@@ -73,52 +73,88 @@ async function receiptToIntro(page, touch) {
   assert.fail('Actual C.STATION receipt did not reach installation intro');
 }
 async function readIntro(page, touch) {
-  const intro = page.locator('[data-test="reel-intro"]');
+  const intro = page.getByRole('dialog', { name: 'MOKUMOKUパッキーの説明' });
   await intro.waitFor();
+  const next = intro.locator('[data-test="reel-intro-next"]');
+  assert(await next.evaluate(b => b === document.activeElement));
   const countBefore = await page.evaluate(async () =>
     (await import('./js/core/state.js')).state.reel.count);
-  // Five text pages followed by the guide. Observe the current page: receipt
-  // input may already have advanced it. Each input must transition once; no retries.
-  for (let i = 0; i < 6; i++) {
-    const shown = await intro.evaluate(root => ({
-      text: root.querySelector('.ri-text')?.textContent,
-      guide: !!root.querySelector('[data-test="reel-guide-card"]'),
-    }));
-    if (shown.guide) {
-      await page.locator('[data-test="reel-guide-card"]').waitFor();
-      assert.equal(await page.evaluate(async () =>
-        (await import('./js/core/state.js')).state.reel.count), countBefore,
-      'Drew before explanation/guide finished');
-      await tap(page, '[data-test="reel-intro"]', touch);
-      await intro.waitFor({ state: 'detached' });
-      return;
-    }
-    assert(shown.text?.trim(), 'Missing intro text before guide');
-    await tap(page, '[data-test="reel-intro"]', touch);
-    await page.waitForFunction(previous => {
-      const root = document.querySelector('[data-test="reel-intro"]');
-      return !!root && (!!root.querySelector('[data-test="reel-guide-card"]')
-        || root.querySelector('.ri-text')?.textContent !== previous);
-    }, shown.text);
+  assert.equal(await intro.getByRole('button', { name: '次へ' }).count(), 1);
+  if (!touch) {
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Shift+Tab');
+    assert(await next.evaluate(b => b === document.activeElement), 'Tab must not leave the explanation');
   }
-  assert.fail('Intro exceeded five text pages without reaching the guide');
+  // The actual C.STATION path checks all five lines and the card. A stale receipt input must not skip one.
+  const expected = [/ボクはパッキー/, /インストール完了/, /かってに1回転/, /ルールはシンプル/, /記録ノート/];
+  for (const [i, match] of expected.entries()) {
+    const current = await intro.locator('.ri-text').innerText();
+    assert.match(current, match);
+    assert.equal(await intro.getByRole('button', { name: '次へ' }).count(), 1);
+    if (touch) await next.tap();
+    else if (i === 0) {
+      // Ignore the second click of a single double click.
+      await next.dblclick();
+    } else if (i === 1) {
+      // The first keydown sends one page, the held-key repeat must not also send the next.
+      await page.keyboard.down('Enter');
+      await page.keyboard.down('Enter');
+      await page.keyboard.up('Enter');
+    } else if (i === 2) await next.press('Space');
+    else if (i === 3) await next.press('Enter');
+    else await next.click();
+  }
+  await intro.locator('[data-test="reel-guide-card"]').waitFor();
+  assert.equal(await page.evaluate(async () =>
+    (await import('./js/core/state.js')).state.reel.count), countBefore,
+  'Drew before explanation/guide finished');
+  const close = intro.getByRole('button', { name: '説明を閉じる' });
+  if (touch) await close.tap();
+  else await close.press('Space');
+  await intro.waitFor({ state: 'detached' });
 }
+// 登録のついでの配達（#3819）で入った手当・経験値。初回の当たりの支払いと分けて数えるため、案内の前後の差を足し込む。
+let errandGain = null;
+const emptyGain = () => ({ money: 0, growthXp: 0, stats: {}, xp: {} });
+const addDiff = (into, after, before) => {
+  for (const key of Object.keys(after)) into[key] = (into[key] || 0) + (after[key] || 0) - (before[key] || 0);
+};
+const minus = (value, gain) => Object.fromEntries(Object.entries(value).map(([key, n]) => [key, n - (gain[key] || 0)]));
 async function noonMapNext(page, touch) {
-  // #2213 B01/B03: after registration, DAY2 noon is the player's own action. The night is
-  // the fixed tonari shift and both deliveries follow on the walk home (covered by
-  // early_deliveries / delivery_night_plan / playthrough). Only advance dialogue here;
-  // never select a destination.
-  for (let n = 0; n < 250; n++) {
+  // #3819: after registration, DAY2 continues with the errand deliveries ("登録のついで"): the map guides
+  // PEPPERMINT, then EDEN, then one report at tonari. Then the noon is the player's own action, and there is no
+  // fixed night shift. Only follow the guided pins and advance dialogue here; never choose a free destination.
+  let before = null;
+  for (let n = 0; n < 400; n++) {
     assert.equal(await page.locator('[data-test="map-guide"]').filter({ hasText: '参加登録' }).count(), 0,
       'LOAD replayed registration');
-    assert.equal(await page.locator('.spot-pin.guide[data-spot="minto"]').count(), 0,
-      'A delivery took over DAY2 noon before the night shift');
+    for (const id of ['minto', 'adam']) {
+      if (await page.locator(`.map:not(.done) .spot-pin.guide[data-spot="${id}"]`).isVisible()) {
+        before ||= await snapshot(page);
+        await tap(page, `[data-test="pin-${id}"]`, touch);
+        await tap(page, '[data-test="map-go"]', touch);
+      }
+    }
     if (await page.locator('.map:not(.done) [data-test="pin-rest"]').isVisible()
-      && await page.locator('[data-test="map-guide"]').count() === 0) return;
+      && await page.locator('[data-test="map-guide"]').count() === 0) {
+      const done = await page.evaluate(async () => {
+        const s = (await import('./js/core/state.js')).state;
+        return [s.slot, !!s.flags._delivery_minto_done, !!s.flags._delivery_adam_done, !!s.flags._delivery_report_done];
+      });
+      assert.deepEqual(done, [0, true, true, true], 'The errand deliveries and report come before the free noon');
+      if (before) {
+        const after = await snapshot(page);
+        errandGain.money += after.money - before.money;
+        errandGain.growthXp += after.growthXp - before.growthXp;
+        addDiff(errandGain.stats, after.stats, before.stats);
+        addDiff(errandGain.xp, after.xp, before.xp);
+      }
+      return;
+    }
     await advanceDialogue(page, touch);
     await page.waitForTimeout(80);
   }
-  assert.fail('LOAD did not reach the free DAY2 noon map within 20 seconds');
+  assert.fail('LOAD did not reach the free DAY2 noon map within the polling budget');
 }
 /** 初回の当たりの支払い。旧しくみは能力Pの合計、心得の盤（通常プレイの既定・SBD97）は経験値（SPEC 1.8） */
 const statSum = (stats) => Object.values(stats).reduce((a, b) => a + b, 0);
@@ -142,6 +178,7 @@ await suite('reel-registration-load', async check => {
   for (const touch of [false, true]) for (const boundary of cases) {
     const label = `${touch ? 'touch' : 'pc'}-${boundary}`;
     await check(label, async page => {
+      errandGain = emptyGain();
       await page.evaluate(async () => {
         const core = await import('./js/core/state.js');
         const s = core.newGame();
@@ -245,20 +282,23 @@ await suite('reel-registration-load', async check => {
         const resumed = await snapshot(page);
         assert.equal(resumed.visitedDay, null);
         assert.equal(resumed.count, committed.reel.count, 'Second interruption redrew first spin');
-        assert.deepEqual(resumed.stats, committed.stats, 'Second interruption changed payout');
-        assert.deepEqual(resumed.xp, committed.statXp);
-        assert.equal(resumed.growthXp, committed.growth?.xp || 0, 'Second interruption changed EXP payout');
+        assert.equal(errandGain.money, 4000, 'The errand pays both delivery allowances once');
+        assert.deepEqual(minus(resumed.stats, errandGain.stats), committed.stats, 'Second interruption changed payout');
+        assert.deepEqual(minus(resumed.xp, errandGain.xp), committed.statXp);
+        assert.equal(resumed.growthXp - errandGain.growthXp, committed.growth?.xp || 0, 'Second interruption changed EXP payout');
         assert.deepEqual(resumed.note, committed.reel.note);
       }
       await noonMapNext(page, touch);
       const after = await snapshot(page);
-      for (const key of ['day', 'slot', 'money', 'stamina']) assert.equal(after[key], receipt[key], key);
+      for (const key of ['day', 'slot', 'stamina']) assert.equal(after[key], receipt[key], key);
+      assert.equal(errandGain.money, 4000, 'The errand pays both delivery allowances once');
+      assert.equal(after.money - errandGain.money, receipt.money, 'money');
       assert.equal(after.visits, 1, 'Replayed the receipt visit');
       assert.equal(after.registered, true);
       assert.equal(after.intro, true);
       assert.equal(after.pendingFirst, false);
       assert.equal(after.pending, 0);
-      assert.equal(after.mintoDone, false); assert.equal(after.adamDone, false);
+      assert.equal(after.mintoDone, true); assert.equal(after.adamDone, true); // #3819: 登録のついでに届ける
       assert.equal(after.seed, 1);
       assert.equal(after.visitedDay, beforeLoad.visitedDay.c_station ?? null);
       const customerAccess = await page.evaluate(async () => {
@@ -269,18 +309,19 @@ await suite('reel-registration-load', async check => {
       assert.equal(customerAccess.ok, true, `Registration blocked a same-day customer visit: ${customerAccess.why}`);
       if (boundary === 'legacy-no-explicit-flag') {
         assert.equal(after.count, 0, 'Inferred a first spin for a legacy installed save');
-        assert.deepEqual(after.stats, receipt.stats);
-        assert.deepEqual(after.xp, receipt.xp);
-        assert.equal(after.growthXp, receipt.growthXp, 'Paid EXP for an inferred legacy first spin');
+        assert.deepEqual(minus(after.stats, errandGain.stats), receipt.stats);
+        assert.deepEqual(minus(after.xp, errandGain.xp), receipt.xp);
+        assert.equal(after.growthXp - errandGain.growthXp, receipt.growthXp, 'Paid EXP for an inferred legacy first spin');
       } else {
         assert.equal(after.count, expected.count, 'Lost or duplicated the first series');
         assert.deepEqual(after.lock, expected.lock, 'Changed deterministic next-spin state');
-        const gain = payoutOf(after, expected.board) - payoutOf(receipt, expected.board);
+        const errandPayout = expected.board ? errandGain.growthXp : statSum(errandGain.stats);
+        const gain = payoutOf(after, expected.board) - payoutOf(receipt, expected.board) - errandPayout;
         if (expected.board) assert.deepEqual(after.stats, receipt.stats, 'The board pays EXP, not stats');
         assert.equal(gain, expected.exp, 'Lost or duplicated first-spin payout');
         if (beforeLoad.reel.count > 0) {
-          assert.deepEqual(after.stats, beforeLoad.stats, 'Repaid a committed result');
-          assert.deepEqual(after.xp, beforeLoad.statXp);
+          assert.deepEqual(minus(after.stats, errandGain.stats), beforeLoad.stats, 'Repaid a committed result');
+          assert.deepEqual(minus(after.xp, errandGain.xp), beforeLoad.statXp);
           assert.deepEqual(after.note, beforeLoad.reel.note);
         }
       }

@@ -410,11 +410,13 @@
           "speaker": "",
           "text": "戻ると、博士は湯のみを両手で包んでいた。大会の映像は止まったままだ。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_doctor_yunomi"},
         {
           "speaker": "dr_kemuri",
           "face": "normal",
           "text": "……さて。勝負の日の話を、しましょうか"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "text": "どちらが正しいかは決めないまま、椅子を戻した。日を決めるかどうかは、まだこれからだった。"
@@ -1666,6 +1668,192 @@
           "speaker": "",
           "face": "",
           "text": "次に差し出されたのは、水の入ったグラスだった。今日は、飲み干してから店を出た。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_wang_tonari_visit",
+      "comment": "#4010 第5章、王煙楼が日本に寄って tonari の一台を吸う（段階3 ch4_longlong_fourth の「いつか日本へ寄ったら、tonariの一台も吸ってみたいね」と、第5章のLIME lime_wang_08「tonariへ寄る日を、そろそろ考えよう」の回収）。王煙楼のLIMEの誘い lime_wang_tonari_visit（連絡先は段階3で交換するので、約束を聞いた人にだけ届く）を受けると、昼の tonari で読む（daily/calendar.js の約束の再生。reminder_spot: tonari）。締めくくり（専用ハガル）を読んだかは前提にしない。日本の店で覚えた言葉の順（bond_after_master_hookah_4「いらっしゃい」「ごゆっくり」・ch4_longlong_visit_f「お疲れさまでした」）を、言われる側・言う側を入れ替えて回収する（読んでいなくても、本人の一言で通じる）。水煙袋の紙の火種（段階1 ch4_longlong_second「その日まで息を細くしておきなさい」）を、はじめの息で立てる。スミさんとは初対面の職人どうしで、旧友・師弟にしない（会釈と短い言葉だけ）。王煙楼は格言で語らず、炭の置き方と手で見せる。シェイクとの師弟・大会の勝敗・ライチには触れない。時間帯は言わない（飛行機が夜、は予定の話）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariの扉が、静かに開いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "旅の上着を腕にかけた王煙楼が、入口で一度立ち止まった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の中を、端から端までゆっくり見る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いらっしゃいませ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "……日本の店で、最初に覚えた言葉だ。言われる側になるのは、初めてだね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥で、スミさんが顔を上げた。目が合うと、どちらからともなく小さく会釈する。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……ごゆっくり"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "laugh",
+          "text": "二つ目の言葉も、ここで聞けた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓ぎわの席を勧めると、王煙楼は腰を下ろす前に、もう一度入口を振り返った。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "扉から、どの席も見えるね。急いでいる客も、座る前に一息つける"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……今日は、どれくらいいられますか"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "surprise",
+          "text": "……それは、私が聞くことだ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "君の一台が、終わるまで。飛行機は、まだ先だからね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、tonariのいつもの葉で作ります。常連さんが、いちばんよく頼むやつです"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "いい。旅の客には、その店のいつものがいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉を詰め、炭を置く。キッチンタイマーを回すと、王煙楼はタイマーではなく、俺の手元を見ていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最初の煙を確かめてから、ホースを渡した。王煙楼は二口吸って、三口目の前に一つだけ息を待った。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "炭が、客の吸う速さを覚えている。……この置き方は、あの人に習ったのかな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼がカウンターのほうを見ると、スミさんは手を止めずに答えた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……そいつの手だ。俺は、教えただけだ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "そうか。なら、いい店だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一台が細くなった頃、王煙楼は鞄から細い金属の道具を出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手のひらに載るほどの、水煙袋だった。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "火種は、君に頼みたい。約束だったからね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙をよった火種を受け取る。……息を、細く。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吹きかけると、紙の先に小さな火が立った。飛ばない。消えない。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "……もう、飛ばないね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼は水煙袋に火を移して、数口だけ吸った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥で、スミさんが手を止めて見ていた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "……息で、火を立てるのか"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "速い息では、立たない。彼は、立てた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは何も言わずに、また灰皿を拭きはじめた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りぎわ、王煙楼は入口で振り返り、二人に向かって頭を下げた。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "お疲れさまでした"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……帰る客に言う言葉を、帰る客が言っていった）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターに、燃え残った火種の紙が一本残っていた。それを、手帳のあいだに挟んだ。"
         }
       ]
     },

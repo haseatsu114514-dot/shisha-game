@@ -162,10 +162,11 @@ const zoneBox = (label, cls, attrs, children) => el(`div.ichi-zone-box${cls}`, {
  * @param speed CPUの手と演出の早回し
  * @param assist 案内（次にすること・自動で冷める）を入れて始めるか。右上の「ガイド」でいつでも切り替えられる
  * @param skin 見た目の案の名前（デザインの見比べ用）。root に data-skin が付き、css/ichidai-skin-<名前>.css の決まりが効く
+ * @param reducedMotion 試遊ページで保存済みの「揺れ・閃光を減らす」が有効か
  * 戻り値: { completed, cancelled, games:[{ winner（0=自分/1〜=相手の席/null=引き分け）, scores, votes, tournament, kit, level, players, rank }], last }
  */
 export function runIchidai({ host = document.getElementById("stage"), signal = null, seed = null, config = null, opponent = null,
-  tutorial = false, pilot = null, speed = 1, allowRetry = true, skin = null, opponentKit = null, opponents = null, assist = true } = {}) {
+  tutorial = false, pilot = null, speed = 1, allowRetry = true, skin = null, opponentKit = null, opponents = null, assist = true, reducedMotion = false } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   const games = [];
@@ -254,7 +255,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   const MOTION_MS = { play: 640, reach: 440, joy: 920, shock: 760, down: 1000, flinch: 520, talk: 1300, lean: 560, pop: 280, tilt: 1500, nod: 950, look: 1700 };
   const SMALL_MOTION = ["tilt", "nod", "look", "talk", "pop", "lean"]; // ほかの動きの最中には重ねない小さな動き
   let fidgetTimer = 0;
-  const calm = () => ui.fast || pilot === "cpu" || matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const calm = () => ui.fast || pilot === "cpu" || reducedMotion || matchMedia("(prefers-reduced-motion: reduce)").matches;
   /** 相手 i の席を動かす（i を省くと、1対1の相手） */
   function seatMotion(kind, i = CPU) {
     const st = seats[i], seat = st?.node;
@@ -489,7 +490,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     // 対戦の前に「VS」（顔アイコンが向かい合い、電撃が走る）。CPUに打たせる早回しでは出さない
     if (!quick()) {
       root.dataset.phase = "versus"; table.replaceChildren();
-      await playVersus({ host: root, signal: ctrl.signal, speed, players: [{ id: "hajime", name: "はじめ", sub: KIT[cfg.kit]?.name }, ...foes.map((f, k) => ({ id: f.id, name: f.name, sub: KIT[kits[k]]?.name }))] });
+      await playVersus({ host: root, signal: ctrl.signal, speed, reducedMotion, players: [{ id: "hajime", name: "はじめ", sub: KIT[cfg.kit]?.name }, ...foes.map((f, k) => ({ id: f.id, name: f.name, sub: KIT[kits[k]]?.name }))] });
       if (dead()) return;
     }
     root.dataset.phase = "play";
@@ -578,7 +579,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   }
 
   function pulseTarget(selector, cls) {
-    if (still()) return;
+    if (calm()) return;
     const target = root.querySelector(selector);
     if (!target) return;
     target.classList.remove(cls); void target.offsetWidth; target.classList.add(cls);
@@ -586,7 +587,6 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   }
 
   // ───────── 札が卓の上を飛ぶ ─────────
-  const still = () => quick() || matchMedia("(prefers-reduced-motion: reduce)").matches;
   /** root の中の座標（1280×720 の物差し）での、要素の中心と幅 */
   function spot(node) {
     if (!node?.isConnected) return null;
@@ -596,7 +596,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   const CENTER = { x: 640, y: 318, w: 240 }; // 使った札を大きく見せる位置（卓の中央の手前）
   /** この入力で動く札の出どころ（手札の位置・炭焼き場の枠・相手の席）と、その札のID。描き直す前に測る */
   function flySource(w, a) {
-    if (still() || !a) return null;
+    if (calm() || !a) return null;
     const p = G.P[w.player], mine = w.player === ME;
     if (a.type === "puton") {
       // 4人対戦の相手は炭焼き場を卓に出していないので、席（顔）から出す
@@ -619,7 +619,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
    * lay＝着地で卓に寝かせる角度。via＝途中で通る位置（手前に大きく見せる）。base＝face の幅
    */
   function fly(face, from, to, { dur = 400, start = "front", end = "front", lay = 44, via = null, base = 112, judge = false } = {}) {
-    if (still() || !from?.w || !to?.w) return Promise.resolve();
+    if (calm() || !from?.w || !to?.w) return Promise.resolve();
     const node = el("div.ichi-fly", { "aria-hidden": "true", style: { width: `${base}px`, height: `${base * 1.4}px` } }, el("div.ichi-fly-card", [
       face ? el("div.ichi-fly-face", face) : null,
       el("div.ichi-fly-face.is-back", el(`i.ichi-back${judge ? ".is-judge" : ""}`, { style: { "--cw": `${base}px` } }))]));
@@ -655,7 +655,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   }
   /** 弱まる・灰になる炭の場所（描き直す前に測る）。ev.zi＝その出来事の直前の並びでの位置 */
   function coalSpot(ev) {
-    if (ev.zi == null || still()) return null;
+    if (ev.zi == null || calm()) return null;
     const node = ev.p === ME ? board.querySelector(`[data-test="ichi-coal-${ev.zi}"]`)
       : multi() ? board.querySelectorAll(`[data-test="ichi-rival-zone-${ev.p}"] .ichi-on`)[ev.zi]
         : board.querySelectorAll('[data-test="ichi-foe-zone"] .ichi-coal-btn')[ev.zi];
@@ -663,7 +663,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   }
   /** 炭の火が下がった・灰になった合図（その場所に、短い印を出す）。なぜ消えたかが分かるように一言付ける */
   function burnFx(ev, at) {
-    if (!at || still()) return;
+    if (!at || calm()) return;
     const ash = ev.t === "ash", why = { cool: "弱った", draft: "すきま風", self: "外した" }[ev.why] || "";
     const node = el(`div.ichi-burn${ash ? ".is-ash" : ".is-down"}`, { "aria-hidden": "true", dataset: { test: "ichi-burn", kind: ash ? "ash" : "down", why: ev.why || "" }, style: { left: `${Math.round(at.x)}px`, top: `${Math.round(at.y)}px` } },
       [el("i"), el("b", { text: ash ? "灰になった" : "火−1" }), ev.p === ME && why ? el("small", { text: why }) : null]);
@@ -701,7 +701,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       if (dead()) return;
       // 置いた札は、飛んできた札が着くまで隠しておく（着いたら置かれる動き）
       const said = speak(ev); // 相手の一言（カードを使った・審査の結果・勝ち負け）。待たずに進む
-      const fl = from && !still();
+      const fl = from && !calm();
       board.style.setProperty("--land", fl && ["charge", "place", "puton"].includes(ev.t) ? `${(human(ev.p) ? 0.3 : 0.36) / speed}s` : fl && ev.t === "play" ? `${(human(ev.p) ? 0.62 : multi() ? 1.0 : 1.7) / speed}s` : "0s");
       if (ev.t === "reveal") { render(); if (ev.puff.judge) { sfx("card"); await showReveal(ev.puff); } } // 練習試合は審査カードを使わない
       else if (ev.t === "score") {
@@ -728,11 +728,11 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       else if (ev.t === "target") { if (ev.to !== ME) { seatMotion("flinch", ev.to); emote("bang", ev.to); } else if (multi() && !quick()) flash(`${G.P[ev.p].name}が あなたをねらった`, "is-foe"); }
       else if (ev.t === "charge" || ev.t === "puton" || ev.t === "place") { if (ev.p !== ME) seatMotion("reach", ev.p); sfx("click"); render(); coalFlight(ev, from); }
       else if (ev.t === "pack") { sfx("card"); render(); leafFlight(ev, from); }
-      else if (ev.t === "flip" || ev.t === "ash") { const at = coalSpot(ev); render(); burnFx(ev, at); if (at && !still()) await wait(ev.p === ME ? 260 : multi() ? 50 : 120); }
+      else if (ev.t === "flip" || ev.t === "ash") { const at = coalSpot(ev); render(); burnFx(ev, at); if (at && !calm()) await wait(ev.p === ME ? 260 : multi() ? 50 : 120); }
       else if (ev.t === "drop") { if (human(ev.p) && !quick()) flash(`${CARD[ev.id].name}は灰へ`, "is-foe"); render(); }
       else if (ev.t === "wear") render();
       // 蒸らし: ターンの終わりに、熱が火力へ1近づく（自分のぶんは、熱の目盛りが動くのを少し見せる）
-      else if (ev.t === "heat") { render(); if (ev.p === ME && !still()) { pulseTarget('[data-test="ichi-zone"]', ev.to > ev.from ? "fx-steam-up" : "fx-steam-down"); if (ev.why === "steam") await wait(multi() ? 200 : 420); } }
+      else if (ev.t === "heat") { render(); if (ev.p === ME && !calm()) { pulseTarget('[data-test="ichi-zone"]', ev.to > ev.from ? "fx-steam-up" : "fx-steam-down"); if (ev.why === "steam") await wait(multi() ? 200 : 420); } }
       if (["puton", "flip", "ash", "place"].includes(ev.t)) pulseTarget(ev.t === "place" ? (ev.p !== ME ? ".ichi-foe .is-stove" : '[data-test="ichi-stove"]') : ev.p === ME ? '[data-test="ichi-zone"]' : multi() ? `[data-test="ichi-rival-zone-${ev.p}"]` : ".ichi-foe .is-coal", `fx-${ev.t}`);
     }
   }
@@ -1585,7 +1585,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
           const at = many && i !== ME ? spot(seats[i]?.node) : null;
           floatText(i === ME ? "me" : many ? "rival" : "foe", `+${n}`, at && { left: `${Math.round(at.x - 26)}px`, top: "34px" });
         }
-        if (ev.voter != null && !quick() && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        if (ev.voter != null && !calm()) {
           const at = many && ev.voter !== ME ? spot(seats[ev.voter]?.node) : null;
           const medal = el(`i.ichi-flying-medal.is-${ev.voter === ME ? "me" : many ? "rival" : "foe"}`, { "aria-hidden": "true", style: at ? { "--tx": `${Math.round(at.x - 622)}px`, "--ty": `${Math.round(60 - 352)}px` } : null });
           root.append(medal); setTimeout(() => medal.remove(), 850);

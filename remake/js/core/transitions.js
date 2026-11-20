@@ -386,8 +386,33 @@ export async function retryStroke(mid, host = document.getElementById("fx")) {
 // 紫の夜の面とラベンダーの地平線をやめ、ゲームの絵で作る。眠る前の部屋の絵が暗く沈み、左下に日付の題字が出て、
 // 窓から差す光で朝の部屋の絵に替わる。天気は図形ではなく、窓の光（晴れ）・青みと曇りの絵（くもり）・窓の雨（雨）で伝える。
 
+/**
+ * 日付の題字（夜明けの幕・朝のDAYカード）の明朝（Suien Name・font-display: swap）を待つ。
+ * 届く前に描くと数字が代わりのゴシックで出て、届いた途端に明朝へ差し替わる。同じ「4」でも形と太さが変わり、
+ * 「DAY４からDAY4になった」と見えていた（#3813 項目5。文字はどちらも半角）。上限 ms までに届かなければ false。
+ */
+export function dateTypeReady(ms = 1500) {
+  const fonts = globalThis.document?.fonts;
+  if (!fonts?.load) return Promise.resolve(true);
+  // 書体の宣言が無い・読めない時（[] や失敗）は false。題字は本文の書体で描く
+  const loaded = Promise.resolve().then(() => fonts.load('700 180px "Suien Name"', "DAY0123456789"))
+    .then((faces) => (faces?.length ?? 0) > 0).catch(() => false);
+  const timer = globalThis.setTimeout;
+  if (typeof timer !== "function") return loaded;
+  let id;
+  return Promise.race([loaded, new Promise((resolve) => { id = timer(() => resolve(false), ms); })])
+    .finally(() => globalThis.clearTimeout?.(id));
+}
+/** 明朝が間に合わなかった題字は、初めから本文の書体（ゴシック）で描く。見ている間に明朝へ差し替わらない */
+export function plainDateType(card, nodes) {
+  card.dataset.type = "plain";
+  for (const node of nodes) if (node) node.style.fontFamily = "var(--font)";
+}
+
 function flipNumber(from, value) {
-  const span = el("span.tr-flip", [el("i", { text: String(from ?? value) }), el("i", { text: String(value) })]);
+  // 旧セーブ等から文字列の全角数字が渡っても、朝の日付は DAY1 と同じ半角で描く。
+  const asciiDigits = (number) => String(number).replace(/[０-９]/g, digit => String(digit.charCodeAt(0) - 0xff10));
+  const span = el("span.tr-flip", [el("i", { text: asciiDigits(from ?? value) }), el("i", { text: asciiDigits(value) })]);
   span.lastChild.style.transform = "translateY(100%)";
   return span;
 }
@@ -427,6 +452,7 @@ const isHome = (pic) => /bg_home/.test(`${pic?.style?.backgroundImage || ""} ${p
  */
 export async function nightToMorning(host, mid) {
   const reduced = reducedMotion();
+  const typeReady = dateTypeReady(); // 灯りが落ちる間に、日付の題字の明朝を読む
   const unhold = holdCover();
   const node = el("div.tr-dawn", { "aria-hidden": "true", dataset: { transition: "dawn" } });
   host.append(node);
@@ -469,8 +495,10 @@ export async function nightToMorning(host, mid) {
       : el("div.tr-dawn-sub", [el("span", { text: `${info.tournamentName || "SMOKE CROWN CUP"} まで あと` }), leftFlip, el("span", { text: "日" })]);
     if (label) sub.append(el("span.tr-dawn-wx", { text: label, dataset: { weather } }));
     const rule = el("i.tr-dawn-rule");
-    const card = el("div.tr-dawn-card", { dataset: { test: "dawn-card" } }, [el("div.tr-dawn-day", [el("small", { text: info.dayLabel || "DAY" }), dayFlip]), rule, sub]);
+    const dayHead = el("div.tr-dawn-day", [el("small", { text: info.dayLabel || "DAY" }), dayFlip]);
+    const card = el("div.tr-dawn-card", { dataset: { test: "dawn-card" } }, [dayHead, rule, sub]);
     if (info.forecast) card.append(el("small.tr-dawn-sub.tr-dawn-forecast", { text: `明日は${info.forecast}`, dataset: { test: "dawn-forecast" } }));
+    if (!(await typeReady)) plainDateType(card, [dayHead, leftFlip]);
     node.append(card);
     if (reduced) {
       [dayFlip, leftFlip].filter(Boolean).forEach((s) => { s.firstChild.remove(); s.firstChild.style.transform = ""; s.firstChild.style.opacity = ""; });

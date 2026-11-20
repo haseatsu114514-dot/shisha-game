@@ -168,7 +168,8 @@ const measure = (page) => page.evaluate(async () => {
     name: { shown: name.classList.contains("show") && getComputedStyle(name).display !== "none", rows: name.classList.contains("show") && getComputedStyle(name).display !== "none" ? rows(name) : [],
       bar: getComputedStyle(name, "::before").backgroundColor, face: getComputedStyle(name).backgroundImage, text: name.textContent,
       fontSize: parseFloat(getComputedStyle(name).fontSize), clipped: name.scrollWidth > name.clientWidth + 1 },
-    speaker: vn.style.getPropertyValue("--neo-speaker"),
+    speaker: name.style.getPropertyValue("--neo-speaker"),
+    portraitSpeakerColor: getComputedStyle(document.querySelector(".vn-portraits")).getPropertyValue("--neo-speaker"),
     controls: [...document.querySelectorAll(".vn-ctl")].map((node) => ({ id: node.dataset.test, ...px(node.getBoundingClientRect()), realHeight: node.getBoundingClientRect().height })),
     choices: choices.classList.contains("show") ? [...choices.querySelectorAll(".vn-choice")].map((node) => ({ ...px(node.getBoundingClientRect()),
       fontSize: parseFloat(getComputedStyle(node).fontSize), shrunk: node.style.fontSize, face: getComputedStyle(node).backgroundImage })) : [],
@@ -195,6 +196,7 @@ const STAGE = { left: 0, top: 0, right: 1280, bottom: 720 };
 /** 本文・名前・操作・選択肢が互いに重ならず、ステージの中にある。本文は帯の中で、行数の上限を守る。 */
 function assertLayout(m, label, { lines = 2, phone = false } = {}) {
   assert.equal(m.look, "neo", `${label}: 新版が効いている`);
+  assert.equal(m.portraitSpeakerColor, "", `${label}: 名前札の色を立ち絵の描画へ継承しない`);
   assert(!m.stage.scrollable && m.stage.scrollTop === 0, `${label}: ステージにスクロール領域を作らない ${JSON.stringify(m.stage)}`);
   assert(m.text.rows.length > 0, `${label}: 本文が出ている`);
   assert(m.text.lines <= lines && m.text.breaks <= lines - 1 && !m.text.overflow && !m.inner.overflow,
@@ -560,8 +562,9 @@ async function dailyMap(page, { phone }) {
   assert.equal(m.hud.money, "42,000円");
   assert(m.hud.moneySize >= (phone ? 24 : 20), `所持金の数字の大きさ ${m.hud.moneySize}`);
   assert.equal(m.hud.exp, "Lv.1");
-  assert(Math.abs(m.hud.stamina.width - 120) < 1 && Math.abs(m.hud.expBar.width - 120) < 1, "体力と Lv のゲージは現行と同じ長さ（120px）");
-  assert(m.hud.staminaFill > 60, "体力の中身が出ている");
+  // Lv のゲージは120px。体力の枠は盤の割り振り前は経験値ゲージの半分（60px）から始まり、盤の体力成長でだけ伸びる（#3821）。
+  assert(Math.abs(m.hud.stamina.width - 60) < 1 && Math.abs(m.hud.expBar.width - 120) < 1, `体力の枠は盤なしで経験値ゲージの半分・Lv は120px ${m.hud.stamina.width}/${m.hud.expBar.width}`);
+  assert(m.hud.staminaFill > m.hud.stamina.width / 2, "体力の中身が出ている");
   for (const rect of m.hud.inside) assert(inside(rect, m.hud.card, 1), `HUD の中身が板に収まる ${JSON.stringify(rect)}`);
   const centers = m.hud.inside.map((rect) => (rect.top + rect.bottom) / 2);
   assert(Math.max(...centers) - Math.min(...centers) <= m.hud.card.height / 2, "HUD は1行");
@@ -1276,7 +1279,8 @@ async function chapterMap(page, { phone, chapter }) {
   assert(m.hud.card.right <= (phone ? 640 : 720), `${label}: HUD の板が長くなりすぎない ${m.hud.card.right}`);
   assert(noPaperFrame(m.hud.cardFrame) && m.hud.cardFace.includes("linear-gradient") && light(m.hud.dayColor) && light(m.hud.moneyColor), `${label}: HUD は夜紫の板に白い数字`);
   for (const rect of m.hud.inside) assert(inside(rect, m.hud.card, 1), `${label}: HUD の中身が板に収まる ${JSON.stringify(rect)}`);
-  assert(Math.abs(m.hud.stamina.width - 120) < 1 && Math.abs(m.hud.expBar.width - 120) < 1, `${label}: ゲージは現行と同じ長さ`);
+  // 体力の枠は盤の割り振り前は経験値ゲージ（120px）の半分。各章の地図の状態は盤を割り振っていない（#3821）。
+  assert(Math.abs(m.hud.stamina.width - 60) < 1 && Math.abs(m.hud.expBar.width - 120) < 1, `${label}: 体力の枠は経験値ゲージの半分 ${m.hud.stamina.width}/${m.hud.expBar.width}`);
   if (phone) {
     // 横持ちスマホは体力と Lv を1つの区画に上下2段。2つのゲージの始まりはそろう。
     assert(m.hud.expRow.top >= m.hud.staminaRow.bottom - 1 && Math.abs(m.hud.expRow.left - m.hud.staminaRow.left) < 1

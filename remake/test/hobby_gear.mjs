@@ -1,5 +1,5 @@
 // VOL07（#2273・#1904）: ミニゲームの自分の道具。一度だけ買えて、SAVE/LOADで二重購入・二重効果にならない。
-// 効き目は小さく、何が変わるかは数値で決まっている（斧の揺れ×0.9・DJの▶判定+10ms・TRPGの盛り上がり1から）。
+// 効き目は小さく、何が変わるかは数値で決まっている（斧の揺れ×0.9・DJの▶判定の幅+¼拍・TRPGの盛り上がり1から）。
 // node --experimental-vm-modules remake/test/hobby_gear.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -84,21 +84,26 @@ assert.deepEqual(releaseAimAt({ x: .1, y: -.2 }, 3000, .6, 1, false), releaseAim
 assert.throws(() => swayAt(0, .62, 0, false, .2), RangeError, "極端な補正は受け付けない");
 assert.equal(SWAY.max, .11, "揺れの上限そのものは変えない");
 
-// 4. DJ: ▶の判定の窓だけが前後10ms広い。音程・フェーダーの採点は同じ。
-assert.equal(gear.DJ_ALLOWANCE_MS, 10);
-assert.equal(dj.gradeOf(35), "GOOD");
-assert.equal(dj.gradeOf(35, 10), "PERFECT");
-assert.equal(dj.gradeOf(-125), "EARLY");
-assert.equal(dj.gradeOf(-125, 10), "OK");
-assert.equal(dj.gradeOf(200, 10), "LATE");
-const base = { playMs: 65, reached: 4, follow: .8 };
-const plain = dj.scoreTransition(base), phones = dj.scoreTransition({ ...base, allowance: 10 });
+// 4. DJ: ▶の判定の幅だけが前後¼拍広い（PERFECT ±½→±¾拍＝1.5倍）。音程・フェーダーの採点は同じ。
+// 2026-11-20（#2456 §4・DJK01・DJK07）: 判定の幅は拍（120 BPM で PERFECT 250・GOOD 1000・OK 2000ms）。ヘッドホンは以前の +10ms から ¼拍（120 BPM で 125ms）へ。
+assert.equal(gear.DJ_ALLOWANCE_BEATS, 0.25);
+assert.equal(gear.DJ_ALLOWANCE_BEATS, dj.PHONES_ALLOWANCE, "本編とDJの画面で同じ値");
+assert.match(gear.HOBBY_GEAR.gear_headphones.effect, /¼拍/);
+assert.equal(dj.gradeOf(300), "GOOD");
+assert.equal(dj.gradeOf(300, dj.PHONES_ALLOWANCE), "PERFECT");
+assert.equal(dj.gradeOf(375, dj.PHONES_ALLOWANCE), "PERFECT", "¾拍まで");
+assert.equal(dj.gradeOf(376, dj.PHONES_ALLOWANCE), "GOOD");
+assert.equal(dj.gradeOf(-2100), "EARLY");
+assert.equal(dj.gradeOf(-2100, dj.PHONES_ALLOWANCE), "OK");
+assert.equal(dj.gradeOf(2126, dj.PHONES_ALLOWANCE), "LATE");
+const base = { playMs: 1100, reached: 4, follow: .8 };
+const plain = dj.scoreTransition(base), phones = dj.scoreTransition({ ...base, allowance: dj.PHONES_ALLOWANCE });
 assert.deepEqual([plain.parts[0], plain.parts[2]], [phones.parts[0], phones.parts[2]], "音程・フェーダーの点は同じ");
-assert.deepEqual([plain.parts[1], phones.parts[1]], [60, 85], "65msの入りが GOOD 相当に");
-assert.equal(dj.scoreTransition({ ...base, playMs: 20 }).total, dj.scoreTransition({ ...base, playMs: 20, allowance: 10 }).total, "ぴったりの入りは同じ点");
+assert.deepEqual([plain.parts[1], phones.parts[1]], [60, 85], "1100msの入りが GOOD 相当に");
+assert.equal(dj.scoreTransition({ ...base, playMs: 20 }).total, dj.scoreTransition({ ...base, playMs: 20, allowance: dj.PHONES_ALLOWANCE }).total, "ぴったりの入りは同じ点");
 assert.equal(dj.createSet(SETS[0]).allowance, 0);
-assert.equal(dj.createSet(SETS[0], Math.random, { allowance: 10 }).allowance, 10);
-assert.equal(dj.createSet(SETS[0], Math.random, { allowance: 999 }).allowance, 30, "上限30ms");
+assert.equal(dj.createSet(SETS[0], Math.random, { allowance: dj.PHONES_ALLOWANCE }).allowance, .25);
+assert.equal(dj.createSet(SETS[0], Math.random, { allowance: 999 }).allowance, .5, "上限½拍");
 assert.equal(new URL(djUrl(1, { phones: true })).searchParams.get("phones"), "1");
 assert.equal(new URL(djUrl(1)).searchParams.get("phones"), null, "持っていなければ付けない");
 
@@ -114,4 +119,4 @@ assert.equal(diceTable.snapshot().momentum, 0);
 assert.deepEqual(Array.from({ length: 6 }, () => diceTable.die()), Array.from({ length: 6 }, () => plainTable.die()), "出目の並びは同じ");
 assert.equal(new TrpgSession(scenario, { seed: 42, warmStart: "yes" }).warmStart, false, "true のときだけ");
 
-console.log("PASS hobby gear: venues, one purchase across save/load, hatchet sway ×0.9, headphones ±10ms, dice start the table warm");
+console.log("PASS hobby gear: venues, one purchase across save/load, hatchet sway ×0.9, headphones ±¼ beat, dice start the table warm");

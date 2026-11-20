@@ -1,6 +1,7 @@
 // 初登場カットイン: キャラが名乗って名前が出たあと、最初に一度だけ「名前・二つ名・一言」を全画面で出す。
 // 文言の正本は data/characters.json の intro_cutin。
 //   { title: 二つ名, line: 一言（「／」は2行にする時の改行位置）, face: 立ち絵の表情, color: 差し色,
+//     fallback_color: 画像なしの登場演出に限る差し色（通常会話と共有する color の上書き）
 //     motion: 動きの型 sharp/soft/still/bounce, name: "alias"=フルネームを伏せる（ネタバレになる相手）, display_name: 名前（下記） }
 // 載せる言葉は名前・二つ名・一言＋小さく好きなフレーバー。初対面の顔だけを書く（2026-10-31）
 // 名前の出し方（NAMES-1106「カットインの名前表示ルール」2026-11-06 オーナー策定）: intro_cutin.display_name に書く。
@@ -64,17 +65,8 @@ function framePortrait(img, p) {
   img.style.setProperty("--ax", `${-(p.ax * 100)}%`);
 }
 
-/**
- * 初登場は最後まで見せる。クリック・Enter・SKIPでも表示時間を短くしない。
- * @param opts.onAppear 画像が出た時の場面処理（本人の登場に合わせるBGMなど）
- */
-export async function playIntro(id, { onAppear = null, override = {}, variant = "" } = {}) {
-  const intro = { ...introOf(id, variant), ...override };
-  if (!introOf(id, variant)) return;
-  if (variant !== "unknown") markMet(id);
-  markIntroSeen(id, variant);
-  const { source: nameSource, main, subSource } = introName(id, variant, override);
-  const standingInfo = portraitInfo(id, intro.face || "normal");
+/** 紹介に出す人物の絵と背景。playIntro と先読み（prefetchIntro）で同じものを選ぶ */
+function introSources(id, intro) {
   // 登場カットインの配置は現行原画用。会話の画風設定と独立して選ぶ。
   let p = portraitInfo(id, intro.face || "normal", "classic");
   let art = DB.manifest.introArt?.[id];
@@ -84,13 +76,48 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     p = { ...p, src: graphic.portrait, face: "graphic" };
     art = { ...art, frames: { graphic: graphic.frame } };
   }
+  const background = art && p ? graphic?.background || img(art.background) : null;
+  return { p, art, graphic, background };
+}
+
+/** 絵つきの紹介を出す前に待つもの（人物の絵・背景・書体）。読み込み済みならすぐ済む。ms は絵を待つ上限（null は上限なしで見守る） */
+function introAssetsReady(intro, { p, background }, { source, main }, ms = 15000) {
+  return Promise.all([
+    imageReady(p.src, ms), imageReady(background, ms),
+    document.fonts.load('900 150px "Intro Gothic"', main).catch(() => []),
+    document.fonts.load('700 38px "Intro Gothic"', `${intro.title}${intro.line}${source}`).catch(() => []),
+  ]);
+}
+
+/**
+ * 紹介の絵と書体を、出す前に取り始める（待たない）。本人が話した時点で呼べば、その行を読んでいる間に届き、
+ * 送った後に待たずに済む（#2444 観察4）。同じ絵は imageReady が一度だけ取り、playIntro の待ちと共有する。
+ * 先読みでは待つ上限を数えない（長く読んでいても、送った後の playIntro はそこから従来どおり待てる）。
+ */
+export function prefetchIntro(id, { variant = "", override = {} } = {}) {
+  if (!introOf(id, variant)) return;
+  const intro = { ...introOf(id, variant), ...override };
+  const sources = introSources(id, intro);
+  if (sources.art && sources.p) introAssetsReady(intro, sources, introName(id, variant, override), null);
+  else if (sources.p) imageReady(sources.p.src, null);
+}
+
+/**
+ * 初登場は最後まで見せる。クリック・Enter・SKIPでも表示時間を短くしない。
+ * @param opts.onAppear 画像が出た時の場面処理（本人の登場に合わせるBGMなど）
+ * @param opts.waitAssets 絵・書体の待ち（Promise）を受け取り、待つ間の表示を添えて返す（会話エンジンの読み込みの表示。#2444 観察4）
+ */
+export async function playIntro(id, { onAppear = null, override = {}, variant = "", waitAssets = (ready) => ready } = {}) {
+  const intro = { ...introOf(id, variant), ...override };
+  if (!introOf(id, variant)) return;
+  if (variant !== "unknown") markMet(id);
+  markIntroSeen(id, variant);
+  const names = introName(id, variant, override);
+  const { source: nameSource, main, subSource } = names;
+  const standingInfo = portraitInfo(id, intro.face || "normal");
+  const { p, art, graphic, background } = introSources(id, intro);
   if (art && p) {
-    const background = graphic?.background || img(art.background);
-    await Promise.all([
-      imageReady(p.src, 15000), imageReady(background, 15000),
-      document.fonts.load('900 150px "Intro Gothic"', main).catch(() => []),
-      document.fonts.load('700 38px "Intro Gothic"', `${intro.title}${intro.line}${nameSource}`).catch(() => []),
-    ]);
+    await waitAssets(introAssetsReady(intro, { p, background }, names));
     const host = illustratedIntro(id, variant, intro, nameSource, p, art, background);
     host.dataset.art = graphic ? "graphic" : "classic"; // ひより専用の明るい配色は旧絵柄（白い背景）だけ
     const motion = motionOf(intro);
@@ -122,12 +149,12 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
   const portrait = p ? el("img.ci-portrait", { src: p.src, alt: "", draggable: "false" }) : el("div.ci-portrait.none", { text: [...main][0] || "？" });
   if (p) {
     framePortrait(portrait, p);
-    await imageReady(p.src, 15000);
+    await waitAssets(imageReady(p.src, 15000));
   }
   const motif = { hajime: "smoke", adam: "duality", naru: "stripes", dr_kemuri: "science", samechan: "shark", sui: "stripes", maezono: "duality", pakki: "duality" }[id] || "smoke";
   const pattern = el("div.ci-motif", { "aria-hidden": "true" });
   pattern.innerHTML = `<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">${motifs[motif]}</svg>`;
-  const host = el("div.cutin", { dataset: { char: id }, style: `--ci: ${intro.color || "var(--gold)"}` }, [
+  const host = el("div.cutin", { dataset: { char: id }, style: `--ci: ${intro.fallback_color || intro.color || "var(--gold)"}` }, [
     el("div.ci-left-field"),
     el("div.ci-halftone"),
     pattern,

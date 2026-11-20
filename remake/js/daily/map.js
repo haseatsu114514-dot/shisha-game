@@ -10,7 +10,7 @@ import { trainRide } from "../core/scene-motions.js";
 import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 import { state, save, timeOfDay } from "../core/state.js";
-import { growthEnabled, hidaneTotal } from "../core/growth.js";
+import { growthEnabled, hidaneTotal, readyLessons } from "../core/growth.js";
 import { SE } from "../core/audio.js";
 import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel } from "./spots.js";
 import { updateHud } from "./hud.js";
@@ -73,6 +73,23 @@ const firstFreeDay = () => state.chapter === 1 && state.day <= 2;
 
 let interrupt = null;
 /** ピン地図・街歩きに共通する、未決定の行き先選択状態。 */
+/**
+ * その行き先で心得の盤の授業を相談できる相手（SBD141）。相談が始まる処理（calendar.js・ch2-preparation.js・ch5-shops.js・ch5-dubai.js）と同じ人を返す:
+ * 第5章の通い店は talkWith、ドバイの屋敷などは teacher、ライバルの店は charId、SHISHARK はサメちゃん、tonari はスミさん（バイト上がり）とつむぎ（客席）、
+ * 第1・2章の Dr.fookah は2階の凛想。ひよりは店に居合わせた時だけなので、ピンには出さない
+ */
+export function spotTeachers(s, chapter = state?.chapter) {
+  if (!s) return [];
+  if (s.talkWith || s.teacher) return [s.talkWith || s.teacher];
+  if (s.kind === "rival" && s.charId) return [s.charId];
+  if (s.kind === "samechan") return ["samechan"];
+  if (s.kind === "tonari") return ["sumi", "tsumugi"];
+  if (s.id === "shop" && s.kind === "shop" && chapter <= 2) return ["rio"];
+  return [];
+}
+/** その行き先で今相談できる授業（灯してあって、♥も届いていて、まだ習っていない） */
+export const spotLessons = (s) => growthEnabled() ? spotTeachers(s).flatMap((who) => readyLessons(who)) : [];
+
 export const isChoosingDestination = () => !!document.querySelector("#screen [data-destination-selection]:not(.done)");
 /** 表示中のマップを外から閉じる（LIME で誘いに乗ったときなど）。マップが無ければ何もしない */
 export function interruptMap(value) {
@@ -88,6 +105,7 @@ const backgroundOf = (region) => typeof region?.background === "function" ? regi
  * @param opts.notice   上部に出す一言（「今夜は約束がある」など）
  * @param opts.reminder 右下の「今日はどうする？」に添える一言（心得の盤の組み直しの期限など。ピンに重ならない所に出す）
  * @param opts.eventPin 今夜イベントがある場所のピン id（! バッジ）
+ * @param opts.eventPinLabel 今夜の予定を文字で示す場合の札（任意の新着印と区別する）
  * @param opts.guide    { pin, title, text, free } 1日目の案内・配達用。その1か所だけ選べるようにして光らせる。
  *                      free（表示する一言）があれば、その行き先は代金がかからない
  * @param opts.onShown  マップと解禁の余韻を出し終えたとき（LIME の初回案内など）
@@ -96,11 +114,13 @@ const backgroundOf = (region) => typeof region?.background === "function" ? regi
  */
 export async function chooseSpot(opts = {}) {
   // 初回だけ: 看板の顔とスロットの図柄が読めてから地図を出す（遅い回線でも最大2秒・GUI20・21）
-  const ready = () => Promise.all([uiArtReady(), storeLogosReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
+  const url = backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`);
+  const backdrop = setBg(url, { fast: true, brief: true, mapBackdrop: true });
+  const ready = () => Promise.all([uiArtReady(), storeLogosReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), backdrop]);
   // プレイヤーの既定では、0.5秒を超えた待ちに作業台と同じ漫画つきのロード画面を出す（core/ui.js の loadingNotice）。
   if (comicLoadingRequired()) {
     await withLoadingNotice(ready(), loadingNotice("マップを準備しています…"));
-    return await openMap(opts);
+    return await openMap(opts, url, backdrop);
   }
   let notice = null;
   const timer = setTimeout(() => {
@@ -110,7 +130,7 @@ export async function chooseSpot(opts = {}) {
   try {
     await ready();
   } finally { clearTimeout(timer); notice?.remove(); }
-  return await openMap(opts);
+  return await openMap(opts, url, backdrop);
 }
 
 /** 行き先の場面を「移動」の幕で開く。押したピンの位置と、看板に出ている行き先の名前を渡す（core/transition-moves.js） */
@@ -171,19 +191,57 @@ function fitMapCrop(pins) {
   stage.style.setProperty("--map-crop", `${Math.round(crop)}px`);
 }
 
-function openMap({ notice = "", reminder = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, visitBlock = null, regions = null, regionId = null, onRegionChange = null }) {
+function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = "", guide = null, onShown = null, onBeforeGo = null, visitBlock = null, regions = null, regionId = null, onRegionChange = null }, initialUrl, initialBackdrop) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
     let region = regionOf({ regions, regionId });
     const mapSpots = () => region ? typeof region.spots === "function" ? region.spots() : region.spots : allSpots();
-    const setMapBackground = () => setBg(backgroundOf(region) || bgUrl(`bg_osu_map_${tod}`), { fast: true });
-    void setMapBackground();
     updateHud();
     const info = el("div.map-info");
     const pins = el("div.map-pins");
     let selected = null;
     const owner = state;
+    // Own the pending image by the mounted map and region, not by the shared background layer.
+    // A late image after entering a shop, changing region, or loading another save has no authority to draw.
+    let backdropRevision = 0;
+    const message = el("span", { role: "status" });
+    const retry = el("button", { type: "button", text: "地図を再読み込み", dataset: { test: "map-backdrop-retry" } });
+    const mapStatus = el("div.map-backdrop-note", { hidden: true, dataset: { test: "map-backdrop-status" } }, [message, retry]);
+    const recoverBackdrop = (url, task) => {
+      const revision = ++backdropRevision;
+      mapStatus.hidden = true;
+      if (task.isShown?.() !== false) return;
+      const active = () => revision === backdropRevision && state === owner && root.isConnected && !root.classList.contains("done");
+      const failed = () => {
+        message.textContent = "地図の背景を表示できません。";
+        retry.hidden = !url;
+      };
+      const watch = async (transfer) => {
+        message.textContent = "地図を読み込み中…";
+        retry.hidden = true;
+        if (!transfer || !await transfer) { if (active()) failed(); return; }
+        if (!active()) return;
+        const draw = setBg(url, { instant: true, mapBackdrop: true });
+        await draw;
+        if (!active()) return;
+        if (draw.isShown()) mapStatus.hidden = true;
+        else failed();
+      };
+      mapStatus.hidden = false;
+      retry.onclick = () => { if (active() && !retry.hidden) void watch(imageReady(url, null)); };
+      const pending = imageReady.pending(url);
+      if (pending) void watch(pending);
+      else failed();
+    };
+    const setMapBackground = async () => {
+      ++backdropRevision;
+      mapStatus.hidden = true;
+      const url = backgroundOf(region) || bgUrl(`bg_osu_map_${tod}`);
+      const task = setBg(url, { fast: true, mapBackdrop: true });
+      await task;
+      if (state === owner && root.isConnected && !root.classList.contains("done")) recoverBackdrop(url, task);
+    };
     let stationTrip = null;
     let revealing = false;
     let stopReveal = () => {};
@@ -253,10 +311,8 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     const idleInfo = () => {
       clearSpotInfo();
       if (guide) {
-        // 案内の文言は下中央の GUIDE 表示に一本化する。右下のパネルに同じ文言を重ねない（#3814）。
-        info.replaceChildren(...[
-          forecastFoot(),
-        ].filter(Boolean));
+        // GUIDE 中は右下の案内箱を出さない。天気予報は GUIDE 側に表示する。
+        info.replaceChildren();
         return;
       }
       // 操作の説明は最初の日だけ。以後は期限の一言や明日の天気がある時だけ出す。
@@ -285,6 +341,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
         event.preventDefault();
         go(s);
       };
+      const lessons = av.why === "locked" ? [] : spotLessons(s);
       const pv = av.why === "locked" ? null : spotPreview(s);
       const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
       if (preview) {
@@ -328,8 +385,10 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       // 今は入れない行き先は、理由（本日定休日・夜から営業・今日はもう行った 等）を見える文字で添える（#3555。読み上げだけだった）。
       // 説明文は増やさず（#2853 の「店名と写真だけ」）、小さな札で見せる。入れる行き先は料金、入れない時はその理由。
       // 体力は数字で見せない（ゲージでなんとなく把握するゲーム性・MAP04）。料金はピンから外し、ここで見せる（MAP05）。
-      const tags = !av.ok ? (av.why && av.why !== "locked" ? [["mi-why", av.why, "map-why"]] : [])
-        : [s.cost && !freeGuide(s) ? ["mi-cost", `料金 ${yen(s.cost)}`, "map-cost"] : null].filter(Boolean);
+      // 授業を相談できる店は、その授業の名前を札で添える（SBD141）。入れない日も出す（明日以降に来ればよいと分かる）
+      const lessonTag = lessons.length ? ["mi-lesson", `授業の相談「${lessons.map((l) => l.name).join("」「")}」`, "map-lesson"] : null;
+      const tags = !av.ok ? [av.why && av.why !== "locked" ? ["mi-why", av.why, "map-why"] : null, lessonTag].filter(Boolean)
+        : [s.cost && !freeGuide(s) ? ["mi-cost", `料金 ${yen(s.cost)}`, "map-cost"] : null, lessonTag].filter(Boolean);
       const tagRow = tags.length ? el("div.mi-tags", tags.map(([cls, text, test]) => el(`span.mi-tag.${cls}`, { text, dataset: { test } }))) : null;
       info.replaceChildren(...[
         el("div.mi-banner", { text: label }),
@@ -451,7 +510,12 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       const facility = !(s.id === "trpg_bar" && hasStoreLogo(s.id)) && !locked && !(!known && s.unknownLabel) && s.facilityIcon !== false ? createMapFacilityIcon(s.id) : null;
       const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 82, height: 46 }) : null;
       const hidane = s.id === "kannon" && growthEnabled() ? hidaneTotal() : 0;
-      const badge = locked ? null
+      // 灯した授業を相談できる店（SBD141）: 看板の左に「相談」の吹き出し。右上の「!」・火種の数、上の顔とは別の場所に置く
+      const lessons = locked ? [] : spotLessons(s);
+      const lessonMark = lessons.length ? el("i.lesson-badge", { text: "相談", dataset: { test: `map-lesson-${s.id}` } }) : null;
+      const eventLabel = !locked && eventPin === s.id ? eventPinLabel : "";
+      const status = [eventLabel, av.tag].filter(Boolean).join("・");
+      const badge = locked || eventLabel ? null
         : hidane > 0 ? el("i.evt-badge.hidane-badge", { text: String(Math.min(99, hidane)), "aria-label": `火種 ${hidane}・内省で灯せる`, dataset: { test: "kannon-hidane" } })
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
         : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
@@ -462,12 +526,13 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && s.facilityIcon !== false && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}${closed ? ".closed" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
-        "aria-label": `${pinSpeech(s, locked, caption)}${s.cost && !freeGuide(s) ? `・利用料 ${yen(s.cost)}` : ""}${av.tag ? `（${av.tag}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
+        "aria-label": `${pinSpeech(s, locked, caption)}${s.cost && !freeGuide(s) ? `・利用料 ${yen(s.cost)}` : ""}${status ? `（${status}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}${lessons.length ? `・授業「${lessons.map((l) => l.name).join("」「")}」を相談できる` : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
         el("div.pin-visual", [
           el("div.shield", [
             badge,
+            lessonMark,
             el("div.ico", [facility || logo || (locked || !known && s.unknownLabel
               ? el("span", { text: "？" }) : pinSymbol(s))]),
           ]),
@@ -476,7 +541,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
         el("div.sub-label", { text: caption }),
         // 料金はピンに出さない（右下のプレビューの「料金」で確かめる・MAP05。読み上げの aria-label には残す）。
         // 休みの札は文字を残したまま、PC・スマホとも CSS で看板の角の「休」の印に置き換える（2画面表示は文字のまま）。
-        av.tag ? el(`small.pin-status${closed ? ".pin-closed" : ""}`, { text: av.tag, title: av.tag }) : null,
+        status ? el(`small.pin-status${closed && !eventLabel ? ".pin-closed" : ""}`, { text: status, title: status }) : null,
       ]);
       if (facility) {
         const crop = facility.querySelector('.facility-icon-crop');
@@ -547,13 +612,17 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
       pins,
       notice ? el("div.map-notice", { text: notice }) : null,
-      revealNotice,
-      guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [el("b", { text: "GUIDE" }), el("span", { text: guide.text })]) : null,
+      revealNotice, mapStatus,
+      guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [
+        el("b", { text: "GUIDE" }), el("span", { text: guide.text }),
+        tomorrowForecast() ? el("span.map-guide-forecast", { text: `明日は${tomorrowForecast()}` }) : null,
+      ]) : null,
       info,
     ]);
     if (region) root.dataset.region = region.id;
     renderPins();
     showScreen("map", root);
+    recoverBackdrop(initialUrl, initialBackdrop);
     // ワイドステージでは絵とピンを横いっぱいに拡大し、上下の切り方をピンの位置から決める（画面の向き・大きさが変わったら決め直す）
     const refit = () => { if (!root.isConnected) { globalThis.removeEventListener?.("resize", refit); return; } fitMapCrop(pins); };
     globalThis.addEventListener?.("resize", refit);

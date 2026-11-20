@@ -3,13 +3,13 @@ import { craftContext } from "./context.js";
 import { state } from "../core/state.js";
 import { growthPerks, growthFeature, useGrowthInsurance, growthSkill, growthLesson, growthCritical, settleGrowthPhase, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
 // 吸い出し（CLAUDE.md: 最低2回・3回までは無傷・それ以上は葉が痩せる。やめ時は自分で選ぶ）
-// 左右に振れる針を止めた位置で、熱を入れる吸い／キープ／熱を逃がす吸い。中央の細い帯が「ジャスト」。
+// 左右に振れる針を止めた位置で、上げ吸い／キープ／下げ吸い。中央の細い帯が「ジャスト」。
 // 熱管理（大会のR3・調整）も同じ針のゲーム。「炭を交換しますか？」で個数を選び、交換した炭で温度が戻ってから、
 // 温度が動き続ける中で最低1回吸って整える。3回目の吸い出しからフレーバーが傷む（TH14・TH21・TH22・TH39）。
 // 温度計の一番上で焦げ、熱管理で冷え切り、赤い葉が0枚になると、その一台はダメになる（TH82）。一度に吸えるのは5回まで（TH94）。
 // 吸いすぎ・過熱での吸い出しは、はじめの体力も削って疲れ（針が速く、成功帯が狭い）が付く（TH29）。
 // 人によって狙いが違うので、EXCELLENT・GOOD の判定は出さない。吸うと温度計の横に上下の印だけが出る（TH36）。
-// 左の作業風景に温度計、右に半円ダイヤル。左の熱を逃がす吸い=寒色→キープ→右の熱を入れる吸い=暖色。
+// 左の作業風景に温度計、右に半円ダイヤル。左の下げ吸い=寒色→キープ→右の上げ吸い=暖色。
 // TH61: 真円の半円と中央から振れる細い針。止めたら一口を吸い終えるまで固定する。
 // 各帯には温度が上下することだけを添える。時間・強さは画面に書かない（TH60）。
 // 熱管理では、立ち上げから吸われて消耗した炭を交換する。交換する炭は最初の炭焼きのときに一緒に焼いておいたものをトングで持ってくる。
@@ -27,6 +27,7 @@ import { craftConditions, heatDelta, pullResult, isIdealTemperature, isRainbowTe
 import { buildThermometer } from "./thermometer.js";
 import { attackGuide, attackRange, inAttackRange, attackScore, ATTACK_BAND } from "./attack-band.js";
 import { renewalCraft } from "../core/craft-version.js";
+import { assistEffect } from "./retry-assist-level.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { impact, exhale, smokeRing } from "./fx.js";
 import { mixColor } from "./art.js";
@@ -52,11 +53,11 @@ const HOSE_ICON = `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" s
   <path d="m31.6 15.8 1.8-1.9" stroke="currentColor" stroke-width="7.4" stroke-linecap="butt"/>
   <path d="m38.8 7.8 3.4-3.6" stroke="currentColor" stroke-width="3.2"/>
 </svg>`;
-// 針の位置の帯（0〜1）。熱を逃がす吸い=左、キープ=中、熱を入れる吸い=右。芯に止めると上げ下げが強い。
+// 針の位置の帯（0〜1）。下げ吸い=左、キープ=中、上げ吸い=右。芯に止めると上げ下げが強い。
 export const ZONES = [
-  { id: "down", from: 0, to: 0.34, just: [0.14, 0.205], label: "熱を逃がす吸い", mark: "▼", delta: -0.1, justDelta: -0.16 },
+  { id: "down", from: 0, to: 0.34, just: [0.14, 0.205], label: "下げ吸い", mark: "▼", delta: -0.1, justDelta: -0.16 },
   { id: "keep", from: 0.34, to: 0.66, just: [0.468, 0.532], label: "キープ", mark: "＝", delta: 0, justDelta: 0 },
-  { id: "up", from: 0.66, to: 1, just: [0.795, 0.86], label: "熱を入れる吸い", mark: "▲", delta: 0.1, justDelta: 0.16 },
+  { id: "up", from: 0.66, to: 1, just: [0.795, 0.86], label: "上げ吸い", mark: "▲", delta: 0.1, justDelta: 0.16 },
 ];
 // 交換する炭の個数ごとの、戻ってくる熱と、その後の燃え進む速さ（0個は消耗した炭のままで早く冷える）。
 const COAL_HEAT = [0, 0.06, 0.11, 0.16, .21];
@@ -117,7 +118,7 @@ export function careStartTemp(cs) {
 const MODES = {
   pull: {
     store: "pull", title: "吸い出し", min: 2, safe: 3, drift: false, serveLabel: "提供する",
-    hint: "右で温度を上げ、左で下げる。中央のキープは左寄りで微減、右寄りで微増。雨の日は熱が入りにくいので、温度が下がったら熱を入れる吸いを増やそう。吸い終えてから次の針を止めよう。緑の範囲で味を整える。低めと高めで表情が変わる葉もある。蒸らしで集中できたほど針はゆっくり動く",
+    hint: "右の上げ吸いで温度を上げ、左の下げ吸いで下げる。中央のキープは左寄りで微減、右寄りで微増。雨の日は熱が入りにくいので、温度が下がったら上げ吸いを増やそう。吸い終えてから次の針を止めよう。緑の範囲で味を整える。低めと高めで表情が変わる葉もある。蒸らしで集中できたほど針はゆっくり動く",
     start: startTemp, focus: pullFocusFromSteam,
   },
   care: {
@@ -127,10 +128,10 @@ const MODES = {
   },
 };
 
-export function runPull(cs) { return pullGame(cs, MODES.pull); }
-export async function runCare(cs, { round = 0 } = {}) {
+export function runPull(cs, { holdFailedResult = false } = {}) { return pullGame(cs, MODES.pull, holdFailedResult); }
+export async function runCare(cs, { round = 0, holdFailedResult = false } = {}) {
   cs.careRound = round;
-  const completed = await pullGame(cs, { ...MODES.care, title: round ? `調整 ${round}回目` : "熱管理" });
+  const completed = await pullGame(cs, { ...MODES.care, title: round ? `調整 ${round}回目` : "熱管理" }, holdFailedResult);
   if (completed === false) throw new Error("Care interrupted before finishing");
   if (round && cs.care) {
     cs.careHistory ??= [];
@@ -139,7 +140,7 @@ export async function runCare(cs, { round = 0 } = {}) {
   }
 }
 
-async function pullGame(cs, mode) {
+async function pullGame(cs, mode, holdFailedResult) {
   const owner=state;
   await waitBenchReady(cs, mode.store);
   if(state!==owner)return false;
@@ -159,8 +160,9 @@ async function pullGame(cs, mode) {
   // リニューアル（CRN03・04・06・10）: 止めた瞬間の光りと音・行き先・吸っている間の弧・良くなった一口の手応え・集中の札・結果の一語。
   // 桜井版（CRN16）はリニューアル前のとおり（芯に入った一口だけ手応え）。
   const renewal = renewalCraft(cs);
-  // 桜井式の大会だけ（SKR04）: 温度計の上の端に「攻めの帯」。ここで終えると、その回の審査に上積み。
+  // #3795: 桜井版共通の温度判定。第1章大会だけは既存の審査加点もある。
   const attacking = attackGuide(cs);
+  const attackVotes = cs.mode === "tournament" && (cs.chapter ?? 1) === 1 && cs.voteStyle === "sakurai";
   // テスト用（craftTest.aim = "attack"）: 安全な口数の範囲で、攻めの帯の内側（上下2割を除く）に入る最短の吸い方を探し、
   // その1口目の針の位置を返す。内側が無ければ帯の全体、それも無ければ口数の上限まで探す。それでも無ければ null。
   const planAttackPull = () => {
@@ -195,10 +197,10 @@ async function pullGame(cs, mode) {
   };
   // テスト用（craftTest.aim = "attack"）: 上手な自動操作が中心ではなく攻めの帯のまん中を狙う。
   const autoGoal = () => { const r = attacking && craftTest.aim === "attack" ? attackRange(bands) : null; return r ? (r.low + r.high) / 2 : center; };
-  const attackNote = attacking ? `桃色の「攻めの帯」で${mode.drift ? "整え終える" : "提供する"}と、この回の審査が伸びる（帯の上を越えると味が崩れる）。` : "";
+  const attackNote = attacking ? `桃色の「攻めの帯」で${mode.drift ? "整え終える" : "提供する"}と、${attackVotes ? "この回の審査が伸びる" : "温度の評価が満点になる"}（帯の上を越えると味が崩れる）。` : "";
   const panel = stepPanel(mode.store, mode.title, attackNote ? `${attackNote}${mode.hint}` : tutorial
     ? mode.drift ? "温度を戻すのは炭。交換する数と置き方で決まる。そのあとの吸いは味の確かめで、温度は少ししか動かない。1〜2口で整え終えよう"
-    : "中央のキープは左寄りで微減、右寄りで微増。右の熱を入れる吸いは温度を上げ、左の熱を逃がす吸いは温度を下げる。雨の日は熱を入れる吸いを増やそう。吸い終わってから次の針を止める"
+    : "中央のキープは左寄りで微減、右寄りで微増。右の上げ吸いは温度を上げ、左の下げ吸いは温度を下げる。雨の日は上げ吸いを増やそう。吸い終わってから次の針を止める"
     : mode.hint);
   const gameClock = createCraftClock(panel);
   const concentration = mode.focus(cs);
@@ -220,7 +222,7 @@ async function pullGame(cs, mode) {
   let pulls = 0, justs = 0, criticals = 0, smokeRings = 0, failed = null, coals = null;
   // 熱管理だけ: 炭が燃え進んで熱が落ちる速さと、洞察で小さくなる揺らぎ
   const clarity = mode.drift ? skill.clarity(cs) : 1;
-  const baseCool = mode.drift ? rand(0.006, 0.013) * (cs.retryAssist ? .55 : 1) : 0;
+  const baseCool = mode.drift ? rand(0.006, 0.013) * assistEffect(cs).cool : 0;
   let coolRate = 0, elapsed = 0;
   const wobblePhase = rand(0, 6.28);
   const wobble = () => (mode.drift ? conditions.sparsity * 0.05 * Math.sin(elapsed * Math.PI * 2 / 2.6) + 0.014 * (1 - 0.7 * clarity) * Math.sin(elapsed * 1.7 + wobblePhase) : 0);
@@ -259,7 +261,7 @@ async function pullGame(cs, mode) {
   ].filter(Boolean))));
   if (effectVisible("sense")) dial.append(effectBadge("sense", "感"));
   if (effectVisible("technique")) dial.append(effectBadge("technique", "技"));
-  const currentZoneLabel = el("b", { text: "熱を逃がす吸い" });
+  const currentZoneLabel = el("b", { text: "下げ吸い" });
   // CRN06: 止めたらどこへ行くかを、針のそばでも読めるように（温度計の点線と同じ予告）
   const destination = el("span.pull-destination", { dataset: { test: "pull-destination" } });
   const currentZone = el("div.pull-current-zone", { dataset: { test: "pull-current-zone" } }, [
@@ -317,7 +319,7 @@ async function pullGame(cs, mode) {
   const actionButtons=[pullBtn,deepBtn,blindBtn,serveBtn].filter(Boolean);
   const controls=el(`div.pull-btns${actionButtons.length>2?".with-options":""}`,{style:actionButtons.length>2?{gridTemplateColumns:`minmax(0,1.75fr) repeat(${actionButtons.length-1},minmax(0,1fr))`}:{}},actionButtons);
   const play = el("div.pull-play", [dialRow, effectLine("technique", "技", "技術でゲージがゆっくり"), summary, controls]);
-  play.setAttribute("aria-label", "左の熱を逃がす吸いで温度を下げ、中央でキープ、右の熱を入れる吸いで温度を上げる");
+  play.setAttribute("aria-label", "左の下げ吸いで温度を下げ、中央でキープ、右の上げ吸いで温度を上げる");
   const main = el("div.pull-main", [play]);
   panel.append(el(`div.pull${mode.drift ? ".pull-care" : ""}`, [thermometer.root, main]));
   thermometer.root.append(readout);
@@ -434,7 +436,7 @@ async function pullGame(cs, mode) {
     const isJust = at >= z.just[0] && at <= z.just[0] + jw;
     // キープ中央は維持。半円の色に合わせ、左寄りは微減、右寄りは微増。
     const raw = z.id === "keep" ? (at - .5) * PULL_TUNING.keepSlope : (isJust ? z.justDelta : z.delta) + PULL_TUNING.sideBias;
-    // 熱管理の吸いは確かめの一口。熱を入れる吸いで冷えた一台を戻すことはできない（E06 案A）。
+    // 熱管理の吸いは確かめの一口。上げ吸いで冷えた一台を戻すことはできない（E06 案A）。
     const delta = mode.drift ? raw * CARE_PULL_SCALE : raw;
     return { z, isJust, delta, critical: isJust && growthCritical(state, at - (z.just[0] + jw / 2), jw, { tutorial }) };
   };
@@ -711,7 +713,7 @@ async function pullGame(cs, mode) {
           const candidates = [.141, .3, keep, .75, .796];
           at = candidates.sort((a, b) => Math.abs(T + pullHeat(actionAt(a).delta) - goal) - Math.abs(T + pullHeat(actionAt(b).delta) - goal))[0];
         } else if (auto === "burn") {
-          at = .83; // テスト用: 右のジャスト熱を入れる吸いを重ねて焦がす
+          at = .83; // テスト用: 右のジャスト上げ吸いを重ねて焦がす
         } else {
           at = rand(0, 1) < 0.5 ? 0.7 : 0.75;
           // 雑な吸い方の自動操作でも、焦がす一手は打たない（大会の敗北テストを安定させる）。
@@ -747,20 +749,22 @@ async function pullGame(cs, mode) {
     if (failed === "burnt") cs.burnt = true;
     if (mode.store === "pull") { cs.pullDone = true; recordNaruFinish(cs, bands, { automatic: !!autoSkill() }); refreshBench(); }
     tickerSay(text.ticker);
-    await resultCard(panel, { title: text.title, lines: [text.line, waterComfortLine(cs.water), `${pulls}回吸った`] });
+    await resultCard(panel, { title: text.title, lines: [text.line, waterComfortLine(cs.water), `${pulls}回吸った`], holdUntilExit: holdFailedResult });
     return true;
   }
 
   const result = pullResult(T, pulls, justs, bands, safeLimit);
   const { inZone, optimal } = result;
-  // 攻めの帯（桜井式の大会だけ）: 帯の中は温度を満点として扱い、審査の上積みは票の計算（ch1-votes.js）が足す。
+  // 攻めの帯: 帯の中は温度を満点として扱い、第1章の審査の上積みだけ票の計算（ch1-votes.js）が足す。
   const attackBand = attacking ? attackRange(bands) : null;
   const attack = !!attackBand && inAttackRange(T, attackBand);
   const baseScore = attack ? Math.max(result.score, attackScore(pulls, safeLimit)) : result.score;
   let score = Math.min(100,baseScore + (criticals ? Math.min(SKILL_TUNING.criticalCap, criticals * SKILL_TUNING.critical) : 0));
   const tasteCard = mode.store==="pull"&&cs.blindService&&growthLesson(state,"M-B3")?"白紙の味カードで提供した。味の名前は伏せ、尋ねられたら答える":actualExpressionCard(cs, T);
   cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, criticals, smokeRings, coals, inZone, optimal, over: T > ideal[1], under: T < ideal[0], ...(attackBand ? { attack } : {}) };
-  const attackLine = attack ? `攻めの帯で${mode.store === "pull" ? "出した" : "整え終えた"}！ 審査員が身を乗り出した（この回の審査 +${ATTACK_BAND.bonus}）` : null;
+  const attackLine = attack ? attackVotes
+    ? `攻めの帯で${mode.store === "pull" ? "出した" : "整え終えた"}！ 審査員が身を乗り出した（この回の審査 +${ATTACK_BAND.bonus}）`
+    : `攻めの帯で${mode.store === "pull" ? "提供した" : "整え終えた"}（温度の評価は満点、吸いすぎの減点は残る）` : null;
   if (attack) {
     impact(panel, "big", { color: "#ff3fa4" });
     SE.fanfare();
@@ -799,7 +803,9 @@ async function pullGame(cs, mode) {
     title: `${mode.title} 結果`,
     summary: [...(renewal ? [`${keptWord}で整え終えた（${coals ? `炭×${coals}` : "炭そのまま"}・${pulls}回吸った）`] : []), ...(attackLine ? [attackLine] : [])],
     lines: [
-      inZone ? `適温に整えて、${context.returned}` : T > ideal[1] ? cs.mode==="tournament"?"熱いまま審査員に任せてしまった":"まだ熱い。次は炭を減らすか、外寄りに置こう" : cs.mode==="tournament"?"冷めたまま審査員に任せてしまった":"まだぬるい。次は炭を多めに替えるか、内寄りに寄せよう",
+      inZone ? `適温に整えて、${context.returned}`
+        : T > ideal[1] ? cs.mode==="tournament" ? `熱いまま${context.recipient}に任せてしまった` : "まだ熱い。次は炭を減らすか、外寄りに置こう"
+        : cs.mode==="tournament" ? `冷めたまま${context.recipient}に任せてしまった` : "まだぬるい。次は炭を多めに替えるか、内寄りに寄せよう",
       tasteCard,
       waterComfortLine(cs.water),
       coals ? `消耗した炭を${coals}個${{ outer: "、外寄りに置いて", inner: "、内寄りに寄せて" }[cs.careCoals?.place] || ""}交換した` : "炭は交換せずに整えた",

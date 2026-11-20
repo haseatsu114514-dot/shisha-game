@@ -10,8 +10,10 @@ import { growthEnabled } from "../core/growth-mode.js";
 import { rememberGrowthMix, growthRecallOptions } from "../core/growth-memory.js";
 import { effectVisible, effectBadge } from "./effect-visual.js";
 import { canSeeMixHint, canSeeGoldenShort } from "../core/stat-step-tables.js";
+import { craftStageEnabled } from "./stage-layout.js";
+import { packingMark, coalLayoutMark } from "./choice-marks.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible, benchRoot, explainStepOnce } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible, benchRoot, explainStepOnce, preparationGauge } from "./session.js";
 import { flavorMixLife, LEAF_DAMAGE } from "./flavor-life.js";
 import { autoSkill } from "./common.js";
 import { mixBowlPreview, packingBowlPreview } from "./art.js";
@@ -20,7 +22,6 @@ import { flavorStock, addFlavorStock, ownedFlavorIds, flavorPackageArt, SHOP_FLA
 import { runSteamTimer } from "./timer.js";
 import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK, applyCoalTraining } from "./coals.js";
-import { buildMixTemperatureGauge } from "./thermometer.js";
 import { flavorFamilyGrams, configEffectLabel } from "./score.js";
 import { renewalCraft } from "../core/craft-version.js";
 import { FOIL_FREE_HMS } from "./holes_logic.js";
@@ -95,6 +96,7 @@ function choose(panel, options, { cols = 2, onPreview } = {}) {
         onpointerenter: () => { if (!o.disabled) onPreview?.(o.value); },
         onclick: () => { SE.select(); resolve(o.value); },
       }, [
+        o.mark || null,
         o.badge ? el("span.opt-badge", { text: o.badge }) : null,
         el("b", { text: o.label }),
         el("small", { text: o.desc || "" }),
@@ -344,7 +346,7 @@ export async function stepMix(cs) {
   const taste = el("div.mix-taste", { "aria-live": "polite", dataset: { test: "mix-taste" } });
   const regLine = el("div.reg-line");
   const recipeLine = el("div.recipe-line");
-  const thermometer = buildMixTemperatureGauge(cs, { vertical: true });
+  const thermometer = preparationGauge(cs);
   const idealLine = el("span.mix-ideal"), optimalLine = el("span.mix-optimal");
   const temperatureHint = el("small", { text: "上が高温" });
   // #1081 E02: 蒸らし・吸い出しで初めて出る「フレーバーの持ち」を、葉を決めるこの工程でも左の窓で先に見せる。
@@ -354,7 +356,7 @@ export async function stepMix(cs) {
   const lifePreview = cs.mode === "tutorial" ? null : el("div.mix-life-preview", { dataset: { test: "mix-life-preview" } }, [
     el("b", { text: "フレーバーの持ち" }), lifeHost, lifeNote,
   ]);
-  const temperaturePreview = el("div.mix-temperature-preview", { hidden: cs.mode === "tutorial", dataset: { test: "mix-temperature-preview" } }, [
+  const temperaturePreview = el("div.mix-temperature-preview", { dataset: { test: "mix-temperature-preview" } }, [
     el("b", { text: "温度帯" }),
     thermometer.root,
     el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
@@ -462,7 +464,7 @@ export async function stepMix(cs) {
     el("div.mix-side", [vessel, taste, lifePreview, recipeLine]),
     // ひらめきは葉の組み合わせの助言なので葉の一覧の頭に置き、決定欄に隠れないようにする（#907）。
     // 見出しとまとめて1要素にし、一覧の子の数（行数に応じた配置の切り替え）を変えない。
-    el("div.mix-list", [el("div.mix-list-head", [singleStyle,
+    el(cs.orderFlavorIds ? "div.mix-list.mix-list-supplied" : "div.mix-list", [el("div.mix-list-head", [singleStyle,
       recall.length ? el("details.mix-recall", [el("summary", { text: "香りの記憶" }),
         el("div.chips", recall.map(option => el("button.btn.ghost.small", {
           text: option.name, dataset: { test: `mix-recall-${option.id}` }, onclick: () => {
@@ -548,6 +550,7 @@ export async function stepPack(cs) {
   const dense = densePackAvailable(state);
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
   if (!await explainStepOnce(cs, "pack")) return;
+  const illustrated = craftStageEnabled() && !renewalCraft(cs);
   const options = [
     { value: "fluffy", label: "ふんわり", surface: "空気を残す・軽い吸い心地", desc: "熱が早く入る。軽い一台を狙う時に。温めすぎに注意" },
     { value: "normal", label: "ノーマル", surface: "均等にならす・基本", desc: "熱の入り方と抜けが標準。初めての葉や器具を試す時に" },
@@ -572,12 +575,11 @@ export async function stepPack(cs) {
     normal: { rate: "熱は標準", note: "帯は配合どおり" },
     firm: { rate: "熱が遅い", note: "蒸らし長め" },
   };
-  const thermometer = buildMixTemperatureGauge(cs, { vertical: true });
+  const thermometer = preparationGauge(cs);
   const idealLine = el("span.mix-ideal");
   const optimalLine = el("span.mix-optimal");
   const temperatureHint = el("small", { dataset: { test: "pack-heat-hint" } });
   const temperaturePreview = el("div.mix-temperature-preview", {
-    hidden: cs.mode === "tutorial",
     dataset: { test: "pack-temperature-preview" },
   }, [
     el("b", { text: "温度帯" }),
@@ -588,7 +590,7 @@ export async function stepPack(cs) {
   const choices = options.map(option => el("button.pack-choice", {
     type: "button", disabled: !!option.locked, dataset: { test: `opt-${option.value}` },
     onclick: () => { if (option.locked) return; selected = option; SE.select(); draw(); },
-  }, [el("b", { text: option.label }), el("small", { text: option.surface })]));
+  }, [illustrated ? packingMark(option.value, option.locked) : null, el("b", { text: option.label }), el("small", { text: option.surface })]));
   function draw() {
     vessel.dataset.pack = selected.value;
     vessel.setAttribute("aria-label", `${DB.equipById[cs.equip.bowl]?.name || "ハガル"}：${selected.label}。${selected.surface}`);
@@ -665,10 +667,11 @@ export async function stepPlace(cs) {
   await waitBenchReady(cs, "place");
   const panel = stepPanel("place", "炭の配置", lessonHint(cs, "place", "基本は同じ炭を三角に3個。配置を決めてから炭を焼く"));
   if (!await explainStepOnce(cs, "place")) return;
+  const illustrated = craftStageEnabled() && !renewalCraft(cs);
   const layouts = availableCoalLayouts(cs.mode === "tutorial" ? {} : state.flags);
   cs.place = await choose(panel, layouts.map(value => value === "triangle"
-    ? { value, label: "トライアングル（3個）", desc: "三角に置いて、熱を均等に届ける", auto: true }
-    : { value, label: "4点置き（4個）", desc: "熱が強く入る配置。温度を見て調整する", badge: renewalCraft(cs) ? configEffectLabel("place", "four") : undefined }));
+    ? { value, mark: illustrated ? coalLayoutMark(3) : null, label: illustrated ? "三角・3個" : "トライアングル（3個）", desc: "三角に置いて、熱を均等に届ける", auto: true }
+    : { value, mark: illustrated ? coalLayoutMark(4) : null, label: illustrated ? "四角・4個" : "4点置き（4個）", desc: "熱が強く入る配置。温度を見て調整する", badge: renewalCraft(cs) ? configEffectLabel("place", "four") : undefined }));
   cs.coalTypes = coalTypes({ ...cs, coalTypes: null });
   if (cs.mode !== "tutorial" && state.flags[COAL_UNLOCK.mixed] && state.owned.includes("flat_charcoal") && state.owned.includes("cube_charcoal")) {
     const n = coalCount(cs);

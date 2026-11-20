@@ -336,7 +336,7 @@ export async function runHomeShisha({ eve = false } = {}) {
   if (result.info.golden === "hit") toast(`✨ 黄金比！ ${result.info.recipe.name}は ${goldenLabel(result.info.recipe)}`, { kind: "good", se: "twinkle" });
   await play(homeShishaDialogue(result, rig, Math.random, { distant: tasteDistant() }));
   if (state !== owner) return true;
-  notifyMastery(result.masteryGains);
+  notifyMastery(result.masteryGains, result.mix);
   save();
   return true;
 }

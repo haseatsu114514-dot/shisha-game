@@ -7,6 +7,7 @@
 //   - 龍龍水煙所: 王煙楼の店がドバイに出した店。ほかの章のライバルの店と同じく、通うと好感度と段階の会話が進む（ch4-longlong.js）
 //   - 必須の出会い（FESTAの太陽・スークの出会い・路地裏の約束）は、期限の夜までに寄らなければその夜に読む
 //   - 再訪の会話は data/dialogue/ch4_dubai_daily.json から巡回して読む
+//   - スミさんからの夜の電話（#3097 計画 4-1）: DAY7 の時差の電話を読んだ後の夜に宿で休むと、休む場面の代わりに一本ずつ読む
 //   - 中心地のカフェ・路地裏のカフェは、来店のたびに現地のメニューから一台頼んで味わう（ch4-dubai-cafe.js。2026-11-02
 //     オーナー「カフェで吸えたりとかにしよう」）。ドバイで一台吸う来店は現地の相場をきりよく（2026-11-02 オーナー「シーシャは6000 カフェは3000 できりよくいく」）:
 //     専門店（FESTA）6,000円・カフェ（中心地・路地裏）3,000円。調べた相場（1ディルハム≒43.5円）は
@@ -30,7 +31,7 @@ import { openingStatus, MOSQUE_VISITING_HOURS } from "../daily/spot-hours.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_DAILY_EVE_DAY, CH4_FREE_SCENE_IDS, chapterFourProgress, syncChapterFourDay,
-  chapterFourSecondAvailable, chapterFourStoryNightDue } from "./ch4-progress.js";
+  chapterFourSecondAvailable, chapterFourStoryNightDue, CH4_SUMI_CALL, chapterFourLastNightCall, skipChapterFourLastNightCall } from "./ch4-progress.js";
 import { CAMEL_DAILY_SPOT_ID, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
 import { overseasCompanion } from "../core/overseas-companion.js";
 import { chainStageAt } from "./visit-chains.js";
@@ -57,7 +58,12 @@ import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/b
 
 export const DUBAI = "dubai";
 const INN_REST_SCENES = ["ch4_inn_rest", "ch4_inn_rest_b", "ch4_inn_rest_c", "ch4_inn_rest_d", "ch4_inn_rest_e"]; // #3097: 3本→5本
-const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
+// スミさんからの夜の電話（#3097 計画 4-1）。DAY7 の時差の電話（CH4_SUMI_CALL）を読んだ後、夜に宿で休むと、休む場面の代わりに
+// 一本ずつ順に読む（一度きり。読み終えたら休む巡回だけに戻り、休む巡回の回数は進めない）。つむぎが同じ便で来ていれば、
+// tonari のつむぎの話（_c）は飛ばす。読んだ数は再訪の会話の記録の sumi_call に置く。
+export const SUMI_NIGHT_CALLS = Object.freeze(["ch4_sumi_call_b", "ch4_sumi_call_c", "ch4_sumi_call_d", "ch4_sumi_call_e"]);
+const SUMI_CALL_TSUMUGI = "ch4_sumi_call_c";
+const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと。スミさんの夜の電話は sumi_call）
 
 // 必須の出会いの期限（ドバイDAY。この日の夜までに寄らなければ、その夜に読む）。路地裏は出会いの2日後から。
 const DEADLINE = Object.freeze({ festa: 6, first: 8, second: 11 });
@@ -66,22 +72,26 @@ const DEADLINE = Object.freeze({ festa: 6, first: 8, second: 11 });
 // カフェの *_culture_* は現地のシーシャ文化の話（吸いながら店の人・常連から聞く。注文の後に読む）。
 const TALKS = Object.freeze({
   souq: ["ch4_dubai_souq_revisit", "ch4_souq_talk_b", "ch4_souq_talk_c", "ch4_souq_talk_d", "ch4_souq_talk_e", "ch4_souq_talk_f", "ch4_souq_talk_g"],
-  festa: ["ch4_festa_revisit", "ch4_festa_talk_b", "ch4_festa_talk_c", "ch4_festa_talk_d", "ch4_festa_talk_e", "ch4_festa_talk_f", "ch4_festa_talk_g"],
+  // h・i は太陽との小会話（#3097 計画 4-5。審査員だとは明かさない）
+  festa: ["ch4_festa_revisit", "ch4_festa_talk_b", "ch4_festa_talk_c", "ch4_festa_talk_d", "ch4_festa_talk_e", "ch4_festa_talk_f", "ch4_festa_talk_g",
+    "ch4_festa_talk_h", "ch4_festa_talk_i"],
   center_cafe: ["ch4_dubai_cafe_revisit", "ch4_cafe_talk_b", "ch4_cafe_culture_hose", "ch4_cafe_talk_c", "ch4_cafe_culture_coffee", "ch4_cafe_talk_d", "ch4_cafe_talk_e", "ch4_cafe_talk_f"],
   alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_culture_clay", "ch4_alley_talk_c", "ch4_alley_culture_majlis", "ch4_alley_talk_d", "ch4_alley_talk_e", "ch4_alley_talk_f"],
   // 4本目からは期限の無い追加の小会話（#3097）。3本を読んだ後は、追加の分だけを巡回する（nextTalk）
-  naru: ["ch4_naru_dubai_1", "ch4_naru_dubai_2", "ch4_naru_dubai_3", "ch4_naru_dubai_4", "ch4_naru_dubai_5", "ch4_naru_dubai_6"],
+  naru: ["ch4_naru_dubai_1", "ch4_naru_dubai_2", "ch4_naru_dubai_3", "ch4_naru_dubai_4", "ch4_naru_dubai_5", "ch4_naru_dubai_6",
+    "ch4_naru_dubai_7", "ch4_naru_dubai_8", "ch4_naru_dubai_9", "ch4_naru_dubai_10"], // 7〜10 は #3097 計画 4-3
   practice: ["ch4_practice_hall_1", "ch4_practice_hall_2", "ch4_practice_hall_3", "ch4_practice_hall_4", "ch4_practice_hall_5", "ch4_practice_hall_6"],
 });
-// 再訪の会話の背景（行き先の既定と違う場面だけ）。なるの2回目は練習会場、3回目はクリーク沿い。
+// 再訪の会話の背景（行き先の既定と違う場面だけ）。なるの2回目は練習会場、3回目はクリーク沿い、7回目は夜のロビー（地の文が夜）。
 const TALK_BG = Object.freeze({
   ch4_naru_dubai_1: CH4_PLACE_BG.inn, ch4_naru_dubai_2: CH4_PLACE_BG.venue, ch4_naru_dubai_3: "bg_dubai_street_night",
   ch4_naru_dubai_4: CH4_PLACE_BG.inn, ch4_naru_dubai_5: CH4_PLACE_BG.inn, ch4_naru_dubai_6: CH4_PLACE_BG.inn,
+  ch4_naru_dubai_7: "bg_dubai_inn_night", ch4_naru_dubai_8: CH4_PLACE_BG.inn, ch4_naru_dubai_9: CH4_PLACE_BG.inn, ch4_naru_dubai_10: CH4_PLACE_BG.inn,
   ch4_practice_hall_1: CH4_PLACE_BG.venue, ch4_practice_hall_2: CH4_PLACE_BG.venue,
 });
 export const DUBAI_DAILY_IDS = Object.freeze([
-  ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-z]|dubai_\d|hall_\d|culture_[a-z]+)$/.test(scene))),
-  "ch4_creek_walk_day", "ch4_creek_walk_night", ...INN_REST_SCENES, ...INN_TRIAL_IDS, ...REHEARSAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
+  ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-z]|dubai_\d+|hall_\d|culture_[a-z]+)$/.test(scene))),
+  "ch4_creek_walk_day", "ch4_creek_walk_night", ...INN_REST_SCENES, ...SUMI_NIGHT_CALLS, ...INN_TRIAL_IDS, ...REHEARSAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
 ]);
 
 const read = id => chapterFourProgress(state).read[id] === true;
@@ -210,7 +220,7 @@ export function chapterFourDubaiDefinition(io) {
     get nightEvents() { const event = dubaiNightEvent(io); return event ? { [state.day]: event } : {}; },
     morningDeparture: async () => { syncChapterFourDay(state); save(); },
     mapOptions: () => ({
-      regionId: DUBAI,
+      regionId: DUBAI, eventPinLabel: "今夜の予定",
       regions: [{ id: DUBAI, label: "ドバイ", background: () => bgUrl(timeOfDay() === "night" ? CH4_PLACE_BG.mapDusk : CH4_PLACE_BG.map),
         spots: chapterFourDubaiSpots }],
       onRegionChange: () => {},
@@ -260,28 +270,54 @@ export async function runChapterFourDubai(io) {
 /** 期限を過ぎた必須の出会い（story_routes の順）。前のものを読むまで次は来ない。 */
 function dueMandatory() {
   const day = dubaiDay();
-  if (!read("ch4_festa")) return day >= DEADLINE.festa ? [{ id: "ch4_festa", beat: "夜。会場の出張ブースから、手拍子が聞こえてくる──" }] : null;
+  if (!read("ch4_festa")) return day >= DEADLINE.festa ? [{ id: "ch4_festa", pin: "ch4_dubai_festa", beat: "夜。会場の出張ブースから、手拍子が聞こえてくる──" }] : null;
   if (!read("ch4_stranger_first")) return day >= DEADLINE.first
-    ? [...(read("ch4_dubai_souq") ? [] : [{ id: "ch4_stranger_first_forced_in" }]), { id: "ch4_stranger_first", beat: "夜。香辛料の匂いがする方へ、足が向いた──" }] : null;
+    ? [...(read("ch4_dubai_souq") ? [] : [{ id: "ch4_stranger_first_forced_in" }]), { id: "ch4_stranger_first", pin: "ch4_dubai_souq", beat: "夜。香辛料の匂いがする方へ、足が向いた──" }] : null;
   if (!read("ch4_stranger_second")) return day >= DEADLINE.second && chapterFourSecondAvailable(state)
-    ? [{ id: "ch4_stranger_second", beat: "夜。約束した路地の奥の店へ──" }] : null;
+    ? [{ id: "ch4_stranger_second", pin: "ch4_dubai_alley", beat: "夜。約束した路地の奥の店へ──" }] : null;
   return null;
 }
 
 function dubaiNightEvent(io) {
   const staff = chapterFourStaffNightEvent();
-  if (staff) return { ...staff, run: () => keepDailyHud(() => staff.run()) };
+  if (staff) return withOverdueStory({ ...staff, run: () => keepDailyHud(() => staff.run()) }, io);
   const due = dueMandatory();
-  if (!due) return naruTalkNightEvent() || storyNightEvent(io);
+  if (!due) {
+    const naru = naruTalkNightEvent();
+    return naru ? withOverdueStory(naru, io) : storyNightEvent(io);
+  }
   const last = due[due.length - 1];
-  return {
-    id: `dubai-night:${last.id}`, schedule: "fixed", pin: null, label: "ドバイの夜", beat: last.beat,
+  return withOverdueStory({
+    id: `dubai-night:${last.id}`, schedule: "fixed", pin: last.pin, label: "ドバイの夜", beat: last.beat,
     done: () => !dueMandatory(),
     run: async () => {
       for (const scene of due) {
         if (read(scene.id)) continue;
         if (!await keepDailyHud(() => io.readAndCommit(scene.id))) return;
       }
+    },
+  }, io);
+}
+
+/**
+ * 本筋の夜の取りこぼしを防ぐ（#3097・2026-11-20）。店の手伝い・期限の出会い・なるとの話の夜が続くと、本筋の夜は次の夜へ
+ * 送られ、前夜（DAY13）に入ると読まれずに終わっていた（説明会・下見・買い出し・時差の電話・記者会見・色紙）。
+ * 予定の日を過ぎて一度送られた本筋だけ、その夜の予定を読み終えた後に続けて読む（一夜に本筋は一本まで。順番は変えない）。
+ * 本筋の場面は冒頭で場所を書いているので、つなぎの一行は足さない。その日が予定の日の本筋は、従来どおり空いた夜に読む。
+ */
+function withOverdueStory(event, io) {
+  const owner = state;
+  const due = chapterFourStoryNightDue(owner);
+  if (!event || !due || due.day >= chapterFourProgress(owner).day) return event;
+  const story = storyNightEvent(io);
+  if (!story) return event;
+  return {
+    ...event, id: `${event.id}+${story.id}`,
+    done: () => event.done() && story.done(),
+    run: async () => {
+      if (!event.done()) await event.run();
+      if (state !== owner || !event.done() || story.done()) return;
+      await story.run();
     },
   };
 }
@@ -302,7 +338,7 @@ function naruTalkNightEvent() {
   if (!scene) return null;
   const owner = state;
   return {
-    id: `dubai-naru:${scene}`, schedule: "fixed", pin: null, label: "なると話す", beat: "夜。なるから「少し話そう」とメッセージが来た──",
+    id: `dubai-naru:${scene}`, schedule: "fixed", pin: "ch4_dubai_naru", label: "なると話す", beat: "夜。なるから「少し話そう」とメッセージが来た──",
     done: () => dueNaruTalk(owner) !== scene,
     run: async () => {
       if (dueNaruTalk(owner) !== scene) return;
@@ -342,13 +378,39 @@ function tourSlotEvent() {
 
 // ドバイの本筋の夜（説明会・下見・買い出し・時差の電話・記者会見。SPC27）。期限の出会いや店の手伝いが無い夜に一つ。
 function storyNightEvent(io) {
-  const story = chapterFourStoryNightDue(state);
+  const owner = state;
+  const lastCall = chapterFourLastNightCall(owner);
+  // 買い出し直後のSAVEをLOADしても、電話を強制せず、選ばなかった／読了した後に別の夜会話を足さない。
+  if (lastCall) return lastCall === "pending" ? {
+    id: "dubai-story:last-night-call", schedule: "fixed", pin: null, label: "tonariからの電話",
+    done: () => chapterFourLastNightCall(owner) !== "pending",
+    run: () => offerLastNightCall(io, owner),
+  } : null;
+  const story = chapterFourStoryNightDue(owner);
   if (!story) return null;
   return {
     id: `dubai-story:${story.id}`, schedule: "fixed", pin: null, label: story.label, beat: story.beat,
     done: () => read(story.id),
-    run: async () => { if (!read(story.id)) await keepDailyHud(() => io.readAndCommit(story.id)); },
+    run: async () => {
+      if (state !== owner || read(story.id) || !await keepDailyHud(() => io.readAndCommit(story.id))) return;
+      if (story.id === "ch4_story_market") await offerLastNightCall(io, owner);
+    },
   };
+}
+
+async function offerLastNightCall(io, owner) {
+  if (state !== owner || chapterFourLastNightCall(owner) !== "pending") return;
+  await setBg(bgUrl(CH4_SCENE_BG[CH4_SUMI_CALL]));
+  if (state !== owner) return;
+  const answer = await modal({ title: "宿の部屋",
+    body: "買ってきた炭をしまうと、スマホの画面に「tonari」と出た。",
+    options: [
+      { label: "電話に出る", value: "answer", test: "ch4-last-night-call-answer", primary: true },
+      { label: "今夜は休む", value: "rest", test: "ch4-last-night-call-rest" },
+    ] });
+  if (state !== owner || chapterFourLastNightCall(owner) !== "pending") return;
+  if (answer === "answer") await keepDailyHud(() => io.readAndCommit(CH4_SUMI_CALL));
+  else if (skipChapterFourLastNightCall(owner)) save();
 }
 
 // ---- 行き先の処理 -------------------------------------------------------------------------
@@ -402,6 +464,18 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
     }
     // 必要ハートに届いた最古の未読の段階、無ければ小会話（ch4-longlong.js）。読み終えた時だけ記録する。
     longlong = nextLonglongVisit(state, affinityLevel(LONGLONG_CHAR));
+    // 小会話の番なら、通いの続き（chapters/visit-chains.js・#4010）を先に読む。小会話の巡回は進めない。代金・好感度は小会話と同じ
+    const teaChain = longlong.kind === "talk" ? await chainVisitDue("longlong") : null;
+    if (state !== owner) return unused;
+    if (teaChain) {
+      done = await playChainStage(teaChain, id => readPlain(id, LONGLONG_BG, owner));
+      if (!done || state !== owner) return unused;
+      if (entry.cost) addMoney(-entry.cost);
+      addStamina(entry.stamina || 0);
+      if (entry.stat) earnStat(entry.stat, 4);
+      gainAffinity(LONGLONG_CHAR, visitAffinity("talk"));
+      return { used: true, exerted: (entry.stamina || 0) < 0 };
+    }
     // ♥5の締めくくりの後（#3693）: 小会話の代わりに♥5後の場面を一度ずつ、読み終えたら短い汎用（core/bond-after.js）。
     // 小会話の巡回は進めない。代金・好感度・能力は小会話と同じ。台本を読めなければ小会話のまま。
     after = longlong.kind === "talk" ? bondAfterNext(state, LONGLONG_CHAR) : null;
@@ -458,8 +532,23 @@ async function visitCamel(owner) {
   return result.used && state === owner ? { used: true, exerted: false, slotsUsed: 0 } : unused;
 }
 
+/** 今夜、宿で休むと読むスミさんの夜の電話（SUMI_NIGHT_CALLS の次の一本）。昼・時差の電話の前・読み終えた後は null。 */
+function sumiNightCallDue() {
+  if (timeOfDay() !== "night" || !read(CH4_SUMI_CALL)) return null;
+  const tsumugiHere = overseasCompanion(state)?.companion === "tsumugi";
+  const calls = SUMI_NIGHT_CALLS.filter(id => DB.dialogues[id]?.lines?.length && !(tsumugiHere && id === SUMI_CALL_TSUMUGI));
+  return calls[state.flags[TALKS_FLAG]?.sumi_call || 0] || null;
+}
+
 // 通常・試作メニュー・前日リハーサルの「休む」は同じ巡回を使う。中断やLOADでは進めない。
+// スミさんの夜の電話がある夜は、休む場面の代わりに電話を読む（休む巡回は進めない）。
 async function readInnRest(bg, owner) {
+  const call = sumiNightCallDue();
+  if (call) {
+    if (!await readPlain(call, bg, owner)) return false;
+    countTalk("sumi_call");
+    return true;
+  }
   const turn = quietTurn("ch4_dubai_inn", INN_REST_SCENES);
   if (!turn || !await readPlain(turn.id, bg, owner)) return false;
   owner.flags[turn.key] = turn.count + 1;

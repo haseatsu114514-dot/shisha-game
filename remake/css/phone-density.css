@@ -47,12 +47,37 @@ html:root[data-density="phone"] body:not(:root) .pull-btns.with-options .btn:not
 }
 
 /* ---------------------------------------------------------------- 確認ダイアログ・閉じる系 */
+/* #3203: 縮小された舞台に全画面のぼかしを掛けると、地図とHUDが四隅へ鏡写しになる場合がある。暗幕の色だけで区切る。 */
+html:root[data-density="phone"] #modal > .modal-backdrop { backdrop-filter: none; }
 html:root[data-density="phone"] body:not(:root) .modal-body { font-size: var(--phone-text); line-height: 1.6; }
 html:root[data-density="phone"] body:not(:root) .modal-actions { gap: var(--phone-gap); }
 html:root[data-density="phone"] body:not(:root) .dmenu .dm-close { min-height: var(--phone-tap); font-size: var(--phone-text); }
-/* 用語集: 閉じるボタンが高くなった分だけ本文の枠が縮むので、固定の高さ（460px）をやめて枠いっぱいに収める（下端が隠れてスクロールできなくなるのを防ぐ）。 */
-html:root[data-density="phone"] body:not(:root) .glossary-modal .modal-body { display: flex; flex-direction: column; overflow: hidden; }
-html:root[data-density="phone"] body:not(:root) .glossary-modal .glossary { flex: 1 1 auto; height: auto; min-height: 0; }
+/* 用語集（#3947）: 舞台が小さくなっても本文は実寸14px以上に。
+   折り返しが増えすぎないよう窓を広げ、見出し・タブ・閉じるボタンを残して用語リストだけをスクロールする。 */
+html:root[data-density="phone"] body:not(:root) .glossary-modal {
+  width: 1040px;
+  max-width: calc(100% - 96px);
+  height: 668px;
+  max-height: calc(100% - 52px);
+  padding: 18px 26px;
+}
+html:root[data-density="phone"] body:not(:root) .glossary-modal > h3 {
+  margin-bottom: 10px;
+  font-size: max(30px, calc(16px / var(--k, 1)));
+  line-height: 1.25;
+}
+html:root[data-density="phone"] body:not(:root) .glossary-modal .modal-body { display: flex; flex: 1; flex-direction: column; overflow: hidden; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .glossary { flex: 1; height: auto; min-height: 0; gap: 10px; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-tabs { flex-shrink: 0; padding: 4px; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-tab {
+  min-height: var(--phone-tap);
+  font-size: var(--phone-ctl);
+}
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-body { min-height: 0; overscroll-behavior: contain; touch-action: pan-y; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-term { padding-block: 8px; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-term b { font-size: max(29px, calc(15.5px / var(--k, 1))); }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-term p { font-size: max(27px, calc(14px / var(--k, 1))); line-height: 1.55; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .modal-actions { margin-top: 12px; }
 
 /* ---------------------------------------------------------------- HUD（LIME・MENU・DAY カード） */
 html:root[data-density="phone"] body:not(:root) .hud-right { gap: var(--phone-gap); }
@@ -79,6 +104,33 @@ html:root[data-density="phone"] body:not(:root) #hud :is(.dc-day small, .dc-slot
 html:root[data-density="phone"] body:not(:root) #hud :is(.dc-row, .hud-card .hud-stamina, .hud-card .hud-exp) { height: auto; min-height: calc(var(--phone-sub) + 10px); }
 /* 体力と経験値のゲージの始まりをそろえる: 2つのラベルを同じ大きさの文字・同じ幅にする（daily.css の PC 版と同じ考え方） */
 html:root[data-density="phone"] body:not(:root) #hud .hud-card :is(.hud-stamina > span:first-child, .hud-exp .hx-lv) { width: 2.9em; font-size: var(--phone-sub); }
+
+/* 地図だけ、店の看板にかからないよう左上カードの余白と右列を詰める。
+   文字の実寸下限と画面端の safe-area を守り、章内の日付だと分かる見出しを付ける。 */
+.dc-day-label { display: none; }
+html:root[data-density="phone"][data-look="classic"] body[data-screen="map"] #hud .hud-card {
+  padding: 3px 8px;
+  /* 16:9 の余白だけでノッチを避けられない端末はカードを内側へ。 */
+  margin-left: max(0px, calc((env(safe-area-inset-left, 0px) - (100vw - 1280px * var(--k, 1)) / 2) / var(--k, 1)));
+}
+html:root[data-density="phone"][data-look="classic"] body[data-screen="map"] #hud .dc-main { width: calc(var(--phone-sub) * 4); }
+html:root[data-density="phone"][data-look="classic"] body[data-screen="map"] #hud .dc-day-label {
+  display: block;
+  margin-bottom: 3px;
+  font-size: var(--phone-sub);
+  line-height: 1;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+html:root[data-density="phone"][data-look="classic"] body[data-screen="map"] #hud .dc-day { white-space: nowrap; }
+html:root[data-density="phone"][data-look="classic"] body[data-screen="map"] #hud .dc-meta {
+  width: max(214px, calc(var(--phone-sub) * 9.25));
+  margin-left: 6px;
+  padding-left: 9px;
+}
+html:root[data-density="phone"][data-look="classic"] body[data-screen="map"] #hud :is(.dc-row, .hud-card .hud-stamina, .hud-card .hud-exp) {
+  min-height: calc(var(--phone-sub) + 4px);
+}
 
 /* ---------------------------------------------------------------- 会話の操作ボタン・選択肢 */
 /* 会話ウインドウの下端: 横持ちの iPhone は下にホームバーの領域があり、端ぎりぎりだと欠けて見える（オーナー指摘 2026-11-08）。
@@ -107,18 +159,38 @@ html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-controls .vn-
    2行（46px×2）と、本心つき（1行44px＋本心2行）が枠の高さ（176px・下15px空き）に収まる行の高さにする（notifications_layout の検査）。 */
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-text { font-size: 32px; line-height: 46px; min-height: 92px; }
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-box.has-inner .vn-text { line-height: 44px; min-height: 44px; }
-/* 名札は補助文の大きさに上げる。名札の幅に収まらない長い名前は name-fit.js の縮小（--vn-name-fit-size）に従う。 */
-html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-name { font-size: var(--vn-name-fit-size, var(--phone-sub)); }
+/* 紙の横持ち会話で、操作を左右に出せるときは上の帯を本文に使う。
+   176px の枠の中央に50pxの行を置く。短いページは文字送りの前に行数が確定するので、途中で本文がずれない。
+   本心つき・枠内に操作が残るときは、従来どおり別の行や操作の領域を確保する。 */
+/* 約1024px の本文の右で送り印を出し、右端の煙との間も空ける。 */
+html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box {
+  --vn-next-right: 68px;
+}
+html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box:not(.has-inner) {
+  --vn-body-top: calc((var(--vn-dialogue-height) - 100px) / 2);
+}
+html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box:not(.has-inner) .vn-text {
+  font-size: 36px; line-height: 50px; min-height: 100px;
+}
+html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box:not(.has-inner) .vn-text[data-page-lines="1"] {
+  padding-top: 25px;
+}
+/* 名札の短い名前を読みやすくする。長い名前は実際の字幅に合わせる name-fit.js に従う。 */
+html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-box .vn-name {
+  max-width: 328px;
+  font-size: var(--vn-name-fit-size, max(27px, calc(13.5px / var(--k, 1))));
+}
 /* 選択肢の文字は本文に合わせて 24→28px（iPhone 横で実寸 13→15px）。全角26字（GUI22 の上限）が縮まずに1行で入るよう、幅を 720→880px に広げる */
 html:root[data-density="phone"] body:not(:root) .vn-choice { width: 880px; max-width: 100%; min-height: var(--phone-tap); font-size: max(28px, calc(var(--phone-text) + 4px)); }
 /* 操作ボタンが上へ伸びた分だけ、選択肢を上げて間隔を保つ。 */
 html:root[data-density="phone"] body:not(:root) .vn-choices { bottom: calc(262px + var(--phone-tap) - 44px); }
-html:root[data-density="phone"] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: calc(356px + var(--phone-tap) - 44px); }
+html:root[data-density="phone"] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: calc(374px + var(--phone-tap) - 44px); }
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-choices {
   bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px + var(--phone-tap) - 44px);
 }
+/* 2択は PC と同じく 3択以上より 68px 上（#3813 で +18）。 */
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 112px + var(--phone-tap) - 44px);
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 130px + var(--phone-tap) - 44px);
 }
 /* 選択肢が高くなるので、5択から（従来は6択から）画面上端と操作欄の間でスクロールさせる。 */
 html:root[data-density="phone"] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(5)) {
@@ -172,3 +244,62 @@ html:root[data-density="phone"] body:not(:root) .gal .gal-characters { gap: 2px 
 html:root[data-density="phone"] body:not(:root) .gal .gal-tabs { gap: var(--phone-gap); }
 /* セーブ・ロードの空き枠「── 空き ──」（同じ巡回で 8.7px）。補助文の大きさにそろえる */
 html:root[data-density="phone"] body:not(:root) .saveload-modal .ss-info.empty { font-size: var(--phone-sub); }
+
+/* ---------------------------------------------------------------- #3726 A-2 の残り（同じ巡回で見つけた MENU の「?」・会話の送り記号「▼」・くじの黒板）
+   実寸は 844×390／Safari のバー（844×340）で、「?」10.8／9.4px・「▼」9.8／8.5px・黒板の注記 7.0／6.1px（賞 10.8／9.4px）だった。
+   MENU の「?」: 文字は clamp の上限 20px で止まっていた。文字だけを補助文の大きさにする。
+   丸（舞台上 26〜30px・2026-11-08 オーナー「?が大きすぎ」）と、押せる範囲の ::before（実寸 40px）は変えない。 */
+html:root[data-density="phone"] body:not(:root) .dmenu .dm-help { font-size: var(--phone-sub); }
+/* 会話の送り記号: 右下の位置（--vn-next-right/bottom）はそのまま、記号だけ補助文の大きさに */
+html:root[data-density="phone"] body:not(:root) .vn-next { font-size: var(--phone-sub); }
+/* くじの黒板（ガラガラの横に立つ看板）: くじの名前 21px・賞 20px・注記 13px だった。書ける面（描いた絵で約 166×249px）は変えず、
+   文字を補助文の大きさにして行の高さと間隔を詰める。注記は6字で折り返し、「ラストワン賞／あり」「最後の1枚を／引いた方へ」の2行にする。 */
+html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-text { gap: 6px; line-height: 1.2; }
+html:root[data-density="phone"] body:not(:root) .mo-garagara :is(.kj-sign-title, .kj-sign-row, .kj-sign-note) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-title { padding-bottom: 5px; letter-spacing: 0.04em; }
+html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-row { gap: 12px; }
+html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-note { max-width: 6.2em; text-align: center; }
+
+/* スロット（#4035 B4）。ノートは縦スクロールを残し、初回カードは横幅を使って文字を拡大する。 */
+html:root[data-density="phone"] body:not(:root) :is(.reel-intro, .reel-night, .reel-widget, .reel-cutin) {
+  --slot-phone-text: max(24px, var(--phone-text));
+}
+html:root[data-density="phone"] body:not(:root) :is(
+  .reel-intro .ri-next, .reel-intro .rn-close,
+  .reel-intro .rn-tile-head, .reel-intro .rn-tile-body, .reel-intro .cue-chip,
+  .reel-note :is(.rn-cols h3, .rn-setting-box h3, .rn-table, .rn-history, .rn-history small,
+    .rn-hall, .rn-empty, .rn-setting, .rn-setting small, .rn-hint-head, .rn-hints),
+  .reel-night .rn-label, .reel-widget .rw-bubble,
+  .reel-cutin :is(.rc-aim, .rc-freeze-text span, .rc-freeze-sub)
+) {
+  font-size: var(--slot-phone-text);
+}
+html:root[data-density="phone"] body:not(:root) :is(.reel-intro, .reel-widget) .rw-face.txt {
+  font-size: max(var(--slot-phone-text), calc(20px * var(--slot-scale, 1)));
+}
+html:root[data-density="phone"] .reel-intro .cue-chip {
+  min-width: 1.25em;
+  min-height: 1.25em;
+}
+html:root[data-density="phone"] .reel-intro .ri-panel.sys {
+  width: min(1160px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  overflow-y: auto;
+}
+html:root[data-density="phone"] .reel-intro .ri-panel.sys .rn-card {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+html:root[data-density="phone"] body:not(:root) .reel-widget .rw-bubble.cue {
+  font-size: max(var(--slot-phone-text), calc(12px / var(--k, 1)));
+}
+html:root[data-density="phone"] .reel-note .ri-head {
+  min-height: var(--phone-tap);
+  padding-right: 136px; /* 長い見出しが右上の「閉じる」と重ならないようにする */
+}
+/* 出現直後の見出しがフリーズ演出の枠で切れないよう、拡大の始点を抑える。 */
+html:root[data-density="phone"] .reel-cutin .rc-freeze-label {
+  animation-name: rc-title-phone;
+}
+@keyframes rc-title-phone {
+  from { transform: scale(1.8); opacity: 0; }
+}

@@ -1,18 +1,23 @@
 // DESERT RIDE を単体で遊ぶページ（remake/desert-ride.html）。本編の保存は読み書きしない。
 // 自己ベストはこのページだけの localStorage（suien_desert_ride_preview）に残す。
-import { RULES_VERSION } from "./minigames/desert-ride-model.js";
+// 三段階（#3779）: このページでは初級・中級・上級とも開いている。?tier=easy|normal|hard で最初に選んでおく段（既定は中級＝前と同じ遊び）。
+// 初級の自己ベストは別の鍵（suien_desert_ride_preview_easy）。初級の勝ちでは、なる（好敵手）は来ない（本編と同じ）。
+import { BOOST, RULES_VERSION } from "./minigames/desert-ride-model.js";
+import { TIERS } from "./core/play-tiers.js";
 import { el } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
 import { initSideArea } from "./core/side-area.js";
+import { calmFlash } from "./core/transition-kit.js";
 import { runDesertRide } from "./minigames/desert-ride.js";
 
 const KEY = "suien_desert_ride_preview";
+const EASY_KEY = "suien_desert_ride_preview_easy";
 const stage = document.getElementById("stage");
 const app = document.getElementById("desert-app");
 initStageFit(stage); // 画面の当て方は本編と同じ共通部品（core/stage-fit.js・#3076）
 initSideArea({ stage, standalone: true }); // 左右の余白の煙と縁（YHK）
-const readBest = () => { try { const v = JSON.parse(localStorage.getItem(KEY) || "null"); return v && Number.isFinite(v.score) ? v : null; } catch { return null; } };
-let reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const readBest = (key = KEY) => { try { const v = JSON.parse(localStorage.getItem(key) || "null"); return v && Number.isFinite(v.score) ? v : null; } catch { return null; } };
+let reduce = calmFlash();
 function menu(message = "狙いは、S。") {
   const best = readBest();
   const reduceBox = el("input", { type: "checkbox", dataset: { test: "desert-page-reduce" }, onchange: e => { reduce = e.target.checked; } });
@@ -25,7 +30,13 @@ function menu(message = "狙いは、S。") {
     const courseId = params.get("course") || undefined;
     const seedParam = params.get("seed");
     const seed = seedParam != null && seedParam !== "" && Number.isFinite(Number(seedParam)) ? Number(seedParam) : undefined;
-    const { results } = await runDesertRide({ host: stage, tutorial, best, legacyBest: best?.legacyBest, rivals, reducedMotion: reduce, courseId, seed, onResult: result => {
+    const tier = TIERS.includes(params.get("tier")) ? params.get("tier") : "normal";
+    const { results } = await runDesertRide({ host: stage, tutorial, best, legacyBest: best?.legacyBest, rivals, reducedMotion: reduce, courseId, seed, tiers: TIERS, tier, easyBest: readBest(EASY_KEY), onResult: result => {
+      if (result.tier === "easy") {
+        const easy = readBest(EASY_KEY);
+        if (!easy || result.score > easy.score) try { localStorage.setItem(EASY_KEY, JSON.stringify({ score: result.score, rank: result.rank, rulesVersion: RULES_VERSION })); } catch { /* 保存できない環境 */ }
+        return;
+      }
       const prev = readBest();
       const beatNoor = !!prev?.beatNoor || (result.race?.who === "noor" && result.race.won);
       const sameRules = prev?.rulesVersion === RULES_VERSION;
@@ -52,7 +63,7 @@ function menu(message = "狙いは、S。") {
     el("p", { style: { marginTop: "16px" } }, [el("label", [reduceBox, el("span", { text: "動きを減らす（揺れ・閃光・速度線なし）" })])]),
     best?.beatNoor ? el("p", { text: "ヌールに勝った。なるが、砂丘で待っている。", dataset: { test: "desert-page-naru" } }) : null,
     // キーの説明は PC だけ（スマホは画面のボタンと、ゲームの中の「？」で足りる）
-    el("p.dr-page-keys", { text: "PC: ← → で移動（空中では回転）、Space でジャンプ／着地、↓ でブースト。スマホ: 下のボタン。", style: { fontSize: "15px", color: "#5a3a2a" } }),
+    el("p.dr-page-keys", { text: `PC: ← → で移動（空中では回転）、Space でジャンプ／着地、ゲージが目印（${BOOST.minGauge * 100}%）に届いたら ↓ でブースト。スマホは画面のボタン。`, style: { fontSize: "15px", color: "#5a3a2a" } }),
   ].filter(Boolean));
 }
 menu();

@@ -39,7 +39,7 @@ export const CH5_SHOPS = Object.freeze([
 // 第1・2章の物語の続き（段階の会話・試作）は流さず、ほかのヒロインの店と同じ通いの小会話にする。代金はかからない。
 const SHOWROOM_ID = "ch5_rio_showroom";
 // extras: 通いの小会話の代わりに一度だけ読む、街の人同士の話（REL06）。after は先に読む通いの小会話の数、met は居合わせる人、
-// seen は先に読んでおく extras（#3468 E案の仕入れ相談は、お茶の場面の続き）。相関の正本は brand/character_profiles.md「キャラ同士のつながり」。
+// seen は先に読んでおく extras（#3468 E案の仕入れ相談は、お茶の場面の続き）。lover はその人が恋人の時だけ（#4010）。相関の正本は brand/character_profiles.md「キャラ同士のつながり」。
 const showroom = () => shop(homeBase("shop"), { id: SHOWROOM_ID, talkWith: "rio", stat: CHAR_STAT.rio, bg: VISIT_BG.rio, affinity: 5,
   needsMet: true, stamina: -14, talks: talksOf("rio_shop"), desc: "Dr.fookah の2階。夜は、凛想さんがショールームにいる。",
   extras: Object.freeze([Object.freeze({ scene: "ch5_rio_naru_tea", after: 1, met: "naru" }),
@@ -55,7 +55,10 @@ const samechanShop = () => shop(DB.samechan?.spot && { ...DB.samechan.spot, regi
   needsMet: true, talks: talksOf("samechan_shop"), desc: "海とサメがモチーフの店。サメちゃんと側近がいる。" });
 const agehaShop = () => shop(PREPARATION_SPOTS.find(spot => spot.charId === "ageha"), {
   talkWith: "ageha", stat: "sense", bgUrl: PREPARATION_SPOTS.find(spot => spot.charId === "ageha")?.previewUrl, affinity: 5,
-  needsMet: true, talks: talksOf("ageha_shop"), desc: "あげはの店。ギャルとオタクで、今日もにぎやか。" });
+  needsMet: true, talks: talksOf("ageha_shop"), desc: "あげはの店。ギャルとオタクで、今日もにぎやか。",
+  // 恋人のあげはの時だけの一度きりの場面（#4010。ほかの恋人の第3章の東京の合流に当たる）。lover は、その人が恋人の時だけ読む
+  extras: Object.freeze([Object.freeze({ scene: "ch5_ageha_lover_two_hands", after: 1, lover: "ageha" }),
+    Object.freeze({ scene: "ch5_ageha_lover_closing", after: 2, lover: "ageha", seen: "ch5_ageha_lover_two_hands" })]) });
 
 const known = (value, entry) => !!entry && (!entry.needsMet || !!value?.met?.[entry.talkWith])
   && (!entry.requiresMet || !!value?.met?.[entry.requiresMet]);
@@ -70,6 +73,7 @@ export function chapterFiveShopExtraDue(entry, value = state) {
   const talks = value?.flags?.[TALKS_FLAG]?.[entry?.id] || 0;
   return (entry?.extras || []).find(extra => talks >= (extra.after || 0) && !value.flags?.[extraSeenFlag(extra.scene)]
     && (!extra.met || !!value.met?.[extra.met]) && (!extra.seen || !!value.flags?.[extraSeenFlag(extra.seen)])
+    && (!extra.lover || (value.lovers || []).includes(extra.lover) && !value.flags?._story_shuraba_unresolved)
     && !!DB.dialogues[extra.scene]?.lines?.length)?.scene || null;
 }
 /** spotById 用（地図の外から id で引く）。 */

@@ -8,7 +8,7 @@ import { showScreen, setBg, retire, layers, flash, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay, save, config } from "../core/state.js";
-import { craftVersionFrom, renewalCraft } from "../core/craft-version.js";
+import { craftVersionForSession, renewalCraft } from "../core/craft-version.js";
 import { currentCondition, addStamina, tier01 } from "../core/stats.js";
 import { growthSkill, growthCraftCondition, growthLesson, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
 import { noteGrowthCraftOwner } from "../core/growth-memory.js";
@@ -24,6 +24,7 @@ import { runHeat } from "./heat.js";
 import { runSteamDodge } from "./steam.js";
 import { runPull } from "./pull.js";
 import { applyCraftSkin, craftSkinUrls } from "./skin.js";
+import { buildMixTemperatureGauge } from "./thermometer.js";
 import { buildThermalAtmosphere } from "./thermal.js";
 import { buildPanelSmoke } from "./smoke-art.js";
 import { temperatureAfterSteam } from "./conditions.js";
@@ -43,6 +44,7 @@ import { buildRigRecord } from "./rig-record.js";
 import { buildRivalWindows } from "./rival-windows.js";
 import { demoFor, openDemoSheet } from "./demo.js";
 import { craftStageEnabled } from "./stage-layout.js";
+import { assistBenchNote } from "./retry-assist-level.js";
 
 // ライバルの顔アイコンを読むまでの間（作業台の準備が済んでから）
 const RIVAL_FACE_DELAY_MS = 1200;
@@ -51,7 +53,7 @@ const RIVAL_FACE_DELAY_MS = 1200;
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
  * その腕前相当の結果を出して進む（UIの流れ自体は通常どおり通る）。
  */
-export const craftTest = { auto: null, aim: null }; // auto: "good" / "bad" / "burn"（温度を上げ続けて焦がす）。aim: "attack" で上手な自動操作が攻めの帯を狙う（桜井式の大会だけ）
+export const craftTest = { auto: null, aim: null }; // auto: "good" / "bad" / "burn"（温度を上げ続けて焦がす）。aim: "attack" で上手な自動操作が攻めの帯を狙う（桜井版の攻めの帯）
 
 export const MODE_LABEL = { tutorial: "LESSON", drill: "PRACTICE", rehearsal: "REHEARSAL", tournament: "SMOKE CROWN CUP" };
 const MODE_NOTE = { tutorial: "レッスン", drill: "練習モード", rehearsal: "リハーサル", tournament: "大会" };
@@ -68,8 +70,8 @@ export function newSession(mode) {
   const steamVariation = { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
   const cs = {
     mode,
-    // シーシャ作りの版（リニューアル／桜井版・CRN16）。一台の途中では変えない
-    craftVersion: craftVersionFrom(config),
+    // #3795: 全入口を桜井版へ。第1章大会の版は従来どおり試合の方式で確定する。
+    craftVersion: craftVersionForSession(mode, state.chapter, config),
     ...(growthLesson(state,"M-B3")?{blindVariance:rand(-LESSON_TUNING.blindSwing,LESSON_TUNING.blindSwing)}:{}),
     chapter: state.chapter,
     audienceIds: audienceFor(mode, state.chapter),
@@ -140,6 +142,9 @@ function waitForBenchAssets(b, task, assets = task, notice = true) {
  * 戻り値の panel に各工程が中身を描き、左側は作業風景の静止モックアップ。
  */
 export function openBench(cs, { steps = [], entryAssets = null } = {}) {
+  // 第2〜4章は保存済みの一台を直接復元する。完了済みの採点は保持し、再開する作業台も統一する。
+  // 第1章大会の試合記録と、独立プレビューの明示的な版比較は変更しない。
+  if (!cs.preview && (cs.mode !== "tournament" || (cs.chapter ?? state.chapter) !== 1)) cs.craftVersion = "sakurai";
   applyCoalTraining(cs, state.flags);
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
   // 制作中は大会用の台だけを見せる。家背景に所持品の台を重ねない（#873）。
@@ -155,7 +160,8 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   const audience = buildAudience(cs);
   const title = el("div.bench-title");
   const hint = el("div.bench-hint");
-  const phaseProgress = buildCraftProgress(steps);
+  const iconRail = craftStageEnabled() && !renewalCraft(cs);
+  const phaseProgress = buildCraftProgress(steps, { iconRail });
   const progress = phaseProgress.root, progressCount = phaseProgress.count;
   const guide = buildGuide();
   const panel = el("div.bench-panel");
@@ -164,7 +170,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   worker.footer.append(leaf.root);
   // 版（リニューアル／桜井版・CRN16）は CSS とカウントダウン（core/ui.js）が見る
   const root = el("div.bench", { dataset: { mode: cs.mode, chapter: cs.chapter, craftVersion: renewalCraft(cs) ? "renewal" : "sakurai" } }, [
-    el("div.bench-top", [el("span.bench-mode", [craftMode(cs, MODE_LABEL), el(cs.retryAssist ? "small.retry-assist" : "small", { text: cs.retryAssist ? "今回のみ操作補助" : craftModeNote(cs, MODE_NOTE) })]), progress]),
+    el("div.bench-top", [el("span.bench-mode", [craftMode(cs, MODE_LABEL), el(cs.retryAssist ? "small.retry-assist" : "small", { text: cs.retryAssist ? assistBenchNote(cs) : craftModeNote(cs, MODE_NOTE) })]), progress]),
     el("div.bench-left", [
       worker.root,
       audience?.root,
@@ -177,8 +183,9 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   showScreen("bench", root);
   bench = { cs, owner:state, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
-  // 固定レッスンと単工程ドリルには総合評価を出さない。
-  if (cs.mode !== "tutorial" && cs.mode !== "drill") {
+  // レッスンも大会と同じ暫定ランクを表示。配合だけの接客と、前工程を補う単工程ドリルは総合を捏造しない。
+  const rankedLesson = steps.some(([id]) => ["holes", "heat", "pull", "care1", "care2"].includes(id));
+  if (cs.mode !== "drill" && (cs.mode !== "tutorial" || rankedLesson)) {
     bench.rankHud = mountCraftRank(root.querySelector(".bench-top"), null, { preserveMode: true });
     const b = bench;
     const observer = new MutationObserver(() => {
@@ -194,7 +201,13 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
     const workerStage = worker.root.querySelector(".bench-worker-stage");
     const railHost = craftStageEnabled() ? root.querySelector(".bench-top") : workerStage;
     workerStage?.append(bench.record.aura);
-    railHost?.append(bench.record.root);
+    if (iconRail) {
+      // 工程と出来栄えは別の情報。採点履歴は既存の「?」で、時計を止めて読める。
+      const record = el("section.craft-record-review", { "aria-label": "工程ごとの仕上がり" }, [
+        el("strong", { text: "この一台の仕上がり" }), bench.record.root,
+      ]);
+      guide.note.after(record);
+    } else railHost?.append(bench.record.root);
     bench.record.restore(cs);
     // ライバルの小窓（CFX04）: 大会だけ。隣の台の進み具合を工程ごとの灯で見せる
     bench.rivals = buildRivalWindows(cs);
@@ -346,6 +359,13 @@ export async function explainStepOnce(cs, id, panelId = id) {
   return true;
 }
 
+// 加熱前の共通の柱。配合・詰めのプレビューも同じ一本を使い、初回説明や結果カードで
+// 操作パネルが空になっても残す。実温度を扱う工程では各ミニゲームの温度計へ渡す。
+export function preparationGauge(cs) {
+  if (bench?.cs !== cs) return buildMixTemperatureGauge(cs, { vertical: true });
+  return bench.preheat ??= buildMixTemperatureGauge(cs, { vertical: true });
+}
+
 /** 工程の見出しを切り替え、パネルを空にして返す */
 export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id] || hintText, lessonStep = id } = {}) {
   const b = bench;
@@ -366,7 +386,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.guide.root.open = false;
   b.guide.root.hidden = !hintText && !lesson;
   b.guide.note.textContent = lesson?.detail || hintText;
-  b.phaseProgress.update(id === "care" && b.cs.careRound ? `care${b.cs.careRound}` : id, titleText);
+  b.phaseProgress.update(id === "care" && b.cs.careRound ? `care${b.cs.careRound}` : id, titleText, lessonStep);
   // 短い操作案内は、隠れている見出しではなく既存のスミさんの欄へ。
   // 蒸らし弾幕中は従来どおり無言とし、説明は「?」で読み返せる。
   const coaching = lesson && lessonStep !== "steam" ? `スミ「${lesson.brief}」` : hintText;
@@ -376,6 +396,11 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
   b.root.dataset.step = id;
+  if (craftStageEnabled() && ["setup", "mix", "pack", "holes", "place", "heat"].includes(id)) {
+    const gauge = preparationGauge(b.cs);
+    gauge.updateBands();
+    b.panel.before(gauge.root);
+  } else b.preheat?.root.remove();
   b.worker.setStep(id);
   renderFatigue();
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
@@ -386,17 +411,6 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   if (id === "steam") b.thermal.update(temperatureAfterSteam(b.cs, 0));
   if (["pull", "care"].includes(id)) b.thermal.update(b.cs.care?.temp ?? b.cs.pull?.temp ?? b.cs.steam?.temp ?? 0);
   return b.panel;
-}
-
-/** 初回レッスンの工程だけ、操作開始前にお手本を一度見せる。 */
-export async function showStepDemo(cs, step) {
-  const b = bench;
-  if (cs.mode !== "tutorial" || craftTest.auto || !b || !demoFor(step, b.root.dataset.craftVersion) || b.cs !== cs || !b.root.isConnected) return;
-  const seenDemo = state.flags.seenDemo ||= {};
-  if (seenDemo[step]) return;
-  seenDemo[step] = true; // とばしても既読。再度見たいときは brief のリンクから開ける。
-  if (!cs.preview) save();
-  await openDemoSheet(b.root, step);
 }
 
 /** 同じ一台の実温度を、蒸らし以降の背景と煙の絵へ返す。 */

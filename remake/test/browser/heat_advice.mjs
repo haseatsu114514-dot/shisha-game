@@ -64,7 +64,11 @@ await suite("heat-advice", async check => {
       }
       const summary = await page.locator('[data-test="step-summary"]').textContent();
       assert.equal(summary.includes("・自動"), pattern !== "early");
-      assert.match(summary, /取り頃で取れた炭はなかった/);
+      assert.match(summary, new RegExp(`工程点：${actual.score}点 ／ 取り頃：0/3個`));
+      await page.locator('[data-test="step-details"]').click();
+      if (pattern !== "early") {
+        assert.match(await page.locator(".rc-lines").innerText(), /火は入っている.*生焼けより減点は軽い/);
+      }
       assert(!/次は.*待とう/.test(summary), "The summary must describe the picks without contradicting timing advice");
       assert.equal(await page.locator('[data-test="craft-rating"]').textContent(), pattern === "late-auto" ? "○" : "△",
         "Timing misses and the existing heat evaluation remain separate axes");

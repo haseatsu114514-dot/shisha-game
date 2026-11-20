@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-18 11:02 UTC",
+ "generated": "2026-11-20 15:31 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -632,16 +632,20 @@
   "cg_ch1_tournament_battle.png",
   "cg_ch1_tsumugi_heart_art.png",
   "cg_ch1_tsumugi_sketch_wip.png",
+  "cg_ch2_ageha_lesson.png",
   "cg_ch2_ageha_purikura_strip.png",
   "cg_ch2_ageha_purikura_strip_gal.png",
   "cg_ch2_ageha_purikura_strip_soft.png",
+  "cg_ch2_sofa_wet_cloth.png",
   "cg_ch3_childhood_offered_hand.png",
+  "cg_ch3_mashiro_no_craft_day.png",
   "cg_ch4_dubai_arrival.png",
+  "cg_ch4_traveler_chair.png",
   "cg_ch4_world_handshake.png",
+  "cg_ch5_doctor_yunomi.png",
   "cg_ch5_shisha_9000.png",
   "cg_ending_tonari_night.png",
   "cg_hiyori_confession.png",
-  "cg_saku_mashiro_childhood.png",
   "cg_mashiro_confession.png",
   "cg_mashiro_double_apple.png",
   "cg_minto_casual.png",
@@ -654,6 +658,7 @@
   "cg_oneesan_first_smoke.png",
   "cg_rio_confession.png",
   "cg_ryuji_purikura.png",
+  "cg_saku_mashiro_childhood.png",
   "cg_samechan_confession.png",
   "cg_tsumugi_confession.png",
   "cg_tsumugi_smoke_color.png"
@@ -1506,9 +1511,9 @@
    }
   },
   "dr_kemuri": {
-   "color": "#39d7e7",
-   "secondary": "#cafaff",
-   "shadow": "#032d3a",
+   "color": "#c5a467",
+   "secondary": "#ead9ad",
+   "shadow": "#302823",
    "background": "ui/character_intros/dr_kemuri.png",
    "frames": {
     "normal": {
@@ -2790,7 +2795,6 @@
   "bgm_ending.mp3",
   "bgm_ethnic05.bgm",
   "bgm_ethnic08.bgm",
-  "bgm_ethnic09.bgm",
   "bgm_ethnic12.bgm",
   "bgm_judging.bgm",
   "bgm_map.mp3",
@@ -3778,7 +3782,12 @@
   "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
   "backgrounds/bg_axe_lane.png",
   "backgrounds/bg_axe_lane_aim.png",
-  "ui/scene_props/shisha_home_stand_stainless.png"
+  "ui/scene_props/shisha_home_stand_stainless.png",
+  "cgs/cg_ch2_ageha_lesson.png",
+  "cgs/cg_ch2_sofa_wet_cloth.png",
+  "cgs/cg_ch3_mashiro_no_craft_day.png",
+  "cgs/cg_ch4_traveler_chair.png",
+  "cgs/cg_ch5_doctor_yunomi.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

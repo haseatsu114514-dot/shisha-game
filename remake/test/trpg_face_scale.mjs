@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import { COSTUME_KEYS, resolvedCostumeKey } from "../js/trpg/costumes.js";
-import { FACE_FRAC, EYE_Y, NPC_FRAMES, PORTRAIT_FRAMES, EXTRA_PORTRAIT_FRAMES, circleFaceStyle, npcBustStyle, npcFaceFrame, portraitFaceFrame } from "../js/trpg/face-crops.js";
+import { FACE_FRAC, EYE_Y, NPC_FRAMES, PORTRAIT_FRAMES, EXTRA_PORTRAIT_FRAMES, circleFaceStyle, costumeIconStyle, faceIconStyle, npcBustStyle, npcFaceFrame, portraitFaceFrame } from "../js/trpg/face-crops.js";
 
 const frames = JSON.parse(await readFile(new URL("../img/ui/trpg/costumes/frames.json", import.meta.url), "utf8"));
 const CAST = ["hajime", "hiyori", "samechan", "tsumugi", "ageha", "adam", "rei", "sumi", "salaryman"];
@@ -48,12 +48,10 @@ test("circleFaceStyle fills the parent with the crop and keeps the face centered
   const frame = portraitFaceFrame("samechan", "new");
   const style = circleFaceStyle(frame);
   assert.ok(style);
-  const side = frame.box_exact[2] - frame.box_exact[0];
-  const widthPct = parseFloat(style.width);
-  assert.ok(Math.abs(widthPct - (frame.src[0] / side) * 100) < 0.01);
-  const topPct = parseFloat(style.top);
-  assert.ok(Math.abs(topPct - (-frame.box_exact[1] / side) * 100) < 0.01);
-  assert.match(style.transform, /translateX\(-/);
+  const side = frame.face.w / FACE_FRAC;
+  assert.ok(Math.abs(parseFloat(style.width) - frame.src[0] / side * 100) < 1e-6);
+  assert.equal(style.top, "42%");
+  assert.match(style.transform, /^translate\(/);
   // Samechan's shark hood must not be the crop: the face crop is tighter than 400px.
   assert.ok(side < 400, `samechan crop side ${side}`);
 });
@@ -149,6 +147,51 @@ test("extended cast (sai, regulars), regular-table costume aliases, speaker bust
       assert.equal(shifted.top, "35%");
       assert.equal(shifted.width, base.width);
       assert.notEqual(shifted.transform, base.transform, `new/${id}/${face} compensates canvas offset`);
+    }
+  }
+});
+
+test("round icons resolve the displayed style and expression before positioning the eyes", () => {
+  const manifest = { portraits: { hiyori: { faces: ["normal", "surprise"] } },
+    portraitVariants: { new: { hiyori: { faces: ["surprise"] } } } };
+  assert.deepEqual(faceIconStyle("hiyori", "new", manifest), faceIconStyle("hiyori", "classic"));
+  assert.notDeepEqual(faceIconStyle("hiyori", "new", manifest, "surprise"), faceIconStyle("hiyori", "new"));
+  assert.deepEqual(faceIconStyle("hiyori", "classic", manifest, "missing"), faceIconStyle("hiyori", "classic"));
+});
+
+test("Hiyori's lower face and cheek span stay registered across six costumes and expressions", () => {
+  function project(style, [x, y]) {
+    const [tx, ty] = style.transform.match(/-?[\d.]+/g).map(Number);
+    const scale = parseFloat(style.width) / 100 / 896;
+    return [0.5 + (x + tx * 8.96) * scale, EYE_Y + (y + ty * 12) * scale];
+  }
+  // Independent screenshot landmarks: chin and cheek contour, plus the mouth
+  // (excluded from fitting because a surprised or smiling mouth changes shape).
+  const samples = [
+    ["normal", [517.5, 321.5], [478.5, 304.5], [540.5, 299.0], [512.5, 305.5], [482, 289], [522, 274]],
+    ["rosa", [512.5, 308.5], [475.0, 290.5], [537.0, 286.0], [508.5, 292.5], [480, 276], [518, 262]],
+    ["marta", [515.5, 310.5], [479.0, 293.5], [540.5, 289.5], [511.0, 295.0], [482, 278], [522, 265]],
+    ["otto", [512.5, 322.0], [479.0, 302.0], [539.5, 301.0], [510.0, 304.5], [483, 283], [524, 274]],
+    ["midori", [521.0, 322.0], [482.5, 304.5], [544.0, 300.0], [516.0, 305.5], [486, 289], [526, 273]],
+    ["yura", [535.0, 324.5], [497.0, 306.0], [560.5, 302.5], [530.0, 308.0], [500, 290], [544, 274]],
+    ["neri", [525.0, 315.5], [487.0, 298.5], [549.5, 294.0], [520.0, 300.0], [492, 284], [530, 269]],
+    ["smile", [526.0, 323.0], [486.0, 306.0], [548.0, 299.5], [519.5, 308.5], [488, 294], [530, 276]],
+    ["surprise", [520.5, 329.5], [482.0, 311.5], [546.0, 307.0], [515.5, 314.0], [485, 293], [526, 277]],
+    ["sad", [519.5, 326.0], [480.0, 308.0], [543.5, 303.5], [515.0, 311.5], [484, 294], [526, 279]],
+  ];
+  const base = faceIconStyle("hiyori", "new");
+  const [, chin0, left0, right0, mouth0] = samples[0];
+  for (const [id, chin, left, right, mouth, eyeL, eyeR] of samples) {
+    const frame = frames.find(f => f.character === "hiyori" && f.role_id === id);
+    const style = frame ? costumeIconStyle(frame) : faceIconStyle("hiyori", "new", null, id);
+    const maxError = (a, b) => Math.max(...a.map((v, i) => Math.abs(v - b[i])));
+    assert.ok(maxError(project(style, chin), project(base, chin0)) < .016, id + " chin");
+    const span = project(style, right)[0] - project(style, left)[0];
+    assert.ok(Math.abs(span - (project(base, right0)[0] - project(base, left0)[0])) < .019, id + " jaw");
+    const eyeY = (project(style, eyeL)[1] + project(style, eyeR)[1]) / 2;
+    assert.ok(Math.abs(eyeY - EYE_Y) < .023, id + " eye line");
+    if (!["surprise", "smile", "sad"].includes(id)) {
+      assert.ok(maxError(project(style, mouth), project(base, mouth0)) < .025, id + " mouth");
     }
   }
 });

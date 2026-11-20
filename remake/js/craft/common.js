@@ -7,6 +7,7 @@ import { craftCondition } from "../core/condition.js";
 import { state } from "../core/state.js";
 import { growthPerks } from "../core/growth-effects.js";
 import { renewalCraft } from "../core/craft-version.js";
+import { assistEffect } from "./retry-assist-level.js";
 
 // #2533 オーナー承認「ランクは仮置きでそのポイントでいい」。仮置きの閾値で、調整可能。
 // D〜S の境目は従来どおり（gradeOf と同じ）。SS・SSS は表示だけの上の段で、完成品の点の現実的な上限（約86）でも
@@ -26,14 +27,14 @@ export const strainWindow = (cs) => 0.88 ** Math.min(3, cs?.strain || 0);
 /** 腕前（★）に、その一台を作り始めたときの体力コンディションと、途中で溜まった疲れを重ねる。 */
 export const skill = {
   slow: (cs) => (1 + 0.18 * tier01("technique") + (growthPerks(state)?.gauge || 0) / 100)
-    * craftCondition(cs).slow * strainSlow(cs) * (cs.retryAssist ? 1.35 : 1),
+    * craftCondition(cs).slow * strainSlow(cs) * assistEffect(cs).slow,
   window: (cs, kind = "heat") => (1 + 0.45 * tier01("sense") + (growthPerks(state)?.[kind] || 0) / 100)
-    * craftCondition(cs).window * strainWindow(cs) * (cs.retryAssist ? 1.5 : 1),
+    * craftCondition(cs).window * strainWindow(cs) * assistEffect(cs).window,
   clarity: (cs) => clamp(tier01("insight") + craftCondition(cs).focus - 1, 0, 1),
 };
 
 /** 工程の結果カード。自動操作中は少し待って勝手に閉じる */
-export function resultCard(panel, { title, lines = [], summary = [], advice = "", button = "次へ" }) {
+export function resultCard(panel, { title, lines = [], summary = [], advice = "", button = "次へ", holdUntilExit = false }) {
   const { evaluation, hasAudience } = presentBenchResult(panel, title, advice);
   // 結果を読むとき、直前の判定文字を重ねない。
   panel.querySelectorAll(".stamp").forEach((stamp) => stamp.remove());
@@ -44,9 +45,13 @@ export function resultCard(panel, { title, lines = [], summary = [], advice = ""
         if (btn.disabled) return;
         btn.disabled = true;
         SE.select();
-        card.classList.remove("show");
-        card.classList.add("done");
-        setTimeout(() => card.remove(), 300);
+        // 遷移先を待つ大会の敗北では、カードを消して元の操作を見せ直さない。
+        if (holdUntilExit) card.inert = true;
+        else {
+          card.classList.remove("show");
+          card.classList.add("done");
+          setTimeout(() => card.remove(), 300);
+        }
         resolve();
       },
     }, [el("span.btn-label", { text: button })]);
@@ -91,8 +96,8 @@ export function timingLabel(kind, fallback = "") {
 }
 
 /** 画面内の座標で判定スタンプを出す（パネル基準） */
-export function popStamp(host, text, kind = "", x = "50%", y = "40%") {
-  const s = el(`div.stamp${kind ? "." + kind : ""}`, { text: timingLabel(kind, text), style: { left: x, top: y } });
+export function popStamp(host, text, kind = "", x = "50%", y = "40%", { timing = true } = {}) {
+  const s = el(`div.stamp${kind ? "." + kind : ""}`, { text: timing ? timingLabel(kind, text) : text, style: { left: x, top: y } });
   host.append(s);
   setTimeout(() => s.remove(), 1100);
 }

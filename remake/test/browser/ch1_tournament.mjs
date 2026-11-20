@@ -271,7 +271,7 @@ await suite("ch1-tournament", async check => {
     assert.equal(await page.locator('.nico').count(), 0, "Old comments leaked after fast transition");
   });
 
-  // #3558 項目3: 吸い出しの結果確認で流れるコメントが、ゾーンラベル（熱を入れる吸い／熱を逃がす吸い）に重ならない。
+  // #3558 項目3: 吸い出しの結果確認で流れるコメントが、ゾーンラベル（上げ吸い／下げ吸い）に重ならない。
   // コメントは .bc-lane の clip-path で切り取られるので、ラベル矩形（帯座標）が多角形の外にあることを幾何で確かめる。
   await check("pull-label-comment-clearance", async page => {
     await init(page);
@@ -504,6 +504,9 @@ await suite("ch1-tournament", async check => {
     }, round);
     const next = page.locator('[data-test="standings-next"]');
     await next.waitFor({ state: "visible" });
+    // 票が入る演出（TSH02）の間は「次へ」を押せない。会話の AUTO/SKIP は演出も板も飛ばさない。
+    assert.equal(await next.isDisabled(), true, "次へ is locked while the votes are being cast");
+    await page.locator('[data-test="standings"][data-ceremony="done"]').waitFor();
     await page.waitForTimeout(4200);
     assert.equal(await page.evaluate(() => T.standingsDone), false, "VN AUTO/SKIP cannot dismiss standings");
     assert.equal(await page.evaluate(() => document.querySelector(`[data-test="${T.standingsMode}"]`).getAttribute("aria-pressed")), "true");
@@ -516,6 +519,130 @@ await suite("ch1-tournament", async check => {
     assert(await page.evaluate(() => JSON.stringify(T.core.state) === T.beforeStandings));
     await page.evaluate(() => document.querySelector(`[data-test="${T.standingsMode}"]`).click());
   });
+
+  // 票が入る演出（TSH02）: 入れる前の値から始まり、審査員ごとに票が入って、入れた後の値で終わる。板を押すと早送り。
+  const startVoteBoard = page => page.evaluate(async () => {
+    const votes = await import("./js/craft/ch1-votes.js");
+    ["naru", "adam", "minto", "sui", "maezono", "dr_kemuri"].forEach(T.core.markMet);
+    window.cs = { mix: { lemon: 8, mint: 4 }, holes: { score: 93 }, heat: { score: 95 },
+      stats: { aroma: 88, taste: 86, heatStability: 84, burnRisk: 14, draw: 82, smoke: 85, craftQuality: 88, duration: 80 },
+      pull: { score: 92, attack: true }, careHistory: [{ score: 99, attack: true }, { score: 104, attack: true }], care: { score: 99 },
+      parts: { holes: 93, heat: 95, shisha: 88, care1: 99, care2: 96 }, total: 92 };
+    window.attempt = { rulesVersion: 2 };
+    votes.beginCh1Votes(attempt, { style: "sakurai" });
+    votes.castCh1Votes(attempt, 0, cs);
+    const sum = table => Object.fromEntries(votes.CH1_CONTESTANTS.map(id =>
+      [id, attempt.voteAttempt.baseVotes[id] + votes.CH1_JUDGES.reduce((n, judge) => n + table[judge][id], 0)]));
+    const before = sum(attempt.voteAttempt.votes);
+    window.standingsDone = false;
+    // 票は showStandings の先頭で同期して確定する。
+    window.standings = T.result.showStandings(2, 90, cs, attempt).then(() => { window.standingsDone = true; });
+    return { before, after: sum(attempt.voteAttempt.votes) };
+  });
+  const boardPoints = page => page.locator('[data-test="standings"] .sd-row').evaluateAll(rows =>
+    Object.fromEntries(rows.map(row => [row.dataset.id, parseInt(row.querySelector('.sd-points').textContent, 10)])));
+  const boardSpent = page => page.locator('[data-test="standings"] .judge-chip').evaluateAll(chips =>
+    Object.fromEntries(chips.map(chip => [chip.dataset.judge, [Number(chip.dataset.spent), chip.querySelectorAll('.judge-pips .on').length, chip.querySelector('.judge-left').textContent]])));
+  const settled = { maezono: [5, 5, '投入 5 ／ 残り 5'], dr_kemuri: [5, 5, '投入 5 ／ 残り 5'], sui: [5, 5, '投入 5 ／ 残り 5'] };
+  for (const mode of ["plays-through", "tap-skips", "key-skips", "reduced-motion"]) await check(`vote-ceremony-${mode}`, async page => {
+    await init(page);
+    const expected = await startVoteBoard(page);
+    assert.notDeepEqual(expected.before, expected.after, "The round must move points");
+    const board = page.locator('[data-test="standings"]');
+    const next = page.locator('[data-test="standings-next"]');
+    await board.and(page.locator('.show')).waitFor();
+    if (mode === "reduced-motion") {
+      // 動きを減らす設定では、票の動き・見出しの帯を出さず、最後の値をすぐ出す。
+      await board.and(page.locator('[data-ceremony="done"]')).waitFor({ timeout: 1000 });
+      assert.equal(await page.locator('.ts-sting, .ts-token, .ts-plus').count(), 0);
+    } else {
+      assert.equal(await board.getAttribute("data-ceremony"), "running");
+      assert.deepEqual(await boardPoints(page), expected.before, "The board starts from the points before this round");
+      assert.deepEqual(await boardSpent(page), { maezono: [2, 2, '投入 2 ／ 残り 8'], dr_kemuri: [2, 2, '投入 2 ／ 残り 8'], sui: [2, 2, '投入 2 ／ 残り 8'] });
+      assert.equal(await next.isDisabled(), true);
+      assert.equal(await page.locator('.ts-sting').count(), 1, "The vote opens with the heading band");
+      if (mode === "plays-through") {
+        // 審査員の番が来ると札が前に出て、票の粒が飛ぶ。
+        await page.locator('.judge-chip.ts-casting').first().waitFor();
+        await page.locator('.ts-token').first().waitFor({ state: "attached" });
+      } else {
+        await page.waitForTimeout(1500);
+        assert.equal(await board.getAttribute("data-ceremony"), "running");
+        if (mode === "tap-skips") await board.locator('.tournament-heading h1').click();
+        else await page.keyboard.press("Enter");
+      }
+      await board.and(page.locator('[data-ceremony="done"]')).waitFor({ timeout: mode === "plays-through" ? 12000 : 1000 });
+      assert.equal(await page.evaluate(() => window.standingsDone), false, "Skipping the ceremony does not dismiss the board");
+    }
+    assert.deepEqual(await boardPoints(page), expected.after);
+    assert.deepEqual(await boardSpent(page), settled);
+    assert.equal(await page.locator('.ts-token, .judge-chip.ts-casting, .ts-wait').count(), 0, "No ceremony leftovers");
+    // 並びは点の多い順。「次へ」は出そろってから押せる。
+    const order = await board.locator('.sd-row').evaluateAll(rows => rows
+      .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top).map(row => parseInt(row.querySelector('.sd-points').textContent, 10)));
+    assert.deepEqual(order, order.slice().sort((a, b) => b - a));
+    await next.and(page.locator(':enabled')).waitFor();
+    assert.equal(await next.evaluate(button => document.activeElement === button), true);
+    await assertFits(page, '.standings, .sd-row, .sd-status, [data-test="standings-next"], .standings .judge-chip');
+    await capture(page, `vote-ceremony-${mode}`);
+    await page.keyboard.press("Enter");
+    await page.evaluate(() => window.standings);
+    assert.equal(await page.locator('[data-test="standings"], .fx-dim, .ts-token').count(), 0);
+  }, mode === "reduced-motion" ? { reducedMotion: "reduce" } : {});
+
+  // 結果発表（TSH03）: カウントは出場者4人に光が巡り、最後の投票は3人の票 → 千須の最後の1点、順位表の前に大見出し。
+  for (const touch of [false, true]) await check(`final-vote-and-splash-${touch ? "touch" : "pc"}`, async page => {
+    await init(page);
+    await startVoteBoard(page);
+    await page.locator('[data-test="standings"][data-ceremony="running"]').locator('.tournament-heading h1').click();
+    await page.locator('[data-test="standings-next"]:enabled').click();
+    const { result, lastRound } = await page.evaluate(async () => {
+      await window.standings;
+      const votes = await import("./js/craft/ch1-votes.js");
+      for (const round of [2, 3]) votes.castCh1Votes(attempt, round, cs);
+      window.countdown = T.result.resultCountdown(cs, "win", attempt);
+      return { result: attempt.voteAttempt.result, lastRound: attempt.voteAttempt.finalVotes };
+    });
+    assert.equal(result.rank, 1);
+    await page.locator('[data-test="result-count"]').waitFor();
+    assert.equal(await page.locator('.rc-card').count(), 4);
+    assert.equal(await page.locator('.rc-card .ts-bust img').count(), 4, "Each finalist stands as a portrait");
+    await page.waitForTimeout(1400);
+    assert.equal(await page.locator('.rc-card.spot').count(), 1, "The spotlight visits one finalist per count");
+    await assertFits(page, '.count-screen .tournament-heading, .rc-ring, .rc-pray, .rc-card');
+    await capture(page, `count-finalists-${touch ? "touch" : "pc"}`);
+    await page.evaluate(async () => { await countdown; (await import("./js/core/ui.js")).retireScreen(); window.cut = T.result.suiCutin(1, attempt); });
+    const final = page.locator('[data-test="final-vote"]');
+    await final.and(page.locator('.show')).waitFor();
+    const finalPoints = () => final.locator('.nc-row').evaluateAll(rows => Object.fromEntries(rows.map(row => [row.dataset.id, parseInt(row.querySelector('.nc-pt').textContent, 10)])));
+    const before4 = Object.fromEntries(result.rows.map(row => [row.id, row.points
+      - ["maezono", "dr_kemuri", "sui"].reduce((n, judge) => n + (lastRound[judge]?.[row.id] || 0), 0)]));
+    assert.deepEqual(await finalPoints(), before4, "The final board starts before the last round's votes");
+    assert.equal(await final.locator('.nc-caller').count(), 3);
+    // 押すと、残りの間を詰めて最後まで進む。
+    await page.waitForTimeout(1200);
+    const area = await final.boundingBox(), at = { x: area.x + area.width * 0.25, y: area.y + area.height * 0.85 };
+    if (touch) await page.touchscreen.tap(at.x, at.y); else await page.mouse.click(at.x, at.y);
+    await page.evaluate(() => window.cut);
+    assert.equal(await page.locator('[data-test="final-vote"], .ts-token').count(), 0);
+    await page.evaluate(() => { window.finalResult = T.result.resultTable(cs, 1, attempt); });
+    const splash = page.locator('[data-test="result-splash"]');
+    await splash.and(page.locator('.show')).waitFor();
+    assert.equal(await splash.locator('h2').textContent(), "CHAMPION");
+    assert.equal(await splash.locator('.ts-crest img').count(), 1);
+    assert.equal(await splash.locator('.ts-splash-bust img').count(), 1);
+    await page.waitForTimeout(900);
+    await assertFits(page, '[data-test="result-splash"] h2, [data-test="result-splash"] p, .ts-splash-tap');
+    await capture(page, `champion-splash-${touch ? "touch" : "pc"}`);
+    if (touch) await splash.tap(); else await splash.click();
+    await splash.waitFor({ state: "detached" });
+    await page.locator('.result-table.ts-revealed').waitFor();
+    assert.deepEqual(await page.locator('.rt-row').evaluateAll(rows => rows.map(row => [row.dataset.id, parseInt(row.querySelector('.rt-pt').textContent, 10)])),
+      result.rows.map(row => [row.id, row.points]));
+    await assertFits(page, '.result-table, .rt-layout, .rt-row, .rt-detail, [data-test="result-next"]');
+    await page.locator('[data-test="result-next"]').click();
+    await page.evaluate(() => window.finalResult);
+  }, touch ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
 
   await check("standings-load-cancels-old-tournament", async page => {
     await init(page);

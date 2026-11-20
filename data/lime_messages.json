@@ -4,6 +4,7 @@
       "naru": "今日は店を臨時で閉めたから、午後ちょっと付き合えよ",
       "adam": "今日は店を臨時で休む。午後、共に出かけよう",
       "minto": "今日は臨時でお店を休みにしたの。午後、会えたら嬉しいな",
+      "kumicho": "今日は店を臨時で閉めてやしてね",
       "fallback": "今日は臨時のお休み。午後、会えたらうれしいな"
     },
     "sumi_baito": {
@@ -1232,6 +1233,64 @@
       ]
     },
     {
+      "id": "lime_outing_kumicho_1",
+      "important": true,
+      "sender": "kumicho",
+      "chapter": 2,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "kumicho",
+          "text": "あんちゃん、昼から駅裏の銭湯へ行くんでさ。熱波師が来る日でね"
+        },
+        {
+          "sender": "kumicho",
+          "text": "……あんちゃんも、来なさるかい"
+        }
+      ],
+      "accept_event": "outing_kumicho_1",
+      "accept_text": "昼から行きます",
+      "decline_response": {
+        "sender": "kumicho",
+        "text": "おう、無理はしなさんな。湯は逃げやしねえ"
+      },
+      "closed_on": 0,
+      "reminder_text": "この前の銭湯、今日も昼から行くんでさ。都合がつきゃ、来なせえ",
+      "private_schedule": "holiday_or_temporary"
+    },
+    {
+      "id": "lime_after_outing_kumicho",
+      "sender": "kumicho",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_kumicho",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "kumicho",
+          "text": "この前は、付き合わせちまったな。湯冷めはしなかったかい"
+        },
+        {
+          "sender": "kumicho",
+          "text": "籠を二つ並べるのが、癖になりそうでさ。……次も、下の段からですぜ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "次も下の段から行きます",
+          "response": "それでいい。上の段は、体と相談してからでさ",
+          "affinity": 2
+        },
+        {
+          "text": "牛乳、ごちそうさまでした",
+          "response": "あれも込みで、サウナなんでさ。礼を言うほどのもんじゃねえ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_rei_first",
       "sender": "rei",
       "chapter": 2,
@@ -1515,6 +1574,251 @@
         {
           "text": "迷ってたんですね",
           "response": "……三回しまった。四回目で、出せた",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_outing_rei_1",
+      "important": true,
+      "sender": "rei",
+      "chapter": 2,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "night",
+      "after_close": true,
+      "messages": [
+        {
+          "sender": "rei",
+          "text": "……今夜、店を閉めたら、駅の向こうのライブハウスの前まで行く"
+        },
+        {
+          "sender": "rei",
+          "text": "中には入らない。扉が開くたびに漏れてくる音を、聞くだけ"
+        },
+        {
+          "sender": "rei",
+          "text": "キミも、来る？"
+        }
+      ],
+      "accept_event": "outing_rei_1",
+      "accept_text": "仕事のあとに行きます",
+      "decline_response": {
+        "sender": "rei",
+        "text": "……うん。音は、また漏れてくる"
+      },
+      "reminder_text": "……この前言った、ライブハウスの前。今夜も、店を閉めたら行く"
+    },
+    {
+      "id": "lime_after_outing_rei",
+      "sender": "rei",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_rei",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "rei",
+          "text": "……この前の、扉の前"
+        },
+        {
+          "sender": "rei",
+          "text": "帰ってから、最後の曲を頭からかけた。外で聞いたのと、少し違って聞こえた"
+        },
+        {
+          "sender": "rei",
+          "text": "キミの拍、少し走ってた"
+        }
+      ],
+      "replies": [
+        {
+          "text": "また連れていってください",
+          "response": "……うん。扉の前なら、いつでも空いてる",
+          "affinity": 2
+        },
+        {
+          "text": "拍、走ってましたか",
+          "response": "……少し。でも、走るのは楽しい時だ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_outing_saku_1",
+      "sender": "saku",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "今日の昼、少しだけ抜けられる？　試食係を一人、探してるんだ"
+        },
+        {
+          "sender": "saku",
+          "text": "何を作るかは、会ってから。公園の入口で待ってるね"
+        }
+      ],
+      "accept_event": "outing_saku_1",
+      "accept_text": "昼から行きます",
+      "decline_response": {
+        "sender": "saku",
+        "text": "了解。試食係の席は、空けとくね"
+      },
+      "reminder_text": "この前の試食係の話、今日の昼ならどう？"
+    },
+    {
+      "id": "lime_after_outing_saku",
+      "sender": "saku",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_saku",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "この前は、試食係ありがとう"
+        },
+        {
+          "sender": "saku",
+          "text": "あれから、煙でも試してる。きゅうりのフレーバーは棚に無いから、ミントの青さで代わりを探してる"
+        },
+        {
+          "sender": "saku",
+          "text": "まだ、メロンにならない。外れの欄が、きゅうりで埋まってく"
+        }
+      ],
+      "replies": [
+        {
+          "text": "できたら、また試食係やります",
+          "response": "うん。目を閉じる練習、しといて",
+          "affinity": 2
+        },
+        {
+          "text": "外れの欄、読んでみたいです",
+          "response": "ほとんど『きゅうり』だよ。それでよければ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_outing_steve_1",
+      "sender": "steve",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "ヘイ、ハジメ。今日の昼、少し付き合え"
+        },
+        {
+          "sender": "steve",
+          "text": "公園の池に、貸しボートがある。一人で乗る勇気が、まだ無い"
+        }
+      ],
+      "accept_event": "outing_steve_1",
+      "accept_text": "昼から行きます",
+      "decline_response": {
+        "sender": "steve",
+        "text": "オーケー。池は、どこにも行かない"
+      },
+      "reminder_text": "ヘイ。この前のボートの話、今日の昼ならどうだ"
+    },
+    {
+      "id": "lime_after_outing_steve",
+      "sender": "steve",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_steve",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "ヘイ、ハジメ。この前のボート、カードに書いた"
+        },
+        {
+          "sender": "steve",
+          "text": "秒の欄は、空のままだ。数えてなかったからな"
+        },
+        {
+          "sender": "steve",
+          "text": "余白には『鳥。延長。ハジメが漕いだ』。……読み返すと、また乗りたくなる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "次は最初から延長で借りましょう",
+          "response": "オーケー。延長の分は、次はハジメだな",
+          "affinity": 2
+        },
+        {
+          "text": "秒の欄、空でいいと思います",
+          "response": "イエス。空の欄が一つくらい、あってもいい",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_outing_volk_1",
+      "sender": "volk",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "今日の昼、空いているか"
+        },
+        {
+          "sender": "volk",
+          "text": "買い物に付き合え。一人で選ぶと、基準が偏る"
+        }
+      ],
+      "accept_event": "outing_volk_1",
+      "accept_text": "昼から行きます",
+      "decline_response": {
+        "sender": "volk",
+        "text": "分かった。記録には、空欄で残す"
+      },
+      "reminder_text": "この前の買い物の件だ。今日の昼なら、どうだ"
+    },
+    {
+      "id": "lime_after_outing_volk",
+      "sender": "volk",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_volk",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "記録。この前の瓶は、半分になった"
+        },
+        {
+          "sender": "volk",
+          "text": "量は、書いていない。日付だけだ"
+        },
+        {
+          "sender": "volk",
+          "text": "次に尽きた日も、書く。お前の舌も、その時に借りる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "また一緒に選びます",
+          "response": "そうしろ。俺の舌だけだと、偏る",
+          "affinity": 2
+        },
+        {
+          "text": "半分、早くないですか",
+          "response": "早いかどうかは、測っていない",
           "affinity": 1
         }
       ]
@@ -2366,6 +2670,74 @@
       ]
     },
     {
+      "id": "lime_ch2_sumi_commute_tonari",
+      "sender": "sumi",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch2_commute_tonari",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "電車で店の名前を出したらしいな"
+        },
+        {
+          "sender": "sumi",
+          "text": "聞かれたなら、それでいい。こっちから言って回るなよ"
+        },
+        {
+          "sender": "sumi",
+          "text": "来たら、お前が出ろ。顔は覚えてるな"
+        }
+      ],
+      "replies": [
+        {
+          "text": "スーツの人でした",
+          "response": "スーツなら、電車に何十人もいる。顔を見とけ",
+          "affinity": 1
+        },
+        {
+          "text": "来たら、俺が作ります",
+          "response": "おう。名前で来た客を、名前だけで帰すなよ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch2_tsumugi_train_window",
+      "sender": "tsumugi",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch2_commute_window_sent",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おはようございます。電車の窓の写真、届きました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "光が横に流れるのは、止まってる窓じゃ見られない線ですね"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……資料に、なりました。今日、少しだけ描いてみます"
+        }
+      ],
+      "replies": [
+        {
+          "text": "描けたら見たい",
+          "response": "……描けたら、です。線が、まだ揺れてるので",
+          "affinity": 2
+        },
+        {
+          "text": "また撮ったら送るね",
+          "response": "はい。……ぶれてる写真のほうが、好きです",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_ageha_ch2_goodday",
       "sender": "ageha",
       "chapter": 2,
@@ -2666,6 +3038,74 @@
         }
       ],
       "chapter": 1
+    },
+    {
+      "id": "lime_ch2_samechan_resting_shark",
+      "sender": "samechan",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_talk_seen_ch2_samechan_resting_shark",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "図鑑の続きじゃ。ネムリブカは、夜になると岩場を出て、狩りに行くのじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "昼のうちにちゃんと休んでおるから、夜に動けるのじゃぞ。……お主もじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "「勇者の帳面は、角を折らずに運んだ。礼はいらぬ」……と、コロちゃんが申しておる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "今日は早めに寝ます",
+          "response": "うむ。それでこそ、ネムリブカの仲間じゃ",
+          "affinity": 2
+        },
+        {
+          "text": "図鑑、今度見せてください",
+          "response": "うむ！ 次は、寝顔のよいサメの頁からじゃ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_ch2_sumi_salaryman",
+      "sender": "sumi",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_talk_seen_ch2_shift_talk_salaryman",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "この前の鉄仮面さんの席、片づけたのはお前だったな"
+        },
+        {
+          "sender": "sumi",
+          "text": "ホースの掛け方、見たか"
+        },
+        {
+          "sender": "sumi",
+          "text": "顔に出ねえ客ほど、手元と息に出る。覚えとけ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ちゃんと掛けてありました",
+          "response": "おう。あれも、あの人の「ごちそうさん」だ",
+          "affinity": 2
+        },
+        {
+          "text": "息、もっと見るようにします",
+          "response": "それでいい。見すぎて、手を止めるなよ",
+          "affinity": 1
+        }
+      ]
     },
     {
       "id": "lime_samechan_opening",
@@ -3697,6 +4137,35 @@
           "affinity": 1
         }
       ]
+    },
+    {
+      "id": "lime_wang_tonari_visit",
+      "important": true,
+      "sender": "master_hookah",
+      "chapter": 5,
+      "region": "home",
+      "trigger_condition": "ch5_started",
+      "trigger_day": 6,
+      "type": "invitation",
+      "time_slot": "noon",
+      "reminder_spot": "tonari",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "日本に着いた。本店の用の途中で、少しだけ寄り道ができた"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "今日の昼、tonariへ寄ってもいいかな。一台、客として座りたい"
+        }
+      ],
+      "accept_event": "ch5_wang_tonari_visit",
+      "accept_text": "お待ちしてます",
+      "decline_response": {
+        "sender": "master_hookah",
+        "text": "分かった。日本には、もう少しいる。また聞くよ"
+      },
+      "reminder_text": "まだ日本にいる。昼のtonariに、寄ってもいいかな"
     },
     {
       "id": "lime_taiyo_01",

@@ -104,7 +104,7 @@ export function startPackageFromMeta(meta) {
 }
 
 const CYCLE_GROUPS = [
-  ["stats", "能力"],
+  ["stats", "能力・経験値・授業"],
   ["money", "所持金"],
   ["items", "所持品"],
   ["knowledge", "知識・記録"],
@@ -143,7 +143,7 @@ export async function openNextCycleOptions(meta) {
     const choice = await modal({
       title: `${nextCycle}周目をはじめる`,
       body: el("div.cfg", [
-        el("p", { text: "能力と持ち物を引き継いで、出会いからもう一度はじめます。" }),
+        el("p", { text: "能力・経験値・授業と持ち物（好感度でもらった贈り物も）を引き継いで、出会いからもう一度はじめます。" }),
         el("p", { text: "好感度・恋愛や出会いの記録は引き継がれず、新しく始まります。" }),
         ...rows,
       ]),
@@ -433,9 +433,8 @@ export async function openConfig(opts = {}) {
   // 見た目の様式（LK01）。既定は旧版（LK23）。新版は選べない（コードは残してある）。DS風はすべての章でいつでも切り替えられる（LK21）。
   const look = segRow("見た目", "cfg-look", LOOKS.filter(({ id }) => !DISABLED_LOOKS.includes(id)).map(({ id, label }) => [id, label]),
     normalizeLook(config.look), (v) => { setConfig("look", v); setLook(v); });
-  // シーシャ作りの版（CRN16）。リニューアル＝新しい作業台＋いままでの審査、桜井版＝リニューアル前の作業台＋第1章の大会の桜井式の審査（SKR04）。
-  // どちらを残すかオーナーが遊んで決める。次に始める一台（大会は次に始める試合）から効く。
-  const craftVersion = segRow("シーシャ作りの版", "cfg-craft-version", CRAFT_VERSIONS.map(({ id, label }) => [id, label]),
+  // #3795: 通常制作は桜井版。第1章大会の既存の切替だけ残し、次の試合から効かせる。
+  const craftVersion = segRow("第1章大会の版", "cfg-craft-version", CRAFT_VERSIONS.map(({ id, label }) => [id, label]),
     normalizeCraftVersion(config.craftVersion), (v) => setConfig("craftVersion", v));
   const portraits = segRow("会話の立ち絵", "cfg-portrait-style", [["classic", "旧"], ["new", "新"]],
     config.portraitStyle === "classic" ? "classic" : "new", (v) => setConfig("portraitStyle", v));
@@ -484,6 +483,7 @@ export async function openConfig(opts = {}) {
   return modal({
     title: "設定",
     body: el("div.cfg", [
+      saveTransferRow(),
       row("UIデザイン", createUiThemeSelect(config.uiTheme, value => { config.uiTheme = value; persist(); opts.onChange?.("uiTheme", value); })),
       look,
       row("ミュート（すべての音を消す）", mute),
@@ -502,7 +502,6 @@ export async function openConfig(opts = {}) {
       row("見た演出を短く", shortSeen),
       row("能力の効き目を色で表示", effectColors),
       ...(fullscreen ? [el("div.cfg-row", [el("span", { text: "全画面" }), fullscreen])] : []),
-      saveTransferRow(),
     ]),
     options: [{ label: "閉じる", value: true, primary: true, test: "cfg-close" }],
     className: "cfg-modal",

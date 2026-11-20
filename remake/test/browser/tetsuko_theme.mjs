@@ -5,7 +5,7 @@
 // - 動きを減らす設定では演出を出さず、題の札はすぐ見える
 // - ミニゲーム共通の方針（オーナー・2026-11-06）: 基本画面に常に見える文字は題・道具の名前だけ（反応の一行は少しで消える）。
 //   今日の様子は「？」の中。操作と遊び方は「？」を開いた時だけ見え、画面の道具がすべて載っている
-// - 手応えの作り直し（§10・2026-11-11）: 手帳で選んだしぐさが、おねだりの吹き出しになる。写真は猫のそばのカメラ。
+// - 手応えの作り直し（§10・2026-11-11）: 手帳で選んだしぐさが、おねだりの吹き出しになる。撮影は右上のボタンとPキー。
 //   おねだり・なでる場所・飛びつき・ごきげん・見守りの手応えは tetsuko_feel.mjs（画面を直接開く短い検査）
 // - スマホ横持ち（#2842）: 844×340 で、基本画面・「？」・手帳・もようがえの文字が実寸 11px 以上、押せる所が実寸 38px 以上、
 //   隣り合う道具の間が 12px（ステージ上）以上
@@ -94,8 +94,8 @@ async function openTetsuko(page) {
 }
 
 const hudVisibility = page => page.evaluate(() => getComputedStyle(document.querySelector(".hud")).visibility);
-// 基本画面の道具の名前（「？」は記号だけ）。写真は、しぐさが見えた時だけ猫のそばに出るカメラ（文字なし）。
-const CONTROLS = ["？", "もようがえ", "てつこ手帳", "帰る", "なでる", "じゃらし", "ブラシ", "おやつ"];
+// 基本画面の道具の名前（「？」は記号だけ）。撮影は右上に常設。
+const CONTROLS = ["？", "撮影", "もようがえ", "てつこ手帳", "帰る", "なでる", "じゃらし", "ブラシ", "おやつ"];
 // 画面の中で見えている文字（題の札・反応の帯・演出・擬音と粒は除く）。読み上げ専用の文字・透明の文字は数えない。
 function visibleTexts() {
   const host = document.querySelector('[data-test="tetsuko-time-screen"]');
@@ -159,7 +159,7 @@ await suite("tetsuko-theme", async check => {
     assert.equal(await screen.getAttribute("data-intro"), "");
     const look = await page.evaluate(() => {
       const css = selector => getComputedStyle(document.querySelector(selector));
-      const parts = [".tt-logo", ".tt-tool", ".tt-act-token", ".tt-caption", ".tt-joy", ".tt-shot", ".tt-wish", ".tt-act-label"];
+      const parts = [".tt-logo", ".tt-tool", ".tt-act-token", ".tt-caption-paper", ".tt-joy", ".tt-shot", ".tt-wish", ".tt-act-label"];
       return {
         logo: document.querySelector(".tetsuko-time > .tt-logo")?.textContent || "",
         logoOpacity: css(".tetsuko-time > .tt-logo").opacity,
@@ -246,14 +246,19 @@ await suite("tetsuko-theme", async check => {
     await seed(page);
     const screen = await openTetsuko(page);
     const get = id => page.locator(dt(`tetsuko-${id}`));
-    // 一つの短い遊び: 振る→狙う→前足→写真。連打の点数にはしない。写真は、しぐさが見えた時だけ猫のそばに出るカメラ。
+    // 一つの短い遊び: 振る→狙う→前足→写真。撮影の札はしぐさにかかわらず右上にある。
+    const shot = get("photo");
+    assert(await shot.isVisible(), "The shutter is visible before playing");
+    const initialShot = await shot.boundingBox();
     await get("play").click();
     await get("play").click();
     await get("play").click();
     await get("note").filter({ hasText: "はじめて前足が出た" }).waitFor();
     await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-photo"]')?.classList.contains("ready"));
-    await get("photo").click();
-    assert(!await get("photo").evaluate(node => node.classList.contains("ready")), "The same moment does not ask for a photo twice");
+    assert.deepEqual(await shot.boundingBox(), initialShot, "The shutter stays in place as the cat moves");
+    if (phone) await shot.tap();
+    else await page.keyboard.press("p");
+    assert(!await shot.evaluate(node => node.classList.contains("ready")), "The same moment does not ask for a photo twice");
     assert(Number(await get("joy").getAttribute("data-value")) > 0, "Playing fills her hearts");
     // 手帳から次の遊びを選ぶと、てつこのおねだり（吹き出し）がその手がかりになり、もようがえが呼ばれる。
     await get("book").click();

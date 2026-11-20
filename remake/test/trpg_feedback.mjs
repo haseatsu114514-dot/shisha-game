@@ -6,7 +6,7 @@ const sessionSource = await readFile(new URL("../js/trpg/session.js", import.met
 const sessionURL = "data:text/javascript;base64," + Buffer.from(sessionSource).toString("base64");
 const { TrpgSession } = await import(sessionURL);
 const source = (await readFile(new URL("../js/trpg/feedback.js", import.meta.url), "utf8")).replace('"./session.js"', JSON.stringify(sessionURL));
-const { rollOdds, checkForecast, rerollOdds } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+const { rollOdds, checkForecast, declarationChanceLabels, rerollOdds } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
 const ordinary = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_ordinary.json", import.meta.url), "utf8"));
 const shark = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_shark.json", import.meta.url), "utf8"));
 
@@ -42,14 +42,14 @@ test("forecast cannot reveal whether a hypothesis matches the hidden profile", (
     const a = checkForecast(shark, correct, "prepare", { support });
     assert.deepEqual(a, checkForecast(shark, incorrect, "prepare", { support }));
     assert.equal(a.baseBonus, support ? 10 : 3);
-    assert.equal(a.potentialBonus, 4);
+    assert.equal(a.potentialBonus, 5);
     assert.deepEqual(a.odds, rollOdds(a.baseBonus));
-    assert.deepEqual(a.bestOdds, rollOdds(a.baseBonus + 4));
+    assert.deepEqual(a.bestOdds, rollOdds(a.baseBonus + 5));
   }
   assert.deepEqual({ correct, incorrect, shark }, before);
   const hiddenState = { hypothesis: "scent", get profileId() { throw new Error("Hidden profile was read"); } };
   const publicScenario = { rules: shark.rules, get profiles() { throw new Error("Hidden profiles were read"); } };
-  assert.equal(checkForecast(publicScenario, hiddenState, "prepare").potentialBonus, 4);
+  assert.equal(checkForecast(publicScenario, hiddenState, "prepare").potentialBonus, 5);
 });
 
 test("unconfirmed hypotheses and other phases have no conditional bonus; support adds seven", () => {
@@ -97,7 +97,7 @@ test("returned forecasts are independent and malformed roll inputs are rejected"
   forecast.odds.success = 0;
   forecast.bestOdds.trouble = 99;
   assert.deepEqual(checkForecast(shark, { hypothesis: "scent" }, "prepare").odds, rollOdds(3));
-  assert.deepEqual(checkForecast(shark, { hypothesis: "scent" }, "prepare").bestOdds, rollOdds(7));
+  assert.deepEqual(checkForecast(shark, { hypothesis: "scent" }, "prepare").bestOdds, rollOdds(8));
   for (const bonus of [undefined, NaN, Infinity, "1"]) assert.throws(() => rollOdds(bonus), TypeError);
   for (const dice of [[0, 20], [1, 21], [1.5, 2], [1], null]) assert.throws(() => rerollOdds(dice, 1, 0), RangeError);
   assert.throws(() => rerollOdds([1, 6], 1, 2), RangeError);
@@ -119,7 +119,7 @@ test("a declared approach forecasts with that character's stat; unknown approach
   assert.throws(() => checkForecast(ordinary, { hypothesis: null }, "listen", { approach: "missing" }));
   // The hidden profile is never read for an approach forecast either.
   const hidden = { hypothesis: "scent", get profileId() { throw new Error("Hidden profile was read"); } };
-  assert.equal(checkForecast(shark, hidden, "prepare", { approach: "prepare_kit" }).potentialBonus, 4);
+  assert.equal(checkForecast(shark, hidden, "prepare", { approach: "prepare_kit" }).potentialBonus, 5);
 });
 
 // #3199（2026-11-12 オーナー「ダイスの成功率は補正込みで出して」）: 振る前に見せる見込みは、実際の判定に効く補正と同じもの。
@@ -162,4 +162,55 @@ test("the odds shown before a roll carry exactly the modifiers the real roll use
     }
   }
   assert(checks >= 200 && aided > 20 && pushed > 20 && guessed > 20, JSON.stringify({ checks, aided, pushed, guessed }));
+});
+
+test("visible declaration percentages count successful rolls on the chosen sheet, with and without a matching hypothesis", () => {
+  for (const hypothesis of ["scent", "vibration", null]) for (const support of [false, true]) {
+    const session = new TrpgSession(shark, { seed: 9, profileId: "scent" });
+    session.state.phase = "prepare";
+    session.state.hypothesis = hypothesis;
+    session.state.momentum = 1;
+    for (const field of session.flow.prepare) session.plan(field, shark.options[field][0].id);
+    const before = session.snapshot();
+    for (const approach of shark.checks.prepare.approaches) {
+      session.state = structuredClone(before);
+      const options = { support, approach: approach.id };
+      const forecast = checkForecast(shark, before, "prepare", { ...options, sheets: session.sheets });
+      const labels = declarationChanceLabels(forecast);
+      session.beginCheck("prepare", options);
+      const counts = { success: 0, mixed: 0, trouble: 0 };
+      for (let a = 1; a <= 20; a++) for (let b = 1; b <= 20; b++) {
+        session.state.pending.dice = [a, b];
+        counts[session.checkResult().grade]++;
+      }
+      const matched = hypothesis === "scent";
+      assert.equal(session.state.pending.hypothesisBonus, matched ? 5 : 0);
+      assert.equal(labels.insight === null, hypothesis === null);
+      const shown = matched ? forecast.bestOdds : forecast.odds;
+      for (const grade of Object.keys(counts)) assert.equal(shown[grade], Math.round(counts[grade] / 4));
+      const percent = shown.success + "%";
+      if (hypothesis === "scent") assert.equal(labels.insight, "的中時 約" + percent);
+      else assert.equal(labels.success, "成功 約" + percent);
+    }
+  }
+  assert.equal(declarationChanceLabels(checkForecast(shark, {}, "listen")).insight, null);
+});
+
+test("one extra insight point crosses the mixed and success boundaries only on a matching preparation", () => {
+  const session = new TrpgSession(shark, { seed: 9, profileId: "scent" });
+  session.state.phase = "prepare";
+  session.state.hypothesis = "scent";
+  session.state.momentum = 1;
+  for (const field of session.flow.prepare) session.plan(field, shark.options[field][0].id);
+  const options = { approach: "prepare_rig", sheets: session.sheets };
+  const forecast = checkForecast(shark, session.snapshot(), "prepare", options);
+  assert.deepEqual(forecast.odds, { success: 44, mixed: 43, trouble: 14 });
+  assert.deepEqual(rollOdds(forecast.baseBonus + 4), { success: 62, mixed: 33, trouble: 5 });
+  assert.deepEqual(forecast.bestOdds, { success: 66, mixed: 30, trouble: 4 });
+  session.beginCheck("prepare", options);
+  assert.equal(session.checkResult().bonus, 12);
+  for (const [dice, grade] of [[[2, 4], "trouble"], [[3, 4], "mixed"], [[8, 9], "mixed"], [[9, 9], "success"], [[1, 20], "success"]]) {
+    session.state.pending.dice = dice;
+    assert.equal(session.checkResult().grade, grade);
+  }
 });

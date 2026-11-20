@@ -1,6 +1,7 @@
 import { recordPlayMastery, syncPlayMastery } from "../core/play-mastery.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { isTrpgRegular } from "./regulars.js";
+import { buildTrpgPlayRecord } from "./play-record.js";
 // Campaign rules only. All mutations are explicit; this module has no DOM/storage.
 const clone = value => JSON.parse(JSON.stringify(value));
 const excluded = new Set(["sumi", "naru", "salaryman"]);
@@ -106,11 +107,11 @@ export function castTrpgTable(state, catalog, scenario, options = {}) {
   const ready = tableStatus(state, catalog, options);
   if (!ready.ok) return ready;
   const book = catalog.scenarios.find(b => b.id === scenario.id);
-  if (!book) return { ok: false, reason: "今の本棚にはない物語" };
+  if (!book) return { ok: false, reason: "今は選べない物語" };
   const progress = trpgBookProgress(state, book);
   if (!progress.ok) return progress;
   // onShelf: 入荷済みでまだ買っていない本も、顔ぶれが成り立つかだけを見る（tablePlayableTonight）
-  if (!options.onShelf && !state.trpg?.owned?.includes(scenario.id)) return { ok: false, reason: "本棚に加えると遊べる" };
+  if (!options.onShelf && !state.trpg?.owned?.includes(scenario.id)) return { ok: false, reason: "シナリオ本を買うと遊べる" };
   const available = new Set(catalog.participants.filter(p => participantStatus(state, p).ok).map(p => p.id));
   if (book?.zeroMemberCast) for (const id of book.zeroMemberCast) available.add(id);
   for (const id of catalog.regulars || []) if (isTrpgRegular(id)) available.add(id);
@@ -177,7 +178,7 @@ export function materializeTrpgCast(scenario, assignments) {
     });
   }
   table.presentation.prepareIdle = "準備を選ぼう。仲間がいれば、切り札も頼める";
-  table.presentation.endingIdle = "この晩の話は、ここまで。みんなとの記録を本棚に残そう";
+  table.presentation.endingIdle = "この晩の話は、ここまで。本棚で遊んだ記録を見返せます";
   table.presentation.exitText = "中断した物語は、また遊べます。今夜の行動は使いません。";
   return table;
 }
@@ -243,10 +244,16 @@ export function completeTrpgTable(state, catalog, scenario, ticket, result, opti
     // The player's own character, as built for this table: name, origin and stats (older saves may also carry a look).
     ...(result.pc && typeof result.pc.name === "string" ? { pc: clone(result.pc) } : {}),
   };
-  state.trpg.cleared[scenario.id] = { ...(betterPlay(memory, kept) ? memory : kept), endingsSeen: seen, plays };
+  state.trpg.cleared[scenario.id] = { ...(betterPlay(memory, kept) ? memory : kept), endingsSeen: seen, plays,
+    ...(kept?.records !== undefined ? { records: kept.records } : {}) };
   if (state.trpg.bookmark?.id === scenario.id) delete state.trpg.bookmark;
   state.slot++;
   recordPlayMastery(state, "trpg", result, `${state.cycle || 1}:${scenario.id}:${plays}`);
+  // 本編の完了はここで確定。再生データは選ばれた時だけ作り、進行セーブを妨げない。
+  if (options.recordTable && options.onReplayOffer) {
+    const ended = { chapter: state.chapter, day: state.day, flags: state.flags };
+    options.onReplayOffer(() => buildTrpgPlayRecord(options.recordTable, result, memory, ended, plays, options.characters));
+  }
   return true;
 }
 

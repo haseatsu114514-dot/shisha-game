@@ -31,7 +31,15 @@ await suite("packing-temperature", async check => {
     await page.locator('[data-test="pack-temperature-preview"]').waitFor();
     assert.equal(await page.locator('[data-test="pack-temperature-preview"]').isVisible(), true);
     assert.equal(await page.locator('[data-test="mix-temperature"]').getAttribute("data-selected"), "true");
-    assert.equal(await page.locator('[data-test="thermo-pointer"]').isVisible(), false);
+    const parked = page.locator('[data-test="thermo-pointer"]');
+    assert(await parked.isVisible(), "preheat pointer stays at the bottom");
+    assert.equal(await parked.evaluate(p => getComputedStyle(p).animationName), "none", "only a live pointer pulses");
+    const center = await parked.evaluate(p => {
+      const a = p.getBoundingClientRect(), tube = p.closest(".thermo").querySelector(".thermo-tube").getBoundingClientRect();
+      return Math.abs(a.top + a.height / 2 - tube.bottom);
+    });
+    assert(center < 3, "preheat pointer must line up with the bottom of the glass");
+    assert.equal(await page.locator(".thermo").getAttribute("aria-valuenow"), null, "no measured heat before steaming");
     const expected = await page.evaluate(() => QA.conditions.temperatureBands(QA.cs));
     const shown = await page.locator('[data-test="mix-temperature"]').evaluate(root => ({
       t: Number(root.dataset.tolerance),
@@ -64,4 +72,34 @@ await suite("packing-temperature", async check => {
     assert.equal(after.pack, "firm");
     assert.equal(after.snap, before, "confirming pack must not rewrite mix scoring inputs");
   }, { viewport: { width: 1280, height: 720 } });
+  await check("first-lesson-and-tournament-preheat", async page => {
+    await prepare(page);
+    for (const mode of ["tutorial", "tournament"]) {
+      await page.evaluate(async mode => {
+        const cs = QA.cs = QA.session.newSession(mode);
+        cs.mix = { double_apple: 9, mint: 3 };
+        await QA.session.openBench(cs).ready;
+        await QA.session.waitBenchReady(cs, "mix");
+        QA.session.stepPanel("mix", "配合");
+      }, mode);
+      const worker = page.locator(".bench-worker");
+      assert.equal(await worker.getAttribute("data-face"), mode === "tutorial" ? "normal" : "serious");
+      if (mode === "tutorial") assert(await worker.locator(".worker-actor").isVisible());
+      await page.evaluate(() => { QA.run = QA.steps.stepPack(QA.cs); });
+      await page.locator('[data-test="pack-confirm"]').waitFor();
+      await page.locator('[data-test="pack-confirm"]').click(); await page.evaluate(() => QA.run);
+      const gauge = page.locator(".thermo");
+      for (const id of ["holes", "place", "heat"]) {
+        await page.evaluate(id => QA.session.stepPanel(id, id), id);
+        assert.equal(await gauge.count(), 1);
+        assert(await gauge.isVisible());
+        assert.equal(await gauge.getAttribute("aria-valuenow"), null);
+        assert.match(await gauge.getAttribute("aria-label"), /加熱前/);
+        assert.equal(await gauge.locator(".thermo-mark").evaluate(n => n.style.bottom), "0%");
+        assert(!(await page.locator(".bench-right").evaluate(n => getComputedStyle(n, "::before").content)).includes("お休み"));
+      }
+      await page.evaluate(() => QA.session.stepPanel("steam", "蒸らし"));
+      assert.equal(await gauge.count(), 0, "preparation does not duplicate the next live meter");
+    }
+  });
 });

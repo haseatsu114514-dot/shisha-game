@@ -34,9 +34,16 @@ assert.equal(carry.flagVerdict("seenDemo"), "carry");
 const root = new URL("../../", import.meta.url);
 const copy = (v) => JSON.parse(JSON.stringify(v));
 
-// ---------------------------------------------------------------- A. SCHEMA 28 と後方互換
+// ---------------------------------------------------------------- A. SCHEMA 29 と後方互換
 {
-  assert.equal(SCHEMA, 28);
+  assert.equal(SCHEMA, 29);
+  const newlyMigratedSource = newState();
+  newlyMigratedSource.schema = 28;
+  newlyMigratedSource.trpg.cleared = { "ordinary-cup": { ending: "test", plays: 1, chapter: 2, day: 4, gm: "sai", participants: ["hajime"] } };
+  localStorage.setItem(SAVE_KEY, JSON.stringify(newlyMigratedSource));
+  const migrated = load();
+  assert.equal(migrated.schema, 29);
+  assert.deepEqual(migrated.trpg.cleared, newlyMigratedSource.trpg.cleared, "28からリプレイを作り足さない");
   const fresh = newState();
   assert.equal(fresh.cycle, 1);
   assert.equal(typeof fresh.cycleId, "string");
@@ -262,9 +269,10 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
 
   assert.equal(pkg.money, MAX_MONEY);
   assert.equal(pkg.stats.technique, 55);
-  assert.ok(!pkg.owned.includes("suyaki_minto"));
+  // 好感度の締めくくりでもらった専用ハガルは引き継ぐ（台帳 NGC01）。装備中の枠もそのまま
+  assert.ok(pkg.owned.includes("suyaki_minto"));
   assert.ok(pkg.owned.includes("hagal_80beat"));
-  assert.ok(!("bowl" in pkg.equip));
+  assert.equal(pkg.equip.bowl, "suyaki_minto");
   assert.equal(pkg.equip.hms, "lotos_hagal");
   assert.deepEqual(pkg.keepsakes, []);
   assert.ok(!("club" in pkg.trpg));

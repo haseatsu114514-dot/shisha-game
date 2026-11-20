@@ -206,6 +206,60 @@ await suite("conversation-ui", async check => {
     await page.locator('[data-test="choice-0"]').waitFor({ state: "hidden" });
     assert.deepEqual(await storageSnapshot(page), saved);
   });
+  for (const touch of [false, true]) {
+    await check(`log-pauses-stage-${touch ? "touch" : "pc"}`, async page => {
+      const play = (lines) => page.evaluate(async lines => {
+        const { config } = await import("./js/core/state.js");
+        const { play } = await import("./js/vn/engine.js");
+        config.textSpeed = 4;
+        config.autoSpeed = 3;
+        const reading = new AbortController();
+        window.auditLogReading = reading;
+        void play({ dialogue_id: "__log_ownership", lines: lines.map(text => ({ text })) }, { signal: reading.signal });
+      }, lines);
+      await play(["最初の文です。", "次の文です。", "最後の文です。"]);
+      const firstLine = page.locator(".vn-text").filter({ hasText: "最初の文です。" });
+      await firstLine.waitFor();
+      const log = page.locator(".vn-log.show");
+      const press = selector => page.locator(selector)[touch ? "tap" : "click"]();
+      const point = await page.locator('[data-test="vn-log"]').evaluate(el => {
+        const r = el.getBoundingClientRect();
+        return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+      });
+      // Open AUTO and LOG in succession. LOG must suspend even an already-running AUTO.
+      await press('[data-test="vn-auto"]');
+      if (touch) await page.touchscreen.tap(point.x, point.y);
+      else await page.mouse.click(point.x, point.y);
+      await log.waitFor();
+      // The LOG is inset. Use hit testing to click the actual stage behind, not the log element.
+      const margin = await log.evaluate(el => {
+        const r = el.getBoundingClientRect(), stage = document.querySelector("#vn").getBoundingClientRect();
+        const x = (stage.left + r.left) / 2, y = (r.top + r.bottom) / 2;
+        const hit = document.elementFromPoint(x, y);
+        return { x, y, stage: !!hit?.closest("#vn") && !hit.closest(".vn-log, .vn-ctl, .vn-choices") };
+      });
+      assert(margin.stage, "expected a hit on the exposed stage outside the LOG");
+      await page.waitForTimeout(350); // Let the normal scene-opening input lock expire.
+      if (touch) await page.touchscreen.tap(margin.x, margin.y);
+      else await page.mouse.click(margin.x, margin.y);
+      assert.equal(await firstLine.count(), 1, "stage tap must not advance the conversation under LOG");
+      assert.equal(await page.locator('[data-test="vn-auto"]').getAttribute("aria-pressed"), "true", "outside tap must not reset AUTO");
+      await page.waitForTimeout(750);
+      assert.equal(await firstLine.count(), 1, "AUTO must stay paused until LOG closes");
+      await page.keyboard.press("Escape");
+      await log.waitFor({ state: "detached" });
+      assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), "vn-log");
+      await page.locator(".vn-text").filter({ hasText: "次の文です。" }).waitFor();
+      await press('[data-test="vn-auto"]');
+      await press('[data-test="vn-log"]');
+      await log.waitFor();
+      await page.evaluate(() => window.auditLogReading.abort());
+      assert.equal(await log.count(), 0, "abort must close LOG instead of only hiding it with the scene");
+      await play(["別の会話です。"]);
+      await page.locator(".vn-text").filter({ hasText: "別の会話です。" }).waitFor();
+      assert.equal(await log.count(), 0, "a new scene must not inherit the old LOG");
+    }, touch ? { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true } : {});
+  }
   await check("keyboard-controls", async page => {
     await page.locator(".vn-next.show").waitFor();
     const saved = await storageSnapshot(page);

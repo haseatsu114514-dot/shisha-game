@@ -1,0 +1,66 @@
+【Codex への依頼】大会の演出（TSH07）の絵のパーツ4枚を作って、リポジトリに保存してください
+
+リポジトリ: haseatsu114514-dot/shisha-game（作業の決まりは AGENTS.md）。
+最新の origin/main から新しいブランチを作る。作業前に `git lfs install --skip-repo`。
+
+■ 背景（読むだけでよい）
+大会の演出（投票・結果発表・合間のアイキャッチ）は実装済みで、光・冠・票の粒・幕はいまコード（CSS／SVG）で描いている。
+これを絵に差し替えて、もっと豪華にするための部品。演出の仕組みは remake/js/craft/tournament-show.js と remake/css/tournament-show.css、
+記録は docs/owner_requests.md の TSH07 と asset_sources/ui/tournament-show-20261120/README.md。
+
+■ 画風の参考（開いて見る。形や中身は真似しない、色と質感だけ合わせる）
+- remake/img/ui/craft-night/backdrop.webp … 夜紫の地の色と光の当たり方
+- remake/img/ui/craft-night/cutin-band.webp … 金のサテンの質感
+- remake/img/ui/kuji/burst.webp … 金の後光
+- remake/img/ui/continue/backdrop_stage.webp … 舞台の床とスポットライト
+
+■ 共通のスタイル指針（docs/prompts/asset_gen_prompts.md の「共通スタイル指針」。4枚すべての冒頭に付ける）
+スタイル: 薄暗いシーシャラウンジの空気。`assets/backgrounds/bg_eden_shop.png` 程度の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調は避ける。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。手・腕は細身で中性的、明るいピーチ系の同一肌色に統一する。
+配色: 黒〜濃紫の闇に、琥珀／金（#f4d27a系）の暖色ネオンが差す。煙のかすみ。
+視点: 作りパートは一人称（プレイヤーの手元を上から見下ろす角度）。
+出力: PNG・透過指定のものは背景完全透過。@2x（実寸の2倍）で。指定なき限り 1280×720 基準。
+NG: 文字/ロゴ/UI/数字の焼き込み（数値はゲーム側UIで出すので画像に入れない）、watermark。
+
+■ 大会の演出の上乗せ指針（英文。4枚すべての冒頭に、上の共通指針の後に付ける）
+Style: gala-night stage graphics for the tournament broadcast of a stylish Japanese shisha-bar visual novel, drawn in a clean pixel-painterly anime-game style and used as game UI parts. Deep night purple (#150d22 ground, #221534 panels, #2e1d45 cards) remains the base colour; rich satin gold (#fff6dc highlights, #f6d68e and #e3bd6e body, #b98c3a shadow) is the lead accent and is used generously for trims, rims and ornaments; soft lavender light (#c9a7e6) and a little warm white sparkle are secondary. Luxurious, festive and theatrical like a televised award ceremony: art-deco fan and sunburst motifs, elegant smoke-curl flourishes, tiny star sparkles, glossy highlights and soft bloom. Crisp readable silhouettes, clean edges, front-facing, no perspective distortion, no photo realism. No people, no characters, no hands. No shisha pipes, hookahs, bowls, hoses or charcoal. Never bake in any text, letters, kanji, logo, digits, gauges, icons, hearts or watermark.
+
+■ 焼き込まないもの（コードが描く）
+文字・数字・順位・点数・ロゴ・ゲージ・紙吹雪・票の動き・光の筋の動き・煙の動き。人物・シーシャの台や炭も描かない。
+
+--- 1/4: backdrop.png ---
+保存先: asset_sources/ui/tournament-show-20261120/raw/backdrop.png
+寸法: 1536×1024・不透明（透過なし）
+使う場所: 中間投票の後ろの舞台、結果の大見出し、合間のアイキャッチの地。中央に順位の板と金の大きな文字がコードで重なる。
+Create ONE wide STAGE BACKDROP for an award-ceremony screen, landscape 1536x1024, fully opaque, seen straight on. Heavy night-purple velvet drapes hang at the far LEFT and far RIGHT edges only (each about 12% of the width) with thin gold fringe; a faint gold art-deco sunburst arch is painted on the back wall high in the centre; three or four soft spotlight beams fall from the top edge and fade out before the middle; a few blurred warm bokeh dots and tiny gold dust motes float near the edges; the lower fifth is a glossy dark stage floor with a soft reflection. The central 70% of the image stays dark, calm and almost empty so that a ranking board and large gold lettering can be drawn on top by code. No podium, no trophy, no microphone, no screens, no audience.
+
+--- 2/4: vote-token.png ---
+保存先: asset_sources/ui/tournament-show-20261120/raw/vote-token.png
+寸法: 1024×1024・背景は完全透過
+使う場所: 審査員の札から出場者の行へ飛ぶ票の粒。ゲームでは幅26pxほどに縮める。審査員ごとの色は外側の光としてコードが付けるので、コインは金一色でよい。
+Create ONE round VOTE TOKEN (a commemorative coin) on a fully transparent background, 1024x1024, centred, perfectly front-facing, diameter about 82% of the image. Satin gold coin with a raised polished rim, a ring of tiny engraved dots just inside the rim, and in the centre a simple engraved emblem: a small three-point crown with one elegant smoke curl rising from it. A soft glossy highlight sweeps across the upper-left, deeper amber shadow on the lower-right. Nothing else in the image; everything outside the coin is fully transparent. The token is drawn about 26px wide in the game, so keep the emblem bold and simple.
+
+--- 3/4: crest-gold.png ---
+保存先: asset_sources/ui/tournament-show-20261120/raw/crest-gold.png
+寸法: 1024×1024・背景は完全透過
+使う場所: 優勝の大見出し「CHAMPION」の上の冠と月桂冠。輪の中にコードが「1 ST」を大きく書くので、中央は必ず空ける。
+Create ONE CHAMPION CREST on a fully transparent background, 1024x1024, centred, front-facing, filling about 88% of the image. A laurel wreath of polished gold leaves forms an open ring (two branches meeting at the bottom with a small ribbon-less tie, open at the top); above the opening sits a five-point gold crown with small round pearls on the points; two thin smoke-curl flourishes rise symmetrically from behind the crown. The whole centre of the wreath (about 45% of the image width) is completely empty and fully transparent, because a large rank number is drawn there by code. Soft glossy highlights, tiny star sparkles on the leaf tips. Everything outside the crest is fully transparent.
+
+--- 4/4: curtain.png ---
+保存先: asset_sources/ui/tournament-show-20261120/raw/curtain.png
+寸法: 1024×1536（縦長）・右側は完全透過
+使う場所: 合間のアイキャッチで左右から閉じて開く幕の左半分。右半分はコードで鏡写しにする。
+Create ONE STAGE CURTAIN PANEL (the left half of a pair) on a fully transparent background, portrait 1024x1536. A heavy night-purple velvet curtain (#2e1d45 folds with #150d22 shadows and soft lavender #c9a7e6 highlights on the fold ridges) hangs from the top edge to the bottom edge and covers the left 80% of the image; its right edge is a soft vertical wave of folds with a thin gold braid trim, and a gold fringe runs along the bottom hem. The right 20% of the image is fully transparent. The panel will be mirrored by code for the right half and slid sideways to open, so keep the left edge and the top edge straight and fully covered.
+
+■ 作った後に確かめること（ダメなら作り直す）
+- 文字・数字・ロゴ・透かしが一つも入っていない
+- 透過の指定の3枚は、絵の外が本当に透明（白や市松模様の背景が焼き込まれていない）
+- crest-gold.png の輪の中央が空いている（数字を書く場所）
+- backdrop.png の中央7割が暗く静か（板と文字が読める）
+- curtain.png の左端と上端がまっすぐ埋まっていて、右側2割が透明
+- 4枚とも夜紫が地で、金が主役（ネオンの青・ピンクの強い発色になっていない）
+
+■ 保存と提出
+1. 4枚を上の保存先（raw/）に PNG で置く。asset_sources の画像は Git LFS なので、`git add` 後に `git lfs ls-files` で4枚が入ったことを確かめる。
+2. asset_sources/ui/tournament-show-20261120/README.md の表に、各原画の寸法・バイト数・SHA-256 を足す（asset_sources/ui/craft-night-20261102/README.md と同じ形）。
+3. `./tools/check_git_safety.sh` を通してコミットし、ブランチを push して Draft PR を開く。PR には4枚のプレビュー（または保存先）と、作り直した枚数を書く。
+4. ゲームへの組み込み（WebP への変換、`remake/tools/build_ui_skin.py` への追加、CSS の差し替え）はしない。絵を見て採用を決めてから、別の作業で行う。

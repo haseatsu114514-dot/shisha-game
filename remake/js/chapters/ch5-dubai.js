@@ -17,7 +17,8 @@ import { planeRide } from "../core/scene-motions.js";
 import { showHud } from "../daily/hud.js";
 import { CAMEL_DAILY_SPOT_ID, CAMEL_SCENES, CAMEL_STAGES, CH4_CAMEL_SCENE_FILES, CH5_CAMEL_MEET, camelDailySpot, camelRaceRecord, camelSceneBg,
   chapterFiveCamelMeetDue, advanceChapterFiveCamelMeet } from "./ch4-camel-progress.js";
-import { DESERT_CAFE_PRICE, DESERT_GUIDE, DESERT_SPOT_IDS, completeDesertReunion, desertChapterFiveSpots, desertProgress, noorConfessionWaiting } from "./ch4-desert-progress.js";
+import { DESERT_CAFE_PRICE, DESERT_GUIDE, DESERT_SPOT_IDS, NOOR_LOVER_SCENES, completeDesertReunion, desertChapterFiveSpots, desertProgress,
+  noorConfessionWaiting, noorLoverReadFlag, noorLoverSceneDue } from "./ch4-desert-progress.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -128,7 +129,7 @@ export const chapterFiveDubaiLeisureById = id => chapterFiveDubaiLeisureSpots().
 const REST_SCENES = ["ch5_dubai_guest_rest", "ch5_dubai_guest_rest_b", "ch5_dubai_guest_rest_c"];
 const SCENES = DUBAI_SPOTS.flatMap(entry => entry.talks || [])
   .concat(["ch5_dubai_letter", ...DUBAI_LETTER_AGAIN, "ch5_dubai_go", "ch5_dubai_back", "ch5_dubai_arrival", ...REST_SCENES,
-    CAMEL_AGAIN.scene, DUNES_AGAIN.scene, CH5_CAMEL_MEET.scene, NOOR_CAFE_AGAIN, ...Object.values(CH5_NOOR_SCENES)]);
+    CAMEL_AGAIN.scene, DUNES_AGAIN.scene, CH5_CAMEL_MEET.scene, NOOR_CAFE_AGAIN, ...Object.values(CH5_NOOR_SCENES), ...Object.values(NOOR_LOVER_SCENES)]);
 const CH4_SCENES = ["ch4_creek_walk_day", "ch4_creek_walk_night"];
 // クリーク沿いは第4章と同じ場面を、同じ順番の続きから読む（SPV03）
 
@@ -260,6 +261,8 @@ async function readDubaiChain(spot, due, staminaGuard, owner) {
   if (!await playChainStage(due, id => read(id, spot.preview, owner)) || state !== owner) return unused;
   if (fee) addMoney(-fee);
   addStamina(spot.stamina);
+  // 人に会いに行く行き先（中庭の太陽）の続きは、いつもの小会話と同じだけ仲が深まる（#4010）。路地裏のカフェは店なので付けない。
+  if (BOND_PLACE[spot.id]) { gainAffinity(BOND_PLACE[spot.id].who, visitAffinity("talk")); markMet(BOND_PLACE[spot.id].who); }
   earnStat(spot.stat, 4);
   return { used: true, exerted: true };
 }
@@ -273,9 +276,9 @@ function bondStoryDue(spot, bond) {
   if (bond.afterFirstTalk && !(state.flags[TALKS_FLAG]?.[spot.id] > 0)) return null;
   return nextDubaiBondStory(state, bond.who, bond.where, affinityLevel(bond.who));
 }
-/** 屋敷の行き先に、新しい段階の会話か締めくくりがあるか（地図の「！」）。 */
+/** 屋敷の行き先に、新しい段階の会話・締めくくり・通いの続きがあるか（地図の「！」）。 */
 export const dubaiBondHasNew = spot => !!BOND_PLACE[spot.id]
-  && (finaleAtVisit(BOND_PLACE[spot.id].who) || !!bondStoryDue(spot, BOND_PLACE[spot.id]));
+  && (finaleAtVisit(BOND_PLACE[spot.id].who) || !!bondStoryDue(spot, BOND_PLACE[spot.id]) || !!chainStageAt(state, spot.id));
 
 /** 段階の会話を一本読む。読み終えた時だけ既読・体力・好感度（段階の値）・能力を確定する。 */
 async function readDubaiBondStory(spot, who, scene, staminaGuard, owner) {
@@ -337,10 +340,17 @@ async function goToDubai(owner) {
   if (!state.flags[GUEST_FLAG]) {
     if (await read("ch5_dubai_arrival", RESIDENCE_BG, owner)) { state.flags[GUEST_FLAG] = true; markMet("sheikh"); save(); }
   }
+  // 恋人のヌールが空港で迎える（#4010。最初の一度と、見送りで札を預けた後の二度目）。読み終えた時だけ印を付ける
+  const kind = state !== owner ? null : noorLoverSceneDue(state, "welcome") ? "welcome" : noorLoverSceneDue(state, "again") ? "again" : null;
+  if (kind && await read(NOOR_LOVER_SCENES[kind], "bg_dubai_airport_day", owner)) { state.flags[noorLoverReadFlag(kind)] = true; save(); }
   return { used: true, exerted: false };
 }
 
 async function goHome(owner) {
+  // 恋人のヌールが空港で見送る（#4010。出迎えの後に一度だけ）。読み終えた時だけ印を付ける
+  const farewell = noorLoverSceneDue(state, "farewell");
+  if (farewell && await read(farewell, "bg_dubai_airport_day", owner)) { state.flags[noorLoverReadFlag("farewell")] = true; save(); }
+  if (state !== owner) return unused;
   if (!await read("ch5_dubai_back", "bg_dubai_airport_day", owner)) return unused;
   // 帰りの便は往復の切符に入っている（ここでは払わない）。次の切符入りの手紙は、この日から数えて届く。
   recordDubaiReturn(state);
@@ -474,6 +484,15 @@ async function visitNoorCafe(spot, owner) {
 
 /** 夜: ドバイにいれば屋敷の客間で寝る（帰らない）。 */
 export async function dubaiNight() {
+  // 恋人のヌールが屋敷の門まで送ってくれる夜（#4010。出迎えの後に一度だけ）
+  const owner = state, scene = noorLoverSceneDue(state, "night");
+  if (scene) {
+    try { await loadDubaiScenes(); } catch { /* 読めなければ今夜は見送る */ }
+    if (state === owner && DB.dialogues[scene]?.lines?.length && await read(scene, "bg_dubai_street_night", owner)) {
+      state.flags[noorLoverReadFlag("night")] = true;
+      save();
+    }
+  }
   await showBg(RESIDENCE_BG, "night");
   return true;
 }

@@ -4,11 +4,11 @@ import { imageReady } from "../core/ui.js";
 import { coalCount, coalTypes } from "./coals.js";
 import { coalSpriteFiles } from "./heat_view.js";
 import { bowlArtFiles } from "./art.js";
-import { WORKER_SCENES } from "./worker-scenes.js";
+import { WORKER_SCENES, workerSceneKey } from "./worker-scenes.js";
 import { benchBgRef } from "./worker.js";
 import { audienceAssetUrls } from "./audience.js";
 
-const BASE = ["bench_base.png", "ui_craft_panel.png", "ui_craft_button.png",
+const BASE = ["ui_temperature_frame.png", "bench_base.png", "ui_craft_panel.png", "ui_craft_button.png",
   "hookah_base.png", "hookah_stem.png", "hookah_tray.png", "bowl_empty_silicone.png"];
 const STEPS = {
   setup: ["bowl_empty_phunnel.png", "bowl_empty_clay.png"],
@@ -23,7 +23,7 @@ const STEPS = {
 export function craftAssetUrls(mode = "tournament", { step = "setup", cs = null, count = null } = {}) {
   const kind = step === "care" ? "pull" : step;
   const files = [...BASE, ...(STEPS[kind] || [])];
-  const scene = WORKER_SCENES[kind];
+  const scene = WORKER_SCENES[workerSceneKey(kind, null, mode)];
   if (scene) files.push(scene.file);
   if (["mix", "pack"].includes(kind)) files.push(...bowlArtFiles(cs));
   if (kind === "heat") {
@@ -35,7 +35,7 @@ export function craftAssetUrls(mode = "tournament", { step = "setup", cs = null,
   return [...new Set([
     ...files.map(makingUrl),
     bgUrl(cs ? benchBgRef(cs) : mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside"), // 家の練習は自宅（#638）
-    portraitInfo("hajime", "serious", "classic")?.src, // 作業窓の固定配置と同じ版
+    portraitInfo("hajime", mode === "tutorial" && ["setup", "mix"].includes(kind) ? "normal" : "serious", "classic")?.src, // 作業窓の固定配置と同じ版
     ...people.map(faceIconUrl),
     ...audienceAssetUrls(cs || { mode, audienceIds: people }),
   ].filter(Boolean))];

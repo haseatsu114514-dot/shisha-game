@@ -1508,13 +1508,13 @@
           "speaker": "tsumugi",
           "role": "GM／場面",
           "face": "normal",
-          "text": "渡すとき、{pc}は少し言葉に詰まった。でも、気持ちは伝わったようだ"
+          "text": "封筒の端が引っかかった。{pc}は、折れないようにそっと直した"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "（うまく言えなかったけど……届いたなら、いいか）"
+          "text": "（急がなくていい。ここまで運んできたんだ）"
         }
       ]
     },
@@ -2167,7 +2167,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "顔を見て、手渡ししよう。直接届けたい"
+          "text": "手渡しにしよう。受け取った顔を、差出人にも伝えたい"
         }
       ]
     },
@@ -2181,7 +2181,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "起こさないように、窓辺にそっと置いていこう"
+          "text": "窓辺に置こう。起きて最初に見つけるのが、この手紙になるように"
         }
       ]
     },
@@ -2195,7 +2195,13 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ミトンに歌ってもらって、歌と一緒に渡そう"
+          "text": "ミトン、いつもの歌を頼める？ 手紙を渡すときに"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミトンは耳を立て、小さな声で歌いはじめた"
         }
       ]
     },
@@ -2309,7 +2315,7 @@
           "speaker": "tsumugi",
           "role": "GM／場面",
           "face": "normal",
-          "text": "女の子は何度も『絶対に届けてね』と言ったらしい"
+          "text": "『またねって、言えなかったから』。女の子は、そう言って手を離した"
         }
       ]
     },
@@ -2483,25 +2489,25 @@
           "speaker": "tsumugi",
           "role": "GM／場面",
           "face": "normal",
-          "text": "丘の上の灯台。扉が開き、白いひげのおじいさんが目を丸くした"
+          "text": "丘の灯台。扉を開けた灯台守の袖に、灯りの油がついている"
         },
         {
           "speaker": "tsumugi",
           "role": "灯台守のおじいさん／物語",
           "face": "surprise",
-          "text": "この年寄りに、手紙かい？ ……五十年で、はじめてだ"
+          "text": "手紙？ ……わしは夜に灯りをつけているだけだよ"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／場面",
           "face": "normal",
-          "text": "封を開くと、船頭や子どもたちの字。『毎晩の灯りを、ありがとう』"
+          "text": "封を開くと、大小の字で『あの灯りが見えると、帰れます』"
         },
         {
           "speaker": "tsumugi",
           "role": "灯台守のおじいさん／物語",
           "face": "smile",
-          "text": "そうか……。ちゃんと、見ていてくれたんだなあ"
+          "text": "あの舟が橋をくぐるまで、今夜もつけておこうかね"
         },
         {
           "speaker": "tsumugi",
@@ -2513,13 +2519,13 @@
           "speaker": "tsumugi",
           "role": "GM／場面",
           "face": "normal",
-          "text": "その夜、丘の灯りは、いつもより少しだけ明るく見えた"
+          "text": "灯台守は手紙を胸のポケットに。油のついた袖で目元を拭った"
         },
         {
-          "speaker": "hajime",
-          "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "（あたりまえの灯りにも、届く言葉があるんだな）"
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "翌晩。パン屋の主人が袋を差しだすと、灯台守はもう一つ頼んだ"
         }
       ]
     },
@@ -2533,25 +2539,31 @@
           "speaker": "tsumugi",
           "role": "GM／場面",
           "face": "normal",
-          "text": "遠い町の、窓の大きな家。夜明け前の窓辺に、手紙をそっと置いた"
+          "text": "遠い町の大きな窓に、夜明けの色がさした"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／場面",
           "face": "normal",
-          "text": "朝。目を覚ました子が、窓辺の封筒に気づく"
+          "text": "子どもが封を切ると、青い押し花が膝に落ちた"
         },
         {
           "speaker": "tsumugi",
           "role": "遠い町の子／物語",
           "face": "surprise",
-          "text": "……あの子からだ！"
+          "text": "……まだ、あの坂に咲いてるんだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "手紙のいちばん下に、少し離れて『またね』とある"
         },
         {
           "speaker": "tsumugi",
           "role": "遠い町の子／物語",
           "face": "smile",
-          "text": "こっちの窓からも、同じ月が見えてるよって、返事を書かなきゃ"
+          "text": "返事、書こう。『こっちでも、九時に月を見てるよ』"
         },
         {
           "speaker": "tsumugi",
@@ -2560,23 +2572,10 @@
           "text": "返事も、ぼくが届けます"
         },
         {
-          "speaker": "hiyori",
-          "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "遠くても、同じ月……。いいお話ね",
-          "variants": {
-            "regulara": {
-              "text": "遠くても、同じ月……。いいお話ね",
-              "face": "normal",
-              "role": "PL／卓の会話"
-            }
-          }
-        },
-        {
-          "speaker": "hajime",
-          "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "（遠くの窓まで、ちゃんと届いたな）"
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "窓辺で、子どもは花の茎を指で押さえたまま、返事を書いた"
         }
       ]
     },
@@ -2596,37 +2595,37 @@
           "speaker": "tsumugi",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ミトンが、いつもの鼻歌を歌う。絵描きが、ゆっくりと顔を上げた"
+          "text": "絵筆の横に何枚も絵がある。どの絵でも、ミトンは窓の外を見ている"
         },
         {
           "speaker": "tsumugi",
           "role": "屋根裏の絵描き／物語",
           "face": "surprise",
-          "text": "……その耳。いちばん最初に描いた、あの子だ"
+          "text": "……その耳。今でも、風が吹くと伏せるのかい？"
         },
         {
           "speaker": "tsumugi",
           "role": "郵便猫ミトン／物語",
           "face": "smile",
-          "text": "描いてくれて、ありがとう。それだけ、言いたかったんです"
+          "text": "はい。……描いてもらったとき、お礼がまだ言えなかったんです"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／場面",
           "face": "normal",
-          "text": "にじんだ宛名の下に、肉球の判子がひとつ押してあった"
-        },
-        {
-          "speaker": "hajime",
-          "role": "PL／卓の会話",
-          "face": "normal",
-          "text": "（描いた人に、ありがとう……か）"
+          "text": "宛名の下に肉球の判子。絵描きは、汚さないように端を持った"
         },
         {
           "speaker": "tsumugi",
-          "role": "GM／卓の会話",
-          "face": "bow",
-          "text": "物語の中のお話ですよ"
+          "role": "郵便猫ミトン／物語",
+          "face": "smile",
+          "text": "……今度は、ぼくが窓の中にいてもいいですか？"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "絵描きは新しい紙を出した。ミトンは月の当たるところに座った"
         }
       ]
     },
@@ -2640,7 +2639,7 @@
           "speaker": "tsumugi",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
-          "text": "……ちがったみたい、です。でも、ありがとうございます"
+          "text": "……ここじゃなかったみたいです。封は、まだ閉じておきます"
         },
         {
           "speaker": "tsumugi",
@@ -2652,25 +2651,25 @@
           "speaker": "tsumugi",
           "role": "GM／場面",
           "face": "normal",
-          "text": "パン屋も船頭も、窓から顔を出して『うちかもしれない』と言う"
+          "text": "窓からパン屋の主人が身を乗り出し、夜道にランタンを差し出した"
         },
         {
           "speaker": "tsumugi",
           "role": "郵便猫ミトン／物語",
           "face": "smile",
-          "text": "この町、月のよく見える家ばかりみたいです"
+          "text": "次の角まで、一緒に来てくれますか？"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "宛先を探して歩く夜も、悪くないな"
+          "text": "うん。今度は俺が、窓の灯りを数えるよ"
         },
         {
           "speaker": "tsumugi",
-          "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "続きは、また今度。次の配達も楽しみですね"
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミトンは封筒を鞄に戻した。坂の先で、まだ窓が一つ光っていた"
         }
       ]
     },
@@ -2781,13 +2780,13 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "サイさんのGM、静かなのに、ちゃんとどきどきした"
+          "text": "つむぎが本を閉じても、ミトンの足音が聞こえそうです"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "bow",
-          "text": "ありがとうございます。次の物語もご用意しておきます"
+          "text": "……足音だけ、もう少し置いておきましょうか"
         }
       ]
     },

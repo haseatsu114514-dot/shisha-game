@@ -261,7 +261,10 @@ async function checkTrains() {
       assert.equal(result.mid, 1); assert.equal(result.opacity, 1); assert.equal(result.covering, true);
       assert.equal(result.unchanged, true); assert.equal(result.overlays, 0); assert.equal(result.coveringAfter, false);
       assert.equal(result.points, 5, `${name}: the car covers all corners before the scene changes`); assert.equal(result.flag, "1");
-      assert(result.elapsed < 2800, `${name}: ${result.elapsed}ms took too long`);
+      // 乗っている時間は「最短 C_RIDE（train.js の 900ms）と場面の差し替え（mid）の長い方」。わざと遅らせた
+      // 到着（delay）は、最短を超えた分だけ全体が延びるのが仕様なので、その分だけ上限に足す（演出自体の余裕は同じ）。
+      const budget = 2800 + Math.max(0, (options.delay || 0) - 900);
+      assert(result.elapsed < budget, `${name}: ${result.elapsed}ms took too long (budget ${budget}ms)`);
       await page.keyboard.press("Enter"); assert.equal(await page.evaluate(() => audit.keys), 1);
       if (name === "normal") {
         const policy = await page.evaluate(async () => {
@@ -405,6 +408,84 @@ async function checkFlights() {
   }
 }
 
+// #3813 項目5: 朝のDAYカードの題字（明朝・Suien Name）は、書体が届いてから描く。届く前に描くと数字が代わりのゴシックで出て、
+// 届いた途端に明朝へ差し替わり「DAY４からDAY4になった」と見えた。上限までに届かなければ初めからゴシックで描き、後から差し替えない。
+// （夜明けの幕の同じ待ちは dawn_numbers.mjs が見る）
+async function checkDateType() {
+  for (const late of [true, false]) {
+    const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+    const page = await context.newPage();
+    page.on("pageerror", (e) => errors.push(`date-type: ${e.message}`));
+    let release = () => {};
+    if (late) {
+      const gate = new Promise((resolve) => { release = resolve; });
+      await page.route("**/ZenOldMincho-Name-Bold.woff2", async (route) => { await gate; await route.continue().catch(() => {}); });
+    }
+    try {
+      await page.goto(base); await page.waitForSelector('[data-test="title-new"]');
+      const read = () => page.evaluate(() => {
+        const title = document.querySelector(".day-card .dc-title");
+        return title && { type: title.closest(".day-card").dataset.type || "", font: getComputedStyle(title).fontFamily,
+          mincho: document.fonts.check('700 160px "Suien Name"', "DAY5") };
+      });
+      await page.evaluate(async () => {
+        const ui = await import("./js/core/ui.js");
+        window.dayCardDone = false;
+        ui.dayCard("DAY 5", "SMOKE CROWN CUP まで あと 9日", { ms: 4000 }).then(() => { window.dayCardDone = true; });
+      });
+      await page.waitForSelector(".day-card");
+      const shown = await read();
+      if (late) {
+        assert.equal(shown.type, "plain", "明朝が間に合わない題字は本文の書体で描く");
+        assert.match(shown.font, /^"Suien Gothic"/);
+        release();
+        await page.waitForFunction(() => [...document.fonts].some((f) => f.family.includes("Suien Name") && f.status === "loaded"), null, { timeout: 15000 });
+        const after = await read();
+        assert(after, "題字がまだ出ている間に確かめる");
+        assert.deepEqual({ type: after.type, font: after.font }, { type: shown.type, font: shown.font }, "明朝が後から届いても、出ている題字は差し替えない");
+      } else {
+        assert.equal(shown.type, "", "明朝が届いた題字はそのまま明朝");
+        assert.match(shown.font, /^"Suien Name"/);
+        assert.equal(shown.mincho, true, "明朝を読んでから描く");
+      }
+      await page.waitForFunction(() => window.dayCardDone, null, { timeout: 15000 });
+      console.log(`PASS day card type: ${late ? "late font is drawn plain from the start and not swapped" : "drawn in the loaded mincho"}`);
+    } finally { release(); await context.close(); }
+  }
+}
+
+// #3813 項目4: バイトの終わりの吊り札（採用の c）は画面の真ん中に出す（オーナー「もっと下げて真ん中に出したい」）。
+// 板（絵 1536×1024 の y419〜994）の中心が舞台の高さの真ん中（720 の 360px）に止まり、下りてくる前は絵の下端（y996）まで画面の上に隠れている。
+async function checkShiftSign() {
+  for (const [label, viewport, brief] of [["desktop", { width: 1280, height: 720 }, false], ["desktop-brief", { width: 1280, height: 720 }, true], ["mobile", { width: 844, height: 390 }, false]]) {
+    const { page, context } = await open(viewport, `shift-sign-${label}`);
+    try {
+      const sign = await page.evaluate(async (brief) => {
+        const marks = [];
+        const stageBox = (node) => {
+          const stage = document.getElementById("stage").getBoundingClientRect(), k = stage.height / 720, r = node.getBoundingClientRect();
+          return { top: (r.top - stage.top) / k, height: r.height / k };
+        };
+        const animate = Element.prototype.animate;
+        Element.prototype.animate = function (...args) {
+          const a = animate.apply(this, args);
+          // 1つ目＝下りてくる動きの始まり、2つ目＝戻る動きの始まり（止まっていた位置）。どちらも最初のコマで測る
+          if (this.classList?.contains("mo-shop-sign")) { a.currentTime = 0; marks.push(stageBox(this)); }
+          return a;
+        };
+        try { await (await import("./js/motions/shift.js")).c({ brief }); } finally { Element.prototype.animate = animate; }
+        return marks;
+      }, brief);
+      assert.equal(sign.length, 2, `${label}: 札は1回下りて1回戻る`);
+      const [start, settled] = sign;
+      const boardCenter = settled.top + settled.height * (419 + 994) / 2048;
+      assert(Math.abs(boardCenter - 360) <= 4, `${label}: 札の板は画面の高さの真ん中 ${JSON.stringify(sign)}`);
+      assert(start.top + start.height * 996 / 1024 <= 0, `${label}: 下りてくる前の札は画面の外 ${JSON.stringify(sign)}`);
+      console.log(`PASS shift sign ${label}: board centre ${boardCenter.toFixed(1)}px, starts off-screen`);
+    } finally { await context.close(); }
+  }
+}
+
 try {
   await checkTrains();
   await checkShinkansen();
@@ -417,6 +498,7 @@ try {
     console.log("PASS marker audit: separate frames, same-frame snap, hidden pen");
   } finally { await auditContext.close(); }
   const alternatesOnly = process.argv.includes("--alternates-only");
+  if (!alternatesOnly) { await checkDateType(); await checkShiftSign(); }
   if (!alternatesOnly) {
     for (const name of ["door", "cheki", "tarot", "gift", "shift", "shark", "sketch", "dawn-sun", "dawn-cloud", "dawn-rain", "dawn-sick"]) await checkScene(name, desktop, "desktop");
     for (const name of ["door", "cheki", "tarot", "gift", "shift", "shark", "sketch", "dawn-rain"]) await checkScene(name, mobile, "mobile");

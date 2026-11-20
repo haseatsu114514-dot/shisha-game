@@ -8,6 +8,8 @@ const STAGE_W = 1280, STAGE_H = 720;
 const FACE = 24;
 const text = (node) => node?.textContent?.trim() || "";
 
+// 体力の枠の全長（ドット）。css/look-retro.css の .retro-gauge i と同じ。
+const GAUGE_DOTS = 34;
 // 体力の印（7×6 ドットのハート）。絵文字に化けないよう図形で描く。
 const HEART = '<svg viewBox="0 0 7 6" width="7" height="6" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/></svg>';
 
@@ -201,6 +203,8 @@ export function createMapScene(shell, painter) {
       headMoney.textContent = hud?.money ? `¥${hud.money}` : "";
       gaugeFill.style.width = `${Math.max(0, Math.min(100, hud?.stamina ?? 0))}%`;
       gauge.dataset.health = hud?.health || "";
+      // 枠の長さは現行の HUD と同じ割合（盤の割り振り前は半分、盤の体力で全長まで伸びる・#3821）。1ドット単位に丸める
+      gauge.style.setProperty("--gauge-dots", String(Math.max(1, Math.round(GAUGE_DOTS * (hud?.track ?? 1)))));
       gauge.setAttribute("aria-label", `体力 ${Math.round(hud?.stamina ?? 0)}%`);
       gauge.hidden = !hud?.hasStamina; // 第2章の初日の地図など、体力を出さない HUD もある
     }

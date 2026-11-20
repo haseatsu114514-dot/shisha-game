@@ -112,6 +112,21 @@
 >
 > 2026-10-08の採用タイマーは[最終プロンプト](../../asset_sources/ui/craft-focus-20261008/kitchen-timer-final-prompt.txt)と[素材・配線契約](../../asset_sources/ui/craft-focus-20261008/README.md)を参照。白い100均風の本体、空の液晶、分／秒／スタート＆ストップ／リセットの4ボタン。文字と7セグ数字は実際の状態をコードで重ねる。下記の旧「数字は出さない」リングタイマー案は採用していない。
 
+## 大会の演出（TSH）のUIパーツ（2026-11-20）
+
+大会の投票・結果発表・合間のアイキャッチの部品4枚。Codex へそのまま貼る依頼文は [`asset_sources/ui/tournament-show-20261120/codex-request.txt`](../../asset_sources/ui/tournament-show-20261120/codex-request.txt)（下の共通スタイル指針＋大会の上乗せ指針＋4枚の英文）。原画の置き場・組み込みの手順は同じフォルダの [README](../../asset_sources/ui/tournament-show-20261120/README.md)。
+
+| 原画（`asset_sources/ui/tournament-show-20261120/raw/`） | 寸法・透過 | 使う場所 |
+|---|---|---|
+| `backdrop.png` | 1536×1024・不透明 | 中間投票の後ろの舞台・結果の大見出し・アイキャッチの地（中央7割は空ける） |
+| `vote-token.png` | 1024×1024・透過 | 飛ぶ票の粒（幅26px程度。審査員の色はコードの光） |
+| `crest-gold.png` | 1024×1024・透過 | 優勝の冠と月桂冠（中央はコードが「1 ST」を書くので空ける） |
+| `curtain.png` | 1024×1536・透過 | アイキャッチの幕の左半分（右はコードで鏡写し） |
+
+## tonari フロア営業の部品（2026-11-20）
+
+第1〜2章のバイトのミニゲーム（五つの卓を一人で回す）の、板・札・印・記号・帯の部品48枚。背景は今の店内画（`bg_tonari_inside_*`）をそのまま使う。Codex へそのまま貼る依頼文（下の共通スタイル指針＋フロア営業の上乗せ指針＋部品ごとの文）と、作る物の一覧・寸法・組み込みの手順は [Issue #3960](https://github.com/haseatsu114514-dot/shisha-game/issues/3960) の本文が正本。いまの画面の見本と、前の版の依頼の記録は [`asset_sources/ui/tonari-floor-20261120/`](../../asset_sources/ui/tonari-floor-20261120/README.md)。
+
 ## 共通スタイル指針（全アセット冒頭に付ける）
 
 フレーバーの商品箱は現行採用画像のメーカー意匠を参照する。AFバニラの生成指示と参照画像は [`asset_sources/af-vanilla/prompt.txt`](../../asset_sources/af-vanilla/prompt.txt)、原画・変換・検品は[制作資料](../../asset_sources/af-vanilla/README.md)。黒箱・白い翼と独立した輪・味の筆帯は既存AFから継承し、既存10点の採用正本は変更しない。

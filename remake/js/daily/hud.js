@@ -17,10 +17,19 @@ import { isRainy } from "./weather.js";
 import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel, departurePrep } from "../core/chapter-clock.js";
 import { growthEnabled, growthView, gaugeInfo, hidaneTotal } from "../core/growth.js";
 import { NODE_BY_ID, pathTo } from "../core/growth-board.js";
+import { boardPerks, LESSON_TUNING } from "../core/growth-effects.js";
 
-// 体力バーと経験値バーの共通の長さ（px）。経験値を少し短くし、体力も同じ長さにそろえる（#3034・オーナー指示 2026-11-09）。
-// 最大体力が育成で伸びてもバー自体の長さは変えない（減り方は中身の割合で読む）。経験値側は daily.css の .hx-bar が同じ値を保つ。
+// 体力バーは従来幅の半分から、盤で増えた最大体力の分だけ伸ばす（#3821）。
+// 初期幅・見た目の上限だけを決める。実際の体力量やバランスは盤と maxStamina() が持つ。
 const HUD_GAUGE_WIDTH = 120;
+const MAX_BOARD_STAMINA = boardPerks(Object.keys(NODE_BY_ID)).stamina + LESSON_TUNING.stamina;
+
+function staminaTrackWidth() {
+  if (!growthEnabled()) return HUD_GAUGE_WIDTH; // 旧能力モードでは従来表示を保持。
+  const bonus = maxStamina() - maxStamina({ forCondition: true });
+  const progress = Math.min(1, Math.max(0, bonus / MAX_BOARD_STAMINA));
+  return HUD_GAUGE_WIDTH * (1 + progress) / 2;
+}
 
 /** 章の最終日（大会・勝負の日）まであと何日か。決まっていなければ null。台詞の {daysLeft} もこれに一本化する */
 export const daysLeft = () => chapterDaysLeft(state);
@@ -98,13 +107,14 @@ export function initHud(h) {
   handlers = { ...handlers, ...h };
   dom = {
     area: el("div.dc-area", { text: HOME_CITY_EN }),
+    dayLabel: el("span.dc-day-label", { text: "日付" }),
     day: el("div.dc-day"),
     slot: el("div.dc-slot"),
     money: el("b"),
     left: el("b"),
     // 所持金・大会まで・体力のラベルは文字を残し（読み上げ・説明用）、画面では ¥・🏆・♥ の印に置き換える（CSS・#2853）
     leftLabel: el("span.dc-label", { text: "次の大会まで" }),
-    stamina: el("div.hud-stamina", [el("span.dc-label", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
+    stamina: el("div.hud-stamina", [el("span.dc-label", { text: "体力" }), el("div.hud-stamina-meter", { style: { flex: `0 0 ${HUD_GAUGE_WIDTH}px` } }, [el("i.hud-bar", [el("span.gauge-track", [el("b")])])])]),
     phone: el("button.hud-lime", { title: "LIME", "aria-label": "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
     // 経験値と次のレベルまで（SPEC 6.1a）。置き場所は情報カードの体力の下（REPORT P4・R5）
     exp: el("div.hud-exp", { hidden: true, dataset: { test: "hud-exp" } }, [
@@ -120,7 +130,7 @@ export function initHud(h) {
   const moneyRow = el("div.dc-row.money", { title: "所持金" }, [el("span.dc-label", { text: "所持金" }), dom.money]);
   const root = el("div.hud", [
     el("div.hud-card", [
-      el("div.dc-main", [dom.area, dom.day, dom.slot]),
+      el("div.dc-main", [dom.area, dom.dayLabel, dom.day, dom.slot]),
       el("div.dc-meta", [moneyRow, dom.goalRow = el("div.dc-row.goal", { dataset: { test: "hud-goal" } }, [dom.leftLabel, dom.left]), dom.stamina, dom.exp]),
     ]),
     el("div.hud-right", [dom.phone, dom.menu]),
@@ -244,7 +254,9 @@ export function updateHud() {
     el("span.dc-area-short", { text: areaName }),
   );
   const finalDay = chapterFinalDay(state);
-  dom.day.replaceChildren(...[el("b", { text: String(chapterDay(state)) }), finalDay === null ? null : el("small", { text: `/${finalDay}` })].filter(Boolean));
+  const day = chapterDay(state);
+  dom.dayLabel.title = finalDay === null ? `${day}日目` : `${finalDay}日間のうち ${day}日目`;
+  dom.day.replaceChildren(...[el("b", { text: String(day) }), finalDay === null ? null : el("small", { text: `/${finalDay}` })].filter(Boolean));
   const night = state.slot >= 1;
   const rain = isRainy() ? "・雨" : "";
   // 昼・夜の札に、今日あと何回動けるかを入れる（「☀残り2」。地図の案内箱にあった一言をここへ統合・#2853）
@@ -280,8 +292,11 @@ export function updateHud() {
   dom.stamina.querySelector("b").style.width = `${Math.round(r * 100)}%`;
   scheduleRecovery();
   dom.stamina.classList.toggle("low", health === "red");
-  // バーの長さは経験値ゲージと共通の固定長（#3034）。最大体力が伸びても長さは変えず、減りは割合で表す。
-  dom.stamina.querySelector(".hud-bar").style.width = `${HUD_GAUGE_WIDTH}px`;
+  // 枠の長さと現在体力の割合は別。枠が伸びても回復させず、カード全体の幅も動かさない。
+  const track = staminaTrackWidth();
+  dom.stamina.querySelector(".hud-bar").style.width = `${track}px`;
+  // 枠の長さの割合（盤の割り振り前 0.5 〜 1）。DS風の上画面の帯（looks/retro/map.js）が同じ割合で枠を伸ばす。
+  dom.stamina.dataset.track = String(Math.round(track / HUD_GAUGE_WIDTH * 1000) / 1000);
   updateGrowth();
 }
 

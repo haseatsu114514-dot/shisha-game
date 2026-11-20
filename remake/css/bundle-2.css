@@ -533,6 +533,21 @@
 .end-screen.gameover[data-layout="manga"][data-timed-out="true"] .go-title { filter: grayscale(1) brightness(1.7) contrast(1.15); transition: none; }
 @keyframes go-manga-pop { from { scale: 1.35; rotate: -6deg; } to { scale: 1; rotate: 0deg; } }
 @keyframes go-manga-shake { from { translate: -2px 1px; rotate: -7deg; } to { translate: 2px -1px; rotate: -5deg; } }
+
+/* 「難易度を下げる？」（WIN14）は、2択のコマと同じ場所に一枚のコマとして出す。焦点・ホバーの段だけ黒く塗る。 */
+.end-screen.gameover[data-layout="manga"] .go-difficulty {
+  left: 766px; right: 20px; top: 330px; bottom: 20px; width: auto; transform: none; align-content: center; gap: 12px;
+  padding: 18px 26px 26px 44px; border: 0; border-radius: 0; background: #fff; box-shadow: none;
+  clip-path: polygon(35px 0, 100% 0, 100% 100%, 0 100%); outline: 7px solid #111; outline-offset: -7px;
+}
+.end-screen.gameover[data-layout="manga"] .go-difficulty-title { font-size: 36px; color: #111; }
+.end-screen.gameover[data-layout="manga"] .go-difficulty-choice,
+.end-screen.gameover[data-layout="manga"] .go-difficulty-choice.primary {
+  min-height: 72px; border: 4px solid #111; border-radius: 0; background: #fff; color: #111; font-size: 34px; font-weight: 900;
+}
+.end-screen.gameover[data-layout="manga"] .go-difficulty-choice:is(:hover, :focus-visible) {
+  outline: none; background: #111 repeating-linear-gradient(112deg, transparent 0 26px, color-mix(in srgb, var(--go-accent) 55%, transparent) 26px 30px); color: #fff;
+}
 /* 大会CONTINUE V4。1280×720の本編・プレビューで同じ画面を使う。
    2026-10-10: 紫の煙、見出し横の数字、下端までの人物。1行テロップと2択ボタンに間隔を取る。 */
 .end-screen.gameover {
@@ -859,6 +874,19 @@
 .gameover[data-layout="inner"][data-reduced-motion="true"] { animation: none; }
 @media (prefers-reduced-motion: reduce) { .gameover[data-layout="inner"] { animation: none; } }
 
+/* 3敗目からの「難易度を下げる？」（WIN14）。再挑戦を押した後だけ、同じ画面の中に名前だけの選択肢を出す。カウントは止める。 */
+.gameover .go-difficulty { position: absolute; z-index: 6; left: 50%; top: 50%; width: 540px; transform: translate(-50%, -50%);
+  display: grid; gap: 16px; padding: 28px 32px 32px; border: 2px solid #f6d68e; border-radius: 16px; background: #150d22f2;
+  box-shadow: 0 18px 50px #000a; text-align: center; }
+.gameover .go-difficulty[hidden] { display: none; }
+.gameover .go-difficulty-title { margin: 0; font-size: 36px; font-weight: 900; letter-spacing: .06em; color: #fff6dc; }
+.gameover .go-difficulty-list { display: grid; gap: 12px; }
+.gameover .go-difficulty-choice { min-height: 76px; border: 2px solid #c9a7e6; border-radius: 12px; background: #2b1d3d; color: #fff;
+  font: inherit; font-size: 34px; font-weight: 800; letter-spacing: .08em; cursor: pointer; }
+.gameover .go-difficulty-choice.primary { border-color: #f6d68e; background: #f6d68e; color: #1a0f24; }
+.gameover .go-difficulty-choice:is(:hover, :focus-visible) { outline: 3px solid #fff; outline-offset: 3px; }
+.gameover[data-phase="difficulty"] :is(.go-clock, .go-count-back, .go-next) { visibility: hidden; }
+
 /* ===== css/staff-roll.css ===== */
 /* スタッフロール（#517）。1280×720 の固定ステージ上で、下から上へ文字だけを流す。
    名前・役職は本文書体。拡縮後も読めるよう、役職は24px・名前は44px以上にする。 */
@@ -916,6 +944,7 @@
 .staff-roll-sound p { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); overflow-wrap: anywhere; }
 .staff-roll-sound-trpg p { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); overflow-wrap: anywhere; }
 .staff-roll-sound-main p { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); overflow-wrap: anywhere; }
+.staff-roll-licenses p { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); overflow-wrap: anywhere; }
 .staff-roll-closing p {
   font-size: 40px;
   font-weight: 700;
@@ -1177,7 +1206,12 @@
   filter: none;
 }
 .vn-controls .vn-ctl.on::after { content: "·"; margin-left: 3px; color: #f0cd82; }
-.vn-controls .vn-ctl:focus-visible { outline: 2px solid #f0cd82; outline-offset: -3px; }
+.vn-controls .vn-ctl:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-decoration-color: #f0cd82;
+  text-underline-offset: 5px;
+}
 .vn-next { right: 32px; bottom: 13px; color: #edca82; }
 
 /* ===== css/ui-themes.css ===== */
@@ -1241,6 +1275,12 @@ html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.btn,.vn-choice,.mi-go,.s
 }
 html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.btn,.vn-choice,.mi-go,.st-tab,.shop-tab,.gl-tab,.vn-ctl):focus-visible {
   outline: 2px solid var(--gold-hi); outline-offset: 2px;
+}
+/* VN 操作は文字の下線でキーボード位置を示す。押せる箱の外側に矩形の線を出さない。 */
+html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-controls .vn-ctl:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-underline-offset: 5px;
 }
 html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.panel,.modal-box,.ink-panel) :is(.panel,.ink-panel,.st-row) {
   background: var(--inner-face); border-color: var(--inner-edge); box-shadow: none;
@@ -1449,10 +1489,10 @@ html:root[data-ui-theme] body:not(:root) .vn-next.show { animation-name:vn-next-
 html:root[data-ui-theme] body:not(:root) .vn-choices {
   bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px);
 }
-/* 2択は会話欄の上 112px（3択以上は 62px）。YHK14: 142px は高すぎ、62px は低すぎたので 94px に。
-   2026-11-14 オーナー「もう少し上へ」で 94px → 112px（+18）。 */
+/* 2択は会話欄の上 130px（3択以上は 62px）。YHK14: 142px は高すぎ、62px は低すぎたので 94px に。
+   2026-11-14 オーナー「もう少し上へ」で 94px → 112px（+18）。2026-11-18 オーナー「もう気持ち上」（#3813）で 112px → 130px（+18。142px より下）。 */
 html:root[data-ui-theme] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 112px);
+  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 130px);
 }
 /* 各原画の縁を窓の上辺に合わせる。中央に見出し用の空白は取らない。 */
 html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(:root) .vn-box::before,
@@ -1564,6 +1604,17 @@ html:root[data-ui-theme="paper"] body:not(:root) .vn-box:is(.narration, .thought
   inset: -8px -8px -8px; background: var(--vn-lounge-frame) center / 100% 100% no-repeat, var(--paper);
   border-radius: 8px; box-shadow: inset 0 0 0 1px #69497e40;
   filter: drop-shadow(0 8px 18px #110a2240);
+}
+/* スマホは操作が窓の外にあるため、本文上の罫線だけを消す。紙の原画（2464×384）の
+   罫線 y=102–109 に、同じ絵のすぐ下の紙肌を重ねる。外枠・煙・PC の描画は変えない。 */
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-box::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  clip-path: inset(26% 4% 70.5%);
+  background: var(--vn-lounge-frame) center top -6px / 100% 100% no-repeat;
+  z-index: -1;
+  pointer-events: none;
 }
 html:root[data-ui-theme="paper"] body:not(:root) .vn-box .vn-name {
   font-family: var(--font); font-weight: 900; color: #fff; text-shadow: none;
@@ -3040,12 +3091,37 @@ html:root[data-density="phone"] body:not(:root) .pull-btns.with-options .btn:not
 }
 
 /* ---------------------------------------------------------------- 確認ダイアログ・閉じる系 */
+/* #3203: 縮小された舞台に全画面のぼかしを掛けると、地図とHUDが四隅へ鏡写しになる場合がある。暗幕の色だけで区切る。 */
+html:root[data-density="phone"] #modal > .modal-backdrop { backdrop-filter: none; }
 html:root[data-density="phone"] body:not(:root) .modal-body { font-size: var(--phone-text); line-height: 1.6; }
 html:root[data-density="phone"] body:not(:root) .modal-actions { gap: var(--phone-gap); }
 html:root[data-density="phone"] body:not(:root) .dmenu .dm-close { min-height: var(--phone-tap); font-size: var(--phone-text); }
-/* 用語集: 閉じるボタンが高くなった分だけ本文の枠が縮むので、固定の高さ（460px）をやめて枠いっぱいに収める（下端が隠れてスクロールできなくなるのを防ぐ）。 */
-html:root[data-density="phone"] body:not(:root) .glossary-modal .modal-body { display: flex; flex-direction: column; overflow: hidden; }
-html:root[data-density="phone"] body:not(:root) .glossary-modal .glossary { flex: 1 1 auto; height: auto; min-height: 0; }
+/* 用語集（#3947）: 舞台が小さくなっても本文は実寸14px以上に。
+   折り返しが増えすぎないよう窓を広げ、見出し・タブ・閉じるボタンを残して用語リストだけをスクロールする。 */
+html:root[data-density="phone"] body:not(:root) .glossary-modal {
+  width: 1040px;
+  max-width: calc(100% - 96px);
+  height: 668px;
+  max-height: calc(100% - 52px);
+  padding: 18px 26px;
+}
+html:root[data-density="phone"] body:not(:root) .glossary-modal > h3 {
+  margin-bottom: 10px;
+  font-size: max(30px, calc(16px / var(--k, 1)));
+  line-height: 1.25;
+}
+html:root[data-density="phone"] body:not(:root) .glossary-modal .modal-body { display: flex; flex: 1; flex-direction: column; overflow: hidden; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .glossary { flex: 1; height: auto; min-height: 0; gap: 10px; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-tabs { flex-shrink: 0; padding: 4px; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-tab {
+  min-height: var(--phone-tap);
+  font-size: var(--phone-ctl);
+}
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-body { min-height: 0; overscroll-behavior: contain; touch-action: pan-y; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-term { padding-block: 8px; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-term b { font-size: max(29px, calc(15.5px / var(--k, 1))); }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-term p { font-size: max(27px, calc(14px / var(--k, 1))); line-height: 1.55; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .modal-actions { margin-top: 12px; }
 
 /* ---------------------------------------------------------------- HUD（LIME・MENU・DAY カード） */
 html:root[data-density="phone"] body:not(:root) .hud-right { gap: var(--phone-gap); }
@@ -3072,6 +3148,33 @@ html:root[data-density="phone"] body:not(:root) #hud :is(.dc-day small, .dc-slot
 html:root[data-density="phone"] body:not(:root) #hud :is(.dc-row, .hud-card .hud-stamina, .hud-card .hud-exp) { height: auto; min-height: calc(var(--phone-sub) + 10px); }
 /* 体力と経験値のゲージの始まりをそろえる: 2つのラベルを同じ大きさの文字・同じ幅にする（daily.css の PC 版と同じ考え方） */
 html:root[data-density="phone"] body:not(:root) #hud .hud-card :is(.hud-stamina > span:first-child, .hud-exp .hx-lv) { width: 2.9em; font-size: var(--phone-sub); }
+
+/* 地図だけ、店の看板にかからないよう左上カードの余白と右列を詰める。
+   文字の実寸下限と画面端の safe-area を守り、章内の日付だと分かる見出しを付ける。 */
+.dc-day-label { display: none; }
+html:root[data-density="phone"][data-look="classic"] body[data-screen="map"] #hud .hud-card {
+  padding: 3px 8px;
+  /* 16:9 の余白だけでノッチを避けられない端末はカードを内側へ。 */
+  margin-left: max(0px, calc((env(safe-area-inset-left, 0px) - (100vw - 1280px * var(--k, 1)) / 2) / var(--k, 1)));
+}
+html:root[data-density="phone"][data-look="classic"] body[data-screen="map"] #hud .dc-main { width: calc(var(--phone-sub) * 4); }
+html:root[data-density="phone"][data-look="classic"] body[data-screen="map"] #hud .dc-day-label {
+  display: block;
+  margin-bottom: 3px;
+  font-size: var(--phone-sub);
+  line-height: 1;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+html:root[data-density="phone"][data-look="classic"] body[data-screen="map"] #hud .dc-day { white-space: nowrap; }
+html:root[data-density="phone"][data-look="classic"] body[data-screen="map"] #hud .dc-meta {
+  width: max(214px, calc(var(--phone-sub) * 9.25));
+  margin-left: 6px;
+  padding-left: 9px;
+}
+html:root[data-density="phone"][data-look="classic"] body[data-screen="map"] #hud :is(.dc-row, .hud-card .hud-stamina, .hud-card .hud-exp) {
+  min-height: calc(var(--phone-sub) + 4px);
+}
 
 /* ---------------------------------------------------------------- 会話の操作ボタン・選択肢 */
 /* 会話ウインドウの下端: 横持ちの iPhone は下にホームバーの領域があり、端ぎりぎりだと欠けて見える（オーナー指摘 2026-11-08）。
@@ -3100,18 +3203,38 @@ html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-controls .vn-
    2行（46px×2）と、本心つき（1行44px＋本心2行）が枠の高さ（176px・下15px空き）に収まる行の高さにする（notifications_layout の検査）。 */
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-text { font-size: 32px; line-height: 46px; min-height: 92px; }
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-box.has-inner .vn-text { line-height: 44px; min-height: 44px; }
-/* 名札は補助文の大きさに上げる。名札の幅に収まらない長い名前は name-fit.js の縮小（--vn-name-fit-size）に従う。 */
-html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-name { font-size: var(--vn-name-fit-size, var(--phone-sub)); }
+/* 紙の横持ち会話で、操作を左右に出せるときは上の帯を本文に使う。
+   176px の枠の中央に50pxの行を置く。短いページは文字送りの前に行数が確定するので、途中で本文がずれない。
+   本心つき・枠内に操作が残るときは、従来どおり別の行や操作の領域を確保する。 */
+/* 約1024px の本文の右で送り印を出し、右端の煙との間も空ける。 */
+html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box {
+  --vn-next-right: 68px;
+}
+html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box:not(.has-inner) {
+  --vn-body-top: calc((var(--vn-dialogue-height) - 100px) / 2);
+}
+html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box:not(.has-inner) .vn-text {
+  font-size: 36px; line-height: 50px; min-height: 100px;
+}
+html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box:not(.has-inner) .vn-text[data-page-lines="1"] {
+  padding-top: 25px;
+}
+/* 名札の短い名前を読みやすくする。長い名前は実際の字幅に合わせる name-fit.js に従う。 */
+html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-box .vn-name {
+  max-width: 328px;
+  font-size: var(--vn-name-fit-size, max(27px, calc(13.5px / var(--k, 1))));
+}
 /* 選択肢の文字は本文に合わせて 24→28px（iPhone 横で実寸 13→15px）。全角26字（GUI22 の上限）が縮まずに1行で入るよう、幅を 720→880px に広げる */
 html:root[data-density="phone"] body:not(:root) .vn-choice { width: 880px; max-width: 100%; min-height: var(--phone-tap); font-size: max(28px, calc(var(--phone-text) + 4px)); }
 /* 操作ボタンが上へ伸びた分だけ、選択肢を上げて間隔を保つ。 */
 html:root[data-density="phone"] body:not(:root) .vn-choices { bottom: calc(262px + var(--phone-tap) - 44px); }
-html:root[data-density="phone"] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: calc(356px + var(--phone-tap) - 44px); }
+html:root[data-density="phone"] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: calc(374px + var(--phone-tap) - 44px); }
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-choices {
   bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px + var(--phone-tap) - 44px);
 }
+/* 2択は PC と同じく 3択以上より 68px 上（#3813 で +18）。 */
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 112px + var(--phone-tap) - 44px);
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 130px + var(--phone-tap) - 44px);
 }
 /* 選択肢が高くなるので、5択から（従来は6択から）画面上端と操作欄の間でスクロールさせる。 */
 html:root[data-density="phone"] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(5)) {
@@ -3165,6 +3288,65 @@ html:root[data-density="phone"] body:not(:root) .gal .gal-characters { gap: 2px 
 html:root[data-density="phone"] body:not(:root) .gal .gal-tabs { gap: var(--phone-gap); }
 /* セーブ・ロードの空き枠「── 空き ──」（同じ巡回で 8.7px）。補助文の大きさにそろえる */
 html:root[data-density="phone"] body:not(:root) .saveload-modal .ss-info.empty { font-size: var(--phone-sub); }
+
+/* ---------------------------------------------------------------- #3726 A-2 の残り（同じ巡回で見つけた MENU の「?」・会話の送り記号「▼」・くじの黒板）
+   実寸は 844×390／Safari のバー（844×340）で、「?」10.8／9.4px・「▼」9.8／8.5px・黒板の注記 7.0／6.1px（賞 10.8／9.4px）だった。
+   MENU の「?」: 文字は clamp の上限 20px で止まっていた。文字だけを補助文の大きさにする。
+   丸（舞台上 26〜30px・2026-11-08 オーナー「?が大きすぎ」）と、押せる範囲の ::before（実寸 40px）は変えない。 */
+html:root[data-density="phone"] body:not(:root) .dmenu .dm-help { font-size: var(--phone-sub); }
+/* 会話の送り記号: 右下の位置（--vn-next-right/bottom）はそのまま、記号だけ補助文の大きさに */
+html:root[data-density="phone"] body:not(:root) .vn-next { font-size: var(--phone-sub); }
+/* くじの黒板（ガラガラの横に立つ看板）: くじの名前 21px・賞 20px・注記 13px だった。書ける面（描いた絵で約 166×249px）は変えず、
+   文字を補助文の大きさにして行の高さと間隔を詰める。注記は6字で折り返し、「ラストワン賞／あり」「最後の1枚を／引いた方へ」の2行にする。 */
+html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-text { gap: 6px; line-height: 1.2; }
+html:root[data-density="phone"] body:not(:root) .mo-garagara :is(.kj-sign-title, .kj-sign-row, .kj-sign-note) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-title { padding-bottom: 5px; letter-spacing: 0.04em; }
+html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-row { gap: 12px; }
+html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-note { max-width: 6.2em; text-align: center; }
+
+/* スロット（#4035 B4）。ノートは縦スクロールを残し、初回カードは横幅を使って文字を拡大する。 */
+html:root[data-density="phone"] body:not(:root) :is(.reel-intro, .reel-night, .reel-widget, .reel-cutin) {
+  --slot-phone-text: max(24px, var(--phone-text));
+}
+html:root[data-density="phone"] body:not(:root) :is(
+  .reel-intro .ri-next, .reel-intro .rn-close,
+  .reel-intro .rn-tile-head, .reel-intro .rn-tile-body, .reel-intro .cue-chip,
+  .reel-note :is(.rn-cols h3, .rn-setting-box h3, .rn-table, .rn-history, .rn-history small,
+    .rn-hall, .rn-empty, .rn-setting, .rn-setting small, .rn-hint-head, .rn-hints),
+  .reel-night .rn-label, .reel-widget .rw-bubble,
+  .reel-cutin :is(.rc-aim, .rc-freeze-text span, .rc-freeze-sub)
+) {
+  font-size: var(--slot-phone-text);
+}
+html:root[data-density="phone"] body:not(:root) :is(.reel-intro, .reel-widget) .rw-face.txt {
+  font-size: max(var(--slot-phone-text), calc(20px * var(--slot-scale, 1)));
+}
+html:root[data-density="phone"] .reel-intro .cue-chip {
+  min-width: 1.25em;
+  min-height: 1.25em;
+}
+html:root[data-density="phone"] .reel-intro .ri-panel.sys {
+  width: min(1160px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  overflow-y: auto;
+}
+html:root[data-density="phone"] .reel-intro .ri-panel.sys .rn-card {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+html:root[data-density="phone"] body:not(:root) .reel-widget .rw-bubble.cue {
+  font-size: max(var(--slot-phone-text), calc(12px / var(--k, 1)));
+}
+html:root[data-density="phone"] .reel-note .ri-head {
+  min-height: var(--phone-tap);
+  padding-right: 136px; /* 長い見出しが右上の「閉じる」と重ならないようにする */
+}
+/* 出現直後の見出しがフリーズ演出の枠で切れないよう、拡大の始点を抑える。 */
+html:root[data-density="phone"] .reel-cutin .rc-freeze-label {
+  animation-name: rc-title-phone;
+}
+@keyframes rc-title-phone {
+  from { transform: scale(1.8); opacity: 0; }
+}
 
 /* ===== css/wide-screens.css ===== */
 /* ワイドステージ（#2861）でメニュー・タイトル等を横幅いっぱいまで使う（オーナー指示 2026-11-08「メニューとかタイトルとか諸々もワイドモードへ」）。
@@ -3404,6 +3586,17 @@ html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] 
    それでも長い時は窓の中でスクロールする（craft.css の .audience-note と同じ） */
 html:root[data-density="phone"] body #stage .bench .bench-left .bench-audience { height: auto; min-height: 112px; max-height: 58%; }
 html:root[data-density="phone"] body #stage .bench .bench-audience .audience-note { max-width: none; }
+
+/* 一枚の舞台のチュートリアル（#4035 B3）。左端 x12 から温度計（x327）の手前までに収める。
+   一言の板は座の下で縦に分割し、台詞が増えてもガラスの座を含む上側は伸ばさない。 */
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode="tutorial"] .bench-left .bench-audience {
+  width: 304px;
+  border-image-slice: 210 59 27 220 fill !important;
+  border-image-width: 86.8px 24.3px 11.2px 90.8px !important;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode="tutorial"] .bench-audience .audience-people {
+  align-self: flex-start; margin-top: 12.6px;
+}
 /* 配合: 「温度帯」「フレーバーの持ち」の見出し（温度帯の凡例は細い列に収める既存の作りのまま） */
 html:root[data-density="phone"] body #stage .bench :is(.mix-life-preview > b, .mix-temperature-preview > b) { font-size: var(--wide-small); }
 /* 穴あけの型の説明 */
@@ -3604,7 +3797,7 @@ html:root[data-density="phone"] body #stage .bench :is(.rc-details > summary, .b
    作業台（.bench）の置き場所と枠だけを替える。寸法の座標系・判定・工程の中身は変えない。
    見本: remake/previews/craft-stage-layout/（1280×720 のステージ座標）
    - はじめ: 左 x0〜340（作業風景を枠から出して拡大。右端は舞台へ溶かす）
-   - 熱の柱: x338〜398・y82〜602（温度計を全工程で同じ場所へ。無い工程は消灯の柱）
+   - 熱の柱: x338〜398・y82〜602（加熱前から温度計を同じ場所へ）
    - 舞台: x410〜1264・y80〜708
    - 上のレール: y0〜76（帯なし）／左下: 見守る人の一言 */
 
@@ -3687,6 +3880,11 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-worker:is([data-sce
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-worker:is([data-scene="pack"], [data-scene="holes"]) .bench-worker-stage { --hero-x: -70px; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-worker[data-scene="heat"] .bench-worker-stage { --hero-x: -60px; }
 
+/* 初回の配合は通常の立ち絵。既存の作業絵と顔の中心が違うので、柱の左へ寄せる。 */
+html body.craft-stage:not(.game-ds) .bench[data-mode="tutorial"] .bench-worker:is([data-step=""], [data-step="mix"]) .bench-worker-stage { --hero-x: -188px; }
+/* 初回は操作の手本を優先する。帯の説明はゲージのアクセシブル名で読む。 */
+html body.craft-stage:not(.game-ds) .bench[data-mode="tutorial"]:is([data-step="mix"], [data-step="pack"]) .mix-temperature-preview > .mix-temperature-legend { display: none !important; }
+
 /* ---------- 左下: 見守る人・実況の一言 ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-left .bench-audience {
   position: absolute !important; left: 12px !important; right: auto !important; bottom: 12px !important; top: auto !important; width: 388px; height: auto !important; min-height: 96px !important; margin: 0 !important; z-index: 4;
@@ -3725,20 +3923,20 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-guide-tip { top: ca
 
 /* ---------- 熱の柱: 温度計を全工程で同じ場所・同じ大きさへ ----------
    管は y134〜602（高さ468）。その上 y82〜124 が状態の札の席で、札は吸い出し以降だけ出す。 */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo {
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo {
   --thermo-inset: 1.5% !important; --thermo-span: 60px !important;
   position: fixed !important; left: 338px !important; top: 134px !important; right: auto !important; bottom: auto !important;
   width: 60px !important; height: 468px !important; margin: 0 !important; z-index: 5; display: block !important; transform: none !important;
 }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo[hidden] { display: none !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo::after { display: none !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-housing {
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo[hidden] { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo::after { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-housing {
   position: absolute; inset: 0 6px; width: auto !important; height: auto !important; border-radius: 26px;
   background: linear-gradient(90deg, #0d0817, #2a1d3c 45%, #0d0817); border: 2px solid #e3bd6e99; box-shadow: 0 0 0 2px #0b0614, 0 10px 26px #000a;
 }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-housing .thermo-skin { display: none !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-housing .thermo-tube { left: 7px !important; right: 7px !important; top: 7px !important; bottom: 7px !important; width: auto !important; height: auto !important; border-radius: 19px; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-pointer { left: 50px !important; right: auto !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-housing .thermo-skin { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-housing .thermo-tube { left: 7px !important; right: 7px !important; top: 7px !important; bottom: 7px !important; width: auto !important; height: auto !important; border-radius: 19px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-pointer { left: 50px !important; right: auto !important; }
 /* 配合・詰め方の温度帯の予想: 包みの箱と注記は出さず、柱と見出しの札だけ */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview {
   position: fixed !important; left: 338px !important; top: 82px !important; width: 340px !important; height: 520px !important; pointer-events: none;
@@ -3746,8 +3944,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview {
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview[hidden] { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview > .thermo { pointer-events: auto; }
-/* 予想の柱には今の温度が無いので矢印を置かず、下へはみ出す点線の札も出さない（点線そのものは残る） */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview .thermo-projected-label, html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview .thermo-pointer { display: none !important; }
+/* 加熱前の針は下端のまま。予測の注記は表示しない。 */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview .thermo-projected-label { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview > :not(.thermo):not(.mix-temperature-legend) { display: none !important; }
 /* 色の見方（おいしい範囲・低め／高め）は柱の右上に小さく一行だけ */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview > .mix-temperature-legend {
@@ -3755,7 +3953,7 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview >
   font-size: 17px !important; line-height: 1.3; white-space: nowrap;
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-side, html body.craft-stage:not(.game-ds) .bench[data-mode] .packing { padding-top: 34px !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-temperature::before {
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before {
   content: "温度帯"; display: grid !important; place-items: center; position: absolute; left: 50%; top: -52px; transform: translateX(-50%);
   min-width: 124px; height: 42px; padding: 0 14px; border-radius: 21px; white-space: nowrap; font-size: 22px; font-weight: 900; letter-spacing: .06em;
   color: #74e0b0; background: #2e1d45; border: 1.5px solid #74e0b0; box-shadow: 0 4px 10px #0009;
@@ -3769,16 +3967,6 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read
   background: #1b112af2 !important; border-width: 1.5px !important; box-shadow: 0 4px 10px #0009;
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-state { font-size: 22px !important; line-height: 1.4 !important; font-weight: 900; letter-spacing: .06em; white-space: nowrap; }
-/* 温度計を持たない工程（機材・炭の配置・穴あけ・炭焼き）は、消灯の柱を同じ場所に立てる */
-html body.craft-stage:not(.game-ds) .bench[data-mode]:is([data-step="setup"], [data-step="place"], [data-step="holes"], [data-step="heat"]) .bench-right::before {
-  content: ""; position: fixed; left: 344px; top: 134px; width: 48px; height: 468px; z-index: 5; border-radius: 26px; pointer-events: none;
-  border: 2px solid #6d5a86; box-shadow: 0 0 0 2px #0b0614, 0 10px 26px #000a;
-  background:
-    linear-gradient(90deg, #0d0817 0 7px, transparent 7px calc(100% - 7px), #0d0817 calc(100% - 7px)),
-    linear-gradient(0deg, #0d0817 0 7px, transparent 7px calc(100% - 7px), #0d0817 calc(100% - 7px)),
-    repeating-linear-gradient(0deg, #0000 0 11px, #1a0f2a55 11px 12px),
-    linear-gradient(0deg, #8a8a86, #6f7072 40%, #5c6660 44%, #66706a 64%, #6a6460 71%, #4a4444 90%, #2f2a2c);
-}
 /* 熱の背景の模様は、枠が無くなったぶん控えめに（気配として残す） */
 html body.craft-stage:not(.game-ds) .bench[data-mode] > .thermal-backdrop { opacity: .32; }
 
@@ -3824,14 +4012,18 @@ html body.craft-stage:not(.game-ds) .bench[data-mode]:is([data-step="heat"], [da
 }
 
 /* ---------- 蒸らし時間・蒸らし: 状態の札（ぬるい等）は出さない（吸い出し以降だけ・CSL11）。待つ姿は寄りすぎない大きさで ---------- */
-html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="steam"] .bench-panel .thermo .pull-read { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="steam"] .bench-right .thermo .pull-read { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-worker[data-scene="focus"] .bench-worker-stage { --hero-s: 1.08; --hero-x: -46px; }
 
-/* ---------- 熱の柱の札: 舞台へはみ出さないよう、柱の右端にそろえて左へ伸ばす ---------- */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
-  left: auto !important; right: -6px !important; transform: none !important; min-width: 96px !important; font-size: 20px;
+/* ---------- 熱の柱の札: 温度計の中心にそろえる（#3815 オーナー「温度計に対して中央揃えに」）。
+   右端そろえは札の幅だけ左へずれて見えた。「温度帯」の札は柱の幅（80px）ちょうどに置き、柱の外へはみ出さない。
+   吸い出しの状態の札（ぬるい・適温…）は言葉の長さで幅が変わるので、柱の中心から左右へ同じだけ伸ばす ---------- */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before {
+  left: 0 !important; right: 0 !important; transform: none !important; box-sizing: border-box; min-width: 0 !important; padding: 0 !important; font-size: 20px;
 }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-temperature::before { right: 0 !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
+  left: 50% !important; right: auto !important; transform: translateX(-50%) !important; min-width: 80px !important; padding: 0 12px !important; font-size: 20px;
+}
 
 /* ---------- 上のレール（大会）: ライバルは顔と灯だけ ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rival-windows .rival-name { display: none; }
@@ -4009,7 +4201,7 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rival-window
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top .bench-mode small { display: none !important; }
 /* 大会以外はレールに余白があるので、練習の種類（手順の中間チェック等）を残す */
 html body.craft-stage:not(.game-ds) .bench[data-mode]:not([data-mode="tournament"]) .bench-top .bench-mode small { display: inline !important; }
-/* 3回負けて選んだ「今回のみ操作補助」は、大会でも消さない（補助が効いていることを知らせる札） */
+/* 3回負けて選んだ「今回のみイージー」「今回のみベリーイージー」は、大会でも消さない（補助が効いていることを知らせる札・WIN13） */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top .bench-mode small.retry-assist { display: inline !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress { flex: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track { gap: 18px !important; }
@@ -4024,7 +4216,7 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > :is(button, a
 
 /* ---------- 「？」はスマホでも押しやすい大きさ（実寸38px以上）。熱の柱の矢印は管の目盛りと同じ基準 ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-guide summary { width: 84px !important; height: 84px !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo { --thermo-inset: 9px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo { --thermo-inset: 9px !important; }
 /* 炭焼きの炭壺の帯は「？」の手前で終える */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .heat-info { right: 104px !important; }
 
@@ -4046,35 +4238,24 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-name .fr-ratio { min-h
 /* ---------- 熱の柱の外枠（銅とガラスの柱）: 温度計の箱を外枠ごと x327〜407・y95〜603（幅80）にし、
    上下同じ余白44（矢印の位置の計算が上下対称の前提）で窓 y139〜559 に管（幅26）を合わせる。帽子の上に札が乗る。
    絵の窓は上 38.6・下 44 なので、絵だけ 5.4 下げて置く ---------- */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo { left: 327px !important; top: 95px !important; width: 80px !important; height: 508px !important; --thermo-inset: 44px !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-housing {
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo { left: 327px !important; top: 95px !important; width: 80px !important; height: 508px !important; --thermo-inset: 44px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-housing {
   position: absolute; inset: 5.4px 0 0 0 !important; width: auto !important; height: auto !important;
   border-radius: 0; background: none; box-shadow: none; border: 0 solid transparent;
   border-image: url("../img/ui/craft-glass/spine-housing.webp") 91 0 90 0 fill / 58px 0 57px 0 stretch !important;
 }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-housing .thermo-tube { left: 27.1px !important; right: 27.1px !important; top: 38.6px !important; bottom: 44px !important; border-radius: 13px; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-pointer { left: 55px !important; }
-/* 札は帽子の上（y89〜131）。柱の箱の右端にそろえ、舞台へはみ出さない */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read { top: -6px !important; right: 0 !important; }
-/* 温度計を持たない工程の消灯の柱も、同じ外枠に暗い管 */
-html body.craft-stage:not(.game-ds) .bench[data-mode]:is([data-step="setup"], [data-step="place"], [data-step="holes"], [data-step="heat"]) .bench-right::before {
-  left: 327px; top: 100.4px; width: 80px; height: 502.6px; border-radius: 0; box-shadow: none; border: 0 solid transparent;
-  border-image: url("../img/ui/craft-glass/spine-housing.webp") 91 0 90 0 fill / 58px 0 57px 0 stretch !important;
-  background:
-    repeating-linear-gradient(0deg, #0000 0 11px, #1a0f2a55 11px 12px) 27.1px 38.6px / 25.8px 420px no-repeat,
-    linear-gradient(0deg, #6a6a68, #56585a 40%, #4a524e 44%, #525a56 64%, #55504c 71%, #3c3838 90%, #262224) 27.1px 38.6px / 25.8px 420px no-repeat;
-}
-/* 消灯の柱には何の柱かを縦書きで添える（ラベル無しの灰色の帯に見えないように） */
-html body.craft-stage:not(.game-ds) .bench[data-mode]:is([data-step="setup"], [data-step="place"], [data-step="holes"], [data-step="heat"]) .bench-right::before {
-  content: "温度計はお休み"; display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 38px 0 44px;
-  writing-mode: vertical-rl; font-size: 19px; font-weight: 800; letter-spacing: .14em; color: #cdbfe0; text-shadow: 0 1px 4px #000, 0 0 2px #000;
-}
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-housing .thermo-tube { left: 27.1px !important; right: 27.1px !important; top: 38.6px !important; bottom: 44px !important; border-radius: 13px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-pointer { left: 55px !important; }
+/* 加熱前の針先は管の右縁のまま、矢羽を幅80の枠内に収める。 */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature .thermo-pointer { width: 25px; }
+/* 札は帽子の上（y89〜131）。横は柱の中心（上の「熱の柱の札」） */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read { top: -6px !important; }
 /* ---------- 小さな札（銅の縁のガラスの札）: 柱の上の状態の札・「温度帯」の札・針の現在位置。両端の丸を残して横に伸ばす ---------- */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
   border: 0 solid transparent !important; border-radius: 21px !important; background: none !important; box-shadow: none !important;
   border-image: url("../img/ui/craft-glass/plaque.webp") 0 125 fill / 0 21.6px stretch !important;
 }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-temperature::before { z-index: 3; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before { z-index: 3; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read { z-index: 3; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-current-zone {
   border-color: transparent !important; border-style: solid !important; border-radius: 26px !important; background: none !important; box-shadow: none !important;
@@ -4118,9 +4299,10 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .b
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .bench-phase.seen:not(.now) { filter: brightness(1.18) saturate(1.1); }
 html body.craft-stage:not(.game-ds) .bench[data-mode][data-mode="tournament"] .bench-progress-track > .bench-phase.now { padding-right: 14px !important; }
-/* ---------- 見守る人の一言の板（紫の革に縫い目・左のガラスの座に顔） ---------- */
+/* ---------- 見守る人の一言の板（紫の革に縫い目・左のガラスの座に顔） ----------
+   顔（56px）の中心を、絵のガラスの座の中心（板の左から約58px）にそろえる（#3815）。文字の頭の位置は変えない（29.9＋56＋5.7＝91.6）。 */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-left .bench-audience {
-  padding: 8px 14px 8px 20.6px !important; gap: 15px; border: 0 solid transparent !important; border-radius: 0 !important; background: none !important; box-shadow: none !important;
+  padding: 8px 14px 8px 29.9px !important; gap: 5.7px; border: 0 solid transparent !important; border-radius: 0 !important; background: none !important; box-shadow: none !important;
   border-image: url("../img/ui/craft-glass/voice-plate.webp") 118 59 119 220 fill / 48.8px 24.3px 49.2px 90.8px / .4px 1.6px 1.6px 1.4px stretch !important; filter: drop-shadow(0 8px 14px #0009);
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-people, html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-person, html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-face { width: 56px !important; height: 56px !important; }
@@ -4275,6 +4457,34 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .res
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .result-card .rc-details[open] { grid-area: 3 / 1 / 4 / -1; min-height: 0; overflow-y: auto; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .result-card .rc-details[open] .rc-lines { max-height: none; overflow: visible; }
 
+/* #3558 項目4: 配合行。#3557 の列幅調整とは別に、特徴と在庫を離し、熟練度を全文表示する。 */
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row { grid-template-rows: minmax(var(--bench-tap), auto) auto auto auto; row-gap: 4px !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-feature { overflow: hidden; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-feature b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row .fr-mastery { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }
+
+/* 最初の注文の支給葉は、名前と分量操作を横に並べて3種とも初期表示に収める。 */
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix:has(.mix-list-supplied) {
+  grid-template-columns: 220px minmax(0, 1fr) !important;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix:has(.mix-list-supplied) .mix-vessel { width: 100% !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .flavor-row {
+  grid-template-columns: 64px max-content minmax(0, 1fr) var(--bench-tap) 44px var(--bench-tap);
+  grid-template-rows: auto auto;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-feature { grid-column: 2 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-name > small:first-of-type {
+  grid-area: 1 / 3 !important; min-width: 0; overflow-wrap: anywhere;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-mastery { grid-area: 2 / 2 / 3 / 4 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-ratio {
+  grid-area: 2 / 4 / 3 / -1 !important; text-align: center;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied :is(.fr-btn, .fr-g) { grid-row: 1 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-btn:first-of-type { grid-column: 4 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-g { grid-column: 5 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-btn:last-of-type { grid-column: 6 !important; }
+
 /* ===== css/side-area.css ===== */
 /* 左右の余白の活用（YHK・2026-11-11 オーナー決定）。部品と追随は js/core/side-area.js。
    ステージ（固定 1280×720）の外・場面背景のぼかし（#backdrop）の上に、左と右の層を1枚ずつ置く。ステージの中は変えない。
@@ -4409,13 +4619,13 @@ body.reduce-shake .side-smoke, :root[data-side-calm="on"] .side-smoke { animatio
 :root[data-side-pad="on"] #vn .vn-controls > .vn-ctl[data-test="vn-glossary"]::before { content: none !important; }
 :root[data-side-pad="on"] #hud .hud-right > :is(.hud-lime, .hud-menu) { visibility: hidden !important; }
 /* 会話の操作を余白へ出している間は、会話欄の上に伸びる操作札（phone-density.css の --phone-tap）の分を空けない。
-   選択肢を PC と同じ高さ（3択以上は会話欄の上 62px、2択は 94px）へ下げる（オーナー「2択が上すぎる」「もう少し上」2026-11-13・YHK14）。
+   選択肢を PC と同じ高さ（3択以上は会話欄の上 62px、2択は 130px）へ下げる（オーナー「2択が上すぎる」「もう少し上」2026-11-13・YHK14 → 2択は 11-14 に 112px、11-18「もう気持ち上」#3813 で 130px）。
    新版（look-neo.css）は帯のすぐ上に自分で置くので、ここでは触らない（#stage #vn の規則が勝つ）。 */
 html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:root) .vn-choices {
   bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px);
 }
 html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 112px);
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 130px);
 }
 :root[data-side-pad="on"].side-probe #hud .hud-right > :is(.hud-lime, .hud-menu) { visibility: inherit !important; }
 
@@ -4464,8 +4674,11 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
   --neo-line: 56px;
   --neo-inner-size: 28px;
   --neo-band-h: calc(var(--neo-text-top) + var(--neo-line) * 2 + 10px + var(--neo-safe-b));
-  /* 札の字（--phone-ctl）に比例する: 5つの字の幅 約12.4em＋左右の余白 0.6em×10＋間隔 12px×4。 */
-  --neo-ctl-w: calc(var(--phone-ctl) * 18.4 + 48px);
+  /* 札の字（--phone-ctl）に比例する。実測（--phone-ctl 24px・しっぽり明朝）: 札5つの全幅 512.7px
+     ＝字幅の合計 約12.7em＋左右の余白 32px×5＋間隔 12px×4。旧式（18.4em＋48px＝489.6px）は
+     実測より小さく、名前の上限幅が広がりすぎて長い名前が札の手前12pxで止まらなかった。
+     字幅の増減に追従するよう比例式にし、実測より少し大きめに取る。 */
+  --neo-ctl-w: calc(var(--phone-ctl) * 13 + 213px);
 }
 
 /* ---------------------------------------------------------------- 1. 会話窓: 画面下から立ち上がる夜紫の帯 */
@@ -4738,10 +4951,9 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl:focus-visible {
   outline: none;
-}
-:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl:focus-visible::after {
-  outline: 2px solid var(--neo-gold);
-  outline-offset: -2px;
+  text-decoration: underline;
+  text-decoration-color: var(--neo-gold);
+  text-underline-offset: 5px;
 }
 /* AUTO・SKIP の点灯: 札を金で塗り、文字を墨にする。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl.on {
@@ -4932,9 +5144,10 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
   gap: 12px;
   counter-reset: neo-choice;
 }
-/* 2026-11-14 オーナー「二択をもう少し上へ」: 2択だけ帯との間隔を 12px → 30px に広げる（vn.css の 338→356px と同じ +18）。 */
+/* 2026-11-14 オーナー「二択をもう少し上へ」: 2択だけ帯との間隔を 12px → 30px に広げる（vn.css の 338→356px と同じ +18）。
+   2026-11-18 オーナー「もう気持ち上」（#3813）で 30px → 48px（旧版と同じ +18）。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom: calc(var(--neo-band-h) + 30px);
+  bottom: calc(var(--neo-band-h) + 48px);
 }
 /* 多い時のスクロール領域は、画面の上端（現行と同じ 16px）から帯の上まで。幅は選択肢の幅＋左右 20px。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choices:has(> .vn-choice:nth-child(6)) { top: 16px; width: 840px; }
@@ -4944,9 +5157,9 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 :root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
   bottom: calc(max(var(--neo-band-h), var(--neo-band-h) - var(--neo-rule-top) + var(--phone-tap)) + 12px);
 }
-/* 2択だけ帯との間隔を +18 広げる（上のデスクトップ側と同じ調整）。 */
+/* 2択だけ帯との間隔を +36 広げる（上のデスクトップ側と同じ調整）。 */
 :root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom: calc(max(var(--neo-band-h), var(--neo-band-h) - var(--neo-rule-top) + var(--phone-tap)) + 30px);
+  bottom: calc(max(var(--neo-band-h), var(--neo-band-h) - var(--neo-rule-top) + var(--phone-tap)) + 48px);
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choice {
   --neo-c-fill: rgba(33, 20, 52, .9);
@@ -5051,8 +5264,8 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 /* LOG を開いている間は、操作の札と送りの印を消す（現行では LOG の紙の下に隠れている）。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #vn:has(> .vn-log.show) .vn-controls { opacity: 0; pointer-events: none; }
 :root[data-look="neo"] body:not(.game-ds) #stage #vn:has(> .vn-log.show) .vn-next { opacity: 0; animation: none; }
-/* 会話カットイン（はじめの顔の枠・下端 y526）: 名前の行に掛からない高さへ上げ、帯の暗がりの上に出す。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-cutin-layer { translate: 0 -44px; z-index: 6; }
+/* 会話カットイン（はじめの顔の帯）: 帯の暗がりの上に出す。位置は新版の名前の行に合わせて決めてあるので動かさない（CCR・2026-11-20）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-cutin-layer { z-index: 6; }
 /* シーシャの図解: 画面の右上から、帯（と名前の行の操作の札）の上までに収める（少し縮めて、帯の暗がりの上に出す）。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .sd-diagram { top: 22px; scale: .9; transform-origin: 100% 0; z-index: 6; }
 :root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .sd-diagram { top: 16px; scale: .9; }
@@ -5619,6 +5832,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map .spot-pin.guided-off { opacity: .5; }
 /* 居る人の顔と「!」: 縁を夜紫の面に合わせる。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map .spot-pin .pin-person { border-color: #f6f1fa; box-shadow: 0 0 0 1px rgba(21, 13, 34, .6), 0 2px 5px rgba(8, 3, 16, .55); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .map .spot-pin .pin-unknown { box-shadow: inset 0 2px 5px rgba(8, 3, 16, .55); }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map .evt-badge:not(.hidane-badge) { color: #26160a; background: var(--neo-ui-gold); border-color: #fbe6b4; box-shadow: 0 0 10px rgba(227, 189, 110, .85); }
 :root[data-look="neo"] body.reduce-shake:not(.game-ds) #stage #screen .map :is(.evt-badge, .evt-badge::after, .spot-pin.guide .shield) { animation: none; }
 
@@ -6770,7 +6984,14 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
   background: linear-gradient(180deg, #f3d48d, #d9a94f);
   border-color: #fbe6b4;
 }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu :is(.axe-bar-division-label, .axe-bar-career) { color: var(--neo-ui-lav); }
+/* 閉じた段（#3779）: 押せる札より暗い面・点線の縁・淡い文字。開き方の2行目まで読める明るさは残す。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu .axe-bar-divisions .axe-bar-tier:disabled {
+  color: var(--neo-ui-dim);
+  background: rgba(20, 12, 32, .55);
+  border-style: dashed;
+  border-color: rgba(201, 167, 230, .38);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu :is(.axe-bar-division-label, .axe-bar-career, .axe-bar-tier-line) { color: var(--neo-ui-lav); }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu .axe-bar-division-note { color: var(--neo-ui-dim); }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu .axe-bar-records { border-top-color: rgba(201, 167, 230, .24); }
 
@@ -7051,7 +7272,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-bubble h3 { color: var(--neo-ui-gold-hi); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-bubble .gb-tutorial-count { color: var(--neo-ui-dim); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-spot {
-  box-shadow: 0 0 0 9999px rgba(8, 3, 16, .58), 0 0 0 3px var(--neo-ui-gold-hi), 0 0 18px 4px rgba(246, 223, 168, .5);
+  box-shadow: 0 0 0 9999px var(--gb-tutorial-shade, rgba(8, 3, 16, .58)), 0 0 0 3px var(--neo-ui-gold-hi), 0 0 18px 4px rgba(246, 223, 168, .5);
 }
 
 /* 近い目的地（SBD104）: 紙の札をやめて、盤の色の線が左に付いた夜紫の札。 */
@@ -7647,7 +7868,9 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 .retro-maphead-money { color: var(--r-gold); }
 .retro-gauge { display: flex; align-items: center; gap: calc(var(--d) * 3); color: #e56b8c; }
 .retro-gauge svg { display: block; width: calc(var(--d) * 7); height: calc(var(--d) * 6); }
-.retro-gauge i { position: relative; display: block; width: calc(var(--d) * 34); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-lilac); }
+/* 枠の長さ（--gauge-dots）は現行の HUD と同じ割合で retro/map.js が決める: 盤の割り振り前は半分（17）、盤の体力で 34 まで伸びる（#3821）。
+   足りない分は右の余白にして、帯の所持金・昼夜の位置を動かさない */
+.retro-gauge i { position: relative; display: block; width: calc(var(--d) * var(--gauge-dots, 34)); margin-right: calc(var(--d) * (34 - var(--gauge-dots, 34))); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-lilac); }
 .retro-gauge i b { position: absolute; left: 0; top: 0; bottom: 0; background: #57c79a; }
 .retro-gauge[data-health="yellow"] i b { background: #f6c93b; }
 .retro-gauge[data-health="red"] i b { background: #d9342b; }
@@ -8403,7 +8626,8 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 :is(.loading-gate, .boot-gate).is-ready .loading-bar-fill { width: 100%; animation: none; transform: none; }
 :is(.loading-gate, .boot-gate).is-ready .loading-bar { box-shadow: inset 0 0 0 1px #ffffff30, 0 0 calc(8 * var(--loading-unit)) #ff5fa8b3, 0 0 calc(22 * var(--loading-unit)) #b45cf080, 0 0 calc(40 * var(--loading-unit)) #3fd0e84d; }
 .loading-bar::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, transparent, #ffffff55, transparent); transform: translateX(-100%); animation: loading-bar-sweep 1.6s ease-in-out infinite; }
-:is(.loading-gate, .boot-gate).is-ready .loading-bar::after { animation: none; opacity: 0; }
+/* 準備完了では作業中の光の往復を止め、明るい光の筋を一度だけ端まで走らせる（下の「準備完了の合図」）。 */
+:is(.loading-gate, .boot-gate).is-ready .loading-bar::after { opacity: 0; background: linear-gradient(90deg, transparent, #fff6e0d9, transparent); animation: loading-ready-sweep .8s ease-out; }
 
 /* Upright, wide-tracked LOADING led by the small shisha mark. The coal heat over the HMD breathes as a warm
    glow (the only motion: smoke is never drawn coming out of hardware, docs/shisha_reference.md §4.1). */
@@ -8416,7 +8640,17 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 /* "Tap/click/key to continue" pill, revealed only once preparation is done and a comic is shown.
    Its line is always reserved (and budgeted) so the stack never shifts when it appears. */
 .loading-proceed { box-sizing: border-box; flex: none; margin: calc(6 * var(--loading-unit)) 0 calc(9 * var(--loading-unit)); min-height: calc(24 * var(--loading-unit)); padding: calc(3 * var(--loading-unit)) calc(16 * var(--loading-unit)); border-radius: 999px; border: 1px solid #ffffff2e; background: #0b071380; color: #f3e7cc; font-size: calc(14 * var(--loading-unit)); font-weight: 700; line-height: 1.3; letter-spacing: .08em; opacity: 0; transition: opacity .2s ease; }
-:is(.loading-gate, .boot-gate).is-ready .loading-proceed { opacity: .92; animation: loading-proceed-pulse 1.6s ease-in-out infinite; }
+/* 準備完了の合図（#3812 オーナー「ロード完了したらわかるようにしたい。気がついたら終わってて押し忘れる」）。
+   .is-ready が付いた瞬間に一度だけ、ゲージが明るく光って光の筋が走り、「準備完了」が琥珀色に灯り、「進む」の札が光の輪とともに出る。
+   その後も「準備完了」は琥珀色のまま、「進む」の札は琥珀の縁でゆっくり光り続ける（LOADING… の間と一目で見分けられる）。
+   変えるのは色・影・不透明度だけで、大きさと位置は変えない（起動画面からの引き継ぎや漫画の有無で位置を比べている）。
+   出る時刻と入力の受け付けは core/loading.js のまま。一度きりの光は「揺れ・閃光を減らす」で、動きは端末の「動きを減らす」で止める（色と縁は残す）。 */
+:is(.loading-gate, .boot-gate).is-ready .loading-bar { transition: none; animation: loading-ready-bar 1s ease-out; }
+:is(.loading-gate, .boot-gate).is-ready .loading-status { color: #ffdca0; text-shadow: 0 0 .6em #f0a84a8c, 0 1px 0 #00000080; animation: loading-ready-status 1.2s ease-out; }
+:is(.loading-gate, .boot-gate).is-ready .loading-proceed { opacity: .92; border-color: #f0c27aa6; background: #1c1020cc; color: #fff1d8; box-shadow: 0 0 .7em #f0b45c4d; transition: none;
+  animation: loading-ready-proceed .9s ease-out, loading-proceed-pulse 1.8s ease-in-out .9s infinite; }
+body.reduce-shake :is(.loading-gate, .boot-gate).is-ready :is(.loading-bar, .loading-status) { animation: none; }
+body.reduce-shake :is(.loading-gate, .boot-gate).is-ready .loading-bar::after { animation: none; }
 
 @keyframes loading-appear { from { opacity: 0; } to { opacity: 1; } }
 @keyframes loading-sheet { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -8427,7 +8661,14 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 @keyframes loading-logo-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes loading-bar-sweep { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
 @keyframes loading-bar-indeterminate { from { transform: translateX(-110%); } to { transform: translateX(300%); } }
-@keyframes loading-proceed-pulse { 0%, 100% { opacity: .75; } 50% { opacity: .95; } }
+/* 「進む」の札は琥珀の光を強めて弱める（0%・100% の影は .is-ready の静止の影）。 */
+@keyframes loading-proceed-pulse { 0%, 100% { opacity: .92; } 50% { opacity: 1; box-shadow: 0 0 1.2em #f0b45c8c; } }
+/* 準備完了の瞬間に一度だけ（0%・100% を書かない値は .is-ready の静止の見た目から・へ戻る）。 */
+@keyframes loading-ready-bar { 22% { filter: brightness(1.4) saturate(1.1); box-shadow: inset 0 0 0 1px #ffffffa6, 0 0 calc(12 * var(--loading-unit)) #fff0d6d9, 0 0 calc(30 * var(--loading-unit)) #ff5fa8cc, 0 0 calc(60 * var(--loading-unit)) #b45cf0a6; } }
+@keyframes loading-ready-sweep { 0% { opacity: 1; transform: translateX(-100%); } 70% { opacity: 1; } 100% { opacity: 0; transform: translateX(100%); } }
+@keyframes loading-ready-status { 0% { color: #f3e8d2; text-shadow: 0 0 .5em #ff5fa866, 0 1px 0 #00000080; } 22% { color: #fff6e2; text-shadow: 0 0 .3em #fff3d9, 0 0 1.1em #f0a84ae6, 0 1px 0 #00000080; } }
+/* 不透明度は 0 から始めない（準備完了と同時に「進む」が見えていることを確かめる検査がある）。 */
+@keyframes loading-ready-proceed { 0% { opacity: .4; box-shadow: 0 0 0 0 #f0c27a00, 0 0 0 #f0b45c00; } 35% { opacity: 1; box-shadow: 0 0 0 .3em #f0c27a59, 0 0 1.4em #f0b45cb3; } }
 
 /* Portrait: break out of the scaled #stage and cover the real viewport, so panels and bubble text can
    be sized against the visible area and stay readable. Kept below #rotate-hint (z-index 999) so touch
@@ -8491,6 +8732,9 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 @media (prefers-reduced-motion: reduce) {
   :is(.loading-gate, .boot-gate), :is(.loading-gate, .boot-gate)::before, .loading-logo::before, .loading-logo::after, .loading-card, .loading-panels figure, .loading-emblem path, .loading-bar::after, .loading-bar-fill, .loading-proceed { animation: none; }
   .loading-emblem .emblem-glow, :is(.loading-gate, .boot-gate).is-ready .emblem-glow { animation: none; opacity: .7; }
+  /* 準備完了の合図も動かさない。琥珀色の「準備完了」と縁の光った「進む」の札は静止したまま残す（#3812）。 */
+  :is(.loading-gate, .boot-gate).is-ready :is(.loading-bar, .loading-status, .loading-proceed) { animation: none; }
+  :is(.loading-gate, .boot-gate).is-ready .loading-bar::after { animation: none; }
   :is(.loading-gate, .boot-gate).is-ready .loading-proceed { opacity: .92; }
 }
 

@@ -106,7 +106,8 @@ async function harness({ learned = false, noWobble = false } = {}) {
   const source = fs.readFileSync(new URL("../js/craft/pull.js", import.meta.url), "utf8");
   const mod = new vm.SourceTextModule(source, { context });
   await mod.link(spec => {
-    if (["./pull-draw.js", "./stage-layout.js"].includes(spec)) {
+    // 救済の段（WIN13）も本物を使う。この一台は救済なし。
+    if (["./pull-draw.js", "./stage-layout.js", "./retry-assist-level.js"].includes(spec)) {
       const source = fs.readFileSync(new URL(`../js/craft/${spec}`, import.meta.url), "utf8");
       return new vm.SourceTextModule(source, { context });
     }

@@ -411,10 +411,79 @@ await suite("trpg-main", async check => {
     const storage = await storageSnapshot(page);
     assert.equal(storage.local.suien_remake_slot1, baseline.local.suien_remake_slot1);
     assert.equal(storage.local.qa_unrelated, "keep"); assert.equal(storage.session.qa_unrelated, "keep");
-    assert(JSON.parse(storage.local.suien_remake_save).trpg.cleared[id], "Ending must save before the finish button");
+    const savedEnding = JSON.parse(storage.local.suien_remake_save);
+    assert.equal(ending.trpg.cleared[id].plays, 1);
+    assert.deepEqual(savedEnding.trpg.cleared[id], ending.trpg.cleared[id], "Progress must save before the replay decision");
+    assert.equal(savedEnding.trpg.cleared[id].records, undefined, "No replay is saved before consent");
+    await button(page, "trpg-replay-save-question").waitFor();
+    assert.match(await button(page, "trpg-replay-save-question").textContent(), /リプレイを保存しますか？.*本編の進行は残ります/s);
+    await assertFits(page, '[data-test="trpg-replay-save-yes"], [data-test="trpg-replay-save-no"]');
+    for (const choice of ["yes", "no"]) {
+      const rect = await button(page, "trpg-replay-save-" + choice).boundingBox();
+      assert(rect && rect.height >= 43.9, "Both replay decisions keep a 44px tap target");
+    }
+    await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-replay-choice-" + label + ".png" });
+    await hit(page, "trpg-replay-save-yes");
+    await button(page, "trpg-replay-save-question").waitFor({ state: "detached" });
+    assert.equal(await button(page, "trpg-replay-saved-status").textContent(), "本棚にリプレイを保存しました。");
+    const optedIn = JSON.parse((await storageSnapshot(page)).local.suien_remake_save);
+    assert.equal(optedIn.trpg.cleared[id].records.length, 1);
+    assert.equal(optedIn.trpg.cleared[id].plays, savedEnding.trpg.cleared[id].plays);
+    assert.deepEqual(optedIn.growth, savedEnding.growth, "Replay consent is not a second completion");
+    assert.equal(await button(page, "trpg-finish").textContent(), "カフェへ戻る");
+    await button(page, "trpg-finish").scrollIntoViewIfNeeded();
+    await assertFits(page, '[data-test="trpg-finish"]');
     // TRF13: the ending tells what the night added to the club (a first clear is 2 + 1 ending + 0-3 stars), and the shelf shows it.
     assert.match(await button(page, "trpg-ending-club").textContent(), /部の実績 ＋[3-6]/);
     await hit(page, "trpg-finish");
+    await page.getByRole("heading", { name: "今夜の卓を終えました" }).waitFor();
+    assert.equal(await page.locator(".trpg-campaign-notice").textContent(), "本棚にリプレイを保存しました。");
+    const returned = await snapshot(page);
+    const savedReturn = JSON.parse((await storageSnapshot(page)).local.suien_remake_save);
+    assert.equal(returned.slot, ending.slot, "Returning to the cafe does not spend another action");
+    assert.deepEqual(returned.trpg.cleared[id], optedIn.trpg.cleared[id]);
+    assert.deepEqual(savedReturn.trpg.cleared[id], optedIn.trpg.cleared[id]);
+    assert(savedEnding.growth.playMastery.trpg, "The completed table records mastery before returning to the cafe");
+    assert.deepEqual(savedReturn.growth.playMastery.trpg, savedEnding.growth.playMastery.trpg);
+    assert.deepEqual(savedReturn.growth?.rewards, savedEnding.growth?.rewards);
+    const [first] = optedIn.trpg.cleared[id].records;
+    assert.equal(first.play, 1);
+    assert(first.lines.length > 0, "the ending and epilogue are in the save before closing the table");
+    assert(first.rolls.length > 0 && first.choices.length > 0);
+    const storageBeforeReading = await storageSnapshot(page);
+    await page.evaluate(() => {
+      const original = Storage.prototype.setItem;
+      let writes = 0;
+      Storage.prototype.setItem = function (...args) { writes++; return original.apply(this, args); };
+      window.__finishShelfWriteCheck = () => { Storage.prototype.setItem = original; return writes; };
+    });
+    assert.equal(await button(page, "trpg-bookshelf-open").getAttribute("aria-label"), "本棚（過去プレイを再生）");
+    await hit(page, "trpg-bookshelf-open");
+    const bookshelf = button(page, "trpg-bookshelf"), firstEntry = button(page, "trpg-shelf-run-" + id + "-1");
+    assert.equal(await bookshelf.getAttribute("role"), "dialog");
+    assert.match(await firstEntry.textContent(), /第1回.*再生/);
+    await hit(page, "trpg-shelf-run-" + id + "-1");
+    const scene = button(page, "trpg-replay-scene"), progress = button(page, "trpg-replay-progress");
+    const pageCount = first.stages.length + 1;
+    assert.equal(await progress.textContent(), "場面 1 / " + pageCount);
+    assert(await button(page, "trpg-replay-back").isDisabled());
+    assert.equal(await scene.locator("li").textContent(), first.rolls[0]);
+    await hit(page, "trpg-replay-next");
+    assert.equal(await progress.textContent(), "場面 2 / " + pageCount);
+    await hit(page, "trpg-replay-back");
+    assert.equal(await scene.locator("li").textContent(), first.rolls[0]);
+    for (let i = 1; i < pageCount; i++) await hit(page, "trpg-replay-next");
+    assert.equal(await progress.textContent(), "場面 " + pageCount + " / " + pageCount);
+    assert(await button(page, "trpg-replay-next").isDisabled());
+    assert.deepEqual(await scene.locator(".trpg-log-line").allTextContents(), first.lines.map(line => line.join("")));
+    assert(await scene.getByRole("heading", { name: first.ending, exact: true }).isVisible());
+    await hit(page, "trpg-replay-list");
+    assert.equal(await firstEntry.count(), 1);
+    assert.equal(await page.locator(".trpg-cinematic").count(), 0);
+    await hit(page, "trpg-bookshelf-close");
+    assert.equal(await page.evaluate(() => window.__finishShelfWriteCheck()), 0, "replay does not call Storage.setItem");
+    assert.deepEqual(await snapshot(page), returned, "replay does not change the active save or rewards");
+    assert.deepEqual(await storageSnapshot(page), storageBeforeReading, "replay does not write storage");
     assert.match(await button(page, "trpg-club-rank").getAttribute("aria-label"), /実績 [3-6]。/);
     await assertFits(page, '[data-test="trpg-club-rank"]');
     await hit(page, "trpg-reflect-hard"); await hit(page, "trpg-campaign-close");
@@ -422,10 +491,35 @@ await suite("trpg-main", async check => {
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.load(); core.state.day = 5; core.state.slot = 1; });
     // TMX14 (owner 2026-11-11): a finished book can be played again on a later night.
     await open(page); assert.equal(await button(page, "trpg-play-" + id).textContent(), "もう一度遊ぶ");
-    assert((await button(page, "trpg-memory-" + id).textContent()).length > 0);
+    assert.equal(await button(page, "trpg-book-" + id).locator(".trpg-campaign-book-badge").textContent(), "遊んだ記録");
+    assert.match(await button(page, "trpg-memory-" + id).textContent(), /見た結末 1 \/ 4/);
+    assert.deepEqual((await snapshot(page)).trpg.cleared[id], optedIn.trpg.cleared[id]);
     assert.match(await button(page, "trpg-memory-pc").textContent(), /演じた役/);
     await assertShelfControls(page);
     await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-campaign-memory-" + label + ".png" });
+    await hit(page, "trpg-bookshelf-open");
+    assert.equal(await firstEntry.count(), 1, "the record can be opened after loading");
+    await hit(page, "trpg-shelf-run-" + id + "-1");
+    assert.equal(await scene.locator("li").textContent(), first.rolls[0]);
+    await page.keyboard.press("Escape");
+    assert.equal(await bookshelf.count(), 0);
+    if (label === "ordinary-pc") {
+      await play(page, id);
+      await button(page, "trpg-replay-save-question").waitFor();
+      const beforeDecline = await storageSnapshot(page);
+      await hit(page, "trpg-replay-save-no");
+      assert.equal(await button(page, "trpg-replay-saved-status").textContent(), "リプレイは保存しませんでした。");
+      assert.deepEqual(await storageSnapshot(page), beforeDecline, "Declining does not write a replay or save again");
+      await hit(page, "trpg-finish");
+      await hit(page, "trpg-bookshelf-open");
+      assert.equal(await firstEntry.count(), 1);
+      assert.equal(await button(page, "trpg-shelf-run-" + id + "-2").count(), 0);
+      const replayed = await snapshot(page);
+      assert.equal(replayed.trpg.cleared[id].plays, 2);
+      assert.deepEqual(replayed.trpg.cleared[id].records, [first], "The chosen first replay remains intact");
+      await hit(page, "trpg-bookshelf-close");
+      assert.deepEqual(await snapshot(page), replayed);
+    }
     await hit(page, "trpg-campaign-close");
   }, options);
   // TRF13: the rank is counted from the shelf (no new save field), and its growth point reaches the player's first role.
@@ -439,6 +533,11 @@ await suite("trpg-main", async check => {
         ending: endings[0], endingTitle: "", variant: "smooth", plan: {}, version, stars: 2, heat: 6, night: "盛り上がった夜", endingsSeen: endings, plays: 2 };
     }, { version: shark.version, endings: Object.keys(shark.endings).slice(0, 2) });
     await open(page);
+    await hit(page, "trpg-bookshelf-open");
+    const legacy = button(page, "trpg-shelf-story-shark-last-order");
+    assert.match(await legacy.textContent(), /詳しい記録のない回は、結末の概要だけ残っています/);
+    assert.equal(await legacy.locator("button").count(), 0, "an old summary has no replay button");
+    await hit(page, "trpg-bookshelf-close");
     const banner = button(page, "trpg-club-rank");
     assert.equal(await banner.getAttribute("data-rank"), "2");
     assert.equal(await banner.getAttribute("aria-label"), "部のランク 2、なじみの部。実績 6。次のランクまで あと10。はじめの役の成長点 ＋1");
@@ -488,6 +587,11 @@ await suite("trpg-main", async check => {
     const left = await snapshot(page);
     assert.equal(left.slot, 1, "a bookmark does not spend the night"); assert.deepEqual(left.trpg.cleared, {});
     assert.match(await button(page, "trpg-bookmark-ordinary-cup").textContent(), /しおり/);
+    await hit(page, "trpg-campaign-close");
+    await page.waitForFunction(() => window.__trpgBarResult !== null);
+    await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.load(); });
+    assert.deepEqual((await snapshot(page)).trpg.bookmark, table, "Loading preserves the saved bookmark");
+    await open(page);
     // Continue: the same room with the same clue already found, then finish the story as usual.
     await hit(page, "trpg-resume-ordinary-cup");
     await button(page, "trpg-spot-window").waitFor();
@@ -502,7 +606,14 @@ await suite("trpg-main", async check => {
     const done = await snapshot(page);
     assert.equal(done.slot, 2); assert(done.trpg.cleared["ordinary-cup"]); assert.equal(done.trpg.bookmark, undefined);
     assert.equal(done.trpg.cleared["ordinary-cup"].plays, 1);
-    await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-hard"); await hit(page, "trpg-campaign-close");
+    await button(page, "trpg-replay-save-question").waitFor();
+    await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.load(); });
+    await button(page, "trpg-replay-save-question").waitFor({ state: "detached" });
+    const loadedDone = await snapshot(page);
+    assert.equal(loadedDone.slot, 2);
+    assert.equal(loadedDone.trpg.bookmark, undefined);
+    assert.deepEqual(loadedDone.trpg.cleared["ordinary-cup"], done.trpg.cleared["ordinary-cup"]);
+    assert.equal(loadedDone.trpg.cleared["ordinary-cup"].records, undefined);
     // TMX14: a finished book shows the endings seen and can be played again on another night.
     await page.evaluate(() => { Object.assign(__remake.state, { day: 4, slot: 1 }); });
     await open(page);

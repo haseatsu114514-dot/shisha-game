@@ -36,7 +36,7 @@ import { noteShopStamp, shopStampsShortcut } from "./ch5-shop-stamps.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
   chapterFivePreparation, chapterFivePrepPending, recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
-  chapterFivePrepScene, CH5_PREP_TRIALS,
+  chapterFivePrepScene, CH5_PREP_TRIALS, chapterFiveCallOpen, CH5_CALL_OPEN_NOTE,
 } from "./ch5-progress.js";
 import { SUMI_TRIAL_FLAG, SUMI_TRIAL_INTRO, SUMI_TRIAL_STAMINA, sumiTrialOffered, sumiTrialFeedbackPending,
   sumiTrialResult, recordSumiTrial, finishSumiTrialFeedback, declineSumiTrialTonight, sumiTrialScene } from "./ch5-sumi-trial.js";
@@ -57,9 +57,9 @@ const TONARI_SLOTS = Object.freeze({
 const PRACTICE = "ch5_free_tonari_practice";
 const MASHIRO_VISIT = "ch5_free_mashiro_visit";
 
-/** 博士に連絡する（勝負の日を決める）。家の電話から。 */
+/** 博士に連絡する（勝負の日を決める）。家の電話から。閉店後の練習と試作を終えてから出す（chapterFiveCallOpen）。 */
 export const CH5_CALL_SPOT = Object.freeze({
-  id: "ch5_call", kind: "ch5_call", label: "博士に連絡する", area: "自宅の電話", x: 64, y: 66,
+  id: "ch5_call", kind: "ch5_call", label: "博士に連絡する", area: "自宅の電話", x: 74, y: 66,
   theme: "rest", glyph: "☎", preview: "bg_home",
   desc: "勝負の日を決める。決めたら、その日の残りは準備にあてて、翌日が勝負になる。",
 });
@@ -75,8 +75,11 @@ const HIDDEN_SPOTS = Object.freeze(["naru", "minto", "shishark", "c_station", "t
  * 第5章の地元の行き先（東京の配送便は昼だけ・ドバイは切符入りの手紙が届いている時だけ押せる）。
  * 出張シーシャは、引き受けた依頼がある日だけ（昼の会・夜の会で押せる時間帯が決まっている）。
  */
-export function chapterFiveHomeSpots() {
-  return [...allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id)), ...chapterFiveShops(), CH5_CALL_SPOT, chapterFiveTokyoPin(), chapterFiveDubaiPin(),
+export function chapterFiveHomeSpots({ tonariDue = false } = {}) {
+  // 指定の時間帯に読める章の会話だけ、既存の「！」で案内する。普通のtonariの新着表示はそのまま。
+  const local = allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id))
+    .map(spot => spot.id === "tonari" && tonariDue ? { ...spot, hasNew: () => true } : spot);
+  return [...local, ...chapterFiveShops(), chapterFiveCallOpen(state) ? CH5_CALL_SPOT : null, chapterFiveTokyoPin(), chapterFiveDubaiPin(),
     chapterFiveCateringSpot()].filter(Boolean);
 }
 
@@ -106,7 +109,11 @@ export function chapterFiveDailyDefinition(io) {
     withLovers: () => cateringBusyContacts(), // 朝の配信除外だけ。同行者や恋愛状態は変更しない
     limeShortcuts: () => [shopStampsShortcut()],
     tournamentName: "博士との勝負",
-    undatedNote: "博士との勝負の日は、まだ決まっていない",
+    // 博士への連絡は、tonari の閉店後の練習と試作を終えてから（2026-11-20 オーナー。chapterFiveCallOpen）。その後は急がせない
+    get undatedNote() {
+      return chapterFiveCallOpen(state) ? "博士への連絡は、準備ができたらいつでも。急がなくていい。"
+        : "まずは tonari へ。博士への連絡は、閉店後の練習を終えてから。";
+    },
     // 夜の帰り道の告白は、第4章までに恋愛ルートに入った相手だけ（第5章で初めて届いた締めくくりでは告白しない・
     // romance.js の romanceRouteOpen）。第3・4章の出発前と東京・ドバイで持ち越した告白が、帰郷後の地元の夜に届く
     // （IR33・#2024。東京・ドバイへ出ている夜は romance.js の confessionHeld が持ち越す）。恋人の誘いとデートも開いている（IR16）。
@@ -116,7 +123,7 @@ export function chapterFiveDailyDefinition(io) {
       return ({
       regionId: currentRegion(),
       regions: [
-        { id: "home", label: `地元・${HOME_CITY_NAME}`, background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: chapterFiveHomeSpots },
+        { id: "home", label: `地元・${HOME_CITY_NAME}`, background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: () => chapterFiveHomeSpots({ tonariDue: !!dueTonariScene() }) },
         { id: "widehanga", label: `隣町・${CH2_CITY_NAME}`, background: () => MAP[timeOfDay()], spots: chapterFiveCitySpots },
         { id: TOKYO, label: "東京", background: () => bgUrl(`bg_tokyo_map_${timeOfDay()}`), spots: chapterFiveTokyoSpots },
         // ドバイの地図は第4章と同じ（昼は真昼、夜は夕景）。占い師はドバイには現れない（台帳 URA）。
@@ -269,7 +276,8 @@ async function performChapterFiveSpot(spot, io, options = {}) {
     await openShop({ direct: true });
     return { used: false, exerted: false };
   }
-  if (spot.id === CH5_CALL_SPOT.id) return contactDoctor(io);
+  // 古い画面の残りなどから押されても、準備の区切りの前は連絡しない（地図にも出していない）
+  if (spot.id === CH5_CALL_SPOT.id) return chapterFiveCallOpen(state) ? contactDoctor(io) : { used: false, exerted: false };
   return null;
 }
 
@@ -365,5 +373,6 @@ async function runPrep(io) {
   if (!await io.readScene(sceneId)) return false;
   if (!recordChapterFivePrepAdjustment(state, adjusted === "adjust")) return false;
   save();
+  if (chapterFiveCallOpen(state)) toast(CH5_CALL_OPEN_NOTE);
   return true;
 }

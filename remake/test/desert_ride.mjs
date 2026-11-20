@@ -2,7 +2,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { RIVAL_COAST, CHARGE, COURSE, LAYOUT, NEAR, GATE, SLALOM, PRACTICE_WALL, PLAYER, nearReward, recoverWindow, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
-  summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS, jumpPeak, jumpHeight } from "../js/minigames/desert-ride-model.js";
+  summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS, jumpPeak, jumpHeight,
+  TIER_TUNING, tierOf, resultTier } from "../js/minigames/desert-ride-model.js";
 
 const DT = 1 / 60;
 /** ゲージを置く（使わないと減る仕組みを止めて、量そのものを確かめる）。 */
@@ -554,7 +555,7 @@ test("boost: the gauge fills from near misses, successful big landings and spins
   assert(Math.abs(fill.gauge - (BOOST.land + BOOST.perfect) * CHARGE) < 1e-9);
 });
 
-test("boost spends any stocked gauge proportionally, even during recovery or an active boost", () => {
+test("normal boost requires 30% and spends the stocked gauge proportionally, including during an active boost", () => {
   const game = createGame(generateCourse(DEFAULT_SEED));
   chargeBoost(game, 0.4);
   game.fallT = 0.5;
@@ -562,9 +563,16 @@ test("boost spends any stocked gauge proportionally, even during recovery or an 
   assert.equal(game.gauge, 0);
   assert(Math.abs(game.boostT - BOOST.duration * 0.4) < 1e-9);
   game.fallT = 0;
-  chargeBoost(game, 0.2);
-  assert.equal(boost(game), "boost");
-  assert(Math.abs(game.boostT - BOOST.duration * 0.6) < 1e-9);
+  chargeBoost(game, 0.299);
+  const currentBoostTime = game.boostT;
+  const eventCount = game.events.length;
+  assert.equal(boost(game), null, "just below 30% cannot extend an active boost");
+  assert.equal(game.gauge, 0.299);
+  assert.equal(game.boostT, currentBoostTime);
+  assert.equal(game.events.length, eventCount);
+  game.gauge = 0.3;
+  assert.equal(boost(game), "boost", "exactly 30% can boost");
+  assert(Math.abs(game.boostT - BOOST.duration * 0.7) < 1e-9);
   assert.equal(game.stats.boosts, 2);
   assert.equal(boost(game), null, "spent stock cannot be used again");
 });
@@ -881,7 +889,7 @@ test("boost during the hit window cancels the stumble; an empty gauge or a late 
   // hit + boost with gauge: recover, keep speed, spend the gauge, no fall on the result
   let game = createGame(course);
   game.combo = 4; game.score = 1000;
-  chargeBoost(game, 0.8);
+  hold(game, 0.2); // 立て直しは通常の最低量より少なくても使える
   while (game.z < rock.z - 30) step(game, {}, DT);
   const speedBefore = game.speed, comboBefore = game.combo, scoreBefore = game.score;
   while (!game.passed.has(rock)) { game.x = rock.x; step(game, {}, DT); }
@@ -918,7 +926,7 @@ test("boost during the hit window cancels the stumble; an empty gauge or a late 
   assert.equal(game.stats.recoveries, 0);
   // timing window: a boost after recoverWindow is a normal boost, the stumble remains
   game = createGame(course);
-  chargeBoost(game, 0.7);
+  hold(game, 0.7);
   while (game.z < rock.z - 20) step(game, {}, DT);
   while (!game.passed.has(rock)) { game.x = rock.x; step(game, {}, DT); }
   assert.equal(canRecover(game), true);
@@ -939,6 +947,8 @@ test("boost during the hit window cancels the stumble; an empty gauge or a late 
   while (game.air > 0) step(game, { left: true }, DT);
   assert.equal(game.events.at(-1).reason, "spin");
   assert.equal(canRecover(game), false);
+  assert.equal(boost(game), null, "the remaining gauge is below the normal minimum");
+  game.gauge = 0.3;
   assert.equal(boost(game), "boost");
   assert(game.fallT > 0);
 });
@@ -1251,4 +1261,122 @@ test("scoped art loading defers unselected rivals and waits through decode", asy
     if (NativeImage === undefined) delete globalThis.Image;
     else globalThis.Image = NativeImage;
   }
+});
+
+// ---------------------------------------------------------------- 三段階（#3779）
+// 2026-11-20 オーナー「各ミニゲームに三段階の難易度を追加」: ヌールとの勝負に初級・中級・上級。中級は前と同じ。
+// 初級は岩が少なくヌールが遅い・手加減が多い。上級は岩が多くヌールが速い・手加減が少ない（なるよりは遅い）。
+const raceTier = (course, skill, tier, { rival = rivalRun(course, { tier }), lane = null } = {}) => {
+  const game = createGame(course, { rival, tier }), memo = lane === null ? {} : { lane };
+  if (lane !== null) game.x = lane;
+  while (!game.finished && game.t < 200) botStep(game, skill, memo, DT);
+  return game;
+};
+const rocksOf = course => course.features.filter(f => f.kind === "rock");
+
+test("three tiers: the middle tier is the game as it was; easy thins the rocks, hard adds some, on the same bumps and curves (#3779)", () => {
+  assert.deepEqual(Object.keys(TIER_TUNING), ["easy", "normal", "hard"]);
+  assert.deepEqual(TIER_TUNING.normal, { rocks: {}, noor: {}, rubber: {} }, "the middle tier overrides nothing");
+  assert.equal(tierOf(undefined), "normal"); assert.equal(tierOf("secret"), "normal"); assert.equal(tierOf("hard"), "hard");
+  for (const pack of COURSE_PACKS) {
+    const base = buildCourse({ id: pack.id }), normal = buildCourse({ id: pack.id, tier: "normal" });
+    assert.deepEqual(normal.features, base.features, `${pack.id}: the middle tier is the same course`);
+    assert.equal(normal.tier, undefined);
+    assert.equal(rivalRun(base, { tier: "normal" }).finishTime, rivalRun(base).finishTime, `${pack.id}: the middle tier's Noor is the same Noor`);
+    const easy = buildCourse({ id: pack.id, tier: "easy" }), hard = buildCourse({ id: pack.id, tier: "hard" });
+    for (const [course, tier] of [[easy, "easy"], [hard, "hard"]]) {
+      assert.equal(course.tier, tier); assert.equal(course.id, pack.id); assert.equal(course.name, pack.name); assert.equal(course.length, base.length);
+      assert.deepEqual(course.curves, base.curves, `${pack.id} ${tier}: the same bends`);
+      assert.deepEqual(course.features.filter(f => f.kind === "bump"), base.features.filter(f => f.kind === "bump"), `${pack.id} ${tier}: the same bumps`);
+      for (let i = 1; i < course.features.length; i++) assert(course.features[i].z >= course.features[i - 1].z, "features sorted by z");
+      // 公平さは中級と同じ: 岩の列は 30m 以上離れ、起伏の着地帯に岩が無く、どの列もコースの中に抜けられる幅が残る
+      const rocks = rocksOf(course), zs = [...new Set(rocks.map(r => r.z))].sort((a, b) => a - b);
+      for (let i = 1; i < zs.length; i++) assert(zs[i] - zs[i - 1] >= 30, `${pack.id} ${tier}: rocks ${zs[i - 1]} and ${zs[i]} are too close`);
+      for (const bump of course.features.filter(f => f.kind === "bump")) for (const rock of rocks) assert(rock.z <= bump.z || rock.z - bump.z >= 50, `${pack.id} ${tier}: rock ${rock.z} in the landing after ${bump.z}`);
+      for (const z of zs) {
+        const row = rocks.filter(r => r.z === z).sort((a, b) => a.x - b.x), edges = [-EDGE, ...row.flatMap(r => [r.x - r.w, r.x + r.w]), EDGE];
+        let widest = 0;
+        for (let i = 0; i < edges.length; i += 2) widest = Math.max(widest, edges[i + 1] - edges[i]);
+        assert(widest >= 0.4 && row.every(r => Math.abs(r.x) + r.w <= 1), `${pack.id} ${tier}: the row at ${z} is passable`);
+      }
+    }
+    const [e, n, h] = [easy, base, hard].map(course => rocksOf(course).length);
+    assert(e <= n * 0.65, `${pack.id}: easy has clearly fewer rocks (${e} vs ${n})`);
+    assert(h >= n + 3, `${pack.id}: hard has more rocks (${h} vs ${n})`);
+    // 初級の岩は中級の岩の一部（間引くだけ）、上級は中級の岩を全部残して足す
+    const key = r => `${r.z}:${r.x}`;
+    assert(rocksOf(easy).every(r => rocksOf(base).some(o => key(o) === key(r))), `${pack.id}: easy only removes rocks`);
+    assert(rocksOf(base).every(r => rocksOf(hard).some(o => key(o) === key(r))), `${pack.id}: hard keeps every rock of the middle tier`);
+    assert.deepEqual(buildCourse({ id: pack.id, tier: "hard" }).features, hard.features, "deterministic");
+  }
+  // 段が違っても、同じ runSeed なら同じコース（名前）
+  for (const runSeed of [1, 2, 3, 99, 12345]) {
+    const ids = ["easy", "normal", "hard", undefined].map(tier => pickCourse(runSeed, tier).id);
+    assert(ids.every(id => id === ids[0]), `run seed ${runSeed}: ${ids.join(", ")}`);
+  }
+});
+
+test("three tiers: the ideal riders never fall and Noor never falls on the easy and hard courses (#3779)", () => {
+  for (const tier of ["easy", "hard"]) {
+    const courses = [...COURSE_PACKS.map(pack => buildCourse({ id: pack.id, tier })), ...Array.from({ length: 30 }, (_, i) => buildCourse({ seed: i + 1, tier }))];
+    for (const course of courses) {
+      for (const skill of ["expert", "perfect"]) assert.equal(summary(play(course, skill)).falls, 0, `${course.id} ${tier}: ${skill} has no unavoidable rock`);
+      assert.equal(rivalRun(course, { tier }).falls, 0, `${course.id} ${tier}: Noor never falls`);
+    }
+  }
+});
+
+test("three tiers: easy is won by a late-landing rider, hard is a coin toss for clean landings, and Naru stays the strongest (#3779)", () => {
+  // 勝率は本番の4本で、同じ腕前でも滑る位置（レーン）を10通りにずらして数える（ボットは乱数を使わないので、位置のずれで揺らぎを作る）
+  const lanes = Array.from({ length: 10 }, (_, i) => -0.45 + i * 0.1);
+  const rate = (tier, skill) => {
+    const list = COURSE_PACKS.flatMap(pack => {
+      const course = buildCourse({ id: pack.id, tier }), rival = rivalRun(course, { tier });
+      return lanes.map(lane => raceTier(course, skill, tier, { rival, lane }).race.won);
+    });
+    return list.filter(Boolean).length / list.length;
+  };
+  // 初級: 着地が甘い滑り（B評価の目安）で8割以上。中級の同じ滑りは今の値（ヌールと同じ滑りなので、ほぼ負ける）
+  const easyGood = rate("easy", "good"), normalGood = rate("normal", "good");
+  assert(easyGood >= 0.8, `easy: a late-landing rider wins ${Math.round(easyGood * 100)}%`);
+  assert(normalGood <= 0.5, `normal: the same rider as Noor wins at most half (${Math.round(normalGood * 100)}%)`);
+  // 上級: 着地を決める滑り（A評価の目安）で2〜4割。回って決める滑りなら勝てる
+  const hardPerfect = rate("hard", "perfect");
+  assert(hardPerfect >= 0.2 && hardPerfect <= 0.4, `hard: clean landings win ${Math.round(hardPerfect * 100)}%`);
+  assert.equal(rate("hard", "expert"), 1, "hard: the ideal spinning run wins");
+  assert.equal(rate("normal", "perfect"), 1, "normal: clean landings beat Noor as before");
+  for (const pack of COURSE_PACKS) {
+    const [easy, normal, hard] = ["easy", "normal", "hard"].map(tier => rivalRun(buildCourse({ id: pack.id, tier }), { tier }));
+    assert(easy.finishTime > normal.finishTime + 1.5, `${pack.id}: easy Noor is slower (${easy.finishTime.toFixed(1)} vs ${normal.finishTime.toFixed(1)})`);
+    assert(hard.finishTime < normal.finishTime - 1, `${pack.id}: hard Noor is faster (${hard.finishTime.toFixed(1)} vs ${normal.finishTime.toFixed(1)})`);
+    // なる（好敵手）は段の外で、上級のヌールより速い（同じ上級のコースでも、なるの中級のコースでも）
+    const hardCourse = buildCourse({ id: pack.id, tier: "hard" });
+    assert(rivalRun(hardCourse, { who: "naru" }).finishTime < hard.finishTime - 1, `${pack.id}: Naru beats hard Noor on the hard course`);
+    assert(rivalRun(buildCourse({ id: pack.id }), { who: "naru" }).finishTime < hard.finishTime - 1, `${pack.id}: Naru's own run is faster than hard Noor`);
+    assert.deepEqual(rivalRun(hardCourse, { who: "naru", tier: "easy" }).samples, rivalRun(hardCourse, { who: "naru" }).samples, "Naru ignores the tier");
+  }
+  // 手加減: 初級は大きく離されると長く待ち、上級はあまり待たない。なると中級はいつもの RUBBER
+  const course = buildCourse({ id: "ridge" });
+  const rubber = tier => rivalRun(course, { tier }).rubber;
+  assert(rubber("easy").easeOff < RUBBER.easeOff && rubber("easy").keep > RUBBER.keep && rubber("easy").lag > RUBBER.lag);
+  assert(rubber("hard").easeOff > RUBBER.easeOff && rubber("hard").keep < RUBBER.keep && rubber("hard").lag < RUBBER.lag);
+  assert.equal(rubber("normal"), RUBBER); assert.equal(rivalRun(course, { who: "naru" }).rubber, RUBBER);
+  assert.deepEqual(rubberCaps(1, rubber("easy")), { lead: 0, lag: rubber("easy").keep });
+});
+
+test("three tiers: the result keeps its tier; results without one (old saves, Naru) read as the middle tier (#3779)", () => {
+  const course = buildCourse({ id: "ridge", tier: "easy" });
+  const easy = summary(raceTier(course, "good", "easy"));
+  assert.equal(easy.tier, "easy");
+  assert.equal(readResult(easy).tier, "easy");
+  assert.equal(resultTier(readResult(easy)), "easy");
+  const naru = createGame(buildCourse({ id: "ridge" }), { rival: rivalRun(buildCourse({ id: "ridge" }), { who: "naru" }) });
+  while (!naru.finished && naru.t < 200) botStep(naru, "expert", {}, DT);
+  assert.equal(summary(naru).tier, undefined, "the Naru race has no tier");
+  const old = { finished: true, score: 9000, rank: "A", time: 55, maxCombo: 9, falls: 0, race: { won: true, gap: 1, who: "noor" } };
+  assert.equal(readResult(old).tier, undefined, "an old record is not rewritten");
+  assert.equal(resultTier(readResult(old)), "normal", "an old record is the middle tier");
+  assert.equal(readResult({ ...old, tier: "secret" }).tier, undefined, "an unknown tier is dropped");
+  assert.equal(resultTier(null), "normal");
+  assert.equal(createGame(course, { tier: "nope" }).tier, null);
 });

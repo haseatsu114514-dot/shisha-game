@@ -7,11 +7,11 @@ import { MAX_MONEY, TOURNAMENT_DAY, KUJI_TICKET_MAX } from "./rules.js";
 import { MASTERY_THRESHOLDS, RENAMED_MASTERY_KEYS, learnFlavorStory } from "./flavor-mastery.js";
 import { emit } from "./bus.js";
 import { recordGalleryProgress } from "./gallery-progress.js";
-import { STARTER_HIDANE, STARTER_FLAG } from "./growth-starter.js";
+import { LEGACY_STARTER_HIDANE, STARTER_FLAG } from "./growth-starter.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 28; // 28: 初回の白火6を累計獲得へ計上 / 27: 好感度名簿と既知キャラの初期♥1 / 26: キャラID改名（IDREN01）の旧セーブ付け替え / 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: 凛想の味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 29; // 29: TRPGの完了記録を本棚で閲覧 / 28: 初回の白火6を累計獲得へ計上 / 27: 好感度名簿と既知キャラの初期♥1 / 26: キャラID改名（IDREN01）の旧セーブ付け替え / 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: 凛想の味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 // 実際の任意交流で好感度を育てられる人物。占い・STATUS・初対面報酬で共用する。
 // ひよりは交流機会が少なくても対象に残す（Issue #2750）。
@@ -394,6 +394,7 @@ function migrate(s) {
   }
   // スキーマ14。旧無料プレビューの試遊から購入・クリアを推測しない。
   const trpg = record(s.trpg);
+  // スキーマ29。旧セーブの完了概要は維持し、保存されていない卓の台詞・選択・出目は補わない。
   const ids = value => [...new Set((Array.isArray(value) ? value : []).filter(id => typeof id === "string" && id))];
   // スキーマ15。MAXや過去の卓から設立・入部を推測せず、購入とクリアは保持する。
   const club = record(trpg.club);
@@ -522,11 +523,11 @@ function migrate(s) {
   if (!Number.isFinite(s.playMs) || s.playMs < 0) s.playMs = 0;
   if (s.playMsFull !== true) s.playMsFull = false;
   // schema27以前は初回の白火6を所持にだけ加算した。実際に渡した印がある保存だけ、
-  // 所持・支払を動かさず累計へ一度だけ足す。すでに198を通常獲得した保存も没収しない。
+  // 所持・支払を動かさず累計へ一度だけ足す。すでに上限まで通常獲得した保存も没収しない。
   if (oldSchema < 28 && s.flags[STARTER_FLAG] === true && s.growth && typeof s.growth === "object"
     && !Array.isArray(s.growth) && s.growth.starterAccounted !== true) {
     const earned = s.growth.earned;
-    s.growth.earned = (Number.isFinite(earned) && earned > 0 ? Math.floor(earned) : 0) + STARTER_HIDANE;
+    s.growth.earned = (Number.isFinite(earned) && earned > 0 ? Math.floor(earned) : 0) + LEGACY_STARTER_HIDANE;
     s.growth.starterAccounted = true;
   }
   s.schema = SCHEMA;
@@ -572,7 +573,22 @@ function noteSaveResult(saved) {
   try { emit(saved ? "save-recovered" : "save-failed"); } catch { /* 通知の失敗で遊びを止めない */ }
 }
 
+// 任意の長い勤務は、体力・台詞・給料・枠を分割して保存しない。LOADされた別ownerは妨げない。
+const actionSaveHolds = new WeakMap();
+export function holdActionSave(owner) {
+  actionSaveHolds.set(owner, (actionSaveHolds.get(owner) || 0) + 1);
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    const count = actionSaveHolds.get(owner) - 1;
+    if (count) actionSaveHolds.set(owner, count); else actionSaveHolds.delete(owner);
+  };
+}
+
 function writeSave(target = state) {
+  // 一時保留は容量エラーではない。最後の安全なAUTOを保ち、呼出側の行動末で通常保存する。
+  if (target && actionSaveHolds.has(target)) return { raw: null, saved: false };
   if (!target) return { raw: null, saved: false };
   // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
   try {
@@ -665,6 +681,7 @@ export function saveToSlot(key) {
 
 /** 手動枠と AUTO それぞれの実際の書き込み結果。既存の保存順序は維持する。 */
 export function saveToSlotResult(key) {
+  if (state && actionSaveHolds.has(state)) return { autoSaved: false, manualSaved: false };
   const { raw, saved: autoSaved } = writeSave();
   try {
     localStorage.setItem(key, raw === null ? JSON.stringify(state) : raw);
@@ -733,8 +750,8 @@ export const config = {
   staffRollSeen: false, // スタッフロールを一度最後まで見たか。見た端末では2回目から飛ばせる（#517）
   // 左右の余白（横長のスマホでステージの外に余る所・YHK）。"full"＝煙と縁・縦書きの帯・親指ボタン／"plain"＝これまでどおり、ぼかしだけ
   sideArea: "full",
-  // シーシャ作りの版（core/craft-version.js・CRN16）。未選択（null）はリニューアル。"sakurai" で桜井版
-  // （リニューアル前の作業台＋第1章の大会の桜井式の審査・SKR04）
+  // 第1章大会の既存の版選択（CRN16）。#3795: それ以外の制作は設定によらず桜井版。
+  // 未選択（null）は従来どおりリニューアル。保存キーは互換のため維持。
   craftVersion: null,
 };
 

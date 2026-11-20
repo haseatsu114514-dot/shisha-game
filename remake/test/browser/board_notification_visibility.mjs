@@ -39,7 +39,10 @@ await suite("board-notification-visibility", async check => {
       await page.locator(".gain-card.info").last().waitFor();
       await page.waitForTimeout(650);
       const cards = await cardContrasts(page);
-      assert.equal(cards.length, 8);
+      // 熟練度カードは #3935 から「パッケージ絵＋星5段階」になり、札の文字（.gc-badge）と小見出し（.gc-sub）を持たない。
+      // 測る文字は 熟練度カードの gc-top・gc-main ＋ 通常カードの gc-badge・gc-top・gc-main・gc-sub の6つ。
+      assert.equal(cards.length, 6);
+      assert.equal(await page.locator(".gain-card.mastery .gc-mastery-stars").isVisible(), true, "Mastery card shows its five-step stars");
       for (const row of cards) {
         assert(row.ratio >= 4.5, `Paper card text contrast ${JSON.stringify(row)}`);
         if (row.selector === "gc-main") assert.equal(row.shadow, "none");
@@ -89,10 +92,14 @@ await suite("board-notification-visibility", async check => {
         const scroll = [viewport.scrollLeft, viewport.scrollTop];
         const t = performance.now(); for (const n of nodes) n.click();
         return { nodes: nodes.every((n, i) => layer.children[i] === n), paths: paths.every((n, i) => svg.children[i] === n), wallet: root.querySelector('[data-test="board-wallet"]') === wallet,
-          scroll: scroll.every((v, i) => [viewport.scrollLeft, viewport.scrollTop][i] === v), selected: root.querySelectorAll(".gb-node.selected").length,
+          scroll: scroll.every((v, i) => [viewport.scrollLeft, viewport.scrollTop][i] === v), zoom: viewport.dataset.zoom, selected: root.querySelectorAll(".gb-node.selected").length,
           filters: svg.querySelectorAll("filter, feTurbulence").length, count: nodes.length, elapsed: performance.now() - t };
       });
-      assert(selection.nodes && selection.paths && selection.wallet && selection.scroll, JSON.stringify(selection));
+      assert(selection.nodes && selection.paths && selection.wallet, JSON.stringify(selection));
+      // Phone density auto-zooms to 1.2 centered on the selected cell (#3121), which
+      // legitimately moves the viewport; desktop selection must not move it at all.
+      if (touch) assert.equal(selection.zoom, "1.20", JSON.stringify(selection));
+      else assert(selection.scroll, JSON.stringify(selection));
       assert.equal(selection.selected, 1); assert.equal(selection.filters, 0);
       console.log(`board selection (${touch ? "touch" : "desktop"}): ${JSON.stringify(selection)}`);
       const node = page.locator('.gb-node[data-status="available"]').first();

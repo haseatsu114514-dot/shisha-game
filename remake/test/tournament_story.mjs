@@ -269,10 +269,17 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
  const ch1=src('ch1.js');
  for (const event of banter[1]) assert.match(ch1,new RegExp(`playTournamentEvent\\(cs, "${event}"`),`ch1 plays ${event}`);
  // 優勝の流れでも、会長の二口（judging）の後・カウントの前に結果発表前を読む。
- assert.match(ch1,/play\(\{ \.\.\.judging, lines: judgingLines \}, \{ bg: STAGE \}\);\s*\/\/[^\n]*\n\s*await playTournamentEvent\(cs, "preresult", \{ bg: STAGE, context: \{ win: true \} \}\);\s*await resultCountdown/);
+ assert.match(ch1,/playLive\(\{ \.\.\.judging, lines: judgingLines \}, venue\(\)\);\s*\/\/[^\n]*\n\s*await playTournamentEvent\(cs, "preresult", venue\("[^"]*", \{ context: \{ win: true \} \}\)\);\s*await resultCountdown/);
+ // 第2〜4章の合間の掛け合いの前にアイキャッチ（TSH11）。中身は tournament-show.js の intervalCard。
+ for (const file of ['ch2-tournament.js','ch3-tournament.js']) assert.match(src(file),/card: intervalCard\(event, p\.voted \? standings\(p\) : \[\]\)/,file);
+ assert.match(src('ch4-tournament.js'),/card: intervalCard\(event, p\.voted \? rows : \[\]\)/);
+ const show=fs.readFileSync(new URL('../js/craft/tournament-show.js',import.meta.url),'utf8');
+ for (const event of ['interlude_pull','interlude1','interlude2','interlude3']) assert.match(show,new RegExp(`\\n  ${event}: \\["`),event);
+ // 会場の会話は舞台の背景と中継の枠（TSH04）を venue() でそろえる。
+ assert.match(ch1,/function venue\(scene = null, extra = \{\}\) \{[\s\S]*?return \{ bg: STAGE, live: \{ event: "SMOKE CROWN CUP", phase: livePhase, standings: ch1LiveStandings\(state\.tournament\) \}, \.\.\.extra \};/);
  assert.match(src('ch2-tournament.js'),/commentary\(owner, "preresult"\)/);
  assert.match(src('ch2-tournament.js'),/commentary\(owner, interlude\)\) return;\s*\/\/[^\n]*\n\s*if \(p\.step === 8 && !await commentary\(owner, "serve"\)\) return;/,'ch2 serve follows interlude_pull');
  assert.match(src('ch3-tournament.js'),/p\.step === 0 \? "prestart" : p\.step === 8 \? "serve"/);assert.match(src('ch3-tournament.js'),/commentary\(owner, "preresult"\)/);
- assert.match(src('ch4-tournament.js'),/p\.step === 8 \? "serve"/);assert.match(src('ch4-tournament.js'),/p\.step === 0 \? \["prestart", stepEvent\]/);assert.match(src('ch4-tournament.js'),/playTournamentEvent\(p\.craft, "preresult"\)/);
+ assert.match(src('ch4-tournament.js'),/p\.step === 8 \? "serve"/);assert.match(src('ch4-tournament.js'),/p\.step === 0 \? \["prestart", stepEvent\]/);assert.match(src('ch4-tournament.js'),/playTournamentEvent\(p\.craft, "preresult"/);
 }
 console.log('PASS: four tournaments, judges, packings, mix, crowds, temperature/care callbacks, legacy saves and no score mutation');

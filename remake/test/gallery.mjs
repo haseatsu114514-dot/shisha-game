@@ -181,21 +181,37 @@ assert.equal(galleryHint(actualEntries.find(e => e.id === "cg_minto_confession")
 assert.equal(galleryHint(actualEntries.find(e => e.id === "cg_hiyori_confession")), "");
 assert.equal(galleryHint({ requiredChapter: 3, char: "minto" }), "第3章クリアで解放");
 const actualStats = galleryStats(actualEntries);
-assert.equal(actualManifest.cgs.length, 34);
-assert.equal(actualEntries.filter(e => e.cg).length, 31, "two alternate strips and the DAY3 sketch-in-progress are excluded");
-assert.equal(actualStats.total, 31, "current catalog has no approved additions");
+const adoptedStills = [
+  ["cg_ch2_sofa_wet_cloth", 2, "other", "焦げ跡と濡れ布"],
+  ["cg_ch2_ageha_lesson", 2, "ageha", "あげはの吸い方講座"],
+  ["cg_ch3_mashiro_no_craft_day", 3, "mashiro", "作らないと決めた昼"],
+  ["cg_ch4_traveler_chair", 4, "other", "日陰の椅子"],
+  ["cg_ch5_doctor_yunomi", 5, "other", "湯のみを包む博士"],
+];
+const unlockedStills = galleryEntries(actualManifest, actualCatalog, empty, new Set(adoptedStills.map(([id]) => id)));
+for (const [id, chapter, char, title] of adoptedStills) {
+  const entry = actualEntries.find(item => item.id === id);
+  assert(entry, id);
+  assert.deepEqual({ chapter: entry.chapter, char: entry.char, title: entry.title, kind: entry.kind }, { chapter, char, title, kind: "still" });
+  assert.equal(entry.unlocked, false, id);
+  assert.equal(unlockedStills.find(item => item.id === id).unlocked, true, id);
+}
+assert.equal(actualManifest.cgs.length, 34 + adoptedStills.length);
+assert.equal(actualEntries.filter(e => e.cg).length, 31 + adoptedStills.length, "two alternate strips and the DAY3 sketch-in-progress are excluded");
+assert.equal(actualStats.total, 31 + adoptedStills.length, "current catalog has no approved additions");
 assert.equal(actualStats.unlocked, 0);
 assert.equal(actualStats.rate, 0);
 const expectedChars = {
   minto: 5, ageha: 3, tsumugi: 3, naru: 3, rio: 1, mashiro: 4, other: 12,
 };
+for (const [, , char] of adoptedStills) expectedChars[char]++;
 for (const entry of actualEntries) assert(Object.hasOwn(CHAR_LABELS, entry.char), `${entry.id} has a character tag`);
 assert.equal(actualEntries.find(e => e.id === "cg_ch3_childhood_offered_hand").char, "mashiro");
 for (const [char, total] of Object.entries(expectedChars)) assert.equal(actualStats.byChar[char].total, total, char);
 assert.equal(Object.values(actualStats.byChar).reduce((sum, s) => sum + s.total, 0), actualStats.total);
 assert.equal(Object.values(actualStats.byKind).reduce((sum, s) => sum + s.total, 0), actualStats.total);
 const fullStats = galleryStats(galleryEntries(actualManifest, actualCatalog, empty, new Set(actualEntries.map(e => e.id))));
-assert.equal(fullStats.unlocked, 31);
+assert.equal(fullStats.unlocked, 31 + adoptedStills.length);
 assert.equal(fullStats.rate, 100);
 assert.equal(g.shouldAnnounceCompletion(actualStats, empty), false);
 assert.equal(g.shouldAnnounceCompletion({ total: 0, unlocked: 0 }, empty), false);
@@ -234,7 +250,7 @@ const adopted = galleryEntries(actualManifest, { items: [
   { ...comic, id: "not_explicitly_approved", approved: undefined },
 ] }, { ...empty, clearedChapters: [1] }, new Set([movie.id]));
 const adoptedStats = galleryStats(adopted);
-assert.equal(adoptedStats.total, 33, "only approved comics add to T");
+assert.equal(adoptedStats.total, 33 + adoptedStills.length, "only approved comics add to T");
 assert.equal(adoptedStats.unlocked, 1);
 assert.deepEqual(copy(adoptedStats.byKind.comic), { total: 2, unlocked: 1, rate: 50 });
 assert.equal(adoptedStats.byKind.movie, undefined);

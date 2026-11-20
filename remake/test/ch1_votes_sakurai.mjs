@@ -4,7 +4,7 @@ import { beginCh1Votes, castCh1Votes, isSakuraiVotes, sakuraiMine, sakuraiRival,
   CH1_JUDGES, CH1_CONTESTANTS, CH1_VOTE_VERSION, CH1_SAKURAI_VERSION } from "../js/craft/ch1-votes.js";
 import { ATTACK_BAND, attackGuide, attackRange, inAttackRange, attackScore } from "../js/craft/attack-band.js";
 import { voteStyleFrom, voteStyleForCraftVersion } from "../js/core/vote-style.js";
-import { craftVersionFrom, normalizeCraftVersion, renewalCraft, PLAYER_DEFAULT_CRAFT_VERSION } from "../js/core/craft-version.js";
+import { craftVersionFrom, craftVersionForSession, normalizeCraftVersion, renewalCraft, PLAYER_DEFAULT_CRAFT_VERSION } from "../js/core/craft-version.js";
 import { temperatureBands } from "../js/craft/temperature-model.js";
 
 const BASE_STATS = { aroma: 98, taste: 46, heatStability: 73, burnRisk: 25, draw: 80, smoke: 62, craftQuality: 79 };
@@ -77,9 +77,10 @@ for (const score of [60, 70, 80, 86, 90, 100]) {
   for (const judge of CH1_JUDGES) assert.equal(attack[judge] - plain[judge], ATTACK_BAND.bonus);
   const failed = craft({ attack: [3] }); failed.careHistory[1].failed = "burnt";
   assert.deepEqual(sakuraiMine(failed, 3), plain);
-  // 調整2回目を真ん中で終えると、最後に攻めてくるみんとに1位と千須の最後の1点を取られる。攻めると取り返せる。
+  // 調整2回目を真ん中で終えると、最後に攻めてくるみんとにその回の1位を取られる。攻めると取り返せる。
+  // 千須の最後の1点は、どちらでも、もう一口吸った台（はじめ）へ入る（#3916）。
   const center = match(craft());
-  assert.equal(center.lastPoint, "minto");
+  assert.equal(center.lastPoint, "hajime");
   assert.equal(center.picks[3].maezono.first, "minto");
   const bold = match(craft({ attack: [3] }));
   assert.equal(bold.lastPoint, "hajime");
@@ -89,9 +90,10 @@ for (const score of [60, 70, 80, 86, 90, 100]) {
 
 // 逆転: 出だしでつまずいても、後半を攻めれば勝てる（いままでの審査では前半で決まっていた）。
 {
-  const slip = craft({ heat: 70, pull: 100, care: [100, 100] });
+  // 千須の最後の1点がはじめへ入る（#3916）ので、調整を満点にすれば攻めずに届く。手本は調整97点の一台にする。
+  const slip = craft({ heat: 70, pull: 100, care: [97, 97] });
   assert.notEqual(match(slip).result.rank, 1, "攻めなければ届かない");
-  assert.equal(match(craft({ heat: 70, attack: [1, 2, 3] })).result.rank, 1, "攻めれば逆転できる");
+  assert.equal(match(craft({ heat: 70, care: [97, 97], attack: [1, 2, 3] })).result.rank, 1, "攻めれば逆転できる");
   assert.notEqual(match(slip, "classic").result.rank, 1, "いままでの審査では前半の失敗を取り返せない");
 }
 
@@ -133,7 +135,17 @@ for (const base of [70, 80, 90]) {
   assert.equal(attackRange({ ideal: [.4, .5], optimal: [.45, .55] }), null);
   assert.equal(attackGuide({ mode: "tournament", voteStyle: "sakurai" }), true);
   assert.equal(attackGuide({ mode: "tournament" }), false, "いままでの審査では出さない");
-  assert.equal(attackGuide({ mode: "drill", voteStyle: "sakurai" }), false, "練習では出さない");
+  assert.equal(attackGuide({ mode: "drill", voteStyle: "sakurai" }), false, "版のない旧部品には判定を足さない");
+  for (const chapter of [1, 2, 3, 4, 5]) for (const mode of ["tutorial", "rehearsal", "drill", "tournament"]) {
+    const protectedMatch = chapter === 1 && mode === "tournament";
+    for (const craftVersion of [null, "renewal", "sakurai"]) for (const search of ["", "?craft=renewal", "?craft=sakurai&vote=classic"]) {
+      const config = { craftVersion };
+      assert.equal(craftVersionForSession(mode, chapter, config, search),
+        protectedMatch ? craftVersionFrom(config, search) : "sakurai", `${chapter}/${mode}/${craftVersion}/${search}`);
+    }
+    assert.equal(attackGuide({ chapter, mode, craftVersion: "sakurai" }), !protectedMatch);
+  }
+  assert.equal(attackGuide({ chapter: 1, mode: "tournament", craftVersion: "sakurai", voteStyle: "sakurai" }), true);
 }
 
 // 方式の選び方（CRN16）: 審査の方式はシーシャ作りの版で決まる（桜井版＝桜井式・リニューアル＝いままで）。

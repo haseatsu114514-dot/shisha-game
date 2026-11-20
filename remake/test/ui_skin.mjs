@@ -1,4 +1,4 @@
-// 簡潔な能力通知と5色・所持金の桁・経験値と共通の固定長の体力ゲージを持つHUDを実ブラウザで確認。
+// 簡潔な能力通知と5色・所持金の桁・盤なしでは経験値の半分の長さから始まる体力ゲージ（#3821）を持つHUDを実ブラウザで確認。
 // サーバーを8123で起動後: node remake/test/ui_skin.mjs（SHOTSで確認画像の保存先）
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -38,7 +38,7 @@ try {
     core.state.phase = "daily";
     for (const id of ["minto", "naru", "adam", "tsumugi", "rio"]) core.state.met[id] = true;
     hud.initHud({}); hud.showHud();
-    window.previewMap = map.chooseSpot();
+    window.previewMap = map.chooseSpot({ guide: { pin: "shop", text: "Dr.fookah で仕入れ" } });
     await Promise.all(["panel", "button", "map-pin", "heart", "reward-clean", "gauge-frame", "gauge-fill"].map(async (name) => {
       const image = new Image(); image.src = `img/ui/lounge/${name}.webp`;
       await image.decode();
@@ -50,8 +50,55 @@ try {
   // 地図画面に着いて HUD の幅が出るまで待ってから計測する。
   await page.waitForFunction(() => document.body.dataset.screen === "map"
     && document.querySelector(".hud-stamina")?.getBoundingClientRect().width > 0, null, { timeout: 30000 });
-  for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }, { width: 740, height: 320 }]) {
     await setViewportAndFit(page, viewport);
+    const dayCard = await page.evaluate(async () => {
+      await document.fonts.ready;
+      const card = document.querySelector(".hud-card");
+      const label = card.querySelector(".dc-day-label");
+      const day = card.querySelector(".dc-day");
+      const dateText = () => day.textContent;
+      const r = card.getBoundingClientRect();
+      const overlaps = sel => {
+        const pin = document.querySelector(`[data-test="pin-shop"] ${sel}`).getBoundingClientRect();
+        return r.right > pin.left && r.bottom > pin.top && r.left < pin.right && r.top < pin.bottom;
+      };
+      const { state } = T.core;
+      const start = { day: state.day, chapter: state.chapter, flags: state.flags };
+      const dates = [];
+      for (const sample of [
+        { day: 1, chapter: 1, flags: {} },
+        { day: 16, chapter: 3, flags: { _ch3_prep: { startDay: 15, days: 3 } } },
+        { day: 43, chapter: 5, flags: { _ch5: { startDay: 32 } } },
+        { day: 43, chapter: 5, flags: { _ch5: { startDay: 32, matchDay: 67 } } },
+      ]) {
+        Object.assign(state, sample);
+        T.hud.updateHud();
+        const glyphs = document.createRange();
+        glyphs.selectNodeContents(day);
+        dates.push({
+          text: dateText(), description: label.title,
+          fits: glyphs.getBoundingClientRect().right <= day.getBoundingClientRect().right + 1,
+        });
+      }
+      Object.assign(state, start);
+      T.hud.updateHud();
+      const k = parseFloat(getComputedStyle(document.getElementById("stage")).getPropertyValue("--k"));
+      return {
+        label: label.textContent, visible: getComputedStyle(label).display !== "none",
+        px: parseFloat(getComputedStyle(label).fontSize) * k, dates,
+        shopClear: !overlaps(".pin-visual") && !overlaps(".sub-label"),
+      };
+    });
+    assert.equal(dayCard.visible, viewport.width < 900, "the date heading is added only on the phone map");
+    if (dayCard.visible) {
+      assert.equal(dayCard.label, "日付");
+      assert(dayCard.px >= 11.49, "the date is readable at actual phone scale");
+      assert(dayCard.shopClear, "the day card must not cover the Day 1 Dr.fookah pin or caption");
+      assert(dayCard.dates.every(date => date.fits), "dates with or without a chapter deadline fit the card");
+    }
+    assert.deepEqual(dayCard.dates.map(day => day.text), ["1/14", "2/3", "12", "12/36"]);
+    assert.equal(dayCard.dates[0].description, "14日間のうち 1日目");
     const geometry = await page.evaluate(() => {
       document.querySelector(".hud-bar").style.transition = "none";
       const snapshot = () => [".hud-card", ".hud-stamina", ".hud-lime", ".hud-menu"].map((selector) => {
@@ -83,9 +130,10 @@ try {
       assert(result.timeHidden, "時間帯・残りの行動の札（☀残り2）は画面に出さず、読み上げ用にだけ残す（MAP06）");
       assert.equal(result.countdown, null, "残り日数の行が左上カードに残っている（#3033で削除済みのはず）");
     }
-    // バーの長さは最大体力によらず経験値ゲージと共通の固定長（#3034）。指定幅が最大体力で変わらないことを見る。
+    // 体力の枠は経験値ゲージ（120px）の半分から始まり、盤の体力成長でだけ伸びる（#3821。#3034 の固定長から変更）。
+    // 根性による最大体力の増加では伸ばさない。盤で伸びる幅と旧能力モードの従来幅は tutorial_growth.mjs で見る。
     assert.equal(geometry[1].barWidth, geometry[0].barWidth, "Stamina window length changed with maximum capacity");
-    assert.equal(geometry[0].barWidth, 120, "Stamina window is not the shared gauge length");
+    assert.equal(geometry[0].barWidth, 60, "Stamina window does not start at half the shared gauge length");
     if (shots) await page.screenshot({ path: `${shots}/fixed-hud-${viewport.width}.png` });
   }
   console.log("[ui skin] PASS: 7 generated images, stable money/controls and fixed stamina window at desktop and mobile sizes");
@@ -138,7 +186,7 @@ try {
         out.push({ ratio: T.core.state.stamina / maximum, maximum, // 丸めた実際の体力で境界を判定する（最大154は割り切れない）
            health: holder.dataset.health, color: getComputedStyle(holder.querySelector("b")).backgroundColor,
           width: holder.querySelector("b").style.width, windowWidth: holder.clientWidth, barWidth: bar.clientWidth, barSpecifiedWidth: parseFloat(bar.style.width),
-          // バーの長さは最大体力によらず経験値ゲージと共通の固定長（#3034）。行からはみ出さない。
+          // 根性による最大体力では枠を伸ばさない（盤の体力成長だけで伸びる・#3821）。行からはみ出さない。
           inside: bar.getBoundingClientRect().right <= holder.getBoundingClientRect().right + .5 });
       }
     }
@@ -153,9 +201,9 @@ try {
   for (const maximum of [100, 154]) {
     assert.equal(new Set(stamina.filter((value) => value.maximum === maximum).map((value) => value.windowWidth)).size, 1, "Losing stamina changed the capacity window");
   }
-  assert.equal(stamina[0].barSpecifiedWidth, 120);
-  assert.equal(stamina[7].barSpecifiedWidth, 120); // 最大体力154でも長さは経験値ゲージと同じ固定長（#3034）
-  console.log("[ui skin] PASS: green/yellow/red, exact boundaries, zero/full, fixed gauge length shared with exp");
+  assert.equal(stamina[0].barSpecifiedWidth, 60);
+  assert.equal(stamina[7].barSpecifiedWidth, 60); // 根性で最大体力154になっても、盤なしの枠は半分のまま（#3821）
+  console.log("[ui skin] PASS: green/yellow/red, exact boundaries, zero/full, half-length stamina window without board growth");
   const sessions = await page.evaluate(async () => {
     const { newSession } = await import("./js/craft/session.js"), { skill } = await import("./js/craft/common.js");
     const out = [];

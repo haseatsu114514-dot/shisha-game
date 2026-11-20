@@ -43,6 +43,13 @@
       "speaker": "sai",
       "role": "店長／はじめての人へ",
       "face": "normal",
+      "text": "GMは、物語で出会う人の役も演じます",
+      "panel": "table"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
       "text": "遊ぶ人はPL。PLは、物語の中の役を一人ずつ演じます",
       "panel": "table"
     },
@@ -64,7 +71,7 @@
       "speaker": "sai",
       "role": "店長／はじめての人へ",
       "face": "normal",
-      "text": "困った場面では『どうする？』と聞かれます。誰が何をするか、選ぶだけ",
+      "text": "GMが『どうする？』と聞いたら、誰がどう動くか選んでください",
       "panel": "declare"
     },
     {
@@ -72,6 +79,20 @@
       "role": "店長／はじめての人へ",
       "face": "normal",
       "text": "迷ったら『おすすめ』の印を。いちばん成功しやすい行動です",
+      "panel": "declare"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "手がかりがそろったら、あなたの見立てを聞かせてください",
+      "panel": "declare"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "札に『的中時』とあれば、見立てが当たると準備の判定に＋5です",
       "panel": "declare"
     },
     {

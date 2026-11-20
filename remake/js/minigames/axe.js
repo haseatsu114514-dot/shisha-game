@@ -2,6 +2,7 @@
 import { el } from "../core/util.js";
 import { buildVersioned } from "../core/asset-version.js";
 import { imgFileUrl } from "../core/img-file.js";
+import { onStageFit } from "../core/stage-fit.js";
 import { portraitStyle } from "../core/portrait-style.js";
 import { portraitAsset } from "../core/portrait-resolver.js";
 import { svg } from "../core/transition-kit.js";
@@ -56,9 +57,8 @@ function loadAimStyle() {
 }
 const { x: CX, y: CY, radius: R } = TARGET;
 // #3807: frame the lane and the scoring board with one camera. The hand stays at arm's length.
-const FPS_LANE_ZOOM = 1.04;
 const FPS_CENTER_Y = 211;
-const FPS_BOARD_TRANSFORM = `translate(${CX} ${FPS_CENTER_Y}) scale(${.85 * FPS_LANE_ZOOM}) translate(${-CX} ${-CY})`;
+const FPS_BOARD_TRANSFORM = `translate(${CX} ${FPS_CENTER_Y}) scale(.895) translate(${-CX} ${-CY})`;
 // Outline in the original 1280×720 aiming photo. Keep the gap between the arms open to the lane.
 const HAND_SILHOUETTE = [
   "M825 142 Q778 177 765 224 Q756 261 766 286 Q815 250 854 255 L868 260 L825 354",
@@ -277,17 +277,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     boardScaleArt);
   let laneAimImage = null, handFront = null, handFrontImage = null;
   if (tapPull) {
-    const w = 1000 * FPS_LANE_ZOOM, h = w * 9 / 16;
-    // Frame the foreground from the rear floor joint to just inside the painted foul line.
-    // Only the floor crop changes; board, reticle, camera origin and hands keep their own transforms.
-    const lane = svg("svg", { class: "axe-lane-bg", x: CX - w / 2, y: FPS_CENTER_Y - h / 2,
-      width: w, height: h, viewBox: "0 0 1280 720", overflow: "hidden" });
-    const laneId = artId + "-lane";
-    lane.append(svg("image", { id: laneId, href: ART.lane, width: 1280, height: 720 }),
-      svg("svg", { y: 482, width: 1280, height: 238, viewBox: "0 482 1280 154", preserveAspectRatio: "none", overflow: "hidden" }, [
-        svg("use", { href: "#" + laneId }),
-      ]));
-    artBoard.insertBefore(lane, artBoard.firstChild);
+    // Fit the narrower lane to the original camera; the board and its shadow meet the rear floor seam.
+    const w = 1000, h = 562.5;
+    artBoard.insertBefore(svg("image", { class: "axe-lane-bg", href: ART.lane,
+      x: CX - w / 2, y: -65, width: w, height: h }), artBoard.firstChild);
 
     // The aiming photo includes the lane. Reuse only the foreground at its original size and position.
     const handId = artId + "-hands", clipId = handId + "-outline", frontId = handId + "-front";
@@ -608,7 +601,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     lifetime.signal.addEventListener("abort", () => clearTimeout(timer), { once: true });
     root.append(cutin);
   }
-  host.append(root); root.focus();
+  host.append(root);
+  if (tapPull) observePullTrackSize();
   if (tapPull) pullInput = attachAxePullInput({ root, board, handle: pullHandle, signal: lifetime.signal, target: TARGET,
     // 狙いはゲージで決める。的に触れても狙いは動かさず、投げる時（power）だけ上へ弾く
     aimOnTouch: false, canAim: () => false,
@@ -642,7 +636,40 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   window.addEventListener("blur", () => { windowFocused = false; pullInput?.cancel(); stamp = null; render(); }, { signal: lifetime.signal });
   window.addEventListener("focus", () => { windowFocused = true; stamp = null; render(); }, { signal: lifetime.signal });
   window.addEventListener("pagehide", () => cleanup(false), { signal: lifetime.signal });
-  loadArt(); frame = requestAnimationFrame(tick); return promise;
+  loadArt();
+  // Focus can force layout; apply the initial loading DOM before doing so.
+  root.focus();
+  frame = requestAnimationFrame(tick); return promise;
+  function observePullTrackSize() {
+    const stage = root.closest("#stage");
+    let sizeFrame = 0, stageScale = Number(stage?.style.getPropertyValue("--k"));
+    const resize = () => {
+      if (!root.isConnected) return;
+      const { height } = root.getBoundingClientRect();
+      if (!height) return;
+      const cssScale = height / root.clientHeight || 1;
+      const trackHeight = Math.max(80, Math.min(180, height * .26)) / cssScale + "px";
+      if (pullTrack.style.height !== trackHeight) pullTrack.style.height = trackHeight;
+    };
+    // The release track is only a visual guide. Read its size after layout,
+    // never between the DOM writes in render() or in the moving aim loop.
+    const observer = new ResizeObserver(resize);
+    observer.observe(root, { box: "border-box" });
+    const queueResize = () => {
+      if (sizeFrame) return;
+      sizeFrame = requestAnimationFrame(() => { sizeFrame = 0; resize(); });
+    };
+    // ResizeObserver does not see the transform-only scale changes of #stage.
+    const unsubscribe = stage ? onStageFit(({ stage: fitted, k }) => {
+      if (fitted === stage && k !== stageScale) { stageScale = k; queueResize(); }
+    }) : null;
+    if (!stage) window.addEventListener("resize", queueResize, { signal: lifetime.signal });
+    lifetime.signal.addEventListener("abort", () => {
+      observer.disconnect();
+      unsubscribe?.();
+      cancelAnimationFrame(sizeFrame);
+    }, { once: true });
+  }
   function showFace(face) {
     const art = faceArt(portraitKey, face);
     if (portrait.src === art.src) return;
@@ -956,9 +983,6 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const strength = power < POWER.stickMin ? "弱すぎる・落下" : power > POWER.stickMax ? "強すぎる・落下"
       : power >= POWER.sweetMin && power <= POWER.sweetMax ? "適正" : "刺さる回転";
     if (tapPull) {
-      const rect = root.getBoundingClientRect(), cssScale = rect.height / root.clientHeight || 1;
-      const distance = Math.max(80, Math.min(180, rect.height * .26)) / cssScale;
-      pullTrack.style.height = distance + "px"; // 弾く台: 取っ手は下に置いたまま（強さは右の回転ゲージに出る）
       pullHandle.disabled = actor !== "player" || phase !== "power" || isPaused();
       pullHandle.style.backgroundColor = equipment.grip;
       root.dataset.rawPower = String(rawPower); root.dataset.pulling = String(Boolean(pullInput?.pulling));
@@ -1121,12 +1145,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     }
     // League-style scoreboard: one row per thrower, a divider at the half, calls as axe marks.
     const rows = versus ? ["player", "opponent"] : ["player"];
-    const record = rows.map(id => (versus ? match[id] : shots).map(shot => shot.score + ":" + shot.outcome).join(",")).join("|") + "|" + (match?.suddenDeath.map(r => (r.player?.score ?? "-") + "/" + (r.opponent?.score ?? "-")).join(",") || "") + ":" + phase + ":" + actor + ":" + sdRound;
+    // Aiming changes the needle, not the active score tile. Keep the existing scoreboard DOM.
+    const showingScore = phase === "result" || phase === "summary";
+    const record = rows.map(id => (versus ? match[id] : shots).map(shot => shot.score + ":" + shot.outcome + ":" + (shot.called || "")).join(",")).join("|") + "|" + (match?.suddenDeath.map(r => (r.player?.score ?? "-") + "/" + (r.opponent?.score ?? "-")).join(",") || "") + ":" + showingScore + ":" + actor + ":" + sd;
     if (scoreboard.dataset.record !== record) {
       scoreboard.dataset.record = record;
       scoreboard.replaceChildren(...rows.map(id => {
         const list = versus ? match[id] : shots, mine = id === actor;
-        const current = ["result", "summary"].includes(phase) ? list.length - 1 : list.length;
+        const current = showingScore ? list.length - 1 : list.length;
         const ks = killState(list, rules.throws);
         const tiles = Array.from({ length: rules.throws }, (_, i) => el("span.axe-tile", {
           dataset: { outcome: list[i]?.outcome || "", filled: String(Boolean(list[i])), current: String(mine && !sd && i === current), half: String(halfOf(i, rules.throws)) },

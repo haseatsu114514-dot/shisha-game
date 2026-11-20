@@ -238,6 +238,31 @@ await suite("ch4-dubai-daily", async check => {
     assert(!log.includes("それが今日の下見だ。合格だな"), "not the walk with Naru");
   });
 
+  await check("festa-deadline-label-clears-after-a-daytime-visit", async page => {
+    await seed(page, (value, progress) => {
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      value.day = value.flags._ch4.startDay + 5;
+      value.flags._ch4.day = 6;
+    });
+    await loadSlot(page);
+    await dubaiMap(page, { day: 54, slot: 0 });
+    const festa = page.locator(dt("pin-ch4_dubai_festa"));
+    const cafe = page.locator(dt("pin-ch4_dubai_cafe"));
+    assert.equal(await festa.locator(".pin-status").innerText(), "今夜の予定");
+    assert.match(await festa.getAttribute("aria-label"), /今夜の予定/);
+    assert.equal(await cafe.locator(".evt-badge.story").innerText(), "!");
+    await go(page, "ch4_dubai_festa");
+    await dubaiMap(page, { day: 54, slot: 1 });
+    assert.doesNotMatch(await festa.getAttribute("aria-label"), /今夜の予定/);
+    assert.equal(await cafe.locator(".evt-badge.story").innerText(), "!");
+    const meetingCount = async () => (await backlog(page)).filter(line => line.startsWith("FESTAのブースに入ると")).length;
+    assert.equal(await meetingCount(), 1);
+    await go(page, "ch4_dubai_creek");
+    await dubaiMap(page, { day: 55, slot: 0 });
+    assert.equal(await meetingCount(), 1, "昼の出会いを夜に二重再生しない");
+    assert.equal((await get(page)).flags._ch4.read.ch4_festa, true);
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+
   // FESTA（審査員の太陽と会う場面）に寄らないまま DAY6 の夜を迎えると、その夜に会場の出張ブースで読む。
   await check("festa-is-read-on-its-deadline-night-if-skipped", async page => {
     await seed(page, (value, progress) => {
@@ -401,6 +426,48 @@ await suite("ch4-dubai-daily", async check => {
     assert.equal(after.met.master_hookah, true);
     // 前夜祭や強制イベントでは好感度は上がらない。初対面の♥1（#2615）も通常の出会いだけに付く（2026-11-06 オーナー決定）。
     assert.equal(after.affinity.master_hookah || 0, 0, "The reception itself gives no affection");
+  });
+
+  // 店の仕事と期限の出会いを先に読んだ経路。DAY12の買い出し後にだけ、スミさんの電話を任意で聞ける。
+  for (const answer of [true, false]) await check(`day-twelve-delayed-sumi-call-${answer ? "answer" : "rest"}`, async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_stranger_first", "ch4_festa", "ch4_stranger_second", "ch4_story_briefing", "ch4_story_venue"]) p.read[id] = true;
+      p.firstDay = 8;
+      value.flags._ch4_dubai_talks = { naru: 3 };
+      value.day = p.startDay + 11; value.slot = 1; p.day = 12;
+    });
+    await loadSlot(page);
+    await dubaiMap(page, { day: 60, slot: 1 });
+    await go(page, "ch4_dubai_creek");
+    const takeCall = page.locator(dt("ch4-last-night-call-answer"));
+    const rest = page.locator(dt("ch4-last-night-call-rest"));
+    await takeCall.waitFor();
+    const before = await get(page);
+    assert(before.flags._ch4.read.ch4_story_market);
+    assert.equal(before.slot, 2);
+    assert(!before.flags._ch4.read.ch4_story_sumi_call);
+    if (answer) {
+      await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = false; });
+      await takeCall.click();
+      await page.locator("#vn.active").waitFor();
+      await loadSlot(page);
+      await takeCall.waitFor();
+      assert(!(await get(page)).flags._ch4.read.ch4_story_sumi_call, "Interrupted call is not read and can be chosen again");
+      await takeCall.click();
+    } else {
+      await rest.click();
+    }
+    await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor({ timeout: 60000 });
+    const after = await get(page);
+    assert.equal(after.flags._ch4.day, 13);
+    assert.equal(after.flags._ch4.part, "eve");
+    assert.equal(after.flags._ch4.read.ch4_story_sumi_call === true, answer);
+    assert(!after.flags._ch4.read.ch4_story_press && !after.flags._ch4.read.ch4_story_yosegaki);
+    assert.equal(after.flags._ch4_sheikh_revealed, false);
+    assert.equal(after.money, before.money);
+    assert.deepEqual(after.affinity, before.affinity);
   });
 
   // DAY12 の宿の前日リハーサルを受ける側: 本番と同じ一台（調整2回）を作って講評まで読むと記録が残り、

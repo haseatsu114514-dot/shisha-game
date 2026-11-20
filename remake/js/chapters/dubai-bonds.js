@@ -1,7 +1,7 @@
 // ドバイの太陽・シェイクの好感度ルート（2026-11-11 オーナー「ルートを新設」RVE03）。
 // ほかの章のライバルと同じく、通うと段階の会話が進み、♥5の次の来店で締めくくり（専用ハガル）を一度だけ読む。
 // - 太陽: 第4章のFESTA（大会会場の出張ブース・DAY1〜12）で段階1〜3（審査員だとは明かさない）、
-//   第5章のシェイクの屋敷の中庭で段階4・5と締めくくり（大会の後。審査席にいたことはもう知っている）。
+//   第5章のシェイクの屋敷の中庭で段階4〜6と締めくくり（大会の後。審査席にいたことはもう知っている）。
 //   FESTAは第4章だけなので、第4章の段階1〜3は締めくくりの前提にしない（読めた人だけの前日譚）。
 // - シェイク: 第5章の屋敷で段階1〜5と締めくくり。連絡はLIMEではなく手紙（ch5-travel.js）で、段階を読んだ後の手紙が一度ずつ届く。
 // 段階の必要ハートは core/affinity-stages.js の DUBAI_BOND_STORIES。ここは DOM を持たない判定と記録だけ。
@@ -41,7 +41,8 @@ export const dubaiBondRead = (value, scene) => dubaiBondRecord(value).read[scene
  */
 export function nextDubaiBondStory(value, id, where, heart = 0) {
   const { read } = dubaiBondRecord(value);
-  return (DUBAI_BOND_STORIES[id] || []).find(entry => entry.where === where && read[entry.scene] !== true && heart >= entry.heart)?.scene || null;
+  return (DUBAI_BOND_STORIES[id] || []).find(entry => entry.where === where && read[entry.scene] !== true && heart >= entry.heart
+    && !lateAfterFinale(value, id, entry))?.scene || null;
 }
 
 /** 段階を読み終えた時だけ呼ぶ。知らない場面は記録しない。 */
@@ -52,9 +53,12 @@ export function recordDubaiBondRead(value, scene) {
   return true;
 }
 
+/** 後から足した段階（late）は、締めくくりを読み終えた保存には出さず、読んだものとして扱う（順番が戻らないように）。 */
+const lateAfterFinale = (value, id, entry) => !!entry.late && !!value?.finales?.[id];
+
 /** 締めくくりの前提の段階をすべて読んだか（太陽は第5章の段階だけ。FESTAの段階は前日譚なので数えない）。 */
 export const dubaiBondStoriesDone = (value, id) => (DUBAI_BOND_STORIES[id] || [])
-  .filter(entry => !entry.prelude).every(entry => dubaiBondRead(value, entry.scene));
+  .filter(entry => !entry.prelude).every(entry => dubaiBondRead(value, entry.scene) || lateAfterFinale(value, id, entry));
 
 /** 次に届くシェイクの手紙（届いていない最古のもの）。無ければ null（いつもの手紙が届く）。 */
 export function sheikhBondLetterDue(value) {

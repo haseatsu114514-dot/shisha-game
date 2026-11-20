@@ -5,7 +5,8 @@ import { showScreen } from "./ui.js";
 export function createChapterCard({ hud, screen, test, heading, menuButton }) {
   return function card(owner, name, title, description, actions = [], note = "", sceneId = "", extra = []) {
     hud();
-    showScreen(screen, el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
+    // 完了カードは章のクリア画面（レベルアップの札を本文の外へ寄せる・#3938）。
+    showScreen(screen, el(`main.ch2-contest${name === "complete" ? ".chapter-clear" : ""}`, { dataset: { test: test(name), scene: sceneId } }, [
       el("header.ch2-contest-header", [
         el("div", [el("p", { text: heading }), el("h1", { text: title })]),
         menuButton(owner),

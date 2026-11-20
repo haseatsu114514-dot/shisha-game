@@ -38,7 +38,6 @@ export const STAFF_MUSIC = Object.freeze([
   { title: "民族12 アラブの商人", composer: "魔王魂", source: "魔王魂" },
   { title: "民族08 ピラミッド アレンジ版", composer: "魔王魂", source: "魔王魂" },
   { title: "民族05", composer: "魔王魂", source: "魔王魂" },
-  { title: "民族09 揺れる提灯", composer: "魔王魂", source: "魔王魂" },
   { title: "月明かりの灯台", composer: "甘茶", source: "甘茶の音楽工房" },
   { title: "Firebrand", composer: "Kevin MacLeod", source: "incompetech.com・CC BY 4.0" },
   // TRPGのシナリオ別BGM（OpenGameArt・CC0。オーナー「クレジットは載せる」2026-11-10。出典は asset_sources/music/trpg-audio/）
@@ -93,6 +92,14 @@ export const STAFF_SOUND_DESERT = Object.freeze([
   "効果音（サンドボード）：Joseph Sardin（BigSoundBank / La Sonothèque）（CC0） – https://bigsoundbank.com/",
 ]);
 
+// 書体と日本語の改行処理（#3726 B-9）。ライセンス文は配布物に同梱している:
+// remake/fonts/OFL-NotoSansJP.txt・OFL-ZenOldMincho.txt・ZenOldMincho-Name-OFL.txt、
+// assets/fonts/OFL-DotGothic16.txt、remake/js/vn/LICENSE-BudouX.txt。書体を足したらここにも1行足す。
+export const STAFF_LICENSES = Object.freeze([
+  "フォント：Noto Sans JP（Adobe・Google）／Zen Old Mincho（The Zen Old Mincho Project Authors）／DotGothic16（The DotGothic16 Project Authors） – SIL Open Font License 1.1",
+  "日本語の改行：BudouX（Google LLC） – Apache License 2.0",
+]);
+
 const reducedMotion = () => !!window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
 /** 今このスタッフロールを飛ばせるか（一度最後まで見た端末だけ） */
@@ -122,6 +129,7 @@ function sections() {
     el("section.staff-roll-sound-camel", STAFF_SOUND_CAMEL.map(text => el("p", { text }))),
     el("section.staff-roll-sound-desert", STAFF_SOUND_DESERT.map(text => el("p", { text }))),
     el("section.staff-roll-sound-axe", STAFF_SOUND_AXE.map(text => el("p", { text }))),
+    el("section.staff-roll-licenses", STAFF_LICENSES.map(text => el("p", { text }))),
     el("section.staff-roll-closing", [el("p", { text: STAFF_ROLL_CLOSING })]),
   ].filter(Boolean);
 }

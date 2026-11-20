@@ -41,6 +41,14 @@ export function checkForecast(scenario, state, kind, { support = false, approach
   };
 }
 
+/** 宣言する時点の成功率。見立てで変わる卓だけ、的中した場合の数字も並べる。 */
+export function declarationChanceLabels({ odds, bestOdds, potentialBonus }) {
+  return {
+    success: "成功 約" + odds.success + "%",
+    insight: potentialBonus ? "的中時 約" + bestOdds.success + "%" : null,
+  };
+}
+
 export function rerollOdds(dice, bonus, index) {
   requireBonus(bonus);
   if (![0, 1].includes(index) || !Array.isArray(dice) || dice.length !== 2

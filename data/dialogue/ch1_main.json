@@ -775,6 +775,11 @@
           "text": "吐き出した煙が店内の空気と混じって、もう一度香る。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "自分の一台も吸ってみる。吐いた煙は、そこで消えた。"
+        },
+        {
           "speaker": "sumi",
           "face": "normal",
           "text": "フレーバーは同じだ。違うのは詰め方と熱の回し方だけだ"
@@ -831,27 +836,17 @@
           "speaker": "sumi",
           "face": "normal",
           "beat": 800,
-          "text": "……十五年前、世界大会で二位になった"
+          "text": "腕が上がるとな、吸う顔より、自分の手元ばかり見るようになる"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "え……スミさんが、ですか"
-        },
-        {
-          "speaker": "sumi",
           "face": "normal",
-          "text": "点は取れた。けど採点表ばかり見て、客の顔が浮かばなくなった"
-        },
-        {
-          "speaker": "sumi",
-          "face": "serious",
-          "text": "だから降りた。負けたからじゃねえ"
+          "text": "……スミさんも、ですか"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "それきり、スミさんは黙った。静かな余韻だけが残っていた。"
+          "text": "スミさんは答えずに、瓶の蓋を閉めた。静かな余韻だけが残っていた。"
         },
         {
           "type": "fx",
@@ -893,7 +888,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（客の顔が浮かばない。……あのスミさんが）"
+          "text": "（自分の手元ばかり。……スミさんにも、そんな頃があったのか）"
         },
         {
           "type": "apply",
@@ -1297,6 +1292,82 @@
           "text": "[imp]あの頃、tonariで。[/imp]"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_tutorial_oneesan_dry",
+      "metadata": {},
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お姉さんが吸い口を離した。煙は出ていない。"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_normal",
+          "text": "……あれ。まだ煙が出ないみたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。熱が入る前に出してしまって"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_smile",
+          "text": "うん。急がなくていいよ、新人くん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お姉さんは、吸い口をそっと皿に戻した。"
+        },
+        {
+          "type": "choice",
+          "id": "oneesan_praise_feel",
+          "choices": [
+            {
+              "text": "（次は、ちゃんと煙を出そう）",
+              "next": "op_talent"
+            },
+            {
+              "text": "（今の一台をスミさんに相談しよう）",
+              "next": "op_report"
+            }
+          ]
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……次は、ちゃんと確かめます"
+        }
+      ],
+      "branches": {
+        "op_talent": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "次は、俺が先に一口確かめます"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "そうしろ。お客さんの一口目で試すな"
+          }
+        ],
+        "op_report": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "スミさん、煙が出ませんでした"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "熱が入ってねえな。次は、出す前に確かめろ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_tutorial_oneesan",

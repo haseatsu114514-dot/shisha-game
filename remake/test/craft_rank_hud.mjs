@@ -221,7 +221,7 @@ test("sibling mount preserves the mode title, note and identity through disposal
   const h = await harness();
   const title = h.document.createTextNode("SMOKE CROWN CUP");
   h.mode.replaceChildren(title);
-  const note = h.document.createElement("small"); note.textContent = "今回のみ操作補助";
+  const note = h.document.createElement("small"); note.textContent = "今回のみイージー";
   h.mode.append(note);
   const rank = h.api.mountCraftRank(h.top, { grade: "S" }, { preserveMode: true });
   assert.equal(h.top.firstChild, h.mode);

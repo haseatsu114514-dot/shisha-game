@@ -34,6 +34,11 @@
         },
         {
           "speaker": "hajime",
+          "face": "sad",
+          "text": "（なんで勝てたのかも、まだ分からないのに）"
+        },
+        {
+          "speaker": "hajime",
           "face": "serious",
           "text": "（みんなには武器がある。俺には……何がある？）"
         },
@@ -97,6 +102,10 @@
           "speaker": "",
           "face": "",
           "text": "自分用に一台作った。配合も手順も、いつもどおりのはずだった。"
+        },
+        {
+          "type": "motion",
+          "id": "taste"
         },
         {
           "speaker": "",
@@ -232,11 +241,13 @@
           "face": "",
           "text": "スミさんが炭を金属の皿へ戻し、焦げ跡に濡れた布を当てる。煙は細くなって消えた。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch2_sofa_wet_cloth"},
         {
           "speaker": "",
           "face": "",
           "text": "お客さんの手と服、足元を一人ずつ確かめた。誰にも、けがはなかった。"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",

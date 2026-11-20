@@ -15,6 +15,7 @@ import { masteryHooks } from "./flavor-mastery.js";
 import { syncRespecOpportunity, closeRespecOpportunity } from "./growth-respec.js";
 import { KUJI_LIMITED_GRADES } from "./rules.js";
 import { syncPlayMastery, masteryRecord, masteryLine, PLAY_MASTERY } from "./play-mastery.js";
+import { syncPlayTiers, tierCleared, TIER_GAMES, TIER_LABEL } from "./play-tiers.js";
 export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
 export function setGrowthPreview(on) {
@@ -33,10 +34,10 @@ export const MAX_LEVEL = 99; // 2周目の終わりにやり込んで届く上�
 export const BOARD_TOTAL = BOARD_KEYS.reduce((n, b) => n + STAT_SQUARES[b]
   + BOARD_SHAPES[b].cells.filter(([, kind]) => kind === "gate").length, 0) + [...SKILLS,...STAT_UPGRADES].reduce((n, s) => n + s.cost, 0);
 /** 盤の型の版。違う版の灯し方は、使った火種を返して最初から（習得した授業は残す） */
-export const BOARD_VERSION = 13; // 4: 授業の小道、5: 授業20、6: 1レベル1つ、7: 3盤とも7割、8: 3盤を同じ大きさに・1レベル2つ、9: 紋を下に・関門の先に授業、10: 関門を紋のそばに・極みは盤を埋めたご褒美、11: 3枚の形をそれぞれ変える、12: 紋の場所も盤ごと・授業は章の順に遠く（2026-10-30）、13: 輪つきの木・要のマス・アイコン（2026-10-31）
+export const BOARD_VERSION = 15; // 15: ユニークなスキル3つ（聞き上手・くじ運・仕事が早い。2026-11-20 SBD154）、14: ♥5の授業を奥へ（第1章の人はスキルの先・あとの章の人は台座の先のいちばん奥。2026-11-20 SBD149）、 4: 授業の小道、5: 授業20、6: 1レベル1つ、7: 3盤とも7割、8: 3盤を同じ大きさに・1レベル2つ、9: 紋を下に・関門の先に授業、10: 関門を紋のそばに・極みは盤を埋めたご褒美、11: 3枚の形をそれぞれ変える、12: 紋の場所も盤ごと・授業は章の順に遠く（2026-10-30）、13: 輪つきの木・要のマス・アイコン（2026-10-31）
 /**
  * レベルアップ1回でもらう万能の火種（1.5）。2026-10-30 オーナー「いろんな盤をあけてく爽快感も欲しい」→「1レベル2つ・盤を細かく」（SBD60）:
- * どのレベルも2つ。盤は198（3盤とも66）で、1周目（中央 Lv.57、約140）で3つの盤どれも7割。
+ * どのレベルも2つ。盤は204（3盤とも68。v15 でユニークなスキルを各盤1つ足した。その前は198）で、1周目（中央 Lv.57、約140＋優勝などの上乗せ）で3つの盤どれも約7割。
  */
 export const HIDANE_PER_LEVEL = 2;
 export const hidaneForLevel = () => HIDANE_PER_LEVEL;
@@ -50,7 +51,7 @@ export const KEY_GIFT = Object.freeze({ color: 1, any: 1 });
 export const WIN_HIDANE = 3;
 export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 export const CHAPTER_MULT = { 1: 1, 2: 1.25, 3: 1.5, 4: 1.75, 5: 2 };
-export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30, recipe: 30, golden: 20, scene: 20 };
+export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30, recipe: 30, golden: 20, scene: 20, tutorial: 10 };
 /**
  * 絆の深い相手（恋人・締めくくりを読んだ相手）からの誘いに乗った行動の倍率（LM11・2026-11-12 オーナー
  * 「絆深い相手の誘いは経験値多い」）。新鮮さでは減らさず、同じ相手の店へ通う回数にも数えない。
@@ -557,6 +558,8 @@ function giveSet(g, set) {
   return parts;
 }
 
+/** てつこの好感度の満タン（ハート5。minigames/tetsuko-model.js と同じ値。依存を増やさないため写す。テストで照合） */
+export const TETSUKO_AFFECTION_FULL = 100;
 const RANK_ORDER = ["D", "C", "B", "A", "S"];
 // 斧投げのランクの境目（minigames/axe-challenges.js の RANKS と同じ。依存を増やさないため写す。テストで照合）
 export const AXE_RANKS = [["S", 0.8], ["A", 0.62], ["B", 0.45], ["C", 0.25], ["D", 0]];
@@ -575,7 +578,10 @@ function bestAxeRank(s) {
 }
 function playRewardMet(reward, s) {
   if (reward.master) return masteryRecord(s, reward.game).done;
+  if (reward.tier) return tierCleared(s, reward.game, reward.tier);
+  if (reward.game === "tetsuko" && reward.affection) return Number(s.flags?._tetsuko_time?.affection) >= TETSUKO_AFFECTION_FULL;
   if (reward.game === "axe") { const rank = bestAxeRank(s); return !!rank && atLeast(rank, reward.rank); }
+  if (reward.game === "trpg" && reward.scenario) return !!s.trpg?.cleared?.[reward.scenario];
   if (reward.game === "trpg") {
     const cleared = Object.values(s.trpg?.cleared || {});
     if (reward.stars) return cleared.some((c) => (c?.stars || 0) >= reward.stars);
@@ -593,6 +599,7 @@ function playRewardMet(reward, s) {
  */
 export function claimPlayRewards(g, s = state) {
   syncPlayMastery(s);
+  syncPlayTiers(s);
   const out = [];
   for (const reward of PLAY_REWARDS) {
     if (g.rewards[reward.id] || !playRewardMet(reward, s)) continue;
@@ -705,39 +712,12 @@ export async function presentNight({ evePlace = null } = {}) {
   return state === owner ? result : null;
 }
 
-/**
- * 参拝の場所に着いた時の「静かに振り返る」（時間を使わない）。
- * 火種が無ければ何もしない（false）。振り返った・戻った時は true（呼び出し側は行動にしない）。
- */
-export async function reflectAtSpot(spotId, { boardOnly = false } = {}) {
+/** 地元の観音堂の入口。DAY3の本筋だけは受付を挟まず盤へ進む。 */
+export async function reflectAtSpot(spotId, options) {
   if (spotId !== "kannon" || !growthEnabled() || !state) return false;
   const owner = state;
-  const { canReflectAt, reflectAt } = await import("../daily/reflection.js");
-  if (state !== owner || !growthEnabled()) return true;
-  // 最初の火種をまだもらっていなければ、火種が0でも初回だけは盤を開ける（はじめての案内）
-  if (!canReflectAt("kannon")) return false;
-  const { modal } = await import("./ui.js");
-  if (state !== owner || !growthEnabled()) return true;
-  const how = await modal({ title: "観音堂", body: "学んできたことを振り返り、火種を盤に灯せる。", options: [
-    { label: "盤を開く（時間は進まない）", value: "reflect", primary: true, test: "kannon-reflect" },
-    ...(!boardOnly ? [{ label: "いつもどおり過ごす（1行動）", value: "visit", test: "kannon-visit" }] : []),
-    { label: "戻る", value: null },
-  ] });
-  if (state !== owner || !growthEnabled()) return true;
-  if (how === "visit") return false;
-  if (how === "reflect") {
-    if (!owner.flags._kannon_growth_intro_done) {
-      const { play } = await import("../vn/engine.js");
-      if (state !== owner || !growthEnabled()) return true;
-      const result = await play("kannon_growth_intro", { bg: "res://assets/backgrounds/bg_kannon_night.png" });
-      if (state !== owner || !growthEnabled() || result?.cancelled
-        || result?.id !== "kannon_growth_intro" || !result.visited?.includes("kannon_growth_intro")) return true;
-      owner.flags._kannon_growth_intro_done = true;
-      save();
-    }
-    await reflectAt("kannon");
-  }
-  return true;
+  const { visitKannondo } = await import("../daily/reflection.js");
+  return state === owner && visitKannondo(options);
 }
 
 /** メニューの「心得の盤」。無効なら出さない。メニューからは見るだけ（灯すのは参拝の場所。2.8） */
@@ -748,10 +728,12 @@ export const growthMenuItems = () => growthEnabled()
  * 盤の画面を開き、閉じるまで待つ。大会の当日は開かない。
  * place を渡した時（参拝の場所での内省）だけ灯せる。渡さなければ見るだけ（目標は決められる）。
  */
-export async function openGrowthBoard({ place = null } = {}) {
+export async function openGrowthBoard({ place = null, onExit = null } = {}) {
   if (!growthEnabled() || !state || state.phase === "tournament") return null;
+  const owner = state;
   const { openBoard } = await import("../daily/growth-board-screen.js");
-  return openBoard({ place });
+  if (state !== owner || !growthEnabled()) return null;
+  return openBoard({ place, onExit });
 }
 
 // ---------------------------------------------------------------- ゲージ（6.1a）
@@ -777,6 +759,7 @@ export function gaugeInfo(g = state?.growth) {
 
 // 自由行動の確定（paidAction）と好感度の段から呼ばれる入口を登録する。
 setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp, recipe: awardRecipeExp, scene: awardSceneExp, affinity: awardAffinityStepExp, perks: growthPerks,
+  skill: growthSkill,
   committed: s => { if (s.growth?.respec) { syncRespecOpportunity(s.growth, s); closeRespecOpportunity(s.growth); } },
   capacityBonus: s => growthLesson(s, "M-B4") ? LESSON_TUNING.stamina : 0,
   sleepMultiplier: s => (growthSkill(s, "K03") ? 1 + SKILL_TUNING.sleep : 1)
@@ -789,4 +772,17 @@ on("play-mastery", ({ state: owner, game, newly }) => {
   if (owner !== state) return;
   settleGrowth();
   emit("notice", { text: newly ? `認定：${PLAY_MASTERY[game].title}` : masteryLine(owner, game) });
+});
+
+// てつこの好感度がハート5に届いた（#3779。tetsuko-time.js の確定が一度だけ知らせる）。白火をその場で精算する。
+on("tetsuko-hearts", ({ state: owner, full }) => {
+  if (owner !== state || !full) return;
+  settleGrowth();
+});
+
+// ミニゲームの段を初めてクリアした（#3779）。上級なら白火をその場で精算する。下の段の一言は各ゲームの結果の画面が出す。
+on("play-tier", ({ state: owner, game, newlyHard }) => {
+  if (owner !== state || !newlyHard) return;
+  settleGrowth();
+  emit("notice", { text: `${TIER_GAMES[game]?.title || ""} ${TIER_LABEL.hard}クリア` });
 });

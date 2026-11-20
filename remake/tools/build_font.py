@@ -1,30 +1,36 @@
-"""リメイク版の本文フォント（しっぽり明朝 B1）を、ゲームで使う文字に絞って woff2 にする。
+"""リメイク版の本文フォント（Noto Sans JP）を、ゲームで使う文字に絞って woff2 にする。
 
 使い方:
     pip install fonttools brotli
-    python3 remake/tools/build_font.py <元TTFのあるフォルダ>
-      （フォルダに ShipporiMinchoB1-Medium.ttf / -Bold.ttf を置く。
-        入手元: https://github.com/google/fonts/tree/main/ofl/shipporiminchob1 ・SIL OFL 1.1）
+    python3 remake/tools/build_font.py <元フォントのあるフォルダ>
+      （フォルダに NotoSansJP[wght].ttf（可変フォント）と、補完用の
+        ZenKakuGothicNew-Medium.ttf / -Bold.ttf を置く。
+        入手元: https://github.com/google/fonts/tree/main/ofl/notosansjp ・
+                https://github.com/google/fonts/tree/main/ofl/zenkakugothicnew
+                いずれも SIL OFL 1.1）
 
-収録する文字 = 旧書体（Zen Kaku Gothic New）の同梱サブセットが持っていた字種
+収録する文字 = 同梱済みサブセットが持っていた字種（安全集合として引き継ぐ）
                ＋ data/ と remake/ に実際に出てくる全文字。
-しっぽり明朝 B1 が持たない35字（℃・罫線・数学記号・キリル文字など、ヴォルクのロシア語と
-レイの「†黒羅雨℃†」で使う）は、同梱済みの Zen Old Mincho Blue から字形を補って合成する
-（端末のフォールバックに頼ると機種で見た目が変わるため）。太さは 500 / 700 の2段で、
-800〜900 の指定は CSS 側で 700 のフェイスが受ける（重さ対策）。
+Noto Sans JP が持たない字（キリル文字など、ヴォルクのロシア語で使う）は、
+以前の本文フォントだった Zen Kaku Gothic New から字形を補い、別ファイルの
+補完フェイスとして CSS の unicode-range で割り当てる
+（端末のフォールバックに頼ると機種で見た目が変わるため）。
+太さは可変フォントを 500 / 700 に固定した2段で、800〜900 の指定は CSS 側で
+700 のフェイスが受ける（重さ対策）。
 """
 import sys
 from pathlib import Path
 
 from fontTools import subset
-from fontTools.merge import Merger
 from fontTools.ttLib import TTFont
+from fontTools.varLib.instancer import instantiateVariableFont
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "remake" / "fonts"
-WEIGHTS = ("Medium", "Bold")
+WEIGHTS = (("Medium", 500), ("Bold", 700))
 FEATURES = ["kern", "liga", "ccmp", "locl", "mark", "mkmk"]
-# しっぽり明朝 B1 に無く、Zen Old Mincho Blue から補う字（℃、記号、キリル）
+# Noto Sans JP に無いことが分かっている字（℃・記号・キリル）。実際の補完は
+# サブセット後の欠けを計算して行うため、この一覧は保証対象の明示用。
 SUPPLEMENT = [
     0x0412, 0x0414, 0x0416, 0x0422, 0x0434, 0x0435, 0x0437, 0x0438, 0x0439,
     0x043B, 0x043C, 0x043D, 0x043E, 0x0441, 0x0442, 0x0445, 0x0447, 0x044B,
@@ -43,14 +49,27 @@ def used_chars():
 
 
 def subset_font(src_path, unicodes, out_path):
+    # Noto Sans JP の cmap format 14（異体字セレクタ）があると fontTools の
+    # subset が落ちるため、事前に取り除く（ゲームでは異体字セレクタを使わない）
+    probe = TTFont(str(src_path))
+    if "cmap" in probe and any(t.format == 14 for t in probe["cmap"].tables):
+        probe["cmap"].tables = [t for t in probe["cmap"].tables if t.format != 14]
+        stripped = Path(str(src_path) + ".nouvs")
+        probe.save(str(stripped))
+        src_path = stripped
     opts = subset.Options()
     opts.flavor = "woff2"
     opts.layout_features = FEATURES
     opts.hinting = False
     opts.desubroutinize = True
+    # 可変フォント由来の HVAR 等が残ると Merger が VarStore で落ちるため落とす
+    opts.drop_tables += ["HVAR", "VVAR", "MVAR", "STAT"]
     font = subset.load_font(str(src_path), opts)
+    # fontTools 4.68 では Noto Sans JP に対して unicodes 指定の closure が
+    # 落ちるため、cmap から引いたグリフ名で populate する
+    src_cmap = TTFont(str(src_path)).getBestCmap()
     sub = subset.Subsetter(opts)
-    sub.populate(unicodes=",".join(f"U+{c:04X}" for c in sorted(unicodes)))
+    sub.populate(glyphs=[src_cmap[c] for c in sorted(unicodes) if c in src_cmap])
     sub.subset(font)
     subset.save_font(font, str(out_path), opts)
     return TTFont(str(out_path)).getBestCmap()
@@ -58,30 +77,49 @@ def subset_font(src_path, unicodes, out_path):
 
 def main():
     src = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
-    blue_path = OUT / "ZenOldMincho-Blue-Regular.woff2"
-    blue_cmap = TTFont(str(blue_path)).getBestCmap()
     base_unicodes = {ord(c) for c in used_chars()} | set(SUPPLEMENT)
     # 収録済みフォントが持つ字種は落とさない（安全集合として引き継ぐ）
-    shipped = OUT / "ShipporiMinchoB1-Medium.woff2"
-    if shipped.exists():
-        base_unicodes |= set(TTFont(str(shipped)).getBestCmap())
+    for shipped_name in ("NotoSansJP-Medium.woff2", "ShipporiMinchoB1-Medium.woff2"):
+        shipped = OUT / shipped_name
+        if shipped.exists():
+            base_unicodes |= set(TTFont(str(shipped)).getBestCmap())
+            break
+    if (OUT / "supplement-ranges.txt").exists():
+        (OUT / "supplement-ranges.txt").unlink()
     tmp = OUT / ".build_font_tmp"
     tmp.mkdir(exist_ok=True)
     try:
-        supp_path = tmp / "supp.woff2"
-        subset_font(blue_path, [c for c in SUPPLEMENT if c in blue_cmap], supp_path)
-        for name in WEIGHTS:
-            sub_path = tmp / f"ShipporiMinchoB1-{name}.woff2"
-            cmap = subset_font(src / f"ShipporiMinchoB1-{name}.ttf", base_unicodes, sub_path)
-            missing = [c for c in SUPPLEMENT if c not in cmap]
-            dst = OUT / f"ShipporiMinchoB1-{name}.woff2"
+        var_path = src / "NotoSansJP[wght].ttf"
+        for name, wght in WEIGHTS:
+            inst_path = tmp / f"NotoSansJP-{name}.ttf"
+            vf = TTFont(str(var_path))
+            instantiateVariableFont(vf, {"wght": wght})
+            vf.save(str(inst_path))
+            sub_path = tmp / f"NotoSansJP-{name}.woff2"
+            # フォントに無い字を subset へ渡すと fontTools が落ちる字種があるため、
+            # 実在する字だけを渡し、欠けは下の補完で埋める
+            noto_cmap = TTFont(str(inst_path)).getBestCmap()
+            cmap = subset_font(inst_path, [c for c in base_unicodes if c in noto_cmap], sub_path)
+            donor_path = src / f"ZenKakuGothicNew-{name}.ttf"
+            donor_cmap = TTFont(str(donor_path)).getBestCmap()
+            missing = [c for c in sorted(base_unicodes) if c not in cmap and c in donor_cmap]
+            dst = OUT / f"NotoSansJP-{name}.woff2"
+            sub_path.replace(dst)
+            # 補完字は合成せず、別ファイルにして CSS 側で unicode-range 付きの
+            # 同名 @font-face として割り当てる（fontTools の Merger が可変フォント
+            # 由来の VarStore を合成できないため）。範囲は base.css の
+            # "Suien Gothic" 補完フェイスと supplement-ranges.txt に転記すること。
             if missing:
-                merged = Merger().merge([str(sub_path), str(supp_path)])
-                merged.flavor = "woff2"
-                merged.save(str(dst))
-            else:
-                sub_path.replace(dst)
-            print(f"{dst.relative_to(ROOT)}: {dst.stat().st_size // 1024} KB")
+                supp_dst = OUT / f"NotoSansJP-Supp-{name}.woff2"
+                subset_font(donor_path, missing, supp_dst)
+                rng = ",".join(f"U+{c:04X}" for c in missing)
+                (OUT / "supplement-ranges.txt").write_text(
+                    (OUT / "supplement-ranges.txt").read_text(encoding="utf-8") if (OUT / "supplement-ranges.txt").exists() else ""
+                    + f"{name}: {rng}\n", encoding="utf-8")
+            nowhere = [c for c in sorted(base_unicodes) if c not in cmap and c not in donor_cmap]
+            print(f"{dst.relative_to(ROOT)}: {dst.stat().st_size // 1024} KB"
+                  f"（補完 {len(missing)} 字 / どちらにも無い {len(nowhere)} 字"
+                  + (": " + ",".join(f"U+{c:04X}" for c in nowhere[:20]) if nowhere else "") + "）")
     finally:
         for p in tmp.iterdir():
             p.unlink()
