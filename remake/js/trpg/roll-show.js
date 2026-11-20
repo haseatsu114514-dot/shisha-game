@@ -9,6 +9,8 @@
 //   4. 補正のチップが入り、目標までのゲージが伸びる。30の旗を越えたら旗が弾け飛ぶ。届かなければ「あと N」が残る。
 //   5. 評価の大文字が叩きつけられる。成功＝金・紙吹雪・集中線、クリティカル＝四方から文字が飛んでくる・金の噴水・大揺れ、
 //      ひと手間＝緑、思わぬ出来事＝落ちてくる重い文字・画面が沈む、ファンブル＝ダイスが割れ・青く暗く・文字が崩れる。
+// スキル（仲間の切り札・振り直し）を使った判定は、投げる前に「SKILL!」のカットインで誰の何が発動したかを見せる。
+// 振り直せる時は、評価のあとに「○○の「△△」で振り直せる！」と知らせる。
 // タップ・Enter・Space・Escape で結果まで飛ばせる。動きを減らす設定と、本番のDOM以外（単体テストの簡易DOM）では null を返し、
 // 呼び出し側がこれまでどおり卓の窓の中で見せる。揺れを減らす設定（body.reduce-shake）では揺れ・閃光・寄りを省く。
 import { el } from "../core/util.js";
@@ -42,7 +44,9 @@ function word(text, cls = "") {
 /**
  * @param host 判定の窓を載せている幕（.trpg-overlay）。演出はその上に重なり、終わると自分で片付く。
  * @param show { title, who, rule, dice: [a, b], thrown: 振り直した1個の番号（最初の判定は null）, bonus, bonusLabel, total, goal, mixed,
- *               grade, special, label, sub, sound(kind), onVerdict: 評価が出た瞬間（一度だけ）, onDone: 片付いた後 }
+ *               grade, special, label, sub, sound(kind), onVerdict: 評価が出た瞬間（一度だけ）, onDone: 片付いた後,
+ *               skill: { kind: "support"|"reroll", who, name, effect, face: Node } 発動したスキル（無ければ無し）,
+ *               rerollHint: 評価のあとに「振り直せる！」の下へ添える、誰の何か（無ければ出さない） }
  * @returns { playing, cancel(), skip() } 。演出しない環境では null。
  */
 export function playRollShow(host, show) {
@@ -68,7 +72,7 @@ export function playRollShow(host, show) {
   const dieNodes = dice.map((value, i) => el("div.trpg-rs-die", { dataset: { i: String(i) }, style: { left: REST[i][0] - SIZE / 2 + "px", top: REST[i][1] - SIZE / 2 + "px" } }, [
     el("i.trpg-rs-halo"), el("i.trpg-rs-shadow"),
     el("div.trpg-rs-spin", el("span.trpg-rs-body")),
-    el("i.trpg-rs-ring"), el("b.trpg-rs-num", [word(value, "num")]),
+    el("i.trpg-rs-ring"), el("b.trpg-rs-num", { text: String(value), dataset: { digits: String(String(value).length) } }),
     el("span.trpg-rs-crack", { html: CRACK }),
   ]));
   const plus = [el("span.trpg-rs-plus.a", { text: "+" }), el("span.trpg-rs-plus.b", { text: "+" })];
@@ -95,6 +99,19 @@ export function playRollShow(host, show) {
   const verdictSub = show.sub ? el("em", { text: show.sub }) : null;
   const verdict = el("div.trpg-rs-verdict", [verdictMega, el("strong", [verdictWord]), verdictSub].filter(Boolean));
   const camera = el("div.trpg-rs-camera", [head, goalNode, plus[0], ...dieNodes, plus[1], chip, needNode, sum, meter, verdict]);
+  const skill = show.skill || null, lead = skill ? 980 : 0;
+  const skillNode = skill ? el("div.trpg-rs-skill", { dataset: { kind: skill.kind } }, [
+    el("i.trpg-rs-skill-band"),
+    el("span.trpg-rs-skill-face", skill.face ? [skill.face] : []),
+    el("div.trpg-rs-skill-copy", [
+      el("small", { text: "SKILL!  " + (skill.who || "") + "の切り札" }),
+      el("strong", [word("「" + skill.name + "」", "skill")]),
+      el("em", { text: skill.effect || "" }),
+    ]),
+  ]) : null;
+  const hintNode = show.rerollHint ? el("div.trpg-rs-hint", [el("b", { text: "SKILL" }), el("strong", { text: "振り直せる！" }), el("span", { text: show.rerollHint })]) : null;
+  if (skillNode) camera.append(skillNode);
+  if (hintNode) camera.append(hintNode);
   const lines = el("i.trpg-rs-lines"), rays = el("i.trpg-rs-rays"), vignette = el("i.trpg-rs-vignette"), tint = el("i.trpg-rs-tint");
   const burst = el("div.trpg-rs-burst"), flash = el("i.trpg-rs-flash");
   const hint = el("small.trpg-rs-skip", { text: "タップでスキップ" });
@@ -217,6 +234,23 @@ export function playRollShow(host, show) {
   animate(head, [{ opacity: 0, transform: "translateX(-120px) skewX(-20deg)" }, { opacity: 1, transform: "none" }], { duration: 360, delay: 80, easing: EASE.out });
   animate(goalNode, [{ opacity: 0, scale: "2.4", rotate: "20deg" }, { opacity: 1, scale: "1", rotate: "0deg" }], { duration: 380, delay: 200, easing: EASE.back });
   animate(hint, [{ opacity: 0 }, { opacity: .75 }], { duration: 300, delay: 600 });
+  if (skillNode) playSkill();
+  after(lead, main);
+
+  /** スキル発動のカットイン: 金の帯が斜めに走り、使った人の顔と技の名前が叩きつけられる。ダイスはその後に投げ込まれる。 */
+  function playSkill() {
+    sound("skill");
+    animate(skillNode, [{ opacity: 0 }, { opacity: 1, offset: .08 }, { opacity: 1, offset: .82 }, { opacity: 0 }], { duration: lead + 120, easing: "linear" });
+    animate(skillNode.querySelector(".trpg-rs-skill-band"), [{ transform: "skewY(-6deg) scaleX(0)" }, { transform: "skewY(-6deg) scaleX(1)" }], { duration: 260, easing: EASE.out });
+    animate(skillNode.querySelector(".trpg-rs-skill-face"), [{ opacity: 0, translate: "-260px 0", rotate: "-30deg" }, { opacity: 1, translate: "0 0", rotate: "0deg" }], { duration: 320, delay: 80, easing: EASE.back });
+    const chars = [...skillNode.querySelectorAll(".trpg-rs-word > .c")];
+    chars.forEach((c, n) => animate(c, [{ opacity: 0, scale: "2.6", translate: "0 -30px" }, { opacity: 1, scale: "1", translate: "0 0" }], { duration: 240, delay: 180 + n * 40, easing: EASE.out }));
+    animate(skillNode.querySelector(".trpg-rs-skill-copy em"), [{ opacity: 0, translate: "60px 0" }, { opacity: 1, translate: "0 0" }], { duration: 240, delay: 260 + chars.length * 40, easing: EASE.out });
+    after(200 + chars.length * 40, () => { shake(8, 260, .6); blink(["#fff", "#2a1600", "#fff4c2"], 260, .5); });
+    animate(lines, [{ opacity: .1 }, { opacity: .55 }, { opacity: .14 }], { duration: lead, easing: "ease-out" });
+  }
+
+  function main() {
   sound("shake");
 
   // ---- 2. 投げ込み ----
@@ -373,7 +407,8 @@ export function playRollShow(host, show) {
     sound("slam");
     const chars = [...verdictWord.children];
     animate(verdict, [{ opacity: 0 }, { opacity: 1 }], { duration: 60 });
-    animate(verdictMega, [{ opacity: 0, translate: "30% 0" }, { opacity: 1, translate: "0 0", offset: .25 }, { opacity: 1, translate: "-8% 0" }], { duration: 2200, easing: EASE.out });
+    // 中央寄せ（CSS の translate: -50% -50%）を保ったまま、右から入って少しずつ流れる。
+    animate(verdictMega, [{ opacity: 0, translate: "-30% -50%" }, { opacity: 1, translate: "-50% -50%", offset: .25 }, { opacity: 1, translate: "-53% -50%" }], { duration: 2200, easing: EASE.out });
     // サイコロは少し退いて、言葉を主役に（合計とゲージは届いたかを見せるので、そのまま）。
     for (const part of [...dieNodes, ...plus, chip, needNode]) {
       animate(part, [{ filter: "brightness(1) blur(0px)" }, { filter: "brightness(.5) blur(2px)" }], { duration: 260, easing: "ease-out" });
@@ -422,6 +457,10 @@ export function playRollShow(host, show) {
       animate(goalStamp, [{ opacity: 0, scale: "3" }, { opacity: 1, scale: "1" }], { duration: 240, delay: 300, easing: EASE.out });
     }
     confetti();
+    if (hintNode) {
+      animate(hintNode, [{ opacity: 0, translate: "80px 0", scale: ".7" }, { opacity: 1, translate: "0 0", scale: "1" }], { duration: 300, delay: 700, easing: EASE.back });
+      after(700, () => sound("chip"));
+    }
   });
   /** 評価ごとの紙吹雪: 成功は中央から弾け、クリティカルは左右の下から噴き上がる。うまくいかない時は、静かに降るだけ。 */
   function confetti() {
@@ -454,5 +493,6 @@ export function playRollShow(host, show) {
   const endAt = verdictAt + hold;
   after(endAt - 240, () => animate(node, [{ opacity: 1 }, { opacity: 0 }], { duration: 240, easing: "ease-in" }));
   after(endAt, () => handle.skip());
+  }
   return handle;
 }

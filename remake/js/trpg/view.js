@@ -1018,7 +1018,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
    * ダイス劇場（TRF29）: 振った瞬間から評価が出るまでを画面いっぱいで見せる。出目・合計・評価は決まった値を渡すだけ。
    * 評価の音と光は、劇場の中で評価が出た瞬間（飛ばした時は閉じる時）に一度だけ。演出しない環境（動きを減らす設定・簡易DOM）では null。
    */
-  function rollShow(result, { title, who = "", statName = "", thrown = null, labels = LABELS, onDone }) {
+  function rollShow(result, { title, who = "", statName = "", thrown = null, labels = LABELS, skill = null, rerollHint = "", onDone }) {
     if (!overlay) return null;
     const special = result.special === "critical" || result.special === "fumble" ? result.special : "";
     const near = nearMissOf(result);
@@ -1026,6 +1026,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       title, who, rule: DICE.success + "以上で成功", dice: result.dice, thrown, bonus: result.bonus, bonusLabel: result.bonus === result.base && statName ? statName : "補正",
       total: result.total, goal: DICE.success, mixed: DICE.mixed, grade: result.grade, special: result.special || "",
       sound: kind => { if (!disposed) audio.play(kind); },
+      skill, rerollHint,
       label: special ? SPECIALS[special] : labels[result.grade] + (result.grade === "success" && !labels[result.grade].endsWith("！") ? "！" : ""),
       sub: special === "critical" ? "20の目 · 必ず成功" : result.special === "double" ? SPECIALS.double : near ? "あと" + near + "……！" : "",
       onVerdict: () => {
@@ -1038,10 +1039,17 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (show) stageFx(show);
     return show;
   }
-  /** 判定の卓の題と、動く役（劇場の見出し）。 */
+  /** 判定の卓の題と、動く役（劇場の見出し）。仲間の切り札を使った判定は、そのカットインも。振り直せる時は、その知らせも。 */
   function showCopy(result) {
-    const pc = sheets[result.sheet];
-    return { title: scenario.checks[result.kind].title, who: pc?.name || (result.actor && cast[result.actor] ? name(result.actor) : ""), statName: result.stat ? statLabel(result.stat) : "" };
+    const pc = sheets[result.sheet], actor = session.rerollActor, state = session.snapshot();
+    const canReroll = result.special !== "critical" && result.grade !== "success" && !state.used[actor] && state.teamwork > 0 && cast[actor];
+    return { title: scenario.checks[result.kind].title, who: pc?.name || (result.actor && cast[result.actor] ? name(result.actor) : ""), statName: result.stat ? statLabel(result.stat) : "",
+      skill: result.helper && cast[result.helper] ? skillOf(result.helper, "support", "＋" + DICE.support + "  成功しやすくなる") : null,
+      rerollHint: canReroll ? name(actor) + "の「" + cast[actor].ability + "」 · 連携札1枚" : "" };
+  }
+  /** スキルのカットインに出す、使った人と技（TRF31）。 */
+  function skillOf(id, kind, effect) {
+    return { kind, who: name(id), name: cast[id].ability, effect, face: pcFace(seatOf(id), id) };
   }
   // The die travels and casts its shadow; the body inside spins, so the shadow stays on the felt.
   function die(value, rolling = false) {
@@ -1296,7 +1304,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         session.reroll(i);
         // 振り直しも劇場で: 選んだ1個だけがもう一度投げ込まれ、合計と評価が出直す。その間、卓の札は押せない。
         const again = session.checkResult();
-        if (rollShow(again, { ...showCopy(again), thrown: i, onDone: () => showRollResult(pop, body, i, true) })) {
+        if (rollShow(again, { ...showCopy(again), thrown: i, skill: skillOf(session.rerollActor, "reroll", (i + 1) + "個目のサイコロを振り直す"), onDone: () => showRollResult(pop, body, i, true) })) {
           syncResources();
           pop.box.dataset.rollState = "rolling";
           // 使った切り札の札はその場で片付ける（二度押しで二度振らない）。「物語を続ける」は、結果が出直してから置き直す。

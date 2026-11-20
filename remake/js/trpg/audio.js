@@ -147,6 +147,7 @@ export function createTrpgAudio(initialTheme = "harbor") {
     slam: () => { tone(62, 0, .42, .3); tone(124, 0, .2, .08, "triangle"); grain(0, .3, .14, 320, .7, "lowpass"); },
     boom: () => { tone(44, 0, .8, .34); grain(0, .6, .16, 180, .6, "lowpass"); },
     "critical-hit": () => { [1047, 1319, 1568, 2093, 2637].forEach((f, i) => tone(f, i * .028, .5, .035)); SHOW.slam(); },
+    skill: () => { grain(0, .22, .08, 1400, .6); [523.25, 783.99, 1046.5, 1567.98].forEach((f, i) => tone(f, .05 + i * .05, .3, .05, "triangle")); },
     crack: () => { grain(0, .08, .2, 3600, 1.2); grain(.05, .12, .13, 1200, 1); tone(70, 0, .32, .16); },
   };
   function play(kind = "tap") {
