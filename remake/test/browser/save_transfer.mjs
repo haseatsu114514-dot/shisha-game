@@ -108,6 +108,37 @@ await suite("save-transfer", async check => {
     }
   });
 
+  await check("export-escape-closes-only-export", async page => {
+    await seed(page);
+    await openConfig(page);
+    const exportButton = page.locator('[data-test="save-export"]');
+    await exportButton.click();
+    const dialog = page.locator(".xfer-layer");
+    await dialog.waitFor({ state: "visible" });
+    await page.evaluate(() => {
+      window.exportEffects = { downloads: 0, copies: 0 };
+      const click = HTMLAnchorElement.prototype.click;
+      HTMLAnchorElement.prototype.click = function () {
+        if (this.hasAttribute("download")) window.exportEffects.downloads++;
+        return click.call(this);
+      };
+      Object.defineProperty(navigator.clipboard, "writeText", {
+        value: async () => { window.exportEffects.copies++; },
+      });
+      const execCommand = document.execCommand.bind(document);
+      document.execCommand = (command, ...args) => {
+        if (command === "copy") window.exportEffects.copies++;
+        return execCommand(command, ...args);
+      };
+    });
+    await page.locator('[data-test="export-file"]').focus();
+    await page.keyboard.press("Escape");
+    assert.deepEqual(await page.evaluate(() => window.exportEffects), { downloads: 0, copies: 0 });
+    await dialog.waitFor({ state: "detached" });
+    assert(await page.locator('[data-test="save-transfer"]').isVisible());
+    assert(await exportButton.evaluate(button => document.activeElement === button));
+  });
+
   await check("retired-slots-are-ignored-on-transfer", async page => {
     await seed(page);
     const result = await page.evaluate(async () => {

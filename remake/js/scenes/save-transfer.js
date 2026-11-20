@@ -36,10 +36,11 @@ function modal({ title, body, options, className = "", focusTest }) {
     ]);
     const layer = el("div.xfer-layer", [el("div.modal-backdrop"), box]);
     const buttons = [...box.querySelectorAll(".modal-actions button")];
-    const dismiss = [...buttons].reverse().find((b) => !b.classList.contains("primary")) || buttons[0];
+    const dismiss = [...options].reverse().find((o) => !o.keep && !o.primary) || options.find((o) => !o.keep);
     const onKey = (e) => {
       if (e.key !== "Escape") return;
-      e.preventDefault(); e.stopImmediatePropagation(); dismiss?.click();
+      e.preventDefault(); e.stopImmediatePropagation();
+      if (dismiss) close(dismiss.value);
     };
     const close = (value) => {
       window.removeEventListener("keydown", onKey, true);
