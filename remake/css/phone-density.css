@@ -50,9 +50,32 @@ html:root[data-density="phone"] body:not(:root) .pull-btns.with-options .btn:not
 html:root[data-density="phone"] body:not(:root) .modal-body { font-size: var(--phone-text); line-height: 1.6; }
 html:root[data-density="phone"] body:not(:root) .modal-actions { gap: var(--phone-gap); }
 html:root[data-density="phone"] body:not(:root) .dmenu .dm-close { min-height: var(--phone-tap); font-size: var(--phone-text); }
-/* 用語集: 閉じるボタンが高くなった分だけ本文の枠が縮むので、固定の高さ（460px）をやめて枠いっぱいに収める（下端が隠れてスクロールできなくなるのを防ぐ）。 */
-html:root[data-density="phone"] body:not(:root) .glossary-modal .modal-body { display: flex; flex-direction: column; overflow: hidden; }
-html:root[data-density="phone"] body:not(:root) .glossary-modal .glossary { flex: 1 1 auto; height: auto; min-height: 0; }
+/* 用語集（#3947）: 舞台が小さくなっても本文は実寸14px以上に。
+   折り返しが増えすぎないよう窓を広げ、見出し・タブ・閉じるボタンを残して用語リストだけをスクロールする。 */
+html:root[data-density="phone"] body:not(:root) .glossary-modal {
+  width: 1040px;
+  max-width: calc(100% - 96px);
+  height: 668px;
+  max-height: calc(100% - 52px);
+  padding: 18px 26px;
+}
+html:root[data-density="phone"] body:not(:root) .glossary-modal > h3 {
+  margin-bottom: 10px;
+  font-size: max(30px, calc(16px / var(--k, 1)));
+  line-height: 1.25;
+}
+html:root[data-density="phone"] body:not(:root) .glossary-modal .modal-body { display: flex; flex: 1; flex-direction: column; overflow: hidden; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .glossary { flex: 1; height: auto; min-height: 0; gap: 10px; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-tabs { flex-shrink: 0; padding: 4px; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-tab {
+  min-height: var(--phone-tap);
+  font-size: var(--phone-ctl);
+}
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-body { min-height: 0; overscroll-behavior: contain; touch-action: pan-y; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-term { padding-block: 8px; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-term b { font-size: max(29px, calc(15.5px / var(--k, 1))); }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .gl-term p { font-size: max(27px, calc(14px / var(--k, 1))); line-height: 1.55; }
+html:root[data-density="phone"] body:not(:root) .glossary-modal .modal-actions { margin-top: 12px; }
 
 /* ---------------------------------------------------------------- HUD（LIME・MENU・DAY カード） */
 html:root[data-density="phone"] body:not(:root) .hud-right { gap: var(--phone-gap); }
