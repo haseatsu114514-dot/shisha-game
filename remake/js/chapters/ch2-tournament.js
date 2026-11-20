@@ -12,7 +12,7 @@ import { layers, showScreen, setBg, enterScene, modal, imageReady, withChapterLo
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { maxStamina } from "../core/stats.js";
 import { awardTournamentExp, awardChapterClearExp } from "../core/growth.js";
-import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
+import { recordTournamentLoss, retryAssistOffer, applyRetryAssistChoice } from "./retry-assist.js";
 import { chosenAssistLevel } from "../craft/retry-assist-level.js";
 import { applyAssistRecovery } from "./tournament-resources.js";
 import { play } from "../vn/engine.js";
@@ -290,11 +290,11 @@ async function renderDefeat(owner, variant = null) {
   await warmGameOver();
   if (!live(owner)) return;
   hud(owner, true); // MENU retains SAVE/LOAD; its modal pauses the shared clock/audio.
-  const root = buildGameOver({ context, variant,
-    onRetry: () => perform(owner, async () => {
-      const assisted = await chooseRetryAssist(p, () => live(owner) && root.isConnected && progress() === p);
+  // 3敗目からは、再挑戦を押した同じ画面で難易度を選ぶ（WIN14）。
+  const root = buildGameOver({ context, variant, difficulty: retryAssistOffer(p),
+    onRetry: level => perform(owner, async () => {
       if (!live(owner) || !root.isConnected || progress() !== p) return;
-      if (assisted === null) { await renderDefeat(owner, root.continueVariant); return; }
+      applyRetryAssistChoice(p, level);
       owner.cs = null;
       checkpoint("ready"); renderReady(owner);
     }),

@@ -126,3 +126,18 @@
 .end-screen.gameover[data-layout="manga"][data-timed-out="true"] .go-title { filter: grayscale(1) brightness(1.7) contrast(1.15); transition: none; }
 @keyframes go-manga-pop { from { scale: 1.35; rotate: -6deg; } to { scale: 1; rotate: 0deg; } }
 @keyframes go-manga-shake { from { translate: -2px 1px; rotate: -7deg; } to { translate: 2px -1px; rotate: -5deg; } }
+
+/* 「難易度を下げる？」（WIN14）は、2択のコマと同じ場所に一枚のコマとして出す。焦点・ホバーの段だけ黒く塗る。 */
+.end-screen.gameover[data-layout="manga"] .go-difficulty {
+  left: 766px; right: 20px; top: 330px; bottom: 20px; width: auto; transform: none; align-content: center; gap: 12px;
+  padding: 18px 26px 26px 44px; border: 0; border-radius: 0; background: #fff; box-shadow: none;
+  clip-path: polygon(35px 0, 100% 0, 100% 100%, 0 100%); outline: 7px solid #111; outline-offset: -7px;
+}
+.end-screen.gameover[data-layout="manga"] .go-difficulty-title { font-size: 36px; color: #111; }
+.end-screen.gameover[data-layout="manga"] .go-difficulty-choice,
+.end-screen.gameover[data-layout="manga"] .go-difficulty-choice.primary {
+  min-height: 72px; border: 4px solid #111; border-radius: 0; background: #fff; color: #111; font-size: 34px; font-weight: 900;
+}
+.end-screen.gameover[data-layout="manga"] .go-difficulty-choice:is(:hover, :focus-visible) {
+  outline: none; background: #111 repeating-linear-gradient(112deg, transparent 0 26px, color-mix(in srgb, var(--go-accent) 55%, transparent) 26px 30px); color: #fff;
+}

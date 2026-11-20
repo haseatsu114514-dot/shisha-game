@@ -2792,6 +2792,74 @@
       "chapter": 1
     },
     {
+      "id": "lime_ch2_samechan_resting_shark",
+      "sender": "samechan",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_talk_seen_ch2_samechan_resting_shark",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "図鑑の続きじゃ。ネムリブカは、夜になると岩場を出て、狩りに行くのじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "昼のうちにちゃんと休んでおるから、夜に動けるのじゃぞ。……お主もじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "「勇者の帳面は、角を折らずに運んだ。礼はいらぬ」……と、コロちゃんが申しておる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "今日は早めに寝ます",
+          "response": "うむ。それでこそ、ネムリブカの仲間じゃ",
+          "affinity": 2
+        },
+        {
+          "text": "図鑑、今度見せてください",
+          "response": "うむ！ 次は、寝顔のよいサメの頁からじゃ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_ch2_sumi_salaryman",
+      "sender": "sumi",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_talk_seen_ch2_shift_talk_salaryman",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "この前の鉄仮面さんの席、片づけたのはお前だったな"
+        },
+        {
+          "sender": "sumi",
+          "text": "ホースの掛け方、見たか"
+        },
+        {
+          "sender": "sumi",
+          "text": "顔に出ねえ客ほど、手元と息に出る。覚えとけ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ちゃんと掛けてありました",
+          "response": "おう。あれも、あの人の「ごちそうさん」だ",
+          "affinity": 2
+        },
+        {
+          "text": "息、もっと見るようにします",
+          "response": "それでいい。見すぎて、手を止めるなよ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_samechan_opening",
       "sender": "samechan",
       "chapter": 2,

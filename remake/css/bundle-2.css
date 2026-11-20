@@ -533,6 +533,21 @@
 .end-screen.gameover[data-layout="manga"][data-timed-out="true"] .go-title { filter: grayscale(1) brightness(1.7) contrast(1.15); transition: none; }
 @keyframes go-manga-pop { from { scale: 1.35; rotate: -6deg; } to { scale: 1; rotate: 0deg; } }
 @keyframes go-manga-shake { from { translate: -2px 1px; rotate: -7deg; } to { translate: 2px -1px; rotate: -5deg; } }
+
+/* 「難易度を下げる？」（WIN14）は、2択のコマと同じ場所に一枚のコマとして出す。焦点・ホバーの段だけ黒く塗る。 */
+.end-screen.gameover[data-layout="manga"] .go-difficulty {
+  left: 766px; right: 20px; top: 330px; bottom: 20px; width: auto; transform: none; align-content: center; gap: 12px;
+  padding: 18px 26px 26px 44px; border: 0; border-radius: 0; background: #fff; box-shadow: none;
+  clip-path: polygon(35px 0, 100% 0, 100% 100%, 0 100%); outline: 7px solid #111; outline-offset: -7px;
+}
+.end-screen.gameover[data-layout="manga"] .go-difficulty-title { font-size: 36px; color: #111; }
+.end-screen.gameover[data-layout="manga"] .go-difficulty-choice,
+.end-screen.gameover[data-layout="manga"] .go-difficulty-choice.primary {
+  min-height: 72px; border: 4px solid #111; border-radius: 0; background: #fff; color: #111; font-size: 34px; font-weight: 900;
+}
+.end-screen.gameover[data-layout="manga"] .go-difficulty-choice:is(:hover, :focus-visible) {
+  outline: none; background: #111 repeating-linear-gradient(112deg, transparent 0 26px, color-mix(in srgb, var(--go-accent) 55%, transparent) 26px 30px); color: #fff;
+}
 /* 大会CONTINUE V4。1280×720の本編・プレビューで同じ画面を使う。
    2026-10-10: 紫の煙、見出し横の数字、下端までの人物。1行テロップと2択ボタンに間隔を取る。 */
 .end-screen.gameover {
@@ -858,6 +873,19 @@
 .gameover[data-layout="inner"][data-paused="true"] *::after { animation-play-state: paused !important; }
 .gameover[data-layout="inner"][data-reduced-motion="true"] { animation: none; }
 @media (prefers-reduced-motion: reduce) { .gameover[data-layout="inner"] { animation: none; } }
+
+/* 3敗目からの「難易度を下げる？」（WIN14）。再挑戦を押した後だけ、同じ画面の中に名前だけの選択肢を出す。カウントは止める。 */
+.gameover .go-difficulty { position: absolute; z-index: 6; left: 50%; top: 50%; width: 540px; transform: translate(-50%, -50%);
+  display: grid; gap: 16px; padding: 28px 32px 32px; border: 2px solid #f6d68e; border-radius: 16px; background: #150d22f2;
+  box-shadow: 0 18px 50px #000a; text-align: center; }
+.gameover .go-difficulty[hidden] { display: none; }
+.gameover .go-difficulty-title { margin: 0; font-size: 36px; font-weight: 900; letter-spacing: .06em; color: #fff6dc; }
+.gameover .go-difficulty-list { display: grid; gap: 12px; }
+.gameover .go-difficulty-choice { min-height: 76px; border: 2px solid #c9a7e6; border-radius: 12px; background: #2b1d3d; color: #fff;
+  font: inherit; font-size: 34px; font-weight: 800; letter-spacing: .08em; cursor: pointer; }
+.gameover .go-difficulty-choice.primary { border-color: #f6d68e; background: #f6d68e; color: #1a0f24; }
+.gameover .go-difficulty-choice:is(:hover, :focus-visible) { outline: 3px solid #fff; outline-offset: 3px; }
+.gameover[data-phase="difficulty"] :is(.go-clock, .go-count-back, .go-next) { visibility: hidden; }
 
 /* ===== css/staff-roll.css ===== */
 /* スタッフロール（#517）。1280×720 の固定ステージ上で、下から上へ文字だけを流す。
