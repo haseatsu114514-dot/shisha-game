@@ -3891,6 +3891,35 @@
       ]
     },
     {
+      "id": "lime_wang_tonari_visit",
+      "important": true,
+      "sender": "master_hookah",
+      "chapter": 5,
+      "region": "home",
+      "trigger_condition": "ch5_started",
+      "trigger_day": 6,
+      "type": "invitation",
+      "time_slot": "noon",
+      "reminder_spot": "tonari",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "日本に着いた。本店の用の途中で、少しだけ寄り道ができた"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "今日の昼、tonariへ寄ってもいいかな。一台、客として座りたい"
+        }
+      ],
+      "accept_event": "ch5_wang_tonari_visit",
+      "accept_text": "昼、tonariで待ってます",
+      "decline_response": {
+        "sender": "master_hookah",
+        "text": "分かった。日本には、もう少しいる。また聞くよ"
+      },
+      "reminder_text": "まだ日本にいる。昼のtonariに、寄ってもいいかな"
+    },
+    {
       "id": "lime_taiyo_01",
       "sender": "da_silva",
       "chapter": 4,
