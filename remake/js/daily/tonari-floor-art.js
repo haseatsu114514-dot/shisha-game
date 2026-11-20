@@ -1,5 +1,4 @@
-// tonari フロア営業の記号と客の影絵。コードで描く仮の絵で、Codex の絵が届いたら tonari-floor-stage.js の FLOOR_ART に
-// 登録して差し替える（依頼の内容と置き場は asset_sources/ui/tonari-floor-20261120/README.md）。
+// tonari フロア営業の記号・満足の顔・客の影絵。客の顔は tonari-floor-stage.js の FLOOR_ART に登録する。
 import { el } from "../core/util.js";
 import { buildVersioned } from "../core/asset-version.js";
 import { FLOOR_ART, artUrl, personIds } from "./tonari-floor-stage.js";
@@ -34,10 +33,10 @@ const GLYPHS = {
   smile: '<circle cx="12" cy="12" r="8.5"/><path d="M8.5 13.5c1 2 6 2 7 0"/><path d="M9 9.5v.1M15 9.5v.1"/>',
   flat: '<circle cx="12" cy="12" r="8.5"/><path d="M9 14.5h6"/><path d="M9 9.5v.1M15 9.5v.1"/>',
   frown: '<circle cx="12" cy="12" r="8.5"/><path d="M8.5 15.5c1-2 6-2 7 0"/><path d="M9 9.5v.1M15 9.5v.1"/>',
-  // 気分（＝ミックスの属性）の印。色の札の上に載せるので、塗りつぶした形にする: フルーティ＝りんご／スイート＝包みのあめ／リフレッシュ＝雪の結晶／リラックス＝三日月
+  // 気分（＝ミックスの属性）の印。色の札の上に載せるので、塗りつぶした形にする: フルーティ＝りんご／スイート＝包みのあめ／刺激系＝稲妻／リラックス＝三日月
   wishFruit: '<path d="M12 8.200c-1.700-1.300-4.700-1.100-6.100 1.100-1.600 2.500-.600 6.800 1.700 9.300 1.300 1.500 2.900 1.600 4.400.700 1.500.900 3.100.800 4.400-.700 2.300-2.500 3.300-6.800 1.700-9.300-1.400-2.200-4.400-2.400-6.100-1.100z" fill="currentColor"/><path d="M12 8.200c0-2.200 1-3.900 3.200-4.800"/>',
   wishSweet: '<circle cx="12" cy="12" r="4.600" fill="currentColor"/><path d="M7.600 12 3 8.200v7.600zM16.400 12 21 8.200v7.600z" fill="currentColor"/>',
-  wishFresh: '<path d="M12 2.500v19M3.800 7.250l16.400 9.500M20.200 7.250 3.800 16.750"/><path d="M9.500 4.300 12 6.500l2.500-2.200M9.500 19.700 12 17.500l2.500 2.200"/>',
+  wishFresh: '<path d="M10.5 3H19l-5.6 7.1H18L4.7 21l4.4-8H4.6z" fill="currentColor" stroke="none"/>',
   wishDeep: '<path d="M19.600 14.900A8.200 8.200 0 1 1 9.100 4.400a6.600 6.600 0 0 0 10.500 10.500z" fill="currentColor"/>',
   // シャッフル（並んでいるミックスを入れ替える）
   shuffle: '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/>',
@@ -57,9 +56,21 @@ const GLYPHS = {
   markBad: '<path d="M5.5 5.5l13 13M18.500 5.500l-13 13"/>',
 };
 
+// icons.webp は8列×3行。満足の顔と、アトラスにない記号は元のSVGを使う。
+const ICON_TILE = {
+  order: 0, cook: 1, add: 2, ease: 3, thin: 4, harsh: 5, glass: 6, drink: 6, ask: 7,
+  talk: 8, bill: 9, clean: 10, alert: 11, clock: 12, coin: 13, pause: 14, shuffle: 15,
+  lamp: 16, wishFruit: 17, wishSweet: 18, wishFresh: 19, wishDeep: 20, star: 21, door: 22, anger: 23, moodMad: 23,
+};
+
 export function glyph(name, className = "") {
+  const tile = ICON_TILE[name];
   return el(`span.tf-icon${className ? "." + className : ""}`, {
     "aria-hidden": true,
+    ...(tile === undefined ? {} : {
+      dataset: { atlas: "true" },
+      style: { "--tf-icon-position": `${(tile % 8) * 100 / 7}% ${Math.floor(tile / 8) * 50}%` },
+    }),
     html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${GLYPHS[name] || GLYPHS.alert}</svg>`,
   });
 }
