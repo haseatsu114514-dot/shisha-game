@@ -1390,7 +1390,7 @@
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "見送りって、ガイドの仕事に無いの。……だから、今日は下手でいい"
+          "text": "見送りって、ガイドの仕事に無いの、……だから、今日は下手でいい"
         },
         {
           "speaker": "",
@@ -1400,7 +1400,7 @@
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "戻しとくね。……五時間、また始まり"
+          "text": "戻しとくね、……五時間、また始まり"
         },
         {
           "speaker": "hajime",
@@ -1420,7 +1420,12 @@
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "持ってって。次に来る時、また掲げるから。……ちゃんと返してね"
+          "text": "持ってって。次に来る時、また掲げるから"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "……ちゃんと返してね"
         },
         {
           "speaker": "hajime",
@@ -1430,7 +1435,7 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "よし。……いってらっしゃい、ハジメ"
+          "text": "よし、……いってらっしゃい、ハジメ"
         },
         {
           "speaker": "",
@@ -1489,7 +1494,22 @@
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "日本の時計、また消すね。……時差、ゼロ"
+          "text": "父がね、札を見て笑ってた。「二つ目の星は、店の壁に貼るのか」って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "貼るんですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "貼らない。これは、ハジメが持って帰る札だから"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "日本の時計、また消すね、……時差、ゼロ"
         }
       ]
     },
