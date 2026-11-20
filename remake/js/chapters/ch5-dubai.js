@@ -260,6 +260,8 @@ async function readDubaiChain(spot, due, staminaGuard, owner) {
   if (!await playChainStage(due, id => read(id, spot.preview, owner)) || state !== owner) return unused;
   if (fee) addMoney(-fee);
   addStamina(spot.stamina);
+  // 人に会いに行く行き先（中庭の太陽）の続きは、いつもの小会話と同じだけ仲が深まる（#4010）。路地裏のカフェは店なので付けない。
+  if (BOND_PLACE[spot.id]) { gainAffinity(BOND_PLACE[spot.id].who, visitAffinity("talk")); markMet(BOND_PLACE[spot.id].who); }
   earnStat(spot.stat, 4);
   return { used: true, exerted: true };
 }
@@ -273,9 +275,9 @@ function bondStoryDue(spot, bond) {
   if (bond.afterFirstTalk && !(state.flags[TALKS_FLAG]?.[spot.id] > 0)) return null;
   return nextDubaiBondStory(state, bond.who, bond.where, affinityLevel(bond.who));
 }
-/** 屋敷の行き先に、新しい段階の会話か締めくくりがあるか（地図の「！」）。 */
+/** 屋敷の行き先に、新しい段階の会話・締めくくり・通いの続きがあるか（地図の「！」）。 */
 export const dubaiBondHasNew = spot => !!BOND_PLACE[spot.id]
-  && (finaleAtVisit(BOND_PLACE[spot.id].who) || !!bondStoryDue(spot, BOND_PLACE[spot.id]));
+  && (finaleAtVisit(BOND_PLACE[spot.id].who) || !!bondStoryDue(spot, BOND_PLACE[spot.id]) || !!chainStageAt(state, spot.id));
 
 /** 段階の会話を一本読む。読み終えた時だけ既読・体力・好感度（段階の値）・能力を確定する。 */
 async function readDubaiBondStory(spot, who, scene, staminaGuard, owner) {

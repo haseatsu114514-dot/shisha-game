@@ -186,10 +186,11 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
 
 // ---- 第5章のドバイ: 路地裏のカフェ（閉店後の段は夜だけ・代金なし） ---------------------------------------------
 {
+  const gained = [];
   const dubai = await load("chapters/ch5-dubai.js", {
     get state() { return state; }, save() {}, timeOfDay: () => (state.slot ? "night" : "day"), markMet() {}, DB,
     sceneBg: () => ({ url: "", tint: null }), setBg: async () => {}, toast() {}, modal: async () => null, layers: { hud: {} },
-    play, readDialogues, addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; }, earnStat() {}, gainAffinity() {},
+    play, readDialogues, addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; }, earnStat() {}, gainAffinity: (id, n) => { gained.push([id, n]); },
     visitAffinity: () => 5, affinityLevel: () => 0, spendableMoney: value => value.money, finaleAtVisit: () => false,
     consultLessons: async () => {}, nextDubaiBondStory: () => null, DUBAI_LETTER_AGAIN: [], DUBAI_LETTER_DAYS: 2,
     CH5_CAMEL_MEET: { scene: "ch5_camel_meet" }, CH4_CAMEL_SCENE_FILES: { ch4_camel_race: [] }, SHEIKH_BOND_IDS: [], TAIYO_BOND_IDS: [],
@@ -229,6 +230,35 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert(shown.some(t => t.includes("ゆっくり開きます")), "1段目の答えが返る");
   assert(chains.chainFinished(state, "ch5_alley_gift"));
   state.money = evening;
+  // 中庭の太陽（#4010）: 小会話3本の後に旗の続き。人に会う行き先なので、小会話と同じだけ好感度が付く（路地裏のカフェには付けない）
+  assert.deepEqual(gained.filter(([id]) => id !== "sheikh" && id !== "da_silva"), [], "店の続きでは好感度を動かさない");
+  const { dubaiBondHasNew } = dubai.ns;
+  const taiyo = DUBAI_SPOTS.find(entry => entry.id === "ch5_dubai_taiyo");
+  const meet = () => performDubaiSpot(taiyo, { staminaGuard: async () => true });
+  for (const id of ["ch5_dubai_taiyo", "ch5_dubai_taiyo_b", "ch5_dubai_taiyo_c"]) {
+    assert.equal(dubaiBondHasNew(taiyo), false);
+    await meet();
+    assert.equal(played.at(-1), id);
+  }
+  assert.equal(dubaiBondHasNew(taiyo), true, "一通り読んだら「！」");
+  chooser = () => 1; // 「またあした」と書く
+  gained.length = 0;
+  const purse = state.money;
+  assert.deepEqual(plainOf(await meet()), { used: true, exerted: true });
+  assert.equal(played.at(-1), "ch5_chain_flag_1");
+  assert.deepEqual(gained, [["da_silva", 5]], "いつもの小会話と同じ好感度");
+  assert.equal(state.money, purse, "中庭は代金を取らない");
+  assert.equal(state.flags._ch5_dubai_talks.ch5_dubai_taiyo, 3, "小会話の巡回は進めない");
+  assert.equal(dubaiBondHasNew(taiyo), false, "同じ日は次の段を出さない");
+  await meet();
+  assert.equal(played.at(-1), "ch5_dubai_taiyo", "同じ日にもう一度来たら、いつもの小会話");
+  state.day += 1;
+  shown = [];
+  await meet();
+  assert.equal(played.at(-1), "ch5_chain_flag_2");
+  assert(shown.some(t => t.includes("これを読んでから、帰る")) && shown.some(t => t === "「またあした」。"), "1段目の答えが返る");
+  assert(chains.chainFinished(state, "ch5_taiyo_flag"));
+  assert.equal(dubaiBondHasNew(taiyo), false);
 }
 
 // ---- 第4章のドバイ: 中心地のカフェ → 宿 → カフェ ------------------------------------------------------------------
@@ -361,4 +391,4 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert(chains.chainFinished(state, "ch3_tofu"));
 }
 
-console.log("OK: visit chains wiring — play wrapper (hooks, records, interruption, load failure), ch5 Tokyo Smoke & Glory, ch5 Dubai alley (night, no fee), ch4 cafe→inn→cafe (inn trial result), ch3 mukai option");
+console.log("OK: visit chains wiring — play wrapper (hooks, records, interruption, load failure), ch5 Tokyo Smoke & Glory, ch5 Dubai alley (night, no fee) and courtyard flags (affinity), ch4 cafe→inn→cafe (inn trial result), ch3 mukai option");
