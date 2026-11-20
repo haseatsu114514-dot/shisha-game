@@ -78,6 +78,55 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-leave")).click();
   });
 
+  await check("portrait-guard-holds-practice-countdown-and-race", async page => {
+    await page.goto(new URL("desert-ride.html?course=ridge&seed=123", page.url()).href);
+    await page.locator(t("desert-page-tutorial")).tap();
+    const rotate = page.locator("#rotate-hint");
+    const sample = () => page.evaluate(() => {
+      const ride = window.__desertRide;
+      const { t, x, z, score, falls, air, boostT } = ride.game;
+      return { t, x, z, score, falls, air, boostT, countdown: ride.countdown, results: ride.results.length };
+    });
+    async function assertHeld() {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await rotate.waitFor({ state: "visible" });
+      const before = await sample();
+      // あえてキーを送る。画面の案内を越えてジャンプ/舵/BOOSTを操作できないことも確認する。
+      await page.keyboard.press("Space");
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.down("ArrowRight");
+      await page.waitForTimeout(450);
+      assert.deepEqual(await sample(), before, "portrait blocks the clock, physics, and input");
+      await page.setViewportSize({ width: 844, height: 390 });
+      await rotate.waitFor({ state: "hidden" });
+      await page.waitForFunction(before => {
+        const ride = window.__desertRide;
+        return ride.game?.t > before.t || ride.countdown < before.countdown;
+      }, before);
+      const after = await sample();
+      await page.keyboard.up("ArrowRight");
+      return { before, after };
+    }
+    await phase(page, "practice");
+    // 案内が出る前に押したキーも、復帰後に押しっぱなしとして扱わない。
+    await page.keyboard.down("ArrowRight");
+    const practice = await assertHeld();
+    assert(practice.after.t < practice.before.t + .25, "no catch-up on resume");
+    await page.waitForTimeout(150);
+    const later = await sample();
+    assert(Math.abs(later.x - practice.after.x) < .15, "no stuck steering after a rotate interruption");
+    await page.keyboard.press("Escape");
+    await phase(page, "menu");
+    await page.locator(t("desert-start")).tap();
+    await phase(page, "run");
+    assert((await assertHeld()).before.countdown > 0, "start countdown is interrupted");
+    await page.waitForFunction(() => window.__desertRide?.game?.t > 0);
+    assert((await assertHeld()).before.t > 0, "the live race is interrupted");
+    await page.keyboard.press("Escape");
+    await phase(page, "menu");
+    await page.locator(t("desert-leave")).tap();
+  }, { hasTouch: true, isMobile: true, reducedMotion: "reduce", viewport: { width: 844, height: 390 } });
+
   // 始める前のロード（2026-11-11 オーナー「加速すると処理重い。ゲーム開始前に漫画付きロードとか挟んでもいい」）:
   // 絵の読み込みが遅いと、作業台と同じ漫画つきのロード画面が出て、読み終えて進むと（テストは自動で読む）絵がそろった状態で走り出す。
   await check("slow-art-waits-behind-the-comic-loading-screen", async page => {

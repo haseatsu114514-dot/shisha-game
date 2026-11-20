@@ -179,7 +179,7 @@ function buildDom() {
   cutin = createConversationCutin(dom.cutin, { sound: (name) => SE[name]?.() });
   nameFit = createNameFit(dom.name);
   host.addEventListener("pointerup", (e) => {
-    if (!running || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
+    if (!running || dom.log.classList.contains("show") || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
     if (performance.now() < running.openLockUntil) return;
     if (autoMode || skipMode) { setAuto(false); setSkip(false); }
     advance();
@@ -394,6 +394,7 @@ export function play(idOrDlg, opts = {}) {
     };
     autoFxGap = 0;
     cutin?.clear();
+    dom.log.classList.remove("show");
     dom.portraits.replaceChildren();
     dom.choices.replaceChildren();
     dom.text.innerHTML = "";
@@ -568,6 +569,7 @@ function finish(cancelled = false) {
   if (!cancelled) awardLoverSceneExp(r.id, r.owner);
   if (!cancelled && r.growthScene) earnSceneCompletion(r.id, r.owner);
   layers.vn.classList.remove("active");
+  dom.log.classList.remove("show");
   document.body.classList.remove("in-vn", "vn-open", "vn-lift-props");
   dom.cg.classList.remove("show");
   releaseCg();
