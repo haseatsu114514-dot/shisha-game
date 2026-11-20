@@ -119,16 +119,23 @@ export const stallItem = id => STALL_MENU.find(item => item.id === id) || null;
 // LIMEの連絡先にいて、今ドバイに来ていない人だけ（present は ch4-beach.js の chapterFourBeachCast）。
 // 初回の休み（宿の部屋の場面）の後から。世界大会の前の暮らしの電話なので、大会の後は出さない（core/story-context.js）。
 export const HOME_DAY_CALL_FLAG = "_ch4_home_calls";
+// #3097 第3弾で、つむぎ・ましろ・綾取・スティーブの4本を間に足した（ドバイへ来る前の人から先に届くよう、地元の人と交互に並べる）。
 export const HOME_DAY_CALLS = Object.freeze([
   { scene: "ch4_home_call_adam_apple", from: "adam" },
+  { scene: "ch4_home_call_tsumugi_sky", from: "tsumugi" },
   { scene: "ch4_home_call_rio_scent", from: "rio" },
   { scene: "ch4_home_call_kumicho_coffee", from: "kumicho" },
+  { scene: "ch4_home_call_mashiro_chai", from: "mashiro" },
   { scene: "ch4_home_call_samechan_shark", from: "samechan" },
   { scene: "ch4_home_call_minto_mint", from: "minto" },
+  { scene: "ch4_home_call_saku_menu", from: "saku" },
   { scene: "ch4_home_call_rei_sound", from: "rei" },
   { scene: "ch4_home_call_hiyori_train", from: "hiyori" },
+  { scene: "ch4_home_call_steve_timer", from: "steve" },
   { scene: "ch4_home_call_ageha_gold", from: "ageha" },
 ].map(call => Object.freeze(call)));
+// 電話の中で、かけてきた人のほかに話す人（mukai の開店前のムカイさん）
+export const HOME_DAY_CALL_EXTRA_SPEAKERS = Object.freeze({ ch4_home_call_mashiro_chai: Object.freeze(["mukai_master"]) });
 export const HOME_DAY_CALL_IDS = Object.freeze(HOME_DAY_CALLS.map(call => call.scene));
 /**
  * 今、宿で休むと届く地元からの電話の台本ID（読むだけ）。無ければ null（いつもの休む場面を読む）。

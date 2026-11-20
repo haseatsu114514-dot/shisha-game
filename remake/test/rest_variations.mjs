@@ -155,12 +155,13 @@ for (const [,base,,rest] of cases) for (const suffix of revisits(rest)) {
 {
   const homeCalls = [...local.HOME_DAY_CALL_IDS];
   Object.assign(DB.dialogues, await readDialogues('ch4_home_calls', homeCalls));
-  assert.equal(homeCalls.length, 8);
+  assert.equal(homeCalls.length, 12);
   for (const { scene: id, from } of local.HOME_DAY_CALLS) {
     const scene = DB.dialogues[id];
     assert(scene?.lines?.length >= 10 && !scene.metadata && scene.lines.every(line => !line.type), `${id}: a full scene without rewards`);
     assert(scene.lines.filter(line => line.speaker === from).length >= 4, `${id}: ${from} talks`);
-    assert(scene.lines.every(line => ['', 'hajime', from].includes(line.speaker)), `${id}: only the caller and Hajime`);
+    const extra = local.HOME_DAY_CALL_EXTRA_SPEAKERS[id] || [];
+    assert(scene.lines.every(line => ['', 'hajime', from, ...extra].includes(line.speaker)), `${id}: only the caller and Hajime`);
     assert(!scene.lines.some(line => /大会|審査|優勝|順位/.test(line.text)), `${id}: nothing about the world tournament`);
     for (const line of scene.lines) assert([...line.text].reduce((n,c)=>n+(c.codePointAt(0)<=255?0.5:1),0)<=48);
   }
