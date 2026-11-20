@@ -51,7 +51,7 @@ export const KEY_GIFT = Object.freeze({ color: 1, any: 1 });
 export const WIN_HIDANE = 3;
 export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 export const CHAPTER_MULT = { 1: 1, 2: 1.25, 3: 1.5, 4: 1.75, 5: 2 };
-export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30, recipe: 30, golden: 20, scene: 20 };
+export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30, recipe: 30, golden: 20, scene: 20, tutorial: 10 };
 /**
  * 絆の深い相手（恋人・締めくくりを読んだ相手）からの誘いに乗った行動の倍率（LM11・2026-11-12 オーナー
  * 「絆深い相手の誘いは経験値多い」）。新鮮さでは減らさず、同じ相手の店へ通う回数にも数えない。

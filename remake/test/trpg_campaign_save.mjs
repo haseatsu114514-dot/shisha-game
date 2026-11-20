@@ -158,3 +158,26 @@ for (const fixture of cases) {
   }
 }
 console.log(`PASS: ${cases.length} malformed TRPG fixtures via auto/manual load; valid records, money and relationships preserved`);
+
+const priorClear = copy(core.newState());
+priorClear.schema = 28;
+priorClear.trpg.cleared["ordinary-cup"] = { ...validClear, plays: 1 };
+storage.set(core.SAVE_KEY, JSON.stringify(priorClear));
+const fromPrevious = core.load();
+assert.deepEqual(copy(fromPrevious.trpg.cleared), priorClear.trpg.cleared);
+assert.equal(fromPrevious.trpg.cleared["ordinary-cup"].records, undefined, "old clears do not acquire fabricated transcripts");
+
+const newRecord = (play, day) => ({ play, chapter: 2, day, title: "世界一普通の一台", ending: "一緒に見つけた一台",
+  endingLine: "この回の結末", participants: ["はじめ", "ひより"], choices: ["見立て：雨"], rolls: ["4 ＋ 14 ＋ 補正3 ＝ 21"],
+  lines: [["はじめ", "この回に残した台詞"]], stages: [["聞き込み", 0, 0, 0], ["見立て", 0, 1, -1]] });
+fromPrevious.trpg.cleared["ordinary-cup"].records = [newRecord(2, 4), newRecord(3, 6)];
+fromPrevious.trpg.cleared["ordinary-cup"].plays = 3;
+assert(core.save());
+assert(core.saveToSlot("suien_remake_slot1"));
+for (const key of [core.SAVE_KEY, "suien_remake_slot1"]) {
+  const loaded = key === core.SAVE_KEY ? core.load() : core.loadFromSlot(key);
+  assert.equal(loaded.schema, 29);
+  assert.deepEqual(copy(loaded.trpg.cleared["ordinary-cup"].records), [newRecord(2, 4), newRecord(3, 6)]);
+  assert.equal(loaded.trpg.cleared["ordinary-cup"].ending, "discovery");
+}
+console.log("PASS: schema 28 summaries preserve their shape; two dated shelf records survive both save slots");

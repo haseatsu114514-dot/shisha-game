@@ -39,7 +39,10 @@ await suite("board-notification-visibility", async check => {
       await page.locator(".gain-card.info").last().waitFor();
       await page.waitForTimeout(650);
       const cards = await cardContrasts(page);
-      assert.equal(cards.length, 8);
+      // 熟練度カードは #3935 から「パッケージ絵＋星5段階」になり、札の文字（.gc-badge）と小見出し（.gc-sub）を持たない。
+      // 測る文字は 熟練度カードの gc-top・gc-main ＋ 通常カードの gc-badge・gc-top・gc-main・gc-sub の6つ。
+      assert.equal(cards.length, 6);
+      assert.equal(await page.locator(".gain-card.mastery .gc-mastery-stars").isVisible(), true, "Mastery card shows its five-step stars");
       for (const row of cards) {
         assert(row.ratio >= 4.5, `Paper card text contrast ${JSON.stringify(row)}`);
         if (row.selector === "gc-main") assert.equal(row.shadow, "none");

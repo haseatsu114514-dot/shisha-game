@@ -34,9 +34,16 @@ assert.equal(carry.flagVerdict("seenDemo"), "carry");
 const root = new URL("../../", import.meta.url);
 const copy = (v) => JSON.parse(JSON.stringify(v));
 
-// ---------------------------------------------------------------- A. SCHEMA 28 と後方互換
+// ---------------------------------------------------------------- A. SCHEMA 29 と後方互換
 {
-  assert.equal(SCHEMA, 28);
+  assert.equal(SCHEMA, 29);
+  const newlyMigratedSource = newState();
+  newlyMigratedSource.schema = 28;
+  newlyMigratedSource.trpg.cleared = { "ordinary-cup": { ending: "test", plays: 1, chapter: 2, day: 4, gm: "sai", participants: ["hajime"] } };
+  localStorage.setItem(SAVE_KEY, JSON.stringify(newlyMigratedSource));
+  const migrated = load();
+  assert.equal(migrated.schema, 29);
+  assert.deepEqual(migrated.trpg.cleared, newlyMigratedSource.trpg.cleared, "28からリプレイを作り足さない");
   const fresh = newState();
   assert.equal(fresh.cycle, 1);
   assert.equal(typeof fresh.cycleId, "string");

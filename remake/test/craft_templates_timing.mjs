@@ -128,7 +128,9 @@ try {
     assert.match(summary, /奥 PERFECT：0\.08秒早い/);
     assert.match(summary, /手前左 GOOD：1\.10秒遅い/);
     assert.match(summary, /手前右 GOOD：1\.15秒遅い/);
-    assert.match(summary, /取り頃で取れた炭がある/);
+    // #3918 D: 工程点と「取り頃で取れた個数」を同じ欄で別々に示す（PERFECT 1・GOOD 2 → 取り頃 1/3個）
+    const heatScore = await page.evaluate(() => cs.heat.score);
+    assert.match(summary, new RegExp(`工程点：${heatScore}点 ／ 取り頃：1/3個`));
     assert.doesNotMatch(summary, /タイミング精度|平均誤差/);
     assert.equal(await page.locator('[data-test="coal-timing-0"]').textContent(), first);
     assert.equal(await page.evaluate(() => cs.heat.timingAccuracy === cs.heat.score), true);

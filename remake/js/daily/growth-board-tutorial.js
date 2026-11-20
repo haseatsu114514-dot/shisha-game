@@ -35,9 +35,10 @@ export const tutorialPending = (s) => !switchedOff() && !!s?.flags && !s.flags[T
 export const TUTORIAL_STEPS = Object.freeze([
   { id: "intro", title: "心得の盤", target: '[data-test="board-viewport"]',
     text: ["レベルが上がると、火種がたまる。", "火種をマスに灯して、力を伸ばそう。"] },
-  // 財布は粒の絵と数だけ（SBD116）。どの粒が何かをここで伝える
+  // 財布は粒の絵と数だけ（SBD116）。どの粒が何かをここで伝える。
+  // 色の台座は色の火だけ（白火は受け取りが上限に届いた後だけ。core/growth-board.js の paymentFor）。上限の時は CAPPED_WHITE_LINE に替える（#1801 U5）
   { id: "wallet", title: "火種", target: '[data-test="board-wallet"]',
-    text: ["白い粒は「白火」。", `はじめての今回は、白火を${STARTER_HIDANE}つ渡しておく。`, "白火は、どの盤のマスにも使える。", "色つきの火は、ひし形の台座の鍵。"] },
+    text: ["白い粒は「白火」。", `はじめての今回は、白火を${STARTER_HIDANE}つ渡しておく。`, "白火は、台座を除き、どの盤のマスにも使える。", "色つきの火は、ひし形の台座の鍵。"] },
   { id: "tabs", title: "3枚の盤", target: ".gb-tabs",
     text: ["盤は「才能」「感覚」「理論」の3枚。", "ここで切り替える。どの盤から灯してもいい。"] },
   { id: "kinds", title: "マスの形", target: '[data-test="board-viewport"]', place: "above",
@@ -47,7 +48,7 @@ export const TUTORIAL_STEPS = Object.freeze([
   { id: "light", title: "灯す", target: ".gb-light", wait: "pending",
     text: ["このマスで伸びる力は右に出る。", "「灯す」を押そう。"] },
   { id: "more", title: "続けて灯す", target: '[data-test="board-viewport"]',
-    text: ["灯したマスの隣が、新しく光る。", "残りの火種も、好きな道へ灯してみよう。"] },
+    text: ["灯したマスの隣が、新しく光る。", "選んだマスは、もう一度押しても灯る。", "残りの火種も、好きな道へ灯してみよう。"] },
   { id: "side", title: "右のパネル", target: '[data-test="board-preview"]',
     text: ["マスを選ぶと、ここに中身が出る。", "選んでいない時は、盤の伸びと「近い目的地」。", "伸びのアイコンは、押すと名前が出る。", "欲しいマスは「目標にする」で印をつけておける。"] },
   { id: "decide", title: "決定", target: '[data-test="board-decide"]',
@@ -55,6 +56,8 @@ export const TUTORIAL_STEPS = Object.freeze([
   { id: "help", title: "絵つきの見方", target: '[data-test="board-help"]',
     text: ["マスの形や印、火種のもらい方は、", "「？」の絵つきの見方でいつでも確かめられる。", "火種を灯せるのは、静かな場所で振り返った時だけ。"] },
 ]);
+/** 火種の受け取りが上限に届いた後の「白火」の行（その時は白火も台座にはまる） */
+export const CAPPED_WHITE_LINE = "白火は、台座にも、どの盤のマスにも使える。";
 
 const STYLE_ID = "gb-tutorial-style";
 const STYLE = `
@@ -84,9 +87,9 @@ function ensureStyle(doc) {
 
 /**
  * 盤の画面（root）に案内を重ねる。onDone は完了・飛ばした時に一度だけ呼ばれる（済んだ印を立てる）。
- * 戻り値＝止める関数（盤を閉じた時に呼ぶ）。
+ * capped＝火種の受け取りが上限に届いている（白火も台座にはまる）。戻り値＝止める関数（盤を閉じた時に呼ぶ）。
  */
-export function startBoardTutorial(root, { onDone = () => {}, starterAmount = STARTER_HIDANE, canPractice = starterAmount !== 0 } = {}) {
+export function startBoardTutorial(root, { onDone = () => {}, starterAmount = STARTER_HIDANE, canPractice = starterAmount !== 0, capped = false } = {}) {
   const doc = root.ownerDocument;
   ensureStyle(doc);
   const layer = doc.createElement("div");
@@ -140,13 +143,15 @@ export function startBoardTutorial(root, { onDone = () => {}, starterAmount = ST
   function draw() {
     if (finished) return;
     const s = step();
+    // 焦点（#1801 U4）: 盤の中にあった焦点は、描き直した吹き出しの「次へ」へ。操作を待つ手順は、押す部品（光っているマス・「灯す」）へ
+    const keepFocus = root.contains(doc.activeElement);
     bubble.replaceChildren();
     const title = doc.createElement("h3");
     title.textContent = s.title;
     const starterText = starterAmount === null ? "白火の残りはここで確認できる。"
       : starterAmount === 0 ? "火種の獲得は上限に届いている。"
         : `はじめての今回は、白火を${starterAmount}つ渡しておく。`;
-    const lines = s.id === "wallet" ? [s.text[0], starterText, s.text[2], s.text[3]] : s.text;
+    const lines = s.id === "wallet" ? [s.text[0], starterText, capped ? CAPPED_WHITE_LINE : s.text[2], s.text[3]] : s.text;
     bubble.append(title, ...lines.map((line) => { const p = doc.createElement("p"); p.textContent = line; return p; }));
     const row = doc.createElement("div");
     row.className = "gb-tutorial-row";
@@ -166,6 +171,7 @@ export function startBoardTutorial(root, { onDone = () => {}, starterAmount = ST
     }
     bubble.append(row);
     place();
+    if (keepFocus) ((s.wait && root.querySelector(s.target)) || row.querySelector(".btn.primary") || skip).focus({ preventScroll: true });
   }
   function button(text, test, onclick, primary = false) {
     const b = doc.createElement("button");

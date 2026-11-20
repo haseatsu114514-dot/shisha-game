@@ -201,7 +201,7 @@ window.__remake = {
       if (name) kit.setMotionVariant(name);
       return Object.fromEntries(Object.keys(kit.ADOPTED_VARIANT).map((k) => [k, kit.motionVariant(k)]));
     },
-    // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch）。
+    // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch / taste / hush / unveil）。
     // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。くじのガラガラは garagara-S / -A / -B / -C、ラストワン賞は garagara-LAST（C賞のあとに続けて見るなら garagara-C+LAST）。連続は garagara-10 / -10A / -10S / -10LAST（5回なら garagara-5S）。章題は chapter-1 / -2 / -4 / -5。※今のセーブを上書きする
     async motion(name = "cheki") {
       const core = await import("./core/state.js");
@@ -303,6 +303,21 @@ window.__remake = {
         if (name !== "purikura-scene") return motions.purikuraShot();
         Object.assign(DB.dialogues, await readDialogues("ch2_ageha_story", ["remake_ch2_ageha_gyaru"]));
         return play("remake_ch2_ageha_gyaru", { bg: ROOMS.ageha });
+      }
+      // 章の山場（#3965）: taste＝第2章の味が遠のく夜、hush＝第3章の結果発表の前、unveil＝第4章の四つ目の台に立つ男
+      if (name === "taste" || name === "unveil") {
+        const { readDialogues } = await import("./core/chapter-data.js");
+        const [file, id] = name === "taste" ? ["ch2_main", "ch2_slump_taste"] : ["ch4_main", "ch4_tournament_start"];
+        Object.assign(DB.dialogues, await readDialogues(file, [id]));
+        Object.assign(state, { chapter: name === "taste" ? 2 : 4, slot: name === "taste" ? 2 : 0 });
+        for (const who of ["pakki", "master_hookah", "da_silva"]) state.met[who] = true;
+        return play(id, name === "taste" ? {} : { bg: "res://assets/backgrounds/bg_dubai_grand_smoke_stage.png" });
+      }
+      if (name === "hush") {
+        await setBg(bgUrl("bg_tournament_stage", "day"));
+        const screen = document.getElementById("screen");
+        screen.replaceChildren(Object.assign(document.createElement("p"), { textContent: "（結果発表の前）", style: "position:absolute;left:0;right:0;top:46%;text-align:center;color:#fff" }));
+        return motions.sceneMoment("stageHush", () => { screen.firstChild.textContent = "（ここに結果の画面が出る）"; });
       }
       if (name === "sketch") {
         const art = sceneBg(tonariNight, "night");

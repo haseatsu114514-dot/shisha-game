@@ -4,29 +4,104 @@ import { suite, assertFits, storageSnapshot } from "./support.mjs";
 import { assertCraftProgress } from "./craft_progress_assertions.mjs";
 
 const labels = ["パッキング", "炭焼き", "蒸らし", "吸い出し", "提供", "調整"];
-async function init(page, steps = null) {
-  await page.evaluate(async steps => {
+async function init(page, steps = null, craftVersion = null) {
+  await page.evaluate(async ({ steps, craftVersion }) => {
     const core = await import("./js/core/state.js"); core.newGame();
     window.T = { core, session: await import("./js/craft/session.js"),
       pull: await import("./js/craft/pull.js"), practice: await import("./js/craft/practice.js"),
       score: await import("./js/craft/score.js") };
     window.cs = T.session.newSession("tournament");
+    if (craftVersion) cs.craftVersion = craftVersion;
     Object.assign(cs, { water: 0.5, place: "triangle", heat: { score: 100, heatPower: 70, heatStability: 80, burnRisk: 10, aromaRetention: 80 },
       steam: { temp: .54, score: 100, seconds: 480 }, steamSeconds: 480,
       holes: { score: 95, total: 24, outerEven: .95, innerExcess: 0, outer: 24, middle: 0, inner: 0 },
       mix: { blueberry: 9, mint: 3 }, mixInfo: { score: 90, total: 12, intensity: 5 }, pack: "normal" });
     T.session.openBench(cs, { steps: steps || T.practice.CRAFT_STEPS });
     await T.session.waitBenchReady(cs);
-  }, steps);
+  }, { steps, craftVersion });
 }
 const active = page => page.locator('.bench-phase[aria-current="step"]').getAttribute("data-step");
 const headerLabels = page => page.locator(".bench-phase-copy b").allTextContents();
 const fits = page => assertCraftProgress(page);
 
 await suite("craft-progress", async check => {
+  for (const [size, viewport, touch] of [
+    ["desktop", { width: 1280, height: 720 }, false],
+    ["phone", { width: 844, height: 390 }, true],
+    ["short", { width: 740, height: 320 }, true],
+  ]) await check(`sakurai-equipment-fit-${size}`, async page => {
+    await page.evaluate(async () => {
+      const model = await import("./js/core/state.js");
+      const { DB } = await import("./js/core/data.js");
+      const session = await import("./js/craft/session.js");
+      const { stepSetup } = await import("./js/craft/steps.js");
+      model.newGame(); model.state.chapter = 1; model.state.day = 14;
+      const bowls = Object.values(DB.equipById).filter(item => item.type === "bowl").map(item => item.id);
+      model.state.owned = [...new Set([...model.state.owned, ...bowls, "tanukish_lid"])];
+      window.gearCS = session.newSession("tournament");
+      gearCS.craftVersion = "sakurai";
+      const { CRAFT_STEPS } = await import("./js/craft/practice.js");
+      await session.openBench(gearCS, { steps: CRAFT_STEPS }).ready;
+      window.gearRun = stepSetup(gearCS);
+    });
+    const panel = page.locator(".bench[data-step='setup'] .bench-panel");
+    const compare = page.locator('[data-test="setup-compare"]');
+    await compare.waitFor();
+    assert.equal(await page.locator(".bench").getAttribute("data-craft-version"), "sakurai");
+    const geometry = await panel.evaluate(async node => {
+      const { DB } = await import("./js/core/data.js");
+      const { equipmentUse } = await import("./js/craft/flavor-guide.js");
+      const pr = node.getBoundingClientRect();
+      const inside = (r, bounds) => r.left >= bounds.left - 1 && r.right <= bounds.right + 1;
+      const cards = [...node.querySelectorAll(".opt-grid > .opt")].map(card => {
+        const id = card.dataset.test.slice(4);
+        const equipment = DB.equipById[id], reference = equipmentUse(equipment);
+        const rect = card.getBoundingClientRect();
+        const title = card.querySelector("b"), desc = card.querySelector("small");
+        const copy = [title, desc, card.querySelector(".opt-badge")].filter(Boolean).every(line => {
+          const r = document.createRange(); r.selectNodeContents(line);
+          return [...r.getClientRects()].every(bounds => inside(bounds, rect) && inside(bounds, pr)
+            && bounds.top >= rect.top - 1 && bounds.bottom <= rect.bottom + 1);
+        });
+        return {
+          id, fit: inside(rect, pr) && copy, complete: title.textContent === equipment.name
+            && desc.textContent === (reference.use + (reference.caution ? ` ／ 注意：${reference.caution}` : "")),
+        };
+      });
+      const preview = node.querySelector('[data-test="setup-preview"]');
+      return { cards, width: [node.clientWidth, node.scrollWidth], expected: Object.values(DB.equipById).filter(item => item.type === "bowl").length,
+        preview: preview.querySelectorAll("dd").length, scrollablePreview: preview.scrollHeight > preview.clientHeight };
+    });
+    assert(geometry.cards.length > 12, "The regression requires the long, unlocked bowl inventory");
+    assert.equal(geometry.cards.length, geometry.expected);
+    assert(geometry.cards.every(card => card.fit && card.complete), JSON.stringify(geometry.cards.filter(card => !card.fit || !card.complete)));
+    assert(geometry.width[1] <= geometry.width[0] + 1, "Equipment choices must not require horizontal scrolling");
+    assert.equal(geometry.preview, 6, "Every equipment preview value is retained");
+    if (touch) assert(geometry.scrollablePreview, "The existing detailed preview can still scroll");
+    const choose = async option => { if (touch) await option.tap(); else await option.click(); };
+    const selected = panel.locator('[data-test="opt-silicone_bowl"]');
+    assert.match(await selected.textContent(), /装備中/);
+    await panel.locator('[data-test="opt-hagal_80beat"]').focus();
+    assert.match(await panel.locator('[data-test="setup-preview"]').textContent(), /この候補で組む一式.*最大15g/);
+    await choose(compare);
+    const close = page.locator('[data-test="setup-compare-close"]');
+    await close.waitFor();
+    assert.equal(await page.locator(".equipment-compare-list > section").count(), geometry.cards.length);
+    assert.match(await page.locator(".equipment-compare-list").textContent(), /80beatハガル/);
+    await choose(close);
+    const last = panel.locator(".opt-grid > .opt").last();
+    const lastGear = (await last.getAttribute("data-test")).slice(4);
+    await last.scrollIntoViewIfNeeded();
+    assert(await panel.evaluate(node => node.scrollTop > 0 && node.scrollLeft === 0), "Late equipment is reached by vertical scrolling only");
+    await choose(last);
+    await page.waitForFunction(id => gearCS.equip.bowl === id, lastGear);
+    assert.equal(await page.locator(".bench").getAttribute("data-step"), "setup");
+  }, { viewport, isMobile: touch, hasTouch: touch });
+
   for (const [name, viewport, mobile, reducedMotion] of [
     ["desktop", { width: 1280, height: 720 }, false, "no-preference"],
     ["touch", { width: 844, height: 390 }, true, "reduce"],
+    ["compact-touch", { width: 740, height: 320 }, true, "reduce"],
   ]) {
     await check(`${name}-steam-guide`, async page => {
       await page.evaluate(async () => {
@@ -60,6 +135,14 @@ await suite("craft-progress", async check => {
       await page.waitForFunction(() => document.activeElement?.matches(".bench-guide summary"));
       await page.waitForFunction(() => guideStarts === 1);
       await page.waitForFunction(() => !document.querySelector('[data-test="dodge-precision"]')?.disabled);
+      if (mobile) {
+        await assertFits(page, '.dodge-action, .precision-state');
+        assert(await page.locator('[data-test="dodge-slash"]').isDisabled(), "Locked attack stays disabled");
+        const precision = page.locator('[data-test="dodge-precision"]');
+        await precision.tap();
+        assert.equal(await precision.getAttribute('aria-pressed'), 'true');
+        await assertFits(page, '.dodge-action, .precision-state');
+      }
       await page.waitForFunction(() => document.querySelector('[data-test="steam-clock"]').textContent !== "10:00");
       // Reopen through the native summary, then dismiss through the same real button.
       if (mobile) await summary.tap(); else await page.keyboard.press("Enter");
@@ -157,6 +240,89 @@ await suite("craft-progress", async check => {
     }, { viewport, isMobile: mobile, hasTouch: mobile });
   }
 
+  for (const [size, viewport, touch] of [
+    ["desktop", { width: 1280, height: 720 }, false],
+    ["phone", { width: 844, height: 390 }, true],
+    ["short", { width: 740, height: 320 }, true],
+  ]) await check(`sakurai-route-and-record-${size}`, async page => {
+    await init(page);
+    await page.evaluate(async () => {
+      cs.craftVersion = "sakurai"; // 第1章大会の実在する別方式。新しい台で入口を作り直す。
+      window.iconCS = { ...cs };
+      T.session.openBench(iconCS, { steps: T.practice.CRAFT_STEPS });
+      await T.session.waitBenchReady(iconCS);
+    });
+    for (const [id, title, lessonStep] of [
+      ["setup", "水入れ"], ["mix", "配合"], ["pack", "パッキング"], ["holes", "アルミ穴あけ"],
+      ["place", "炭の配置"], ["heat", "炭焼き"], ["steam", "蒸らし", "timer"],
+      ["steam", "蒸らし"], ["pull", "吸い出し"], ["serve", "提供"], ["care", "熱管理"],
+    ]) {
+      await page.evaluate(([id,title,lessonStep]) => T.session.stepPanel(id,title,"作業の説明", {lessonStep}), [id,title,lessonStep]);
+      await assertCraftProgress(page);
+      if (lessonStep === "timer" || id === "place") assert.equal(await page.locator(".craft-route-stop.now .bench-phase-step").innerText(), lessonStep === "timer" ? "蒸らし時間" : "炭の配置");
+    }
+    const guide = page.locator(".bench-guide"), ledger = guide.locator(".rig-record");
+    assert(!await ledger.isVisible());
+    await guide.locator("summary").first().click();
+    assert(await ledger.isVisible());
+    assert.match(await ledger.getAttribute("aria-label"), /穴あけ.*炭焼き/);
+    // 横持ちでは上の帯用の丸い灯の固定寸法に負けず、工程名が札に入り、隣の札と重ならない（#3924）。
+    await assertFits(page, ".craft-record-review .rig-lamp");
+    const record = await guide.locator(".craft-record-review").evaluate(review => {
+      const stage = document.getElementById("stage"), k = stage.getBoundingClientRect().width / stage.offsetWidth;
+      const lamps = [...review.querySelectorAll(".rig-lamp")].map(lamp => lamp.getBoundingClientRect());
+      return { heading: parseFloat(getComputedStyle(review.querySelector("strong")).fontSize) * k,
+        label: parseFloat(getComputedStyle(review.querySelector(".rig-lamp"), "::before").fontSize) * k,
+        overlap: lamps.some((a, i) => lamps.slice(i + 1).some(b => a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1)) };
+    });
+    assert(record.heading >= 11 && record.label >= 11, `Record text is readable at real size: ${JSON.stringify(record)}`);
+    assert(!record.overlap, "Phase lamps in the guide must not overlap");
+    await page.getByRole("button", {name:"説明を閉じて進む"}).click();
+    assert(!await ledger.isVisible());
+    assert(await guide.locator("summary").first().evaluate(el => el === document.activeElement));
+  }, {viewport, isMobile: touch, hasTouch: touch, reducedMotion: "reduce"});
+
+  // 穴の配置（2種類）: 横持ちでも配置・説明の開閉・開始は実寸44px、任意の説明の本文は実寸11px以上。
+  // 説明を開いて一覧の最後まで送っても、開始の札は画面内に残る（#3924）。
+  for (const [size, viewport] of [["phone", { width: 844, height: 390 }], ["short", { width: 740, height: 320 }]]) await check(`sakurai-hole-chooser-${size}`, async page => {
+    await page.evaluate(async () => {
+      const model = await import("./js/core/state.js");
+      const session = await import("./js/craft/session.js"), holes = await import("./js/craft/holes.js");
+      const { CRAFT_STEPS } = await import("./js/craft/practice.js");
+      model.newGame(); model.state.chapter = 2; model.state.day = 3;
+      window.holeCS = session.newSession("tournament");
+      Object.assign(holeCS, { craftVersion: "sakurai", availableHoleTemplateIds: ["outer24", "outer12-middle12"],
+        mix: { double_apple: 9, mint: 3 }, pack: "normal", equip: { ...holeCS.equip, hms: "tanukish_lid" } });
+      await session.openBench(holeCS, { steps: CRAFT_STEPS }).ready;
+      window.holeRun = holes.runHoles(holeCS);
+    });
+    const start = page.locator('[data-test="hole-start"]');
+    await start.waitFor();
+    assert.equal(await page.locator(".bench").getAttribute("data-craft-version"), "sakurai");
+    const measure = () => page.evaluate(() => {
+      const stage = document.getElementById("stage"), k = stage.getBoundingClientRect().width / stage.offsetWidth;
+      const begin = document.querySelector('[data-test="hole-start"]').getBoundingClientRect();
+      return { targets: [...document.querySelectorAll('.hole-chooser :is(.ht-option, .ht-help summary, [data-test="hole-start"])')]
+        .map(node => node.getBoundingClientRect()).map(r => +Math.min(r.width, r.height).toFixed(1)),
+        startVisible: begin.top >= 0 && begin.bottom <= innerHeight + 1,
+        help: [...document.querySelectorAll(".hole-chooser .ht-help p")].filter(node => node.getClientRects().length)
+          .map(node => +(parseFloat(getComputedStyle(node).fontSize) * k).toFixed(1)) };
+    });
+    const closed = await measure();
+    assert.equal(closed.targets.length, 4, "Two layouts, the optional explanation and the start control");
+    assert(closed.startVisible && closed.targets.every(size => size >= 43.5), JSON.stringify(closed));
+    const outer = page.locator('[data-test="hole-template-outer24"]');
+    await outer.tap();
+    assert.equal(await outer.getAttribute("aria-pressed"), "true");
+    await page.locator(".hole-chooser .ht-help summary").tap();
+    await page.locator(".hole-chooser-scroll").evaluate(node => { node.scrollTop = node.scrollHeight; });
+    const opened = await measure();
+    assert(opened.help.length >= 2 && opened.help.every(size => size >= 11), `Optional explanation is readable: ${JSON.stringify(opened)}`);
+    assert(opened.startVisible && opened.targets.every(size => size >= 43.5), JSON.stringify(opened));
+    await start.tap();
+    await page.locator('[data-test="hole-punch"]').waitFor();
+  }, { viewport, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
+
   await check("failed-pull-stays-on-pull", async page => {
     await init(page);
     await page.evaluate(async () => { T.session.craftTest.auto = "burn"; await T.pull.runPull(cs); });
@@ -208,6 +374,48 @@ await suite("craft-progress", async check => {
       assert.deepEqual(phase.labels, labels, "Substep titles must keep the six phase labels");
     }
   });
+
+  await check("compact-sakurai-timer-and-result-actions", async page => {
+    await init(page, null, "sakurai");
+    await page.evaluate(async () => {
+      const timer = await import("./js/craft/timer.js");
+      window.timerRun = timer.runSteamTimer(cs);
+    });
+    const reset = page.locator('[data-test="timer-reset"]');
+    const timerStart = page.locator('[data-test="timer-start"]');
+    await reset.waitFor();
+    await assertFits(page, '.timer-button');
+    const resetLines = await reset.evaluate(button => {
+      const text = document.createRange();
+      text.selectNodeContents(button);
+      return new Set([...text.getClientRects()].map(rect => rect.top)).size;
+    });
+    assert(resetLines <= 2, "Reset must fit the illustrated key in no more than two lines");
+    await reset.tap();
+    assert(await timerStart.isDisabled());
+    await assertFits(page, '.timer-button');
+    await page.locator('[data-test="timer-minute-up"]').tap();
+    assert(await timerStart.isEnabled());
+    await timerStart.tap();
+    await page.evaluate(async () => {
+      await timerRun;
+      const result = await import("./js/craft/result.js");
+      window.finalRun = result.resultTable(cs, 3);
+    });
+    const save = page.locator('[data-test="result-save"]');
+    const next = page.locator('[data-test="result-next"]');
+    await save.waitFor();
+    await assertFits(page, '[data-test="result-save"], [data-test="result-next"]');
+    const resultDetails = page.locator('.rt-detail-scroll');
+    assert(await resultDetails.evaluate(n => n.scrollHeight > n.clientHeight), "Long result remains independently scrollable");
+    await resultDetails.evaluate(n => { n.scrollTop = n.scrollHeight; });
+    await assertFits(page, '[data-test="result-save"], [data-test="result-next"]');
+    const download = page.waitForEvent("download");
+    await save.tap();
+    assert.match((await download).suggestedFilename(), /\.png$/);
+    await next.tap();
+    await page.evaluate(() => finalRun);
+  }, { viewport: { width: 740, height: 320 }, hasTouch: true, isMobile: true });
 
   await check("tutorial-progress-includes-pull-and-serve", async page => {
     await page.evaluate(async () => {

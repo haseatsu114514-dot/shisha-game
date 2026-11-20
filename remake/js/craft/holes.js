@@ -19,7 +19,10 @@ import { RINGS, circularAngleDistance, templateComplete, evaluateFoil, usesFoil,
   NEEDLE, needleHalfArc, needleOffset, referenceDegrees, HOLE_SIZES, pressDepth, pressLimit } from "./holes_logic.js";
 import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, availableHoleTemplates, ringsForTemplate, templateCountsLabel } from "./holes_templates.js";
 import { stepVent } from "./steps.js";
+import { craftStageEnabled } from "./stage-layout.js";
+import { holePatternMark } from "./choice-marks.js";
 import { renewalCraft } from "../core/craft-version.js";
+import { assistEffect } from "./retry-assist-level.js";
 export { RINGS } from "./holes_logic.js";
 /**
  * 穴あけの手触りの調整値（CRN・P8）。試遊ページの ?tune=holes.timeLimit:40 で差し替えて試せる。
@@ -42,25 +45,29 @@ async function chooseTemplate(panel, cs) {
   const counts = el("div.ht-counts", { dataset: { test: "hole-template-counts" } });
   const note = el("small.ht-note");
   const description = el("p.ht-description", { "aria-live": "polite" });
+  const illustrated = craftStageEnabled() && !renewalCraft(cs);
   const choices = templates.map((template) => {
     const button = el("button.btn.ht-option", { dataset: { test: `hole-template-${template.id}` } }, [
+      illustrated ? holePatternMark(ringsForTemplate(template)) : null,
       el("span.btn-label", { text: template.label }),
     ]);
     button.addEventListener("click", () => { selected = template; SE.good(); draw(); });
     return button;
   });
-  const start = el("button.btn.primary", { dataset: { test: "hole-start" } }, [el("span.btn-label", { text: "この配置で穴あけを始める" })]);
-  panel.append(el("div.holes", [
+  const start = el("button.btn.primary", { dataset: { test: "hole-start" } }, [el("span.btn-label", { text: illustrated ? "穴あけを始める" : "この配置で穴あけを始める" })]);
+  const help = el("details.ht-help", [
+    el("summary", { text: "穴数と熱の回り方" }),
+    illustrated ? counts : null,
+    el("p", { text: "多い穴は熱が早く回り、安定しやすい。穴あけでズレる機会も増える" }),
+    el("p", { text: "少ない穴は穴あけが楽。熱はゆっくり入り、吸い方で温度が動きやすい" }),
+    illustrated ? note : null,
+  ]);
+  const title = el("b.ht-title", { text: illustrated ? "穴の配置" : "穴あけテンプレート" });
+  panel.append(el(illustrated ? "div.holes.hole-chooser" : "div.holes", [
     el("div.hr-stage", [preview]),
-    el("div.ht-side", [
-      el("b.ht-title", { text: "穴あけテンプレート" }), ...choices, counts, description,
-      el("details.ht-help", [
-        el("summary", { text: "穴数と熱の回り方" }),
-        el("p", { text: "多い穴は熱が早く回り、安定しやすい。穴あけでズレる機会も増える" }),
-        el("p", { text: "少ない穴は穴あけが楽。熱はゆっくり入り、吸い方で温度が動きやすい" }),
-      ]),
-      note, start,
-    ]),
+    el("div.ht-side", illustrated ? [
+      el("div.hole-chooser-scroll", [title, ...choices, description, help]), start,
+    ] : [title, ...choices, counts, description, help, note, start]),
   ]));
   function draw() {
     const plane = el("div.foil-target-plane");
@@ -121,7 +128,7 @@ export async function runHoles(cs) {
   const slow = skill.slow(cs) * (tutorial ? HOLES_TUNING.lessonSlow : 1);
   const perfWin = HOLES_TUNING.perfectDeg * skill.window(cs, "holes") * (tutorial ? HOLES_TUNING.lessonPerfect : 1);
   const basePerfWin = perfWin / (1 + 0.45 * effectTier("sense"));
-  const goodWin = HOLES_TUNING.goodDeg * craftCondition(cs).window * (tutorial ? HOLES_TUNING.lessonGood : 1) * (cs.retryAssist ? 1.35 : 1);
+  const goodWin = HOLES_TUNING.goodDeg * craftCondition(cs).window * (tutorial ? HOLES_TUNING.lessonGood : 1) * assistEffect(cs).holesGood;
   const limit = tutorial ? HOLES_TUNING.lessonTimeLimit : HOLES_TUNING.timeLimit + (growthSkill(gameState, "K01") ? SKILL_TUNING.holesSeconds : 0);
   // 操作の詳しい説明・凡例・採点は「?」へ。基本画面には置かない（ミニゲームUI共通の方針）。
   benchRoot(cs)?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", { dataset: { test: "hole-guide" } }, [
@@ -147,10 +154,10 @@ export async function runHoles(cs) {
   const ringLabel = el("div.hr-ring");
   const timeBar = el("i.hr-time-bar", [el("b")]);
   const feedback = el("div.hr-feedback", { "aria-live": "polite", dataset: { test: "hole-feedback" } });
-  const report = (text, kind) => {
+  const report = (text, kind, options) => {
     reactAudience(cs, kind);
     feedback.replaceChildren();
-    popStamp(feedback, text, kind, "50%", "50%");
+    popStamp(feedback, text, kind, "50%", "50%", options);
   };
   // 一刺しの判定は、目が向いている穴のすぐ外側に出す（CRN05。右の札まで目を動かさない）
   const calloutAt = (text, kind, a, r) => {
@@ -369,7 +376,8 @@ export async function runHoles(cs) {
     });
     if (ring.taken.every(Boolean)) {
       const clean = ring.holes.every((hole) => hole.d <= perfWin && hole.size === HOLE_SIZES.small) && ring.extra === 0;
-      report(clean ? "BEAUTIFUL RING" : "RING COMPLETE", "just");
+      // 周の完成演出は一刺しの精度判定ではない。EXCELLENT へ置き換えない。
+      report(clean ? "BEAUTIFUL RING" : "RING COMPLETE", "just", { timing: false });
       // リング全体が鳴る: 中心から大きな輪と、リングの円周に沿った火の粉（盤は止めない）
       const size = Math.round(ring.r * D * 1.05), gold = clean ? "#ffc21a" : undefined;
       if (renewal) {

@@ -1,4 +1,4 @@
-// 心得の盤の演出（SBD102〜105）、経験値が届いたその場のレベルアップ（SBD108〜110・SBD122）、
+// 心得の盤の演出（SBD102〜105・火種を灯す手応えの強化 SBD132〜137）、経験値が届いたその場のレベルアップ（SBD108〜110・SBD122）、
 // 絵と数だけの画面と絵つきの「？」（SBD116〜119）を実DOMで確かめる。
 // 飾りは規則を変えない: 火種の数・灯したマス・保存は今までどおりで、動きを減らす設定では待たずに閉じる。
 import assert from "node:assert/strict";
@@ -196,10 +196,10 @@ await suite("growth-fx", async (check) => {
       await help.waitFor();
       assert.equal(await help.locator(".gh-page").getAttribute("data-page"), "flow");
       assert.equal(await help.locator(".gh-flow > li").count(), 4);
-      assert.match(await help.innerText(), /1\/7[\s\S]*その場でレベルアップ[\s\S]*観音堂などで振り返る/);
+      assert.match(await help.innerText(), /1\/8[\s\S]*その場でレベルアップ[\s\S]*観音堂などで振り返る/);
       await tap(t("board-help-next"));
       assert.equal(await help.locator(".gh-page").getAttribute("data-page"), "fire");
-      assert.match(await help.innerText(), /2\/7[\s\S]*白火[\s\S]*色の台座[\s\S]*節目（Lv\.10ごと）[\s\S]*大会で優勝/);
+      assert.match(await help.innerText(), /2\/8[\s\S]*白火[\s\S]*色の台座[\s\S]*節目（Lv\.10ごと）[\s\S]*大会で優勝/);
       assert.equal(await help.locator(".gh-gain").count(), 6, "もらえる時は6つ");
       await page.waitForFunction(() => { const imgs = [...document.querySelectorAll(".gh-page .gh-pic")]; return imgs.length > 0 && imgs.every((img) => img.complete && img.naturalWidth > 0); }, null, { timeout: 10000 }); // 見本は盤と同じ絵が読めている
       await tap(t("board-help-next"));
@@ -209,7 +209,11 @@ await suite("growth-fx", async (check) => {
       const perks = await help.locator("[data-perk]").evaluateAll((rows) => rows.map((row) => [row.dataset.perk, row.querySelector("b").textContent, row.querySelector(".gh-text span").textContent]));
       assert.equal(perks.length, 12, "能力は12");
       assert(perks.every(([key, name, text]) => key && name && text), `どの能力にも名前と一言がある: ${JSON.stringify(perks)}`);
-      for (const id of ["flow", "fire", "kinds", "perks", "states", "how", "rules"]) {
+      // 授業のページ（SBD140）: ながれの4手順と、札の下の印3つ
+      await tap(t("board-help-tab-lesson"));
+      assert.deepEqual(await help.locator(".gh-row .gh-text b").allInnerTexts(), ["出会う", "♥5まで仲良くなる", "盤で灯す", "会って習う", "仲良くなる途中", "今教われる", "灯した。会いに行く"]);
+      assert.deepEqual(await help.locator(".gh-tag").allInnerTexts(), ["♥4/5", "今", "相談"]);
+      for (const id of ["flow", "fire", "kinds", "lesson", "perks", "states", "how", "rules"]) {
         await tap(t(`board-help-tab-${id}`));
         await assertFits(page, t("board-help-pages"));
         await assertFits(page, t("board-help-next"));
@@ -222,8 +226,28 @@ await suite("growth-fx", async (check) => {
       await goals.first().click();
       assert.equal(await page.locator(`.gb-node.selected`).getAttribute("data-test"), first.replace("board-goal-", "board-node-"));
 
-      // 目標（空気を読む）まで灯す: 火種が飛び、盤の中に光が出る。仮置きの数と財布は今までどおり
       await tap(t("board-tab-body"));
+      // 今灯せるマスは、選んでからもう一度押すと灯る（SBD133）。灯したマスは火の入った姿になり（暗い面に沈まない。SBD132）、
+      // マスから獲得の数字、財布から払った数が昇る（SBD134）。「取り消す」で元に戻る
+      const near = await page.locator(".gb-node.stat.s-available").first().getAttribute("data-test");
+      await tap(t(near));
+      assert.equal(await page.locator(".gb-node.s-pending").count(), 0, "一度目は選ぶだけ");
+      assert.equal(await page.locator(t("board-wallet")).getAttribute("data-ready"), "1", "灯せるマスがある間、財布が息づく");
+      await tap(t(near));
+      assert.equal(await page.locator(".gb-node.s-pending").count(), 1, "選んだマスをもう一度押すと灯る");
+      await page.locator(".gb-fx .gfx-pop").first().waitFor({ state: "attached" });
+      assert.match(await page.locator(".gb-fx .gfx-pop").first().innerText(), /[＋−][\d.]+%?/, "マスから獲得の数字が昇る");
+      assert.match(await page.locator(`${t("growth-board")} > .gfx-pop`).first().innerText(), /^−1$/, "財布から払った数が昇る");
+      const face = await page.locator(`${t(near)} .gb-face`).evaluate((node) => { const cs = getComputedStyle(node); return { bg: cs.backgroundImage, glow: cs.boxShadow }; });
+      assert(/gradient/.test(face.bg) && face.glow !== "none", `仮置きのマスは火の入った面: ${JSON.stringify(face)}`);
+      assert.equal(await page.locator(".gb-path.lit.pending").first().evaluate((node) => getComputedStyle(node).animationName), "gb-flow", "仮置きの道は光の点が流れる");
+      assert.match(await page.locator(t("board-perk-total")).innerText(), /の合計：/);
+      assert.equal(await page.locator(`${t("board-perk-total")} .gb-total-bar u`).count(), 1, "合計の前後は棒でも見える");
+      await tap(t("board-reset"));
+      assert.equal(await page.locator(".gb-node.s-pending").count(), 0);
+      await page.waitForFunction(() => !document.querySelector(".gfx-fly, .gfx-pop"));
+
+      // 目標（空気を読む）まで灯す: 火種が飛び、盤の中に光が出る。仮置きの数と財布は今までどおり
       await tap(t("board-node-K07"));
       await tap(t("board-towards"));
       await page.locator(".gb-fx .gfx-ring").first().waitFor({ state: "attached" });
@@ -231,11 +255,19 @@ await suite("growth-fx", async (check) => {
       assert.match(await page.locator(t("board-wallet")).innerText(), /白火\s*10[\s\S]*紅火\s*1/, "白火10・紅火1を払う");
       await page.waitForFunction(() => !document.querySelector(".gfx-fly"));
 
-      // 決定: 保存してから演出。スキル・色の台座・要のマスをカットインで出し、押すと次へ進む
+      // 決定: 保存してから演出。火が走りきると、まとめの札（灯した数と増えた能力。押すと先へ。SBD136）、
+      // 続けてスキル・色の台座・要のマスをカットインで出し、押すと次へ進む
       await tap(t("board-decide"));
+      const banner = page.locator(t("board-commit-banner"));
+      await banner.waitFor();
+      assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).peekSave()?.growth?.nodes?.includes("K07") ?? null), true, "演出の前に保存済み");
+      assert.match((await banner.innerText()).replace(/\s+/g, ""), /^LIGHTUP火を7つ灯した/);
+      const rows = await banner.locator(".gfx-banner-row").evaluateAll((nodes) => nodes.map((node) => [node.querySelector("em").textContent, node.querySelector(":scope > b").textContent]));
+      assert(rows.length >= 2 && rows.every(([name, value]) => name && /^[＋−][\d.]+%?$/.test(value)), `増えた能力を名前と数で: ${JSON.stringify(rows)}`);
+      await assertFits(page, ".gfx-banner");
+      await banner.dispatchEvent("pointerdown");
       const cutin = page.locator(t("board-cutin"));
       await cutin.waitFor();
-      assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).peekSave()?.growth?.nodes?.includes("K07") ?? null), true, "演出の前に保存済み");
       assert.match(await cutin.innerText(), /SKILL[\s\S]*空気を読む[\s\S]*1\/3/);
       await assertFits(page, ".gfx-cutin");
       await cutin.dispatchEvent("pointerdown");
@@ -283,6 +315,75 @@ await suite("growth-fx", async (check) => {
     }, options);
   }
 
+  // 授業の仕組みが見て分かる（SBD139・SBD140）: 右のパネルに「出会う → ♥5 → 盤で灯す → 会って習う」の進み具合、盤の札の下に今の状態の印。
+  // 灯しただけの授業は ✓ ではなく「相談」（会いに行く）、習得してから ✓
+  for (const [label, options] of [
+    ["pc", { viewport: { width: 1331, height: 760 } }],
+    ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  ]) {
+    await check(`${label}-lesson-flow-and-tags`, async (page) => {
+      await setupDaily(page, { chapter: 2 });
+      await page.evaluate(async () => {
+        const g = await import("./js/core/growth.js"), stats = await import("./js/core/stats.js"), gr = g.ensureGrowth(), s = __remake.state;
+        s.flags._board_starter_given = true; s.flags._board_tutorial_done = true;
+        s.met = { ...(s.met || {}), adam: true };
+        s.affinity = { ...(s.affinity || {}), adam: 60 };
+        window.adamHeart = stats.affinityLevel("adam");
+        gr.hidane.any = 6;
+        gr.nodes.push("M-S1", "M-W1"); gr.learned.push("M-W1"); // 蒸らしアタック＝灯しただけ、キューブ炭＝習得済み
+        window.boardDone = g.openGrowthBoard({ place: "kannon" });
+      });
+      await page.locator(`${t("growth-board")}[data-art]`).waitFor();
+      const heart = await page.evaluate(() => window.adamHeart);
+      assert(heart > 0 && heart < 5, `アダムは♥5の手前: ${heart}`);
+      const flow = page.locator(t("board-lesson-flow"));
+      const steps = () => flow.locator("li").evaluateAll((rows) => rows.map((row) => [row.querySelector(".gb-lf-label").textContent, row.className.match(/done|now|todo/)[0], row.querySelector(".gb-lf-detail")?.textContent || ""]));
+      const pick = (id) => page.locator(t(`board-node-${id}`)).evaluate((node) => node.click());
+      await page.locator(t("board-tab-sense")).click();
+      // 灯しただけの授業: 札の印は「相談」で ✓ は無い。ながれは「会って習う」が今
+      const lit = page.locator(t("board-node-M-S1"));
+      assert.equal(await lit.locator(".gb-lesson-tag.t-talk").innerText(), "相談");
+      assert.equal(await lit.locator(".gb-node-state").count(), 0, "灯しただけの授業に ✓ は付けない");
+      await pick("M-S1");
+      assert.deepEqual(await steps(), [["出会う", "done", ""], ["盤で灯す", "done", ""], ["会って習う", "now", ""]], "スミさんの授業は♥の手順が無い");
+      assert.equal(await flow.getAttribute("data-now"), "learn");
+      assert.match(await page.locator(".gb-p-state").innerText(), /相談できる。次にスミさんに会った時/);
+      await assertFits(page, t("board-lesson-flow"));
+      // ♥が足りない授業: 札の印は「♥n/5」、ながれは♥の手順が今で、♥の数が見える
+      const sealed = page.locator(t("board-node-M-S2"));
+      assert.equal(await sealed.locator(".gb-lesson-tag.t-heart").innerText(), `♥${heart}/5`);
+      await pick("M-S2");
+      assert.deepEqual((await steps()).map((row) => row.slice(0, 2)), [["出会う", "done"], ["♥5まで", "now"], ["盤で灯す", "todo"], ["会って習う", "todo"]]);
+      assert.equal((await steps())[1][2], "♥".repeat(heart) + "♡".repeat(5 - heart));
+      assert.match(await page.locator(".gb-p-state").innerText(), new RegExp(`^つぎ：アダムと♥5まで仲良くなる（いま♥${heart}）$`));
+      await assertFits(page, t("board-lesson-flow"));
+      // 「？」は授業のページから開く
+      await page.locator(t("board-help")).click();
+      await page.locator(`${t("board-help-pages")} .gh-page[data-page="lesson"]`).waitFor();
+      await assertFits(page, t("board-help-pages"));
+      await page.locator(t("board-help-close")).click();
+      // まだ出会っていない人の授業: 「?」の印のまま、ながれは「出会う」が今
+      await pick("M-S4");
+      assert.equal(await flow.getAttribute("data-now"), "meet");
+      assert.equal(await page.locator(t("board-node-M-S4")).locator(".gb-lesson-tag").count(), 0);
+      assert.match(await page.locator(".gb-p-state").innerText(), /物語が進んで出会うと/);
+      // 習得済みの授業: ✓ が付き、印は無い。ながれは全部済み
+      await page.locator(t("board-tab-wisdom")).click();
+      const learned = page.locator(t("board-node-M-W1"));
+      assert.equal(await learned.locator(".gb-node-state").innerText(), "✓");
+      assert.equal(await learned.locator(".gb-lesson-tag").count(), 0);
+      await pick("M-W1");
+      assert.equal(await flow.getAttribute("data-now"), "done");
+      assert((await steps()).every((row) => row[1] === "done"));
+      // 道が届いていない授業（♥は要らない）: 「盤で灯す」が今で、あと火種いくつかが出る
+      await pick("M-W2");
+      const far = await steps();
+      assert.equal(await flow.getAttribute("data-now"), "light");
+      assert.match(far.find((row) => row[0] === "盤で灯す")[2], /^あと火種\d+$/);
+      assert.match(await page.locator(".gb-p-state").innerText(), /^つぎ：盤の道をここまでつなぐ（あと火種\d+）。授業に火種はいらない$/);
+    }, options);
+  }
+
   // 動きを減らす設定: 光もカットインも出さず、待たずに閉じる。灯した結果は同じ
   await check("reduced-motion-skips-effects", async (page) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
@@ -292,7 +393,7 @@ await suite("growth-fx", async (check) => {
       __remake.state.flags._board_starter_given = true; __remake.state.flags._board_tutorial_done = true;
       Object.assign(gr, { hidane: { any: 20, body: 2, sense: 0, wisdom: 0 }, earned: 22, target: "K07" });
       window.cutins = 0;
-      new MutationObserver(() => { if (document.querySelector('[data-test="board-cutin"], .gfx-ring, .gfx-fly, .gfx-spark')) window.cutins++; }).observe(document.body, { childList: true, subtree: true });
+      new MutationObserver(() => { if (document.querySelector('[data-test="board-cutin"], [data-test="board-commit-banner"], .gfx-ring, .gfx-fly, .gfx-fly-tail, .gfx-spark, .gfx-flash, .gfx-flame, .gfx-pop, .gfx-edge')) window.cutins++; }).observe(document.body, { childList: true, subtree: true });
       window.boardDone = g.openGrowthBoard({ place: "kannon" });
     });
     await page.locator(`${t("growth-board")}[data-art]`).waitFor();
@@ -302,7 +403,7 @@ await suite("growth-fx", async (check) => {
     await page.locator(t("board-decide")).click();
     await page.locator(t("growth-board")).waitFor({ state: "detached" });
     assert(Date.now() - started < 1500, "演出の待ちを作らない");
-    assert.equal(await page.evaluate(() => window.cutins), 0, "光・カットインを出さない");
+    assert.equal(await page.evaluate(() => window.cutins), 0, "光・数字・まとめの札・カットインを出さない");
     assert.equal(await page.evaluate(async () => (await window.boardDone).length), 7);
   }, { viewport: { width: 1331, height: 760 } });
 }, { entry: `${baseURL}?growth=1`, acknowledgeGrowth: false });

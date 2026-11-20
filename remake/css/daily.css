@@ -1365,27 +1365,33 @@ html:root[data-density="phone"] body:not(:root) .lvup-face { width: 64px; height
 .lvup.has-art.gift .lvup-rays { opacity: 0.45; }
 html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 140px; }
 
-/* #3938: 第1章のクリア時だけ右下の余白へ。通知は独立したキューなので、
-   出す順を変えず、先に出ている札も後から届く札も同じ場所に収める。 */
-#screen:has(> .ch1-clear) ~ #fx .lvup {
+/* #3938: 章のクリア画面（.chapter-clear）だけ、札を本文の外の余白へ。通知は独立したキューなので、
+   出す順を変えず、先に出ている札も後から届く札も同じ場所に収める。
+   第1章のクリア画面は右下の余白（ボタンの横）。 */
+#screen:has(> .chapter-clear) ~ #fx .lvup {
   --plate-h: 86px; top: auto; left: auto; right: 20px; bottom: 20px; translate: none;
   max-width: 390px; transform-origin: bottom right;
 }
-#screen:has(> .ch1-clear) ~ #fx .lvup-plate {
+/* 第2〜5章の「第N章・完」のカード（.ch2-contest）は、ボタンの列の上、カードの右下の空き。
+   右端はカードの中身の右端（MENU の右端）にそろえ、下端はどの画面幅でもボタンの列より上に置く。 */
+#screen:has(> .ch2-contest.chapter-clear) ~ #fx .lvup { right: 93px; bottom: 150px; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-plate {
   height: auto; min-height: var(--plate-h); grid-template-columns: auto minmax(0, 1fr);
   padding: 8px 34px; column-gap: 12px;
 }
-#screen:has(> .ch1-clear) ~ #fx .lvup-fires { gap: 6px 10px; padding-left: 12px; flex-wrap: wrap; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-head { font-size: 24px; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-lv b { font-size: 38px; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-lv:has(small) { display: grid; gap: 0; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-lv small { font-size: 20px; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-none { padding-left: 10px; white-space: normal; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-fire .hidane-icon { width: 38px; height: 38px; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-fire b { font-size: 34px; }
-/* 大きな光と、非表示のMENUへ飛ぶ粒を本文に重ねない。札の中の動きはそのまま。 */
-#screen:has(> .ch1-clear) ~ #fx :is(.lvup-rays, .gfx-ring, .gfx-spark, .gfx-fly),
-#screen:has(> .ch1-clear) ~ #fx .lvup.milestone::before { display: none; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-fires { gap: 6px 10px; padding-left: 12px; flex-wrap: wrap; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-head { font-size: 24px; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-lv b { font-size: 38px; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-lv:has(small) { display: grid; gap: 0; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-lv small { font-size: 20px; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-none { padding-left: 10px; white-space: normal; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-fire .hidane-icon { width: 38px; height: 38px; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-fire b { font-size: 34px; }
+/* 大きな光と、非表示のMENUへ飛ぶ粒を本文に重ねない。札の中の動きはそのまま。
+   消す光と粒は、札が #fx の直下に出すものだけ（MENU や観音堂から開いた心得の盤の中の光は消さない）。 */
+#screen:has(> .chapter-clear) ~ #fx > :is(.gfx-ring, .gfx-spark, .gfx-fly),
+#screen:has(> .chapter-clear) ~ #fx .lvup-rays,
+#screen:has(> .chapter-clear) ~ #fx .lvup.milestone::before { display: none; }
 
 /* ---------------------------------------------------------------- レベルアップと火種の演出の強化（2026-11-11 オーナー「見た目や演出など全面的にパワーアップさせて」SBD103）
    部品は js/daily/growth-fx.js。動くのは transform と opacity だけ（広い面のぼかし・ノイズは使わない）。動きを減らす設定では止める */
@@ -1696,7 +1702,7 @@ html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 140px; }
 .gboard.has-art .gb-icon-img { display: block; }
 .gboard.has-art .gb-node:has(.gb-icon-img) .gb-glyph { opacity: 0; }
 .gboard.has-art .gb-node.stat .gb-icon-img { inset: 14%; width: 72%; height: 72%; filter: drop-shadow(0 0 2px #000) brightness(1.15); }
-.gboard.has-art .gb-node.stat:not(.s-unlocked):not(.s-available) .gb-face { background: rgba(14, 10, 20, 0.96); border-color: #4a4054; }
+.gboard.has-art .gb-node.stat:not(.s-unlocked):not(.s-available):not(.s-pending) .gb-face { background: rgba(14, 10, 20, 0.96); border-color: #4a4054; }
 .gboard.has-art .gb-node.stat.s-unlocked .gb-icon-img, .gboard.has-art .gb-node.stat.s-available .gb-icon-img { filter: drop-shadow(0 0 3px var(--board-c)) opacity(1); }
 .gboard.has-art .gb-node.skill .gb-icon-img { inset: 24%; width: 52%; height: 52%; filter: drop-shadow(0 0 2px #000) opacity(0.8); }
 .gboard.has-art .gb-node.skill.s-unlocked .gb-icon-img { filter: drop-shadow(0 0 4px var(--board-c)) opacity(1); }
@@ -1871,7 +1877,9 @@ html:root[data-density="phone"] body:not(:root) .gh-plain .gh-row { grid-templat
 .gfx-cutin.b-body { --cc: #ef8a5e; } .gfx-cutin.b-sense { --cc: #58a6ff; } .gfx-cutin.b-wisdom { --cc: #7bd36d; }
 .gfx-cutin.t-lesson, .gfx-cutin.t-peak, .gfx-cutin.t-notable { --cc: #f4d27a; }
 @keyframes gfx-cutin-in { 0% { transform: scaleY(0.1) translateX(-40px); opacity: 0; } 100% { transform: none; opacity: 1; } }
-.gfx-cutin-streak { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--cc) 55%, #fff) 50%, transparent 70%); opacity: 0; animation: gfx-streak .7s ease-out .08s; }
+/* 光の筋は枠の内側で切り抜く（動いている間だけ枠の外へはみ出した扱いになり、はみ出しの検査が時間しだいで落ちていた） */
+.gfx-cutin-streak { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.gfx-cutin-streak::before { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--cc) 55%, #fff) 50%, transparent 70%); opacity: 0; animation: gfx-streak .7s ease-out .08s; }
 @keyframes gfx-streak { 0% { transform: translateX(-100%); opacity: 0.75; } 100% { transform: translateX(100%); opacity: 0; } }
 .gfx-cutin-icon { position: relative; flex: none; display: grid; place-items: center; width: 92px; height: 92px; border-radius: 50%; border: 2px solid var(--cc);
   background: radial-gradient(circle, color-mix(in srgb, var(--cc) 34%, #120c1c), #0a0612 75%); box-shadow: 0 0 22px color-mix(in srgb, var(--cc) 60%, transparent), inset 0 0 16px color-mix(in srgb, var(--cc) 40%, transparent);
@@ -1946,7 +1954,7 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16
 .gb-goal-lock { font-size: 13px; font-weight: 800; color: #e06a8a; }
 .gb-goal-now { padding: 1px 8px; border-radius: 999px; font-size: 13px; font-weight: 800; color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); }
 @media (prefers-reduced-motion: reduce) {
-  .gboard.can-light .gb-node.stat.s-available::before, .gboard.has-art .gb-node.gate.lit-now .gb-gate-gem, .gb-bar.grew .gb-bar-sum, .gfx-cutin, .gfx-cutin-streak, .gfx-cutin-icon, .gfx-cutin-veil { animation: none !important; }
+  .gboard.can-light .gb-node.stat.s-available::before, .gboard.has-art .gb-node.gate.lit-now .gb-gate-gem, .gb-bar.grew .gb-bar-sum, .gfx-cutin, .gfx-cutin-streak::before, .gfx-cutin-icon, .gfx-cutin-veil { animation: none !important; }
   .gb-bar-line b { transition: none; }
 }
 /* 盤の間隔を広げた（SBD78）: 世界の大きさは JS が決める。結界は道を横切る大きさで、暗い帯の上に置く */
@@ -2194,7 +2202,7 @@ body:not(:root) #hud .dc-row span,
 body:not(:root) #hud .hud-card .hud-stamina > span:first-child { flex: none; width: auto; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 body:not(:root) #hud .dc-row.money b { font-size: 20px; line-height: 1; }
 body:not(:root) #hud .dc-row:not(.money) b { font-size: 15px; line-height: 1; }
-/* 体力: バーの長さは経験値ゲージと共通の固定長（#3034）。最大体力が伸びてもバーは伸ばさない（長さは hud.js の HUD_GAUGE_WIDTH が決める）。 */
+/* 体力: 枠の長さは hud.js が決める。盤の割り振り前は経験値ゲージ（HUD_GAUGE_WIDTH=120px）の半分から始め、盤の体力成長でだけ120pxまで伸ばす（#3821。#3034 の固定長から変更）。根性などによる最大体力では伸ばさない。行の幅は120pxのまま。 */
 body:not(:root) #hud .hud-card .hud-stamina { position: relative; }
 body:not(:root) #hud .hud-card .hud-stamina > span:first-child { width: 28px; }
 body:not(:root) #hud .hud-card .hud-stamina .hud-bar { position: relative; flex: none; box-sizing: border-box; height: 12px; min-width: 0; max-width: none; margin: 0; border-radius: 6px; }
@@ -2361,4 +2369,197 @@ body:not(:root) #hud .dc-slot { position: absolute; width: 1px; height: 1px; mar
 
 @media (prefers-reduced-motion: reduce) {
   .spot-pin.guide .shield, .evt-badge, .evt-badge::after, .shop-row.errand::after, .lime-row.typing i, .lc-hole::after { animation: none; }
+}
+
+/* ================= 火種を灯す手応えの強化（2026-11-20 SBD132〜137）=================
+   部品は js/daily/growth-fx.js、調整値は同じファイルの FX。盤の面・札・台座・結界・顔のデザイン（#2129）は変えず、灯した瞬間と決定の光を足す。
+   動きを減らす設定では、飛ぶ火種・閃光・炎・数字・まとめの札は出さない（JS 側で出さない）。ここの常時の動きも下でまとめて止める */
+/* 仮置きのマス: 火が入って揺れている姿に。今までは絵のある盤で黒い丸に沈み、灯したのに暗くなっていた（決定前の区別は破線の「+」の印と、流れる点の道で残す） */
+.gboard .gb-node.stat.s-pending .gb-face { --pend: gb-pending-glow;
+  border: 2px solid #fff1b8; color: #fff; background: radial-gradient(circle at 50% 64%, #a85a14 0%, #4a220c 58%, #1c0d08 100%);
+  box-shadow: 0 0 6px #fff1b8, 0 0 18px #ffb43c, inset 0 0 8px rgba(255, 190, 80, 0.8); animation: gb-pending-glow 1.5s ease-in-out infinite; }
+@keyframes gb-pending-glow { 50% { box-shadow: 0 0 9px #fff6dc, 0 0 28px #ffb43c, inset 0 0 11px rgba(255, 210, 120, 0.95); } }
+.gboard.has-art .gb-node.stat.s-pending .gb-icon-img { filter: drop-shadow(0 0 2px #2a1000) drop-shadow(0 0 4px #ffd38a) opacity(1); }
+.gb-node.s-pending .gb-glyph { color: #fff; text-shadow: 0 0 6px #ffb43c; }
+/* 仮置きのマスの上に立つ火（今灯せるマスの小さな火より大きく明るい） */
+.gb-node.stat.s-pending::before { content: ""; position: absolute; left: 50%; top: -10px; width: 12px; height: 18px; margin-left: -6px; pointer-events: none; transform-origin: 50% 100%;
+  border-radius: 50% 50% 50% 50% / 66% 66% 34% 34%; background: radial-gradient(ellipse at 50% 74%, #fff 0%, #ffe9b8 30%, #ff9a2a 64%, transparent 80%);
+  filter: drop-shadow(0 0 5px #ffb43c); animation: gb-flame .8s ease-in-out infinite; }
+@keyframes gb-flame { 0%, 100% { transform: scale(0.9, 0.92) rotate(-3deg); opacity: 0.9; } 35% { transform: scale(1.08, 1.18) rotate(2deg); opacity: 1; } 70% { transform: scale(0.96, 1.04) rotate(-1deg); } }
+.gboard .gb-node:is(.skill, .lesson, .gate).s-pending .gb-face { --pend: gb-pending-filter; animation: gb-pending-filter 1.5s ease-in-out infinite; }
+@keyframes gb-pending-filter { 0%, 100% { filter: drop-shadow(0 0 6px #ffb43c) brightness(1.05); } 50% { filter: drop-shadow(0 0 14px #ffd38a) brightness(1.25); } }
+/* 仮置きの道: 火が来た側から先へ、光の点が流れる（決定すると一本の光る管になる） */
+.gb-tube-glow.pending { stroke: #ffb43c; stroke-width: 8; stroke-dasharray: none; opacity: 0.4; animation: gb-tube-breathe 1.5s ease-in-out infinite; }
+@keyframes gb-tube-breathe { 50% { opacity: 0.68; } }
+.gb-path.lit.pending { stroke: #fff6dc; stroke-width: 3.5; stroke-dasharray: 2 12; animation: gb-flow .6s linear infinite; }
+@keyframes gb-flow { to { stroke-dashoffset: -14; } }
+/* 灯すを押した瞬間: 火種が届くまでは受ける構え（まだ暗い）。届いた瞬間に弾けて火が入る */
+.gboard .gb-nodes .gb-node.s-pending.lit-now .gb-face { animation: gb-brace .28s ease-out, var(--pend, gb-pending-glow) 1.5s ease-in-out .28s infinite; }
+@keyframes gb-brace { 0% { scale: 0.78; } 60% { scale: 1.08; } 100% { scale: 1; } }
+.gboard .gb-nodes .gb-node.stat.s-pending.pre-ignite .gb-face { background: rgba(14, 10, 20, 0.96); border-color: #fff; box-shadow: 0 0 8px rgba(255, 241, 184, 0.6); animation: gb-brace .28s ease-out; }
+.gboard .gb-nodes .gb-node:is(.skill, .lesson, .gate).s-pending.pre-ignite .gb-face { animation: gb-brace .28s ease-out; }
+.gb-node.s-pending.pre-ignite::before { display: none; }
+.gb-node.s-pending.pre-ignite > .gb-node-state { visibility: hidden; }
+.gboard .gb-nodes .gb-node.s-pending.ignite-hit .gb-face { animation: gb-ignite-hit .46s cubic-bezier(.2, 1.5, .4, 1), var(--pend, gb-pending-glow) 1.5s ease-in-out .46s infinite; }
+@keyframes gb-ignite-hit { 0% { scale: 1.75; filter: brightness(2.6); } 50% { scale: 0.9; filter: brightness(1.35); } 100% { scale: 1; } }
+/* 決定前の印（破線の +）は火の色に。暗い丸のままだと火の入ったマスの上で照準のように見えた */
+.gboard .gb-nodes .gb-node.s-pending > .gb-node-state { color: #3a1a04; background: #ffcf7a; border: 2px dashed #fff6dc; box-shadow: 0 0 0 2px #1a0d08, 0 0 8px #ffb43c; }
+/* 絵のある盤のスキル・授業・台座・極みは札が四角い箱なので、弾む時に箱の影（四角い光）を出さず、札の形のまま光らせる */
+.gboard.has-art .gb-node:is(.skill, .lesson, .gate, .peak).lit-now:not(.s-pending) .gb-face { animation: gb-lit-art .6s cubic-bezier(.2, 1.4, .4, 1); }
+@keyframes gb-lit-art { 0% { scale: 1.6; filter: brightness(2.2) drop-shadow(0 0 16px #ffd38a); } 55% { scale: 0.94; filter: brightness(1.25) drop-shadow(0 0 9px #ffd38a); } 100% { scale: 1; } }
+.gb-node.s-pending.ignite-hit > .gb-node-state { animation: gb-badge-in .3s cubic-bezier(.2, 1.6, .4, 1) .12s both; }
+@keyframes gb-badge-in { from { scale: 0; } }
+/* 飛ぶ火種は大きく、光の尾を引く。届いた所に閃光と炎 */
+.hidane-icon.gfx-fly { width: 32px; height: 32px; filter: drop-shadow(0 0 2px #2a1406) drop-shadow(0 0 9px var(--hc)); }
+.gfx-fly-tail { position: absolute; left: 0; top: 0; width: 16px; height: 16px; border-radius: 50%; z-index: 29; pointer-events: none;
+  background: radial-gradient(circle, #fff, var(--c, #ffd38a) 48%, transparent 72%); box-shadow: 0 0 10px var(--c, #ffd38a); }
+.gfx-flash { position: absolute; border-radius: 50%; pointer-events: none; z-index: 6; mix-blend-mode: screen;
+  background: radial-gradient(circle, #fff 0%, color-mix(in srgb, var(--c, #ffd38a) 70%, #fff) 30%, color-mix(in srgb, var(--c, #ffd38a) 55%, transparent) 55%, transparent 70%); }
+.gfx-flame { position: absolute; pointer-events: none; z-index: 6; border-radius: 50% 50% 50% 50% / 68% 68% 32% 32%;
+  background: radial-gradient(ellipse at 50% 76%, #fff 0%, #ffe9b8 26%, var(--c, #ffb43c) 60%, transparent 78%); filter: drop-shadow(0 0 4px var(--c, #ffb43c)); }
+/* マスから昇る「体力 ＋8」・財布から昇る「−1」。暗い盤でも明るい紙でも読めるよう、濃い縁を付ける */
+.gfx-pop { position: absolute; z-index: 31; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; pointer-events: none; font-size: 18px; font-weight: 900; line-height: 1; letter-spacing: 0.02em;
+  color: var(--c, #ffe9b8); text-shadow: 0 0 2px #1a0d14, 0 0 2px #1a0d14, 1px 1px 0 #1a0d14, -1px 1px 0 #1a0d14, 1px -1px 0 #1a0d14, -1px -1px 0 #1a0d14, 0 2px 0 #1a0d14, 0 0 10px rgba(255, 170, 50, 0.9); }
+.gfx-pop b { font-weight: 900; font-variant-numeric: tabular-nums; }
+.gfx-pop img { width: 22px; height: 22px; object-fit: contain; filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 4px #ffb43c); }
+.gfx-pop.big { padding: 5px 14px; border-radius: 999px; font-size: 21px; background: rgba(18, 9, 24, 0.9); border: 1.5px solid var(--c, #ffe9b8); box-shadow: 0 0 16px color-mix(in srgb, var(--c, #ffe9b8) 55%, transparent); }
+.gfx-pop.big img { width: 28px; height: 28px; }
+.gfx-edge { position: absolute; inset: 0; z-index: 44; pointer-events: none;
+  box-shadow: inset 0 0 110px 26px color-mix(in srgb, var(--c, #ffd38a) 62%, transparent), inset 0 0 0 3px color-mix(in srgb, var(--c, #ffd38a) 75%, #fff); }
+html:root[data-density="phone"] body:not(:root) .gfx-pop { font-size: 26px; }
+html:root[data-density="phone"] body:not(:root) .gfx-pop.big { font-size: 28px; }
+html:root[data-density="phone"] body:not(:root) .gfx-pop img { width: 30px; height: 30px; }
+/* 盤の中の表示は盤の倍率（スマホ横は選ぶと1.2倍）も掛かるので、その分だけ控える */
+html:root[data-density="phone"] body:not(:root) .gb-fx .gfx-pop { font-size: 21px; }
+html:root[data-density="phone"] body:not(:root) .gb-fx .gfx-pop.big { font-size: 23px; }
+html:root[data-density="phone"] body:not(:root) .gb-fx .gfx-pop img { width: 24px; height: 24px; }
+/* 財布: 粒と数を大きく。灯せるマスが残っている間は縁が息づく（開いた時に粒が順に弾むのは growth-fx.js の popIn） */
+.gb-wallet { gap: 16px; padding: 7px 16px; }
+.gb-hidane b { font-size: 24px; font-weight: 800; }
+.gboard.has-art .gb-hidane i { width: 32px; height: 32px; }
+.gb-wallet[data-ready] { animation: gb-wallet-ready 1.7s ease-in-out infinite; }
+@keyframes gb-wallet-ready { 0%, 100% { box-shadow: 0 0 0 1px rgba(255, 180, 60, 0.35), 0 0 6px rgba(255, 180, 60, 0.25); } 50% { box-shadow: 0 0 0 2px rgba(255, 196, 92, 0.85), 0 0 16px rgba(255, 180, 60, 0.6); } }
+/* 右のパネル: 能力の合計の前後を一本の棒で（濃い所＝いま、明るく息づく所＝灯すと増える分） */
+.gb-p-total { display: grid; gap: 5px; }
+.gb-total-bar { --c: var(--board-c); display: block; height: 9px; }
+.gb-total-bar u { position: absolute; top: 0; bottom: 0; min-width: 4px; border-radius: 0 4px 4px 0; text-decoration: none; background: linear-gradient(90deg, #ffd38a, #fff6dc); box-shadow: 0 0 8px #ffb43c; animation: gb-total-gain 1.1s ease-in-out infinite; }
+@keyframes gb-total-gain { 50% { opacity: 0.45; } }
+html:root[data-ui-theme="paper"] .gb-total-bar u { background: linear-gradient(90deg, #e39a2c, #f6c56a); box-shadow: none; }
+/* 決定のまとめの札: 「火を N つ灯した」と増えた能力。押すと先へ */
+.gboard.committing .gfx-banner-veil { pointer-events: auto; }
+.gfx-banner-veil { position: absolute; inset: 0; z-index: 45; display: grid; place-items: center; cursor: pointer;
+  background: radial-gradient(ellipse 72% 52% at 50% 50%, rgba(6, 3, 12, 0.7), transparent 78%), rgba(6, 3, 12, 0.4); animation: gfx-veil-in .18s ease-out both; }
+.gfx-banner { --cc: #ffd38a; position: relative; display: grid; justify-items: center; gap: 4px; box-sizing: border-box; min-width: 520px; max-width: calc(100% - 48px); padding: 20px 48px 22px; overflow: hidden; color: #fff; text-align: center;
+  border-top: 2px solid var(--cc); border-bottom: 2px solid var(--cc); background: linear-gradient(180deg, rgba(30, 16, 38, 0.97), rgba(12, 7, 18, 0.97));
+  box-shadow: 0 0 46px color-mix(in srgb, var(--cc) 40%, transparent); animation: gfx-banner-in .38s cubic-bezier(.2, 1.25, .3, 1) both; }
+.gfx-banner.b-body { --cc: #ef8a5e; } .gfx-banner.b-sense { --cc: #58a6ff; } .gfx-banner.b-wisdom { --cc: #7bd36d; }
+@keyframes gfx-banner-in { 0% { transform: scaleY(0.08); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.gfx-banner-rays { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.gfx-banner-rays::before { content: ""; position: absolute; left: 50%; top: 50%; width: 900px; height: 900px; margin: -450px 0 0 -450px; opacity: 0.16;
+  background: repeating-conic-gradient(from 0deg, var(--cc) 0deg 6deg, transparent 6deg 18deg); mask-image: radial-gradient(circle, #000 0%, transparent 62%); -webkit-mask-image: radial-gradient(circle, #000 0%, transparent 62%);
+  animation: gfx-rays-spin 14s linear infinite; }
+@keyframes gfx-rays-spin { to { rotate: 360deg; } }
+.gfx-banner > :not(.gfx-banner-rays) { position: relative; }
+.gfx-banner small { font-size: 14px; font-weight: 800; letter-spacing: 0.34em; color: var(--cc); }
+.gfx-banner strong { display: flex; align-items: baseline; gap: 10px; font-size: 30px; font-weight: 900; letter-spacing: 0.06em; }
+.gfx-banner strong b { font-size: 68px; line-height: 1; color: #fff6dc; font-variant-numeric: tabular-nums; text-shadow: 0 0 4px var(--cc), 0 0 22px var(--cc); animation: gfx-count-pop .5s cubic-bezier(.2, 1.7, .4, 1) .1s both; }
+@keyframes gfx-count-pop { 0% { scale: 0.2; opacity: 0; } 100% { scale: 1; opacity: 1; } }
+.gfx-banner-rows { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 12px; max-width: 700px; margin-top: 8px; }
+.gfx-banner-row { display: inline-flex; align-items: center; gap: 7px; padding: 4px 14px 4px 5px; border-radius: 999px; font-size: 16px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18);
+  animation: gfx-row-in .3s ease-out both; animation-delay: calc(.26s + var(--i, 0) * 70ms); }
+@keyframes gfx-row-in { 0% { opacity: 0; translate: 0 10px; } 100% { opacity: 1; translate: 0 0; } }
+.gfx-banner-row em { font-style: normal; color: #eadff2; }
+.gfx-banner-row > b { font-size: 20px; font-weight: 900; color: #ffe08a; font-variant-numeric: tabular-nums; }
+.gfx-banner-icon { position: relative; flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: rgba(8, 5, 12, 0.9); border: 1px solid color-mix(in srgb, var(--cc) 60%, transparent); }
+.gfx-banner-icon b { font-size: 15px; font-weight: 900; color: #fff; }
+.gfx-banner-icon img { display: none; position: absolute; inset: 12%; width: 76%; height: 76%; object-fit: contain; }
+.gfx-banner-icon.has-img img { display: block; } .gfx-banner-icon.has-img b { display: none; }
+html:root[data-density="phone"] body:not(:root) .gfx-banner { min-width: 720px; padding: 22px 56px 26px; }
+html:root[data-density="phone"] body:not(:root) .gfx-banner small { font-size: 18px; }
+html:root[data-density="phone"] body:not(:root) .gfx-banner strong { font-size: 38px; }
+html:root[data-density="phone"] body:not(:root) .gfx-banner strong b { font-size: 84px; }
+html:root[data-density="phone"] body:not(:root) .gfx-banner-rows { max-width: 1000px; gap: 10px 14px; }
+html:root[data-density="phone"] body:not(:root) .gfx-banner-row { font-size: var(--phone-sub); padding: 6px 18px 6px 6px; }
+html:root[data-density="phone"] body:not(:root) .gfx-banner-row > b { font-size: var(--phone-text); }
+html:root[data-density="phone"] body:not(:root) .gfx-banner-icon { width: 40px; height: 40px; }
+@media (prefers-reduced-motion: reduce) {
+  .gb-node.s-pending .gb-face, .gb-node.s-pending::before, .gb-node.s-pending > .gb-node-state, .gb-tube-glow.pending, .gb-path.lit.pending, .gb-wallet[data-ready], .gb-total-bar u,
+  .gfx-banner, .gfx-banner *, .gfx-banner-rays::before, .gfx-banner-veil { animation: none !important; }
+}
+
+/* ================= 授業の仕組みを見てわかるように（2026-11-20 SBD139〜141）=================
+   授業は「出会う → ♥5 → 盤で灯す → 会って習う」。右のパネルに進み具合の図、盤の札の下に今の状態の印を出す */
+.gb-lesson-flow { list-style: none; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); margin: 4px 0 2px; padding: 10px 2px 8px; border-radius: 10px;
+  background: color-mix(in srgb, currentColor 5%, transparent); border: 1px solid color-mix(in srgb, #e8b04a 45%, transparent); }
+.gb-lesson-flow li { position: relative; display: grid; justify-items: center; align-content: start; gap: 3px; min-width: 0; text-align: center; }
+/* 手順をつなぐ線: 前の手順が済んでいれば金 */
+.gb-lesson-flow li + li::before { content: ""; position: absolute; top: 15px; right: calc(50% + 19px); width: calc(100% - 38px); height: 3px; border-radius: 2px; background: color-mix(in srgb, currentColor 22%, transparent); }
+.gb-lesson-flow li.done + li::before { background: #e8b04a; }
+.gb-lf-dot { display: grid; place-items: center; width: 32px; height: 32px; box-sizing: border-box; border-radius: 50%; font-style: normal; font-size: 16px; font-weight: 900; line-height: 1;
+  border: 2px solid color-mix(in srgb, currentColor 35%, transparent); color: color-mix(in srgb, currentColor 60%, transparent); }
+.gb-lesson-flow li.done .gb-lf-dot { color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); border-color: #fff1b8; }
+.gb-lesson-flow li.now .gb-lf-dot { color: #2a1406; background: #ffb43c; border-color: #fff6dc; box-shadow: 0 0 0 3px rgba(255, 180, 60, 0.35), 0 0 12px #ffb43c; animation: gb-lf-now 1.4s ease-in-out infinite; }
+@keyframes gb-lf-now { 50% { box-shadow: 0 0 0 6px rgba(255, 180, 60, 0.12), 0 0 18px #ffb43c; } }
+.gb-lf-label { font-size: 15px; font-weight: 800; line-height: 1.25; }
+.gb-lesson-flow li.todo .gb-lf-label { opacity: 0.55; }
+.gb-lf-detail { font-size: 13px; font-weight: 800; line-height: 1.2; color: #ffd08a; }
+.gb-lesson-flow li.k-heart .gb-lf-detail { color: #e2557f; letter-spacing: 0.02em; }
+html:root[data-ui-theme="paper"] .gb-lf-detail { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .gb-lesson-flow li.k-heart .gb-lf-detail { color: #c93d68; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-lesson-flow { margin: 2px 0; padding: 6px 0 5px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-lf-dot { width: 34px; height: 34px; font-size: 18px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-lesson-flow li + li::before { top: 16px; right: calc(50% + 20px); width: calc(100% - 40px); }
+html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-lf-label, .gb-lf-detail) { font-size: max(var(--phone-sub), calc(11.5px / var(--k, 1))); }
+/* 盤の授業の札の下の印: ♥4/5（仲良くなる途中）／今（今教われる）／相談（灯した。会いに行く）。位置は値段・? の印と同じ */
+.gboard .gb-nodes .gb-node > .gb-lesson-tag { position: absolute; left: 50%; top: calc(50% + var(--fh) * 0.4 - 9px); translate: -50% 0; z-index: 3; display: grid; place-items: center; height: 22px; padding: 0 8px;
+  box-sizing: border-box; border-radius: 11px; white-space: nowrap; font-size: 13px; font-weight: 900; line-height: 1; pointer-events: none; box-shadow: 0 0 0 2px rgba(10, 6, 16, 0.9); }
+.gb-lesson-tag.t-heart { color: #fff; background: #b8386a; }
+.gb-lesson-tag.t-now { color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); box-shadow: 0 0 0 2px rgba(10, 6, 16, 0.9), 0 0 10px #ffb43c; animation: gb-tag-now 1.4s ease-in-out infinite; }
+@keyframes gb-tag-now { 50% { box-shadow: 0 0 0 2px rgba(10, 6, 16, 0.9), 0 0 18px #ffd38a; } }
+.gb-lesson-tag.t-talk { color: #10261a; background: #9be7b4; padding-left: 21px; }
+/* 「相談」の印の吹き出し */
+.gb-lesson-tag.t-talk::before { content: ""; position: absolute; left: 7px; top: 6px; width: 10px; height: 8px; border-radius: 3px; background: #10261a; }
+.gb-lesson-tag.t-talk::after { content: ""; position: absolute; left: 9px; top: 13px; border: 3px solid transparent; border-top-color: #10261a; border-left-color: #10261a; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-nodes .gb-node > .gb-lesson-tag { height: max(24px, calc(11.5px / var(--k, 1) + 8px)); border-radius: 999px; font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-nodes .gb-node > .gb-lesson-tag.t-talk { padding-left: 26px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-lesson-tag.t-talk::before { left: 8px; top: calc(50% - 7px); width: 13px; height: 10px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-lesson-tag.t-talk::after { left: 11px; top: calc(50% + 2px); }
+@media (prefers-reduced-motion: reduce) { .gb-lesson-flow li.now .gb-lf-dot, .gb-lesson-tag.t-now { animation: none !important; } }
+/* 「？」の授業のページ: 札の下の印の見本 */
+.gh-lesson .gh-row { grid-template-columns: 64px 1fr; }
+.gh-tag.gb-lesson-tag { position: relative; display: inline-grid; place-items: center; height: 24px; padding: 0 9px; border-radius: 12px; white-space: nowrap; font-size: 13px; font-weight: 900; line-height: 1; animation: none; }
+.gh-tag.gb-lesson-tag.t-talk { padding-left: 22px; }
+.gh-tag.gb-lesson-tag.t-talk::before { top: 7px; } .gh-tag.gb-lesson-tag.t-talk::after { top: 14px; }
+html:root[data-density="phone"] body:not(:root) .gh-lesson .gh-row { grid-template-columns: 84px 1fr; }
+html:root[data-density="phone"] body:not(:root) .gh-tag.gb-lesson-tag { height: 30px; font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gh-tag.gb-lesson-tag.t-talk { padding-left: 26px; }
+html:root[data-density="phone"] body:not(:root) .gh-tag.gb-lesson-tag.t-talk::before { left: 8px; top: 9px; }
+html:root[data-density="phone"] body:not(:root) .gh-tag.gb-lesson-tag.t-talk::after { left: 10px; top: 17px; }
+
+/* ================= 演出の追加（2026-11-20 SBD142）================= */
+/* 灯したことで新しく灯せるようになったマスが、順に光って開く */
+.gboard .gb-nodes .gb-node.just-ready .gb-face { animation: gb-just-ready .5s cubic-bezier(.2, 1.5, .4, 1), gb-breathe 1.8s ease-in-out .5s infinite; }
+.gboard .gb-nodes .gb-node:is(.skill, .lesson).just-ready .gb-face { animation: gb-just-ready .5s cubic-bezier(.2, 1.5, .4, 1), gb-breathe-skill 1.8s ease-in-out .5s infinite; }
+@keyframes gb-just-ready { 0% { scale: 0.6; filter: brightness(2.4); } 55% { scale: 1.25; filter: brightness(1.5); } 100% { scale: 1; } }
+/* 盤の札の数が増えたら弾む */
+.gb-tab-count.grew { display: inline-block; animation: gb-tab-grew .45s cubic-bezier(.2, 1.6, .4, 1); }
+@keyframes gb-tab-grew { 0% { scale: 1.6; color: #ffb43c; } 100% { scale: 1; } }
+/* 決定のカットイン: 後ろに回る光の筋・昇る火の粉・スキルの漫画のコマ（右に敷いて左へ溶かす） */
+.gfx-cutin-deco { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.gfx-cutin > :not(.gfx-cutin-deco):not(.gfx-cutin-streak):not(.gfx-cutin-count) { position: relative; }
+.gfx-cutin-rays { position: absolute; left: 46px; top: 50%; width: 760px; height: 760px; margin: -380px 0 0 -334px; opacity: 0.22;
+  background: repeating-conic-gradient(from 0deg, var(--cc) 0deg 7deg, transparent 7deg 20deg); mask-image: radial-gradient(circle, #000 0%, transparent 60%); -webkit-mask-image: radial-gradient(circle, #000 0%, transparent 60%);
+  animation: gfx-rays-spin 12s linear infinite; }
+.gfx-cutin-ember { position: absolute; left: var(--x); bottom: -10px; width: var(--s); height: var(--s); border-radius: 50%; opacity: 0;
+  background: radial-gradient(circle, #fff6dc, var(--cc) 55%, transparent 72%); animation: gfx-cutin-ember var(--d) linear var(--w) infinite; }
+@keyframes gfx-cutin-ember { 0% { transform: translateY(0) scale(1); opacity: 0; } 15% { opacity: 0.9; } 100% { transform: translateY(-150px) scale(0.3); opacity: 0; } }
+.gfx-cutin-art { position: absolute; right: 0; top: 0; width: 54%; height: 100%; object-fit: cover; object-position: 50% 50%; opacity: 0;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 55%); -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 55%); transition: opacity .3s; }
+.gfx-cutin-deco.has-art .gfx-cutin-art { opacity: 0.42; }
+.gfx-cutin:has(.gfx-cutin-deco.has-art) .gfx-cutin-text :is(strong, span) { text-shadow: 0 0 6px #0c0712, 0 0 12px #0c0712, 0 1px 2px #0c0712; }
+/* まとめの札: 火の粉が昇る */
+.gfx-banner-ember { position: absolute; left: var(--x); bottom: -10px; width: var(--s); height: var(--s); border-radius: 50%; opacity: 0;
+  background: radial-gradient(circle, #fff6dc, var(--cc) 55%, transparent 72%); animation: gfx-cutin-ember var(--d) linear var(--w) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .gboard .gb-nodes .gb-node.just-ready .gb-face, .gb-tab-count.grew, .gfx-cutin-rays, .gfx-cutin-ember, .gfx-banner-ember { animation: none !important; }
 }
