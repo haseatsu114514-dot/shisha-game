@@ -526,6 +526,8 @@ async function drive(owner) {
     } else if (p.stage === "tasting") {
       owner.cs ||= clone(p.craft);
       playBgm("bgm_judging");
+      // 最後の調整の後、手を離した四人の待ち時間（#3097 第2弾。第2章の interlude3 に当たる）。講評を読んだ保存には後から出さない。
+      if (!owner.cs.tournamentStory?.seen?.includes("tasting") && !await commentary(owner, "interlude3")) return;
       if (!await commentary(owner, "tasting")) return;
       // 結果発表前の掛け合い（#3060）。
       if (!await commentary(owner, "preresult")) return;
