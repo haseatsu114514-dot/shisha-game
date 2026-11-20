@@ -345,10 +345,14 @@ export function voteCeremony(o) {
           }));
           index += 1;
         }
-        if (!skipped && showMoves()) {
-          // 加点は合計点の左に出す（数字に重ねない）。
-          const at = localPoint(host, pointsOf(row) || row, 0, 0.5);
-          const plus = el("b.ts-plus", { text: `+${gift.points}`, style: { left: `${at.x - 10}px`, top: `${at.y}px`, "--c": color, animationDelay: `${index * STEP + 260}ms` } });
+        const stack = seg?.parentElement;
+        if (!skipped && showMoves() && stack) {
+          // 加点の札は、その審査員の色の帯が伸びきる先端に付ける（帯の終わりと点数の間に浮かせない）。
+          const reach = judges.slice(0, judges.indexOf(step.judge) + 1)
+            .reduce((sum, judge) => sum + (judge === step.judge ? (live[judge]?.[gift.id] || 0) + gift.points : live[judge]?.[gift.id] || 0), 0);
+          const a = localPoint(host, stack, 0, 0.5), b = localPoint(host, stack, 1, 0.5);
+          const x = a.x + (b.x - a.x) * Math.min(1, reach / VOTE_SCALE);
+          const plus = el("b.ts-plus", { text: `+${gift.points}`, style: { left: `${x}px`, top: `${a.y}px`, "--c": color, animationDelay: `${index * STEP + 220}ms` } });
           host.append(plus);
           setTimeout(() => plus.remove(), index * STEP + 1500);
         }

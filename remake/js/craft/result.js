@@ -304,7 +304,12 @@ export async function resultCountdown(cs, kind, attempt = null) {
     if (n <= 4) SE.heartbeat();
     if (n > 0 && n <= 9) {
       // 出現位置は見出し帯（上部34px〜約125px＝約17%）を避ける。12%からだと見出しに重なる（#3558 項目6）
-      const c = el("div.rc-cut", { text: cutWords[(10 - n) % cutWords.length], style: { left: `${rand(8, 70)}%`, top: `${rand(20, 70)}%`, "--r": `${rand(-8, 8)}deg` } });
+      // 出す場所は、見出し（上部〜約20%）・出場者のカード（約31〜77%）・中央の輪を避けた2本の帯だけ（TSH09）。
+      // 上の帯＝見出しの右・カードの上、下の帯＝カードの下の床。交互に使う。
+      const above = n % 2 === 0;
+      const c = el("div.rc-cut", { text: cutWords[(10 - n) % cutWords.length], style: above
+        ? { left: `${rand(50, 72)}%`, top: `${rand(21, 23)}%`, "--r": `${rand(-4, 4)}deg` }
+        : { left: `${rand(6, 70)}%`, top: `${rand(81, 85)}%`, "--r": `${rand(-6, 6)}deg` } });
       cuts.append(c);
       setTimeout(() => c.remove(), 900);
     }
