@@ -77,6 +77,29 @@ const paymentLine = () => {
 };
 
 await suite("board-phone-text", async (check) => {
+  await check("first-light-tutorial-keeps-the-effect-and-payment-visible", async page => {
+    await page.evaluate(async () => {
+      localStorage.removeItem("suien_board_tutorial");
+      const core = await import("./js/core/state.js");
+      const s = core.newGame();
+      Object.assign(s, { phase: "daily", day: 3 });
+      const { openBoard } = await import("./js/daily/growth-board-screen.js");
+      void openBoard({ place: "kannon" });
+    });
+    for (let step = 0; step < 4; step++) await page.locator(t("board-tutorial-next")).tap();
+    const node = page.locator(t("board-node-B1"));
+    await node.tap();
+    const bubble = page.locator(".gb-tutorial-bubble");
+    await bubble.getByRole("heading", { name: "灯す", exact: true }).waitFor();
+    const panel = page.locator(t("board-preview"));
+    const [explanation, preview] = await Promise.all([bubble.boundingBox(), panel.boundingBox()]);
+    assert(explanation.x + explanation.width <= preview.x, "The tutorial bubble must stay to the left of the details");
+    assert.match(await panel.innerText(), /最大体力\s*＋8/);
+    assert.deepEqual((await page.evaluate(paymentLine)).covered, []);
+    await page.locator(t("board-light")).tap();
+    assert.equal(await node.getAttribute("data-status"), "pending");
+  }, { ...phone, reducedMotion: "reduce" });
+
   // #3987 実プレイ: DAY3 に感覚の「かわし」(S1) を灯し、DAY7 の観音堂で「火加減」(S4) を選ぶと、844×390 で
   // 右下の支払い行「白火1で払う」が固定の「灯す（火種1）／目標にする」の後ろに隠れた。説明の長いマス・授業・スキルも同じに見る
   const PAY_CASES = [

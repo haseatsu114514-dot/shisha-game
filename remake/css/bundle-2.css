@@ -4417,6 +4417,28 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-feature b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row .fr-mastery { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }
 
+/* 最初の注文の支給葉は、名前と分量操作を横に並べて3種とも初期表示に収める。 */
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix:has(.mix-list-supplied) {
+  grid-template-columns: 220px minmax(0, 1fr) !important;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix:has(.mix-list-supplied) .mix-vessel { width: 100% !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .flavor-row {
+  grid-template-columns: 64px max-content minmax(0, 1fr) var(--bench-tap) 44px var(--bench-tap);
+  grid-template-rows: auto auto;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-feature { grid-column: 2 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-name > small:first-of-type {
+  grid-area: 1 / 3 !important; min-width: 0; overflow-wrap: anywhere;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-mastery { grid-area: 2 / 2 / 3 / 4 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-ratio {
+  grid-area: 2 / 4 / 3 / -1 !important; text-align: center;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied :is(.fr-btn, .fr-g) { grid-row: 1 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-btn:first-of-type { grid-column: 4 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-g { grid-column: 5 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-btn:last-of-type { grid-column: 6 !important; }
+
 /* ===== css/side-area.css ===== */
 /* 左右の余白の活用（YHK・2026-11-11 オーナー決定）。部品と追随は js/core/side-area.js。
    ステージ（固定 1280×720）の外・場面背景のぼかし（#backdrop）の上に、左と右の層を1枚ずつ置く。ステージの中は変えない。
@@ -7205,6 +7227,14 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-bubble .gb-tutorial-count { color: var(--neo-ui-dim); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-spot {
   box-shadow: 0 0 0 9999px rgba(8, 3, 16, .58), 0 0 0 3px var(--neo-ui-gold-hi), 0 0 18px 4px rgba(246, 223, 168, .5);
+}
+
+/* 「灯す」を待つ間は説明を盤の左に置き、右の効果と支払いを読める明るさにする。 */
+#stage #fx .gboard:has(.gb-light) .gb-tutorial-bubble:has(.gb-tutorial-wait) {
+  left: calc(16px + var(--stage-safe-l, 0px)) !important;
+}
+#stage #fx .gboard:has(.gb-light) .gb-tutorial:has(.gb-tutorial-wait) .gb-tutorial-spot {
+  box-shadow: 0 0 0 3px var(--gold-hi, #ffe2a6), 0 0 18px 4px rgba(255, 226, 166, .55);
 }
 
 /* 近い目的地（SBD104）: 紙の札をやめて、盤の色の線が左に付いた夜紫の札。 */
