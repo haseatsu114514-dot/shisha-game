@@ -4970,6 +4970,43 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-rows { gap: 0 16px; 
 html:root[data-density="phone"] .desert-ride .dr-card.dr-result .dr-button.dr-button { min-width: 0; flex: 1 1 0; font-size: 28px; }
 html:root[data-density="phone"] .desert-ride .dr-result .dr-result-side { padding-top: 16px; }
 
+/* ---- 三段階（#3779・2026-11-20 オーナー「各ミニゲームに三段階の難易度を追加」）:
+   メニューの「滑る」の上に、ヌールとの勝負の段の札（初級・中級・上級）。札はメニューのボタンと同じ .btn で、選んでいる段は主のボタンの色。
+   閉じた段は押せず、下の一言に開く条件（点線の縁）。結果のカードは記録の板の上に段の札（左の見出しの列は高さに余裕が無い）、初めてクリアした時は記録の板の下に一言。
+   段を替えるのはメニュー（結果の「段を選ぶ」）。スマホは文字を舞台上 24px 以上にして、札は指で押せる高さ ---- */
+.dr-tiers { display: flex; justify-content: center; gap: 12px; margin: 0 0 14px; }
+.dr-tiers:empty { display: none; }
+.desert-ride .dr-tier { min-width: 150px; min-height: 64px; padding: 6px 18px; align-items: center; justify-content: center; gap: 0; text-align: center; line-height: 1.2; }
+.desert-ride .dr-tier b { font-size: 24px; font-weight: 900; letter-spacing: .12em; }
+.desert-ride .dr-tier small { font-size: 14px; font-weight: 700; letter-spacing: .02em; opacity: .85; white-space: nowrap; }
+.desert-ride .dr-tier[data-state="chosen"] { box-shadow: 0 0 0 3px rgba(178, 101, 47, .45); }
+.desert-ride .dr-tier[data-state="chosen"] b::before { content: "✓ "; font-size: .8em; }
+.desert-ride .dr-tier:disabled { opacity: .62; border-style: dashed; background: transparent; }
+.desert-ride .dr-tier[data-fresh="true"] small { opacity: 1; color: #b2652f; }
+.desert-ride .dr-tier.primary[data-fresh="true"] small { color: inherit; }
+.dr-best-slot:empty { display: none; }
+.dr-best-slot .dr-best { margin: 0 0 10px; }
+
+.dr-result .dr-result-tags { display: flex; justify-content: flex-start; gap: 10px; margin: -10px 0 -6px; }
+.dr-result-tier { padding: 3px 14px; font-size: 18px; font-weight: 900; letter-spacing: .14em; color: #fff7e8; border-radius: 4px;
+  background: linear-gradient(180deg, #d98a2b, #9a5212); box-shadow: 0 2px 0 rgba(40, 12, 4, .5), inset 0 0 0 2px rgba(255, 210, 150, .5); }
+.dr-result-tier[data-tier="easy"] { background: linear-gradient(180deg, #3f9a84, #1f6352); }
+.dr-result-tier[data-tier="hard"] { background: linear-gradient(180deg, #c8402a, #7c1a0e); }
+.dr-result .dr-tier-note { align-self: flex-end; margin: -4px 0 0; padding: 6px 18px; font-size: 18px; font-weight: 900; letter-spacing: .04em; color: #ffe9c4;
+  background: rgba(140, 50, 16, .72); border: 1px solid rgba(255, 190, 120, .6); border-radius: 4px; }
+
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .desert-ride .dr-tier { min-width: 230px; min-height: 84px; }
+  .desert-ride .dr-tier b { font-size: 28px; }
+  .desert-ride .dr-tier small, .dr-result-tier, .dr-result .dr-tier-note { font-size: 24px; }
+}
+html:root[data-density="phone"] .desert-ride .dr-tier { min-width: 230px; min-height: var(--phone-tap, 84px); }
+html:root[data-density="phone"] .desert-ride .dr-tier b { font-size: 28px; }
+html:root[data-density="phone"] .desert-ride :is(.dr-tier small, .dr-result-tier, .dr-result .dr-tier-note) { font-size: 24px; }
+/* 結果のボタンが4つ（もう一度・なると勝負・段を選ぶ・下りる）の時は2つずつ2段に（スマホは1段に詰めると文字が2行に折れる） */
+.desert-ride .dr-result .dr-actions:has(> .dr-button:nth-child(4)) > .dr-button,
+html:root[data-density="phone"] .desert-ride .dr-card.dr-result .dr-actions:has(> .dr-button:nth-child(4)) > .dr-button.dr-button { flex: 1 1 calc(50% - 8px); }
+
 /* ===== css/tetsuko-time.css ===== */
 /* てつこといっしょ（#2454）: mukai の裏口のふれあい画面。#stage（1280×720）の #screen 層に重ね、HUD はそのまま。
    UI v2（docs/spec/tetsuko_time.md §6）: 右上に道具、左下に反応の一行、右下に手元の道具。色は専用テーマ（tetsuko-theme.css）。

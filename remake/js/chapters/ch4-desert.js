@@ -4,6 +4,8 @@
 // 同じ外出の中の再挑戦は追加の行動を使わない。記録は state.desert、進み具合は flags._ch4_desert。
 // 報酬は初回完走の経験値（core/growth.js の awardActionExp。心得の盤が有効な時だけ入る）と、
 // Aランク以上で寝る前の「遊びのご褒美」（growth-board-data.js の PLAY_REWARDS "desert-a"）。能力値の直接加算はしない。
+// 三段階（#3779・core/play-tiers.js）: ヌールとの勝負に初級・中級・上級。段の解放はここで state から読んでゲームへ渡す（第5章も同じ入口）。
+// 上級を初めてクリアすると白火1つ（PLAY_REWARDS "desert-hard"）。初級の結果は自己ベスト・Aランクのご褒美・達人認定に数えない（ch4-desert-progress.js）。
 // ゲーム本体は minigames/desert-ride.js（保存を読まない）。台詞は data/dialogue/ch4_desert.json。
 import { state, save, config } from "../core/state.js";
 import { DB } from "../core/data.js";
@@ -11,6 +13,7 @@ import { showScreen, setBg, layers, toast } from "../core/ui.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { play } from "../vn/engine.js";
 import { awardActionExp } from "../core/growth.js";
+import { syncPlayTiers, openTiers, defaultTier, rememberTier, tierRecord, tierUnlockNote, TIER_HARD_GIFT } from "../core/play-tiers.js";
 
 export * from "./ch4-desert-progress.js";
 import { addMoney, gainAffinity, visitAffinity, privateBondScope } from "../core/stats.js";
@@ -152,23 +155,31 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       showScreen("none", null);
     }
     let firstWin = false, firstNaruWin = false, thirdWin = false;
+    // 段の解放（旧保存のヌールへの勝ち＝中級クリアを先に取り込む。何度呼んでも同じ）。上級の札には、まだなら白火の案内
+    syncPlayTiers(owner);
+    const tierState = () => ({ tiers: openTiers(owner, "desert"), cleared: tierRecord(owner, "desert").cleared });
     const { results } = await runDesertRide({
       host: host || document.getElementById("stage") || layers.screen, signal, tutorial: status.first,
-      best: before.best, legacyBest: before.legacyBest,
+      best: before.best, legacyBest: before.legacyBest, easyBest: before.easyBest,
+      ...tierState(), tier: defaultTier(owner, "desert"),
+      tierNotes: tierRecord(owner, "desert").cleared.includes("hard") ? null : { hard: `クリアで白火${TIER_HARD_GIFT}` },
+      onTier: tier => { if (current() && rememberTier(owner, "desert", tier)) save(); },
       reducedMotion: (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) || !!config.reduceShake,
       guide: name, rivals,
       onResult: result => {
-        if (!current()) return;
+        if (!current()) return null;
         const saved = recordDesertResult(owner, result, { awardExp: awardActionExp });
-        if (!saved) return;
+        if (!saved) return null;
         save();
         if (saved.firstWin) firstWin = true;
         if (saved.firstNaruWin) firstNaruWin = true;
         if (saved.thirdWin) thirdWin = true;
-        const best = saved.newBest && !saved.firstClear ? " 自己ベスト更新" : "";
+        const best = saved.newBest && !saved.firstClear ? saved.tier === "easy" ? " 初級の自己ベスト更新" : " 自己ベスト更新" : "";
         if (saved.who === "naru") toast(`${naruName}「${firstLine(saved.won ? DESERT_NARU_LINES.win : DESERT_NARU_LINES.lose)}」${best}`, { kind: "good" });
         else toast(`${name}「${firstLine(saved.won ? DESERT_RACE_WIN_LINE : `venue_noor_result_${result.rank}`)}」${best}`, { kind: "good" });
         if (saved.firstClear) toast("初めての完走。砂丘の写真を、ヌールが撮ってくれた", { kind: "good" });
+        // 段のクリア: 開いた段とクリア済みの段をゲームへ返し、結果のカードに一言（上級は白火の知らせが growth.js から別に出る）
+        return { ...tierState(), note: tierUnlockNote("desert", saved.tierAdded) };
       },
     });
     if (!current()) return changed;
