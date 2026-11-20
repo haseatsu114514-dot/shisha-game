@@ -5071,6 +5071,7 @@
         "remake/css/ui-paper.css",
         "remake/css/daily.css",
         "remake/js/daily/growth-board-screen.js",
+        "remake/js/core/mastery-notice.js",
         "remake/test/browser/board_notification_visibility.mjs"
       ],
       "run": [

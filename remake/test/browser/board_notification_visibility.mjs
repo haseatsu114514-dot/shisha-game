@@ -39,7 +39,9 @@ await suite("board-notification-visibility", async check => {
       await page.locator(".gain-card.info").last().waitFor();
       await page.waitForTimeout(650);
       const cards = await cardContrasts(page);
-      assert.equal(cards.length, 8);
+      // 熟練度の札は #3814 で「見出し・銘柄名」＋箱の絵と星になった（補足の文と文字の印は無い。絵と星は mastery_display.mjs が見る）。
+      // 文字として測るのは 熟練度の札 2つ（見出し・銘柄名）＋ レモンの札 4つ（見出し・名前・補足・印）
+      assert.deepEqual(cards.map(row => row.selector), ["gc-top", "gc-main", "gc-badge", "gc-top", "gc-main", "gc-sub"]);
       for (const row of cards) {
         assert(row.ratio >= 4.5, `Paper card text contrast ${JSON.stringify(row)}`);
         if (row.selector === "gc-main") assert.equal(row.shadow, "none");
