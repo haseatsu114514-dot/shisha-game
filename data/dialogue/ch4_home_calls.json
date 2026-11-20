@@ -1,0 +1,558 @@
+{
+  "comment": "#3097 第2弾・VOL20（2026-11-21 オーナー「交友を1章以降も厚く」）。ドバイの昼に宿で休むと、日本（夜）の地元の人から電話が来る（ch4-dubai-daily.js・ch4-dubai-local.js の HOME_DAY_CALLS。一度きり・一回の休みに一本。夜のスミさんの電話とは別）。LIMEの連絡先にいて、今ドバイに来ていない人だけ（ch4-beach.js の chapterFourBeachCast にいない人）。ドバイは日本より5時間遅い。世界大会の結果・ほかの選手・恋愛の段階に触れない。好感度・能力・お金は付けない（休んだ体力はコード側）。季節は書かない。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_home_call_adam_apple",
+      "comment": "アダムからの電話。ドバイの棚のダブルアップル（我が同胞）。出発前の「分かる日が来たら、聞かせろ」（ch3_prep_adam）を読んでいなくても通じる。はじめはまだ味の感想を言わない（吸ったら聞かせる約束だけ）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の暑さを避けて宿で横になっていると、スマホが鳴った。画面に、林檎の絵文字が二つ。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "俺だ。そっちは昼か"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "昼の三時です。そっちは……"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "夜の八時だ。店を開けたところだ"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "一つ、聞きたい。ドバイの棚に、我が同胞はいたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いました。宿の近くのカフェの、表のメニューのいちばん上に"
+        },
+        {
+          "speaker": "adam",
+          "face": "intense",
+          "text": "……いちばん上か。よい国だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電話の向こうで、満足そうに鼻を鳴らす音がした。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "吸ったら、聞かせろ。……今のお前なら、分かるだろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。分かったら、ちゃんと言います"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "分からなかったら、分からんと言え。それも、聞く"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "客が来た。……ダブルアップルの、重い方だ。切る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れた。冷房の風の中で、少しだけ林檎の匂いを思い出した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_home_call_rio_scent",
+      "comment": "凛想さんからの電話。ドバイの街の匂いを言葉で報告する（試香の報告と同じ）。甘い木の煙とカルダモン（カルダモンのコーヒーは ch4_dubai_daily の既存の場面と同じ）。上司（ヴォルク）の話は出さない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿で横になると、スマホが短く震えた。画面には「rio.」とある。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "モルモットくん、生きてる？ そっち、暑いんでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "暑いです。外に出ると、空気が熱いお湯みたいで"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "いい表現。じゃあ次は匂い。そっちの街の匂い、言葉で送って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "言葉で、ですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "画像じゃ匂わないでしょ。試香の報告と同じ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少し考えて、宿の前の通りを思い出した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "店の前から、甘い煙みたいな匂いが流れてきます。木を焚いたみたいな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あと、カルダモン。コーヒーを出す店の前を通ると、必ず"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……甘い木の煙と、カルダモンね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電話の向こうで、ペンの走る音がした。"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "いいデータ。帰ってきたら、それに近い袋を探してあげる"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "見つかるまでは、モルモットの契約、延長だからね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れた。窓の外から、さっき言葉にした匂いが、かすかに入ってきた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_home_call_kumicho_coffee",
+      "comment": "神崎さんからの電話。向こうの店の客の迎え方（カルダモンのコーヒー・注ぎ足し・カップを振ると「もういい」の合図）を聞いて、盃にたとえる（「映画の話だ」）。はじめへの呼びかけ（あんちゃん／兄弟）は使わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホが鳴った。画面には「神崎煙草店」とある。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、俺だ。そっちは、まだ日が高えんでしょう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。暑いので、宿で休んでました"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "一つ、聞きてえことがありやして。向こうの店じゃ、客に何を出すんですかい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "小さいカップのコーヒーです。カルダモンの香りがする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "飲み終わると、すぐ注ぎ足してくれるんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "カップを軽く振るのが、もう結構です、の合図で"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電話の向こうで、神崎さんが「ほう」と低く唸った。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "振るまで注ぎ続ける、か。……盃と同じでさ。断り方まで決まってる"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "客に先に言わせねえ。いい作法だ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smug",
+          "text": "……いや、映画の話だ。気にしなさんな"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "戻ったら、その振り方、うちの店で見せてくだせえ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……ほんじゃ、また"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れた。机の上の空の紙コップを、なんとなく軽く振ってみた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_home_call_samechan_shark",
+      "comment": "サメちゃんからの電話。ドバイの海のジンベエザメのことを聞きたくてかける。コロちゃんが本心をばらす。泳ぎの話はしない。はじめが砂浜へ行ったかどうかに触れない（「サメは、まだ見てない」だけ）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿で横になっていると、スマホが震えた。画面には、サメの絵文字が一つだけ。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "お主！ ドバイの海に、サメはおるか！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "い、いきなりですね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "調べたのじゃ。そっちの海には、大きなジンベエザメが来るそうではないか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "見たか？ 背中の水玉は、いくつあった？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "サメは、まだ見てないです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "む……そうか。見る暇もないか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近よ、勇者は修行中だ。サメ見物は後でよい"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "わ、分かっておる。……ならば、帰りの飛行機の窓から、海を見るのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "水の上に大きな影が見えたら、それはきっとジンベエじゃ。わしに知らせよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。見えたら、すぐ送ります"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れた。飛行機の窓から見えるのかどうかは、聞けなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_home_call_minto_mint",
+      "comment": "みんとからの電話。営業中の休憩に、ドバイのミントの飲み物（ミントとレモン）を聞く。営業中の口調（年齢・正体・♥段階に触れない）。最後の一言だけ営業の声ではない。季節は書かない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホが鳴った。出ると、明るい声と一緒に、氷の鳴る音がした。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくーん！ 休憩中だから、ちょっとだけね♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "そっちって、ミント強い？ 有名なミントの飲み物とか、ある？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "カフェのメニューに、ミントとレモンの飲み物がありました。緑色の"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "緑！？ ……どのくらい緑？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "抹茶よりは明るくて、メロンソーダよりは濃い、くらいです"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "わかりやすーい！ さすがはじめくん、いいお客さんの目してる"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "帰ってきたら、それ、うちの新メニューにしちゃおっかな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "向こうで、ドアベルが鳴った。お客さんらしい。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "いらっしゃいませ〜♡ ……じゃ、切るね。暑いんだから、お水飲んでね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れた。最後の一言だけ、営業の声じゃなかった気がした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_home_call_rei_sound",
+      "comment": "クラウドからの電話。開店前に、ドバイの音を電話越しに聴かせてほしいと頼む。汽笛のあとの間で、その日の一曲目が決まる。第3章の電話（ch3_home_call_rei_last_song）を読んでいなくても通じる。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホが鳴った。表示は「†黒羅雨℃†」。今度は、出てすぐに声がした。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……今、平気？ 店、開ける前"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "平気です。宿で休んでました"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "そっちの音、少し聴かせてほしい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "音、ですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "今日の一曲目が、まだ決まってない。遠くの音を聴くと、決まることがある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホを窓のほうへ向けた。冷房の唸り、遠くの車、どこかで鳴る船の汽笛。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらくして、クラウドさんの小さな息の音がした。"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……汽笛のあとの間がいい。一曲目、決まった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どんな曲ですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "帰ってきたら、その日の一曲目にかける"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れた。窓の外で、もう一度、汽笛が鳴った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_home_call_hiyori_train",
+      "comment": "ひよりさんからの電話。会社帰りの電車から、儚い芝居と素の大きな反応を行き来する（characters.json）。暑さには水と塩。出発前の「経験者は語る」（ch3_prep_hiyori）を受けるが、読んでいなくても通じる。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿で横になると、スマホが震えた。出ると、電車の走る音が聞こえた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……はじめくん。砂の国はどう？ 私は今、会社という砂漠からの帰り"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "お疲れさまです。今日も、遅かったんですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "定時の三時間後を、遅いと言わない世界に私はいるの……儚いでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "儚いというより、ひどいです"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "でしょ！？ ……あ、ごめん、電車の中だった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "声が急に小さくなった。周りに頭を下げている気配がする。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "そっち、暑いんでしょ。水と、塩。両方ね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "汗で塩が抜けると、急に頭が回らなくなるから、……経験者は語る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どこで経験したんですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "会社の運動会、……聞かないで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電車が駅に着く音がして、通話が切れた。机の上の水を、一気に飲んだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_home_call_ageha_gold",
+      "comment": "あげはからの電話。金のスーク（ch4_tour の場面と同じ通り）のことを聞く。はじめが行ったかどうかに触れない（宿の人から聞いた話だけ）。最後は眠そうな声に気づく。恋人でも友人でも読める。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホが鳴った。画面いっぱいに、あげはの自撮りのアイコンが出ている。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、生きてる？ そっち昼？ こっち夜！ ……時差、ウケる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "生きてます。昼過ぎです"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ねえねえ、そっちって金のアクセの市場あるんでしょ。雑誌で見た"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あるみたいです。宿の人が、まぶしいから昼は行くなって"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "まぶしいから！？ 行きたーい！"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……でも、うちが行ったら、全部ほしくなって帰れなくなるやつだ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "写真だけ送って。見るだけなら、タダだし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "行けたら、撮ってきます"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あと、ハジメっち。……ちゃんと寝てる？ 声、ちょっと眠そう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今、ちょうど休もうとしてました"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "じゃあ休んで！ うち、もう切るから。おやすみ……じゃなくて、こんにちは？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れた。昼過ぎの「おやすみ」は、思ったよりよく効いた。"
+        }
+      ]
+    }
+  ]
+}

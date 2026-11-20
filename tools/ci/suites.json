@@ -2111,6 +2111,7 @@
         "remake/js/core/story-routes.js",
         "data/story_routes.json",
         "data/dialogue/ch4_dubai_daily.json",
+        "data/dialogue/ch4_home_calls.json",
         "data/dialogue/ch4_spots.json",
         "data/dialogue/ch4_longlong.json",
         "data/dialogue/ch4_main.json",

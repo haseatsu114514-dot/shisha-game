@@ -44,7 +44,9 @@ import { LONGLONG_BG, LONGLONG_CHAR, LONGLONG_IDS, LONGLONG_LOAD_IDS, nextLonglo
 import { finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { FESTA_BOND_IDS, nextDubaiBondStory, recordDubaiBondRead } from "./dubai-bonds.js";
 import { NIGHT_SCENE_IDS, STALL_NONE, STALL_PLACE, STALL_SCENE_IDS, dubaiSpotAt, nightVisit, recordNightVisit, priceText,
-  stallChoices, stallItem, stallLabel, stallSceneId, STALL_TALKS, STALL_TURN, CREEK_SCENES, CREEK_SPOT_IDS, CREEK_TURN, creekSpotScenes } from "./ch4-dubai-local.js";
+  stallChoices, stallItem, stallLabel, stallSceneId, STALL_TALKS, STALL_TURN, CREEK_SCENES, CREEK_SPOT_IDS, CREEK_TURN, creekSpotScenes,
+  HOME_DAY_CALL_IDS, homeDayCallId, recordHomeDayCall } from "./ch4-dubai-local.js";
+import { chapterFourBeachCast } from "./ch4-beach.js";
 import { quietTurn } from "../daily/spots.js";
 import { runFullPractice } from "../craft/practice.js";
 import { computeShisha } from "../craft/score.js";
@@ -249,7 +251,8 @@ export function chapterFourDubaiDefinition(io) {
 /** ドバイの日常（DAY1〜12）を回す。前夜祭の日（DAY13）の朝か LOAD で戻る。 */
 export async function runChapterFourDubai(io) {
   const owner = state;
-  Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS), await readDialogues("ch4_longlong", LONGLONG_LOAD_IDS),
+  Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS), await readDialogues("ch4_home_calls", HOME_DAY_CALL_IDS),
+    await readDialogues("ch4_longlong", LONGLONG_LOAD_IDS),
     await readDialogues("taiyo_bond", FESTA_BOND_IDS), creekSpotScenes(await readDialogues("ch4_spots", CREEK_SPOT_IDS)));
   // 同行した恋人と宿で過ごす場面（BLC08・companion-time.js）。読めなくても地図は開き、宿の選択肢に出ないだけ
   if (companionLover(owner)) await readDialogues(COMPANION_TIME_FILE, COMPANION_TIME_IDS).then(found => Object.assign(DB.dialogues, found)).catch(() => {});
@@ -540,6 +543,14 @@ function sumiNightCallDue() {
   return calls[state.flags[TALKS_FLAG]?.sumi_call || 0] || null;
 }
 
+/** 今、昼に宿で休むと読む地元からの電話（ch4-dubai-local.js の HOME_DAY_CALLS）。休む場面の巡回の回数は daily/spots.js の quietTurn の鍵。 */
+function homeDayCallDue() {
+  const call = homeDayCallId(state, { daytime: timeOfDay() !== "night", rested: Number(state.flags[INN_REST_TURN]) || 0,
+    present: chapterFourBeachCast(state) || [] });
+  return call && DB.dialogues[call]?.lines?.length ? call : null;
+}
+const INN_REST_TURN = "_spot_turn_ch4_dubai_inn"; // quietTurn("ch4_dubai_inn", …) の回数の鍵
+
 // 通常・試作メニュー・前日リハーサルの「休む」は同じ巡回を使う。中断やLOADでは進めない。
 // スミさんの夜の電話がある夜は、休む場面の代わりに電話を読む（休む巡回は進めない）。
 async function readInnRest(bg, owner) {
@@ -547,6 +558,13 @@ async function readInnRest(bg, owner) {
   if (call) {
     if (!await readPlain(call, bg, owner)) return false;
     countTalk("sumi_call");
+    return true;
+  }
+  // 昼の休みは、地元からの電話がある回は休む場面の代わりに電話を読む（#3097 第2弾・ch4-dubai-local.js の HOME_DAY_CALLS）。
+  const home = homeDayCallDue();
+  if (home) {
+    if (!await readPlain(home, bg, owner)) return false;
+    recordHomeDayCall(owner, home);
     return true;
   }
   const turn = quietTurn("ch4_dubai_inn", INN_REST_SCENES);
