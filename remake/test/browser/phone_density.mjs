@@ -257,7 +257,104 @@ function measure({ targets, texts, required = [], fits = null }) {
   return { k, density: document.documentElement.dataset.density ?? null, taps, fonts, gaps, missing, overflow };
 }
 
+// #4035 B4: 文字は舞台上24px、タップは縦横とも縮小後39px。ノートの縦スクロールは許容する。
+async function checkSlotDensity(page) {
+  const checkLayout = async (root, { targets = [], required, fits } = {}) => {
+    await page.waitForFunction(selector => document.querySelector(selector)?.checkVisibility({
+      visibilityProperty: true, opacityProperty: true,
+    }), root);
+    const m = await page.evaluate(measure, { targets, texts: [root], required, fits });
+    if (process.env.PD_DUMP) console.log(JSON.stringify({ root, ...m }, null, 1));
+    assert.equal(m.density, "phone", root);
+    assert.ok(m.fonts.length, `${root} の文字が測れていない`);
+    assert.deepEqual(m.missing, [], root);
+    assert.deepEqual(m.fonts.filter(f => f.px / m.k < 23.99), [], `${root} の文字が舞台上24px未満`);
+    assert.deepEqual(m.taps.filter(t => t.missing || Math.min(t.h, t.w) < 38.99), [], `${root} のタップ部品が実寸39px未満`);
+    assert.deepEqual(m.overflow, [], `${root} のカードから文字がはみ出している`);
+    assert.ok(await page.locator(root).evaluate(node => {
+      const box = node.getBoundingClientRect();
+      const stage = document.querySelector("#screen").getBoundingClientRect();
+      return node.scrollWidth <= node.clientWidth + 1
+        && box.left >= stage.left - 0.5 && box.right <= stage.right + 0.5
+        && box.top >= stage.top - 0.5 && box.bottom <= stage.bottom + 0.5;
+    }), `${root} が舞台からはみ出しているか、横スクロールがある`);
+  };
+  await page.evaluate(async () => {
+    const { newGame } = await import("./js/core/state.js");
+    const { clearScreen } = await import("./js/core/ui.js");
+    newGame();
+    clearScreen();
+    void (await import("./js/daily/reel.js")).installReel();
+  });
+
+  const next = '[data-test="reel-intro-next"]';
+  await checkLayout(".reel-intro .ri-panel", { targets: [next], required: [".ri-text"] });
+  for (let i = 0; i < 5; i++) {
+    assert.equal(await page.locator(next).textContent(), "次へ");
+    await page.locator(next).tap();
+  }
+  await checkLayout(".ri-panel.sys", { targets: [next], required: [".rn-tile-head", ".rn-tile-body", ".cue-chip"], fits: ".rn-tile" });
+  // 844×390ではカードの末尾と閉じるボタンまで一度に見える。
+  assert.ok(await page.locator(".ri-panel.sys").evaluate(node => node.scrollHeight <= node.clientHeight + 1));
+  await page.locator(next).tap();
+  await checkLayout(".reel-night.show .rn-label");
+  await page.locator(".reel-night").waitFor({ state: "detached" });
+
+  await page.evaluate(async () => {
+    const { state } = await import("./js/core/state.js");
+    const { layers } = await import("./js/core/ui.js");
+    const { mountReel } = await import("./js/daily/reel.js");
+    state.reel.settingDraws = 1;
+    Object.assign(state.reel.note, {
+      history: [{ kind: "BIG", games: 12345, chapter: 5, day: 123 }],
+      freezeLog: [{ chapter: 4, day: 123, spin: 123456 }],
+      periods: { 0: { spins: 148, big: 2, reg: 1, bell: 6 } },
+    });
+    void mountReel(layers.screen);
+  });
+  const lamp = page.locator('[data-test="reel-lamp"]');
+  // ランプは見た目より当たり判定が広い。中心から上下左右19.5pxの点が同じ操作先かを見る。
+  assert.ok(await lamp.evaluate(node => {
+    const r = node.getBoundingClientRect();
+    return [[-19.5, 0], [19.5, 0], [0, -19.5], [0, 19.5]].every(([dx, dy]) =>
+      document.elementFromPoint(r.x + r.width / 2 + dx, r.y + r.height / 2 + dy)?.closest(".rw-lamp-wrap") === node.parentElement);
+  }), "ランプの当たり判定が実寸39px未満");
+  await lamp.tap();
+
+  const close = '[data-test="reel-note-close"]';
+  const notePages = [
+    [".rn-table", ".rn-history small", ".rn-hall"],
+    [".rn-card .cue-chip"],
+    [".rn-setting small", ".rn-hint-head"],
+  ];
+  for (const [index, required] of notePages.entries()) {
+    // 末尾のページ送りまでスクロールし、実際のタップで次のページへ進む。
+    if (index > 0) await page.locator(".reel-note .ri-next").tap();
+    await checkLayout(".reel-note .rn-panel", { targets: [close], required, fits: ".rn-tile" });
+  }
+  await page.locator(close).tap();
+  await page.locator(".reel-note").waitFor({ state: "detached" });
+
+  await page.evaluate(async () => (await import("./js/daily/reel.js")).force("big", "before"));
+  await checkLayout(".rc-board", { required: [".rc-aim", ".rc-label"] });
+  await page.locator(".reel-cutin").waitFor({ state: "detached" });
+  await checkLayout(".rw-bubble.show");
+
+  await page.evaluate(async () => (await import("./js/daily/reel.js")).force("freeze"));
+  await checkLayout(".rc-freeze-text");
+  await checkLayout(".rc-freeze-sub");
+  assert.ok(await page.locator(".rc-freeze-label").evaluate(node => {
+    const animation = node.getAnimations()[0];
+    // 文字が現れ始める瞬間は、終了時より大きく横にはみ出しやすい。
+    if (animation) animation.currentTime = 1;
+    const rect = node.getBoundingClientRect();
+    const frame = node.closest(".rc-freeze").getBoundingClientRect();
+    return rect.left >= frame.left - 0.5 && rect.right <= frame.right + 0.5;
+  }), "FREEZE BONUS の出現時に文字が切れている");
+}
+
 await suite("phone-density", async check => {
+  await check("iphone-landscape-slot", checkSlotDensity, { viewport: PHONES[0][1], ...touch });
   for (const [name, viewport] of PHONES) {
     for (const screen of SCREENS) {
       await check(`${name}-${screen.id}`, async page => {

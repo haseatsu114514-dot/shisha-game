@@ -257,3 +257,47 @@ html:root[data-density="phone"] body:not(:root) .mo-garagara :is(.kj-sign-title,
 html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-title { padding-bottom: 5px; letter-spacing: 0.04em; }
 html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-row { gap: 12px; }
 html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-note { max-width: 6.2em; text-align: center; }
+
+/* スロット（#4035 B4）。ノートは縦スクロールを残し、初回カードは横幅を使って文字を拡大する。 */
+html:root[data-density="phone"] body:not(:root) :is(.reel-intro, .reel-night, .reel-widget, .reel-cutin) {
+  --slot-phone-text: max(24px, var(--phone-text));
+}
+html:root[data-density="phone"] body:not(:root) :is(
+  .reel-intro .ri-next, .reel-intro .rn-close,
+  .reel-intro .rn-tile-head, .reel-intro .rn-tile-body, .reel-intro .cue-chip,
+  .reel-note :is(.rn-cols h3, .rn-setting-box h3, .rn-table, .rn-history, .rn-history small,
+    .rn-hall, .rn-empty, .rn-setting, .rn-setting small, .rn-hint-head, .rn-hints),
+  .reel-night .rn-label, .reel-widget .rw-bubble,
+  .reel-cutin :is(.rc-aim, .rc-freeze-text span, .rc-freeze-sub)
+) {
+  font-size: var(--slot-phone-text);
+}
+html:root[data-density="phone"] body:not(:root) :is(.reel-intro, .reel-widget) .rw-face.txt {
+  font-size: max(var(--slot-phone-text), calc(20px * var(--slot-scale, 1)));
+}
+html:root[data-density="phone"] .reel-intro .cue-chip {
+  min-width: 1.25em;
+  min-height: 1.25em;
+}
+html:root[data-density="phone"] .reel-intro .ri-panel.sys {
+  width: min(1160px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  overflow-y: auto;
+}
+html:root[data-density="phone"] .reel-intro .ri-panel.sys .rn-card {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+html:root[data-density="phone"] body:not(:root) .reel-widget .rw-bubble.cue {
+  font-size: max(var(--slot-phone-text), calc(12px / var(--k, 1)));
+}
+html:root[data-density="phone"] .reel-note .ri-head {
+  min-height: var(--phone-tap);
+  padding-right: 136px; /* 長い見出しが右上の「閉じる」と重ならないようにする */
+}
+/* 出現直後の見出しがフリーズ演出の枠で切れないよう、拡大の始点を抑える。 */
+html:root[data-density="phone"] .reel-cutin .rc-freeze-label {
+  animation-name: rc-title-phone;
+}
+@keyframes rc-title-phone {
+  from { transform: scale(1.8); opacity: 0; }
+}
