@@ -3,18 +3,19 @@
 // - 形は2つ。画面の左端から出る「寄りの帯」（金の細い線・中は今の背景のぼかし・帽子が線の手前に出る）と、
 //   大会の決意だけに使う全幅の「目元の帯」。
 // - 相手の行（その顔）は、台詞が出切ってから相手の顔の高さに出る。はじめ自身の行は名前のすぐ上に出る。
-// - 絵は ART の4枚。Codex の専用の絵が届くまでは、新版の立ち絵の原画を切り抜いた仮の絵を同じファイル名で置いている。
+// - 絵は ART の4枚。動揺・沈み・受け取るは Codex の専用の絵（原画 asset_sources/conversation-cutin-redesign-20261120/originals/、
+//   ゲーム用への変換は同じフォルダの fit_cutin.py）。決意だけは、新版の立ち絵の原画を切り抜いた仮の絵のまま。
 //   差し替えるときは ART の寸法・顔の位置・頭の高さだけを直す（枠と出し方は変えない）。
 // 台本（data/dialogue）は書き換えず、会話ID＋話者＋台詞の全文で行を指す。台詞が変わると出なくなるので、テストで実在を固定している。
 
 export const ART_DIR = "img/ui/conversation_cutin/";
 // 絵ごとの寸法（px）。face は顔の中心、head は帽子のてっぺん〜あごの高さ（どちらも絵の px）。
-// 仮の絵（660×560）は、試作でオーナーに見せた見え方（原画の0.96倍）になる値にしてある。
+// 値は fit_cutin.py が測った値から出す。仮の絵（決意・660×560）は、試作でオーナーに見せた見え方（原画の0.96倍）になる値
 export const ART = {
-  flustered: { file: "hajime_flustered.webp", w: 660, h: 560, face: [330, 230], head: 219 }, // 動揺: その顔（軽い）
-  downcast: { file: "hajime_downcast.webp", w: 660, h: 560, face: [330, 230], head: 219 }, // 沈み: その顔（重い）・敗北
-  grateful: { file: "hajime_grateful.webp", w: 660, h: 560, face: [330, 230], head: 219 }, // 受け取る: 絆の締めくくり
-  resolve: { file: "hajime_resolve.webp", w: 660, h: 560, face: [330, 230], head: 219 }, // 決意: 大会の目元の帯
+  flustered: { file: "hajime_flustered.webp", w: 617, h: 731, face: [356, 329], head: 389 }, // 動揺: その顔（軽い）
+  downcast: { file: "hajime_downcast.webp", w: 637, h: 731, face: [409, 384], head: 419 }, // 沈み: その顔（重い）・敗北
+  grateful: { file: "hajime_grateful.webp", w: 658, h: 736, face: [399, 319], head: 369 }, // 受け取る: 絆の締めくくり
+  resolve: { file: "hajime_resolve.webp", w: 660, h: 560, face: [330, 230], head: 219 }, // 決意: 大会の目元の帯（仮の絵）
 };
 
 // 帯（舞台 1280×720 の座標）。face は顔の中心を置く位置、head は画面での頭の高さ（帯の中の座標）。
