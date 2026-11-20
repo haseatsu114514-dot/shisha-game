@@ -7,6 +7,7 @@
 //   - 龍龍水煙所: 王煙楼の店がドバイに出した店。ほかの章のライバルの店と同じく、通うと好感度と段階の会話が進む（ch4-longlong.js）
 //   - 必須の出会い（FESTAの太陽・スークの出会い・路地裏の約束）は、期限の夜までに寄らなければその夜に読む
 //   - 再訪の会話は data/dialogue/ch4_dubai_daily.json から巡回して読む
+//   - スミさんからの夜の電話（#3097 計画 4-1）: DAY7 の時差の電話を読んだ後の夜に宿で休むと、休む場面の代わりに一本ずつ読む
 //   - 中心地のカフェ・路地裏のカフェは、来店のたびに現地のメニューから一台頼んで味わう（ch4-dubai-cafe.js。2026-11-02
 //     オーナー「カフェで吸えたりとかにしよう」）。ドバイで一台吸う来店は現地の相場をきりよく（2026-11-02 オーナー「シーシャは6000 カフェは3000 できりよくいく」）:
 //     専門店（FESTA）6,000円・カフェ（中心地・路地裏）3,000円。調べた相場（1ディルハム≒43.5円）は
@@ -57,7 +58,12 @@ import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/b
 
 export const DUBAI = "dubai";
 const INN_REST_SCENES = ["ch4_inn_rest", "ch4_inn_rest_b", "ch4_inn_rest_c", "ch4_inn_rest_d", "ch4_inn_rest_e"]; // #3097: 3本→5本
-const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
+// スミさんからの夜の電話（#3097 計画 4-1）。DAY7 の時差の電話（CH4_SUMI_CALL）を読んだ後、夜に宿で休むと、休む場面の代わりに
+// 一本ずつ順に読む（一度きり。読み終えたら休む巡回だけに戻り、休む巡回の回数は進めない）。つむぎが同じ便で来ていれば、
+// tonari のつむぎの話（_c）は飛ばす。読んだ数は再訪の会話の記録の sumi_call に置く。
+export const SUMI_NIGHT_CALLS = Object.freeze(["ch4_sumi_call_b", "ch4_sumi_call_c", "ch4_sumi_call_d", "ch4_sumi_call_e"]);
+const SUMI_CALL_TSUMUGI = "ch4_sumi_call_c";
+const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと。スミさんの夜の電話は sumi_call）
 
 // 必須の出会いの期限（ドバイDAY。この日の夜までに寄らなければ、その夜に読む）。路地裏は出会いの2日後から。
 const DEADLINE = Object.freeze({ festa: 6, first: 8, second: 11 });
@@ -66,22 +72,26 @@ const DEADLINE = Object.freeze({ festa: 6, first: 8, second: 11 });
 // カフェの *_culture_* は現地のシーシャ文化の話（吸いながら店の人・常連から聞く。注文の後に読む）。
 const TALKS = Object.freeze({
   souq: ["ch4_dubai_souq_revisit", "ch4_souq_talk_b", "ch4_souq_talk_c", "ch4_souq_talk_d", "ch4_souq_talk_e", "ch4_souq_talk_f", "ch4_souq_talk_g"],
-  festa: ["ch4_festa_revisit", "ch4_festa_talk_b", "ch4_festa_talk_c", "ch4_festa_talk_d", "ch4_festa_talk_e", "ch4_festa_talk_f", "ch4_festa_talk_g"],
+  // h・i は太陽との小会話（#3097 計画 4-5。審査員だとは明かさない）
+  festa: ["ch4_festa_revisit", "ch4_festa_talk_b", "ch4_festa_talk_c", "ch4_festa_talk_d", "ch4_festa_talk_e", "ch4_festa_talk_f", "ch4_festa_talk_g",
+    "ch4_festa_talk_h", "ch4_festa_talk_i"],
   center_cafe: ["ch4_dubai_cafe_revisit", "ch4_cafe_talk_b", "ch4_cafe_culture_hose", "ch4_cafe_talk_c", "ch4_cafe_culture_coffee", "ch4_cafe_talk_d", "ch4_cafe_talk_e", "ch4_cafe_talk_f"],
   alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_culture_clay", "ch4_alley_talk_c", "ch4_alley_culture_majlis", "ch4_alley_talk_d", "ch4_alley_talk_e", "ch4_alley_talk_f"],
   // 4本目からは期限の無い追加の小会話（#3097）。3本を読んだ後は、追加の分だけを巡回する（nextTalk）
-  naru: ["ch4_naru_dubai_1", "ch4_naru_dubai_2", "ch4_naru_dubai_3", "ch4_naru_dubai_4", "ch4_naru_dubai_5", "ch4_naru_dubai_6"],
+  naru: ["ch4_naru_dubai_1", "ch4_naru_dubai_2", "ch4_naru_dubai_3", "ch4_naru_dubai_4", "ch4_naru_dubai_5", "ch4_naru_dubai_6",
+    "ch4_naru_dubai_7", "ch4_naru_dubai_8", "ch4_naru_dubai_9", "ch4_naru_dubai_10"], // 7〜10 は #3097 計画 4-3
   practice: ["ch4_practice_hall_1", "ch4_practice_hall_2", "ch4_practice_hall_3", "ch4_practice_hall_4", "ch4_practice_hall_5", "ch4_practice_hall_6"],
 });
-// 再訪の会話の背景（行き先の既定と違う場面だけ）。なるの2回目は練習会場、3回目はクリーク沿い。
+// 再訪の会話の背景（行き先の既定と違う場面だけ）。なるの2回目は練習会場、3回目はクリーク沿い、7回目は夜のロビー（地の文が夜）。
 const TALK_BG = Object.freeze({
   ch4_naru_dubai_1: CH4_PLACE_BG.inn, ch4_naru_dubai_2: CH4_PLACE_BG.venue, ch4_naru_dubai_3: "bg_dubai_street_night",
   ch4_naru_dubai_4: CH4_PLACE_BG.inn, ch4_naru_dubai_5: CH4_PLACE_BG.inn, ch4_naru_dubai_6: CH4_PLACE_BG.inn,
+  ch4_naru_dubai_7: "bg_dubai_inn_night", ch4_naru_dubai_8: CH4_PLACE_BG.inn, ch4_naru_dubai_9: CH4_PLACE_BG.inn, ch4_naru_dubai_10: CH4_PLACE_BG.inn,
   ch4_practice_hall_1: CH4_PLACE_BG.venue, ch4_practice_hall_2: CH4_PLACE_BG.venue,
 });
 export const DUBAI_DAILY_IDS = Object.freeze([
-  ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-z]|dubai_\d|hall_\d|culture_[a-z]+)$/.test(scene))),
-  "ch4_creek_walk_day", "ch4_creek_walk_night", ...INN_REST_SCENES, ...INN_TRIAL_IDS, ...REHEARSAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
+  ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-z]|dubai_\d+|hall_\d|culture_[a-z]+)$/.test(scene))),
+  "ch4_creek_walk_day", "ch4_creek_walk_night", ...INN_REST_SCENES, ...SUMI_NIGHT_CALLS, ...INN_TRIAL_IDS, ...REHEARSAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
 ]);
 
 const read = id => chapterFourProgress(state).read[id] === true;
@@ -484,8 +494,23 @@ async function visitCamel(owner) {
   return result.used && state === owner ? { used: true, exerted: false, slotsUsed: 0 } : unused;
 }
 
+/** 今夜、宿で休むと読むスミさんの夜の電話（SUMI_NIGHT_CALLS の次の一本）。昼・時差の電話の前・読み終えた後は null。 */
+function sumiNightCallDue() {
+  if (timeOfDay() !== "night" || !read(CH4_SUMI_CALL)) return null;
+  const tsumugiHere = overseasCompanion(state)?.companion === "tsumugi";
+  const calls = SUMI_NIGHT_CALLS.filter(id => DB.dialogues[id]?.lines?.length && !(tsumugiHere && id === SUMI_CALL_TSUMUGI));
+  return calls[state.flags[TALKS_FLAG]?.sumi_call || 0] || null;
+}
+
 // 通常・試作メニュー・前日リハーサルの「休む」は同じ巡回を使う。中断やLOADでは進めない。
+// スミさんの夜の電話がある夜は、休む場面の代わりに電話を読む（休む巡回は進めない）。
 async function readInnRest(bg, owner) {
+  const call = sumiNightCallDue();
+  if (call) {
+    if (!await readPlain(call, bg, owner)) return false;
+    countTalk("sumi_call");
+    return true;
+  }
   const turn = quietTurn("ch4_dubai_inn", INN_REST_SCENES);
   if (!turn || !await readPlain(turn.id, bg, owner)) return false;
   owner.flags[turn.key] = turn.count + 1;

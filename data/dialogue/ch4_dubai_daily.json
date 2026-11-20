@@ -1,5 +1,5 @@
 {
-  "comment": "第4章ドバイの日常（昼・夜に1行動ずつ）で読む短い任意会話。本筋の強制場面は ch4_main.json。すべて前夜祭より前の自由行動で読む想定で、大会後には出さない。シェイク（旅装の男）は出さない・匂わせない。王煙楼は龍龍水煙所のドバイの店（ch4_longlong.json）で会える。ここの会話では名前の噂まで（店で先に会っていても矛盾しない書き方にする）。太陽は ch4_festa の「次は大会で会おう」を守り、はじめと会話はしない（遠くから見かける・身ぶりまで）。太陽が審査員だと分かる言葉は大会当日まで出さない（はじめは出場者だと思っている）。GRAND SMOKE の出場者は四人だけなので、練習会場の他国の作り手は出展ブースの人として書く。報酬の文・背景指定はコード側。中心地のカフェ・路地裏のカフェでは来店のたびに現地のメニューから一台頼んで味わう（ch4_dubai_taste_*。2026-11-02 オーナー「カフェで吸えたりとかにしよう」）。*_culture_* は吸いながら聞く現地のシーシャ文化の話で、注文の後に読む。文化の話は店の人・常連が自分の店・家の作法として話し、国や宗教の決まりとして断定しない。ch4_dubai_night_* は夜がにぎわう店の夜（夜に行くと店の場面の前に読む）、ch4_souq_stall_* はスークの屋台で買った時の味（2026-11-02 オーナー「2以外は採用」。ch4-dubai-local.js）。現地の言葉は「マルハバ（ようこそ・こんにちは）」「シュクラン（ありがとう）」を少しだけ使い、訳は付けず文脈で分かる書き方にする。",
+  "comment": "第4章ドバイの日常（昼・夜に1行動ずつ）で読む短い任意会話。本筋の強制場面は ch4_main.json。すべて前夜祭より前の自由行動で読む想定で、大会後には出さない。シェイク（旅装の男）は出さない・匂わせない。王煙楼は龍龍水煙所のドバイの店（ch4_longlong.json）で会える。ここの会話では名前の噂まで（店で先に会っていても矛盾しない書き方にする）。太陽は ch4_festa の「次は大会で会おう」を守り、再訪の会話では遠くから見かける・身ぶりまで（例外は #3097 計画 4-5 の太陽との小会話 ch4_festa_talk_h・_i だけ。初対面の後なら成り立つ文にし、段階の会話 taiyo_bond.json の内容は前提にしない）。太陽が審査員だと分かる言葉は大会当日まで出さない（はじめは出場者だと思っている）。GRAND SMOKE の出場者は四人だけなので、練習会場の他国の作り手は出展ブースの人として書く。報酬の文・背景指定はコード側。中心地のカフェ・路地裏のカフェでは来店のたびに現地のメニューから一台頼んで味わう（ch4_dubai_taste_*。2026-11-02 オーナー「カフェで吸えたりとかにしよう」）。*_culture_* は吸いながら聞く現地のシーシャ文化の話で、注文の後に読む。文化の話は店の人・常連が自分の店・家の作法として話し、国や宗教の決まりとして断定しない。ch4_dubai_night_* は夜がにぎわう店の夜（夜に行くと店の場面の前に読む）、ch4_souq_stall_* はスークの屋台で買った時の味（2026-11-02 オーナー「2以外は採用」。ch4-dubai-local.js）。ch4_sumi_call_* はスミさんからの夜の電話で、DAY7 の時差の電話（ch4_story_sumi_call）を読んだ後の夜に、宿で休むと一本ずつ読む（#3097 計画 4-1。ch4-dubai-daily.js の SUMI_NIGHT_CALLS）。現地の言葉は「マルハバ（ようこそ・こんにちは）」「シュクラン（ありがとう）」を少しだけ使い、訳は付けず文脈で分かる書き方にする。",
   "dialogues": [
     {
       "dialogue_id": "ch4_souq_talk_b",
@@ -176,6 +176,49 @@
       ]
     },
     {
+      "dialogue_id": "ch4_festa_talk_h",
+      "comment": "FESTA再訪（#3097 PR-L・計画 4-5）。太陽との小会話。太陽がはじめに煙の輪の吐き方を教える。輪は吐いた本人には見えず、見るのは隣の客。初対面の ch4_festa の後なら成り立つ文にし、段階の会話（taiyo_bond.json）の名前・連絡先・休憩所を前提にしない（はじめを名前で呼ばない）。日本語は taiyo_bond.json の決まりどおり、助詞の抜けと短い区切りまで。審査員だと分かる言葉なし。大会・時間帯に触れない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "曲の切れ目に、太陽が舞台から客席の端へ降りてきた。こっちを見つけて、まっすぐ歩いてくる。" },
+        { "speaker": "da_silva", "face": "excited", "text": "よう、日本の！　ちゃんと、吸ってるか？" },
+        { "speaker": "", "face": "", "text": "手元の一台を持ち上げてみせると、太陽は隣の椅子に、背もたれを抱えて座った。" },
+        { "speaker": "da_silva", "face": "normal", "text": "お前、輪、吐けるか？" },
+        { "speaker": "hajime", "face": "normal", "text": "……やったこと、ないです" },
+        { "speaker": "da_silva", "face": "surprise", "text": "ない！？　作る人なのに！" },
+        { "speaker": "da_silva", "face": "smile", "text": "口、丸く。で、喉で……ポン、だ" },
+        { "speaker": "", "face": "", "text": "言われたとおりに、口を丸くして吐いた。煙は輪にならず、顔の前でほどけた。" },
+        { "speaker": "", "face": "", "text": "もう一度。いびつな輪が一つだけ浮かんで、すぐに崩れた。" },
+        { "speaker": "", "face": "", "text": "隣の席の客が、それを見て吹き出した。小さな拍手まで付いた。" },
+        { "speaker": "hajime", "face": "sad", "text": "……笑われました" },
+        { "speaker": "da_silva", "face": "excited", "text": "笑った！　いい輪だ！" },
+        { "speaker": "da_silva", "face": "normal", "text": "輪はな、吐いたやつには、見えねえ。見るのは、隣だ" },
+        { "speaker": "da_silva", "face": "smile", "text": "だから、いびつでいい。隣が笑えば、それでいい" },
+        { "speaker": "", "face": "", "text": "太陽は自分でも一つ、きれいな輪を隣の客へ送った。客が、また手を叩いた。" },
+        { "speaker": "hajime", "face": "smile", "text": "（作る側も、笑おうぜ、か）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_festa_talk_i",
+      "comment": "FESTA再訪（#3097 PR-L・計画 4-5）。太陽との小会話。客席でノートに温度と客の吸う速さを書くはじめに、太陽が「今日、何が楽しかった」を一行書かせる（ch4_festa の「作る側も、笑おうぜ」）。巡回は順に読むので、旗（_g）と輪（_h）の後。初対面の ch4_festa の後なら成り立つ文にし、段階の会話を前提にしない。審査員だと分かる言葉なし。配合の中身は書かない。大会・時間帯に触れない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "客席の隅でノートを開いた。ブースの温度と、隣の客が吸う速さを書きつけていく。" },
+        { "speaker": "", "face": "", "text": "ページに影が落ちた。太陽が、後ろからのぞきこんでいる。" },
+        { "speaker": "da_silva", "face": "normal", "text": "何、書いてる？" },
+        { "speaker": "hajime", "face": "normal", "text": "ここの温度と、お客さんが吸う速さです。癖で" },
+        { "speaker": "da_silva", "face": "serious", "text": "……数字ばっかりだな" },
+        { "speaker": "", "face": "", "text": "太陽は指でページを叩いて、下の空いたところを示した。" },
+        { "speaker": "da_silva", "face": "normal", "text": "ここ。今日、何が楽しかった？　書け" },
+        { "speaker": "hajime", "face": "surprise", "text": "楽しかったこと、ですか" },
+        { "speaker": "da_silva", "face": "smile", "text": "数字は、明日も取れる。今日の楽しいは、今日だけ" },
+        { "speaker": "", "face": "", "text": "ペンを持ったまま、しばらく考えた。手拍子。旗。隣の客の、小さな拍手。" },
+        { "speaker": "", "face": "", "text": "結局、一行だけ書いた。隣の客が、笑った。" },
+        { "speaker": "da_silva", "face": "excited", "text": "いいメモだ！　それ、一番大事なやつ" },
+        { "speaker": "da_silva", "face": "normal", "text": "疲れた日に、読め。数字より、効くぞ" },
+        { "speaker": "", "face": "", "text": "太陽は親指を立てて、舞台へ駆け戻っていった。" },
+        { "speaker": "", "face": "", "text": "数字の並んだページの下で、その一行だけが、ほかの字より大きかった。" }
+      ]
+    },
+    {
       "dialogue_id": "ch4_cafe_talk_b",
       "comment": "中心地の高級カフェ再訪（ch4_dubai_cafe_revisit の後の想定）。強い冷房と、頼まれる前の肩掛け。店員は cafe_staff。",
       "lines": [
@@ -342,6 +385,85 @@
         { "speaker": "naru", "face": "normal", "text": "炭は、俺が見てる。乾燥機は、見てなかった、……同じ失敗だな" },
         { "speaker": "", "face": "", "text": "なるは縮んだTシャツをきれいに畳んで、鞄の底にしまった。" },
         { "speaker": "naru", "face": "smile", "text": "捨てねえよ。帰ったら、店の雑巾にする、……ドバイの記念だ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_naru_dubai_7",
+      "comment": "なると会う（#3097 PR-K・計画 4-3 の見本①をそのまま採用）。期限のある3本の後に、地図の「なると会う」で巡回する追加の小会話。旅の話・配合の見せ合い・前夜祭・大会の結果に触れない。宿のロビーに置いてあるデーツの皿で、元は料理の道にいたなるの視点を出す。地の文に「夜」とあるので、背景は夜の宿（ch4-dubai-daily.js の TALK_BG）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "宿のロビーの隅に、小さな皿が置いてある。艶のあるデーツが、いつ見ても山になっていた。" },
+        { "speaker": "", "face": "", "text": "夜、水をもらいに降りると、なるがその皿の前で腕を組んでいた。" },
+        { "speaker": "hajime", "face": "normal", "text": "……まだ食べてなかったの？" },
+        { "speaker": "naru", "face": "serious", "text": "食べた。三つ目だ、……分からねえんだよ" },
+        { "speaker": "hajime", "face": "normal", "text": "何が" },
+        { "speaker": "naru", "face": "normal", "text": "甘いのに、最後に残らねえ。黒糖みたいな顔して、喉の手前で引いていく" },
+        { "speaker": "", "face": "", "text": "なるは四つ目をつまんで、明かりにかざした。種のまわりを、じっと見ている。" },
+        { "speaker": "naru", "face": "normal", "text": "学校で習った菓子は、だいたい甘さを残す方に組むんだよ。バターとか、焼き色とかで" },
+        { "speaker": "naru", "face": "normal", "text": "こいつは逆だ。甘さが、自分から帰っていく" },
+        { "speaker": "hajime", "face": "normal", "text": "（帰っていく甘さ、か）" },
+        { "speaker": "hajime", "face": "normal", "text": "フロントの人、コーヒーと一緒に出してたよ。苦いのと交互に" },
+        { "speaker": "naru", "face": "surprise", "text": "……そういうことか" },
+        { "speaker": "", "face": "", "text": "なるはロビーのポットから小さなカップにコーヒーを注いで、デーツをもう一つ口に入れた。" },
+        { "speaker": "naru", "face": "smile", "text": "引いた後に、苦いのが来る。で、また甘いのが欲しくなる、……よくできてんな" },
+        { "speaker": "hajime", "face": "smile", "text": "帰ったら、店で試す？" },
+        { "speaker": "naru", "face": "normal", "text": "試さねえよ、まだ。……これは、ここで食うからうまいんだ" },
+        { "speaker": "", "face": "", "text": "そう言いながら、なるはスマホのメモに何か打ち込んでいた。画面は、こちらに向けなかった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_naru_dubai_8",
+      "comment": "なると会う（#3097 PR-K・計画 4-3）。追加の小会話。旅の話・配合の見せ合い・前夜祭・大会の結果に触れない。時間帯に触れない。白いスニーカー（characters.json の見た目）の縫い目の砂を、古い歯ブラシでかき出す。文句を言いながら、はじめの靴まで丁寧に磨く面倒見。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "宿のロビーの隅で、なるが白いスニーカーを膝にのせていた。" },
+        { "speaker": "", "face": "", "text": "手には、古い歯ブラシ。縫い目に入った砂を、一粒ずつかき出している。" },
+        { "speaker": "hajime", "face": "surprise", "text": "砂、そんなに入るんだ" },
+        { "speaker": "naru", "face": "normal", "text": "外を一回歩くと、これだ。靴の中まで、砂漠が付いてくる" },
+        { "speaker": "hajime", "face": "normal", "text": "毎回、そこまでやるの？" },
+        { "speaker": "naru", "face": "smile", "text": "白いのは、手をかけた分しか白くならねえんだよ" },
+        { "speaker": "", "face": "", "text": "ブラシが、縫い目に沿って細かく往復する。台の灰を払うときと、同じ手つきだった。" },
+        { "speaker": "naru", "face": "normal", "text": "……お前のも出せ。ついでだ" },
+        { "speaker": "hajime", "face": "surprise", "text": "え、いいよ。自分でやる" },
+        { "speaker": "naru", "face": "normal", "text": "隣で砂だらけの靴履かれてると、気になるんだよ" },
+        { "speaker": "", "face": "", "text": "差し出した靴を、なるは文句を言いながら、自分のより時間をかけて磨いた。" },
+        { "speaker": "hajime", "face": "smile", "text": "（……こういう所、店でも同じなんだろうな）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_naru_dubai_9",
+      "comment": "なると会う（#3097 PR-K・計画 4-3）。追加の小会話。旅の話・配合の見せ合い・前夜祭・大会の結果に触れない。時間帯に触れない。点検中のエレベーターの代わりに、部屋の階まで階段で競争する。勝ったなるが、途中で子どもに道を譲ったはじめを認めて水をおごる（負けると本気で悔しがるが、相手を称えることは忘れない・characters.json）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "宿のエレベーターの前に、点検中の札が下がっていた。" },
+        { "speaker": "naru", "face": "smile", "text": "階段だな。……部屋の階まで、競争するか" },
+        { "speaker": "hajime", "face": "surprise", "text": "え、今から？" },
+        { "speaker": "naru", "face": "smile", "text": "負けた方が、水おごりな" },
+        { "speaker": "", "face": "", "text": "言い終わる前に、なるはもう一段目を蹴っていた。" },
+        { "speaker": "", "face": "", "text": "追いかけて二つ目の踊り場を回ると、大きな袋を抱えた子どもが、段の真ん中で立ち止まっていた。" },
+        { "speaker": "", "face": "", "text": "壁に寄って先に通してから、また駆け上がる。" },
+        { "speaker": "", "face": "", "text": "部屋の階の廊下で、なるが手すりにもたれて、肩で息をしていた。" },
+        { "speaker": "naru", "face": "smile", "text": "……勝った" },
+        { "speaker": "hajime", "face": "normal", "text": "うん、負けた" },
+        { "speaker": "naru", "face": "normal", "text": "……下で、子どもに道、譲ってたろ。上から見えた" },
+        { "speaker": "naru", "face": "serious", "text": "あれが無けりゃ、分かんなかった" },
+        { "speaker": "naru", "face": "normal", "text": "……水は、俺が出す" },
+        { "speaker": "", "face": "", "text": "なるは廊下の自販機の前で、二本分の小銭を数えはじめた。" },
+        { "speaker": "hajime", "face": "smile", "text": "（勝ちは譲らないのに、水はおごるんだな）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_naru_dubai_10",
+      "comment": "なると会う（#3097 PR-K・計画 4-3）。追加の小会話。旅の話・前夜祭・大会の結果に触れない。配合は見せ合わない（最後の一言で念を押す）。時間帯に触れない。宿のロビーで、日本から来た二人連れに土産の甘いものの選び方を惜しまず教える（「俺の台は丸見えだ」の人柄）。巡回は4本目から順に読むので、ルカイマットを割った _4 とデーツの _7 の後。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "宿のロビーで、日本から来たらしい二人連れが、なるに地図を見せていた。" },
+        { "speaker": "customer", "face": "", "text": "お土産の甘いもの、どこで買えばいいですかね" },
+        { "speaker": "naru", "face": "normal", "text": "スークの奥に、丸い揚げ菓子の屋台があります。あれは、その場で食ってください" },
+        { "speaker": "naru", "face": "normal", "text": "揚げたのは、持って帰ると湿気るんで。土産なら、デーツの箱がいいです" },
+        { "speaker": "customer", "face": "", "text": "詳しいですね。こっちに住んでる方ですか" },
+        { "speaker": "naru", "face": "smile", "text": "いえ、日本からです。……ただの、甘いもん好きです" },
+        { "speaker": "", "face": "", "text": "二人連れは何度も頭を下げて、通りへ出ていった。" },
+        { "speaker": "hajime", "face": "smile", "text": "揚げ菓子は割って、デーツは明かりにかざしてたもんね" },
+        { "speaker": "naru", "face": "normal", "text": "聞かれたら、全部言う。隠すほどのもんじゃねえ" },
+        { "speaker": "naru", "face": "smile", "text": "……台の配合は、別だけどな" },
+        { "speaker": "hajime", "face": "smile", "text": "知ってる" }
       ]
     },
     {
@@ -1054,6 +1176,102 @@
         { "speaker": "", "face": "", "text": "風を天井へ向けると、部屋の空気がゆっくり混ざって、やっと落ち着いた。" },
         { "speaker": "hajime", "face": "normal", "text": "（数字を変えるより、流れを変えるほうが効くこともあるのか）" },
         { "speaker": "", "face": "", "text": "ちょうどいい部屋で横になると、すぐにまぶたが重くなった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_sumi_call_b",
+      "comment": "スミさんからの夜の電話（#3097 PR-K・計画 4-1）。DAY7 の時差の電話（ch4_dubai_story.json の ch4_story_sumi_call）を読んだ後の夜に、宿で休むと _b〜_e を一本ずつ順に読む（一度きり。ch4-dubai-daily.js の SUMI_NIGHT_CALLS）。日本は閉店後の夜中で、スミさんは一人で店を回している。話題は tonari・つむぎ・常連の近況。大会・ほかの選手・審査員・スミさんの過去（ドバイの路地裏の店・シェイク）に触れない。好感度・能力・お金は付けない（休んだ体力はコード側）。 窓際の無口な常連が、はじめの帰りを聞いた。スミさんは客のことを書きつける古いレシートに一行足す（ch2_shift_talk_receipts を読んでいなくても成り立つ書き方）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "宿の部屋で横になっていると、スマホが鳴った。画面に「tonari」と出ている。" },
+        { "speaker": "", "face": "", "text": "今度は、出たときから閉店後のカウンターが映っていた。" },
+        { "speaker": "hajime", "face": "smile", "text": "映ってます。最初から、ちゃんと" },
+        { "speaker": "sumi", "face": "normal", "text": "立てかけ方は、覚えた" },
+        { "speaker": "", "face": "", "text": "スマホは、たぶんレジの横に立ててある。画面の端で、スミさんがグラスを拭いていた。" },
+        { "speaker": "sumi", "face": "normal", "text": "窓際の、ヘッドホンの客な。いつも一言もしゃべらねえ人だ" },
+        { "speaker": "hajime", "face": "normal", "text": "ミント少なめの人ですよね" },
+        { "speaker": "sumi", "face": "normal", "text": "今日、帰りがけに、初めて声をかけてきた" },
+        { "speaker": "hajime", "face": "surprise", "text": "あの人が、ですか" },
+        { "speaker": "sumi", "face": "normal", "text": "……あの若いのは、いつ帰るんだ、だと" },
+        { "speaker": "", "face": "", "text": "思わず、寝台の上で座り直した。" },
+        { "speaker": "hajime", "face": "normal", "text": "なんて答えたんですか" },
+        { "speaker": "sumi", "face": "normal", "text": "そのうち帰る、と言った。……うなずいて、帰っていった" },
+        { "speaker": "", "face": "", "text": "スミさんが、レジの下から輪ゴムで留めた紙の束を出した。客のことを書いておく、古いレシートだ。" },
+        { "speaker": "sumi", "face": "normal", "text": "一行、足しとく" },
+        { "speaker": "", "face": "", "text": "裏に何か書いている。画面越しでは、字までは読めなかった。" },
+        { "speaker": "hajime", "face": "smile", "text": "（何て書いたのか、帰ったら聞こう）" },
+        { "speaker": "sumi", "face": "normal", "text": "グラスが、まだ残ってる、……切るぞ" },
+        { "speaker": "", "face": "", "text": "通話が切れた。暗くなった画面を伏せて、目を閉じた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_sumi_call_c",
+      "comment": "スミさんからの夜の電話（#3097 PR-K・計画 4-1。前置きは ch4_sumi_call_b と同じ）。つむぎが入口の黒板に描いていった絵（耳に葉っぱの生えたラクダ。尻尾の煙が猫の尻尾と混ざる。characters.json の作風）を、スミさんがビデオで見せる。閉店の札を裏返し、グラスを重ねていった（恋愛を進めない）。つむぎが同じ便でドバイに来ている保存では読まない（ch4-dubai-daily.js が飛ばす）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "冷房の音を聞きながら目を閉じかけたとき、スマホが震えた。tonariからだ。" },
+        { "speaker": "", "face": "", "text": "出ると、画面いっぱいに、店の入口の黒板が映った。" },
+        { "speaker": "hajime", "face": "surprise", "text": "……黒板、ですか？" },
+        { "speaker": "sumi", "face": "normal", "text": "つむぎが描いてった。お前に見せろ、とさ" },
+        { "speaker": "", "face": "", "text": "今日のおすすめの横に、いつもの猫がいる。その隣に、こぶのある生き物が増えていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "これ、ラクダですか" },
+        { "speaker": "sumi", "face": "normal", "text": "ラクダだと。……耳から、葉っぱが生えてる" },
+        { "speaker": "", "face": "", "text": "ラクダの尻尾は煙になって、店の奥へ伸びていた。途中で、猫の尻尾と一本に混ざっている。" },
+        { "speaker": "hajime", "face": "smile", "text": "（……つむぎの描く生き物だ）" },
+        { "speaker": "sumi", "face": "normal", "text": "閉める前に、札まで裏返していった。頼んでねえのに" },
+        { "speaker": "sumi", "face": "thinking", "text": "グラスも、流しの横に重ねてあった。客にやらせることじゃねえ" },
+        { "speaker": "hajime", "face": "normal", "text": "つむぎ、なんて言ってました？" },
+        { "speaker": "sumi", "face": "normal", "text": "気になると、線が引けないんです、だと" },
+        { "speaker": "", "face": "", "text": "画面が揺れて、黒板からスミさんの顔に戻った。眉間のしわが、いつもより浅い。" },
+        { "speaker": "sumi", "face": "normal", "text": "このラクダ、笑ってるのか" },
+        { "speaker": "hajime", "face": "smile", "text": "笑ってますね、……たぶん" },
+        { "speaker": "sumi", "face": "smile", "text": "……そう伝えとく" },
+        { "speaker": "", "face": "", "text": "通話が切れたあとも、笑っているらしいラクダの顔が、まぶたの裏に残っていた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_sumi_call_d",
+      "comment": "スミさんからの夜の電話（#3097 PR-K・計画 4-1。前置きは ch4_sumi_call_b と同じ）。C.STATIONでシーシャを覚えた学生が、初めての tonari で「辛くなった」と自分から言えた。言ってくれる客には炭が間に合う（スミさんの手仕事）。スミさんは千須の店を「入口だけは、ちゃんとしてる」とだけ言い、はじめが聞き返すと話を変える（二人の昔の話は第4章の大会後 ch4_sui_old_rival と帰国後 ch4_sumi_return まで明かさない。千須を審査・大会の話に出さない）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "シャワーから戻ると、スマホが鳴っていた。今夜は画面が暗いまま、声だけの電話だった。" },
+        { "speaker": "", "face": "", "text": "向こうで、水を流す音がしている。ボトルを洗っているらしい。" },
+        { "speaker": "sumi", "face": "normal", "text": "今日、初めての客が来た。学生だ" },
+        { "speaker": "sumi", "face": "normal", "text": "シーシャは初めてじゃねえ。C.STATIONで覚えたんだと" },
+        { "speaker": "hajime", "face": "normal", "text": "会長の、チェーンのお店ですね" },
+        { "speaker": "sumi", "face": "normal", "text": "……ああ" },
+        { "speaker": "sumi", "face": "normal", "text": "吸い始めて少しして、辛くなったって、自分から言ってきた" },
+        { "speaker": "hajime", "face": "surprise", "text": "初めての店で、ですか" },
+        { "speaker": "sumi", "face": "normal", "text": "向こうで、言っていいって教わったらしい" },
+        { "speaker": "", "face": "", "text": "水の音が止まった。少しだけ、間が空いた。" },
+        { "speaker": "sumi", "face": "normal", "text": "言ってくれる客には、炭が間に合う。黙って我慢されたら、それまでだ" },
+        { "speaker": "sumi", "face": "thinking", "text": "……あいつの店は、入口だけは、ちゃんとしてる" },
+        { "speaker": "hajime", "face": "normal", "text": "あいつ、って……" },
+        { "speaker": "sumi", "face": "normal", "text": "そっちは、何時だ" },
+        { "speaker": "hajime", "face": "normal", "text": "……まだ、夜の早いうちです" },
+        { "speaker": "sumi", "face": "normal", "text": "なら、もう少し起きてろ。俺は寝る" },
+        { "speaker": "", "face": "", "text": "通話は、それで切れた。聞き返す間は、なかった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（入口だけは、か。……今の、褒めてたよな）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_sumi_call_e",
+      "comment": "スミさんからの夜の電話（#3097 PR-K・計画 4-1。前置きは ch4_sumi_call_b と同じ）。閉店後の tonari に、棚の古いCDラジカセの二枚目の四曲目（閉店が近い合図。ch2_shift_talk_cd_player を読んでいなくても成り立つ書き方）。一人だと片づけがずれて、炭を見る目が減る（帰国後 ch4_sumi_return の「一人で回して分かった」の前振り。人を入れる話はしない）。閉店後にスミさんが一人で吸うカルダモンの一台（ch1_sumi_secret・characters.json の好み）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "寝台に寝転んで電話に出ると、聞き覚えのある曲が、小さく流れていた。" },
+        { "speaker": "hajime", "face": "surprise", "text": "これ、二枚目の四曲目ですよね" },
+        { "speaker": "sumi", "face": "normal", "text": "……よく分かるな" },
+        { "speaker": "hajime", "face": "smile", "text": "閉店の曲ですから。体が覚えてます" },
+        { "speaker": "sumi", "face": "normal", "text": "今日は、片づけが、この曲に間に合わなかった" },
+        { "speaker": "", "face": "", "text": "向こうで、洗ったホースをフックに掛ける音がした。一本、また一本。" },
+        { "speaker": "sumi", "face": "normal", "text": "一人だと、洗い物が後ろへずれる。ずれた分、炭を見る目が減る" },
+        { "speaker": "hajime", "face": "normal", "text": "帰ったら、全部やります" },
+        { "speaker": "sumi", "face": "normal", "text": "全部はいい。半分やれ" },
+        { "speaker": "hajime", "face": "normal", "text": "お客さん、もういないのに、曲はかけてるんですね" },
+        { "speaker": "sumi", "face": "thinking", "text": "……止めると、店が静かすぎる" },
+        { "speaker": "", "face": "", "text": "少しして、こぽ、と水の揺れる音が届いた。閉店後に、スミさんが一人で吸う一台だ。" },
+        { "speaker": "hajime", "face": "normal", "text": "カルダモンですか" },
+        { "speaker": "sumi", "face": "normal", "text": "他に何がある" },
+        { "speaker": "hajime", "face": "smile", "text": "（……匂いまで、届く気がした）" },
+        { "speaker": "sumi", "face": "normal", "text": "曲が終わる、……寝ろ" },
+        { "speaker": "", "face": "", "text": "通話が切れる前に、四曲目の最後の音が、小さく鳴った。" }
       ]
     }
   ]

@@ -48,13 +48,13 @@ assert.deepEqual(longlongRecord(value), { read: { ch4_longlong_first: true }, ta
 assert.deepEqual(nextLonglongVisit(value, 0), { id: "ch4_longlong_visit_c", kind: "talk" }, "小会話は順に巡回");
 recordLonglongVisit(value, { id: "ch4_longlong_visit_c", kind: "talk" });
 assert.deepEqual(nextLonglongVisit(value, 0), { id: "ch4_longlong_visit_d", kind: "talk" }, "3本目（RVE07）");
-for (const suffix of ["d", "e", "f"]) {
+for (const suffix of ["d", "e", "f", "g", "h", "i", "j"]) {
   recordLonglongVisit(value, { id: `ch4_longlong_visit_${suffix}`, kind: "talk" });
   const next = String.fromCharCode(suffix.charCodeAt(0) + 1);
   assert.deepEqual(nextLonglongVisit(value, 0), { id: `ch4_longlong_visit_${next}`, kind: "talk" }, `#3097: ${next} の小会話`);
 }
-recordLonglongVisit(value, { id: "ch4_longlong_visit_g", kind: "talk" });
-assert.deepEqual(nextLonglongVisit(value, 0), { id: "ch4_longlong_visit_b", kind: "talk" }, "6本を回ったら最初へ");
+recordLonglongVisit(value, { id: "ch4_longlong_visit_k", kind: "talk" });
+assert.deepEqual(nextLonglongVisit(value, 0), { id: "ch4_longlong_visit_b", kind: "talk" }, "10本を回ったら最初へ（#3097 計画 4-2 で h〜k）");
 value.flags[LONGLONG_FLAG] = "broken";
 assert.deepEqual(longlongRecord(value), { read: {}, talks: 0 }, "壊れた記録は空として読む");
 assert.equal(classifyFlag(LONGLONG_FLAG), "progression");
