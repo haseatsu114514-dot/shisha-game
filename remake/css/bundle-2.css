@@ -4562,9 +4562,11 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
   font-size: max(30px, calc(17px / var(--k, 1))) !important;
 }
 /* はじめの絵（左の窓）: 手元や体が下のほうにある場面は、絵を持ち上げて一言の札の上に出す（PHN17）。
-   絵は窓の下へ 64px はみ出して置いてある（craft-stage.css の bottom: -64px）ので、その分までは持ち上げても下に隙間ができない。
+   絵は窓の下へ 64px はみ出して置いてある（craft-stage.css の bottom: -64px）ので、その範囲で持ち上げても下に隙間ができない。
    頭が上のレールのすぐ下にある場面（機材・水入れの立ち姿、炭焼き、蒸らし）は動かさない。 */
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-worker:is([data-scene="mix"], [data-scene="pack"], [data-scene="holes"], [data-scene="pull"], [data-scene="inhale"]) .bench-worker-stage { bottom: 0 !important; }
+/* 持ち上げる量は、絵の上端が画面の上から 40px 以内に収まる分まで（worker_scenes）。配合・吸い出しは54px、詰め方・穴あけは38px */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-worker:is([data-scene="mix"], [data-scene="pull"], [data-scene="inhale"]) .bench-worker-stage { bottom: -10px !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-worker:is([data-scene="pack"], [data-scene="holes"]) .bench-worker-stage { bottom: -26px !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"][data-mode="tutorial"] .bench-worker:is([data-step=""], [data-step="mix"]) .bench-worker-stage { bottom: -64px !important; } /* 初回の配合は立ち絵（頭がレールのすぐ下） */
 /* 一言の札: 2行までは定位置、長い講評は上へ伸ばして切らない */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-left .bench-audience {
@@ -5165,9 +5167,9 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 .audience-note[data-pages] > .audience-page { grid-area: 1 / 1; opacity: 0; transition: opacity .22s; pointer-events: none; }
 .audience-note[data-pages] > .audience-page[data-on="true"] { opacity: 1; }
 .audience-note[data-pages]::after {
-  content: "▼"; position: absolute; right: -2px; bottom: 2px; font-size: .62em; line-height: 1; color: #f3cf8a; animation: ph-note-more 1s ease-in-out infinite;
+  content: "▼"; position: absolute; right: 0; bottom: 5px; font-size: .62em; line-height: 1; color: #f3cf8a; animation: ph-note-more 1s ease-in-out infinite;
 }
-@keyframes ph-note-more { 50% { translate: 0 3px; opacity: .55; } }
+@keyframes ph-note-more { 50% { translate: 0 3px; opacity: .55; } } /* 下へ3px揺れても札の中（bottom: 5px） */
 @media (prefers-reduced-motion: reduce) { .audience-note[data-pages] > .audience-page { transition: none; } .audience-note[data-pages]::after { animation: none; } }
 
 /* ================================================================ 炭焼き: コンロを舞台の真ん中に、炭壺の札は舞台の幅いっぱい */
