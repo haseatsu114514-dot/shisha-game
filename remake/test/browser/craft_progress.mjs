@@ -77,8 +77,15 @@ await suite("craft-progress", async check => {
     assert(geometry.cards.every(card => card.fit && card.complete), JSON.stringify(geometry.cards.filter(card => !card.fit || !card.complete)));
     assert(geometry.width[1] <= geometry.width[0] + 1, "Equipment choices must not require horizontal scrolling");
     assert.equal(geometry.preview, 6, "Every equipment preview value is retained");
-    if (touch) assert(geometry.scrollablePreview, "The existing detailed preview can still scroll");
     const choose = async option => { if (touch) await option.tap(); else await option.click(); };
+    // 横持ち（PHN）: 一式の札は名前だけに畳み、6つの値の表は「性能を見比べる」の中で読む。札の中で送る以前の配置でもよい。
+    if (touch && !geometry.scrollablePreview) {
+      await choose(compare);
+      const values = page.locator("#modal .equipment-compare-set dd");
+      await values.first().waitFor();
+      assert.equal(await values.count(), 6, "Every equipment preview value stays readable from the compare dialog");
+      await choose(page.locator('[data-test="setup-compare-close"]'));
+    }
     const selected = panel.locator('[data-test="opt-silicone_bowl"]');
     assert.match(await selected.textContent(), /装備中/);
     await panel.locator('[data-test="opt-hagal_80beat"]').focus();

@@ -296,7 +296,9 @@ async function pullGame(cs, mode) {
   const drawStatus = el("span.pull-draw-status", { role: "status", dataset: { test: "pull-draw-status" } });
   // TH89: 蛇腹のホースと硬い持ち手・吸い口。ペンに見えないよう、筒の太さと曲がりで描く。
   const inhale = el("span.pull-btn-icon", { "aria-hidden": "true", html: HOSE_ICON });
-  const pullLabel = el("span.btn-label", { text: "吸う（針を止める）" });
+  // 「（針を止める）」は分けておく（スマホは絵と「吸う」だけを大きく出す・css/craft-phone.css）。文は今までと同じ
+  const pullIdle = () => ["吸う", el("span.pull-btn-note", { text: "（針を止める）" })];
+  const pullLabel = el("span.btn-label", pullIdle());
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" }, disabled: true }, [inhale, pullLabel]);
   const deepBtn = mode.store === "pull" && !tutorial && growthLesson(state,"M-S4") ? el("button.btn", { text:"ズボー", title:"一気に深く吸って熱を大きく上げる", "aria-label":"ズボー（一気に深く）", disabled:true, dataset:{test:"pull-deep"} }) : null;
   const blindBtn = mode.store==="pull"&&!tutorial&&growthLesson(state,"M-B3")?el("button.btn.ghost.small",{
@@ -563,7 +565,7 @@ async function pullGame(cs, mode) {
       setBenchDraw(cs, null);
       drawing = false;
       delete play.dataset.draw;
-      pullLabel.textContent = "吸う（針を止める）";
+      pullLabel.replaceChildren(...pullIdle());
       drawStatus.textContent = "";
       if (!failed && !finished && !abandoned && play.isConnected) {
         render();

@@ -215,6 +215,7 @@
       "paths": [
         "asset_sources/ui/craft-stage-20261110/stage_src.css",
         "remake/css/craft-stage.css",
+        "remake/css/craft-phone.css",
         "remake/css/wide-craft.css",
         "remake/test/browser/craft_phone_text.mjs"
       ],
@@ -2601,6 +2602,7 @@
       "timeout": 12,
       "paths": [
         "remake/css/craft.css",
+        "remake/css/craft-phone.css",
         "remake/css/worker-scenes.css",
         "remake/js/craft/**",
         "remake/test/browser/packing_layout.mjs",
@@ -2674,6 +2676,7 @@
         "remake/js/craft/progress.js",
         "remake/js/daily/coal-lesson.js",
         "remake/css/craft.css",
+        "remake/css/craft-phone.css",
         "remake/css/base.css",
         "remake/test/heat_feedback.mjs",
         "remake/test/craft_templates_timing.mjs",
@@ -3950,7 +3953,7 @@
       "kind": "browser",
       "weight": 1,
       "timeout": 3,
-      "paths": ["remake/css/phone-layout.css", "remake/index.html", "remake/craft-preview.html", "remake/test/browser/phone_layout_1110.mjs"],
+      "paths": ["remake/css/phone-layout.css", "remake/css/craft-phone.css", "remake/index.html", "remake/craft-preview.html", "remake/test/browser/phone_layout_1110.mjs"],
       "run": ["node remake/test/browser/phone_layout_1110.mjs"],
       "chrome": "playwright"
     },
@@ -4600,8 +4603,18 @@
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/css/craft-stage.css", "remake/css/phone-layout.css", "remake/js/craft/fx.js", "remake/test/browser/mobile_craft_layout.mjs"],
+      "paths": ["remake/css/craft-stage.css", "remake/css/craft-phone.css", "remake/css/phone-layout.css", "remake/js/craft/fx.js", "remake/test/browser/mobile_craft_layout.mjs"],
       "run": ["node remake/test/browser/mobile_craft_layout.mjs"]
+    },
+    {
+      "id": "craft-phone-layout",
+      "title": "スマホ横持ちの桜井版の作業台（PHN）: 全工程で文字・押す所・絵が、ステージの外へ出ない／入れ物に切られない／実寸11.4px・44pxを割らない／別の部品に覆われない。はじめの状態（844×390）と、育成済み（効果の印・単体で勝負・香りの記憶・ズボー・味の名前を伏せる）の3サイズ",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 8,
+      "paths": ["remake/css/craft-phone.css", "remake/css/craft*.css", "remake/css/phone-density.css", "remake/css/phone-layout.css", "remake/css/wide-craft.css", "remake/css/bundles.json", "remake/js/core/stage-fit.js", "remake/js/craft/**", "remake/test/browser/craft_phone_layout.mjs", "remake/test/browser/craft_phone_audit.mjs"],
+      "run": ["node remake/test/browser/craft_phone_layout.mjs"],
+      "chrome": "playwright"
     },
     {
       "id": "side-area",

@@ -138,7 +138,10 @@ export async function runHoles(cs) {
       ["ズレたとき", "ミスにはならず、ズレた位置のまま穴として残る（点は低くなる）。針は次の目印へ進む"],
       ["採点", "間隔のそろい50・狙いの正確さ30・穴の大きさのそろい15・時間5。浅い穴はさらに1穴8点減点"],
       ...rings.map(ring => [ring.label, ring.role]),
-    ].map(([label, text]) => el("li", [el("b", { text: label }), el("span", { text })]))),
+      // スマホの右の列は狭く、能力の効果は「技」「感」の札だけを出す。中身はここで読む（css/craft-phone.css。PC は今までどおり画面に出る）
+      ...(effectVisible("technique") ? [["技", "技術で針がゆっくり", "bench-guide-phone"]] : []),
+      ...(effectVisible("sense") ? [["感", "センスで成功の幅が広がる", "bench-guide-phone"]] : []),
+    ].map(([label, text, only]) => el(only ? `li.${only}` : "li", [el("b", { text: label }), el("span", { text })]))),
     el("p", { text: "時間が過ぎても、選んだ配置を最後まで開けられる" }),
   ]));
 
@@ -176,7 +179,8 @@ export async function runHoles(cs) {
   const pressMeter = renewal ? null : el("span.hr-press-meter", { "aria-hidden": "true", dataset: { test: "hole-press-meter" } }, [el("i.hr-press-fill")]);
   const punchBtn = el("button.btn.primary.hr-punch", { dataset: { test: "hole-punch" } }, [el("span.btn-label", { text: "穴を開ける" }), pressMeter]);
   const nextBtn = renewal ? null : el("button.btn.small", { text: "次のリングへ", dataset: { test: "hole-next" } });
-  const doneBtn = renewal ? null : el("button.btn.small.ghost", { text: "穴あけを終えて結果へ", dataset: { test: "hole-done" } });
+  // 文は「穴あけを終えて結果へ」のまま。前半を分けておく（スマホの狭い列では「結果へ」だけを出す・css/craft-phone.css）
+  const doneBtn = renewal ? null : el("button.btn.small.ghost", { dataset: { test: "hole-done" } }, [el("span.hole-done-lead", { text: "穴あけを終えて" }), "結果へ"]);
   const side = el("div.hr-side", [el("small.ht-current", { text: template.label }), ringLabel,
       effectVisible("technique") ? effectBadge("technique", "技") : null,
       senseBand(basePerfWin, 12), effectLine("technique", "技", "技術で針がゆっくり"),

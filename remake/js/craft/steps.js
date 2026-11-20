@@ -11,14 +11,14 @@ import { rememberGrowthMix, growthRecallOptions } from "../core/growth-memory.js
 import { effectVisible, effectBadge } from "./effect-visual.js";
 import { canSeeMixHint, canSeeGoldenShort } from "../core/stat-step-tables.js";
 import { craftStageEnabled } from "./stage-layout.js";
-import { packingMark, coalLayoutMark } from "./choice-marks.js";
+import { packingMark, coalLayoutMark, foilMark, coalMixMark } from "./choice-marks.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible, benchRoot, explainStepOnce, preparationGauge } from "./session.js";
 import { flavorMixLife, LEAF_DAMAGE } from "./flavor-life.js";
 import { autoSkill } from "./common.js";
 import { mixBowlPreview, packingBowlPreview } from "./art.js";
 import { mixTaste } from "./mix-taste.js";
-import { flavorStock, addFlavorStock, ownedFlavorIds, flavorPackageArt, SHOP_FLAVORS } from "../daily/shop.js";
+import { flavorStock, addFlavorStock, ownedFlavorIds, flavorPackageArt, equipmentProductArt, SHOP_FLAVORS } from "../daily/shop.js";
 import { runSteamTimer } from "./timer.js";
 import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK, applyCoalTraining } from "./coals.js";
@@ -99,7 +99,8 @@ function choose(panel, options, { cols = 2, onPreview } = {}) {
         o.mark || null,
         o.badge ? el("span.opt-badge", { text: o.badge }) : null,
         el("b", { text: o.label }),
-        el("small", { text: o.desc || "" }),
+        // note（注意書き）は分けておく。スマホは札に出さず、見比べのダイアログで読む（PHN）。文は今までと同じ
+        el("small", o.note ? [o.desc || "", el("span.opt-note", { text: ` ／ 注意：${o.note}` })] : { text: o.desc || "" }),
       ])));
     panel.append(grid);
     if (autoSkill()) {
@@ -143,16 +144,18 @@ export async function stepSetup(cs) {
     const preview = el("div", [equipmentPreview(cs)]);
     panel.append(preview);
     panel.append(el("button.btn.small.equipment-compare", { type: "button", text: "性能を見比べる", dataset: { test: "setup-compare" },
-      onclick: () => modal({ title: `${label}を見比べる`, className: "flavor-guide-dialog", body: el("div.equipment-compare-list", owned.map(item =>
-        el("section", [el("b", { text: item.name }), equipmentGuide(item, currentId)]))),
+      // 一式の性能の表（スマホでは画面に出さない）も、この中で読める（PHN）
+      onclick: () => modal({ title: `${label}を見比べる`, className: "flavor-guide-dialog", body: el("div", [el("div.equipment-compare-list", owned.map(item =>
+        el("section", [el("b", { text: item.name }), equipmentGuide(item, currentId)]))), el("div.equipment-compare-set", [equipmentPreview(cs)])]),
       options: [{ label: "選択に戻る", primary: true, test: "setup-compare-close" }] }),
     }));
     cs.equip[type] = await choose(panel, owned.map((e) => {
       const disabled = !compatible(e);
       const guide = equipmentUse(e);
+      const art = equipmentProductArt(e.id, 96);
       return {
-        value: e.id, label: e.name,
-        desc: `${guide.use}${guide.caution ? ` ／ 注意：${guide.caution}` : ""}`,
+        value: e.id, label: e.name, mark: art && el("i.opt-art", { "aria-hidden": "true" }, [art]),
+        desc: guide.use, note: guide.caution || "",
         disabled, badge: disabled ? (type === "bowl" ? "対応するHMDを持っていません" : "素焼き非対応") : e.id === currentId ? "装備中" : null,
         auto: !disabled && e.id === currentId,
       };
@@ -171,8 +174,8 @@ async function chooseFoilOption(cs) {
   const preview = el("div", [equipmentPreview(cs)]);
   panel.append(preview);
   cs.foilOptIn = await choose(panel, [
-    { value: false, label: "アルミなしで作る", desc: "ロートスに直接のせる。穴あけはしない", auto: !cs.foilOptIn },
-    { value: true, label: "アルミを付けて作る", desc: "アルミを張って穴を開ける。熱の入り方を自分で決める", auto: !!cs.foilOptIn },
+    { value: false, mark: foilMark(false), label: "アルミなしで作る", desc: "ロートスに直接のせる。穴あけはしない", auto: !cs.foilOptIn },
+    { value: true, mark: foilMark(true), label: "アルミを付けて作る", desc: "アルミを張って穴を開ける。熱の入り方を自分で決める", auto: !!cs.foilOptIn },
   ], { onPreview: foilOptIn => preview.replaceChildren(equipmentPreview({ ...cs, foilOptIn }, { candidate: true })) });
 }
 
@@ -368,11 +371,26 @@ export async function stepMix(cs) {
   }) : null;
   const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "このフレーバーで詰める" })]);
   const totalOf = () => Object.values(cs.mix).reduce((s, g) => s + g, 0);
+  // スマホ横持ち（PHN）: 予想は見出しと3本の棒だけを常に見せ、読み方・熟練・低め／高め・色の見方は押して開く。
+  // 中身は同じ mixForecastCard。PC は今までどおり、その場の「▶」で開く。
+  let forecastDetail = null;
+  taste.addEventListener("click", () => {
+    if (document.documentElement.dataset.density !== "phone" || !forecastDetail || !taste.querySelector("[data-test='mix-forecast']")) return;
+    const card = forecastDetail();
+    card.querySelectorAll("details").forEach((d) => { d.open = true; });
+    const bands = thermometer.updateBands();
+    card.append(el("p.flavor-guide-note", { text: bands.expressionWeight >= .999
+      ? "熱の柱：緑はおいしく作れる範囲。低めと高めで香りが変わる。"
+      : "熱の柱：緑は適温の目安。中央はこの配合で合わせやすい温度。" }));
+    SE.click();
+    modal({ title: "仕上がりの目安", className: "flavor-guide-dialog", body: card, options: [{ label: "配合に戻る", primary: true, test: "mix-forecast-close" }] });
+  });
 
   const redraw = () => {
     const total = totalOf();
     lcd.textContent = `${total.toFixed(1)} g / ${cap} g`;
     lcd.classList.toggle("ok", total >= 12 && total <= cap && (reg?.exact == null || total === reg.exact));
+    lcd.style.setProperty("--mix-fill", String(clamp(total / cap, 0, 1))); // スマホの量のゲージ（css/craft-phone.css）。表示だけ
     vessel.replaceChildren(mixBowlPreview(cs, total));
     vessel.dataset.filled = String(total > 0);
     const aroma = cs.mode === "tournament" && cs.chapter === 2
@@ -386,6 +404,7 @@ export async function stepMix(cs) {
       const mastery = mixMasteryProfile(masteryState, cs.mix, DB.flavorById);
       const precision = mastery.progress;
       taste.replaceChildren(mixForecastCard(cs, { precision, mastery, aroma }));
+      forecastDetail = () => mixForecastCard(cs, { precision, mastery, aroma });
     }
     const info = evaluateMix(cs);
     const bands = thermometer.updateBands();
@@ -411,7 +430,11 @@ export async function stepMix(cs) {
     }
     // 比率（#638）: グラムだけでなく、今の割合も見せる（表示のみ・判定には使わない）
     const pct = mixPercents(cs.mix);
-    rows.forEach((r) => { r.g.textContent = `${cs.mix[r.id] || 0}g`; r.ratio.textContent = cs.mix[r.id] ? `比率 ${pct[r.id]}%` : ""; });
+    rows.forEach((r) => {
+      r.g.textContent = `${cs.mix[r.id] || 0}g`;
+      // 「比率」の2字は分けておく（スマホはグラムの下に％だけを出す・css/craft-phone.css）。読み上げ・textContent は今までどおり「比率 25%」
+      r.ratio.replaceChildren(...(cs.mix[r.id] ? [el("span.fr-ratio-label", { text: "比率 " }), `${pct[r.id]}%`] : []));
+    });
     refreshBench();
   };
 
@@ -435,14 +458,17 @@ export async function stepMix(cs) {
       el("span.fr-package", [flavorPackageArt(id, 54)]),
       el("div.fr-name", [
         el("button.fr-feature", { type: "button", dataset: { test: `flavor-info-${id}` }, "aria-label": `${f?.short_name || f?.name || id}の特徴を見る`,
-          onclick: () => modal({ title: f?.short_name || f?.name || id, className: "flavor-guide-dialog", body: flavorFeatureCard(f, { description: f?.description }),
+          onclick: () => modal({ title: f?.short_name || f?.name || id, className: "flavor-guide-dialog",
+            body: el("div.flavor-info-body", [flavorFeatureCard(f, { description: f?.description }),
+              el("p.flavor-info-mastery", { text: masteryLabel(state, id, DB.flavorById), dataset: { test: "flavor-info-mastery" } })]),
             options: [{ label: "配合に戻る", primary: true, test: "flavor-info-close" }] }),
         }, [el("b", { text: f?.short_name || f?.name || id })]),
-        supplied(id) ? el("small.fr-reg", { text: `${reg.free ? "持ち込み申請" : "課題（支給）"}${stockTag}` })
+        // 「（支給）」「申請」は分けておく（スマホの1行の補助文では省く・css/craft-phone.css）。文は今までと同じ
+        supplied(id) ? el("small.fr-reg", [reg.free ? "持ち込み" : "課題", el("span.fr-reg-supply", { text: reg.free ? "申請" : "（支給）" }), stockTag])
           : consumes ? el("small.fr-stock", { text: `残り${flavorStock(id)}g${stockTag}` })
           : el("small", { text: tags }),
         el("small.fr-mastery", { text: masteryLabel(state, id, DB.flavorById) }),
-        cs.staffPractice ? el("small.fr-stock", { text: `まかない ${staffStock(state, id)}g ／ 私物 ${flavorStock(id)}g（まかない優先）` }) : null,
+        cs.staffPractice ? el("small.fr-stock.fr-stock-staff", [`まかない ${staffStock(state, id)}g ／ 私物 ${flavorStock(id)}g`, el("span.fr-reg-supply", { text: "（まかない優先）" })]) : null,
         ratio,
       ]),
       holdRepeat(el("button.fr-btn", { text: "−", "aria-label": `${f?.short_name || f?.name || id}を1g減らす`, dataset: { test: `mix-minus-${id}` }, onclick: () => change(-1) }), () => change(-1), renewalCraft(cs)),
@@ -676,8 +702,8 @@ export async function stepPlace(cs) {
   if (cs.mode !== "tutorial" && state.flags[COAL_UNLOCK.mixed] && state.owned.includes("flat_charcoal") && state.owned.includes("cube_charcoal")) {
     const n = coalCount(cs);
     const combination = await choose(stepPanel("place", "炭の組み合わせ", "フラットとキューブの火力を組み合わせる"), [
-      { value: "same", label: "同じ炭で揃える", desc: `${n}個とも選んだ炭を使う`, auto: true },
-      { value: "mixed", label: "フラット＋キューブ", desc: `キューブ1個とフラット${n - 1}個` },
+      { value: "same", mark: coalMixMark(false, n), label: "同じ炭で揃える", desc: `${n}個とも選んだ炭を使う`, auto: true },
+      { value: "mixed", mark: coalMixMark(true, n), label: "フラット＋キューブ", desc: `キューブ1個とフラット${n - 1}個` },
     ]);
     if (combination === "mixed") cs.coalTypes = ["cube_charcoal", ...Array(n - 1).fill("flat_charcoal")];
   }

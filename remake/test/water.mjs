@@ -145,6 +145,21 @@ await check("auto good confirms neutral water; auto bad and manual keep the curr
   fire(confirm, "click"); await pending;
   assert.equal(manual.water, 0); assert.equal(notices.at(-1), none);
 });
+await check("a blocked view keeps one animation frame while the wave settles (no doubling freeze)", async () => {
+  // 注いだ直後（水面がまだ揺れている）に説明や MENU を開く。予約したコマが毎回2つに増えると、数秒で画面が固まる。
+  const m = mounted({ quantity: .3 });
+  down(m); tick(200); fire(m.button("pour"), "pointerup", { pointerId: 1 });
+  assert.equal(frames.size, 1, "the settling wave keeps animating after release");
+  document.blocked = true;
+  let most = 0;
+  for (let i = 0; i < 40 && frames.size; i++) { tick(16); most = Math.max(most, frames.size); }
+  assert.ok(most <= 1, `at most one pending frame while blocked, saw ${most}`);
+  document.blocked = false;
+  for (let i = 0; i < 400 && frames.size; i++) tick(16);
+  assert.equal(frames.size, 0, "the wave settles and the loop stops");
+  m.cancel(); await assert.rejects(m.result, { name: "AbortError" }); m.panel.remove();
+  waterSounds.length = 0; // 後ろの検査は音の記録が空から始まる前提
+});
 await check("water sound follows hold and stops on release, cancel and bounds", async () => {
   const m = mounted({ quantity: .5 });
   down(m); assert.equal(waterSounds.length, 1);
