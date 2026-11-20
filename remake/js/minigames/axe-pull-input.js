@@ -155,6 +155,12 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
       if (flick.id === 'keyboard') { flick.elapsed += delta; power = clamp(flick.elapsed / 1200, 0, 1); onPower(power); }
     },
     get pulling() { return flick !== null; },
+    // Display travel is independent of the release speed used for scoring.
+    get swipeProgress() {
+      if (!flick || flick.id === 'keyboard') return flick ? power : 0;
+      const rise = flick.samples[0].y - flick.samples.at(-1).y;
+      return clamp(rise / Math.max(1, flick.geometry[5] * .22), 0, 1);
+    },
     get rawPower() { return power; },
   };
 }

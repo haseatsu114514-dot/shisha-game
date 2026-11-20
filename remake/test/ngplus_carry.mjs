@@ -269,9 +269,10 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
 
   assert.equal(pkg.money, MAX_MONEY);
   assert.equal(pkg.stats.technique, 55);
-  assert.ok(!pkg.owned.includes("suyaki_minto"));
+  // 好感度の締めくくりでもらった専用ハガルは引き継ぐ（台帳 NGC01）。装備中の枠もそのまま
+  assert.ok(pkg.owned.includes("suyaki_minto"));
   assert.ok(pkg.owned.includes("hagal_80beat"));
-  assert.ok(!("bowl" in pkg.equip));
+  assert.equal(pkg.equip.bowl, "suyaki_minto");
   assert.equal(pkg.equip.hms, "lotos_hagal");
   assert.deepEqual(pkg.keepsakes, []);
   assert.ok(!("club" in pkg.trpg));

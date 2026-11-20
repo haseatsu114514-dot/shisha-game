@@ -8,6 +8,7 @@ import { MAX_MONEY } from "../js/core/rules.js";
 import { STAT_JA, hasAffinity } from "../js/core/state.js";
 import { chapterDay, chapterDaysLeft, departurePrep, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 import { chapterFeatureEnabled } from "../js/core/chapter-features.js";
+import { TOKYO_FREE_TIMES_V3 } from "../js/core/tokyo-clock.js";
 const root = new URL("../", import.meta.url);
 const dataRoot = new URL("../../", import.meta.url);
 const limeData = JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8"));
@@ -447,7 +448,7 @@ reset({ slot: 2, flags: { _confession_due: "minto", _minto_identity_revealed: tr
 assert.equal(await romance.maybeConfession(async () => {}), true); assert.equal(plays.length, 1); assert(!state.flags._minto_name_known); assert.equal(state.flags._confession_due, "minto");
 
 // 外出後の話は後日読んでも時間が食い違わない。私的LIMEに店の呼び込み口調を持ち込まない。
-const afterOutings = allMessages.filter((m) => m.id.startsWith("lime_after_outing_")); assert.equal(afterOutings.length, 10); // 神崎・クラウドの2通（#3097）を含む
+const afterOutings = allMessages.filter((m) => m.id.startsWith("lime_after_outing_")); assert.equal(afterOutings.length, 13); // 神崎・クラウドの2通（#3097 PR-A）と、綾取・スティーブ・ヴォルクの3通（PR-H）を含む
 for (const message of afterOutings) { const text = JSON.stringify(message); assert(!/昨日|昨夜/.test(text)); assert(text.includes("この前")); }
 const privateMinto = allMessages.filter((m) => m.sender === "minto" && m.id !== "lime_minto_day4");
 for (const message of privateMinto) assert(!/♡|生きてる〜|おはよっ|チェキ/.test(JSON.stringify(message)), message.id);
@@ -508,6 +509,39 @@ for (const id of ["kumicho", "rei"]) {
   reset({ ...base, flags: { ...rivalOutingReady[id] }, finales: { [id]: { route: "friend" } } }); assert(!rivalOuting(id), `${id}: ♥5の締めくくりの後は誘わない`);
   reset({ ...base, chapter: 3, flags: { ...rivalOutingReady[id] } }); assert(!rivalOuting(id), `${id}: 第2章の外では誘わない`);
   reset({ ...base, flags: { ...rivalOutingReady[id], [`_invited_lime_outing_${id}_1`]: true, [`_outing_done_${id}`]: true } });
+  assert(!rivalOuting(id)); assert(phone.morningMessages().some((m) => m.id === `lime_after_outing_${id}`), `${id}: 外出の後日談も『この前』で届く`);
+}
+// 綾取・スティーブ・ヴォルクの♥3の外出（#3097 PR-H）。東京の日常ループ（版3）の昼の空きにだけ、この周回で LIME を交換した後
+// （交換の場面の既読）・♥5の締めくくりの前に届く。地元で会う誘いと違い、東京にいる間に届く（region: "tokyo"）。日を改めて届け直さない。
+for (const id of ["saku", "steve", "volk"]) {
+  const invite = invitationById[`lime_outing_${id}_1`];
+  assert.equal(invite.accept_event, `outing_${id}_1`); assert.equal(invite.time_slot, "noon");
+  assert.equal(invite.chapter, 3); assert.equal(invite.region, "tokyo"); assert(!invite.important, `${id}: 日を改めて届け直さない`);
+  const exchanged = { [`_ch3_read_ch3_${id}_lime`]: true };
+  // 東京の章内日 = day - startDay + 1（startDay 40 の day 45 は DAY6 の昼の空き、day 47 は本筋が昼を使う DAY8）
+  const tokyo = (day, flags = {}, extra = {}) => reset({ chapter: 3, day, contacts: [id], affinity: { [id]: 33 },
+    flags: { _ch3_intro: { startDay: 40, stage: 5, routeVersion: 3 }, _ch2_region: "tokyo", ...flags }, ...extra });
+  tokyo(45, exchanged); assert(rivalOuting(id), `${id}: 東京の昼の空きに誘う`);
+  // 届く日は core/tokyo-clock.js の昼の空き（TOKYO_FREE_TIMES_V3）と同じ（phone.js の写しがずれていないか）
+  for (let tokyoDay = 1; tokyoDay <= 14; tokyoDay++) {
+    tokyo(39 + tokyoDay, exchanged);
+    assert.equal(rivalOuting(id), TOKYO_FREE_TIMES_V3.some((w) => w.day === tokyoDay && w.slot === 0), `${id}: DAY${tokyoDay}`);
+  }
+  tokyo(45); assert(!rivalOuting(id), `${id}: この周回で LIME を交換する前は誘わない`);
+  tokyo(47, exchanged); assert(!rivalOuting(id), `${id}: 本筋の場面が昼の行動を使う日は誘わない`);
+  tokyo(45, exchanged, { finales: { [id]: { route: "friend" } } }); assert(!rivalOuting(id), `${id}: ♥5の締めくくりの後は誘わない`);
+  tokyo(45, { ...exchanged, _ch2_region: "home" }); assert(!rivalOuting(id), `${id}: 東京の外（出発前の地元）では誘わない`);
+  tokyo(45, { ...exchanged, _ch3_intro: { startDay: 40, stage: 5, routeVersion: 2 } }); assert(!rivalOuting(id), `${id}: 日常ループでない旧行程では誘わない`);
+  tokyo(45, exchanged, { tokyoVisits: { plans: [{ status: "planned", meetup: { id: "d6-noon", day: 45, slot: 0 }, date: { id: "d6-night", day: 45, slot: 1 } }] } });
+  assert(!rivalOuting(id), `${id}: 恋人の東京訪問の約束がある昼には誘わない`);
+  // 一度届いた誘いは、返事をしそびれても日を改めて届かない（東京の空き時間を誘いで塞がない）
+  tokyo(46, exchanged, { limeRead: [invite.id], inbox: [item(invite, { day: 45, read: true, done: true, result: "expired", replyState: "expired" })] });
+  assert(!rivalOuting(id), `${id}: 返事をしそびれた誘いを日を改めて届けない`);
+  // 受けた昼の約束は、東京にいても誘いの時間帯として有効（地元の約束のように流さない）
+  tokyo(45, { ...exchanged, [`_invited_${invite.id}`]: true }, { inbox: [item(invite, { read: true, done: true, result: "accepted", replyState: "replied" })] });
+  state.pendingInvite = { event: invite.accept_event, sender: id, slot: 0, day: 45, originId: invite.id };
+  phone.expireInvitations(); assert.equal(state.pendingInvite?.originId, invite.id, `${id}: 東京で受けた約束を流さない`);
+  tokyo(46, { ...exchanged, [`_invited_${invite.id}`]: true, [`_outing_done_${id}`]: true });
   assert(!rivalOuting(id)); assert(phone.morningMessages().some((m) => m.id === `lime_after_outing_${id}`), `${id}: 外出の後日談も『この前』で届く`);
 }
 // 神崎の店の定休日（day % 7 === 0）以外は、臨時休業の一言を添えて誘う（なると同じ holiday_or_temporary）。

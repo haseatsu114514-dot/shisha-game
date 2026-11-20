@@ -10,7 +10,7 @@ import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, 
 import { canReflect } from "../daily/reflection.js";
 import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
 import { state, save } from "../core/state.js";
-import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withSceneLoading } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withSceneLoading, toast } from "../core/ui.js";
 import { sceneMoment } from "../core/scene-motions.js";
 import { saveFlow } from "../scenes/saves.js";
 import { play, hooks, vnTest } from "../vn/engine.js";
@@ -38,7 +38,7 @@ import { naruTastingCategory } from "../craft/naru-tasting.js";
 import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_SCENE_FILES, CH5_PREP_TRIALS,
   chapterFiveAftermathScene, chapterFiveSceneTail,
   chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho, chapterFiveLoverEcho,
-  recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
+  recordChapterFivePrepTrial, recordChapterFivePrepAdjustment, chapterFiveCallOpen, CH5_CALL_OPEN_NOTE,
   canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
   chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveVoteTally, CH5_FIRST_CUP_VOTES, recordChapterFiveSecondCup,
@@ -362,6 +362,7 @@ async function renderPrep(owner) {
     if (!await readScene(owner, sceneId)) return;
     if (!recordChapterFivePrepAdjustment(state, adjusted)) return;
     save();
+    if (chapterFiveCallOpen(state)) toast(CH5_CALL_OPEN_NOTE);
     await renderStage(owner);
   };
   card(owner, "prep", "もう一台か、このままか", `スミさんの返答: ${trial.point}`, [

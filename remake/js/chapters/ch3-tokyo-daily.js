@@ -7,6 +7,7 @@
 //     東京の店・CHOI-ZAP・池の弁天堂・クラブSEAM・mukaiの奥の部屋（地元との連絡は右上の LIME の一番上の行）
 //   - 寄り道（任意の場面）は、その場所を訪ねた時に一つずつ読む（行動を使うので選んで読む。台本の能力報酬も効く）。
 //     遠くからの電話（みんと・つむぎ・ひより）は、本筋の予定が無い夜に一つ届く
+//     地元からの電話（スミさん・アダム・凛想・神崎・サメちゃん・クラウド）は、奥の部屋で休んだ時に一本ずつ届く（#3097 第2弾）
 // 現在地は flags._ch2_region = "tokyo"（HUD の街の札）。台詞の正本は data/dialogue/ch3_*.json と ch3_tokyo_daily.json。
 import { state, save, timeOfDay } from "../core/state.js";
 import { DB, bgUrl, displayName } from "../core/data.js";
@@ -24,10 +25,10 @@ import { consultLessons } from "../core/growth.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { tokyoTime, TOKYO_FREE_TIMES_V3, timeNumber } from "../core/tokyo-clock.js";
-import { dueTokyoVisit, completeTokyoVisitAction, visitContacts, syncTokyoVisits } from "../core/tokyo-visits.js";
+import { dueTokyoVisit, completeTokyoVisitAction, visitContacts, syncTokyoVisits, visitingTokyo } from "../core/tokyo-visits.js";
 import { CH3_DAILY_PLAN, chapterThreeScenes, chapterThreeProgress, completeChapterThreeScene } from "./ch3-progress.js";
 import { OUTING_DIALOGUE_IDS, outingCounts, outingDialogueId, outingAffinity, outingReason, chapterThreeOutingCandidates, recordChapterThreeOuting,
-  roomRestId, recordRoomRest, ROOM_REST_IDS } from "./ch3-outing-progress.js";
+  roomRestId, recordRoomRest, ROOM_REST_IDS, homeCallId, recordHomeCall, HOME_CALL_IDS } from "./ch3-outing-progress.js";
 import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
 import { runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
@@ -242,6 +243,8 @@ export async function runChapterThreeTokyo(io) {
     readDialogues("ch3_outings", OUTING_IDS).then(found => Object.assign(DB.dialogues, found)),
     readDialogues("ch3_activities", TOKYO_GYM_IDS).then(found => Object.assign(DB.dialogues, found)),
     readDialogues("ch3_tokyo_daily", TOKYO_DAILY_IDS).then(found => Object.assign(DB.dialogues, found)),
+    readDialogues("ch3_home_calls", HOME_CALL_IDS).then(found => Object.assign(DB.dialogues, found)),
+    ...Object.entries(RIVAL_OUTING_FILES).map(([file, ids]) => readDialogues(file, ids).then(found => Object.assign(DB.dialogues, found))),
     loadMukaiShift(),
     refreshOptional(),
   ]);
@@ -255,6 +258,9 @@ export async function runChapterThreeTokyo(io) {
 
 const OUTING_IDS = OUTING_DIALOGUE_IDS; // 通いの小会話（AFB02）も含む外出の台本
 export const TOKYO_DAILY_IDS = Object.freeze([...ROOM_REST_IDS, "ch3_tokyo_fortune"]);
+// 綾取・スティーブ・ヴォルクの♥3の友人の外出（#3097 PR-H）。LIME の誘い lime_outing_<id>_1 の accept_event で、
+// daily/calendar.js の約束の処理が再生して _outing_done_<id> を立てる。大会後の寄り道（ch3-aftermath-progress.js）と同じ台本。
+export const RIVAL_OUTING_FILES = Object.freeze({ ch3_rivals: ["outing_saku_1", "outing_steve_1"], ch3_volk: ["outing_volk_1"] });
 
 // ---- 昼の行動を使う場面・約束 ----------------------------------------------------------
 function tokyoSlotEvent(io) {
@@ -400,6 +406,13 @@ async function settleEvening(io) {
   if (result.kind === "date") for (const id of result.participants) if (loverMilestonesDue([id]).length) await readLoverMilestone(id);
 }
 
+/** 今、奥の部屋で休むと届く地元からの電話（ch3-outing-progress.js の HOME_CALLS）。夜は本筋の場面・遠くからの電話の夜を避ける。 */
+function homeCallDue() {
+  const night = timeOfDay() === "night";
+  const call = homeCallId(state, { night, busy: night && (!!dueNightScene() || !!dueCall()), away: id => visitingTokyo(state, id) });
+  return call && DB.dialogues[call]?.lines?.length ? call : null;
+}
+
 function dueCall() {
   if (state.flags[CALL_NIGHT_FLAG] === state.day) return null;
   return optional.find(scene => isCall(scene.id)) || null;
@@ -436,9 +449,12 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
     return unused;
   }
   if (entry.place === "room") {
-    if (!await readPlain(roomRestId(state), "bg_mukai_shop", owner)) return unused;
+    // 地元からの電話がある回は、休む場面の代わりに電話を読む（休む場面の巡回は進めない。#3097 第2弾）
+    const call = homeCallDue();
+    if (!await readPlain(call || roomRestId(state), "bg_mukai_shop", owner)) return unused;
     addStamina(entry.stamina);
-    recordRoomRest(state);
+    if (call) recordHomeCall(state, call);
+    else recordRoomRest(state);
     return { used: true, exerted: false };
   }
   if (entry.place === "park") return goOuting(outingById("park_walk"), staminaGuard, owner);

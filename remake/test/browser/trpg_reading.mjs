@@ -92,6 +92,44 @@ async function assertReadable(page, scope, label, { taps = true } = {}) {
 }
 
 await suite("trpg-reading", async check => {
+  // 試遊の部活提案は、背の低い横画面で2つ目の返事が画面下へ押し出されていた。
+  const campaignProposal = {
+    pageEntry: new URL("trpg-campaign-preview.html?harness=1", baseURL).href,
+    pageReadySelector: '[data-test="trpg-club-proposal"]',
+  };
+  async function assertProposalChoicesFit(page, label) {
+    await page.evaluate(() => document.fonts.ready);
+    const choices = await control(page, "trpg-club-proposal").locator("button").evaluateAll(buttons => {
+      const stage = document.getElementById("stage").getBoundingClientRect();
+      return buttons.map(button => {
+        const rect = button.getBoundingClientRect();
+        const center = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+        return {
+          test: button.dataset.test,
+          w: rect.width, h: rect.height,
+          inside: rect.left >= stage.left && rect.right <= stage.right &&
+            rect.top >= stage.top && rect.bottom <= stage.bottom,
+          reachable: button.contains(center),
+        };
+      });
+    });
+    assert.equal(choices.length, 2);
+    assert.deepEqual(choices.filter(b => !b.inside || !b.reachable || b.w < 39 || b.h < 39), [],
+      `${label}: both responses must fit and be at least 39px without scrolling`);
+  }
+  await check("club-proposal-phone", async page => {
+    await assertProposalChoicesFit(page, "844x390");
+    await resize(page, LOW);
+    await assertProposalChoicesFit(page, "844x340");
+    await hit(page, "trpg-club-choice-people");
+    await control(page, "trpg-club-founded").waitFor();
+  }, { ...PHONE, ...campaignProposal });
+  await check("club-proposal-pc", async page => {
+    await assertProposalChoicesFit(page, "1280x720");
+    await hit(page, "trpg-club-choice-time");
+    await control(page, "trpg-club-founded").waitFor();
+  }, { ...PC, ...campaignProposal });
+
   // 本棚（過去プレイを再生）と店の「？」: 紙の本文が実寸 8〜9px、「閉じる」「次へ」などの札が 26〜29px だった。
   await check("bookshelf-and-shop-help-phone", async page => {
     const record = { play: 1, chapter: 2, day: 2, title: "世界一普通の一台", ending: "雨音のある一台", endingLine: "普通とは、何も求められずに過ごせる時間だった。",
