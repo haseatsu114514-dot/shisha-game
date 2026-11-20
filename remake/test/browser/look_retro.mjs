@@ -274,6 +274,33 @@ await suite("look_retro", async (check) => {
     assert.match(lists.head, /¥42,000/);
     assert.match(lists.status, /行動 あと2回/);
     assert.equal(lists.go, "true", "nothing is selected yet");
+    // 体力の枠（#3821）: 現行の HUD と同じ割合。盤の割り振り前は半分（17/34 ドット）、盤の体力を灯すと伸びる。
+    // 足りない分は余白にして、帯の所持金の位置は動かさない。中身（残量の割合）は枠の長さと別
+    const gauge = () => page.evaluate(() => {
+      const box = document.querySelector(".retro-gauge"), bar = box.querySelector("i"), r = bar.getBoundingClientRect();
+      return {
+        dots: Number(box.style.getPropertyValue("--gauge-dots")), track: Number(document.querySelector("#hud .hud-stamina").dataset.track),
+        bar: r.width, slot: r.width + parseFloat(getComputedStyle(bar).marginRight), fill: bar.querySelector("b").style.width,
+        money: document.querySelector(".retro-maphead-money").getBoundingClientRect().left,
+      };
+    });
+    const half = await gauge();
+    assert.deepEqual([half.dots, half.track, half.fill], [17, 0.5, "80%"], `before any board stamina: ${JSON.stringify(half)}`);
+    assert(Math.abs(half.bar / half.slot - 0.5) < 0.01, `the frame is half of the slot: ${JSON.stringify(half)}`);
+    await page.evaluate(async () => {
+      const { ensureGrowth } = await import("./js/core/growth.js");
+      const { NODES, HUB, commitPending } = await import("./js/core/growth-board.js");
+      const s = window.__remake.state, g = ensureGrowth(s);
+      g.hidane.any = 8;
+      commitPending([NODES.find((n) => n.perk === "stamina" && n.ring === 1 && n.links.includes(HUB)).id], s);
+      (await import("./js/daily/hud.js")).updateHud();
+    });
+    await page.waitForFunction((dots) => Number(document.querySelector(".retro-gauge").style.getPropertyValue("--gauge-dots")) > dots, half.dots);
+    const grown = await gauge();
+    assert(grown.track > 0.5 && grown.track < 1, `board stamina lengthens the classic frame: ${JSON.stringify(grown)}`);
+    assert.equal(grown.dots, Math.round(34 * grown.track), "the DS frame follows the same ratio");
+    assert(grown.bar > half.bar, `the DS frame grows: ${JSON.stringify([half, grown])}`);
+    assert.deepEqual([grown.slot, grown.money], [half.slot, half.money], "the head layout does not move");
     // 行を選ぶ＝現行のピンを選ぶ
     await page.locator(t("retro-row-minto")).tap();
     await page.waitForFunction(() => document.querySelector('[data-test="pin-minto"]').classList.contains("sel")

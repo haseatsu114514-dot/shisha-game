@@ -242,6 +242,10 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (m.id === "lime_outing_rio_1" && !chapterFeatureEnabled(state.chapter || 1, "rioHomeOuting")) return false;
   // ひよりの♥3の外出（#2025）は第1章の昼だけ。tonariでの再会（スミさんのLIME）の後に届き、夜や締めくくりの前提は増やさない。
   if (m.id === "lime_outing_hiyori_1" && !(chapterFeatureEnabled(state.chapter, "hiyoriHomeOuting") && state.flags._hiyori_tonari_return_done)) return false;
+  // 神崎・クラウドの♥3の外出（#3097）は、場面が前提にする話（神崎の銭湯の紹介・クラウドの最初の「同士」）を読んだ後、
+  // ♥5の締めくくり（呼び方が「兄弟」に変わる・「同士」を「友達」と言い直す）の前にだけ届く。章は LIME の chapter: 2 で絞る。
+  if (m.id === "lime_outing_kumicho_1" && !(state.flags._kumicho_sento_introduced && !state.finales?.kumicho)) return false;
+  if (m.id === "lime_outing_rei_1" && !(state.flags._ch2_read_ch2_rei_second && !state.finales?.rei)) return false;
   // 綾取がドバイへ応援に来た保存（SPC22。core/overseas-companion.js の guests）では、東京の煙幕から配信を見る前提の第4章のLIMEは届かない。
   const guests = state.flags?._overseas_companion?.guests;
   if (/^lime_ch4_saku_/.test(m.id) && Array.isArray(guests) && guests.includes("saku")) return false;
