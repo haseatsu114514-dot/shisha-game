@@ -299,6 +299,10 @@ export const CHAPTER_TALKS = Object.freeze({
     { chapter: 2, scene: "ch2_rio_city_scent" },
     // #3097 PR-C: 朝の満員電車は柔軟剤の見本市。匂わない車両をはじめに聞く（はじめは試作を吸わない）
     { chapter: 2, scene: "ch2_rio_rush_hour" },
+    // #3097 第2弾（VOL20）: 試香の日の昼は塩だけのおにぎり。はじめは「顔で答える係」（味の不調の前後どちらでも読める）
+    { chapter: 2, scene: "ch2_rio_plain_lunch" },
+    // #3097 第3弾: 袋のラベルの言葉を、吸う人に伝わる方で選ぶ（はじめは客の言い方で答える）
+    { chapter: 2, scene: "ch2_rio_label_words" },
     { chapter: 3, scene: "ch3_prep_rio", prep: true },
     { chapter: 4, scene: "ch4_prep_rio", prep: true },
   ]),
@@ -308,6 +312,10 @@ export const CHAPTER_TALKS = Object.freeze({
     // #3097 PR-C: 券売機の回の続き（柚ヶ谷で迷って買った七つの林檎）と、初めての客への「在庫切れ」
     { chapter: 2, scene: "ch2_adam_yuzugaya_apples" },
     { chapter: 2, scene: "ch2_adam_out_of_stock" },
+    // #3097 第2弾（VOL20）: 皮が途切れた日は遠出しない決まりで、柚ヶ谷の林檎を一つだけ頼まれる
+    { chapter: 2, scene: "ch2_adam_apple_errand" },
+    // #3097 第3弾: 皮の長さの手帳。はじめが運んだ林檎は途切れなかった
+    { chapter: 2, scene: "ch2_adam_peel_record" },
     { chapter: 3, scene: "ch3_prep_adam", prep: true },
     { chapter: 4, scene: "ch4_prep_adam", prep: true },
   ]),
@@ -317,6 +325,10 @@ export const CHAPTER_TALKS = Object.freeze({
     // #3097 PR-C: 客の忘れ物の定期券と、ミントの強さの札。営業中の口調だけ（年齢・正体・♥段階に触れない）
     { chapter: 2, scene: "ch2_minto_lost_pass" },
     { chapter: 2, scene: "ch2_minto_mint_scale" },
+    // #3097 第2弾（VOL20）: 客のあだ名の手帳。営業中の口調だけ（年齢・正体・♥段階に触れない）
+    { chapter: 2, scene: "ch2_minto_nickname_notes" },
+    // #3097 第3弾: 「傘の人」が傘を忘れた日（手帳の回の続き）
+    { chapter: 2, scene: "ch2_minto_umbrella_day" },
     { chapter: 3, scene: "ch3_prep_minto", prep: true },
     { chapter: 4, scene: "ch4_prep_minto", prep: true },
   ]),

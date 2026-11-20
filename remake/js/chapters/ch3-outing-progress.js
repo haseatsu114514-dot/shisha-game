@@ -118,6 +118,10 @@ export const HOME_CALLS = Object.freeze([
   { scene: "ch3_home_call_sumi_pocket", from: "sumi", night: true },
   { scene: "ch3_home_call_kumicho_bow", from: "kumicho" },
   { scene: "ch3_home_call_rei_last_song", from: "rei", night: true },
+  // #3097 第3弾: みんと（東京編のチェキの枠）・スミさん（冷蔵庫のプリン）・サメちゃん（東京の水族館のシロワニ）
+  { scene: "ch3_home_call_minto_frame", from: "minto" },
+  { scene: "ch3_home_call_sumi_pudding", from: "sumi", night: true },
+  { scene: "ch3_home_call_samechan_aquarium", from: "samechan" },
 ].map(call => Object.freeze(call)));
 export const HOME_CALL_IDS = Object.freeze(HOME_CALLS.map(call => call.scene));
 /**

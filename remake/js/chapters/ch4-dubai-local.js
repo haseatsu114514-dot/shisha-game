@@ -7,6 +7,7 @@
 //   2. 屋台: スークの後に屋台で軽く買える（カラクチャイ・シャワルマ・ルカイマット）。時間は使わず、体力が少し戻る。
 //   3. ディルハム: ドバイの値段に、約何ディルハムかを添える（1ディルハム≒43.5円。DBS02 で調べた相場と同じ）。
 // 季節は正本に無いので書かない（日付・気温は出さず、「昼の暑さ」「夜の川風」までにする）。
+import { tournamentFinished } from "../core/story-context.js";
 
 // ---- ディルハム ---------------------------------------------------------------------------
 export const YEN_PER_DIRHAM = 43.5;
@@ -110,3 +111,48 @@ export const stallLabel = item => `${item.label} ${priceText(item.price)}`;
 /** 今の手持ちで買えるものだけ（並びはメニュー順）。 */
 export const stallChoices = money => STALL_MENU.filter(item => item.price <= (Number(money) || 0));
 export const stallItem = id => STALL_MENU.find(item => item.id === id) || null;
+
+// ---- 地元からの昼の電話 ------------------------------------------------------------------------
+// 宿で昼に休むと、日本（夜）の地元の人から電話が来る（#3097 第2弾・VOL20・2026-11-21 オーナー「交友を1章以降も厚く」）。
+// 台本は data/dialogue/ch4_home_calls.json。休む場面の代わりに未読の一本を読む（一度きり。休む場面の巡回は進めない）。
+// 夜はスミさんの電話（ch4-dubai-daily.js の SUMI_NIGHT_CALLS）が受け持つので、昼だけ（ドバイの昼＝日本の夜）。
+// LIMEの連絡先にいて、今ドバイに来ていない人だけ（present は ch4-beach.js の chapterFourBeachCast）。
+// 初回の休み（宿の部屋の場面）の後から。世界大会の前の暮らしの電話なので、大会の後は出さない（core/story-context.js）。
+export const HOME_DAY_CALL_FLAG = "_ch4_home_calls";
+// #3097 第3弾で、つむぎ・ましろ・綾取・スティーブの4本を間に足した（ドバイへ来る前の人から先に届くよう、地元の人と交互に並べる）。
+export const HOME_DAY_CALLS = Object.freeze([
+  { scene: "ch4_home_call_adam_apple", from: "adam" },
+  { scene: "ch4_home_call_tsumugi_sky", from: "tsumugi" },
+  { scene: "ch4_home_call_rio_scent", from: "rio" },
+  { scene: "ch4_home_call_kumicho_coffee", from: "kumicho" },
+  { scene: "ch4_home_call_mashiro_chai", from: "mashiro" },
+  { scene: "ch4_home_call_samechan_shark", from: "samechan" },
+  { scene: "ch4_home_call_minto_mint", from: "minto" },
+  { scene: "ch4_home_call_saku_menu", from: "saku" },
+  { scene: "ch4_home_call_rei_sound", from: "rei" },
+  { scene: "ch4_home_call_hiyori_train", from: "hiyori" },
+  { scene: "ch4_home_call_steve_timer", from: "steve" },
+  { scene: "ch4_home_call_ageha_gold", from: "ageha" },
+].map(call => Object.freeze(call)));
+// 電話の中で、かけてきた人のほかに話す人（mukai の開店前のムカイさん）
+export const HOME_DAY_CALL_EXTRA_SPEAKERS = Object.freeze({ ch4_home_call_mashiro_chai: Object.freeze(["mukai_master"]) });
+export const HOME_DAY_CALL_IDS = Object.freeze(HOME_DAY_CALLS.map(call => call.scene));
+/**
+ * 今、宿で休むと届く地元からの電話の台本ID（読むだけ）。無ければ null（いつもの休む場面を読む）。
+ * @param options.daytime 昼の休みか
+ * @param options.rested これまでに宿で休んだ回数（初回の休みは部屋の場面のまま）
+ * @param options.present 今ドバイにいる人の id の一覧
+ */
+export function homeDayCallId(value, { daytime = false, rested = 0, present = [] } = {}) {
+  if (!daytime || !(rested > 0) || value?.chapter !== 4 || tournamentFinished(value, 4)) return null;
+  const read = value.flags?.[HOME_DAY_CALL_FLAG] || {};
+  const contacts = Array.isArray(value.contacts) ? value.contacts : [];
+  const here = new Set(Array.isArray(present) ? present : []);
+  return HOME_DAY_CALLS.find(call => !read[call.scene] && contacts.includes(call.from) && !here.has(call.from))?.scene || null;
+}
+/** 電話を読んだ記録（読了後）。休む場面の巡回の回数は進めない。 */
+export function recordHomeDayCall(value, scene) {
+  if (!value?.flags || !HOME_DAY_CALL_IDS.includes(scene)) return false;
+  value.flags[HOME_DAY_CALL_FLAG] = { ...(value.flags[HOME_DAY_CALL_FLAG] || {}), [scene]: true };
+  return true;
+}

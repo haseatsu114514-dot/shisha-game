@@ -42,6 +42,10 @@ export const CH2_HOME_IDS = Object.freeze(["ch2_rest_notebook", "cafe_ch2_commut
   // ひよりの相席（hiyori.js の HIYORI_CH2_TALKS）
   "ch2_minto_lost_pass", "ch2_minto_mint_scale", "ch2_rio_rush_hour", "ch2_adam_yuzugaya_apples", "ch2_adam_out_of_stock", "ch2_naru_sign_light",
   "ch2_samechan_remora_seat", "ch2_samechan_spare_teeth", "ch2_hiyori_health_check", "ch2_hiyori_capsule_toy",
+  // #3097 第2弾（VOL20）: 地元の普段の会話の続き（みんと・凛想・アダムは CHAPTER_TALKS、サメちゃん・ひよりは各モジュール）
+  "ch2_minto_nickname_notes", "ch2_rio_plain_lunch", "ch2_adam_apple_errand", "ch2_samechan_poster", "ch2_hiyori_mirror_pose",
+  // #3097 第3弾: 同じ5人の続き
+  "ch2_minto_umbrella_day", "ch2_rio_label_words", "ch2_adam_peel_record", "ch2_samechan_menu_letters", "ch2_hiyori_commute_poem",
   // tonariの大会準備で一台作る場面（ch2-craft-prep.js の CH2_CRAFT_PREP_IDS と同じ。読み込みを軽くするため名前を並べる）
   "ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed",
   "ch2_prep_midcheck_intro", "ch2_prep_midcheck_good", "ch2_prep_midcheck_rough", "ch2_prep_midcheck_failed", "ch2_prep_rehearsal_intro",

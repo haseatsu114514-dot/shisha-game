@@ -90,6 +90,7 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_samechan_dubai_evening: "bg_dubai_inn_night",
   ch4_hiyori_dubai_evening: "bg_dubai_inn_night",
   ch4_mashiro_dubai_friend_evening: "bg_dubai_inn_night",
+  ...Object.fromEntries(["tsumugi", "minto", "rio", "ageha", "samechan", "hiyori"].map(id => [`ch4_${id}_dubai_friend_evening`, "bg_dubai_inn_night"])),
   // 大会当日の朝（4-4・SPC28・ch4-morning.js が組み立てる）。宿のロビー
   ch4_tournament_morning: "bg_dubai_inn_day",
   ch4_lovers_eve: "bg_dubai_inn_day",
@@ -190,7 +191,12 @@ export const CH4_ARRIVAL_EVENING_SCENES = Object.freeze({
   ageha: "ch4_ageha_dubai_evening", mashiro: "ch4_mashiro_dubai_evening",
   samechan: "ch4_samechan_dubai_evening", hiyori: "ch4_hiyori_dubai_evening",
 });
-export const CH4_FRIEND_ARRIVAL_EVENING_SCENES = Object.freeze({ mashiro: "ch4_mashiro_dubai_friend_evening" });
+// 恋人でない人の夕方（友人版の到着の後）。ましろ（#3097）に、#3097 第3弾で残りの6人を足した（前夜祭へ出かける前の短い時間）。
+export const CH4_FRIEND_ARRIVAL_EVENING_SCENES = Object.freeze({
+  tsumugi: "ch4_tsumugi_dubai_friend_evening", minto: "ch4_minto_dubai_friend_evening", rio: "ch4_rio_dubai_friend_evening",
+  ageha: "ch4_ageha_dubai_friend_evening", mashiro: "ch4_mashiro_dubai_friend_evening",
+  samechan: "ch4_samechan_dubai_friend_evening", hiyori: "ch4_hiyori_dubai_friend_evening",
+});
 const CH4_MAIN_EVENING_SCENES = Object.freeze([CH4_ARRIVAL_EVENING_SCENES.samechan, CH4_ARRIVAL_EVENING_SCENES.hiyori]);
 
 // 台本の読み込み対象（ch4.js が FILES に使う）。
