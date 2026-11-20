@@ -162,6 +162,10 @@ export function openBoard({ place = null, onExit = null } = {}) {
   const ZOOM_MIN = Math.min(VIEW_W / W, VIEW_H / H), ZOOM_START = 1, ZOOM_MAX = 1.5;
   let zoom = ZOOM_START;
   const side = el("div.gb-side", { dataset: { test: "board-preview" }, "aria-live": "polite" });
+  // 説明が下端の枠（支払いの行とボタン）の後ろへ続いている間の印（#3987）。スマホ横では枠の上に影を出して、送れば読めると知らせる
+  const markMore = () => { side.dataset.more = String(side.scrollHeight - side.scrollTop - side.clientHeight > 1); };
+  side.addEventListener("scroll", markMore, { passive: true });
+  if (typeof ResizeObserver === "function") new ResizeObserver(markMore).observe(side);
   const footer = el("div.gb-footer");
   const root = el(`div.gboard${canLight ? ".can-light" : ".view-only"}`, { role: "dialog", "aria-modal": "true", "aria-label": "心得の盤", dataset: { test: "growth-board", mode: canLight ? "light" : "view" } }, [
     header,
@@ -599,7 +603,7 @@ export function openBoard({ place = null, onExit = null } = {}) {
 
   function renderSide(v) {
     const node = selected ? NODE_BY_ID[selected] : null;
-    if (!node || node.board !== board) { side.replaceChildren(...boardSummary(v)); return; }
+    if (!node || node.board !== board) { side.replaceChildren(...boardSummary(v)); markMore(); return; }
     const st = status(node, v), shown = revealOf(node);
     const lines = [];
     const portrait = panelPortrait(node, shown);
@@ -667,7 +671,9 @@ export function openBoard({ place = null, onExit = null } = {}) {
       lines.push(lessonFlow(node, st, v));
     }
     if (g.target === node.id && st !== "unlocked") lines.push(el("p.gb-p-target", { dataset: { test: "board-target-line" }, text: targetText(node.id, v) }));
-    lines.push(el(`p.gb-p-state.s-${st}`, { text: stateText(node, st, v) }));
+    // 支払い・今の状態の一行は、ボタンと同じ下端の枠に入れる（#3987。スマホ横では枠ごとパネル下端に残し、説明だけを送る。
+    // 844×390 で「白火1で払う」が固定のボタンの後ろに隠れていた）。PC は枠が display: contents で、今までと同じ並び
+    const stateLine = el(`p.gb-p-state.s-${st}`, { text: stateText(node, st, v) });
     const actions = [];
     if (canLight && st === "available") actions.push(el("button.btn.primary.gb-light", { text: node.kind === "gate" ? `はめる（${payText(paymentFor(node, v.hidane, v.ctx))}）` : node.cost ? `灯す（火種${node.cost}）` : "教わる", dataset: { test: "board-light" }, onclick: () => light(node.id) }));
     if (st === "pending") actions.push(el("button.btn.gb-undo", { text: "やめる", dataset: { test: "board-undo" }, onclick: () => unlight(node.id) }));
@@ -675,7 +681,10 @@ export function openBoard({ place = null, onExit = null } = {}) {
       actions.push(el("button.btn.gb-aim", { text: g.target === node.id ? "目標をやめる" : "目標にする", dataset: { test: "board-target" }, onclick: () => toggleTarget(node.id) }));
       if (canLight && g.target === node.id && st !== "available") actions.push(el("button.btn.gb-aim", { text: "目標まで灯す", dataset: { test: "board-towards" }, onclick: () => towards(node.id) }));
     }
-    side.replaceChildren(...lines.filter(Boolean), el("div.gb-side-actions", actions));
+    // ボタンの無い時（灯してあるマスなど）は枠を作らず、説明の続きに置く（下端に残すものが無い）
+    const actionBox = el("div.gb-side-actions", actions);
+    side.replaceChildren(...lines.filter(Boolean), ...(actions.length ? [el("div.gb-side-foot", [stateLine, actionBox])] : [stateLine, actionBox]));
+    markMore();
   }
 
   /** 同じ効果を持っている時の一文（#1801 U2）。灯す前に「重ねても増えない」と知らせるだけで、値・火種は変えない */

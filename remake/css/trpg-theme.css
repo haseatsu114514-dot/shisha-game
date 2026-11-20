@@ -637,6 +637,10 @@ html:root .trpg-root.trpg-cinematic .trpg-builder-origin:hover:not(:disabled) { 
 html:root .trpg-root.trpg-cinematic .trpg-builder-origin.selected { border-color: #8a6524; background: #f7e7bf; box-shadow: inset 0 0 0 2px #d9ad4f; }
 html:root .trpg-root.trpg-cinematic .trpg-builder-origin-art { border-color: #c9b07a; }
 html:root .trpg-root.trpg-cinematic .trpg-builder :is(.trpg-builder-points, .trpg-builder-easy, .trpg-builder-hint, .trpg-builder-stat-help, .trpg-builder-stat-rows dt, .trpg-builder-stat-rows dd > span) { color: #3d2c16; }
+/* 「残り N 点」（能力を自分で振る）: 深緑の箱の時の淡い黄・淡い緑のままで、紙の上では読めなかった（#3199）。
+   紙の上で読める濃さにする。残っている時は琥珀、振り終えた（0点）時は緑。 */
+html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-points strong { color: #7d420c; }
+html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-points[data-left="0"] strong { color: #276032; }
 html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-stat-rows i b { background: #d8cbad; }
 html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-stat-rows i b.lit { background: linear-gradient(180deg, #e7b955, #b8862c); }
 html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-button:not(.trpg-builder-origin):not(.trpg-help-button) { border-color: #8a6524; background: #2f5a55; color: #fff6df; }
@@ -1255,6 +1259,15 @@ html:root[data-density="phone"] .trpg-campaign[data-view="shelf"] .trpg-campaign
 @media (min-width: 1001px) and (min-height: 601px) {
   html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene { min-height: 132px; }
   html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene .trpg-dice-row { margin: 8px 0; }
+  /* 「判定の詳細」を開いた時（#3199・TRF24 の残件）: 見通しの表がトレイ・切り札の札の下に積まれ、卓の中を下へ送らないと見えなかった
+     （切り札の札がある判定で 145px はみ出し）。開いている間だけ、トレイと切り札の札を左、詳細（判定の説明・見通しの表）を右に並べる。
+     決まりの一文・成功のごほうび・誰が何で は上に通しで残す。表の数字は今までと同じ（見せ方だけ）。 */
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-auto-flow: row dense; column-gap: 28px; align-items: start;
+  }
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) > * { grid-column: 1 / -1; }
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) > :is(.trpg-roll-scene, .trpg-aid, .trpg-aid-spent) { grid-column: 1; }
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-roll-details[open] { grid-column: 2; grid-row: span 2; max-width: none; margin: 8px 0 0; }
 }
 
 /* ---- 役の姿は「紙のコマ」（TRF26）: 暗い場面に立つ時（判定のカットイン・物語の中の役の台詞）は、人物のまわりに生成りの紙の縁を付ける。

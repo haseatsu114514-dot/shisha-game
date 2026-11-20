@@ -659,7 +659,7 @@ export async function deliverToRival(spot) {
     addMoney(RIVAL_DELIVERY_PAY);
     gainExp(EXP.tutorial, { key: `ch1_delivery_${charId}`, tag: "配達" });
     save(); // 手当・経験値・納品済みは同じ保存に入り、再入店やLOADで増やさない。
-    toast(`配達の手当 +${RIVAL_DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
+    toast(`配達の手当 +${RIVAL_DELIVERY_PAY.toLocaleString()}円`, { kind: "good" });
     return true;
   } finally {
     deliveriesInFlight.delete(owner);

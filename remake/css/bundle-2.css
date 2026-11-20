@@ -1754,8 +1754,6 @@ html:root[data-ui-theme="paper"] .gboard.has-art .gb-side {
   border-image: var(--paper-art) 72 fill / 22px / 0 stretch; box-shadow: none; filter: drop-shadow(0 6px 14px #110a2233); padding: 4px 8px 4px;
 }
 html:root[data-ui-theme="paper"] .gb-side::before, html:root[data-ui-theme="paper"] .gb-side::after { display: none; }
-/* スマホ幅で下に留まるボタンの帯も紙の色に（暗い帯のままだと、紙の説明文の上に黒い箱が載って読めない。2026-11-20 SBD155 の確認で発見） */
-html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .gboard .gb-side-actions { background: var(--paper); }
 html:root[data-ui-theme="paper"] .gb-p-title { color: var(--lavender); }
 html:root[data-ui-theme="paper"] :is(.gb-p-sub, .gb-p-state, .gb-hint) { color: var(--paper-muted); font-weight: 700; letter-spacing: .02em; }
 html:root[data-ui-theme="paper"] .gb-p-next { color: var(--paper-ink); }

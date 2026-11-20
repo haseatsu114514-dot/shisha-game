@@ -23,4 +23,17 @@ export function buildTrackData(channelData, sampleRate, cfg) {
  for(let i=0;i<channelData.length;i++){const bucket=Math.floor(i*8192/channelData.length);peaks[bucket]=Math.max(peaks[bucket],Math.abs(channelData[i]));}
  return {nativeBpm:cfg.bpm,duration,firstBeat:cfg.firstBeat,beats:Math.floor(((duration-cfg.firstBeat)*cfg.bpm/60)/4)*4,peaks};
 }
+/** 試聴（DJK06・#2456 §3）: where a track shows what it is — the loudest `bars` bars of its loop (bar-aligned, from the waveform peaks),
+ *  so a card's preview plays the drop instead of a quiet intro. Beats from the first beat; worked out once per track. */
+export function previewBeat(track, bars = 2) {
+ if (Number.isFinite(track.previewBeat)) return track.previewBeat;
+ const beatSec = 60 / track.nativeBpm, k = track.peaks.length / track.duration, last = Math.floor(track.beats / 4) - bars;
+ let best = 0, top = -1;
+ for (let bar = 0; bar <= last; bar++) {
+  const a = Math.floor((track.firstBeat + bar * 4 * beatSec) * k), b = Math.floor((track.firstBeat + (bar + bars) * 4 * beatSec) * k);
+  let sum = 0; for (let i = Math.max(0, a); i < b && i < track.peaks.length; i++) sum += track.peaks[i];
+  const mean = sum / Math.max(1, b - a); if (mean > top + 1e-9) { top = mean; best = bar * 4; }
+ }
+ return (track.previewBeat = best);
+}
 export function peakAt(track, sec) {return track.peaks[Math.max(0,Math.min(track.peaks.length-1,Math.floor(sec/track.duration*track.peaks.length)))];}
