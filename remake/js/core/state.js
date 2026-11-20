@@ -7,7 +7,7 @@ import { MAX_MONEY, TOURNAMENT_DAY, KUJI_TICKET_MAX } from "./rules.js";
 import { MASTERY_THRESHOLDS, RENAMED_MASTERY_KEYS, learnFlavorStory } from "./flavor-mastery.js";
 import { emit } from "./bus.js";
 import { recordGalleryProgress } from "./gallery-progress.js";
-import { STARTER_HIDANE, STARTER_FLAG } from "./growth-starter.js";
+import { LEGACY_STARTER_HIDANE, STARTER_FLAG } from "./growth-starter.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
@@ -523,11 +523,11 @@ function migrate(s) {
   if (!Number.isFinite(s.playMs) || s.playMs < 0) s.playMs = 0;
   if (s.playMsFull !== true) s.playMsFull = false;
   // schema27以前は初回の白火6を所持にだけ加算した。実際に渡した印がある保存だけ、
-  // 所持・支払を動かさず累計へ一度だけ足す。すでに198を通常獲得した保存も没収しない。
+  // 所持・支払を動かさず累計へ一度だけ足す。すでに上限まで通常獲得した保存も没収しない。
   if (oldSchema < 28 && s.flags[STARTER_FLAG] === true && s.growth && typeof s.growth === "object"
     && !Array.isArray(s.growth) && s.growth.starterAccounted !== true) {
     const earned = s.growth.earned;
-    s.growth.earned = (Number.isFinite(earned) && earned > 0 ? Math.floor(earned) : 0) + STARTER_HIDANE;
+    s.growth.earned = (Number.isFinite(earned) && earned > 0 ? Math.floor(earned) : 0) + LEGACY_STARTER_HIDANE;
     s.growth.starterAccounted = true;
   }
   s.schema = SCHEMA;

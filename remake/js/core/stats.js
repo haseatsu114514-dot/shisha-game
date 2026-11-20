@@ -328,7 +328,10 @@ export const BOND_PACE = 0.5;
  */
 export const VISIT_AFFINITY = Object.freeze({ story: 16, talk: 8 });
 export const SLOW_VISIT_AFFINITY = Object.freeze({ story: 10, talk: 5 });
-export const visitAffinity = (kind, s = state) => (s?.chapter >= 5 ? SLOW_VISIT_AFFINITY : VISIT_AFFINITY)[kind];
+/** 聞き上手（心得の盤のスキル K25。SBD154）: 通いの小会話の好感度に足す点。growth-effects.js の SKILL_TUNING.listen と同じ値 */
+export const LISTEN_BONUS = 2;
+export const visitAffinity = (kind, s = state) => (s?.chapter >= 5 ? SLOW_VISIT_AFFINITY : VISIT_AFFINITY)[kind]
+  + (kind === "talk" && expHooks?.enabled?.() && expHooks.skill?.(s, "K25") ? LISTEN_BONUS : 0);
 
 // 会話のmetadata報酬と訪問終了の報酬は別々に加算される。同じ相手の通知だけを
 // ステ通知と同じ時間窓で合算し、最初のハートから最後のハートまで一枚で見せる。
