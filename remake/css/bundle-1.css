@@ -11089,27 +11089,33 @@ html:root[data-density="phone"] body:not(:root) .lvup-face { width: 64px; height
 .lvup.has-art.gift .lvup-rays { opacity: 0.45; }
 html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 140px; }
 
-/* #3938: 第1章のクリア時だけ右下の余白へ。通知は独立したキューなので、
-   出す順を変えず、先に出ている札も後から届く札も同じ場所に収める。 */
-#screen:has(> .ch1-clear) ~ #fx .lvup {
+/* #3938: 章のクリア画面（.chapter-clear）だけ、札を本文の外の余白へ。通知は独立したキューなので、
+   出す順を変えず、先に出ている札も後から届く札も同じ場所に収める。
+   第1章のクリア画面は右下の余白（ボタンの横）。 */
+#screen:has(> .chapter-clear) ~ #fx .lvup {
   --plate-h: 86px; top: auto; left: auto; right: 20px; bottom: 20px; translate: none;
   max-width: 390px; transform-origin: bottom right;
 }
-#screen:has(> .ch1-clear) ~ #fx .lvup-plate {
+/* 第2〜5章の「第N章・完」のカード（.ch2-contest）は、ボタンの列の上、カードの右下の空き。
+   右端はカードの中身の右端（MENU の右端）にそろえ、下端はどの画面幅でもボタンの列より上に置く。 */
+#screen:has(> .ch2-contest.chapter-clear) ~ #fx .lvup { right: 93px; bottom: 150px; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-plate {
   height: auto; min-height: var(--plate-h); grid-template-columns: auto minmax(0, 1fr);
   padding: 8px 34px; column-gap: 12px;
 }
-#screen:has(> .ch1-clear) ~ #fx .lvup-fires { gap: 6px 10px; padding-left: 12px; flex-wrap: wrap; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-head { font-size: 24px; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-lv b { font-size: 38px; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-lv:has(small) { display: grid; gap: 0; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-lv small { font-size: 20px; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-none { padding-left: 10px; white-space: normal; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-fire .hidane-icon { width: 38px; height: 38px; }
-#screen:has(> .ch1-clear) ~ #fx .lvup-fire b { font-size: 34px; }
-/* 大きな光と、非表示のMENUへ飛ぶ粒を本文に重ねない。札の中の動きはそのまま。 */
-#screen:has(> .ch1-clear) ~ #fx :is(.lvup-rays, .gfx-ring, .gfx-spark, .gfx-fly),
-#screen:has(> .ch1-clear) ~ #fx .lvup.milestone::before { display: none; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-fires { gap: 6px 10px; padding-left: 12px; flex-wrap: wrap; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-head { font-size: 24px; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-lv b { font-size: 38px; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-lv:has(small) { display: grid; gap: 0; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-lv small { font-size: 20px; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-none { padding-left: 10px; white-space: normal; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-fire .hidane-icon { width: 38px; height: 38px; }
+#screen:has(> .chapter-clear) ~ #fx .lvup-fire b { font-size: 34px; }
+/* 大きな光と、非表示のMENUへ飛ぶ粒を本文に重ねない。札の中の動きはそのまま。
+   消す光と粒は、札が #fx の直下に出すものだけ（MENU や観音堂から開いた心得の盤の中の光は消さない）。 */
+#screen:has(> .chapter-clear) ~ #fx > :is(.gfx-ring, .gfx-spark, .gfx-fly),
+#screen:has(> .chapter-clear) ~ #fx .lvup-rays,
+#screen:has(> .chapter-clear) ~ #fx .lvup.milestone::before { display: none; }
 
 /* ---------------------------------------------------------------- レベルアップと火種の演出の強化（2026-11-11 オーナー「見た目や演出など全面的にパワーアップさせて」SBD103）
    部品は js/daily/growth-fx.js。動くのは transform と opacity だけ（広い面のぼかし・ノイズは使わない）。動きを減らす設定では止める */

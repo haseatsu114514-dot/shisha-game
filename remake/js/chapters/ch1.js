@@ -981,7 +981,7 @@ export async function showClear() {
     } catch { toast("第2章を読み込めなかった。通信を確認して、もう一度試してください"); }
     finally { playing = false; next.disabled = false; }
   } });
-  const root = el("div.end-screen.clear.ch1-clear", [
+  const root = el("div.end-screen.clear.chapter-clear", [
     el("div.end-title", { text: "第1章 クリア" }),
     el("div.end-sub", { text: "SMOKE CROWN CUP 優勝 ── 勝ちは、始まりだった。" }),
     el("div.end-body", [
