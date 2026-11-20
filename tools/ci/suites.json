@@ -1229,7 +1229,7 @@
     },
     {
       "id": "departure-home-talks",
-      "title": "Chapter 3/4 prep days at home: one send-off talk each from Adam, Minto, Rio and Samechan, read once on a prep-day visit (N3a)",
+      "title": "Chapter 3/4 prep days at home: one send-off talk each from Adam, Minto, Rio, Samechan, Tsumugi, Hiyori, Ageha, Kumicho and Cloud, read once on a prep-day visit (N3a, #3097 PR-I)",
       "kind": "quick",
       "run": ["node --experimental-vm-modules remake/test/departure_home_talks.mjs"]
     },
@@ -2392,6 +2392,8 @@
         "remake/js/daily/hud.js",
         "data/dialogue/ch3_departure.json",
         "data/dialogue/ch3_ch4_home.json",
+        "data/dialogue/ch4_prep_home.json",
+        "remake/js/daily/hiyori.js",
         "remake/js/daily/spots.js",
         "remake/js/daily/samechan.js",
         "remake/test/browser/ch3_departure_prep.mjs"
