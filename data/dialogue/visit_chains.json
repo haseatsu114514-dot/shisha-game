@@ -2898,6 +2898,153 @@
       }
     },
     {
+      "dialogue_id": "ch5_chain_flag_3",
+      "comment": "第5章 屋敷の中庭の太陽、通いの続き（#4010）3/3（2/3の翌日以降）。屋敷のみんなに旗を配り終えた太陽の分だけが無い（作る係は、もらう係をやらない）。はじめが余った紙で太陽の旗を作る。書く一語は1/3で選んだのと同じ言葉（chain_pick）で、今度は太陽に向けた意味で書く。太陽は旗を自分のシャツの胸ポケットに挿す（2/3で、はじめが太陽の旗を胸ポケットに挿したのと対）。「店の旗は、客のもの。……これは、俺のだ」。家族史・育ち・大会・「カカッテコイ」・「〜もフェスタ」は使わない。時間帯を言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "中庭の低い卓に、旗を作った紙の残りが積んであった。緑と黄色の、最後の数枚。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "ハジメ！　屋敷のみんなに、全部配った。庭番のじいさんも、厨房のおばちゃんも"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "太陽さんの分は、あるんですか"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "surprise",
+          "text": "……俺の？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽は卓の上を見下ろした。旗は、一本も残っていなかった。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "作る係が、もらう係やると、店が回らねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、今日は俺が作る係です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "余った紙に、緑と黄色を塗った。乾くのを待って、裏に一語だけ書く。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch5_chain_flag_1",
+          "pick": "otsukare",
+          "next_true": "for_otsukare",
+          "next_false": "for_other"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽は旗を受け取ると、しばらく指でつまんで眺めていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それから、シャツの胸ポケットに挿した。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "自分の旗、初めてだ"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "店の旗は、客のもの"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "……これは、俺のだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "噴水の前で、二人の胸ポケットから、同じ緑と黄色がのぞいていた。"
+        }
+      ],
+      "branches": {
+        "for_otsukare": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「おつかれさま」。旗を作って、配って、一日じゅう走り回っていた人に。"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "surprise",
+            "text": "……俺が、言われる側か"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "smile",
+            "text": "これ、いいな。一日の終わりに、読む"
+          }
+        ],
+        "for_other": [
+          {
+            "type": "condition",
+            "condition_type": "chain_pick",
+            "scene": "ch5_chain_flag_1",
+            "pick": "mata",
+            "next_true": "for_mata",
+            "next_false": "for_arigato"
+          }
+        ],
+        "for_mata": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「またあした」。休暇が終わっても、また会えるように。"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "smile",
+            "text": "明日も、来るのか"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "smile",
+            "text": "……休暇、延ばすかな"
+          }
+        ],
+        "for_arigato": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「ありがとう」。いちばん多く言っていて、たぶん、いちばん言われていない言葉。"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "excited",
+            "text": "アリガトウ！　……言うのは、慣れてる"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "もらうのは、慣れてねえな"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "ch5_chain_pair_1",
       "comment": "第5章 シェイクの屋敷、通いの続き（#4010・#4016）1/2。小会話3本（ch5_dubai_sheikh・_b・_c）の後。段階の会話・締めくくりを前提にしない。狙い: 「誰も本音で接してくれない」孤独（characters.json の background_secret）を、屋敷の中で一度だけ破る。ch5_dubai_sheikh_c の「部屋で聞くと、皆が先に『最高です』と言う」を言い直さず、練習用の小さな台を二つ前にして困っている具体で見せる（ch5_dubai_letter_bond_2 の「君が来る日には、隣にもう一台置いておく」を読んだ人には呼応になる）。はじめが、どちらが誰の台か伏せて二台とも出すことを提案。シェイク「名を伏せるのは、旅装の時しかしたことがない」（第4章の旅人の三度は本編で全員が読む）。誰に吸ってもらうかを、はじめが選ぶ（pair_taster: coffee＝コーヒーの係の若い使用人／coal＝炭場の年配の使用人）。シェイクが選ぶと名が出る、という理由ではじめに任せる。使用人は日本語を話さない（ここでは出さない）。金の台・決勝・スミさん・王煙楼・「友人」には触れない。時間帯を言わない。",
       "lines": [
@@ -3253,6 +3400,197 @@
             "speaker": "sheikh",
             "face": "smug",
             "text": "次は、目を閉じた彼に、私の台を選ばせる"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_chain_tea_1",
+      "comment": "第4章 龍龍水煙所（王煙楼のドバイの店）の通いの続き（#4010）1/2。小会話3本の後（ch4-longlong.js の talks）。段階・締めくくりを前提にしない。本店のある街からドバイへ働きに来ている若い客が、毎日茶を一杯だけ飲んで帰る。王煙楼が「明日の茶」をはじめに選ばせる（tea_pick: home＝本店の街の茶／here＝ドバイの市場の甘い茶）。王煙楼は格言で語らず、選んだ茶筒に印をつける手で見せる（反応は短い一言だけ）。客は日本語を話さない（ここでは話さない）。大会・前夜祭・シェイク・ライチには触れない。時間帯を言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "龍龍水煙所の隅の席で、若い客が一人、茶だけを飲んでいた。台は頼んでいない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの人、前にもいましたね"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "毎日だよ。本店のある街から、こちらへ働きに来ている人だ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "茶を一杯。それだけ飲んで、帰っていく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は杯を両手で包んだまま、湯気の消えた茶を見ていた。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "……明日の茶を、君に選んでもらおうかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺が、ですか"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "私が選ぶと、毎日同じになる。同じでいいのか、分からなくなってね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼は、棚の茶筒を二つ並べた。本店から持ってきた茶と、ドバイの市場で買った甘い茶。"
+        },
+        {
+          "type": "choice",
+          "id": "tea_pick",
+          "choices": [
+            {
+              "text": "本店の街の茶にする",
+              "next": "home"
+            },
+            {
+              "text": "ドバイの甘い茶にする",
+              "next": "here"
+            }
+          ]
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "いい。明日は、それを淹れよう。淹れるのは、君だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼は、選んだ茶筒にだけ、指で小さく印をつけた。"
+        }
+      ],
+      "branches": {
+        "home": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "遠くで働いている時は、慣れた味が欲しくなる気がして"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "そうだね。……慣れた味は、遠くの景色も連れてくるけれど"
+          }
+        ],
+        "here": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ここにいる間の味も、あっていい気がして"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "そうだね。……甘い茶は、ここの人の飲み方だ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_chain_tea_2",
+      "comment": "第4章 龍龍水煙所の通いの続き（#4010）2/2（1/2の翌日以降）。はじめが選んだ茶を淹れる（最初の湯は捨てる＝店のやり方。説明はしない）。客の答えは1/2の選択（chain_pick）で分ける。home: 母の店の茶と同じだと言い、帰る前に一度だけ水煙を吸ってみたいと初めて台を頼む。here: 甘すぎると笑ってもう一杯頼み、隣の席の人と話し出して帰らない。客は日本語を話さないので、言葉は王煙楼が訳す（地の文と、王煙楼の台詞）。締めは、明日の茶もまた聞こう、と注ぎ足す手。大会・前夜祭・シェイク・ライチには触れない。時間帯を言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隅の席に、今日も同じ客が座った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼に目で促されて、昨日選んだ茶を淹れた。最初の湯は、捨てる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "杯を置くと、客は一口飲んで、手を止めた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch4_chain_tea_1",
+          "pick": "home",
+          "next_true": "drink_home",
+          "next_false": "drink_here"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "明日も、来ますかね"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "来るよ。……明日の茶は、また君に聞こう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼は、空いた杯を下げる前に、もう一度だけ茶を注ぎ足した。"
+        }
+      ],
+      "branches": {
+        "drink_home": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "客は短く何か言った。王煙楼が、少し間を置いて訳す。"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "母の店の茶と同じだ、と"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "客は杯を置くと、初めて、壁ぎわに並んだ水煙の台を指さした。"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "smile",
+            "text": "帰る前に、一度吸ってみたいそうだ"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "smile",
+            "text": "……私が詰めよう"
+          }
+        ],
+        "drink_here": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "客は目を丸くして、それから声を出して笑った。"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "smile",
+            "text": "甘すぎる、だそうだ。……でも、もう一杯、と"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "二杯目を飲むあいだに、客は隣の席の人に話しかけていた。杯が空いても、まだ帰らなかった。"
           }
         ]
       }

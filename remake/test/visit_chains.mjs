@@ -43,6 +43,13 @@ const save = (extra = {}) => ({ chapter: 3, day: 40, slot: 0, phase: "daily", fl
   assert.equal(chainStageAt(taiyo, "ch5_dubai_taiyo")?.stage.id, "ch5_chain_flag_1");
   assert.equal(chainStageAt(taiyo, "ch5_dubai_sheikh"), null, "屋敷のシェイクには無い");
   assert.equal(chainStageAt({ ...taiyo, chapter: 4 }, "ch5_dubai_taiyo"), null, "第5章の外では開かない");
+  // 第4章の龍龍水煙所（#4010）: 小会話3本の後。第4章のドバイの間だけ。壊れた記録は0本として読む
+  const wang = save({ chapter: 4, flags: { _ch4_longlong: { read: {}, talks: 2 } } });
+  assert.equal(chainStageAt(wang, "longlong"), null, "小会話2本では開かない");
+  wang.flags._ch4_longlong.talks = 3;
+  assert.equal(chainStageAt(wang, "longlong")?.stage.id, "ch4_chain_tea_1");
+  assert.equal(chainStageAt({ ...wang, chapter: 5 }, "longlong"), null, "第4章の外では開かない");
+  for (const broken of [null, 3, [], { talks: "x" }]) assert.equal(chainStageAt(save({ chapter: 4, flags: { _ch4_longlong: broken } }), "longlong"), null);
   // 第5章のシェイクの屋敷（#4016）: 小会話3本の後。中庭の太陽には出ない
   const sheikh = save({ chapter: 5, flags: { _ch5_dubai_talks: { ch5_dubai_sheikh: 2, ch5_dubai_taiyo: 3 } } });
   assert.equal(chainStageAt(sheikh, "ch5_dubai_sheikh"), null, "小会話2本では開かない");
@@ -204,6 +211,7 @@ const opened = {
   ch5_alley_gift: { chapter: 5, slot: 1, flags: { _ch5_dubai_talks: { ch5_dubai_alley: 3 } } },
   ch5_taiyo_flag: { chapter: 5, flags: { _ch5_dubai_talks: { ch5_dubai_taiyo: 3 } } },
   ch5_sheikh_pair: { chapter: 5, flags: { _ch5_dubai_talks: { ch5_dubai_sheikh: 3 } } },
+  ch4_longlong_tea: { chapter: 4, flags: { _ch4_longlong: { read: {}, talks: 3 } } },
 };
 const endings = {};
 for (const [chainId, chain] of Object.entries(VISIT_CHAINS)) {

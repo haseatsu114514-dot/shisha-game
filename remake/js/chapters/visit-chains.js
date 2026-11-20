@@ -6,9 +6,10 @@
 //   第3章 mukai: 豆腐屋の常連さんの相談を聞く → 常連さんの台で一台を試す → 後日、家で作った報告を聞く
 //   第4章 中心地のカフェ→宿→カフェ: ボウルだけ替える頼み方を知る → 宿で二つ目を試す → 店で感想を交わす
 //   第4章 スーク: スパイス屋の店主に鼻を貸す → 強すぎた香りの直し方 → カフェの主人の礼（#3097）
+//   第4章 龍龍水煙所: 毎日茶だけ飲む客に、明日の茶を選ぶ → その茶を淹れる（#4010）
 //   第5章 Smoke & Glory: tonariで作った一台を覚えている客 → スティーブの台で作る → スティーブのカードの余白
 //   第5章 路地裏のカフェ: いつもの一台を出してくれる店員に、閉店後の一台を渡す
-//   第5章 屋敷の中庭の太陽: 庭番へ渡す旗に日本の一語を書く → 太陽の書いた同じ一語を受け取る（#4010）
+//   第5章 屋敷の中庭の太陽: 庭番へ渡す旗に日本の一語を書く → 太陽の書いた同じ一語を受け取る → 太陽の旗を作る（#4010）
 //   第5章 シェイクの屋敷: 誰の台か伏せて二台を出す → 選んだ客役が手で答える（#4010）
 // 先の段で選んだ答え（choice の分岐名）を記録し、後の段の台本が条件 chain_pick で読む。実際の制作の結果など、その場で
 // 決まる事実は呼び出し側が facts で渡し、台本は条件 chain_fact で読む（chapters/visit-chain-play.js）。
@@ -99,6 +100,16 @@ export const VISIT_CHAINS = Object.freeze({
       stage({ id: "ch4_chain_spice_3", place: "souq" }),
     ]),
   }),
+  // 第4章のドバイ（#4010）。龍龍水煙所（王煙楼の店）の小会話を3本読むと開く（段階の会話・締めくくりが読める来店はそちらが先。
+  // ch4-dubai-daily.js）。毎日茶だけ飲む本店の街の客に、はじめが明日の茶を選ぶ → 後日、その茶を淹れる。
+  ch4_longlong_tea: Object.freeze({
+    chapter: 4,
+    opens: value => count(plain(value?.flags?._ch4_longlong) ? value.flags._ch4_longlong.talks : 0) >= 3,
+    stages: Object.freeze([
+      stage({ id: "ch4_chain_tea_1", place: "longlong", choice: "tea_pick", picks: ["home", "here"] }),
+      stage({ id: "ch4_chain_tea_2", place: "longlong" }),
+    ]),
+  }),
   // 第5章の東京。Smoke & Glory の小会話を一通り読むと開く（♥5の締めくくりの来店はそちらが先）。
   ch5_steve_guest: Object.freeze({
     chapter: 5,
@@ -119,13 +130,16 @@ export const VISIT_CHAINS = Object.freeze({
     ]),
   }),
   // 第5章のドバイ（#4010）。中庭の太陽の小会話を一通り読むと開く。段階の会話・締めくくりが読める来店は、そちらが先（ch5-dubai.js）。
-  // 太陽に頼まれて、屋敷の庭番へ渡す旗に日本の一語を書く → 後日、旗の行き先を見て、太陽の書いた同じ一語を受け取る。
+  // 太陽に頼まれて、屋敷の庭番へ渡す旗に日本の一語を書く → 後日、旗の行き先を見て、太陽の書いた同じ一語を受け取る
+  // → 配り終えた太陽の分だけ無い旗を、はじめが作る。
   ch5_taiyo_flag: Object.freeze({
     chapter: 5,
     opens: value => talksRead(value, "_ch5_dubai_talks", "ch5_dubai_taiyo") >= 3,
     stages: Object.freeze([
       stage({ id: "ch5_chain_flag_1", place: "ch5_dubai_taiyo", choice: "flag_word", picks: ["otsukare", "mata", "arigato"] }),
       stage({ id: "ch5_chain_flag_2", place: "ch5_dubai_taiyo" }),
+      // 3段目（#4010）: 配り終えた太陽の分だけ無い旗を、はじめが作る（1段目と同じ一語）
+      stage({ id: "ch5_chain_flag_3", place: "ch5_dubai_taiyo" }),
     ]),
   }),
   // 第5章のドバイ（#4010・#4016）。シェイクの屋敷の小会話を一通り読むと開く。段階の会話・締めくくりが読める来店は、そちらが先。
