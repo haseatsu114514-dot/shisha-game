@@ -144,10 +144,13 @@ export async function stepSetup(cs) {
     const preview = el("div", [equipmentPreview(cs)]);
     panel.append(preview);
     panel.append(el("button.btn.small.equipment-compare", { type: "button", text: "性能を見比べる", dataset: { test: "setup-compare" },
-      // 一式の性能の表（スマホでは画面に出さない）も、この中で読める（PHN）
-      onclick: () => modal({ title: `${label}を見比べる`, className: "flavor-guide-dialog", body: el("div", [el("div.equipment-compare-list", owned.map(item =>
-        el("section", [el("b", { text: item.name }), equipmentGuide(item, currentId)]))), el("div.equipment-compare-set", [equipmentPreview(cs)])]),
-      options: [{ label: "選択に戻る", primary: true, test: "setup-compare-close" }] }),
+      onclick: () => {
+        const list = el("div.equipment-compare-list", owned.map(item => el("section", [el("b", { text: item.name }), equipmentGuide(item, currentId)])));
+        modal({ title: `${label}を見比べる`, className: "flavor-guide-dialog", body: list,
+          options: [{ label: "選択に戻る", primary: true, test: "setup-compare-close" }] });
+        // 一式の性能の表（スマホでは画面に出さない）も、この中で読める（PHN）。一覧の子は機材の数のまま、表は一覧の後ろに添える
+        list.after?.(el("div.equipment-compare-set", [equipmentPreview(cs)]));
+      },
     }));
     cs.equip[type] = await choose(panel, owned.map((e) => {
       const disabled = !compatible(e);
