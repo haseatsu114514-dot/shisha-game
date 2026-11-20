@@ -626,6 +626,25 @@
       ]
     },
     {
+      "id": "board-focus-browser",
+      "title": "Growth board keyboard focus (aria-modal, Tab/Shift+Tab stay inside, redraws keep focus, close returns to MENU) and the same-effect note (#1801 U4/U2)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/growth-board-tutorial.js",
+        "remake/js/core/growth-board.js",
+        "remake/js/core/growth-board-data.js",
+        "remake/js/daily/menu.js",
+        "remake/test/browser/board_focus.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/board_focus.mjs"
+      ]
+    },
+    {
       "id": "kannondo-day3",
       "title": "Chapter 1 DAY3 Kannondo, interactive fire-seed tutorial, day/night and SAVE/LOAD (#3820)",
       "kind": "browser",
