@@ -2490,6 +2490,74 @@
       ]
     },
     {
+      "id": "lime_ch2_sumi_commute_tonari",
+      "sender": "sumi",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch2_commute_tonari",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "電車で店の名前を出したらしいな"
+        },
+        {
+          "sender": "sumi",
+          "text": "聞かれたなら、それでいい。こっちから言って回るなよ"
+        },
+        {
+          "sender": "sumi",
+          "text": "来たら、お前が出ろ。顔は覚えてるな"
+        }
+      ],
+      "replies": [
+        {
+          "text": "スーツの人でした",
+          "response": "スーツなら、電車に何十人もいる。顔を見とけ",
+          "affinity": 1
+        },
+        {
+          "text": "来たら、俺が作ります",
+          "response": "おう。名前で来た客を、名前だけで帰すなよ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch2_tsumugi_train_window",
+      "sender": "tsumugi",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch2_commute_window_sent",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おはようございます。電車の窓の写真、届きました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "光が横に流れるのは、止まってる窓じゃ見られない線ですね"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……資料に、なりました。今日、少しだけ描いてみます"
+        }
+      ],
+      "replies": [
+        {
+          "text": "描けたら見たい",
+          "response": "……描けたら、です。線が、まだ揺れてるので",
+          "affinity": 2
+        },
+        {
+          "text": "また撮ったら送るね",
+          "response": "はい。……ぶれてる写真のほうが、好きです",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_ageha_ch2_goodday",
       "sender": "ageha",
       "chapter": 2,

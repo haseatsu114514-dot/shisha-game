@@ -156,7 +156,14 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_cleared", "progression"],
   ["_ch2_coal_role_coals", "progression"],
   ["_ch2_coal_role_plate", "progression"],
+  // #3097 PR-B: 行き帰りの電車の小品（chapters/ch2-commute.js）。読んだ日と各回の既読。window_sent は写真をつむぎへ送った（後日の LIME の条件）
+  ["_ch2_commute_day", "progression"],
+  ["_ch2_commute_doze", "progression"],
+  ["_ch2_commute_regulars", "progression"],
+  ["_ch2_commute_tonari", "progression"],
   ["_ch2_commute_v1", "progression"],
+  ["_ch2_commute_window", "progression"],
+  ["_ch2_commute_window_sent", "person"],
   ["_ch2_day1", "progression"],
   ["_ch2_deliveries", "progression"],
   ["_ch2_eve_done", "progression"],
@@ -570,6 +577,11 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_cafe_naru_break", "person"],
   ["_spot_seen_cafe_naru_rio", "person"],
   ["_spot_seen_ch1_tsumugi_low_water", "person"],
+  // #3097 PR-B: 第2章の地元の雨の回（daily/spot-encounters.js の chapterRainScene）
+  ["_spot_seen_cafe_ch2_rain", "progression"],
+  ["_spot_seen_ch2_rest_rain", "progression"],
+  ["_spot_seen_choizap_ch2_rain", "progression"],
+  ["_spot_seen_cs_ch2_rain", "progression"],
   ["_spot_seen_choizap_ch2_neck", "progression"], // #3097 第2弾
   ["_spot_seen_choizap_ch2_numbers", "progression"],
   ["_spot_seen_choizap_ch2_stairs", "progression"], // #3097 第1弾
