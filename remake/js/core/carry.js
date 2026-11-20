@@ -135,7 +135,9 @@ export const FLAG_EXACT_RULES = [
   ["_cafe_introduced", "progression"],
   ["_ch1_cleared", "progression"],
   ["_ch1_day2_shift_done", "progression"],
+  ["_ch1_day3_kannon_done", "progression"],
   ["_ch1_early", "progression"],
+  ["_ch1_lemon_single", "progression"], // 第1章の大会をレモンだけで勝った（#3916）。優勝の夜と第4章の会話が変わる
   ["_ch1_eve", "progression"],
   ["_ch1_mid", "progression"],
   ["_ch1_opening", "progression"],

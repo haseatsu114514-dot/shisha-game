@@ -632,6 +632,27 @@
       ]
     },
     {
+      "id": "kannondo-day3",
+      "title": "Chapter 1 DAY3 Kannondo, interactive fire-seed tutorial, day/night and SAVE/LOAD (#3820)",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 8,
+      "paths": [
+        "remake/js/chapters/ch1.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/reflection.js",
+        "remake/js/daily/growth-board-*.js",
+        "remake/js/core/growth.js",
+        "remake/js/daily/spots.js",
+        "remake/js/daily/spot-access.js",
+        "data/dialogue/ch1_spots.json",
+        "remake/test/browser/kannondo_day3.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/kannondo_day3.mjs"
+      ]
+    },
+    {
       "id": "growth-board-denominator",
       "title": "Growth board, status and menu share one stat denominator statTotal (#2444)",
       "kind": "browser",
@@ -4644,11 +4665,11 @@
     },
     {
       "id": "conversation-cutin",
-      "title": "Conversation cut-ins in the main VN engine (#2990, #3417): every placement plays, enter/leave, SKIP/LOG",
+      "title": "Conversation cut-ins in the main VN engine (#2990, #3417, CCR redesign): every placement plays, partner lines wait for the text, enter/leave, SKIP/LOG",
       "kind": "browser",
       "weight": 1.2,
       "timeout": 4,
-      "paths": ["remake/js/vn/engine.js", "remake/js/vn/conversation-cutin.js", "remake/css/vn/conversation-cutin.css", "remake/test/browser/conversation_cutin_2990.mjs"],
+      "paths": ["remake/js/vn/engine.js", "remake/js/vn/conversation-cutin.js", "remake/css/vn/conversation-cutin.css", "remake/img/ui/conversation_cutin/**", "remake/test/browser/conversation_cutin_2990.mjs"],
       "run": ["node remake/test/browser/conversation_cutin_2990.mjs"]
     },
     {

@@ -705,39 +705,12 @@ export async function presentNight({ evePlace = null } = {}) {
   return state === owner ? result : null;
 }
 
-/**
- * 参拝の場所に着いた時の「静かに振り返る」（時間を使わない）。
- * 火種が無ければ何もしない（false）。振り返った・戻った時は true（呼び出し側は行動にしない）。
- */
-export async function reflectAtSpot(spotId, { boardOnly = false } = {}) {
+/** 地元の観音堂の入口。DAY3の本筋だけは受付を挟まず盤へ進む。 */
+export async function reflectAtSpot(spotId, options) {
   if (spotId !== "kannon" || !growthEnabled() || !state) return false;
   const owner = state;
-  const { canReflectAt, reflectAt } = await import("../daily/reflection.js");
-  if (state !== owner || !growthEnabled()) return true;
-  // 最初の火種をまだもらっていなければ、火種が0でも初回だけは盤を開ける（はじめての案内）
-  if (!canReflectAt("kannon")) return false;
-  const { modal } = await import("./ui.js");
-  if (state !== owner || !growthEnabled()) return true;
-  const how = await modal({ title: "観音堂", body: "学んできたことを振り返り、火種を盤に灯せる。", options: [
-    { label: "盤を開く（時間は進まない）", value: "reflect", primary: true, test: "kannon-reflect" },
-    ...(!boardOnly ? [{ label: "いつもどおり過ごす（1行動）", value: "visit", test: "kannon-visit" }] : []),
-    { label: "戻る", value: null },
-  ] });
-  if (state !== owner || !growthEnabled()) return true;
-  if (how === "visit") return false;
-  if (how === "reflect") {
-    if (!owner.flags._kannon_growth_intro_done) {
-      const { play } = await import("../vn/engine.js");
-      if (state !== owner || !growthEnabled()) return true;
-      const result = await play("kannon_growth_intro", { bg: "res://assets/backgrounds/bg_kannon_night.png" });
-      if (state !== owner || !growthEnabled() || result?.cancelled
-        || result?.id !== "kannon_growth_intro" || !result.visited?.includes("kannon_growth_intro")) return true;
-      owner.flags._kannon_growth_intro_done = true;
-      save();
-    }
-    await reflectAt("kannon");
-  }
-  return true;
+  const { visitKannondo } = await import("../daily/reflection.js");
+  return state === owner && visitKannondo(options);
 }
 
 /** メニューの「心得の盤」。無効なら出さない。メニューからは見るだけ（灯すのは参拝の場所。2.8） */
@@ -748,10 +721,12 @@ export const growthMenuItems = () => growthEnabled()
  * 盤の画面を開き、閉じるまで待つ。大会の当日は開かない。
  * place を渡した時（参拝の場所での内省）だけ灯せる。渡さなければ見るだけ（目標は決められる）。
  */
-export async function openGrowthBoard({ place = null } = {}) {
+export async function openGrowthBoard({ place = null, onExit = null } = {}) {
   if (!growthEnabled() || !state || state.phase === "tournament") return null;
+  const owner = state;
   const { openBoard } = await import("../daily/growth-board-screen.js");
-  return openBoard({ place });
+  if (state !== owner || !growthEnabled()) return null;
+  return openBoard({ place, onExit });
 }
 
 // ---------------------------------------------------------------- ゲージ（6.1a）
