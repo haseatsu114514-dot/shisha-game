@@ -66,14 +66,15 @@ try {
   await page.keyboard.press("Enter");
   await page.waitForSelector(".vn-choices.show .vn-choice");
   await page.waitForTimeout(500);
-  // 2択の位置は現行組版（vn-composition.css）で会話欄の上 112px（3択以上は 62px）。
+  // 2択の位置は現行組版（vn-composition.css）で会話欄の上 130px（3択以上は 62px）。
   // e5c34d0e6 で旧来の 306px 直書きから移行。#3499 の 142px は高すぎるとされ、
-  // YHK14 で 94px に戻したあと、2026-11-14 オーナー「もう少し上へ」で 94px → 112px（#3646）。
-  // 枠の寸法は CSS 変数から読み、オフセット 112px そのものを検証する。
+  // YHK14 で 94px に戻したあと、2026-11-14 オーナー「もう少し上へ」で 94px → 112px（#3646）、
+  // 2026-11-18 オーナー「もう気持ち上」で 112px → 130px（#3813）。
+  // 枠の寸法は CSS 変数から読み、オフセット 130px そのものを検証する。
   const choicesBottom = await page.locator(".vn-choices").evaluate(e => {
     const rootStyle = getComputedStyle(document.documentElement);
     const expected = parseFloat(rootStyle.getPropertyValue("--vn-dialogue-bottom"))
-      + parseFloat(rootStyle.getPropertyValue("--vn-dialogue-height")) + 112;
+      + parseFloat(rootStyle.getPropertyValue("--vn-dialogue-height")) + 130;
     return { actual: getComputedStyle(e).bottom, expected: `${expected}px` };
   });
   assert.equal(choicesBottom.actual, choicesBottom.expected);
