@@ -3221,6 +3221,25 @@
       ]
     },
     {
+      "id": "chapter-moments",
+      "title": "第2〜4章の山場の演出（味が遠のく・結果発表前の静けさ・四つ目の台の影）の位置・後片付け・再開",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 10,
+      "paths": [
+        "remake/js/motions/moments.js",
+        "remake/css/motions/moments.css",
+        "remake/js/core/scene-motions.js",
+        "remake/js/chapters/ch3-tournament.js",
+        "data/dialogue/ch2_main.json",
+        "data/dialogue/ch4_main.json",
+        "remake/test/browser/chapter_moments.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/chapter_moments.mjs"
+      ]
+    },
+    {
       "id": "text-editor",
       "title": "Text editor, wrapping, notifications and rewards",
       "kind": "browser",

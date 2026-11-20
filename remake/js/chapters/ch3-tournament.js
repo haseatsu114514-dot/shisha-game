@@ -1,5 +1,6 @@
 import { playEntrance } from "./tournament-entrance.js";
 import { defeatFade } from "../core/transitions.js";
+import { sceneMoment } from "../core/scene-motions.js";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
 import { createChapterActions } from "../core/chapter-actions.js";
@@ -494,11 +495,16 @@ async function drive(owner) {
       // 結果発表前の掛け合い（#3060）。
       if (!await commentary(owner, "preresult")) return;
       checkpoint("result");
+      owner.hush = true; // この場で発表へ進んだ時だけ、結果の前に会場の光を絞る（#3965）。再開では出さない
     } else if (p.stage === "votes") { renderVotes(owner); return; }
     else if (p.stage === "result") {
       // この場で結果を出したことを覚える。敗北の入り（#2688 A19）は、この場で負けが決まった時だけ出す
       if (p.result) owner.resultShown = true;
-      playBgm("bgm_judging"); renderVotes(owner, true); return;
+      playBgm("bgm_judging");
+      // 光を絞り、暗い間に結果の画面を出す。見せるだけで、順位・点・保存地点は変えない
+      if (owner.hush) { owner.hush = false; await sceneMoment("stageHush", () => { if (live(owner)) renderVotes(owner, true); }); }
+      else renderVotes(owner, true);
+      return;
     }
     else if (p.stage === "defeat") { await renderDefeat(owner); return; }
     else if (p.stage === "victory") {
