@@ -215,6 +215,28 @@ test("来店と注文待ち: 客は自分で座る。注文を聞かないと、
   assert.equal(floorPlan(createFloorNight({ level: 1, daytime: true })).title, "いつもの昼");
 });
 
+test("二人連れ: 一卓に一人。同じ時に来て、空いている卓へ一人ずつ座り、注文も会計も一人ずつ（TFL51）", () => {
+  for (const night of Object.keys(NIGHTS)) {
+    const s = createFloorNight({ seed: 3, level: 1, night });
+    const people = NIGHTS[night].cast.reduce((sum, kind) => sum + GUESTS[kind].party, 0);
+    assert.equal(Object.keys(s.guests).length, people, `${night}: 二人連れは二人の客になる`);
+    for (const g of Object.values(s.guests)) {
+      assert.equal(g.party, 1, `${night}: ${g.id} は一人`);
+      if (!g.pair) continue;
+      const mate = s.guests[g.pair];
+      assert.deepEqual([mate.pair, mate.arrive, mate.kind], [g.id, g.arrive, g.kind], `${night}: 連れとは同じ時に来る`);
+      assert.notEqual(mate.art, g.art, "絵は一人ずつ違う");
+    }
+  }
+  // 来たら、空いている卓へ一人ずつ座る（同じ卓には座らない）
+  let s = createFloorNight({ seed: 3, level: 1, night: "full" });
+  const pair = Object.values(s.guests).find((g) => g.pair);
+  s = until(s, (x) => x.tables.some((t) => t.guestId === pair.id) && x.tables.some((t) => t.guestId === pair.pair), 40);
+  const seats = s.tables.filter((t) => t.guestId === pair.id || t.guestId === pair.pair);
+  assert.equal(new Set(seats.map((t) => t.id)).size, 2);
+  assert.ok(seats.every((t) => t.phase === "order"), "注文も一人ずつ");
+});
+
 test("注文: 並んでいるミックスから選ぶ。出すと次の一つが入る。仕込みは同時に2台まで", () => {
   let s = createFloorNight({ seed: 7, level: 1 });
   assert.equal(s.hand.length, HAND_SIZE);

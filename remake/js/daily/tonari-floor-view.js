@@ -228,8 +228,7 @@ export function runTonariFloor({
     ]);
     // 右の列: ミックスの一覧（原作の、控えの列にあたる）。押すと、いちばん急ぎの注文待ちの卓へそのまま出す。全部は並ばないので、シャッフルで入れ替える
     const handList = el("div.tf-preset-list");
-    // 上の行: 出す先の卓の番号（色は、その客の気分）と、シャッフル。一行に並べる（小さい画面でも、5つの札が上下の帯に被らない）
-    const targetChip = el("b.tf-target", { dataset: { ...test("target"), on: "false" } });
+    // 出す先の卓は、店内の卓の札の点線の枠と、列の縁の色（その客の気分）で示す（TFL52 で列の上の番号の丸は無くし、空いた分を一覧に回した）
     // シャッフルは入れ替えに時間がかかる（その間はミックスを出せない）。かかる秒数を、ボタンの中に出す
     const shuffleCost = `${seconds(floorShuffleTime)}秒`;
     // 押すと、この「N秒」がそのまま秒読みになる（2026-11-20 オーナー「一回押すとその文字が4秒カウントになる感じで」・TFL50）
@@ -238,9 +237,10 @@ export function runTonariFloor({
     // 入れ替えの最中に、一覧の上へ掛ける札（進みの棒つき）
     const busyBar = el("i");
     const busyCover = el("div.tf-presets-busy", { "aria-hidden": true, dataset: test("shuffle-busy") }, [glyph("shuffle"), el("b", { text: "入れ替え中" }), el("span.tf-bar", {}, [busyBar])]);
-    // 右の列は、上の帯の下から画面の下まで。上にシャッフル、まん中にミックスの一覧、下にフィーバー（あとで足す）
+    // 右の列は、画面の上の端から下の端まで。上にミックスの一覧、下にボタンの段（シャッフルとフィーバー。フィーバーはあとで足す）（TFL52）
+    const actions = el("div.tf-actions", {}, [shuffleButton]);
     const side = el("aside.tf-presets", { "aria-label": "ミックスの一覧とフィーバー", dataset: { ...test("presets"), busy: "false" } }, [
-      el("div.tf-presets-head", {}, [targetChip, shuffleButton]), el("div.tf-preset-box", {}, [handList, busyCover]),
+      el("div.tf-preset-box", {}, [handList, busyCover]), actions,
     ]);
     // 下の帯は、出来事の行とはじめの心の声だけ（押すと、心の声が指す卓へ）。選んでいる卓のドックは無くした（卓の札と同じ情報のため。TFL49）
     const logLines = el("div.tf-log", { "aria-hidden": true, dataset: test("log") });
@@ -251,14 +251,14 @@ export function runTonariFloor({
       el("span.tf-advice", {}, [hajimeFace ? el("img", { src: hajimeFace, alt: "はじめ", draggable: false }) : null, hintText]),
     ]);
     const feverLevels = el("span.tf-fever-levels", { "aria-hidden": true }, [1, 2, 3].map((n) => el("i", { dataset: { n } }, [el("i")])));
-    // フィーバーのボタンとゲージは、右の列の下に置く（下の帯は、卓のドックと出来事の行だけにして広く使う。
-    // 2026-11-20 オーナー「フィーバーボタンやゲージとか一部のボタンをサイドバーに移動したり、スペースを活用して欲しい」）
+    // フィーバーのボタンとゲージは、右の列のボタンの段（シャッフルの下）に置く（2026-11-20 オーナー「フィーバーボタンやゲージとか一部のボタンを
+    // サイドバーに移動したり、スペースを活用して欲しい」・TFL41／「右のサイドバーにボタンとして設置したい」・TFL52）。一行の名前と、その下の細いゲージ
     const feverLabel = el("b", { text: "フィーバー" }), feverLv = el("i.tf-bonus-lv");
     const bonusButton = el("button.tf-bonus", { type: "button", dataset: test("bonus"), onclick: () => useFever() }, [
-      el("span.tf-bonus-head", {}, [el("span.tf-bonus-lamp", {}, [glyph("lamp")]), feverLabel]),
-      el("span.tf-bonus-gauge", {}, [feverLevels, feverLv]),
+      el("span.tf-bonus-head", {}, [el("span.tf-bonus-lamp", {}, [glyph("lamp")]), feverLabel, feverLv]),
+      el("span.tf-bonus-gauge", {}, [feverLevels]),
     ]);
-    side.append(bonusButton);
+    actions.append(bonusButton);
     const bottom = el("footer.tf-bottom", {}, [ticker]);
     const layer = el("div.tf-layer");
     const banner = el("div.tf-banner", { "aria-hidden": true });
@@ -589,9 +589,8 @@ export function runTonariFloor({
       const key = `${state.hand.join(",")}/${wish || ""}/${target?.id || ""}`;
       if (handList.dataset.key !== key) {
         handList.dataset.key = key;
-        targetChip.textContent = target ? String(target.id) : "";
-        targetChip.dataset.on = String(!!target);
-        targetChip.setAttribute("aria-label", target ? `${target.id}卓（${WISH[wish].label}の気分）へ出す` : "");
+        side.dataset.target = target ? String(target.id) : "";
+        side.setAttribute("aria-label", target ? `ミックスの一覧（押すと${target.id}卓・${WISH[wish].label}の気分へ出す）とフィーバー` : "ミックスの一覧とフィーバー");
         side.dataset.wish = wish || "";
         side.style.setProperty("--c", wish ? WISH[wish].color : "transparent");
         handList.replaceChildren(...hand.map((mix, i) => el("button.tf-preset", {
@@ -992,7 +991,7 @@ export function runTonariFloor({
       const record = topSales > 0 && result.sales > topSales; // これまでの売上の最高を超えた
       const drinks = result.groups.reduce((sum, row) => sum + Math.round((row.drink || 0) / PRICE.drink), 0);
       const items = [
-        ["お迎えした組", `${result.served}／${result.came}組`],
+        ["お迎えしたお客さん", `${result.served}／${result.came}人`],
         ["チャージ", yen(result.items.charge)],
         ["シーシャ", yen(result.items.shisha)],
         [`ドリンク（${drinks}杯）`, yen(result.items.drink)],
@@ -1015,14 +1014,14 @@ export function runTonariFloor({
             el("div.tf-slip-side", {}, [
               el("div.tf-stamp", { dataset: { ...test("rank"), rank: result.rank } }, [el("i", { "aria-hidden": true }), el("b", { text: result.stamp })]),
               el("p.tf-slip-fans", { dataset: { ...test("fans"), down: String(result.fans < 0) }, text: `店のファン ${result.fans >= 0 ? "＋" : "−"}${Math.abs(result.fans)}人（合計 ${Math.max(0, fans + result.fans)}人）` }),
-              el("p.tf-slip-stages", {}, MOODS.filter((m) => result.stages[m.id]).map((m) => el("span", { style: { "--c": m.color }, text: `${m.label} ${result.stages[m.id]}組` }))),
+              el("p.tf-slip-stages", {}, MOODS.filter((m) => result.stages[m.id]).map((m) => el("span", { style: { "--c": m.color }, text: `${m.label} ${result.stages[m.id]}人` }))),
               el("h3", { text: "好評だったミックス" }),
               el("ul.tf-slip-mixes", {}, result.mixes.length ? result.mixes.map((m, i) => el("li", {}, [
                 el("span", {}, [el("b", { text: String(i + 1) }), attrBadge(m.id), el("span.tf-mix-text", {}, [el("span.tf-slip-mix", {}, mixSpans(m.id)), recipeNode(m.id)])]), el("small", { text: `${floorStage(m.avg).label}・${m.n}台` }),
               ])) : [el("li", {}, [el("small", { text: "提供できた一台がありませんでした" })])]),
             ]),
           ]),
-          el("p.tf-slip-counts", { text: `いい調整 ${result.counts.tend}回・いいケア ${result.counts.care}回・追加ドリンク ${result.counts.drink}杯・おかわり ${result.counts.extend}組・フィーバー ${result.fevers}回${result.streak >= 2 ? `・ぴったり ${result.streak}連続` : ""}` }),
+          el("p.tf-slip-counts", { text: `いい調整 ${result.counts.tend}回・いいケア ${result.counts.care}回・追加ドリンク ${result.counts.drink}杯・おかわり ${result.counts.extend}人・フィーバー ${result.fevers}回${result.streak >= 2 ? `・ぴったり ${result.streak}連続` : ""}` }),
           // 大入りの夜は、紙吹雪で祝う（文字は足さない）
           result.rank === "S" ? el("div.tf-confetti", { "aria-hidden": true }, Array.from({ length: 22 }, (_, i) => el("i", { style: { "--i": String(i) } }))) : null,
           el("p.tf-slip-sumi", {}, [
