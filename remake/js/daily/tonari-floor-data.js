@@ -1,9 +1,8 @@
 // tonari フロア営業の台本（価格・配合・客・合図・夜の種類）。ルールは tonari-floor-model.js、画面は tonari-floor-view.js。
 // 価格は店の売上の内訳。はじめの所持金には入らない（日当と売上ボーナスは tonari.js が渡す）。
-export const PRICE = Object.freeze({
-  seat: 500, drink: 400, refill: 400, top: 800,
-  shisha: Object.freeze({ short: 1400, normal: 1600, long: 1800 }),
-});
+// 単価（2026-11-20 オーナー指定）: 基本（シーシャ一台）2,000円・チャージ700円（ひとり）・
+// トップ替え（おかわり）が入ると＋1,500円・ドリンクは注文されると600円。コースで値段は変わらない（滞在の長さだけ）。
+export const PRICE = Object.freeze({ shisha: 2000, charge: 700, top: 1500, drink: 600 });
 
 /** 提供してからの滞在（1刻み＝店内0.5秒相当）。 */
 export const STAY = Object.freeze({ short: 46, normal: 64, long: 86 });
@@ -95,20 +94,20 @@ export const GUESTS = Object.freeze(Object.fromEntries([
 export const VERBS = Object.freeze([
   Object.freeze({ id: "add", label: "炭を替える", note: "熱を足す" }),
   Object.freeze({ id: "ease", label: "炭を下ろす", note: "熱を逃がす" }),
-  Object.freeze({ id: "drink", label: "飲み物を聞く", note: "グラスを見る" }),
+  Object.freeze({ id: "drink", label: "飲み物を聞く", note: "注文をうかがう" }),
   Object.freeze({ id: "talk", label: "ひと声かける", note: "話を聞く" }),
   Object.freeze({ id: "leave", label: "そっとしておく", note: "声はかけない" }),
 ]);
 
 // 合図。label は卓の吹き出しの短い言葉、sight は読み取る夜（!だけ出る夜）に伝票へ出す様子、
-// said は言葉で伝える夜の一言。good は正しく応えた時、verb が正解の手入れ。
+// said は言葉で伝える夜の一言。good は正しく応えた時、verb が正解の手入れ。drink＝応えるとドリンクの注文（PRICE.drink）になる。
 export const CALLS = Object.freeze({
   thin: Object.freeze({ verb: "add", label: "煙が薄い", said: "あの、煙が薄くなってきたみたいで",
     sight: "煙が細い。ホースを見て、首をかしげている。", good: "あ、戻ってきた。ありがとう" }),
   harsh: Object.freeze({ verb: "ease", label: "喉にくる", said: "すみません、少し喉にくるかも",
     sight: "小さく咳をして、ホースをそっと置いた。", good: "うん、やわらかくなった" }),
-  glass: Object.freeze({ verb: "drink", label: "グラスが空", said: "同じのを、もう一杯いいですか？",
-    sight: "氷だけになったグラスを、からからと揺らしている。", good: "ありがとう。ちょうど欲しかったんだ", refill: true }),
+  glass: Object.freeze({ verb: "drink", label: "飲み物", said: "すみません、飲み物もお願いできますか？",
+    sight: "メニューを開いて、飲み物の所を指でなぞっている。", good: "ありがとう。喉が渇いてたんです", drink: true }),
   ask: Object.freeze({ verb: "talk", label: "聞きたそう", said: "あの……吸い方、これで合ってますか？",
     sight: "こちらを見て、目が合うと小さく手を上げた。", good: "よかった、合ってたんですね" }),
   focus: Object.freeze({ verb: "leave", label: "夢中", said: "……",
@@ -127,16 +126,17 @@ export const SERVE_LINES = Object.freeze({
   top: Object.freeze(["さっきと違う香り、いいですね", "二台目みたいで得した気分"]),
 });
 
-// 会計の声かけ（お見送り）。客の顔を見て選ぶ: 笑顔＝もう少し誘える（延長）／ふつう＝お礼／曇り顔＝お詫び。並びは固定。
-// 延長はトップ替え（PRICE.top）。一卓に一度まで。売上は店のもので、はじめの所持金には入らない。
+// 会計の声かけ（お見送り）。客の顔を見て選ぶ: 笑顔＝トップ替えを誘える／ふつう＝お礼／曇り顔＝お詫び。並びは固定。
+// トップ替え＝一台のおかわり（PRICE.top。滞在が延びる。2026-11-20 オーナー「延長はトップ替えにしよう　おかわりってこと」）。
+// 一卓に一度まで。売上は店のもので、はじめの所持金には入らない。コードの中の名前は extend のまま。
 export const SENDS = Object.freeze([
-  Object.freeze({ id: "extend", label: "もう少し、いかがですか？", note: "トップ替えをすすめる" }),
+  Object.freeze({ id: "extend", label: "トップ替え、いかがですか？", note: "おかわりをすすめる" }),
   Object.freeze({ id: "thanks", label: "ありがとうございました", note: "お礼を言って見送る" }),
   Object.freeze({ id: "sorry", label: "お待たせして、すみません", note: "お詫びして見送る" }),
 ]);
 /** 声かけへの返事。 */
 export const SEND_LINES = Object.freeze({
-  extend: "じゃあ、もう少しだけ。違う香りも試したい",
+  extend: "じゃあ、お願いします。違う香りも試したい",
   extendMiss: "いえ、今日はこれで",
   thanks: Object.freeze(["ごちそうさま。また来ます", "いい時間でした。ありがとう"]),
   thanksLow: "……どうも",

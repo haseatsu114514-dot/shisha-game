@@ -11,13 +11,13 @@ export const FLOOR_TICK_MS = 500;
 const T = Object.freeze({
   queue: 56, orderGrace: 18, waitGrace: 44, billGrace: 16, quickSeat: 10,
   prep: 14, topPrep: 10, shelf: 2, call: 28, consult: 30, bonusTime: 28, register: 6, topStay: 26,
-  extendMin: 40, // 閉店までこの刻みより短い時は、延長（トップ替え）をすすめられない
+  extendMin: 40, // 閉店までこの刻みより短い時は、トップ替えをすすめられない
 });
 const MOOD = Object.freeze({
   start: 50, quickSeat: 5, best: 22, near: 8, off: -14, redoBest: 16, redoNear: 6,
   care: 8, careMiss: -8, careLate: -10, top: 6, waive: 6, decay: 0.5, bonusTime: 0.6, unserved: 40,
   smile: 80, frown: 45, // 顔の段（笑顔は80以上、曇り顔は45未満）
-  send: 5, sorry: 14, extendMiss: -6, // 会計の声かけ（顔に合った一言・お詫びが届いた・延長を断られた）
+  send: 5, sorry: 14, extendMiss: -6, // 会計の声かけ（顔に合った一言・お詫びが届いた・トップ替えを断られた）
 });
 const AIR = Object.freeze({ full: 100, best: 18, near: 8, care: 10, seat: 4, star3: 8, star2: 4, clean: 2, send: 4 });
 const PLAN_EFFECT = Object.freeze({
@@ -104,7 +104,7 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, anchor = nu
     bench: null, line: [], shelf: [],
     air: 0, bonusTimeLeft: 0, bonusTimes: 0,
     sales: 0, results: [],
-    counts: { best: 0, near: 0, off: 0, care: 0, careMiss: 0, late: 0, missed: 0, cleaned: 0, top: 0, refill: 0, quick: 0, extend: 0, send: 0 },
+    counts: { best: 0, near: 0, off: 0, care: 0, careMiss: 0, late: 0, missed: 0, cleaned: 0, top: 0, drink: 0, quick: 0, extend: 0, send: 0 },
     anchor: anchorBest ? { family: anchor.family, guestId: order[anchorAt], index: null } : null,
     log: [],
   };
@@ -112,7 +112,7 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, anchor = nu
 
 function emptyTable(id) {
   return { id, phase: "empty", guestId: null, mood: 0, since: 0, mixId: null, accepted: null, served: false,
-    stayEnd: 0, call: null, callsLeft: [], delivery: null, refills: 0, top: null, redoUsed: false, line: "" };
+    stayEnd: 0, call: null, callsLeft: [], delivery: null, drinks: 0, top: null, redoUsed: false, line: "" };
 }
 
 const tableOf = (s, id) => s.tables[id - 1] || null;
@@ -152,12 +152,12 @@ function dropJobs(s, tableId) {
 }
 
 function totalFor(guest, table) {
-  const seat = PRICE.seat * guest.party;
-  const drink = PRICE.drink * guest.party;
-  const shisha = table.accepted ? PRICE.shisha[guest.stay] : 0;
-  const refill = PRICE.refill * table.refills;
+  // チャージは人数分、シーシャは一台（二人組はシェア）、ドリンクは注文された杯数、トップ替えは運んだ分
+  const charge = PRICE.charge * guest.party;
+  const shisha = table.accepted ? PRICE.shisha : 0;
+  const drink = PRICE.drink * table.drinks;
   const top = table.top === "served" ? PRICE.top : 0;
-  return { seat, drink, shisha, refill, top, total: seat + drink + shisha + refill + top };
+  return { charge, shisha, drink, top, total: charge + shisha + drink + top };
 }
 
 function settle(s, table, by) {
@@ -361,7 +361,7 @@ function scheduleCalls(s, table, guest, scale) {
 /**
  * 操作を一つ確定する。できない操作は同じ state を返す（画面は何も進めない）。
  * action: { type: "seat" | "order" | "serve" | "care" | "consult" | "bill" | "clean" | "rush" | "bonusTime" | "finish", tableId, mixId, verb, reply }
- * 会計の reply は "extend"（延長をすすめる）/ "thanks"（お礼）/ "sorry"（お詫び）。省くと "thanks"。
+ * 会計の reply は "extend"（トップ替え＝おかわりをすすめる）/ "thanks"（お礼）/ "sorry"（お詫び）。省くと "thanks"。
  */
 export function floorAct(state, action) {
   if (!action || state.done) return state;
@@ -408,7 +408,7 @@ export function floorAct(state, action) {
       if (ok) {
         table.mood = clampMood(table.mood + MOOD.care);
         s.counts.care += 1;
-        if (call.refill) { table.refills += 1; s.counts.refill += 1; }
+        if (call.drink) { table.drinks += 1; s.counts.drink += 1; }
         gain(s, AIR.care);
         table.line = call.good;
       } else {
@@ -416,7 +416,7 @@ export function floorAct(state, action) {
         s.counts.careMiss += 1;
         table.line = call.quiet ? CALL_DISTURBED : CALL_MISS;
       }
-      note(s, { type: "care", tableId: table.id, ok, line: table.line, refill: ok && !!call.refill });
+      note(s, { type: "care", tableId: table.id, ok, line: table.line, drink: ok && !!call.drink });
       break;
     }
     case "consult": {
@@ -432,7 +432,7 @@ export function floorAct(state, action) {
       } else {
         table.accepted = false;
         table.mood = clampMood(table.mood + MOOD.waive);
-        table.line = "いえ、こちらこそ。飲み物はおいしいです";
+        table.line = "いえ、こちらこそ。お気づかい、ありがとう";
         scheduleCalls(s, table, guest, 0.5);
       }
       note(s, { type: "consult", tableId: table.id, redo: !!redo });
@@ -440,7 +440,7 @@ export function floorAct(state, action) {
     }
     case "bill": {
       if (!can("bill")) return state;
-      // 会計の声かけ: 客の顔に合った一言（best）で満足と店の空気が上がる。笑顔の客は、延長（トップ替え）に応じてくれる。
+      // 会計の声かけ: 客の顔に合った一言（best）で満足と店の空気が上がる。笑顔の客は、トップ替え（おかわり）に応じてくれる。
       const reply = ["extend", "thanks", "sorry"].includes(action.reply) ? action.reply : "thanks";
       const off = floorSendOff(s, table.id);
       if (reply === "extend" && off.extend !== "ok") return state;
@@ -540,8 +540,8 @@ export function floorTimeLeft(s) {
 export const floorFace = (mood) => (mood >= MOOD.smile ? "smile" : mood >= MOOD.frown ? "flat" : "frown");
 
 /**
- * 会計の声かけの見立て。face＝客の顔、extend＝延長をすすめられるか（"ok" / "used" 済み / "late" 閉店が近い / "none" 台代を外した卓）、
- * best＝顔に合った一言（笑顔＝延長、もう延長できなければお礼／ふつう＝お礼／曇り顔＝お詫び）。会計前の卓は null。
+ * 会計の声かけの見立て。face＝客の顔、extend＝トップ替えをすすめられるか（"ok" / "used" 済み / "late" 閉店が近い / "none" 台代を外した卓）、
+ * best＝顔に合った一言（笑顔＝トップ替え、もう誘えなければお礼／ふつう＝お礼／曇り顔＝お詫び）。会計前の卓は null。
  */
 export function floorSendOff(s, tableId) {
   const table = tableOf(s, tableId);
@@ -552,7 +552,7 @@ export function floorSendOff(s, tableId) {
   return { face, extend, best };
 }
 
-/** その卓の、いままでのお代（席・初杯・台代・おかわり・トップ替え）。客がいない卓は null。 */
+/** その卓の、いままでのお代（チャージ・シーシャ・ドリンク・トップ替え）。客がいない卓は null。 */
 export function floorBill(s, tableId) {
   const table = tableOf(s, tableId);
   const guest = guestAt(s, table);

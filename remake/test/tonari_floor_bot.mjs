@@ -1,6 +1,6 @@
 // フロア営業を最後まで回す検査用の操作役。pace＝一つの操作にかかる刻み（2＝手際がよい、16＝ほぼ放置）。
 // pick＝注文で選ぶ一台（"best" ぴったり / "near" 悪くない / "off" 外れ）。合図には正しい手入れで応える。
-// 会計は客の顔に合った一言を選ぶ。extend＝笑顔の客へ延長をすすめる（入口や作業台が混んでいる時はお礼で見送る）。
+// 会計は客の顔に合った一言を選ぶ。extend＝笑顔の客へトップ替え（おかわり）をすすめる（入口や作業台が混んでいる時はお礼で見送る）。
 import { createFloorNight, floorTick, floorAct, floorTap, floorResult, floorUrgency, floorAirFull, floorSendOff } from "../js/daily/tonari-floor-model.js";
 import { CALLS, MIXES } from "../js/daily/tonari-floor-data.js";
 

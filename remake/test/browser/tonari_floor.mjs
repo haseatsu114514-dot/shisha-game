@@ -139,7 +139,7 @@ await suite("tonari-floor", async (check) => {
     assert.equal(done.served, done.expected);
   });
 
-  // 実画面の操作: 案内→注文→配膳→合図→会計の声かけ（延長）→片付け、休止・速さ・引き継ぎ・締めの伝票。
+  // 実画面の操作: 案内→注文→配膳→合図→会計の声かけ（トップ替え）→片付け、休止・速さ・引き継ぎ・締めの伝票。
   for (const [platform, options] of [["pc", {}], ["touch", touch]]) {
     await run(`${platform}-ui`, async (page) => {
       await setup(page);
@@ -206,7 +206,7 @@ await suite("tonari-floor", async (check) => {
       assert(tagBox.courseInside, "コースの文字が札の中に収まる");
       assert(tagBox.box.left >= tagBox.seat.left - 2 && tagBox.box.right <= tagBox.seat.right + 2 && tagBox.box.bottom <= tagBox.seat.bottom + 2, "札は、卓のボタン（押し所）の上に重なる");
       assert(tagBox.box.top >= tagBox.hud.bottom && tagBox.box.left >= tagBox.door.right - 2 && tagBox.box.bottom <= tagBox.bottom.top, "札が帯や入口の列に被らない");
-      assert.equal(await page.locator(t("dock-bill")).innerText(), "900円", "席と初杯");
+      assert.equal(await page.locator(t("dock-bill")).innerText(), "700円", "チャージ");
       if (platform === "pc") {
         // マウスを乗せた卓の様子に替わる（押さなくても見られる）
         await table(2).hover();
@@ -273,7 +273,7 @@ await suite("tonari-floor", async (check) => {
       await page.locator(t(`option-${verb}`)).click();
       assert(await api((a) => a.state().tables[0].mood) > mood);
       assert.equal(await page.locator(t("screen")).getAttribute("data-verdict"), "best");
-      // 会計の声かけ: 客の顔を見て選ぶ。笑顔の客は延長（トップ替え）に応じる
+      // 会計の声かけ: 客の顔を見て選ぶ。笑顔の客はトップ替え（おかわり）に応じる
       for (let i = 0; i < 200 && (await api((a) => a.state().tables[0].phase)) !== "bill"; i++) {
         await tick(1);
         if (await api((a) => !!a.state().tables[0].call)) { await table(1).click(); await page.locator(".tf-sheet .tf-option").first().click(); }
@@ -283,7 +283,9 @@ await suite("tonari-floor", async (check) => {
       assert.equal(await page.locator(t("sheet")).getAttribute("data-kind"), "bill");
       assert.equal(await api((a) => a.state().tables[0].phase), "bill", "押しただけでは会計しない");
       assert.deepEqual(await page.locator(".tf-sheet .tf-option b").allInnerTexts().then((list) => list.map((s) => s.replace(/\s/g, ""))),
-        ["もう少し、いかがですか？", "ありがとうございました", "お待たせして、すみません"]);
+        ["トップ替え、いかがですか？", "ありがとうございました", "お待たせして、すみません"]);
+      assert.match(await page.locator(t("option-extend")).innerText(), /おかわりをすすめる・＋1,500円/);
+      assert.equal(await page.locator(t("dock-bill")).innerText(), "2,700円", "チャージ700円＋基本2,000円");
       assert.equal(await page.locator(".tf-sheet-lead").getAttribute("data-mood"), "smile");
       assert.equal(await page.locator(".tf-sheet-tip").count(), 1, "はじめのうちは、選び方の一言が出る");
       // 選んだあと、判定の印（◎）とまん中の札が出る。印が出ている間も時間は止まり、もう一度押すと先へ進む
@@ -291,15 +293,15 @@ await suite("tonari-floor", async (check) => {
       await page.locator(t("option-extend")).click();
       assert.equal(await api((a) => a.mode()), "panel");
       assert.equal(await page.locator(t("sheet")).getAttribute("data-verdict"), "best");
-      assert.equal(await page.locator(".tf-verdict b").innerText(), "延長！");
-      assert.match(await page.locator(".tf-banner").innerText(), /延長、いただきました！/);
+      assert.equal(await page.locator(".tf-verdict b").innerText(), "トップ替え！");
+      assert.match(await page.locator(".tf-banner").innerText(), /トップ替え、いただきました！\s*おかわり ＋1,500円/);
       assert.equal(await page.locator(t("option-extend")).getAttribute("data-picked"), "true");
       if (platform === "pc") await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/tonari-floor-pc-verdict.png` }).catch(() => {});
       await page.locator(t("option-extend")).click();
       await page.evaluate(() => { C.view.floorTest.verdictMs = null; });
       assert.equal(await api((a) => a.mode()), "live");
       assert.deepEqual(await api((a) => { const table = a.state().tables[0]; return [table.phase, table.top, a.state().sales]; }), ["enjoy", "ordered", 0]);
-      // トップ替えを運ぶ→もう一度の会計では、延長をもう誘えない
+      // トップ替えを運ぶ→もう一度の会計では、もう誘えない。ご利用は1,500円増える
       await tick(12);
       await table(1).click();
       assert.equal(await api((a) => a.state().tables[0].top), "served");
@@ -307,6 +309,7 @@ await suite("tonari-floor", async (check) => {
       await table(1).click();
       assert.equal(await page.locator(t("option-extend")).isDisabled(), true);
       assert.match(await page.locator(t("dock")).innerText(), /トップ替え/);
+      assert.equal(await page.locator(t("dock-bill")).innerText(), "4,200円");
       await page.locator(t("option-thanks")).click();
       assert.equal(await api((a) => a.state().tables[0].phase), "dirty");
       assert.notEqual(await page.locator(t("sales")).innerText(), "0円");
@@ -339,11 +342,11 @@ await suite("tonari-floor", async (check) => {
         const rows = [...document.querySelectorAll(".tf-slip-items div")].map((n) => [n.querySelector("dt").textContent, n.querySelector("dd").textContent]);
         const card = document.querySelector(".tf-slip").getBoundingClientRect(), stage = document.getElementById("stage").getBoundingClientRect();
         return { names: rows.map((r) => r[0]), sum: rows.slice(1).reduce((total, r) => total + yen(r[1]), 0), total: yen(document.querySelector('[data-test="tonari-floor-final-sales"]').textContent),
-          top: yen(rows[4][1]), inside: card.top >= stage.top - 1 && card.bottom <= stage.bottom + 1 };
+          top: yen(rows[3][1]), inside: card.top >= stage.top - 1 && card.bottom <= stage.bottom + 1 };
       });
-      assert.deepEqual(slip.names, ["お迎えした組", "席料と初杯", "シーシャ（一台）", "もう一杯", "延長（トップ替え）"]);
+      assert.deepEqual(slip.names, ["お迎えした組", "チャージ", "シーシャ", "トップ替え（おかわり）", "ドリンク"]);
       assert.equal(slip.sum, slip.total);
-      assert.equal(slip.top, 800);
+      assert.equal(slip.top, 1500);
       assert(slip.inside, "結果の札が舞台に収まる");
       await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/tonari-floor-${platform}-result.png` }).catch(() => {});
       await page.locator(t("option-continue")).click();
@@ -353,7 +356,8 @@ await suite("tonari-floor", async (check) => {
       assert.equal(result.anchorIndex, null, "「今日の注文」の客（二組目）は、まだ受け取っていない");
       const mine = result.groups.find((g) => g.tableId === 1);
       assert.equal(mine.stars, 3);
-      assert.equal(mine.top, 800, "延長のトップ替えが会計に入る");
+      assert.equal(mine.top, 1500, "トップ替えが会計に入る");
+      assert.equal(mine.total, 4200, "チャージ700円＋基本2,000円＋トップ替え1,500円");
       assert.equal(result.counts.extend, 1);
       assert.equal(await page.evaluate(() => C.core.state.money), 30000, "店の売上は、はじめの所持金に入らない");
     }, options);

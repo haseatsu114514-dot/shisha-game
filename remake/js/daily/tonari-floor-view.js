@@ -39,7 +39,7 @@ const POP = {
 };
 const MARK = { best: "markBest", good: "markGood", miss: "markMiss", bad: "markBad" };
 const SEND_ICON = { extend: "top", thanks: "bill", sorry: "talk" };
-const SEND_BLOCKED = { used: "延長は一卓に一度まで", late: "そろそろ閉店", none: "今日は誘えない" };
+const SEND_BLOCKED = { used: "トップ替えは一卓に一度まで", late: "そろそろ閉店", none: "今日は誘えない" };
 const quoted = (text) => (text.startsWith("（") ? text : `「${text}」`);
 const test = (key) => ({ test: `tonari-floor-${key}` });
 const stars = (n) => el("span.tf-stars", { "aria-label": `星${n}つ`, dataset: { n } }, [1, 2, 3].map((i) => glyph("star", i <= n ? "on" : "off")));
@@ -312,7 +312,7 @@ export function runTonariFloor({
     }
     // 客のひとことは「◯卓「…」」の行にする（かっこ書きの様子は、そのまま）
     const say = (id, text, tone = "") => { if (text) log(`${id}卓${quoted(text)}`, tone); };
-    // まん中の札（延長が決まった時など、大きな出来事だけ）
+    // まん中の札（トップ替え・ドリンクの注文など、売上が増える出来事だけ）
     function showBanner(title, sub = "") {
       banner.replaceChildren(el("b", { text: title }), sub ? el("small", { text: sub }) : "");
       banner.dataset.on = "false";
@@ -350,20 +350,20 @@ export function runTonariFloor({
           }
           case "call": SE.tick(); log(e.call === "consult" ? `${e.tableId}卓から、ご相談です` : `${e.tableId}卓で、お客さんが呼んでいます`); break;
           case "care":
-            if (e.ok) { SE.perfect(); pop(e.tableId, e.refill ? `もう一杯 ＋${yen(PRICE.refill)}` : "いい手入れ", "best", "best"); }
+            if (e.ok) { SE.perfect(); pop(e.tableId, e.drink ? `ドリンク ＋${yen(PRICE.drink)}` : "いい手入れ", "best", "best"); }
             else { SE.miss(); pop(e.tableId, "ちがったみたい", "off", "bad"); }
             say(e.tableId, e.line, e.ok ? "good" : "bad");
-            // 飲み物の合図に応えると、追加の注文になる
-            if (e.refill) showBanner("もう一杯、いただきました！", `飲み物 ＋${yen(PRICE.refill)}`);
+            // 飲み物の合図に応えると、ドリンクの注文になる
+            if (e.drink) showBanner("ドリンク、いただきました！", `ご注文 ＋${yen(PRICE.drink)}`);
             break;
           case "callLate":
             if (!CALLS[e.call]?.quiet) { SE.miss(); pop(e.tableId, "合図を見逃した", "off"); log(`${e.tableId}卓の合図を見逃しました`, "bad"); }
             break;
           case "extend":
             SE.perfect(); SE.money();
-            pop(e.tableId, "延長", "best", "best");
+            pop(e.tableId, "トップ替え", "best", "best");
             say(e.tableId, e.line, "good");
-            showBanner("延長、いただきました！", `トップ替え ＋${yen(PRICE.top)}`);
+            showBanner("トップ替え、いただきました！", `おかわり ＋${yen(PRICE.top)}`);
             break;
           case "consult": SE.select(); break;
           case "billReady": SE.tick(); log(`${e.tableId}卓がお会計です`); break;
@@ -623,9 +623,9 @@ export function runTonariFloor({
     function verdictOf(log) {
       for (const e of log) {
         if (e.type === "care") return e.ok
-          ? { mark: "best", text: e.refill ? "もう一杯、いただきました" : "いい手入れ！", line: e.line }
+          ? { mark: "best", text: e.drink ? "ドリンクのご注文！" : "いい手入れ！", line: e.line }
           : { mark: "bad", text: "ちがったみたい", line: e.line };
-        if (e.type === "extend") return { mark: "best", text: "延長！", line: e.line };
+        if (e.type === "extend") return { mark: "best", text: "トップ替え！", line: e.line };
         if (e.type === "bill" && e.verdict) {
           return { mark: e.verdict, text: { best: "いいお見送り！", good: "お見送り", miss: "かみ合わなかった…" }[e.verdict], line: e.line };
         }
@@ -666,12 +666,12 @@ export function runTonariFloor({
         options = VERBS.map((verb) => option(verb.label, verb.note,
           pick({ type: "care", tableId: table.id, verb: verb.id }), { icon: verb.id, key: verb.id }));
       } else if (panel.kind === "bill") {
-        // 会計の声かけ: 客の顔を見て選ぶ。笑顔の客は、延長（トップ替え）に応じてくれる
+        // 会計の声かけ: 客の顔を見て選ぶ。笑顔の客は、トップ替え（おかわり）に応じてくれる
         const off = floorSendOff(state, table.id);
         kindLabel = "お会計";
         face = off.face;
         lead = quoted(table.line || "お会計、お願いします");
-        if (state.level < 2) tip = "顔を見て選ぶ。笑顔なら延長を誘える、曇り顔にはお詫び";
+        if (state.level < 2) tip = "顔を見て選ぶ。笑顔ならトップ替えを誘える、曇り顔にはお詫び";
         options = SENDS.map((send) => {
           const open = send.id !== "extend" || off.extend === "ok";
           const noteText = send.id !== "extend" ? send.note : open ? `${send.note}・＋${yen(PRICE.top)}` : SEND_BLOCKED[off.extend];
@@ -685,7 +685,7 @@ export function runTonariFloor({
         options = [
           ...guest.options.filter((mixId) => mixId !== table.mixId && !table.redoUsed).map((mixId, i) => option(`${MIXES[mixId].label}で作り直す`, `お代はそのまま・${MIXES[mixId].note}`,
             pick({ type: "consult", tableId: table.id, mixId }), { icon: "cook", key: `redo-${i}` })),
-          option("台代を外す", "席と飲み物だけいただく", pick({ type: "consult", tableId: table.id }), { icon: "bill", key: "waive" }),
+          option("台代を外す", "チャージだけいただく", pick({ type: "consult", tableId: table.id }), { icon: "bill", key: "waive" }),
         ];
       }
       options.forEach((node, i) => { node.dataset.digit = String(i + 1); });
@@ -821,10 +821,10 @@ export function runTonariFloor({
       const sum = (key) => result.groups.reduce((total, row) => total + (row[key] || 0), 0);
       const items = [
         ["お迎えした組", `${result.served}／${result.expected}組`],
-        ["席料と初杯", yen(sum("seat") + sum("drink"))],
-        ["シーシャ（一台）", yen(sum("shisha"))],
-        ["もう一杯", yen(sum("refill"))],
-        ["延長（トップ替え）", yen(sum("top"))],
+        ["チャージ", yen(sum("charge"))],
+        ["シーシャ", yen(sum("shisha"))],
+        ["トップ替え（おかわり）", yen(sum("top"))],
+        ["ドリンク", yen(sum("drink"))],
       ];
       return el("section.tf-result", { role: "dialog", "aria-modal": "true", "aria-labelledby": "tf-result-title", dataset: { ...test("result"), rank: result.rank } }, [
         el("div.tf-slip", {}, [
@@ -843,7 +843,7 @@ export function runTonariFloor({
               ]))),
             ]),
           ]),
-          el("p.tf-slip-counts", { text: `ぴったりの一台 ${result.counts.best}組・いい手入れ ${result.counts.care}回・延長 ${result.counts.extend}組・ボーナスタイム ${result.bonusTimes}回` }),
+          el("p.tf-slip-counts", { text: `ぴったりの一台 ${result.counts.best}組・いい手入れ ${result.counts.care}回・トップ替え ${result.counts.extend}組・ボーナスタイム ${result.bonusTimes}回` }),
           el("p.tf-slip-sumi", {}, [
             sumiFace ? el("img", { src: sumiFace, alt: "", draggable: false }) : null,
             el("span", { text: `スミ「${result.comment}」` }),
