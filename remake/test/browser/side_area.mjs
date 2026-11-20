@@ -407,6 +407,9 @@ await suite("side-area-trial-pages", async check => {
   }, { ...PHONE, ...trialEntry("camel-race.html") });
 }, {
   readLoadingComics: false,
+  // 試遊ページに店頭の応対は無い。応対を読む補助（shop_greeting_reader.mjs）は会話の部品一式を import し、
+  // その連鎖で斧投げの開発用の調整値（minigames/axe-feel.js の axeFeel）を読むため、保存領域の検査が補助自身を数えてしまう
+  readShopGreeting: false,
   // 保存領域への接触を記録する（support.mjs の準備が済んだ後に入れる）
   initScript: () => {
     window.__storageTouches = [];
