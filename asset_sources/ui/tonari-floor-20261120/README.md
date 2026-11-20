@@ -1,135 +1,178 @@
-# tonari フロア営業の画像素材 ── Codex への依頼（2026-11-20・TFL06）
+# tonari フロア営業の画像素材 ── Codex への依頼（2026-11-20・TFL06 → TFL08 で作り直し）
 
 オーナー「バイトパートを龍が如く0や極2にあるキャバクラ経営ゲームみたいにしようと思ってます。……画像生成はコーデックスに依頼して見た目も良くして」（2026-11-20）。
+続けて「バイトのやつは専用の画像生成で見た目とか作って見栄えからよくしたい。内装のレイアウトは変えてもいいので、それでコーデックスにパーツや見た目の依頼を出して」（同日）。
 
-遊びの仕様は [docs/spec/tonari_floor.md](../../../docs/spec/tonari_floor.md)。画面は `remake/js/daily/tonari-floor-view.js`・`remake/css/tonari-floor.css`。
+そこで、会話用の店内画に札を重ねる今の形をやめ、**営業の画面のために組み直した店内**と、そこに座る客・卓の上の物・UI の部品を一式そろえる。遊びの仕様は [docs/spec/tonari_floor.md](../../../docs/spec/tonari_floor.md)。Codex への依頼は Issue #3960。
 
-## いまの画面は何で描いているか
+## 目指す見た目
 
-2026-11-20 の時点で、この環境の OpenAI 画像 API は残高切れ（`credit_balance_exhausted`）で、1枚も生成できなかった。そこで次の形で先に遊べるようにした。
+**「少し上から見た、夜の tonari の舞台」**。緑の布のソファと木の低い卓が五つ、客は全員こちらを向いて座り、卓の上に一台と煙。上の端にモザイクランプが並び、左の端が入口、右の端がスミさんのカウンター（作業台と受渡棚）。UI は、木の札・真鍮・生成りの伝票・モザイクガラスの灯りで、店にある物として描く。
 
-| 画面の物 | いま | 届いたら |
-|---|---|---|
-| 店内 | 採用済みの会話用の背景 `bg_tonari_inside_*`（昼・夜・曇り）をそのまま敷く。卓4つ＋カウンターを五つの席として使う | フロア専用の店内画（下の B）に替え、`tonari-floor-view.js` の `SPOTS`（卓の位置）と `LAMPS`（灯りの位置）を絵に合わせる |
-| 客 | コードで描いた影絵（顔のない胸像。`tonari-floor-art.js` の `bust()`） | 客の絵（下の A）を `remake/img/ui/tonari-floor/guest-<種類>.webp` に置き、`GUEST_ART` に登録する。コードは変えずに差し替わる |
-| 板・ボタン・紙 | ゲーム共通の絵（`remake/img/ui/lounge/panel.webp`、`craft-paper/board.webp`・`button-paper.webp`・`button-amber.webp`）を九分割 | 専用の部品（下の D）が届いたら CSS の画像を替える |
-| 記号（注文・配膳・合図など） | コードの線画（`tonari-floor-art.js` の `GLYPHS`） | 記号の絵（下の D）に替える |
-| 卓の上のシーシャ台 | 置いていない（提供中の卓は、番号札から煙が立つ） | 透過の一台（下の C）を番号札の位置に置く |
+- 店は今の tonari と同じ店（`assets/backgrounds/bg_tonari_inside_day.png` の家具・配色・灯り）。**内装の並べ方は変えてよい**（オーナー決定）。別の店に見える色や素材には変えない。
+- 客は名もない客。本編の登場人物（つむぎ・ひより・鉄仮面さん・サイの店の常連など）に似せない。常連帳は作らないので、決まった個人に見える強い特徴（派手な髪色・傷・目立つ装飾）を付けない。
+- 画風は、客＝[立ち絵の規格](../../../docs/portrait_standard.md) 3節、店内＝[背景の規格](../../../docs/background_standard.md) 2節の塗り。AIっぽさ（テカり・グロー・エアブラシ・量産型の顔・擬似文字）を避ける（[素材規約](../../../docs/asset_ai_guidance.md)）。
+- 数字・名前・時計・満足の輪・吹き出しの文字・煙の動き・灯りの明滅はコードが描く。素材には焼き込まない。
+- シーシャ機材が写るのは C の一台だけ（`docs/shisha_reference.md` §4 の手順が要る）。店内画と客の絵には、台・ホース・炭を描かない。
 
-数字・名前・時計・満足の輪・吹き出しの文字・煙の動き・灯りの明滅はコードが描く。素材には焼き込まない。
+## 配置（この2枚を見てから描く）
 
-Codex への依頼は Issue にまとめる（オーナー「コーデックスへの依頼はイシューにまとめて」）。原画はこのフォルダの `originals/` に置いて push してもらう。届いたら大きさ・透過をそろえ、`remake/img/ui/tonari-floor/` の WebP にして組み込む。
+| ファイル | 中身 |
+|---|---|
+| [layout-guide.png](layout-guide.png) | 店内の配置図（1600×900）。緑＝ソファ、茶＝卓、赤茶＝敷物、左の濃い茶＝入口、右の濃い茶＝カウンター、上の丸＝モザイクランプ。**灰色の帯と札＝ゲームのUIが重なる所**、白い点線＝客の絵が入る範囲、白い丸＝卓の番号札、白い縦棒＝卓の上の一台。位置の目安で、色や形の簡素さは真似しない |
+| [screen-mock.png](screen-mock.png) | 同じ配置で営業を動かした画面（1280×720）。客は仮の影絵、板と文字は今の画面のもの。UI がどこに重なるかの確認用 |
 
-## 方針
+どちらもゲームの実際の座標から描いている（`remake/test/tonari_floor_guide.mjs`。位置の正本は `remake/js/daily/tonari-floor-stage.js` の `STAGES.floor`）。
 
-- **店は今の tonari と同じ店**。緑の布のソファ・木の低い卓・モザイクランプ・窓の外の街・右手の木のカウンター。別の店に見える模様替えをしない。
-- **客は名もない客**。本編の登場人物（つむぎ・ひより・鉄仮面さん・サイの店の常連など）に似せない。常連帳は作らないので、決まった個人に見える強い特徴（派手な髪色・傷・目立つ装飾）を付けない。
-- **客の絵にシーシャ機材を描かない**（ホース・台・炭を持たせない）。機材の必須手順（`docs/shisha_reference.md` §4）が要るのは C の一台だけ。
-- 画風は、客＝[立ち絵の規格](../../../docs/portrait_standard.md) 3節、店内＝[背景の規格](../../../docs/background_standard.md) 2節。AIっぽさ（テカり・グロー・エアブラシ・量産型の顔・擬似文字）を避ける（[素材規約](../../../docs/asset_ai_guidance.md)）。
+重ねる順（奥から）: **店内（ソファまで）→ 客 → 卓の前景 → 卓の上の一台と煙 → 番号札 → 吹き出し**。客は卓の奥に座り、膝から下は卓が隠す。だから「奥の卓の手前の縁（上から57%）」より下に「手前の客の頭（58%）」が来る配置にしてある（卓の前景が1枚で済む）。
 
-## 一覧（A を先に。A が届けば画面の印象がいちばん変わる）
+位置（絵の横・縦に対する％）:
 
-### A. 客の絵（10枚）
+| 物 | 位置 |
+|---|---|
+| 奥の3席 | 卓の中心が横 22%・47%・72%。ソファは縦 32.5〜51%（幅22%）、卓は縦 49〜57%（幅16%） |
+| 手前の2席 | 卓の中心が横 30%・66%。ソファは縦 61〜79%（幅24%）、卓は縦 77〜86%（幅18%） |
+| 客 | 奥は頭の上が縦31%・腰が50%（絵の高さ19%）。手前は頭の上が58%・腰が78%（高さ20%） |
+| 入口 | 左の端 横 0〜9.5%・縦 24〜84% |
+| カウンター | 右の端 横 86.5〜100%・縦 32〜94%（作業台の天板が上、その手前に受渡棚） |
+| 通路と敷物 | 手前の2席の間 横 42〜54% |
+| ゲームのUI | 上の帯 縦 0〜13%／下の帯 横 18〜82%・縦 87.5〜98.5%／左上の札（入口）／右上の札（作業台と受渡棚） |
 
-1回の生成で1枚。**1024×1024・背景は単色マゼンタ（#FF00FF）**。胸から上。頭のてっぺんから胸までが画面の高さの 70〜80%、左右は中央。丸く切り抜いて使うので、頭と肩が画面の内接円に収まること。二人組は二人を一枚に並べて描く（肩が少し重なってよい。二人とも顔が内接円に入る）。表情は、店でくつろぐ前の普通の顔（口を閉じた穏やかな顔）。
+## 一覧（0 → A → B の順。0 で見た目を決めてから、同じ絵柄で部品を作る）
+
+### 0. 完成見本（1〜2枚・最初に作る）
+
+`concept-1.png`（と `concept-2.png`）・1920×1080。**完成した営業の画面を1枚の絵として**描く: 配置図どおりの店内に、客が3〜4組座り、卓の上に一台と煙、上・左・右・下にUIの板。文字は入れない（板の中は空でよい）。部品の絵柄・色・質感をここで決め、以降の A〜D はこの見本を参照に渡して同じ絵柄で作る。オーナーが見本を選んだら、残りへ進む（2案あれば雰囲気を変える: 例「木と真鍮が濃い落ち着いた案」「モザイクガラスの色を効かせた明るい案」）。
+
+### A. 店内（専用レイアウト・2枚＋卓の前景）
+
+| ID | ファイル名 | サイズ | 中身 |
+|---|---|---|---|
+| TFL-BG01 | `room-day.png` | 1920×1080・不透過（生成は 2048×1152 以上。出ない時は 1672×941 のままでよい） | 配置図どおりの店内。昼。窓からの外光が主な光 |
+| TFL-BG02 | `room-night.png` | 同上 | 同じ構図・同じ家具の位置の夜。モザイクランプが主な光。真っ黒にしない（暗さはゲームが重ねる） |
+| TFL-BG03 | `front-day.png`・`front-night.png` | 店内と同じ寸法・背景透過 | 上の2枚から**卓5つだけを残して、ほかを透明にした絵**（客より手前に重ねる）。作れなければ無くてよい（こちらで切り出す） |
+
+- カメラ: 床から約2mの高さから、店の中央を正面に見下ろす（見下ろす角度 15〜20度）。左右対称に近い、舞台を見るような構図。
+- 五つの席はどれも「緑の布のソファ1つ（3人掛け・木の枠）＋その手前に木の低い卓1つ」。**ソファは全部こちら向き**（客がこちらを向いて座る）。卓の上は空（グラスも台も置かない）。
+- 卓は、天板と手前の面がはっきり見える四角い形にし、輪郭を背景から切り分けやすくする（前景として切り出すため）。卓の上や手前に物を重ねない。
+- 奥の壁に、木枠の窓（外は街）・額・植物の棚。上の端にモザイクランプを10個ほど並べる（絵に光のにじみは描かない）。
+- 左の端に入口の戸（木とガラス）と小さなマット。右の端に木のカウンター（上が作業台の天板、手前に受渡しの棚板2枚分）。カウンターの中は空（人物は描かない）。
+- 灰色の帯と札の所（配置図）は、細かい描き込みと強い灯りを避けた静かな面にする。
+- 人物・シーシャの台・ホース・炭・グラス・皿・文字・看板の字・ロゴ・UI を描かない。
+
+### B. 客（座った姿・10種＋笑顔10種）
+
+1回の生成で1枚。**背景は単色マゼンタ（#FF00FF）**。ソファに腰かけた姿勢で、**頭のてっぺんから太ももの途中まで**（膝から下は卓に隠れるので描かない）。体は正面〜やや斜め、店内画と同じ少し上からの角度。ソファ・卓・背景・影は描かない。両手は膝の上か体の前（グラス・シーシャの台・ホースは持たせない）。
+1人の絵は 1024×1024、二人組は二人を並べて 1536×1024（肩が触れるくらいの間隔。二人の頭の高さをそろえる）。人物は画面の下端まで（下端＝太ももの途中）、頭の上に画面の高さの8%ほどの余白。
 
 | ID | ファイル名 | 客 | 中身 |
 |---|---|---|---|
-| TFL-G01 | `guest-first.png` | 初めての方（1人） | 20代前半の女性。肩までのボブ。薄い色のニット。少し緊張して、店内を見回した後の顔 |
-| TFL-G02 | `guest-worker.png` | 仕事帰りの方（1人） | 30代の男性。短い髪。ネクタイをゆるめたワイシャツ。疲れているが穏やか |
-| TFL-G03 | `guest-train.png` | 終電前の二人 | 20代の二人。キャップの男性と、長い髪の女性。上着を着たまま。時計を気にしている様子は描かない（顔だけ） |
-| TFL-G04 | `guest-reader.png` | 読書の方（1人） | 20〜30代。細い縁の眼鏡。落ち着いた色のカーディガン。文庫本を胸の前に持つ（表紙に文字を描かない） |
-| TFL-G05 | `guest-walkers.png` | 散歩帰りの二人 | 30代の二人。ポニーテールの女性と短い髪の男性。薄手の上着。外を歩いてきた後のゆるい顔 |
-| TFL-G06 | `guest-nose.png` | 香り好きの方（1人） | 30代の女性。髪を上でまとめたお団子。襟のあるシャツ。香りを確かめるような、少し真剣な目 |
-| TFL-G07 | `guest-students.png` | 学生の二人 | 20歳前後の二人。くせ毛の男性とキャップの男性。パーカー。楽しそう |
-| TFL-G08 | `guest-talkers.png` | 話し込む二人 | 20代後半の女性二人。長い髪とボブ。互いのほうへ少し体を向けている |
-| TFL-G09 | `guest-elder.png` | 年配の方（1人） | 60代の男性。つばのある帽子。襟付きの上着。背すじが伸びている |
-| TFL-G10 | `guest-friends.png` | 友だち同士の二人 | 20代の女性二人。お団子とポニーテール。明るい色の服。笑っている |
+| TFL-G01 | `guest-first.png` | 初めての方（1人） | 20代前半の女性。肩までのボブ。薄い色のニット。少し緊張して、背すじを伸ばして座っている |
+| TFL-G02 | `guest-worker.png` | 仕事帰りの方（1人） | 30代の男性。短い髪。ネクタイをゆるめたワイシャツ。深く腰かけて力が抜けている |
+| TFL-G03 | `guest-train.png` | 終電前の二人 | 20代の二人。キャップの男性と、長い髪の女性。上着を着たまま、浅く腰かけている |
+| TFL-G04 | `guest-reader.png` | 読書の方（1人） | 20〜30代。細い縁の眼鏡。落ち着いた色のカーディガン。開いた文庫本を胸の前に持つ（表紙に文字を描かない） |
+| TFL-G05 | `guest-walkers.png` | 散歩帰りの二人 | 30代の二人。ポニーテールの女性と短い髪の男性。薄手の上着。くつろいで少し寄りかかっている |
+| TFL-G06 | `guest-nose.png` | 香り好きの方（1人） | 30代の女性。髪を上でまとめたお団子。襟のあるシャツ。腕を軽く組み、香りを確かめるような真剣な目 |
+| TFL-G07 | `guest-students.png` | 学生の二人 | 20歳前後の二人。くせ毛の男性とキャップの男性。パーカー。身を乗り出して楽しそう |
+| TFL-G08 | `guest-talkers.png` | 話し込む二人 | 20代後半の女性二人。長い髪とボブ。互いのほうへ体を向けている |
+| TFL-G09 | `guest-elder.png` | 年配の方（1人） | 60代の男性。つばのある帽子。襟付きの上着。背すじが伸び、両手を膝に置く |
+| TFL-G10 | `guest-friends.png` | 友だち同士の二人 | 20代の女性二人。お団子とポニーテール。明るい色の服。肩を寄せている |
 
-### B. フロア専用の店内画（2枚）
-
-**1920×1080・不透過（生成は 2048×1152 以上）**。今の tonari と同じ店を、営業の画面用に少し高い位置（床から約2m）から見下ろす。人物・シーシャ機材・グラス・文字は描かない（卓の上は空。ゲームが札・客・一台・煙を重ねる）。
-
-| ID | ファイル名 | 中身 |
-|---|---|---|
-| TFL-BG01 | `bg_tonari_floor_day.png` | 昼。窓からの外光が主な光 |
-| TFL-BG02 | `bg_tonari_floor_night.png` | 同じ構図の夜。モザイクランプの灯りが主な光。真っ黒にしない（暗さはゲームが重ねる） |
-
-構図（1920×1080 での目安。ゲームが重ねる物の場所）:
-- **五つの席**（どれも「緑のソファ1つ＋木の低い卓1つ」）を、互いに重ならず全部見えるように置く。奥の壁ぎわに3席（卓の中心が x≈26%・50%・74%、y≈45%）、手前の左右に2席（卓の中心が x≈30%・70%、y≈68%）。真ん中は通路で、敷物を一枚。
-- **各席の上（卓の中心から上へ画面の高さの約18%）は静かな面**にする（ゲームが丸い客の札と吹き出しを置く）。強い灯り・細かい模様・額を置かない。
-- **左の端 0〜10%**: 入口の戸（ゲームが「入口」の札を置く）。
-- **右の端 88〜100%**: 木のカウンターと棚（ゲームが「作業台・受渡棚」の札を置く）。
-- **上 0〜14%・下 86〜100%**: 灯りと床だけにして、細かい描き込みを控える（ゲームが帯を置く）。
-- モザイクランプは上の端に並べる（ゲームがチルタイムの時だけ灯りを強める。絵に光のにじみを描かない）。
+- 上の10枚は**普通の顔**（口を閉じた穏やかな顔）。
+- **笑顔の10枚**（`guest-first-happy.png` など。ファイル名の末尾に `-happy`）: 同じ人物・同じ姿勢・同じ大きさで、表情だけ満足そうな笑顔にする（普通の顔の絵を参照に渡して作る）。満足が高い卓で差し替わる。普通の顔が先で、笑顔は後回しでよい。
 
 ### C. 卓の上の一台（1枚・透過）
 
-`shisha_tonari_table.png`・**1024×1536・背景完全透過**。完成して提供済みの一台。煙は描かない（ゲームが描く）。採用済みの `assets/ui/scene_props/shisha_c_station.png`（原画 `asset_sources/hookah-overlays-20261112/`）と同じ構造・同じ縮尺で、色だけ tonari に合わせる（銀のステム、透明なガラスのベース、ホースは緑のソファに合う深い緑）。`docs/shisha_reference.md` §4 の「生成前に決める8行」を埋め、「プロンプトに貼る文」を入れ、出力後に §4.4 のチェックを通す。
+`shisha-table.png`・**1024×1536・背景完全透過**。完成して提供済みの一台。煙は描かない（ゲームが描く）。採用済みの `assets/ui/scene_props/shisha_c_station.png`（原画 `asset_sources/hookah-overlays-20261112/`）と同じ構造・同じ縮尺で、色だけ tonari に合わせる（銀のステム、透明なガラスのベース、ホースは緑のソファに合う深い緑）。ホースは台の左側へ短く垂らし、ハンドルは台の足元に置く（客の顔に被らないように）。`docs/shisha_reference.md` §4 の「生成前に決める8行」を埋め、「プロンプトに貼る文」を入れ、出力後に §4.4 のチェックを通す。
 
-### D. UI の部品（透過。文字・数字を描かない）
+### D. UI の部品（透過。文字・数字を描かない。0 の見本と同じ絵柄で）
 
 | ID | ファイル名 | サイズ | 中身 |
 |---|---|---|---|
 | TFL-UI01 | `slip.png` | 768×512（九分割・角 40px） | 注文の伝票の紙。生成りの紙に、上の端だけミシン目。薄い罫線。角は少し丸い |
-| TFL-UI02 | `plate.png` | 640×240（九分割・角 60px） | 上の帯・入口・作業台に使う木の札。濃い胡桃色の板に真鍮の角金具。中は平らで暗い |
+| TFL-UI02 | `plate.png` | 640×240（九分割・角 60px） | 上の帯・入口・作業台・スミさんの一言に使う木の札。濃い胡桃色の板に真鍮の角金具。中は平らで暗く、上に明るい文字が読める |
 | TFL-UI03 | `button.png`・`button-primary.png` | 512×200（九分割・角 40px） | 伝票の上で押す紙のボタン（生成り）と、決定のボタン（琥珀色）。縁は真鍮色の細い線 |
-| TFL-UI04 | `bubble.png` | 480×200 | 卓の上の吹き出し。生成りの丸い札。下に小さなしっぽ |
-| TFL-UI05 | `lamp-off.png`・`lamp-on.png` | 512×768 | チルタイムの灯り。tonari のモザイクランプを一つ、正面から。消えた状態と灯った状態（光のにじみは描かない） |
+| TFL-UI04 | `bubble.png`・`bubble-quiet.png` | 480×200 | 卓の上の吹き出し。生成りの丸い札に小さなしっぽ（押せる用件）と、暗い色の札（待ちの表示） |
+| TFL-UI05 | `lamp-off.png`・`lamp-on.png` | 512×768 | ボーナスタイムの灯り。tonari のモザイクランプを一つ、正面から。消えた状態と灯った状態（光のにじみは描かない） |
 | TFL-UI06 | `icons.png` | 2048×1024（8列×4行・1コマ 256×256） | 記号20種を同じ画風で（下の順）。太い線・少ない色・32px でも見分けがつく形。文字・数字・通貨記号を描かない |
-| TFL-UI07 | `medal.png` | 512×512 | 客の絵を入れる丸い枠（真鍮の縁・中は透明） |
+| TFL-UI07 | `number-plate.png` | 256×256 | 卓の番号札。真鍮の丸い札（中は空。数字はゲームが載せる） |
+| TFL-UI08 | `face-smile.png`・`face-flat.png`・`face-frown.png` | 各 256×256 | 満足の顔の印（満足・ふつう・不満）。丸い札に単純な顔。色は緑・琥珀・赤茶 |
+| TFL-UI09 | `band.png` | 2048×360 | 「営業開始」「ボーナスタイム」「営業終了」で画面を横切る帯。濃い色の布か木に金の縁。中は空（文字はゲームが載せる）。左右の端は透明へ消える |
+| TFL-UI10 | `stamp.png` | 512×512 | 締めの伝票に押す判子の枠（朱色の二重丸。中は空。かすれは控えめ） |
+| TFL-UI11 | `door-chip.png` | 256×256 | 入口で待つ客の絵を入れる丸い枠（真鍮の縁・中は透明） |
 
 記号の順（左上から右へ）: 案内（戸と矢印）／注文（伝票）／仕込み（葉を入れた器）／配膳（盆）／煙が薄い（細い煙）／喉にくる（強い火）／グラスが空（氷だけのグラス）／聞きたそう（吹き出しに「？」の形）／夢中（開いた本）／トップ替え（回る矢印と葉）／相談（吹き出しに点3つ）／会計（レシート）／片付け（布ときらめき）／合図（「！」の形）／炭を替える（角炭と足し印）／炭を下ろす（角炭と引き印）／飲み物（グラス）／ひと声（吹き出し）／そっとしておく（三日月）／灯り（ランプ）。
+
+原画は `asset_sources/ui/tonari-floor-20261120/originals/` に置いて push する（LFS。`git lfs ls-files` で確認）。
 
 ## Codex へ渡す文
 
 ```
---- A 共通（guest-*.png・1回の生成で1枚）---
-shisha-game の「tonari フロア営業」で、卓の丸い札に入れる客の絵を1枚描いてください。
+--- 0: concept-1.png（最初に作る。できれば雰囲気を変えた concept-2.png も）---
+shisha-game の「tonari フロア営業」（シーシャバーの五つの卓を回す営業ミニゲーム）の、完成した画面の見本を1枚の絵として描いてください。
+参照画像（役割も書く）:
+ ① 配置: asset_sources/ui/tonari-floor-20261120/layout-guide.png（家具・客・UIの位置だけ。色や形の簡素さは真似しない）
+ ② UIの位置: asset_sources/ui/tonari-floor-20261120/screen-mock.png（板と札がどこに重なるかだけ。絵柄は真似しない）
+ ③ 店と画風: assets/backgrounds/bg_tonari_inside_day.png（同じ店。ソファ・卓・モザイクランプ・窓・カウンター・配色・塗りを真似る）
+描くもの: 少し上（床から約2m・見下ろし15〜20度）から見た、夜の tonari の店内。緑の布のソファと木の低い卓が五つ（奥に3席、手前の左右に2席。ソファは全部こちら向き）。客が3〜4組、こちらを向いて座っている。卓の上にシーシャの一台と、ゆるい煙。上の端にモザイクランプ。左の端に入口の戸、右の端に木のカウンター。
+その上に、ゲームのUIを「店にある物」として描く: 上の帯に木の札が3つ（左＝時計、中央＝モザイクランプの形の溜まり具合、右＝売上）、左上に小さな木の札（入口）、右上に木の札（作業台と受渡棚）、下に横長の木の札（店主の一言）、客の頭の上に生成りの丸い吹き出し、卓の上に真鍮の丸い番号札。素材は木・真鍮・生成りの紙・モザイクガラス。
+文字・数字・ロゴは入れない（札の中は空でよい）。光のにじみ・レンズフレアを描かない。
+出力: 1920×1080 PNG。保存先: asset_sources/ui/tonari-floor-20261120/originals/concept-1.png
+
+--- A 1/2: room-day.png ---
+0 で選ばれた見本と同じ絵柄で、UI・人物・卓の上の物を除いた「店内だけ」を描いてください。営業の画面の下絵です。
+参照画像: ① 配置 layout-guide.png（位置の正本。家具の位置と大きさを合わせる。色や形の簡素さは真似しない） ② 見本 concept-1.png（絵柄） ③ 店 assets/backgrounds/bg_tonari_inside_day.png（家具・配色・塗り）
+場面: 日本のシーシャバー tonari の店内。昼。窓からの外光が主な光。床から約2mの高さから店の中央を正面に見下ろす（見下ろす角度15〜20度）。左右対称に近い、舞台を見るような構図。
+構図（画面の横・縦に対する％）: 五つの席は、どれも「緑の布のソファ1つ（3人掛け・木の枠・こちら向き）＋その手前に木の低い卓1つ」。奥の壁ぎわに3席（卓の中心が横22%・47%・72%。ソファは縦32.5〜51%、卓は縦49〜57%）。手前の左右に2席（卓の中心が横30%・66%。ソファは縦61〜79%、卓は縦77〜86%）。手前の2席の間（横42〜54%）は通路で、敷物を一枚。左の端（横0〜9.5%）に入口の戸とマット。右の端（横86.5〜100%）に木のカウンター（上が作業台の天板、手前に受渡しの棚板）。奥の壁に木枠の窓・額・植物の棚。上の端にモザイクランプを10個ほど並べる。
+卓は、天板と手前の面がはっきり見える四角い形にし、輪郭を背景から切り分けやすくする。卓の上や手前に物を重ねない。
+上の帯（縦0〜13%）・下の帯（横18〜82%・縦87.5〜98.5%）・左上と右上の札の所（配置図の灰色）は、細かい描き込みと強い灯りを避けた静かな面にする（ゲームのUIが重なる）。
+描かないもの: 人物、シーシャの台・ホース・炭、グラス・皿、文字・看板の字・ロゴ・UI、光のにじみ・レンズフレア・光の筋。
+出力: 2048×1152 以上・16:9・PNG。保存先: asset_sources/ui/tonari-floor-20261120/originals/room-day.png
+できれば、この絵から卓5つだけを残してほかを透明にした同寸の front-day.png も保存してください（客より手前に重ねる前景）。
+STYLE STANDARD (shisha-game backgrounds): anime visual novel background, detailed digital painting with painterly brushwork, in the same hand as the approved shisha-game backgrounds attached as style references. Realistic perspective and material textures, one clear light source, forms built from painted planes rather than outlines, warm lighting by default. No people, no text, no logos, no signboard lettering, no watermark, no UI. Keep night scenes readable: shadows still show detail, never a solid black area (the game adds its own night tint). Base interiors and equipment on present-day Japanese shisha bars. Output 2048x1152 or larger, 16:9.
+
+--- A 2/2: room-night.png ---
+採用した room-day.png を参照に渡し、同じ構図・同じ家具の位置のまま夜にしてください（窓の外は夜の街。モザイクランプの灯りが主な光。影の中も形が読める明るさ）。家具・卓・ソファの位置を1画素もずらさないつもりで。ほかの条件と STYLE STANDARD は 1/2 と同じ。front-night.png も同じ要領で。
+保存先: asset_sources/ui/tonari-floor-20261120/originals/room-night.png
+
+--- B 共通（guest-*.png・1回の生成で1枚）---
+shisha-game の「tonari フロア営業」で、ソファに座る客の絵を1枚描いてください。店内画の卓の奥に重ねて使います。
 参照画像（リポジトリのファイルを渡す。役割も書く）:
  ① 画風の目標: assets/sprites/characters/minto/chr_minto_normal.png と assets/sprites/characters/ageha/chr_ageha_normal.png（線・塗り・影の段数だけを真似る。顔・髪・衣装は写さない）
  ② 頭身と顔の大きさの目標: 男性は assets/sprites/characters/sui/chr_sui_normal.png（千須）、女性は assets/sprites/characters/rio/chr_rio_normal.png（凛想）（頭身の目標だけ。顔・髪・体格・衣装は写さない）
+ ③ 店の光: concept-1.png（客に当たる光の色と向きだけ）
 描くもの: <上の表の「中身」をそのまま入れる>。名もない客で、本編の登場人物の誰にも似せない。
-構図: 胸から上。頭のてっぺんから胸までが画面の高さの70〜80%、左右は中央。頭と肩が画面の内接円に収まる（丸く切り抜いて使う）。二人組は二人を一枚に並べ、二人とも顔が内接円に入る。体はやや斜め、目線はこちらか少し下。
-表情: 口を閉じた穏やかな顔。
-描かないもの: シーシャの台・ホース・炭・煙、グラス、文字・ロゴ・数字、背景、影、床。
-出力: 1024×1024 PNG。背景は単色マゼンタ（#FF00FF）で塗りつぶす。
+姿勢と構図: ソファに腰かけた姿勢。頭のてっぺんから太ももの途中まで（膝から下は描かない。画面の下端が太ももの途中）。体は正面〜やや斜め。店内画と同じ、少し上（見下ろし15〜20度）から見た角度。頭の上に画面の高さの8%ほどの余白。1人は画面の中央、二人組は二人を並べて肩が触れるくらいの間隔で、頭の高さをそろえる。
+表情: 口を閉じた穏やかな顔（-happy の絵は、普通の顔の絵を参照に渡して、同じ人物・同じ姿勢・同じ大きさのまま表情だけ満足そうな笑顔に）。
+描かないもの: ソファ・卓・背景・影・床、シーシャの台・ホース・炭・煙、グラス、文字・ロゴ・数字。
+出力: 1人は 1024×1024、二人組は 1536×1024 の PNG。背景は単色マゼンタ（#FF00FF）で塗りつぶす。
 保存先: asset_sources/ui/tonari-floor-20261120/originals/<ファイル名>
 STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face.
 
---- B 1/2: bg_tonari_floor_day.png ---
-shisha-game の「tonari フロア営業」の店内画を描いてください。会話用の背景ではなく、五つの席を見渡す営業の画面の下絵です。
-参照画像:
- ① 場所と画風: assets/backgrounds/bg_tonari_inside_day.png（同じ店。ソファ・卓・モザイクランプ・窓・カウンター・配色・塗りを真似る。構図は真似しない）
-場面: 日本のシーシャバー tonari の店内。昼。窓からの外光が主な光。床から約2mの少し高い位置から、店の中央を正面に見下ろす（俯瞰しすぎない。見下ろす角度は15〜20度）。
-構図: 五つの席（どれも緑の布のソファ1つ＋木の低い卓1つ）を、互いに重ならず全部見えるように置く。奥の壁ぎわに3席（卓の中心が画面の横26%・50%・74%、縦45%）、手前の左右に2席（卓の中心が横30%・70%、縦68%）。真ん中は通路で、敷物を一枚。各席の上（卓の中心から上へ画面の高さの約18%）は、強い灯り・細かい模様・額を置かない静かな面にする。左の端0〜10%に入口の戸。右の端88〜100%に木のカウンターと棚。上0〜14%と下86〜100%は、灯りと床だけにして描き込みを控える。モザイクランプは上の端に並べる。
-卓の上は空にする。人物・シーシャの台・ホース・炭・グラス・皿・文字・看板の字・ロゴ・UI を描かない（ゲームが重ねる）。光のにじみ・レンズフレア・光の筋を描かない。
-出力: 2048×1152 以上・16:9・PNG。保存先: asset_sources/ui/tonari-floor-20261120/originals/bg_tonari_floor_day.png
-STYLE STANDARD (shisha-game backgrounds): anime visual novel background, detailed digital painting with painterly brushwork, in the same hand as the approved shisha-game backgrounds attached as style references. Realistic perspective and material textures, one clear light source, forms built from painted planes rather than outlines, warm lighting by default. No people, no text, no logos, no signboard lettering, no watermark, no UI. Keep night scenes readable: shadows still show detail, never a solid black area (the game adds its own night tint). Base interiors and equipment on present-day Japanese shisha bars. Output 2048x1152 or larger, 16:9.
-
---- B 2/2: bg_tonari_floor_night.png ---
-1/2 で採用した bg_tonari_floor_day.png を参照に渡し、同じ構図・同じ家具の位置のまま夜にしてください（窓の外は夜の街。モザイクランプの灯りが主な光。影の中も形が読める明るさ）。家具・卓・ソファの位置を1画素もずらさないつもりで。ほかの条件と STYLE STANDARD は 1/2 と同じ。
-保存先: asset_sources/ui/tonari-floor-20261120/originals/bg_tonari_floor_night.png
-
---- C: shisha_tonari_table.png ---
-採用済みの assets/ui/scene_props/shisha_c_station.png を参照に渡し、同じ構造・同じ縮尺・同じ向きのまま、色だけ替えてください: 銀のステム（紺の帯は無地の銀へ）、透明なガラスのベース、ホースは深い緑。HMD・炭2個・受け皿・パージ弁・ホースの経路（側面のポートから1本、手元の硬いハンドルまで分岐なし）は参照のまま変えない。煙・文字・背景は描かない。
+--- C: shisha-table.png ---
+採用済みの assets/ui/scene_props/shisha_c_station.png を参照に渡し、同じ構造・同じ縮尺・同じ向きのまま、色だけ替えてください: 銀のステム（紺の帯は無地の銀へ）、透明なガラスのベース、ホースは深い緑。ホースは台の左側へ短く垂らし、ハンドルは台の足元に置く。HMD・炭2個・受け皿・パージ弁・ホースの経路（側面のポートから1本、手元の硬いハンドルまで分岐なし）は参照のまま変えない。煙・文字・背景は描かない。
 docs/shisha_reference.md §4.2 の「プロンプトに貼る文」を足し、§4.3 の8行を制作記録に残し、出力後に §4.4 のチェックを通してください。
-出力: 1024×1536 PNG・背景完全透過。保存先: asset_sources/ui/tonari-floor-20261120/originals/shisha_tonari_table.png
+出力: 1024×1536 PNG・背景完全透過。保存先: asset_sources/ui/tonari-floor-20261120/originals/shisha-table.png
 
 --- D 共通（UI の部品）---
 shisha-game の「tonari フロア営業」の画面の部品を描いてください。tonari は木と布と真鍮とモザイクガラスの、あたたかい店です。
-参照画像: assets/backgrounds/bg_tonari_inside_day.png（店の色と素材）、remake/img/ui/craft-paper/board.webp（紙の質感）
-画風: 手で描いた水彩〜ガッシュ調のゲームUI。写真・3D・光沢・グローにしない。面は平らで、上に文字を重ねても読める。
+参照画像: ① 見本 concept-1.png（絵柄・色・質感をそろえる） ② assets/backgrounds/bg_tonari_inside_day.png（店の色と素材）
+画風: 見本と同じ、手で描いたゲームUI。写真・3D・強い光沢・グローにしない。面は平らで、上に文字を重ねても読める。
 描くもの: <上の表の「中身」をそのまま入れる>
 描かないもの: 文字・数字・通貨記号・ロゴ・透かし。
 出力: 表のサイズの PNG・背景完全透過。九分割で使う板とボタンは、角の飾りを表の「角」の幅に収め、辺と中は一様にする。
 保存先: asset_sources/ui/tonari-floor-20261120/originals/<ファイル名>
 ```
 
-## 届いた後の組み込み（受け取った担当がやること）
+## いまの画面と、届いた後の組み込み
 
-1. 原画を `originals/` に置く（LFS。`git lfs ls-files` で確認）。マゼンタの背景は透過にし、端のにじみを消す。
-2. 客: 512×512 の WebP にして `remake/img/ui/tonari-floor/guest-<種類>.webp`。`remake/js/daily/tonari-floor-art.js` の `GUEST_ART` に `種類: "../../img/ui/tonari-floor/guest-<種類>.webp"` を足す。
-3. 店内: `assets/backgrounds/` に置いて `python3 tools/background_catalog.py sync`・`python3 remake/tools/build_manifest.py`。`tonari.js` の `serveFloorOrder` が渡す `art` をこの絵にし、`tonari-floor-view.js` の `SPOTS`・`LAMPS` を絵に合わせて測り直す。
-4. 部品・記号: `remake/img/ui/tonari-floor/` に WebP で置き、`remake/css/tonari-floor.css` の `border-image` と `tonari-floor-art.js` の `glyph()` を替える。
-5. `node remake/test/browser/tonari_floor.mjs` と、PC 1280×720・横持ち 844×390 の実画面で確認する。
+絵が届くまでは、採用済みの会話用の店内画 `bg_tonari_inside_*` に丸い客の札を重ねた形（`STAGES.classic`）で遊べる。2026-11-20 の時点で、この環境の OpenAI 画像 API は残高切れ（`credit_balance_exhausted`）で、Claude 側では1枚も生成できていない。
+
+専用レイアウトの受け口はコードに入れてある（`remake/js/daily/tonari-floor-stage.js`）。届いた順に、次のように登録する。
+
+1. 原画を `originals/` に置く。マゼンタの背景は透過にし、端のにじみを消す。
+2. **客**: 高さ 512px の WebP にして `remake/img/ui/tonari-floor/guest-<種類>.webp`（笑顔は `-happy`）。`FLOOR_ART.guests` に `種類: { idle: "…", happy: "…" }` を足す。客の絵だけ先に届いた時は、今の丸い札の中に顔のまわりが切り抜かれて出る。
+3. **店内**: `remake/img/ui/tonari-floor/room-day.webp`・`room-night.webp` と、卓の前景 `front-day.webp`・`front-night.webp`（届かなければ `STAGES.floor` の `table` の範囲で店内画から切り出す）。`FLOOR_ART.stage` を `"floor"` にすると専用レイアウトへ切り替わる。絵の家具が配置図からずれていたら、`STAGES.floor` の `seat`・`plate`・`prop`・`lamps` を絵に合わせて測り直す。
+4. **卓の上の一台**: `remake/img/ui/tonari-floor/shisha-table.webp` を `FLOOR_ART.props.shisha` に登録する。
+5. **部品・記号**: `remake/img/ui/tonari-floor/` に WebP で置き、`remake/css/tonari-floor.css` の `border-image` と、`remake/js/daily/tonari-floor-art.js` の `glyph()` を替える。
+6. `node remake/test/browser/tonari_floor.mjs`（`seated-stage` が専用レイアウトの重なりを見る）と、PC 1280×720・横持ち 844×390 の実画面で確認する。

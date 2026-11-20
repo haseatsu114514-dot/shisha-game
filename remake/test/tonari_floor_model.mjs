@@ -1,9 +1,9 @@
 // tonari フロア営業のルール（js/daily/tonari-floor-model.js）。
-// 同じ種なら同じ一晩・操作は刻みを使わない・配合の合否・合図・会計・チルタイム・評価の境界を確かめる。
+// 同じ種なら同じ一晩・操作は刻みを使わない・配合の合否・合図・会計・ボーナスタイム・評価の境界を確かめる。
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createFloorNight, floorTick, floorAct, floorTap, floorResult, floorAdvice, floorUrgency, pickNight,
-  floorChillFull, floorChillLength, FLOOR_TABLE_COUNT } from "../js/daily/tonari-floor-model.js";
+  floorAirFull, floorBonusTimeLength, FLOOR_TABLE_COUNT } from "../js/daily/tonari-floor-model.js";
 import { MIXES, WISHES, GUESTS, CALLS, NIGHTS, FAMILIES, PRICE, RANKS, VERBS } from "../js/daily/tonari-floor-data.js";
 import { playFloorBot } from "./tonari_floor_bot.mjs";
 
@@ -101,7 +101,7 @@ test("配合: ぴったり・悪くない・外れで満足と会計が変わる
   assert.equal(fine.log.at(-1).grade, "near");
   assert.equal(miss.log.at(-1).grade, "off");
   assert.ok(at(best, 1).mood > at(fine, 1).mood && at(fine, 1).mood > at(miss, 1).mood);
-  assert.ok(best.chill > fine.chill && fine.chill > miss.chill);
+  assert.ok(best.air > fine.air && fine.air > miss.air);
   assert.equal(at(miss, 1).accepted, null);
   // 相談: 作り直すと先に作られ、ぴったりなら台代をいただける
   let s = until(miss, (x) => floorTap(x, 1) === "consult");
@@ -229,23 +229,23 @@ test("作業台と受渡棚: 一台ずつ仕上がり、棚は二つまで。急
   assert.equal(s.shelf.length, 2, "運ぶと、待っていた一台が棚へ出る");
 });
 
-test("チルタイム: 溜まった時だけ使え、その間は合図と待ち時間が止まり満足が上がる", () => {
+test("ボーナスタイム: 溜まった時だけ使え、その間は合図と待ち時間が止まり満足が上がる", () => {
   let s = serveFirst(createFloorNight({ seed: 4, level: 1 }));
-  assert.equal(floorAct(s, { type: "chill" }), s, "溜まる前は使えない");
-  s = { ...s, chill: floorChillFull };
+  assert.equal(floorAct(s, { type: "bonusTime" }), s, "溜まる前は使えない");
+  s = { ...s, air: floorAirFull };
   s = until(s, (x) => floorTap(x, 1) === "care");
   const call = { ...at(s, 1).call };
   const mood = at(s, 1).mood;
-  s = act(s, { type: "chill" });
-  assert.equal(s.chill, 0);
-  assert.equal(s.chillLeft, floorChillLength);
-  assert.equal(floorAdvice(s).kind, "chill");
-  s = floorTick(s, floorChillLength);
-  assert.equal(s.chillLeft, 0);
+  s = act(s, { type: "bonusTime" });
+  assert.equal(s.air, 0);
+  assert.equal(s.bonusTimeLeft, floorBonusTimeLength);
+  assert.equal(floorAdvice(s).kind, "bonusTime");
+  s = floorTick(s, floorBonusTimeLength);
+  assert.equal(s.bonusTimeLeft, 0);
   assert.ok(at(s, 1).mood > mood, "満足が上がる");
-  assert.equal(at(s, 1).call.until - s.t, call.until - (s.t - floorChillLength), "合図の残り時間は減らない");
-  assert.ok(s.log.some((e) => e.type === "chillEnd"));
-  assert.equal(s.chillCount, 1);
+  assert.equal(at(s, 1).call.until - s.t, call.until - (s.t - floorBonusTimeLength), "合図の残り時間は減らない");
+  assert.ok(s.log.some((e) => e.type === "bonusTimeEnd"));
+  assert.equal(s.bonusTimes, 1);
 });
 
 test("今夜の段取り: 仕込み・炭・レジがそれぞれ効く", () => {
@@ -315,7 +315,7 @@ test("通し: 手際のよい操作は大入り、放っておく夜は評価が
       assert.equal(quick.lost, 0);
       assert.equal(quick.served, quick.expected);
       assert.equal(quick.sales, quick.groups.reduce((sum, g) => sum + g.total, 0));
-      assert.ok(quick.chillCount >= 1, `${night}: 一晩に一度はチルタイムが溜まる`);
+      assert.ok(quick.bonusTimes >= 1, `${night}: 一晩に一度はボーナスタイムが溜まる`);
       const slow = playFloorBot({ seed: 11, level, night, chapter, pace: 16, pick: "near" }).result;
       assert.ok(["B", "C"].includes(slow.rank), `${night}: 手が遅いと評価は下がる（${slow.rank}）`);
       assert.ok(slow.score < quick.score);

@@ -156,7 +156,7 @@ await suite("tonari-floor", async (check) => {
       // 画面の外へはみ出さない・押せる大きさ（実画素で40px以上）
       const boxes = await page.evaluate(() => {
         const stage = document.getElementById("stage").getBoundingClientRect();
-        return [...document.querySelectorAll(".tf-seat, .tf-chill, .tf-pause-button, .tf-ticker")].map((n) => {
+        return [...document.querySelectorAll(".tf-seat, .tf-bonus, .tf-pause-button, .tf-ticker")].map((n) => {
           const r = n.getBoundingClientRect();
           return { cls: n.className, w: r.width, h: r.height, inside: r.left >= stage.left - 1 && r.right <= stage.right + 1 && r.top >= stage.top - 1 && r.bottom <= stage.bottom + 1 };
         });
@@ -208,13 +208,13 @@ await suite("tonari-floor", async (check) => {
       assert.notEqual(await page.locator(t("sales")).innerText(), "0円");
       await table(1).click();
       assert.equal(await api((a) => a.state().tables[0].phase), "empty");
-      // チルタイム: 溜まるまで押せない
-      assert.equal(await page.locator(t("chill")).isDisabled(), true);
-      await api((a) => { a.state().chill = 100; });
+      // ボーナスタイム: 溜まるまで押せない
+      assert.equal(await page.locator(t("bonus")).isDisabled(), true);
+      await api((a) => { a.state().air = 100; });
       await tick(1);
-      assert.equal(await page.locator(t("chill")).isDisabled(), false);
-      await page.locator(t("chill")).click({ force: true });
-      assert.equal(await page.locator(t("screen")).getAttribute("data-chill"), "on");
+      assert.equal(await page.locator(t("bonus")).isDisabled(), false);
+      await page.locator(t("bonus")).click({ force: true });
+      assert.equal(await page.locator(t("screen")).getAttribute("data-bonus"), "on");
       // 休止→ゆっくり→つづける→引き継ぎ→締めの伝票
       await page.locator(t("pause")).click();
       await page.locator(t("pause-panel")).waitFor();
@@ -236,6 +236,67 @@ await suite("tonari-floor", async (check) => {
       assert.equal(result.anchorIndex, null, "「今日の注文」の客（二組目）は、まだ受け取っていない");
       assert.equal(result.groups[0].stars, 3);
       assert.equal(await page.evaluate(() => C.core.state.money), 30000, "店の売上は、はじめの所持金に入らない");
+    }, options);
+  }
+
+  // 専用の店内画（客が座る形）: 絵が届く前でも、配置図の舞台で重なりと操作を確かめる。
+  // 客は卓の奥・卓の前景は客より手前・番号札と吹き出しはさらに手前。絵の登録があれば影絵の代わりに絵を出す。
+  for (const [platform, options] of [["pc", {}], ["touch", touch]]) {
+    await run(`${platform}-seated-stage`, async (page) => {
+      await setup(page);
+      await page.evaluate(async () => {
+        C.fresh();
+        const guide = await import("./test/tonari_floor_guide.mjs");
+        const pixel = (color) => { const c = Object.assign(document.createElement("canvas"), { width: 8, height: 8 }); const x = c.getContext("2d"); x.fillStyle = color; x.fillRect(0, 0, 8, 8); return c.toDataURL(); };
+        window.done = C.view.runTonariFloor({ seed: 3, level: 1, night: true, stage: guide.floorGuideStage({ night: true }),
+          guests: { first: { idle: pixel("#c33"), happy: pixel("#3c3") } }, props: { shisha: pixel("#ccc") } }).then((r) => { window.result = r; });
+      });
+      const api = (fn, arg) => page.evaluate(({ fn, arg }) => new Function("a", "arg", `return (${fn})(a, arg)`)(C.view.floorTest.api, arg), { fn: fn.toString(), arg });
+      await page.locator(t("option-start")).click();
+      assert.equal(await page.locator(t("screen")).getAttribute("data-style"), "seated");
+      assert.equal(await page.locator(".tf-front").count(), 1);
+      await api((a) => a.tick(6));
+      await page.locator(t("table-4")).click(); // 手前の左の卓へ案内
+      assert.equal(await api((a) => a.state().tables[3].phase), "order");
+      const geo = await page.evaluate(() => {
+        const z = (sel) => Number(getComputedStyle(document.querySelector(sel)).zIndex);
+        const rect = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right, w: r.width, h: r.height }; };
+        const stage = document.getElementById("stage").getBoundingClientRect();
+        const spot = '.tf-spot[data-id="4"]';
+        return { seat: rect(`${spot} .tf-seat`), plate: rect(`${spot} .tf-plate`), bubble: rect(`${spot} .tf-bubble`), stage: { top: stage.top, h: stage.height },
+          z: { seat: z(`${spot} .tf-seat`), front: z(".tf-front"), plate: z(`${spot} .tf-plate`), bubble: z(`${spot} .tf-bubble`) },
+          painted: !!document.querySelector(`${spot} .tf-who img`), hud: rect(".tf-top") };
+      });
+      assert(geo.z.seat < geo.z.front && geo.z.front < geo.z.plate && geo.z.plate < geo.z.bubble, JSON.stringify(geo.z));
+      assert(geo.painted, "登録した客の絵が出る");
+      assert(geo.bubble.bottom <= geo.seat.top + 2, "吹き出しは頭の上");
+      assert(geo.plate.top >= geo.seat.bottom - 2, "番号札は客より手前（下）");
+      assert(geo.seat.h >= 40 && geo.seat.w >= 40, `座った客は押せる大きさ: ${geo.seat.w}x${geo.seat.h}`);
+      // 吹き出しからも同じ卓の伝票が開く
+      await page.locator('.tf-spot[data-id="4"] .tf-bubble').click();
+      await page.locator(t("sheet")).waitFor();
+      const best = await api((a) => { const g = a.state().guests.g1; return g.options.indexOf(g.best); });
+      await page.locator(t(`option-mix-${best}`)).click();
+      await api((a) => a.tick(15));
+      await page.locator(t("table-4")).click(); // 配膳
+      assert.equal(await api((a) => a.state().tables[3].phase), "enjoy");
+      assert.equal(await page.locator('.tf-spot[data-id="4"]').getAttribute("data-served"), "true");
+      assert.equal(await page.locator('.tf-spot[data-id="4"] .tf-prop img').count(), 1, "卓の上の一台が出る");
+      // 満足が上がると、登録があれば笑顔の絵に替わる
+      const idle = await page.locator('.tf-spot[data-id="4"] .tf-who img').getAttribute("src");
+      await api((a) => { a.state().tables[3].mood = 95; a.tick(1); });
+      assert.notEqual(await page.locator('.tf-spot[data-id="4"] .tf-who img').getAttribute("src"), idle);
+      // 奥の客のひとことは、上の帯に隠れない
+      await api((a) => { for (let i = 0; i < 40 && !a.state().queue.length; i++) a.tick(1); });
+      await page.locator(t("table-1")).click();
+      await page.locator(t("table-1")).click();
+      await page.locator(".tf-sheet .tf-option").first().click();
+      await api((a) => a.tick(15));
+      await page.locator(t("table-1")).click();
+      const say = await page.evaluate(() => { const r = document.querySelector('.tf-spot[data-id="1"] .tf-say').getBoundingClientRect(); const hud = document.querySelector(".tf-clock").getBoundingClientRect(); return { top: r.top, hudBottom: hud.bottom, on: document.querySelector('.tf-spot[data-id="1"] .tf-say').dataset.on }; });
+      assert.equal(say.on, "true");
+      assert(say.top >= say.hudBottom - 4, `奥の卓のひとことが上の帯に被る: ${say.top} < ${say.hudBottom}`);
+      await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/tonari-floor-${platform}-seated.png` }).catch(() => {});
     }, options);
   }
 

@@ -1,7 +1,8 @@
-// tonari フロア営業の記号と客の影絵。コードで描く仮の絵で、Codex の絵が届いたら GUEST_ART に登録して差し替える
-// （依頼の内容と置き場は asset_sources/ui/tonari-floor-20261120/README.md）。
+// tonari フロア営業の記号と客の影絵。コードで描く仮の絵で、Codex の絵が届いたら tonari-floor-stage.js の FLOOR_ART に
+// 登録して差し替える（依頼の内容と置き場は asset_sources/ui/tonari-floor-20261120/README.md）。
 import { el } from "../core/util.js";
 import { buildVersioned } from "../core/asset-version.js";
+import { FLOOR_ART, artUrl } from "./tonari-floor-stage.js";
 
 // 24×24・線の太さ1.8。色は currentColor。塗りつぶす記号は fill:true。
 const GLYPHS = {
@@ -41,10 +42,6 @@ export function glyph(name, className = "") {
     html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${GLYPHS[name] || GLYPHS.alert}</svg>`,
   });
 }
-
-// 客の絵（Codex 生成）が届いたら、客の種類ID → 画像の相対パスをここに足す。無い種類は下の影絵で描く。
-// 例: first: "../../img/ui/tonari-floor/guest-first.webp"
-export const GUEST_ART = Object.freeze({});
 
 const SKIN = ["#edd0b0", "#e3bf9c", "#f1d9bf", "#d9b08c"];
 const HAIR = ["#3a2a22", "#54382a", "#2c2a33", "#6d4b32", "#22201f"];
@@ -92,10 +89,19 @@ export function bust(look, key = "") {
   });
 }
 
-/** 卓の客（1〜2人）。絵があれば絵、無ければ影絵。 */
-export function guestArt(guest) {
-  const src = GUEST_ART[guest.kind];
-  if (src) return el("span.tf-guest-art", { "aria-hidden": true }, [el("img", { src: buildVersioned(new URL(src, import.meta.url).href), alt: "", decoding: "async" })]);
+/**
+ * 卓の客（1〜2人）。絵があれば絵、無ければ影絵。
+ * @param opts.happy 満足している時の絵（登録があれば）を使う
+ * @param opts.art 絵の登録（検査用に差し替えられる。既定は FLOOR_ART.guests）
+ */
+export function guestArt(guest, { happy = false, art = FLOOR_ART.guests } = {}) {
+  const entry = art?.[guest.kind];
+  const src = typeof entry === "string" ? entry : (happy && entry?.happy) || entry?.idle;
+  if (src) {
+    const url = artUrl(src);
+    return el("span.tf-guest-art", { "aria-hidden": true, dataset: { party: guest.party, painted: "true" } },
+      [el("img", { src: /^(data:|blob:)/.test(url) ? url : buildVersioned(url), alt: "", decoding: "async", draggable: false })]);
+  }
   return el("span.tf-guest-art", { "aria-hidden": true, dataset: { party: guest.party } },
     guest.look.slice(0, guest.party).map((look, i) => bust(look, `${guest.id}${i}`)));
 }

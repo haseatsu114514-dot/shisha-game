@@ -10,13 +10,13 @@ export const FLOOR_TICK_MS = 500;
 // 待てる長さ（刻み）。grace を過ぎると満足が少しずつ下がる。
 const T = Object.freeze({
   queue: 56, orderGrace: 18, waitGrace: 44, billGrace: 16, quickSeat: 10,
-  prep: 14, topPrep: 10, shelf: 2, call: 28, consult: 30, chill: 28, register: 6, topStay: 26,
+  prep: 14, topPrep: 10, shelf: 2, call: 28, consult: 30, bonusTime: 28, register: 6, topStay: 26,
 });
 const MOOD = Object.freeze({
   start: 50, quickSeat: 5, best: 22, near: 8, off: -14, redoBest: 16, redoNear: 6,
-  care: 8, careMiss: -8, careLate: -10, top: 6, waive: 6, decay: 0.5, chill: 0.6, unserved: 40,
+  care: 8, careMiss: -8, careLate: -10, top: 6, waive: 6, decay: 0.5, bonusTime: 0.6, unserved: 40,
 });
-const CHILL = Object.freeze({ full: 100, best: 18, near: 8, care: 10, seat: 4, star3: 8, star2: 4, clean: 2 });
+const AIR = Object.freeze({ full: 100, best: 18, near: 8, care: 10, seat: 4, star3: 8, star2: 4, clean: 2 });
 const PLAN_EFFECT = Object.freeze({
   prep: { prep: 9 }, coal: { call: 1.6 }, register: { register: true },
 });
@@ -100,7 +100,7 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, anchor = nu
     guests, upcoming: order, queue: [],
     tables: Array.from({ length: FLOOR_TABLE_COUNT }, (_, i) => emptyTable(i + 1)),
     bench: null, line: [], shelf: [],
-    chill: 0, chillLeft: 0, chillCount: 0,
+    air: 0, bonusTimeLeft: 0, bonusTimes: 0,
     sales: 0, results: [],
     counts: { best: 0, near: 0, off: 0, care: 0, careMiss: 0, late: 0, missed: 0, cleaned: 0, top: 0, refill: 0, quick: 0 },
     anchor: anchorBest ? { family: anchor.family, guestId: order[anchorAt], index: null } : null,
@@ -120,10 +120,10 @@ const note = (s, event) => { s.log.push(event); };
 const lineFor = (s, list, salt) => list[(s.seed + salt) % list.length];
 
 function gain(s, amount) {
-  if (s.chillLeft > 0) return; // チルタイム中は溜まらない
-  const before = s.chill;
-  s.chill = Math.min(CHILL.full, s.chill + amount);
-  if (before < CHILL.full && s.chill >= CHILL.full) note(s, { type: "chillFull" });
+  if (s.bonusTimeLeft > 0) return; // ボーナスタイム中は溜まらない
+  const before = s.air;
+  s.air = Math.min(AIR.full, s.air + amount);
+  if (before < AIR.full && s.air >= AIR.full) note(s, { type: "airFull" });
 }
 
 function feedBench(s) {
@@ -196,7 +196,7 @@ function close(s, why) {
     }
   }
   s.bench = null; s.line = []; s.shelf = [];
-  s.chillLeft = 0;
+  s.bonusTimeLeft = 0;
   s.done = true;
   s.closing = why;
   note(s, { type: "close", why });
@@ -210,14 +210,14 @@ function openCall(s, table, type, length) {
 function tickOnce(s) {
   if (s.done) return;
   s.t += 1;
-  const chill = s.chillLeft > 0;
+  const bonusOn = s.bonusTimeLeft > 0;
   while (s.upcoming.length && s.guests[s.upcoming[0]].arrive <= s.t) {
     const id = s.upcoming.shift();
     s.queue.push({ id, since: s.t });
     note(s, { type: "arrive", guestId: id });
   }
   s.queue = s.queue.filter((entry) => {
-    if (chill) { entry.since += 1; return true; } // チルタイム中は入口の客も急がない
+    if (bonusOn) { entry.since += 1; return true; } // ボーナスタイム中は入口の客も急がない
     if (s.t - entry.since < T.queue) return true;
     const guest = s.guests[entry.id];
     s.results.push({ guestId: guest.id, tableId: null, name: guest.name, party: guest.party, mood: 0, stars: 0, total: 0, missed: true });
@@ -230,11 +230,11 @@ function tickOnce(s) {
   feedBench(s);
   for (const table of s.tables) {
     if (table.phase === "order" || table.phase === "wait" || table.phase === "bill") {
-      if (chill) { table.since += 1; continue; }
+      if (bonusOn) { table.since += 1; continue; }
       if (table.phase === "bill" && planOf(s).register) {
         if (s.t - table.since >= T.register) {
           const paid = settle(s, table, "sumi");
-          gain(s, paid.stars === 3 ? CHILL.star3 : paid.stars === 2 ? CHILL.star2 : 0);
+          gain(s, paid.stars === 3 ? AIR.star3 : paid.stars === 2 ? AIR.star2 : 0);
           note(s, { type: "bill", tableId: table.id, ...paid, by: "sumi" });
         }
         continue;
@@ -244,9 +244,9 @@ function tickOnce(s) {
       continue;
     }
     if (table.phase !== "enjoy") continue;
-    if (chill) {
+    if (bonusOn) {
       // いい空気の間は、合図も帰り支度も止まる。満足だけがゆっくり上がる。
-      table.mood = clampMood(table.mood + MOOD.chill);
+      table.mood = clampMood(table.mood + MOOD.bonusTime);
       table.stayEnd += 1;
       if (table.call) table.call.until += 1;
       for (const next of table.callsLeft) next.at += 1;
@@ -274,9 +274,9 @@ function tickOnce(s) {
       note(s, { type: "billReady", tableId: table.id });
     }
   }
-  if (s.chillLeft > 0) {
-    s.chillLeft -= 1;
-    if (!s.chillLeft) note(s, { type: "chillEnd" });
+  if (s.bonusTimeLeft > 0) {
+    s.bonusTimeLeft -= 1;
+    if (!s.bonusTimeLeft) note(s, { type: "bonusTimeEnd" });
   }
   if (s.t >= s.length) close(s, "time");
   else if (!s.upcoming.length && !s.queue.length && s.tables.every((table) => table.phase === "empty")) close(s, "clear");
@@ -334,7 +334,7 @@ function serve(s, table) {
     table.line = grade === "off" ? lineFor(s, SERVE_LINES.off, table.id) : lineFor(s, SERVE_LINES.redo, table.id);
     table.stayEnd = s.t + Math.round(stay * 0.6);
     scheduleCalls(s, table, guest, 0.6);
-    if (grade === "best") gain(s, CHILL.near);
+    if (grade === "best") gain(s, AIR.near);
     note(s, { type: "serve", tableId: table.id, grade: grade === "off" ? "off" : "redo", line: table.line });
     return;
   }
@@ -347,7 +347,7 @@ function serve(s, table) {
     table.callsLeft = [{ type: "consult", at: s.t + 3 }];
   } else {
     table.accepted = true;
-    gain(s, CHILL[grade]);
+    gain(s, AIR[grade]);
     scheduleCalls(s, table, guest, 1);
   }
   note(s, { type: "serve", tableId: table.id, grade, line: table.line });
@@ -361,7 +361,7 @@ function scheduleCalls(s, table, guest, scale) {
 
 /**
  * 操作を一つ確定する。できない操作は同じ state を返す（画面は何も進めない）。
- * action: { type: "seat" | "order" | "serve" | "care" | "top" | "consult" | "bill" | "clean" | "rush" | "chill" | "finish", tableId, mixId, verb, accept }
+ * action: { type: "seat" | "order" | "serve" | "care" | "top" | "consult" | "bill" | "clean" | "rush" | "bonusTime" | "finish", tableId, mixId, verb, accept }
  */
 export function floorAct(state, action) {
   if (!action || state.done) return state;
@@ -377,7 +377,7 @@ export function floorAct(state, action) {
       const quick = s.t - entry.since <= T.quickSeat;
       Object.assign(table, emptyTable(table.id), { phase: "order", guestId: entry.id, since: s.t,
         mood: MOOD.start + (quick ? MOOD.quickSeat : 0), line: s.guests[entry.id].quote });
-      if (quick) { s.counts.quick += 1; gain(s, CHILL.seat); }
+      if (quick) { s.counts.quick += 1; gain(s, AIR.seat); }
       note(s, { type: "seat", tableId: table.id, quick });
       break;
     }
@@ -409,7 +409,7 @@ export function floorAct(state, action) {
         table.mood = clampMood(table.mood + MOOD.care);
         s.counts.care += 1;
         if (call.refill) { table.refills += 1; s.counts.refill += 1; }
-        gain(s, CHILL.care);
+        gain(s, AIR.care);
         table.line = call.good;
       } else {
         table.mood = clampMood(table.mood + MOOD.careMiss);
@@ -456,7 +456,7 @@ export function floorAct(state, action) {
     case "bill": {
       if (!can("bill")) return state;
       const paid = settle(s, table, "hajime");
-      gain(s, paid.stars === 3 ? CHILL.star3 : paid.stars === 2 ? CHILL.star2 : 0);
+      gain(s, paid.stars === 3 ? AIR.star3 : paid.stars === 2 ? AIR.star2 : 0);
       note(s, { type: "bill", tableId: table.id, ...paid, by: "hajime" });
       break;
     }
@@ -464,15 +464,15 @@ export function floorAct(state, action) {
       if (!can("clean")) return state;
       s.tables[table.id - 1] = emptyTable(table.id);
       s.counts.cleaned += 1;
-      gain(s, CHILL.clean);
+      gain(s, AIR.clean);
       note(s, { type: "clean", tableId: table.id });
       break;
-    case "chill":
-      if (s.chill < CHILL.full || s.chillLeft > 0) return state;
-      s.chill = 0;
-      s.chillLeft = T.chill;
-      s.chillCount += 1;
-      note(s, { type: "chillStart" });
+    case "bonusTime":
+      if (s.air < AIR.full || s.bonusTimeLeft > 0) return state;
+      s.air = 0;
+      s.bonusTimeLeft = T.bonusTime;
+      s.bonusTimes += 1;
+      note(s, { type: "bonusTimeStart" });
       break;
     case "finish":
       close(s, "handoff");
@@ -500,10 +500,10 @@ export const floorQueueUrgency = (s, entry) => Math.max(0, Math.min(1, (s.t - en
 /** スミさんの一言（今いちばん先に見るところ）。台詞なので句点で終えない。 */
 export function floorAdvice(s) {
   if (s.done) return { kind: "done", tableId: null, text: "お疲れさん" };
-  if (s.chillLeft > 0) return { kind: "chill", tableId: null, text: "……いい煙だ。今のうちに、手を進めておけ" };
+  if (s.bonusTimeLeft > 0) return { kind: "bonusTime", tableId: null, text: "……いい煙だ。今のうちに、手を進めておけ" };
   const tables = s.tables;
   const enjoying = tables.filter((t) => t.phase === "enjoy").length;
-  if (s.chill >= CHILL.full && enjoying >= 2) return { kind: "chillReady", tableId: null, text: "店がいい空気だ。チルタイム、いけるぞ" };
+  if (s.air >= AIR.full && enjoying >= 2) return { kind: "bonusTimeReady", tableId: null, text: "店がいい空気だ。ボーナスタイム、いけるぞ" };
   const urgent = (list) => list.sort((a, b) => floorUrgency(s, b.id) - floorUrgency(s, a.id))[0];
   const empty = tables.find((t) => t.phase === "empty");
   if (s.queue.length && empty) return { kind: "seat", tableId: empty.id, text: "入口でお客さんが待ってる。空いた卓へ通せ" };
@@ -518,7 +518,7 @@ export function floorAdvice(s) {
   if (billing && !planOf(s).register) return { kind: "bill", tableId: billing.id, text: `${billing.id}卓がお会計だ` };
   const dirty = tables.find((t) => t.phase === "dirty");
   if (dirty) return { kind: "clean", tableId: dirty.id, text: s.queue.length ? `${dirty.id}卓を片付ければ、次を通せる` : `${dirty.id}卓、手が空いたら片付けだ` };
-  if (s.chill >= CHILL.full) return { kind: "chillReady", tableId: null, text: "チルタイムは、卓が埋まった時に使え" };
+  if (s.air >= AIR.full) return { kind: "bonusTimeReady", tableId: null, text: "ボーナスタイムは、卓が埋まった時に使え" };
   if (tables.some((t) => t.delivery && !t.delivery.ready)) return { kind: "idle", tableId: null, text: "いま仕込んでる。上がったら運んでくれ" };
   return { kind: "idle", tableId: null, text: enjoying ? "いい調子だ。卓の様子を見ておけ" : "次のお客さんまで、少し間がある" };
 }
@@ -540,10 +540,10 @@ export function floorResult(s) {
   return {
     night: s.night, title: s.title, sales: s.sales, score, rank: rank.id, stamp: rank.stamp, bonus: rank.bonus, comment: rank.line,
     groups, served: groups.filter((row) => !row.missed && !row.unserved).length, expected, lost,
-    counts: { ...s.counts }, chillCount: s.chillCount, closing: s.closing,
+    counts: { ...s.counts }, bonusTimes: s.bonusTimes, closing: s.closing,
     anchorIndex: s.anchor?.index ?? null, anchorFamily: s.anchor?.family ?? null,
   };
 }
 
-export const floorChillFull = CHILL.full;
-export const floorChillLength = T.chill;
+export const floorAirFull = AIR.full;
+export const floorBonusTimeLength = T.bonusTime;
