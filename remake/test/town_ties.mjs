@@ -117,6 +117,19 @@ check("Naru and Rio, the order (#3468 E): wired after the tea at the chapter-fiv
   assert.match(source, /\{ scene: "ch5_rio_naru_tea", after: 1, met: "naru" \}\),\s*Object\.freeze\(\{ scene: "ch5_rio_naru_order", after: 2, met: "naru", seen: "ch5_rio_naru_tea" \}\)/);
 });
 
+check("Ageha's lover-only shop scenes (#4010): only while she is his lover, in order, after the usual talks", () => {
+  const source = fs.readFileSync(new URL("../js/chapters/ch5-shops.js", import.meta.url), "utf8");
+  assert.match(source, /\{ scene: "ch5_ageha_lover_two_hands", after: 1, lover: "ageha" \}\),\s*Object\.freeze\(\{ scene: "ch5_ageha_lover_closing", after: 2, lover: "ageha", seen: "ch5_ageha_lover_two_hands" \}\)/);
+  assert.match(source, /!extra\.lover \|\| \(value\.lovers \|\| \[\]\)\.includes\(extra\.lover\) && !value\.flags\?\._story_shuraba_unresolved/);
+  for (const id of ["ch5_ageha_lover_two_hands", "ch5_ageha_lover_closing"]) {
+    const dlg = dialogues[id];
+    assert.equal(dlg.metadata?.private_scene, true, id);
+    const speakers = new Set(dlg.lines.filter((l) => !l.type && l.speaker).map((l) => l.speaker));
+    assert.deepEqual([...speakers].sort(), ["ageha", "hajime"], `${id}: only the two of them speak`);
+    assert(!/上がった|好感度|修羅場|大会/.test(dlg.lines.map((l) => l.text || "").join("")), id);
+  }
+});
+
 check("Hiyori and Minto: Minto plays along and never says so to her; her own age stays a joke", () => {
   const dlg = dialogues.hiyori_shop_minto;
   // みんとの店なので、名前欄は営業の「みんと」のまま（本名を知っていても）

@@ -644,7 +644,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         node.append(el("button.trpg-spot", { type: "button",
           class: checked ? "checked" : "", disabled: busy || (!checked && state.clues.length >= session.rules.exploreLimit),
           "aria-label": spot.label + (checked ? "、調査済み。もう一度読む" : "を調べる"),
-          style: { left: spot.x + "%", top: spot.y + "%" }, dataset: { test: "trpg-spot-" + spot.id, labelSide: spot.y >= 65 ? "above" : "below" },
+          style: { left: spot.x + "%", top: spot.y + "%" }, dataset: { test: "trpg-spot-" + spot.id, labelSide: spot.y >= 65 ? "above" : "below",
+            // 画面の端に近い印は、名札を中央でなく内側へ寄せる（中央揃えだと、長い名札が画面の外へ切れた・#3199）。
+            ...(spot.x < 12 ? { labelAlign: "start" } : spot.x > 88 ? { labelAlign: "end" } : {}) },
           onclick: () => {
             if (busy || overlay) return;
             const clue = session.inspect(spot.id), from = clue.fresh ? root.querySelector('[data-test="trpg-spot-' + spot.id + '"]')?.getBoundingClientRect?.() : null;

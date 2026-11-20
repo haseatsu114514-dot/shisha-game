@@ -57,7 +57,7 @@ const overrides={spendableMoney,state, DB:{flavorById:{lemon:{}},dialogues:{},li
  completeInvitation:()=>{state.pendingInvite=null},
  invitationCost:()=>0,invitationGrowth:()=>({}),isFriendEvent:()=>false,isFinaleEvent:()=>false,CHAR_STAT:{},storeInvitationSpot:()=>false,
  openingStatus:()=>({ok:true}),VISIT_BG:{},restAtHome:async()=>{},currentCondition:()=>({health:'green'}),
- // #2213 B03: the DAY2 night slot is a fixed shift; record it instead of running the tonari scenes.
+ // #3819: DAY2 has no fixed shift any more. A voluntary shift is recorded instead of running the tonari scenes.
  doBaito:async({story}={})=>{calls.push({type:'shift',day:state.day,slot:state.slot,story:await story?.()})},
 };
 const context=vm.createContext({console,Math,Set,String,Number,Array,Promise});
@@ -124,7 +124,8 @@ for(const unavailable of [locked,closed]) {
  assert.equal(calls.find(x=>x.pin==='c_station').free,'参加登録（代金なし）');
  assert.equal(state.money,14000);
 }
-// DAY2 batch handoff: both requests are read in tonari before visiting either shop.
+// DAY2 batch handoff (#3819): both requests are read in tonari, then the deliveries follow the registration
+// in the morning ("登録のついで"), before any free action. No fixed shift.
 const deliveryTrace=()=>calls.filter(x=>x.type==='scene'
   && ['remake_delivery_minto','remake_delivery_eden','remake_delivery_report'].includes(x.id)
   || x.type==='map' && ['minto','adam'].includes(x.pin))
@@ -136,10 +137,14 @@ assert.deepEqual(deliveryTrace(),[
 ]);
 assert.equal(state.flags._delivery_batch_started,true);
 assert.equal(state.flags._delivery_report_done,true);
-// #2213 B03: one free noon action, then the night slot is the fixed shift; deliveries follow it.
-assert.deepEqual(calls.filter(x=>x.type==='shift').map(x=>[x.day,x.slot]),[[2,1]]);
-assert.equal(state.flags._ch1_day2_shift_done,true);
-assert(calls.findIndex(x=>x.type==='shift')<calls.findIndex(x=>x.type==='map'&&x.pin==='minto'));
+assert.deepEqual(calls.filter(x=>x.type==='shift'),[],'#3819: DAY2 has no fixed shift');
+assert.equal(state.flags._ch1_day2_shift_done,undefined);
+assert.deepEqual(calls.filter(x=>x.type==='map'&&['minto','adam'].includes(x.pin)).map(x=>[x.pin,x.slot,x.free]),
+ [['minto',0,'配達（登録のついで・代金なし）'],['adam',0,'配達（登録のついで・代金なし）']]);
+assert.equal(calls.find(x=>x.id==='remake_delivery_report').slot,0,'The report is read before the free day');
+const firstFree=calls.findIndex(x=>x.type==='map'&&!x.pin);
+assert(firstFree>calls.findIndex(x=>x.id==='remake_delivery_report'),'Free actions come after the errand and report');
+assert.deepEqual(calls.filter(x=>x.type==='map'&&!x.pin).map(x=>x.slot),[0,1],'Both DAY2 slots stay free');
 assert.equal(state.money,14000);assert.equal(state.stamina,94);assert.equal(actionEnds,2);
 const firstGuide=calls.findIndex(x=>x.type==='map'&&x.pin==='minto');
 const secondGuide=calls.findIndex(x=>x.type==='map'&&x.pin==='adam');
@@ -194,9 +199,29 @@ assert(!dialogue('remake_delivery_eden').lines[0].text.includes('戻ったか'))
 assert(!dialogue('remake_delivery_minto').lines.some(line=>line.text?.includes('戻ってこい')));
 console.log('delivery batch: morning briefing, no interim return, one report, SAVE/LOAD and old checkpoint PASS');
 
-// #3819 item 2: visiting Adam or Minto while delivery is requested prioritizes delivery over normal smoking,
+// #3819 item 2: visiting Adam or Minto while delivery is still requested prioritizes delivery over normal smoking,
 // does not advance the daytime slot to night, and allows normal smoking once delivery is completed.
+// The morning errand delivers both shops first; a shop is left for the day only when the errand could not reach it.
 reset({day:2});
+mapQueue.push('adam');
+await c.runDaily({untilDay:3,nightEvents:{}});
+assert.deepEqual(
+ calls.filter(x=>['visit','rival','shift'].includes(x.type)||x.id==='remake_delivery_minto_handoff'||x.id==='remake_delivery_report')
+  .map(x=>[x.type,x.id,x.day,x.slot,x.deliveryFlag??null]),
+ [
+  ['scene','remake_delivery_minto_handoff',2,0,null],
+  ['visit','adam',2,0,true],
+  ['scene','remake_delivery_report',2,0,null],
+  ['rival','adam',2,0,true],
+ ],
+ 'After the morning errand, choosing Adam at noon is an ordinary visit'
+);
+assert.equal(state.story.adam,2);
+assert.equal(state.money,11000,'+4000 delivery pay (minto+adam) -3000 normal Adam visit');
+
+// Minto closed in the morning: the errand keeps the order (no Adam first), Adam is delivered on a noon visit
+// without spending the slot, a second Adam visit is ordinary smoking, and Minto waits for its next open day.
+reset({day:2});closed.add('minto');
 mapQueue.push('adam','adam');
 await c.runDaily({untilDay:3,nightEvents:{}});
 assert.deepEqual(
@@ -205,24 +230,18 @@ assert.deepEqual(
  [
   ['visit','adam',2,0,true],
   ['rival','adam',2,0,true],
-  ['shift',undefined,2,1,null],
-  ['scene','remake_delivery_minto_handoff',2,2,null],
-  ['scene','remake_delivery_report',2,2,null],
  ],
- 'Adam daytime visit must run delivery first (slot 0), then allow normal smoking (slot 0->1), then shift and remaining Minto delivery'
+ 'Adam daytime visit must run delivery first (slot 0), then allow normal smoking (slot 0->1)'
 );
-assert.equal(state.flags._delivery_adam,true);
 assert.equal(state.flags._delivery_adam_done,true);
-assert.equal(state.flags._delivery_minto_done,true);
-assert.equal(state.flags._delivery_report_done,true);
-assert.equal(state.story.adam,2);
-assert.equal(state.visitedDay.adam,2);
-assert.equal(state.money,11000,'+4000 delivery pay (minto+adam) -3000 normal Adam visit');
-assert.equal(state.stamina,78,'80 - 16 (normal Adam visit) + 14 (sleep); delivery spent no stamina');
-assert.equal(actionEnds,2,'Only the normal customer visit and fixed shift spin the reel');
+assert.equal(state.flags._delivery_minto_done,undefined,'A closed shop waits; the order is not swapped');
+assert.equal(state.flags._delivery_report_done,undefined);
+assert.equal(state.money,9000,'+2000 Adam delivery pay -3000 normal Adam visit');
+assert.equal(actionEnds,2,'Only the normal customer visit and the free night action spin the reel');
+closed.clear();
 
-reset({day:2});
-mapQueue.push('minto','minto');
+reset({day:2});closed.add('adam');
+mapQueue.push('minto');
 await c.runDaily({untilDay:3,nightEvents:{}});
 assert.deepEqual(
  calls.filter(x=>['visit','rival','shift'].includes(x.type)||x.id==='remake_delivery_minto_handoff'||x.id==='remake_delivery_report')
@@ -230,42 +249,13 @@ assert.deepEqual(
  [
   ['scene','remake_delivery_minto_handoff',2,0,null],
   ['rival','minto',2,0,true],
-  ['shift',undefined,2,1,null],
-  ['visit','adam',2,2,true],
-  ['scene','remake_delivery_report',2,2,null],
  ],
- 'Minto daytime visit must run handoff delivery first (slot 0), then allow normal smoking (slot 0->1), then shift and remaining Adam delivery'
+ 'With Adam closed the errand still hands Minto the boxes, then a noon Minto visit is ordinary'
 );
-assert.equal(state.flags._delivery_minto,true);
 assert.equal(state.flags._delivery_minto_done,true);
-assert.equal(state.flags._delivery_adam_done,true);
-assert.equal(state.flags._delivery_report_done,true);
+assert.equal(state.flags._delivery_adam_done,undefined);
 assert.equal(state.story.minto,1);
-assert.equal(state.story.adam,1);
-assert.equal(state.visitedDay.minto,2);
-assert.equal(state.money,11000,'+4000 delivery pay (minto+adam) -3000 normal Minto visit');
-assert.equal(state.stamina,78);
-assert.equal(actionEnds,2);
-
-reset({day:2});
-mapQueue.push('minto','adam');
-await c.runDaily({untilDay:3,nightEvents:{}});
-assert.deepEqual(
- calls.filter(x=>['visit','rival','shift'].includes(x.type)||x.id==='remake_delivery_minto_handoff'||x.id==='remake_delivery_report')
-  .map(x=>[x.type,x.id,x.day,x.slot]),
- [
-  ['scene','remake_delivery_minto_handoff',2,0],
-  ['visit','adam',2,0],
-  ['shift',undefined,2,1],
-  ['scene','remake_delivery_report',2,2],
- ],
- 'Completing both deliveries at noon still preserves the free noon action, the mandatory night shift, and the single report'
-);
-assert.equal(state.flags._ch1_day2_shift_done,true);
-assert.equal(state.flags._delivery_report_done,true);
-assert.equal(state.money,14000);
-assert.equal(state.stamina,94);
-assert.equal(actionEnds,2);
+closed.clear();
 console.log('delivery priority (#3819 item 2): Adam/Minto daytime delivery before normal smoking PASS');
 
 console.log('early deliveries: order, accounting, legacy checkpoints, appointments, closures and rest PASS');

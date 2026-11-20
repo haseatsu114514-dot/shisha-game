@@ -707,6 +707,7 @@ export const FLAG_FAMILY_RULES = [
   ["_motion_seen_*", "ui"],
   ["_lime_exchange_shown_*", "ui"],
   ["_flavor_*", "unlock"],
+  ["_ch5_noor_lover_*", "progression"], // 第5章、恋人のヌールの出迎え・夜・見送り・二度目の出迎えを読んだ（#4010・ch4-desert-progress.js の noorLoverReadFlag）
   ["_*_affinity_question_done", "person"],
   ["_*_affinity_released_pts", "person"],
   ["_*_affinity_stage_released_pts", "person"],

@@ -6,6 +6,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import * as chains from "../js/chapters/visit-chains.js";
+import * as longlongRules from "../js/chapters/ch4-longlong.js";
 
 const text = rel => readFileSync(new URL(rel, import.meta.url), "utf8");
 const plainOf = value => JSON.parse(JSON.stringify(value)); // vm の中で作られた値を、この試験の側の素の値へ写す
@@ -257,8 +258,38 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   await meet();
   assert.equal(played.at(-1), "ch5_chain_flag_2");
   assert(shown.some(t => t.includes("これを読んでから、帰る")) && shown.some(t => t === "「またあした」。"), "1段目の答えが返る");
+  assert(!chains.chainFinished(state, "ch5_taiyo_flag"), "3段目（太陽の旗）が残っている");
+  await meet();
+  assert.match(played.at(-1), /^ch5_dubai_taiyo(_[bc])?$/, "同じ日は小会話（巡回の続き）");
+  state.day += 1;
+  shown = [];
+  await meet();
+  assert.equal(played.at(-1), "ch5_chain_flag_3");
+  assert(shown.some(t => t.includes("休暇、延ばすかな")), "1段目の一語で、太陽の旗の言葉が決まる");
   assert(chains.chainFinished(state, "ch5_taiyo_flag"));
   assert.equal(dubaiBondHasNew(taiyo), false);
+  // シェイクの屋敷（#4016）: 同じ仕組み。炭場の人を選ぶと、2段目で屋敷の中で初めて負ける
+  const sheikh = DUBAI_SPOTS.find(entry => entry.id === "ch5_dubai_sheikh");
+  const call = () => performDubaiSpot(sheikh, { staminaGuard: async () => true });
+  for (const id of ["ch5_dubai_sheikh", "ch5_dubai_sheikh_b", "ch5_dubai_sheikh_c"]) {
+    assert.equal(dubaiBondHasNew(sheikh), false);
+    await call();
+    assert.equal(played.at(-1), id);
+  }
+  assert.equal(dubaiBondHasNew(sheikh), true, "一通り読んだら「！」");
+  chooser = () => 1; // 炭場の年配の人に頼む
+  gained.length = 0;
+  await call();
+  assert.equal(played.at(-1), "ch5_chain_pair_1");
+  assert.deepEqual(gained, [["sheikh", 5]], "いつもの小会話と同じ好感度");
+  await call();
+  assert.equal(played.at(-1), "ch5_dubai_sheikh", "同じ日にもう一度来たら、いつもの小会話");
+  state.day += 1;
+  shown = [];
+  await call();
+  assert.equal(played.at(-1), "ch5_chain_pair_2");
+  assert(shown.some(t => t === "だから目を閉じた、だそうだ"), "1段目の答えが返る");
+  assert(chains.chainFinished(state, "ch5_sheikh_pair"));
 }
 
 // ---- 第4章のドバイ: 中心地のカフェ → 宿 → カフェ ------------------------------------------------------------------
@@ -286,6 +317,9 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     quietTurn: (id, pool) => ({ id: pool[0], key: `_spot_turn_${id}`, count: 0 }),
     companionTimeOpen: () => false, // 同行した恋人と過ごせる日（BLC08・companion-time.js）。この試験では開かない
     chainStageAt: chains.chainStageAt, chainVisitDue, playChainStage,
+    // 龍龍水煙所（王煙楼の店。#4010 の通いの続き）は本物の決まりで動かす
+    LONGLONG_CHAR: longlongRules.LONGLONG_CHAR, LONGLONG_BG: longlongRules.LONGLONG_BG, nextLonglongVisit: longlongRules.nextLonglongVisit,
+    longlongHasNew: longlongRules.longlongHasNew, recordLonglongVisit: longlongRules.recordLonglongVisit, bondAfterNext: () => null,
   });
   const { CH4_DUBAI_SPOTS, chapterFourDubaiDefinition } = ch4.ns;
   const pool = ["ch4_dubai_cafe_revisit", "ch4_cafe_talk_b", "ch4_cafe_culture_hose", "ch4_cafe_talk_c", "ch4_cafe_culture_coffee", "ch4_cafe_talk_d"];
@@ -336,6 +370,28 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert(chains.chainFinished(state, "ch4_second_bowl"));
   await perform(cafe);
   assert.deepEqual(played.slice(-2), ["ch4_cafe_talk_c", "taste_mint"], "終わった後は再訪の会話の続き");
+
+  // 龍龍水煙所（#4010）: 段階を読み終え、小会話を3本読んだ後の小会話の番に、通いの続きを読む（代金はいつもの来店・巡回は進めない）
+  const longlong = CH4_DUBAI_SPOTS.find(entry => entry.place === "longlong");
+  for (const id of longlongRules.LONGLONG_IDS) DB.dialogues[id] = DB.dialogues[id] || stub(id);
+  state.flags._ch4_longlong = { read: Object.fromEntries(longlongRules.LONGLONG_IDS.slice(0, 5).map(id => [id, true])), talks: 2 };
+  await perform(longlong);
+  assert.equal(played.at(-1), longlongRules.LONGLONG_TALKS[2], "小会話2本の後は、まだ小会話");
+  assert.equal(longlong.hasNew?.() ?? true, true);
+  chooser = () => 1; // ドバイの甘い茶にする
+  const before = state.money;
+  await perform(longlong);
+  assert.equal(played.at(-1), "ch4_chain_tea_1");
+  assert.equal(before - state.money, longlong.cost, "代金はいつもの来店と同じ");
+  assert.equal(state.flags._ch4_longlong.talks, 3, "巡回は進めない");
+  await perform(longlong);
+  assert.equal(played.at(-1), longlongRules.LONGLONG_TALKS[3], "同じ日は小会話");
+  state.day += 1;
+  shown = [];
+  await perform(longlong);
+  assert.equal(played.at(-1), "ch4_chain_tea_2");
+  assert(shown.some(t => t.includes("甘すぎる")), "1段目の答えが返る");
+  assert(chains.chainFinished(state, "ch4_longlong_tea"));
 }
 
 // ---- 第3章の東京: mukai の選択肢の最後に段が出る ------------------------------------------------------------------
@@ -391,4 +447,4 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert(chains.chainFinished(state, "ch3_tofu"));
 }
 
-console.log("OK: visit chains wiring — play wrapper (hooks, records, interruption, load failure), ch5 Tokyo Smoke & Glory, ch5 Dubai alley (night, no fee) and courtyard flags (affinity), ch4 cafe→inn→cafe (inn trial result), ch3 mukai option");
+console.log("OK: visit chains wiring — play wrapper (hooks, records, interruption, load failure), ch5 Tokyo Smoke & Glory, ch5 Dubai alley (night, no fee) and courtyard flags / residence pair (affinity), ch4 cafe→inn→cafe (inn trial result) and longlong tea, ch3 mukai option");
