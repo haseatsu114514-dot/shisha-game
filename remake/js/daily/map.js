@@ -105,6 +105,7 @@ const backgroundOf = (region) => typeof region?.background === "function" ? regi
  * @param opts.notice   上部に出す一言（「今夜は約束がある」など）
  * @param opts.reminder 右下の「今日はどうする？」に添える一言（心得の盤の組み直しの期限など。ピンに重ならない所に出す）
  * @param opts.eventPin 今夜イベントがある場所のピン id（! バッジ）
+ * @param opts.eventPinLabel 今夜の予定を文字で示す場合の札（任意の新着印と区別する）
  * @param opts.guide    { pin, title, text, free } 1日目の案内・配達用。その1か所だけ選べるようにして光らせる。
  *                      free（表示する一言）があれば、その行き先は代金がかからない
  * @param opts.onShown  マップと解禁の余韻を出し終えたとき（LIME の初回案内など）
@@ -190,7 +191,7 @@ function fitMapCrop(pins) {
   stage.style.setProperty("--map-crop", `${Math.round(crop)}px`);
 }
 
-function openMap({ notice = "", reminder = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, visitBlock = null, regions = null, regionId = null, onRegionChange = null }, initialUrl, initialBackdrop) {
+function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = "", guide = null, onShown = null, onBeforeGo = null, visitBlock = null, regions = null, regionId = null, onRegionChange = null }, initialUrl, initialBackdrop) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
@@ -512,7 +513,9 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       // 灯した授業を相談できる店（SBD141）: 看板の左に「相談」の吹き出し。右上の「!」・火種の数、上の顔とは別の場所に置く
       const lessons = locked ? [] : spotLessons(s);
       const lessonMark = lessons.length ? el("i.lesson-badge", { text: "相談", dataset: { test: `map-lesson-${s.id}` } }) : null;
-      const badge = locked ? null
+      const eventLabel = !locked && eventPin === s.id ? eventPinLabel : "";
+      const status = [eventLabel, av.tag].filter(Boolean).join("・");
+      const badge = locked || eventLabel ? null
         : hidane > 0 ? el("i.evt-badge.hidane-badge", { text: String(Math.min(99, hidane)), "aria-label": `火種 ${hidane}・内省で灯せる`, dataset: { test: "kannon-hidane" } })
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
         : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
@@ -523,7 +526,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && s.facilityIcon !== false && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}${closed ? ".closed" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
-        "aria-label": `${pinSpeech(s, locked, caption)}${s.cost && !freeGuide(s) ? `・利用料 ${yen(s.cost)}` : ""}${av.tag ? `（${av.tag}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}${lessons.length ? `・授業「${lessons.map((l) => l.name).join("」「")}」を相談できる` : ""}`,
+        "aria-label": `${pinSpeech(s, locked, caption)}${s.cost && !freeGuide(s) ? `・利用料 ${yen(s.cost)}` : ""}${status ? `（${status}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}${lessons.length ? `・授業「${lessons.map((l) => l.name).join("」「")}」を相談できる` : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
         el("div.pin-visual", [
@@ -538,7 +541,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
         el("div.sub-label", { text: caption }),
         // 料金はピンに出さない（右下のプレビューの「料金」で確かめる・MAP05。読み上げの aria-label には残す）。
         // 休みの札は文字を残したまま、PC・スマホとも CSS で看板の角の「休」の印に置き換える（2画面表示は文字のまま）。
-        av.tag ? el(`small.pin-status${closed ? ".pin-closed" : ""}`, { text: av.tag, title: av.tag }) : null,
+        status ? el(`small.pin-status${closed && !eventLabel ? ".pin-closed" : ""}`, { text: status, title: status }) : null,
       ]);
       if (facility) {
         const crop = facility.querySelector('.facility-icon-crop');

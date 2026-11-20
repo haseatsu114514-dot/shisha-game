@@ -1523,6 +1523,92 @@
       ]
     },
     {
+      "dialogue_id": "tonari_floor_first",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店前。スミさんが、卓の番号札を一枚ずつ置いていった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ。今日は、フロアを一人で回してみろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、俺一人でですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "うちは、この地区じゃ老舗でな。ありがたいことに、よく混む"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "大会や、家で作る一台とは別物だ。一台ずつ向き合ってる暇はない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "向き合わなくて、いいんですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "手を抜けって話じゃない。店で要るのは、手際だ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "待たせない。炭を切らさない。卓を、まんべんなく見る"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "大会とは、別の競技だと思え"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "気分を聞いて、合う一台を出す。炭は、言われる前に見に行け"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "俺は奥で帳簿をつけてる。フロアには出ない"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店がいい空気になったら、灯りが教えてくれる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……はい。やってみます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tonari_floor_start",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "番号札を卓に置いて、今日のミックスを確かめる。今日も、一人で店を回す。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_baito_end",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png"

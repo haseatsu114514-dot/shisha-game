@@ -1,3 +1,4 @@
+import { guardCompletionCardInput } from "./completion-card-input.js";
 import { playEntrance } from "./tournament-entrance.js";
 import { defeatFade } from "../core/transitions.js";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
@@ -91,11 +92,12 @@ function hud(owner, visible = false) {
 function card(owner, name, title, description, actions = [], extra = []) {
   hud(owner);
   // 完了カードは章のクリア画面（レベルアップの札を本文の外へ寄せる・#3938）。
-  return showScreen("ch2-tournament", el(`main.ch2-contest${name === "complete" ? ".chapter-clear" : ""}`, { dataset: { test: id(name) } }, [
+  const panel = el(`main.ch2-contest${name === "complete" ? ".chapter-clear" : ""}`, { dataset: { test: id(name) } }, [
     el("header.ch2-contest-header", [el("div", [el("p", { text: "第二章・DAY14 ／ HAZE: OPEN CLOUD" }), el("h1", { text: title })]), menuButton(owner)]),
     el("p.ch2-contest-description", { text: description }), ...extra,
     el("div.ch2-contest-actions", actions),
-  ]));
+  ]);
+  return showScreen("ch2-tournament", name === "complete" ? guardCompletionCardInput(panel) : panel);
 }
 async function read(owner, name) {
   if (!live(owner)) return false;

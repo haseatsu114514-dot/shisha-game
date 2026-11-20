@@ -3,7 +3,7 @@ import { DB } from "../core/data.js";
 import { state, save, STAT_KEYS } from "../core/state.js";
 import { addMoney, addStamina, gainStat, gainAffinity, bond } from "../core/stats.js";
 import { play, isPlaying } from "../vn/engine.js";
-import { dateVenue, dateScene, relationshipDayTotal, relationshipDayOf } from "./date-scene.js";
+import { dateVenue, dateScene, relationshipDayTotal, relationshipDayOf, dateTopic, advanceDateTopic } from "./date-scene.js";
 import { playSamechanMilestone } from "./samechan-bonds.js";
 import { growthEnabled, awardActionExp } from "../core/growth.js";
 import { petitAfterDate } from "./petit-shuraba.js";
@@ -59,9 +59,10 @@ export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = 
     if (spent > 0) {
       // 恋人のデートは、絆の深い相手からの誘い（LM11。ほかの恋人のデートは calendar.js の invitationExp が同じ印を付ける）
       if (growthEnabled()) awardActionExp({ key: "samechan", person: "samechan", bond: true });
-      else gainStat(DB.lover.dates.samechan[selected].stat, 2);
+      else gainStat(dateTopic("samechan")[selected].stat, 2);
     }
     gainAffinity("samechan", 10);
+    advanceDateTopic("samechan"); // 次のデートは次の話題（#4030）。読み終えた時だけ
     state.lastDate.samechan = state.day;
     state.flags._samechan_last_date_chapter = state.chapter;
     if (advanceSlot) state.slot = Math.min(2, state.slot + 1);

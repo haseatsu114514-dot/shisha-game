@@ -634,8 +634,8 @@
     1920,
     1080
    ],
-   "luma": 109,
-   "blob": "80395ccbd42faf9d5bf40abaee08ddd0fbad41a9"
+   "luma": 106,
+   "blob": "d3b59594512ce7620840d05b52100f2be4f5dbdc"
   },
   "bg_home_night.png": {
    "place": "home",
@@ -645,8 +645,8 @@
     1920,
     1080
    ],
-   "luma": 68,
-   "blob": "fc686244477755fc1117d0af8c09b9e949319a91"
+   "luma": 74,
+   "blob": "c5b4c5e7ab03a100308f5e8b197d0b201478a123"
   },
   "bg_home_overcast_day.png": {
    "place": "home",

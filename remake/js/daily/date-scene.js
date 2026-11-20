@@ -14,8 +14,25 @@ export function dateVenue(id, savedId = null) {
     || venues[((state.loveLevel[id] || 1) + (state.lastDate[id] || 0)) % venues.length];
 }
 
+// デートの話題（#4030）。元の台本（0）→ topics を順に → 一周したら元へ。デートを読み終えるたびに一つ進む（advanceDateTopic）。
+// 第5章は自由行動に期限が無く、恋人のデートが何度も続くので、毎回同じ会話にしない。arrive は元の台本のまま。
+export const dateTopicFlag = id => `_date_topic_${id}`;
+const topicCount = (value, id) => Math.max(0, Math.floor(Number(value?.flags?.[dateTopicFlag(id)]) || 0));
+/** 今回のデートで使う台本（元の台本に、今の話題の mid・choiceQ・optA・optB・close を重ねたもの）。無ければ null */
+export function dateTopic(id, value = state) {
+  const base = DB.lover?.dates?.[id];
+  if (!base) return null;
+  const topics = Array.isArray(base.topics) ? base.topics : [];
+  const at = topicCount(value, id) % (topics.length + 1);
+  return at === 0 ? base : { ...base, ...topics[at - 1] };
+}
+/** デートを読み終えた時だけ呼ぶ。次のデートは次の話題になる */
+export function advanceDateTopic(id, value = state) {
+  if (value?.flags) value.flags[dateTopicFlag(id)] = topicCount(value, id) + 1;
+}
+
 export function dateScene(id, venue, { choice = null, choiceFlags = null, growth = true } = {}) {
-  const sc = DB.lover.dates[id];
+  const sc = dateTopic(id);
   const name = callName(id, state, { context: "private" });
   const maxed = (state.loveLevel[id] || 0) >= 5;
   const branches = Object.fromEntries(["a", "b"].map(key => {
