@@ -6,6 +6,7 @@ import * as core from "../js/core/state.js";
 import { captureEntryResources, restoreEntryResources, applyAssistRecovery } from "../js/chapters/tournament-resources.js";
 import { beginCh1Votes, isSakuraiVotes } from "../js/craft/ch1-votes.js";
 import { voteStyleFrom } from "../js/core/vote-style.js";
+import { chosenAssistLevel } from "../js/craft/retry-assist-level.js";
 globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};
 const { regulationFor } = await import("../js/craft/steps.js");
@@ -98,7 +99,7 @@ const context = vm.createContext({
   play: id => played.push(id),
   // 会場の会話は中継の枠つきの playLive で読む（TSH04）。ここでは読んだ台本だけを記録する。
   playLive: id => played.push(id), ch1LiveStandings: () => [],
-  captureEntryResources, restoreEntryResources, applyAssistRecovery, beginCh1Votes, maxStamina: () => 130, regulationFor,
+  captureEntryResources, restoreEntryResources, applyAssistRecovery, beginCh1Votes, maxStamina: () => 130, regulationFor, chosenAssistLevel,
   // 審査の方式（SKR04）は試合を始める時のシーシャ作りの版で決まる（CRN16）。ここでは桜井版を選んだ端末として流す。
   voteStyleFrom: (config) => voteStyleFrom(config, ""), config: { craftVersion: "sakurai" }, isSakuraiVotes, SAKURAI_RULE_LINES: [],
   save: () => saves.push(copy(entrant)), toast: stub,
@@ -126,13 +127,16 @@ for (const sv of saves) assert.deepEqual(sv.tournament.entryResources, saves[0].
 assert.equal(sessions[1].stamina, 52);
 assert.deepEqual(sessions[1].flavorStock, {});
 // #590: 救済を選んだ挑戦だけ、戻した直後に現在の最大体力（根性込みの値）へ。entryは書き換えない。
-entrant.stamina = 3; entrant.tournament.retryAssist = true;
+entrant.stamina = 3; entrant.tournament.retryAssist = true; entrant.tournament.losses = 6;
 await vm.runInContext("tournamentDay()", context);
 assert.equal(sessions[2].stamina, 130, "assisted retry recovers to the current maximum");
+assert.equal(session.retryAssist, true);
+assert.equal(session.retryAssistLevel, 2, "6敗で選んだ救済は2段目（WIN13）");
 assert.deepEqual(sessions[2].flavorStock, {}, "stock is restored once, unchanged by recovery");
 assert.equal(entrant.tournament.entryResources.stamina, 52, "the entry snapshot keeps the original stamina");
 entrant.stamina = 3; entrant.tournament.retryAssist = false;
 await vm.runInContext("tournamentDay()", context);
+assert.equal(session.retryAssistLevel, 0, "断った一台に段は付かない");
 assert.equal(sessions[3].stamina, 52, "declining the assist keeps the entry stamina");
 assert.equal(applyAssistRecovery({ stamina: 9 }, "yes", 130), false, "only an explicit true assists");
 for (const sv of saves) assert.deepEqual(sv.tournament.entryResources, saves[0].tournament.entryResources, "recovery never writes a new entry save");
