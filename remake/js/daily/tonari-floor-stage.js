@@ -97,5 +97,5 @@ export const currentStage = (stage = null) => stage || STAGES[FLOOR_ART.stage] |
 /** 卓の中心（キーボードで卓を移る時の位置）。 */
 export const spotCenter = (spot) => spot.seat || [spot.box[0] + spot.box[2] / 2, spot.box[1] + spot.box[3] / 2];
 
-/** 客ひとりずつの絵のID（1人は種類ID、二人組は -a・-b）。 */
-export const personIds = (guest) => (guest.party > 1 ? ["a", "b"].slice(0, guest.party).map((s) => `${guest.kind}-${s}`) : [guest.kind]);
+/** 卓の客の絵のID（一卓に一人。一人で来る客は種類ID、二人連れは -a・-b。TFL51）。 */
+export const personIds = (guest) => [guest.art || guest.kind];

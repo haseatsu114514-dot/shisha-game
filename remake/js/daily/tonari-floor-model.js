@@ -150,19 +150,26 @@ function shuffled(list, random) {
 export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = false, daytime = false, night = null, visitor = null } = {}) {
   const def = night ? NIGHTS[night] || NIGHTS.usual : pickNight(level, seed, { rainy, daytime });
   const random = rng((Number(seed) >>> 0) ^ 0x51ed27);
+  // 客は一人ずつ（一卓に一人。TFL51）。二人連れは同じ刻みに来る二人の客になり、空いている卓へ一人ずつ座る。
+  // art＝その人の絵のID（一人で来る客は種類ID、二人連れは「種類ID-a」「種類ID-b」）、pair＝連れの客のID
   const guests = {};
+  let n = 0;
   def.cast.forEach((kindId, i) => {
     const kind = GUESTS[kindId];
-    const id = `g${i + 1}`;
-    guests[id] = {
-      id, kind: kindId, name: byTime(kind.name, daytime), party: kind.party, stay: kind.stay, rank: kind.rank, trait: kind.trait,
-      drinksMax: kind.drinks, look: [...kind.look], arrive: def.arrive[i], order: makeOrder(random),
-    };
+    const ids = Array.from({ length: kind.party }, () => `g${++n}`);
+    ids.forEach((id, j) => {
+      guests[id] = {
+        id, kind: kindId, art: kind.party > 1 ? `${kindId}-${"ab"[j]}` : kindId, pair: kind.party > 1 ? ids[1 - j] : null,
+        name: byTime(kind.name, daytime), party: 1, stay: kind.stay, rank: kind.rank, trait: kind.trait,
+        drinksMax: kind.drinks, look: [kind.look[j] || kind.look[0]], arrive: def.arrive[i], order: makeOrder(random),
+      };
+    });
   });
-  // たまに遊びに来る本編の人物。三組目の客と入れ替わる
+  // たまに遊びに来る本編の人物。三人目の客と入れ替わる（二人連れの一人なら、連れは一人で来る）
   const who = VISITORS[visitor];
   if (who && guests.g3) {
-    guests.g3 = { ...guests.g3, kind: `visitor-${who.id}`, charId: who.id, name: who.name, party: 1, stay: who.stay, rank: who.rank, trait: null,
+    if (guests.g3.pair) guests[guests.g3.pair].pair = null;
+    guests.g3 = { ...guests.g3, kind: `visitor-${who.id}`, art: null, pair: null, charId: who.id, name: who.name, party: 1, stay: who.stay, rank: who.rank, trait: null,
       drinksMax: who.drinks, look: ["bob"], order: { wish: who.wish, quote: who.quote } };
   }
   const deck = shuffled(mixIdsFor(chapter), random); // その章の店で出せるミックス

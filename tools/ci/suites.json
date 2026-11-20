@@ -1437,6 +1437,7 @@
         "remake/js/daily/tonari.js",
         "remake/test/tonari_floor_bot.mjs",
         "remake/test/tonari_floor_guide.mjs",
+        "remake/js/core/side-area.js",
         "remake/test/browser/tonari_floor.mjs"
       ],
       "run": [
