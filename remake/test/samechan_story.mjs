@@ -170,7 +170,28 @@ assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/,'開店祝いの
   assert(!/なぎさ|泳ぎ|恋人|告白|大会|手伝/.test(ch2Talk.lines.map(row=>row.text).join('\n')),'本名・泳ぎ・恋愛・大会・店の手伝いに触れない');
   const after=lime.messages.find(m=>m.id==='lime_ch2_samechan_resting_shark');
   assert.equal(after.trigger_flag,`_talk_seen_${k.SAMECHAN_CH2_TALK}`);assert.equal(after.chapter,2);
-  delete data.DB.dialogues[k.SAMECHAN_CH2_TALK];
+  // #3097 PR-C: 第2章の普段の会話を2本足した（コバンザメ席・予備のグラス）。ネムリブカの回の後、並びの順に一来店に一本ずつ
+  assert.deepEqual([...k.SAMECHAN_CH2_TALKS],[k.SAMECHAN_CH2_TALK,'ch2_samechan_remora_seat','ch2_samechan_spare_teeth']);
+  const ch2Home=JSON.parse(await fs.readFile(new URL('../../data/dialogue/ch2_home.json',import.meta.url),'utf8')).dialogues;
+  for(const id of k.SAMECHAN_CH2_TALKS.slice(1)){
+    const talk=ch2Home.find(d=>d.dialogue_id===id);assert(talk,`${id} exists in ch2_home.json`);
+    data.DB.dialogues[id]=talk;
+    for(const row of talk.lines){
+      if(row.voice==='korochan')assert(!/じゃ|のう|おる/.test(row.text),'コロちゃんに本人の語尾が混ざらない');
+      if(row.speaker==='samechan')assert(manifest.portraits.samechan.faces.includes(row.face));
+      assert(!row.type,'命令（好感度・旗）は来店の処理が持つ');
+    }
+    assert(!/なぎさ|泳ぎ|恋人|告白|大会|手伝/.test(talk.lines.map(row=>row.text).join('\n')),`${id}: 本名・泳ぎ・恋愛・大会・店の手伝いに触れない`);
+  }
+  state.chapter=3;assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/,'第2章だけ');state.chapter=2;
+  for(const id of k.SAMECHAN_CH2_TALKS.slice(1)){
+    assert.equal(k.samechanVisitDialogue(),id);
+    state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),id);
+    assert.equal(state.flags[`_talk_seen_${id}`],true);assert.deepEqual([...rewards.at(-1)],['samechan',8],'いつもの来店と同じ');
+    assert.equal(k.samechanVisitAffinityKind(id),'talk');
+  }
+  assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/,'三本とも一度だけ');
+  for(const id of k.SAMECHAN_CH2_TALKS)delete data.DB.dialogues[id];
 }
 // #3693: 締めくくりを友人として迎えた後は、いつもの小会話の代わりに♥5後の場面を一度ずつ。素焼きが無ければ一本目を飛ばす。好感度はいつもの来店と同じ
 state.finales={samechan:{chapter:2,day:3,route:'friend'}};state.owned=[];
