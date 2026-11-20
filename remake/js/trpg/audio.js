@@ -125,6 +125,31 @@ export function createTrpgAudio(initialTheme = "harbor") {
   }
   const clack = (delay, volume) => { grain(delay, .05, volume, 2600 + Math.random() * 900, 2.2); tone(190 + Math.random() * 70, delay, .06, volume * .55, "triangle"); };
   const rattle = times => times.forEach(delay => grain(delay, .035, .045, 4200, 3));
+  // ためのうねり: 低い音が上がっていき、叩きつける前に消える（ダイス劇場・TRF29）。
+  function swell(duration, from, to, volume) {
+    const o = context.createOscillator(), f = context.createBiquadFilter(), g = context.createGain(), now = context.currentTime;
+    o.type = "sawtooth"; o.frequency.setValueAtTime(from, now); o.frequency.exponentialRampToValueAtTime(to, now + duration);
+    f.type = "lowpass"; f.frequency.setValueAtTime(400, now); f.frequency.exponentialRampToValueAtTime(2400, now + duration);
+    g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(volume, now + duration * .85); g.gain.linearRampToValueAtTime(0, now + duration);
+    o.connect(f).connect(g).connect(master); voices.add(o);
+    o.onended = () => { voices.delete(o); o.disconnect(); f.disconnect(); g.disconnect(); };
+    o.start(now); o.stop(now + duration + .02);
+  }
+  /** ダイス劇場（TRF29）の合成音。録音は使わず、出目の着地・ため・叩きつけに合わせて鳴らす。 */
+  const SHOW = {
+    die: () => { grain(0, .07, .22, 2300, 2); tone(105, 0, .16, .22); clack(.07, .09); clack(.13, .045); },
+    tension: () => swell(1.05, 70, 220, .05),
+    beat: () => { tone(58, 0, .15, .28); tone(50, .16, .17, .2); },
+    whoosh: () => { grain(0, .2, .09, 900, .6); grain(.04, .18, .06, 1900, .6); },
+    chip: () => { clack(0, .07); tone(1568, .02, .14, .04); tone(2093, .07, .16, .03); },
+    clear: () => { [784, 1047, 1319, 1568].forEach((f, i) => tone(f, i * .045, .2, .05, "triangle")); grain(0, .25, .06, 3200, .8); },
+    short: () => { tone(98, 0, .26, .07, "sawtooth"); tone(92, .14, .3, .06, "sawtooth"); },
+    slam: () => { tone(62, 0, .42, .3); tone(124, 0, .2, .08, "triangle"); grain(0, .3, .14, 320, .7, "lowpass"); },
+    boom: () => { tone(44, 0, .8, .34); grain(0, .6, .16, 180, .6, "lowpass"); },
+    "critical-hit": () => { [1047, 1319, 1568, 2093, 2637].forEach((f, i) => tone(f, i * .028, .5, .035)); SHOW.slam(); },
+    skill: () => { grain(0, .22, .08, 1400, .6); [523.25, 783.99, 1046.5, 1567.98].forEach((f, i) => tone(f, .05 + i * .05, .3, .05, "triangle")); },
+    crack: () => { grain(0, .08, .2, 3600, 1.2); grain(.05, .12, .13, 1200, 1); tone(70, 0, .32, .16); },
+  };
   function play(kind = "tap") {
     if (disposed || !enabled || !Audio) return;
     // 卓の操作（クリック）の中で初めて鳴る時に、ここで音の準備をする。既定で音はON。
@@ -136,6 +161,8 @@ export function createTrpgAudio(initialTheme = "harbor") {
       if (!sample("shake")) rattle([0, .05, .1, .16, .21]);
       if (!sample("land", .74)) [[.37, .16], [.44, .13], [.66, .1], [.73, .085], [.87, .055], [.93, .04]].forEach(([d, v]) => clack(d, v));
     }
+    else if (kind === "shake") { if (!sample("shake")) rattle([0, .05, .1, .16, .21]); }
+    else if (SHOW[kind]) SHOW[kind]();
     else if (kind === "rethrow") { if (!sample("rethrow")) { rattle([0, .06, .12]); [[.3, .14], [.5, .09], [.62, .05]].forEach(([d, v]) => clack(d, v)); } }
     else if (["open", "page", "card", "slip", "success", "mixed", "trouble", "critical", "fumble", "ending"].includes(kind) && sample(kind)) return;
     else if (kind === "critical") play("success");

@@ -8,6 +8,8 @@ import { createTrpgAudio } from "./audio.js";
 import { checkForecast, declarationChanceLabels, rerollOdds, rollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { playIncarnation, playSceneCard, playResultCut, playClueCard, impact } from "./stage-fx.js";
+import { playRollShow, preloadRollLogos } from "./roll-show.js";
+import { createD20, restPose } from "./dice3d.js";
 import { autoWrap } from "../vn/text.js";
 
 // 調べる場所の印の半径（見える輪。スマホでは押せる範囲が広いが、輪は同じ大きさ）。ワイドでの上下の切り方に使う
@@ -986,7 +988,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       const node = button("", "trpg-search", () => {
         if (busy || disposed || session.snapshot().search) return;
         const result = session.search();
-        syncResources(); keepMark(); audio.play("roll"); rolled();
+        syncResources(); keepMark(); rolled();
+        // じっくり調べる、も同じ劇場で（TRF29）。下の卓はもう結果を出していて、劇場が閉じると見える。
+        if (rollShow({ ...result, bonus: result.base }, { title: "じっくり調べる", who, statName: statLabel("eye"), labels: SEARCH_LABELS, onDone: () => {} })) return;
+        audio.play("roll");
         const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
         clearTimeout(searchTimer);
         searchTimer = setTimeout(() => {
@@ -1010,12 +1015,60 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("small", { text: search.ruled.length ? "✕ " + search.ruled.length + "つ" : "決め手なし", "aria-hidden": "true" }),
     ]);
   }
+  /**
+   * ダイス劇場（TRF29）: 振った瞬間から評価が出るまでを画面いっぱいで見せる。出目・合計・評価は決まった値を渡すだけ。
+   * 評価の音と光は、劇場の中で評価が出た瞬間（飛ばした時は閉じる時）に一度だけ。演出しない環境（動きを減らす設定・簡易DOM）では null。
+   */
+  function rollShow(result, { title, who = "", statName = "", thrown = null, labels = LABELS, skill = null, rerollHint = "", onDone }) {
+    if (!overlay) return null;
+    const special = result.special === "critical" || result.special === "fumble" ? result.special : "";
+    const near = nearMissOf(result);
+    const show = playRollShow(overlay, {
+      title, who, rule: DICE.success + "以上で成功", dice: result.dice, thrown, bonus: result.bonus, bonusLabel: result.bonus === result.base && statName ? statName : "補正",
+      total: result.total, goal: DICE.success, mixed: DICE.mixed, grade: result.grade, special: result.special || "",
+      sound: kind => { if (!disposed) audio.play(kind); },
+      skill, rerollHint,
+      label: special ? SPECIALS[special] : labels[result.grade] + (result.grade === "success" && !labels[result.grade].endsWith("！") ? "！" : ""),
+      sub: special === "critical" ? "20の目 · 必ず成功" : result.special === "double" ? SPECIALS.double : near ? "あと" + near + "……！" : "",
+      onVerdict: () => {
+        if (disposed) return;
+        audio.play(special || result.grade);
+        if (special) stageFx(impact(root, special));
+      },
+      onDone: () => { if (!disposed) onDone(); },
+    });
+    if (show) stageFx(show);
+    return show;
+  }
+  /** 判定の卓の題と、動く役（劇場の見出し）。仲間の切り札を使った判定は、そのカットインも。振り直せる時は、その知らせも。 */
+  function showCopy(result) {
+    const pc = sheets[result.sheet], actor = session.rerollActor, state = session.snapshot();
+    const canReroll = result.special !== "critical" && result.grade !== "success" && !state.used[actor] && state.teamwork > 0 && cast[actor];
+    return { title: scenario.checks[result.kind].title, who: pc?.name || (result.actor && cast[result.actor] ? name(result.actor) : ""), statName: result.stat ? statLabel(result.stat) : "",
+      skill: result.helper && cast[result.helper] ? skillOf(result.helper, "support", "＋" + DICE.support + "  成功しやすくなる") : null,
+      rerollHint: canReroll ? name(actor) + "の「" + cast[actor].ability + "」 · 連携札1枚" : "" };
+  }
+  /** スキルのカットインに出す、使った人と技（TRF31）。 */
+  function skillOf(id, kind, effect) {
+    return { kind, who: name(id), name: cast[id].ability, effect, face: pcFace(seatOf(id), id) };
+  }
   // The die travels and casts its shadow; the body inside spins, so the shadow stays on the felt.
   function die(value, rolling = false) {
-    return el("div.trpg-die.trpg-d20", { class: rolling ? "rolling" : "", role: "img", "aria-label": "20面ダイス " + value },
+    const node = el("div.trpg-die.trpg-d20", { class: rolling ? "rolling" : "", role: "img", "aria-label": "20面ダイス " + value },
       el("span.trpg-die-body", { "aria-hidden": "true",
         html: '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><polygon points="50,2 95,26 95,74 50,98 5,74 5,26"/><path d="M50 2 25 68 75 68 50 2M5 26 25 68 5 74M95 26 75 68 95 74M50 98 25 68M50 98 75 68M5 26 50 2 95 26"/></svg>' },
         el("span.trpg-d20-value", { text: String(value), "aria-hidden": "true" })));
+    // 止まっているダイスは、劇場と同じ立体の絵（TRF36）。数字の要素は残す（読み上げの値・テスト・描けない時の表示）。
+    if (!rolling) {
+      const canvas = el("canvas.trpg-die-3d", { "aria-hidden": "true" }), d3 = createD20(canvas);
+      if (d3) {
+        d3.resize(150, 2);
+        d3.draw(restPose(value));
+        node.querySelector(".trpg-die-body").append(canvas);
+        node.dataset.render = "3d";
+      }
+    }
+    return node;
   }
   function showFace(node, value) {
     node.setAttribute("aria-label", "20面ダイス " + value);
@@ -1116,6 +1169,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function openCheck(kind, approachId = null) {
     if (busy || overlay || session.snapshot().pending) return;
+    preloadRollLogos();
     const check = scenario.checks[kind], helper = check.helper || null;
     const declared = approachBase(scenario, kind, approachId, sheets).approach;
     const body = el("div", [el("p.trpg-roll-instruction", { text: DICE.success + "以上で成功" }), stakeLine(kind), actorPanel(declared), el("div.trpg-roll-scene",
@@ -1172,6 +1226,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       thrown.forEach((node, i) => { node.dataset.throw = "ab"[i]; });
       body.querySelector(".trpg-dice-row").replaceChildren(...thrown, el("span.trpg-dice-bonus", { text: "＋" + result.bonus }));
       settleGuard = false;
+      // 画面いっぱいの劇場で見せられる時は、卓の窓は結果が出るまで下で待つ（TRF29）。音は劇場が着地に合わせて鳴らす。
+      if (rollShow(result, { ...showCopy(result), onDone: () => showRollResult(pop, body, null, true) })) return;
       audio.play("roll");
       const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (!reduced) {
@@ -1192,10 +1248,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     pop.box.querySelector("h2").append(el("small.trpg-roll-rule", { text: DICE.success + "以上で成功" }));
     pop.box.append(el("div.trpg-spare-kit", { "aria-hidden": "true", role: "presentation" }));
   }
-  function showRollResult(pop, body, rerolledDie = null) {
+  function showRollResult(pop, body, rerolledDie = null, shown = false) {
     const result = session.checkResult();
     syncResources();
     pop.box.dataset.rollState = "settled";
+    // 劇場で出目も評価も見せた後は、卓の上でダイスの着地・合計の出方・音・衝撃を繰り返さない（粒の余韻だけ残す）。
+    if (shown) pop.box.dataset.shown = "true"; else delete pop.box.dataset.shown;
     pop.box.dataset.grade = result.grade;
     const prize = STAKES[rewardKindOf(scenario, result.kind)];
     const near = nearMissOf(result);
@@ -1209,7 +1267,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       ].filter(Boolean)),
       rollGauge(result),
     );
-    if (result.special === "critical" || result.special === "fumble") stageFx(impact(root, result.special));
+    if (!shown && (result.special === "critical" || result.special === "fumble")) stageFx(impact(root, result.special));
     pop.box.dataset.special = result.special || "";
     if (result.special) body.append(el("p.trpg-roll-special", { dataset: { test: "trpg-roll-special", special: result.special } }, [
       el("strong", { text: SPECIALS[result.special] }),
@@ -1247,7 +1305,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       pop.box.append(fx);
     }
     // クリティカル（20の目）とファンブル（1の目で思わぬ出来事）は専用のジングル。
-    audio.play(result.special === "critical" || result.special === "fumble" ? result.special : result.grade);
+    if (!shown) audio.play(result.special === "critical" || result.special === "fumble" ? result.special : result.grade);
     if (result.hypothesisBonus) receipts.append(el("p.trpg-ability-receipt.trpg-roll-insight", { text: "見立て的中 ＋" + result.hypothesisBonus }));
     if (session.rules.inspectionPressure) receipts.append(el("p.trpg-ability-receipt.trpg-roll-consequence", { text: RISK + (result.grade === "success" ? " ±0" : " ＋" + session.rules.checkPressure[result.grade]) }));
     // クリティカルは最高の出目なので振り直しは出さない。使えない時も何も出さない（決まりは「？」に）。
@@ -1256,8 +1314,20 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       body.append(el("div.trpg-rerolls", [0, 1].map(i =>
       button("", "trpg-reroll-" + i, () => {
         if (settleGuard || session.snapshot().used[session.rerollActor] || session.snapshot().teamwork < 1) return;
+        session.reroll(i);
+        // 振り直しも劇場で: 選んだ1個だけがもう一度投げ込まれ、合計と評価が出直す。その間、卓の札は押せない。
+        const again = session.checkResult();
+        if (rollShow(again, { ...showCopy(again), thrown: i, skill: skillOf(session.rerollActor, "reroll", (i + 1) + "個目のサイコロを振り直す"), onDone: () => showRollResult(pop, body, i, true) })) {
+          syncResources();
+          pop.box.dataset.rollState = "rolling";
+          // 使った切り札の札はその場で片付ける（二度押しで二度振らない）。「物語を続ける」は、結果が出直してから置き直す。
+          body.querySelectorAll(".trpg-rerolls, .trpg-roll-trump").forEach(n => n.remove());
+          pop.box.querySelector(".trpg-modal-actions").replaceChildren();
+          pop.box.focus({ preventScroll: true });
+          return;
+        }
         audio.play("rethrow");
-        session.reroll(i); showRollResult(pop, body, i);
+        showRollResult(pop, body, i);
       }, { class: "trpg-reroll-choice" }))));
       body.querySelectorAll(".trpg-reroll-choice").forEach((node, i) => node.append(
         seatMark(session.rerollActor),
