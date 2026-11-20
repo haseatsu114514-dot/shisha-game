@@ -19,8 +19,8 @@ const SHOTS = process.env.SHOTS || "";
 const log = (...a) => console.log("[remake]", ...a);
 
 // 時間を使う行動計画は上から順に消費。必須購入は中間準備後の最初の自由マップで行う。
-// DAY1 の昼は案内つきのおつかい（Dr.fookah でレモン→KEMURIKUSA 偵察）、DAY2 は参加登録の後、スミさんの配達（PEPPERMINT・EDEN）で埋まる
-// （配達の2枠は計画を消費しない。DAY3 から下の計画へ進む）
+// DAY1 の昼は案内つきのおつかい（Dr.fookah でレモン→KEMURIKUSA 偵察）、DAY2 の朝は参加登録のついでにスミさんの配達
+// （PEPPERMINT・EDEN）と報告（#3819）。配達は行動枠と計画を消費しない。DAY2 の昼・夜から下の計画へ進む
 
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
 // This full-chapter run checks progression, scoring and CG recording. Normal-speed
@@ -301,15 +301,15 @@ for (;;) {
     const id = await page.locator(".spot-pin.guide").getAttribute("data-spot");
     if (!snap.errandDone || id === "c_station") guided++; else deliveryGuided++;
     if (snap.day === 1 && !["shop", "naru"].includes(id)) throw new Error("DAY1 must end after scouting");
-    // #2213 B01/B03: 昼は自由行動、夜は固定のシフト。配達はシフト後の帰り道（slot 2）。
-    if (id === "minto" && (snap.day !== 2 || snap.slot !== 2)) throw new Error("Minto must be the first delivery on the DAY2 walk home");
-    if (id === "adam" && (snap.day !== 2 || snap.slot !== 2 || !snap.deliveryMintoDone)) throw new Error("Adam must be the second delivery on the DAY2 walk home");
+    // #3819: 配達は参加登録のついで（DAY2 の朝・slot 0）。PEPPERMINT → EDEN の順。固定のシフトは無い。
+    if (id === "minto" && (snap.day !== 2 || snap.slot !== 0)) throw new Error("Minto must be the first delivery right after the DAY2 registration");
+    if (id === "adam" && (snap.day !== 2 || snap.slot !== 0 || !snap.deliveryMintoDone)) throw new Error("Adam must be the second delivery right after the DAY2 registration");
     if (id === "c_station" && (snap.day !== 2 || snap.slot !== 0)) throw new Error("Registration must happen before DAY2 deliveries");
     await chooseDestination(id);
     continue;
   }
-  // 配達が全部済むまでは、DAY2昼の自由行動のほかは届け先だけを選べる案内のマップしか出ない（夜は固定シフト）
-  if (snap.screen === "map" && !snap.deliveriesDone && !(snap.day === 2 && snap.slot === 0)) throw new Error(`free map before deliveries (DAY ${snap.day} slot ${snap.slot})`);
+  // 配達が全部済むまでは、届け先だけを選べる案内のマップしか出ない（#3819: 登録のついでに届けてから自由行動）
+  if (snap.screen === "map" && !snap.deliveriesDone) throw new Error(`free map before deliveries (DAY ${snap.day} slot ${snap.slot})`);
   if (snap.screen === "map" && snap.deliveriesDone && !checkedDeliveryBoundary) {
     const minto = await page.evaluate(() => { const s = window.__remake.state; return { story: s.story.minto || 0, visits: s.visits.minto || 0, visited: s.visitedDay.minto === s.day }; });
     if (minto.story || minto.visits || minto.visited) throw new Error(`Delivery consumed normal minto visit: ${JSON.stringify(minto)}`);
@@ -468,7 +468,7 @@ if (s.reel.pending.length) throw new Error(`slot spins left unshown: ${s.reel.pe
 // 1日目の案内: レモンの仕入れ→偵察→スミさんから私物として贈られる。
 log(`day1 errands: guided=${guided} errandBlocked=${errandBlocked} scout=${!!s.flags._errand_scout_done} lemon=${s.flavors.includes("lemon")}`);
 if (guided !== 3 || !errandBlocked || !s.flags._errand_scout_done || !s.flavors.includes("lemon") || !s.flags._lemon_gift_read) throw new Error("day1 errands not completed as guided");
-// スミさんの配達（DAY2 昼 PEPPERMINT・夜 EDEN）: 初来店を配達の場面で通す
+// スミさんの配達（DAY2 の朝、登録のついでに PEPPERMINT → EDEN）: 初来店を配達の場面で通す
 log(`deliveries: guided=${deliveryGuided} adam=${s.flags._delivery_adam_done}@${s.flags._delivery_adam} minto=${s.flags._delivery_minto_done}@${s.flags._delivery_minto}`);
 if (deliveryGuided !== 2 || !s.flags._delivery_adam || !s.flags._delivery_minto || !s.flags._delivery_adam_done || !s.flags._delivery_minto_done)
   throw new Error("EDEN/PEPPERMINT deliveries not completed as guided");

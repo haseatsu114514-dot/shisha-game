@@ -68,7 +68,7 @@ const runDailySource = calendar.slice(calendar.indexOf('export async function ru
 const morningSource = calendar.slice(calendar.indexOf('async function morning()'), calendar.indexOf('\n/** HUD'));
 const nightSource = calendar.slice(calendar.indexOf('async function endDay('));
 // #2213 B01: 配達はその日の行動枠の後（帰り道）に確認する。実 dueDelivery で、第2章・配達期間外は割り込まないことを通す。
-const dueDeliverySource = calendar.slice(calendar.indexOf('function dueDelivery()'), calendar.indexOf('\nasync function deliver('));
+const dueDeliverySource = calendar.slice(calendar.indexOf('function dueDelivery('), calendar.indexOf('\nasync function deliver('));
 for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
   const trace = [], snapshots = [];
   const fixture = { chapter, day: 15, slot: 2, stamina: 60, money: 1000, flags: { _morning_15: true }, visitedDay: {} };
