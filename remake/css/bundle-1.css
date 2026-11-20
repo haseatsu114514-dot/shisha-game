@@ -14665,6 +14665,24 @@ html:root[data-density="phone"] body:not(:root) .reel-note .rn-close { min-heigh
 .gc-badge:not(.face) { font-size: 21px; }
 .st-badge { border-image-width: 5px; font-size: 17px; }
 .gc-title { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.gain-card.mastery { max-width: 355px; padding: 10px 17px 10px 12px; gap: 12px; }
+.gain-card.mastery .gc-meta { min-width: 0; gap: 2px; overflow-wrap: anywhere; }
+.gain-card.mastery .gc-main { line-height: 1.3; }
+.gain-card.mastery .shop-product-art {
+  width: 66px;
+  height: 66px;
+  background: #f6efe2;
+  border: 1px solid color-mix(in srgb, var(--gc) 55%, #9c7d6e);
+  border-radius: 4px;
+}
+.gc-mastery { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+.gc-mastery-label { color: var(--text-dim); font-size: 14px; font-weight: 700; white-space: nowrap; }
+.gc-mastery-stars { display: flex; gap: 3px; color: var(--gc); font-size: 18px; line-height: 1; }
+.gc-mastery-stars .filled { color: #e8ab4b; text-shadow: 0 0 1px #563212; }
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .gain-card.mastery .gc-top, .gc-mastery-label { font-size: max(16px, calc(11.5px / var(--k, 1))); }
+  .gain-card.mastery .gc-main, .gc-mastery-stars { font-size: max(22px, calc(13px / var(--k, 1))); }
+}
 .gc-points { color: var(--gc); font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* 原素材に近い4:1の比率で金属縁をつぶさず、通常68pxに収める。
    上下10.5pxの余白と47.2pxの文字列（見出し14px×1.2＋間隔1px＋本文21px×1.4）で高さを決める。
