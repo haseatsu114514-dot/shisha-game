@@ -3959,7 +3959,9 @@
         "remake/css/wide-screens.css",
         "remake/css/base.css",
         "remake/css/shop.css",
-        "remake/css/daily-menu.css"
+        "remake/css/daily-menu.css",
+        "remake/css/motions/garagara.css",
+        "remake/js/motions/garagara-stage.js"
       ],
       "run": ["node remake/test/browser/phone_density.mjs"],
       "chrome": "playwright"

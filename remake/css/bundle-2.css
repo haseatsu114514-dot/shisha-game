@@ -3258,6 +3258,21 @@ html:root[data-density="phone"] body:not(:root) .gal .gal-tabs { gap: var(--phon
 /* セーブ・ロードの空き枠「── 空き ──」（同じ巡回で 8.7px）。補助文の大きさにそろえる */
 html:root[data-density="phone"] body:not(:root) .saveload-modal .ss-info.empty { font-size: var(--phone-sub); }
 
+/* ---------------------------------------------------------------- #3726 A-2 の残り（同じ巡回で見つけた MENU の「?」・会話の送り記号「▼」・くじの黒板）
+   実寸は 844×390／Safari のバー（844×340）で、「?」10.8／9.4px・「▼」9.8／8.5px・黒板の注記 7.0／6.1px（賞 10.8／9.4px）だった。
+   MENU の「?」: 文字は clamp の上限 20px で止まっていた。文字だけを補助文の大きさにする。
+   丸（舞台上 26〜30px・2026-11-08 オーナー「?が大きすぎ」）と、押せる範囲の ::before（実寸 40px）は変えない。 */
+html:root[data-density="phone"] body:not(:root) .dmenu .dm-help { font-size: var(--phone-sub); }
+/* 会話の送り記号: 右下の位置（--vn-next-right/bottom）はそのまま、記号だけ補助文の大きさに */
+html:root[data-density="phone"] body:not(:root) .vn-next { font-size: var(--phone-sub); }
+/* くじの黒板（ガラガラの横に立つ看板）: くじの名前 21px・賞 20px・注記 13px だった。書ける面（描いた絵で約 166×249px）は変えず、
+   文字を補助文の大きさにして行の高さと間隔を詰める。注記は6字で折り返し、「ラストワン賞／あり」「最後の1枚を／引いた方へ」の2行にする。 */
+html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-text { gap: 6px; line-height: 1.2; }
+html:root[data-density="phone"] body:not(:root) .mo-garagara :is(.kj-sign-title, .kj-sign-row, .kj-sign-note) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-title { padding-bottom: 5px; letter-spacing: 0.04em; }
+html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-row { gap: 12px; }
+html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-note { max-width: 6.2em; text-align: center; }
+
 /* ===== css/wide-screens.css ===== */
 /* ワイドステージ（#2861）でメニュー・タイトル等を横幅いっぱいまで使う（オーナー指示 2026-11-08「メニューとかタイトルとか諸々もワイドモードへ」）。
    #screen・#modal・#fx は base.css で中央1280（inset: 0 var(--stage-gutter)）に置かれている。ここでは画面ごとに根元の要素を
