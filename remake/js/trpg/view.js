@@ -9,6 +9,7 @@ import { checkForecast, declarationChanceLabels, rerollOdds, rollOdds } from "./
 import { playTrpgEntrance } from "./entrance.js";
 import { playIncarnation, playSceneCard, playResultCut, playClueCard, impact } from "./stage-fx.js";
 import { playRollShow, preloadRollLogos } from "./roll-show.js";
+import { createD20, restPose } from "./dice3d.js";
 import { autoWrap } from "../vn/text.js";
 
 // 調べる場所の印の半径（見える輪。スマホでは押せる範囲が広いが、輪は同じ大きさ）。ワイドでの上下の切り方に使う
@@ -1053,10 +1054,21 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   // The die travels and casts its shadow; the body inside spins, so the shadow stays on the felt.
   function die(value, rolling = false) {
-    return el("div.trpg-die.trpg-d20", { class: rolling ? "rolling" : "", role: "img", "aria-label": "20面ダイス " + value },
+    const node = el("div.trpg-die.trpg-d20", { class: rolling ? "rolling" : "", role: "img", "aria-label": "20面ダイス " + value },
       el("span.trpg-die-body", { "aria-hidden": "true",
         html: '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><polygon points="50,2 95,26 95,74 50,98 5,74 5,26"/><path d="M50 2 25 68 75 68 50 2M5 26 25 68 5 74M95 26 75 68 95 74M50 98 25 68M50 98 75 68M5 26 50 2 95 26"/></svg>' },
         el("span.trpg-d20-value", { text: String(value), "aria-hidden": "true" })));
+    // 止まっているダイスは、劇場と同じ立体の絵（TRF36）。数字の要素は残す（読み上げの値・テスト・描けない時の表示）。
+    if (!rolling) {
+      const canvas = el("canvas.trpg-die-3d", { "aria-hidden": "true" }), d3 = createD20(canvas);
+      if (d3) {
+        d3.resize(150, 2);
+        d3.draw(restPose(value));
+        node.querySelector(".trpg-die-body").append(canvas);
+        node.dataset.render = "3d";
+      }
+    }
+    return node;
   }
   function showFace(node, value) {
     node.setAttribute("aria-label", "20面ダイス " + value);

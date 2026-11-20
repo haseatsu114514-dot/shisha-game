@@ -609,6 +609,9 @@ try {
       const pending = (await page.evaluate(() => __trpg.snapshot())).pending;
       const first = await seen();
       assert(first.covers, "The roll takes the whole screen");
+      // 立体のダイス（TRF36）: 2個とも Canvas に描かれ、何か描いてある（透明のままではない）。
+      assert.equal(await show.locator('.trpg-rs-die[data-render="3d"] canvas.trpg-rs-d3').count(), 2, "Both dice are drawn in 3D");
+      assert(await show.locator("canvas.trpg-rs-d3").first().evaluate(c => { const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; for (let i = 3; i < d.length; i += 4) if (d[i] > 0) return true; return false; }), "The 3D die is painted");
       assert.deepEqual(first.dice, pending.dice, "The show draws the session's dice");
       assert.equal(first.chip, "＋" + pending.bonus);
       assert.deepEqual([first.grade, first.label, first.thrown, first.settle], ["mixed", "ひと手間かかる", null, false], "Seed 3 opens with 12 and 8");
@@ -620,6 +623,7 @@ try {
       await page.locator('[data-test="trpg-settle"]').waitFor();
       assert.equal(await show.count(), 0, "The show leaves by itself");
       assert.equal(await page.locator(".trpg-roll-stage").getAttribute("data-shown"), "true");
+      assert.equal(await page.locator('.trpg-roll-stage .trpg-die[data-render="3d"]').count(), 2, "The result table shows the same 3D dice");
       // 振り直し: 選んだ1個だけが投げ直される。途中のタップで結果まで飛ぶ（卓の札は、劇場の間は押せない）。
       await hit(page, '[data-test="trpg-reroll-0"]');
       await show.waitFor();

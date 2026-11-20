@@ -14,6 +14,7 @@
 // タップ・Enter・Space・Escape で結果まで飛ばせる。動きを減らす設定と、本番のDOM以外（単体テストの簡易DOM）では null を返し、
 // 呼び出し側がこれまでどおり卓の窓の中で見せる。揺れを減らす設定（body.reduce-shake）では揺れ・閃光・寄りを省く。
 import { el } from "../core/util.js";
+import { createD20, pose, randomAxis, restPose } from "./dice3d.js";
 
 const EASE = {
   out: "cubic-bezier(.16,1,.3,1)", back: "cubic-bezier(.2,1.6,.4,1)", soft: "cubic-bezier(.3,.7,.4,1)",
@@ -86,7 +87,7 @@ export function playRollShow(host, show) {
   // ---- 部品 ----
   const dieNodes = dice.map((value, i) => el("div.trpg-rs-die", { dataset: { i: String(i) }, style: { left: REST[i][0] - SIZE / 2 + "px", top: REST[i][1] - SIZE / 2 + "px" } }, [
     el("i.trpg-rs-halo"), el("i.trpg-rs-shadow"),
-    el("div.trpg-rs-spin", el("span.trpg-rs-body")),
+    el("div.trpg-rs-spin", [el("span.trpg-rs-body"), el("canvas.trpg-rs-d3")]),
     el("i.trpg-rs-ring"), el("b.trpg-rs-num", { text: String(value), dataset: { digits: String(String(value).length) } }),
     el("span.trpg-rs-crack", { html: CRACK }),
   ]));
@@ -191,6 +192,23 @@ export function playRollShow(host, show) {
   if (fit < 1) fitBox.style.transform = `scale(${fit})`;
   after(320, () => { armed = true; });
 
+  // ---- 立体のダイス（TRF36・dice3d.js） ----
+  // 最後の姿勢（出目の面がこちらを向く）から、軸まわりに何回転かさせた姿勢で投げ、着地でちょうど最後の姿勢に戻す。
+  // Canvas が使えない環境では null のまま、これまでの絵（d20-rest／d20-tumble）で見せる。
+  const pixelRatio = (typeof devicePixelRatio === "number" ? devicePixelRatio : 1) * (node.getBoundingClientRect?.().width / (node.offsetWidth || 1) || 1) * fit;
+  const solids = dieNodes.map((die, i) => {
+    const d3 = createD20(die.querySelector(".trpg-rs-d3"));
+    if (!d3) return null;
+    d3.resize(SIZE, pixelRatio);
+    die.dataset.render = "3d";
+    const solid = { d3, R: restPose(dice[i]), axis: randomAxis(), turns: (i ? -1 : 1) * Math.PI * (6 + Math.random() * 3), progress: () => 1 };
+    d3.draw(pose(solid.R, solid.axis, solid.turns));
+    return solid;
+  });
+  const clock = el("i.trpg-rs-clock");
+  node.append(clock);
+  const tick = solids.some(Boolean) ? animate(clock, [{ opacity: 0 }, { opacity: 0 }], { duration: 120000, fill: "none" }) : null;
+
   // ---- 画面の手応え: 揺れ（大→小に収束・少しランダム）、明暗のフラッシュ、寄り ----
   function shake(amp, ms = 420, vertical = .45) {
     if (still || amp <= 0) return;
@@ -236,6 +254,12 @@ export function playRollShow(host, show) {
     die.dataset.state = "rest";
     die.dataset.landed = "true";
     if (hot) die.dataset.glow = "critical"; else if (cold) die.dataset.glow = "fumble";
+    const solid = solids[i];
+    if (solid) {
+      solid.d3.tone(hot ? "critical" : cold ? "fumble" : "ivory");
+      solid.d3.draw(solid.R);
+      if (!quiet) animate(die.querySelector(".trpg-rs-d3"), [{ filter: "brightness(1.9)" }, { filter: "brightness(1)" }], { duration: big ? 420 : 300, easing: "ease-out", fill: "none" });
+    }
     if (quiet) return;
     const num = die.querySelector(".trpg-rs-num");
     animate(num, [{ opacity: 0, filter: "brightness(3) blur(3px)" }, { opacity: 1, filter: "brightness(1.8) blur(0px)", offset: .35 }, { opacity: 1, filter: "brightness(1) blur(0px)" }],
@@ -296,7 +320,7 @@ export function playRollShow(host, show) {
       easing: n === points.length - 1 ? "linear" : points[n + 1][2] === 0 ? EASE.slam : y === 0 ? EASE.rise : EASE.soft,
     })), { duration: end });
     animate(die, [{ opacity: 0 }, { opacity: 1 }], { duration: 80, composite: "replace" });
-    animate(die.querySelector(".trpg-rs-spin"), spins.map(([t, r]) => ({ offset: t / end, rotate: r + "deg" })), { duration: end, easing: "linear" });
+    if (die.dataset.render !== "3d") animate(die.querySelector(".trpg-rs-spin"), spins.map(([t, r]) => ({ offset: t / end, rotate: r + "deg" })), { duration: end, easing: "linear" });
     animate(die.querySelector(".trpg-rs-shadow"), points.map(([t, , y, s]) => ({ offset: t / end, opacity: Math.max(.08, .6 + y / 500), scale: String(Math.max(.4, 1 - Math.abs(y) / 420) * s), translate: `0 ${-y}px` })), { duration: end });
   }
   // 先に止まる1個: 左下の手前から投げ込まれ、跳ねて止まる。
@@ -322,9 +346,44 @@ export function playRollShow(host, show) {
       [hoverAt + hover / 2, side * 40, -205, 1.32], [hoverAt + hover, side * 15, -195, 1.34], [hoverAt + hover + 110, 0, -235, 1.42], [slamAt, 0, 0, 1],
       [slamAt + 90, 0, 0, 1], [slamAt + 190, 0, -30, 1.03], [slamAt + 290, 0, 0, 1]],
     [[0, side * 1100], [380, side * 420], [hoverAt, side * 150], [hoverAt + hover, side * 60], [slamAt, 0], [slamAt + 290, 0]]);
+    // 立体のダイスの回り方: 宙では速く、「ため」の間はゆっくり、叩きつけでまた速くなって、着地の瞬間に出目の面で止まる。
+    if (solids[last]) {
+      const h1 = hoverAt + hover;
+      solids[last].progress = t => t <= hoverAt ? .55 * (1 - (1 - t / hoverAt) ** 2)
+        : t <= h1 ? .55 + .1 * (t - hoverAt) / hover
+        : t < slamAt ? .65 + .35 * (1 - (1 - (t - h1) / (slamAt - h1)) ** 1.5) : 1;
+      solids[last].landAt = slamAt;
+    }
     // 宙で「ため」ている間は、コマ送りもゆっくり（スローモーション）。叩きつける直前に速さが戻る。
     after(hoverAt, () => { if (dieNodes[last].dataset.state === "tumbling") dieNodes[last].dataset.state = "hover"; });
     after(hoverAt + hover, () => { if (dieNodes[last].dataset.state === "hover") dieNodes[last].dataset.state = "tumbling"; });
+  }
+
+  if (solids[first]) {
+    if (thrown === null) {
+      solids[first].progress = t => t >= firstRest ? 1 : 1 - (1 - t / firstRest) ** 2.4;
+      solids[first].landAt = firstRest;
+    } else solids[first].progress = () => 1;
+  }
+  // 描画: 劇場の時計（一時停止・タブを離れた時に一緒に止まる）で姿勢を決める。着地のあとは、少し揺れて止まる。
+  if (tick) {
+    const t0 = tick.currentTime || 0;
+    const frame = () => {
+      if (done) return;
+      const t = (tick.currentTime || 0) - t0;
+      let moving = false;
+      for (const solid of solids) {
+        if (!solid) continue;
+        const e = Math.min(1, Math.max(0, solid.progress(t)));
+        let theta = solid.turns * (1 - e), axis = solid.axis;
+        const after = solid.landAt != null ? t - solid.landAt : -1;
+        if (after >= 0 && after < 360) { theta = .1 * Math.sin(after / 360 * Math.PI * 3) * (1 - after / 360); axis = [1, 0, 0]; }
+        if (e < 1 || (after >= 0 && after < 360)) moving = true;
+        solid.d3.draw(pose(solid.R, axis, theta));
+      }
+      if (moving || t < 400) requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
   }
 
   // ---- 3. ため: 「あと N 以上で成功！」・心音・寄り ----
