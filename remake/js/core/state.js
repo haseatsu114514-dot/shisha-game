@@ -552,7 +552,14 @@ export function playTimeMs(value = state) {
   return value === state && playClockAt !== null ? saved + Math.max(0, Date.now() - playClockAt) : saved;
 }
 
-export function setState(s) {
+// このタブの進行の基になったAUTO原文。枠の表示・確認だけでは更新しない。
+let autoBaseRaw = null;
+function readRaw(key) {
+  try { return localStorage.getItem(key); } catch { return null; }
+}
+
+export function setState(s, baseRaw = readRaw(SAVE_KEY)) {
+  autoBaseRaw = baseRaw;
   state = s;
   playClockAt = s && pageVisible() ? Date.now() : null;
   emit("hud"); // ロード・はじめからでも、前の残量と通知を画面に持ち越さない。
@@ -586,7 +593,7 @@ export function holdActionSave(owner) {
   };
 }
 
-function writeSave(target = state) {
+function writeSave(target = state, { manualLoad = false, expectedRaw = autoBaseRaw } = {}) {
   // 一時保留は容量エラーではない。最後の安全なAUTOを保ち、呼出側の行動末で通常保存する。
   if (target && actionSaveHolds.has(target)) return { raw: null, saved: false };
   if (!target) return { raw: null, saved: false };
@@ -605,7 +612,11 @@ function writeSave(target = state) {
   let raw = null;
   try {
     raw = JSON.stringify(target);
+    if (!manualLoad && localStorage.getItem(SAVE_KEY) !== expectedRaw) {
+      return { raw, saved: false, conflict: true };
+    }
     localStorage.setItem(SAVE_KEY, raw);
+    autoBaseRaw = raw;
     lastComplementedAutosaveRaw = raw;
     noteSaveResult(true);
     return { raw, saved: true };
@@ -616,13 +627,20 @@ function writeSave(target = state) {
   }
 }
 
-export function save() {
-  return writeSave().saved;
+export function autoSaveResult() {
+  const result = writeSave();
+  if (result.conflict) {
+    try { emit("save-conflict"); } catch { /* 通知の失敗でもAUTOの上書きは防ぐ */ }
+  }
+  return result;
 }
 
-export function peekSave() {
+export function save() {
+  return autoSaveResult().saved;
+}
+
+function parseSave(raw) {
   try {
-    const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return null;
     const s = JSON.parse(raw);
     return s && typeof s === "object" ? s : null;
@@ -631,13 +649,18 @@ export function peekSave() {
   }
 }
 
+export function peekSave() {
+  return parseSave(readRaw(SAVE_KEY));
+}
+
 export function load() {
-  const s = peekSave();
+  const raw = readRaw(SAVE_KEY);
+  const s = parseSave(raw);
   if (!s) return null;
   // 移行で想定外の例外が出ても、タイトルやブートを巻き込まず読み込み失敗にする。
   let migrated = null;
   try { migrated = migrate(s); } catch { migrated = null; }
-  return migrated ? setState(migrated) : null;
+  return migrated ? setState(migrated, raw) : null;
 }
 
 // ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に1枠）
@@ -650,12 +673,8 @@ const BOOT_LOAD_KEY = "suien_remake_boot_load";
 
 /** 枠の中身（無い・壊れている→null） */
 export function readSlot(key) {
-  try {
-    const s = JSON.parse(localStorage.getItem(key) || "null");
-    return s && typeof s === "object" && s.day ? s : null;
-  } catch {
-    return null;
-  }
+  const s = parseSave(readRaw(key));
+  return s?.day ? s : null;
 }
 /** 外から受け取ったセーブが、読み込みと同じ移行を通せるか（保存はしない。形式は変えない） */
 export function isLoadableSave(s) {
@@ -674,7 +693,7 @@ export function peekLatestSave() {
 }
 export const anySlotSaved = () => SAVE_SLOTS.some((s) => readSlot(s.key));
 
-/** 今の状態を手動の枠に書く（オートセーブも同時に更新） */
+/** 今の状態を手動の枠に書く。別タブの保存と競合していなければAUTOも更新する。 */
 export function saveToSlot(key) {
   return saveToSlotResult(key).manualSaved;
 }
@@ -682,10 +701,11 @@ export function saveToSlot(key) {
 /** 手動枠と AUTO それぞれの実際の書き込み結果。既存の保存順序は維持する。 */
 export function saveToSlotResult(key) {
   if (state && actionSaveHolds.has(state)) return { autoSaved: false, manualSaved: false };
-  const { raw, saved: autoSaved } = writeSave();
+  const { raw, saved: autoSaved, conflict } = writeSave();
+  if (key === SAVE_KEY) return { autoSaved, manualSaved: autoSaved };
   try {
     localStorage.setItem(key, raw === null ? JSON.stringify(state) : raw);
-    return { autoSaved, manualSaved: true };
+    return { autoSaved, manualSaved: true, conflict };
   } catch {
     return { autoSaved, manualSaved: false };
   }
@@ -693,8 +713,9 @@ export function saveToSlotResult(key) {
 
 /** 枠から読み込んで今の状態にする。以後のオートセーブもこのデータから続く */
 export function loadFromSlot(key, { validate } = {}) {
-  const s = readSlot(key);
-  if (!s) return null;
+  const sourceRaw = readRaw(key);
+  const s = parseSave(sourceRaw);
+  if (!s?.day) return null;
   // 移行で想定外の例外が出ても、進行中の状態と保存元を保ったまま読み込み失敗にする。
   let migrated = null;
   try { migrated = migrate(s); } catch { migrated = null; }
@@ -702,10 +723,10 @@ export function loadFromSlot(key, { validate } = {}) {
   // 外部JSONなどの候補は、移行後の形を検証してから保存・公開する。
   try { if (validate && validate(migrated) === false) return null; } catch { return null; }
   // 保存の成否が決まるまで候補を公開しない。hud購読者は旧画面を破棄しうる。
-  const { saved } = writeSave(migrated);
+  const { raw, saved } = writeSave(migrated, { manualLoad: key !== SAVE_KEY, expectedRaw: sourceRaw });
   // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。
   if (!saved && key !== SAVE_KEY) return null;
-  return setState(migrated);
+  return setState(migrated, saved ? raw : sourceRaw);
 }
 
 /** ゲーム中にロードしたとき: いったん読み直して、タイトルを飛ばしてそのまま再開する */

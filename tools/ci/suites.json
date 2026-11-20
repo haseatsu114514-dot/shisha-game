@@ -2144,6 +2144,7 @@
         "data/dialogue/ch4_visitors.json",
         "data/dialogue/ch4_*_dubai.json",
         "data/dialogue/ch4_arrival_daily.json",
+        "data/dialogue/ch4_morning.json",
         "data/dialogue/tournament_craft.json",
         "remake/test/browser/ch4_full_flow.mjs"
       ],

@@ -18,6 +18,8 @@ const values = {createChapterMenu: () => () => {},
   showScreen: (_, tree) => { screen = tree; }, setBg: async () => {}, enterScene: async () => {},
   playBgm() {}, toast: text => notices.push(text), hooks: {},
   awardChapterClearExp() {},
+  // 結果発表の後ろの、来てくれた人の一言（ch4-morning.js）。顔ぶれと並びは ch4_beach.mjs で確かめる
+  chapterFourResultScript: source => source,
   play: async () => ({ cancelled: cancel }),
   // 章末のグラフ（daily/status.js の chapterGrowthChart）。盤モード／旧しくみの描き分けと基準の扱いは growth_levelup.mjs の chapter-end-board-chart
   chapterGrowthChart: (value, size) => { comparisons.push({ value, size }); return node("svg"); },
