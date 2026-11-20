@@ -36,7 +36,7 @@ await suite("craft-cues-2190", async check => {
         [{ mode: "rehearsal", practiceKind: "practice" }, ["PRACTICE", "一台を作る練習"]],
         [{ mode: "tutorial", practiceKind: "early" }, ["LESSON", "レッスン"]],
         [{ mode: "rehearsal", practiceKind: "practice", eventTitle: "PRACTICE", eventNote: "まかないで練習" }, ["PRACTICE", "まかないで練習"]],
-        [{ mode: "rehearsal", practiceKind: "midcheck", retryAssist: true }, ["PRACTICE", "今回のみ操作補助"]],
+        [{ mode: "rehearsal", practiceKind: "midcheck", retryAssist: true }, ["PRACTICE", "今回のみイージー"]],
         [{ mode: "tournament" }, ["SMOKE CROWN CUP", "大会"]],
       ]) {
         const actual = await page.evaluate(async properties => {

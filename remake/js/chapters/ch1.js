@@ -60,6 +60,7 @@ import { giveSumiRig, giveEarlyHomeRig } from "../daily/home-rig.js";
 import { judgeNaruMatch, naruMatchReviewLines } from "./naru-match.js";
 import { configureFirstBrew, firstBrewOrder, rememberFirstBrew, serveFirstBrew } from "./first-brew.js";
 import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
+import { chosenAssistLevel } from "../craft/retry-assist-level.js";
 
 const BG = (name) => `res://assets/backgrounds/${name}.png`;
 const TONARI = BG("bg_tonari_inside");
@@ -645,6 +646,7 @@ function prepareTournamentAttempt(newTournament) {
 function startTournamentCraft() {
   const cs = newSession("tournament");
   cs.retryAssist = state.tournament.retryAssist === true;
+  cs.retryAssistLevel = chosenAssistLevel(state.tournament); // 3敗ごとに一段ずつ判定が広がる（WIN13）
   // 桜井式の試合だけ、吸い出し・調整の温度計に「攻めの帯」を出す（craft/attack-band.js）。
   if (isSakuraiVotes(state.tournament.voteAttempt)) cs.voteStyle = "sakurai";
   // シーシャ作りの版（CRN16）は、試合を始めた時の審査の方式にそろえる（桜井式＝桜井版・いままで＝リニューアル）。試合の途中で設定を変えても混ざらない
