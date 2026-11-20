@@ -54,14 +54,15 @@ await suite("tutorial-growth", async check => {
     assert.deepEqual(after, [27000, receipt.growth.xp, 0]);
   }, phone);
 
-  for (const slot of [0, 2]) await check(slot === 0 ? "daytime-delivery" : "guided-delivery", async page => {
-    const names = slot === 0 ? ["adam", "minto"] : ["minto", "adam"];
+  // #3819: 登録のついで（slot 0）も帰り道（slot 2）も、案内は PEPPERMINT → EDEN の順
+  for (const slot of [0, 2]) await check(slot === 0 ? "errand-delivery" : "guided-delivery", async page => {
+    const names = ["minto", "adam"];
     await page.evaluate(async initialSlot => {
       const core = await import("./js/core/state.js");
       const s = core.newGame();
       Object.assign(s, { phase: "daily", day: 2, slot: initialSlot });
       Object.assign(s.flags, { _morning_2: true, _errand_scout_done: true, _c_station_registered: true, _ch1_rules_read: true,
-        _delivery_batch_started: true, _delivery_minto_told: true, _delivery_adam_told: true, _ch1_day2_shift_done: true });
+        _delivery_batch_started: true, _delivery_minto_told: true, _delivery_adam_told: true });
       (await import("./js/vn/engine.js")).vnTest.turbo = true;
       const write = Storage.prototype.setItem;
       window.deliveries = {};

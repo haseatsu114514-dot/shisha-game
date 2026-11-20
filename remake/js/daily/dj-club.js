@@ -101,7 +101,7 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
           venueHost("yoru", played && arrivalGreeted("club_seam", owner) && firstLine(DB.dialogues, "venue_yoru_menu")
             || firstLine(dialogues, played ? "venue_yoru_return" : "venue_yoru_greet"), DB),
           el("p.sub-lead", { text: "今夜はオープンデッキ。▶と横フェーダーで曲をつなぐ。時間は進まない。" }),
-          // モニターヘッドホン（VOL07）: ヨルの店で一度だけ買える。▶の判定が10ms広くなる。
+          // モニターヘッドホン（VOL07）: ヨルの店で一度だけ買える。▶の判定の幅が前後¼拍広くなる（DJK07）。
           gearOffer(owner, "gear_headphones", { isCurrent: current, onBought: item => {
             save(); toast(`「${item.name}」を買った。${item.effect}`, { kind: "good" });
           } }),

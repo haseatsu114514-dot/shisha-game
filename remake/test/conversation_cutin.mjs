@@ -192,7 +192,11 @@ const engine = fs.readFileSync(path.join(root, "remake/js/vn/engine.js"), "utf8"
 assert.match(engine, /function next\(\) \{[\s\S]{0,260}cutin\?\.leave\(/);
 assert.match(engine, /if \(v\) \{ cutin\?\.clear\(\); setAuto\(false\); \}/);
 assert.match(engine, /function openLog\(\) \{\n  cutin\?\.clear\(\);/);
-assert.match(engine, /function finish\(cancelled = false\) \{[\s\S]{0,900}cutin\?\.clear\(\);/);
+// 会話の終了は finish() の本体（宣言から行頭の「}」まで）の中で片付ける。以前は「宣言から900字以内」と字数で見ていたため、
+// 本体に1行足しただけで外れ（#4025 で 902 字）、逆に本体が短いと次の関数の中の clear でも通ってしまった
+const finishBody = /\nfunction finish\(cancelled = false\) \{\n([\s\S]*?)\n\}\n/.exec(engine)?.[1];
+assert(finishBody, "engine.js に finish(cancelled = false) が見つからない");
+assert.match(finishBody, /\n  cutin\?\.clear\(\);/);
 assert.match(engine, /function completeTyping\(\) \{[\s\S]{0,500}cutin\?\.reveal\(\);/);
 assert.match(engine, /renderPage\(\);\n[^\n]*\n  if \(cutinSrc\) showCutin\(r, cutinCue, cutinSrc\);/, "文字送りを始めてから出す");
 assert.match(engine, /cutin\?\.show\(cue, src, \{ still: reducedMotion\(\), bg: cutinBackdrop\(\), typing: !!r\.typing \}\)/);
