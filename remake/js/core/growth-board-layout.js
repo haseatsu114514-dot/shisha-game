@@ -76,15 +76,8 @@ function buildNodes() {
     if (isHubSide(n.gx, n.gy)) n.links.push(HUB);
     Object.freeze(n.links);
   }
-  // 授業の小道: 授業のマスにつながる能力のマスは、その人に会うまで盤に出さない（2026-10-30 オーナー採用）
-  const byId = Object.fromEntries(nodes.map((n) => [n.id, n]));
-  for (const lesson of nodes.filter((n) => n.kind === "lesson")) {
-    // 授業にしかつながらない能力のマスだけが小道（一周の道の角のように、ほかへも続くマスは小道にしない）
-    for (const id of lesson.links) {
-      const n = byId[id];
-      if (n?.kind === "stat" && n.links.filter((l) => l !== lesson.id).length <= 1 && !n.links.includes(HUB)) Object.assign(n, { trail: lesson.id });
-    }
-  }
+  // 授業の小道（その人に会うまで伏せる能力のマス。2026-10-30）は v10 で無くなった。v14（SBD149）で♥が要る授業を道のいちばん奥へ
+  // 移したので、授業の手前の能力のマス（台座の先の2マス目）は授業にしかつながらないが、ふつうの能力のマスとして最初から灯せる
   return nodes.map(Object.freeze);
 }
 
