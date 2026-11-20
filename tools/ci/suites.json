@@ -4383,6 +4383,7 @@
         "remake/js/trpg/campaign-view.js",
         "remake/js/trpg/preview.js",
         "remake/trpg-preview.html",
+        "remake/trpg-campaign-preview.html",
         "data/trpg_catalog.json",
         "data/dialogue/trpg_ordinary.json",
         "data/dialogue/trpg_shark.json",
