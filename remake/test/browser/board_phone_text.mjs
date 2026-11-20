@@ -1,15 +1,14 @@
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
-// 横持ちスマホの心得の盤（#3121）: 右パネル・値段・目的地の文字は実効 11.5px 以上（検査は 11.4）。
-// 拡大・？・閉じるは実寸 39px 以上。マスのクリック箱は等倍では隣と重なるので 44px のまま、
-// 1.2 倍以上で実効 44px まで広げる。盤の絵の地名や、後ろのマップのピンは対象外。
+// 横持ちスマホの心得の盤（#3121）: 盤全体の補助文字は実効 11.5px 以上、
+// 詳細本文と倍率ボタンは 12.5px 以上。全体は見渡せるまま、マス選択時に 1.2 倍へ寄せる。
 const t = (name) => `[data-test="${name}"]`;
 const MIN_FONT = 11.4;
 const MIN_TAP = 39;
 const phone = { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true };
 
-async function openBoard(page) {
+async function openBoard(page, { view = true } = {}) {
   await page.evaluate(async () => {
     (await import("./js/core/growth.js")).setGrowthPreview(true);
     const core = await import("./js/core/state.js");
@@ -28,6 +27,7 @@ async function openBoard(page) {
   });
   await page.locator("#screen .map:not(.done)").waitFor({ timeout: 20000 });
   await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
+  if (!view) return;
   await page.locator(t("hud-menu")).click();
   await page.locator(t("menu-board")).click();
   await page.locator(`${t("growth-board")}[data-mode="view"]`).waitFor({ timeout: 20000 });
@@ -66,6 +66,8 @@ await suite("board-phone-text", async (check) => {
       return small;
     }, MIN_TAP);
     assert.deepEqual(chrome, [], "board: small chrome taps");
+    const zoomHeight = await page.locator(t("board-zoom-in")).evaluate((node) => node.getBoundingClientRect().height);
+    assert(zoomHeight >= 43.9, `zoom buttons should be 44px high, got ${zoomHeight}`);
 
     const before = await page.evaluate(() => {
       const n = document.querySelector('[data-test="board-node-B1"]');
@@ -73,8 +75,19 @@ await suite("board-phone-text", async (check) => {
       return { hit: document.querySelector('[data-test="board-viewport"]').dataset.hit, w: r.width, h: r.height };
     });
     assert.equal(before.hit, "tight");
-    assert(before.w < 39, `default zoom should keep node hits compact, got ${before.w}`);
+    assert(before.w >= 38.9, `default zoom should offer a 39px hit, got ${before.w}`);
 
+    await page.locator(t("board-zoom-fit")).click();
+    const fit = await page.locator(t("board-node-B1")).boundingBox();
+    assert(fit.width >= 26, `fit view should keep non-overlapping node hits, got ${fit.width}`);
+    await page.locator(t("board-node-B1")).evaluate((node) => node.click());
+    assert(Number(await page.locator(t("board-viewport")).getAttribute("data-zoom")) >= 1.2,
+      "selecting from fit should zoom toward the chosen node");
+    const detailFont = await page.locator(".gb-side p").first().evaluate((node) => {
+      const stage = document.querySelector("#stage");
+      return parseFloat(getComputedStyle(node).fontSize) * stage.getBoundingClientRect().width / stage.offsetWidth;
+    });
+    assert(detailFont >= 12.4, `detail text should be at least 12.5px, got ${detailFont}`);
     await page.locator(t("board-zoom-in")).click();
     const after = await page.evaluate(() => {
       const viewport = document.querySelector('[data-test="board-viewport"]');
@@ -94,4 +107,66 @@ await suite("board-phone-text", async (check) => {
     assert(after.w + 0.05 >= 43 && after.h + 0.05 >= 43, `zoomed node hit should be 44px effective, got ${JSON.stringify(after)}`);
     assert(after.minGap >= -0.5, `zoomed node hits must not overlap, gap ${after.minGap}`);
   }, phone);
-});
+
+  await check("phone-844x340-long-lesson", async (page) => {
+    await openBoard(page);
+    await page.locator(t("board-tab-sense")).click();
+    await page.locator(t("board-node-M-S2")).evaluate((node) => node.click());
+    const first = await page.evaluate(() => {
+      const side = document.querySelector(".gb-side");
+      const actions = side.querySelector(".gb-side-actions");
+      const sideBox = side.getBoundingClientRect(), actionBox = actions.getBoundingClientRect();
+      return { text: side.innerText, scrollable: side.scrollHeight > side.clientHeight,
+        actionVisible: actionBox.top >= sideBox.top && actionBox.bottom <= sideBox.bottom };
+    });
+    assert(first.text.includes("単体で勝負") && first.text.includes("錠が開くと"), "lesson meaning is present");
+    assert(first.scrollable, "long lesson should scroll in the short viewport");
+    assert(first.actionVisible, "lesson action should stay inside the panel");
+    const last = await page.locator(".gb-side").evaluate((side) => {
+      side.scrollTop = side.scrollHeight;
+      const action = side.querySelector(".gb-side-actions").getBoundingClientRect();
+      const state = side.querySelector(".gb-p-state").getBoundingClientRect();
+      return { actionTop: action.top, stateBottom: state.bottom };
+    });
+    assert(last.stateBottom < last.actionTop, "the last explanation remains readable above the actions");
+  }, { ...phone, viewport: { width: 844, height: 340 } });
+
+  await check("phone-zoom-controls", async (page) => {
+    await openBoard(page, { view: false });
+    for (const mode of ["normal", "fit", "max"]) {
+      await page.evaluate(() => { void import("./js/daily/growth-board-screen.js").then((m) => m.openBoard({ place: "kannon" })); });
+      await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+      if (mode === "fit") await page.locator(t("board-zoom-fit")).click();
+      if (mode === "max") {
+        const plus = page.locator(t("board-zoom-in"));
+        while (!(await plus.isDisabled())) await plus.click();
+      }
+      const id = await page.evaluate(() => document.querySelector(".gb-node.s-available")?.dataset.test);
+      assert(id, `${mode}: no available node on the active board`);
+      await page.locator(t(id)).evaluate((node) => node.click());
+      const viewport = page.locator(t("board-viewport"));
+      const zoom = Number(await viewport.getAttribute("data-zoom"));
+      assert(zoom >= (mode === "max" ? 1.5 : 1.2), `${mode}: node selection zoom ${zoom}`);
+      const before = await viewport.evaluate((node) => [node.scrollLeft, node.scrollTop]);
+      const box = await viewport.boundingBox();
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(box.x + box.width / 2 - 50, box.y + box.height / 2 - 35, { steps: 5 });
+      await page.mouse.up();
+      const after = await viewport.evaluate((node) => [node.scrollLeft, node.scrollTop]);
+      assert(after.some((value, i) => Math.abs(value - before[i]) > 5), `${mode}: pan did not move`);
+      await page.locator(t("board-light")).evaluate((node) => node.click());
+      await page.locator(t(id)).evaluate((node) => node.click());
+      await page.locator(t("board-undo")).waitFor();
+      await page.locator(t("board-undo")).evaluate((node) => node.click());
+      await page.locator(t("board-light")).waitFor();
+      if (mode === "max") await page.locator(t("board-light")).evaluate((node) => node.click());
+      await page.locator(t("board-decide")).evaluate((node) => node.click());
+      await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      if (mode === "max") {
+        const committed = await page.evaluate(async (nodeId) => (await import("./js/core/growth.js")).ensureGrowth((await import("./js/core/state.js")).state).nodes.includes(nodeId.slice("board-node-".length)), id);
+        assert(committed, "max: decision should save the lit node");
+      }
+    }
+  }, { ...phone, reducedMotion: "reduce" });
+}, { acknowledgeGrowth: false, freshBrowserPerCase: true });

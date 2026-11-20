@@ -9,24 +9,30 @@ await suite("first-brew-finish", async check => {
       const first = await import("./js/chapters/first-brew.js");
       const vn = await import("./js/vn/engine.js");
       const { DB } = await import("./js/core/data.js");
+      const { mixExpression } = await import("./js/craft/flavor-profile.js");
+      const { temperatureBands } = await import("./js/craft/temperature-model.js");
       (await import("./js/chapters/ch1.js")).setupHooks();
       vn.vnTest.turbo = true;
       const original = JSON.stringify(DB.dialogues.ch1_tutorial_oneesan), rows = [];
-      for (const finish of ["balanced", "cool", "hot", "legacy", "assisted", "unfinished", "failed"]) {
+      for (const finish of ["balanced", "cool", "hot", "dry", "rounded-zero", "legacy", "assisted", "unfinished", "failed"]) {
         const s = core.newGame();
         const progress = s.flags._ch1_opening = {};
         const cs = { mix: { lemon: 9, mint: 3 }, pullDone: finish !== "unfinished",
           failed: finish === "failed", pull: { temp: .5,
-            inZone: finish === "balanced", under: finish === "cool", over: finish === "hot" } };
+            inZone: finish === "balanced", under: ["cool", "dry", "rounded-zero"].includes(finish), over: finish === "hot" } };
+        if (["dry", "assisted", "unfinished", "failed"].includes(finish)) cs.pull.temp = 0;
+        if (finish === "rounded-zero") cs.pull.temp = temperatureBands(cs).ideal[0] - 1 / 3 + 1e-6;
+        const actual = mixExpression(cs, cs.pull.temp);
         first.rememberFirstBrew(progress, cs, finish !== "assisted");
         if (finish === "legacy") delete progress.firstBrew.finish;
         core.save(); core.newGame(); core.load();
         const saved = core.state.flags._ch1_opening;
         const before = JSON.stringify({ stats: core.state.stats, stock: core.state.flavorStock, money: core.state.money });
-        const lines = [];
+        const lines = [], cgs = [];
         vn.hooks.onLine = (_id, line) => { if (line.text) lines.push(line.text); };
+        vn.hooks.onCg = id => cgs.push(id);
         const ok = await first.serveFirstBrew(saved);
-        rows.push({ finish, ok, brew: saved.firstBrew, lines, before,
+        rows.push({ finish, ok, brew: saved.firstBrew, lines, cgs, actual, before,
           after: JSON.stringify({ stats: core.state.stats, stock: core.state.flavorStock, money: core.state.money }) });
       }
       return { rows, unchanged: original === JSON.stringify(DB.dialogues.ch1_tutorial_oneesan) };
@@ -36,11 +42,25 @@ await suite("first-brew-finish", async check => {
       assert(row.ok);
       assert.equal(row.after, row.before);
       const text = row.lines.join("\n");
+      if (row.finish === "dry") {
+        assert.equal(row.brew.finish, "dry");
+        assert.equal(row.actual.aromaScale, 0);
+        assert.equal(row.actual.values.body, 0);
+        assert.match(text, /まだ煙が出ない/);
+        assert.doesNotMatch(text, /レモン.*ミント|おいしい|美味しい|煙を味わった/);
+        assert.deepEqual(row.cgs, []);
+        continue;
+      }
       assert.match(text, /レモン.*ミント/);
       assert.match(text, /いいシーシャ屋さん/);
-      if (["balanced", "cool", "hot"].includes(row.finish)) {
-        assert.equal(row.brew.finish, row.finish);
-        assert.match(text, { balanced: /熱もちょうどよく/, cool: /少し薄い/, hot: /少し熱い/ }[row.finish]);
+      if (row.finish === "rounded-zero") {
+        assert.equal(row.brew.finish, "cool");
+        assert(row.actual.values.body > 0);
+        assert.equal(Math.round(row.actual.values.body * 10), 0, "0と表示されても実値は0ではない");
+      }
+      if (["balanced", "cool", "hot", "rounded-zero"].includes(row.finish)) {
+        assert.equal(row.brew.finish, row.finish === "rounded-zero" ? "cool" : row.finish);
+        assert.match(text, { balanced: /熱もちょうどよく/, cool: /少し薄い/, hot: /少し熱い/, "rounded-zero": /少し薄い/ }[row.finish]);
         assert.doesNotMatch(text, /つい、もう一口/);
       } else {
         assert.equal(row.brew.finish ?? null, null);

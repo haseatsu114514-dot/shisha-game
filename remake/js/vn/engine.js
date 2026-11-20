@@ -9,7 +9,7 @@ import { romanceIntent, createRomanceHesitation } from "../core/romance-hesitati
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
 import { createNameFit } from "./name-fit.js";
-import { conversationCutinCue, conversationCutinAllowed, createConversationCutin } from "./conversation-cutin.js";
+import { conversationCutinCue, conversationCutinAllowed, conversationCutinSrc, createConversationCutin } from "./conversation-cutin.js";
 import { uiThemeFrame } from "../core/ui-theme.js";
 import { fortuneChoiceIndex } from "../core/fortune-effects.js";
 import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
@@ -69,7 +69,7 @@ function warnVn(kind, detail) {
 const log = [];
 let dom = null;
 let nameFit = null;
-let cutin = null; // 会話カットイン（立ち絵版・#2990）
+let cutin = null; // 会話カットイン（はじめの顔の帯。#2990・2026-11-20 再設計 CCR）
 let settingsReady = null;
 let openVnConfig = null;
 let running = null;     // 再生中の会話の状態
@@ -176,7 +176,7 @@ function buildDom() {
   dom.skipBtn.setAttribute("aria-pressed", "false");
   dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"), ctl("設定", openSettings, "vn-config"));
   host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.cutin, dom.box, dom.choices, dom.controls, dom.log);
-  cutin = createConversationCutin(dom.cutin);
+  cutin = createConversationCutin(dom.cutin, { sound: (name) => SE[name]?.() });
   nameFit = createNameFit(dom.name);
   host.addEventListener("pointerup", (e) => {
     if (!running || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
@@ -913,7 +913,7 @@ async function showLine(line) {
   clearTimeout(autoTimer);
   const images = linePortraits(line);
   const cutinCue = line._romanceTransient || skipMode || vnTest.turbo ? null : conversationCutinCue(r.currentId || r.id, line);
-  const cutinSrc = cutinCue ? portraitInfo("hajime", cutinCue.face, "new")?.src : null;
+  const cutinSrc = cutinCue ? conversationCutinSrc(cutinCue) : null;
   if (cutinSrc) images.push(cutinSrc);
   // 選択したUIの書体で折り返す。初回だけ代替フォントでページを決めない。
   const fontReady = Promise.all([dom.text, dom.name].map(node => {
@@ -1008,11 +1008,19 @@ async function showLine(line) {
     r.spoken.add(line.portrait);
     if (needsIntro(line.portrait)) queueIntro({ id: line.portrait });
   }
-  if (cutinSrc) showCutin(r, cutinCue, cutinSrc);
   renderPage();
+  // 文字送りを始めてから出す（相手の行の型は、文字送りが終わるまで待つ）
+  if (cutinSrc) showCutin(r, cutinCue, cutinSrc);
 }
 
-/** 会話カットイン（#2990）。台本で決めた行だけ、出せる条件（1会話1回・相手の立ち絵の枚数）を満たす時に出す */
+/** 帯の中に敷く、今の背景の絵（CSS の background-image の値）。取れない時は空 */
+function cutinBackdrop() {
+  const top = [...(document.getElementById("bg")?.children || [])].filter((n) => n.classList.contains("bg-img")).at(-1);
+  const image = top ? getComputedStyle(top).backgroundImage : "";
+  return image && image !== "none" ? image : "";
+}
+
+/** 会話カットイン（#2990・2026-11-20 再設計 CCR）。台本で決めた行だけ、出せる条件（1会話1回・相手の立ち絵の枚数）を満たす時に出す */
 function showCutin(r, cue, src) {
   const shown = [...dom.portraits.querySelectorAll("img")];
   const ok = conversationCutinAllowed(cue, {
@@ -1024,7 +1032,7 @@ function showCutin(r, cue, src) {
   });
   if (!ok) return;
   r.cutinShown = true;
-  cutin?.show(cue, src, { still: reducedMotion() });
+  cutin?.show(cue, src, { still: reducedMotion(), bg: cutinBackdrop(), typing: !!r.typing });
 }
 
 // 報酬キュー: 「……【技術】と【センス】が少し上がった。」の規定フレーズを読んで加算する
@@ -1081,6 +1089,7 @@ function renderPage() {
   const page = r.pages[r.pageIdx];
   const raw = page.text;
   r.fullHtml = r.innerVoice ? `<span class="tx-voice">${formatHtml(raw)}</span>` : formatHtml(raw);
+  dom.text.dataset.pageLines = raw.includes("\n") ? "2" : "1";
   r.fullInnerHtml = page.inner ? formatHtml(page.inner) : "";
   r.spokenLength = visibleLength(r.fullHtml);
   const total = r.spokenLength + visibleLength(r.fullInnerHtml);
@@ -1188,6 +1197,8 @@ function completeTyping() {
   r.shown = total;
   renderTyped(total);
   dom.next.classList.add("show");
+  // 相手の行の会話カットインは、台詞が出切ってから出す
+  cutin?.reveal();
   kickAuto();
 }
 

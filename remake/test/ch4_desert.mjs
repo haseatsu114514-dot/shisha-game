@@ -11,6 +11,8 @@ import { DESERT_FLAG, DESERT_TALKS, DESERT_TALK_HEARTS, DESERT_INVITE_STAGE, NOO
   NOOR_STORY_EXTRAS, NOOR_STORY_DIALOGUE_IDS, NOOR_CONFESSION_DIALOGUE_IDS, noorStoryFlag, noorStoryDue, completeNoorStory,
   NOOR_FARIS_SCENES, NOOR_FARIS_FLAGS, noorFarisDue, completeNoorFaris } from "../js/chapters/ch4-desert-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
+import { openTiers, tierRecord, syncPlayTiers } from "../js/core/play-tiers.js";
+import { masteryRecord, syncPlayMastery } from "../js/core/play-mastery.js";
 import { tournamentFinished } from "../js/core/story-context.js";
 import { readFileSync } from "node:fs";
 
@@ -170,6 +172,82 @@ test("records keep the best by score, count runs, and reward the first finish on
   // 壊れた保存は空扱い（throw しない）
   assert.deepEqual(desertRecords({ desert: { runs: "x", best: { score: "no" } } }).best, null);
   assert.deepEqual(desertProgress({ flags: { [DESERT_FLAG]: { v: 2, talks: 99, chats: -1, lastTalkDay: -2 } } }), { talks: DESERT_TALKS.length, chats: 0, lastTalkDay: null, outings: 0, lastOutingDay: null });
+});
+
+// 三段階（#3779・core/play-tiers.js）: ヌールより先にゴールしたら、その段のクリア。初級は楽なので、自己ベスト・Aランクのご褒美（bestRank）・
+// 勝ち数（なるが来る・初勝利の場面）・達人認定に数えない（初級の自己ベストは別）。段の無い結果（旧保存）は中級。
+test("three tiers: a win clears its tier; easy runs never count toward the best, the A-rank reward, the wins or mastery; tierless results are the middle tier", () => {
+  const value = fresh();
+  const tiers = () => tierRecord(value, "desert").cleared;
+  // 初級で A・ヌールに勝つ: 初級だけクリア（中級が開く）。記録は完走の数と初回の報酬・初級の自己ベストだけ
+  const easyWin = recordDesertResult(value, { ...result(9000, "A"), race: { won: true, gap: 2, who: "noor" }, tier: "easy" }, { awardExp: () => 70 });
+  assert.deepEqual({ tier: easyWin.tier, tierAdded: easyWin.tierAdded, newBest: easyWin.newBest, firstClear: easyWin.firstClear, exp: easyWin.exp, won: easyWin.won, firstWin: easyWin.firstWin },
+    { tier: "easy", tierAdded: ["easy"], newBest: true, firstClear: true, exp: 70, won: true, firstWin: false });
+  assert.deepEqual(tiers(), ["easy"]);
+  assert.deepEqual(openTiers(value, "desert"), ["easy", "normal"]);
+  let records = desertRecords(value);
+  assert.deepEqual({ runs: records.runs, best: records.best, bestRank: records.bestRank, wins: records.wins, rewarded: records.rewarded }, { runs: 1, best: null, bestRank: null, wins: 0, rewarded: true });
+  assert.deepEqual({ score: records.easyBest.score, rank: records.easyBest.rank, tier: records.easyBest.tier }, { score: 9000, rank: "A", tier: "easy" });
+  assert.equal(desertRankAtLeast(value, "A"), false, "an easy A is not the A-rank reward");
+  assert.deepEqual(desertRivals(value), ["noor"], "an easy win does not bring Naru");
+  syncPlayMastery(value); syncPlayTiers(value);
+  assert.deepEqual({ count: masteryRecord(value, "desert").count, done: masteryRecord(value, "desert").done }, { count: 0, done: false }, "an easy win is not mastery");
+  assert.deepEqual(tiers(), ["easy"], "the old-save import does not read an easy win as the middle tier");
+  // 初級の低い点は初級の自己ベストを残す。負けはクリアにならない
+  const easyLow = recordDesertResult(value, { ...result(4000, "B"), race: { won: false, gap: 0.3, who: "noor" }, tier: "easy" });
+  assert.deepEqual({ newBest: easyLow.newBest, tierAdded: easyLow.tierAdded }, { newBest: false, tierAdded: [] });
+  assert.equal(desertRecords(value).easyBest.score, 9000);
+  // 中級で B・負け: 自己ベストと評価は前と同じに数える。クリアにはならない
+  const normalLost = recordDesertResult(value, { ...result(5200, "B"), race: { won: false, gap: 0.4, who: "noor" }, tier: "normal" });
+  assert.deepEqual({ newBest: normalLost.newBest, tierAdded: normalLost.tierAdded }, { newBest: true, tierAdded: [] });
+  records = desertRecords(value);
+  assert.deepEqual({ best: records.best.score, bestRank: records.bestRank, wins: records.wins }, { best: 5200, bestRank: "B", wins: 0 });
+  // 中級で A・勝つ: 中級クリア（上級が開く）。勝ち数・初勝利・なる・達人は前と同じ
+  const normalWin = recordDesertResult(value, { ...result(8800, "A"), race: { won: true, gap: 1, who: "noor" }, tier: "normal" });
+  assert.deepEqual({ tierAdded: normalWin.tierAdded, firstWin: normalWin.firstWin }, { tierAdded: ["normal"], firstWin: true });
+  assert.deepEqual(openTiers(value, "desert"), ["easy", "normal", "hard"]);
+  assert.deepEqual([desertRecords(value).wins, desertRecords(value).bestRank, desertRankAtLeast(value, "A")], [1, "A", true]);
+  assert.deepEqual(desertRivals(value), ["noor", "naru"]);
+  assert.equal(masteryRecord(value, "desert").done, true, "a middle-tier win over Noor is mastery, as before");
+  // 初級の S は、中級以上の評価（bestRank）を上げない
+  recordDesertResult(value, { ...result(18000, "S"), race: { won: true, gap: 4, who: "noor" }, tier: "easy" });
+  assert.deepEqual([desertRecords(value).bestRank, desertRecords(value).best.score, desertRecords(value).wins], ["A", 8800, 1]);
+  // なるとの勝負は段の外（勝ってもクリアにしない）
+  assert.deepEqual(recordDesertResult(value, { ...result(9300, "A"), race: { won: true, gap: 0.6, who: "naru" } }).tierAdded, []);
+  // 上級で勝つ: 上級クリア（白火の精算は growth.js。ここでは記録だけ）
+  const hardWin = recordDesertResult(value, { ...result(12000, "A"), race: { won: true, gap: 0.2, who: "noor" }, tier: "hard" });
+  assert.deepEqual([hardWin.tier, hardWin.tierAdded, hardWin.firstWin], ["hard", ["hard"], false]);
+  assert.deepEqual(tiers(), ["easy", "normal", "hard"]);
+  assert.deepEqual([desertRecords(value).wins, desertRecords(value).best.score], [2, 12000], "a hard win counts like a middle-tier win");
+  // 段の無い結果（段ができる前の保存・遅れて届いた結果）は中級: 勝てば中級クリア（初級も一緒に）
+  const old = fresh();
+  const tierless = recordDesertResult(old, { ...result(8000, "A"), race: { won: true, gap: 1 } });
+  assert.deepEqual([tierless.tier, tierless.tierAdded, tierless.firstWin, desertRecords(old).bestRank], ["normal", ["easy", "normal"], true, "A"]);
+});
+
+// growth.js が聞いている本編と同じ並び: 中級の初勝利は達人認定の精算（旧保存の取り込み）に飲まれず「中級クリア」を知らせ、上級の初勝利で白火1つ（一度だけ）
+test("three tiers with the growth board listening: the first middle-tier win still reports its clear, and the first hard win pays one white fire once", async () => {
+  const storage = new Map();
+  globalThis.localStorage ??= { getItem: k => storage.get(k) ?? null, setItem: (k, v) => storage.set(k, String(v)), removeItem: k => storage.delete(k) };
+  const core = await import("../js/core/state.js");
+  const growth = await import("../js/core/growth.js");
+  const s = Object.assign(core.newState(), { chapter: 4, day: 46 });
+  core.setState(s);
+  const g = growth.ensureGrowth();
+  const run = (tier, won) => recordDesertResult(s, { ...result(9000, "A"), race: { won, gap: 1, who: "noor" }, tier });
+  assert.deepEqual(run("easy", true).tierAdded, ["easy"]);
+  assert.equal(masteryRecord(s, "desert").done, false);
+  const normal = run("normal", true);
+  assert.deepEqual([normal.tierAdded, normal.firstWin], [["normal"], true], "the mastery settle does not swallow the first middle-tier clear");
+  assert.equal(masteryRecord(s, "desert").done, true);
+  const start = g.earned;
+  assert.deepEqual(run("hard", false).tierAdded, [], "a loss on hard clears nothing");
+  assert.deepEqual(run("hard", true).tierAdded, ["hard"]);
+  assert.equal(g.rewards["desert-hard"], true);
+  assert.equal(g.earned - start, 1, "one white fire for the first hard clear");
+  assert.deepEqual(run("hard", true).tierAdded, []);
+  growth.settleGrowth();
+  assert.equal(g.earned - start, 1, "never twice");
 });
 
 test("old-route map destinations: the café before the invitation, the dunes after, with the day-use rule and the fee in the text", () => {
