@@ -220,5 +220,79 @@ assert(/煙の褒め方が嘘だね/.test(taste)); assert(!/心因|気のせい|
 for (const id of ["remake_ch2_aquarium_repeat", "remake_ch2_aquarium_repeat_b", "remake_ch2_aquarium_repeat_c"]) {
   assert(all[id].lines.length >= 4, `${id} has a few more lines`);
 }
-console.log("PASS ch2 home talks: chapter 2 facility encounters, Rio's two talks, Ageha's nine small talks with greetings, tournament-safe scripts, aquarium revisits");
+// ---- ⑤ 第2章の地元の雨の回（#3097 PR-B・実 spots.js の visitSpot・restAtHome） ----------------------
+// 雨の日、巡回が引いた回の代わりに章の台本を一度だけ読む。巡回は引いた回を読んだものとして進め、
+// 経験値は引いた回の鍵（play の growthKey）で数える。夜の束の施設・晴れの日・第1章では差し替えない。
+{
+  const rainTexts = (await import(new URL("remake/js/daily/weather.js", root))).RAIN_SPOT_TEXTS;
+  const rest = Object.fromEntries(dialogueFile("remake_ch1").filter(d => /^remake_rest/.test(d.dialogue_id)).map(d => [d.dialogue_id, d]));
+  const saved = DB.dialogues; DB.dialogues = { ...all, ...rest };
+  let rainy = true, calls = [];
+  spotsModule.set("./weather.js", "isRainy", () => rainy);
+  spotsModule.set("./weather.js", "RAIN_SPOT_TEXTS", rainTexts);
+  spotsModule.set("./spot-encounters.js", "chapterRainScene", encounters.chapterRainScene);
+  spotsModule.set("./spot-encounters.js", "quietSpotPool", encounters.quietSpotPool);
+  spotsModule.set("./spot-encounters.js", "spotEncounterDue", () => null);
+  spotsModule.set("./spot-encounters.js", "recordSpotEncounter", encounters.recordSpotEncounter);
+  spotsModule.set("./spot-hours.js", "openingStatus", () => ({ ok: true }));
+  spotsModule.set("../vn/engine.js", "play", async (id, opts = {}) => { calls.push({ id, ...opts }); return { id }; });
+  const spotSave = (chapter, patch = {}) => {
+    state = { chapter, phase: "daily", day: 20, slot: 0, stamina: 80, money: 50000, met: { naru: true, adam: true, minto: true, dr_kemuri: true },
+      spotVisits: { cafe: 3, choizap: 3, c_station: 3 }, reel: { introDone: true }, story: {}, visits: {}, contacts: [], affinity: {}, lovers: [],
+      ...patch, flags: { _gym_member: true, ...patch.flags } };
+    spotsModule.set("../core/state.js", "state", state);
+    calls = [];
+  };
+  const spot = id => spots.SPOTS.find(entry => entry.id === id);
+  const plainCall = call => ({ id: call.id, growthScene: call.growthScene, growthKey: call.growthKey });
+  // 喫茶こはく: 雨の回（第1章の2本）を引いた日に、第2章の雨の台本へ差し替える
+  spotSave(2);
+  await spots.visitSpot(spot("cafe"));
+  assert.deepEqual(plainCall(calls[0]), { id: "cafe_ch2_rain", growthScene: true, growthKey: rainTexts.cafe[0] });
+  assert.equal(state.flags._spot_turn_cafe_rain, 1, "the drawn rain turn counts as read");
+  // 台本の末尾で既読になった後は、引いた回をそのまま読む（経験値の鍵の差し替えも無い）
+  state.flags._spot_seen_cafe_ch2_rain = true; calls = [];
+  await spots.visitSpot(spot("cafe"));
+  assert.deepEqual(plainCall(calls[0]), { id: rainTexts.cafe[1], growthScene: true, growthKey: undefined });
+  // 第1章・晴れの日は差し替えない
+  spotSave(1); await spots.visitSpot(spot("cafe")); assert.equal(calls[0].id, rainTexts.cafe[0]); assert.equal(calls[0].growthKey, undefined);
+  rainy = false; spotSave(2); await spots.visitSpot(spot("cafe"));
+  assert.notEqual(calls[0].id, "cafe_ch2_rain"); assert.equal(calls[0].growthKey, undefined); rainy = true;
+  // CHOI-ZAP・C.STATION: 雨の回が無いので、引いた静かな回を差し替える。静かな回の巡回も一つ進む
+  for (const [id, scene, key] of [["choizap", "choizap_ch2_rain", "_spot_turn_choizap"], ["c_station", "cs_ch2_rain", "_spot_turn_c_station"]]) {
+    spotSave(2);
+    await spots.visitSpot(spot(id));
+    const drawn = encounters.quietSpotPool(spot(id), 0).filter(scene => all[scene])[0];
+    assert.deepEqual(plainCall(calls[0]), { id: scene, growthScene: true, growthKey: drawn }, `${id}: chapter 2 rain`);
+    assert.equal(state.flags[key], 1);
+  }
+  // CHOI-ZAP の夜は夜の束を読み、雨の台本（昼の場面）にしない
+  spotSave(2, { slot: 1 }); await spots.visitSpot(spot("choizap"));
+  assert.notEqual(calls[0].id, "choizap_ch2_rain"); assert.equal(calls[0].growthKey, undefined);
+  // 家で休む: 雨の回を一度だけ差し替える（休む回は経験値の付かない場面のまま）
+  spotSave(2); await spots.restAtHome(spot("rest"));
+  assert.equal(calls[0].id, "ch2_rest_rain"); assert.equal(calls[0].growthScene, undefined);
+  assert.equal(state.flags._spot_turn_rest_rain, 1);
+  state.flags._spot_seen_ch2_rest_rain = true; calls = [];
+  await spots.restAtHome(spot("rest")); assert.equal(calls[0].id, "remake_rest_rain");
+  spotSave(2); await spots.restAtHome(spot("rest"), { fullDay: true }); assert.equal(calls[0].id, "remake_rest_day");
+  spotSave(1); await spots.restAtHome(spot("rest")); assert.equal(calls[0].id, "remake_rest_rain");
+  // 台本: 読み込み一覧と一致し、自分の既読を記録し、大会・味・報酬の文を書かない。観音堂（心得の盤）には置かない
+  const { CH2_RAIN_IDS } = await import(new URL("remake/js/chapters/ch2-city-data.js", root));
+  assert.deepEqual([...encounters.CHAPTER_RAIN_IDS], [...CH2_RAIN_IDS], "the chapter 2 loader publishes every rain scene");
+  for (const id of encounters.CHAPTER_RAIN_IDS) {
+    const text = JSON.stringify(all[id]);
+    assert(all[id]?.lines?.length, `${id} exists`);
+    assert(text.includes(`"_spot_seen_${id}"`), `${id} records its own reading`);
+    assert(!/大会|本番|県大会|優勝|味|が(少し|かなり|大きく)?上がった/.test(text), `${id}: any day before or after the taste trouble, no reward text`);
+    assert(/雨/.test(text), `${id} is a rainy day scene`);
+  }
+  assert(!encounters.CHAPTER_RAIN_IDS.some(id => id.startsWith("kannon")));
+  // 実 VN エンジンは、growthKey を渡された時だけその鍵で完読の経験値を数える（実際の再生はブラウザの検査）
+  const engineSource = read("remake/js/vn/engine.js");
+  assert.match(engineSource, /growthKey: typeof opts\.growthKey === "string" && opts\.growthKey \? opts\.growthKey : null,/);
+  assert.match(engineSource, /if \(!cancelled && r\.growthScene\) earnSceneCompletion\(r\.growthKey \|\| r\.id, r\.owner\);/);
+  DB.dialogues = saved;
+}
+console.log("PASS ch2 home talks: chapter 2 facility encounters, chapter 2 rainy-day swaps (#3097 PR-B), Rio's two talks, Ageha's nine small talks with greetings, tournament-safe scripts, aquarium revisits");
 

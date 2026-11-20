@@ -117,3 +117,17 @@ export function spotFollowupDue(charId, save, dialogues) {
     && !save.flags[event.done || `_spot_follow_${charId}`] && (!event.flag || save.flags[event.flag])
     && !(event.rift && naruRift(save)))?.id || null;
 }
+
+// #3097 PR-B: 地元の雨の回の章ごとの台本。雨の日、巡回が引いた回（施設の雨の回・静かな回、家で休む回）の代わりに一度だけ読む。
+// 巡回は引いた回を読んだものとして一つ進め、初回読了の経験値も引いた回の鍵で数える（daily/spots.js の visitSpot・restAtHome）。新しい場面 ID で経験値を増やさない。
+// 読んだ印は台本末尾の `_spot_seen_<id>`。観音堂は心得の盤を開く場所で、施設の回を読まないので置かない（daily/reflection.js）。
+const CHAPTER_RAIN = {
+  2: { cafe: "cafe_ch2_rain", choizap: "choizap_ch2_rain", c_station: "cs_ch2_rain", rest: "ch2_rest_rain" },
+};
+export const CHAPTER_RAIN_IDS = Object.freeze(Object.values(CHAPTER_RAIN).flatMap(Object.values));
+
+/** その章の雨の日に、引いた回の代わりに読む台本。雨でない・読了済み・台本が読み込まれていない時は null。 */
+export function chapterRainScene(placeId, save, dialogues, rainy) {
+  const id = CHAPTER_RAIN[save?.chapter]?.[placeId];
+  return rainy && id && dialogues?.[id]?.lines?.length && !save.flags?.[seenKey(id)] ? id : null;
+}

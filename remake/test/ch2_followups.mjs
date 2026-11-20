@@ -330,7 +330,10 @@ fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // + 地元の第2章の会話7本と、tonariのシフト上がりの会話7本（ch2_tonari_talks.json・#3097 第1弾）
 // + 施設の寄り道4本と、tonariのシフト上がりの会話5本（#3097 第2弾）＋あげはの小会話3本（#3097）
 // + 神崎・クラウドの♥3の友人の外出2本（LIME の accept_event・#3097 PR-A）
-assert.equal(Object.keys(loaderDB.dialogues).length, 98 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+// + 地元の雨の回4本（ch2_home.json）と、行き帰りの電車の小品4本（ch2_city.json・#3097 PR-B）
+assert.equal(Object.keys(loaderDB.dialogues).length, 106 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+for (const id of ["cafe_ch2_rain", "choizap_ch2_rain", "cs_ch2_rain", "ch2_rest_rain", "ch2_commute_morning_regulars", "ch2_commute_return_tonari",
+  "ch2_commute_morning_doze", "ch2_commute_return_window"]) assert(loaderDB.dialogues[id]?.lines?.length, `#3097 PR-B: ${id}`);
 for (const id of ["outing_kumicho_1", "outing_rei_1"]) assert(loaderDB.dialogues[id]?.lines?.length, `${id}: LIMEの誘いで再生する外出の台本も公開する`);
 for (const suffix of ["b", "c", "d", "g", "h", "i"]) assert(loaderDB.dialogues[`remake_ch2_ageha_repeat_${suffix}`], `ageha small talk ${suffix}`);
 for (const id of ["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze", "ch2_rio_taste", "ch2_rio_strawberry"]) assert(loaderDB.dialogues[id], id);

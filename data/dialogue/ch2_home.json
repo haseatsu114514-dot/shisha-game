@@ -1759,6 +1759,326 @@
       ]
     },
     {
+      "dialogue_id": "cafe_ch2_rain",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨の日の喫茶こはく。ドアを開けると、いつもの曲が聞こえなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の棚のレコードは、針を上げたまま止まっている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "マスター、今日は音楽、かけないんですか"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "雨の日は、かけないことにしているんです"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "雨のほうが、いい音を出しますので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "耳をすますと、屋根を叩く音が、店の奥まで届いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨どいから落ちる水が、窓の外で、ぽこ、ぽこと低く鳴っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新聞をめくる音、カップを置く音、マスターが豆を挽く音。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……曲がないと、こんなに音があったのか）"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "晴れの日に同じことをすると、静かすぎると言われます"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "雨の日だけは、どなたにも言われません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "雨に、伴奏してもらってるみたいですね"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "伴奏をしているのは、こちらかもしれませんよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マスターはそう言って、いつものラテを置いた。カップの縁が、小さく鳴った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（足すんじゃなくて、一つ引く。それで、ほかの音が聞こえてくる）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（煙にも、そういう日があるのかもしれない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨が弱くなるまで、カップを両手で包んで、店の音を聞いていた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cafe_ch2_rain"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_ch2_rain",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨の日のCHOI-ZAP。入口の傘立てに、濡れた傘が三本差してあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓のガラスを、雨が細く流れていく。マシンの音も、今日はまばらだ。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "こんにちは。雨の日は、だいたいあの傘の三人なんですよ"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "奥のバイクの方と、ストレッチ台の方と、ロッカーの前で迷ってる方"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "見ると、ロッカーの前の人は、本当に鍵を持ったまま迷っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "晴れの日より、少ないんですね"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "晴れの日は、外を走る人も多いので。雨の日に来るのは、雨でも来る人です"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "だから雨の日に三本そろわないと、ちょっと心配になるんです"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "晴れの日に来なくても、何とも思わないのに。変ですよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……分かる気がします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariにも、雨の日は長居する客がいる。窓際の席が、なかなか空かない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（雨の日に、あの席が空いてたら……俺もきっと、気になる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マットの上で体を伸ばしてから、帰り際に傘立てを見た。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺の傘を入れて、四本。ほかの三本も、まだ並んでいた。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "また雨の日に。……もちろん、晴れの日もどうぞ"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_choizap_ch2_rain"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cs_ch2_rain",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨の日のC.STATIONは、窓際の席から埋まっていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "どのテーブルでも、スマホが窓の方を向いている。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "雨の日は、煙がきれいに残るんです。窓の前だと、特に"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吐いた煙が、ガラスの前でゆっくり広がって、なかなか消えない。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "なので、雨の日は写真のお客さんが多くて。私たちは、その間に回ります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "回る、ですか"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "撮ってる間も、炭は進むので。気づいたら葉が焦げてた、ってなりがちで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員はトングを持って、写真に夢中なテーブルを、一つずつ回っていった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭の位置をそっと直して、何も言わずに離れる。お客さんは、気づいていない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（声も、かけないんだ）"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "声をかけると、いい一枚を逃しちゃうので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見えてるものに夢中な間も、火は進むんですね"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "はい。煙がきれいな日ほど、炭から目を離せないんです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓の前の煙が、ようやく薄くなった。その向こうで、雨はまだ降っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（きれいに見える日ほど、手元を見る。……tonariでも、同じだ）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cs_ch2_rain"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_rest_rain",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "家に着くころには、雨が本降りになっていた。上着の肩が、濡れて重い。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハンガーに掛けて、ベッドに腰を下ろす。窓を叩く音が、部屋の中まで響いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今日はもう、どこにも行かない。そう決めた）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "机の上に、ノートが開いたままだった。ページの端が、湿気で少し波打っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "書きかけの行を、一つだけ読み返す。続きは、明日にした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホで時刻表を開きかけて、やめた。明日の電車は、明日の俺が調べればいい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（雨の日くらい、時計を見ないでいよう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ベッドに横になると、雨の音が少し遠くなった。いつの間にか、眠っていた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_ch2_rest_rain"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch2_rio_city_scent",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
