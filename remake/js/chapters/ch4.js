@@ -8,7 +8,7 @@ import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { state, save } from "../core/state.js";
-import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast, withChapterLoading, withSceneLoading } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast, withChapterLoading, withSceneLoading, retireScreen } from "../core/ui.js";
 import { saveFlow } from "../scenes/saves.js";
 import { planeRide } from "../core/scene-motions.js";
 import { defeatFade } from "../core/transitions.js";
@@ -571,28 +571,40 @@ async function showChapterFourCommittedResult(result) {
   const notes = [result.failure ? "完了した工程から振り返ろう。" : `はじめは${result.rank}位。審査員三人、それぞれの10点が出揃った。`,
     ...(result.failure ? [] : [`総合 ${result.total.toFixed(1)} ／ ${parts}`]),
     ...craftReviewLines(match?.craft)];
-  const { chapterFourStandingsView, playChapterFourVotes, CH4_CONTEST_MODAL } = await import("./ch4-standings.js");
+  const { chapterFourStandingsView, playChapterFourVotes, CH4_CONTEST_MODAL, chapterFourNameOf } = await import("./ch4-standings.js");
+  const show_ = await import("../craft/tournament-show.js");
   // 結果発表: 会場の拍手（1位はファンファーレも）。制作を完了できなかった時は鳴らさない。
   const reaction = () => { if (!result.failure) { SE.crowd?.(2.4); if (result.rank === 1) SE.fanfare?.(); } };
   const votes = result.votes || match?.votes;
   const view = match?.votes ? chapterFourStandingsView({ ...match, votes }, { rows: result.rows, notes, test: "ch4-result", final: true }) : null;
   // この場で最後の票を入れた時だけ、票が入る進行を見せる（TSH05）。出そろうまで、見出しの順位と講評の行は伏せる。
   const before = view && !result.failure ? (await import("./ch4-tournament.js")).takeChapterFourLastVotes() : null;
+  // この場で結果が決まった時だけ、持ち点の前に10カウント（TSH10）。LOAD後の再表示では流さない。
+  if (before && match?.craft) {
+    const { resultCountdown } = await import("../craft/result.js");
+    const { CH4_CONTESTANTS } = await import("./ch4-tournament-state.js");
+    await resultCountdown(match.craft, show_.countdownKind(result.rank), null, { contestants: CH4_CONTESTANTS,
+      event: "HAZE: GRAND SMOKE", sub: "審査員3人、最後の持ち点の行方。", nameOf: chapterFourNameOf });
+    retireScreen();
+  }
   const closed = modal({ title: result.failure ? "制作を完了できなかった" : before ? "世界大会の結果" : `世界大会 ${result.rank}位`,
     body: view || notes.join("\n"), className: view ? CH4_CONTEST_MODAL : "",
     options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
   const show = view ? playChapterFourVotes(view, match, { before, rows: result.rows, votes, final: true, late: [...view.querySelectorAll(":scope > .ch2-contest-note")] }) : { moved: false };
-  if (show.moved) show.done.then(() => {
-    const title = view.closest(".modal-box")?.querySelector("h3");
-    if (!title?.isConnected) return;
-    title.textContent = `世界大会 ${result.rank}位`;
-    reaction();
-  });
-  else {
-    const title = view?.closest(".modal-box")?.querySelector("h3");
+  // 票が出そろったら: 見出しに順位、拍手。この場で決まった時は大見出し（モーダルの上）と、優勝なら紙吹雪（TSH10）。
+  const finish = async () => {
+    const box = view?.closest(".modal-box"), title = box?.querySelector("h3");
+    if (view && !title?.isConnected) return;
     if (title && before) title.textContent = `世界大会 ${result.rank}位`;
     reaction();
-  }
+    if (!before || !box) return;
+    await show_.resultSplash(result.rank, { event: "HAZE: GRAND SMOKE", host: layers.modal });
+    if (!box.isConnected) return;
+    if (result.rank === 1) show_.showConfetti(box, { count: 80 });
+    box.querySelector(".modal-actions .btn.primary")?.focus({ preventScroll: true });
+  };
+  if (show.moved) show.done.then(finish);
+  else finish();
   await closed;
 }
 

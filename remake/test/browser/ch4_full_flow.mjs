@@ -31,6 +31,8 @@ const observeTournament = page => page.evaluate(() => {
       "誰のための一台か", "客の呼吸は、まだ続いている", "直した跡が、煙に出ている"])
       if (text.includes(phrase)) window.__ch4Observed.text.add(phrase);
     document.querySelectorAll(".nico").forEach(node => window.__ch4Observed.comments.add(node.textContent));
+    // 結果発表の10カウント（TSH10）。その場で結果が決まった時だけ出る。
+    if (document.querySelector('[data-test="result-count"]')) window.__ch4Observed.count = true;
   });
   window.__ch4Observer.observe(document.body, { subtree: true, childList: true, characterData: true });
 });
@@ -316,6 +318,7 @@ await suite("ch4-full-flow", async check => {
       assert.equal(Object.values(row).reduce((a, b) => a + b, 0), 10);
     // #2031: 最終結果は文字だけでなく持ち点の盤（4人の順位）で出る。
     assert.equal(await page.locator(`${dt("ch4-result")} li[data-contestant]`).count(), 4);
+    assert.equal(await page.evaluate(() => window.__ch4Observed.count === true), true, "The world final opens with the result countdown");
     assert.equal(await page.locator(`${dt("ch4-result")} li[data-contestant="hajime"]`).getAttribute("data-rank"), "1");
     await page.locator(dt("ch4-verdict-continue")).click();
     await page.locator(scene("ch4_result")).waitFor();
