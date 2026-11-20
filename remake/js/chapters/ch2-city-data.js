@@ -41,6 +41,10 @@ export const CH2_HOME_IDS = Object.freeze(["cafe_ch2_commute", "cafe_ch2_taste",
   ...["great", "good", "rough", "burnt", "drill"].map(result => `ch2_prep_rehearsal_${result}`)]);
 const OUTING_IDS = ["aquarium", "sento", "chain"].flatMap(id => ["look", "visit", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
 const CITY_IDS = ["arrival", ...STOPS.map((stop) => stop.id), ...Object.keys(ROOMS).flatMap((id) => [`${id}_inside`, `${id}_farewell`]), "return"].map((id) => `ch2_city_${id}`);
+// #3097 PR-B: 地元の雨の回（daily/spot-encounters.js の CHAPTER_RAIN の第2章）と、行き帰りの電車の小品（chapters/ch2-commute.js の COMMUTE_SCENES）。
+// 読み込みを軽くするため名前を並べる。一致は remake/test/ch2_home_talks.mjs が確かめる。
+export const CH2_RAIN_IDS = Object.freeze(["cafe_ch2_rain", "choizap_ch2_rain", "cs_ch2_rain", "ch2_rest_rain"]);
+export const CH2_COMMUTE_IDS = Object.freeze(["ch2_commute_morning_regulars", "ch2_commute_return_tonari", "ch2_commute_morning_doze", "ch2_commute_return_window"]);
 
 export async function loadCityDialogues() {
   const dialogues = await readDialogues("ch2_city", CITY_IDS);
@@ -81,7 +85,9 @@ export async function loadPreparationDialogues() {
   if (agehaVisits.length) (files.ch2_ageha_story ||= []).push(...agehaVisits);
   if (STRAWBERRY_TRIAL_IDS.length) (files.ch2_main ||= []).push(...STRAWBERRY_TRIAL_IDS); // まかないの苺の試作（#1650）
   // 地元の施設の第2章の寄り道（daily/spot-encounters.js）と凛想の会話（daily/spots.js の CHAPTER_TALKS）（VOL13）
-  files.ch2_home = [...CH2_HOME_IDS];
+  files.ch2_home = [...CH2_HOME_IDS, ...CH2_RAIN_IDS];
+  // 行き帰りの電車の小品（#3097 PR-B）
+  (files.ch2_city ||= []).push(...CH2_COMMUTE_IDS);
   // tonariのシフト上がりの会話（daily/tonari.js の CH2_SHIFT_TALKS・#3097）
   files.ch2_tonari_talks = [...CH2_SHIFT_TALK_IDS];
   // 全台本を検証してから、接続するIDだけ公開。旧導入・大会結果は日常へ混ぜない。

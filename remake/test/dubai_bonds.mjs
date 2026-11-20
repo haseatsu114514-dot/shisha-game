@@ -38,6 +38,8 @@ const save = (extra = {}) => ({ chapter: 5, flags: {}, finales: {}, lovers: [], 
   const s = save();
   assert(!dubaiBondStoriesDone(s, "da_silva"));
   for (const scene of ["ch5_taiyo_bond_4", "ch5_taiyo_bond_5"]) recordDubaiBondRead(s, scene);
+  assert(!dubaiBondStoriesDone(s, "da_silva"), "♥4の段階（#4010）を読むまでは締めくくりへ進まない");
+  recordDubaiBondRead(s, "ch5_taiyo_bond_6");
   assert(dubaiBondStoriesDone(s, "da_silva"), "FESTAの段階を読んでいなくても、第5章の段階で締めくくりへ");
   const sheikh = save();
   for (const entry of DUBAI_BOND_STORIES.sheikh.slice(0, 4)) recordDubaiBondRead(sheikh, entry.scene);
@@ -46,6 +48,30 @@ const save = (extra = {}) => ({ chapter: 5, flags: {}, finales: {}, lovers: [], 
   assert(dubaiBondStoriesDone(sheikh, "sheikh"));
   assert.deepEqual(DUBAI_BOND_STORIES.sheikh.map(entry => entry.heart), [1, 1, 2, 3, 4]);
   assert(DUBAI_BOND_STORIES.da_silva.filter(entry => entry.where === "festa").every(entry => entry.prelude));
+}
+
+// ---- ♥4の段階（#4010）: ♥2・♥3の段階の後、♥4に届いてから。後から足したので、締めくくり済みの保存には出さない ----
+{
+  assert.deepEqual(DUBAI_BOND_STORIES.da_silva.filter(entry => entry.where === "courtyard").map(entry => [entry.scene, entry.heart]),
+    [["ch5_taiyo_bond_4", 2], ["ch5_taiyo_bond_5", 3], ["ch5_taiyo_bond_6", 4]]);
+  assert.deepEqual(DUBAI_BOND_STORIES.da_silva.filter(entry => entry.late).map(entry => entry.scene), ["ch5_taiyo_bond_6"]);
+  const s = save();
+  for (const scene of ["ch5_taiyo_bond_4", "ch5_taiyo_bond_5"]) recordDubaiBondRead(s, scene);
+  assert.equal(nextDubaiBondStory(s, "da_silva", "courtyard", 3), null, "♥3ではまだ読めない");
+  assert.equal(nextDubaiBondStory(s, "da_silva", "courtyard", 4), "ch5_taiyo_bond_6");
+  assert.equal(nextDubaiBondStory(s, "da_silva", "courtyard", 5), "ch5_taiyo_bond_6", "♥5に届いていても、締めくくりの前に読む");
+  assert.equal(pendingAffinityStage(s, "da_silva")?.scene, "ch5_taiyo_bond_6");
+  // 追加の前に締めくくりまで読んだ保存: 段階は出さず、前提は満たしたままにする
+  const old = save({ finales: { da_silva: { route: "friend", chapter: 5 } } });
+  for (const scene of ["ch5_taiyo_bond_4", "ch5_taiyo_bond_5"]) recordDubaiBondRead(old, scene);
+  assert.equal(nextDubaiBondStory(old, "da_silva", "courtyard", 5), null, "締めくくりの後に、前の段階へ戻らない");
+  assert(dubaiBondStoriesDone(old, "da_silva"));
+  assert.equal(pendingAffinityStage(old, "da_silva"), null);
+  // 台本: 締めくくりの持ち物と、ほかの場面で一度だけ使う言葉を先に使わない
+  const body = JSON.stringify(byId("taiyo_bond").ch5_taiyo_bond_6.lines);
+  assert.doesNotMatch(body, /カカッテコイ|休憩所|眠れ|祭りのあと|帰りそびれ|もフェスタ|フェスタだ/);
+  assert.match(body, /今の、なし！/);
+  assert.match(body, /……今の、なしで/);
 }
 
 // ---- MENU の残件: FESTAの段階は第4章だけ、屋敷の段階は第5章だけ。着地後は残さない -----------------

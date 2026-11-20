@@ -26,7 +26,7 @@ import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { fortuneHere, fortunePosition } from "./fortune-schedule.js";
 import { openingStatus, rioUnavailable } from "./spot-hours.js";
 
-import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
+import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue, chapterRainScene } from "./spot-encounters.js";
 
 export const VISIT_COST = 3000;
 // 東京のシーシャ屋は少し相場が上がって一台4,000円（2026-11-02 オーナー「東京編はシーシャ屋の値段4000円にしたい　少し相場上がって」）。
@@ -711,7 +711,10 @@ export async function visitSpot(spot) {
     state.flags._ev_reviewer_payoff = true;
     id = "ch1_reviewer_payoff";
   }
-  await play(id, { bg: bgRef(spot.bg), growthScene: true }); // bgUrl が昼夜差分（_day/_night）を選ぶ
+  // 第2章の雨の日は、引いた回をその章の雨の台本に差し替えて一度だけ読む（#3097 PR-B）。夜の束の施設は昼だけ。
+  // 巡回は引いた回を読んだものとして進め、経験値も引いた回の鍵で数える（差し替えた台本の ID では増やさない）。
+  const rain = turn && id === turn.id && !nightBundle(spot) ? chapterRainScene(spot.id, state, DB.dialogues, isRainy()) : null;
+  await play(rain || id, { bg: bgRef(spot.bg), growthScene: true, ...(rain ? { growthKey: id } : {}) }); // bgUrl が昼夜差分（_day/_night）を選ぶ
   if (state !== owner) return;
   // 読んだ束だけ次へ送る。寄り道会話・記事の噂の来店では送らない。
   if (turn && id === turn.id) state.flags[turn.key] = turn.count + 1;
@@ -748,8 +751,11 @@ export async function restAtHome(spot, { fullDay = false } = {}) {
   delete state.flags._cold_pending;
   delete state.flags._overwork;
   state.flags._home_tonight = state.slot >= 1;
-  const turn = fullDay ? null : isRainy() && quietTurn("rest", REST_RAIN_SCENES, "rain") || quietTurn("rest", REST_SCENES);
-  const result = await play(fullDay ? "remake_rest_day" : turn?.id || REST_SCENES[0]);
+  const rainy = !fullDay && isRainy();
+  const turn = fullDay ? null : rainy && quietTurn("rest", REST_RAIN_SCENES, "rain") || quietTurn("rest", REST_SCENES);
+  // 第2章の雨の日は、雨の回を章の台本に一度だけ差し替える（#3097 PR-B。休む回は経験値の付かない場面で、巡回はそのまま進む）
+  const rain = rainy ? chapterRainScene("rest", state, DB.dialogues, true) : null;
+  const result = await play(fullDay ? "remake_rest_day" : rain || turn?.id || REST_SCENES[0]);
   if (state !== owner || !result || result.cancelled) return;
   if (turn) owner.flags[turn.key] = turn.count + 1;
   if (owner.chapter === 2) owner.flags._ch2_rest_taken = true;

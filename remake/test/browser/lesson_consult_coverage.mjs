@@ -369,10 +369,13 @@ await suite("lesson-consult-coverage", async (check) => {
     });
     assert.deepEqual(result.lockedBefore, [true, true], "the ♥5 lessons are locked below ♥5");
     // 最初の来店と屋敷の段階の会話（RVE03・chapters/dubai-bonds.js）は段階の値、小会話はそれより小さい値（端数の繰り越しで±1揺れる）
-    for (const who of ["sheikh", "da_silva"]) {
-      const gains = result.gains[who];
-      assert(gains.every(gain => gain > 0) && gains[0] > Math.min(...gains), `${who}: the first visit is a stage talk, small talks are lighter (${gains})`);
+    {
+      const gains = result.gains.sheikh;
+      assert(gains.every(gain => gain > 0) && gains[0] > Math.min(...gains), `sheikh: the first visit is a stage talk, small talks are lighter (${gains})`);
     }
+    // 太陽は第4章の♥3から、最初の来店と中庭の段階（♥2・♥3・♥4。♥4は #4010 で追加）だけで♥5に届く。どれも段階の値
+    assert.equal(result.gains.da_silva.length, 4, `Taiyo: the first talk and three courtyard stages reach ♥5 (${result.gains.da_silva})`);
+    assert(result.gains.da_silva.every(gain => gain >= 8), `Taiyo: every visit is a stage talk (${result.gains.da_silva})`);
     assert(result.visits.sheikh <= 15, `the Sheikh reaches ♥5 from zero in ${result.visits.sheikh} visits`);
     assert(result.visits.da_silva <= 7, `Taiyo reaches ♥5 in ${result.visits.da_silva} visits after chapter 4`);
     assert.deepEqual(result.lockedAfter, [false, false], "♥5 opens both lessons");
