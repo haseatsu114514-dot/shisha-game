@@ -144,10 +144,10 @@
 /* 決意: 全幅の目元の帯。帯より上の画面を暗くし、帯の中に細い光の筋 */
 .vn-cutin[data-frame="eyes"] .vn-cutin-tint { background: linear-gradient(90deg, rgba(20, 10, 32, .94) 0%, rgba(46, 26, 70, .5) 40%, rgba(46, 26, 70, .5) 60%, rgba(20, 10, 32, .94) 100%); }
 .vn-cutin-streak { position: absolute; left: 0; height: 1px; opacity: .35; background: linear-gradient(90deg, transparent, rgba(255, 240, 214, .5) 30%, rgba(255, 240, 214, .5) 60%, transparent); }
-.vn-cutin-streak.s0 { top: 34px; width: 70%; }
-.vn-cutin-streak.s1 { top: 68px; width: 100%; }
-.vn-cutin-streak.s2 { top: 104px; width: 55%; }
-.vn-cutin-streak.s3 { top: 148px; width: 85%; }
+.vn-cutin-streak.s0 { top: 29px; width: 70%; }
+.vn-cutin-streak.s1 { top: 58px; width: 100%; }
+.vn-cutin-streak.s2 { top: 88px; width: 55%; }
+.vn-cutin-streak.s3 { top: 126px; width: 85%; }
 .vn-cutin-dim { position: absolute; inset: 0 0 240px 0; background: linear-gradient(180deg, rgba(8, 3, 16, .5) 70%, transparent); animation: vn-cutin-fade .14s ease-out both; }
 
 /* 出る動き */
