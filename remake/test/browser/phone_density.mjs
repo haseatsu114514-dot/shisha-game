@@ -136,6 +136,15 @@ async function openKuji(page, spec) {
   }, spec);
   await page.locator(".mo-garagara .kj-sign-text").waitFor();
 }
+// 黒板の字を測る時（動きを減らす設定のスマホのケース）は、字が実際に見えてから測る。
+// 黒板は出た直後、重ねる面（.kuji-overlay）のフェード（kj-fade。実時間で進む）の最初のコマまで不透明度が 0 ちょうど。
+// その瞬間に測ると、字は置いてあるのに「文字を測る部品が見えていない」になる（kuji.js の取り込みが増えて舞台が早く組み上がり、
+// 上の待ちが一瞬で終わるようになって表に出た。2026-11-20 #4019）。測るのと同じ見え方（不透明度も見る）で待つ。
+// PC の確認（desktop-unchanged）は字の大きさを読むだけなので、この待ちは使わない
+async function openKujiShown(page, spec) {
+  await openKuji(page, spec);
+  await page.waitForFunction(() => document.querySelector(".mo-garagara .kj-sign-title")?.checkVisibility({ visibilityProperty: true, opacityProperty: true }));
+}
 
 // 開く・閉じる演出（無限に回る飾りは除く）が終わるまで待つ
 function settle(page) {
@@ -160,9 +169,9 @@ const SCREENS = [
   { id: "save-screen", open: openSaveScreen, targets: [], texts: [".saveload-modal .ss-list"] },
   { id: "conversation-next", open: openConversationNext, targets: [], texts: [".vn-next"], required: [".vn-next"] },
   // 黒板の字は大きくしても書ける面（.kj-sign-text）からはみ出さない（fits）
-  { id: "kuji-sign", open: page => openKuji(page, "C@g1000"), targets: [], texts: [".mo-garagara .kj-sign-text"],
+  { id: "kuji-sign", open: page => openKujiShown(page, "C@g1000"), targets: [], texts: [".mo-garagara .kj-sign-text"],
     required: [".kj-sign-title", ".kj-sign-row", ".kj-sign-note"], fits: ".mo-garagara .kj-sign-text", reducedMotion: "reduce" },
-  { id: "kuji-sign-last", open: page => openKuji(page, "LAST@g1000"), targets: [], texts: [".mo-garagara .kj-sign-text"],
+  { id: "kuji-sign-last", open: page => openKujiShown(page, "LAST@g1000"), targets: [], texts: [".mo-garagara .kj-sign-text"],
     required: [".kj-sign-title", ".kj-sign-note"], fits: ".mo-garagara .kj-sign-text", reducedMotion: "reduce" },
 ];
 
