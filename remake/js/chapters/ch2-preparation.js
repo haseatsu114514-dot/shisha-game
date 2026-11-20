@@ -1,4 +1,4 @@
-import { normalizeCommuteState, chooseMorningCity, returnCityHome } from "./ch2-commute.js";
+import { normalizeCommuteState, chooseMorningCity, readMorningStationCommute, returnCityHome } from "./ch2-commute.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 // 第2章の自由日。日常の消費・練習・保存・LIME・就寝は既存calendarを使う。
@@ -369,6 +369,7 @@ export async function runChapterTwoPreparation() {
         { id: "widehanga", label: `隣町・${CH2_CITY_NAME}`, background: () => MAP[timeOfDay()], spots: () => [...PREPARATION_SPOTS, CITY_SHOP, ...knownCityOutings(state).filter(spot => spot.kind !== "trpg"), trpgSpot()].filter(Boolean) },
       ],
       onRegionChange: id => { state.flags._ch2_region = id; save(); },
+      onStationDeparture: readMorningStationCommute,
     }),
     spotById: id => [...PREPARATION_SPOTS, CITY_SHOP, ...knownCityOutings(state)].find(spot => spot.id === id),
     performSpot: visitPreparationSpot,
