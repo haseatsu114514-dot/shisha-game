@@ -9,7 +9,9 @@ const state = { chapter: 4, day: 50, slot: 0, flags: {} };
 const DB = { dialogues: {} };
 const pools = {
   souq: ['ch4_dubai_souq_revisit', 'ch4_souq_talk_b', 'ch4_souq_talk_c', 'ch4_souq_talk_d', 'ch4_souq_talk_e', 'ch4_souq_talk_f', 'ch4_souq_talk_g'],
-  festa: ['ch4_festa_revisit', 'ch4_festa_talk_b', 'ch4_festa_talk_c', 'ch4_festa_talk_d', 'ch4_festa_talk_e', 'ch4_festa_talk_f', 'ch4_festa_talk_g'],
+  // #3097 計画 4-5: h・i は太陽との小会話
+  festa: ['ch4_festa_revisit', 'ch4_festa_talk_b', 'ch4_festa_talk_c', 'ch4_festa_talk_d', 'ch4_festa_talk_e', 'ch4_festa_talk_f', 'ch4_festa_talk_g',
+    'ch4_festa_talk_h', 'ch4_festa_talk_i'],
   center_cafe: ['ch4_dubai_cafe_revisit', 'ch4_cafe_talk_b', 'ch4_cafe_culture_hose', 'ch4_cafe_talk_c', 'ch4_cafe_culture_coffee', 'ch4_cafe_talk_d', 'ch4_cafe_talk_e', 'ch4_cafe_talk_f'],
   alley_cafe: ['ch4_alley_cafe_quiet', 'ch4_alley_culture_clay', 'ch4_alley_talk_c', 'ch4_alley_culture_majlis', 'ch4_alley_talk_d', 'ch4_alley_talk_e', 'ch4_alley_talk_f'],
 };
@@ -153,15 +155,18 @@ assert.equal(spot('souq').hasNew(), true, 'NG+ reset permits revisits again');
   assert.equal(state.flags._ch4_dubai_talks.naru, 1);
   assert.equal(night.done(), true);
   // #3097: 4本目からは期限の無い追加の小会話。期限の夜には来ず、地図の「なると会う」で読み、3本を読んだ後は追加の分だけを巡回する
-  const extra = ['ch4_naru_dubai_4', 'ch4_naru_dubai_5', 'ch4_naru_dubai_6'];
+  // #3097 計画 4-3 で 7〜10 を足した（7本目は見本①）。10本目は二桁の id なので、読み込みの一覧（DUBAI_DAILY_IDS）にも入ることを見る
+  const extra = ['ch4_naru_dubai_4', 'ch4_naru_dubai_5', 'ch4_naru_dubai_6', 'ch4_naru_dubai_7', 'ch4_naru_dubai_8', 'ch4_naru_dubai_9', 'ch4_naru_dubai_10'];
+  assert.deepEqual([...module.namespace.DUBAI_DAILY_IDS].filter(id => /^ch4_naru_dubai_/.test(id)), ['ch4_naru_dubai_1', 'ch4_naru_dubai_2', 'ch4_naru_dubai_3', ...extra],
+    'every naru talk, including the two-digit one, is in the real load list');
   for (const id of extra) DB.dialogues[id] = { dialogue_id: id, lines: [{ text: id }] };
   assert.equal(dueNaruTalk(at(12, 3)), null, 'no deadline night for the added talks');
   state.flags = { _ch4: { startDay: 49, part: 'free', day: 11, read: {} }, _ch4_dubai_talks: { naru: 3 } };
   assert.equal(spot('naru').hasNew(), true, 'the added talks are new on the map');
   played.length = 0;
-  for (let i = 0; i < 4; i++) await perform(spot('naru'));
+  for (let i = 0; i < extra.length + 1; i++) await perform(spot('naru'));
   assert.deepEqual(played, [...extra, extra[0]], 'added talks rotate without returning to the first (jet lag) talk');
-  assert.equal(state.flags._ch4_dubai_talks.naru, 7);
+  assert.equal(state.flags._ch4_dubai_talks.naru, 3 + extra.length + 1);
   assert.equal(spot('naru').hasNew(), false);
 }
 console.log('PASS Dubai new-talk markers: four pools, actual visits, completion, repeat, interruption, load, missing scripts and reset');
