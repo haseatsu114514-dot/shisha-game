@@ -9,7 +9,7 @@ import { CAMEL_FLAG, CAMEL_SCENES, CH4_CAMEL_SCENE_FILES, CAMEL_STAGES, camelRac
   camelTalkAfterRace, CAMEL_NAME_FLAG, CAMEL_MASTER_FLAG, CAMEL_NAME_PLAYS, CAMEL_RESULT_TALKS, camelResultTalk,
   CAMEL_DAILY_SPOT_ID, camelDailySpot, availableCamelCups, CH5_CAMEL_MEET, chapterFiveCamelMeetDue, advanceChapterFiveCamelMeet } from "../js/chapters/ch4-camel-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
-import { newGrowth, claimPlayRewards } from "../js/core/growth.js";
+import { newGrowth, claimPlayRewards, BOARD_TOTAL } from "../js/core/growth.js";
 import { simulateRace, camelMastered, camelExpert, CAMEL_CUPS } from "../js/minigames/camel-race-model.js";
 import { classifyFlag, buildCarryPackage } from "../js/core/carry.js";
 
@@ -222,7 +222,7 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   assert.equal(next.flags._ch4_camel, undefined, "story progress resets for the next cycle");
   assert.deepEqual(availableCamelCups(next), CAMEL_CUPS.map(cup => cup.id));
   assert.deepEqual(claimPlayRewards(carry.growth, next), [], "NG+ cannot duplicate the gift");
-  const cap = newGrowth(); cap.earned = 198;
+  const cap = newGrowth(); cap.earned = BOARD_TOTAL;
   const capped = claimPlayRewards(cap, value).find(row => row.label === "ラクダレース中級認定");
   assert.deepEqual(capped.parts, [], "at the cap mastery is recorded without a false +1");
   assert.equal(cap.rewards["camel-master"], true);

@@ -26,22 +26,36 @@ const fresh = earned => {
   return { s, g };
 };
 
-// 未配布と配布済み。初回6が所持と累計の両方へ一度だけ入る。
+const T = growth.BOARD_TOTAL; // 盤の全部＝受け取りの上限（v15 で 204）
+const STARTER = tutorial.STARTER_HIDANE; // 最初にそろえる手元の数（SBD153: 6つ渡す → 手元が3つになるまで）
+assert.equal(STARTER, 3);
+
+// 未配布と配布済み。手元が3つになるまでの白火が、所持と累計の両方へ一度だけ入る。
 {
   const { s, g } = fresh(0);
-  assert.equal(tutorial.grantStarterHidane(s, g), 6);
-  assert.deepEqual(account(g), { earned: 6, held: 6, paid: 0 });
+  assert.equal(tutorial.grantStarterHidane(s, g), 3);
+  assert.deepEqual(account(g), { earned: 3, held: 3, paid: 0 });
   assert.equal(g.starterAccounted, true);
   assert.equal(tutorial.grantStarterHidane(s, g), 0);
-  assert.deepEqual(account(g), { earned: 6, held: 6, paid: 0 });
+  assert.deepEqual(account(g), { earned: 3, held: 3, paid: 0 });
+}
+// もう持っている分は差だけ（レベルアップの2つを持って初めて開くと1つ。3つ以上なら渡さない）。渡さなくても初回の印は付く
+for (const [held, given] of [[1, 2], [2, 1], [3, 0], [8, 0]]) {
+  const { s, g } = fresh(held);
+  g.hidane.any = held;
+  assert.equal(tutorial.grantStarterHidane(s, g), given, `手元${held}`);
+  assert.deepEqual(account(g), { earned: held + given, held: held + given, paid: 0 });
+  assert.equal(s.flags[tutorial.STARTER_FLAG], true);
+  assert.equal(tutorial.grantStarterHidane(s, g), 0, "一度だけ");
 }
 
-// 旧保存から初めて盤を開く場合も、残容量1〜5と上限到達後には198を超えて渡さない。
+// 旧保存から初めて盤を開く場合も、残容量1〜5と上限到達後には上限を超えて渡さない。
 for (const room of [1, 2, 3, 4, 5, 0]) {
-  const { s, g } = fresh(growth.BOARD_TOTAL - room);
-  assert.equal(tutorial.grantStarterHidane(s, g), room, `残容量${room}`);
-  assert.equal(g.earned, growth.BOARD_TOTAL);
-  assert.equal(growth.hidaneTotal(g), room);
+  const { s, g } = fresh(T - room);
+  const given = Math.min(room, STARTER);
+  assert.equal(tutorial.grantStarterHidane(s, g), given, `残容量${room}`);
+  assert.equal(g.earned, T - room + given);
+  assert.equal(growth.hidaneTotal(g), given);
   assert.equal(s.flags[tutorial.STARTER_FLAG], true);
   assert.equal(tutorial.grantStarterHidane(s, g), 0);
 }
@@ -52,12 +66,12 @@ for (const room of [1, 2, 3, 4, 5, 0]) {
   old.phase = "daily";
   old.growth = growth.newGrowth();
   delete old.growth.starterAccounted;
-  old.growth.earned = 197;
+  old.growth.earned = T - 1;
   storage.set(core.SAVE_KEY, JSON.stringify(old));
   const loaded = core.load();
-  assert.equal(loaded.growth.earned, 197, "旧SAVEの初開封前には補正しない");
+  assert.equal(loaded.growth.earned, T - 1, "旧SAVEの初開封前には補正しない");
   assert.equal(tutorial.grantStarterHidane(loaded, loaded.growth), 1);
-  assert.deepEqual(account(loaded.growth), { earned: 198, held: 1, paid: 0 });
+  assert.deepEqual(account(loaded.growth), { earned: T, held: 1, paid: 0 });
 }
 
 // Issue本文と同じ順序: 初回付与→Lv99ぶんの経験値→夜の精算→全有料ノードの確定。
@@ -65,11 +79,11 @@ for (const room of [1, 2, 3, 4, 5, 0]) {
   const { s, g } = fresh(0);
   s.chapter = 5;
   g.ringsOpen = 5;
-  assert.equal(tutorial.grantStarterHidane(s, g), 6);
-  assert.deepEqual(account(g), { earned: 6, held: 6, paid: 0 });
+  assert.equal(tutorial.grantStarterHidane(s, g), 3);
+  assert.deepEqual(account(g), { earned: 3, held: 3, paid: 0 });
   growth.gainExp(growth.totalExpFor(99), { silent: true });
   growth.settleGrowth();
-  assert.deepEqual(account(g), { earned: 198, held: 198, paid: 0 });
+  assert.deepEqual(account(g), { earned: T, held: T, paid: 0 });
 
   for (const lesson of board.LESSONS) { s.met[lesson.who] = true; s.affinity[lesson.who] = 999; }
   s.flags._ch4_sheikh_revealed = true;
@@ -82,32 +96,32 @@ for (const room of [1, 2, 3, 4, 5, 0]) {
   }
   assert.equal(priced.filter(node => !g.nodes.includes(node.id)).length, 0,
     `全有料ノードを確定できる: ${JSON.stringify({ rest: priced.filter(node => !g.nodes.includes(node.id)).map(node => [node.id, board.nodeStatus(node, g, board.replay(g, []))]), wallet: g.hidane })}`);
-  assert.deepEqual(account(g), { earned: 198, held: 0, paid: 198 });
+  assert.deepEqual(account(g), { earned: T, held: 0, paid: T });
   assert.equal(growth.settleGrowth().boardFull, true, "全盤完成の判定も成立する");
   assert.equal(growth.giveColored(g, "body").n, 0, "完成後に追加配布しない");
 
   assert.equal(core.save(), true);
   const loaded = core.load();
-  assert.deepEqual(account(loaded.growth), { earned: 198, held: 0, paid: 198 });
+  assert.deepEqual(account(loaded.growth), { earned: T, held: 0, paid: T });
   assert.equal(tutorial.grantStarterHidane(loaded, loaded.growth), 0, "LOADで二重付与しない");
 
   const next = startNextCycle(buildCarryPackage(loaded));
   assert.equal(next.flags[tutorial.STARTER_FLAG], true);
   assert.equal(tutorial.grantStarterHidane(next, next.growth), 0, "NG+で二重付与しない");
-  assert.deepEqual(account(next.growth), { earned: 198, held: 0, paid: 198 });
+  assert.deepEqual(account(next.growth), { earned: T, held: 0, paid: T });
 
-  // 修正前に204個を得て全盤を灯した旧SAVEは、用途のない6を自動没収しない。
+  // 修正前（初回の白火6を累計に数えていなかった頃）に上限＋6個を得て全盤を灯した旧SAVEは、用途のない6を自動没収しない。
   const legacyFull = structuredClone(loaded);
   legacyFull.schema = 27;
-  legacyFull.growth.earned = 198;
+  legacyFull.growth.earned = T;
   legacyFull.growth.hidane.any = 6;
   delete legacyFull.growth.starterAccounted;
   storage.set(core.SAVE_KEY, JSON.stringify(legacyFull));
-  assert.deepEqual(account(core.load().growth), { earned: 204, held: 6, paid: 198 });
+  assert.deepEqual(account(core.load().growth), { earned: T + 6, held: 6, paid: T });
 }
 
 // 旧SAVEで配布済みの6は会計へ足す。既に上限まで通常獲得した保存も没収しない。
-for (const priorEarned of [0, 192, 198]) {
+for (const priorEarned of [0, T - 6, T]) {
   const s = core.newState();
   s.schema = 27;
   s.phase = "daily";
