@@ -182,11 +182,16 @@ try{
   assert.equal(await page.locator('.pick-card .energy').count(),2,'ノリ as flames');assert.equal(await page.locator('.pick-card .marks em').count(),4,'two ✓/✕ marks per card: fits the request, mixes in key');
   assert(done.mood>=2,'a clean transition never cools the room');assert.equal(await page.locator('#mood').textContent(),['帰りそう','しらけ気味','様子見','ノってきた','最高潮'][done.mood]);assert.equal(await page.locator('.floor').getAttribute('data-mood'),String(done.mood));
   for(const [i,key] of done.select.options.entries())assert.match(await page.locator('#pick-'+i).textContent(),new RegExp(await page.evaluate(async k=>(await import('./tracks.mjs')).TRACKS[k].title.replace(/[()]/g,'.'),key)));
-  // Pick the first card: it loads on deck A at the master tempo (SET 1) and the next cue opens from B.
-  await press('pick-0');
+  // 試聴 (DJK06・#2456 §3): a tap listens to a card for a few seconds (the music dips), nothing is loaded yet; another card switches.
+  assert(await page.locator('#pick-go').isDisabled(),'この曲にする waits for a card');
+  await press('pick-1');let heard=await until(page,'listen 1',s=>s.preview?.key===done.select.options[1],errors);assert.equal(heard.phase,'select');assert.equal(heard.pickIndex,1);assert.equal(heard.tracks[0],null,'listening loads nothing');
+  assert(await page.locator('#pick-1').evaluate(e=>e.classList.contains('chosen')&&e.classList.contains('listening')));assert(await page.locator('#pick-go').isEnabled());assert.match(await page.locator('#pick-hint').textContent(),/試聴中/);
+  await press('pick-0');heard=await until(page,'listen 0',s=>s.preview?.key===done.select.options[0],errors);assert.equal(heard.pickIndex,0);assert(await page.locator('#pick-1').evaluate(e=>!e.classList.contains('chosen')));
+  // Pick the first card (PC: この曲にする, touch: the same card again): it loads on deck A at the master tempo (SET 1) and the next cue opens from B.
+  await press(kind==='pc'?'pick-go':'pick-0');
   const picked=await until(page,'pick',s=>s.phase==='cue',errors);
   assert.equal(picked.tracks[0],done.select.options[0]);assert.deepEqual(picked.bpms,[120,120]);assert.deepEqual([picked.cue.from,picked.cue.to],[1,0]);assert.equal(picked.played.length,3);
-  assert(await page.locator('#pick').isHidden());assert.equal(await page.locator('#indicator-a').textContent(),'STANDBY');
+  assert(await page.locator('#pick').isHidden());assert.equal(await page.locator('#indicator-a').textContent(),'STANDBY');assert.equal(picked.preview,null,'the pick stops the preview');
   assert.match(await page.locator('#toast').textContent(),/[◎○△]/,'the pick is rated');
   assert.equal(await page.locator('#score-result').evaluate(e=>e.children.length),0,'set result only after the last transition');
   // Restart rebuilds a fresh set without a page reload.
@@ -242,7 +247,7 @@ try{
    if(s.phase==='done')break;
    if(s.phase==='cue'&&s.cue&&!s.cue.pressed&&s.remaining<=.05)await page.locator('#play-'+(s.cue.to?'b':'a')).click();
    else if(s.phase==='mix'){const g=s.progress>=.97?1:s.guide??0;await page.evaluate(v=>{const f=document.getElementById('crossfader');f.value=String(v);f.dispatchEvent(new Event('input',{bubbles:true}));},s.cue.to===1?g:1-g);}
-   else if(s.phase==='select'){await page.waitForTimeout(300);await page.locator('#pick-0').click();}
+   else if(s.phase==='select'){await page.waitForTimeout(300);await page.locator('#pick-0').click();await page.locator('#pick-0').click();} // listen, then load (DJK06)
    await page.waitForTimeout(15);
   }
   // the record is fixed the moment the set ends; the card waits while the room cheers

@@ -105,7 +105,7 @@ export function djNightChoices(value, window) {
   return [{ ...(clubKnown(value) ? DJ_NIGHT : DJ_NIGHT_FIRST), ok: true, consumes: false, dj: true }];
 }
 
-/** 本編の音量設定と、自分のモニターヘッドホン（VOL07・▶の判定が10ms広い）を DJ へ渡す URL。
+/** 本編の音量設定と、自分のモニターヘッドホン（VOL07・▶の判定の幅が前後¼拍広い）を DJ へ渡す URL。
  *  best: このセットの自己ベストの点（0〜100・無ければ付けない）。結果の板が「自己ベストまであと○点」を出す（DJF07）。 */
 export function djUrl(set, { muted = false, volume = 0.5, phones = false, phone = false, best = null } = {}) {
   const url = new URL("../../previews/dj/index.html", import.meta.url);
