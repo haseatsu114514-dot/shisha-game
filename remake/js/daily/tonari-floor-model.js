@@ -40,7 +40,9 @@ const MOOD = Object.freeze({ start: 40, care: 5, careMiss: -8, careLate: -10, te
 const RATE_MOOD = Object.freeze({ best: 90, good: 72, none: 30 });
 const KEEN_CUT = Object.freeze({ best: 0, good: 6, none: 4 });
 const RATE_GRADE = Object.freeze({ best: "best", good: "good", none: "off" });
-const FEVER = Object.freeze({ level: 100, max: 300, care: 10, tend: 8, best: 14, good: 7, send: 4, targets: Object.freeze([0, 2, 4, FLOOR_TABLE_COUNT]) });
+const FEVER = Object.freeze({ level: 100, max: 300, care: 10, tend: 8, best: 14, good: 7, send: 4, targets: Object.freeze([0, 2, 4, FLOOR_TABLE_COUNT]),
+  // 流れ（◎を続けて出した数）: 2連続めから、◎で溜まるゲージが＋3ずつ増える（＋9まで）。◎以外を出すか、客が帰ると切れる
+  streakStep: 3, streakCap: 3 });
 const FANS = Object.freeze({ max: 3, good: 2, ok: 1, low: 0, mad: -2, left: -3 });
 const DRINK_CHANCE = Object.freeze({ max: 0.7, good: 0.4, ok: 0.1, low: 0, mad: 0 });
 const EXTEND_CHANCE = Object.freeze({ max: 0.35, good: 0.1, ok: 0, low: 0, mad: 0 });
@@ -156,7 +158,7 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = fal
     guests, upcoming: Object.keys(guests), came: 0,
     tables: Array.from({ length: FLOOR_TABLE_COUNT }, (_, i) => emptyTable(i + 1)),
     hand: deck.slice(0, HAND_SIZE), deck: deck.slice(HAND_SIZE), shuffleAt: 0, shuffles: 0,
-    fever: 0, feverLeft: 0, feverLevel: 0, fevers: 0,
+    fever: 0, feverLeft: 0, feverLevel: 0, fevers: 0, streak: 0, bestStreak: 0,
     sales: 0, fans: 0, results: [], mixes: {},
     counts: { best: 0, good: 0, off: 0, care: 0, careMiss: 0, late: 0, left: 0, drink: 0, extend: 0, tend: 0, tendLate: 0 },
     log: [],
@@ -257,8 +259,11 @@ function serve(s, table) {
   s.counts[result.grade] += 1;
   const own = VISITORS[guest.charId]?.lines; // 本編の人物は、その人の言葉で返す
   table.line = own ? own[result.grade === "best" ? "best" : result.grade === "off" ? "off" : "good"] : lineFor(s, SERVE_LINES[result.grade], table.id + s.t);
-  if (result.grade === "best") gain(s, FEVER.best); else if (result.grade === "good") gain(s, FEVER.good);
-  note(s, { type: "serve", tableId: table.id, grade: result.grade, rating: result.rating, line: table.line, mood: result.mood, late });
+  // 流れ: ◎を続けて出すほど、ゲージが早く溜まる。○や×を出すと切れる（合う一台を待ってシャッフルするか、いまある一台で繋ぐか）
+  s.streak = result.rating === "best" ? s.streak + 1 : 0;
+  s.bestStreak = Math.max(s.bestStreak, s.streak);
+  if (result.grade === "best") gain(s, FEVER.best + FEVER.streakStep * Math.min(FEVER.streakCap, s.streak - 1)); else if (result.grade === "good") gain(s, FEVER.good);
+  note(s, { type: "serve", tableId: table.id, grade: result.grade, rating: result.rating, line: table.line, mood: result.mood, late, streak: s.streak });
 }
 
 function addDrink(s, table, why) {
@@ -300,6 +305,7 @@ function tickOnce(s) {
         // 注文を聞いてもらえなかった客は、怒って帰る
         table.bill = { charge: 0, shisha: 0, drink: 0, top: 0 };
         s.counts.left += 1;
+        s.streak = 0; // 帰らせてしまうと、流れも切れる
         note(s, { type: "left", tableId: table.id, guestId: guest.id, line: SEND_LINES.mad });
         settle(s, table, { left: true });
       }
@@ -623,12 +629,27 @@ export function floorClock(s) {
  * 営業の結果。score＝迎えた組の満足の平均（怒って帰った組は0）。
  * 原価・利益は扱わない（満足と売上だけ）。mixes＝好評だったミックス（平均の満足が高い順）。visitor＝遊びに来た本編の人物（いなければ null）。
  */
+const rankOf = (score, left, groups) => RANKS.find((r) => score >= r.min && !(r.id === "S" && (left || !groups))) || RANKS[RANKS.length - 1];
+/**
+ * いまの調子（いま締めたら、どの評価か）。見送った組の満足と、いま一台が出ている卓の満足の平均で見る。
+ * まだ一台も出していない間は null。next＝一つ上の評価と、そこまでに足りない満足。
+ */
+export function floorOutlook(s) {
+  const moods = [...s.results.map((row) => row.mood), ...s.tables.filter((t) => t.phase === "enjoy" || t.phase === "bill").map((t) => t.mood)];
+  if (!moods.length) return null;
+  const score = Math.round(moods.reduce((sum, mood) => sum + mood, 0) / moods.length);
+  const left = s.results.filter((row) => row.left).length;
+  const rank = rankOf(score, left, moods.length);
+  const upper = RANKS[RANKS.findIndex((r) => r.id === rank.id) - 1] || null;
+  return { score, rank: rank.id, stamp: rank.stamp, left, next: upper ? { rank: upper.id, stamp: upper.stamp, need: Math.max(0, upper.min - score), blocked: upper.id === "S" && left > 0 } : null };
+}
+
 export function floorResult(s) {
   const groups = s.results.map((row) => ({ ...row }));
   const score = groups.length ? Math.round(groups.reduce((sum, row) => sum + row.mood, 0) / groups.length) : 0;
   const left = groups.filter((row) => row.left).length;
   // 「大入り」は、怒って帰った組がいない夜だけ。
-  const rank = RANKS.find((r) => score >= r.min && !(r.id === "S" && (left || !groups.length))) || RANKS[RANKS.length - 1];
+  const rank = rankOf(score, left, groups.length);
   const sum = (key) => groups.reduce((total, row) => total + (row[key] || 0), 0);
   const mixes = Object.values(s.mixes).map((m) => ({ id: m.id, label: mixName(m.id), n: m.n, avg: Math.round(m.sum / m.n) }))
     .sort((a, b) => b.avg - a.avg || b.n - a.n).slice(0, 3);
@@ -638,10 +659,12 @@ export function floorResult(s) {
     fans: s.fans, score, rank: rank.id, stamp: rank.stamp, bonus: rank.bonus, comment: rank.line,
     groups, served: groups.filter((row) => !row.left).length, came: groups.length, left,
     stages: Object.fromEntries(MOODS.map((m) => [m.id, groups.filter((row) => row.stage === m.id).length])),
-    counts: { ...s.counts }, fevers: s.fevers, shuffles: s.shuffles, closing: s.closing, mixes,
+    counts: { ...s.counts }, fevers: s.fevers, shuffles: s.shuffles, streak: s.bestStreak, closing: s.closing, mixes,
   };
 }
 
 export const floorOrderWait = orderWait;
 export const floorFeverLength = T.fever;
+/** 閉店までこの刻みを切ったら、新しい客は来ない（ラストオーダー）。 */
+export const floorLastCall = T.lastCall;
 export const floorSlots = T.slots;

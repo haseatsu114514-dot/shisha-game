@@ -140,7 +140,7 @@ await suite("tonari-floor", async (check) => {
     assert.equal(after.result.bonus, 1500);
     assert.equal(after.result.left, 0, "手際よく回せば、誰も待ちきれずに帰らない");
     assert(after.result.counts.tend >= 1, "炭の調整に回っている");
-    assert.deepEqual(after.floor, { nights: 1, best: "S", fans: after.result.fans });
+    assert.deepEqual(after.floor, { nights: 1, best: "S", fans: after.result.fans, top: after.result.sales }, "回した回数・最高の評価・ファン・売上の最高が残る");
     assert(after.floor.fans > 0);
     assert.equal(after.visited, 4);
     assert.equal(after.baitoCount, 2);
@@ -179,7 +179,7 @@ await suite("tonari-floor", async (check) => {
     await page.waitForFunction(() => C.core.state.slot >= 1 && !document.querySelector('[data-test="tonari-floor-screen"]:not(.done)'), null, { timeout: 60000 });
     const done = await page.evaluate(() => ({ floor: C.core.state.flags._tonari_floor, result: C.result, error: window.calendarError }));
     assert.equal(done.error, undefined);
-    assert.deepEqual(done.floor, { nights: 3, best: done.result.rank === "S" ? "S" : "A", fans: Math.max(0, 7 + done.result.fans) });
+    assert.deepEqual(done.floor, { nights: 3, best: done.result.rank === "S" ? "S" : "A", fans: Math.max(0, 7 + done.result.fans), top: done.result.sales });
     assert.equal(done.result.served + done.result.left, done.result.came);
     assert(done.result.served >= 1);
   });
@@ -666,6 +666,80 @@ await suite("tonari-floor", async (check) => {
       assert(audit.frames > 300 && audit.pops >= 2 && audit.bands >= 1 && audit.fevers >= 1, JSON.stringify(audit));
     }, { ...options, reducedMotion: "no-preference" });
   }
+
+  // 手応えと駆け引き（2026-11-20 オーナー「ゲームとして面白くしたり演出を強くする」・TFL46）:
+  // 流れ（◎の連続で言葉と光が変わる）・卓の札の手応え・いまの調子のゲージ・フィーバーの入りと明け・ラストオーダー・精算の自己ベストと紙吹雪
+  await run("pc-juice", async (page) => {
+    await setup(page);
+    await page.evaluate(() => {
+      C.fresh();
+      window.done = C.view.runTonariFloor({ seed: 5, level: 1, chapter: 1, night: true, fans: 12, topSales: 1000,
+        art: C.data.bgUrl("res://assets/backgrounds/bg_tonari_inside.png", "night") }).then((r) => { window.result = r; });
+    });
+    await page.locator(t("option-start")).click();
+    await afterBand(page);
+    // id の卓へ、合い方 want の一台を出して提供まで進める（ほかの卓は、帰らせないように片付ける）
+    const serve = (id, want) => page.evaluate(({ id, want }) => {
+      const a = C.view.floorTest.api;
+      const mixFor = (wish, rating) => Object.keys(C.floorData.MIXES).find((m) => C.model.mixRatings(m)[wish] === rating);
+      const others = () => { const s = a.state(); for (const x of s.tables) { if (x.id === id) continue; const tap = C.model.floorTap(s, x.id);
+        if (tap === "tend") a.act({ type: "tend", tableId: x.id }); else if (tap === "bill") a.act({ type: "bill", tableId: x.id });
+        else if (tap === "care") a.act({ type: "care", tableId: x.id, verb: C.floorData.CALLS[x.call.type].verb });
+        else if (tap === "order") x.since = s.t; } }; // 注文待ちの客は、順番が来るまで待たせておく（帰ると流れが切れるので）
+      for (let i = 0; i < 200 && a.state().tables[id - 1].phase !== "order"; i++) { others(); a.tick(1); }
+      const s = a.state(), mix = mixFor(s.guests[s.tables[id - 1].guestId].order.wish, want);
+      s.hand[0] = mix;
+      a.act({ type: "order", tableId: id, mix });
+      for (let i = 0; i < 60 && a.state().tables[id - 1].phase !== "enjoy"; i++) { others(); a.tick(1); }
+      const spot = document.querySelector(`.tf-spot[data-id="${id}"]`);
+      return { streak: a.state().streak, pop: spot.querySelector(".tf-pop")?.textContent, hit: spot.dataset.hit, burst: !!spot.querySelector(".tf-tag-box > .tf-burst"),
+        glow: document.querySelector('[data-test="tonari-floor-bonus"]').dataset.streak };
+    }, { id, want });
+    // 一つ目の◎: 卓の札が弾んで光る。二つ目の◎: 言葉が「2連続！」に変わり、フィーバーのゲージが光りはじめる。○を出すと流れは切れる
+    assert.deepEqual(await serve(1, "best"), { streak: 1, pop: "ぴったり！", hit: "best", burst: true, glow: "0" });
+    assert.deepEqual(await serve(2, "best"), { streak: 2, pop: "2連続！", hit: "chain", burst: true, glow: "1" });
+    assert.deepEqual(await serve(3, "good"), { streak: 0, pop: "いい感じ", hit: "good", burst: true, glow: "0" });
+    // いまの調子: 売上の下のゲージ。満足の平均と、評価の境目の刻み（まずまず・上々・大入り）。売上の箱からはみ出さない
+    const outlook = await page.evaluate(() => { const bar = document.querySelector('[data-test="tonari-floor-outlook"]'), box = document.querySelector(".tf-sales").getBoundingClientRect(), r = bar.getBoundingClientRect(), o = C.model.floorOutlook(C.view.floorTest.api.state());
+      return { rank: bar.dataset.rank, label: bar.getAttribute("aria-label"), fill: Math.round(parseFloat(bar.querySelector("i").style.width)), score: o.score, stamp: o.stamp, ticks: [...bar.querySelectorAll("b")].map((n) => n.style.left),
+        inside: r.left >= box.left && r.right <= box.right && r.bottom <= box.bottom && r.top >= document.querySelector('[data-test="tonari-floor-sales"]').getBoundingClientRect().bottom - 1 }; });
+    assert.deepEqual([outlook.rank.length, outlook.label, outlook.fill, outlook.ticks, outlook.inside], [1, `いまの調子: ${outlook.stamp}`, outlook.score, ["88%", "74%", "56%"], true]);
+    // 評価の段が下がると、ゲージが光って出来事の行で知らせる
+    const before = outlook.rank;
+    await page.evaluate(() => { const a = C.view.floorTest.api; a.tick(10); a.state().tables.forEach((x) => { if (x.phase === "enjoy") x.mood = 20; }); a.tick(1); });
+    const down = await page.evaluate(() => { const bar = document.querySelector('[data-test="tonari-floor-outlook"]'); return { rank: bar.dataset.rank, bump: bar.dataset.bump, log: document.querySelector('[data-test="tonari-floor-log"]').innerText }; });
+    assert.notEqual(down.rank, before);
+    assert.equal(down.bump, "down");
+    assert.match(down.log, /いまの調子：(上々|まずまず|ばたばた)/);
+    // フィーバー: 入る時に画面が光り、明けると、その間に増えた売上を知らせる
+    await page.evaluate(() => { const a = C.view.floorTest.api; a.state().tables.forEach((x) => { if (x.phase === "enjoy") x.mood = 80; }); a.state().fever = 130; a.tick(1); });
+    await page.locator(t("bonus")).click({ force: true });
+    assert.equal(await page.locator(".tf-flash").getAttribute("data-on"), "fever");
+    await page.evaluate(() => { const a = C.view.floorTest.api; for (let i = 0; i < 80 && a.state().feverLeft > 0; i++) a.tick(1); });
+    assert.match(await page.locator(t("log")).innerText(), /フィーバーが明けました（＋[\d,]+円）/);
+    assert.equal(await page.locator(".tf-flash").getAttribute("data-on"), "soft");
+    await afterBand(page);
+    // ラストオーダー: 新しい客が来なくなる時に、まん中の札で知らせる。残り10秒は、時計が脈を打つ
+    await page.evaluate(() => { const a = C.view.floorTest.api, s = a.state(); s.t = s.length - C.model.floorLastCall - 1; a.tick(1); a.tick(1); });
+    assert.match(await page.locator(".tf-banner").innerText(), /ラストオーダー\s*新しい来店は、ここまで/);
+    assert.equal(await page.locator(t("screen")).getAttribute("data-final"), "false");
+    await page.evaluate(() => { const a = C.view.floorTest.api, s = a.state(); s.t = s.length - 19; a.tick(1); });
+    assert.equal(await page.locator(t("screen")).getAttribute("data-final"), "true");
+    // 精算: 大入りは紙吹雪。これまでの売上の最高を超えた夜は「自己ベスト」。いちばん長かった流れも残る
+    await page.evaluate(() => { const a = C.view.floorTest.api, s = a.state(); s.results.forEach((r) => { r.mood = 96; r.left = false; });
+      s.tables.forEach((x) => { if (x.phase === "enjoy" || x.phase === "bill") x.mood = 96; else if (x.phase !== "empty") { x.phase = "empty"; x.guestId = null; } }); a.act({ type: "finish" }); });
+    await page.locator(t("result")).waitFor();
+    const slip = await page.evaluate(() => { const rect = (sel) => document.querySelector(sel).getBoundingClientRect(); const rec = rect('[data-test="tonari-floor-record"]'), total = rect(".tf-slip-total"), card = rect(".tf-slip");
+      return { rank: document.querySelector('[data-test="tonari-floor-result"]').dataset.rank, confetti: document.querySelectorAll(".tf-confetti i").length, record: document.querySelector('[data-test="tonari-floor-record"]').textContent,
+        sales: document.querySelector('[data-test="tonari-floor-final-sales"]').textContent, value: Number(document.querySelector('[data-test="tonari-floor-final-sales"]').dataset.value),
+        counts: document.querySelector(".tf-slip-counts").textContent, below: rec.top >= total.bottom - 1 && rec.bottom <= card.bottom }; });
+    assert.deepEqual([slip.rank, slip.confetti, slip.record, slip.below], ["S", 22, "自己ベスト！これまで 1,000円", true]);
+    assert(slip.value > 1000 && slip.sales === `${slip.value.toLocaleString("ja-JP")}円`, JSON.stringify(slip));
+    assert.match(slip.counts, /ぴったり 2連続$/);
+    await page.locator(t("option-continue")).click();
+    await page.waitForFunction(() => window.result !== undefined);
+    assert.deepEqual(await page.evaluate(() => [window.result.streak, window.result.sales]), [2, slip.value]);
+  });
 
   // 専用の店内画: 絵が届く前でも、配置図の舞台で重なりと操作を確かめる。
   // 席は「上3（こちら向き）・下2（内向き）」。客は全身を描かず、席に「丸の中の顔」で出す（二人組は丸が二つ）。絵の登録があれば影絵の代わりに絵を出す。

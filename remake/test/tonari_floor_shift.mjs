@@ -83,14 +83,17 @@ async function floorBoundary(mode) {
   if (mode === "done") {
     assert.equal(result.bonus, 1000);
     // 別realmの値なので文字列で比べる
-    assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":1,"best":"A","fans":6}');
+    assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":1,"best":"A","fans":6,"top":16800}');
+    assert.equal(calls[0].topSales, 0, "はじめての営業には、売上の記録が無い");
     // 次の営業へ、ファンの合計を渡す。評価は良かったほうを残し、ファンは0を下回らない。
     const second = await module.namespace.serveFloorOrder(account, signal);
     assert.equal(calls.length, 2);
     assert.equal(calls[1].level, 1);
     assert.equal(calls[1].fans, 6);
     assert.equal(second.bonus, 500);
-    assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":2,"best":"A","fans":0}');
+    assert.equal(calls[1].topSales, 16800, "次の営業へ、売上の最高を渡す");
+    // 売上の最高は、超えた時だけ書き換える（2回目の 9,000円では変わらない）
+    assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":2,"best":"A","fans":0,"top":16800}');
   } else {
     assert.equal(result, null);
     assert.equal(account.flags._tonari_floor, undefined);

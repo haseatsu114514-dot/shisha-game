@@ -566,12 +566,13 @@ async function serveShiftOrder() {
 // フロア営業の一晩。店の売上は画面の中だけで、はじめの財布・能力・私物は共通の勤務処理からだけ動く。
 // 返り値は営業の結果（中断・LOAD は null）。画面を読み込めない時は、いつもの「今日の注文」へ戻す。
 const FLOOR_RANK_ORDER = ["C", "B", "A", "S"];
-/** これまでフロアを回した回数・いちばん良かった評価・店のファンの合計（保存は flags._tonari_floor）。 */
+/** これまでフロアを回した回数・いちばん良かった評価・店のファンの合計・売上の最高（保存は flags._tonari_floor）。 */
 function floorProgress(s = state) {
   const saved = s.flags?._tonari_floor;
   return {
     nights: Number.isInteger(saved?.nights) && saved.nights > 0 ? saved.nights : 0, best: saved?.best || null,
     fans: Number.isInteger(saved?.fans) && saved.fans > 0 ? saved.fans : 0,
+    top: Number.isInteger(saved?.top) && saved.top > 0 ? saved.top : 0, // 売上の最高（超えると、精算に「自己ベスト」が出る）
   };
 }
 /**
@@ -600,14 +601,15 @@ async function serveFloorOrder(owner, signal) {
   if (!current()) return null;
   const night = timeOfDay() === "night";
   const result = await run({
-    seed, level: progress.nights, chapter: owner.chapter, fans: progress.fans,
+    seed, level: progress.nights, chapter: owner.chapter, fans: progress.fans, topSales: progress.top,
     visitor: floorVisitor(owner, seed, progress.nights, visitors), rainy: isRainy(), night,
     art: bgUrl(TONARI_BG, timeOfDay()), isCurrent: current, signal,
   });
   if (!current() || !result) return null;
   const best = FLOOR_RANK_ORDER.indexOf(result.rank) > FLOOR_RANK_ORDER.indexOf(progress.best) ? result.rank : progress.best;
   // 進み具合と店のファンの合計は、シフトの給料・行動消費と一緒に calendar で保存する。
-  owner.flags._tonari_floor = { nights: progress.nights + 1, best, fans: Math.max(0, progress.fans + result.fans) };
+  owner.flags._tonari_floor = { nights: progress.nights + 1, best, fans: Math.max(0, progress.fans + result.fans),
+    top: Math.max(progress.top, Number.isInteger(result.sales) ? result.sales : 0) };
   await setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
   return current() ? result : null;
 }

@@ -594,6 +594,12 @@ export const SE = {
   punch: () => { tone({ freq: 2400, to: 1400, type: "square", dur: 0.03, vol: 0.08 }); noise({ dur: 0.05, vol: 0.12, filter: 5000, type: "highpass" }); },
   perfect: () => { tone({ freq: 1320, type: "triangle", dur: 0.09, vol: 0.18 }); tone({ freq: 1760, type: "triangle", dur: 0.14, vol: 0.16, delay: 0.06 }); },
   good: () => tone({ freq: 990, type: "triangle", dur: 0.1, vol: 0.14 }),
+  // 続けて決めた時の音（n＝何連続め）。続くほど、音階を一つずつ上がる（8つめで頭打ち）
+  chain: (n = 1) => {
+    const f = 1047 * 2 ** ([0, 2, 4, 5, 7, 9, 11, 12][Math.min(8, Math.max(1, Math.round(n))) - 1] / 12);
+    tone({ freq: f, type: "triangle", dur: 0.09, vol: 0.18 });
+    tone({ freq: f * 1.5, type: "triangle", dur: 0.14, vol: 0.16, delay: 0.06 });
+  },
   miss: () => tone({ freq: 220, to: 160, type: "sawtooth", dur: 0.16, vol: 0.08 }),
   just: () => { tone({ freq: 1568, type: "sine", dur: 0.3, vol: 0.2 }); tone({ freq: 2093, type: "sine", dur: 0.4, vol: 0.14, delay: 0.04 }); noise({ dur: 0.25, vol: 0.08, filter: 8000, type: "highpass" }); },
   crackle: () => { for (let i = 0; i < 4; i++) noise({ dur: 0.03, vol: 0.1, filter: 2500 + Math.random() * 3000, delay: Math.random() * 0.25, q: 2 }); },

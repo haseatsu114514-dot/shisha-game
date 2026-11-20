@@ -14,9 +14,9 @@ import { buildVersioned } from "../core/asset-version.js";
 import {
   createFloorNight, floorTick, floorAct, floorTap, floorHint, floorResult, floorUrgency, floorWaitLeft,
   floorStayLeft, floorCoalLeft, floorTendDue, floorMaking, floorHand, floorShuffleLeft, floorTimeLeft, floorStage, floorBill, floorFeverLevel,
-  mixName, mixNameParts, mixFlavorParts, mixFullName, floorPlan, floorFeverLength, floorSlots, floorShuffleTime, FLOOR_TICK_MS, FLOOR_TABLE_COUNT,
+  mixName, mixNameParts, mixFlavorParts, mixFullName, floorOutlook, floorLastCall, floorPlan, floorFeverLength, floorSlots, floorShuffleTime, FLOOR_TICK_MS, FLOOR_TABLE_COUNT,
 } from "./tonari-floor-model.js";
-import {
+import { RANKS,
   MIXES, WISHES, VERBS, CALLS, MOODS, PRICE, VISITORS,
 } from "./tonari-floor-data.js";
 import { glyph, guestArt } from "./tonari-floor-art.js";
@@ -109,6 +109,8 @@ export function runTonariFloor({
   stage = null, guests = FLOOR_ART.guests, props = FLOOR_ART.props, cutins = FLOOR_ART.cutins,
   // mount＝画面を載せる先（デバッグの試遊。省くと本編の画面として出す）。kind＝営業の種類を名指しする（省くと回数と天気で決まる）
   mount = null, kind = null,
+  // topSales＝これまでの売上の最高（超えると、精算に「自己ベスト」が出る。0 は記録なし）
+  topSales = 0,
   isCurrent = () => true, signal = null,
 } = {}) {
   if (signal?.aborted || !isCurrent()) return Promise.resolve(null);
@@ -135,6 +137,9 @@ export function runTonariFloor({
   let panel = null, selected = 1, speed = 1, active = true, leaving = false, outerMenu = false;
   let carry = 0, lastAt = 0, timer = null, bannerTimer = null, verdictTimer = null, cutinTimer = null, bandTimer = null, lastHint = "", salesMark = 0;
   let feverBgm = null; // フィーバー中だけ、前に流れていた曲の名前を持つ（明けたらその曲へ戻す）
+  // 手応えの演出（TFL46）: 売上の数字の回り方・フィーバーで増えた売上・いまの調子・残り10秒の刻み・ラストオーダーの知らせ
+  let salesShown = 0, salesRaf = 0, feverSalesAt = 0, lastOutlook = null, outlookAt = -99, lastFinal = 99, lastCalled = false;
+  const calm = () => floorTest.manual || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches; // 動きを省く時（検査の手動送り・動きを減らす設定）
   const refs = { spots: [] };
 
   return new Promise((resolve) => {
@@ -159,6 +164,7 @@ export function runTonariFloor({
         // 手応えの言葉・客のひとことは、見出しと同じ所（箱のすぐ上）に出す。出ている間は見出しを隠すので、札の上に札が重ならない
         el("span.tf-fx", { "aria-hidden": true }), tagWant,
         el("span.tf-tag-box", {}, [
+          el("i.tf-burst", { "aria-hidden": true }), // 手応えの光の輪と火花（文字は足さない）
           tagReq, el("i.tf-tag-no", { text: String(id) }),
           el("span.tf-tag-cell", {}, [tagWho]), el("span.tf-tag-cell", {}, [tagFace]),
           el("i.tf-tag-anger", { "aria-hidden": true }, [glyph("anger")]), // 待たせている客の、怒りの印
@@ -200,10 +206,14 @@ export function runTonariFloor({
     const clockText = el("b", { text: "0:00", dataset: test("time-left") });
     const clockBar = el("i");
     const salesText = el("strong", { text: yen(0), dataset: test("sales") });
+    // いまの調子: いま締めたらどの評価か。満足の平均のゲージに、評価の境目の刻み（まずまず・上々・大入り）
+    const outlookFill = el("i");
+    const outlookBar = el("span.tf-outlook", { role: "img", "aria-label": "いまの調子: まだ分からない", dataset: { ...test("outlook"), rank: "" } },
+      [outlookFill, ...RANKS.filter((r) => r.min > 0).map((r) => el("b", { style: { left: `${r.min}%` }, dataset: { rank: r.id } }))]);
     const top = el("header.tf-top", {}, [
       making,
       el("div.tf-clock", {}, [el("small", {}, [glyph("clock"), el("span.tf-sr", { text: "残り時間" })]), clockText, el("span.tf-clock-bar", {}, [clockBar])]),
-      el("div.tf-sales", {}, [el("small", {}, [glyph("coin"), el("span.tf-sr", { text: "店の売上" })]), salesText]),
+      el("div.tf-sales", {}, [el("small", {}, [glyph("coin"), el("span.tf-sr", { text: "店の売上" })]), el("span.tf-sales-main", {}, [salesText, outlookBar])]),
       el("button.tf-pause-button", { type: "button", "aria-label": "休止", dataset: test("pause"), onclick: () => openPause() }, [glyph("pause")]),
     ]);
     // 右の列: ミックスの一覧（原作の、控えの列にあたる）。押すと、いちばん急ぎの注文待ちの卓へそのまま出す。全部は並ばないので、シャッフルで入れ替える
@@ -250,10 +260,11 @@ export function runTonariFloor({
     const layer = el("div.tf-layer");
     const banner = el("div.tf-banner", { "aria-hidden": true });
     const cutinBand = el("div.tf-cutin", { "aria-hidden": true });
+    const flash = el("div.tf-flash", { "aria-hidden": true });
     const announce = el("p.tf-sr", { "aria-live": "polite", "aria-atomic": "true" });
     const host = el("section.tonari-floor", { "aria-label": "tonari フロア営業", dataset: {
       ...test("screen"), night: String(night), mode, stage: layout.id, style: layout.style } }, [
-      stageBox, top, side, bottom, cutinBand, layer, banner, announce,
+      stageBox, top, side, bottom, cutinBand, flash, layer, banner, announce,
     ]);
     host.style.setProperty("--tf-cutin-ms", `${CUTIN_MS}ms`);
 
@@ -322,6 +333,34 @@ export function runTonariFloor({
       node.addEventListener("animationend", () => node.remove(), { once: true });
       setTimeout(() => node.remove(), 1800);
     }
+    // 卓の札の手応え: 弾む・光の輪と火花が散る・揺れる（kind＝chain / best / good / tend / coin / off）
+    function hit(id, kind) {
+      const spot = refs.spots[id - 1];
+      if (!spot) return;
+      spot.root.dataset.hit = "";
+      void spot.root.offsetWidth; // 続けて起きた時に、動きを最初からやり直す
+      spot.root.dataset.hit = kind;
+      clearTimeout(spot.hitTimer);
+      spot.hitTimer = setTimeout(() => { spot.root.dataset.hit = ""; }, 700);
+    }
+    // 画面全体の光（fever＝フィーバーの入り / soft＝明け / bad＝客が帰った）
+    function flashNow(kind) {
+      flash.dataset.on = "";
+      void flash.offsetWidth;
+      flash.dataset.on = kind;
+    }
+    // 売上の数字は、増えた分だけ回って上がる
+    function rollSales(to) {
+      cancelAnimationFrame(salesRaf);
+      const from = salesShown, start = performance.now(), ms = calm() ? 0 : 420;
+      const step = (now) => {
+        const k = ms ? Math.min(1, (now - start) / ms) : 1;
+        salesShown = Math.round(from + (to - from) * (1 - (1 - k) ** 3));
+        salesText.textContent = yen(salesShown);
+        if (k < 1 && active) salesRaf = requestAnimationFrame(step);
+      };
+      step(start);
+    }
     // 出来事の行（下の帯。新しい行が下に入る）。読み上げにも同じ言葉を流す
     function log(text, tone = "") {
       if (!text) return;
@@ -363,31 +402,36 @@ export function runTonariFloor({
             if (e.rare) { SE.jingle(); log(`${guest.name}が遊びに来た！ ${e.tableId}卓へ`, "good"); }
             else log(`${e.tableId}卓　${guest.name}「${e.line}」`);
             break;
-          case "left": SE.miss(); pop(e.tableId, "帰った…", "off", "anger"); log(`${e.tableId}卓の${guest.name}が、待ちきれずに帰ってしまいました`, "bad"); break;
+          case "left": SE.miss(); hit(e.tableId, "off"); flashNow("bad"); pop(e.tableId, "帰った…", "off", "anger"); log(`${e.tableId}卓の${guest.name}が、待ちきれずに帰ってしまいました`, "bad"); break;
           case "order": SE.click(); log(`${e.tableId}卓　${mixName(e.mix)}を仕込みはじめた`); break;
           case "shuffle": SE.whoosh(); log(`ミックスを入れ替える（${seconds(e.ticks)}秒かかる）`); break;
           case "shuffleDone": SE.select(); log("新しいミックスが並んだ", "good"); break;
           case "serve": {
             const [text, kind, mark] = POP[e.grade] || POP.good;
-            if (e.grade === "best") SE.perfect(); else if (e.grade === "off") SE.miss(); else SE.good();
-            pop(e.tableId, text, e.late >= 3 && kind === "best" ? "near" : kind, mark); // 待たせた分は、最初の満足から引かれている（札の色を一段落とす）
+            // 流れ: ◎を続けて出すと、言葉が「2連続！」「3連続！」に変わり、音が一段ずつ上がる
+            const chained = e.grade === "best" && e.streak >= 2;
+            if (e.grade === "best") SE.chain(e.streak || 1); else if (e.grade === "off") SE.miss(); else SE.good();
+            hit(e.tableId, chained ? "chain" : e.grade === "best" ? "best" : e.grade === "off" ? "off" : "good");
+            pop(e.tableId, chained ? `${e.streak}連続！` : text, e.late >= 3 && kind === "best" ? "near" : kind, mark); // 待たせた分は、最初の満足から引かれている（札の色を一段落とす）
             say(e.tableId, e.line, e.grade === "off" ? "bad" : "good");
             break;
           }
-          case "tend": SE.good(); pop(e.tableId, "いい調整", "best", "best"); log(`${e.tableId}卓　炭を整えた`, "good"); break;
+          case "tend": SE.good(); hit(e.tableId, "tend"); pop(e.tableId, "いい調整", "best", "best"); log(`${e.tableId}卓　炭を整えた`, "good"); break;
           case "call": SE.tick(); log(e.coal ? `${e.tableId}卓　炭を見てほしそうです` : `${e.tableId}卓で、お客さんの様子が変わりました`, e.coal ? "bad" : ""); break;
           case "care":
-            if (e.ok) { SE.perfect(); pop(e.tableId, "いいケア", "best", "best"); } else { SE.miss(); pop(e.tableId, "ちがった…", "off", "bad"); }
+            if (e.ok) { SE.perfect(); hit(e.tableId, "good"); pop(e.tableId, "いいケア", "best", "best"); } else { SE.miss(); hit(e.tableId, "off"); pop(e.tableId, "ちがった…", "off", "bad"); }
             say(e.tableId, e.line, e.ok ? "good" : "bad");
             break;
           case "callLate": SE.miss(); pop(e.tableId, "見逃した", "off"); log(`${e.tableId}卓の頼みを見逃しました`, "bad"); break;
           case "drink":
             SE.money();
+            hit(e.tableId, "coin");
             pop(e.tableId, `＋${yen(PRICE.drink)}`, "coin", "drink");
             log(`${e.tableId}卓　追加ドリンク注文！`, "good");
             break;
           case "extend":
             SE.perfect(); SE.money();
+            hit(e.tableId, "best");
             pop(e.tableId, "おかわり！", "best", "best");
             log(`${e.tableId}卓　おかわり！「${e.line}」`, "good");
             showBanner("トップ替え、いただきました！", `おかわり ＋${yen(PRICE.top)}`);
@@ -395,11 +439,12 @@ export function runTonariFloor({
           case "billReady": SE.tick(); log(`${e.tableId}卓がお会計です`); break;
           case "bill":
             SE.money();
+            hit(e.tableId, "coin");
             pop(e.tableId, e.fans > 0 ? `ファン ＋${e.fans}` : yen(e.total), e.fans > 0 ? "best" : "coin", e.fans > 0 ? "" : "bill");
             if (e.line) say(e.tableId, e.line, e.fans > 1 ? "good" : "");
             break;
           case "feverReady": SE.jingle(); log(`フィーバー Lv${e.level} が使えます`, "good"); break;
-          case "feverStart": SE.just(); SE.whoosh(); break;
+          case "feverStart": SE.just(); SE.whoosh(); flashNow("fever"); break;
           case "feverEnd": endFever(); break;
           default: break;
         }
@@ -588,7 +633,33 @@ export function runTonariFloor({
       if (salesText.dataset.value !== String(state.sales)) {
         if (salesText.dataset.value !== undefined) { salesText.dataset.bump = "false"; void salesText.offsetWidth; salesText.dataset.bump = "true"; }
         salesText.dataset.value = String(state.sales);
-        salesText.textContent = yen(state.sales);
+        rollSales(state.sales);
+      }
+      // いまの調子: 評価の段が変わったら、ゲージが光って、出来事の行で知らせる（続けては知らせない）
+      const outlook = state.done ? null : floorOutlook(state);
+      if (outlook) {
+        outlookFill.style.width = `${outlook.score}%`;
+        outlookBar.dataset.rank = outlook.rank;
+        outlookBar.setAttribute("aria-label", `いまの調子: ${outlook.stamp}`);
+        if (!lastOutlook) lastOutlook = outlook.rank;
+        else if (lastOutlook !== outlook.rank && state.t - outlookAt >= 8) {
+          const up = RANKS.findIndex((r) => r.id === outlook.rank) < RANKS.findIndex((r) => r.id === lastOutlook);
+          lastOutlook = outlook.rank;
+          outlookAt = state.t;
+          outlookBar.dataset.bump = ""; void outlookBar.offsetWidth; outlookBar.dataset.bump = up ? "up" : "down";
+          if (up) SE.select(); else SE.cancel();
+          log(`いまの調子：${outlook.stamp}`, up ? "good" : "bad");
+        }
+      }
+      // 流れ（◎の連続）が伸びるほど、フィーバーのゲージが強く光る
+      bonusButton.dataset.streak = String(Math.min(3, Math.max(0, state.streak - 1)));
+      // 残り10秒は、1秒ごとに刻む。ラストオーダー（新しい客が来なくなる時）は、まん中の札で知らせる
+      const leftTicks = state.length - state.t, leftSec = Math.ceil(leftTicks / 2);
+      host.dataset.final = String(leftSec <= 10 && !state.done);
+      if (leftSec <= 10 && leftSec < lastFinal && !state.done && mode === "live") { lastFinal = leftSec; if (!calm()) SE.tick(); }
+      if (!lastCalled && leftTicks <= floorLastCall && !state.done && mode === "live") {
+        lastCalled = true;
+        if (leftTicks > floorLastCall - 4) { SE.count(); showBanner("ラストオーダー", "新しい来店は、ここまで"); log("ラストオーダーです", ""); }
       }
       // フィーバー: 3段のゲージ。溜まった段までを一度に使う
       const feverOn = state.feverLeft > 0;
@@ -661,6 +732,7 @@ export function runTonariFloor({
       if (state.done) return;
       // 突入の演出: 時間を止めて、帯と曲を切り替える
       const level = state.feverLevel;
+      feverSalesAt = state.sales;
       feverBgm = requestedBgm() || SHIFT_BGM;
       playBgm(FEVER_BGM);
       cutin("FEVER TIME!", `Lv${level}　${state.tables.filter((x) => x.fever).length}卓が最高の居心地`, "fever", "fever");
@@ -673,7 +745,8 @@ export function runTonariFloor({
       if (!feverBgm) return;
       playBgm(feverBgm);
       feverBgm = null;
-      log("フィーバーが明けました");
+      flashNow("soft");
+      log(`フィーバーが明けました（＋${yen(Math.max(0, state.sales - feverSalesAt))}）`, "good");
     }
 
     // ---- 選ぶ札（共通） ----
@@ -904,6 +977,21 @@ export function runTonariFloor({
         renderLayer();
         const result = floorResult(state);
         setTimeout(() => { if (active) { SE.stamp(); if (result.rank === "S") SE.fanfare(); else if (result.rank === "A") SE.jingle(); } }, 380);
+        // 売上は、0から数え上がる（動きを省く時は、そのまま出す）
+        const total = layer.querySelector('[data-test="tonari-floor-final-sales"]');
+        if (total && !calm()) {
+          const start = performance.now();
+          let beat = -1;
+          const step = (now) => {
+            if (!active || !total.isConnected) return;
+            const k = Math.min(1, (now - start) / 900);
+            total.textContent = yen(Math.round(result.sales * (1 - (1 - k) ** 3)));
+            const n = Math.floor(k * 9);
+            if (n !== beat && k < 1) { beat = n; SE.tick(); }
+            if (k < 1) requestAnimationFrame(step); else { total.dataset.done = "true"; SE.money(); }
+          };
+          requestAnimationFrame(step);
+        }
         layer.querySelector('[data-test="tonari-floor-option-continue"]')?.focus({ preventScroll: true });
       };
       if (floorTest.manual) show(); else setTimeout(show, CUTIN_MS);
@@ -911,6 +999,7 @@ export function runTonariFloor({
     // 結果（精算）: 左に売上の内訳と合計、右に評価・ファン・満足の内訳・好評だったミックス（原価・利益は扱わない）
     function renderResult() {
       const result = floorResult(state);
+      const record = topSales > 0 && result.sales > topSales; // これまでの売上の最高を超えた
       const drinks = result.groups.reduce((sum, row) => sum + Math.round((row.drink || 0) / PRICE.drink), 0);
       const items = [
         ["お迎えした組", `${result.served}／${result.came}組`],
@@ -925,7 +1014,12 @@ export function runTonariFloor({
           el("div.tf-slip-body", {}, [
             el("div.tf-slip-sales", {}, [
               el("dl.tf-slip-items", {}, items.map(([name, value]) => el("div", {}, [el("dt", { text: name }), el("dd", { text: value })]))),
-              el("div.tf-slip-total", {}, [el("h2#tf-result-title", { text: "店の売上" }), el("strong", { text: yen(result.sales), dataset: test("final-sales") })]),
+              el("div.tf-slip-total", {}, [
+                el("h2#tf-result-title", { text: "店の売上" }),
+                el("strong", { text: yen(result.sales), dataset: { ...test("final-sales"), value: String(result.sales) } }),
+              ]),
+              // これまでの売上の最高を超えた夜だけ、合計の下に出す
+              record ? el("p.tf-slip-record", { dataset: test("record") }, [el("b", { text: "自己ベスト！" }), el("span", { text: `これまで ${yen(topSales)}` })]) : null,
               result.visitor ? el("p.tf-slip-visitor", { dataset: test("visitor"), text: `今日は、${VISITORS[result.visitor].name}が遊びに来た` }) : null,
             ]),
             el("div.tf-slip-side", {}, [
@@ -938,7 +1032,9 @@ export function runTonariFloor({
               ])) : [el("li", {}, [el("small", { text: "提供できた一台がありませんでした" })])]),
             ]),
           ]),
-          el("p.tf-slip-counts", { text: `いい調整 ${result.counts.tend}回・いいケア ${result.counts.care}回・追加ドリンク ${result.counts.drink}杯・おかわり ${result.counts.extend}組・フィーバー ${result.fevers}回` }),
+          el("p.tf-slip-counts", { text: `いい調整 ${result.counts.tend}回・いいケア ${result.counts.care}回・追加ドリンク ${result.counts.drink}杯・おかわり ${result.counts.extend}組・フィーバー ${result.fevers}回${result.streak >= 2 ? `・ぴったり ${result.streak}連続` : ""}` }),
+          // 大入りの夜は、紙吹雪で祝う（文字は足さない）
+          result.rank === "S" ? el("div.tf-confetti", { "aria-hidden": true }, Array.from({ length: 22 }, (_, i) => el("i", { style: { "--i": String(i) } }))) : null,
           el("p.tf-slip-sumi", {}, [
             sumiFace ? el("img", { src: sumiFace, alt: "", draggable: false }) : null,
             el("span", { text: `スミ「${result.comment}」` }),

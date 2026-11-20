@@ -6,7 +6,7 @@ import { readFileSync } from "node:fs";
 import {
   createFloorNight, floorTick, floorAct, floorTap, floorResult, floorHint, floorBill, floorMaking, floorHand, floorShuffleLeft, floorShuffleTime, floorPlan,
   floorWaitLeft, floorStayLeft, floorCoalLeft, floorTendDue, floorFeverLevel, floorFace, floorStage, floorTimeLeft, floorClock,
-  mixName, mixNameParts, mixFlavorNames, mixFlavorParts, mixFullName, mixRatings, evaluateMix, pickNight, floorOrderWait, floorFeverLength, floorSlots, FLOOR_TABLE_COUNT,
+  floorOutlook, mixName, mixNameParts, mixFlavorNames, mixFlavorParts, mixFullName, mixRatings, evaluateMix, pickNight, floorOrderWait, floorFeverLength, floorSlots, FLOOR_TABLE_COUNT,
 } from "../js/daily/tonari-floor-model.js";
 import {
   PRICE, FLAVORS, MIXES, WISHES, WISH_IDS, HAND_SIZE, GUESTS, VISITORS, CALLS, VERBS, NIGHTS, RANKS, MOODS, SERVE_LINES, SEND_LINES, mixIdsFor, mixChapter,
@@ -392,6 +392,51 @@ test("フィーバー: 3段。段ごとに対象の卓が増え、その間は�
     assert.equal(end.feverLeft, 0);
     assert.ok(end.log.some((e) => e.type === "feverEnd") || end.done);
   }
+});
+
+test("流れ: ◎を続けて出すほどフィーバーのゲージが早く溜まる。◎以外を出す・客が帰ると切れる", () => {
+  // 流れが streak の時に、1卓へ合い方 want の一台を出して、提供された刻みの様子を見る
+  const serveAt = (streak, want = "best") => {
+    let x = createFloorNight({ seed: 11, level: 6, night: true });
+    x = until(x, (y) => at(y, 1).phase === "order");
+    const wish = wishOf(x, 1).wish, mix = Object.keys(MIXES).find((id) => mixRatings(id)[wish] === want);
+    x = { ...x, hand: [mix, ...x.hand.filter((id) => id !== mix).slice(0, HAND_SIZE - 1)], streak, bestStreak: streak, fever: 0 };
+    x = act(x, { type: "order", tableId: 1, mix });
+    const made = until(x, (y) => y.log.some((e) => e.type === "serve" && e.tableId === 1));
+    return { fever: made.fever, streak: made.streak, best: made.bestStreak, note: made.log.find((e) => e.type === "serve").streak };
+  };
+  // ◎が続くと流れが伸び、○や×を出すと切れる
+  assert.deepEqual(serveAt(0), { fever: 14, streak: 1, best: 1, note: 1 });
+  assert.deepEqual(serveAt(1), { fever: 17, streak: 2, best: 2, note: 2 });
+  assert.deepEqual(serveAt(2, "good"), { fever: 7, streak: 0, best: 2, note: 0 });
+  assert.deepEqual(serveAt(2, "none"), { fever: 0, streak: 0, best: 2, note: 0 });
+  // ゲージの増え方: 1つ目＝14、2連続＝17、3連続＝20、4連続から＝23（そこで頭打ち）
+  assert.deepEqual([0, 1, 2, 3, 6].map((streak) => serveAt(streak).fever), [14, 17, 20, 23, 23]);
+  // 注文を聞かずに帰らせると、流れも切れる
+  let gone = createFloorNight({ seed: 11, level: 6, night: true });
+  gone = until({ ...until(gone, (x) => at(x, 1).phase === "order"), streak: 3, bestStreak: 3 }, (x) => x.counts.left >= 1);
+  assert.deepEqual([gone.streak, gone.bestStreak], [0, 3]);
+  assert.equal(floorResult(gone).streak, 3, "精算に、いちばん長かった流れが残る");
+});
+
+test("いまの調子: いま締めたらどの評価かを、見送った組と、一台が出ている卓の満足から出す", () => {
+  let s = createFloorNight({ seed: 5, level: 1, night: true });
+  assert.equal(floorOutlook(s), null, "まだ一台も出していない間は出さない");
+  s = serveFirst(s);
+  const mood = at(s, 1).mood;
+  const first = floorOutlook(s);
+  assert.deepEqual([first.score, first.rank, first.left], [Math.round(mood), RANKS.find((r) => Math.round(mood) >= r.min).id, 0]);
+  // 一つ上の評価と、そこまでに足りない満足
+  const low = floorOutlook({ ...s, tables: s.tables.map((t) => (t.id === 1 ? { ...t, mood: 60 } : t)) });
+  assert.deepEqual([low.rank, low.stamp, low.next], ["B", "まずまず", { rank: "A", stamp: "上々", need: 14, blocked: false }]);
+  const top = floorOutlook({ ...s, tables: s.tables.map((t) => (t.id === 1 ? { ...t, mood: 95 } : t)) });
+  assert.deepEqual([top.rank, top.next], ["S", null]);
+  // 誰かを帰らせた夜は、満足が足りていても大入りにならない（見通しにも出る）
+  const gone = floorOutlook({ ...s, tables: s.tables.map((t) => (t.id === 1 ? { ...t, mood: 100 } : t)), results: [{ mood: 100 }, { mood: 100 }, { mood: 100 }, { mood: 100 }, { mood: 100 }, { mood: 100 }, { mood: 100 }, { mood: 0, left: true }] });
+  assert.deepEqual([gone.score, gone.rank, gone.left, gone.next.blocked], [89, "A", 1, true]);
+  // 締めの評価と同じ答えになる
+  const done = playFloorBot({ seed: 9, level: 3, night: true }).state;
+  assert.deepEqual([floorOutlook(done).rank, floorOutlook(done).score], [floorResult(done).rank, floorResult(done).score]);
 });
 
 test("レアな来店: 本編の人物は三組目として来て、その人の気分と言葉で返す。来なくても同じ一晩", () => {
