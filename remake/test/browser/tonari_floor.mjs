@@ -249,11 +249,12 @@ await suite("tonari-floor", async (check) => {
         n.querySelector(".tf-attr").dataset.main, n.querySelector(".tf-attr").dataset.sub, n.querySelectorAll(".tf-attr svg").length])),
         first.map((m) => [m.id, m.rating, m.rating === "none" ? "" : MARK[m.rating], m.main, m.sub || "", m.sub ? 2 : 1]));
       // ミックス名の下に、使ったフレーバーを必ず（）で出す（グラム数は出さない）。名前も材料も、札からはみ出さない
-      const recipes = await page.locator(".tf-preset").evaluateAll((list) => list.map((n) => { const row = n.getBoundingClientRect(), name = n.querySelector(".tf-preset-name").getBoundingClientRect(), rec = n.querySelector(".tf-recipe").getBoundingClientRect();
-        return { text: n.querySelector(".tf-recipe").textContent, label: n.getAttribute("aria-label"), inside: name.top >= row.top - 0.5 && rec.bottom <= row.bottom + 0.5 && rec.right <= row.right + 0.5 && name.bottom <= rec.top + 1 }; }));
-      assert.deepEqual(recipes.map((r) => r.text), first.map((m) => `（${m.recipe.join("・")}）`));
+      // 1種の物（〜単）は、名前がそのまま中身なので（）は付けない
+      const recipes = await page.locator(".tf-preset").evaluateAll((list) => list.map((n) => { const row = n.getBoundingClientRect(), name = n.querySelector(".tf-preset-name").getBoundingClientRect(), node = n.querySelector(".tf-recipe"), rec = (node || n.querySelector(".tf-preset-name")).getBoundingClientRect();
+        return { text: node?.textContent ?? "", label: n.getAttribute("aria-label"), inside: name.top >= row.top - 0.5 && rec.bottom <= row.bottom + 0.5 && rec.right <= row.right + 0.5 && name.right <= row.right + 0.5 && (!node || name.bottom <= rec.top + 1) }; }));
+      assert.deepEqual(recipes.map((r) => r.text), first.map((m) => (m.single ? "" : `（${m.recipe.join("・")}）`)));
       assert(recipes.every((r) => r.inside), `右の列の札から、名前か材料がはみ出す: ${JSON.stringify(recipes)}`);
-      assert(recipes.every((r, i) => r.label.startsWith(`${first[i].name}（${first[i].recipe.join("・")}）`) && !/\d\s*g|グラム/.test(r.text)), JSON.stringify(recipes));
+      assert(recipes.every((r, i) => r.label.startsWith(first[i].full) && !/\d\s*g|グラム/.test(r.text)), JSON.stringify(recipes));
       // 属性の印: メインはサブより大きく、色はその気分の色
       const badge = await page.locator(".tf-preset .tf-attr").first().evaluate((n) => { const main = n.querySelector(".tf-attr-main").getBoundingClientRect(), sub = n.querySelector(".tf-attr-sub")?.getBoundingClientRect();
         return { main: main.width, sub: sub?.width ?? 0, color: getComputedStyle(n.querySelector(".tf-attr-main")).backgroundColor }; });
@@ -326,9 +327,9 @@ await suite("tonari-floor", async (check) => {
       assert.deepEqual(await page.locator(".tf-mix-option").evaluateAll((list) => list.map((n) => [n.dataset.mix, n.querySelector("b").textContent, n.querySelector(".tf-rate").textContent, n.querySelector(".tf-attr").dataset.main])),
         first.map((m) => [m.id, m.name, MARK[m.rating], m.main]), "並んでいるミックス（属性の印つき）と、客の気分との合い方");
       // 名前の下に、使ったフレーバー（）。札の中に収まり、合い方の印に被らない
-      const optionRecipes = await page.locator(".tf-mix-option").evaluateAll((list) => list.map((n) => { const row = n.getBoundingClientRect(), text = n.querySelector(".tf-mix-text").getBoundingClientRect(), rec = n.querySelector(".tf-recipe").getBoundingClientRect(), rate = n.querySelector(".tf-rate").getBoundingClientRect();
-        return { text: n.querySelector(".tf-recipe").textContent, inside: text.top >= row.top - 0.5 && rec.bottom <= row.bottom + 0.5 && rec.right <= rate.left + 0.5 }; }));
-      assert.deepEqual(optionRecipes.map((r) => r.text), first.map((m) => `（${m.recipe.join("・")}）`));
+      const optionRecipes = await page.locator(".tf-mix-option").evaluateAll((list) => list.map((n) => { const row = n.getBoundingClientRect(), text = n.querySelector(".tf-mix-text").getBoundingClientRect(), node = n.querySelector(".tf-recipe"), rec = (node || n.querySelector(".tf-mix-text")).getBoundingClientRect(), rate = n.querySelector(".tf-rate").getBoundingClientRect();
+        return { text: node?.textContent ?? "", inside: text.top >= row.top - 0.5 && rec.bottom <= row.bottom + 0.5 && rec.right <= rate.left + 0.5 }; }));
+      assert.deepEqual(optionRecipes.map((r) => r.text), first.map((m) => (m.single ? "" : `（${m.recipe.join("・")}）`)));
       assert(optionRecipes.every((r) => r.inside), JSON.stringify(optionRecipes));
       assert.equal(await page.locator(".tf-sheet small:not(.tf-shuffle-cost)").count(), 0, "説明の文は置かない（印と色で読む。シャッフルの秒数だけ出す）");
       // 接客の画面: 左に大きな選択肢、右に卓の様子（店内のその卓の絵・客の顔・客の言葉）。店内の帯・一覧・卓の札は隠れ、UI の上に UI が重ならない
@@ -484,7 +485,7 @@ await suite("tonari-floor", async (check) => {
       assert.deepEqual(await page.locator(".tf-visit-info").evaluate((n) => [!!n.querySelector(".tf-visit-mix .tf-attr"), !!n.querySelector(".tf-visit-face svg"), [...n.querySelectorAll(".tf-visit-bars small")].map((x) => x.textContent), /円$/.test(n.querySelector(".tf-visit-bill strong").textContent)]),
         [true, true, ["満足", "滞在", "炭"], true]);
       // 出している一台は、名前と、使ったフレーバー（）
-      assert.equal(await page.locator(".tf-visit-mix .tf-mix-text").evaluate((n) => `${n.querySelector("b").textContent}${n.querySelector(".tf-recipe").textContent}`),
+      assert.equal(await page.locator(".tf-visit-mix .tf-mix-text").evaluate((n) => `${n.querySelector("b").textContent}${n.querySelector(".tf-recipe")?.textContent ?? ""}`),
         await page.evaluate(() => { const s = C.view.floorTest.api.state(); return C.model.mixFullName(s.tables.find((x) => x.id === Number(document.querySelector(".tf-visit-no").textContent.replace(/\D/g, ""))).mix); }));
       assert.deepEqual(await page.locator(".tf-sheet .tf-option b").allInnerTexts().then((list) => list.map((s) => s.replace(/\s/g, ""))),
         ["炭を替える", "炭を下ろす", "お水を出す", "吸い方を案内する", "雑談する"]);
@@ -520,7 +521,8 @@ await suite("tonari-floor", async (check) => {
       assert.equal(await page.locator(t("sheet")).count(), 0);
       assert.deepEqual(await api((a) => { const s = a.state(); return [s.tables[0].phase, s.fans, s.sales]; }), ["cool", before.fans + 3, before.sales],
         "大満足の客はファン＋3。売上は注文のたびに入っている（会計で二重に足さない）");
-      assert.match(await lastLog(), /^1卓「.+」$/);
+      // 見送りの言葉は、出来事の行に出る（同じ時に「いまの調子」の知らせが続くことがあるので、2行のどちらかに出ていればよい）
+      assert.match(await page.locator(t("log")).innerText(), /(^|\n)1卓「.+」(\n|$)/);
       assert.match(await page.locator(t("dock")).innerText(), /1卓\s*片付け中/);
       assert.equal(await tagText(1), "1 片付け中");
       // フィーバー: 1段溜まるまで押せない。使うと、くつろいでいる卓が最高の居心地になる
@@ -574,7 +576,7 @@ await suite("tonari-floor", async (check) => {
           total: yen(document.querySelector('[data-test="tonari-floor-final-sales"]').textContent), text: document.querySelector(".tf-slip").textContent,
           fans: document.querySelector('[data-test="tonari-floor-fans"]').textContent, mixes: document.querySelectorAll(".tf-slip-mixes li").length,
           recipes: [...document.querySelectorAll(".tf-slip-mixes li")].map((li) => { const rec = li.querySelector(".tf-recipe"), box = li.getBoundingClientRect(), r = rec?.getBoundingClientRect();
-            return rec ? [/^（[^（）]+）$/.test(rec.textContent), r.right <= box.right + 0.5 && r.bottom <= box.bottom + 0.5] : null; }),
+            return rec ? [/^（[^（）]+）$/.test(rec.textContent), r.right <= box.right + 0.5 && r.bottom <= box.bottom + 0.5] : [/単$/.test(li.querySelector(".tf-slip-mix")?.textContent || ""), true]; }),
           inside: card.top >= stage.top - 1 && card.bottom <= stage.bottom + 1 };
       });
       assert.deepEqual(slip.names, ["お迎えした組", "チャージ", "シーシャ", "ドリンク", "トップ替え（おかわり）"]);
@@ -583,7 +585,7 @@ await suite("tonari-floor", async (check) => {
       assert.match(slip.text, /いい調整 \d+回・いいケア \d+回・追加ドリンク \d+杯・おかわり \d+組・フィーバー 1回/);
       assert.match(slip.fans, /^店のファン [＋−]\d+人（合計 \d+人）$/);
       assert(slip.mixes >= 1 && slip.inside, "精算の札が舞台に収まる");
-      assert(slip.recipes.every((r) => r && r[0] && r[1]), `好評だったミックスにも、使ったフレーバーが切れずに出る: ${JSON.stringify(slip.recipes)}`);
+      assert(slip.recipes.every((r) => r && r[0] && r[1]), `好評だったミックスにも、使ったフレーバーが切れずに出る（1種の物は「〜単」）: ${JSON.stringify(slip.recipes)}`);
       await page.screenshot({ path: `${shots}/tonari-floor-${platform}-result.png` }).catch(() => {});
       await page.locator(t("option-continue")).click();
       await page.waitForFunction(() => window.result !== undefined);
@@ -665,6 +667,47 @@ await suite("tonari-floor", async (check) => {
       // 点検が空振りしていないこと: 言葉が同時に2つ以上出ていて、帯の演出（営業開始かフィーバー）も通っている
       assert(audit.frames > 300 && audit.pops >= 2 && audit.bands >= 1 && audit.fevers >= 1, JSON.stringify(audit));
     }, { ...options, reducedMotion: "no-preference" });
+  }
+
+  // 単品・2種・3種（2026-11-20 オーナー「ミックスは3種のも入れて欲しい。単品ならダブルアップル単とかにする」・TFL47）:
+  // 1種の物は「〜単」で（）なし、2〜3種は名前のあとに（）。いちばん長い名前と材料でも、右の列の札と接客の画面の札に収まる
+  for (const [platform, options] of [["pc", {}], ["touch", touch]]) {
+    await run(`${platform}-mix-kinds`, async (page) => {
+      await setup(page);
+      await page.evaluate(() => {
+        C.fresh();
+        window.done = C.view.runTonariFloor({ seed: 5, level: 6, chapter: 2, night: true, fans: 12,
+          art: C.data.bgUrl("res://assets/backgrounds/bg_tonari_inside.png", "night") }).then((r) => { window.result = r; });
+      });
+      await page.locator(t("option-start")).click();
+      await afterBand(page);
+      for (const hand of [["apple", "cappuccino", "cottoncandy", "mintshake", "berrymint"], ["berries", "flowergarden", "caramelmacchiato", "berrysmoothie", "nutslatte"], ["chai", "tropical", "pinepassion", "earlgrey", "sakuralatte"]]) {
+        await page.evaluate((hand) => { const a = C.view.floorTest.api, s = a.state(); s.hand = hand; if (s.tables[0].phase === "empty") a.tick(4); else a.tick(1); }, hand);
+        const expected = await page.evaluate((hand) => hand.map((id) => ({ name: C.model.mixName(id), full: C.model.mixFullName(id), single: C.model.mixIsSingle(id), flavors: C.model.mixFlavorNames(id) })), hand);
+        const rows = await page.locator(".tf-preset").evaluateAll((list) => list.map((n) => { const row = n.getBoundingClientRect(), name = n.querySelector(".tf-preset-name"), nr = name.getBoundingClientRect(), node = n.querySelector(".tf-recipe"), rr = node?.getBoundingClientRect();
+          const stamp = n.querySelector(".tf-match")?.getBoundingClientRect(), hits = (a, b) => a && b && a.left < b.right - 0.5 && b.left < a.right - 0.5 && a.top < b.bottom - 0.5 && b.top < a.bottom - 0.5;
+          const words = [...name.querySelectorAll("span")].map((x) => x.getBoundingClientRect());
+          return { single: n.dataset.single, name: name.textContent, recipe: node?.textContent ?? "", label: n.getAttribute("aria-label"), lines: node ? Math.round(rr.height / parseFloat(getComputedStyle(node).lineHeight) / (row.width / n.offsetWidth)) : 0,
+            inside: nr.top >= row.top - 0.5 && (rr || nr).bottom <= row.bottom + 0.5 && words.every((w) => w.right <= row.right + 0.5) && (!rr || (rr.right <= row.right + 0.5 && nr.bottom <= rr.top + 1)), stamp: words.some((w) => hits(w, stamp)) }; }));
+        assert.deepEqual(rows.map((r) => [r.single, r.name, r.recipe]), expected.map((m) => [String(m.single), m.name, m.single ? "" : `（${m.flavors.join("・")}）`]));
+        assert(rows.every((r, i) => r.inside && !r.stamp && r.lines <= 2 && r.label.startsWith(expected[i].full)), `右の列の札に収まらない: ${JSON.stringify(rows)}`);
+        // 接客の画面の札: 名前の下に材料（1行）。1種の物は名前だけ
+        await page.locator(t("table-1")).click();
+        await page.locator(t("sheet")).waitFor();
+        const options = await page.locator(".tf-mix-option").evaluateAll((list) => list.map((n) => { const row = n.getBoundingClientRect(), text = n.querySelector(".tf-mix-text").getBoundingClientRect(), node = n.querySelector(".tf-recipe"), rr = node?.getBoundingClientRect(), rate = n.querySelector(".tf-rate").getBoundingClientRect(), b = n.querySelector("b");
+          return { name: b.textContent, recipe: node?.textContent ?? "", cut: b.scrollWidth > b.clientWidth + 1, lines: node ? Math.round(rr.height / parseFloat(getComputedStyle(node).lineHeight) / (row.width / n.offsetWidth)) : 0,
+            inside: text.top >= row.top - 0.5 && (rr || text).bottom <= row.bottom + 0.5 && (rr || text).right <= rate.left + 0.5 }; }));
+        assert.deepEqual(options.map((r) => [r.name, r.recipe]), expected.map((m) => [m.name, m.single ? "" : `（${m.flavors.join("・")}）`]));
+        assert(options.every((r) => r.inside && !r.cut && r.lines <= 1), `接客の画面の札に収まらない: ${JSON.stringify(options)}`);
+        await page.locator(".tf-sheet .tf-link").click();
+      }
+      // 3種のミックスは仕込みが長く（9秒）、合った時の満足が高い。1種は早い（5秒）
+      assert.deepEqual(await page.evaluate(() => { const a = C.view.floorTest.api, s = a.state(), wish = s.guests[s.tables[0].guestId].order.wish;
+        const rich = Object.keys(C.floorData.MIXES).find((id) => C.floorData.MIXES[id].flavors.length === 3 && C.model.mixRatings(id)[wish] === "best");
+        s.hand[0] = rich; a.act({ type: "order", tableId: 1, mix: rich });
+        const total = a.state().tables[0].make.total; for (let i = 0; i < 60 && a.state().tables[0].phase !== "enjoy"; i++) a.tick(1);
+        return [total, Math.round(a.state().tables[0].mood) >= 85]; }), [18, true]);
+    }, options);
   }
 
   // 手応えと駆け引き（2026-11-20 オーナー「ゲームとして面白くしたり演出を強くする」・TFL46）:

@@ -38,6 +38,8 @@ const MOOD = Object.freeze({ start: 40, care: 5, careMiss: -8, careLate: -10, te
   decay: 0.07, decayPerLast: 0.2, feverAfter: 10 });
 // 気分との合い方ごとの、提供した時の満足。こだわりの客は、◎でないと少し辛い
 const RATE_MOOD = Object.freeze({ best: 90, good: 72, none: 30 });
+/** 3種のミックスが合った時の、満足の上乗せ。 */
+const RICH_MOOD = 4;
 const KEEN_CUT = Object.freeze({ best: 0, good: 6, none: 4 });
 const RATE_GRADE = Object.freeze({ best: "best", good: "good", none: "off" });
 const FEVER = Object.freeze({ level: 100, max: 300, care: 10, tend: 8, best: 14, good: 7, send: 4, targets: Object.freeze([0, 2, 4, FLOOR_TABLE_COUNT]),
@@ -65,15 +67,24 @@ function roll(s) {
 
 // ---- ミックス ----
 /** ミックスの名前を、折ってよい切れ目で分けたもの（決まった名前は「｜」で分ける。無ければ材料ごと）。 */
-export const mixNameParts = (id) => (MIXES[id]?.name ? MIXES[id].name.split("｜") : (MIXES[id]?.flavors || []).map((f) => FLAVORS[f].label));
+export const mixNameParts = (id) => {
+  const mix = MIXES[id];
+  if (!mix) return [];
+  if (mix.name) return mix.name.split("｜");
+  // 1種の物はミックスではない。名前は「本編のフレーバー名＋単」（ダブルアップル単・コットンキャンディ単。TFL47）
+  if (mix.flavors.length === 1) { const parts = [...FLAVORS[mix.flavors[0]].fullParts]; parts[parts.length - 1] += "単"; return parts; }
+  return mix.flavors.map((f) => FLAVORS[f].label);
+};
+/** フレーバー1種の物か（ミックスではない。名前がそのまま中身なので、（）は付けない）。 */
+export const mixIsSingle = (id) => (MIXES[id]?.flavors.length || 0) === 1;
 /** ミックスの名前（材料の名前をつなげる。決まった名前があればそれ）。 */
 export const mixName = (id) => mixNameParts(id).join("");
 /** ミックスに使ったフレーバーの名前（本編の名前。グラム数は出さない）。 */
 export const mixFlavorNames = (id) => (MIXES[id]?.flavors || []).map((f) => FLAVORS[f].full);
 /** 同じ名前を、狭い札で折ってよい切れ目ごとに分けた形（フレーバーごとに、語の配列）。 */
 export const mixFlavorParts = (id) => (MIXES[id]?.flavors || []).map((f) => [...FLAVORS[f].fullParts]);
-/** 名前のあとに、使ったフレーバーを（）で添えた書き方。例: わたあめ（コットンキャンディ）。 */
-export const mixFullName = (id) => `${mixName(id)}（${mixFlavorNames(id).join("・")}）`;
+/** 名前のあとに、使ったフレーバーを（）で添えた書き方。例: カフェモカ（コーヒー・チョコレート）。1種の物は名前だけ（ダブルアップル単）。 */
+export const mixFullName = (id) => (mixIsSingle(id) ? mixName(id) : `${mixName(id)}（${mixFlavorNames(id).join("・")}）`);
 /** ミックスと、4つの気分との合い方。メインの属性＝◎（best）、サブの属性＝○（good）、ほか＝×（none）。 */
 export function mixRatings(id) {
   const mix = MIXES[id];
@@ -93,7 +104,9 @@ export function evaluateMix(id, order, rank = "plain") {
   const ratings = mixRatings(id);
   if (!ratings || !order) return null;
   const rating = ratings[order.wish];
-  return { mood: RATE_MOOD[rating] - (rank === "keen" ? KEEN_CUT[rating] : 0), rating, grade: RATE_GRADE[rating] };
+  // 3種のミックスは、仕込みが長い（約9秒。2種は7秒、1種は5秒）ぶん、合った時（◎・○）の満足が少し高い（TFL47）
+  const rich = MIXES[id].flavors.length >= 3 && rating !== "none" ? RICH_MOOD : 0;
+  return { mood: RATE_MOOD[rating] + rich - (rank === "keen" ? KEEN_CUT[rating] : 0), rating, grade: RATE_GRADE[rating] };
 }
 
 /** 満足（居心地）の段。 */
@@ -575,7 +588,7 @@ export function floorPlan(s) {
 }
 /** 並んでいるミックス（一覧）。wish を渡すと、その気分との合い方 rating も付く。 */
 export function floorHand(s, wish = null) {
-  return s.hand.map((id) => { const ratings = mixRatings(id); return { id, name: mixName(id), flavors: [...MIXES[id].flavors], recipe: mixFlavorNames(id), main: MIXES[id].main, sub: MIXES[id].sub, ratings, rating: wish ? ratings[wish] : null }; });
+  return s.hand.map((id) => { const ratings = mixRatings(id); return { id, name: mixName(id), full: mixFullName(id), single: mixIsSingle(id), flavors: [...MIXES[id].flavors], recipe: mixFlavorNames(id), main: MIXES[id].main, sub: MIXES[id].sub, ratings, rating: wish ? ratings[wish] : null }; });
 }
 /** 入れ替えが済むまでの刻み（0 なら並んでいる。0 より大きい間は、ミックスを出せず、シャッフルも重ねられない）。 */
 export const floorShuffleLeft = (s) => Math.max(0, s.shuffleAt - s.t);

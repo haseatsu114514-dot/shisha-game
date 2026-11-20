@@ -245,7 +245,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* 幅は、卓の札の幅まで（出はじめに1.08倍へふくらんでも、隣の卓の言葉・見出しと重ならない。文字の上に文字を重ねない・TFL45）。収まらない言葉は折る */
 .tf-pop {
   position: absolute; left: 0; bottom: 2px; translate: -50% 0; width: max-content; max-width: 190px; padding: 3px 14px; border-radius: 18px; min-height: 34px;
-  display: inline-flex; align-items: center; gap: 5px; text-wrap: balance;
+  display: inline-flex; align-items: center; gap: 5px; text-wrap: balance; overflow-wrap: anywhere; /* 一つの文節が幅より長い時も、箱の中で折る（はみ出して切れない） */
   background: #2a1c15f5; color: var(--tf-ivory); font-size: var(--tf-text); font-weight: 700; line-height: 1.15; box-shadow: 0 0 0 2px #e7c27a;
   animation: tf-pop 1.5s var(--ease-out, ease) forwards;
 }
@@ -385,13 +385,15 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-target[data-on="false"] { display: none; }
 .tf-preset-list { display: grid; grid-auto-rows: minmax(0, 1fr); gap: 4px; min-height: 0; }
 .tf-preset {
-  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; align-content: center; gap: 2px 6px; min-height: var(--tf-tap); padding: 2px 4px 2px 4px;
+  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; align-content: center; gap: 2px 4px; min-height: var(--tf-tap); padding: 2px 4px 2px 4px;
   border: 2px solid #6b5338; border-radius: 9px; background: #2a1c15; color: #fff1c4; text-align: left;
   font-size: var(--tf-small); font-weight: 700; line-height: 1.05; transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
   --tf-attr: clamp(32px, calc(var(--tf-tap) - 34px), 40px);
 }
 .tf-preset-name { min-width: 0; padding-right: 14px; } /* 右上の判の分を空けておく（客が来た時に、名前の折れ方が変わらない） */
 .tf-preset .tf-recipe { grid-column: 1 / -1; font-size: var(--tf-tiny); line-height: 1.08; }
+/* 1種の物（〜単）: 材料の行が無いぶん、名前がまん中に寄る（右上の判に掛からない）。6字の切れ目（カプチーノ単・キャンディ単）も1行に入るよう、名前の幅を広げる */
+.tf-preset[data-single="true"] .tf-preset-name { padding-right: 0; margin-right: -3px; font-size: min(var(--tf-small), 22px); }
 :is(.tf-preset-name, .tf-slip-mixes li > span) span { display: inline-block; white-space: nowrap; }
 /* 合い方の印（◎ ○）は、札の右上に載る小さな判 */
 .tf-match {
@@ -690,9 +692,9 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-list .tf-mix-option { gap: 12px; padding: 2px 12px; }
 .tf-list .tf-mix-option b { font-size: var(--tf-big); }
 .tf-mix-option b { min-width: 0; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tf-mix-option .tf-recipe { font-size: var(--tf-small); padding-left: 0.5em; }
+.tf-mix-option .tf-recipe { font-size: var(--tf-small); padding-left: 0.3em; } /* 3種の材料も1行に収まる幅を取る */
 .tf-mix-option .tf-rate { margin-right: 0; }
-@media (hover: hover) and (pointer: fine) { .tf-mix-option .tf-rate { margin-right: 34px; } } /* キーボードで選べる番号の分 */
+@media (hover: hover) and (pointer: fine) { .tf-mix-option .tf-rate { margin-right: 28px; } } /* キーボードで選べる番号の分 */
 .tf-mix-option[data-rating="none"]:not(:hover, :focus-visible) :is(b, .tf-rate, .tf-recipe) { opacity: 0.55; }
 .tf-mix-option[data-rating="best"] { box-shadow: 0 0 0 2px #fff1af, 0 0 14px #ffb45acc; }
 .tf-list .tf-option:is(:hover, :focus-visible):not(:disabled) .tf-rate { color: #2a1a08; text-shadow: none; }

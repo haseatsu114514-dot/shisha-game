@@ -56,6 +56,7 @@ const mixSpans = (id) => mixNameParts(id).map((text) => el("span", { text }));
 // 括弧は、隣の語から離れない
 const recipeNode = (id) => {
   const flavors = mixFlavorParts(id);
+  if (flavors.length < 2) return null; // 1種の物は、名前がそのまま中身（ダブルアップル単）。（）は付けない
   return el("span.tf-recipe", {}, flavors.map((words, i) => el("span.tf-recipe-flavor", {}, words.map((text, w) => el("span", {}, [
     i === 0 && w === 0 ? el("i.tf-paren", { text: "（", dataset: { side: "open" } }) : null,
     `${text}${w === words.length - 1 && i < flavors.length - 1 ? "・" : ""}`,
@@ -582,7 +583,7 @@ export function runTonariFloor({
         side.style.setProperty("--c", wish ? WISH[wish].color : "transparent");
         handList.replaceChildren(...hand.map((mix, i) => el("button.tf-preset", {
           type: "button", "aria-label": `${mixFullName(mix.id)}、${WISH[mix.main].label}${mix.sub ? `・${WISH[mix.sub].label}` : ""}${mix.rating ? `、${target.id}卓に${APT_MARK[mix.rating]}` : ""}`,
-          dataset: { ...test(`mix-${i}`), mix: mix.id, main: mix.main, rating: mix.rating || "" }, onclick: () => quickServe(mix.id),
+          dataset: { ...test(`mix-${i}`), mix: mix.id, main: mix.main, rating: mix.rating || "", single: String(mix.single) }, onclick: () => quickServe(mix.id),
         }, [attrBadge(mix.id), el("span.tf-preset-name", {}, mixSpans(mix.id)), recipeNode(mix.id), mix.rating && mix.rating !== "none" ? el("i.tf-match", { text: APT_MARK[mix.rating] }) : null])));
       }
       for (const spot of refs.spots) spot.root.dataset.target = String(String(target?.id || "") === spot.root.dataset.id);

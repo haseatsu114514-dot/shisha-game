@@ -6,7 +6,7 @@ import { readFileSync } from "node:fs";
 import {
   createFloorNight, floorTick, floorAct, floorTap, floorResult, floorHint, floorBill, floorMaking, floorHand, floorShuffleLeft, floorShuffleTime, floorPlan,
   floorWaitLeft, floorStayLeft, floorCoalLeft, floorTendDue, floorFeverLevel, floorFace, floorStage, floorTimeLeft, floorClock,
-  floorOutlook, mixName, mixNameParts, mixFlavorNames, mixFlavorParts, mixFullName, mixRatings, evaluateMix, pickNight, floorOrderWait, floorFeverLength, floorSlots, FLOOR_TABLE_COUNT,
+  floorOutlook, mixName, mixNameParts, mixFlavorNames, mixFlavorParts, mixFullName, mixIsSingle, mixRatings, evaluateMix, pickNight, floorOrderWait, floorFeverLength, floorSlots, FLOOR_TABLE_COUNT,
 } from "../js/daily/tonari-floor-model.js";
 import {
   PRICE, FLAVORS, MIXES, WISHES, WISH_IDS, HAND_SIZE, GUESTS, VISITORS, CALLS, VERBS, NIGHTS, RANKS, MOODS, SERVE_LINES, SEND_LINES, mixIdsFor, mixChapter,
@@ -66,15 +66,25 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
   for (const [id, mix] of Object.entries(MIXES)) {
     assert.ok(mix.flavors.length >= 1 && mix.flavors.length <= 3 && mix.flavors.every((f) => FLAVORS[f]), id);
     const name = mixName(id);
-    assert.ok(name.length >= 2 && name.length <= 10, `名前は札に収まる長さ: ${name}`);
-    assert.ok(mixNameParts(id).every((part) => part.length <= 5) && mixNameParts(id).join("") === name && !name.includes("｜"), `狭い札では、5字までの切れ目で折れる: ${name}`);
+    // 1種の物はミックスではない。名前は「本編のフレーバー名＋単」（ダブルアップル単）で、作った名前（わたあめ など）は付けない。
+    // 2〜3種のミックスは、名前（材料そのまま、または付けた名前）のあとに、使ったフレーバーを（）で添える
+    const single = mix.flavors.length === 1;
+    assert.equal(mixIsSingle(id), single);
+    if (single) assert.deepEqual([name, mix.name], [`${FLAVORS[mix.flavors[0]].full}単`, null], `${id}: 単品の名前`);
+    assert.ok(name.length >= 2 && name.length <= (single ? 11 : 10), `名前は札に収まる長さ: ${name}`);
+    assert.ok(mixNameParts(id).every((part) => part.length <= (single ? 6 : 5)) && mixNameParts(id).join("") === name && !name.includes("｜"), `狭い札では、5字（単品は6字）までの切れ目で折れる: ${name}`);
+    if (mix.flavors.length === 3) {
+      // 3種のミックス: 右の列で（）が2行に収まる並び（前の二つか、後ろの二つが短い）。接客の画面で1行に収まる長さ
+      const [a, b, c] = mix.flavors.map((f) => FLAVORS[f].full.length);
+      assert.ok(mix.name && (a + b <= 7 || b + c <= 8) && a + b + c <= 14, `${name}: 3種の材料は札に収まる並び（${a}・${b}・${c}）`);
+    }
     assert.ok(!names.has(name), `同じ名前が二つ無い: ${name}`);
     names.add(name);
     // 名前のあとに、使ったフレーバーを必ず（）で添える。グラム数は出さない（TFL44）
     assert.deepEqual(mixFlavorNames(id), mix.flavors.map((f) => FLAVORS[f].full));
     assert.deepEqual(mixFlavorParts(id).map((words) => words.join("")), mixFlavorNames(id));
-    assert.equal(mixFullName(id), `${name}（${mixFlavorNames(id).join("・")}）`);
-    assert.ok(/^[^（）]+（[^（）0-9０-９]+）$/.test(mixFullName(id)) && !/グラム|[0-9０-９]\s*g/i.test(mixFullName(id)), mixFullName(id));
+    assert.equal(mixFullName(id), mix.flavors.length === 1 ? name : `${name}（${mixFlavorNames(id).join("・")}）`);
+    assert.ok((mix.flavors.length === 1 ? /^[^（）0-9０-９]+単$/ : /^[^（）]+（[^（）0-9０-９]+）$/).test(mixFullName(id)) && !/グラム|[0-9０-９]\s*g/i.test(mixFullName(id)), mixFullName(id));
     // 属性は、メイン一つと、あればサブ一つ。メインは材料の属性（family）から、サブは材料の family か also から選ぶ
     const has = (wish) => mix.flavors.some((f) => FLAVORS[f].family === wish || FLAVORS[f].also.includes(wish));
     assert.ok(WISH_IDS.includes(mix.main) && mix.flavors.some((f) => FLAVORS[f].family === mix.main), `${name}: メインの属性が材料の系統にある`);
@@ -83,7 +93,13 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
   }
   for (const chapter of [1, 2]) for (const wish of WISH_IDS) {
     const main = mixIdsFor(chapter).filter((id) => MIXES[id].main === wish).length;
-    assert.ok(main >= 16 && main <= 22, `第${chapter}章・${wish}: メインのミックスが偏らない（${main}）`);
+    assert.ok(main >= 20 && main <= 28, `第${chapter}章・${wish}: メインのミックスが偏らない（${main}）`);
+  }
+  // 1種（単品）・2種・3種が、どの章でも並ぶ
+  for (const chapter of [1, 2]) {
+    const count = (n) => mixIdsFor(chapter).filter((id) => MIXES[id].flavors.length === n).length;
+    assert.ok(count(1) >= 12 && count(2) >= 50 && count(3) >= 18, `第${chapter}章: 単品 ${count(1)}・2種 ${count(2)}・3種 ${count(3)}`);
+    for (const wish of WISH_IDS) assert.ok(mixIdsFor(chapter).some((id) => MIXES[id].flavors.length === 3 && MIXES[id].main === wish), `第${chapter}章・${wish}: 3種のミックスがある`);
   }
   for (const f of Object.values(FLAVORS)) assert.equal("cost" in f, false, "原価は扱わない");
   assert.deepEqual(Object.keys(CALLS), ["thin", "harsh", "thirsty", "cough", "chatty"], "炭の調整は、頼みではなく自分から行く");
@@ -116,13 +132,23 @@ test("ミックスの属性: メイン＝◎・サブ＝○・ほか＝×。提�
   assert.equal(mixName("chocomint"), "チョコミント");
   assert.deepEqual(mixNameParts("chocomint"), ["チョコ", "ミント"]);
   assert.deepEqual(mixNameParts("lemonmint"), ["レモン", "ミント"]);
+  // 1種の物は「〜単」。作った名前は付けず、（）も付けない（名前がそのまま中身）
+  assert.deepEqual([mixName("cottoncandy"), mixFullName("cottoncandy"), mixNameParts("cottoncandy")], ["コットンキャンディ単", "コットンキャンディ単", ["コットン", "キャンディ単"]]);
+  assert.deepEqual([mixName("apple"), mixFullName("apple"), mixNameParts("apple")], ["ダブルアップル単", "ダブルアップル単", ["ダブル", "アップル単"]]);
+  assert.deepEqual([mixName("cappuccino"), mixName("earlgrey"), mixName("mintshake")], ["カプチーノ単", "アールグレイ単", "ペパーミントシェイク単"]);
+  // 3種のミックス: 名前のあとに、3つのフレーバー
+  assert.equal(mixFullName("chai"), "チャイ（ブラックティー・シナモン・ハニー）");
+  assert.equal(mixFullName("tropical"), "トロピカル（パイナップル・マンゴー・バナナ）");
+  assert.deepEqual(mixNameParts("flowergarden"), ["フラワー", "ガーデン"]);
   // 名前だけでは材料が分からないミックスも、（）を見れば分かる
-  assert.equal(mixFullName("cottoncandy"), "わたあめ（コットンキャンディ）");
   assert.equal(mixFullName("cafemocha"), "カフェモカ（コーヒー・チョコレート）");
   assert.equal(mixFullName("milktea"), "ミルクティー（アールグレイ・ミルク）");
   assert.equal(mixFullName("caramelnuts"), "キャラメルナッツ（キャラメル・ヘーゼルナッツ）");
   assert.equal(mixFullName("lemonmint"), "レモンミント（レモン・ミント）");
   assert.deepEqual(mixFlavorParts("cottoncandy"), [["コットン", "キャンディ"]]);
+  // 3種のミックスは、仕込みが長いぶん、合った時（◎・○）の満足が少し高い（合わない時は同じ）
+  assert.deepEqual([evaluateMix("chai", { wish: "deep" }).mood, evaluateMix("chai", { wish: "sweet" }).mood, evaluateMix("chai", { wish: "fresh" }).mood], [94, 76, 30]);
+  assert.deepEqual([evaluateMix("cinnamontea", { wish: "deep" }).mood, evaluateMix("apple", { wish: "deep" }).mood], [90, 90], "2種と単品は、これまでどおり");
   assert.deepEqual([mixFlavorNames("nothing"), mixFlavorParts("nothing")], [[], []]);
   const order = { wish: "fresh" };
   const best = evaluateMix("lemonmint", order), good = evaluateMix("watermelonkiwi", order), none = evaluateMix("caramelmilk", order);
@@ -263,12 +289,13 @@ test("シャッフル: 並んでいるミックスを全部入れ替える。入
 });
 
 test("シャッフルしすぎると損をする: ◎が出るまで回し続けると、満席の日は客を待たせて帰られる", () => {
-  const total = (pick) => Array.from({ length: 16 }, (_, i) => playFloorBot({ seed: i + 1, level: 5, night: "full", pace: 6, pick }).result)
+  const NIGHTS_PLAYED = 48; // ミックスの顔ぶれで1晩ごとの揺れが大きいので、夜数を多めに取る
+  const total = (pick) => Array.from({ length: NIGHTS_PLAYED }, (_, i) => playFloorBot({ seed: i + 1, level: 5, night: "full", pace: 6, pick }).result)
     .reduce((sum, r) => ({ left: sum.left + r.left, score: sum.score + r.score, shuffles: sum.shuffles + r.shuffles }), { left: 0, score: 0, shuffles: 0 });
   const careful = total("best"), greedy = total("greedy");
   assert.ok(greedy.shuffles > careful.shuffles * 3, `欲張ると、何倍も回す（${careful.shuffles} → ${greedy.shuffles}）`);
-  assert.ok(greedy.left >= careful.left + 10, `待たせて帰られる組が増える（${careful.left} → ${greedy.left}）`);
-  assert.ok(greedy.score < careful.score - 80, `満足の平均も下がる（${careful.score} → ${greedy.score}）`);
+  assert.ok(greedy.left >= careful.left + NIGHTS_PLAYED, `待たせて帰られる組が増える（1晩に1組以上。${careful.left} → ${greedy.left}）`);
+  assert.ok(greedy.score < careful.score - 5 * NIGHTS_PLAYED, `満足の平均も下がる（1晩あたり5点以上。${careful.score} → ${greedy.score}）`);
 });
 
 test("調整: 炭の残りが少なくなったら、頼まれる前に自分から行く。放っておくと客から頼まれる", () => {
