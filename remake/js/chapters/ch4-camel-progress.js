@@ -1,5 +1,6 @@
 import { recordPlayMastery, syncPlayMastery } from "../core/play-mastery.js";
-import { CAMEL_CUPS, camelCupQualified, camelMastered, camelExpert } from "../minigames/camel-race-model.js";
+import { CAMEL_CUPS, camelCupQualified, camelMastered, camelExpert, camelCupTier } from "../minigames/camel-race-model.js";
+import { recordTierClear } from "../core/play-tiers.js";
 // 第4章ドバイ編・任意イベント「ラクダレース」の進み具合・行き先・記録（純粋関数。DOM・保存・音を持たない）。
 // 画面と訪問の流れは ch4-camel-race.js、遊びの本体は minigames/camel-race.js。
 //
@@ -207,6 +208,9 @@ export function recordCamelRaceResult(value, run, runs = 1) {
   camel.lastPlayDay = value.day;
   if (camel.stage < CAMEL_STAGES.unlocked) camel.stage = CAMEL_STAGES.unlocked;
   recordPlayMastery(value, "camel", run, `${value.cycle || 1}:${camel.plays}`);
+  // 三段階（#3779）: 入門・標準・上級大会の3位以内が、その段のクリア。上級を初めてクリアすると白火1つ（growth が精算）
+  const tier = camelCupTier(cup);
+  if (tier && camelCupQualified(run)) recordTierClear(value, "camel", tier);
   return { firstClear, newBest, plays: camel.plays };
 }
 
