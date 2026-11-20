@@ -1,0 +1,30 @@
+Create one finished visual novel event CG (a story still) for the Japanese shisha-bar game "Suien Zensen -EN:CODE-". Opaque landscape 16:9, at the largest 16:9 size the tool can make (at least 1672x941). Japanese 2D anime illustration in the same hand as the attached approved event CG: clean confident outlines, cel shading with two or three clearly shaped shadow steps, warm cinematic light, a detailed painted background with a fine pixel-painter texture; not 3D, not photographic, no airbrush skin gloss, no rim-light glow, no floating sparkles or light particles. The approved event CG is a rendering-style reference only: do not copy its people, composition, props or equipment. Every named character must be exactly the same person as their attached approved sprite: same face design, eye shape and color, hairstyle and hair color, age, build and outfit; do not drift toward a generic pretty face. Unless the scene says otherwise, the viewer is the protagonist Hajime: never show his face; at most his hands, sleeves, shoulder, back or the back of his head (short black hair under a black cap, black zip hoodie over a black t-shirt). Put every important face, hand and prop within the top 65% of the image, because a dialogue window covers the bottom 25%. No text, letters, numbers, logos, UI, borders or watermark anywhere; any paper, sign, label, bag, phone or monitor screen is blank or unreadable. Unnamed customers, workers and passers-by are ordinary adults with plain everyday faces and clothes, never caricatures.
+
+Scene: chapter 4, Dubai, Cafe Oasis, the cafe of Noor's father with a desert-tour desk (use the attached room), daytime. On the table lies a hand-drawn pencil route map of the dunes with NO words or numbers: wavy dune contours, one old pencil line that was never erased, a small × mark beside it, and a fresh second line drawn a little apart with gentler curves. Noor (27; same woman as the attached sprite: sun-tanned, black hair loosely tied back, thin beige scarf around her neck, khaki outdoor shirt with rolled sleeves, sunglasses on her head) taps the middle of the × with the eraser end of her pencil, grinning: rueful pride about the day she got her car stuck in the sand. Hajime leans in from the near side; only his forearm and hand on the table. Bright desert daylight through the window. No religious symbols, no hookah, no text on the map.
+
+Variant A: over the table, the map in the center, Noor across from the viewer.
+
+Frame precisely: every important face, hand and story prop should be completely inside the upper 60% (absolute boundary 65%). Reserve the lower third for quiet foreground surfaces or legs only. Keep the scene and the specified action. No extra candles, plants, watches, bracelets, jewelry or ornaments. Existing sprite accessories alone are allowed when depicted on the reference sprite.
+
+Reference images in order:
+1. 本人  (chr_noor_normal.png)
+2. 本人  (chr_noor_smile.png)
+3. 場所  (bg_dubai_cafe_salim_day.png)
+4. Rendering style only (cg_ch4_dubai_arrival.png)
+
+
+--- ImageGenでの採用編集（入力は直前の生成画像） ---
+
+Edit the attached 16:9 Japanese cel-shaded visual novel event still. Keep the people, likeness, art style, scene and setting. Close diagonal on the map and pencil from Noor's right. Pull back and reframe downward enough to show the ENTIRE map, both little pencil paths, a distinct small black X, the pencil and both characters' hands between y=36–62%. Noor taps the X with a pink ERASER END, with the sharpened point upward. The route map has no letters or numbers. Her smile and original outfit unchanged. One continuous table in perspective, its nearest bare area fills the bottom third. Remove extra potted plants. No readable text.
+
+--- ImageGenでの採用編集（入力は直前の生成画像） ---
+
+Edit this 16:9 anime visual novel CG. Preserve existing likeness, scene and rendering. Keep scene and camera angle as much as possible, but shrinks the paper map by 25% and puts its four corners together on the farther half of the same tabletop, completely between y=38% and y=60%. The map has precisely two paths and one small black X under a PINK ERASER held downward, not graphite nib; no readable characters. Raise Hajime's hand from the side edge and show all fingers above y=61%. Noor looks at the X and smiles. The bottom third is bare continuation of the tabletop. No additional plants or pamphlets with legible text. Use real continuous perspective, no abrupt horizontal split. No legible text.
+
+--- ImageGenでの採用編集（入力は直前の生成画像） ---
+
+Edit this finished landscape cel-shaded VN CG. Preserve Noor official character, cafe and warmth. Place a small rectangular paper route map FLAT on the table right in front of Noor. Show the whole small map in the rectangle spanning y=39–58% of the image. Map has two staggered wavy pencil routes and ONE clear hand-drawn small black X. Noor holds one long wooden yellow pencil about 16 cm long tilted diagonally, visibly complete from sharpened graphite point in the air at the top to pink eraser touching the black X. Never substitute a separate eraser or a stub for this long pencil. Her other hand stays under her cheek. Hajime's black-sleeved resting hand and full fingers come from frame left at y=47–57%, palm down on the table, not raised. Lower 38% is simply unobstructed continuous tabletop in correct perspective. No words, figures, logos, plants or extra props.
+
+--- ImageGenでの採用編集（入力は直前の生成画像） ---
+
+Edit only the visual framing and preserve this drawing's cel-shaded style, Noor, exact map markings and long pencil. The table's top surface goes upwards in frame so its rear edge and both resting hands align approximately with Noor's upper chest. Put the complete small map with its lower corners at 59% (from top) and the entirety of Hajime's resting hand to the left at 54%. Show the complete long yellow pencil x-axis tilted, sharpened graphite end up and visible, eraser end touching the small X. Turn camera down a bit with much more bare table in the foreground. Keep a continuous perspective, no split edge. No words or extra props.

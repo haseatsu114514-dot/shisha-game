@@ -314,9 +314,17 @@ console.log('PASS: #1925 actual normal/after-close/rest invitation paths return 
   reset(); Object.assign(state.flags, readTo(1)); mode = 'cancel';
   assert.equal(await commute.namespace.returnCityHome(), false); mode = 'ok';
   assert(!state.flags._ch2_commute_tonari);
-  // 朝の上りも、同じ並びの選び方を通る（実 chooseMorningCity は画面の選択を使うので、呼び出しだけ確かめる）
-  const commuteSource = read('remake/js/chapters/ch2-commute.js');
-  assert.match(commuteSource, /await ride\("morning", ticket, \{ dialogue_id: "__ch2_morning_train", lines: \[ticket\] \}\);/);
+  // 地元の翌朝は選択なし。昼に駅から柚ヶ谷へ向かうと、確定済みの運賃を使って朝の小品を読む。
+  reset(); state.slot = 0;
+  Object.assign(state.flags, { _ch2_region: 'home', _ch2_stay_local_since: 17 });
+  await commute.namespace.chooseMorningCity();
+  assert.deepEqual(log, []); assert.equal(state.flags._ch2_morning_departed, 18);
+  state.flags._ch2_region = 'widehanga'; state.money -= 200; // 駅で精算済み
+  await commute.namespace.readMorningStationCommute({ to: 'widehanga' });
+  await commute.namespace.readMorningStationCommute({ to: 'widehanga' });
+  assert.deepEqual(log, ['ch2_commute_morning_regulars']);
+  assert.match(lastDialogue.lines[0].text, /片道切符を200円で買い/);
+  assert.equal(state.money, 800); assert.equal(state.slot, 0);
   // 窓の写真は、つむぎと連絡先を交換している時だけ送る。後日の LIME は送った時だけ届く
   const windowScene = commuteDB.dialogues.ch2_commute_return_window;
   const photo = windowScene.lines.find(line => line.type === 'condition');

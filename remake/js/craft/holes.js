@@ -138,7 +138,10 @@ export async function runHoles(cs) {
       ["ズレたとき", "ミスにはならず、ズレた位置のまま穴として残る（点は低くなる）。針は次の目印へ進む"],
       ["採点", "間隔のそろい50・狙いの正確さ30・穴の大きさのそろい15・時間5。浅い穴はさらに1穴8点減点"],
       ...rings.map(ring => [ring.label, ring.role]),
-    ].map(([label, text]) => el("li", [el("b", { text: label }), el("span", { text })]))),
+      // スマホの右の列は狭く、能力の効果は「技」「感」の札だけを出す。中身はここで読む（css/craft-phone.css。PC は今までどおり画面に出る）
+      ...(effectVisible("technique") ? [["技", "技術で針がゆっくり", "bench-guide-phone"]] : []),
+      ...(effectVisible("sense") ? [["感", "センスで成功の幅が広がる", "bench-guide-phone"]] : []),
+    ].map(([label, text, only]) => el(only ? `li.${only}` : "li", [el("b", { text: label }), el("span", { text })]))),
     el("p", { text: "時間が過ぎても、選んだ配置を最後まで開けられる" }),
   ]));
 
@@ -176,7 +179,8 @@ export async function runHoles(cs) {
   const pressMeter = renewal ? null : el("span.hr-press-meter", { "aria-hidden": "true", dataset: { test: "hole-press-meter" } }, [el("i.hr-press-fill")]);
   const punchBtn = el("button.btn.primary.hr-punch", { dataset: { test: "hole-punch" } }, [el("span.btn-label", { text: "穴を開ける" }), pressMeter]);
   const nextBtn = renewal ? null : el("button.btn.small", { text: "次のリングへ", dataset: { test: "hole-next" } });
-  const doneBtn = renewal ? null : el("button.btn.small.ghost", { text: "穴あけを終えて結果へ", dataset: { test: "hole-done" } });
+  // 文は「穴あけを終えて結果へ」のまま。前半を分けておく（スマホの狭い列では「結果へ」だけを出す・css/craft-phone.css）
+  const doneBtn = renewal ? null : el("button.btn.small.ghost", { dataset: { test: "hole-done" } }, [el("span.hole-done-lead", { text: "穴あけを終えて" }), "結果へ"]);
   const side = el("div.hr-side", [el("small.ht-current", { text: template.label }), ringLabel,
       effectVisible("technique") ? effectBadge("technique", "技") : null,
       senseBand(basePerfWin, 12), effectLine("technique", "技", "技術で針がゆっくり"),
@@ -503,23 +507,28 @@ export async function runHoles(cs) {
     disc.classList.add("finished");
   } else panel.replaceChildren(); // 桜井版: 結果を出す前に穴あけ操作を片付け、完了ボタンとの重なりを防ぐ（リニューアル前のとおり）
   const marked = res.tally.perfect + res.tally.good + (res.tally.rough || 0) + res.tally.tooClose + res.tally.shallow;
+  const shallowAdvice = "短いタップで穴が浅くなった。少し長く押してから離そう";
+  const depthFirst = res.holeSizes.shallow > 0 && res.holeSizes.shallow * 2 >= res.total;
+  const spacingAdvice = res.evenness > 0.8 ? "穴の間隔が揃い、熱が回りやすそうだ" : "穴の間隔にばらつきがある。次は目印をよく見よう";
   await resultCard(panel, {
     title: "穴あけ 結果",
     button: "確認して次の工程へ",
     grade: res.grade,
+    advice: tutorial && depthFirst ? shallowAdvice : "",
     ...(renewal ? { summary: [
       `EXCELLENT ${res.tally.perfect}・GOOD ${res.tally.good}・ズレ ${(res.tally.rough || 0) + res.tally.tooClose}・浅い ${res.tally.shallow}（${marked}穴）`,
-      res.evenness > 0.8 ? "穴の間隔が揃い、熱が回りやすそうだ" : "穴の間隔にばらつきがある。次は目印をよく見よう",
+      depthFirst ? shallowAdvice : spacingAdvice,
     ] } : {}),
     lines: [
+      depthFirst ? shallowAdvice : "",
       `テンプレート：${template.label}`,
-      res.evenness > 0.8 ? "穴の間隔が揃い、熱が回りやすそうだ" : "穴の間隔にばらつきがある。次は目印をよく見よう",
+      spacingAdvice,
       `目印の達成：${res.tally.perfect + res.tally.good + (res.tally.rough || 0) + res.tally.tooClose + res.tally.shallow}/${Object.values(template.counts).reduce((sum, count) => sum + count, 0)}か所（EXCELLENT ${res.tally.perfect}・GOOD ${res.tally.good}）`,
       `穴あけ入力：${res.total}回 ／ ズレて開いた穴：${(res.tally.rough || 0) + res.tally.tooClose}回（近すぎた穴を含む）／ 浅い穴：${res.tally.shallow}回`,
       `実際に開いた穴：外周 ${res.outer}・中周 ${res.middle}・内周 ${res.inner}（計 ${res.total} 穴）`,
       "ズレた穴も開いた穴として残り、間隔と熱の回り方に影響する",
       `穴の大きさ：浅い ${res.holeSizes.shallow}・小 ${res.holeSizes.small}・少し大きい ${res.holeSizes.wide}・大きい ${res.holeSizes.large}`,
-      res.holeSizes.shallow ? "浅い穴は成立したが、深さ不足で大きく減点された" : "",
+      res.holeSizes.shallow && !depthFirst ? shallowAdvice : "",
       res.innerExcess ? "内周を開けすぎた。焦げやすくなるかもしれない" : res.outerEven > 0.8 ? "外周がきれいに揃った。熱が全体に回りそうだ" : "",
       res.total < 24 ? "穴を控えめに仕上げた。吸い出しでは温度の動きをよく見よう" : "",
     ],

@@ -54,7 +54,8 @@ const REQUIRED = ["tournament_day", "national_craft", "national_adjustment", "na
   .map(id => `ch3_${id}`);
 const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); };
 const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
-  stepSteamTime, runSteamDodge, runPull, cs => runCare(cs, { round: 1 }), cs => runCare(cs, { round: 2 })];
+  stepSteamTime, runSteamDodge, cs => runPull(cs, { holdFailedResult: true }),
+  cs => runCare(cs, { round: 1, holdFailedResult: true }), cs => runCare(cs, { round: 2, holdFailedResult: true })];
 const STEP_IDS = ["setup", "mix", "pack", "foil", "place", "coalfire", "steam", "steam", "pull", "adjust", "adjust"];
 // 1・4票は工程確定直後、2・3票は対応する台詞の読了後に確定する。
 // 台詞待ちの stage は既存 SAVE の再開地点でもあるため、そのまま保持する。
@@ -525,6 +526,8 @@ async function drive(owner) {
     } else if (p.stage === "tasting") {
       owner.cs ||= clone(p.craft);
       playBgm("bgm_judging");
+      // 最後の調整の後、手を離した四人の待ち時間（#3097 第2弾。第2章の interlude3 に当たる）。講評を読んだ保存には後から出さない。
+      if (!owner.cs.tournamentStory?.seen?.includes("tasting") && !await commentary(owner, "interlude3")) return;
       if (!await commentary(owner, "tasting")) return;
       // 結果発表前の掛け合い（#3060）。
       if (!await commentary(owner, "preresult")) return;

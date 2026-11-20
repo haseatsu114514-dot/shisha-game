@@ -278,12 +278,17 @@ export function afterChapterVisitDue(charId, s = state) {
 /**
  * その章の間だけ店で読める短い会話（第2章の凛想・VOL13）。段階会話より先に、一来店に一本ずつ・一度だけ。
  * flag は読める時期（味の不調の後など）。台本は章の準備期間に読み込む（data/dialogue/ch2_home.json）ので、未読込なら出さない。
- * 初対面の固有会話（VISIT_SEQ の1本目）を読んだ相手だけ（呼び名・面識を前提にするため）。
- * 既読は `_talk_seen_<scene>`。好感度は通い訪問と同じ+5。
+ * 初対面の固有会話（VISIT_SEQ の1本目）を読んだ相手だけ（呼び名・面識を前提にするため）。柚ヶ谷の三人は、第2章の最初の来店の会話
+ * （remake_ch2_<id>_chat。flags._ch2_talks）を読んだ相手だけ。
+ * 既読は `_talk_seen_<scene>`。好感度は通い訪問と同じ+5。flag が「!」で始まる時は、その旗が立っていない時だけ読む。
  * prep は、東京・ドバイへ発つ前の地元の準備3日（chapters/departure-prep.js）だけ読む送り出しの会話（第3・4章・N3a）。
- * 出発後（その章の大会の前後とも）には出ないので、大会後の分岐は持たない。台本は data/dialogue/ch3_ch4_home.json を準備期間に読み込む。
+ * 出発後（その章の大会の前後とも）には出ないので、大会後の分岐は持たない。台本は準備期間に読み込む（第3章は data/dialogue/ch3_ch4_home.json、
+ * #3097 PR-I で足した第4章のつむぎ・ひより・柚ヶ谷の三人は data/dialogue/ch4_prep_home.json）。
  * untilRift は、なるとの対峙（naruRiftActive）より前だけ読む会話。対峙の後、なるは店を長く休むため。
  * サメちゃんの店（SHISHARK）は来店の処理が別なので、同じ扱いの会話を daily/samechan.js の SAMECHAN_PREP_TALKS に持つ。
+ * ひより（tonariに仕事帰りに寄る）も同じ理由で daily/hiyori.js の HIYORI_PREP_TALKS に持つ。
+ * つむぎは tonari の客席の来店（daily/tonari.js の tonariCustomer → visitChar）、柚ヶ谷の三人は柚ヶ谷の店の来店
+ * （chapters/ch2-preparation.js の visitPreparationSpot）で読む。
  */
 export const CHAPTER_TALKS = Object.freeze({
   rio: Object.freeze([
@@ -294,6 +299,10 @@ export const CHAPTER_TALKS = Object.freeze({
     { chapter: 2, scene: "ch2_rio_city_scent" },
     // #3097 PR-C: 朝の満員電車は柔軟剤の見本市。匂わない車両をはじめに聞く（はじめは試作を吸わない）
     { chapter: 2, scene: "ch2_rio_rush_hour" },
+    // #3097 第2弾（VOL20）: 試香の日の昼は塩だけのおにぎり。はじめは「顔で答える係」（味の不調の前後どちらでも読める）
+    { chapter: 2, scene: "ch2_rio_plain_lunch" },
+    // #3097 第3弾: 袋のラベルの言葉を、吸う人に伝わる方で選ぶ（はじめは客の言い方で答える）
+    { chapter: 2, scene: "ch2_rio_label_words" },
     { chapter: 3, scene: "ch3_prep_rio", prep: true },
     { chapter: 4, scene: "ch4_prep_rio", prep: true },
   ]),
@@ -303,6 +312,10 @@ export const CHAPTER_TALKS = Object.freeze({
     // #3097 PR-C: 券売機の回の続き（柚ヶ谷で迷って買った七つの林檎）と、初めての客への「在庫切れ」
     { chapter: 2, scene: "ch2_adam_yuzugaya_apples" },
     { chapter: 2, scene: "ch2_adam_out_of_stock" },
+    // #3097 第2弾（VOL20）: 皮が途切れた日は遠出しない決まりで、柚ヶ谷の林檎を一つだけ頼まれる
+    { chapter: 2, scene: "ch2_adam_apple_errand" },
+    // #3097 第3弾: 皮の長さの手帳。はじめが運んだ林檎は途切れなかった
+    { chapter: 2, scene: "ch2_adam_peel_record" },
     { chapter: 3, scene: "ch3_prep_adam", prep: true },
     { chapter: 4, scene: "ch4_prep_adam", prep: true },
   ]),
@@ -312,8 +325,31 @@ export const CHAPTER_TALKS = Object.freeze({
     // #3097 PR-C: 客の忘れ物の定期券と、ミントの強さの札。営業中の口調だけ（年齢・正体・♥段階に触れない）
     { chapter: 2, scene: "ch2_minto_lost_pass" },
     { chapter: 2, scene: "ch2_minto_mint_scale" },
+    // #3097 第2弾（VOL20）: 客のあだ名の手帳。営業中の口調だけ（年齢・正体・♥段階に触れない）
+    { chapter: 2, scene: "ch2_minto_nickname_notes" },
+    // #3097 第3弾: 「傘の人」が傘を忘れた日（手帳の回の続き）
+    { chapter: 2, scene: "ch2_minto_umbrella_day" },
     { chapter: 3, scene: "ch3_prep_minto", prep: true },
     { chapter: 4, scene: "ch4_prep_minto", prep: true },
+  ]),
+  // #3097 PR-I: 窓際の席のつむぎ（tonariの客席）。同行・応援の話はしない（第4章はドバイへ必ず応援に来る・SPC17）
+  tsumugi: Object.freeze([
+    { chapter: 3, scene: "ch3_prep_tsumugi", prep: true },
+    { chapter: 4, scene: "ch4_prep_tsumugi", prep: true },
+  ]),
+  // #3097 PR-I: 柚ヶ谷の三人（第2章の通い訪問の店）
+  ageha: Object.freeze([
+    { chapter: 3, scene: "ch3_prep_ageha", prep: true },
+    { chapter: 4, scene: "ch4_prep_ageha", prep: true },
+  ]),
+  kumicho: Object.freeze([
+    { chapter: 3, scene: "ch3_prep_kumicho", prep: true },
+    { chapter: 4, scene: "ch4_prep_kumicho", prep: true },
+  ]),
+  rei: Object.freeze([
+    // 第2章で余りチケットを受け取った人は、ライブの夜（ch3_prep_rei_live）が東京への送り出しを兼ねるので出さない
+    { chapter: 3, scene: "ch3_prep_rei", prep: true, flag: "!_ch2_rei_ticket" },
+    { chapter: 4, scene: "ch4_prep_rei", prep: true },
   ]),
   naru: Object.freeze([
     // #3097 PR-C: 看板の電球の付け替え。DAY3の祝いの後、DAY11の対峙より前だけ（対峙の後は店を長く休む）
@@ -328,11 +364,13 @@ const inDeparturePrep = (s = state) => {
   const prep = s?.chapter === 3 ? s.flags?._ch3_prep : s?.chapter === 4 ? s.flags?._ch4_prep : null;
   return !!prep && !prep.departed && Number.isInteger(prep.startDay);
 };
+// 読める時期の旗。「!」で始まる旗は、立っていない時だけ（バイトの接客の trigger_flag と同じ書き方）
+const talkFlagMet = (flags, flag) => !flag || (flag.startsWith("!") ? !flags?.[flag.slice(1)] : !!flags?.[flag]);
 export function chapterTalkDue(charId, s = state) {
-  if (!((s?.story?.[charId] || 0) >= 1)) return null;
+  if (!((s?.story?.[charId] || 0) >= 1) && !((s?.flags?._ch2_talks?.[charId] || 0) >= 1)) return null;
   return (CHAPTER_TALKS[charId] || []).find(talk => (s?.chapter || 1) === talk.chapter && s.phase === "daily"
     && (!talk.prep || inDeparturePrep(s)) && (!talk.untilRift || !naruRiftActive(s))
-    && !s.flags?.[`_talk_seen_${talk.scene}`] && (!talk.flag || s.flags?.[talk.flag])
+    && !s.flags?.[`_talk_seen_${talk.scene}`] && talkFlagMet(s.flags, talk.flag)
     && DB.dialogues[talk.scene]?.lines?.length)?.scene || null;
 }
 /**

@@ -1,6 +1,7 @@
 import { el } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
 import { initSideArea } from "./core/side-area.js";
+import { calmFlash } from "./core/transition-kit.js";
 initStageFit(document.getElementById("stage")); // 画面の当て方は本編と同じ共通部品（#3076）
 initSideArea({ stage: document.getElementById("stage"), standalone: true }); // 左右の余白の煙と縁（YHK）
 import { runAxeThrow } from "./minigames/axe.js";
@@ -36,7 +37,7 @@ function menu(result = null) {
     playBgm("bgm_axe");
     try { const result = await runAxeThrow({ host, inputMode, autoAdvance, mode, opponent: mode === "versus" ? rival : opponent,
       difficulty: mode === "versus" && rival === "adam" ? "secret" : difficulty,
-      division: mode === "practice" ? "rec" : division, bestOf: mode === "versus" ? bestOf : 1 });
+      division: mode === "practice" ? "rec" : division, bestOf: mode === "versus" ? bestOf : 1, reducedMotion: calmFlash() });
       stopBgm(); menu(result);
     }
     catch (error) { stopBgm(); console.error(error); buttons.forEach(b => { b.disabled = false; }); lesson.disabled = false; message.textContent = "開き直して、もう一度お試しください。"; button.focus(); }
@@ -113,7 +114,7 @@ function menu(result = null) {
     if (busy() || intro.inert || !intro.isConnected) return;
     lessonOpen = true; intro.inert = true;
     playBgm("bgm_axe");
-    try { await runAxeThrow({ host, inputMode, tutorial: true, opponent: null, allowRetry: true }); }
+    try { await runAxeThrow({ host, inputMode, tutorial: true, opponent: null, allowRetry: true, reducedMotion: calmFlash() }); }
     catch (error) { console.error(error); }
     finally {
       stopBgm();

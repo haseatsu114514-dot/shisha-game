@@ -25,8 +25,11 @@ const PURIKURA_IDS = ["remake_ch2_ryuji_melty_greeting", "remake_ch2_purikura_ry
 const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "remake_ch2_kumicho_sento"];
 // #3097 第1弾: tonariのシフト上がりの会話（daily/tonari.js の CH2_SHIFT_TALKS と同じ並び。読み込みを軽くするため名前を並べる。一致は remake/test/ch2_shift_talks.mjs）
 export const CH2_SHIFT_TALK_IDS = Object.freeze(["ch2_shift_talk_fare", "ch2_shift_talk_three_shops", "ch2_shift_talk_supper",
-  "ch2_shift_talk_salaryman", "ch2_shift_talk_receipts", "ch2_shift_talk_student", "ch2_shift_talk_tsumugi_board", "ch2_shift_talk_one_hose",
-  "ch2_shift_talk_lost_box", "ch2_shift_talk_first_timer", "ch2_shift_talk_cd_player", "ch2_shift_talk_same_seat", "ch2_shift_talk_burnt_finger"]);
+  "ch2_shift_talk_salaryman", "ch2_shift_talk_receipts", "ch2_shift_talk_student", "ch2_shift_talk_tsumugi_board",
+  "ch2_shift_talk_tsumugi_ash", "ch2_shift_talk_tsumugi_backs", "ch2_shift_talk_tsumugi_hands", "ch2_shift_talk_one_hose",
+  "ch2_shift_talk_lost_box", "ch2_shift_talk_first_timer", "ch2_shift_talk_cd_player", "ch2_shift_talk_same_seat", "ch2_shift_talk_burnt_finger",
+  // #3097 計画 2-8（PR-D）第3弾
+  "ch2_shift_talk_water_line", "ch2_shift_talk_my_mouthpiece", "ch2_shift_talk_short_one", "ch2_shift_talk_early_coal", "ch2_shift_talk_last_visit"]);
 export const CH2_HOME_IDS = Object.freeze(["ch2_rest_notebook", "cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze",
   "ch2_rio_taste", "ch2_rio_strawberry",
   // #3097 第1弾: 施設の寄り道4本と、凛想・みんと・アダムの第2章の会話（spot-encounters.js の ENCOUNTERS・spots.js の CHAPTER_TALKS）
@@ -39,6 +42,10 @@ export const CH2_HOME_IDS = Object.freeze(["ch2_rest_notebook", "cafe_ch2_commut
   // ひよりの相席（hiyori.js の HIYORI_CH2_TALKS）
   "ch2_minto_lost_pass", "ch2_minto_mint_scale", "ch2_rio_rush_hour", "ch2_adam_yuzugaya_apples", "ch2_adam_out_of_stock", "ch2_naru_sign_light",
   "ch2_samechan_remora_seat", "ch2_samechan_spare_teeth", "ch2_hiyori_health_check", "ch2_hiyori_capsule_toy",
+  // #3097 第2弾（VOL20）: 地元の普段の会話の続き（みんと・凛想・アダムは CHAPTER_TALKS、サメちゃん・ひよりは各モジュール）
+  "ch2_minto_nickname_notes", "ch2_rio_plain_lunch", "ch2_adam_apple_errand", "ch2_samechan_poster", "ch2_hiyori_mirror_pose",
+  // #3097 第3弾: 同じ5人の続き
+  "ch2_minto_umbrella_day", "ch2_rio_label_words", "ch2_adam_peel_record", "ch2_samechan_menu_letters", "ch2_hiyori_commute_poem",
   // tonariの大会準備で一台作る場面（ch2-craft-prep.js の CH2_CRAFT_PREP_IDS と同じ。読み込みを軽くするため名前を並べる）
   "ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed",
   "ch2_prep_midcheck_intro", "ch2_prep_midcheck_good", "ch2_prep_midcheck_rough", "ch2_prep_midcheck_failed", "ch2_prep_rehearsal_intro",

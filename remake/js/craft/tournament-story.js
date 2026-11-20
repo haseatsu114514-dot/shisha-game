@@ -24,10 +24,11 @@ export async function playTournamentEvent(cs, event, options = {}) {
   clearComments();
   // context は台本の選択だけに使う（票・在庫は読むだけ）。play には渡さない。
   // card は合間のアイキャッチ（{ title, sub, note }）。まだ読んでいない掛け合いの前にだけ出す。
-  const { context, card = null, ...playOptions } = options;
+  // supporters は第4章の客席の声（区切りの実況の後に続ける人。tournament-story-data.js の tournamentStoryLeadIn）。
+  const { context, card = null, supporters = [], ...playOptions } = options;
   if (card && !playOptions.signal?.aborted) await eyecatch(layers.fx, card);
   // 区切りの実況は別の場面として先に読む（途中で止めたら、次は実況から読み直す）。
-  const leadIn = tournamentStoryLeadIn(cs, event);
+  const leadIn = tournamentStoryLeadIn(cs, event, { supporters });
   if (leadIn) {
     const opened = await playLive(leadIn, playOptions);
     if (!opened || opened.cancelled) return false;

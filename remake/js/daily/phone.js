@@ -63,9 +63,23 @@ function invitationAvailable(m, { fixedNight = () => false } = {}) {
   if (m.time_slot === "night" && fixedNight(state.day)) return false;
   // 誘い（恋人のデート・外出・交友のお誘い）は地元で会う約束。東京・ドバイにいる間は乗れず、帰ってから届く
   // （IR16・#2024）。東京にいる間のムカイさんのシフトの誘いだけは、その街の仕事の連絡なので届く。雑談・噂は止めない
+  // その街で会う約束の誘い（LIME の region がその街。東京のライバルの♥3の外出・#3097 PR-H）も、その街にいる間は届く
   if (m.type === "invitation" && awayFromHome(state)
-    && !(m.accept_event === "__mukai_baito__" && state.flags?._ch2_region === "tokyo")) return false;
+    && !(m.accept_event === "__mukai_baito__" && state.flags?._ch2_region === "tokyo")
+    && !(m.region && m.region === state.flags?._ch2_region)) return false;
   return true;
+}
+
+// 東京の日常ループ（版3）で、本筋の場面が昼の行動を使う日（core/tokyo-clock.js の TOKYO_FREE_TIMES_V3 に昼の空きが無い日。
+// 試験の依存を増やさないため写し）。東京で会う約束の昼の誘いは、この日には届かない。
+const TOKYO_STORY_NOONS = new Set([1, 2, 3, 4, 8, 11, 13]);
+/** 東京の今日の昼が、本筋の場面にも恋人の東京訪問の約束にも使われていない空き時間か（読むだけ）。 */
+function tokyoNoonOpen() {
+  if (state.chapter !== 3 || state.flags?._ch3_intro?.routeVersion !== 3) return false;
+  const day = chapterDay(state), id = `d${day}-noon`;
+  if (day > 13 || TOKYO_STORY_NOONS.has(day)) return false;
+  return !(state.tokyoVisits?.plans || []).some((plan) => plan.status !== "returned"
+    && [plan.meetup, plan.date].some((time) => time?.id === id && time.day === state.day && time.slot === 0));
 }
 
 /** 私的な待ち合わせを配信時に確定。定休日を待つ物語は臨時休暇、仕事後が重なる大事な物語も臨時休暇にする。 */
@@ -246,6 +260,12 @@ function eligible(m, { tournamentDay = false } = {}) {
   // ♥5の締めくくり（呼び方が「兄弟」に変わる・「同士」を「友達」と言い直す）の前にだけ届く。章は LIME の chapter: 2 で絞る。
   if (m.id === "lime_outing_kumicho_1" && !(state.flags._kumicho_sento_introduced && !state.finales?.kumicho)) return false;
   if (m.id === "lime_outing_rei_1" && !(state.flags._ch2_read_ch2_rei_second && !state.finales?.rei)) return false;
+  // 綾取・スティーブ・ヴォルクの♥3の外出（#3097 PR-H）は、この周回で LIME を交換した後（交換の場面の既読。持ち越さない印）、
+  // ♥5の締めくくりの前に、東京の昼の空き時間にだけ届く（章と街は LIME の chapter: 3・region: "tokyo"）。日を改めて
+  // 届け直さない（important を付けない）ので、東京の14日の空き時間を誘いで塞がない。届かなかった分は大会後の寄り道で読む
+  // （ch3-aftermath-progress.js）。受けた約束が体調や予定の重なりで流れた時だけ、次の空きに届け直す（rescheduleInvitation）。
+  if (/^lime_outing_(saku|steve|volk)_1$/.test(m.id)
+    && !(state.flags[`_ch3_read_ch3_${m.sender}_lime`] && !state.finales?.[m.sender] && tokyoNoonOpen())) return false;
   // 綾取がドバイへ応援に来た保存（SPC22。core/overseas-companion.js の guests）では、東京の煙幕から配信を見る前提の第4章のLIMEは届かない。
   const guests = state.flags?._overseas_companion?.guests;
   if (/^lime_ch4_saku_/.test(m.id) && Array.isArray(guests) && guests.includes("saku")) return false;
@@ -1492,7 +1512,7 @@ export function limeCoach(onOpen) {
 
 /** 章の旅程相談。既存端末とアカウントを使い、当日招待の失効・報酬処理へ流さない。 */
 export async function openContactLime({ contacts, summary, actions, onAction, signal = null,
-  title = "恋人との連絡", empty = "連絡先を交換した恋人ができると、ここから連絡できます。" }) {
+  title = "恋人との連絡", empty = "連絡先を交換した恋人ができると、ここから連絡できます。", guide = "" }) {
   const owner = state;
   const ui = phoneShell({ time: clockNow(), title: `DAY ${chapterDay(state)}` });
   let resolveClose;
@@ -1507,6 +1527,10 @@ export async function openContactLime({ contacts, summary, actions, onAction, si
     ui.header.replaceChildren(el("span.lime-logo", { text: "LIME" }), el("span.lime-title", { text: title }));
     ui.chat.classList.add("list");
     ui.chat.replaceChildren();
+    if (guide) {
+      ui.chat.append(el("p.lime-tip", { text: guide, dataset: { test: "lime-contact-guide" } }));
+      guide = "";
+    }
     for (const id of contacts()) {
       const account = accountFor(id);
       ui.chat.append(el("button.lime-chat-row", { dataset: { test: `lime-contact-${id}` }, onclick: () => showThread(id) }, [

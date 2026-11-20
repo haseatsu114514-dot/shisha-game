@@ -21,7 +21,9 @@ export function equipmentPreview(cs, { candidate = false } = {}) {
   ];
   return el("section.equipment-guide.equipment-set-preview", { dataset: { test: "setup-preview" }, "aria-label": "一式の性能プレビュー" }, [
     el("b", { text: candidate ? "この候補で組む一式" : "いま選んでいる一式" }),
-    el("small.flavor-guide-caption", { text: ["bowl", "hms", "charcoal"].map(type => DB.equipById[cs.equip[type]]?.name || cs.equip[type]).join(" ／ ") }),
+    // 文は「器 ／ HMD ／ 炭」のまま。名前ごとに分けておき、折れる時は「／」の後ろで折る（行の頭に「／」を残さない）
+    el("small.flavor-guide-caption", ["bowl", "hms", "charcoal"].map(type => DB.equipById[cs.equip[type]]?.name || cs.equip[type])
+      .flatMap((name, i, all) => i < all.length - 1 ? [el("span.equipment-set-name", { text: `${name} ／` }), " "] : [el("span.equipment-set-name", { text: name })])),
     el("dl.equipment-guide-rows", rows.flatMap(([label, value]) => [el("dt", { text: label }), el("dd", { text: value })])),
     el("small.flavor-guide-caption", { text: "炭は3個での目安。葉の配合や、この後の配置・吸い方でも仕上がりは変わるよ" }),
   ]);

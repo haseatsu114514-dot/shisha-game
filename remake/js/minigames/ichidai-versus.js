@@ -48,10 +48,10 @@ const pick = (list) => list[Math.floor(Math.random() * list.length)];
  * @param speed 早回し。signal が止まったら片付けて終わる
  * @returns 終わった（か飛ばされた）ら解決する Promise
  */
-export function playVersus({ host, players, speed = 1, signal = null } = {}) {
+export function playVersus({ host, players, speed = 1, signal = null, reducedMotion = false } = {}) {
   const list = (players || []).slice(0, 4), n = list.length, layout = VS_LAYOUT[n];
   if (!host?.isConnected || !layout || signal?.aborted) return Promise.resolve();
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduced = reducedMotion || matchMedia("(prefers-reduced-motion: reduce)").matches;
   const face = (p) => {
     const url = faceUrl(p.id), blank = () => el("span.ichi-vs-face.is-blank", { text: (p.name || "？").slice(0, 1) });
     return url ? el("img.ichi-vs-face", { src: url, alt: "", draggable: "false", onerror: (e) => { e.currentTarget.replaceWith(blank()); } }) : blank();

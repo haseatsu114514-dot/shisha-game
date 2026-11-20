@@ -128,10 +128,10 @@ const MODES = {
   },
 };
 
-export function runPull(cs) { return pullGame(cs, MODES.pull); }
-export async function runCare(cs, { round = 0 } = {}) {
+export function runPull(cs, { holdFailedResult = false } = {}) { return pullGame(cs, MODES.pull, holdFailedResult); }
+export async function runCare(cs, { round = 0, holdFailedResult = false } = {}) {
   cs.careRound = round;
-  const completed = await pullGame(cs, { ...MODES.care, title: round ? `調整 ${round}回目` : "熱管理" });
+  const completed = await pullGame(cs, { ...MODES.care, title: round ? `調整 ${round}回目` : "熱管理" }, holdFailedResult);
   if (completed === false) throw new Error("Care interrupted before finishing");
   if (round && cs.care) {
     cs.careHistory ??= [];
@@ -140,7 +140,7 @@ export async function runCare(cs, { round = 0 } = {}) {
   }
 }
 
-async function pullGame(cs, mode) {
+async function pullGame(cs, mode, holdFailedResult) {
   const owner=state;
   await waitBenchReady(cs, mode.store);
   if(state!==owner)return false;
@@ -202,6 +202,10 @@ async function pullGame(cs, mode) {
     ? mode.drift ? "温度を戻すのは炭。交換する数と置き方で決まる。そのあとの吸いは味の確かめで、温度は少ししか動かない。1〜2口で整え終えよう"
     : "中央のキープは左寄りで微減、右寄りで微増。右の上げ吸いは温度を上げ、左の下げ吸いは温度を下げる。雨の日は上げ吸いを増やそう。吸い終わってから次の針を止める"
     : mode.hint);
+  // スマホは「技」の札だけを出す。文はここで読む（PHN18・css/craft-phone.css。PC は今までどおり画面に出る）
+  if (effectVisible("technique")) panel.closest?.(".bench")?.querySelector?.(".bench-guide-tip > p")?.after?.(el("div.bench-guide-extra.bench-guide-phone", [
+    el("ul", [el("li", [el("b", { text: "技" }), el("span", { text: "技術でゲージがゆっくり" })])]),
+  ]));
   const gameClock = createCraftClock(panel);
   const concentration = mode.focus(cs);
   // 疲れが付くと途中から針が速く、成功帯が狭くなるので、毎回計算し直す。
@@ -296,7 +300,9 @@ async function pullGame(cs, mode) {
   const drawStatus = el("span.pull-draw-status", { role: "status", dataset: { test: "pull-draw-status" } });
   // TH89: 蛇腹のホースと硬い持ち手・吸い口。ペンに見えないよう、筒の太さと曲がりで描く。
   const inhale = el("span.pull-btn-icon", { "aria-hidden": "true", html: HOSE_ICON });
-  const pullLabel = el("span.btn-label", { text: "吸う（針を止める）" });
+  // 「（針を止める）」は分けておく（スマホは絵と「吸う」だけを大きく出す・css/craft-phone.css）。文は今までと同じ
+  const pullIdle = () => ["吸う", el("span.pull-btn-note", { text: "（針を止める）" })];
+  const pullLabel = el("span.btn-label", pullIdle());
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" }, disabled: true }, [inhale, pullLabel]);
   const deepBtn = mode.store === "pull" && !tutorial && growthLesson(state,"M-S4") ? el("button.btn", { text:"ズボー", title:"一気に深く吸って熱を大きく上げる", "aria-label":"ズボー（一気に深く）", disabled:true, dataset:{test:"pull-deep"} }) : null;
   const blindBtn = mode.store==="pull"&&!tutorial&&growthLesson(state,"M-B3")?el("button.btn.ghost.small",{
@@ -563,7 +569,7 @@ async function pullGame(cs, mode) {
       setBenchDraw(cs, null);
       drawing = false;
       delete play.dataset.draw;
-      pullLabel.textContent = "吸う（針を止める）";
+      pullLabel.replaceChildren(...pullIdle());
       drawStatus.textContent = "";
       if (!failed && !finished && !abandoned && play.isConnected) {
         render();
@@ -749,7 +755,7 @@ async function pullGame(cs, mode) {
     if (failed === "burnt") cs.burnt = true;
     if (mode.store === "pull") { cs.pullDone = true; recordNaruFinish(cs, bands, { automatic: !!autoSkill() }); refreshBench(); }
     tickerSay(text.ticker);
-    await resultCard(panel, { title: text.title, lines: [text.line, waterComfortLine(cs.water), `${pulls}回吸った`] });
+    await resultCard(panel, { title: text.title, lines: [text.line, waterComfortLine(cs.water), `${pulls}回吸った`], holdUntilExit: holdFailedResult });
     return true;
   }
 

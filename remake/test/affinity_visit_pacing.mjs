@@ -26,6 +26,7 @@ function harness(id, initial = 9) {
     BOND_FINALES:{samechan:{dialogue:'samechan_bond_finale'},ageha:{dialogue:'ch2_ageha_bond_finale'}},
     BOND_QUESTIONS:{ageha:{host:'remake_ch2_ageha_newcomer',dialogue:'ch2_ageha_bond_question'}},
     questionVisitDue:()=>false,
+    chapterTalkDue:()=>null, // 出発前の送り出し（#3097 PR-I）は第3・4章だけ。この第2章の来店では出ない
     playQuestionVisit:async who=>{
       const r=await c.play('ch2_ageha_bond_question');
       if(r?.cancelled)return false;

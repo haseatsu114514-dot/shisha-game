@@ -135,10 +135,10 @@ registerLimeReplyAction("tokyo_visit_decline", item => {
 });
 
 export async function openTokyoLime({ signal = null } = {}) {
+  const owner = state;
   await loadTokyoSocial();
-  if (signal?.aborted) return;
+  if (state !== owner || signal?.aborted) return;
   syncTokyoSocial();
-  save();
   // 恋人からの新しいLIMEは、そのトークの「新しいLIMEを読む」で一覧を閉じ、既存の端末で読んでから一覧へ戻る（#2024）。
   const closer = new AbortController();
   const forward = () => closer.abort();
@@ -174,7 +174,11 @@ export async function openTokyoLime({ signal = null } = {}) {
       && state.chapter >= definitions.characters[id].dateMinChapter) options.push({ id: "offer", label: state.tokyoVisits.offers[id]?.held ? "保留中の訪問を相談" : "デートに誘う" });
     return options;
   };
-  await openContactLime({ contacts, summary, actions, signal: closer.signal, title: "地元との連絡",
+  const guide = playerRegion(state) === "tokyo" && !state.flags._ch3_lime_contact_guide
+    ? "届いた話はトークで読める。自分から相談したいときは、電話印（☎）の「地元との連絡」を開こう。" : "";
+  if (guide) state.flags._ch3_lime_contact_guide = true;
+  save();
+  await openContactLime({ contacts, summary, actions, signal: closer.signal, title: "地元との連絡", guide,
     empty: "連絡先を交換した恋人や地元の友人がいると、ここから連絡できます。", onAction: (id, action) => {
     if (action === "lover") {
       loverRead = id;

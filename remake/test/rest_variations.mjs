@@ -14,6 +14,7 @@ const storage = new Map();
 globalThis.localStorage = { getItem: k => storage.get(k) ?? null, setItem: (k,v) => storage.set(k,String(v)) };
 let current, cancelled = false, swap = false, choices = [], trial = false, rehearsal = false, rewards = 0;
 let sumiCallRead = false, companion = null; // 第4章の時差の電話（ch4_story_sumi_call）の既読と、同じ便で来た恋人
+let present = []; // 今ドバイにいる人（ch4-beach.js の chapterFourBeachCast）。地元からの昼の電話（#3097 第2弾）の相手から外す
 const context = vm.createContext({ console });
 const noop = () => {};
 const readDialogues = async (file, ids) => {
@@ -36,7 +37,7 @@ const values = {
   readDialogues, loadMukaiShift: async () => {}, creekSpotScenes: x => x,
   addStamina: n => { current.stamina += n; }, earnStat: () => rewards++, gainAffinity: () => rewards++,
   spendableMoney: () => current.money, chapterFourProgress: () => ({ startDay: current.day, read: sumiCallRead ? { ch4_story_sumi_call: true } : {} }),
-  CH4_SUMI_CALL: 'ch4_story_sumi_call', overseasCompanion: () => ({ companion }),
+  CH4_SUMI_CALL: 'ch4_story_sumi_call', overseasCompanion: () => ({ companion }), chapterFourBeachCast: () => present,
   innTrialDue: () => trial, rehearsalDue: () => rehearsal, chainVisitDue: () => null,
 };
 const stateModule = new vm.SyntheticModule(['state','save','timeOfDay','markMet'], function() {
@@ -148,5 +149,54 @@ for (const [,base,,rest] of cases) for (const suffix of revisits(rest)) {
   for (let i = 0; i < 4; i++) await rest(1);
   assert.deepEqual(scenes, ['ch4_sumi_call_b', 'ch4_sumi_call_d', 'ch4_sumi_call_e', 'ch4_inn_rest'], 'Tsumugi travelling with Hajime is not drawing at tonari');
   sumiCallRead = false; companion = null;
+}
+// 地元からの昼の電話（#3097 第2弾・VOL20）: ドバイの昼に宿で休むと、日本（夜）の地元の人から一本ずつ。
+// 初回の休みの後から。LIMEの連絡先にいて、今ドバイにいない人だけ。夜はスミさんの電話・休む巡回のまま。電話は休む巡回を進めない。
+{
+  const homeCalls = [...local.HOME_DAY_CALL_IDS];
+  Object.assign(DB.dialogues, await readDialogues('ch4_home_calls', homeCalls));
+  assert.equal(homeCalls.length, 12);
+  for (const { scene: id, from } of local.HOME_DAY_CALLS) {
+    const scene = DB.dialogues[id];
+    assert(scene?.lines?.length >= 10 && !scene.metadata && scene.lines.every(line => !line.type), `${id}: a full scene without rewards`);
+    assert(scene.lines.filter(line => line.speaker === from).length >= 4, `${id}: ${from} talks`);
+    const extra = local.HOME_DAY_CALL_EXTRA_SPEAKERS[id] || [];
+    assert(scene.lines.every(line => ['', 'hajime', from, ...extra].includes(line.speaker)), `${id}: only the caller and Hajime`);
+    assert(!scene.lines.some(line => /大会|審査|優勝|順位/.test(line.text)), `${id}: nothing about the world tournament`);
+    for (const line of scene.lines) assert([...line.text].reduce((n,c)=>n+(c.codePointAt(0)<=255?0.5:1),0)<=48);
+  }
+  const innVisit = cases[2][2], restKey = '_spot_turn_ch4_dubai_inn';
+  const rest = async (slot) => {
+    current.slot = slot; current.stamina = 10;
+    assert.equal((await innVisit()).used, true); assert(current.stamina > 10, 'a call is still a rest');
+    return scenes.at(-1);
+  };
+  replace(newState()); Object.assign(current, { chapter: 4, money: 12345, contacts: ['sumi', 'adam', 'rio', 'kumicho'] });
+  scenes.length = 0; rewards = 0; sumiCallRead = false; companion = null; present = ['rio'];
+  assert.equal(await rest(0), 'ch4_inn_rest', 'the first rest keeps the room scene');
+  assert.equal(await rest(0), 'ch4_home_call_adam_apple', 'a daytime rest brings the first call from home');
+  assert.equal(await rest(1), 'ch4_inn_rest_b', 'night rests stay with the rest rotation (Sumi owns the night calls)');
+  assert(saveToSlot('suien_remake_slot1')); replace(loadFromSlot('suien_remake_slot1'));
+  assert.equal(await rest(0), 'ch4_home_call_kumicho_coffee', 'Rio is in Dubai, so she does not call from home');
+  assert.equal(await rest(0), 'ch4_inn_rest_c', 'nobody left to call');
+  assert.equal(current.flags[restKey], 3, 'calls do not advance the rest rotation');
+  assert.deepEqual(Object.keys(current.flags[local.HOME_DAY_CALL_FLAG]).sort(), ['ch4_home_call_adam_apple', 'ch4_home_call_kumicho_coffee']);
+  present = []; assert.equal(await rest(0), 'ch4_home_call_rio_scent', 'after Rio goes home... or never came, she can call');
+  assert.equal(current.money, 12345); assert.equal(rewards, 0, 'calls give no affinity or stats');
+  // 中断・別の保存への切り替えでは、電話の記録も休む巡回も進めない
+  replace(newState()); Object.assign(current, { chapter: 4, contacts: ['sumi', 'minto'] }); current.flags[restKey] = 1;
+  current.slot = 0; current.stamina = 10;
+  cancelled = true; assert.equal((await innVisit()).used, false); cancelled = false;
+  assert.equal(current.flags[local.HOME_DAY_CALL_FLAG], undefined); assert.equal(current.flags[restKey], 1);
+  assert.equal(await rest(0), 'ch4_home_call_minto_mint', 'the interrupted call is read again');
+  // 判定だけ: 夜・初回の休みの前・別の章・世界大会の後は出さない
+  const at = (patch, options) => local.homeDayCallId({ chapter: 4, phase: 'daily', contacts: ['adam'], flags: {}, ...patch },
+    { daytime: true, rested: 1, present: [], ...options });
+  assert.equal(at({}), 'ch4_home_call_adam_apple');
+  assert.equal(at({}, { daytime: false }), null); assert.equal(at({}, { rested: 0 }), null);
+  assert.equal(at({ chapter: 5 }), null); assert.equal(at({ phase: 'aftermath' }), null);
+  assert.equal(at({}, { present: ['adam'] }), null); assert.equal(at({ contacts: [] }), null);
+  assert.equal(local.recordHomeDayCall({ flags: {} }, 'ch4_inn_rest_b'), false, 'only home calls are recorded');
+  present = [];
 }
 console.log('PASS rest variations: real chapter loaders/visits, rotation, SAVE/LOAD, cancellation, menus, unchanged rewards and Sumi\'s night calls');

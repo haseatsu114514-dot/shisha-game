@@ -87,6 +87,11 @@ body.reduce-shake .side-smoke, :root[data-side-calm="on"] .side-smoke { animatio
 /* 会話と地図の操作は同じ二席を使う。非表示ボタンの空席を下へ積まない。 */
 .side-pad.top [data-pad="glossary"], .side-pad.top [data-pad="lime"] { grid-area: 1 / 1; }
 .side-pad.top [data-pad="config"], .side-pad.top [data-pad="menu"] { grid-area: 2 / 1; }
+/* シーシャ作りの作業台（PHN19）: 右の上に「?」と手応え（大会）、左の下に外観（めったに使わない）。会話の操作とは同時に出さない */
+.side-pad.top [data-pad="help"] { grid-area: 1 / 1; }
+.side-pad.top [data-pad="reception"] { grid-area: 2 / 1; }
+.side-pad.bottom [data-pad="auto"] { grid-area: 1 / 1; }
+.side-pad.bottom [data-pad="log"], .side-pad.bottom [data-pad="look"] { grid-area: 2 / 1; }
 .side-pad.bottom { bottom: 22px; }
 /* 余白の幅の真ん中に置く。広い端末ではステージ寄り（端から 26px）で止め、外側を空ける */
 .side[data-side="l"] .side-pad { right: clamp(14px, calc((var(--side-g, 0px) - 88px) / 2), 26px); }
@@ -115,12 +120,29 @@ body.reduce-shake .side-smoke, :root[data-side-calm="on"] .side-smoke { animatio
 /* LIME: ステージの中の印と同じ、緑の吹き出し */
 .side-lime { position: relative; display: grid; place-items: center; width: 62px; height: 44px; padding-top: 1px; box-sizing: border-box; font-size: max(17px, calc(9.5px / var(--k, 1))); font-weight: 900; letter-spacing: 0; color: #fff; background: #06c755; border-radius: 50%; }
 .side-lime::after { content: ""; position: absolute; left: 28%; bottom: -6px; border-style: solid; border-width: 9px 5px 0 9px; border-color: #06c755 transparent transparent transparent; }
+/* 作業台の「?」: 字を大きく（説明を開いている間は押された色） */
+.side-help { font-family: Georgia, "Times New Roman", serif; font-size: 46px; font-weight: 900; line-height: 1; }
 /* MENU: 三本線と字 */
 .side-bars { position: static !important; width: 30px; height: 20px; border-top: 4px solid currentColor; border-bottom: 4px solid currentColor; box-sizing: border-box; background: linear-gradient(currentColor, currentColor) center / 100% 4px no-repeat; }
 /* 未読の数（赤）と、未使用の火種の数（火の色）、MENU の中に増えた物がある合図（金の点） */
 .side-badge { position: absolute; right: -4px; top: -4px; box-sizing: border-box; min-width: 32px; height: 32px; padding: 0 7px; font-style: normal; font-size: max(18px, calc(10px / var(--k, 1))); font-weight: 800; line-height: 32px; text-align: center; color: #fff; background: #e5484d; border-radius: 16px; box-shadow: 0 0 0 2px #1e1330; }
 .side-badge.fire { color: #2a1206; background: linear-gradient(180deg, #ffd27a, #ff9b3d); }
 .side-dot { position: absolute !important; left: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: #e3bd6e; box-shadow: 0 0 0 2px #1e1330, 0 0 10px #e3bd6e; }
+
+/* ---------------------------------------------------------------- D ランク（シーシャ作りの間・親指ボタンがある時。PHN19）
+   作業台の上の帯のランクを、右の余白の下の端に大きく写す（帯の中では帯の高さまでしか大きくできないため）。
+   切り欠きの来る真ん中を避けて下の端。横はボタンの列の真ん中にそろえる。絵の切り替えは js/core/side-area.js の syncRank */
+.side-rank {
+  position: absolute; bottom: 24px; left: 10px; width: min(140px, calc(var(--side-g, 0px) - 20px));
+  display: grid; justify-items: center; gap: 2px; pointer-events: none; font-family: var(--font);
+}
+.side-rank small { font-size: max(18px, calc(10px / var(--k, 1))); font-weight: 800; line-height: 1; letter-spacing: .24em; color: #c9a7e6; text-shadow: 0 0 8px rgba(0, 0, 0, .95); }
+.side-rank img { display: block; width: 100%; height: auto; max-height: 150px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .8)); }
+.side-rank b { font-family: Georgia, "Times New Roman", serif; font-size: 60px; font-style: italic; font-weight: 700; line-height: 1.1; color: #c9a7e6; text-shadow: 0 2px 8px rgba(0, 0, 0, .9); }
+.side-rank:has(> img:not([hidden])) b { display: none; }
+.side-rank.pop img { animation: side-rank-pop .42s ease-out; }
+@keyframes side-rank-pop { from { transform: scale(.82); opacity: .7; } 60% { transform: scale(1.08); opacity: 1; } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .side-rank.pop img { animation: none; } }
 
 /* 余白へ出している間は、ステージの中の元のボタンを隠す（用語・設定も右上へ）。
    HUD のボタンは場所を残して見えなくするだけ（MENU を起点にする演出が元の位置を測るため）。
@@ -140,3 +162,11 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
   bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 130px);
 }
 :root[data-side-pad="on"].side-probe #hud .hud-right > :is(.hud-lime, .hud-menu) { visibility: inherit !important; }
+/* シーシャ作りの作業台の「?」・外観を選ぶ・大会の手応え（PHN19）。場所は残して見えなくするだけ（押せるかを元の位置で確かめるため） */
+:root[data-side-pad="on"] #screen .bench .bench-head .bench-guide > summary,
+:root[data-side-pad="on"] #screen .bench .bench-top > .bench-appearance-button,
+:root[data-side-pad="on"] #screen .bench [data-test="judge-reception"] { visibility: hidden !important; }
+:root[data-side-rank="on"] #screen .bench .bench-top > .craft-rank { opacity: 0 !important; } /* 読み上げ（ランクの変化の知らせ）は元のランクに残す */
+:root[data-side-pad="on"].side-probe #screen .bench .bench-head .bench-guide > summary,
+:root[data-side-pad="on"].side-probe #screen .bench .bench-top > .bench-appearance-button,
+:root[data-side-pad="on"].side-probe #screen .bench [data-test="judge-reception"] { visibility: inherit !important; }

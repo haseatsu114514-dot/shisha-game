@@ -6,7 +6,8 @@ import { advanceToChapterThree, departChapterThree, chapterThreeScenes, complete
   chapterThreeFreeTime, completeChapterThreeFreeTime } from "../js/chapters/ch3-progress.js";
 import { TOKYO_OUTINGS, OUTING_DIALOGUE_IDS, OUTINGS_FLAG, chapterThreeOutings, chapterThreeOutingCandidates,
   claimChapterThreeOuting, outingDialogueId, outingAffinity, tasteRecovered, recordChapterThreeOuting,
-  rainyOuting, roomRestId, recordRoomRest, ROOM_REST_IDS } from "../js/chapters/ch3-outing-progress.js";
+  rainyOuting, roomRestId, recordRoomRest, ROOM_REST_IDS, HOME_CALLS, HOME_CALL_IDS, HOME_CALL_FLAG, homeCallId,
+  recordHomeCall } from "../js/chapters/ch3-outing-progress.js";
 import { rainyFor } from "../js/daily/weather.js";
 import { chapterThreeMapModel } from "../js/chapters/ch3-map-model.js";
 import { classifyFlag } from "../js/core/carry.js";
@@ -645,3 +646,74 @@ console.log("PASS: six everyday scenes load and rotate; park recovery and ordina
   assert.equal(value.money, money);
 }
 console.log("PASS: park day/night rotation, old saves, SAVE/LOAD and duplicate completion");
+
+// 地元からの電話（#3097 第2弾・2026-11-21 オーナー「交友を1章以降も厚く」）: 奥の部屋で休むと、休む場面の代わりに一本ずつ読む。
+{
+  const value = departure();
+  value.contacts = ["sumi"];
+  value.flags._ch3_room_rests = 0;
+  assert.equal(homeCallId(value, { night: true }), null, "The first rest keeps the introduction of the room");
+  recordRoomRest(value);
+  // 連絡先にいる人だけ。並びの先頭から、未読の一本
+  assert.equal(homeCallId(value), "ch3_home_call_sumi_fan");
+  recordHomeCall(value, "ch3_home_call_sumi_fan");
+  assert.equal(value.flags._ch3_room_rests, 1, "A call does not advance the rest rotation");
+  assert.equal(homeCallId(value), null, "Sumi's night call waits for the night; nobody else is in the contacts");
+  assert.equal(homeCallId(value, { night: true }), "ch3_home_call_sumi_pocket");
+  assert.equal(homeCallId(value, { night: true, busy: true }), null, "A night with a story scene or a far call has no home call");
+  value.contacts.push("adam", "samechan", "rio", "kumicho", "rei");
+  assert.equal(homeCallId(value), "ch3_home_call_adam_exit");
+  assert.equal(homeCallId(value, { night: true }), "ch3_home_call_adam_exit");
+  assert.equal(homeCallId(value, { away: id => id === "adam" }), "ch3_home_call_rio_face", "Someone visiting Tokyo does not call from home");
+  const read = [];
+  for (let turn = 0; turn < 20; turn++) { // 昼と夜の休みを交互に（夜だけの電話は昼には来ない）
+    const call = homeCallId(value, { night: turn % 2 === 0 });
+    if (call) { read.push(call); recordHomeCall(value, call); }
+  }
+  assert.equal(read.length, new Set(read).size, "No call is read twice");
+  const reachable = HOME_CALLS.filter(call => value.contacts.includes(call.from)).map(call => call.scene); // みんとは連絡先にいない
+  assert.deepEqual(new Set(read), new Set(reachable.filter(id => id !== "ch3_home_call_sumi_fan")), "Every call from a contact is read once");
+  assert.equal(homeCallId(value, { night: true }), null);
+  assert.deepEqual(Object.keys(value.flags[HOME_CALL_FLAG]).sort(), [...reachable].sort());
+  assert(!value.flags[HOME_CALL_FLAG].ch3_home_call_minto_frame, "Not from someone outside the contacts");
+  recordHomeCall(value, "ch3_tokyo_room_rest_b");
+  assert.equal(value.flags[HOME_CALL_FLAG].ch3_tokyo_room_rest_b, undefined, "Only home calls are recorded");
+  assert.equal(classifyFlag(HOME_CALL_FLAG), "progression");
+  // 全国大会の後・別の章では出さない
+  const after = departure();
+  Object.assign(after, { contacts: ["sumi"], phase: "aftermath" });
+  after.flags._ch3_room_rests = 3;
+  assert.equal(homeCallId(after), null, "No pre-tournament call after the national tournament");
+  after.phase = "daily";
+  assert.equal(homeCallId(after), "ch3_home_call_sumi_fan");
+  after.chapter = 4;
+  assert.equal(homeCallId(after), null);
+  // 保存と読み込みで既読が残る
+  const storage = new Map();
+  globalThis.localStorage = { getItem: key => storage.get(key) ?? null, setItem: (key, v) => storage.set(key, String(v)) };
+  const saved = departure();
+  saved.contacts = ["sumi"];
+  saved.flags._ch3_room_rests = 1;
+  recordHomeCall(saved, homeCallId(saved));
+  setState(saved);
+  assert(saveToSlot("suien_remake_slot1"));
+  const loaded = loadFromSlot("suien_remake_slot1");
+  assert.equal(homeCallId(loaded), null);
+  assert.equal(homeCallId(loaded, { night: true }), "ch3_home_call_sumi_pocket");
+
+  // 台本: 一覧の全部があり、電話をかけてくる人が話す（ポケットの誤発信だけは店の音とLIME）。はじめは味の感想を言わず、大会・事件に触れない
+  const calls = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_home_calls.json", import.meta.url)));
+  const byId = Object.fromEntries(calls.dialogues.map(scene => [scene.dialogue_id, scene]));
+  assert.deepEqual(Object.keys(byId).sort(), [...HOME_CALL_IDS].sort());
+  for (const { scene: id, from } of HOME_CALLS) {
+    const scene = byId[id];
+    assert(scene.lines.length >= 12, `${id}: a full scene, not a stub`);
+    assert(scene.lines.every(line => !line.type && typeof line.text === "string" && line.text.length > 0));
+    assert.equal(scene.metadata, undefined, `${id}: no reward or background override`);
+    if (id !== "ch3_home_call_sumi_pocket") assert(scene.lines.filter(line => line.speaker === from).length >= 4, `${id}: ${from} speaks`);
+    const text = scene.lines.map(line => line.text).join("\n");
+    assert.doesNotMatch(text, /大会|ダブルアップル|舌|なるさん/, `${id}: readable before and after the taste returns, apart from the story`);
+    assert.match(text, /スマホ|電話|通話/, `${id}: reads as a call`);
+  }
+}
+console.log("PASS: home calls replace a Tokyo rest one at a time, only from contacts and only before the national tournament");

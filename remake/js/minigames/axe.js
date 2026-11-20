@@ -1,5 +1,6 @@
 // Caller awaits preceding VN. Practice never reads or writes story/save state.
 import { el } from "../core/util.js";
+import { buildVersioned } from "../core/asset-version.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { onStageFit } from "../core/stage-fit.js";
 import { portraitStyle } from "../core/portrait-style.js";
@@ -42,18 +43,37 @@ const CUT_MARK = imgFileUrl("ui/axe_throw/cut-mark.webp");
 const CHIPS = { src: imgFileUrl("ui/axe_throw/wood-chips.webp"), cell: 128, cols: 4, rows: 2, size: 26 };
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
+// Load the first-person controls only for this minigame, like the craft water UI.
+let aimStyle;
+function loadAimStyle() {
+  if (!aimStyle) aimStyle = new Promise((resolve, reject) => {
+    const href = buildVersioned(new URL("../../css/axe-aim.css", import.meta.url).href);
+    const link = el("link", { rel: "stylesheet", href });
+    link.onload = resolve;
+    link.onerror = () => { link.remove(); aimStyle = null; reject(new Error("Axe aiming styles unavailable")); };
+    document.head.append(link);
+  });
+  return aimStyle;
+}
 const { x: CX, y: CY, radius: R } = TARGET;
-// 一人称の的の見せ方（#3639 オーナー指示 2026-11-18 差し替え＋同日第4弾で寄せ）: 板の中心は少し上げた
-// (CX, 215) のまま、写真側を 1.15 倍に寄せて「的の近くから投げる」感じにする。板も同じ中心で同率に
-// 拡げるため、表示変換は scale .85×1.15＝.9775 だけになる。板ローカル座標（CX/CY/R）と判定は一切
-// 変えず、表示変換はこの transform だけが担う（クリック変換は変換グループの CTM で追随する）。
-const FPS_BOARD_TRANSFORM = `translate(${CX} 215) scale(.9775) translate(${-CX} ${-CY})`;
-// 手元の型（#3639 オーナー指示 2026-11-18 第3弾「手元をレイヤー上に」＋第4弾で両手構えへ差し替え）: 構え絵
-// （bg_axe_lane_aim）に焼き込まれた両手と斧の輪郭。素のレーン絵との差分の最大輪郭を実測し、写真の寄せ
-// （x=-245, y=-107, 1150×646.875）に合わせて画像座標（1280×720）から viewBox 座標へ換算したもの。
-// 右下は「横を止める」ボタンに被らないよう、ボタンの範囲を画像座標へ戻した x>=965 かつ y>=575 を切り落としてある。
-// 表示だけの型で、判定・座標には使わない。
-const HAND_SILHOUETTE = "M613.9 84.4L581.6 67.3L558.2 74.5L525.0 52.9L497.1 21.5L486.3 26.9L445.9 84.4L437.8 123.0L440.5 147.3L471.1 130.2L516.0 118.5L516.0 110.4L503.4 109.5L503.4 96.9L498.0 112.2L489.9 111.3L488.1 86.2L498.0 81.7L524.1 88.9L524.1 78.1L508.8 77.2L508.8 56.5L525.0 60.1L533.9 72.7L540.2 122.1L533.9 123.0L498.0 208.4L455.8 229.0L459.4 248.8L446.8 256.0L434.2 311.7L441.4 333.2L435.1 345.8L401.0 348.5L390.2 363.8L383.0 363.8L374.0 348.5L326.4 349.4L310.2 371.9L312.9 387.1L283.3 381.8L283.3 396.1L268.0 400.6L267.1 408.7L224.9 412.3L248.2 418.6L246.4 436.6L256.3 431.2L257.2 422.2L278.8 431.2L273.4 444.6L283.3 445.5L281.5 466.2L271.6 467.1L262.6 479.7L222.2 479.7L221.3 470.7L194.3 486.0L134.1 482.4L122.5 491.4L120.7 505.7L144.9 517.4L164.7 517.4L171.9 504.8L180.9 504.8L183.6 513.8L206.9 511.1L207.8 519.2L191.6 525.5L186.2 539.0L195.2 539.0L201.5 529.1L229.4 529.1L230.3 539.0L363.2 539.0L385.7 516.5L395.6 518.3L397.4 539.0L434.2 539.0L435.1 532.7L444.1 532.7L444.1 525.5L435.1 523.7L439.6 508.4L467.5 512.0L474.6 526.4L494.4 521.9L500.7 533.6L507.9 533.6L509.7 523.7L520.5 522.8L521.4 503.9L511.5 503.9L509.7 495.0L482.7 479.7L452.2 478.8L452.2 467.1L466.6 463.5L459.4 453.6L461.2 441.9L469.3 441.0L464.8 424.9L478.2 423.1L478.2 410.5L462.1 402.4L462.1 390.7L482.7 388.0L472.9 364.7L478.2 350.3L486.3 349.4L584.3 433.9L579.8 459.9L588.8 443.7L606.7 453.6L605.8 469.8L590.5 468.0L587.0 474.3L601.3 479.7L605.8 506.6L621.1 506.6L614.8 500.3L621.1 453.6L592.3 430.3L592.3 422.2L621.1 424.9L621.1 394.3L636.4 396.1L632.8 408.7L708.2 407.8L615.7 334.1L579.8 314.4L569.0 300.9L566.3 276.6L551.9 262.3L550.1 247.0L533.9 234.4L557.3 188.6L551.9 176.0L560.0 173.3L560.9 163.4L576.2 172.4L577.1 157.1L569.9 152.6L574.4 139.2L561.8 132.0L561.8 122.1L574.4 118.5L580.7 95.1L598.6 92.5L614.8 98.7Z";
+// #3807: frame the lane and the scoring board with one camera. The hand stays at arm's length.
+const FPS_CENTER_Y = 211;
+const FPS_BOARD_TRANSFORM = `translate(${CX} ${FPS_CENTER_Y}) scale(.895) translate(${-CX} ${-CY})`;
+// Outline in the original 1280×720 aiming photo. Keep the gap between the arms open to the lane.
+const HAND_SILHOUETTE = [
+  "M825 142 Q778 177 765 224 Q756 261 766 286 Q815 250 854 255 L868 260 L825 354",
+  "Q816 350 808 359 Q802 368 787 370 Q776 372 781 382 Q782 387 790 390",
+  "Q773 390 769 402 Q765 412 777 424 Q764 423 761 434 Q757 445 768 452",
+  "Q755 454 757 465 Q758 476 769 482 L756 507 Q738 507 722 508",
+  "Q711 509 704 526 Q691 542 680 565 Q670 585 640 607 Q621 605 604 621",
+  "Q591 635 581 642 L565 655 Q551 661 544 666 L478 720 H677 Q692 705 695 682 Q701 694 734 702",
+  "Q750 707 755 689 L763 645 Q782 649 788 636 L787 628 Q798 623 797 611",
+  "L795 606 Q809 601 806 582 L805 578 Q819 575 811 561 Q817 543 802 532",
+  "L817 502 Q839 516 878 552 Q875 575 890 596 Q931 646 960 720 H1263",
+  "Q1195 663 1116 613 Q1047 565 992 519 Q959 484 942 488 Q911 471 899 447",
+  "Q890 430 885 404 Q882 389 864 378 L923 278 L955 294 L986 245 L956 230",
+  "L959 220 Q960 210 937 201 Q915 190 910 195 L904 205 Q857 184 825 142 Z",
+].join(" ");
 // Solid plank edges inside the 1254px artwork (alpha 250+, asset_sources/ui/axe-watl-20261101/adoption.json); the transparent margin is not wood.
 const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 1190 / 1254 };
 const PLANK = { left: CX + BOARD.left * R, right: CX + BOARD.right * R, top: CY + BOARD.top * R, bottom: CY + BOARD.bottom * R };
@@ -71,6 +91,22 @@ const FLICK_MISS = { shallow: ["弾きが浅い", "↑ もう少し上まで弾�
 // Each context swaps only the greeting and the send-off; the five teaching steps are shared.
 export const LESSON_CONTEXTS = ["first", "event"];
 const LESSON_STEPS = ["welcome", "target", "horizontal", "vertical", "power", "result", "finish"];
+// Keep the companion's face and reaction selection; use a brief line in the first-person lane.
+function shortHiyori(text, phase, shot, called, context, actor) {
+  if (phase === "result" && shot && actor === "player") {
+    const lines = { bull: "ど真ん中ね", killshot: "キルショットね", "killshot-miss": "惜しい、青の外ね", hit: "いい当たりね", miss: "もう少しだったね", drop: "惜しい、落ちちゃった" };
+    return lines[shot.outcome] || "次も見てるね";
+  }
+  if (phase === "choice" && called && !context.suddenDeath) return "キルショットね";
+  const first = text.trim().replace(/^…+\s*/u, "").split(/[。！？\n]/u)[0];
+  if (first && first.length <= 10) return first;
+  if (context.suddenDeath) return "ここで決着ね";
+  if (phase === "summary") return "いい勝負だったね";
+  if (context.switching) return "次は向こうの板ね";
+  if (context.last) return "最後の一投ね";
+  return actor === "opponent" ? "私も投げるね" : "肩の力を抜いてね";
+}
+
 export function runAxeThrow({ host = document.getElementById("stage") || document.getElementById("axe-app"),
   signal, mode = "practice", tutorial = false, opponent = tutorial ? null : "hiyori", allowRetry = true, difficulty = "normal", seed,
   division = "rec", bestOf = 1, lessonContext = null, steady, gearId = "house", inputMode = "tap-pull", autoAdvance = true, reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
@@ -139,6 +175,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     tabindex: "-1", dataset: { test: "axe-game" }, style: { "--axe-bg": "url('" + ART.bg + "')" } });
   root.classList.toggle("axe-first-person", tapPull); root.dataset.inputMode = inputMode; root.dataset.gearId = gearId;
   root.dataset.mode = mode; root.dataset.division = division;
+  if (tapPull) root.dataset.scoreLayout = host.dataset.axeScoreLayout === "top" ? "top" : "side";
   root.dataset.tutorial = String(tutorial);
   root.dataset.reducedMotion = String(reducedMotion);
   if (host.id === "stage" || host.closest("#stage")) root.classList.add("axe-in-stage"); // 試遊ページも #stage の中（#3076）なら本編と同じ大きさ規格
@@ -152,10 +189,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     // #2834: 「やめる」も「？」と同じ丸い札（✕）。名前は読み上げ用の文字で付ける。
     el("button.axe-button.axe-close.axe-help", { type: "button", title: "やめる", dataset: { test: "axe-cancel" }, onclick: () => cleanup(false) },
       [el("span", { "aria-hidden": "true", text: "✕" }), el("span.axe-quiet", { text: "やめる" })])]);
-  // 一人称ではスコア類（REC・各投・合計・投数・連続）を上部バーから外し、右上の細いピルへ寄せる
-  // （#3639 オーナー指示 2026-11-18 第3弾: 下部中央から右上へ移し、下部は手元と操作のために開ける）。
-  // ？／× はピルの右隣に並ぶ。中身の作り・更新は従来どおりで、置き場所だけが変わる。
+  // 一人称の得点はレーンの端にまとめる。？／×は左上に独立させ、投げる面を空ける。
   const scorePill = tapPull ? el("div.axe-score-pill", { dataset: { test: "axe-score-pill" } }) : null;
+  const scoreLatest = el("strong"), scoreOpponent = el("strong");
+  const scoreLatestLabel = el("span", { text: "直近" });
+  const scoreRound = el("span.axe-score-round");
   if (scorePill) scorePill.append(round);
   const divisionBadge = el("span.axe-division", { text: DIVISIONS[division].short, title: DIVISIONS[division].name + "：" + DIVISIONS[division].note, dataset: { test: "axe-division" } });
   if (scorePill) scorePill.append(divisionBadge); else heading.insertBefore(divisionBadge, round);
@@ -164,17 +202,25 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const totalValue = el("strong", { text: "0" });
   // 次のランクまでの残り（指摘12・桜井 #023「目の前に吊られたごほうび」）。ひとりで投げる時だけ、合計点の脇に小さく
   const nextGoal = el("em.axe-total-next", { hidden: true, dataset: { test: "axe-total-next" } });
-  const total = el("div.axe-total", { dataset: { test: "axe-total" } }, [
-    el("small", { text: versus ? "あなたの合計" : "合計点" }), totalValue, el("span", { text: "/ " + rules.max + "点" }), nextGoal,
-  ]);
-  if (scorePill) scorePill.append(total); else heading.insertBefore(total, round);
+  const total = scorePill
+    ? el("div.axe-total.axe-score-reading", { dataset: { test: "axe-total", reading: "total" } }, [el("span", { text: versus ? "あなた" : "累計" }), totalValue])
+    : el("div.axe-total", { dataset: { test: "axe-total" } }, [
+      el("small", { text: versus ? "あなたの合計" : "合計点" }), totalValue, el("span", { text: "/ " + rules.max + "点" }), nextGoal,
+    ]);
+  if (!scorePill) heading.insertBefore(total, round);
+  const scoreFigures = scorePill ? el("section.axe-score-figures", { "aria-label": "得点" }, [
+    el("div.axe-score-reading", { dataset: { reading: "latest" } }, [scoreLatestLabel, scoreLatest]),
+    total,
+    versus ? el("div.axe-score-reading", { dataset: { reading: "opponent" } }, [el("span", { text: rivalName }), scoreOpponent]) : null,
+    scoreRound,
+  ]) : null;
   const heat = el("span.axe-heat", { hidden: true, "aria-live": "polite", dataset: { test: "axe-heat" } });
   if (scorePill) scorePill.append(heat); else heading.insertBefore(heat, round);
   const scoreboard = el("div.axe-scoreboard", { role: "table", "aria-label": "各投の得点", dataset: { test: "axe-scoreboard" } });
   const goals = el("ul.axe-challenges", { hidden: !challengeIds.length, "aria-label": "この回のチャレンジ", dataset: { test: "axe-challenges" } });
   const portrait = el("img.axe-portrait", { alt: companion?.name || "", dataset: { test: "axe-portrait" } });
   const comment = el("p.axe-comment", { "aria-live": "polite", dataset: { test: "axe-comment" } });
-  const companionCard = companion ? el("div.axe-companion", [el("div.axe-portrait-frame", [portrait]), el("div", [el("strong", { text: companion.name }), comment])]) : null;
+  const companionCard = companion ? el("div.axe-companion", [el("div.axe-portrait-frame", [portrait]), el("div.axe-companion-copy", [el("strong", { text: companion.name }), comment])]) : null;
   // 描画は2枚に分ける（2026-11-10）: 木の板・塗装・過去の切れ込みは動かない下の層（.axe-target-art）、
   // 照準・針・飛ぶ斧・着弾の演出は上の層（.axe-target）。毎フレーム描き直すのは上の層だけになる。
   let boardScaleG = null; // 一人称の表示変換グループ（上の層）。構築の最後に board の中身をここへ寄せる
@@ -192,7 +238,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         return;
       }
       if (phase === "horizontal" || phase === "vertical") { act(); return; }
-      if (phase !== "choice") return;
+      if (phase !== "choice" || suddenDeath()) return;
+      act(); return;
     }
     if (cycles[phase]) { act(); return; }
     if (phase !== "choice" || actor !== "player" || isPaused() || suddenDeath()) return;
@@ -202,7 +249,6 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const nearest = KILLS.map(k => ({ id: k.id, d: Math.hypot(p.x - (CX + k.x * R), p.y - (CY + k.y * R)) })).sort((a, b) => a.d - b.d)[0];
     if (nearest.d <= 26) selectCall(nearest.id);
     else if (called && Math.hypot(p.x - CX, p.y - CY) < R * .7) selectCall(null);
-    else if (tapPull) act(); // 青以外に触れたら構える（横のゲージが動き出す）
   }, { signal: lifetime.signal });
   if (tapPull) {
     for (const layer of [artBoard, board]) layer.setAttribute("viewBox", "-170 -65 1000 562.5");
@@ -219,6 +265,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const floorShadowId = artId + "-floor-shadow";
   const boardScaleArt = svg("g", { class: "axe-board-scale" });
   if (tapPull) boardScaleArt.setAttribute("transform", FPS_BOARD_TRANSFORM);
+  if (tapPull) boardScaleArt.append(svg("ellipse", { class: "axe-floor-shadow", cx: CX, cy: PLANK.bottom,
+    rx: (PLANK.right - PLANK.left) / 2, ry: 17, fill: `url(#${floorShadowId})`, "aria-hidden": "true" }));
   boardScaleArt.append(art);
   artBoard.append(svg("defs", {}, [svg("radialGradient", { id: vignetteId, cx: CX, cy: CY, r: R * 1.62, gradientUnits: "userSpaceOnUse" }, [
     svg("stop", { offset: "0", "stop-color": "#fff3d6", "stop-opacity": .08 }), svg("stop", { offset: ".55", "stop-color": "#000", "stop-opacity": 0 }),
@@ -226,26 +274,27 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     svg("radialGradient", { id: floorShadowId }, [
       svg("stop", { offset: "0", "stop-color": "#000", "stop-opacity": .42 }), svg("stop", { offset: ".7", "stop-color": "#000", "stop-opacity": .2 }),
       svg("stop", { offset: "1", "stop-color": "#000", "stop-opacity": 0 })])]),
-    ...(tapPull ? [svg("ellipse", { class: "axe-floor-shadow", cx: CX, cy: 414, rx: 210, ry: 17, fill: `url(#${floorShadowId})`, "aria-hidden": "true" })] : []),
     boardScaleArt);
-  // 一人称レーンの背景絵（#3639）: レーンの中に立った視点の絵を全面に敷き、狙いの間だけ構え（右手と斧）の絵を重ねる。
-  // 絵の中の的は無地の円盤で、得点の盤面はこれまでどおり板とSVGが担う（判定・座標は一切変えない）。
   let laneAimImage = null, handFront = null, handFrontImage = null;
   if (tapPull) {
-    laneAimImage = svg("image", { class: "axe-lane-aim", href: ART.laneAim, x: -245, y: -107, width: 1150, height: 646.875, preserveAspectRatio: "xMidYMid slice", opacity: 0 });
-    const lane = svg("g", { class: "axe-fps-lane" }, [
-      svg("rect", { x: -170, y: -65, width: 1000, height: 562.5, fill: "#171f22" }),
-      svg("image", { class: "axe-lane-bg", href: ART.lane, x: -245, y: -107, width: 1150, height: 646.875, preserveAspectRatio: "xMidYMid slice" }),
-      laneAimImage,
-    ]);
-    artBoard.insertBefore(lane, artBoard.firstChild);
-    // 手元を最前面へ（#3639 オーナー指示 2026-11-18 第3弾）: 構え絵は背景に焼き込まれているため、同じ絵を
-    // 右手と斧の輪郭（HAND_SILHOUETTE）で型抜きした複写を別層で重ね、スコアピル等より上に描く。
-    // 元の構え絵とピクセル単位で重なるので見た目は変わらず、手元だけが前面に来る。タッチは受けない（CSS）。
-    const handClipId = artId + "-hand-clip";
-    handFrontImage = svg("image", { class: "axe-hand-front-img", href: ART.laneAim, x: -245, y: -107, width: 1150, height: 646.875, preserveAspectRatio: "xMidYMid slice", opacity: 0, "clip-path": `url(#${handClipId})` });
+    // Fit the narrower lane to the original camera; the board and its shadow meet the rear floor seam.
+    const w = 1000, h = 562.5;
+    artBoard.insertBefore(svg("image", { class: "axe-lane-bg", href: ART.lane,
+      x: CX - w / 2, y: -65, width: w, height: h }), artBoard.firstChild);
+
+    // The aiming photo includes the lane. Reuse only the foreground at its original size and position.
+    const handId = artId + "-hands", clipId = handId + "-outline", frontId = handId + "-front";
+    artBoard.append(svg("defs", {}, [
+      svg("clipPath", { id: clipId }, [svg("path", { d: HAND_SILHOUETTE })]),
+      svg("svg", { id: handId, x: -245, y: -107, width: 1150, height: 646.875, viewBox: "0 0 1280 720" }, [
+        svg("image", { href: ART.laneAim, width: 1280, height: 720, "clip-path": `url(#${clipId})` })]),
+    ]));
+    laneAimImage = svg("use", { class: "axe-lane-aim", href: "#" + handId, opacity: 0 });
+    artBoard.append(laneAimImage);
+    // Keep the lower-right sleeve behind the action button, as in the original framing.
+    handFrontImage = svg("use", { class: "axe-hand-front-img", href: "#" + handId, opacity: 0, "clip-path": `url(#${frontId})` });
     handFront = svg("svg", { viewBox: "-170 -65 1000 562.5", class: "axe-hand-front", "aria-hidden": "true" }, [
-      svg("defs", {}, [svg("clipPath", { id: handClipId }, [svg("path", { d: HAND_SILHOUETTE })])]), handFrontImage]);
+      svg("defs", {}, [svg("clipPath", { id: frontId }, [svg("path", { d: "M-170 -65H830V396H565V497.5H-170Z" })])]), handFrontImage]);
   }
   // Painted markings at the official proportions: 20 mm black lines, red bulls, blue killshots.
   // WATL: the inner killshot is outlined in red pen, the outer may be red; the pen lines sit inside each circle so the blue reads at its true size.
@@ -290,6 +339,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       viewBox: `${chip % CHIPS.cols * CHIPS.cell} ${Math.floor(chip / CHIPS.cols) * CHIPS.cell} ${CHIPS.cell} ${CHIPS.cell}`,
     }, [svg("image", { href: CHIPS.src, width: CHIPS.cell * CHIPS.cols, height: CHIPS.cell * CHIPS.rows })])]);
   });
+  const prizeId = artId + "-prize";
+  board.append(svg("defs", {}, [svg("linearGradient", { id: prizeId, x2: ".22", y2: "1" },
+    ["#ffffff", "#ff7996", "#ffd254", "#92f797", "#5cdfff", "#ba97ff"].map((color, i) =>
+      svg("stop", { offset: i / 5, "stop-color": color })))]));
   const burst = svg("text", { class: "axe-score-burst", "text-anchor": "middle", "font-size": 38,
     "font-weight": 900, "paint-order": "stroke", stroke: "#17120e", "stroke-width": 4 });
   const impactFx = svg("g", { class: "axe-impact-fx", opacity: 0, "aria-hidden": "true", "pointer-events": "none" }, [impactFlash, darkRing, impactRing, echoRing, ...dust, ...splinters, burst]);
@@ -307,6 +360,23 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const contactShadow = svg("ellipse", { class: "axe-contact-shadow", rx: 0, ry: 0, fill: `url(#${shadowId})`, opacity: 0 });
   // 宣言した青を囲む輪。光らせる効果（filter）の代わりに線で描く。
   const calledRing = svg("circle", { class: "axe-called-ring", r: KILLS[0].outer * R + 5, fill: "none", stroke: "#fff5b1", "stroke-width": 3, opacity: 0 });
+  const callLight = svg("g", { class: "axe-call-light", fill: "none", "pointer-events": "none", "aria-hidden": "true" });
+  // One short cue at the chosen blue or the blade contact. It never enters the scoring art used by the zoom.
+  function lightCall(kind, point) {
+    callLight.replaceChildren();
+    if (!point || !tapPull || actor !== "player" || suddenDeath()) return;
+    callLight.setAttribute("transform", `translate(${CX + point.x * R} ${CY + point.y * R})`);
+    const iris = svg("g", { class: "axe-call-iris", "data-cue": kind }, [
+      svg("circle", { r: 25, "stroke-width": 7, opacity: .32 }),
+      svg("circle", { r: 25, "stroke-width": 2 }),
+      svg("path", { d: "M-42 0h10M32 0h10M0 -42v10M0 32v10", "stroke-width": 3, "stroke-linecap": "round" }),
+    ]);
+    if (kind === "hit") {
+      iris.append(svg("path", { d: "M-42 -23l-10 -7m18 59-9 10m56-75 6-13m16 67 12 9m6-49 10-4",
+        stroke: "#fff5c9", "stroke-width": 3, "stroke-linecap": "round" }));
+    }
+    callLight.append(iris);
+  }
   const bladePx = BLADE.halfLength * R;
   // The white blade marker is the 4 in cutting edge: the highest zone it touches scores.
   // A dark outline under the white blade keeps it readable on light and dark wood alike.
@@ -358,9 +428,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const sdBadge = svg("text", { class: "axe-sd-badge", x: CX, y: VIEW.y + 26, "text-anchor": "middle", fill: "#9cecff", "font-size": 22, "font-weight": 900, opacity: 0 }, ["SUDDEN DEATH"]);
   const gaugeLabel = (x, y, text, fill, anchor, step) => svg("text", { class: "axe-gauge-label", "data-gauge": step, x, y, "text-anchor": anchor, fill, "font-size": 22, "font-weight": 900,
     "paint-order": "stroke", stroke: "#140d08", "stroke-width": 4 }, [text]);
-  board.append(zoneHalo, calledRing, powerShift, releaseDot, contactShadow, impacts, impactMark, trail, ...ghosts, flying, fixedAim, crosshair, flickHint, impactFx,
-    gaugeLabel(CX, VIEW.y + VIEW.size - 10, tapPull ? "↔ 横 · 金の印でタップ" : "↔ 横", "#a9dcef", "middle", "horizontal"),
-    gaugeLabel(tapPull ? PLANK.right - 30 : VIEW.x + VIEW.size - 8, CY - 26, "↕ 縦", "#f1c983", "end", "vertical"), guideX, guideY, xNeedle, yNeedle, sdBadge);
+  board.append(zoneHalo, callLight, calledRing, powerShift, releaseDot, contactShadow, impacts, impactMark, trail, ...ghosts, flying, fixedAim, crosshair, flickHint, impactFx,
+    ...(tapPull ? [] : [
+      gaugeLabel(CX, VIEW.y + VIEW.size - 10, "↔ 横", "#a9dcef", "middle", "horizontal"),
+      gaugeLabel(VIEW.x + VIEW.size - 8, CY - 26, "↕ 縦", "#f1c983", "end", "vertical"),
+    ]), guideX, guideY, xNeedle, yNeedle, sdBadge);
   // 一人称の手（指摘2）: 以前はSVGの手と斧を重ねていたが、#3639 で構えの絵（背景に描き込んだ右手と斧）に置き換えた。
   // 狙いの間は laneAim の絵が手元を担い、投げた瞬間に素のレーンへ戻って飛ぶ斧（SVG）へ繋ぐ。hands は常に null（姿勢まわりの分岐は休眠）。
   const hands = null;
@@ -393,12 +465,33 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     powerWords]);
   const resultCard = el("div.axe-result-card", { hidden: true, dataset: { test: "axe-result" } }, [resultLabel, resultValue, powerReview, rankBadge, resultTip]);
   const status = el("p.axe-call-status", { dataset: { test: "axe-call-status" } });
-  const calls = el("div.axe-calls", [el("button.axe-button", { text: "通常", dataset: { call: "normal" }, onclick: () => selectCall(null) }),
+  const normalCall = el("button.axe-button", { text: "通常", dataset: { call: "normal" }, onclick: () => selectCall(null) });
+  const calls = tapPull ? null : el("div.axe-calls", [normalCall,
     ...KILLS.map(target => el("button.axe-button", { text: killPlaces[target.id] + "の青",
       dataset: { call: target.id }, onclick: () => selectCall(target.id) }))]);
-  // 宣言の札の見出し（#3639 オーナー指示 2026-11-18 第3弾「左上のどこを狙うUIが分かりにくい」）:
-  // 札の真上に「ねらい」の小さな札を浮かべ、何を選ぶ場所か一目で分かるようにする。表示条件は札本体とそろえる。
-  const callsLabel = tapPull ? el("div.axe-calls-label", { dataset: { test: "axe-calls-label" }, text: "ねらい" }) : null;
+  const callOrder = ["upper-left", "lower-left", "upper-right", "lower-right"];
+  const callDial = svg("svg", { class: "axe-call-dial", viewBox: "0 0 56 56", "aria-hidden": "true" }, [
+    svg("circle", { cx: 28, cy: 28, r: 14, fill: "none", stroke: "currentColor", "stroke-width": 2 }),
+    svg("path", { d: "M28 8v12m0 16v12M8 28h12m16 0h12", fill: "none", stroke: "currentColor", "stroke-width": 3 }),
+    ...callOrder.map((id, i) => svg("circle", { cx: i < 2 ? 12 : 44, cy: i % 2 ? 44 : 12, r: 5, "data-blue": id })),
+  ]);
+  const callCount = el("span.axe-call-count", { "aria-hidden": "true" });
+  const callName = el("span.axe-call-name", { text: "キルショット" });
+  const callToggle = tapPull ? el("button.axe-call-toggle", {
+    type: "button", dataset: { test: "axe-call-picker" }, onclick: cycleCall,
+  }, [callDial, callName, callCount]) : null;
+  const cancelCall = tapPull ? el("button.axe-call-cancel", {
+    type: "button", hidden: true, title: "通常投げに戻す", "aria-label": "宣言を取り消して通常投げに戻す",
+    dataset: { test: "axe-call-cancel" }, onclick: () => selectCall(null),
+  }, [svg("svg", { viewBox: "0 0 40 40", "aria-hidden": "true" }, [
+    svg("path", { d: "M15 8 5 17l10 9m-8-9h17c12 0 12 15 0 15h-5", fill: "none", stroke: "currentColor", "stroke-width": 4, "stroke-linecap": "round", "stroke-linejoin": "round" }),
+  ])]) : null;
+  const calledPlace = tapPull ? el("span.axe-quiet", { role: "status", "aria-atomic": "true" }) : null;
+  const callControls = tapPull ? el("div.axe-call-controls", [callToggle, cancelCall, calledPlace]) : null;
+  const verdictWord = el("strong");
+  const callVerdict = tapPull ? el("div.axe-call-verdict", { hidden: true, role: "status", dataset: { test: "axe-call-verdict" } }, [
+    el("i", { "aria-hidden": "true" }), el("span", [el("small", { text: "キルショット" }), verdictWord]),
+  ]) : null;
   const liveValue = el("strong"), liveReason = el("span.axe-live-reason");
   const liveScore = el("div.axe-live-score", { hidden: true, dataset: { test: "axe-live-score" } }, [el("span.axe-live-label", { text: "今の刃先" }), liveValue, liveReason]);
   const needle = el("span.axe-needle", { dataset: { test: "axe-needle" } });
@@ -412,11 +505,26 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const gauge = el("div.axe-gauge", { role: "img", "aria-label": "回転ゲージ。緑の帯が刃から当たる回転" }, [
     el("span.axe-stick", { style: { "--from": POWER.stickMin * 100 + "%", "--size": (POWER.stickMax - POWER.stickMin) * 100 + "%" } }),
     el("span.axe-sweet", { style: { "--from": POWER.sweetMin * 100 + "%", "--size": (POWER.sweetMax - POWER.sweetMin) * 100 + "%" } }), powerFill, needle]);
-  const pullHandle = el("button.axe-pull-handle", { type: "button", text: "↑", "aria-label": "上へ素早く弾いて投げる（狙いはそのまま）。Space長押しでも投げられます", dataset: { test: "axe-pull-handle" } });
+  const pullHandle = el("button.axe-pull-handle", { type: "button", "aria-label": "上へ素早く弾いて投げる（狙いはそのまま）。Space長押しでも投げられます", dataset: { test: "axe-pull-handle" } }, [
+    el("span.axe-flick-emblem", { "aria-hidden": "true" }, [
+      svg("svg", { viewBox: "0 0 112 184", class: "axe-flick-arrows", fill: "none" }, [
+        svg("path", { d: "M15 148V49Q15 23 41 19L66 15Q97 12 97 43V148Q96 176 57 180Q18 177 15 148Z", fill: "#151b1d", "fill-opacity": .93, stroke: "#e0b674", "stroke-width": 3 }),
+        svg("path", { d: "M43 137V63m26 74V63", stroke: "#886b48", "stroke-width": 2 }),
+        svg("path", { d: "M56 135V39m-17 15 17-21 17 21", stroke: "#fff2bd", "stroke-width": 6, "stroke-linecap": "round", "stroke-linejoin": "round" }),
+        svg("circle", { cx: 56, cy: 144, r: 24, fill: "#332822", stroke: "#ffda95", "stroke-width": 3 }),
+        svg("g", { class: "axe-swipe-grip" }, [
+          svg("image", { x: 31, y: 113, width: 51, height: 60, transform: "rotate(18 56 144)", href: imgFileUrl("ui/axe_throw/throwing_axe.webp") }),
+        ]),
+      ]),
+    ]),
+  ]);
+  let swipeShown = false;
+  pullHandle.addEventListener("animationend", e => {
+    if (e.animationName === "axe-swipe-demo") pullHandle.dataset.demonstrate = "false";
+  }, { signal: lifetime.signal });
   const green = axeGreenBand(gearId);
   const pullTrack = el("div.axe-pull-track", [el("i.axe-pull-green", { style: { top: green.min * 100 + "%", height: (green.max - green.min) * 100 + "%" } }), pullHandle]);
-  const pullLabel = el("p.axe-pull-label", { text: "上へ弾いて投げる" });
-  const timing = el("div.axe-timing", [powerLabel, powerReadout, gauge, ...(tapPull ? [pullLabel, pullTrack] : [])]);
+  const timing = el("div.axe-timing", [powerLabel, powerReadout, gauge, ...(tapPull ? [pullTrack] : [])]);
   const feedback = el("p.axe-feedback", { dataset: { test: "axe-feedback" } });
   // #2729 (2026-11-08): the throw button stands on its own below the panel, with an axe on it, so the place to throw reads at a glance.
   const actionLabel = el("span.axe-action-label");
@@ -461,20 +569,25 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   // 的は中央。狙いの札（通常・青の宣言）は的の上に重ね、構えたら消える。回転ゲージは的のすぐ右に縦で立つ。
   // 左は見守りの一言とチャレンジ（投げている間は消える）、右は結果と操作のボタンだけ。
   const throwZone = el("div.axe-throw", { dataset: { test: "axe-throw" } }, [action, retry]);
-  // 狙いの案内（#3639・UI案A）: 的の上に「どこを狙う？」を浮かべ、今が狙う位置を決める場面だと一目で分かるようにする。
-  // 宣言中は同じ場所の宣言札に切り替える。タッチは一切受けない（pointer-events: none はCSS）。
-  const aimPromptTitle = el("strong.axe-aim-prompt-title", { text: "どこを狙う？" });
-  const aimPromptSub = el("span.axe-aim-prompt-sub", { text: "的に触れて位置を決め、上へ弾いて投げる" });
-  const aimPrompt = tapPull ? el("div.axe-aim-prompt", { hidden: true, dataset: { test: "axe-aim-prompt" }, "aria-hidden": "true" }, [aimPromptTitle, aimPromptSub]) : null;
+  const aimSteps = {
+    choice: ["ねらい", "的をタップ"],
+    horizontal: ["ねらい 1 / 2", "左右の針を止める"],
+    vertical: ["ねらい 2 / 2", "上下の針を止める"],
+    power: ["投げる", "上へ弾く"],
+  };
+  const aimPromptTitle = el("span.axe-aim-prompt-title");
+  const aimPromptSub = el("strong.axe-aim-prompt-sub");
+  const aimPrompt = tapPull ? el("div.axe-aim-prompt", { hidden: true, dataset: { test: "axe-aim-prompt" }, role: "status" }, [aimPromptTitle, aimPromptSub]) : null;
+  const aimPanel = tapPull ? el("div.axe-aim-panel", [aimPrompt, callControls]) : calls;
   const boardPane = el("div.axe-board-pane", [
-    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), artBoard, board, zoom, calls, callsLabel, status, aimPrompt, handFront]),
+    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), artBoard, board, zoom, aimPanel, status, handFront]),
     side = el("aside.axe-side", { dataset: { test: "axe-side" } }, [matchScore, goals, companionCard]),
     panel = el("aside.axe-panel", [matchRecords, steps, liveScore, resultCard, note, feedback, steadiness, stability, keyhint, controls, throwZone]);
   const body = el("div.axe-body", [side, boardPane, timing, panel]);
   // #2729 (2026-11-08): the per-throw strip shares the sign's row (between the title and the total), so the board gets that row's height.
-  if (scorePill) scorePill.append(scoreboard); else heading.insertBefore(scoreboard, total);
+  if (scorePill) scorePill.append(scoreFigures, scoreboard); else heading.insertBefore(scoreboard, total);
   root.append(heading, body, announcement);
-  if (scorePill) root.append(scorePill);
+  if (scorePill) root.append(scorePill, callVerdict, el("i.axe-swipe-release", { "aria-hidden": "true" }));
   // #2718: 始まった瞬間の切り替えの幕。見た目だけ（文字はCSSで描き、読み上げ・入力・時計・判定には触れない）。動きを減らす設定では出さない。
   if (!reducedMotion) {
     const label = tutorial ? "マキの無料1投レッスン" : versus ? rivalName + "と対戦" : mode === "league" ? "10投ゲーム" : "3投の練習";
@@ -495,7 +608,12 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     aimOnTouch: false, canAim: () => false,
     canPull: () => actor === "player" && phase === "power" && !isPaused(),
     onAim: () => {},
-    onPower: raw => { rawPower = raw; power = axePower(raw, gearId); render(); },
+    onPower: raw => {
+      rawPower = raw; power = axePower(raw, gearId);
+      if (pullInput?.pulling) pullHandle.dataset.demonstrate = "false";
+      pullHandle.style.setProperty("--axe-swipe-y", (-85 * (pullInput?.swipeProgress || 0)).toFixed(1) + "px");
+      render();
+    },
     // lean: 弾いた向きの傾きで、狙いの横へ足すぶれ（まっすぐ弾けば 0）。狙いの記録（baseAim）は触れた所のまま
     onRelease: (lean = 0) => {
       if (actor !== "player" || phase !== "power" || isPaused()) return;
@@ -583,7 +701,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const key = lessonContext && coachLines[lessonContext + "_" + id] ? lessonContext + "_" + id : id;
     // 取っ手・Space・集中の説明は「？」の遊び方に任せ、2文だけにする。弾き方は的の上の小さな手が動いて見せる
     const tapLesson = {
-      power: "狙いが決まったら、的のどこかに触れて上へ、ひと息で弾く。速すぎても遅すぎても落ちるよ",
+      power: "狙いが決まったら、的か右下から上へ、ひと息で弾く。速すぎても遅すぎても落ちるよ",
     };
     if (tapPull) { titles.power = "上へ弾いて投げる"; titles.target = "今の一投と、刃が触れた所"; }
     // Keep the canonical first/event greeting, free-lesson terms and scoring explanation.
@@ -618,7 +736,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       .then(manifest => {
         if (phase === "closed") return;
         portraitManifest = manifest;
-        const lessonArt = [];
+        const lessonArt = tapPull ? [loadAimStyle()] : [];
         if (tutorial) {
           if (!manifest.portraits?.maki?.faces?.includes("normal")) throw new Error("Teacher artwork missing from catalogue");
           lessonArt.push(decodeArt(faceArt("maki", "normal").src),
@@ -650,24 +768,60 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       .then(() => { if (phase !== "closed") setPhase("choice"); }, () => { if (phase !== "closed") setPhase("failed"); })
       .finally(() => { stopTimer(); lifetime.signal.removeEventListener("abort", stopTimer); });
   }
+  function canChooseCall() {
+    return actor === "player" && (phase === "choice" || tapPull && phase === "power" && !pullInput?.pulling)
+      && !isPaused() && !suddenDeath() && performance.now() - lastAction >= T.guard;
+  }
+  // Only the resolved throw consumes a call. Skip closed/ineligible blues, then return to normal.
+  function cycleCall() {
+    if (!canChooseCall()) return;
+    const next = callOrder.slice(callOrder.indexOf(called) + 1).find(id => canCall(id, shots, rules.throws));
+    selectCall(next || null);
+  }
   function selectCall(id) {
-    if (actor !== "player" || !(phase === "choice" || tapPull && phase === "power" && !pullInput?.pulling) || isPaused() || suddenDeath() || performance.now() - lastAction < T.guard || id && !canCall(id, shots, rules.throws)) return;
-    const cue = declarationCue(called, id);
-    called = id; render(); if (tapPull) root.focus();
-    if (cue) showDeclareCue(cue);
+    if (!canChooseCall() || id && !canCall(id, shots, rules.throws)) return;
+    const previous = called;
+    called = id;
+    render();
+    if (!tapPull) {
+      const cue = declarationCue(previous, id);
+      if (cue) showDeclareCue(cue);
+      return;
+    }
+    callToggle.focus({ preventScroll: true });
+    calledPlace.textContent = id ? "キルショット、" + killPlaces[id] : "通常投げ";
+    lightCall(previous ? "turn" : "declare", KILLS.find(point => point.id === id));
+    if (!id) { clearDeclareCue(); return; }
+    unlockAudio();
+    showDeclareCue(previous
+      ? { kind: "retarget", target: id, label: killPlaces[id], duration: 320 }
+      : { kind: "challenge", target: id, label: "キルショット", place: "挑戦", duration: 1000 });
   }
   function showDeclareCue(cue) {
     clearDeclareCue();
     declareMarker = markers.get(cue.target) || null;
     declareMarker?.classList.add("axe-declare-flash");
     declareNode = el("div.axe-declare", { "aria-hidden": "true", dataset: { test: cue.test || "axe-declare", kind: cue.kind || "declare" } }, [
-      el("strong", { text: cue.label }), el("span", { text: cue.place }),
+      el("strong", { text: cue.label }), cue.place ? el("span", { text: cue.place }) : null,
     ]);
+    if (tapPull && cue.kind === "goal") {
+      declareNode.append(svg("svg", { class: "axe-award-sparks", viewBox: "0 0 44 92", "aria-hidden": "true" }, [
+        svg("path", { d: "m21 7 2 7 7 3-7 2-2 8-3-8-7-2 7-3zM10 62l2 5 5 2-5 2-2 5-2-5-5-2 5-2z", fill: "#ffda79" }),
+        svg("path", { d: "m32 32 2 6 5 2-5 2-2 6-2-6-5-2 5-2z", fill: "#a0efff" }),
+        svg("path", { d: "m4 43 8-10m13 48 8-11", stroke: "#ffacb2", "stroke-width": 3, "stroke-linecap": "round" }),
+      ]));
+    }
     root.append(declareNode);
     // 宣言は刃を構える「チャキッ」、最後の1投・持ち替え・延長戦は太鼓、目標達成は「シャーン」（2026-11-11 オーナー「効果音しょぼかったり」）。
     // 弾き損ねの札は軽い選択音だけ（失敗を責める音にしない）
-    if (cue.kind === "flick") SE.select();
-    else playAxeSe(cue.kind === "goal" ? "cueClear" : cue.kind === "last" || cue.kind === "half" ? "cueDrum" : "call");
+    if (cue.kind === "challenge") {
+      playAxeSe("cueDrum", { rate: 1.18 });
+      playAxeSe("call");
+    } else if (cue.kind === "retarget") playAxeSe("stop", { rate: 1.35 });
+    else if (cue.kind === "flick") SE.select();
+    else if (cue.kind === "goal" && tapPull) {
+      if (latest("player")?.score > 0) playAxeSe("goalFanfare");
+    } else playAxeSe(cue.kind === "goal" ? "cueClear" : cue.kind === "last" || cue.kind === "half" ? "cueDrum" : "call");
     declareTimer = setTimeout(clearDeclareCue, cue.duration || C.declare);
   }
   /** 弾き損ねの理由の札（700ms）。投げは使わない */
@@ -699,7 +853,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     } else if (next === "result" && actor === "player" && challengeIds.length) {
       const fresh = evaluateChallenges(challengeIds, shots).filter(c => c.state === "done" && !clearedGoals.has(c.id));
       fresh.forEach(c => clearedGoals.add(c.id));
-      if (fresh.length) showDeclareCue({ label: "CHALLENGE CLEAR", kind: "goal", test: "axe-goal-cue", duration: C.goal, place: fresh.map(c => c.label).join(" / ") });
+      if (fresh.length) showDeclareCue({ label: tapPull ? "目標達成" : "CHALLENGE CLEAR", kind: "goal", test: "axe-goal-cue", duration: C.goal, place: fresh.map(c => tapPull ? c.short : c.label).join(" / ") });
     }
   }
   function clearDeclareCue() {
@@ -724,12 +878,18 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   function setPhase(next) {
     clearDeclareCue();
     phase = next; elapsed = 0; stamp = null;
+    if (next === "choice" || next === "opponent-ready" || next === "summary") callLight.replaceChildren();
     if (next === "choice" && actor === "player" && suddenDeath()) called = suddenDeathTarget(match.suddenDeath.length);
     if (next === "summary") { recordGame(); summaryJingle(); }
-    if (next === "power" && showsFlickHint()) playFlickHint();
+    if (next === "power" && tapPull) {
+      pullHandle.dataset.demonstrate = String(!swipeShown);
+      swipeShown = true;
+      if (showsFlickHint()) playFlickHint();
+    }
     phaseCue(next);
     if (next === "flight") {
       root.dataset.slowMotion = String(Boolean(pending.called) && !reducedMotion);
+      if (pending.called) lightCall("release", KILLS.find(point => point.id === pending.called));
       contacted = null; holdFrame = 0;
       for (const node of [flying, ...ghosts]) setAxePalette(node, actor === "player" ? equipment : null);
       const pose = flightPose(pending, reducedMotion ? FLIGHT.travel + FLIGHT.fall : 0);
@@ -795,7 +955,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       const index = nodes.indexOf(document.activeElement);
       nodes[(index + (event.shiftKey ? -1 : 1) + nodes.length) % nodes.length]?.focus(); event.preventDefault(); event.stopPropagation(); return;
     }
-    if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); cleanup(false); return; }
+    if (event.key === "Escape") {
+      event.preventDefault(); event.stopPropagation();
+      if (tapPull && called && actor === "player" && !suddenDeath() && ["choice", "power"].includes(phase)) selectCall(null); else cleanup(false);
+      return;
+    }
     if (event.key.toLowerCase() === "f" && !event.ctrlKey && !event.metaKey && !event.altKey) {
       event.preventDefault(); event.stopPropagation(); if (!event.repeat) focusAim(); return;
     }
@@ -894,17 +1058,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (laneAimImage) laneAimImage.setAttribute("opacity", aimShown);
     if (handFrontImage) handFrontImage.setAttribute("opacity", aimShown);
     if (aimPrompt) {
-      // 宣言中は同じ位置の宣言札で狙いを示す。構え・回転中にも残す。
-      const show = !called && actor === "player" && ["choice", "horizontal", "vertical"].includes(phase) && !isPaused();
-      aimPrompt.hidden = !show;
-      if (show) {
-        const title = "どこを狙う？";
-        if (aimPromptTitle.textContent !== title) aimPromptTitle.textContent = title;
-        const firstThrow = shots.length === 0 && gameIndex === 0 && (!versus || match.opponent.length === 0);
-        const sub = phase === "horizontal" ? "横の針を、金の印で止める" : phase === "vertical" ? "縦の針を、金の印で止める"
-          : firstThrow || tutorial ? "的に触れて位置を決め、上へ弾いて投げる" : "";
-        if (aimPromptSub.textContent !== sub) aimPromptSub.textContent = sub;
-        aimPromptSub.hidden = !sub;
+      const step = aimSteps[phase];
+      aimPrompt.hidden = !step || actor !== "player" || isPaused();
+      if (!aimPrompt.hidden) {
+        if (aimPromptTitle.textContent !== step[0]) aimPromptTitle.textContent = step[0];
+        if (aimPromptSub.textContent !== step[1]) aimPromptSub.textContent = step[1];
       }
     }
     root.dataset.outcome = displayedShot?.outcome || "";
@@ -940,13 +1098,30 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       const value = i === 0 ? axisText(aim.x, "左", "右") : i === 1 ? axisText(aim.y, "上", "下") : Math.round(power * 100) + "%";
       step.lastChild.textContent = locked ? "✓ " + value : live ? value : "—";
     }
-    timing.hidden = tapPull ? actor !== "player" || !["choice", "power"].includes(phase) : !moving && !displayedShot;
+    timing.hidden = tapPull ? actor !== "player" || phase !== "power" || isPaused() : !moving && !displayedShot;
     timing.dataset.active = String(powerActive); feedback.hidden = ["loading", "failed", "summary"].includes(phase);
     const sdRound = versus ? match.suddenDeath.length : 0;
+    const roundNumber = Math.min(currentShots.length + (shown ? 0 : 1), rules.throws);
     round.textContent = sd ? (versus ? (actor === "player" ? "あなた " : rivalName + " ") : "") + "サドンデス " + Math.max(1, sdRound + (phase === "choice" && actor === "player" ? 1 : 0))
       : (versus ? (actor === "player" ? "あなた " : rivalName + " ") : "") + Math.min(currentShots.length + (["result", "summary"].includes(phase) ? 0 : 1), rules.throws) + " / " + rules.throws + " 投"
       + (rules.half ? (currentHalf ? " · 後半" : " · 前半") : "") + (series && bestOf > 1 ? " · G" + (gameIndex + 1) : "");
     totalValue.textContent = String(totalOf(shots));
+    if (scoreFigures) {
+      const lastDuel = match?.suddenDeath.at(-1);
+      const rivalLatest = versus && (lastDuel
+        ? Boolean(lastDuel.opponent)
+        : match.opponent.length > 0 && match.opponent.length === match.player.length);
+      const recent = latest(rivalLatest ? "opponent" : "player");
+      scoreLatest.classList.toggle("axe-prize-score", phase === "result" && actor === "player" && !rivalLatest
+        && recent === shown && shown?.outcome === "killshot" && shown.score > 0);
+      const values = [
+        [scoreLatest, recent ? "+" + recent.score : "—"],
+        [scoreLatestLabel, recent && versus ? (rivalLatest ? rivalName : "あなた") + "の投" : "直近"],
+        [scoreOpponent, versus ? String(totalOf(match.opponent)) : ""],
+        [scoreRound, sd ? "延長" : roundNumber + " / " + rules.throws + " 投"],
+      ];
+      for (const [node, text] of values) if (node.textContent !== text) node.textContent = text;
+    }
     const goalLine = !versus && !tutorial && phase !== "summary" ? rankTargets(totalOf(shots), rules.max)[0] : null;
     nextGoal.hidden = !goalLine;
     if (goalLine && nextGoal.textContent !== goalLine.rank + "まで" + goalLine.need) nextGoal.textContent = goalLine.rank + "まで" + goalLine.need;
@@ -988,7 +1163,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         return el("div.axe-score-row", { role: "row", dataset: { thrower: id, active: String(mine) } }, [
           // #2834: ひとりで投げる時の「各投」は帯を見れば分かるので読み上げ用だけ。対戦の名前は見せる。
           el(versus ? "span.axe-score-name" : "span.axe-score-name.axe-quiet", { text: versus ? (id === "player" ? "あなた" : rivalName) : "各投" }),
-          el("div.axe-score-tiles", tapPull ? { tabindex: "0", role: "group", "aria-label": "各投の得点。延長戦は横にスクロール" } : {}, [...tiles, ...sdTiles]),
+          el("div.axe-score-tiles", tapPull ? { tabindex: phase === "summary" ? "0" : "-1", role: "group", "aria-label": "各投の得点。延長戦は横にスクロール" } : {}, [...tiles, ...sdTiles]),
           // #2834: 宣言の残りは青いバッジ1つ（斧のマーク＋数）。
           el("span.axe-score-calls", { role: "img", title: "キルショットの宣言 残り" + ks.remaining + "回", "aria-label": "宣言 残り" + ks.remaining + "回", dataset: { remaining: String(Math.max(ks.remaining, 0)) } },
             [axeMark(), el("b", { "aria-hidden": "true", text: String(Math.max(ks.remaining, 0)) })]),
@@ -1013,9 +1188,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     status.dataset.kind = sd ? "sudden-death" : called ? "called" : "remaining";
     status.textContent = sd ? "サドンデス：" + killPlaces[called] + "の青 · 刃が触れれば勝ち" : called ? (tapPull ? "キルショット宣言\n" : "宣言中：") + killPlaces[called] + "の青 · 青以外0点"
       : "キルショット 残り" + ks.remaining + "回" + (ks.bonus ? "（落下で+" + ks.bonus + "）" : "") + (ks.mustRow ? " · " + (ks.mustRow === "upper" ? "上" : "下") + "の青だけ" : "");
-    for (const button of calls.children) {
+    const callAvailable = canChooseCall() && !sd;
+    for (const button of calls?.children || []) {
       const id = button.dataset.call;
-      button.disabled = isPaused() || performance.now() - lastAction < T.guard || !(phase === "choice" || tapPull && phase === "power" && !pullInput?.pulling) || sd || id !== "normal" && !canCall(id, shots, rules.throws);
+      button.disabled = !callAvailable || (id === "normal" ? tapPull && !called : !canCall(id, shots, rules.throws));
       button.setAttribute("aria-pressed", String((called || "normal") === id));
       if (id !== "normal") {
         const target = KILLS.find(t => t.id === id), closed = ks.closed.includes(target.row);
@@ -1030,7 +1206,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       const justThrown = phase === "result" && shown?.called === target.id;
       const marker = markers.get(target.id); marker.setAttribute("opacity", ks.closed.includes(target.row) && !sd && !justThrown ? .28 : 1);
       if (called === target.id) { calledRing.setAttribute("cx", CX + target.x * R); calledRing.setAttribute("cy", CY + target.y * R); }
-      marker.setAttribute("data-callable", String(phase === "choice" && actor === "player" && !sd && canCall(target.id, shots, rules.throws)));
+      marker.setAttribute("data-callable", String(phase === "choice" && actor === "player" && !sd && !tapPull && canCall(target.id, shots, rules.throws)));
     }
     // Closures of this half, from the current thrower's own history.
     const closureIndex = ["result", "summary"].includes(phase) && !sd ? Math.max(0, currentShots.length - 1) : throwIndex;
@@ -1057,10 +1233,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       const context = { heat: heatOf(shots), last: shots.length === rules.throws - 1, grade: phase === "summary" ? gradeOf(totalOf(shots), rules.max) : null,
         switching: phase === "choice" && switching(), bonus: bonusEarned, suddenDeath: sd };
       const line = versus && matchLines ? matchReaction(matchLines, phase, match, actor, pending, called, { ...context, faces: companion.faces, versusOnly: opponent === "adam" }) : reaction(opponent, phase, shots, called, context);
-      if (comment.textContent !== line.text) comment.textContent = line.text;
+      const text = tapPull && opponent === "hiyori" ? shortHiyori(line.text, phase, shown, called, context, actor) : line.text;
+      if (comment.textContent !== text) comment.textContent = text;
       if (portraitKey) showFace(line.face);
     }
-    calledRing.setAttribute("opacity", called ? 1 : 0);
+    calledRing.setAttribute("opacity", called && (!tapPull || actor === "player") ? 1 : 0);
     fixedAim.setAttribute("opacity", moving ? .8 : 0);
     const hint = showsFlickHint();
     flickHint.setAttribute("opacity", hint ? 1 : 0);
@@ -1089,7 +1266,34 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       zoomPower.textContent = "回転 " + Math.round(zoomShot.power * 100) + "%";
       zoom.setAttribute("aria-label", "刃の着地点の拡大。" + zoomShot.score + "点・" + label + "・" + zoomPower.textContent);
     }
-    calls.hidden = (tapPull ? !["choice", "power"].includes(phase) || pullInput?.pulling : phase !== "choice") || sd; if (callsLabel) callsLabel.hidden = calls.hidden;
+    if (calls) calls.hidden = phase !== "choice" || sd;
+    if (callToggle) {
+      callControls.hidden = !["choice", "power"].includes(phase) || sd || Boolean(pullInput?.pulling);
+      callToggle.disabled = !callAvailable || !called && !KILLS.some(target => canCall(target.id, shots, rules.throws));
+      cancelCall.hidden = !called;
+      cancelCall.disabled = !callAvailable;
+      const count = "×" + Math.max(0, ks.remaining);
+      if (callCount.textContent !== count) callCount.textContent = count;
+      const name = called ? killPlaces[called] : "キルショット";
+      if (callName.textContent !== name) callName.textContent = name;
+      if (callToggle.dataset.target !== (called || "")) {
+        callToggle.dataset.target = called || "";
+        for (const dot of callDial.querySelectorAll("[data-blue]")) dot.classList.toggle("selected", dot.dataset.blue === called);
+      }
+      const callLabel = (called ? "キルショット、" + name + "を宣言中。次の狙いへ" : "キルショットに挑戦") + "（残り" + ks.remaining + "回）";
+      if (callToggle.title !== callLabel) {
+        callToggle.title = callLabel;
+        callToggle.setAttribute("aria-label", callLabel);
+      }
+      aimPanel.hidden = actor !== "player" || isPaused() || !aimSteps[phase];
+      const verdict = phase === "result" && actor === "player" && shown?.called && !sd && !isPaused()
+        ? shown.outcome === "killshot" ? "hit" : "miss" : "";
+      callVerdict.hidden = !verdict;
+      if (verdict && callVerdict.dataset.result !== verdict) {
+        callVerdict.dataset.result = verdict;
+        verdictWord.textContent = verdict === "hit" ? "命中" : "外れ";
+      }
+    }
     reaim.hidden = !cycles[phase]; retry.hidden = !allowRetry || phase !== "summary" || Boolean(series && !seriesWinner());
     controls.hidden = steadiness.hidden = !moving;
     focusButton.disabled = isPaused() || focusUsed || performance.now() - lastAction < T.guard;
@@ -1102,7 +1306,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     stability.setAttribute("aria-label", remaining > 0 ? "集中の残り時間" : "腕の安定");
     stability.setAttribute("aria-valuenow", String(Math.round(stabilityValue * 100)));
     const focusText = remaining > 0 ? "集中中" : focusUsed ? "集中は使用済み" : "息を整える · 1回";
-    if (focusButton.textContent !== focusText) focusButton.textContent = focusText;
+    const focusCaption = tapPull ? (remaining > 0 ? "集中中" : focusUsed ? "使用済み" : "集中") : focusText;
+    if (focusButton.textContent !== focusCaption) focusButton.textContent = focusCaption;
+    if (tapPull && focusButton.getAttribute("aria-label") !== focusText) focusButton.setAttribute("aria-label", focusText);
     const steadyText = remaining > 0 ? "集中 · あと" + (remaining / 1000).toFixed(1) + "秒"
       : "腕の疲れ " + (fatigue < .3 ? "小" : fatigue < .7 ? "中" : "大") + (steady < 1 ? " · マイ斧で揺れ−" + Math.round((1 - steady) * 100) + "%" : " · 白い刃先を見よう");
     if (steadiness.textContent !== steadyText) steadiness.textContent = steadyText;
@@ -1111,7 +1317,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (tapPull) keyhint.textContent = phase === "power" ? "的に触れて上へ弾く / Space長押し / Fで集中" : "的をタップ / Space・Enterで針を止める · Fで集中";
     board.setAttribute("aria-disabled", String(!moving && !(phase === "choice" && actor === "player" && !sd) || actor !== "player" || isPaused()));
     board.setAttribute("aria-label", moving ? ({ horizontal: "横", vertical: "縦", power: "回転" })[phase] + "ゲージ。タップまたはSpaceで止める" : "斧投げの的。赤6点・5の円・リング4〜1点・宣言した青7／8点。青をタップで宣言");
-    if (tapPull) board.setAttribute("aria-label", phase === "power" ? "的に触れて上へ素早く弾くと投げる" : moving ? ({ horizontal: "横", vertical: "縦" })[phase] + "の針。金の印に重なったらタップで止める" : "的をタップで構える。構える前は青をタップして宣言できます");
+    if (tapPull) board.setAttribute("aria-label", phase === "power" ? "上にスワイプして投げる" : moving ? ({ horizontal: "横", vertical: "縦" })[phase] + "の針。金の印に重なったらタップで止める" : "的をタップで構える");
     reaim.disabled = retry.disabled = isPaused() || performance.now() - lastAction < T.guard;
     action.disabled = isPaused() || ["loading", "flight", "opponent-ready"].includes(phase) || cycles[phase] && elapsed < T.guard || performance.now() - lastAction < T.guard;
     const nextAction = { loading: "読み込み中…", failed: "もう一度読み込む", choice: "構える", horizontal: "横を止める", vertical: "縦を止める", power: strength === "適正" ? "いま放す！" : "緑の帯で放す",
@@ -1158,7 +1364,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       : phase === "result" ? !last ? "" : last.outcome === "drop" ? (last.dropReason === "weak" ? "柄から当たって落下 · 0点" : "回りすぎて落下 · 0点") : last.outcome === "killshot" ? "キルショット！ " + last.score + "点"
       : last.outcome === "killshot-miss" ? (last.stuck ? "宣言した青い的から外れた · 0点" : "板の外 · 0点") : last.score ? (last.outcome === "bull" ? "ど真ん中！ " : "命中！ ") + last.score + "点" : last.zone?.kind === "closed" ? "閉じた円に触れた · 0点" : "的の外 · 0点"
       : "合計 " + totalOf(shots) + " / " + rules.max + "点";
-    const inputNote = tapPull && ["choice", "power"].includes(phase) ? phase === "choice" ? "的をタップで構える。青をタップで宣言" : "的に触れて上へ弾く。遅いと柄から、速すぎると回りすぎ" : nextNote;
+    const inputNote = tapPull && ["choice", "power"].includes(phase) ? phase === "choice" ? "的をタップして構える" : "上にスワイプして投げる" : nextNote;
     const finalNote = versus && phase === "summary" ? ({ player: "あなたの勝ち", opponent: rivalName + "の勝ち", draw: "引き分け" })[matchResult(match).winner] + (matchResult(match).suddenDeath ? " · サドンデス" + matchResult(match).suddenDeath.rounds + "本" : "") + (bestOf > 1 ? " · マッチ " + series.wins.player + "-" + series.wins.opponent : "") : inputNote;
     if (note.textContent !== finalNote) note.textContent = finalNote;
     const spoken = missNote || finalNote;
@@ -1220,8 +1426,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       shard.setAttribute("transform", `translate(${Math.cos(radian) * distance} ${Math.sin(radian) * distance + progress * progress * F.chipFall}) rotate(${angle + progress * 200}) scale(${(1 - progress * .8) * (i % 2 ? .65 : 1)})`);
     }
     burst.textContent = effect.burst;
-    burst.setAttribute("font-size", party ? 38 : 30);
-    burst.setAttribute("y", F.burstTop - progress * F.burstRise); burst.setAttribute("fill", effect.color);
+    const prize = tapPull && actor === "player" && shot.outcome === "killshot" && shot.score > 0;
+    burst.setAttribute("font-size", prize ? 47 : party ? 38 : 30);
+    burst.setAttribute("y", F.burstTop - progress * F.burstRise); burst.setAttribute("fill", prize ? `url(#${prizeId})` : effect.color);
   }
   function tick(now) {
     if (phase === "closed") return;
@@ -1249,6 +1456,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       // 柄から当たる・回りすぎは「コンッ」。床に落ちた時の「ガシャン」は下の drop（板の外は跳ね返らない）。
       if (display >= FLIGHT.travel && contacted !== pending) {
         contacted = pending;
+        if (pending.called && actor === "player" && !suddenDeath()) {
+          const hit = pending.outcome === "killshot";
+          lightCall(hit ? "hit" : "miss", hit ? pending.landing : KILLS.find(point => point.id === pending.called));
+          if (tapPull && !hit) playAxeSe("stop", { rate: .68 });
+        }
         if (pending.stuck) playAxeSe(pending.outcome === "killshot" ? "killshot" : "stick", { scored: pending.score > 0, rate: gear?.stickRate || 1 });
         else if (pending.dropReason !== "off-board") playAxeSe("bounce");
       }
@@ -1286,8 +1498,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         if (holdFrame) { holdFrame = 0; boardPane.style.transform = ""; }
         // 得点と失敗の合図は止めが明けてから重ねる（ギュッとしてパッ）。床に落ちた音も落ち切った時に
         if (!shot.stuck) playAxeSe("drop");
-        if (shot.score >= 6) playAxeSe("cheer");
-        else if (!shot.score) playAxeSe("miss");
+        if (!shot.score) playAxeSe("miss");
         // 着弾の揺れの位相を投ごとに変える（同じ揺れの繰り返しにしない）
         const n = (versus ? match.player.length + match.opponent.length + match.suddenDeath.length * 2 : shots.length) + gameIndex * 31;
         const mix = Math.imul((baseSeed ^ Math.imul(n + 1, 0x9e3779b1)) >>> 0, 0x85ebca6b) >>> 0;
@@ -1303,6 +1514,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
           impacts.append(embedded);
         }
         setPhase("result");
+        if (shot.score >= 6 && !(tapPull && declareNode?.dataset.kind === "goal")) playAxeSe("cheer");
       }
     }
     // 対戦の自動送り（タップで即。最後の投・サドンデス・集計の前は手動）

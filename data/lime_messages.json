@@ -1644,6 +1644,186 @@
       ]
     },
     {
+      "id": "lime_outing_saku_1",
+      "sender": "saku",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "今日の昼、少しだけ抜けられる？　試食係を一人、探してるんだ"
+        },
+        {
+          "sender": "saku",
+          "text": "何を作るかは、会ってから。公園の入口で待ってるね"
+        }
+      ],
+      "accept_event": "outing_saku_1",
+      "accept_text": "昼から行きます",
+      "decline_response": {
+        "sender": "saku",
+        "text": "了解。試食係の席は、空けとくね"
+      },
+      "reminder_text": "この前の試食係の話、今日の昼ならどう？"
+    },
+    {
+      "id": "lime_after_outing_saku",
+      "sender": "saku",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_saku",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "この前は、試食係ありがとう"
+        },
+        {
+          "sender": "saku",
+          "text": "あれから、煙でも試してる。きゅうりのフレーバーは棚に無いから、ミントの青さで代わりを探してる"
+        },
+        {
+          "sender": "saku",
+          "text": "まだ、メロンにならない。外れの欄が、きゅうりで埋まってく"
+        }
+      ],
+      "replies": [
+        {
+          "text": "できたら、また試食係やります",
+          "response": "うん。目を閉じる練習、しといて",
+          "affinity": 2
+        },
+        {
+          "text": "外れの欄、読んでみたいです",
+          "response": "ほとんど『きゅうり』だよ。それでよければ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_outing_steve_1",
+      "sender": "steve",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "ヘイ、ハジメ。今日の昼、少し付き合え"
+        },
+        {
+          "sender": "steve",
+          "text": "公園の池に、貸しボートがある。一人で乗る勇気が、まだ無い"
+        }
+      ],
+      "accept_event": "outing_steve_1",
+      "accept_text": "昼から行きます",
+      "decline_response": {
+        "sender": "steve",
+        "text": "オーケー。池は、どこにも行かない"
+      },
+      "reminder_text": "ヘイ。この前のボートの話、今日の昼ならどうだ"
+    },
+    {
+      "id": "lime_after_outing_steve",
+      "sender": "steve",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_steve",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "ヘイ、ハジメ。この前のボート、カードに書いた"
+        },
+        {
+          "sender": "steve",
+          "text": "秒の欄は、空のままだ。数えてなかったからな"
+        },
+        {
+          "sender": "steve",
+          "text": "余白には『鳥。延長。ハジメが漕いだ』。……読み返すと、また乗りたくなる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "次は最初から延長で借りましょう",
+          "response": "オーケー。延長の分は、次はハジメだな",
+          "affinity": 2
+        },
+        {
+          "text": "秒の欄、空でいいと思います",
+          "response": "イエス。空の欄が一つくらい、あってもいい",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_outing_volk_1",
+      "sender": "volk",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "今日の昼、空いているか"
+        },
+        {
+          "sender": "volk",
+          "text": "買い物に付き合え。一人で選ぶと、基準が偏る"
+        }
+      ],
+      "accept_event": "outing_volk_1",
+      "accept_text": "昼から行きます",
+      "decline_response": {
+        "sender": "volk",
+        "text": "分かった。記録には、空欄で残す"
+      },
+      "reminder_text": "この前の買い物の件だ。今日の昼なら、どうだ"
+    },
+    {
+      "id": "lime_after_outing_volk",
+      "sender": "volk",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_volk",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "記録。この前の瓶は、半分になった"
+        },
+        {
+          "sender": "volk",
+          "text": "量は、書いていない。日付だけだ"
+        },
+        {
+          "sender": "volk",
+          "text": "次に尽きた日も、書く。お前の舌も、その時に借りる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "また一緒に選びます",
+          "response": "そうしろ。俺の舌だけだと、偏る",
+          "affinity": 2
+        },
+        {
+          "text": "半分、早くないですか",
+          "response": "早いかどうかは、測っていない",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "rumor_kemuri_experiments",
       "sender": "naru",
       "trigger_condition": "lime_exchanged",
