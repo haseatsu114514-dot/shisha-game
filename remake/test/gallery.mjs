@@ -190,6 +190,10 @@ const adoptedStills = [
   ["cg_ch2_rei_earphone", 2, "other", "片耳ぶんの一曲"],
   ["cg_ch2_ageha_white_bear", 2, "ageha", "白いクマと閉店後"],
   ["cg_ch3_mashiro_no_craft_day", 3, "mashiro", "作らないと決めた昼"],
+  ["cg_ch3_liars_night", 3, "other", "嘘つきたちの夜"],
+  ["cg_ch3_national_ask_customer", 3, "other", "炭より先に、客の返事"],
+  ["cg_ch3_half_cake", 3, "mashiro", "半分ずつのケーキ"],
+  ["cg_ch3_mukai_latte_cat", 3, "other", "そっぽを向く泡の猫"],
   ["cg_ch4_traveler_chair", 4, "other", "日陰の椅子"],
   ["cg_ch5_doctor_yunomi", 5, "other", "湯のみを包む博士"],
 ];

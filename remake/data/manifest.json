@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-20 15:37 UTC",
+ "generated": "2026-11-20 15:39 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -643,7 +643,11 @@
   "cg_ch2_rest_notebook.png",
   "cg_ch2_sofa_wet_cloth.png",
   "cg_ch3_childhood_offered_hand.png",
+  "cg_ch3_half_cake.png",
+  "cg_ch3_liars_night.png",
   "cg_ch3_mashiro_no_craft_day.png",
+  "cg_ch3_mukai_latte_cat.png",
+  "cg_ch3_national_ask_customer.png",
   "cg_ch4_dubai_arrival.png",
   "cg_ch4_traveler_chair.png",
   "cg_ch4_world_handshake.png",
@@ -3797,7 +3801,11 @@
   "cgs/cg_ch2_kanzaki_id_check.png",
   "cgs/cg_ch2_naru_score_sheet.png",
   "cgs/cg_ch2_rei_earphone.png",
-  "cgs/cg_ch2_rest_notebook.png"
+  "cgs/cg_ch2_rest_notebook.png",
+  "cgs/cg_ch3_half_cake.png",
+  "cgs/cg_ch3_liars_night.png",
+  "cgs/cg_ch3_mukai_latte_cat.png",
+  "cgs/cg_ch3_national_ask_customer.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
