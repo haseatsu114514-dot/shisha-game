@@ -44,7 +44,8 @@ export async function checkRecords(records, { output, executablePath, playwright
   }
   const { chromium } = createRequire(import.meta.url)(playwrightModule || "playwright");
   const allowed = new Set(["remake/css/base.css", "remake/css/ui-art.css", "remake/css/ui-inner.css", "remake/css/vn.css", "remake/js/vn/text.js", "remake/js/vn/budoux_ja.js",
-    "remake/js/vn/layout.js", "remake/js/vn/inner.js", "remake/fonts/ShipporiMinchoB1-Medium.woff2", "remake/fonts/ShipporiMinchoB1-Bold.woff2"]);
+    "remake/js/vn/layout.js", "remake/js/vn/inner.js", "remake/fonts/NotoSansJP-Medium.woff2", "remake/fonts/NotoSansJP-Bold.woff2",
+    "remake/fonts/NotoSansJP-Supp-Medium.woff2", "remake/fonts/NotoSansJP-Supp-Bold.woff2"]);
   const html = `<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     ${["base", "vn", "ui-art", "ui-inner"].map(name => `<link rel="stylesheet" href="/remake/css/${name}.css">`).join("")}
     <style>:root{--art-panel:none}</style>

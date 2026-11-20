@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { suite, assertFits } from './support.mjs';
+import { assertParkedThermometer } from './craft_temperature_assertions.mjs';
 import { rotateThroughGuard } from './rotate_guard.mjs';
 const shots = process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser';
 const test = (page,id) => page.locator(`[data-test="${id}"]`);
@@ -117,8 +118,13 @@ await suite('craft-layout-703', async check => {
         for(const step of ['mix','timer','steam','pull']) {
           if(step!=='mix')await page.evaluate(()=>{QA.cs.mix={double_apple:9,mint:3};QA.cs.steamSeconds=300;QA.cs.steam={temp:.54,score:100};});
           await run(page,step);
-          assert.equal(await page.locator('.mix-temperature-preview:visible').count(),0,step);
-          assert.equal(await page.locator('.thermo:visible').count(),step==='mix'?0:1,step);
+          assert.equal(await page.locator('.mix-temperature-preview:visible').count(),step==='mix'?1:0,step);
+          if (step==='mix') {
+            assert.equal(await page.locator('.mix-temperature-preview .thermo:visible').count(),1);
+            await assertParkedThermometer(page,{selected:false});
+          } else {
+            assert.equal(await page.locator('.thermo:visible').count(),1,step);
+          }
           if(step==='timer') {
             assert.match(await page.locator('.bench-hint').textContent(),/温度計.*3〜10分/);
             await test(page,'timer-start').click(); await page.evaluate(()=>QA.run);
