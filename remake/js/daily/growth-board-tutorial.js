@@ -38,7 +38,7 @@ export const TUTORIAL_STEPS = Object.freeze([
   // 財布は粒の絵と数だけ（SBD116）。どの粒が何かをここで伝える。
   // 色の台座は色の火だけ（白火は受け取りが上限に届いた後だけ。core/growth-board.js の paymentFor）。上限の時は CAPPED_WHITE_LINE に替える（#1801 U5）
   { id: "wallet", title: "火種", target: '[data-test="board-wallet"]',
-    text: ["白い粒は「白火」。", `はじめての今回は、白火を${STARTER_HIDANE}つ渡しておく。`, "白火は、台座を除けば、どの盤のマスにも使える。", "色つきの火は、ひし形の台座の鍵。"] },
+    text: ["白い粒は「白火」。", `はじめての今回は、白火を${STARTER_HIDANE}つ渡しておく。`, "白火は、台座を除き、どの盤のマスにも使える。", "色つきの火は、ひし形の台座の鍵。"] },
   { id: "tabs", title: "3枚の盤", target: ".gb-tabs",
     text: ["盤は「才能」「感覚」「理論」の3枚。", "ここで切り替える。どの盤から灯してもいい。"] },
   { id: "kinds", title: "マスの形", target: '[data-test="board-viewport"]', place: "above",
@@ -57,7 +57,7 @@ export const TUTORIAL_STEPS = Object.freeze([
     text: ["マスの形や印、火種のもらい方は、", "「？」の絵つきの見方でいつでも確かめられる。", "火種を灯せるのは、静かな場所で振り返った時だけ。"] },
 ]);
 /** 火種の受け取りが上限に届いた後の「白火」の行（その時は白火も台座にはまる） */
-export const CAPPED_WHITE_LINE = "白火は、台座も含めて、どの盤のマスにも使える。";
+export const CAPPED_WHITE_LINE = "白火は、台座にも、どの盤のマスにも使える。";
 
 const STYLE_ID = "gb-tutorial-style";
 const STYLE = `

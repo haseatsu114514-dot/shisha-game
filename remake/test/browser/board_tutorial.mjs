@@ -35,9 +35,9 @@ await suite("board-tutorial", async (check) => {
     assert.deepEqual(await flags(page), { starter: true, done: false });
     assert.match(await page.locator(t("board-tutorial")).textContent(), /1 \/ 10/, "案内は10手順（マスの形・右のパネルを足した。SBD116）");
     await page.locator(t("board-tutorial-next")).click(); // 盤
-    // 火種（#1801 U5）: 色の台座は色の火だけなので、白火は「台座を除けば」どの盤のマスにも使える
+    // 火種（#1801 U5）: 色の台座は色の火だけなので、白火は「台座を除き」どの盤のマスにも使える
     const wallet = await page.locator(t("board-tutorial")).textContent();
-    assert.match(wallet, /白火は、台座を除けば、どの盤のマスにも使える。/);
+    assert.match(wallet, /白火は、台座を除き、どの盤のマスにも使える。/);
     assert.match(wallet, /色つきの火は、ひし形の台座の鍵。/);
     for (let n = 0; n < 3; n++) await page.locator(t("board-tutorial-next")).click(); // 火種・3枚の盤・マスの形
     // 光っているマスを押す → 「灯す」を押す（どちらも押すと次へ進む）
@@ -119,7 +119,7 @@ await suite("board-tutorial", async (check) => {
     await page.locator(t("board-tutorial-next")).click();
     assert.match(await page.locator(t("board-tutorial")).textContent(), /白火を1つ渡しておく/);
     // 最後の1つで受け取りが上限に届いた: 白火も台座にはまる（盤の「（白火も可）」と同じ決まり）
-    assert.match(await page.locator(t("board-tutorial")).textContent(), /白火は、台座も含めて、どの盤のマスにも使える。/);
+    assert.match(await page.locator(t("board-tutorial")).textContent(), /白火は、台座にも、どの盤のマスにも使える。/);
   });
 
   await check("late-first-opening-at-cap-grants-nothing", async (page) => {
@@ -129,8 +129,8 @@ await suite("board-tutorial", async (check) => {
     assert.equal(await earned(page), 198);
     await page.locator(t("board-tutorial-next")).click();
     assert.match(await page.locator(t("board-tutorial")).textContent(), /火種の獲得は上限に届いている/);
-    assert.match(await page.locator(t("board-tutorial")).textContent(), /白火は、台座も含めて、どの盤のマスにも使える。/);
-    assert.doesNotMatch(await page.locator(t("board-tutorial")).textContent(), /台座を除けば/);
+    assert.match(await page.locator(t("board-tutorial")).textContent(), /白火は、台座にも、どの盤のマスにも使える。/);
+    assert.doesNotMatch(await page.locator(t("board-tutorial")).textContent(), /台座を除き/);
     await page.locator(t("board-tutorial-next")).click(); // 3枚の盤
     await page.locator(t("board-tutorial-next")).click(); // マスの形
     await page.locator(t("board-tutorial-next")).click(); // 操作待ちは挟まず、右のパネル
