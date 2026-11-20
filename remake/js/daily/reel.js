@@ -1378,11 +1378,18 @@ function showIntro() {
       app.textContent = page.card ? "パッキースロットの遊び方" : "MOKUMOKUパッキー";
       next.textContent = page.card ? "説明を閉じる" : "次へ";
     };
-    // クリックの入口は1つ。ボタンはブラウザのEnter/Spaceで同じ入口を通る。
+    // タッチでは会話が指を置いた瞬間に進むので、この説明はそのタップの途中で開く。同じタップの後から来る
+    // mousedown・click が説明に落ちると、「次へ」のフォーカスが外れ、1枚目を読まずに飛ばす。
+    // そこで、この説明の上で始まった押下だけをクリックとして数え、枠を押してもボタンのフォーカスは外さない。
+    let pressedHere = false;
+    box.addEventListener("pointerdown", () => { pressedHere = true; });
+    box.addEventListener("mousedown", (event) => { if (event.target !== next) event.preventDefault(); });
+    // クリックの入口は1つ。ボタンはブラウザのEnter/Spaceで同じ入口を通る（キーボードの click は detail 0）。
     box.addEventListener("click", (event) => {
       // マウスのダブルクリックだけ2打目を抑制。タッチでは別々のタップも連続クリックとして数えられる。
       const isTouch = event.pointerType === "touch" || event.sourceCapabilities?.firesTouchEvents === true;
       if (closed || !box.isConnected || (!isTouch && event.detail > 1)) return;
+      if (event.detail > 0 && !pressedHere) return;
       if (state !== owner) { close(false); return; }
       i += 1;
       if (i === 2) SE.puka();

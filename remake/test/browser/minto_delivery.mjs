@@ -101,6 +101,8 @@ await suite('minto-delivery',async check=>{
    },scene);
    assert.deepEqual(delivered,{points:0,carry:0,met:true,pending:true,story:0,visits:0});
    await page.reload({waitUntil:'load'});
+   // 再読み込み直後は台本と会話の画面がまだ揃っていない。タイトルの起動を待ってから保存を読む。
+   await page.locator('[data-test="title-new"]').waitFor({timeout:30000});await page.locator('#boot').waitFor({state:'detached'});
    const first=await page.evaluate(async()=>{
     const core=await import('./js/core/state.js'),vn=await import('./js/vn/engine.js'),stats=await import('./js/core/stats.js'),spots=await import('./js/daily/spots.js');
     if(!core.load())throw Error('delivery save did not load');
@@ -113,6 +115,8 @@ await suite('minto-delivery',async check=>{
    assert(first.remote.points+first.remote.carry>0,'LIME still uses its existing reward formula');
    assert.deepEqual({...first,remote:undefined},{remote:undefined,points:9,carry:0,pending:false,story:1,visits:1});
    await page.reload({waitUntil:'load'});
+   // 再読み込み直後は台本と会話の画面がまだ揃っていない。タイトルの起動を待ってから保存を読む。
+   await page.locator('[data-test="title-new"]').waitFor({timeout:30000});await page.locator('#boot').waitFor({state:'detached'});
    const repeat=await page.evaluate(async()=>{
     const core=await import('./js/core/state.js'),vn=await import('./js/vn/engine.js'),spots=await import('./js/daily/spots.js');
     if(!core.load())throw Error('first voluntary visit save did not load');
