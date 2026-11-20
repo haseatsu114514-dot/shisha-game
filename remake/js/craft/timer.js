@@ -48,6 +48,7 @@ export async function runSteamTimer(cs) {
         ? [`雑念回避は約${Math.ceil(effective)}秒に短縮。`, "蒸らし時間・温度・採点はそのままです。"]
         : [`雑念回避は約${Math.ceil(effective)}秒。`, "選んだ蒸らし時間をこの長さに縮めて遊びます。"];
     durationHint.textContent = `${main}${more}`;
+    durationHint.dataset.empty = String(seconds < minimumSeconds); // 時間を決める前の案内（スマホは画面に出さない・css/craft-phone.css）
     durationHint.replaceChildren?.(el("span.steam-duration-main", { text: main }), ...(more ? [el("span.steam-duration-more", { text: more })] : []));
     if (shorten) {
       shorten.setAttribute("aria-pressed", String(!!cs.steamShorten));

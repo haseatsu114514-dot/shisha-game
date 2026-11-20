@@ -4539,11 +4539,15 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
   width: var(--ph-tap) !important; height: var(--ph-tap) !important; min-width: 0 !important; min-height: 0 !important; background-size: 102% 107% !important;
   font-size: max(30px, calc(17px / var(--k, 1))) !important;
 }
+/* はじめの絵（左の窓）: 手元や体が下のほうにある場面は、絵を持ち上げて一言の札の上に出す（PHN17）。
+   絵は窓の下へ 64px はみ出して置いてある（craft-stage.css の bottom: -64px）ので、その分までは持ち上げても下に隙間ができない。
+   頭が上のレールのすぐ下にある場面（機材・水入れの立ち姿、炭焼き、蒸らし）は動かさない。 */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-worker:is([data-scene="mix"], [data-scene="pack"], [data-scene="holes"], [data-scene="pull"], [data-scene="inhale"]) .bench-worker-stage { bottom: 0 !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"][data-mode="tutorial"] .bench-worker:is([data-step=""], [data-step="mix"]) .bench-worker-stage { bottom: -64px !important; } /* 初回の配合は立ち絵（頭がレールのすぐ下） */
 /* 一言の札: 2行までは定位置、長い講評は上へ伸ばして切らない */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-left .bench-audience {
-  height: auto !important; min-height: 104px !important; max-height: 300px !important; overflow: visible !important; align-items: center;
+  height: auto !important; min-height: 104px !important; max-height: 300px !important; overflow: hidden !important; align-items: center;
 }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-left .bench-audience .audience-speech { min-height: 0; max-height: calc(100% + 12px); margin-block: -6px; padding-block: 6px; overflow: hidden; } /* 切り抜きの枠は見出しの字の上端より 6px 外 */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-audience .audience-name,
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-audience .audience-caption { font-size: var(--ph-sub) !important; line-height: 1.2 !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-audience .audience-note {
@@ -4551,12 +4555,14 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 }
 
 /* 大会の「手応え」（心得で開く・ここまでの審査員の受け止めの一覧）: 一言の札の見出しの中では字が実寸5px・押す所が実寸22pxで使えなかった。
-   札の左上に、押す所1つぶんの大きさの見出し札として立てる（札の外へ出すので、札そのものは切り抜かず、中の文だけを切り抜く）。
+   上のレールの右（「?」の左）へ、押す所1つぶんの大きさで置く。札の上に立てると、はじめの絵（手元）に被る（PHN17）。
+   札の影（filter）があると、中の部品は札を基準にしか置けないので、手応えがある時だけ札の影を box-shadow に替える。
    まだ開けない間（受け止めが1つも無い間）は出さない */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-left .bench-audience:has([data-test="judge-reception"]) { filter: none !important; box-shadow: 0 6px 16px #0009; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-audience [data-test="judge-reception"] {
-  position: absolute !important; left: 8px !important; right: auto !important; top: auto !important; bottom: calc(100% + 6px) !important; z-index: 2;
-  box-sizing: border-box; height: var(--ph-tap) !important; min-height: 0 !important; min-width: var(--ph-tap) !important; margin: 0 !important; padding: 0 20px !important;
-  font-size: var(--ph-sub) !important; line-height: 1.1 !important; white-space: nowrap;
+  position: fixed !important; top: calc((var(--ph-rail) - var(--ph-tap)) / 2) !important; right: calc(var(--ph-tap) + 18px) !important; left: auto !important; bottom: auto !important; z-index: 30;
+  box-sizing: border-box; width: auto !important; min-width: var(--ph-tap) !important; height: var(--ph-tap) !important; min-height: 0 !important; margin: 0 !important; padding: 0 8px !important;
+  font-size: var(--ph-sub) !important; line-height: 1.1 !important; letter-spacing: 0 !important; white-space: nowrap;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-audience [data-test="judge-reception"]:disabled { display: none !important; }
 
@@ -5192,6 +5198,8 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .steam-play { flex: none !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .dodge-controls { flex: 1 1 auto !important; height: auto !important; min-height: var(--ph-tap) !important; max-height: 180px !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .dodge-controls :is(.btn.dodge-action, .slash-control) { height: 100% !important; min-height: 0 !important; }
+/* 札が低くなっても、名前は札の下の銅の縁に乗せない（下に実寸7px以上）。絵を札の高さに合わせて縮める */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .dodge-controls .refresh-emblem { width: auto !important; height: min(104px, calc(100% - 72px)) !important; aspect-ratio: 1; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .dodge-controls > .dodge-pad { width: auto !important; height: 100% !important; max-height: 176px; aspect-ratio: 1; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .dodge-controls > .dodge-pad > .dodge-knob { left: calc(50% - 44px) !important; top: calc(50% - 54px) !important; }
 
@@ -5302,10 +5310,10 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 /* ================================================================ 調整: 炭の交換を選ぶ
    上に一言（1〜2行）、置き方の3つの札、下に交換する数の4枚の札（炭の絵）。 */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-main > .care-coals {
-  position: absolute !important; inset: 0 !important; height: auto !important; margin: 0 !important; padding: 14px 18px 16px !important;
+  position: absolute !important; inset: 0 !important; height: auto !important; margin: 0 !important; padding: 14px 18px 16px calc(var(--ph-sub) * 2 + 22px) !important; /* 左は柱の印（「攻め」2字）の置き場 */
   display: grid !important; grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: auto auto auto minmax(0, 1fr) !important; gap: 8px !important; align-content: stretch;
 }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .care-coals > .care-coals-lead { margin: 0 0 0 64px !important; font-size: var(--ph-sub) !important; line-height: 1.36 !important; color: var(--ph-ink); }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .care-coals > .care-coals-lead { margin: 0 0 0 max(0px, calc(60px - var(--ph-sub) * 2)) !important; font-size: var(--ph-sub) !important; line-height: 1.36 !important; color: var(--ph-ink); }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .care-coals > .care-places { display: grid !important; grid-template-columns: auto repeat(3, minmax(0, 1fr)) !important; gap: 8px !important; align-items: center; margin: 0 !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .care-coals .care-places-label { font-size: var(--ph-sub) !important; color: var(--ph-gold); white-space: nowrap; padding-right: 6px; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .care-coals .care-place {
@@ -5434,6 +5442,21 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 
 /* 作業台の準備中（絵を読み込む間に一瞬出る）: 字を読める大きさに */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .craft-loading { font-size: var(--ph-text) !important; }
+
+/* ================================================================ 文字で説明しすぎない（PHN18・オーナー 11/20「文字で説明しすぎないで」）
+   絵・印・光るボタンで伝わっている説明の文は、画面に置かない（読みたい時は「?」）。結果の数や、課題の条件は残す。 */
+/* 穴あけ: 押し加減は「穴を開ける」の中の目盛り（小さい穴→大きい穴）で、次にすることは光るボタンで分かる */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > :is(.hr-depth-hint, .hr-plan) { visibility: hidden !important; }
+/* 穴の配置: 配置の違いは図で選ぶ。違いの説明は「穴数と熱の回り方」を開いて読む */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hole-chooser .ht-description { display: none !important; }
+/* 吸い出し: 「▼下げ吸い／▲上げ吸い」の矢印と色で分かるので、「温度を下げる／上げる」の補足は出さない */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-play .pull-zone-label span { display: none !important; }
+/* 蒸らし時間: 時間を決める前の「時間を設定すると…」は出さない（決めると「雑念回避は約○秒。」が出る） */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] [data-test="steam-duration-hint"][data-empty="true"] { visibility: hidden !important; }
+
+/* ================================================================ 熱の柱の印（「攻め」「目安」）は柱の右に
+   柱の左に出すと、はじめの絵（手元・ボトル・肩）に被った（PHN17）。柱の右は舞台の左の余白 */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-right .thermo .thermo-range-note { left: 100% !important; right: auto !important; margin: 0 0 0 3px !important; }
 
 /* ================================================================ 能力の効果の印（能力が育つと出る「技・感・察・根」）
    PC の大きさ（12px）のままでは、スマホで実寸6.5pxになり読めなかった。札は実寸16px角・字は実寸11.6px以上にそろえる。 */

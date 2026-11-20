@@ -65,15 +65,18 @@ const notePagers = new WeakMap();
  * 1行目の右側が読めなくなる（一枚の舞台。スマホ横で顕著）。柱の根元より下に収まる行数を返す。柱が無い配置では制限しない。
  */
 function visibleNoteLines(note) {
-  const plate = note.closest?.(".bench-audience"), spine = note.closest?.(".bench")?.querySelector(".bench-right .thermo-housing");
+  const bench = note.closest?.(".bench"), plate = note.closest?.(".bench-audience"), spine = bench?.querySelector(".bench-right .thermo-housing");
   if (!plate || !spine || !globalThis.document?.body?.classList.contains("craft-stage")) return Infinity;
+  // スマホ横持ちは札を低く保つ（PHN17）: 行が増えるほど、札がはじめの絵（手元・シーシャ台）を下から覆う。
+  // ふだんは2行、レッスンは札の字の列が細い（1行6字ほど）ので3行まで。超える分は同じ場所で送る。
+  const cap = globalThis.document.documentElement?.dataset?.density === "phone" ? (bench.dataset?.mode === "tutorial" ? 3 : 2) : Infinity;
   const plateBox = plate.getBoundingClientRect(), spineBox = spine.getBoundingClientRect();
-  if (!plateBox.width || !spineBox.height || spineBox.left > plateBox.right) return Infinity;
+  if (!plateBox.width || !spineBox.height || spineBox.left > plateBox.right) return cap;
   const style = getComputedStyle(note), k = plateBox.width / (plate.offsetWidth || plateBox.width);
   const line = (parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.3) * k;
   const bottom = plateBox.bottom - (parseFloat(getComputedStyle(plate).paddingBottom) || 0) * k;
   // 1行目が柱の根元の下端より少し（行の3割半）上までなら、字は隠れない（行の上の余白ぶん）
-  return Math.max(2, Math.floor((bottom - spineBox.bottom) / line + .35));
+  return Math.min(cap, Math.max(2, Math.floor((bottom - spineBox.bottom) / line + .35)));
 }
 
 export function audienceFor(mode, chapter) {

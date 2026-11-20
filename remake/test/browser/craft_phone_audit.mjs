@@ -90,7 +90,8 @@ export const audit = () => {
     if (!isText && !isTap) continue; // 絵の部品は「外へ出ない・切られない」まで
     const vb = vis.box, vw = vb.right - vb.left, vh = vb.bottom - vb.top;
     if (vw < 2 || vh < 2) continue;
-    for (const [fx, fy] of isTap ? [[.5, .5]] : [[.12, .5], [.5, .5], [.88, .5]]) {
+    // 字の頭と終わりも見る（1字だけ隠れるのも被り）
+    for (const [fx, fy] of isTap ? [[.5, .5]] : [[.03, .5], [.12, .5], [.5, .5], [.88, .5], [.97, .5]]) {
       const x = vb.left + vw * fx, y = vb.top + vh * fy;
       if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) continue;
       const top = document.elementFromPoint(x, y);
