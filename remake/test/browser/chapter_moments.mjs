@@ -99,8 +99,16 @@ await suite("chapter-moments", async check => {
       await page.locator(moment("taste")).waitFor({ state: "detached" });
       await page.waitForFunction(() => document.querySelector("#vn .vn-text")?.textContent.includes("一口吸う"));
       assert.equal(await page.locator("#fx .mo-moment").count(), 0, "No layer is left behind");
-      await page.keyboard.press("Enter"); await page.keyboard.press("Enter");
-      await page.waitForFunction(() => document.querySelector("#vn .vn-text")?.textContent.includes("洗ったホース"));
+      // 演出のあとも会話がふつうに送れる。1回ずつ送り、次の行（洗ったホース）に着くこと。
+      // 1回目の Enter は文字送りの完了になることがあり、遅い環境では行の準備中（ready 前）の Enter は受け付けない。
+      // 1回の Enter で2行は進まないので、着いた所で止めれば行を飛ばしていないことも確かめられる。
+      let reached = false;
+      for (let n = 0; n < 4 && !reached; n++) {
+        await page.keyboard.press("Enter");
+        reached = await page.waitForFunction(() => document.querySelector("#vn .vn-text")?.textContent.includes("洗ったホース"),
+          null, { timeout: 1500 }).then(() => true, () => false);
+      }
+      assert(reached, "The conversation continues to the next line after the moment");
     }, { viewport });
 
     await check(`ch4-shadow-unveils-before-the-name-${size}`, async page => {
