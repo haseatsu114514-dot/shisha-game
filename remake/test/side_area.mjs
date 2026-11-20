@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import { SIDE_MIN, sideTier, kanjiNumber, stripInfo } from "../js/core/side-area.js";
 import { fitStage, onStageFit } from "../js/core/stage-fit.js";
+import { CH3_AFTERMATH_SCENES } from "../js/chapters/ch3-aftermath-progress.js";
 
 // 段: 主流のスマホ（19:9＝120・19.5:9＝140・20:9＝160）は wide、18:9（80）は mid、16:9（0）は none
 assert.deepEqual([0, 19, 20, 59, 60, 80, 117, 118, 120, 140, 160, 289].map(sideTier),
@@ -39,6 +40,59 @@ const prep = { chapter: 3, day: 30, slot: 1, phase: "daily", flags: { _ch3_prep:
 assert.deepEqual(stripInfo(prep, "map"), { chapter: "第三章", city: "橙須", when: "出発前二日目" });
 assert.equal(stripInfo({ chapter: 3, day: 33, slot: 0, phase: "daily", flags: { _ch3_intro: { startDay: 32 }, _ch2_region: "tokyo" } }, "none").city, "東京");
 assert.equal(stripInfo({ chapter: 4, day: 50, slot: 0, phase: "daily", flags: { _ch4: { startDay: 47 }, _ch2_region: "dubai" } }, "none").city, "ドバイ");
+// 読み込み前後と同じ保存データで、旅程が日常用の地域フラグを上書きせず表示だけ変える。
+function savedCity(value, screen, city) {
+  const saved = JSON.stringify(value);
+  assert.equal(stripInfo(value, screen).city, city);
+  assert.equal(JSON.stringify(value), saved, "帯は保存を変更しない");
+  assert.equal(stripInfo(JSON.parse(saved), screen).city, city, "同じ保存地点から読み込んでも表示が一致する");
+}
+for (const [stage, city] of Object.entries({
+  departure: "橙須", arrival: "柚ヶ谷", map: "柚ヶ谷", return: "柚ヶ谷", tonari: "橙須", complete: "橙須",
+})) {
+  const flags = { _ch2_day1: { startDay: 15, stage }, _ch2_region: "home" };
+  savedCity({ ...ch2, day: 15, flags }, stage === "map" ? "ch2-city" : "none", city);
+}
+savedCity({ ...ch2, flags: { ...ch2.flags, _ch2_day1: { startDay: 15, stage: "complete" }, _ch2_preparation_started: true } }, "map", "柚ヶ谷");
+
+const ch3Home = CH3_AFTERMATH_SCENES.findIndex(scene => scene.homecoming);
+const ch3After = { chapter: 3, day: 46, slot: 1, phase: "aftermath", flags: {
+  _ch2_region: "tokyo", _ch3_intro: { startDay: 31 }, _ch3_aftermath: { version: 4, winDay: 44, stage: ch3Home - 1 },
+} };
+savedCity(ch3After, "ch3-aftermath", "東京");  // 煙幕の片づけ（帰郷の日の朝）
+ch3After.flags._ch3_aftermath.stage++;
+savedCity(ch3After, "ch3-aftermath", "東京");  // 帰郷カード・新幹線に乗る前
+assert.equal(stripInfo(ch3After, "homecoming").city, "橙須");  // 降車後。まだ読了していない
+savedCity(ch3After, "ch3-aftermath", "東京");  // 読了前に中断・再開すれば、まだ乗車前
+ch3After.flags._ch3_aftermath.stage++;
+savedCity(ch3After, "ch3-aftermath", "橙須");  // つむぎの絵以降（帰郷後に再開）
+savedCity({ ...ch3After, flags: { ...ch3After.flags, _ch3_aftermath: { version: 4, winDay: 44, stage: ch3Home, skip: ["ch3_home_customer"] } } }, "ch3-aftermath", "橙須");
+savedCity({ ...ch3After, phase: "cleared", flags: { ...ch3After.flags, _ch3_cleared: true } }, "ch3-aftermath", "橙須");
+
+const ch4After = { chapter: 4, day: 64, slot: 0, phase: "aftermath", flags: {
+  _ch2_region: "dubai", _ch4: { startDay: 51, part: "resolution", resolution: 3, read: { ch4_ending: true } },
+} };
+savedCity(ch4After, "ch4", "ドバイ");  // 帰国便の前
+savedCity(ch4After, "none", "ドバイ");  // 移動中
+assert.equal(stripInfo(ch4After, "homecoming").city, "橙須");  // 到着後。まだ読了していない
+savedCity(ch4After, "ch4", "ドバイ");  // 読了前に中断・再開すれば、まだ搭乗前
+ch4After.flags._ch4.read.ch4_sumi_return = true;
+ch4After.flags._ch4.resolution++;
+savedCity(ch4After, "ch4", "橙須");  // 翌週のtonari・再開
+savedCity({ ...ch4After, phase: "cleared", flags: { ...ch4After.flags, _ch4_cleared: true } }, "ch4", "橙須");
+
+const ch5 = { chapter: 5, day: 65, slot: 0, phase: "opening", flags: {
+  _ch2_region: "dubai", _ch5: { startDay: 65, part: "prologue" },
+} };
+savedCity(ch5, "ch5", "橙須");
+ch5.flags._ch5.part = "free";
+savedCity(ch5, "none", "橙須");  // 日常ループ直前の打ち上げ
+ch5.flags._ch5_region_started = true;
+for (const [region, city] of [["home", "橙須"], ["widehanga", "柚ヶ谷"], ["tokyo", "東京"], ["dubai", "ドバイ"]]) {
+  ch5.flags._ch2_region = region;
+  savedCity(ch5, "map", city);
+}
+
 // 帯は1列。いちばん長い組み合わせでも字数が増えすぎない（章3字＋街3字＋日付7字）
 assert(stripInfo({ ...prep, day: 31 }, "map").when.length <= 7);
 

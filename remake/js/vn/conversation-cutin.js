@@ -1,65 +1,83 @@
-// 会話カットイン（立ち絵版・#2990）。はじめの既存の立ち絵（新画風 new の表情）を枠で切り抜き、台本の決まった行にだけ出す。
-// 仕様・枠・出現アニメーション・出す条件は Draft PR #2931 のデモ（#2924）が正本。採用は 2a・2c・5・5b・4・4m・3 の7件
-// （2026-11-08 オーナー選別）。不採用の 1（聞き手の小窓）・3m（心の声の目元帯）は入れない。白い顔のグラフィック版は登場カットイン専用。
+// 会話カットイン（はじめの顔の帯）。台本の決まった行にだけ、カットイン専用の絵を帯に入れて出す。
+// 2026-11-20 再設計（docs/owner_requests.md の CCR01〜05。寸法と依頼文は asset_sources/conversation-cutin-redesign-20261120/）:
+// - 形は2つ。画面の左端から出る「寄りの帯」（金の細い線・中は今の背景のぼかし・帽子が線の手前に出る）と、
+//   大会の決意だけに使う全幅の「目元の帯」。
+// - 相手の行（その顔）は、台詞が出切ってから相手の顔の高さに出る。はじめ自身の行は名前のすぐ上に出る。
+// - 絵は ART の4枚。Codex の専用の絵が届くまでは、新版の立ち絵の原画を切り抜いた仮の絵を同じファイル名で置いている。
+//   差し替えるときは ART の寸法・顔の位置・頭の高さだけを直す（枠と出し方は変えない）。
 // 台本（data/dialogue）は書き換えず、会話ID＋話者＋台詞の全文で行を指す。台詞が変わると出なくなるので、テストで実在を固定している。
 
-// 立ち絵（896×1200）の中の、顔の中心と帽子のつば〜目元の中心（原画の px）。デモ（#2931）と同じ値
-export const SPRITE = { w: 896, h: 1200 };
-export const FOCUS = {
-  face: { normal: [480, 205], sad: [468, 215], serious: [478, 202], surprise: [480, 205], smile: [480, 205] },
-  brim: { normal: [482, 170], sad: [470, 180], serious: [480, 168], surprise: [482, 170], smile: [482, 170] },
+export const ART_DIR = "img/ui/conversation_cutin/";
+// 絵ごとの寸法（px）。face は顔の中心、head は帽子のてっぺん〜あごの高さ（どちらも絵の px）。
+// 仮の絵（660×560）は、試作でオーナーに見せた見え方（原画の0.96倍）になる値にしてある。
+export const ART = {
+  flustered: { file: "hajime_flustered.webp", w: 660, h: 560, face: [330, 230], head: 219 }, // 動揺: その顔（軽い）
+  downcast: { file: "hajime_downcast.webp", w: 660, h: 560, face: [330, 230], head: 219 }, // 沈み: その顔（重い）・敗北
+  grateful: { file: "hajime_grateful.webp", w: 660, h: 560, face: [330, 230], head: 219 }, // 受け取る: 絆の締めくくり
+  resolve: { file: "hajime_resolve.webp", w: 660, h: 560, face: [330, 230], head: 219 }, // 決意: 大会の目元の帯
 };
 
-// 枠（舞台 1280×720 の座標）。tall・band は PR #2831 の A・C と同じ形。eyeband は相手の手前（x380）まで
+// 帯（舞台 1280×720 の座標）。face は顔の中心を置く位置、head は画面での頭の高さ（帯の中の座標）。
+// reply は相手の行（相手の顔と同じ高さ）、own ははじめ自身の行（名前の行のすぐ上）、eyes は全幅の目元の帯。
+const BAND = { x: 0, w: 500, h: 250, poly: "0,26 500,0 452,232 0,250", accent: "512,2 464,234", face: [262, 158], head: 210, breakout: 40 };
 export const FRAMES = {
-  tall: { x: 36, y: 192, w: 300, h: 334, poly: "0,23 300,0 264,334 0,334" },
-  band: { x: 0, y: 308, w: 480, h: 218, poly: "0,31 480,0 425,195 0,218" },
-  eyeband: { x: 0, y: 200, w: 380, h: 120, poly: "0,10 380,0 362,120 0,112" },
+  reply: { ...BAND, y: 104 },
+  own: { ...BAND, y: 226 },
+  eyes: { x: 0, y: 128, w: 1280, h: 190, poly: "0,28 1280,0 1280,162 0,190", edge: "0,28 1280,0", inner: "0,190 1280,162", face: [596, 160], head: 383, breakout: 0, wide: true },
 };
 
-// 案ごとの見せ方。on: "partner" 相手の行に、はじめの顔だけを無言で出す / "line" はじめ自身の行に出す
-// leave: "line" 次の行で消える / "fade" 次の行で0.3秒かけて薄れる / ms … その時間で消える
-// partners: 出せる「相手の立ち絵の枚数」（#2845 オーナー決定: 相手の行は1枚の時だけ。案4は独白の0枚も可）
+// 型ごとの見せ方。on: "partner" 相手の行に、はじめの顔だけを無言で出す（台詞が出切ってから）/ "line" はじめ自身の行に出す
+// enter・leave: 出入りの動き（cut 左から開く / soft 静かに浮かぶ・薄れる / rise 持ち上がる / eyes 帯が開く・縦につぶれる）
+// ms: その時間で自分から消える。無ければ次の行へ進むまで残る
+// partners: 出せる「相手の立ち絵の枚数」（#2845 オーナー決定: 相手の行は1枚の時だけ。沈むは独白の0枚も可。決意は2枚も可）
+// drop: 顔を帯の中で下げる量（沈んだ構図）。tone: 帯の色（amber 琥珀の線 / cool 色を落とした暗い青紫）
 export const KINDS = {
-  "2a": { plan: 2, frame: "tall", pose: { scale: 0.86, fx: 150, fy: 128 }, enter: "slide", on: "partner", leave: "line", partners: [1] },
-  "2c": { plan: 2, frame: "band", pose: { scale: 0.86, fx: 230, fy: 118 }, enter: "slide", on: "partner", leave: "line", ms: 900, partners: [1] },
-  "5": { plan: 5, frame: "tall", pose: { scale: 0.86, fx: 150, fy: 128 }, enter: "rise", on: "line", leave: "line", partners: [1], amber: true },
-  "4": { plan: 4, frame: "tall", pose: { scale: 0.86, fx: 150, fy: 196 }, enter: "fade", on: "line", leave: "fade", partners: [0, 1], sink: true },
-  // 仮判断（#2990）: 大会本番の決意の行は実際の再生で相手の立ち絵が2枚（王煙楼・鳴切）になるため、はじめ自身の行に限り2枚でも出す。
-  // 1枚だけに戻すときは partners を [1] にする。
-  "3": { plan: 3, frame: "eyeband", pose: { scale: 1.25, fx: 200, fy: 60, focus: "brim" }, enter: "wipe", on: "line", leave: "line", partners: [1, 2] },
+  "2c": { label: "その顔（軽い）", frame: "reply", enter: "cut", leave: "cut", ms: 1150, on: "partner", partners: [1], se: "whoosh" },
+  "2a": { label: "その顔（重い）", frame: "reply", enter: "soft", leave: "soft", on: "partner", partners: [1] },
+  "5": { label: "受け取る", frame: "own", enter: "rise", leave: "soft", on: "line", partners: [1], tone: "amber" },
+  "4": { label: "沈む", frame: "own", enter: "soft", leave: "soft", on: "line", partners: [0, 1], tone: "cool", drop: 14, breakout: 0 },
+  "3": { label: "決意", frame: "eyes", enter: "eyes", leave: "eyes", ms: 800, on: "line", partners: [1, 2], se: "whoosh", dim: true },
 };
+// 消える動きの長さ（ms）。CSS の .vn-cutin.leave と合わせる
+export const LEAVE_MS = { cut: 180, soft: 320, eyes: 180 };
 
-// 置き場（#2990 の配置判断）。id は Issue の案番号（5b・4m は同じ見せ方の別場面）
+// 置き場。id は #2845 の案番号（5b・4m は同じ型の別場面）。art は ART の絵
+// 出すのは「相手がはじめの顔に触れた行」「大会の決意と敗北」「絆の締めくくり」だけ（CCR04・2026-11-20 オーナー決定）。
 export const CUES = [
-  { id: "2a", kind: "2a", dialogue: "ch2_tsumugi_color", speaker: "tsumugi", face: "sad", text: "はい。……お水が要る顔でした" },
-  // #3660: 序盤のアピール用（2026-11-15 オーナー指示）。最初の場面と、つむぎ初回の会話にも置く
-  { id: "3", kind: "3", dialogue: "ch1_opening", speaker: "hajime", face: "serious", text: "なんか、負けられないなあ" },
-  { id: "2a", kind: "2a", dialogue: "ch1_tsumugi_first", speaker: "tsumugi", face: "surprise", text: "……猫です。葉っぱと煙が、ついてるだけで" },
-  { id: "2c", kind: "2c", dialogue: "ch1_tsumugi_third", speaker: "tsumugi", face: "surprise", text: "……急に、そんな顔しないでください" },
-  { id: "5", kind: "5", dialogue: "samechan_bond_finale", speaker: "hajime", face: "smile", text: "大事に使います。ありがとうございます" },
-  { id: "5b", kind: "5", dialogue: "ch1_sumi_bond_finale", speaker: "hajime", face: "smile", text: "……ありがとうございます。大事に使います" },
-  { id: "5", kind: "5", dialogue: "ch1_adam_bond_finale", speaker: "hajime", face: "smile", text: "……大事に詰めます。アダムさん、ありがとうございます" },
-  { id: "4", kind: "4", dialogue: "ch4_defeat", speaker: "hajime", face: "sad", text: "……届かなかった。悔しいな" },
-  { id: "4", kind: "4", dialogue: "ch1_tournament_defeat", speaker: "hajime", face: "sad", text: "（……そうか。届かなかった）" },
-  { id: "4m", kind: "4", dialogue: "ch2_abyss_baito", speaker: "hajime", face: "sad", text: "……俺、シーシャ、向いてないのかな" },
-  { id: "3", kind: "3", dialogue: "ch4_tournament_start", speaker: "hajime", face: "serious", text: "うん。全員に、勝ちたい" },
-  // #3417: 第1章に寄っていた置き場を全章へ広げる（各章3回前後・1会話1回・会話演出の印と同じ行には置かない）。同じ型の別場面
-  { id: "3", kind: "3", dialogue: "ch2_tournament_stations", speaker: "hajime", face: "serious", text: "……よろしくお願いします。最後まで、手順通りに作ります" },
-  { id: "3", kind: "3", dialogue: "ch3_tournament_day", speaker: "hajime", face: "serious", text: "作ってから、決めます。よろしくお願いします" },
-  { id: "5", kind: "5", dialogue: "ch3_volk_bond_finale", speaker: "hajime", face: "smile", text: "はい、大事に使います" },
-  { id: "4", kind: "4", dialogue: "ch3_national_defeat", speaker: "hajime", face: "sad", text: "……もう少し、待てた気がする" },
-  { id: "2a", kind: "2a", dialogue: "ch4_rehearsal_good", speaker: "naru", face: "serious", text: "その顔なら大丈夫だ" },
-  { id: "3", kind: "3", dialogue: "ch5_relationship_before_second_cup", speaker: "hajime", face: "serious", text: "……はい" },
-  { id: "2c", kind: "2c", dialogue: "ch5_tsumugi_makes_for_hajime", speaker: "tsumugi", face: "surprise", text: "……寝不足ですね。目の下、ちょっと暗いです" },
-  { id: "4", kind: "4", dialogue: "ch5_second_cup_defeat", speaker: "hajime", face: "sad", text: "……はい。店へ帰って、一服します" },
-  { id: "5", kind: "5", dialogue: "ch5_second_cup_result", speaker: "hajime", face: "smile", text: "ありがとうございます。最初の一台、また吸わせてください" },
+  { id: "2a", kind: "2a", dialogue: "ch2_tsumugi_color", speaker: "tsumugi", art: "downcast", text: "はい。……お水が要る顔でした" },
+  // 序盤のアピール（#3660）は、台本に元からある「その顔」の行へ置き直した（CCR04。冒頭の「なんか、負けられないなあ」と、つむぎ初回の「……猫です」は外した）
+  { id: "2c", kind: "2c", dialogue: "ch1_adam_first", speaker: "adam", art: "flustered", text: "ふっ……その顔。ダブルアップルの魔力に堕ちたようだな" },
+  { id: "2c", kind: "2c", dialogue: "ch1_tsumugi_third", speaker: "tsumugi", art: "flustered", text: "……急に、そんな顔しないでください" },
+  { id: "5", kind: "5", dialogue: "samechan_bond_finale", speaker: "hajime", art: "grateful", text: "大事に使います。ありがとうございます" },
+  { id: "5b", kind: "5", dialogue: "ch1_sumi_bond_finale", speaker: "hajime", art: "grateful", text: "……ありがとうございます。大事に使います" },
+  { id: "5", kind: "5", dialogue: "ch1_adam_bond_finale", speaker: "hajime", art: "grateful", text: "……大事に詰めます。アダムさん、ありがとうございます" },
+  { id: "4", kind: "4", dialogue: "ch4_defeat", speaker: "hajime", art: "downcast", text: "……届かなかった。悔しいな" },
+  { id: "4", kind: "4", dialogue: "ch1_tournament_defeat", speaker: "hajime", art: "downcast", text: "（……そうか。届かなかった）" },
+  { id: "4m", kind: "4", dialogue: "ch2_abyss_baito", speaker: "hajime", art: "downcast", text: "……俺、シーシャ、向いてないのかな" },
+  // 仮判断（#2990）: 大会本番の決意の行は実際の再生で相手の立ち絵が2枚（王煙楼・鳴切）になるため、決意は2枚でも出す。全幅の帯なので重ならない
+  { id: "3", kind: "3", dialogue: "ch4_tournament_start", speaker: "hajime", art: "resolve", text: "うん。全員に、勝ちたい" },
+  // #3417: 置き場を全章へ広げる（各章3回前後・1会話1回・会話演出の印と同じ行には置かない）。同じ型の別場面
+  { id: "3", kind: "3", dialogue: "ch2_tournament_stations", speaker: "hajime", art: "resolve", text: "……よろしくお願いします。最後まで、手順通りに作ります" },
+  { id: "3", kind: "3", dialogue: "ch3_tournament_day", speaker: "hajime", art: "resolve", text: "作ってから、決めます。よろしくお願いします" },
+  { id: "5", kind: "5", dialogue: "ch3_volk_bond_finale", speaker: "hajime", art: "grateful", text: "はい、大事に使います" },
+  { id: "4", kind: "4", dialogue: "ch3_national_defeat", speaker: "hajime", art: "downcast", text: "……もう少し、待てた気がする" },
+  { id: "2a", kind: "2a", dialogue: "ch4_rehearsal_good", speaker: "naru", art: "resolve", text: "その顔なら大丈夫だ" },
+  { id: "3", kind: "3", dialogue: "ch5_relationship_before_second_cup", speaker: "hajime", art: "resolve", text: "……はい" },
+  { id: "2c", kind: "2c", dialogue: "ch5_tsumugi_makes_for_hajime", speaker: "tsumugi", art: "flustered", text: "……寝不足ですね。目の下、ちょっと暗いです" },
+  { id: "4", kind: "4", dialogue: "ch5_second_cup_defeat", speaker: "hajime", art: "downcast", text: "……はい。店へ帰って、一服します" },
+  { id: "5", kind: "5", dialogue: "ch5_second_cup_result", speaker: "hajime", art: "grateful", text: "ありがとうございます。最初の一台、また吸わせてください" },
 ];
 
 /** この行に置いたカットイン（無ければ null）。分岐・演出の行や、立ち絵の指定を差し替えた行には出さない */
 export function conversationCutinCue(dialogueId, line) {
   if (!dialogueId || !line || line.type || line.portrait !== undefined) return null;
   return CUES.find((c) => c.dialogue === dialogueId && c.speaker === line.speaker && c.text === line.text) || null;
+}
+
+/** 絵の URL（remake/ からの相対） */
+export function conversationCutinSrc(cue) {
+  const art = ART[cue?.art];
+  return art ? ART_DIR + art.file : null;
 }
 
 /** 出せる条件（#2845 オーナー決定＋デモの判定）。1会話1回まで・相手の立ち絵の枚数・他の表示と重ねない */
@@ -71,67 +89,130 @@ export function conversationCutinAllowed(cue, ctx) {
   return kind.on !== "partner" || ctx.portraitSpeakers?.length === 1 && ctx.portraitSpeakers[0] === cue.speaker;
 }
 
-/** 立ち絵をそのまま縮尺して、顔（または帽子のつば〜目元）が枠内の指定位置に来る置き方。回転・加筆はしない */
+/** 絵をそのまま縮尺して、顔の中心が帯の決めた位置に来る置き方（帯の中の座標）。回転・加筆はしない */
 export function conversationCutinArt(cue) {
-  const kind = KINDS[cue.kind], p = kind.pose;
-  const [fx, fy] = FOCUS[p.focus || "face"][cue.face] || FOCUS[p.focus || "face"].normal;
-  return { width: SPRITE.w * p.scale, height: SPRITE.h * p.scale, left: p.fx - fx * p.scale, top: p.fy - fy * p.scale };
+  const kind = KINDS[cue.kind], f = FRAMES[kind.frame], art = ART[cue.art];
+  const scale = f.head / art.head;
+  const [fx, fy] = [f.face[0], f.face[1] + (kind.drop || 0)];
+  return { width: art.w * scale, height: art.h * scale, left: fx - art.face[0] * scale, top: fy - art.face[1] * scale, scale };
 }
 
 const SVG = "http://www.w3.org/2000/svg";
-/** カットインの層。show で出し、next 行で leave、SKIP・LOG・終了では clear で即座に消す */
-export function createConversationCutin(layer, { document = globalThis.document, schedule = globalThis.setTimeout, cancel = globalThis.clearTimeout } = {}) {
-  let node = null, timer = null;
+const pts = (s) => s.split(" ").map((xy) => xy.split(",").map(Number));
+const clipPolygon = (points) => `polygon(${points.map(([x, y]) => `${x}px ${y}px`).join(",")})`;
+
+/**
+ * カットインの層。show で出し、次の行で leave、SKIP・LOG・終了では clear で即座に消す。
+ * 相手の行の型は、台詞の文字送り中なら出すのを待ち、reveal（文字送りが終わった時）で出す。
+ * sound は効果音の名前を受け取る関数（engine.js が SE へつなぐ）。
+ */
+export function createConversationCutin(layer, { document = globalThis.document, schedule = globalThis.setTimeout, cancel = globalThis.clearTimeout, sound = () => {} } = {}) {
+  let node = null, timer = null, pending = null;
   const drop = (n) => n?.remove();
   const clear = () => {
     if (timer !== null) cancel(timer);
     timer = null;
+    pending = null;
     for (const n of [...layer.children]) drop(n);
     node = null;
   };
-  const show = (cue, src, { still = false } = {}) => {
-    clear();
-    const kind = KINDS[cue.kind], f = FRAMES[kind.frame], art = conversationCutinArt(cue);
-    const n = document.createElement("div");
-    n.className = "vn-cutin";
-    Object.assign(n.dataset, { cue: cue.id, kind: cue.kind, plan: String(kind.plan), enter: kind.enter, face: cue.face, still: String(!!still) });
-    if (kind.sink) n.classList.add("sink");
-    if (kind.amber) n.classList.add("amber");
-    Object.assign(n.style, { left: `${f.x}px`, top: `${f.y}px`, width: `${f.w}px`, height: `${f.h}px` });
-    const clip = document.createElement("div");
-    clip.className = "vn-cutin-clip";
-    clip.style.clipPath = `polygon(${f.poly.split(" ").map((xy) => xy.split(",").map((v) => `${v}px`).join(" ")).join(",")})`;
-    const image = document.createElement("img");
+  const div = (cls) => { const n = document.createElement("div"); n.className = cls; return n; };
+  const line = (svg, cls, points) => {
+    const p = document.createElementNS(SVG, "polyline");
+    p.setAttribute("class", cls);
+    p.setAttribute("points", points);
+    svg.append(p);
+  };
+  const artImage = (cue, src) => {
+    const a = conversationCutinArt(cue), image = document.createElement("img");
     image.className = "vn-cutin-art";
     image.alt = "";
     image.draggable = false;
-    for (const key of ["left", "top", "width", "height"]) image.style[key] = `${art[key]}px`;
-    image.onerror = () => { if (node === n) clear(); };
+    for (const key of ["left", "top", "width", "height"]) image.style[key] = `${a[key]}px`;
     image.src = src;
-    clip.append(image);
+    return image;
+  };
+  const mount = (cue, src, { still = false, bg = "" } = {}) => {
+    const kind = KINDS[cue.kind], f = FRAMES[kind.frame], poly = pts(f.poly);
+    const n = div("vn-cutin");
+    Object.assign(n.dataset, { cue: cue.id, kind: cue.kind, frame: kind.frame, enter: kind.enter, art: cue.art, still: String(!!still) });
+    if (kind.tone) n.dataset.tone = kind.tone;
+    Object.assign(n.style, { left: `${f.x}px`, top: `${f.y}px`, width: `${f.w}px`, height: `${f.h}px` });
+    // 帯の中: 今の背景のぼかし → 夜紫の色 → 顔の後ろの淡い光 → 絵 → 下の影 → 出る時に一度だけ走る光
+    const shadow = div("vn-cutin-shadow"), clip = div("vn-cutin-clip");
+    clip.style.clipPath = clipPolygon(poly);
+    const backdrop = div("vn-cutin-bg");
+    if (bg) backdrop.style.backgroundImage = bg;
+    clip.append(backdrop, div("vn-cutin-tint"));
+    if (f.wide) for (const i of [0, 1, 2, 3]) { const s = div(`vn-cutin-streak s${i}`); clip.append(s); }
+    else {
+      const halo = div("vn-cutin-halo");
+      halo.style.setProperty("--hx", `${f.face[0]}px`);
+      halo.style.setProperty("--hy", `${f.face[1] + (kind.drop || 0)}px`);
+      clip.append(halo);
+    }
+    const image = artImage(cue, src);
+    image.onerror = () => { if (node === n) clear(); };
+    clip.append(image, div("vn-cutin-shade"), div("vn-cutin-sheen"));
+    shadow.append(clip);
+    n.append(shadow);
+    // 帽子だけ帯の上の線より手前に出す（同じ絵を、帯の上の線より上だけ見せる）
+    const breakout = kind.breakout ?? f.breakout;
+    if (breakout) {
+      const over = div("vn-cutin-over");
+      over.style.clipPath = clipPolygon([[0, -breakout], [poly[1][0] - 24, -breakout], [poly[1][0] - 24, poly[1][1] + 2], [poly[0][0], poly[0][1] + 2]]);
+      over.append(artImage(cue, src));
+      n.append(over);
+    }
     const svg = document.createElementNS(SVG, "svg");
     svg.setAttribute("viewBox", `0 0 ${f.w} ${f.h}`);
-    const border = document.createElementNS(SVG, "polygon");
-    border.setAttribute("points", f.poly);
-    svg.append(border);
-    n.append(clip, svg);
+    svg.setAttribute("aria-hidden", "true");
+    const edge = f.edge || f.poly;
+    line(svg, "vn-cutin-glow", edge);
+    line(svg, "vn-cutin-edge", edge);
+    if (f.accent) line(svg, "vn-cutin-accent", f.accent);
+    if (f.inner) line(svg, "vn-cutin-inner", f.inner);
+    n.append(svg);
+    if (kind.dim) {
+      const dim = div("vn-cutin-dim");
+      dim.dataset.still = String(!!still);
+      layer.append(dim);
+    }
     layer.append(n);
     node = n;
-    if (kind.ms) timer = schedule(() => { if (node === n) clear(); }, kind.ms);
+    if (kind.se) sound(kind.se);
+    if (kind.ms) timer = schedule(() => { timer = null; if (node === n) leave({ still }); }, kind.ms);
     return n;
   };
-  /** 次の行へ進むとき。案4だけ0.3秒かけて薄れる（動きを減らす設定では即座に消す） */
+  /** 出す。相手の行の型は、文字送りの途中（typing）なら reveal まで待つ */
+  const show = (cue, src, { still = false, bg = "", typing = false } = {}) => {
+    clear();
+    if (typing && KINDS[cue.kind]?.on === "partner") {
+      pending = () => mount(cue, src, { still, bg });
+      return null;
+    }
+    return mount(cue, src, { still, bg });
+  };
+  /** 文字送りが終わった時。待っていたカットインを出す */
+  const reveal = () => {
+    const go = pending;
+    pending = null;
+    return go ? go() : null;
+  };
+  /** 次の行へ進むとき・自分から消えるとき。型ごとの動きで消える（動きを減らす設定では即座に消す） */
   const leave = ({ still = false } = {}) => {
+    pending = null;
     const n = node;
-    if (!n) return;
-    const kind = KINDS[n.dataset.kind];
     if (timer !== null) cancel(timer);
     timer = null;
+    if (!n) return;
     node = null;
-    if (kind?.leave === "fade" && !still) {
-      n.classList.add("leave");
-      schedule(() => drop(n), 300);
-    } else drop(n);
+    const kind = KINDS[n.dataset.kind];
+    const parts = [...layer.children];
+    if (still || !kind) { for (const p of parts) drop(p); return; }
+    for (const p of parts) p.classList.add("leave");
+    n.dataset.leave = kind.leave;
+    schedule(() => { for (const p of parts) drop(p); }, LEAVE_MS[kind.leave] || 0);
   };
-  return { show, leave, clear };
+  return { show, reveal, leave, clear };
 }

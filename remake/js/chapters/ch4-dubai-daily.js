@@ -30,7 +30,7 @@ import { openingStatus, MOSQUE_VISITING_HOURS } from "../daily/spot-hours.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_DAILY_EVE_DAY, CH4_FREE_SCENE_IDS, chapterFourProgress, syncChapterFourDay,
-  chapterFourSecondAvailable, chapterFourStoryNightDue } from "./ch4-progress.js";
+  chapterFourSecondAvailable, chapterFourStoryNightDue, CH4_SUMI_CALL, chapterFourLastNightCall, skipChapterFourLastNightCall } from "./ch4-progress.js";
 import { CAMEL_DAILY_SPOT_ID, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
 import { overseasCompanion } from "../core/overseas-companion.js";
 import { chainStageAt } from "./visit-chains.js";
@@ -342,13 +342,39 @@ function tourSlotEvent() {
 
 // ドバイの本筋の夜（説明会・下見・買い出し・時差の電話・記者会見。SPC27）。期限の出会いや店の手伝いが無い夜に一つ。
 function storyNightEvent(io) {
-  const story = chapterFourStoryNightDue(state);
+  const owner = state;
+  const lastCall = chapterFourLastNightCall(owner);
+  // 買い出し直後のSAVEをLOADしても、電話を強制せず、選ばなかった／読了した後に別の夜会話を足さない。
+  if (lastCall) return lastCall === "pending" ? {
+    id: "dubai-story:last-night-call", schedule: "fixed", pin: null, label: "tonariからの電話",
+    done: () => chapterFourLastNightCall(owner) !== "pending",
+    run: () => offerLastNightCall(io, owner),
+  } : null;
+  const story = chapterFourStoryNightDue(owner);
   if (!story) return null;
   return {
     id: `dubai-story:${story.id}`, schedule: "fixed", pin: null, label: story.label, beat: story.beat,
     done: () => read(story.id),
-    run: async () => { if (!read(story.id)) await keepDailyHud(() => io.readAndCommit(story.id)); },
+    run: async () => {
+      if (state !== owner || read(story.id) || !await keepDailyHud(() => io.readAndCommit(story.id))) return;
+      if (story.id === "ch4_story_market") await offerLastNightCall(io, owner);
+    },
   };
+}
+
+async function offerLastNightCall(io, owner) {
+  if (state !== owner || chapterFourLastNightCall(owner) !== "pending") return;
+  await setBg(bgUrl(CH4_SCENE_BG[CH4_SUMI_CALL]));
+  if (state !== owner) return;
+  const answer = await modal({ title: "宿の部屋",
+    body: "買ってきた炭をしまうと、スマホの画面に「tonari」と出た。",
+    options: [
+      { label: "電話に出る", value: "answer", test: "ch4-last-night-call-answer", primary: true },
+      { label: "今夜は休む", value: "rest", test: "ch4-last-night-call-rest" },
+    ] });
+  if (state !== owner || chapterFourLastNightCall(owner) !== "pending") return;
+  if (answer === "answer") await keepDailyHud(() => io.readAndCommit(CH4_SUMI_CALL));
+  else if (skipChapterFourLastNightCall(owner)) save();
 }
 
 // ---- 行き先の処理 -------------------------------------------------------------------------

@@ -802,7 +802,9 @@ async function pullGame(cs, mode) {
     title: `${mode.title} 結果`,
     summary: [...(renewal ? [`${keptWord}で整え終えた（${coals ? `炭×${coals}` : "炭そのまま"}・${pulls}回吸った）`] : []), ...(attackLine ? [attackLine] : [])],
     lines: [
-      inZone ? `適温に整えて、${context.returned}` : T > ideal[1] ? cs.mode==="tournament"?"熱いまま審査員に任せてしまった":"まだ熱い。次は炭を減らすか、外寄りに置こう" : cs.mode==="tournament"?"冷めたまま審査員に任せてしまった":"まだぬるい。次は炭を多めに替えるか、内寄りに寄せよう",
+      inZone ? `適温に整えて、${context.returned}`
+        : T > ideal[1] ? cs.mode==="tournament" ? `熱いまま${context.recipient}に任せてしまった` : "まだ熱い。次は炭を減らすか、外寄りに置こう"
+        : cs.mode==="tournament" ? `冷めたまま${context.recipient}に任せてしまった` : "まだぬるい。次は炭を多めに替えるか、内寄りに寄せよう",
       tasteCard,
       waterComfortLine(cs.water),
       coals ? `消耗した炭を${coals}個${{ outer: "、外寄りに置いて", inner: "、内寄りに寄せて" }[cs.careCoals?.place] || ""}交換した` : "炭は交換せずに整えた",

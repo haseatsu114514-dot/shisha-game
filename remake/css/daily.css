@@ -355,6 +355,10 @@ body[data-screen="bench"]:has(.bench[data-mode="tournament"][data-chapter="1"]) 
 /* ---------------------------------------------------------------- マップ */
 /* 旧版を踏襲: 看板型のピン（テーマ色のグラデ・白縁・しっぽ）＋下の白い札／右下の墨×金パネル */
 .map { position: absolute; inset: 0; }
+/* A failed or slow map keeps its destinations usable without suggesting they are inside the previous shop. */
+#bg .map-fallback { background-color: #40384a; background-image: repeating-linear-gradient(32deg, transparent 0 53px, #514758 54px 55px), repeating-linear-gradient(112deg, transparent 0 74px, #514758 75px 76px); }
+.map-backdrop-note:not([hidden]) { position: absolute; z-index: 8; bottom: 100px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; white-space: nowrap; color: #fffaf1; background: #302837; border-radius: 6px; padding: 5px 12px; font-size: max(20px, var(--mui-text, 11px)); }
+.map-backdrop-note button { font: inherit; color: #ffdf9b; padding: 5px 8px; text-decoration: underline; cursor: pointer; }
 .map::before {
   content: "";
   position: absolute;
@@ -1686,6 +1690,7 @@ html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 140px; }
 .gh-title { margin: 0; font-size: 18px; font-weight: 900; }
 .gh-page { height: 312px; overflow: auto; padding-right: 2px; }
 .modal-box.gboard-help { max-height: 680px; }
+#modal:has(.kannondo-dialog) .modal-backdrop { backdrop-filter: none; } /* 観音堂の昼夜の絵は残す */
 .gh-list, .gh-flow, .gh-gains { display: grid; gap: 8px 16px; margin: 0; padding: 0; list-style: none; }
 .gh-list { grid-template-columns: 1fr 1fr; align-content: start; }
 .gh-row { display: grid; grid-template-columns: 84px 1fr; align-items: center; gap: 10px; }
@@ -2083,7 +2088,7 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16
 
 /* ---------------------------------------------------------------- スマホ横の盤（SBD114・SBD120・SBD125①）
    PC と同じ配置をステージごと縮めていたので、上の帯・札・右のパネル・近い目的地の文字が実寸 7〜8px だった。
-   規格（#2851。phone-density.css）の補助文の大きさ（--phone-sub。実寸 約11.5px）にそろえる。並びと押せる所は変えない。
+   規格（#2851。phone-density.css）を土台に、本文と倍率操作は実寸12.5px以上にする。
    右のパネルは絵の高さを詰めて、マスの説明とボタンが送らずに収まるようにする。行間はこの書体の字の高さ（約1.4）より詰めない（字の上下が行からはみ出す）（wide-screens.css の盤の規則はワイド表示の廃止 #3035 で効かない） */
 html:root[data-density="phone"] body:not(:root) .gboard .gb-level, html:root[data-density="phone"] body:not(:root) .gboard .gb-level small, html:root[data-density="phone"] body:not(:root) .gboard .gb-place-chip { font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-place-chip { padding: 3px 16px; }
@@ -2091,10 +2096,12 @@ html:root[data-density="phone"] body:not(:root) .gboard .gb-tab { gap: 10px; pad
 html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-tab-body, .gb-tab-body b) { font-size: var(--phone-sub); line-height: 1.42; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-tab-head { width: 34px; height: 34px; font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-tab-ready { min-width: 26px; height: 26px; font-size: 17px; }
-html:root[data-density="phone"] body:not(:root) .gboard .gb-zoom .gb-icon { min-width: max(44px, calc(40px / var(--k, 1))); height: max(44px, calc(40px / var(--k, 1))); border-radius: calc(max(44px, calc(40px / var(--k, 1))) / 2); font-size: var(--phone-sub); --pill-cap: calc(max(44px, calc(40px / var(--k, 1))) / 2); }
-html:root[data-density="phone"] body:not(:root) .gboard .gb-side { gap: 3px; font-size: var(--phone-sub); line-height: 1.42; }
-html:root[data-density="phone"] body:not(:root) .gboard .gb-p-title { font-size: var(--phone-text); line-height: 1.42; }
-html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-p-sub, .gb-p-state, .gb-bar, .gb-bar-sum, .gb-bar-note, .gb-feat, .gb-goals-head, .gb-goal-name, .gb-goal-fire b, .gb-goal-lock, .gb-goal-now) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-zoom .gb-icon { min-width: max(44px, calc(44px / var(--k, 1))); height: max(44px, calc(44px / var(--k, 1))); border-radius: calc(max(44px, calc(44px / var(--k, 1))) / 2); font-size: max(var(--phone-sub), calc(12.5px / var(--k, 1))); --pill-cap: calc(max(44px, calc(44px / var(--k, 1))) / 2); }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-side { gap: 3px; font-size: max(var(--phone-sub), calc(12.5px / var(--k, 1))); line-height: 1.42; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-p-title { font-size: max(var(--phone-text), calc(13px / var(--k, 1))); line-height: 1.42; }
+html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-p-sub, .gb-p-state, .gb-p-quality, .gb-p-reward, .gb-p-total, .gb-p-next, .gb-p-lock, .gb-p-target, .gb-bar, .gb-bar-sum, .gb-bar-note, .gb-feat, .gb-goals-head, .gb-goal-name, .gb-goal-fire b, .gb-goal-lock, .gb-goal-now) { font-size: max(var(--phone-sub), calc(12.5px / var(--k, 1))); }
+/* 長い要マス・授業の説明はスクロールできるまま、操作だけをパネル下端に残す。 */
+html:root[data-density="phone"] body:not(:root) .gboard .gb-side-actions { position: sticky; bottom: 0; z-index: 1; flex: none; padding-block: 4px; background: rgba(10, 6, 16, 0.96); }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-art { height: 84px; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-art span { font-size: 44px; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-art-icon { width: 64px; height: 64px; }
@@ -2117,8 +2124,8 @@ html:root[data-density="phone"] body:not(:root) .gboard.has-art .gb-hidane i { w
 html:root[data-density="phone"] body:not(:root) .gboard .gb-nodes .gb-node > :is(.gb-cost, .gb-mystery),
 html:root[data-density="phone"] body:not(:root) .gboard.has-art .gb-nodes .gb-node > :is(.gb-cost, .gb-mystery) { min-width: max(28px, calc(11.5px / var(--k, 1) + 12px)); width: max(28px, calc(11.5px / var(--k, 1) + 12px)); height: max(28px, calc(11.5px / var(--k, 1) + 12px)); font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-header .gb-icon { width: max(44px, calc(40px / var(--k, 1))); height: max(44px, calc(40px / var(--k, 1))); font-size: var(--phone-sub); }
-/* #3724 修正: 上のアイコンは実効40px（レイアウト約74px）で盤の固定行（60px）より高く、上下中央寄せの分だけ盤の上端からはみ出して閉じるボタンが画面外に出る。スマホ密度ではヘッダー行をアイコンの高さまで広げ、差分はマス表示の行で吸収する */
-html:root[data-density="phone"] body:not(:root) .gboard { grid-template-rows: max(60px, calc(40px / var(--k, 1))) minmax(0, 1fr) 112px; }
+/* #3724 修正: 上のアイコンは実効40px（レイアウト約74px）で盤の固定行（60px）より高く、上下中央寄せの分だけ盤の上端からはみ出して閉じるボタンが画面外に出る。スマホ密度ではヘッダー行を倍率ボタンの44pxまで広げ、差分はマス表示の行で吸収する */
+html:root[data-density="phone"] body:not(:root) .gboard { grid-template-rows: max(60px, calc(44px / var(--k, 1))) minmax(0, 1fr) 112px; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-left { grid-template-rows: 60px minmax(0, 1fr); }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-bar-glyph,
 html:root[data-density="phone"] body:not(:root) .gboard .gb-glyph,
@@ -2129,7 +2136,14 @@ html:root[data-density="phone"] body:not(:root) .gboard .gb-node b,
 html:root[data-density="phone"] body:not(:root) .gboard .gb-face b,
 html:root[data-density="phone"] body:not(:root) .gboard .gb-goal-icon b { font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-node > .gb-node-state { width: max(18px, calc(11.5px / var(--k, 1) + 10px)); height: max(18px, calc(11.5px / var(--k, 1) + 10px)); }
-/* 拡大時だけマスのクリック箱を実効44pxまで広げる（等倍では隣と重なるので広げない）（#3121） */
+/* 全体・等倍でも隣と重ならない範囲でクリック箱を広げる。全体は見渡す表示なので
+   39px にはできず、選択後に JS がそのマスを 1.2 倍へ寄せる。 */
+html:root[data-density="phone"] body:not(:root) .gb-board[data-hit="tight"] .gb-node {
+  --gb-hit: min(83px, max(44px, calc(39px / var(--k, 1) / var(--gb-zoom, 1))));
+  width: var(--gb-hit); height: var(--gb-hit);
+  margin: calc(var(--gb-hit) / -2) 0 0 calc(var(--gb-hit) / -2);
+}
+/* 拡大時は実効44px。 */
 html:root[data-density="phone"] body:not(:root) .gb-board[data-hit="wide"] .gb-node {
   --gb-hit: max(44px, calc(44px / var(--k, 1) / var(--gb-zoom, 1)));
   width: var(--gb-hit); height: var(--gb-hit);

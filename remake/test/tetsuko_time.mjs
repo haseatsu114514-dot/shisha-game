@@ -15,7 +15,7 @@ import {
   TETSUKO_TIME_FLAG, MOODS, MOMENTS, PROPS, SLOTS, ALBUM_LIMIT, PET_REST_STREAK, PLAY_PAW, PLAY_AUTO_CATCH, AUTO_DELAY,
   JOY, JOY_MAX, JOY_HEARTS, PET_ZONES, SWEET_ZONES, WISH_PATIENCE,
   moodOf, moodLabel, relationStage, sessionStage, readTetsukoRecord, createSession, openingReaction, act, canAct,
-  autonomous, autoDelay, placeProp, takePhoto, farewell, sessionResult, unlockedProps, discoveryGuide,
+  autonomous, autoDelay, placeProp, canPlaceProp, takePhoto, farewell, sessionResult, unlockedProps, discoveryGuide,
   invite, peakReaction, seekMoment, sweetZoneOf, joyHearts,
 } from "../js/minigames/tetsuko-model.js";
 import { HELP } from "../js/minigames/tetsuko-help.js";
@@ -250,7 +250,7 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   assert.deepEqual(session.newProps, ["box", "ball"], "初めての訪問で、箱とボールが使える");
   assert.equal(placeProp(session, "bench", "cushion"), false, "まだ借りていない物は置けない");
   assert.equal(placeProp(session, "bench", "ball"), false, "ボールは床だけ");
-  assert(placeProp(session, "bench", "box"));
+  assert.equal(placeProp(session, "bench", "box"), false, "大きな箱をベンチに重ねない");
   assert(placeProp(session, "floor", "box"), "別の枠へ置けば移る");
   assert.deepEqual(session.props, { bench: null, floor: "box", bed: null });
   assert(placeProp(session, "floor", null));
@@ -261,6 +261,26 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   assert.deepEqual(createSession(save({ count: 3 })).newProps, ["bed"], "すり寄ってきた日に、猫ベッド");
   assert.deepEqual(createSession(save({ count: 6 })).newProps, [], "その後は増えない");
   for (const prop of PROPS) for (const slot of prop.slots) assert(SLOTS.includes(slot));
+}
+
+// #3794: 大物の重ね置きを離しても確定しない。乗っている座布団を動かすと足元は床へ戻る。
+{
+  const session = createSession(save({ count: 4 }));
+  assert(placeProp(session, "floor", "tunnel"));
+  const before = { ...session.props };
+  assert.equal(canPlaceProp(session, "bed", "box"), false);
+  assert.equal(placeProp(session, "bed", "box"), false);
+  assert.deepEqual(session.props, before, "無効なドロップでは元の配置を保つ");
+  assert.equal(canPlaceProp(session, "bench", "box"), false);
+  assert(placeProp(session, "bench", "cushion"));
+  session.cat = { ...session.cat, inside: "cushion", spot: "bench", pose: "curl" };
+  assert(placeProp(session, "bed", "cushion"));
+  assert.equal(session.cat.inside, null, "乗っていた物を動かしたら猫を降ろす");
+  assert.equal(session.cat.spot, "floor", "足元は床へ戻す");
+  assert.equal(session.cat.pose, "sit");
+  assert.deepEqual(session.props, { bench: null, floor: "tunnel", bed: "cushion" });
+  const record = readTetsukoRecord(save({ record: { props: { bench: "box", floor: "tunnel", bed: "box" } } }));
+  assert.deepEqual(record.props, { bench: null, floor: "tunnel", bed: null }, "旧記録の不正な積み重ねも正規化する");
 }
 
 // 自律行動: 1回おきに待機を挟み、直前と同じ行動は引かない。置いた物を使う。未発見を優先する。
@@ -442,7 +462,7 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   assert(first.joy.gain >= JOY.invite);
   assert.equal(keep(invite(session, "ball")).id, "ball_paw", "続けて誘うと、別の反応");
   assert.equal(keep(invite(session, "ball")).id, "ball_watch");
-  placeProp(session, "bench", "box");
+  placeProp(session, "floor", "box");
   assert.equal(keep(invite(session, "box")).id, "box_peek");
   assert.equal(session.cat.inside, "box");
   assert.equal(keep(invite(session, "box")).id, "box_in");
@@ -463,7 +483,7 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
     keep(openingReaction(session));
     const stage = session.stage;
     // その日の段階で置ける物を置く（ベッドと箱は両方）。
-    if (stage >= 3) { placeProp(session, "bed", "bed"); placeProp(session, "bench", "box"); placeProp(session, "floor", "ball"); }
+    if (stage >= 3) { placeProp(session, "bed", "bed"); placeProp(session, "floor", "box"); }
     else if (stage >= 1) { placeProp(session, "bench", "cushion"); placeProp(session, "floor", "box"); }
     else placeProp(session, "floor", "ball");
     for (const kind of ["pet", "play", "play", "play", "catch", "brush", "watch", "watch"]) keep(act(session, kind));

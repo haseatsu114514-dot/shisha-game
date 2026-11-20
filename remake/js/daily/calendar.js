@@ -128,6 +128,13 @@ export async function runDaily(def) {
       if (!state.flags._c_station_registered && state.slot < 2 && !restingToday()) await registerTournament();
     }
     await chapterDef.morningDeparture?.();
+    if (state !== owner) return;
+    // DAY3の朝、地図へ出る前に観音堂へ。昼枠を使わず、昼より先へ進んだ旧セーブは巻き戻さない。
+    if (state.chapter === 1 && state.day === 3 && state.slot === 0 && !state.flags._ch1_day3_kannon_done) {
+      await reflectAtSpot("kannon", { direct: true, onExit: () => { owner.flags._ch1_day3_kannon_done = true; } });
+      if (state !== owner) return;
+      updateHud();
+    }
     while (state.slot < 2) {
       const story = await chapterDef.slotEvent?.();
       if (story) {
@@ -144,6 +151,7 @@ export async function runDaily(def) {
       }
       if (fixedShiftDue()) await fixedShift();
       else await takeAction();
+      if (state !== owner) return;
       updateHud();
       save();
     }
@@ -293,6 +301,7 @@ function openMenu() {
   return openFullMenu({ canSave: isChoosingDestination });
 }
 
+// 地図の GUIDE は「行き先＋用件」を一文に。店名を繰り返さず、共通操作（看板を2回タップ）は初回だけ添える。
 // ---------------------------------------------------------------- 1日目の案内
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
@@ -315,7 +324,7 @@ async function day1Errands() {
       f._errand_shop_told = true;
       save();
     }
-    await chooseSpot({ guide: { pin: "shop", text: "スミさんに頼まれた仕入れへ。Dr.fookah をタップ。もう一度タップで入る！" }, onShown });
+    await chooseSpot({ guide: { pin: "shop", text: "Dr.fookahでレモンを仕入れる。看板を2回タップ。" }, onShown });
     await openShop({ errand: "lemon", expense: true, expenseFlag: "_errand_lemon_expensed" });
     f._errand_shop_done = true;
     save();
@@ -334,7 +343,7 @@ async function day1Errands() {
     f._errand_scout_told = true;
     save();
   }
-  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。KEMURIKUSA をタップ。もう一度タップで入る！" }, onShown });
+  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。" }, onShown });
   if (!f._errand_naru_visited) {
     await visitRival(naru);
     state.visitedDay.naru = state.day;
@@ -350,7 +359,7 @@ async function registerTournament() {
   const venue = spotById("c_station");
   // 偵察を見送った旧保存などでは、未解放/休業の受付へ案内して進行を止めない。
   if (!venue || !isUnlocked(venue) || isClosed(venue) || state.flags._c_station_registered) return;
-  await chooseSpot({ guide: { pin: "c_station", text: "まずは大会の参加登録へ。C.STATION の受付をタップ。もう一度タップで入る！", free: "参加登録（代金なし）" } });
+  await chooseSpot({ guide: { pin: "c_station", text: "C.STATIONで大会に登録する。", free: "参加登録（代金なし）" } });
   await visitSpot({ ...venue, cost: 0, stamina: 0 });
   if (state.flags._c_station_registered && !state.flags._ch1_rules_read) {
     await (await import("../scenes/rule-sheet.js")).openRuleSheet();
@@ -369,8 +378,8 @@ async function registerTournament() {
  * 自分で先に行った旧セーブの店は飛ばし、DAY2 を過ぎた旧セーブには割り込まない
  */
 const DELIVERIES = [
-  { charId: "minto", scene: "remake_delivery_minto", text: "帰り道に、まとめ買いのミントを PEPPERMINT へ。PEPPERMINT をタップ。もう一度タップで入る！" },
-  { charId: "adam", scene: "remake_delivery_eden", text: "次は古いダブルアップルを EDEN へ。EDEN をタップ。もう一度タップで入る！" },
+  { charId: "minto", scene: "remake_delivery_minto", text: "PEPPERMINTにミントを届ける。" },
+  { charId: "adam", scene: "remake_delivery_eden", text: "EDENに古いダブルアップルを届ける。" },
 ];
 const DELIVERY_LAST_DAY = 2;
 const DELIVERY_PAY = 2000;
@@ -602,6 +611,7 @@ async function takeAction() {
       else limeCoach(phoneButton);
     }, // 通知を先にタップした場合は、マップが開いたところで目的のトークへ
     onBeforeGo: async (destination) => {
+      if (destination.boardOnly) return true; // 行動枠も約束も進めない
       const spendsAction = !["shop", "fortune"].includes(destination.kind)
         && !(typeof pendingDelivery === "function" && pendingDelivery(destination.charId));
       // 組み直しが開いている間の最初の行動は、確定する前に閉じることを一度だけ知らせる（SPEC 5.2）
@@ -619,6 +629,10 @@ async function takeAction() {
   if (!spot) throw new Error(`行き先が見つかりません: ${spotId}`);
   const blocked = visitBlock(spot);
   if (blocked) { toast(blocked.why); return; }
+  if (spot.boardOnly) {
+    await reflectAtSpot(spot.id);
+    return;
+  }
   if (spot.kind === "rival" && typeof pendingDelivery === "function" && pendingDelivery(spot.charId)) {
     if (!openingStatus(spot, state).ok || isClosed(spot)) return;
     await deliver(pendingDelivery(spot.charId), { guide: false });
@@ -739,8 +753,6 @@ async function performSpotAction(spot) {
     else if (await staminaGuard(-14)) { used = await visitRio(); exerted = used; if (used) await consultLessons("rio"); }
     else used = false;
   } else if (spot.kind === "spot") {
-    // 観音堂で内省（心得の盤 SPEC 2.8）: 火種を灯す。時間も体力も使わない。true=行動にしない
-    if (await reflectAtSpot(spot.id) === true) return { used: false, exerted: false };
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
     if (await visitSpot(spot) === false) return { used: false, exerted: false };
     exerted = spot.stamina < 0;

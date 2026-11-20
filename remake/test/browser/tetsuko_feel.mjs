@@ -198,4 +198,31 @@ await suite("tetsuko-feel", async check => {
     const { result } = await leaveAndSettle(page);
     assert(result.found.includes("hug_toy"));
   }, { reducedMotion: "reduce" });
+
+  await check("tetsuko-decor-rejects-overlap-and-returns-drag", async page => {
+    await open(page, { record: { sessions: 3, props: { floor: "tunnel" } } });
+    await page.locator(dt("tetsuko-decor")).click();
+    const box = page.locator(dt("tetsuko-item-box"));
+    await box.click();
+    const bed = page.locator(dt("tetsuko-slot-bed"));
+    assert.equal(await bed.getAttribute("data-allowed"), "false", "A floor tunnel blocks the bed-side box");
+    assert.equal(await bed.evaluate(node => getComputedStyle(node).borderTopColor), "rgb(211, 61, 54)", "Invalid spot is framed red");
+    const from = await box.boundingBox(), to = await bed.boundingBox();
+    await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 8 });
+    await page.mouse.up();
+    assert.equal(await page.locator('.tt-slot[data-slot="floor"]').getAttribute("data-prop"), "tunnel", "The original prop stays put");
+    assert.equal(await page.locator('.tt-slot[data-slot="bed"]').getAttribute("data-prop"), "", "Invalid drop adds nothing");
+    await page.locator(dt("tetsuko-item-cushion")).click();
+    await page.locator(dt("tetsuko-slot-bench")).click();
+    assert.equal(await page.locator('.tt-slot[data-slot="bench"]').getAttribute("data-prop"), "cushion", "Small props still fit on the bench");
+    const floor = page.locator(dt("tetsuko-slot-floor"));
+    const floorRect = await floor.boundingBox(), benchRect = await page.locator(dt("tetsuko-slot-bench")).boundingBox();
+    await page.mouse.move(floorRect.x + floorRect.width / 2, floorRect.y + floorRect.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(benchRect.x + benchRect.width / 2, benchRect.y + benchRect.height / 2, { steps: 8 });
+    await page.mouse.up();
+    assert.equal(await page.locator('.tt-slot[data-slot="floor"]').getAttribute("data-prop"), "tunnel", "Rejected move returns the placed prop to its floor slot");
+  }, { reducedMotion: "reduce" });
 });

@@ -68,6 +68,7 @@ export function initLayers() {
 
 let bgNow = "";
 let bgShown = ""; // 実際に #bg へ出した背景（読めずに見送った指定は含まない）
+let bgRevision = 0;
 let bgTask = Promise.resolve();
 let bgAssetsReady = Promise.resolve();
 let activeCurtain = null;
@@ -129,6 +130,7 @@ export function imageReady(url, ms = 1500, { keep = false, pin = false } = {}) {
     if (pin) entry.pin = true;
   }
   const p = entry.promise;
+  if (ms === null) return p; // explicit retry: observe this transfer until it settles
   if (expiredImageWaits.has(p) && expiredImageWaits.get(p) >= ms) return Promise.resolve(false);
   return new Promise((resolve) => {
     const timer = setTimeout(() => {
@@ -141,6 +143,9 @@ export function imageReady(url, ms = 1500, { keep = false, pin = false } = {}) {
 }
 
 /** URL がすでに読み込み・デコード済みでキャッシュに残っているかを同期で返す。 */
+// Observe the existing transfer after a bounded wait. Do not start a second request or timer.
+imageReady.pending = (url) => bgReady.get(url)?.promise || null;
+
 imageReady.isReady = (url) => {
   if (!url) return false;
   const entry = bgReady.get(url);
@@ -240,9 +245,10 @@ export function uiArtReady(ms = 2000) {
  * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ。
  * assetsReady は画像の取得・デコードだけを待つ。読み込み表示と操作解禁の条件を混同しない。
  */
-export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [], homeRigs = true } = {}) {
+export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [], homeRigs = true, mapBackdrop = false } = {}) {
   const host = layers.bg;
   const art = { homeRigs };
+  const isShown = () => !!url && bgShown === key;
   const key = `${url}|${tint || ""}|${sceneArtUrls(url, art).join("|")}`;
   const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
   // 時間が過ぎる波（transitions.waveBeat）が覆ったまま預けた幕。新しい背景を描いてから開く（#2688 F3）
@@ -251,38 +257,45 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
     refreshWeather();
     const assetsReady = Promise.all([bgAssetsReady, ...ready.map((u) => imageReady(u, 15000))]);
     const same = Promise.all([bgTask, assetsReady]).then(async (values) => { if (handoff) await handoff(); return values; });
-    return Object.assign(same, { assetsReady, covered: activeCurtain?.covered || Promise.resolve() });
+    return Object.assign(same, { isShown, assetsReady, covered: activeCurtain?.covered || Promise.resolve() });
   }
   const coveredElsewhere = layers.wipe?.classList.contains("black") || layers.wipe?.classList.contains("cover") || isCovering();
   const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip"), sceneArrival }) : null;
   if (curtain) activeCurtain = curtain;
   bgNow = key;
-  bgAssetsReady = Promise.all([...sceneArtUrls(url, art), ...ready].map((u) => imageReady(u, 15000)));
+  const revision = ++bgRevision;
+  bgAssetsReady = Promise.all([...sceneArtUrls(url, art), ...ready].map((u) => imageReady(u, mapBackdrop ? 1800 : 15000)));
   bgTask = Promise.all([curtain?.covered, bgAssetsReady]).then(([, loaded]) => {
-    if (bgNow !== key) return; // 待っている間に別の背景が指定された
+    if (bgRevision !== revision) return; // 待っている間に別の背景が指定された
     // 背景の絵そのもの（先頭）が読めなかった（通信失敗・時間切れ）ときは、前の背景を残す。読めない絵の層を重ねて
     // 前の背景を片付けると、黒一色の画面になる（#3203）。同じ背景をもう一度指定したら読み直すよう、記録は今出ている背景に戻す。
     // 背景を消す指定（url なし＝暗転）と、まだ何も出ていない最初の背景は、これまでどおり差し替える。
-    const keep = !!url && loaded[0] === false && host.children.length > 0;
+    // Pins must never be drawn over a shop. Give a missing map its own neutral background;
+    // the mounted map owns late recovery. Other scene failures keep the previous art as before.
+    const missingMap = mapBackdrop && (!url || !loaded[0]);
+    const shownUrl = missingMap ? null : url;
+    const keep = !mapBackdrop && !!url && loaded[0] === false && host.children.length > 0;
     const next = keep ? null : el("div.bg-img");
     if (keep) bgNow = bgShown;
     else {
-      bgShown = key;
-      renderSceneArt(next, url, art);
-      if (!url) next.classList.add("black");
+      bgShown = missingMap ? "" : key;
+      if (missingMap) bgNow = ""; // a later retry must not coalesce with this placeholder
+      renderSceneArt(next, shownUrl, art);
+      if (missingMap) { next.classList.add("map-fallback"); next.style.removeProperty("background-image"); }
+      else if (!url) next.classList.add("black");
       if (fast) next.classList.add("fast");
       if (tint) next.dataset.tint = tint;
       host.append(next);
       // 時間帯の色（css/look-neo.css の #bg[data-tone] ~ #vn）。いま出した絵の名前と色調から決める
       const tone = sceneTone(next.dataset.sceneBg, tint);
       if (tone) host.dataset.tone = tone; else delete host.dataset.tone;
-      syncBackdrop(url, tint, instant);
+      syncBackdrop(shownUrl, tint, instant);
     }
     // 場面はここで確定する。絵が読めず前の背景を残したときも、入店の合図は落とさない（進行は止めない）。
     curtain?.commitArrival?.(url);
     if (!curtain) sceneArrival.commitArrival(url);
     if (keep) return; // 背景・余白のぼかし・雨は前の場面のまま
-    weatherBg = url || "";
+    weatherBg = shownUrl || "";
     weatherTint = tint || "";
     refreshWeather();
     const olds = [...host.children].slice(0, -1);
@@ -309,7 +322,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
     }
     if (handoff) await handoff();
   });
-  return Object.assign(bgTask, { assetsReady: bgAssetsReady, covered: curtain?.covered || Promise.resolve() });
+  return Object.assign(bgTask, { isShown, assetsReady: bgAssetsReady, covered: curtain?.covered || Promise.resolve() });
 }
 
 /**

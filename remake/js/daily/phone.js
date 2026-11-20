@@ -14,7 +14,8 @@ import { state } from "../core/state.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
-import { gainAffinity, affinityLevel, applyStats, bond } from "../core/stats.js";
+import { gainAffinity, affinityLevel, AFFINITY_RANK_PTS, applyStats, bond } from "../core/stats.js";
+import { gainExp, growthEnabled } from "../core/growth.js";
 import { SE } from "../core/audio.js";
 import { hooks } from "../vn/engine.js";
 import { formatHtml } from "../vn/text.js";
@@ -1020,10 +1021,27 @@ function phoneShell({ time, title }) {
   return ui;
 }
 
+/** 好感度がすでにMAXなら、日常の雑談の好感度を少量のEXPに置き換える。 */
+function settleMaxAffinityChat(item, ui, replied = false) {
+  const m = item.msg;
+  if (m.type !== "chat" || !(m.casual || m.friend) || m.lover || isLover(m.sender) || !growthEnabled()
+    || affinityLevel(m.sender) !== AFFINITY_RANK_PTS.length - 1) return false;
+  // 既読・返信済みの同じ話題があっても、再案内や再表示ではEXPを入れない。
+  const origin = originId(item);
+  if (item.id === origin && !state.inbox.some(other => other !== item && originId(other) === origin
+    && (replied ? other.replyState === "replied" : other.read))) {
+    const got = gainExp(5, { key: "lime_chat", silent: true });
+    if (got > 0) ui.note(`EXP +${got}`); // スマホ内だけに表示し、トーク履歴やHUDには重ねて残さない
+  }
+  return true;
+}
+
 /** 読み終えたときの報酬（返信の無いメッセージ）。噂は洞察、ふつうの連絡は少しだけ好感度 */
-function readReward(m) {
+function readReward(item, ui) {
+  const m = item.msg;
   if (m.type === "rumor") applyStats({ insight: 2 });
   else if (m.type !== "invitation" && !(m.replies && m.replies.length) && m.sender !== "???" && m.sender !== "sumi") {
+    if (settleMaxAffinityChat(item, ui)) return;
     // 恋人の読むだけの連絡（朝のひとこと）は、私的なやりとりとして絆に積もる（LM01: 返事1点ぶん）
     const lover = isLover(m.sender);
     bond.private = lover;
@@ -1076,10 +1094,12 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       if (!alive()) break;
     }
     if (!alive()) return; // 読み終える前に戻ったら、既読・報酬を付けない
-    item.read = true;
-    if (!state.limeRead.includes(m.id)) state.limeRead.push(m.id);
-    syncMintoKnowledge();
-    readReward(m);
+    if (!item.read) {
+      item.read = true;
+      if (!state.limeRead.includes(m.id)) state.limeRead.push(m.id);
+      syncMintoKnowledge();
+      readReward(item, ui);
+    }
   }
   if (!alive()) return;
   if (item.done) {
@@ -1202,17 +1222,19 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     const responseMedia = replyMedia(item, r.response_media);
     if (responseMedia) item.log.push({ me: false, ...responseMedia });
     if (r.response) item.log.push({ me: false, text: r.response });
-    bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
-    try {
-      // 雑談は選んだ返事に応じて1〜2点。0点も尊重し、恋人の絆の倍率は従来どおり。
-      const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
-      gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1), {
-        source: "lime",
-        // 確定した返信だけに添える。履歴には保存せず、再表示では通知しない。
-        onGain: () => ui.note(isLover(m.sender) ? "♡ 心の距離がほんの少し近づいた" : "♡ ほんの少し仲良くなった"),
-      });
-    } finally {
-      bond.private = false;
+    // 雑談は選んだ返事に応じて1〜2点。0点・約束などの返事・恋人の絆は従来どおり。
+    const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
+    if (!(points > 0 && !r.action && settleMaxAffinityChat(item, ui, true))) {
+      bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
+      try {
+        gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1), {
+          source: "lime",
+          // 確定した返信だけに添える。履歴には保存せず、再表示では通知しない。
+          onGain: () => ui.note(isLover(m.sender) ? "♡ 心の距離がほんの少し近づいた" : "♡ ほんの少し仲良くなった"),
+        });
+      } finally {
+        bond.private = false;
+      }
     }
     // 以降は表示のみ。古い画面/セーブの待機処理を新しい画面へ持ち越さない。
     await ui.bubble(r.text, true);

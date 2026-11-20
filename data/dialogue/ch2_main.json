@@ -34,6 +34,11 @@
         },
         {
           "speaker": "hajime",
+          "face": "sad",
+          "text": "（なんで勝てたのかも、まだ分からないのに）"
+        },
+        {
+          "speaker": "hajime",
           "face": "serious",
           "text": "（みんなには武器がある。俺には……何がある？）"
         },

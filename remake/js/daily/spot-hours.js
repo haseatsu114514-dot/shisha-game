@@ -36,6 +36,6 @@ export function spotTimeNote(spot, save) {
   if (spot.kind === "shop") return save.slot === 1 ? rioUnavailable(save) || "2階の相談を受付中" : "買い物は昼夜・2階の相談は夜";
   if (spot.kind === "trpg") return save.slot === 0 ? "昼：店長と無料試遊・本選び" : "夜：仲間とTRPG";
   if (spot.id === "choizap") return save.slot === 0 ? "無人ジム・動画で自主トレ" : "無人ジム・夜の自主トレ";
-  if (spot.id === "kannon") return save.slot === 0 ? "昼：猫と街の人のいる境内" : "夜：静かな境内でひと休み";
+  if (spot.id === "kannon") return "心得の盤を開く（時間は進まない）";
   return "";
 }

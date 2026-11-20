@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
+import { assertParkedThermometer } from "./craft_temperature_assertions.mjs";
 const shots = process.env.SHOTS || ".codex/artifacts/remake-browser/presentation";
 fs.mkdirSync(shots, { recursive: true });
 const select = (page, selector, touch) => touch ? page.locator(selector).tap() : page.locator(selector).click();
@@ -52,17 +53,15 @@ await suite("ch1-presentation", async check => {
       });
       await page.locator('[data-test="mix-plus-double_apple"]').waitFor();
       assert.equal(await page.locator(".bowl-layers").count(), 0);
-      assert(await page.locator('[data-test="mix-temperature-preview"]').isHidden());
-      assert(await page.locator('.mix-temperature').isHidden());
+      assert(await page.locator('[data-test="mix-temperature-preview"]').isVisible());
+      await assertParkedThermometer(page, { selected: false });
       assert.match(await page.locator('.mix-temperature-legend').textContent(), /未選択/);
       assert.match(await page.locator('[data-test="mix-taste"]').textContent(), /どんな一服/);
       for (const [id, times] of [["double_apple", 10], ["mint", 2]]) for (let i = 0; i < times; i++) await select(page, `[data-test="mix-plus-${id}"]`, touch);
       await assertFits(page, ".mix-vessel, .mix-taste, .mix-footer, .fr-btn");
       assert.match(await page.locator('[data-test="mix-taste"]').textContent(), /アニス.*ミント/);
       await page.screenshot({ path: `${shots}/${device}-mix-basic.png` });
-      assert(await page.locator('[data-test="mix-temperature-preview"]').isHidden());
-      assert(await page.locator('.mix-temperature').isHidden());
-      await page.screenshot({ path: `${shots}/${device}-mix-initial-no-temperature.png` });
+      await assertParkedThermometer(page, { selected: true });
       await select(page, '[data-test="mix-ok"]', touch); await page.evaluate(() => V.running);
       await page.evaluate(() => { V.running = V.steps.stepPack(V.cs); });
       await page.locator('[data-test="opt-normal"]').waitFor();
@@ -80,6 +79,7 @@ await suite("ch1-presentation", async check => {
       });
       await page.locator('[data-test="mix-plus-lemon"]').waitFor();
       assert(await page.locator('[data-test="mix-temperature-preview"]').isVisible());
+      await assertParkedThermometer(page, { selected: false });
       assert.match(await page.locator('.mix-temperature-legend').textContent(), /未選択/);
       await assertFits(page, ".mix-temperature-preview, .mix-temperature, .mix-temperature-legend");
       await assertFits(page, ".mix-vessel, .mix-taste, .mix-footer");
@@ -92,6 +92,7 @@ await suite("ch1-presentation", async check => {
       assert(await page.locator('[data-test="mix-ok"]').isDisabled());
       for (let i = 0; i < 2; i++) await select(page, '[data-test="mix-plus-lemon"]', touch);
       assert(!await page.locator('[data-test="mix-ok"]').isDisabled());
+      await assertParkedThermometer(page, { selected: true });
       await assertFits(page, ".mix-temperature-preview, .mix-temperature, .mix-temperature-legend");
       await select(page, '[data-test="mix-ok"]', touch); await page.evaluate(() => V.running);
       assert.equal(await page.evaluate(() => V.core.state.flavorStock.grape), 20);
