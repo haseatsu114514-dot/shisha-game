@@ -17,7 +17,7 @@ export const FEEL = {
   // 【振動】スマホの振動 ms（並びは「振動・休み・振動…」）
   buzz: { PERFECT: [14, 36, 22], GOOD: [14], OK: [8], EARLY: [36], LATE: [36], combo: [10], broken: [24], slip: [30, 40, 30], fix: [12, 30, 16], S: [16, 40, 16, 40, 30], A: [16, 40, 20], finish: [20, 50, 20, 50, 40] },
   // 【効果音】全体の大きさ（曲の音量に対する倍率）と、出来事ごとの大きさ。大きい出来事ほど大きく
-  sfx: { master: 1, tick: .16, tickLast: .22, click: .22, impact: .5, impactSmall: .32, stumble: .26, clap: .2, thud: .22, up: .2, down: .2, stamp: .42, slip: .24, fix: .26,
+  sfx: { master: 1, tick: .16, tickLast: .22, reserve: .18, click: .22, impact: .5, impactSmall: .32, stumble: .26, clap: .2, thud: .22, up: .2, down: .2, stamp: .42, slip: .24, fix: .26,
     cheer: { PERFECT: .5, GOOD: .26, combo16: .14, combo24: .2, combo32: .34, S: .6, A: .34, pickGreat: .22, finishS: .7, finishA: .55, finishB: .3, finishC: 0 },
     applause: { S: .5, A: .4, B: .26, C: .12 } },
   // 【皿】1回転で動く拍の数（大きいほど少し回すだけで動く）／矢印キー1回で動く拍／回した分をまとめて曲へ送る間隔 ms／

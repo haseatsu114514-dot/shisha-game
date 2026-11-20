@@ -85,16 +85,17 @@ assert.throws(() => swayAt(0, .62, 0, false, .2), RangeError, "極端な補正�
 assert.equal(SWAY.max, .11, "揺れの上限そのものは変えない");
 
 // 4. DJ: ▶の判定の窓だけが前後10ms広い。音程・フェーダーの採点は同じ。
+// 2026-11-20（#2456 §4・DJK01）: 判定の幅は拍（120 BPM で PERFECT 250・GOOD 1000・OK 2000ms）。ヘッドホンはその各幅を前後10ms広げる（DJK07）。
 assert.equal(gear.DJ_ALLOWANCE_MS, 10);
-assert.equal(dj.gradeOf(35), "GOOD");
-assert.equal(dj.gradeOf(35, 10), "PERFECT");
-assert.equal(dj.gradeOf(-125), "EARLY");
-assert.equal(dj.gradeOf(-125, 10), "OK");
-assert.equal(dj.gradeOf(200, 10), "LATE");
-const base = { playMs: 65, reached: 4, follow: .8 };
+assert.equal(dj.gradeOf(255), "GOOD");
+assert.equal(dj.gradeOf(255, 10), "PERFECT");
+assert.equal(dj.gradeOf(-2005), "EARLY");
+assert.equal(dj.gradeOf(-2005, 10), "OK");
+assert.equal(dj.gradeOf(2011, 10), "LATE");
+const base = { playMs: 1005, reached: 4, follow: .8 };
 const plain = dj.scoreTransition(base), phones = dj.scoreTransition({ ...base, allowance: 10 });
 assert.deepEqual([plain.parts[0], plain.parts[2]], [phones.parts[0], phones.parts[2]], "音程・フェーダーの点は同じ");
-assert.deepEqual([plain.parts[1], phones.parts[1]], [60, 85], "65msの入りが GOOD 相当に");
+assert.deepEqual([plain.parts[1], phones.parts[1]], [60, 85], "1005msの入りが GOOD 相当に");
 assert.equal(dj.scoreTransition({ ...base, playMs: 20 }).total, dj.scoreTransition({ ...base, playMs: 20, allowance: 10 }).total, "ぴったりの入りは同じ点");
 assert.equal(dj.createSet(SETS[0]).allowance, 0);
 assert.equal(dj.createSet(SETS[0], Math.random, { allowance: 10 }).allowance, 10);

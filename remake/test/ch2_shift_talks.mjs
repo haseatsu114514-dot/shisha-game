@@ -51,6 +51,18 @@ assert.equal(due(save({ met: { ageha: true, kumicho: true }, flags: seen("ch2_sh
 const early = seen("ch2_shift_talk_fare", "ch2_shift_talk_three_shops");
 assert.notEqual(due(save({ day: 22, flags: early }), dialogues), "ch2_shift_talk_supper");
 assert.equal(due(save({ day: 22, flags: { ...early, _ch2_read_ch2_lingering_smell: true } }), dialogues), "ch2_shift_talk_supper");
+// #3097 PR-I: 鉄仮面さんの回は DAY6 の二人の炭替え（ch2_coal_together・「炭、きれいだった」）の後だけ。夕飯の話の次
+{
+  const supperRead = { ...early, ...seen("ch2_shift_talk_supper"), _ch2_read_ch2_lingering_smell: true };
+  assert.notEqual(due(save({ day: 22, flags: supperRead }), dialogues), "ch2_shift_talk_salaryman", "not before the shared coal change");
+  assert.equal(due(save({ day: 22, flags: { ...supperRead, _ch2_read_ch2_coal_together: true } }), dialogues), "ch2_shift_talk_salaryman");
+  assert.equal(due(save({ day: 22, flags: { ...early, _ch2_read_ch2_lingering_smell: true, _ch2_read_ch2_coal_together: true } }), dialogues),
+    "ch2_shift_talk_supper", "the supper talk stays first");
+  const rows = dialogues.ch2_shift_talk_salaryman.lines;
+  const unfinished = rows.findIndex(line => line.speaker === "salaryman" && line.text.includes("今日も"));
+  assert(unfinished > 0 && rows.slice(unfinished).some(line => line.speaker === "sumi" && line.text.includes("この前の続き")),
+    "picks up 「炭、きれいだった」 from ch2_coal_together");
+}
 // レシートは DAY3 から
 assert.notEqual(due(save({ day: 16, flags: early }), dialogues), "ch2_shift_talk_receipts");
 assert.equal(due(save({ day: 17, flags: early }), dialogues), "ch2_shift_talk_receipts");
