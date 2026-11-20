@@ -38,6 +38,10 @@
 | 19 | `cg_ch5_shisha_9000` | ch5 | `ch5_match_day_arrival` の機体発見から9000の台詞直前まで | SMOKE LABで9000と博士に対面。未装着の同型台2台。正規立ち絵参照。原画・機材構成・プロンプトは同README |
 | 20 | `cg_ending_tonari_night` | ending | `ending_start` の閉店後描写から場面末尾まで | 恋人の有無に依存しないtonari閉店後。スミが洗ったグラスを伏せる。原画とプロンプトは同README |
 
+## 第2〜5章の新規スチル26枚（#3952 確定・2026-11-20）
+
+#3952 の80案から選んだ26枚は、生成プロンプト・3案からの採用手順・検品を [`asset_sources/stills-ch2-ch5-3952/`](../../asset_sources/stills-ch2-ch5-3952/README.md) に、本編への組み込み位置（`show_cg`／`hide_cg` を置く行・条件・ギャラリー名・検証）を [#3957](https://github.com/haseatsu114514-dot/shisha-game/issues/3957) にまとめた。上の一覧とは別に、そちらを正本にする。
+
 ## 生成プロンプト案（image-to-image、立ち絵参照前提・英語）
 
 共通サフィックス: `anime style, cinematic lighting, 16:9, high detail, shisha lounge atmosphere`
