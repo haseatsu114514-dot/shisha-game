@@ -5,7 +5,9 @@ import { newState, setState, saveToSlot, loadFromSlot } from "../js/core/state.j
 import { advanceToChapterThree, departChapterThree, chapterThreeScenes, completeChapterThreeScene,
   chapterThreeFreeTime, completeChapterThreeFreeTime } from "../js/chapters/ch3-progress.js";
 import { TOKYO_OUTINGS, OUTING_DIALOGUE_IDS, OUTINGS_FLAG, chapterThreeOutings, chapterThreeOutingCandidates,
-  claimChapterThreeOuting, outingDialogueId, outingAffinity, tasteRecovered, recordChapterThreeOuting } from "../js/chapters/ch3-outing-progress.js";
+  claimChapterThreeOuting, outingDialogueId, outingAffinity, tasteRecovered, recordChapterThreeOuting,
+  rainyOuting, roomRestId, recordRoomRest, ROOM_REST_IDS } from "../js/chapters/ch3-outing-progress.js";
+import { rainyFor } from "../js/daily/weather.js";
 import { chapterThreeMapModel } from "../js/chapters/ch3-map-model.js";
 import { classifyFlag } from "../js/core/carry.js";
 import { AFFINITY_RANK_PTS } from "../js/core/stats.js";
@@ -21,6 +23,8 @@ function departure({ member = false, legacy = false } = {}) {
   assert(departChapterThree(value));
   value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
   if (legacy) delete value.flags._ch3_intro.routeVersion;
+  // 雨の日の読み分け（PR-G）は天気の種で決まる。種の無いセーブは晴れ扱いなので、雨は下のテストで種を決めて確かめる。
+  value.weatherSeed = null;
   return value;
 }
 const ids = (value, window) => chapterThreeOutings(value, window.id).map(item => item.id);
@@ -457,6 +461,89 @@ function nextWindow(value) {
   }
 }
 
+// #3097 計画 3-1（PR-G）: 雨の日は、mukaiの手伝い・公園・奥の部屋を雨の日の版で読む。
+// 手伝いの最初の1回と味が戻った後の1回目は通常の場面。公園と奥の部屋は、雨で読んだ回に晴れの日の巡回を進めない。
+{
+  const seedFor = (value, rain) => {
+    for (let seed = 0; seed < 5000; seed++) if (rainyFor({ ...value, weatherSeed: seed }) === rain) return seed;
+    throw new Error("no seed");
+  };
+  const mukai = TOKYO_OUTINGS.find(item => item.id === "mukai_help"), park = TOKYO_OUTINGS.find(item => item.id === "park_walk");
+  const { value, window } = at("d5-noon");
+  assert(!tasteRecovered(value));
+  assert.equal(rainyFor(value), false, "A save without a weather seed reads as dry");
+  value.weatherSeed = seedFor(value, true);
+  // 手伝い: 最初の1回は導入のまま、2回目からは雨の版を雨の回数で巡回する
+  value.flags[OUTINGS_FLAG] = {};
+  assert.equal(rainyOuting(value, "mukai_help"), false);
+  assert.equal(outingDialogueId(value, mukai), "ch3_outing_mukai_help_lost");
+  value.flags[OUTINGS_FLAG] = { mukai_help: 3 };
+  const before = structuredClone(value);
+  assert.equal(outingDialogueId(value, mukai), "ch3_outing_mukai_help_rain");
+  assert.deepEqual(value, before, "Selecting the rain intro must not change the save");
+  recordChapterThreeOuting(value, "mukai_help");
+  assert.deepEqual(value.flags[OUTINGS_FLAG], { mukai_help: 4, mukai_help_rain: 1 }, "The shift count still moves on a rainy day");
+  assert.equal(outingDialogueId(value, mukai), "ch3_outing_mukai_help_rain_b");
+  recordChapterThreeOuting(value, "mukai_help");
+  assert.equal(outingDialogueId(value, mukai), "ch3_outing_mukai_help_rain");
+  // 晴れの日は、雨の回数に関係なく通常の巡回（手伝いの回数で決まる）
+  value.weatherSeed = seedFor(value, false);
+  assert.equal(outingDialogueId(value, mukai), "ch3_outing_mukai_help_lost_f");
+  // 味が戻った後: 戻ってからの1回目は「戻ってきた」場面、その後は雨の版
+  const late = at("d12-noon").value;
+  assert(tasteRecovered(late));
+  late.weatherSeed = seedFor(late, true);
+  late.flags[OUTINGS_FLAG] = { mukai_help: 5 };
+  assert.equal(outingDialogueId(late, mukai), "ch3_outing_mukai_help");
+  recordChapterThreeOuting(late, "mukai_help");
+  assert.deepEqual(late.flags[OUTINGS_FLAG], { mukai_help: 6, mukai_help_back: 1 });
+  assert.equal(outingDialogueId(late, mukai), "ch3_outing_mukai_help_rain");
+  // 公園: 雨なら昼夜それぞれの雨の版。昼夜の巡回は進めず、合計と雨の回数だけ数える
+  value.weatherSeed = seedFor(value, true);
+  value.flags[OUTINGS_FLAG] = { park_walk: 2, park_walk_day: 1, park_walk_night: 1 };
+  assert.equal(outingDialogueId(value, park, { slot: 0 }), "ch3_outing_park_walk_day_rain");
+  assert.equal(outingDialogueId(value, park, { slot: 1 }), "ch3_outing_park_walk_night_rain");
+  recordChapterThreeOuting(value, "park_walk", 0);
+  assert.deepEqual(value.flags[OUTINGS_FLAG], { park_walk: 3, park_walk_day: 1, park_walk_night: 1, park_walk_rain: 1 });
+  value.weatherSeed = seedFor(value, false);
+  assert.equal(outingDialogueId(value, park, { slot: 0 }), "ch3_outing_park_walk_day_b", "The next dry day continues the day rotation");
+  // 奥の部屋: 初回は雨でも導入。2回目以降の雨の日は雨の版で、巡回の回数は進めない
+  value.weatherSeed = seedFor(value, true);
+  value.flags._ch3_room_rests = 0;
+  assert.equal(roomRestId(value), "ch3_tokyo_room_rest");
+  recordRoomRest(value);
+  assert.equal(value.flags._ch3_room_rests, 1);
+  assert.equal(roomRestId(value), "ch3_tokyo_room_rest_rain");
+  recordRoomRest(value);
+  assert.equal(value.flags._ch3_room_rests, 1, "A rainy rest does not advance the dry rotation");
+  value.weatherSeed = seedFor(value, false);
+  assert.equal(roomRestId(value), "ch3_tokyo_room_rest_b");
+  recordRoomRest(value);
+  assert.equal(value.flags._ch3_room_rests, 2);
+
+  // 台本: 読み込み一覧にあり、ムカイさんが話し、雨の場面であることが本文で分かる。手伝いの雨版は味の感想を言わない
+  const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_outings.json", import.meta.url)));
+  const daily = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_tokyo_daily.json", import.meta.url)));
+  const byId = Object.fromEntries([...data.dialogues, ...daily.dialogues].map(scene => [scene.dialogue_id, scene]));
+  const rainIds = ["ch3_outing_mukai_help_rain", "ch3_outing_mukai_help_rain_b", "ch3_outing_park_walk_day_rain", "ch3_outing_park_walk_night_rain"];
+  for (const id of rainIds) assert(OUTING_DIALOGUE_IDS.includes(id), `${id}: real loader requests the rain scene`);
+  assert(ROOM_REST_IDS.includes("ch3_tokyo_room_rest_rain"));
+  for (const id of [...rainIds, "ch3_tokyo_room_rest_rain"]) {
+    const scene = byId[id];
+    assert(scene, id);
+    assert(scene.lines.length >= 12, `${id}: a full scene, not a stub`);
+    assert(scene.lines.every(line => !line.type && typeof line.text === "string" && line.text.length > 0));
+    assert.equal(scene.metadata, undefined, `${id}: no extra reward or background override`);
+    assert.match(scene.lines.map(line => line.text).join("\n"), /雨|傘/, `${id}: reads as a rainy day`);
+  }
+  for (const id of ["ch3_outing_mukai_help_rain", "ch3_outing_mukai_help_rain_b", "ch3_tokyo_room_rest_rain"]) {
+    assert(byId[id].lines.filter(line => line.speaker === "mukai_master").length >= 3, `${id}: Mukai speaks`);
+  }
+  for (const id of ["ch3_outing_mukai_help_rain", "ch3_outing_mukai_help_rain_b"]) {
+    assert.doesNotMatch(byId[id].lines.map(line => line.text).join("\n"), /舌|味が|大会/, `${id}: readable before and after the taste returns`);
+  }
+}
+
 assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
 console.log("ch3 outings: ok");
 
@@ -550,6 +637,7 @@ console.log("PASS: six everyday scenes load and rotate; park recovery and ordina
       assert(saveToSlot("suien_remake_slot1"));
       value = loadFromSlot("suien_remake_slot1");
       assert(value);
+      value.weatherSeed = null; // 読み込みで種が作り直される。雨の日の版は PR-G のテストで種を決めて確かめる
     }
   }
   assert.deepEqual(value.flags[OUTINGS_FLAG], { park_walk: 93, mukai_help: 4, park_walk_day: 6, park_walk_night: 6 });

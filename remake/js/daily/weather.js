@@ -32,6 +32,12 @@ export function isRainy(day = state?.day) {
   return !inDryRegion(state, day) && rollsRain(state.weatherSeed, day);
 }
 
+/** 渡したセーブで、その日が雨か（読むだけ。種がまだ無いセーブは晴れ扱いで、種を作らない）。台本の読み分けに使う。 */
+export function rainyFor(s, day = s?.day) {
+  if (!s || !day || day < 2 || s.phase === "tournament" || s.weatherSeed == null) return false;
+  return !inDryRegion(s, day) && rollsRain(s.weatherSeed, day);
+}
+
 /**
  * DAYカードに出す天気（CI109）。雨は isRainy のまま。雨でない日の約3割を「くもり」として見せるだけで、
  * くもりは会話・給料・制作を変えず、専用の曇天画がある背景だけ切り替える。DAY1 は晴れ。大会中は null。
