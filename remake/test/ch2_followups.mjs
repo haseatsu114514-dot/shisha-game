@@ -332,7 +332,8 @@ fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // + 神崎・クラウドの♥3の友人の外出2本（LIME の accept_event・#3097 PR-A）
 // + 喫茶こはくの上園さん・SHISHARKのサメちゃんの第2章の会話と、鉄仮面さんのシフト上がり（#3097 PR-I）
 // + 地元の雨の回4本（ch2_home.json）と、行き帰りの電車の小品4本（ch2_city.json・#3097 PR-B）
-assert.equal(Object.keys(loaderDB.dialogues).length, 109 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+assert.equal(Object.keys(loaderDB.dialogues).length, 110 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+assert(loaderDB.dialogues.ch2_rest_notebook?.lines?.length, "first chapter 2 rest scene is loaded");
 for (const id of ["cafe_ch2_rain", "choizap_ch2_rain", "cs_ch2_rain", "ch2_rest_rain", "ch2_commute_morning_regulars", "ch2_commute_return_tonari",
   "ch2_commute_morning_doze", "ch2_commute_return_window"]) assert(loaderDB.dialogues[id]?.lines?.length, `#3097 PR-B: ${id}`);
 for (const id of ["outing_kumicho_1", "outing_rei_1"]) assert(loaderDB.dialogues[id]?.lines?.length, `${id}: LIMEの誘いで再生する外出の台本も公開する`);

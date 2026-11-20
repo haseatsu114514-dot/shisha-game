@@ -27,7 +27,7 @@ const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "rema
 export const CH2_SHIFT_TALK_IDS = Object.freeze(["ch2_shift_talk_fare", "ch2_shift_talk_three_shops", "ch2_shift_talk_supper",
   "ch2_shift_talk_salaryman", "ch2_shift_talk_receipts", "ch2_shift_talk_student", "ch2_shift_talk_tsumugi_board", "ch2_shift_talk_one_hose",
   "ch2_shift_talk_lost_box", "ch2_shift_talk_first_timer", "ch2_shift_talk_cd_player", "ch2_shift_talk_same_seat", "ch2_shift_talk_burnt_finger"]);
-export const CH2_HOME_IDS = Object.freeze(["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze",
+export const CH2_HOME_IDS = Object.freeze(["ch2_rest_notebook", "cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze",
   "ch2_rio_taste", "ch2_rio_strawberry",
   // #3097 第1弾: 施設の寄り道4本と、凛想・みんと・アダムの第2章の会話（spot-encounters.js の ENCOUNTERS・spots.js の CHAPTER_TALKS）
   "cafe_ch2_foam", "kannon_ch2_omikuji", "choizap_ch2_stairs", "cs_ch2_new_staff", "ch2_rio_city_scent", "ch2_minto_commute_frame", "ch2_adam_ticket_machine",

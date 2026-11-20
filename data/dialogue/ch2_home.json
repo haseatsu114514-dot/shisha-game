@@ -2,6 +2,31 @@
   "comment": "第2章の地元（橙須）で読む短い会話（VOL13）。施設の寄り道（daily/spot-encounters.js の chapter: 2）と、Dr.fookah 2階の凛想の会話（daily/spots.js の CHAPTER_TALKS）、SHISHARKのサメちゃんの第2章の会話（daily/samechan.js の SAMECHAN_CH2_TALK・#3097 PR-I）、tonariの大会準備で一台作る場面（chapters/ch2-craft-prep.js・ch2_prep_*）。第2章の準備期間に ch2-city-data.js の loadPreparationDialogues で読み込む。施設の能力の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
   "dialogues": [
     {
+      "dialogue_id": "ch2_rest_notebook",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "練習ノートに、手が伸びかけた。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ch2_rest_notebook"
+        },
+        {
+          "speaker": "",
+          "text": "ページに挟んだ指を抜き、ノートを閉じた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今日は、書かない）"
+        },
+        {
+          "type": "hide_cg"
+        }
+      ]
+    },
+    {
       "dialogue_id": "cafe_ch2_commute",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_cafe_day.png"

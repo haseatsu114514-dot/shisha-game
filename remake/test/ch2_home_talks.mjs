@@ -287,12 +287,27 @@ for (const id of ["remake_ch2_aquarium_repeat", "remake_ch2_aquarium_repeat_b", 
   assert.notEqual(calls[0].id, "choizap_ch2_rain"); assert.equal(calls[0].growthKey, undefined);
   // 家で休む: 雨の回を一度だけ差し替える（休む回は経験値の付かない場面のまま）
   spotSave(2); await spots.restAtHome(spot("rest"));
-  assert.equal(calls[0].id, "ch2_rest_rain"); assert.equal(calls[0].growthScene, undefined);
+  assert.deepEqual(calls.map(call => call.id), ["ch2_rest_rain", "ch2_rest_notebook"]);
+  assert(calls.every(call => call.growthScene === undefined));
   assert.equal(state.flags._spot_turn_rest_rain, 1);
   state.flags._spot_seen_ch2_rest_rain = true; calls = [];
-  await spots.restAtHome(spot("rest")); assert.equal(calls[0].id, "remake_rest_rain");
-  spotSave(2); await spots.restAtHome(spot("rest"), { fullDay: true }); assert.equal(calls[0].id, "remake_rest_day");
-  spotSave(1); await spots.restAtHome(spot("rest")); assert.equal(calls[0].id, "remake_rest_rain");
+  await spots.restAtHome(spot("rest")); assert.deepEqual(calls.map(call => call.id), ["remake_rest_rain"]);
+  spotSave(2); await spots.restAtHome(spot("rest"), { fullDay: true });
+  assert.deepEqual(calls.map(call => call.id), ["remake_rest_day", "ch2_rest_notebook"]);
+  spotSave(1); await spots.restAtHome(spot("rest")); assert.deepEqual(calls.map(call => call.id), ["remake_rest_rain"]);
+  rainy = false;
+  spotSave(2); await spots.restAtHome(spot("rest"));
+  assert.deepEqual(calls.map(call => call.id), ["remake_rest", "ch2_rest_notebook"]);
+  spotSave(2);
+  const interrupted = state;
+  spotsModule.set("../vn/engine.js", "play", async id => {
+    calls.push({ id });
+    spotsModule.set("../core/state.js", "state", { ...state, flags: {} });
+    return { id, cancelled: true };
+  });
+  await spots.restAtHome(spot("rest"));
+  assert.deepEqual(calls.map(call => call.id), ["remake_rest"]);
+  assert.equal(interrupted.flags._ch2_rest_taken, undefined);
   // 台本: 読み込み一覧と一致し、自分の既読を記録し、大会・味・報酬の文を書かない。観音堂（心得の盤）には置かない
   const { CH2_RAIN_IDS } = await import(new URL("remake/js/chapters/ch2-city-data.js", root));
   assert.deepEqual([...encounters.CHAPTER_RAIN_IDS], [...CH2_RAIN_IDS], "the chapter 2 loader publishes every rain scene");
