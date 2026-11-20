@@ -11861,15 +11861,15 @@ html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-p-sub, .gb-p-sta
 html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-title, .gb-hub-text) { font-size: max(24px, calc(11.5px / var(--k, 1))); }
 /* 長い要マス・授業の説明はスクロールできるまま、支払いの行（.gb-p-state）と操作だけをパネル下端の枠に残す。
    ボタンだけを残していた時は、844×390 で一番下の「白火1で払う」が固定のボタンの後ろに隠れた（#3987）。
-   枠は左右に 4px 張り出し、文の幅は説明と同じ。上に細い金の線を引き、後ろの説明の字が透けないよう塗りつぶす。
-   説明が枠の後ろへ続く間（data-more。growth-board-screen.js）は、枠の上に影を出して知らせる */
-html:root[data-density="phone"] body:not(:root) .gboard .gb-side-foot { position: sticky; bottom: 0; z-index: 1; flex: none; display: flex; flex-direction: column; gap: 3px; margin-inline: -4px; padding: 4px; border-top: 1px solid rgba(244, 210, 122, 0.35); background: #0a0610; }
-html:root[data-density="phone"] body:not(:root) .gboard .gb-side-foot > .gb-side-actions { margin-top: 0; }
-html:root[data-density="phone"] body:not(:root) .gboard .gb-side[data-more="true"] > .gb-side-foot::before { content: ""; position: absolute; inset: auto 0 100%; height: 24px; background: linear-gradient(rgba(10, 6, 16, 0), rgba(10, 6, 16, 0.6)); pointer-events: none; }
-/* 紙の盤でも、暗い枠の中の支払いの行は明るい字にする（紙の上の濃い字のままだと読めない） */
-html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .gboard .gb-side-foot > .gb-p-state { color: #d9cfe2; }
-html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .gboard .gb-side-foot > .gb-p-state.s-available { color: #ffd08a; }
-html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .gboard .gb-side-foot > .gb-p-state.s-pending { color: #fff; }
+   枠は左右に 4px 張り出し、文の幅は説明と同じ。上に細い線を引き、後ろの説明の字が透けないよう枠の色（--foot-bg）で塗る。
+   ボタンの段そのものには色を塗らない（枠の色に任せる）。説明が枠の後ろへ続く間（data-more。growth-board-screen.js）は、
+   枠のすぐ上で説明を枠の色へ薄れさせて、送れば続きがあると知らせる */
+html:root[data-density="phone"] body:not(:root) .gboard .gb-side-foot { --foot-bg: #0a0610; position: sticky; bottom: 0; z-index: 1; flex: none; display: flex; flex-direction: column; gap: 3px; margin-inline: -4px; padding: 4px; border-top: 1px solid rgba(244, 210, 122, 0.35); background: var(--foot-bg); }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-side > .gb-side-foot > .gb-side-actions { margin-top: 0; background: none; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-side[data-more="true"] > .gb-side-foot::before { content: ""; position: absolute; inset: auto 0 100%; height: 24px; background: linear-gradient(transparent, color-mix(in srgb, var(--foot-bg) 85%, transparent)); pointer-events: none; }
+/* 紙の盤（既定のUIデザイン）では枠も紙の色にする。暗い帯が紙の説明の上に載って見えないように。字は紙の上の色のまま
+   （新版の盤は夜紫の面なので、暗い枠のまま） */
+html:root[data-ui-theme="paper"]:not([data-look="neo"])[data-density="phone"] body:not(:root) .gboard .gb-side-foot { --foot-bg: var(--paper); border-top-color: var(--paper-line); }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-art { height: 84px; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-art span { font-size: 44px; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-art-icon { width: 64px; height: 64px; }
