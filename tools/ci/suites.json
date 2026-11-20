@@ -4007,6 +4007,23 @@
       "chrome": "playwright"
     },
     {
+      "id": "title-save-guard",
+      "title": "タイトルへ戻る前のオートセーブ失敗と再試行",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/chapter-menu.js",
+        "remake/js/core/state.js",
+        "remake/js/core/ui.js",
+        "remake/js/daily/menu.js",
+        "remake/js/scenes/saves.js",
+        "remake/test/browser/fixtures/title_save.html",
+        "remake/test/browser/title_save_guard.mjs"
+      ],
+      "run": ["node remake/test/browser/title_save_guard.mjs"]
+    },
+    {
       "id": "daily-menu",
       "title": "Full-screen daily MENU: four read-only tabs, keys, save guard and landscape layout (#2097)",
       "kind": "browser",
