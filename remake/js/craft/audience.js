@@ -16,15 +16,67 @@ function wrapNote(note) {
   const size = parseFloat(getComputedStyle(note).fontSize) || 16;
   if (!note.clientWidth) return;
   const limit = Math.max(6, Math.floor(note.clientWidth / size));
-  if (note.dataset.limit === String(limit) && note.dataset.wrapped === raw) return;
-  note.dataset.limit = String(limit); note.dataset.wrapped = raw;
+  const maxLines = visibleNoteLines(note);
+  const signature = `${limit}/${maxLines}`;
+  if (note.dataset.limit === signature && note.dataset.wrapped === raw) return;
+  note.dataset.limit = signature; note.dataset.wrapped = raw;
   let lines = autoWrap(raw, limit).split("\n");
   // 2行に収まる短い一言は、両側が枠に入るなら最後の読点・句点で折る（「少しずつ／整えよう」より「見ながら、／少しずつ」）。
   if (lines.length === 2 && !raw.includes("\n")) {
     const at = Math.max(...["、", "。", "！", "？"].map((p) => raw.lastIndexOf(p, limit - 1)));
     if (at > 0 && at < raw.length - 1 && raw.length - at - 1 <= limit) lines = [raw.slice(0, at + 1), raw.slice(at + 1)];
   }
-  note.replaceChildren(...lines.flatMap((line, i) => (i ? [el("br"), line] : [line])));
+  clearTimeout(notePagers.get(note)); notePagers.delete(note);
+  const broken = (rows) => rows.flatMap((line, i) => (i ? [el("br"), line] : [line]));
+  if (lines.length <= maxLines) {
+    delete note.dataset.pages; delete note.dataset.page;
+    note.replaceChildren(...broken(lines));
+    return;
+  }
+  // 札に収まらない長い一言（PHN）: 行の右端に「続き」の印の場所を1字ぶん空けて折り直し、同じ場所で数行ずつ送る。
+  lines = autoWrap(raw, Math.max(6, limit - 1)).split("\n");
+  const count = Math.ceil(lines.length / maxLines), per = Math.ceil(lines.length / count);
+  const pages = Array.from({ length: count }, (_, i) => lines.slice(i * per, (i + 1) * per)).filter((rows) => rows.length);
+  const nodes = pages.map((rows, i) => el("span.audience-page", { dataset: { on: String(i === 0) } }, broken(rows)));
+  note.replaceChildren(...nodes);
+  note.dataset.pages = String(pages.length); note.dataset.page = "1";
+  let page = 0;
+  const show = (next) => {
+    page = next % nodes.length;
+    nodes.forEach((node, i) => { node.dataset.on = String(i === page); });
+    note.dataset.page = String(page + 1);
+    schedule();
+  };
+  // 読む速さ: 1ページ 2.2秒＋1字0.11秒。札が外れたら止める。
+  const schedule = () => {
+    clearTimeout(notePagers.get(note));
+    notePagers.set(note, setTimeout(() => { if (note.isConnected && nodes[0].parentNode === note) show(page + 1); },
+      2200 + 110 * pages[page].join("").length));
+  };
+  note.onpointerdown = () => { if (nodes[0].parentNode === note) show(page + 1); };
+  schedule();
+}
+
+// 送り中の札と、そのタイマー
+const notePagers = new WeakMap();
+
+/**
+ * 札に一度に出せる行数。一言の札は下端を固定して上へ伸びるので、行が増えると右上が熱の柱の根元の裏に入り、
+ * 1行目の右側が読めなくなる（一枚の舞台。スマホ横で顕著）。柱の根元より下に収まる行数を返す。柱が無い配置では制限しない。
+ */
+function visibleNoteLines(note) {
+  const bench = note.closest?.(".bench"), plate = note.closest?.(".bench-audience"), spine = bench?.querySelector(".bench-right .thermo-housing");
+  if (!plate || !spine || !globalThis.document?.body?.classList.contains("craft-stage")) return Infinity;
+  // スマホ横持ちは札を低く保つ（PHN17）: 行が増えるほど、札がはじめの絵（手元・シーシャ台）を下から覆う。
+  // ふだんは2行、レッスンは札の字の列が細い（1行6字ほど）ので3行まで。超える分は同じ場所で送る。
+  const cap = globalThis.document.documentElement?.dataset?.density === "phone" ? (bench.dataset?.mode === "tutorial" ? 3 : 2) : Infinity;
+  const plateBox = plate.getBoundingClientRect(), spineBox = spine.getBoundingClientRect();
+  if (!plateBox.width || !spineBox.height || spineBox.left > plateBox.right) return cap;
+  const style = getComputedStyle(note), k = plateBox.width / (plate.offsetWidth || plateBox.width);
+  const line = (parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.3) * k;
+  const bottom = plateBox.bottom - (parseFloat(getComputedStyle(plate).paddingBottom) || 0) * k;
+  // 1行目が柱の根元の下端より少し（行の3割半）上までなら、字は隠れない（行の上の余白ぶん）
+  return Math.min(cap, Math.max(2, Math.floor((bottom - spineBox.bottom) / line + .35)));
 }
 
 export function audienceFor(mode, chapter) {

@@ -176,7 +176,9 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
     const settled = !direction && Math.abs(wave) < 0.01 && Math.abs(velocity) < 0.01;
     if (settled) { wave = 0; velocity = 0; }
     render();
-    if (!settled) raf = requestAnimationFrame(frame);
+    // 説明・MENU を開いている間は上の stop() が wake() で次のコマを予約済み。ここで重ねて予約すると、波が収まるまで
+    // 1コマごとに予約が倍々に増えて画面が固まる（注いだ直後に「?」を開くと再現した・PHN）。予約は常に1つだけ。
+    if (!settled && !raf) raf = requestAnimationFrame(frame);
   }
   render();
   if (signal?.aborted) cancel();
