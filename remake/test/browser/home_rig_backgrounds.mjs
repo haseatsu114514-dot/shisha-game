@@ -271,6 +271,18 @@ await suite("home-rig-backgrounds", async check => {
       }
       await page.evaluate(async () => HQ.ui.setBg(HQ.data.bgUrl("bg_street", "day"), { instant: true }));
       assert.deepEqual(await rigs(page), [], "No props on unrelated backgrounds");
+      // C.STATION の店内（昼・夜・曇天）には台の絵を重ねない。ソファの上などに浮いて見えた（#3818・オーナー「マップ内に書き込んであるの以外入れない」）。
+      for (const file of ["bg_c_station_day.png", "bg_c_station_night.png", "bg_c_station_overcast_day.png", "bg_c_station_overcast_night.png"]) {
+        const url = await page.evaluate(async file => {
+          const url = HQ.data.img(`backgrounds/${file}`);
+          await HQ.ui.setBg(url, { instant: true });
+          return url;
+        }, file);
+        const shown = page.locator("#bg > :last-child");
+        assert.equal(await shown.getAttribute("data-scene-bg"), file);
+        assert.equal(await shown.locator("svg.scene-art, .scene-prop").count(), 0, `${file} has no composited rig`);
+        assert.deepEqual(await page.evaluate(url => HQ.art.sceneArtUrls(url), url), [url], `${file} preloads only the background`);
+      }
     }, opts);
 
     if (baseline) continue;
