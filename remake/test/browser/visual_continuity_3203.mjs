@@ -1,4 +1,4 @@
-// #3203: 表示の不連続の2件。
+// #3203: 遅延・失敗時の表示と、共通モーダルの暗幕。
 // 1. 地図→Dr.fookah の入口で、出た直後のフレームの写真の枠が空白だった（スマホ横 844×390・写真の読み込み待ち）。
 //    写真のデコードを待ってから入口を出す。遅い通信では上限で入口を出し、写真が届くまで枠に下地を見せる。
 // 2. 背景画像の取得に失敗すると、前の背景を片付けて黒一色の画面になっていた（ui.setBg）。読めなければ前の背景を残す。
@@ -71,6 +71,50 @@ const shownBg = page => page.evaluate(() => {
 });
 
 await suite("visual-continuity-3203", async check => {
+  // 縮小時のHUDの鏡写しはDOMが重複するのではなく描画で起きる。
+  // 左上だけを緑にして、暗幕の前・表示中・閉じた後に同じ四隅の画素を読む。
+  await check("landscape-modal-keeps-one-backdrop", async page => {
+    const points = await page.evaluate(async () => {
+      const ui = await import("./js/core/ui.js");
+      ui.clearScreen();
+      const stage = document.createElement("div");
+      stage.style.cssText = "position:absolute;inset:0;background:#d02020";
+      const corner = document.createElement("div");
+      corner.style.cssText = "position:absolute;left:0;top:0;width:20%;height:18%;background:#20e020";
+      stage.append(corner);
+      ui.showScreen("map", stage);
+      const rect = stage.getBoundingClientRect();
+      return [[.1, .08], [.1, .92], [.9, .08], [.9, .92]].map(([x, y]) =>
+        [Math.round(rect.left + x * rect.width), Math.round(rect.top + y * rect.height)]);
+    });
+    const readCorners = async () => {
+      const png = await page.screenshot({ scale: "css" });
+      return page.evaluate(async ({ png, points }) => {
+        const image = new Image();
+        image.src = "data:image/png;base64," + png;
+        await image.decode();
+        const canvas = document.createElement("canvas");
+        canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(image, 0, 0);
+        return points.map(([x, y]) => {
+          const [r, g] = ctx.getImageData(x, y, 1, 1).data;
+          return g > r ? "green" : "red";
+        });
+      }, { png: png.toString("base64"), points });
+    };
+    const expected = ["green", "red", "red", "red"];
+    assert.deepEqual(await readCorners(), expected, "one distinct corner before opening");
+    await page.evaluate(async () => {
+      const ui = await import("./js/core/ui.js");
+      void ui.modal({ title: "mukai", body: "何をしよう。", options: [{ label: "閉じる", test: "close-check" }] });
+    });
+    await page.locator("#modal.show .modal-box").waitFor();
+    assert.deepEqual(await readCorners(), expected, "the dimmed background is not reflected into the other corners");
+    await page.locator('[data-test="close-check"]').tap();
+    assert.deepEqual(await readCorners(), expected, "closing leaves the same stage");
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
+
   await check("phone-map-to-shop-entry-photo", async page => {
     page.setDefaultTimeout(45000);
     const photos = await holdFloorPhotos(page);
@@ -171,4 +215,4 @@ await suite("visual-continuity-3203", async check => {
     assert.equal(cleared.black, true); assert.equal(cleared.count, 1); assert.equal(cleared.url, "none");
   }, { ignoreFailedResource: failure => FAILING_BG.test(failure.split(" ").at(-1)) });
 });
-console.log("PASS visual-continuity-3203: shop entry waits for its photos (bounded, placeholder when slow), a failed background keeps the previous one");
+console.log("PASS visual-continuity-3203: modal backdrop, shop photos and failed-background recovery");

@@ -280,11 +280,14 @@ function dueMandatory() {
 
 function dubaiNightEvent(io) {
   const staff = chapterFourStaffNightEvent();
-  if (staff) return { ...staff, run: () => keepDailyHud(() => staff.run()) };
+  if (staff) return withOverdueStory({ ...staff, run: () => keepDailyHud(() => staff.run()) }, io);
   const due = dueMandatory();
-  if (!due) return naruTalkNightEvent() || storyNightEvent(io);
+  if (!due) {
+    const naru = naruTalkNightEvent();
+    return naru ? withOverdueStory(naru, io) : storyNightEvent(io);
+  }
   const last = due[due.length - 1];
-  return {
+  return withOverdueStory({
     id: `dubai-night:${last.id}`, schedule: "fixed", pin: null, label: "ドバイの夜", beat: last.beat,
     done: () => !dueMandatory(),
     run: async () => {
@@ -292,6 +295,29 @@ function dubaiNightEvent(io) {
         if (read(scene.id)) continue;
         if (!await keepDailyHud(() => io.readAndCommit(scene.id))) return;
       }
+    },
+  }, io);
+}
+
+/**
+ * 本筋の夜の取りこぼしを防ぐ（#3097・2026-11-20）。店の手伝い・期限の出会い・なるとの話の夜が続くと、本筋の夜は次の夜へ
+ * 送られ、前夜（DAY13）に入ると読まれずに終わっていた（説明会・下見・買い出し・時差の電話・記者会見・色紙）。
+ * 予定の日を過ぎて一度送られた本筋だけ、その夜の予定を読み終えた後に続けて読む（一夜に本筋は一本まで。順番は変えない）。
+ * 本筋の場面は冒頭で場所を書いているので、つなぎの一行は足さない。その日が予定の日の本筋は、従来どおり空いた夜に読む。
+ */
+function withOverdueStory(event, io) {
+  const owner = state;
+  const due = chapterFourStoryNightDue(owner);
+  if (!event || !due || due.day >= chapterFourProgress(owner).day) return event;
+  const story = storyNightEvent(io);
+  if (!story) return event;
+  return {
+    ...event, id: `${event.id}+${story.id}`,
+    done: () => event.done() && story.done(),
+    run: async () => {
+      if (!event.done()) await event.run();
+      if (state !== owner || !event.done() || story.done()) return;
+      await story.run();
     },
   };
 }

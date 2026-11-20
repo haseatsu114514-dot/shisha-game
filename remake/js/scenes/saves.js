@@ -1,7 +1,7 @@
 // セーブ／ロードの枠選び（オートセーブ＋手動1枠）。タイトルの「ロード」と、日常の MENU から開く。
 import { el, yen } from "../core/util.js";
 import { layers, modal, toast } from "../core/ui.js";
-import { SCHEMA, SAVE_SLOTS, readSlot, saveToSlotResult, loadFromSlot, state } from "../core/state.js";
+import { SCHEMA, SAVE_SLOTS, readSlot, save, saveToSlotResult, loadFromSlot, state } from "../core/state.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { cycleBadgeText, overwriteCycleNote } from "../core/cycle-display.js";
 import { chapterDay } from "../core/chapter-clock.js";
@@ -144,6 +144,28 @@ function pickSlot(mode) {
     layers.modal.classList.add("show");
     window.addEventListener("keydown", onKey);
   });
+}
+
+/** 保存できる場面では、AUTOへの保存成功か明示的な破棄を待ってから場面を終了する。 */
+export async function returnToTitle({ current, leave, canSave = () => true }) {
+  if (canSave()) {
+    while (!save()) {
+      const choice = await modal({
+        title: "オートセーブできませんでした",
+        body: "保存せずにタイトルへ戻ると、前回の保存以降の進行は失われます。",
+        options: [
+          { label: "再試行", value: "retry", primary: true },
+          { label: "保存せず離れる", value: "discard" },
+          { label: "残る", value: "stay" }, // Escapeでも残る
+        ],
+      });
+      if (!current()) return;
+      if (choice === "discard") break;
+      if (choice !== "retry" || !canSave()) return;
+    }
+  }
+  leave();
+  location.reload();
 }
 
 /** 今の状態を手動の枠へ。上書きは確認する */

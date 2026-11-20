@@ -128,10 +128,10 @@ const MODES = {
   },
 };
 
-export function runPull(cs) { return pullGame(cs, MODES.pull); }
-export async function runCare(cs, { round = 0 } = {}) {
+export function runPull(cs, { holdFailedResult = false } = {}) { return pullGame(cs, MODES.pull, holdFailedResult); }
+export async function runCare(cs, { round = 0, holdFailedResult = false } = {}) {
   cs.careRound = round;
-  const completed = await pullGame(cs, { ...MODES.care, title: round ? `調整 ${round}回目` : "熱管理" });
+  const completed = await pullGame(cs, { ...MODES.care, title: round ? `調整 ${round}回目` : "熱管理" }, holdFailedResult);
   if (completed === false) throw new Error("Care interrupted before finishing");
   if (round && cs.care) {
     cs.careHistory ??= [];
@@ -140,7 +140,7 @@ export async function runCare(cs, { round = 0 } = {}) {
   }
 }
 
-async function pullGame(cs, mode) {
+async function pullGame(cs, mode, holdFailedResult) {
   const owner=state;
   await waitBenchReady(cs, mode.store);
   if(state!==owner)return false;
@@ -751,7 +751,7 @@ async function pullGame(cs, mode) {
     if (failed === "burnt") cs.burnt = true;
     if (mode.store === "pull") { cs.pullDone = true; recordNaruFinish(cs, bands, { automatic: !!autoSkill() }); refreshBench(); }
     tickerSay(text.ticker);
-    await resultCard(panel, { title: text.title, lines: [text.line, waterComfortLine(cs.water), `${pulls}回吸った`] });
+    await resultCard(panel, { title: text.title, lines: [text.line, waterComfortLine(cs.water), `${pulls}回吸った`], holdUntilExit: holdFailedResult });
     return true;
   }
 

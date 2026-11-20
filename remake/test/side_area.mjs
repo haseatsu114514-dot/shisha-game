@@ -69,6 +69,23 @@ savedCity(ch3After, "ch3-aftermath", "橙須");  // つむぎの絵以降（帰�
 savedCity({ ...ch3After, flags: { ...ch3After.flags, _ch3_aftermath: { version: 4, winDay: 44, stage: ch3Home, skip: ["ch3_home_customer"] } } }, "ch3-aftermath", "橙須");
 savedCity({ ...ch3After, phase: "cleared", flags: { ...ch3After.flags, _ch3_cleared: true } }, "ch3-aftermath", "橙須");
 
+const ch4Trip = { chapter: 4, day: 49, slot: 0, phase: "opening", flags: {
+  _ch2_region: "home", _ch4_prep: { startDay: 47, days: 3, departed: false },
+  _ch4: { startDay: 50, stage: 2, part: "prologue" },
+} };
+savedCity(ch4Trip, "map", "橙須"); // 配合決定済み・まだ地元で準備中
+ch4Trip.day = 50;
+ch4Trip.flags._ch4_prep.departed = true;
+savedCity(ch4Trip, "ch4", "ドバイ"); // 空港カードの初描画
+ch4Trip.flags._ch4.stage++;
+savedCity(ch4Trip, "ch4", "ドバイ"); // 宿のカードで保存して再開
+delete ch4Trip.flags._ch4_prep; // 準備期間の無い旧行程
+savedCity(ch4Trip, "ch4", "ドバイ");
+ch4Trip.flags._ch4.stage = 1;
+savedCity(ch4Trip, "ch4", "橙須");
+Object.assign(ch4Trip.flags._ch4, { stage: 4, part: "free" });
+savedCity(ch4Trip, "ch4", "ドバイ"); // 地域フラグが地元のままの旧日程
+
 const ch4After = { chapter: 4, day: 64, slot: 0, phase: "aftermath", flags: {
   _ch2_region: "dubai", _ch4: { startDay: 51, part: "resolution", resolution: 3, read: { ch4_ending: true } },
 } };

@@ -42,7 +42,8 @@ const other = data.dialogues.find(scene => scene !== source);
 assert.equal(chapterFiveUnrecordedDialogue({}, other), other);
 console.log("ch5 unrecorded ordinary work: ok");
 
-// 自由行動の最初の案内: 店の「！」は今読める場面にだけ付き、電話・遠出の行き先も残す。
+// 自由行動の最初の案内: 店の「！」は今読める場面にだけ付き、遠出の行き先も残す。博士への連絡（勝負の日を決める電話）は、
+// tonari の閉店後の練習と試作を終えてから出す（2026-11-20 オーナー「ある程度ストーリーが進んだら、好きなタイミングで挑める」）。
 globalThis.document ||= { addEventListener() {}, querySelector() { return null; } };
 globalThis.window ||= {};
 const core = await import("../js/core/state.js");
@@ -59,10 +60,11 @@ const home = () => def.mapOptions().regions.find(region => region.id === "home")
 const tonari = spots => spots.find(spot => spot.id === "tonari");
 const before = structuredClone(fresh);
 assert.equal(def.untilDay, Infinity);
-assert.match(def.undatedNote, /連絡はいつでも/);
+assert.match(def.undatedNote, /まずは tonari へ。博士への連絡は、閉店後の練習を終えてから/);
+assert.equal(progress.chapterFiveCallOpen(fresh), false);
 assert.equal(tonari(home()).hasNew?.(), true, "Mashiro's visit is available on the first day");
 assert.equal(tonari(chapterFiveHomeSpots()).hasNew, undefined, "The shared spot isn't mutated");
-assert.equal(home().find(spot => spot.id === "ch5_call")?.kind, "ch5_call", "Immediate contact still works");
+assert.equal(home().find(spot => spot.id === "ch5_call"), undefined, "The doctor can't be called on the first day");
 assert.equal(def.mapOptions().regions.length, 4, "Other places remain accessible");
 assert.deepEqual(fresh, before, "Showing the map must not consume time or create a visit");
 fresh.slot = 1;
@@ -74,4 +76,30 @@ assert(progress.completeChapterFiveScene(fresh, "ch5_free_first_visitor"));
 assert.equal(tonari(home()).hasNew, undefined, "The workbench scene waits until night");
 fresh.slot = 1;
 assert.equal(tonari(home()).hasNew?.(), true);
-console.log("ch5 home map: local story timing, immediate contact and free choice passed");
+assert.equal(home().find(spot => spot.id === "ch5_call"), undefined, "Still not before the workbench scene");
+// 練習を読んで試作が途中（試す→返答→直すか）の間も、まだ出さない
+assert(progress.completeChapterFiveScene(fresh, "ch5_free_tonari_practice"));
+assert.equal(home().find(spot => spot.id === "ch5_call"), undefined, "Not while the prep is pending");
+assert(progress.recordChapterFivePrepTrial(fresh, "heat"));
+assert.equal(progress.chapterFiveCallOpen(fresh), false, "The trial alone is not the end of the prep");
+const notYet = await def.performSpot({ id: "ch5_call", kind: "ch5_call" }, {});
+assert.deepEqual(notYet, { used: false, exerted: false }, "A stale button does not call the doctor early");
+assert.equal(fresh.flags._ch5.read.ch5_unrecorded_day, undefined, "Nothing is read by the stale button");
+// 試作を終えたら出る。期限は無く、案内も急がせない
+assert(progress.recordChapterFivePrepAdjustment(fresh, true));
+assert.equal(progress.chapterFiveCallOpen(fresh), true);
+assert.equal(home().find(spot => spot.id === "ch5_call")?.kind, "ch5_call", "The call opens after the prep");
+assert.match(def.undatedNote, /準備ができたらいつでも。急がなくていい/);
+assert.equal(def.untilDay, Infinity, "No deadline after the call opens");
+fresh.day += 200;
+assert.equal(home().find(spot => spot.id === "ch5_call")?.kind, "ch5_call", "Still open after a long preparation");
+// 日を決めた後（勝負の前夜）は、もう一度は出さない。第5章以外の保存でも false
+const scheduled = structuredClone(fresh);
+assert(progress.completeChapterFiveScene(scheduled, "ch5_unrecorded_day"));
+assert(progress.recordChapterFiveScheduleDecision(scheduled, "decide"));
+assert(progress.completeChapterFiveScene(scheduled, "ch5_schedule_contact"));
+assert.equal(progress.chapterFiveProgress(scheduled).part, "scheduled");
+assert.equal(progress.chapterFiveCallOpen(scheduled), false);
+assert.equal(progress.chapterFiveCallOpen({ chapter: 4, flags: {} }), false);
+assert.equal(progress.chapterFiveCallOpen(undefined), false);
+console.log("ch5 home map: local story timing, the doctor's call after the prep (no deadline) and free choice passed");

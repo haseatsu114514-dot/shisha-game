@@ -48,7 +48,8 @@ const REQUIRED = ["lobby", "entrance", "stations", "rules", "verdict", "farewell
 // SETUPの確定境界に水を含める。途中LOADはSETUP先頭から、確定後はMIXから。
 const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); };
 const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
-  stepSteamTime, runSteamDodge, runPull, cs => runCare(cs, { round: 1 }), cs => runCare(cs, { round: 2 })];
+  stepSteamTime, runSteamDodge, cs => runPull(cs, { holdFailedResult: true }),
+  cs => runCare(cs, { round: 1, holdFailedResult: true }), cs => runCare(cs, { round: 2, holdFailedResult: true })];
 const STEP_IDS = ["setup", "mix", "pack", "foil", "place", "coalfire", "steam", "steam", "pull", "adjust", "adjust"];
 // 第2章の4票は各工程の確定直後に投入する（第3章の台詞読了待ちとは異なる）。
 const VOTE_BOUNDARIES = new Map([[8, 0], [9, 1], [10, 2], [11, 3]]);

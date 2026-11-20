@@ -7,7 +7,10 @@ import { chapterFourMapModel } from "../js/chapters/ch4-map-model.js";
 import { CAMEL_FLAG, CAMEL_SCENES, CH4_CAMEL_SCENE_FILES, CAMEL_STAGES, camelRaceRecord, camelRaceDestination, camelRaceOpen,
   recordCamelRaceResult, consumeCamelRaceDaytime, advanceCamelRaceStage, resultSceneFor, camelSceneBg, CAMEL_TRACK_BG, CAMEL_SHOP_BG,
   camelTalkAfterRace, CAMEL_NAME_FLAG, CAMEL_MASTER_FLAG, CAMEL_NAME_PLAYS, CAMEL_RESULT_TALKS, camelResultTalk,
-  CAMEL_DAILY_SPOT_ID, camelDailySpot, availableCamelCups, CH5_CAMEL_MEET, chapterFiveCamelMeetDue, advanceChapterFiveCamelMeet } from "../js/chapters/ch4-camel-progress.js";
+  CAMEL_DAILY_SPOT_ID, camelDailySpot, availableCamelCups, CH5_CAMEL_MEET, chapterFiveCamelMeetDue, advanceChapterFiveCamelMeet,
+  CAMEL_STABLE_FLAG, CAMEL_STABLE_TALKS, camelStableTalk, recordCamelStableTalk } from "../js/chapters/ch4-camel-progress.js";
+import * as camelProgress from "../js/chapters/ch4-camel-progress.js";
+const PORTRAIT_FACES = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8")).portraits;
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { newGrowth, claimPlayRewards, BOARD_TOTAL } from "../js/core/growth.js";
 import { simulateRace, camelMastered, camelExpert, CAMEL_CUPS } from "../js/minigames/camel-race-model.js";
@@ -427,6 +430,115 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   }
   const race = readFileSync(new URL("../js/chapters/ch4-camel-race.js", import.meta.url), "utf8");
   assert.match(race, /first \? resultSceneFor\(best\.rank\) : camelResultTalk\(outcome\.plays, outcome\.newBest\)/);
+}
+
+// #3097 計画 4-6: ラクダレース場の待ち時間（ch4_camel_stable_a〜_c）。_a→_b→_c の順に一度ずつ、読み終えた本数だけを保存する
+{
+  assert.deepEqual([...CAMEL_STABLE_TALKS], ["a", "b", "c"].map(suffix => `ch4_camel_stable_${suffix}`));
+  const probe = newState();
+  assert.equal(recordCamelStableTalk(probe, CAMEL_STABLE_TALKS[1]), false, "only the next scene can be recorded");
+  for (const [index, id] of CAMEL_STABLE_TALKS.entries()) {
+    assert.equal(camelStableTalk(probe), id);
+    assert(recordCamelStableTalk(probe, id));
+    assert.equal(probe.flags[CAMEL_STABLE_FLAG], index + 1);
+    assert.equal(recordCamelStableTalk(probe, id), false, `${id} is read once`);
+  }
+  assert.equal(camelStableTalk(probe), null, "after the three, the revisit goes back to the usual flow");
+  for (const broken of [undefined, null, "x", -2]) {
+    probe.flags[CAMEL_STABLE_FLAG] = broken;
+    assert.equal(camelStableTalk(probe), CAMEL_STABLE_TALKS[0], String(broken));
+  }
+  assert.equal(camelStableTalk(null), CAMEL_STABLE_TALKS[0]);
+  assert.equal(recordCamelStableTalk(null, CAMEL_STABLE_TALKS[0]), false);
+  assert.equal(classifyFlag(CAMEL_STABLE_FLAG), "progression");
+  probe.flags[CAMEL_STABLE_FLAG] = 2;
+  assert.equal(buildCarryPackage(probe).flags[CAMEL_STABLE_FLAG], undefined, "NG+ reads the waiting scenes again");
+  // 台本: 8〜12行。話者はファーリス・ハリール・はじめ、表情は立ち絵が実在するもの。報酬・旗の行は置かない
+  const rows = Object.fromEntries(readData("dialogue/ch4_camel_race").dialogues.map(row => [row.dialogue_id, row]));
+  for (const id of CAMEL_STABLE_TALKS) {
+    const row = rows[id];
+    assert(row && row.lines.length >= 8 && row.lines.length <= 12, `${id}: ${row?.lines.length} lines`);
+    assert(CH4_CAMEL_SCENE_FILES.ch4_camel_race.includes(id), `${id} is loaded with the race scenes`);
+    assert.equal(camelSceneBg(id), CAMEL_TRACK_BG, `${id} is read at the track`);
+    for (const line of row.lines) {
+      assert.equal(line.type, undefined, `${id}: no reward or flag rows`);
+      assert(["", "hajime", "faris", "khalil"].includes(line.speaker), `${id}: ${line.speaker}`);
+      if (!line.speaker) { assert.match(line.text, /。$/, `${id}: narration ends with 。`); continue; }
+      assert.doesNotMatch(line.text, /。$/, `${id}: dialogue does not end with 。`);
+      // 立ち絵の表情は画像の一覧（remake/data/manifest.json）で確かめる。CI の quick は画像を取得しない部分チェックアウト
+      assert(PORTRAIT_FACES[line.speaker]?.faces?.includes(line.face), `${id}: ${line.speaker} ${line.face}`);
+    }
+    assert.doesNotMatch(row.lines.map(line => line.text).join(""), /大会|優勝|審査|シェイク|恋|好き|宿/, `${id} stays off the tournament, romance and the inn`);
+  }
+}
+
+// 待ち時間の接続（ch4-camel-race.js）: 二度目からの訪問で、結果の会話を読み終えた後に一本。三本の後は結果の会話まで。
+// 初めてのレースの日・一度きりの会話の日・結果の会話を中断した日は読まない。勝敗・記録・報酬・昼の枠は、待ち時間の有無で変わらない。
+{
+  const { runInNewContext } = await import("node:vm");
+  const source = readFileSync(new URL("../js/chapters/ch4-camel-race.js", import.meta.url), "utf8")
+    .replace(/^import [\s\S]*?;\n/gm, "").replace(/^export \*[^\n]*\n/gm, "").replace("export async function", "async function");
+  const runOf = rank => ({ cup: "practice", total: 90 - rank * 10, rank, grade: "B", time: 55 });
+  // 本物の進み具合の関数でレースを完走した訪問を一回流す（stop の場面は読み切らない＝中断）
+  const visit = async (owner, { rank = 2, stop = null } = {}) => {
+    const calls = [];
+    const context = { ...camelProgress, state: owner, save: () => calls.push(["save"]), toast: () => {}, growthEnabled: () => false,
+      playArrival: async () => null, loadCamelArt: () => Promise.resolve(null),
+      paidAction: async (work, options) => { const value = await work(); calls.push(["paid", options.consumed(value)]); return { value }; },
+      runCamelRace: async () => ({ completed: true, best: runOf(rank), runs: [runOf(rank)] }) };
+    const run = runInNewContext(`${source}\nvisitCamelRace;`, context);
+    const result = await run({ host: {}, isCurrent: () => true, beforeRace: () => {}, read: async id => { calls.push(["read", id]); return id !== stop; } });
+    return { result, calls, reads: calls.filter(call => call[0] === "read").map(call => call[1]), saves: calls.filter(call => call[0] === "save").length };
+  };
+  const raced = () => {
+    const value = dubaiFreeDay();
+    value.flags[CAMEL_FLAG] = { stage: CAMEL_STAGES.unlocked, watched: true, plays: 1, meetDay: value.day - 2, inviteDay: value.day - 1,
+      lastPlayDay: value.day - 1, best: { total: 95, rank: 1, grade: "S", time: 50, chapter: 4, day: value.day - 1 } };
+    value.flags[CAMEL_NAME_FLAG] = true; // ハビーバの名前の会話は済ませた（巡回だけを見る）
+    return value;
+  };
+  const nextDay = value => { value.day += 1; value.slot = 0; };
+  const owner = raced(), twin = structuredClone(owner);
+  const usual = CAMEL_RESULT_TALKS.usual, [a, b, c] = CAMEL_STABLE_TALKS;
+  for (const [stop, expected, turn] of [[null, [usual[0], a], 1], [null, [usual[1], b], 2], [c, [usual[2], c], 2], [null, [usual[3], c], 3], [null, [usual[0]], 3]]) {
+    nextDay(owner); nextDay(twin);
+    const { result, calls, reads, saves } = await visit(owner, { stop });
+    assert.deepEqual(reads, expected, `turn ${turn}`);
+    assert.equal(owner.flags[CAMEL_STABLE_FLAG], turn);
+    assert.equal(saves, reads.length === 2 && stop === null ? 2 : 1, "the race saves once; a finished waiting scene saves once more");
+    assert.deepEqual({ ...result }, { used: true, exerted: true, slotsUsed: 0 }); // vm の中で作った値なので、こちらの形に写して比べる
+    assert(calls.some(call => call[0] === "paid" && call[1] === false), "a repeat race has no first-clear reward");
+    // 同じレースを待ち時間なしで確定した場合と、記録・報酬・昼の枠・能力・お金・体力が同じ
+    recordCamelRaceResult(twin, runOf(2)); consumeCamelRaceDaytime(twin);
+    const { [CAMEL_STABLE_FLAG]: _turn, ...flags } = owner.flags;
+    assert.deepEqual(flags, twin.flags, `turn ${turn}: only the waiting-scene count differs`);
+    for (const key of ["slot", "day", "stats", "money", "stamina", "growth", "affinity"]) assert.deepEqual(owner[key], twin[key], key);
+  }
+  // 結果の会話を読み切らなかった日は、待ち時間も読まない（本数は進めない）
+  const cut = raced(); nextDay(cut);
+  assert.deepEqual((await visit(cut, { stop: usual[0] })).reads, [usual[0]]);
+  assert.equal(cut.flags[CAMEL_STABLE_FLAG], undefined);
+  // 一度きりの会話（通算3回目・ハビーバの名前）の日は、その会話だけ。待ち時間は次の再訪へ
+  const named = raced(); delete named.flags[CAMEL_NAME_FLAG]; named.flags[CAMEL_FLAG].plays = 2; nextDay(named);
+  assert.deepEqual((await visit(named)).reads, [CAMEL_SCENES.name]);
+  assert.equal(named.flags[CAMEL_NAME_FLAG], true); assert.equal(named.flags[CAMEL_STABLE_FLAG], undefined);
+  nextDay(named);
+  assert.deepEqual((await visit(named)).reads, [usual[2], a]);
+  // 初めてのレースの日（本番を見た日）は、初回の結果の会話だけ
+  const first = dubaiFreeDay();
+  first.flags[CAMEL_FLAG] = { stage: CAMEL_STAGES.invited, watched: true, meetDay: first.day - 2, inviteDay: first.day - 1 };
+  const opening = await visit(first, { rank: 2 });
+  assert.deepEqual(opening.reads, [CAMEL_SCENES.place]);
+  assert(opening.calls.some(call => call[0] === "paid" && call[1] === true), "the first finish keeps its one-time reward");
+  assert.equal(first.flags[CAMEL_STABLE_FLAG], undefined);
+  // 第5章のドバイでも、同じ巡回を読む（大会・宿に触れない文なので、大会の後でも成り立つ）
+  const chapterFive = newState();
+  Object.assign(chapterFive, { chapter: 5, phase: "daily", day: 60, slot: 0 });
+  chapterFive.flags._ch2_region = "dubai";
+  chapterFive.flags[CAMEL_FLAG] = structuredClone(raced().flags[CAMEL_FLAG]);
+  chapterFive.flags[CAMEL_FLAG].lastPlayDay = 49;
+  chapterFive.flags[CAMEL_NAME_FLAG] = true;
+  assert.deepEqual((await visit(chapterFive)).reads, [usual[0], a]);
 }
 
 console.log("ch4_camel_race: ok");
