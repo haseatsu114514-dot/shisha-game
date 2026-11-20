@@ -35,6 +35,7 @@ async function play(id) {
     assert(scene.branches?.[key], `${id}: unresolved branch ${key}`);
     branches.push([id, key]); queue.unshift(...scene.branches[key]);
   };
+  let visibleCg = null;
   while (queue.length) {
     const line = queue.shift();
     if (line.type === "condition") {
@@ -53,11 +54,20 @@ async function play(id) {
         }
         return { cancelled: true };
       }
+    } else if (line.type === "show_cg") {
+      assert.equal(id, "ch2_naru_confrontation");
+      assert.equal(line.cg_id, "cg_ch2_naru_score_sheet");
+      assert.equal(visibleCg, null);
+      visibleCg = line.cg_id;
+    } else if (line.type === "hide_cg") {
+      assert.equal(visibleCg, "cg_ch2_naru_score_sheet");
+      visibleCg = null;
     } else {
       assert(!line.type || line.type === "hide_portrait", `${id}: unexpected effect ${line.type}`);
       if (line.text) shown.push([id, line.text]);
     }
   }
+  assert.equal(visibleCg, null, `${id}: CG must be hidden at the end`);
   return { id };
 }
 
