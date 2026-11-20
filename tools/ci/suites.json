@@ -4756,6 +4756,27 @@
       ]
     },
     {
+      "id": "tutorial-growth",
+      "title": "Chapter 1 scout and delivery EXP, stamina capacity HUD and saves",
+      "kind": "browser",
+      "weight": 0.7,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/spots.js",
+        "remake/js/daily/hud.js",
+        "remake/js/core/growth.js",
+        "remake/js/core/growth-effects.js",
+        "remake/js/core/growth-board.js",
+        "remake/js/core/stats.js",
+        "remake/js/core/state.js",
+        "remake/test/browser/tutorial_growth.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/tutorial_growth.mjs"
+      ]
+    },
+    {
       "id": "bonds",
       "title": "Complete bonds, nicknames and lover progression",
       "kind": "browser",
