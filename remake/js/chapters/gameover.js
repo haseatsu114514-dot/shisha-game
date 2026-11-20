@@ -12,6 +12,7 @@ import { DB, img, portraitInfo } from "../core/data.js";
 import { imageReady } from "../core/ui.js";
 import { createContinueView, continuePortraitStyle } from "./continue-view.js";
 import { continueLayoutSetting } from "./continue-looks.js";
+import { retryAssistOptions } from "./retry-assist.js";
 
 
 // at = 開始からの秒数。全体の台詞表示は約20秒。テロップは1キュー1行（全角22字以内）に小分けする。
@@ -99,7 +100,9 @@ let nextScript = 0;
 let previousContinueSpeaker = null;
 // 初回はカウント演出だけを見せ、選択期限を設けない。再挑戦以降は20秒で終了する。
 export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle,
-  soundEffects = true, reducedMotion = false, layout = continueLayoutSetting(), background = "stage", context = null } = {}) {
+  soundEffects = true, reducedMotion = false, layout = continueLayoutSetting(), background = "stage", context = null, difficulty = 0 } = {}) {
+  // difficulty: 3敗目からの救済で選べるいちばんやさしい段（0: 聞かない・1: イージーまで・2: ベリーイージーまで。WIN14）。
+  // 再挑戦を押すとカウントを止めて同じ画面で難易度を選び、選んだ段を onRetry(段) へ渡す。
   // variant: 整数=スミさんの台本番号、"lover:<id>"=その恋人、null=通常（スミさんか恋人を同じ確率で選ぶ）。
   const forced = typeof variant === "string" && variant.startsWith("lover:") ? LOVER_CONTINUE_SCRIPTS[variant.slice(6)] : null;
   const chosen = !forced && variant == null
@@ -130,7 +133,8 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   let reduce = reducedMotion || !!motion?.matches;
   let start = 0, speechStart = 0, cueIndex = -1, ticker = 0, entry = 0, frame = 0, deadline = 0;
   let currentInstant = false, pausedAt = null, reactionAt = null, choice = null, secondFace = false, exit = 0;
-  let boundary = 0, leavingAt = null, connectedOnce = false;
+  let boundary = 0, leavingAt = null, connectedOnce = false, picking = false;
+  root.retryDifficulty = 0;
   let reactionLine = -1, reactionLineAt = 0, reactionInstant = false;
   const counted = new Set();
   const observer = new MutationObserver(availabilityChanged);
@@ -250,20 +254,20 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   }
   function armBoundary() {
     clearTimeout(boundary);
-    if (!active || !started || choice || pauseReasons.size) return;
+    if (!active || !started || choice || picking || pauseReasons.size) return;
     const elapsed = performance.now() - start;
     const next = (Math.floor(elapsed / 1000) + 1) * 1000;
     boundary = window.setTimeout(() => { tick(); armBoundary(); }, Math.max(1, next - elapsed));
   }
   function armDeadline() {
     clearTimeout(deadline);
-    if (active && started && !choice && !pauseReasons.size) {
+    if (active && started && !choice && !picking && !pauseReasons.size) {
       if (timed) deadline = window.setTimeout(expire, Math.max(0, DECISION_SECONDS * 1000 - (performance.now() - start)));
       armBoundary();
     }
   }
   function expire() {
-    if (!timed || !available() || !started || choice) return;
+    if (!timed || !available() || !started || choice || picking) return;
     if (performance.now() - start < DECISION_SECONDS * 1000) return armDeadline();
     choice = "timeout";
     clearTimeout(entry); clearTimeout(deadline); clearTimeout(boundary); clearInterval(ticker); cancelAnimationFrame(frame); frame = 0;
@@ -309,13 +313,14 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     if (!active || leavingAt == null || pauseReasons.size) return;
     exit = window.setTimeout(() => {
       if (!available()) return;
-      const callback = choice === "retry" ? onRetry : onTitle;
+      const retrying = choice === "retry";
       cleanup();
-      callback?.();
+      if (retrying) onRetry?.(root.retryDifficulty);
+      else onTitle?.();
     }, Math.max(0, 240 - (performance.now() - leavingAt)));
   }
   function tick() {
-    if (!available() || !started || leavingAt != null) return;
+    if (!available() || !started || leavingAt != null || picking) return;
     if (choice) {
       const elapsed = performance.now() - reactionAt;
       if (choice === "timeout") {
@@ -349,11 +354,30 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     view.reveal(reduce ? 1 : 0);
     startCaption();
   }
-  function decide(value) {
-    if (!available() || choice) return;
+  function askDifficulty() {
+    if (!available() || choice || picking) return;
     if (!started) begin();
     if (!started) return;
     if (timed && performance.now() - start >= DECISION_SECONDS * 1000) return expire();
+    // 続けると決めた時点でカウントを止める。難易度は時間切れなしで選べる。
+    picking = true;
+    clearTimeout(entry); clearTimeout(deadline); clearTimeout(boundary); clearInterval(ticker); ticker = 0;
+    root.dataset.phase = "difficulty";
+    root.classList.remove("go-urgent", "go-done");
+    view.difficulty(retryAssistOptions(difficulty), pickDifficulty);
+    view.announce("難易度を下げる？");
+  }
+  function pickDifficulty(level) {
+    if (!picking || !available()) return;
+    root.retryDifficulty = Number.isInteger(level) && level > 0 && level <= difficulty ? level : 0;
+    picking = false;
+    decide("retry", true);
+  }
+  function decide(value, chosenDifficulty = false) {
+    if (!available() || choice || (picking && !chosenDifficulty)) return;
+    if (!started) begin();
+    if (!started) return;
+    if (!chosenDifficulty && timed && performance.now() - start >= DECISION_SECONDS * 1000) return expire();
     choice = value; // どちらのボタンも、この時点で分岐を確定して二重発火を止める。
     clearTimeout(entry); clearTimeout(deadline); clearTimeout(boundary); clearInterval(ticker);
     root.dataset.phase = "reaction";
@@ -390,7 +414,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     armDeadline();
     startCaption();
   }
-  view.retry.addEventListener("click", () => decide("retry"));
+  view.retry.addEventListener("click", () => difficulty > 0 ? askDifficulty() : decide("retry"));
   view.quit.addEventListener("click", () => decide("quit"));
   // ネイティブbuttonのEnter/Space確定は残し、前画面からの長押しと
   // retry→反応送りへfocusが移った後の同じ押下だけを止める。
@@ -401,9 +425,15 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
       if (event.repeat || !available()) { blockKey(event); return; }
       if (event.key === " ") spaceTarget = event.target;
     } else if ((event.key === "ArrowLeft" || event.key === "ArrowRight")
-      && !choice && available() && [view.retry, view.quit].includes(event.target)) {
+      && !choice && !picking && available() && [view.retry, view.quit].includes(event.target)) {
       blockKey(event);
       (event.key === "ArrowLeft" ? view.retry : view.quit).focus({ preventScroll: true });
+    } else if (event.key.startsWith("Arrow") && picking && available() && view.picker.contains(event.target)) {
+      // 難易度の選択肢は矢印で上下（左右）に送る。
+      blockKey(event);
+      const buttons = [...view.picker.querySelectorAll("button")];
+      const step = event.key === "ArrowUp" || event.key === "ArrowLeft" ? -1 : 1;
+      buttons[(buttons.indexOf(event.target) + step + buttons.length) % buttons.length]?.focus({ preventScroll: true });
     }
   }
   function keyboardUp(event) {
@@ -415,7 +445,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   root.addEventListener("keydown", keyboardDown, true);
   root.addEventListener("keyup", keyboardUp, true);
   function advanceSpeech() {
-    if (!available() || choice) return;
+    if (!available() || choice || picking) return;
     if (!started) begin();
     if (!started) return;
     if (timed && performance.now() - start >= DECISION_SECONDS * 1000) return expire();

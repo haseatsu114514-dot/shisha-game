@@ -103,6 +103,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     ? new vm.SyntheticModule(levelNames, function () { for (const name of levelNames) this.setExport(name, assistLevel[name]); }, { context })
     : new vm.SyntheticModule(["modal"], function () { this.setExport("modal", values.modal); }, { context }));
   await retry.evaluate(); values.chooseRetryAssist = retry.namespace.chooseRetryAssist;
+  values.applyRetryAssistChoice = retry.namespace.applyRetryAssistChoice;
   const module = new vm.SourceTextModule(source, { context });
   await module.link(async spec => {
     const names = [...source.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)]
@@ -307,6 +308,19 @@ previewStorage.clear();
     assert.equal(deeper.value.flags._ch4.match.craft.retryAssistLevel, level, `${losses}敗で選んだ段`);
   }
   assert(!continued.trace.includes("コンティニュー"), "SAVE/LOAD keeps the selected assist without asking again mid-craft");
+  // コンティニュー画面で選んだ難易度（WIN14）は、制作の開始で問いを出さずに使い、一度で消える。
+  for (const [losses, picked, level] of [[6, 2, 2], [6, 1, 1], [6, 0, 0], [3, 2, 0]]) {
+    const chosen = structuredClone(failed);
+    match.chapterFourMatch(chosen).history = Array.from({ length: losses }, () => ({ win: false }));
+    match.recordChapterFourRetryChoice(chosen, picked);
+    const started = await run({ resume: chosen, assistChoice: true });
+    assert.equal(started.error, undefined);
+    assert(!started.trace.includes("コンティニュー"), "画面で選んだ後は、制作の開始で聞き直さない");
+    assert.equal(started.value.flags._ch4.match.craft.retryAssist, level > 0);
+    assert.equal(started.value.flags._ch4.match.craft.retryAssistLevel, level, `${losses}敗で画面の${picked}`);
+    assert.equal(started.value.flags._ch4.match.retryChoice, undefined, "選んだ難易度は一台で使い切る");
+    assert(started.trace.includes(level > 0 ? "session-stamina:100" : "session-stamina:22"));
+  }
   const unknown = structuredClone(failed); unknown.flags._ch4.match.history = [];
   unknown.flags._ch4.attempts = 99;
   const noInferredLoss = await run({ resume: unknown, assistChoice: true });

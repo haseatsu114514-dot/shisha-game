@@ -26,7 +26,8 @@ import { chapterDay } from "../core/chapter-clock.js";
 import { tokyoTime, TOKYO_FREE_TIMES_V3, timeNumber } from "../core/tokyo-clock.js";
 import { dueTokyoVisit, completeTokyoVisitAction, visitContacts, syncTokyoVisits } from "../core/tokyo-visits.js";
 import { CH3_DAILY_PLAN, chapterThreeScenes, chapterThreeProgress, completeChapterThreeScene } from "./ch3-progress.js";
-import { OUTING_DIALOGUE_IDS, outingCounts, outingDialogueId, outingAffinity, outingReason, chapterThreeOutingCandidates, recordChapterThreeOuting } from "./ch3-outing-progress.js";
+import { OUTING_DIALOGUE_IDS, outingCounts, outingDialogueId, outingAffinity, outingReason, chapterThreeOutingCandidates, recordChapterThreeOuting,
+  roomRestId, recordRoomRest, ROOM_REST_IDS } from "./ch3-outing-progress.js";
 import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
 import { runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
@@ -253,14 +254,7 @@ export async function runChapterThreeTokyo(io) {
 }
 
 const OUTING_IDS = OUTING_DIALOGUE_IDS; // 通いの小会話（AFB02）も含む外出の台本
-// 奥の部屋で休む: 初回は ch3_tokyo_room_rest、2回目からは日常の小品を巡回する（#3097。公園の散歩と同じ読み分け）。
-const ROOM_REST_FLAG = "_ch3_room_rests";
-const ROOM_REST_AGAIN = Object.freeze(["b", "c", "d", "e", "f", "g", "h", "i", "j", "k"].map(suffix => `ch3_tokyo_room_rest_${suffix}`)); // #3097 第2弾で f〜h、RLS09 で i〜k
-export function roomRestId(value = state) {
-  const count = Math.max(0, Math.floor(Number(value.flags?.[ROOM_REST_FLAG]) || 0));
-  return count ? ROOM_REST_AGAIN[(count - 1) % ROOM_REST_AGAIN.length] : "ch3_tokyo_room_rest";
-}
-export const TOKYO_DAILY_IDS = Object.freeze(["ch3_tokyo_room_rest", ...ROOM_REST_AGAIN, "ch3_tokyo_fortune"]);
+export const TOKYO_DAILY_IDS = Object.freeze([...ROOM_REST_IDS, "ch3_tokyo_fortune"]);
 
 // ---- 昼の行動を使う場面・約束 ----------------------------------------------------------
 function tokyoSlotEvent(io) {
@@ -442,9 +436,9 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
     return unused;
   }
   if (entry.place === "room") {
-    if (!await readPlain(roomRestId(), "bg_mukai_shop", owner)) return unused;
+    if (!await readPlain(roomRestId(state), "bg_mukai_shop", owner)) return unused;
     addStamina(entry.stamina);
-    state.flags[ROOM_REST_FLAG] = (Number(state.flags[ROOM_REST_FLAG]) || 0) + 1;
+    recordRoomRest(state);
     return { used: true, exerted: false };
   }
   if (entry.place === "park") return goOuting(outingById("park_walk"), staminaGuard, owner);
