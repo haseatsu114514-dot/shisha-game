@@ -108,7 +108,7 @@
 
 /* ===== css/vn/conversation-cutin.css ===== */
 /* 会話カットイン（はじめの顔の帯。remake/js/vn/conversation-cutin.js）。座標は舞台 1280×720 の px。
-   2026-11-20 再設計（docs/owner_requests.md CCR01〜05）: 金の細い線＋淡いラベンダーの光、中は今の背景のぼかし、帽子が線の手前に出る。
+   2026-11-20 再設計（docs/owner_requests.md CCR01〜05）: 金の細い線＋淡いラベンダーの光、中は今の背景のぼかし。人物は帯の中に収める（2026-11-20 オーナー「収めるで」）。
    試作の値は asset_sources/conversation-cutin-redesign-20261120/README.md。 */
 .vn-cutin-layer { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
 #vn:not(.active) .vn-cutin-layer { visibility: hidden; }
@@ -117,8 +117,7 @@
 
 .vn-cutin { position: absolute; pointer-events: none; animation: .22s ease-out both; }
 .vn-cutin-shadow { position: absolute; inset: 0; filter: drop-shadow(0 14px 22px rgba(4, 0, 10, .55)); }
-.vn-cutin-clip, .vn-cutin-over { position: absolute; inset: 0; overflow: hidden; }
-.vn-cutin-over { overflow: visible; }
+.vn-cutin-clip { position: absolute; inset: 0; overflow: hidden; }
 /* 中: 今の背景を大きくぼかして敷き、夜紫を重ねる。背景が取れない時は夜紫だけ */
 .vn-cutin-bg { position: absolute; inset: -30px; background: #2a1a3c center 40% / cover no-repeat; filter: blur(6px) saturate(1.05) brightness(.82); transform: scale(1.5); }
 .vn-cutin-tint { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(26, 14, 42, .78) 0%, rgba(48, 28, 74, .42) 50%, rgba(70, 42, 100, .2) 100%); }
@@ -145,10 +144,10 @@
 /* 決意: 全幅の目元の帯。帯より上の画面を暗くし、帯の中に細い光の筋 */
 .vn-cutin[data-frame="eyes"] .vn-cutin-tint { background: linear-gradient(90deg, rgba(20, 10, 32, .94) 0%, rgba(46, 26, 70, .5) 40%, rgba(46, 26, 70, .5) 60%, rgba(20, 10, 32, .94) 100%); }
 .vn-cutin-streak { position: absolute; left: 0; height: 1px; opacity: .35; background: linear-gradient(90deg, transparent, rgba(255, 240, 214, .5) 30%, rgba(255, 240, 214, .5) 60%, transparent); }
-.vn-cutin-streak.s0 { top: 34px; width: 70%; }
-.vn-cutin-streak.s1 { top: 68px; width: 100%; }
-.vn-cutin-streak.s2 { top: 104px; width: 55%; }
-.vn-cutin-streak.s3 { top: 148px; width: 85%; }
+.vn-cutin-streak.s0 { top: 29px; width: 70%; }
+.vn-cutin-streak.s1 { top: 58px; width: 100%; }
+.vn-cutin-streak.s2 { top: 88px; width: 55%; }
+.vn-cutin-streak.s3 { top: 126px; width: 85%; }
 .vn-cutin-dim { position: absolute; inset: 0 0 240px 0; background: linear-gradient(180deg, rgba(8, 3, 16, .5) 70%, transparent); animation: vn-cutin-fade .14s ease-out both; }
 
 /* 出る動き */

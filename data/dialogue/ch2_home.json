@@ -1,5 +1,5 @@
 {
-  "comment": "第2章の地元（橙須）で読む短い会話（VOL13）。施設の寄り道（daily/spot-encounters.js の chapter: 2）と、Dr.fookah 2階の凛想の会話（daily/spots.js の CHAPTER_TALKS）、tonariの大会準備で一台作る場面（chapters/ch2-craft-prep.js・ch2_prep_*）。第2章の準備期間に ch2-city-data.js の loadPreparationDialogues で読み込む。施設の能力の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
+  "comment": "第2章の地元（橙須）で読む短い会話（VOL13）。施設の寄り道（daily/spot-encounters.js の chapter: 2）と、Dr.fookah 2階の凛想の会話（daily/spots.js の CHAPTER_TALKS）、SHISHARKのサメちゃんの第2章の会話（daily/samechan.js の SAMECHAN_CH2_TALK・#3097 PR-I）、tonariの大会準備で一台作る場面（chapters/ch2-craft-prep.js・ch2_prep_*）。第2章の準備期間に ch2-city-data.js の loadPreparationDialogues で読み込む。施設の能力の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
   "dialogues": [
     {
       "dialogue_id": "cafe_ch2_commute",
@@ -1759,6 +1759,326 @@
       ]
     },
     {
+      "dialogue_id": "cafe_ch2_rain",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨の日の喫茶こはく。ドアを開けると、いつもの曲が聞こえなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の棚のレコードは、針を上げたまま止まっている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "マスター、今日は音楽、かけないんですか"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "雨の日は、かけないことにしているんです"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "雨のほうが、いい音を出しますので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "耳をすますと、屋根を叩く音が、店の奥まで届いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨どいから落ちる水が、窓の外で、ぽこ、ぽこと低く鳴っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新聞をめくる音、カップを置く音、マスターが豆を挽く音。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……曲がないと、こんなに音があったのか）"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "晴れの日に同じことをすると、静かすぎると言われます"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "雨の日だけは、どなたにも言われません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "雨に、伴奏してもらってるみたいですね"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "伴奏をしているのは、こちらかもしれませんよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マスターはそう言って、いつものラテを置いた。カップの縁が、小さく鳴った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（足すんじゃなくて、一つ引く。それで、ほかの音が聞こえてくる）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（煙にも、そういう日があるのかもしれない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨が弱くなるまで、カップを両手で包んで、店の音を聞いていた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cafe_ch2_rain"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_ch2_rain",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨の日のCHOI-ZAP。入口の傘立てに、濡れた傘が三本差してあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓のガラスを、雨が細く流れていく。マシンの音も、今日はまばらだ。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "こんにちは。雨の日は、だいたいあの傘の三人なんですよ"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "奥のバイクの方と、ストレッチ台の方と、ロッカーの前で迷ってる方"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "見ると、ロッカーの前の人は、本当に鍵を持ったまま迷っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "晴れの日より、少ないんですね"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "晴れの日は、外を走る人も多いので。雨の日に来るのは、雨でも来る人です"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "だから雨の日に三本そろわないと、ちょっと心配になるんです"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "晴れの日に来なくても、何とも思わないのに。変ですよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……分かる気がします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariにも、雨の日は長居する客がいる。窓際の席が、なかなか空かない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（雨の日に、あの席が空いてたら……俺もきっと、気になる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マットの上で体を伸ばしてから、帰り際に傘立てを見た。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺の傘を入れて、四本。ほかの三本も、まだ並んでいた。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "また雨の日に。……もちろん、晴れの日もどうぞ"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_choizap_ch2_rain"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cs_ch2_rain",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨の日のC.STATIONは、窓際の席から埋まっていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "どのテーブルでも、スマホが窓の方を向いている。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "雨の日は、煙がきれいに残るんです。窓の前だと、特に"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吐いた煙が、ガラスの前でゆっくり広がって、なかなか消えない。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "なので、雨の日は写真のお客さんが多くて。私たちは、その間に回ります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "回る、ですか"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "撮ってる間も、炭は進むので。気づいたら葉が焦げてた、ってなりがちで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員はトングを持って、写真に夢中なテーブルを、一つずつ回っていった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭の位置をそっと直して、何も言わずに離れる。お客さんは、気づいていない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（声も、かけないんだ）"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "声をかけると、いい一枚を逃しちゃうので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見えてるものに夢中な間も、火は進むんですね"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "はい。煙がきれいな日ほど、炭から目を離せないんです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓の前の煙が、ようやく薄くなった。その向こうで、雨はまだ降っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（きれいに見える日ほど、手元を見る。……tonariでも、同じだ）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cs_ch2_rain"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_rest_rain",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "家に着くころには、雨が本降りになっていた。上着の肩が、濡れて重い。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハンガーに掛けて、ベッドに腰を下ろす。窓を叩く音が、部屋の中まで響いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今日はもう、どこにも行かない。そう決めた）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "机の上に、ノートが開いたままだった。ページの端が、湿気で少し波打っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "書きかけの行を、一つだけ読み返す。続きは、明日にした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホで時刻表を開きかけて、やめた。明日の電車は、明日の俺が調べればいい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（雨の日くらい、時計を見ないでいよう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ベッドに横になると、雨の音が少し遠くなった。いつの間にか、眠っていた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_ch2_rest_rain"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch2_rio_city_scent",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
@@ -2349,6 +2669,324 @@
         {
           "type": "set_flag",
           "flag": "_spot_seen_cs_ch2_candy"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_ch2_maezono",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "喫茶こはくの窓際の席で、上園さんがプリンにスマホを向けていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "撮り終えたところで、こちらに気づいて手を上げる。テーブルには、開いたままのノート。"
+        },
+        {
+          "speaker": "maezono",
+          "face": "smile",
+          "text": "おや、逢縁くん。こんにちは"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "上園さん、こんにちは。お仕事ですか"
+        },
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "ええ。今日は、おいしいもののほうの記事でねえ"
+        },
+        {
+          "speaker": "maezono",
+          "face": "smile",
+          "text": "ここのプリン、ずっと書きたかったんです。逢縁くんも、どうです"
+        },
+        {
+          "speaker": "maezono",
+          "face": "smile",
+          "text": "ひと口目の感想を、聞かせてほしいなあ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "断る理由もなくて、同じものを頼んだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マスターが運んできたのは、固めのプリンだった。ほろ苦そうなカラメルが、縁まで流れている。"
+        },
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "マスター、この固さの秘密、記事に書いてもいいですか"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "蒸す時間と、冷やす時間です。……何分かは、お教えできません"
+        },
+        {
+          "speaker": "maezono",
+          "face": "smile",
+          "text": "いいねえ。秘密があるほうが、おいしそうに書けるんです"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_taste_distant",
+          "next_true": "taste_far",
+          "next_false": "taste_near"
+        },
+        {
+          "speaker": "maezono",
+          "face": "smile",
+          "text": "うんうん、ちゃんと見てるねえ。私のノートより、ずっと細かい"
+        },
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "私はねえ、いつも先に言っちゃうんです"
+        },
+        {
+          "speaker": "maezono",
+          "face": "excited",
+          "text": "おいしいねえ、って"
+        },
+        {
+          "speaker": "maezono",
+          "face": "smile",
+          "text": "理由は、あとから探しに行く。言葉は、おいしいの後ろからついてくるんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "先に、ですか"
+        },
+        {
+          "speaker": "maezono",
+          "face": "smile",
+          "text": "先に。……おかげで、締め切りはいつもぎりぎりなんだけどねえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "上園さんは笑って、ノートの新しいページに、大きく「おいしい」とだけ書いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その下は、まだ真っ白だ。"
+        },
+        {
+          "speaker": "maezono",
+          "face": "excited",
+          "text": "いやあ。プリンも、おいしいねえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "上園さんは最後のひと口を惜しむように食べて、伝票を手に立ち上がった。"
+        },
+        {
+          "speaker": "maezono",
+          "face": "smile",
+          "text": "記事が出たら、読んでくださいね。一行目だけは、もう決まってますから"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_taste_distant",
+          "next_true": "close_far",
+          "next_false": "close_near"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cafe_ch2_maezono"
+        }
+      ],
+      "branches": {
+        "taste_far": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひと口。冷たさと、なめらかさは分かる。甘さだけが、どこか遠かった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……冷たくて、なめらかで。固さは、ちょうどいいと思います"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "カラメルは、たぶん苦めで。それから、……"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "その先が、出てこなかった。上園さんは、急かさずに待っている。"
+          }
+        ],
+        "taste_near": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひと口。甘さのあとから、カラメルの苦みが追いかけてくる。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "甘さと苦みが、七対三くらいです。固さは、ちょうどいいと思います"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "冷やす時間がもう少し長ければ、たぶん……"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "気づくと、点を付けるみたいに数えていた。上園さんが、目を丸くしている。"
+          }
+        ],
+        "close_far": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（先に、おいしいって言う。……最後にそう言えたのは、いつだっけ）"
+          }
+        ],
+        "close_near": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（先に、おいしいって言う。……さっきの俺は、割合から言ってた）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_samechan_resting_shark",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "setting": "#3097（計画 PR-I）第2章の普段の会話。初来店の後、いつもの来店の代わりに一度だけ（daily/samechan.js の SAMECHAN_CH2_TALK）。はじめは客として座るだけで、店の作業は手伝わない。恋愛・♥段階・泳ぎ・本名・大会に触れない。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "SHISHARKのカウンターに、薄い図鑑が開いて置いてあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "写真のサメは、海の底の砂に腹をつけて、じっと動かずにいる。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "おお、はじめ。よいところに来た。見よ、ネムリブカじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ネムリブカ……眠る、サメですか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ。昼のあいだは、岩の陰や海の底で、じっと休んでおるのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "サメって、止まると息ができないんじゃなかったんですか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "それは、一部のサメの話じゃ。止まって休めるサメも、ちゃんとおる"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "どのサメも止まらずにおったら、海は疲れたサメだらけになるからのう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんは一服の台を置くと、図鑑を閉じて、こちらをじっと見た。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……お主、座ってから、まだ一度も背もたれに触れておらんぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われて気づいた。膝の上で、配合のノートを開いたままだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "グラムと分の数字が、ページの端まで並んでいる。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者よ。その帳面は、余が預かろう",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ、それはよい。帰るまで、カウンターの内側で預かるのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……じゃあ、少しだけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートを差し出すと、コロちゃんの口が、ぱくりとそれをくわえた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "ちゃんと返す。……中は見ぬぞ。数字は、目が回るからのう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "ここは、ネムリブカの岩場じゃ。休みたい者は、勝手に休んでゆけばよい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背もたれに体を預ける。台から上る煙が、さっきよりゆっくり見えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（止まって休めるサメも、ちゃんといる、か）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、ノートはコロちゃんの口から、角ひとつ折れずに返ってきた。"
         }
       ]
     }

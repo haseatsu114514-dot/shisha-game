@@ -329,13 +329,20 @@ fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // + クラウドのMELTY PUFFの挨拶回とシールの後日2本（#3468 A案）
 // + 地元の第2章の会話7本と、tonariのシフト上がりの会話7本（ch2_tonari_talks.json・#3097 第1弾）
 // + 施設の寄り道4本と、tonariのシフト上がりの会話5本（#3097 第2弾）＋あげはの小会話3本（#3097）
-assert.equal(Object.keys(loaderDB.dialogues).length, 96 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+// + 神崎・クラウドの♥3の友人の外出2本（LIME の accept_event・#3097 PR-A）
+// + 喫茶こはくの上園さん・SHISHARKのサメちゃんの第2章の会話と、鉄仮面さんのシフト上がり（#3097 PR-I）
+// + 地元の雨の回4本（ch2_home.json）と、行き帰りの電車の小品4本（ch2_city.json・#3097 PR-B）
+assert.equal(Object.keys(loaderDB.dialogues).length, 109 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+for (const id of ["cafe_ch2_rain", "choizap_ch2_rain", "cs_ch2_rain", "ch2_rest_rain", "ch2_commute_morning_regulars", "ch2_commute_return_tonari",
+  "ch2_commute_morning_doze", "ch2_commute_return_window"]) assert(loaderDB.dialogues[id]?.lines?.length, `#3097 PR-B: ${id}`);
+for (const id of ["outing_kumicho_1", "outing_rei_1"]) assert(loaderDB.dialogues[id]?.lines?.length, `${id}: LIMEの誘いで再生する外出の台本も公開する`);
 for (const suffix of ["b", "c", "d", "g", "h", "i"]) assert(loaderDB.dialogues[`remake_ch2_ageha_repeat_${suffix}`], `ageha small talk ${suffix}`);
 for (const id of ["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze", "ch2_rio_taste", "ch2_rio_strawberry"]) assert(loaderDB.dialogues[id], id);
 for (const id of ["cafe_ch2_foam", "kannon_ch2_omikuji", "choizap_ch2_stairs", "cs_ch2_new_staff", "ch2_rio_city_scent", "ch2_minto_commute_frame", "ch2_adam_ticket_machine",
   ...["fare", "three_shops", "supper", "receipts", "student", "tsumugi_board", "one_hose"].map(id => `ch2_shift_talk_${id}`),
   "cafe_ch2_clock", "kannon_ch2_incense", "choizap_ch2_neck", "cs_ch2_candy",
-  ...["lost_box", "first_timer", "cd_player", "same_seat", "burnt_finger"].map(id => `ch2_shift_talk_${id}`)]) assert(loaderDB.dialogues[id], `#3097: ${id}`);
+  ...["lost_box", "first_timer", "cd_player", "same_seat", "burnt_finger"].map(id => `ch2_shift_talk_${id}`),
+  "cafe_ch2_maezono", "ch2_samechan_resting_shark", "ch2_shift_talk_salaryman"]) assert(loaderDB.dialogues[id], `#3097: ${id}`);
 for (const id of ["ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed", "ch2_prep_rehearsal_intro",
   ...["intro", "good", "rough", "failed"].map(result => `ch2_prep_midcheck_${result}`),
   ...["great", "good", "rough", "burnt", "drill"].map(result => `ch2_prep_rehearsal_${result}`)]) assert(loaderDB.dialogues[id], `craft prep ${id} is published`);

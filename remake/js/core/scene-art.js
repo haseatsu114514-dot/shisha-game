@@ -22,11 +22,9 @@ const HOME_SCENE_PROPS = [
 ];
 const isHome = (url) => /^bg_home(?:_(?:overcast_)?(?:day|night))?\.png$/.test(sceneFile(url));
 
-const C_STATION_SCENE_PROPS = [
-  { file: "shisha_c_station.png", x: 448, y: 311, h: 140, ratio: 491 / 768 },
-  { file: "shisha_c_station.png", x: 160, y: 447, h: 280, ratio: 491 / 768 },
-  { file: "shisha_c_station.png", x: 1180, y: 438, h: 275, ratio: 491 / 768 },
-];
+// C.STATION の店内（bg_c_station_day / bg_c_station_night）には台を重ねない（#3818）。
+// オーナー「ソファの上とか変なとこにシーシャの画像合成されてて違和感　これはなくしたい　基本的にシーシャの絵はマップ内に書き込んであるの以外入れない」。
+// 下の一覧（ほかの店・大会会場）の重ねをやめるかどうかはオーナー判断待ちなので、今は変えない。
 export const SCENE_PROPS = {
   // 隠れ家（#3282 B6・2026-11-13 に描き直した絵）: 台を描いていない絵なので、中央の卓・中の卓・右の卓の天板へ重ねる。
   // x は台の中心、y は台の底（卓の天板の中ほど）、h は高さ。奥の卓ほど小さく、手前の卓ほど大きい。
@@ -35,8 +33,6 @@ export const SCENE_PROPS = {
     { file: "shisha_hideaway.png", x: 925, y: 492, h: 152, ratio: 368 / 768 },
     { file: "shisha_hideaway.png", x: 1165, y: 520, h: 172, ratio: 368 / 768 },
   ],
-  "bg_c_station_day.png": C_STATION_SCENE_PROPS,
-  "bg_c_station_night.png": C_STATION_SCENE_PROPS,
   // 大会会場（#3282 B10・2026-11-13 に描き直した絵）: 4つの作業台の天板（y≈347）の中央へ重ねる。台の中心は x=274・509・765・1003。
   "bg_tournament_stage.png": [274, 509, 765, 1003].map((x) => ({
     file: "shisha_c_station.png", x, y: 347, h: 124, ratio: 424 / 768,

@@ -25,7 +25,7 @@ const PURIKURA_IDS = ["remake_ch2_ryuji_melty_greeting", "remake_ch2_purikura_ry
 const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "remake_ch2_kumicho_sento"];
 // #3097 第1弾: tonariのシフト上がりの会話（daily/tonari.js の CH2_SHIFT_TALKS と同じ並び。読み込みを軽くするため名前を並べる。一致は remake/test/ch2_shift_talks.mjs）
 export const CH2_SHIFT_TALK_IDS = Object.freeze(["ch2_shift_talk_fare", "ch2_shift_talk_three_shops", "ch2_shift_talk_supper",
-  "ch2_shift_talk_receipts", "ch2_shift_talk_student", "ch2_shift_talk_tsumugi_board", "ch2_shift_talk_one_hose",
+  "ch2_shift_talk_salaryman", "ch2_shift_talk_receipts", "ch2_shift_talk_student", "ch2_shift_talk_tsumugi_board", "ch2_shift_talk_one_hose",
   "ch2_shift_talk_lost_box", "ch2_shift_talk_first_timer", "ch2_shift_talk_cd_player", "ch2_shift_talk_same_seat", "ch2_shift_talk_burnt_finger"]);
 export const CH2_HOME_IDS = Object.freeze(["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze",
   "ch2_rio_taste", "ch2_rio_strawberry",
@@ -33,12 +33,18 @@ export const CH2_HOME_IDS = Object.freeze(["cafe_ch2_commute", "cafe_ch2_taste",
   "cafe_ch2_foam", "kannon_ch2_omikuji", "choizap_ch2_stairs", "cs_ch2_new_staff", "ch2_rio_city_scent", "ch2_minto_commute_frame", "ch2_adam_ticket_machine",
   // #3097 第2弾: 施設の寄り道を各1本
   "cafe_ch2_clock", "kannon_ch2_incense", "choizap_ch2_neck", "cs_ch2_candy",
+  // #3097 PR-I: 喫茶こはくの上園さん（spot-encounters.js）と、SHISHARKのサメちゃんの第2章の会話（daily/samechan.js の SAMECHAN_CH2_TALK）
+  "cafe_ch2_maezono", "ch2_samechan_resting_shark",
   // tonariの大会準備で一台作る場面（ch2-craft-prep.js の CH2_CRAFT_PREP_IDS と同じ。読み込みを軽くするため名前を並べる）
   "ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed",
   "ch2_prep_midcheck_intro", "ch2_prep_midcheck_good", "ch2_prep_midcheck_rough", "ch2_prep_midcheck_failed", "ch2_prep_rehearsal_intro",
   ...["great", "good", "rough", "burnt", "drill"].map(result => `ch2_prep_rehearsal_${result}`)]);
 const OUTING_IDS = ["aquarium", "sento", "chain"].flatMap(id => ["look", "visit", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
 const CITY_IDS = ["arrival", ...STOPS.map((stop) => stop.id), ...Object.keys(ROOMS).flatMap((id) => [`${id}_inside`, `${id}_farewell`]), "return"].map((id) => `ch2_city_${id}`);
+// #3097 PR-B: 地元の雨の回（daily/spot-encounters.js の CHAPTER_RAIN の第2章）と、行き帰りの電車の小品（chapters/ch2-commute.js の COMMUTE_SCENES）。
+// 読み込みを軽くするため名前を並べる。一致は remake/test/ch2_home_talks.mjs が確かめる。
+export const CH2_RAIN_IDS = Object.freeze(["cafe_ch2_rain", "choizap_ch2_rain", "cs_ch2_rain", "ch2_rest_rain"]);
+export const CH2_COMMUTE_IDS = Object.freeze(["ch2_commute_morning_regulars", "ch2_commute_return_tonari", "ch2_commute_morning_doze", "ch2_commute_return_window"]);
 
 export async function loadCityDialogues() {
   const dialogues = await readDialogues("ch2_city", CITY_IDS);
@@ -64,9 +70,10 @@ export async function loadPreparationDialogues() {
   required.push(...["ageha", "kumicho", "rei"].map(id => `remake_ch2_${id}_repeat_e`));
   // 好感度MAXの締めくくり（daily/bonds.js の BOND_FINALES・#2027）
   const files = { ch2_preparation: required, ch2_deliveries: [...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS],
-    ch2_kumicho: ["ch2_kumicho_bond_finale"],
+    // ♥3の友人の外出（LIME lime_outing_kumicho_1・lime_outing_rei_1 の accept_event。daily/calendar.js が再生する・#3097）
+    ch2_kumicho: ["ch2_kumicho_bond_finale", "outing_kumicho_1"],
     // クラウドのライブの夜（第3章の出発前の準備期間だけ。ch2-preparation.js の reiLiveDue・RVE07）
-    ch2_rei: ["ch2_rei_bond_finale", "ch3_prep_rei_live"] };
+    ch2_rei: ["ch2_rei_bond_finale", "ch3_prep_rei_live", "outing_rei_1"] };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
   // 昼の本筋（耳鼻科・なるの店のまかない。SPC28）
   for (const scene of CH2_DAY_SCENES) (files[scene.file] ||= []).push(scene.id);
@@ -78,7 +85,9 @@ export async function loadPreparationDialogues() {
   if (agehaVisits.length) (files.ch2_ageha_story ||= []).push(...agehaVisits);
   if (STRAWBERRY_TRIAL_IDS.length) (files.ch2_main ||= []).push(...STRAWBERRY_TRIAL_IDS); // まかないの苺の試作（#1650）
   // 地元の施設の第2章の寄り道（daily/spot-encounters.js）と凛想の会話（daily/spots.js の CHAPTER_TALKS）（VOL13）
-  files.ch2_home = [...CH2_HOME_IDS];
+  files.ch2_home = [...CH2_HOME_IDS, ...CH2_RAIN_IDS];
+  // 行き帰りの電車の小品（#3097 PR-B）
+  (files.ch2_city ||= []).push(...CH2_COMMUTE_IDS);
   // tonariのシフト上がりの会話（daily/tonari.js の CH2_SHIFT_TALKS・#3097）
   files.ch2_tonari_talks = [...CH2_SHIFT_TALK_IDS];
   // 全台本を検証してから、接続するIDだけ公開。旧導入・大会結果は日常へ混ぜない。

@@ -67,7 +67,9 @@ const modules = {
   "./growth-board-help.js": { openBoardHelp: async () => {} },
   // 演出の部品（SBD104）は飾りだけ。この検査では動きを減らす設定と同じ扱いにして、規則と表示だけを見る
   "./growth-fx.js": { reducedMotion: () => true, igniteAt() {}, runAlongPath() {}, flyHidane: async () => {}, bump() {}, commitCutIn: async () => {},
-    emberField: () => new Element(), HIDANE_COLOR: { any: "#fff1d0", body: "#ef8a5e", sense: "#58a6ff", wisdom: "#7bd36d" } },
+    emberField: () => new Element(), HIDANE_COLOR: { any: "#fff1d0", body: "#ef8a5e", sense: "#58a6ff", wisdom: "#7bd36d" },
+    // 手応えの強化（SBD132）の部品も飾りだけ
+    FX: {}, flashAt() {}, ringPulse() {}, popGain() {}, popOn() {}, popIn() {}, kick() {}, edgeFlash() {}, commitBanner: async () => {} },
   "../core/data.js": { displayName: id => id, faceIconUrl: () => null, portraitInfo: () => null, faceFrame: () => null },
   "../core/portrait-style.js": { portraitStyle: () => "classic" },
   "../core/stats.js": { affinityLevel: () => 0 }, "../core/growth.js": growth, "../core/growth-board.js": { ...board, pathTo: (...args) => { routeLookups++; return board.pathTo(...args); } },
@@ -163,26 +165,27 @@ await closeScenario(scenario);
 Object.assign(g, { nodes: [], paid: {}, hidane: { any: 20, body: 0, sense: 0, wisdom: 0 }, earned: 20, target: "K07" });
 s.chapter = 2;
 scenario = (await openScenario()).done;
-assert.match(targetLine(), /火種11・色の台座1（色火あと1）/);
+// 「空気を読む」は v14（SBD149）で色の台座のすぐ隣へ（授業と入れ替え）: 紋から 能力3＋台座1＋スキル5＝火種9
+assert.match(targetLine(), /火種9・色の台座1（色火あと1）/);
 root.querySelector('[data-test="board-towards"]').click();
 assert.deepEqual(["B3", "B6", "B9"].map(id => button(id).dataset.status), ["pending", "pending", "pending"]);
 assert.equal(whiteFire(), 17);
-assert.match(targetLine(), /火種8・色の台座1（色火あと1）・次は色火が足りない/);
+assert.match(targetLine(), /火種6・色の台座1（色火あと1）・次は色火が足りない/);
 button("B9").click(); root.querySelector('[data-test="board-undo"]').click();
 assert.equal(whiteFire(), 18, "Undo returns the provisional payment");
 button("K07").click();
-assert.match(targetLine(), /火種9・色の台座1（色火あと1）/);
+assert.match(targetLine(), /火種7・色の台座1（色火あと1）/);
 root.querySelector('[data-test="board-towards"]').click();
 root.querySelector('[data-test="board-decide"]').click(); await scenario;
 assert.deepEqual(g.nodes, ["B3", "B6", "B9"], "The already-paid path stays committed");
 scenario = (await openScenario()).done;
 assert.equal(whiteFire(), 17);
-assert.match(targetLine(), /火種8・色の台座1（色火あと1）/);
+assert.match(targetLine(), /火種6・色の台座1（色火あと1）/);
 await closeScenario(scenario);
 
 s.chapter = 1; g.ringsOpen = 1;
 scenario = (await openScenario()).done;
-assert.match(targetLine(), /火種8・色の台座1（色火あと1）・次は結界の先/);
+assert.match(targetLine(), /火種6・色の台座1（色火あと1）・次は結界の先/);
 await closeScenario(scenario);
 
 Object.assign(g, { nodes: [], paid: {}, hidane: { any: 20, body: 0, sense: 2, wisdom: 0 }, earned: 20, target: "M-S2" });
@@ -224,6 +227,48 @@ root.querySelector('[data-test="board-target"]').click();
 assert.equal(routeLookups, lookupsBefore + 2, "A fresh replay must recompute, even for the same destination");
 await closeScenario(scenario);
 console.log("PASS board route cache: shared target/detail, repeated selection and new-view invalidation");
+
+// #1801 U2: 同じ効き目（蒸らしのメンタル回復。craft/steam.js の refreshEffect は OR で判定）を持っている時は、
+// まだ灯していない方の右のパネルに「重ねても増えない」と出す。数字・火種は変えない。
+const overlapText = () => root.querySelector('[data-test="board-overlap"]')?.textContent ?? null;
+const mentalId = board.NODES.find(n => n.feature === "mental").id;
+const sideText = () => root.querySelector('[data-test="board-preview"]').children.map(n => n.textContent || "").join("|");
+const openSense = () => root.querySelector('[data-test="board-tab-sense"]').click();
+await new Promise(r => setImmediate(r)); // 前の盤が閉じ終わるのを待つ
+Object.assign(g, { nodes: [], paid: {}, hidane: { any: 30, body: 0, sense: 0, wisdom: 0 }, earned: 30, target: null, ringsOpen: 5, seenRing: 5 });
+s.chapter = 5;
+scenario = (await openScenario()).done;
+button("K13").click();
+assert.equal(overlapText(), null, "Nothing owned yet: no overlap note on K13");
+assert.match(sideText(), /火種7/, "K13 keeps its fire cost");
+openSense(); button(mentalId).click();
+assert.equal(overlapText(), null, "Nothing owned yet: no overlap note on the ✦ square");
+await closeScenario(scenario);
+
+g.nodes = [mentalId];
+scenario = (await openScenario()).done;
+button("K13").click();
+assert.equal(overlapText(), "同じ効果の✦「弾消しで回復」を習得済み。重ねても増えない");
+assert.match(sideText(), /火種7/, "The note does not change K13's cost");
+openSense(); button(mentalId).click();
+assert.equal(overlapText(), null, "The owned side itself has no note");
+await closeScenario(scenario);
+
+g.nodes = ["K13"];
+scenario = (await openScenario()).done;
+button("K13").click();
+assert.equal(overlapText(), null, "The owned skill itself has no note");
+openSense(); button(mentalId).click();
+assert.equal(overlapText(), "大会の蒸らしでは、習得済みの「声援」と同じ効果。重ねても増えない",
+  "K13 only covers tournaments, so the ✦ square overlaps there only");
+await closeScenario(scenario);
+g.nodes = [];
+// 仮置き（決定前）の同じ効果も知らせる。灯した後の自分自身・関係の無いマスには出さない
+assert.equal(board.overlapNote(board.NODE_BY_ID.K13, { nodes: [] }, new Set([mentalId])), "同じ効果の✦「弾消しで回復」を仮置き中。重ねても増えない");
+assert.equal(board.overlapNote(board.NODE_BY_ID[mentalId], { nodes: [] }, new Set(["K13"])), "大会の蒸らしでは、仮置き中の「声援」と同じ効果。重ねても増えない");
+assert.equal(board.overlapNote(board.NODE_BY_ID.K13, { nodes: ["K13", mentalId] }, new Set(["K13", mentalId])), null);
+assert.equal(board.overlapNote(board.NODE_BY_ID.K12, { nodes: [mentalId] }, new Set([mentalId])), null);
+console.log("PASS board overlap note: K13 and ✦mental (same OR condition) say 「重ねても増えない」 before lighting; owned/pending wording; no cost change");
 
 // The board's eye coordinates come from the same per-style face measurements as the face icons (manifest faceFrames, 2026-11-06).
 // The lesson cards and the right panel follow the VN portrait setting; people without new artwork keep the classic art and coordinates.

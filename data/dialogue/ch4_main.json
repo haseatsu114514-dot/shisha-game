@@ -951,6 +951,12 @@
           "text": "歓声が、一瞬だけ止んだ。男は急ぐでもなく、自分の台の前に立つ。"
         },
         {
+          "type": "motion",
+          "id": "unveil",
+          "char_id": "sheikh",
+          "face": "normal"
+        },
+        {
           "speaker": "pakki",
           "face": "smile",
           "text": "そして現王者、シェイク・ナジュム・アル=ガリヤーン！"
@@ -1831,6 +1837,37 @@
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "会長から、地元大会で俺の台を二口吸ったわけを聞きました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "surprise",
+          "text": "……あいつ、喋ったか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "配合を聞いた時に、そうだろうと思った。笑っちまった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "教えてくれればよかったのに"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "俺の口から言う話じゃねえ。あいつの二口目だ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch1_lemon_single",
+          "next_true": "lemon_single"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
           "text": "じゃあ俺、その日は早めに片づけます"
         },
         {
@@ -2026,6 +2063,23 @@
             "speaker": "",
             "face": "",
             "text": "伝票を出すたびに開けていた引き出しだ。写真があるのは、知らなかった。"
+          }
+        ],
+        "lemon_single": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "レモンだけで来たバカって、スミさんのことですよね"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "……昔の話だ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんは横を向いて咳払いをした。口元が、少し笑っていた。"
           }
         ]
       },
@@ -2276,6 +2330,48 @@
           "text": "次は向こうから言うだろうと、互いに待ちすぎた"
         },
         {
+          "speaker": "sui",
+          "face": "normal",
+          "text": "あの晩から、あいつの煙は吸っていない。地元の大会まではな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "地元の、……俺の台ですか？"
+        },
+        {
+          "speaker": "sui",
+          "face": "thinking",
+          "text": "吐いたあと、少し遅れて、もう一度香った。あいつの煙はそうだった"
+        },
+        {
+          "speaker": "sui",
+          "face": "normal",
+          "text": "点を数え始める前の、あいつの煙だ。負けて作らせるたびに、二口吸った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "だから、二口だったんですか。凝った配合でもなかったのに"
+        },
+        {
+          "speaker": "sui",
+          "face": "smile",
+          "text": "配合じゃない。手だ。毎日あの店で作っていれば、手が覚える"
+        },
+        {
+          "speaker": "sui",
+          "face": "normal",
+          "text": "最後の1点は、もう一口吸いたい台へ入れる。あの日は、君の台だった"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch1_lemon_single",
+          "next_true": "lemon_single",
+          "next_false": "mixed"
+        },
+        {
           "speaker": "naru",
           "face": "serious",
           "text": "……店を増やすのって、負けたからですか"
@@ -2321,7 +2417,33 @@
           "text": "なるは何も言わず、もう一度ケースの留め具を確かめた。千須はスタッフに呼ばれて戻っていった。"
         }
       ],
-      "comment": "競技の採点が確定した後。過去の友情を採点理由にせず、はじめとなるを同じ結末へ固定しない。"
+      "comment": "競技の採点が確定した後。過去の友情を採点理由にせず、はじめとなるを同じ結末へ固定しない。",
+      "branches": {
+        "lemon_single": [
+          {
+            "speaker": "sui",
+            "face": "smile",
+            "text": "おまけに、レモンだけだ。昔それをやったバカが、もう一人いた"
+          },
+          {
+            "speaker": "sui",
+            "face": "normal",
+            "text": "俺の目の前でな。その晩も、二口吸わされた"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（スミさんの言ってた『バカ』って、自分のことだったのか）"
+          }
+        ],
+        "mixed": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……スミさんは、知ってたのかな）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch4_two_tables",
@@ -2350,6 +2472,16 @@
           "speaker": "",
           "face": "",
           "text": "スミさんが出したのは、カルダモンの一台だった。千須が二口目を吸う。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が、少し遅れて、もう一度香った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……地元大会の、あの香りだ）"
         },
         {
           "speaker": "",

@@ -242,6 +242,10 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (m.id === "lime_outing_rio_1" && !chapterFeatureEnabled(state.chapter || 1, "rioHomeOuting")) return false;
   // ひよりの♥3の外出（#2025）は第1章の昼だけ。tonariでの再会（スミさんのLIME）の後に届き、夜や締めくくりの前提は増やさない。
   if (m.id === "lime_outing_hiyori_1" && !(chapterFeatureEnabled(state.chapter, "hiyoriHomeOuting") && state.flags._hiyori_tonari_return_done)) return false;
+  // 神崎・クラウドの♥3の外出（#3097）は、場面が前提にする話（神崎の銭湯の紹介・クラウドの最初の「同士」）を読んだ後、
+  // ♥5の締めくくり（呼び方が「兄弟」に変わる・「同士」を「友達」と言い直す）の前にだけ届く。章は LIME の chapter: 2 で絞る。
+  if (m.id === "lime_outing_kumicho_1" && !(state.flags._kumicho_sento_introduced && !state.finales?.kumicho)) return false;
+  if (m.id === "lime_outing_rei_1" && !(state.flags._ch2_read_ch2_rei_second && !state.finales?.rei)) return false;
   // 綾取がドバイへ応援に来た保存（SPC22。core/overseas-companion.js の guests）では、東京の煙幕から配信を見る前提の第4章のLIMEは届かない。
   const guests = state.flags?._overseas_companion?.guests;
   if (/^lime_ch4_saku_/.test(m.id) && Array.isArray(guests) && guests.includes("saku")) return false;
@@ -684,7 +688,7 @@ function flushOrClearNotice() {
   queuedNotice = null;
   if (pending.owner === state && pending.chapter === state.chapter) {
     const unread = unreadCount();
-    if (unread > 0) renderNotice(Math.min(pending.count, unread), { onOpen: pending.onOpen });
+    if (unread > 0) renderNotice(Math.min(pending.count, unread), pending);
   }
   if (!hasActivePushNotice()) disconnectNoticeObserver();
 }
@@ -724,31 +728,45 @@ function syncNoticeObserver() {
   }
 }
 
-function renderNotice(count, { onOpen = null } = {}) {
+// 初日のスミさんへの返信だけ、期限を既存の通知に添える。進行や返事は強制しない。
+function dayOneLimeReply() {
+  if (state.chapter !== 1 || state.day !== 1 || state.flags._lime_opened) return null;
+  return state.inbox.find(item => originId(item) === "L21" && item.day === 1 && !item.dayOneHintShown && !item.read && !item.done
+    && item.replyState === "waiting" && !isMissedReply(item));
+}
+
+function renderNotice(count, { onOpen = null, onDayOneHint = null } = {}) {
+  const owner = state;
+  const dayOneReply = onOpen && dayOneLimeReply();
+  const text = dayOneReply ? "スミさんのLIMEは今日中なら返信できます" : `新着メッセージが${count}件あります`;
   const senders = [...new Set(state.inbox.filter((i) => !i.read).map(accountOf))].slice(0, 4);
   const newest = [...state.inbox].reverse().find((i) => !i.read);
   let opened = false;
   const card = el(onOpen ? "button.lime-push" : "div.lime-push", onOpen ? {
     type: "button", dataset: { test: "lime-notice" },
-    "aria-label": "新着メッセージのトークを開く",
+    "aria-label": dayOneReply ? `${text}。トークを開く` : "新着メッセージのトークを開く",
     onclick: () => {
-      if (opened) return;
+      if (opened || state !== owner || !activeNotices.has(card)) return;
       opened = true;
       activeNotices.delete(card);
       card.remove();
       syncNoticeObserver();
-      onOpen(newest ? accountOf(newest) : null);
+      onOpen(dayOneReply ? accountOf(dayOneReply) : newest ? accountOf(newest) : null);
     },
   } : {}, [
     el("div.lp-icon", [el("span", { text: "LIME" })]),
     el("div.lp-body", [
       el("div.lp-top", [el("b", { text: "LIME" }), el("small", { text: "いま" })]),
-      el("div.lp-text", { text: `新着メッセージが${count}件あります` }),
+      el("div.lp-text", { text }),
     ]),
     el("div.lp-faces", senders.map((s) => avatar(s, true))),
   ]);
   activeNotices.add(card);
   layers.toasts.append(card);
+  if (dayOneReply) {
+    dayOneReply.dayOneHintShown = true;
+    onDayOneHint?.();
+  }
   SE.phoneReceive();
   syncNoticeObserver();
   requestAnimationFrame(() => card.classList.add("show"));
@@ -759,28 +777,34 @@ function renderNotice(count, { onOpen = null } = {}) {
       card.remove();
       syncNoticeObserver();
     }, 500);
-  }, 3200);
+  }, dayOneReply ? 5000 : 3200);
 }
 
 /** 朝の通知（スマホのプッシュ通知風）。マップ画面でのみ表示し、会話や他画面ではマップへ戻るまで待機する */
-export function pushNotice(count, { onOpen = null } = {}) {
+export function pushNotice(count, { onOpen = null, onDayOneHint = null, dayOneReminder = false } = {}) {
   if (!count) return;
+  const sameSession = queuedNotice && queuedNotice.owner === state
+    && queuedNotice.chapter === state.chapter && queuedNotice.day === state.day;
+  if (dayOneReminder) {
+    if (!dayOneLimeReply()) return;
+    // 朝の通知が待機中なら再利用。朝を通過済みの旧セーブでも案内を出す。
+    if (sameSession) { flushOrClearNotice(); return; }
+  }
   if (!mapNoticeReady()) {
-    const sameSession = queuedNotice && queuedNotice.owner === state
-      && queuedNotice.chapter === state.chapter && queuedNotice.day === state.day;
     queuedNotice = {
       owner: state,
       chapter: state.chapter,
       day: state.day,
       count: sameSession ? queuedNotice.count + count : count,
       onOpen: onOpen || queuedNotice?.onOpen || null,
+      onDayOneHint: onDayOneHint || (sameSession ? queuedNotice.onDayOneHint : null),
     };
     clearVisibleNotices();
     syncNoticeObserver();
     return;
   }
   queuedNotice = null;
-  renderNotice(count, { onOpen });
+  renderNotice(count, { onOpen, onDayOneHint });
 }
 
 /**

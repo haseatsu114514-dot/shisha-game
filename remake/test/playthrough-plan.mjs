@@ -1,8 +1,8 @@
 // Actions that consume the chapter's limited free time.
 export const PLAN = [
   "baito:holes",
-  // #2213 B01/B03: DAY2 の昼は自由行動、夜は固定シフト、帰り道に PEPPERMINT→EDEN へ配達。
-  // 先に EDEN・PEPPERMINT へ客として行くと配達の初来店が飛ぶので、DAY2 の昼は KEMURIKUSA にする。
+  // #3819: DAY2 の朝に参加登録のついでに PEPPERMINT→EDEN へ配達し、報告の後は昼・夜とも自由行動（固定シフトなし）。
+  // 最初の "baito:holes" が DAY2 の昼のシフトになり、常連さんの話はこのシフトで読む。
   // 占い師（11/02 から章に1〜2回・第1章はつむぎの噂の後）に会えるよう、客席は つむぎが昼にいる DAY4 に当てる。
   "naru", "adam",
   "customer", "minto",

@@ -179,7 +179,7 @@ function buildDom() {
   cutin = createConversationCutin(dom.cutin, { sound: (name) => SE[name]?.() });
   nameFit = createNameFit(dom.name);
   host.addEventListener("pointerup", (e) => {
-    if (!running || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
+    if (!running || dom.log.classList.contains("show") || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
     if (performance.now() < running.openLockUntil) return;
     if (autoMode || skipMode) { setAuto(false); setSkip(false); }
     advance();
@@ -331,6 +331,7 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * @param opts.fromLine 主列の開始位置（含む）。既読キーは元の行位置を保つ
  * @param opts.toLine 主列の終了位置（含まない）。分岐は通常どおり再生する
  * @param opts.growthScene 自分で選んだ固有場面。全編の正常完読を自由行動の経験値候補にする
+ * @param opts.growthKey growthScene の経験値を数える場面 ID。巡回の回を章の台本に差し替えて読む時、引いた回の鍵で数える（#3097）
  * @param opts.previewProtagonist 比較プレビューでだけ主人公の立ち絵も表示する（本編は非表示）
  * 範囲指定でも各playの終了時に台本の報酬を処理する。報酬つき台本を分割する用途には使わない。
  */
@@ -369,6 +370,7 @@ export function play(idOrDlg, opts = {}) {
       currentId: dlg.dialogue_id || "", // 表示中の台本。jumpTo で jump 先へ進む
       dlg,
       growthScene: opts.growthScene === true && opts.fromLine == null && opts.toLine == null && !!dlg.lines?.length,
+      growthKey: typeof opts.growthKey === "string" && opts.growthKey ? opts.growthKey : null,
       queue: queuedLines(dlg.dialogue_id, dlg.lines).slice(opts.fromLine ?? 0, opts.toLine),
       branches: dlg.branches || {},
       resolve,
@@ -394,6 +396,7 @@ export function play(idOrDlg, opts = {}) {
     };
     autoFxGap = 0;
     cutin?.clear();
+    dom.log.classList.remove("show");
     dom.portraits.replaceChildren();
     dom.choices.replaceChildren();
     dom.text.innerHTML = "";
@@ -566,8 +569,9 @@ function finish(cancelled = false) {
   if (!cancelled && r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
   if (!cancelled && meta.flavor_lesson) notifyMastery(learnFlavorStory(state, r.dlg, DB.flavorById));
   if (!cancelled) awardLoverSceneExp(r.id, r.owner);
-  if (!cancelled && r.growthScene) earnSceneCompletion(r.id, r.owner);
+  if (!cancelled && r.growthScene) earnSceneCompletion(r.growthKey || r.id, r.owner);
   layers.vn.classList.remove("active");
+  dom.log.classList.remove("show");
   document.body.classList.remove("in-vn", "vn-open", "vn-lift-props");
   dom.cg.classList.remove("show");
   releaseCg();
@@ -652,6 +656,9 @@ function next() {
       if (vnTest.turbo) continue;
       const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context), purikura: () => purikuraShot(),
         dragon: () => sceneMoment("dragonSmoke"), // dragon: 第4章 前夜祭の龍の煙（#2688 A5）
+        taste: () => sceneMoment("tasteFade"), // taste: 第2章 一口ぶんの煙から甘さの色だけが抜ける（#3965）
+        // unveil: 第4章 四つ目の台に立つ男の影がほどけて本人の姿になる（#3965）。立ち絵は会話と同じ枠取りで渡す
+        unveil: () => sceneMoment("shadowUnveil", unveilFigure(line.char_id, line.face)),
         // gaze: 修羅場で恋人たちの視線が刺さる。その場にいる恋人は呼び出し側が play の cast で渡す（無ければ会ったことのある恋人全員）。
         // "brief": true はプチ修羅場の短い版
         gaze: () => gazeCutin(r.cast || (state.lovers || []).filter((id) => state.met?.[id]), { brief: line.brief === true }) }[line.id];
@@ -1238,6 +1245,15 @@ function updatePortraits(speaker, face, explicit = false) {
   for (const img of dom.portraits.querySelectorAll("img")) img.classList.toggle("active", img.dataset.speaker === speaker);
   layoutPortraits();
   return entrance;
+}
+
+/** 演出（motions/moments.js の shadowUnveil）へ渡す、会話と同じ大きさ・足元の立ち絵。絵が無ければ null（演出は何もしない） */
+function unveilFigure(charId, face = "normal") {
+  const info = charId ? portraitInfo(charId, face) : null;
+  if (!info) return null;
+  const img = el("img", { src: info.src, alt: "", draggable: "false" });
+  frame(img, info);
+  return img;
 }
 
 /** 透過余白の差を補正し、本体の高さ・足元位置をキャラ間でそろえる */

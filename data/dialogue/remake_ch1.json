@@ -13,6 +13,21 @@
           "text": "……いや、仕込みは後でいい。はじめ、あのお姉さんの注文で、手順をおさらいするぞ"
         },
         {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "今ですか？ お客さんの注文なのに"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "だからだ。大会に出るなら、人に出す一台で頭から復習しとけ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "3ヶ月もやれば手癖がつく。自分じゃ、なかなか見えないもんだ"
+        },
+        {
           "speaker": "sumi",
           "face": "smile",
           "text": "俺が横で見てる。配合から提供まで、一つずつ確かめよう"
@@ -834,7 +849,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あのゴボゴボは、煙が水をくぐる音なんですね"
+          "text": "いつものゴボゴボは、煙が水をくぐる音。……改めて言われると新鮮です"
         },
         {
           "speaker": "sumi",
@@ -1642,27 +1657,14 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "届けたら一服していけ。配達の手当は、バイト代につけとく"
+          "text": "届けたら一服していけ。向こうも、そのつもりで待ってる"
         },
         {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "その前に、C.STATIONの受付で大会の参加登録を済ませてこい"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "なるさんに教えてもらった受付ですね"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "ああ。今夜はシフトに入ってくれ。届け物は上がった帰りに、PEPPERMINT、それからEDENだ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "登録して、夜はシフト、帰りに二軒ですね。行ってきます"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_c_station_registered",
+          "next_true": "dl_route_registered",
+          "next_false": "dl_route_register"
         }
       ],
       "branches": {
@@ -1675,16 +1677,50 @@
           {
             "speaker": "sumi",
             "face": "normal",
-            "text": "この辺の小さい店は、炭や葉を融通し合ってる。足りない時はお互い様だ"
+            "text": "付き合いってほどじゃない。うちは葉や炭の物販もやってるだろ"
           },
           {
             "speaker": "sumi",
             "face": "normal",
-            "text": "うちは古株だからな。まとめ買いの窓口も、いつの間にかうちになった"
+            "text": "この辺の店が、仕入れに使ってくれてるだけだ。配達は、そのついでだな"
           },
           {
             "type": "set_flag",
             "flag": "_delivery_network_told"
+          }
+        ],
+        "dl_route_register": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "登録が済んだら、その足でPEPPERMINT、それからEDENだ"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "今日はシフトはいい。二軒とも届けたら、一度顔を出せ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "登録して、そのついでに二軒ですね。行ってきます"
+          }
+        ],
+        "dl_route_registered": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "PEPPERMINT、それからEDENの順で回ってこい"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "二軒とも届けたら、一度顔を出せ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "PEPPERMINT、それからEDENですね。行ってきます"
           }
         ]
       }
@@ -1698,7 +1734,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "カウンターの横に、業務用のミントの大袋が3つ積まれていた。"
+          "text": "カウンターの横に、ミントの250グラムの箱が3つ積まれていた。"
         },
         {
           "type": "condition",
@@ -1710,7 +1746,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "これ全部ですか？ 3袋もありますけど"
+          "text": "これ全部ですか？ 3箱もありますけど"
         },
         {
           "speaker": "sumi",
@@ -1727,7 +1763,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（業務用のミント、3袋も。……PEPPERMINTって、店の名前のとおりミントが看板なんだな）"
+          "text": "（ミントだけで3箱も。……PEPPERMINTって、店の名前のとおりミントが看板なんだな）"
         },
         {
           "speaker": "sumi",
@@ -1747,7 +1783,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "客として寄るなら、仕事が片付いた後に、自分で行ってみろ"
+          "text": "客として寄るなら、用事が片付いてから、自分で行ってみろ"
         },
         {
           "speaker": "hajime",
@@ -1765,12 +1801,12 @@
           {
             "speaker": "sumi",
             "face": "normal",
-            "text": "この辺の小さい店は、炭や葉を融通し合ってる。足りない時はお互い様だ"
+            "text": "付き合いってほどじゃない。うちは葉や炭の物販もやってるだろ"
           },
           {
             "speaker": "sumi",
             "face": "normal",
-            "text": "うちは古株だからな。まとめ買いの窓口も、いつの間にかうちになった"
+            "text": "この辺の店が、仕入れに使ってくれてるだけだ。配達は、そのついでだな"
           },
           {
             "type": "set_flag",
@@ -1781,14 +1817,40 @@
           {
             "speaker": "sumi",
             "face": "normal",
-            "text": "はじめ。今日も届け物だ。まとめ買いのミントが届いた"
+            "text": "はじめ。今日も届け物だ。頼まれてたミントが入った"
           }
         ],
         "dl_first": [
           {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_c_station_registered",
+            "next_true": "dl_first_plain",
+            "next_false": "dl_register"
+          }
+        ],
+        "dl_first_plain": [
+          {
             "speaker": "sumi",
             "face": "normal",
-            "text": "はじめ。届け物を頼む。まとめ買いのミントが届いた"
+            "text": "はじめ。届け物を頼む。頼まれてたミントが入った"
+          }
+        ],
+        "dl_register": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "はじめ。今日はC.STATIONで、大会の参加登録を済ませてこい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "なるさんに教えてもらった受付ですね"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "ああ。で、出るついでに届け物を頼みたい。頼まれてたミントが入った"
           }
         ]
       }
@@ -4673,6 +4735,11 @@
           "text": "2回目の調整、終了！ 提供から最後の一口まで、味を守り切れたのは誰だ！？"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "最後の調整で、みんとの台からひときわ冷たいミントが立った。客席がわっと沸く。"
+        },
+        {
           "speaker": "pakki",
           "face": "excited",
           "text": "さあ最終局面ッ！ 炭も葉も、もう触れません！ ここから先は、選手の手を離れます"
@@ -4701,6 +4768,16 @@
           "speaker": "adam",
           "face": "serious",
           "text": "……お前も最後まで、丁寧に作り続けた。俺はそれを見ていた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（アダムさんの立ち上がり。なるさんの一口目。みんとさんの最後）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（みんな、自分の色の一番いいところを出してきた）"
         }
       ]
     },
@@ -4714,12 +4791,12 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "いらっしゃいっ♡ その大きな袋、tonariさんからのお届け物？"
+          "text": "いらっしゃいっ♡ その箱、tonariさんからのお届け物？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。tonariでバイトしている逢縁はじめです。ご注文のミントを届けに来ました"
+          "text": "はい。tonariでバイトしている逢縁はじめです。ご注文のミントを3箱、お届けに来ました"
         },
         {
           "speaker": "minto",
@@ -4736,7 +4813,7 @@
         },
         {
           "speaker": "",
-          "text": "3袋をカウンター脇の台車へ置くと、みんとは伝票に丸い字で「みんと♡」とサインした。"
+          "text": "3つの箱をカウンターに置くと、みんとは伝票に丸い字で「みんと♡」とサインした。"
         },
         {
           "speaker": "hajime",
@@ -5233,6 +5310,11 @@
             "speaker": "oneesan",
             "face": "ura_smile",
             "text": "……レモン。きゅっとして、あとがすっきりする。こういうの、今吸いたかった……"
+          },
+          {
+            "speaker": "oneesan",
+            "face": "ura_smile",
+            "text": "……ミントは、また今度かな。次は少しだけ、入れてみてね"
           }
         ],
         "lemon_mint": [
@@ -5247,6 +5329,11 @@
             "speaker": "oneesan",
             "face": "ura_smile",
             "text": "……オレンジだ。優しい甘さなのに、あとが軽いね。サッパリしてて……落ち着く"
+          },
+          {
+            "speaker": "oneesan",
+            "face": "ura_smile",
+            "text": "……ミントは、また今度かな。次は少しだけ、入れてみてね"
           }
         ],
         "orange_mint": [
@@ -5339,16 +5426,58 @@
           "text": "はい。PEPPERMINTもEDENも、ちゃんと受け取ってもらえました"
         },
         {
-          "speaker": "sumi",
-          "face": "smile",
-          "text": "ご苦労さん。配達の手当は今日のバイト代に上乗せしてある。これで上がっていいぞ"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_c_station_registered",
+          "next_true": "rep_registered",
+          "next_false": ""
         },
         {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "ありがとうございます。お疲れさまでした"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch1_day2_shift_done",
+          "next_true": "rep_after_shift",
+          "next_false": "rep_free_day"
         }
-      ]
+      ],
+      "branches": {
+        "rep_registered": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "大会の受付も、済ませてきたな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。規則の紙も、もらってきました"
+          }
+        ],
+        "rep_free_day": [
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "ご苦労さん。今日はシフトはいい。あとは好きに使え"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとうございます。助かります"
+          }
+        ],
+        "rep_after_shift": [
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "ご苦労さん。今日はこれで上がっていいぞ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとうございます。お疲れさまでした"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "remake_lemon_gift",

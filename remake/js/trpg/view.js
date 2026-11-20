@@ -163,7 +163,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     for (let i = effects.length - 1; i >= 0; i--) if (!effects[i].playing) effects.splice(i, 1);
     effects.push(...list.filter(effect => effect?.playing));
   }
-  let resolveFinished, completed = null;
+  let resolveFinished, completed = null, replayStatus = "";
   const finished = new Promise(resolve => { resolveFinished = resolve; });
   const progress = el("nav.trpg-journey", { "aria-label": "物語の進行" });
   const teamwork = el("div.trpg-teamwork", { dataset: { test: "trpg-teamwork" } });
@@ -644,7 +644,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         node.append(el("button.trpg-spot", { type: "button",
           class: checked ? "checked" : "", disabled: busy || (!checked && state.clues.length >= session.rules.exploreLimit),
           "aria-label": spot.label + (checked ? "、調査済み。もう一度読む" : "を調べる"),
-          style: { left: spot.x + "%", top: spot.y + "%" }, dataset: { test: "trpg-spot-" + spot.id, labelSide: spot.y >= 65 ? "above" : "below" },
+          style: { left: spot.x + "%", top: spot.y + "%" }, dataset: { test: "trpg-spot-" + spot.id, labelSide: spot.y >= 65 ? "above" : "below",
+            // 画面の端に近い印は、名札を中央でなく内側へ寄せる（中央揃えだと、長い名札が画面の外へ切れた・#3199）。
+            ...(spot.x < 12 ? { labelAlign: "start" } : spot.x > 88 ? { labelAlign: "end" } : {}) },
           onclick: () => {
             if (busy || overlay) return;
             const clue = session.inspect(spot.id), from = clue.fresh ? root.querySelector('[data-test="trpg-spot-' + spot.id + '"]')?.getBoundingClientRect?.() : null;
@@ -766,6 +768,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       scene.append(el("div.trpg-ending", [
         el("div.trpg-kicker", { text: presentation.endingKicker }), el("h2", { text: ending.title, dataset: { test: "trpg-ending-title" } }),
         el("p", { text: ending.line }),
+        replayStatus ? el("p.trpg-modal-intro", { role: "status", text: replayStatus, dataset: { test: "trpg-replay-saved-status" } }) : null,
         el("p.trpg-ending-heat", { dataset: { test: "trpg-ending-heat", tier: String(heatTier(result.heat.value)) } },
           [el("strong", { text: result.heat.night }), el("span", { text: "盛り上がり " + result.heat.value + "/" + result.heat.max }),
             result.finale ? el("b.trpg-ending-finale", { dataset: { test: "trpg-ending-finale" }, text: "会心のクライマックス" }) : null].filter(Boolean)),
@@ -896,7 +899,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("div.trpg-choice-cards", scenario.options[session.flow.serve[0]].map(option => optionButton(session.flow.serve[0], option))),
     ]);
   }
-  function modal(title, body, actions, { dismiss = true, wide = false, skin = "" } = {}) {
+  function modal(title, body, actions, { dismiss = true, onDismiss = null, wide = false, skin = "" } = {}) {
     if (overlay || disposed) return null;
     staging?.cancel();
     const previousFocus = document.activeElement;
@@ -909,9 +912,34 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       overlay?.remove(); overlay = null; modalCloser = null;
       if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true }); else root.focus({ preventScroll: true });
     };
-    modalCloser = dismiss ? close : null;
+    modalCloser = dismiss ? onDismiss || close : null;
     (box.querySelector("button:not(:disabled), input") || box).focus({ preventScroll: true });
     return { close, box };
+  }
+  function askReplaySave(chooseReplay) {
+    let pop;
+    const decide = keep => {
+      if (!pop || disposed) return;
+      const current = pop;
+      pop = null; // 二重タップやEscapeとボタンの競合で同じ卓を二度確定しない。
+      replayStatus = chooseReplay(keep);
+      current.close();
+      renderBody();
+      root.querySelector('[data-test="trpg-finish"]')?.focus({ preventScroll: true });
+    };
+    // ステージ縮小後も、保存・見送りのどちらにも44px以上の高さを残す。
+    const touchTarget = { minHeight: "max(54px, calc(44px / var(--k, 1)))" };
+    pop = modal("リプレイを保存しますか？", el("p.trpg-modal-intro", {
+      text: "保存すると、この回の選択・出目・結末を本棚で見返せます。保存しなくても、本編の進行は残ります。",
+    }), [
+      button("保存する", "trpg-replay-save-yes", () => decide(true), { class: "primary", style: touchTarget }),
+      button("保存しない", "trpg-replay-save-no", () => decide(false), { style: touchTarget }),
+    ], { onDismiss: () => decide(false) });
+    if (pop) {
+      pop.box.dataset.test = "trpg-replay-save-question";
+      // 最後の台詞のEnterを持ち越しても、保存を確定しない。
+      pop.box.focus({ preventScroll: true });
+    }
   }
   function chooseHypothesis() {
     if (busy || overlay) return;
@@ -1258,8 +1286,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
           talk(sequence(...own("aside"), withCue(ending.dialogue, "ending"), scenario.debrief?.[result.variant], scenario.epilogue, ...own("after")), () => {
             completed = result;
             // 本編の卓は、今夜の卓で部の実績がどれだけ増えたかを返す（TRF13）。試遊の卓は何も返さない。
-            clubGained = onComplete(result)?.club || null;
+            const completion = onComplete(result);
+            clubGained = completion?.club || null;
             renderBody();
+            if (completion?.chooseReplay) askReplaySave(completion.chooseReplay);
           });
         }
       };

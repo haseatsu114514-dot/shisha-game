@@ -28,6 +28,18 @@
       "run": ["node remake/test/play_mastery.mjs"]
     },
     {
+      "id": "axe-tiers",
+      "title": "Axe bar three tiers (#3779): divisions as tiers, clear lines (B, A, A), unlocks, old-save import and the top-tier fire",
+      "kind": "quick",
+      "run": ["node remake/test/axe_tiers.mjs"]
+    },
+    {
+      "id": "play-tiers",
+      "title": "Mini-game three tiers (#3779): unlocks, clear records, old-save import and the one-time top-tier fire",
+      "kind": "quick",
+      "run": ["node remake/test/play_tiers.mjs"]
+    },
+    {
       "id": "promo-site",
       "title": "公式プロモーションサイト（promo/）の参照切れ・ページ内リンク・人物と店の対応・使っていない絵",
       "kind": "quick",
@@ -272,6 +284,25 @@
         "remake/test/browser/ch1_victory_resume_2190.mjs"
       ],
       "run": ["node remake/test/browser/ch1_victory_resume_2190.mjs"]
+    },
+    {
+      "id": "chapter-clear-levelup-3938",
+      "title": "第2〜5章の「第N章・完」で、章クリアのレベルアップ・火種の札が本文・成長図・ボタンにかからない",
+      "kind": "browser",
+      "weight": 2.5,
+      "timeout": 8,
+      "paths": [
+        "remake/css/daily.css",
+        "remake/css/ch2-tournament.css",
+        "remake/js/daily/levelup.js",
+        "remake/js/core/chapter-card.js",
+        "remake/js/chapters/ch2-tournament.js",
+        "remake/js/chapters/ch3-aftermath.js",
+        "remake/js/chapters/ch4.js",
+        "remake/js/chapters/ch5.js",
+        "remake/test/browser/chapter_clear_levelup_3938.mjs"
+      ],
+      "run": ["node remake/test/browser/chapter_clear_levelup_3938.mjs"]
     },
     {
       "id": "resume-modal-title-cleared-3514",
@@ -586,13 +617,15 @@
     },
     {
       "id": "growth-fx-browser",
-      "title": "Growth level-up reward chips, colour-fire note, board light/commit effects, near goals and reduced motion (SBD102-105)",
+      "title": "Growth level-up reward chips, colour-fire note, board light/commit effects, tap-again lighting, gain pops, commit banner, lesson flow and tags, peak show, map lesson badges, near goals and reduced motion (SBD102-105, SBD132-142, SBD138, SBD141)",
       "kind": "browser",
       "weight": 0.5,
       "timeout": 4,
       "paths": [
         "remake/js/daily/growth-fx.js",
         "remake/js/daily/levelup.js",
+        "remake/js/daily/map.js",
+        "remake/js/core/audio.js",
         "remake/js/daily/growth-board-screen.js",
         "remake/js/core/growth-board.js",
         "remake/js/core/growth.js",
@@ -623,6 +656,25 @@
       ],
       "run": [
         "node remake/test/browser/board_tutorial.mjs"
+      ]
+    },
+    {
+      "id": "board-focus-browser",
+      "title": "Growth board keyboard focus (aria-modal, Tab/Shift+Tab stay inside, redraws keep focus, close returns to MENU) and the same-effect note (#1801 U4/U2)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/growth-board-tutorial.js",
+        "remake/js/core/growth-board.js",
+        "remake/js/core/growth-board-data.js",
+        "remake/js/daily/menu.js",
+        "remake/test/browser/board_focus.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/board_focus.mjs"
       ]
     },
     {
@@ -742,7 +794,7 @@
       "kind": "browser",
       "weight": 0.5,
       "timeout": 3,
-      "paths": ["remake/js/minigames/dj.js", "remake/js/daily/dj-club.js", "remake/js/chapters/ch3.js", "remake/js/chapters/ch3-map-model.js", "remake/previews/dj/**", "data/dialogue/ch3_club.json", "remake/test/browser/dj_club.mjs"],
+      "paths": ["remake/js/minigames/dj.js", "remake/js/daily/dj-club.js", "remake/js/chapters/ch3.js", "remake/js/chapters/ch3-map-model.js", "remake/previews/dj/**", "data/dialogue/ch3_club.json", "remake/test/browser/dj_club.mjs", "remake/js/core/play-tiers.js"],
       "run": ["node remake/test/browser/dj_club.mjs"]
     },
     {
@@ -770,8 +822,8 @@
       "id": "desert-ride",
       "title": "DESERT RIDE on PC and touch, reduced motion, and the chapter 4 outing with save/load and interruption",
       "kind": "browser",
-      "weight": 3.5,
-      "timeout": 8,
+      "weight": 4,
+      "timeout": 10,
       "paths": [
         "remake/js/core/stage-fit.js",
         "remake/js/minigames/desert-ride.js",
@@ -788,7 +840,8 @@
         "remake/desert-ride.html",
         "remake/css/desert-ride.css",
         "data/dialogue/ch4_desert.json",
-        "remake/test/browser/desert_ride.mjs"
+        "remake/test/browser/desert_ride.mjs",
+        "remake/js/core/play-tiers.js"
       ],
       "run": ["node remake/test/browser/desert_ride.mjs"]
     },
@@ -1256,6 +1309,7 @@
         "node remake/test/steam_heart.mjs",
         "node remake/test/steam_patterns.mjs",
         "node remake/test/steam_mind.mjs",
+        "node remake/test/retry_assist_level.mjs",
         "node remake/test/venue_hours.mjs",
         "node remake/test/ch2_progress.mjs",
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",
@@ -1496,6 +1550,22 @@
         "/asset_sources/map-facilities-579/"
       ],
       "pillow": true
+    },
+    {
+      "id": "ch1-first-play-feedback-browser",
+      "title": "Chapter 1: foil ring feedback and same-day LIME reply guide",
+      "kind": "browser",
+      "weight": 5,
+      "timeout": 12,
+      "paths": [
+        "remake/js/craft/common.js",
+        "remake/js/craft/holes.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/phone.js",
+        "data/lime_messages.json",
+        "remake/test/browser/ch1_first_play_feedback.mjs"
+      ],
+      "run": ["node remake/test/browser/ch1_first_play_feedback.mjs"]
     },
     {
       "id": "ch1-presentation",
@@ -1938,7 +2008,8 @@
         "assets/sprites/characters/khalil/**",
         "remake/img/sprites/characters/hajime/**",
         "assets/backgrounds/bg_dubai_camel_track_morning.png",
-        "remake/test/browser/ch4_camel_race.mjs"
+        "remake/test/browser/ch4_camel_race.mjs",
+        "remake/js/core/play-tiers.js"
       ],
       "run": ["node remake/test/browser/ch4_camel_race.mjs"]
     },
@@ -2646,7 +2717,7 @@
       "weight": 3,
       "timeout": 15,
       "paths": [
-        "remake/js/craft/result.js",
+        "remake/js/craft/result.js", "remake/js/craft/tournament-show.js", "remake/js/craft/tournament-graphics.js", "remake/css/tournament.css", "remake/css/tournament-show.css",
         "remake/js/craft/heat*.js",
         "remake/js/craft/coals.js",
         "remake/js/craft/common.js",
@@ -3236,6 +3307,25 @@
       ]
     },
     {
+      "id": "chapter-moments",
+      "title": "第2〜4章の山場の演出（味が遠のく・結果発表前の静けさ・四つ目の台の影）の位置・後片付け・再開",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 10,
+      "paths": [
+        "remake/js/motions/moments.js",
+        "remake/css/motions/moments.css",
+        "remake/js/core/scene-motions.js",
+        "remake/js/chapters/ch3-tournament.js",
+        "data/dialogue/ch2_main.json",
+        "data/dialogue/ch4_main.json",
+        "remake/test/browser/chapter_moments.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/chapter_moments.mjs"
+      ]
+    },
+    {
       "id": "text-editor",
       "title": "Text editor, wrapping, notifications and rewards",
       "kind": "browser",
@@ -3344,7 +3434,8 @@
         "remake/test/browser/venue_hours.mjs",
         "remake/test/venue_hours.mjs",
         "data/dialogue/venue_hours.json",
-        "data/dialogue/trpg_club.json"
+        "data/dialogue/trpg_club.json",
+        "remake/js/core/play-tiers.js"
       ],
       "run": [
         "node remake/test/browser/play_spots.mjs",
@@ -3905,7 +3996,9 @@
         "remake/css/wide-screens.css",
         "remake/css/base.css",
         "remake/css/shop.css",
-        "remake/css/daily-menu.css"
+        "remake/css/daily-menu.css",
+        "remake/css/motions/garagara.css",
+        "remake/js/motions/garagara-stage.js"
       ],
       "run": ["node remake/test/browser/phone_density.mjs"],
       "chrome": "playwright"
@@ -4286,6 +4379,37 @@
       ],
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/trpg",
+        "BROWSER_TIMEOUT_MS": "30000"
+      }
+    },
+    {
+      "id": "trpg-reading",
+      "title": "TRPGを横持ちで読む・押す（#3199）: 本棚（過去プレイを再生）と店の「？」、探索の危機の数と調べる場所の名札、チュートリアルの図、判定の詳細（PC・844×340）、キャラ作りの「能力を自分で振る」、シートと結末の文字。844×390・844×340・1280×720",
+      "kind": "browser",
+      "weight": 2.5,
+      "timeout": 10,
+      "paths": [
+        "remake/css/trpg*.css",
+        "remake/css/phone-density.css",
+        "remake/js/core/stage-fit.js",
+        "remake/js/trpg/view.js",
+        "remake/js/trpg/shelf-help.js",
+        "remake/js/trpg/play-record-view.js",
+        "remake/js/trpg/campaign-view.js",
+        "remake/js/trpg/preview.js",
+        "remake/trpg-preview.html",
+        "data/trpg_catalog.json",
+        "data/dialogue/trpg_ordinary.json",
+        "data/dialogue/trpg_shark.json",
+        "data/dialogue/trpg_moonflower_encore.json",
+        "data/dialogue/trpg_mist_kingdom.json",
+        "remake/test/browser/trpg_reading.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/trpg_reading.mjs"
+      ],
+      "env": {
+        "ARTIFACT_DIR": ".codex/artifacts/trpg-reading",
         "BROWSER_TIMEOUT_MS": "30000"
       }
     },
@@ -4718,6 +4842,27 @@
       ]
     },
     {
+      "id": "tutorial-growth",
+      "title": "Chapter 1 scout and delivery EXP, stamina capacity HUD and saves",
+      "kind": "browser",
+      "weight": 0.7,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/spots.js",
+        "remake/js/daily/hud.js",
+        "remake/js/core/growth.js",
+        "remake/js/core/growth-effects.js",
+        "remake/js/core/growth-board.js",
+        "remake/js/core/stats.js",
+        "remake/js/core/state.js",
+        "remake/test/browser/tutorial_growth.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/tutorial_growth.mjs"
+      ]
+    },
+    {
       "id": "bonds",
       "title": "Complete bonds, nicknames and lover progression",
       "kind": "browser",
@@ -5012,10 +5157,28 @@
         "remake/css/ui-paper.css",
         "remake/css/daily.css",
         "remake/js/daily/growth-board-screen.js",
+        "remake/js/core/mastery-notice.js",
         "remake/test/browser/board_notification_visibility.mjs"
       ],
       "run": [
         "node remake/test/browser/board_notification_visibility.mjs"
+      ]
+    },
+    {
+      "id": "board-phone-text-browser",
+      "title": "Growth board on landscape phones: text/tap minimums and the payment line kept beside the pinned actions",
+      "kind": "browser",
+      "weight": 1.2,
+      "timeout": 5,
+      "paths": [
+        "remake/css/phone-density.css",
+        "remake/css/ui-paper.css",
+        "remake/css/daily.css",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/test/browser/board_phone_text.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/board_phone_text.mjs"
       ]
     },
     {

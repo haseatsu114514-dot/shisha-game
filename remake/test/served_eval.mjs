@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { DB } from '../js/core/data.js';
 import { temperatureBands } from '../js/craft/temperature-model.js';
-import { servedTasteLine, servedStateLine, servedEvaluationLines } from '../js/craft/served-eval.js';
+import { servedTasteLine, servedStateLine, servedEvaluationLines, servedMixWords, servedLemonOnly } from '../js/craft/served-eval.js';
 
 // 課題のレモン必須に合わせた最小カタログ（同系統合算の確認用に mint へ family を付ける）。
 DB.flavorById = {
@@ -52,4 +52,22 @@ assert.equal(lines.length, 2);
 for (const l of lines) { assert.equal(l.speaker, ''); assert.equal(l.face, ''); assert(l.text.length); }
 assert.equal(JSON.stringify(input), snapshot, '評価の生成でセッションを変えない');
 
-console.log('PASS: served taste/state lines for representatives, high/low/good temps, neutral old-save');
+// --- 優勝の夜にスミさんへ答える配合（#3916）：多い順・同系統は合算・メーカー表記なし・記録なしは null ---
+assert.equal(servedMixWords({ mix: { lemon: 12 } }), 'レモン');
+assert.equal(servedMixWords({ mix: { lemon: 4, mint: 3, cool_mint: 2 } }), 'ミントとレモン');
+assert.equal(servedMixWords({ mix: { vanilla: 2, lemon: 6, mint: 3 } }), 'レモンとミントとバニラ');
+DB.flavorById.peach = { short_name: 'AF ピーチ', heat_tolerance: 1 };
+assert.equal(servedMixWords({ mix: { lemon: 5, mint: 3, vanilla: 2, peach: 1 } }), 'レモンとミントとバニラと、ほかに1つ');
+assert.equal(servedMixWords({ mix: {} }), null);
+assert.equal(servedMixWords({}), null);
+assert.equal(servedMixWords(null), null);
+
+// --- レモンだけの一台（#3916）：課題の葉だけで、0gの葉は数えない。ほかのレモン系やミント入りは違う ---
+assert.equal(servedLemonOnly({ mix: { lemon: 12 } }), true);
+assert.equal(servedLemonOnly({ mix: { lemon: 12, mint: 0 } }), true);
+assert.equal(servedLemonOnly({ mix: { lemon: 10, mint: 2 } }), false);
+assert.equal(servedLemonOnly({ mix: { ice_lemon: 12 } }), false);
+assert.equal(servedLemonOnly({ mix: {} }), false);
+assert.equal(servedLemonOnly(null), false);
+
+console.log('PASS: served taste/state lines for representatives, high/low/good temps, neutral old-save, mix words, lemon only');

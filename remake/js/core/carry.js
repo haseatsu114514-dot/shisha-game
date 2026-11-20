@@ -137,6 +137,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch1_day2_shift_done", "progression"],
   ["_ch1_day3_kannon_done", "progression"],
   ["_ch1_early", "progression"],
+  ["_ch1_lemon_single", "progression"], // 第1章の大会をレモンだけで勝った（#3916）。優勝の夜と第4章の会話が変わる
   ["_ch1_eve", "progression"],
   ["_ch1_mid", "progression"],
   ["_ch1_opening", "progression"],
@@ -155,7 +156,14 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_cleared", "progression"],
   ["_ch2_coal_role_coals", "progression"],
   ["_ch2_coal_role_plate", "progression"],
+  // #3097 PR-B: 行き帰りの電車の小品（chapters/ch2-commute.js）。読んだ日と各回の既読。window_sent は写真をつむぎへ送った（後日の LIME の条件）
+  ["_ch2_commute_day", "progression"],
+  ["_ch2_commute_doze", "progression"],
+  ["_ch2_commute_regulars", "progression"],
+  ["_ch2_commute_tonari", "progression"],
   ["_ch2_commute_v1", "progression"],
+  ["_ch2_commute_window", "progression"],
+  ["_ch2_commute_window_sent", "person"],
   ["_ch2_day1", "progression"],
   ["_ch2_deliveries", "progression"],
   ["_ch2_eve_done", "progression"],
@@ -177,11 +185,13 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_kumicho_sixth", "person"],
   ["_ch2_read_ch2_kumicho_third", "person"],
   ["_ch2_read_ch2_lingering_smell", "progression"], // スミさんの飯の接客回（baito_ch2_staff_meal）の条件
+  ["_ch2_read_ch2_naru_lunch", "person"], // 試煙会（remake_ch2_ageha_tasting）で、前日の昼に聞いた苺の依頼を受けるか（#3922）
   ["_ch2_read_ch2_naru_warm", "person"],
   ["_ch2_read_ch2_naru_window", "person"], // 前夜の振り返りで、休みの店の前に送ったLIMEの返事を待つか（#2720）
   ["_ch2_read_ch2_pre_tournament_realisation", "progression"],
   ["_ch2_read_ch2_rei_fifth", "person"],
   ["_ch2_read_ch2_rei_fourth", "person"],
+  ["_ch2_read_ch2_rei_second", "person"], // 最初の「同士」の回。♥3の外出の誘い lime_outing_rei_1 の条件（daily/phone.js）
   ["_ch2_read_ch2_rei_sixth", "person"],
   ["_ch2_read_ch2_rei_third", "person"], // クラウドの本名の回。LIME lime_rei_bond_a の条件
   ["_ch2_read_ch2_slump_taste", "progression"],
@@ -498,8 +508,10 @@ export const FLAG_EXACT_RULES = [
   ["_outing_done_adam", "person"],
   ["_outing_done_ageha", "person"],
   ["_outing_done_hiyori", "person"],
+  ["_outing_done_kumicho", "person"],
   ["_outing_done_minto", "person"],
   ["_outing_done_naru", "person"],
+  ["_outing_done_rei", "person"],
   ["_outing_done_rio", "person"],
   ["_outing_done_samechan", "person"],
   ["_outing_done_tsumugi", "person"],
@@ -557,12 +569,18 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_cafe_ch2_clock", "progression"], // #3097 第2弾（daily/spot-encounters.js の第2章の回）
   ["_spot_seen_cafe_ch2_commute", "progression"],
   ["_spot_seen_cafe_ch2_foam", "progression"], // #3097 第1弾（daily/spot-encounters.js の第2章の回）
+  ["_spot_seen_cafe_ch2_maezono", "person"], // #3097 PR-I 喫茶こはくの上園さん（第2章）
   ["_spot_seen_cafe_ch2_taste", "progression"],
   ["_spot_seen_cafe_maezono_break", "person"],
   ["_spot_seen_cafe_master_quiz", "progression"],
   ["_spot_seen_cafe_naru_break", "person"],
   ["_spot_seen_cafe_naru_rio", "person"],
   ["_spot_seen_ch1_tsumugi_low_water", "person"],
+  // #3097 PR-B: 第2章の地元の雨の回（daily/spot-encounters.js の chapterRainScene）
+  ["_spot_seen_cafe_ch2_rain", "progression"],
+  ["_spot_seen_ch2_rest_rain", "progression"],
+  ["_spot_seen_choizap_ch2_rain", "progression"],
+  ["_spot_seen_cs_ch2_rain", "progression"],
   ["_spot_seen_choizap_ch2_neck", "progression"], // #3097 第2弾
   ["_spot_seen_choizap_ch2_numbers", "progression"],
   ["_spot_seen_choizap_ch2_stairs", "progression"], // #3097 第1弾
@@ -593,6 +611,9 @@ export const FLAG_EXACT_RULES = [
   ["_sumi_rig_received_day", "progression"],
   // 凛想が味の不調に気づいた回（第2章）を読んだか。第3・4章の出発前の凛想の会話が分岐に使う（data/dialogue/ch3_ch4_home.json）
   ["_talk_seen_ch2_rio_taste", "person"],
+  // #3097 PR-I: サメちゃんの第2章の会話（daily/samechan.js）と、鉄仮面さんのシフト上がり（daily/tonari.js）。後日の LIME の条件に使う
+  ["_talk_seen_ch2_samechan_resting_shark", "person"],
+  ["_talk_seen_ch2_shift_talk_salaryman", "person"],
   // 第3章の出発前に凛想から「向こうの顔」を頼まれたか。第4章の出発前の凛想の会話が、その報告の分岐に使う
   ["_talk_seen_ch3_prep_rei_live", "person"], // クラウドのライブの夜（第3章の準備期間・RVE07）
   ["_talk_seen_ch3_prep_rio", "person"],
@@ -683,6 +704,7 @@ export const FLAG_FAMILY_RULES = [
   ["_motion_seen_*", "ui"],
   ["_lime_exchange_shown_*", "ui"],
   ["_flavor_*", "unlock"],
+  ["_ch5_noor_lover_*", "progression"], // 第5章、恋人のヌールの出迎え・夜・見送り・二度目の出迎えを読んだ（#4010・ch4-desert-progress.js の noorLoverReadFlag）
   ["_*_affinity_question_done", "person"],
   ["_*_affinity_released_pts", "person"],
   ["_*_affinity_stage_released_pts", "person"],

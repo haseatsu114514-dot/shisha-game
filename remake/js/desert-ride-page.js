@@ -1,17 +1,21 @@
 // DESERT RIDE を単体で遊ぶページ（remake/desert-ride.html）。本編の保存は読み書きしない。
 // 自己ベストはこのページだけの localStorage（suien_desert_ride_preview）に残す。
+// 三段階（#3779）: このページでは初級・中級・上級とも開いている。?tier=easy|normal|hard で最初に選んでおく段（既定は中級＝前と同じ遊び）。
+// 初級の自己ベストは別の鍵（suien_desert_ride_preview_easy）。初級の勝ちでは、なる（好敵手）は来ない（本編と同じ）。
 import { BOOST, RULES_VERSION } from "./minigames/desert-ride-model.js";
+import { TIERS } from "./core/play-tiers.js";
 import { el } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
 import { initSideArea } from "./core/side-area.js";
 import { runDesertRide } from "./minigames/desert-ride.js";
 
 const KEY = "suien_desert_ride_preview";
+const EASY_KEY = "suien_desert_ride_preview_easy";
 const stage = document.getElementById("stage");
 const app = document.getElementById("desert-app");
 initStageFit(stage); // 画面の当て方は本編と同じ共通部品（core/stage-fit.js・#3076）
 initSideArea({ stage, standalone: true }); // 左右の余白の煙と縁（YHK）
-const readBest = () => { try { const v = JSON.parse(localStorage.getItem(KEY) || "null"); return v && Number.isFinite(v.score) ? v : null; } catch { return null; } };
+const readBest = (key = KEY) => { try { const v = JSON.parse(localStorage.getItem(key) || "null"); return v && Number.isFinite(v.score) ? v : null; } catch { return null; } };
 let reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 function menu(message = "狙いは、S。") {
   const best = readBest();
@@ -25,7 +29,13 @@ function menu(message = "狙いは、S。") {
     const courseId = params.get("course") || undefined;
     const seedParam = params.get("seed");
     const seed = seedParam != null && seedParam !== "" && Number.isFinite(Number(seedParam)) ? Number(seedParam) : undefined;
-    const { results } = await runDesertRide({ host: stage, tutorial, best, legacyBest: best?.legacyBest, rivals, reducedMotion: reduce, courseId, seed, onResult: result => {
+    const tier = TIERS.includes(params.get("tier")) ? params.get("tier") : "normal";
+    const { results } = await runDesertRide({ host: stage, tutorial, best, legacyBest: best?.legacyBest, rivals, reducedMotion: reduce, courseId, seed, tiers: TIERS, tier, easyBest: readBest(EASY_KEY), onResult: result => {
+      if (result.tier === "easy") {
+        const easy = readBest(EASY_KEY);
+        if (!easy || result.score > easy.score) try { localStorage.setItem(EASY_KEY, JSON.stringify({ score: result.score, rank: result.rank, rulesVersion: RULES_VERSION })); } catch { /* 保存できない環境 */ }
+        return;
+      }
       const prev = readBest();
       const beatNoor = !!prev?.beatNoor || (result.race?.who === "noor" && result.race.won);
       const sameRules = prev?.rulesVersion === RULES_VERSION;

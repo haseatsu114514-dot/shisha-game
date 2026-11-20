@@ -202,11 +202,16 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   assert(camelExpert(expert));
   recordCamelRaceResult(value, expert);
   assert(camelRaceRecord(value).cups.expert.mastered);
+  // 三段階（#3779）: 入門・標準・上級大会の3位以内が初級・中級・上級のクリア
+  assert.deepEqual(value.growth.playTiers.camel.cleared, ["easy", "normal", "hard"]);
   const g = newGrowth();
   const rewards = claimPlayRewards(g, value);
   assert.deepEqual(rewards.find(row => row.label === "ラクダレース中級認定").parts, [{ kind: "any", n: 1 }]);
-  assert.equal(rewards.filter(row => /ラクダ/.test(row.label)).length, 2, "old finish and new mastery are separate");
+  // 完走（感の火）・中級認定（白火）・上級クリア（白火・#3779）は別々に一度ずつ
+  assert.deepEqual(rewards.find(row => row.label === "ラクダレース 上級クリア").parts, [{ kind: "any", n: 1 }]);
+  assert.equal(rewards.filter(row => /ラクダ/.test(row.label)).length, 3, "old finish, mastery and the top tier are separate");
   assert.equal(g.rewards["camel-master"], true);
+  assert.equal(g.rewards["camel-hard"], true);
   assert.deepEqual(claimPlayRewards(g, JSON.parse(JSON.stringify(value))), [], "SAVE/LOAD cannot duplicate the gift");
   value.growth = g;
   assert.equal(classifyFlag("_camel_cups"), "unlock");

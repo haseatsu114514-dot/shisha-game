@@ -3,6 +3,7 @@
 // 前夜→大会→勝ち側の本線→完了カードまでを、1本のセーブで実UI・実saveだけで通す。
 // 自由行動の途中で実セーブ→リロード→再開し、進行が壊れないことも確認する。
 import assert from "node:assert/strict";
+import path from "node:path";
 import { suite } from "./support.mjs";
 
 const dt = name => `[data-test="${name}"]`;
@@ -30,6 +31,8 @@ const observeTournament = page => page.evaluate(() => {
       "誰のための一台か", "客の呼吸は、まだ続いている", "直した跡が、煙に出ている"])
       if (text.includes(phrase)) window.__ch4Observed.text.add(phrase);
     document.querySelectorAll(".nico").forEach(node => window.__ch4Observed.comments.add(node.textContent));
+    // 結果発表の10カウント（TSH10）。その場で結果が決まった時だけ出る。
+    if (document.querySelector('[data-test="result-count"]')) window.__ch4Observed.count = true;
   });
   window.__ch4Observer.observe(document.body, { subtree: true, childList: true, characterData: true });
 });
@@ -83,6 +86,55 @@ async function loadSlot(page, slot) {
 }
 
 await suite("ch4-full-flow", async check => {
+  // #3938: 出発カードの表示名だけ。恋人・応援の判定や保存のIDは元のまま。
+  for (const [label, known, selected, partnered = true] of [
+    ["companion-picker-private-name-unknown", false, "mashiro"],
+    ["companion-picker-private-name-known", true, null],
+    ["companion-picker-no-lover", false, null, false],
+  ]) {
+    await check(label, async page => {
+      await seed(page);
+      if (partnered) await page.evaluate(async known => {
+        const core = await import("./js/core/state.js");
+        Object.assign(core.state, { lovers: ["mashiro", "minto"], loverSince: { mashiro: 35, minto: 8 } });
+        Object.assign(core.state.met, { mashiro: true, minto: true });
+        Object.assign(core.state.affinity, { mashiro: 400, minto: 380 });
+        // 正体を知ることと、本人から私的な呼び名を聞いたことは別。
+        core.state.flags._minto_identity_revealed = true;
+        if (known) core.state.flags._minto_name_known = true;
+        core.save();
+      }, known);
+      await loadSlot(page, 0);
+      await page.locator(dt("ch3-aftermath-complete")).waitFor({ timeout: 60000 });
+      await page.locator(dt("ch3-aftermath-chapter-four")).tap();
+      await page.locator(dt("ch4-companion")).waitFor({ timeout: 60000 });
+      const before = await get(page);
+      const mashiro = page.locator(dt("ch4-companion-mashiro"));
+      const minto = page.locator(dt("ch4-companion-minto"));
+      const none = page.locator(dt("ch4-companion-none"));
+      const artifacts = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser");
+      await page.screenshot({ path: path.join(artifacts, `${label}-landscape.png`) });
+      if (partnered) {
+        assert.equal(await mashiro.innerText(), "ましろ");
+        assert.equal(await minto.innerText(), known ? "栞" : "みんと");
+      } else {
+        assert.equal(await mashiro.count(), 0);
+        assert.equal(await minto.count(), 0);
+      }
+      assert.equal(await none.innerText(), "同行なし");
+      assert.equal(before.flags._overseas_companion, undefined, "表示だけでは選択・保存しない");
+      await (selected ? mashiro : none).tap();
+      await page.waitForFunction(id => window.__remake.state.flags._overseas_companion?.companion === id, selected);
+      const after = await get(page);
+      assert.deepEqual(after.flags._overseas_companion,
+        { decided: true, companion: selected, supports: !partnered ? ["tsumugi", "mashiro"] : selected ? ["tsumugi", "minto"] : ["tsumugi", "minto", "mashiro"], guests: [] });
+      assert.deepEqual(after.lovers, before.lovers);
+      assert.deepEqual(after.affinity, before.affinity);
+      assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")).flags._overseas_companion),
+        after.flags._overseas_companion);
+    }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
+  }
+
   await check("chapter-four-prologue-dubai-eve-tournament-and-resolution-on-one-save", async page => {
     await seed(page);
     // 1. タイトルからロード → 第3章の完了カード → 第4章へ
@@ -266,6 +318,7 @@ await suite("ch4-full-flow", async check => {
       assert.equal(Object.values(row).reduce((a, b) => a + b, 0), 10);
     // #2031: 最終結果は文字だけでなく持ち点の盤（4人の順位）で出る。
     assert.equal(await page.locator(`${dt("ch4-result")} li[data-contestant]`).count(), 4);
+    assert.equal(await page.evaluate(() => window.__ch4Observed.count === true), true, "The world final opens with the result countdown");
     assert.equal(await page.locator(`${dt("ch4-result")} li[data-contestant="hajime"]`).getAttribute("data-rank"), "1");
     await page.locator(dt("ch4-verdict-continue")).click();
     await page.locator(scene("ch4_result")).waitFor();
@@ -330,6 +383,52 @@ await suite("ch4-full-flow", async check => {
     await page.locator(dt("ch4-complete")).waitFor({ timeout: 60000 });
     assert.equal((await get(page)).flags._ch4.resolution, resolution.length);
   }, { reducedMotion: "reduce" });
+
+  // 世界大会の持ち点（TSH05・TSH06）: モーダルは夜紫の板（紙の小窓では白い点数が読めず、票の帯が潰れていた）。
+  // 票は入れる前の値から始まり、板を押すと早送り。出そろうまで「続きを作る」は押せない。
+  await check("standings-modal-is-a-readable-board-and-votes-arrive", async page => {
+    const expected = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"); core.newGame();
+      Object.assign(core.config, { bgmVolume: 0, seVolume: 0 });
+      const model = await import("./js/chapters/ch4-tournament-state.js");
+      const view = await import("./js/chapters/ch4-standings.js");
+      const empty = () => Object.fromEntries(model.CH4_JUDGES.map(judge => [judge, Object.fromEntries(model.CH4_CONTESTANTS.map(id => [id, 0]))]));
+      const before = empty(), votes = empty(), [a, b, c] = model.CH4_JUDGES;
+      Object.assign(before[a], { hajime: 1, sheikh: 1 }); Object.assign(before[b], { sheikh: 1, naru: 1 }); Object.assign(before[c], { master_hookah: 1, hajime: 1 });
+      for (const judge of model.CH4_JUDGES) Object.assign(votes[judge], before[judge]);
+      votes[a].hajime += 2; votes[a].naru += 1; votes[b].hajime += 2; votes[b].sheikh += 1; votes[c].sheikh += 2; votes[c].hajime += 1;
+      const p = { votes, baseVotes: Object.fromEntries(model.CH4_CONTESTANTS.map(id => [id, 1])), voted: 2, quality: { hajime: 90, naru: 80, master_hookah: 78, sheikh: 88 } };
+      const sum = table => Object.fromEntries(model.CH4_CONTESTANTS.map(id => [id, 1 + model.CH4_JUDGES.reduce((n, judge) => n + table[judge][id], 0)]));
+      window.boardClosed = false;
+      view.showChapterFourStandings(p, { before }).then(() => { window.boardClosed = true; });
+      return { before: sum(before), after: sum(votes) };
+    });
+    const board = page.locator(dt("ch4-standings")), next = page.locator(dt("ch4-standings-continue"));
+    await board.waitFor();
+    const points = () => board.locator("li[data-contestant]").evaluateAll(rows => Object.fromEntries(rows.map(row => [row.dataset.contestant, parseInt(row.querySelector("strong").textContent, 10)])));
+    assert.equal(await board.getAttribute("data-ceremony"), "running");
+    assert.deepEqual(await points(), expected.before);
+    assert.equal(await next.isDisabled(), true);
+    const look = await board.evaluate(node => {
+      const box = node.closest(".modal-box"), rgb = value => (value.match(/\d+/g) || []).slice(0, 3).reduce((n, v) => n + Number(v), 0);
+      const strong = node.querySelector('li[data-contestant]:not([data-rank="1"]) strong');
+      return { width: box.getBoundingClientRect().width / (document.getElementById("stage").getBoundingClientRect().width / 1280),
+        ground: rgb(getComputedStyle(box).backgroundColor), ink: rgb(getComputedStyle(strong).color),
+        bar: node.querySelector(".vote-stack").getBoundingClientRect().width, columns: getComputedStyle(node).gridTemplateColumns.split(" ").length };
+    });
+    assert(look.width > 900, `The board uses the stage width: ${look.width}`);
+    assert(look.ground < 120 && look.ink > 600, `Light points on a dark board: ${JSON.stringify(look)}`);
+    assert(look.bar > 150 && look.columns === 2, `The vote bars and the judges column have room: ${JSON.stringify(look)}`);
+    await page.locator(".judge-chip.ts-casting").first().waitFor();
+    await board.locator(".judge-legend").click();
+    await board.and(page.locator('[data-ceremony="done"]')).waitFor({ timeout: 1000 });
+    assert.deepEqual(await points(), expected.after);
+    assert.equal(await page.evaluate(() => window.boardClosed), false, "Skipping the ceremony does not close the board");
+    await next.and(page.locator(":enabled")).waitFor();
+    await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/ch4-standings-board.png` });
+    await next.click();
+    await page.waitForFunction(() => window.boardClosed === true);
+  });
 
   await check("real-craft-burnt-defeat-restores-resources-and-retry-wins", async page => {
     await seed(page);

@@ -6,6 +6,7 @@ import * as core from "../js/core/state.js";
 import { captureEntryResources, restoreEntryResources, applyAssistRecovery } from "../js/chapters/tournament-resources.js";
 import { beginCh1Votes, isSakuraiVotes } from "../js/craft/ch1-votes.js";
 import { voteStyleFrom } from "../js/core/vote-style.js";
+import { chosenAssistLevel } from "../js/craft/retry-assist-level.js";
 globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};
 const { regulationFor } = await import("../js/craft/steps.js");
@@ -96,7 +97,9 @@ const context = vm.createContext({
   prepareFlavorStock: stub, lastNight: stub, warmCraftAssets: () => Promise.resolve([]), clearScreen: stub, initHud: stub,
   showHud: stub, playBgm: stub, dayCard: stub, morningMessages: () => [], openPhone: stub,
   play: id => played.push(id),
-  captureEntryResources, restoreEntryResources, applyAssistRecovery, beginCh1Votes, maxStamina: () => 130, regulationFor,
+  // 会場の会話は中継の枠つきの playLive で読む（TSH04）。ここでは読んだ台本だけを記録する。
+  playLive: id => played.push(id), ch1LiveStandings: () => [],
+  captureEntryResources, restoreEntryResources, applyAssistRecovery, beginCh1Votes, maxStamina: () => 130, regulationFor, chosenAssistLevel,
   // 審査の方式（SKR04）は試合を始める時のシーシャ作りの版で決まる（CRN16）。ここでは桜井版を選んだ端末として流す。
   voteStyleFrom: (config) => voteStyleFrom(config, ""), config: { craftVersion: "sakurai" }, isSakuraiVotes, SAKURAI_RULE_LINES: [],
   save: () => saves.push(copy(entrant)), toast: stub,
@@ -124,13 +127,16 @@ for (const sv of saves) assert.deepEqual(sv.tournament.entryResources, saves[0].
 assert.equal(sessions[1].stamina, 52);
 assert.deepEqual(sessions[1].flavorStock, {});
 // #590: 救済を選んだ挑戦だけ、戻した直後に現在の最大体力（根性込みの値）へ。entryは書き換えない。
-entrant.stamina = 3; entrant.tournament.retryAssist = true;
+entrant.stamina = 3; entrant.tournament.retryAssist = true; entrant.tournament.losses = 6; entrant.tournament.retryAssistLevel = 2;
 await vm.runInContext("tournamentDay()", context);
 assert.equal(sessions[2].stamina, 130, "assisted retry recovers to the current maximum");
+assert.equal(session.retryAssist, true);
+assert.equal(session.retryAssistLevel, 2, "6敗で選んだベリーイージーがその一台に付く（WIN13）");
 assert.deepEqual(sessions[2].flavorStock, {}, "stock is restored once, unchanged by recovery");
 assert.equal(entrant.tournament.entryResources.stamina, 52, "the entry snapshot keeps the original stamina");
 entrant.stamina = 3; entrant.tournament.retryAssist = false;
 await vm.runInContext("tournamentDay()", context);
+assert.equal(session.retryAssistLevel, 0, "断った一台に段は付かない");
 assert.equal(sessions[3].stamina, 52, "declining the assist keeps the entry stamina");
 assert.equal(applyAssistRecovery({ stamina: 9 }, "yes", 130), false, "only an explicit true assists");
 for (const sv of saves) assert.deepEqual(sv.tournament.entryResources, saves[0].tournament.entryResources, "recovery never writes a new entry save");
@@ -150,13 +156,16 @@ const gameOverStart = source.indexOf("async function showGameOver(");
 const gameOverEnd = source.indexOf("/** 開発用:", gameOverStart);
 assert(gameOverStart >= 0 && gameOverEnd > gameOverStart);
 let ready, retryOptions, transition, opened = 0, resumed = 0;
+const appliedLevels = [];
 const ownerContext = vm.createContext({
   state: core.newState(), recordTournamentLoss: stub, save: stub,
   craftContinueContext: () => ({}), recordContinueContext: () => ({}),
   warmGameOver: () => new Promise(resolve => { ready = resolve; }),
   showHud: stub, stopBgm: stub, SE: { miss: stub }, location: { reload: stub },
   buildGameOver: options => { retryOptions = options; return { isConnected: true }; },
-  showScreen: () => opened++, chooseRetryAssist: async () => {}, retire: stub,
+  showScreen: () => opened++, retire: stub,
+  // 難易度はコンティニュー画面の中で選ぶ（WIN14）。ここでは選ばれた段の受け渡しだけを見る。
+  retryAssistOffer: () => 2, applyRetryAssistChoice: (tournament, level) => { appliedLevels.push(level); return level > 0; },
   // 再挑戦は一筆を逆向きに流す幕（#2688 A19・F4）。幕の内側で呼ぶ関数を受け取る。敗北の入りの灰色はこの検査では出さない
   retryStroke: callback => { transition = callback; }, defeatFade: async () => null, tournamentDay: () => resumed++,
 });
@@ -167,7 +176,9 @@ assert.equal(opened, 0, "LOAD during preload cannot attach the old game-over scr
 ownerContext.warmGameOver = async () => {};
 await vm.runInContext("showGameOver()", ownerContext);
 assert.equal(opened, 1);
-await retryOptions.onRetry();
+assert.equal(retryOptions.difficulty, 2, "3敗目からの難易度は、コンティニュー画面へ渡す");
+await retryOptions.onRetry(2);
+assert.deepEqual(appliedLevels, [2], "画面で選んだ段を、次の一台の記録へ渡す");
 assert.equal(typeof transition, "function");
 ownerContext.state = core.newState(); transition();
 assert.equal(resumed, 0, "LOAD during the wipe cannot resume the old tournament");

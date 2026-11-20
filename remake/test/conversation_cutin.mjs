@@ -19,10 +19,10 @@ assert.deepEqual(Object.keys(KINDS).sort(), ["2a", "2c", "3", "4", "5"]);
 assert.deepEqual([...new Set(CUES.map((c) => c.id))].sort(), ["2a", "2c", "3", "4", "4m", "5", "5b"]);
 assert(!KINDS["3"].partners.includes(0), "3m（相手なしの目元帯）は不採用");
 for (const [id, k] of Object.entries(KINDS)) if (k.partners.includes(0)) assert.equal(id, "4", "相手なしで出せるのは沈む（4m）だけ");
-// 型ごとの帯: 相手の行は相手の顔の高さ（reply）、はじめの行は名前の上（own）、決意だけ全幅（eyes）
+// 型ごとの帯: 寄りの帯は相手の行もはじめの行も名前の上の1か所（band）、決意だけ全幅（eyes）
 for (const [id, k] of Object.entries(KINDS)) {
   assert(FRAMES[k.frame], `${id}: 帯 ${k.frame}`);
-  assert.equal(k.frame, k.on === "partner" ? "reply" : id === "3" ? "eyes" : "own", `${id}: 帯の置き場`);
+  assert.equal(k.frame, id === "3" ? "eyes" : "band", `${id}: 帯の置き場（寄りの帯は1か所にそろえる）`);
   assert(LEAVE_MS[k.leave] >= 0, `${id}: 消える動き ${k.leave}`);
 }
 
@@ -96,8 +96,8 @@ for (const [name, f] of Object.entries(FRAMES)) {
   assert(f.x >= 0 && f.x + f.w <= (f.wide ? 1280 : 520), `${name} の左右`);
   assert(f.y + f.h <= 526, `${name} は本文欄より上`);
 }
-assert(FRAMES.own.y + FRAMES.own.h <= 500, "はじめの行の帯は名前の行より上");
-assert(FRAMES.reply.y + FRAMES.reply.h < FRAMES.own.y + FRAMES.own.h, "相手の行の帯は、はじめの行の帯より上");
+assert(FRAMES.band.y + FRAMES.band.h <= 500, "寄りの帯は名前の行より上");
+assert.deepEqual(Object.keys(FRAMES).sort(), ["band", "eyes"], "出す位置は寄りの帯と目元の帯の2つだけ");
 // 絵は縦横比を変えずに縮尺するだけ。顔の中心が帯の中に入る
 for (const cue of CUES) {
   const a = conversationCutinArt(cue), art = ART[cue.art], f = FRAMES[KINDS[cue.kind].frame];
@@ -105,6 +105,7 @@ for (const cue of CUES) {
   const cx = a.left + art.face[0] * a.scale, cy = a.top + art.face[1] * a.scale;
   assert(cx > 0 && cx < f.w && cy > 0 && cy < f.h, `${cue.id}: 顔が帯の中`);
 }
+
 
 // 6) 層の出し入れ
 function element(tag = "div") {
@@ -132,7 +133,7 @@ assert.equal(ct.show(at("2a"), "downcast.webp", { typing: true, bg: 'url("bg.web
 assert.equal(layer.children.length, 0);
 const heavy = ct.reveal();
 assert.equal(layer.children.length, 1, "文字送りが終わると出る");
-assert.equal(heavy.dataset.frame, "reply");
+assert.equal(heavy.dataset.frame, "band");
 assert.equal(find(heavy, "vn-cutin-bg")[0].style.backgroundImage, 'url("bg.webp")', "帯の中に今の背景");
 assert.equal(ct.reveal(), null, "出すのは1回だけ");
 ct.leave();
@@ -142,11 +143,11 @@ assert(heavy.removed);
 // はじめの行は文字送り中でもすぐ出る
 const own = ct.show(at("5"), "grateful.webp", { typing: true });
 assert(own && own.dataset.tone === "amber" && own.dataset.enter === "rise", "受け取るは琥珀・持ち上がる");
-assert.equal(find(own, "vn-cutin-over").length, 1, "帽子を線の手前に出す");
+assert.equal(find(own, "vn-cutin-over").length, 0, "帽子も帯の中に収める（はみ出さない）");
 ct.clear();
 const sink = ct.show(at("4m"), "downcast.webp");
 assert.equal(sink.dataset.tone, "cool");
-assert.equal(find(sink, "vn-cutin-over").length, 0, "沈むは帯からはみ出さない");
+assert.equal(find(sink, "vn-cutin-over").length, 0, "沈むも帯からはみ出さない");
 // 軽い型は自分から消える（効果音つき）
 ct.clear();
 sounds.length = 0;
@@ -191,7 +192,11 @@ const engine = fs.readFileSync(path.join(root, "remake/js/vn/engine.js"), "utf8"
 assert.match(engine, /function next\(\) \{[\s\S]{0,260}cutin\?\.leave\(/);
 assert.match(engine, /if \(v\) \{ cutin\?\.clear\(\); setAuto\(false\); \}/);
 assert.match(engine, /function openLog\(\) \{\n  cutin\?\.clear\(\);/);
-assert.match(engine, /function finish\(cancelled = false\) \{[\s\S]{0,900}cutin\?\.clear\(\);/);
+// 会話の終了は finish() の本体（宣言から行頭の「}」まで）の中で片付ける。以前は「宣言から900字以内」と字数で見ていたため、
+// 本体に1行足しただけで外れ（#4025 で 902 字）、逆に本体が短いと次の関数の中の clear でも通ってしまった
+const finishBody = /\nfunction finish\(cancelled = false\) \{\n([\s\S]*?)\n\}\n/.exec(engine)?.[1];
+assert(finishBody, "engine.js に finish(cancelled = false) が見つからない");
+assert.match(finishBody, /\n  cutin\?\.clear\(\);/);
 assert.match(engine, /function completeTyping\(\) \{[\s\S]{0,500}cutin\?\.reveal\(\);/);
 assert.match(engine, /renderPage\(\);\n[^\n]*\n  if \(cutinSrc\) showCutin\(r, cutinCue, cutinSrc\);/, "文字送りを始めてから出す");
 assert.match(engine, /cutin\?\.show\(cue, src, \{ still: reducedMotion\(\), bg: cutinBackdrop\(\), typing: !!r\.typing \}\)/);

@@ -5,10 +5,12 @@ import { initialBaseVotes, baseVoteOf } from "./tournament-base-votes.js";
 
 export const CH4_CONTESTANTS = Object.freeze(["hajime", "naru", "master_hookah", "sheikh"]);
 export const CH4_JUDGES = Object.freeze(["sui", "da_silva", "emil"]);
-// 2026-11-03「3・4章を難しく調整」: なるの中盤、シェイクの終盤を強める暫定値（実機調整前）。
+// 2026-11-03「3・4章を難しく調整」: なるの中盤、シェイクの終盤を強める暫定値（版2・版3）。
 // 配点は2/3/2/3を保持。最後40%の案は、相手の固定順位を生むため採用しない。
-// 途中の旧保存は旧基準を保持し、新しい一台から版2で競う。
-export const CH4_RULES_VERSION = 3;
+// 途中の旧保存は旧基準を保持し、新しい一台から最新の版で競う。
+// 版4（2026-11-20 #3916・WIN12「大会自体、7.6.5.3割」）: 版2・版3はふつうの腕前で約6%と厳しすぎたため、
+// 3人の曲線を各回−2.5にして約3割にした（`node remake/tools/balance/measure.mjs --chapter 4 --n 300 --seed 1`）。
+export const CH4_RULES_VERSION = 4;
 // 穴・熱・提供・調整1・調整2・最終総合。各成分は等重みから±10pt以内。
 export const CH4_JUDGE_WEIGHTS = Object.freeze({
   sui: Object.freeze([15, 15, 15, 15, 15, 25]),
@@ -20,10 +22,17 @@ export const CH4_LEGACY_RIVAL_CURVE = Object.freeze({
   master_hookah: Object.freeze([87, 87, 87, 87]),
   sheikh: Object.freeze([88, 88, 88, 88]),
 });
-export const CH4_RIVAL_CURVE = Object.freeze({
+// 版2・版3の曲線。途中の版2・版3の保存はこの値のまま最後まで進む。
+export const CH4_V3_RIVAL_CURVE = Object.freeze({
   naru: Object.freeze([87, 94, 94.5, 92.5]),
   master_hookah: Object.freeze([87.5, 87.5, 87.5, 87.5]),
   sheikh: Object.freeze([90, 88, 88.25, 94]),
+});
+// 版4の曲線（版3から各回−2.5。形＝なるの中盤・シェイクの終盤の強さは同じ）。
+export const CH4_RIVAL_CURVE = Object.freeze({
+  naru: Object.freeze([84.5, 91.5, 92, 90]),
+  master_hookah: Object.freeze([85, 85, 85, 85]),
+  sheikh: Object.freeze([87.5, 85.5, 85.75, 91.5]),
 });
 // 互換用: 最後の票の値。
 export const CH4_RIVAL_QUALITY = Object.freeze(Object.fromEntries(
@@ -36,9 +45,9 @@ export const CH4_VOTE_AFTER_STEPS = Object.freeze([8, 9, 10, 11]);
 const rulesVersion = p => p.rulesVersion === undefined ? 1 : p.rulesVersion;
 function rulesFor(p) {
   const version = rulesVersion(p);
-  if (version !== 1 && version !== 2 && version !== CH4_RULES_VERSION) throw new Error("世界大会の採点規則を確認できません");
+  if (version !== 1 && version !== 2 && version !== 3 && version !== CH4_RULES_VERSION) throw new Error("世界大会の採点規則を確認できません");
   return version === 1 ? { curve: CH4_LEGACY_RIVAL_CURVE, spend: CH4_LEGACY_SPEND }
-    : { curve: CH4_RIVAL_CURVE, spend: CH4_SPEND };
+    : { curve: version === CH4_RULES_VERSION ? CH4_RIVAL_CURVE : CH4_V3_RIVAL_CURVE, spend: CH4_SPEND };
 }
 const clone = value => structuredClone(value);
 // 同点時の並びは改名前（wang）の文字列順を保つ。
@@ -83,6 +92,22 @@ export function chapterFourRetryContext(value) {
   const p = chapterFourMatch(value);
   return { attempts: p.history.length + 1, losses: p.history.filter(entry => entry?.win === false).length,
     retryAssist: false };
+}
+
+/** コンティニュー画面で選んだ難易度（WIN14）を、次の一台を始めるまで保存する。0 はノーマル。 */
+export function recordChapterFourRetryChoice(value, level) {
+  const p = chapterFourMatch(value);
+  p.retryChoice = Number.isInteger(level) && level > 0 ? level : 0;
+  return p.retryChoice;
+}
+
+/** 保存した難易度の選択を一度だけ取り出す。画面の選択を持たない保存（旧版）は null。 */
+export function takeChapterFourRetryChoice(value) {
+  const p = chapterFourMatch(value);
+  if (!Number.isInteger(p.retryChoice)) return null;
+  const level = p.retryChoice;
+  delete p.retryChoice;
+  return level;
 }
 
 export function recoverChapterFourStep(value) {

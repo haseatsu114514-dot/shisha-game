@@ -458,6 +458,86 @@ await suite('ch2-tournament',async check=>{
     assert.equal(retried.flags._ch2_tournament.attempts,before.flags._ch2_tournament.attempts);
     assert.deepEqual(retried.flavorStock,before.flavorStock);
   },{reducedMotion:'reduce'});
+  // 票が入る演出（TSH05）: 第2〜4章の持ち点の板。入れる前の値から始まり、板を押すと早送り。出そろうまで押す所は押せず、解説は伏せる。
+  const contestPoints=page=>page.locator('.ch2-contest-rival').evaluateAll(rows=>Object.fromEntries(rows.map(row=>[row.dataset.contestant,parseInt(row.querySelector('strong').textContent,10)])));
+  const seedVotes=(page,final)=>page.evaluate(async final=>{
+    const core=await import('./js/core/state.js');
+    const model=await import('./js/chapters/ch2-tournament-state.js');
+    (await import('./js/vn/engine.js')).vnTest.turbo=false; // 早送りの検査設定を外し、演出を出す
+    const p=model.startAttempt(core.state,{holes:{score:88},heat:{score:90},pack:'normal',mix:{strawberry:8,mint:4},careHistory:[{score:90},{score:92}],
+      total:90,parts:{holes:88,heat:90,shisha:86,care1:90,care2:92}});
+    const sum=()=>Object.fromEntries(model.CONTESTANTS.map(id=>[id,(p.baseVotes?.[id]||0)+model.JUDGES.reduce((n,judge)=>n+p.votes[judge][id],0)]));
+    for(let round=0;round<(final?3:1);round++)model.castVotes(p,round,90);
+    const before=sum();
+    model.castVotes(p,final?3:1,90);
+    if(final){p.step=11;model.recordResult(core.state,90);p.stage='result';}else p.stage='votes';
+    core.save();
+    await (await import('./js/chapters/ch2-tournament.js')).runChapterTwoTournament();
+    return {before,after:sum()};
+  },final);
+  for(const final of [false,true]) await check(`vote-ceremony-on-contest-board-${final?'result':'votes'}`,async page=>{
+    await seed(page,{stage:'entry',auto:null});await page.locator(t('entry')).waitFor();
+    const expected=await seedVotes(page,final);
+    assert.notDeepEqual(expected.before,expected.after);
+    const board=page.locator(t(final?'result':'votes')),next=page.locator(t('continue'));
+    await board.waitFor();
+    assert.equal(await board.getAttribute('data-ceremony'),'running');
+    assert.deepEqual(await contestPoints(page),expected.before,'The board starts from the points before this round');
+    assert.equal(await next.isDisabled(),true,'The action is locked while the votes are being cast');
+    assert(await board.locator('.ch2-contest-reason.ts-wait').count()>0,'The explanation waits for the votes');
+    if(final)assert.equal(await board.locator('.ch2-contest-description.ts-wait').count(),1,'The final rank is not told before the votes arrive');
+    await page.locator('.judge-chip.ts-casting').first().waitFor();
+    await page.waitForTimeout(700);
+    await board.locator('.ch2-contest-header h1').click();
+    await board.and(page.locator('[data-ceremony="done"]')).waitFor({timeout:1000});
+    assert.deepEqual(await contestPoints(page),expected.after);
+    assert.equal(await page.locator('.ts-token, .judge-chip.ts-casting, .ts-wait').count(),0,'No ceremony leftovers');
+    await next.and(page.locator(':enabled')).waitFor();
+    assert.equal(await next.evaluate(button=>document.activeElement===button),true);
+    // 押す所は、解説・振り返り・講評が重なっても枠の中に見えている（TSH06）。
+    await page.waitForTimeout(450);
+    assert(await next.evaluate(button=>{const r=button.getBoundingClientRect(),card=button.closest('.ch2-contest').getBoundingClientRect();
+      const hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+      return r.top>=card.top-1&&r.bottom<=card.bottom+1&&(hit===button||button.contains(hit));}),'The continue button must be visible inside the card');
+    await assertFits(page,`${t('continue')}, .ch2-contest-rival`);
+    await page.screenshot({path:`${process.env.ARTIFACT_DIR||'.codex/artifacts/remake-browser'}/ch2-vote-ceremony-${final?'result':'votes'}.png`});
+  });
+
+  // 結果発表（TSH10）: その場で結果が出た時だけ、板の前に10カウント、票が出そろった後に大見出し。開き直した時は流さない。
+  await check('result-reveal-plays-once-countdown-board-and-splash',async page=>{
+    await seed(page,{stage:'entry',auto:null});await page.locator(t('entry')).waitFor();
+    const rank=await page.evaluate(async()=>{
+      const core=await import('./js/core/state.js');
+      const model=await import('./js/chapters/ch2-tournament-state.js');
+      (await import('./js/vn/engine.js')).vnTest.turbo=false;
+      // 結果発表前の掛け合いは読み終えた扱い。負けの側（決着の間を挟まない）で流れだけを見る。
+      const p=model.startAttempt(core.state,{holes:{score:40},heat:{score:40},pack:'normal',mix:{strawberry:8,mint:4},careHistory:[{score:40},{score:40}],
+        total:40,parts:{holes:40,heat:40,shisha:40,care1:40,care2:40},tournamentStory:{seen:['interlude3','tasting','preresult']}});
+      for(let round=0;round<4;round++)model.castVotes(p,round,40);
+      p.step=11;const result=model.recordResult(core.state,40);p.stage='tasting';core.save();
+      void (await import('./js/chapters/ch2-tournament.js')).runChapterTwoTournament();
+      return result.rank;
+    });
+    assert.notEqual(rank,1);
+    await page.locator('[data-test="result-count"]').waitFor();
+    assert.equal(await page.locator('.rc-card').count(),4);
+    assert.equal(await page.locator('.rc-card').last().getAttribute('data-id'),'hajime','はじめは右端（光が最後に巡る位置）');
+    const board=page.locator(t('result'));
+    await board.waitFor({timeout:20000});
+    await board.and(page.locator('[data-ceremony="done"]')).waitFor({timeout:15000});
+    const splash=page.locator('[data-test="result-splash"]');
+    await splash.waitFor();
+    assert.equal(await splash.getAttribute('data-rank'),String(rank));
+    assert.equal(await splash.locator('h2').textContent(),`${rank}位`);
+    await splash.click();await splash.waitFor({state:'detached'});
+    await page.locator(t('continue')).and(page.locator(':focus')).waitFor();
+    // 開き直し（LOAD後の再表示と同じ）: 10カウントと大見出しは流さず、板だけ
+    await page.evaluate(async()=>{void (await import('./js/chapters/ch2-tournament.js')).runChapterTwoTournament();});
+    await board.waitFor();
+    await page.waitForTimeout(1500);
+    assert.equal(await page.locator('[data-test="result-count"], [data-test="result-splash"]').count(),0,'Countdown and splash play only when the result is decided here');
+  });
+
   await check('vote-reason-low-holes-uses-actual-step-label',async page=>{
     await seed(page,{stage:'entry',auto:null});await page.locator(t('entry')).waitFor();
     const before=await page.evaluate(async()=>{
@@ -616,23 +696,29 @@ await suite('ch2-tournament',async check=>{
     let s=await get(page);assert(s.flags._ch2_tournament.failure);assert.equal(s.flags._ch2_tournament.history.length,0);
     await reload(page);await page.locator(t('defeat')).waitFor();await page.locator(t('retry')).click();await page.locator(t('ready')).waitFor();
   });
-  for (const touch of [false,true]) await check(`continue-assist-cancel-${touch?'touch':'pc'}`,async page=>{
+  // WIN14: 3敗目からは、再挑戦を押した同じCONTINUE画面で難易度を選ぶ。名前だけ・カウントは止まる・別の窓は出ない。
+  for (const touch of [false,true]) await check(`continue-difficulty-in-screen-${touch?'touch':'pc'}`,async page=>{
     const press=sel=>touch?page.locator(sel).tap():page.locator(sel).click();
     await seed(page,{stage:'defeat',auto:null,progress:{attempts:3,losses:2,lastLossAttempt:2,failure:'leaf'}});
     await page.locator(t('defeat')).waitFor();
-    const speaker=await page.locator(t('defeat')).getAttribute('data-speaker');
-    const variant=await page.locator(t('defeat')).getAttribute('data-variant');
     const before=await get(page);
-    await press(t('retry'));await press(dt('retry-assist-cancel'));
-    await page.waitForFunction(()=>document.querySelector('.gameover')?.dataset.phase==='speaking');
-    assert.equal(await page.locator(t('defeat')).getAttribute('data-speaker'),speaker);
-    assert.equal(await page.locator(t('defeat')).getAttribute('data-variant'),variant);
+    await press(t('retry'));
+    await page.locator(dt('retry-difficulty')).waitFor();
+    assert.equal(await page.locator(t('defeat')).getAttribute('data-phase'),'difficulty');
+    assert.equal(await page.locator('#modal.show').count(),0,'難易度は別の窓ではなく、CONTINUE画面の中で選ぶ');
+    assert.deepEqual(await page.locator(`${dt('retry-difficulty')} button`).allInnerTexts(),['イージー','ノーマル']);
+    assert.equal(await page.locator(`${dt('retry-difficulty')} p`).innerText(),'難易度を下げる？');
+    const count=await page.locator('.go-count').textContent();
+    await page.waitForTimeout(1600);
+    assert.equal(await page.locator('.go-count').textContent(),count,'選んでいる間はカウントが止まる');
+    const during=await get(page);
+    assert.equal(during.flags._ch2_tournament.attempts,3);
+    assert.equal(during.flags._ch2_tournament.losses,3);
+    assert.equal(during.flags._ch2_tournament.retryAssist,false);
+    assert.equal(during.stamina,before.stamina);assert.deepEqual(during.flavorStock,before.flavorStock);
+    await press(dt('retry-assist-no'));await page.locator(t('ready')).waitFor();
     const after=await get(page);
-    assert.equal(after.flags._ch2_tournament.attempts,3);
-    assert.equal(after.flags._ch2_tournament.losses,3);
-    assert.equal(after.flags._ch2_tournament.retryAssist,false);
-    assert.equal(after.stamina,before.stamina);assert.deepEqual(after.flavorStock,before.flavorStock);
-    await press(t('retry'));await press(dt('retry-assist-no'));await page.locator(t('ready')).waitFor();
+    assert.equal(after.flags._ch2_tournament.retryAssist,false);assert.equal(after.flags._ch2_tournament.retryAssistLevel,0);
   },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
   // #590: 3敗目の再挑戦で第1章と同じ救済。選んだ挑戦だけ現在の最大体力へ、断れば大会開始時の体力。
   for(const assist of [true,false]) await check(`third-loss-retry-assist-${assist?'yes':'no'}`,async page=>{

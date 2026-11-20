@@ -9,7 +9,7 @@ import { SE } from "../core/audio.js";
 import { state } from "../core/state.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { HIDANE_NAME } from "../core/growth-board-data.js";
-import { hidaneIcon, igniteOn, flyHidane, HIDANE_COLOR, reducedMotion } from "./growth-fx.js";
+import { hidaneIcon, igniteOn, flyHidane, bump, HIDANE_COLOR, reducedMotion } from "./growth-fx.js";
 
 const KINDS = Object.keys(HIDANE_COLOR);
 
@@ -138,9 +138,20 @@ async function present(item) {
     // レベルの数字で火が弾ける（節目は大きく）。そのあと粒が MENU の火種の印へ飛ぶ
     if (node.isConnected) igniteOn(layers.fx, lv, { color: "#ffd38a", big: !!item.milestone });
     await sleep(700);
+    // もらった数だけ粒が飛ぶ（8つまで。SBD138④）。MENU の火種の印は、粒が届くたびに弾み、最後の粒で MENU に火が入る
     const menu = document.querySelector("#hud .hud-menu");
-    if (node.isConnected && menu) for (const [i, fire] of [...node.querySelectorAll(".lvup-fire .hidane-icon")].slice(0, 4).entries()) {
-      void flyHidane(layers.fx, fire, menu, { kind: fire.className.match(/k-(\w+)/)?.[1] || "any", delay: i * 90, duration: 520 });
+    const icons = [...node.querySelectorAll(".lvup-fire .hidane-icon")];
+    if (node.isConnected && menu && icons.length) {
+      const total = fireTotals(item.parts).reduce((n, part) => n + part.n, 0), count = Math.min(8, Math.max(icons.length, total));
+      const badge = () => menu.querySelector(".hidane-badge:not([hidden])");
+      for (let i = 0; i < count; i++) {
+        const fire = icons[i % icons.length], kind = fire.className.match(/k-(\w+)/)?.[1] || "any";
+        void flyHidane(layers.fx, fire, menu, { kind, delay: i * 70, duration: 520 }).then(() => {
+          if (item.owner !== state) return;
+          bump(badge());
+          if (i === count - 1) igniteOn(layers.fx, menu, { color: HIDANE_COLOR[kind] });
+        });
+      }
     }
   }
   await sleep(still ? 1900 : level && (item.milestone || item.to - item.from > 1) ? 1500 : 1000);

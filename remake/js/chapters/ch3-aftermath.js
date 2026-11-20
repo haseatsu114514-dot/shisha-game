@@ -86,7 +86,8 @@ function menuButton(owner) {
 function card(owner, name, title, description, actions = [], note = "", sceneId = "", extra = []) {
   layers.hud.replaceChildren();
   layers.hud.classList.remove("show");
-  const panel = el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
+  // 完了カードは章のクリア画面（レベルアップの札を本文の外へ寄せる・#3938）。
+  const panel = el(`main.ch2-contest${name === "complete" ? ".chapter-clear" : ""}`, { dataset: { test: test(name), scene: sceneId } }, [
     el("header.ch2-contest-header", [
       el("div", [el("p", { text: "第三章 ／ 嘘つきたちの夜" }), el("h1", { text: title })]),
       menuButton(owner),

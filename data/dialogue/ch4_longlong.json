@@ -1,5 +1,5 @@
 {
-  "comment": "龍龍水煙所のドバイの店（2026-11-02 オーナー「マスターフーカーの店に行けたり」「普通に他の章のライバルと同じ扱い」）。王煙楼は58歳の現役職人・一人称「私」・短く落ち着いた言葉（老人語にしない）。シェイクの師であることは出さない（シェイクの正体は大会の朝まで伏せる）。スミさんの弟子・旧友にしない。呼び名は王煙楼（「煙楼先生」とは呼ばない）。ライチの話は前夜祭（ch4_wang_reception）の味の会話なので、ここでは別の葉を出す。店はドバイの日常（DAY1〜12）だけの地図にあり、今は大会後に読めないが、大会に触れる行は tournament_finished（第4章）で大会後の言い方に分ける。好感度・能力・代金はコード側（ch4-dubai-daily.js）。 段階の会話は first〜fifth を一訪問一本（必要ハートは core/affinity-stages.js の LONGLONG_VISIT_STORIES）、読み終えた後は visit_b〜visit_g を巡回する。背景は bg_longlong_shop（コード側で指定）。",
+  "comment": "龍龍水煙所のドバイの店（2026-11-02 オーナー「マスターフーカーの店に行けたり」「普通に他の章のライバルと同じ扱い」）。王煙楼は58歳の現役職人・一人称「私」・短く落ち着いた言葉（老人語にしない）。シェイクの師であることは出さない（シェイクの正体は大会の朝まで伏せる）。スミさんの弟子・旧友にしない。呼び名は王煙楼（「煙楼先生」とは呼ばない）。ライチの話は前夜祭（ch4_wang_reception）の味の会話なので、ここでは別の葉を出す。店はドバイの日常（DAY1〜12）だけの地図にあり、今は大会後に読めないが、大会に触れる行は tournament_finished（第4章）で大会後の言い方に分ける。好感度・能力・代金はコード側（ch4-dubai-daily.js）。 段階の会話は first〜fifth を一訪問一本（必要ハートは core/affinity-stages.js の LONGLONG_VISIT_STORIES）、読み終えた後は visit_b〜visit_k を巡回する（h〜k は #3097 計画 4-2）。背景は bg_longlong_shop（コード側で指定）。",
   "dialogues": [
     {
       "dialogue_id": "ch4_longlong_first",
@@ -875,6 +875,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "窓際の席で、汗が引くのを待つ。出された茶を、二杯飲み干した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "何も言わないのに、運ばれてきた一台は、今日の暑さにちょうどいい軽さだった。"
         },
         {
@@ -1161,6 +1166,268 @@
           "speaker": "master_hookah",
           "face": "smile",
           "text": "にらむ目は、そのうち休める。耳は、急がなくていい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_visit_h",
+      "comment": "段階の会話の合間・読み終えた後の通い（小会話。visit_b〜visit_k を巡回。#3097 PR-L・計画 4-2 で h〜k を追加）。♥が足りない間も読むので、初回（first）の後なら成り立つ文にする。大会・前夜祭・シェイクに触れない。時間帯を言わない。 炭を替えに急ぐ店員を止め、客の話の切れ目まで待たせる。言葉で教えず、待って見せる。結びは格言にせず、はじめの台の炭を、はじめが吐き終えたところで寄せる手で終える。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "龍龍水煙所。店員が新しい炭をトングで挟んで、奥の卓へ急いでいた。"
+        },
+        {
+          "speaker": "",
+          "text": "奥の卓では、客が二人、身を乗り出して話している。片方が、ちょうど何か言いかけたところだった。"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "待ちなさい",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼が、店員の肘に軽く手を添えた。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "text": "でも、炭が落ちます"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "落ちる前に、話が終わる。見ていなさい",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "客の話は、それから少し続いた。最後に二人がそろって笑い、ホースが卓に置かれる。"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "今だ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "店員が炭を替えた。客は笑った顔のまま、それに気づきもしなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……ぴったりでしたね",
+          "face": "surprise"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "話の途中で手を出すと、客は話を一つ失くす。炭は、少しなら待てる",
+          "face": "normal"
+        },
+        {
+          "speaker": "shop_clerk",
+          "text": "私、炭しか見てなかったです"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "炭は、よく見えていたよ。あとは、待つだけだ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼はこちらの卓へ来て、炭を一つ外側へ寄せた。ちょうど、こちらが一口吐き終えたところだった。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "（……いつから、待ってたんだろう）",
+          "face": "normal"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_visit_i",
+      "comment": "段階の会話の合間・読み終えた後の通い（小会話。visit_b〜visit_k を巡回。#3097 PR-L・計画 4-2 で h〜k を追加）。♥が足りない間も読むので、初回（first）の後なら成り立つ文にする。大会・前夜祭・シェイクに触れない。時間帯を言わない。 客の忘れ物を、レジで預からずに座っていた卓へ置いておく。戻ってくる人は、まず座った所を見る。はじめは tonari の忘れ物の傘を思い出す（ch2_shift_talk_receipts を読んでいなくても成り立つ書き方）。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "窓際の卓に、小さな手帳が一冊、置き忘れてあった。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "text": "店主、忘れ物です。レジで預かっておきますね"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "いや。そのまま、そこに置いておきなさい",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼は手帳を卓の真ん中へ少しだけ寄せて、隣に水の杯を一つ置いた。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "レジの方が、なくならないんじゃないですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "戻ってくる人は、まず自分の座った所を見る。そこに無いと、慌てる",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "慌てた人は、礼を言うのも急ぐ。急がせる理由を、一つ減らしておく",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "しばらくして、さっきの客が早足で戻ってきた。迷わず窓際の卓へ行き、手帳を見つけて肩を下ろす。"
+        },
+        {
+          "speaker": "",
+          "text": "客は置いてあった水を一口飲んでから、ゆっくり頭を下げて出ていった。"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "ほらね",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "（tonariの忘れ物の傘も、レジじゃなくて、傘立ての奥にあったな）",
+          "face": "smile"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_visit_j",
+      "comment": "段階の会話の合間・読み終えた後の通い（小会話。visit_b〜visit_k を巡回。#3097 PR-L・計画 4-2 で h〜k を追加）。♥が足りない間も読むので、初回（first）の後なら成り立つ文にする。大会・前夜祭・シェイクに触れない。時間帯を言わない。 中国の本店（本店は中国のまま・ch4-longlong.js）へ電話をする王煙楼。聞くのは売り上げではなく、今日は誰が来たか、来なかった人は誰か。三日来ない人には、次に来た日に茶を一杯多く淹れる。本店の人の名前・新しい設定は出さない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "店の奥で、王煙楼が電話をしていた。知らない言葉が、低く短く続く。"
+        },
+        {
+          "speaker": "",
+          "text": "電話を切ると、王煙楼はこちらに気づいて、空いた席を指した。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "お店のことですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "本店だ。毎日、一つだけ聞いている",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "売り上げとか、ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "それは帳面が覚えている。私が聞くのは、今日は誰が来たか",
+          "face": "smile"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "常連の名前を、一人ずつ言ってもらう。来なかった人の名前も",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "来なかった人も、ですか",
+          "face": "surprise"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "三日続けて来ない人がいたら、次に来た日に、茶を一杯多く淹れる",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……何も聞かずに、ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "聞かない。一杯多く飲んでいく間に、向こうが話したければ話す",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼は、卓の上の小さな帳面を閉じた。名前らしい字が、細かく並んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "（帰ったら、来なかった人の顔から数えてみよう）",
+          "face": "normal"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_visit_k",
+      "comment": "段階の会話の合間・読み終えた後の通い（小会話。visit_b〜visit_k を巡回。#3097 PR-L・計画 4-2 で h〜k を追加）。♥が足りない間も読むので、初回（first）の後なら成り立つ文にする。大会・前夜祭・シェイクに触れない。時間帯を言わない。 客と同じ速さで息をして、その人の一口の長さをつかむ（characters.json の「相手の呼吸を読む観察」）。はじめが真似をすると、ゆっくりな客に合わせすぎて眠くなる。半分だけ合わせる。格言にせず、手つきと笑いで見せる。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "王煙楼が、入口近くの客の台に葉を詰めていた。"
+        },
+        {
+          "speaker": "",
+          "text": "手を動かしながら、肩が、客の肩と同じ速さで上がり下がりしている。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……今、お客さんと一緒に息をしてました？",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "気づいたね。同じ速さで吸って吐くと、あの人の一口の長さが分かる",
+          "face": "smile"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "長い一口の人には、炭を少し離す。それだけだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "真似をして、窓際の年配の客に合わせて息をしてみた。"
+        },
+        {
+          "speaker": "",
+          "text": "吸って、止まって、ゆっくり吐く。吸って、止まって、ゆっくり吐く。"
+        },
+        {
+          "speaker": "",
+          "text": "三回目で、あくびが出た。"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "ゆっくりな人を選んだね",
+          "face": "laugh"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……眠くなりました",
+          "face": "sad"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "合わせすぎると、自分の手が止まる。半分だけ、合わせなさい",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "半分だけ。言われたとおりにすると、客の肩と自分の手が、同じ拍で動きはじめた。"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "それでいい",
+          "face": "smile"
         }
       ]
     },
