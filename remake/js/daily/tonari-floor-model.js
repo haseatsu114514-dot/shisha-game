@@ -4,11 +4,11 @@
 //
 // 卓の流れ: empty →（来店・自動で着席）→ order（注文待ち。約9秒で怒って帰る）→ prep（仕込み。同時に2台まで）
 //   →（自動で提供）→ enjoy（滞在。炭の調整・客からの頼み・追加ドリンク）→ bill（お会計待ち）→ cool（片付け）→ empty
-//   客は気分（フルーティ／スイート／リフレッシュ／リラックス）を言うだけ。並んでいるミックス（手札）から、合う一台を選んで出す。
+//   客は気分（フルーティ／スイート／刺激系／リラックス）を言うだけ。並んでいるミックス（手札）から、合う一台を選んで出す。
 //   炭は、頼まれなくても自分から調整に行く（炭の残りが少なくなったら）。放っておくと、客から頼まれる。
 //   滞在が終わる時、居心地の良い客は自分からおかわり（トップ替え）を頼むことがある。
 import {
-  PRICE, FLAVORS, MIXES, WISHES, HAND_SIZE, VISITORS, STAY, GUESTS, CALLS, NIGHTS, RANKS, MOODS, mixIdsFor,
+  PRICE, FLAVORS, AROMATIC_SPICES, MIXES, WISHES, HAND_SIZE, VISITORS, STAY, GUESTS, CALLS, NIGHTS, RANKS, MOODS, mixIdsFor,
   SERVE_LINES, SEND_LINES, CALL_MISS, byTime,
 } from "./tonari-floor-data.js";
 
@@ -93,7 +93,10 @@ export function mixRatings(id) {
 }
 // 持続性（1〜3。炭の調整の間隔と、くつろいでいる間の下がり方に効く）: 清涼系は軽く、茶葉・スパイス・花は長い
 const LAST = Object.freeze({ fresh: 1, fruit: 2, sweet: 2, deep: 3 });
-const mixLast = (id) => { const list = MIXES[id].flavors.map((f) => FLAVORS[f]); return list.reduce((sum, f) => sum + LAST[f.family], 0) / list.length; };
+const mixLast = (id) => {
+  const list = MIXES[id].flavors.map((f) => FLAVORS[f]);
+  return list.reduce((sum, f) => sum + (AROMATIC_SPICES.includes(f.id) ? LAST.deep : LAST[f.family]), 0) / list.length;
+};
 const mixTime = (id) => T.make[MIXES[id].flavors.length];
 
 /**

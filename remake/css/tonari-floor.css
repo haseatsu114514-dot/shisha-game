@@ -1,11 +1,12 @@
 /* tonari フロア営業（ワンオペ＆フレーバー調合型）。舞台（1280〜1600×720）いっぱいに店内を敷き、卓の札は絵の座標（％）へ置く。
-   板・ボタンはゲーム共通の絵（lounge の暗い板、craft-night のガラスと金の札）を九分割で使う。
+   板・ボタンは tonari フロア営業の専用の絵を九分割で使う。
    画面の構成: 上＝仕込み中の一台・残り時間・売上／右＝ミックスの一覧（カウンター側。卓の札と重ならない）／下＝卓のドック・出来事の行とはじめの心の声・フィーバー。
    注文待ちの卓を押すと、店内がその卓へ寄り、左にミックスの列（属性の印と、気分との合い方つき）・下に大きなドックが出る。客からの頼み（ケア）も同じ形。
    文字を減らして、色と印で読む: 気分＝ミックスの属性は4色と4つの印（.tf-wish・.tf-attr）、卓の札の見出しは押すと進む用件の時だけ。
    炭の調整と会計は、卓を押すだけ。 */
 .tonari-floor {
   position: absolute; inset: 0 calc(-1 * var(--stage-gutter, 0px)); isolation: isolate; overflow: hidden; overflow: clip; /* clip＝フォーカス移動で中身がずれない */
+  --art-panel: url("../img/ui/tonari-floor/panel.webp");
   --tf-ivory: #fff3d9; --tf-dim: #d9c6a4; --tf-brass: #f3cd86; --tf-ink: #3a2a1c; --tf-ink-dim: #7a6450;
   --tf-good: #7fd39a; --tf-mid: #f0c060; --tf-low: #ef7f6a; --tf-plum: #1b1220;
   --tf-small: max(22px, calc(11.5px / var(--k, 1)));
@@ -27,6 +28,12 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-sr { position: absolute; clip-path: inset(50%); overflow: hidden; white-space: nowrap; width: 1px; height: 1px; }
 .tf-icon { width: 30px; height: 30px; display: inline-flex; flex: 0 0 auto; }
 .tf-icon svg { width: 100%; height: 100%; }
+.tf-icon[data-atlas="true"] { position: relative; }
+.tf-icon[data-atlas="true"] svg { opacity: 0; }
+.tf-icon[data-atlas="true"]::before {
+  content: ""; position: absolute; inset: 0; background: currentColor;
+  mask: url("../img/ui/tonari-floor/icons.webp") var(--tf-icon-position) / 800% 300% no-repeat;
+}
 /* 気分（＝ミックスの属性）の札: 色と印（フルーティ＝橙・りんご／スイート＝桃・あめ／リフレッシュ＝水色・雪／リラックス＝藤・月） */
 .tf-wish { position: relative; display: inline-flex; align-items: center; gap: 4px; font-weight: 700; white-space: nowrap; color: #1b1220; }
 .tf-wish .tf-icon { width: 22px; height: 22px; }
@@ -34,11 +41,11 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* ミックスの属性の印: メイン（大きい角丸。その気分の客に◎）と、サブ（右下の小さい丸。○）。色と形の両方で読める */
 .tf-attr { position: relative; flex: 0 0 auto; display: inline-block; width: var(--tf-attr, 34px); height: var(--tf-attr, 34px); }
 .tf-attr:not([data-sub=""]) { margin-right: calc(var(--tf-attr, 34px) * 0.2); }
-.tf-attr i { position: absolute; display: grid; place-items: center; background: var(--c); color: #1b1220; font-style: normal; }
+.tf-attr i { position: absolute; display: grid; place-items: center; background: var(--c) var(--tf-attr-art) center / 100% 100% no-repeat; color: #1b1220; font-style: normal; }
 .tf-attr-main { inset: 0; border-radius: 28%; box-shadow: 0 0 0 2px #1b1220; }
 .tf-attr-sub { right: -22%; bottom: -12%; width: 58%; height: 58%; border-radius: 50%; box-shadow: 0 0 0 2px #1b1220; }
 .tonari-floor .tf-attr i .tf-icon { width: 72%; height: 72%; color: #1b1220; }
-.tf-attr .tf-icon svg { stroke-width: 2.6; }
+.tf-attr i .tf-icon { visibility: hidden; }
 /* 使ったフレーバー（ミックス名のあとの（）。TFL44）: 語の切れ目でだけ折れる。全角の括弧は、空きを詰めて置く */
 .tf-recipe { display: block; font-weight: 500; color: #d8c4a0; line-height: 1.12; }
 .tf-recipe-flavor { display: inline-block; max-width: 100%; vertical-align: top; }
@@ -80,7 +87,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 }
 /* フィーバーの掛かった卓は、札が紫に灯る */
 .tf-spot[data-tone="fever"] .tf-tag-want { color: #2a1040; background: linear-gradient(180deg, #f0e4ff, #b592ff); box-shadow: 0 0 0 2px #2a1040, 0 0 0 4px #f0e4ffaa; }
-.tf-spot[data-tone="fever"] .tf-tag-box { background: linear-gradient(180deg, #8a6ad0, #47306a); box-shadow: 0 0 0 2px #f0e4ff, 0 0 18px #b592ff, inset 0 0 0 1px #0004; }
+.tf-spot[data-tone="fever"] .tf-tag-box { --tf-tag-art: url("../img/ui/tonari-floor/tag-box-violet.webp"); --tf-tail: #f0e4ff; box-shadow: 0 0 0 2px #f0e4ff, 0 0 18px #b592ff, inset 0 0 0 1px #0004; }
 .tf-spot[data-tone="fever"] .tf-tag-box::after { border-top-color: #f0e4ff; }
 .tonari-floor[data-fever="on"] .tf-glow i { opacity: 1; animation: tf-flicker 3.2s ease-in-out infinite; animation-delay: calc(var(--r) * -0.37s); }
 .tonari-floor[data-fever="on"] .tf-haze i { opacity: 1; animation: tf-drift 9s ease-in-out infinite alternate; }
@@ -120,7 +127,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-plate {
   left: var(--px); top: var(--py); translate: -50% -50%; pointer-events: auto; z-index: 4;
   width: 54px; height: 54px; padding: 0; border-radius: 50%; border: 2px solid #f1d59a;
-  background: radial-gradient(circle at 40% 30%, #6a4a30, #3a2618); color: #ffe9bd; box-shadow: 0 4px 10px #000a;
+  background: url("../img/ui/tonari-floor/number-plate.webp") center / cover no-repeat; color: #ffe9bd; box-shadow: 0 4px 10px #000a;
   font-size: var(--tf-text); font-weight: 700; display: grid; place-items: center;
 }
 .tf-plate b { line-height: 1; }
@@ -146,12 +153,12 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-tag-want .tf-icon { width: 27px; height: 27px; }
 .tf-tag-box {
   position: relative; display: grid; grid-template-columns: auto auto; gap: 4px 5px; padding: 6px; border-radius: 14px; min-height: 44px;
-  background: linear-gradient(180deg, #3f8f5c, #2a6a44); box-shadow: 0 0 0 2px #c9f2d5, inset 0 0 0 1px #0004;
+  --tf-tag-art: url("../img/ui/tonari-floor/tag-box-green.webp");
+  border-image: var(--tf-tag-art) 40 fill / 20px / 0 stretch;
 }
 .tf-tag-box::after { /* 卓を指すしっぽ */
-  content: ""; position: absolute; left: 50%; top: 100%; translate: -50% 1px; border: 8px solid transparent; border-top-color: #c9f2d5; border-bottom: 0;
+  content: ""; position: absolute; left: 50%; top: 100%; translate: -50% 1px; width: 20px; height: 10px; background: var(--tf-tail, #7fd39a); mask: url("../img/ui/tonari-floor/tag-tail.webp") center / contain no-repeat;
 }
-.tonari-floor[data-style="medal"] .tf-tag-box::after { display: none; }
 .tf-tag-req, .tf-tag-gauge, .tf-tag-empty { grid-column: 1 / -1; }
 /* 帯: 注文待ちの間だけ、客の気分（色と印と名前）。出したあとは畳む */
 .tf-tag-req {
@@ -161,9 +168,9 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-tag-req .tf-wish .tf-icon { width: 26px; height: 26px; }
 .tf-tag-req[data-kind="wish"] { display: flex; }
 /* 卓の札は、小さい画面でも読めるよう大きめにする（2026-11-20 オーナー「各卓のウインドウ見やすく」） */
-.tf-tag-cell { position: relative; min-width: 84px; height: 72px; border-radius: 10px; overflow: hidden; background: #10201acc; display: grid; place-items: center; }
+.tf-tag-cell { position: relative; min-width: 84px; height: 72px; border-radius: 10px; overflow: hidden; border-image: url("../img/ui/tonari-floor/tag-window-dark.webp") 20 fill / 10px / 0 stretch; display: grid; place-items: center; }
 .tf-tag-cell + .tf-tag-cell { min-width: 88px; }
-.tf-tag-who { position: absolute; inset: 0; background: radial-gradient(circle at 50% 35%, #fff7e6, #ecd9b6 70%, #cfb48a); }
+.tf-tag-who { position: absolute; inset: 0; border-image: url("../img/ui/tonari-floor/tag-window-light.webp") 20 fill / 10px / 0 stretch; }
 .tf-tag-no {
   position: absolute; left: 8px; top: 46px; z-index: 1; min-width: 27px; height: 27px; padding: 0 4px; border-radius: 7px; display: grid; place-items: center;
   background: #1b1220; color: #ffe9bd; font-size: 21px; font-weight: 700; font-style: normal; line-height: 1;
@@ -198,23 +205,23 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-tag-empty .tf-icon { width: 30px; height: 30px; }
 .tf-spot:is([data-phase="empty"], [data-phase="cool"]) :is(.tf-tag-cell, .tf-tag-req) { display: none; }
 .tf-spot:is([data-phase="empty"], [data-phase="cool"]) .tf-tag-empty { display: block; }
-.tf-spot:is([data-phase="empty"], [data-phase="cool"]) .tf-tag-box { background: #3a332ed9; box-shadow: 0 0 0 2px #8a7c6c; }
+.tf-spot:is([data-phase="empty"], [data-phase="cool"]) .tf-tag-box { --tf-tag-art: url("../img/ui/tonari-floor/tag-box-gray.webp"); --tf-tail: #8a7c6c; box-shadow: 0 0 0 2px #8a7c6c; }
 .tf-spot:is([data-phase="empty"], [data-phase="cool"]) .tf-tag-box::after { border-top-color: #8a7c6c; }
 /* 見出しは、押すと進む用件と「おかわり中」だけ。空席は札ごと出さない（卓の番号札だけが残る） */
 .tf-spot[data-head="false"] .tf-tag-want { display: none; }
 .tf-spot[data-phase="empty"] .tf-bubble { display: none; }
 /* 用件のある卓: 金の見出しで、札ごと弾む */
-.tf-spot[data-tone="act"] .tf-tag-want { color: #2a1a08; background: linear-gradient(180deg, #ffe7a8, #f0b64e); box-shadow: 0 0 0 2px #2a1a08, 0 0 0 4px #ffe7a8aa; }
-.tf-spot[data-tone="act"] .tf-tag-box { box-shadow: 0 0 0 2px #ffe7a8, 0 0 14px #ffb45acc, inset 0 0 0 1px #0004; }
+.tf-spot[data-tone="act"] .tf-tag-want { color: #2a1a08; background: none; border-image: url("../img/ui/tonari-floor/want-gold.webp") 44 fill / 20px / 0 stretch; box-shadow: 0 0 0 4px #ffe7a866; }
+.tf-spot[data-tone="act"] .tf-tag-box { --tf-tag-art: url("../img/ui/tonari-floor/tag-box-gold.webp"); --tf-tail: #fff1af; box-shadow: 0 0 0 2px #ffe7a8, 0 0 14px #ffb45acc, inset 0 0 0 1px #0004; }
 .tf-spot[data-tone="act"] .tf-bubble { animation: tf-bob 1.5s ease-in-out infinite; }
-.tf-spot[data-tone="tend"] .tf-tag-want { color: #2a1a08; background: linear-gradient(180deg, #ffd9a0, #f0a04e); box-shadow: 0 0 0 2px #2a1a08; }
-.tf-spot[data-tone="tend"] .tf-tag-box { box-shadow: 0 0 0 2px #ffcf8a, 0 0 10px #f0a04e99, inset 0 0 0 1px #0004; }
+.tf-spot[data-tone="tend"] .tf-tag-want { color: #fff3d9; background: none; border-image: url("../img/ui/tonari-floor/want-amber.webp") 44 fill / 20px / 0 stretch; box-shadow: none; }
+.tf-spot[data-tone="tend"] .tf-tag-box { --tf-tag-art: url("../img/ui/tonari-floor/tag-box-amber.webp"); --tf-tail: #ffb45a; box-shadow: 0 0 0 2px #ffcf8a, 0 0 10px #f0a04e99, inset 0 0 0 1px #0004; }
 .tf-spot[data-tone="tend"] .tf-tag-gauge i { animation: tf-blink 0.8s steps(2, jump-none) infinite; }
 /* ミックスを出す先の卓（右の列を押すと、ここへ出る） */
 .tf-spot[data-target="true"] .tf-tag-box { outline: 3px dashed #fff1af; outline-offset: 3px; }
-.tf-spot[data-tone="wait"] .tf-tag-want { color: var(--tf-dim); background: #2c1f18f2; box-shadow: 0 0 0 1px #8a6a48; font-weight: 500; }
-.tf-spot[data-tone="wait"] .tf-tag-box { background: linear-gradient(180deg, #2f6f78, #1f4a52); box-shadow: 0 0 0 2px #9fd8e0, inset 0 0 0 1px #0004; }
-.tf-spot[data-tone="wait"] .tf-tag-box::after { border-top-color: #9fd8e0; }
+.tf-spot[data-tone="wait"] .tf-tag-want { color: var(--tf-dim); background: none; border-image: url("../img/ui/tonari-floor/want-dark.webp") 44 fill / 20px / 0 stretch; box-shadow: none; font-weight: 500; }
+.tf-spot[data-tone="wait"] .tf-tag-box { --tf-tag-art: url("../img/ui/tonari-floor/tag-box-teal.webp"); box-shadow: 0 0 0 2px #9fd8e0, inset 0 0 0 1px #0004; }
+.tf-spot[data-tone="wait"] .tf-tag-box { --tf-tail: #9fd8e0; }
 .tf-spot[data-urgent="high"] .tf-tag-box { box-shadow: 0 0 0 3px #e2503c, 0 0 14px #e2503c, inset 0 0 0 1px #0004; }
 .tf-spot[data-urgent="high"] .tf-bubble { animation-duration: 0.6s; }
 .tf-spot[data-selected="true"] .tf-tag-box { outline: 3px solid #fff1af; outline-offset: 3px; }
@@ -228,11 +235,11 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-spot[data-leaving="true"] .tf-tag-pie { background: conic-gradient(#ffd24a calc(var(--stay, 0) * 360deg), #2a1c15 0); }
 .tf-tag-count {
   display: none; align-items: center; gap: 2px; margin-left: auto; height: 34px; padding: 0 11px 0 6px; border-radius: 17px;
-  background: #7c1f1a; color: #fff; box-shadow: 0 0 0 2px #ffb4a8, 0 2px 4px #000a; font-size: var(--tf-text); line-height: 1;
+  border-image: url("../img/ui/tonari-floor/wait-badge.webp") 30 fill / 15px / 0 stretch; color: #fff; box-shadow: 0 2px 4px #000a; font-size: var(--tf-text); line-height: 1;
 }
 .tf-tag-count:not(:empty) { display: inline-flex; }
 .tf-tag-count .tf-icon { width: 20px; height: 20px; }
-.tf-tag-count[data-over="true"] { background: #e2503c; animation: tf-blink 0.7s steps(2, jump-none) infinite; }
+.tf-tag-count[data-over="true"] { filter: brightness(1.3); animation: tf-blink 0.7s steps(2, jump-none) infinite; }
 @keyframes tf-blink { 50% { opacity: 0.45; } }
 /* はじめての営業だけ、はじめの心の声が指す卓を光らせる */
 .tf-spot[data-guide="true"] .tf-tag-box::before {
@@ -246,7 +253,8 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-pop {
   position: absolute; left: 0; bottom: 2px; translate: -50% 0; width: max-content; max-width: 190px; padding: 3px 14px; border-radius: 18px; min-height: 34px;
   display: inline-flex; align-items: center; gap: 5px; text-wrap: balance; overflow-wrap: anywhere; /* 一つの文節が幅より長い時も、箱の中で折る（はみ出して切れない） */
-  background: #2a1c15f5; color: var(--tf-ivory); font-size: var(--tf-text); font-weight: 700; line-height: 1.15; box-shadow: 0 0 0 2px #e7c27a;
+  --tf-pop-art: url("../img/ui/tonari-floor/pop-plain.webp");
+  border-image: var(--tf-pop-art) 44 fill / 18px / 0 stretch; color: var(--tf-ivory); font-size: var(--tf-text); font-weight: 700; line-height: 1.15;
   animation: tf-pop 1.5s var(--ease-out, ease) forwards;
 }
 /* 見出しのある札では、見出しの所に重ねて出す */
@@ -254,15 +262,15 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-bubble:has(.tf-pop) :is(.tf-tag-want, .tf-tag-anger) { visibility: hidden; }
 .tf-pop .tf-icon { width: 27px; height: 27px; }
 .tf-pop .tf-icon svg { stroke-width: 2.6; }
-.tf-pop[data-kind="best"] { background: #2d6a44; box-shadow: 0 0 0 2px #c9f2d5; }
-.tf-pop[data-kind="near"] { background: #7a5a22; }
-.tf-pop[data-kind="off"] { background: #7c3428; box-shadow: 0 0 0 2px #ffc9bd; }
+.tf-pop[data-kind="best"] { --tf-pop-art: url("../img/ui/tonari-floor/pop-best.webp"); }
+.tf-pop[data-kind="near"] { --tf-pop-art: url("../img/ui/tonari-floor/pop-near.webp"); }
+.tf-pop[data-kind="off"] { --tf-pop-art: url("../img/ui/tonari-floor/pop-off.webp"); }
 /* 客のひとこと（来店した時に、気分を言う）。長い言葉は2行に折って、隣の札や右の一覧へはみ出さない */
 .tf-pop[data-kind="say"] {
-  background: #fffaf0; color: #3a2a1c; box-shadow: 0 0 0 2px #c9a877; border-radius: 16px 16px 16px 4px; animation-duration: 2.6s;
+  border-image: url("../img/ui/tonari-floor/bubble-say.webp") 34 fill / 17px / 0 stretch; color: #3a2a1c; border-radius: 16px 16px 16px 4px; animation-duration: 2.6s;
   font-size: var(--tf-small); text-align: center; padding: 3px 7px; /* 8字が1行に入る幅（「甘いのが吸いたい」など） */
 }
-.tf-pop[data-kind="coin"] { background: #fff1c4; color: #5a3c0c; box-shadow: 0 0 0 2px #c79a3a; }
+.tf-pop[data-kind="coin"] { --tf-pop-art: url("../img/ui/tonari-floor/pop-coin.webp"); color: #5a3c0c; }
 @keyframes tf-pop { 0% { opacity: 0; scale: 0.7; } 14% { opacity: 1; scale: 1.08; } 24% { scale: 1; } 82% { opacity: 1; } 100% { opacity: 0; } }
 /* 卓から立つ煙 */
 .tf-smoke { width: 0; height: 0; opacity: 0; transition: opacity 0.8s ease; z-index: 3; }
@@ -386,7 +394,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-preset-list { display: grid; grid-auto-rows: minmax(0, 1fr); gap: 4px; min-height: 0; }
 .tf-preset {
   position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; align-content: center; gap: 2px 4px; min-height: var(--tf-tap); padding: 2px 4px 2px 4px;
-  border: 2px solid #6b5338; border-radius: 9px; background: #2a1c15; color: #fff1c4; text-align: left;
+  border: 2px solid transparent; border-radius: 9px; border-image: url("../img/ui/tonari-floor/mix-card.webp") 24 fill / 12px / 0 stretch; color: #fff1c4; text-align: left;
   font-size: var(--tf-small); font-weight: 700; line-height: 1.05; transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
   --tf-attr: clamp(32px, calc(var(--tf-tap) - 34px), 40px);
 }
@@ -398,14 +406,14 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* 合い方の印（◎ ○）は、札の右上に載る小さな判 */
 .tf-match {
   position: absolute; right: -5px; top: -5px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
-  font-style: normal; font-size: 22px; line-height: 1; font-weight: 700; color: #1b1220; background: #ffe2a6; box-shadow: 0 0 0 2px #1b1220;
+  font-style: normal; font-size: 22px; line-height: 1; font-weight: 700; color: transparent; background: url("../img/ui/tonari-floor/stamp-good.webp") center / contain no-repeat;
 }
-.tf-preset[data-rating="best"] { border-color: #fff1af; background: #3a2a14; box-shadow: 0 0 0 2px #ffd98a88, 0 0 12px #ffb45a99; }
-.tf-preset[data-rating="best"] .tf-match { background: #9be8b4; }
+.tf-preset[data-rating="best"] { border-image-source: url("../img/ui/tonari-floor/mix-card-best.webp"); box-shadow: 0 0 0 2px #ffd98a88, 0 0 12px #ffb45a99; }
+.tf-preset[data-rating="best"] .tf-match { background-image: url("../img/ui/tonari-floor/stamp-best.webp"); }
 /* 合わない札は、名前と地を沈める（属性の印は、そのまま見せる） */
-.tf-preset[data-rating="none"] { background: #1c1410; border-color: #4a3a2a; }
+.tf-preset[data-rating="none"] { border-image-source: url("../img/ui/tonari-floor/mix-card-dim.webp"); }
 .tf-preset[data-rating="none"] :is(.tf-preset-name, .tf-recipe) { opacity: 0.5; }
-.tf-preset:is(:hover, :focus-visible) { background: #7a4a16; border-color: #fff1af; }
+.tf-preset:is(:hover, :focus-visible) { filter: brightness(1.24); }
 .tf-preset:is(:hover, :focus-visible) :is(.tf-preset-name, .tf-recipe) { opacity: 1; }
 .tf-preset:active { scale: 0.97; }
 /* 注文待ちの卓がある間は、列がその客の気分の色に灯る */
@@ -413,7 +421,8 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* シャッフル: 金のボタン。合う一台が並んでいない時は、光って知らせる */
 .tf-shuffle {
   flex: 1 1 auto; min-width: 0; min-height: var(--tf-tap); display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 1px 4px;
-  border: 2px solid #fff1af; border-radius: 10px; background: linear-gradient(180deg, #ffe7a8, #f0b64e 62%, #d9952e); color: #2a1a08;
+  border: 2px solid transparent; border-radius: 10px; border-image: url("../img/ui/tonari-floor/shuffle.webp") 24 fill / 12px / 0 stretch;
+  background: linear-gradient(180deg, #ffe7a8, #d9952e) center / calc(100% - 10px) calc(100% - 10px) no-repeat; color: #2a1a08;
   font-size: var(--tf-small); font-weight: 700; line-height: 1; white-space: nowrap; box-shadow: 0 3px 0 #7a4a16, 0 5px 10px #0008;
 }
 :where(.tonari-floor) button.tf-shuffle { color: #2a1a08; }
@@ -421,7 +430,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-shuffle .tf-icon svg { stroke-width: 2.8; }
 .tf-shuffle:is(:hover, :focus-visible):not(:disabled) { filter: brightness(1.12); }
 .tf-shuffle:active:not(:disabled) { translate: 0 2px; box-shadow: 0 1px 0 #7a4a16; }
-.tf-shuffle:disabled { filter: grayscale(0.85) brightness(0.62); box-shadow: none; }
+.tf-shuffle:disabled { border-image-source: url("../img/ui/tonari-floor/shuffle-off.webp"); background: none; box-shadow: none; }
 .tf-shuffle[data-call="true"] { animation: tf-shuffle-call 0.9s ease-in-out infinite; }
 @keyframes tf-shuffle-call { 50% { box-shadow: 0 3px 0 #7a4a16, 0 0 0 5px #fff1afaa, 0 0 20px #ffd98a; scale: 1.04; } }
 .tf-shuffle-main { display: inline-flex; align-items: center; gap: 4px; }
@@ -456,6 +465,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* 卓のドック: 選んでいる卓の番号・客・気分（出したあとは一台）・ご利用 */
 .tf-dock { flex: 0 0 500px; display: flex; align-items: center; gap: 10px; padding: 6px 18px; }
 .tf-dock-no { flex: 0 0 auto; font-size: var(--tf-text); color: var(--tf-brass); white-space: nowrap; }
+.tf-dock-who::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: url("../img/ui/tonari-floor/face-ring.webp") center / contain no-repeat; }
 .tf-dock-who { position: relative; flex: 0 0 auto; width: 56px; height: 56px; border-radius: 50%; overflow: hidden;
   background: radial-gradient(circle at 50% 35%, #fff7e6, #ecd9b6 70%, #cfb48a); box-shadow: 0 0 0 2px #e7c27a; }
 .tf-dock-main { flex: 1 1 auto; min-width: 0; display: grid; gap: 1px; }
@@ -485,12 +495,15 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* フィーバーのゲージ（3段）。1段でも溜まれば押せて、溜まった段までを一度に使う（Lv1＝2卓、Lv2＝4卓、Lv3＝全卓） */
 .tf-bonus {
   position: relative; display: grid; align-content: center; gap: 7px; width: 100%; min-width: 0; min-height: max(var(--tf-tap), 84px); padding: 6px; border: none; border-radius: 14px;
-  background: #1b1220e6; box-shadow: 0 0 0 2px #8a6a48; transition: box-shadow 0.3s ease, background 0.3s ease, scale 0.2s ease;
+  border-image: url("../img/ui/tonari-floor/fever-button.webp") 28 fill / 14px / 0 stretch; transition: box-shadow 0.3s ease, background 0.3s ease, scale 0.2s ease;
 }
 /* 上の段: 灯りと名前。下の段: 3段のゲージと、使える段（Lv） */
 .tf-bonus-head { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .tf-bonus-lamp { position: relative; width: 36px; height: 36px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #33243c; box-shadow: inset 0 0 0 2px #e7c27a; flex: 0 0 auto; }
-.tf-bonus-lamp .tf-icon { position: relative; z-index: 1; width: 24px; height: 24px; color: #fff7e6; filter: drop-shadow(0 1px 2px #0009); }
+.tf-bonus-lamp { background-image: url("../img/ui/tonari-floor/lamp-off.webp"); background-position: center; background-size: auto 93%; background-repeat: no-repeat; }
+.tonari-floor[data-fever="ready"] .tf-bonus-lamp { background-image: url("../img/ui/tonari-floor/lamp-on.webp"); }
+.tonari-floor[data-fever="on"] .tf-bonus-lamp { background-image: url("../img/ui/tonari-floor/lamp-fever.webp"); }
+.tf-bonus-lamp .tf-icon { visibility: hidden; position: relative; z-index: 1; width: 24px; height: 24px; color: #fff7e6; filter: drop-shadow(0 1px 2px #0009); }
 .tf-bonus-head b { flex: 1 1 auto; min-width: 0; text-align: left; font-size: var(--tf-small); color: #a8947c; line-height: 1.15; white-space: nowrap; }
 .tf-bonus-gauge { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .tf-bonus-lv {
@@ -501,11 +514,11 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-fever-levels { flex: 1 1 auto; min-width: 0; display: flex; gap: 4px; }
 .tf-fever-levels > i { display: block; flex: 1 1 0; height: 14px; border-radius: 7px; background: #5a4630; overflow: hidden; }
 .tf-fever-levels > i > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #ff9d4a, #ffd98a); transition: width 0.5s linear; }
-.tonari-floor[data-fever="ready"] .tf-bonus { background: #5a2f12; box-shadow: 0 0 0 3px #ffd98a, 0 0 26px #ffb45acc; animation: tf-ready 1.1s ease-in-out infinite; }
+.tonari-floor[data-fever="ready"] .tf-bonus { border-image-source: url("../img/ui/tonari-floor/fever-button-ready.webp"); box-shadow: 0 0 0 3px #ffd98a, 0 0 26px #ffb45acc; animation: tf-ready 1.1s ease-in-out infinite; }
 .tonari-floor[data-fever="ready"] .tf-bonus-head b, .tonari-floor[data-fever="on"] .tf-bonus-head b { color: #fff1c4; }
-.tonari-floor[data-fever="ready"] .tf-bonus-lamp { background: #c9742a; }
-.tonari-floor[data-fever="on"] .tf-bonus { background: #47306a; box-shadow: 0 0 0 3px #d9c2ff, 0 0 30px #b592ffaa; }
-.tonari-floor[data-fever="on"] .tf-bonus-lamp { background: #8a6ad0; }
+.tonari-floor[data-fever="ready"] .tf-bonus-lamp { background-color: #c9742a; }
+.tonari-floor[data-fever="on"] .tf-bonus { border-image-source: url("../img/ui/tonari-floor/fever-button-on.webp"); box-shadow: 0 0 0 3px #d9c2ff, 0 0 30px #b592ffaa; }
+.tonari-floor[data-fever="on"] .tf-bonus-lamp { background-color: #8a6ad0; }
 .tonari-floor[data-fever="on"] .tf-fever-levels > i > i { background: linear-gradient(90deg, #b592ff, #f0e4ff); }
 @keyframes tf-ready { 50% { scale: 1.05; } }
 
@@ -524,7 +537,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   background: linear-gradient(90deg, transparent, #1b1220f2 14%, #1b1220f2 86%, transparent); border-block: 3px solid #e7c27a;
   rotate: -2deg; opacity: 0; pointer-events: none; z-index: 6;
 }
-.tf-cutin-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; }
+.tf-cutin-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; z-index: -1; }
 .tf-cutin b { font-size: 68px; letter-spacing: 0.16em; color: #fff1c4; text-shadow: 0 0 24px #ffb45a; line-height: 1.1; }
 .tf-cutin small { font-size: var(--tf-text); color: var(--tf-dim); letter-spacing: 0.1em; }
 .tf-cutin[data-on="true"] { animation: tf-cutin var(--tf-cutin-ms, 1.5s) var(--ease-out, ease) forwards; }
@@ -536,13 +549,15 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 }
 .tf-cutin[data-kind="fever"] b { font-size: 100px; font-style: italic; letter-spacing: 0.08em; color: #fff; text-shadow: 0 0 30px #ff7ad9, 0 0 10px #ffd98a, 0 4px 0 #2a1040; }
 .tf-cutin[data-kind="fever"] small { color: #f0e4ff; font-weight: 700; }
+.tf-cutin[data-art="true"] { background: none; border-block-color: transparent; }
+.tf-cutin[data-art="true"][data-kind="fever"] { padding-left: 108px; }
 
 /* まん中の札（延長が決まった時など） */
 .tf-banner {
   position: absolute; left: 50%; top: 92px; translate: -50% 0; z-index: 10; pointer-events: none; opacity: 0; /* 上の帯のすぐ下。卓の札に重ならない所 */
   display: flex; align-items: baseline; gap: 14px; padding: 6px 34px 8px; white-space: nowrap;
   background: linear-gradient(#0e0913, #0e0913) center / calc(100% - 8px) calc(100% - 8px) no-repeat;
-  border: 0 solid transparent; border-image: var(--art-panel) 110 fill / 22px / 0 stretch; box-shadow: 0 0 34px #ffb45a99, 0 10px 26px #000a;
+  border: 0 solid transparent; border-image: url("../img/ui/tonari-floor/banner.webp") 48 fill / 24px / 0 stretch; box-shadow: 0 0 34px #ffb45a99, 0 10px 26px #000a;
 }
 .tf-banner b { font-size: 30px; line-height: 1.15; letter-spacing: 0.04em; color: #fff1c4; text-shadow: 0 0 18px #ffb45a; }
 .tf-banner small { font-size: var(--tf-text); color: #9be8b4; font-weight: 700; }
@@ -588,7 +603,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   position: relative; overflow: hidden; border-radius: 18px; background: radial-gradient(120% 90% at 50% 40%, #6b4a33, #2a1c15) center / cover no-repeat;
   box-shadow: 0 0 0 3px #e7c27a, 0 0 0 6px #1b1220, 0 14px 34px #000c;
 }
-.tf-visit-view::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #140c0866, transparent 30%, transparent 62%, #140c08b3); pointer-events: none; }
+.tf-visit-view::after { content: ""; position: absolute; inset: 0; border-image: url("../img/ui/tonari-floor/visit-frame.webp") 56 / 28px / 0 stretch; background: linear-gradient(180deg, #140c0866, transparent 30%, transparent 62%, #140c08b3); pointer-events: none; }
 .tf-visit-no {
   position: absolute; left: 14px; top: 12px; z-index: 2; padding: 4px 14px; border-radius: 16px; background: #1b1220e6; color: #ffe9bd; box-shadow: 0 0 0 2px #f1d59a;
   font-size: var(--tf-text); line-height: 1.2;
@@ -596,15 +611,16 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* 客の言葉・様子（吹き出し）。客の顔の上に出す */
 .tf-visit .tf-sheet-quote {
   position: absolute; left: 50%; bottom: 212px; translate: -50% 0; z-index: 2; width: max-content; max-width: 84%; padding: 10px 20px; border-radius: 20px 20px 20px 6px;
-  background: #fffaf0; color: #3a2a1c; box-shadow: 0 0 0 2px #c9a877, 0 6px 14px #0009; font-size: var(--tf-text); line-height: 1.3; font-weight: 700; text-align: center; text-wrap: balance;
+  border-image: url("../img/ui/tonari-floor/bubble-say.webp") 34 fill / 17px / 0 stretch; color: #3a2a1c; box-shadow: 0 6px 14px #0009; font-size: var(--tf-text); line-height: 1.3; font-weight: 700; text-align: center; text-wrap: balance;
 }
-.tf-visit .tf-sheet-quote[data-sight="true"] { font-weight: 500; border-radius: 12px; background: #2a1c15f2; color: #e9dcc4; box-shadow: 0 0 0 2px #8a6a48; }
+.tf-visit .tf-sheet-quote[data-sight="true"] { font-weight: 500; border-radius: 12px; border-image: url("../img/ui/tonari-floor/mix-card.webp") 24 fill / 12px / 0 stretch; color: #e9dcc4; box-shadow: 0 0 0 2px #8a6a48; }
 /* 客の顔（卓に座っている）。二人組は横に並ぶ */
 .tf-visit-who {
   position: absolute; left: 50%; bottom: 0; translate: -50% 0; z-index: 1; width: 230px; height: 196px; border-radius: 28px 28px 0 0; overflow: hidden;
-  background: radial-gradient(circle at 50% 35%, #fff7e6, #ecd9b6 70%, #cfb48a); box-shadow: 0 0 0 4px var(--tf-mood-color, #e7c27a), 0 6px 16px #000a;
+  background: url("../img/ui/tonari-floor/visit-who.webp") center / 100% 100% no-repeat; box-shadow: 0 0 0 4px var(--tf-mood-color, #e7c27a), 0 6px 16px #000a;
 }
 .tf-visit-who[data-party="2"] { width: 330px; }
+.tf-visit-who .tf-person[data-painted="true"] { border-radius: 0; }
 .tf-visit-info {
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 10px 18px; border-radius: 14px; background: #0e0913f2; box-shadow: 0 0 0 2px #6b5338; color: var(--tf-ivory);
   font-size: var(--tf-small); line-height: 1.2; --tf-attr: 28px;
@@ -633,7 +649,11 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   background: #140c0888; color: #ffd98a; filter: drop-shadow(0 0 16px currentColor) drop-shadow(0 4px 6px #000c);
 }
 .tf-verdict .tf-icon { width: 170px; height: 170px; }
-.tf-verdict .tf-icon svg { stroke-width: 2.6; }
+.tf-verdict .tf-icon svg { opacity: 0; }
+.tf-verdict .tf-icon { background: url("../img/ui/tonari-floor/verdict-best.webp") center / contain no-repeat; }
+.tf-sheet[data-verdict="good"] .tf-verdict .tf-icon { background-image: url("../img/ui/tonari-floor/verdict-good.webp"); }
+.tf-sheet[data-verdict="miss"] .tf-verdict .tf-icon { background-image: url("../img/ui/tonari-floor/verdict-miss.webp"); }
+.tf-sheet[data-verdict="bad"] .tf-verdict .tf-icon { background-image: url("../img/ui/tonari-floor/verdict-bad.webp"); }
 .tf-verdict b { font-size: 34px; line-height: 1.1; color: #fff7e6; text-shadow: 0 2px 6px #000; }
 .tf-sheet[data-verdict] .tf-verdict { display: grid; animation: tf-verdict 0.45s var(--ease-snap, ease); }
 .tf-sheet[data-verdict="good"] .tf-verdict { color: #9be8b4; }
@@ -650,7 +670,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* 選ぶ札: 暗いガラスに金の文字。決定は金の札 */
 .tf-option {
   min-height: 96px; padding: 2px 10px; display: flex; align-items: center; justify-content: center; gap: 10px; text-align: left;
-  border: 12px solid transparent; border-image: url("../img/ui/craft-night/button-glass.webp") 28 fill / 12px / 0 stretch;
+  border: 12px solid transparent; border-image: url("../img/ui/tonari-floor/card.webp") 50 fill / 12px / 0 stretch;
   background: none; color: #fff1c4; transition: filter 0.15s ease, scale 0.15s ease;
 }
 .tf-option b { display: block; font-size: var(--tf-text); line-height: 1.2; }
@@ -659,7 +679,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-option:is(:hover, :focus-visible) { filter: brightness(1.35) drop-shadow(0 0 8px #ffd98a88); scale: 1.02; }
 .tf-option:active { scale: 0.97; }
 .tf-option[data-primary="true"] {
-  border-width: 14px; border-image: url("../img/ui/craft-night/button-gold.webp") 36 fill / 14px / 0 stretch;
+  border-width: 14px; border-image: url("../img/ui/tonari-floor/card-primary.webp") 50 fill / 14px / 0 stretch;
   color: #2a1a08; min-width: 320px; justify-content: center; text-align: center;
 }
 .tf-option[data-primary="true"] small { color: #5a3a14; }
@@ -670,7 +690,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* 枠の絵は 12px のまま、上下の枠の厚みだけ薄くする */
 .tf-list .tf-option { min-height: max(84px, var(--tf-tap)); justify-content: flex-start; border-width: 4px 12px; padding: 2px 16px; gap: 16px; position: relative; }
 .tf-list .tf-option:is(:hover, :focus-visible):not(:disabled), .tf-list .tf-option[data-picked="true"] {
-  border-image: url("../img/ui/craft-night/button-gold.webp") 36 fill / 14px / 0 stretch;
+  border-image: url("../img/ui/tonari-floor/card-primary.webp") 50 fill / 14px / 0 stretch;
   color: #2a1a08; filter: drop-shadow(0 0 10px #ffd98a99); scale: 1; translate: 8px 0;
 }
 .tf-list .tf-option:is(:hover, :focus-visible):not(:disabled) :is(small, .tf-icon, .tf-recipe), .tf-list .tf-option[data-picked="true"] :is(small, .tf-icon, .tf-recipe) { color: #5a3a14; }
@@ -734,10 +754,10 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-slip-total strong { font-size: 52px; line-height: 1.1; color: #ffe2a6; text-shadow: 0 0 18px #f0a64a66; }
 .tf-slip-side { display: grid; gap: 6px; }
 .tf-stamp { display: flex; align-items: center; justify-content: center; gap: 14px; animation: tf-stamp 0.5s 0.35s var(--ease-snap, ease) backwards; }
-.tf-stamp i { display: block; width: 92px; height: 78px; flex: 0 0 auto; background: url("../img/ui/craft-night/medal-plain.webp") center / contain no-repeat; filter: drop-shadow(0 4px 8px #000a); }
-.tf-stamp[data-rank="S"] i { background-image: url("../img/ui/craft-night/medal-gold.webp"); filter: drop-shadow(0 0 14px #ffd98a) drop-shadow(0 4px 8px #000a); }
-.tf-stamp[data-rank="A"] i { background-image: url("../img/ui/craft-night/medal-silver.webp"); }
-.tf-stamp[data-rank="B"] i { background-image: url("../img/ui/craft-night/medal-bronze.webp"); }
+.tf-stamp i { display: block; width: 92px; height: 78px; flex: 0 0 auto; background: url("../img/ui/tonari-floor/medal-c.webp") center / contain no-repeat; filter: drop-shadow(0 4px 8px #000a); }
+.tf-stamp[data-rank="S"] i { background-image: url("../img/ui/tonari-floor/medal-s.webp"); filter: drop-shadow(0 0 14px #ffd98a) drop-shadow(0 4px 8px #000a); }
+.tf-stamp[data-rank="A"] i { background-image: url("../img/ui/tonari-floor/medal-a.webp"); }
+.tf-stamp[data-rank="B"] i { background-image: url("../img/ui/tonari-floor/medal-b.webp"); }
 .tf-stamp b { font-size: 40px; line-height: 1.1; letter-spacing: 0.08em; color: #fff1c4; white-space: nowrap; }
 .tf-stamp[data-rank="S"] b { color: #ffe2a6; text-shadow: 0 0 14px #f0a64a; }
 .tf-stamp[data-rank="C"] b { color: var(--tf-dim); }
