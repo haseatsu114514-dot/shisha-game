@@ -25,8 +25,11 @@ const PURIKURA_IDS = ["remake_ch2_ryuji_melty_greeting", "remake_ch2_purikura_ry
 const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "remake_ch2_kumicho_sento"];
 // #3097 第1弾: tonariのシフト上がりの会話（daily/tonari.js の CH2_SHIFT_TALKS と同じ並び。読み込みを軽くするため名前を並べる。一致は remake/test/ch2_shift_talks.mjs）
 export const CH2_SHIFT_TALK_IDS = Object.freeze(["ch2_shift_talk_fare", "ch2_shift_talk_three_shops", "ch2_shift_talk_supper",
-  "ch2_shift_talk_salaryman", "ch2_shift_talk_receipts", "ch2_shift_talk_student", "ch2_shift_talk_tsumugi_board", "ch2_shift_talk_one_hose",
-  "ch2_shift_talk_lost_box", "ch2_shift_talk_first_timer", "ch2_shift_talk_cd_player", "ch2_shift_talk_same_seat", "ch2_shift_talk_burnt_finger"]);
+  "ch2_shift_talk_salaryman", "ch2_shift_talk_receipts", "ch2_shift_talk_student", "ch2_shift_talk_tsumugi_board",
+  "ch2_shift_talk_tsumugi_ash", "ch2_shift_talk_tsumugi_backs", "ch2_shift_talk_tsumugi_hands", "ch2_shift_talk_one_hose",
+  "ch2_shift_talk_lost_box", "ch2_shift_talk_first_timer", "ch2_shift_talk_cd_player", "ch2_shift_talk_same_seat", "ch2_shift_talk_burnt_finger",
+  // #3097 計画 2-8（PR-D）第3弾
+  "ch2_shift_talk_water_line", "ch2_shift_talk_my_mouthpiece", "ch2_shift_talk_short_one", "ch2_shift_talk_early_coal", "ch2_shift_talk_last_visit"]);
 export const CH2_HOME_IDS = Object.freeze(["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze",
   "ch2_rio_taste", "ch2_rio_strawberry",
   // #3097 第1弾: 施設の寄り道4本と、凛想・みんと・アダムの第2章の会話（spot-encounters.js の ENCOUNTERS・spots.js の CHAPTER_TALKS）

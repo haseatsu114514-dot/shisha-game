@@ -1,5 +1,5 @@
 {
-  "comment": "第2章のtonariのシフト上がりに、スミさんの固有会話も♥5後の会話も無い日に読む短い会話（#3097 ボリューム均し・第1弾の7本＋第2弾の5本＋PR-I の鉄仮面さんの1本）。daily/tonari.js の CH2_SHIFT_TALKS が条件と順番を持ち、未読を先頭から一本ずつ・一度だけ読む（既読は _talk_seen_<ID>）。報酬はいつものバイト上がりと同じで、台本は好感度・能力値・お金を動かさない。味の感想・苺の課題・大会の結果・恋愛の進行を前提にしない。",
+  "comment": "第2章のtonariのシフト上がりに、スミさんの固有会話も♥5後の会話も無い日に読む短い会話（#3097 ボリューム均し・第1弾の7本＋第2弾の5本＋PR-I の鉄仮面さんの1本＋PR-D のつむぎが店にいる日の3本と第3弾の5本）。daily/tonari.js の CH2_SHIFT_TALKS が条件と順番を持ち、未読を先頭から一本ずつ・一度だけ読む（既読は _talk_seen_<ID>）。報酬はいつものバイト上がりと同じで、台本は好感度・能力値・お金を動かさない。味の感想・苺の課題・大会の結果・恋愛の進行を前提にしない。",
   "dialogues": [
     {
       "dialogue_id": "ch2_shift_talk_fare",
@@ -1723,6 +1723,606 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（顔に出ない人の分は、こういう所に出るのかもしれない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_shift_talk_tsumugi_ash",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シフト上がり。使い終わった炭を片づけていると、つむぎがタブレットを抱えて、そばに来た。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はじめさん。その灰、少しだけ見ていてもいいですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いいけど、……ただの灰だよ。もう捨てるところだし"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "形が、毎回ちがうので。今日のは、丸くなって眠っている猫に見えます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われて見ると、燃え尽きた炭の白い灰が、背中を丸めたような形のまま残っていた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "火が均等に回ると、形が残る。片側だけ焼けると、そこから崩れる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "surprise",
+          "text": "スミさん、灰を見ただけで分かるんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "炭の顔は、最後に灰に出る。……吸った客の、吸い方もな"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "では、この猫は、最後までゆっくり吸ってもらえた猫ですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは、ひびの入った画面に丸い背中の線を引いた。尻尾の先だけ、煙にほどけている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "灰まで描くんだ。触ったら、すぐ崩れちゃうのに"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "燃えたあとも、ここにあったものなので。描いておかないと、捨てられてしまいます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……捨てるのは、描き終わってからにしろ。灰は、逃げねえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは片づけの手を止めて、つむぎの手元に、明かりを一つ寄せた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_shift_talk_tsumugi_backs",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シフト上がり。つむぎがタブレットを抱えたまま、スミさんの前で小さく手を挙げた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "スミさん。このお店の絵を、外に出してもいいですか。みんなに見える所に"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客の顔が描いてなきゃ、いい。店の名前も、書かなくていい"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "顔は、描いていません。背中だけです。お店の名前も、入れていません"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面には、夜の客席が描かれていた。煙の向こうに、背中がいくつか並んでいる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際の丸い背中、角の席の広い背中。名前は知らなくても、どれが誰かすぐに分かる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "背中だけでも、誰だか分かるね。窓際の人なんて、そっくりだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。背中は、顔より、その日のことを隠さないので"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "……カウンターの端の、これは"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はじめさんです。ホースを運んでいる途中の背中です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺、こんなに前のめりで歩いてる？ 自分じゃ、分からなかった"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "最近は、少し。……急いでいる背中です。描いていて、そう見えました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……出していい。ただ、こいつのは、もう少しゆっくり歩いてる日のにしとけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは小さく頷いて、俺の背中の線だけを、ほんの少し起こして描き直した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_shift_talk_tsumugi_hands",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店間際。流しで瓶を洗っていると、カウンター越しに、つむぎのペンの音がした。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "動かないでください。……あ、やっぱり動いてください。洗っている手が描きたいので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "どっちなの。……じゃあ、いつも通り洗うよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "洗っている途中の手です。止まると、ただの手になってしまうので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣ではスミさんも、同じ流しで、ホースの口を一本ずつ洗っている。指の節が太い。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……スミさんの手も、描いていいですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "好きにしろ。手しか描かねえならな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらくして、画面に二組の手が並んだ。瓶を持つ手と、ホースを持つ手。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はじめさんの手、スミさんの手に似てきました。瓶を回す向きが、同じです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……そうかな。スミさんの手は、もっと速いよ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "似せたつもりはねえ。同じ流しで同じ瓶を洗ってりゃ、そうなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（似てる、か。……嬉しいのか、そうじゃないのか、自分でもよく分からない）"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "似ているところが描けると、うれしいです。一緒にいた時間が、線に出るので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "瓶を伏せて棚に戻す。画面の中では、二組の手が、まだ同じ向きに瓶を回していた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_shift_talk_water_line",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後、瓶の水を替えていると、スミさんが一本だけ取り上げて、水の高さを指で示した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "これは、指一本ぶん少なく入れとけ。奥の席で、いつも本を読んでる常連の台だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "少なくすると、何が変わるんですか。煙の量ですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "吸う時の重さと、音だ。水が多いと重くなって、ぼこぼこ鳴る"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "あの人は、音がうるさいと本が読めねえ。だから、静かに鳴る高さにする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "本を読む人のために、水の量まで変えてたんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "水は煙を冷やすだけだ。だが、鳴り方は、そのまま客の居心地になる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の瓶は、逆に指一本ぶん多い。ぼこぼこ鳴るのを聞くと落ち着く、という人の分だそうだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "瓶に、印でもつけてるんですか。どの台が誰のか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "つけてねえ。台の顔と、客の顔を見りゃ分かる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われて並んだ瓶を見比べても、俺にはどれも同じ高さに、同じ顔に見えた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "毎日入れてりゃ、手が覚える。目で測ってるうちは、まだまだだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……じゃあ、明日の水は俺が入れます。間違えてたら、言ってください"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "間違えたら、客が言う。……口じゃなくて、鳴り方でな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_shift_talk_my_mouthpiece",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "上がる少し前。いつも首から吸い口を下げてくる常連さんが、今日は首元をしきりに触っていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……マウスピース、家に忘れてきた。首が軽くて、落ち着かないんだよな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "使い捨てのを出す。……おい、新しいのを一つ持ってこい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "袋に入った使い捨ての吸い口を渡す。常連さんは袋を破いて、ホースの先にかぶせた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "吸い口が違うだけで、そんなに変わるものなんですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "変わる気がする。……いや、気のせいか。いつもより、ちょっと遠い感じがする"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "味は変わらねえ。変わるのは、口に当たる硬さと、首の重さだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは炭を少しだけ寄せて、いつもより長く台の前に立っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、気のせいってことですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "気のせいでも、本人には本物だ。……だから今日は、炭のほうで合わせる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何口か吸ううちに、常連さんは首元から手を離した。吐く煙が、いつもの長さに戻っていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……うん、いつものだ。吸い口のせいじゃなかったのかもな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（炭のほうで合わせる、か。……何をどう合わせたのか、俺には見えなかった）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "次は首に掛けてこい。あれが無いと、あんたは座り方まで違う"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_shift_talk_short_one",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店まで、あと四十分。ドアベルが鳴って、仕事着のままの女の人が、息を切らして入ってきた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "まだ、大丈夫ですか？ ……短くていいので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの、すみません、もうすぐ閉店で……"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "大丈夫だ。座ってくれ。上着は、そこに掛けといていい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは葉をいつもより少なく量り、炭も一つ減らした。蒸らしのタイマーも、短めに回す。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "短い一台は、短く終わるように作る。長いのを途中で止めさせるより、ずっといい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "閉店に合わせて、作り方まで変えるんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "閉店に合わせてるんじゃねえ。あの人の、帰りの電車にだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "タイマーが鳴るまでの間、女の人は鞄を膝に抱えたまま、天井の明かりをぼんやり見上げていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "運んだ一台を、女の人はゆっくり吸った。最後の一口と閉店の時間が、ほとんど同じだった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……間に合った。今日はここに来たくて、仕事、急いで片づけてきたんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "お疲れさまでした。また、ゆっくり来てください"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……次は、もう少し早く来い。長いのを作る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "女の人は笑って頭を下げ、駅のほうへ小走りで帰っていった。看板を消したのは、その後だった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_shift_talk_early_coal",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "上がる少し前。客の少ない時間なのに、スミさんがコンロに炭を三つ並べはじめた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "誰か、予約ですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "予約じゃねえ。毎週この曜日の、この時間に来る人がいる。連絡は、一回もねえがな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "来てから起こすと、待たせる。炭が赤くなるまでの間は、来る前に済ませとく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "来なかったら、どうするんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "来なかったら、俺が吸う。炭を無駄にするよりはいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭の縁が赤くなりはじめたころ、ドアベルが鳴った。作業着の男の人が、いつもの席に黙って座る。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは顔を一度見て、葉を量りはじめた。男の人は、蒸らしの間も黙って待っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭は先に起こしても、葉は来てから詰めるんですね。てっきり、全部先にやるのかと"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "葉は、顔を見てからだ。疲れてりゃ、少し軽くする。機嫌がよけりゃ、いつも通り"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "タイマーが鳴り、運ばれた一台を、男の人は一口吸った。肩が、一段下がった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……ここに来ると、一週間が終わるんだよな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（待たせないって、こういうことなのか）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "来なかった週は、ほんとに俺が吸ってんだぞ。今まで二回だけだがな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_shift_talk_last_visit",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店の一時間前。いつもカウンターに座る常連さんが、今日は上着を脱がずに腰を下ろした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "来週、引っ越すんだ。仕事で、遠くに。……ここに来るのも、今日で最後"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、……そうなんですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "最後だし、何か特別なのを頼んでみようかな。いちばん高いやつとか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは何も言わずに、その人がいつも頼む葉の缶を、もう棚から下ろしていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん、特別なのって……何を出すんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "いつものを出す。……最後だからって、変えるな。変えたら、覚えて帰れねえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を置き、蒸らしのタイマーを回す。鳴るまでの間、常連さんは店の中を、端から順に眺めていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "運んだ一台を一口吸って、常連さんは少しだけ笑った。それから、天井を見て長く吐いた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……いつものだ。特別なのを頼んだのになあ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "特別なのは、向こうで探せ。いつものは、ここにしか置いてねえからな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、常連さんは入口で一度だけ振り向いて、看板を見上げてから出ていった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……スミさん。寂しく、ないんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "寂しいに決まってんだろ。……だから、いつものを出した"
         }
       ]
     }
