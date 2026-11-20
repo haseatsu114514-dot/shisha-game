@@ -238,6 +238,31 @@ await suite("ch4-dubai-daily", async check => {
     assert(!log.includes("それが今日の下見だ。合格だな"), "not the walk with Naru");
   });
 
+  await check("festa-deadline-label-clears-after-a-daytime-visit", async page => {
+    await seed(page, (value, progress) => {
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      value.day = value.flags._ch4.startDay + 5;
+      value.flags._ch4.day = 6;
+    });
+    await loadSlot(page);
+    await dubaiMap(page, { day: 54, slot: 0 });
+    const festa = page.locator(dt("pin-ch4_dubai_festa"));
+    const cafe = page.locator(dt("pin-ch4_dubai_cafe"));
+    assert.equal(await festa.locator(".pin-status").innerText(), "今夜の予定");
+    assert.match(await festa.getAttribute("aria-label"), /今夜の予定/);
+    assert.equal(await cafe.locator(".evt-badge.story").innerText(), "!");
+    await go(page, "ch4_dubai_festa");
+    await dubaiMap(page, { day: 54, slot: 1 });
+    assert.doesNotMatch(await festa.getAttribute("aria-label"), /今夜の予定/);
+    assert.equal(await cafe.locator(".evt-badge.story").innerText(), "!");
+    const meetingCount = async () => (await backlog(page)).filter(line => line.startsWith("FESTAのブースに入ると")).length;
+    assert.equal(await meetingCount(), 1);
+    await go(page, "ch4_dubai_creek");
+    await dubaiMap(page, { day: 55, slot: 0 });
+    assert.equal(await meetingCount(), 1, "昼の出会いを夜に二重再生しない");
+    assert.equal((await get(page)).flags._ch4.read.ch4_festa, true);
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+
   // FESTA（審査員の太陽と会う場面）に寄らないまま DAY6 の夜を迎えると、その夜に会場の出張ブースで読む。
   await check("festa-is-read-on-its-deadline-night-if-skipped", async page => {
     await seed(page, (value, progress) => {
