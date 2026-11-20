@@ -229,7 +229,7 @@ for (const chapter of [4, 5]) {
     state, CH4_SCENE_FILES: {},
     createChapterActions: () => ({ button() {}, perform() {} }),
     modal: async spec => { dialogs.push(spec); if (errorAt === 'modal') throw new Error('modal failure'); if (waiting) await waiting.promise; return choice; },
-    save: () => { events.push('save'); if (saveError) throw new Error('save failure'); return true; },
+    autoSaveResult: () => { events.push('save'); if (saveError) throw new Error('save failure'); return { saved: true }; },
     saveFlow: async () => { events.push('saveFlow'); if (saveError) throw new Error('save failure'); },
     loadFlow: async options => { events.push(['loadFlow', options.inGame]); loadEntered?.resolve(); if (loadError) throw new Error('load failure'); if (loadWaiting) await loadWaiting.promise; return loadKey; },
     loadFromSlot: key => { events.push(['loadFromSlot', key]); if (errorAt === 'loadFromSlot') throw new Error('slot failure'); return loaded; },
@@ -263,7 +263,7 @@ for (const chapter of [4, 5]) {
     let names = [...parentSource.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)]
       .find(match => match[2] === spec)[1].split(',').map(name => name.trim());
     if (target.pathname.endsWith('/core/state.js')) {
-      names = ['state', 'save', 'loadFromSlot', 'requestResumeOnBoot', 'SCHEMA', 'SAVE_SLOTS', 'readSlot', 'saveToSlotResult'];
+      names = ['state', 'save', 'autoSaveResult', 'loadFromSlot', 'requestResumeOnBoot', 'SCHEMA', 'SAVE_SLOTS', 'readSlot', 'saveToSlotResult'];
     }
     const stub = new vm.SyntheticModule(names, function () {
       for (const name of names) this.setExport(name, bindings[name] ?? (() => {}));
