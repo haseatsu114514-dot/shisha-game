@@ -3,7 +3,7 @@
 オーナー要望（2026-11-20・TRF32）「文字はファンブルとかクリティカルとかコーデックスで作りたい。ファンブルだと悪魔が囁くようなデザインにしたりとか遊び心を持たせたい」。
 判定のダイス劇場（`remake/js/trpg/roll-show.js`・TRF29〜31）で、評価が出た瞬間に叩きつける大文字を、CSSで組んだ文字から**描いたロゴ**に替える。
 
-- 置き場所: 原画はこのフォルダの `raw/`、採用した原寸は `assets/ui/trpg/roll-logos/`、ゲーム用は `remake/img/ui/trpg/roll-logos/`（WebP・横 1200px 以下）
+- 置き場所: 原画（採用した原寸）はこのフォルダの `raw/`、ゲーム用は `remake/img/ui/trpg/roll-logos/`（WebP）
 - 画風の基準: 卓の小物 `assets/ui/trpg/spare-polyhedral-kit-v1.png` と20面ダイス `assets/ui/trpg/d20-rest.png`（添付して「同じ卓の世界の小物」と伝える）。今のダイス劇場の画面写真も添付すると、置かれる場所の明るさが伝わる
 - 英字にした理由: 画像生成はカタカナの綴りを崩しやすい。日本語の読み（クリティカル！・ファンブル……・うまくいった！など）は、ゲームの文字がロゴの下に添える
 - 受け取ったら: 綴り（1文字ずつ）・透過・余白・指定外の文字や数字が無いこと・小さく縮めても読めること（横 400px）を確かめてから組み込む
@@ -64,8 +64,27 @@ TRPGミニゲームの判定演出で使う「結果のロゴ」を、1枚に1�
 
 ## 組み込み（こちら側の作業）
 
-1. 原画を `raw/` に保存し、検品（綴り・透過・余白・指定外の文字や数字・横 400px での読みやすさ）。採用分を `assets/ui/trpg/roll-logos/`（新規画像は Git LFS）
-2. `remake/img/ui/trpg/roll-logos/<名前>.webp`（横 1200px 以下）を作り、`python3 remake/tools/build_manifest.py`
+1. 原画を `raw/` に保存し、検品（綴り・透過・余白・指定外の文字や数字・横 400px での読みやすさ）
+2. `remake/img/ui/trpg/roll-logos/<名前>.webp` を作る（下の「受領と組み込み」の手順。manifest への登録は不要: TRPG の画面素材はコードが直接読む）
 3. `remake/js/trpg/roll-show.js` の評価（`.trpg-rs-verdict`）で、今の大文字の代わりにロゴを叩きつける。日本語の読み（クリティカル！ など）はロゴの下に小さく残す。ロゴが読めない時は今の大文字のまま
 4. スキル発動のカットイン（`.trpg-rs-skill`）の「SKILL!」も、ロゴがあれば差し替える
 5. `node remake/test/browser/trpg.mjs`（`roll-show-*`）と、PC 1280×720・スマホ 844×390 の目視
+
+## 受領と組み込み（2026-11-20）
+
+Codex 作の6枚を PR #4085 で受領（`raw/roll-logo-*.png`、1536×1024・透過）。検品: 綴り・指定の数字（CRITICAL の「20」、FUMBLE の「1」）・余白・横 400px での読みやすさ。成功・ひと手間・スキルにも、共通の意匠として小さな多面体が入っている（採用）。
+ゲーム用の WebP（PR #4080）: 透明な余白を 12px 残して切り詰め、横 960px に縮めて WebP（品質 88）。評価の色の名前とファイルの対応は `critical`／`fumble`／`success`／`partial`（ひと手間）／`miss`（思わぬ出来事）／`skill`。
+
+```bash
+python3 - <<'PY'
+from PIL import Image
+for name in ['critical','fumble','success','partial','miss','skill']:
+    im = Image.open(f'asset_sources/trpg-roll-logos/raw/roll-logo-{name}.png').convert('RGBA')
+    l, t, r, b = im.split()[3].point(lambda v: 255 if v > 8 else 0).getbbox()
+    im = im.crop((max(0, l-12), max(0, t-12), min(im.width, r+12), min(im.height, b+12)))
+    if im.width > 960: im = im.resize((960, round(im.height * 960 / im.width)), Image.LANCZOS)
+    im.save(f'remake/img/ui/trpg/roll-logos/{name}.webp', 'WEBP', quality=88, method=6)
+PY
+```
+
+組み込み: `remake/js/trpg/roll-show.js`（`LOGO_FILES`・`slamLogo`）。判定の卓を開いた時に6枚を先読みし、評価の瞬間に読み終えていればロゴを叩きつけ、日本語の読みは下に小さく添える（読めていなければ文字の大文字のまま）。スキル発動のカットインの「SKILL!」もロゴ（読めなければ文字）。

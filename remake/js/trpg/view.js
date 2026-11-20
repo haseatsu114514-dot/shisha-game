@@ -8,7 +8,7 @@ import { createTrpgAudio } from "./audio.js";
 import { checkForecast, declarationChanceLabels, rerollOdds, rollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { playIncarnation, playSceneCard, playResultCut, playClueCard, impact } from "./stage-fx.js";
-import { playRollShow } from "./roll-show.js";
+import { playRollShow, preloadRollLogos } from "./roll-show.js";
 import { autoWrap } from "../vn/text.js";
 
 // 調べる場所の印の半径（見える輪。スマホでは押せる範囲が広いが、輪は同じ大きさ）。ワイドでの上下の切り方に使う
@@ -1157,6 +1157,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function openCheck(kind, approachId = null) {
     if (busy || overlay || session.snapshot().pending) return;
+    preloadRollLogos();
     const check = scenario.checks[kind], helper = check.helper || null;
     const declared = approachBase(scenario, kind, approachId, sheets).approach;
     const body = el("div", [el("p.trpg-roll-instruction", { text: DICE.success + "以上で成功" }), stakeLine(kind), actorPanel(declared), el("div.trpg-roll-scene",

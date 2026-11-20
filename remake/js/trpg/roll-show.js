@@ -30,6 +30,21 @@ const CONFETTI = {
   fumble: ["#8ea2c4", "#5d6f80", "#3b4a63", "#c0cbe0"],
 };
 const CRACK = '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50 8 44 30 54 38 40 56 50 64 36 92"/><path d="M44 30 30 34 22 26"/><path d="M54 38 70 40 78 52"/><path d="M40 56 26 62"/><path d="M50 64 64 74 70 90"/></svg>';
+// 評価のロゴ（Codex 作・#4082・asset_sources/trpg-roll-logos/）。評価の色（tone）→ 絵の名前。
+const LOGO_FILES = Object.freeze({ critical: "critical", fumble: "fumble", success: "success", mixed: "partial", trouble: "miss", skill: "skill" });
+const logoUrl = kind => LOGO_FILES[kind] ? new URL(`../../img/ui/trpg/roll-logos/${LOGO_FILES[kind]}.webp`, import.meta.url).href : "";
+const preloaded = new Map();
+/** 判定の卓を開いた時に呼ぶ。評価の瞬間までにロゴを読み終えておく（読めなければ文字のまま）。 */
+export function preloadRollLogos() {
+  if (typeof Image !== "function") return;
+  for (const kind of Object.keys(LOGO_FILES)) {
+    if (preloaded.has(kind)) continue;
+    const img = new Image();
+    img.decoding = "async";
+    img.src = logoUrl(kind);
+    preloaded.set(kind, img);
+  }
+}
 const live = host => typeof document?.createElement === "function" && typeof host?.animate === "function" && host.isConnected !== false;
 const calm = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 const rand = (lo, hi) => lo + Math.random() * (hi - lo);
@@ -97,20 +112,28 @@ export function playRollShow(host, show) {
   const verdictWord = word(String(show.label).replace(/…+$/, ""), "verdict");
   const verdictMega = el("span.trpg-rs-mega", { text: MEGA[tone] || "" });
   const verdictSub = show.sub ? el("em", { text: show.sub }) : null;
-  const verdict = el("div.trpg-rs-verdict", [verdictMega, el("strong", [verdictWord]), verdictSub].filter(Boolean));
+  // ロゴの絵が読めていれば、評価はロゴを叩きつけ、日本語の読みは下に小さく添える。読めていなければ今の大文字。
+  const verdictLogo = el("img.trpg-rs-logo", { src: logoUrl(tone), alt: "", decoding: "async" });
+  const verdict = el("div.trpg-rs-verdict", [verdictMega, verdictLogo, el("div.trpg-rs-verdict-line", [el("strong", [verdictWord]), verdictSub].filter(Boolean))]);
   const camera = el("div.trpg-rs-camera", [head, goalNode, plus[0], ...dieNodes, plus[1], chip, needNode, sum, meter, verdict]);
   const skill = show.skill || null, lead = skill ? 980 : 0;
   const skillNode = skill ? el("div.trpg-rs-skill", { dataset: { kind: skill.kind } }, [
     el("i.trpg-rs-skill-band"),
     el("span.trpg-rs-skill-face", skill.face ? [skill.face] : []),
     el("div.trpg-rs-skill-copy", [
-      el("small", { text: "SKILL!  " + (skill.who || "") + "の切り札" }),
+      el("img.trpg-rs-skill-logo", { src: logoUrl("skill"), alt: "", decoding: "async" }),
+      el("small", { text: (skill.who || "") + "の切り札" }),
       el("strong", [word("「" + skill.name + "」", "skill")]),
       el("em", { text: skill.effect || "" }),
     ]),
   ]) : null;
   const hintNode = show.rerollHint ? el("div.trpg-rs-hint", [el("b", { text: "SKILL" }), el("strong", { text: "振り直せる！" }), el("span", { text: show.rerollHint })]) : null;
-  if (skillNode) camera.append(skillNode);
+  if (skillNode) {
+    camera.append(skillNode);
+    // ロゴの絵が読めない時は、文字の「SKILL!」に戻す。
+    const skillLogo = skillNode.querySelector(".trpg-rs-skill-logo"), skillWho = skillNode.querySelector(".trpg-rs-skill-copy > small");
+    skillLogo?.addEventListener?.("error", () => { skillLogo.hidden = true; skillWho.textContent = "SKILL!  " + skillWho.textContent; });
+  }
   if (hintNode) camera.append(hintNode);
   const lines = el("i.trpg-rs-lines"), rays = el("i.trpg-rs-rays"), vignette = el("i.trpg-rs-vignette"), tint = el("i.trpg-rs-tint");
   const burst = el("div.trpg-rs-burst"), flash = el("i.trpg-rs-flash");
@@ -419,7 +442,13 @@ export function playRollShow(host, show) {
     judge();
     sound("slam");
     const chars = [...verdictWord.children];
+    const logo = verdictLogo.complete && verdictLogo.naturalWidth > 0;
     animate(verdict, [{ opacity: 0 }, { opacity: 1 }], { duration: 60 });
+    if (logo) {
+      verdict.dataset.logo = "true";
+      slamLogo();
+      chars.forEach((c, n) => animate(c, [{ opacity: 0, translate: "0 16px" }, { opacity: 1, translate: "0 0" }], { duration: 200, delay: 360 + n * 28, easing: EASE.out }));
+    }
     // 中央寄せ（CSS の translate: -50% -50%）を保ったまま、右から入って少しずつ流れる。
     animate(verdictMega, [{ opacity: 0, translate: "-30% -50%" }, { opacity: 1, translate: "-50% -50%", offset: .25 }, { opacity: 1, translate: "-53% -50%" }], { duration: 2200, easing: EASE.out });
     // サイコロは少し退いて、言葉を主役に（合計とゲージは届いたかを見せるので、そのまま）。
@@ -428,7 +457,10 @@ export function playRollShow(host, show) {
     }
     dieNodes.forEach(die => animate(die, [{ scale: "1" }, { scale: ".9" }], { duration: 320, easing: EASE.out }));
     animate(tint, [{ opacity: 0 }, { opacity: 1 }], { duration: 240, easing: "ease-out" });
-    if (tone === "critical") {
+    if (logo) {
+      // 動きは slamLogo() が付けた。光と後光だけここで。
+      if (tone === "critical" || tone === "success") animate(rays, [{ opacity: 0, scale: ".3" }, { opacity: tone === "critical" ? 1 : .75, scale: "1.1" }], { duration: 500, easing: EASE.out });
+    } else if (tone === "critical") {
       chars.forEach((c, n) => {
         const a = rand(0, Math.PI * 2);
         animate(c, [{ opacity: 0, translate: `${Math.cos(a) * 900}px ${Math.sin(a) * 600}px`, rotate: rand(-540, 540) + "deg", scale: "3" },
@@ -461,7 +493,7 @@ export function playRollShow(host, show) {
       if (!still) animate(camera, [{ rotate: "0deg" }, { rotate: "2.6deg" }], { duration: 1400, delay: 500, easing: EASE.soft });
     }
     if (verdictSub) animate(verdictSub, [{ opacity: 0, translate: "0 24px", scale: ".6" }, { opacity: 1, translate: "0 0", scale: "1" }],
-      { duration: 280, delay: chars.length * 50 + 200, easing: EASE.back });
+      { duration: 280, delay: logo ? 520 : chars.length * 50 + 200, easing: EASE.back });
     if (grade === "success") {
       goalNode.dataset.result = "clear";
       animate(goalStamp, [{ opacity: 0, scale: "3", rotate: "-30deg" }, { opacity: 1, scale: "1", rotate: "-12deg" }], { duration: 260, delay: 300, easing: EASE.back });
@@ -475,6 +507,33 @@ export function playRollShow(host, show) {
       after(700, () => sound("chip"));
     }
   });
+  /** ロゴを評価ごとの動きで叩きつける。クリティカルは回りながら巨大な所から、ファンブルは出たあとにずり落ちて傾く。 */
+  function slamLogo() {
+    const L = verdictLogo;
+    if (tone === "critical") {
+      animate(L, [{ opacity: 0, scale: "4", rotate: "-24deg" }, { opacity: 1, scale: ".9", rotate: "3deg", offset: .7 }, { opacity: 1, scale: "1", rotate: "0deg" }], { duration: 460, easing: EASE.out });
+      after(300, () => { shake(26, 700, .55); blink(["#fff", "#3a2000", "#fff6cf", "#ffe08a"], 440, .78); sound("boom"); });
+      animate(L, [{ scale: "1" }, { scale: "1.05" }, { scale: "1" }], { duration: 900, delay: 700, iterations: 2, easing: "ease-in-out", composite: "add", fill: "none" });
+    } else if (tone === "success") {
+      animate(L, [{ opacity: 0, scale: "3", translate: "0 -80px" }, { opacity: 1, scale: ".92", translate: "0 6px", offset: .7 }, { opacity: 1, scale: "1", translate: "0 0" }], { duration: 340, easing: EASE.out });
+      after(240, () => { shake(14, 480, .5); blink(["#fff", "#120c00", "#fff7d6"], 300, .6); });
+    } else if (tone === "mixed") {
+      animate(L, [{ opacity: 0, translate: "420px 0", rotate: "8deg" }, { opacity: 1, translate: "-14px 0", rotate: "-2deg", offset: .75 }, { opacity: 1, translate: "0 0", rotate: "0deg" }], { duration: 380, easing: EASE.out });
+      after(300, () => shake(7, 300, .3));
+    } else if (tone === "trouble") {
+      animate(L, [{ opacity: 0, translate: "0 -560px", rotate: "0deg" }, { opacity: 1, translate: "0 0", rotate: "0deg", offset: .5, easing: "ease-out" },
+        { translate: "0 -44px", rotate: "-2deg", offset: .68, easing: "ease-in" }, { translate: "0 0", rotate: "3deg", offset: .84 }, { opacity: 1, translate: "0 0", rotate: "5deg" }],
+      { duration: 760, easing: "cubic-bezier(.5,0,1,.6)" });
+      after(380, () => shake(12, 420, 1));
+      if (!still) animate(camera, [{ rotate: "0deg" }, { rotate: "-1.6deg" }], { duration: 700, delay: 300, easing: EASE.out });
+    } else if (tone === "fumble") {
+      // 出た直後は堂々としているのに、悪魔のささやきでずり落ちて傾く。
+      animate(L, [{ opacity: 0, scale: "1.7" }, { opacity: 1, scale: "1" }], { duration: 220, easing: EASE.out });
+      animate(L, [{ translate: "0 0", rotate: "0deg" }, { translate: "-6px 34px", rotate: "-7deg" }], { duration: 900, delay: 800, easing: "cubic-bezier(.5,0,.6,1.4)" });
+      after(120, () => { shake(18, 560, .8); blink(["#000", "#c9d6ee", "#000", "#3b4a63"], 520, .8); sound("boom"); });
+      if (!still) animate(camera, [{ rotate: "0deg" }, { rotate: "2.6deg" }], { duration: 1400, delay: 500, easing: EASE.soft });
+    }
+  }
   /** 評価ごとの紙吹雪: 成功は中央から弾け、クリティカルは左右の下から噴き上がる。うまくいかない時は、静かに降るだけ。 */
   function confetti() {
     const colors = CONFETTI[tone], pieces = [];

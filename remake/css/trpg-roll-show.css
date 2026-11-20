@@ -279,8 +279,8 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-mega {
   font-size: 168px; font-weight: 900; letter-spacing: -.01em; line-height: 1; transform: skewX(-12deg);
   color: transparent; -webkit-text-stroke: 3px color-mix(in srgb, var(--rs) 55%, transparent); opacity: 0;
 }
-html:root .trpg-root .trpg-roll-show .trpg-rs-verdict > strong { display: block; font-size: 138px; transform: skewX(-9deg) rotate(-3deg); }
-html:root .trpg-root .trpg-roll-show .trpg-rs-verdict > em {
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict-line > strong { display: block; font-size: 138px; transform: skewX(-9deg) rotate(-3deg); }
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict-line > em {
   padding: 6px 26px; font-size: 32px; font-weight: 900; color: #1a0f04; background: var(--rs); transform: skewX(-12deg) rotate(-3deg);
   box-shadow: 0 0 0 4px #1a0f04, 0 8px 18px #000a; opacity: 0;
 }
@@ -304,6 +304,30 @@ html:root .trpg-root .trpg-roll-show[data-tone="fumble"][data-phase="verdict"] .
   40% { filter: drop-shadow(-3px 0 0 #ff2a6d77) drop-shadow(3px 0 0 #2af0ff77); translate: -3px 1px; }
   70% { filter: drop-shadow(-7px 0 0 #ff2a6d99) drop-shadow(6px 0 0 #2af0ff99); translate: 2px -1px; }
 }
+
+/* ======== 評価のロゴ（Codex 作・#4082） ======== */
+/* ロゴが読めた時だけ verdict に data-logo。ロゴを主役にし、日本語の読みは下の行に小さく、英字の飾りは出さない。 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict-line { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-logo { display: none; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict[data-logo="true"] { top: 34px; height: 400px; gap: 4px; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict[data-logo="true"] .trpg-rs-logo {
+  display: block; width: auto; height: 300px; max-width: 920px; object-fit: contain; filter: drop-shadow(0 12px 18px #000b);
+}
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict[data-logo="true"] .trpg-rs-mega { display: none; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict[data-logo="true"] .trpg-rs-verdict-line { flex-direction: row; gap: 18px; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict[data-logo="true"] .trpg-rs-verdict-line > strong { font-size: 50px; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict[data-logo="true"] .trpg-rs-verdict-line > em { font-size: 26px; padding: 4px 20px; }
+html:root .trpg-root .trpg-roll-show[data-tone="critical"] .trpg-rs-verdict[data-logo="true"] .trpg-rs-logo { animation: trpg-rs-logo-glow 1.2s ease-in-out infinite alternate; }
+@keyframes trpg-rs-logo-glow { from { filter: drop-shadow(0 12px 18px #000b) drop-shadow(0 0 10px #ffcf4a66); } to { filter: drop-shadow(0 12px 18px #000b) drop-shadow(0 0 34px #ffd76a); } }
+html:root .trpg-root .trpg-roll-show[data-tone="fumble"][data-phase="verdict"] .trpg-rs-verdict[data-logo="true"] .trpg-rs-logo { animation: trpg-rs-logo-glitch .9s steps(1, end) infinite; }
+@keyframes trpg-rs-logo-glitch {
+  0%, 100% { filter: drop-shadow(0 12px 18px #000b) drop-shadow(-5px 0 0 #ff2a6d88) drop-shadow(5px 0 0 #2af0ff88); }
+  30% { filter: drop-shadow(0 12px 18px #000b) drop-shadow(-9px 0 0 #ff2a6daa) drop-shadow(8px 0 0 #2af0ffaa); }
+  60% { filter: drop-shadow(0 12px 18px #000b) drop-shadow(-3px 0 0 #ff2a6d66) drop-shadow(3px 0 0 #2af0ff66); }
+}
+/* スキル発動のカットインの「SKILL!」は、ロゴの絵（読めない時は文字。roll-show.js）。 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill-logo[hidden] { display: none; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill-logo { display: block; width: auto; height: 116px; margin: -18px 0 -6px -10px; filter: drop-shadow(0 6px 10px #000a); }
 
 /* ======== スキル発動（TRF31） ======== */
 /* カットイン: 金の帯が斜めに走り、使った人の顔と「技の名前」。仲間の切り札は金、振り直しは青緑の光。 */
@@ -374,9 +398,9 @@ html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-grade]:not([data-grade
 html:root .trpg-root.trpg-cinematic:has(.trpg-roll-show) :is(.trpg-heat-pop, .trpg-heat-pop:not([data-tier="0"])) { left: 40px; right: auto; top: 128px; }
 
 /* タブを離れている間は止める（卓のほかの演出と同じ）。 */
-html:root .trpg-root[data-paused="true"] .trpg-roll-show :is(.trpg-rs-body, .trpg-rs-rays, .trpg-rs-lines, .trpg-rs-halo, .trpg-rs-word) { animation-play-state: paused; }
+html:root .trpg-root[data-paused="true"] .trpg-roll-show :is(.trpg-rs-body, .trpg-rs-rays, .trpg-rs-lines, .trpg-rs-halo, .trpg-rs-word, .trpg-rs-logo) { animation-play-state: paused; }
 /* 揺れを減らす設定: 集中線のちらつきと文字のにじみも止める。 */
-html:root body.reduce-shake .trpg-root .trpg-roll-show :is(.trpg-rs-lines, .trpg-rs-word.verdict) { animation: none; }
+html:root body.reduce-shake .trpg-root .trpg-roll-show :is(.trpg-rs-lines, .trpg-rs-word.verdict, .trpg-rs-logo) { animation: none; }
 /* 劇場のあとに出る結果の卓は、もう出目も評価も見せた後なので、置き直しの動きを付けない。 */
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] :is(.trpg-die, .trpg-die-body, .trpg-d20-value, .trpg-reroll-stamp, .trpg-dice-total, .trpg-dice-total > strong, .trpg-dice-grade, .trpg-dice-near, .trpg-roll-special, .trpg-roll-reward, .trpg-dice-row, .trpg-roll-gauge-mark) {
   animation-duration: .01s !important; animation-delay: 0s !important; transition-duration: .01s !important; transition-delay: 0s !important;
