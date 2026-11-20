@@ -4711,7 +4711,6 @@
       "paths": [
         "remake/js/daily/calendar.js",
         "remake/js/daily/spots.js",
-        "remake/js/daily/shop.js",
         "remake/js/daily/hud.js",
         "remake/js/core/growth.js",
         "remake/js/core/growth-effects.js",

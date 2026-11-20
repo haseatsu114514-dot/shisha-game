@@ -264,13 +264,10 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const pointTo = (button, active) => {
       if (firstErrand) {
         button.dataset.errandTarget = String(active);
-        if (active) button.setAttribute("aria-current", "step");
-        else button.removeAttribute("aria-current");
-        // スクロール領域の端でも切れないよう、二重の枠をボタンの内側に置く。
-        button.style.boxShadow = active ? "inset 0 0 0 7px #fff1d4" : "";
-        button.style.outline = active ? "4px solid #a85f29" : "";
-        button.style.outlineOffset = active ? "-4px" : "";
+        button.style.outline = active ? "3px solid #84569d" : "";
+        button.style.outlineOffset = active ? "2px" : "";
       }
+      return button;
     };
     const listed = (id) => flavorIds.includes(id) && releasedFlavor(id);
     const lookup = (id) => listed(id) ? { item: DB.flavorById[id], flavor: true } : { item: DB.equipById[id], flavor: false };
@@ -299,7 +296,8 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       return el("div.shop-quantity", [
         el("button.shop-step", { text: "−", disabled: !n, "aria-label": `${name}を1つ減らす`, dataset: { test: `minus-${item.id}` }, onclick: () => change(item.id, -1) }),
         el("output", { text: n, "aria-label": `${name}の購入数`, dataset: { test: `quantity-${item.id}` } }),
-        el("button.shop-step.plus", { text: "＋", disabled: n >= (flavor ? 99 : 1), "aria-label": `${name}を1つ追加`, dataset: { test: `buy-${item.id}` }, onclick: () => change(item.id, 1) }),
+        pointTo(el("button.shop-step.plus", { text: "＋", disabled: n >= (flavor ? 99 : 1), "aria-label": `${name}を1つ追加`, dataset: { test: `buy-${item.id}` }, onclick: () => change(item.id, 1) }),
+          item.id === errand && !n && flavorStock(errand) < minStock),
       ]);
     };
     const detail = (item, flavor) => {
@@ -362,49 +360,41 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       if (finished || state !== session) return;
       const scroll = body.scrollTop, rows = order(), count = rows.reduce((n, r) => n + r.quantity, 0), total = rows.reduce((n, r) => n + r.cost, 0);
       money.replaceChildren(el("small", { text: stockChapter === 2 ? "所持金（帰りの200円を確保）" : "所持金" }), el("span", { text: priceText(state.money) }));
-      let step = null;
-      const affordable = spendableMoney(state) >= total;
       if (errandBox) {
         const done = errandReady();
         errandBox.classList.toggle("done", done);
         errandBox.textContent = done ? `✓ ${errandName}を仕入れた。店を出て戻ろう` : `${errandName}を1箱選んで、下のボタンで購入${onExpense(errand) ? "（1箱は店の経費）" : ""}`;
         if (firstErrand) {
-          step = done ? "leave" : count && affordable ? "purchase" : tab !== "flavor" ? "return-tab"
-            : category !== "all" && category !== DB.flavorById[errand].category ? "return-filter"
-              : count ? "reduce" : "select";
+          const step = done ? "leave" : count ? "purchase" : tab !== "flavor" ? "return-tab"
+            : category !== "all" && category !== DB.flavorById[errand].category ? "return-filter" : "select";
           errandBox.dataset.guideStep = step;
           errandBox.textContent = {
-            select: `① ${errandName}の「＋」${onExpense(errand) ? "（1箱は店の経費）" : ""}`,
-            purchase: "② 下の「購入する」",
-            reduce: "所持金に合わせて「−」で箱数を減らす",
-            leave: "③「店を出る」でスミさんのもとへ",
-            "return-tab": "「フレーバー」に戻る",
-            "return-filter": "「すべて」に戻る",
+            select: `① ${errandName}の「＋」を押す → ② 下の「購入する」${onExpense(errand) ? "（1箱は店の経費）" : ""}`,
+            purchase: `② ↓ 下の「購入する」を押して、${errandName}の仕入れを確定しよう`,
+            leave: "③ ←「店を出る」を押して、スミさんのところへ戻ろう",
+            "return-tab": `①「フレーバー」に戻り、${errandName}を選ぼう。今日は頼まれた葉だけ仕入れる`,
+            "return-filter": `①「すべて」に戻り、${errandName}の「＋」を押そう`,
           }[step];
         }
       }
       tabs.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.tab === tab); b.setAttribute("aria-pressed", String(b.dataset.tab === tab));
-        pointTo(b, step === "return-tab" && b.dataset.tab === "flavor"); });
+        pointTo(b, errandBox?.dataset.guideStep === "return-tab" && b.dataset.tab === "flavor"); });
       filters.hidden = tab !== "flavor";
       filters.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.category === category); b.setAttribute("aria-pressed", String(b.dataset.category === category));
-        pointTo(b, step === "return-filter" && b.dataset.category === "all"); });
+        pointTo(b, errandBox?.dataset.guideStep === "return-filter" && b.dataset.category === "all"); });
       const items = groupShopFlavors(flavorIds.filter(listed).map((id) => DB.flavorById[id]).filter((f) => f && (category === "all" || category === f.category)));
       if (firstErrand) items.sort((a, b) => Number(b.id === errand) - Number(a.id === errand));
       body.replaceChildren(...(tab === "flavor" ? items.map((f) => productRow(f, true))
         : tab === "equip" ? DB.equipment.filter(item => forSale(item, stockChapter)).map((e) => productRow(e, false)) : tab === "kuji" ? kujiRows(() => { if (live()) render(); }, kujiShop) : sellRows()));
       body.scrollTop = scroll;
-      summary.replaceChildren(el("small", { text: "合計" }), el("strong", { text: priceText(total) }), el("span", { text: affordable ? `購入後 ${priceText(state.money - total)}` : `あと ${priceText(total - spendableMoney(state))}` }));
+      summary.replaceChildren(el("small", { text: "合計" }), el("strong", { text: priceText(total) }), el("span", { text: spendableMoney(state) >= total ? `購入後 ${priceText(state.money - total)}` : `あと ${priceText(total - spendableMoney(state))}` }));
       summary.disabled = !count;
       summary.setAttribute("aria-label", `選択した${count}点の内容を確認。合計${yen(total)}`);
-      checkout.disabled = !count || !affordable;
+      checkout.disabled = !count || total > spendableMoney(state);
       summary.hidden = checkout.hidden = !count && (tab === "kuji" || tab === "sell");
       checkout.textContent = count ? `${count}${rows.every((r) => r.flavor) ? "箱" : "点"}を購入する →` : "商品を選んでください";
-      pointTo(checkout, step === "purchase" && !checkout.disabled);
-      pointTo(leaveButton, step === "leave");
-      if (step === "select" || step === "reduce") {
-        const next = body.querySelector(`[data-test="${step === "select" ? "buy" : "minus"}-${errand}"]`);
-        if (next) { pointTo(next, true); body.scrollTop = 0; }
-      }
+      pointTo(checkout, errandBox?.dataset.guideStep === "purchase" && !checkout.disabled);
+      pointTo(leaveButton, errandBox?.dataset.guideStep === "leave");
       if (focusTest) {
         const button = body.querySelector(`[data-test="${focusTest}"]`);
         if (button && !button.disabled) button.focus({ preventScroll: true });
