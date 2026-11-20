@@ -9,6 +9,7 @@
 //   第5章 Smoke & Glory: tonariで作った一台を覚えている客 → スティーブの台で作る → スティーブのカードの余白
 //   第5章 路地裏のカフェ: いつもの一台を出してくれる店員に、閉店後の一台を渡す
 //   第5章 屋敷の中庭の太陽: 庭番へ渡す旗に日本の一語を書く → 太陽の書いた同じ一語を受け取る（#4010）
+//   第5章 シェイクの屋敷: 誰の台か伏せて二台を出す → 選んだ客役が手で答える（#4010）
 // 先の段で選んだ答え（choice の分岐名）を記録し、後の段の台本が条件 chain_pick で読む。実際の制作の結果など、その場で
 // 決まる事実は呼び出し側が facts で渡し、台本は条件 chain_fact で読む（chapters/visit-chain-play.js）。
 // 交流の記憶は後の段の台本の remember 行（data/relationship_memories.json）で残し、大会前夜の振り返りに出る。
@@ -125,6 +126,16 @@ export const VISIT_CHAINS = Object.freeze({
     stages: Object.freeze([
       stage({ id: "ch5_chain_flag_1", place: "ch5_dubai_taiyo", choice: "flag_word", picks: ["otsukare", "mata", "arigato"] }),
       stage({ id: "ch5_chain_flag_2", place: "ch5_dubai_taiyo" }),
+    ]),
+  }),
+  // 第5章のドバイ（#4010・#4016）。シェイクの屋敷の小会話を一通り読むと開く。段階の会話・締めくくりが読める来店は、そちらが先。
+  // どちらが誰の台か伏せて二台を出し、選んだ客役（コーヒーの係／炭場の年配の人）が手で答える。
+  ch5_sheikh_pair: Object.freeze({
+    chapter: 5,
+    opens: value => talksRead(value, "_ch5_dubai_talks", "ch5_dubai_sheikh") >= 3,
+    stages: Object.freeze([
+      stage({ id: "ch5_chain_pair_1", place: "ch5_dubai_sheikh", choice: "pair_taster", picks: ["coffee", "coal"] }),
+      stage({ id: "ch5_chain_pair_2", place: "ch5_dubai_sheikh" }),
     ]),
   }),
 });

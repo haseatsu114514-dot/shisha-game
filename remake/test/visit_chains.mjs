@@ -43,6 +43,12 @@ const save = (extra = {}) => ({ chapter: 3, day: 40, slot: 0, phase: "daily", fl
   assert.equal(chainStageAt(taiyo, "ch5_dubai_taiyo")?.stage.id, "ch5_chain_flag_1");
   assert.equal(chainStageAt(taiyo, "ch5_dubai_sheikh"), null, "屋敷のシェイクには無い");
   assert.equal(chainStageAt({ ...taiyo, chapter: 4 }, "ch5_dubai_taiyo"), null, "第5章の外では開かない");
+  // 第5章のシェイクの屋敷（#4016）: 小会話3本の後。中庭の太陽には出ない
+  const sheikh = save({ chapter: 5, flags: { _ch5_dubai_talks: { ch5_dubai_sheikh: 2, ch5_dubai_taiyo: 3 } } });
+  assert.equal(chainStageAt(sheikh, "ch5_dubai_sheikh"), null, "小会話2本では開かない");
+  sheikh.flags._ch5_dubai_talks.ch5_dubai_sheikh = 3;
+  assert.equal(chainStageAt(sheikh, "ch5_dubai_sheikh")?.stage.id, "ch5_chain_pair_1");
+  assert.notEqual(chainStageAt(sheikh, "ch5_dubai_taiyo")?.stage.id, "ch5_chain_pair_1", "中庭の太陽には出ない");
   // 第2章の銭湯（#3097）: 初回＋再訪2回で開く。ほかの遊び場・ほかの章では開かない
   const sento = save({ chapter: 2, flags: { _ch2_outing_visits_ch2_sento: 2 } });
   assert.equal(chainStageAt(sento, "ch2_sento"), null, "銭湯2回では開かない");
@@ -197,6 +203,7 @@ const opened = {
   ch5_steve_guest: { chapter: 5, flags: { _ch5_tokyo_talks: { ch5_tokyo_steve: 3 } } },
   ch5_alley_gift: { chapter: 5, slot: 1, flags: { _ch5_dubai_talks: { ch5_dubai_alley: 3 } } },
   ch5_taiyo_flag: { chapter: 5, flags: { _ch5_dubai_talks: { ch5_dubai_taiyo: 3 } } },
+  ch5_sheikh_pair: { chapter: 5, flags: { _ch5_dubai_talks: { ch5_dubai_sheikh: 3 } } },
 };
 const endings = {};
 for (const [chainId, chain] of Object.entries(VISIT_CHAINS)) {

@@ -2896,6 +2896,366 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch5_chain_pair_1",
+      "comment": "第5章 シェイクの屋敷、通いの続き（#4010・#4016）1/2。小会話3本（ch5_dubai_sheikh・_b・_c）の後。段階の会話・締めくくりを前提にしない。狙い: 「誰も本音で接してくれない」孤独（characters.json の background_secret）を、屋敷の中で一度だけ破る。ch5_dubai_sheikh_c の「部屋で聞くと、皆が先に『最高です』と言う」を言い直さず、練習用の小さな台を二つ前にして困っている具体で見せる（ch5_dubai_letter_bond_2 の「君が来る日には、隣にもう一台置いておく」を読んだ人には呼応になる）。はじめが、どちらが誰の台か伏せて二台とも出すことを提案。シェイク「名を伏せるのは、旅装の時しかしたことがない」（第4章の旅人の三度は本編で全員が読む）。誰に吸ってもらうかを、はじめが選ぶ（pair_taster: coffee＝コーヒーの係の若い使用人／coal＝炭場の年配の使用人）。シェイクが選ぶと名が出る、という理由ではじめに任せる。使用人は日本語を話さない（ここでは出さない）。金の台・決勝・スミさん・王煙楼・「友人」には触れない。時間帯を言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "低い卓の部屋に、小さな台が二つ並んでいた。どちらも、飾りのない素朴な作りだ。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "練習用だ。……一つ、困っていることがあってな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "困ってること、ですか"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "作っても、感想が返ってこない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクは片方の台のホースを持ち上げた。吸い口は、まだ新しい。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "家の者に吸わせると、吸う前から顔が決まっている"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "一口目で、もう頭を下げる。二口目のことは、誰も話さない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二つの台を見比べた。同じ形のボウルに、同じ長さのホース。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……台が二つあるなら、俺も一台作ります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どっちが誰の台か伏せて、二台とも出しませんか"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "surprise",
+          "text": "伏せる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "誰の台か分からなければ、気をつかいようがないので"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "名を伏せるのは、旅装の時しかしたことがない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクは、しばらく黙って二つの台を見ていた。口の端が、少しずつ上がっていく。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smug",
+          "text": "……面白い。私の一台だと知らずに、吸わせるのか"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "誰に頼むかは、君が決めてくれ。私が選ぶと、もう名が出る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（顔にすぐ出る人か、炭をよく知っている人か）"
+        },
+        {
+          "type": "choice",
+          "id": "pair_taster",
+          "choices": [
+            {
+              "text": "コーヒーの係の人に頼む",
+              "next": "coffee"
+            },
+            {
+              "text": "炭場の年配の人に頼む",
+              "next": "coal"
+            }
+          ]
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "葉は、どちらも葡萄にしよう。炭の数も、そろえる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "違うのは、作る手だけですね"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "次に君が来た日にしよう。今日は、手を慣らしておく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクは片方の台を自分の前へ引き寄せ、空のボウルの縁に指で触れた。"
+        }
+      ],
+      "branches": {
+        "coffee": [
+          {
+            "speaker": "sheikh",
+            "face": "smile",
+            "text": "あの若いのか。杯を注ぐ手は、家でいちばん速い"
+          },
+          {
+            "speaker": "sheikh",
+            "face": "normal",
+            "text": "そのぶん、顔にもすぐ出る。いい選びだ"
+          }
+        ],
+        "coal": [
+          {
+            "speaker": "sheikh",
+            "face": "surprise",
+            "text": "炭場の彼か。……この家で、いちばん長く炭を見てきた男だ"
+          },
+          {
+            "speaker": "sheikh",
+            "face": "normal",
+            "text": "ごまかしは利かないぞ。いい選びだ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch5_chain_pair_2",
+      "comment": "第5章 シェイクの屋敷、通いの続き（#4010・#4016）2/2（1/2の翌日以降）。同じ葡萄の葉・同じ数の炭で、はじめとシェイクが並んで一台ずつ作り、シェイクが台を入れ替えて伏せる。客役は1/2の答え（chain_pick）で分ける。coffee: 若い係が片方のホースを置き忘れたように持ち続け、それがシェイクの台だった（名を伏せて、屋敷で初めて選ばれる）。coal: 年配の使用人は炭の並びで主の台が分かってしまうので目を閉じて吸い、はじめの台を指す（屋敷の中で初めて負ける）。どちらも、客役は言葉ではなく手で答える（山場。地の文を短く）。使用人は日本語を話さないので、言葉はシェイクが訳す（ch5_sheikh_bond_5 と同じ）。締めの一言は答えで変える。まとめの独白は置かず、二つの台の煙で終える。金の台・決勝・スミさん・王煙楼・「友人」には触れない。時間帯を言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "低い卓の部屋に、葡萄の缶が一つと、同じ数の炭が二組並んでいた。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "来たか。始めよう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "並んで、葉を詰めた。シェイクの手は急がない。こちらの手も、つられて静かになる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を置いて、キッチンタイマーを回す。鳴る前に、シェイクが二つの台を入れ替えた。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smug",
+          "text": "これで、私にも分からない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "自分で入れ替えたのに、ですか"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "二度、余計に回した"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch5_chain_pair_1",
+          "pick": "coffee",
+          "next_true": "come_coffee",
+          "next_false": "come_coal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一台目。二台目。客は黙って、どちらも三口ずつ吸った。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch5_chain_pair_1",
+          "pick": "coffee",
+          "next_true": "answer_coffee",
+          "next_false": "answer_coal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "使用人が下がると、部屋には二つの台の煙だけが残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……伏せると、こんなに静かなんですね"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "静かだ。……だが、ちゃんと返ってきた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクは、残ったほうの台のホースを取って、こちらへ差し出した。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch5_chain_pair_1",
+          "pick": "coffee",
+          "next_true": "end_coffee",
+          "next_false": "end_coal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葡萄の煙が、二つの台から同じ高さでのぼっていた。"
+        }
+      ],
+      "branches": {
+        "come_coffee": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "扉が開いて、コーヒーの係の若い使用人が入ってきた。主の前で、背筋が伸びきっている。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "シェイクが短く何か言うと、使用人はぎこちなくうなずいて、卓の前に座った。"
+          }
+        ],
+        "come_coal": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "扉が開いて、炭場の年配の使用人が入ってきた。卓の上の炭を見て、眉が少しだけ動く。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "シェイクが短く何か言うと、使用人は黙ってうなずき、目を閉じてから座った。"
+          }
+        ],
+        "answer_coffee": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "若い使用人は、二台目のホースを置こうとして、手を止めた。もう一口、吸う。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "置くのを忘れたように、ホースは手の中に残ったままだった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "シェイクが、台の向きを確かめる。二台目は、シェイクの台だった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "使用人は気づいて、慌ててホースを置き、頭を下げかけた。"
+          },
+          {
+            "speaker": "sheikh",
+            "face": "normal",
+            "text": "下がらなくていい"
+          },
+          {
+            "speaker": "sheikh",
+            "face": "smile",
+            "text": "……今のが、この家で初めて聞いた感想だ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "使用人は分からない顔のまま、それでも少しだけ笑った。"
+          }
+        ],
+        "answer_coal": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "年配の使用人は、目を閉じたままホースを置いた。それから迷わずに、一台を指さした。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "俺の台だった。"
+          },
+          {
+            "speaker": "sheikh",
+            "face": "surprise",
+            "text": "……炭を見れば、どちらが私の台か分かったはずだ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "シェイクが尋ねると、使用人は短く答えた。シェイクが、小さく息を吐いて訳す。"
+          },
+          {
+            "speaker": "sheikh",
+            "face": "normal",
+            "text": "だから目を閉じた、だそうだ"
+          },
+          {
+            "speaker": "sheikh",
+            "face": "smile",
+            "text": "この家の中で負けたのは、初めてだ"
+          },
+          {
+            "speaker": "sheikh",
+            "face": "smile",
+            "text": "……悪くない"
+          }
+        ],
+        "end_coffee": [
+          {
+            "speaker": "sheikh",
+            "face": "smile",
+            "text": "次は、君の台が選ばれる番だ。また伏せよう"
+          }
+        ],
+        "end_coal": [
+          {
+            "speaker": "sheikh",
+            "face": "smug",
+            "text": "次は、目を閉じた彼に、私の台を選ばせる"
+          }
+        ]
+      }
     }
   ]
 }

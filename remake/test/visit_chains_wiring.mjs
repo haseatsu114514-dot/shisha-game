@@ -259,6 +259,28 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert(shown.some(t => t.includes("これを読んでから、帰る")) && shown.some(t => t === "「またあした」。"), "1段目の答えが返る");
   assert(chains.chainFinished(state, "ch5_taiyo_flag"));
   assert.equal(dubaiBondHasNew(taiyo), false);
+  // シェイクの屋敷（#4016）: 同じ仕組み。炭場の人を選ぶと、2段目で屋敷の中で初めて負ける
+  const sheikh = DUBAI_SPOTS.find(entry => entry.id === "ch5_dubai_sheikh");
+  const call = () => performDubaiSpot(sheikh, { staminaGuard: async () => true });
+  for (const id of ["ch5_dubai_sheikh", "ch5_dubai_sheikh_b", "ch5_dubai_sheikh_c"]) {
+    assert.equal(dubaiBondHasNew(sheikh), false);
+    await call();
+    assert.equal(played.at(-1), id);
+  }
+  assert.equal(dubaiBondHasNew(sheikh), true, "一通り読んだら「！」");
+  chooser = () => 1; // 炭場の年配の人に頼む
+  gained.length = 0;
+  await call();
+  assert.equal(played.at(-1), "ch5_chain_pair_1");
+  assert.deepEqual(gained, [["sheikh", 5]], "いつもの小会話と同じ好感度");
+  await call();
+  assert.equal(played.at(-1), "ch5_dubai_sheikh", "同じ日にもう一度来たら、いつもの小会話");
+  state.day += 1;
+  shown = [];
+  await call();
+  assert.equal(played.at(-1), "ch5_chain_pair_2");
+  assert(shown.some(t => t === "だから目を閉じた、だそうだ"), "1段目の答えが返る");
+  assert(chains.chainFinished(state, "ch5_sheikh_pair"));
 }
 
 // ---- 第4章のドバイ: 中心地のカフェ → 宿 → カフェ ------------------------------------------------------------------
@@ -391,4 +413,4 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert(chains.chainFinished(state, "ch3_tofu"));
 }
 
-console.log("OK: visit chains wiring — play wrapper (hooks, records, interruption, load failure), ch5 Tokyo Smoke & Glory, ch5 Dubai alley (night, no fee) and courtyard flags (affinity), ch4 cafe→inn→cafe (inn trial result), ch3 mukai option");
+console.log("OK: visit chains wiring — play wrapper (hooks, records, interruption, load failure), ch5 Tokyo Smoke & Glory, ch5 Dubai alley (night, no fee) and courtyard flags / residence pair (affinity), ch4 cafe→inn→cafe (inn trial result), ch3 mukai option");
