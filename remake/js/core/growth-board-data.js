@@ -72,6 +72,17 @@ export const FEATURES = {
   golden: { board: "wisdom", name: "黄金比のヒント", text: "黄金比まで何を足せばいいか分かる" },
 };
 /**
+ * 重ねても増えない効き目（#1801 U2）。効く側が「どれか1つあれば効く」で判定するので、by を持っていると node を足しても上積みが無い。
+ * 右のパネルで灯す前に知らせるだけで、数字・火種は変えない。node・by はマスの id か ✦の名前（FEATURES のキー）。
+ * only は重なる場面（無ければ全部重なる）。効く側の判定を変えたら、ここも直す。
+ * - 蒸らしのメンタル回復（craft/steam.js の refreshEffect）: ✦「弾消しで回復」はすべての蒸らし、K13「声援」は大会の蒸らしだけ。
+ *   ✦があれば K13 は全部重なる。K13 だけの時に✦を足すと、大会以外の蒸らしでは新しく効く（大会の分だけ重なる）。
+ */
+export const OVERLAPS = [
+  { node: "K13", by: "mental" },
+  { node: "mental", by: "K13", only: "大会の蒸らし" },
+];
+/**
  * 普通のマス（白火で灯す能力のマス）の恩恵（2026-10-30 オーナー「少しでも恩恵はつけたい。毎回違うのでなくてもいい」SBD59）。
  * どの恩恵かはマスごと（BOARD_SHAPES の4つ目）。強さは帯で決まる（SBD62「遠くをとりに行くやつはリターンを合わせたい」）:
  * 近く×2・中ほど×2・関門の先×3（SBD111）。text の {n} に帯の倍率が掛かる。表示と実効値は同じ集計を使う（growth-effects.js）。
@@ -291,6 +302,15 @@ export const PLAY_REWARDS = [
   { id: "desert-master", game: "desert", master: true, label: "砂丘の乗り手", gift: { any: 1 } },
   { id: "trpg-master", game: "trpg", master: true, label: "物語の読み手", gift: { any: 1 } },
   { id: "tetsuko-master", game: "tetsuko", master: true, label: "てつこの友だち", gift: { any: 1 } },
+  // ミニゲームの三段階（#3779・core/play-tiers.js）: 上級を初めてクリアしたら白火1つ。各ゲーム一度だけ
+  { id: "axe-hard", game: "axe", tier: "hard", label: "斧投げ 上級クリア", gift: { any: 1 } },
+  { id: "camel-hard", game: "camel", tier: "hard", label: "ラクダレース 上級クリア", gift: { any: 1 } },
+  { id: "desert-hard", game: "desert", tier: "hard", label: "サンドボード 上級クリア", gift: { any: 1 } },
+  { id: "dj-hard", game: "dj", tier: "hard", label: "DJ 上級クリア", gift: { any: 1 } },
+  // てつこは段を持たない。来訪をまたいで溜まる好感度がハート5（flags._tetsuko_time.affection が満タン）に届いたら白火1つ（#3779）
+  { id: "tetsuko-heart", game: "tetsuko", affection: true, label: "てつこの好感度 ♥5", gift: { any: 1 } },
+  // TRPG は三段階にしない。サイが立ちはだかる最後の本（data/trpg_catalog.json の finale）を初めてクリアしたら白火1つ（#3779）
+  { id: "trpg-finale", game: "trpg", scenario: "mist-kingdom", label: "TRPG 最後の本をクリア", gift: { any: 1 } },
 ];
 /** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに色つきの火種1つ（いちばん伸びの少ない盤の色）。
  * 第5章の限定台くじ（core/rules.js の KUJI_LIMITED_GRADES・KJ05）は付けない（#2455） */

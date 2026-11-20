@@ -15,6 +15,7 @@ import { masteryHooks } from "./flavor-mastery.js";
 import { syncRespecOpportunity, closeRespecOpportunity } from "./growth-respec.js";
 import { KUJI_LIMITED_GRADES } from "./rules.js";
 import { syncPlayMastery, masteryRecord, masteryLine, PLAY_MASTERY } from "./play-mastery.js";
+import { syncPlayTiers, tierCleared, TIER_GAMES, TIER_LABEL } from "./play-tiers.js";
 export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
 export function setGrowthPreview(on) {
@@ -50,7 +51,7 @@ export const KEY_GIFT = Object.freeze({ color: 1, any: 1 });
 export const WIN_HIDANE = 3;
 export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 export const CHAPTER_MULT = { 1: 1, 2: 1.25, 3: 1.5, 4: 1.75, 5: 2 };
-export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30, recipe: 30, golden: 20, scene: 20 };
+export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30, recipe: 30, golden: 20, scene: 20, tutorial: 10 };
 /**
  * 絆の深い相手（恋人・締めくくりを読んだ相手）からの誘いに乗った行動の倍率（LM11・2026-11-12 オーナー
  * 「絆深い相手の誘いは経験値多い」）。新鮮さでは減らさず、同じ相手の店へ通う回数にも数えない。
@@ -557,6 +558,8 @@ function giveSet(g, set) {
   return parts;
 }
 
+/** てつこの好感度の満タン（ハート5。minigames/tetsuko-model.js と同じ値。依存を増やさないため写す。テストで照合） */
+export const TETSUKO_AFFECTION_FULL = 100;
 const RANK_ORDER = ["D", "C", "B", "A", "S"];
 // 斧投げのランクの境目（minigames/axe-challenges.js の RANKS と同じ。依存を増やさないため写す。テストで照合）
 export const AXE_RANKS = [["S", 0.8], ["A", 0.62], ["B", 0.45], ["C", 0.25], ["D", 0]];
@@ -575,7 +578,10 @@ function bestAxeRank(s) {
 }
 function playRewardMet(reward, s) {
   if (reward.master) return masteryRecord(s, reward.game).done;
+  if (reward.tier) return tierCleared(s, reward.game, reward.tier);
+  if (reward.game === "tetsuko" && reward.affection) return Number(s.flags?._tetsuko_time?.affection) >= TETSUKO_AFFECTION_FULL;
   if (reward.game === "axe") { const rank = bestAxeRank(s); return !!rank && atLeast(rank, reward.rank); }
+  if (reward.game === "trpg" && reward.scenario) return !!s.trpg?.cleared?.[reward.scenario];
   if (reward.game === "trpg") {
     const cleared = Object.values(s.trpg?.cleared || {});
     if (reward.stars) return cleared.some((c) => (c?.stars || 0) >= reward.stars);
@@ -593,6 +599,7 @@ function playRewardMet(reward, s) {
  */
 export function claimPlayRewards(g, s = state) {
   syncPlayMastery(s);
+  syncPlayTiers(s);
   const out = [];
   for (const reward of PLAY_REWARDS) {
     if (g.rewards[reward.id] || !playRewardMet(reward, s)) continue;
@@ -764,4 +771,17 @@ on("play-mastery", ({ state: owner, game, newly }) => {
   if (owner !== state) return;
   settleGrowth();
   emit("notice", { text: newly ? `認定：${PLAY_MASTERY[game].title}` : masteryLine(owner, game) });
+});
+
+// てつこの好感度がハート5に届いた（#3779。tetsuko-time.js の確定が一度だけ知らせる）。白火をその場で精算する。
+on("tetsuko-hearts", ({ state: owner, full }) => {
+  if (owner !== state || !full) return;
+  settleGrowth();
+});
+
+// ミニゲームの段を初めてクリアした（#3779）。上級なら白火をその場で精算する。下の段の一言は各ゲームの結果の画面が出す。
+on("play-tier", ({ state: owner, game, newlyHard }) => {
+  if (owner !== state || !newlyHard) return;
+  settleGrowth();
+  emit("notice", { text: `${TIER_GAMES[game]?.title || ""} ${TIER_LABEL.hard}クリア` });
 });

@@ -28,6 +28,18 @@
       "run": ["node remake/test/play_mastery.mjs"]
     },
     {
+      "id": "axe-tiers",
+      "title": "Axe bar three tiers (#3779): divisions as tiers, clear lines (B, A, A), unlocks, old-save import and the top-tier fire",
+      "kind": "quick",
+      "run": ["node remake/test/axe_tiers.mjs"]
+    },
+    {
+      "id": "play-tiers",
+      "title": "Mini-game three tiers (#3779): unlocks, clear records, old-save import and the one-time top-tier fire",
+      "kind": "quick",
+      "run": ["node remake/test/play_tiers.mjs"]
+    },
+    {
       "id": "promo-site",
       "title": "公式プロモーションサイト（promo/）の参照切れ・ページ内リンク・人物と店の対応・使っていない絵",
       "kind": "quick",
@@ -626,6 +638,25 @@
       ]
     },
     {
+      "id": "board-focus-browser",
+      "title": "Growth board keyboard focus (aria-modal, Tab/Shift+Tab stay inside, redraws keep focus, close returns to MENU) and the same-effect note (#1801 U4/U2)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/growth-board-tutorial.js",
+        "remake/js/core/growth-board.js",
+        "remake/js/core/growth-board-data.js",
+        "remake/js/daily/menu.js",
+        "remake/test/browser/board_focus.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/board_focus.mjs"
+      ]
+    },
+    {
       "id": "kannondo-day3",
       "title": "Chapter 1 DAY3 Kannondo, interactive fire-seed tutorial, day/night and SAVE/LOAD (#3820)",
       "kind": "browser",
@@ -742,7 +773,7 @@
       "kind": "browser",
       "weight": 0.5,
       "timeout": 3,
-      "paths": ["remake/js/minigames/dj.js", "remake/js/daily/dj-club.js", "remake/js/chapters/ch3.js", "remake/js/chapters/ch3-map-model.js", "remake/previews/dj/**", "data/dialogue/ch3_club.json", "remake/test/browser/dj_club.mjs"],
+      "paths": ["remake/js/minigames/dj.js", "remake/js/daily/dj-club.js", "remake/js/chapters/ch3.js", "remake/js/chapters/ch3-map-model.js", "remake/previews/dj/**", "data/dialogue/ch3_club.json", "remake/test/browser/dj_club.mjs", "remake/js/core/play-tiers.js"],
       "run": ["node remake/test/browser/dj_club.mjs"]
     },
     {
@@ -770,8 +801,8 @@
       "id": "desert-ride",
       "title": "DESERT RIDE on PC and touch, reduced motion, and the chapter 4 outing with save/load and interruption",
       "kind": "browser",
-      "weight": 3.5,
-      "timeout": 8,
+      "weight": 4,
+      "timeout": 10,
       "paths": [
         "remake/js/core/stage-fit.js",
         "remake/js/minigames/desert-ride.js",
@@ -788,7 +819,8 @@
         "remake/desert-ride.html",
         "remake/css/desert-ride.css",
         "data/dialogue/ch4_desert.json",
-        "remake/test/browser/desert_ride.mjs"
+        "remake/test/browser/desert_ride.mjs",
+        "remake/js/core/play-tiers.js"
       ],
       "run": ["node remake/test/browser/desert_ride.mjs"]
     },
@@ -1954,7 +1986,8 @@
         "assets/sprites/characters/khalil/**",
         "remake/img/sprites/characters/hajime/**",
         "assets/backgrounds/bg_dubai_camel_track_morning.png",
-        "remake/test/browser/ch4_camel_race.mjs"
+        "remake/test/browser/ch4_camel_race.mjs",
+        "remake/js/core/play-tiers.js"
       ],
       "run": ["node remake/test/browser/ch4_camel_race.mjs"]
     },
@@ -2647,7 +2680,7 @@
       "weight": 3,
       "timeout": 15,
       "paths": [
-        "remake/js/craft/result.js",
+        "remake/js/craft/result.js", "remake/js/craft/tournament-show.js", "remake/js/craft/tournament-graphics.js", "remake/css/tournament.css", "remake/css/tournament-show.css",
         "remake/js/craft/heat*.js",
         "remake/js/craft/coals.js",
         "remake/js/craft/common.js",
@@ -3237,6 +3270,25 @@
       ]
     },
     {
+      "id": "chapter-moments",
+      "title": "第2〜4章の山場の演出（味が遠のく・結果発表前の静けさ・四つ目の台の影）の位置・後片付け・再開",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 10,
+      "paths": [
+        "remake/js/motions/moments.js",
+        "remake/css/motions/moments.css",
+        "remake/js/core/scene-motions.js",
+        "remake/js/chapters/ch3-tournament.js",
+        "data/dialogue/ch2_main.json",
+        "data/dialogue/ch4_main.json",
+        "remake/test/browser/chapter_moments.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/chapter_moments.mjs"
+      ]
+    },
+    {
       "id": "text-editor",
       "title": "Text editor, wrapping, notifications and rewards",
       "kind": "browser",
@@ -3345,7 +3397,8 @@
         "remake/test/browser/venue_hours.mjs",
         "remake/test/venue_hours.mjs",
         "data/dialogue/venue_hours.json",
-        "data/dialogue/trpg_club.json"
+        "data/dialogue/trpg_club.json",
+        "remake/js/core/play-tiers.js"
       ],
       "run": [
         "node remake/test/browser/play_spots.mjs",
@@ -4716,6 +4769,27 @@
       "run": [
         "node remake/test/browser/shopping_tutorial.mjs",
         "node remake/test/browser/rio_shop_entry.mjs"
+      ]
+    },
+    {
+      "id": "tutorial-growth",
+      "title": "Chapter 1 scout and delivery EXP, stamina capacity HUD and saves",
+      "kind": "browser",
+      "weight": 0.7,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/spots.js",
+        "remake/js/daily/hud.js",
+        "remake/js/core/growth.js",
+        "remake/js/core/growth-effects.js",
+        "remake/js/core/growth-board.js",
+        "remake/js/core/stats.js",
+        "remake/js/core/state.js",
+        "remake/test/browser/tutorial_growth.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/tutorial_growth.mjs"
       ]
     },
     {

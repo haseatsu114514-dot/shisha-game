@@ -50,6 +50,8 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     waitBenchReady: async () => trace.push("ready"),
     benchRoot: () => ({ querySelector: () => ({ append: () => trace.push("menu") }) }),
     showChapterFourStandings: async p => { trace.push(`standings:${p.voted}`); shown.push(match.chapterFourStandings(p)); },
+    // 会話の中継の枠（TSH05）: 帯の中身は見た目だけで、進行・票・保存には触れない。ここでは受け口だけ用意する。
+    chapterFourNameOf: id => id, liveOf: (title, event, rows = []) => ({ event: title, phase: event, standings: rows }),
     retireScreen: () => trace.push("retire"), playBgm() {}, clearComments() {}, block() {},
     play: async dialogue => { trace.push(dialogue.dialogue_id); return {}; },
     modal: async options => { trace.push(options.title);
@@ -185,8 +187,9 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   assert(at(t, "standings:2") < story(t, "interlude1") && story(t, "interlude1") < at(t, "ch4_craft_advice_9"));
   assert(at(t, "ch4_craft_advice_9") < at(t, "ch4_customer_1"));
   assert(at(t, "standings:3") < story(t, "interlude2") && story(t, "interlude2") < at(t, "ch4_customer_2"));
-  // 提供後の掛け合いには実際の順位を渡す。版2は炭/調整96だけでは中盤のなるに並ばれる。
-  assert(t.includes("story:interlude1:2"));
+  // 提供後の掛け合いには実際の順位を渡す。版4（#3916 WIN12・相手の曲線−2.5）では炭/調整96の一台は提供後も先頭のまま
+  // （なるに並ばれるのは92の一台。下の「なるを強くする」の検査で固定する）。
+  assert(t.includes("story:interlude1:1"));
   assert.deepEqual(success.value.flags._ch4.match.craft.tournamentStory.seen, ["prestart", "opening", "packed", "waiting", "serve", "interlude1", "interlude2", "preresult"]);
   // 保存から再開しても、読んだ掛け合いは繰り返さない。提供で失敗した一台に調整前の掛け合いは出ない。
   assert.deepEqual(told(resumed.trace), ["interlude1", "interlude2", "preresult"]);
@@ -213,12 +216,15 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   const average = await run({ quality: 89, rulesVersion: 1 });
   const legacyStrong = await run({ rulesVersion: 1 });
   const currentStrong = await run({ quality: 100 });
+  // 版4では92の一台が、提供後になるに並ばれて先頭を譲り、最後の票で勝つ（版2・版3の96の一台と同じ形）。
+  const currentContested = await run({ quality: 92 });
+  assert.equal(currentContested.result.win, true);
   assert(legacyStrong.trace.includes("story:interlude1:1"), "Legacy strong crafts keep the original story context");
   assert.equal(currentStrong.result.win, true);
   assert.equal(average.result.win, true);
   const told = (r, event) => r.contexts.find(row => row.event === event);
   assert.deepEqual(average.shown.map(rows => rows[0].id), ["hajime", "naru", "naru"]);
-  for (const r of [average, legacyStrong, success, currentStrong]) for (const [event, index] of [["interlude1", 1], ["interlude2", 2]]) {
+  for (const r of [average, legacyStrong, success, currentStrong, currentContested]) for (const [event, index] of [["interlude1", 1], ["interlude2", 2]]) {
     const rows = r.shown[index], me = rows.find(row => row.id === "hajime");
     assert.deepEqual(told(r, event), { event, leader: rows[0].id, rank: me.rank,
       tied: rows[1].points === rows[0].points, level: me.points === rows[0].points }, `${event} is told the standings just shown`);
@@ -233,7 +239,8 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   assert.equal(told(legacyStrong, "interlude2").leader, "hajime");
   assert.equal(told(currentStrong, "interlude1").leader, "hajime");
   assert.equal(told(currentStrong, "interlude2").leader, "hajime");
-  assert.equal(told(success, "interlude1").leader, "naru", "Current mid-game Naru lead is passed to the story, never a stale fixed rank");
+  assert.equal(told(currentContested, "interlude1").leader, "naru", "Current mid-game Naru lead is passed to the story, never a stale fixed rank");
+  assert.equal(told(currentContested, "interlude1").rank, 2);
 }
 const noAsk = await run({ ask: false });
 assert.deepEqual(noAsk.value.flags._ch4.match.craft.customerChecks, [false, false]);

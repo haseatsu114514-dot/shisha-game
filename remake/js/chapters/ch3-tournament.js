@@ -1,5 +1,6 @@
 import { playEntrance } from "./tournament-entrance.js";
 import { defeatFade } from "../core/transitions.js";
+import { sceneMoment } from "../core/scene-motions.js";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
 import { createChapterActions } from "../core/chapter-actions.js";
@@ -34,6 +35,7 @@ import * as broadcast from "../craft/broadcast.js";
 import { voteStack, judgePanel, judgeLegend, craftReviewBlock } from "../craft/tournament-graphics.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
+import { contestCeremony, liveOf } from "../craft/tournament-show.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { adjustmentLines, resultLines, defeatLines } from "./ch3-verdict.js";
@@ -125,7 +127,7 @@ function hud(owner, visible = false) {
 
 function card(owner, name, title, description, actions = [], extra = []) {
   hud(owner);
-  showScreen("ch3-tournament", el("main.ch2-contest", { dataset: { test: id(name) } }, [
+  return showScreen("ch3-tournament", el("main.ch2-contest", { dataset: { test: id(name) } }, [
     el("header.ch2-contest-header", [
       el("div", [el("p", { text: "第三章・DAY14 ／ HAZE: NATIONAL TOKYO" }), el("h1", { text: title })]),
       menuButton(owner),
@@ -184,7 +186,10 @@ function checkpoint(stage) { progress().stage = stage; save(); }
 async function commentary(owner, event) {
   hud(owner);
   const controller = new AbortController(); owner.controller = controller;
-  const result = await playTournamentEvent(owner.cs, event, { signal: controller.signal });
+  // 会話には中継の枠を付ける（TSH05。票が出てからは順位の札も）。台本の選び方・既読の記録は変えない。
+  const p = progress();
+  const result = await playTournamentEvent(owner.cs, event, { signal: controller.signal,
+    live: liveOf("HAZE: NATIONAL TOKYO", event, p.voted ? standings(p) : [], who => displayName(who, state)) });
   if (owner.controller === controller) owner.controller = null;
   if (!live(owner) || !result) return false;
   progress().craft = clone(owner.cs);
@@ -321,8 +326,10 @@ function voteReason(p, cs, final = false) {
 function renderVotes(owner, final = false) {
   playBgm("bgm_judging");
   // 途中の持ち点は判の一打、最終結果は会場の拍手（1位はファンファーレも）。第1章の結果発表（craft/result.js）とそろえる。
-  if (final) { SE.crowd?.(2.4); if (progress().result?.rank === 1) SE.fanfare?.(); }
-  else SE.stamp?.();
+  const reaction = () => {
+    if (final) { SE.crowd?.(2.4); if (progress().result?.rank === 1) SE.fanfare?.(); }
+    else SE.stamp?.();
+  };
   const p = progress(), rows = final ? p.result.rows : standings(p);
   const craft = owner.cs || (p.craft ? clone(p.craft) : null);
   const reason = voteReason(p, craft, final);
@@ -337,7 +344,7 @@ function renderVotes(owner, final = false) {
   ]);
   const judgeFace = judge => { const face = contestantAvatar(judge); face.classList.add("judge-face"); return face; };
   const judges = judgePanel(p.votes, JUDGES, { cls: ".ch2-contest-judges", face: judgeFace, craft: final ? craft : null });
-  card(owner, final ? "result" : "votes", final ? "全国大会の結果" : "いま、動いた持ち点。",
+  const screen = card(owner, final ? "result" : "votes", final ? "全国大会の結果" : "いま、動いた持ち点。",
     final ? `はじめは${p.result.rank}位。審査員三人、それぞれの10点が出揃いました。`
       : ["制作が終わり、次は吸い出しと提供。", "提供を終えた一台。次は客席での調整。",
         "一度目の調整を終え、同じ一台をもう一度確かめます。"][p.voted - 1], [
@@ -356,6 +363,17 @@ function renderVotes(owner, final = false) {
       judges,
       el("p.ch2-contest-note", { text: "一度入れた点は戻らない。同点なら一台の出来栄えで順位を決める。" }),
     ]);
+  // 票が入る瞬間（TSH05）: 審査員ごとに票が飛び、点が数え上がり、並びが入れ替わる。同じ回を見せるのは一度だけ（再表示は出そろった板から）。
+  const shown = `${p.attempts ?? 0}:${p.voted}:${final ? "result" : "votes"}`;
+  const show = owner.votesShown === shown ? { moved: false } : contestCeremony({
+    root: screen, judges: JUDGES, contestants: CONTESTANTS, votes: p.votes, last: p.lastVotes, base: p.baseVotes || {}, rows, quality: p.quality || {},
+    buttons: [...screen.querySelectorAll(".ch2-contest-actions button")],
+    late: [...screen.querySelectorAll(`.ch2-contest-reason${final ? ", .ch2-contest-description" : ""}`)],
+    sting: { eyebrow: "HAZE: NATIONAL TOKYO", title: final ? "FINAL VOTE" : "JUDGES' VOTE", sub: final ? "最後の票が入ります" : "審査員の票が入ります" },
+  });
+  owner.votesShown = shown;
+  if (show.moved) show.done.then(() => { if (live(owner) && screen.isConnected) reaction(); });
+  else reaction();
 }
 
 async function renderDefeat(owner, variant = null) {
@@ -494,11 +512,16 @@ async function drive(owner) {
       // 結果発表前の掛け合い（#3060）。
       if (!await commentary(owner, "preresult")) return;
       checkpoint("result");
+      owner.hush = true; // この場で発表へ進んだ時だけ、結果の前に会場の光を絞る（#3965）。再開では出さない
     } else if (p.stage === "votes") { renderVotes(owner); return; }
     else if (p.stage === "result") {
       // この場で結果を出したことを覚える。敗北の入り（#2688 A19）は、この場で負けが決まった時だけ出す
       if (p.result) owner.resultShown = true;
-      playBgm("bgm_judging"); renderVotes(owner, true); return;
+      playBgm("bgm_judging");
+      // 光を絞り、暗い間に結果の画面を出す。見せるだけで、順位・点・保存地点は変えない
+      if (owner.hush) { owner.hush = false; await sceneMoment("stageHush", () => { if (live(owner)) renderVotes(owner, true); }); }
+      else renderVotes(owner, true);
+      return;
     }
     else if (p.stage === "defeat") { await renderDefeat(owner); return; }
     else if (p.stage === "victory") {

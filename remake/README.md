@@ -166,7 +166,7 @@ remake/
 4. **文字は題字として組む**: 章題と同じ明朝（`Suien Name`）で大きく、または登場カットインの生成りの帯に載せる（行き先の題字・ROUND の帯・贈り物の札）。
 5. **数を絞り、山場に寄せる**: 毎日見るものは1〜2秒で静かに。時間を使うのは物語の要所と一度きりの出来事だけ。
 
-就寝→翌朝は部屋の夜と朝の絵をつなぎ、左下に日付の題字（`nightToMorning`）。マップ→場所の移動は `core/transition-moves.js`（既定は帰宅が lights、ほかは zoom。`?move=pin` などで切り替え）。場面ごとの演出は `core/scene-motions.js` が窓口で、中身は `js/motions/<場面>.js`・`css/motions/<場面>.css`。各場面の a／b（10月の型）と c（作り直した型）を持ち、本編は `core/mg-kit.js` の `ADOPTED_VARIANT`（2026-11-13: チェキ・占い・贈り物・バイト終業・サメちゃん・スケッチ・電車・飛行機と配送便・新幹線が c、扉は a）。比べるときは `?movar=a|b|c`（c の無い場面は採用の型のまま）・`__remake.dev.motionVariant("b")`（`"auto"` で採用に戻す）。a／b の配色は紫1色（既定）／場面ごとの色（`?mopal=free`）で、c は配色の切り替えを使わない。大会の会場入り（`ui.smokeWipe`）・ROUND の帯（`ui.roundCut`）・敗北の入り（`defeatFade`）・再挑戦（`retryStroke`）・回想から現在へ（`motions/moments.js` の `leafWave`）・フィナーレの混ざる煙（`mixedSmoke`）は1つの型だけ。龍の煙（`dragonSmoke`）は一枚絵の到着待ち（Issue #3413）。`__remake.dev.motion("cheki")` などで再生、夜明けの天気は `dawn-sun`／`dawn-cloud`／`dawn-rain`／`dawn-sick`。DAYカードの天気（晴れ・くもり・雨）は `daily/weather.js` の `weatherOf()` で、くもりは見た目だけ。会話の中では `show_cg` の `"effect": "cheki"` と `{"type": "motion", "id": "tarot"}` で呼ぶ。SKIP中と動きを減らす設定では省く。録画は `asset_sources/transitions/`。
+就寝→翌朝は部屋の夜と朝の絵をつなぎ、左下に日付の題字（`nightToMorning`）。マップ→場所の移動は `core/transition-moves.js`（既定は帰宅が lights、ほかは zoom。`?move=pin` などで切り替え）。場面ごとの演出は `core/scene-motions.js` が窓口で、中身は `js/motions/<場面>.js`・`css/motions/<場面>.css`。各場面の a／b（10月の型）と c（作り直した型）を持ち、本編は `core/mg-kit.js` の `ADOPTED_VARIANT`（2026-11-13: チェキ・占い・贈り物・バイト終業・サメちゃん・スケッチ・電車・飛行機と配送便・新幹線が c、扉は a）。比べるときは `?movar=a|b|c`（c の無い場面は採用の型のまま）・`__remake.dev.motionVariant("b")`（`"auto"` で採用に戻す）。a／b の配色は紫1色（既定）／場面ごとの色（`?mopal=free`）で、c は配色の切り替えを使わない。大会の会場入り（`ui.smokeWipe`）・ROUND の帯（`ui.roundCut`）・敗北の入り（`defeatFade`）・再挑戦（`retryStroke`）・回想から現在へ（`motions/moments.js` の `leafWave`）・フィナーレの混ざる煙（`mixedSmoke`）は1つの型だけ。龍の煙（`dragonSmoke`）は一枚絵の到着待ち（Issue #3413）。第2〜4章の山場（#3965・TMG61〜63）は同じ `motions/moments.js` に、第2章の味が遠のく煙（`tasteFade`・台本の `{"type": "motion", "id": "taste"}`）、第3章の結果発表の前に会場の光を絞る（`stageHush`・その場で発表へ進んだ時だけ）、第4章の四つ目の台に立つ男の影がほどける（`shadowUnveil`・台本の `{"type": "motion", "id": "unveil", "char_id": "sheikh"}`）。`__remake.dev.motion("taste")`／`"hush"`／`"unveil"` で再生。`__remake.dev.motion("cheki")` などで再生、夜明けの天気は `dawn-sun`／`dawn-cloud`／`dawn-rain`／`dawn-sick`。DAYカードの天気（晴れ・くもり・雨）は `daily/weather.js` の `weatherOf()` で、くもりは見た目だけ。会話の中では `show_cg` の `"effect": "cheki"` と `{"type": "motion", "id": "tarot"}` で呼ぶ。SKIP中と動きを減らす設定では省く。録画は `asset_sources/transitions/`。
 
 **LIME交換**（#931）: 連絡先を交換した直後に、はじめのスマホの画面で「友だち追加→『追加』をタップ→友だち一覧に1行増える」を見せる（`js/motions/lime.js`・`css/motions/lime.css`）。端末・緑・アカウント名はゲーム内のLIMEと同じで、友だち一覧は演出の中だけの画面。a はアイコンが一覧へ飛んで収まる、b は画面ごと横にスライドする（採用待ち。既定は a、`?movar=b` で比べる）。`__remake.dev.motion("lime")`・`"lime-adam"`・`"lime-minto-private"`（栞の私用アカウント）で再生。SKIP中も見せ、動きを減らす設定では追加し終えた画面だけを見せる（#833）。
 
@@ -198,7 +198,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
 2. スミさんの練習の誘い（任意）: 練習するなら手本つきで一台を通しで作る。どちらの選択でも → `ch1_tutorial_oneesan`
 3. DAY1 の昼はスミさんのおつかい（案内つき・旧版 N18/N19）: Dr.fookah で大会の課題フレーバーのレモンを仕入れる（`remake_day1_errand_shop`・店の経費・買うまで店を出られない・時間は使わない）
    → スミさんから稽古用にレモンを受け取る（`remake_lemon_gift`）→ KEMURIKUSA を客として偵察（`remake_day1_errand_scout`・行動1回＋交通費。偵察でDAY1は終了）。案内中のマップは行き先の1か所だけが光って選べる
-   DAY2 は昼に PEPPERMINT、夜に EDEN へ tonari の配達（スミさんの頼み・`daily/calendar.js` の DELIVERIES・`remake_delivery_*`・DL01/DL02）。まとめ買いのミント／古いロットのダブルアップル缶を届け、
+   DAY2 は昼に PEPPERMINT、夜に EDEN へ tonari の配達（スミさんの頼み・`daily/calendar.js` の DELIVERIES・`remake_delivery_*`・DL01/DL02）。注文のミント（250グラムの箱3つ）／古いロットのダブルアップル缶を届け、
    PEPPERMINTは**店先でみんとへ手渡し・勧誘で終了**し、店内で一服するかは後の自由行動で選ぶ。EDENは従来どおり無料の初来店に続く（配達手当 2,000円、配達では能力・スロットは伸びない）。
    配達の目的地は案内するが、終了後はDAY3から自由行動。PEPPERMINTへの初入店は自由選択で通常の訪問料・行動を使う。自分で先に行っていた旧セーブの店は飛ばし、DAY3以降の旧セーブには割り込まない
 4. 日常 DAY1〜14（1日2行動・昼/夜）
@@ -406,6 +406,7 @@ node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信
 
 テスト用フック: `window.__remake`（state参照・ミニゲーム自動解決）。
 開発用ジャンプ: ブラウザのコンソールで `__remake.dev.tournament()`（大会当日から）／`__remake.dev.drill("heat")`（ドリル単体）。※今のセーブを上書きする。UIの見た目を変えても壊れないよう、
+大会のショー演出（2026-11-20・[要望台帳](../docs/owner_requests.md) の TSH）は、試合を進めずに見られる: コンソールで `__remake.dev.show("vote-2")`（中間投票。`vote-1`〜`vote-3`）／`("count")`・`("count-lose")`（結果発表のカウント）／`("final")`（最後の投票）／`("champion")`・`("lose")`（大見出しと順位表）／`("interval")`（合間のアイキャッチと中継の枠）／`("result")`・`("result-lose")`（カウントから順位表まで通し）。※今のセーブを上書きする。部品は `js/craft/tournament-show.js`・`css/tournament-show.css`（票が入る進行 `voteCeremony`・第2〜4章の板用 `contestCeremony`・中継の枠 `liveFrame`・アイキャッチ `eyecatch`・大見出しは `craft/result.js` の `resultSplash`）。自動操作・会話の早送り・「動きを減らす」では動かさない。
 テストはこのフックと `data-test` 属性だけに依存する。
 
 穴あけテンプレートの追加は `js/craft/holes_templates.js` の `HOLE_TEMPLATES` にID・表示名・各リングの穴数・短い説明を登録する。交流で解放する種類は `unlockFlag` を付け、実際のイベントで既存の `state.flags` にそのフラグを立てる。未解放の種類は選択に出さず、一台の開始時に選べる種類を確定する。「外周24穴」（`_hole_outer24_unlocked`）は、スミさんの授業 M-W2 の `unlocks` で立てる（`lesson_sumi_four` の末尾で外周の配置を教わる。習得済みの旧セーブは読み込み時に立つ）。0穴のリングはプレビューの穴・プレイ対象から除外され、結果は選んだテンプレートIDと実際に開いた穴数・配置を持つ。

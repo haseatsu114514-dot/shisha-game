@@ -206,6 +206,7 @@ for (const scenario of scenarios) {
       for (const field of scenario.flow.serve) q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click();
       q('trpg-serve-open').click(); declare('serve'); roll(); q('trpg-settle').click(); drain();
       const club = root.querySelector('[data-test="trpg-ending-club"]');
+      extra.afterEnding?.(mounted);
       const out = { cover, club: club && { up: club.dataset.up, text: club.textContent }, completions: mounted.completions };
       mounted.api.destroy(); return out;
     };
@@ -219,6 +220,28 @@ for (const scenario of scenarios) {
     const steady = play({ growth: 1, onComplete: () => ({ club: { gained: 1, points: 8, rank: 2, name: 'なじみの部', growth: 1, rankUp: false, growthUp: 0, next: { ...next, need: 8 } } }) });
     assert.equal(steady.club.up, 'false'); assert.match(steady.club.text, /部の実績 ＋1次のランクまで あと 8/); assert.doesNotMatch(steady.club.text, /能力＋/);
     assert.equal(play({ growth: 1, onComplete: () => ({ club: { gained: 0, rankUp: false, growthUp: 0, next } }) }).club, null, 'nothing gained, nothing shown');
+    for (const action of ['yes', 'no', 'escape', 'load']) {
+      const decisions = [];
+      const ending = play({
+        onComplete: () => ({ chooseReplay: keep => { decisions.push(keep); return keep ? '本棚にリプレイを保存しました。' : 'リプレイは保存しませんでした。'; } }),
+        afterEnding: ({ api, root, q }) => {
+          const prompt = q('trpg-replay-save-question'), yes = q('trpg-replay-save-yes'), no = q('trpg-replay-save-no');
+          assert.equal(prompt.getAttribute('role'), 'dialog');
+          assert.equal(documentPort.activeElement, prompt, 'held Enter cannot accept a focused save button');
+          assert.match(prompt.textContent, /保存しますか？.*本編の進行は残ります/);
+          assert.deepEqual(decisions, [], 'reaching the prompt does not save a replay');
+          if (action === 'load') { api.destroy(); yes.click(); assert.deepEqual(decisions, []); return; }
+          if (action === 'escape') {
+            for (const close of root.events.keydown) close({ key: 'Escape', target: prompt, preventDefault() {} });
+          } else (action === 'yes' ? yes : no).click();
+          yes.click(); no.click();
+          assert.equal(root.querySelector('[data-test="trpg-replay-save-question"]'), null);
+          assert.deepEqual(decisions, [action === 'yes'], 'repeated clicks and Escape cannot accept twice');
+          assert.equal(documentPort.activeElement, q('trpg-finish'));
+        },
+      });
+      assert.equal(ending.completions, 1, 'the replay choice or LOAD cannot spend a second action');
+    }
   });
   // じっくり調べる（目星・TRF14）: 見立ての卓で一度だけ振れる。出目と結果の帯・違いそうな見立ての付箋が出て、しおりにも残る。
   test(scenario.id + ': a closer look rolls once on the guess board, marks the wrong guesses and is kept in the bookmark', () => {

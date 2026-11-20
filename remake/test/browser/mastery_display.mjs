@@ -15,9 +15,25 @@ await suite('mastery-display', async check => {
   await page.locator('.gain-card').first().waitFor();
   assert.equal(await page.locator('.gain-card').count(),2);
   assert.match(await page.locator('#banners').innerText(),/熟練度アップ/);
-  assert.match(await page.locator('#banners').innerText(),/★★★★★ MAX/);
+  const notices = page.locator('.gain-card.mastery');
+  assert.deepEqual(await notices.locator('.gc-mastery-stars').allTextContents(), ['★★☆☆☆', '★★★★★']);
+  assert.deepEqual(await notices.locator('.gc-mastery').evaluateAll(rows => rows.map(row => row.getAttribute('aria-label'))),
+    ['熟練度 2 / 5', '熟練度 5 / 5（最大）']);
+  assert.equal(await notices.locator('.gc-mastery-label').innerText(), 'MAX');
+  for (const id of ['lemon', 'mint']) {
+   const art = notices.locator(`[data-product-art="${id}"] img`);
+   await art.evaluate(img => img.decode());
+   assert.match(await art.getAttribute('src'), new RegExp(`/${id}\\.webp$`));
+  }
   assert.doesNotMatch(await page.locator('#banners').innerText(),/次まで|あと\d/);
   await page.waitForTimeout(650); // 通知の入場アニメーション完了を待つ
+  assert(await notices.evaluateAll(cards => cards.every(card => {
+   const box = card.getBoundingClientRect();
+   return [...card.children].every(child => {
+    const r = child.getBoundingClientRect();
+    return r.left >= box.left && r.right <= box.right && r.top >= box.top && r.bottom <= box.bottom;
+   });
+  })));
   await page.screenshot({path:`/tmp/1081-mastery-${touch?'touch':'pc'}.png`});
   await page.evaluate(()=>{
    MD.n.notifyMastery(MD.m.gainFlavorExperience(MD.core.state,{mint:1},6,MD.DB.flavorById));
@@ -37,6 +53,30 @@ await suite('mastery-display', async check => {
   assert.match(await page.locator('.gain-card.stat').innerText(),/3段に上がった/); // 10段化（#1685 T2）: 内部値21は3段
   assert.equal(await page.locator('.gain-card.stat .gc-points').count(),0);
  },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true}:{});
+ await check('shared-family-and-art-fallback', async page => {
+  let broken = 0;
+  await page.route(url => url.pathname.endsWith('/img/shop/heaven10/lemon.webp'), route => {
+   broken++;
+   return route.fulfill({ contentType: 'image/webp', body: 'broken image' });
+  });
+  await page.evaluate(async () => {
+   const core = await import('./js/core/state.js');
+   const { DB } = await import('./js/core/data.js');
+   const { gainFlavorExperience } = await import('./js/core/flavor-mastery.js');
+   const { notifyMastery } = await import('./js/core/mastery-notice.js');
+   const s = core.newGame(); s.flavorMastery = { earlgrey: 5, lemon: 5 };
+   const mix = { nightside_earlgrey: 6, dark_earlgrey: 2, lemon: 4 };
+   notifyMastery(gainFlavorExperience(s, mix, 6, DB.flavorById), mix);
+  });
+  const notices = page.locator('.gain-card.mastery');
+  assert.deepEqual(await notices.locator('.gc-mastery-stars').allTextContents(), ['★★☆☆☆', '★★☆☆☆']);
+  const fallback = notices.locator('[data-product-art="lemon"] .shop-type-mark');
+  await fallback.waitFor();
+  assert.equal(await fallback.innerText(), 'フレーバー');
+  assert(broken > 0);
+  await notices.locator('[data-product-art="nightside_earlgrey"] img').evaluate(img => img.decode());
+  assert.deepEqual(await page.evaluate(() => __remake.state.flavorMastery), { earlgrey: 9, lemon: 7 });
+ }, { viewport: { width: 740, height: 320 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
  for (const touch of [false,true]) await check(`stars-without-experience-${touch?'touch':'pc'}`, async page => {
   for (const [xp,stars] of [[0,1],[5.999,1],[6,2],[17.999,2],[18,3],[35.999,3],[36,4],[59.999,4],[60,5]]) {
    await page.evaluate(async xp => {

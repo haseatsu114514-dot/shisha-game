@@ -34,7 +34,12 @@ await suite("board-tutorial", async (check) => {
     assert.equal(await earned(page), 6);
     assert.deepEqual(await flags(page), { starter: true, done: false });
     assert.match(await page.locator(t("board-tutorial")).textContent(), /1 \/ 10/, "案内は10手順（マスの形・右のパネルを足した。SBD116）");
-    for (let n = 0; n < 4; n++) await page.locator(t("board-tutorial-next")).click(); // 盤・火種・3枚の盤・マスの形
+    await page.locator(t("board-tutorial-next")).click(); // 盤
+    // 火種（#1801 U5）: 色の台座は色の火だけなので、白火は「台座を除き」どの盤のマスにも使える
+    const wallet = await page.locator(t("board-tutorial")).textContent();
+    assert.match(wallet, /白火は、台座を除き、どの盤のマスにも使える。/);
+    assert.match(wallet, /色つきの火は、ひし形の台座の鍵。/);
+    for (let n = 0; n < 3; n++) await page.locator(t("board-tutorial-next")).click(); // 火種・3枚の盤・マスの形
     // 光っているマスを押す → 「灯す」を押す（どちらも押すと次へ進む）
     const target = await page.locator(".gb-node.s-available").first().getAttribute("data-test");
     await page.locator(t(target)).click();
@@ -72,6 +77,39 @@ await suite("board-tutorial", async (check) => {
     assert.equal(await earned(page), 6);
   });
 
+  // #1801 U4: キーボードだけで案内を最後まで進められ、焦点が盤の外（背後の画面）へ落ちない
+  await check("keyboard-only-walkthrough-keeps-focus-in-the-board", async (page) => {
+    await openKannon(page);
+    await page.locator(t("board-tutorial")).waitFor();
+    const focus = () => page.evaluate(() => {
+      const a = document.activeElement;
+      return { inBoard: !!a?.closest?.('[data-test="growth-board"]'), test: a?.dataset?.test || a?.tagName || null };
+    });
+    const expectFocus = async (re, label) => {
+      const f = await focus();
+      assert(f.inBoard, `${label}: focus left the board ${JSON.stringify(f)}`);
+      assert.match(String(f.test), re, `${label}: ${JSON.stringify(f)}`);
+    };
+    // 開くと案内の「次へ」に焦点。Enter で進む間も、描き直した吹き出しのボタンに残る（盤・火種・3枚の盤・マスの形）
+    for (let n = 0; n < 4; n++) { await expectFocus(/^board-tutorial-next$/, `step ${n + 1}`); await page.keyboard.press("Enter"); }
+    // 光っているマスを押す手順: 焦点はそのマスへ。Enter で選ぶと、次の手順の「灯す」へ
+    await expectFocus(/^board-node-/, "pick: a lit square");
+    await page.keyboard.press("Enter");
+    await page.locator(".gb-light").waitFor();
+    await expectFocus(/^board-light$/, "light: the light button");
+    await page.keyboard.press("Enter");
+    await page.locator('.gb-node[data-status="pending"]').first().waitFor();
+    // 続けて灯す・右のパネル・決定 → 絵つきの見方の「灯しはじめる」
+    for (let n = 0; n < 3; n++) { await expectFocus(/^board-tutorial-next$/, `after lighting ${n + 1}`); await page.keyboard.press("Enter"); }
+    await expectFocus(/^board-tutorial-done$/, "last step");
+    await page.keyboard.press("Enter");
+    assert.equal(await page.locator(t("board-tutorial")).count(), 0);
+    assert.deepEqual(await flags(page), { starter: true, done: true });
+    await expectFocus(/^board-tab-/, "After the tutorial, focus goes back to the board tab");
+    for (let n = 0; n < 5; n++) { await page.keyboard.press("Shift+Tab"); await expectFocus(/./, `Shift+Tab ${n + 1}`); }
+    assert.equal(await page.locator('.gb-node[data-status="pending"]').count(), 1, "The square lit by keyboard is still provisional");
+  });
+
   await check("late-first-opening-respects-the-remaining-capacity", async (page) => {
     await openKannon(page, 197);
     await page.locator(t("board-tutorial")).waitFor();
@@ -80,6 +118,8 @@ await suite("board-tutorial", async (check) => {
     assert.match(await page.locator(t("board-tutorial-next")).first().textContent(), /次へ/);
     await page.locator(t("board-tutorial-next")).click();
     assert.match(await page.locator(t("board-tutorial")).textContent(), /白火を1つ渡しておく/);
+    // 最後の1つで受け取りが上限に届いた: 白火も台座にはまる（盤の「（白火も可）」と同じ決まり）
+    assert.match(await page.locator(t("board-tutorial")).textContent(), /白火は、台座にも、どの盤のマスにも使える。/);
   });
 
   await check("late-first-opening-at-cap-grants-nothing", async (page) => {
@@ -89,6 +129,8 @@ await suite("board-tutorial", async (check) => {
     assert.equal(await earned(page), 198);
     await page.locator(t("board-tutorial-next")).click();
     assert.match(await page.locator(t("board-tutorial")).textContent(), /火種の獲得は上限に届いている/);
+    assert.match(await page.locator(t("board-tutorial")).textContent(), /白火は、台座にも、どの盤のマスにも使える。/);
+    assert.doesNotMatch(await page.locator(t("board-tutorial")).textContent(), /台座を除き/);
     await page.locator(t("board-tutorial-next")).click(); // 3枚の盤
     await page.locator(t("board-tutorial-next")).click(); // マスの形
     await page.locator(t("board-tutorial-next")).click(); // 操作待ちは挟まず、右のパネル

@@ -5,7 +5,7 @@ import { affinityLevel } from "./stats.js";
 import { ensureGrowth, HIDANE_KEYS, noteLit, BOARD_TOTAL } from "./growth.js";
 import {
   BOARD_KEYS, BOARD_JA, BOARD_PREFIX, STAT_SQUARES, BOARD_SHAPES,
-  SKILLS, LESSONS, PEAK_CELL, SQUARE_PERKS, PERK_TIERS, GATE_TIER, FEATURES, NOTABLES,
+  SKILLS, LESSONS, PEAK_CELL, SQUARE_PERKS, PERK_TIERS, GATE_TIER, FEATURES, NOTABLES, OVERLAPS,
 } from "./growth-board-data.js";
 
 export * from "./growth-board-data.js";
@@ -65,6 +65,24 @@ export function perkTotals(board, unlocked) {
 /** ✦のマスで開いた「できること」（その盤の分。灯したかどうかつき） */
 export const featuresOf = (board, unlocked) => boardNodes(board).filter((n) => n.feature)
   .map((n) => ({ ...FEATURES[n.feature], key: n.feature, node: n.id, on: unlocked.has(n.id) }));
+
+/**
+ * 灯しても上積みが無い時の一文（#1801 U2・OVERLAPS）。node と同じ効果のマスが確定（習得済み）か仮置きにあれば返す。無ければ null。
+ * 灯した後の node 自身には出さない。g は確定した盤、unlocked は確定＋仮置き（replay の結果）。
+ */
+export function overlapNote(node, g, unlocked) {
+  if (!node || g.nodes.includes(node.id)) return null;
+  const label = (key) => FEATURES[key] ? `✦「${FEATURES[key].name}」` : `「${NODE_BY_ID[key]?.name || key}」`;
+  for (const o of OVERLAPS) {
+    if (o.node !== node.id && o.node !== node.feature) continue;
+    const by = NODES.filter((n) => n.id === o.by || n.feature === o.by);
+    const have = by.some((n) => g.nodes.includes(n.id)) ? "習得済み" : by.some((n) => unlocked.has(n.id)) ? "仮置き中" : null;
+    if (!have) continue;
+    return o.only ? `${o.only}では、${have}の${label(o.by)}と同じ効果。重ねても増えない`
+      : `同じ効果の${label(o.by)}を${have}。重ねても増えない`;
+  }
+  return null;
+}
 
 /** その盤の能力のマス（極みを除く）が全部灯っているか。極みはその時だけ灯せる（SBD63） */
 export const statsFilled = (board, unlocked) => boardNodes(board).every((n) => n.kind !== "stat" || n.peak || unlocked.has(n.id));

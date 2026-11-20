@@ -1,9 +1,10 @@
-// 章の要所の一度きりのモーショングラフィックス（#2688 A3・A5・A6・A8）。顔は描かない。
+// 章の要所の一度きりのモーショングラフィックス（#2688 A3・A5・A6・A8、#3965 の第2〜4章の山場）。
 // 回想（A3）と混ざる煙（A8）は作り直した（TMG60）: 紫の図形をやめ、場面の絵と煙の絵（smoke/）で作る。
 // どれも見せるだけで、保存・進行・票には触れない。動きを減らす設定・テストの高速送りでは何もしない（mid() だけ行う）。
 import { el, sleep, nextFrame } from "../core/util.js";
 import { W, H, COLOR, EASE, svg, stageSvg, move, reducedMotion } from "../core/transition-kit.js";
 import { holdCover, bgSnapshot, smokeArt, smokeOut } from "../core/transitions.js";
+import { duckBgm } from "../core/audio.js";
 
 const fx = () => document.getElementById("fx");
 const skip = () => reducedMotion() || !!(window.__remake?.vnTest?.turbo || window.__remake?.craftTest?.auto);
@@ -174,4 +175,124 @@ export async function mixedSmoke(colors = []) {
     plumes.forEach(({ el: p }) => move(p, [{ opacity: 0.8 }, { opacity: 0 }], 600, { easing: "ease-in" }));
     await merged;
   });
+}
+
+// ---------------------------------------------------------------- 第2章 味が遠のく（ch2_slump_taste・#3965）
+
+/**
+ * 一口ぶんの煙が甘さの色をまとって立ちのぼり、途中で色と輪郭だけが抜ける。煙の濃さは残る（約3秒）。
+ * 続く行「煙はちゃんと濃い。なのに、甘さがどこにも来ない。」の直前に置く。背景は覆わず、赤い閃光や失敗の合図は出さない。
+ */
+export async function tasteFade() {
+  if (skip() || !fx()) return;
+  const node = layer("mo-taste", "taste");
+  // 煙の絵は横長の帯で、左右の端が切れている。帯の両端を溶かすグラデーションを重ねる（mixedSmoke と同じ）
+  const haze = `url("${smokeArt().haze}"), linear-gradient(to right, transparent, #000 26%, #000 74%, transparent)`;
+  const mask = { maskImage: haze, webkitMaskImage: haze, maskComposite: "intersect", webkitMaskComposite: "source-in" };
+  const plains = [], sweets = [];
+  const wisp = (cls) => {
+    const plain = el("i.mo-taste-plain", { style: mask }), sweet = el("i.mo-taste-sweet", { style: mask });
+    plains.push(plain); sweets.push(sweet);
+    return el(`div.mo-taste-wisp${cls}`, [plain, sweet]);
+  };
+  const dim = el("div.mo-taste-dim");
+  const puff = el("div.mo-taste-puff", [wisp(".w1"), wisp(".w2"), wisp(".w3")]);
+  node.append(dim, puff);
+  await covering(node, async () => {
+    move(dim, [{ opacity: 0 }, { opacity: 1 }], 500, { easing: "ease-out" });
+    // 1. 甘さの色をまとった煙が、下から立ちのぼる
+    await move(puff, [
+      { opacity: 0, transform: "translateY(170px) scale(.78)" },
+      { opacity: 1, transform: "translateY(0) scale(1)" },
+    ], 1100, { easing: EASE.out });
+    await sleep(240);
+    // 2. 色と輪郭だけが抜ける（煙そのものは残る）
+    move(puff, [{ transform: "translateY(0) scale(1)" }, { transform: "translateY(-16px) scale(1.05)" }], 2000, { easing: "ease-out" });
+    plains.forEach((p) => move(p, [{ filter: "blur(0px)" }, { filter: "blur(7px)" }], 780, { easing: EASE.inOut }));
+    await Promise.all(sweets.map((p) => move(p, [{ opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(7px)" }], 780, { easing: EASE.inOut })));
+    // 3. 一拍。色のない煙だけが残る
+    await sleep(640);
+    await move(node, [{ opacity: 1 }, { opacity: 0 }], 520, { easing: "ease-in" });
+  });
+}
+
+// ---------------------------------------------------------------- 第3章 結果発表の前の静けさ（全国大会・#3965）
+
+/** 光を絞る暗い面。--mo-hole（光の輪の大きさ）を動かす。x・y は光の中心（舞台の幅・高さに対する割合） */
+function lightIris(x = 0.5, y = 0.4) {
+  return el("div.mo-iris", { style: { "--mo-x": String(x), "--mo-y": `${y * 100}%` } });
+}
+const iris = (hole, dark) => ({ "--mo-hole": `${hole}%`, opacity: dark });
+
+/**
+ * 会場の光が外側から絞られて舞台の一点に残り、一拍の静けさのあと暗くなる。その間に mid() が結果の画面を出し、光が開く（約2.3秒）。
+ * 順位や点はここでは出さない（結果の画面に任せる）。曲は絞っている間だけ下げ、開く時に戻す。
+ */
+export async function stageHush(mid) {
+  if (skip() || !fx()) { await mid?.(); return; }
+  const node = layer("mo-hush", "hush");
+  const dark = lightIris(0.5, 0.36);
+  node.append(dark);
+  try {
+    await covering(node, async () => {
+      duckBgm(0.35, 500);
+      await move(dark, [iris(150, 0), iris(26, 1)], 900, { easing: EASE.inOut });
+      await sleep(480);
+      await move(dark, [iris(26, 1), iris(0, 1)], 260, { easing: "ease-in" });
+      await mid?.();
+      await nextFrame(); await nextFrame();
+      duckBgm(1, 500);
+      await move(dark, [iris(0, 1), iris(170, 0)], 620, { easing: "ease-out" });
+    });
+  } finally { duckBgm(1, 300); }
+}
+
+// ---------------------------------------------------------------- 第4章 四つ目の台に立つ男（ch4_tournament_start・#3965）
+
+/** 演出の間だけ、会話の立ち絵と窓を引っ込める。戻り値で戻す（次の行と一緒に現れる） */
+function hideDialogue(ms = 360) {
+  const parts = [...document.querySelectorAll("#vn .vn-portraits, #vn .vn-box")];
+  const fades = parts.map((part) => part.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms, easing: "ease", fill: "forwards" }));
+  return () => {
+    fades.forEach((fade) => fade.cancel());
+    parts.forEach((part) => part.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: "ease" }));
+  };
+}
+
+/**
+ * 歓声が止んだ会場で、光が四つ目の台へ絞られ、そこに立つ男の影が煙のにじみでほどけて本人の姿になる（約3.6秒）。
+ * figure は会話と同じ枠取りを済ませた立ち絵（engine.js が作って渡す）。名前はこのあとの司会の台詞が呼ぶので、ここでは出さない。
+ * スチル（#3957 の cg_ch4_sheikh_reveal）を入れる時は、この演出の figure をその絵に替えて一体にする。別の静止画を重ねない。
+ */
+export async function shadowUnveil(figure) {
+  if (skip() || !fx() || !figure) return;
+  const node = layer("mo-unveil", "unveil");
+  const dark = lightIris(0.69, 0.4);
+  figure.classList.add("mo-unveil-figure");
+  const shadow = figure.cloneNode(false);
+  shadow.classList.add("shadow");
+  const stand = el("div.mo-unveil-stand", [figure, shadow]);
+  node.append(dark, stand);
+  let showDialogue = () => {};
+  try {
+    await covering(node, async () => {
+      if (figure.decode) await Promise.race([figure.decode().catch(() => {}), sleep(1500)]);
+      duckBgm(0.35, 400);
+      // 1. 司会の立ち絵と会話の窓が引き、光が四つ目の台へ絞られて、影が立つ
+      showDialogue = hideDialogue();
+      move(dark, [iris(150, 0), iris(58, 1)], 800, { easing: EASE.inOut });
+      await sleep(350);
+      await move(stand, [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "translateY(0)" }], 700, { easing: EASE.out });
+      await sleep(420);
+      // 2. 影が下から煙のにじみでほどけ、本人の姿になる
+      figure.style.opacity = "1";
+      hazeRise(node, 1500);
+      move(dark, [iris(58, 1), iris(76, 0.9)], 1300, { easing: "ease-out" });
+      await smokeOut(shadow, 1300);
+      shadow.remove();
+      await sleep(650);
+      duckBgm(1, 500);
+      await move(node, [{ opacity: 1 }, { opacity: 0 }], 480, { easing: "ease-in" });
+    });
+  } finally { showDialogue(); duckBgm(1, 300); }
 }

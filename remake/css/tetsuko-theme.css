@@ -256,6 +256,12 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
   .tetsuko-time .tt-help-note { min-height: var(--tk-tap); margin-top: 10px; padding-top: 8px; padding-right: calc(var(--tk-tap) * 1.5 + 20px); }
   .tetsuko-time .tt-help-close { bottom: 14px; }
 }
+/* とっておきの札のハート（§11）: 届いたハートの絵を使う。スマホ横持ちでは文字に合わせて大きく */
+.tetsuko-time[data-art-ui~="tk_heart"] .tt-toast-heart svg { display: none; }
+.tetsuko-time[data-art-ui~="tk_heart"] .tt-toast-heart { background: url("../img/ui/tetsuko/ui_tk_heart.webp") center / contain no-repeat; }
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .tetsuko-time .tt-toast-heart { width: calc(var(--tk-fs) * 1.6); height: calc(var(--tk-fs) * 1.6); }
+}
 /* スマホ規格（#2851・#2729）: 題の札の英字（TETSUKO TIME・実寸 7.6px）は飾りなので出さない（読み上げ・題の文字には残る）。 */
 html:root[data-density="phone"] .tetsuko-time .tt-logo-roman { display: none; }
 /* 「？」の統一（#2729・2026-11-08 オーナー指摘「？が大きい」）: 見た目は舞台上 31〜35px の細い線の丸（::before）、中の「？」は実寸 11.5px 以上。
