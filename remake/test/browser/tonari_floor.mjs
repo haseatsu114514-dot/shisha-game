@@ -495,8 +495,8 @@ await suite("tonari-floor", async (check) => {
     }, options);
   }
 
-  // 専用の店内画（客が座る形）: 絵が届く前でも、配置図の舞台で重なりと操作を確かめる。
-  // 席は「上3（こちら向き）・下2（内向き）」。客 → 前景 → 番号札 → 卓の札の順に重なる。絵の登録があれば影絵の代わりに絵を出す。
+  // 専用の店内画: 絵が届く前でも、配置図の舞台で重なりと操作を確かめる。
+  // 席は「上3（こちら向き）・下2（内向き）」。客は全身を描かず、席に「丸の中の顔」で出す（二人組は丸が二つ）。絵の登録があれば影絵の代わりに絵を出す。
   for (const [platform, options] of [["pc", {}], ["touch", touch]]) {
     await run(`${platform}-seated-stage`, async (page) => {
       await setup(page);
@@ -536,6 +536,19 @@ await suite("tonari-floor", async (check) => {
       });
       assert(geo.z.seat < geo.z.front && geo.z.front < geo.z.plate && geo.z.plate < geo.z.bubble, JSON.stringify(geo.z));
       assert(geo.painted, "登録した客の絵が出る");
+      // 客は「丸の中の顔」: 丸く切り抜かれ、席の範囲に収まる。席に顔が出るので、卓の札の顔の窓は畳む
+      const token = await page.evaluate(() => {
+        const seat = document.querySelector('.tf-spot[data-id="4"] .tf-seat').getBoundingClientRect();
+        const people = [...document.querySelectorAll('.tf-spot[data-id="4"] .tf-who .tf-person')].map((n) => { const r = n.getBoundingClientRect();
+          return { w: r.width, h: r.height, round: getComputedStyle(n).borderRadius, inside: r.left >= seat.left - 1 && r.right <= seat.right + 1 && r.top >= seat.top - 1 && r.bottom <= seat.bottom + 1 }; });
+        return { people, party: Number(document.querySelector('.tf-spot[data-id="4"]').dataset.party), tagFace: getComputedStyle(document.querySelector('.tf-spot[data-id="4"] .tf-tag-who')).display };
+      });
+      assert.equal(token.people.length, token.party, "人数ぶんの丸が出る");
+      for (const person of token.people) {
+        assert(Math.abs(person.w - person.h) < 1.5 && person.round === "50%" && person.inside, JSON.stringify(person));
+        assert(person.h < geo.seat.h * 0.75, "全身ではなく、顔の丸");
+      }
+      assert.equal(token.tagFace, "none");
       assert(geo.bubble.bottom <= geo.plate.top + 2, "手前の席の札は、内側の卓の上");
       assert(geo.bubble.left >= geo.seat.right - 2, "手前の左の席は、卓と札が内側（右）にある");
       assert(geo.seat.h >= 40 && geo.seat.w >= 40, `座った客は押せる大きさ: ${geo.seat.w}x${geo.seat.h}`);

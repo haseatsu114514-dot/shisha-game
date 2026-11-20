@@ -90,9 +90,9 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* たまに遊びに来た本編の人物の卓は、札が金に灯る */
 .tf-spot[data-rare="true"] .tf-tag-box { box-shadow: 0 0 0 2px #ffe7a8, 0 0 16px #ffd76acc, inset 0 0 0 1px #0004; }
 .tf-spot[data-rare="true"] .tf-tag-no { background: #f0b64e; color: #1b1220; }
-/* 届いた客の絵は座った全身（1人1枚）。卓の札・入口の列・ドックでは、顔のまわりへ寄せて見せる */
+/* 届いた客の絵は、丸の中に入る顔（肩から上・1人1枚）。そのまま敷く */
 .tf-person[data-painted="true"] { aspect-ratio: 1; overflow: hidden; border-radius: 50%; margin-bottom: 0; }
-.tf-person[data-painted="true"] img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; scale: 2.3; transform-origin: 50% 6%; }
+.tf-person[data-painted="true"] img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
 /* 卓の上の番号札 */
 .tf-plate {
   left: var(--px); top: var(--py); translate: -50% -50%; pointer-events: auto; z-index: 4;
@@ -224,24 +224,22 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-smoke i:nth-child(3) { animation-delay: 2.8s !important; left: -40px; }
 @keyframes tf-puff { 0% { opacity: 0; translate: 0 0; scale: 0.4; } 20% { opacity: 0.9; } 100% { opacity: 0; translate: 14px -120px; scale: 1.9; } }
 
-/* ---- 専用の店内画（客が座る形）。位置と大きさは tonari-floor-stage.js の STAGES.floor ---- */
-/* 客の入る範囲（左・上・幅・高さ）は画面のコードが舞台の表から置く。下端が足元 */
+/* ---- 専用の店内画（席に、丸の中の顔が出る形）。位置と大きさは tonari-floor-stage.js の STAGES.floor ---- */
+/* 席の範囲（左・上・幅・高さ）は画面のコードが舞台の表から置く。その中に、丸の中の顔を並べる */
 .tonari-floor[data-style="seated"] .tf-seat { translate: none; border-radius: 14px; }
-.tonari-floor[data-style="seated"] .tf-who .tf-guest-art { filter: drop-shadow(0 4px 5px #0007); }
-.tonari-floor[data-style="seated"] .tf-who .tf-person { height: 100%; width: auto; aspect-ratio: 0.6; margin: 0; translate: none; border-radius: 0; overflow: visible; }
-.tonari-floor[data-style="seated"] .tf-who .tf-person img { object-fit: contain; object-position: 50% 100%; scale: 1; }
-.tonari-floor[data-style="seated"] .tf-who .tf-bust, .tonari-floor[data-style="seated"] .tf-who .tf-bust svg { height: 100%; }
-/* 奥の席（こちら向き）: 並んで座る。二人組は向かい合うように右の人を反転する */
-.tonari-floor[data-style="seated"] .tf-spot[data-row="back"] .tf-who .tf-guest-art[data-party="2"] .tf-person { margin-inline: -4%; }
-.tonari-floor[data-style="seated"] .tf-spot[data-row="back"] .tf-who .tf-guest-art[data-party="2"] .tf-person[data-i="1"] { scale: -1 1; }
-/* 手前の席（内向き）: 奥行きに並んで座る（奥の人が先に描かれ、手前の人が少し重なる）。右の席は絵を反転して内側を向かせる */
-.tonari-floor[data-style="seated"] .tf-spot[data-row="side"] .tf-who .tf-guest-art { display: block; }
-.tonari-floor[data-style="seated"] .tf-spot[data-row="side"] .tf-who .tf-person { position: absolute; right: 4%; bottom: 0; height: 96%; }
-.tonari-floor[data-style="seated"] .tf-spot[data-row="side"] .tf-who .tf-guest-art[data-party="2"] .tf-person[data-i="0"] { right: auto; left: 0; bottom: auto; top: 0; height: 86%; }
-.tonari-floor[data-style="seated"] .tf-spot[data-row="side"] .tf-who .tf-guest-art[data-party="2"] .tf-person[data-i="1"] { right: 0; height: 92%; }
-.tonari-floor[data-style="seated"] .tf-spot[data-row="side"][data-flip="true"] .tf-who .tf-person { right: auto; left: 4%; scale: -1 1; }
-.tonari-floor[data-style="seated"] .tf-spot[data-row="side"][data-flip="true"] .tf-who .tf-guest-art[data-party="2"] .tf-person[data-i="0"] { left: auto; right: 0; }
-.tonari-floor[data-style="seated"] .tf-spot[data-row="side"][data-flip="true"] .tf-who .tf-guest-art[data-party="2"] .tf-person[data-i="1"] { left: 0; right: auto; }
+/* 客は、丸の中の顔で席に出す（全身は描かない。2026-11-20 オーナー「人物の全身まで書くと結構狭くなるから○の中に顔を入れて来店ってことにしてもいいかも」）。
+   丸の縁の色は満足の段。二人組は丸を二つ並べる */
+.tonari-floor[data-style="seated"] .tf-who .tf-guest-art { align-items: center; justify-content: center; gap: 5%; filter: drop-shadow(0 4px 5px #0007); }
+.tonari-floor[data-style="seated"] .tf-who .tf-person {
+  width: min(44%, 96px); height: auto; aspect-ratio: 1; margin: 0; translate: none; overflow: hidden; border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #fff7e6, #ecd9b6 70%, #cfb48a); box-shadow: 0 0 0 3px var(--tf-mood-color, #f1d59a), 0 0 0 5px #2a1c15;
+}
+.tonari-floor[data-style="seated"] .tf-who .tf-guest-art[data-party="1"] .tf-person { width: min(56%, 104px); }
+.tonari-floor[data-style="seated"] .tf-who .tf-guest-art[data-party="2"] .tf-person:first-child { translate: none; }
+.tonari-floor[data-style="seated"] .tf-who .tf-bust { margin-top: 8%; }
+/* 席に顔が出るので、卓の札の左の窓（客の顔）は畳んで、卓番号だけを残す */
+.tonari-floor[data-style="seated"] .tf-tag-cell:has(.tf-tag-who) { min-width: 28px; background: none; }
+.tonari-floor[data-style="seated"] .tf-tag-who { display: none; }
 .tonari-floor[data-style="seated"] .tf-spot[data-selected="true"] .tf-who .tf-guest-art { filter: drop-shadow(0 0 5px #fff1af) drop-shadow(0 4px 5px #0007); }
 .tonari-floor[data-style="seated"] .tf-spot[data-tone="fever"] .tf-who .tf-guest-art { filter: drop-shadow(0 0 10px #d9c2ff) drop-shadow(0 4px 5px #0007); }
 /* 卓の上の一台。提供してから会計まで置く */

@@ -141,10 +141,10 @@ export function runTonariFloor({
   const daytime = !night;
   const plan = pickNight(level, seed, { rainy, daytime });
   let state = createFloorNight({ seed, level, chapter, presets, rainy, daytime, visitor });
-  // 客の絵。本編の人物は顔アイコン（座る形の店内では、席は影絵・札とドックは顔アイコン）
-  const artOf = (guest, { seat = false, happy = false } = {}) => {
-    const face = guest.charId && !(seat && seated) ? faceIconUrl(guest.charId) : null;
-    if (!face) return guestArt(guest, { happy, seated: seat && seated, art: guests });
+  // 客の絵は、どこでも「丸の中の顔」（全身は描かない）。本編の人物は顔アイコン
+  const artOf = (guest, { happy = false } = {}) => {
+    const face = guest.charId ? faceIconUrl(guest.charId) : null;
+    if (!face) return guestArt(guest, { happy, art: guests });
     const img = el("img", { src: face, alt: "", decoding: "async", draggable: false });
     const node = el("span.tf-guest-art", { "aria-hidden": true, dataset: { party: 1 } }, [el("span.tf-person", { dataset: { i: 0, face: "true" } }, [img])]);
     img.addEventListener("error", () => node.replaceWith(guestArt(guest, { art: guests })), { once: true }); // 顔アイコンを読めない時は影絵で出す
@@ -167,7 +167,7 @@ export function runTonariFloor({
     SPOTS.forEach((spot, i) => {
       const id = i + 1;
       const tap = () => tapTable(id);
-      // 卓のボタン（読み上げとキーボードの入口）。座る形では座った客、会話用の店内画では卓の札と同じ所の押し所になる
+      // 卓のボタン（読み上げとキーボードの入口）。専用の店内では席（丸の中の顔が出る）、会話用の店内画では卓の札と同じ所の押し所になる
       const seat = el("button.tf-seat", { type: "button", dataset: test(`table-${id}`), onclick: tap }, [el("span.tf-medal", {}, [el("span.tf-who")])]);
       seat.addEventListener("pointerenter", (event) => { if (event.pointerType === "mouse" && mode === "live") select(id); });
       // 卓の札: 上に用件、箱の上の帯に要望（求める吸い心地の色）、左に卓番号と客、右に顔（注文待ちは残り秒）とドリンクの杯数、
@@ -449,7 +449,7 @@ export function runTonariFloor({
       });
       spot.root.style.setProperty("--stay", stay.toFixed(3));
       spot.root.style.setProperty("--tf-mood-color", stageId ? MOOD[stageId].color : "#d9c6a4");
-      // 満足している客は、登録があれば笑顔の絵に替える（座った絵だけ）
+      // 満足している客は、登録があれば笑顔の絵に替える（席に顔の丸が出る舞台だけ）
       const happy = seated && !!guest && table.mood >= 85 && !!stageId;
       if (spot.guestId !== (guest?.id || null) || spot.happy !== happy) {
         if (spot.guestId !== (guest?.id || null)) {
@@ -461,7 +461,7 @@ export function runTonariFloor({
         }
         spot.guestId = guest?.id || null;
         spot.happy = happy;
-        spot.who.replaceChildren(guest ? artOf(guest, { seat: true, happy }) : "");
+        spot.who.replaceChildren(guest ? artOf(guest, { happy }) : "");
         spot.root.dataset.party = guest ? String(guest.party) : "";
       }
       const wantKey = want.join("/");

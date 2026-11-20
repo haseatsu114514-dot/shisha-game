@@ -55,7 +55,7 @@ export function drawFloorGuide({ night = false, zones = false } = {}) {
     }
   }
   if (zones) {
-    // Codex へ渡す配置図: ゲームが重ねる物の場所（灰＝帯と札、点線＝客の絵、白丸＝番号札、白い縦棒＝卓の上の一台、白い四角＝卓の札）
+    // Codex へ渡す配置図: ゲームが重ねる物の場所（灰＝帯と札、点線の丸＝客の顔の丸、白丸＝番号札、白い縦棒＝卓の上の一台、白い四角＝卓の札）
     // 灰は上の帯（作成中の一台・残り時間・売上）・下の帯（卓のドック・出来事とはじめの心の声・フィーバー。横いっぱい）・右の定番の列
     r.drawImage(front, 0, 0);
     r.fillStyle = "#2b2b2b99";
@@ -63,7 +63,11 @@ export function drawFloorGuide({ night = false, zones = false } = {}) {
     r.fillRect(W * 0.012, H * 0.86, W * 0.976, H * 0.126);
     r.fillRect(W * 0.822, H * 0.133, W * 0.166, H * 0.6);
     r.setLineDash([12, 8]); r.lineWidth = 4; r.strokeStyle = "#ffffff";
-    for (const spot of stage.spots) { const [x, y, w, h] = px(spot.box); r.strokeRect(x, y, w, h); }
+    for (const spot of stage.spots) {
+      // 席に出る「丸の中の顔」（二人組は二つ）。席の範囲のまん中に並ぶ
+      const [x, y, w, h] = px(spot.box), radius = Math.min(w * 0.22, 60);
+      for (const dx of [-1, 1]) { r.beginPath(); r.arc(x + w / 2 + dx * radius * 1.12, y + h / 2, radius, 0, Math.PI * 2); r.stroke(); }
+    }
     r.setLineDash([]);
     r.fillStyle = "#ffffff";
     for (const spot of stage.spots) {
