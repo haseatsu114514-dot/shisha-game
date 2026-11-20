@@ -36,8 +36,8 @@ export const STATE_KEY_RULES = {
   story: { verdict: "reset", note: "§2.4" },
   visits: { verdict: "reset", note: "§2.2" },
   visitedDay: { verdict: "reset", note: "§2.2" },
-  owned: { verdict: "conditional", note: "購入・報酬品は引き継ぐ。gift 由来の装備と、くじ限定の台（KJ05）はリセット（§2.1）" },
-  equip: { verdict: "conditional", note: "贈答品の枠はパッケージに入れない（§2.1）" },
+  owned: { verdict: "conditional", note: "購入・報酬品は引き継ぐ。好感度の締めくくりでもらった専用ハガル（gift）も引き継ぐ（台帳 NGC01）。くじ限定の台（KJ05）だけリセット（§2.1）" },
+  equip: { verdict: "conditional", note: "引き継いだ所持にある装備の枠だけ残す（§2.1）" },
   flavors: { verdict: "carry", note: "図鑑記録（§2.1）" },
   flavorMastery: { verdict: "carry", note: "系統ごとのXP（§2.1）" },
   flavorLessons: { verdict: "carry", note: "受講済みレッスン（§2.1）" },
@@ -81,6 +81,7 @@ export const STATE_KEY_RULES = {
 };
 
 // data/equipment.json の gift フィールドが付いた装備 = キャラから贈られた専用ハガル。
+// 周回では引き継ぐ（2026-11-20 オーナー「好感度はリセット。ただし好感度イベントでもらったものや経験値や授業スキルは引き継ぐ」・台帳 NGC01）。
 // 分類網羅テストが data 側と一致するか照合する。
 export const GIFT_EQUIPMENT_IDS = [
   "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_saku", "suyaki_mashiro", "suyaki_minto", "suyaki_naru", "suyaki_noor",
@@ -810,10 +811,10 @@ export function buildCarryPackage(s) {
   for (const grade of KUJI_LIMITED_GRADES) delete data.kuji[grade];
   data.reel = clone(s?.reel ?? {});
   data.best = clone(s?.best ?? {});
-  // 装備: 贈答品とくじ限定の台（KJ05）を除いた所持だけを引き継ぐ。装備中の枠も、残った所持にあるものだけを残す
-  // （空いた枠を既定装備に戻すのは周回開始側の仕事で、ここでは枠ごと落とす）。
-  const gift = new Set([...GIFT_EQUIPMENT_IDS, ...KUJI_ONLY_EQUIPMENT]);
-  data.owned = (Array.isArray(s?.owned) ? s.owned : []).filter((id) => !gift.has(id));
+  // 装備: くじ限定の台（KJ05）を除いた所持を引き継ぐ。好感度の締めくくりでもらった専用ハガルも引き継ぐ（NGC01）。
+  // 装備中の枠も、残った所持にあるものだけを残す（空いた枠を既定装備に戻すのは周回開始側の仕事で、ここでは枠ごと落とす）。
+  const dropped = new Set(KUJI_ONLY_EQUIPMENT);
+  data.owned = (Array.isArray(s?.owned) ? s.owned : []).filter((id) => !dropped.has(id));
   const ownedSet = new Set(data.owned);
   data.equip = Object.fromEntries(Object.entries(s?.equip ?? {}).filter(([, id]) => ownedSet.has(id)));
   // 記念品: 由来が明示されていて人物由来でないものだけ（未分類は持ち越さない）

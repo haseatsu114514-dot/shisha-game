@@ -104,7 +104,7 @@ export function startPackageFromMeta(meta) {
 }
 
 const CYCLE_GROUPS = [
-  ["stats", "能力"],
+  ["stats", "能力・経験値・授業"],
   ["money", "所持金"],
   ["items", "所持品"],
   ["knowledge", "知識・記録"],
@@ -143,7 +143,7 @@ export async function openNextCycleOptions(meta) {
     const choice = await modal({
       title: `${nextCycle}周目をはじめる`,
       body: el("div.cfg", [
-        el("p", { text: "能力と持ち物を引き継いで、出会いからもう一度はじめます。" }),
+        el("p", { text: "能力・経験値・授業と持ち物（好感度でもらった贈り物も）を引き継いで、出会いからもう一度はじめます。" }),
         el("p", { text: "好感度・恋愛や出会いの記録は引き継がれず、新しく始まります。" }),
         ...rows,
       ]),
