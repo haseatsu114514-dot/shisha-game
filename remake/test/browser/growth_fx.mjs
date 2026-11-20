@@ -384,6 +384,69 @@ await suite("growth-fx", async (check) => {
     }, options);
   }
 
+  // 極み（SBD138③）: 盤の能力のマスを全部灯した後に極みを灯すと、盤の全体まで引いて波が走り、金の「盤を極めた」のカットイン
+  await check("peak-commit-show", async (page) => {
+    await setupDaily(page, { chapter: 5 });
+    const peak = await page.evaluate(async () => {
+      const g = await import("./js/core/growth.js"), b = await import("./js/core/growth-board.js"), gr = g.ensureGrowth();
+      __remake.state.flags._board_starter_given = true; __remake.state.flags._board_tutorial_done = true;
+      const nodes = b.boardNodes("body");
+      gr.nodes.push(...nodes.filter((n) => n.kind === "stat" && !n.peak || n.kind === "gate").map((n) => n.id));
+      gr.hidane = { any: 5, body: 0, sense: 0, wisdom: 0 };
+      window.boardDone = g.openGrowthBoard({ place: "kannon" });
+      return nodes.find((n) => n.peak).id;
+    });
+    await page.locator(`${t("growth-board")}[data-art]`).waitFor();
+    await page.locator(t(`board-node-${peak}`)).evaluate((node) => node.click());
+    await page.locator(t("board-light")).click();
+    await page.locator(t("board-decide")).click();
+    await page.locator(`${t("growth-board")}.peak-burst`).waitFor({ timeout: 8000 });
+    assert.equal(await page.locator(t("board-viewport")).getAttribute("data-zoom"), await page.locator(t("board-viewport")).evaluate((node) => node.dataset.zoom), "引いた倍率のまま");
+    assert(Number(await page.locator(t("board-viewport")).getAttribute("data-zoom")) < 1, "盤の全体まで引く");
+    await page.locator(t("board-commit-banner")).waitFor();
+    await page.locator(t("board-commit-banner")).dispatchEvent("pointerdown");
+    const cutin = page.locator(`${t("board-cutin")} .gfx-cutin.t-peak`);
+    await cutin.waitFor();
+    assert.match(await cutin.innerText(), /盤を極めた[\s\S]*才能を極めた/);
+    await assertFits(page, ".gfx-cutin");
+    await page.locator(t("board-cutin")).dispatchEvent("pointerdown");
+    await page.locator(t("growth-board")).waitFor({ state: "detached" });
+    assert((await page.evaluate(() => __remake.state.growth.nodes)).includes(peak));
+  }, { viewport: { width: 1331, height: 760 } });
+
+  // 地図の「相談」の印（SBD141）: 灯した授業を相談できる店の看板の左に印、選ぶと右下に授業の名前の札。まだ灯していない人の店には出さない
+  for (const [label, options] of [
+    ["pc", { viewport: { width: 1331, height: 760 } }],
+    ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  ]) {
+    await check(`${label}-map-lesson-badge`, async (page) => {
+      await page.evaluate(async () => {
+        const core = await import("./js/core/state.js");
+        const s = core.newGame();
+        Object.assign(s, { phase: "daily", chapter: 1, day: 6, slot: 1, stamina: 90, money: 30000 });
+        core.config.bgmVolume = 0; core.config.seVolume = 0; core.config.voiceBlip = false;
+        const g = await import("./js/core/growth.js"), gr = g.ensureGrowth();
+        s.flags._board_starter_given = true; s.flags._board_tutorial_done = true; s.flags._kannon_growth_intro_done = true;
+        s.met = { ...(s.met || {}), adam: true, naru: true };
+        s.affinity = { ...(s.affinity || {}), adam: 999 };
+        gr.nodes.push("M-S2", "M-S1");
+        window.pick = (await import("./js/daily/map.js")).chooseSpot({});
+      });
+      await page.locator(t("pin-adam")).waitFor();
+      assert.equal(await page.locator(`${t("pin-adam")} .lesson-badge`).innerText(), "相談");
+      assert.equal(await page.locator(`${t("pin-tonari")} .lesson-badge`).count(), 1, "スミさんの授業は tonari で相談");
+      assert.equal(await page.locator(`${t("pin-naru")} .lesson-badge`).count(), 0, "灯していない人の店には出さない");
+      assert.match(await page.locator(t("pin-adam")).getAttribute("aria-label"), /授業「単体の美学」を相談できる/);
+      await assertFits(page, `${t("pin-adam")} .lesson-badge`);
+      await page.locator(t("pin-adam")).click();
+      assert.equal(await page.locator(t("map-lesson")).innerText(), "授業の相談「単体の美学」");
+      await assertFits(page, t("map-lesson"));
+      // 習得したら印は消える
+      await page.evaluate(() => { __remake.state.growth.learned.push("M-S2"); });
+      assert.deepEqual((await page.evaluate(async () => (await import("./js/daily/map.js")).spotLessons({ kind: "rival", charId: "adam" }))), [], "習得済みは相談しない");
+    }, options);
+  }
+
   // 動きを減らす設定: 光もカットインも出さず、待たずに閉じる。灯した結果は同じ
   await check("reduced-motion-skips-effects", async (page) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
