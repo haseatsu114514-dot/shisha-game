@@ -245,7 +245,7 @@ function sakuraiBoard(p, index) {
   const mine = JUDGES.map(({ id }) => `${short(id)} ${Number(views[id]?.hajime ?? 0).toFixed(1)}`).join(" ／ ");
   const nextNote = index === 0 ? `次は提供の一台。${Object.entries(SAKURAI.focus).map(([id, f]) => `${short(id)}は${f.label}`).join("・")}を見る`
     : index === 1 ? "次は1回目の調整。温度計の攻めの帯で整え終えると、審査が伸びる"
-      : "次は2回目の調整。最後はみんとが攻めてくる。千須の最後の1点もここで決まる";
+      : "次は2回目の調整。なるは崩れず、最後はみんとが攻めてくる";
   return {
     sub: `この回は${info.parts}だけで決まる · ${points === 2 ? "1位も2位も1票" : "1位に2票・2位に1票"} · 全員に基礎票1点`,
     feed: [`はじめの評価（この回）: ${mine}${p.attacks?.[index] ? `（攻めの帯 +${SAKURAI.attackBonus}）` : ""}`, next ? nextNote : ""].filter(Boolean),
@@ -375,10 +375,10 @@ export async function suiCutin(rank, attempt = null) {
   const cut = el("div.nc-cut", [
     el("span.nc-cut-art", art ? [el("img", { src: art, alt: "", decoding: "async" })] : [faceOf("sui", ".nc-cut-face")]),
     el("div.nc-cut-text", [el("small", { text: "審査員長" }), el("b", { text: "千須豪" }),
-      el("div.nc-cut-pt", [el("strong", { text: modern ? "1" : "10" }), el("span", { text: modern ? "最後の調整に、残る1点" : "持ち点10、一括投入" })])]),
+      el("div.nc-cut-pt", [el("strong", { text: modern ? "1" : "10" }), el("span", { text: modern ? "もう一口に、残る1点" : "持ち点10、一括投入" })])]),
   ]);
   const ov = el("div.sui-cut.ts-final", { dataset: { test: "final-vote" } }, [el("i.nc-rays", { "aria-hidden": "true" }),
-    header("SMOKE CROWN CUP ／ FINAL VOTE", modern ? "千須の最後の1点" : "千須の10点", modern ? "二度目の調整で味を守った一台へ" : "もう一口、吸いたい一台へ。", true), bars, cut]);
+    header("SMOKE CROWN CUP ／ FINAL VOTE", modern ? "千須の最後の1点" : "千須の10点", "もう一口、吸いたい一台へ。", true), bars, cut]);
   stageLights(ov, { beams: 3, dust: 20 });
   layers.fx.append(ov);
   // 押すと、残りの間を詰めて先へ進む（自動で進む画面だが、待たされないように）。

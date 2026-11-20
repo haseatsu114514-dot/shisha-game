@@ -50,6 +50,22 @@ export function servedStateLine(cs) {
   return "香りはまだ遠い。次の調整で、もう少し立たせたい。";
 }
 
+// 優勝の夜、スミさんに「本番は何で行った」と聞かれた時の答え（#3916）。多い順に3系統まで、残りは数だけ。
+// 配合の良し悪しは言わない。配合が記録されていなければ null（台本の中立文を使う）。
+export function servedMixWords(cs) {
+  const dom = dominantAromas(cs);
+  if (!dom) return null;
+  const names = dom.groups.slice(0, 3).map(group => aromaName(group.topId));
+  const rest = dom.groups.length - names.length;
+  return names.join("と") + (rest > 0 ? `と、ほかに${rest}つ` : "");
+}
+
+// 第1章の大会をレモン（課題の葉）だけで作ったか（#3916）。優勝の夜のスミさんの昔話と、第4章の会長の話が変わる。
+export function servedLemonOnly(cs) {
+  const used = Object.entries(cs?.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0).map(([id]) => id);
+  return used.length === 1 && used[0] === "lemon";
+}
+
 // 固定だった「華やかさはない。個性も薄い」の代わりに差し込む地の文2行。
 export function servedEvaluationLines(cs) {
   return [servedTasteLine(cs), servedStateLine(cs)].map(text => ({ speaker: "", face: "", text }));
