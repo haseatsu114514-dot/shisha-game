@@ -10,6 +10,8 @@ import { growthEnabled } from "../core/growth-mode.js";
 import { rememberGrowthMix, growthRecallOptions } from "../core/growth-memory.js";
 import { effectVisible, effectBadge } from "./effect-visual.js";
 import { canSeeMixHint, canSeeGoldenShort } from "../core/stat-step-tables.js";
+import { craftStageEnabled } from "./stage-layout.js";
+import { packingMark, coalLayoutMark } from "./choice-marks.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible, benchRoot, explainStepOnce, preparationGauge } from "./session.js";
 import { flavorMixLife, LEAF_DAMAGE } from "./flavor-life.js";
@@ -94,6 +96,7 @@ function choose(panel, options, { cols = 2, onPreview } = {}) {
         onpointerenter: () => { if (!o.disabled) onPreview?.(o.value); },
         onclick: () => { SE.select(); resolve(o.value); },
       }, [
+        o.mark || null,
         o.badge ? el("span.opt-badge", { text: o.badge }) : null,
         el("b", { text: o.label }),
         el("small", { text: o.desc || "" }),
@@ -547,6 +550,7 @@ export async function stepPack(cs) {
   const dense = densePackAvailable(state);
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
   if (!await explainStepOnce(cs, "pack")) return;
+  const illustrated = craftStageEnabled() && !renewalCraft(cs);
   const options = [
     { value: "fluffy", label: "ふんわり", surface: "空気を残す・軽い吸い心地", desc: "熱が早く入る。軽い一台を狙う時に。温めすぎに注意" },
     { value: "normal", label: "ノーマル", surface: "均等にならす・基本", desc: "熱の入り方と抜けが標準。初めての葉や器具を試す時に" },
@@ -586,7 +590,7 @@ export async function stepPack(cs) {
   const choices = options.map(option => el("button.pack-choice", {
     type: "button", disabled: !!option.locked, dataset: { test: `opt-${option.value}` },
     onclick: () => { if (option.locked) return; selected = option; SE.select(); draw(); },
-  }, [el("b", { text: option.label }), el("small", { text: option.surface })]));
+  }, [illustrated ? packingMark(option.value, option.locked) : null, el("b", { text: option.label }), el("small", { text: option.surface })]));
   function draw() {
     vessel.dataset.pack = selected.value;
     vessel.setAttribute("aria-label", `${DB.equipById[cs.equip.bowl]?.name || "ハガル"}：${selected.label}。${selected.surface}`);
@@ -663,10 +667,11 @@ export async function stepPlace(cs) {
   await waitBenchReady(cs, "place");
   const panel = stepPanel("place", "炭の配置", lessonHint(cs, "place", "基本は同じ炭を三角に3個。配置を決めてから炭を焼く"));
   if (!await explainStepOnce(cs, "place")) return;
+  const illustrated = craftStageEnabled() && !renewalCraft(cs);
   const layouts = availableCoalLayouts(cs.mode === "tutorial" ? {} : state.flags);
   cs.place = await choose(panel, layouts.map(value => value === "triangle"
-    ? { value, label: "トライアングル（3個）", desc: "三角に置いて、熱を均等に届ける", auto: true }
-    : { value, label: "4点置き（4個）", desc: "熱が強く入る配置。温度を見て調整する", badge: renewalCraft(cs) ? configEffectLabel("place", "four") : undefined }));
+    ? { value, mark: illustrated ? coalLayoutMark(3) : null, label: illustrated ? "三角・3個" : "トライアングル（3個）", desc: "三角に置いて、熱を均等に届ける", auto: true }
+    : { value, mark: illustrated ? coalLayoutMark(4) : null, label: illustrated ? "四角・4個" : "4点置き（4個）", desc: "熱が強く入る配置。温度を見て調整する", badge: renewalCraft(cs) ? configEffectLabel("place", "four") : undefined }));
   cs.coalTypes = coalTypes({ ...cs, coalTypes: null });
   if (cs.mode !== "tutorial" && state.flags[COAL_UNLOCK.mixed] && state.owned.includes("flat_charcoal") && state.owned.includes("cube_charcoal")) {
     const n = coalCount(cs);

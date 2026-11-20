@@ -13,30 +13,41 @@ const PHASES = [
 // 同じ工程の見出しに複数の作業が入るもの（パッキング）は、いまの作業名を見出しの横へ添える。見出し本体の語は変えない。
 const SUB_STEP = { pack: (id, title) => ({ setup: title.startsWith("機材") ? "機材" : "水入れ", mix: "配合", pack: "詰め", holes: title.includes("通気") ? "通気" : "穴あけ" })[id] || "" };
 
-export function buildCraftProgress(steps) {
+export function buildCraftProgress(steps, { iconRail = false } = {}) {
   const available = new Set(steps.map(([id]) => id));
   if (available.has("pull")) available.add("serve");
   const phases = PHASES.filter(([, , ids]) => !steps.length || ids.some(id => available.has(id)));
   const count = el("b.bench-progress-count");
-  const cells = phases.map(([phase, label, ids, icon], i) => el("span.bench-phase", { "aria-label": label, title: label, dataset: { step: phase, steps: ids.join(",") } }, [
-    el("i.bench-phase-icon", { "aria-hidden": "true", html: `<svg viewBox="0 0 36 36">${icon}</svg>` }),
-    el("span.bench-phase-copy", [el("small", { text: String(i + 1).padStart(2, "0") }), el("b", { text: label })]),
-    SUB_STEP[phase] ? el("span.bench-phase-step", { "aria-hidden": "true", dataset: { test: "bench-phase-step" } }) : null,
+  const subStep = (phase, id, title, lessonStep) => {
+    if (iconRail && id === "place") return "炭の配置";
+    if (iconRail && lessonStep === "timer") return "蒸らし時間";
+    return SUB_STEP[phase]?.(id, title || "") || "";
+  };
+  const cells = phases.map(([phase, label, ids, icon], i) => el(iconRail ? "li.bench-phase.craft-route-stop" : "span.bench-phase", { "aria-label": label, title: label, dataset: { step: phase, steps: ids.join(",") } }, [
+    el(iconRail ? "i.craft-route-icon" : "i.bench-phase-icon", { "aria-hidden": "true", html: `<svg viewBox="0 0 36 36">${icon}</svg>` }),
+    el("span.bench-phase-copy", [iconRail ? null : el("small", { text: String(i + 1).padStart(2, "0") }), el("b", { text: label })]),
+    (SUB_STEP[phase] || (iconRail && ["heat", "steam"].includes(phase))) ? el("span.bench-phase-step", { "aria-hidden": "true", dataset: { test: "bench-phase-step" } }) : null,
   ]));
-  const root = el("nav.bench-progress", { "aria-label": "制作の工程" }, [count, el("div.bench-progress-track", cells)]);
-  return { root, count, update(id, title) {
+  const root = el("nav.bench-progress", { "aria-label": "制作の工程" }, [count, el(iconRail ? "ol.craft-route-track" : "div.bench-progress-track", cells)]);
+  return { root, count, update(id, title, lessonStep) {
     const active = phases.findIndex(([, , ids]) => ids.includes(id));
     cells.forEach((cell, i) => {
       cell.classList.toggle("now", i === active);
       cell.classList.toggle("seen", i < active);
       if (i === active) cell.setAttribute("aria-current", "step");
       else cell.removeAttribute("aria-current");
+      if (iconRail) {
+        const detail = i === active ? subStep(phases[i][0], id, title, lessonStep) : "";
+        const status = i === active ? "現在" : i < active ? "完了" : "これから";
+        cell.title = `${phases[i][1]}${detail ? "：" + detail : ""}（${status}）`;
+        cell.setAttribute("aria-label", cell.title);
+      }
       const sub = cell.querySelector(".bench-phase-step");
-      if (sub) sub.textContent = i === active ? SUB_STEP[phases[i][0]](id, title || "") : "";
+      if (sub) sub.textContent = i === active ? subStep(phases[i][0], id, title, lessonStep) : "";
     });
     count.textContent = `${active + 1} / ${phases.length}`;
     const currentTitle = phases[active]?.[1] ?? title;
-    const subLabel = phases[active] && SUB_STEP[phases[active][0]]?.(id, title || "");
+    const subLabel = phases[active] && subStep(phases[active][0], id, title, lessonStep);
     root.setAttribute("aria-label", `制作の工程：${currentTitle}${subLabel ? `（${subLabel}）` : ""}。${active + 1} / ${phases.length}`);
   } };
 }
