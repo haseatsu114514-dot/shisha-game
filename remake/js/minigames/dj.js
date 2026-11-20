@@ -1,11 +1,17 @@
 import { recordPlayMastery, syncPlayMastery } from "../core/play-mastery.js";
+import { recordTierClear } from "../core/play-tiers.js";
 // DJ ミニゲームを本編から開く部品（2026-11-01 DJS10・クラブSEAM DJS12）。遊びの本体は remake/previews/dj/ をそのまま同じ画面に重ねて使う。
 // ミニゲームは時間を使わない（#2113）: 行動・日付・お金・体力は変えない。記録は state.dj に残し、
 // 心得の盤の「遊びのご褒美」（SBD39・growth.js の claimPlayRewards）が state.dj.bestRank を読んで、寝る前に感覚の火種を1つ渡す。
 import { SETS } from "../../previews/dj/tracks.mjs";
 
 export const DJ_RANKS = Object.freeze(["C", "B", "A", "S"]);
-export const DJ_SETS = Object.freeze(SETS.map((set, index) => Object.freeze({ id: index + 1, name: set.name, label: set.label, tracks: set.count })));
+// tier: ミニゲームの三段階（#3779・core/play-tiers.js）。SET 1＝初級・SET 2＝中級・SET 3＝上級。
+// 段の「クリア」は、そのセットを B ランク以上で回しきること。解放は今までどおり（前のセットを1回回しきる）。
+const SET_TIERS = Object.freeze(["easy", "normal", "hard"]);
+export const DJ_SETS = Object.freeze(SETS.map((set, index) => Object.freeze({ id: index + 1, name: set.name, label: set.label, tracks: set.count, tier: SET_TIERS[index] })));
+/** セットの段を除いた説明（「入門・ズレなし」→「ズレなし」）。段の名前と並べる時に重ねない。 */
+export const djSetNote = set => String(set?.label || "").replace(/^(入門|本命|上級)・/, "");
 const rankIndex = rank => DJ_RANKS.indexOf(rank);
 const record = value => value && typeof value === "object" && !Array.isArray(value) ? value : null;
 const percent = value => Number.isFinite(value) && value >= 0 && value <= 100 ? Math.round(value) : null;
@@ -56,7 +62,10 @@ export function recordDjResult(s, data) {
   const after = djRecords({ dj: { sets } });
   s.dj = { sets, bestRank: after.bestRank };
   recordPlayMastery(s, "dj", result, `${s.cycle || 1}:${result.set}:${sets[result.set].plays}`);
-  return { entry, newBest, rankUp: before.bestRank === null || rankIndex(after.bestRank) > rankIndex(before.bestRank) };
+  // 三段階（#3779）: B 以上で回しきったら、そのセットの段をクリア。上級（SET 3）を初めてクリアすると白火1つ（growth が精算）
+  const tier = DJ_SETS[result.set - 1]?.tier;
+  const tiers = tier && rankIndex(result.rank) >= rankIndex("B") ? recordTierClear(s, "dj", tier) : [];
+  return { entry, newBest, rankUp: before.bestRank === null || rankIndex(after.bestRank) > rankIndex(before.bestRank), tiers };
 }
 
 /** 東京の路地の地下のクラブ「SEAM」（店主は針間ヨル）。第3章の夜の自由時間だけ地図の行き先に出す（自由時間を使わない）。
