@@ -1,7 +1,10 @@
 // ドバイの必須の仕事。実選択・済ませた仕事・読了を分け、成績や自由行動は変更しない。
+// 合間の短い場面（#3097 計画 4-7）: DAY4は準備を終えた後・ノートを開く前（prepBreak）、DAY9は片づけ（returned）の後
+// （serviceBreak）。どちらも同じ夜の仕事の中で読み、読了は _ch4.read だけに残す（仕事の記録・選択・結果は変えない）。
 export const CH4_STAFF_IDS = Object.freeze({
   notice: "ch4_staff_notice", preparation: "ch4_staff_preparation", prepared: "ch4_staff_prepared",
-  notebook: "ch4_staff_notebook", order: "ch4_staff_order", returned: "ch4_staff_returned",
+  prepBreak: "ch4_staff_break_prep", notebook: "ch4_staff_notebook", order: "ch4_staff_order",
+  returned: "ch4_staff_returned", serviceBreak: "ch4_staff_break_service",
   echo: "ch4_staff_match_echo", cleanup: "ch4_staff_cleanup",
 });
 export const CH4_STAFF_SCENE_FILES = Object.freeze({ ch4_staff_work: Object.freeze(Object.values(CH4_STAFF_IDS)) });
@@ -27,7 +30,8 @@ export function chapterFourStaffNight(value) {
     return { id: "notice", label: "明日の搬入確認", beat: "宿へ戻ると、会場から道具の受け渡しの連絡が届いていた。" };
   if (today === 4 && read(value, CH4_STAFF_IDS.notice) && !record?.preparation?.read)
     return { id: "preparation", label: "会場を開ける人たち", beat: "連絡のあった共用ブースへ、借りる道具を受け取りに向かう。" };
-  if (today === 9 && record?.preparation?.read && !record.service?.read)
+  // 片づけの後の合間（serviceBreak）を読み終えるまでが、DAY9の夜の仕事
+  if (today === 9 && record?.preparation?.read && !(record.service?.read && read(value, CH4_STAFF_IDS.serviceBreak)))
     return { id: "service", label: "海の向こうで、一人に出す", beat: "道具を受け取った共用ブースで、あのスタッフに声をかけられた。" };
   return null;
 }
@@ -56,9 +60,11 @@ export function chapterFourStaffSceneAllowed(value, id) {
   if (id === CH4_STAFF_IDS.notice) return event === "notice";
   if (id === CH4_STAFF_IDS.preparation) return event === "preparation" && !record?.preparation?.introRead;
   if (id === CH4_STAFF_IDS.prepared) return event === "preparation" && !!record?.preparation?.introRead && !record.preparation.workDone;
+  if (id === CH4_STAFF_IDS.prepBreak) return event === "preparation" && !!record?.preparation?.workDone && !record.preparation.read;
   if (id === CH4_STAFF_IDS.notebook) return event === "preparation" && !!record?.preparation?.workDone && !record.preparation.read;
   if (id === CH4_STAFF_IDS.order) return event === "service" && !record?.service?.introRead;
   if (id === CH4_STAFF_IDS.returned) return event === "service" && !!record?.service?.careDone && !record.service.read;
+  if (id === CH4_STAFF_IDS.serviceBreak) return event === "service" && !!record?.service?.read;
   const tournament = value?.chapter === 4 && value.flags?._ch4?.routeVersion === 2
     && day(value) === 14 && value.flags._ch4.part === "tournament";
   if (id === CH4_STAFF_IDS.echo) return tournament && !!record?.service?.read && !value.flags._ch4.match?.result;
@@ -113,7 +119,7 @@ export async function runChapterFourStaffNight(value, { read: readScene, adjust,
   };
   if (event.id === "notice") return finish(CH4_STAFF_IDS.notice);
   if (event.id === "preparation") {
-    for (const id of [CH4_STAFF_IDS.preparation, CH4_STAFF_IDS.prepared, CH4_STAFF_IDS.notebook])
+    for (const id of [CH4_STAFF_IDS.preparation, CH4_STAFF_IDS.prepared, CH4_STAFF_IDS.prepBreak, CH4_STAFF_IDS.notebook])
       if (!await finish(id)) return false;
     return true;
   }
@@ -123,7 +129,9 @@ export async function runChapterFourStaffNight(value, { read: readScene, adjust,
     if (!live() || !recordChapterFourStaffCare(value, cs)) return false;
     save();
   }
-  return finish(CH4_STAFF_IDS.returned);
+  // 片づけ（returned）を読み終えた後に、同じ夜の中で合間を一本（中断なら、次はこの合間だけ）
+  if (!await finish(CH4_STAFF_IDS.returned)) return false;
+  return finish(CH4_STAFF_IDS.serviceBreak);
 }
 
 /** 中断後の実選択だけを復元し、後日の記憶も完了した体験から組み立てる。読み取りでは保存を変えない。 */

@@ -52,12 +52,21 @@ for (const choice of ["tools", "seats"]) {
   const restored = dialogue(value, all[ids.preparation]);
   assert(!restored.lines.some(line => line.type === "choice"));
   assert.match(text(restored), choice === "tools" ? /器具の番号を見る/ : /俺は席と水を見る/);
+  const reads = [];
   assert(await run(value, { read: async id => {
+    reads.push(id);
     if (id === ids.prepared) { assert(work(value).preparation.introRead); assert.equal(work(value).preparation.workDone, undefined); }
-    if (id === ids.notebook) { assert(work(value).preparation.workDone); assert.equal(work(value).preparation.read, undefined); }
+    // 合間（#3097 計画 4-7）は準備を終えた後・ノートの前。仕事の記録は進めない
+    if (id === ids.prepBreak) { assert(work(value).preparation.workDone); assert.equal(work(value).preparation.read, undefined); }
+    if (id === ids.notebook) {
+      assert(work(value).preparation.workDone); assert.equal(work(value).preparation.read, undefined);
+      assert.equal(value.flags._ch4.read[ids.prepBreak], true, "the break is saved before the notebook");
+    }
     return true;
   }, save: () => saves++ }));
-  assert.equal(saves, 3); assert(work(value).preparation.read); assert.equal(due(value), null);
+  assert.deepEqual(reads, [ids.preparation, ids.prepared, ids.prepBreak, ids.notebook]);
+  assert.equal(saves, 4); assert(work(value).preparation.read); assert.equal(due(value), null);
+  assert.deepEqual(Object.keys(work(value).preparation).sort(), ["choice", "introRead", "read", "workDone"], "the break adds no work record");
   assert.deepEqual(preserved(value), before);
   date(value, 9);
   const order = text(dialogue(value, all[ids.order]));
@@ -82,12 +91,16 @@ for (const choice of ["tools", "seats"]) {
 for (const prep of ["tools", "seats"]) for (const order of ["sweetness", "strength"])
   for (const [score, failed, expected] of [[85, false, "good"], [30, false, "rough"], [0, "cold", "failed"]])
     for (const [coals, place] of [[0, null], [1, "outer"], [2, "std"], [3, "inner"]]) {
-      const value = prepared(prep), before = preserved(value); let adjusted = 0, saves = 0;
+      const value = prepared(prep), before = preserved(value); let adjusted = 0, saves = 0; const reads = [];
       assert(await run(value, { read: async id => {
+        reads.push(id);
         if (id === ids.order) assert(choose(value, id, "ch4_staff_order_choice", order));
+        // 合間（#3097 計画 4-7）は、どの結果でも片づけ（returned）を読み終えた後
+        if (id === ids.serviceBreak) { assert(work(value).service.read); assert.equal(work(value).service.result, expected); }
         return true;
       }, adjust: async actual => { assert.equal(actual, order); adjusted++; return care(score, { failed, coals, place }); }, save: () => saves++ }));
-      assert.equal(adjusted, 1); assert.equal(saves, 3);
+      assert.deepEqual(reads, [ids.order, ids.returned, ids.serviceBreak]);
+      assert.equal(adjusted, 1); assert.equal(saves, 4); assert.equal(value.flags._ch4.read[ids.serviceBreak], true);
       const service = work(value).service;
       assert.equal(service.choice, order); assert(service.introRead); assert(service.careDone); assert(service.read);
       assert.equal(service.result, expected); assert.equal(service.adjustment.coals, coals); assert.equal(service.adjustment.place, place);
@@ -129,7 +142,87 @@ for (const prep of ["tools", "seats"]) for (const order of ["sweetness", "streng
   assert(work(value).service.careDone); assert.equal(work(value).service.read, undefined);
   value = saved(value); const reads = [];
   assert(await run(value, { read: async id => { reads.push(id); return true; }, adjust: () => assert.fail("Completed care repeated"), save: () => {} }));
-  assert.deepEqual(reads, [ids.returned]);
+  assert.deepEqual(reads, [ids.returned, ids.serviceBreak]);
+}
+
+// 合間（#3097 計画 4-7）の途中で中断・LOADしても、済んだ仕事を繰り返さず合間だけを読む。夜の仕事は合間を読み終えるまで続く。
+{
+  let value = notice();
+  assert.equal(await run(value, { read: async id => {
+    if (id === ids.preparation) choose(value, id, "ch4_staff_prep_choice", "tools");
+    return id !== ids.prepBreak;
+  }, save: () => {} }), false);
+  assert(work(value).preparation.workDone); assert.equal(work(value).preparation.read, undefined);
+  assert.equal(value.flags._ch4.read[ids.prepBreak], undefined); assert.equal(due(value).id, "preparation");
+  value = saved(value); let reads = [];
+  assert(await run(value, { read: async id => { reads.push(id); return true; }, save: () => {} }));
+  assert.deepEqual(reads, [ids.prepBreak, ids.notebook]);
+  assert.equal(due(value), null);
+
+  date(value, 9);
+  const stopped = await run(value, { read: async id => {
+    if (id === ids.order) choose(value, id, "ch4_staff_order_choice", "sweetness");
+    return id !== ids.serviceBreak;
+  }, adjust: async () => care(30), save: () => {} });
+  assert.equal(stopped, false);
+  const service = structuredClone(work(value).service);
+  assert.equal(service.read, true); assert.equal(service.result, "rough");
+  assert.equal(value.flags._ch4.read[ids.serviceBreak], undefined);
+  assert.equal(due(value).id, "service", "an unread break keeps DAY9's night open");
+  assert.equal(choose(value, ids.order, "ch4_staff_order_choice", "strength"), false); assert.equal(recordCare(value, care()), false);
+  value = saved(value); reads = [];
+  assert(await run(value, { read: async id => { reads.push(id); return true; }, adjust: () => assert.fail("Completed care repeated"), save: () => {} }));
+  assert.deepEqual(reads, [ids.serviceBreak]);
+  assert.deepEqual(work(value).service, service, "the break leaves the order, care and result as they were");
+  assert.equal(due(value), null);
+  assert(!allowed(value, ids.serviceBreak) && !allowed(value, ids.prepBreak), "each break is read once");
+}
+
+// 合間は自分の夜の仕事の中だけ。準備の前・ノートの後・提供の前・大会の日には出さない。旧保存の済んだ仕事は繰り返さない。
+{
+  const value = notice();
+  assert.equal(due(value).id, "preparation");
+  assert(!allowed(value, ids.prepBreak), "not before the preparation work");
+  assert.equal(complete(value, ids.prepBreak), false);
+  const done = prepared();
+  assert(!allowed(done, ids.prepBreak), "not after the notebook (DAY9)");
+  assert(!allowed(done, ids.serviceBreak), "not before the service");
+  assert.equal(complete(done, ids.serviceBreak), false);
+  await serve(done);
+  date(done, 14); done.flags._ch4.part = "tournament";
+  assert(!allowed(done, ids.serviceBreak) && !allowed(done, ids.prepBreak), "not on the tournament day");
+  // 合間を足す前に DAY9 の仕事を終えた保存: 同じ DAY9 の夜なら合間だけを読む。翌日以降は救済しない
+  const legacy = prepared();
+  await serve(legacy);
+  delete legacy.flags._ch4.read[ids.serviceBreak];
+  const legacyService = structuredClone(work(legacy).service);
+  assert.equal(due(legacy).id, "service");
+  const reads = [];
+  assert(await run(legacy, { read: async id => { reads.push(id); return true; }, adjust: () => assert.fail("Legacy care repeated"), save: () => {} }));
+  assert.deepEqual(reads, [ids.serviceBreak]); assert.deepEqual(work(legacy).service, legacyService);
+  const later = prepared(); await serve(later); delete later.flags._ch4.read[ids.serviceBreak]; date(later, 10);
+  const untouched = saved(later);
+  assert.equal(due(later), null);
+  assert.equal(await run(later, { read: () => assert.fail("Past break replayed"), save: () => assert.fail("Old save altered") }), false);
+  assert.deepEqual(later, untouched);
+}
+
+// 合間の台本: 8〜12行、話者と表情は実在、時系列（大会の予告・結果）と恋愛に触れない。
+{
+  const characters = new Set(JSON.parse(fs.readFileSync(new URL("../../data/characters.json", import.meta.url))).map(c => c.id));
+  for (const id of [ids.prepBreak, ids.serviceBreak]) {
+    const scene = all[id];
+    assert(scene, `${id} has a script`);
+    assert(scene.lines.length >= 8 && scene.lines.length <= 12, `${id}: ${scene.lines.length} lines`);
+    for (const line of scene.lines) {
+      if (!line.speaker) { assert.match(line.text, /。$/, `${id}: narration ends with 。`); continue; }
+      assert(characters.has(line.speaker) || ["shop_clerk", "customer"].includes(line.speaker), `${id}: ${line.speaker}`);
+      assert.doesNotMatch(line.text, /。$/, `${id}: dialogue does not end with 。`);
+      if (line.face) assert(fs.existsSync(new URL(`../../assets/sprites/characters/${line.speaker}/chr_${line.speaker}_${line.face}.png`, import.meta.url)),
+        `${id}: ${line.speaker} ${line.face}`);
+    }
+    assert.doesNotMatch(text(scene), /大会|優勝|試合|審査|シェイク|恋|好き/, `${id} stays off the tournament and romance`);
+  }
 }
 
 // 調整中断と別保存へのLOADは結果を確定しない。未完了の調整だけを再開する。

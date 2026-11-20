@@ -279,6 +279,7 @@ export const FLAG_EXACT_RULES = [
   ["_camel_cups", "unlock"], // 大会の解放・中級認定・上級称号を周回へ残す
   ["_camel_name_done", "progression"], // ハビーバの名前の由来（ミニゲームのドラマ・SPC26）
   ["_camel_master_done", "progression"], // 上級を勝ち切った日の房飾り（SPC26）
+  ["_camel_stable_turn", "progression"], // ラクダレース場の待ち時間の場面を読んだ本数（#3097 計画 4-6・ch4-camel-progress.js）。周回では持ち越さない
   ["_club_yoru_request", "progression"], // クラブSEAMの常連のリクエスト（SPC26）
   ["_club_yoru_last_set", "progression"], // 閉店前にヨルと交代で回す夜（SPC26）
   ["_ch4_morning_done", "progression"], // 大会当日の朝を読み終えた（ch4-morning.js・SPC28）。周回では持ち越さない
