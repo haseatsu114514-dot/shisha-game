@@ -6,7 +6,7 @@ import { readFileSync } from "node:fs";
 import {
   createFloorNight, floorTick, floorAct, floorTap, floorResult, floorHint, floorBill, floorMaking, floorHand, floorShuffleLeft, floorShuffleTime, floorPlan,
   floorWaitLeft, floorStayLeft, floorCoalLeft, floorTendDue, floorFeverLevel, floorFace, floorStage, floorTimeLeft, floorClock,
-  mixName, mixNameParts, mixRatings, evaluateMix, pickNight, floorOrderWait, floorFeverLength, floorSlots, FLOOR_TABLE_COUNT,
+  mixName, mixNameParts, mixFlavorNames, mixFlavorParts, mixFullName, mixRatings, evaluateMix, pickNight, floorOrderWait, floorFeverLength, floorSlots, FLOOR_TABLE_COUNT,
 } from "../js/daily/tonari-floor-model.js";
 import {
   PRICE, FLAVORS, MIXES, WISHES, WISH_IDS, HAND_SIZE, GUESTS, VISITORS, CALLS, VERBS, NIGHTS, RANKS, MOODS, SERVE_LINES, SEND_LINES, mixIdsFor, mixChapter,
@@ -54,6 +54,9 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
     assert.equal(f.family, wishOfCategory[source.category], `${f.id}: 属性は本編の系統（${source.category}）から`);
     assert.equal(f.chapter, source.chapter_min ?? 1, `${f.id}: 出回る章は本編と同じ`);
     assert.ok(source.name.endsWith(f.label) || f.label.length <= 5, `${f.id}: 呼び名は短い`);
+    // （）に出す名前は、本編のフレーバー名からメーカー名を除いたもの（わたあめ＝コットンキャンディ など、呼び名と違う物もそのまま出す）
+    assert.equal(f.full, source.name.split(" ").slice(1).join(" "), `${f.id}: 材料として出す名前は、本編の名前`);
+    assert.ok(f.fullParts.join("") === f.full && f.fullParts.every((part) => part.length >= 1 && part.length <= 6), `${f.id}: 狭い札では、6字までの切れ目で折れる`);
     assert.ok(f.also.every((wish) => WISH_IDS.includes(wish) && wish !== f.family));
   }
   assert.ok(Object.keys(MIXES).length >= 70, "ミックスは、一覧に並びきらない数がある");
@@ -67,6 +70,11 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
     assert.ok(mixNameParts(id).every((part) => part.length <= 5) && mixNameParts(id).join("") === name && !name.includes("｜"), `狭い札では、5字までの切れ目で折れる: ${name}`);
     assert.ok(!names.has(name), `同じ名前が二つ無い: ${name}`);
     names.add(name);
+    // 名前のあとに、使ったフレーバーを必ず（）で添える。グラム数は出さない（TFL44）
+    assert.deepEqual(mixFlavorNames(id), mix.flavors.map((f) => FLAVORS[f].full));
+    assert.deepEqual(mixFlavorParts(id).map((words) => words.join("")), mixFlavorNames(id));
+    assert.equal(mixFullName(id), `${name}（${mixFlavorNames(id).join("・")}）`);
+    assert.ok(/^[^（）]+（[^（）0-9０-９]+）$/.test(mixFullName(id)) && !/グラム|[0-9０-９]\s*g/i.test(mixFullName(id)), mixFullName(id));
     // 属性は、メイン一つと、あればサブ一つ。メインは材料の属性（family）から、サブは材料の family か also から選ぶ
     const has = (wish) => mix.flavors.some((f) => FLAVORS[f].family === wish || FLAVORS[f].also.includes(wish));
     assert.ok(WISH_IDS.includes(mix.main) && mix.flavors.some((f) => FLAVORS[f].family === mix.main), `${name}: メインの属性が材料の系統にある`);
@@ -108,6 +116,14 @@ test("ミックスの属性: メイン＝◎・サブ＝○・ほか＝×。提�
   assert.equal(mixName("chocomint"), "チョコミント");
   assert.deepEqual(mixNameParts("chocomint"), ["チョコ", "ミント"]);
   assert.deepEqual(mixNameParts("lemonmint"), ["レモン", "ミント"]);
+  // 名前だけでは材料が分からないミックスも、（）を見れば分かる
+  assert.equal(mixFullName("cottoncandy"), "わたあめ（コットンキャンディ）");
+  assert.equal(mixFullName("cafemocha"), "カフェモカ（コーヒー・チョコレート）");
+  assert.equal(mixFullName("milktea"), "ミルクティー（アールグレイ・ミルク）");
+  assert.equal(mixFullName("caramelnuts"), "キャラメルナッツ（キャラメル・ヘーゼルナッツ）");
+  assert.equal(mixFullName("lemonmint"), "レモンミント（レモン・ミント）");
+  assert.deepEqual(mixFlavorParts("cottoncandy"), [["コットン", "キャンディ"]]);
+  assert.deepEqual([mixFlavorNames("nothing"), mixFlavorParts("nothing")], [[], []]);
   const order = { wish: "fresh" };
   const best = evaluateMix("lemonmint", order), good = evaluateMix("watermelonkiwi", order), none = evaluateMix("caramelmilk", order);
   assert.deepEqual([best.rating, good.rating, none.rating], ["best", "good", "none"]);
@@ -178,6 +194,7 @@ test("注文: 並んでいるミックスから選ぶ。出すと次の一つが
   const hand = floorHand(s, wishOf(s, 1).wish);
   assert.deepEqual(hand.map((h) => h.id), s.hand);
   assert.ok(hand.every((h) => h.name === mixName(h.id) && h.rating === h.ratings[wishOf(s, 1).wish]));
+  assert.ok(hand.every((h) => h.recipe.length >= 1 && h.recipe.join("・") === mixFlavorNames(h.id).join("・")), "一覧の札は、使ったフレーバーを持つ");
   assert.ok(hand.every((h) => h.main === MIXES[h.id].main && h.sub === MIXES[h.id].sub), "並んでいる札に、メインとサブの属性が付く");
   const outside = s.deck[3];
   assert.equal(floorAct(s, { type: "order", tableId: 1, mix: outside }), s, "並んでいないミックスは出せない");

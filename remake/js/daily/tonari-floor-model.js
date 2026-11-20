@@ -66,6 +66,12 @@ function roll(s) {
 export const mixNameParts = (id) => (MIXES[id]?.name ? MIXES[id].name.split("｜") : (MIXES[id]?.flavors || []).map((f) => FLAVORS[f].label));
 /** ミックスの名前（材料の名前をつなげる。決まった名前があればそれ）。 */
 export const mixName = (id) => mixNameParts(id).join("");
+/** ミックスに使ったフレーバーの名前（本編の名前。グラム数は出さない）。 */
+export const mixFlavorNames = (id) => (MIXES[id]?.flavors || []).map((f) => FLAVORS[f].full);
+/** 同じ名前を、狭い札で折ってよい切れ目ごとに分けた形（フレーバーごとに、語の配列）。 */
+export const mixFlavorParts = (id) => (MIXES[id]?.flavors || []).map((f) => [...FLAVORS[f].fullParts]);
+/** 名前のあとに、使ったフレーバーを（）で添えた書き方。例: わたあめ（コットンキャンディ）。 */
+export const mixFullName = (id) => `${mixName(id)}（${mixFlavorNames(id).join("・")}）`;
 /** ミックスと、4つの気分との合い方。メインの属性＝◎（best）、サブの属性＝○（good）、ほか＝×（none）。 */
 export function mixRatings(id) {
   const mix = MIXES[id];
@@ -563,7 +569,7 @@ export function floorPlan(s) {
 }
 /** 並んでいるミックス（一覧）。wish を渡すと、その気分との合い方 rating も付く。 */
 export function floorHand(s, wish = null) {
-  return s.hand.map((id) => { const ratings = mixRatings(id); return { id, name: mixName(id), flavors: [...MIXES[id].flavors], main: MIXES[id].main, sub: MIXES[id].sub, ratings, rating: wish ? ratings[wish] : null }; });
+  return s.hand.map((id) => { const ratings = mixRatings(id); return { id, name: mixName(id), flavors: [...MIXES[id].flavors], recipe: mixFlavorNames(id), main: MIXES[id].main, sub: MIXES[id].sub, ratings, rating: wish ? ratings[wish] : null }; });
 }
 /** 入れ替えが済むまでの刻み（0 なら並んでいる。0 より大きい間は、ミックスを出せず、シャッフルも重ねられない）。 */
 export const floorShuffleLeft = (s) => Math.max(0, s.shuffleAt - s.t);

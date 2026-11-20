@@ -233,6 +233,12 @@ await suite("tonari-floor", async (check) => {
       assert.deepEqual(await page.locator(".tf-preset").evaluateAll((list) => list.map((n) => [n.dataset.mix, n.dataset.rating, n.querySelector(".tf-match")?.textContent || "",
         n.querySelector(".tf-attr").dataset.main, n.querySelector(".tf-attr").dataset.sub, n.querySelectorAll(".tf-attr svg").length])),
         first.map((m) => [m.id, m.rating, m.rating === "none" ? "" : MARK[m.rating], m.main, m.sub || "", m.sub ? 2 : 1]));
+      // ミックス名の下に、使ったフレーバーを必ず（）で出す（グラム数は出さない）。名前も材料も、札からはみ出さない
+      const recipes = await page.locator(".tf-preset").evaluateAll((list) => list.map((n) => { const row = n.getBoundingClientRect(), name = n.querySelector(".tf-preset-name").getBoundingClientRect(), rec = n.querySelector(".tf-recipe").getBoundingClientRect();
+        return { text: n.querySelector(".tf-recipe").textContent, label: n.getAttribute("aria-label"), inside: name.top >= row.top - 0.5 && rec.bottom <= row.bottom + 0.5 && rec.right <= row.right + 0.5 && name.bottom <= rec.top + 1 }; }));
+      assert.deepEqual(recipes.map((r) => r.text), first.map((m) => `（${m.recipe.join("・")}）`));
+      assert(recipes.every((r) => r.inside), `右の列の札から、名前か材料がはみ出す: ${JSON.stringify(recipes)}`);
+      assert(recipes.every((r, i) => r.label.startsWith(`${first[i].name}（${first[i].recipe.join("・")}）`) && !/\d\s*g|グラム/.test(r.text)), JSON.stringify(recipes));
       // 属性の印: メインはサブより大きく、色はその気分の色
       const badge = await page.locator(".tf-preset .tf-attr").first().evaluate((n) => { const main = n.querySelector(".tf-attr-main").getBoundingClientRect(), sub = n.querySelector(".tf-attr-sub")?.getBoundingClientRect();
         return { main: main.width, sub: sub?.width ?? 0, color: getComputedStyle(n.querySelector(".tf-attr-main")).backgroundColor }; });
@@ -257,7 +263,7 @@ await suite("tonari-floor", async (check) => {
         if (/tf-(seat|bonus|pause-button|ticker|preset|shuffle)$/.test(box.cls)) assert(Math.min(box.w, box.h) >= 40, `${box.cls} が小さい: ${box.w}x${box.h}`);
       }
       assert.equal(await page.evaluate(() => document.querySelector(".tonari-floor").scrollLeft), 0);
-      // 上の帯は左から「仕込み中の一台・残り時間・売上」、下の帯は「卓のドック・出来事の行」。右の列は上から「シャッフル・ミックスの一覧・フィーバー」で、画面の下まで
+      // 上の帯は左から「仕込み中の一台・残り時間・売上・休止」、下の帯は「卓のドック・出来事の行」。右の列は上から「シャッフル・ミックスの一覧・フィーバー」で、画面の上の端から下の端まで
       const bands = await page.evaluate(() => {
         const rect = (sel) => document.querySelector(sel).getBoundingClientRect();
         const x = (sel) => { const r = rect(sel); return (r.left + r.right) / 2; };
@@ -269,13 +275,15 @@ await suite("tonari-floor", async (check) => {
         const y = (sel) => { const r = rect(sel); return [r.top, r.bottom]; };
         const inSide = (sel) => { const r = rect(sel); return r.left >= side.left - 1 && r.right <= side.right + 1 && r.top >= side.top - 1 && r.bottom <= side.bottom + 1; };
         return { top: [x(".tf-making"), x(".tf-clock"), x(".tf-sales")], bottom: [x(".tf-dock"), x(".tf-ticker")], center: (stage.left + stage.right) / 2,
-          side: { left: side.left, top: side.top, bottom: side.bottom }, sideRight: side.left > (stage.left + stage.right) / 2, hud: top.bottom, foot: bottom.top, footRight: bottom.right, stageBottom: stage.bottom, tags,
+          side: { left: side.left, top: side.top, bottom: side.bottom }, sideRight: side.left > (stage.left + stage.right) / 2, hud: top.bottom, hudTop: top.top, foot: bottom.top, footRight: bottom.right, stageBottom: stage.bottom, tags,
+          topRight: Math.max(rect(".tf-sales").right, rect(".tf-pause-button").right), salesPause: [rect(".tf-sales").right, rect(".tf-pause-button").left], clockSales: [rect(".tf-clock").right, rect(".tf-sales").left],
           column: [y(".tf-presets-head"), y(".tf-preset-box"), y(".tf-bonus")], inSide: [".tf-shuffle", ".tf-preset-box", ".tf-bonus"].map(inSide), bonusInSide: !!document.querySelector(".tf-presets .tf-bonus"), bonusInFoot: !!document.querySelector(".tf-bottom .tf-bonus"),
           overflow: document.querySelector(".tf-presets").scrollWidth - document.querySelector(".tf-presets").clientWidth };
       });
       assert(bands.top[0] < bands.top[1] && bands.top[1] < bands.top[2] && Math.abs(bands.top[1] - bands.center) < 4, "残り時間は上のまん中");
       assert(bands.bottom[0] < bands.bottom[1], "下の帯の並び");
-      assert(bands.sideRight && bands.side.top >= bands.hud - 2 && bands.side.bottom <= bands.stageBottom + 1 && bands.side.bottom >= bands.foot, "右の列は、上の帯の下から画面の下まで");
+      assert(bands.sideRight && Math.abs(bands.side.top - bands.hudTop) <= 2 && bands.side.bottom <= bands.stageBottom + 1 && bands.side.bottom >= bands.foot, "右の列は、画面の上の端から下の端まで");
+      assert(bands.topRight <= bands.side.left - 2 && bands.salesPause[0] <= bands.salesPause[1] && bands.clockSales[0] <= bands.clockSales[1], `売上と休止は、残り時間と右の列のあいだに収まる: ${JSON.stringify([bands.clockSales, bands.salesPause, bands.topRight, bands.side.left])}`);
       assert(bands.footRight <= bands.side.left + 2, `下の帯が右の列に被る: ${bands.footRight} > ${bands.side.left}`);
       // フィーバーのボタンとゲージは、右の列のいちばん下（下の帯には置かない）
       assert.deepEqual([bands.bonusInSide, bands.bonusInFoot, bands.inSide, bands.overflow <= 1], [true, false, [true, true, true], true]);
@@ -302,6 +310,11 @@ await suite("tonari-floor", async (check) => {
       assert.equal((await page.locator(".tf-sheet-kind").innerText()).trim(), label1);
       assert.deepEqual(await page.locator(".tf-mix-option").evaluateAll((list) => list.map((n) => [n.dataset.mix, n.querySelector("b").textContent, n.querySelector(".tf-rate").textContent, n.querySelector(".tf-attr").dataset.main])),
         first.map((m) => [m.id, m.name, MARK[m.rating], m.main]), "並んでいるミックス（属性の印つき）と、客の気分との合い方");
+      // 名前の下に、使ったフレーバー（）。札の中に収まり、合い方の印に被らない
+      const optionRecipes = await page.locator(".tf-mix-option").evaluateAll((list) => list.map((n) => { const row = n.getBoundingClientRect(), text = n.querySelector(".tf-mix-text").getBoundingClientRect(), rec = n.querySelector(".tf-recipe").getBoundingClientRect(), rate = n.querySelector(".tf-rate").getBoundingClientRect();
+        return { text: n.querySelector(".tf-recipe").textContent, inside: text.top >= row.top - 0.5 && rec.bottom <= row.bottom + 0.5 && rec.right <= rate.left + 0.5 }; }));
+      assert.deepEqual(optionRecipes.map((r) => r.text), first.map((m) => `（${m.recipe.join("・")}）`));
+      assert(optionRecipes.every((r) => r.inside), JSON.stringify(optionRecipes));
       assert.equal(await page.locator(".tf-sheet small:not(.tf-shuffle-cost)").count(), 0, "説明の文は置かない（印と色で読む。シャッフルの秒数だけ出す）");
       // 接客の画面: 左に大きな選択肢、右に卓の様子（店内のその卓の絵・客の顔・客の言葉）。店内の帯・一覧・卓の札は隠れ、UI の上に UI が重ならない
       const view = await page.evaluate(() => {
@@ -421,6 +434,9 @@ await suite("tonari-floor", async (check) => {
       await api((a) => { const x = a.state().tables[0]; x.wants = []; x.mood = 70; });
       await table(1).click();
       assert.equal(await spot(1).locator(".tf-pop").last().innerText(), "炭はまだ大丈夫");
+      // 同じ卓に続けて言葉が出ても、重ねない（新しい言葉に替わる）
+      await table(1).click();
+      assert.deepEqual([await spot(1).locator(".tf-pop").count(), await spot(1).locator(".tf-pop").innerText()], [1, "炭はまだ大丈夫"]);
       assert.equal(await api((a) => a.state().counts.tend), 0);
       await until("C.model.floorTendDue(s, 1)", [1]);
       assert.match(await tagText(1), /^炭の調整 /);
@@ -450,6 +466,9 @@ await suite("tonari-floor", async (check) => {
       assert.match(await page.locator(".tf-visit .tf-sheet-quote").innerText(), /^「.+」$/);
       assert.deepEqual(await page.locator(".tf-visit-info").evaluate((n) => [!!n.querySelector(".tf-visit-mix .tf-attr"), !!n.querySelector(".tf-visit-face svg"), [...n.querySelectorAll(".tf-visit-bars small")].map((x) => x.textContent), /円$/.test(n.querySelector(".tf-visit-bill strong").textContent)]),
         [true, true, ["満足", "滞在", "炭"], true]);
+      // 出している一台は、名前と、使ったフレーバー（）
+      assert.equal(await page.locator(".tf-visit-mix .tf-mix-text").evaluate((n) => `${n.querySelector("b").textContent}${n.querySelector(".tf-recipe").textContent}`),
+        await page.evaluate(() => { const s = C.view.floorTest.api.state(); return C.model.mixFullName(s.tables.find((x) => x.id === Number(document.querySelector(".tf-visit-no").textContent.replace(/\D/g, ""))).mix); }));
       assert.deepEqual(await page.locator(".tf-sheet .tf-option b").allInnerTexts().then((list) => list.map((s) => s.replace(/\s/g, ""))),
         ["炭を替える", "炭を下ろす", "お水を出す", "吸い方を案内する", "雑談する"]);
       const t1 = await api((a) => a.state().t);
@@ -533,6 +552,8 @@ await suite("tonari-floor", async (check) => {
         return { names: rows.map((r) => r[0].replace(/（\d+杯）/, "")), sum: rows.slice(1, 5).reduce((total, r) => total + yen(r[1]), 0),
           total: yen(document.querySelector('[data-test="tonari-floor-final-sales"]').textContent), text: document.querySelector(".tf-slip").textContent,
           fans: document.querySelector('[data-test="tonari-floor-fans"]').textContent, mixes: document.querySelectorAll(".tf-slip-mixes li").length,
+          recipes: [...document.querySelectorAll(".tf-slip-mixes li")].map((li) => { const rec = li.querySelector(".tf-recipe"), box = li.getBoundingClientRect(), r = rec?.getBoundingClientRect();
+            return rec ? [/^（[^（）]+）$/.test(rec.textContent), r.right <= box.right + 0.5 && r.bottom <= box.bottom + 0.5] : null; }),
           inside: card.top >= stage.top - 1 && card.bottom <= stage.bottom + 1 };
       });
       assert.deepEqual(slip.names, ["お迎えした組", "チャージ", "シーシャ", "ドリンク", "トップ替え（おかわり）"]);
@@ -541,6 +562,7 @@ await suite("tonari-floor", async (check) => {
       assert.match(slip.text, /いい調整 \d+回・いいケア \d+回・追加ドリンク \d+杯・おかわり \d+組・フィーバー 1回/);
       assert.match(slip.fans, /^店のファン [＋−]\d+人（合計 \d+人）$/);
       assert(slip.mixes >= 1 && slip.inside, "精算の札が舞台に収まる");
+      assert(slip.recipes.every((r) => r && r[0] && r[1]), `好評だったミックスにも、使ったフレーバーが切れずに出る: ${JSON.stringify(slip.recipes)}`);
       await page.screenshot({ path: `${shots}/tonari-floor-${platform}-result.png` }).catch(() => {});
       await page.locator(t("option-continue")).click();
       await page.waitForFunction(() => window.result !== undefined);

@@ -14,7 +14,7 @@ import { buildVersioned } from "../core/asset-version.js";
 import {
   createFloorNight, floorTick, floorAct, floorTap, floorHint, floorResult, floorUrgency, floorWaitLeft,
   floorStayLeft, floorCoalLeft, floorTendDue, floorMaking, floorHand, floorShuffleLeft, floorTimeLeft, floorStage, floorBill, floorFeverLevel,
-  mixName, mixNameParts, floorPlan, floorFeverLength, floorSlots, floorShuffleTime, FLOOR_TICK_MS, FLOOR_TABLE_COUNT,
+  mixName, mixNameParts, mixFlavorParts, mixFullName, floorPlan, floorFeverLength, floorSlots, floorShuffleTime, FLOOR_TICK_MS, FLOOR_TABLE_COUNT,
 } from "./tonari-floor-model.js";
 import {
   MIXES, WISHES, VERBS, CALLS, MOODS, PRICE, VISITORS,
@@ -48,6 +48,18 @@ const quoted = (text) => (text.startsWith("（") ? text : `「${text}」`);
 const seconds = (ticks) => Math.ceil(ticks * FLOOR_TICK_MS / 1000);
 /** ミックスの名前を、決まった切れ目でだけ折れる形にする。 */
 const mixSpans = (id) => mixNameParts(id).map((text) => el("span", { text }));
+// 使ったフレーバー: ミックス名のあとに、必ず（）で添える（2026-11-20 オーナー「ミックス名はわたあめとかにしてもいいけど
+// 必ず()で何のフレーバー使ったミックスなのかお願い。グラム数までは書かなくていい」・TFL44）。
+// 狭い札では、まずフレーバーの切れ目（・のあと）で折れ、1つが1行に収まらない時だけ、長い名前の語の切れ目（データの「｜」）で折れる。
+// 括弧は、隣の語から離れない
+const recipeNode = (id) => {
+  const flavors = mixFlavorParts(id);
+  return el("span.tf-recipe", {}, flavors.map((words, i) => el("span.tf-recipe-flavor", {}, words.map((text, w) => el("span", {}, [
+    i === 0 && w === 0 ? el("i.tf-paren", { text: "（", dataset: { side: "open" } }) : null,
+    `${text}${w === words.length - 1 && i < flavors.length - 1 ? "・" : ""}`,
+    i === flavors.length - 1 && w === words.length - 1 ? el("i.tf-paren", { text: "）", dataset: { side: "close" } }) : null,
+  ])))));
+};
 /** 気分（＝属性）の札: 色と印と名前。 */
 function wishChip(id) {
   return el("span.tf-wish", { dataset: { wish: id }, style: { "--c": WISH[id].color } }, [glyph(WISH_ICON[id]), el("span", { text: WISH[id].label })]);
@@ -300,7 +312,8 @@ export function runTonariFloor({
       const spot = refs.spots[id - 1];
       if (!spot) return;
       const node = el("span.tf-pop", { dataset: { kind } }, [mark ? glyph(MARK[mark]) : null, el("span", { text })]);
-      spot.fx.append(node);
+      // 同じ卓に続けて出た時は、新しい言葉に替える（言葉の上に言葉を重ねない。出来事の行には両方残る。TFL39）
+      spot.fx.replaceChildren(node);
       node.addEventListener("animationend", () => node.remove(), { once: true });
       setTimeout(() => node.remove(), 1800);
     }
@@ -512,9 +525,9 @@ export function runTonariFloor({
         side.dataset.wish = wish || "";
         side.style.setProperty("--c", wish ? WISH[wish].color : "transparent");
         handList.replaceChildren(...hand.map((mix, i) => el("button.tf-preset", {
-          type: "button", "aria-label": `${mix.name}（${WISH[mix.main].label}${mix.sub ? `・${WISH[mix.sub].label}` : ""}）${mix.rating ? `、${target.id}卓に${APT_MARK[mix.rating]}` : ""}`,
+          type: "button", "aria-label": `${mixFullName(mix.id)}、${WISH[mix.main].label}${mix.sub ? `・${WISH[mix.sub].label}` : ""}${mix.rating ? `、${target.id}卓に${APT_MARK[mix.rating]}` : ""}`,
           dataset: { ...test(`mix-${i}`), mix: mix.id, main: mix.main, rating: mix.rating || "" }, onclick: () => quickServe(mix.id),
-        }, [attrBadge(mix.id), el("span.tf-preset-name", {}, mixSpans(mix.id)), mix.rating && mix.rating !== "none" ? el("i.tf-match", { text: APT_MARK[mix.rating] }) : null])));
+        }, [attrBadge(mix.id), el("span.tf-preset-name", {}, mixSpans(mix.id)), recipeNode(mix.id), mix.rating && mix.rating !== "none" ? el("i.tf-match", { text: APT_MARK[mix.rating] }) : null])));
       }
       for (const spot of refs.spots) spot.root.dataset.target = String(String(target?.id || "") === spot.root.dataset.id);
       // 入れ替えの最中は、一覧を隠して進みを出す（ミックスは出せない）
@@ -709,9 +722,9 @@ export function runTonariFloor({
     // ミックスの札: 左に属性の印（メインが大きく、サブが小さい）、右に、この客との合い方（◎ ○ ×）
     function mixOption(mix, wish, onPick, i) {
       return el("button.tf-option.tf-mix-option", { type: "button", onclick: onPick,
-        "aria-label": `${mix.name}（${WISH[mix.main].label}${mix.sub ? `・${WISH[mix.sub].label}` : ""}）、${wish.label}の気分に${APT_MARK[mix.rating]}`,
+        "aria-label": `${mixFullName(mix.id)}、${WISH[mix.main].label}${mix.sub ? `・${WISH[mix.sub].label}` : ""}、${wish.label}の気分に${APT_MARK[mix.rating]}`,
         dataset: { ...test(`option-mix-${i}`), mix: mix.id, main: mix.main, rating: mix.rating } }, [
-        attrBadge(mix.id), el("b", { text: mix.name }), el("i.tf-rate", { text: APT_MARK[mix.rating], dataset: { rating: mix.rating } }),
+        attrBadge(mix.id), el("span.tf-mix-text", {}, [el("b", { text: mix.name }), recipeNode(mix.id)]), el("i.tf-rate", { text: APT_MARK[mix.rating], dataset: { rating: mix.rating } }),
       ]);
     }
     function renderPanel() {
@@ -752,7 +765,7 @@ export function runTonariFloor({
         ]),
         el("div.tf-visit-info", {}, [
           el("b", { text: guest.name }),
-          ordering ? wishChip(wish.id) : el("span.tf-visit-mix", {}, [attrBadge(table.mix), el("span", { text: mixName(table.mix) })]),
+          ordering ? wishChip(wish.id) : el("span.tf-visit-mix", {}, [attrBadge(table.mix), el("span.tf-mix-text", {}, [el("b", { text: mixName(table.mix) }), recipeNode(table.mix)])]),
           served ? el("span.tf-visit-face", {}, [glyph(stage.face)]) : null,
           served ? el("div.tf-visit-bars", {}, [bar("満足", "mood", table.mood / 100), bar("滞在", "stay", floorStayLeft(state, table.id)), bar("炭", "coal", floorCoalLeft(state, table.id))]) : null,
           el("span.tf-visit-bill", {}, [glyph("coin"), el("strong", { text: yen(floorBill(state, table.id)?.total || 0) })]),
@@ -910,7 +923,7 @@ export function runTonariFloor({
               el("p.tf-slip-stages", {}, MOODS.filter((m) => result.stages[m.id]).map((m) => el("span", { style: { "--c": m.color }, text: `${m.label} ${result.stages[m.id]}組` }))),
               el("h3", { text: "好評だったミックス" }),
               el("ul.tf-slip-mixes", {}, result.mixes.length ? result.mixes.map((m, i) => el("li", {}, [
-                el("span", {}, [el("b", { text: String(i + 1) }), attrBadge(m.id), ...mixSpans(m.id)]), el("small", { text: `${floorStage(m.avg).label}・${m.n}台` }),
+                el("span", {}, [el("b", { text: String(i + 1) }), attrBadge(m.id), el("span.tf-mix-text", {}, [el("span.tf-slip-mix", {}, mixSpans(m.id)), recipeNode(m.id)])]), el("small", { text: `${floorStage(m.avg).label}・${m.n}台` }),
               ])) : [el("li", {}, [el("small", { text: "提供できた一台がありませんでした" })])]),
             ]),
           ]),

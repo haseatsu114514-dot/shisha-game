@@ -24,7 +24,21 @@ export const WISH_IDS = Object.freeze(WISHES.map((w) => w.id));
 // id は本編と同じ。label＝ミックスの名前に使う短い呼び名（メーカー名は付けない）、family＝属性（本編の系統から決まる: fruit→フルーティ／sweet→スイート／
 // cooling→リフレッシュ／spice・floral→リラックス）、also＝サブに出来る属性（柑橘の爽やかさ、茶葉やスパイスの落ち着き、など）、chapter＝本編で出回る章。
 // 本編のデータとの食い違い（無い id・系統のずれ・章のずれ・大会で使えない物）は、remake/test/tonari_floor_model.mjs が止める。
-const flavor = (id, label, family, also = [], chapter = 1) => Object.freeze({ id, label, family, also: Object.freeze(also), chapter });
+// 本編でのフレーバー名（メーカー名を除いた部分）。ミックス名の後ろの（）に、使ったフレーバーとして出す（TFL44）。
+// label はミックス名を組むための短い呼び名なので、本編の名前と違う物と、長くて折れ目が要る物をここに書く
+// （「｜」は、狭い札で折ってよい所。data/flavors.json の名前と食い違うと検査で止まる）
+const FULL_NAMES = Object.freeze({
+  cool_mint: "クール｜ミント", blueberry_mint: "ブルーベリー｜ミント", ice_grape: "アイス｜グレープ", ice_lemon: "アイス｜レモン",
+  peppermint_shake: "ペパーミント｜シェイク", frozen_citrus: "フローズン｜シトラス", frozen_berry: "フローズン｜ベリー",
+  grapefruit: "グレープ｜フルーツ", pineapple: "パイナップル", blueberry: "ブルーベリー", strawberry: "ストロベリー",
+  lemon_tea: "レモン｜ティー", cherry: "レッド｜チェリー", passion_fruit: "パッション｜フルーツ", chocolate: "チョコレート",
+  cotton_candy: "コットン｜キャンディ", hazelnut: "ヘーゼル｜ナッツ", white_gummy_bear: "ホワイト｜グミベア", double_apple: "ダブル｜アップル",
+  black_tea: "ブラック｜ティー", white_musk: "ホワイト｜ムスク", sakura: "桜",
+});
+const flavor = (id, label, family, also = [], chapter = 1) => {
+  const parts = Object.freeze((FULL_NAMES[id] || label).split("｜"));
+  return Object.freeze({ id, label, full: parts.join(""), fullParts: parts, family, also: Object.freeze(also), chapter });
+};
 export const FLAVORS = Object.freeze(Object.fromEntries([
   // cooling（リフレッシュ）
   flavor("mint", "ミント", "fresh"), flavor("cool_mint", "クールミント", "fresh"), flavor("blueberry_mint", "ベリーミント", "fresh", ["fruit"]),
