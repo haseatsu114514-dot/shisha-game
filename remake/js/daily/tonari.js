@@ -215,7 +215,7 @@ async function baitoShift({ called, story, floor, owner, signal }) {
   const floorBonus = floorNight?.bonus || 0; // 営業の評価に応じた、店からの売上ボーナス
   // 仕事が早い（心得の盤のスキル K27。SBD154）: 基本の日当の1割を上乗せ
   const quickPay = growthSkill(owner, "K27") ? Math.round(basePay * SKILL_TUNING.baitoPay) : 0;
-  const pay = basePay + bonus + extra + rainPay + condition.shiftBonus + callingBonus + floorBonus + quickPay;
+  const pay = basePay + bonus + extra + rainPay + condition.shiftBonus + floorBonus + callingBonus + quickPay;
   await shiftClose();
   const closing = state.chapter >= 5 ? { lines: [
     { speaker: "", face: "", text: "今日の仕事を終えて、手取りを帳面に記した。" },
