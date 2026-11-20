@@ -44,6 +44,7 @@ import { buildRigRecord } from "./rig-record.js";
 import { buildRivalWindows } from "./rival-windows.js";
 import { demoFor, openDemoSheet } from "./demo.js";
 import { craftStageEnabled } from "./stage-layout.js";
+import { assistBenchNote } from "./retry-assist-level.js";
 
 // ライバルの顔アイコンを読むまでの間（作業台の準備が済んでから）
 const RIVAL_FACE_DELAY_MS = 1200;
@@ -169,7 +170,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   worker.footer.append(leaf.root);
   // 版（リニューアル／桜井版・CRN16）は CSS とカウントダウン（core/ui.js）が見る
   const root = el("div.bench", { dataset: { mode: cs.mode, chapter: cs.chapter, craftVersion: renewalCraft(cs) ? "renewal" : "sakurai" } }, [
-    el("div.bench-top", [el("span.bench-mode", [craftMode(cs, MODE_LABEL), el(cs.retryAssist ? "small.retry-assist" : "small", { text: cs.retryAssist ? "今回のみ操作補助" : craftModeNote(cs, MODE_NOTE) })]), progress]),
+    el("div.bench-top", [el("span.bench-mode", [craftMode(cs, MODE_LABEL), el(cs.retryAssist ? "small.retry-assist" : "small", { text: cs.retryAssist ? assistBenchNote(cs) : craftModeNote(cs, MODE_NOTE) })]), progress]),
     el("div.bench-left", [
       worker.root,
       audience?.root,

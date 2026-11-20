@@ -252,9 +252,12 @@ await suite("first-brew", async check => {
     const windows = await page.evaluate(async () => {
       const { skill } = await import("./js/craft/common.js"); const cs = T.session.newSession("tournament");
       const ordinary = { slow: skill.slow(cs), window: skill.window(cs) }; cs.retryAssist = true;
-      return { ordinary, easier: { slow: skill.slow(cs), window: skill.window(cs) }, stats: T.core.state.stats };
+      const easier = { slow: skill.slow(cs), window: skill.window(cs) }; cs.retryAssistLevel = 2;
+      return { ordinary, easier, easiest: { slow: skill.slow(cs), window: skill.window(cs) }, stats: T.core.state.stats };
     });
     assert(windows.easier.slow > windows.ordinary.slow && windows.easier.window > windows.ordinary.window);
+    // 6敗で選べるベリーイージー（WIN13）は、イージーより、さらに針が遅く判定が広い。
+    assert(windows.easiest.slow > windows.easier.slow && windows.easiest.window > windows.easier.window);
   });
 
   await check("third-recorded-loss-continue-retry", async page => {
@@ -286,7 +289,7 @@ await suite("first-brew", async check => {
     await shot(page, "continue-assist-question");
     await page.locator('[data-test="retry-assist-yes"]').click();
     await page.locator('.bench[data-mode="tournament"]').waitFor({ timeout: 45000 });
-    assert.match(await page.locator(".bench-mode").innerText(), /今回のみ操作補助/);
+    assert.match(await page.locator(".bench-mode").innerText(), /今回のみイージー/);
     assert.equal(await page.evaluate(() => T.core.state.tournament.retryAssist), true);
     await shot(page, "assisted-tournament");
   });

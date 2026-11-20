@@ -4,6 +4,7 @@ import { loadTournamentCraftDialogue } from "../core/data.js";
 import { awardTournamentExp } from "../core/growth.js";
 import { maxStamina } from "../core/stats.js";
 import { chooseRetryAssist } from "./retry-assist.js";
+import { chosenAssistLevel } from "../craft/retry-assist-level.js";
 import { applyAssistRecovery } from "./tournament-resources.js";
 import { play } from "../vn/engine.js";
 import { modal, retireScreen } from "../core/ui.js";
@@ -51,6 +52,7 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
     applyAssistRecovery(state, assisted, maxStamina());
     const cs = newSession("tournament");
     cs.retryAssist = assisted === true;
+    cs.retryAssistLevel = chosenAssistLevel(retry); // 3敗ごとに一段ずつ判定が広がる（WIN13）
     cs.eventTitle = "HAZE: GRAND SMOKE";
     cs.eventNote = "世界大会・一台を二度調整";
     if (!startChapterFourCraft(state, cs)) throw new Error("世界大会の開始地点を確認できません");

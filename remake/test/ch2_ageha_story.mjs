@@ -52,7 +52,7 @@ assert(!night(8), "8日目はサメのTRPG参加日");
 for (const step of CH2_NIGHTS.flatMap((n) => n.steps).filter((s) => s.file === "ch2_ageha_story")) assert(story[step.id], step.id);
 
 // 店に通う回: 7日目より前はギャル友→初めての客→雑誌取材の順、7日目以降はダメな日が先。全部読んだら null
-const save = { flags: {}, affinity: {ageha:66} };
+const save = { chapter: 2, flags: {}, affinity: {ageha:66} };
 assert.equal(agehaStoryScene(save, 3, story), AGEHA_VISITS[0]);
 assert.equal(agehaStoryScene(save, 7, story), AGEHA_BADDAY.id);
 for (const id of [AGEHA_BADDAY.id, ...AGEHA_VISITS]) {
@@ -61,6 +61,12 @@ for (const id of [AGEHA_BADDAY.id, ...AGEHA_VISITS]) {
 }
 assert.equal(agehaStoryScene(save, 9, story), null);
 assert.equal(agehaStoryScene({ flags: {} }, 9, {}), null, "台本が無ければいつもの会話");
+// #3922: 「ダメな日」は大会前の第2章だけ。大会後の準備期間（第3・4章）に初めて読ませない（再会で渡していない水の礼を受けるため）
+for (const chapter of [3, 4]) {
+  assert.equal(agehaStoryScene({ chapter, flags: {}, affinity: { ageha: 66 } }, 20, story), AGEHA_VISITS[0], `第${chapter}章は通う回へ`);
+  const visited = Object.fromEntries(AGEHA_VISITS.map((id) => [`_ch2_read_${id}`, true]));
+  assert.equal(agehaStoryScene({ chapter, flags: visited, affinity: { ageha: 66 } }, 20, story), null, `第${chapter}章で未読のダメな日を出さない`);
+}
 // 通う回とダメな日のあと、グミ→店の言葉→白いクマの席の順で一度ずつ（#3081）
 {
   const later = Object.fromEntries(AGEHA_LATER_SCENES.map((extra) => [extra.id, { lines: [{ speaker: "ageha", text: "a" }] }]));
@@ -68,13 +74,18 @@ assert.equal(agehaStoryScene({ flags: {} }, 9, {}), null, "台本が無ければ
   assert.equal(agehaLaterScene(save, later), AGEHA_LATER_SCENES[0].id);
   const unread = { ...save.flags };
   delete unread[`_ch2_read_${AGEHA_BADDAY.id}`];
-  assert.equal(agehaLaterScene({ flags: unread }, later), null, "ダメな日の前には出さない");
+  assert.equal(agehaLaterScene({ chapter: 2, flags: unread }, later), null, "ダメな日の前には出さない");
+  // #3922: 第2章の外では「ダメな日」が出ないので、読まずに大会を越えた保存も後日の三本へ進める
+  for (const chapter of [3, 4]) assert.equal(agehaLaterScene({ chapter, flags: unread }, later), AGEHA_LATER_SCENES[0].id, `第${chapter}章はダメな日を前提にしない`);
+  const notVisited = { ...unread };
+  delete notVisited[`_ch2_read_${AGEHA_VISITS.at(-1)}`];
+  assert.equal(agehaLaterScene({ chapter: 3, flags: notVisited }, later), null, "第3章でも通う回の前には出さない");
   let progressed = { ...save.flags };
   for (const [index, extra] of AGEHA_LATER_SCENES.entries()) {
-    assert.equal(agehaLaterScene({ flags: progressed }, later), extra.id);
+    assert.equal(agehaLaterScene({ chapter: 2, flags: progressed }, later), extra.id);
     progressed = { ...progressed, [extra.flag]: true };
     const next = AGEHA_LATER_SCENES[index + 1];
-    assert.equal(agehaLaterScene({ flags: progressed }, later), next ? next.id : null);
+    assert.equal(agehaLaterScene({ chapter: 2, flags: progressed }, later), next ? next.id : null);
   }
   const agehaFile = read("data/dialogue/ch1_ageha.json").dialogues;
   for (const extra of AGEHA_LATER_SCENES) {

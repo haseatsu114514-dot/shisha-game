@@ -75,6 +75,8 @@ const stubMods = {
   "../core/condition.js": synth("condition", ["craftCondition"], { craftCondition: noop }),
   // シーシャ作りの版（CRN16）。版の無い一台はリニューアル
   "../core/craft-version.js": synth("craft-version", ["renewalCraft"], { renewalCraft: (cs) => cs?.craftVersion !== "sakurai" }),
+  // 救済の段（WIN13）。この検査は入力だけを見るので、救済なしの倍率を返す。
+  "./retry-assist-level.js": synth("retry-assist-level", ["assistEffect"], { assistEffect: () => ({ slow: 1, window: 1, holesGood: 1, cool: 1 }) }),
 };
 
 // common-main.js を無改変で評価する。
