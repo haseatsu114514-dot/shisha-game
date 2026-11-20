@@ -513,8 +513,11 @@ export const FLAG_EXACT_RULES = [
   ["_outing_done_naru", "person"],
   ["_outing_done_rei", "person"],
   ["_outing_done_rio", "person"],
+  ["_outing_done_saku", "person"], // 綾取・スティーブ・ヴォルクの♥3の外出（#3097 PR-H）。東京の約束か大会後の寄り道で立つ
   ["_outing_done_samechan", "person"],
+  ["_outing_done_steve", "person"],
   ["_outing_done_tsumugi", "person"],
+  ["_outing_done_volk", "person"],
   ["_overwork", "progression"],
   ["_pakki_first_spin_pending", "pending"],
   ["_prep_flavor", "progression"],
