@@ -146,18 +146,20 @@ export const STAY_LABEL = Object.freeze({ short: "ショート", normal: "ふつ
 // 名もない客。常連帳・好感度は作らない（#1267）。rank＝要求の高さ（"plain" 一般 / "keen" こだわり）、
 // trait＝"beginner"（吸い方の案内が要る）/ "talker"（雑談を好む）、drinks＝追加ドリンクの上限。
 // name が [昼, 夜] の客は、シフトの時間帯で呼び名が変わる。
+// party＝一緒に来る人数。**一つの卓に座るのは一人だけ**（2026-11-20 オーナー「2人が一卓に座るのは無くす。2人同時にきたら1席1席で1人一台ずつ」・TFL51）。
+// 二人連れは同じ時に来て、空いている卓へ一人ずつ座り、注文・満足・会計も一人ずつ。name は一人ずつの呼び名（二人とも同じ呼び名で、卓の番号で見分ける）
 const guest = (id, name, party, stay, rank, trait, drinks, look) => Object.freeze({ id, name, party, stay, rank, trait, drinks, look: Object.freeze(look) });
 export const GUESTS = Object.freeze(Object.fromEntries([
   guest("first", "初めての方", 1, "normal", "plain", "beginner", 1, ["bob"]),
   guest("worker", ["仕事の合間の方", "仕事帰りの方"], 1, "short", "plain", null, 1, ["short"]),
-  guest("train", ["昼休みの二人", "終電前の二人"], 2, "short", "plain", "talker", 1, ["cap", "long"]),
+  guest("train", ["昼休みの方", "終電前の方"], 2, "short", "plain", "talker", 1, ["cap", "long"]),
   guest("reader", "読書の方", 1, "long", "plain", null, 2, ["glasses"]),
-  guest("walkers", "散歩帰りの二人", 2, "long", "plain", "talker", 2, ["pony", "short"]),
+  guest("walkers", "散歩帰りの方", 2, "long", "plain", "talker", 2, ["pony", "short"]),
   guest("nose", "香り好きの方", 1, "normal", "keen", null, 2, ["bun"]),
-  guest("students", "学生の二人", 2, "normal", "plain", "beginner", 1, ["curly", "cap"]),
-  guest("talkers", "話し込む二人", 2, "normal", "plain", "talker", 2, ["long", "bob"]),
+  guest("students", "学生さん", 2, "normal", "plain", "beginner", 1, ["curly", "cap"]),
+  guest("talkers", "話し好きの方", 2, "normal", "plain", "talker", 2, ["long", "bob"]),
   guest("elder", "年配の方", 1, "long", "keen", null, 2, ["hat"]),
-  guest("friends", "友だち同士の二人", 2, "long", "plain", "talker", 3, ["bun", "pony"]),
+  guest("friends", "友だち連れの方", 2, "long", "plain", "talker", 3, ["bun", "pony"]),
 ].map((g) => [g.id, g])));
 // たまに遊びに来る、本編の人物（2026-11-20 オーナー「好感度1以上の人物がたまにレアで遊びに来たりとかも入れたい」）。
 // 来る条件（顔見知り・好感度1以上・章）は tonari.js が決める。ここは気分と台詞だけ。台詞は大会の前後どちらでも通る言葉にする（交流の時系列ルール）。
@@ -219,9 +221,9 @@ export const SEND_LINES = Object.freeze({
 // title・forecast が [昼, 夜] のものは時間帯で変わる。回した回数（level）で、注文の種類とケアの見せ方が変わる（model）。
 const night = (id, title, forecast, length, arrive, cast) => Object.freeze({ id, title, forecast, length, arrive: Object.freeze(arrive), cast: Object.freeze(cast) });
 export const NIGHTS = Object.freeze({
-  first: night("first", "はじめてのワンオペ", "客足はゆっくり。まずは五組", 320, [4, 10, 70, 130, 190],
+  first: night("first", "はじめてのワンオペ", "客足はゆっくり。まずは六人", 320, [4, 10, 70, 130, 190],
     ["first", "worker", "train", "reader", "worker"]),
-  usual: night("usual", ["いつもの昼", "いつもの夜"], "いつもどおり。七組ほど", 360, [4, 9, 14, 80, 130, 180, 230],
+  usual: night("usual", ["いつもの昼", "いつもの夜"], "いつもどおり。十人ほど", 360, [4, 9, 14, 80, 130, 180, 230],
     ["first", "reader", "train", "walkers", "worker", "nose", "talkers"]),
   friday: night("friday", ["昼休みの波", "終電前の夜"], ["昼休みの短い客が続く", "終電までの短い客が続く"], 360, [4, 8, 12, 60, 100, 140, 180, 220, 260],
     ["train", "worker", "talkers", "worker", "students", "train", "nose", "worker", "first"]),
@@ -229,7 +231,7 @@ export const NIGHTS = Object.freeze({
     ["reader", "walkers", "elder", "first", "friends", "worker", "talkers"]),
   newcomers: night("newcomers", "初めてさんの日", "初めての客が多い", 360, [4, 9, 14, 70, 120, 170, 220, 260],
     ["first", "students", "first", "reader", "students", "worker", "first", "train"]),
-  full: night("full", "満席の日", "卓がずっと埋まりそうだ", 384, [4, 7, 10, 13, 16, 80, 120, 160, 200, 240, 270],
+  full: night("full", "満席の日", "卓がずっと埋まりそうだ", 384, [4, 8, 12, 16, 20, 90, 135, 180, 220, 255, 285],
     ["train", "nose", "walkers", "worker", "friends", "students", "elder", "train", "talkers", "worker", "reader"]),
 });
 /** [昼, 夜] で分かれる言葉を、シフトの時間帯で選ぶ。 */
