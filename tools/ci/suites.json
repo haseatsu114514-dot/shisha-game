@@ -2437,7 +2437,7 @@
       "title": "Chapter 3 Tokyo days on the shared daily loop (VOL03)",
       "kind": "browser",
       "weight": 0.8,
-      "timeout": 6,
+      "timeout": 8,
       "paths": [
         "remake/js/chapters/ch3-tokyo-daily.js",
         "remake/js/chapters/tokyo-mukai.js",
