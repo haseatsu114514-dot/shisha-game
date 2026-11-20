@@ -50,6 +50,16 @@ export function servedStateLine(cs) {
   return "香りはまだ遠い。次の調整で、もう少し立たせたい。";
 }
 
+// 優勝の夜、スミさんに「本番は何で行った」と聞かれた時の答え（#3916）。多い順に3系統まで、残りは数だけ。
+// 配合の良し悪しは言わない。配合が記録されていなければ null（台本の中立文を使う）。
+export function servedMixWords(cs) {
+  const dom = dominantAromas(cs);
+  if (!dom) return null;
+  const names = dom.groups.slice(0, 3).map(group => aromaName(group.topId));
+  const rest = dom.groups.length - names.length;
+  return names.join("と") + (rest > 0 ? `と、ほかに${rest}つ` : "");
+}
+
 // 固定だった「華やかさはない。個性も薄い」の代わりに差し込む地の文2行。
 export function servedEvaluationLines(cs) {
   return [servedTasteLine(cs), servedStateLine(cs)].map(text => ({ speaker: "", face: "", text }));

@@ -33,7 +33,7 @@ import { recordCg } from "../scenes/gallery.js";
 import { newSession, openBench, tickerSay, waitBenchReady, runDrill } from "../craft/session.js";
 import * as bc from "../craft/broadcast.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
-import { servedEvaluationLines } from "../craft/served-eval.js";
+import { servedEvaluationLines, servedMixWords } from "../craft/served-eval.js";
 import { naruTastingLine } from "../craft/naru-tasting.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime, regulationFor } from "../craft/steps.js";
 import { stepWater } from "../craft/water-view.js";
@@ -844,6 +844,8 @@ async function victory(cs) {
     clearContinueHistory(owner);
     owner.tournament.retryAssist = false;
     v.comment = (cs ? craftRecognition(cs) : null)?.comment || null;
+    // 優勝の夜にスミさんへ答える配合（#3916）。旧保存・記録なしは台本の中立文のまま。
+    v.mix = (cs ? servedMixWords(cs) : null) || null;
     addMoney(PRIZE);
     delete owner.tournament.stockSnap;
     delete owner.tournament.entryResources;
@@ -854,6 +856,8 @@ async function victory(cs) {
   const after = DB.dialogues.ch1_tournament_after;
   const tonariAt = after.lines.findIndex(line => line.type === "bg" && line.bg?.includes("bg_tonari_inside"));
   const lobby = BG("bg_c_station_lobby");
+  // 優勝の夜、スミさんに答える配合（#3916）。記録が無ければ台本の中立文のまま。
+  const withMix = lines => lines.map(line => line.cue === "ch1_mix" && v.mix ? { ...line, text: `${v.mix}です` } : line);
   // 大会後の数日は日常のslotを進めず描く。LOADでも各段の場所・時間を背景から確立する。
   const inScene = (bg, run) => async () => {
     await setBg(bgUrl(bg));
@@ -872,7 +876,7 @@ async function victory(cs) {
         ], close_label: "……はい。ありがとうございます、スミさん",
       },
     ], { time: "PM 6:52", title: "表彰式のあと" })),
-    inScene(TONARI_N, () => play({ ...after, lines: after.lines.slice(tonariAt) })),
+    inScene(TONARI_N, () => play({ ...after, lines: withMix(after.lines.slice(tonariAt)) })),
     inScene(TONARI_N, () => play("interval_day1_naru_lime")),
     inScene(TONARI_N, () => gainStat("guts", 1)),
     // 優勝の夜。記録を続ける博士の伏線へ。

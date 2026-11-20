@@ -1831,6 +1831,31 @@
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "会長から、地元大会で俺の台を二口吸ったわけを聞きました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "surprise",
+          "text": "……あいつ、喋ったか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "配合を聞いた時に、そうだろうと思った。笑っちまった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "教えてくれればよかったのに"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "俺の口から言う話じゃねえ。あいつの二口目だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
           "text": "じゃあ俺、その日は早めに片づけます"
         },
         {
@@ -2276,6 +2301,46 @@
           "text": "次は向こうから言うだろうと、互いに待ちすぎた"
         },
         {
+          "speaker": "sui",
+          "face": "normal",
+          "text": "あの晩から、あいつの煙は吸っていない。地元の大会まではな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "地元の、……俺の台ですか？"
+        },
+        {
+          "speaker": "sui",
+          "face": "thinking",
+          "text": "吐いたあと、少し遅れて、もう一度香った。あいつの煙はそうだった"
+        },
+        {
+          "speaker": "sui",
+          "face": "normal",
+          "text": "点を数え始める前の、あいつの煙だ。負けて作らせるたびに、二口吸った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "だから、二口だったんですか。凝った配合でもなかったのに"
+        },
+        {
+          "speaker": "sui",
+          "face": "smile",
+          "text": "配合じゃない。手だ。毎日あの店で作っていれば、手が覚える"
+        },
+        {
+          "speaker": "sui",
+          "face": "normal",
+          "text": "最後の1点は、もう一口吸いたい台へ入れる。あの日は、君の台だった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……スミさんは、知ってたのかな）"
+        },
+        {
           "speaker": "naru",
           "face": "serious",
           "text": "……店を増やすのって、負けたからですか"
@@ -2350,6 +2415,16 @@
           "speaker": "",
           "face": "",
           "text": "スミさんが出したのは、カルダモンの一台だった。千須が二口目を吸う。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が、少し遅れて、もう一度香った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……地元大会の、あの香りだ）"
         },
         {
           "speaker": "",
