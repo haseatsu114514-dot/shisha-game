@@ -3980,7 +3980,7 @@
         }
       ],
       "accept_event": "ch5_wang_tonari_visit",
-      "accept_text": "昼、tonariで待ってます",
+      "accept_text": "お待ちしてます",
       "decline_response": {
         "sender": "master_hookah",
         "text": "分かった。日本には、もう少しいる。また聞くよ"
