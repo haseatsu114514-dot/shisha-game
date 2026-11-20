@@ -5355,7 +5355,8 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-play:has(> .pull-btns.with-options) .pull-dial-row > .pull-tags { max-width: calc(100% - var(--pull-b) - 274px) !important; flex-wrap: nowrap; justify-content: center; width: calc(100% - var(--pull-b) - 274px); }
 /* 温度の札（ぬるい・適温…）は柱の頭の真ん中（#3815）。長い言葉（冷え切りそう！）は舞台の左上の角へ掛かるので、角には字を置かない（下げ吸いの見出し・調整の一言を右へ寄せる） */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-right .thermo .pull-read { white-space: nowrap; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-right .thermo .pull-read :is(.pull-state, .pull-drift) { font-size: var(--ph-sub) !important; line-height: 1.2 !important; white-space: nowrap !important; }
+/* 行の高さは舞台と同じ 1.4（1.2 だと字の上下が札の箱から 3px はみ出す・mix_temperature の expressive-labels-fit-through-care） */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-right .thermo .pull-read :is(.pull-state, .pull-drift) { font-size: var(--ph-sub) !important; line-height: 1.4 !important; white-space: nowrap !important; }
 
 /* ================================================================ 調整: 炭の交換を選ぶ
    上に一言（1〜2行）、置き方の3つの札、下に交換する数の4枚の札（炭の絵）。 */

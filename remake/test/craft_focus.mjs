@@ -244,7 +244,9 @@ try {
   for (const temp of [.54,.45]) {
     await page.evaluate(async temp => {
       __remake.craftTest.auto=null; window.cs=T.session.newSession('tournament');
-      cs.steam={score:100,temp,seconds:480}; cs.holes={total:24,minimumComplete:true};
+      // 見本の温度は共有帯（温度計の目盛り）の上の位置。この一台の帯へ写す（PST01 で本番の緑・虹を狭めたため。中心 .54 はそのまま）
+      const { visualTemperature, temperatureBands } = await import('./js/craft/conditions.js');
+      cs.steam={score:100,temp:visualTemperature(temp,temperatureBands(cs)),seconds:480}; cs.holes={total:24,minimumComplete:true};
       await T.openBench(cs); window.pullRun=T.pull.runPull(cs);
     },temp);
     const band=await page.locator('.thermo-optimal').evaluate(n=>n.getBoundingClientRect().height);
