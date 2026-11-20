@@ -127,10 +127,12 @@ async function openConversationNext(page) {
 // 動きを減らす設定の舞台は 0.9 秒で札へ移り、黒板ごと消える（motions/garagara.js の sleep(900)）。
 // 遅い CI では測る前に消えて「文字を測る部品が見えていない」になるため、ページの時計を止めて黒板を出したままにする。
 // 時計を止めても黒板は描かれる（舞台は時刻を待たずに組み立てる）。止めたまま検査を終える（くじは最後に開く）
+// 止める時刻は 1 秒先に取る。入れた時計は止めるまで進み続けるので、近すぎる時刻（以前は 10ms 先）だと負荷の高い時に
+// 止める前に過ぎて "Cannot fast-forward to the past" になった。先へ進めた分はくじを開く前なので、黒板の 0.9 秒には掛からない
 async function openKuji(page, spec) {
   await page.evaluate(async () => (await import("./js/core/ui.js")).clearScreen());
   await page.clock.install();
-  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 10));
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.evaluate(async spec => {
     window.PD = (await import("./js/daily/kuji.js")).previewReveal(spec);
   }, spec);
