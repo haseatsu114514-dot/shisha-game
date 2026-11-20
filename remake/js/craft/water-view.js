@@ -5,7 +5,7 @@ import { state } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, benchRoot, craftTest, setBenchWater } from "./session.js";
 import { STEP_BRIEFS } from "./bench-ui.js";
-import { waterQuantity, changeWater, waterComfort, STEM_TIP } from "./water.js";
+import { waterQuantity, changeWater, waterComfort, STEM_TIP, WATER } from "./water.js";
 
 function ensureStyle() {
   if (document.querySelector('link[data-craft-water]')) return;
@@ -191,7 +191,10 @@ export async function stepWater(cs) {
   const panel = stepPanel("setup", "水入れ", cs.mode === "tutorial"
     ? "スミ「注ぐときは長押し。二本の線を目安に、こぼして戻してもいい」"
     : "長押しで注ぐ・こぼす。水量を決めてから配合へ進む", { brief: STEP_BRIEFS.water, lessonStep: "water" });
-  const view = mountWater(panel, { quantity: cs.water, isCurrent: () => state === ownerState && !!benchRoot(cs) });
+  // DBG「自動で成功」は目安（二本の線のあいだ）の真ん中で確定する（#3938。空のまま確定して「水なし」になっていた）。
+  // 「自動で失敗」・手動は今の水量のまま（開始時は空）。
+  const quantity = craftTest.auto === "good" ? WATER.neutral : cs.water;
+  const view = mountWater(panel, { quantity, isCurrent: () => state === ownerState && !!benchRoot(cs) });
   benchRoot(cs)?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", [el("p", { text: WATER_HELP })]));
   if (craftTest.auto) queueMicrotask(view.confirm);
   cs.water = await view.result;

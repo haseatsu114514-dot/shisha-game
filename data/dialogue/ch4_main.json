@@ -951,6 +951,12 @@
           "text": "歓声が、一瞬だけ止んだ。男は急ぐでもなく、自分の台の前に立つ。"
         },
         {
+          "type": "motion",
+          "id": "unveil",
+          "char_id": "sheikh",
+          "face": "normal"
+        },
+        {
           "speaker": "pakki",
           "face": "smile",
           "text": "そして現王者、シェイク・ナジュム・アル=ガリヤーン！"

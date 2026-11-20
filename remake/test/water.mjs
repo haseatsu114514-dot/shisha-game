@@ -114,11 +114,36 @@ await check("four water bands render and confirm their messages", async () => {
     assert.equal(m.button("meter").getAttribute("aria-valuetext"), label);
     assert.ok(!m.root.descendants().some(node => node.textContent?.includes("%")));
     m.cancel(); await assert.rejects(m.result, { name: "AbortError" }); m.panel.remove();
-    session.namespace.craftTest.auto = "good";
+    // 「自動で失敗」は今の水量のまま確定する。各区分の確定文をここで確かめる（成功側は次の検査）。
+    session.namespace.craftTest.auto = "bad";
     const cs = { water: q }; await view.stepWater(cs);
     assert.equal(cs.water, q); assert.equal(notices.at(-1), message);
     session.namespace.craftTest.auto = null;
   }
+});
+await check("auto good confirms neutral water; auto bad and manual keep the current amount (#3938)", async () => {
+  const ideal = "ステムがほどよく浸かった。すっきりした吸い心地になりそう";
+  const none = "ステムが水に届いていない。煙が冷えないぞ";
+  // 開始時（未設定＝空）でも、途中再開の実量でも、「自動で成功」は目安の真ん中で確定する。
+  for (const start of [undefined, 0, model.STEM_TIP, model.WATER.high + .01, 1]) {
+    session.namespace.craftTest.auto = "good";
+    const cs = start === undefined ? {} : { water: start }; await view.stepWater(cs);
+    assert.equal(cs.water, model.WATER.neutral, `auto good from ${start}`);
+    const comfort = model.waterComfort(cs.water); // 別realmの戻り値なので項目ごとに比べる。
+    assert.equal(comfort.band, "ideal"); assert.equal(comfort.drawW, 0); assert.equal(comfort.bubble, 1);
+    assert.equal(notices.at(-1), ideal);
+  }
+  // 「自動で失敗」は成功側と混同しない。開始時の空のまま確定する。
+  session.namespace.craftTest.auto = "bad";
+  const bad = {}; await view.stepWater(bad);
+  assert.equal(bad.water, 0); assert.equal(model.waterComfort(bad.water).band, "none"); assert.equal(notices.at(-1), none);
+  // 手動（自動なし）は確定ボタンを押すまで待ち、空から始まる量を変えない。
+  session.namespace.craftTest.auto = null;
+  const manual = {}; const pending = view.stepWater(manual);
+  const confirm = document.body.descendants().filter(node => node.dataset.test === "water-confirm").at(-1);
+  await Promise.resolve(); assert.equal(manual.water, undefined, "manual water waits for the confirm button");
+  fire(confirm, "click"); await pending;
+  assert.equal(manual.water, 0); assert.equal(notices.at(-1), none);
 });
 await check("water sound follows hold and stops on release, cancel and bounds", async () => {
   const m = mounted({ quantity: .5 });
@@ -237,7 +262,7 @@ await check("full practice record saves only confirmed water, care-only records 
 await check("real practice orchestration puts confirmed water between SETUP and MIX", async () => {
   stub("js/craft/steps.js", {
     stepSetup: async () => order.push("setup"),
-    stepMix: async cs => { assert.equal(cs.water, 0); order.push("mix"); },
+    stepMix: async cs => { assert.equal(cs.water, model.WATER.neutral); order.push("mix"); },
     stepPack: async () => {}, stepPlace: async () => {}, stepSteamTime: async () => {}, evaluateMix: () => ({}),
   });
   stub("js/craft/holes.js", { runHoles: async () => {} });
@@ -251,8 +276,9 @@ await check("real practice orchestration puts confirmed water between SETUP and 
   state.newGame(); order.length = 0; session.namespace.craftTest.auto = "good";
   const practice = await load("js/craft/practice.js");
   const cs = await practice.runFullPractice({ coached: true });
-  assert.deepEqual(order, ["setup", "water", "mix"]); assert.equal(cs.water, 0);
-  assert.equal(history.practiceRecords().at(-1).water, 0);
+  // 「自動で成功」の確定量（目安の真ん中）が、MIXの前に入り練習記録にも残る（#3938）。
+  assert.deepEqual(order, ["setup", "water", "mix"]); assert.equal(cs.water, model.WATER.neutral);
+  assert.equal(history.practiceRecords().at(-1).water, model.WATER.neutral);
   session.namespace.craftTest.auto = null;
 });
 console.log(`${checks} water checks passed; browser rendering/real pointer capture not covered by DOM adapter.`);

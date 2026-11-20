@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { suite } from './support.mjs';
+import { suite, assertFits } from './support.mjs';
 const shots=path.resolve(fileURLToPath(new URL('../../../',import.meta.url)),process.env.ARTIFACT_DIR||'.codex/artifacts/remake-browser');
 fs.mkdirSync(shots,{recursive:true});
 
@@ -52,6 +52,62 @@ await suite('tournament-story',async check=>{
     assert.equal(await page.evaluate(()=>cs.steam.temp),.52);
     assert.equal(await page.locator('.bench').evaluate(n=>n.getBoundingClientRect().width>0),true);
   },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
+
+  // 会場の会話の中継の枠と合間のアイキャッチ（TSH04）: 会話の間だけ出て、読み終えたら片付く。台本・既読の記録は変えない。
+  for(const touch of [false,true]) await check(`${touch?'touch':'pc'}-live-frame-and-eyecatch`,async page=>{
+    await page.evaluate(async()=>{
+      const core=await import('./js/core/state.js');core.newGame();
+      const data=await import('./js/core/data.js');
+      await data.loadTournamentCraftDialogue();
+      const vn=await import('./js/vn/engine.js');
+      const session=await import('./js/craft/session.js');
+      const story=await import('./js/craft/tournament-story.js');
+      const cs=window.cs=session.newSession('tournament');
+      cs.mix={lemon:8,mint:4};cs.pack='fluffy';
+      for(const id of ['hajime','pakki','naru','adam','minto'])core.state.flags[`_intro_${id}`]=true;
+      Object.assign(core.config,{textSpeed:4,bgmVolume:0,seVolume:0,voiceBlip:false});
+      vn.vnTest.turbo=false;
+      window.T={core,vn,story,data};
+      const standings=[['adam',1,4],['hajime',1,4],['naru',3,1],['minto',3,1]].map(([id,rank,points])=>({id,rank,points,me:id==='hajime',face:data.faceIconUrl(id)}));
+      window.pending=story.playTournamentEvent(cs,'interlude1',{bg:data.bgUrl('bg_tournament_stage'),
+        live:{event:'SMOKE CROWN CUP',phase:'ROUND 1 終了',standings},
+        card:{title:'INTERVAL',sub:'ROUND 1 → ROUND 2',note:'はじめ 現在1位 ・ 4pt'}});
+    });
+    // アイキャッチ: 会話の前に一度。押すとすぐ開く。
+    const card=page.locator('.ts-eyecatch.in');
+    await card.waitFor();
+    assert.equal(await card.locator('b').textContent(),'INTERVAL');
+    assert.equal(await card.locator('.ts-eyecatch-sub').textContent(),'ROUND 1 → ROUND 2');
+    assert.equal(await page.locator('#vn.active').count(),0,'The conversation waits for the eyecatch');
+    await page.waitForTimeout(450);
+    await page.screenshot({path:path.join(shots,`tournament-story-eyecatch-${touch?'touch':'pc'}.png`)});
+    if(touch)await card.tap();else await card.click();
+    await page.locator('.ts-eyecatch').waitFor({state:'detached'});
+    // 中継の枠: LIVE の帯・場面・いまの順位（はじめの札に印）。光は立ち絵の後ろ、帯は立ち絵の手前。
+    await page.locator('#vn.active').waitFor();
+    const bug=page.locator('#vn .ts-live-front .ts-live-bug');
+    await bug.waitFor();
+    assert.equal(await bug.locator('b').textContent(),'SMOKE CROWN CUP');
+    assert.equal(await bug.locator('span').textContent(),'ROUND 1 終了');
+    assert.deepEqual(await page.locator('#vn .ts-live-chip').evaluateAll(chips=>chips.map(chip=>[chip.dataset.rank,chip.querySelector('i').textContent,chip.classList.contains('me')])),
+      [['1','4pt',false],['1','4pt',true],['3','1pt',false],['3','1pt',false]]);
+    const layer=await page.evaluate(()=>{const z=sel=>Number(getComputedStyle(document.querySelector(sel)).zIndex);
+      return {back:z('#vn .ts-live-back'),portraits:z('#vn .vn-portraits'),front:z('#vn .ts-live-front'),box:z('#vn .vn-box')};});
+    assert(layer.back<layer.portraits&&layer.portraits<layer.front&&layer.front<layer.box,`Unexpected layering ${JSON.stringify(layer)}`);
+    assert.equal(await page.locator('#vn .ts-live').evaluateAll(nodes=>nodes.every(node=>getComputedStyle(node).pointerEvents==='none')),true,'The frame never takes input');
+    await page.waitForTimeout(700);
+    await assertFits(page,'#vn .ts-live-bug, #vn .ts-live-rank, .vn-box');
+    await page.screenshot({path:path.join(shots,`tournament-story-live-${touch?'touch':'pc'}.png`)});
+    // 読み終えたら枠は残らない（次の、大会ではない会話に持ち越さない）。
+    await page.evaluate(()=>{T.vn.vnTest.turbo=true;});
+    await page.keyboard.press('Enter');
+    assert.equal(await page.evaluate(()=>pending),true);
+    assert.deepEqual(await page.evaluate(()=>cs.tournamentStory.seen),['interlude1']);
+    await page.waitForFunction(()=>!document.querySelector('.ts-live'));
+    // 既読の掛け合いは、アイキャッチも出さずに通り過ぎる。
+    assert.equal(await page.evaluate(()=>T.story.playTournamentEvent(cs,'interlude1',{card:{title:'INTERVAL'},live:{event:'SMOKE CROWN CUP'}})),true);
+    assert.equal(await page.locator('.ts-eyecatch, .ts-live').count(),0);
+  },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true}:{});
 
   await check('chapter1-four-events-in-real-tournament',async page=>{
     page.setDefaultTimeout(60000);

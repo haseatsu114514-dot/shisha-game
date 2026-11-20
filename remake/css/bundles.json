@@ -33,6 +33,7 @@
     "worker-scenes.css",
     "craft-header.css",
     "tournament.css",
+    "tournament-show.css",
     "motions.css"
    ]
   },
