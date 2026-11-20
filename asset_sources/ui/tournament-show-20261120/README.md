@@ -9,7 +9,11 @@
 - 既存の絵の流用: 後光＝`remake/img/ui/kuji/burst.webp`、結果のカウントの舞台＝`remake/img/ui/continue/backdrop_stage.webp`、板・帯・メダル＝`remake/img/ui/craft-night/`。
 - 下の4枚は「あれば差し替えるともっと豪華になる」部品。**無くても動く**。届いたら実画面で見比べて、良い方を残す。
 
-## 依頼文（Codex にそのまま貼る）
+## Codex への依頼（2026-11-20）
+
+オーナー「絵のパーツはコーデックスに依頼」。**Codex にそのまま貼る依頼文は [codex-request.txt](codex-request.txt)**（4枚の生成・保存先・確かめること・Draft PR まで。ゲームへの組み込みは頼んでいない）。下の表と `prompts/` はその中身の元。
+
+## 依頼文（部品ごと）
 
 共通の書き出し（各依頼文の先頭に貼る）は [prompts/style.txt](prompts/style.txt)。1回の生成で1枚。文字・数字・ロゴは描かない（コードが載せる）。シーシャの台・ハガル・炭は描かない。
 

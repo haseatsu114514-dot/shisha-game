@@ -199,7 +199,8 @@ try {
     assert(await page.locator('.bench-worker-name').isHidden());
     assert.equal(await page.locator('.bench-title').textContent(), '蒸らし');
     assert(await page.locator('.bench-title').isHidden());
-    assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし');
+    // #3923: 工程帯は番号と一文字の並列をやめ、作業の絵＋今の工程名だけにした
+    assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '蒸らし');
     // 今の工程の札の高さ: 新しい配置（既定）は上のレールの札 44、旧配置は帯の札 49
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight),
       await page.evaluate(() => document.body.classList.contains('craft-stage')) ? 44 : 49);
