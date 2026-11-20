@@ -283,6 +283,7 @@ await suite("tonari-floor", async (check) => {
       }
       assert.equal(await page.evaluate(() => document.querySelector(".tonari-floor").scrollLeft), 0);
       // 上の帯は左から「仕込み中・残り時間・売上・休止」。触らない情報（仕込み中・残り時間・売上）は小さな札で、押す所（休止）だけ指の大きさ（TFL49）。
+      // 残り時間と売上は、ひとまとめで画面のまん中（TFL50）
       // 下の帯は出来事の行だけ（店内のまん中の下）。右の列は上から「シャッフル・ミックスの一覧・フィーバー」で、画面の上の端から下の端まで
       const bands = await page.evaluate(() => {
         const rect = (sel) => document.querySelector(sel).getBoundingClientRect();
@@ -295,13 +296,13 @@ await suite("tonari-floor", async (check) => {
         const y = (sel) => { const r = rect(sel); return [r.top, r.bottom]; };
         const inSide = (sel) => { const r = rect(sel); return r.left >= side.left - 1 && r.right <= side.right + 1 && r.top >= side.top - 1 && r.bottom <= side.bottom + 1; };
         const hudRects = [".tf-making", ".tf-clock", ".tf-sales", ".tf-pause-button", ".tf-ticker"].map((sel) => { const r = rect(sel); return { sel, left: r.left, right: r.right, top: r.top, bottom: r.bottom, h: r.height }; });
-        return { top: [x(".tf-making"), x(".tf-clock"), x(".tf-sales")], ticker: x(".tf-ticker"), roomCenter: (top.left + top.right) / 2, center: (stage.left + stage.right) / 2, hudRects, stageH: stage.height,
+        return { top: [x(".tf-making"), x(".tf-clock"), x(".tf-sales")], mid: x(".tf-top-mid"), ticker: x(".tf-ticker"), roomCenter: (bottom.left + bottom.right) / 2, center: (stage.left + stage.right) / 2, hudRects, stageH: stage.height,
           side: { left: side.left, top: side.top, bottom: side.bottom }, sideRight: side.left > (stage.left + stage.right) / 2, hud: top.bottom, hudTop: top.top, foot: bottom.top, footRight: bottom.right, stageBottom: stage.bottom, tags,
           topRight: Math.max(rect(".tf-sales").right, rect(".tf-pause-button").right), salesPause: [rect(".tf-sales").right, rect(".tf-pause-button").left], clockSales: [rect(".tf-clock").right, rect(".tf-sales").left],
           column: [y(".tf-presets-head"), y(".tf-preset-box"), y(".tf-bonus")], inSide: [".tf-shuffle", ".tf-preset-box", ".tf-bonus"].map(inSide), bonusInSide: !!document.querySelector(".tf-presets .tf-bonus"), bonusInFoot: !!document.querySelector(".tf-bottom .tf-bonus"),
           overflow: document.querySelector(".tf-presets").scrollWidth - document.querySelector(".tf-presets").clientWidth };
       });
-      assert(bands.top[0] < bands.top[1] && bands.top[1] < bands.top[2] && Math.abs(bands.top[1] - bands.roomCenter) < 4, "残り時間は、店内（右の列の手前）の上のまん中");
+      assert(bands.top[0] < bands.top[1] && bands.top[1] < bands.top[2] && Math.abs(bands.mid - bands.center) < 4, `残り時間と売上は、画面の上のまん中: ${bands.mid} / ${bands.center}`);
       assert(Math.abs(bands.ticker - bands.roomCenter) < 4, "出来事の行は、店内の下のまん中");
       // 触らない情報の札は小さい（画面の高さの8%以下）。休止と出来事の行は、指で押せる大きさ（上で確かめた）
       for (const r of bands.hudRects.filter((r) => /making|clock|sales/.test(r.sel))) assert(r.h <= bands.stageH * 0.08 + 1, `${r.sel} が大きい: ${r.h}`);
@@ -388,8 +389,13 @@ await suite("tonari-floor", async (check) => {
       await table(1).click();
       assert.equal(await api((a) => a.mode()), "live");
       assert.equal(await spot(1).locator(".tf-pop").last().innerText(), "入れ替え中…");
-      await tick(8);
+      // 押すと、ボタンの「4秒」がそのまま秒読みになる（TFL50）
+      assert.equal(await page.locator(t("shuffle-count")).first().textContent(), "4秒");
+      await tick(2);
+      assert.equal(await page.locator(t("shuffle-count")).first().textContent(), "3秒");
+      await tick(6);
       assert.equal(await page.locator(t("presets")).getAttribute("data-busy"), "false");
+      assert.equal(await page.locator(t("shuffle-count")).first().textContent(), "4秒", "入れ替えが済んだら、元の「4秒」に戻る");
       assert.equal(await lastLog(), "新しいミックスが並んだ");
       assert.equal(await api((a) => C.model.floorWaitLeft(a.state(), 1)), waitBefore - 8, "入れ替えの間も、客の待ち時間は減る");
       const second = await hand(g1.order.wish);

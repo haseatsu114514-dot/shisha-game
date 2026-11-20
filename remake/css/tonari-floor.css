@@ -106,6 +106,9 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   left: var(--x); top: var(--y); translate: -50% calc(-50% + 4px); pointer-events: auto; z-index: 1; /* 卓の札（見出しから下の棒まで）と同じ所を覆う */
   width: 200px; height: 168px; padding: 0; border: none; background: none; border-radius: 16px;
 }
+/* 選んだ卓は、卓の札の枠（空席は番号札の光）で示す。押し所の四角い枠は札とずれて見えるので出さない（TFL50） */
+.tf-seat:focus-visible { outline: none; }
+.tf-spot[data-selected="true"] .tf-plate { box-shadow: 0 0 0 3px #fff1af, 0 0 12px #fff1afaa, 0 4px 10px #000a; }
 .tf-medal { position: absolute; inset: 0; display: block; }
 .tonari-floor[data-style="medal"] .tf-medal { display: none; }
 .tf-who { position: absolute; inset: 0; display: block; transition: opacity 0.3s ease; }
@@ -123,6 +126,17 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* 届いた客の絵は、丸の中に入る顔（肩から上・1人1枚）。そのまま敷く */
 .tf-person[data-painted="true"] { aspect-ratio: 1; overflow: hidden; border-radius: 50%; margin-bottom: 0; }
 .tf-person[data-painted="true"] img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+/* 卓の札の左の窓では、客の絵を本編の人物の顔アイコン（つむぎ等）と同じ寄せにする（TFL50）。
+   顔アイコンは、目の高さが窓の約6割・頬の幅が窓の約4割。客の絵（目の高さ57%・頬の幅26%）を窓の幅の151%に広げて、目を窓の59%の高さに合わせる。
+   二人組は窓を半分ずつ使い、少しだけ引く */
+.tf-tag-who { container-type: size; }
+.tf-tag-who .tf-guest-art { align-items: stretch; --tf-face-w: 151cqw; }
+.tf-tag-who .tf-guest-art[data-party="2"] { --tf-face-w: 128cqw; }
+.tf-tag-who .tf-person[data-painted="true"] { position: relative; flex: 1 1 0; width: auto; height: 100%; aspect-ratio: auto; margin: 0; translate: none; border-radius: 0; }
+.tf-tag-who .tf-person[data-painted="true"] img {
+  position: absolute; left: 50%; top: calc(59cqh - 0.57 * var(--tf-face-w)); translate: -50% 0;
+  width: var(--tf-face-w); height: auto; max-width: none; aspect-ratio: 1; object-fit: fill;
+}
 /* 卓の上の番号札 */
 .tf-plate {
   left: var(--px); top: var(--py); translate: -50% -50%; pointer-events: auto; z-index: 4;
@@ -147,7 +161,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* 会話用の店内画の舞台では、押すのは下の卓のボタン（札は重ねるだけ） */
 .tonari-floor[data-style="medal"] .tf-bubble { pointer-events: none; }
 .tf-tag-want {
-  display: inline-flex; align-items: center; gap: 4px; height: 30px; padding: 0 12px 0 8px; border-radius: 15px;
+  display: inline-flex; align-items: center; gap: 4px; height: 30px; padding: 0 18px 0 16px; border-radius: 15px;
   font-size: var(--tf-small); font-weight: 700; line-height: 1; color: #d9f5e0; background: #1d3a2bf2; box-shadow: 0 0 0 2px #7fd39a;
 }
 .tf-tag-want .tf-icon { width: 22px; height: 22px; }
@@ -211,7 +225,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-spot[data-head="false"] .tf-tag-want { display: none; }
 .tf-spot[data-phase="empty"] .tf-bubble { display: none; }
 /* 用件のある卓: 金の見出しで、札ごと弾む */
-.tf-spot[data-tone="act"] .tf-tag-want { color: #2a1a08; background: none; border-image: url("../img/ui/tonari-floor/want-gold.webp") 44 fill / 20px / 0 stretch; box-shadow: 0 0 0 4px #ffe7a866; }
+.tf-spot[data-tone="act"] .tf-tag-want { color: #2a1a08; background: none; border-image: url("../img/ui/tonari-floor/want-gold.webp") 44 fill / 20px / 0 stretch; box-shadow: none; filter: drop-shadow(0 0 4px #ffe7a8cc); }
 .tf-spot[data-tone="act"] .tf-tag-box { --tf-tag-art: url("../img/ui/tonari-floor/tag-box-gold.webp"); --tf-tail: #fff1af; box-shadow: 0 0 0 2px #ffe7a8, 0 0 14px #ffb45acc, inset 0 0 0 1px #0004; }
 .tf-spot[data-tone="act"] .tf-bubble { animation: tf-bob 1.5s ease-in-out infinite; }
 .tf-spot[data-tone="tend"] .tf-tag-want { color: #fff3d9; background: none; border-image: url("../img/ui/tonari-floor/want-amber.webp") 44 fill / 20px / 0 stretch; box-shadow: none; }
@@ -301,7 +315,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tonari-floor[data-style="seated"] .tf-tag-cell:has(.tf-tag-who) { min-width: 28px; background: none; }
 .tonari-floor[data-style="seated"] .tf-tag-who { display: none; }
 /* 専用の店内では、札を小さめに保つ（席に顔が出ている。奥の席の札が、上の帯に被らないように） */
-.tonari-floor[data-style="seated"] .tf-tag-want { height: 30px; padding: 0 12px 0 8px; font-size: var(--tf-small); }
+.tonari-floor[data-style="seated"] .tf-tag-want { height: 30px; padding: 0 18px 0 16px; font-size: var(--tf-small); }
 .tonari-floor[data-style="seated"] .tf-tag-want .tf-icon { width: 24px; height: 24px; }
 .tonari-floor[data-style="seated"] .tf-tag-box { gap: 3px 4px; padding: 5px; }
 .tonari-floor[data-style="seated"] .tf-tag-req { height: 26px; font-size: var(--tf-small); }
@@ -321,9 +335,10 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-prop img { display: block; height: 100%; width: auto; filter: drop-shadow(0 3px 4px #0008); }
 .tf-spot[data-served="true"] .tf-prop { opacity: 1; }
 
-/* ---- 上の帯（仕込み中・残り時間・売上と休止）。触らない情報は小さな札に（TFL49）。帯は右の列の手前で止まる ---- */
+/* ---- 上の帯（仕込み中・残り時間と売上・休止）。触らない情報は小さな札に（TFL49）。
+   残り時間と売上は、画面のまん中にひとまとめ（TFL50）。帯は画面の幅いっぱいで、休止だけが右の列の手前に寄る ---- */
 .tf-top {
-  position: absolute; inset: 8px calc(var(--tf-pad-r) + 222px) auto var(--tf-pad-l); height: var(--tf-tap);
+  position: absolute; inset: 8px var(--tf-pad-r) auto var(--tf-pad-l); height: var(--tf-tap);
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; pointer-events: none;
 }
 .tf-top > * { pointer-events: auto; }
@@ -354,16 +369,17 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-clock-bar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #f0a64a, #ffe2a6); transition: width 0.5s linear; }
 .tonari-floor[data-late="true"] .tf-clock b { color: #ff9a8a; }
 .tonari-floor[data-late="true"] .tf-clock-bar i { background: #e2503c; }
-.tf-top > :nth-child(3) { justify-self: end; }
-/* 売上と休止は、帯の右の端（右の列の手前）。売上の下に「いまの調子」の細い帯 */
-.tf-sales { display: flex; align-items: center; gap: 6px; padding: 0 10px; margin-right: calc(var(--tf-tap) + 8px); white-space: nowrap; transition: opacity 0.2s ease; }
+.tf-top-mid { display: flex; align-items: center; gap: 8px; pointer-events: none; }
+.tf-top-mid > * { pointer-events: auto; }
+/* 売上は残り時間のすぐ右。売上の下に「いまの調子」の細い帯 */
+.tf-sales { display: flex; align-items: center; gap: 6px; padding: 0 10px; white-space: nowrap; transition: opacity 0.2s ease; }
 .tf-sales small { position: relative; display: inline-flex; color: var(--tf-brass); }
 .tf-sales small .tf-icon { width: 20px; height: 20px; }
 .tf-sales strong { font-size: var(--tf-text); color: var(--tf-brass); line-height: 1.05; min-width: 4.6em; text-align: right; transform-origin: right center; }
 .tf-sales strong[data-bump="true"] { animation: tf-bump 0.45s var(--ease-out, ease); }
 @keyframes tf-bump { 30% { scale: 1.22; color: #fff1c4; } }
-/* 休止は押す所なので、指で押せる大きさ（印は小さく） */
-.tf-pause-button { position: absolute; right: 0; top: 0; width: var(--tf-tap); height: var(--tf-tap); display: grid; place-items: center; padding: 0; color: var(--tf-brass); }
+/* 休止は押す所なので、指で押せる大きさ（印は小さく）。右の列（幅212px）の手前 */
+.tf-pause-button { justify-self: end; margin-right: 222px; width: var(--tf-tap); height: var(--tf-tap); display: grid; place-items: center; padding: 0; color: var(--tf-brass); }
 .tf-pause-button .tf-icon { width: 24px; height: 24px; }
 
 /* ---- 右の列（カウンター側）: ミックスの一覧。押すと、いちばん急ぎの注文待ちの卓へそのまま出す。
@@ -423,6 +439,10 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-shuffle:is(:hover, :focus-visible):not(:disabled) { filter: brightness(1.12); }
 .tf-shuffle:active:not(:disabled) { translate: 0 2px; box-shadow: 0 1px 0 #7a4a16; }
 .tf-shuffle:disabled { border-image-source: url("../img/ui/tonari-floor/shuffle-off.webp"); background: none; box-shadow: none; }
+/* 入れ替えの最中は、ボタンの「N秒」がそのまま秒読みになる（TFL50） */
+.tf-shuffle[data-wait="true"] { opacity: 1; }
+.tf-shuffle[data-wait="true"] .tf-shuffle-cost { font-size: 22px; color: #fff1c4; text-shadow: 0 1px 2px #000c; }
+.tonari-floor .tf-shuffle[data-wait="true"] .tf-shuffle-cost .tf-icon { width: 20px; height: 20px; }
 .tf-shuffle[data-call="true"] { animation: tf-shuffle-call 0.9s ease-in-out infinite; }
 @keyframes tf-shuffle-call { 50% { box-shadow: 0 3px 0 #7a4a16, 0 0 0 5px #fff1afaa, 0 0 20px #ffd98a; scale: 1.04; } }
 .tf-shuffle-main { display: inline-flex; align-items: center; gap: 4px; }
