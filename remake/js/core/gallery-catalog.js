@@ -14,7 +14,7 @@ const cgChars = Object.fromEntries(Object.entries({
   tsumugi: ["cg_ch1_tsumugi_heart_art", "cg_tsumugi_confession", "cg_tsumugi_smoke_color"],
   naru: ["cg_naru_after_hours", "cg_naru_last_chance", "cg_naru_next_entry", "cg_ch2_naru_score_sheet"],
   rio: ["cg_rio_confession"],
-  mashiro: ["cg_ch3_childhood_offered_hand", "cg_saku_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession", "cg_ch3_mashiro_no_craft_day"],
+  mashiro: ["cg_ch3_childhood_offered_hand", "cg_saku_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession", "cg_ch3_mashiro_no_craft_day", "cg_ch3_half_cake"],
 }).flatMap(([char, ids]) => ids.map(id => [id, char])));
 const charTag = char => Object.hasOwn(CHAR_LABELS, char) ? char : "other";
 // IDに cheki を含むが通常のスチルとして扱うもの（オーナー指示 2026-11-18: cg_minto_cheki はツーショット写真でありチェキではない）。
@@ -55,6 +55,10 @@ export function galleryStats(entries) {
   return stats;
 }
 const labels = {
+  cg_ch3_liars_night: "嘘つきたちの夜",
+  cg_ch3_national_ask_customer: "炭より先に、客の返事",
+  cg_ch3_half_cake: "半分ずつのケーキ",
+  cg_ch3_mukai_latte_cat: "そっぽを向く泡の猫",
   cg_ch2_kanzaki_id_check: "神崎煙草店の年齢確認",
   cg_ch2_naru_score_sheet: "光る採点表",
   cg_ch2_rest_notebook: "ノートを閉じた日",
