@@ -45,6 +45,69 @@ function withoutDetail(entry, label) {
 }
 
 await suite("camel-judge-feedback", async check => {
+  for (const phase of ["countdown", "race"]) {
+    await check(`portrait-guard-holds-${phase}`, async page => {
+      const landscape = { width: 844, height: 390 };
+      const portrait = { width: 390, height: 844 };
+      const rotate = page.locator("#rotate-hint");
+      const sample = () => page.evaluate(() => {
+        const { phase, t, countdown, combo, whipHeld, paused, runs } = window.__camelRace.fx;
+        const held = [...document.querySelectorAll(".camel-controls .held")].length;
+        const positions = [...document.querySelectorAll(".camel-dot")].map(dot => dot.style.getPropertyValue("--x"));
+        const voiceHit = document.querySelector('[data-test="camel-voice"]').dataset.hit;
+        return { phase, t, countdown, combo, whipHeld, paused, runs, held, positions, voiceHit };
+      });
+      await page.goto(new URL("camel-race.html", baseURL).href);
+      await page.locator(quick).tap();
+      await page.waitForFunction(phase => window.__camelRace?.fx.phase === phase, phase);
+      await page.keyboard.down("x");
+      assert.equal((await sample()).held, 1, "the whip is held before rotation");
+      await page.setViewportSize(portrait);
+      await rotate.waitFor({ state: "visible" });
+      const before = await sample();
+      assert.equal(before.phase, phase);
+      await page.waitForTimeout(450);
+      assert.deepEqual(await sample(), before, "the countdown or race clock stops under the guide");
+
+      assert.equal(before.held, 0, "rotation releases the pre-existing hold");
+      assert.equal(before.whipHeld, false);
+      await page.keyboard.up("x");
+      await page.keyboard.press("Space");
+      await page.keyboard.down("x");
+      await page.keyboard.press("Escape");
+      for (const control of ["camel-voice", "camel-signal"]) {
+        await page.locator(`[data-test="${control}"]`).dispatchEvent("pointerdown", { pointerId: 1 });
+      }
+      assert.deepEqual(await sample(), before, "covered controls cannot judge input or change pause state");
+
+      await page.setViewportSize(landscape);
+      await rotate.waitFor({ state: "hidden" });
+      const after = await sample();
+      assert(Math.abs(after.countdown - before.countdown) < .25 && after.t - before.t < .25,
+        "returning to landscape resumes without catching up");
+      await page.waitForFunction(({ t, countdown }) => {
+        const fx = window.__camelRace.fx;
+        return fx.t > t || fx.countdown < countdown;
+      }, before);
+      await page.waitForFunction(() => window.__camelRace.fx.t > .15);
+      assert.equal((await sample()).whipHeld, false, "whip input does not carry over");
+      await page.keyboard.up("x");
+
+      await page.keyboard.press("Escape");
+      await page.locator('[data-test="camel-resume"]').waitFor();
+      const paused = await sample();
+      await page.setViewportSize(portrait);
+      await rotate.waitFor({ state: "visible" });
+      await page.keyboard.press("Enter");
+      await page.setViewportSize(landscape);
+      await rotate.waitFor({ state: "hidden" });
+      await page.locator('[data-test="camel-resume"]').waitFor();
+      assert.deepEqual(await sample(), paused, "a manual pause survives the rotation");
+      await page.locator('[data-test="camel-resume"]').tap();
+      assert.equal((await sample()).paused, false);
+    }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
+  }
+
   await check("wasted-voice-without-cue", async page => {
     await startRace(page);
     const cueAtPress = await page.evaluate(() => {
