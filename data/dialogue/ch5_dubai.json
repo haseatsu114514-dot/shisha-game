@@ -1376,6 +1376,124 @@
       ]
     },
     {
+      "dialogue_id": "ch5_noor_lover_farewell",
+      "comment": "#4010 第5章、恋人のヌールの見送り。出迎え（ch5_noor_lover_welcome）を読んだ後、ドバイから日本へ帰る時に一度だけ（chapters/ch5-dubai.js の goHome。決まりは ch4-desert-progress.js の noorLoverSceneDue）。出迎えの手書きの札（「ハジメ」と星一つ）を預ける。日本の時計を戻す（時差が戻る）。lover_noor_lv5 の「夜の線」・キスは使わない。表情は normal / smile / surprise だけ。",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出発ロビーの手前で、ヌールさんが足を止めた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "見送りって、ガイドの仕事に無いの。……だから、今日は下手でいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんはスマホを出して、時計を一つ足した。日本の時計が、また並ぶ。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "戻しとくね。……五時間、また始まり"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "次は、もっと早く来ます"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "うん。じゃあ、これ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "渡されたのは、空港で掲げていた手書きの札だった。「ハジメ」と、小さな星が一つ。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "持ってって。次に来る時、また掲げるから。……ちゃんと返してね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "預かります。なくさないように、手帳に挟んでおきます"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "よし。……いってらっしゃい、ハジメ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "保安検査の列から振り返ると、ヌールさんはまだ、同じ場所で手を振っていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_lover_again",
+      "comment": "#4010 第5章、恋人のヌールの二度目の出迎え。見送り（ch5_noor_lover_farewell）で札を預けた後、次にドバイへ着いた時に一度だけ（chapters/ch5-dubai.js の goToDubai）。はじめが返した札に、ヌールが星を一つ書き足す（二回目の星）。表情は normal / smile / surprise だけ。",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "到着ロビーの出口で、ヌールさんが両手を差し出していた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "はい。返して"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……いきなりですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手帳から札を出して渡すと、ヌールさんはペンを取り出し、星の隣にもう一つ星を書いた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "二回目。星、二つになった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは札を高く掲げて、ロビーの真ん中で一回だけ振った。もう、隣にいるのに。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "もう、見つけてもらってますよ"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "知ってる。掲げたかっただけ"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "日本の時計、また消すね。……時差、ゼロ"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch5_noor_cafe_4",
       "comment": "第5章のドバイで読む ch4_noor_cafe_4（DSR20 の♥4）。流れは第4章と同じで、はじめが遊びに来ている間の言い方だけ替える（帰りを「いつか」ではなく「また」にする。chapters/ch5-dubai.js が差し替える。段階の数え方は ch4_noor_cafe_4 のまま）。大会に触れない。段階2で第4章稿に合わせて増補。",
       "lines": [

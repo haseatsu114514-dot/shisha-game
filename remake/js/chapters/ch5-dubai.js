@@ -340,13 +340,17 @@ async function goToDubai(owner) {
   if (!state.flags[GUEST_FLAG]) {
     if (await read("ch5_dubai_arrival", RESIDENCE_BG, owner)) { state.flags[GUEST_FLAG] = true; markMet("sheikh"); save(); }
   }
-  // 恋人のヌールが空港で迎える（#4010。一度だけ）。読み終えた時だけ印を付ける
-  const welcome = state === owner ? noorLoverSceneDue(state, "welcome") : null;
-  if (welcome && await read(welcome, "bg_dubai_airport_day", owner)) { state.flags[noorLoverReadFlag("welcome")] = true; save(); }
+  // 恋人のヌールが空港で迎える（#4010。最初の一度と、見送りで札を預けた後の二度目）。読み終えた時だけ印を付ける
+  const kind = state !== owner ? null : noorLoverSceneDue(state, "welcome") ? "welcome" : noorLoverSceneDue(state, "again") ? "again" : null;
+  if (kind && await read(NOOR_LOVER_SCENES[kind], "bg_dubai_airport_day", owner)) { state.flags[noorLoverReadFlag(kind)] = true; save(); }
   return { used: true, exerted: false };
 }
 
 async function goHome(owner) {
+  // 恋人のヌールが空港で見送る（#4010。出迎えの後に一度だけ）。読み終えた時だけ印を付ける
+  const farewell = noorLoverSceneDue(state, "farewell");
+  if (farewell && await read(farewell, "bg_dubai_airport_day", owner)) { state.flags[noorLoverReadFlag("farewell")] = true; save(); }
+  if (state !== owner) return unused;
   if (!await read("ch5_dubai_back", "bg_dubai_airport_day", owner)) return unused;
   // 帰りの便は往復の切符に入っている（ここでは払わない）。次の切符入りの手紙は、この日から数えて届く。
   recordDubaiReturn(state);

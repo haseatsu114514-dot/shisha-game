@@ -309,6 +309,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_dubai_dunes_again", "progression"], // 第5章の砂丘の前の再会を読んだ
   ["_ch5_noor_lover_welcome", "progression"], // 第5章、恋人のヌールの空港の出迎えを読んだ（#4010・ch4-desert-progress.js）
   ["_ch5_noor_lover_night", "progression"], // 第5章、恋人のヌールに屋敷の門まで送ってもらった夜を読んだ（#4010）
+  ["_ch5_noor_lover_farewell", "progression"], // 第5章、恋人のヌールの空港の見送り（札を預かる）を読んだ（#4010）
+  ["_ch5_noor_lover_again", "progression"], // 第5章、恋人のヌールの二度目の出迎え（札に星を足す）を読んだ（#4010）
   ["_ch5_after_party", "progression"],
   ["_ch5_party_seat", "progression"],
   ["_ch5_party_conflict", "progression"], // 打ち上げの修羅場で反応まで読んだ恋人（chapters/ch5-party.js・#2815）

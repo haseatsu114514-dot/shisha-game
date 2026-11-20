@@ -752,6 +752,14 @@ test("chapter 5: a lover Noor meets hajime at the airport once, then walks him t
   assert.equal(noorLoverSceneDue(read, "night"), NOOR_LOVER_SCENES.night);
   read.flags[noorLoverReadFlag("night")] = true;
   assert.equal(noorLoverSceneDue(read, "night"), null);
+  // 帰る時の見送り（出迎えの後）→ 次に着いた時の二度目の出迎え（見送りの後）
+  assert.equal(noorLoverSceneDue(lover(), "farewell"), null, "no farewell before the welcome");
+  assert.equal(noorLoverSceneDue(read, "again"), null, "the second welcome comes after the farewell");
+  assert.equal(noorLoverSceneDue(read, "farewell"), NOOR_LOVER_SCENES.farewell);
+  read.flags[noorLoverReadFlag("farewell")] = true;
+  assert.equal(noorLoverSceneDue(read, "again"), NOOR_LOVER_SCENES.again);
+  read.flags[noorLoverReadFlag("again")] = true;
+  assert.deepEqual(Object.keys(NOOR_LOVER_SCENES).map(kind => noorLoverSceneDue(read, kind)), [null, null, null, null], "each once");
   assert.equal(noorLoverSceneDue(lover(), "bogus"), null);
   const scenes = Object.fromEntries(JSON.parse(readFileSync(new URL("../../data/dialogue/ch5_dubai.json", import.meta.url), "utf8")).dialogues
     .map(d => [d.dialogue_id, d]));
@@ -763,8 +771,10 @@ test("chapter 5: a lover Noor meets hajime at the airport once, then walks him t
   const ch5Dubai = readFileSync(new URL("../js/chapters/ch5-dubai.js", import.meta.url), "utf8");
   assert.match(ch5Dubai, /noorLoverSceneDue\(state, "welcome"\)/);
   assert.match(ch5Dubai, /noorLoverSceneDue\(state, "night"\)/);
+  assert.match(ch5Dubai, /noorLoverSceneDue\(state, "again"\)/);
+  assert.match(ch5Dubai, /noorLoverSceneDue\(state, "farewell"\)/);
   assert.match(ch5Dubai, /\.\.\.Object\.values\(NOOR_LOVER_SCENES\)/, "the scenes are loaded with the other Dubai scenes");
   assert.equal(classifyFlag(noorLoverReadFlag("welcome")), "progression");
-  assert.equal(classifyFlag(noorLoverReadFlag("night")), "progression");
+  for (const kind of Object.keys(NOOR_LOVER_SCENES)) assert.equal(classifyFlag(noorLoverReadFlag(kind)), "progression", kind);
 });
 
