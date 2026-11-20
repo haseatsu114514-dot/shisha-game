@@ -220,7 +220,7 @@ export function chapterFourDubaiDefinition(io) {
     get nightEvents() { const event = dubaiNightEvent(io); return event ? { [state.day]: event } : {}; },
     morningDeparture: async () => { syncChapterFourDay(state); save(); },
     mapOptions: () => ({
-      regionId: DUBAI,
+      regionId: DUBAI, eventPinLabel: "今夜の予定",
       regions: [{ id: DUBAI, label: "ドバイ", background: () => bgUrl(timeOfDay() === "night" ? CH4_PLACE_BG.mapDusk : CH4_PLACE_BG.map),
         spots: chapterFourDubaiSpots }],
       onRegionChange: () => {},
@@ -270,11 +270,11 @@ export async function runChapterFourDubai(io) {
 /** 期限を過ぎた必須の出会い（story_routes の順）。前のものを読むまで次は来ない。 */
 function dueMandatory() {
   const day = dubaiDay();
-  if (!read("ch4_festa")) return day >= DEADLINE.festa ? [{ id: "ch4_festa", beat: "夜。会場の出張ブースから、手拍子が聞こえてくる──" }] : null;
+  if (!read("ch4_festa")) return day >= DEADLINE.festa ? [{ id: "ch4_festa", pin: "ch4_dubai_festa", beat: "夜。会場の出張ブースから、手拍子が聞こえてくる──" }] : null;
   if (!read("ch4_stranger_first")) return day >= DEADLINE.first
-    ? [...(read("ch4_dubai_souq") ? [] : [{ id: "ch4_stranger_first_forced_in" }]), { id: "ch4_stranger_first", beat: "夜。香辛料の匂いがする方へ、足が向いた──" }] : null;
+    ? [...(read("ch4_dubai_souq") ? [] : [{ id: "ch4_stranger_first_forced_in" }]), { id: "ch4_stranger_first", pin: "ch4_dubai_souq", beat: "夜。香辛料の匂いがする方へ、足が向いた──" }] : null;
   if (!read("ch4_stranger_second")) return day >= DEADLINE.second && chapterFourSecondAvailable(state)
-    ? [{ id: "ch4_stranger_second", beat: "夜。約束した路地の奥の店へ──" }] : null;
+    ? [{ id: "ch4_stranger_second", pin: "ch4_dubai_alley", beat: "夜。約束した路地の奥の店へ──" }] : null;
   return null;
 }
 
@@ -288,7 +288,7 @@ function dubaiNightEvent(io) {
   }
   const last = due[due.length - 1];
   return withOverdueStory({
-    id: `dubai-night:${last.id}`, schedule: "fixed", pin: null, label: "ドバイの夜", beat: last.beat,
+    id: `dubai-night:${last.id}`, schedule: "fixed", pin: last.pin, label: "ドバイの夜", beat: last.beat,
     done: () => !dueMandatory(),
     run: async () => {
       for (const scene of due) {
@@ -338,7 +338,7 @@ function naruTalkNightEvent() {
   if (!scene) return null;
   const owner = state;
   return {
-    id: `dubai-naru:${scene}`, schedule: "fixed", pin: null, label: "なると話す", beat: "夜。なるから「少し話そう」とメッセージが来た──",
+    id: `dubai-naru:${scene}`, schedule: "fixed", pin: "ch4_dubai_naru", label: "なると話す", beat: "夜。なるから「少し話そう」とメッセージが来た──",
     done: () => dueNaruTalk(owner) !== scene,
     run: async () => {
       if (dueNaruTalk(owner) !== scene) return;
