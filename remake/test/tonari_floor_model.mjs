@@ -1,11 +1,17 @@
-// tonari フロア営業のルール（js/daily/tonari-floor-model.js）。
-// 同じ種なら同じ一晩・操作は刻みを使わない・配合の合否・合図・会計の声かけ（トップ替え）・単価・ボーナスタイム・評価の境界を確かめる。
+// tonari フロア営業のルール（js/daily/tonari-floor-model.js）。ワンオペ＆フレーバー調合型。
+// 台本の整合・調合と評価・同じ種なら同じ一晩・自動着席と注文待ち・同時作成・ケア・ドリンクと延長・会計・フィーバー・定番・締め・通しを確かめる。
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createFloorNight, floorTick, floorAct, floorTap, floorResult, floorAdvice, floorUrgency, pickNight,
-  floorSendOff, floorBill, floorFace, floorWaitLeft, floorAirFull, floorBonusTimeLength, FLOOR_TABLE_COUNT } from "../js/daily/tonari-floor-model.js";
-import { MIXES, WISHES, GUESTS, CALLS, NIGHTS, FAMILIES, PRICE, RANKS, VERBS, SENDS, SEND_LINES } from "../js/daily/tonari-floor-data.js";
-import { playFloorBot } from "./tonari_floor_bot.mjs";
+import {
+  createFloorNight, floorTick, floorAct, floorTap, floorResult, floorHint, floorUrgency, floorWaitLeft, floorStayLeft, floorCoalLeft,
+  floorMaking, floorBill, floorStage, floorFace, floorFeverLevel, floorPresets, floorOrderWait, floorFeverLength, floorSlots,
+  mixInfo, mixKey, mixLabel, aptitude, evaluateMix, pickNight, FLOOR_TABLE_COUNT,
+} from "../js/daily/tonari-floor-model.js";
+import {
+  PRICE, COST, TRAIT_IDS, FAMILIES, FLAVORS, SYNERGIES, NG, TAG_LABEL, GUESTS, CALLS, VERBS, NIGHTS, RANKS, MOODS, STARTER_PRESETS,
+  PRESET_MAX, SERVE_LINES, SEND_LINES, ORDER_WORDS,
+} from "../js/daily/tonari-floor-data.js";
+import { playFloorBot, bestMix } from "./tonari_floor_bot.mjs";
 
 const at = (s, id) => s.tables[id - 1];
 const act = (s, action) => {
@@ -13,143 +19,203 @@ const act = (s, action) => {
   assert.notEqual(next, s, `t${s.t} ${JSON.stringify(action)} は受け付けられるはず`);
   return next;
 };
-const until = (s, done, limit = 400) => {
+const until = (s, done, limit = 500) => {
   for (let i = 0; i < limit && !done(s) && !s.done; i++) s = floorTick(s);
   assert.ok(done(s), `t${s.t} まで待っても条件を満たさない`);
   return s;
 };
-const near = (guest) => guest.options.find((id) => id !== guest.best && MIXES[id].family === MIXES[guest.best].family);
-const off = (guest) => guest.options.find((id) => MIXES[id].family !== MIXES[guest.best].family);
-/** その卓が会計を頼むまで進める（合図には正しく応え、仕上がった一台は運ぶ）。 */
+/** その卓が会計を頼むまで進める（ケアには正しく応える）。 */
 function toBill(s, tableId = 1) {
   for (let i = 0; i < 600 && floorTap(s, tableId) !== "bill"; i++) {
-    const tap = floorTap(s, tableId);
-    if (tap === "care") s = act(s, { type: "care", tableId, verb: CALLS[at(s, tableId).call.type].verb });
-    else if (tap === "serve") s = act(s, { type: "serve", tableId });
-    else s = floorTick(s);
+    s = floorTap(s, tableId) === "care" ? act(s, { type: "care", tableId, verb: CALLS[at(s, tableId).call.type].verb }) : floorTick(s);
   }
   assert.equal(floorTap(s, tableId), "bill");
   return s;
 }
-/** 1卓へ案内し、選んだ配合を提供するところまで。 */
-function serveFirst(s, pick = (guest) => guest.best, tableId = 1) {
-  s = until(s, (x) => x.queue.length > 0);
-  s = act(s, { type: "seat", tableId });
-  const guest = s.guests[at(s, tableId).guestId];
-  s = act(s, { type: "order", tableId, mixId: pick(guest) });
-  s = until(s, (x) => at(x, tableId).delivery?.ready);
-  return act(s, { type: "serve", tableId });
+/** 最初の客に、選んだ一台を出すところまで（1卓）。 */
+function serveFirst(s, pick = (guest) => bestMix(guest.order, guest.rank)) {
+  s = until(s, (x) => at(x, 1).phase === "order");
+  const guest = s.guests[at(s, 1).guestId];
+  s = act(s, { type: "order", tableId: 1, mix: pick(guest) });
+  return until(s, (x) => at(x, 1).phase === "enjoy");
 }
+const order = (over) => ({ type: "normal", family: "fruit", trait: "cloud", ng: null, must: null, quote: "", ...over });
 
-test("台本: 客の言葉・配合・合図・夜の種類がそろっている", () => {
-  for (const w of WISHES) {
-    assert.ok(MIXES[w.best] && MIXES[w.off], w.quote);
-    assert.notEqual(MIXES[w.best].family, MIXES[w.off].family, `外れは別の注文から: ${w.quote}`);
-    assert.ok(!w.quote.endsWith("。"), `客の台詞は句点で終えない: ${w.quote}`);
+test("台本: 棚の30種・相性・NG・ケア・客・夜の種類がそろっている", () => {
+  const flavors = Object.values(FLAVORS);
+  assert.equal(flavors.length, 30);
+  assert.deepEqual(FAMILIES.map((f) => flavors.filter((x) => x.family === f.id).length), [10, 6, 7, 7]);
+  for (const f of flavors) {
+    assert.equal(f.traits.length, 4, f.id);
+    assert.ok(f.traits.every((v) => v >= 0 && v <= 3) && f.cost > 0, f.id);
+    for (const tag of f.tags) assert.ok(TAG_LABEL[tag], `${f.id}:${tag}`);
+    for (const fam of f.also) assert.ok(FAMILIES.some((x) => x.id === fam) && fam !== f.family, `${f.id}:${fam}`);
   }
-  for (const families of Object.values(FAMILIES)) for (const family of families) {
-    for (const index of [0, 1]) assert.ok(WISHES.some((w) => w.best === `${family}:${index}`), `${family}:${index} を望む客がいる`);
-  }
+  for (const pair of SYNERGIES) for (const tag of pair) assert.ok(TAG_LABEL[tag], tag);
+  for (const ng of Object.values(NG)) for (const tag of ng.tags) assert.ok(TAG_LABEL[tag], tag);
+  // スッキリ系には、ミントのタグが無いフレーバーもある（「ミント無しでスッキリ」に応えられる）
+  assert.ok(flavors.some((f) => f.family === "fresh" && !f.tags.includes("mint")));
   const verbs = VERBS.map((v) => v.id);
+  assert.deepEqual(verbs, ["add", "ease", "water", "teach", "chat"]);
   for (const [type, call] of Object.entries(CALLS)) assert.ok(verbs.includes(call.verb), type);
-  for (const guest of Object.values(GUESTS)) for (const type of guest.calls) assert.ok(CALLS[type], `${guest.id}:${type}`);
-  assert.deepEqual(SENDS.map((send) => send.id), ["extend", "thanks", "sorry"]);
-  // 単価（オーナー指定）: 基本2,000円・チャージ700円・トップ替え＋1,500円・ドリンク600円
+  for (const line of [...Object.values(SERVE_LINES).flat(), ...Object.values(SEND_LINES).flat(), ...Object.values(ORDER_WORDS.omakase), ...Object.values(CALLS).map((c) => c.good)]) {
+    assert.ok(!line.endsWith("。"), `客の台詞は句点で終えない: ${line}`);
+  }
   assert.deepEqual({ ...PRICE }, { shisha: 2000, charge: 700, top: 1500, drink: 600 });
-  assert.ok(Object.values(CALLS).some((call) => call.drink && call.verb === "drink"), "ドリンクの注文になる合図がある");
-  for (const line of Object.values(SEND_LINES).flat()) assert.ok(!line.endsWith("。"), `客の台詞は句点で終えない: ${line}`);
+  assert.ok(STARTER_PRESETS.length >= 3 && STARTER_PRESETS.length <= PRESET_MAX);
+  for (const ids of STARTER_PRESETS) assert.ok(mixInfo(ids), ids.join("+"));
   for (const night of Object.values(NIGHTS)) {
     assert.equal(night.arrive.length, night.cast.length, night.id);
     for (const kind of night.cast) assert.ok(GUESTS[kind], `${night.id}:${kind}`);
-    assert.ok(night.arrive.at(-1) + 110 < night.length, `${night.id}: 最後の客が帰るまでの時間がある`);
   }
   assert.deepEqual(RANKS.map((r) => r.id), ["S", "A", "B", "C"]);
+  assert.deepEqual(MOODS.map((m) => m.id), ["max", "good", "ok", "low", "mad"]);
+  assert.deepEqual([100, 85, 84, 65, 64, 40, 39, 20, 19, 0].map((v) => floorStage(v).id), ["max", "max", "good", "good", "ok", "ok", "low", "low", "mad", "mad"]);
+  assert.deepEqual([90, 50, 10].map(floorFace), ["smile", "flat", "frown"]);
 });
 
-test("同じ種なら同じ一晩。操作も経過も元の state を書き換えない", () => {
-  const input = { seed: 321, level: 2, chapter: 1, anchor: { family: "fruit_mint_free", index: 1 } };
+test("調合: 1〜3種を混ぜると、特性は平均・系統は寄り・相性はタグの組・原価と作成時間は数で決まる", () => {
+  const lm = mixInfo(["lemon", "mint"]);
+  assert.equal(lm.label, "レモン＋ミント");
+  assert.equal(mixLabel(["apple"]), "ダブルアップル");
+  assert.deepEqual(lm.traits, { taste: 1.5, chill: 1.5, cloud: 2.5, last: 1.5 });
+  assert.deepEqual(lm.family, { fruit: 0.5, fresh: 0.75, sweet: 0, deep: 0 });
+  assert.deepEqual(lm.synergies, [["citrus", "mint"]]);
+  assert.equal(lm.cost, FLAVORS.lemon.cost + FLAVORS.mint.cost + COST.coal);
+  assert.equal(mixKey(["mint", "lemon"]), mixKey(["lemon", "mint"]), "入れた順は区別しない");
+  const [one, two, three] = [mixInfo(["grape"]), mixInfo(["grape", "berry"]), mixInfo(["grape", "berry", "pine"])];
+  assert.ok(one.time < two.time && two.time < three.time, "混ぜる数が多いほど、立ち上げに時間がかかる");
+  assert.ok(mixInfo(["grape", "berry"], { preset: true }).time < two.time, "定番は早く出せる");
+  assert.equal(mixInfo(["peach", "vanilla"]).synergies.length, 1);
+  assert.equal(mixInfo(["earlgrey", "milk", "lemon"]).synergies.length, 2);
+  for (const bad of [[], ["grape", "grape"], ["grape", "berry", "pine", "mint"], ["nothing"], null]) assert.equal(mixInfo(bad), null);
+  assert.deepEqual([1, 0.8, 0.5, 0.25, 0.2].map(aptitude), ["best", "best", "good", "weak", "none"]);
+});
+
+test("評価: 系統の適性×吸い心地の到達度×相性。NGを混ぜると大きく下がり、指定フレーバー・おまかせには別の加点がある", () => {
+  const fruitCloud = order();
+  const best = evaluateMix(["grape", "berry"], fruitCloud);
+  assert.deepEqual([best.family, best.grade, best.ratio], ["best", "best", 1.25]);
+  const good = evaluateMix(["peach"], fruitCloud); // 系統は合うが、煙は並
+  const weak = evaluateMix(["milk", "mint", "grape"], fruitCloud); // 煙は出るが、果物は1/3
+  const none = evaluateMix(["vanilla"], fruitCloud);
+  assert.deepEqual([good.family, weak.family, none.family], ["best", "weak", "none"]);
+  assert.ok(best.mood > good.mood && good.mood > weak.mood && weak.mood > none.mood);
+  assert.equal(none.grade, "off");
+  // こだわりの客は要求が高い（同じ一台でも到達度が下がる）
+  assert.ok(evaluateMix(["grape"], fruitCloud, "keen").mood < evaluateMix(["grape"], fruitCloud, "plain").mood);
+  // 相性が成立すると上がる
+  const plain = evaluateMix(["lemon", "orange"], order({ trait: "taste" }));
+  const synergy = evaluateMix(["lemon", "peach"], order({ trait: "taste" }));
+  assert.equal(plain.synergies.length, 0);
+  assert.ok(synergy.synergies.length === 1 && synergy.mood > plain.mood);
+  // NG: 「スッキリ系でミント無し」にミントを混ぜると大幅減。ライムやレモングラスなら通る
+  const noMint = order({ type: "ng", family: "fresh", trait: "chill", ng: "mint" });
+  const hit = evaluateMix(["mint", "lime"], noMint);
+  const safe = evaluateMix(["lemongrass", "lime"], noMint);
+  assert.deepEqual([hit.ngHit, hit.grade, safe.ngHit], [true, "ng", false]);
+  assert.ok(safe.mood - hit.mood > 25);
+  // 指定フレーバー: 入れれば加点、入れなければ外れ
+  const pin = order({ type: "pin", family: "sweet", trait: "taste", must: "earlgrey" });
+  const withIt = evaluateMix(["earlgrey", "honey"], pin);
+  const without = evaluateMix(["vanilla", "honey"], pin);
+  assert.deepEqual([withIt.mustOk, without.mustOk, without.grade], [true, false, "off"]);
+  assert.ok(withIt.mood > without.mood);
+  // おまかせ: 系統は問わない。相性の数が効く
+  const omakase = order({ type: "omakase", family: null, trait: "chill" });
+  assert.equal(evaluateMix(["vanilla"], omakase).family, null);
+  assert.ok(evaluateMix(["earlgrey", "milk", "lemon"], omakase).mood > evaluateMix(["earlgrey", "hinoki"], omakase).mood);
+});
+
+test("同じ種なら同じ一晩。操作も経過も元の state を書き換えない。注文の種類は回すほど増える", () => {
+  const input = { seed: 321, level: 2, chapter: 1 };
   const a = createFloorNight(input), b = createFloorNight(input);
   assert.deepEqual(a, b);
   assert.equal(a.tables.length, FLOOR_TABLE_COUNT);
-  const anchored = a.guests[a.anchor.guestId];
-  assert.equal(anchored.best, "fruit_mint_free:1");
-  assert.equal(new Set(anchored.options).size, 3);
-  const wishes = (seed) => Object.values(createFloorNight({ seed, level: 1 }).guests).map((g) => g.quote).join("/");
-  assert.equal(new Set([1, 2, 3, 4, 5, 6].map(wishes)).size > 3, true, "種が違えば客の言葉も変わる");
   const frozen = structuredClone(a);
   const later = floorTick(a, 10);
   assert.deepEqual(a, frozen);
   assert.equal(later.t, 10);
-  assert.equal(floorAct(later, { type: "seat", tableId: 9 }), later, "無い卓は何も進めない");
+  assert.equal(floorAct(later, { type: "order", tableId: 9, mix: ["apple"] }), later, "無い卓は何も進めない");
   assert.equal(floorAct(later, { type: "bill", tableId: 1 }), later, "会計前の卓は会計できない");
-  const seated = act(later, { type: "seat", tableId: 3 });
-  assert.equal(at(later, 3).phase, "empty");
-  assert.equal(at(seated, 3).phase, "order");
-  // 注文を待たせている残り: 18刻みから減り、0 で満足が下がり始める
-  assert.equal(floorWaitLeft(seated, 3), 18);
-  assert.equal(floorWaitLeft(floorTick(seated, 5), 3), 13);
-  const waited = floorTick(seated, 30);
-  assert.equal(floorWaitLeft(waited, 3), 0);
-  assert.ok(at(waited, 3).mood < at(seated, 3).mood);
-  assert.equal(seated.t, later.t, "操作は時間を使わない");
-});
-
-test("夜の種類: 最初は四組、二回目は六組、雨の日は雨の夜、第2章は第2章の注文も出る", () => {
+  assert.equal(act(later, { type: "order", tableId: 1, mix: ["apple"] }).t, later.t, "操作は時間を使わない");
+  const types = (level) => { const set = new Set(); for (let seed = 0; seed < 30; seed++) for (const g of Object.values(createFloorNight({ seed, level }).guests)) set.add(g.order.type); return [...set].sort(); };
+  assert.deepEqual(types(0), ["normal"]);
+  assert.deepEqual(types(1), ["ng", "normal"]);
+  assert.deepEqual(types(3), ["ng", "normal", "omakase", "pin"]);
+  for (const g of Object.values(createFloorNight({ seed: 9, level: 3 }).guests)) {
+    assert.ok(g.order.quote.length <= 48 && !g.order.quote.endsWith("。"), g.order.quote);
+    assert.ok(TRAIT_IDS.includes(g.order.trait));
+  }
   assert.equal(pickNight(0, 5).id, "first");
   assert.equal(pickNight(1, 5).id, "usual");
   assert.equal(pickNight(3, 5, { rainy: true }).id, "rain");
-  assert.ok(["friday", "newcomers", "usual"].includes(pickNight(2, 77).id));
-  assert.equal(Object.keys(createFloorNight({ level: 0 }).guests).length, 4);
-  assert.equal(Object.keys(createFloorNight({ level: 1 }).guests).length, 6);
-  const first = createFloorNight({ level: 0, seed: 3 });
-  for (const guest of Object.values(first.guests)) for (const type of guest.calls) assert.ok(["thin", "harsh", "glass"].includes(type));
-  assert.equal(first.hint, "said");
+  assert.equal(createFloorNight({ level: 0 }).hint, "said");
   assert.equal(createFloorNight({ level: 3 }).hint, "sight");
-  const ch1 = new Set(), ch2 = new Set();
-  for (let seed = 0; seed < 40; seed++) {
-    for (const g of Object.values(createFloorNight({ seed, level: 2, chapter: 1 }).guests)) ch1.add(MIXES[g.best].family);
-    for (const g of Object.values(createFloorNight({ seed, level: 2, chapter: 2 }).guests)) ch2.add(MIXES[g.best].family);
-  }
-  assert.deepEqual([...ch1].sort(), [...FAMILIES[1]].sort());
-  assert.ok([...ch2].some((family) => family.startsWith("ch2_")));
 });
 
-test("配合: ぴったり・悪くない・外れで満足と会計が変わる。外れは相談から作り直せる", () => {
-  const base = createFloorNight({ seed: 12, level: 1 });
-  const best = serveFirst(base);
-  const fine = serveFirst(base, near);
-  const miss = serveFirst(base, off);
-  assert.equal(best.log.at(-1).grade, "best");
-  assert.equal(fine.log.at(-1).grade, "near");
-  assert.equal(miss.log.at(-1).grade, "off");
-  assert.ok(at(best, 1).mood > at(fine, 1).mood && at(fine, 1).mood > at(miss, 1).mood);
-  assert.ok(best.air > fine.air && fine.air > miss.air);
-  assert.equal(at(miss, 1).accepted, null);
-  // 相談: 作り直すと先に作られ、ぴったりなら台代をいただける
-  let s = until(miss, (x) => floorTap(x, 1) === "consult");
-  const guest = s.guests[at(s, 1).guestId];
-  const redo = act(s, { type: "consult", tableId: 1, mixId: guest.best });
-  assert.equal(redo.bench?.tableId ?? redo.line[0].tableId, 1);
-  let served = act(until(redo, (x) => at(x, 1).delivery?.ready), { type: "serve", tableId: 1 });
-  assert.equal(served.log.at(-1).grade, "redo");
-  assert.equal(at(served, 1).accepted, true);
-  // 相談: 台代を外すと、席と飲み物だけの会計になる
-  const waived = act(s, { type: "consult", tableId: 1 });
-  assert.equal(at(waived, 1).accepted, false);
-  let paid = until(waived, (x) => floorTap(x, 1) === "bill" || floorTap(x, 1) === "care");
-  while (floorTap(paid, 1) !== "bill") {
-    if (floorTap(paid, 1) === "care") paid = act(paid, { type: "care", tableId: 1, verb: CALLS[at(paid, 1).call.type].verb });
-    else paid = floorTick(paid);
+test("来店と注文待ち: 客は自動で座り、約9秒のうちに注文を聞かないと怒って帰る", () => {
+  let s = createFloorNight({ seed: 5, level: 1 });
+  s = until(s, (x) => at(x, 1).phase === "order");
+  assert.equal(s.came, 1);
+  assert.equal(s.log.at(-1).type, "arrive");
+  assert.equal(floorTap(s, 1), "order");
+  assert.equal(floorWaitLeft(s, 1), floorOrderWait(s));
+  assert.equal(floorOrderWait(s), 18);
+  assert.equal(floorOrderWait(createFloorNight({ level: 0 })), 30, "はじめての営業は長く待ってくれる");
+  assert.equal(floorHint(s).kind, "order");
+  const waited = floorTick(s, 10);
+  assert.equal(floorWaitLeft(waited, 1), 8);
+  assert.ok(floorUrgency(waited, 1) > 0.5);
+  const gone = floorTick(s, 18);
+  assert.equal(at(gone, 1).phase, "cool");
+  assert.equal(gone.counts.left, 1);
+  assert.equal(gone.results[0].left, true);
+  assert.equal(gone.results[0].total, 0);
+  assert.ok(gone.fans < 0, "怒って帰るとファンが減る");
+  assert.equal(at(floorTick(gone, 6), 1).phase, "empty", "少し置いて、卓が空く");
+  assert.equal(at(until(gone, (x) => at(x, 1).phase === "order"), 1).phase, "order", "次に来た客が、その卓に入る");
+  // 卓が埋まっている間は、次の客は入ってこない（空くまで待つ）
+  let full = createFloorNight({ seed: 5, night: "full", level: 5 });
+  for (let i = 0; i < 40; i++) {
+    full = floorTick(full);
+    for (const table of full.tables) if (table.phase === "order") full = act(full, { type: "order", tableId: table.id, mix: ["apple"] });
   }
-  paid = act(paid, { type: "bill", tableId: 1 });
-  const row = paid.results.at(-1);
-  assert.equal(row.shisha, 0);
-  assert.equal(row.charge, PRICE.charge * guest.party);
-  assert.equal(row.total, row.charge + row.drink, "台代を外した卓は、チャージと注文されたドリンクだけ");
+  assert.ok(full.tables.every((x) => x.phase !== "empty"));
+  assert.equal(full.came, FLOOR_TABLE_COUNT);
+  assert.ok(full.upcoming.length > 0);
 });
 
-test("合図: 正しい手入れで満足が上がり、外すと下がる。夢中の客はそっとしておく", () => {
+test("注文と作成: 確定でチャージと初回ドリンクが付き、同時に2台まで作成が進んで、出来たら自動で提供される", () => {
+  let s = createFloorNight({ seed: 5, night: "full", level: 5 });
+  s = until(s, (x) => x.tables.filter((t) => t.phase === "order").length >= 3);
+  const pair = s.tables.find((t) => t.phase === "order" && s.guests[t.guestId].party === 2);
+  const before = s.sales;
+  s = act(s, { type: "order", tableId: pair.id, mix: ["grape", "berry"] });
+  assert.equal(at(s, pair.id).phase, "prep");
+  assert.deepEqual(floorBill(s, pair.id), { charge: 1400, shisha: 0, drink: 1200, top: 0, total: 2600 }, "二人組: チャージと初回ドリンクが二人分");
+  assert.equal(s.sales - before, 2600);
+  assert.equal(floorAct(s, { type: "order", tableId: pair.id, mix: ["apple"] }), s, "注文は一度だけ");
+  for (const table of s.tables) if (table.phase === "order") s = act(s, { type: "order", tableId: table.id, mix: ["apple", "mint", "lemon"] });
+  const making = floorMaking(s);
+  assert.ok(making.length >= 3);
+  assert.deepEqual(making.map((m) => m.active), making.map((_, i) => i < floorSlots), "同時に作れるのは2台まで");
+  const third = making[2];
+  const next = floorTick(s, 3);
+  assert.equal(floorMaking(next).find((m) => m.tableId === third.tableId).left, third.left, "枠が空くまで、3台目は進まない");
+  // 出来上がると自動で提供され、シーシャの代金と原価が付く
+  const cost = s.cost;
+  s = until(s, (x) => at(x, pair.id).phase === "enjoy");
+  assert.equal(floorBill(s, pair.id).shisha, PRICE.shisha);
+  assert.equal(s.cost - cost >= mixInfo(["grape", "berry"]).cost, true);
+  assert.ok(["best", "good", "ok", "off", "ng"].includes(at(s, pair.id).grade));
+  assert.ok(s.log.some((e) => e.type === "serve") || floorStayLeft(s, pair.id) > 0.9);
+  assert.equal(floorTap(s, pair.id), "info");
+});
+
+test("ケア: 定期の温度調整と客の様子に、正しい言葉で応えると満足とフィーバーが上がる。外す・放っておくと下がる", () => {
   let s = serveFirst(createFloorNight({ seed: 4, level: 1 }));
+  assert.ok(floorCoalLeft(s, 1) > 0.9);
   s = until(s, (x) => floorTap(x, 1) === "care");
   const type = at(s, 1).call.type;
   const right = CALLS[type].verb;
@@ -157,266 +223,180 @@ test("合図: 正しい手入れで満足が上がり、外すと下がる。夢
   const good = act(s, { type: "care", tableId: 1, verb: right });
   const bad = act(s, { type: "care", tableId: 1, verb: wrong });
   assert.ok(at(good, 1).mood > at(s, 1).mood && at(bad, 1).mood < at(s, 1).mood);
+  assert.ok(good.fever > s.fever);
   assert.equal(good.counts.care, 1);
   assert.equal(bad.counts.careMiss, 1);
-  // 卓の札に出す残り: 合図は消えるまで、くつろいでいる卓・空席には出さない
-  assert.equal(floorWaitLeft(s, 1), at(s, 1).call.until - s.t);
-  assert.equal(floorWaitLeft(good, 1), null);
-  assert.equal(floorWaitLeft(s, 2), null);
   assert.equal(at(good, 1).call, null);
-  assert.ok(floorUrgency(s, 1) >= 0 && floorUrgency(s, 1) <= 1);
-  // 応えないまま時間が過ぎると、合図は消えて満足が下がる
+  assert.equal(floorWaitLeft(s, 1), at(s, 1).call.until - s.t);
   const late = until(s, (x) => !at(x, 1).call);
-  assert.ok(at(late, 1).mood < at(s, 1).mood);
-  // 夢中の客（読書）は、放っておいても減点しない
-  let reader = createFloorNight({ seed: 2, level: 1 });
-  const readerId = Object.values(reader.guests).find((g) => g.kind === "reader").id;
-  reader = until(reader, (x) => x.queue.some((q) => q.id === readerId), 300);
-  while (reader.queue[0].id !== readerId) reader = act(reader, { type: "seat", tableId: reader.tables.find((t) => t.phase === "empty").id });
-  reader = act(reader, { type: "seat", tableId: 5 });
-  reader = act(reader, { type: "order", tableId: 5, mixId: reader.guests[readerId].best });
-  reader = act(until(reader, (x) => at(x, 5).delivery?.ready), { type: "serve", tableId: 5 });
-  reader = until(reader, (x) => at(x, 5).call?.type === "focus");
-  const before = at(reader, 5).mood;
-  assert.equal(at(until(reader, (x) => !at(x, 5).call), 5).mood, before);
-  assert.ok(at(act(reader, { type: "care", tableId: 5, verb: "leave" }), 5).mood > before);
-  assert.ok(at(act(reader, { type: "care", tableId: 5, verb: "talk" }), 5).mood < before);
-});
-
-test("会計と片付け: 人数分の席と初杯・一台分の台代。会計だけでは空席にならない", () => {
-  let s = createFloorNight({ seed: 7, level: 1 });
-  const pair = Object.values(s.guests).find((g) => g.party === 2);
-  s = until(s, (x) => x.queue.some((q) => q.id === pair.id), 300);
-  let tableId = 1;
-  while (s.queue[0].id !== pair.id) s = act(s, { type: "seat", tableId: tableId++ });
-  s = act(s, { type: "seat", tableId: 5 });
-  s = act(s, { type: "order", tableId: 5, mixId: pair.best });
-  s = act(until(s, (x) => at(x, 5).delivery?.ready), { type: "serve", tableId: 5 });
-  assert.deepEqual(floorBill(s, 5), { charge: 1400, shisha: 2000, drink: 0, top: 0, total: 3400 }, "二人組: チャージ二人分＋シェアの一台");
-  // ドリンクは、飲み物の合図に応えて注文された時だけ付く（1杯600円）。外した時は付かない
-  let ordered = 0;
-  for (let i = 0; i < 600 && floorTap(s, 5) !== "bill"; i++) {
-    if (floorTap(s, 5) !== "care") { s = floorTick(s); continue; }
-    const call = CALLS[at(s, 5).call.type];
-    if (call.drink) {
-      const missed = act(s, { type: "care", tableId: 5, verb: "talk" });
-      assert.equal(at(missed, 5).drinks, 0);
-      assert.equal(missed.log.at(-1).drink, false);
+  assert.ok(at(late, 1).mood < at(s, 1).mood - 5);
+  assert.equal(late.counts.late, 1);
+  // 初心者はむせる（吸い方の案内）。はじめての営業でも出る
+  let first = serveFirst(createFloorNight({ seed: 4, level: 0 }));
+  assert.equal(first.guests[at(first, 1).guestId].trait, "beginner");
+  first = until(first, (x) => !!at(x, 1).call);
+  assert.equal(at(first, 1).call.type, "cough");
+  // 同時に呼ばれるのは、店全体で2卓まで
+  let busy = createFloorNight({ seed: 6, night: "full", level: 5 });
+  let most = 0;
+  for (let i = 0; i < 300 && !busy.done; i++) {
+    busy = floorTick(busy);
+    for (const table of busy.tables) {
+      if (table.phase === "order") busy = act(busy, { type: "order", tableId: table.id, mix: ["apple"] });
+      if (table.phase === "bill") busy = act(busy, { type: "bill", tableId: table.id });
     }
-    s = act(s, { type: "care", tableId: 5, verb: call.verb });
-    if (call.drink) { ordered += 1; assert.equal(s.log.at(-1).drink, true); }
+    most = Math.max(most, busy.tables.filter((t) => t.call).length);
   }
-  assert.ok(ordered >= 1, "この二人組は飲み物を頼む");
-  assert.equal(s.counts.drink, ordered);
-  const sales = s.sales;
-  const running = floorBill(s, 5);
-  s = act(s, { type: "bill", tableId: 5 });
-  const row = s.results.at(-1);
-  assert.equal(running.total, row.total, "卓の「ご利用」は、会計の合計と同じ");
-  assert.equal(floorBill(s, 5), null);
-  assert.equal(row.charge, 1400);
-  assert.equal(row.drink, 600 * ordered);
-  assert.equal(row.shisha, 2000, "コースで値段は変わらない");
-  assert.equal(row.total, 3400 + 600 * ordered);
-  assert.equal(s.sales - sales, row.total);
-  assert.equal(at(s, 5).phase, "dirty");
-  assert.equal(floorTap(s, 5), "clean");
-  assert.equal(floorAct(s, { type: "seat", tableId: 5 }), s, "片付け前の卓へは案内できない");
-  s = act(s, { type: "clean", tableId: 5 });
-  assert.equal(at(s, 5).phase, "empty");
+  assert.equal(most, 2);
 });
 
-test("会計の声かけ: 顔に合った一言で満足が上がる。笑顔の客はトップ替え（おかわり）に応じ、一卓に一度まで", () => {
-  const s = toBill(serveFirst(createFloorNight({ seed: 4, level: 1 })));
-  const withMood = (mood) => { const x = structuredClone(s); at(x, 1).mood = mood; return x; };
-  assert.equal(floorSendOff(s, 2), null, "会計前の卓に見立ては無い");
-  assert.deepEqual([90, 80, 79, 45, 44].map(floorFace), ["smile", "smile", "flat", "flat", "frown"]);
-  // 笑顔: トップ替え（おかわり）に応じてくれる。売上（＋1,500円）は、運んでから会計で入る
-  const smile = withMood(90);
-  assert.deepEqual(floorSendOff(smile, 1), { face: "smile", extend: "ok", best: "extend" });
-  const plainTotal = floorBill(smile, 1).total;
-  const extended = act(smile, { type: "bill", tableId: 1, reply: "extend" });
-  assert.equal(at(extended, 1).phase, "enjoy");
-  assert.equal(at(extended, 1).top, "ordered");
-  assert.equal(extended.sales, smile.sales);
-  assert.equal(extended.log.at(-1).type, "extend");
-  assert.equal(extended.counts.extend, 1);
-  assert.ok(extended.air > smile.air);
-  assert.equal(floorTap(extended, 1), "info", "仕上がるまでは待つ");
-  const again = toBill(extended);
-  assert.equal(at(again, 1).top, "served");
-  assert.ok(again.t - extended.t >= 26, "トップ替えの分だけ長く過ごす");
-  assert.deepEqual(floorSendOff(again, 1), { face: "smile", extend: "used", best: "thanks" });
-  assert.equal(floorAct(again, { type: "bill", tableId: 1, reply: "extend" }), again, "トップ替えは一卓に一度まで");
-  const paid = act(again, { type: "bill", tableId: 1, reply: "thanks" });
-  assert.equal(paid.results.at(-1).top, 1500);
-  assert.equal(paid.results.at(-1).total - plainTotal, 1500, "トップ替えが入ると1,500円増える");
-  assert.equal(paid.log.at(-1).verdict, "best");
-  // 笑顔にお礼だけ: 悪くはないが、トップ替えの機会を逃す
-  const plain = act(smile, { type: "bill", tableId: 1 });
-  assert.equal(plain.log.at(-1).reply, "thanks");
-  assert.equal(plain.log.at(-1).verdict, "good");
-  assert.equal(plain.results.at(-1).mood, 90);
-  assert.equal(plain.results.at(-1).top, 0);
-  // ふつうの顔: お礼が合う。トップ替えをすすめると断られて、少し気まずい
-  const flat = withMood(60);
-  assert.equal(floorSendOff(flat, 1).best, "thanks");
-  assert.equal(act(flat, { type: "bill", tableId: 1, reply: "thanks" }).results.at(-1).mood, 65);
-  const pushed = act(flat, { type: "bill", tableId: 1, reply: "extend" });
-  assert.equal(pushed.log.at(-1).verdict, "miss");
-  assert.equal(pushed.results.at(-1).mood, 54);
-  assert.equal(at(pushed, 1).phase, "dirty");
-  assert.equal(act(flat, { type: "bill", tableId: 1, reply: "sorry" }).results.at(-1).mood, 60);
-  // 曇り顔: お詫びが届く。お礼だけでは変わらない
-  const frown = withMood(40);
-  assert.equal(floorSendOff(frown, 1).best, "sorry");
-  const sorry = act(frown, { type: "bill", tableId: 1, reply: "sorry" });
-  assert.equal(sorry.results.at(-1).mood, 54);
-  assert.equal(sorry.log.at(-1).verdict, "best");
-  assert.equal(act(frown, { type: "bill", tableId: 1, reply: "thanks" }).log.at(-1).verdict, "miss");
-  // 閉店が近い時・台代を外した卓には、トップ替えをすすめられない
-  const late = withMood(90);
-  late.t = late.length - 20;
-  assert.deepEqual(floorSendOff(late, 1), { face: "smile", extend: "late", best: "thanks" });
-  assert.equal(floorAct(late, { type: "bill", tableId: 1, reply: "extend" }), late);
-  const waived = withMood(90);
-  at(waived, 1).accepted = false;
-  assert.equal(floorSendOff(waived, 1).extend, "none");
+test("ドリンクと延長: 居心地の良い卓ほど追加ドリンクが入り、延長（トップ替え）は満足した客だけが自分から頼む", () => {
+  const run = (mood) => {
+    let drinks = 0, extends_ = 0, groups = 0;
+    for (let seed = 1; seed <= 40; seed++) {
+      let s = serveFirst(createFloorNight({ seed, level: 0 }));
+      for (let i = 0; i < 300 && at(s, 1).phase === "enjoy"; i++) {
+        at(s, 1).mood = mood; // 検査のため、満足を固定して滞在させる
+        if (at(s, 1).call) s = act(s, { type: "care", tableId: 1, verb: CALLS[at(s, 1).call.type].verb });
+        at(s, 1).mood = mood;
+        s = floorTick(s);
+      }
+      drinks += at(s, 1).extra ?? 0;
+      extends_ += floorBill(s, 1)?.top ? 1 : 0;
+      groups += 1;
+      if (floorBill(s, 1)?.top) {
+        assert.equal(floorBill(s, 1).top, PRICE.top);
+        assert.equal(s.counts.extend, 1, "延長は一卓に一度まで");
+      }
+    }
+    return { drinks: drinks / groups, extends: extends_ / groups };
+  };
+  const [max, good, ok] = [run(95), run(70), run(50)];
+  assert.ok(max.drinks > good.drinks && good.drinks > ok.drinks, JSON.stringify([max, good, ok]));
+  assert.ok(max.extends > good.extends && max.extends > 0.15 && max.extends < 0.6, JSON.stringify(max));
+  assert.equal(ok.extends, 0, "普通の客は延長しない");
 });
 
-test("入口: 待たせすぎると帰ってしまう。満席でも6卓目は生まれない", () => {
-  let s = createFloorNight({ seed: 5, level: 1 });
-  s = until(s, (x) => x.counts.missed > 0, 400);
-  assert.ok(s.results[0].missed);
-  assert.equal(s.results[0].total, 0);
-  const full = createFloorNight({ seed: 5, night: "full", level: 5 });
-  let f = full;
-  for (let i = 0; i < 200 && f.tables.some((t) => t.phase === "empty"); i++) {
-    f = floorTick(f);
-    const free = f.tables.find((t) => t.phase === "empty");
-    if (f.queue.length && free) f = act(f, { type: "seat", tableId: free.id });
-  }
-  assert.ok(f.tables.every((t) => t.phase !== "empty"));
-  f = until(f, (x) => x.queue.length > 0, 200);
-  for (const t of f.tables) assert.equal(floorTap(f, t.id) === "seat", false);
-  assert.equal(f.tables.length, FLOOR_TABLE_COUNT);
+test("会計: 見送り方を選ぶ。ショップカードは少しの費用でファンが増える。売上と利益は明細と一致する", () => {
+  let s = serveFirst(createFloorNight({ seed: 7, level: 0 }));
+  s = toBill(s);
+  assert.ok(["bill", "order", "call"].includes(floorHint(s).kind));
+  const total = floorBill(s, 1).total;
+  assert.equal(total, PRICE.charge + PRICE.shisha + PRICE.drink * at(s, 1).drinks + floorBill(s, 1).top, "1名: チャージ＋基本＋ドリンク（初回1杯＋追加）");
+  at(s, 1).mood = 70;
+  const plain = act(s, { type: "bill", tableId: 1 });
+  const card = act(s, { type: "bill", tableId: 1, card: true });
+  assert.equal(plain.results.at(-1).total, total);
+  assert.equal(card.service - s.service, COST.card);
+  assert.ok(card.fans > plain.fans && plain.fans > s.fans);
+  assert.equal(at(plain, 1).phase, "cool");
+  assert.equal(floorTap(plain, 1), "none");
+  // 不満の客にカードを渡しても、ファンは増えない
+  at(s, 1).mood = 30;
+  assert.equal(act(s, { type: "bill", tableId: 1, card: true }).fans, act(s, { type: "bill", tableId: 1 }).fans);
+  // 会計を待たせると、満足が下がっていく
+  at(s, 1).mood = 70;
+  assert.ok(at(floorTick(s, 40), 1).mood < 70);
+  const done = floorResult(act(plain, { type: "finish" }));
+  assert.equal(done.sales, done.groups.reduce((sum, g) => sum + g.total, 0));
+  assert.equal(done.sales, done.items.charge + done.items.shisha + done.items.drink + done.items.top);
+  assert.equal(done.profit, done.sales - done.cost - done.service);
+  assert.ok(done.cost > 0);
+  assert.equal(done.mixes[0].label, mixLabel(plain.results.find((row) => row.tableId === 1 && row.mix).mix), "好評だったミックスに残る");
 });
 
-test("作業台と受渡棚: 一台ずつ仕上がり、棚は二つまで。急ぎの伝票は先に回せる", () => {
+test("フィーバー: 溜まった段だけ使え、対象の卓は居心地が最高のまま止まり、追加ドリンクが続く", () => {
   let s = createFloorNight({ seed: 5, night: "full", level: 5 });
-  for (let seated = 0; seated < 5;) {
+  for (let i = 0; i < 60; i++) {
     s = floorTick(s);
-    const free = s.tables.find((t) => t.phase === "empty");
-    if (s.queue.length && free) {
-      s = act(s, { type: "seat", tableId: free.id });
-      s = act(s, { type: "order", tableId: free.id, mixId: s.guests[at(s, free.id).guestId].best });
-      seated++;
-    }
+    for (const table of s.tables) if (table.phase === "order") s = act(s, { type: "order", tableId: table.id, mix: ["apple"] });
   }
-  assert.ok(s.bench);
-  const waiting = s.line.map((job) => job.tableId);
-  assert.ok(waiting.length >= 2);
-  const rushed = act(s, { type: "rush", tableId: waiting.at(-1) });
-  assert.equal(rushed.line[0].tableId, waiting.at(-1));
-  assert.equal(floorAct(s, { type: "rush", tableId: waiting[0] }), s, "先頭の伝票は動かない");
-  s = floorTick(s, 120);
-  assert.equal(s.shelf.length, 2, "棚は二つまで");
-  assert.ok(s.bench && s.bench.left === 0, "三台目は作業台で棚が空くのを待つ");
-  const first = s.shelf[0].tableId;
-  s = act(s, { type: "serve", tableId: first });
-  assert.equal(s.shelf.length, 2, "運ぶと、待っていた一台が棚へ出る");
+  const enjoying = s.tables.filter((t) => t.phase === "enjoy").length;
+  assert.ok(enjoying >= 4);
+  const low = { ...s, fever: 99 };
+  assert.equal(floorAct(low, { type: "fever" }), low, "溜まる前は使えない");
+  assert.equal(floorFeverLevel(low), 0);
+  assert.deepEqual([100, 250, 300].map((fever) => floorFeverLevel({ ...s, fever })), [1, 2, 3]);
+  const one = act({ ...s, fever: 130 }, { type: "fever" });
+  assert.equal(one.tables.filter((t) => t.fever).length, 2, "Lv1＝2卓");
+  assert.equal(one.fever, 30);
+  assert.equal(one.feverLeft, floorFeverLength);
+  const two = act({ ...s, fever: 200 }, { type: "fever" });
+  assert.equal(two.tables.filter((t) => t.fever).length, 4, "Lv2＝4卓");
+  const three = act({ ...s, fever: 300 }, { type: "fever" });
+  assert.equal(three.tables.filter((t) => t.fever).length, enjoying, "Lv3＝くつろいでいる全卓");
+  assert.equal(floorAct(one, { type: "fever" }), one, "フィーバー中は重ねて使えない");
+  const target = one.tables.find((t) => t.fever);
+  const base = at(s, target.id).mood;
+  const mid = floorTick(one, 12);
+  assert.equal(at(mid, target.id).mood, 100);
+  assert.equal(at(mid, target.id).call, null);
+  assert.equal(at(mid, target.id).stayEnd - mid.t, target.stayEnd - one.t, "滞在の残りは減らない");
+  assert.ok(at(mid, target.id).extra > target.extra, "追加ドリンクが入る");
+  assert.equal(floorTap(mid, target.id), "info");
+  const after = floorTick(one, floorFeverLength);
+  assert.equal(after.feverLeft, 0);
+  assert.ok(after.log.some((e) => e.type === "feverEnd"));
+  assert.ok(at(after, target.id).mood > base && at(after, target.id).mood < 100, "明けた後は、少し上乗せが残る");
+  assert.equal(after.fevers, 1);
 });
 
-test("ボーナスタイム: 溜まった時だけ使え、その間は合図と待ち時間が止まり満足が上がる", () => {
-  let s = serveFirst(createFloorNight({ seed: 4, level: 1 }));
-  assert.equal(floorAct(s, { type: "bonusTime" }), s, "溜まる前は使えない");
-  s = { ...s, air: floorAirFull };
-  s = until(s, (x) => floorTap(x, 1) === "care");
-  const call = { ...at(s, 1).call };
-  const mood = at(s, 1).mood;
-  s = act(s, { type: "bonusTime" });
-  assert.equal(s.air, 0);
-  assert.equal(s.bonusTimeLeft, floorBonusTimeLength);
-  assert.equal(floorAdvice(s).kind, "bonusTime");
-  s = floorTick(s, floorBonusTimeLength);
-  assert.equal(s.bonusTimeLeft, 0);
-  assert.ok(at(s, 1).mood > mood, "満足が上がる");
-  assert.equal(at(s, 1).call.until - s.t, call.until - (s.t - floorBonusTimeLength), "合図の残り時間は減らない");
-  assert.ok(s.log.some((e) => e.type === "bonusTimeEnd"));
-  assert.equal(s.bonusTimes, 1);
+test("定番: 最大8枠。登録・外す・重複なし。保存が壊れていたら、はじめの4つに戻る", () => {
+  let s = createFloorNight({ seed: 1, level: 2 });
+  assert.deepEqual(s.presets, STARTER_PRESETS.map((m) => [...m]));
+  s = act(s, { type: "preset", op: "add", mix: ["grape", "berry"] });
+  assert.equal(s.presets.length, STARTER_PRESETS.length + 1);
+  assert.equal(floorAct(s, { type: "preset", op: "add", mix: ["berry", "grape"] }), s, "同じ組み合わせは二度登録しない");
+  for (const id of ["mango", "lychee", "pine", "rose", "chai"]) s = floorAct(s, { type: "preset", op: "add", mix: [id] });
+  assert.equal(s.presets.length, PRESET_MAX);
+  s = act(s, { type: "preset", op: "remove", mix: ["apple"] });
+  assert.equal(s.presets.length, PRESET_MAX - 1);
+  assert.equal(s.t, 0);
+  assert.deepEqual(floorPresets([["grape"], ["nothing"], ["grape"], ["lemon", "mint"]]), [["grape"], ["lemon", "mint"]]);
+  assert.deepEqual(floorPresets(null), STARTER_PRESETS.map((m) => [...m]));
+  assert.equal(createFloorNight({ presets: [["rose", "lychee"]] }).presets.length, 1);
+  // 定番の一台は、早く出せる
+  const quick = serveFirst(createFloorNight({ seed: 3, level: 0, presets: [["lemon", "mint"]] }), () => ["lemon", "mint"]);
+  const slow = serveFirst(createFloorNight({ seed: 3, level: 0, presets: [["apple"]] }), () => ["lemon", "mint"]);
+  assert.ok(quick.t < slow.t);
 });
 
-test("今夜の段取り: 仕込み・炭・レジがそれぞれ効く", () => {
-  const plain = serveFirst(createFloorNight({ seed: 6, level: 2, night: "usual" }));
-  const prep = serveFirst(createFloorNight({ seed: 6, level: 2, night: "usual", plan: "prep" }));
-  assert.ok(prep.t < plain.t, "仕込みを先に済ませると早く出せる");
-  const open = (s) => { s = until(s, (x) => floorTap(x, 1) === "care"); return at(s, 1).call.until - at(s, 1).call.since; };
-  assert.ok(open(serveFirst(createFloorNight({ seed: 6, level: 2, night: "usual", plan: "coal" }))) > open(plain));
-  let s = serveFirst(createFloorNight({ seed: 6, level: 2, night: "usual", plan: "register" }));
-  for (let i = 0; i < 300 && at(s, 1).phase !== "dirty"; i++) {
-    const tap = floorTap(s, 1);
-    if (tap === "care") s = act(s, { type: "care", tableId: 1, verb: CALLS[at(s, 1).call.type].verb });
-    else s = floorTick(s);
-  }
-  assert.equal(at(s, 1).phase, "dirty", "会計はスミさんが受ける");
-  assert.equal(s.results.at(-1).by, "sumi");
-});
-
-test("締め: 時間切れ・引き継ぎは提供済みの卓だけ会計し、提供前の卓にお代を付けない", () => {
+test("締め: 時間が来たら残った卓を送り出す。早じまいも出来る。怒って帰した夜は大入りにならない", () => {
   let s = serveFirst(createFloorNight({ seed: 8, level: 1 }));
-  s = until(s, (x) => x.queue.length > 0);
-  s = act(s, { type: "seat", tableId: 2 });
-  s = act(s, { type: "order", tableId: 2, mixId: s.guests[at(s, 2).guestId].best });
   const closed = act(s, { type: "finish" });
   assert.ok(closed.done);
-  assert.equal(floorAct(closed, { type: "clean", tableId: 1 }), closed);
+  assert.equal(closed.closing, "early");
+  assert.equal(floorAct(closed, { type: "fever" }), closed);
   assert.equal(floorTick(closed, 5), closed);
   const result = floorResult(closed);
-  assert.equal(result.closing, "handoff");
-  const [served, unserved] = [result.groups.find((g) => g.tableId === 1), result.groups.find((g) => g.tableId === 2)];
-  assert.equal(served.by, "sumi");
-  assert.ok(served.total > 0);
-  assert.ok(unserved.unserved);
-  assert.equal(unserved.total, 0);
-  assert.equal(result.sales, served.total);
-  assert.notEqual(result.rank, "S", "途中で任せた夜は大入りにならない");
-  assert.ok(result.score < 60, "まだ来ていない組の分も平均に入る");
-  // 誰も迎えない夜は、最後の客が帰った時に閉まる
+  assert.equal(result.groups[0].by, "close");
+  assert.equal(result.sales, result.groups.reduce((sum, g) => sum + g.total, 0));
+  // 誰の注文も聞かない夜: 全員が怒って帰り、評価は最低
   const idle = floorTick(createFloorNight({ seed: 8, level: 1 }), 1000);
   assert.ok(idle.done);
-  assert.equal(idle.closing, "clear");
-  assert.equal(floorResult(idle).rank, "C");
-  assert.equal(floorResult(idle).sales, 0);
-  assert.equal(floorResult(idle).lost, 6);
-  // 注文を聞かないまま閉店時刻になった卓は、スミさんが引き継ぐ
-  let stuck = until(createFloorNight({ seed: 8, level: 1 }), (x) => x.queue.length > 0);
-  stuck = floorTick(act(stuck, { type: "seat", tableId: 4 }), 1000);
-  assert.equal(stuck.closing, "time");
-  assert.equal(stuck.t, stuck.length);
-  assert.ok(floorResult(stuck).groups.find((g) => g.tableId === 4).unserved);
+  assert.ok(["time", "clear"].includes(idle.closing));
+  const none = floorResult(idle);
+  assert.equal(none.rank, "C");
+  assert.equal(none.sales, 0);
+  assert.ok(none.left >= 5 && none.left === none.came);
+  assert.ok(none.fans < 0);
+  // 全員を迎えて送り出したら、時間前でも閉まる
+  const all = playFloorBot({ seed: 2, level: 0, pace: 2 });
+  assert.equal(all.state.closing, "clear");
+  assert.ok(all.state.t < all.state.length);
 });
 
-test("今日の注文の客: 受け取った一台だけを記録する", () => {
-  const input = { seed: 15, level: 1, anchor: { family: "citrus", index: 1 } };
-  const play = (pick) => playFloorBot({ ...input, pick });
-  assert.equal(play("best").result.anchorIndex, 1);
-  assert.equal(play("near").result.anchorIndex, 0);
-  assert.equal(createFloorNight({ seed: 15, level: 1 }).anchor, null);
-  assert.equal(floorResult(act(createFloorNight(input), { type: "finish" })).anchorIndex, null);
-});
-
-test("通し: 手際のよい操作は大入り、放っておく夜は評価が低い。売上は明細の合計と一致する", () => {
+test("通し: 注文に合わせて調合すれば大入り、定番だけでも回せる、放っておく夜は評価が低い", () => {
   for (const [night, level] of [["first", 0], ["usual", 1], ["friday", 2], ["rain", 2], ["newcomers", 3], ["full", 5]]) {
-    for (const chapter of [1, 2]) {
-      const quick = playFloorBot({ seed: 11, level, night, chapter, pace: 2 }).result;
-      assert.equal(quick.rank, "S", `${night} 第${chapter}章: 手際よく回せば大入り（${quick.score}）`);
-      assert.equal(quick.lost, 0);
-      assert.equal(quick.served, quick.expected);
-      assert.equal(quick.sales, quick.groups.reduce((sum, g) => sum + g.total, 0));
-      assert.ok(quick.bonusTimes >= 1, `${night}: 一晩に一度はボーナスタイムが溜まる`);
-      const slow = playFloorBot({ seed: 11, level, night, chapter, pace: 16, pick: "near" }).result;
-      assert.ok(["B", "C"].includes(slow.rank), `${night}: 手が遅いと評価は下がる（${slow.rank}）`);
-      assert.ok(slow.score < quick.score);
-    }
+    const quick = playFloorBot({ seed: 11, level, night, pace: 2 }).result;
+    assert.equal(quick.rank, "S", `${night}: 合わせて調合し、手際よく回せば大入り（${quick.score}）`);
+    assert.equal(quick.left, 0);
+    assert.equal(quick.sales, quick.groups.reduce((sum, g) => sum + g.total, 0));
+    assert.ok(quick.profit < quick.sales && quick.fans > 0);
+    assert.ok(quick.mixes.length >= 1 && quick.mixes[0].avg >= quick.mixes.at(-1).avg);
+    const preset = playFloorBot({ seed: 11, level, night, pace: 5, pick: "preset" }).result;
+    assert.ok(["S", "A", "B"].includes(preset.rank) && preset.score < quick.score, `${night}: 定番だけでも回せる（${preset.rank}）`);
+    const slow = playFloorBot({ seed: 11, level, night, pace: 16, pick: "preset" }).result;
+    assert.ok(slow.score < preset.score && ["A", "B", "C"].includes(slow.rank), `${night}: 手が遅いと評価は下がる（${slow.rank}）`);
   }
 });

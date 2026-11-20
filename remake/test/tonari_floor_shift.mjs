@@ -37,14 +37,14 @@ assert.deepEqual([game.loadFromSlot(slot).money, game.state.slot, game.state.vis
   [JSON.parse(before).money + 8000, 1, 4]);
 
 // フロア営業と本編の境界（画面はここでは代役）。
-// 店の売上を財布・私物へ混ぜない。中断・LOAD では注文の記録も進み具合も残さない。
-// その日の「今日の注文」の客が受け取った一台だけを、次に同じ注文が来た時の想起（_shift_mix_）へ渡す。
-import { MIXES } from "../js/daily/tonari-floor-data.js";
+// 店の売上を財布・私物へ混ぜない。中断・LOAD では進み具合を残さない。
+// 定番ミックスと店のファンの合計は flags._tonari_floor に残り、次の営業へ渡る。
+// ワンオペの営業は「今日の注文」の記録（_shift_order_・_shift_mix_）に触れない。
 const text = await fs.readFile(new URL("../js/daily/tonari.js", import.meta.url), "utf8");
 const start = text.indexOf("const SHIFT_ORDERS = [");
 assert(start >= 0);
-async function orderBoundary(mode) {
-  const account = { day: 4, chapter: 1, weatherSeed: 18, flags: {}, money: 30000, inventory: { mint: 3 } };
+async function floorBoundary(mode) {
+  const account = { day: 4, chapter: 1, weatherSeed: 18, flags: { _shift_mix_citrus: 1 }, money: 30000, inventory: { mint: 3 } };
   const context = vm.createContext({ state: account, DB: { dialogues: {} }, tsumugiAtTonari: () => false,
     TONARI_BG: "tonari", play: async () => ({}), isRainy: () => false, timeOfDay: () => "night",
     bgUrl: () => "bg", setBg: async () => {}, toast: () => {} });
@@ -52,14 +52,11 @@ async function orderBoundary(mode) {
   const view = new vm.SyntheticModule(["runTonariFloor"], function () {
     this.setExport("runTonariFloor", async options => {
       calls.push(options);
-      if (options.anchor) {
-        assert(MIXES[`${options.anchor.family}:${options.anchor.index}`], "今日の注文は、フロアの配合にある注文");
-        account.flags["_shift_mix_" + options.anchor.family] ??= 1; // 以前の提供記録
-      }
       if (mode === "load") context.state = { ...account, flags: {} };
       if (mode === "abandon") return null;
-      return { sales: 16800, rank: calls.length === 1 ? "A" : "B", stamp: "上々", bonus: 1000,
-        anchorFamily: options.anchor?.family ?? null, anchorIndex: mode === "unserved" || !options.anchor ? null : 0 };
+      return calls.length === 1
+        ? { sales: 16800, rank: "A", stamp: "上々", bonus: 1000, fans: 6, presets: [["lemon", "mint"], ["peach", "lemon"]] }
+        : { sales: 9000, rank: "B", stamp: "まずまず", bonus: 500, fans: -9, presets: [["lemon", "mint"]] };
     });
   }, { context });
   await view.link(() => { throw Error("unexpected import"); });
@@ -75,28 +72,30 @@ async function orderBoundary(mode) {
   assert.equal(calls[0].level, 0, "はじめての営業は level 0");
   assert.equal(calls[0].chapter, 1);
   assert.equal(calls[0].night, true);
-  const family = calls[0].anchor.family;
-  if (mode === "served" || mode === "unserved") {
+  assert.equal(calls[0].presets, null, "はじめての営業は、店の定番から始める");
+  assert.equal(calls[0].fans, 0);
+  assert.equal("anchor" in calls[0], false, "今日の注文の客は、ワンオペの営業には混ぜない");
+  if (mode === "done") {
     assert.equal(result.bonus, 1000);
-    assert.equal(account.flags["_shift_order_1:4"], true);
-    assert.equal(account.flags["_shift_mix_" + family], mode === "served" ? 0 : 1, "受け取らなかった一台で前の記録を書き換えない");
-    assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":1,"best":"A"}'); // 別realmの値なので文字列で比べる
-    // 同じ日にもう一度開いても、その日の注文の客は重ねて来ない。評価は良かったほうを残す。
-    await module.namespace.serveFloorOrder(account, signal);
+    // 別realmの値なので文字列で比べる
+    assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":1,"best":"A","presets":[["lemon","mint"],["peach","lemon"]],"fans":6}');
+    // 次の営業へ、定番とファンの合計を渡す。評価は良かったほうを残し、ファンは0を下回らない。
+    const second = await module.namespace.serveFloorOrder(account, signal);
     assert.equal(calls.length, 2);
-    assert.equal(calls[1].anchor, null);
     assert.equal(calls[1].level, 1);
-    assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":2,"best":"A"}');
-    assert.equal(account.flags["_shift_mix_" + family], mode === "served" ? 0 : 1);
+    assert.equal(JSON.stringify(calls[1].presets), '[["lemon","mint"],["peach","lemon"]]');
+    assert.equal(calls[1].fans, 6);
+    assert.equal(second.bonus, 500);
+    assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":2,"best":"A","presets":[["lemon","mint"]],"fans":0}');
   } else {
     assert.equal(result, null);
-    assert.equal(account.flags["_shift_order_1:4"], undefined);
     assert.equal(account.flags._tonari_floor, undefined);
-    assert.equal(account.flags["_shift_mix_" + family], 1);
   }
+  assert.equal(account.flags["_shift_order_1:4"], undefined, "今日の注文は済んだことにしない");
+  assert.equal(account.flags._shift_mix_citrus, 1, "前に出した一台の記録を書き換えない");
   assert.equal(account.money, 30000); assert.deepEqual(account.inventory, { mint: 3 });
 }
-for (const mode of ["served", "unserved", "load", "abandon"]) await orderBoundary(mode);
+for (const mode of ["done", "load", "abandon"]) await floorBoundary(mode);
 // 画面を読み込めない時は、いつもの「今日の注文」へ戻す（進み具合は増やさない）。
 {
   const account = { day: 4, chapter: 1, weatherSeed: 18, flags: {}, money: 30000 };
@@ -116,4 +115,4 @@ for (const mode of ["served", "unserved", "load", "abandon"]) await orderBoundar
   assert.equal(account.flags["_shift_order_1:4"], true);
   assert.equal(account.flags._tonari_floor, undefined);
 }
-console.log("tonari floor: AUTO/manual save, owner replacement, order memory, progress and fallback OK");
+console.log("tonari floor: AUTO/manual save, owner replacement, presets/fans carry-over, progress and fallback OK");

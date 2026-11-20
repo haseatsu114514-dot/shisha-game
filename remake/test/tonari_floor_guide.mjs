@@ -56,13 +56,12 @@ export function drawFloorGuide({ night = false, zones = false } = {}) {
   }
   if (zones) {
     // Codex へ渡す配置図: ゲームが重ねる物の場所（灰＝帯と札、点線＝客の絵、白丸＝番号札、白い縦棒＝卓の上の一台、白い四角＝卓の札）
-    // 灰は上の帯・下の帯（卓のドック・出来事とスミさんの一言・ボーナスタイム。横いっぱい）・左の入口の列・右上の作業台の札
+    // 灰は上の帯（作成中の一台・残り時間・売上）・下の帯（卓のドック・出来事とはじめの心の声・フィーバー。横いっぱい）・右の定番の列
     r.drawImage(front, 0, 0);
     r.fillStyle = "#2b2b2b99";
-    r.fillRect(0, 0, W, H * 0.13);
+    r.fillRect(0, 0, W, H * 0.122);
     r.fillRect(W * 0.012, H * 0.86, W * 0.976, H * 0.126);
-    r.fillRect(W * 0.012, H * 0.14, W * 0.117, H * 0.32);
-    r.fillRect(W * 0.8, H * 0.14, W * 0.188, H * 0.32);
+    r.fillRect(W * 0.822, H * 0.133, W * 0.166, H * 0.6);
     r.setLineDash([12, 8]); r.lineWidth = 4; r.strokeStyle = "#ffffff";
     for (const spot of stage.spots) { const [x, y, w, h] = px(spot.box); r.strokeRect(x, y, w, h); }
     r.setLineDash([]);
@@ -70,8 +69,8 @@ export function drawFloorGuide({ night = false, zones = false } = {}) {
     for (const spot of stage.spots) {
       r.beginPath(); r.arc(spot.plate[0] * W / 100, spot.plate[1] * H / 100, 20, 0, Math.PI * 2); r.fill();
       r.fillRect(spot.prop[0] * W / 100 - 5, (spot.prop[1] - spot.propH) * H / 100, 10, spot.propH * H / 100);
-      // 卓の札（幅 12.7%・高さ 16%。下端の中央が bubble）
-      const [bw, bh] = [W * 0.127, H * 0.16];
+      // 卓の札（幅 13%・高さ 18%。下端の中央が bubble）
+      const [bw, bh] = [W * 0.13, H * 0.18];
       r.fillStyle = "#ffffffcc";
       r.fillRect(spot.bubble[0] * W / 100 - bw / 2, spot.bubble[1] * H / 100 - bh, bw, bh);
       r.fillStyle = "#ffffff";

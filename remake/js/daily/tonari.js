@@ -41,13 +41,13 @@ const ichidaiNote = () => {
 const strawberryTrialOpen = () => state.chapter === 2 && !!state.flags._ch2_read_remake_ch2_ageha_tasting
   && !state.flags._ch2_strawberry_trial && !!DB.dialogues.ch2_strawberry_trial_intro?.lines?.length;
 
-// フロア営業（tonari-floor-*.js）: 案内から会計までを任される営業。日当と行動枠はいつものシフトと同じで、
+// フロア営業（tonari-floor-*.js）: 注文・調合・ケア・会計を一人で回す営業（ワンオペ）。日当と行動枠はいつものシフトと同じで、
 // 営業の評価に応じて店からの売上ボーナスが付く。バイトとして店に立つ第1〜2章で、最初のシフトを済ませた後に選べる。
 const floorShiftOpen = () => state.chapter <= 2 && (state.baitoCount || 0) >= 1;
 function floorShiftNote(forecast = "", stamp = "") {
   const pay = `${shiftPayNote(state)}＋売上ボーナス`;
-  if (!floorProgress().nights) return `【新しい仕事】案内から会計まで、五つの卓を回す営業を任される。${pay}`;
-  return `${forecast ? `今日の予報：${forecast}。` : ""}案内から会計まで、五つの卓を回す。${pay}${stamp ? `（これまでの最高：${stamp}）` : ""}`;
+  if (!floorProgress().nights) return `【新しい仕事】注文から会計まで、五つの卓を一人で回す。${pay}`;
+  return `${forecast ? `今日の予報：${forecast}。` : ""}注文から会計まで、五つの卓を一人で回す。${pay}${stamp ? `（これまでの最高：${stamp}）` : ""}`;
 }
 /** 勤務札の予報と最高の評価は、フロアの台本を読めてから足す（このメニューの取り込みは増やさない。読めなければ出さないだけ）。 */
 async function fillFloorForecast(card) {
@@ -197,7 +197,7 @@ async function baitoShift({ called, story, floor, owner, signal }) {
     if (await customerEvent(condition, signal) === false) return false;
   }
   if (!current()) return false;
-  // フロア営業は「今日の注文」の代わり。その日の注文の客は、営業の中の一組として来る。
+  // フロア営業は「今日の注文」の代わり（その日の注文の想起は進めない）。
   let floorNight = null;
   if (onFloor) {
     floorNight = await serveFloorOrder(owner, signal);
@@ -561,16 +561,18 @@ async function serveShiftOrder() {
 // フロア営業の一晩。店の売上は画面の中だけで、はじめの財布・能力・私物は共通の勤務処理からだけ動く。
 // 返り値は営業の結果（中断・LOAD は null）。画面を読み込めない時は、いつもの「今日の注文」へ戻す。
 const FLOOR_RANK_ORDER = ["C", "B", "A", "S"];
-/** これまでフロアを回した回数と、いちばん良かった評価（保存は flags._tonari_floor）。 */
+/** これまでフロアを回した回数・いちばん良かった評価・定番ミックス・店のファンの合計（保存は flags._tonari_floor）。 */
 function floorProgress(s = state) {
   const saved = s.flags?._tonari_floor;
-  return { nights: Number.isInteger(saved?.nights) && saved.nights > 0 ? saved.nights : 0, best: saved?.best || null };
+  return {
+    nights: Number.isInteger(saved?.nights) && saved.nights > 0 ? saved.nights : 0, best: saved?.best || null,
+    presets: Array.isArray(saved?.presets) ? saved.presets : null, fans: Number.isInteger(saved?.fans) && saved.fans > 0 ? saved.fans : 0,
+  };
 }
 async function serveFloorOrder(owner, signal) {
   const current = () => state === owner && !signal.aborted;
   if (!current()) return null;
-  const key = `_shift_order_${owner.chapter}:${owner.day}`;
-  const { order, seed } = shiftOrderOfDay();
+  const { seed } = shiftOrderOfDay();
   const progress = floorProgress(owner);
   let run;
   try { ({ runTonariFloor: run } = await import("./tonari-floor-view.js")); }
@@ -581,21 +583,15 @@ async function serveFloorOrder(owner, signal) {
     return current() ? { bonus: 0, stamp: "", fallback: true } : null;
   }
   if (!current()) return null;
-  // その日の「今日の注文」の客。フロアの台本にある注文（配合の二択）の時だけ、営業の中の一組として来る（画面が決める）。
-  // 受け取った一台を、次に同じ注文が来た時の想起（#1415）へ渡す。
-  const anchor = owner.flags[key] ? null : { family: order.id, index: ((seed >>> 3) ^ owner.day) & 1 };
   const night = timeOfDay() === "night";
   const result = await run({
-    seed, level: progress.nights, chapter: owner.chapter, anchor, rainy: isRainy(), night,
+    seed, level: progress.nights, chapter: owner.chapter, presets: progress.presets, fans: progress.fans, rainy: isRainy(), night,
     art: bgUrl(TONARI_BG, timeOfDay()), isCurrent: current, signal,
   });
   if (!current() || !result) return null;
-  if (anchor && result.anchorFamily === order.id) {
-    owner.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
-    if (Number.isInteger(result.anchorIndex) && order.mixes[result.anchorIndex]) owner.flags[`_shift_mix_${order.id}`] = result.anchorIndex;
-  }
   const best = FLOOR_RANK_ORDER.indexOf(result.rank) > FLOOR_RANK_ORDER.indexOf(progress.best) ? result.rank : progress.best;
-  owner.flags._tonari_floor = { nights: progress.nights + 1, best };
+  // 定番ミックスと店のファンの合計は、シフトの給料・行動消費と一緒に calendar で保存する。
+  owner.flags._tonari_floor = { nights: progress.nights + 1, best, presets: result.presets, fans: Math.max(0, progress.fans + result.fans) };
   await setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
   return current() ? result : null;
 }

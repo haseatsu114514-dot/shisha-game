@@ -242,7 +242,7 @@ export const FLAG_EXACT_RULES = [
   ["_petit_seen_notice_tsumugi", "progression"],
   ["_petit_seen_sumi", "progression"],
   ["_tetsuko_time", "progression"], // てつこといっしょ（#2454）: 小物の配置・しぐさ図鑑・アルバム。来訪記録 _ch3_outings と同じく周回で持ち越さない
-  ["_tonari_floor", "progression"], // tonari フロア営業: 回した回数と最高の評価。シフトの記録 _shift_mix_* と同じく周回で持ち越さない
+  ["_tonari_floor", "progression"], // tonari フロア営業: 回した回数・最高の評価・定番ミックス・店のファンの合計。シフトの記録 _shift_mix_* と同じく周回で持ち越さない
   ["_ch3_naru_party_ready", "progression"],
   ["_ch3_pizza_party", "progression"],
   ["_minto_calling_paid", "progression"],
