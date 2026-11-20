@@ -5,10 +5,12 @@ import { el } from "../core/util.js";
 import { state } from "../core/state.js";
 import { modal } from "../core/ui.js";
 import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics.js";
-import { CH4_JUDGES, chapterFourStandings } from "./ch4-tournament-state.js";
+import { contestCeremony } from "../craft/tournament-show.js";
+import { CH4_JUDGES, CH4_CONTESTANTS, chapterFourStandings } from "./ch4-tournament-state.js";
 
 // 王煙楼（master_hookah）は世界大会では「王 煙楼」と表記する。
 const NAME = { master_hookah: "王 煙楼" };
+export const chapterFourNameOf = id => id === "hajime" ? "はじめ" : NAME[id] || displayName(id, state);
 const nameOf = id => NAME[id] || displayName(id, state);
 const NOTES = [
   "制作が終わり、次は吸い出しと提供。",
@@ -38,8 +40,27 @@ export function chapterFourStandingsView(p, { rows = chapterFourStandings(p), no
   ]);
 }
 
-/** 投票が動いた直後の途中順位。OK で制作へ戻る。 */
-export async function showChapterFourStandings(p) {
-  await modal({ title: "いま、動いた持ち点。", body: chapterFourStandingsView(p),
+/** 持ち点の板を載せるモーダルの面（夜紫の板。css/tournament-show.css）。 */
+export const CH4_CONTEST_MODAL = "ts-contest-modal";
+
+/**
+ * 持ち点の板に、票が入る進行を付ける（TSH05）。板がモーダルに出てから呼ぶ。before＝入れる前の票（無ければ何もしない）。
+ * 進行の間はモーダルのボタンを押せなくし、板を押すと早送りする。
+ */
+export function playChapterFourVotes(view, p, { before, rows = chapterFourStandings(p), votes = p.votes, final = false, late = [] } = {}) {
+  if (!before) return { moved: false, done: Promise.resolve() };
+  return contestCeremony({
+    root: view, judges: CH4_JUDGES, contestants: CH4_CONTESTANTS, votes, before, base: p.baseVotes || {}, rows, quality: p.quality || {},
+    buttons: [...(view.closest(".modal-box")?.querySelectorAll(".modal-actions button") || [])], late,
+    sting: { eyebrow: "HAZE: GRAND SMOKE", title: final ? "FINAL VOTE" : "JUDGES' VOTE", sub: final ? "最後の票が入ります" : "審査員の票が入ります" },
+  });
+}
+
+/** 投票が動いた直後の途中順位。OK で制作へ戻る。before＝この回の票を入れる前の票（票が入る進行の出発点）。 */
+export async function showChapterFourStandings(p, { before = null } = {}) {
+  const view = chapterFourStandingsView(p);
+  const closed = modal({ title: "いま、動いた持ち点。", body: view, className: CH4_CONTEST_MODAL,
     options: [{ label: "続きを作る", value: true, primary: true, test: "ch4-standings-continue" }] });
+  playChapterFourVotes(view, p, { before });
+  await closed;
 }

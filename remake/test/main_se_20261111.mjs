@@ -156,7 +156,8 @@ assert.match(await read("remake/js/core/store-arrival.js"), /if \(!fast\) SE\.do
 assert.match(await read("remake/js/core/transitions.js"), /if \(weather === "sun"\) SE\.birds\?\.\(\);/);
 // 第2〜4章の結果発表: 最終結果は拍手、1位はファンファーレも。途中の持ち点は判の一打。
 for (const path of ["remake/js/chapters/ch2-tournament.js", "remake/js/chapters/ch3-tournament.js"]) {
-  assert.match(await read(path), /if \(final\) \{ SE\.crowd\?\.\(2\.4\); if \(progress\(\)\.result\?\.rank === 1\) SE\.fanfare\?\.\(\); \}\n  else SE\.stamp\?\.\(\);/, path);
+  // 票が入る演出（TSH05）の後に鳴らすため、音は reaction() にまとめてある（鳴らす音は同じ）。
+  assert.match(await read(path), /if \(final\) \{ SE\.crowd\?\.\(2\.4\); if \(progress\(\)\.result\?\.rank === 1\) SE\.fanfare\?\.\(\); \}\n\s+else SE\.stamp\?\.\(\);/, path);
 }
 assert.match(await read("remake/js/chapters/ch4.js"), /if \(!result\.failure\) \{ SE\.crowd\?\.\(2\.4\); if \(result\.rank === 1\) SE\.fanfare\?\.\(\); \}/);
 // 通知に添える音: レシピ帳・メモはページ、黄金比はきらきら、手に入れたものは入手の音、判子は判の音。

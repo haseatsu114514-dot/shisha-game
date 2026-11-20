@@ -28,6 +28,18 @@
       "run": ["node remake/test/play_mastery.mjs"]
     },
     {
+      "id": "axe-tiers",
+      "title": "Axe bar three tiers (#3779): divisions as tiers, clear lines (B, A, A), unlocks, old-save import and the top-tier fire",
+      "kind": "quick",
+      "run": ["node remake/test/axe_tiers.mjs"]
+    },
+    {
+      "id": "play-tiers",
+      "title": "Mini-game three tiers (#3779): unlocks, clear records, old-save import and the one-time top-tier fire",
+      "kind": "quick",
+      "run": ["node remake/test/play_tiers.mjs"]
+    },
+    {
       "id": "promo-site",
       "title": "公式プロモーションサイト（promo/）の参照切れ・ページ内リンク・人物と店の対応・使っていない絵",
       "kind": "quick",
@@ -626,6 +638,27 @@
       ]
     },
     {
+      "id": "kannondo-day3",
+      "title": "Chapter 1 DAY3 Kannondo, interactive fire-seed tutorial, day/night and SAVE/LOAD (#3820)",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 8,
+      "paths": [
+        "remake/js/chapters/ch1.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/reflection.js",
+        "remake/js/daily/growth-board-*.js",
+        "remake/js/core/growth.js",
+        "remake/js/daily/spots.js",
+        "remake/js/daily/spot-access.js",
+        "data/dialogue/ch1_spots.json",
+        "remake/test/browser/kannondo_day3.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/kannondo_day3.mjs"
+      ]
+    },
+    {
       "id": "growth-board-denominator",
       "title": "Growth board, status and menu share one stat denominator statTotal (#2444)",
       "kind": "browser",
@@ -721,7 +754,7 @@
       "kind": "browser",
       "weight": 0.5,
       "timeout": 3,
-      "paths": ["remake/js/minigames/dj.js", "remake/js/daily/dj-club.js", "remake/js/chapters/ch3.js", "remake/js/chapters/ch3-map-model.js", "remake/previews/dj/**", "data/dialogue/ch3_club.json", "remake/test/browser/dj_club.mjs"],
+      "paths": ["remake/js/minigames/dj.js", "remake/js/daily/dj-club.js", "remake/js/chapters/ch3.js", "remake/js/chapters/ch3-map-model.js", "remake/previews/dj/**", "data/dialogue/ch3_club.json", "remake/test/browser/dj_club.mjs", "remake/js/core/play-tiers.js"],
       "run": ["node remake/test/browser/dj_club.mjs"]
     },
     {
@@ -749,8 +782,8 @@
       "id": "desert-ride",
       "title": "DESERT RIDE on PC and touch, reduced motion, and the chapter 4 outing with save/load and interruption",
       "kind": "browser",
-      "weight": 3.5,
-      "timeout": 8,
+      "weight": 4,
+      "timeout": 10,
       "paths": [
         "remake/js/core/stage-fit.js",
         "remake/js/minigames/desert-ride.js",
@@ -767,7 +800,8 @@
         "remake/desert-ride.html",
         "remake/css/desert-ride.css",
         "data/dialogue/ch4_desert.json",
-        "remake/test/browser/desert_ride.mjs"
+        "remake/test/browser/desert_ride.mjs",
+        "remake/js/core/play-tiers.js"
       ],
       "run": ["node remake/test/browser/desert_ride.mjs"]
     },
@@ -1917,7 +1951,8 @@
         "assets/sprites/characters/khalil/**",
         "remake/img/sprites/characters/hajime/**",
         "assets/backgrounds/bg_dubai_camel_track_morning.png",
-        "remake/test/browser/ch4_camel_race.mjs"
+        "remake/test/browser/ch4_camel_race.mjs",
+        "remake/js/core/play-tiers.js"
       ],
       "run": ["node remake/test/browser/ch4_camel_race.mjs"]
     },
@@ -2610,7 +2645,7 @@
       "weight": 3,
       "timeout": 15,
       "paths": [
-        "remake/js/craft/result.js",
+        "remake/js/craft/result.js", "remake/js/craft/tournament-show.js", "remake/js/craft/tournament-graphics.js", "remake/css/tournament.css", "remake/css/tournament-show.css",
         "remake/js/craft/heat*.js",
         "remake/js/craft/coals.js",
         "remake/js/craft/common.js",
@@ -3308,7 +3343,8 @@
         "remake/test/browser/venue_hours.mjs",
         "remake/test/venue_hours.mjs",
         "data/dialogue/venue_hours.json",
-        "data/dialogue/trpg_club.json"
+        "data/dialogue/trpg_club.json",
+        "remake/js/core/play-tiers.js"
       ],
       "run": [
         "node remake/test/browser/play_spots.mjs",
@@ -4616,11 +4652,11 @@
     },
     {
       "id": "conversation-cutin",
-      "title": "Conversation cut-ins in the main VN engine (#2990, #3417): every placement plays, enter/leave, SKIP/LOG",
+      "title": "Conversation cut-ins in the main VN engine (#2990, #3417, CCR redesign): every placement plays, partner lines wait for the text, enter/leave, SKIP/LOG",
       "kind": "browser",
       "weight": 1.2,
       "timeout": 4,
-      "paths": ["remake/js/vn/engine.js", "remake/js/vn/conversation-cutin.js", "remake/css/vn/conversation-cutin.css", "remake/test/browser/conversation_cutin_2990.mjs"],
+      "paths": ["remake/js/vn/engine.js", "remake/js/vn/conversation-cutin.js", "remake/css/vn/conversation-cutin.css", "remake/img/ui/conversation_cutin/**", "remake/test/browser/conversation_cutin_2990.mjs"],
       "run": ["node remake/test/browser/conversation_cutin_2990.mjs"]
     },
     {

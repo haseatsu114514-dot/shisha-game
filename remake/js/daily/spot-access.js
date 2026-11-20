@@ -31,6 +31,7 @@ export function spotAvailability(s, { guide = null, visitBlock = null } = {}) {
     const tag = isTemporaryClosed(s) ? "本日臨時休業" : "本日定休日";
     return { ok: false, why: tag, tag };
   }
+  if (s.boardOnly) return { ok: true }; // 旧セーブの通常訪問済みにかかわらず、盤は何度でも開ける
   if (invitationRevisitBlocked(s)) {
     return { ok: false, why: "今日はもう行った", tag: "今日はもう行った" };
   }

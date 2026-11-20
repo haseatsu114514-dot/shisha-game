@@ -2065,13 +2065,8 @@
     {
       "dialogue_id": "kannon_growth_intro",
       "lines": [
-        { "speaker": "", "face": "", "text": "境内に入ると、街のざわめきが遠のいた。" },
-        { "speaker": "hajime", "face": "normal", "text": "（ここまで、いろんなことを教わったな）" },
-        { "speaker": "hajime", "face": "normal", "text": "（うまくいったことも、失敗したことも。次の一服につなげたい）" },
-        { "speaker": "", "face": "", "text": "積み重ねた経験は、その場でレベルと火種になる。" },
-        { "speaker": "", "face": "", "text": "火種は、才能・感覚・理論の三つの盤へ灯せる。" },
-        { "speaker": "", "face": "", "text": "ここで振り返り、盤に灯すだけなら、時間も体力も使わない。" },
-        { "speaker": "hajime", "face": "normal", "text": "（今日は、どの道を伸ばしてみようか）" }
+        { "speaker": "", "face": "", "text": "観音堂。手を合わせると、これまでの一服がよみがえった。" },
+        { "speaker": "", "face": "", "text": "学んだことを火種にして、才能・感覚・理論の三つの盤に灯そう。" }
       ]
     },
     {

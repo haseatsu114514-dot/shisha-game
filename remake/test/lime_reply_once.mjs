@@ -14,7 +14,8 @@ const response = { text: '頑張ります', response: 'うん、お互いにね'
 const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 const flush = async () => { for (let i = 0; i < 12; i++) await Promise.resolve(); };
 
-async function fixture({ lover = false, reply = response, invitation = false, cost = 0 } = {}) {
+async function fixture({ lover = false, reply = response, invitation = false, cost = 0,
+  affinity = 9, growth = true, xpAward = 5 } = {}) {
   const nodes = [], timers = new Map();
   const element = (spec, attrs = {}, children = []) => {
     if (Array.isArray(attrs)) { children = attrs; attrs = {}; }
@@ -23,7 +24,8 @@ async function fixture({ lover = false, reply = response, invitation = false, co
       replaceChildren(...items) { this.children = items; }, remove() { this.isConnected = false; } };
     nodes.push(node); return node;
   };
-  const original = { phase: 'daily', chapter: 1, day: 5, slot: 0, met: {}, flags: {}, inbox: [], limeRead: [], gains: [], lovers: lover ? ['minto'] : [] };
+  const original = { phase: 'daily', chapter: 1, day: 5, slot: 0, met: {}, flags: {}, inbox: [], limeRead: [],
+    gains: [], xp: 0, affinity, insights: 0, lovers: lover ? ['minto'] : [] };
   let current = original;
   const bond = { private: false };
   const notes = [];
@@ -36,8 +38,15 @@ async function fixture({ lover = false, reply = response, invitation = false, co
     'chapter-clock.js': { chapterDay: () => 5 },
     'chapter-features.js': { chapterFeatureEnabled },
     'travel-budget.js': { spendableMoney: () => 30000 },
-    'stats.js': { gainAffinity: (id, pts, opts) => { current.gains.push({ id, pts, private: bond.private }); if (pts > 0) opts?.onGain?.(.2125); },
-      affinityLevel: () => 1, applyStats: noop, bond },
+    'stats.js': { gainAffinity: (id, pts, opts) => { current.gains.push({ id, pts, private: bond.private });
+      if (pts > 0) { current.affinity += pts; opts?.onGain?.(.2125); } },
+      AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66],
+      affinityLevel: () => lover || current.affinity >= 66 ? 5 : current.affinity >= 48 ? 4 : 1,
+      applyStats: ({ insight }) => { current.insights += insight; }, bond },
+    'growth.js': { growthEnabled: () => growth, gainExp: (base, { key, silent }) => {
+      assert.equal(base, 5); assert.equal(key, 'lime_chat'); assert.equal(silent, true);
+      current.xp += xpAward; return xpAward;
+    } },
     'audio.js': { SE: { phoneReceive: noop, click: noop } }, 'engine.js': { hooks: {} }, 'text.js': { formatHtml: String },
     'spots.js': { hasContact: noop, spotById: noop, isClosed: noop },
     'romance.js': { loverMessages: noop, isLover: id => current.lovers.includes(id), dateSchedule: noop },
@@ -78,8 +87,8 @@ async function fixture({ lover = false, reply = response, invitation = false, co
     note: value => notes.push(value) };
   return { nodes, timers, api: phone.namespace, original, bond, item, ui, picks, bubbles, media, held, reply, notes,
     run: (target = item) => phone.namespace.testRunItem(target, ui, []),
-    replaceState() {
-      current = { inbox: [], limeRead: [], gains: [], lovers: [] };
+    replaceState(value = { inbox: [], limeRead: [], gains: [], lovers: [] }) {
+      current = value;
       modules.get('state.js').setExport('state', current); return current;
     },
     async finish() { for (let i = 0; i < 8; i++) { for (const h of held) h.resolve(); await flush(); } },
@@ -152,6 +161,95 @@ for (const [name, lover, points, expected] of [['zero reward', false, 0, 0], ['e
     assert.deepEqual(f.original.gains.map(x => x.pts), [expected]); assert.equal(f.bond.private, false);
   });
 }
+
+const setCasual = f => Object.assign(f.item, { read: false, replyState: 'none',
+  msg: { id: f.item.id, type: 'chat', sender: 'minto', casual: true, messages: ['雑談です'] } });
+const finishRead = async f => { const run = f.run(); await f.finish(); await run; };
+const finishReply = async f => {
+  const run = f.run(); f.picks.at(-1).resolve(f.reply); await f.finish(); await run;
+};
+
+test('maxed acquaintance: completed first read grants EXP once, including simultaneous reads and post-load reopen', async () => {
+  const f = await fixture({ affinity: 66 }); setCasual(f);
+  const a = f.run(), b = f.run();
+  assert.equal(f.original.xp, 0, 'notification/opening is not the reward');
+  await f.finish(); await Promise.all([a, b]);
+  assert.equal(f.original.xp, 5); assert.equal(f.original.affinity, 66);
+  assert.deepEqual(f.original.gains, []); assert.deepEqual(f.original.limeRead, [f.item.id]);
+  assert.deepEqual(f.notes, ['EXP +5']); assert.deepEqual(logs(f.item), []);
+  const loaded = f.replaceState(JSON.parse(JSON.stringify(f.original)));
+  await f.run(loaded.inbox[0]);
+  assert.equal(loaded.xp, 5); assert.deepEqual(f.notes, ['EXP +5']);
+});
+
+test('an interrupted first read does not grant XP; it can still grant on a later complete read', async () => {
+  const f = await fixture({ affinity: 66 }); setCasual(f);
+  const read = f.run(); f.ui.gen++; await f.finish(); await read;
+  assert.equal(f.item.read, false); assert.equal(f.original.xp, 0);
+  await finishRead(f); assert.equal(f.original.xp, 5);
+});
+
+for (const [start, end] of [[50, 52], [64, 66]]) test(`acquaintance starts below max (${start}): only affinity changes`, async () => {
+  const f = await fixture({ affinity: start }); setCasual(f);
+  await finishRead(f);
+  assert.equal(f.original.affinity, end); assert.equal(f.original.xp, 0);
+  assert.deepEqual(f.original.gains.map(g => g.pts), [2]);
+});
+
+test('maxed friend: selecting a rewarded reply grants one EXP award and no affinity', async () => {
+  const f = await fixture({ affinity: 66, xpAward: 8 }); f.item.msg.friend = true;
+  const a = f.run(), b = f.run();
+  assert.equal(f.original.xp, 0, 'just reading a replyable chat is not the reward');
+  for (const pick of f.picks) pick.resolve(f.reply);
+  await f.finish(); await Promise.all([a, b]);
+  assert.equal(f.original.xp, 8); assert.equal(f.original.affinity, 66);
+  assert.deepEqual(f.original.gains, []); assert.deepEqual(f.notes, ['EXP +8']);
+  assert.deepEqual(logs(f.item), expectedLog);
+  await f.run(); assert.equal(f.original.xp, 8); assert.deepEqual(f.notes, ['EXP +8']);
+});
+
+test('friend whose reply just reaches MAX earns only normal affinity', async () => {
+  const f = await fixture({ affinity: 65 }); f.item.msg.friend = true;
+  await finishReply(f); assert.equal(f.original.affinity, 66); assert.equal(f.original.xp, 0);
+  assert.deepEqual(f.notes, ['♡ ほんの少し仲良くなった']);
+});
+
+test('resends and duplicate origins cannot award EXP', async () => {
+  const f = await fixture({ affinity: 66 }); setCasual(f);
+  const resend = JSON.parse(JSON.stringify(f.item));
+  resend.originId = f.item.id;
+  await finishRead(f);
+  await f.run({ ...resend, id: resend.originId + '_again', msg: { ...resend.msg, messages: [] } });
+  await f.run({ ...resend, msg: { ...resend.msg, messages: [] } });
+  assert.equal(f.original.xp, 5); assert.deepEqual(f.notes, ['EXP +5']);
+});
+
+for (const [name, fields, options, expected] of [
+  ['story chat', {}, {}, 1],
+  ['zero-point friend reply', { friend: true }, { reply: { ...response, affinity: 0 } }, 0],
+  ['lover bond even when a friend chat arrived earlier', { friend: true }, { lover: true }, 3],
+  ['reply that performs a separate action', { friend: true }, { reply: { ...response, action: 'qa_action' } }, 1],
+  ['legacy growth mode', { friend: true }, { growth: false }, 1],
+]) test(`MAX does not change ${name}`, async () => {
+  const f = await fixture({ affinity: 66, ...options }); Object.assign(f.item.msg, fields);
+  let acted = 0; f.api.registerLimeReplyAction('qa_action', () => { acted++; });
+  await finishReply(f);
+  assert.equal(f.original.xp, 0); assert.deepEqual(f.original.gains.map(g => g.pts), [expected]);
+  assert.equal(acted, options.reply?.action ? 1 : 0);
+});
+
+test('MAX does not change rumor rewards, friend invitations or EXP at the level cap', async () => {
+  const rumor = await fixture({ affinity: 66 }); setCasual(rumor).msg.type = 'rumor';
+  await finishRead(rumor);
+  assert.equal(rumor.original.insights, 2); assert.equal(rumor.original.xp, 0);
+  const invite = await fixture({ affinity: 66, invitation: true }); invite.item.msg.friend = true;
+  const run = invite.run(); invite.picks[0].resolve({ text: '行く！', go: true });
+  await invite.finish(); await run;
+  assert.equal(invite.original.pendingInvite.event, 'outing_minto_1'); assert.equal(invite.original.xp, 0);
+  const capped = await fixture({ affinity: 66, xpAward: 0 }); setCasual(capped);
+  await finishRead(capped);
+  assert.equal(capped.original.xp, 0); assert.deepEqual(capped.original.gains, []); assert.deepEqual(capped.notes, []);
+});
 
 for (const mode of ['reentry', 'load']) test(`invitation commits before animation: ${mode}`, async () => {
   const f = await fixture({ invitation: true });

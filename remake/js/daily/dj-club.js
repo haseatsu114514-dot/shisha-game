@@ -1,4 +1,5 @@
 import { masteryLine } from "../core/play-mastery.js";
+import { tierLine, TIER_LABEL } from "../core/play-tiers.js";
 // 東京の路地の地下のクラブ「SEAM」（第3章の夜の自由時間・DJS10/DJS12。第5章の東京に泊まっている夜も同じ・#2033）。店主は針間ヨル（characters.json の yoru）。
 // 初めて入る夜だけ出会いの場面（名乗るまで → 登場カットイン → ch3_club_first_after）、初めてAランク以上を出した夜だけヨルとの会話（ch3_club_a_talk）、通算3セット目の常連のリクエスト（ch3_club_request）、全セットA以上の夜の閉店前の交代（ch3_club_last_set）を一度ずつ流す（dj.js の djTalkAfterSet・SPC26）。
 // ミニゲームなので時間・お金・体力・好感度は変えない（#2113）。記録（state.dj）と既読フラグだけを保存する。
@@ -19,7 +20,7 @@ import { venueHost } from "../core/venue-host.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { play } from "../vn/engine.js";
 import { playIntro } from "../vn/intro.js";
-import { CLUB_MET_FLAG, CLUB_A_TALK_FLAG, DJ_SETS, djRecords, djSetOpen, djTalkAfterSet, recordDjResult, runDjSet } from "../minigames/dj.js";
+import { CLUB_MET_FLAG, CLUB_A_TALK_FLAG, DJ_SETS, djRecords, djSetNote, djSetOpen, djTalkAfterSet, recordDjResult, runDjSet } from "../minigames/dj.js";
 import { gearOffer, ownsGear } from "../core/hobby-gear.js";
 import { arrivalGreeted, markArrival, playArrival } from "./venue-arrivals.js";
 
@@ -105,10 +106,12 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
             save(); toast(`「${item.name}」を買った。${item.effect}`, { kind: "good" });
           } }),
           el("p", { text: masteryLine(owner, "dj"), dataset: { test: "dj-mastery" } }),
+          // 三段階（#3779）: SET 1・2・3＝初級・中級・上級。B 以上で回しきるとその段をクリア、上級クリアで白火1つ
+          el("p", { text: tierLine(owner, "dj"), dataset: { test: "dj-tiers" } }),
           el("div.sub-choices", DJ_SETS.map(set => el("button.big-choice", {
-            type: "button", disabled: !djSetOpen(owner, set.id), dataset: { test: `dj-set-${set.id}` },
+            type: "button", disabled: !djSetOpen(owner, set.id), dataset: { test: `dj-set-${set.id}`, tier: set.tier },
             onclick: () => { if (djSetOpen(owner, set.id)) resolve(set.id); },
-          }, [el("b", { text: `${set.name}　${set.label}` }), el("small", { text: bestText(owner, set.id) })]))),
+          }, [el("b", { text: `${TIER_LABEL[set.tier]}｜${set.name}　${djSetNote(set)}` }), el("small", { text: bestText(owner, set.id) })]))),
           el("button.btn.ghost.small.sub-back", { type: "button", text: "← 地図に戻る", dataset: { test: "dj-club-back" }, onclick: () => resolve(null) }));
         showScreen("dj-club", host);
       });
@@ -123,6 +126,8 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
           if (!saved) return;
           save();
           if (saved.newBest) toast(`${DJ_SETS[result.set - 1].name} 自己ベスト ${result.rank}・${result.total}点`, { kind: "good" });
+          // 上級の白火の知らせは growth が出す。初級・中級は次の段のことを一言
+          if (saved.tiers.length && !saved.tiers.includes("hard")) toast(`${TIER_LABEL[saved.tiers.at(-1)]}クリア。次のセットで、もう一段上へ。`, { kind: "good" });
         } });
       if (!current()) break;
       if (bgmBefore) playBgm(bgmBefore);

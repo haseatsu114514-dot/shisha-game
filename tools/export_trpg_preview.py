@@ -49,7 +49,7 @@ def main():
     files.update("data/" + file for file in catalog.get("characterProfiles", []))
     if catalog.get("club", {}).get("file"):
         files.add("data/" + catalog["club"]["file"])
-    files.update("remake/fonts/ShipporiMinchoB1-" + weight + ".woff2" for weight in ["Medium", "Bold"])
+    files.update(f"remake/fonts/NotoSansJP-{part}.woff2" for part in ["Medium", "Bold", "Supp-Medium", "Supp-Bold"])
 
     def portrait(actor, face="normal"):
         meta = manifest["portraits"][actor]

@@ -15,6 +15,7 @@ import { masteryHooks } from "./flavor-mastery.js";
 import { syncRespecOpportunity, closeRespecOpportunity } from "./growth-respec.js";
 import { KUJI_LIMITED_GRADES } from "./rules.js";
 import { syncPlayMastery, masteryRecord, masteryLine, PLAY_MASTERY } from "./play-mastery.js";
+import { syncPlayTiers, tierCleared, TIER_GAMES, TIER_LABEL } from "./play-tiers.js";
 export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
 export function setGrowthPreview(on) {
@@ -557,6 +558,8 @@ function giveSet(g, set) {
   return parts;
 }
 
+/** てつこの好感度の満タン（ハート5。minigames/tetsuko-model.js と同じ値。依存を増やさないため写す。テストで照合） */
+export const TETSUKO_AFFECTION_FULL = 100;
 const RANK_ORDER = ["D", "C", "B", "A", "S"];
 // 斧投げのランクの境目（minigames/axe-challenges.js の RANKS と同じ。依存を増やさないため写す。テストで照合）
 export const AXE_RANKS = [["S", 0.8], ["A", 0.62], ["B", 0.45], ["C", 0.25], ["D", 0]];
@@ -575,7 +578,10 @@ function bestAxeRank(s) {
 }
 function playRewardMet(reward, s) {
   if (reward.master) return masteryRecord(s, reward.game).done;
+  if (reward.tier) return tierCleared(s, reward.game, reward.tier);
+  if (reward.game === "tetsuko" && reward.affection) return Number(s.flags?._tetsuko_time?.affection) >= TETSUKO_AFFECTION_FULL;
   if (reward.game === "axe") { const rank = bestAxeRank(s); return !!rank && atLeast(rank, reward.rank); }
+  if (reward.game === "trpg" && reward.scenario) return !!s.trpg?.cleared?.[reward.scenario];
   if (reward.game === "trpg") {
     const cleared = Object.values(s.trpg?.cleared || {});
     if (reward.stars) return cleared.some((c) => (c?.stars || 0) >= reward.stars);
@@ -593,6 +599,7 @@ function playRewardMet(reward, s) {
  */
 export function claimPlayRewards(g, s = state) {
   syncPlayMastery(s);
+  syncPlayTiers(s);
   const out = [];
   for (const reward of PLAY_REWARDS) {
     if (g.rewards[reward.id] || !playRewardMet(reward, s)) continue;
@@ -705,39 +712,12 @@ export async function presentNight({ evePlace = null } = {}) {
   return state === owner ? result : null;
 }
 
-/**
- * 参拝の場所に着いた時の「静かに振り返る」（時間を使わない）。
- * 火種が無ければ何もしない（false）。振り返った・戻った時は true（呼び出し側は行動にしない）。
- */
-export async function reflectAtSpot(spotId, { boardOnly = false } = {}) {
+/** 地元の観音堂の入口。DAY3の本筋だけは受付を挟まず盤へ進む。 */
+export async function reflectAtSpot(spotId, options) {
   if (spotId !== "kannon" || !growthEnabled() || !state) return false;
   const owner = state;
-  const { canReflectAt, reflectAt } = await import("../daily/reflection.js");
-  if (state !== owner || !growthEnabled()) return true;
-  // 最初の火種をまだもらっていなければ、火種が0でも初回だけは盤を開ける（はじめての案内）
-  if (!canReflectAt("kannon")) return false;
-  const { modal } = await import("./ui.js");
-  if (state !== owner || !growthEnabled()) return true;
-  const how = await modal({ title: "観音堂", body: "学んできたことを振り返り、火種を盤に灯せる。", options: [
-    { label: "盤を開く（時間は進まない）", value: "reflect", primary: true, test: "kannon-reflect" },
-    ...(!boardOnly ? [{ label: "いつもどおり過ごす（1行動）", value: "visit", test: "kannon-visit" }] : []),
-    { label: "戻る", value: null },
-  ] });
-  if (state !== owner || !growthEnabled()) return true;
-  if (how === "visit") return false;
-  if (how === "reflect") {
-    if (!owner.flags._kannon_growth_intro_done) {
-      const { play } = await import("../vn/engine.js");
-      if (state !== owner || !growthEnabled()) return true;
-      const result = await play("kannon_growth_intro", { bg: "res://assets/backgrounds/bg_kannon_night.png" });
-      if (state !== owner || !growthEnabled() || result?.cancelled
-        || result?.id !== "kannon_growth_intro" || !result.visited?.includes("kannon_growth_intro")) return true;
-      owner.flags._kannon_growth_intro_done = true;
-      save();
-    }
-    await reflectAt("kannon");
-  }
-  return true;
+  const { visitKannondo } = await import("../daily/reflection.js");
+  return state === owner && visitKannondo(options);
 }
 
 /** メニューの「心得の盤」。無効なら出さない。メニューからは見るだけ（灯すのは参拝の場所。2.8） */
@@ -748,10 +728,12 @@ export const growthMenuItems = () => growthEnabled()
  * 盤の画面を開き、閉じるまで待つ。大会の当日は開かない。
  * place を渡した時（参拝の場所での内省）だけ灯せる。渡さなければ見るだけ（目標は決められる）。
  */
-export async function openGrowthBoard({ place = null } = {}) {
+export async function openGrowthBoard({ place = null, onExit = null } = {}) {
   if (!growthEnabled() || !state || state.phase === "tournament") return null;
+  const owner = state;
   const { openBoard } = await import("../daily/growth-board-screen.js");
-  return openBoard({ place });
+  if (state !== owner || !growthEnabled()) return null;
+  return openBoard({ place, onExit });
 }
 
 // ---------------------------------------------------------------- ゲージ（6.1a）
@@ -789,4 +771,17 @@ on("play-mastery", ({ state: owner, game, newly }) => {
   if (owner !== state) return;
   settleGrowth();
   emit("notice", { text: newly ? `認定：${PLAY_MASTERY[game].title}` : masteryLine(owner, game) });
+});
+
+// てつこの好感度がハート5に届いた（#3779。tetsuko-time.js の確定が一度だけ知らせる）。白火をその場で精算する。
+on("tetsuko-hearts", ({ state: owner, full }) => {
+  if (owner !== state || !full) return;
+  settleGrowth();
+});
+
+// ミニゲームの段を初めてクリアした（#3779）。上級なら白火をその場で精算する。下の段の一言は各ゲームの結果の画面が出す。
+on("play-tier", ({ state: owner, game, newlyHard }) => {
+  if (owner !== state || !newlyHard) return;
+  settleGrowth();
+  emit("notice", { text: `${TIER_GAMES[game]?.title || ""} ${TIER_LABEL.hard}クリア` });
 });

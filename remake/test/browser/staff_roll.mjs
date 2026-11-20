@@ -314,6 +314,10 @@ await suite("staff-roll", async check => {
     assert(!text.includes("Shared Discovery") && !text.includes("Aiming groove"), "Owner-made Suno tracks stay off the third-party list until the owner decides");
     assert.deepEqual(await page.locator(".staff-roll-sound-trpg p").allTextContents(),
       ["効果音（TRPG）：Kenney – Casino Audio / RPG Audio / Music Jingles（CC0） – https://kenney.nl/"]);
+    // #3726 B-9: 同梱している書体と BudouX のライセンス（ライセンス文は配布物に同梱）。
+    assert.deepEqual(await page.locator(".staff-roll-licenses p").allTextContents(),
+      ["フォント：Noto Sans JP（Adobe・Google）／Zen Old Mincho（The Zen Old Mincho Project Authors）／DotGothic16（The DotGothic16 Project Authors） – SIL Open Font License 1.1",
+        "日本語の改行：BudouX（Google LLC） – Apache License 2.0"]);
     for (const key of ["Escape", "Enter", " "]) await page.keyboard.press(key);
     await page.locator(dt("staff-roll")).click({ position: { x: 640, y: 360 } });
     await page.waitForTimeout(1500);

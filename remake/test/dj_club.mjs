@@ -188,6 +188,21 @@ check("SBD39: an A (or S) best gives one sense ember at bedtime, once; B does no
   assert.deepEqual(growth.claimPlayRewards(g, s), [], "only once");
   const g2 = growth.newGrowth(), s2 = {}; dj.recordDjResult(s2, msg(1, "S", 95)); assert.equal(growth.claimPlayRewards(g2, { ...s2, flags: {}, kuji: {} }).length, 1);
 });
+check("three tiers (#3779): SET 1/2/3 are easy/normal/hard, B or better clears, the top tier gives one white fire once", () => {
+  assert.deepEqual(dj.DJ_SETS.map(set => set.tier), ["easy", "normal", "hard"]);
+  assert.deepEqual(dj.DJ_SETS.map(dj.djSetNote), ["ズレなし", "途中で1回ズレる", "2回ズレる"], "the tier name replaces 入門／本命／上級");
+  const s = { chapter: 3, flags: {}, trpg: { cleared: {} }, kuji: {} };
+  assert.deepEqual(dj.recordDjResult(s, msg(1, "C", 40)).tiers, [], "C does not clear");
+  assert.deepEqual(dj.recordDjResult(s, msg(1, "B", 60)).tiers, ["easy"]);
+  const g = growth.newGrowth();
+  assert(!growth.claimPlayRewards(g, s).some(row => row.label === "DJ 上級クリア"));
+  assert.deepEqual(dj.recordDjResult(s, msg(3, "B", 56)).tiers, ["normal", "hard"], "a harder clear also clears the tiers below");
+  const got = growth.claimPlayRewards(g, s).find(row => row.label === "DJ 上級クリア");
+  assert.deepEqual(got.parts, [{ kind: "any", n: 1 }]);
+  assert.equal(g.rewards["dj-hard"], true);
+  assert.deepEqual(dj.recordDjResult(s, msg(3, "S", 95)).tiers, []);
+  assert(!growth.claimPlayRewards(g, s).some(row => row.label === "DJ 上級クリア"), "only once");
+});
 check("state.dj survives save and load without a schema change", () => {
   core.setState(core.newState());
   dj.recordDjResult(core.state, msg(1, "A", 84));

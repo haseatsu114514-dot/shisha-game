@@ -1,6 +1,7 @@
-// 会話カットイン（立ち絵版・#2990）を本編の会話エンジンと実際の台本で確かめる。
-// 置いた行で、はじめの既存の立ち絵（new）の切り抜きが左側に出て、次の行で消える（案4は薄れて消える・2c は0.9秒で消える）。
-// LOG・SKIP で即座に消え、SKIP 中は出さない。置き場と条件の表は remake/test/conversation_cutin.mjs が見る。
+// 会話カットイン（はじめの顔の帯。#2990・2026-11-20 再設計 CCR）を本編の会話エンジンと実際の台本で確かめる。
+// 置いた行で、カットイン専用の絵（img/ui/conversation_cutin/）を入れた帯が出て、次の行で消える（重い型・沈む・受け取るは薄れて消える、
+// 軽い型・決意は自分から消える）。相手の行の型は台詞が出切ってから出る。LOG・SKIP で即座に消え、SKIP 中は出さない。
+// 置き場と条件の表は remake/test/conversation_cutin.mjs が見る。
 // #3417: 同じ型の別場面（第2〜5章へ広げた置き場など）も、実際の台本の再生で出て次の行で片付くことを1件ずつ確かめる。
 import assert from "node:assert/strict";
 import path from "node:path";
@@ -9,13 +10,13 @@ import { suite } from "./support.mjs";
 const SHOTS = process.env.SHOTS ? path.resolve(process.env.SHOTS) : null;
 
 /** 置き場の行の少し前から本物の台本を再生し、カットインの層の出入りを時刻つきで記録する。id は案の番号か CUES の添字 */
-async function start(page, id) {
-  await page.evaluate(async (id) => {
+async function start(page, id, { textSpeed = 4 } = {}) {
+  await page.evaluate(async ({ id, textSpeed }) => {
     const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js"), data = await import("./js/core/data.js");
     const vn = await import("./js/vn/engine.js"), intro = await import("./js/vn/intro.js"), cut = await import("./js/vn/conversation-cutin.js");
     core.newGame();
     ui.clearScreen();
-    Object.assign(core.config, { textSpeed: 4, skipSeenOnly: false, bgmVolume: 0, seVolume: 0, voiceBlip: false, portraitStyle: "new" });
+    Object.assign(core.config, { textSpeed, skipSeenOnly: false, bgmVolume: 0, seVolume: 0, voiceBlip: false, portraitStyle: "new" });
     vn.vnTest.turbo = false;
     const cue = typeof id === "number" ? cut.CUES[id] : cut.CUES.find((c) => c.id === id);
     // 第2〜5章の台本は章に入る時に読む。ここでは本物の JSON をそのまま登録する
@@ -43,12 +44,21 @@ async function start(page, id) {
     await new Promise((r) => requestAnimationFrame(r));
     new MutationObserver((records) => {
       for (const rec of records) {
-        for (const n of rec.addedNodes) cutinQA.events.push({ t: performance.now(), type: "add", cue: n.dataset?.cue, text: document.querySelector(".vn-text").textContent });
-        for (const n of rec.removedNodes) cutinQA.events.push({ t: performance.now(), type: "remove", cue: n.dataset?.cue });
-        if (rec.type === "attributes" && rec.target.classList?.contains("leave")) cutinQA.events.push({ t: performance.now(), type: "leave", cue: rec.target.dataset.cue });
+        // 出た瞬間の位置と絵を記録する（軽い型・決意は自分から消えるので、後から測ると消えていることがある）
+        for (const n of rec.addedNodes) {
+          if (!n.classList?.contains("vn-cutin")) continue;
+          const img = n.querySelector("img");
+          cutinQA.events.push({
+            t: performance.now(), type: "add", cue: n.dataset.cue, frame: n.dataset.frame, art: n.dataset.art, src: img?.src,
+            text: document.querySelector(".vn-text").textContent, next: !!document.querySelector(".vn-next.show"),
+            left: n.offsetLeft, right: n.offsetLeft + n.offsetWidth, bottom: n.offsetTop + n.offsetHeight,
+          });
+        }
+        for (const n of rec.removedNodes) if (n.classList?.contains("vn-cutin")) cutinQA.events.push({ t: performance.now(), type: "remove", cue: n.dataset?.cue });
+        if (rec.type === "attributes" && rec.target.classList?.contains("vn-cutin") && rec.target.classList.contains("leave")) cutinQA.events.push({ t: performance.now(), type: "leave", cue: rec.target.dataset.cue });
       }
     }).observe(layer(), { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
-  }, id);
+  }, { id, textSpeed });
 }
 /** 行を送りながら、置き場の行の文を出し終えるまで進める */
 async function waitAdvanceReady(page) {
@@ -85,39 +95,38 @@ async function reachCue(page) {
   }
   throw new Error("置き場の行まで届かない");
 }
-const nowShown = (page) => page.evaluate(() => {
-  const n = document.querySelector(".vn-cutin");
-  if (!n) return null;
-  // 舞台 1280×720 の座標（出入りの動きの途中でも変わらない offset で測る）
-  const img = n.querySelector("img");
-  return { cue: n.dataset.cue, src: img.src, decoded: img.complete && img.naturalWidth > 0, right: n.offsetLeft + n.offsetWidth, bottom: n.offsetTop + n.offsetHeight };
-});
+/** 帯の位置: 寄りの帯は左側だけ、全幅は決意だけ。どちらも本文欄（y526〜）より上 */
+function assertPlaced(add) {
+  const wide = add.frame === "eyes";
+  assert(add.left >= 0 && add.right <= (wide ? 1280 : 520) && add.bottom <= 526, `${add.cue}: 帯の位置（${add.frame}・右端 ${add.right}・下端 ${add.bottom}）`);
+}
+/** 絵が読める（専用の絵のフォルダの、置き場の絵） */
+const decodes = (page, src) => page.evaluate((src) => new Promise((r) => { const i = new Image(); i.onload = () => r(i.naturalWidth > 0); i.onerror = () => r(false); i.src = src; }), src);
+const firstAdd = (page) => page.evaluate(() => cutinQA.events.find((e) => e.type === "add"));
 
 await suite("conversation-cutin-2990", async (check) => {
-  for (const id of ["2a", "5", "5b", "4m", "3"]) {
-    await check(`${id}：置いた行で出て、次の行で消える`, async (page) => {
+  for (const id of ["2a", "2c", "5", "5b", "4m", "3"]) {
+    await check(`${id}：置いた行で出て、片付く`, async (page) => {
       await start(page, id);
       await reachCue(page);
-      await page.waitForFunction(() => document.querySelector(".vn-cutin img")?.complete);
-      const shown = await nowShown(page);
-      assert.equal(shown.cue, id);
-      assert(shown.decoded, "立ち絵が読めている");
-      assert.match(shown.src, /character_variants\/new\/hajime\/chr_hajime_/, "既存の new の立ち絵");
-      assert(shown.right <= 640 && shown.bottom <= 526, `左側・本文欄より上（右端 ${shown.right}・下端 ${shown.bottom}）`);
-      const add = await page.evaluate(() => cutinQA.events.find((e) => e.type === "add"));
+      const add = await firstAdd(page);
       assert.equal(add.cue, id);
-      if (SHOTS) {
-        await page.waitForFunction(() => document.querySelector(".vn-cutin")?.getAnimations().every((a) => a.playState === "finished"));
+      assert.match(add.src, /img\/ui\/conversation_cutin\/hajime_(flustered|downcast|grateful|resolve)\.webp$/, "カットイン専用の絵");
+      assert(await decodes(page, add.src), "絵が読める");
+      assertPlaced(add);
+      if (SHOTS && !["2c", "3"].includes(id)) {
+        await page.waitForFunction(() => document.querySelector(".vn-cutin")?.getAnimations({ subtree: true }).every((a) => a.playState === "finished"));
         await page.screenshot({ path: path.join(SHOTS, `cutin-${id}.png`) });
       }
-      await page.locator(".vn-box").click();
-      await page.waitForFunction(() => !document.querySelector(".vn-cutin"));
+      // 軽い型・決意は送らなくても消える。ほかは次の行で消える
+      if (!["2c", "3"].includes(id)) await page.locator(".vn-box").click();
+      await page.waitForFunction(() => !document.querySelector(".vn-cutin, .vn-cutin-dim"), null, { timeout: 5000 });
       assert.equal(await page.evaluate(() => cutinQA.events.filter((e) => e.type === "add").length), 1, "1会話1回");
       await page.evaluate(() => cutinQA.controller.abort());
     });
   }
 
-  // 同じ型の別場面（各案の先頭は上で詳しく見る）。置いた行で正しい案が1回出て、次の行（2c は0.9秒）で片付く
+  // 同じ型の別場面（各型の先頭は上で詳しく見る）。置いた行で正しい型・絵が1回出て、片付く
   const others = await (async () => {
     const { CUES } = await import("../../js/vn/conversation-cutin.js");
     return CUES.map((cue, index) => ({ ...cue, index })).filter((cue) => CUES.findIndex((c) => c.id === cue.id) !== cue.index);
@@ -126,19 +135,30 @@ await suite("conversation-cutin-2990", async (check) => {
     await check(`${cue.id}（${cue.dialogue}）：置いた行で出て、片付く`, async (page) => {
       await start(page, cue.index);
       await reachCue(page);
-      await page.waitForFunction(() => document.querySelector(".vn-cutin img")?.complete);
-      const shown = await nowShown(page);
-      assert.equal(shown?.cue, cue.id);
-      assert(shown.decoded, "立ち絵が読めている");
-      assert.match(shown.src, new RegExp(`chr_hajime_${cue.face}\\.`), `表情 ${cue.face}`);
-      if (cue.id !== "2c") await page.locator(".vn-box").click();
-      await page.waitForFunction(() => !document.querySelector(".vn-cutin"), null, { timeout: 5000 });
+      const add = await firstAdd(page);
+      assert.equal(add?.cue, cue.id);
+      assert.match(add.src, new RegExp(`hajime_${cue.art}\\.webp$`), `絵 ${cue.art}`);
+      assert(await decodes(page, add.src), "絵が読める");
+      assertPlaced(add);
+      if (!["2c", "3"].includes(cue.id)) await page.locator(".vn-box").click();
+      await page.waitForFunction(() => !document.querySelector(".vn-cutin, .vn-cutin-dim"), null, { timeout: 5000 });
       assert.equal(await page.evaluate(() => cutinQA.events.filter((e) => e.type === "add").length), 1, "1会話1回");
       await page.evaluate(() => cutinQA.controller.abort());
     });
   }
 
-  await check("4：次の行で0.3秒かけて薄れて消える", async (page) => {
+  await check("相手の行：台詞が出切ってから出る", async (page) => {
+    // 文字を1文字ずつ出す速さで、相手が「その顔」と言う行まで進める
+    await start(page, "2a", { textSpeed: 2 });
+    await reachCue(page);
+    const add = await firstAdd(page);
+    const cue = await page.evaluate(() => cutinQA.cue.text);
+    assert.equal(add.text, cue.replace(/\n/g, ""), "出た時には台詞が最後まで出ている");
+    assert(add.next, "送りの印（▼）と同時");
+    await page.evaluate(() => cutinQA.controller.abort());
+  });
+
+  await check("沈む：次の行で0.3秒かけて薄れて消える", async (page) => {
     await start(page, "4");
     await reachCue(page);
     if (SHOTS) { await page.waitForFunction(() => document.querySelector(".vn-cutin img")?.complete); await page.screenshot({ path: path.join(SHOTS, "cutin-4.png") }); }
@@ -151,7 +171,7 @@ await suite("conversation-cutin-2990", async (check) => {
     await page.evaluate(() => cutinQA.controller.abort());
   });
 
-  await check("2c：送らなくても0.9秒で消え、台詞はそのまま", async (page) => {
+  await check("2c：送らなくても約1秒で消え、台詞はそのまま", async (page) => {
     await start(page, "2c");
     await reachCue(page);
     const text = await page.locator(".vn-text").textContent();
@@ -159,9 +179,22 @@ await suite("conversation-cutin-2990", async (check) => {
     const ev = await page.evaluate(() => cutinQA.events);
     const add = ev.find((e) => e.type === "add"), gone = ev.find((e) => e.type === "remove");
     assert.equal(add.cue, "2c");
-    // setTimeout は負荷で遅れる向きにしか揺れない。下限だけ厳密に見る
-    assert(gone.t - add.t >= 850, `0.9秒で消える（${Math.round(gone.t - add.t)}ms）`);
+    // setTimeout は負荷で遅れる向きにしか揺れない。下限だけ厳密に見る（出ている1.15秒＋閉じる0.18秒）
+    assert(gone.t - add.t >= 1280, `約1秒出てから閉じる（${Math.round(gone.t - add.t)}ms）`);
     assert.equal(await page.locator(".vn-text").textContent(), text, "台詞は送られない");
+    await page.evaluate(() => cutinQA.controller.abort());
+  });
+
+  await check("3：決意は全幅の帯で、帯より上を暗くし、送らなくても消える", async (page) => {
+    await start(page, "3");
+    await reachCue(page);
+    const add = await firstAdd(page);
+    assert.equal(add.frame, "eyes");
+    assert.equal(add.right, 1280, "全幅");
+    await page.waitForFunction(() => !document.querySelector(".vn-cutin, .vn-cutin-dim"), null, { timeout: 5000 });
+    const ev = await page.evaluate(() => cutinQA.events);
+    const gone = ev.find((e) => e.type === "remove");
+    assert(gone.t - add.t >= 900, `0.8秒出てから閉じる（${Math.round(gone.t - add.t)}ms）`);
     await page.evaluate(() => cutinQA.controller.abort());
   });
 

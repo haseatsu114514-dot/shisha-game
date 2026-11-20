@@ -14,7 +14,8 @@ export const HELP = Object.freeze([
     Object.freeze({ icon: "treat", name: "おやつ", text: "1日に1回あげられる。" }),
   ]) }),
   Object.freeze({ title: "画面のしるし", rows: Object.freeze([
-    Object.freeze({ icon: "heart", name: "ごきげん", text: "ハートがいっぱいになると、とっておきが見られる。" }),
+    // ハートは来訪をまたいで溜まる（§11・#3779）。1回ではハート1つまで。
+    Object.freeze({ icon: "heart", name: "ごきげん", text: "色々お世話すると、来るたびに少しずつたまる。" }),
     Object.freeze({ icon: "wish", name: "吹き出し", text: "てつこが、今してほしいこと。" }),
     Object.freeze({ icon: "tap", name: "置いた物", text: "タップすると、てつこを誘える。" }),
     Object.freeze({ icon: "watch", name: "見守る", text: "何もしないでいると、隣で見守ったことになる。" }),
