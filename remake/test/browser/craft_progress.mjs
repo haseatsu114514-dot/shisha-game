@@ -266,10 +266,62 @@ await suite("craft-progress", async check => {
     await guide.locator("summary").first().click();
     assert(await ledger.isVisible());
     assert.match(await ledger.getAttribute("aria-label"), /穴あけ.*炭焼き/);
+    // 横持ちでは上の帯用の丸い灯の固定寸法に負けず、工程名が札に入り、隣の札と重ならない（#3924）。
+    await assertFits(page, ".craft-record-review .rig-lamp");
+    const record = await guide.locator(".craft-record-review").evaluate(review => {
+      const stage = document.getElementById("stage"), k = stage.getBoundingClientRect().width / stage.offsetWidth;
+      const lamps = [...review.querySelectorAll(".rig-lamp")].map(lamp => lamp.getBoundingClientRect());
+      return { heading: parseFloat(getComputedStyle(review.querySelector("strong")).fontSize) * k,
+        label: parseFloat(getComputedStyle(review.querySelector(".rig-lamp"), "::before").fontSize) * k,
+        overlap: lamps.some((a, i) => lamps.slice(i + 1).some(b => a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1)) };
+    });
+    assert(record.heading >= 11 && record.label >= 11, `Record text is readable at real size: ${JSON.stringify(record)}`);
+    assert(!record.overlap, "Phase lamps in the guide must not overlap");
     await page.getByRole("button", {name:"説明を閉じて進む"}).click();
     assert(!await ledger.isVisible());
     assert(await guide.locator("summary").first().evaluate(el => el === document.activeElement));
   }, {viewport, isMobile: touch, hasTouch: touch, reducedMotion: "reduce"});
+
+  // 穴の配置（2種類）: 横持ちでも配置・説明の開閉・開始は実寸44px、任意の説明の本文は実寸11px以上。
+  // 説明を開いて一覧の最後まで送っても、開始の札は画面内に残る（#3924）。
+  for (const [size, viewport] of [["phone", { width: 844, height: 390 }], ["short", { width: 740, height: 320 }]]) await check(`sakurai-hole-chooser-${size}`, async page => {
+    await page.evaluate(async () => {
+      const model = await import("./js/core/state.js");
+      const session = await import("./js/craft/session.js"), holes = await import("./js/craft/holes.js");
+      const { CRAFT_STEPS } = await import("./js/craft/practice.js");
+      model.newGame(); model.state.chapter = 2; model.state.day = 3;
+      window.holeCS = session.newSession("tournament");
+      Object.assign(holeCS, { craftVersion: "sakurai", availableHoleTemplateIds: ["outer24", "outer12-middle12"],
+        mix: { double_apple: 9, mint: 3 }, pack: "normal", equip: { ...holeCS.equip, hms: "tanukish_lid" } });
+      await session.openBench(holeCS, { steps: CRAFT_STEPS }).ready;
+      window.holeRun = holes.runHoles(holeCS);
+    });
+    const start = page.locator('[data-test="hole-start"]');
+    await start.waitFor();
+    assert.equal(await page.locator(".bench").getAttribute("data-craft-version"), "sakurai");
+    const measure = () => page.evaluate(() => {
+      const stage = document.getElementById("stage"), k = stage.getBoundingClientRect().width / stage.offsetWidth;
+      const begin = document.querySelector('[data-test="hole-start"]').getBoundingClientRect();
+      return { targets: [...document.querySelectorAll('.hole-chooser :is(.ht-option, .ht-help summary, [data-test="hole-start"])')]
+        .map(node => node.getBoundingClientRect()).map(r => +Math.min(r.width, r.height).toFixed(1)),
+        startVisible: begin.top >= 0 && begin.bottom <= innerHeight + 1,
+        help: [...document.querySelectorAll(".hole-chooser .ht-help p")].filter(node => node.getClientRects().length)
+          .map(node => +(parseFloat(getComputedStyle(node).fontSize) * k).toFixed(1)) };
+    });
+    const closed = await measure();
+    assert.equal(closed.targets.length, 4, "Two layouts, the optional explanation and the start control");
+    assert(closed.startVisible && closed.targets.every(size => size >= 43.5), JSON.stringify(closed));
+    const outer = page.locator('[data-test="hole-template-outer24"]');
+    await outer.tap();
+    assert.equal(await outer.getAttribute("aria-pressed"), "true");
+    await page.locator(".hole-chooser .ht-help summary").tap();
+    await page.locator(".hole-chooser-scroll").evaluate(node => { node.scrollTop = node.scrollHeight; });
+    const opened = await measure();
+    assert(opened.help.length >= 2 && opened.help.every(size => size >= 11), `Optional explanation is readable: ${JSON.stringify(opened)}`);
+    assert(opened.startVisible && opened.targets.every(size => size >= 43.5), JSON.stringify(opened));
+    await start.tap();
+    await page.locator('[data-test="hole-punch"]').waitFor();
+  }, { viewport, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
 
   await check("failed-pull-stays-on-pull", async page => {
     await init(page);

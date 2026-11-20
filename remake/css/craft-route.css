@@ -37,6 +37,9 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench .craft-r
 .craft-record-review .rig-lamp b { display: none; }
 .craft-record-review .rig-lamp::before { content: attr(data-label); font-size: max(14px, calc(12px / var(--k,1))); font-style: normal; }
 .craft-record-review .rig-lamp[data-tier="off"] { border-style: dashed; }
+/* スマホの共通規格（wide-craft.css）は上の帯の丸い灯の寸法を #stage 付きで固定する。説明の中の札は文字の幅に合わせ、見出しも実寸の下限へ。 */
+html:root[data-density="phone"] body #stage .bench .craft-record-review .rig-lamp { width: auto; height: auto; }
+html:root[data-density="phone"] body #stage .bench .craft-record-review > strong { font-size: var(--wide-small); }
 .craft-choice-mark { display: grid; place-items: center; align-self: center; flex: none; color: inherit; }
 .craft-choice-mark svg { width: 100%; height: 100%; }
 body.craft-stage #stage .bench[data-craft-version="sakurai"] .packing .pack-choice:has(.craft-choice-mark) {
@@ -84,6 +87,12 @@ html body.craft-stage #stage .bench[data-craft-version="sakurai"] .bench-top:not
 html body.craft-stage #stage .bench .hole-chooser .ht-option { flex-direction: row; }
 html body.craft-stage:not(.game-ds) #stage .bench[data-mode] .hole-chooser .hr-stage { grid-template-columns: minmax(0,1fr); }
 html body.craft-stage:not(.game-ds) #stage .bench[data-mode] .hole-chooser .hr-stage > .ht-preview { max-width: 100%; min-width: 0; box-sizing: border-box; }
+/* 横持ちでは、任意の説明の本文を他の説明と同じ実寸に、開閉・配置・開始は実寸44pxの押す所にする。 */
+html:root[data-density="phone"] body #stage .bench .hole-chooser .ht-help p { font-size: var(--wide-text); line-height: 1.45; }
+html:root[data-density="phone"] body.craft-stage #stage .bench .hole-chooser :is(.ht-help summary, .ht-option, [data-test="hole-start"]) {
+  box-sizing: border-box; min-height: calc(44px / var(--k, 1));
+}
+html:root[data-density="phone"] body #stage .bench .hole-chooser .ht-help summary { padding-block: calc(12px / var(--k, 1)); }
 
 /* 機材が揃ってくると、長い名前の最小幅が2列とも広げる。カードの幅を先に決め、
    名前・装備中の表示・注意書きは縦に折り返す。横へスワイプしなくても選べる。 */
