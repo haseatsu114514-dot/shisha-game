@@ -277,6 +277,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_trial_steve", "progression"],
   ["_ch3_tokyo_call_night", "progression"],
   ["_ch3_room_rests", "progression"], // 東京の奥の部屋で休んだ回数（ch3-tokyo-daily.js の小品の巡回）。周回では持ち越さない
+  ["_ch3_home_calls", "progression"], // 東京の奥の部屋で休んだ時に読んだ地元からの電話（ch3-outing-progress.js の HOME_CALLS・#3097 第2弾）
   ["_ch4", "progression"],
   ["_camel_cups", "unlock"], // 大会の解放・中級認定・上級称号を周回へ残す
   ["_camel_name_done", "progression"], // ハビーバの名前の由来（ミニゲームのドラマ・SPC26）
