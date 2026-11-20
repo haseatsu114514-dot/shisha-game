@@ -9,6 +9,8 @@ const t = (name) => `[data-test="${name}"]`;
 const MIN_FONT = 11.4;
 const MIN_TAP = 39;
 const phone = { viewport: { width: 846, height: 393 }, isMobile: true, hasTouch: true };
+const phone844 = { ...phone, viewport: { width: 844, height: 390 } };
+const practice = { pageEntry: `${baseURL}ichidai.html?kit=a&tournament=practice&level=1&seed=33`, pageReadySelector: t("ichi-menu-start") };
 
 const scanText = (minFont) => {
   const stage = document.querySelector("#stage");
@@ -76,7 +78,7 @@ await suite("ichidai-phone-text", async (check) => {
   }, { ...phone, pageEntry: `${baseURL}ichidai.html?kit=a&tournament=practice&level=1&seed=33`, pageReadySelector: t("ichi-menu-start") });
 
   // 葉の盆: 2行名が右上の残り枚数の丸に隠れないこと（#3557。844x390 実プレイで ダブルアップル→「アッ」等）
-  await check("market-846x393-leaf-names", async (page) => {
+  await check("market-844x390-leaf-names", async (page) => {
     await enterGame(page);
     await page.locator(t("ichi-do-hint")).click();
     await page.locator(t("ichi-market")).waitFor({ timeout: 15000 });
@@ -112,5 +114,67 @@ await suite("ichidai-phone-text", async (check) => {
       return out;
     });
     assert.deepEqual(problems, [], "market leaf names");
-  }, { ...phone, pageEntry: `${baseURL}ichidai.html?kit=a&tournament=practice&level=1&seed=33`, pageReadySelector: t("ichi-menu-start") });
+
+    const readouts = await page.evaluate(() => {
+      const stage = document.querySelector("#stage");
+      const k = stage.getBoundingClientRect().width / stage.offsetWidth;
+      return [".ichi-coal-left i", ".ichi-market-head b", ".ichi-coal-fire.is-ember", ".ichi-trend.is-up"].map(
+        selector => [...document.querySelectorAll(selector)].map(el => parseFloat(getComputedStyle(el).fontSize) * k));
+    });
+    assert.ok(readouts.every(sizes => sizes.length && sizes.every(size => size >= MIN_FONT)), JSON.stringify(readouts));
+
+    const confirm = async test => {
+      const box = await page.locator(t(test)).boundingBox();
+      assert.ok(Math.min(box.width, box.height) >= MIN_TAP, `${test}: ${JSON.stringify(box)}`);
+    };
+    await page.locator(`${t("ichi-market")} .ichi-pile-main`).first().tap();
+    await confirm("ichi-pack");
+    await page.locator(t("ichi-pack")).tap();
+    await page.locator(t("ichi-market")).waitFor({ state: "detached" });
+    await confirm("ichi-end");
+  }, { ...phone844, ...practice });
+
+  await check("help-844x390", async (page) => {
+    await enterGame(page);
+    await page.locator(t("ichi-help")).tap();
+    const next = page.locator(t("ichi-help-next"));
+    for (;;) {
+      const problems = await page.evaluate(({ minFont, minTap }) => {
+        const stage = document.querySelector("#stage");
+        const bounds = stage.getBoundingClientRect();
+        const k = bounds.width / stage.offsetWidth;
+        const sheet = document.querySelector(".ichi-help").getBoundingClientRect();
+        const problems = [];
+        if (sheet.top < bounds.top || sheet.bottom > bounds.bottom) problems.push("遊び方が画面外");
+        for (const li of document.querySelectorAll(".ichi-help li")) {
+          if (parseFloat(getComputedStyle(li).fontSize) * k < minFont || li.scrollWidth > li.clientWidth + 1) problems.push(li.textContent);
+        }
+        for (const button of document.querySelectorAll(".ichi-help-buttons button")) {
+          const { width, height, bottom } = button.getBoundingClientRect();
+          if (Math.min(width, height) < minTap || bottom > bounds.bottom) problems.push(button.textContent);
+        }
+        return problems;
+      }, { minFont: MIN_FONT, minTap: MIN_TAP });
+      assert.deepEqual(problems, []);
+      if (await next.isDisabled()) break;
+      await next.tap();
+    }
+    await page.locator(t("ichi-help-close")).tap();
+  }, { ...phone844, ...practice });
+
+  await check("versus-844x390-long-name", async (page) => {
+    await page.locator(t("ichi-menu-quick")).tap();
+    await page.locator(".ichi-vs-player.p-1 > b").waitFor();
+    const placement = await page.evaluate(() => {
+      const stage = document.querySelector("#stage").getBoundingClientRect();
+      const labels = [...document.querySelectorAll(".ichi-vs-player > :is(b, small)")];
+      return labels.flatMap(label => {
+        const rect = label.getBoundingClientRect();
+        return rect.left < stage.left || rect.right > stage.right || rect.top < stage.top || rect.bottom > stage.bottom
+          ? [label.textContent] : [];
+      });
+    });
+    assert.deepEqual(placement, [], "VSの長い名前を画面内に表示");
+  }, { ...phone844, ...practice, reducedMotion: "reduce",
+    pageEntry: `${practice.pageEntry}&face=sumi&name=${encodeURIComponent("†黒羅雨℃† ロングネームの対戦相手")}` });
 });
