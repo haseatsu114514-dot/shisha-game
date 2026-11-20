@@ -59,24 +59,34 @@ assert.equal(await pending,null);assert.equal(t.retryAssist,false);
 current=true;
 const nextAttempt=assist.namespace.chooseRetryAssist(t,()=>current);t.attempts=2;resolve(1);
 assert.equal(await nextAttempt,null);assert.equal(t.retryAssist,false);
-// 3敗でイージー、6敗でベリーイージーも選べる（WIN13）。2敗では聞かない。
+// 3敗でイージー、6敗でベリーイージーも選べる（WIN13）。名前だけで、効き目の説明は出さない（WIN14）。2敗では聞かない。
 const tests=options=>Array.from(options,o=>o.test); // vm の配列を外の配列へ写して比べる
-for(const [losses,more] of [[3,3],[4,2],[5,1]]) {
+const labels=options=>Array.from(options,o=>o.label);
+for(const losses of [3,4,5]) {
   const r={losses,retryAssist:false};asked=null;
   const p=assist.namespace.chooseRetryAssist(r,()=>true);
   assert.deepEqual(tests(asked.options),['retry-assist-yes','retry-assist-no','retry-assist-cancel']);
-  assert.equal(asked.options[0].label,'イージーで挑戦');assert.equal(asked.options[0].primary,true);
-  assert(asked.body.startsWith('今回だけ難易度を下げますか？<br>イージー：'),asked.body);
-  assert(asked.body.endsWith(`あと${more}回負けると、ベリーイージーも選べます。`),asked.body);
+  assert.deepEqual(labels(asked.options),['イージー','ノーマル','選択に戻る']);assert.equal(asked.options[0].primary,true);
+  assert.equal(asked.body,'難易度を下げる？');
   resolve(1);assert.equal(await p,true);assert.equal(r.retryAssistLevel,1);
 }
 for(const [losses,answer,result] of [[6,2,true],[6,1,true],[9,2,true],[6,0,false]]) {
   const r={losses,retryAssist:false};asked=null;
   const p=assist.namespace.chooseRetryAssist(r,()=>true);
   assert.deepEqual(tests(asked.options),['retry-assist-yes','retry-assist-easy','retry-assist-no','retry-assist-cancel']);
-  assert.equal(asked.options[0].label,'ベリーイージーで挑戦');assert.equal(asked.options[0].primary,true);
-  assert.equal(asked.body,'今回だけ難易度を下げますか？<br>イージー：針がゆっくり動き、判定が広がります。<br>ベリーイージー：針がとてもゆっくり動き、判定が大きく広がります。<br>どちらも蒸らしの雑念と調整中の冷え方が穏やかになり、体力も最大まで回復します。');
+  assert.deepEqual(labels(asked.options),['ベリーイージー','イージー','ノーマル','選択に戻る']);assert.equal(asked.options[0].primary,true);
+  assert.equal(asked.body,'難易度を下げる？');
   resolve(answer);assert.equal(await p,result);assert.equal(r.retryAssist,result);assert.equal(r.retryAssistLevel,answer);
+}
+// コンティニュー画面の選択肢（WIN14）。取消は無く、先頭がいちばんやさしい段。
+assert.deepEqual(Array.from(assist.namespace.retryAssistOptions(1),o=>[o.label,o.value,o.test]),[['イージー',1,'retry-assist-yes'],['ノーマル',0,'retry-assist-no']]);
+assert.deepEqual(Array.from(assist.namespace.retryAssistOptions(2),o=>[o.label,o.value,o.test]),[['ベリーイージー',2,'retry-assist-yes'],['イージー',1,'retry-assist-easy'],['ノーマル',0,'retry-assist-no']]);
+assert.deepEqual([0,2,3,5,6,9].map(losses=>assist.namespace.retryAssistOffer({losses})),[0,0,1,1,2,2]);
+// 画面で選んだ段を記録する。選べない段や想定外の値はノーマル。
+for(const [losses,level,assisted,stored] of [[3,1,true,1],[3,2,false,0],[6,2,true,2],[6,1,true,1],[6,0,false,0],[2,1,false,0],[6,undefined,false,0],[6,'2',false,0]]) {
+  const r={losses,retryAssist:true,retryAssistLevel:9};
+  assert.equal(assist.namespace.applyRetryAssistChoice(r,level),assisted,`${losses}敗で${level}`);
+  assert.deepEqual([r.retryAssist,r.retryAssistLevel],[assisted,stored]);
 }
 // 選べない段（3敗でベリーイージー）や想定外の値は取消扱い。
 { const r={losses:3,retryAssist:false};const p=assist.namespace.chooseRetryAssist(r,()=>true);resolve(2);assert.equal(await p,null);assert.equal(r.retryAssist,false); }

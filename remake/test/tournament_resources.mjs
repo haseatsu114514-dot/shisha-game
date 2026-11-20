@@ -156,13 +156,16 @@ const gameOverStart = source.indexOf("async function showGameOver(");
 const gameOverEnd = source.indexOf("/** 開発用:", gameOverStart);
 assert(gameOverStart >= 0 && gameOverEnd > gameOverStart);
 let ready, retryOptions, transition, opened = 0, resumed = 0;
+const appliedLevels = [];
 const ownerContext = vm.createContext({
   state: core.newState(), recordTournamentLoss: stub, save: stub,
   craftContinueContext: () => ({}), recordContinueContext: () => ({}),
   warmGameOver: () => new Promise(resolve => { ready = resolve; }),
   showHud: stub, stopBgm: stub, SE: { miss: stub }, location: { reload: stub },
   buildGameOver: options => { retryOptions = options; return { isConnected: true }; },
-  showScreen: () => opened++, chooseRetryAssist: async () => {}, retire: stub,
+  showScreen: () => opened++, retire: stub,
+  // 難易度はコンティニュー画面の中で選ぶ（WIN14）。ここでは選ばれた段の受け渡しだけを見る。
+  retryAssistOffer: () => 2, applyRetryAssistChoice: (tournament, level) => { appliedLevels.push(level); return level > 0; },
   // 再挑戦は一筆を逆向きに流す幕（#2688 A19・F4）。幕の内側で呼ぶ関数を受け取る。敗北の入りの灰色はこの検査では出さない
   retryStroke: callback => { transition = callback; }, defeatFade: async () => null, tournamentDay: () => resumed++,
 });
@@ -173,7 +176,9 @@ assert.equal(opened, 0, "LOAD during preload cannot attach the old game-over scr
 ownerContext.warmGameOver = async () => {};
 await vm.runInContext("showGameOver()", ownerContext);
 assert.equal(opened, 1);
-await retryOptions.onRetry();
+assert.equal(retryOptions.difficulty, 2, "3敗目からの難易度は、コンティニュー画面へ渡す");
+await retryOptions.onRetry(2);
+assert.deepEqual(appliedLevels, [2], "画面で選んだ段を、次の一台の記録へ渡す");
 assert.equal(typeof transition, "function");
 ownerContext.state = core.newState(); transition();
 assert.equal(resumed, 0, "LOAD during the wipe cannot resume the old tournament");

@@ -59,7 +59,7 @@ import { playCh1Title } from "./ch1-title-motion.js";
 import { giveSumiRig, giveEarlyHomeRig } from "../daily/home-rig.js";
 import { judgeNaruMatch, naruMatchReviewLines } from "./naru-match.js";
 import { configureFirstBrew, firstBrewOrder, rememberFirstBrew, serveFirstBrew } from "./first-brew.js";
-import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
+import { recordTournamentLoss, retryAssistOffer, applyRetryAssistChoice } from "./retry-assist.js";
 import { chosenAssistLevel } from "../craft/retry-assist-level.js";
 
 const BG = (name) => `res://assets/backgrounds/${name}.png`;
@@ -1030,11 +1030,12 @@ async function showGameOver({ rank = 0, reason = "rank", variant = null, cs = nu
     context: !preview && owner?.phase === "tournament"
       ? recordContinueContext(owner, owner.tournament, owner.tournament.attempts, craftContinueContext(cs, { chapter: 1, reason, rank }))
       : craftContinueContext(cs, { chapter: 1, reason, rank }),
-    onRetry: async () => {
+    // 3敗目からは、再挑戦を押した同じ画面で難易度を選ぶ（WIN14）。
+    difficulty: tournament ? retryAssistOffer(tournament) : 0,
+    onRetry: async level => {
       if (!owner) { location.reload(); return; }
-      const assisted = await chooseRetryAssist(tournament, () => state === owner && owner.tournament === tournament && root.isConnected);
-      if (assisted === null) { if (state === owner && root.isConnected) await showGameOver({ reason, rank, cs, variant: root.continueVariant, preview }); return; }
-      if (state !== owner || !root.isConnected) return;
+      if (state !== owner || owner.tournament !== tournament || !root.isConnected) return;
+      applyRetryAssistChoice(tournament, level);
       save();
       retire(root);
       // 再挑戦は、一筆を逆向きに流して色を戻す（#2688 A19・F4。暗い煙ワイプはタイトル→開始と会場入りだけ）

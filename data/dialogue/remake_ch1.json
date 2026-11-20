@@ -5310,6 +5310,11 @@
             "speaker": "oneesan",
             "face": "ura_smile",
             "text": "……レモン。きゅっとして、あとがすっきりする。こういうの、今吸いたかった……"
+          },
+          {
+            "speaker": "oneesan",
+            "face": "ura_smile",
+            "text": "……ミントは、また今度かな。次は少しだけ、入れてみてね"
           }
         ],
         "lemon_mint": [
@@ -5324,6 +5329,11 @@
             "speaker": "oneesan",
             "face": "ura_smile",
             "text": "……オレンジだ。優しい甘さなのに、あとが軽いね。サッパリしてて……落ち着く"
+          },
+          {
+            "speaker": "oneesan",
+            "face": "ura_smile",
+            "text": "……ミントは、また今度かな。次は少しだけ、入れてみてね"
           }
         ],
         "orange_mint": [
