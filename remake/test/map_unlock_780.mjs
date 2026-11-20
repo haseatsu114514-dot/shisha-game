@@ -63,15 +63,16 @@ const mapMod=load('map.js');await mapMod.link(spec=>load(spec.split('/').at(-1))
 const map=mapMod.namespace, spots=modules.get('spots.js').namespace, access=modules.get('spot-access.js').namespace, reveals=modules.get('map-reveals.js').namespace;
 function reset(extra={}) {for(const k of Object.keys(state))delete state[k];Object.assign(state,{chapter:1,day:2,slot:0,phase:'daily',flags:{},story:{},met:{},visits:{},visitedDay:{},spotVisits:{},contacts:[],money:30000,stamina:100},extra);played.length=0;cancelled=false;}
 const cafe=spots.spotById('cafe'), axe=spots.spotById('axe_bar');
-// #1807: receiving (not merely earning EXP) opens Kannon, even without meeting Adam.
+// #3820: the DAY3 visit comes first; afterward receiving fire seeds still opens Kannon without Adam (#1807).
 const kannon=spots.spotById('kannon');
 reset();growthOn=true;
 assert(!access.spotVisible(kannon));
 state.growth={earned:0,xp:205,hidane:{any:0}};
 assert(!access.spotVisible(kannon),'pending level is not a received fire seed');
 state.growth.earned=2;state.growth.hidane.any=2;
-assert(access.spotVisible(kannon));assert(access.spotAvailability(kannon).ok);
-assert.match(reveals.spotRevealNotice(kannon,state),/静かに振り返れる/);
+assert(!access.spotVisible(kannon), "the board tutorial is introduced on DAY3, not after a DAY2 level up");
+state.day=3;assert(access.spotVisible(kannon));assert(access.spotAvailability(kannon).ok);
+assert.match(reveals.spotRevealNotice(kannon,state),/心得の盤を開ける/);
 assert.doesNotMatch(reveals.spotRevealNotice(kannon,state),/アダム/);
 state.growth.hidane.any=0;assert(access.spotVisible(kannon),'spending never hides the place');
 growthOn=false;assert(!access.spotVisible(kannon),'disabled growth preserves the original gate');

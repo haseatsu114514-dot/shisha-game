@@ -128,6 +128,13 @@ export async function runDaily(def) {
       if (!state.flags._c_station_registered && state.slot < 2 && !restingToday()) await registerTournament();
     }
     await chapterDef.morningDeparture?.();
+    if (state !== owner) return;
+    // DAY3の朝、地図へ出る前に観音堂へ。昼枠を使わず、昼より先へ進んだ旧セーブは巻き戻さない。
+    if (state.chapter === 1 && state.day === 3 && state.slot === 0 && !state.flags._ch1_day3_kannon_done) {
+      await reflectAtSpot("kannon", { direct: true, onExit: () => { owner.flags._ch1_day3_kannon_done = true; } });
+      if (state !== owner) return;
+      updateHud();
+    }
     while (state.slot < 2) {
       const story = await chapterDef.slotEvent?.();
       if (story) {
@@ -144,6 +151,7 @@ export async function runDaily(def) {
       }
       if (fixedShiftDue()) await fixedShift();
       else await takeAction();
+      if (state !== owner) return;
       updateHud();
       save();
     }
@@ -600,6 +608,7 @@ async function takeAction() {
       else limeCoach(phoneButton);
     }, // 通知を先にタップした場合は、マップが開いたところで目的のトークへ
     onBeforeGo: async (destination) => {
+      if (destination.boardOnly) return true; // 行動枠も約束も進めない
       const spendsAction = !["shop", "fortune"].includes(destination.kind)
         && !(typeof pendingDelivery === "function" && pendingDelivery(destination.charId));
       // 組み直しが開いている間の最初の行動は、確定する前に閉じることを一度だけ知らせる（SPEC 5.2）
@@ -617,6 +626,10 @@ async function takeAction() {
   if (!spot) throw new Error(`行き先が見つかりません: ${spotId}`);
   const blocked = visitBlock(spot);
   if (blocked) { toast(blocked.why); return; }
+  if (spot.boardOnly) {
+    await reflectAtSpot(spot.id);
+    return;
+  }
   if (spot.kind === "rival" && typeof pendingDelivery === "function" && pendingDelivery(spot.charId)) {
     if (!openingStatus(spot, state).ok || isClosed(spot)) return;
     await deliver(pendingDelivery(spot.charId), { guide: false });
@@ -737,8 +750,6 @@ async function performSpotAction(spot) {
     else if (await staminaGuard(-14)) { used = await visitRio(); exerted = used; if (used) await consultLessons("rio"); }
     else used = false;
   } else if (spot.kind === "spot") {
-    // 観音堂で内省（心得の盤 SPEC 2.8）: 火種を灯す。時間も体力も使わない。true=行動にしない
-    if (await reflectAtSpot(spot.id) === true) return { used: false, exerted: false };
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
     if (await visitSpot(spot) === false) return { used: false, exerted: false };
     exerted = spot.stamina < 0;
