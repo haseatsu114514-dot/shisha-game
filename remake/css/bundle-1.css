@@ -9147,24 +9147,24 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-hint > span { grid-column: 1 / -1;
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid { box-shadow: 0 0 0 2px #ffcf4a99, 0 0 18px #ffcf4a55, 0 3px 0 #a98f6266; }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid:not(:has(input:checked)) { animation: trpg-rs-skill-ready 1.2s ease-in-out infinite alternate; }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid::before {
-  content: "SKILL"; position: absolute; left: 12px; top: -9px; padding: 0 8px; border-radius: 4px; font-size: 11px; font-weight: 900; letter-spacing: .12em; line-height: 16px;
+  content: "SKILL"; position: absolute; left: 12px; top: -9px; padding: 0 8px; border-radius: 4px; font-size: 12px; font-weight: 900; letter-spacing: .02em; line-height: 16px;
   color: #1a0f04; background: #ffcf4a; box-shadow: 0 0 0 1px #1a0f04; pointer-events: none;
 }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid:has(input:checked)::after {
-  content: "発動！"; left: auto; right: 12px; top: -9px; padding: 0 8px; border: 0; border-radius: 4px; font-size: 11px; line-height: 16px; letter-spacing: .08em;
+  content: "発動！"; left: auto; right: 12px; top: -9px; padding: 0 8px; border: 0; border-radius: 4px; font-size: 12px; font-weight: 900; line-height: 16px; letter-spacing: .02em;
   color: #fff; background: #c0392b; box-shadow: 0 0 0 1px #1a0f04; transform: none;
 }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-trump { color: #9ff0dc; font-weight: 700; }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice { position: relative; border-color: #5fe0c4aa; box-shadow: 0 0 0 1px #5fe0c455, 0 0 16px #5fe0c444, 0 3px 0 #a98f6255; }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice::before {
-  content: "SKILL"; position: absolute; left: 12px; top: -9px; padding: 0 8px; border-radius: 4px; font-size: 11px; font-weight: 900; letter-spacing: .12em; line-height: 16px;
+  content: "SKILL"; position: absolute; left: 12px; top: -9px; padding: 0 8px; border-radius: 4px; font-size: 12px; font-weight: 900; letter-spacing: .02em; line-height: 16px;
   color: #031a16; background: #5fe0c4; box-shadow: 0 0 0 1px #031a16; pointer-events: none;
 }
 /* スマホ横持ち（ステージが縮む）では、札の字が実寸で読める大きさに。並びと札の大きさは変えない。 */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid::before,
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid:has(input:checked)::after,
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice::before {
-  top: calc(-8px / var(--k, 1)); padding: 0 calc(6px / var(--k, 1)); font-size: calc(10px / var(--k, 1)); line-height: calc(15px / var(--k, 1));
+  top: calc(-8px / var(--k, 1)); padding: 0 calc(6px / var(--k, 1)); font-size: calc(12px / var(--k, 1)); line-height: calc(16px / var(--k, 1));
 }
 /* 届かなかった時は、振り直しの札が呼んでいる（脈打つ光）。 */
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-grade]:not([data-grade="success"]) .trpg-reroll-choice:not(:disabled) { animation: trpg-rs-reroll-call 1s ease-in-out infinite alternate; }
