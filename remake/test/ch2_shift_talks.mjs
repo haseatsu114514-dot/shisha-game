@@ -73,6 +73,36 @@ assert.equal(ts({}, true), "ch2_shift_talk_tsumugi_board");
 assert.equal(ts({}, false), "ch2_shift_talk_one_hose", "Tsumugi not at tonari today");
 assert.equal(ts({ met: {} }, true), "ch2_shift_talk_one_hose", "not met yet");
 assert.equal(ts({ day: 27 }, true), "ch2_shift_talk_one_hose", "not on DAY13");
+// #3097 PR-D: つむぎの普段の会話3本も、面識があって店にいる日・DAY13以外。条件の無い回を一本挟んで、続けては出ない
+{
+  const tsumugiTalks = ["ch2_shift_talk_tsumugi_ash", "ch2_shift_talk_tsumugi_fan", "ch2_shift_talk_tsumugi_last_line"];
+  const boardRead = seen("ch2_shift_talk_tsumugi_board");
+  assert.equal(ts({ flags: boardRead }, true), "ch2_shift_talk_one_hose", "the board talk is not followed by another Tsumugi talk");
+  const oneHoseRead = { ...boardRead, ...seen("ch2_shift_talk_one_hose") };
+  assert.equal(ts({ flags: oneHoseRead }, true), "ch2_shift_talk_tsumugi_ash");
+  assert.equal(ts({ flags: oneHoseRead }, false), "ch2_shift_talk_lost_box", "Tsumugi not at tonari today");
+  assert.equal(ts({ flags: oneHoseRead, met: {} }, true), "ch2_shift_talk_lost_box", "not met yet");
+  assert.equal(ts({ flags: oneHoseRead, day: 27 }, true), "ch2_shift_talk_lost_box", "not on DAY13");
+  for (const id of tsumugiTalks) {
+    const at = ids.indexOf(id);
+    assert(at > 0 && !tsumugiTalks.includes(ids[at - 1]) && ids[at - 1] !== "ch2_shift_talk_tsumugi_board", `${id}: an unconditioned talk comes right before`);
+    const others = seen(...ids.filter(other => other !== id));
+    assert.equal(ts({ flags: others }, true), id, `${id}: read when Tsumugi is here`);
+    assert.equal(ts({ flags: others }, false), null, `${id}: waits for a day Tsumugi is here`);
+    const rows = dialogues[id].lines;
+    assert(rows.some(line => line.speaker === "tsumugi") && rows.some(line => line.speaker === "sumi"), `${id}: Tsumugi talks at Sumi's shift-up`);
+  }
+  // 第3弾のスミさん・常連の回は、柚ヶ谷へ通い始めた後（DAY2以降）なら、つむぎの有無を問わず順に出る
+  const third = ["last_order", "hose_grip", "chain_staff", "empty_stomach", "moving_away"].map(id => `ch2_shift_talk_${id}`);
+  const beforeThird = seen(...ids.slice(0, ids.indexOf(third[0])));
+  assert.equal(ts({ flags: beforeThird }, false), third[0]);
+  assert.equal(due(save({ day: 15, met: { tsumugi: true }, flags: beforeThird }), dialogues, { tsumugiHere: true }), null, "DAY1: no shift talk yet");
+  for (const id of third) assert.equal(ts({ flags: seen(...ids.filter(other => other !== id)) }, false), id);
+  // 千須会長の回は、昔の約束やあの晩の話を先取りしない（第4章の帰国後にスミさんが自分から話す）
+  const chain = dialogues.ch2_shift_talk_chain_staff.lines.map(line => line.text).join("\n");
+  assert.match(chain, /千須会長/);
+  assert.doesNotMatch(chain, /勝った方|約束|準優勝|世界大会|説教/, "chain_staff keeps the old story for chapter 4");
+}
 // 全部読んだら定型へ
 assert.equal(due(save({ day: 20, met: { tsumugi: true }, flags: seen(...ids) }), dialogues, { tsumugiHere: true }), null, "each read once");
 

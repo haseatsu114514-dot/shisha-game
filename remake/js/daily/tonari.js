@@ -344,6 +344,8 @@ async function afterShift() {
 // 報酬はいつものバイト上がりと同じ。条件は章・章内日・面識・本編の既読だけで、ルート・恋人・♥段階は見ない。
 // 章内日は保存の通算日と _ch2_day1.startDay（DAY1）から数える（core/chapter-clock.js と同じ起点）。
 const ch2DayOf = (s) => { const start = s?.flags?._ch2_day1?.startDay; return Number.isInteger(start) ? s.day - start + 1 : null; };
+// #3097 PR-D: つむぎの普段の会話。黒板の回と同じく面識があって店にいる日・DAY13以外で、ほかの回と同じく柚ヶ谷へ通い始めた後（DAY2以降）
+const ch2TsumugiTalkDue = (s, { tsumugiHere }) => !!s.met?.tsumugi && tsumugiHere && ch2DayOf(s) !== 13 && (ch2DayOf(s) ?? 2) >= 2;
 export const CH2_SHIFT_TALKS = Object.freeze([
   // 柚ヶ谷へ通い始めた後（DAY2以降）
   { id: "ch2_shift_talk_fare", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
@@ -358,12 +360,23 @@ export const CH2_SHIFT_TALKS = Object.freeze([
   // つむぎが店にいる時だけ。DAY13（つむぎの色の夜）とは別の日
   { id: "ch2_shift_talk_tsumugi_board", when: (s, { tsumugiHere }) => !!s.met?.tsumugi && tsumugiHere && ch2DayOf(s) !== 13 },
   { id: "ch2_shift_talk_one_hose", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  // #3097 PR-D: つむぎの普段の会話（灰の跡・換気扇・閉店後の線。恋愛は進めない）。つむぎの回が続けて出ないよう、条件の無い回の後ろに一本ずつ置く
+  { id: "ch2_shift_talk_tsumugi_ash", when: ch2TsumugiTalkDue },
   // #3097（RLS03）第2弾: 忘れ物の箱・初めての客・古いCDラジカセ・いつもの席・指の火傷。どれも柚ヶ谷へ通い始めた後
   { id: "ch2_shift_talk_lost_box", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
   { id: "ch2_shift_talk_first_timer", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
   { id: "ch2_shift_talk_cd_player", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  { id: "ch2_shift_talk_tsumugi_fan", when: ch2TsumugiTalkDue },
   { id: "ch2_shift_talk_same_seat", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
   { id: "ch2_shift_talk_burnt_finger", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  // #3097 PR-D 第3弾: 閉店間際の三十分・ホースの持ち手・C.STATIONの店員（千須会長との昔の話はしない）・空きっ腹の常連・転勤する常連。
+  // どれも柚ヶ谷へ通い始めた後。つむぎの閉店後の線は、つむぎが店にいる日だけ
+  { id: "ch2_shift_talk_last_order", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  { id: "ch2_shift_talk_hose_grip", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  { id: "ch2_shift_talk_tsumugi_last_line", when: ch2TsumugiTalkDue },
+  { id: "ch2_shift_talk_chain_staff", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  { id: "ch2_shift_talk_empty_stomach", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  { id: "ch2_shift_talk_moving_away", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
 ]);
 /** 今日のシフト上がりに読む第2章の会話（無ければ null）。台本が読み込まれていない時は出さない。 */
 export function ch2ShiftTalkDue(s, dialogues, context = {}) {
