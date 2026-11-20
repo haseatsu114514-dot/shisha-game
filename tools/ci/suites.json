@@ -4368,6 +4368,37 @@
       }
     },
     {
+      "id": "trpg-reading",
+      "title": "TRPGを横持ちで読む・押す（#3199）: 本棚（過去プレイを再生）と店の「？」、探索の危機の数と調べる場所の名札、チュートリアルの図、判定の詳細（PC・844×340）、キャラ作りの「能力を自分で振る」、シートと結末の文字。844×390・844×340・1280×720",
+      "kind": "browser",
+      "weight": 2.5,
+      "timeout": 10,
+      "paths": [
+        "remake/css/trpg*.css",
+        "remake/css/phone-density.css",
+        "remake/js/core/stage-fit.js",
+        "remake/js/trpg/view.js",
+        "remake/js/trpg/shelf-help.js",
+        "remake/js/trpg/play-record-view.js",
+        "remake/js/trpg/campaign-view.js",
+        "remake/js/trpg/preview.js",
+        "remake/trpg-preview.html",
+        "data/trpg_catalog.json",
+        "data/dialogue/trpg_ordinary.json",
+        "data/dialogue/trpg_shark.json",
+        "data/dialogue/trpg_moonflower_encore.json",
+        "data/dialogue/trpg_mist_kingdom.json",
+        "remake/test/browser/trpg_reading.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/trpg_reading.mjs"
+      ],
+      "env": {
+        "ARTIFACT_DIR": ".codex/artifacts/trpg-reading",
+        "BROWSER_TIMEOUT_MS": "30000"
+      }
+    },
+    {
       "id": "water-pour",
       "title": "Water pour preview",
       "kind": "browser",
@@ -5116,6 +5147,23 @@
       ],
       "run": [
         "node remake/test/browser/board_notification_visibility.mjs"
+      ]
+    },
+    {
+      "id": "board-phone-text-browser",
+      "title": "Growth board on landscape phones: text/tap minimums and the payment line kept beside the pinned actions",
+      "kind": "browser",
+      "weight": 1.2,
+      "timeout": 5,
+      "paths": [
+        "remake/css/phone-density.css",
+        "remake/css/ui-paper.css",
+        "remake/css/daily.css",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/test/browser/board_phone_text.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/board_phone_text.mjs"
       ]
     },
     {
