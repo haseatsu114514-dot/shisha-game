@@ -293,7 +293,10 @@ export function updateHud() {
   scheduleRecovery();
   dom.stamina.classList.toggle("low", health === "red");
   // 枠の長さと現在体力の割合は別。枠が伸びても回復させず、カード全体の幅も動かさない。
-  dom.stamina.querySelector(".hud-bar").style.width = `${staminaTrackWidth()}px`;
+  const track = staminaTrackWidth();
+  dom.stamina.querySelector(".hud-bar").style.width = `${track}px`;
+  // 枠の長さの割合（盤の割り振り前 0.5 〜 1）。DS風の上画面の帯（looks/retro/map.js）が同じ割合で枠を伸ばす。
+  dom.stamina.dataset.track = String(Math.round(track / HUD_GAUGE_WIDTH * 1000) / 1000);
   updateGrowth();
 }
 

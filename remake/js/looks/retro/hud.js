@@ -19,6 +19,8 @@ export function readHud() {
     moves: /あと(\d+)回/.exec(title)?.[1] || "",
     money: text(hud.querySelector(".dc-row.money b")).replace(/円$/, ""),
     stamina: parseFloat(stamina?.querySelector(".gauge-track b")?.style.width) || 0,
+    // 体力の枠の長さ（現行の HUD の全長に対する割合。盤の割り振り前は 0.5、盤の体力で 1 まで伸びる・#3821）。読めなければ全長
+    track: Math.min(1, Math.max(0, Number(stamina?.dataset.track) || 1)),
     hasStamina: !!stamina,
     health: stamina?.dataset.health || "",
     unread: lime?.classList.contains("has") ? text(lime.querySelector(".badge-number")) : "",

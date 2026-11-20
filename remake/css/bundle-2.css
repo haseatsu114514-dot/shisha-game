@@ -7754,7 +7754,9 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 .retro-maphead-money { color: var(--r-gold); }
 .retro-gauge { display: flex; align-items: center; gap: calc(var(--d) * 3); color: #e56b8c; }
 .retro-gauge svg { display: block; width: calc(var(--d) * 7); height: calc(var(--d) * 6); }
-.retro-gauge i { position: relative; display: block; width: calc(var(--d) * 34); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-lilac); }
+/* 枠の長さ（--gauge-dots）は現行の HUD と同じ割合で retro/map.js が決める: 盤の割り振り前は半分（17）、盤の体力で 34 まで伸びる（#3821）。
+   足りない分は右の余白にして、帯の所持金・昼夜の位置を動かさない */
+.retro-gauge i { position: relative; display: block; width: calc(var(--d) * var(--gauge-dots, 34)); margin-right: calc(var(--d) * (34 - var(--gauge-dots, 34))); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-lilac); }
 .retro-gauge i b { position: absolute; left: 0; top: 0; bottom: 0; background: #57c79a; }
 .retro-gauge[data-health="yellow"] i b { background: #f6c93b; }
 .retro-gauge[data-health="red"] i b { background: #d9342b; }
