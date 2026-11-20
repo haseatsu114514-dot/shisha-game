@@ -52,7 +52,77 @@ const scanText = (minFont) => {
   return small;
 };
 
+// 支払い・今の状態の一行（.gb-p-state。「白火1で払う」など）が、右の説明の下端に置いた「灯す／目標にする」の後ろに隠れず、
+// 枠の中で見えていること（#3987）。行の上の9点を elementFromPoint で叩き、いちばん上に描かれているのが行そのものかを見る。
+const paymentLine = () => {
+  const side = document.querySelector(".gb-side");
+  const state = side.querySelector(".gb-p-state"), actions = side.querySelector(".gb-side-actions");
+  const stage = document.querySelector("#stage");
+  const k = stage.getBoundingClientRect().width / stage.offsetWidth;
+  const cs = getComputedStyle(side), p = side.getBoundingClientRect(), s = state.getBoundingClientRect(), a = actions.getBoundingClientRect();
+  const top = p.top + parseFloat(cs.borderTopWidth) * k, bottom = p.bottom - parseFloat(cs.borderBottomWidth) * k;
+  const covered = [];
+  for (const fx of [0.03, 0.5, 0.97]) for (const fy of [0.2, 0.5, 0.8]) {
+    const hit = document.elementFromPoint(s.left + s.width * fx, s.top + s.height * fy);
+    if (hit !== state && !state.contains(hit)) covered.push(`${fx},${fy}:${hit ? `${hit.tagName}.${String(hit.className).replace(/ /g, ".")}` : "none"}`);
+  }
+  return {
+    text: state.textContent, actions: [...actions.children].map((b) => b.textContent),
+    font: +(parseFloat(getComputedStyle(state).fontSize) * k).toFixed(2),
+    stateBottom: +s.bottom.toFixed(1), actionsTop: +a.top.toFixed(1), height: +s.height.toFixed(1),
+    inside: s.top >= top - 0.5 && s.bottom <= bottom + 0.5, covered,
+    // 説明が下端の枠の後ろへ続いているか（送れば読める）と、その印
+    cut: side.scrollHeight - side.scrollTop - side.clientHeight > 1, more: side.dataset.more ?? null,
+  };
+};
+
 await suite("board-phone-text", async (check) => {
+  // #3987 実プレイ: DAY3 に感覚の「かわし」(S1) を灯し、DAY7 の観音堂で「火加減」(S4) を選ぶと、844×390 で
+  // 右下の支払い行「白火1で払う」が固定の「灯す（火種1）／目標にする」の後ろに隠れた。説明の長いマス・授業・スキルも同じに見る
+  const PAY_CASES = [
+    ["phone-844x390", phone],
+    ["phone-844x340", { ...phone, viewport: { width: 844, height: 340 } }],
+    ["phone-932x430", { ...phone, viewport: { width: 932, height: 430 } }],
+    ["pc-1280x720", {}],
+  ];
+  for (const [label, profile] of PAY_CASES) {
+    await check(`payment-line-not-hidden-${label}`, async (page) => {
+      const isPhone = label.startsWith("phone");
+      await openBoard(page, { view: false });
+      await page.evaluate(() => { void import("./js/daily/growth-board-screen.js").then((m) => m.openBoard({ place: "kannon" })); });
+      await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+      await page.locator(`${t("growth-board")}[data-art]`).waitFor({ timeout: 15000 }).catch(() => {});
+      await page.locator(t("board-tab-sense")).click();
+      for (const id of ["S4", "S5", "S6", "K15", "M-S2"]) {
+        await page.locator(t(`board-node-${id}`)).evaluate((node) => node.click());
+        await page.locator(".gb-side").evaluate((side) => { side.scrollTop = 0; side.dispatchEvent(new Event("scroll")); });
+        const line = await page.evaluate(paymentLine);
+        const where = `${label} ${id} ${JSON.stringify(line)}`;
+        if (id === "S4") {
+          assert.equal(line.text, "白火1で払う", where);
+          assert.deepEqual(line.actions, ["灯す（火種1）", "目標にする"], where);
+        }
+        assert.deepEqual(line.covered, [], `支払い行の上に別の部品が重なる: ${where}`);
+        assert(line.stateBottom <= line.actionsTop + 0.5, `支払い行がボタンの上端より下に食い込む: ${where}`);
+        assert(line.inside, `支払い行が右の説明の枠からはみ出す: ${where}`);
+        if (isPhone) {
+          assert(line.font >= 12.4, `支払い行は実寸12.5px以上: ${where}`);
+          // 説明が枠の後ろへ続く時だけ印を出す。送り切ると消える
+          assert.equal(line.more, String(line.cut), `説明の続きの印: ${where}`);
+          if (line.cut) {
+            const end = await page.locator(".gb-side").evaluate((side) => {
+              side.scrollTop = side.scrollHeight;
+              side.dispatchEvent(new Event("scroll"));
+              return side.dataset.more;
+            });
+            assert.equal(end, "false", `送り切ったら印は消える: ${where}`);
+            assert.deepEqual((await page.evaluate(paymentLine)).covered, [], `送った後も支払い行は見える: ${where}`);
+          }
+        }
+      }
+    }, { ...profile, reducedMotion: "reduce" });
+  }
+
   await check("phone-844x390", async (page) => {
     await openBoard(page);
     assert.deepEqual(await page.evaluate(scanText, MIN_FONT), [], "board: small text");
@@ -107,6 +177,27 @@ await suite("board-phone-text", async (check) => {
     assert(after.w + 0.05 >= 43 && after.h + 0.05 >= 43, `zoomed node hit should be 44px effective, got ${JSON.stringify(after)}`);
     assert(after.minGap >= -0.5, `zoomed node hits must not overlap, gap ${after.minGap}`);
   }, phone);
+
+  // #3121 の受入（844×340・932×430 も）: 文字の実寸の下限、倍率・？・×の押す大きさ、通常倍率のマスの押す大きさ、詳細本文
+  for (const viewport of [{ width: 844, height: 340 }, { width: 932, height: 430 }]) {
+    await check(`phone-${viewport.width}x${viewport.height}-sizes`, async (page) => {
+      await openBoard(page);
+      const where = `${viewport.width}x${viewport.height}`;
+      assert.deepEqual(await page.evaluate(scanText, MIN_FONT), [], `${where} board: small text`);
+      const small = await page.evaluate((minTap) => ["board-zoom-in", "board-zoom-out", "board-zoom-fit", "board-help", "board-close", "board-node-B1"]
+        .map((name) => [name, document.querySelector(`[data-test="${name}"]`).getBoundingClientRect()])
+        .filter(([, box]) => Math.min(box.width, box.height) + 0.05 < minTap)
+        .map(([name, box]) => `${name} ${box.width.toFixed(1)}x${box.height.toFixed(1)}`), MIN_TAP);
+      assert.deepEqual(small, [], `${where} board: small taps`);
+      await page.locator(t("board-node-B1")).evaluate((node) => node.click());
+      const fonts = await page.locator(".gb-side p").evaluateAll((nodes) => {
+        const stage = document.querySelector("#stage");
+        const k = stage.getBoundingClientRect().width / stage.offsetWidth;
+        return nodes.filter((node) => node.getClientRects().length).map((node) => +(parseFloat(getComputedStyle(node).fontSize) * k).toFixed(2));
+      });
+      assert(fonts.length && Math.min(...fonts) >= 12.4, `${where} detail text should be at least 12.5px, got ${fonts}`);
+    }, { ...phone, viewport });
+  }
 
   await check("phone-844x340-long-lesson", async (page) => {
     await openBoard(page);
