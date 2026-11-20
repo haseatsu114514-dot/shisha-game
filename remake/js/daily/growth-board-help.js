@@ -71,6 +71,8 @@ export const HELP_PAGES = Object.freeze([
     row(el("span.gh-key", { text: "3" }), "盤で灯す", "道をつなげて「教わる」。火種はいらない"),
     row(el("span.gh-key", { text: "4" }), "会って習う", "灯しただけでは使えない。その人に会って話を聞くと身につく"),
     row(el("span.gh-tag.gb-lesson-tag.t-heart", { text: "♥4/5" }), "仲良くなる途中", "札の下の印。♥が届くと教われる"),
+    row(el("span.gh-tag.gb-lesson-tag.t-heart.only", { text: "あと♥1" }), "あとは♥だけ", "道は届いた。札が桃色に脈打つ"),
+    row(el("span.gh-tag.gb-lesson-tag.t-road", { text: "♥達成" }), "あとは道だけ", "仲は足りた。盤の道をつなごう"),
     row(el("span.gh-tag.gb-lesson-tag.t-now", { text: "今" }), "今教われる", "内省の時に、札を選んで「教わる」"),
     row(el("span.gh-tag.gb-lesson-tag.t-talk", { text: "相談" }), "灯した。会いに行く", "その人の店などで相談する（LIMEでは習えない）"),
   ]) },

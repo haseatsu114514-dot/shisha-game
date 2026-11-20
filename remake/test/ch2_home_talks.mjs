@@ -1,6 +1,7 @@
 // VOL13: 第2章の地元の会話を足す。
 // ① 施設の寄り道（実 spot-encounters.js）: 喫茶こはく・観音堂・CHOI-ZAP・C.STATIONに第2章だけの回。第1章・第3章では出ない
 // ② Dr.fookah 2階の凛想（実 spots.js の visitChar）: 第2章だけの会話2本。味の不調に気づく回を先に、一来店一本・一度だけ
+//    #3097 PR-C: 凛想・アダム・みんとの続きと、なるの1本（DAY3の祝いの後、対峙より前だけ）。台本10本の中身の決まり（④）
 // ③ あげはの通い訪問（実 ch2-preparation.js）: 小会話6種を巡回し、昼夜の店のあいさつを挟む
 // ④ 台本: 大会を前提にする台詞には大会後の分岐、第2章の水族館の再訪は数行
 // node --experimental-vm-modules remake/test/ch2_home_talks.mjs
@@ -152,7 +153,9 @@ assert.deepEqual(played, ["ch2_rio_taste"]);
 await visitRio(); assert.deepEqual(played, ["ch2_rio_strawberry"]);
 // #3097 第1弾: 柚ヶ谷の匂いの回は、苺の回の後に一本
 await visitRio(); assert.deepEqual(played, ["ch2_rio_city_scent"]);
-await visitRio(); assert(!played.some(id => id.startsWith("ch2_rio_")), "all three read");
+// #3097 PR-C: 満員電車の回は、柚ヶ谷の匂いの回の後に一本
+await visitRio(); assert.deepEqual(played, ["ch2_rio_rush_hour"]);
+await visitRio(); assert(!played.some(id => id.startsWith("ch2_rio_")), "all four read");
 // 中断したら既読にしない
 state = rioSave({ flags: { _ch2_taste_distant: true } }); playMode = "cancel";
 played = []; affinity = [];
@@ -169,13 +172,53 @@ for (const chapter of [1, 3]) { state = rioSave({ chapter }); assert.equal(spots
 state = rioSave(); const saved = DB.dialogues; DB.dialogues = {}; assert.equal(spots.chapterTalkDue("rio"), null); DB.dialogues = saved;
 assert.equal(spots.chapterTalkDue("adam"), null);
 // #3097 第1弾: アダム・みんとの第2章の会話。初めて話した後の第2章だけ、一度きり
-for (const [id, scene] of [["adam", "ch2_adam_ticket_machine"], ["minto", "ch2_minto_commute_frame"]]) {
-  state = rioSave({ story: { [id]: 2 } });
-  assert.equal(spots.chapterTalkDue(id), scene, `${id}: chapter 2 talk`);
-  state = rioSave({ story: { [id]: 2 }, flags: { [`_talk_seen_${scene}`]: true } });
-  assert.equal(spots.chapterTalkDue(id), null, `${id}: read once`);
-  for (const chapter of [1, 3]) { state = rioSave({ chapter, story: { [id]: 2 } }); assert.notEqual(spots.chapterTalkDue(id), scene, `${id}: not in chapter ${chapter}`); }
+// #3097 PR-C: アダム・みんとに2本ずつ。第1弾の回の後に、並びの順で一来店に一本
+for (const [id, scenes] of [["adam", ["ch2_adam_ticket_machine", "ch2_adam_yuzugaya_apples", "ch2_adam_out_of_stock"]],
+  ["minto", ["ch2_minto_commute_frame", "ch2_minto_lost_pass", "ch2_minto_mint_scale"]]]) {
+  const seen = {};
+  for (const scene of scenes) {
+    state = rioSave({ story: { [id]: 2 }, flags: { ...seen } });
+    assert.equal(spots.chapterTalkDue(id), scene, `${id}: chapter 2 talk ${scene}`);
+    assert.equal(spots.hasNewStory(id), true, `${id}: the map marks ${scene}`);
+    seen[`_talk_seen_${scene}`] = true;
+  }
+  state = rioSave({ story: { [id]: 2 }, flags: seen });
+  assert.equal(spots.chapterTalkDue(id), null, `${id}: each read once`);
+  for (const chapter of [1, 3]) { state = rioSave({ chapter, story: { [id]: 2 } }); assert(!scenes.includes(spots.chapterTalkDue(id)), `${id}: not in chapter ${chapter}`); }
   state = rioSave({ story: {} }); assert.equal(spots.chapterTalkDue(id), null, `${id}: first meeting comes first`);
+  // 実 visitChar: 一来店に一本、段階会話より先。読み終えたら既読、好感度は通い訪問と同じ
+  state = rioSave({ story: { [id]: 2 }, visits: { [id]: 6 }, met: { [id]: true }, affinity: { [id]: 40 } }); played = []; affinity = [];
+  for (const scene of scenes) {
+    played = []; affinity = [];
+    assert.equal(await spots.visitChar(id), true);
+    assert.deepEqual(played, [scene]); assert.deepEqual(plain(affinity), [[id, 8]]); assert.equal(state.story[id], 2);
+    assert.equal(state.flags[`_talk_seen_${scene}`], true);
+  }
+}
+// #3097 PR-C: なるの第2章の会話は、DAY3の祝い（_ch2_naru_warm_done）の後、DAY11の対峙より前だけ。対峙の後、なるは店を長く休む
+{
+  const warm = { _ch2_naru_warm_done: true };
+  state = rioSave({ story: { naru: 3 } }); assert.equal(spots.chapterTalkDue("naru"), null, "naru: not before the celebration night");
+  state = rioSave({ story: { naru: 3 }, flags: warm });
+  assert.equal(spots.chapterTalkDue("naru"), "ch2_naru_sign_light", "naru: after the celebration night");
+  assert.equal(spots.hasNewStory("naru"), true);
+  for (const rift of ["_ch2_read_ch2_naru_confrontation", "_ch2_night_11_done", "_ch2_naru_listened", "_ch2_naru_hurt"]) {
+    state = rioSave({ story: { naru: 3 }, flags: { ...warm, [rift]: true } });
+    assert.equal(spots.chapterTalkDue("naru"), null, `naru: never after the confrontation (${rift})`);
+  }
+  for (const chapter of [1, 3, 4]) { state = rioSave({ chapter, story: { naru: 3 }, flags: warm }); assert.equal(spots.chapterTalkDue("naru"), null, `naru: chapter ${chapter}`); }
+  state = rioSave({ story: {}, flags: warm }); assert.equal(spots.chapterTalkDue("naru"), null, "naru: first meeting comes first");
+  state = rioSave({ story: { naru: 3 }, flags: { ...warm, _talk_seen_ch2_naru_sign_light: true } }); assert.equal(spots.chapterTalkDue("naru"), null, "naru: read once");
+  // 実 visitChar: 対峙より前は読む。中断なら既読にしない
+  state = rioSave({ story: { naru: 3 }, visits: { naru: 6 }, met: { naru: true }, affinity: { naru: 40 }, flags: { ...warm } });
+  playMode = "cancel"; played = []; affinity = [];
+  assert.equal(await spots.visitChar("naru"), false); assert(!state.flags._talk_seen_ch2_naru_sign_light); assert.deepEqual(plain(affinity), []);
+  playMode = "ok"; played = []; affinity = [];
+  assert.equal(await spots.visitChar("naru"), true); assert.deepEqual(played, ["ch2_naru_sign_light"]);
+  assert.equal(state.flags._talk_seen_ch2_naru_sign_light, true); assert.deepEqual(plain(affinity), [["naru", 8]]);
+  // 対峙の後は、店そのものが閉まっていて来店できない
+  state = rioSave({ story: { naru: 3 }, visits: { naru: 6 }, met: { naru: true }, flags: { ...warm, _ch2_naru_hurt: true } }); played = [];
+  assert.equal(await spots.visitChar("naru"), false); assert.deepEqual(played, []);
 }
 
 // ---- ③ あげはの通い訪問の小会話6種と昼夜のあいさつ（実 ch2-preparation.js） --------------------
@@ -235,6 +278,39 @@ assert(/煙の褒め方が嘘だね/.test(taste)); assert(!/心因|気のせい|
 // 水族館の再訪（1,800円）は各4行以上
 for (const id of ["remake_ch2_aquarium_repeat", "remake_ch2_aquarium_repeat_b", "remake_ch2_aquarium_repeat_c"]) {
   assert(all[id].lines.length >= 4, `${id} has a few more lines`);
+}
+// #3097 PR-C: 地元の普段の会話10本。大会・味の感想を前提にせず、報酬の文・命令を持たない（読了と好感度は来店の処理が持つ）
+{
+  const PRC = { minto: ["ch2_minto_lost_pass", "ch2_minto_mint_scale"], rio: ["ch2_rio_rush_hour"], samechan: ["ch2_samechan_remora_seat", "ch2_samechan_spare_teeth"],
+    hiyori: ["ch2_hiyori_health_check", "ch2_hiyori_capsule_toy"], adam: ["ch2_adam_yuzugaya_apples", "ch2_adam_out_of_stock"], naru: ["ch2_naru_sign_light"] };
+  const { CH2_HOME_IDS } = await import(new URL("remake/js/chapters/ch2-city-data.js", root));
+  const textOf = id => all[id].lines.map(line => line.text).join("\n");
+  for (const [who, ids] of Object.entries(PRC)) for (const id of ids) {
+    assert(all[id]?.lines?.length, `${id} exists`);
+    assert(CH2_HOME_IDS.includes(id), `${id} is loaded with the chapter 2 preparation`);
+    assert(all[id].lines.every(line => !line.type), `${id}: the visit handles reading and affinity`);
+    assert(all[id].lines.some(line => line.speaker === who), `${id}: ${who} speaks`);
+    assert(!/大会|本番|県大会|優勝|審査|採点|が(少し|かなり|大きく)?上がった/.test(textOf(id)), `${id}: before or after the tournament, no reward text`);
+    // はじめは味の感想を言わない（第2章の味の不調の前後どちらでも読む）
+    assert(!all[id].lines.some(line => line.speaker === "hajime" && /味|甘い|苦い|香り|おいし|うまい/.test(line.text)), `${id}: hajime does not judge the taste`);
+  }
+  // みんと: 営業中の名前のまま、年齢の話をしない
+  for (const id of PRC.minto) {
+    assert(!/歳|年齢|二十|はたち|アラサー|栞|お姉さん/.test(textOf(id)), `${id}: no age talk, the shop name only`);
+    assert(all[id].lines.every(line => !/^ura_/.test(line.face)), `${id}: the shop look`);
+  }
+  // 凛想: 香りへの配慮は、生活用品（無香料の洗剤・柔軟剤）で見せる
+  assert(/無香料/.test(textOf("ch2_rio_rush_hour")) && /柔軟剤/.test(textOf("ch2_rio_rush_hour")) && !/マニキュア|ネイル/.test(textOf("ch2_rio_rush_hour")));
+  // サメちゃん: 本名・泳ぎ・恋愛・店の手伝いに触れない。コロちゃんに本人の語尾が混ざらない
+  for (const id of PRC.samechan) {
+    assert(!/なぎさ|泳ぎ|恋人|告白|手伝/.test(textOf(id)), id);
+    for (const line of all[id].lines) if (line.voice === "korochan") assert(!/じゃ|のう|おる/.test(line.text), `${id}: ${line.text}`);
+  }
+  // ひより: どの店の相席でも読むので店名を出さない。斧投げの正体を前提にしない。本心は inner だけ
+  for (const id of PRC.hiyori) {
+    assert(!/斧|tonari|SHISHARK|PEPPERMINT|EDEN|KEMURIKUSA|Dr\.fookah|C\.STATION|MELTY/.test(JSON.stringify(all[id].lines)), id);
+    assert(all[id].lines.some(line => line.inner) && all[id].metadata?.private_scene === true, id);
+  }
 }
 // ---- ⑤ 第2章の地元の雨の回（#3097 PR-B・実 spots.js の visitSpot・restAtHome） ----------------------
 // 雨の日、巡回が引いた回の代わりに章の台本を一度だけ読む。巡回は引いた回を読んだものとして進め、
