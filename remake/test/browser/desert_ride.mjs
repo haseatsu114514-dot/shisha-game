@@ -209,6 +209,127 @@ await suite("desert-ride", async check => {
     assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), null, "the page never touches the real save");
   });
 
+  // 三段階（#3779・2026-11-20 オーナー「各ミニゲームに三段階の難易度を追加」）: メニューの「初級／中級／上級」の札を押して滑り、結果のカードに段が出る。
+  // 単体ページは3段とも開いている（?tier= で最初に選ぶ段）。札は PC でも横持ちタッチでもカードの中に収まり、文字がはみ出さず、指で押せる。
+  const tierChip = (page, name) => page.locator(`${t("desert-tier")}[data-tier="${name}"]`);
+  const assertTierLayout = async (page, { minTap, minFont }) => {
+    const got = await page.evaluate(() => {
+      const rect = node => node.getBoundingClientRect().toJSON();
+      const inside = (inner, outer) => inner.left >= outer.left - 0.5 && inner.right <= outer.right + 0.5 && inner.top >= outer.top - 0.5 && inner.bottom <= outer.bottom + 0.5;
+      const card = rect(document.querySelector('[data-test="desert-menu"]')), stage = rect(document.getElementById("stage"));
+      const chips = [...document.querySelectorAll('[data-test="desert-tier"]')].map(node => ({ tier: node.dataset.tier, box: rect(node),
+        textInside: [...node.children].every(child => inside(rect(child), rect(node))) && node.scrollWidth <= node.clientWidth + 1,
+        font: Math.min(...[...node.children].map(child => parseFloat(getComputedStyle(child).fontSize))) }));
+      return { card, stage, chips, start: rect(document.querySelector('[data-test="desert-start"]')), cardInStage: inside(card, stage), chipsInCard: chips.every(chip => inside(chip.box, card)) };
+    });
+    assert.deepEqual(got.chips.map(chip => chip.tier), ["easy", "normal", "hard"]);
+    assert(got.cardInStage && got.chipsInCard, "the chips stay inside the menu card, and the card inside the stage");
+    for (const chip of got.chips) {
+      assert(chip.textInside, `${chip.tier}: the label and the line under it fit in the chip`);
+      assert(chip.box.width >= minTap && chip.box.height >= minTap, `${chip.tier}: big enough to press (${chip.box.width.toFixed(0)}x${chip.box.height.toFixed(0)})`);
+      assert(chip.font >= minFont, `${chip.tier}: text is at least ${minFont}px on the stage (${chip.font})`);
+      assert(chip.box.bottom <= got.start.top, `${chip.tier}: the chips sit above the start button`);
+    }
+    for (let i = 1; i < got.chips.length; i++) assert(got.chips[i].box.left >= got.chips[i - 1].box.right, "the chips do not overlap");
+  };
+  await check("tiers-pick-easy-and-hard-on-the-menu-and-show-the-tier-on-the-result", async page => {
+    await page.goto(new URL("desert-ride.html?course=ridge&tier=easy", page.url()).href);
+    await page.locator(t("desert-page-start")).click();
+    await page.locator(t("desert-menu")).waitFor();
+    await assertTierLayout(page, { minTap: 44, minFont: 14 });
+    assert.deepEqual(await page.evaluate(() => window.__desertRide.tiers), ["easy", "normal", "hard"], "the preview opens all three tiers");
+    assert.equal(await tierChip(page, "easy").getAttribute("aria-checked"), "true", "?tier=easy picks easy");
+    assert.match(await tierChip(page, "hard").innerText(), /上級\s*手ごわい/);
+    // 上級を選んで滑る: 岩が多い同じコース。HUD のコース名に段。回って決める滑りならヌールに勝てる
+    await tierChip(page, "hard").click();
+    assert.equal(await tierChip(page, "hard").getAttribute("aria-checked"), "true");
+    assert.equal(await tierChip(page, "easy").getAttribute("aria-checked"), "false");
+    await page.locator(t("desert-start")).click();
+    await phase(page, "run");
+    const run = await page.evaluate(async () => {
+      const model = await import("./js/minigames/desert-ride-model.js");
+      const g = window.__desertRide.game, rocks = course => course.features.filter(f => f.kind === "rock").length;
+      return { tier: g.tier, id: g.course.id, rocks: rocks(g.course), normalRocks: rocks(model.buildCourse({ id: g.course.id })), rival: window.__desertRide.rival.tier };
+    });
+    assert.deepEqual({ tier: run.tier, id: run.id, rival: run.rival }, { tier: "hard", id: "ridge", rival: "hard" });
+    assert(run.rocks > run.normalRocks, `hard has more rocks (${run.rocks} vs ${run.normalRocks})`);
+    assert.equal(await page.locator(t("desert-course")).innerText(), "コースA · 上級");
+    await autoplayToResult(page, "expert");
+    assert.equal(await page.locator(t("desert-result-tier")).innerText(), "上級");
+    assert.equal(await page.locator(t("desert-result-tier")).getAttribute("data-tier"), "hard");
+    assert.equal(await page.locator(t("desert-race")).getAttribute("data-won"), "true");
+    assert.match(await page.locator(t("desert-best")).innerText(), /^自己ベスト更新/);
+    // 段を替えるのはメニュー。前の段が選ばれたまま、その段の自己ベスト
+    await page.locator(t("desert-choose-tier")).click();
+    await phase(page, "menu");
+    assert.equal(await tierChip(page, "hard").getAttribute("aria-checked"), "true");
+    assert.match(await page.locator(t("desert-best")).innerText(), /^自己ベスト .*／ S/);
+    // 初級: 自己ベストは別（まだ無いので出さない）。着地が甘い滑りでも勝てる
+    await tierChip(page, "easy").click();
+    assert.equal(await page.locator(t("desert-best")).count(), 0, "easy has its own best");
+    await page.locator(t("desert-start")).click();
+    await phase(page, "run");
+    assert.equal(await page.evaluate(() => window.__desertRide.game.tier), "easy");
+    assert.equal(await page.locator(t("desert-course")).innerText(), "コースA · 初級");
+    await autoplayToResult(page, "good");
+    assert.equal(await page.locator(t("desert-result-tier")).innerText(), "初級");
+    assert.equal(await page.locator(t("desert-race")).getAttribute("data-won"), "true");
+    assert.match(await page.locator(t("desert-best")).innerText(), /^初級の自己ベスト更新/);
+    // 再挑戦は同じ段
+    await page.locator(t("desert-retry")).click();
+    await phase(page, "run");
+    assert.equal(await page.evaluate(() => window.__desertRide.game.tier), "easy");
+    await page.keyboard.press("Escape");
+    await phase(page, "menu");
+    assert.match(await page.locator(t("desert-best")).innerText(), /^初級の自己ベスト/);
+    await page.locator(t("desert-leave")).click();
+    await page.locator(t("desert-page-best")).waitFor();
+    const saved = await page.evaluate(() => ({ main: JSON.parse(localStorage.getItem("suien_desert_ride_preview")), easy: JSON.parse(localStorage.getItem("suien_desert_ride_preview_easy")) }));
+    assert.equal(saved.main.rank, "S"); assert.equal(saved.main.beatNoor, true, "a hard win brings Naru on the preview page");
+    assert.equal(saved.easy.rulesVersion, 2); assert(saved.easy.score > 0);
+    assert(saved.main.score !== saved.easy.score, "the easy best is kept apart");
+  });
+
+  await check("tiers-on-a-landscape-phone-chips-fit-and-the-result-buttons-wrap", async page => {
+    // なると勝負できる状態（結果のボタンが4つ: もう一度・なると勝負・段を選ぶ・下りる）
+    await page.evaluate(() => localStorage.setItem("suien_desert_ride_preview", JSON.stringify({ score: 9000, rank: "A", rulesVersion: 2, beatNoor: true })));
+    await page.goto(new URL("desert-ride.html?course=left-bowl", page.url()).href);
+    await page.locator(t("desert-page-start")).tap();
+    await page.locator(t("desert-menu")).waitFor();
+    await assertTierLayout(page, { minTap: 40, minFont: 24 });
+    assert.equal(await tierChip(page, "normal").getAttribute("aria-checked"), "true", "the middle tier by default on the preview");
+    await tierChip(page, "easy").tap();
+    assert.equal(await tierChip(page, "easy").getAttribute("aria-checked"), "true");
+    await page.locator(t("desert-start")).tap();
+    await autoplayToResult(page, "good");
+    assert.equal(await page.locator(t("desert-result-tier")).innerText(), "初級");
+    await page.waitForTimeout(900); // 判の出る動きが終わってから測る
+    const result = await page.evaluate(() => {
+      const rect = node => node.getBoundingClientRect().toJSON();
+      const stage = rect(document.getElementById("stage"));
+      const buttons = [...document.querySelectorAll('[data-test="desert-result"] .dr-actions .dr-button')].map(node => ({ text: node.textContent, box: rect(node), fits: node.scrollWidth <= node.clientWidth + 1 }));
+      const parts = ['[data-test="desert-result-tier"]', '[data-test="desert-best"]', '[data-test="desert-total"]', ".dr-rows"].map(selector => rect(document.querySelector(selector)));
+      return { stage, buttons, parts, tierFont: parseFloat(getComputedStyle(document.querySelector('[data-test="desert-result-tier"]')).fontSize) };
+    });
+    assert.deepEqual(result.buttons.map(button => button.text), ["もう一度滑る", "なると勝負", "段を選ぶ", "砂丘を下りる"]);
+    for (const box of [...result.buttons.map(button => button.box), ...result.parts]) {
+      assert(box.left >= result.stage.left - 0.5 && box.right <= result.stage.right + 0.5 && box.top >= result.stage.top - 0.5 && box.bottom <= result.stage.bottom + 0.5, "the result stays on the stage");
+    }
+    for (const button of result.buttons) assert(button.fits && button.box.height >= 40, `${button.text}: the label fits and the button is big enough (${button.box.height.toFixed(0)})`);
+    const rows = [...new Set(result.buttons.map(button => Math.round(button.box.top)))];
+    assert.equal(rows.length, 2, "four buttons wrap into two rows of two");
+    for (let i = 0; i < result.buttons.length; i++) for (let j = i + 1; j < result.buttons.length; j++) {
+      const a = result.buttons[i].box, b = result.buttons[j].box;
+      assert(a.right <= b.left + 0.5 || b.right <= a.left + 0.5 || a.bottom <= b.top + 0.5 || b.bottom <= a.top + 0.5, `${result.buttons[i].text} and ${result.buttons[j].text} do not overlap`);
+    }
+    assert(result.tierFont >= 24, "the tier badge is readable on the phone");
+    await page.locator(t("desert-choose-tier")).tap();
+    await phase(page, "menu");
+    assert.equal(await tierChip(page, "easy").getAttribute("aria-checked"), "true");
+    await page.locator(t("desert-leave")).tap();
+    await page.locator(t("desert-page-best")).waitFor();
+  }, { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
+
   await check("phone-touch-buttons-reduced-motion-and-tutorial", async page => {
     // タッチ端末でもブースト中の曲の速さは変えない。
     await page.addInitScript(() => {
@@ -532,25 +653,72 @@ await suite("desert-ride", async check => {
     assert.match(await page.locator(t("desert-practiced")).innerText(), /ヌール「もう一度練習してもいいし、本番へ進んでもいいよ」/);
     // コースは毎回ランダム。コースA（ridge）だけは着地が遅い滑りでもヌールに0.1秒先着するので、コースBに固定する
     await page.evaluate(() => window.__desertRide.setCourse("left-bowl"));
+    // 三段階（#3779）: はじめは初級だけが開いている。練習のあとの本番は初級
+    assert.equal(await page.evaluate(() => window.__desertRide.tier), "easy");
+    assert.deepEqual(await page.evaluate(() => window.__desertRide.tiers), ["easy"]);
     await page.locator(t("desert-start")).click();
-    // 1本目は着地が遅い滑り: B。ヌールと同じ滑りなので競走は負け
+    // 1本目は初級を着地が遅い滑りで: 初級のヌールには勝てる。初級クリアで中級が開く（結果のカードに段と一言）
     await autoplayToResult(page, "good");
     await page.locator(".toast", { hasText: "ヌール「" }).waitFor();
     await page.locator(".toast", { hasText: "初めての完走" }).waitFor();
+    assert.equal(await page.locator(t("desert-result-tier")).innerText(), "初級");
+    assert.equal(await page.locator(t("desert-race")).getAttribute("data-won"), "true");
+    assert.equal(await page.locator(t("desert-tier-note")).innerText(), "初級をクリア。中級が開いた。");
+    assert.match(await page.locator(t("desert-best")).innerText(), /初級の自己ベスト更新/);
     value = await get(page);
-    assert.equal(value.desert.runs, 1); assert.equal(value.desert.best.rank, "B"); assert.equal(value.desert.bestRank, "B");
-    assert.equal(value.desert.wins, 0); assert.equal(value.desert.best.race.won, false);
+    // 初級は自己ベスト・評価のご褒美・勝ち数（なるが来る・初勝利の場面）に数えない。完走の数と初回の報酬は数える
+    assert.equal(value.desert.runs, 1); assert.equal(value.desert.best, null); assert.equal(value.desert.bestRank, null);
+    assert.equal(value.desert.wins, 0); assert.equal(value.desert.easyBest.tier, "easy"); assert.equal(value.desert.easyBest.race.won, true);
+    assert.deepEqual(value.growth.playTiers.desert.cleared, ["easy"]);
     assert.deepEqual(value.desert.firstClear, { chapter: 4, day: 48 }); assert.equal(value.desert.rewarded, true);
     assert.deepEqual(value.stats, before.stats, "no direct stat gain"); assert.equal(value.money, before.money);
+    // 段を替えるのはメニュー（結果の「段を選ぶ」）。中級が開き、上級は中級クリアで開く
+    await page.locator(t("desert-choose-tier")).click();
+    await phase(page, "menu");
+    const tier = name => page.locator(`${t("desert-tier")}[data-tier="${name}"]`);
+    assert.equal(await tier("normal").isDisabled(), false);
+    assert.equal(await tier("normal").getAttribute("data-fresh"), "true");
+    assert.match(await tier("normal").innerText(), /開いた！/);
+    assert.equal(await tier("hard").isDisabled(), true);
+    assert.match(await tier("hard").innerText(), /中級クリアで開く/);
+    assert.match(await tier("easy").innerText(), /クリア済み/);
+    await tier("normal").click();
+    assert.equal(await tier("normal").getAttribute("aria-checked"), "true");
+    assert.equal((await get(page)).growth.playTiers.desert.last, "normal", "the chosen tier is remembered in the save");
+    await page.locator(t("desert-start")).click();
+    // 2本目は中級を着地が遅い滑りで: B。ヌールと同じ滑りなので競走は負け（中級は前と同じ遊び）
+    await autoplayToResult(page, "good");
+    assert.equal(await page.locator(t("desert-result-tier")).innerText(), "中級");
+    assert.equal(await page.locator(t("desert-tier-note")).count(), 0, "no note without a new clear");
+    value = await get(page);
+    assert.equal(value.desert.runs, 2); assert.equal(value.desert.best.rank, "B"); assert.equal(value.desert.bestRank, "B");
+    assert.equal(value.desert.wins, 0); assert.equal(value.desert.best.race.won, false); assert.equal(value.desert.best.tier, "normal");
     assert.equal(JSON.parse(await page.evaluate(() => localStorage.getItem("suien_remake_save"))).desert.bestRank, "B", "recorded to the autosave");
-    // 同じ外出の中の再挑戦: 行動は増えず、記録だけ増える。自己ベストは点数で更新。回ってブーストすればヌールに勝つ（勝ちのひとこと）
+    // 同じ外出の中の再挑戦（同じ段）: 行動は増えず、記録だけ増える。自己ベストは点数で更新。回ってブーストすればヌールに勝つ（勝ちのひとこと）
     await page.locator(t("desert-retry")).click();
     await autoplayToResult(page, "expert");
     await page.locator(".toast", { hasText: "ヌール「悔しいけど、今日は私の負け。次は負けないからね」" }).waitFor();
+    assert.equal(await page.locator(t("desert-result-tier")).innerText(), "中級", "retry keeps the tier");
+    assert.equal(await page.locator(t("desert-tier-note")).innerText(), "中級をクリア。上級が開いた。");
     value = await get(page);
-    assert.equal(value.desert.runs, 2); assert.equal(value.desert.bestRank, "S"); assert.equal(value.flags._ch4_desert.outings, 1);
+    assert.equal(value.desert.runs, 3); assert.equal(value.desert.bestRank, "S"); assert.equal(value.flags._ch4_desert.outings, 1);
     assert.equal(value.desert.wins, 1);
     assert.match(await resultText(page), /自己ベスト更新/);
+    // 上級を初めてクリアすると白火1つ（各ゲーム一度だけ・growth.js が精算）
+    const earned = value.growth.earned;
+    await page.locator(t("desert-choose-tier")).click();
+    await phase(page, "menu");
+    assert.match(await tier("hard").innerText(), /クリアで白火1/);
+    await tier("hard").click();
+    await page.locator(t("desert-start")).click();
+    await autoplayToResult(page, "expert");
+    assert.equal(await page.locator(t("desert-result-tier")).innerText(), "上級");
+    assert.equal(await page.locator(t("desert-tier-note")).innerText(), "サンドボードの上級をクリア！ 白火が1つ届く。");
+    value = await get(page);
+    assert.deepEqual(value.growth.playTiers.desert.cleared, ["easy", "normal", "hard"]);
+    assert.equal(value.growth.rewards["desert-hard"], true);
+    assert.equal(value.growth.earned - earned, 1, "one white fire for the top tier");
+    assert.equal(value.desert.runs, 4); assert.equal(value.desert.wins, 2, "a hard win counts like a middle-tier win");
     // 初めて勝った日は、夕日の前に旗の下で短く話す
     await page.evaluate(async () => {
       const { hooks } = await import("./js/vn/engine.js");
@@ -576,7 +744,7 @@ await suite("desert-ride", async check => {
     await page.locator(t("slot-1")).click();
     await page.locator(t("ch4-free")).waitFor({ timeout: 60000 });
     value = await get(page);
-    assert.equal(value.desert.bestRank, "S"); assert.equal(value.desert.runs, 2);
+    assert.equal(value.desert.bestRank, "S"); assert.equal(value.desert.runs, 4);
     assert.deepEqual(value.flags._ch4_desert, { v: 2, talks: 4, chats: 0, lastTalkDay: 3, outings: 1, lastOutingDay: 3 });
     assert(await page.locator(t("ch4-go-dunes")).isDisabled());
     // 翌日はまた行ける。2回目の外出は短い到着 → 練習なしで本番。途中で中断（再読込）しても外出の消費だけ残り、記録は増えない。
@@ -591,6 +759,10 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(t("desert-start-naru")).count(), 1, "after beating Noor, Naru waits at the dunes");
     value = await get(page);
     assert.equal(value.desert.naruMet, true);
+    // 段は保存から: 3段とも開いていて、前に選んだ上級が選ばれている（上級はクリア済み）
+    assert.deepEqual(await page.evaluate(() => window.__desertRide.tiers), ["easy", "normal", "hard"]);
+    assert.equal(await page.locator(`${t("desert-tier")}[data-tier="hard"]`).getAttribute("aria-checked"), "true");
+    assert.match(await page.locator(`${t("desert-tier")}[data-tier="hard"]`).innerText(), /クリア済み/);
     await page.locator(t("desert-start")).click();
     await phase(page, "run");
     await page.waitForFunction(() => window.__desertRide.game.z > 40);
@@ -601,7 +773,7 @@ await suite("desert-ride", async check => {
     await page.reload();
     await page.locator(t("ch4-free")).waitFor({ timeout: 60000 });
     value = await get(page);
-    assert.equal(value.desert.runs, 2, "an interrupted run leaves no record");
+    assert.equal(value.desert.runs, 4, "an interrupted run leaves no record");
     assert.deepEqual(value.flags._ch4_desert, { v: 2, talks: 4, chats: 0, lastTalkDay: 3, outings: 2, lastOutingDay: 4 });
     assert(await page.locator(t("ch4-go-dunes")).isDisabled(), "the interrupted trip still used the day");
     assert.equal(await page.locator(t("desert-ride")).count(), 0);
@@ -623,6 +795,8 @@ await suite("desert-ride", async check => {
       if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
       value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
       value.flags._ch4.titleSeen = true;
+      // 三段階（#3779）: 初級はクリア済み（中級が開いていて、既定は開いている中でいちばん上＝中級。中級は前と同じ遊び）
+      value.growth = { ...(value.growth || {}), playTiers: { desert: { cleared: ["easy"] } } };
       for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
       value.day += 3;
       if (!progress.departChapterFour(value)) throw new Error("Departure failed");
@@ -678,8 +852,10 @@ await suite("desert-ride", async check => {
     assert.equal(value.flags._ch4_desert.outings, 1);
     await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
     await phase(page, "practiced");
+    assert.equal(await page.evaluate(() => window.__desertRide.tier), "normal", "the highest open tier by default");
     await page.locator(t("desert-start")).click();
     await autoplayToResult(page, "perfect");
+    assert.equal(await page.locator(t("desert-result-tier")).innerText(), "中級");
     await page.evaluate(() => {
       window.__bgs = [];
       new MutationObserver(() => { for (const node of document.querySelectorAll("#bg .bg-img")) if (!window.__bgs.includes(node.style.backgroundImage)) window.__bgs.push(node.style.backgroundImage); })
