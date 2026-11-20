@@ -194,7 +194,7 @@ await suite("tonari-floor", async (check) => {
       const mood = await api((a) => a.state().tables[0].mood);
       await table(1).click();
       assert.deepEqual(await page.locator(".tf-sheet .tf-option b").allInnerTexts().then((list) => list.map((s) => s.replace(/\s/g, ""))),
-        ["炭を替える", "炭を下ろす", "飲み物をうかがう", "ひと声かける", "そっとしておく"]);
+        ["炭を替える", "炭を下ろす", "飲み物を聞く", "ひと声かける", "そっとしておく"]);
       const verb = await page.evaluate((call) => C.floorData.CALLS[call].verb, call);
       await page.locator(t(`option-${verb}`)).click();
       assert(await api((a) => a.state().tables[0].mood) > mood);
@@ -240,7 +240,7 @@ await suite("tonari-floor", async (check) => {
   }
 
   // 専用の店内画（客が座る形）: 絵が届く前でも、配置図の舞台で重なりと操作を確かめる。
-  // 客は卓の奥・卓の前景は客より手前・番号札と吹き出しはさらに手前。絵の登録があれば影絵の代わりに絵を出す。
+  // 席は「上3（こちら向き）・下2（内向き）」。客 → 前景 → 番号札 → 卓のマーカーの順に重なる。絵の登録があれば影絵の代わりに絵を出す。
   for (const [platform, options] of [["pc", {}], ["touch", touch]]) {
     await run(`${platform}-seated-stage`, async (page) => {
       await setup(page);
@@ -269,9 +269,15 @@ await suite("tonari-floor", async (check) => {
       });
       assert(geo.z.seat < geo.z.front && geo.z.front < geo.z.plate && geo.z.plate < geo.z.bubble, JSON.stringify(geo.z));
       assert(geo.painted, "登録した客の絵が出る");
-      assert(geo.bubble.bottom <= geo.seat.top + 2, "吹き出しは頭の上");
-      assert(geo.plate.top >= geo.seat.bottom - 2, "番号札は客より手前（下）");
+      assert(geo.bubble.bottom <= geo.plate.top + 2, "手前の席のマーカーは、内側の卓の上");
+      assert(geo.bubble.left >= geo.seat.right - 2, "手前の左の席は、卓とマーカーが内側（右）にある");
       assert(geo.seat.h >= 40 && geo.seat.w >= 40, `座った客は押せる大きさ: ${geo.seat.w}x${geo.seat.h}`);
+      // 席の形: 上の3席はこちら向き、下の2席は内向き（右の席は絵を反転する）
+      assert.deepEqual(await page.evaluate(() => [...document.querySelectorAll(".tf-spot")].map((n) => `${n.dataset.row}:${n.dataset.flip}`)),
+        ["back:false", "back:false", "back:false", "side:false", "side:true"]);
+      const rows = await page.evaluate(() => [...document.querySelectorAll(".tf-spot .tf-seat")].map((n) => { const r = n.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }));
+      assert(rows[0].x < rows[1].x && rows[1].x < rows[2].x && Math.abs(rows[0].y - rows[2].y) < 2, "上の段に3席");
+      assert(rows[3].x < rows[0].x && rows[4].x > rows[2].x && rows[3].y > rows[0].y && Math.abs(rows[3].y - rows[4].y) < 2, "下の段は左右の端に2席");
       // 吹き出しからも同じ卓の伝票が開く
       await page.locator('.tf-spot[data-id="4"] .tf-bubble').click();
       await page.locator(t("sheet")).waitFor();
@@ -293,8 +299,10 @@ await suite("tonari-floor", async (check) => {
       await page.locator(".tf-sheet .tf-option").first().click();
       await api((a) => a.tick(15));
       await page.locator(t("table-1")).click();
-      const say = await page.evaluate(() => { const r = document.querySelector('.tf-spot[data-id="1"] .tf-say').getBoundingClientRect(); const hud = document.querySelector(".tf-clock").getBoundingClientRect(); return { top: r.top, hudBottom: hud.bottom, on: document.querySelector('.tf-spot[data-id="1"] .tf-say').dataset.on }; });
+      const say = await page.evaluate(() => { const spot = document.querySelector('.tf-spot[data-id="1"]'); const r = spot.querySelector(".tf-say").getBoundingClientRect(); const hud = document.querySelector(".tf-clock").getBoundingClientRect();
+        return { top: r.top, hudBottom: hud.bottom, on: spot.querySelector(".tf-say").dataset.on, seatTop: spot.querySelector(".tf-seat").getBoundingClientRect().top, bottom: r.bottom }; });
       assert.equal(say.on, "true");
+      assert(say.bottom <= say.seatTop + 2, "奥の席のひとことは頭の上");
       assert(say.top >= say.hudBottom - 4, `奥の卓のひとことが上の帯に被る: ${say.top} < ${say.hudBottom}`);
       await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/tonari-floor-${platform}-seated.png` }).catch(() => {});
     }, options);

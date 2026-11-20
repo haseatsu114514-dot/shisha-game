@@ -497,6 +497,20 @@ export function floorUrgency(s, tableId) {
 }
 export const floorQueueUrgency = (s, entry) => Math.max(0, Math.min(1, (s.t - entry.since) / T.queue));
 
+/** くつろいでいる卓の、滞在の残り（1→0）。番号札の輪で、いつ席が空くかを見せる。 */
+export function floorStayLeft(s, tableId) {
+  const table = tableOf(s, tableId);
+  const guest = guestAt(s, table);
+  if (!guest || table.phase !== "enjoy") return 0;
+  return Math.max(0, Math.min(1, (table.stayEnd - s.t) / STAY[guest.stay]));
+}
+
+/** 営業の残り時間（"2:31"。1刻み＝0.5秒）。 */
+export function floorTimeLeft(s) {
+  const seconds = Math.max(0, Math.ceil((s.length - s.t) * FLOOR_TICK_MS / 1000));
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
 /** スミさんの一言（今いちばん先に見るところ）。台詞なので句点で終えない。 */
 export function floorAdvice(s) {
   if (s.done) return { kind: "done", tableId: null, text: "お疲れさん" };

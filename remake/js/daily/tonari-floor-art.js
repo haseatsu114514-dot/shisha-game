@@ -2,7 +2,7 @@
 // 登録して差し替える（依頼の内容と置き場は asset_sources/ui/tonari-floor-20261120/README.md）。
 import { el } from "../core/util.js";
 import { buildVersioned } from "../core/asset-version.js";
-import { FLOOR_ART, artUrl } from "./tonari-floor-stage.js";
+import { FLOOR_ART, artUrl, personIds } from "./tonari-floor-stage.js";
 
 // 24×24・線の太さ1.8。色は currentColor。塗りつぶす記号は fill:true。
 const GLYPHS = {
@@ -67,18 +67,23 @@ const LOOKS = {
 
 const hash = (text) => { let h = 2166136261; for (const c of String(text)) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
 
-/** 客ひとりの影絵（顔は描かない）。key で髪・服の色を決める。 */
-export function bust(look, key = "") {
+/**
+ * 客ひとりの影絵（顔は描かない）。key で髪・服の色を決める。
+ * @param seatedBody 座った全身（胸像の下に胴と膝を足す。専用の店内画で、絵が届くまでの仮の姿）
+ */
+export function bust(look, key = "", seatedBody = false) {
   const h = hash(`${key}/${look}`);
   const shape = LOOKS[look] || LOOKS.short;
   const hair = look === "hat" ? "#8d8a86" : HAIR[h % HAIR.length];
   const wear = WEAR[(h >>> 4) % WEAR.length];
   const skin = SKIN[(h >>> 9) % SKIN.length];
   const tint = shape.capped ? wear : hair;
+  const dark = `color-mix(in srgb, ${wear} 70%, #2a1d16)`;
   return el("span.tf-bust", {
-    "aria-hidden": true, style: { "--tf-wear-dark": `color-mix(in srgb, ${wear} 70%, #2a1d16)` },
-    html: `<svg viewBox="0 0 64 64">
+    "aria-hidden": true, style: { "--tf-wear-dark": dark },
+    html: `<svg viewBox="0 0 64 ${seatedBody ? 112 : 64}">
       <g fill="${tint}">${shape.back || ""}</g>
+      ${seatedBody ? `<path d="M9 62h46l3 26H6z" fill="${wear}"/><path d="M6 86h52l2 18q0 6-6 6H10q-6 0-6-6z" fill="${dark}"/>` : ""}
       <path d="M6 64c0-12 8-19 26-19s26 7 26 19z" fill="${wear}"/>
       <path d="M26 45c2 4 10 4 12 0l-1.5-6h-9z" fill="${skin}"/>
       <path d="M22 50c3 4 17 4 20 0" fill="none" stroke="#00000022" stroke-width="2"/>
@@ -90,18 +95,19 @@ export function bust(look, key = "") {
 }
 
 /**
- * 卓の客（1〜2人）。絵があれば絵、無ければ影絵。
+ * 卓の客（1〜2人）。ひとりずつ、絵の登録があれば絵、無ければ影絵。
  * @param opts.happy 満足している時の絵（登録があれば）を使う
+ * @param opts.seated 座った全身で出す（専用の店内画）。省くと顔のまわり（丸い札・入口の列・伝票）
  * @param opts.art 絵の登録（検査用に差し替えられる。既定は FLOOR_ART.guests）
  */
-export function guestArt(guest, { happy = false, art = FLOOR_ART.guests } = {}) {
-  const entry = art?.[guest.kind];
-  const src = typeof entry === "string" ? entry : (happy && entry?.happy) || entry?.idle;
-  if (src) {
+export function guestArt(guest, { happy = false, seated = false, art = FLOOR_ART.guests } = {}) {
+  const people = personIds(guest).map((id, i) => {
+    const entry = art?.[id];
+    const src = typeof entry === "string" ? entry : (happy && entry?.happy) || entry?.idle;
+    if (!src) return el("span.tf-person", { dataset: { i } }, [bust(guest.look[i] || guest.look[0], `${guest.id}${i}`, seated)]);
     const url = artUrl(src);
-    return el("span.tf-guest-art", { "aria-hidden": true, dataset: { party: guest.party, painted: "true" } },
+    return el("span.tf-person", { dataset: { i, painted: "true" } },
       [el("img", { src: /^(data:|blob:)/.test(url) ? url : buildVersioned(url), alt: "", decoding: "async", draggable: false })]);
-  }
-  return el("span.tf-guest-art", { "aria-hidden": true, dataset: { party: guest.party } },
-    guest.look.slice(0, guest.party).map((look, i) => bust(look, `${guest.id}${i}`)));
+  });
+  return el("span.tf-guest-art", { "aria-hidden": true, dataset: { party: guest.party } }, people);
 }

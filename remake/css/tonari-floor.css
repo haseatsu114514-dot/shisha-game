@@ -75,14 +75,13 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-seat:active .tf-medal { scale: 0.94; }
 .tf-who { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; display: block; transition: opacity 0.3s ease; }
 .tf-guest-art { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; }
-.tf-guest-art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
-/* 届いた客の絵は座った全身。丸い札・入口の列・伝票では、顔のまわりへ寄せて見せる */
-.tf-guest-art[data-painted="true"] img { scale: 1.9; transform-origin: 50% 12%; }
-.tf-guest-art[data-painted="true"][data-party="2"] img { scale: 1.3; transform-origin: 50% 6%; }
-.tf-bust { display: block; width: 86%; flex: 0 0 auto; margin-bottom: -4%; }
-.tf-bust svg { display: block; width: 100%; height: auto; }
-.tf-guest-art[data-party="2"] .tf-bust { width: 60%; margin-inline: -6%; }
-.tf-guest-art[data-party="2"] .tf-bust:first-child { translate: 0 -5%; }
+.tf-person { display: block; flex: 0 0 auto; width: 86%; margin-bottom: -4%; }
+.tf-guest-art[data-party="2"] .tf-person { width: 60%; margin-inline: -6%; }
+.tf-guest-art[data-party="2"] .tf-person:first-child { translate: 0 -5%; }
+.tf-bust, .tf-bust svg { display: block; width: 100%; height: auto; }
+/* 届いた客の絵は座った全身（1人1枚）。丸い札・入口の列・伝票では、顔のまわりへ寄せて見せる */
+.tf-person[data-painted="true"] { aspect-ratio: 1; overflow: hidden; border-radius: 50%; margin-bottom: 0; }
+.tf-person[data-painted="true"] img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; scale: 2.3; transform-origin: 50% 6%; }
 /* 満足の輪（札のまわり）。色は顔の段と同じ。 */
 .tf-mood-ring {
   position: absolute; inset: -9px; border-radius: 50%;
@@ -109,6 +108,14 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   font-size: var(--tf-text); font-weight: 700; display: grid; place-items: center;
 }
 .tf-plate b { line-height: 1; }
+/* くつろいでいる卓は、番号札のまわりの輪で滞在の残りを見せる（輪が無くなると会計） */
+.tf-plate::before {
+  content: ""; position: absolute; inset: -8px; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;
+  background: conic-gradient(#8fd6ff calc(var(--stay, 0) * 360deg), #0000 0);
+  -webkit-mask: radial-gradient(closest-side, #0000 calc(100% - 6px), #000 calc(100% - 5px));
+  mask: radial-gradient(closest-side, #0000 calc(100% - 6px), #000 calc(100% - 5px));
+}
+.tf-spot[data-phase="enjoy"] .tf-plate::before { opacity: 1; }
 .tf-spot[data-phase="empty"] .tf-plate { opacity: 0.82; }
 .tf-spot[data-act="true"] .tf-plate { border-color: #fff1af; box-shadow: 0 0 0 4px #fff1af55, 0 4px 10px #000a; }
 /* はじめての営業だけ、スミさんの一言が指す卓を光らせる */
@@ -120,17 +127,17 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 @keyframes tf-guide { from { opacity: 1; scale: 0.9; } to { opacity: 0; scale: 1.35; } }
 /* 吹き出し（いま出来ること・合図） */
 .tf-bubble {
-  left: var(--x); top: var(--by); translate: -50% -100%; white-space: nowrap; z-index: 5; pointer-events: auto;
+  left: var(--bx); top: var(--by); translate: -50% -100%; white-space: nowrap; z-index: 5; pointer-events: auto;
   display: none; align-items: center; gap: 6px; padding: 5px 14px 5px 6px; border: none; border-radius: 26px;
-  background: #fffaf0; color: var(--tf-ink); font-size: var(--tf-small); font-weight: 700; line-height: 1;
-  box-shadow: 0 0 0 2px #6b4a30, 0 6px 14px #000a;
+  background: linear-gradient(180deg, #ffe7a8, #f0b64e); color: #2a1a08; font-size: var(--tf-small); font-weight: 700; line-height: 1;
+  box-shadow: 0 0 0 2px #2a1a08, 0 0 0 4px #ffe7a8aa, 0 6px 14px #000a;
 }
 .tf-bubble[data-on="true"] { display: inline-flex; }
 .tf-bubble::after {
   content: ""; position: absolute; left: 50%; top: 100%; translate: -50% -1px; border: 9px solid transparent;
-  border-top-color: #fffaf0; border-bottom: 0; filter: drop-shadow(0 2px 0 #6b4a30);
+  border-top-color: #f0b64e; border-bottom: 0; filter: drop-shadow(0 2px 0 #2a1a08);
 }
-.tf-bubble .tf-icon { position: relative; width: 40px; height: 40px; padding: 6px; border-radius: 50%; background: #f1dfc0; color: #5b3d25; }
+.tf-bubble .tf-icon { position: relative; width: 40px; height: 40px; padding: 6px; border-radius: 50%; background: #1b1220; color: #ffe2a6; }
 .tf-urge {
   position: absolute; left: 6px; top: 5px; width: 40px; height: 40px; border-radius: 50%;
   background: conic-gradient(var(--tf-urge-color, #d99a3a) calc(var(--urge, 0) * 360deg), #0000 0);
@@ -145,12 +152,12 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-spot[data-urgent="mid"] { --tf-urge-color: #e0862e; }
 .tf-spot[data-urgent="high"] { --tf-urge-color: #e2503c; }
 .tf-spot[data-urgent="high"] .tf-bubble { animation-duration: 0.6s; box-shadow: 0 0 0 3px #e2503c, 0 6px 14px #000a; }
-.tf-spot[data-tap="serve"] .tf-bubble .tf-icon { background: #ffd98a; }
-.tf-spot[data-tap="bill"] .tf-bubble .tf-icon { background: #cfe8c0; }
+.tf-spot[data-tap="bill"] .tf-bubble { background: linear-gradient(180deg, #d6f5c9, #7fd39a); }
+.tf-spot[data-tap="bill"] .tf-bubble::after { border-top-color: #7fd39a; }
 @keyframes tf-bob { 50% { translate: -50% calc(-100% - 5px); } }
 /* 客のひとこと */
 .tf-say {
-  left: var(--x); top: var(--by); translate: -50% calc(-100% - 58px); max-width: 440px; width: max-content;
+  left: var(--bx); top: var(--by); translate: -50% calc(-100% - 58px); max-width: 440px; width: max-content;
   padding: 8px 14px; border-radius: 12px; background: #fffaf0f2; color: var(--tf-ink); font-size: var(--tf-small); line-height: 1.3;
   box-shadow: 0 0 0 2px #b8946a, 0 8px 18px #000a; opacity: 0; scale: 0.9; transition: opacity 0.2s ease, scale 0.2s ease; z-index: 6;
 }
@@ -164,7 +171,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-spot[data-edge="right"] .tf-say { --tail: 78%; }
 .tf-spot[data-edge="left"] .tf-say { translate: -22% calc(-100% - 58px); }
 .tf-spot[data-edge="right"] .tf-say { translate: -78% calc(-100% - 58px); }
-.tf-fx { left: var(--x); top: var(--fy); width: 0; height: 0; z-index: 7; }
+.tf-fx { left: var(--fx); top: var(--fy); width: 0; height: 0; z-index: 7; }
 .tf-pop {
   position: absolute; left: 0; top: 0; translate: -50% 0; white-space: nowrap; padding: 4px 14px; border-radius: 20px;
   background: #2a1c15ee; color: var(--tf-ivory); font-size: var(--tf-text); font-weight: 700; box-shadow: 0 0 0 2px #e7c27a;
@@ -188,15 +195,26 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 @keyframes tf-puff { 0% { opacity: 0; translate: 0 0; scale: 0.4; } 20% { opacity: 0.9; } 100% { opacity: 0; translate: 14px -120px; scale: 1.9; } }
 
 /* ---- 専用の店内画（客が座る形）。位置と大きさは tonari-floor-stage.js の STAGES.floor ---- */
-.tonari-floor[data-style="seated"] .tf-seat { translate: -50% -100%; width: auto; height: var(--gh); aspect-ratio: 1; border-radius: 14px; }
-.tonari-floor[data-style="seated"] .tf-spot[data-party="2"] .tf-seat { aspect-ratio: 1.5; }
+/* 客の入る範囲（左・上・幅・高さ）は画面のコードが舞台の表から置く。下端が足元 */
+.tonari-floor[data-style="seated"] .tf-seat { translate: none; border-radius: 14px; }
 .tonari-floor[data-style="seated"] .tf-medal { inset: 0; border-radius: 0; background: none; box-shadow: none; }
 .tonari-floor[data-style="seated"] .tf-who { overflow: visible; border-radius: 0; }
 .tonari-floor[data-style="seated"] .tf-mood-ring { display: none; }
-.tonari-floor[data-style="seated"] .tf-who .tf-guest-art img { object-fit: contain; object-position: 50% 100%; scale: 1; }
-.tonari-floor[data-style="seated"] .tf-who .tf-bust { width: 100%; margin: 0; }
-.tonari-floor[data-style="seated"] .tf-who .tf-guest-art[data-party="2"] .tf-bust { width: 58%; margin-inline: -4%; translate: none; }
 .tonari-floor[data-style="seated"] .tf-who .tf-guest-art { filter: drop-shadow(0 4px 5px #0007); }
+.tonari-floor[data-style="seated"] .tf-who .tf-person { height: 100%; width: auto; aspect-ratio: 0.6; margin: 0; translate: none; border-radius: 0; overflow: visible; }
+.tonari-floor[data-style="seated"] .tf-who .tf-person img { object-fit: contain; object-position: 50% 100%; scale: 1; }
+.tonari-floor[data-style="seated"] .tf-who .tf-bust, .tonari-floor[data-style="seated"] .tf-who .tf-bust svg { height: 100%; }
+/* 奥の席（こちら向き）: 並んで座る。二人組は向かい合うように右の人を反転する */
+.tonari-floor[data-style="seated"] .tf-spot[data-row="back"] .tf-guest-art[data-party="2"] .tf-person { margin-inline: -4%; }
+.tonari-floor[data-style="seated"] .tf-spot[data-row="back"] .tf-guest-art[data-party="2"] .tf-person[data-i="1"] { scale: -1 1; }
+/* 手前の席（内向き）: 奥行きに並んで座る（奥の人が先に描かれ、手前の人が少し重なる）。右の席は絵を反転して内側を向かせる */
+.tonari-floor[data-style="seated"] .tf-spot[data-row="side"] .tf-guest-art { display: block; }
+.tonari-floor[data-style="seated"] .tf-spot[data-row="side"] .tf-person { position: absolute; right: 4%; bottom: 0; height: 96%; }
+.tonari-floor[data-style="seated"] .tf-spot[data-row="side"] .tf-guest-art[data-party="2"] .tf-person[data-i="0"] { right: auto; left: 0; bottom: auto; top: 0; height: 86%; }
+.tonari-floor[data-style="seated"] .tf-spot[data-row="side"] .tf-guest-art[data-party="2"] .tf-person[data-i="1"] { right: 0; height: 92%; }
+.tonari-floor[data-style="seated"] .tf-spot[data-row="side"][data-flip="true"] .tf-person { right: auto; left: 4%; scale: -1 1; }
+.tonari-floor[data-style="seated"] .tf-spot[data-row="side"][data-flip="true"] .tf-guest-art[data-party="2"] .tf-person[data-i="0"] { left: auto; right: 0; }
+.tonari-floor[data-style="seated"] .tf-spot[data-row="side"][data-flip="true"] .tf-guest-art[data-party="2"] .tf-person[data-i="1"] { left: 0; right: auto; }
 .tonari-floor[data-style="seated"] .tf-spot[data-selected="true"] .tf-who .tf-guest-art { filter: drop-shadow(0 0 5px #fff1af) drop-shadow(0 4px 5px #0007); }
 .tonari-floor[data-style="seated"] .tf-spot[data-selected="true"] .tf-medal { box-shadow: none; }
 /* 顔の印のまわりが満足の輪になる */
@@ -229,12 +247,16 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   background: linear-gradient(#0e0913, #0e0913) center / calc(100% - 8px) calc(100% - 8px) no-repeat;
   border: 0 solid transparent; border-image: var(--art-panel) 110 fill / 20px / 0 stretch; box-shadow: 0 6px 18px #0007;
 }
-.tf-clock { justify-self: start; display: flex; align-items: center; gap: 10px; padding: 10px 20px 14px; position: relative; min-width: 230px; }
+.tf-clock { justify-self: start; display: flex; align-items: center; gap: 10px; padding: 8px 20px 15px; position: relative; min-width: 300px; }
 .tf-clock .tf-icon { color: var(--tf-brass); width: 34px; height: 34px; }
-.tf-clock small { display: block; font-size: var(--tf-small); color: var(--tf-dim); line-height: 1.1; }
-.tf-clock b { font-size: var(--tf-big); color: var(--tf-brass); line-height: 1.05; }
-.tf-clock-bar { position: absolute; left: 18px; right: 18px; bottom: 9px; height: 4px; border-radius: 2px; background: #5a4630; overflow: hidden; }
-.tf-clock-bar i { display: block; height: 100%; width: 0; background: var(--tf-brass); transition: width 0.5s linear; }
+.tf-clock small { display: block; font-size: var(--tf-small); color: var(--tf-dim); line-height: 1.1; white-space: nowrap; }
+.tf-clock b { font-size: 40px; color: var(--tf-brass); line-height: 1; letter-spacing: 0.02em; }
+.tf-clock-side { margin-left: 8px; padding-left: 12px; border-left: 1px solid #6b5338; display: grid; gap: 3px; }
+.tf-clock-side b { font-size: var(--tf-small); color: var(--tf-ivory); }
+.tf-clock-bar { position: absolute; left: 18px; right: 18px; bottom: 8px; height: 5px; border-radius: 3px; background: #5a4630; overflow: hidden; }
+.tf-clock-bar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #f0a64a, #ffe2a6); transition: width 0.5s linear; }
+.tonari-floor[data-late="true"] .tf-clock b { color: #ff9a8a; }
+.tonari-floor[data-late="true"] .tf-clock-bar i { background: #e2503c; }
 .tf-top > :nth-child(3) { justify-self: end; }
 .tf-sales { display: flex; align-items: baseline; gap: 12px; padding: 12px 22px; margin-right: 90px; white-space: nowrap; }
 .tf-sales small { font-size: var(--tf-small); color: var(--tf-dim); }
@@ -321,55 +343,56 @@ button.tf-shelf-item { border: 2px solid #fff1af; background: #7a4a16; color: #f
 .tf-layer { position: absolute; inset: 0; display: none; z-index: 8; }
 .tf-layer[data-on="true"] { display: grid; background: #140c08a6; }
 .tf-sheet { align-self: end; justify-self: center; width: min(1120px, 92%); margin-bottom: 14px; animation: tf-rise 0.22s var(--ease-out, ease); }
-.tf-sheet-paper, .tf-slip {
-  position: relative; color: var(--tf-ink);
-  border: 18px solid transparent; border-image: url("../img/ui/craft-paper/board.webp") 40 fill / 18px / 0 stretch;
-  filter: drop-shadow(0 12px 26px #000a);
+.tf-sheet-paper, .tf-slip, .tf-intro-card {
+  position: relative; color: var(--tf-ivory);
+  background: linear-gradient(#0e0913, #0e0913) center / calc(100% - 8px) calc(100% - 8px) no-repeat;
+  border: 0 solid transparent; border-image: var(--art-panel) 110 fill / 26px / 0 stretch; box-shadow: 0 16px 40px #000b;
 }
-.tf-sheet-paper { padding: 6px 14px 4px; display: grid; gap: 10px; }
+.tf-sheet-paper { padding: 22px 30px 16px; display: grid; gap: 12px; }
 .tf-sheet-kind {
-  position: absolute; right: 8px; top: -2px; padding: 3px 16px; border-radius: 4px; background: #5b3d25; color: #fff1c4;
-  font-size: var(--tf-small); font-weight: 700; letter-spacing: 0.1em; rotate: 2deg;
+  position: absolute; right: 26px; top: -6px; padding: 4px 18px; border-radius: 4px; color: #2a1a08;
+  background: linear-gradient(180deg, #ffe7a8, #f0b64e); box-shadow: 0 3px 8px #0009;
+  font-size: var(--tf-small); font-weight: 700; letter-spacing: 0.1em;
 }
 .tf-sheet-head { display: flex; align-items: center; gap: 14px; }
-.tf-sheet-no { font-size: var(--tf-big); font-weight: 700; color: #8a5a1c; white-space: nowrap; }
+.tf-sheet-no { font-size: var(--tf-big); font-weight: 700; color: var(--tf-brass); white-space: nowrap; }
 .tf-sheet-head .tf-guest-art { position: relative; inset: auto; width: 70px; height: 70px; border-radius: 50%; overflow: hidden; flex: 0 0 auto;
-  background: radial-gradient(circle at 50% 35%, #fff7e6, #ecd9b6 70%, #cfb48a); box-shadow: 0 0 0 2px #5b3d25; }
-.tf-sheet-head h2 { font-size: var(--tf-big); line-height: 1.15; }
-.tf-sheet-head small { font-size: var(--tf-small); color: var(--tf-ink-dim); }
-.tf-sheet-quote { font-size: var(--tf-big); line-height: 1.35; font-weight: 700; padding: 4px 6px; }
-.tf-sheet-quote[data-sight="true"] { font-weight: 500; color: #5a4332; }
-.tf-sheet-said { font-size: var(--tf-small); color: var(--tf-ink-dim); padding-inline: 6px; }
+  background: radial-gradient(circle at 50% 35%, #fff7e6, #ecd9b6 70%, #cfb48a); box-shadow: 0 0 0 2px #e7c27a; }
+.tf-sheet-head h2 { font-size: var(--tf-big); line-height: 1.15; color: #fff1c4; }
+.tf-sheet-head small { font-size: var(--tf-small); color: var(--tf-dim); }
+.tf-sheet-quote { font-size: var(--tf-big); line-height: 1.35; font-weight: 700; padding: 4px 6px; color: #fffaf0; }
+.tf-sheet-quote[data-sight="true"] { font-weight: 500; color: #e9dcc4; }
+.tf-sheet-said { font-size: var(--tf-small); color: var(--tf-dim); padding-inline: 6px; }
 .tf-options { display: grid; gap: 10px; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); }
 .tf-options[data-count="1"] { --cols: 1; justify-items: center; }
 .tf-options[data-count="2"] { --cols: 2; }
 .tf-options[data-count="4"] { --cols: 2; }
 .tf-options[data-count="5"] { --cols: 5; }
+/* 選ぶ札: 暗いガラスに金の文字。決定は金の札 */
 .tf-option {
-  min-height: 92px; padding: 2px 10px; display: flex; align-items: center; justify-content: center; gap: 10px; text-align: left;
-  border: 14px solid transparent; border-image: url("../img/ui/craft-paper/button-paper.webp") 44 fill / 14px / 0 stretch;
-  color: var(--tf-ink); transition: filter 0.15s ease, scale 0.15s ease;
+  min-height: 96px; padding: 2px 10px; display: flex; align-items: center; justify-content: center; gap: 10px; text-align: left;
+  border: 12px solid transparent; border-image: url("../img/ui/craft-night/button-glass.webp") 28 fill / 12px / 0 stretch;
+  background: none; color: #fff1c4; transition: filter 0.15s ease, scale 0.15s ease;
 }
 .tf-option b { display: block; font-size: var(--tf-text); line-height: 1.2; }
-.tf-option small { display: block; font-size: var(--tf-small); color: var(--tf-ink-dim); line-height: 1.2; margin-top: 3px; }
-.tf-option .tf-icon { width: 40px; height: 40px; color: #8a5a1c; }
-.tf-option:is(:hover, :focus-visible) { filter: brightness(1.04) drop-shadow(0 0 8px #ffd98a); scale: 1.02; }
+.tf-option small { display: block; font-size: var(--tf-small); color: var(--tf-dim); line-height: 1.2; margin-top: 3px; }
+.tf-option .tf-icon { width: 40px; height: 40px; color: var(--tf-brass); }
+.tf-option:is(:hover, :focus-visible) { filter: brightness(1.35) drop-shadow(0 0 8px #ffd98a88); scale: 1.02; }
 .tf-option:active { scale: 0.97; }
-.tf-option[data-primary="true"] { border-image-source: url("../img/ui/craft-paper/button-amber.webp"); border-image-slice: 40 fill; color: #3b2208; min-width: 320px; justify-content: center; text-align: center; }
+.tf-option[data-primary="true"] {
+  border-width: 14px; border-image: url("../img/ui/craft-night/button-gold.webp") 36 fill / 14px / 0 stretch;
+  color: #2a1a08; min-width: 320px; justify-content: center; text-align: center;
+}
 .tf-option[data-primary="true"] small { color: #5a3a14; }
+.tf-option[data-primary="true"]:is(:hover, :focus-visible) { filter: brightness(1.08) drop-shadow(0 0 10px #ffd98a); }
 .tf-options[data-count="5"] .tf-option { flex-direction: column; text-align: center; gap: 4px; padding-inline: 2px; }
 .tf-sheet-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.tf-sheet-foot small, .tf-intro-note { font-size: var(--tf-small); color: var(--tf-ink-dim); }
-.tf-link { border: none; background: none; padding: 8px 18px; min-height: 48px; font-size: var(--tf-text); font-weight: 700; color: #8a5a1c !important; text-decoration: underline; }
+.tf-sheet-foot small, .tf-intro-note { font-size: var(--tf-small); color: #b8a58a; }
+.tf-link { border: none; background: none; padding: 8px 18px; min-height: 48px; font-size: var(--tf-text); font-weight: 700; color: var(--tf-brass) !important; text-decoration: underline; }
 @keyframes tf-rise { from { opacity: 0; translate: 0 30px; } }
 
 .tf-intro, .tf-pause, .tf-result { align-self: center; justify-self: center; animation: tf-rise 0.25s var(--ease-out, ease); }
-.tf-intro-card {
-  width: min(900px, 90vw); display: grid; gap: 14px; padding: 26px 34px 24px; text-align: center; color: var(--tf-ivory);
-  background: linear-gradient(#0e0913, #0e0913) center / calc(100% - 8px) calc(100% - 8px) no-repeat;
-  border: 0 solid transparent; border-image: var(--art-panel) 110 fill / 26px / 0 stretch; box-shadow: 0 16px 40px #000b;
-}
-.tf-intro-card .tf-intro-note { color: #b8a58a; }
+.tf-intro-card { width: min(900px, 90vw); display: grid; gap: 14px; padding: 26px 34px 24px; text-align: center; }
 .tf-eyebrow { font-size: var(--tf-small); letter-spacing: 0.14em; color: var(--tf-brass); }
 .tf-intro-card h2 { font-size: 46px; line-height: 1.15; color: #fff1c4; letter-spacing: 0.06em; }
 .tf-intro-card > p { font-size: var(--tf-text); }
@@ -382,34 +405,34 @@ button.tf-shelf-item { border: 2px solid #fff1af; background: #7a4a16; color: #f
 .tf-intro-card .tf-option { min-height: 84px; }
 .tf-pause .tf-intro-card { width: min(760px, 90vw); }
 
-.tf-slip { width: min(880px, 92vw); padding: 10px 22px 8px; display: grid; gap: 9px; }
-.tf-slip .tf-eyebrow { color: #8a5a1c; }
-.tf-slip-top { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 2px dashed #c9b08a; padding-bottom: 8px; }
-.tf-slip-top h2 { font-size: var(--tf-text); color: var(--tf-ink-dim); font-weight: 500; }
-.tf-slip-top strong { font-size: 50px; line-height: 1.1; }
-.tf-stamp {
-  width: 150px; height: 150px; margin: -18px 6px -12px 0; border-radius: 50%; display: grid; place-items: center; rotate: -10deg;
-  color: #c2412c; border: 5px double #c2412c; animation: tf-stamp 0.5s 0.35s var(--ease-snap, ease) backwards;
-}
-.tf-stamp b { font-size: 36px; line-height: 1.05; letter-spacing: 0.04em; text-align: center; max-width: 4.2em; }
-.tf-stamp[data-rank="S"] { color: #b3261e; border-color: #b3261e; box-shadow: inset 0 0 0 4px #b3261e22; }
-.tf-stamp[data-rank="B"] { color: #7a6a3a; border-color: #7a6a3a; }
-.tf-stamp[data-rank="C"] { color: #6a6f7a; border-color: #6a6f7a; }
-@keyframes tf-stamp { from { opacity: 0; scale: 2.2; rotate: 8deg; } }
+/* 本日の営業結果: 売上を大きく、評価はメダルで */
+.tf-slip { width: min(900px, 92vw); padding: 24px 34px 20px; display: grid; gap: 10px; }
+.tf-slip-top { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid #6b5338; padding-bottom: 10px; }
+.tf-slip-top h2 { font-size: var(--tf-text); color: var(--tf-dim); font-weight: 500; }
+.tf-slip-top strong { font-size: 58px; line-height: 1.1; color: #ffe2a6; text-shadow: 0 0 18px #f0a64a66; }
+.tf-stamp { display: grid; justify-items: center; gap: 2px; min-width: 190px; animation: tf-stamp 0.5s 0.35s var(--ease-snap, ease) backwards; }
+.tf-stamp i { display: block; width: 116px; height: 98px; background: url("../img/ui/craft-night/medal-plain.webp") center / contain no-repeat; filter: drop-shadow(0 4px 8px #000a); }
+.tf-stamp[data-rank="S"] i { background-image: url("../img/ui/craft-night/medal-gold.webp"); filter: drop-shadow(0 0 14px #ffd98a) drop-shadow(0 4px 8px #000a); }
+.tf-stamp[data-rank="A"] i { background-image: url("../img/ui/craft-night/medal-silver.webp"); }
+.tf-stamp[data-rank="B"] i { background-image: url("../img/ui/craft-night/medal-bronze.webp"); }
+.tf-stamp b { font-size: 34px; line-height: 1.1; letter-spacing: 0.08em; color: #fff1c4; white-space: nowrap; }
+.tf-stamp[data-rank="S"] b { color: #ffe2a6; text-shadow: 0 0 14px #f0a64a; }
+.tf-stamp[data-rank="C"] b { color: var(--tf-dim); }
+@keyframes tf-stamp { from { opacity: 0; scale: 2.2; } }
 .tf-slip-rows { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 28px; }
-.tf-slip-rows li { display: flex; align-items: center; gap: 8px; font-size: var(--tf-small); border-bottom: 1px dotted #d6c4a4; padding-block: 2px; }
+.tf-slip-rows li { display: flex; align-items: center; gap: 8px; font-size: var(--tf-small); border-bottom: 1px dotted #5a4630; padding-block: 2px; }
 .tf-slip-rows li > span:first-child { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tf-slip-rows small { font-size: var(--tf-small); color: var(--tf-ink-dim); }
-.tf-slip-rows li[data-lost="true"] { color: var(--tf-ink-dim); }
+.tf-slip-rows small { font-size: var(--tf-small); color: var(--tf-dim); }
+.tf-slip-rows li[data-lost="true"] { color: #a8947c; }
 .tf-stars { display: inline-flex; gap: 1px; }
 .tf-stars .tf-icon { width: 24px; height: 24px; }
-.tf-stars .on { color: #e0a020; }
-.tf-stars .off { color: #d9cbb2; }
-.tf-slip-counts { font-size: var(--tf-small); color: var(--tf-ink-dim); }
+.tf-stars .on { color: #ffcf5a; }
+.tf-stars .off { color: #4a3b2c; }
+.tf-slip-counts { font-size: var(--tf-small); color: var(--tf-dim); }
 .tf-slip-sumi { display: flex; align-items: center; gap: 12px; font-size: var(--tf-text); line-height: 1.3; text-align: left; }
-.tf-slip-sumi img { width: 58px; height: 58px; border-radius: 50%; flex: 0 0 auto; box-shadow: 0 0 0 2px #8a5a1c; object-fit: cover; }
-.tf-slip-bonus { font-size: var(--tf-big); font-weight: 700; color: #1f6a3c; text-align: center; }
-.tf-slip-bonus[data-none="true"] { color: var(--tf-ink-dim); font-weight: 500; font-size: var(--tf-text); }
+.tf-slip-sumi img { width: 58px; height: 58px; border-radius: 50%; flex: 0 0 auto; box-shadow: 0 0 0 2px #e7c27a; object-fit: cover; }
+.tf-slip-bonus { font-size: var(--tf-big); font-weight: 700; color: #9be8b4; text-align: center; }
+.tf-slip-bonus[data-none="true"] { color: var(--tf-dim); font-weight: 500; font-size: var(--tf-text); }
 .tf-slip .tf-intro-note { text-align: center; }
 
 @media (prefers-reduced-motion: reduce) {

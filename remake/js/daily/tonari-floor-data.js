@@ -95,7 +95,7 @@ export const GUESTS = Object.freeze(Object.fromEntries([
 export const VERBS = Object.freeze([
   Object.freeze({ id: "add", label: "炭を替える", note: "熱を足す" }),
   Object.freeze({ id: "ease", label: "炭を下ろす", note: "熱を逃がす" }),
-  Object.freeze({ id: "drink", label: "飲み物をうかがう", note: "グラスを見る" }),
+  Object.freeze({ id: "drink", label: "飲み物を聞く", note: "グラスを見る" }),
   Object.freeze({ id: "talk", label: "ひと声かける", note: "話を聞く" }),
   Object.freeze({ id: "leave", label: "そっとしておく", note: "声はかけない" }),
 ]);
