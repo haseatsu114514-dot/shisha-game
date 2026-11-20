@@ -124,9 +124,14 @@ async function openConversationNext(page) {
 
 // くじの黒板（ガラガラの横の看板）: #3726 A-2 の巡回で「ラストワン賞あり」が実寸 7.3px だった。
 // 開発用のプレビュー（景品は渡さない）で抽選器の舞台を出す。動きを減らす設定で、カメラの寄り・フェードを止めて測る
+// 動きを減らす設定の舞台は 0.9 秒で札へ移り、黒板ごと消える（motions/garagara.js の sleep(900)）。
+// 遅い CI では測る前に消えて「文字を測る部品が見えていない」になるため、ページの時計を止めて黒板を出したままにする。
+// 時計を止めても黒板は描かれる（舞台は時刻を待たずに組み立てる）。止めたまま検査を終える（くじは最後に開く）
 async function openKuji(page, spec) {
+  await page.evaluate(async () => (await import("./js/core/ui.js")).clearScreen());
+  await page.clock.install();
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 10));
   await page.evaluate(async spec => {
-    (await import("./js/core/ui.js")).clearScreen();
     window.PD = (await import("./js/daily/kuji.js")).previewReveal(spec);
   }, spec);
   await page.locator(".mo-garagara .kj-sign-text").waitFor();

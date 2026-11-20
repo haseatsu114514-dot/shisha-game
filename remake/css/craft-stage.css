@@ -222,11 +222,15 @@ html body.craft-stage:not(.game-ds) .bench[data-mode]:is([data-step="heat"], [da
 html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="steam"] .bench-right .thermo .pull-read { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-worker[data-scene="focus"] .bench-worker-stage { --hero-s: 1.08; --hero-x: -46px; }
 
-/* ---------- 熱の柱の札: 舞台へはみ出さないよう、柱の右端にそろえて左へ伸ばす ---------- */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
-  left: auto !important; right: -6px !important; transform: none !important; min-width: 96px !important; font-size: 20px;
+/* ---------- 熱の柱の札: 温度計の中心にそろえる（#3815 オーナー「温度計に対して中央揃えに」）。
+   右端そろえは札の幅だけ左へずれて見えた。「温度帯」の札は柱の幅（80px）ちょうどに置き、柱の外へはみ出さない。
+   吸い出しの状態の札（ぬるい・適温…）は言葉の長さで幅が変わるので、柱の中心から左右へ同じだけ伸ばす ---------- */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before {
+  left: 0 !important; right: 0 !important; transform: none !important; box-sizing: border-box; min-width: 0 !important; padding: 0 !important; font-size: 20px;
 }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before { right: 0 !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
+  left: 50% !important; right: auto !important; transform: translateX(-50%) !important; min-width: 80px !important; padding: 0 12px !important; font-size: 20px;
+}
 
 /* ---------- 上のレール（大会）: ライバルは顔と灯だけ ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rival-windows .rival-name { display: none; }
@@ -451,8 +455,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .ther
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-pointer { left: 55px !important; }
 /* 加熱前の針先は管の右縁のまま、矢羽を幅80の枠内に収める。 */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature .thermo-pointer { width: 25px; }
-/* 札は帽子の上（y89〜131）。柱の箱の右端にそろえ、舞台へはみ出さない */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read { top: -6px !important; right: 0 !important; }
+/* 札は帽子の上（y89〜131）。横は柱の中心（上の「熱の柱の札」） */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read { top: -6px !important; }
 /* ---------- 小さな札（銅の縁のガラスの札）: 柱の上の状態の札・「温度帯」の札・針の現在位置。両端の丸を残して横に伸ばす ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
   border: 0 solid transparent !important; border-radius: 21px !important; background: none !important; box-shadow: none !important;
@@ -502,9 +506,10 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .b
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .bench-phase.seen:not(.now) { filter: brightness(1.18) saturate(1.1); }
 html body.craft-stage:not(.game-ds) .bench[data-mode][data-mode="tournament"] .bench-progress-track > .bench-phase.now { padding-right: 14px !important; }
-/* ---------- 見守る人の一言の板（紫の革に縫い目・左のガラスの座に顔） ---------- */
+/* ---------- 見守る人の一言の板（紫の革に縫い目・左のガラスの座に顔） ----------
+   顔（56px）の中心を、絵のガラスの座の中心（板の左から約58px）にそろえる（#3815）。文字の頭の位置は変えない（29.9＋56＋5.7＝91.6）。 */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-left .bench-audience {
-  padding: 8px 14px 8px 20.6px !important; gap: 15px; border: 0 solid transparent !important; border-radius: 0 !important; background: none !important; box-shadow: none !important;
+  padding: 8px 14px 8px 29.9px !important; gap: 5.7px; border: 0 solid transparent !important; border-radius: 0 !important; background: none !important; box-shadow: none !important;
   border-image: url("../img/ui/craft-glass/voice-plate.webp") 118 59 119 220 fill / 48.8px 24.3px 49.2px 90.8px / .4px 1.6px 1.6px 1.4px stretch !important; filter: drop-shadow(0 8px 14px #0009);
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-people, html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-person, html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-face { width: 56px !important; height: 56px !important; }
