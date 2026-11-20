@@ -2351,7 +2351,14 @@
   background: linear-gradient(180deg, #f3d48d, #d9a94f);
   border-color: #fbe6b4;
 }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu :is(.axe-bar-division-label, .axe-bar-career) { color: var(--neo-ui-lav); }
+/* 閉じた段（#3779）: 押せる札より暗い面・点線の縁・淡い文字。開き方の2行目まで読める明るさは残す。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu .axe-bar-divisions .axe-bar-tier:disabled {
+  color: var(--neo-ui-dim);
+  background: rgba(20, 12, 32, .55);
+  border-style: dashed;
+  border-color: rgba(201, 167, 230, .38);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu :is(.axe-bar-division-label, .axe-bar-career, .axe-bar-tier-line) { color: var(--neo-ui-lav); }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu .axe-bar-division-note { color: var(--neo-ui-dim); }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu .axe-bar-records { border-top-color: rgba(201, 167, 230, .24); }
 

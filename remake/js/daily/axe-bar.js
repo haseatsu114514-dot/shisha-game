@@ -14,13 +14,15 @@ import { DIVISIONS } from "../minigames/axe-model.js";
 import { axeBarDiscovered, axeBarSightingDue } from "../core/axe-bar-discovery.js";
 import { playAxeBarSighting } from "./axe-bar-discovery.js";
 import { playBgm, currentBgm } from "../core/audio.js";
+import { TIERS, TIER_LABEL, TIER_GAMES, tierOpen, tierCleared, defaultTier, rememberTier, recordTierClear, tierLine, tierUnlockNote, syncPlayTiers } from "../core/play-tiers.js";
+import { AXE_TIER_DIVISION, axeTierClear, axeTierLock } from "./axe-bar-tiers.js";
 import { gearOffer } from "../core/hobby-gear.js";
 import { arrivalsOff, arrivalGreeted, markArrival, leaveArrivalNote, readyArrivals, playArrival, playVenueTurn } from "./venue-arrivals.js";
 
 import { HOUSE_AXE, PERSONAL_AXES, bestOwnedAxe, ownsAxe, axeEffect } from "../minigames/axe-equipment.js";
 
 const modes = { practice: "3投練習", league: "10投ゲーム（WATL式）" };
-let active = false, division = "am";
+let active = false;
 /** 通算の成績。投数・得点・ブル・キル・落下だけを足す（ランクの判定は best を読む growth.js と無関係）。 */
 function addCareer(records, result) {
   const c = records.career ||= { games: 0, throws: 0, points: 0, bulls: 0, kills: 0, calls: 0, drops: 0 };
@@ -83,6 +85,9 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       await playArrival("axe_bar", { read, save: owner, ctx: { idle: !available() } });
       if (!current()) return false;
     }
+    // 段を知らない旧保存の実績を取り込んでから札を作る（core/play-tiers.js。何も無ければ書かない）
+    syncPlayTiers(owner);
+    let tier = defaultTier(owner, "axe");
     const mode = await new Promise(resolve => {
       host.hidden = false;
       let lessonOpen = false, gearOpen = false, picked = false;
@@ -111,13 +116,23 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
           if (current() && host.isConnected) { host.hidden = false; host.inert = false; lesson.focus(); }
         }
       } });
-      const divisionNote = el("span.axe-bar-division-note", { text: DIVISIONS[division].note, dataset: { test: "axe-bar-division-note" } });
-      const divisionButtons = Object.entries(DIVISIONS).map(([id, d]) => el("button.btn.ghost.small", {
-        type: "button", text: d.name, title: d.note, "aria-pressed": String(id === division), dataset: { test: "axe-bar-division-" + id }, onclick: () => {
-          if (picked) return; division = id;
-          for (const button of divisionButtons) button.setAttribute("aria-pressed", String(button.dataset.test === "axe-bar-division-" + id));
-          divisionNote.textContent = d.note;
-        } }));
+      // #3779 10投の難しさ: 段は部門そのもの（初級 レク・中級 アマ・上級 プロ。axe-bar-tiers.js）。閉じた段は押せず、開き方を札に出す。
+      // 既定は前に選んだ段（無ければ開いている中でいちばん上）。選び直しは覚えるだけで、保存は来店の確定（calendar）に任せる。
+      const divisionNote = el("span.axe-bar-division-note", { dataset: { test: "axe-bar-division-note" } });
+      const showTier = () => {
+        for (const button of tierButtons) button.setAttribute("aria-pressed", String(button.dataset.tier === tier));
+        divisionNote.textContent = DIVISIONS[AXE_TIER_DIVISION[tier]].note;
+      };
+      const tierButtons = TIERS.map(id => {
+        const open = tierOpen(owner, "axe", id), d = DIVISIONS[AXE_TIER_DIVISION[id]], lock = open ? "" : axeTierLock(id);
+        return el("button.btn.ghost.small.axe-bar-tier", { type: "button", disabled: !open, title: lock || d.note,
+          dataset: { test: "axe-bar-tier-" + id, tier: id, division: AXE_TIER_DIVISION[id], cleared: String(tierCleared(owner, "axe", id)) }, onclick: () => {
+            if (picked || lessonOpen || gearOpen || !tierOpen(owner, "axe", id)) return;
+            tier = id; rememberTier(owner, "axe", id); showTier();
+          } }, [el("span.axe-bar-tier-name", [el("b", { text: TIER_LABEL[id] }), " ", el("span", { text: d.name })]),
+          lock ? el("small.axe-bar-tier-lock", { text: lock, dataset: { test: "axe-bar-tier-lock-" + id } }) : null]);
+      });
+      showTier();
       // Equipment has its own bounded view: keep the main venue's playable controls on screen.
       // Every tier is optional; purchases never exchange or refund existing ownership.
       const gear = el("section.axe-bar-gear", { "aria-label": "マイ斧の購入と選択", dataset: { test: "axe-bar-gear" } });
@@ -164,7 +179,8 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       const playButtons = Object.entries(modes).map(([id, label]) => el("button.big-choice", {
         disabled: !available(), dataset: { test: "axe-bar-" + id }, onclick: () => { if (available()) pick(id); },
       }, [el("b", { text: label }), el("small", { text: records[id] ? `自己ベスト ${records[id].best.total}点 · ${records[id].plays}回プレイ` : "まだ記録はありません" })]));
-      const divisions = el("div.axe-bar-divisions", { role: "group", "aria-label": "10投ゲームの部門（閉じ方）" }, [el("span.axe-bar-division-label", { text: "10投の部門" }), ...divisionButtons, divisionNote]);
+      const divisions = el("div.axe-bar-divisions", { role: "group", "aria-label": "10投ゲームの難しさ（部門の閉じ方）" }, [el("span.axe-bar-division-label", { text: "10投の難しさ" }), ...tierButtons, divisionNote,
+        el("span.axe-bar-tier-line", { text: `${tierLine(owner, "axe")} · クリア：${TIER_GAMES.axe.clear}`, dataset: { test: "axe-bar-tier-line" } })]);
       host.append(el("h2.sub-title", { text: AXE_BAR.label }),
         venueHost("maki", DB.dialogues[welcome]?.lines?.[0]?.text || "", DB), el("p.sub-lead", { text: status }),
         el("div.axe-bar-tools", [lesson, gearButton]),
@@ -186,7 +202,9 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       owner.flags._axe_lesson_done = true;
       if (!available()) return false;
     }
-    const result = await runAxeThrow({ host: document.getElementById("stage"), mode, opponent: null, allowRetry: false, signal: abort.signal, division: mode === "league" ? division : "rec",
+    // 3投練習は段の外（レクの決まり）。10投は選んだ段の部門。メニューの後に段が閉じることは無いが、念のため開いている段に戻す
+    if (!tierOpen(owner, "axe", tier)) tier = defaultTier(owner, "axe");
+    const result = await runAxeThrow({ host: document.getElementById("stage"), mode, opponent: null, allowRetry: false, signal: abort.signal, division: mode === "league" ? AXE_TIER_DIVISION[tier] : "rec",
       gearId: ownsAxe(owner, gearId) ? gearId : "house" });
     if (!result.completed || !available()) return false;
     syncPlayMastery(owner);
@@ -199,6 +217,9 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     records[mode] = { plays: (previous?.plays || 0) + 1, last: entry,
       best: newBest ? entry : previous.best };
     recordPlayMastery(owner, "axe", result, `${owner.cycle || 1}:${chapter}:${day}:${mode}:${records[mode].plays}`);
+    // #3779 段のクリア: その部門の10投で B 以上だけ。初めての段なら一言（上級なら growth.js が白火を精算して知らせる）
+    const clearedTier = axeTierClear(result);
+    const unlock = tierUnlockNote("axe", clearedTier ? recordTierClear(owner, "axe", clearedTier) : []);
     addMoney(-AXE_BAR.playCost); addStamina(AXE_BAR.stamina); earnStat("guts", 1);
     const outcome = result.total === 0 ? "miss" : previous && newBest ? "record" : "finish";
     const goals = (result.challenges || []).filter(goal => goal.state === "done").length;
@@ -207,6 +228,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     const closing = { miss: "axe_finish_miss", record: "axe_finish_record" }[outcome];
     if (!arrivalsOff() && DB.dialogues.axe_finish_a?.lines?.length) {
       if (summary) toast(summary, { kind: "good" });
+      if (unlock) toast(unlock, { kind: "good" });
       // 次の来店で、マキがこの日の結果に触れる（自己ベスト・一本も刺さらなかった日だけ）
       leaveArrivalNote("axe_bar", outcome === "finish" ? null : outcome, owner);
       if (closing && DB.dialogues[closing]?.lines?.length) await read(closing);
@@ -214,6 +236,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       return state === owner;
     }
     toast(`斧崎マキ「${DB.dialogues[`venue_maki_${outcome}`]?.lines?.[0]?.text || ""}」` + (summary ? ` ${summary}` : ""), { kind: "good" });
+    if (unlock) toast(unlock, { kind: "good" });
     return true;
   } finally {
     observer.disconnect(); unsubscribe(); window.removeEventListener("pagehide", cancel);
