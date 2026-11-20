@@ -33,12 +33,12 @@ const T = Object.freeze({
 /** 炭の残りがこの割合を切ったら、調整どき（自分から行ける）。 */
 const TEND_FROM = 0.35;
 // decay＝くつろいでいる間に炭が進んで少しずつ下がる分（持続性の高いミックスほどゆるやか）。feverAfter＝フィーバーが明けた後に残る上乗せ
-const MOOD = Object.freeze({ start: 40, care: 5, careMiss: -8, careLate: -10, tend: 6, tendMiss: -4, billDecay: 0.4,
+const MOOD = Object.freeze({ start: 40, care: 5, careMiss: -8, careLate: -10, tend: 6, tendMiss: -7, billDecay: 0.4,
   decay: 0.07, decayPerLast: 0.2, feverAfter: 10 });
 // 気分との合い方ごとの、提供した時の満足。こだわりの客は、◎でないと少し辛い
-const RATE_MOOD = Object.freeze({ best: 90, good: 72, weak: 52, none: 30 });
-const KEEN_CUT = Object.freeze({ best: 0, good: 6, weak: 6, none: 4 });
-const RATE_GRADE = Object.freeze({ best: "best", good: "good", weak: "ok", none: "off" });
+const RATE_MOOD = Object.freeze({ best: 90, good: 72, none: 30 });
+const KEEN_CUT = Object.freeze({ best: 0, good: 6, none: 4 });
+const RATE_GRADE = Object.freeze({ best: "best", good: "good", none: "off" });
 const FEVER = Object.freeze({ level: 100, max: 300, care: 10, tend: 8, best: 14, good: 7, send: 4, targets: Object.freeze([0, 2, 4, FLOOR_TABLE_COUNT]) });
 const FANS = Object.freeze({ max: 3, good: 2, ok: 1, low: 0, mad: -2, left: -3 });
 const DRINK_CHANCE = Object.freeze({ max: 0.7, good: 0.4, ok: 0.1, low: 0, mad: 0 });
@@ -61,23 +61,22 @@ function roll(s) {
 }
 
 // ---- ミックス ----
+/** ミックスの名前を、折ってよい切れ目で分けたもの（決まった名前は「｜」で分ける。無ければ材料ごと）。 */
+export const mixNameParts = (id) => (MIXES[id]?.name ? MIXES[id].name.split("｜") : (MIXES[id]?.flavors || []).map((f) => FLAVORS[f].label));
 /** ミックスの名前（材料の名前をつなげる。決まった名前があればそれ）。 */
-export const mixName = (id) => MIXES[id]?.name || (MIXES[id]?.flavors || []).map((f) => FLAVORS[f].label).join("");
-/** 系統への寄り（0〜1）から、合い方の段（◎ best / ○ good / △ weak / × none）。 */
-export const aptitude = (weight) => (weight >= 0.75 ? "best" : weight >= 0.5 ? "good" : weight >= 0.25 ? "weak" : "none");
-/** ミックスと、4つの気分との合い方。材料の系統（also は半分）の平均で決まる。 */
+export const mixName = (id) => mixNameParts(id).join("");
+/** ミックスと、4つの気分との合い方。メインの属性＝◎（best）、サブの属性＝○（good）、ほか＝×（none）。 */
 export function mixRatings(id) {
-  const list = (MIXES[id]?.flavors || []).map((f) => FLAVORS[f]);
-  if (!list.length) return null;
-  return Object.fromEntries(WISHES.map((w) =>
-    [w.id, aptitude(list.reduce((sum, f) => sum + (f.family === w.id ? 1 : f.also.includes(w.id) ? 0.5 : 0), 0) / list.length)]));
+  const mix = MIXES[id];
+  if (!mix) return null;
+  return Object.fromEntries(WISHES.map((w) => [w.id, w.id === mix.main ? "best" : w.id === mix.sub ? "good" : "none"]));
 }
 const mixLast = (id) => { const list = MIXES[id].flavors.map((f) => FLAVORS[f]); return list.reduce((sum, f) => sum + f.traits[3], 0) / list.length; };
 const mixTime = (id) => T.make[MIXES[id].flavors.length];
 
 /**
- * 一台を、客の気分に当てた時の評価。mood＝提供した時の満足（0〜100）、rating＝合い方（best ◎ / good ○ / weak △ / none ×）、
- * grade＝手応え（best / good / ok / off）。
+ * 一台を、客の気分に当てた時の評価。mood＝提供した時の満足（0〜100）、rating＝合い方（best ◎ / good ○ / none ×）、
+ * grade＝手応え（best / good / off）。
  */
 export function evaluateMix(id, order, rank = "plain") {
   const ratings = mixRatings(id);
@@ -150,7 +149,7 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = fal
     hand: deck.slice(0, HAND_SIZE), deck: deck.slice(HAND_SIZE), shuffleAt: 0, shuffles: 0,
     fever: 0, feverLeft: 0, feverLevel: 0, fevers: 0,
     sales: 0, fans: 0, results: [], mixes: {},
-    counts: { best: 0, good: 0, ok: 0, off: 0, care: 0, careMiss: 0, late: 0, left: 0, drink: 0, extend: 0, tend: 0, tendLate: 0 },
+    counts: { best: 0, good: 0, off: 0, care: 0, careMiss: 0, late: 0, left: 0, drink: 0, extend: 0, tend: 0, tendLate: 0 },
     log: [],
   };
 }
@@ -545,12 +544,17 @@ export const floorTendDue = (s, tableId) => { const table = tableOf(s, tableId);
 /** 仕込み中の一台（先に受けた順）。active＝いま手が動いている（同時に2台まで）。 */
 export function floorMaking(s) {
   return s.tables.filter((x) => x.phase === "prep").sort((a, b) => a.since - b.since || a.id - b.id)
-    .map((x, i) => ({ tableId: x.id, label: mixName(x.mix), left: x.make.left, total: x.make.total, active: i < T.slots }));
+    .map((x, i) => ({ tableId: x.id, mix: x.mix, label: mixName(x.mix), left: x.make.left, total: x.make.total, active: i < T.slots }));
 }
 
+/** いまの営業の種類（題と予報）。 */
+export function floorPlan(s) {
+  const def = NIGHTS[s.night] || NIGHTS.usual;
+  return { id: def.id, title: byTime(def.title, s.daytime), forecast: byTime(def.forecast, s.daytime) };
+}
 /** 並んでいるミックス（一覧）。wish を渡すと、その気分との合い方 rating も付く。 */
 export function floorHand(s, wish = null) {
-  return s.hand.map((id) => { const ratings = mixRatings(id); return { id, name: mixName(id), flavors: [...MIXES[id].flavors], ratings, rating: wish ? ratings[wish] : null }; });
+  return s.hand.map((id) => { const ratings = mixRatings(id); return { id, name: mixName(id), flavors: [...MIXES[id].flavors], main: MIXES[id].main, sub: MIXES[id].sub, ratings, rating: wish ? ratings[wish] : null }; });
 }
 /** 次にシャッフルできるまでの刻み（0 なら今できる）。 */
 export const floorShuffleLeft = (s) => Math.max(0, s.shuffleAt - s.t);

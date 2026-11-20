@@ -31,6 +31,24 @@ const GAMES = [
     if (signal.aborted) return;
     return runIchidai({ host, signal, opponent: { id: "sumi", name: "スミさん" } });
   } },
+  // tonari フロア営業（バイトのワンオペ営業）。本編の状態には触れず、結果は捨てる。客の並びは開くたびに変わる。
+  // はじめて＝進め方つきのゆっくりした営業／いつもの夜＝本編の人物が一人遊びに来る／満席の日＝いちばん忙しい営業
+  ...[
+    ["floor-first", "フロア営業（はじめて）", { level: 0 }],
+    ["floor", "フロア営業（いつもの夜）", { level: 1, visitor: true }],
+    ["floor-full", "フロア営業（満席の日）", { level: 6, kind: "full" }],
+  ].map(([id, label, opts]) => ({ id, label, start: async (host, signal) => {
+    const [{ runTonariFloor, FLOOR_VISITORS }, { bgUrl }] = await Promise.all([import("../daily/tonari-floor-view.js"), import("../core/data.js")]);
+    if (signal.aborted) return;
+    playBgm("tonari");
+    const seed = Date.now() >>> 0;
+    const visitors = Object.keys(FLOOR_VISITORS);
+    return runTonariFloor({
+      mount: host, signal, seed, level: opts.level, kind: opts.kind || null, chapter: 1, night: true,
+      visitor: opts.visitor ? visitors[seed % visitors.length] : null,
+      art: bgUrl("res://assets/backgrounds/bg_tonari_inside.png", "night"),
+    });
+  } })),
   { id: "tetsuko", label: "てつこといっしょ", start: async (_host, signal) => {
     const value = newState();
     value.chapter = 3; value.phase = "daily"; value.day = 5;

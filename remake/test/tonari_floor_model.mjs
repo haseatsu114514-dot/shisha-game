@@ -3,9 +3,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  createFloorNight, floorTick, floorAct, floorTap, floorResult, floorHint, floorBill, floorMaking, floorHand, floorShuffleLeft,
+  createFloorNight, floorTick, floorAct, floorTap, floorResult, floorHint, floorBill, floorMaking, floorHand, floorShuffleLeft, floorPlan,
   floorWaitLeft, floorStayLeft, floorCoalLeft, floorTendDue, floorFeverLevel, floorFace, floorStage, floorTimeLeft, floorClock,
-  mixName, mixRatings, evaluateMix, pickNight, floorOrderWait, floorFeverLength, floorSlots, FLOOR_TABLE_COUNT,
+  mixName, mixNameParts, mixRatings, evaluateMix, pickNight, floorOrderWait, floorFeverLength, floorSlots, FLOOR_TABLE_COUNT,
 } from "../js/daily/tonari-floor-model.js";
 import {
   PRICE, FLAVORS, MIXES, WISHES, WISH_IDS, HAND_SIZE, GUESTS, VISITORS, CALLS, VERBS, NIGHTS, RANKS, MOODS, SERVE_LINES, SEND_LINES,
@@ -50,13 +50,17 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
     assert.ok(mix.flavors.length >= 1 && mix.flavors.length <= 3 && mix.flavors.every((f) => FLAVORS[f]), id);
     const name = mixName(id);
     assert.ok(name.length >= 2 && name.length <= 8, `名前は札に収まる長さ: ${name}`);
+    assert.ok(mixNameParts(id).every((part) => part.length <= 5) && mixNameParts(id).join("") === name && !name.includes("｜"), `狭い札では、5字までの切れ目で折れる: ${name}`);
     assert.ok(!names.has(name), `同じ名前が二つ無い: ${name}`);
     names.add(name);
-    assert.ok(Object.values(mixRatings(id)).some((r) => r === "best" || r === "good"), `どれかの気分には合う: ${name}`);
+    // 属性は、メイン一つと、あればサブ一つ。どちらも材料の系統（family か also）にある物から選ぶ
+    const has = (wish) => mix.flavors.some((f) => FLAVORS[f].family === wish || FLAVORS[f].also.includes(wish));
+    assert.ok(WISH_IDS.includes(mix.main) && has(mix.main), `${name}: メインの属性が材料にある`);
+    assert.ok(mix.sub === null || (WISH_IDS.includes(mix.sub) && mix.sub !== mix.main && has(mix.sub)), `${name}: サブの属性が材料にある`);
   }
   for (const wish of WISH_IDS) {
-    const best = Object.keys(MIXES).filter((id) => mixRatings(id)[wish] === "best").length;
-    assert.ok(best >= 4, `${wish}: ぴったりの一台が4つ以上ある（${best}）`);
+    const main = Object.values(MIXES).filter((mix) => mix.main === wish).length;
+    assert.ok(main >= 8 && main <= 10, `${wish}: メインのミックスが偏らない（${main}）`);
   }
   for (const f of Object.values(FLAVORS)) assert.equal("cost" in f, false, "原価は扱わない");
   assert.deepEqual(Object.keys(CALLS), ["thin", "harsh", "thirsty", "cough", "chatty"], "炭の調整は、頼みではなく自分から行く");
@@ -66,7 +70,7 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
     assert.ok(night.cast.every((kind) => GUESTS[kind]) && night.arrive.every((t, i) => i === 0 || t >= night.arrive[i - 1]));
   }
   for (const lines of Object.values(SERVE_LINES)) for (const line of lines) assert.ok(!line.endsWith("。"), line);
-  assert.deepEqual(Object.keys(SERVE_LINES), ["best", "good", "ok", "off"]);
+  assert.deepEqual(Object.keys(SERVE_LINES), ["best", "good", "off"]);
   assert.ok(SEND_LINES.extend.every((line) => /おかわり|もう一台/.test(line)), "延長とは言わない（おかわり）");
   assert.deepEqual([PRICE.shisha, PRICE.charge, PRICE.top, PRICE.drink], [2000, 700, 1500, 600]);
   assert.deepEqual(RANKS.map((r) => r.id), ["S", "A", "B", "C"]);
@@ -75,21 +79,28 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
   assert.equal(floorStage(85).id, "max");
 });
 
-test("ミックスと気分の合い方: 材料の系統で ◎○△× が決まり、提供した時の満足になる", () => {
+test("ミックスの属性: メイン＝◎・サブ＝○・ほか＝×。提供した時の満足になる", () => {
   assert.deepEqual(mixRatings("lemonmint"), { fruit: "good", sweet: "none", fresh: "best", deep: "none" });
   assert.deepEqual(mixRatings("apple"), { fruit: "best", sweet: "none", fresh: "none", deep: "good" });
   assert.deepEqual(mixRatings("caramelmilk"), { fruit: "none", sweet: "best", fresh: "none", deep: "none" });
-  assert.equal(mixRatings("milktea").fresh, "weak");
+  assert.deepEqual(mixRatings("milktea"), { fruit: "none", sweet: "good", fresh: "none", deep: "best" });
+  for (const id of Object.keys(MIXES)) {
+    const marks = Object.values(mixRatings(id));
+    assert.deepEqual([marks.filter((r) => r === "best").length, marks.filter((r) => r === "good").length], [1, MIXES[id].sub ? 1 : 0], id);
+  }
+  assert.equal(mixRatings("nothing"), null);
   assert.equal(mixName("lemonmint"), "レモンミント");
   assert.equal(mixName("chocomint"), "チョコミント");
+  assert.deepEqual(mixNameParts("chocomint"), ["チョコ", "ミント"]);
+  assert.deepEqual(mixNameParts("lemonmint"), ["レモン", "ミント"]);
   const order = { wish: "fresh" };
-  const best = evaluateMix("lemonmint", order), good = evaluateMix("grapemint", order), weak = evaluateMix("milktea", order), none = evaluateMix("caramelmilk", order);
-  assert.deepEqual([best.rating, good.rating, weak.rating, none.rating], ["best", "good", "weak", "none"]);
-  assert.deepEqual([best.grade, good.grade, weak.grade, none.grade], ["best", "good", "ok", "off"]);
-  assert.ok(best.mood >= 85 && good.mood >= 65 && good.mood < 85 && weak.mood >= 40 && weak.mood < 65 && none.mood < 40);
+  const best = evaluateMix("lemonmint", order), good = evaluateMix("peachice", order), none = evaluateMix("caramelmilk", order);
+  assert.deepEqual([best.rating, good.rating, none.rating], ["best", "good", "none"]);
+  assert.deepEqual([best.grade, good.grade, none.grade], ["best", "good", "off"]);
+  assert.ok(best.mood >= 85 && good.mood >= 65 && good.mood < 85 && none.mood < 40);
   // こだわりの客は、ぴったりでないと少し辛い（ぴったりなら同じ）
   assert.equal(evaluateMix("lemonmint", order, "keen").mood, best.mood);
-  assert.ok(evaluateMix("grapemint", order, "keen").mood < good.mood);
+  assert.ok(evaluateMix("peachice", order, "keen").mood < good.mood);
 });
 
 test("同じ種なら同じ一晩。操作も経過も元の state を書き換えない。客は気分を言うだけ", () => {
@@ -138,6 +149,9 @@ test("来店と注文待ち: 客は自分で座る。注文を聞かないと、
   assert.equal(gone.results[0].left, true);
   assert.equal(gone.sales, 0);
   assert.ok(floorOrderWait(createFloorNight({ level: 0 })) > floorOrderWait(s), "はじめての営業は、長く待ってくれる");
+  // 営業の種類は、回数と天気で決まる。名指しもできる（デバッグの試遊）
+  assert.deepEqual([floorPlan(createFloorNight({ level: 0 })).id, floorPlan(createFloorNight({ level: 1 })).id, floorPlan(createFloorNight({ level: 1, night: "full" })).id], ["first", "usual", "full"]);
+  assert.equal(floorPlan(createFloorNight({ level: 1, daytime: true })).title, "いつもの昼");
 });
 
 test("注文: 並んでいるミックスから選ぶ。出すと次の一つが入る。仕込みは同時に2台まで", () => {
@@ -148,6 +162,7 @@ test("注文: 並んでいるミックスから選ぶ。出すと次の一つが
   const hand = floorHand(s, wishOf(s, 1).wish);
   assert.deepEqual(hand.map((h) => h.id), s.hand);
   assert.ok(hand.every((h) => h.name === mixName(h.id) && h.rating === h.ratings[wishOf(s, 1).wish]));
+  assert.ok(hand.every((h) => h.main === MIXES[h.id].main && h.sub === MIXES[h.id].sub), "並んでいる札に、メインとサブの属性が付く");
   const outside = s.deck[3];
   assert.equal(floorAct(s, { type: "order", tableId: 1, mix: outside }), s, "並んでいないミックスは出せない");
   const pick = hand[1].id, next = s.deck[0];

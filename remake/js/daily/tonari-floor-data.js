@@ -9,7 +9,7 @@
 export const PRICE = Object.freeze({ shisha: 2000, charge: 700, top: 1500, drink: 600 });
 
 /**
- * 客の気分（どんな一台が吸いたいか）。原作の「見た目のタイプ」にあたり、ミックスごとに ◎○△× の合い方がある。
+ * 客の気分（どんな一台が吸いたいか）＝ミックスの属性。原作の「見た目のタイプ」にあたり、ミックスごとにメイン（◎）とサブ（○）がある。
  * id はフレーバーの系統と同じ。say＝客が吹き出しで言う言葉（台詞なので句点で終えない）。
  */
 export const WISHES = Object.freeze([
@@ -63,18 +63,28 @@ export const FLAVORS = Object.freeze(Object.fromEntries([
 ].map((f) => [f.id, f])));
 
 // ミックスの一覧（店で出せる一台）。営業中は、この中から HAND_SIZE 個が並び、選んで出す。出すと次の一つが補充され、シャッフルで全部を入れ替えられる。
-// 気分との合い方（◎○△×）は、材料の系統から決まる（model の mixRatings）。name を省くと、材料の名前をつなげる。
-const mix = (id, flavors, name = null) => Object.freeze({ id, flavors: Object.freeze(flavors), name });
+// main＝メインの属性（その気分の客に ◎）、sub＝サブの属性（その気分の客に ○。無いミックスもある）。それ以外の気分には ×。
+// ひと目で分かるよう、合い方はこの二つだけで決める（2026-11-20 オーナー「一目で何属性がメインなのかわかりやすくして」）。
+// どちらも、材料の系統（family か also）にある属性から選ぶ。name を省くと材料の名前をつなげる。name の「｜」は、狭い札で折ってよい位置（表示では消える）。
+const mix = (id, flavors, main, sub = null, name = null) => Object.freeze({ id, flavors: Object.freeze(flavors), main, sub, name });
 export const MIXES = Object.freeze(Object.fromEntries([
-  mix("lemonmint", ["lemon", "mint"]), mix("peachvanilla", ["peach", "vanilla"]), mix("apple", ["apple"]), mix("milktea", ["earlgrey", "milk"], "ミルクティー"),
-  mix("grapemint", ["grape", "mint"]), mix("mangomilk", ["mango", "milk"]), mix("berryice", ["berry", "ice"], "ベリーアイス"), mix("orangemint", ["orange", "mint"]),
-  mix("chai", ["chai", "cinnamon"]), mix("lycheerose", ["lychee", "rose"]), mix("pinemint", ["pine", "mint"]), mix("caramelmilk", ["caramel", "milk"]),
-  mix("limemint", ["lime", "mint"]), mix("jasminepeach", ["jasmine", "peach"]), mix("chocomint", ["chocolate", "mint"], "チョコミント"), mix("honeylemon", ["honey", "lemon"]),
-  mix("vanillacookie", ["vanilla", "cookie"]), mix("pistachiomilk", ["pistachio", "milk"]), mix("hinokijasmine", ["hinoki", "jasmine"]), mix("rosejasmine", ["rose", "jasmine"]),
-  mix("cardamomchai", ["cardamom", "chai"]), mix("guava", ["guava"]), mix("eucalyptusmint", ["eucalyptus", "mint"]), mix("lemongrasslime", ["lemongrass", "lime"], "ハーブライム"),
-  mix("icemint", ["ice", "mint"]), mix("grapeberry", ["grape", "berry"], "グレープベリー"), mix("mangoorange", ["mango", "orange"]), mix("cinnamonapple", ["cinnamon", "apple"], "シナモンアップル"),
-  mix("chocovanilla", ["chocolate", "vanilla"], "チョコバニラ"), mix("honeymilk", ["honey", "milk"]), mix("earllemon", ["earlgrey", "lemon"], "レモンティー"), mix("peachice", ["peach", "ice"]),
-  mix("peachmango", ["peach", "mango"]), mix("pineorange", ["pine", "orange"]),
+  // リフレッシュがメイン（〜ミントは、ミントの清涼感が主役）
+  mix("lemonmint", ["lemon", "mint"], "fresh", "fruit"), mix("grapemint", ["grape", "mint"], "fresh", "fruit"), mix("orangemint", ["orange", "mint"], "fresh", "fruit"),
+  mix("pinemint", ["pine", "mint"], "fresh", "fruit"), mix("guava", ["guava"], "fresh", "fruit", "グァバ｜ミント"), mix("chocomint", ["chocolate", "mint"], "fresh", "sweet", "チョコ｜ミント"),
+  mix("limemint", ["lime", "mint"], "fresh"), mix("eucalyptusmint", ["eucalyptus", "mint"], "fresh"), mix("lemongrasslime", ["lemongrass", "lime"], "fresh", null, "ハーブ｜ライム"),
+  mix("icemint", ["ice", "mint"], "fresh"),
+  // フルーティがメイン
+  mix("apple", ["apple"], "fruit", "deep", "ダブル｜アップル"), mix("lycheerose", ["lychee", "rose"], "fruit", "deep"), mix("berryice", ["berry", "ice"], "fruit", "fresh", "ベリー｜アイス"),
+  mix("peachice", ["peach", "ice"], "fruit", "fresh"), mix("grapeberry", ["grape", "berry"], "fruit", null, "グレープ｜ベリー"), mix("mangoorange", ["mango", "orange"], "fruit"),
+  mix("peachmango", ["peach", "mango"], "fruit"), mix("pineorange", ["pine", "orange"], "fruit"),
+  // スイートがメイン（〜ミルク・〜バニラ・ハニー〜は、甘さが主役）
+  mix("peachvanilla", ["peach", "vanilla"], "sweet", "fruit"), mix("mangomilk", ["mango", "milk"], "sweet", "fruit"), mix("honeylemon", ["honey", "lemon"], "sweet", "fruit"),
+  mix("chocovanilla", ["chocolate", "vanilla"], "sweet", "deep", "チョコ｜バニラ"), mix("caramelmilk", ["caramel", "milk"], "sweet"), mix("vanillacookie", ["vanilla", "cookie"], "sweet"),
+  mix("pistachiomilk", ["pistachio", "milk"], "sweet"), mix("honeymilk", ["honey", "milk"], "sweet"),
+  // リラックスがメイン（茶葉・スパイス・花）
+  mix("milktea", ["earlgrey", "milk"], "deep", "sweet", "ミルク｜ティー"), mix("chai", ["chai", "cinnamon"], "deep", "sweet"), mix("cardamomchai", ["cardamom", "chai"], "deep", "sweet"),
+  mix("jasminepeach", ["jasmine", "peach"], "deep", "fruit"), mix("cinnamonapple", ["cinnamon", "apple"], "deep", "fruit", "シナモン｜アップル"),
+  mix("hinokijasmine", ["hinoki", "jasmine"], "deep", "fresh"), mix("rosejasmine", ["rose", "jasmine"], "deep", "fresh"), mix("earllemon", ["earlgrey", "lemon"], "deep", "fresh", "レモン｜ティー"),
 ].map((m) => [m.id, m])));
 /** 一度に並ぶミックスの数。 */
 export const HAND_SIZE = 5;
@@ -145,7 +155,6 @@ export const CALL_MISS = "えっと、そうじゃなくて……";
 export const SERVE_LINES = Object.freeze({
   best: Object.freeze(["うん、これ。こういうのが吸いたかった", "わ、ぴったり。よく分かりましたね", "そうそう、こういうのです"]),
   good: Object.freeze(["うん、いいですね", "あ、こういうのもいいかも", "おいしい。ありがとう"]),
-  ok: Object.freeze(["うん、悪くないね", "思ってたのと少し違うけど、おいしい"]),
   off: Object.freeze(["少し、思っていたのと違うかも……", "あれ、今日の気分とは違うような……"]),
 });
 /** 会計・おかわりの一言。 */

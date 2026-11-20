@@ -4,7 +4,7 @@
 import { createFloorNight, floorTick, floorAct, floorTap, floorResult, floorUrgency, floorFeverLevel, floorHand, floorShuffleLeft } from "../js/daily/tonari-floor-model.js";
 import { CALLS } from "../js/daily/tonari-floor-data.js";
 
-const ORDER = ["best", "good", "weak", "none"];
+const ORDER = ["best", "good", "none"];
 /** 並んでいるミックスから、その気分にいちばん合う一台（worst＝いちばん合わない一台）。 */
 export function bestMix(s, order, { worst = false } = {}) {
   const hand = floorHand(s, order.wish).sort((a, b) => (ORDER.indexOf(a.rating) - ORDER.indexOf(b.rating)) * (worst ? -1 : 1));

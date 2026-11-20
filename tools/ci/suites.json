@@ -11,7 +11,7 @@
   "suites": [
     {
       "id": "tonari-floor",
-      "title": "tonari floor service (one-person): guest wishes, mix list and shuffle, coal tending, care calls, refills, fever, rating and shift boundaries",
+      "title": "tonari floor service (one-person): guest wishes, mix main/sub attributes, mix list and shuffle, coal tending, care calls, refills, fever, rating and shift boundaries",
       "kind": "quick",
       "run": ["node --test remake/test/tonari_floor_model.mjs", "node --experimental-vm-modules remake/test/tonari_floor_shift.mjs"]
     },
@@ -583,6 +583,7 @@
         "remake/js/dev/**",
         "remake/js/main.js",
         "remake/js/craft/session.js",
+        "remake/js/daily/tonari-floor-view.js",
         "remake/test/browser/debug_tools.mjs",
         "remake/test/browser/support.mjs"
       ],
