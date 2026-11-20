@@ -58,11 +58,12 @@
    "time": "",
    "weather": "",
    "size": [
-    1280,
-    720
+    1672,
+    941
    ],
-   "luma": 44,
-   "blob": "876a12e342cdf89a7372b759a3cd5a48e387ed63"
+   "luma": 49,
+   "blob": "6d24f7d20bafe26a78e64de4b0e5031a483c86c5",
+   "accepted": "2026-11-19 オーナー採用（#3807・#3894）。木枠と木の腰壁の狭いレーン。内蔵生成の原寸1672×941。"
   },
   "bg_axe_lane_aim.png": {
    "place": "axe_lane_aim",

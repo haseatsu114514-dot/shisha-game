@@ -55,7 +55,38 @@ export const STAGES = Object.freeze({
 //     例: first: { idle: "../../img/ui/tonari-floor/guest-first.webp" }, "train-a": { idle: "…/guest-train-a.webp" }
 // - props: 卓の上の一台（shisha）など。無ければ置かない。
 // - cutins: 画面を横切る帯の絵（open＝営業開始／fever＝フィーバーの突入／close＝営業終了）。無ければ色の帯だけ。
-export const FLOOR_ART = Object.freeze({ stage: "classic", guests: Object.freeze({}), props: Object.freeze({}), cutins: Object.freeze({}) });
+export const floorArtPath = (name) => `../../img/ui/tonari-floor/${name}.webp`;
+const guestFaces = (id) => Object.freeze({
+  idle: floorArtPath(`guest-${id}`),
+  happy: floorArtPath(`guest-${id}-happy`),
+});
+
+export const FLOOR_ART = Object.freeze({
+  stage: "classic",
+  guests: Object.freeze({
+    first: guestFaces("first"),
+    worker: guestFaces("worker"),
+    "train-a": guestFaces("train-a"),
+    "train-b": guestFaces("train-b"),
+    reader: guestFaces("reader"),
+    "walkers-a": guestFaces("walkers-a"),
+    "walkers-b": guestFaces("walkers-b"),
+    nose: guestFaces("nose"),
+    "students-a": guestFaces("students-a"),
+    "students-b": guestFaces("students-b"),
+    "talkers-a": guestFaces("talkers-a"),
+    "talkers-b": guestFaces("talkers-b"),
+    elder: guestFaces("elder"),
+    "friends-a": guestFaces("friends-a"),
+    "friends-b": guestFaces("friends-b"),
+  }),
+  props: Object.freeze({}),
+  cutins: Object.freeze({
+    open: floorArtPath("cutin-open"),
+    fever: floorArtPath("cutin-fever"),
+    close: floorArtPath("cutin-close"),
+  }),
+});
 
 /** 相対パスの絵を、このファイルから見た URL にする（data: や http(s): はそのまま）。 */
 export const artUrl = (src) => (!src ? null : /^(data:|blob:|https?:|\/)/.test(src) ? src : new URL(src, import.meta.url).href);
