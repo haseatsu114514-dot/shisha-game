@@ -8851,7 +8851,8 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-word > .c::after {
 }
 
 /* ======== 見出しと目標 ======== */
-html:root .trpg-root .trpg-roll-show .trpg-rs-camera { position: relative; width: 1280px; height: 720px; flex: none; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-fit { position: relative; width: 1280px; height: 720px; flex: none; transform-origin: 50% 50%; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-camera { position: relative; width: 1280px; height: 720px; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-head { position: absolute; left: 60px; top: 38px; display: grid; justify-items: start; gap: 4px; opacity: 0; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-kicker {
   display: inline-flex; align-items: center; gap: 12px; font-size: 17px; font-weight: 900; letter-spacing: .5em; color: #ffd76a; transform: skewX(-12deg);
@@ -8910,14 +8911,15 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-state="hover"] .trpg-rs-b
 html:root .trpg-root .trpg-roll-show .trpg-rs-shadow {
   position: absolute; left: 20%; right: 20%; bottom: 2px; height: 36px; border-radius: 50%; background: #000; filter: blur(10px); opacity: .6;
 }
-/* 目: 止まった瞬間に上の面へ叩きつけられる。絵の上の面（三角。300px のダイスで頂点 y76・底辺 y173・底辺の幅 114px）の中に収まる大きさ。
-   2桁は 52px を面の真ん中より少し下、1桁は 72px を底辺寄りに置く（数字の上端でも三角の幅に入る）。 */
+/* 目: 絵の上の面（三角。300px のダイスで頂点 (149,76)・底辺 y173・底辺の幅 114px・重心 y141）に印刷された数字。
+   縁取りや落ち影を付けると「上に乗っている」ように浮くので、面の陰影になじむ墨の色（multiply）に、彫り込みの細い光だけ。
+   2桁は面の重心より少し下（広い所）に 50px、1桁は重心に 66px。字間は 0（詰めると中心がずれる）。 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-num {
-  position: absolute; left: 50%; top: 150px; translate: -50% -50%; opacity: 0; z-index: 2;
-  font-size: 52px; font-weight: 900; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; white-space: nowrap;
-  color: #2a1c06; -webkit-text-stroke: 4px #fff8e2; paint-order: stroke fill; text-shadow: 0 2px 0 #b4893f, 0 3px 6px #0006;
+  position: absolute; left: 50%; top: 147px; translate: -50% -50%; opacity: 0; z-index: 2;
+  font-size: 50px; font-weight: 900; line-height: 1; letter-spacing: 0; font-variant-numeric: tabular-nums; white-space: nowrap;
+  color: #3a2608; mix-blend-mode: multiply; text-shadow: 0 1px 0 #fff3d066;
 }
-html:root .trpg-root .trpg-roll-show .trpg-rs-num[data-digits="1"] { top: 143px; font-size: 72px; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-num[data-digits="1"] { top: 142px; font-size: 66px; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-held="true"] { filter: saturate(.6) brightness(.62); }
 html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-held="true"] .trpg-rs-num { opacity: 1; }
 html:root .trpg-root .trpg-roll-show[data-phase="verdict"] .trpg-rs-die[data-held="true"] { filter: none; }
@@ -8929,11 +8931,11 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-halo {
   animation: trpg-rs-turn 5s linear infinite; mix-blend-mode: screen;
 }
 html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="critical"] .trpg-rs-body { filter: drop-shadow(0 0 16px #fff2b0) drop-shadow(0 0 46px #ffb84a) brightness(1.15) saturate(1.3); }
-html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="critical"] .trpg-rs-num { color: #7a2a00; -webkit-text-stroke-color: #fffbe6; text-shadow: 0 2px 0 #ffb84a, 0 0 18px #ffe08a; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="critical"] .trpg-rs-num { color: #8a3000; mix-blend-mode: normal; text-shadow: 0 0 10px #fff2b0, 0 0 22px #ffcf4a; }
 /* ファンブルの1: 冷たく沈み、ひびが走る。 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="fumble"] .trpg-rs-body { filter: drop-shadow(0 0 20px #5f77a8) saturate(.15) brightness(.62) contrast(1.2); }
-html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="fumble"] .trpg-rs-num { color: #0e1830; -webkit-text-stroke-color: #dfe8fa; text-shadow: 0 2px 0 #5d6f99; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-crack { position: absolute; inset: 12%; z-index: 1; opacity: 0; pointer-events: none; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="fumble"] .trpg-rs-num { color: #0e1830; text-shadow: none; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-crack { position: absolute; inset: 22% 24% 20%; z-index: 1; opacity: 0; pointer-events: none; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="fumble"] .trpg-rs-crack { opacity: 1; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-crack svg { width: 100%; height: 100%; overflow: visible; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-crack path {

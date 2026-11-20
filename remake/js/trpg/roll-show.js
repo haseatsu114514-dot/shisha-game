@@ -115,8 +115,9 @@ export function playRollShow(host, show) {
   const lines = el("i.trpg-rs-lines"), rays = el("i.trpg-rs-rays"), vignette = el("i.trpg-rs-vignette"), tint = el("i.trpg-rs-tint");
   const burst = el("div.trpg-rs-burst"), flash = el("i.trpg-rs-flash");
   const hint = el("small.trpg-rs-skip", { text: "タップでスキップ" });
+  const fitBox = el("div.trpg-rs-fit", [camera]);
   const node = el("div.trpg-roll-show", { "aria-hidden": "true", dataset: { grade, special, tone, phase: "throw", ...(thrown === null ? {} : { thrown: String(thrown) }) } },
-    [el("i.trpg-rs-veil"), tint, rays, lines, camera, vignette, burst, flash, hint]);
+    [el("i.trpg-rs-veil"), tint, rays, lines, fitBox, vignette, burst, flash, hint]);
 
   const animate = (target, frames, options) => {
     if (!target) return null;
@@ -162,6 +163,9 @@ export function playRollShow(host, show) {
   host.addEventListener("keydown", onKey, true);
   document.addEventListener("visibilitychange", onHide);
   host.append(node);
+  // 幕（ステージの単位）が 1280×720 より小さい時は、枠ごと縮めて画面の外へ出さない。
+  const fit = Math.min(1, (node.clientWidth || 1280) / 1280, (node.clientHeight || 720) / 720);
+  if (fit < 1) fitBox.style.transform = `scale(${fit})`;
   after(320, () => { armed = true; });
 
   // ---- 画面の手応え: 揺れ（大→小に収束・少しランダム）、明暗のフラッシュ、寄り ----
@@ -180,11 +184,17 @@ export function playRollShow(host, show) {
     animate(flash, frames, { duration: ms, easing: "linear", fill: "none" });
   }
   let camScale = 1;
+  const zooms = [];
   function zoom(scale, ms, origin = "50% 50%", easing = EASE.out) {
     if (still) return;
     camera.style.transformOrigin = origin;
-    animate(camera, [{ scale: String(camScale) }, { scale: String(scale) }], { duration: ms, easing });
+    zooms.push(animate(camera, [{ scale: String(camScale) }, { scale: String(scale) }], { duration: ms, easing }));
     camScale = scale;
+  }
+  /** 寄りを全部やめて等倍へ戻す。寄ったまま残ると、画面の左右が切れる。 */
+  function unzoom() {
+    for (const animation of zooms.splice(0)) { try { animation?.cancel(); } catch { /* already gone */ } }
+    camScale = 1;
   }
   function sparks(die, count, colors, reach = [110, 220]) {
     for (let n = 0; n < count; n++) {
@@ -205,8 +215,8 @@ export function playRollShow(host, show) {
     if (hot) die.dataset.glow = "critical"; else if (cold) die.dataset.glow = "fumble";
     if (quiet) return;
     const num = die.querySelector(".trpg-rs-num");
-    animate(num, [{ opacity: 0, scale: big ? "3.6" : "2.6", rotate: "-14deg" }, { opacity: 1, scale: ".9", rotate: "3deg", offset: .62 }, { opacity: 1, scale: "1", rotate: "0deg" }],
-      { duration: big ? 340 : 260, easing: EASE.out });
+    animate(num, [{ opacity: 0, filter: "brightness(3) blur(3px)" }, { opacity: 1, filter: "brightness(1.8) blur(0px)", offset: .35 }, { opacity: 1, filter: "brightness(1) blur(0px)" }],
+      { duration: big ? 420 : 320, easing: "ease-out" });
     animate(die.querySelector(".trpg-rs-spin"), [{ scale: "1.22 .78" }, { scale: ".92 1.1", offset: .45 }, { scale: "1 1" }], { duration: 260, easing: EASE.soft, fill: "none" });
     animate(die.querySelector(".trpg-rs-ring"), [{ opacity: 1, scale: ".3" }, { opacity: 0, scale: hot ? "3.6" : big ? "2.8" : "2.1" }],
       { duration: hot ? 760 : 480, easing: EASE.out });
@@ -330,8 +340,11 @@ export function playRollShow(host, show) {
     reveal(last, { big: true });
     sound("die");
     if (!still) {
+      const from = camScale;
+      unzoom();
       camera.style.transformOrigin = `${REST[last][0]}px ${REST[last][1]}px`;
-      animate(camera, [{ scale: decided ? "1" : "1.07" }, { scale: "1.13", offset: .25 }, { scale: ".98", offset: .7 }, { scale: "1" }], { duration: 420, easing: EASE.out });
+      zooms.push(animate(camera, [{ scale: String(from) }, { scale: "1.13", offset: .25 }, { scale: ".98", offset: .7 }, { scale: "1" }], { duration: 420, easing: EASE.out, fill: "backwards" }));
+      after(440, unzoom);
     }
     animate(vignette, [{ opacity: decided ? 0 : .9 }, { opacity: 0 }], { duration: 400, easing: "ease-out" });
     const reached = grade === "success";
