@@ -470,6 +470,38 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(await page.locator('[data-test="ch3-intro-tournament"]').count(), 1);
   });
 
+  // #3097 第2弾: 奥の部屋で休むと、地元から電話が来る（休む場面の代わりに一本。夜だけの電話は夜に）。休む場面の巡回は進めない。
+  await check("resting-in-the-back-room-brings-a-call-from-home", async page => {
+    // DAY6 は本筋の場面が無い一日（次は DAY7 の夜のなるへの連絡）。昼と夜を、それぞれの時間帯から始めた保存で休む。
+    const rest = async (slot, flags) => {
+      await seed(page, { _ch3_room_rests: 1, ...flags });
+      const start = await page.evaluate(async slot => {
+        const core = await import("./js/core/state.js");
+        const progress = await import("./js/chapters/ch3-progress.js");
+        const value = core.state, intro = value.flags._ch3_intro;
+        intro.stage = progress.CH3_INTRO_SCENES.findIndex(scene => scene.id === "ch3_naru_contact_before_tournament");
+        value.day = intro.startDay + 5; value.slot = slot; value.phase = "daily"; value.stamina = 30;
+        Object.assign(value.met, { mukai_master: true, mashiro: true });
+        value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+        core.save();
+        return value.day;
+      }, slot);
+      await loadSlot(page, 0);
+      await tokyoMap(page, { day: start, slot });
+      await go(page, "ch3_tokyo_room");
+      await tokyoMap(page, slot ? { day: start + 1, slot: 0 } : { day: start, slot: 1 });
+      return get(page);
+    };
+    let state = await rest(0, {});
+    assert.deepEqual(state.flags._ch3_home_calls, { ch3_home_call_sumi_fan: true }, "Sumi's daytime call replaces the rest scene");
+    assert.equal(state.flags._ch3_room_rests, 1, "The rest rotation does not move");
+    assert(state.stamina > 30, "Resting still restores stamina");
+    // 夜: 本筋も遠くからの電話も無い夜なので、夜だけの電話（ポケットの誤発信）
+    state = await rest(1, { _ch3_home_calls: { ch3_home_call_sumi_fan: true } });
+    assert.deepEqual(Object.keys(state.flags._ch3_home_calls).sort(), ["ch3_home_call_sumi_fan", "ch3_home_call_sumi_pocket"]);
+    assert.equal(state.flags._ch3_room_rests, 1);
+  });
+
   // VOL15: 辻占のオババは東京にも現れる（理由は語らない）。地図の行き先になり、時間を使わずに3,000円で占う。
   await check("the-street-fortune-teller-appears-in-tokyo-too", async page => {
     await seed(page);

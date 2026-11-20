@@ -21,7 +21,8 @@ const source = fs.readFileSync(new URL("../js/chapters/ch4-tournament.js", impor
 const retrySource = fs.readFileSync(new URL("../js/chapters/retry-assist.js", import.meta.url), "utf8");
 
 async function run({ failure = null, abandon = false, invalidate = false, resume = null, ask = true, loadFails = false,
-  storyCancel = null, quality = 96, rulesVersion, assistChoice = false, assistInvalidate = false, staffCancel = false } = {}) {
+  storyCancel = null, quality = 96, rulesVersion, assistChoice = false, assistInvalidate = false, staffCancel = false,
+  cheers = [] } = {}) {
   const value = resume || newState();
   if (!resume) {
     value.chapter = 4; value.phase = "tournament";
@@ -29,7 +30,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     value.flags._ch4 = { part: "tournament", read: { ch4_tournament_start: true, ch4_stranger_second: true, ch4_stranger_third: true } };
   }
   setState(value);
-  const trace = [], snapshots = [], contexts = [], shown = [];
+  const trace = [], snapshots = [], contexts = [], shown = [], supporters = [];
   let current = true;
   const initial = () => { trace.push(`session-stamina:${value.stamina}`); return { mode: "tournament", chapter: 4, equip: {}, mix: {}, careHistory: [],
     pack: "normal", place: "triangle", steamSeconds: 480, pullDone: false, total: 0 }; };
@@ -62,6 +63,8 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     },
     // 制作中の掛け合い（#2031）: 台本の読み込みと、既読を制作保存へ書く共通の再生（本物と同じく既読は読まない）。
     TOURNAMENT_STORY_STEPS,
+    // 調整1回目の後の客席の声（#3097 第2弾）: 大会の朝に一言をくれた人（恋人が先）の一人目を渡す。
+    chapterFourMorningCheers: () => ({ cheers, more: false }),
     loadTournamentCraftDialogue: async () => { trace.push("craft-dialogue"); if (loadFails) throw new Error("offline"); },
     playTournamentEvent: async (cs, event, options) => {
       const story = cs.tournamentStory ||= { seen: [] };
@@ -69,6 +72,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
       if (story.seen.includes(event)) return true;
       trace.push(`story:${event}:${options?.context?.rank ?? "-"}`);
       contexts.push({ event, ...options?.context });
+      supporters.push([event, options?.supporters ?? null]);
       if (storyCancel === event) return false;
       story.seen.push(event);
       return true;
@@ -117,7 +121,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
   let result, error;
   try { result = await module.namespace.runChapterFourCraft({ isCurrent: () => current, menuButton: () => ({}) }); }
   catch (e) { error = e; }
-  return { trace, snapshots, value, result, error, contexts, shown };
+  return { trace, snapshots, value, result, error, contexts, shown, supporters };
 }
 const success = await run();
 assert.equal(success.error, undefined);
@@ -182,11 +186,13 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   const told = trace => trace.filter(item => String(item).startsWith("story:")).map(item => item.split(":")[1]);
   const t = success.trace;
   assert.equal(t[0], "craft-dialogue", "The craft banter loads before any save or step");
-  assert.deepEqual(told(t), ["prestart", "opening", "packed", "waiting", "serve", "interlude1", "interlude2", "preresult"]);
+  // #3097 第2弾: 吸い出しの前に4人の心の声（interlude_pull）、その後に提供の掛け合い（serve）。
+  assert.deepEqual(told(t), ["prestart", "opening", "packed", "waiting", "interlude_pull", "serve", "interlude1", "interlude2", "preresult"]);
   // #3060: 開始前の掛け合いは制作の最初の工程・opening の前。
   assert(story(t, "prestart") < story(t, "opening"));
   // #3060: 提供開始の掛け合いは吸い出しの前、結果発表前の掛け合いは二度目の調整の後・結果の前。
   assert(at(t, "standings:1") < story(t, "serve") && story(t, "serve") < at(t, "pull"));
+  assert(at(t, "standings:1") < story(t, "interlude_pull") && story(t, "interlude_pull") < story(t, "serve"));
   assert(story(t, "preresult") > at(t, "care2") && story(t, "preresult") < at(t, "retire"));
   assert(story(t, "opening") < at(t, "setup"));
   assert(at(t, "pack") < story(t, "packed") && story(t, "packed") < at(t, "holes"));
@@ -197,12 +203,14 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   // 提供後の掛け合いには実際の順位を渡す。版4（#3916 WIN12・相手の曲線−2.5）では炭/調整96の一台は提供後も先頭のまま
   // （なるに並ばれるのは92の一台。下の「なるを強くする」の検査で固定する）。
   assert(t.includes("story:interlude1:1"));
-  assert.deepEqual(success.value.flags._ch4.match.craft.tournamentStory.seen, ["prestart", "opening", "packed", "waiting", "serve", "interlude1", "interlude2", "preresult"]);
+  assert.deepEqual(success.value.flags._ch4.match.craft.tournamentStory.seen, ["prestart", "opening", "packed", "waiting", "interlude_pull", "serve", "interlude1", "interlude2", "preresult"]);
   // 保存から再開しても、読んだ掛け合いは繰り返さない。提供で失敗した一台に調整前の掛け合いは出ない。
   assert.deepEqual(told(resumed.trace), ["interlude1", "interlude2", "preresult"]);
   const burnt = await run({ failure: "pull" });
-  assert(!told(burnt.trace).some(event => event.startsWith("interlude") || event === "preresult"));
-  assert.deepEqual(told((await run({ failure: "care1" })).trace), ["prestart", "opening", "packed", "waiting", "serve", "interlude1"]);
+  // 吸い出しの前の心の声（interlude_pull）は提供の前なので読む。提供の後の合間（interlude1〜）と結果発表前は出ない。
+  assert.deepEqual(told(burnt.trace), ["prestart", "opening", "packed", "waiting", "interlude_pull", "serve"]);
+  assert(!told(burnt.trace).some(event => ["interlude1", "interlude2", "interlude3", "preresult"].includes(event)));
+  assert.deepEqual(told((await run({ failure: "care1" })).trace), ["prestart", "opening", "packed", "waiting", "interlude_pull", "serve", "interlude1"]);
   // 台本が読めなければ、保存と大会の開始地点に触れない（第3章と同じ）。
   const offline = await run({ loadFails: true });
   assert.equal(offline.error?.message, "offline");
@@ -215,7 +223,18 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   assert(!closed.trace.includes("holes"));
   const reopened = await run({ resume: structuredClone(closed.value) });
   assert.equal(reopened.result.win, true);
-  assert.deepEqual(told(reopened.trace), ["packed", "waiting", "serve", "interlude1", "interlude2", "preresult"]);
+  assert.deepEqual(told(reopened.trace), ["packed", "waiting", "interlude_pull", "serve", "interlude1", "interlude2", "preresult"]);
+  // 提供の掛け合いを読んだ後の保存（心の声が入る前の版の保存を含む）には、心の声を後から出さない。
+  const servedOld = structuredClone(closed.value);
+  const oldMatch = servedOld.flags._ch4.match;
+  oldMatch.step = 8; oldMatch.craft.tournamentStory = { seen: ["prestart", "opening", "packed", "waiting", "serve"] };
+  assert(!told((await run({ resume: servedOld })).trace).includes("interlude_pull"));
+  // 客席の声: 大会の朝に一言をくれた人（恋人が先）の二人目までを渡す（読むのは提供後・調整1回目の後の実況だけ）。
+  const cheered = await run({ cheers: ["ageha", "adam", "rei"] });
+  const supporterAt = (r, event) => r.supporters.find(([told]) => told === event)?.[1];
+  assert.deepEqual(supporterAt(cheered, "interlude1"), ["ageha", "adam"]);
+  assert.deepEqual(supporterAt(cheered, "interlude2"), ["ageha", "adam"]);
+  assert.deepEqual(supporterAt(success, "interlude2"), [], "Nobody came: no voice from the stands");
 }
 // 2026-11-02「なるを強くする」: ふつうの出来の一台では、提供後・調整1回目の票でなるが先頭に立ち、最後の票で逆転する。
 // 掛け合いには、直前に見せた途中順位と同じ並び（はじめの順位と先頭）を渡す。強い一台では先頭ははじめのまま。
