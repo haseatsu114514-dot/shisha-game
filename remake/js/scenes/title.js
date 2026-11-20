@@ -483,6 +483,7 @@ export async function openConfig(opts = {}) {
   return modal({
     title: "設定",
     body: el("div.cfg", [
+      saveTransferRow(),
       row("UIデザイン", createUiThemeSelect(config.uiTheme, value => { config.uiTheme = value; persist(); opts.onChange?.("uiTheme", value); })),
       look,
       row("ミュート（すべての音を消す）", mute),
@@ -501,7 +502,6 @@ export async function openConfig(opts = {}) {
       row("見た演出を短く", shortSeen),
       row("能力の効き目を色で表示", effectColors),
       ...(fullscreen ? [el("div.cfg-row", [el("span", { text: "全画面" }), fullscreen])] : []),
-      saveTransferRow(),
     ]),
     options: [{ label: "閉じる", value: true, primary: true, test: "cfg-close" }],
     className: "cfg-modal",
