@@ -363,6 +363,85 @@
       ]
     },
     {
+      "dialogue_id": "ch5_noor_lover_welcome",
+      "comment": "#4010 第5章、恋人のヌール（ドバイに住む）の出迎え。ほかの恋人の第4章「別便の到着」（ch4_*_dubai_girlfriend）に当たる場面で、今度はヌールがはじめを迎える側。ヌールが恋人の保存で、第5章にドバイへ着いた時に一度だけ（chapters/ch5-dubai.js の goToDubai。決まりは ch4-desert-progress.js の noorLoverSceneDue）。lover_noor_lv2 の「日本の時計、ホームに出しておいた」を受け、はじめがいる間は日本の時計を消す（時差ゼロ）。lover_noor_lv5 の「夜の線」・キスは使わない。シェイク・大会・味覚には触れない。表情は normal / smile / surprise だけ。",
+      "metadata": { "private_scene": true },
+      "lines": [
+        { "speaker": "", "face": "", "text": "到着ロビーの出口に、手書きの紙を掲げた人が立っていた。" },
+        { "speaker": "", "face": "", "text": "紙には大きく「ハジメ」。その下に、小さな星が一つ。" },
+        { "speaker": "noor", "face": "smile", "text": "ハジメ！　こっち！　……ガイドの札、自分の恋人に使うの初めて" },
+        { "speaker": "hajime", "face": "surprise", "text": "ヌールさん。迎えに来てくれたんですか" },
+        { "speaker": "noor", "face": "normal", "text": "当たり前でしょ。屋敷の迎えより先に着くの、大変だったんだから" },
+        { "speaker": "", "face": "", "text": "ヌールさんは紙を畳んで、上着のポケットにしまった。" },
+        { "speaker": "", "face": "", "text": "畳んだ紙の角が、ポケットから少しはみ出している。" },
+        { "speaker": "noor", "face": "normal", "text": "ねえ、これ見て" },
+        { "speaker": "", "face": "", "text": "スマホの画面を見せられた。前は二つ並んでいた時計が、一つになっている。" },
+        { "speaker": "noor", "face": "smile", "text": "ハジメがこっちにいる間は、日本の時計、消しとく。時差、ゼロ" },
+        { "speaker": "hajime", "face": "smile", "text": "いつもは、五時間ずれてますもんね" },
+        { "speaker": "noor", "face": "normal", "text": "ずれてる分、ちゃんと埋めてもらうからね。今日の線は、もう引いてある" },
+        { "speaker": "hajime", "face": "normal", "text": "どこへ行くんですか" },
+        { "speaker": "noor", "face": "smile", "text": "屋敷まで。……いちばん遠回りの道で" },
+        { "speaker": "", "face": "", "text": "駐車場までの短い道で、ヌールさんは三回振り返って、ちゃんと隣にいるか確かめた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_lover_night",
+      "comment": "#4010 第5章、恋人のヌールの夜。ほかの恋人の第4章「到着の夕方」（ch4_*_dubai_evening）に当たる。出迎え（ch5_noor_lover_welcome）を読んだ後、ドバイで迎える夜に一度だけ（chapters/ch5-dubai.js の dubaiNight）。屋敷の門の前まで車で送ってもらう。遠距離では声しか届かないことを、手の甲を叩く一度の手で見せる。ドバイの夜は日本の夜中（時差五時間）。lover_noor_lv5 の「夜の線」・キスは使わない。表情は normal / smile / surprise だけ。",
+      "metadata": { "private_scene": true },
+      "lines": [
+        { "speaker": "", "face": "", "text": "夜、屋敷の門の前まで、ヌールさんの車が送ってくれた。" },
+        { "speaker": "", "face": "", "text": "エンジンを切っても、ヌールさんはしばらく降りなかった。" },
+        { "speaker": "noor", "face": "normal", "text": "……日本だと、今、何時？" },
+        { "speaker": "hajime", "face": "normal", "text": "夜中の、二時くらいです" },
+        { "speaker": "noor", "face": "smile", "text": "じゃあ、いつもならハジメは寝てて、私はお盆を持って走ってる時間" },
+        { "speaker": "noor", "face": "normal", "text": "今日は、どっちも起きてて、どっちも隣にいる、……変な感じ" },
+        { "speaker": "hajime", "face": "smile", "text": "電話だと、声しか届かないですもんね" },
+        { "speaker": "noor", "face": "normal", "text": "声だけでも、けっこう届いてたよ。……でも、これは届かなかった" },
+        { "speaker": "", "face": "", "text": "ヌールさんは、俺の手の甲を指で一回、軽く叩いた。" },
+        { "speaker": "noor", "face": "smile", "text": "おやすみ、ハジメ。明日の線は、朝に送る" },
+        { "speaker": "hajime", "face": "smile", "text": "はい。今日は、時差なしで寝ます" },
+        { "speaker": "", "face": "", "text": "門をくぐって振り返ると、車のライトが、角を曲がるまで二回点滅した。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_lover_farewell",
+      "comment": "#4010 第5章、恋人のヌールの見送り。出迎え（ch5_noor_lover_welcome）を読んだ後、ドバイから日本へ帰る時に一度だけ（chapters/ch5-dubai.js の goHome。決まりは ch4-desert-progress.js の noorLoverSceneDue）。出迎えの手書きの札（「ハジメ」と星一つ）を預ける。日本の時計を戻す（時差が戻る）。lover_noor_lv5 の「夜の線」・キスは使わない。表情は normal / smile / surprise だけ。",
+      "metadata": { "private_scene": true },
+      "lines": [
+        { "speaker": "", "face": "", "text": "出発ロビーの手前で、ヌールさんが足を止めた。" },
+        { "speaker": "noor", "face": "normal", "text": "見送りって、ガイドの仕事に無いの、……だから、今日は下手でいい" },
+        { "speaker": "", "face": "", "text": "ヌールさんはスマホを出して、時計を一つ足した。日本の時計が、また並ぶ。" },
+        { "speaker": "noor", "face": "normal", "text": "戻しとくね、……五時間、また始まり" },
+        { "speaker": "hajime", "face": "normal", "text": "次は、もっと早く来ます" },
+        { "speaker": "noor", "face": "smile", "text": "うん。じゃあ、これ" },
+        { "speaker": "", "face": "", "text": "渡されたのは、空港で掲げていた手書きの札だった。「ハジメ」と、小さな星が一つ。" },
+        { "speaker": "noor", "face": "normal", "text": "持ってって。次に来る時、また掲げるから" },
+        { "speaker": "noor", "face": "smile", "text": "……ちゃんと返してね" },
+        { "speaker": "hajime", "face": "smile", "text": "預かります。なくさないように、手帳に挟んでおきます" },
+        { "speaker": "noor", "face": "smile", "text": "よし、……いってらっしゃい、ハジメ" },
+        { "speaker": "", "face": "", "text": "保安検査の列から振り返ると、ヌールさんはまだ、同じ場所で手を振っていた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_lover_again",
+      "comment": "#4010 第5章、恋人のヌールの二度目の出迎え。見送り（ch5_noor_lover_farewell）で札を預けた後、次にドバイへ着いた時に一度だけ（chapters/ch5-dubai.js の goToDubai）。はじめが返した札に、ヌールが星を一つ書き足す（二回目の星）。表情は normal / smile / surprise だけ。",
+      "metadata": { "private_scene": true },
+      "lines": [
+        { "speaker": "", "face": "", "text": "到着ロビーの出口で、ヌールさんが両手を差し出していた。" },
+        { "speaker": "noor", "face": "normal", "text": "はい。返して" },
+        { "speaker": "hajime", "face": "smile", "text": "……いきなりですね" },
+        { "speaker": "", "face": "", "text": "手帳から札を出して渡すと、ヌールさんはペンを取り出し、星の隣にもう一つ星を書いた。" },
+        { "speaker": "noor", "face": "smile", "text": "二回目。星、二つになった" },
+        { "speaker": "", "face": "", "text": "ヌールさんは札を高く掲げて、ロビーの真ん中で一回だけ振った。もう、隣にいるのに。" },
+        { "speaker": "hajime", "face": "surprise", "text": "もう、見つけてもらってますよ" },
+        { "speaker": "noor", "face": "smile", "text": "知ってる。掲げたかっただけ" },
+        { "speaker": "noor", "face": "normal", "text": "父がね、札を見て笑ってた。「二つ目の星は、店の壁に貼るのか」って" },
+        { "speaker": "hajime", "face": "smile", "text": "貼るんですか" },
+        { "speaker": "noor", "face": "smile", "text": "貼らない。これは、ハジメが持って帰る札だから" },
+        { "speaker": "noor", "face": "normal", "text": "日本の時計、また消すね、……時差、ゼロ" }
+      ]
+    },
+    {
       "dialogue_id": "ch5_noor_cafe_4",
       "comment": "第5章のドバイで読む ch4_noor_cafe_4（DSR20 の♥4）。流れは第4章と同じで、はじめが遊びに来ている間の言い方だけ替える（帰りを「いつか」ではなく「また」にする。chapters/ch5-dubai.js が差し替える。段階の数え方は ch4_noor_cafe_4 のまま）。大会に触れない。段階2で第4章稿に合わせて増補。",
       "lines": [

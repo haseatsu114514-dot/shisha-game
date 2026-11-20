@@ -1148,9 +1148,55 @@
         {
           "speaker": "",
           "face": "",
+          "text": "アダムは、さっきの常連と同じタッパーを棚から下ろした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "常連さんの注文、どこにも書いてないんですね"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "書かぬ。客の顔と、葉の顔を、並べて覚えている"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りぎわ、甘い方を頼んだ常連が振り返った。「総督、来週は少し重めで」"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "うむ。……来週の顔は、来週決める"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "常連が笑って出ていった。アダムは、タッパーのラベルを一度だけ指でなぞった。"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "……はじめよ。お前の顔も、もう棚に一つある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、どれですか"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "教えぬ。総督の機密だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "……【センス】が少し上がった。"
         }
-      ]
+      ],
+      "comment": "#4010 で増補（♥2が短かった）: 常連の注文を書かずに「客の顔と葉の顔を並べて覚えている」アダムと、はじめの顔ももう棚に一つある（どれかは総督の機密）。報酬の行はそのまま最後に残す。"
     },
     {
       "dialogue_id": "ch1_adam_outing_dagurikura",

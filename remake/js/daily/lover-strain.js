@@ -3,6 +3,7 @@
 // 差し込み口:
 //   strainMorning()      … 朝（calendar.js の morning）。一日ぶん進めて、予兆のLIMEと、はじめの独り言を出す
 //   maybeStrainTalk(beat) … 一日の終わり（calendar.js の endDay。告白と同じ位置）。溜まりきった恋人が帰り道で待っている
+//                           （遠くに住むましろ・ヌールは、夜に電話・テレビ電話がかかってくる。STR12）
 //   maybeStrainReunion(beat) … 同じく一日の終わり（別れ話が無かった夜）。友達に戻った相手に、こちらからやり直しを申し込む
 //   strainAfterVisit(spot) … その人の店へ顔を出した後（calendar.js の performSpotAction）
 // 別れ話は必ず読む場面なので、行動・体力・お金・能力の報酬は無い。数値は画面にも台詞にも出さない。
@@ -17,12 +18,20 @@ import { rejoinLover } from "./romance.js";
 import { petitPlace } from "./petit-shuraba.js";
 import { tickStrain, syncStrain, strainTalkPick, settleStrainTalk, strainVisit, strainSignMessage,
   strainTalkScenes, joinStrainScenes, STRAIN_SCENES, STRAIN_OUTCOME_FLAGS,
-  strainReunionPick, deferStrainReunion, settleStrainReunion, STRAIN_REUNION_FLAG } from "../core/lover-strain.js";
+  strainReunionPick, deferStrainReunion, settleStrainReunion, STRAIN_REUNION_FLAG, STRAIN_REMOTE_IDS } from "../core/lover-strain.js";
 
 const FILE = "lover_strain";
 const STREET_NIGHT = "res://assets/backgrounds/bg_street_night.png";
+// 遠くに住む恋人（STR12）は、夜の自室に電話がかかってくる。やり直しも、はじめのほうから電話をかける
+const HOME_NIGHT = "res://assets/backgrounds/bg_home_night.png";
+const remote = id => STRAIN_REMOTE_IDS.includes(id);
+const sceneBgFor = id => remote(id) ? HOME_NIGHT : STREET_NIGHT;
+const CALL_KIND = Object.freeze({ mashiro: "電話", noor: "テレビ電話" });
 // はじめの呼び方（別れ話の台本の地の文・台詞と同じ）。ほかの相手は、私的な場面の呼び名（みんとは「栞さん」）
-const CALL = Object.freeze({ tsumugi: "つむぎちゃん", rio: "凛想さん", hiyori: "ひよりさん" });
+const CALL = Object.freeze({ tsumugi: "つむぎちゃん", rio: "凛想さん", hiyori: "ひよりさん", mashiro: "ましろちゃん", noor: "ヌールさん" });
+/** 別れ話の前の一拍（地元の恋人は帰り道、遠くの恋人は夜の電話） */
+export const strainTalkBeat = id => remote(id) ? `——夜、${name(id)}から${CALL_KIND[id] || "電話"}がかかってきた。`
+  : `——帰り道、${name(id)}が待っていた。`;
 const name = (id) => CALL[id] || callName(id, state, { context: "private" });
 
 // はじめの独り言（朝に一度だけ）。LIMEを開かない人にも、何がまずいのかが分かるように理由ごとに言う
@@ -84,9 +93,9 @@ export async function maybeStrainTalk(beat, { busyNight = false } = {}) {
   if (!dialogue) return false;
   const flags = Object.values(STRAIN_OUTCOME_FLAGS);
   for (const flag of flags) delete state.flags[flag];
-  await beat(`——帰り道、${name(pick.id)}が待っていた。`);
+  await beat(strainTalkBeat(pick.id));
   if (state !== owner) return false;
-  const result = await play(dialogue, { bg: STREET_NIGHT });
+  const result = await play(dialogue, { bg: sceneBgFor(pick.id) });
   if (state !== owner) return false;
   const outcome = state.flags[STRAIN_OUTCOME_FLAGS.end] ? "end" : state.flags[STRAIN_OUTCOME_FLAGS.excuse] ? "excuse"
     : state.flags[STRAIN_OUTCOME_FLAGS.keep] ? "keep" : null;
@@ -134,13 +143,13 @@ export async function maybeStrainReunion(beat, { busyNight = false } = {}) {
   delete state.flags[STRAIN_REUNION_FLAG];
   await beat(`（……${name(id)}の顔が、ふと浮かんだ）`);
   if (state !== owner) return false;
-  const gate = await play(reunionGate(id), { bg: STREET_NIGHT });
+  const gate = await play(reunionGate(id), { bg: sceneBgFor(id) });
   if (state !== owner) return false;
   const go = !!state.flags[STRAIN_REUNION_FLAG];
   delete state.flags[STRAIN_REUNION_FLAG];
   if (!gate || gate.cancelled) return false;
   if (!go) { deferStrainReunion(state, id); save(); return true; }
-  const result = await play({ ...scene, metadata: { ...(scene.metadata || {}), private_scene: true } }, { bg: STREET_NIGHT });
+  const result = await play({ ...scene, metadata: { ...(scene.metadata || {}), private_scene: true } }, { bg: sceneBgFor(id) });
   if (state !== owner || !result || result.cancelled) return false; // 途中のLOAD・中断では何も決めない（次の夜にもう一度）
   const who = name(id);
   if (!settleStrainReunion(state, id)) return false;

@@ -8,12 +8,17 @@
 // - 減るのは、デート・LIMEの返事・その人の店へ顔を出すこと。記念日は数えない（オーナー「記念日は面倒なのでなくていい」）。
 // - 4 と 7 で予兆（本人のLIMEと、はじめの独り言）、10 で夜の帰り道に別れ話。引き止めれば恋人のまま（何度でも）、
 //   受け入れると友達に戻る。能力・お金・体力には一切触れない。
-// - 止まっている間: はじめが東京・ドバイにいる・出発前の準備・修羅場が未解決。遠くに住む恋人（ましろ・ヌール）は対象外。
+// - 止まっている間: はじめが東京・ドバイにいる・出発前の準備・修羅場が未解決。
+// - 遠くに住む恋人（東京のましろ・ドバイのヌール。STRAIN_REMOTE_IDS）も対象（台帳 STR12・#4021）。会えないこと自体は責めず、
+//   溜まるのは地元の恋人と同じ「誘いを断る・返事をしない・LIMEを開かない・女の勘」だけ。別れ話は帰り道ではなく夜の電話
+//   （ましろ）・テレビ電話（ヌール）で切り出す（daily/lover-strain.js）。はじめが東京・ドバイにいる間は、ほかの恋人と同じく止まる。
 // 差し込み口と再生は daily/lover-strain.js、台本は data/dialogue/lover_strain.json、予兆のLIMEは remake/data/lover.json の strain。
 import { relationshipElapsedDay, departurePrep } from "./chapter-clock.js";
 
-/** 対象の恋人（地元で会える相手）。東京のましろ・ドバイのヌールは、会えないことを責められないので対象外 */
-export const STRAIN_IDS = Object.freeze(["tsumugi", "minto", "rio", "ageha", "samechan", "hiyori"]);
+/** 遠くに住む恋人（別れ話は電話で切り出す）。会えないこと自体は責めない（溜まり方は地元の恋人と同じ・距離では溜まらない） */
+export const STRAIN_REMOTE_IDS = Object.freeze(["mashiro", "noor"]);
+/** 対象の恋人。地元で会える6人と、遠くに住む2人（STR12） */
+export const STRAIN_IDS = Object.freeze(["tsumugi", "minto", "rio", "ageha", "samechan", "hiyori", ...STRAIN_REMOTE_IDS]);
 export const STRAIN_SIGN1 = 4;   // 予兆①（素っ気ないLIME）
 export const STRAIN_SIGN2 = 7;   // 予兆②（「話したい」のLIME）
 export const STRAIN_TALK = 10;   // 別れ話
