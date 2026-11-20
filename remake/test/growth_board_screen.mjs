@@ -196,7 +196,7 @@ assert.match(targetLine(), /次は授業の錠/);
 await closeScenario(scenario);
 
 Object.assign(g, { nodes: ["B3", "B6", "B9"], paid: { B3: { any: 1 }, B6: { any: 1 }, B9: { any: 1 } },
-  hidane: { any: 17, body: 0, sense: 0, wisdom: 0 }, earned: 198, target: "K07" });
+  hidane: { any: 17, body: 0, sense: 0, wisdom: 0 }, earned: 204, target: "K07" });
 scenario = (await openScenario()).done;
 assert.match(targetLine(), /色の台座1（白火も可）/);
 button("BG1").click();
@@ -206,7 +206,7 @@ button("K07").click(); root.querySelector('[data-test="board-towards"]').click()
 assert.equal(button("K07").dataset.status, "pending", "The capped white fire crosses the gate");
 await closeScenario(scenario);
 
-Object.assign(g, { nodes: [], paid: {}, hidane: { any: 0, body: 0, sense: 13, wisdom: 0 }, earned: 198, target: null });
+Object.assign(g, { nodes: [], paid: {}, hidane: { any: 0, body: 0, sense: 13, wisdom: 0 }, earned: 204, target: null });
 scenario = (await openScenario()).done;
 button("B3").click();
 assert.equal(button("B3").dataset.status, "available");

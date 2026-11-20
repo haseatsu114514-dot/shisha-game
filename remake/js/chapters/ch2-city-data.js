@@ -35,6 +35,10 @@ export const CH2_HOME_IDS = Object.freeze(["ch2_rest_notebook", "cafe_ch2_commut
   "cafe_ch2_clock", "kannon_ch2_incense", "choizap_ch2_neck", "cs_ch2_candy",
   // #3097 PR-I: 喫茶こはくの上園さん（spot-encounters.js）と、SHISHARKのサメちゃんの第2章の会話（daily/samechan.js の SAMECHAN_CH2_TALK）
   "cafe_ch2_maezono", "ch2_samechan_resting_shark",
+  // #3097 PR-C: 地元の普段の会話。みんと・凛想・アダム・なる（spots.js の CHAPTER_TALKS）、サメちゃん（samechan.js の SAMECHAN_CH2_TALKS）、
+  // ひよりの相席（hiyori.js の HIYORI_CH2_TALKS）
+  "ch2_minto_lost_pass", "ch2_minto_mint_scale", "ch2_rio_rush_hour", "ch2_adam_yuzugaya_apples", "ch2_adam_out_of_stock", "ch2_naru_sign_light",
+  "ch2_samechan_remora_seat", "ch2_samechan_spare_teeth", "ch2_hiyori_health_check", "ch2_hiyori_capsule_toy",
   // tonariの大会準備で一台作る場面（ch2-craft-prep.js の CH2_CRAFT_PREP_IDS と同じ。読み込みを軽くするため名前を並べる）
   "ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed",
   "ch2_prep_midcheck_intro", "ch2_prep_midcheck_good", "ch2_prep_midcheck_rough", "ch2_prep_midcheck_failed", "ch2_prep_rehearsal_intro",
