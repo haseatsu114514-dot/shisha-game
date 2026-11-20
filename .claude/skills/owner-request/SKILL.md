@@ -46,8 +46,8 @@ description: オーナー（ユーザー）から指摘・要望・バグ報告�
 ✅ にする前に、**修正したファイル以外にも同じ症状が残っていないか grep で現物確認**する。
 
 - 教訓: アダムのカタコトは dialogue では消えていたが `lime_messages.json` に残っていた。
-- 台詞・文言系: `rg -n "<症状の文字列>" data/ remake/js/ --include="*.json" --include="*.js"`
-- 見た目・CSS系: reel.css→style.css のような**連結・複製先へのドリフト**がないか確認する。
+- 台詞・文言系: `rg -n -F -g '*.json' -g '*.js' -e '<症状の文字列>' data/ remake/js/` で同じ文言を横断検索する。
+- 見た目・CSS系: まず `rg -n -F -g '!bundle.css' -g '!bundle-[12].css' -e '<セレクタ>' remake/css/` で正本を横断検索する。連結先は `remake/css/bundles.json` を参照し、元CSSを直したら `python3 remake/tools/build_css_bundles.py` で再生成し、同じコマンドの `--check` でずれがないことを確認する。
 - 「オーナーの手元で古い」系の報告は、コードの先祖返りを疑う前に
   **配信物（GitHub Pages）が古い版のままの可能性**を先に確認する
   （`deploy-pages.yml` の最終実行とmainのHEADを照合する。旧版の `D.build` 刻印は現行 `remake/` に無い）。
