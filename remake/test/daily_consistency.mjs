@@ -204,7 +204,7 @@ assert(!/bg_street|到着した|看板を確かめ|ドアを|店内に入ると/
 assert(!/一服してって|どうぞ、こっちへ/.test(JSON.stringify(handoff)), "Delivery must not auto-enter PEPPERMINT");
 const mintoFirst = JSON.parse(await fs.readFile(new URL("data/dialogue/ch1_minto.json", dataRoot), "utf8")).dialogues.find((d) => d.dialogue_id === "ch1_minto_first");
 assert(mintoFirst?.branches?.dl_door?.some((line) => /配達してくれた/.test(line.text || "")));
-assert(!mintoFirst.branches.dl_door.some((line) => /三袋を/.test(line.text || "")), "Delivery should not replay on first voluntary visit");
+assert(!mintoFirst.branches.dl_door.some((line) => /3つの箱を/.test(line.text || "")), "Delivery should not replay on first voluntary visit");
 const end = scenes.find((s) => s.dialogue_id === "remake_baito_end"); assert(!/レジを締め|閉店/.test(JSON.stringify(end)));
 assert(!JSON.stringify(scenes.find((s) => s.dialogue_id === "remake_repeat_sumi_1")).includes("静かな夜"));
 const closing = sumi.find((s) => s.dialogue_id === "ch1_sumi_closing"); assert(JSON.stringify(closing).includes("閉店後"));

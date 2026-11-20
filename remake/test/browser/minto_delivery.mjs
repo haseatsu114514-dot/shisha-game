@@ -73,7 +73,7 @@ await suite('minto-delivery',async check=>{
     for(const layer of frame.bg) assert(!/bg_street/.test(layer.bg),`Street background submitted: ${JSON.stringify(frame)}`);
    }
    for(const row of result.trace) assert.match(row.bg,/peppermint/,`${row.text}: ${row.bg}`);
-   assert(result.trace.some(l=>l.text?.includes('カウンター脇')));
+   assert(result.trace.some(l=>l.text?.includes('3つの箱を')));
    // 手当はバイト代への上乗せで残る。帰り道の配達は体力を使わない（帰宅後の睡眠回復は増える側だけ）。
    assert.equal(result.s.money,12000); assert(result.s.stamina>=80,`delivery spent stamina: ${result.s.stamina}`);
    for(const key of ['stats','statXp','story']) assert.deepEqual(result.s[key],result.before[key],key);

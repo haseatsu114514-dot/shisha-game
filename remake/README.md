@@ -198,7 +198,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
 2. スミさんの練習の誘い（任意）: 練習するなら手本つきで一台を通しで作る。どちらの選択でも → `ch1_tutorial_oneesan`
 3. DAY1 の昼はスミさんのおつかい（案内つき・旧版 N18/N19）: Dr.fookah で大会の課題フレーバーのレモンを仕入れる（`remake_day1_errand_shop`・店の経費・買うまで店を出られない・時間は使わない）
    → スミさんから稽古用にレモンを受け取る（`remake_lemon_gift`）→ KEMURIKUSA を客として偵察（`remake_day1_errand_scout`・行動1回＋交通費。偵察でDAY1は終了）。案内中のマップは行き先の1か所だけが光って選べる
-   DAY2 は昼に PEPPERMINT、夜に EDEN へ tonari の配達（スミさんの頼み・`daily/calendar.js` の DELIVERIES・`remake_delivery_*`・DL01/DL02）。まとめ買いのミント／古いロットのダブルアップル缶を届け、
+   DAY2 は昼に PEPPERMINT、夜に EDEN へ tonari の配達（スミさんの頼み・`daily/calendar.js` の DELIVERIES・`remake_delivery_*`・DL01/DL02）。注文のミント（250グラムの箱3つ）／古いロットのダブルアップル缶を届け、
    PEPPERMINTは**店先でみんとへ手渡し・勧誘で終了**し、店内で一服するかは後の自由行動で選ぶ。EDENは従来どおり無料の初来店に続く（配達手当 2,000円、配達では能力・スロットは伸びない）。
    配達の目的地は案内するが、終了後はDAY3から自由行動。PEPPERMINTへの初入店は自由選択で通常の訪問料・行動を使う。自分で先に行っていた旧セーブの店は飛ばし、DAY3以降の旧セーブには割り込まない
 4. 日常 DAY1〜14（1日2行動・昼/夜）
