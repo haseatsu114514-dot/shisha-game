@@ -241,11 +241,13 @@
           "face": "",
           "text": "スミさんが炭を金属の皿へ戻し、焦げ跡に濡れた布を当てる。煙は細くなって消えた。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch2_sofa_wet_cloth"},
         {
           "speaker": "",
           "face": "",
           "text": "お客さんの手と服、足元を一人ずつ確かめた。誰にも、けがはなかった。"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",

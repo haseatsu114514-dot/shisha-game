@@ -991,11 +991,13 @@
           "speaker": "",
           "text": "ましろは自分の作業台にも布をかけた。俺のためだけに休むのではないらしい。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch3_mashiro_no_craft_day"},
         {
           "speaker": "mashiro",
           "face": "normal",
           "text": "お茶、飲む？"
         },
+        {"type": "hide_cg"},
         {
           "type": "choice",
           "id": "ch3_rest_choice",

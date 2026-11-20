@@ -469,6 +469,7 @@
           "face": "",
           "text": "一緒に日陰へ入る。男は名乗らないまま、椅子を一つ引いた。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch4_traveler_chair"},
         {
           "speaker": "traveler",
           "face": "normal",
@@ -483,7 +484,8 @@
           "speaker": "traveler",
           "face": "normal",
           "text": "そうか、ハジメ。なら今日は私が客だ。作る話は、そのあとでいい"
-        }
+        },
+        {"type": "hide_cg"}
       ],
       "comment": "old_manの正体はシェイク。表示名と正装の立ち絵は大会当日の公開まで伏せる。"
     },

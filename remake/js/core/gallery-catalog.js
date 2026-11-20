@@ -9,12 +9,12 @@ export const CHAR_LABELS = {
   rio: "凛想", mashiro: "ましろ", other: "その他",
 };
 const cgChars = Object.fromEntries(Object.entries({
-  ageha: ["cg_ageha_first_purikura", "cg_ch2_ageha_purikura_strip", "cg_ageha_confession"],
+  ageha: ["cg_ageha_first_purikura", "cg_ch2_ageha_purikura_strip", "cg_ageha_confession", "cg_ch2_ageha_lesson"],
   minto: ["cg_ch1_minto_casual_reveal", "cg_minto_casual", "cg_minto_cheki", "cg_minto_confession", "cg_minto_first_cheki"],
   tsumugi: ["cg_ch1_tsumugi_heart_art", "cg_tsumugi_confession", "cg_tsumugi_smoke_color"],
   naru: ["cg_naru_after_hours", "cg_naru_last_chance", "cg_naru_next_entry"],
   rio: ["cg_rio_confession"],
-  mashiro: ["cg_ch3_childhood_offered_hand", "cg_saku_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession"],
+  mashiro: ["cg_ch3_childhood_offered_hand", "cg_saku_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession", "cg_ch3_mashiro_no_craft_day"],
 }).flatMap(([char, ids]) => ids.map(id => [id, char])));
 const charTag = char => Object.hasOwn(CHAR_LABELS, char) ? char : "other";
 // IDに cheki を含むが通常のスチルとして扱うもの（オーナー指示 2026-11-18: cg_minto_cheki はツーショット写真でありチェキではない）。
@@ -55,6 +55,11 @@ export function galleryStats(entries) {
   return stats;
 }
 const labels = {
+  cg_ch2_sofa_wet_cloth: "焦げ跡と濡れ布",
+  cg_ch2_ageha_lesson: "あげはの吸い方講座",
+  cg_ch3_mashiro_no_craft_day: "作らないと決めた昼",
+  cg_ch4_traveler_chair: "日陰の椅子",
+  cg_ch5_doctor_yunomi: "湯のみを包む博士",
   cg_naru_after_hours: "なる・旅先のやり直し",
   cg_naru_last_chance: "なる・勝って帰る日",
   cg_naru_next_entry: "なる・もう一つの予選",
