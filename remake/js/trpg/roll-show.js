@@ -274,7 +274,7 @@ export function playRollShow(host, show) {
   function playSkill() {
     sound("skill");
     animate(skillNode, [{ opacity: 0 }, { opacity: 1, offset: .08 }, { opacity: 1, offset: .82 }, { opacity: 0 }], { duration: lead + 120, easing: "linear" });
-    animate(skillNode.querySelector(".trpg-rs-skill-band"), [{ transform: "skewY(-6deg) scaleX(0)" }, { transform: "skewY(-6deg) scaleX(1)" }], { duration: 260, easing: EASE.out });
+    animate(skillNode.querySelector(".trpg-rs-skill-band"), [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 260, easing: EASE.out });
     animate(skillNode.querySelector(".trpg-rs-skill-face"), [{ opacity: 0, translate: "-260px 0", rotate: "-30deg" }, { opacity: 1, translate: "0 0", rotate: "0deg" }], { duration: 320, delay: 80, easing: EASE.back });
     const chars = [...skillNode.querySelectorAll(".trpg-rs-word > .c")];
     chars.forEach((c, n) => animate(c, [{ opacity: 0, scale: "2.6", translate: "0 -30px" }, { opacity: 1, scale: "1", translate: "0 0" }], { duration: 240, delay: 180 + n * 40, easing: EASE.out }));
