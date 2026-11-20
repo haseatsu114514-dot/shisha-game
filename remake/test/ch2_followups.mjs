@@ -338,7 +338,9 @@ fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // + tonariのつむぎがいる日の3本とシフト上がりの第3弾5本（ch2_tonari_talks.json・#3097 PR-D）
 // + 地元の普段の会話の続き5本（みんと・凛想・アダム・サメちゃん・ひより 各1。ch2_home.json・#3097 第2弾 VOL20）
 // + 同じ5人の続き5本（#3097 第3弾）
-assert.equal(Object.keys(loaderDB.dialogues).length, 137 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+// + 第2章で初めて家で休んだ時のノートの場面（ch2_home.json・#3957）
+assert.equal(Object.keys(loaderDB.dialogues).length, 138 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+assert(loaderDB.dialogues.ch2_rest_notebook?.lines?.length, "first chapter 2 rest scene is loaded");
 for (const id of ["ch2_minto_nickname_notes", "ch2_rio_plain_lunch", "ch2_adam_apple_errand", "ch2_samechan_poster", "ch2_hiyori_mirror_pose",
   "ch2_minto_umbrella_day", "ch2_rio_label_words", "ch2_adam_peel_record", "ch2_samechan_menu_letters", "ch2_hiyori_commute_poem"])
   assert(loaderDB.dialogues[id]?.lines?.length, `#3097 VOL20: ${id}`);

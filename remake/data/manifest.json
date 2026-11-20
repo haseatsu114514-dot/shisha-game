@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-20 15:31 UTC",
+ "generated": "2026-11-20 15:37 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -636,6 +636,11 @@
   "cg_ch2_ageha_purikura_strip.png",
   "cg_ch2_ageha_purikura_strip_gal.png",
   "cg_ch2_ageha_purikura_strip_soft.png",
+  "cg_ch2_ageha_white_bear.png",
+  "cg_ch2_kanzaki_id_check.png",
+  "cg_ch2_naru_score_sheet.png",
+  "cg_ch2_rei_earphone.png",
+  "cg_ch2_rest_notebook.png",
   "cg_ch2_sofa_wet_cloth.png",
   "cg_ch3_childhood_offered_hand.png",
   "cg_ch3_mashiro_no_craft_day.png",
@@ -3787,7 +3792,12 @@
   "cgs/cg_ch2_sofa_wet_cloth.png",
   "cgs/cg_ch3_mashiro_no_craft_day.png",
   "cgs/cg_ch4_traveler_chair.png",
-  "cgs/cg_ch5_doctor_yunomi.png"
+  "cgs/cg_ch5_doctor_yunomi.png",
+  "cgs/cg_ch2_ageha_white_bear.png",
+  "cgs/cg_ch2_kanzaki_id_check.png",
+  "cgs/cg_ch2_naru_score_sheet.png",
+  "cgs/cg_ch2_rei_earphone.png",
+  "cgs/cg_ch2_rest_notebook.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

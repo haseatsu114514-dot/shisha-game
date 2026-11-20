@@ -809,7 +809,13 @@ export async function restAtHome(spot, { fullDay = false } = {}) {
   const result = await play(fullDay ? "remake_rest_day" : rain || turn?.id || REST_SCENES[0]);
   if (state !== owner || !result || result.cancelled) return;
   if (turn) owner.flags[turn.key] = turn.count + 1;
-  if (owner.chapter === 2) owner.flags._ch2_rest_taken = true;
+  if (owner.chapter === 2) {
+    if (!owner.flags._ch2_rest_taken) {
+      await play("ch2_rest_notebook");
+      if (state !== owner) return;
+    }
+    owner.flags._ch2_rest_taken = true;
+  }
 }
 
 /** 好感度の段階（♥の数） */
