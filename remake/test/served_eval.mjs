@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { DB } from '../js/core/data.js';
 import { temperatureBands } from '../js/craft/temperature-model.js';
-import { servedTasteLine, servedStateLine, servedEvaluationLines, servedMixWords } from '../js/craft/served-eval.js';
+import { servedTasteLine, servedStateLine, servedEvaluationLines, servedMixWords, servedLemonOnly } from '../js/craft/served-eval.js';
 
 // 課題のレモン必須に合わせた最小カタログ（同系統合算の確認用に mint へ family を付ける）。
 DB.flavorById = {
@@ -62,4 +62,12 @@ assert.equal(servedMixWords({ mix: {} }), null);
 assert.equal(servedMixWords({}), null);
 assert.equal(servedMixWords(null), null);
 
-console.log('PASS: served taste/state lines for representatives, high/low/good temps, neutral old-save, mix words');
+// --- レモンだけの一台（#3916）：課題の葉だけで、0gの葉は数えない。ほかのレモン系やミント入りは違う ---
+assert.equal(servedLemonOnly({ mix: { lemon: 12 } }), true);
+assert.equal(servedLemonOnly({ mix: { lemon: 12, mint: 0 } }), true);
+assert.equal(servedLemonOnly({ mix: { lemon: 10, mint: 2 } }), false);
+assert.equal(servedLemonOnly({ mix: { ice_lemon: 12 } }), false);
+assert.equal(servedLemonOnly({ mix: {} }), false);
+assert.equal(servedLemonOnly(null), false);
+
+console.log('PASS: served taste/state lines for representatives, high/low/good temps, neutral old-save, mix words, lemon only');

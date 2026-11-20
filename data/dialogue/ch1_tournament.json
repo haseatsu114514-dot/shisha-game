@@ -1157,19 +1157,16 @@
           "text": "え、……そんなにおかしかったですか？"
         },
         {
-          "speaker": "sumi",
-          "face": "smile",
-          "text": "いや、……いい配合だ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（絶対、何かある顔だ）"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch1_lemon_single",
+          "next_true": "mix_lemon_single",
+          "next_false": "mix_any"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんは答えず、使い込んだトングを布巾で拭いた。"
+          "text": "スミさんはそれ以上言わず、使い込んだトングを布巾で拭いた。"
         },
         {
           "speaker": "",
@@ -1628,6 +1625,45 @@
             "speaker": "hajime",
             "face": "sad",
             "text": "（……そうだった。今度、飲むんだ）"
+          }
+        ],
+        "mix_lemon_single": [
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "いや。昔、大会にレモンだけで出たバカがいてな"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "みんな何種類も混ぜてくるのに、そいつだけ一本で来た"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "その人、どうなったんですか"
+          },
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "……さあな。客席じゅうに笑われてたよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（スミさんの昔の知り合いかな。……なんか、楽しそうだ）"
+          }
+        ],
+        "mix_any": [
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "いや、……いい配合だ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（絶対、何かある顔だ）"
           }
         ]
       }

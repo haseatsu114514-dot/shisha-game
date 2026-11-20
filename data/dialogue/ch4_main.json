@@ -1854,6 +1854,12 @@
           "text": "俺の口から言う話じゃねえ。あいつの二口目だ"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch1_lemon_single",
+          "next_true": "lemon_single"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "じゃあ俺、その日は早めに片づけます"
@@ -2051,6 +2057,23 @@
             "speaker": "",
             "face": "",
             "text": "伝票を出すたびに開けていた引き出しだ。写真があるのは、知らなかった。"
+          }
+        ],
+        "lemon_single": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "レモンだけで来たバカって、スミさんのことですよね"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "……昔の話だ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんは横を向いて咳払いをした。口元が、少し笑っていた。"
           }
         ]
       },
@@ -2336,9 +2359,11 @@
           "text": "最後の1点は、もう一口吸いたい台へ入れる。あの日は、君の台だった"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……スミさんは、知ってたのかな）"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch1_lemon_single",
+          "next_true": "lemon_single",
+          "next_false": "mixed"
         },
         {
           "speaker": "naru",
@@ -2386,7 +2411,33 @@
           "text": "なるは何も言わず、もう一度ケースの留め具を確かめた。千須はスタッフに呼ばれて戻っていった。"
         }
       ],
-      "comment": "競技の採点が確定した後。過去の友情を採点理由にせず、はじめとなるを同じ結末へ固定しない。"
+      "comment": "競技の採点が確定した後。過去の友情を採点理由にせず、はじめとなるを同じ結末へ固定しない。",
+      "branches": {
+        "lemon_single": [
+          {
+            "speaker": "sui",
+            "face": "smile",
+            "text": "おまけに、レモンだけだ。昔それをやったバカが、もう一人いた"
+          },
+          {
+            "speaker": "sui",
+            "face": "normal",
+            "text": "俺の目の前でな。その晩も、二口吸わされた"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（スミさんの言ってた『バカ』って、自分のことだったのか）"
+          }
+        ],
+        "mixed": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……スミさんは、知ってたのかな）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch4_two_tables",
