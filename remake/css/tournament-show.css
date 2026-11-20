@@ -261,6 +261,23 @@
 
 /* ================================================================ 第2〜4章の持ち点の板（票が入る進行を重ねる。寸法は ch2-tournament.css のまま） */
 .ch4-standings { position: relative; }
+/* 第4章の持ち点（モーダル）: 紙の小窓のままだと、暗い面向けの白い点数が読めず、票の帯の列も潰れていた。
+   第2・3章のカードと同じ夜紫の板にして、左に順位・右に審査員を並べる。どの見た目（UIテーマ・look）でもこの面にする。 */
+html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal { width: 1100px; min-width: 0; max-width: calc(100% - 64px); max-height: calc(100% - 36px); padding: 22px 30px 20px;
+  color: #f5f1e8; --text: #f5f1e8; --text-dim: #cfc6d8; text-shadow: none; filter: none; backdrop-filter: none;
+  border: 1px solid #e3bd6e99; border-image: none; border-radius: 16px; background: linear-gradient(135deg, #1b1228fa, #0d0a15fc 60%), #0d0a15;
+  box-shadow: 0 0 0 1px #150d22, 0 0 0 3px #e3bd6e44, 0 24px 80px #000c, inset 0 1px 0 #ffe7b322; }
+html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal > h3 { margin: 0 0 10px; padding-bottom: 10px; border-bottom: 1px solid #e8c27a2e; font-size: 34px; font-style: italic; font-weight: 900; letter-spacing: .04em;
+  background: var(--ts-gold-text); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 0 #2a1638); }
+html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal .modal-body { color: #f5f1e8; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #e3bd6e88 transparent; }
+.ts-contest-modal .ch4-standings { display: grid; grid-template-columns: minmax(0, 1fr) 300px; column-gap: 22px; row-gap: 8px; align-content: start; padding: 2px 4px 6px; }
+.ts-contest-modal .ch4-standings > * { grid-column: 1 / -1; margin: 0; }
+.ts-contest-modal .ch4-standings > .ch2-contest-board { grid-column: 1; }
+.ts-contest-modal .ch4-standings > .ch2-contest-judges { grid-column: 2; }
+html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal .ch2-contest-note { color: #cfc6d8; font-size: 17px; line-height: 1.5; }
+html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal .ch2-contest-rival > span { color: #f5f1e8; }
+html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal .ch2-contest-rival.me > span { color: #ffe2a6; }
+html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal .modal-actions { justify-content: flex-end; margin-top: 12px; }
 /* 結果のカードは、解説・振り返り・審査員の講評が重なると枠の高さを越える（「結果を受け止める」が枠の下へ出て見えなかった）。
    枠の中で縦に送れるようにし、押す所は下端に留める。収まっている時（途中の持ち点）は見た目が変わらない。 */
 .ch2-contest:has(> .ch2-contest-board) { overflow: hidden auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #e3bd6e88 transparent; }
@@ -332,6 +349,8 @@ html:root[data-density="phone"] body:not(:root) .ts-live-chip em { font-size: va
 html:root[data-density="phone"] body:not(:root) .ts-live-chip b { width: 30px; height: 30px; font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) .ts-live-chip i { font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) :is(.ts-splash-tap, .ts-splash-eyebrow, .ts-sting-copy small, .ts-round-mark small) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) #stage #modal > .modal-box.ts-contest-modal :is(.ch2-contest-note, .judge-legend, .judge-name, .judge-left) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) #stage #modal > .modal-box.ts-contest-modal .ch4-standings { grid-template-columns: minmax(0, 1fr) 360px; }
 
 @media (prefers-reduced-motion: reduce) {
   .ts-beam, .ts-dust, .ts-halo, .ts-plus, .ts-rankup, .ts-confetti i, .ts-burst b { animation: none !important; }

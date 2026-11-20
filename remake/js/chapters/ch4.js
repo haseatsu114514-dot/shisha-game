@@ -571,7 +571,7 @@ async function showChapterFourCommittedResult(result) {
   const notes = [result.failure ? "完了した工程から振り返ろう。" : `はじめは${result.rank}位。審査員三人、それぞれの10点が出揃った。`,
     ...(result.failure ? [] : [`総合 ${result.total.toFixed(1)} ／ ${parts}`]),
     ...craftReviewLines(match?.craft)];
-  const { chapterFourStandingsView, playChapterFourVotes } = await import("./ch4-standings.js");
+  const { chapterFourStandingsView, playChapterFourVotes, CH4_CONTEST_MODAL } = await import("./ch4-standings.js");
   // 結果発表: 会場の拍手（1位はファンファーレも）。制作を完了できなかった時は鳴らさない。
   const reaction = () => { if (!result.failure) { SE.crowd?.(2.4); if (result.rank === 1) SE.fanfare?.(); } };
   const votes = result.votes || match?.votes;
@@ -579,7 +579,7 @@ async function showChapterFourCommittedResult(result) {
   // この場で最後の票を入れた時だけ、票が入る進行を見せる（TSH05）。出そろうまで、見出しの順位と講評の行は伏せる。
   const before = view && !result.failure ? (await import("./ch4-tournament.js")).takeChapterFourLastVotes() : null;
   const closed = modal({ title: result.failure ? "制作を完了できなかった" : before ? "世界大会の結果" : `世界大会 ${result.rank}位`,
-    body: view || notes.join("\n"),
+    body: view || notes.join("\n"), className: view ? CH4_CONTEST_MODAL : "",
     options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
   const show = view ? playChapterFourVotes(view, match, { before, rows: result.rows, votes, final: true, late: [...view.querySelectorAll(":scope > .ch2-contest-note")] }) : { moved: false };
   if (show.moved) show.done.then(() => {

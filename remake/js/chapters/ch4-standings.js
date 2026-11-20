@@ -40,6 +40,9 @@ export function chapterFourStandingsView(p, { rows = chapterFourStandings(p), no
   ]);
 }
 
+/** 持ち点の板を載せるモーダルの面（夜紫の板。css/tournament-show.css）。 */
+export const CH4_CONTEST_MODAL = "ts-contest-modal";
+
 /**
  * 持ち点の板に、票が入る進行を付ける（TSH05）。板がモーダルに出てから呼ぶ。before＝入れる前の票（無ければ何もしない）。
  * 進行の間はモーダルのボタンを押せなくし、板を押すと早送りする。
@@ -56,7 +59,7 @@ export function playChapterFourVotes(view, p, { before, rows = chapterFourStandi
 /** 投票が動いた直後の途中順位。OK で制作へ戻る。before＝この回の票を入れる前の票（票が入る進行の出発点）。 */
 export async function showChapterFourStandings(p, { before = null } = {}) {
   const view = chapterFourStandingsView(p);
-  const closed = modal({ title: "いま、動いた持ち点。", body: view,
+  const closed = modal({ title: "いま、動いた持ち点。", body: view, className: CH4_CONTEST_MODAL,
     options: [{ label: "続きを作る", value: true, primary: true, test: "ch4-standings-continue" }] });
   playChapterFourVotes(view, p, { before });
   await closed;
