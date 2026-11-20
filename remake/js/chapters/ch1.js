@@ -327,7 +327,9 @@ const sketchScene = (id, bg) => async () => {
 const once = (key, fn) => ({ id: key, doneKeys: [key], run: async (context) => { await fn(context); setFlag(key); }, done: () => flag(key) });
 
 export const NIGHT_EVENTS = {
-  2: { label: "常連さんの話", schedule: "regular", pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
+  // #3819: DAY2は固定のシフトを入れない。常連さんの話は、次に入ったシフトの接客で読む（daily/calendar.js の regularCustomerStory）。
+  // DAY7までシフトに入らなかった時だけ、DAY8以降の夜に読む（DAY10の「常連さんの変化」より前）。
+  2: { label: "常連さんの話", schedule: "regular", freeNights: [2, 3, 4, 5, 6, 7], pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
   3: { id: "_ev_first_practice", doneKeys: ["_tsumugi_contest_progress", "_ev_first_practice"], schedule: "preparation", deadline: 6,
     label: "基礎の確認", pin: "tonari", teaser: "tonari", beat: "夜。つむぎの途中の絵を見にtonariへ。閉店後はスミさんと練習を相談する──",
     done: () => flag("_tsumugi_contest_progress") && flag("_ev_first_practice"),
