@@ -36,12 +36,12 @@ export const STAGES = Object.freeze({
     lamps: [[32.9, 17.5, 9], [37.8, 5.6, 7], [37.4, 22.7, 6], [42.5, 13, 9], [40.2, 26.5, 5], [46, 20.5, 5], [49.3, 9.5, 8],
       [52.8, 22, 5], [56.1, 16, 6], [60.2, 23.5, 8], [63.4, 14, 9], [68.8, 10.5, 6], [67.7, 25.3, 5], [72, 21.5, 5]],
   }),
-  // フロア専用の店内画。左の端が入口、右の端がカウンター（作業台と受渡棚）。
+  // フロア専用の店内画。入口とカウンターは描かない（2026-11-20 オーナー指示で廃止。door・counter は配置図用の名残の地帯）。
   floor: Object.freeze({
     id: "floor", style: "seated",
     // 客は丸の中の顔で出すので、客より手前に重ねる前景は要らない（使う時だけ frontDay・frontNight を足す）
     art: { day: "../../img/ui/tonari-floor/room-day.webp", night: "../../img/ui/tonari-floor/room-night.webp" },
-    spots: [back(24, "奥の左の卓"), back(47, "奥のまん中の卓"), back(70, "奥の右の卓"), side("手前の左の卓", false), side("手前の右の卓", true)],
+    spots: [back(29, "奥の左の卓"), back(49, "奥のまん中の卓"), back(70, "奥の右の卓"), side("手前の左の卓", false), side("手前の右の卓", true)],
     lamps: [[9, 8, 6], [17, 6, 7], [25, 9, 6], [33, 6, 8], [41, 9, 6], [49, 6, 7], [57, 9, 6], [65, 6, 8], [73, 9, 6], [81, 6, 7]],
     door: [0, 24, 9.5, 60], counter: [86.5, 32, 13.5, 62], rug: [40, 62, 14, 32],
   }),
@@ -54,7 +54,16 @@ export const STAGES = Object.freeze({
 //     例: first: { idle: "../../img/ui/tonari-floor/guest-first.webp" }, "train-a": { idle: "…/guest-train-a.webp" }
 // - props: 卓の上の一台（shisha）など。無ければ置かない。
 // - cutins: 画面を横切る帯の絵（open＝営業開始／fever＝フィーバーの突入／close＝営業終了）。無ければ色の帯だけ。
-export const FLOOR_ART = Object.freeze({ stage: "classic", guests: Object.freeze({}), props: Object.freeze({}), cutins: Object.freeze({}) });
+const GUEST_DIR = "../../img/ui/tonari-floor";
+const guestEntry = (id) => Object.freeze({ idle: `${GUEST_DIR}/guest-${id}.webp`, happy: `${GUEST_DIR}/guest-${id}-happy.webp` });
+export const FLOOR_ART = Object.freeze({
+  stage: "floor",
+  guests: Object.freeze(Object.fromEntries(
+    ["first", "worker", "train-a", "train-b", "reader", "walkers-a", "walkers-b", "nose",
+      "students-a", "students-b", "talkers-a", "talkers-b", "elder", "friends-a", "friends-b"].map((id) => [id, guestEntry(id)]))),
+  props: Object.freeze({ shisha: `${GUEST_DIR}/shisha-table.webp` }),
+  cutins: Object.freeze({ open: `${GUEST_DIR}/cutin-open.webp`, fever: `${GUEST_DIR}/cutin-fever.webp`, close: `${GUEST_DIR}/cutin-close.webp` }),
+});
 
 /** 相対パスの絵を、このファイルから見た URL にする（data: や http(s): はそのまま）。 */
 export const artUrl = (src) => (!src ? null : /^(data:|blob:|https?:|\/)/.test(src) ? src : new URL(src, import.meta.url).href);

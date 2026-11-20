@@ -1,11 +1,12 @@
 /* tonari フロア営業（ワンオペ＆フレーバー調合型）。舞台（1280〜1600×720）いっぱいに店内を敷き、卓の札は絵の座標（％）へ置く。
-   板・ボタンはゲーム共通の絵（lounge の暗い板、craft-night のガラスと金の札）を九分割で使う。
+   板・ボタン・メダルはフロア専用の絵（#3960 で作成、img/ui/tonari-floor/）を九分割・背景で使う。
    画面の構成: 上＝作成中の一台・残り時間・売上／右＝定番ミックス（カウンター側。卓の札と重ならない）／下＝卓のドック・出来事の行とはじめの心の声・フィーバー。
    注文待ちの卓を押すと調合の窓（棚・ボウル・予想）。ケアと会計は、店内がその卓へ寄り、左に選択肢の列・下に大きなドックが出る。 */
 .tonari-floor {
   position: absolute; inset: 0 calc(-1 * var(--stage-gutter, 0px)); isolation: isolate; overflow: hidden; overflow: clip; /* clip＝フォーカス移動で中身がずれない */
   --tf-ivory: #fff3d9; --tf-dim: #d9c6a4; --tf-brass: #f3cd86; --tf-ink: #3a2a1c; --tf-ink-dim: #7a6450;
   --tf-good: #7fd39a; --tf-mid: #f0c060; --tf-low: #ef7f6a; --tf-plum: #1b1220;
+  --art-panel: url("../img/ui/tonari-floor/panel.webp"); /* フロア専用の板（#3960。九分割・角110px） */
   --tf-small: max(22px, calc(11.5px / var(--k, 1)));
   --tf-text: max(25px, calc(13px / var(--k, 1)));
   --tf-big: max(30px, calc(15.5px / var(--k, 1)));
@@ -478,7 +479,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* 選ぶ札: 暗いガラスに金の文字。決定は金の札 */
 .tf-option {
   min-height: 96px; padding: 2px 10px; display: flex; align-items: center; justify-content: center; gap: 10px; text-align: left;
-  border: 12px solid transparent; border-image: url("../img/ui/craft-night/button-glass.webp") 28 fill / 12px / 0 stretch;
+  border: 12px solid transparent; border-image: url("../img/ui/tonari-floor/card.webp") 36 fill / 12px / 0 stretch;
   background: none; color: #fff1c4; transition: filter 0.15s ease, scale 0.15s ease;
 }
 .tf-option b { display: block; font-size: var(--tf-text); line-height: 1.2; }
@@ -487,7 +488,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-option:is(:hover, :focus-visible) { filter: brightness(1.35) drop-shadow(0 0 8px #ffd98a88); scale: 1.02; }
 .tf-option:active { scale: 0.97; }
 .tf-option[data-primary="true"] {
-  border-width: 14px; border-image: url("../img/ui/craft-night/button-gold.webp") 36 fill / 14px / 0 stretch;
+  border-width: 14px; border-image: url("../img/ui/tonari-floor/card-primary.webp") 36 fill / 14px / 0 stretch;
   color: #2a1a08; min-width: 320px; justify-content: center; text-align: center;
 }
 .tf-option[data-primary="true"] small { color: #5a3a14; }
@@ -499,7 +500,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-list .tf-option { min-height: 92px; justify-content: flex-start; border-width: 4px 12px; padding: 2px 14px; gap: 14px; position: relative; }
 .tf-list[data-count="5"] .tf-option { min-height: 76px; }
 .tf-list .tf-option:is(:hover, :focus-visible):not(:disabled), .tf-list .tf-option[data-picked="true"] {
-  border-image: url("../img/ui/craft-night/button-gold.webp") 36 fill / 14px / 0 stretch;
+  border-image: url("../img/ui/tonari-floor/card-primary.webp") 36 fill / 14px / 0 stretch;
   color: #2a1a08; filter: drop-shadow(0 0 10px #ffd98a99); scale: 1; translate: 8px 0;
 }
 .tf-list .tf-option:is(:hover, :focus-visible):not(:disabled) :is(small, .tf-icon), .tf-list .tf-option[data-picked="true"] :is(small, .tf-icon) { color: #5a3a14; }
@@ -553,10 +554,10 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-slip-total strong { font-size: 52px; line-height: 1.1; color: #ffe2a6; text-shadow: 0 0 18px #f0a64a66; }
 .tf-slip-side { display: grid; gap: 6px; }
 .tf-stamp { display: flex; align-items: center; justify-content: center; gap: 14px; animation: tf-stamp 0.5s 0.35s var(--ease-snap, ease) backwards; }
-.tf-stamp i { display: block; width: 92px; height: 78px; flex: 0 0 auto; background: url("../img/ui/craft-night/medal-plain.webp") center / contain no-repeat; filter: drop-shadow(0 4px 8px #000a); }
-.tf-stamp[data-rank="S"] i { background-image: url("../img/ui/craft-night/medal-gold.webp"); filter: drop-shadow(0 0 14px #ffd98a) drop-shadow(0 4px 8px #000a); }
-.tf-stamp[data-rank="A"] i { background-image: url("../img/ui/craft-night/medal-silver.webp"); }
-.tf-stamp[data-rank="B"] i { background-image: url("../img/ui/craft-night/medal-bronze.webp"); }
+.tf-stamp i { display: block; width: 92px; height: 78px; flex: 0 0 auto; background: url("../img/ui/tonari-floor/medal-c.webp") center / contain no-repeat; filter: drop-shadow(0 4px 8px #000a); }
+.tf-stamp[data-rank="S"] i { background-image: url("../img/ui/tonari-floor/medal-s.webp"); filter: drop-shadow(0 0 14px #ffd98a) drop-shadow(0 4px 8px #000a); }
+.tf-stamp[data-rank="A"] i { background-image: url("../img/ui/tonari-floor/medal-a.webp"); }
+.tf-stamp[data-rank="B"] i { background-image: url("../img/ui/tonari-floor/medal-b.webp"); }
 .tf-stamp b { font-size: 40px; line-height: 1.1; letter-spacing: 0.08em; color: #fff1c4; white-space: nowrap; }
 .tf-stamp[data-rank="S"] b { color: #ffe2a6; text-shadow: 0 0 14px #f0a64a; }
 .tf-stamp[data-rank="C"] b { color: var(--tf-dim); }
