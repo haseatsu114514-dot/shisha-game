@@ -985,6 +985,8 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hole-chooser .ht-description { display: none !important; }
 /* 吸い出し: 「▼下げ吸い／▲上げ吸い」の矢印と色で分かるので、「温度を下げる／上げる」の補足は出さない */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-play .pull-zone-label span { display: none !important; }
+/* 吸い出し: 能力の効果は「技」の札だけ（文は「?」で読む） */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-play > .effect-line > span:not(.effect-badge) { display: none !important; }
 /* 蒸らし時間: 時間を決める前の「時間を設定すると…」は出さない（決めると「雑念回避は約○秒。」が出る） */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] [data-test="steam-duration-hint"][data-empty="true"] { visibility: hidden !important; }
 

@@ -202,6 +202,10 @@ async function pullGame(cs, mode, holdFailedResult) {
     ? mode.drift ? "温度を戻すのは炭。交換する数と置き方で決まる。そのあとの吸いは味の確かめで、温度は少ししか動かない。1〜2口で整え終えよう"
     : "中央のキープは左寄りで微減、右寄りで微増。右の上げ吸いは温度を上げ、左の下げ吸いは温度を下げる。雨の日は上げ吸いを増やそう。吸い終わってから次の針を止める"
     : mode.hint);
+  // スマホは「技」の札だけを出す。文はここで読む（PHN18・css/craft-phone.css。PC は今までどおり画面に出る）
+  if (effectVisible("technique")) panel.closest?.(".bench")?.querySelector?.(".bench-guide-tip > p")?.after?.(el("div.bench-guide-extra.bench-guide-phone", [
+    el("ul", [el("li", [el("b", { text: "技" }), el("span", { text: "技術でゲージがゆっくり" })])]),
+  ]));
   const gameClock = createCraftClock(panel);
   const concentration = mode.focus(cs);
   // 疲れが付くと途中から針が速く、成功帯が狭くなるので、毎回計算し直す。
