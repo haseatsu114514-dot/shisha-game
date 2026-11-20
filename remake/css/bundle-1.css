@@ -12335,7 +12335,10 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin.t-peak .gfx-cutin-tex
 .gb-node.lesson.lp-talk::before { background: radial-gradient(circle, rgba(155, 231, 180, 0.6) 0%, rgba(155, 231, 180, 0.22) 46%, transparent 70%); animation: gb-lp-glow 1.8s ease-in-out infinite; }
 @keyframes gb-lp-glow { 50% { opacity: 0.55; } }
 /* 下の印: あと♥1（道は届いた。明るい桃色で脈打つ）・♥達成（金の縁） */
-.gb-lesson-tag.t-heart.only { background: linear-gradient(180deg, #ff7aa6, #d83e74); box-shadow: 0 0 0 2px rgba(10, 6, 16, 0.9), 0 0 10px #ff7aa6; animation: gb-tag-heart 1.25s ease-in-out infinite; }
+.gb-lesson-tag.t-heart.only { background: linear-gradient(180deg, #ff7aa6, #d83e74); animation: gb-tag-heart 1.25s ease-in-out infinite; }
+.gboard .gb-nodes .gb-node > .gb-lesson-tag.t-heart.only { box-shadow: 0 0 0 2px rgba(10, 6, 16, 0.9), 0 0 10px #ff7aa6; }
+/* 「相談」の印: 吹き出しの絵のぶんの左の余白が、札の印の基の指定（余白 0 8px）に負けて、絵が「相」の字に重なっていた（PC幅。スマホ幅は別の指定で空いていた） */
+.gboard .gb-nodes .gb-node > .gb-lesson-tag.t-talk { padding-left: 21px; }
 @keyframes gb-tag-heart { 14%, 42% { scale: 1.12; } 28%, 60% { scale: 1; } }
 .gb-lesson-tag.t-road { color: #ffe9b8; background: #2a1c0c; border: 1.5px solid #ffe08a; }
 .gh-tag.gb-lesson-tag.t-heart.only { animation: none; }

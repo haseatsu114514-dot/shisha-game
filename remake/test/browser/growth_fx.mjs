@@ -209,10 +209,10 @@ await suite("growth-fx", async (check) => {
       const perks = await help.locator("[data-perk]").evaluateAll((rows) => rows.map((row) => [row.dataset.perk, row.querySelector("b").textContent, row.querySelector(".gh-text span").textContent]));
       assert.equal(perks.length, 12, "能力は12");
       assert(perks.every(([key, name, text]) => key && name && text), `どの能力にも名前と一言がある: ${JSON.stringify(perks)}`);
-      // 授業のページ（SBD140）: ながれの4手順と、札の下の印3つ
+      // 授業のページ（SBD140・SBD155）: ながれの4手順と、札の下の印5つ（道が届いた「あと♥1」・♥が足りた「♥達成」を足した）
       await tap(t("board-help-tab-lesson"));
-      assert.deepEqual(await help.locator(".gh-row .gh-text b").allInnerTexts(), ["出会う", "♥5まで仲良くなる", "盤で灯す", "会って習う", "仲良くなる途中", "今教われる", "灯した。会いに行く"]);
-      assert.deepEqual(await help.locator(".gh-tag").allInnerTexts(), ["♥4/5", "今", "相談"]);
+      assert.deepEqual(await help.locator(".gh-row .gh-text b").allInnerTexts(), ["出会う", "♥5まで仲良くなる", "盤で灯す", "会って習う", "仲良くなる途中", "あとは♥だけ", "あとは道だけ", "今教われる", "灯した。会いに行く"]);
+      assert.deepEqual(await help.locator(".gh-tag").allInnerTexts(), ["♥4/5", "あと♥1", "♥達成", "今", "相談"]);
       for (const id of ["flow", "fire", "kinds", "lesson", "perks", "states", "how", "rules"]) {
         await tap(t(`board-help-tab-${id}`));
         await assertFits(page, t("board-help-pages"));
