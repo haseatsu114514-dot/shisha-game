@@ -255,7 +255,10 @@ const noneOf = (label, value) => { state = value; for (const id of LOCALS) asser
 noneOf("chapter 3 after departure", known(3, { _ch3_prep: { ...PREP, departed: true } }));
 noneOf("chapter 4 after departure", known(4, { _ch4_prep: { ...PREP, departed: true } }));
 noneOf("chapter 5", known(5, { _ch4_prep: { ...PREP, departed: true } }));
-noneOf("chapter 2", known(2, { _ch3_prep: { ...PREP } }));
+// 第2章は送り出しを出さない。つむぎだけは第2章の客席の会話（#3097 第5弾）が先に来る（送り出しではない）
+state = known(2, { _ch3_prep: { ...PREP } });
+for (const id of ["ageha", "kumicho", "rei"]) assert.equal(spots.chapterTalkDue(id), null, `chapter 2: ${id}`);
+assert.equal(spots.chapterTalkDue("tsumugi"), "ch2_tsumugi_charcoal_bread", "chapter 2: Tsumugi's own chapter 2 talk, not a send-off");
 noneOf("before the first talk", save(3, { flags: prepFlags(3, { _ch2_talks: { ageha: 0 } }) }));
 // 第2章で余りチケットを受け取った人は、第3章はライブの夜（ch3_prep_rei_live）が送り出し。第4章の送り出しは読める
 state = known(3, { _ch2_rei_ticket: true }); assert.equal(spots.chapterTalkDue("rei"), null, "the live night is the chapter 3 send-off");
