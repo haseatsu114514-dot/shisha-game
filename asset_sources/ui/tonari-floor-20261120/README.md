@@ -21,7 +21,7 @@
 - 数字・名前・時計・満足の輪・マーカーの文字・煙の動き・灯りの明滅はコードが描く。素材には焼き込まない。
 - シーシャ機材が写るのは C の一台だけ（`docs/shisha_reference.md` §4 の手順が要る）。店内画と客の絵には、台・ホース・炭を描かない。
 
-## 配置（この2枚を見てから描く）
+## 配置（この3枚を見てから描く）
 
 | ファイル | 中身 |
 |---|---|
@@ -29,7 +29,7 @@
 | [screen-mock.png](screen-mock.png) | 同じ配置で営業を動かした画面（1280×720）。店内と客は仮の絵、板と文字は今の画面のもの。UI がどこに重なるかの確認用 |
 | [screen-mock-serve.png](screen-mock-serve.png) | 卓を押して選ぶ場面（接客ビュー。1280×720）。店内が選んだ卓へ1.3倍に寄り、左に選択肢の列、下に客のドックが出る。客の絵が大きく見える場面なので、**客の絵はこの大きさ（画面の縦の半分ほど）でも粗が出ない細かさ**で作る |
 
-どちらもゲームの実際の座標から描いている（`remake/test/tonari_floor_guide.mjs`。位置の正本は `remake/js/daily/tonari-floor-stage.js` の `STAGES.floor`）。
+どれもゲームの実際の座標から描いている（`remake/test/tonari_floor_guide.mjs`。位置の正本は `remake/js/daily/tonari-floor-stage.js` の `STAGES.floor`）。
 
 重ねる順（奥から）: **店内 → 客 → 前景（上の段の卓・下の段のソファの手前の肘掛け）→ 卓の上の一台と煙 → 番号札 → 卓のマーカー**。上の段の客は卓の奥に座り、膝から下を卓が隠す。下の段の客は横向きのソファに座り、手前の肘掛けが腰のあたりを隠す。
 
@@ -150,7 +150,7 @@ STYLE STANDARD (shisha-game backgrounds): anime visual novel background, detaile
 保存先: asset_sources/ui/tonari-floor-20261120/originals/room-night.png
 
 --- B 共通（guest-*.png・1回の生成で1枚・1枚に1人）---
-shisha-game の「tonari フロア営業」で、ソファに座る客の絵を1人ぶん描いてください。店内画のソファの上に重ねて使います。
+shisha-game の「tonari フロア営業」で、ソファに座る客の絵を1人ぶん描いてください。店内画のソファの上に重ねて使います。接客の場面では大きく（画面の縦の半分ほど）見えるので、顔と手元を丁寧に描いてください。
 参照画像（リポジトリのファイルを渡す。役割も書く）:
  ① 画風の目標: assets/sprites/characters/minto/chr_minto_normal.png と assets/sprites/characters/ageha/chr_ageha_normal.png（線・塗り・影の段数だけを真似る。顔・髪・衣装は写さない）
  ② 頭身と顔の大きさの目標: 男性は assets/sprites/characters/sui/chr_sui_normal.png（千須）、女性は assets/sprites/characters/rio/chr_rio_normal.png（凛想）（頭身の目標だけ。顔・髪・体格・衣装は写さない）
