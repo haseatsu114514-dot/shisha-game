@@ -127,7 +127,8 @@ export async function tonariCustomer({ signal = null } = {}) {
     addStamina(-16);
     const greeting = await play(state.slot === 0 ? "venue_tonari_day" : "venue_tonari_night", { bg: TONARI_BG, signal });
     if (!live() || !greeting || greeting.cancelled) return false;
-    await meetHiyoriAtTonari();
+    // 出発前のひよりの送り出し（#3097 PR-I）は、つむぎの新しい話を読む来店では次の対面へ残す（一来店に一本）
+    await meetHiyoriAtTonari({ prepTalk: !(tsumugiAtTonari(state) && hasNewStory("tsumugi")) });
     if (!live()) return false;
     if (tsumugiAtTonari(state)) {
       if (!await visitChar("tsumugi") || !live()) return false;
@@ -395,6 +396,11 @@ export const CH2_SHIFT_TALKS = Object.freeze([
   { id: "ch2_shift_talk_student", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
   // つむぎが店にいる時だけ。DAY13（つむぎの色の夜）とは別の日
   { id: "ch2_shift_talk_tsumugi_board", when: (s, { tsumugiHere }) => !!s.met?.tsumugi && tsumugiHere && ch2DayOf(s) !== 13 },
+  // #3097 計画 2-7（PR-D）: つむぎの普段の会話3本（灰の猫・背中の絵・洗う手）。黒板の回と同じく、つむぎが店にいる日だけ・DAY13とは別の日。
+  // つむぎのいる日は限られるので、黒板の回のすぐ後に置く（いない日は飛ばして、下のスミさんの回を読む）。恋愛を進めない
+  { id: "ch2_shift_talk_tsumugi_ash", when: (s, { tsumugiHere }) => !!s.met?.tsumugi && tsumugiHere && ch2DayOf(s) !== 13 },
+  { id: "ch2_shift_talk_tsumugi_backs", when: (s, { tsumugiHere }) => !!s.met?.tsumugi && tsumugiHere && ch2DayOf(s) !== 13 },
+  { id: "ch2_shift_talk_tsumugi_hands", when: (s, { tsumugiHere }) => !!s.met?.tsumugi && tsumugiHere && ch2DayOf(s) !== 13 },
   { id: "ch2_shift_talk_one_hose", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
   // #3097（RLS03）第2弾: 忘れ物の箱・初めての客・古いCDラジカセ・いつもの席・指の火傷。どれも柚ヶ谷へ通い始めた後
   { id: "ch2_shift_talk_lost_box", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
@@ -402,6 +408,12 @@ export const CH2_SHIFT_TALKS = Object.freeze([
   { id: "ch2_shift_talk_cd_player", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
   { id: "ch2_shift_talk_same_seat", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
   { id: "ch2_shift_talk_burnt_finger", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  // #3097 計画 2-8（PR-D）第3弾: 瓶の水の高さ・忘れたマウスピース・閉店前の短い一台・先に起こす炭・引っ越す常連。スミさんの手仕事と客の話
+  { id: "ch2_shift_talk_water_line", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  { id: "ch2_shift_talk_my_mouthpiece", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  { id: "ch2_shift_talk_short_one", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  { id: "ch2_shift_talk_early_coal", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  { id: "ch2_shift_talk_last_visit", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
 ]);
 /** 今日のシフト上がりに読む第2章の会話（無ければ null）。台本が読み込まれていない時は出さない。 */
 export function ch2ShiftTalkDue(s, dialogues, context = {}) {

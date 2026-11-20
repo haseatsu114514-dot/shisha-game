@@ -3,7 +3,8 @@
 //
 // 流れ（骨格）:
 //   prologue   : 橋渡し → 帰郷 → 自由行動へ
-//   free       : tonari の自由場面（任意）→「博士に連絡する」で日程の場面へ
+//   free       : tonari の自由場面 →「博士に連絡する」で日程の場面へ。連絡は閉店後の練習と試作を終えてから（chapterFiveCallOpen・
+//                2026-11-20 オーナー）。その後は期限なしで、好きな日に決められる
 //     prep     : 「閉店後の練習」のあと、試作→スミさんの返答→再調整の選択（#1666。結果は試合と後日談に返る）
 //     trial    : prep を終えた夜の tonari で、任意で一度だけ本物の一台を作ってスミさんに吸ってもらう
 //                （#2020 F・ch5-sumi-trial.js。進行は止めない。講評は二杯目の前の試作の返りの後に一行で返る）
@@ -25,7 +26,10 @@
 //   ch5_reflection_placeholder はテスト専用なので接続しない。
 import { selectPostEndingConflict } from "../core/story-routes.js";
 import { STORY_BGM } from "../core/story-audio.js";
+import { CH5_PROLOGUE } from "./ch5-prologue.js";
 import { SUMI_TRIAL_IDS, sumiTrialRecall } from "./ch5-sumi-trial.js";
+
+export { CH5_PROLOGUE };
 
 // ---- 背景の対応表（1か所に集約）----------------------------------------------------
 // 第5章の勝負会場は SMOKE LAB。その他は既存 bg を使用する。
@@ -154,13 +158,6 @@ export const CH5_SCENE_BGM = Object.freeze({
 });
 
 // ---- 場面表 -------------------------------------------------------------------------
-// プロローグ。橋渡しの位置は※仮置き（CH4-CONNECTION-DESIGN。ch4_two_tables の後という説もある）。
-// ch5_opening は data/story_routes.json の before_match[0] と一致させる。
-export const CH5_PROLOGUE = Object.freeze([
-  { id: "ch5_bridge_after_return", label: "ドバイのあと", location: "tonari" },
-  { id: "ch5_opening", label: "帰郷", location: "橙須" },
-].map(scene => Object.freeze(scene)));
-
 // 自由行動で再生する場面。tonari の3件は昼→夕→夜の順に1回ずつ（台本コメントの時間帯に合わせる）。
 // そのあと、後輩スタッフのつむぎの6場面（接客→はじめに作る→満席の夜→開店前の練習→相談相手→店先の黒板）を順に1回ずつ（#2606）。
 // 閉店後の練習（試作）より後に置き、勝負までの流れを遅らせない。
@@ -441,6 +438,22 @@ export function chapterFivePrepPending(value) {
   return progress.part === "free" && progress.read[PREP_PRACTICE] === true
     && (progress.prep === undefined || progress.prep.adjusted === null);
 }
+
+/**
+ * 博士に連絡できる（勝負の日を決められる）自由行動か。2026-11-20 オーナー「好きなタイミングで準備できたら挑める。
+ * ある程度ストーリーが進んだら、ゆっくり準備してもいい」: tonari の「閉店後の練習」と試作（試す→スミさんの返答→
+ * 直すか、このまま覚えるか）を終えてから。試作の結果は勝負の二杯目に返るので、ここを準備の区切りにする。
+ * 期限は置かない（日常ループの untilDay は日を決めるまで Infinity のまま）。読むだけで保存は変えない。
+ */
+export function chapterFiveCallOpen(value) {
+  if (value?.chapter !== 5) return false;
+  let progress;
+  try { progress = chapterFiveProgress(value); } catch { return false; } // 地図を出すだけの判定なので、読めない保存では止めない
+  return progress.part === "free" && progress.read[PREP_PRACTICE] === true
+    && !!progress.prep && progress.prep.adjusted !== null;
+}
+/** 博士に連絡できるようになった時の知らせ（試作を終えた時に一度）。 */
+export const CH5_CALL_OPEN_NOTE = "準備の区切りがついた。勝負の日は、自宅の電話で博士と決められる";
 
 /** 試作の場面を読み終えたら、何を試したかを保存する。 */
 export function recordChapterFivePrepTrial(value, trial) {

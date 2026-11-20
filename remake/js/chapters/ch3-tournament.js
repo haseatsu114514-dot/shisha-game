@@ -54,7 +54,8 @@ const REQUIRED = ["tournament_day", "national_craft", "national_adjustment", "na
   .map(id => `ch3_${id}`);
 const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); };
 const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
-  stepSteamTime, runSteamDodge, runPull, cs => runCare(cs, { round: 1 }), cs => runCare(cs, { round: 2 })];
+  stepSteamTime, runSteamDodge, cs => runPull(cs, { holdFailedResult: true }),
+  cs => runCare(cs, { round: 1, holdFailedResult: true }), cs => runCare(cs, { round: 2, holdFailedResult: true })];
 const STEP_IDS = ["setup", "mix", "pack", "foil", "place", "coalfire", "steam", "steam", "pull", "adjust", "adjust"];
 // 1・4票は工程確定直後、2・3票は対応する台詞の読了後に確定する。
 // 台詞待ちの stage は既存 SAVE の再開地点でもあるため、そのまま保持する。

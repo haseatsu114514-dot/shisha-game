@@ -96,7 +96,19 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
     after: ["ch3_mashiro_doze"] },
   // #3468 G案。ムカイさん×ヨルの開店前の曲順。大会前に読めなかった時だけ、同じ既読で。台本は大会に触れない。好感度は動かさない。
   { id: "ch3_mukai_yoru_playlist", file: "ch3_mukai", label: "昼の曲順", location: "mukai", bg: "bg_mukai_shop", met: ["yoru"] },
+  // #3097 PR-H。綾取・スティーブ・ヴォルクの♥3の友人の外出。東京の日常ループでは LIME の誘い（lime_outing_<id>_1）の昼に行くが、
+  // LIME の交換が大会の直前（綾取は助言の後）や大会の後（ヴォルクは四度目の来店の後）になり誘いが届かないことが多いので、
+  // 行かなかった分を帰る前に一度だけ読める。outing=その人の外出の印 _outing_done_<id>（済んだ保存と♥5の締めくくりの後は出さない。
+  // 読んだら立て、後日の LIME lime_after_outing_<id> が届く）。条件は誘いと同じ（交換の場面の既読と♥3）。
+  // 台本は大会と時間帯に触れないので、大会の前後どちらで読んでも通る。好感度は動かさない（誘いに乗った時の分は日常ループの約束の処理）。
+  { id: "outing_saku_1", file: "ch3_rivals", label: "試食係", location: "公園", bg: "bg_tokyo_park",
+    met: ["saku"], after: ["ch3_saku_lime"], heart: { saku: 3 }, outing: "saku" },
+  { id: "outing_steve_1", file: "ch3_rivals", label: "貸しボートの三十分", location: "公園の池", bg: "bg_tokyo_park",
+    met: ["steve"], after: ["ch3_steve_lime"], heart: { steve: 3 }, outing: "steve" },
+  { id: "outing_volk_1", file: "ch3_volk", label: "測らない瓶", location: "商店街", bg: "bg_street",
+    met: ["volk"], after: ["ch3_volk_lime"], heart: { volk: 3 }, outing: "volk" },
 ]);
+const outingDone = (value, who) => !!value.flags[`_outing_done_${who}`] || !!value.finales?.[who];
 /**
  * 好感度の段階（♥）の下限。core/stats.js の AFFINITY_RANK_PTS の写し（vm で読む試験の依存を増やさない。ch3_aftermath.mjs で照合）。
  * heart=その人物の通常好感度がこの段階以上の時だけ出す（大会前の寄り道 ch3-story-wiring.js の heart と同じ）。
@@ -115,6 +127,7 @@ export function availableAftermathDetours(value) {
     && (!scene.to || stage <= sceneIndex(scene.to))
     && (scene.met || []).every(who => value.met?.[who])
     && (scene.after || []).every(id => value.flags[detourReadFlag(id)])
+    && (!scene.outing || !outingDone(value, scene.outing))
     && Object.entries(scene.heart || {}).every(([who, level]) => (value.affinity?.[who] || 0) >= AFTERMATH_HEART_PTS[level]));
 }
 
@@ -174,8 +187,10 @@ export function availableAftermathFinales(value, due) {
 
 /** 寄り道を最後まで読んだ時だけ既読にする。本筋の進行には触れない。 */
 export function completeAftermathDetour(value, id) {
-  if (!availableAftermathDetours(value).some(scene => scene.id === id)) return false;
+  const scene = availableAftermathDetours(value).find(item => item.id === id);
+  if (!scene) return false;
   value.flags[detourReadFlag(id)] = true;
+  if (scene.outing) value.flags[`_outing_done_${scene.outing}`] = true; // 日常ループの約束（daily/calendar.js）と同じ印
   return true;
 }
 

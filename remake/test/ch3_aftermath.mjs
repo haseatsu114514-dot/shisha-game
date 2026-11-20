@@ -9,6 +9,7 @@ import { CH3_AFTERMATH_SCENES, CH3_AFTERMATH_DETOURS, canRunChapterThreeAftermat
   availableAftermathFinales, AFTERMATH_HEART_PTS } from "../js/chapters/ch3-aftermath-progress.js";
 import { agehaConfessionDue, beginAgehaConfessionDay, AGEHA_CONFESSION_DAY_AFTER_WIN, AGEHA_HEART_MAX_PTS } from "../js/chapters/ch3-romance-entry.js";
 import { AFFINITY_RANK_PTS } from "../js/core/stats.js";
+import { classifyFlag } from "../js/core/carry.js";
 assert.equal(AGEHA_HEART_MAX_PTS, AFFINITY_RANK_PTS[5], "ageha's ♥5 threshold must follow the shared affinity table");
 
 // STK23: 帰郷した夜は、新幹線を降りた足でMELTY PUFF → tonariでつむぎの絵 → 最後に帰郷の客（章の最後の画）。
@@ -130,6 +131,9 @@ const detourIds = ["ch3_mukai_after_tournament", "ch3_cigarman_trace", "ch3_emil
   ...MASHIRO_EXTRAS];
 // #3468 G案（ムカイさん×ヨルの曲順）は mukai の寄り道の末尾
 detourIds.push("ch3_mukai_yoru_playlist");
+// #3097 PR-H: 綾取・スティーブ・ヴォルクの♥3の友人の外出（東京の LIME の誘いで行かなかった分）
+const RIVAL_OUTINGS = ["outing_saku_1", "outing_steve_1", "outing_volk_1"];
+detourIds.push(...RIVAL_OUTINGS);
 const openFirst = ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second", "ch3_volk_after_ch3",
   "ch3_mashiro_mukai_syrup_shelf"];
 assert.deepEqual(CH3_AFTERMATH_DETOURS.map(scene => scene.id), detourIds);
@@ -229,6 +233,41 @@ assert(!mukaiAfter.lines.some(line => /屋根裏|鍵/.test(line.text || "")), "t
   }
   const loaded = JSON.parse(JSON.stringify(late));
   assert(!availableAftermathDetours(loaded).some(scene => scene.id === MASHIRO_EXTRAS[0]), "LOAD keeps the read flag");
+}
+// #3097 PR-H: ♥3の友人の外出は、LIME を交換した場面の既読と♥3がそろった人だけ、帰る前に一度。
+// 東京の約束で済ませた保存（_outing_done_<id>）と♥5の締めくくりの後は出さない。読むと同じ印が立ち、後日の LIME が届く。
+{
+  const ready = winningSave();
+  ready.met = { saku: true, steve: true, volk: true };
+  Object.assign(ready.flags, { _ch3_read_ch3_saku_lime: true, _ch3_read_ch3_steve_lime: true, _ch3_read_ch3_volk_lime: true });
+  ready.affinity = { saku: 33, steve: 33, volk: 32 };
+  beginChapterThreeAftermath(ready);
+  assert(!availableAftermathDetours(ready).some(scene => RIVAL_OUTINGS.includes(scene.id)), "victory night waits");
+  completeChapterThreeAftermathScene(ready, "ch3_abyss_hotel");
+  const outings = () => availableAftermathDetours(ready).map(scene => scene.id).filter(id => RIVAL_OUTINGS.includes(id));
+  assert.deepEqual(outings(), ["outing_saku_1", "outing_steve_1"], "♥3 (33pt) opens it; ♥2 (32pt) does not");
+  ready.affinity.volk = 33;
+  assert.deepEqual(outings(), RIVAL_OUTINGS);
+  const before = structuredClone(ready);
+  delete before.flags._ch3_read_ch3_saku_lime;
+  assert(!availableAftermathDetours(before).some(scene => scene.id === "outing_saku_1"), "the LIME exchange is required");
+  ready.flags._outing_done_steve = true; // 東京の日常ループの約束で済ませた
+  ready.finales = { ...ready.finales, volk: { route: "friend" } };
+  assert.deepEqual(outings(), ["outing_saku_1"], "done in Tokyo or after the ♥5 finale: not offered");
+  const progress = structuredClone(ready.flags._ch3_aftermath), date = [ready.day, ready.slot];
+  assert.equal(completeAftermathDetour(ready, "outing_saku_1"), true);
+  assert.equal(ready.flags._outing_done_saku, true, "the after-outing LIME is unlocked by the same flag");
+  assert.equal(ready.flags._ch3_read_outing_saku_1, true);
+  assert.deepEqual([ready.flags._ch3_aftermath, [ready.day, ready.slot]], [progress, date], "the outing detour does not advance time");
+  assert.equal(completeAftermathDetour(ready, "outing_saku_1"), false, "read once");
+  assert.deepEqual(outings(), []);
+  for (const id of ["_outing_done_saku", "_outing_done_steve", "_outing_done_volk"]) assert.equal(classifyFlag(id), "person", id);
+  const scripts = Object.fromEntries(["ch3_rivals", "ch3_volk"].flatMap(file => readData(`dialogue/${file}`).dialogues).map(row => [row.dialogue_id, row]));
+  for (const id of RIVAL_OUTINGS) {
+    const text = JSON.stringify(scripts[id].lines);
+    assert(!scripts[id].lines.some(line => line.type), `${id}: no reward or control lines (the invitation settles rewards)`);
+    assert(!/大会|本番|全国|明日|今夜|昼|夜|朝/.test(text), `${id}: reads the same before/after the tournament and at any time`);
+  }
 }
 // IR23: 鉄の煙の再訪は大会後も順に一つずつ。大会前に読んだ分（同じ既読フラグ）は飛ばす。好感度は任意の場面の台本の報酬だけ。
 {
@@ -549,9 +588,10 @@ console.log("PASS: Volk and Steve's greeting and Smoke & Glory follow-up open on
   completeChapterThreeAftermathScene(lessonSave, "ch3_naru_reconcile");
   assert.deepEqual(who(lessonSave), ["volk"], "the cleanup morning: Ayatori is packing the shop, only Volk is left");
   // 寄り道を全部読んでも、授業だけで寄り道の入口が開く（ch3-aftermath.js は寄り道と授業の合計で入口を出す）
-  lessonSave.met = { ...lessonSave.met, emil: true, volk: true, steve: true, yoru: true };
+  lessonSave.met = { ...lessonSave.met, emil: true, volk: true, steve: true, yoru: true, saku: true };
   lessonSave.flags._ch3_read_ch3_cigarman_rumor = true;
   lessonSave.flags._ch3_read_ch3_saku_lime = true;
+  lessonSave.flags._ch3_read_ch3_steve_lime = true; // スティーブとの♥3の外出の条件（#3097 PR-H。交換の場面は大会前のmukaiだけ）
   lessonSave.affinity.volk = AFFINITY_RANK_PTS[4]; // 五度目は♥4、LIME交換は♥2から
   lessonSave.affinity.saku = AFFINITY_RANK_PTS[4];
   lessonSave.affinity.steve = AFFINITY_RANK_PTS[4];

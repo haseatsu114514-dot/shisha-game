@@ -53,4 +53,35 @@ await suite("step-intro", async check => {
     assert.equal(await page.evaluate(() => document.querySelector(".bench-guide").open), false);
     assert.equal(await page.evaluate(() => document.querySelector(".bench-panel").inert), false);
   });
+
+  await check("first-order-ingredients-fit-after-closing-the-guide", async page => {
+    await init(page);
+    await page.evaluate(async () => {
+      const { configureFirstBrew } = await import("./js/chapters/first-brew.js");
+      window.cs = configureFirstBrew(T.session.newSession("tutorial"));
+      await T.open(cs);
+      window.mixing = T.steps.stepMix(cs);
+    });
+    await page.locator('[data-test="bench-guide-close"]').tap();
+    const mint = page.locator('[data-test="mix-plus-mint"]');
+    await mint.waitFor();
+    const list = page.locator(".mix-list");
+    const controls = await list.evaluate(node => {
+      const clip = node.getBoundingClientRect();
+      return Array.from(node.querySelectorAll(".fr-btn"), button => {
+        const box = button.getBoundingClientRect();
+        const hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+        return {
+          id: button.dataset.test,
+          fits: box.top >= clip.top && box.bottom <= clip.bottom && box.height >= 43.9,
+          reachable: button === hit || button.contains(hit),
+        };
+      });
+    });
+    assert.equal(controls.length, 6);
+    assert(controls.every(button => button.fits && button.reachable), JSON.stringify(controls));
+    await mint.tap();
+    assert.equal(await page.evaluate(() => cs.mix.mint), 1);
+    assert.equal(await list.evaluate(node => node.scrollTop), 0);
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
 }, { stepIntro: true });

@@ -27,7 +27,7 @@ import { dialoguePages } from "./layout.js";
 import { glossaryPanel } from "./glossary.js";
 import { createTypedHtml } from "./typed-html.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
-import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
+import { needsIntro, playIntro, prefetchIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
 import { chekiShot, tarotFlip, limeExchange, purikuraShot, sceneMoment, gazeCutin } from "../core/scene-motions.js";
 import { showShishaDiagram, hideShishaDiagram } from "./shisha-diagram.js";
@@ -680,7 +680,7 @@ function next() {
       if (id !== "hajime") { queueIntro({ id, variant, override: line.intro || {} }); continue; }
       if (vnTest.turbo) { markIntroSeen(id, variant); continue; }
       r.ready = false;
-      playIntro(id, { variant, override: line.intro || {} }).then(() => { if (running === r) { r.ready = true; next(); } });
+      playIntro(id, { variant, override: line.intro || {}, waitAssets: introAssetWait(r) }).then(() => { if (running === r) { r.ready = true; next(); } });
       return;
     }
     if (type === "hide_portrait") {
@@ -889,8 +889,13 @@ async function visualSettled(node, ms = 800) {
 function queueIntro(cue) {
   if (!running.pendingIntros.some((pending) => pending.id === cue.id && (pending.variant || "") === (cue.variant || ""))) {
     running.pendingIntros.push(cue);
+    // 紹介の絵と書体を今から取り始める。本人の行を読んでいる間に届けば、送った後に待たない（#2444 観察4）
+    if (!vnTest.turbo) prefetchIntro(cue.id, cue);
   }
 }
+
+/** 紹介の絵・書体の待ちにも、ほかの素材の待ちと同じ読み込みの表示を添える（▼は送った時点で消えている。#2444 観察4） */
+const introAssetWait = (r) => (ready) => waitSceneAssets(ready, r);
 
 // 読み進めた時点で、本人の立ち絵と発話を見た紹介だけを出す。
 function introThenShow(line, show = showLine) {
@@ -906,7 +911,7 @@ function introThenShow(line, show = showLine) {
   }
   r.ready = false;
   (async () => {
-    for (const { id, variant, override } of due) await playIntro(id, { variant, override, onAppear: () => speakerBgm(id) });
+    for (const { id, variant, override } of due) await playIntro(id, { variant, override, onAppear: () => speakerBgm(id), waitAssets: introAssetWait(r) });
     if (running !== r) return;
     r.ready = true;
     if (line) show(line); else finish();

@@ -1144,6 +1144,7 @@
         "node --experimental-vm-modules remake/test/ch3_wayfinding.mjs",
         "node remake/test/ch3_map.mjs",
         "node --experimental-vm-modules remake/test/ch4_progress.mjs",
+        "node --experimental-vm-modules remake/test/ch4_story_overdue.mjs",
         "node --experimental-vm-modules remake/test/ch4_rewards.mjs",
         "node remake/test/camel_race_model.mjs",
         "node remake/test/camel_race_feedback.mjs",
@@ -1155,6 +1156,7 @@
         "node remake/test/ch4_longlong.mjs",
         "node remake/test/affection_fill.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
+        "node --experimental-vm-modules remake/test/ch5_unrecorded.mjs",
         "node remake/test/ch5_sumi_trial.mjs",
         "node remake/test/ch5_party.mjs",
         "node remake/test/petit_shuraba.mjs",
@@ -1235,7 +1237,7 @@
     },
     {
       "id": "departure-home-talks",
-      "title": "Chapter 3/4 prep days at home: one send-off talk each from Adam, Minto, Rio and Samechan, read once on a prep-day visit (N3a)",
+      "title": "Chapter 3/4 prep days at home: one send-off talk each from Adam, Minto, Rio, Samechan, Tsumugi, Hiyori, Ageha, Kumicho and Cloud, read once on a prep-day visit (N3a, #3097 PR-I)",
       "kind": "quick",
       "run": ["node --experimental-vm-modules remake/test/departure_home_talks.mjs"]
     },
@@ -2420,6 +2422,8 @@
         "remake/js/daily/hud.js",
         "data/dialogue/ch3_departure.json",
         "data/dialogue/ch3_ch4_home.json",
+        "data/dialogue/ch4_prep_home.json",
+        "remake/js/daily/hiyori.js",
         "remake/js/daily/spots.js",
         "remake/js/daily/samechan.js",
         "remake/test/browser/ch3_departure_prep.mjs"
@@ -2486,6 +2490,21 @@
         "remake/test/browser/tetsuko_feel.mjs"
       ],
       "run": ["node remake/test/browser/tetsuko_feel.mjs"]
+    },
+    {
+      "id": "chapter-completion-input",
+      "title": "Chapter 2/3 completion card input across the final dialogue tap",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/completion-card-input.js",
+        "remake/js/chapters/ch2-tournament.js",
+        "remake/js/chapters/ch3-aftermath.js",
+        "remake/js/vn/engine.js",
+        "remake/test/browser/chapter_completion_input.mjs"
+      ],
+      "run": ["node remake/test/browser/chapter_completion_input.mjs"]
     },
     {
       "id": "ch3-full-flow",
@@ -4036,6 +4055,23 @@
       "chrome": "playwright"
     },
     {
+      "id": "title-save-guard",
+      "title": "タイトルへ戻る前のオートセーブ失敗と再試行",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/chapter-menu.js",
+        "remake/js/core/state.js",
+        "remake/js/core/ui.js",
+        "remake/js/daily/menu.js",
+        "remake/js/scenes/saves.js",
+        "remake/test/browser/fixtures/title_save.html",
+        "remake/test/browser/title_save_guard.mjs"
+      ],
+      "run": ["node remake/test/browser/title_save_guard.mjs"]
+    },
+    {
       "id": "daily-menu",
       "title": "Full-screen daily MENU: four read-only tabs, keys, save guard and landscape layout (#2097)",
       "kind": "browser",
@@ -4412,6 +4448,7 @@
         "remake/js/trpg/campaign-view.js",
         "remake/js/trpg/preview.js",
         "remake/trpg-preview.html",
+        "remake/trpg-campaign-preview.html",
         "data/trpg_catalog.json",
         "data/dialogue/trpg_ordinary.json",
         "data/dialogue/trpg_shark.json",
@@ -4735,6 +4772,19 @@
       "run": [
         "node remake/test/intro_transition.mjs"
       ]
+    },
+    {
+      "id": "intro-wait-2444",
+      "title": "First-appearance cut-in waits like other VN asset waits: no stale next mark, loading notice, input held, art fetched once the speaker talks (#2444 obs. 4)",
+      "kind": "browser",
+      "weight": 0.8,
+      "timeout": 4,
+      "paths": [
+        "remake/js/vn/engine.js",
+        "remake/js/vn/intro.js",
+        "remake/test/browser/intro_wait_2444.mjs"
+      ],
+      "run": ["node remake/test/browser/intro_wait_2444.mjs"]
     },
     {
       "id": "conversation-effects-demo",

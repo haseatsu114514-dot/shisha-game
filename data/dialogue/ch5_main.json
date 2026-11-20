@@ -410,11 +410,13 @@
           "speaker": "",
           "text": "戻ると、博士は湯のみを両手で包んでいた。大会の映像は止まったままだ。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_doctor_yunomi"},
         {
           "speaker": "dr_kemuri",
           "face": "normal",
           "text": "……さて。勝負の日の話を、しましょうか"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "text": "どちらが正しいかは決めないまま、椅子を戻した。日を決めるかどうかは、まだこれからだった。"
