@@ -1149,6 +1149,7 @@
         "node remake/test/ch4_longlong.mjs",
         "node remake/test/affection_fill.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
+        "node --experimental-vm-modules remake/test/ch5_unrecorded.mjs",
         "node remake/test/ch5_sumi_trial.mjs",
         "node remake/test/ch5_party.mjs",
         "node remake/test/petit_shuraba.mjs",
