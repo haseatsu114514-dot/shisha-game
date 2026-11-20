@@ -78,8 +78,6 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-word > .c {
   text-shadow: 0 .015em 0 var(--depth), 0 .03em 0 var(--depth), 0 .045em 0 var(--depth), 0 .06em 0 var(--depth), 0 .075em 0 var(--depth),
     0 .09em 0 color-mix(in srgb, var(--depth) 70%, #000), 0 .105em 0 color-mix(in srgb, var(--depth) 70%, #000), 0 .16em .2em #000c;
 }
-/* 「……」は字の大きさのままだと丸い粒が並ぶので、小さく詰める。 */
-html:root .trpg-root .trpg-roll-show .trpg-rs-word > .c.dot { font-size: .5em; letter-spacing: -.12em; --stroke: .26em; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-word > .c::after {
   content: attr(data-c); position: absolute; left: 0; top: 0; z-index: 1; -webkit-text-stroke: 0; text-shadow: none;
   color: transparent; background: var(--fill); -webkit-background-clip: text; background-clip: text;
@@ -331,7 +329,9 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-verdict[data-logo="true"] .trpg-rs
   display: block; width: auto; height: 300px; max-width: 920px; object-fit: contain; filter: drop-shadow(0 12px 18px #000b);
 }
 html:root .trpg-root .trpg-roll-show .trpg-rs-verdict[data-logo="true"] .trpg-rs-mega { display: none; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-verdict[data-logo="true"] .trpg-rs-verdict-line { flex-direction: row; align-items: center; gap: 18px; transform: none; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict[data-logo="true"] .trpg-rs-verdict-line { position: relative; flex-direction: row; align-items: center; gap: 0; transform: none; }
+/* 読みを画面の真ん中に。補足の札は流れから外して読みの右へ（並べて真ん中に寄せると、読みが左へずれて見えた）。 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict[data-logo="true"] .trpg-rs-verdict-line > em { position: absolute; left: calc(100% + 18px); top: 50%; translate: 0 -50%; white-space: nowrap; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-verdict[data-logo="true"] .trpg-rs-verdict-line > strong { font-size: 50px; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-verdict[data-logo="true"] .trpg-rs-verdict-line > em { font-size: 26px; padding: 4px 20px; }
 html:root .trpg-root .trpg-roll-show[data-tone="critical"] .trpg-rs-verdict[data-logo="true"] .trpg-rs-logo { animation: trpg-rs-logo-glow 1.2s ease-in-out infinite alternate; }
@@ -344,39 +344,33 @@ html:root .trpg-root .trpg-roll-show[data-tone="fumble"][data-phase="verdict"] .
 }
 /* スキル発動のカットインの「SKILL!」は、ロゴの絵（読めない時は文字。roll-show.js）。 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-logo[hidden] { display: none; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-skill-logo { display: block; width: auto; height: 116px; margin: -18px 0 -6px -10px; filter: drop-shadow(0 6px 10px #000a); }
-
-/* ======== スキル発動（TRF31） ======== */
-/* カットイン: 金の帯が斜めに走り、使った人の顔と「技の名前」。仲間の切り札は金、振り直しは青緑の光。 */
-html:root .trpg-root .trpg-roll-show .trpg-rs-skill {
-  position: absolute; left: 0; right: 0; top: 214px; height: 250px; z-index: 6; display: flex; align-items: center; justify-content: center; gap: 34px; opacity: 0; pointer-events: none;
-  transform: rotate(var(--rs-tilt));
-}
+/* スキル発動のカットイン（TRF38 で作り直し）: 傾けない水平の帯。帯の中に「顔＋文字の塊」を1つ、上下左右の真ん中に置く。
+   文字の塊は左揃え: 1行目＝SKILL! のロゴと「○○の切り札」、2行目＝技の名前、3行目＝効き目の札。 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill { position: absolute; left: 0; right: 0; top: 230px; height: 240px; z-index: 6; opacity: 0; pointer-events: none; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-band {
-  position: absolute; left: -60px; right: -60px; top: 34px; bottom: 34px; transform-origin: left center;
-  background: linear-gradient(90deg, transparent 0, #4a2a00f2 8%, #b07000f2 30%, #ffcf4a 50%, #b07000f2 70%, #4a2a00f2 92%, transparent 100%);
-  border-block: 4px solid #fff3c4; box-shadow: 0 0 60px #ffcf4a99, 0 10px 30px #000c;
+  position: absolute; inset: 0; transform-origin: 50% 50%;
+  background: linear-gradient(90deg, transparent 0, #4a2a00f2 10%, #a86a00f2 50%, #4a2a00f2 90%, transparent 100%);
+  border-block: 4px solid #ffd76a; box-shadow: 0 0 50px #ffcf4a88, 0 10px 30px #000c;
 }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill[data-kind="reroll"] .trpg-rs-skill-band {
-  background: linear-gradient(90deg, transparent 0, #032a24f2 8%, #0b6a5af2 30%, #5fe0c4 50%, #0b6a5af2 70%, #032a24f2 92%, transparent 100%);
-  border-color: #d8fff4; box-shadow: 0 0 60px #5fe0c499, 0 10px 30px #000c;
+  background: linear-gradient(90deg, transparent 0, #032a24f2 10%, #0b6a5af2 50%, #032a24f2 90%, transparent 100%);
+  border-color: #8ff0d8; box-shadow: 0 0 50px #5fe0c488, 0 10px 30px #000c;
 }
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill-inner { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 36px; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-face {
-  position: relative; flex: none; width: 190px; height: 190px; overflow: hidden; border-radius: 50%;
-  background: radial-gradient(circle at 40% 30%, #fff6dc, #d9b062); box-shadow: 0 0 0 7px #fff3c4, 0 0 0 12px #1a0f04, 0 0 40px #ffcf4a, 0 12px 24px #000c;
+  position: relative; flex: none; width: 176px; height: 176px; overflow: hidden; border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #fff6dc, #d9b062); box-shadow: 0 0 0 6px #ffd76a, 0 0 0 10px #1a0f04, 0 10px 20px #000c;
 }
-html:root .trpg-root .trpg-roll-show .trpg-rs-skill[data-kind="reroll"] .trpg-rs-skill-face { box-shadow: 0 0 0 7px #d8fff4, 0 0 0 12px #031a16, 0 0 40px #5fe0c4, 0 12px 24px #000c; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill[data-kind="reroll"] .trpg-rs-skill-face { box-shadow: 0 0 0 6px #8ff0d8, 0 0 0 10px #031a16, 0 10px 20px #000c; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-face img { position: absolute; max-width: none; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy { position: relative; display: grid; justify-items: start; gap: 6px; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy > small {
-  font-size: 24px; font-weight: 900; letter-spacing: .14em; color: #fff; transform: skewX(var(--rs-slant)); -webkit-text-stroke: 6px #1a0f04; paint-order: stroke fill;
-}
-html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy > strong { font-size: 92px; transform: skewX(var(--rs-slant)); }
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill-kicker { display: flex; align-items: center; gap: 12px; height: 72px; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill-logo { display: block; height: 72px; width: auto; filter: drop-shadow(0 3px 6px #000a); }
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill-kicker > small { font-size: 24px; font-weight: 900; letter-spacing: .08em; color: #fff; -webkit-text-stroke: 6px #1a0f04; paint-order: stroke fill; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy > strong { display: block; font-size: 80px; line-height: 1; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-word.skill { --fill: linear-gradient(180deg, #ffffff 0%, #fff6d0 40%, #ffd76a 58%, #fff3c4 100%); --edge: #1a0f04; --depth: #7a4a00; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill[data-kind="reroll"] .trpg-rs-word.skill { --fill: linear-gradient(180deg, #ffffff 0%, #e4fff8 40%, #6ff0d0 58%, #e0fff7 100%); --edge: #031a16; --depth: #0b4a40; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy > em {
-  padding: 4px 18px; font-size: 28px; font-weight: 900; color: #1a0f04; background: #fff3c4; transform: skewX(var(--rs-slant)); box-shadow: 0 0 0 3px #1a0f04; opacity: 0;
-}
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy > em { padding: 3px 16px; border-radius: 6px; font-size: 24px; font-weight: 900; color: #1a0f04; background: #fff3c4; box-shadow: 0 0 0 3px #1a0f04; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill[data-kind="reroll"] .trpg-rs-skill-copy > em { background: #d8fff4; }
 /* 振り直せる時の知らせ: 評価のあと、合計の右（ダイス・評価・合計・ゲージのどれにも重ならない所）に。 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-hint {

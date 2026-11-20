@@ -51,10 +51,11 @@ const calm = () => typeof matchMedia === "function" && matchMedia("(prefers-redu
 const rand = (lo, hi) => lo + Math.random() * (hi - lo);
 const pick = list => list[Math.floor(Math.random() * list.length)];
 
-/** 1文字ずつの札にした言葉。字ごとに金属の塗り（::after）と太い縁取り（本体）を重ね、字ごとに動かせる。 */
+/** 言葉の札。太い縁取りと厚み（本体）の上に、金属の塗り（::after）を重ねる。 */
 function word(text, cls = "") {
-  return el("span.trpg-rs-word" + (cls ? "." + cls : ""), [...String(text)].map((c, i) =>
-    el("span.c", { class: c === "…" ? "dot" : null, dataset: { c: c === " " ? " " : c }, style: { "--i": String(i) }, text: c === " " ? " " : c })));
+  // 言葉は1続きの文字として描く（縁を全部先に、塗りを全部あとに）。1文字ずつ分けると、隣の字の黒い縁どうしが重なって見えた。
+  const t = String(text);
+  return el("span.trpg-rs-word" + (cls ? "." + cls : ""), [el("span.c", { dataset: { c: t }, text: t })]);
 }
 
 /**
@@ -120,12 +121,13 @@ export function playRollShow(host, show) {
   const skill = show.skill || null, lead = skill ? 980 : 0;
   const skillNode = skill ? el("div.trpg-rs-skill", { dataset: { kind: skill.kind } }, [
     el("i.trpg-rs-skill-band"),
-    el("span.trpg-rs-skill-face", skill.face ? [skill.face] : []),
-    el("div.trpg-rs-skill-copy", [
-      el("img.trpg-rs-skill-logo", { src: logoUrl("skill"), alt: "", decoding: "async" }),
-      el("small", { text: (skill.who || "") + "の切り札" }),
-      el("strong", [word("「" + skill.name + "」", "skill")]),
-      el("em", { text: skill.effect || "" }),
+    el("div.trpg-rs-skill-inner", [
+      el("span.trpg-rs-skill-face", skill.face ? [skill.face] : []),
+      el("div.trpg-rs-skill-copy", [
+        el("div.trpg-rs-skill-kicker", [el("img.trpg-rs-skill-logo", { src: logoUrl("skill"), alt: "", decoding: "async" }), el("small", { text: (skill.who || "") + "の切り札" })]),
+        el("strong", [word("「" + skill.name + "」", "skill")]),
+        el("em", { text: skill.effect || "" }),
+      ]),
     ]),
   ]) : null;
   const hintNode = show.rerollHint ? el("div.trpg-rs-hint", [el("b", { text: "SKILL" }), el("strong", { text: "振り直せる！" }), el("span", { text: show.rerollHint })]) : null;
@@ -299,12 +301,10 @@ export function playRollShow(host, show) {
   function playSkill() {
     sound("skill");
     animate(skillNode, [{ opacity: 0 }, { opacity: 1, offset: .08 }, { opacity: 1, offset: .82 }, { opacity: 0 }], { duration: lead + 120, easing: "linear" });
-    animate(skillNode.querySelector(".trpg-rs-skill-band"), [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 260, easing: EASE.out });
-    animate(skillNode.querySelector(".trpg-rs-skill-face"), [{ opacity: 0, translate: "-260px 0", rotate: "-30deg" }, { opacity: 1, translate: "0 0", rotate: "0deg" }], { duration: 320, delay: 80, easing: EASE.back });
-    const chars = [...skillNode.querySelectorAll(".trpg-rs-word > .c")];
-    chars.forEach((c, n) => animate(c, [{ opacity: 0, scale: "2.6", translate: "0 -30px" }, { opacity: 1, scale: "1", translate: "0 0" }], { duration: 240, delay: 180 + n * 40, easing: EASE.out }));
-    animate(skillNode.querySelector(".trpg-rs-skill-copy em"), [{ opacity: 0, translate: "60px 0" }, { opacity: 1, translate: "0 0" }], { duration: 240, delay: 260 + chars.length * 40, easing: EASE.out });
-    after(200 + chars.length * 40, () => { shake(8, 260, .6); blink(["#fff", "#2a1600", "#fff4c2"], 260, .5); });
+    // 帯は真ん中から左右へ伸び、顔と文字は1つの塊のまま入る（部品ごとに別々に動かすと、止まった時に並びがずれて見えた）。
+    animate(skillNode.querySelector(".trpg-rs-skill-band"), [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 240, easing: EASE.out });
+    animate(skillNode.querySelector(".trpg-rs-skill-inner"), [{ opacity: 0, translate: "-120px 0" }, { opacity: 1, translate: "0 0" }], { duration: 300, delay: 90, easing: EASE.out });
+    after(330, () => { shake(8, 260, .6); blink(["#fff", "#2a1600", "#fff4c2"], 260, .5); });
     animate(lines, [{ opacity: .1 }, { opacity: .55 }, { opacity: .14 }], { duration: lead, easing: "ease-out" });
   }
 
@@ -552,7 +552,8 @@ export function playRollShow(host, show) {
       after(120, () => { shake(18, 560, .8); blink(["#000", "#c9d6ee", "#000", "#3b4a63"], 520, .8); sound("boom"); });
       if (!still) animate(camera, [{ rotate: "0deg" }, { rotate: "2.6deg" }], { duration: 1400, delay: 500, easing: EASE.soft });
     }
-    if (verdictSub) animate(verdictSub, [{ opacity: 0, translate: "0 24px", scale: ".6" }, { opacity: 1, translate: "0 0", scale: "1" }],
+    // ロゴの時は札を読みの右に置く（CSS の translate を保つため、動きは大きさと濃さだけ）。
+    if (verdictSub) animate(verdictSub, logo ? [{ opacity: 0, scale: ".6" }, { opacity: 1, scale: "1" }] : [{ opacity: 0, translate: "0 24px", scale: ".6" }, { opacity: 1, translate: "0 0", scale: "1" }],
       { duration: 280, delay: logo ? 520 : chars.length * 50 + 200, easing: EASE.back });
     if (grade === "success") {
       goalNode.dataset.result = "clear";
