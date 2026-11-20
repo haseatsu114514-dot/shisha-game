@@ -1,7 +1,8 @@
 /* 1280×720の舞台内だけで切り替える。本文枠・文字・操作ボタンには触れない。 */
 .tonari-opening { overflow: hidden; pointer-events: none; isolation: isolate; }
-.tonari-opening .to-room { position: absolute; inset: 0; background-size: cover; background-position: center; transform-origin: 44% 42%; transition: transform .65s ease, filter .4s ease; }
-.tonari-opening[data-shot="empty"] .to-room { transform: scale(1.32); transform-origin: 42% 65%; }
+/* 店内の絵は拡大・縮小しない。退店後の席（empty）も店内の引きのまま見せる
+   （#3812 オーナー「画面が拡大されたり引き離されたり気持ち悪い」: 以前は empty で1.32倍に寄り、スミさんの行で引き戻していた）。 */
+.tonari-opening .to-room { position: absolute; inset: 0; background-size: cover; background-position: center; transition: filter .4s ease; }
 .tonari-opening[data-shot="coal"] .to-room,
 .tonari-opening[data-shot="bowl"] .to-room { filter: blur(7px) brightness(.66); }
 .tonari-opening .to-workbench { position: absolute; inset: 45% 0 0; background: linear-gradient(165deg, #815031, #40291d 70%) center bottom / cover; filter: brightness(1.15) saturate(.75); opacity: 0; transition: opacity .3s; }

@@ -1,6 +1,18 @@
 // 第一章の自宅・となり・商店街: 天候別の昼夜、屋内外の雨、FHDデコードとセーブ不変。
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { suite, storageSnapshot, assertFits } from "./browser/support.mjs";
+
+// 背景の寸法は台帳（data/background_catalog.json）が正本。規格は 1920x1080 で、
+// 規格外は台帳の accepted に理由がある絵だけ認める（#3810 の tonari は生成原寸 1672x940）。
+const BG_CATALOG = JSON.parse(readFileSync(new URL("../../data/background_catalog.json", import.meta.url), "utf8")).backgrounds;
+function expectedSize(name) {
+  const entry = BG_CATALOG[name];
+  assert.ok(entry, `${name} is missing from data/background_catalog.json`);
+  if (!entry.accepted) assert.deepEqual(entry.size, [1920, 1080], `${name} is off-standard without an accepted reason`);
+  assert.ok(Math.abs(entry.size[0] / entry.size[1] - 16 / 9) < 0.01, `${name} is not 16:9`);
+  return entry.size;
+}
 
 await suite("ch1-visual-quality", async check => {
   for (const place of ["home", "tonari_inside", "street"]) {
@@ -35,7 +47,7 @@ await suite("ch1-visual-quality", async check => {
           assert.equal(result.weather, weather);
           assert.equal(result.url, `img/backgrounds/bg_${place}_${overcast}${time}.webp`);
           assert.equal(result.tint, null);
-          assert.deepEqual(result.dimensions, [1920, 1080]);
+          assert.deepEqual(result.dimensions, expectedSize(`bg_${place}_${overcast}${time}.png`));
           const text = place === "home"
             ? (time === "day" ? "朝。喉の奥が痛い。" : "店明かりの落ちた商店街")
             : place === "street"

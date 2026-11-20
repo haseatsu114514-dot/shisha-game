@@ -2645,7 +2645,7 @@
       "weight": 3,
       "timeout": 15,
       "paths": [
-        "remake/js/craft/result.js",
+        "remake/js/craft/result.js", "remake/js/craft/tournament-show.js", "remake/js/craft/tournament-graphics.js", "remake/css/tournament.css", "remake/css/tournament-show.css",
         "remake/js/craft/heat*.js",
         "remake/js/craft/coals.js",
         "remake/js/craft/common.js",

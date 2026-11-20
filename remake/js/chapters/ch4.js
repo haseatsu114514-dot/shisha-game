@@ -253,7 +253,7 @@ async function renderCompanionChoice(owner) {
   card(owner, "companion", "出発前・同行の選択",
     lovers.length ? "ドバイへ一緒に行く恋人を、1人まで選べる。選ばなかった恋人も、別の便で応援に来られる。"
       : "今回は、一緒に行く恋人はいない。",
-    [...lovers.map(id => button(owner, DB.characters[id]?.name || id, `companion-${id}`, choose(id))),
+    [...lovers.map(id => button(owner, displayName(id, state, { context: "private" }), `companion-${id}`, choose(id))),
       button(owner, "同行なし", "companion-none", choose(null), !lovers.length)]);
 }
 
@@ -571,13 +571,29 @@ async function showChapterFourCommittedResult(result) {
   const notes = [result.failure ? "完了した工程から振り返ろう。" : `はじめは${result.rank}位。審査員三人、それぞれの10点が出揃った。`,
     ...(result.failure ? [] : [`総合 ${result.total.toFixed(1)} ／ ${parts}`]),
     ...craftReviewLines(match?.craft)];
-  const { chapterFourStandingsView } = await import("./ch4-standings.js");
+  const { chapterFourStandingsView, playChapterFourVotes, CH4_CONTEST_MODAL } = await import("./ch4-standings.js");
   // 結果発表: 会場の拍手（1位はファンファーレも）。制作を完了できなかった時は鳴らさない。
-  if (!result.failure) { SE.crowd?.(2.4); if (result.rank === 1) SE.fanfare?.(); }
-  await modal({ title: result.failure ? "制作を完了できなかった" : `世界大会 ${result.rank}位`,
-    body: match?.votes ? chapterFourStandingsView({ ...match, votes: result.votes || match.votes }, { rows: result.rows, notes, test: "ch4-result", final: true })
-      : notes.join("\n"),
+  const reaction = () => { if (!result.failure) { SE.crowd?.(2.4); if (result.rank === 1) SE.fanfare?.(); } };
+  const votes = result.votes || match?.votes;
+  const view = match?.votes ? chapterFourStandingsView({ ...match, votes }, { rows: result.rows, notes, test: "ch4-result", final: true }) : null;
+  // この場で最後の票を入れた時だけ、票が入る進行を見せる（TSH05）。出そろうまで、見出しの順位と講評の行は伏せる。
+  const before = view && !result.failure ? (await import("./ch4-tournament.js")).takeChapterFourLastVotes() : null;
+  const closed = modal({ title: result.failure ? "制作を完了できなかった" : before ? "世界大会の結果" : `世界大会 ${result.rank}位`,
+    body: view || notes.join("\n"), className: view ? CH4_CONTEST_MODAL : "",
     options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
+  const show = view ? playChapterFourVotes(view, match, { before, rows: result.rows, votes, final: true, late: [...view.querySelectorAll(":scope > .ch2-contest-note")] }) : { moved: false };
+  if (show.moved) show.done.then(() => {
+    const title = view.closest(".modal-box")?.querySelector("h3");
+    if (!title?.isConnected) return;
+    title.textContent = `世界大会 ${result.rank}位`;
+    reaction();
+  });
+  else {
+    const title = view?.closest(".modal-box")?.querySelector("h3");
+    if (title && before) title.textContent = `世界大会 ${result.rank}位`;
+    reaction();
+  }
+  await closed;
 }
 
 async function runTournament(owner) {

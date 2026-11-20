@@ -99,6 +99,8 @@ try {
     }
     // 寝る前のレベルアップ（心得の盤、11/02から通常プレイで有効）。初回はOKを押すまで待つ全画面の演出。
     if (await press('[data-test="levelup-ok"]')) { await page.waitForTimeout(70); continue; }
+    // 第1章DAY3の朝は地図の前に観音堂で心得の盤が開く（#3955）。盤の中身はこの検査の対象外なので閉じて進む。
+    if (await press('[data-test="board-close"]')) { await page.waitForTimeout(70); continue; }
     if (snap.modal) {
       if (!await press('[data-test="reel-intro"]') && !await press('[data-test="drill-finish"]')
         && !await press('[data-test="kuji-reveal"]')) await press("#modal .modal-actions button");
