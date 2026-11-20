@@ -21,6 +21,7 @@ import { computeShisha, finalize } from "../craft/score.js";
 import { block, clearComments } from "../craft/broadcast.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
+import { chapterFourMorningCheers } from "./ch4-morning.js";
 import { showChapterFourStandings, chapterFourNameOf } from "./ch4-standings.js";
 import { liveOf, intervalCard } from "../craft/tournament-show.js";
 import { chapterFourMatch, startChapterFourCraft, recoverChapterFourStep, chapterFourRetryContext,
@@ -65,9 +66,13 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
     playBgm("bgm_tournament_craft");
     // 制作中の掛け合い（#2031）。工程の前に一度だけ読み、既読は制作保存に残す（再挑戦では最初から）。
     // 作り始める直前（開始前）と吸い出しの前（審査員への提供開始）の掛け合い（#3060）。
+    // 吸い出しの前は、4人の心の声（interlude_pull。#3097 第2弾）の後に提供の掛け合い。
     const stepEvent = p.step === 8 ? "serve" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : TOURNAMENT_STORY_STEPS.get(p.step);
-    for (const event of p.step === 0 ? ["prestart", stepEvent] : [stepEvent]) {
+    const stepEvents = p.step === 0 ? ["prestart", stepEvent] : p.step === 8 ? ["interlude_pull", stepEvent] : [stepEvent];
+    for (const event of stepEvents) {
       if (!event || p.craft.tournamentStory?.seen?.includes(event)) continue;
+      // 心の声は提供の掛け合いより前だけ。提供の掛け合いを読んだ保存には、後から出さない。
+      if (event === "interlude_pull" && p.craft.tournamentStory?.seen?.includes("serve")) continue;
       // 台本は直前に見せた途中順位と同じ並び（はじめの順位・先頭・先頭と同じ持ち点か）だけを語る。
       const rows = chapterFourStandings(p);
       const me = rows.find(row => row.id === "hajime"), top = rows[0];
@@ -75,6 +80,8 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
         tied: rows[1]?.points === top?.points, level: me?.points === top?.points };
       // 会話には中継の枠を付ける（TSH05。票が出てからは順位の札も）。
       const told = await playTournamentEvent(p.craft, event, { context,
+        // 審査員の一言に続く客席の声（大会の朝に一言をくれた人。恋人が先。提供後は二人目、調整1回目の後は一人目）。
+        supporters: chapterFourMorningCheers(state).cheers.slice(0, 2),
         live: liveOf("HAZE: GRAND SMOKE", event, p.voted ? rows : [], chapterFourNameOf),
         // 合間の掛け合いの前にアイキャッチ（TSH11。いまの順位つき。既読なら出さない）。
         card: intervalCard(event, p.voted ? rows : []) });

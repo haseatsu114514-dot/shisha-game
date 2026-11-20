@@ -49,11 +49,29 @@ export function hajimeServedState(cs) {
 // 第2章の工程の区切り（提供・調整1・調整2）に、合間の掛け合いの前に置くパッキーと審査員の実況（#2213 DR-08）。
 // 第1章の r2_end／r3_end／remake_round4_end に当たる。結果や点数は言わない。
 const CH2_ROUND_ENDS = { interlude1: "served", interlude2: "care1", interlude3: "care2" };
-export function tournamentStoryLeadIn(cs, event) {
-  const part = cs?.chapter === 2 ? CH2_ROUND_ENDS[event] : null;
-  const scene = part && DB.dialogues[`tournament_craft_roundend_2_${part}`];
-  if (part && !scene) throw new Error(`大会演出の台本がありません: roundend_2_${part}`);
-  return scene ? { dialogue_id: `tournament_craft_2_${event}_roundend`, lines: scene.lines.map(line => ({ ...line })) } : null;
+// 第4章の提供後・調整1回目の後の審査員の一言（#3097 第2弾・2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」）。
+// その後に客席の応援の声（大会の朝に一言をくれた人。chapters/ch4-morning.js の順＝恋人が先）を続ける。
+// 調整1回目の後は一人目、提供後は二人目（来てくれた人が二人以上の時だけ）。
+const CH4_ROUND_ENDS = { interlude1: "served", interlude2: "care1" };
+const ROUND_ENDS = { 2: CH2_ROUND_ENDS, 4: CH4_ROUND_ENDS };
+/** 第4章の客席の声の台本がある人（tournament_craft_stands_4_<id>）。大会の朝の一言（ch4_morning_cheer_<id>）と同じ顔ぶれ。 */
+export const CH4_STANDS_IDS = Object.freeze(["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori", "noor",
+  "adam", "kumicho", "rei", "saku", "steve", "volk"]);
+const CH4_STANDS_AT = { interlude1: 1, interlude2: 0 };
+/**
+ * 合間の掛け合いの前に読む区切りの実況。無ければ null。
+ * @param options.supporters 第4章で客席から声をかける人（大会の朝に一言をくれた順。いなければ空）
+ */
+export function tournamentStoryLeadIn(cs, event, { supporters = [] } = {}) {
+  const chapter = cs?.chapter;
+  const part = ROUND_ENDS[chapter]?.[event] || null;
+  const scene = part && DB.dialogues[`tournament_craft_roundend_${chapter}_${part}`];
+  if (part && !scene) throw new Error(`大会演出の台本がありません: roundend_${chapter}_${part}`);
+  if (!scene) return null;
+  const supporter = chapter === 4 ? supporters?.[CH4_STANDS_AT[event]] : null;
+  const stands = CH4_STANDS_IDS.includes(supporter) ? DB.dialogues[`tournament_craft_stands_4_${supporter}`] : null;
+  return { dialogue_id: `tournament_craft_${chapter}_${event}_roundend`,
+    lines: [...scene.lines, ...(stands?.lines || [])].map(line => ({ ...line })) };
 }
 
 export function tournamentStoryDialogue(cs, event, random = Math.random, context = {}) {
