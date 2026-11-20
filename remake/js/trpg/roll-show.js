@@ -196,7 +196,7 @@ export function playRollShow(host, show) {
     sparks(die, hot ? 22 : big ? 14 : 9, hot ? ["#ffe08a", "#fff", "#ffb84a"] : cold ? ["#8ea2c4", "#c9d6ee"] : ["#fff3c9", "#ffd76a"], hot ? [160, 320] : [110, 220]);
     if (hot) {
       animate(die.querySelector(".trpg-rs-halo"), [{ opacity: 0, scale: ".2" }, { opacity: 1, scale: "1.15", offset: .4 }, { opacity: .85, scale: "1" }], { duration: 520, easing: EASE.out });
-      blink(["#fff", "#2a1600", "#fff4c2", "#ffe08a"], 420, .9);
+      blink(["#fff", "#2a1600", "#fff4c2", "#ffe08a"], 380, .78);
       shake(16, 520, .5);
       sound("critical-hit");
     } else if (cold) {
@@ -386,12 +386,12 @@ export function playRollShow(host, show) {
         animate(c, [{ opacity: 0, translate: `${Math.cos(a) * 900}px ${Math.sin(a) * 600}px`, rotate: rand(-540, 540) + "deg", scale: "3" },
           { opacity: 1, translate: "0 0", rotate: "0deg", scale: "1" }], { duration: 380, delay: n * 45, easing: EASE.out });
       });
-      after(chars.length * 45 + 300, () => { shake(26, 700, .55); blink(["#fff", "#3a2000", "#fff6cf", "#ffe08a", "#fff"], 560, .9); sound("boom"); });
+      after(chars.length * 45 + 300, () => { shake(26, 700, .55); blink(["#fff", "#3a2000", "#fff6cf", "#ffe08a"], 440, .78); sound("boom"); });
       animate(rays, [{ opacity: 0, scale: ".3" }, { opacity: 1, scale: "1.1" }], { duration: 500, easing: EASE.out });
     } else if (tone === "success") {
       chars.forEach((c, n) => animate(c, [{ opacity: 0, scale: "3.2", translate: "0 -60px", rotate: rand(-24, 24) + "deg" },
         { opacity: 1, scale: ".9", translate: "0 6px", rotate: "0deg", offset: .7 }, { opacity: 1, scale: "1", translate: "0 0" }], { duration: 300, delay: n * 55, easing: EASE.out }));
-      after(chars.length * 55 + 160, () => { shake(14, 480, .5); blink(["#fff", "#120c00", "#fff7d6"], 340, .75); });
+      after(chars.length * 55 + 160, () => { shake(14, 480, .5); blink(["#fff", "#120c00", "#fff7d6"], 300, .6); });
       animate(rays, [{ opacity: 0, scale: ".4" }, { opacity: .75, scale: "1" }], { duration: 460, easing: EASE.out });
     } else if (tone === "mixed") {
       chars.forEach((c, n) => animate(c, [{ opacity: 0, translate: "240px 0", transform: "skewX(-30deg)" }, { opacity: 1, translate: "0 0", transform: "none" }], { duration: 280, delay: n * 38, easing: EASE.out }));
