@@ -147,7 +147,7 @@
     },
     {
       "dialogue_id": "ch4_creek_dhow",
-      "comment": "未接続原稿（#3097 ボリューム均し）。クリーク沿いの行き先は毎回 ch4_creek_walk_day／night の1場面だけなので、再訪で巡回して読む小品の想定。接続先の remake/js/chapters/ch4-dubai-daily.js は #3165 が変更中のため、本PRでは台詞のみ。はじめ単独＋立ち絵なしの単発話者だけ。能力上昇・数値・choice は付けない。 昼。古い木造の貨物船（ダウ船）の荷積み。人足は shop_clerk の単発話者として扱う（船の人）。積み荷の行き先の国名は書かない。",
+      "comment": "クリークの昼の再訪で巡回する小品（ch4-dubai-local.js）。古い木造の貨物船（ダウ船）の荷積み。人足は shop_clerk の単発話者として扱う（船の人）。",
       "lines": [
         {
           "speaker": "",
@@ -164,6 +164,7 @@
           "face": "",
           "text": "男たちが一列に並んで、荷を手から手へ放っていく。掛け声は短く、止まらない。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch4_creek_dhow"},
         {
           "speaker": "hajime",
           "face": "normal",
@@ -184,6 +185,7 @@
           "face": "serious",
           "text": "（下から順に、崩れない形を作っていく。ボウルに葉を詰めるのと、少し似てるな）"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",

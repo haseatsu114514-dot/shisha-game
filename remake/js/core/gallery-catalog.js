@@ -55,6 +55,12 @@ export function galleryStats(entries) {
   return stats;
 }
 const labels = {
+  cg_ch4_festa_welcome: "FESTAの椅子と水",
+  cg_ch4_traveler_tongs: "返したトング",
+  cg_ch4_sheikh_reveal: "四つ目の台",
+  cg_ch4_young_sumi_water: "十五年前の一杯の水",
+  cg_ch4_noor_pencil_x: "消さなかった×",
+  cg_ch4_creek_dhow: "クリークの荷積み",
   cg_ch3_liars_night: "嘘つきたちの夜",
   cg_ch3_national_ask_customer: "炭より先に、客の返事",
   cg_ch3_half_cake: "半分ずつのケーキ",

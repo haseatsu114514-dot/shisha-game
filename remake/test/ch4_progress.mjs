@@ -106,6 +106,12 @@ assert.deepEqual(CH4_RESOLUTION.map(scene => scene.id),
   ["ch4_result", "ch4_sui_old_rival", "ch4_ending", "ch4_sumi_return", "ch4_two_tables"]);
 assert.deepEqual(routes.on_win, CH4_RESOLUTION.map(scene => scene.id));
 assert.deepEqual(routes.on_loss, ["ch4_defeat"]);
+const waterStill = "cg_ch4_young_sumi_water";
+const scenesWithWaterStill = files.ch4_main.filter(scene => scene.lines.some(line => line.cg_id === waterStill));
+assert.deepEqual(scenesWithWaterStill.map(scene => scene.dialogue_id), ["ch4_ending"]);
+const waterLines = scenesWithWaterStill[0].lines;
+const finaleGate = waterLines.findIndex(line => line.condition_type === "finale_seen");
+assert.equal(waterLines[finaleGate - 1].type, "hide_cg");
 
 function clearedSave() {
   const value = newState();
@@ -352,6 +358,7 @@ assert.equal(completeChapterFourScene(lost, "ch4_tournament_start"), true);
 assert.equal(completeChapterFourScene(lost, "ch4_defeat"), false, "No defeat scene before the result");
 lost.flags._ch4.match = { version: 1, step: 9, voted: 1, history: [], result: { win: false } };
 assert.equal(completeChapterFourScene(lost, "ch4_defeat"), true);
+assert.equal(completeChapterFourScene(lost, "ch4_ending"), false, "The victory flashback cannot run after a loss");
 assert.equal(lost.flags._ch4.part, "tournament", "A defeat does not leave the tournament");
 assert.equal(chapterFourAfterDefeat(lost), true);
 assert.equal(lost.flags._ch4.part, "tournament");
