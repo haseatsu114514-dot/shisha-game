@@ -9,8 +9,9 @@ import { DESERT_FLAG, DESERT_TALKS, DESERT_TALK_HEARTS, DESERT_INVITE_STAGE, NOO
   DESERT_SPOT_IDS, desertDailySpots, desertDailySpotById, NOOR_FINALE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, noorStoriesDone, noorFinaleWaiting,
   noorConfessionWaiting, desertChapterFiveSpots, completeDesertReunion, NOOR_VISIT_CONFESSION_FLAG,
   NOOR_STORY_EXTRAS, NOOR_STORY_DIALOGUE_IDS, NOOR_CONFESSION_DIALOGUE_IDS, noorStoryFlag, noorStoryDue, completeNoorStory,
-  NOOR_FARIS_SCENES, NOOR_FARIS_FLAGS, noorFarisDue, completeNoorFaris } from "../js/chapters/ch4-desert-progress.js";
+  NOOR_FARIS_SCENES, NOOR_FARIS_FLAGS, noorFarisDue, completeNoorFaris, NOOR_LOVER_SCENES, noorLoverReadFlag, noorLoverSceneDue } from "../js/chapters/ch4-desert-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
+import { classifyFlag } from "../js/core/carry.js";
 import { openTiers, tierRecord, syncPlayTiers } from "../js/core/play-tiers.js";
 import { masteryRecord, syncPlayMastery } from "../js/core/play-mastery.js";
 import { tournamentFinished } from "../js/core/story-context.js";
@@ -738,3 +739,32 @@ test("chapter 5 Dubai: Café Oasis until Noor's finale, the dunes once invited; 
   assert.match(desert, /owner\.flags\[NOOR_VISIT_CONFESSION_FLAG\] = \(owner\.finales\?\.\[DESERT_GUIDE\]\?\.chapter \|\| 0\) >= 5/);
   assert.match(desert, /delete owner\.flags\[NOOR_VISIT_CONFESSION_FLAG\]/);
 });
+
+test("chapter 5: a lover Noor meets hajime at the airport once, then walks him to the gate one night (#4010)", () => {
+  const lover = (extra = {}) => ({ chapter: 5, day: 90, lovers: ["noor"], flags: {}, ...extra });
+  assert.equal(noorLoverSceneDue(lover(), "welcome"), NOOR_LOVER_SCENES.welcome);
+  assert.equal(noorLoverSceneDue(lover(), "night"), null, "the night comes after the welcome");
+  assert.equal(noorLoverSceneDue(lover({ lovers: ["tsumugi"] }), "welcome"), null, "only when she is his lover");
+  assert.equal(noorLoverSceneDue(lover({ chapter: 4 }), "welcome"), null, "chapter 4 has its own eve date");
+  assert.equal(noorLoverSceneDue(lover({ flags: { _story_shuraba_unresolved: true } }), "welcome"), null);
+  const read = lover({ flags: { [noorLoverReadFlag("welcome")]: true } });
+  assert.equal(noorLoverSceneDue(read, "welcome"), null, "once");
+  assert.equal(noorLoverSceneDue(read, "night"), NOOR_LOVER_SCENES.night);
+  read.flags[noorLoverReadFlag("night")] = true;
+  assert.equal(noorLoverSceneDue(read, "night"), null);
+  assert.equal(noorLoverSceneDue(lover(), "bogus"), null);
+  const scenes = Object.fromEntries(JSON.parse(readFileSync(new URL("../../data/dialogue/ch5_dubai.json", import.meta.url), "utf8")).dialogues
+    .map(d => [d.dialogue_id, d]));
+  for (const id of Object.values(NOOR_LOVER_SCENES)) {
+    assert(scenes[id]?.lines?.some(line => line.speaker === "noor"), id);
+    assert.equal(scenes[id].metadata?.private_scene, true, `${id}: a private scene`);
+    assert(scenes[id].lines.every(line => !line.face || ["normal", "smile", "surprise"].includes(line.face) || line.speaker !== "noor"), `${id}: faces`);
+  }
+  const ch5Dubai = readFileSync(new URL("../js/chapters/ch5-dubai.js", import.meta.url), "utf8");
+  assert.match(ch5Dubai, /noorLoverSceneDue\(state, "welcome"\)/);
+  assert.match(ch5Dubai, /noorLoverSceneDue\(state, "night"\)/);
+  assert.match(ch5Dubai, /\.\.\.Object\.values\(NOOR_LOVER_SCENES\)/, "the scenes are loaded with the other Dubai scenes");
+  assert.equal(classifyFlag(noorLoverReadFlag("welcome")), "progression");
+  assert.equal(classifyFlag(noorLoverReadFlag("night")), "progression");
+});
+

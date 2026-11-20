@@ -12,6 +12,18 @@ import { camelRaceRecord, CAMEL_STAGES } from "./ch4-camel-progress.js";
 
 export const DESERT_FLAG = "_ch4_desert";
 export const DESERT_GUIDE = "noor";
+// 第5章、恋人のヌール（ドバイに住む）: はじめがドバイへ着いた時の出迎えと、その夜（#4010）。ほかの恋人の第4章の
+// 「別便の到着」（ch4_*_dubai_girlfriend）と「到着の夕方」（ch4_*_dubai_evening）に当たる。台本は data/dialogue/ch5_dubai.json、
+// 再生は chapters/ch5-dubai.js（goToDubai・dubaiNight）。読んだ印は周回で持ち越さない（core/carry.js の progression）。
+export const NOOR_LOVER_SCENES = Object.freeze({ welcome: "ch5_noor_lover_welcome", night: "ch5_noor_lover_night" });
+export const noorLoverReadFlag = kind => `_ch5_noor_lover_${kind}`;
+/** 今読む恋人の場面の ID（kind: "welcome" 着いた時 / "night" ドバイの夜）。恋人でない・第5章でない・修羅場が未解決・読んだ後・夜は出迎えの前なら null */
+export function noorLoverSceneDue(value, kind) {
+  const flags = value?.flags || {};
+  if (!NOOR_LOVER_SCENES[kind] || value?.chapter !== 5 || !(value.lovers || []).includes(DESERT_GUIDE) || flags._story_shuraba_unresolved) return null;
+  if (kind === "night" && !flags[noorLoverReadFlag("welcome")]) return null;
+  return flags[noorLoverReadFlag(kind)] ? null : NOOR_LOVER_SCENES[kind];
+}
 // DSR20（ヒロイン化）: 誘いの後に♥3の問い（恋愛／友情。bond_q1_noor）と♥4の会話。段階を読み終えた♥5で締めくくり（daily/bonds.js の
 // BOND_FINALES.noor・専用ハガル）。最後の問い（bond_q2_noor）で恋愛を選ぶと、次の砂丘（ツアー代なし）の夕日で告白（confession_noor）。
 // 締めくくりのあと砂丘へ行けないまま帰国した時は、第5章のドバイの最初の砂丘が約束の日（chapters/ch5-dubai.js）。同じ告白を、

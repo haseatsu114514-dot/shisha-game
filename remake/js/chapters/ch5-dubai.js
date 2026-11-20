@@ -17,7 +17,8 @@ import { planeRide } from "../core/scene-motions.js";
 import { showHud } from "../daily/hud.js";
 import { CAMEL_DAILY_SPOT_ID, CAMEL_SCENES, CAMEL_STAGES, CH4_CAMEL_SCENE_FILES, CH5_CAMEL_MEET, camelDailySpot, camelRaceRecord, camelSceneBg,
   chapterFiveCamelMeetDue, advanceChapterFiveCamelMeet } from "./ch4-camel-progress.js";
-import { DESERT_CAFE_PRICE, DESERT_GUIDE, DESERT_SPOT_IDS, completeDesertReunion, desertChapterFiveSpots, desertProgress, noorConfessionWaiting } from "./ch4-desert-progress.js";
+import { DESERT_CAFE_PRICE, DESERT_GUIDE, DESERT_SPOT_IDS, NOOR_LOVER_SCENES, completeDesertReunion, desertChapterFiveSpots, desertProgress,
+  noorConfessionWaiting, noorLoverReadFlag, noorLoverSceneDue } from "./ch4-desert-progress.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -128,7 +129,7 @@ export const chapterFiveDubaiLeisureById = id => chapterFiveDubaiLeisureSpots().
 const REST_SCENES = ["ch5_dubai_guest_rest", "ch5_dubai_guest_rest_b", "ch5_dubai_guest_rest_c"];
 const SCENES = DUBAI_SPOTS.flatMap(entry => entry.talks || [])
   .concat(["ch5_dubai_letter", ...DUBAI_LETTER_AGAIN, "ch5_dubai_go", "ch5_dubai_back", "ch5_dubai_arrival", ...REST_SCENES,
-    CAMEL_AGAIN.scene, DUNES_AGAIN.scene, CH5_CAMEL_MEET.scene, NOOR_CAFE_AGAIN, ...Object.values(CH5_NOOR_SCENES)]);
+    CAMEL_AGAIN.scene, DUNES_AGAIN.scene, CH5_CAMEL_MEET.scene, NOOR_CAFE_AGAIN, ...Object.values(CH5_NOOR_SCENES), ...Object.values(NOOR_LOVER_SCENES)]);
 const CH4_SCENES = ["ch4_creek_walk_day", "ch4_creek_walk_night"];
 // クリーク沿いは第4章と同じ場面を、同じ順番の続きから読む（SPV03）
 
@@ -339,6 +340,9 @@ async function goToDubai(owner) {
   if (!state.flags[GUEST_FLAG]) {
     if (await read("ch5_dubai_arrival", RESIDENCE_BG, owner)) { state.flags[GUEST_FLAG] = true; markMet("sheikh"); save(); }
   }
+  // 恋人のヌールが空港で迎える（#4010。一度だけ）。読み終えた時だけ印を付ける
+  const welcome = state === owner ? noorLoverSceneDue(state, "welcome") : null;
+  if (welcome && await read(welcome, "bg_dubai_airport_day", owner)) { state.flags[noorLoverReadFlag("welcome")] = true; save(); }
   return { used: true, exerted: false };
 }
 
@@ -476,6 +480,15 @@ async function visitNoorCafe(spot, owner) {
 
 /** 夜: ドバイにいれば屋敷の客間で寝る（帰らない）。 */
 export async function dubaiNight() {
+  // 恋人のヌールが屋敷の門まで送ってくれる夜（#4010。出迎えの後に一度だけ）
+  const owner = state, scene = noorLoverSceneDue(state, "night");
+  if (scene) {
+    try { await loadDubaiScenes(); } catch { /* 読めなければ今夜は見送る */ }
+    if (state === owner && DB.dialogues[scene]?.lines?.length && await read(scene, "bg_dubai_street_night", owner)) {
+      state.flags[noorLoverReadFlag("night")] = true;
+      save();
+    }
+  }
   await showBg(RESIDENCE_BG, "night");
   return true;
 }
