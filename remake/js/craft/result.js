@@ -18,6 +18,8 @@ import { castCh1Votes, isSakuraiVotes, SAKURAI, sakuraiFocusOf, ch1RoundPoints }
 import { evaluationOf, judgeComment, judgeDeductionReason } from "./feedback.js";
 import { craftRecognition } from "./recognition.js";
 import { VOTE_SCALE, voteStack as stackOf, judgePanel as panelOf, judgeLegend as legendOf, countUp, JUDGE_LOOK } from "./tournament-graphics.js";
+import { stageLights, voteCeremony, showSting, showConfetti, sparkBurst, haloOf, crestSvg, metalOf, bustOf, flyToken,
+  localPoint, holdOrTap, showMoves } from "./tournament-show.js";
 
 export const CONTESTANTS = ["naru", "adam", "minto", "hajime"];
 const RIVAL_COLOR = { naru: "#f0d8a0", adam: "#c9463a", minto: "#7fe0c2" };
@@ -76,6 +78,14 @@ const header = (eyebrow, title, sub, live = false) => el("header.tournament-head
   el("h1", { text: title }), el("p", { text: sub }),
 ]);
 
+/** 会話の中継の枠に出す、いまの順位（確定済みの票を読むだけ。票の無い旧試合は空）。 */
+export function ch1LiveStandings(attempt) {
+  const p = attempt?.rulesVersion >= 2 ? attempt.voteAttempt : null;
+  if (!p?.votes || !p.voted) return [];
+  const values = totals(p.votes, JUDGES.length, p.baseVotes);
+  return ordered(values).map((id) => ({ id, rank: rankOf(id, values), points: values[id], me: id === "hajime", face: faceIconUrl(id) }));
+}
+
 // ---------------------------------------------------------------- 中継グラフィックの部品
 const JUDGE_IDS = JUDGES.map((j) => j.id);
 const judgeName = (id) => JUDGES.find((j) => j.id === id)?.label || displayName(id, state);
@@ -92,10 +102,13 @@ const judgeLegend = () => legendOf(JUDGE_IDS);
  */
 export async function showStandings(round, mine, cs = null, attempt = null) {
   const owner = state;
+  // 票が入る演出の出発点（この回の票を入れる前）。この回の票がすでに確定していれば、前後は同じになる。
+  const beforeTable = attempt?.rulesVersion >= 2 ? structuredClone(attempt.voteAttempt?.votes || {}) : round > 1 ? interimPointTable(round - 1) : {};
   // 審査員の投入票と、新規試合だけにある基礎票を集計する。
   if (attempt?.rulesVersion >= 2) castCh1Votes(attempt, round - 1, cs);
   const table = attempt?.rulesVersion >= 2 ? attempt.voteAttempt.votes : interimPointTable(round);
   const values = totals(table, JUDGES.length, attempt?.voteAttempt?.baseVotes);
+  const valuesBefore = totals(beforeTable, JUDGES.length, attempt?.voteAttempt?.baseVotes);
   const feed = attempt?.rulesVersion >= 2 ? ["3人の審査員が、ここまでの工程に投票", `千須審査員長も${round}回目の配点を投入`] : round === 1
     ? [`${displayName("maezono", state)}、なるに2点・はじめに1点投入！`, "千須審査員長、まだ動かず"]
     : round === 2
@@ -109,6 +122,7 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
   }, [el("span.btn-label", { text: "次へ" })]);
   next.disabled = true;
   const board = el("div.standings.tournament-board", { dataset: { test: "standings", round }, role: "status" }, [
+    el("i.ts-board-glow", { "aria-hidden": "true" }), el("b.ts-round-mark", { "aria-hidden": "true" }, [el("small", { text: "ROUND" }), String(round)]),
     header(`SMOKE CROWN CUP ／ ROUND ${round}`, "中間投票", sakurai ? sakurai.sub : attempt?.voteAttempt?.baseVotes
       ? "審査員3人が各10点を工程ごとに配分 · 全員に基礎票1点"
       : attempt?.rulesVersion >= 2 ? "審査員3人が各10点を工程ごとに配分。千須は最後の1点を調整後に投じる。"
@@ -126,13 +140,35 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
       ]),
       judgePanel(table, attempt?.rulesVersion >= 2 ? [] : ["sui"], sakurai?.extra),
     ]),
-    el("div.sd-status", [el("span", { text: "ここまでの制作" }), el(`b.craft-evaluation.${review.tone}`, { text: review.mark }), el("span", { text: round === 3 ? "次は2回目の調整" : round === 2 ? "次は1回目の調整" : "次は吸い出し・提供" })]),
-    recognition?.summary ? el("p.sd-recognition", { text: recognition.summary, dataset: { test: "standings-recognition" } }) : null,
-    el("div.sd-feed", [el("b.sd-feed-tag", { text: "速報" }), el("div.sd-feed-lines", (sakurai ? sakurai.feed : feed).map((t) => el("div", { text: t }))), next]),
+    el("div.sd-status.ts-vote-late", [el("span", { text: "ここまでの制作" }), el(`b.craft-evaluation.${review.tone}`, { text: review.mark }), el("span", { text: round === 3 ? "次は2回目の調整" : round === 2 ? "次は1回目の調整" : "次は吸い出し・提供" })]),
+    recognition?.summary ? el("p.sd-recognition.ts-vote-late", { text: recognition.summary, dataset: { test: "standings-recognition" } }) : null,
+    el("div.sd-feed", [el("b.sd-feed-tag", { text: "速報" }), el("div.sd-feed-lines.ts-vote-late", (sakurai ? sakurai.feed : feed).map((t) => el("div", { text: t }))), next]),
   ]);
-  const dim = el("div.fx-dim");
+  const dim = el("div.fx-dim.ts-show-dim");
+  stageLights(dim, { beams: 5, dust: 26 });
   layers.fx.append(dim, board);
-  SE.crowd(1.6);
+  // 票が入る瞬間（TSH02）。板は入れた後の値で組んであり、ここで入れる前へ戻してから審査員ごとに票を飛ばす。板を押すと早送り。
+  const ranked = (v) => ordered(v).map((id) => ({ id, rank: rankOf(id, v) }));
+  const ceremony = voteCeremony({
+    host: board, judges: JUDGE_IDS, contestants: CONTESTANTS, before: beforeTable, after: table,
+    base: attempt?.voteAttempt?.baseVotes || {}, rankBefore: ranked(valuesBefore), rankAfter: ranked(values),
+    rowOf: (id) => board.querySelector(`.sd-row[data-id="${id}"]`), pointsOf: (row) => row.querySelector(".sd-points"),
+    medalOf: (row) => row.querySelector(".sd-rank"), chipOf: (judge) => board.querySelector(`.judge-chip[data-judge="${judge}"]`),
+    held: attempt?.rulesVersion >= 2 ? [] : ["sui"],
+    onJudge: (judge, chip) => chip?.querySelectorAll(".ts-wait").forEach((node) => node.classList.remove("ts-wait")),
+    lead: 1000,
+  });
+  if (ceremony.moved) { SE.whoosh(); showSting(layers.fx, { eyebrow: `ROUND ${round}`, title: "JUDGES' VOTE", sub: "審査員の票が入ります", ms: 720 }); }
+  else SE.crowd(1.6);
+  const skipCeremony = (event) => {
+    if (event.type === "keydown" && event.key !== "Enter" && event.key !== " ") return;
+    if (board.dataset.ceremony !== "running") return;
+    if (event.type === "keydown") { event.preventDefault(); event.stopPropagation(); }
+    ceremony.skip();
+  };
+  // click で受ける（pointerdown で早送りすると、続く mousedown の既定動作で「次へ」のフォーカスが外れる）。
+  board.addEventListener("click", skipCeremony);
+  window.addEventListener("keydown", skipCeremony, true);
   // 速報は読了操作を待つ。会話のAUTO/SKIPとは独立し、自動送りは開発用の自動操作だけ。
   await new Promise((resolve, reject) => {
     const previousFocus = document.activeElement;
@@ -144,6 +180,8 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
       const hadFocus = document.activeElement === next;
       next.disabled = true;
       clearTimeout(entranceTimer); clearTimeout(autoTimer); clearTimeout(exitTimer);
+      ceremony.skip();
+      window.removeEventListener("keydown", skipCeremony, true);
       next.removeEventListener("click", advance);
       observer.disconnect(); removeState();
       window.removeEventListener("pagehide", cancel);
@@ -170,13 +208,27 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
     const removeState = on("hud", () => { if (state !== owner) cancel(); });
     window.addEventListener("pagehide", cancel);
     next.addEventListener("click", advance);
+    let entered = () => {};
+    const shown = new Promise((ready) => { entered = ready; });
     const entranceTimer = setTimeout(() => {
       if (!current()) { cancel(); return; }
       dim.classList.add("show"); board.classList.add("show");
+      entered();
+    }, 40);
+    // 「次へ」は板が出て、票が出そろってから押せる（早送りした時はその場で）。
+    Promise.all([ceremony.done, shown]).then(() => {
+      if (settled) return;
+      if (!current()) { cancel(); return; }
+      window.removeEventListener("keydown", skipCeremony, true);
+      if (ceremony.moved) {
+        SE.crowd(1.6);
+        const lead = board.querySelector('.sd-row[data-rank="1"]');
+        if (lead) { const at = localPoint(board, lead, 0.08, 0.5); sparkBurst(board, at.x, at.y, { count: 12, spread: 70 }); }
+      }
       next.disabled = false;
       next.focus({ preventScroll: true });
       if (autoSkill()) autoTimer = setTimeout(() => next.click(), 300);
-    }, 40);
+    }, () => { if (!settled) cancel(); });
   });
 }
 
@@ -201,7 +253,7 @@ function sakuraiBoard(p, index) {
       const pick = picks[judge];
       return [
         el("small.judge-focus", { text: `見る所：${sakuraiFocusOf(judge, index)}`, dataset: { test: "judge-focus", judge } }),
-        pick ? el("small.judge-pick", { text: `→ ${nameOf(pick.first)}${pick.points[pick.first]}・${nameOf(pick.second)}1`, dataset: { test: "judge-pick", judge } }) : null,
+        pick ? el("small.judge-pick.ts-vote-late", { text: `→ ${nameOf(pick.first)}${pick.points[pick.first]}・${nameOf(pick.second)}1`, dataset: { test: "judge-pick", judge } }) : null,
       ].filter(Boolean);
     },
   };
@@ -221,13 +273,18 @@ export async function resultCountdown(cs, kind, attempt = null) {
   const num = el("div.rc-num");
   const ring = el("div.rc-ring", { "aria-hidden": "true", html: '<svg viewBox="0 0 240 240"><circle class="rc-ring-track" cx="120" cy="120" r="110"/><circle class="rc-ring-progress" cx="120" cy="120" r="110"/></svg>' });
   const cuts = el("div.rc-cuts");
-  const pray = el("div.rc-pray", CONTESTANTS.map((id) => el(`div.rc-card${id === "hajime" ? ".me" : ""}`, [
-    faceOf(id, ".rc-face"),
+  // 出場者4人を、カウントの左右に2人ずつ立たせる（TSH03）。数字が進むたびに光が1人ずつ巡る。
+  const cards = CONTESTANTS.map((id) => el(`div.rc-card${id === "hajime" ? ".me" : ""}`, { dataset: { id } }, [
+    bustOf(id, { cls: ".rc-bust", face: "serious", name: nameOf(id) }),
     el("i.rc-shisha", { style: { background: id === "hajime" ? mixColor(cs.mix) : RIVAL_COLOR[id] } }),
     el("span", { text: nameOf(id) }),
-  ])));
-  const screen = el("div.count-screen", { dataset: { test: "result-count" } }, [header("SMOKE CROWN CUP / FINAL JUDGING", "結果発表", attempt?.rulesVersion >= 2 ? "最後の調整と、残る1点の行方。" : "最後の10点が、動く。"), cuts, ring, num, pray, el("div.rc-crt")]);
+  ]));
+  const pray = el("div.rc-pray", cards);
+  const screen = el("div.count-screen.ts-count", { dataset: { test: "result-count" } }, [header("SMOKE CROWN CUP / FINAL JUDGING", "結果発表", attempt?.rulesVersion >= 2 ? "最後の調整と、残る1点の行方。" : "最後の10点が、動く。"), cuts, el("i.rc-pulse", { "aria-hidden": "true" }), ring, num, pray, el("i.rc-heart", { "aria-hidden": "true" }), el("div.rc-crt")]);
+  stageLights(screen, { beams: 4, dust: 18, tone: "cool" });
   showScreen("count", screen);
+  // 光の巡り: はじめで終わる順（残り1〜0は全員を照らす）。
+  const spotOrder = [0, 2, 1, 3];
   const mainLeaf = Object.entries(cs.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0).sort((a, b) => b[1] - a[1])[0]?.[0];
   const leafName = DB.flavorById?.[mainLeaf]?.short_name || DB.flavorById?.[mainLeaf]?.name || "葉";
   const cutWords = [
@@ -241,6 +298,8 @@ export async function resultCountdown(cs, kind, attempt = null) {
     num.classList.remove("pop");
     void num.offsetWidth;
     num.classList.add("pop");
+    screen.dataset.count = String(n);
+    cards.forEach((card, k) => card.classList.toggle("spot", n <= 1 || spotOrder[(10 - n) % 4] === k));
     SE.count();
     if (n <= 4) SE.heartbeat();
     if (n > 0 && n <= 9) {
@@ -297,12 +356,18 @@ async function parin(screen, disaster) {
 export async function suiCutin(rank, attempt = null) {
   const modern = attempt?.rulesVersion >= 2;
   const table = modern ? attempt.voteAttempt.votes : pointTable(rank);
-  const before = modern ? totals(attempt.voteAttempt.beforeLast, JUDGES.length, attempt.voteAttempt.baseVotes) : totals(table, 2);
-  const after = totals(table, JUDGES.length, modern ? attempt.voteAttempt.baseVotes : null);
+  const base = modern ? attempt.voteAttempt.baseVotes : null;
+  // 新規試合は、最後の回（2回目の調整）の票がまだ画面に出ていない。3人の票 → 千須の最後の1点、の順に見せる（TSH03）。
+  const last = modern ? attempt.voteAttempt.finalVotes : null;
+  const opening = last ? Object.fromEntries(JUDGE_IDS.map((j) => [j, Object.fromEntries(CONTESTANTS.map((id) => [id, (table[j]?.[id] || 0) - (last[j]?.[id] || 0)]))])) : null;
+  const beforeTable = modern ? attempt.voteAttempt.beforeLast : table;
+  const before = modern ? totals(beforeTable, JUDGES.length, base) : totals(table, 2);
+  const after = totals(table, JUDGES.length, base);
+  const openingTotals = opening ? totals(opening, JUDGES.length, base) : before;
   const rows = CONTESTANTS.slice().sort((a, b) => before[b] - before[a]).map((id) => el(`div.nc-row${id === "hajime" ? ".me" : ""}`, { dataset: { id } }, [
     el("span.nc-rank.rank-medal", { text: String(rankOf(id, before)) }),
     faceOf(id, ".nc-face"), el("span.nc-name", { text: nameOf(id) }),
-    voteStack(modern ? attempt.voteAttempt.beforeLast : table, id, "nc-bar", modern ? 3 : 2),
+    voteStack(beforeTable, id, "nc-bar", modern ? 3 : 2),
     el("span.nc-pt", { text: `${before[id]}` }),
   ]));
   const bars = el("div.nc-bars", rows);
@@ -312,42 +377,75 @@ export async function suiCutin(rank, attempt = null) {
     el("div.nc-cut-text", [el("small", { text: "審査員長" }), el("b", { text: "千須豪" }),
       el("div.nc-cut-pt", [el("strong", { text: modern ? "1" : "10" }), el("span", { text: modern ? "最後の調整に、残る1点" : "持ち点10、一括投入" })])]),
   ]);
-  const ov = el("div.sui-cut", [el("i.nc-rays", { "aria-hidden": "true" }),
+  const ov = el("div.sui-cut.ts-final", { dataset: { test: "final-vote" } }, [el("i.nc-rays", { "aria-hidden": "true" }),
     header("SMOKE CROWN CUP ／ FINAL VOTE", modern ? "千須の最後の1点" : "千須の10点", modern ? "二度目の調整で味を守った一台へ" : "もう一口、吸いたい一台へ。", true), bars, cut]);
+  stageLights(ov, { beams: 3, dust: 20 });
   layers.fx.append(ov);
-  const fast = !!autoSkill();
+  // 押すと、残りの間を詰めて先へ進む（自動で進む画面だが、待たされないように）。
+  let hurry = !!autoSkill(), ceremony = null;
+  const hurryUp = () => { hurry = true; ceremony?.skip(); };
+  ov.addEventListener("pointerdown", hurryUp);
+  const pause = (ms) => sleep(hurry ? Math.min(ms, 90) : ms);
+  const ranked = (v) => CONTESTANTS.slice().sort((a, b) => v[b] - v[a]).map((id) => ({ id, rank: rankOf(id, v) }));
+  const rowOf = (id) => bars.querySelector(`[data-id="${id}"]`);
+  // 3人の最後の回の票（千須の最後の1点は残す）。この画面には審査員の札が無いので、右に3人の札を出して、そこから票を飛ばす。
+  const callers = el("div.nc-callers", { "aria-hidden": "true" }, JUDGE_IDS.map((judge) => el("span.judge-chip.nc-caller", { dataset: { judge }, style: { "--c": JUDGE_LOOK[judge]?.color || "#f6c95e" } }, [
+    faceOf(judge, ".judge-face"), el("b", { text: JUDGE_LOOK[judge]?.short || judgeName(judge) }), el("i.judge-pips")])));
+  if (opening && showMoves()) ov.append(callers);
+  ceremony = opening ? voteCeremony({
+    host: ov, judges: JUDGE_IDS, contestants: CONTESTANTS, before: opening, after: beforeTable, base: base || {},
+    rankBefore: ranked(openingTotals), rankAfter: ranked(before),
+    rowOf, pointsOf: (row) => row.querySelector(".nc-pt"), medalOf: (row) => row.querySelector(".nc-rank"),
+    chipOf: (judge) => callers.querySelector(`[data-judge="${judge}"]`), lead: 900,
+  }) : null;
+  if (!ceremony?.moved) callers.remove();
   await sleep(40);
   ov.classList.add("show");
   SE.crowd(2);
-  await sleep(fast ? 100 : 1600);
+  if (ceremony?.moved) {
+    showSting(ov, { eyebrow: "FINAL ROUND", title: "LAST VOTE", sub: "最後の票が入ります", ms: 700 });
+    await ceremony.done;
+    callers.classList.add("out");
+    await pause(500);
+  } else await pause(1600);
   cut.classList.add("show");
   ov.classList.add("cutting");
   SE.just();
   flash("gold");
-  await sleep(fast ? 100 : 1400);
+  await pause(1400);
   ov.classList.remove("cutting");
-  // 千須の色の帯だけが伸び、点数が数え上がる。
+  // 千須の色の帯だけが伸び、点数が数え上がる。票の粒は名前の札から飛ぶ。
+  const from = cut.querySelector(".nc-cut-pt strong") || cut;
   for (const row of rows) {
-    const id = row.dataset.id;
+    const id = row.dataset.id, gained = (table.sui[id] || 0) - (modern ? beforeTable.sui[id] || 0 : 0);
     const seg = row.querySelector('.nc-bar [data-judge="sui"]');
-    seg.style.width = `${(table.sui[id] || 0) / VOTE_SCALE * 100}%`;
-    if (table.sui[id]) row.classList.add("hit");
-    countUp(row.querySelector(".nc-pt"), before[row.dataset.id], after[id], 900);
+    const land = () => {
+      seg.style.width = `${(table.sui[id] || 0) / VOTE_SCALE * 100}%`;
+      if (table.sui[id]) row.classList.add("hit");
+      countUp(row.querySelector(".nc-pt"), before[id], after[id], hurry ? 0 : 900);
+      if (gained > 0) { const at = localPoint(ov, row.querySelector(".nc-pt")); sparkBurst(ov, at.x, at.y, { count: 22, spread: 120 }); }
+    };
+    if (gained > 0 && showMoves() && !hurry) {
+      for (let n = 0; n < Math.min(gained, 10); n++) flyToken(ov, from, seg.parentElement, { color: JUDGE_LOOK.sui.color, delay: n * 70, ms: 620, arc: 120 });
+      setTimeout(land, 560);
+    } else land();
   }
+  await pause(560);
   SE.fanfare();
-  await sleep(fast ? 50 : 950);
+  await pause(950);
   // 並べ替え（入れ替わりを、行が実際に動いて見せる）
   const top = new Map(rows.map((r) => [r, r.getBoundingClientRect().top]));
   const order = CONTESTANTS.slice().sort((a, b) => after[b] - after[a]);
   order.forEach((id, i) => {
     const row = bars.querySelector(`[data-id="${id}"]`);
     row.style.order = String(i);
+    row.dataset.rank = String(rankOf(id, after));
     row.querySelector(".nc-rank").textContent = String(rankOf(id, after));
     row.classList.toggle("lead", rankOf(id, after) === 1);
   });
   for (const row of rows) {
     const dy = top.get(row) - row.getBoundingClientRect().top;
-    if (!dy || fast) continue;
+    if (!dy || hurry) continue;
     row.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }], { duration: 700, easing: "cubic-bezier(.2,.8,.2,1)" });
   }
   if (order[0] === "hajime") {
@@ -355,21 +453,13 @@ export async function suiCutin(rank, attempt = null) {
     ov.append(el("div.nc-stamp", { text: modern ? "集計！" : rankOf("hajime", before) === 1 ? "確定！" : "逆転！" }));
     SE.stamp();
   }
-  await sleep(fast ? 100 : 1500);
-  if (rank === 1) confetti(ov);
-  await sleep(fast ? 100 : 1600);
+  await pause(1500);
+  if (rank === 1) showConfetti(ov, { count: 120 });
+  await pause(1600);
+  ov.removeEventListener("pointerdown", hurryUp);
   ov.classList.add("out");
   await sleep(400);
   ov.remove();
-}
-
-function confetti(host) {
-  const colors = ["#ffc24a", "#38f0ff", "#ff3fa4", "#a6ff5c", "#ffffff"];
-  for (let i = 0; i < 70; i++) {
-    const c = el("i.confetti", { style: { left: `${rand(0, 100)}%`, background: colors[i % colors.length], animationDelay: `${rand(0, 0.6)}s`, "--x": `${rand(-120, 120)}px`, "--r": `${rand(-720, 720)}deg` } });
-    host.append(c);
-    setTimeout(() => c.remove(), 3200);
-  }
 }
 
 // ---------------------------------------------------------------- 最終順位表
@@ -420,15 +510,56 @@ export function resultTable(cs, rank, attempt = null) {
       ]),
       el("div.rt-layout", [el("section.rt-ranking", [el("div.rt-ranking-head", [el("h2", { text: "最終順位 · 審査員の持ち点" }), judgeLegend()]), el("div.rt-rows", rows)]), detail]), btn,
     ]);
+    stageLights(screen, { beams: rank === 1 ? 4 : 2, dust: rank === 1 ? 24 : 10, tone: rank === 1 ? "gold" : "cool" });
     showScreen("result", screen);
-    if (rank === 1) {
-      SE.fanfare();
-      // 紙吹雪は画面の枠の中だけで降らせる（下へ抜けた分でスクロールを作らない）。
-      const sky = el("div.rt-confetti", { "aria-hidden": "true" });
-      screen.append(sky);
-      confetti(sky);
-    }
+    // 順位表の前に、結果の大見出し（優勝は冠・光・紙吹雪。TSH03）。押すとすぐ順位表へ。
+    resultSplash(rank).then(() => {
+      if (!screen.isConnected) return;
+      screen.classList.add("ts-revealed");
+      if (rank === 1) {
+        // 紙吹雪は画面の枠の中だけで降らせる（下へ抜けた分でスクロールを作らない）。
+        const sky = el("div.rt-confetti", { "aria-hidden": "true" });
+        screen.append(sky);
+        showConfetti(sky, { count: 90 });
+      }
+    });
     if (autoSkill()) setTimeout(() => btn.click(), 150);
   });
+}
+
+/**
+ * 結果の大見出し。1位は「CHAMPION」（冠と月桂冠・後光・紙吹雪・はじめの立ち絵）、それ以外は順位だけを静かに出す。
+ * 動きを見せない時（自動操作・動きを減らす）は何も出さない。押すと閉じる。
+ */
+async function resultSplash(rank) {
+  if (!showMoves()) return;
+  const win = rank === 1, metal = metalOf(rank);
+  // 優勝は冠と月桂冠に「1 ST」。届かなかった時は月桂冠だけを順位の後ろに薄く敷く。
+  const crest = crestSvg({ metal, crown: win });
+  if (win) crest.append(el("b", { text: "1" }), el("small", { text: "ST" }));
+  const node = el(`div.ts-splash${win ? ".win" : ""}`, { dataset: { test: "result-splash", rank, metal }, tabindex: "-1", role: "status",
+    "aria-label": win ? "優勝" : `${rank}位` }, [
+    win ? haloOf() : null,
+    el("i.ts-splash-floor", { "aria-hidden": "true" }),
+    bustOf("hajime", { cls: ".ts-splash-bust", face: win ? "smile" : "serious", zoom: 1.5, headTop: 0.06, name: "はじめ" }),
+    el("div.ts-splash-copy", [
+      crest,
+      el("small.ts-splash-eyebrow", { text: "SMOKE CROWN CUP ／ FINAL RESULT" }),
+      el("h2", { text: win ? "CHAMPION" : `${rank}位` }),
+      el("p", { text: win ? "逢縁 はじめ" : "この一台の記録を、次の挑戦へ。" }),
+    ]),
+    el("span.ts-splash-tap", { text: "タップで順位表へ" }),
+  ]);
+  stageLights(node, { beams: win ? 5 : 2, dust: win ? 30 : 8, tone: win ? "gold" : "cool" });
+  layers.fx.append(node);
+  await sleep(30);
+  node.classList.add("show");
+  node.focus({ preventScroll: true });
+  if (win) { SE.fanfare(); SE.crowd(2.6); showConfetti(node, { count: 150, ms: 5200 }); flash("gold"); }
+  else SE.stamp();
+  await holdOrTap(node, win ? 3600 : 2200);
+  node.classList.add("out");
+  await sleep(380);
+  node.remove();
 }
 

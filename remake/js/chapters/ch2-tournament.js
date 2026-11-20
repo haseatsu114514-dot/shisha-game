@@ -33,6 +33,7 @@ import * as broadcast from "../craft/broadcast.js";
 import { voteStack, judgePanel, judgeLegend, craftReviewBlock } from "../craft/tournament-graphics.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
+import { contestCeremony, liveOf } from "../craft/tournament-show.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { strawberryTournamentMemory } from "./ch2-story-data.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -86,7 +87,7 @@ function hud(owner, visible = false) {
 }
 function card(owner, name, title, description, actions = [], extra = []) {
   hud(owner);
-  showScreen("ch2-tournament", el("main.ch2-contest", { dataset: { test: id(name) } }, [
+  return showScreen("ch2-tournament", el("main.ch2-contest", { dataset: { test: id(name) } }, [
     el("header.ch2-contest-header", [el("div", [el("p", { text: "第二章・DAY14 ／ HAZE: OPEN CLOUD" }), el("h1", { text: title })]), menuButton(owner)]),
     el("p.ch2-contest-description", { text: description }), ...extra,
     el("div.ch2-contest-actions", actions),
@@ -124,8 +125,10 @@ function checkpoint(stage) { progress().stage = stage; save(); }
 async function commentary(owner, event) {
   hud(owner, true);
   const controller = new AbortController(); owner.controller = controller;
-  // 掛け合いは保存済みの実際の票を読んで台詞を選ぶ（#1649）。
-  const result = await playTournamentEvent(owner.cs, event, { signal: controller.signal, context: { progress: clone(progress()) } });
+  // 掛け合いは保存済みの実際の票を読んで台詞を選ぶ（#1649）。会話には中継の枠を付ける（TSH05。票が出てからは順位の札も）。
+  const p = progress();
+  const result = await playTournamentEvent(owner.cs, event, { signal: controller.signal, context: { progress: clone(p) },
+    live: liveOf("HAZE: OPEN CLOUD", event, p.voted ? standings(p) : [], who => displayName(who, state)) });
   if (owner.controller === controller) owner.controller = null;
   if (!live(owner) || !result) return false;
   progress().craft = clone(owner.cs); save();
@@ -221,8 +224,10 @@ export function voteReason(p, cs, final = false) {
 function renderVotes(owner, final = false) {
   playBgm("bgm_judging");
   // 途中の持ち点は判の一打、最終結果は会場の拍手（1位はファンファーレも）。第1章の結果発表（craft/result.js）とそろえる。
-  if (final) { SE.crowd?.(2.4); if (progress().result?.rank === 1) SE.fanfare?.(); }
-  else SE.stamp?.();
+  const reaction = () => {
+    if (final) { SE.crowd?.(2.4); if (progress().result?.rank === 1) SE.fanfare?.(); }
+    else SE.stamp?.();
+  };
   const p = progress(), rows = final ? p.result.rows : standings(p);
   const craft = owner.cs || (p.craft ? clone(p.craft) : null);
   const reason = voteReason(p, craft, final);
@@ -235,7 +240,7 @@ function renderVotes(owner, final = false) {
   ]);
   const judgeFace = judge => { const face = contestantAvatar(judge); face.classList.add("judge-face"); return face; };
   const judges = judgePanel(p.votes, JUDGES, { cls: ".ch2-contest-judges", face: judgeFace, craft: final ? craft : null });
-  card(owner, final ? "result" : "votes", final ? "県大会の結果" : "いま、動いた持ち点。",
+  const screen = card(owner, final ? "result" : "votes", final ? "県大会の結果" : "いま、動いた持ち点。",
     final ? `はじめは${p.result.rank}位。審査員3人、それぞれの10点が出揃いました。` : ["制作が終わり、次は吸い出しと提供。", "提供を終えた一台。次は客席での調整。", "一度目の調整を終え、同じ一台をもう一度確かめます。"][p.voted - 1], [
       button(owner, final ? "結果を受け止める" : "続きを作る", "continue", async () => {
         if (final && p.result.rank === 1) clearContinueHistory(state);
@@ -245,6 +250,17 @@ function renderVotes(owner, final = false) {
       p.baseVotes ? el("p.ch2-contest-note", { text: "全出場者に基礎票1点" }) : null,
       el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]), judges,
       el("p.ch2-contest-note", { text: "投入された点は戻りません。同点の場合は一台の出来栄えで順位を決めます。" })]);
+  // 票が入る瞬間（TSH05）: 審査員ごとに票が飛び、点が数え上がり、並びが入れ替わる。同じ回を見せるのは一度だけ（再表示は出そろった板から）。
+  const shown = `${p.attempts ?? 0}:${p.voted}:${final ? "result" : "votes"}`;
+  const show = owner.votesShown === shown ? { moved: false } : contestCeremony({
+    root: screen, judges: JUDGES, contestants: CONTESTANTS, votes: p.votes, last: p.lastVotes, base: p.baseVotes || {}, rows, quality: p.quality || {},
+    buttons: [...screen.querySelectorAll(".ch2-contest-actions button")],
+    late: [...screen.querySelectorAll(`.ch2-contest-reason${final ? ", .ch2-contest-description" : ""}`)],
+    sting: { eyebrow: "HAZE: OPEN CLOUD", title: final ? "FINAL VOTE" : "JUDGES' VOTE", sub: final ? "最後の票が入ります" : "審査員の票が入ります" },
+  });
+  owner.votesShown = shown;
+  if (show.moved) show.done.then(() => { if (live(owner) && screen.isConnected) reaction(); });
+  else reaction();
 }
 async function renderDefeat(owner, variant = null) {
   const p = progress(); broadcast.clearComments();
