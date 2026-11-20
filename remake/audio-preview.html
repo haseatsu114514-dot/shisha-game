@@ -12,7 +12,13 @@
 body { margin: 0; background: #14101f; color: #f3ecdf; font: 15px/1.6 "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; }
 main { max-width: 860px; margin: 0 auto; padding: 20px 16px 60px; }
 h1 { font-size: 20px; margin: 0 0 4px; }
-h1.section { margin-top: 36px; }
+h2.section { margin: 36px 0 4px; font-size: 20px; }
+h1 + h2.section { margin-top: 20px; }
+.comparison { margin-top: 14px; }
+.comparison h3 { margin: 0 0 6px; font-size: 16px; }
+.comparison .buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.comparison h4 { margin: 10px 0 4px; font-size: 14px; }
+.comparison .comparison-status { min-height: 1.6em; margin: 4px 0 0; }
 audio { width: 100%; max-width: 420px; height: 44px; }
 .row.bgm { grid-template-columns: 1fr; }
 p.lead { margin: 0 0 14px; color: #c9bfd6; font-size: 13px; }
@@ -31,10 +37,14 @@ button:active { transform: translateY(1px); }
 <body>
 <main>
 <h1>効果音・BGMの試聴</h1>
+<h2 class="section" id="se-comparison">場面別の効果音比較</h2>
+<p class="lead">今の音と候補を、音量を揃えて1案ずつ再生します。</p>
+<div id="comparison-list"></div>
+<h2 class="section">録音と前の音の比較</h2>
 <p class="lead">新しく入れた録音の音と、前の音（合成音）を聴き比べるページです。合わない音があれば、名前を伝えてもらえれば前の音へ戻すか、別の音に替えます。ゲームの保存データは変えません。</p>
 <p id="status" role="status">どれかのボタンを押すと音が出るようになります。</p>
 <div id="list"></div>
-<h1 class="section">BGM</h1>
+<h2 class="section">BGM</h2>
 <p class="lead">新しく当てた曲です。再生ボタンで聴けます（1曲ずつ鳴ります）。合わなければ曲名を伝えてください。別の曲に替えるか、前の曲へ戻します。</p>
 <div id="bgm-list"></div>
 </main>

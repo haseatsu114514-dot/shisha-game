@@ -1,6 +1,5 @@
-// 効果音の試聴ページ（audio-preview.html）。新しく入れた録音と、前の合成音を聴き比べる。
-// 音はゲーム本編と同じ core/audio.js をそのまま鳴らす。出典は asset_sources/music/main-se-20261111/。
-import { SE, SYNTH_SE, unlockAudio, preloadSe, applyVolumes, playBgm, stopBgm } from "./core/audio.js";
+// 効果音の試聴ページ（audio-preview.html）。場面別の候補と、録音・合成音を聴き比べる。
+import { SE, SYNTH_SE, unlockAudio, preloadSe, applyVolumes, playBgm, stopBgm, recordedSeFiles, renderIntroImpact } from "./core/audio.js";
 import { config } from "./core/state.js";
 
 // now: 今ゲームで鳴る音。before: 前に鳴っていた音（null は「前は無音」）。
@@ -67,8 +66,169 @@ const make = (tag, props = {}, children = []) => {
   node.append(...children);
   return node;
 };
+
+const recordings = recordedSeFiles();
+const comparisonScenes = [
+  {
+    title: "第1章タイトルコール",
+    current: [{ label: "ジングル", file: recordings.jingle[0] }],
+    candidates: [
+      { label: "TRPG 成功ジングル", file: "trpg/jingle_success.wav" },
+      { label: "TRPG エンディングジングル", file: "trpg/jingle_ending.wav" },
+      { label: "斧投げの強い一撃", file: "axe_throw/killshot.wav" },
+      { label: "砂丘の雷鳴", file: "desert_ride/thunder_full.wav" },
+    ],
+  },
+  {
+    title: "登場カットイン",
+    current: [
+      { label: "sharp（判を押す音）", impact: "stamp" },
+      { label: "still（打撃音）", impact: "hit" },
+      { label: "bounce（選択音2回）", file: recordings.select[0], times: [0, 0.12] },
+      { label: "soft（無音）" },
+      { label: "旧絵柄（選択音）", file: recordings.select[0] },
+    ],
+    candidates: [
+      { label: "ラクダレースの判", file: "camel_race/stamp_drop.wav" },
+      { label: "斧が的に当たる音", file: "axe_throw/hit_1.wav" },
+      { label: "短い風切り音", file: "ui_whoosh.wav" },
+      { label: "追い抜きの風切り音", file: "camel_race/overtake_whoosh.wav" },
+    ],
+  },
+  {
+    title: "ゲーム中のロード完了",
+    current: [{ label: "無音" }],
+    candidates: [
+      { label: "短い風切り音", file: "ui_whoosh.wav" },
+      { label: "TRPG 成功ジングル", file: "trpg/jingle_success.wav" },
+    ],
+  },
+];
+
+const comparisonList = document.getElementById("comparison-list");
+const comparisonClips = new Map();
+const comparisonSources = new Set();
+let comparisonContext;
+let comparisonVolume;
+let comparisonRequest = 0;
+let activeComparisonStatus;
+
+function stopComparison() {
+  comparisonRequest++;
+  for (const source of comparisonSources) source.stop();
+  comparisonSources.clear();
+  if (activeComparisonStatus) activeComparisonStatus.textContent = "";
+}
+
+// 短い打音と余韻の長い曲を比べるため、最も音の強い50msの実効値を揃える。
+function comparisonGain(buffer) {
+  const channels = Array.from({ length: buffer.numberOfChannels }, (_, i) => buffer.getChannelData(i));
+  const windowSize = Math.round(buffer.sampleRate * 0.05);
+  let peak = 0;
+  let maxRms = 0;
+  for (let start = 0; start < buffer.length; start += windowSize) {
+    const end = Math.min(start + windowSize, buffer.length);
+    let energy = 0;
+    for (const samples of channels) {
+      for (let i = start; i < end; i++) {
+        peak = Math.max(peak, Math.abs(samples[i]));
+        energy += samples[i] ** 2;
+      }
+    }
+    maxRms = Math.max(maxRms, Math.sqrt(energy / ((end - start) * channels.length)));
+  }
+  return maxRms ? Math.min(0.08 / maxRms, 0.85 / peak) : 0;
+}
+
+function loadComparisonClip({ file, impact }) {
+  const key = file || impact;
+  if (!comparisonClips.has(key)) {
+    const load = file
+      ? fetch(`../assets/audio/se/${file}`).then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${file}`);
+        return response.arrayBuffer();
+      }).then(data => comparisonContext.decodeAudioData(data))
+      : renderIntroImpact(impact, comparisonContext.sampleRate);
+    comparisonClips.set(key, load.then(buffer => ({
+      buffer, gain: comparisonGain(buffer),
+    })).catch(error => {
+      comparisonClips.delete(key);
+      throw error;
+    }));
+  }
+  return comparisonClips.get(key);
+}
+
+async function playComparison(clip, status) {
+  stopComparison();
+  activeComparisonStatus = status;
+  stopPacked();
+  for (const player of players) player.pause();
+  const request = comparisonRequest;
+  const { label } = clip;
+  if (!clip.file && !clip.impact) {
+    status.textContent = `${label}（効果音なし）`;
+    return;
+  }
+  status.textContent = `${label} を準備中…`;
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!comparisonContext) {
+      comparisonContext = new AudioContext();
+      comparisonVolume = comparisonContext.createGain();
+      comparisonVolume.connect(comparisonContext.destination);
+    }
+    const [, sample] = await Promise.all([comparisonContext.resume(), loadComparisonClip(clip)]);
+    if (request !== comparisonRequest) return;
+
+    comparisonVolume.gain.value = sample.gain;
+    const start = comparisonContext.currentTime + 0.01;
+    for (const delay of clip.times || [0]) {
+      const source = comparisonContext.createBufferSource();
+      source.buffer = sample.buffer;
+      source.connect(comparisonVolume);
+      comparisonSources.add(source);
+      source.onended = () => {
+        source.disconnect();
+        comparisonSources.delete(source);
+        if (request === comparisonRequest && !comparisonSources.size) {
+          status.textContent = `${label} を再生しました。`;
+        }
+      };
+      source.start(start + delay);
+    }
+    status.textContent = `${label} を再生中…`;
+  } catch {
+    if (request === comparisonRequest) status.textContent = `${label} を再生できませんでした。もう一度お試しください。`;
+  }
+}
+
+function comparisonGroup(heading, clips, status, current = false) {
+  const buttons = clips.map((clip, i) => make("button", {
+    type: "button",
+    className: current ? "old" : "",
+    textContent: current ? clip.label : `候補${i + 1}　${clip.label}`,
+    onclick: () => playComparison(clip, status),
+  }));
+  return make("div", {}, [
+    make("h4", { textContent: heading }),
+    make("div", { className: "buttons" }, buttons),
+  ]);
+}
+
+for (const { title, current, candidates } of comparisonScenes) {
+  const status = make("p", { className: "lead comparison-status" });
+  status.setAttribute("role", "status");
+  comparisonList.append(make("section", { className: "comparison" }, [
+    make("h3", { textContent: title }),
+    comparisonGroup("今の音", current, status, true),
+    comparisonGroup("候補", candidates, status),
+    status,
+  ]));
+}
+
 for (const [index, row] of AUDIO_PREVIEW_ROWS.entries()) {
-  const play = fn => async () => { await unlock(); fn(); };
+  const play = fn => async () => { stopComparison(); await unlock(); fn(); };
   list.append(make("section", { className: "row" }, [
     make("div", {}, [
       make("h2", { textContent: row.name }),
@@ -86,7 +246,11 @@ for (const [index, row] of AUDIO_PREVIEW_ROWS.entries()) {
 
 const bgmList = document.getElementById("bgm-list");
 const players = [];
-const stopPacked = () => stopBgm(0);
+const stopPacked = () => {
+  stopBgm(0);
+  const button = bgmList.querySelector("button[data-playing='1']");
+  if (button) { button.dataset.playing = ""; button.textContent = "再生"; }
+};
 for (const [index, row] of BGM_PREVIEW_ROWS.entries()) {
   const info = [
     make("h2", { textContent: row.name }),
@@ -98,9 +262,10 @@ for (const [index, row] of BGM_PREVIEW_ROWS.entries()) {
   if (row.key) {
     const button = make("button", { type: "button", textContent: "再生", id: `bgm-${index}` });
     button.addEventListener("click", async () => {
+      stopComparison();
       await unlock();
       for (const other of players) other.pause();
-      if (button.dataset.playing === "1") { stopPacked(); button.dataset.playing = ""; button.textContent = "再生"; return; }
+      if (button.dataset.playing === "1") { stopPacked(); return; }
       playBgm(row.key);
       button.dataset.playing = "1"; button.textContent = "停止";
     });
@@ -108,9 +273,8 @@ for (const [index, row] of BGM_PREVIEW_ROWS.entries()) {
   } else {
     const player = make("audio", { controls: true, preload: "none", src: `../assets/audio/bgm/${row.file}`, id: `bgm-${index}` });
     player.addEventListener("play", () => {
+      stopComparison();
       stopPacked();
-      const packedBtn = document.querySelector("#bgm-list button[data-playing='1']");
-      if (packedBtn) { packedBtn.dataset.playing = ""; packedBtn.textContent = "再生"; }
       for (const other of players) if (other !== player) other.pause();
     });
     players.push(player);

@@ -470,8 +470,8 @@ function syncRain() {
 
 // ---------------------------------------------------------------- SE（録音未読込時・演出用の合成）
 
-function tone({ freq = 440, to = null, type = "sine", dur = 0.12, vol = 0.25, delay = 0, attack = 0.005 }) {
-  const c = ensureCtx();
+function tone({ freq = 440, to = null, type = "sine", dur = 0.12, vol = 0.25, delay = 0, attack = 0.005 }, output) {
+  const c = output?.context || ensureCtx();
   if (!c) return;
   const t = c.currentTime + delay;
   const o = c.createOscillator();
@@ -482,18 +482,18 @@ function tone({ freq = 440, to = null, type = "sine", dur = 0.12, vol = 0.25, de
   g.gain.setValueAtTime(0, t);
   g.gain.linearRampToValueAtTime(vol, t + attack);
   g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  o.connect(g).connect(seBus);
+  o.connect(g).connect(output || seBus);
   o.start(t);
   o.stop(t + dur + 0.02);
 }
 
-function noise({ dur = 0.3, vol = 0.2, delay = 0, filter = 1200, q = 0.8, type = "bandpass", sweepTo = null }) {
-  const c = ensureCtx();
+function noise({ dur = 0.3, vol = 0.2, delay = 0, filter = 1200, q = 0.8, type = "bandpass", sweepTo = null }, output) {
+  const c = output?.context || ensureCtx();
   if (!c) return;
   const t = c.currentTime + delay;
   const len = Math.max(1, Math.floor(c.sampleRate * dur));
   let buf, offset = 0;
-  if (dur <= 3) {
+  if (dur <= 3 && !output) {
     if (!noiseBuffer) {
       noiseBuffer = c.createBuffer(1, Math.floor(c.sampleRate * 3), c.sampleRate);
       const d = noiseBuffer.getChannelData(0);
@@ -517,7 +517,7 @@ function noise({ dur = 0.3, vol = 0.2, delay = 0, filter = 1200, q = 0.8, type =
   g.gain.setValueAtTime(0, t);
   g.gain.linearRampToValueAtTime(vol, t + Math.min(0.04, dur / 3));
   g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  src.connect(f).connect(g).connect(seBus);
+  src.connect(f).connect(g).connect(output || seBus);
   src.start(t, offset, dur);
 }
 
@@ -580,6 +580,25 @@ function boardCrackle({ gain = .45, rate = 1, delay = 0 } = {}) {
   lastVariant.set("board-crackle", file);
   recordedVoice(file, { gain, rate, delay });
 }
+function playHit(output) {
+  tone({ freq: 140, to: 60, type: "sine", dur: 0.2, vol: 0.3 }, output);
+  noise({ dur: 0.12, vol: 0.12, filter: 900 }, output);
+}
+
+function playStamp(output) {
+  tone({ freq: 90, to: 50, type: "sine", dur: 0.18, vol: 0.35 }, output);
+  noise({ dur: 0.08, vol: 0.18, filter: 1200 }, output);
+}
+
+/** 試聴ページで既存の合成打撃音の音量を測るためのバッファ。 */
+export function renderIntroImpact(id, sampleRate) {
+  const OfflineContext = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  const offline = new OfflineContext(1, Math.ceil(sampleRate * 0.25), sampleRate);
+  const play = id === "stamp" ? playStamp : playHit;
+  play(offline.destination);
+  return offline.startRendering();
+}
+
 export const SE = {
   click: () => tone({ freq: 1200, to: 900, type: "triangle", dur: 0.05, vol: 0.12 }),
   select: () => { tone({ freq: 660, type: "triangle", dur: 0.08, vol: 0.18 }); tone({ freq: 990, type: "triangle", dur: 0.1, vol: 0.14, delay: 0.05 }); },
@@ -601,11 +620,11 @@ export const SE = {
   whoosh: () => noise({ dur: 0.7, vol: 0.14, filter: 400, q: 0.6, sweepTo: 2600 }),
   // ラクダレース: 自分のラクダの一完歩ごとの蹄（低く短く。速く走るほど詰まって聞こえる）。
   hoof: () => { tone({ freq: 96, to: 52, type: "sine", dur: 0.08, vol: 0.11 }); noise({ dur: 0.04, vol: 0.04, filter: 600 }); },
-  hit: () => { tone({ freq: 140, to: 60, type: "sine", dur: 0.2, vol: 0.3 }); noise({ dur: 0.12, vol: 0.12, filter: 900 }); },
+  hit: () => playHit(),
   heartbeat: () => { tone({ freq: 70, to: 45, type: "sine", dur: 0.14, vol: 0.4 }); tone({ freq: 70, to: 45, type: "sine", dur: 0.12, vol: 0.3, delay: 0.2 }); },
   tick: () => tone({ freq: 2000, type: "square", dur: 0.02, vol: 0.05 }),
   count: () => { tone({ freq: 880, type: "square", dur: 0.08, vol: 0.12 }); tone({ freq: 440, type: "sine", dur: 0.25, vol: 0.12 }); },
-  stamp: () => { tone({ freq: 90, to: 50, type: "sine", dur: 0.18, vol: 0.35 }); noise({ dur: 0.08, vol: 0.18, filter: 1200 }); },
+  stamp: () => playStamp(),
   crowd: (sec = 2.2) => { noise({ dur: sec, vol: 0.16, filter: 700, q: 0.4 }); noise({ dur: sec * 0.8, vol: 0.08, filter: 1800, q: 0.6, delay: 0.2 }); },
   drumroll: (sec = 2) => { const n = Math.floor(sec * 22); for (let i = 0; i < n; i++) noise({ dur: 0.05, vol: 0.05 + (i / n) * 0.12, filter: 900, delay: i / 22 }); },
   // 1位確定の「プチュン」（ブラウン管が落ちる音）
