@@ -1565,6 +1565,8 @@ html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 140px; }
 .gb-hint { margin-top: auto !important; color: var(--text-dim); font-size: 13px; }
 .gb-side-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .gb-side-actions .btn { min-height: 44px; min-width: 120px; }
+/* 支払いの行とボタンを包む枠（#3987）。PC では枠を作らず、今までどおり説明の続きに並ぶ。スマホ横はパネル下端に残す（下のスマホ横の盤） */
+.gb-side-foot { display: contents; }
 .gb-footer { display: flex; gap: 16px; align-items: center; padding: 10px 18px; border-top: 1px solid rgba(244, 210, 122, 0.35); background: rgba(10, 6, 16, 0.75); }
 .gb-wallet { display: flex; gap: 12px; align-items: center; flex: none; }
 /* 火種は色と形で見分ける（SBD62）: 白火＝白金の丸、紅火＝炎、蒼火＝しずく、翠火＝角（キューブ炭） */
@@ -2130,8 +2132,19 @@ html:root[data-density="phone"] body:not(:root) .gboard .gb-zoom .gb-icon { min-
 html:root[data-density="phone"] body:not(:root) .gboard .gb-side { gap: 3px; font-size: max(var(--phone-sub), calc(12.5px / var(--k, 1))); line-height: 1.42; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-p-title { font-size: max(var(--phone-text), calc(13px / var(--k, 1))); line-height: 1.42; }
 html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-p-sub, .gb-p-state, .gb-p-quality, .gb-p-reward, .gb-p-total, .gb-p-next, .gb-p-lock, .gb-p-target, .gb-bar, .gb-bar-sum, .gb-bar-note, .gb-feat, .gb-goals-head, .gb-goal-name, .gb-goal-fire b, .gb-goal-lock, .gb-goal-now) { font-size: max(var(--phone-sub), calc(12.5px / var(--k, 1))); }
-/* 長い要マス・授業の説明はスクロールできるまま、操作だけをパネル下端に残す。 */
-html:root[data-density="phone"] body:not(:root) .gboard .gb-side-actions { position: sticky; bottom: 0; z-index: 1; flex: none; padding-block: 4px; background: rgba(10, 6, 16, 0.96); }
+/* 見出し「心得の盤」と紋の字（才・感・理）は 24px のままだと 844×340（--k 0.47）で実寸 11.3px。盤の文字の下限 11.5px を割らない（#3121） */
+html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-title, .gb-hub-text) { font-size: max(24px, calc(11.5px / var(--k, 1))); }
+/* 長い要マス・授業の説明はスクロールできるまま、支払いの行（.gb-p-state）と操作だけをパネル下端の枠に残す。
+   ボタンだけを残していた時は、844×390 で一番下の「白火1で払う」が固定のボタンの後ろに隠れた（#3987）。
+   枠は左右に 4px 張り出し、文の幅は説明と同じ。上に細い金の線を引き、後ろの説明の字が透けないよう塗りつぶす。
+   説明が枠の後ろへ続く間（data-more。growth-board-screen.js）は、枠の上に影を出して知らせる */
+html:root[data-density="phone"] body:not(:root) .gboard .gb-side-foot { position: sticky; bottom: 0; z-index: 1; flex: none; display: flex; flex-direction: column; gap: 3px; margin-inline: -4px; padding: 4px; border-top: 1px solid rgba(244, 210, 122, 0.35); background: #0a0610; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-side-foot > .gb-side-actions { margin-top: 0; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-side[data-more="true"] > .gb-side-foot::before { content: ""; position: absolute; inset: auto 0 100%; height: 24px; background: linear-gradient(rgba(10, 6, 16, 0), rgba(10, 6, 16, 0.6)); pointer-events: none; }
+/* 紙の盤でも、暗い枠の中の支払いの行は明るい字にする（紙の上の濃い字のままだと読めない） */
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .gboard .gb-side-foot > .gb-p-state { color: #d9cfe2; }
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .gboard .gb-side-foot > .gb-p-state.s-available { color: #ffd08a; }
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .gboard .gb-side-foot > .gb-p-state.s-pending { color: #fff; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-art { height: 84px; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-art span { font-size: 44px; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-art-icon { width: 64px; height: 64px; }

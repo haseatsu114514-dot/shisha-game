@@ -5119,6 +5119,23 @@
       ]
     },
     {
+      "id": "board-phone-text-browser",
+      "title": "Growth board on landscape phones: text/tap minimums and the payment line kept beside the pinned actions",
+      "kind": "browser",
+      "weight": 1.2,
+      "timeout": 5,
+      "paths": [
+        "remake/css/phone-density.css",
+        "remake/css/ui-paper.css",
+        "remake/css/daily.css",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/test/browser/board_phone_text.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/board_phone_text.mjs"
+      ]
+    },
+    {
       "id": "look",
       "title": "見た目の様式（新版／旧版／DS風）の既定・全章で効くこと・起動時の移行",
       "kind": "quick",
