@@ -1,6 +1,6 @@
 // 会話カットイン（はじめの顔の帯）。台本の決まった行にだけ、カットイン専用の絵を帯に入れて出す。
 // 2026-11-20 再設計（docs/owner_requests.md の CCR01〜05。寸法と依頼文は asset_sources/conversation-cutin-redesign-20261120/）:
-// - 形は2つ。画面の左端から出る「寄りの帯」（金の細い線・中は今の背景のぼかし・帽子が線の手前に出る）と、
+// - 形は2つ。画面の左端から出る「寄りの帯」（金の細い線・中は今の背景のぼかし。人物は帯の中に収める）と、
 //   大会の決意だけに使う全幅の「目元の帯」。
 // - 相手の行（その顔）は、台詞が出切ってから相手の顔の高さに出る。はじめ自身の行は名前のすぐ上に出る。
 // - 絵は ART の4枚。動揺・沈み・受け取るは Codex の専用の絵（原画 asset_sources/conversation-cutin-redesign-20261120/originals/、
@@ -20,11 +20,12 @@ export const ART = {
 
 // 帯（舞台 1280×720 の座標）。face は顔の中心を置く位置、head は画面での頭の高さ（帯の中の座標）。
 // reply は相手の行（相手の顔と同じ高さ）、own ははじめ自身の行（名前の行のすぐ上）、eyes は全幅の目元の帯。
-const BAND = { x: 0, w: 500, h: 250, poly: "0,26 500,0 452,232 0,250", accent: "512,2 464,234", face: [262, 158], head: 210, breakout: 40 };
+// 帽子も帯の中に収める（2026-11-20 オーナー「収めるで」。それまでは帽子だけ帯の上の線より手前に出していた）
+const BAND = { x: 0, w: 500, h: 250, poly: "0,26 500,0 452,232 0,250", accent: "512,2 464,234", face: [262, 175], head: 172 };
 export const FRAMES = {
   reply: { ...BAND, y: 104 },
   own: { ...BAND, y: 226 },
-  eyes: { x: 0, y: 128, w: 1280, h: 190, poly: "0,28 1280,0 1280,162 0,190", edge: "0,28 1280,0", inner: "0,190 1280,162", face: [596, 160], head: 383, breakout: 0, wide: true },
+  eyes: { x: 0, y: 128, w: 1280, h: 190, poly: "0,28 1280,0 1280,162 0,190", edge: "0,28 1280,0", inner: "0,190 1280,162", face: [596, 160], head: 383, wide: true },
 };
 
 // 型ごとの見せ方。on: "partner" 相手の行に、はじめの顔だけを無言で出す（台詞が出切ってから）/ "line" はじめ自身の行に出す
@@ -36,7 +37,7 @@ export const KINDS = {
   "2c": { label: "その顔（軽い）", frame: "reply", enter: "cut", leave: "cut", ms: 1150, on: "partner", partners: [1], se: "whoosh" },
   "2a": { label: "その顔（重い）", frame: "reply", enter: "soft", leave: "soft", on: "partner", partners: [1] },
   "5": { label: "受け取る", frame: "own", enter: "rise", leave: "soft", on: "line", partners: [1], tone: "amber" },
-  "4": { label: "沈む", frame: "own", enter: "soft", leave: "soft", on: "line", partners: [0, 1], tone: "cool", drop: 14, breakout: 0 },
+  "4": { label: "沈む", frame: "own", enter: "soft", leave: "soft", on: "line", partners: [0, 1], tone: "cool", drop: 14 },
   "3": { label: "決意", frame: "eyes", enter: "eyes", leave: "eyes", ms: 800, on: "line", partners: [1, 2], se: "whoosh", dim: true },
 };
 // 消える動きの長さ（ms）。CSS の .vn-cutin.leave と合わせる
@@ -157,14 +158,6 @@ export function createConversationCutin(layer, { document = globalThis.document,
     clip.append(image, div("vn-cutin-shade"), div("vn-cutin-sheen"));
     shadow.append(clip);
     n.append(shadow);
-    // 帽子だけ帯の上の線より手前に出す（同じ絵を、帯の上の線より上だけ見せる）
-    const breakout = kind.breakout ?? f.breakout;
-    if (breakout) {
-      const over = div("vn-cutin-over");
-      over.style.clipPath = clipPolygon([[0, -breakout], [poly[1][0] - 24, -breakout], [poly[1][0] - 24, poly[1][1] + 2], [poly[0][0], poly[0][1] + 2]]);
-      over.append(artImage(cue, src));
-      n.append(over);
-    }
     const svg = document.createElementNS(SVG, "svg");
     svg.setAttribute("viewBox", `0 0 ${f.w} ${f.h}`);
     svg.setAttribute("aria-hidden", "true");

@@ -106,6 +106,7 @@ for (const cue of CUES) {
   assert(cx > 0 && cx < f.w && cy > 0 && cy < f.h, `${cue.id}: 顔が帯の中`);
 }
 
+
 // 6) 層の出し入れ
 function element(tag = "div") {
   return {
@@ -142,11 +143,11 @@ assert(heavy.removed);
 // はじめの行は文字送り中でもすぐ出る
 const own = ct.show(at("5"), "grateful.webp", { typing: true });
 assert(own && own.dataset.tone === "amber" && own.dataset.enter === "rise", "受け取るは琥珀・持ち上がる");
-assert.equal(find(own, "vn-cutin-over").length, 1, "帽子を線の手前に出す");
+assert.equal(find(own, "vn-cutin-over").length, 0, "帽子も帯の中に収める（はみ出さない）");
 ct.clear();
 const sink = ct.show(at("4m"), "downcast.webp");
 assert.equal(sink.dataset.tone, "cool");
-assert.equal(find(sink, "vn-cutin-over").length, 0, "沈むは帯からはみ出さない");
+assert.equal(find(sink, "vn-cutin-over").length, 0, "沈むも帯からはみ出さない");
 // 軽い型は自分から消える（効果音つき）
 ct.clear();
 sounds.length = 0;
