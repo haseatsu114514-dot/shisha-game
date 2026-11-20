@@ -4495,13 +4495,24 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 }
 /* 一言の札: 2行までは定位置、長い講評は上へ伸ばして切らない */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-left .bench-audience {
-  height: auto !important; min-height: 104px !important; max-height: 300px !important; overflow: hidden !important; align-items: center;
+  height: auto !important; min-height: 104px !important; max-height: 300px !important; overflow: visible !important; align-items: center;
 }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-left .bench-audience .audience-speech { min-height: 0; max-height: calc(100% + 12px); margin-block: -6px; padding-block: 6px; overflow: hidden; } /* 切り抜きの枠は見出しの字の上端より 6px 外 */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-audience .audience-name,
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-audience .audience-caption { font-size: var(--ph-sub) !important; line-height: 1.2 !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-audience .audience-note {
   font-size: max(24px, calc(11.6px / var(--k, 1))) !important; line-height: 1.45 !important; min-height: 2.9em !important; max-height: none !important; overflow: visible !important;
 }
+
+/* 大会の「手応え」（心得で開く・ここまでの審査員の受け止めの一覧）: 一言の札の見出しの中では字が実寸5px・押す所が実寸22pxで使えなかった。
+   札の左上に、押す所1つぶんの大きさの見出し札として立てる（札の外へ出すので、札そのものは切り抜かず、中の文だけを切り抜く）。
+   まだ開けない間（受け止めが1つも無い間）は出さない */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-audience [data-test="judge-reception"] {
+  position: absolute !important; left: 8px !important; right: auto !important; top: auto !important; bottom: calc(100% + 6px) !important; z-index: 2;
+  box-sizing: border-box; height: var(--ph-tap) !important; min-height: 0 !important; min-width: var(--ph-tap) !important; margin: 0 !important; padding: 0 20px !important;
+  font-size: var(--ph-sub) !important; line-height: 1.1 !important; white-space: nowrap;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-audience [data-test="judge-reception"]:disabled { display: none !important; }
 
 /* ================================================================ 「?」の説明: 舞台の中央に開く */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-guide[open] .bench-guide-tip {
@@ -4607,13 +4618,22 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .flavor-forecast > b {
   display: block !important; margin: 0 !important; font-size: var(--ph-sub) !important; line-height: 1.25 !important; color: var(--ph-gold); overflow-wrap: anywhere;
 }
-/* 棒が出たら、主役の見出し（「○○が主役」）は葉の一覧で分かるので畳み、札の頭は「仕上がりの目安 ›」だけにする */
+/* 棒が出たら、主役の見出し（「○○が主役」）は葉の一覧で分かるので畳み、札の頭は「仕上がりの目安 ›」にする。
+   札の見える高さは「見出し＋3本の棒」まで。続き（予想幅・低め／高め・熟練の開閉）は札の中を縦に送って読める（札を押すと大きく開く）。
+   続きを消してしまうと、低め／高めの香りと熟練をその場で確かめられない（flavor_expression・mastery_display の検査が見ている） */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste:has([data-test="mix-forecast"]) { max-height: calc(var(--ph-sub) * 4.65 + 78px); overflow: hidden auto !important; overscroll-behavior: contain; scrollbar-width: none; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .flavor-forecast[data-test="mix-forecast"] > b { display: none !important; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .flavor-forecast[data-test="mix-forecast"]::before {
-  content: "仕上がりの目安 ›"; font-size: var(--ph-sub); font-weight: 700; line-height: 1.2; color: var(--ph-gold); letter-spacing: 0; white-space: nowrap;
-}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .flavor-forecast > .flavor-guide-caption { display: contents !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .forecast-caption-title { order: -1; font-size: var(--ph-sub) !important; font-weight: 700; line-height: 1.2 !important; color: var(--ph-gold); letter-spacing: 0; white-space: nowrap; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .forecast-caption-title::after { content: " ›"; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .forecast-caption-sep { display: none !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .forecast-caption-range { order: 1; margin-top: 16px; font-size: var(--ph-sub) !important; line-height: 1.3 !important; color: var(--ph-dim); }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .flavor-heat-choices { order: 2; display: grid !important; gap: 3px; margin: 0 !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .flavor-heat-choices :is(span, b) { font-size: var(--ph-sub) !important; line-height: 1.35 !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .flavor-guide-more { order: 3; display: block !important; margin: 0 !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .flavor-guide-more > summary { display: flex !important; align-items: center; min-height: var(--ph-tap) !important; font-size: var(--ph-sub) !important; line-height: 1.3 !important; color: var(--ph-gold); cursor: pointer; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .flavor-guide-more > p { margin: 0 0 8px !important; font-size: var(--ph-sub) !important; line-height: 1.4 !important; color: var(--ph-ink); }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .flavor-forecast > p { margin: 0 !important; font-size: var(--ph-sub) !important; line-height: 1.35 !important; color: var(--ph-dim); }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste :is(.flavor-guide-caption, .flavor-heat-choices, .flavor-guide-more) { display: none !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .flavor-axes { display: grid !important; gap: 5px !important; width: 100% !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .flavor-axis {
   display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; grid-template-rows: auto 10px !important; gap: 2px 8px !important; min-height: 0 !important;
@@ -4689,17 +4709,17 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-caption { display: none !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row {
-  flex: none !important; display: grid !important; grid-template-columns: 64px minmax(0, 1fr) var(--ph-tap) 62px var(--ph-tap) !important; grid-template-rows: minmax(0, 1fr) auto !important;
+  flex: none !important; display: grid !important; grid-template-columns: 64px minmax(0, 1fr) var(--ph-tap) 62px var(--ph-tap) !important; grid-template-rows: minmax(0, 1fr) auto auto !important;
   column-gap: 8px !important; row-gap: 0 !important; align-items: center !important; height: auto !important; min-height: calc(var(--ph-tap) + 14px) !important; padding: 5px 10px 5px 6px !important;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row > .fr-package {
-  grid-area: 1 / 1 / 3 / 2 !important; width: 64px !important; height: calc(var(--ph-tap) + 2px) !important; display: grid; place-items: center; overflow: hidden;
+  grid-area: 1 / 1 / 4 / 2 !important; width: 64px !important; height: calc(var(--ph-tap) + 2px) !important; display: grid; place-items: center; overflow: hidden;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-name { display: contents !important; }
 /* 名前＝特徴を開く押す所。行の高さいっぱいを押せる面にし、下の補助文は上に重ねて見せるだけ */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-feature {
-  grid-area: 1 / 1 / 3 / 3 !important; position: relative; z-index: 1; align-self: stretch !important; display: flex !important; align-items: flex-start !important; justify-content: flex-start !important;
-  width: auto !important; min-width: 0 !important; height: auto !important; min-height: var(--ph-tap) !important; margin: 0 !important; padding: 7px 0 calc(var(--ph-sub) * 1.2 + 10px) 72px !important; overflow: hidden;
+  grid-area: 1 / 1 / 4 / 3 !important; position: relative; z-index: 1; align-self: stretch !important; display: flex !important; align-items: flex-start !important; justify-content: flex-start !important;
+  width: auto !important; min-width: 0 !important; height: auto !important; min-height: var(--ph-tap) !important; margin: 0 !important; padding: 6px 0 calc(var(--ph-sub) * 2.4 + 8px) 72px !important; overflow: hidden;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-feature b {
   min-width: 0; font-size: max(24px, calc(12.8px / var(--k, 1))) !important; line-height: 1.16 !important; letter-spacing: 0 !important; white-space: normal; overflow-wrap: anywhere;
@@ -4710,19 +4730,20 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
   font-size: 19px !important; font-weight: 700; font-style: italic; font-family: Georgia, serif; line-height: 1 !important; color: #2a1a05 !important; background: #f3cf8a; box-shadow: 0 1px 4px #000a;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-name > small {
-  grid-area: 2 / 2 / 3 / 3 !important; align-self: end !important; margin: 0 0 7px !important; padding: 0 !important; font-size: var(--ph-sub) !important; line-height: 1.2 !important;
+  grid-area: 2 / 2 / 3 / 3 !important; align-self: end !important; margin: 0 !important; padding: 0 !important; font-size: var(--ph-sub) !important; line-height: 1.2 !important;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; color: var(--ph-dim);
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-name > small.fr-reg { color: #ffd98a; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-name > small .fr-reg-supply { display: none; }
 /* まかないの練習: 「まかない○g ／ 私物○g」は2行ぶんの場所を取る */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-name > small.fr-stock-staff { white-space: normal; overflow-wrap: anywhere; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row:has(.fr-stock-staff) .fr-feature { padding-bottom: calc(var(--ph-sub) * 2.4 + 10px) !important; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-name > small.fr-mastery,
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row:has(.fr-stock-staff) .fr-feature { padding-bottom: calc(var(--ph-sub) * 3.6 + 8px) !important; }
+/* 熟練度（★）は補助文の下の行に。葉ごとの慣れが一覧で分かる（特徴のダイアログにも出す） */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-name > small.fr-mastery { grid-area: 3 / 2 / 4 / 3 !important; margin: 0 0 6px !important; color: #d9b979; white-space: nowrap !important; letter-spacing: -.05em; overflow: visible !important; text-overflow: clip !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-name:has(> .fr-stock ~ .fr-stock) > .fr-stock:first-of-type,
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-name:has(> small.fr-stock) > small:not([class]) { display: none !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row > .fr-btn {
-  grid-row: 1 / 3 !important; width: var(--ph-tap) !important; height: var(--ph-tap) !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important;
+  grid-row: 1 / 4 !important; width: var(--ph-tap) !important; height: var(--ph-tap) !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important;
   font-size: max(34px, calc(18px / var(--k, 1))) !important; line-height: 1 !important;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row > .fr-btn:first-of-type { grid-column: 3 !important; }
@@ -4732,7 +4753,7 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
   font-size: max(28px, calc(15px / var(--k, 1))) !important; font-weight: 700; line-height: 1.1 !important; color: #fff;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-name > small.fr-ratio {
-  grid-area: 2 / 4 / 3 / 5 !important; align-self: start !important; display: block !important; visibility: visible !important; margin: 0 0 6px !important; text-align: center; color: var(--ph-gold);
+  grid-area: 2 / 4 / 4 / 5 !important; align-self: start !important; display: block !important; visibility: visible !important; margin: 0 0 6px !important; text-align: center; color: var(--ph-gold);
   min-height: 1.2em;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-ratio .fr-ratio-label { display: none; }

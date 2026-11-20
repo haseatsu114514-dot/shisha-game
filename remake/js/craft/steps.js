@@ -371,10 +371,11 @@ export async function stepMix(cs) {
   }) : null;
   const okBtn = el("button.btn.primary", { disabled: true, dataset: { test: "mix-ok" } }, [el("span.btn-label", { text: "このフレーバーで詰める" })]);
   const totalOf = () => Object.values(cs.mix).reduce((s, g) => s + g, 0);
-  // スマホ横持ち（PHN）: 予想は見出しと3本の棒だけを常に見せ、読み方・熟練・低め／高め・色の見方は押して開く。
-  // 中身は同じ mixForecastCard。PC は今までどおり、その場の「▶」で開く。
+  // スマホ横持ち（PHN）: 予想の札は見出しと3本の棒が見える高さ。続き（予想幅・低め／高め・熟練）は札の中を送るか、札を押して大きく開く。
+  // 中身は同じ mixForecastCard。札の中の「熟練 ★…」はその場で開閉する（押しても大きくは開かない）。PC は今までどおり。
   let forecastDetail = null;
-  taste.addEventListener("click", () => {
+  taste.addEventListener("click", (event) => {
+    if (event.target?.closest?.("details")) return;
     if (document.documentElement.dataset.density !== "phone" || !forecastDetail || !taste.querySelector("[data-test='mix-forecast']")) return;
     const card = forecastDetail();
     card.querySelectorAll("details").forEach((d) => { d.open = true; });
