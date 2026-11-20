@@ -1378,11 +1378,18 @@ function showIntro() {
       app.textContent = page.card ? "パッキースロットの遊び方" : "MOKUMOKUパッキー";
       next.textContent = page.card ? "説明を閉じる" : "次へ";
     };
-    // クリックの入口は1つ。ボタンはブラウザのEnter/Spaceで同じ入口を通る。
+    // 受付会話の最後のタップは pointerup の時点でこの説明を開く。同じタップの互換 mousedown・click が
+    // 後から説明に届くと、フォーカスが外れて1ページ目が飛ばされる。この箱の上で押し始めた入力だけを受ける。
+    let armed = false;
+    box.addEventListener("pointerdown", () => { armed = true; });
+    box.addEventListener("mousedown", (event) => { if (!armed) event.preventDefault(); });
+    // クリックの入口は1つ。ボタンはブラウザのEnter/Spaceで同じ入口を通る（detail 0 なので印は要らない）。
     box.addEventListener("click", (event) => {
       // マウスのダブルクリックだけ2打目を抑制。タッチでは別々のタップも連続クリックとして数えられる。
       const isTouch = event.pointerType === "touch" || event.sourceCapabilities?.firesTouchEvents === true;
-      if (closed || !box.isConnected || (!isTouch && event.detail > 1)) return;
+      const stale = event.detail !== 0 && !armed;
+      armed = false;
+      if (closed || !box.isConnected || stale || (!isTouch && event.detail > 1)) return;
       if (state !== owner) { close(false); return; }
       i += 1;
       if (i === 2) SE.puka();

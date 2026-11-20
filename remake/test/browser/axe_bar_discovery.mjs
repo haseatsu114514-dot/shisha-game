@@ -65,16 +65,20 @@ await suite("axe-bar-discovery", async check => {
           direct: await A.bar.visitAxeBar(), location: A.daily.hiyoriShopLocation() };
       });
       assert.deepEqual(locked, { unlocked: false, why: "locked", direct: false, location: null });
+      // chooseSpot は背景などの準備を待ってから地図を開く。地図が出てから確かめ、中断も成功したことを確かめる。
+      await page.locator(".map:not(.done)").waitFor();
       // #780: 未発見の施設は「？？？」でも出さず、地図にピンを作らない。
       assert.equal(await page.locator(t("pin-axe_bar")).count(), 0);
-      await page.evaluate(() => { A.map.interruptMap("__lime__"); A.result = null; A.flow = A.daily.meetHiyoriAtTonari().then(r => A.result = r); });
+      assert.equal(await page.evaluate(() => A.map.interruptMap("__lime__")), true, "LIME must interrupt the open map");
+      await page.evaluate(() => { A.result = null; A.flow = A.daily.meetHiyoriAtTonari().then(r => A.result = r); });
       await finishScene(page, mode);
       assert.equal(await page.evaluate(() => A.result), true);
       assert.deepEqual(await resources(page), before, "噂だけで面識・関係・報酬を付けない");
       assert.equal(await page.evaluate(() => A.core.state.flags._axe_bar_rumor_done), true);
       // 地図の実ボタンから、無料のBAR入口へ接続。
       await page.evaluate(() => { A.result = null; A.flow = A.map.chooseSpot().then(id => id === "axe_bar" && A.bar.visitAxeBar()).then(r => A.result = r); });
-      await page.locator('.map:not(.done):not([data-revealing="true"])').waitFor(); // #780: 新ピンの解錠演出中は選択を受け付けない
+      // #780: 新ピンの解錠演出中は選択を受け付けない。新ピンを含む地図の演出が終わるまで待つ。
+      await page.locator(`.map:not(.done):not([data-revealing="true"]) ${t("pin-axe_bar")}`).waitFor();
       await page.locator(t("pin-axe_bar")).click(); await page.locator(t("map-go")).click();
       await finishScene(page, mode);
       await page.locator(t("axe-bar-back")).waitFor();
