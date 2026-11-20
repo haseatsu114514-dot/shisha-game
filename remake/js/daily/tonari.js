@@ -61,7 +61,7 @@ export function tonariMenu() {
       strawberry: makanaiDone ? "今日はもうまかないで練習した" : null,
     };
     const opt = (title, desc, value, test) => {
-      const done = DONE[value] || null;
+      const done = DONE[value === "baito_floor" ? "baito" : value] || null;
       return el(`button.big-choice${done ? ".done" : ""}`, { dataset: { test }, disabled: !!done || (value === "hiyori_axe" && !hiyoriAxeAffordable()),
         onclick: () => { SE.select(); pickIt(value); } }, [
         // 済んだ行動も、店の様子（つむぎがいる 等）の説明は残し、その後ろに理由を添える。
@@ -78,6 +78,7 @@ export function tonariMenu() {
         // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
         strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
         opt(manager ? "店長として店に立つ" : "シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}${manager ? "今日の営業を引き受ける。仕事終わりにはスミさんと話せる" : "接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる"}。${shiftPayNote(state)}＋各種ボーナス`, "baito", "tonari-baito"),
+        state.chapter === 1 ? opt("五卓を担当する", "通常シフトの別の遊び方。お客さんの好みを聞いて、作業台と五つの卓を回す。日当と行動枠は同じ。特別な接客の日はいつもの進行", "baito_floor", "shift-mode-floor") : null,
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
@@ -119,17 +120,17 @@ const activeShifts = new WeakSet();
 
 /** @param opts.called スミさんのLIMEで急に呼ばれたシフト（給料に上乗せ）
  *  @param opts.story その日の接客として流す本編の場面。流したらその場面IDを返す（通常の接客は重ねない） */
-export async function doBaito({ called = false, story = null } = {}) {
+export async function doBaito({ called = false, story = null, floor = false } = {}) {
   const owner = state;
   if (activeShifts.has(owner)) return false;
   activeShifts.add(owner);
   const controller = new AbortController();
   const off = on("hud", () => { if (state !== owner) controller.abort(); });
-  try { return await dialogueSequence(() => baitoShift({ called, story, owner, signal: controller.signal })); }
+  try { return await dialogueSequence(() => baitoShift({ called, story, floor, owner, signal: controller.signal })); }
   finally { off(); controller.abort(); activeShifts.delete(owner); }
 }
 
-async function baitoShift({ called, story, owner, signal }) {
+async function baitoShift({ called, story, floor, owner, signal }) {
   const current = () => state === owner && !signal.aborted;
   const read = async (scene, opts) => {
     const result = await play(scene, { ...opts, signal });
@@ -151,6 +152,7 @@ async function baitoShift({ called, story, owner, signal }) {
   // #2213 B02: 本編の常連の話を接客として読んだ日は、カメオ・通常の接客を重ねない
   const storyId = story ? await story() : null;
   if (!current()) return false; // 本編の場面の途中で LOAD した時は、ここで止める
+  let regular = false;
   if (storyId) rememberBaito(storyId, [storyId]);
   // 正体を伏せた客が一度だけ混ざる（後の章・大会当日で回収される伏線）
   else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n === 2 && !state.flags._ev_rei_cameo) {
@@ -167,9 +169,13 @@ async function baitoShift({ called, story, owner, signal }) {
     rememberBaito("ch1_maezono_cameo", ["maezono"]);
   } else {
     if (await customerEvent(condition, signal) === false) return false;
+    regular = true;
   }
   if (!current()) return false;
-  await serveShiftOrder();
+  // 五卓は任意の通常出勤だけ。既存の本編・お忍び・呼び出し・短い二択は変えない。
+  if (floor && regular && !story && !called && owner.chapter === 1) {
+    if (!await serveFloorOrder(owner, signal)) return false;
+  } else await serveShiftOrder();
   if (!current()) return false;
   if (callingBonus && !await read("baito_minto_calling", { bg: TONARI_BG })) return false;
   const bonus = Math.round(CHARM_BONUS[step("charm") - 1] * condition.bonusRate);
@@ -483,20 +489,16 @@ const SHIFT_ORDERS = [
     mixes: [{ sakura: 8, black_tea: 4 }, { peach: 8, chamomile: 4 }], labels: ["あの日の方向で、店の席向けに", "今日の顔を見て、別の一台を"],
     reactions: ["shift_flavor_ch5_world_viewer_same_direction", "shift_flavor_ch5_world_viewer_todays_face"] },
 ];
-async function serveShiftOrder() {
-  const owner = state;
-  const key = `_shift_order_${state.chapter}:${state.day}`;
-  if (state.flags[key]) return;
+function shiftOrderOfDay() {
   const seed = (state.weatherSeed || 0) ^ Math.imul(state.day + state.chapter * 31, 0x45d9f3b);
   // 章付きの注文はその章だけ。章付きが無い章は、章指定なしの4種から出す。
   const pool = SHIFT_ORDERS.filter((o) => o.chapter === state.chapter
     && (!o.id.startsWith("ch5_tsumugi_") || tsumugiAtTonari(state)));
   const orders = pool.length ? pool : SHIFT_ORDERS.filter((o) => !o.chapter);
-  const order = orders[((seed ^ (seed >>> 16)) >>> 0) % orders.length];
-  const index = await modal({ title: order.title || "今日の注文",
-    body: `${order.lead || "前のお客さんを見送って、次の卓につく。"}<br>「${order.text}」 ${order.ask || "店の葉で一台を作る。"}`,
-    options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })) });
-  if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return;
+  return { order: orders[((seed ^ (seed >>> 16)) >>> 0) % orders.length], seed, orders };
+}
+
+async function finishShiftOrder(owner, key, order, index) {
   // 注文と配合に対応した客の反応を返す（#1073）。給料・行動消費は従来どおり後続のcalendarで確定。
   // 同じ注文が前にもあったら、反応の前にはじめが前回の配合を思い出す（前回と同じか違うかで一行を変える・#1415）。
   const prev = state.flags[`_shift_mix_${order.id}`];
@@ -508,9 +510,45 @@ async function serveShiftOrder() {
   const opening = recall || welcome;
   const scene = DB.dialogues[order.reactions[index]];
   const result = await play(opening && scene ? { ...scene, lines: [...opening.lines, ...scene.lines] } : order.reactions[index], { bg: TONARI_BG });
-  if (state !== owner || result?.cancelled) return;
+  if (state !== owner || result?.cancelled) return false;
   // お客さんへの提供は業務。自分の熟練度を稼ぐ対象にはしない。
   state.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
   state.flags[`_shift_mix_${order.id}`] = index;
+  return true;
 }
 
+async function serveShiftOrder() {
+  const owner = state;
+  const key = `_shift_order_${state.chapter}:${state.day}`;
+  if (state.flags[key]) return;
+  const { order } = shiftOrderOfDay();
+  const index = await modal({ title: order.title || "今日の注文",
+    body: `${order.lead || "前のお客さんを見送って、次の卓につく。"}<br>「${order.text}」 ${order.ask || "店の葉で一台を作る。"}`,
+    options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })) });
+  if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return;
+  return finishShiftOrder(owner, key, order, index);
+}
+
+// 店側の卓伝票は盤内だけ。主人公の財布・能力・私物は共通の勤務処理からだけ動く。
+async function serveFloorOrder(owner, signal) {
+  const current = () => state === owner && !signal.aborted;
+  const key = `_shift_order_${owner.chapter}:${owner.day}`;
+  if (!current() || owner.flags[key]) return current();
+  const { order, orders, seed } = shiftOrderOfDay();
+  let run;
+  try { ({ runTonariFloor: run } = await import("./tonari-floor-view.js")); }
+  catch {
+    if (!current()) return false;
+    toast("フロアを読み込めなかった。今日は一卓の注文を受ける", { kind: "warn" });
+    await serveShiftOrder();
+    return current();
+  }
+  if (!current()) return false;
+  const result = await run({ orders, seed, anchorOrderId: order.id, night: owner.slot !== 0, isCurrent: current, signal });
+  if (!current() || !result) return false;
+  // 主卓が実際に受け取った一台だけ、既存の想起へ。未提供・取消なら前日の記録を残す。
+  if (Number.isInteger(result.anchorIndex) && order.mixes[result.anchorIndex]) {
+    if (!await finishShiftOrder(owner, key, order, result.anchorIndex) || !current()) return false;
+  } else owner.flags[key] = true;
+  return current();
+}

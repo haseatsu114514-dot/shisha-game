@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "tonari-six-table-shift",
+      "title": "tonari six-table service: preference, workload, checkout and shift boundaries",
+      "kind": "quick",
+      "run": ["node remake/test/tonari_floor_model.mjs", "node --experimental-vm-modules remake/test/tonari_floor_shift.mjs"]
+    },
+    {
       "id": "rest-variations",
       "title": "Rest dialogue rotation, SAVE/LOAD and interrupted chapter visits",
       "kind": "quick",
