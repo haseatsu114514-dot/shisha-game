@@ -61,7 +61,9 @@ function stripCity(value, screen) {
     const progress = flags?._ch4;
     if (flags?._ch4_cleared || progress?.read?.ch4_sumi_return === true
       || (progress?.part === "resolution" && screen === "homecoming")) return HOME_CITY_NAME;
-    if (progress?.part === "resolution") return "ドバイ";
+    // 空港・宿は出発前の2場面の後。配合を決めた翌日以降も、渡航前の地図では実際の街を使う。
+    if (progress?.part === "prologue" && !departurePrep(value) && progress.stage >= 2) return "ドバイ";
+    if (["free", "eve", "tournament", "resolution"].includes(progress?.part)) return "ドバイ";
   }
   // 第5章頭のtonariと打ち上げ。日常が始まった保存では、通常どおり実際の行き先を表示する。
   if (chapter === 5 && !flags?._ch5_region_started && ["prologue", "free"].includes(flags?._ch5?.part)) return HOME_CITY_NAME;

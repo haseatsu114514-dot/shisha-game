@@ -1,3 +1,4 @@
+import { guardCompletionCardInput } from "./completion-card-input.js";
 import { playEntrance } from "./tournament-entrance.js";
 import { defeatFade } from "../core/transitions.js";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
@@ -48,7 +49,8 @@ const REQUIRED = ["lobby", "entrance", "stations", "rules", "verdict", "farewell
 // SETUPの確定境界に水を含める。途中LOADはSETUP先頭から、確定後はMIXから。
 const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); };
 const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
-  stepSteamTime, runSteamDodge, runPull, cs => runCare(cs, { round: 1 }), cs => runCare(cs, { round: 2 })];
+  stepSteamTime, runSteamDodge, cs => runPull(cs, { holdFailedResult: true }),
+  cs => runCare(cs, { round: 1, holdFailedResult: true }), cs => runCare(cs, { round: 2, holdFailedResult: true })];
 const STEP_IDS = ["setup", "mix", "pack", "foil", "place", "coalfire", "steam", "steam", "pull", "adjust", "adjust"];
 // 第2章の4票は各工程の確定直後に投入する（第3章の台詞読了待ちとは異なる）。
 const VOTE_BOUNDARIES = new Map([[8, 0], [9, 1], [10, 2], [11, 3]]);
@@ -90,11 +92,12 @@ function hud(owner, visible = false) {
 function card(owner, name, title, description, actions = [], extra = []) {
   hud(owner);
   // 完了カードは章のクリア画面（レベルアップの札を本文の外へ寄せる・#3938）。
-  return showScreen("ch2-tournament", el(`main.ch2-contest${name === "complete" ? ".chapter-clear" : ""}`, { dataset: { test: id(name) } }, [
+  const panel = el(`main.ch2-contest${name === "complete" ? ".chapter-clear" : ""}`, { dataset: { test: id(name) } }, [
     el("header.ch2-contest-header", [el("div", [el("p", { text: "第二章・DAY14 ／ HAZE: OPEN CLOUD" }), el("h1", { text: title })]), menuButton(owner)]),
     el("p.ch2-contest-description", { text: description }), ...extra,
     el("div.ch2-contest-actions", actions),
-  ]));
+  ]);
+  return showScreen("ch2-tournament", name === "complete" ? guardCompletionCardInput(panel) : panel);
 }
 async function read(owner, name) {
   if (!live(owner)) return false;

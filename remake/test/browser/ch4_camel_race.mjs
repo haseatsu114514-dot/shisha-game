@@ -152,8 +152,10 @@ await suite("ch4-camel-race", async check => {
     await page.waitForFunction(() => window.__remake.state.flags._ch4_camel?.plays === 2);
     await page.locator(dt("ch4-free")).waitFor({ timeout: 60000 });
     const replayScenes = (await entered(page)).slice(replayEnteredBefore);
-    assert.deepEqual(replayScenes, ["ch4_camel_replay_usual"]);
+    // 結果の会話の後に、待ち時間の場面の一本目（#3097 計画 4-6）
+    assert.deepEqual(replayScenes, ["ch4_camel_replay_usual", "ch4_camel_stable_a"]);
     state = await get(page);
+    assert.equal(state.flags._camel_stable_turn, 1, "the finished waiting scene is counted once");
     assert.equal(state.flags._ch4_camel.best.total, Number(result.total), "a worse run keeps the best");
     assert.equal(state.slot, 1);
     assert.deepEqual(state.stats, before.stats); assert.equal(state.money, before.money);

@@ -950,6 +950,189 @@
           "text": "（鞄で揺れる赤い房。炭の匂いの中に、砂の匂いが一つ混ざった）"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch4_camel_stable_a",
+      "comment": "待ち時間（#3097 計画 4-6）: 二度目からの練習レースの後、結果の会話を読み終えた後に一本（ch4-camel-progress.js の camelStableTalk。_a→_b→_c の順に一度ずつ、読み終えたら出さない）。時間・お金・体力・好感度・記録は変えない。大会の予告・結果に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レースの後、ハビーバの息が整うまで、柵のそばで待つことになった。"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "息が戻るまで、誰も帰れないよ。車の鍵は叔父さんのポケットだから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お腹が、まだ大きく動いてますね"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "見ていろ。走った後の息で、どこで無理をさせたか分かる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバの横腹が、ゆっくり膨らんでは沈む。その間が、少しずつ長くなっていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（出した直後より、少し経ってからの客の顔の方が、正直なんだよな）"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "ハジメ、今なに考えてた？　顔が、お店の人になってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……顔に出てました？"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "戻った。今日は、ここまでだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハリールさんが柵を開けると、ハビーバは自分から水桶の方へ歩いていった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_stable_b",
+      "comment": "待ち時間（#3097 計画 4-6）の二本目。ファーリスがレースの朝に叔父の車に乗ること、客より先に笑う接客（characters.json）。時間・お金・体力・好感度・記録は変えない。大会の予告・結果に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レースの後、日よけのテントの下で、ハリールさんが車を片づけ終えるのを待った。"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "俺、子どもの頃から、レースの朝は毎回、叔父さんの車に乗ってるんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "毎回ですか？"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "毎回。叔父さんは何も言わないけど、助手席を空けて待ってる"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "空けているのではない。荷物を置かないだけだ"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "ほら、同じ意味"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ファーリスが先に笑い出して、つられて俺も笑った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "店でも、そうですよね。お客さんより先に笑ってる"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "先に笑うと、お客さんも笑うから。叔父さんには効かないけど"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "……効いている。顔に出さないだけだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ファーリスが目を丸くして、それから、今日いちばん大きな声で笑った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（先に笑う人と、顔に出さない人。……案外、似てるのかもしれない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_stable_c",
+      "comment": "待ち時間（#3097 計画 4-6）の三本目。ロボット騎手を外す間。ハリールの「よくないことも多かった。だから変わった」は characters.json の background_secret のとおりで、それ以上は語らせない。時間・お金・体力・好感度・記録は変えない。大会の予告・結果に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバの背中から、ハリールさんがロボットの騎手を外すのを、柵の外で待った。"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "ハジメ、持ってみる？　はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "両手で受け取ると、思ったよりずっと軽い。背中のスピーカーが、まだ少し温かかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "こんなに軽いんですね"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "軽くなければ、ラクダは速く走れない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……昔は、人が乗ってたんですよね"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "よくないことも多かった。だから変わった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハリールさんはそれ以上言わずに、ロボットを受け取って、車の後ろの席に寝かせた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（短い答えの奥に、長い時間がある。……今は、聞かないでおこう）"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "叔父さん、ハビーバの水、俺が替えてくるね"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "頼む。……お前も行け。手が空いているなら、桶を持て"
+        }
+      ]
     }
   ]
 }

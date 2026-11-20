@@ -1,8 +1,10 @@
 // 第3・4章の出発前の準備3日（VOL02）に、地元の常連が準備期間の来店で一度だけ話す送り出しの会話（N3a）。
-// ① 台本（data/dialogue/ch3_ch4_home.json）: 8本すべてが接続済み・報酬の文なし・その章の行き先だけを話す
-// ② アダム・みんと・凛想（実 spots.js の CHAPTER_TALKS / visitChar）: 準備期間だけ・一度だけ・中断は未読・昼夜のあいさつを重ねない（正体の回・途中の質問が先の来店では次へ残す）
+// ① 台本（data/dialogue/ch3_ch4_home.json・ch4_prep_home.json）: 18本すべてが接続済み・報酬の文なし・その章の行き先だけを話す
+// ② アダム・みんと・凛想・つむぎ・柚ヶ谷の三人（実 spots.js の CHAPTER_TALKS / visitChar）: 準備期間だけ・一度だけ・中断は未読・昼夜のあいさつを重ねない
+//    （正体の回・途中の質問が先の来店では次へ残す）。柚ヶ谷の店の来店での精算は ch2_followups.mjs が確かめる
 // ③ サメちゃん（実 samechan.js）: 初来店の後、準備期間の来店で一度だけ。出発後・ほかの章では出さない
-// ④ 準備期間の入口（実 departure-prep.js）: 台本を読み込み、地元の地図に4人の店が出る。読み込めなくても準備期間は始まる
+// ④ 準備期間の入口（実 departure-prep.js）: 2つの台本ファイルを読み込み、地元の地図に4人の店が出る。読み込めなくても準備期間は始まる
+// ⑤ ひより（実 hiyori.js）: tonariでの再会の後、準備期間の夜のtonariの対面で一度だけ。物語の段階が先・客席でつむぎの新しい話を読む来店は次へ
 // node --experimental-vm-modules remake/test/departure_home_talks.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -11,8 +13,10 @@ import vm from "node:vm";
 const root = new URL("../../", import.meta.url);
 const read = p => fs.readFileSync(new URL(p, root), "utf8");
 const dialogueFile = name => JSON.parse(read(`data/dialogue/${name}.json`)).dialogues;
-const talks = dialogueFile("ch3_ch4_home");
-const all = Object.fromEntries(["ch3_ch4_home", "ch2_home", "remake_ch1", "venue_hours", "samechan"]
+// 第3章の分と最初の4人の第4章の分は ch3_ch4_home.json。#3097 PR-I で足した5人の第4章の分は ch4_prep_home.json
+const TALK_FILES = ["ch3_ch4_home", "ch4_prep_home"];
+const talks = TALK_FILES.flatMap(dialogueFile);
+const all = Object.fromEntries([...TALK_FILES, "ch2_home", "remake_ch1", "venue_hours", "samechan"]
   .flatMap(dialogueFile).map(d => [d.dialogue_id, d]));
 const samechanData = JSON.parse(read("data/dialogue/samechan.json"));
 const plain = v => JSON.parse(JSON.stringify(v));
@@ -49,9 +53,15 @@ const PREP = { startDay: 29, days: 3, step: 4, departed: false };
 const prepFlags = (chapter, extra = {}) => ({ [`_ch${chapter}_prep`]: { ...PREP }, _minto_identity_revealed: true, ...extra });
 
 // ---- ① 台本 ---------------------------------------------------------------------
-const PEOPLE = ["adam", "minto", "rio", "samechan"];
+// #3097 PR-I（計画 3-3・4-4）: 地元のつむぎ・ひよりと、柚ヶ谷のあげは・神崎・クラウドを足した
+const ADDED = ["tsumugi", "hiyori", "ageha", "kumicho", "rei"];
+const PEOPLE = ["adam", "minto", "rio", "samechan", ...ADDED];
 const SCENES = [3, 4].flatMap(chapter => PEOPLE.map(id => `ch${chapter}_prep_${id}`));
 assert.deepEqual(talks.map(d => d.dialogue_id).sort(), [...SCENES].sort(), "one talk per person per chapter");
+// 章ごとの台詞量はファイル名の章接頭辞で数える（tools/chapter_volume.py）。足した第4章の分は ch4_ で始まるファイルに置く
+const idsIn = name => dialogueFile(name).map(d => d.dialogue_id);
+assert.deepEqual(idsIn("ch4_prep_home").sort(), ADDED.map(id => `ch4_prep_${id}`).sort());
+for (const id of ADDED) assert(idsIn("ch3_ch4_home").includes(`ch3_prep_${id}`), `ch3_prep_${id} sits with the other chapter 3 talks`);
 const textOf = dialogue => [dialogue.lines, ...Object.values(dialogue.branches || {})].flat().map(line => line.text || "").join("\n");
 for (const dialogue of talks) {
   const id = dialogue.dialogue_id, person = id.split("_").pop(), text = textOf(dialogue);
@@ -84,7 +94,43 @@ assert(/アニス/.test(textOf(all.ch4_prep_adam)) && /リコリス/.test(textOf
 // 第2章「また分かる日に吸え」の回収は第5章の ch5_free_eden_adam（#1588 オーナー決定）。第4章のアダムは先取りしない
 assert(!/分かる日が来た|遅くなりました|好きです|点より先/.test(textOf(all.ch4_prep_adam)), "chapter 4 Adam stops short of the chapter 5 EDEN payoff");
 // 第4章の出発前は全国大会から日がたっている。同行の恋人にも不自然にならないよう、優勝を初耳の知らせにしない
-for (const id of ["ch4_prep_minto", "ch4_prep_rio"]) assert(!/全国優勝|おめでと|結果見た/.test(textOf(all[id])), `${id}: not fresh news`);
+for (const id of ["ch4_prep_minto", "ch4_prep_rio", ...ADDED.map(person => `ch4_prep_${person}`)]) {
+  assert(!/全国優勝|おめでと|結果見た/.test(textOf(all[id])), `${id}: not fresh news`);
+}
+// #3097 PR-I で足した10本（2026-11-18 オーナー決定: 恋愛を進めない普段の会話。恋人の保存でも、友人の保存でも通る）
+for (const id of ADDED.flatMap(person => [`ch3_prep_${person}`, `ch4_prep_${person}`])) {
+  const dialogue = all[id], text = textOf(dialogue), person = id.split("_").pop();
+  const lines = [dialogue.lines, ...Object.values(dialogue.branches || {})].flat();
+  assert(!/好き|恋人|付き合|デート|告白|彼女|彼氏/.test(text), `${id}: an everyday talk that does not move the romance`);
+  // 1本 8〜12行（読む道筋ごと。分岐は片方だけ通る）
+  const path = dialogue.lines.filter(line => line.text).length;
+  assert(path >= 8 && path <= 12, `${id}: ${path} lines`);
+  // 第3章の出発前は、はじめの味が遠い時期（ch3_prep_opening「無理に吸って確かめるな」）。誰も味の話をしない
+  if (id.startsWith("ch3_")) assert(!/味/.test(text), `${id}: nobody talks about the taste before Tokyo`);
+  // 第4章の出発前は、ドバイで初めて知ることを言わない。五人ともドバイへ来ることがある（core/overseas-companion.js）ので、行く・行かないも言わない
+  if (id.startsWith("ch4_")) {
+    assert(!/シェイク|王煙楼|龍龍|前夜祭|十五年前|有給|サウナ|休演/.test(text), `${id}: nothing only learned in Dubai, nobody hints at coming`);
+    assert(!/帰ってきたら|帰ったら|留守/.test(text), `${id}: no promise that assumes they stay home`);
+  }
+  // 本心（inner）はひよりだけの演出
+  assert(lines.every(line => !line.inner || line.speaker === "hiyori"), `${id}: inner is Hiyori's`);
+  // 呼び名は characters.json の voice
+  const callsHajime = { tsumugi: "はじめさん", hiyori: "はじめくん", ageha: "ハジメっち", kumicho: "あんちゃん" }[person];
+  if (callsHajime) assert(lines.some(line => line.speaker === person && line.text.includes(callsHajime)), `${id}: ${person} calls Hajime ${callsHajime}`);
+}
+// 神崎が県大会の日に持ち点の表を見ていた話は第5章（ch2_kumicho_after_ch2）まで言わない。盃の喩えは「映画の話だ」でごまかす
+for (const id of ["ch3_prep_kumicho", "ch4_prep_kumicho"]) assert(!/持ち点|点数|表を見/.test(textOf(all[id])), id);
+assert(/盃/.test(textOf(all.ch3_prep_kumicho)) && /映画の話だ/.test(textOf(all.ch3_prep_kumicho)));
+// クラウドの本名・笑顔の練習・「嘘」・同士の呼び方には触れない（第2章の段階会話の話）
+for (const id of ["ch3_prep_rei", "ch4_prep_rei"]) assert(!/健太|田中|笑顔|嘘|同士/.test(textOf(all[id])), id);
+// あげはの手の震え・前夜の点の話は、帰郷の再会（ch3_ageha_reunion）で本人が話す。第3章の出発前は約束の一台を帰郷まで残す
+assert(!/震え|点の話|前夜/.test(textOf(all.ch3_prep_ageha)) && /約束/.test(textOf(all.ch3_prep_ageha)));
+// 第4章の分岐は、第3章のその人の送り出し（クラウドはライブの夜も）を読んだかだけを見る
+for (const person of ADDED) {
+  const flags = all[`ch4_prep_${person}`].lines.filter(line => line.type === "condition").map(line => line.flag);
+  const allowed = [`_talk_seen_ch3_prep_${person}`, ...(person === "rei" ? ["_talk_seen_ch3_prep_rei_live"] : [])];
+  assert(flags.every(flag => allowed.includes(flag)), `ch4_prep_${person}: ${flags}`);
+}
 // 第3章で凛想に頼まれた「向こうの顔」は、第4章で報告を返す（第3章の会話を読んだ時だけ）
 assert(all.ch4_prep_rio.lines.some(line => line.type === "condition" && line.flag === "_talk_seen_ch3_prep_rio" && line.next_true === "faces"));
 assert(/顔/.test(all.ch4_prep_rio.branches.faces.map(line => line.text).join("\n")), "ch4 Rio: Hajime brings back a face");
@@ -96,7 +142,8 @@ assert(!/見たことがない|見たことない/.test(all.ch3_prep_rio.branche
 const conditions = talks.flatMap(d => [d.lines, ...Object.values(d.branches || {})].flat()).filter(line => line.type === "condition");
 for (const line of conditions) {
   assert(["flag", "story_seen"].includes(line.condition_type), line.condition_type);
-  if (line.condition_type === "flag") assert(["_talk_seen_ch2_rio_taste", "_talk_seen_ch3_prep_rio", "_met_volk"].includes(line.flag), line.flag);
+  if (line.condition_type === "flag") assert(["_talk_seen_ch2_rio_taste", "_talk_seen_ch3_prep_rio", "_met_volk",
+    ...ADDED.map(person => `_talk_seen_ch3_prep_${person}`), "_talk_seen_ch3_prep_rei_live"].includes(line.flag), line.flag);
   if (line.condition_type === "story_seen") assert.equal(line.dialogue, "ch1_rio_fourth");
 }
 
@@ -194,6 +241,41 @@ assert.deepEqual(played, ["venue_adam_night", "question_adam"], "the question vi
 assert.equal(state.flags._talk_seen_ch4_prep_adam, undefined);
 spotsModule.set("./bonds.js", "questionVisitDue", () => false);
 assert.equal(spots.chapterTalkDue("adam"), "ch4_prep_adam");
+// #3097 PR-I: つむぎ（tonariの客席。固有会話を読んだ後）と、柚ヶ谷の三人（第2章の最初の来店の会話 _ch2_talks の後）
+const LOCALS = ["tsumugi", "ageha", "kumicho", "rei"];
+const known = (chapter, flags = {}, patch = {}) => save(chapter, { story: { adam: 1, minto: 1, rio: 1, tsumugi: 1 },
+  visits: { adam: 3, minto: 3, rio: 3, tsumugi: 3 }, met: { adam: true, minto: true, rio: true, tsumugi: true },
+  flags: prepFlags(chapter, { _ch2_talks: { ageha: 1, kumicho: 1, rei: 1 }, ...flags }), ...patch });
+for (const chapter of [3, 4]) {
+  state = known(chapter);
+  for (const id of LOCALS) assert.equal(spots.chapterTalkDue(id), `ch${chapter}_prep_${id}`, `chapter ${chapter} prep: ${id}`);
+  assert.equal(spots.hasNewStory("tsumugi"), true, "the tonari pin shows Tsumugi's new talk");
+}
+const noneOf = (label, value) => { state = value; for (const id of LOCALS) assert.equal(spots.chapterTalkDue(id), null, `${label}: ${id}`); };
+noneOf("chapter 3 after departure", known(3, { _ch3_prep: { ...PREP, departed: true } }));
+noneOf("chapter 4 after departure", known(4, { _ch4_prep: { ...PREP, departed: true } }));
+noneOf("chapter 5", known(5, { _ch4_prep: { ...PREP, departed: true } }));
+noneOf("chapter 2", known(2, { _ch3_prep: { ...PREP } }));
+noneOf("before the first talk", save(3, { flags: prepFlags(3, { _ch2_talks: { ageha: 0 } }) }));
+// 第2章で余りチケットを受け取った人は、第3章はライブの夜（ch3_prep_rei_live）が送り出し。第4章の送り出しは読める
+state = known(3, { _ch2_rei_ticket: true }); assert.equal(spots.chapterTalkDue("rei"), null, "the live night is the chapter 3 send-off");
+assert.equal(spots.chapterTalkDue("kumicho"), "ch3_prep_kumicho");
+state = known(4, { _ch2_rei_ticket: true }); assert.equal(spots.chapterTalkDue("rei"), "ch4_prep_rei");
+// 第3章で読んでも、第4章の会話は別に一度
+state = known(4, { _talk_seen_ch3_prep_tsumugi: true, _talk_seen_ch3_prep_ageha: true });
+assert.equal(spots.chapterTalkDue("tsumugi"), "ch4_prep_tsumugi"); assert.equal(spots.chapterTalkDue("ageha"), "ch4_prep_ageha");
+// つむぎは客席の来店（visitChar）で一度だけ。好感度は通いの値
+state = known(3); played = []; affinity = [];
+assert.equal(await spots.visitChar("tsumugi"), true);
+assert.deepEqual(played, ["ch3_prep_tsumugi"]);
+assert.equal(state.flags._talk_seen_ch3_prep_tsumugi, true); assert.deepEqual(plain(affinity), [["tsumugi", 8]]);
+assert.equal(spots.chapterTalkDue("tsumugi"), null, "read once");
+played = []; await spots.visitChar("tsumugi"); assert(!played.includes("ch3_prep_tsumugi"));
+// 中断したら既読にしない
+state = known(4); playMode = "cancel"; played = []; affinity = [];
+assert.equal(await spots.visitChar("tsumugi"), false);
+assert.equal(state.flags._talk_seen_ch4_prep_tsumugi, undefined); assert.deepEqual(plain(affinity), []);
+playMode = "ok";
 
 // ---- ③ サメちゃん（実 samechan.js） ----------------------------------------------------
 let shark, sharkPlayed, sharkAffinity;
@@ -240,7 +322,91 @@ shark.slot = 1; sharkPlayed = [];
 await samechan.visitSamechan(spot);
 assert(!sharkPlayed.includes("ch3_prep_samechan"), "read once");
 
-// ---- ④ 準備期間の入口（実 departure-prep.js） ----------------------------------------------
+// ---- ④ ひより（実 hiyori.js・#3097 PR-I） --------------------------------------------------
+// tonariでの再会（_hiyori_tonari_return_done）の後、準備期間の夜（仕事帰り）のtonariの対面で一度だけ。物語の段階・質問・締めくくりが先。
+let hiyoriPlayed = [], hiyoriMode = "ok", readyEvent = null, hiyoriSaves = 0;
+const hiyoriDB = { dialogues: { ...all, hiyori_peach_talk: { dialogue_id: "hiyori_peach_talk", lines: [{ speaker: "hiyori", face: "normal", text: "ピーチ" }] } } };
+const hiyoriModule = await loadWithStubs("remake/js/daily/hiyori.js", {
+  "../core/data.js": { DB: hiyoriDB },
+  "../core/state.js": { save: () => { hiyoriSaves++; } },
+  "../core/hiyori-route.js": { hiyoriRoute: () => ({ enabled: true, storyEvents: [], events: [{ id: "peach_talk", dialogue: "hiyori_peach_talk", flag: "_hiyori_peach_talk_done" }] }),
+    hiyoriEventStatus: id => id === readyEvent ? "ready" : "seen", hiyoriHasContact: () => true },
+  "../vn/engine.js": { play: async scene => { hiyoriPlayed.push(scene); return hiyoriMode === "cancel" ? { cancelled: true } : { id: scene }; }, isPlaying: () => false },
+  "./bonds.js": { hiyoriQuestionReady: () => false, finaleAtVisit: () => false, playFinale: async () => false, afterStory: async () => true },
+  "../core/axe-bar-discovery.js": { axeBarRumorDue: () => false, hiyoriFirstMeetingReady: () => true },
+  "../core/bus.js": { on: () => () => {} },
+  "./trpg.js": { maybeRecruitTrpgMember: async () => false },
+});
+const hiyori = hiyoriModule.ns;
+const hiyoriSave = (chapter, flags = {}, patch = {}) => {
+  const value = { chapter, phase: "daily", day: 30, slot: 1, met: { hiyori: true }, story: { hiyori: 4 }, contacts: [], lovers: [],
+    finales: {}, affinity: {}, flags: prepFlags(chapter, { _hiyori_tonari_return_done: true, ...flags }), ...patch };
+  hiyoriModule.set("../core/state.js", "state", value);
+  return value;
+};
+assert.deepEqual(plain(hiyori.HIYORI_PREP_TALKS), { 3: "ch3_prep_hiyori", 4: "ch4_prep_hiyori" });
+for (const chapter of [3, 4]) {
+  hiyoriSave(chapter);
+  assert.equal(hiyori.hiyoriPrepTalkDue(), `ch${chapter}_prep_hiyori`);
+  assert.equal(hiyori.hiyoriAtTonari(), true, "the tonari pin shows Hiyori while her send-off waits");
+}
+for (const [label, value] of [
+  ["daytime (she comes after work)", () => hiyoriSave(3, {}, { slot: 0 })],
+  ["before the tonari reunion", () => hiyoriSave(3, { _hiyori_tonari_return_done: false })],
+  ["not met", () => hiyoriSave(3, {}, { met: {} })],
+  ["after departure", () => hiyoriSave(3, { _ch3_prep: { ...PREP, departed: true } })],
+  ["chapter 4 save holding only the chapter 3 record", () => hiyoriSave(4, { _ch4_prep: undefined, _ch3_prep: { ...PREP } })],
+  ["chapter 5", () => hiyoriSave(5, { _ch4_prep: { ...PREP, departed: true } })],
+  ["chapter 2", () => hiyoriSave(2, { _ch3_prep: { ...PREP } })],
+  ["not in the daily loop", () => hiyoriSave(3, {}, { phase: "opening" })],
+]) { value(); assert.equal(hiyori.hiyoriPrepTalkDue(), null, label); assert.equal(hiyori.hiyoriAtTonari(), false, label); }
+{
+  const saved = hiyoriDB.dialogues.ch3_prep_hiyori; delete hiyoriDB.dialogues.ch3_prep_hiyori;
+  hiyoriSave(3); assert.equal(hiyori.hiyoriPrepTalkDue(), null, "script not loaded");
+  hiyoriDB.dialogues.ch3_prep_hiyori = saved;
+}
+// 中断は既読にしない。最後まで読んだら既読で、次の対面には出ない
+let hiyoriState = hiyoriSave(3); hiyoriMode = "cancel"; hiyoriPlayed = [];
+assert.equal(await hiyori.meetHiyoriAtTonari(), false);
+assert.deepEqual(hiyoriPlayed, ["ch3_prep_hiyori"]); assert.equal(hiyoriState.flags._talk_seen_ch3_prep_hiyori, undefined);
+hiyoriMode = "ok"; hiyoriPlayed = []; hiyoriSaves = 0;
+assert.equal(await hiyori.meetHiyoriAtTonari(), true);
+assert.deepEqual(hiyoriPlayed, ["ch3_prep_hiyori"]); assert.equal(hiyoriState.flags._talk_seen_ch3_prep_hiyori, true);
+assert.equal(hiyoriSaves, 1); assert.deepEqual(plain(hiyoriState.affinity), {}, "no affinity of its own (the tonari visit settles as usual)");
+hiyoriPlayed = []; assert.equal(await hiyori.meetHiyoriAtTonari(), false); assert.deepEqual(hiyoriPlayed, [], "read once");
+// 第3章で読んでも、第4章の送り出しは別に一度
+hiyoriState = hiyoriSave(4, { _talk_seen_ch3_prep_hiyori: true }); assert.equal(hiyori.hiyoriPrepTalkDue(), "ch4_prep_hiyori");
+// 客席でつむぎの新しい話を読む来店（daily/tonari.js が prepTalk: false を渡す）では、次の対面へ残す
+hiyoriPlayed = []; assert.equal(await hiyori.meetHiyoriAtTonari({ prepTalk: false }), false);
+assert.deepEqual(hiyoriPlayed, []); assert.equal(hiyoriState.flags._talk_seen_ch4_prep_hiyori, undefined);
+// 物語の段階（♥4のピーチの会話など）が待っている対面では、段階が先。送り出しは次の対面
+readyEvent = "peach_talk"; hiyoriPlayed = [];
+assert.equal(await hiyori.meetHiyoriAtTonari(), true);
+assert.deepEqual(hiyoriPlayed, ["hiyori_peach_talk"]); assert.equal(hiyoriState.flags._talk_seen_ch4_prep_hiyori, undefined);
+readyEvent = null; hiyoriPlayed = [];
+assert.equal(await hiyori.meetHiyoriAtTonari(), true); assert.deepEqual(hiyoriPlayed, ["ch4_prep_hiyori"]);
+// 客席の来店（実 tonari.js の tonariCustomer）: つむぎが新しい話を持っている夜だけ、ひよりの送り出しを次の対面へ残す
+{
+  let tsumugiHere = true, tsumugiNew = true;
+  const calls = [];
+  const tonariModule = await loadWithStubs("remake/js/daily/tonari.js", {
+    "./hiyori.js": { meetHiyoriAtTonari: async opts => { calls.push(["hiyori", plain(opts)]); return false; } },
+    "./tsumugi-schedule.js": { tsumugiAtTonari: () => tsumugiHere },
+    "./spots.js": { hasNewStory: id => id === "tsumugi" && tsumugiNew, visitChar: async id => { calls.push(["visit", id]); return true; } },
+    "../vn/engine.js": { play: async () => ({}) },
+    "./fortune-rumor.js": { hearFortuneRumor: async () => true },
+    "../core/growth.js": { consultLessons: async () => [] },
+  });
+  for (const [here, fresh, prepTalk] of [[true, true, false], [true, false, true], [false, true, true]]) {
+    tsumugiHere = here; tsumugiNew = fresh; calls.length = 0;
+    tonariModule.set("../core/state.js", "state", { chapter: 3, day: 30, slot: 1, flags: prepFlags(3) });
+    assert.equal(await tonariModule.ns.tonariCustomer(), true);
+    assert.deepEqual(calls[0], ["hiyori", { prepTalk }], `tsumugi here=${here} new=${fresh}`);
+    assert.deepEqual(calls.slice(1), here ? [["visit", "tsumugi"]] : []);
+  }
+}
+
+// ---- ⑤ 準備期間の入口（実 departure-prep.js） ----------------------------------------------
 let prepState, captured = null, readCalls = [], readFails = false;
 const prepDB = { dialogues: {} };
 const homeSpots = [...spots.SPOTS, { ...samechanData.spot, region: "home" }, { id: "trpg", kind: "trpg" }];
@@ -259,21 +425,57 @@ const prepModule = await loadWithStubs("remake/js/chapters/departure-prep.js", {
   "../core/city-locations.js": { CH2_CITY_NAME: "柚ヶ谷", HOME_CITY_NAME: "橙須" },
   "../core/chapter-clock.js": { DEPARTURE_PREP_DAYS: 3 },
   "../daily/calendar.js": { runDaily: async def => { captured = def; } },
-  "../daily/spots.js": { allSpots: () => homeSpots, CHAPTER_TALKS: spots.CHAPTER_TALKS },
+  "../daily/spots.js": { allSpots: () => homeSpots, CHAPTER_TALKS: spots.CHAPTER_TALKS, chapterTalkDue: () => null },
   "../daily/samechan.js": { SAMECHAN_PREP_TALKS: samechan.SAMECHAN_PREP_TALKS },
+  "../daily/hiyori.js": { HIYORI_PREP_TALKS: hiyori.HIYORI_PREP_TALKS },
   "../daily/trpg.js": { trpgSpot: () => null },
   "./ch2-city-data.js": { MAP: { day: "map", night: "map" }, loadChapterTwoDialogues: async () => {}, loadPreparationDialogues: async () => {} },
   "./ch2-outings.js": { CITY_SHOP: { id: "ch2_shop" }, knownCityOutings: () => [] },
   "./ch2-commute.js": { returnCityHome: () => true },
-  "./ch2-preparation.js": { PREPARATION_SPOTS: [], visitPreparationSpot: async () => null },
+  "./ch2-preparation.js": { PREPARATION_SPOTS: [], visitPreparationSpot: async () => null, reiLiveDue: () => false },
 });
 const departure = prepModule.ns;
-assert.deepEqual([...departure.departureTalkScenes()].sort(), [...SCENES].sort(), "every talk in the file is wired, and nothing else");
+assert.deepEqual([...departure.departureTalkScenes()].sort(), [...SCENES].sort(), "every talk in the files is wired, and nothing else");
+assert.deepEqual([...departure.DEPARTURE_TALK_FILES], TALK_FILES);
 prepState = { chapter: 3, phase: "opening", day: 29, slot: 0, flags: prepFlags(3) };
 prepModule.set("../core/state.js", "state", prepState);
 await departure.runDeparturePrep({ destination: "東京" });
-assert.deepEqual(readCalls.map(([name]) => name), ["ch3_ch4_home"]);
+assert.deepEqual(readCalls.map(([name]) => name), TALK_FILES);
 for (const id of SCENES) assert(prepDB.dialogues[id], `${id} loaded for the prep days`);
+// 柚ヶ谷の地図: クラウドの店の「！」は、ライブの夜と送り出しの会話のどちらかが待っている間（神崎・あげはは spots.js の hasNewStory）
+{
+  const reiShop = { id: "ch2_rei", charId: "rei", kind: "rival", region: "widehanga" };
+  prepModule.set("./ch2-preparation.js", "PREPARATION_SPOTS", [reiShop]);
+  const reiPin = () => captured.mapOptions().regions.find(region => region.id === "widehanga").spots().find(item => item.charId === "rei");
+  prepModule.set("../daily/spots.js", "chapterTalkDue", id => id === "rei" ? "ch3_prep_rei" : null);
+  assert.equal(reiPin().hasNew(), true, "the send-off talk shows on Cloud's pin");
+  prepModule.set("../daily/spots.js", "chapterTalkDue", () => null);
+  assert.equal(reiPin().hasNew(), false);
+  prepModule.set("./ch2-preparation.js", "reiLiveDue", () => true);
+  assert.equal(reiPin().hasNew(), true, "the live night still shows");
+  prepModule.set("./ch2-preparation.js", "reiLiveDue", () => false);
+  prepModule.set("./ch2-preparation.js", "PREPARATION_SPOTS", []);
+}
+// 片方のファイルが読めない時は、送り出しを出さない（準備期間は始まる）
+{
+  const saved = captured; captured = null; prepDB.dialogues = {}; readCalls = [];
+  const original = dialogueFile;
+  const warn = console.warn; console.warn = () => {};
+  prepModule.set("../core/chapter-data.js", "readDialogues", async name => {
+    readCalls.push([name, []]);
+    if (name === "ch4_prep_home") throw new Error("ch4_prep_home: HTTP 404");
+    return Object.fromEntries(original(name).map(d => [d.dialogue_id, d]));
+  });
+  try { await departure.runDeparturePrep({ destination: "東京" }); } finally { console.warn = warn; }
+  assert(captured, "the prep loop still starts");
+  assert.equal(prepDB.dialogues.ch3_prep_adam, undefined, "all or nothing, as before");
+  prepModule.set("../core/chapter-data.js", "readDialogues", async (name, required) => {
+    readCalls.push([name, [...required]]);
+    if (readFails) throw new Error("offline");
+    return Object.fromEntries(dialogueFile(name).map(d => [d.dialogue_id, d]));
+  });
+  captured = saved;
+}
 assert.equal(prepState.phase, "daily", "chapterTalkDue needs the daily phase");
 // 地元の地図に4人の店（EDEN・PEPPERMINT・Dr.fookah・SHISHARK）が出る
 const home = captured.mapOptions().regions.find(region => region.id === "home").spots();

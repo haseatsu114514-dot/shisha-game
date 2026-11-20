@@ -623,12 +623,17 @@ async function takeAction() {
     await deliver(pendingDelivery(spot.charId), { guide: false });
     return;
   }
-  const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => performSpotAction(spot), {
-    ...facilityGrowth(spot),
-    consumed: (result) => result.used && spot.kind === "spot",
-    exp: (result) => result.exp || spotExpTarget(spot),
-  });
-  if (!used) return;
+  const spotOwner = state, saveGate = { release: null };
+  let outcome;
+  try {
+    outcome = await paidAction(() => performSpotAction(spot, saveGate), {
+      ...facilityGrowth(spot),
+      consumed: (result) => result.used && spot.kind === "spot",
+      exp: (result) => result.exp || spotExpTarget(spot),
+    });
+  } finally { saveGate.release?.(); }
+  const { value: { used, exerted, slotsUsed = 1 }, spent } = outcome;
+  if (!used || state !== spotOwner) return;
   state.visitedDay[spot.id] = state.day;
   // 章が足す、行き先の行動を終えた後の記録（第5章の店めぐり帳の判子など）。保存は下の afterAction が行う
   chapterDef.afterSpot?.(spot);
@@ -641,7 +646,7 @@ async function takeAction() {
   await afterAction({ exerted, spent });
 }
 
-async function performSpotAction(spot) {
+async function performSpotAction(spot, saveGate) {
   const actionOwner = state;
   const scheduledGuestSpot = hiyoriShopLocation();
   const scheduledCityVisit = cityGuestAtShop(spot);
@@ -677,8 +682,10 @@ async function performSpotAction(spot) {
   let slotsUsed = 1;
   let exp = null;
   if (spot.kind === "tonari") {
-    const sub = await tonariMenu();
-    if (!sub) return { used: false, exerted };
+    const selected = await tonariMenu();
+    const floor = selected === "baito_floor";
+    const sub = floor ? "baito" : selected; // 同じ勤務。固定夜・訪問日・体力・成長の経路を分けない。
+    if (state !== actionOwner || !sub) return { used: false, exerted };
     exp = TONARI_EXP[sub] || null;
     if (sub === "ichidai") {
       const { visitIchidaiTable } = await import("./ichidai-table.js");
@@ -700,6 +707,12 @@ async function performSpotAction(spot) {
       return { used: false, exerted };
     }
     if (!(await staminaGuard(sub === "baito" ? -24 : -16))) return { used: false, exerted };
+    if (state !== actionOwner) return { used: false, exerted: false };
+    if (floor && saveGate) {
+      const { holdActionSave } = await import("../core/state.js");
+      if (state !== actionOwner) return { used: false, exerted: false };
+      saveGate.release = holdActionSave(actionOwner);
+    }
     exerted = true;
     state.visitedDay[makanai ? "tonari_practice" : `tonari_${sub}`] = state.day;
     // #2213 B04: 「まかないで練習」はシフト上がりのメニューで選ぶ（tonari.js）。独立の行動としては選べない。
@@ -708,7 +721,10 @@ async function performSpotAction(spot) {
       addStamina(-16);
       const { masteryGained } = await runStrawberryTrial({ bg: TONARI_BG, isCurrent: () => state === actionOwner });
       if (masteryGained) toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
-    } else if (sub === "baito") await doBaito({ story: carriedShiftStory() });
+    } else if (sub === "baito") {
+      // 本編の「常連さんの話」を読むシフト（carriedShiftStory）は、いつものシフトとして進む（フロア営業の札は、その間は出ない。tonari.js）
+      if (await doBaito({ floor, story: carriedShiftStory() }) === false || state !== actionOwner) return { used: false, exerted: false };
+    }
     else if (await tonariCustomer() === false) return { used: false, exerted: false };
   } else if (spot.kind === "samechan") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
