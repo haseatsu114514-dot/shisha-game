@@ -11339,6 +11339,7 @@ html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 140px; }
 .gh-title { margin: 0; font-size: 18px; font-weight: 900; }
 .gh-page { height: 312px; overflow: auto; padding-right: 2px; }
 .modal-box.gboard-help { max-height: 680px; }
+#modal:has(.kannondo-dialog) .modal-backdrop { backdrop-filter: none; } /* 観音堂の昼夜の絵は残す */
 .gh-list, .gh-flow, .gh-gains { display: grid; gap: 8px 16px; margin: 0; padding: 0; list-style: none; }
 .gh-list { grid-template-columns: 1fr 1fr; align-content: start; }
 .gh-row { display: grid; grid-template-columns: 84px 1fr; align-items: center; gap: 10px; }

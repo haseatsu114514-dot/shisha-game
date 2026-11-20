@@ -256,10 +256,13 @@ function showResumeError() {
 }
 
 async function dailyPart() {
+  const owner = state;
   syncNightQueue(NIGHT_EVENTS);
   const deferFlags = state.deferredNightEvents.filter((entry) => entry.chapter === state.chapter).flatMap((entry) => entry.doneKeys || []);
   await playTsumugiStory(Math.max(1, state.day - 1), { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N), deferFlags });
+  if (state !== owner) return;
   await runDaily({ nightEvents: NIGHT_EVENTS, beforeHomecoming: giveEarlyHomeRig });
+  if (state !== owner) return;
   await tournamentDay();
 }
 
