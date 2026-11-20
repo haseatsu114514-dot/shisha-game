@@ -192,7 +192,8 @@ const engine = fs.readFileSync(path.join(root, "remake/js/vn/engine.js"), "utf8"
 assert.match(engine, /function next\(\) \{[\s\S]{0,260}cutin\?\.leave\(/);
 assert.match(engine, /if \(v\) \{ cutin\?\.clear\(\); setAuto\(false\); \}/);
 assert.match(engine, /function openLog\(\) \{\n  cutin\?\.clear\(\);/);
-assert.match(engine, /function finish\(cancelled = false\) \{[\s\S]{0,900}cutin\?\.clear\(\);/);
+// 会話の終わり（finish の本体の中）で片付ける。字数の上限ではなく、関数の閉じ括弧より前にあることを確かめる
+assert.match(engine, /function finish\(cancelled = false\) \{(?:(?!\n\}\n)[\s\S])*cutin\?\.clear\(\);/);
 assert.match(engine, /function completeTyping\(\) \{[\s\S]{0,500}cutin\?\.reveal\(\);/);
 assert.match(engine, /renderPage\(\);\n[^\n]*\n  if \(cutinSrc\) showCutin\(r, cutinCue, cutinSrc\);/, "文字送りを始めてから出す");
 assert.match(engine, /cutin\?\.show\(cue, src, \{ still: reducedMotion\(\), bg: cutinBackdrop\(\), typing: !!r\.typing \}\)/);

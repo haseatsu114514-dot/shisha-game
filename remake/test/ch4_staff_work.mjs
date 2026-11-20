@@ -5,6 +5,7 @@ import vm from "node:vm";
 import * as progress from "../js/chapters/ch4-staff-work-progress.js";
 import { craftContext } from "../js/craft/context.js";
 import { paginate } from "../js/vn/text.js";
+const PORTRAIT_FACES = JSON.parse(fs.readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8")).portraits;
 const { CH4_STAFF_IDS: ids, chapterFourStaffWork: work, chapterFourStaffNight: due,
   chapterFourStaffSceneAllowed: allowed, completeChapterFourStaffScene: complete,
   recordChapterFourStaffChoice: choose, recordChapterFourStaffCare: recordCare,
@@ -218,8 +219,8 @@ for (const prep of ["tools", "seats"]) for (const order of ["sweetness", "streng
       if (!line.speaker) { assert.match(line.text, /。$/, `${id}: narration ends with 。`); continue; }
       assert(characters.has(line.speaker) || ["shop_clerk", "customer"].includes(line.speaker), `${id}: ${line.speaker}`);
       assert.doesNotMatch(line.text, /。$/, `${id}: dialogue does not end with 。`);
-      if (line.face) assert(fs.existsSync(new URL(`../../assets/sprites/characters/${line.speaker}/chr_${line.speaker}_${line.face}.png`, import.meta.url)),
-        `${id}: ${line.speaker} ${line.face}`);
+      // 立ち絵の表情は画像の一覧（remake/data/manifest.json）で確かめる。CI の quick は画像を取得しない部分チェックアウト
+      if (line.face) assert(PORTRAIT_FACES[line.speaker]?.faces?.includes(line.face), `${id}: ${line.speaker} ${line.face}`);
     }
     assert.doesNotMatch(text(scene), /大会|優勝|試合|審査|シェイク|恋|好き/, `${id} stays off the tournament and romance`);
   }

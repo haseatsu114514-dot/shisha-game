@@ -10,7 +10,7 @@ import { CAMEL_FLAG, CAMEL_SCENES, CH4_CAMEL_SCENE_FILES, CAMEL_STAGES, camelRac
   CAMEL_DAILY_SPOT_ID, camelDailySpot, availableCamelCups, CH5_CAMEL_MEET, chapterFiveCamelMeetDue, advanceChapterFiveCamelMeet,
   CAMEL_STABLE_FLAG, CAMEL_STABLE_TALKS, camelStableTalk, recordCamelStableTalk } from "../js/chapters/ch4-camel-progress.js";
 import * as camelProgress from "../js/chapters/ch4-camel-progress.js";
-import { existsSync } from "node:fs";
+const PORTRAIT_FACES = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8")).portraits;
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { newGrowth, claimPlayRewards } from "../js/core/growth.js";
 import { simulateRace, camelMastered, camelExpert, CAMEL_CUPS } from "../js/minigames/camel-race-model.js";
@@ -465,8 +465,8 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
       assert(["", "hajime", "faris", "khalil"].includes(line.speaker), `${id}: ${line.speaker}`);
       if (!line.speaker) { assert.match(line.text, /。$/, `${id}: narration ends with 。`); continue; }
       assert.doesNotMatch(line.text, /。$/, `${id}: dialogue does not end with 。`);
-      assert(existsSync(new URL(`../../assets/sprites/characters/${line.speaker}/chr_${line.speaker}_${line.face}.png`, import.meta.url)),
-        `${id}: ${line.speaker} ${line.face}`);
+      // 立ち絵の表情は画像の一覧（remake/data/manifest.json）で確かめる。CI の quick は画像を取得しない部分チェックアウト
+      assert(PORTRAIT_FACES[line.speaker]?.faces?.includes(line.face), `${id}: ${line.speaker} ${line.face}`);
     }
     assert.doesNotMatch(row.lines.map(line => line.text).join(""), /大会|優勝|審査|シェイク|恋|好き|宿/, `${id} stays off the tournament, romance and the inn`);
   }
