@@ -4,7 +4,8 @@
 
 いまの会話カットイン（`remake/js/vn/conversation-cutin.js`）は、全身の立ち絵（896×1200）の顔のあたりを切り抜いて縮めている。顔は元の絵で幅150pxほどしかないので、スマホの高精細な画面で線が甘くなる。2026-11-07 のオーナー決定（#2845）「残す案が決まったら、その案の分だけ専用の絵を2〜3枚作る」の分を、ここで作る。
 
-- **状態**: 依頼文を用意した段階。絵はまだ無い。枠・出し方・置き場の再設計案はオーナーの判断待ち（台帳 CCR02〜CCR05）。
+- **状態**（2026-11-20）: 枠・出し方・置き場はオーナーが決定し（台帳 CCR02〜CCR04）、本編に組み込んだ。絵は Codex に依頼中（CCR05）。届くまでは、新版の立ち絵の原画（`asset_sources/portraits/library-candidates-20261105/new/hajime/`）の上半身を切り抜いた仮の絵を、本番と同じファイル名で `remake/img/ui/conversation_cutin/` に置いている。
+- **作る枚数**: 動揺・沈み・受け取る・決意の4枚（2026-11-20 オーナー「それで良い」）。照れ（5/5）は今回は作らない。
 - **絵の方針**（2026-11-07 オーナー指示・#2845）: 立ち絵の構図・距離感・体の向きを土台にし、視線・手の位置・頭や肩の角度の小さな変化で「カットインになった」と分かるようにする。別の一枚絵のように大きく変えない。立ち絵の表情差分と同じにもしない。
 - **使い方**: 帯の中に、帽子のてっぺんから襟元までが入る。胸から下は帯で切れるので、仕草は顔の近く（帽子のつば・首・肩）に置く。
 
@@ -18,10 +19,32 @@
 
 全身を描かないので、[立ち絵の規格](../../docs/portrait_standard.md) 6節の「② 頭身の目標」は使わず、代わりに本人の通常を渡す。画風の英文（3節）はそのまま入れてある。
 
+## Codex に送る文（2026-11-20 オーナーに渡したもの）
+
+```
+shisha-game の会話カットイン用に、はじめの胸から上の絵を4枚作ってください。
+
+1. AGENTS.md に従い、最新の origin/main から新しいブランチを切って作業する（フルクローンはしない）。
+2. asset_sources/conversation-cutin-redesign-20261120/README.md を読む。依頼文は「1/5 動揺」「2/5 沈み」「3/5 受け取る」「4/5 決意」の4本を、書き換えずにそのまま使う。5/5 の照れは今回は作らない。
+3. 参照画像は README の表のとおり、リポジトリのファイルを4枚渡す。LFS は必要なファイルだけ取得する：
+   git lfs pull -I "asset_sources/portraits/library-candidates-20261105/new/hajime/*,assets/sprites/character_variants/new/minto/chr_minto_normal.png,assets/sprites/character_variants/new/ageha/chr_ageha_normal.png"
+   ① は依頼文ごとに違う（動揺＝surprise、沈み＝sad、受け取る＝smile、決意＝serious の -source.png）。② はどれも normal-source.png。
+4. 1回の生成で1枚だけ作る。
+5. できた絵を README の「受け取ったあとの確認」と照らし、外れていたら作り直す（1枚につき3回まで）。合格した原画は加工せず、依頼文にあるファイル名で asset_sources/conversation-cutin-redesign-20261120/originals/ に保存する。
+6. git lfs ls-files で4枚が LFS 管理になったことを確かめてから commit・push し、Draft PR を作る。PR には4枚の画像と確認項目の結果を書く。ゲームのコード（remake/）は触らない。PR はマージしない（組み込みは Claude 側で行う）。
+```
+
 ## 保存先
 
 - 受け取った原画: `asset_sources/conversation-cutin-redesign-20261120/originals/hajime_cutin_<名前>.png`
-- ゲーム用への切り抜き・WebP 化・配置は、枠の案が決まってからこちらで行う（原画は編集しない）。
+- ゲーム用: `remake/img/ui/conversation_cutin/hajime_<flustered|downcast|grateful|resolve>.webp`（いまは仮の絵）。
+
+### 届いた絵の組み込み（こちら側の作業）
+
+1. 原画は編集しない。マゼンタの背景で届いたものは透過に抜き、端のにじみを消す。
+2. 人物の外接箱に余白を少し付けて切り抜き、縮小はしないで WebP にする（帯での頭の高さは 210px、決意の帯は 383px。高精細の画面で2倍近くになるので、原画の 540〜700px をそのまま使う）。同じファイル名で `remake/img/ui/conversation_cutin/` へ上書きする。
+3. `remake/js/vn/conversation-cutin.js` の `ART` の `w`・`h`（WebP の寸法）、`face`（顔の中心）、`head`（帽子のてっぺん〜あご）を、その絵で測った値に直す。枠・出し方・置き場は変えない。
+4. `node remake/test/conversation_cutin.mjs`（寸法の記録と実物の一致も見る）と `node remake/test/browser/conversation_cutin_2990.mjs` を通し、新版・旧版・スマホ横（844×390）で実画面を見る。
 
 ## 受け取ったあとの確認（1枚ごと）
 
@@ -124,9 +147,9 @@ STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand
 Output: ONE figure on a 1024x1024 square canvas, saved as asset_sources/conversation-cutin-redesign-20261120/originals/hajime_cutin_bashful.png. True RGBA transparent background, also between the arm and the head. If transparency is not available, use a flat pure magenta (#ff00ff) background with no gradient. No frame, border, panel, background scene, smoke, speed lines, cast shadow, glow, text, labels, numbers, logo or watermark. No shisha equipment. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Preserve image 1's local color palette, saturation and light-dark range; neutral even lighting, no dramatic light.
 ```
 
-## 再設計案の寸法（試作の値。舞台 1280×720 の座標）
+## 帯の寸法（舞台 1280×720 の座標）
 
-オーナーに見せた試作の値。採用が決まったら `remake/js/vn/conversation-cutin.js`・`remake/css/vn/conversation-cutin.css` へ移す。試作の HTML（絵は埋め込んでいない雛形）は [mock/comparison-page.template.html](mock/comparison-page.template.html)。
+オーナーに見せた試作の値で、2026-11-20 に `remake/js/vn/conversation-cutin.js`（`FRAMES`・`KINDS`）・`remake/css/vn/conversation-cutin.css` へ移した。正本はそちら。試作の HTML（絵は埋め込んでいない雛形）は [mock/comparison-page.template.html](mock/comparison-page.template.html)。
 
 | 部品 | 値 |
 |---|---|
