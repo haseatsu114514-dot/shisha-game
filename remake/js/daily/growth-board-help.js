@@ -64,6 +64,16 @@ export const HELP_PAGES = Object.freeze([
     row(sample("gate", "", pic("hidane_body.webp")), "色の台座", "ひし形。色の火1つ。はめると先の道が開き、台座の力も入る"),
     row(sample("peak", "", pic("frame_peak.webp")), "極み", "その盤の能力のマスを全部灯すと灯せる"),
   ]) },
+  // 授業のながれ（SBD140）: 盤で灯しただけでは身につかないことと、札の下の印の意味。盤の右のパネルの図と同じ順番
+  { id: "lesson", title: "授業", build: () => el("ul.gh-list.gh-plain.gh-lesson", [
+    row(el("span.gh-key", { text: "1" }), "出会う", "会うまでは「?」の影絵。誰の授業かは伏せてある"),
+    row(el("span.gh-key", { text: "2" }), "♥5まで仲良くなる", "スミさんなど、仲の良さを問わない授業もある"),
+    row(el("span.gh-key", { text: "3" }), "盤で灯す", "道をつなげて「教わる」。火種はいらない"),
+    row(el("span.gh-key", { text: "4" }), "会って習う", "灯しただけでは使えない。その人に会って話を聞くと身につく"),
+    row(el("span.gh-tag.gb-lesson-tag.t-heart", { text: "♥4/5" }), "仲良くなる途中", "札の下の印。♥が届くと教われる"),
+    row(el("span.gh-tag.gb-lesson-tag.t-now", { text: "今" }), "今教われる", "内省の時に、札を選んで「教わる」"),
+    row(el("span.gh-tag.gb-lesson-tag.t-talk", { text: "相談" }), "灯した。会いに行く", "その人の店などで相談する（LIMEでは習えない）"),
+  ]) },
   { id: "perks", title: "能力", build: () => el("div.gh-perks", Object.keys(BOARD_JA).map((k) => el(`section.gh-perk-col.b-${k}`, [
     el("h4", { text: `${BOARD_JA[k]}盤` }),
     el("ul", Object.entries(SQUARE_PERKS[k].perks).map(([key, p]) => el("li", { dataset: { perk: key } }, [

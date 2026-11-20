@@ -246,7 +246,19 @@ export function commitCutIn(host, items, { hold = 1150 } = {}) {
         img.addEventListener("error", () => img.remove());
         iconBox.append(img);
       }
+      // 飾り（SBD142）: 後ろの光の筋・昇る火の粉・スキルの漫画のコマ。枠の内側で切り抜く箱に入れる（はみ出しの検査に掛からない）
+      const deco = el("span.gfx-cutin-deco", { "aria-hidden": "true" }, [
+        el("i.gfx-cutin-rays"),
+        ...Array.from({ length: 9 }, (_, i) => el("i.gfx-cutin-ember", { style: { "--x": `${6 + (i * 37) % 90}%`, "--d": `${(1.3 + (i * 7) % 9 / 10).toFixed(1)}s`, "--w": `${(-(i * 13) % 14 / 10).toFixed(1)}s`, "--s": `${4 + (i * 5) % 5}px` } })),
+      ]);
+      if (item.art) {
+        const art = el("img.gfx-cutin-art", { src: item.art, alt: "", draggable: "false" });
+        art.addEventListener("load", () => deco.classList.add("has-art"));
+        art.addEventListener("error", () => art.remove());
+        deco.prepend(art);
+      }
       card = el(`div.gfx-cutin.t-${item.tone || "skill"}${item.board ? `.b-${item.board}` : ""}`, [
+        deco,
         el("i.gfx-cutin-streak", { "aria-hidden": "true" }),
         iconBox,
         el("div.gfx-cutin-text", [
@@ -282,7 +294,8 @@ export function commitBanner(host, { count = 0, board = null, rows = [], hold = 
     };
     const veil = el("div.gfx-banner-veil", { role: "status", dataset: { test: "board-commit-banner" } }, [
       el(`div.gfx-banner${board ? `.b-${board}` : ""}`, [
-        el("i.gfx-banner-rays", { "aria-hidden": "true" }),
+        el("i.gfx-banner-rays", { "aria-hidden": "true" }, Array.from({ length: 12 }, (_, i) => el("i.gfx-banner-ember", {
+          style: { "--x": `${4 + (i * 41) % 92}%`, "--d": `${(1.2 + (i * 7) % 10 / 10).toFixed(1)}s`, "--w": `${(-(i * 11) % 15 / 10).toFixed(1)}s`, "--s": `${4 + (i * 5) % 5}px` } }))),
         el("small", { text: "LIGHT UP" }),
         el("strong", [el("span", { text: "火を" }), el("b", { text: String(count) }), el("span", { text: "つ灯した" })]),
         rows.length ? el("div.gfx-banner-rows", rows.slice(0, 8).map((row, i) => {

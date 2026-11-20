@@ -119,7 +119,11 @@ await suite("board-phone-text", async (check) => {
       return { text: side.innerText, scrollable: side.scrollHeight > side.clientHeight,
         actionVisible: actionBox.top >= sideBox.top && actionBox.bottom <= sideBox.bottom };
     });
-    assert(first.text.includes("単体で勝負") && first.text.includes("錠が開くと"), "lesson meaning is present");
+    // 授業は、ながれの図（出会う → ♥5 → 盤で灯す → 会って習う）と、今の手順の一文で伝える（SBD139）
+    assert(first.text.includes("単体で勝負") && first.text.includes("♥5まで仲良くなる"), "lesson meaning is present");
+    assert.deepEqual(await page.locator(`${t("board-lesson-flow")} li`).evaluateAll((steps) => steps.map((step) => step.querySelector(".gb-lf-label").textContent)),
+      ["出会う", "♥5まで", "盤で灯す", "会って習う"], "授業のながれが出る");
+    assert.equal(await page.locator(t("board-lesson-flow")).getAttribute("data-now"), "heart", "今の手順は ♥5");
     assert(first.scrollable, "long lesson should scroll in the short viewport");
     assert(first.actionVisible, "lesson action should stay inside the panel");
     const last = await page.locator(".gb-side").evaluate((side) => {

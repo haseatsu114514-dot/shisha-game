@@ -196,10 +196,10 @@ await suite("growth-fx", async (check) => {
       await help.waitFor();
       assert.equal(await help.locator(".gh-page").getAttribute("data-page"), "flow");
       assert.equal(await help.locator(".gh-flow > li").count(), 4);
-      assert.match(await help.innerText(), /1\/7[\s\S]*その場でレベルアップ[\s\S]*観音堂などで振り返る/);
+      assert.match(await help.innerText(), /1\/8[\s\S]*その場でレベルアップ[\s\S]*観音堂などで振り返る/);
       await tap(t("board-help-next"));
       assert.equal(await help.locator(".gh-page").getAttribute("data-page"), "fire");
-      assert.match(await help.innerText(), /2\/7[\s\S]*白火[\s\S]*色の台座[\s\S]*節目（Lv\.10ごと）[\s\S]*大会で優勝/);
+      assert.match(await help.innerText(), /2\/8[\s\S]*白火[\s\S]*色の台座[\s\S]*節目（Lv\.10ごと）[\s\S]*大会で優勝/);
       assert.equal(await help.locator(".gh-gain").count(), 6, "もらえる時は6つ");
       await page.waitForFunction(() => { const imgs = [...document.querySelectorAll(".gh-page .gh-pic")]; return imgs.length > 0 && imgs.every((img) => img.complete && img.naturalWidth > 0); }, null, { timeout: 10000 }); // 見本は盤と同じ絵が読めている
       await tap(t("board-help-next"));
@@ -209,7 +209,11 @@ await suite("growth-fx", async (check) => {
       const perks = await help.locator("[data-perk]").evaluateAll((rows) => rows.map((row) => [row.dataset.perk, row.querySelector("b").textContent, row.querySelector(".gh-text span").textContent]));
       assert.equal(perks.length, 12, "能力は12");
       assert(perks.every(([key, name, text]) => key && name && text), `どの能力にも名前と一言がある: ${JSON.stringify(perks)}`);
-      for (const id of ["flow", "fire", "kinds", "perks", "states", "how", "rules"]) {
+      // 授業のページ（SBD140）: ながれの4手順と、札の下の印3つ
+      await tap(t("board-help-tab-lesson"));
+      assert.deepEqual(await help.locator(".gh-row .gh-text b").allInnerTexts(), ["出会う", "♥5まで仲良くなる", "盤で灯す", "会って習う", "仲良くなる途中", "今教われる", "灯した。会いに行く"]);
+      assert.deepEqual(await help.locator(".gh-tag").allInnerTexts(), ["♥4/5", "今", "相談"]);
+      for (const id of ["flow", "fire", "kinds", "lesson", "perks", "states", "how", "rules"]) {
         await tap(t(`board-help-tab-${id}`));
         await assertFits(page, t("board-help-pages"));
         await assertFits(page, t("board-help-next"));
@@ -308,6 +312,75 @@ await suite("growth-fx", async (check) => {
         assert.equal(box.fit, "cover", `${id}: コマは欄に合わせて切り抜く`);
         assert.equal(box.position, "50% 50%", `${id}: 切り抜きは中央（顔と動きは原画の高さの 25〜75% に描いてある）`);
       }
+    }, options);
+  }
+
+  // 授業の仕組みが見て分かる（SBD139・SBD140）: 右のパネルに「出会う → ♥5 → 盤で灯す → 会って習う」の進み具合、盤の札の下に今の状態の印。
+  // 灯しただけの授業は ✓ ではなく「相談」（会いに行く）、習得してから ✓
+  for (const [label, options] of [
+    ["pc", { viewport: { width: 1331, height: 760 } }],
+    ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  ]) {
+    await check(`${label}-lesson-flow-and-tags`, async (page) => {
+      await setupDaily(page, { chapter: 2 });
+      await page.evaluate(async () => {
+        const g = await import("./js/core/growth.js"), stats = await import("./js/core/stats.js"), gr = g.ensureGrowth(), s = __remake.state;
+        s.flags._board_starter_given = true; s.flags._board_tutorial_done = true;
+        s.met = { ...(s.met || {}), adam: true };
+        s.affinity = { ...(s.affinity || {}), adam: 60 };
+        window.adamHeart = stats.affinityLevel("adam");
+        gr.hidane.any = 6;
+        gr.nodes.push("M-S1", "M-W1"); gr.learned.push("M-W1"); // 蒸らしアタック＝灯しただけ、キューブ炭＝習得済み
+        window.boardDone = g.openGrowthBoard({ place: "kannon" });
+      });
+      await page.locator(`${t("growth-board")}[data-art]`).waitFor();
+      const heart = await page.evaluate(() => window.adamHeart);
+      assert(heart > 0 && heart < 5, `アダムは♥5の手前: ${heart}`);
+      const flow = page.locator(t("board-lesson-flow"));
+      const steps = () => flow.locator("li").evaluateAll((rows) => rows.map((row) => [row.querySelector(".gb-lf-label").textContent, row.className.match(/done|now|todo/)[0], row.querySelector(".gb-lf-detail")?.textContent || ""]));
+      const pick = (id) => page.locator(t(`board-node-${id}`)).evaluate((node) => node.click());
+      await page.locator(t("board-tab-sense")).click();
+      // 灯しただけの授業: 札の印は「相談」で ✓ は無い。ながれは「会って習う」が今
+      const lit = page.locator(t("board-node-M-S1"));
+      assert.equal(await lit.locator(".gb-lesson-tag.t-talk").innerText(), "相談");
+      assert.equal(await lit.locator(".gb-node-state").count(), 0, "灯しただけの授業に ✓ は付けない");
+      await pick("M-S1");
+      assert.deepEqual(await steps(), [["出会う", "done", ""], ["盤で灯す", "done", ""], ["会って習う", "now", ""]], "スミさんの授業は♥の手順が無い");
+      assert.equal(await flow.getAttribute("data-now"), "learn");
+      assert.match(await page.locator(".gb-p-state").innerText(), /相談できる。次にスミさんに会った時/);
+      await assertFits(page, t("board-lesson-flow"));
+      // ♥が足りない授業: 札の印は「♥n/5」、ながれは♥の手順が今で、♥の数が見える
+      const sealed = page.locator(t("board-node-M-S2"));
+      assert.equal(await sealed.locator(".gb-lesson-tag.t-heart").innerText(), `♥${heart}/5`);
+      await pick("M-S2");
+      assert.deepEqual((await steps()).map((row) => row.slice(0, 2)), [["出会う", "done"], ["♥5まで", "now"], ["盤で灯す", "todo"], ["会って習う", "todo"]]);
+      assert.equal((await steps())[1][2], "♥".repeat(heart) + "♡".repeat(5 - heart));
+      assert.match(await page.locator(".gb-p-state").innerText(), new RegExp(`^つぎ：アダムと♥5まで仲良くなる（いま♥${heart}）$`));
+      await assertFits(page, t("board-lesson-flow"));
+      // 「？」は授業のページから開く
+      await page.locator(t("board-help")).click();
+      await page.locator(`${t("board-help-pages")} .gh-page[data-page="lesson"]`).waitFor();
+      await assertFits(page, t("board-help-pages"));
+      await page.locator(t("board-help-close")).click();
+      // まだ出会っていない人の授業: 「?」の印のまま、ながれは「出会う」が今
+      await pick("M-S4");
+      assert.equal(await flow.getAttribute("data-now"), "meet");
+      assert.equal(await page.locator(t("board-node-M-S4")).locator(".gb-lesson-tag").count(), 0);
+      assert.match(await page.locator(".gb-p-state").innerText(), /物語が進んで出会うと/);
+      // 習得済みの授業: ✓ が付き、印は無い。ながれは全部済み
+      await page.locator(t("board-tab-wisdom")).click();
+      const learned = page.locator(t("board-node-M-W1"));
+      assert.equal(await learned.locator(".gb-node-state").innerText(), "✓");
+      assert.equal(await learned.locator(".gb-lesson-tag").count(), 0);
+      await pick("M-W1");
+      assert.equal(await flow.getAttribute("data-now"), "done");
+      assert((await steps()).every((row) => row[1] === "done"));
+      // 道が届いていない授業（♥は要らない）: 「盤で灯す」が今で、あと火種いくつかが出る
+      await pick("M-W2");
+      const far = await steps();
+      assert.equal(await flow.getAttribute("data-now"), "light");
+      assert.match(far.find((row) => row[0] === "盤で灯す")[2], /^あと火種\d+$/);
+      assert.match(await page.locator(".gb-p-state").innerText(), /^つぎ：盤の道をここまでつなぐ（あと火種\d+）。授業に火種はいらない$/);
     }, options);
   }
 
