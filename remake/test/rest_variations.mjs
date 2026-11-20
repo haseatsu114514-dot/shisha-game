@@ -8,11 +8,14 @@ import { fileURLToPath } from 'node:url';
 import { newState, setState, saveToSlot, loadFromSlot } from '../js/core/state.js';
 import * as outings from '../js/chapters/ch3-outing-progress.js';
 import * as local from '../js/chapters/ch4-dubai-local.js';
+import { advanceToChapterThree, departChapterThree } from '../js/chapters/ch3-progress.js';
+import { classifyFlag } from '../js/core/carry.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../js');
 const DB = { dialogues: {} }, loaded = new Set(), scenes = [];
 const storage = new Map();
 globalThis.localStorage = { getItem: k => storage.get(k) ?? null, setItem: (k,v) => storage.set(k,String(v)) };
 let current, cancelled = false, swap = false, choices = [], trial = false, rehearsal = false, rewards = 0;
+let rainy = false; // 東京の雨の日（daily/weather.js の isRainy の代わり。第3章の奥の部屋・公園・mukai のシフト）
 let sumiCallRead = false, companion = null; // 第4章の時差の電話（ch4_story_sumi_call）の既読と、同じ便で来た恋人
 const context = vm.createContext({ console });
 const noop = () => {};
@@ -150,3 +153,62 @@ for (const [,base,,rest] of cases) for (const suffix of revisits(rest)) {
   sumiCallRead = false; companion = null;
 }
 console.log('PASS rest variations: real chapter loaders/visits, rotation, SAVE/LOAD, cancellation, menus, unchanged rewards and Sumi\'s night calls');
+
+// #3097 PR-G: 東京の雨の日（第3章の日常ループ）。isRainy が雨の日だけ雨の回を読み、晴れの日は今までの巡回のまま。
+// 奥の部屋は第1章の家で休むと同じ quietTurn の雨の束（休む1回目は雨でも最初の場面）。公園・mukai のシフトは外出の記録に雨の回を数える。
+{
+  Object.assign(values, { isRainy: () => rainy, availableOptionalScenes: () => [], availableChapterThreeTrials: () => [],
+    loverMilestonesDue: () => [], mukaiShiftPay: () => 10000, runMukaiShift: async ({ intro }) => intro() });
+  const ch3 = await load('chapters/ch3-tokyo-daily.js'); await ch3.evaluate();
+  const { chapterThreeTokyoDefinition, CH3_TOKYO_SPOTS, TOKYO_DAILY_IDS } = ch3.namespace;
+  Object.assign(DB.dialogues, await readDialogues('ch3_outings', [...outings.OUTING_DIALOGUE_IDS]),
+    await readDialogues('ch3_tokyo_daily', [...TOKYO_DAILY_IDS]));
+  const tokyo = () => {
+    const value = newState();
+    Object.assign(value, { chapter: 2, day: 25, phase: 'cleared', money: 12345, stamina: 50 });
+    value.flags = { _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true, _ch2_tournament: { stage: 'complete' } };
+    assert(advanceToChapterThree(value)); value.day += 3; assert(departChapterThree(value));
+    value.slot = 0; value.phase = 'daily';
+    return value;
+  };
+  const def = chapterThreeTokyoDefinition({});
+  const go = async (place, wet, pick = []) => {
+    rainy = wet; choices = [...pick]; current.stamina = 50;
+    const result = await def.performSpot(CH3_TOKYO_SPOTS.find(entry => entry.place === place), { staminaGuard: async () => true });
+    rainy = false;
+    return result.used ? scenes.at(-1) : null;
+  };
+  replace(tokyo()); scenes.length = 0;
+  assert.deepEqual([await go('room', true), await go('room', true), await go('room', false), await go('room', true), await go('room', false)],
+    ['ch3_tokyo_room_rest', 'ch3_tokyo_room_rest_rain', 'ch3_tokyo_room_rest_b', 'ch3_tokyo_room_rest_rain', 'ch3_tokyo_room_rest_c'],
+    'room rests: the first rest is the usual one, rainy rests read the rain scene and keep the usual rotation');
+  assert.equal(current.flags._ch3_room_rests, 3);
+  assert.equal(current.flags._spot_turn_ch3_room_rest_rain, 2);
+  assert.equal(classifyFlag('_spot_turn_ch3_room_rest_rain'), 'progression', 'the rain turn is not carried into NG+');
+  cancelled = true; assert.equal(await go('room', true), null); cancelled = false;
+  assert.equal(current.flags._spot_turn_ch3_room_rest_rain, 2, 'a cancelled rainy rest does not count');
+  assert(loaded.has('ch3_tokyo_room_rest_rain'), 'the rain scene is in the real chapter load list');
+
+  replace(tokyo()); scenes.length = 0;
+  assert.deepEqual([await go('park', true), await go('park', false), await go('park', true), await go('park', false)],
+    ['ch3_outing_park_walk_day_rain', 'ch3_outing_park_walk_day', 'ch3_outing_park_walk_day_rain', 'ch3_outing_park_walk_day_b']);
+  current.slot = 1;
+  assert.deepEqual([await go('park', true), await go('park', false)], ['ch3_outing_park_walk_night_rain', 'ch3_outing_park_walk_night']);
+  const shift = ['outing:mukai_help'];
+  current.slot = 0;
+  assert.deepEqual([await go('mukai', true, shift), await go('mukai', true, shift), await go('mukai', false, shift), await go('mukai', true, shift)],
+    ['ch3_outing_mukai_help_lost', 'ch3_outing_mukai_help_rain', 'ch3_outing_mukai_help_lost_d', 'ch3_outing_mukai_help_rain_b'],
+    'shift intros: the first shift is the usual one, then rainy days read the rain intros');
+  cancelled = true; assert.equal(await go('mukai', true, shift), null); cancelled = false;
+  assert.deepEqual(current.flags._ch3_outings, { park_walk: 6, park_walk_day: 4, park_walk_day_rain: 2, park_walk_night: 2,
+    park_walk_night_rain: 1, mukai_help: 4, mukai_help_rain_lost: 2 }, 'a cancelled rainy shift does not count');
+
+  const scene = DB.dialogues.ch3_tokyo_room_rest_rain;
+  assert(scene && !scene.metadata && scene.lines.every(line => !line.type && ['', 'hajime', 'mukai_master'].includes(line.speaker)));
+  assert(scene.lines.every(line => [...line.text].reduce((n, c) => n + (c.codePointAt(0) <= 255 ? 0.5 : 1), 0) <= 48));
+  const text = scene.lines.map(line => line.text).join('\n');
+  assert.match(text, /雨/); assert.doesNotMatch(text, /昼|夜|午後|朝|大会/, 'a room rest can be any time of day');
+  assert.doesNotMatch(scene.lines.filter(line => line.speaker === 'hajime').map(line => line.text).join('\n'), /舌|味/);
+  assert(scene.lines.filter(line => line.speaker === 'mukai_master').length >= 3, 'Mukai speaks');
+}
+console.log('PASS rest variations: Tokyo rain scenes only on rainy days (room, park, mukai shift) without skipping the usual rotation');

@@ -75,11 +75,26 @@ const MUKAI_HELP_TALKS = Object.freeze({
 });
 // 公園の2回目からの巡回（昼夜それぞれ。#3097 で b・c に d・e、さらに f・g、RLS09 で h を足した）
 const PARK_REVISITS = Object.freeze(["b", "c", "d", "e", "f", "g", "h"]);
+// 雨の日の回（#3097 PR-G）。雨かどうかは日常ループが daily/weather.js の isRainy で決めて渡す（第1章の雨の回と同じ抽選。
+// 旧行程は渡さないので晴れの回のまま）。手伝いは1回目と味が戻った後の1回目だけ晴れの日と同じ場面から読み、雨の回は
+// 味が戻る前後で共通。公園は雨の日ならいつも雨の回を、昼夜それぞれ読む。読んだ雨の回は記録の *_rain に数え、
+// 晴れの日の巡回を一本も飛ばさない（第1章の家で休む・施設の雨の回と同じ）。
+const MUKAI_HELP_RAIN = Object.freeze(["ch3_outing_mukai_help_rain", "ch3_outing_mukai_help_rain_b"]);
+const PARK_RAIN = Object.freeze({ day: "ch3_outing_park_walk_day_rain", night: "ch3_outing_park_walk_night_rain" });
 const visitCount = raw => Math.max(0, Math.floor(Number(raw)) || 0);
 const RECOVERY_SCENE = "ch3_taste_return";
 
-/** 台本ID。手伝いは味が戻る前後、公園は昼夜、通う行き先は回数で読み分ける。 */
-export function outingDialogueId(value, outing, window = null) {
+/** 雨の回を読むなら、それを数える記録の鍵（読まないなら null）。選ぶ時と確定の時で同じ判定を使う。 */
+function rainCountKey(value, id, slot, rainy) {
+  if (!rainy) return null;
+  if (id === "park_walk") return `park_walk_${slot ? "night" : "day"}_rain`;
+  if (id !== "mukai_help") return null;
+  const back = tasteRecovered(value);
+  return visitCount(outingCounts(value)[back ? "mukai_help_back" : "mukai_help"]) ? `mukai_help_rain_${back ? "back" : "lost"}` : null;
+}
+
+/** 台本ID。手伝いは味が戻る前後と雨、公園は昼夜と雨、通う行き先は回数で読み分ける。 */
+export function outingDialogueId(value, outing, window = null, { rainy = false } = {}) {
   if (outing.stages?.length) {
     const count = outingCounts(value)[outing.id] || 0;
     return count < outing.stages.length ? outing.stages[count] : outing.loop[(count - outing.stages.length) % outing.loop.length];
@@ -89,14 +104,20 @@ export function outingDialogueId(value, outing, window = null) {
     return count === 0 || outing.talks.length === 1 ? outing.talks[0] : outing.talks[1 + (count - 1) % (outing.talks.length - 1)];
   }
   if (outing.id === "mukai_help") {
-    const back = tasteRecovered(value), talks = MUKAI_HELP_TALKS[back ? "back" : "lost"];
-    return talks[visitCount(outingCounts(value)[back ? "mukai_help_back" : "mukai_help"]) % talks.length];
+    const back = tasteRecovered(value), talks = MUKAI_HELP_TALKS[back ? "back" : "lost"], counts = outingCounts(value);
+    if (rainCountKey(value, outing.id, value.slot, rainy)) {
+      return MUKAI_HELP_RAIN[(visitCount(counts.mukai_help_rain_lost) + visitCount(counts.mukai_help_rain_back)) % MUKAI_HELP_RAIN.length];
+    }
+    const read = visitCount(counts[back ? "mukai_help_back" : "mukai_help"]) - visitCount(counts[`mukai_help_rain_${back ? "back" : "lost"}`]);
+    return talks[Math.max(0, read) % talks.length];
   }
   if (outing.id === "park_walk") {
-    const base = `ch3_outing_park_walk_${(window?.slot ?? value.slot) ? "night" : "day"}`;
-    const count = outingCounts(value)[`park_walk_${(window?.slot ?? value.slot) ? "night" : "day"}`] || 0;
+    const time = (window?.slot ?? value.slot) ? "night" : "day";
+    if (rainy) return PARK_RAIN[time];
+    const base = `ch3_outing_park_walk_${time}`, counts = outingCounts(value);
+    const count = (counts[`park_walk_${time}`] || 0) - visitCount(counts[`park_walk_${time}_rain`]);
     // 昼夜を別に数える。旧セーブの合計から時間帯を推測せず、それぞれの初回から読む（SPV04）。
-    return count ? `${base}_${PARK_REVISITS[(count - 1) % PARK_REVISITS.length]}` : base;
+    return count > 0 ? `${base}_${PARK_REVISITS[(count - 1) % PARK_REVISITS.length]}` : base;
   }
   return `ch3_outing_${outing.id}`;
 }
@@ -112,7 +133,8 @@ export const OUTING_DIALOGUE_IDS = Object.freeze([...MUKAI_HELP_TALKS.lost, ...M
   "ch3_outing_volk_visit", "ch3_outing_volk_visit_b", "ch3_outing_volk_visit_c",
   ...["enmaku_visit_e", "enmaku_visit_f", "enmaku_visit_g", "steve_visit_d", "steve_visit_e", "steve_visit_f",
     "volk_visit_d", "volk_visit_e", "volk_visit_f"].map(id => `ch3_outing_${id}`),
-  ...["day", "night"].flatMap(time => PARK_REVISITS.map(suffix => `ch3_outing_park_walk_${time}_${suffix}`))]);
+  ...["day", "night"].flatMap(time => PARK_REVISITS.map(suffix => `ch3_outing_park_walk_${time}_${suffix}`)),
+  ...MUKAI_HELP_RAIN, ...Object.values(PARK_RAIN)]);
 
 /**
  * この外出で付く好感度（人物ID→pt。確定の前に呼ぶ）。一度きりの話と通いの1回目は段階会話、通いの2回目からは小会話（AFB02）。
@@ -134,10 +156,12 @@ export function outingCounts(value) {
   return record && typeof record === "object" && !Array.isArray(record) ? record : {};
 }
 
-/** 完読した外出の回数。日常ループと旧行程の両方で、確定境界を通ってから呼ぶ。 */
-export function recordChapterThreeOuting(value, id, slot = value.slot) {
+/** 完読した外出の回数。日常ループと旧行程の両方で、確定境界を通ってから呼ぶ。rainy は台本を選んだ時と同じ値を渡す。 */
+export function recordChapterThreeOuting(value, id, slot = value.slot, { rainy = false } = {}) {
   const counts = outingCounts(value);
+  const rain = rainCountKey(value, id, slot, rainy); // 数える前に（手伝いの1回目かどうか）
   const next = { ...counts, [id]: (counts[id] || 0) + 1 };
+  if (rain) next[rain] = visitCount(counts[rain]) + 1;
   if (id === "park_walk") {
     const key = `park_walk_${slot ? "night" : "day"}`;
     next[key] = (counts[key] || 0) + 1;

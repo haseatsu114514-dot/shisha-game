@@ -17,6 +17,7 @@ import { showHud } from "../daily/hud.js";
 import { addMoney, addStamina, earnStat, gainAffinity, paidAction, earnSceneCompletion } from "../core/stats.js";
 import { openShop } from "../daily/shop.js";
 import { fortuneSpot, TOKYO_VISIT_COST, quietTurn } from "../daily/spots.js";
+import { isRainy } from "../daily/weather.js";
 import { TOKYO_GYM_SCENES, TOKYO_GYM_IDS, TOKYO_GYM_TURN } from "./ch3-activity-progress.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
@@ -256,11 +257,16 @@ const OUTING_IDS = OUTING_DIALOGUE_IDS; // 通いの小会話（AFB02）も含�
 // 奥の部屋で休む: 初回は ch3_tokyo_room_rest、2回目からは日常の小品を巡回する（#3097。公園の散歩と同じ読み分け）。
 const ROOM_REST_FLAG = "_ch3_room_rests";
 const ROOM_REST_AGAIN = Object.freeze(["b", "c", "d", "e", "f", "g", "h", "i", "j", "k"].map(suffix => `ch3_tokyo_room_rest_${suffix}`)); // #3097 第2弾で f〜h、RLS09 で i〜k
+// 雨の日は、休む2回目以降に雨の回を読む（#3097 PR-G）。第1章の家で休む（daily/spots.js の restAtHome）と同じ quietTurn の
+// 雨の束で、読んだ本数は _spot_turn_ch3_room_rest_rain に持つ。晴れの日の巡回（ROOM_REST_FLAG）は進めない。
+const ROOM_REST_RAIN = Object.freeze(["ch3_tokyo_room_rest_rain"]);
+const ROOM_REST_TURN = "ch3_room_rest";
+const roomRests = value => Math.max(0, Math.floor(Number(value.flags?.[ROOM_REST_FLAG]) || 0));
 export function roomRestId(value = state) {
-  const count = Math.max(0, Math.floor(Number(value.flags?.[ROOM_REST_FLAG]) || 0));
+  const count = roomRests(value);
   return count ? ROOM_REST_AGAIN[(count - 1) % ROOM_REST_AGAIN.length] : "ch3_tokyo_room_rest";
 }
-export const TOKYO_DAILY_IDS = Object.freeze(["ch3_tokyo_room_rest", ...ROOM_REST_AGAIN, "ch3_tokyo_fortune"]);
+export const TOKYO_DAILY_IDS = Object.freeze(["ch3_tokyo_room_rest", ...ROOM_REST_AGAIN, ...ROOM_REST_RAIN, "ch3_tokyo_fortune"]);
 
 // ---- 昼の行動を使う場面・約束 ----------------------------------------------------------
 function tokyoSlotEvent(io) {
@@ -442,9 +448,11 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
     return unused;
   }
   if (entry.place === "room") {
-    if (!await readPlain(roomRestId(), "bg_mukai_shop", owner)) return unused;
+    const rain = isRainy() && roomRests(state) ? quietTurn(ROOM_REST_TURN, ROOM_REST_RAIN, "rain") : null;
+    if (!await readPlain(rain?.id || roomRestId(), "bg_mukai_shop", owner)) return unused;
     addStamina(entry.stamina);
-    state.flags[ROOM_REST_FLAG] = (Number(state.flags[ROOM_REST_FLAG]) || 0) + 1;
+    if (rain) state.flags[rain.key] = rain.count + 1;
+    else state.flags[ROOM_REST_FLAG] = (Number(state.flags[ROOM_REST_FLAG]) || 0) + 1;
     return { used: true, exerted: false };
   }
   if (entry.place === "park") return goOuting(outingById("park_walk"), staminaGuard, owner);
@@ -478,7 +486,8 @@ async function goOuting(outing, staminaGuard, owner) {
     try { await loadBondAfterScenes(DB); } catch { after = null; }
     if (state !== owner) return unused;
   }
-  const sceneId = after?.scene || outingDialogueId(state, outing);
+  const rainy = isRainy(); // 公園の雨の回（台本を選ぶ時と、回数を数える時で同じ値を使う）
+  const sceneId = after?.scene || outingDialogueId(state, outing, null, { rainy });
   const outingSlot = state.slot;
   if (!await readPlain(sceneId, bg, owner)) return unused;
   markBondAfterRead(state, outing.affinityWith, after);
@@ -486,7 +495,7 @@ async function goOuting(outing, staminaGuard, owner) {
   if (outing.money) addMoney(outing.money);
   if (outing.stat) earnStat(outing.stat, 4);
   for (const [who, pts] of Object.entries(gains)) gainAffinity(who, pts);
-  recordChapterThreeOuting(state, outing.id, outingSlot);
+  recordChapterThreeOuting(state, outing.id, outingSlot, { rainy });
   if (outing.money) toast(`+${outing.money.toLocaleString("ja-JP")}円`, { kind: "good" });
   // 体力を使う外出だけ、話の初完読で X5（通いの小会話も話ごとに一度。第1・2章の店の会話と同じ）
   if (outing.stamina < 0) earnSceneCompletion(sceneId, owner);
@@ -607,7 +616,8 @@ async function visitMukai(io, staminaGuard, owner) {
 async function mukaiShift(owner, { called = false } = {}) {
   const help = outingById("mukai_help");
   if (!help || state !== owner) return false;
-  const sceneId = outingDialogueId(state, help);
+  const rainy = isRainy(); // 雨の日の導入（台本を選ぶ時と、回数を数える時で同じ値を使う）
+  const sceneId = outingDialogueId(state, help, null, { rainy });
   const intro = async () => {
     const ok = await readPlain(sceneId, "bg_mukai_shop", owner);
     if (ok) earnSceneCompletion(sceneId, owner); // 手伝いの導入（味が戻る前・後）の初完読は X5。注文を選ばずにやめたら確定しない
@@ -615,7 +625,7 @@ async function mukaiShift(owner, { called = false } = {}) {
   };
   const done = await runMukaiShift({ called, intro });
   if (!done || state !== owner) return false;
-  recordChapterThreeOuting(state, "mukai_help"); // 手伝いの回数（味が戻った後の回数も）
+  recordChapterThreeOuting(state, "mukai_help", state.slot, { rainy }); // 手伝いの回数（味が戻った後の回数・雨の回も）
   return true;
 }
 

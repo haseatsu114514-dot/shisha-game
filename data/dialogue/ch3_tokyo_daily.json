@@ -468,6 +468,87 @@
       ]
     },
     {
+      "dialogue_id": "ch3_tokyo_room_rest_rain",
+      "comment": "#3097 PR-G（計画 §3-3 の 3-1）奥の部屋で休む雨の日版。雨の日（daily/weather.js の isRainy）、休む2回目以降に、晴れの日の巡回の代わりに読む（ch3-tokyo-daily.js の ROOM_REST_RAIN。第1章の家で休む remake_rest_rain と同じ読み分け）。昼夜・味覚回復・恋愛の成立に依存しない。報酬は台詞に書かない（体力の回復はコードが付ける）。第3章はムカイさんを厚く描く。店と常連の居場所を自分で築いてきた（characters.json）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の部屋で横になると、窓のガラスがかたかたと鳴った。外は雨だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "風が吹くたびに、窓枠の隙間が同じ音を立てる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "戸の向こうで、低い声がした。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "はじめくん、入るぞ。……雨の日は、そこが鳴る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは窓の前にしゃがんで、新聞を細く折り、窓枠の隙間に差し込んだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "かたかたという音が、ぴたりと止んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "慣れてますね"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "店を始めた年からだ。窓を直すより、こっちが早い"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "雨の音は、止めてない。……あれは、よく眠れる"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "新聞は、読み終わったやつだ。気にするな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんが出ていくと、ガラスを打つ雨の音だけが残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（窓の音は止めて、雨の音は残す、か）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓枠の隙間から、折った新聞の端がのぞいている。今日の日付だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（……読み終わるの、早いな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "頭の上を電車が通っても、今日は雨の音にまぎれて遠い。いつのまにか、目を閉じていた。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_tokyo_fortune",
       "comment": "東京で辻占のオババに再会する（VOL15・台帳 URA の「東京にも理由は詳しく教えてくれないけど現れる」）。daily/fortune.js が東京で2回目以降に会ったとき読む。続きは remake_fortune_offer。",
       "lines": [

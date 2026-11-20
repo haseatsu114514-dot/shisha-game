@@ -457,6 +457,68 @@ function nextWindow(value) {
   }
 }
 
+// #3097 PR-G: 東京の雨の日の小品。雨の回は、日常ループが isRainy を渡した時だけ読む（旧行程は渡さないので晴れの回）。
+// 手伝いは1回目と味が戻った後の1回目を晴れの日と同じ場面で読み、雨の回は前後で共通。公園は雨の日ならいつも、昼夜それぞれの雨の回。
+// 読んだ雨の回は *_rain に数え、晴れの日の巡回は一本も飛ばさない。選ぶだけでは保存を変えない。
+{
+  const mukai = TOKYO_OUTINGS.find(item => item.id === "mukai_help"), park = TOKYO_OUTINGS.find(item => item.id === "park_walk");
+  const visit = (value, outing, rainy, window = null) => {
+    const before = structuredClone(value);
+    const id = outingDialogueId(value, outing, window, { rainy });
+    assert.deepEqual(value, before, "Selecting a rain scene must not change the save");
+    assert(OUTING_DIALOGUE_IDS.includes(id), `${id}: real loader requests the scene`);
+    recordChapterThreeOuting(value, outing.id, window?.slot ?? value.slot, { rainy });
+    return id;
+  };
+  const early = at("d5-noon").value;
+  assert(!tasteRecovered(early));
+  assert.deepEqual([true, true, false, true, false].map(rainy => visit(early, mukai, rainy)),
+    ["lost", "rain", "lost_d", "rain_b", "lost_b"].map(suffix => `ch3_outing_mukai_help_${suffix}`),
+    "The first shift is the ordinary intro; rain scenes do not skip the ordinary rotation");
+  assert.deepEqual(early.flags[OUTINGS_FLAG], { mukai_help: 5, mukai_help_rain_lost: 2 });
+  assert.equal(outingDialogueId(early, mukai), "ch3_outing_mukai_help_lost_e", "Without the weather (old route) the ordinary rotation continues");
+
+  const late = at("d12-noon").value;
+  assert(tasteRecovered(late));
+  late.flags[OUTINGS_FLAG] = { mukai_help: 5, mukai_help_rain_lost: 2 };
+  assert.deepEqual([true, true, false].map(rainy => visit(late, mukai, rainy)),
+    ["ch3_outing_mukai_help", "ch3_outing_mukai_help_rain", "ch3_outing_mukai_help_d"],
+    "The first shift after the taste returns still reads the return scene in the rain");
+  assert.deepEqual(late.flags[OUTINGS_FLAG], { mukai_help: 8, mukai_help_rain_lost: 2, mukai_help_back: 3, mukai_help_rain_back: 1 });
+  for (const broken of ["a", -5, null, 2.7, 99]) {
+    late.flags[OUTINGS_FLAG] = { mukai_help: 3, mukai_help_back: 2, mukai_help_rain_lost: broken, mukai_help_rain_back: broken };
+    for (const rainy of [false, true]) assert(OUTING_DIALOGUE_IDS.includes(outingDialogueId(late, mukai, null, { rainy })), `broken rain count ${broken}`);
+  }
+
+  const walker = at("d5-noon").value;
+  walker.flags[OUTINGS_FLAG] = {};
+  assert.deepEqual([[true, 0], [false, 0], [true, 0], [false, 0], [true, 1], [false, 1]].map(([rainy, slot]) => visit(walker, park, rainy, { slot })),
+    ["day_rain", "day", "day_rain", "day_b", "night_rain", "night"].map(suffix => `ch3_outing_park_walk_${suffix}`),
+    "Rainy park walks read the rain scene of that time, and the ordinary first visit is only postponed");
+  assert.deepEqual(walker.flags[OUTINGS_FLAG], { park_walk: 6, park_walk_day: 4, park_walk_day_rain: 2, park_walk_night: 2, park_walk_night_rain: 1 });
+
+  const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_outings.json", import.meta.url)));
+  const byId = Object.fromEntries(data.dialogues.map(scene => [scene.dialogue_id, scene]));
+  const speakers = new Set(["", "hajime", "mukai_master", "mashiro", "customer"]);
+  for (const id of ["mukai_help_rain", "mukai_help_rain_b", "park_walk_day_rain", "park_walk_night_rain"].map(suffix => `ch3_outing_${suffix}`)) {
+    const scene = byId[id], text = scene.lines.map(line => line.text).join("\n");
+    assert(scene.lines.length >= 8);
+    assert(scene.lines.every(line => !line.type && typeof line.text === "string" && line.text.length > 0 && speakers.has(line.speaker)));
+    assert.equal(scene.metadata, undefined, `${id}: no extra reward or background override`);
+    assert.match(text, /雨/, `${id}: the rain scene talks about the rain`);
+    assert.doesNotMatch(text, /大会/, `${id}: no tournament`);
+    // 味が戻る前後のどちらでも読むので、はじめに味の感想を言わせない
+    assert.doesNotMatch(scene.lines.filter(line => line.speaker === "hajime").map(line => line.text).join("\n"), /舌|味/, `${id}: no taste talk from Hajime`);
+  }
+  for (const id of ["mukai_help_rain", "mukai_help_rain_b"].map(suffix => `ch3_outing_${suffix}`)) {
+    assert(byId[id].lines.filter(line => line.speaker === "mukai_master").length >= 3, `${id}: Mukai speaks`);
+  }
+  assert.doesNotMatch(byId.ch3_outing_mukai_help_rain_b.lines.map(line => line.text).join("\n"), /昼|夜|午後|朝/, "The shift can be any time of day");
+  assert.doesNotMatch(byId.ch3_outing_park_walk_day_rain.lines.map(line => line.text).join("\n"), /夜/);
+  assert.doesNotMatch(byId.ch3_outing_park_walk_night_rain.lines.map(line => line.text).join("\n"), /昼/);
+}
+console.log("PASS: Tokyo rain scenes replace the shift intro and park walk only on rainy days without skipping the ordinary rotation");
+
 assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
 console.log("ch3 outings: ok");
 

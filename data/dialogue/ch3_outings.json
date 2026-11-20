@@ -653,6 +653,192 @@
       ]
     },
     {
+      "dialogue_id": "ch3_outing_mukai_help_rain",
+      "comment": "#3097 PR-G（計画 §3-3 の 3-1）mukaiのシフトの導入の雨の日版。雨の日（daily/weather.js の isRainy）に、手伝いの1回目と味が戻った後の1回目を除いて、晴れの日の巡回の代わりに読む（ch3-outing-progress.js の MUKAI_HELP_RAIN）。味が戻る前後のどちらでも読むので、はじめに味の感想を言わせない。第3章はムカイさんを厚く描く（2026-11-18 オーナー指定）。好感度・大会には触れない。日当・能力は既存のシフト精算だけ。最後の行は、続く「今日の注文」へつなぐ。 計画 §4 の見本③をそのまま使う（「帽子」だけ既存の表記「ハット」に合わせた）。ましろは恋愛を進めない普段の顔で出す。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "朝から雨だった。mukaiの窓を、細い筋がいくつも流れていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店前の店で、ムカイさんがコーヒーミルを回していた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "豆の砕ける音が、雨の音に混ざる。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "はじめくん。雨の日は、客が遅い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "遅い、ですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "来ないんじゃない。遅れて来る。傘を畳む分だけな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは入口の脇に、古いタオルを二枚たたんで置いた。濡れた鞄を拭く用らしい。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "おはよぉ……あ、もうタオル出てる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろが、三つ編みの先を少し濡らして入ってきた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "雨の日はねぇ、炭の火が起きるのも、ちょっとだけゆっくりなんだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "湿気で？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。だから僕、いつもより一個早く、炭を入れるの"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……それは、俺が教えたやつだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "えへへ、もう僕のやつだよぉ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは何も言わず、挽いた豆をフィルターに移した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハットのつばの下で、口の端だけが少し上がっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（同じ店でも、雨の日は段取りが一個ずつずれるんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一つ目の炭を火にかけたところで、ドアベルが鳴った。傘を畳む音が、いつもより長かった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_mukai_help_rain_b",
+      "comment": "#3097 PR-G（計画 §3-3 の 3-1）mukaiのシフトの導入の雨の日版。雨の日（daily/weather.js の isRainy）に、手伝いの1回目と味が戻った後の1回目を除いて、晴れの日の巡回の代わりに読む（ch3-outing-progress.js の MUKAI_HELP_RAIN）。味が戻る前後のどちらでも読むので、はじめに味の感想を言わせない。第3章はムカイさんを厚く描く（2026-11-18 オーナー指定）。好感度・大会には触れない。日当・能力は既存のシフト精算だけ。最後の行は、続く「今日の注文」へつなぐ。 ムカイさん本人が話す回。雨宿りの客を、注文より先に座らせる（東京で疲れた人の止まり木・characters.json）。昼夜の言葉は使わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨の日のmukaiは、入口の床から濡れていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんがモップを壁に立てかけて、窓の外の軒先を見ていた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "はじめくん。傘立ての横に、水を一杯置いといてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "注文も聞かないうちに、ですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "雨宿りの客は、入るか迷って、まず軒先に立つ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "水が見えたら、入っていいんだと分かる。……注文は、その後でいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらくして、スーツの肩を濡らした人が、軒先で足を止めた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは何も言わずにドアを少し開けて、ハットのつばを軽く下げた。"
+        },
+        {
+          "speaker": "customer",
+          "text": "すみません。雨がやむまで、いいですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "ああ。やむまでは、客だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんがタオルを渡し、俺は水のグラスを窓際の席へ運んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（注文より先に、座る場所を出すんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターへ戻ると、ムカイさんはもう、湯を沸かし始めていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "雨がやんだら、そのまま帰っちゃうかもしれませんよ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "それでいい。雨の日に入った店は、覚えてるもんだ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "晴れた日に、また来る。……うちの常連にも、そういうのが何人もいる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "肩を拭き終えたその人が、こちらへ小さく手を挙げた。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_outing_enmaku_notes",
       "lines": [
         {
@@ -2720,6 +2906,138 @@
           "speaker": "",
           "face": "",
           "text": "同じ道を少しだけ一緒に歩いてから、角で別れて帰った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_park_walk_day_rain",
+      "comment": "#3097 PR-G（計画 §3-3 の 3-1）公園の散歩の雨の日版。雨の日（daily/weather.js の isRainy）は、昼夜それぞれ晴れの日の巡回の代わりに読む（ch3-outing-progress.js の PARK_RAIN。晴れの日の巡回は一本も飛ばさない）。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。 ムカイさんに借りた傘で歩く。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出がけに、ムカイさんが大きな黒い傘を貸してくれた。公園の雨は横から来る、と言って。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "高架の下を抜けると、雨の音が急に近くなった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼間なのに、池のまわりは夕方みたいに薄暗い。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "池の水面に、小さな輪がいくつも生まれては、すぐに消えていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（輪が多すぎて、どれが最初の一粒か分からないな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "池の端で、白い鳥が一羽、雨に打たれたまま、じっと立っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……あいつは、傘がなくても平気なんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ベンチはどれも濡れている。座るのはあきらめて、池をひと回りすることにした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "木立の下の道に入ったところで、風が向きを変えた。雨が、横から吹きつけてくる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "うわ、本当に横から来た"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "傘を風の方へ傾けると、雨は縁を伝って、足元へ落ちていった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（ムカイさん、この公園の雨を何度くぐったんだろう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大きな傘のおかげで、帰り道も、肩はほとんど濡れなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_park_walk_night_rain",
+      "comment": "#3097 PR-G（計画 §3-3 の 3-1）公園の散歩の雨の日版。雨の日（daily/weather.js の isRainy）は、昼夜それぞれ晴れの日の巡回の代わりに読む（ch3-outing-progress.js の PARK_RAIN。晴れの日の巡回は一本も飛ばさない）。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨の夜の公園には、人の気配がなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "街灯の光が、濡れた道に長く伸びている。傘に当たる雨の音だけが、ずっと近い。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（雨の夜に、わざわざ公園か。……我ながら物好きだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自販機で温かい缶を一本買って、屋根のある休憩所に入った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "傘を閉じて柱に立てかけると、骨の先から、しずくが一つずつ落ちた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ここのベンチだけは乾いていた。座って、缶を両手で包む。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "遠くで電車の音がした。雨のせいか、音の角が丸く聞こえる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここなら、誰にも何も聞かれないな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨の音が、頭の中の考えごとを、一つずつ遠くへ流していく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（……雨の夜の公園も、悪くない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "缶がぬるくなるまで座ってから、傘を開いて帰った。"
         }
       ]
     },
