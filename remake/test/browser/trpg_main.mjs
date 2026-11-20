@@ -411,10 +411,25 @@ await suite("trpg-main", async check => {
     const storage = await storageSnapshot(page);
     assert.equal(storage.local.suien_remake_slot1, baseline.local.suien_remake_slot1);
     assert.equal(storage.local.qa_unrelated, "keep"); assert.equal(storage.session.qa_unrelated, "keep");
-    assert(JSON.parse(storage.local.suien_remake_save).trpg.cleared[id], "Ending must save before the finish button");
+    const savedEnding = JSON.parse(storage.local.suien_remake_save);
+    assert.equal(ending.trpg.cleared[id].plays, 1);
+    assert.deepEqual(savedEnding.trpg.cleared[id], ending.trpg.cleared[id], "Ending must save before returning to the cafe");
+    assert.equal(await button(page, "trpg-finish").textContent(), "カフェへ戻る");
+    await button(page, "trpg-finish").scrollIntoViewIfNeeded();
+    await assertFits(page, '[data-test="trpg-finish"]');
     // TRF13: the ending tells what the night added to the club (a first clear is 2 + 1 ending + 0-3 stars), and the shelf shows it.
     assert.match(await button(page, "trpg-ending-club").textContent(), /部の実績 ＋[3-6]/);
     await hit(page, "trpg-finish");
+    await page.getByRole("heading", { name: "今夜の卓を終えました" }).waitFor();
+    assert.equal(await page.locator(".trpg-campaign-notice").textContent(), "遊んだ記録は、物語の一覧で見返せます。");
+    const returned = await snapshot(page);
+    const savedReturn = JSON.parse((await storageSnapshot(page)).local.suien_remake_save);
+    assert.equal(returned.slot, ending.slot, "Returning to the cafe does not spend another action");
+    assert.deepEqual(returned.trpg.cleared[id], savedEnding.trpg.cleared[id]);
+    assert.deepEqual(savedReturn.trpg.cleared[id], savedEnding.trpg.cleared[id]);
+    assert(savedEnding.growth.playMastery.trpg, "The completed table records mastery before returning to the cafe");
+    assert.deepEqual(savedReturn.growth.playMastery.trpg, savedEnding.growth.playMastery.trpg);
+    assert.deepEqual(savedReturn.growth?.rewards, savedEnding.growth?.rewards);
     assert.match(await button(page, "trpg-club-rank").getAttribute("aria-label"), /実績 [3-6]。/);
     await assertFits(page, '[data-test="trpg-club-rank"]');
     await hit(page, "trpg-reflect-hard"); await hit(page, "trpg-campaign-close");
@@ -422,7 +437,9 @@ await suite("trpg-main", async check => {
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.load(); core.state.day = 5; core.state.slot = 1; });
     // TMX14 (owner 2026-11-11): a finished book can be played again on a later night.
     await open(page); assert.equal(await button(page, "trpg-play-" + id).textContent(), "もう一度遊ぶ");
-    assert((await button(page, "trpg-memory-" + id).textContent()).length > 0);
+    assert.equal(await button(page, "trpg-book-" + id).locator(".trpg-campaign-book-badge").textContent(), "遊んだ記録");
+    assert.match(await button(page, "trpg-memory-" + id).textContent(), /見た結末 1 \/ 4/);
+    assert.deepEqual((await snapshot(page)).trpg.cleared[id], savedEnding.trpg.cleared[id]);
     assert.match(await button(page, "trpg-memory-pc").textContent(), /演じた役/);
     await assertShelfControls(page);
     await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-campaign-memory-" + label + ".png" });
@@ -488,6 +505,11 @@ await suite("trpg-main", async check => {
     const left = await snapshot(page);
     assert.equal(left.slot, 1, "a bookmark does not spend the night"); assert.deepEqual(left.trpg.cleared, {});
     assert.match(await button(page, "trpg-bookmark-ordinary-cup").textContent(), /しおり/);
+    await hit(page, "trpg-campaign-close");
+    await page.waitForFunction(() => window.__trpgBarResult !== null);
+    await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.load(); });
+    assert.deepEqual((await snapshot(page)).trpg.bookmark, table, "Loading preserves the saved bookmark");
+    await open(page);
     // Continue: the same room with the same clue already found, then finish the story as usual.
     await hit(page, "trpg-resume-ordinary-cup");
     await button(page, "trpg-spot-window").waitFor();

@@ -379,7 +379,7 @@ try {
           pointer: getComputedStyle(node.closest(".trpg-fx-layer")).pointerEvents, clip: getComputedStyle(node.closest(".trpg-fx-layer")).overflowX,
           scroll: [stage.scrollWidth - stage.clientWidth, stage.scrollLeft],
           cards: [...node.querySelectorAll(".trpg-incarnate-card")].map(card => ({ front: text(card, ".front strong"), back: text(card, ".back strong"),
-            title: text(card, ".back small"), art: card.querySelector(".back .trpg-costume i")?.getAttribute("style") || "" })) });
+            title: text(card, ".back small"), art: card.querySelector(".back .trpg-incarnate-figure .trpg-costume img")?.src || "" })) });
       } }).observe(document.querySelector(".trpg-root"), { childList: true, subtree: true });
     });
     const staged = kind => page.evaluate(k => window.__staged.filter(entry => entry.kind.includes(k)), kind);
@@ -437,6 +437,7 @@ try {
     assert.match(seen.pc.art, /costumes\/ordinary-cup\/hajime_/, "and wears the role costume");
     // 役の姿は札ではなく人物（TRF19）: 台紙の色も縁も無い。絵そのものも台紙を抜いてある（四隅は透明、体は不透明）。
     assert.deepEqual(seen.pc.frame, ["0px", "rgba(0, 0, 0, 0)"], "No card behind the character in role");
+    assert.equal(incarnation.cards[0].art, /src="([^"]+)"/.exec(seen.pc.art)[1].replaceAll("&amp;", "&"), "The card shows the same costume as the character in role");
     const cutout = await page.evaluate(async src => {
       const image = new Image(); image.src = src; await image.decode();
       const canvas = Object.assign(document.createElement("canvas"), { width: image.naturalWidth, height: image.naturalHeight }), pen = canvas.getContext("2d");
@@ -444,7 +445,7 @@ try {
       const alpha = (x, y) => pen.getImageData(x, y, 1, 1).data[3];
       return { size: [canvas.width, canvas.height], corners: [alpha(0, 0), alpha(canvas.width - 1, 0), alpha(0, canvas.height - 1), alpha(canvas.width - 1, canvas.height - 1)],
         body: alpha(Math.round(canvas.width / 2), Math.round(canvas.height * .45)) };
-    }, /src="([^"]+)"/.exec(seen.pc.art)[1].replaceAll("&amp;", "&"));
+    }, incarnation.cards[0].art);
     assert.deepEqual(cutout, { size: [896, 1200], corners: [0, 0, 0, 0], body: 255 }, "The costume art has no backing paper");
     assert(seen.table, "Table talk returns between the story's lines");
     // 判定: 目標までの帯と、結果のカットイン。
@@ -513,15 +514,21 @@ try {
   await run("reroll-cancel-and-low-motion", { seed: "8", traveler: "quiet" },
     { reducedMotion: "reduce" }, async page => {
       await page.locator('[data-test="trpg-start"]').click();
-      // 動きを減らす設定: 転生は役の札を動かさずに短く見せるだけ（裏返しも光もない）。
-      let calm = null;
-      for (let presses = 0; !calm; presses++) {
-        assert(presses < 40);
-        calm = await page.evaluate(() => { const node = document.querySelector(".trpg-incarnate");
-          if (!node) { document.querySelector('[data-test="trpg-next"]').click(); return null; }
-          return { calm: node.dataset.calm, side: node.querySelector(".trpg-incarnate-card").dataset.side }; });
-      }
-      assert.deepEqual(calm, { calm: "true", side: "back" });
+      // 普段姿と役姿は静止したまま切り替え、スキップしても最初の台詞は残る。
+      const before = await page.evaluate(() => {
+        const next = document.querySelector('[data-test="trpg-next"]');
+        for (let i = 0; i < 40 && !document.querySelector(".trpg-incarnate"); i++) next.click();
+        const node = document.querySelector(".trpg-incarnate");
+        return { calm: node.dataset.calm, fronts: node.querySelectorAll('.trpg-incarnate-card:not([data-side="back"])').length,
+          animations: node.getAnimations({ subtree: true }).length, line: document.querySelector(".trpg-speech p").textContent };
+      });
+      assert.equal(before.calm, "true");
+      assert.equal(before.fronts, 3);
+      assert.equal(before.animations, 0);
+      await page.locator('.trpg-incarnate[data-arrived="true"]').waitFor();
+      assert.equal(await page.locator('.trpg-incarnate-card[data-side="back"]').count(), before.fronts);
+      await page.locator('[data-test="trpg-incarnate-skip"]').click();
+      assert.equal(await page.locator(".trpg-speech p").textContent(), before.line);
       await nextLines(page);
       await checkRoll(page, { reroll: true });
       assert.equal((await page.evaluate(() => __trpg.snapshot())).teamwork, 1);

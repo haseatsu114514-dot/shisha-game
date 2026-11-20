@@ -268,6 +268,9 @@ await suite("ch4-camel-cups", async check => {
     // 大会の札の紋章（CR-WD08・#3217）は4枚とも読めている。
     await page.waitForFunction(() => [...document.querySelectorAll('[data-test="camel-cup-badge"]')].filter(img => img.complete && img.naturalWidth > 0).length === 4);
     const cup = id => page.locator(`[data-test="camel-cup"][data-cup="${id}"]`);
+    // 三段階（#3779）: 入門＝初級・標準＝中級・上級＝上級。練習は段の外
+    assert.deepEqual(await page.locator(dt("camel-cup-tier")).evaluateAll(nodes => nodes.map(node => [node.dataset.tier, node.textContent])),
+      [["", "PRACTICE"], ["easy", "初級 · CUP 01"], ["normal", "中級 · CUP 02"], ["hard", "上級 · CUP 03"]]);
     assert.equal(await cup("standard").isDisabled(), true);
     assert.equal(await cup("expert").isDisabled(), true);
     await page.locator(dt("camel-close")).click();
@@ -291,6 +294,7 @@ await suite("ch4-camel-cups", async check => {
     assert.equal(completed.flags._ch4_camel.plays, 3, "all finished runs are saved once");
     assert.equal(completed.flags._camel_cups.standard.mastered, true);
     assert.equal(completed.flags._camel_cups.expert.mastered, false);
+    assert.deepEqual(completed.growth.playTiers.camel.cleared, ["easy", "normal"], "rookie and standard top-3 finishes clear their tiers");
     await loadSlot(page, 0);
     await dubaiMap(page, { day: before.day, slot: 1 });
     assert.deepEqual((await get(page)).flags._camel_cups, completed.flags._camel_cups);

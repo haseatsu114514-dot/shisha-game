@@ -319,10 +319,9 @@
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl:focus-visible {
   outline: none;
-}
-:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl:focus-visible::after {
-  outline: 2px solid var(--neo-gold);
-  outline-offset: -2px;
+  text-decoration: underline;
+  text-decoration-color: var(--neo-gold);
+  text-underline-offset: 5px;
 }
 /* AUTO・SKIP の点灯: 札を金で塗り、文字を墨にする。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl.on {
@@ -632,8 +631,8 @@
 /* LOG を開いている間は、操作の札と送りの印を消す（現行では LOG の紙の下に隠れている）。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #vn:has(> .vn-log.show) .vn-controls { opacity: 0; pointer-events: none; }
 :root[data-look="neo"] body:not(.game-ds) #stage #vn:has(> .vn-log.show) .vn-next { opacity: 0; animation: none; }
-/* 会話カットイン（はじめの顔の枠・下端 y526）: 名前の行に掛からない高さへ上げ、帯の暗がりの上に出す。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-cutin-layer { translate: 0 -44px; z-index: 6; }
+/* 会話カットイン（はじめの顔の帯）: 帯の暗がりの上に出す。位置は新版の名前の行に合わせて決めてあるので動かさない（CCR・2026-11-20）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-cutin-layer { z-index: 6; }
 /* シーシャの図解: 画面の右上から、帯（と名前の行の操作の札）の上までに収める（少し縮めて、帯の暗がりの上に出す）。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .sd-diagram { top: 22px; scale: .9; transform-origin: 100% 0; z-index: 6; }
 :root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .sd-diagram { top: 16px; scale: .9; }
@@ -1200,6 +1199,7 @@
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map .spot-pin.guided-off { opacity: .5; }
 /* 居る人の顔と「!」: 縁を夜紫の面に合わせる。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map .spot-pin .pin-person { border-color: #f6f1fa; box-shadow: 0 0 0 1px rgba(21, 13, 34, .6), 0 2px 5px rgba(8, 3, 16, .55); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .map .spot-pin .pin-unknown { box-shadow: inset 0 2px 5px rgba(8, 3, 16, .55); }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map .evt-badge:not(.hidane-badge) { color: #26160a; background: var(--neo-ui-gold); border-color: #fbe6b4; box-shadow: 0 0 10px rgba(227, 189, 110, .85); }
 :root[data-look="neo"] body.reduce-shake:not(.game-ds) #stage #screen .map :is(.evt-badge, .evt-badge::after, .spot-pin.guide .shield) { animation: none; }
 
@@ -2351,7 +2351,14 @@
   background: linear-gradient(180deg, #f3d48d, #d9a94f);
   border-color: #fbe6b4;
 }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu :is(.axe-bar-division-label, .axe-bar-career) { color: var(--neo-ui-lav); }
+/* 閉じた段（#3779）: 押せる札より暗い面・点線の縁・淡い文字。開き方の2行目まで読める明るさは残す。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu .axe-bar-divisions .axe-bar-tier:disabled {
+  color: var(--neo-ui-dim);
+  background: rgba(20, 12, 32, .55);
+  border-style: dashed;
+  border-color: rgba(201, 167, 230, .38);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu :is(.axe-bar-division-label, .axe-bar-career, .axe-bar-tier-line) { color: var(--neo-ui-lav); }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu .axe-bar-division-note { color: var(--neo-ui-dim); }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu .axe-bar-records { border-top-color: rgba(201, 167, 230, .24); }
 

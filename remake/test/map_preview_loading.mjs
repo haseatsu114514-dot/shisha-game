@@ -280,3 +280,43 @@ for (const list of pendingImages.values()) {
 }
 await flush(4);
 console.log("PASS map_preview_loading: warm order, foreground pause, portrait deferral, synchronous cache hit, and clean interrupt");
+// A cold map misses its initial deadline at DBG ×8. Pins belong to the map, never to the last shop.
+// Keep a pending request under our control; don't depend on sleeps or a real network failure.
+const originalTimer = context.setTimeout;
+context.setTimeout = (cb, ms, ...args) => originalTimer(cb, (ms === 1800 || ms === 15000) ? 15 : ms, ...args);
+const shopUrl = "img/backgrounds/bg_tonari_inside_day.webp";
+autoResolve = true;
+await ui.setBg(shopUrl, { instant: true });
+autoResolve = false;
+const openTestMap = (url) => map.chooseSpot({ regions: [{ id: "home", background: url, spots: () => [] }] });
+const top = () => ui.layers.bg.children.at(-1);
+async function waitMap() {
+  for (let i = 0; i < 50; i++) {
+    const node = ui.layers.screen.children[0];
+    if (node?.classes.has("map") && !node.classes.has("done")) return node;
+    await new Promise(resolve => setTimeout(resolve, 3));
+  }
+  throw new Error("map did not open");
+}
+async function resetShop() { ui.showScreen("shop", el("div")); await ui.setBg(shopUrl, { instant: true }); }
+for (const mode of ["late", "exit", "retry"]) {
+  await resetShop();
+  const url = `img/backgrounds/qa-map-${mode}.webp`, flow = openTestMap(url);
+  await flush();
+  if (mode === "retry") pendingImages.get(url).shift().onerror();
+  const root = await waitMap(), notice = root.querySelector(".map-backdrop-note"), retry = notice?.children[1];
+  assert(top().classes.has("map-fallback"), "a slow/failed map must never put its pins over the previous shop");
+  assert(notice && !notice.hidden);
+  if (mode === "retry") { assert(!retry.hidden); retry.onclick(); assert(retry.hidden); }
+  if (mode === "exit") { map.interruptMap("exit"); await flow; await resetShop(); }
+  resolveImage(url);
+  await flush(8);
+  if (mode === "exit") assert.equal(top().dataset.sceneBg, "bg_tonari_inside_day.png", "late map must not draw after exit");
+  else {
+    assert.equal(top().dataset.sceneBg, `qa-map-${mode}.png`, "late or retried art replaces the placeholder");
+    assert(notice.hidden);
+    map.interruptMap("done"); await flow;
+  }
+  assert.equal(imageRequests.filter(u => u === url).length, mode === "retry" ? 2 : 1);
+}
+console.log("PASS map backdrop: late cold image, neutral placeholder, genuine failure/retry, stale completion after exit");

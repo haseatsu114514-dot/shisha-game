@@ -9,7 +9,7 @@ import { emit, on } from "../core/bus.js";
 import { state, save } from "../core/state.js";
 import { canRespec, prepareRespec, commitRespec } from "../core/growth-respec.js";
 import { growthEnabled } from "../core/growth-mode.js";
-import { grantStarterHidane, tutorialPending, startBoardTutorial, STARTER_HIDANE, STARTER_FLAG, TUTORIAL_FLAG } from "./growth-board-tutorial.js";
+import { grantStarterHidane, tutorialPending, startBoardTutorial, STARTER_FLAG, TUTORIAL_FLAG } from "./growth-board-tutorial.js";
 import { LESSON_TUNING } from "../core/growth-effects.js";
 import { reducedMotion, igniteAt, runAlongPath, flyHidane, bump, commitCutIn, emberField, HIDANE_COLOR } from "./growth-fx.js";
 import { openBoardHelp } from "./growth-board-help.js";
@@ -115,13 +115,15 @@ export const PLACE_JA = { kannon: "観音堂", tokyo_shrine: "池の弁天堂", 
 
 let current = null;
 
-/** 盤を開き、閉じるまで待つ。戻り値=確定したマス */
-export function openBoard({ place = null } = {}) {
+/** 盤を開き、閉じるまで待つ。onExit は確定内容と同じ保存境界で呼ぶ。戻り値=確定したマス。 */
+export function openBoard({ place = null, onExit = null } = {}) {
   if (current) return current.done;
   const owner = state, original = ensureGrowth();
   // はじめて灯せる時は、最初の火種（白火）を渡して案内する（growth-board-tutorial.js・台帳 SBD）
   const hadStarter = !!owner?.flags?.[STARTER_FLAG];
   const starterGiven = place ? grantStarterHidane(owner, original) : 0;
+  // 説明中の再読み込みでも、受け取った火種は一度だけ。仮置きは従来どおり決定まで保存しない。
+  if (place && !hadStarter && owner.flags[STARTER_FLAG]) save();
   let stopTutorial = () => {};
   let g = original, canLight = !!place, rebuilding = null, finishing = false;
   let dismissConfirm = null;
@@ -743,6 +745,12 @@ export function openBoard({ place = null } = {}) {
     nodeLayer.querySelector(`[data-test="board-node-${selected}"]`)?.classList.remove("selected");
     selected = id;
     if (sound) SE.click?.();
+    // 全体・等倍は見渡すために残す。スマホでマスを選んだら、そのマスを中心に
+    // クリック箱が実寸44pxになる倍率へ寄せ、右の説明と行き来しやすくする。
+    if (document.documentElement?.dataset?.density === "phone" && zoom < 1.2) {
+      const n = NODE_BY_ID[id], p = at(n.gx, n.gy);
+      setZoom(1.2, { x: p.x, y: p.y, vx: viewport.clientWidth / 2, vy: viewport.clientHeight / 2 });
+    }
     const node = nodeLayer.querySelector(`[data-test="board-node-${id}"]`);
     node?.classList.add("selected");
     // 選択だけでは盤・火種は変わらない。札と道を作り直さず、右の説明だけを更新する。
@@ -845,7 +853,10 @@ export function openBoard({ place = null } = {}) {
     if (rebuilding && !reset) commit = false;
     const before = new Set(original.nodes);
     const committed = commit ? commitPending(pending, owner) : [];
-    if (owner === state && (reset || committed.length)) save();
+    if (owner === state && growthEnabled()) {
+      onExit?.();
+      if (reset || committed.length || onExit) save();
+    }
     if (owner === state && committed.length) SE.boardCommit?.();
     // 決定の演出（SBD104）: 保存を済ませてから、灯したマスに順に火が入り、スキルなどはカットインで名前を出す
     if (owner === state && committed.length && growthEnabled()) await commitFx(committed);
@@ -941,7 +952,8 @@ export function openBoard({ place = null } = {}) {
   setZoom(ZOOM_START); centerOnHub();
   requestAnimationFrame(() => root.classList.add("show"));
   if (canLight && tutorialPending(owner)) {
-    stopTutorial = startBoardTutorial(root, { starterAmount: hadStarter ? STARTER_HIDANE : starterGiven,
+    stopTutorial = startBoardTutorial(root, { starterAmount: hadStarter ? null : starterGiven,
+      canPractice: !!nodeLayer.querySelector(".gb-node.s-available"),
       onDone: () => { if (owner === state) { owner.flags[TUTORIAL_FLAG] = true; save(); } } });
   }
   // 盤の絵が届いたら描き直す。読み終えた印（data-art）は、描き直しの後に触る検査が待つのに使う。

@@ -32,6 +32,7 @@ python3 tools/lint_dialogue.py trpg_<名前>                             # 台�
 ## 卓の人と席
 
 - GMは本ごとに部員またはサイ。部員はひより・サメちゃん・アダム・つむぎ・クラウド・あげは。あげはの持ち込み本はサイがGMを手伝う。はじめは必ずPL（切り札は振り直し `abilityType: "reroll"`）。
+- 最後の本（`mist-kingdom`）だけは、サイが思わぬ展開でGMの席から物語へ降り、最後の相手（霧の王、`role: "霧の王／物語"`）を演じて一行の前に立ちはだかる（2026-11-20 オーナー指示）。いつもの笑顔と丁寧さのまま、威圧も悪役の演技もせず、穏やかで断れない提案（「まだ決めなくてもいい」「もう一度、最初から」）で止める。クライマックスの3択はどれも提案を断る言葉で、見せ場は、はじめが初めてサイの提案を断ること。どの結末でも王は「では、その選択で」と受け入れ、後日談でサイは断られたことに気づいていないまま微笑む。
 - 仲間のPL席は2つ。切り札は1人が `prepare`（準備に＋7）、もう1人が `serve`（クライマックスに＋7）。
 - `campaign.seats` はGMとはじめと持ち込み主を `required: true`、それ以外の仲間は `false`。任意の空席はサイの店の常連が埋める。鉄仮面さん・スミさん・なるは入れない。
 - 仲間の役は `companionBuilds.<席>.<プレイヤー>` に2案。1案目は `cast[].sheet` と同じ内容。各案に `making`（本人が役を紹介する2〜4行、`metadata.making: true`）。好きなもの（`likes`）とパロディを入れて、本人らしく。
@@ -96,7 +97,7 @@ python3 tools/lint_dialogue.py trpg_<名前>                             # 台�
 | 部員 | apple-thief / trpg_apple_thief.json | アダム（GM） |
 | 部員 | moonflower-encore / trpg_moonflower_encore.json | クラウド（GM） |
 | 部員 | purikura-hero / trpg_purikura_hero.json | あげは（PL）・サイ（GM） |
-| 最終 | mist-kingdom / trpg_mist_kingdom.json | サイ（GM） |
+| 最終 | mist-kingdom / trpg_mist_kingdom.json | サイ（GM。終盤は霧の王として立ちはだかる） |
 
 題名・料金・入荷条件は `data/trpg_catalog.json` と [本棚・招集の仕様](trpg_preview.md) を参照。
 

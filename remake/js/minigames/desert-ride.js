@@ -9,9 +9,10 @@ import { el } from "../core/util.js";
 import { SE, unlockAudio, createDesertRideSe, desertZapGap, currentBgm, playBgm, preloadBgm, resetBgmTempo } from "../core/audio.js";
 import { BOOST, EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
   rivalRun, rivalAt, RULES_VERSION, DISPLAY, toKmh, toMeters, JUMP, SCORE, RANKS, PLAYER, NEAR, PRACTICE_WALL } from "./desert-ride-model.js";
+import { TIERS, TIER_LABEL } from "../core/play-tiers.js";
 import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose, spinFrames } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
-import { withMinigameLoading, minigameLoadingFixed } from "./minigame-loading.js";
+import { withMinigameLoading } from "./minigame-loading.js";
 
 // ブーストは人物を包む炎のオーラ・砂煙・周辺の速度線と効果音で伝える。曲のテンポは変えない。
 const BOT_STEP = 1 / 60; // 自動操縦の判断と物理の刻み（モデルの検査と同じ）
@@ -239,8 +240,16 @@ const HOWTO = {
  * @param opts.reducedMotion 揺れ・閃光・速度線を止める
  * @param opts.guide 練習と結果のひとことを言う人の名前（無ければ地の文）
  * @param opts.rivals 本番で競える相手（"noor"、ヌールに勝った後は "naru" も）
+ * 三段階（#3779・core/play-tiers.js）: ヌールとの勝負（「滑る」）の段。なるとの勝負と練習は段の外。ゲームは保存を読まず、段の解放は呼び出し側が渡す。
+ * @param opts.tiers 選べる段（既定は3段とも。本編は openTiers）。閉じた段は札に「〜クリアで開く」と出して押せない
+ * @param opts.tier 最初に選んでおく段（本編は defaultTier。開いていなければ、開いている中でいちばん上）
+ * @param opts.cleared クリア済みの段（札に「クリア済み」）。opts.tierNotes は開いた段の札の一言の差し替え（例: 上級の白火）
+ * @param opts.easyBest 初級の自己ベスト { score, rank }（初級は自己ベストを別に持つ）
+ * @param opts.onTier 段を選んだ時に呼ぶ（本編は rememberTier と保存）
+ * onResult は { tiers, cleared, note } を返してよい（記録した後の開いた段・クリア済みの段・結果のカードの一言。本編は tierUnlockNote）
  */
 export function runDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, best = null, legacyBest = null, seed, courseId, rivals = ["noor"],
+  tiers = TIERS, tier = "normal", cleared = [], tierNotes = null, easyBest = null, onTier = null,
   reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = null, speedUp = 1 } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
@@ -259,6 +268,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     const results = [];
     let practiced = false, done = false, frame = 0, runId = 0, currentBest = best?.rulesVersion === RULES_VERSION ? best : null;
     const oldBest = legacyBest || (best && best.rulesVersion !== RULES_VERSION ? best : null);
+    // 段（#3779）: 開いている段・選んでいる段・クリア済みの段・この場で新しく開いた段・初級の自己ベスト（初級は中級以上の自己ベストと分ける）
+    let openTiers = TIERS.filter(t => Array.isArray(tiers) && tiers.includes(t));
+    if (!openTiers.length) openTiers = ["easy"];
+    let chosenTier = openTiers.includes(tier) ? tier : openTiers[openTiers.length - 1];
+    const clearedTiers = new Set(Array.isArray(cleared) ? cleared.filter(t => TIERS.includes(t)) : []);
+    const freshTiers = new Set();
+    let easyTop = easyBest?.rulesVersion === RULES_VERSION ? easyBest : null;
     const root = el("section.desert-ride", { dataset: { test: "desert-ride", phase: "menu", reducedMotion: String(!!reducedMotion) }, tabindex: "-1", "aria-label": "DESERT RIDE" });
     const canvas = el("canvas.dr-canvas", { width: W, height: H, "aria-hidden": "true" });
     const ctx = canvas.getContext("2d");
@@ -444,18 +460,62 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         el("p.dr-lead", { text: message || "砂丘を一気に滑り下りる。ヌールより先に、ゴールの旗へ。" }),
         help, helpButton,
         oldBest ? el("p.dr-legacy-best", { text: `旧ルールの記録 ${oldBest.score.toLocaleString("ja-JP")}点 ／ ${oldBest.rank}（別記録）`, dataset: { test: "desert-legacy-best" } }) : null,
-        currentBest ? el("p.dr-best", { text: `自己ベスト ${currentBest.score.toLocaleString("ja-JP")}点 ／ ${currentBest.rank}`, dataset: { test: "desert-best" } }) : null,
+        bestSlot,
+        tierRow,
         el("div.dr-actions", [start, naruButton, practice, leave]),
       ]));
+      syncTierRow();
       (tutorial && !practiced ? practice : start).focus();
     }
-    function pickRunCourse() {
-      if (courseId) return buildCourse({ id: courseId });
+    // ---- 段（#3779）: メニューの「初級／中級／上級」の札。選んだ段は「滑る」「もう一度滑る」に効く（なるとの勝負・練習は段の外） ----
+    const TIER_WORD = Object.freeze({ easy: "やさしい", normal: "ふつう", hard: "手ごわい" });
+    const tierRow = el("div.dr-tiers", { role: "radiogroup", "aria-label": "ヌールとの勝負の難しさ", dataset: { test: "desert-tiers" } });
+    const bestSlot = el("div.dr-best-slot");
+    /** 段の札の下の一言: 閉じていれば開く条件、クリア済み、呼び出し側の案内（本編は上級に白火）、この場で開いた、ほかは段の手触り。 */
+    function tierSub(t) {
+      if (!openTiers.includes(t)) return `${TIER_LABEL[TIERS[TIERS.indexOf(t) - 1]]}クリアで開く`;
+      if (clearedTiers.has(t)) return "クリア済み";
+      if (tierNotes && typeof tierNotes[t] === "string" && tierNotes[t]) return tierNotes[t];
+      return freshTiers.has(t) ? "開いた！" : TIER_WORD[t];
+    }
+    /** 選んでいる段の自己ベスト（初級は別記録）。無ければ出さない。 */
+    function bestFor(t) { return t === "easy" ? easyTop : currentBest; }
+    function syncTierRow() {
+      tierRow.replaceChildren(...TIERS.map(t => {
+        const open = openTiers.includes(t), chosen = t === chosenTier;
+        return el(`button.btn.dr-tier${chosen ? ".primary" : ""}`, { type: "button", role: "radio", "aria-checked": String(chosen), disabled: !open,
+          dataset: { test: "desert-tier", tier: t, state: !open ? "locked" : chosen ? "chosen" : "open", ...(freshTiers.has(t) ? { fresh: "true" } : {}), ...(clearedTiers.has(t) ? { cleared: "true" } : {}) },
+          onclick: () => chooseTier(t) }, [el("b", { text: TIER_LABEL[t] }), el("small", { text: tierSub(t) })]);
+      }));
+      const top = bestFor(chosenTier);
+      bestSlot.replaceChildren(...(top ? [el("p.dr-best", { text: `${chosenTier === "easy" ? "初級の" : ""}自己ベスト ${top.score.toLocaleString("ja-JP")}点 ／ ${top.rank}`, dataset: { test: "desert-best" } })] : []));
+    }
+    function chooseTier(t) {
+      if (!openTiers.includes(t)) return;
+      const changed = t !== chosenTier;
+      chosenTier = t;
+      syncTierRow();
+      tierRow.querySelector(`[data-tier="${t}"]`)?.focus();
+      if (changed) { try { onTier?.(t); } catch (error) { console.error(error); } }
+    }
+    /** 記録の後に呼び出し側が返した段の様子（開いた段・クリア済み）を受け取る。閉じることはしない。 */
+    function takeTierReply(reply) {
+      if (!reply || typeof reply !== "object") return null;
+      if (Array.isArray(reply.tiers)) {
+        const next = TIERS.filter(t => openTiers.includes(t) || reply.tiers.includes(t));
+        for (const t of next) if (!openTiers.includes(t)) freshTiers.add(t);
+        openTiers = next;
+      }
+      if (Array.isArray(reply.cleared)) for (const t of reply.cleared) if (TIERS.includes(t)) clearedTiers.add(t);
+      return typeof reply.note === "string" && reply.note ? reply.note : null;
+    }
+    function pickRunCourse(tier) {
+      if (courseId) return buildCourse({ id: courseId, tier });
       if (seed != null && Number.isFinite(Number(seed))) {
         const n = Number(seed);
-        return COURSE_PACKS.some(p => p.seed === n) ? buildCourse({ seed: n }) : generateCourse(n);
+        return COURSE_PACKS.some(p => p.seed === n) || tier ? buildCourse({ seed: n, tier }) : generateCourse(n);
       }
-      return pickCourse((Math.random() * 0xFFFFFFFF) >>> 0);
+      return pickCourse((Math.random() * 0xFFFFFFFF) >>> 0, tier);
     }
     function onBoostEvent(kind) {
       if (kind === "recover") {
@@ -476,21 +536,18 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     /**
      * 走る前の準備（2026-11-11 オーナー「加速すると処理重い。ゲーム開始前に漫画付きロードとか挟んでもいい」）:
      * 絵・効果音を読み終えるまで待ち、ブーストの残像に使う色付きの絵を先に作っておく（走っている途中に作ると引っかかる）。
-     * ゲームの中では、この訪問で最初に走る前は、揃っていても漫画のロード画面を出す（決まった場面・minigame-loading.js）。
-     * それ以外は、読み終わっていれば待たずに始める。時間がかかる時（0.22秒より長い）だけ、本編と同じ漫画つきのロード画面を出す。
+     * 準備済みならすぐ始め、長い読み込みだけ案内する（minigame-loading.js）。
      */
-    let preparing = false, firstRun = true;
+    let preparing = false;
     async function prepareAndStart(kind, who = raceWith) {
       if (preparing) return;
       preparing = true;
       try {
         const runArt = loadDesertArt({ rivals: kind === "practice" ? [] : [who] });
-        const fixed = minigameLoadingFixed(firstRun);
-        firstRun = false;
         const tintWho = kind === "practice" ? null : rivals.includes(who) ? who : "noor";
-        if (runArt.pending() || !rideSe.isReady() || fixed) {
+        if (runArt.pending() || !rideSe.isReady()) {
           // 色付きの絵の先作りも門の中（漫画を読んでいる間）に済ませ、門が開いた直後の固まりをなくす。
-          await withMinigameLoading(() => Promise.all([runArt.whenReady(), rideSe.ready()]).then(() => prewarmTints(tintWho)), { host, label: "砂丘へ向かっています…", fixed }).catch(() => {});
+          await withMinigameLoading(() => Promise.all([runArt.whenReady(), rideSe.ready()]).then(() => prewarmTints(tintWho)), { host, label: "砂丘へ向かっています…" }).catch(() => {});
         } else {
           prewarmTints(tintWho);
         }
@@ -507,9 +564,11 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       playBgm(rideBgm);
       mode = kind;
       panel.replaceChildren();
-      const course = kind === "practice" ? practiceCourse() : pickRunCourse();
-      rival = kind === "practice" ? null : rivalRun(course, { who: raceWith });
-      game = createGame(course, { rival });
+      // 段はヌールとの勝負だけ（なるとの勝負・練習は段の外）
+      const runTier = kind === "practice" || raceWith !== "noor" ? null : chosenTier;
+      const course = kind === "practice" ? practiceCourse() : pickRunCourse(runTier);
+      rival = kind === "practice" ? null : rivalRun(course, { who: raceWith, tier: runTier });
+      game = createGame(course, { rival, tier: runTier });
       curveSigns = curveSignsFor(course);
       world = { sky: 0, yaw: 0, sunPulse: 0, slope: null, trail: [] };
       resetBgmTempo();
@@ -796,7 +855,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (ring !== lastLandRing) { lastLandRing = ring; jumpButton.style.setProperty("--land", ring); }
       setText(landTag, landing.tag);
       if (hudNodes.course) {
-        setText(hudNodes.course, mode === "practice" ? "" : (game.course.name || ""));
+        setText(hudNodes.course, mode === "practice" || !game.course.name ? "" : game.tier ? `${game.course.name} · ${TIER_LABEL[game.tier]}` : game.course.name);
         const hidden = mode === "practice" || !game.course.name;
         if (hudNodes.course.hidden !== hidden) hudNodes.course.hidden = hidden;
         // 走り出して4秒で消す（跳んだ人物の頭にかぶらないように。コース名は結果のカードにも出る）
@@ -1104,10 +1163,14 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function commitResult() {
       const result = summary(game);
       results.push(result);
-      const newBest = !currentBest || result.score > currentBest.score;
-      if (newBest) currentBest = { score: result.score, rank: result.rank };
-      try { onResult?.(result); } catch (error) { console.error(error); }
-      return { result, newBest };
+      // 初級の自己ベストは別記録（初級は自己ベスト・評価のご褒美に数えない。#3779）
+      const easy = result.tier === "easy", top = easy ? easyTop : currentBest;
+      const newBest = !top || result.score > top.score;
+      if (newBest && easy) easyTop = { score: result.score, rank: result.rank };
+      else if (newBest) currentBest = { score: result.score, rank: result.rank };
+      let note = null;
+      try { note = takeTierReply(onResult?.(result)); } catch (error) { console.error(error); }
+      return { result, newBest, note };
     }
     /** 次の評価までの点と、今回の滑りでいちばん伸びる所のひとこと（結果のカード）。 */
     function nextGoal(result) {
@@ -1121,7 +1184,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         : next && result.nearMiss < 3 ? "岩はぎりぎりでかすめるほど、点もブーストも大きい" : "";
       return { next: next ? { rank: next[0], points: next[1] - result.score } : null, tip };
     }
-    function showResult({ result, newBest } = pendingResult) {
+    function showResult({ result, newBest, note = null } = pendingResult) {
       pendingResult = null;
       rideSe.stop();
       controls.hidden = true; quit.hidden = true;
@@ -1149,9 +1212,12 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
             // 目標を目の前に: 次の評価までの点（合計のすぐ下）と、今回いちばん伸びる所のひとこと
             next ? el("b.dr-next-rank", { text: `次の評価 ${next.rank} まで あと ${next.points.toLocaleString("ja-JP")}点`, dataset: { test: "desert-next-rank" } }) : null]),
           tip ? el("p.dr-next", { text: tip, dataset: { test: "desert-tip" } }) : null,
-          el("p.dr-best", { text: newBest ? "自己ベスト更新！" : `自己ベスト ${currentBest.score.toLocaleString("ja-JP")}点 ／ ${currentBest.rank}`, dataset: { test: "desert-best", new: String(!!newBest) } }),
+          el("p.dr-best", { text: `${result.tier === "easy" ? "初級の" : ""}${newBest ? "自己ベスト更新！" : `自己ベスト ${bestFor(result.tier).score.toLocaleString("ja-JP")}点 ／ ${bestFor(result.tier).rank}`}`,
+            dataset: { test: "desert-best", new: String(!!newBest) } }),
         ]),
         el("div.dr-result-side", [
+          // 段（#3779）: 記録の板の上に、どの段の滑りかの札（なるとの勝負は段の外なので出さない）
+          result.tier ? el("p.dr-result-tags", [el("b.dr-result-tier", { text: TIER_LABEL[result.tier], dataset: { test: "desert-result-tier", tier: result.tier } })]) : null,
           el("div.dr-rows", [
             statRow("滑走時間", `${result.time.toFixed(1)} 秒`, "desert-time"),
             statRow("最高コンボ", `${result.maxCombo}`, "desert-combo"),
@@ -1165,10 +1231,14 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
             result.carves ? statRow("カービング", `${result.carves} 回`, "desert-carves") : null,
             result.courseName ? statRow("コース", result.courseName, "desert-result-course") : null,
           ].filter(Boolean)),
+          // 初めてクリアした段の一言（「初級をクリア。中級が開いた。」など。呼び出し側の tierUnlockNote）
+          note ? el("p.dr-tier-note", { text: note, dataset: { test: "desert-tier-note" } }) : null,
           el("div.dr-actions", [
             el("button.btn.primary.dr-button", { type: "button", text: "もう一度滑る", dataset: { test: "desert-retry" }, onclick: () => prepareAndStart("run", raceWith) }),
             rivals.includes("naru") ? el("button.btn.dr-button", { type: "button", text: raceWith === "naru" ? "ヌールと競走" : "なると勝負",
               dataset: { test: raceWith === "naru" ? "desert-start-noor" : "desert-start-naru" }, onclick: () => prepareAndStart("run", raceWith === "naru" ? "noor" : "naru") }) : null,
+            // 段を替えるのはメニューで（再挑戦は同じ段）
+            el("button.btn.ghost.dr-button", { type: "button", text: "段を選ぶ", dataset: { test: "desert-choose-tier" }, onclick: () => showMenu() }),
             el("button.btn.ghost.dr-button", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish }),
           ]),
         ]),
@@ -2650,6 +2720,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         for (let i = 0; i < n && !game.finished; i++) step(game, input, dt);
       },
       start(kind = "run", who = "noor") { if (!mode) startRun(kind, who); }, leave: finish,
+      // 段（#3779）: 選んでいる段・開いている段。chooseTier は札を押したのと同じ（閉じた段は選べない）
+      get tier() { return chosenTier; }, get tiers() { return [...openTiers]; }, chooseTier,
       // 検査用: 次の本番からコースを固定する（無い id は外す）。普段のコースは毎回ランダム
       setCourse(id) { courseId = COURSE_PACKS.some(pack => pack.id === id) ? id : undefined; },
       pause(value) { paused = !!value; if (!paused) { last = performance.now(); } },

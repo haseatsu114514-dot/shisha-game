@@ -61,7 +61,7 @@ try {
   const bundleCount = JSON.parse(fs.readFileSync(path.join(remake, "css/bundles.json"), "utf8")).segments.length;
   assert.equal(links.length, bundleCount);
   for (const href of links) assert.match(href, /^css\/[\w./-]+\.css\?v=abc1234$/, href);
-  assert.match(html, /href="fonts\/ShipporiMinchoB1-Medium\.woff2"/);
+  assert.match(html, /href="fonts\/NotoSansJP-Medium\.woff2"/);
   assert.match(html, /<link rel="preload" as="image" href="img\/ui\/ui_title_logo_rich\.webp">/);
   // 起動画面の背景は共通ロード画面の CSS（css/loading.css → bundle-2.css）にある。画像の url() は版を付けない
   const lastBundle = JSON.parse(fs.readFileSync(path.join(remake, "css/bundles.json"), "utf8")).segments.at(-1).out;
@@ -71,7 +71,7 @@ try {
   const trpg = fs.readFileSync(path.join(out, "css/trpg.css"), "utf8");
   assert.match(trpg, /@import url\("venue-host\.css\?v=abc1234"\)/);
   const base = fs.readFileSync(path.join(out, "css/base.css"), "utf8");
-  assert.match(base, /url\("\.\.\/fonts\/ShipporiMinchoB1-Medium\.woff2"\)/);
+  assert.match(base, /url\("\.\.\/fonts\/NotoSansJP-Medium\.woff2"\)/);
   assert.doesNotMatch(base, /\?v=/);
 
   // 試遊ページ: 版の meta・CSS と起動スクリプトの ?v=。本体は page-boot.js が js-<版>/ から読む

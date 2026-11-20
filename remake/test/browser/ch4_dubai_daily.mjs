@@ -403,6 +403,48 @@ await suite("ch4-dubai-daily", async check => {
     assert.equal(after.affinity.master_hookah || 0, 0, "The reception itself gives no affection");
   });
 
+  // 店の仕事と期限の出会いを先に読んだ経路。DAY12の買い出し後にだけ、スミさんの電話を任意で聞ける。
+  for (const answer of [true, false]) await check(`day-twelve-delayed-sumi-call-${answer ? "answer" : "rest"}`, async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_stranger_first", "ch4_festa", "ch4_stranger_second", "ch4_story_briefing", "ch4_story_venue"]) p.read[id] = true;
+      p.firstDay = 8;
+      value.flags._ch4_dubai_talks = { naru: 3 };
+      value.day = p.startDay + 11; value.slot = 1; p.day = 12;
+    });
+    await loadSlot(page);
+    await dubaiMap(page, { day: 60, slot: 1 });
+    await go(page, "ch4_dubai_creek");
+    const takeCall = page.locator(dt("ch4-last-night-call-answer"));
+    const rest = page.locator(dt("ch4-last-night-call-rest"));
+    await takeCall.waitFor();
+    const before = await get(page);
+    assert(before.flags._ch4.read.ch4_story_market);
+    assert.equal(before.slot, 2);
+    assert(!before.flags._ch4.read.ch4_story_sumi_call);
+    if (answer) {
+      await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = false; });
+      await takeCall.click();
+      await page.locator("#vn.active").waitFor();
+      await loadSlot(page);
+      await takeCall.waitFor();
+      assert(!(await get(page)).flags._ch4.read.ch4_story_sumi_call, "Interrupted call is not read and can be chosen again");
+      await takeCall.click();
+    } else {
+      await rest.click();
+    }
+    await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor({ timeout: 60000 });
+    const after = await get(page);
+    assert.equal(after.flags._ch4.day, 13);
+    assert.equal(after.flags._ch4.part, "eve");
+    assert.equal(after.flags._ch4.read.ch4_story_sumi_call === true, answer);
+    assert(!after.flags._ch4.read.ch4_story_press && !after.flags._ch4.read.ch4_story_yosegaki);
+    assert.equal(after.flags._ch4_sheikh_revealed, false);
+    assert.equal(after.money, before.money);
+    assert.deepEqual(after.affinity, before.affinity);
+  });
+
   // DAY12 の宿の前日リハーサルを受ける側: 本番と同じ一台（調整2回）を作って講評まで読むと記録が残り、
   // 1行動・体力16を使う。お金は減らない。宿は一日一度きりなので、夜は別の行き先で一日を終えて前夜祭へ進む。
   await check("day-twelve-inn-rehearsal-runs-a-full-practice-into-the-eve", async page => {

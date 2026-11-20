@@ -3,7 +3,7 @@ import * as shiftPay from "../js/core/shift-pay.js";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
-import { CH2_NIGHTS, STRAWBERRY_TRIAL_IDS, strawberryTrialReady } from "../js/chapters/ch2-story-data.js";
+import { CH2_NIGHTS, STRAWBERRY_TRIAL_IDS, strawberryTrialReady, strawberryTournamentMemory } from "../js/chapters/ch2-story-data.js";
 import { gainFlavorExperience, masteryDay } from "../js/core/flavor-mastery.js";
 
 const root = new URL("../../", import.meta.url);
@@ -233,3 +233,33 @@ assert.equal(learned(), 0, "報酬がない時は成長通知を出さない");
 
 console.log("[ch2 strawberry trial] PASS: tasting sample, feedback, shared makanai day (after-shift makanai), both orders, legacy visit, reward notice");
 
+// 本番の作業台で、試して確かめたことが一度返る。試供品だけ、休んだ人、旧SAVEにも筋が通る。
+const tournament = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_tournament.json", root), "utf8")).dialogues;
+const stations = tournament.find(scene => scene.dialogue_id === "ch2_tournament_stations");
+const otherScene = tournament.find(scene => scene.dialogue_id === "ch2_tournament_rules");
+const originalStations = JSON.stringify(stations);
+const flag = "_ch2_strawberry_trial";
+for (const result of [undefined, "no_berry", "unknown", "__proto__"]) {
+  const skipped = { chapter: 2, flags: { _ch2_strawberry_sample_given: true, [flag]: result } };
+  assert.equal(strawberryTournamentMemory(stations, skipped), stations);
+  assert.match(stations.lines.find(line => line.cue === "strawberry_trial_memory").text, /同じ速さで作らなくていい/);
+}
+const phrase = { gentle: /炭は急がない/, hot: /青臭さ/, thin: /待つのと、足りねえのは別だ/ };
+for (const [result, expected] of Object.entries(phrase)) {
+  const value = { chapter: 2, flags: { [flag]: result }, money: 27500, stamina: 61 };
+  const text = script => script.lines.map(line => line.text || "").join("\n");
+  const memory = strawberryTournamentMemory(stations, value);
+  assert.equal(memory.dialogue_id, stations.dialogue_id);
+  assert.equal(memory.branches, stations.branches, "Existing audience and Ageha dialogue branches are retained");
+  assert.match(text(memory), /舌は当てにならない/);
+  assert.equal((text(memory).match(expected) || []).length, 1);
+  for (const [other, notExpected] of Object.entries(phrase)) if (other !== result) assert.doesNotMatch(text(memory), notExpected);
+  assert.equal(memory.lines.length, stations.lines.length + 1, "Only the two-line memory replaces the neutral line");
+  assert.equal(memory.lines.filter(line => line.type === "apply").length, stations.lines.filter(line => line.type === "apply").length);
+  assert.deepEqual(strawberryTournamentMemory(stations, JSON.parse(JSON.stringify(value))), memory, "Replays unchanged after a pre-stations LOAD");
+  assert.equal(strawberryTournamentMemory(otherScene, value), otherScene, "Post-stations LOAD cannot replay the memory");
+  assert.deepEqual(value, { chapter: 2, flags: { [flag]: result }, money: 27500, stamina: 61 });
+}
+assert.equal(JSON.stringify(stations), originalStations, "Selecting another save doesn't inherit the previous memory");
+assert.equal(strawberryTournamentMemory(stations, { chapter: 3, flags: { [flag]: "gentle" } }), stations);
+console.log("PASS: Chapter 2 strawberry trial remembers the completed heat experience only, at the existing stations checkpoint");

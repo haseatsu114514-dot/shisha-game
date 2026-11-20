@@ -2,9 +2,7 @@
 import { withLoading } from "../core/loading.js";
 import { state } from "../core/state.js";
 import { gameLoadingOptions } from "../core/loading-context.js";
-// Entering the bench is a fixed point: the comic loading screen shows every time, even when nothing needs
-// loading (core/loading.js comicLoadingRequired). preview: the bench preview page waits only when needed
-// and writes nothing (it only reads the existing reading record).
+// 本編の作業台は実際に長く待つときだけ漫画を出す。試遊の表示／読書記録は従来どおり。
 export function prepareBenchEntry(preparation, chapter, steps = [], { preview = false } = {}) {
   const ready = withLoading(({ report }) => {
     if (steps.length) {
@@ -17,7 +15,7 @@ export function prepareBenchEntry(preparation, chapter, steps = [], { preview = 
     }
     return preparation;
   }, {
-    label: "作業台を準備しています…", fixed: !preview,
+    label: "作業台を準備しています…", activity: !preview,
     // Comics unlock per character: only those whose whole cast the player has met (loading-comics.js).
     ...gameLoadingOptions(state, { chapter: chapter || 1, record: !preview }),
   });

@@ -24,6 +24,7 @@ import { runHeat } from "./heat.js";
 import { runSteamDodge } from "./steam.js";
 import { runPull } from "./pull.js";
 import { applyCraftSkin, craftSkinUrls } from "./skin.js";
+import { buildMixTemperatureGauge } from "./thermometer.js";
 import { buildThermalAtmosphere } from "./thermal.js";
 import { buildPanelSmoke } from "./smoke-art.js";
 import { temperatureAfterSteam } from "./conditions.js";
@@ -357,6 +358,13 @@ export async function explainStepOnce(cs, id, panelId = id) {
   return true;
 }
 
+// 加熱前の共通の柱。配合・詰めのプレビューも同じ一本を使い、初回説明や結果カードで
+// 操作パネルが空になっても残す。実温度を扱う工程では各ミニゲームの温度計へ渡す。
+export function preparationGauge(cs) {
+  if (bench?.cs !== cs) return buildMixTemperatureGauge(cs, { vertical: true });
+  return bench.preheat ??= buildMixTemperatureGauge(cs, { vertical: true });
+}
+
 /** 工程の見出しを切り替え、パネルを空にして返す */
 export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id] || hintText, lessonStep = id } = {}) {
   const b = bench;
@@ -387,6 +395,11 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
   b.root.dataset.step = id;
+  if (craftStageEnabled() && ["setup", "mix", "pack", "holes", "place", "heat"].includes(id)) {
+    const gauge = preparationGauge(b.cs);
+    gauge.updateBands();
+    b.panel.before(gauge.root);
+  } else b.preheat?.root.remove();
   b.worker.setStep(id);
   renderFatigue();
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;

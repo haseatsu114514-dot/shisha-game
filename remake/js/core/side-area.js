@@ -18,7 +18,8 @@ import { on } from "./bus.js";
 import { onStageFit } from "./stage-fit.js";
 import { state, config, CONFIG_KEY } from "./state.js";
 import { chapterDay, departurePrep } from "./chapter-clock.js";
-import { currentCity } from "./city-locations.js";
+import { CH2_CITY_NAME, HOME_CITY_NAME, currentCity } from "./city-locations.js";
+import { CH3_AFTERMATH_SCENES } from "../chapters/ch3-aftermath-progress.js";
 
 /** 余白の幅（ステージ上の px・片側）の段。mid から縦書きの帯、wide から親指ボタン。 */
 export const SIDE_MIN = Object.freeze({ narrow: 20, mid: 60, wide: 118 });
@@ -36,9 +37,40 @@ export function kanjiNumber(value) {
 
 // 帯を出さない画面（遊んでいる最中ではない所）。章の読み込み中（ch2-loading など）も出さない。
 const QUIET_SCREENS = new Set(["boot", "title", "staff-roll", "end", "preview", "ch2-error", "ch2-stop"]);
+const CH2_DELIVERY_AWAY = new Set(["arrival", "map", "return"]);
+const CH3_HOMECOMING = CH3_AFTERMATH_SCENES.findIndex(scene => scene.homecoming);
+
+// 専用の旅程では、日常用の地域フラグを読了まで変えないことがある。保存・運賃・LIMEには触れず、帯だけを補正する。
+function stripCity(value, screen) {
+  const { flags, chapter } = value;
+  if (chapter === 2 && chapterDay(value) === 1 && !flags?._ch2_preparation_started) {
+    const stage = flags?._ch2_day1?.stage;
+    if (CH2_DELIVERY_AWAY.has(stage)) return CH2_CITY_NAME;
+    if (stage === "departure" || stage === "tonari" || stage === "complete") return HOME_CITY_NAME;
+  }
+  if (chapter === 3) {
+    const aftermath = flags?._ch3_aftermath;
+    // 帰郷2場面目以降（旧保存では版3への読み替えで場面が1つ増える）は到着済み。
+    const homecoming = aftermath?.version < 3 ? CH3_HOMECOMING - 1 : CH3_HOMECOMING;
+    if (flags?._ch3_cleared || aftermath?.stage > homecoming
+      || (aftermath?.stage === homecoming && (screen === "homecoming" || aftermath.skip?.length))) return HOME_CITY_NAME;
+    // 旧版の場面カードでは地域フラグが地元のままでも、後日談の往路はすでに東京。
+    if (aftermath) return "東京";
+  }
+  if (chapter === 4) {
+    const progress = flags?._ch4;
+    if (flags?._ch4_cleared || progress?.read?.ch4_sumi_return === true
+      || (progress?.part === "resolution" && screen === "homecoming")) return HOME_CITY_NAME;
+    if (progress?.part === "resolution") return "ドバイ";
+  }
+  // 第5章頭のtonariと打ち上げ。日常が始まった保存では、通常どおり実際の行き先を表示する。
+  if (chapter === 5 && !flags?._ch5_region_started && ["prologue", "free"].includes(flags?._ch5?.part)) return HOME_CITY_NAME;
+  return currentCity(value).name;
+}
+
 /**
  * 縦書きの帯に出す言葉。出さない場面は null。
- * 章・日付はセーブ一覧（scenes/saves.js の slotInfo）と同じ読み方、街は HUD の札と同じ（currentCity）。
+ * 章・日付はセーブ一覧（scenes/saves.js の slotInfo）と同じ読み方。街は旅程の表示地点を優先する。
  */
 export function stripInfo(value, screen) {
   if (!value || !screen || QUIET_SCREENS.has(screen) || /-loading$/.test(screen)) return null;
@@ -46,7 +78,7 @@ export function stripInfo(value, screen) {
   const when = departurePrep(value) ? `出発前${day}`
     : value.phase === "tournament" ? "大会当日"
     : value.phase === "daily" ? `${day}・${value.slot >= 1 ? "夜" : "昼"}` : day;
-  return { chapter: `第${kanjiNumber(value.chapter || 1)}章`, city: currentCity(value).name, when };
+  return { chapter: `第${kanjiNumber(value.chapter || 1)}章`, city: stripCity(value, screen), when };
 }
 
 /** 親指ボタンを出してよいか（端末の設定とは別の、開発・検査用の切り替え）。

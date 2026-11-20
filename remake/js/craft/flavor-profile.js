@@ -117,7 +117,7 @@ export function mixExpression(cs, temp, { catalog = DB.flavorById } = {}) {
   const zone = at < bands.ideal[0] ? "cold" : at > bands.ideal[1] ? "hot"
     : position < .35 ? "low" : position > .65 ? "high" : "middle";
   return {
-    values, zone,
+    values, zone, aromaScale,
     label: !entries.length ? "未選択" : zone === "cold" ? "熱が足りず、香りが弱い"
       : zone === "hot" ? "熱が強く、香りが崩れ気味" : profileLabel(entries, position, values),
     expressive: entries.some(entry => expressionOf(entry.flavor)),

@@ -7,11 +7,12 @@
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
 import { el } from "../core/util.js";
+import { TIER_LABEL } from "../core/play-tiers.js";
 import { SE, currentBgm, playBgm, preloadBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
-import { withMinigameLoading, minigameLoadingFixed } from "./minigame-loading.js";
+import { withMinigameLoading } from "./minigame-loading.js";
 import { faceIconUrl } from "../core/data.js";
-import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
+import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelCupTier, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
   whipDrain, finishMargins, POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
 import { CAMEL_RACE_BGM, camelRaceBgmRate } from "./camel-race-bgm.js";
 
@@ -938,19 +939,22 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     sheet.replaceChildren(el("div.camel-card.camel-cup-card", { title: CUP_TIME_NOTE, dataset: { test: "camel-cups" } }, [
       el("p.camel-eyebrow", { text: "HABIBA RACING CLUB" }),
       el("h2", { text: "ハビーバと、次の大会へ" }),
-      el("p", { text: "大会は入門から。中級認定の追加火種は一度だけ、上級は称号への挑戦。" }),
+      el("p", { text: "入門＝初級・標準＝中級・上級＝上級。上級大会で3位以内なら白火がひとつ（一度だけ）。" }),
       el("div.camel-cups", CAMEL_CUPS.map((cup, index) => {
         const enabled = unlocked.has(cup.id);
         const mastered = cupRecords[cup.id]?.mastered || runs.some(run => cup.id === "standard" ? camelMastered(run) : cup.id === "expert" && camelExpert(run));
+        // 上級大会の3位以内＝上級クリア（#3779）。称号（名調教師）はその先の目標
+        const topCleared = cup.id === "expert" && (cupRecords.expert?.qualified || runs.some(run => run.cup === "expert" && camelCupQualified(run)));
+        const tier = camelCupTier(cup.id);
         return el("button.camel-cup", { type: "button", disabled: !enabled,
           dataset: { test: "camel-cup", cup: cup.id }, onclick: () => { sfx("select"); selectedCup = cup.id; prepareRace(); } }, [
           // 大会の紋章（CR-WD08・#3217）。読めなければ札は文字だけ。
           el("img.camel-cup-badge", { src: imgFileUrl(`ui/camel_race/world/cup-${cup.id}.webp`), alt: "", dataset: { test: "camel-cup-badge" },
             onerror: event => { event.currentTarget.remove(); } }),
-          el("small", { text: index ? `CUP 0${index}` : "PRACTICE" }),
+          el("small", { text: tier ? `${TIER_LABEL[tier]} · CUP 0${index}` : "PRACTICE", dataset: { test: "camel-cup-tier", tier: tier || "" } }),
           el("strong", { text: cup.name }), el("span", { dataset: { test: "camel-cup-length" }, text: `${cup.length.toLocaleString("ja-JP")}m ・ 4頭${cupBest(cup.id) >= 0 ? ` ・ ベスト ${cupBest(cup.id)}点` : ""}` }),
           el("span", { text: enabled ? cup.note : cup.id === "standard" ? "入門大会3位以内で解放" : "標準大会の中級認定で解放" }),
-          el("b", { text: mastered ? cup.id === "expert" ? "砂漠の名調教師" : "中級認定済み" : enabled ? "出走する →" : "未解放" }),
+          el("b", { text: mastered ? cup.id === "expert" ? "砂漠の名調教師" : "中級認定済み" : topCleared ? "上級クリア済み" : enabled ? "出走する →" : "未解放" }),
         ]);
       })),
       el("small.camel-cup-note", { text: CUP_TIME_NOTE }),
@@ -961,17 +965,14 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   }
   /**
    * レースの前に絵を読み終えるまで待つ（2026-11-11 オーナー「加速すると処理重い。ゲーム開始前に漫画付きロードとか挟んでもいい」）。
-   * ゲームの中では、この訪問の最初のレースの前は、絵が揃っていても漫画のロード画面を出す（決まった場面・minigame-loading.js）。
-   * それ以外は、読み終わっていれば待たない。時間がかかる時（0.22秒より長い）だけ、本編と同じ漫画つきのロード画面を出す。
+   * 準備済みならすぐ始め、長い読み込みだけ案内する（minigame-loading.js）。
    */
-  let preparingRace = false, firstRace = true;
+  let preparingRace = false;
   async function prepareRace() {
     if (preparingRace) return;
     preparingRace = true;
     try {
-      const fixed = minigameLoadingFixed(firstRace);
-      firstRace = false;
-      if (!art || fixed) await withMinigameLoading(() => loadCamelArt(), { host, label: "レース場へ向かっています…", fixed }).catch(() => {});
+      if (!art) await withMinigameLoading(() => loadCamelArt(), { host, label: "レース場へ向かっています…" }).catch(() => {});
       if (!done) startRace();
     } finally { preparingRace = false; }
   }
@@ -2327,7 +2328,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       nextNode,
       isBest && (best !== null || runs.length > 1) ? el("p.camel-best", { text: "自己ベスト更新！", dataset: { test: "camel-new-best" } }) : null,
       camelMastered(run) ? el("p.camel-best", { text: "中級認定！ 連打に頼らず、声と息を合わせた走り。追加の火種は初回認定時のみ。" })
-        : camelExpert(run) ? el("p.camel-best", { text: "称号獲得：砂漠の名調教師" }) : null,
+        : camelExpert(run) ? el("p.camel-best", { text: "称号獲得：砂漠の名調教師" })
+        : run.cup === "expert" && camelCupQualified(run) ? el("p.camel-best", { text: "上級クリア！ 次は1位・S・連打なしで称号。", dataset: { test: "camel-top-clear" } }) : null,
       el("div.camel-card-actions", allowRetry ? [again, choose, leave] : [leave]),
     ]);
     // 「？」で遊び方を読んだあとは、同じ結果のカードへ戻す（採点・記録はやり直さない）。

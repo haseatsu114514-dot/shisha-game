@@ -106,11 +106,11 @@ export function castTrpgTable(state, catalog, scenario, options = {}) {
   const ready = tableStatus(state, catalog, options);
   if (!ready.ok) return ready;
   const book = catalog.scenarios.find(b => b.id === scenario.id);
-  if (!book) return { ok: false, reason: "今の本棚にはない物語" };
+  if (!book) return { ok: false, reason: "今は選べない物語" };
   const progress = trpgBookProgress(state, book);
   if (!progress.ok) return progress;
   // onShelf: 入荷済みでまだ買っていない本も、顔ぶれが成り立つかだけを見る（tablePlayableTonight）
-  if (!options.onShelf && !state.trpg?.owned?.includes(scenario.id)) return { ok: false, reason: "本棚に加えると遊べる" };
+  if (!options.onShelf && !state.trpg?.owned?.includes(scenario.id)) return { ok: false, reason: "シナリオ本を買うと遊べる" };
   const available = new Set(catalog.participants.filter(p => participantStatus(state, p).ok).map(p => p.id));
   if (book?.zeroMemberCast) for (const id of book.zeroMemberCast) available.add(id);
   for (const id of catalog.regulars || []) if (isTrpgRegular(id)) available.add(id);
@@ -177,7 +177,7 @@ export function materializeTrpgCast(scenario, assignments) {
     });
   }
   table.presentation.prepareIdle = "準備を選ぼう。仲間がいれば、切り札も頼める";
-  table.presentation.endingIdle = "この晩の話は、ここまで。みんなとの記録を本棚に残そう";
+  table.presentation.endingIdle = "この晩の話は、ここまで。遊んだ記録は自動で残ります";
   table.presentation.exitText = "中断した物語は、また遊べます。今夜の行動は使いません。";
   return table;
 }

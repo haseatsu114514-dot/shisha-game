@@ -4,9 +4,9 @@
    見た目は絵で作る: 板・ボタン・ランプ・メダルはゲーム共通の夜のUIキット remake/img/ui/craft-night/（シーシャ作り・大会と同じ）、
    機材まわり（▶・フェーダーの台座・矢印・吹き出し・目印）は remake/img/ui/dj/（asset_sources/ui/dj-renewal-20261111/make_parts.py が描く）。
    枠線と塗りだけの箱は作らない。色: A = 紫、B = 水色、案内（いま触るところ）= 金、乗れている = ミント。 */
-@font-face{font-family:"Suien Gothic";src:url("../../fonts/ShipporiMinchoB1-Medium.woff2") format("woff2");font-weight:100 599;font-display:block}
-@font-face{font-family:"Suien Gothic";src:url("../../fonts/ShipporiMinchoB1-Bold.woff2") format("woff2");font-weight:600 799;font-display:block}
-@font-face{font-family:"Suien Gothic";src:url("../../fonts/ShipporiMinchoB1-Bold.woff2") format("woff2");font-weight:800 900;font-display:block}
+@font-face{font-family:"Suien Gothic";src:url("../../fonts/NotoSansJP-Medium.woff2") format("woff2");font-weight:100 599;font-display:block}
+@font-face{font-family:"Suien Gothic";src:url("../../fonts/NotoSansJP-Bold.woff2") format("woff2");font-weight:600 799;font-display:block}
+@font-face{font-family:"Suien Gothic";src:url("../../fonts/NotoSansJP-Bold.woff2") format("woff2");font-weight:800 900;font-display:block}
 :root{color-scheme:dark;font-family:"Suien Gothic","Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;color:#efe9f4;background:#07050c;
  --a:#c39bff;--b:#7fe3ff;--ink:#0b0812;--ink2:#151024;--line:#3a2f52;--glow:#b45cf0;--gold:#ffc857;--ok:#aee7d5;--warn:#ff8fc4;--mono:ui-monospace,SFMono-Regular,Consolas,monospace;--s:1;accent-color:#b45cf0;
  --kit:url('../../img/ui/craft-night/board.webp');--glass:url('../../img/ui/craft-night/button-glass.webp');--goldbtn:url('../../img/ui/craft-night/button-gold.webp');--strip:url('../../img/ui/craft-night/rank-strip.webp')}

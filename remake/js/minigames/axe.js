@@ -1,6 +1,7 @@
 // Caller awaits preceding VN. Practice never reads or writes story/save state.
 import { el } from "../core/util.js";
 import { imgFileUrl } from "../core/img-file.js";
+import { onStageFit } from "../core/stage-fit.js";
 import { portraitStyle } from "../core/portrait-style.js";
 import { portraitAsset } from "../core/portrait-resolver.js";
 import { svg } from "../core/transition-kit.js";
@@ -487,7 +488,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     lifetime.signal.addEventListener("abort", () => clearTimeout(timer), { once: true });
     root.append(cutin);
   }
-  host.append(root); root.focus();
+  host.append(root);
+  if (tapPull) observePullTrackSize();
   if (tapPull) pullInput = attachAxePullInput({ root, board, handle: pullHandle, signal: lifetime.signal, target: TARGET,
     // 狙いはゲージで決める。的に触れても狙いは動かさず、投げる時（power）だけ上へ弾く
     aimOnTouch: false, canAim: () => false,
@@ -516,7 +518,40 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   window.addEventListener("blur", () => { windowFocused = false; pullInput?.cancel(); stamp = null; render(); }, { signal: lifetime.signal });
   window.addEventListener("focus", () => { windowFocused = true; stamp = null; render(); }, { signal: lifetime.signal });
   window.addEventListener("pagehide", () => cleanup(false), { signal: lifetime.signal });
-  loadArt(); frame = requestAnimationFrame(tick); return promise;
+  loadArt();
+  // Focus can force layout; apply the initial loading DOM before doing so.
+  root.focus();
+  frame = requestAnimationFrame(tick); return promise;
+  function observePullTrackSize() {
+    const stage = root.closest("#stage");
+    let sizeFrame = 0, stageScale = Number(stage?.style.getPropertyValue("--k"));
+    const resize = () => {
+      if (!root.isConnected) return;
+      const { height } = root.getBoundingClientRect();
+      if (!height) return;
+      const cssScale = height / root.clientHeight || 1;
+      const trackHeight = Math.max(80, Math.min(180, height * .26)) / cssScale + "px";
+      if (pullTrack.style.height !== trackHeight) pullTrack.style.height = trackHeight;
+    };
+    // The release track is only a visual guide. Read its size after layout,
+    // never between the DOM writes in render() or in the moving aim loop.
+    const observer = new ResizeObserver(resize);
+    observer.observe(root, { box: "border-box" });
+    const queueResize = () => {
+      if (sizeFrame) return;
+      sizeFrame = requestAnimationFrame(() => { sizeFrame = 0; resize(); });
+    };
+    // ResizeObserver does not see the transform-only scale changes of #stage.
+    const unsubscribe = stage ? onStageFit(({ stage: fitted, k }) => {
+      if (fitted === stage && k !== stageScale) { stageScale = k; queueResize(); }
+    }) : null;
+    if (!stage) window.addEventListener("resize", queueResize, { signal: lifetime.signal });
+    lifetime.signal.addEventListener("abort", () => {
+      observer.disconnect();
+      unsubscribe?.();
+      cancelAnimationFrame(sizeFrame);
+    }, { once: true });
+  }
   function showFace(face) {
     const art = faceArt(portraitKey, face);
     if (portrait.src === art.src) return;
@@ -784,9 +819,6 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const strength = power < POWER.stickMin ? "弱すぎる・落下" : power > POWER.stickMax ? "強すぎる・落下"
       : power >= POWER.sweetMin && power <= POWER.sweetMax ? "適正" : "刺さる回転";
     if (tapPull) {
-      const rect = root.getBoundingClientRect(), cssScale = rect.height / root.clientHeight || 1;
-      const distance = Math.max(80, Math.min(180, rect.height * .26)) / cssScale;
-      pullTrack.style.height = distance + "px"; // 弾く台: 取っ手は下に置いたまま（強さは右の回転ゲージに出る）
       pullHandle.disabled = actor !== "player" || phase !== "power" || isPaused();
       pullHandle.style.backgroundColor = equipment.grip;
       root.dataset.rawPower = String(rawPower); root.dataset.pulling = String(Boolean(pullInput?.pulling));
@@ -938,12 +970,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     }
     // League-style scoreboard: one row per thrower, a divider at the half, calls as axe marks.
     const rows = versus ? ["player", "opponent"] : ["player"];
-    const record = rows.map(id => (versus ? match[id] : shots).map(shot => shot.score + ":" + shot.outcome).join(",")).join("|") + "|" + (match?.suddenDeath.map(r => (r.player?.score ?? "-") + "/" + (r.opponent?.score ?? "-")).join(",") || "") + ":" + phase + ":" + actor + ":" + sdRound;
+    // Aiming changes the needle, not the active score tile. Keep the existing scoreboard DOM.
+    const showingScore = phase === "result" || phase === "summary";
+    const record = rows.map(id => (versus ? match[id] : shots).map(shot => shot.score + ":" + shot.outcome + ":" + (shot.called || "")).join(",")).join("|") + "|" + (match?.suddenDeath.map(r => (r.player?.score ?? "-") + "/" + (r.opponent?.score ?? "-")).join(",") || "") + ":" + showingScore + ":" + actor + ":" + sd;
     if (scoreboard.dataset.record !== record) {
       scoreboard.dataset.record = record;
       scoreboard.replaceChildren(...rows.map(id => {
         const list = versus ? match[id] : shots, mine = id === actor;
-        const current = ["result", "summary"].includes(phase) ? list.length - 1 : list.length;
+        const current = showingScore ? list.length - 1 : list.length;
         const ks = killState(list, rules.throws);
         const tiles = Array.from({ length: rules.throws }, (_, i) => el("span.axe-tile", {
           dataset: { outcome: list[i]?.outcome || "", filled: String(Boolean(list[i])), current: String(mine && !sd && i === current), half: String(halfOf(i, rules.throws)) },
