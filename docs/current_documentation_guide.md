@@ -11,6 +11,14 @@
 7. 成長（経験値・レベル・心得の盤）: 決定は [stat-design/ADDENDUM-BOARD-LAYOUT.md](stat-design/ADDENDUM-BOARD-LAYOUT.md)、実装仕様は [stat-design/SPEC.md](stat-design/SPEC.md)（第2版）。第2版の3能力は `GROWTH_BOARD=false` の裏で未公開。プレイヤーに見える能力は従来の5種類（`gameplay_agent_reference.md`）。
 8. レビュー範囲: [review_scope.md](review_scope.md)。
 
+## 現行設定の確認
+
+ゲームの設定を引用するレビュー、紹介文、小説、画像指示にも適用する。
+
+1. GitHub の `main` の SHA を確認する。ユーザーが特定の版や作業ブランチを指定したときは、その ref を使う。手元の `HEAD` や `origin/main` と差がある場合は、GitHub から該当ファイルをその ref で読む。
+2. 人物の現在の表示名・本名・所属は [人物データ](../data/characters.json)、外見は同データの外見設定と採用済み立ち絵、章の大筋は [物語構成](../brand/story_and_structure.md) を参照する。場面の描写・口調・名乗る順番は、その場面を実際に再生する [台本](../data/dialogue/) と呼び出し元を確認する。初対面、再訪、大会前夜などは場面ごとに照合する。
+3. 過去の要望欄・レビュー・候補の画像プロンプトで見つけた名称や設定は、採用決定と現在の正本で照合する。旧名を直すときは `python3 tools/check_legacy_terms.py` で横断確認し、会話ID・素材キー・旧セーブ変換などは用途を個別に調べる。
+
 ## UIの文字基準（#1352）
 
 - 本文・通常の操作表示・数字・通貨は `remake/css/base.css` の `--font` を使う。数字の整列は実際の字幅で確認し、`tabular-nums` の指定だけを等幅の証拠にしない。

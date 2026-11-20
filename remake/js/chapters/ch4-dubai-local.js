@@ -28,7 +28,7 @@ export const dubaiDaytime = slot => (slot ?? 0) === 0;
 
 /**
  * クリーク沿いの場面（SPV03）。昼・夜それぞれを順番に読む（daily/spots.js の quietTurn。鍵は CREEK_TURN。第5章のドバイも同じ）。
- * 岸から眺める場面だけ。渡し舟に乗る `ch4_creek_abra` は、渡し舟で渡る案が不採用（DBS12）なのでつながない。
+ * 渡し舟は岸から眺める（DBS12）。
  * 歩く場面は ch4_dubai_daily.json、荷積みと釣りは ch4_spots.json（CREEK_SPOT_IDS）。
  */
 export const CREEK_SCENES = Object.freeze({

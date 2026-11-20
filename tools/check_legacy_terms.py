@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """旧名・旧ステータス・旧設定の残存チェッカー。
 
-P2 CI/ローカル用: data/, remake/js/, brand/story_and_structure.md, docs/ を走査し、
+CI/ローカル用: ゲームデータ、ランタイム、公式サイト、現行の設定文書を走査し、
 旧名・旧ステータスが残っていたら失敗させる。
 lint_dialogue.py が対話 JSON だけを見るのに対し、こちらはソースコードと設定文書全般をカバーする。
 
 使い方:
     python3 tools/check_legacy_terms.py          # 全対象走査
     python3 tools/check_legacy_terms.py --characters-only  # キャラ名・みんとの外見だけ検証
-    python3 tools/check_legacy_terms.py --fix     # 安全な置換だけ自動適用（dry-run表示後）
 """
 
 import json
@@ -29,6 +28,10 @@ SCAN_DIRS = [
 SCAN_ROOTS = [
     REPO / "CLAUDE.md",
 ]
+
+# 旧キャラ名・旧設定の検査は、台詞以外のゲームデータと公式サイトにも適用する。
+CURRENT_NAME_ONLY_DIRS = (REPO / "remake" / "data", REPO / "promo")
+CURRENT_NAME_EXTENSIONS = {".json", ".js", ".mjs", ".html", ".md", ".txt"}
 
 SKIP_PATTERNS = {
     "data.js",
@@ -84,7 +87,7 @@ LEGACY_ERROR_CURRENT = {
     "炭場 創": "チャコール博士の本名は火浦 理一",
     "炭場創": "チャコール博士の本名は火浦 理一",
     "前園": "上園 文太郎（ID maezono）に統一",
-    # 2026-11-14 追加（オーナー決定）: rei の芸名「鴉葬レヰ」→「†玖羅雨℃†」（読みはクラウド、単名。本名の田中健太と内部ID rei は維持）。
+    # 現行の芸名は「†黒羅雨℃†」。読みはクラウド。本名と内部ID rei は維持（#3664）。
     "鴉葬レヰ": "†黒羅雨℃†（rei・読みはクラウド）に統一",
     "鴉葬": "†黒羅雨℃†（rei）に統一",
     "レヰ": "クラウド（rei）に統一",
@@ -92,8 +95,8 @@ LEGACY_ERROR_CURRENT = {
     # 2026-11-15 追加（オーナー決定・#3667）: rei の店名「零-ZERO-」→「貴方ノ為ノ此ノ煙。」（句点まで正式な店名。内部IDとロゴのファイル名 zero は維持）。
     "零-ZERO-": "クラウド（rei）の店名は「貴方ノ為ノ此ノ煙。」に統一",
     # 2026-11-15 追加（オーナー最終決定・#3664）: 芸名の頭の字「玖」→「黒」（†黒羅雨℃†。玖は同梱フォントに無く、途中案の紅も不採用）。
-    "†玖羅雨℃†": "†黒羅雨℃†（rei）に統一",
-    "†紅羅雨℃†": "†黒羅雨℃†（rei）に統一",
+    "玖羅雨℃": "†黒羅雨℃†（rei）に統一",
+    "紅羅雨℃": "†黒羅雨℃†（rei）に統一",
 }
 # 2026-11-14: docs/reports/ も日付つきの検証記録（履歴）として扱う。鴉葬レヰ時代のレポートを現行の事実へ書き換えないため。
 HISTORY_PATHS = ("docs/archive/", "docs/qa/", "docs/owner_requests.md", "docs/reports/")
@@ -219,8 +222,9 @@ def is_doc_context(path: Path, line: str) -> bool:
     return False
 
 
-def scan_file(path: Path, errors: list, warnings: list):
-    if path.suffix not in EXTENSIONS:
+def scan_file(path: Path, errors: list, warnings: list, *, current_names_only: bool = False):
+    extensions = CURRENT_NAME_EXTENSIONS if current_names_only else EXTENSIONS
+    if path.suffix not in extensions:
         return
     if should_skip(path):
         return
@@ -234,14 +238,17 @@ def scan_file(path: Path, errors: list, warnings: list):
         if is_doc_context(path, line):
             continue
 
-        for term, fix in LEGACY_ERROR.items():
-            if term in line:
-                errors.append(f"{rel}:{i}: 旧名 '{term}' → {fix}")
-
         if not str(rel).startswith(HISTORY_PATHS):
             for term, fix in LEGACY_ERROR_CURRENT.items():
                 if term in line:
                     errors.append(f"{rel}:{i}: 旧名 '{term}' → {fix}")
+
+        for term, fix in LEGACY_ERROR.items():
+            if term in line:
+                errors.append(f"{rel}:{i}: 旧名 '{term}' → {fix}")
+
+        if current_names_only:
+            continue
 
         for term, fix in LEGACY_STAT_ERROR.items():
             if term in line:
@@ -274,6 +281,11 @@ def main() -> int:
                 if path.is_file():
                     scan_file(path, errors, warnings)
 
+    for d in CURRENT_NAME_ONLY_DIRS:
+        for path in sorted(d.rglob("*")):
+            if path.is_file():
+                scan_file(path, errors, warnings, current_names_only=True)
+
     for path in SCAN_ROOTS:
         if path.is_file():
             scan_file(path, errors, warnings)
@@ -290,7 +302,7 @@ def main() -> int:
             print("   " + e)
         return 1
 
-    total = sum(1 for d in SCAN_DIRS if d.is_dir()
+    total = sum(1 for d in [*SCAN_DIRS, *CURRENT_NAME_ONLY_DIRS] if d.is_dir()
                 for _ in d.rglob("*") if _.is_file()) + len(SCAN_ROOTS)
     print(f"✅ OK — 旧名・旧設定の残存なし（{total} ファイル走査）")
     return 0
