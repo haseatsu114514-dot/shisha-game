@@ -2,7 +2,7 @@
 // node remake/test/lover_strain.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { STRAIN_IDS, STRAIN_SIGN1, STRAIN_SIGN2, STRAIN_TALK, STRAIN_MAX, STRAIN_CAUSES, STRAIN_GAIN, STRAIN_EASE, STRAIN_UNREAD_DAYS,
+import { STRAIN_IDS, STRAIN_REMOTE_IDS, STRAIN_SIGN1, STRAIN_SIGN2, STRAIN_TALK, STRAIN_MAX, STRAIN_CAUSES, STRAIN_GAIN, STRAIN_EASE, STRAIN_UNREAD_DAYS,
   STRAIN_TALK_GAP, STRAIN_TALK_REST, STRAIN_KEEP_VALUE, STRAIN_EXCUSE_VALUE, STRAIN_SCENES, STRAIN_OUTCOME_FLAGS,
   strainRecord, strainOf, strainLovers, strainPaused, strainDrift, addStrain, easeStrain, strainCause, strainUnread, syncStrain,
   tickStrain, strainTalkPick, endLoverRelation, settleStrainTalk, strainSuspect, strainVisit, strainSignMessage,
@@ -32,13 +32,17 @@ const run = (value, until, each = () => {}) => {
 
 // ---- 対象と、止まっている時期
 assert.ok(STRAIN_IDS.every(id => routes.heroine_ids.includes(id)), "Only heroines are tracked");
-assert.ok(!STRAIN_IDS.includes("mashiro") && !STRAIN_IDS.includes("noor"), "Lovers who live far away are never blamed for distance");
+// 遠くに住む恋人（STR12）も対象。溜まり方は同じで、距離そのものでは溜まらない（下の「1人なら何もしなければ溜まらない」と同じ検査）
+assert.deepEqual([...STRAIN_REMOTE_IDS], ["mashiro", "noor"]);
+assert.ok(STRAIN_REMOTE_IDS.every(id => STRAIN_IDS.includes(id)), "Lovers who live far away are tracked too");
+for (const id of STRAIN_REMOTE_IDS) assert.deepEqual(run(save([id], { chapter: 5 }), 40), [], `${id}: distance alone never builds up`);
 assert.ok(STRAIN_SIGN1 < STRAIN_SIGN2 && STRAIN_SIGN2 < STRAIN_TALK && STRAIN_TALK <= STRAIN_MAX);
 assert.ok(STRAIN_MAX - STRAIN_EASE.date < STRAIN_TALK, "One date always pulls a lover back from the breakup talk");
-assert.deepEqual(strainLovers(save(["rio", "rio", "noor", "samechan"])), ["rio"], "Samechan only counts from chapter 2");
+assert.deepEqual(strainLovers(save(["rio", "rio", "noor", "samechan"])), ["rio", "noor"], "Samechan only counts from chapter 2");
 assert.deepEqual(strainLovers(save(["samechan"], { chapter: 2 })), ["samechan"]);
 assert.equal(strainPaused(save([])), true);
-assert.equal(strainPaused(save(["mashiro"])), true, "Only faraway lovers: nothing moves");
+assert.equal(strainPaused(save(["mashiro"])), false, "A faraway lover alone is enough too (STR12)");
+assert.equal(strainPaused(save(["noor"], { flags: { _ch2_region: "dubai" } })), true, "While hajime is in her city, nothing moves");
 assert.equal(strainPaused(save(["rio"])), false, "One lover is enough for the system to run");
 assert.equal(strainPaused(save(["rio"], { flags: { _story_shuraba_unresolved: true } })), true);
 assert.equal(strainPaused(save(["rio"], { flags: { _ch2_region: "tokyo" } })), true);
@@ -113,7 +117,7 @@ assert.equal(strainVisit(mend, "rio"), 0, "Not a lover");
 assert.equal(easeStrain(mend, "ageha", 99), 3);
 assert.equal(strainOf(mend, "ageha"), 0);
 assert.equal(addStrain(mend, "ageha", 99, "unread"), STRAIN_MAX, "Capped");
-assert.equal(addStrain(mend, "noor", 3, "unread"), 0, "Untracked lovers gain nothing");
+assert.equal(addStrain(mend, "noor", 3, "unread"), 0, "Someone who is not her lover gains nothing");
 assert.equal(JSON.stringify(STRAIN_GAIN).includes("anniv"), false);
 
 // ---- 恋人が2人以上: 何もしなくても少しずつ溜まる。誘いに乗っていれば2〜3人は予兆まで行かず、増えるほど追いつかなくなる
@@ -133,7 +137,8 @@ assert.ok(steady(["tsumugi", "rio", "ageha"], 60).peak < STRAIN_SIGN1, "Three lo
 const harem = steady(["tsumugi", "minto", "rio", "ageha", "samechan", "hiyori", "mashiro", "noor"], 60);
 assert.ok(harem.events.some(e => e.stage === 2 && e.cause === "suspect"), "Many lovers: intuition catches up even with every date kept");
 assert.ok(harem.peak >= STRAIN_TALK, "…and ends in a breakup talk");
-assert.equal(harem.value.loverStrain.by.mashiro, undefined, "Faraway lovers add to the count but are not tracked");
+// 遠くに住む恋人（STR12）も同じく勘づく。会えないこと自体は責めないので、理由は「気配」だけ
+assert.ok(strainOf(harem.value, "mashiro") > 0 && strainCause(harem.value, "mashiro") === "suspect", "Faraway lovers sense it too");
 const petit = save(["rio", "minto"]);
 strainSuspect(petit, ["rio", "noor", "rio"]);
 assert.equal(strainOf(petit, "rio"), STRAIN_GAIN.petit);
@@ -247,7 +252,7 @@ const broken = { ...save(["rio"]), loverStrain: { by: { rio: { v: "x", why: 3, s
 assert.deepEqual(strainRecord(broken, "rio"), { v: 0, why: {}, sign: 0, talks: 0 });
 assert.equal(strainOf({ loverStrain: null }, "rio"), 0);
 
-// ---- 台本: 6人 ×（切り出し・二度目の一言・理由3つ・問いかけ）。必ず読む場面なので報酬は無い
+// ---- 台本: 8人 ×（切り出し・二度目の一言・理由3つ・問いかけ）。必ず読む場面なので報酬は無い
 assert.equal(STRAIN_SCENES.length, STRAIN_IDS.length * (4 + STRAIN_CAUSES.length));
 for (const id of STRAIN_SCENES) assert.ok(dialogues[id]?.lines?.length, `${id} exists`);
 assert.deepEqual(Object.keys(dialogues).sort(), [...STRAIN_SCENES].sort(), "No stray scenes");
@@ -294,7 +299,7 @@ for (const id of STRAIN_IDS) {
   assert.ok(sign2.replies.length >= 1 && sign2.replies.every(reply => reply.affinity === 0 && reply.response && [...reply.text].length <= 19));
   assert.notEqual(sign2.replies, lover.strain.sign2[id].r, "The data is not shared with the inbox");
 }
-assert.equal(strainSignMessage(lover, "noor", 1, 1), null);
+assert.equal(strainSignMessage(lover, "naru", 1, 1), null, "No sign for someone who is not a heroine");
 assert.equal(joinStrainScenes(dialogues, ["strain_talk_open_rio", "missing"]), null);
 
 console.log("lover strain: PASS (pause rules, single-lover neglect, intuition by lover count, relief, signs, breakup talk outcomes, script & LIME data)");
