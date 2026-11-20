@@ -52,7 +52,8 @@ export const STAGES = Object.freeze({
 //     無い人はコードの影絵（tonari-floor-art.js）で描く。
 //     例: first: { idle: "../../img/ui/tonari-floor/guest-first.webp" }, "train-a": { idle: "…/guest-train-a.webp" }
 // - props: 卓の上の一台（shisha）など。無ければ置かない。
-export const FLOOR_ART = Object.freeze({ stage: "classic", guests: Object.freeze({}), props: Object.freeze({}) });
+// - cutins: 画面を横切る帯の絵（open＝営業開始／fever＝フィーバーの突入／close＝営業終了）。無ければ色の帯だけ。
+export const FLOOR_ART = Object.freeze({ stage: "classic", guests: Object.freeze({}), props: Object.freeze({}), cutins: Object.freeze({}) });
 
 /** 相対パスの絵を、このファイルから見た URL にする（data: や http(s): はそのまま）。 */
 export const artUrl = (src) => (!src ? null : /^(data:|blob:|https?:|\/)/.test(src) ? src : new URL(src, import.meta.url).href);

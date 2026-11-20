@@ -40,16 +40,20 @@ assert.deepEqual([game.loadFromSlot(slot).money, game.state.slot, game.state.vis
 // 店の売上を財布・私物へ混ぜない。中断・LOAD では進み具合を残さない。
 // 定番ミックスと店のファンの合計は flags._tonari_floor に残り、次の営業へ渡る。
 // ワンオペの営業は「今日の注文」の記録（_shift_order_・_shift_mix_）に触れない。
+// たまに遊びに来る本編の人物は、顔見知り・好感度1以上・その章に来られる人だけ。はじめての営業には来ない。好感度は動かさない。
+const VISITORS = { tsumugi: { id: "tsumugi", chapters: [1, 2] }, naru: { id: "naru", chapters: [1] }, adam: { id: "adam", chapters: [1, 2] } };
 const text = await fs.readFile(new URL("../js/daily/tonari.js", import.meta.url), "utf8");
 const start = text.indexOf("const SHIFT_ORDERS = [");
 assert(start >= 0);
 async function floorBoundary(mode) {
-  const account = { day: 4, chapter: 1, weatherSeed: 18, flags: { _shift_mix_citrus: 1 }, money: 30000, inventory: { mint: 3 } };
+  const account = { day: 4, chapter: 1, weatherSeed: 18, flags: { _shift_mix_citrus: 1 }, money: 30000, inventory: { mint: 3 },
+    met: { tsumugi: true }, affinity: { tsumugi: 9, adam: 30 } };
   const context = vm.createContext({ state: account, DB: { dialogues: {} }, tsumugiAtTonari: () => false,
     TONARI_BG: "tonari", play: async () => ({}), isRainy: () => false, timeOfDay: () => "night",
-    bgUrl: () => "bg", setBg: async () => {}, toast: () => {} });
+    bgUrl: () => "bg", setBg: async () => {}, toast: () => {}, affinityLevel: (id) => ((account.affinity[id] || 0) >= 9 ? 1 : 0) });
   const calls = [];
-  const view = new vm.SyntheticModule(["runTonariFloor"], function () {
+  const view = new vm.SyntheticModule(["runTonariFloor", "FLOOR_VISITORS"], function () {
+    this.setExport("FLOOR_VISITORS", VISITORS);
     this.setExport("runTonariFloor", async options => {
       calls.push(options);
       if (mode === "load") context.state = { ...account, flags: {} };
@@ -75,6 +79,7 @@ async function floorBoundary(mode) {
   assert.equal(calls[0].presets, null, "はじめての営業は、店の定番から始める");
   assert.equal(calls[0].fans, 0);
   assert.equal("anchor" in calls[0], false, "今日の注文の客は、ワンオペの営業には混ぜない");
+  assert.equal(calls[0].visitor, null, "はじめての営業には、本編の人物は来ない");
   if (mode === "done") {
     assert.equal(result.bonus, 1000);
     // 別realmの値なので文字列で比べる
@@ -94,6 +99,19 @@ async function floorBoundary(mode) {
   assert.equal(account.flags["_shift_order_1:4"], undefined, "今日の注文は済んだことにしない");
   assert.equal(account.flags._shift_mix_citrus, 1, "前に出した一台の記録を書き換えない");
   assert.equal(account.money, 30000); assert.deepEqual(account.inventory, { mint: 3 });
+  assert.equal(JSON.stringify(account.affinity), '{"tsumugi":9,"adam":30}', "営業で好感度は動かない");
+  if (mode !== "done") return;
+  // 来る人: 顔見知り（met）で好感度1以上のつむぎだけ。アダムは好感度があっても面識が無いので来ない。なるは面識も好感度も無い。
+  const seen = new Set();
+  for (let day = 1; day <= 60; day++) { account.day = day; await module.namespace.serveFloorOrder(account, signal); seen.add(calls.at(-1).visitor); }
+  assert.deepEqual([...seen].sort(), ["tsumugi", null].sort(), "来るのは条件を満たす人だけ。来ない日のほうが多い");
+  const rate = calls.slice(-60).filter((c) => c.visitor).length;
+  assert.ok(rate >= 4 && rate <= 24, `たまに来る（60日で${rate}回）`);
+  // 第2章ではなるは来ない（店を休んで修行に出ている）。面識と好感度がそろえば、アダムは来る
+  Object.assign(account, { chapter: 2, met: { tsumugi: true, naru: true, adam: true }, affinity: { tsumugi: 9, naru: 20, adam: 30 } });
+  const later = new Set();
+  for (let day = 1; day <= 80; day++) { account.day = day; await module.namespace.serveFloorOrder(account, signal); later.add(calls.at(-1).visitor); }
+  assert.deepEqual([...later].sort(), ["adam", "tsumugi", null].sort());
 }
 for (const mode of ["done", "load", "abandon"]) await floorBoundary(mode);
 // 画面を読み込めない時は、いつもの「今日の注文」へ戻す（進み具合は増やさない）。

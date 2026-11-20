@@ -10,7 +10,7 @@ import { el, pick } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, retire, modal } from "../core/ui.js";
 import { state, timeOfDay, config } from "../core/state.js";
-import { addMoney, addStamina, applyStats, step, currentCondition } from "../core/stats.js";
+import { addMoney, addStamina, applyStats, step, currentCondition, affinityLevel } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play, dialogueSequence } from "../vn/engine.js";
 import { visitChar, hasNewStory } from "./spots.js";
@@ -569,13 +569,23 @@ function floorProgress(s = state) {
     presets: Array.isArray(saved?.presets) ? saved.presets : null, fans: Number.isInteger(saved?.fans) && saved.fans > 0 ? saved.fans : 0,
   };
 }
+/**
+ * フロアにたまに遊びに来る、本編の人物（5回に1回ほど）。顔見知りで、好感度1以上、その章に来られる人だけ。
+ * 面識だけ・好感度だけでは来ない（交流の時系列ルール）。はじめての営業には来ない。来ても好感度は動かさない。
+ */
+function floorVisitor(owner, seed, nights, visitors) {
+  if (nights < 1 || !visitors) return null;
+  const able = Object.values(visitors).filter((v) => v.chapters.includes(owner.chapter) && owner.met?.[v.id] && affinityLevel(v.id) >= 1);
+  const roll = ((seed >>> 5) ^ Math.imul((owner.day || 0) + 1, 0x9e3779b1)) >>> 0;
+  return able.length && roll % 5 === 0 ? able[(roll >>> 8) % able.length].id : null;
+}
 async function serveFloorOrder(owner, signal) {
   const current = () => state === owner && !signal.aborted;
   if (!current()) return null;
   const { seed } = shiftOrderOfDay();
   const progress = floorProgress(owner);
-  let run;
-  try { ({ runTonariFloor: run } = await import("./tonari-floor-view.js")); }
+  let run, visitors;
+  try { ({ runTonariFloor: run, FLOOR_VISITORS: visitors } = await import("./tonari-floor-view.js")); }
   catch {
     if (!current()) return null;
     toast("フロアを読み込めなかった。今日はいつもの接客に入る", { kind: "warn" });
@@ -585,7 +595,8 @@ async function serveFloorOrder(owner, signal) {
   if (!current()) return null;
   const night = timeOfDay() === "night";
   const result = await run({
-    seed, level: progress.nights, chapter: owner.chapter, presets: progress.presets, fans: progress.fans, rainy: isRainy(), night,
+    seed, level: progress.nights, chapter: owner.chapter, presets: progress.presets, fans: progress.fans,
+    visitor: floorVisitor(owner, seed, progress.nights, visitors), rainy: isRainy(), night,
     art: bgUrl(TONARI_BG, timeOfDay()), isCurrent: current, signal,
   });
   if (!current() || !result) return null;

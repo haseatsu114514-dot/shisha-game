@@ -1,12 +1,12 @@
 // tonari フロア営業の台本（単価・フレーバー・客・注文・ケア・夜の種類・評価）。ルールは tonari-floor-model.js、画面は tonari-floor-view.js。
 // 2026-11-20 オーナーの「シーシャ経営ミニゲーム システム・UI設計仕様書」（ワンオペ＆30種フレーバー調合型）に合わせた形。
 // お金はすべて店のもの。はじめの所持金には入らない（日当と売上ボーナスは tonari.js が渡す）。
+// 原価・仕入れ・利益は扱わない（2026-11-20 オーナー「原価とか仕入れとか利益とかは気にしない　ただ満足させて売上をいかに上げるかのゲームにする」。
+// 東京編・ドバイ編のバイトでも同じ遊びを使うため、店ごとの事情を持ち込まない）。
 
 // 単価（2026-11-20 オーナー指定）: 基本（シーシャ一台）2,000円・チャージ700円（ひとり）・
 // トップ替え（おかわり＝延長）が入ると＋1,500円・ドリンクは1杯600円（初回の1杯は必ず注文。追加は居心地しだい）。
 export const PRICE = Object.freeze({ shisha: 2000, charge: 700, top: 1500, drink: 600 });
-/** 原価とサービス費。炭は一台・トップ替えごと、ショップカードは渡した枚数。フレーバーの原価は FLAVORS の cost。 */
-export const COST = Object.freeze({ coal: 120, card: 100 });
 
 /** 吸い心地の4特性（卓の札の帯の色にも使う）。 */
 export const TRAITS = Object.freeze([
@@ -32,45 +32,45 @@ export const TAG_LABEL = Object.freeze({
 });
 
 // 店の棚のフレーバー（30種）。family＝系統、also＝半分だけ寄与する系統（柑橘や茶葉でスッキリ感を出す、など）、
-// tags＝特性タグ（相性とNGの判定に使う）、traits＝[味・香り, チル, 爆煙, 持続性]（0〜3）、cost＝1回使う原価。
-const flavor = (id, label, family, also, tags, traits, cost) => Object.freeze({
-  id, label, family, also: Object.freeze(also), tags: Object.freeze(tags), traits: Object.freeze(traits), cost,
+// tags＝特性タグ（相性とNGの判定に使う）、traits＝[味・香り, チル, 爆煙, 持続性]（0〜3）。
+const flavor = (id, label, family, also, tags, traits) => Object.freeze({
+  id, label, family, also: Object.freeze(also), tags: Object.freeze(tags), traits: Object.freeze(traits),
 });
 export const FLAVORS = Object.freeze(Object.fromEntries([
   // フルーツ系（10）
-  flavor("apple", "ダブルアップル", "fruit", ["deep"], ["classic", "spice"], [3, 1, 2, 3], 110),
-  flavor("grape", "グレープ", "fruit", [], ["juicy", "classic"], [2, 1, 3, 2], 90),
-  flavor("peach", "ピーチ", "fruit", [], ["juicy", "sweet"], [3, 2, 2, 1], 90),
-  flavor("mango", "マンゴー", "fruit", [], ["juicy", "sweet"], [3, 1, 2, 2], 100),
-  flavor("berry", "ベリーミックス", "fruit", [], ["juicy"], [2, 1, 3, 1], 90),
-  flavor("lychee", "ライチ", "fruit", ["fresh"], ["juicy", "light"], [2, 2, 1, 1], 100),
-  flavor("lemon", "レモン", "fruit", ["fresh"], ["citrus"], [2, 1, 2, 1], 80),
-  flavor("grapefruit", "グレープフルーツ", "fruit", ["fresh"], ["citrus"], [2, 2, 1, 2], 90),
-  flavor("orange", "オレンジ", "fruit", [], ["citrus", "juicy"], [3, 1, 2, 1], 80),
-  flavor("pine", "パイン", "fruit", [], ["juicy", "sweet"], [2, 1, 3, 1], 90),
+  flavor("apple", "ダブルアップル", "fruit", ["deep"], ["classic", "spice"], [3, 1, 2, 3]),
+  flavor("grape", "グレープ", "fruit", [], ["juicy", "classic"], [2, 1, 3, 2]),
+  flavor("peach", "ピーチ", "fruit", [], ["juicy", "sweet"], [3, 2, 2, 1]),
+  flavor("mango", "マンゴー", "fruit", [], ["juicy", "sweet"], [3, 1, 2, 2]),
+  flavor("berry", "ベリーミックス", "fruit", [], ["juicy"], [2, 1, 3, 1]),
+  flavor("lychee", "ライチ", "fruit", ["fresh"], ["juicy", "light"], [2, 2, 1, 1]),
+  flavor("lemon", "レモン", "fruit", ["fresh"], ["citrus"], [2, 1, 2, 1]),
+  flavor("grapefruit", "グレープフルーツ", "fruit", ["fresh"], ["citrus"], [2, 2, 1, 2]),
+  flavor("orange", "オレンジ", "fruit", [], ["citrus", "juicy"], [3, 1, 2, 1]),
+  flavor("pine", "パイン", "fruit", [], ["juicy", "sweet"], [2, 1, 3, 1]),
   // スッキリ・清涼系（6）
-  flavor("mint", "ミント", "fresh", [], ["mint"], [1, 2, 3, 2], 70),
-  flavor("ice", "アイス", "fresh", [], ["mint"], [0, 2, 3, 3], 60),
-  flavor("lime", "ライム", "fresh", ["fruit"], ["citrus"], [2, 2, 1, 1], 80),
-  flavor("eucalyptus", "ユーカリ", "fresh", [], ["mint", "herb"], [1, 3, 2, 2], 100),
-  flavor("lemongrass", "レモングラス", "fresh", [], ["herb", "citrus"], [2, 3, 1, 2], 100),
-  flavor("guava", "グァバミント", "fresh", ["fruit"], ["mint", "juicy"], [2, 2, 2, 1], 100),
+  flavor("mint", "ミント", "fresh", [], ["mint"], [1, 2, 3, 2]),
+  flavor("ice", "アイス", "fresh", [], ["mint"], [0, 2, 3, 3]),
+  flavor("lime", "ライム", "fresh", ["fruit"], ["citrus"], [2, 2, 1, 1]),
+  flavor("eucalyptus", "ユーカリ", "fresh", [], ["mint", "herb"], [1, 3, 2, 2]),
+  flavor("lemongrass", "レモングラス", "fresh", [], ["herb", "citrus"], [2, 3, 1, 2]),
+  flavor("guava", "グァバミント", "fresh", ["fruit"], ["mint", "juicy"], [2, 2, 2, 1]),
   // 甘系・スイーツ系（7）
-  flavor("vanilla", "バニラ", "sweet", [], ["cream", "sweet"], [2, 3, 2, 2], 90),
-  flavor("caramel", "キャラメル", "sweet", [], ["dessert", "sweet"], [3, 2, 1, 3], 100),
-  flavor("chocolate", "チョコレート", "sweet", ["deep"], ["dessert", "sweet", "heavy"], [3, 2, 1, 3], 110),
-  flavor("milk", "ミルク", "sweet", [], ["cream"], [1, 3, 3, 1], 80),
-  flavor("honey", "ハニー", "sweet", [], ["sweet"], [2, 3, 1, 2], 90),
-  flavor("pistachio", "ピスタチオ", "sweet", [], ["nut", "cream"], [3, 2, 1, 2], 120),
-  flavor("cookie", "クッキー", "sweet", [], ["dessert", "nut", "sweet"], [3, 2, 2, 2], 110),
+  flavor("vanilla", "バニラ", "sweet", [], ["cream", "sweet"], [2, 3, 2, 2]),
+  flavor("caramel", "キャラメル", "sweet", [], ["dessert", "sweet"], [3, 2, 1, 3]),
+  flavor("chocolate", "チョコレート", "sweet", ["deep"], ["dessert", "sweet", "heavy"], [3, 2, 1, 3]),
+  flavor("milk", "ミルク", "sweet", [], ["cream"], [1, 3, 3, 1]),
+  flavor("honey", "ハニー", "sweet", [], ["sweet"], [2, 3, 1, 2]),
+  flavor("pistachio", "ピスタチオ", "sweet", [], ["nut", "cream"], [3, 2, 1, 2]),
+  flavor("cookie", "クッキー", "sweet", [], ["dessert", "nut", "sweet"], [3, 2, 2, 2]),
   // 茶葉・フローラル・スパイス系（7）
-  flavor("earlgrey", "アールグレイ", "deep", ["fresh"], ["tea", "citrus"], [3, 3, 1, 2], 110),
-  flavor("jasmine", "ジャスミン", "deep", ["fresh"], ["tea", "floral", "light"], [2, 3, 1, 1], 110),
-  flavor("chai", "チャイ", "deep", ["sweet"], ["tea", "spice"], [3, 2, 1, 3], 110),
-  flavor("rose", "ローズ", "deep", [], ["floral"], [3, 2, 1, 2], 120),
-  flavor("hinoki", "ヒノキ", "deep", [], ["heavy", "herb"], [2, 3, 1, 3], 130),
-  flavor("cardamom", "カルダモン", "deep", [], ["spice"], [3, 1, 2, 3], 120),
-  flavor("cinnamon", "シナモン", "deep", ["sweet"], ["spice", "sweet"], [3, 1, 2, 3], 100),
+  flavor("earlgrey", "アールグレイ", "deep", ["fresh"], ["tea", "citrus"], [3, 3, 1, 2]),
+  flavor("jasmine", "ジャスミン", "deep", ["fresh"], ["tea", "floral", "light"], [2, 3, 1, 1]),
+  flavor("chai", "チャイ", "deep", ["sweet"], ["tea", "spice"], [3, 2, 1, 3]),
+  flavor("rose", "ローズ", "deep", [], ["floral"], [3, 2, 1, 2]),
+  flavor("hinoki", "ヒノキ", "deep", [], ["heavy", "herb"], [2, 3, 1, 3]),
+  flavor("cardamom", "カルダモン", "deep", [], ["spice"], [3, 1, 2, 3]),
+  flavor("cinnamon", "シナモン", "deep", ["sweet"], ["spice", "sweet"], [3, 1, 2, 3]),
 ].map((f) => [f.id, f])));
 
 // 相性のいい組み合わせ（タグ同士）。二つのフレーバーが、片方ずつのタグを持つと成立する。
@@ -89,8 +89,8 @@ export const NG = Object.freeze({
 
 // 注文の言葉の部品（客の台詞なので、句点で終えない）。
 export const ORDER_WORDS = Object.freeze({
-  family: Object.freeze({ fruit: "フルーツ系", fresh: "スッキリ系", sweet: "甘い系", deep: "紅茶やスパイスの系統" }),
-  trait: Object.freeze({ taste: "香りがしっかり立つの", chill: "ゆったり落ち着けるの", cloud: "煙しっかりめ", last: "長くもつの" }),
+  family: Object.freeze({ fruit: "フルーツ系", fresh: "さっぱり系", sweet: "甘い系", deep: "お茶かスパイス系" }),
+  trait: Object.freeze({ taste: "香りがしっかりめの", chill: "まったりできるの", cloud: "煙が多めの", last: "長くもつの" }),
   omakase: Object.freeze({
     taste: "今日はおまかせで。香りのいいのをお願いします",
     chill: "今日はおまかせで！ なんか落ち着く感じでよろしく",
@@ -98,8 +98,15 @@ export const ORDER_WORDS = Object.freeze({
     last: "おまかせで。ゆっくり長く吸えるのがいいです",
   }),
   // 指定フレーバー＋仕上げの向き
-  finish: Object.freeze({ fruit: "果物っぽく", fresh: "爽やかに", sweet: "少し甘めに", deep: "落ち着いた感じに" }),
+  // フレーバーを一つ挙げて、あとは雰囲気で頼む（「ミントで、さっぱりお願いします」）。挙げた一種＋その雰囲気の系統を混ぜる
+  finish: Object.freeze({ fruit: "フルーツっぽく", fresh: "さっぱり", sweet: "甘めに", deep: "落ち着いた感じに" }),
 });
+
+// 完全に指定してくる客の注文（言われたとおりに、そのまま出す）。よく頼まれる組み合わせ。
+export const EXACT_MIXES = Object.freeze([
+  ["grape", "mint"], ["lemon", "mint"], ["peach", "vanilla"], ["apple"], ["mango", "milk"], ["earlgrey", "milk"], ["berry", "ice"], ["orange", "mint"],
+  ["chai", "cinnamon"], ["lychee", "rose"], ["pine", "mint"], ["caramel", "milk"], ["grapefruit", "mint"], ["jasmine", "peach"], ["mint"], ["chocolate", "mint"],
+].map((m) => Object.freeze(m)));
 
 // 店の定番ミックスの初期（はじめが覚えている4つ）。定番は最大8枠。保存は flags._tonari_floor.presets。
 export const PRESET_MAX = 8;
@@ -125,6 +132,19 @@ export const GUESTS = Object.freeze(Object.fromEntries([
   guest("elder", "年配の方", 1, "long", "keen", null, 2, ["hat"]),
   guest("friends", "友だち同士の二人", 2, "long", "plain", "talker", 3, ["bun", "pony"]),
 ].map((g) => [g.id, g])));
+// たまに遊びに来る、本編の人物（2026-11-20 オーナー「好感度1以上の人物がたまにレアで遊びに来たりとかも入れたい」）。
+// 来る条件（顔見知り・好感度1以上・章）は tonari.js が決める。ここは注文と台詞だけ。台詞は大会の前後どちらでも通る言葉にする（交流の時系列ルール）。
+// 好感度は動かさない。chapters＝来てよい章、order＝注文（exact＝完全指定／pin＝一種＋雰囲気／normal＝雰囲気だけ）。
+const visitor = (id, name, chapters, stay, rank, drinks, order, lines) => Object.freeze({ id, name, chapters: Object.freeze(chapters), stay, rank, drinks, order: Object.freeze(order), lines: Object.freeze(lines) });
+export const VISITORS = Object.freeze(Object.fromEntries([
+  visitor("tsumugi", "つむぎ", [1, 2], "long", "plain", 1, { type: "normal", family: "deep", trait: "chill", quote: "……はじめさん。お茶っぽくて、落ち着くのを、お願いします" }, {
+    best: "……やわらかい色、です。好きです、これ", good: "……落ち着きます。ありがとうございます", off: "……少し、にぎやかな色、ですね", bye: "……ごちそうさまでした。また、描きに来ます" }),
+  visitor("naru", "なる", [1], "normal", "keen", 1, { type: "pin", family: "sweet", trait: "taste", must: "vanilla", quote: "よう、はじめ。甘いやつ頼むわ。バニラは入れてくれ" }, {
+    best: "……うまいな。焼き菓子みたいだ", good: "いいじゃん。ちゃんと甘い", off: "ん、俺が頼んだのと違うな", bye: "ごちそうさん。また来るわ" }),
+  visitor("adam", "アダム", [1, 2], "normal", "keen", 1, { type: "exact", exact: ["apple"], quote: "……はじめよ。ダブルアップルを。それだけでいい" }, {
+    best: "……よい。この顔は、知っている", good: "……惜しい。余計な声が混ざっている", off: "……これは、ダブルアップルではない", bye: "……また来る" }),
+].map((v) => [v.id, v])));
+
 /** 客層ごとの、吸い心地の要求水準（ミックスの特性値がこれ以上なら満点）。 */
 export const DEMAND = Object.freeze({ plain: 2, keen: 2.5 });
 export const RANK_LABEL = Object.freeze({ plain: "一般", keen: "こだわり" });
@@ -168,8 +188,6 @@ export const SERVE_LINES = Object.freeze({
 /** 会計・延長の一言。 */
 export const SEND_LINES = Object.freeze({
   extend: Object.freeze(["居心地いいから、もう少し吸っていきたいな", "トップ替え、お願いできますか？"]),
-  card: "へえ、カード。また来ますね",
-  cardLow: "……どうも",
   bye: Object.freeze(["ごちそうさま。また来ます", "いい時間でした。ありがとう"]),
   byeLow: "……ごちそうさま",
   mad: "もういいです。帰ります",
@@ -195,13 +213,16 @@ export const NIGHTS = Object.freeze({
 /** [昼, 夜] で分かれる言葉を、シフトの時間帯で選ぶ。 */
 export const byTime = (value, daytime) => (Array.isArray(value) ? value[daytime ? 0 : 1] : value);
 
-/** 満足（居心地）の5段階。min＝内部値の下限。色は顔アイコンの色。 */
+/**
+ * 満足（居心地）の5段階。min＝内部値の下限。color＝顔の印の色、face＝顔の印（tonari-floor-art.js の記号）。
+ * 顔は丸い顔ではなく、煙のかたまりに表情を載せた本作の形（2026-11-20 オーナー「表情アイコンが元ネタのまんまなので少し変えたい」）。
+ */
 export const MOODS = Object.freeze([
-  Object.freeze({ id: "max", label: "大満足", min: 85, color: "#b592ff", face: "smile" }),
-  Object.freeze({ id: "good", label: "満足", min: 65, color: "#f0b64e", face: "smile" }),
-  Object.freeze({ id: "ok", label: "普通", min: 40, color: "#7fd39a", face: "flat" }),
-  Object.freeze({ id: "low", label: "不満", min: 20, color: "#6fb0e8", face: "frown" }),
-  Object.freeze({ id: "mad", label: "激怒", min: 0, color: "#ef7f6a", face: "frown" }),
+  Object.freeze({ id: "max", label: "大満足", min: 85, color: "#ff9ec4", face: "moodMax" }),
+  Object.freeze({ id: "good", label: "満足", min: 65, color: "#ffb454", face: "moodGood" }),
+  Object.freeze({ id: "ok", label: "普通", min: 40, color: "#9fd67f", face: "moodOk" }),
+  Object.freeze({ id: "low", label: "不満", min: 20, color: "#7fb2e6", face: "moodLow" }),
+  Object.freeze({ id: "mad", label: "激怒", min: 0, color: "#ef6a5a", face: "moodMad" }),
 ]);
 
 /** 営業の評価。min＝全組の満足の平均。bonus＝店からの売上ボーナス（チップではない）。 */

@@ -6,7 +6,7 @@
 //   →（自動で提供）→ enjoy（滞在。定期の温度調整・接客ケア・追加ドリンク）→ bill（お会計待ち）→ cool（片付け）→ empty
 //   滞在が終わる時、居心地の良い客は自分から延長（トップ替え＝おかわり）を頼むことがある。
 import {
-  PRICE, COST, TRAIT_IDS, FLAVORS, SYNERGIES, NG, ORDER_WORDS, STAY, GUESTS, DEMAND, CALLS, NIGHTS, RANKS, MOODS,
+  PRICE, TRAIT_IDS, FLAVORS, SYNERGIES, NG, ORDER_WORDS, EXACT_MIXES, VISITORS, STAY, GUESTS, DEMAND, CALLS, NIGHTS, RANKS, MOODS,
   SERVE_LINES, SEND_LINES, CALL_MISS, PRESET_MAX, STARTER_PRESETS, byTime,
 } from "./tonari-floor-data.js";
 
@@ -33,7 +33,9 @@ const MOOD = Object.freeze({ start: 40, base: 24, care: 5, careMiss: -8, careLat
 const FAM_COEF = Object.freeze({ best: 1.5, good: 1.2, weak: 0.8, none: 0.4 });
 const STEP_UP = Object.freeze({ best: "best", good: "best", weak: "good", none: "weak" });
 const FEVER = Object.freeze({ level: 100, max: 300, care: 10, best: 14, good: 7, send: 4, targets: Object.freeze([0, 2, 4, FLOOR_TABLE_COUNT]) });
-const FANS = Object.freeze({ max: 3, good: 2, ok: 1, low: 0, mad: -2, card: 2, left: -3 });
+const FANS = Object.freeze({ max: 3, good: 2, ok: 1, low: 0, mad: -2, left: -3 });
+// 完全に指定された注文: そのまま出せば大満足、余計な一種を足すと満足どまり、頼まれた物が欠けると不満
+const EXACT_MOOD = Object.freeze({ same: 92, extra: 68, missing: 32 });
 const DRINK_CHANCE = Object.freeze({ max: 0.7, good: 0.4, ok: 0.1, low: 0, mad: 0 });
 const EXTEND_CHANCE = Object.freeze({ max: 0.35, good: 0.1, ok: 0, low: 0, mad: 0 });
 const NG_FOR = Object.freeze({ fruit: ["citrus", "sweet", "mint"], fresh: ["mint", "citrus"], sweet: ["heavy", "mint"], deep: ["heavy", "sweet"] });
@@ -64,7 +66,7 @@ export const aptitude = (weight) => (weight >= 0.8 ? "best" : weight >= 0.5 ? "g
 
 /**
  * 1〜3種のフレーバーを混ぜた一台の中身。traits＝4特性の平均、family＝系統ごとの寄り、synergies＝成立した相性（タグの組）、
- * cost＝原価（フレーバー＋炭）、time＝作成・立ち上げの刻み。
+ * time＝作成・立ち上げの刻み。
  */
 export function mixInfo(ids, { preset = false } = {}) {
   if (!validMix(ids)) return null;
@@ -80,7 +82,6 @@ export function mixInfo(ids, { preset = false } = {}) {
   return {
     ids: [...ids], key: mixKey(ids), label: mixLabel(ids), traits, family, synergies,
     tags: [...new Set(list.flatMap((f) => f.tags))],
-    cost: list.reduce((sum, f) => sum + f.cost, 0) + COST.coal,
     time: Math.max(4, T.make[list.length] - (preset ? T.preset : 0)),
   };
 }
@@ -92,6 +93,13 @@ export function mixInfo(ids, { preset = false } = {}) {
 export function evaluateMix(ids, order, rank = "plain") {
   const info = mixInfo(ids);
   if (!info || !order) return null;
+  if (order.type === "exact") {
+    // 完全指定: 言われたとおりの物だけを出すのがいちばん（系統・相性・吸い心地では測らない）
+    const has = order.exact.every((id) => ids.includes(id));
+    const same = has && ids.length === order.exact.length;
+    return { mood: same ? EXACT_MOOD.same : has ? EXACT_MOOD.extra : EXACT_MOOD.missing, grade: same ? "best" : has ? "good" : "off",
+      family: null, ratio: 1, synergies: info.synergies, ngHit: false, mustOk: has, exact: same, info };
+  }
   const ratio = clamp(info.traits[order.trait] / (DEMAND[rank] || DEMAND.plain), 0.5, 1.25);
   let family = order.family ? aptitude(info.family[order.family]) : null;
   if (family && order.type === "pin") family = STEP_UP[family]; // 指定フレーバーを入れるぶん、仕上げの向きは一段甘く見る
@@ -125,18 +133,27 @@ export function pickNight(level = 0, seed = 0, { rainy = false, daytime = false 
   return { ...def, title: byTime(def.title, daytime), forecast: byTime(def.forecast, daytime) };
 }
 
-// 注文の種類は、回した回数で増える: はじめは「系統＋吸い心地」だけ、2回目から NG つき、3回目から おまかせ・指定フレーバー。
+// 注文の種類。抽象的な依頼（雰囲気だけ・一種＋雰囲気・おまかせ）が多く、完全に指定してくる客もいる。
+//   normal＝雰囲気だけ（系統＋吸い心地）／pin＝フレーバーを一つ挙げて、あとは雰囲気（「ミントで、さっぱり」）／exact＝完全指定（「グレープミントで」）
+//   ng＝雰囲気＋抜いてほしい物／omakase＝おまかせ。回した回数で増える: はじめは normal と exact、2回目から pin と ng、3回目から omakase。
 function makeOrder(random, level) {
   const pick = (list) => list[Math.floor(random() * list.length)];
-  const types = level <= 0 ? ["normal"] : level === 1 ? ["normal", "normal", "ng"] : ["normal", "ng", "omakase", "pin"];
+  const types = level <= 0 ? ["normal", "normal", "exact"] : level === 1 ? ["normal", "normal", "pin", "exact", "ng"]
+    : ["normal", "normal", "pin", "pin", "exact", "ng", "omakase"];
   const type = pick(types);
+  if (type === "exact") {
+    const exact = [...pick(EXACT_MIXES)];
+    const [a, b] = exact.map((id) => FLAVORS[id].label);
+    const quote = b ? pick([`${a}${b}で`, `${a}と${b}でお願いします`, `${a}${b}、ください`]) : pick([`${a}だけで、お願いします`, `${a}を、そのままで`]);
+    return { type, family: null, trait: null, ng: null, must: null, exact, quote };
+  }
   const family = pick(["fruit", "fresh", "sweet", "deep"]);
   const trait = pick(TRAIT_IDS);
   const W = ORDER_WORDS;
   if (type === "omakase") return { type, family: null, trait, ng: null, must: null, quote: W.omakase[trait] };
   if (type === "pin") {
     const must = pick(Object.keys(FLAVORS));
-    return { type, family, trait: "taste", ng: null, must, quote: `${FLAVORS[must].label}を入れて、${W.finish[family]}お願いします` };
+    return { type, family, trait: "taste", ng: null, must, quote: `${FLAVORS[must].label}で、${W.finish[family]}お願いします` };
   }
   if (type === "ng") {
     const ng = pick(NG_FOR[family]);
@@ -164,7 +181,7 @@ export const floorPresets = (saved) => { const list = cleanPresets(saved); retur
  * @param opts.level これまでフロアを回した回数（夜の種類・注文の種類・ケアの見せ方）
  * @param opts.presets 店の定番ミックス（保存してあるもの）
  */
-export function createFloorNight({ seed = 0, level = 0, chapter = 1, presets = null, rainy = false, daytime = false, night = null } = {}) {
+export function createFloorNight({ seed = 0, level = 0, chapter = 1, presets = null, rainy = false, daytime = false, night = null, visitor = null } = {}) {
   const def = night ? NIGHTS[night] || NIGHTS.usual : pickNight(level, seed, { rainy, daytime });
   const random = rng((Number(seed) >>> 0) ^ 0x51ed27);
   const guests = {};
@@ -176,16 +193,25 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, presets = n
       drinksMax: kind.drinks, look: [...kind.look], arrive: def.arrive[i], order: makeOrder(random, level),
     };
   });
+  // たまに遊びに来る本編の人物（来る条件は呼び出し側が決める）。三組目の客と入れ替わる
+  const who = VISITORS[visitor];
+  if (who && guests.g3) {
+    const o = who.order;
+    guests.g3 = { ...guests.g3, kind: `visitor-${who.id}`, charId: who.id, name: who.name, party: 1, stay: who.stay, rank: who.rank, trait: null,
+      drinksMax: who.drinks, look: ["bob"],
+      order: { type: o.type, family: o.family || null, trait: o.trait || null, ng: null, must: o.must || null, exact: o.exact ? [...o.exact] : null, quote: o.quote } };
+  }
   return {
     seed: Number(seed) >>> 0, level, chapter, night: def.id, title: byTime(def.title, daytime), daytime: !!daytime,
+    visitor: who && guests.g3?.charId ? who.id : null,
     hint: level >= 3 ? "sight" : "said",
     t: 0, length: def.length, done: false, closing: null, rolls: 0,
     guests, upcoming: Object.keys(guests), came: 0,
     tables: Array.from({ length: FLOOR_TABLE_COUNT }, (_, i) => emptyTable(i + 1)),
     presets: floorPresets(presets),
     fever: 0, feverLeft: 0, feverLevel: 0, fevers: 0,
-    sales: 0, cost: 0, service: 0, fans: 0, results: [], mixes: {},
-    counts: { best: 0, good: 0, ok: 0, off: 0, ng: 0, care: 0, careMiss: 0, late: 0, left: 0, drink: 0, extend: 0, card: 0 },
+    sales: 0, fans: 0, results: [], mixes: {},
+    counts: { best: 0, good: 0, ok: 0, off: 0, ng: 0, care: 0, careMiss: 0, late: 0, left: 0, drink: 0, extend: 0 },
     log: [],
   };
 }
@@ -215,16 +241,15 @@ function earn(s, table, key, amount) {
 }
 
 /** 卓の客を送り出して、結果に残す。 */
-function settle(s, table, { card = false, by = "hajime", left = false } = {}) {
+function settle(s, table, { by = "hajime", left = false } = {}) {
   const guest = guestAt(s, table);
   const mood = Math.round(clamp(table.mood));
   const stage = floorStage(mood);
-  let fans = left ? FANS.left : FANS[stage.id];
-  if (card) { s.service += COST.card; s.counts.card += 1; if (mood >= 40) fans += FANS.card; }
+  const fans = left ? FANS.left : FANS[stage.id];
   s.fans += fans;
   const bill = table.bill || { charge: 0, shisha: 0, drink: 0, top: 0 };
   s.results.push({ guestId: guest.id, tableId: table.id, name: guest.name, party: guest.party, mood: left ? 0 : mood, stage: left ? "mad" : stage.id,
-    ...bill, total: billTotal(bill), mix: table.mix ? [...table.mix] : null, grade: table.grade, card, fans, left, by });
+    ...bill, total: billTotal(bill), mix: table.mix ? [...table.mix] : null, grade: table.grade, fans, left, by, charId: guest.charId || null });
   if (table.mix && table.grade && !left) {
     const key = mixKey(table.mix);
     const entry = s.mixes[key] || (s.mixes[key] = { ids: [...table.mix], n: 0, sum: 0 });
@@ -273,9 +298,10 @@ function serve(s, table) {
   }
   table.wants = wants;
   earn(s, table, "shisha", PRICE.shisha);
-  s.cost += result.info.cost;
   s.counts[result.grade] += 1;
-  table.line = lineFor(s, SERVE_LINES[result.grade], table.id + s.t);
+  const own = VISITORS[guest.charId]?.lines; // 本編の人物は、その人の言葉で返す
+  table.line = own ? own[result.grade === "best" ? "best" : result.grade === "good" || result.grade === "ok" ? "good" : "off"]
+    : lineFor(s, SERVE_LINES[result.grade], table.id + s.t);
   if (result.grade === "best") gain(s, FEVER.best); else if (result.grade === "good") gain(s, FEVER.good);
   note(s, { type: "serve", tableId: table.id, grade: result.grade, line: table.line, mood: result.mood });
 }
@@ -300,7 +326,7 @@ function tickOnce(s) {
     const id = s.upcoming.shift();
     Object.assign(table, emptyTable(table.id), { phase: "order", guestId: id, since: s.t, mood: MOOD.start, line: s.guests[id].order.quote });
     s.came += 1;
-    note(s, { type: "arrive", guestId: id, tableId: table.id });
+    note(s, { type: "arrive", guestId: id, tableId: table.id, rare: !!s.guests[id].charId });
   }
   // 作成・立ち上げ: 先に受けた注文から、同時に slots 台まで進む
   const making = s.tables.filter((x) => x.phase === "prep").sort((a, b) => a.since - b.since || a.id - b.id);
@@ -369,7 +395,6 @@ function tickOnce(s) {
         table.stayEnd = s.t + T.top;
         table.coalAt = s.t + coalPeriod(table);
         earn(s, table, "top", PRICE.top);
-        s.cost += mixInfo(table.mix).cost;
         s.counts.extend += 1;
         table.line = lineFor(s, SEND_LINES.extend, table.id);
         note(s, { type: "extend", tableId: table.id, line: table.line });
@@ -419,7 +444,7 @@ export function floorTap(s, tableId) {
 
 /**
  * 操作を一つ確定する。できない操作は同じ state を返す（画面は何も進めない）。
- * action: { type: "order", tableId, mix: [フレーバーID…], preset } / { type: "care", tableId, verb } / { type: "bill", tableId, card }
+ * action: { type: "order", tableId, mix: [フレーバーID…], preset } / { type: "care", tableId, verb } / { type: "bill", tableId }
  *   / { type: "fever" } / { type: "preset", op: "add" | "remove", mix } / { type: "finish" }
  */
 export function floorAct(state, action) {
@@ -468,12 +493,11 @@ export function floorAct(state, action) {
     }
     case "bill": {
       if (!can("bill")) return state;
-      const card = !!action.card;
       const low = table.mood < 40;
-      const line = card ? (low ? SEND_LINES.cardLow : SEND_LINES.card) : low ? SEND_LINES.byeLow : lineFor(s, SEND_LINES.bye, table.id);
-      const paid = settle(s, table, { card });
+      const line = low ? SEND_LINES.byeLow : VISITORS[guest.charId]?.lines.bye || lineFor(s, SEND_LINES.bye, table.id);
+      const paid = settle(s, table);
       if (paid.mood >= 65) gain(s, FEVER.send);
-      note(s, { type: "bill", tableId: table.id, ...paid, card, line });
+      note(s, { type: "bill", tableId: table.id, ...paid, line });
       break;
     }
     case "fever": {
@@ -599,7 +623,7 @@ export function floorClock(s) {
 
 /**
  * 営業の結果。score＝迎えた組の満足の平均（怒って帰った組は0）。
- * profit＝売上 − 原価（フレーバー・炭）− サービス費（ショップカード）。mixes＝好評だったミックス（平均の満足が高い順）。
+ * 原価・利益は扱わない（満足と売上だけ）。mixes＝好評だったミックス（平均の満足が高い順）。visitor＝遊びに来た本編の人物（いなければ null）。
  */
 export function floorResult(s) {
   const groups = s.results.map((row) => ({ ...row }));
@@ -612,7 +636,7 @@ export function floorResult(s) {
   const mixes = Object.values(s.mixes).map((m) => ({ ids: m.ids, label: mixLabel(m.ids), n: m.n, avg: Math.round(m.sum / m.n), preset: presetKeys.has(mixKey(m.ids)) }))
     .sort((a, b) => b.avg - a.avg || b.n - a.n).slice(0, 3);
   return {
-    night: s.night, title: s.title, sales: s.sales, cost: s.cost, service: s.service, profit: s.sales - s.cost - s.service,
+    night: s.night, title: s.title, sales: s.sales, visitor: s.visitor,
     items: { charge: sum("charge"), shisha: sum("shisha"), drink: sum("drink"), top: sum("top") },
     fans: s.fans, score, rank: rank.id, stamp: rank.stamp, bonus: rank.bonus, comment: rank.line,
     groups, served: groups.filter((row) => !row.left).length, came: groups.length, left,

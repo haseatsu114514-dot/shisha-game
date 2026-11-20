@@ -63,7 +63,7 @@ async function setup(page, { day = 4, slot = 1, manual = true } = {}) {
         const kind = C.model.floorTap(s, table.id), guest = s.guests[table.guestId];
         if (kind === "order") a.act({ type: "order", tableId: table.id, mix: C.bot.bestMix(guest.order, guest.rank) });
         else if (kind === "care") a.act({ type: "care", tableId: table.id, verb: C.floorData.CALLS[table.call.type].verb });
-        else a.act({ type: "bill", tableId: table.id, card: false });
+        else a.act({ type: "bill", tableId: table.id });
       }
     };
     // stop（state を受ける式）が真になるまで、1刻みずつ進める
@@ -195,13 +195,13 @@ await suite("tonari-floor", async (check) => {
     assert(done.result.served >= 1);
   });
 
-  // 実画面の操作: 来店→調合→作成→提供→ケア→会計（ショップカード）→フィーバー、休止・速さ・早じまい・締めの伝票。
+  // 実画面の操作: 来店→調合（完全指定はそのまま・抽象的な注文は読んで組む・定番はひと押し）→作成→提供→ケア→会計→フィーバー、休止・速さ・早じまい・精算。
   for (const [platform, options] of [["pc", {}], ["touch", touch]]) {
     await run(`${platform}-ui`, async (page) => {
       await setup(page);
       await page.evaluate(() => {
         C.fresh();
-        window.done = C.view.runTonariFloor({ seed: 3, level: 1, chapter: 1, night: true, fans: 12,
+        window.done = C.view.runTonariFloor({ seed: 5, level: 1, chapter: 1, night: true, fans: 12,
           art: C.data.bgUrl("res://assets/backgrounds/bg_tonari_inside.png", "night") }).then((r) => { window.result = r; });
       });
       const api = (fn, arg) => page.evaluate(({ fn, arg }) => new Function("a", "arg", `return (${fn})(a, arg)`)(C.view.floorTest.api, arg), { fn: fn.toString(), arg });
@@ -220,10 +220,10 @@ await suite("tonari-floor", async (check) => {
       const g1 = await api((a) => a.state().guests[a.state().tables[0].guestId]);
       assert.equal(await api((a) => a.state().tables[0].phase), "order");
       assert.equal(await lastLog(), `${g1.name}が来店。1卓へ`);
-      // 卓の札: 用件・要望（系統）・卓番号・残り秒（注文は9秒から）・求める吸い心地
-      assert.equal(await tagText(1), "注文 甘 1 9 香り");
+      // 一組目は、完全に指定してくる客（「マンゴーミルク、ください」）。卓の札: 用件・頼まれた物・卓番号・残り秒（注文は9秒から）
+      assert.deepEqual([g1.order.type, g1.order.exact, g1.order.quote], ["exact", ["mango", "milk"], "マンゴーミルク、ください"]);
+      assert.equal(await tagText(1), "注文 マンゴー＋ミルク 1 9 指定");
       assert.equal(await spot(1).getAttribute("data-tone"), "act");
-      assert.equal(await spot(1).locator(".tf-tag-req").getAttribute("data-ng"), "true", "NG のある注文は、帯に印が付く");
       assert.equal(await tagText(2), "2 空席");
       assert.equal(await page.locator(t("screen")).getAttribute("data-ordering"), "true");
       // 画面の外へはみ出さない・押せる大きさ（実画素で40px以上）
@@ -271,11 +271,12 @@ await suite("tonari-floor", async (check) => {
       await page.locator(t("mix")).waitFor();
       assert.equal(await api((a) => a.mode()), "mix");
       assert.equal(await page.locator(t("mix-quote")).innerText(), `「${g1.order.quote}」`);
-      assert.deepEqual(await page.locator(".tf-mix-head .tf-chips span").allInnerTexts(), ["甘系", "味・香り", "重いの無し"]);
+      assert.deepEqual(await page.locator(".tf-mix-head .tf-chips span").allInnerTexts(), ["指定：マンゴー＋ミルク", "言われたとおりに、そのまま"]);
       assert.equal(await page.locator(".tf-mix-tabs button").count(), 4);
-      assert.equal(await page.locator(t("mix-tab-sweet")).getAttribute("aria-selected"), "true", "客の求める系統の棚から開く");
-      assert.equal(await page.locator(".tf-flavor").count(), 7);
-      assert.equal(await page.locator(t("flavor-chocolate")).getAttribute("data-ng"), "true", "NG に当たるフレーバーには印が付く");
+      // 名前の挙がったフレーバーの棚から開き、その棚と札に印が付く
+      assert.equal(await page.locator(t("mix-tab-fruit")).getAttribute("aria-selected"), "true");
+      assert.deepEqual(await page.locator('.tf-mix-tabs button[data-named="true"]').allInnerTexts(), ["フルーツ", "甘"]);
+      assert.equal(await page.locator(t("flavor-mango")).getAttribute("data-must"), "true");
       assert.equal(await page.locator(".tf-mix-preset").count(), 4);
       assert.equal(await page.locator(t("mix-confirm")).isDisabled(), true);
       const frame = await page.evaluate(() => {
@@ -293,34 +294,57 @@ await suite("tonari-floor", async (check) => {
       await page.locator(t("mix-later")).click();
       assert.equal(await api((a) => a.mode()), "live");
       assert.equal(await api((a) => a.state().tables[0].phase), "order");
-      // 棚から選ぶ: 3種まで。もう一度押すと外れる。予想は、ルールの評価と同じ
+      // 完全指定は、言われたとおりにそのまま出す。余計な一種を足すと「余計な一種」、3種まで。もう一度押すと外れる
       await table(1).click();
-      for (const id of ["caramel", "cookie", "vanilla", "honey"]) await page.locator(t(`flavor-${id}`)).click();
+      await page.locator(t("flavor-mango")).click();
+      assert.match(await page.locator(t("mix-preview")).innerText(), /頼まれた物が足りない/);
+      await page.locator(t("mix-tab-sweet")).click();
+      assert.equal(await page.locator(".tf-flavor").count(), 7);
+      for (const id of ["milk", "vanilla", "honey"]) await page.locator(t(`flavor-${id}`)).click();
       assert.equal(await page.locator(".tf-bowl-slot:not(.empty)").count(), 3, "ボウルは3種まで");
+      assert.match(await page.locator(t("mix-preview")).innerText(), /余計な一種が入っている/);
+      assert.equal(await page.locator(t("mix-preview")).getAttribute("data-grade"), "good");
       await page.locator(t("flavor-vanilla")).click();
-      assert.deepEqual(await page.locator(".tf-bowl-slot:not(.empty)").allInnerTexts(), ["キャラメル", "クッキー"]);
-      const expected = await page.evaluate((g) => { const r = C.model.evaluateMix(["caramel", "cookie"], g.order, g.rank); return { grade: r.grade, mood: String(Math.round(r.mood)) }; }, g1);
-      assert.equal(expected.grade, "best");
+      assert.deepEqual(await page.locator(".tf-bowl-slot:not(.empty)").allInnerTexts(), ["マンゴー", "ミルク"]);
       assert.equal(await page.locator(t("mix-preview")).getAttribute("data-grade"), "best");
-      assert.equal(await page.locator(t("mix-preview")).getAttribute("data-mood"), expected.mood);
-      assert.match(await page.locator(t("mix-preview")).innerText(), /甘系 ◎[\s\S]*相性 デザート×ナッツ[\s\S]*予想の満足[\s\S]*大満足[\s\S]*作成 約7秒・原価 330円/);
-      if (platform === "pc") await page.screenshot({ path: `${shots}/tonari-floor-pc-mix.png` }).catch(() => {});
+      assert.equal(await page.locator(t("mix-preview")).getAttribute("data-mood"), "92");
+      assert.match(await page.locator(t("mix-preview")).innerText(), /言われたとおり ◎[\s\S]*予想の満足[\s\S]*大満足[\s\S]*作成 約7秒/);
+      assert.doesNotMatch(await page.locator(t("mix")).innerText(), /原価/, "原価は出さない");
       await page.locator(t("mix-confirm")).click();
       assert.equal(await api((a) => a.mode()), "live");
       assert.equal(await api((a) => a.state().tables[0].phase), "prep");
-      assert.match(await page.locator(t("making")).innerText(), /1卓\s*キャラメル＋クッキー/);
+      assert.match(await page.locator(t("making")).innerText(), /1卓\s*マンゴー＋ミルク/);
       assert.match(await tagText(1), /^作成中 1 \d+秒$/);
       assert.equal(await spot(1).getAttribute("data-gauge"), "make");
-      // 定番はひと押し: いちばん急ぎの注文待ちの卓へ、そのまま出る
+      // 二組目は、抽象的な注文（雰囲気＋抜いてほしい物）。卓の札の帯に系統、右下に求める吸い心地、NG の印
       await tick(5);
-      assert.equal(await api((a) => a.state().tables[1].phase), "order");
-      await page.locator(t("preset-0")).click({ force: true });
-      assert.deepEqual(await api((a) => { const x = a.state().tables[1]; return [x.phase, x.preset, x.mix]; }), ["prep", true, ["lemon", "mint"]]);
-      assert.equal(await lastLog(), "2卓　レモン＋ミントを作りはじめた");
-      // 同時に作れるのは2台まで。三台目は順番を待つ
+      const g2 = await api((a) => a.state().guests[a.state().tables[1].guestId]);
+      assert.deepEqual([g2.order.type, g2.order.family, g2.order.trait, g2.order.ng], ["ng", "sweet", "taste", "heavy"]);
+      assert.equal(await tagText(2), "注文 甘 2 9 香り");
+      assert.equal(await spot(2).locator(".tf-tag-req").getAttribute("data-ng"), "true", "NG のある注文は、帯に印が付く");
+      await table(2).click();
+      assert.equal(await page.locator(t("mix-quote")).innerText(), `「${g2.order.quote}」`);
+      assert.deepEqual(await page.locator(".tf-mix-head .tf-chips span").allInnerTexts(), ["甘系", "味・香り", "重いの無し"]);
+      assert.equal(await page.locator(t("mix-tab-sweet")).getAttribute("aria-selected"), "true", "客の求める系統の棚から開く");
+      assert.equal(await page.locator(t("flavor-chocolate")).getAttribute("data-ng"), "true", "NG に当たるフレーバーには印が付く");
+      await page.locator(t("flavor-chocolate")).click();
+      assert.match(await page.locator(t("mix-preview")).innerText(), /重いの無しに当たる！/);
+      await page.locator(t("flavor-chocolate")).click();
+      for (const id of ["caramel", "pistachio"]) await page.locator(t(`flavor-${id}`)).click();
+      const expected = await page.evaluate((g) => { const r = C.model.evaluateMix(["caramel", "pistachio"], g.order, g.rank); return { grade: r.grade, mood: String(Math.round(r.mood)) }; }, g2);
+      assert.equal(expected.grade, "best");
+      assert.equal(await page.locator(t("mix-preview")).getAttribute("data-grade"), "best");
+      assert.equal(await page.locator(t("mix-preview")).getAttribute("data-mood"), expected.mood, "予想は、ルールの評価と同じ");
+      assert.match(await page.locator(t("mix-preview")).innerText(), /甘系 ◎[\s\S]*相性 デザート×ナッツ[\s\S]*予想の満足[\s\S]*大満足[\s\S]*作成 約7秒/);
+      if (platform === "pc") await page.screenshot({ path: `${shots}/tonari-floor-pc-mix.png` }).catch(() => {});
+      await page.locator(t("mix-confirm")).click();
+      assert.equal(await api((a) => a.state().tables[1].phase), "prep");
+      // 三組目は、定番をひと押し: いちばん急ぎの注文待ちの卓へ、そのまま出る。同時に作れるのは2台までで、三台目は順番を待つ
       await tick(5);
-      await page.evaluate(() => C.others([1, 2]));
-      assert.equal(await api((a) => a.state().tables[2].make.active), false);
+      assert.equal(await api((a) => a.state().tables[2].phase), "order");
+      await page.locator(t("preset-3")).click({ force: true });
+      assert.deepEqual(await api((a) => { const x = a.state().tables[2]; return [x.phase, x.preset, x.mix, x.make.active]; }), ["prep", true, ["earlgrey", "milk"], false]);
+      assert.equal(await lastLog(), "3卓　アールグレイ＋ミルクを作りはじめた");
       assert.match(await tagText(3), /^作成待ち 3/);
       assert.match(await page.locator(".tf-making-more").innerText(), /待ち 1台/);
       assert.equal(await page.locator(".tf-making-row:not(.empty)").count(), 2);
@@ -332,7 +356,10 @@ await suite("tonari-floor", async (check) => {
       assert.equal(await spot(1).getAttribute("data-gauge"), "coal");
       assert.equal(await spot(1).getAttribute("data-mood"), "max");
       assert.equal(await spot(1).locator(".tf-tag-pie").evaluate((n) => getComputedStyle(n).opacity), "1");
-      // 定番を出した時に2卓が選ばれているので、1卓を選び直す（マウスを乗せるのと同じ）
+      // 満足の顔は、丸い顔ではなく煙のかたちの顔（5つの表情）
+      assert.equal(await spot(1).locator(".tf-tag-face svg path").count() >= 4, true);
+      assert.equal(await spot(1).locator(".tf-tag-face svg circle").count(), 0);
+      // 定番を出した時に3卓が選ばれているので、1卓を選び直す（マウスを乗せるのと同じ）
       await page.evaluate(() => document.querySelector('[data-test="tonari-floor-table-1"]').dispatchEvent(new PointerEvent("pointerenter", { pointerType: "mouse" })));
       assert.equal(await page.locator(t("dock-bill")).innerText(), "3,300円", "チャージ700円＋基本2,000円＋初回ドリンク600円");
       assert.equal(await page.locator(".tf-say").count(), 0, "卓の上の吹き出しは使わない");
@@ -360,46 +387,39 @@ await suite("tonari-floor", async (check) => {
       assert(view.row >= 40, `行が小さい: ${view.row}`);
       assert.equal(view.hidden, "none", "接客ビューでは、出来事の行を引っ込める");
       assert.equal(view.side, "0", "接客ビューでは、定番の列を引っ込める");
-      assert.match(await page.locator(t("dock")).innerText(), /ご注文[\s\S]*キャラメル＋クッキー/);
+      assert.match(await page.locator(t("dock")).innerText(), /ご注文[\s\S]*マンゴー＋ミルク/);
       assert.deepEqual(await page.locator(".tf-sheet .tf-option b").allInnerTexts().then((list) => list.map((s) => s.replace(/\s/g, ""))),
         ["炭を替える", "炭を下ろす", "お水を出す", "吸い方を案内する", "雑談する"]);
       const t1 = await api((a) => a.state().t);
       await tick(5);
       assert.equal(await api((a) => a.state().t), t1, "ケアを選ぶ間は進まない");
+      // 選んだあと、判定の印（◎）が出る。印が出ている間も時間は止まり、もう一度押すと先へ進む
       const verb = await page.evaluate((call) => C.floorData.CALLS[call].verb, call);
+      await page.evaluate(() => { C.view.floorTest.verdictMs = 60000; });
       await page.locator(t(`option-${verb}`)).click();
       assert(await api((a) => a.state().tables[0].mood) > mood);
-      assert.equal(await page.locator(t("screen")).getAttribute("data-verdict"), "best");
-      assert.equal(await api((a) => a.mode()), "live");
-      assert.equal(await page.locator(".tf-cam").evaluate((n) => n.style.transform), "", "列を閉じると、店内は元の引きに戻る");
-      // 会計: 延長は誘わない（客から言い出す）。見送りに、ショップカードを渡すかを選ぶ
-      await until("s.tables[0].phase === 'bill'", []);
-      await api((a) => { a.state().tables[0].mood = 90; });
-      await table(1).click();
-      assert.equal(await page.locator(t("sheet")).getAttribute("data-kind"), "bill");
-      assert.equal(await api((a) => a.state().tables[0].phase), "bill", "押しただけでは会計しない");
-      assert.deepEqual(await page.locator(".tf-sheet .tf-option b").allInnerTexts().then((list) => list.map((s) => s.replace(/\s/g, ""))),
-        ["ショップカードを渡す", "笑顔でお見送り"]);
-      assert.match(await page.locator(t("option-card")).innerText(), /ファンが増える・100円/);
-      assert.equal(await page.locator(".tf-sheet-tip").count(), 1, "はじめのうちは、選び方の一言が出る");
-      const bill = await api((a) => C.model.floorBill(a.state(), 1));
-      assert.equal(await page.locator(t("dock-bill")).innerText(), `${bill.total.toLocaleString("ja-JP")}円`);
-      assert.equal(bill.total, bill.charge + bill.shisha + bill.drink + bill.top);
-      // 選んだあと、判定の印が出る。印が出ている間も時間は止まり、もう一度押すと先へ進む
-      await page.evaluate(() => { C.view.floorTest.verdictMs = 60000; });
-      const salesBefore = await api((a) => a.state().sales);
-      await page.locator(t("option-card")).click();
       assert.equal(await api((a) => a.mode()), "panel");
       assert.equal(await page.locator(t("sheet")).getAttribute("data-verdict"), "best");
-      assert.match(await page.locator(".tf-verdict b").innerText(), /^ファン ＋\d+$/);
-      assert.equal(await page.locator(t("option-card")).getAttribute("data-picked"), "true");
+      assert.equal(await page.locator(".tf-verdict b").innerText(), "いいケア！");
+      assert.equal(await page.locator(t(`option-${verb}`)).getAttribute("data-picked"), "true");
       if (platform === "pc") await page.screenshot({ path: `${shots}/tonari-floor-pc-verdict.png` }).catch(() => {});
-      await page.locator(t("option-card")).click();
+      await page.locator(t(`option-${verb}`)).click();
       await page.evaluate(() => { C.view.floorTest.verdictMs = null; });
       assert.equal(await api((a) => a.mode()), "live");
-      assert.deepEqual(await api((a) => { const s = a.state(); return [s.tables[0].phase, s.counts.card, s.service]; }), ["cool", 1, 100]);
-      assert.equal(await api((a) => a.state().sales), salesBefore, "売上は注文のたびに入っている（会計で二重に足さない）");
-      assert(salesBefore >= bill.total);
+      assert.equal(await page.locator(".tf-cam").evaluate((n) => n.style.transform), "", "列を閉じると、店内は元の引きに戻る");
+      // 会計はひと押し（選ばない）。延長は誘わない（客から言い出す）。見送りの言葉は出来事の行に出る
+      await until("s.tables[0].phase === 'bill'", []);
+      await api((a) => { a.state().tables[0].mood = 90; });
+      const bill = await api((a) => C.model.floorBill(a.state(), 1));
+      assert.equal(bill.total, bill.charge + bill.shisha + bill.drink + bill.top);
+      const before = await api((a) => ({ sales: a.state().sales, fans: a.state().fans }));
+      await table(1).click();
+      assert.equal(await api((a) => a.mode()), "live", "会計で画面は切り替わらない");
+      assert.equal(await page.locator(t("sheet")).count(), 0);
+      assert.deepEqual(await api((a) => { const s = a.state(); return [s.tables[0].phase, s.fans, s.sales]; }), ["cool", before.fans + 3, before.sales],
+        "大満足の客はファン＋3。売上は注文のたびに入っている（会計で二重に足さない）");
+      assert(before.sales >= bill.total);
+      assert.match(await lastLog(), /^1卓「.+」$/);
       assert.match(await page.locator(t("dock")).innerText(), /1卓\s*片付け中/);
       assert.equal(await tagText(1), "1 片付け中");
       // フィーバー: 1段溜まるまで押せない。使うと、くつろいでいる卓が最高の居心地になる
@@ -435,18 +455,19 @@ await suite("tonari-floor", async (check) => {
       await page.locator(t("option-confirm-close")).click();
       await page.locator(t("result")).waitFor();
       assert.match(await page.locator(t("rank")).innerText(), /大入り|上々|まずまず|ばたばた/);
-      // 結果: 売上の内訳（項目ごと）と合計・原価・利益。内訳の合計は、店の売上と一致する
+      // 結果: 売上の内訳（項目ごと）と合計。内訳の合計は、店の売上と一致する（原価・利益は出さない）
       const slip = await page.evaluate(() => {
         const yen = (text) => Number(text.replace(/[^0-9]/g, ""));
         const rows = [...document.querySelectorAll(".tf-slip-items div")].map((n) => [n.querySelector("dt").textContent, n.querySelector("dd").textContent]);
         const card = document.querySelector(".tf-slip").getBoundingClientRect(), stage = document.getElementById("stage").getBoundingClientRect();
-        return { names: rows.map((r) => r[0].replace(/（\d+杯）/, "")), sum: rows.slice(1, 5).reduce((total, r) => total + yen(r[1]), 0), minus: yen(rows[5][1]) + yen(rows[6][1]),
-          total: yen(document.querySelector('[data-test="tonari-floor-final-sales"]').textContent), profit: yen(document.querySelector('[data-test="tonari-floor-profit"]').textContent),
-          fans: document.querySelector('[data-test="tonari-floor-fans"]').textContent, inside: card.top >= stage.top - 1 && card.bottom <= stage.bottom + 1 };
+        return { names: rows.map((r) => r[0].replace(/（\d+杯）/, "")), sum: rows.slice(1, 5).reduce((total, r) => total + yen(r[1]), 0),
+          total: yen(document.querySelector('[data-test="tonari-floor-final-sales"]').textContent), profit: document.querySelectorAll('[data-test="tonari-floor-profit"]').length,
+          text: document.querySelector(".tf-slip").textContent, fans: document.querySelector('[data-test="tonari-floor-fans"]').textContent, inside: card.top >= stage.top - 1 && card.bottom <= stage.bottom + 1 };
       });
-      assert.deepEqual(slip.names, ["お迎えした組", "チャージ", "シーシャ", "ドリンク", "トップ替え（おかわり）", "原価（フレーバー・炭）", "サービス費（カード）"]);
+      assert.deepEqual(slip.names, ["お迎えした組", "チャージ", "シーシャ", "ドリンク", "トップ替え（おかわり）"]);
       assert.equal(slip.sum, slip.total);
-      assert.equal(slip.profit, slip.total - slip.minus);
+      assert.equal(slip.profit, 0);
+      assert.doesNotMatch(slip.text, /原価|利益|サービス費/);
       assert.match(slip.fans, /^店のファン [＋−]\d+人（合計 \d+人）$/);
       assert(slip.inside, "結果の札が舞台に収まる");
       // 好評だったミックスを、その場で定番に登録できる
@@ -467,8 +488,7 @@ await suite("tonari-floor", async (check) => {
       const mine = result.result.groups.find((g) => g.tableId === 1);
       assert.equal(mine.stage, "max");
       assert.equal(mine.total, bill.total);
-      assert.equal(result.result.counts.card, 1);
-      assert.equal(result.result.service, 100);
+      assert.deepEqual(["cost", "service", "profit"].filter((key) => key in result.result), []);
       assert.equal(result.result.fevers, 1);
       assert(result.presets >= 4);
       assert.equal(await page.evaluate(() => C.core.state.money), 30000, "店の売上は、はじめの所持金に入らない");
@@ -552,6 +572,47 @@ await suite("tonari-floor", async (check) => {
       await page.screenshot({ path: `${shots}/tonari-floor-${platform}-seated.png` }).catch(() => {});
     }, options);
   }
+
+  // たまに遊びに来る本編の人物: 顔アイコンで出て、その人の注文と言葉で返す。精算に名前が残り、好感度は動かない。
+  await run("pc-visitor", async (page) => {
+    await setup(page);
+    await page.evaluate(() => {
+      const s = C.fresh();
+      window.affinityBefore = JSON.stringify(s.affinity);
+      window.done = C.view.runTonariFloor({ seed: 3, level: 1, chapter: 1, night: true, visitor: "adam",
+        art: C.data.bgUrl("res://assets/backgrounds/bg_tonari_inside.png", "night") }).then((r) => { window.result = r; });
+    });
+    const api = (fn, arg) => page.evaluate(({ fn, arg }) => new Function("a", "arg", `return (${fn})(a, arg)`)(C.view.floorTest.api, arg), { fn: fn.toString(), arg });
+    await page.locator(t("option-start")).click();
+    await page.evaluate(() => C.until("s.tables[2].phase === 'order'", [3]));
+    const guest = await api((a) => a.state().guests[a.state().tables[2].guestId]);
+    assert.deepEqual([guest.charId, guest.name, guest.order.type], ["adam", "アダム", "exact"]);
+    const spot = page.locator('.tf-spot[data-id="3"]');
+    assert.equal(await spot.getAttribute("data-rare"), "true");
+    assert.match(await spot.locator(".tf-tag-who img").getAttribute("src"), /face_adam/);
+    assert.equal((await spot.locator(".tf-bubble").innerText()).replace(/\s+/g, " ").trim(), "注文 ダブルアップル 3 9 指定");
+    assert.match(await page.locator(t("log")).innerText(), /アダムが遊びに来た！ 3卓へ/);
+    await page.locator(t("table-3")).click();
+    await page.locator(t("mix")).waitFor();
+    assert.equal(await page.locator(t("mix-quote")).innerText(), "「……はじめよ。ダブルアップルを。それだけでいい」");
+    assert.equal(await page.locator(".tf-mix-head .tf-chips span").first().innerText(), "指定：ダブルアップル");
+    assert.match(await page.locator(".tf-mix-who img").getAttribute("src"), /face_adam/);
+    await page.locator(t("flavor-apple")).click();
+    assert.match(await page.locator(t("mix-preview")).innerText(), /言われたとおり ◎/);
+    await page.locator(t("mix-confirm")).click();
+    await page.evaluate(() => C.until("s.tables[2].phase === 'enjoy'", [3]));
+    assert.deepEqual(await api((a) => { const x = a.state().tables[2]; return [x.grade, x.line]; }), ["best", "……よい。この顔は、知っている"]);
+    await api((a) => a.act({ type: "finish" }));
+    await page.locator(t("result")).waitFor();
+    assert.equal(await page.locator(t("visitor")).innerText(), "今日は、アダムが遊びに来た");
+    await page.screenshot({ path: `${shots}/tonari-floor-pc-visitor.png` }).catch(() => {});
+    await page.locator(t("option-continue")).click();
+    await page.waitForFunction(() => window.result !== undefined);
+    const done = await page.evaluate(() => ({ visitor: window.result.visitor, row: window.result.groups.find((g) => g.charId === "adam"), same: JSON.stringify(C.core.state.affinity) === window.affinityBefore }));
+    assert.equal(done.visitor, "adam");
+    assert.equal(done.row.stage, "max");
+    assert(done.same, "営業で好感度は動かない");
+  });
 
   // 実時間: 営業中だけ時計が進み、調合・休止・フィーバーの突入・別タブで止まる。キーボードだけでも回せる。
   await run("pc-clock-and-keys", async (page) => {

@@ -84,6 +84,12 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-guest-art[data-party="2"] .tf-person { width: 60%; margin-inline: -6%; }
 .tf-guest-art[data-party="2"] .tf-person:first-child { translate: 0 -5%; }
 .tf-bust, .tf-bust svg { display: block; width: 100%; height: auto; }
+/* 本編の人物は顔アイコン（札・ドック・調合の窓）。もう顔に寄せてある絵なので、そのまま敷く */
+.tf-person[data-face="true"] { width: 100%; height: 100%; margin: 0; }
+.tf-person[data-face="true"] img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* たまに遊びに来た本編の人物の卓は、札が金に灯る */
+.tf-spot[data-rare="true"] .tf-tag-box { box-shadow: 0 0 0 2px #ffe7a8, 0 0 16px #ffd76acc, inset 0 0 0 1px #0004; }
+.tf-spot[data-rare="true"] .tf-tag-no { background: #f0b64e; color: #1b1220; }
 /* 届いた客の絵は座った全身（1人1枚）。卓の札・入口の列・ドックでは、顔のまわりへ寄せて見せる */
 .tf-person[data-painted="true"] { aspect-ratio: 1; overflow: hidden; border-radius: 50%; margin-bottom: 0; }
 .tf-person[data-painted="true"] img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; scale: 2.3; transform-origin: 50% 6%; }
@@ -396,6 +402,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   background: linear-gradient(90deg, transparent, #1b1220f2 14%, #1b1220f2 86%, transparent); border-block: 3px solid #e7c27a;
   rotate: -2deg; opacity: 0; pointer-events: none; z-index: 6;
 }
+.tf-cutin-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; }
 .tf-cutin b { font-size: 68px; letter-spacing: 0.16em; color: #fff1c4; text-shadow: 0 0 24px #ffb45a; line-height: 1.1; }
 .tf-cutin small { font-size: var(--tf-text); color: var(--tf-dim); letter-spacing: 0.1em; }
 .tf-cutin[data-on="true"] { animation: tf-cutin 1.7s var(--ease-out, ease) forwards; }
@@ -538,7 +545,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 
 /* 本日の精算: 左に売上の内訳・原価・利益、右に評価のメダル・ファン・満足の内訳・好評だったミックス */
 .tf-slip { width: 1080px; padding: 22px 36px 18px; display: grid; gap: 9px; }
-.tf-slip-body { display: grid; grid-template-columns: 1.08fr 1fr; gap: 34px; align-items: start; }
+.tf-slip-body { display: grid; grid-template-columns: 0.86fr 1.14fr; gap: 30px; align-items: start; }
 .tf-slip-items { margin: 0; display: grid; gap: 1px; }
 .tf-slip-items div { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; padding: 4px 6px; border-bottom: 1px solid #5a4630; }
 .tf-slip-items dt { font-size: var(--tf-text); color: var(--tf-ivory); }
@@ -556,22 +563,23 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-stamp[data-rank="S"] b { color: #ffe2a6; text-shadow: 0 0 14px #f0a64a; }
 .tf-stamp[data-rank="C"] b { color: var(--tf-dim); }
 @keyframes tf-stamp { from { opacity: 0; scale: 2.2; } }
-.tf-slip-items.minus { margin-top: 4px; }
-.tf-slip-items.minus :is(dt, dd) { font-size: var(--tf-small); font-weight: 500; color: var(--tf-dim); }
-.tf-slip-profit { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; padding: 2px 6px; }
-.tf-slip-profit b { font-size: var(--tf-text); color: var(--tf-brass); }
-.tf-slip-profit strong { font-size: var(--tf-big); color: #9be8b4; }
+.tf-slip-visitor { margin-top: 6px; padding: 2px 6px; font-size: var(--tf-small); font-weight: 700; color: #ffe2a6; }
 .tf-slip-fans { font-size: var(--tf-text); font-weight: 700; color: #e6d8ff; text-align: center; }
 .tf-slip-fans[data-down="true"] { color: #ffc9bd; }
 .tf-slip-stages { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 14px; }
 .tf-slip-stages span { font-size: var(--tf-small); font-weight: 700; color: var(--c); white-space: nowrap; }
 .tf-slip-side h3 { margin: 4px 0 0; padding-bottom: 2px; font-size: var(--tf-small); color: var(--tf-brass); border-bottom: 1px solid #5a4630; }
-.tf-slip-mixes { display: grid; gap: 0; }
-.tf-slip-mixes li { display: flex; align-items: center; gap: 8px; min-height: 46px; font-size: var(--tf-small); line-height: 1.15; border-bottom: 1px dotted #5a4630; }
-.tf-slip-mixes li > span { flex: 1; min-width: 0; }
+/* 好評だったミックスは、横に3つの小さな札（縦に積むと、指で押す高さの画面で収まらない） */
+.tf-slip-mixes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.tf-slip-mixes li { display: grid; align-content: space-between; gap: 2px; min-width: 0; overflow: hidden; padding: 4px 8px 6px; border-radius: 8px; background: #2a1c15cc; box-shadow: inset 0 0 0 1px #5a4630; font-size: var(--tf-small); line-height: 1.12; }
+.tf-slip-mixes li > span { min-width: 0; font-weight: 700; color: #fff1c4; }
+.tf-slip-mixes li > span span { display: inline-block; white-space: nowrap; }
+.tf-slip-mixes li > span b { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-right: 5px; border-radius: 50%; background: #f0b64e; color: #1b1220; font-size: 18px; line-height: 1; vertical-align: 2px; }
+.tf-slip-mixes .tf-chip-button { width: 100%; padding: 2px 2px; }
+.tf-slip-mixes li:only-child { grid-column: 1 / -1; }
 .tf-slip-mixes small { font-size: var(--tf-small); color: var(--tf-dim); white-space: nowrap; }
 .tf-slip-mixes small.on { color: #9be8b4; font-weight: 700; }
-.tf-chip-button { flex: 0 0 auto; min-height: var(--tf-tap); padding: 2px 12px; border: 1px solid #e7c27a; border-radius: 21px; background: #5a2f12; color: #fff1c4; font-size: var(--tf-small); font-weight: 700; white-space: nowrap; }
+.tf-chip-button { min-height: var(--tf-tap); padding: 2px 12px; border: 1px solid #e7c27a; border-radius: 21px; background: #5a2f12; color: #fff1c4; font-size: var(--tf-small); font-weight: 700; white-space: nowrap; }
 .tf-chip-button:disabled { opacity: 0.45; }
 .tf-slip-counts { font-size: var(--tf-small); color: var(--tf-dim); }
 .tf-slip-sumi { display: flex; align-items: center; gap: 12px; font-size: var(--tf-text); line-height: 1.3; text-align: left; }
@@ -616,12 +624,14 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-mix-shelf { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0; }
 .tf-mix-tabs { display: flex; align-items: flex-end; gap: 4px; }
 .tf-mix-tabs button {
-  min-height: max(46px, var(--tf-tap)); padding: 2px 14px; border: 1px solid #8a6a48; border-radius: 10px 10px 0 0; background: #2a1c15; color: var(--tf-dim);
+  min-height: max(46px, var(--tf-tap)); min-width: var(--tf-tap); padding: 2px 14px; border: 1px solid #8a6a48; border-radius: 10px 10px 0 0; background: #2a1c15; color: var(--tf-dim);
   font-size: var(--tf-small); font-weight: 700; white-space: nowrap;
 }
 .tf-mix-tabs button[aria-selected="true"] { background: #7a4a16; color: #fff1c4; border-color: #fff1af; }
 /* 客が求める系統のタブには印を付ける */
 .tf-mix-tabs button[data-want="true"]::after { content: "◎"; margin-left: 3px; color: #9be8b4; }
+/* 注文で名前の挙がったフレーバーがある棚 */
+.tf-mix-tabs button[data-named="true"]::after { content: "●"; margin-left: 3px; color: #9be8b4; font-size: 16px; }
 .tf-mix-foot { display: flex; align-items: center; gap: 18px; }
 .tf-mix-foot > small { font-size: var(--tf-small); color: var(--tf-dim); }
 .tf-legend { display: flex; gap: 10px; align-items: center; }
