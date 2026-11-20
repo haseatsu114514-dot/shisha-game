@@ -147,10 +147,10 @@ export async function runHoles(cs) {
   const ringLabel = el("div.hr-ring");
   const timeBar = el("i.hr-time-bar", [el("b")]);
   const feedback = el("div.hr-feedback", { "aria-live": "polite", dataset: { test: "hole-feedback" } });
-  const report = (text, kind) => {
+  const report = (text, kind, options) => {
     reactAudience(cs, kind);
     feedback.replaceChildren();
-    popStamp(feedback, text, kind, "50%", "50%");
+    popStamp(feedback, text, kind, "50%", "50%", options);
   };
   // 一刺しの判定は、目が向いている穴のすぐ外側に出す（CRN05。右の札まで目を動かさない）
   const calloutAt = (text, kind, a, r) => {
@@ -369,7 +369,8 @@ export async function runHoles(cs) {
     });
     if (ring.taken.every(Boolean)) {
       const clean = ring.holes.every((hole) => hole.d <= perfWin && hole.size === HOLE_SIZES.small) && ring.extra === 0;
-      report(clean ? "BEAUTIFUL RING" : "RING COMPLETE", "just");
+      // 周の完成演出は一刺しの精度判定ではない。EXCELLENT へ置き換えない。
+      report(clean ? "BEAUTIFUL RING" : "RING COMPLETE", "just", { timing: false });
       // リング全体が鳴る: 中心から大きな輪と、リングの円周に沿った火の粉（盤は止めない）
       const size = Math.round(ring.r * D * 1.05), gold = clean ? "#ffc21a" : undefined;
       if (renewal) {

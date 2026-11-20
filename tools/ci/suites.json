@@ -1530,6 +1530,22 @@
       "pillow": true
     },
     {
+      "id": "ch1-first-play-feedback-browser",
+      "title": "Chapter 1: foil ring feedback and same-day LIME reply guide",
+      "kind": "browser",
+      "weight": 5,
+      "timeout": 12,
+      "paths": [
+        "remake/js/craft/common.js",
+        "remake/js/craft/holes.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/phone.js",
+        "data/lime_messages.json",
+        "remake/test/browser/ch1_first_play_feedback.mjs"
+      ],
+      "run": ["node remake/test/browser/ch1_first_play_feedback.mjs"]
+    },
+    {
       "id": "ch1-presentation",
       "title": "Chapter 1 presentation, first brew and deliveries",
       "kind": "browser",
