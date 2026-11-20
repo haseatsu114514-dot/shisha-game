@@ -2,13 +2,14 @@
 // 実行: node --test remake/test/tonari_floor_model.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
-  createFloorNight, floorTick, floorAct, floorTap, floorResult, floorHint, floorBill, floorMaking, floorHand, floorShuffleLeft, floorPlan,
+  createFloorNight, floorTick, floorAct, floorTap, floorResult, floorHint, floorBill, floorMaking, floorHand, floorShuffleLeft, floorShuffleTime, floorPlan,
   floorWaitLeft, floorStayLeft, floorCoalLeft, floorTendDue, floorFeverLevel, floorFace, floorStage, floorTimeLeft, floorClock,
   mixName, mixNameParts, mixRatings, evaluateMix, pickNight, floorOrderWait, floorFeverLength, floorSlots, FLOOR_TABLE_COUNT,
 } from "../js/daily/tonari-floor-model.js";
 import {
-  PRICE, FLAVORS, MIXES, WISHES, WISH_IDS, HAND_SIZE, GUESTS, VISITORS, CALLS, VERBS, NIGHTS, RANKS, MOODS, SERVE_LINES, SEND_LINES,
+  PRICE, FLAVORS, MIXES, WISHES, WISH_IDS, HAND_SIZE, GUESTS, VISITORS, CALLS, VERBS, NIGHTS, RANKS, MOODS, SERVE_LINES, SEND_LINES, mixIdsFor, mixChapter,
 } from "../js/daily/tonari-floor-data.js";
 import { playFloorBot, bestMix, floorBotAction } from "./tonari_floor_bot.mjs";
 
@@ -43,24 +44,38 @@ function toBill(s, tableId = 1) {
 
 test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類がそろっている。原価は持たない", () => {
   assert.deepEqual(WISHES.map((w) => w.label), ["フルーティ", "スイート", "リフレッシュ", "リラックス"]);
-  assert.equal(Object.keys(FLAVORS).length, 30);
-  assert.ok(Object.keys(MIXES).length >= 30, "ミックスは一覧に並びきらない数がある");
+  // 材料は、本編のフレーバー（data/flavors.json）から選ぶ。大会で使えない物・非売品は使わない。属性は本編の系統から、章は本編の解禁から決まる
+  const game = Object.fromEntries(JSON.parse(readFileSync(new URL("../../data/flavors.json", import.meta.url), "utf8")).flavors.map((f) => [f.id, f]));
+  const wishOfCategory = { fruit: "fruit", sweet: "sweet", cooling: "fresh", spice: "deep", floral: "deep" };
+  for (const f of Object.values(FLAVORS)) {
+    const source = game[f.id];
+    assert.ok(source, `${f.id}: 本編にあるフレーバー`);
+    assert.ok(source.competition_legal !== false && source.serve_legal !== false && !source.not_for_sale, `${f.id}: 大会で使える`);
+    assert.equal(f.family, wishOfCategory[source.category], `${f.id}: 属性は本編の系統（${source.category}）から`);
+    assert.equal(f.chapter, source.chapter_min ?? 1, `${f.id}: 出回る章は本編と同じ`);
+    assert.ok(source.name.endsWith(f.label) || f.label.length <= 5, `${f.id}: 呼び名は短い`);
+    assert.ok(f.also.every((wish) => WISH_IDS.includes(wish) && wish !== f.family));
+  }
+  assert.ok(Object.keys(MIXES).length >= 70, "ミックスは、一覧に並びきらない数がある");
+  assert.ok(mixIdsFor(1).length >= 60 && mixIdsFor(2).length > mixIdsFor(1).length, "章が進むと、出せるミックスが増える");
+  assert.ok(mixIdsFor(1).every((id) => mixChapter(id) === 1) && mixIdsFor(0).length === mixIdsFor(1).length);
   const names = new Set();
   for (const [id, mix] of Object.entries(MIXES)) {
     assert.ok(mix.flavors.length >= 1 && mix.flavors.length <= 3 && mix.flavors.every((f) => FLAVORS[f]), id);
     const name = mixName(id);
-    assert.ok(name.length >= 2 && name.length <= 8, `名前は札に収まる長さ: ${name}`);
+    assert.ok(name.length >= 2 && name.length <= 10, `名前は札に収まる長さ: ${name}`);
     assert.ok(mixNameParts(id).every((part) => part.length <= 5) && mixNameParts(id).join("") === name && !name.includes("｜"), `狭い札では、5字までの切れ目で折れる: ${name}`);
     assert.ok(!names.has(name), `同じ名前が二つ無い: ${name}`);
     names.add(name);
-    // 属性は、メイン一つと、あればサブ一つ。どちらも材料の系統（family か also）にある物から選ぶ
+    // 属性は、メイン一つと、あればサブ一つ。メインは材料の属性（family）から、サブは材料の family か also から選ぶ
     const has = (wish) => mix.flavors.some((f) => FLAVORS[f].family === wish || FLAVORS[f].also.includes(wish));
-    assert.ok(WISH_IDS.includes(mix.main) && has(mix.main), `${name}: メインの属性が材料にある`);
+    assert.ok(WISH_IDS.includes(mix.main) && mix.flavors.some((f) => FLAVORS[f].family === mix.main), `${name}: メインの属性が材料の系統にある`);
     assert.ok(mix.sub === null || (WISH_IDS.includes(mix.sub) && mix.sub !== mix.main && has(mix.sub)), `${name}: サブの属性が材料にある`);
+    if (/ミント$/.test(name)) assert.equal(mix.main, "fresh", `${name}: 「〜ミント」はリフレッシュがメイン`);
   }
-  for (const wish of WISH_IDS) {
-    const main = Object.values(MIXES).filter((mix) => mix.main === wish).length;
-    assert.ok(main >= 8 && main <= 10, `${wish}: メインのミックスが偏らない（${main}）`);
+  for (const chapter of [1, 2]) for (const wish of WISH_IDS) {
+    const main = mixIdsFor(chapter).filter((id) => MIXES[id].main === wish).length;
+    assert.ok(main >= 16 && main <= 22, `第${chapter}章・${wish}: メインのミックスが偏らない（${main}）`);
   }
   for (const f of Object.values(FLAVORS)) assert.equal("cost" in f, false, "原価は扱わない");
   assert.deepEqual(Object.keys(CALLS), ["thin", "harsh", "thirsty", "cough", "chatty"], "炭の調整は、頼みではなく自分から行く");
@@ -81,7 +96,7 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
 
 test("ミックスの属性: メイン＝◎・サブ＝○・ほか＝×。提供した時の満足になる", () => {
   assert.deepEqual(mixRatings("lemonmint"), { fruit: "good", sweet: "none", fresh: "best", deep: "none" });
-  assert.deepEqual(mixRatings("apple"), { fruit: "best", sweet: "none", fresh: "none", deep: "good" });
+  assert.deepEqual(mixRatings("apple"), { fruit: "good", sweet: "none", fresh: "none", deep: "best" }, "ダブルアップルは、本編の系統（スパイス）に合わせてリラックスがメイン");
   assert.deepEqual(mixRatings("caramelmilk"), { fruit: "none", sweet: "best", fresh: "none", deep: "none" });
   assert.deepEqual(mixRatings("milktea"), { fruit: "none", sweet: "good", fresh: "none", deep: "best" });
   for (const id of Object.keys(MIXES)) {
@@ -94,13 +109,13 @@ test("ミックスの属性: メイン＝◎・サブ＝○・ほか＝×。提�
   assert.deepEqual(mixNameParts("chocomint"), ["チョコ", "ミント"]);
   assert.deepEqual(mixNameParts("lemonmint"), ["レモン", "ミント"]);
   const order = { wish: "fresh" };
-  const best = evaluateMix("lemonmint", order), good = evaluateMix("peachice", order), none = evaluateMix("caramelmilk", order);
+  const best = evaluateMix("lemonmint", order), good = evaluateMix("watermelonkiwi", order), none = evaluateMix("caramelmilk", order);
   assert.deepEqual([best.rating, good.rating, none.rating], ["best", "good", "none"]);
   assert.deepEqual([best.grade, good.grade, none.grade], ["best", "good", "off"]);
   assert.ok(best.mood >= 85 && good.mood >= 65 && good.mood < 85 && none.mood < 40);
   // こだわりの客は、ぴったりでないと少し辛い（ぴったりなら同じ）
   assert.equal(evaluateMix("lemonmint", order, "keen").mood, best.mood);
-  assert.ok(evaluateMix("peachice", order, "keen").mood < good.mood);
+  assert.ok(evaluateMix("watermelonkiwi", order, "keen").mood < good.mood);
 });
 
 test("同じ種なら同じ一晩。操作も経過も元の state を書き換えない。客は気分を言うだけ", () => {
@@ -157,7 +172,8 @@ test("来店と注文待ち: 客は自分で座る。注文を聞かないと、
 test("注文: 並んでいるミックスから選ぶ。出すと次の一つが入る。仕込みは同時に2台まで", () => {
   let s = createFloorNight({ seed: 7, level: 1 });
   assert.equal(s.hand.length, HAND_SIZE);
-  assert.equal(new Set([...s.hand, ...s.deck]).size, Object.keys(MIXES).length);
+  assert.equal(new Set([...s.hand, ...s.deck]).size, mixIdsFor(1).length, "その章で出せるミックスが、山に入る");
+  assert.equal(new Set([...createFloorNight({ seed: 7, level: 1, chapter: 2 }).hand, ...createFloorNight({ seed: 7, level: 1, chapter: 2 }).deck]).size, mixIdsFor(2).length);
   s = until(s, (x) => at(x, 1).phase === "order");
   const hand = floorHand(s, wishOf(s, 1).wish);
   assert.deepEqual(hand.map((h) => h.id), s.hand);
@@ -193,21 +209,49 @@ test("注文: 並んでいるミックスから選ぶ。出すと次の一つが
   assert.equal(new Set(long.hand).size, HAND_SIZE);
 });
 
-test("シャッフル: 並んでいるミックスを全部入れ替える。続けては出来ない", () => {
-  let s = createFloorNight({ seed: 7, level: 1 });
+test("シャッフル: 並んでいるミックスを全部入れ替える。入れ替えには時間がかかり、その間は出せない", () => {
+  let s = until(createFloorNight({ seed: 7, level: 1 }), (x) => at(x, 1).phase === "order");
   const before = [...s.hand];
   assert.equal(floorShuffleLeft(s), 0);
   const shuffled = act(s, { type: "shuffle" });
   assert.ok(shuffled.hand.every((id) => !before.includes(id)), "いま並んでいた物は出てこない");
-  assert.equal(new Set([...shuffled.hand, ...shuffled.deck]).size, Object.keys(MIXES).length);
+  assert.equal(new Set([...shuffled.hand, ...shuffled.deck]).size, mixIdsFor(1).length);
   assert.equal(shuffled.shuffles, 1);
-  assert.equal(shuffled.t, s.t, "時間は使わない");
-  assert.ok(floorShuffleLeft(shuffled) > 0);
-  assert.equal(floorAct(shuffled, { type: "shuffle" }), shuffled, "続けては出来ない");
-  const later = floorTick(shuffled, floorShuffleLeft(shuffled));
+  assert.deepEqual(shuffled.log, [{ type: "shuffle", ticks: floorShuffleTime }]);
+  // 入れ替えには約4秒かかる。その間は、ミックスを出せず、シャッフルも重ねられない（客は待っている）
+  assert.equal(floorShuffleLeft(shuffled), floorShuffleTime);
+  assert.equal(floorShuffleTime, 8);
+  assert.equal(floorAct(shuffled, { type: "order", tableId: 1, mix: shuffled.hand[0] }), shuffled, "入れ替えの最中は出せない");
+  assert.equal(floorAct(shuffled, { type: "shuffle" }), shuffled, "重ねては出来ない");
+  assert.equal(floorHint(shuffled).kind, "shuffle", "その間は、ほかの卓を見る");
+  const waiting = floorWaitLeft(shuffled, 1);
+  const later = floorTick(shuffled, floorShuffleTime);
   assert.equal(floorShuffleLeft(later), 0);
+  assert.ok(later.log.some((e) => e.type === "shuffleDone"));
+  assert.equal(floorWaitLeft(later, 1), waiting - floorShuffleTime, "入れ替えの間も、客の待ち時間は減る");
+  assert.equal(at(act(later, { type: "order", tableId: 1, mix: later.hand[0] }), 1).phase, "prep");
   assert.notDeepEqual(act(later, { type: "shuffle" }).hand, later.hand);
   assert.deepEqual(act(s, { type: "shuffle" }).hand, shuffled.hand, "同じ種・同じ操作なら同じ並び");
+  // 待たせた分だけ、最初の満足が下がる（すぐ出せば下がらない）
+  const mixId = Object.keys(MIXES).find((id) => MIXES[id].main === wishOf(s, 1).wish);
+  const serveAfter = (state, ticks) => {
+    let x = floorTick(state, ticks);
+    x.hand[0] = mixId;
+    x = until(act(x, { type: "order", tableId: 1, mix: mixId }), (y) => at(y, 1).phase === "enjoy");
+    return x.log.find((e) => e.type === "serve") || { mood: at(x, 1).mood, late: null };
+  };
+  const quick = serveAfter(s, 1), slow = serveAfter(s, 14);
+  assert.deepEqual([quick.late, quick.mood], [0, 90]);
+  assert.ok(slow.late >= 5 && slow.mood === 90 - slow.late, `待たせると下がる（${slow.late}）`);
+});
+
+test("シャッフルしすぎると損をする: ◎が出るまで回し続けると、満席の日は客を待たせて帰られる", () => {
+  const total = (pick) => Array.from({ length: 16 }, (_, i) => playFloorBot({ seed: i + 1, level: 5, night: "full", pace: 6, pick }).result)
+    .reduce((sum, r) => ({ left: sum.left + r.left, score: sum.score + r.score, shuffles: sum.shuffles + r.shuffles }), { left: 0, score: 0, shuffles: 0 });
+  const careful = total("best"), greedy = total("greedy");
+  assert.ok(greedy.shuffles > careful.shuffles * 3, `欲張ると、何倍も回す（${careful.shuffles} → ${greedy.shuffles}）`);
+  assert.ok(greedy.left >= careful.left + 10, `待たせて帰られる組が増える（${careful.left} → ${greedy.left}）`);
+  assert.ok(greedy.score < careful.score - 80, `満足の平均も下がる（${careful.score} → ${greedy.score}）`);
 });
 
 test("調整: 炭の残りが少なくなったら、頼まれる前に自分から行く。放っておくと客から頼まれる", () => {

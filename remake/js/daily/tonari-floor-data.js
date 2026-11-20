@@ -20,72 +20,88 @@ export const WISHES = Object.freeze([
 ]);
 export const WISH_IDS = Object.freeze(WISHES.map((w) => w.id));
 
-// 店の棚のフレーバー（30種）。ミックスの材料。family＝系統（＝気分）、also＝半分だけ寄与する系統（柑橘や茶葉でさっぱり感を出す、など）、
-// tags＝香りの札（今は表示だけ）、traits＝[味・香り, チル, 爆煙, 持続性]（0〜3。持続性は、炭の調整の間隔に効く）。
-const flavor = (id, label, family, also, tags, traits) => Object.freeze({
-  id, label, family, also: Object.freeze(also), tags: Object.freeze(tags), traits: Object.freeze(traits),
-});
+// 店の棚のフレーバー。**本編のフレーバー（data/flavors.json。大会で使える物）から選ぶ**（2026-11-20 オーナー「このゲームの大会とかで使えるフレーバーでの組み合わせで」）。
+// id は本編と同じ。label＝ミックスの名前に使う短い呼び名（メーカー名は付けない）、family＝属性（本編の系統から決まる: fruit→フルーティ／sweet→スイート／
+// cooling→リフレッシュ／spice・floral→リラックス）、also＝サブに出来る属性（柑橘の爽やかさ、茶葉やスパイスの落ち着き、など）、chapter＝本編で出回る章。
+// 本編のデータとの食い違い（無い id・系統のずれ・章のずれ・大会で使えない物）は、remake/test/tonari_floor_model.mjs が止める。
+const flavor = (id, label, family, also = [], chapter = 1) => Object.freeze({ id, label, family, also: Object.freeze(also), chapter });
 export const FLAVORS = Object.freeze(Object.fromEntries([
-  // フルーツ系（10）
-  flavor("apple", "ダブルアップル", "fruit", ["deep"], ["classic", "spice"], [3, 1, 2, 3]),
-  flavor("grape", "グレープ", "fruit", [], ["juicy", "classic"], [2, 1, 3, 2]),
-  flavor("peach", "ピーチ", "fruit", [], ["juicy", "sweet"], [3, 2, 2, 1]),
-  flavor("mango", "マンゴー", "fruit", [], ["juicy", "sweet"], [3, 1, 2, 2]),
-  flavor("berry", "ベリーミックス", "fruit", [], ["juicy"], [2, 1, 3, 1]),
-  flavor("lychee", "ライチ", "fruit", ["fresh"], ["juicy", "light"], [2, 2, 1, 1]),
-  flavor("lemon", "レモン", "fruit", ["fresh"], ["citrus"], [2, 1, 2, 1]),
-  flavor("grapefruit", "グレープフルーツ", "fruit", ["fresh"], ["citrus"], [2, 2, 1, 2]),
-  flavor("orange", "オレンジ", "fruit", [], ["citrus", "juicy"], [3, 1, 2, 1]),
-  flavor("pine", "パイン", "fruit", [], ["juicy", "sweet"], [2, 1, 3, 1]),
-  // スッキリ・清涼系（6）
-  flavor("mint", "ミント", "fresh", [], ["mint"], [1, 2, 3, 2]),
-  flavor("ice", "アイス", "fresh", [], ["mint"], [0, 2, 3, 3]),
-  flavor("lime", "ライム", "fresh", ["fruit"], ["citrus"], [2, 2, 1, 1]),
-  flavor("eucalyptus", "ユーカリ", "fresh", [], ["mint", "herb"], [1, 3, 2, 2]),
-  flavor("lemongrass", "レモングラス", "fresh", [], ["herb", "citrus"], [2, 3, 1, 2]),
-  flavor("guava", "グァバミント", "fresh", ["fruit"], ["mint", "juicy"], [2, 2, 2, 1]),
-  // 甘系・スイーツ系（7）
-  flavor("vanilla", "バニラ", "sweet", [], ["cream", "sweet"], [2, 3, 2, 2]),
-  flavor("caramel", "キャラメル", "sweet", [], ["dessert", "sweet"], [3, 2, 1, 3]),
-  flavor("chocolate", "チョコレート", "sweet", ["deep"], ["dessert", "sweet", "heavy"], [3, 2, 1, 3]),
-  flavor("milk", "ミルク", "sweet", [], ["cream"], [1, 3, 3, 1]),
-  flavor("honey", "ハニー", "sweet", [], ["sweet"], [2, 3, 1, 2]),
-  flavor("pistachio", "ピスタチオ", "sweet", [], ["nut", "cream"], [3, 2, 1, 2]),
-  flavor("cookie", "クッキー", "sweet", [], ["dessert", "nut", "sweet"], [3, 2, 2, 2]),
-  // 茶葉・フローラル・スパイス系（7）
-  flavor("earlgrey", "アールグレイ", "deep", ["fresh"], ["tea", "citrus"], [3, 3, 1, 2]),
-  flavor("jasmine", "ジャスミン", "deep", ["fresh"], ["tea", "floral", "light"], [2, 3, 1, 1]),
-  flavor("chai", "チャイ", "deep", ["sweet"], ["tea", "spice"], [3, 2, 1, 3]),
-  flavor("rose", "ローズ", "deep", [], ["floral"], [3, 2, 1, 2]),
-  flavor("hinoki", "ヒノキ", "deep", [], ["heavy", "herb"], [2, 3, 1, 3]),
-  flavor("cardamom", "カルダモン", "deep", [], ["spice"], [3, 1, 2, 3]),
-  flavor("cinnamon", "シナモン", "deep", ["sweet"], ["spice", "sweet"], [3, 1, 2, 3]),
+  // cooling（リフレッシュ）
+  flavor("mint", "ミント", "fresh"), flavor("cool_mint", "クールミント", "fresh"), flavor("blueberry_mint", "ベリーミント", "fresh", ["fruit"]),
+  flavor("ice_grape", "アイスグレープ", "fresh", ["fruit"]), flavor("ice_lemon", "アイスレモン", "fresh", ["fruit"]),
+  flavor("peppermint_shake", "ミントシェイク", "fresh", ["sweet"]), flavor("frozen_citrus", "フローズンシトラス", "fresh", ["fruit"]),
+  flavor("frozen_berry", "フローズンベリー", "fresh", ["fruit"]),
+  // fruit（フルーティ）
+  flavor("lemon", "レモン", "fruit", ["fresh"]), flavor("orange", "オレンジ", "fruit", ["fresh"]), flavor("grapefruit", "グレープフルーツ", "fruit", ["fresh"]),
+  flavor("watermelon", "スイカ", "fruit", ["fresh"]), flavor("kiwi", "キウイ", "fruit", ["fresh"]), flavor("pineapple", "パイン", "fruit"),
+  flavor("mango", "マンゴー", "fruit"), flavor("peach", "ピーチ", "fruit"), flavor("grape", "グレープ", "fruit"), flavor("blueberry", "ベリー", "fruit"),
+  flavor("raspberry", "ラズベリー", "fruit"), flavor("cassis", "カシス", "fruit"), flavor("strawberry", "イチゴ", "fruit"), flavor("guava", "グアバ", "fruit"),
+  flavor("melon", "メロン", "fruit"), flavor("banana", "バナナ", "fruit", ["sweet"]), flavor("coconut", "ココナッツ", "fruit", ["sweet"]),
+  flavor("lychee", "ライチ", "fruit", ["deep"]), flavor("lemon_tea", "レモンティー", "fruit", ["deep"]),
+  flavor("cherry", "チェリー", "fruit", [], 2), flavor("passion_fruit", "パッション", "fruit", [], 2),
+  // sweet（スイート）
+  flavor("vanilla", "バニラ", "sweet"), flavor("chocolate", "チョコ", "sweet"), flavor("caramel", "キャラメル", "sweet"), flavor("cotton_candy", "わたあめ", "sweet"),
+  flavor("hazelnut", "ナッツ", "sweet"), flavor("honey", "ハニー", "sweet"), flavor("cola", "コーラ", "sweet"),
+  flavor("coffee", "コーヒー", "sweet", ["deep"]), flavor("cappuccino", "カプチーノ", "sweet", ["deep"]),
+  flavor("milk", "ミルク", "sweet", [], 2), flavor("white_gummy_bear", "グミ", "sweet", ["fruit"], 2),
+  // spice・floral（リラックス）
+  flavor("double_apple", "アップル", "deep", ["fruit"]), flavor("cinnamon", "シナモン", "deep", ["sweet"]), flavor("cardamom", "カルダモン", "deep"),
+  flavor("ginger", "ジンジャー", "deep"), flavor("black_tea", "ティー", "deep"), flavor("absal_earlgrey", "アールグレイ", "deep", ["fresh"]),
+  flavor("rose", "ローズ", "deep"), flavor("jasmine", "ジャスミン", "deep"), flavor("lavender", "ラベンダー", "deep"), flavor("chamomile", "カモミール", "deep"),
+  flavor("white_musk", "ムスク", "deep"), flavor("sakura", "サクラ", "deep", [], 2),
 ].map((f) => [f.id, f])));
 
 // ミックスの一覧（店で出せる一台）。営業中は、この中から HAND_SIZE 個が並び、選んで出す。出すと次の一つが補充され、シャッフルで全部を入れ替えられる。
 // main＝メインの属性（その気分の客に ◎）、sub＝サブの属性（その気分の客に ○。無いミックスもある）。それ以外の気分には ×。
 // ひと目で分かるよう、合い方はこの二つだけで決める（2026-11-20 オーナー「一目で何属性がメインなのかわかりやすくして」）。
-// どちらも、材料の系統（family か also）にある属性から選ぶ。name を省くと材料の名前をつなげる。name の「｜」は、狭い札で折ってよい位置（表示では消える）。
+// main は材料の属性（family）から、sub は材料の family か also から選ぶ。目安: 「〜ミント」＝リフレッシュがメイン／ほかは、名前の先に来る材料がメイン。
+// name を省くと材料の label をつなげる。name の「｜」は、狭い札で折ってよい位置（表示では消える）。出回る章は、材料のいちばん遅い章（mixChapter）。
 const mix = (id, flavors, main, sub = null, name = null) => Object.freeze({ id, flavors: Object.freeze(flavors), main, sub, name });
 export const MIXES = Object.freeze(Object.fromEntries([
-  // リフレッシュがメイン（〜ミントは、ミントの清涼感が主役）
+  // ---- リフレッシュがメイン ----
   mix("lemonmint", ["lemon", "mint"], "fresh", "fruit"), mix("grapemint", ["grape", "mint"], "fresh", "fruit"), mix("orangemint", ["orange", "mint"], "fresh", "fruit"),
-  mix("pinemint", ["pine", "mint"], "fresh", "fruit"), mix("guava", ["guava"], "fresh", "fruit", "グァバ｜ミント"), mix("chocomint", ["chocolate", "mint"], "fresh", "sweet", "チョコ｜ミント"),
-  mix("limemint", ["lime", "mint"], "fresh"), mix("eucalyptusmint", ["eucalyptus", "mint"], "fresh"), mix("lemongrasslime", ["lemongrass", "lime"], "fresh", null, "ハーブ｜ライム"),
-  mix("icemint", ["ice", "mint"], "fresh"),
-  // フルーティがメイン
-  mix("apple", ["apple"], "fruit", "deep", "ダブル｜アップル"), mix("lycheerose", ["lychee", "rose"], "fruit", "deep"), mix("berryice", ["berry", "ice"], "fruit", "fresh", "ベリー｜アイス"),
-  mix("peachice", ["peach", "ice"], "fruit", "fresh"), mix("grapeberry", ["grape", "berry"], "fruit", null, "グレープ｜ベリー"), mix("mangoorange", ["mango", "orange"], "fruit"),
-  mix("peachmango", ["peach", "mango"], "fruit"), mix("pineorange", ["pine", "orange"], "fruit"),
-  // スイートがメイン（〜ミルク・〜バニラ・ハニー〜は、甘さが主役）
-  mix("peachvanilla", ["peach", "vanilla"], "sweet", "fruit"), mix("mangomilk", ["mango", "milk"], "sweet", "fruit"), mix("honeylemon", ["honey", "lemon"], "sweet", "fruit"),
-  mix("chocovanilla", ["chocolate", "vanilla"], "sweet", "deep", "チョコ｜バニラ"), mix("caramelmilk", ["caramel", "milk"], "sweet"), mix("vanillacookie", ["vanilla", "cookie"], "sweet"),
-  mix("pistachiomilk", ["pistachio", "milk"], "sweet"), mix("honeymilk", ["honey", "milk"], "sweet"),
-  // リラックスがメイン（茶葉・スパイス・花）
-  mix("milktea", ["earlgrey", "milk"], "deep", "sweet", "ミルク｜ティー"), mix("chai", ["chai", "cinnamon"], "deep", "sweet"), mix("cardamomchai", ["cardamom", "chai"], "deep", "sweet"),
-  mix("jasminepeach", ["jasmine", "peach"], "deep", "fruit"), mix("cinnamonapple", ["cinnamon", "apple"], "deep", "fruit", "シナモン｜アップル"),
-  mix("hinokijasmine", ["hinoki", "jasmine"], "deep", "fresh"), mix("rosejasmine", ["rose", "jasmine"], "deep", "fresh"), mix("earllemon", ["earlgrey", "lemon"], "deep", "fresh", "レモン｜ティー"),
+  mix("pinemint", ["pineapple", "mint"], "fresh", "fruit"), mix("peachmint", ["peach", "mint"], "fresh", "fruit"), mix("watermelonmint", ["watermelon", "mint"], "fresh", "fruit"),
+  mix("berrymint", ["blueberry_mint"], "fresh", "fruit", "ベリー｜ミント"), mix("icelemon", ["ice_lemon"], "fresh", "fruit", "アイス｜レモン"),
+  mix("icegrape", ["ice_grape"], "fresh", "fruit", "アイス｜グレープ"), mix("frozencitrus", ["frozen_citrus"], "fresh", "fruit", "フローズン｜シトラス"),
+  mix("frozenberry", ["frozen_berry"], "fresh", "fruit", "フローズン｜ベリー"), mix("chocomint", ["chocolate", "mint"], "fresh", "sweet"),
+  mix("mintshake", ["peppermint_shake"], "fresh", "sweet", "ミント｜シェイク"), mix("colamint", ["cola", "mint"], "fresh", "sweet"),
+  mix("applemint", ["double_apple", "mint"], "fresh", "deep"), mix("lavendermint", ["lavender", "mint"], "fresh", "deep"),
+  mix("coolmint", ["cool_mint"], "fresh", null, "クール｜ミント"), mix("doublemint", ["mint", "cool_mint"], "fresh", null, "ダブル｜ミント"),
+  // ---- フルーティがメイン ----
+  mix("peachmango", ["peach", "mango"], "fruit"), mix("grapeberry", ["grape", "blueberry"], "fruit"), mix("raspberrycassis", ["raspberry", "cassis"], "fruit"),
+  mix("guavapine", ["guava", "pineapple"], "fruit"), mix("mangoorange", ["mango", "orange"], "fruit", "fresh"), mix("pineorange", ["pineapple", "orange"], "fruit", "fresh"),
+  mix("lemonorange", ["lemon", "orange"], "fruit", "fresh"), mix("watermelonkiwi", ["watermelon", "kiwi"], "fruit", "fresh"),
+  mix("grapefruit", ["grapefruit"], "fruit", "fresh", "グレープ｜フルーツ"), mix("mangococonut", ["mango", "coconut"], "fruit", "sweet"),
+  mix("bananavanilla", ["banana", "vanilla"], "fruit", "sweet"), mix("melonvanilla", ["melon", "vanilla"], "fruit", "sweet"),
+  mix("berryvanilla", ["blueberry", "vanilla"], "fruit", "sweet"), mix("strawberryvanilla", ["strawberry", "vanilla"], "fruit", "sweet"),
+  mix("peachlychee", ["peach", "lychee"], "fruit", "deep"), mix("lycheerose", ["lychee", "rose"], "fruit", "deep"), mix("peachtea", ["peach", "black_tea"], "fruit", "deep"),
+  mix("lemontea", ["lemon_tea"], "fruit", "deep", "レモン｜ティー"),
+  mix("pinepassion", ["pineapple", "passion_fruit"], "fruit"), mix("cherryvanilla", ["cherry", "vanilla"], "fruit", "sweet"),
+  mix("mangomilk", ["mango", "milk"], "fruit", "sweet"), mix("strawberrymilk", ["strawberry", "milk"], "fruit", "sweet"),
+  // ---- スイートがメイン ----
+  mix("chocovanilla", ["chocolate", "vanilla"], "sweet"), mix("caramelvanilla", ["caramel", "vanilla"], "sweet"), mix("caramelnuts", ["caramel", "hazelnut"], "sweet"),
+  mix("choconuts", ["chocolate", "hazelnut"], "sweet"), mix("honeynuts", ["honey", "hazelnut"], "sweet"), mix("vanillacola", ["vanilla", "cola"], "sweet"),
+  mix("cottoncandy", ["cotton_candy"], "sweet"), mix("honeylemon", ["honey", "lemon"], "sweet", "fruit"), mix("vanillapeach", ["vanilla", "peach"], "sweet", "fruit"),
+  mix("chocobanana", ["chocolate", "banana"], "sweet", "fruit"), mix("chocoorange", ["chocolate", "orange"], "sweet", "fruit"),
+  mix("caramelbanana", ["caramel", "banana"], "sweet", "fruit"), mix("colalemon", ["cola", "lemon"], "sweet", "fresh"),
+  mix("cafemocha", ["coffee", "chocolate"], "sweet", "deep", "カフェ｜モカ"), mix("cappuccino", ["cappuccino"], "sweet", "deep"),
+  mix("honeyginger", ["honey", "ginger"], "sweet", "deep"), mix("caramelapple", ["caramel", "double_apple"], "sweet", "deep"),
+  mix("honeymilk", ["honey", "milk"], "sweet"), mix("caramelmilk", ["caramel", "milk"], "sweet"), mix("whitegummy", ["white_gummy_bear"], "sweet", "fruit", "ホワイト｜グミ"),
+  // ---- リラックスがメイン ----
+  mix("rosejasmine", ["rose", "jasmine"], "deep"), mix("muskrose", ["white_musk", "rose"], "deep"), mix("rosetea", ["rose", "black_tea"], "deep"),
+  mix("jasminetea", ["jasmine", "black_tea"], "deep"), mix("cardamomtea", ["cardamom", "black_tea"], "deep"), mix("gingertea", ["ginger", "black_tea"], "deep"),
+  mix("apple", ["double_apple"], "deep", "fruit", "ダブル｜アップル"), mix("cinnamonapple", ["cinnamon", "double_apple"], "deep", "fruit"),
+  mix("cinnamonorange", ["cinnamon", "orange"], "deep", "fruit"), mix("jasminepeach", ["jasmine", "peach"], "deep", "fruit"),
+  mix("jasminelychee", ["jasmine", "lychee"], "deep", "fruit"), mix("roseberry", ["rose", "raspberry"], "deep", "fruit"),
+  mix("cinnamontea", ["cinnamon", "black_tea"], "deep", "sweet"), mix("lavenderhoney", ["lavender", "honey"], "deep", "sweet"),
+  mix("chamomilehoney", ["chamomile", "honey"], "deep", "sweet"), mix("cardamomhoney", ["cardamom", "honey"], "deep", "sweet"),
+  mix("earlgrey", ["absal_earlgrey"], "deep", "fresh", "アール｜グレイ"), mix("lavenderlemon", ["lavender", "lemon"], "deep", "fresh"),
+  mix("milktea", ["absal_earlgrey", "milk"], "deep", "sweet", "ミルク｜ティー"), mix("sakurapeach", ["sakura", "peach"], "deep", "fruit"),
 ].map((m) => [m.id, m])));
+/** ミックスが出回る章（材料のいちばん遅い章）。 */
+export const mixChapter = (id) => Math.max(...MIXES[id].flavors.map((f) => FLAVORS[f].chapter));
+/** その章の店で出せるミックス（東京編・ドバイ編で同じ遊びを開く時も、章で増える）。 */
+export const mixIdsFor = (chapter = 1) => Object.keys(MIXES).filter((id) => mixChapter(id) <= Math.max(1, chapter));
 /** 一度に並ぶミックスの数。 */
 export const HAND_SIZE = 5;
 

@@ -36,7 +36,7 @@ const GAMES = [
   ...[
     ["floor-first", "フロア営業（はじめて）", { level: 0 }],
     ["floor", "フロア営業（いつもの夜）", { level: 1, visitor: true }],
-    ["floor-full", "フロア営業（満席の日）", { level: 6, kind: "full" }],
+    ["floor-full", "フロア営業（満席の日）", { level: 6, kind: "full", chapter: 2 }], // 第2章のミックス（ミルク系など）も並ぶ
   ].map(([id, label, opts]) => ({ id, label, start: async (host, signal) => {
     const [{ runTonariFloor, FLOOR_VISITORS }, { bgUrl }] = await Promise.all([import("../daily/tonari-floor-view.js"), import("../core/data.js")]);
     if (signal.aborted) return;
@@ -44,7 +44,7 @@ const GAMES = [
     const seed = Date.now() >>> 0;
     const visitors = Object.keys(FLOOR_VISITORS);
     return runTonariFloor({
-      mount: host, signal, seed, level: opts.level, kind: opts.kind || null, chapter: 1, night: true,
+      mount: host, signal, seed, level: opts.level, kind: opts.kind || null, chapter: opts.chapter || 1, night: true,
       visitor: opts.visitor ? visitors[seed % visitors.length] : null,
       art: bgUrl("res://assets/backgrounds/bg_tonari_inside.png", "night"),
     });

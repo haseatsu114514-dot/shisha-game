@@ -1536,7 +1536,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "はじめ。今日は、店を一人で回してみろ"
+          "text": "はじめ。今日は、フロアを一人で回してみろ"
         },
         {
           "speaker": "hajime",
@@ -1546,7 +1546,37 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "気分を聞いて、合う一台を出す。炭も会計も、全部お前だ"
+          "text": "うちは、この地区じゃ老舗でな。ありがたいことに、よく混む"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "大会や、家で作る一台とは別物だ。一台ずつ向き合ってる暇はない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "向き合わなくて、いいんですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "手を抜けって話じゃない。店で要るのは、手際だ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "待たせない。炭を切らさない。卓を、まんべんなく見る"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "大会とは、別の競技だと思え"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "気分を聞いて、合う一台を出す。炭は、言われる前に見に行け"
         },
         {
           "speaker": "sumi",
@@ -1556,11 +1586,6 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "炭は、言われる前に見に行け。客の気分を聞けば、外さない"
-        },
-        {
-          "speaker": "sumi",
-          "face": "smile",
           "text": "店がいい空気になったら、灯りが教えてくれる"
         },
         {

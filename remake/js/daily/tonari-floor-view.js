@@ -14,7 +14,7 @@ import { buildVersioned } from "../core/asset-version.js";
 import {
   createFloorNight, floorTick, floorAct, floorTap, floorHint, floorResult, floorUrgency, floorWaitLeft,
   floorStayLeft, floorCoalLeft, floorTendDue, floorMaking, floorHand, floorShuffleLeft, floorTimeLeft, floorStage, floorBill, floorFeverLevel,
-  mixName, mixNameParts, floorPlan, floorFeverLength, floorSlots, FLOOR_TICK_MS, FLOOR_TABLE_COUNT,
+  mixName, mixNameParts, floorPlan, floorFeverLength, floorSlots, floorShuffleTime, FLOOR_TICK_MS, FLOOR_TABLE_COUNT,
 } from "./tonari-floor-model.js";
 import {
   MIXES, WISHES, VERBS, CALLS, MOODS, PRICE, VISITORS,
@@ -34,7 +34,7 @@ const WISH = Object.fromEntries(WISHES.map((w) => [w.id, w]));
 const MOOD = Object.fromEntries(MOODS.map((m) => [m.id, m]));
 // 提供した時の手応え: [言葉, 色, 判定の印]
 const POP = { best: ["ぴったり！", "best", "best"], good: ["いい感じ", "best", "good"], off: ["ちがうかも…", "off", "miss"] };
-const MARK = { best: "markBest", good: "markGood", miss: "markMiss", bad: "markBad", drink: "glass", bill: "coin" };
+const MARK = { best: "markBest", good: "markGood", miss: "markMiss", bad: "markBad", drink: "glass", bill: "coin", anger: "anger" };
 const CALL_ICON = { thin: "thin", harsh: "harsh", thirsty: "glass", cough: "ask", chatty: "talk" };
 const VERB_ICON = { add: "add", ease: "ease", water: "drink", teach: "ask", chat: "talk" };
 const APT_MARK = { best: "◎", good: "○", none: "×" };
@@ -145,6 +145,7 @@ export function runTonariFloor({
         el("span.tf-tag-box", {}, [
           tagReq, el("i.tf-tag-no", { text: String(id) }),
           el("span.tf-tag-cell", {}, [tagWho]), el("span.tf-tag-cell", {}, [tagFace]),
+          el("i.tf-tag-anger", { "aria-hidden": true }, [glyph("anger")]), // 待たせている客の、怒りの印
           el("span.tf-tag-empty"), el("span.tf-tag-gauge", {}, [tagBar]),
         ]),
         el("span.tf-tag-foot", {}, [el("i.tf-tag-pie"), tagCount]),
@@ -153,7 +154,7 @@ export function runTonariFloor({
       const [sx, sy] = spotCenter(spot);
       const anchor = seated
         ? { "--bx": `${spot.bubble[0]}%`, "--by": `${spot.bubble[1]}%`, "--fx": `${spot.fx[0]}%`, "--fy": `${spot.fx[1]}%` }
-        : { "--x": `${sx}%`, "--y": `${sy}%`, "--bx": `${sx}%`, "--by": `calc(${sy}% + 76px)`, "--fx": `${sx}%`, "--fy": `calc(${sy}% + 110px)` };
+        : { "--x": `${sx}%`, "--y": `${sy}%`, "--bx": `${sx}%`, "--by": `calc(${sy}% + 84px)`, "--fx": `${sx}%`, "--fy": `calc(${sy}% + 120px)` };
       if (seated) Object.assign(seat.style, { left: `${spot.box[0]}%`, top: `${spot.box[1]}%`, width: `${spot.box[2]}%`, height: `${spot.box[3]}%` });
       const smokeAt = seated ? [spot.prop[0], spot.prop[1] - spot.propH * 0.86] : spot.plate;
       const prop = seated && shishaArt ? el("span.tf-prop", { "aria-hidden": true, style: {
@@ -191,8 +192,14 @@ export function runTonariFloor({
     const handList = el("div.tf-preset-list");
     // 上の行: 出す先の卓の番号（色は、その客の気分）と、シャッフル。一行に並べる（小さい画面でも、5つの札が上下の帯に被らない）
     const targetChip = el("b.tf-target", { dataset: { ...test("target"), on: "false" } });
-    const shuffleButton = el("button.tf-shuffle", { type: "button", dataset: test("shuffle-side"), onclick: () => doShuffle() }, [glyph("shuffle"), el("span", { text: "シャッフル" })]);
-    const side = el("aside.tf-presets", { "aria-label": "ミックスの一覧", dataset: test("presets") }, [el("div.tf-presets-head", {}, [targetChip, shuffleButton]), handList]);
+    // シャッフルは入れ替えに時間がかかる（その間はミックスを出せない）。かかる秒数を、ボタンの右上に出す
+    const shuffleCost = `${seconds(floorShuffleTime)}秒`;
+    const shuffleFace = () => [glyph("shuffle"), el("span", { text: "シャッフル" }), el("small.tf-shuffle-cost", {}, [glyph("clock"), el("span", { text: shuffleCost })])];
+    const shuffleButton = el("button.tf-shuffle", { type: "button", "aria-label": `シャッフル（${shuffleCost}かかる）`, dataset: test("shuffle-side"), onclick: () => doShuffle() }, shuffleFace());
+    // 入れ替えの最中に、一覧の上へ掛ける札（進みの棒つき）
+    const busyBar = el("i");
+    const busyCover = el("div.tf-presets-busy", { "aria-hidden": true, dataset: test("shuffle-busy") }, [glyph("shuffle"), el("b", { text: "入れ替え中" }), el("span.tf-bar", {}, [busyBar])]);
+    const side = el("aside.tf-presets", { "aria-label": "ミックスの一覧", dataset: { ...test("presets"), busy: "false" } }, [el("div.tf-presets-head", {}, [targetChip, shuffleButton]), handList, busyCover]);
     // 下の帯: 選んでいる卓の詳細／出来事の行とはじめの心の声／フィーバーのゲージ
     const dockNo = el("b.tf-dock-no"), dockWho = el("span.tf-dock-who"), dockName = el("b"), dockSub = el("small");
     const dockMood = el("i"), dockStay = el("i"), dockQuote = el("span"), dockMix = el("span");
@@ -264,7 +271,7 @@ export function runTonariFloor({
     function focusCam(id) {
       const [px, py] = spotCenter(SPOTS[id - 1]);
       const zoom = 1.3;
-      const tx = Math.max(100 - 100 * zoom, Math.min(26, 68 - zoom * px));
+      const tx = Math.max(100 - 100 * zoom, Math.min(30, 69 - zoom * px)); // 選んだ卓を、左の列の右へ出す（列の裏は見えないので、左へ余白が出てよい）
       const ty = Math.max(-40, Math.min(0, 47 - zoom * py));
       cam.style.transform = `translate(${tx.toFixed(2)}%, ${ty.toFixed(2)}%) scale(${zoom})`;
     }
@@ -346,13 +353,14 @@ export function runTonariFloor({
             if (e.rare) { SE.jingle(); log(`${guest.name}が遊びに来た！ ${e.tableId}卓へ`, "good"); }
             else log(`${e.tableId}卓　${guest.name}「${e.line}」`);
             break;
-          case "left": SE.miss(); pop(e.tableId, "帰ってしまった", "off", "bad"); log(`${e.tableId}卓の${guest.name}が、待ちきれずに帰ってしまいました`, "bad"); break;
+          case "left": SE.miss(); pop(e.tableId, "帰ってしまった", "off", "anger"); log(`${e.tableId}卓の${guest.name}が、待ちきれずに帰ってしまいました`, "bad"); break;
           case "order": SE.click(); log(`${e.tableId}卓　${mixName(e.mix)}を仕込みはじめた`); break;
-          case "shuffle": SE.whoosh(); log("ミックスを入れ替えた"); break;
+          case "shuffle": SE.whoosh(); log(`ミックスを入れ替える（${seconds(e.ticks)}秒かかる）`); break;
+          case "shuffleDone": SE.select(); log("新しいミックスが並んだ", "good"); break;
           case "serve": {
             const [text, kind, mark] = POP[e.grade] || POP.good;
             if (e.grade === "best") SE.perfect(); else if (e.grade === "off") SE.miss(); else SE.good();
-            pop(e.tableId, text, kind, mark);
+            pop(e.tableId, e.late >= 3 ? `${text}（待たせた）` : text, kind, mark); // 待たせた分は、最初の満足から引かれている
             say(e.tableId, e.line, e.grade === "off" ? "bad" : "good");
             break;
           }
@@ -520,7 +528,11 @@ export function runTonariFloor({
         }, [attrBadge(mix.id), el("span.tf-preset-name", {}, mixSpans(mix.id)), mix.rating && mix.rating !== "none" ? el("i.tf-match", { text: APT_MARK[mix.rating] }) : null])));
       }
       for (const spot of refs.spots) spot.root.dataset.target = String(String(target?.id || "") === spot.root.dataset.id);
+      // 入れ替えの最中は、一覧を隠して進みを出す（ミックスは出せない）
       const wait = floorShuffleLeft(state);
+      side.dataset.busy = String(wait > 0);
+      for (const row of handList.children) row.disabled = wait > 0;
+      busyBar.style.width = `${Math.round((1 - wait / floorShuffleTime) * 100)}%`;
       shuffleButton.disabled = wait > 0;
       shuffleButton.dataset.wait = String(wait > 0);
       // 合う一台が並んでいない時は、シャッフルを光らせる
@@ -612,6 +624,8 @@ export function runTonariFloor({
       if (!alive() || mode !== "live") return;
       select(id);
       const tap = floorTap(state, id);
+      // 入れ替えの最中は、ミックスを出せない（列を開かない。その間に、ほかの卓を見る）
+      if (tap === "order" && floorShuffleLeft(state) > 0) { SE.error(); pop(id, "入れ替え中…"); return; }
       if (tap === "order" || tap === "care") { openPanel(tap, id); return; } // 読んで選ぶもの（その間、時間は止まる）
       if (tap === "bill") { perform({ type: "bill", tableId: id }); return; } // 会計はひと押し（見送りの言葉は出来事の行に出る）
       if (tap === "tend") { perform({ type: "tend", tableId: id }); return; } // 炭の調整もひと押し（頼まれる前に行く）
@@ -631,11 +645,12 @@ export function runTonariFloor({
       const target = targetTable();
       if (!target) { SE.error(); log("注文待ちの卓がありません"); return; }
       select(target.id);
-      perform({ type: "order", tableId: target.id, mix: mixId });
+      if (!perform({ type: "order", tableId: target.id, mix: mixId })) SE.error();
     }
     function doShuffle() {
       if (!perform({ type: "shuffle" })) { SE.error(); return; }
-      if (mode === "panel" && panel?.kind === "order") { renderLayer(); layer.querySelector(".tf-option")?.focus({ preventScroll: true }); }
+      // 入れ替えには時間がかかるので、列は閉じて店へ戻る（その間に、ほかの卓を見られる）
+      if (mode === "panel" && panel?.kind === "order") closePanel({ cancel: false });
     }
 
     function useFever() {
@@ -731,8 +746,9 @@ export function runTonariFloor({
         lead = quoted(guest.order.quote);
         options = floorHand(state, wish.id).map((mix, i) => mixOption(mix, wish, pick({ type: "order", tableId: table.id, mix: mix.id }), i));
         const wait = floorShuffleLeft(state) > 0;
-        extra = el("button.tf-shuffle.tf-shuffle-big", { type: "button", disabled: wait, dataset: { ...test("shuffle"), wait: String(wait), call: String(!wait && options.every((node) => node.dataset.rating === "none")) },
-          onclick: () => doShuffle() }, [glyph("shuffle"), el("span", { text: "シャッフル" })]);
+        extra = el("button.tf-shuffle.tf-shuffle-big", { type: "button", disabled: wait, "aria-label": `シャッフル（${shuffleCost}かかる）`,
+          dataset: { ...test("shuffle"), wait: String(wait), call: String(!wait && options.every((node) => node.dataset.rating === "none")) },
+          onclick: () => doShuffle() }, shuffleFace());
       } else {
         const call = CALLS[table.call.type];
         kindLabel = table.call.coal ? "炭の調整" : "ケア";
@@ -771,7 +787,7 @@ export function runTonariFloor({
     function renderIntro() {
       const how = [
         ["order", "客の気分と同じ印のミックスを出す"],
-        ["cook", "仕込みは同時に2台まで"],
+        ["shuffle", `合うのが無ければシャッフル（${shuffleCost}かかる）`],
         ["add", "炭が減ったら、頼まれる前に調整へ"],
         ["lamp", "ゲージが溜まったらフィーバー"],
       ];
