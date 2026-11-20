@@ -9,11 +9,11 @@
     1920,
     1080
   ],
-  "quality": 74,
-  "runtimeBytes": 183848,
-  "nativeSha256": "43ce95cce7b66c82aade7d6316fd048fe53d9f8d05eb21ed7336a5c4daa0df34",
-  "sourceSha256": "9f7fe9b77f06caae2320b45fad3089255b31053ad155b41e6612069f35cb6502",
-  "runtimeSha256": "b13ed1bf46b275a639b91522d4055581066497b0fc6cedcfecc9a266e9bca043",
+  "quality": 85,
+  "runtimeBytes": 277840,
+  "nativeSha256": "59e81bb0314d8b55877b76ed56a472b4fc8c3194b379937514ed8245d8dd299a",
+  "sourceSha256": "4bc940307239b6a3e20a51c30cb6f6e47be35aaff82d6ed76b959edfa7e68ffe",
+  "runtimeSha256": "553bc65084921d8ffe676c19f2ca53768bbb8445e41c06d1421c858d26519521",
   "before": {
     "registered": false,
     "fileExists": false
