@@ -37,6 +37,8 @@ ${strip(stats.match(/export function addMoney\(n\) \{[\s\S]*?\n\}/)[0])}
 const DB = {kuji:${data}, equipById:${JSON.stringify(kujiOnly)}}, displayName = () => 'リン';
 const layers = {screen:document.querySelector('#screen'), modal:document.querySelector('#modal')};
 const toast = () => {}, SE = new Proxy({}, {get: () => () => {}}), prizeArt = () => null; // 音と景品の絵はこの検査の対象外
+const growthSkill = () => false, SKILL_TUNING = {kujiLuck:.5}; // 心得の盤のスキル「くじ運」（K26）は灯していない扱い。効き目は growth_unique_skills.mjs が見る
+const luckyOrder = order => order;
 const vnTest = {turbo:true}, FLAVOR_BOX_GRAMS = 50, RIO_AWAY_DAY = 3;
 function addFlavorStock(id, grams) {
   flavorGrants++;

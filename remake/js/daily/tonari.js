@@ -1,7 +1,7 @@
 import { shiftBasePay, shiftPayNote } from "../core/shift-pay.js";
 import { CHARM_BONUS } from "../core/stat-step-tables.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
-import { callingSalesBonus } from "../core/growth-effects.js";
+import { callingSalesBonus, growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
 import { on } from "../core/bus.js";
 import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
@@ -176,7 +176,9 @@ async function baitoShift({ called, story, owner, signal }) {
   const extra = called ? CALLED_BONUS : 0;
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
   const basePay = shiftBasePay(owner);
-  const pay = basePay + bonus + extra + rainPay + condition.shiftBonus + callingBonus;
+  // 仕事が早い（心得の盤のスキル K27。SBD154）: 基本の日当の1割を上乗せ
+  const quickPay = growthSkill(owner, "K27") ? Math.round(basePay * SKILL_TUNING.baitoPay) : 0;
+  const pay = basePay + bonus + extra + rainPay + condition.shiftBonus + callingBonus + quickPay;
   await shiftClose();
   const closing = state.chapter >= 5 ? { lines: [
     { speaker: "", face: "", text: "今日の仕事を終えて、手取りを帳面に記した。" },

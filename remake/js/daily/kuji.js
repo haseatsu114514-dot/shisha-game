@@ -13,6 +13,8 @@ import { RIO_AWAY_DAY, KUJI_TICKET_MAX } from "../core/rules.js";
 import { kujiTickets, grantKujiTickets, spendKujiTicket } from "./kuji-tickets.js";
 import { reveal, revealMany } from "./kuji-reveal.js";
 import { prizeArt } from "./kuji-prize-art.js";
+import { growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
+import { luckyOrder } from "./kuji-luck.js";
 
 // 全等級で購入を共有ロック。表示・セーブには保存しない。
 let purchaseLock = null, currentRows = null;
@@ -32,7 +34,7 @@ function newBox(g) {
   const order = [];
   g.prizes.forEach((p, i) => { for (let k = 0; k < p.count; k++) order.push(i); });
   // 箱は、作った時の景品と1回の値段を持つ（price）。あとで値段や中身を変えても、引き途中の箱はそのまま引き切れる
-  return { order: shuffle(order), drawn: 0, emptyDay: null, price: g.price,
+  return { order: luckyOrder(shuffle(order), g.prizes, growthSkill(state, "K26"), SKILL_TUNING.kujiLuck), drawn: 0, emptyDay: null, price: g.price,
     version: DB.kuji.meta.version, prizes: structuredClone(g.prizes), lastOne: structuredClone(g.lastOne) };
 }
 

@@ -12318,6 +12318,29 @@ body:not(:root) .map .mi-tag.mi-lesson { color: #10261a; background: #9be7b4; wh
 html:root[data-density="phone"] body:not(:root) .gfx-cutin.t-peak .gfx-cutin-text strong { font-size: 48px; }
 @media (prefers-reduced-motion: reduce) { .gboard.peak-burst .gb-reveal { animation: none !important; } }
 
+/* ================= 授業の札の段階（2026-11-20 SBD155）=================
+   道が届いたか・♥が足りたかで、札の後ろの光と下の印を変える。札そのもの（顔・金の枠。#2129）は変えない。
+   lp-far＝まだ遠い（沈める）／lp-heart＝道は届いた。あとは♥だけ（桃色に脈打つ）／lp-road＝♥は足りた。あとは道だけ（金の点線の輪がゆっくり回る）／
+   lp-open＝♥を問わない授業で道がまだ（細い点線の輪だけ）／lp-ready＝今教われる（今までの金の息づき）／lp-talk＝灯した。会いに行く（緑の光）／lp-done＝習得（今までの灯した姿） */
+.gboard .gb-nodes .gb-node.lesson.lp-far .gb-face { opacity: 0.55; }
+.gboard .gb-nodes .gb-node.lesson:is(.lp-heart, .lp-road, .lp-open, .lp-ready, .lp-talk, .lp-done) .gb-face { opacity: 1; }
+.gb-node.lesson:is(.lp-heart, .lp-road, .lp-open, .lp-talk)::before { content: ""; position: absolute; left: 50%; top: 50%; width: calc(var(--fh) + 40px); height: calc(var(--fh) + 40px);
+  translate: -50% -50%; border-radius: 50%; pointer-events: none; }
+.gb-node.lesson.lp-heart::before { background: radial-gradient(circle, rgba(236, 96, 140, 0.7) 0%, rgba(226, 85, 127, 0.32) 46%, transparent 70%); animation: gb-lp-heartbeat 1.25s ease-in-out infinite; }
+@keyframes gb-lp-heartbeat { 0%, 100% { scale: 0.92; opacity: 0.75; } 14% { scale: 1.1; opacity: 1; } 28% { scale: 0.96; opacity: 0.8; } 42% { scale: 1.06; opacity: 1; } 60% { scale: 0.92; opacity: 0.75; } }
+.gb-node.lesson.lp-road::before { width: calc(var(--fh) + 14px); height: calc(var(--fh) + 14px); border: 2px dashed rgba(255, 224, 138, 0.9);
+  background: radial-gradient(circle, rgba(244, 210, 122, 0.24), transparent 70%); animation: gb-lp-turn 14s linear infinite; }
+.gb-node.lesson.lp-open::before { width: calc(var(--fh) + 12px); height: calc(var(--fh) + 12px); border: 1.5px dashed rgba(255, 233, 184, 0.42); }
+@keyframes gb-lp-turn { to { rotate: 360deg; } }
+.gb-node.lesson.lp-talk::before { background: radial-gradient(circle, rgba(155, 231, 180, 0.6) 0%, rgba(155, 231, 180, 0.22) 46%, transparent 70%); animation: gb-lp-glow 1.8s ease-in-out infinite; }
+@keyframes gb-lp-glow { 50% { opacity: 0.55; } }
+/* 下の印: あと♥1（道は届いた。明るい桃色で脈打つ）・♥達成（金の縁） */
+.gb-lesson-tag.t-heart.only { background: linear-gradient(180deg, #ff7aa6, #d83e74); box-shadow: 0 0 0 2px rgba(10, 6, 16, 0.9), 0 0 10px #ff7aa6; animation: gb-tag-heart 1.25s ease-in-out infinite; }
+@keyframes gb-tag-heart { 14%, 42% { scale: 1.12; } 28%, 60% { scale: 1; } }
+.gb-lesson-tag.t-road { color: #ffe9b8; background: #2a1c0c; border: 1.5px solid #ffe08a; }
+.gh-tag.gb-lesson-tag.t-heart.only { animation: none; }
+@media (prefers-reduced-motion: reduce) { .gb-node.lesson::before, .gb-lesson-tag.t-heart.only { animation: none !important; } }
+
 /* ===== css/rule-sheet.css ===== */
 .modal-box.rule-sheet-modal { width: min(560px, 94%); max-height: min(96%, 700px); padding: 12px 24px; }
 .rule-sheet-modal .modal-body { display: flex; justify-content: center; }

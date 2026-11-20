@@ -383,6 +383,66 @@ await suite("growth-fx", async (check) => {
       assert.match(far.find((row) => row[0] === "盤で灯す")[2], /^あと火種\d+$/);
       assert.match(await page.locator(".gb-p-state").innerText(), /^つぎ：盤の道をここまでつなぐ（あと火種\d+）。授業に火種はいらない$/);
     }, options);
+
+    // 授業の札は段階で見た目が変わる（SBD155「授業マスもそこまで開けたら見た目を変えたい。あとは好感度だけって状態とかでも見た目が変わるといい」）:
+    // 道は届いた・あとは♥だけ＝桃色に脈打つ光と「あと♥n」／♥は足りた・あとは道だけ＝金の点線の輪と「♥達成」／
+    // ♥を問わない授業で道がまだ＝細い輪だけ／今教われる＝「今」／灯した＝緑の光と「相談」
+    await check(`${label}-lesson-phase-looks`, async (page) => {
+      await setupDaily(page, { chapter: 2 });
+      const heart = await page.evaluate(async () => {
+        const g = await import("./js/core/growth.js"), b = await import("./js/core/growth-board.js"), stats = await import("./js/core/stats.js"), gr = g.ensureGrowth(), s = __remake.state;
+        s.flags._board_starter_given = true; s.flags._board_tutorial_done = true;
+        s.met = { ...(s.met || {}), adam: true, tsumugi: true, naru: true };
+        s.affinity = { ...(s.affinity || {}), adam: 60, tsumugi: 999, naru: 0 };
+        gr.hidane.any = 6;
+        const lit = new Set();
+        const reach = (id) => { for (const n of b.pathTo(id, lit).path) lit.add(n); };
+        reach("K06");                                                  // アダムの授業（M-S2）の手前のスキルまで道をつなぐ
+        for (const n of b.pathTo("M-W1", lit).path.slice(0, -1)) lit.add(n); // キューブ炭（♥不要）の隣まで
+        gr.nodes.push(...lit, "M-W2");                                 // M-W2 は灯しただけ（相談）
+        window.boardDone = g.openGrowthBoard({ place: "kannon" });
+        return stats.affinityLevel("adam");
+      });
+      await page.locator(`${t("growth-board")}[data-art]`).waitFor();
+      assert(heart > 0 && heart < 5, `アダムは♥5の手前: ${heart}`);
+      const look = (id) => page.locator(t(`board-node-${id}`)).evaluate((node) => {
+        const halo = getComputedStyle(node, "::before"), face = node.querySelector(".gb-face");
+        return { phase: [...node.classList].filter((name) => name.startsWith("lp-")).join(" "), status: node.dataset.status,
+          tag: node.querySelector(".gb-lesson-tag")?.textContent || "", tagClass: node.querySelector(".gb-lesson-tag")?.className || "",
+          halo: halo.content !== "none" && halo.display !== "none", anim: halo.animationName, face: face ? Number(getComputedStyle(face).opacity) : null };
+      });
+      await page.locator(t("board-tab-sense")).click();
+      // 道は届いた・あとは♥だけ
+      const only = await look("M-S2");
+      assert.equal(only.status, "sealed");
+      assert.equal(only.phase, "lp-heart", JSON.stringify(only));
+      assert.equal(only.tag, `あと♥${5 - heart}`);
+      assert.match(only.tagClass, /\bt-heart\b.*\bonly\b/);
+      assert(only.halo && only.anim === "gb-lp-heartbeat", `桃色の光が脈打つ: ${JSON.stringify(only)}`);
+      assert.equal(only.face, 1, "道が届いた授業の顔は沈めない");
+      await page.locator(t("board-node-M-S2")).evaluate((node) => node.click());
+      assert.match(await page.locator(".gb-p-state").innerText(), new RegExp(`^つぎ：アダムと♥5まで仲良くなる（いま♥${heart}）。盤の道はもう届いている$`));
+      await assertFits(page, t("board-lesson-flow"));
+      // ♥は足りた・あとは道だけ
+      const road = await look("M-S3");
+      assert.equal(road.status, "far");
+      assert.equal(road.phase, "lp-road", JSON.stringify(road));
+      assert.equal(road.tag, "♥達成");
+      assert(road.halo && road.anim === "gb-lp-turn", `金の点線の輪が回る: ${JSON.stringify(road)}`);
+      // ♥を問わない授業で、道がまだ: 細い輪だけ（印は無い）
+      const open = await look("M-S1");
+      assert.deepEqual([open.phase, open.tag, open.halo, open.anim], ["lp-open", "", true, "none"], JSON.stringify(open));
+      // 今教われる・灯した（会いに行く）
+      await page.locator(t("board-tab-wisdom")).click();
+      const ready = await look("M-W1"), talk = await look("M-W2");
+      assert.deepEqual([ready.status, ready.phase, ready.tag], ["available", "lp-ready", "今"], JSON.stringify(ready));
+      assert.deepEqual([talk.status, talk.phase, talk.tag], ["unlocked", "lp-talk", "相談"], JSON.stringify(talk));
+      assert(talk.halo && talk.anim === "gb-lp-glow", `灯した授業は緑の光: ${JSON.stringify(talk)}`);
+      // まだ遠い（♥も道もまだ）は、今までどおり「♥n/5」で、顔を沈める
+      const far = await look("M-W3");
+      assert.deepEqual([far.status, far.phase, far.tag, far.halo], ["sealed", "lp-far", "♥0/5", false], JSON.stringify(far));
+      assert(far.face < 1, "まだ遠い授業の顔は沈める");
+    }, options);
   }
 
   // 極み（SBD138③）: 盤の能力のマスを全部灯した後に極みを灯すと、盤の全体まで引いて波が走り、金の「盤を極めた」のカットイン
