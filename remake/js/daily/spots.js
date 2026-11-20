@@ -334,6 +334,11 @@ export const CHAPTER_TALKS = Object.freeze({
   ]),
   // #3097 PR-I: 窓際の席のつむぎ（tonariの客席）。同行・応援の話はしない（第4章はドバイへ必ず応援に来る・SPC17）
   tsumugi: Object.freeze([
+    // #3097 第5弾: 第2章、客としてtonariへ来た日の窓際の席（木炭と食パン・電車に乗せる猫・客席から聞く炭の音）。
+    // 大会・味の感想・コンテストの結果・煙の色に触れない
+    { chapter: 2, scene: "ch2_tsumugi_charcoal_bread" },
+    { chapter: 2, scene: "ch2_tsumugi_train_cat" },
+    { chapter: 2, scene: "ch2_tsumugi_customer_seat" },
     { chapter: 3, scene: "ch3_prep_tsumugi", prep: true },
     { chapter: 4, scene: "ch4_prep_tsumugi", prep: true },
   ]),
@@ -354,6 +359,8 @@ export const CHAPTER_TALKS = Object.freeze({
   naru: Object.freeze([
     // #3097 PR-C: 看板の電球の付け替え。DAY3の祝いの後、DAY11の対峙より前だけ（対峙の後は店を長く休む）
     { chapter: 2, scene: "ch2_naru_sign_light", flag: "_ch2_naru_warm_done", untilRift: true },
+    // #3097 第5弾: 電球の回の「それは、今度な」の続き（モンブランの組み方）。同じく祝いの後・対峙より前だけ
+    { chapter: 2, scene: "ch2_naru_montblanc", flag: "_ch2_naru_warm_done", untilRift: true },
   ]),
 });
 /**

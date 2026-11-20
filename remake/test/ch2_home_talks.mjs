@@ -214,7 +214,15 @@ for (const [id, scenes] of [["adam", ["ch2_adam_ticket_machine", "ch2_adam_yuzug
   }
   for (const chapter of [1, 3, 4]) { state = rioSave({ chapter, story: { naru: 3 }, flags: warm }); assert.equal(spots.chapterTalkDue("naru"), null, `naru: chapter ${chapter}`); }
   state = rioSave({ story: {}, flags: warm }); assert.equal(spots.chapterTalkDue("naru"), null, "naru: first meeting comes first");
-  state = rioSave({ story: { naru: 3 }, flags: { ...warm, _talk_seen_ch2_naru_sign_light: true } }); assert.equal(spots.chapterTalkDue("naru"), null, "naru: read once");
+  // #3097 第5弾: 電球の回の後に、モンブランの続き。同じく対峙より前だけ。二本とも読めば出ない
+  state = rioSave({ story: { naru: 3 }, flags: { ...warm, _talk_seen_ch2_naru_sign_light: true } });
+  assert.equal(spots.chapterTalkDue("naru"), "ch2_naru_montblanc", "naru: the montblanc talk follows the sign light");
+  for (const rift of ["_ch2_read_ch2_naru_confrontation", "_ch2_naru_hurt"]) {
+    state = rioSave({ story: { naru: 3 }, flags: { ...warm, _talk_seen_ch2_naru_sign_light: true, [rift]: true } });
+    assert.equal(spots.chapterTalkDue("naru"), null, `naru: no montblanc after the confrontation (${rift})`);
+  }
+  state = rioSave({ story: { naru: 3 }, flags: { ...warm, _talk_seen_ch2_naru_sign_light: true, _talk_seen_ch2_naru_montblanc: true } });
+  assert.equal(spots.chapterTalkDue("naru"), null, "naru: read once");
   // 実 visitChar: 対峙より前は読む。中断なら既読にしない
   state = rioSave({ story: { naru: 3 }, visits: { naru: 6 }, met: { naru: true }, affinity: { naru: 40 }, flags: { ...warm } });
   playMode = "cancel"; played = []; affinity = [];
@@ -225,6 +233,45 @@ for (const [id, scenes] of [["adam", ["ch2_adam_ticket_machine", "ch2_adam_yuzug
   // 対峙の後は、店そのものが閉まっていて来店できない
   state = rioSave({ story: { naru: 3 }, visits: { naru: 6 }, met: { naru: true }, flags: { ...warm, _ch2_naru_hurt: true } }); played = [];
   assert.equal(await spots.visitChar("naru"), false); assert.deepEqual(played, []);
+}
+
+// #3097 第5弾: tonariへ客として来た日の、窓際の席のつむぎ3本（第2章だけ・並びの順に一来店一本・一度きり）。
+// 第3章・第4章の送り出し（prep）は準備期間だけなので、第2章の会話とは重ならない
+{
+  const scenes = ["ch2_tsumugi_charcoal_bread", "ch2_tsumugi_train_cat", "ch2_tsumugi_customer_seat"];
+  const seen = {};
+  for (const scene of scenes) {
+    state = rioSave({ story: { tsumugi: 2 }, flags: { ...seen } });
+    assert.equal(spots.chapterTalkDue("tsumugi"), scene, `tsumugi: chapter 2 talk ${scene}`);
+    assert.equal(spots.hasNewStory("tsumugi"), true, `tsumugi: the tonari menu marks ${scene}`);
+    seen[`_talk_seen_${scene}`] = true;
+  }
+  state = rioSave({ story: { tsumugi: 2 }, flags: seen }); assert.equal(spots.chapterTalkDue("tsumugi"), null, "tsumugi: each read once");
+  for (const chapter of [1, 3, 4]) { state = rioSave({ chapter, story: { tsumugi: 2 } }); assert(!scenes.includes(spots.chapterTalkDue("tsumugi")), `tsumugi: not in chapter ${chapter}`); }
+  state = rioSave({ story: {} }); assert.equal(spots.chapterTalkDue("tsumugi"), null, "tsumugi: first meeting comes first");
+  // 実 visitChar: 一来店に一本。読み終えたら既読、好感度は通い訪問と同じ。中断なら既読にしない
+  state = rioSave({ story: { tsumugi: 2 }, visits: { tsumugi: 6 }, met: { tsumugi: true }, affinity: { tsumugi: 40 } });
+  playMode = "cancel"; played = []; affinity = [];
+  assert.equal(await spots.visitChar("tsumugi"), false); assert(!state.flags._talk_seen_ch2_tsumugi_charcoal_bread); assert.deepEqual(plain(affinity), []);
+  playMode = "ok";
+  for (const scene of scenes) {
+    played = []; affinity = [];
+    assert.equal(await spots.visitChar("tsumugi"), true);
+    assert.deepEqual(played, [scene]); assert.deepEqual(plain(affinity), [["tsumugi", 8]]); assert.equal(state.story.tsumugi, 2);
+    assert.equal(state.flags[`_talk_seen_${scene}`], true);
+  }
+  // 台本の決まり: 報酬の文・命令を持たない。大会・コンテストの結果・煙の色に触れない。はじめは味の感想を言わない
+  const { CH2_HOME_IDS } = await import(new URL("remake/js/chapters/ch2-city-data.js", root));
+  for (const [who, id] of [...scenes.map(id => ["tsumugi", id]), ["naru", "ch2_naru_montblanc"]]) {
+    const text = all[id].lines.map(line => line.text).join("\n");
+    assert(CH2_HOME_IDS.includes(id), `${id} is loaded with the chapter 2 preparation`);
+    assert(all[id].lines.every(line => !line.type), `${id}: the visit handles reading and affinity`);
+    assert(all[id].lines.some(line => line.speaker === who), `${id}: ${who} speaks`);
+    assert(!/大会|本番|県大会|優勝|審査|採点|入選|コンテスト|応募|が(少し|かなり|大きく)?上がった/.test(text), `${id}: before or after the tournament and the contest result`);
+    assert(!/煙の色|色の名前|何色|色が(見え|ちが|違)/.test(text), `${id}: no smoke colours`);
+    assert(!all[id].lines.some(line => line.speaker === "hajime" && /味|甘い|苦い|香り|おいし|うまい/.test(line.text)), `${id}: hajime does not judge the taste`);
+  }
+  assert(/また今度|それは、今度な/.test(all.ch2_naru_sign_light.lines.map(line => line.text).join("\n")), "the sign light talk promised the montblanc story");
 }
 
 // ---- ③ あげはの通い訪問の小会話6種と昼夜のあいさつ（実 ch2-preparation.js） --------------------
