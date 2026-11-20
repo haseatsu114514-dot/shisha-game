@@ -132,14 +132,18 @@ await suite("regular-service-response", async check => {
       s.restDay = { chapter: 1, day: 2, fullDay: true };
       T.night.syncNightQueue(T.events); const held = await T.night.runNightPlan(T.events);
       const unread = !s.flags._ev_salaryman && !s.flags._salaryman_service_water;
-      s.day = 3; s.restDay = null; T.night.syncNightQueue(T.events); await T.night.runNightPlan(T.events);
+      // #3819: シフトに入らないまま DAY3〜7 の夜には読まない（freeNights）。DAY8 の夜に読む
+      s.day = 3; s.restDay = null; T.night.syncNightQueue(T.events); const waited = await T.night.runNightPlan(T.events);
+      const stillUnread = !s.flags._ev_salaryman;
+      s.day = 8; T.night.syncNightQueue(T.events); await T.night.runNightPlan(T.events);
       T.core.save(); T.core.load(); T.core.state.day = 10; T.vn.backlog().length = 0;
       T.night.syncNightQueue(T.events); await T.night.runNightPlan(T.events);
       const lines = T.lines(), once = T.game(); T.vn.backlog().length = 0;
       const again = await T.night.runNightPlan(T.events);
-      return { held, unread, lines, once, twice: T.game(), again, repeated: T.lines() };
+      return { held, unread, waited, stillUnread, lines, once, twice: T.game(), again, repeated: T.lines() };
     });
     assert.equal(r.held, 0); assert(r.unread); response(r.lines, 1);
+    assert.equal(r.waited, 0); assert(r.stillUnread, "The regular waits for a shift or DAY8's night");
     assert(r.once.flags._ev_salaryman && r.once.flags._ev_salaryman_change);
     assert.deepEqual(r.twice, r.once); assert.equal(r.again, 0); assert.deepEqual(r.repeated, []);
   });
