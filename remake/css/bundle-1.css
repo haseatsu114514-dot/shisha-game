@@ -12289,6 +12289,35 @@ html:root[data-density="phone"] body:not(:root) .gh-tag.gb-lesson-tag.t-talk::af
   .gboard .gb-nodes .gb-node.just-ready .gb-face, .gb-tab-count.grew, .gfx-cutin-rays, .gfx-cutin-ember, .gfx-banner-ember { animation: none !important; }
 }
 
+/* 地図: 灯した授業を相談できる店（2026-11-20 SBD141）。看板の左に、盤の札と同じ緑の「相談」の吹き出し。
+   右上の「!」・火種の数、上の顔と重ならないよう左の辺に置く。右下の案内には授業の名前の札 */
+.map .spot-pin .lesson-badge { position: absolute; left: -10px; top: -10px; z-index: 2; display: grid; place-items: center; min-height: 22px; padding: 1px 8px 1px 22px; box-sizing: border-box;
+  border-radius: 999px; font-style: normal; font-size: 12px; font-weight: 900; line-height: 1.25; white-space: nowrap; color: #10261a; background: #9be7b4;
+  border: 2px solid #e6fff0; box-shadow: 0 0 10px rgba(155, 231, 180, 0.8); pointer-events: none; animation: lesson-badge-bob 1.8s ease-in-out infinite; }
+.map .spot-pin .lesson-badge::before { content: ""; position: absolute; left: 6px; top: 5px; width: 10px; height: 8px; border-radius: 3px; background: #10261a; }
+.map .spot-pin .lesson-badge::after { content: ""; position: absolute; left: 8px; top: 12px; border: 3px solid transparent; border-top-color: #10261a; border-left-color: #10261a; }
+@keyframes lesson-badge-bob { 50% { box-shadow: 0 0 18px rgba(155, 231, 180, 1); scale: 1.06; } }
+/* 看板の上には在店の顔が並ぶので、印は看板の左の辺の真ん中から左へ出す（顔・「!」・店名の札のどれにも重ならない） */
+body:not(:root) .map .spot-pin .lesson-badge { min-height: max(22px, calc(var(--mui-text) * 1.5)); padding-left: max(22px, calc(var(--mui-text) * 1.6)); font-size: max(12px, var(--mui-text));
+  top: 50%; left: auto; right: calc(100% - 12px); translate: 0 -50%; }
+body:not(:root) .map .spot-pin .lesson-badge::before { top: calc(50% - 6px); }
+body:not(:root) .map .spot-pin .lesson-badge::after { top: calc(50% + 1px); }
+/* 授業の名前は長いことがあるので、この札だけ折り返す（右下の案内の幅に収める） */
+body:not(:root) .map .mi-tag.mi-lesson { color: #10261a; background: #9be7b4; white-space: normal; max-width: 100%; box-sizing: border-box; border-radius: 12px; }
+@media (prefers-reduced-motion: reduce) { .map .spot-pin .lesson-badge { animation: none; } }
+
+/* 極みの山場（2026-11-20 SBD138③）: 盤の奥が一度明るく燃える。カットインは金の二重の縁で大きく */
+.gboard.peak-burst .gb-reveal { animation: gb-peak-burst .9s ease-out; }
+@keyframes gb-peak-burst { 0% { filter: brightness(1); } 25% { filter: brightness(2.4) saturate(1.4); } 100% { filter: brightness(1); } }
+.gboard.peak-burst .gb-embers i { display: block; }
+.gfx-cutin.t-peak { --cc: #ffe08a; padding-block: 26px; border-top: 3px double #ffe08a; border-bottom: 3px double #ffe08a;
+  background: linear-gradient(180deg, rgba(48, 30, 8, 0.97), rgba(18, 10, 4, 0.97)); box-shadow: 0 0 60px rgba(255, 210, 110, 0.55), inset 0 0 40px rgba(255, 200, 90, 0.18); }
+.gfx-cutin.t-peak .gfx-cutin-text strong { font-size: 42px; color: #fff6dc; }
+.gfx-cutin.t-peak .gfx-cutin-rays { opacity: 0.38; animation-duration: 6s; }
+.gfx-cutin.t-peak .gfx-cutin-icon { width: 108px; height: 108px; box-shadow: 0 0 24px #ffe08a; }
+html:root[data-density="phone"] body:not(:root) .gfx-cutin.t-peak .gfx-cutin-text strong { font-size: 48px; }
+@media (prefers-reduced-motion: reduce) { .gboard.peak-burst .gb-reveal { animation: none !important; } }
+
 /* ===== css/rule-sheet.css ===== */
 .modal-box.rule-sheet-modal { width: min(560px, 94%); max-height: min(96%, 700px); padding: 12px 24px; }
 .rule-sheet-modal .modal-body { display: flex; justify-content: center; }
