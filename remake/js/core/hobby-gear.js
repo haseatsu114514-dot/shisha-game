@@ -8,8 +8,9 @@ import { MAX_MONEY } from "./rules.js";
 
 /** 斧: 構えたときの照準の揺れ（axe-model.js の swayAt）に掛ける倍率。 */
 export const AXE_STEADY = 0.9;
-/** DJ: ▶を押す瞬間の判定（previews/dj/model.mjs の gradeOf・scoreTransition）を広げるミリ秒。 */
-export const DJ_ALLOWANCE_MS = 10;
+/** DJ: ▶を押す瞬間の判定の幅（previews/dj/model.mjs の ENTRY_BANDS・PHONES_ALLOWANCE）を前後に広げる拍。
+ *  2026-11-20 DJK07: 判定を拍にした（#2456）ので、10ms から ¼拍（PERFECT ±½→±¾拍＝1.5倍）へ。 */
+export const DJ_ALLOWANCE_BEATS = 0.25;
 
 export const HOBBY_GEAR = Object.freeze({
   gear_hatchet: Object.freeze({
@@ -34,7 +35,7 @@ export const HOBBY_GEAR = Object.freeze({
   }),
   gear_headphones: Object.freeze({
     id: "gear_headphones", name: "モニターヘッドホン", short: "ヘッドホン", price: 22000, venue: "club", chapterMin: 3,
-    effect: "▶の判定が前後10ミリ秒広い",
+    effect: "▶の判定が前後¼拍広い（PERFECT の幅が1.5倍）",
     description: "ヨルが勧めるDJ用の密閉型ヘッドホン。次の曲を耳で先に聴けるので、▶を押す瞬間を合わせやすい。",
   }),
 });
