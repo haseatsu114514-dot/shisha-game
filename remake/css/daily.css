@@ -1387,8 +1387,10 @@ html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 140px; }
 #screen:has(> .chapter-clear) ~ #fx .lvup-none { padding-left: 10px; white-space: normal; }
 #screen:has(> .chapter-clear) ~ #fx .lvup-fire .hidane-icon { width: 38px; height: 38px; }
 #screen:has(> .chapter-clear) ~ #fx .lvup-fire b { font-size: 34px; }
-/* 大きな光と、非表示のMENUへ飛ぶ粒を本文に重ねない。札の中の動きはそのまま。 */
-#screen:has(> .chapter-clear) ~ #fx :is(.lvup-rays, .gfx-ring, .gfx-spark, .gfx-fly),
+/* 大きな光と、非表示のMENUへ飛ぶ粒を本文に重ねない。札の中の動きはそのまま。
+   消す光と粒は、札が #fx の直下に出すものだけ（MENU や観音堂から開いた心得の盤の中の光は消さない）。 */
+#screen:has(> .chapter-clear) ~ #fx > :is(.gfx-ring, .gfx-spark, .gfx-fly),
+#screen:has(> .chapter-clear) ~ #fx .lvup-rays,
 #screen:has(> .chapter-clear) ~ #fx .lvup.milestone::before { display: none; }
 
 /* ---------------------------------------------------------------- レベルアップと火種の演出の強化（2026-11-11 オーナー「見た目や演出など全面的にパワーアップさせて」SBD103）

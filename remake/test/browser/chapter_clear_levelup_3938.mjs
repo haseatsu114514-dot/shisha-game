@@ -159,6 +159,16 @@ await suite("chapter-clear-levelup-3938", async check => {
         const cap = page.locator('.lvup.show[data-to="90"]'); await cap.waitFor();
         assert.equal(await cap.locator(".lvup-none").textContent(), "火種は受け取り済み");
         await unobscured(cap);
+        // Only the plate's own light and particles (direct children of #fx) are hidden here; the growth board
+        // opened over this card from MENU (or chapter 5's Kannon-do) keeps the light in its own layer.
+        assert.deepEqual(await page.evaluate(() => {
+          const make = (tag, className) => Object.assign(document.createElement(tag), { className });
+          const own = make("i", "gfx-ring"), board = make("div", "gb-fx"), inBoard = make("i", "gfx-ring");
+          board.append(inBoard); document.querySelector("#fx").append(own, board);
+          const shown = [own, inBoard].map(n => getComputedStyle(n).display !== "none");
+          own.remove(); board.remove();
+          return shown;
+        }), [false, true]);
       }
     }, options);
   }
