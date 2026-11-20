@@ -62,7 +62,8 @@ export const CAPPED_WHITE_LINE = "白火は、台座にも、どの盤のマス�
 const STYLE_ID = "gb-tutorial-style";
 const STYLE = `
 .gb-tutorial{position:absolute;inset:0;z-index:40;pointer-events:none}
-.gb-tutorial-spot{position:absolute;border-radius:12px;box-shadow:0 0 0 9999px rgba(8,6,16,.55),0 0 0 3px var(--gold-hi,#ffe2a6),0 0 18px 4px rgba(255,226,166,.55);transition:all .25s ease;pointer-events:none}
+.gb-tutorial[data-step="light"]{--gb-tutorial-shade:transparent}
+.gb-tutorial-spot{position:absolute;border-radius:12px;box-shadow:0 0 0 9999px var(--gb-tutorial-shade,rgba(8,6,16,.55)),0 0 0 3px var(--gold-hi,#ffe2a6),0 0 18px 4px rgba(255,226,166,.55);transition:all .25s ease;pointer-events:none}
 .gb-tutorial-bubble{position:absolute;max-width:min(var(--gb-tutorial-width,420px),calc(100% - 32px));background:var(--panel,rgba(16,12,28,.94));color:var(--text,#f4ede0);border:1px solid var(--panel-edge,rgba(232,194,122,.5));border-radius:12px;padding:14px 16px 12px;box-shadow:0 8px 28px rgba(0,0,0,.45);pointer-events:auto;font-size:15px;line-height:1.6}
 .gb-tutorial-bubble h3{margin:0 0 6px;font-size:16px;color:var(--gold,#e8c27a)}
 .gb-tutorial-bubble p{margin:0;word-break:auto-phrase;text-wrap:pretty}
@@ -134,7 +135,7 @@ export function startBoardTutorial(root, { onDone = () => {}, starterAmount = ST
       const fitsBelow = below + bh <= h - 16, fitsAbove = above >= 16;
       const y = s.place === "above" && fitsAbove ? above : fitsBelow ? below : fitsAbove ? above
         : Math.max(16, Math.min(h - bh - 16, bottom - bh - 24));
-      bubble.style.left = `${left}px`;
+      bubble.style.left = s.id === "light" ? "calc(16px + var(--stage-safe-l, 0px))" : `${left}px`;
       bubble.style.top = `${y}px`;
       bubble.style.bottom = "";
     }
@@ -145,6 +146,7 @@ export function startBoardTutorial(root, { onDone = () => {}, starterAmount = ST
     const s = step();
     // 焦点（#1801 U4）: 盤の中にあった焦点は、描き直した吹き出しの「次へ」へ。操作を待つ手順は、押す部品（光っているマス・「灯す」）へ
     const keepFocus = root.contains(doc.activeElement);
+    layer.dataset.step = s.id;
     bubble.replaceChildren();
     const title = doc.createElement("h3");
     title.textContent = s.title;

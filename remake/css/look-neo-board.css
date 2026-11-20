@@ -200,15 +200,7 @@
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-bubble h3 { color: var(--neo-ui-gold-hi); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-bubble .gb-tutorial-count { color: var(--neo-ui-dim); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-spot {
-  box-shadow: 0 0 0 9999px rgba(8, 3, 16, .58), 0 0 0 3px var(--neo-ui-gold-hi), 0 0 18px 4px rgba(246, 223, 168, .5);
-}
-
-/* 「灯す」を待つ間は説明を盤の左に置き、右の効果と支払いを読める明るさにする。 */
-#stage #fx .gboard:has(.gb-light) .gb-tutorial-bubble:has(.gb-tutorial-wait) {
-  left: calc(16px + var(--stage-safe-l, 0px)) !important;
-}
-#stage #fx .gboard:has(.gb-light) .gb-tutorial:has(.gb-tutorial-wait) .gb-tutorial-spot {
-  box-shadow: 0 0 0 3px var(--gold-hi, #ffe2a6), 0 0 18px 4px rgba(255, 226, 166, .55);
+  box-shadow: 0 0 0 9999px var(--gb-tutorial-shade, rgba(8, 3, 16, .58)), 0 0 0 3px var(--neo-ui-gold-hi), 0 0 18px 4px rgba(246, 223, 168, .5);
 }
 
 /* 近い目的地（SBD104）: 紙の札をやめて、盤の色の線が左に付いた夜紫の札。 */
