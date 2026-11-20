@@ -20,6 +20,19 @@
 | 優勝の紋章 | [prompts/crest-gold.txt](prompts/crest-gold.txt) | 1024×1024・透過 | `raw/crest-gold.png` | 大見出しの冠と月桂冠（`.ts-splash .ts-crest`。いまは SVG） |
 | 幕（左半分） | [prompts/curtain.txt](prompts/curtain.txt) | 1024×1536・透過 | `raw/curtain.png` | アイキャッチの左右の板（いまは紫の面と金の線）。鏡写しで右にも使う |
 
+## 受け取った原画（記録）
+
+生成は Codex 内蔵 imagegen、1回につきPNG 1枚。票のコインと優勝の紋章は生成後に透明部のノイズ除去を行ったため、生成時の記録（`RESULT.md`）とは bytes・SHA-256 が異なる。幕・背景は生成時のまま。
+
+| 原画 | サイズ | bytes | SHA-256 | 採用先 |
+|---|---:|---:|---|---|
+| `raw/backdrop.png` | 1536×1024 | 1707032 | `30850fd248b77b1d7e27673785dfd84c96e504ab0b7e1be27fb16a7fd2827f56` | `assets/ui/tournament-show/backdrop.png`（同寸・そのまま採用） |
+| `raw/vote-token.png` | 1254×1254 | 1594090 | `9c922a5f5b562985051af1cbc4b3d50b2635d4b5cb44f902bcaa6227b49c05ee` | `assets/ui/tournament-show/vote-token.png`（同寸・そのまま採用） |
+| `raw/crest-gold.png` | 1254×1254 | 1371460 | `819b903e8d4adb0904fe6f09a5e6af78043ff4efdde54ac07657e9254144c36b` | `assets/ui/tournament-show/crest-gold.png`（同寸・そのまま採用） |
+| `raw/curtain.png` | 1024×1536 | 1965083 | `4b02729b75deae47049fe390d6a4e794fc5b53412d9f4c9a1120d24c5912a306` | `assets/ui/tournament-show/curtain.png`（同寸・そのまま採用） |
+
+配布用 WebP は `remake/tools/build_ui_skin.py` の `TOURNAMENT_SHOW_PARTS` で生成し、`remake/img/ui/tournament-show/` に置く（背景1280・コイン128・紋章512・幕640）。
+
 ## 受け取った後（組み込みの手順）
 
 1. 原画を `raw/` に置き、この表に寸法・SHA-256・採用先を足す（[夜紫UIの記録](../craft-night-20261102/README.md) と同じ形）。

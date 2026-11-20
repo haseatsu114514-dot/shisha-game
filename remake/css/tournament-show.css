@@ -23,8 +23,8 @@
 .ts-lights.cool .ts-dust { background: radial-gradient(circle, #fff, #c9a7e6 45%, transparent 70%); box-shadow: 0 0 8px #c9a7e6aa; }
 @keyframes ts-dust { 0% { transform: translate(0, 0); opacity: 0; } 12% { opacity: .9; } 80% { opacity: .7; } 100% { transform: translate(var(--sway), -760px); opacity: 0; } }
 
-/* 中間投票の後ろ: ただの暗幕ではなく、光の差す舞台にする */
-.fx-dim.ts-show-dim { background: radial-gradient(ellipse 70% 60% at 50% 46%, #3a215acc, #150d22f2 62%, #0a0612fa); }
+/* 中間投票の後ろ: ただの暗幕ではなく、光の差す舞台にする（生成絵 backdrop の上に暗いヴェールを残し、板の読みやすさを保つ） */
+.fx-dim.ts-show-dim { background: radial-gradient(ellipse 70% 60% at 50% 46%, #3a215a8c, #150d22d9 62%, #0a0612e6), url('../img/ui/tournament-show/backdrop.webp') center / cover no-repeat, #0a0612; }
 #stage[data-wide] .fx-dim.ts-show-dim { box-shadow: 0 0 0 var(--stage-gutter) #0a0612fa; }
 
 /* ================================================================ 粒・紙吹雪・後光 */
@@ -49,6 +49,11 @@
 /* ================================================================ 冠と月桂冠・胸から上の立ち絵 */
 .ts-crest { position: relative; display: block; width: 200px; height: 200px; filter: drop-shadow(0 6px 10px #0009); }
 .ts-crest svg { display: block; width: 100%; height: 100%; overflow: visible; }
+/* 大見出しの紋章は生成絵（crest-gold）。金以外の順位は色を寄せる */
+.ts-crest-art img { display: block; width: 100%; height: 100%; }
+.ts-splash[data-metal="silver"] .ts-crest-art img { filter: grayscale(1) brightness(1.14) contrast(.92); }
+.ts-splash[data-metal="bronze"] .ts-crest-art img { filter: sepia(.5) saturate(1.35) hue-rotate(-16deg) brightness(.97); }
+.ts-splash[data-metal="plain"] .ts-crest-art img { filter: hue-rotate(232deg) saturate(.5) brightness(1.08); }
 .ts-bust { position: relative; display: block; overflow: hidden; background: linear-gradient(180deg, #3a2456, #1a1028); }
 .ts-bust img { position: absolute; max-width: none; height: auto; user-select: none; -webkit-user-drag: none; }
 .ts-bust.fallback { display: grid; place-items: center; }
@@ -78,10 +83,10 @@
 
 /* ================================================================ 票の粒・加点・順位の上がり */
 .ts-token { position: absolute; width: 0; height: 0; z-index: 9; pointer-events: none; }
+/* 票の粒は生成絵のコイン。審査員の色は外側の光（box-shadow）で残す */
 .ts-token b { position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%;
-  background: radial-gradient(circle at 34% 30%, #fff, color-mix(in srgb, var(--c) 65%, #fff) 26%, var(--c) 58%, color-mix(in srgb, var(--c) 55%, #000) 100%);
-  box-shadow: 0 0 0 2px #fff6dc, 0 0 0 3.5px color-mix(in srgb, var(--c) 50%, #3b2405), 0 0 18px var(--c), 0 0 34px color-mix(in srgb, var(--c) 60%, transparent); }
-.ts-token b::after { content: ""; position: absolute; inset: 6px; border-radius: 50%; border: 1.5px solid #ffffffb0; }
+  background: url('../img/ui/tournament-show/vote-token.webp') center / contain no-repeat;
+  box-shadow: 0 0 18px var(--c), 0 0 34px color-mix(in srgb, var(--c) 60%, transparent); }
 /* 加点の札: その審査員の帯の先端に付く（中心を先端に合わせる）。帯の上でも読めるよう、審査員の色の札に濃い文字 */
 .ts-plus { position: absolute; z-index: 9; transform: translate(-50%, -50%); pointer-events: none; padding: 1px 9px 2px 7px; border-radius: 6px; white-space: nowrap;
   font-size: 20px; line-height: 1.2; font-weight: 900; font-style: italic; color: #1a0f24; background: color-mix(in srgb, var(--c) 82%, #fff);
@@ -207,8 +212,8 @@
 
 /* ================================================================ 結果の大見出し（優勝は冠・後光・紙吹雪） */
 .ts-splash { position: absolute; inset: 0; z-index: 14; overflow: hidden; pointer-events: auto; cursor: pointer; outline: 0; opacity: 0; transition: opacity .3s ease;
-  background: radial-gradient(ellipse 70% 60% at 50% 42%, #2a1840, #0d0716 70%), #0d0716; }
-.ts-splash.win { background: radial-gradient(ellipse 80% 70% at 50% 44%, #5a3a1c 0%, #2a1638 46%, #0d0716 80%), #0d0716; }
+  background: radial-gradient(ellipse 70% 60% at 50% 42%, #2a1840b3, #0d0716e6 70%), url('../img/ui/tournament-show/backdrop.webp') center / cover no-repeat, #0d0716; }
+.ts-splash.win { background: radial-gradient(ellipse 80% 70% at 50% 44%, #5a3a1c8c 0%, #2a1638b3 46%, #0d0716e6 80%), url('../img/ui/tournament-show/backdrop.webp') center / cover no-repeat, #0d0716; }
 .ts-splash.show { opacity: 1; }
 .ts-splash.out { opacity: 0; transition-duration: .36s; }
 #stage[data-wide] .ts-splash { left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); }
@@ -323,12 +328,16 @@ html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal .modal-act
 #vn:has(.vn-cg.show) .ts-live, #vn.flashback .ts-live, #vn.sepia .ts-live { display: none; }
 
 /* ================================================================ 合間のアイキャッチ（幕が閉じて、開く） */
-.ts-eyecatch { position: absolute; inset: 0; z-index: 13; overflow: hidden; pointer-events: auto; cursor: pointer; }
+.ts-eyecatch { position: absolute; inset: 0; z-index: 13; overflow: hidden; pointer-events: auto; cursor: pointer;
+  background: url('../img/ui/tournament-show/backdrop.webp') center / cover no-repeat, #0d0716; }
 #stage[data-wide] .ts-eyecatch { left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); }
-.ts-eyecatch-l, .ts-eyecatch-r { position: absolute; top: -10%; bottom: -10%; width: 62%; transition: transform .3s cubic-bezier(.3, .9, .3, 1);
-  background: linear-gradient(115deg, #1c1030, #2e1a48 45%, #150d22); box-shadow: 0 0 60px #000c; }
-.ts-eyecatch-l { left: -8%; transform: translateX(-104%) skewX(-14deg); border-right: 4px solid #e3bd6e; }
-.ts-eyecatch-r { right: -8%; transform: translateX(104%) skewX(-14deg); border-left: 4px solid #e3bd6e; }
+/* 左右の板は生成絵の幕（左半分）。右は鏡写し。幕の内側は透過で、後ろの舞台が透ける */
+.ts-eyecatch-l, .ts-eyecatch-r { position: absolute; top: -10%; bottom: -10%; width: 62%; transition: transform .3s cubic-bezier(.3, .9, .3, 1); }
+.ts-eyecatch-l::before, .ts-eyecatch-r::before { content: ""; position: absolute; inset: 0;
+  background: url('../img/ui/tournament-show/curtain.webp') left top / auto 100% no-repeat; filter: drop-shadow(0 0 24px #000c); }
+.ts-eyecatch-r::before { transform: scaleX(-1); }
+.ts-eyecatch-l { left: -8%; transform: translateX(-104%) skewX(-14deg); }
+.ts-eyecatch-r { right: -8%; transform: translateX(104%) skewX(-14deg); }
 .ts-eyecatch.in .ts-eyecatch-l, .ts-eyecatch.in .ts-eyecatch-r { transform: skewX(-14deg); }
 .ts-eyecatch.out .ts-eyecatch-l { transform: translateX(-104%) skewX(-14deg); transition-duration: .28s; }
 .ts-eyecatch.out .ts-eyecatch-r { transform: translateX(104%) skewX(-14deg); transition-duration: .28s; }
