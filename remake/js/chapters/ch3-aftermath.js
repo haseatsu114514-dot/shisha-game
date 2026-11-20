@@ -268,7 +268,8 @@ async function playScene(owner, scene) {
     await enterScene(scene.bg ? bgUrl(scene.bg, sceneTime(scene)) : null);
   }
   if (!live(owner)) return false;
-  showScreen("none", null);
+  // 帰郷の帯は列車を降りてから切り替える。読了前に保存の段は進めない。
+  showScreen(scene.homecoming ? "homecoming" : "none", null);
   // 制御行とカットインは読了後のcheckpointまで未確定。会話中の保存は出さない。
   layers.hud.replaceChildren();
   layers.hud.classList.remove("show");

@@ -36,7 +36,8 @@ PREVIEW_FILES = {
     **{f"/remake/{path}": f"remake/{path}" for path in (
         "css/base.css", "css/vn.css", "css/ui-art.css", "css/ui-inner.css",
         "js/vn/text.js", "js/vn/budoux_ja.js", "js/vn/inner.js", "js/vn/layout.js",
-        "fonts/ShipporiMinchoB1-Medium.woff2", "fonts/ShipporiMinchoB1-Bold.woff2",
+        "fonts/NotoSansJP-Medium.woff2", "fonts/NotoSansJP-Bold.woff2",
+        "fonts/NotoSansJP-Supp-Medium.woff2", "fonts/NotoSansJP-Supp-Bold.woff2",
         "img/ui/lounge/panel.webp", "img/ui/lounge/button.webp",
     )},
 }

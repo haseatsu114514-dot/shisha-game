@@ -337,8 +337,46 @@ await suite("spot-encounters", async check => {
     assert(r.recipe && r.memories.includes("adam_origin") && r.memories.includes("adam_blend"));
   });
 
-  // UI経由の通常自由行動も確認。SKIPは選択で止まり、実際にタップした返事を保存する。
-  for (const [platform, options] of [["pc", {}], ["touch", touch]]) for (const ex of examples) {
+  for (const [platform, options] of [["pc", {}], ["touch", touch]]) {
+    await run(`${platform}-kannon-map-opens-only-the-board-without-rewards`, async page => {
+      await setup(page);
+      await page.evaluate(async () => {
+        const s = E.core.state;
+        (await import("./js/core/growth.js")).setGrowthPreview(true);
+        s.spotVisits = { kannon: 1 }; // 旧版で通常訪問を終えた保存でも盤へは入れる
+        s.visitedDay.kannon = s.day;
+        s.flags._kannon_growth_intro_done = true;
+        E.kannonState = () => {
+          const g = s.growth;
+          return { day: s.day, slot: s.slot, money: s.money, stamina: s.stamina, stats: { ...s.stats },
+            xp: g?.xp || 0, earned: g?.earned || 0, fire: g?.hidane?.any || 0,
+            relation: E.relationship(), reel: JSON.stringify(s.reel),
+            visits: s.spotVisits.kannon, lastVisit: s.visitedDay.kannon,
+            seen: !!s.flags._spot_seen_kannon_adam, picked: !!s.flags._spot_choice_adam_pray };
+        };
+        E.before = E.kannonState();
+        E.calendar.runDaily({ nightEvents: {}, onQuit: () => {} }).catch(error => { E.error = error.stack; });
+      });
+      const press = selector => options.hasTouch ? page.locator(selector).tap() : page.locator(selector).click();
+      const map = ".map:not(.done)";
+      await press(`${map} [data-spot="kannon"]`);
+      await press('[data-test="map-go"]');
+      await page.locator('[data-test="kannon-reflect"]').waitFor();
+      assert.deepEqual(await page.locator("#modal.show .modal-actions button").allTextContents(), ["盤を開く", "戻る"]);
+      await assertFits(page, "#modal.show .modal-actions button");
+      await press('[data-test="kannon-reflect"]');
+      await page.locator('[data-test="growth-board"][data-mode="light"]').waitFor();
+      await press('[data-test="board-close"]');
+      await page.locator(map).waitFor();
+      const result = await page.evaluate(() => ({ before: E.before, after: E.kannonState(), trace: E.trace, error: E.error }));
+      assert.equal(result.error, undefined);
+      assert.deepEqual(result.trace, [], "盤専用の入口から、以前の施設会話には入らない");
+      assert.deepEqual(result.after, result.before);
+    }, options);
+  }
+
+  // こはく・ジムの通常自由行動は引き続き、SKIPが選択で止まり、実際に選んだ返事と報酬を保存する。
+  for (const [platform, options] of [["pc", {}], ["touch", touch]]) for (const ex of examples.filter(ex => ex.spot !== "kannon")) {
     await run(`${platform}-${ex.spot}-map-choice-and-normal-reward`, async page => {
       await setup(page);
       await page.evaluate(spot => {
@@ -376,11 +414,11 @@ await suite("spot-encounters", async check => {
       assert.equal(r.error, undefined); assert(r.unchanged && r.seen);
       assert.equal(r.cost, ex.spot === "cafe" ? 800 : 0);
       assert.equal(r.stamina, ex.spot === "choizap" ? -8 : -4);
-      // #784: 旧しくみ（?growth=0）は喫茶こはくも観音堂・ジムと同じく主な能力に2P。心得の盤（通常プレイの既定・SBD97）は経験値
+      // #784: 旧しくみ（?growth=0）は喫茶こはく・ジムの主な能力に2P。心得の盤（通常プレイの既定・SBD97）は経験値
       if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) {
         assert.equal(r.gain, 0); assert(r.xp > 0, JSON.stringify(r));
       } else assert.equal(r.gain, 2);
       assert.equal(r.chosen, platform === "pc"); assert.equal(r.visits, 2); assert.equal(r.visitedToday, 8);
     }, options);
   }
-});
+}, { acknowledgeGrowth: false });

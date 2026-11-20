@@ -62,18 +62,20 @@
           "width": 1536,
           "height": 1024,
           "mode": "RGBA",
-          "sha256": "7b27af2016cae9aa574b6bdca247c63799680358f4573e00e7e9f73ceed06556",
-          "alpha_zero_fraction": 0.651461
+          "sha256": "ba0f56cdbbc52f44bc3597d8fd15bd9f7df4b262e409920ce0909036164ebf27",
+          "alpha_zero_fraction": 0.631354
         },
         {
           "path": "assets/ui/store_logos/zero.webp",
           "width": 768,
           "height": 512,
           "mode": "RGBA",
-          "sha256": "ece115e93072a030a0fedc2ae253dce141553dc9c0eac90d4b378310572585d7",
-          "alpha_zero_fraction": 0.655462
+          "sha256": "53ddce11f769fa6163ad9138be069f2173f4aa3811112564f6508a3dceabd110",
+          "alpha_zero_fraction": 0.672132
         }
-      ]
+      ],
+      "selected_name": "断層ノ青（2段目の位置調整版）",
+      "conversion": "Composition-adjusted #10: alpha bounds threshold 10; proportional Lanczos fit within 724×472, centered on the transparent 768×512 canvas; lossless WebP. The PNG is unchanged."
     }
   ]
 }
