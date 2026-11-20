@@ -116,6 +116,8 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 }
 .tf-plate b { line-height: 1; }
 .tf-spot[data-phase="empty"] .tf-plate { opacity: 0.82; }
+/* 客が着いたら、卓の上の番号札は消す（番号は卓の札に出ている。空席に戻ったら、また出す） */
+.tf-spot:not([data-phase="empty"]) .tf-plate { display: none; }
 .tf-spot[data-act="true"] .tf-plate { border-color: #fff1af; box-shadow: 0 0 0 4px #fff1af55, 0 4px 10px #000a; }
 
 /* 卓の札: 上に用件（押すと進む時だけ）。箱の上の帯は客の気分（注文待ちの間だけ。色と印と名前）、
@@ -354,7 +356,12 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 
 /* ---- 右の列（カウンター側）: ミックスの一覧。押すと、いちばん急ぎの注文待ちの卓へそのまま出す。
    札の左は属性の印（メインが大きく、サブが小さい）。注文待ちの卓がある間は、その客に合う札が灯り（◎＝金の縁、○）、合わない札は沈む ---- */
-.tf-presets { position: absolute; right: var(--tf-pad-r); top: 94px; width: 212px; padding: 6px 8px 7px; display: grid; gap: 4px; transition: opacity 0.2s ease; }
+/* 列は、上の帯の下から画面の下まで。上にシャッフル、まん中にミックスの一覧（空いた高さを分け合う）、下にフィーバー */
+.tf-presets {
+  position: absolute; right: var(--tf-pad-r); top: 94px; bottom: 10px; width: 212px; padding: 6px 8px 7px;
+  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; gap: 4px; transition: opacity 0.2s ease;
+}
+.tf-preset-box { position: relative; display: grid; min-height: 0; }
 .tf-presets-head { display: flex; align-items: center; gap: 6px; }
 /* 出す先の卓の番号。色は、その客の気分 */
 .tf-target {
@@ -362,9 +369,9 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   font-size: var(--tf-text); line-height: 1; box-shadow: 0 0 0 2px #1b1220, 0 0 0 4px var(--c, #f1d59a);
 }
 .tf-target[data-on="false"] { display: none; }
-.tf-preset-list { display: grid; gap: 4px; }
+.tf-preset-list { display: grid; grid-auto-rows: minmax(0, 1fr); gap: 4px; min-height: 0; }
 .tf-preset {
-  position: relative; display: flex; align-items: center; gap: 6px; min-height: max(var(--tf-tap), 52px); padding: 3px 6px 3px 4px;
+  position: relative; display: flex; align-items: center; gap: 6px; min-height: var(--tf-tap); padding: 3px 6px 3px 4px;
   border: 2px solid #6b5338; border-radius: 9px; background: #2a1c15; color: #fff1c4; text-align: left;
   font-size: var(--tf-small); font-weight: 700; line-height: 1.05; transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
   --tf-attr: clamp(32px, calc(var(--tf-tap) - 34px), 40px);
@@ -411,7 +418,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tonari-floor .tf-shuffle-big .tf-shuffle-cost .tf-icon { width: 20px; height: 20px; }
 /* 入れ替えの最中: 一覧を隠して、進みを出す。その間、ミックスは出せない */
 .tf-presets-busy {
-  position: absolute; inset: calc(var(--tf-tap) + 14px) 8px 8px; display: none; place-content: center; justify-items: center; gap: 8px; border-radius: 10px;
+  position: absolute; inset: 0; display: none; place-content: center; justify-items: center; gap: 8px; border-radius: 10px;
   background: #1c1410f2; box-shadow: inset 0 0 0 2px #8a6a48; color: var(--tf-brass); font-size: var(--tf-small); text-align: center;
 }
 .tf-presets-busy .tf-icon { width: 44px; height: 44px; animation: tf-spin 1s linear infinite; }
@@ -423,9 +430,9 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #ff9d4a, #ffd98a); transition: width 0.5s linear; }
 
 
-/* ---- 下の帯: 卓のドック・出来事の行とはじめの心の声・フィーバーのゲージ ---- */
+/* ---- 下の帯: 卓のドック・出来事の行とはじめの心の声（フィーバーは右の列の下） ---- */
 .tf-bottom {
-  position: absolute; left: var(--tf-pad-l); right: var(--tf-pad-r); bottom: 10px; height: 90px;
+  position: absolute; left: var(--tf-pad-l); right: calc(var(--tf-pad-r) + 222px); bottom: 10px; height: 90px; /* 右の列（幅212px）の手前まで */
   display: flex; align-items: stretch; gap: 10px; pointer-events: none;
 }
 .tf-bottom > * { pointer-events: auto; min-width: 0; }
@@ -460,18 +467,25 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-advice p { font-size: var(--tf-small); font-weight: 700; line-height: 1.15; color: #ffe2a6; white-space: nowrap; }
 /* フィーバーのゲージ（3段）。1段でも溜まれば押せて、溜まった段までを一度に使う（Lv1＝2卓、Lv2＝4卓、Lv3＝全卓） */
 .tf-bonus {
-  flex: 0 0 auto; display: flex; align-items: center; gap: 12px; padding: 6px 24px 6px 9px; border: none; border-radius: 40px;
-  background: #1b1220e6; box-shadow: 0 0 0 2px #8a6a48, 0 6px 18px #0007; transition: box-shadow 0.3s ease, background 0.3s ease, scale 0.2s ease;
+  position: relative; display: grid; align-content: center; gap: 7px; width: 100%; min-width: 0; min-height: max(var(--tf-tap), 84px); padding: 6px; border: none; border-radius: 14px;
+  background: #1b1220e6; box-shadow: 0 0 0 2px #8a6a48; transition: box-shadow 0.3s ease, background 0.3s ease, scale 0.2s ease;
 }
-.tf-bonus-lamp { position: relative; width: 62px; height: 62px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #33243c; box-shadow: inset 0 0 0 2px #e7c27a; flex: 0 0 auto; }
-.tf-bonus-lamp .tf-icon { position: relative; z-index: 1; width: 38px; height: 38px; color: #fff7e6; filter: drop-shadow(0 1px 2px #0009); }
-.tf-bonus-text { text-align: left; display: grid; gap: 4px; }
-.tf-bonus-text b { font-size: var(--tf-small); color: #a8947c; line-height: 1.15; white-space: nowrap; min-width: 8.6em; }
-.tf-fever-levels { display: flex; gap: 4px; }
-.tf-fever-levels > i { display: block; flex: 1 1 0; height: 10px; border-radius: 5px; background: #5a4630; overflow: hidden; }
+/* 上の段: 灯りと名前。下の段: 3段のゲージと、使える段（Lv） */
+.tf-bonus-head { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.tf-bonus-lamp { position: relative; width: 36px; height: 36px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #33243c; box-shadow: inset 0 0 0 2px #e7c27a; flex: 0 0 auto; }
+.tf-bonus-lamp .tf-icon { position: relative; z-index: 1; width: 24px; height: 24px; color: #fff7e6; filter: drop-shadow(0 1px 2px #0009); }
+.tf-bonus-head b { flex: 1 1 auto; min-width: 0; text-align: left; font-size: var(--tf-small); color: #a8947c; line-height: 1.15; white-space: nowrap; }
+.tf-bonus-gauge { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.tf-bonus-lv {
+  flex: 0 0 auto; padding: 2px 7px; border-radius: 10px; background: #ffd98a; color: #2a1a08;
+  font-size: 17px; font-weight: 700; font-style: normal; line-height: 1.1;
+}
+.tf-bonus-lv:empty { display: none; }
+.tf-fever-levels { flex: 1 1 auto; min-width: 0; display: flex; gap: 4px; }
+.tf-fever-levels > i { display: block; flex: 1 1 0; height: 14px; border-radius: 7px; background: #5a4630; overflow: hidden; }
 .tf-fever-levels > i > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #ff9d4a, #ffd98a); transition: width 0.5s linear; }
 .tonari-floor[data-fever="ready"] .tf-bonus { background: #5a2f12; box-shadow: 0 0 0 3px #ffd98a, 0 0 26px #ffb45acc; animation: tf-ready 1.1s ease-in-out infinite; }
-.tonari-floor[data-fever="ready"] .tf-bonus-text b, .tonari-floor[data-fever="on"] .tf-bonus-text b { color: #fff1c4; }
+.tonari-floor[data-fever="ready"] .tf-bonus-head b, .tonari-floor[data-fever="on"] .tf-bonus-head b { color: #fff1c4; }
 .tonari-floor[data-fever="ready"] .tf-bonus-lamp { background: #c9742a; }
 .tonari-floor[data-fever="on"] .tf-bonus { background: #47306a; box-shadow: 0 0 0 3px #d9c2ff, 0 0 30px #b592ffaa; }
 .tonari-floor[data-fever="on"] .tf-bonus-lamp { background: #8a6ad0; }

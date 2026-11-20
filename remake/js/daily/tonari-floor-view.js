@@ -8,7 +8,7 @@
 // 状態と金額は tonari-floor-model.js から読むだけで、本編の所持金・在庫・日付には触れない。
 import { el, yen } from "../core/util.js";
 import { showScreen, clearScreen, retire, toast } from "../core/ui.js";
-import { SE, playBgm, requestedBgm } from "../core/audio.js";
+import { SE, playBgm, preloadBgm, requestedBgm } from "../core/audio.js";
 import { faceIconUrl } from "../core/data.js";
 import { buildVersioned } from "../core/asset-version.js";
 import {
@@ -39,7 +39,8 @@ const CALL_ICON = { thin: "thin", harsh: "harsh", thirsty: "glass", cough: "ask"
 const VERB_ICON = { add: "add", ease: "ease", water: "drink", teach: "ask", chat: "talk" };
 const APT_MARK = { best: "◎", good: "○", none: "×" };
 const WISH_ICON = { fruit: "wishFruit", sweet: "wishSweet", fresh: "wishFresh", deep: "wishDeep" };
-const FEVER_BGM = "bgm_tournament_edm"; // 専用の曲が届くまで、手持ちの速い曲へ切り替える
+// フィーバーの曲: プリクラ用に作った平成ユーロビート（2026-11-20 オーナー「フィーバーのBGMはプリクラ用に作ったイケイケなアレで」）
+const FEVER_BGM = "bgm_purikura";
 const SHIFT_BGM = "tonari"; // フィーバーの前に流れていた曲が分からない時に戻す先
 const SALES_STEP = 10000; // 店の売上がこの額をまたぐたびに、下の帯で知らせる
 const test = (key) => ({ test: `tonari-floor-${key}` });
@@ -200,7 +201,10 @@ export function runTonariFloor({
     // 入れ替えの最中に、一覧の上へ掛ける札（進みの棒つき）
     const busyBar = el("i");
     const busyCover = el("div.tf-presets-busy", { "aria-hidden": true, dataset: test("shuffle-busy") }, [glyph("shuffle"), el("b", { text: "入れ替え中" }), el("span.tf-bar", {}, [busyBar])]);
-    const side = el("aside.tf-presets", { "aria-label": "ミックスの一覧", dataset: { ...test("presets"), busy: "false" } }, [el("div.tf-presets-head", {}, [targetChip, shuffleButton]), handList, busyCover]);
+    // 右の列は、上の帯の下から画面の下まで。上にシャッフル、まん中にミックスの一覧、下にフィーバー（あとで足す）
+    const side = el("aside.tf-presets", { "aria-label": "ミックスの一覧とフィーバー", dataset: { ...test("presets"), busy: "false" } }, [
+      el("div.tf-presets-head", {}, [targetChip, shuffleButton]), el("div.tf-preset-box", {}, [handList, busyCover]),
+    ]);
     // 下の帯: 選んでいる卓（番号・客・気分か出している一台・ご利用）／出来事の行とはじめの心の声／フィーバーのゲージ
     const dockNo = el("b.tf-dock-no"), dockWho = el("span.tf-dock-who"), dockName = el("b"), dockSub = el("small");
     const dockBill = el("strong", { dataset: test("dock-bill") }), dockEmpty = el("p.tf-dock-empty");
@@ -218,12 +222,15 @@ export function runTonariFloor({
       el("span.tf-advice", {}, [hajimeFace ? el("img", { src: hajimeFace, alt: "はじめ", draggable: false }) : null, hintText]),
     ]);
     const feverLevels = el("span.tf-fever-levels", { "aria-hidden": true }, [1, 2, 3].map((n) => el("i", { dataset: { n } }, [el("i")])));
-    const feverLabel = el("b", { text: "フィーバー" });
+    // フィーバーのボタンとゲージは、右の列の下に置く（下の帯は、卓のドックと出来事の行だけにして広く使う。
+    // 2026-11-20 オーナー「フィーバーボタンやゲージとか一部のボタンをサイドバーに移動したり、スペースを活用して欲しい」）
+    const feverLabel = el("b", { text: "フィーバー" }), feverLv = el("i.tf-bonus-lv");
     const bonusButton = el("button.tf-bonus", { type: "button", dataset: test("bonus"), onclick: () => useFever() }, [
-      el("span.tf-bonus-lamp", {}, [glyph("lamp")]),
-      el("span.tf-bonus-text", {}, [feverLabel, feverLevels]),
+      el("span.tf-bonus-head", {}, [el("span.tf-bonus-lamp", {}, [glyph("lamp")]), feverLabel]),
+      el("span.tf-bonus-gauge", {}, [feverLevels, feverLv]),
     ]);
-    const bottom = el("footer.tf-bottom", {}, [dock, ticker, bonusButton]);
+    side.append(bonusButton);
+    const bottom = el("footer.tf-bottom", {}, [dock, ticker]);
     const layer = el("div.tf-layer");
     const banner = el("div.tf-banner", { "aria-hidden": true });
     const cutinBand = el("div.tf-cutin", { "aria-hidden": true });
@@ -256,7 +263,7 @@ export function runTonariFloor({
       mode = next;
       host.dataset.mode = next;
       const blocked = next !== "live";
-      for (const node of [spotsBox, top, side, ticker, bonusButton]) node.inert = blocked;
+      for (const node of [spotsBox, top, side, ticker]) node.inert = blocked;
     }
     // ---- 時計（営業の時間。止まっている間も、画面の動きは CSS が進める） ----
     function clock() {
@@ -569,7 +576,9 @@ export function runTonariFloor({
         const fill = feverOn ? (i < state.feverLevel ? state.feverLeft / floorFeverLength : 0) : Math.max(0, Math.min(1, state.fever / 100 - i));
         seg.firstElementChild.style.width = `${Math.round(fill * 100)}%`;
       });
-      feverLabel.textContent = feverOn ? `フィーバー中 Lv${state.feverLevel}` : level ? `フィーバー Lv${level}` : "フィーバー";
+      feverLabel.textContent = feverOn ? "フィーバー中" : "フィーバー";
+      const lv = feverOn ? state.feverLevel : level;
+      feverLv.textContent = lv ? `Lv${lv}` : ""; // 使える段（使っている段）は、灯りの右上の小さな札で出す
       bonusButton.setAttribute("aria-label", feverOn ? "フィーバー中" : level ? `フィーバー Lv${level} を使う` : `フィーバーのゲージ ${Math.round(state.fever)}`);
       const hint = floorHint(state);
       for (const spot of refs.spots) spot.root.dataset.guide = String(state.level === 0 && String(hint.tableId) === spot.root.dataset.id);
@@ -770,6 +779,7 @@ export function runTonariFloor({
     function start() {
       if (!alive()) return cancel();
       SE.select();
+      void preloadBgm(FEVER_BGM); // フィーバーに入った時に、曲が遅れて鳴らないよう先に読んでおく
       setMode("live");
       renderLayer();
       lastAt = performance.now();

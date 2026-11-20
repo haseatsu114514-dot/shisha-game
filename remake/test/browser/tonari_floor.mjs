@@ -16,7 +16,7 @@ async function setup(page, { day = 4, slot = 1, manual = true } = {}) {
       data: await import("./js/core/data.js"), vn: await import("./js/vn/engine.js"),
       ch1: await import("./js/chapters/ch1.js"), tonari: await import("./js/daily/tonari.js"),
       view: await import("./js/daily/tonari-floor-view.js"), model: await import("./js/daily/tonari-floor-model.js"),
-      floorData: await import("./js/daily/tonari-floor-data.js"), bot: await import("./test/tonari_floor_bot.mjs") };
+      floorData: await import("./js/daily/tonari-floor-data.js"), bot: await import("./test/tonari_floor_bot.mjs"), audio: await import("./js/core/audio.js") };
     C.ch1.setupHooks(); C.vn.vnTest.turbo = true;
     C.view.floorTest.manual = manual;
     C.data.DB.baito = []; // 接客の抽選報酬を除き、日当と売上ボーナスだけを比べる
@@ -213,9 +213,13 @@ await suite("tonari-floor", async (check) => {
       assert.equal(await lastLog(), `1卓　${g1.name}「${g1.order.quote}」`);
       assert.equal(await spot(1).locator('.tf-pop[data-kind="say"]').innerText(), g1.order.quote);
       // 客のひとことは、卓の札の見出しの所（箱のすぐ上）に出る。出ている間は見出しを隠すので、札の上に札が重ならない
-      const sayAt = await spot(1).evaluate((n) => { const pop = n.querySelector(".tf-pop").getBoundingClientRect(), box = n.querySelector(".tf-tag-box").getBoundingClientRect(), plate = n.querySelector(".tf-plate").getBoundingClientRect();
-        return { above: pop.bottom <= box.top + 1, plate: pop.bottom <= plate.top, head: getComputedStyle(n.querySelector(".tf-tag-want")).visibility, inTag: !!n.querySelector(".tf-bubble .tf-pop") }; });
-      assert.deepEqual(sayAt, { above: true, plate: true, head: "hidden", inTag: true });
+      const sayAt = await spot(1).evaluate((n) => { const pop = n.querySelector(".tf-pop").getBoundingClientRect(), box = n.querySelector(".tf-tag-box").getBoundingClientRect();
+        return { above: pop.bottom <= box.top + 1, head: getComputedStyle(n.querySelector(".tf-tag-want")).visibility, inTag: !!n.querySelector(".tf-bubble .tf-pop") }; });
+      assert.deepEqual(sayAt, { above: true, head: "hidden", inTag: true });
+      // 客が着いた卓は、床の番号札を畳む（番号は札の隅に出ている）。空席の卓の番号札は残る
+      assert.deepEqual(await page.evaluate(() => [...document.querySelectorAll(".tf-spot")].map((n) => [n.dataset.phase === "empty", n.querySelector(".tf-plate").getClientRects().length > 0]).every(([empty, shown]) => empty === shown)), true);
+      assert.equal(await spot(1).locator(".tf-plate").isVisible(), false);
+      assert.equal(await spot(5).locator(".tf-plate").isVisible(), true);
       // 卓の札: 用件・客の気分（帯。色と印と名前）・卓番号・残り秒（注文は9秒から）
       assert.equal(await tagText(1), `注文 ${label1} 1 9`);
       assert.equal(await spot(1).getAttribute("data-tone"), "act");
@@ -253,7 +257,7 @@ await suite("tonari-floor", async (check) => {
         if (/tf-(seat|bonus|pause-button|ticker|preset|shuffle)$/.test(box.cls)) assert(Math.min(box.w, box.h) >= 40, `${box.cls} が小さい: ${box.w}x${box.h}`);
       }
       assert.equal(await page.evaluate(() => document.querySelector(".tonari-floor").scrollLeft), 0);
-      // 上の帯は左から「仕込み中の一台・残り時間・売上」、下の帯は「卓のドック・出来事の行・フィーバー」。ミックスの列は右
+      // 上の帯は左から「仕込み中の一台・残り時間・売上」、下の帯は「卓のドック・出来事の行」。右の列は上から「シャッフル・ミックスの一覧・フィーバー」で、画面の下まで
       const bands = await page.evaluate(() => {
         const rect = (sel) => document.querySelector(sel).getBoundingClientRect();
         const x = (sel) => { const r = rect(sel); return (r.left + r.right) / 2; };
@@ -262,14 +266,22 @@ await suite("tonari-floor", async (check) => {
         const tags = [...document.querySelectorAll(".tf-spot")].map((n) => { const s = n.querySelector(".tf-seat").getBoundingClientRect(), box = n.querySelector(".tf-tag-box");
           const r = box.getClientRects().length ? box.getBoundingClientRect() : s;
           return { left: Math.min(r.left, s.left), right: Math.max(r.right, s.right), top: Math.min(r.top, s.top), bottom: Math.max(r.bottom, s.bottom) }; });
-        return { top: [x(".tf-making"), x(".tf-clock"), x(".tf-sales")], bottom: [x(".tf-dock"), x(".tf-ticker"), x(".tf-bonus")], center: (stage.left + stage.right) / 2,
-          side: { left: side.left, top: side.top, bottom: side.bottom }, sideRight: side.left > (stage.left + stage.right) / 2, hud: top.bottom, foot: bottom.top, tags };
+        const y = (sel) => { const r = rect(sel); return [r.top, r.bottom]; };
+        const inSide = (sel) => { const r = rect(sel); return r.left >= side.left - 1 && r.right <= side.right + 1 && r.top >= side.top - 1 && r.bottom <= side.bottom + 1; };
+        return { top: [x(".tf-making"), x(".tf-clock"), x(".tf-sales")], bottom: [x(".tf-dock"), x(".tf-ticker")], center: (stage.left + stage.right) / 2,
+          side: { left: side.left, top: side.top, bottom: side.bottom }, sideRight: side.left > (stage.left + stage.right) / 2, hud: top.bottom, foot: bottom.top, footRight: bottom.right, stageBottom: stage.bottom, tags,
+          column: [y(".tf-presets-head"), y(".tf-preset-box"), y(".tf-bonus")], inSide: [".tf-shuffle", ".tf-preset-box", ".tf-bonus"].map(inSide), bonusInSide: !!document.querySelector(".tf-presets .tf-bonus"), bonusInFoot: !!document.querySelector(".tf-bottom .tf-bonus"),
+          overflow: document.querySelector(".tf-presets").scrollWidth - document.querySelector(".tf-presets").clientWidth };
       });
       assert(bands.top[0] < bands.top[1] && bands.top[1] < bands.top[2] && Math.abs(bands.top[1] - bands.center) < 4, "残り時間は上のまん中");
-      assert(bands.bottom[0] < bands.bottom[1] && bands.bottom[1] < bands.bottom[2], "下の帯の並び");
-      assert(bands.sideRight && bands.side.top >= bands.hud - 2 && bands.side.bottom <= bands.foot + 2, "ミックスの列は右。上下の帯に被らない");
+      assert(bands.bottom[0] < bands.bottom[1], "下の帯の並び");
+      assert(bands.sideRight && bands.side.top >= bands.hud - 2 && bands.side.bottom <= bands.stageBottom + 1 && bands.side.bottom >= bands.foot, "右の列は、上の帯の下から画面の下まで");
+      assert(bands.footRight <= bands.side.left + 2, `下の帯が右の列に被る: ${bands.footRight} > ${bands.side.left}`);
+      // フィーバーのボタンとゲージは、右の列のいちばん下（下の帯には置かない）
+      assert.deepEqual([bands.bonusInSide, bands.bonusInFoot, bands.inSide, bands.overflow <= 1], [true, false, [true, true, true], true]);
+      assert(bands.column[0][1] <= bands.column[1][0] + 1 && bands.column[1][1] <= bands.column[2][0] + 1, `右の列の3段が重なる: ${JSON.stringify(bands.column)}`);
       for (const [i, tag] of bands.tags.entries()) {
-        assert(tag.right <= bands.side.left + 2, `${i + 1}卓の札・押し所がミックスの列に被る: ${tag.right} > ${bands.side.left}`);
+        assert(tag.right <= bands.side.left + 2, `${i + 1}卓の札・押し所が右の列に被る: ${tag.right} > ${bands.side.left}`);
         assert(tag.top >= bands.hud - 2 && tag.bottom <= bands.foot + 2, `${i + 1}卓の札が帯に被る`);
       }
       // 選んだ卓の様子が、下のドックに出る（注文を聞くまで、ご利用は0円）
@@ -483,7 +495,8 @@ await suite("tonari-floor", async (check) => {
       await api((a) => { a.state().fever = 130; a.tick(1); });
       assert.equal(await page.locator(t("bonus")).isDisabled(), false);
       assert.equal(await page.locator(t("screen")).getAttribute("data-fever"), "ready");
-      assert.match(await page.locator(t("bonus")).innerText(), /フィーバー Lv1/);
+      assert.match(await page.locator(t("bonus")).innerText(), /^フィーバー\s*Lv1$/);
+      const bgmBefore = await page.evaluate(() => C.audio.requestedBgm());
       await page.locator(t("bonus")).click({ force: true });
       assert.equal(await page.locator(t("screen")).getAttribute("data-fever"), "on");
       assert.match(await page.locator(".tf-cutin").innerText(), /FEVER TIME!\s*Lv1/);
@@ -492,6 +505,12 @@ await suite("tonari-floor", async (check) => {
       assert(fever.tables.every(([, m]) => m === 100));
       assert.equal(await spot(fever.tables[0][0]).getAttribute("data-tone"), "fever");
       assert.equal(await page.locator(t("bonus")).isDisabled(), true, "フィーバー中は重ねて使えない");
+      // フィーバー中の名前と段は、ボタンからはみ出さない。曲は、プリクラ用に作った平成ユーロビートへ替わる
+      assert.match(await page.locator(t("bonus")).innerText(), /^フィーバー中\s*Lv1$/);
+      assert.equal(await page.locator(t("bonus")).evaluate((n) => { const box = n.getBoundingClientRect(), range = document.createRange(); range.selectNodeContents(n.querySelector("b"));
+        const text = range.getBoundingClientRect(), lv = n.querySelector(".tf-bonus-lv").getBoundingClientRect(); return text.left >= box.left && text.right <= box.right && lv.right <= box.right && lv.bottom <= box.bottom; }), true);
+      assert.equal(await page.evaluate(() => C.audio.requestedBgm()), "bgm_purikura");
+      assert.notEqual(bgmBefore, "bgm_purikura");
       if (platform === "pc") await page.screenshot({ path: `${shots}/tonari-floor-pc-fever.png` }).catch(() => {});
       // 休止→ゆっくり→つづける→早じまい→精算
       await page.locator(t("pause")).click();
@@ -561,9 +580,11 @@ await suite("tonari-floor", async (check) => {
       const back = await page.evaluate(() => {
         const rect = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right }; };
         return { tag: rect('.tf-spot[data-id="1"] .tf-bubble'), seat: rect('.tf-spot[data-id="1"] .tf-seat'), hud: rect(".tf-top"), side: rect(".tf-presets"),
-          right: rect('.tf-spot[data-id="3"] .tf-seat'), rightSide: rect('.tf-spot[data-id="5"] .tf-seat') };
+          right: rect('.tf-spot[data-id="3"] .tf-seat'), rightSide: rect('.tf-spot[data-id="5"] .tf-seat'), plate4: rect('.tf-spot[data-id="4"] .tf-plate'),
+          plates: [...document.querySelectorAll(".tf-spot")].map((n) => [n.dataset.phase === "empty", n.querySelector(".tf-plate").getClientRects().length > 0]) };
       });
       assert(back.tag.bottom <= back.seat.top + 2, "奥の席の札は席の上");
+      assert(back.plates.every(([empty, shown]) => empty === shown) && back.plates[0][0] === false && back.plates[3][0] === true, `番号札は空席の間だけ: ${JSON.stringify(back.plates)}`);
       assert(back.tag.top >= back.hud.bottom - 2, `奥の卓の札が上の帯に被る: ${back.tag.top} < ${back.hud.bottom}`);
       assert(back.right.right <= back.side.left + 2 && back.rightSide.right <= back.side.left + 2, "右の席がミックスの列に被る");
       // 手前の左の卓（4卓）に客が座るまで進める
@@ -572,7 +593,7 @@ await suite("tonari-floor", async (check) => {
         const z = (sel) => Number(getComputedStyle(document.querySelector(sel)).zIndex);
         const rect = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right, w: r.width, h: r.height }; };
         const spot = '.tf-spot[data-id="4"]';
-        return { seat: rect(`${spot} .tf-seat`), plate: rect(`${spot} .tf-plate`), bubble: rect(`${spot} .tf-bubble`),
+        return { seat: rect(`${spot} .tf-seat`), plate: rect(`${spot} .tf-plate`), bubble: rect(`${spot} .tf-bubble`), plateShown: document.querySelector(`${spot} .tf-plate`).getClientRects().length > 0,
           z: { seat: z(`${spot} .tf-seat`), front: z(".tf-front"), plate: z(`${spot} .tf-plate`), bubble: z(`${spot} .tf-bubble`) },
           painted: !!document.querySelector(`${spot} .tf-who img`) };
       });
@@ -591,7 +612,9 @@ await suite("tonari-floor", async (check) => {
         assert(person.h < geo.seat.h * 0.75, "全身ではなく、顔の丸");
       }
       assert.equal(token.tagFace, "none");
-      assert(geo.bubble.bottom <= geo.plate.top + 2, "手前の席の札は、内側の卓の上");
+      // 客が着いたので番号札は畳まれる。札は、番号札があった所（内側の卓）の上に出る
+      assert.equal(geo.plateShown, false);
+      assert(geo.bubble.bottom <= back.plate4.top + 2, "手前の席の札は、内側の卓の上");
       assert(geo.bubble.left >= geo.seat.right - 2, "手前の左の席は、卓と札が内側（右）にある");
       assert(geo.seat.h >= 40 && geo.seat.w >= 40, `席は押せる大きさ: ${geo.seat.w}x${geo.seat.h}`);
       // 席の形: 上の3席はこちら向き、下の2席は内向き
