@@ -182,8 +182,13 @@ assert.equal(galleryHint(actualEntries.find(e => e.id === "cg_hiyori_confession"
 assert.equal(galleryHint({ requiredChapter: 3, char: "minto" }), "第3章クリアで解放");
 const actualStats = galleryStats(actualEntries);
 const adoptedStills = [
+  ["cg_ch2_kanzaki_id_check", 2, "other", "神崎煙草店の年齢確認"],
   ["cg_ch2_sofa_wet_cloth", 2, "other", "焦げ跡と濡れ布"],
   ["cg_ch2_ageha_lesson", 2, "ageha", "あげはの吸い方講座"],
+  ["cg_ch2_naru_score_sheet", 2, "naru", "光る採点表"],
+  ["cg_ch2_rest_notebook", 2, "other", "ノートを閉じた日"],
+  ["cg_ch2_rei_earphone", 2, "other", "片耳ぶんの一曲"],
+  ["cg_ch2_ageha_white_bear", 2, "ageha", "白いクマと閉店後"],
   ["cg_ch3_mashiro_no_craft_day", 3, "mashiro", "作らないと決めた昼"],
   ["cg_ch4_traveler_chair", 4, "other", "日陰の椅子"],
   ["cg_ch5_doctor_yunomi", 5, "other", "湯のみを包む博士"],
