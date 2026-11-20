@@ -138,6 +138,45 @@ await suite('axe-tap-pull', async check => {
     assert.deepEqual(await storageSnapshot(page), before);
   });
 
+  for (const [label, context, touch] of [
+    ['pc', { viewport: { width: 1280, height: 720 } }, false],
+    ['touch-landscape', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
+    ['touch-short', { viewport: { width: 740, height: 320 }, isMobile: true, hasTouch: true }, true],
+  ]) await check(`${label}-aim-controls-in-front-of-hand`, async page => {
+    await start(page, touch);
+    for (const step of ['horizontal', 'vertical', 'power']) {
+      await page.waitForTimeout(320);
+      await page.keyboard.press('Space');
+      await phase(page, step);
+      await root(page).evaluate(game => {
+        const hand = game.querySelector('.axe-hand-front');
+        const target = game.querySelector('.axe-target');
+        if (hand.querySelector('use').getAttribute('opacity') !== '1') throw new Error('the foreground hand must be shown');
+        // Include the decorative SVG in hit testing temporarily to observe its paint order.
+        const originalPointerEvents = hand.style.pointerEvents;
+        hand.style.pointerEvents = 'all';
+        try {
+          for (const name of ['axe-focus', 'axe-reaim']) {
+            const button = game.querySelector(`[data-test="${name}"]`);
+            const box = button.getBoundingClientRect();
+            const layers = document.elementsFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+            const index = node => layers.findIndex(layer => node.contains(layer));
+            const [control, foreground, board] = [button, hand, target].map(index);
+            if (!(control >= 0 && control < foreground && foreground < board)) {
+              throw new Error(`${name} must paint above the hand, and the hand above the board (layers ${control}, ${foreground}, ${board})`);
+            }
+          }
+        } finally { hand.style.pointerEvents = originalPointerEvents; }
+      });
+    }
+    const activate = locator => touch ? locator.tap() : locator.click();
+    await activate(page.locator('[data-test="axe-focus"]'));
+    await page.locator('.axe-stability-meter[data-focused="true"]').waitFor();
+    await activate(page.locator('[data-test="axe-reaim"]'));
+    await phase(page, 'choice');
+    assert.equal(await root(page).getAttribute('data-player-throws'), '0');
+  }, context);
+
   await check('touch-cancel-and-second-finger', async page => {
     await start(page, true);
     for (const operation of ['cancel', 'second-finger']) {

@@ -209,6 +209,8 @@
 .axe-first-person[data-reduced-motion="true"] :is(.axe-call-iris,.axe-flick-emblem .axe-flick-arrows) { animation: none; transform: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-panel { right: var(--axe-inset-r); bottom: var(--axe-inset-b); pointer-events: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-panel button { pointer-events: auto; }
+/* Keep the aim controls above the foreground arm, which still draws in front of the target. */
+.axe-game[data-input-mode="tap-pull"].axe-first-person:is([data-phase="horizontal"], [data-phase="vertical"], [data-phase="power"]) .axe-panel { z-index: 7; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person[data-phase="power"] .axe-panel {
   top: auto; right: auto; left: var(--axe-inset-l); bottom: var(--axe-inset-b); padding: 0; overflow: visible;
 }
