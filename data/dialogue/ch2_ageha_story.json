@@ -1379,7 +1379,7 @@
     },
     {
       "dialogue_id": "remake_ch2_ageha_tasting",
-      "comment": "DAY9（#929）。C.STATION柚ヶ谷店の客席で、アフサール新作の先行試煙会。県大会ホールとは別の階。採点・前哨戦にしない。第1章と第2章のライバルが全員固有の手元で反応し、なるとの最初の噛み合わなさを置く（決裂はDAY11）。旧セーブ互換のためIDは旧「試飲会」のまま。",
+      "comment": "DAY9（#929）。C.STATION柚ヶ谷店の客席で、アフサール新作の先行試煙会。県大会ホールとは別の階。採点・前哨戦にしない。第1章と第2章のライバルが全員固有の手元で反応し、なるとの最初の噛み合わなさを置く（決裂はDAY11）。旧セーブ互換のためIDは旧「試飲会」のまま。DAY8の昼（ch2_naru_lunch）を読んだ保存では、苺の依頼を「昨日言ったろ」と受け、笑うまでが昨日より遅い（#3922。病気の朝で昼が飛んだ保存は、ここが依頼の初出）。",
       "lines": [
         {
           "speaker": "",
@@ -1694,14 +1694,11 @@
           "text": "県大会なら、課題の香りを最初に立てたほうが、点になりやすくて"
         },
         {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "いや、店の話だよ。常連の娘さんに頼まれてさ"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "タバコ好きのお母さんの誕生日に、苺の一台を出したいって"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_read_ch2_naru_lunch",
+          "next_true": "order_after_lunch",
+          "next_false": "order_first"
         },
         {
           "speaker": "hajime",
@@ -1719,9 +1716,11 @@
           "text": "……ま、いいけどさ。はじめ最近、話すと全部そっちに行くな"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "なるはすぐに笑って、ノートを閉じた。その笑い方が、いつもより少しだけ、短い。"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_read_ch2_naru_lunch",
+          "next_true": "smile_after_lunch",
+          "next_false": "smile_first"
         },
         {
           "speaker": "ageha",
@@ -2010,6 +2009,44 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "tonariの逢縁はじめです。はじめまして"
+          }
+        ],
+        "order_after_lunch": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "いや、店の話だよ。昨日言ったろ、お母さんの誕生日の苺"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "新作の苺を吸ったら、余計に寄せ方が分かんなくなってさ"
+          }
+        ],
+        "order_first": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "いや、店の話だよ。常連の娘さんに頼まれてさ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "タバコ好きのお母さんの誕生日に、苺の一台を出したいって"
+          }
+        ],
+        "smile_after_lunch": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるはノートを閉じた。昨日の昼より、笑うまでが少しだけ遅かった。"
+          }
+        ],
+        "smile_first": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるはすぐに笑って、ノートを閉じた。その笑い方が、いつもより少しだけ、短い。"
           }
         ]
       }
