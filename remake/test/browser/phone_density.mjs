@@ -344,9 +344,14 @@ async function checkSlotDensity(page) {
   await checkLayout(".rc-freeze-text");
   await checkLayout(".rc-freeze-sub");
   assert.ok(await page.locator(".rc-freeze-label").evaluate(node => {
+    // 実時間で出現を待つと拡大が終わっていることがあるので、出現直後のコマを再現する。
+    node.style.animationName = "none";
+    void node.offsetWidth;
+    node.style.removeProperty("animation-name");
     const animation = node.getAnimations()[0];
-    // 文字が現れ始める瞬間は、終了時より大きく横にはみ出しやすい。
-    if (animation) animation.currentTime = 1;
+    if (!animation) return false;
+    animation.pause();
+    animation.currentTime = 1;
     const rect = node.getBoundingClientRect();
     const frame = node.closest(".rc-freeze").getBoundingClientRect();
     return rect.left >= frame.left - 0.5 && rect.right <= frame.right + 0.5;
