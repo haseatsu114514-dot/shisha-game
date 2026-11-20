@@ -161,7 +161,8 @@ export async function b() {
 
 // ---------------------------------------------------------------- c: 作り直し（TMG55・見本の表「バイト終業」）
 // 紫の丸い札と、店内を覆う暗い面をやめる。店内（背景）は隠さず、tonari の吊り札（#3254 で Codex が描いた表と裏）が
-// 上から下りてきて、1回だけ裏返って CLOSED になる。約1.2秒。brief: 「見た演出を短く」の2回目以降は初めから CLOSED。
+// 上から下りてきて、1回だけ裏返って CLOSED になる。約1.3秒。brief: 「見た演出を短く」の2回目以降は初めから CLOSED。
+// 札は画面の真ん中で止まる（#3813。位置は css/motions/shift.css の .mo-shop-sign）。
 
 const SIGN_ART = {
   open: new URL("../../img/ui/transitions/shift/sign-open.webp", import.meta.url).href,
@@ -173,6 +174,8 @@ function preloadSign() {
   let timer;
   return Promise.race([Promise.all(Object.values(SIGN_ART).map(decode)), new Promise((r) => { timer = setTimeout(r, 800); })]).finally(() => clearTimeout(timer));
 }
+/** 札の出入りの位置。札（高さ400px・top 84px）の絵の下端と影まで画面の上に隠れる所から下りてきて、そこへ戻る */
+const SHOP_SIGN_OFF = "translateY(-130%)";
 /** 札の片面: 絵の上の、文字を書く面（絵の中のエナメルの板）に店の名前と OPEN／CLOSED */
 const signFace = (side, label) => el(`div.mo-shop-face.${side}`, [
   el("img", { src: SIGN_ART[side], alt: "", draggable: false }),
@@ -191,7 +194,7 @@ export async function c({ brief = false } = {}) {
     // 1. 上から下りてきて、吊り輪を軸に小さく揺れる
     move(shade, [{ opacity: 0 }, { opacity: 1 }], 220, { easing: "ease" });
     move(swing, [{ transform: "rotate(-5deg)" }, { transform: "rotate(3deg)", offset: 0.45 }, { transform: "rotate(-1.5deg)", offset: 0.75 }, { transform: "rotate(0deg)" }], brief ? 520 : 760, { easing: "ease-out" });
-    await move(sign, [{ transform: "translateY(-104%)" }, { transform: "translateY(0)" }], brief ? 240 : 260, { easing: E.out });
+    await move(sign, [{ transform: SHOP_SIGN_OFF }, { transform: "translateY(0)" }], brief ? 280 : 300, { easing: E.out });
     if (brief) {
       SE.select();
       await sleep(480);
@@ -204,6 +207,6 @@ export async function c({ brief = false } = {}) {
     }
     // 3. 上へ戻る
     move(shade, [{ opacity: 1 }, { opacity: 0 }], 240, { delay: 40, easing: "ease" });
-    await move(sign, [{ transform: "translateY(0)" }, { transform: "translateY(-104%)" }], 240, { easing: E.in });
+    await move(sign, [{ transform: "translateY(0)" }, { transform: SHOP_SIGN_OFF }], 280, { easing: E.in });
   });
 }

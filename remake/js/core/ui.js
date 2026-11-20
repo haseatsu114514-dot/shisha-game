@@ -13,7 +13,7 @@ import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
 import { syncShopHaze } from "./shop-haze.js";
-import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival, takeParkedCover, smokeArt, smokeIn, smokeOut } from "./transitions.js";
+import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival, takeParkedCover, smokeArt, smokeIn, smokeOut, dateTypeReady, plainDateType } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 import { uiThemeFrame } from "./ui-theme.js";
@@ -898,12 +898,15 @@ export async function chapterTitle({ no, name, read, sub }) {
 
 /** DAYカード（日付の区切り）。クリックを吸い込み、読み終わるまで待つ。weather は小見出しの後ろに出す天気（sun／cloud／rain） */
 export async function dayCard(title, sub, { ms = 1900, weather = null, forecast = null } = {}) {
+  const typeReady = dateTypeReady(); // 題字の明朝を待つ（夜明けの幕と同じ。間に合わなければゴシックのまま描く・#3813）
   const wx = weather ? (await import("../motions/dawn-weather.js").catch(() => null))?.weatherBadge(weather, "dc-weather", "currentColor") : null;
   // 就寝→翌朝の日付の題字（tr-dawn-card）と同じ組み方（TMG60）: 左下に「DAY」の小さな字と大きな数字、細い線、小見出し
   const m = /^([A-Z]+)\s+(\d+)$/.exec(title);
   const head = m ? [el("small", { text: m[1] }), el("b", { text: m[2] })] : [el("b.word", { text: title })];
-  const card = el("div.day-card", [el("div.dc-title", head), el("i.dc-rule"), sub ? el("div.dc-sub", [sub, wx?.badge]) : null]);
+  const titleNode = el("div.dc-title", head);
+  const card = el("div.day-card", [titleNode, el("i.dc-rule"), sub ? el("div.dc-sub", [sub, wx?.badge]) : null]);
   if (forecast) card.append(el("small.dc-sub", { text: `明日は${forecast}`, dataset: { test: "day-forecast" } }));
+  if (!(await typeReady)) plainDateType(card, [titleNode]);
   layers.fx.append(card);
   SE.card();
   await nextFrame();
