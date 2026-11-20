@@ -127,11 +127,11 @@ for (const sv of saves) assert.deepEqual(sv.tournament.entryResources, saves[0].
 assert.equal(sessions[1].stamina, 52);
 assert.deepEqual(sessions[1].flavorStock, {});
 // #590: 救済を選んだ挑戦だけ、戻した直後に現在の最大体力（根性込みの値）へ。entryは書き換えない。
-entrant.stamina = 3; entrant.tournament.retryAssist = true; entrant.tournament.losses = 6;
+entrant.stamina = 3; entrant.tournament.retryAssist = true; entrant.tournament.losses = 6; entrant.tournament.retryAssistLevel = 2;
 await vm.runInContext("tournamentDay()", context);
 assert.equal(sessions[2].stamina, 130, "assisted retry recovers to the current maximum");
 assert.equal(session.retryAssist, true);
-assert.equal(session.retryAssistLevel, 2, "6敗で選んだ救済は2段目（WIN13）");
+assert.equal(session.retryAssistLevel, 2, "6敗で選んだベリーイージーがその一台に付く（WIN13）");
 assert.deepEqual(sessions[2].flavorStock, {}, "stock is restored once, unchanged by recovery");
 assert.equal(entrant.tournament.entryResources.stamina, 52, "the entry snapshot keeps the original stamina");
 entrant.stamina = 3; entrant.tournament.retryAssist = false;

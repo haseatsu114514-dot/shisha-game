@@ -7,7 +7,7 @@
  * tasting order, first cycle so the NG+ lift is 0).
  * `--chapter 4` plays the world final with a plan leaf (peach 8g + mint 4g) through the real ch4-tournament-state.js
  * step functions (start → begin/finish ×11), so judge weights, the rival curve and the result are the game's own.
- * `--assist 1|2|3|4` plays every run with that retry-assist level (WIN13: one level per three losses), through the
+ * `--assist 1|2` plays every run with that retry-assist level (WIN13: 1 = イージー after three losses, 2 = ベリーイージー after six), through the
  * same skill.slow / skill.window the bench uses; the steam dodge easing is not modelled (hits use the same input).
  * Uses the game's mix, heat, steam, temperature and final scoring. The Gaussian input
  * model is an explicit approximation of human operation, not a frame simulation.
@@ -35,7 +35,7 @@ const chapter = option('--chapter', 1);
 assert([1, 2, 3, 4].includes(chapter), '--chapter must be 1, 2, 3 or 4');
 assert(!(chapter !== 1 && voteStyle !== 'classic'), '--votes sakurai is Chapter 1 only');
 const assistLevel = option('--assist', 0);
-assert(Number.isInteger(assistLevel) && assistLevel >= 0 && assistLevel <= 4, '--assist must be 0 to 4');
+assert(Number.isInteger(assistLevel) && assistLevel >= 0 && assistLevel <= 2, '--assist must be 0, 1 or 2');
 assert(Number.isSafeInteger(samples) && samples > 0, '--n must be a positive integer');
 assert(Number.isSafeInteger(seedStart) && seedStart > 0, '--seed must be a positive integer');
 assert(!(boardMode && mode === 'star'), '--board uses production ten-step rules');

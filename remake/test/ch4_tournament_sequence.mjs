@@ -56,7 +56,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     retireScreen: () => trace.push("retire"), playBgm() {}, clearComments() {}, block() {},
     play: async dialogue => { trace.push(dialogue.dialogue_id); return {}; },
     modal: async options => { trace.push(options.title);
-      if (options.title === "コンティニュー") { if (assistInvalidate) current = false; return assistChoice; }
+      if (options.title === "コンティニュー") { if (assistInvalidate) current = false; return assistChoice === true ? options.options[0].value : assistChoice === false ? 0 : assistChoice; }
       return ask;
     },
     // 制作中の掛け合い（#2031）: 台本の読み込みと、既読を制作保存へ書く共通の再生（本物と同じく既読は読まない）。
@@ -277,7 +277,7 @@ previewStorage.clear();
   const yes = await run({ resume: structuredClone(failed), assistChoice: true });
   assert.equal(yes.error, undefined);
   assert.equal(yes.value.flags._ch4.match.craft.retryAssist, true);
-  assert.equal(yes.value.flags._ch4.match.craft.retryAssistLevel, 1, "3敗は1段目");
+  assert.equal(yes.value.flags._ch4.match.craft.retryAssistLevel, 1, "3敗ではイージー");
   assert(yes.trace.includes("session-stamina:100"), "The accepted one-craft assist recovers stamina before creating its condition snapshot");
   assert.equal(yes.trace.filter(item => item === "コンティニュー").length, 1);
   const no = await run({ resume: structuredClone(failed), assistChoice: false });
@@ -297,12 +297,13 @@ previewStorage.clear();
   const continued = await run({ resume: pending });
   assert.equal(continued.value.flags._ch4.match.craft.retryAssist, true);
   assert.equal(continued.value.flags._ch4.match.craft.retryAssistLevel, 1, "途中再開でも選んだ段のまま");
-  // 3回負けるごとに一段ずつ下がる（6敗で2段目・12敗以上は4段目で止まる）。
-  for (const [losses, level] of [[6, 2], [8, 2], [12, 4], [15, 4]]) {
+  // 6敗からはベリーイージー（先頭の選択肢）も選べる。イージーを選べばイージーのまま。
+  for (const [losses, choice, level] of [[6, true, 2], [9, true, 2], [6, 1, 1], [5, true, 1]]) {
     const more = structuredClone(failed);
     match.chapterFourMatch(more).history = Array.from({ length: losses }, () => ({ win: false }));
-    const deeper = await run({ resume: more, assistChoice: true });
-    assert.equal(deeper.value.flags._ch4.match.craft.retryAssistLevel, level, `${losses}敗は${level}段目`);
+    const deeper = await run({ resume: more, assistChoice: choice });
+    assert.equal(deeper.value.flags._ch4.match.craft.retryAssist, true);
+    assert.equal(deeper.value.flags._ch4.match.craft.retryAssistLevel, level, `${losses}敗で選んだ段`);
   }
   assert(!continued.trace.includes("コンティニュー"), "SAVE/LOAD keeps the selected assist without asking again mid-craft");
   const unknown = structuredClone(failed); unknown.flags._ch4.match.history = [];
