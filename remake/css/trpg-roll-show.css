@@ -108,7 +108,7 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-goal::before {
   content: ""; position: absolute; inset: 7px; clip-path: inherit; background: radial-gradient(circle at 40% 30%, #2a5a55, #0b2b2f 70%); z-index: -1;
 }
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal { isolation: isolate; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-goal > small { font-size: 13px; font-weight: 900; letter-spacing: .35em; color: #ffd76a; margin-left: .35em; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-goal > small { font-size: 14px; font-weight: 900; letter-spacing: .35em; color: #ffd76a; margin-left: .35em; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal > b { font-size: 70px; font-weight: 900; line-height: 1.05; color: #fff3c4; text-shadow: 0 4px 0 #8a5a14, 0 0 18px #ffcf4a88; font-variant-numeric: tabular-nums; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal > span { font-size: 15px; font-weight: 700; color: #f2dca6; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-stamp {
