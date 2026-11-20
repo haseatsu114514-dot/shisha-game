@@ -57,7 +57,7 @@ const values = {
   "bonds.js": { bondInvites: () => [], friendMessages: () => friendQueue },
   "story-knowledge.js": { syncMintoKnowledge: noop },
   // サメちゃんのデート（samechan-date.js）が読む心得の盤。LIMEの検査なので旧しくみ（盤は無効）の代役にする
-  "growth.js": { growthEnabled: () => false, awardActionExp: () => 0 },
+  "growth.js": { growthEnabled: () => false, awardActionExp: () => 0, gainExp: () => { throw Error("盤無効時のLIMEでEXPを与えない"); } },
   "petit-shuraba.js": { petitAfterDate: async () => false }, // プチ修羅場（デートの後の寄り道）は remake/test/petit_shuraba.mjs
   "lover-strain.js": { strainOf: () => 0, STRAIN_SIGN2: 7 }, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
   "gallery-progress.js": { recordRouteLover: noop, recordRouteEvent: noop }, // コレクションのルート記録（恋人成立・閲覧した段階）は remake/test/gallery_route_records.mjs
