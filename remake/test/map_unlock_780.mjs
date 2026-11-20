@@ -79,7 +79,8 @@ growthOn=false;assert(!access.spotVisible(kannon),'disabled growth preserves the
 state.flags._spot_guide_adam=true;assert(access.spotVisible(kannon));
 assert.match(reveals.spotRevealNotice(kannon,state),/アダムから聞いた/);
 reset({spotVisits:{kannon:1}});assert(access.spotVisible(kannon),'legacy visit stays open');
-reset({growth:{earned:0,hidane:{sense:1}}});growthOn=true;
+// At or after DAY3, an older save without an earned total still honors its colored wallet.
+reset({day:3,growth:{earned:0,hidane:{sense:1}}});growthOn=true;
 assert(access.spotVisible(kannon),'legacy wallet and colored gifts count');
 growthOn=false;
 reset({story:{naru:2},flags:{_spot_guide_naru:true}});
@@ -114,7 +115,7 @@ state.flags._cafe_introduced=true;flow=map.chooseSpot(pauseOptions);await flush(
 assert.equal(shown.dataset.revealPhase,'pause');map.interruptMap('__load__');assert.equal(await flow,'__load__');
 const beforePrompts=prompts,beforeReels=reels;tick(5000);assert.equal(prompts,beforePrompts);assert.equal(reels,beforeReels);assert.equal(shown.dataset.revealing,undefined);
 // #1807: reuse the amber HUD badge, then remove it when the wallet is empty.
-reset({growth:{earned:2,hidane:{any:2}}});growthOn=true;
+reset({day:3,growth:{earned:2,hidane:{any:2}}});growthOn=true;
 const growthOptions={regions:[{id:'growth-entry',spots:()=>[kannon]}]};
 flow=map.chooseSpot(growthOptions);await flush();
 assert.equal(shown.querySelector('.hidane-badge').text,'2');
