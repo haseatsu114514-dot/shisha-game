@@ -19,10 +19,10 @@ assert.deepEqual(Object.keys(KINDS).sort(), ["2a", "2c", "3", "4", "5"]);
 assert.deepEqual([...new Set(CUES.map((c) => c.id))].sort(), ["2a", "2c", "3", "4", "4m", "5", "5b"]);
 assert(!KINDS["3"].partners.includes(0), "3m（相手なしの目元帯）は不採用");
 for (const [id, k] of Object.entries(KINDS)) if (k.partners.includes(0)) assert.equal(id, "4", "相手なしで出せるのは沈む（4m）だけ");
-// 型ごとの帯: 相手の行は相手の顔の高さ（reply）、はじめの行は名前の上（own）、決意だけ全幅（eyes）
+// 型ごとの帯: 寄りの帯は相手の行もはじめの行も名前の上の1か所（band）、決意だけ全幅（eyes）
 for (const [id, k] of Object.entries(KINDS)) {
   assert(FRAMES[k.frame], `${id}: 帯 ${k.frame}`);
-  assert.equal(k.frame, k.on === "partner" ? "reply" : id === "3" ? "eyes" : "own", `${id}: 帯の置き場`);
+  assert.equal(k.frame, id === "3" ? "eyes" : "band", `${id}: 帯の置き場（寄りの帯は1か所にそろえる）`);
   assert(LEAVE_MS[k.leave] >= 0, `${id}: 消える動き ${k.leave}`);
 }
 
@@ -96,8 +96,8 @@ for (const [name, f] of Object.entries(FRAMES)) {
   assert(f.x >= 0 && f.x + f.w <= (f.wide ? 1280 : 520), `${name} の左右`);
   assert(f.y + f.h <= 526, `${name} は本文欄より上`);
 }
-assert(FRAMES.own.y + FRAMES.own.h <= 500, "はじめの行の帯は名前の行より上");
-assert(FRAMES.reply.y + FRAMES.reply.h < FRAMES.own.y + FRAMES.own.h, "相手の行の帯は、はじめの行の帯より上");
+assert(FRAMES.band.y + FRAMES.band.h <= 500, "寄りの帯は名前の行より上");
+assert.deepEqual(Object.keys(FRAMES).sort(), ["band", "eyes"], "出す位置は寄りの帯と目元の帯の2つだけ");
 // 絵は縦横比を変えずに縮尺するだけ。顔の中心が帯の中に入る
 for (const cue of CUES) {
   const a = conversationCutinArt(cue), art = ART[cue.art], f = FRAMES[KINDS[cue.kind].frame];
@@ -133,7 +133,7 @@ assert.equal(ct.show(at("2a"), "downcast.webp", { typing: true, bg: 'url("bg.web
 assert.equal(layer.children.length, 0);
 const heavy = ct.reveal();
 assert.equal(layer.children.length, 1, "文字送りが終わると出る");
-assert.equal(heavy.dataset.frame, "reply");
+assert.equal(heavy.dataset.frame, "band");
 assert.equal(find(heavy, "vn-cutin-bg")[0].style.backgroundImage, 'url("bg.webp")', "帯の中に今の背景");
 assert.equal(ct.reveal(), null, "出すのは1回だけ");
 ct.leave();

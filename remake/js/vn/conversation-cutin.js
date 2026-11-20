@@ -2,7 +2,7 @@
 // 2026-11-20 再設計（docs/owner_requests.md の CCR01〜05。寸法と依頼文は asset_sources/conversation-cutin-redesign-20261120/）:
 // - 形は2つ。画面の左端から出る「寄りの帯」（金の細い線・中は今の背景のぼかし。人物は帯の中に収める）と、
 //   大会の決意だけに使う全幅の「目元の帯」。
-// - 相手の行（その顔）は、台詞が出切ってから相手の顔の高さに出る。はじめ自身の行は名前のすぐ上に出る。
+// - 出す位置は名前の行のすぐ上の1か所。相手の行（その顔）は、台詞が出切ってから出る。
 // - 絵は ART の4枚。動揺・沈み・受け取るは Codex の専用の絵（原画 asset_sources/conversation-cutin-redesign-20261120/originals/、
 //   ゲーム用への変換は同じフォルダの fit_cutin.py）。決意だけは、新版の立ち絵の原画を切り抜いた仮の絵のまま。
 //   差し替えるときは ART の寸法・顔の位置・頭の高さだけを直す（枠と出し方は変えない）。
@@ -19,14 +19,16 @@ export const ART = {
 };
 
 // 帯（舞台 1280×720 の座標）。face は顔の中心を置く位置、head は画面での頭の高さ（帯の中の座標）。
-// reply は相手の行（相手の顔と同じ高さ）、own ははじめ自身の行（名前の行のすぐ上）、eyes は全幅の目元の帯。
+// band は寄りの帯（名前の行のすぐ上）、eyes は全幅の目元の帯。
 // 帽子も帯の中に収める（2026-11-20 オーナー「収めるで」。それまでは帽子だけ帯の上の線より手前に出していた）
 // 大きさは試作の0.85倍（2026-11-20 オーナー「今ウインドウが大きいのでカットインの少し小さく」。元は寄りの帯 500×250・目元の帯の高さ 190）
 const BAND = { x: 0, w: 425, h: 212, poly: "0,22 425,0 384,197 0,212", accent: "435,2 394,199", face: [223, 149], head: 146 };
+// 出す位置は1つにそろえる（2026-11-20 オーナー「カットインは出す位置を統一したい」「下よりなやつが好き」）:
+// 寄りの帯は、相手の行もはじめの行も、新版の名前の行のすぐ上（下端 y476）。
+// 目元の帯は、オーナー「もう少し下げて中央へ」で y142→y220 へ下げ、顔を画面の左右の真ん中に置いた。
 export const FRAMES = {
-  reply: { ...BAND, y: 112 },
-  own: { ...BAND, y: 264 },
-  eyes: { x: 0, y: 142, w: 1280, h: 162, poly: "0,24 1280,0 1280,138 0,162", edge: "0,24 1280,0", inner: "0,162 1280,138", face: [596, 136], head: 326, wide: true },
+  band: { ...BAND, y: 264 },
+  eyes: { x: 0, y: 220, w: 1280, h: 162, poly: "0,24 1280,0 1280,138 0,162", edge: "0,24 1280,0", inner: "0,162 1280,138", face: [640, 136], head: 326, wide: true },
 };
 
 // 型ごとの見せ方。on: "partner" 相手の行に、はじめの顔だけを無言で出す（台詞が出切ってから）/ "line" はじめ自身の行に出す
@@ -35,10 +37,10 @@ export const FRAMES = {
 // partners: 出せる「相手の立ち絵の枚数」（#2845 オーナー決定: 相手の行は1枚の時だけ。沈むは独白の0枚も可。決意は2枚も可）
 // drop: 顔を帯の中で下げる量（沈んだ構図）。tone: 帯の色（amber 琥珀の線 / cool 色を落とした暗い青紫）
 export const KINDS = {
-  "2c": { label: "その顔（軽い）", frame: "reply", enter: "cut", leave: "cut", ms: 1150, on: "partner", partners: [1], se: "whoosh" },
-  "2a": { label: "その顔（重い）", frame: "reply", enter: "soft", leave: "soft", on: "partner", partners: [1] },
-  "5": { label: "受け取る", frame: "own", enter: "rise", leave: "soft", on: "line", partners: [1], tone: "amber" },
-  "4": { label: "沈む", frame: "own", enter: "soft", leave: "soft", on: "line", partners: [0, 1], tone: "cool", drop: 14 },
+  "2c": { label: "その顔（軽い）", frame: "band", enter: "cut", leave: "cut", ms: 1150, on: "partner", partners: [1], se: "whoosh" },
+  "2a": { label: "その顔（重い）", frame: "band", enter: "soft", leave: "soft", on: "partner", partners: [1] },
+  "5": { label: "受け取る", frame: "band", enter: "rise", leave: "soft", on: "line", partners: [1], tone: "amber" },
+  "4": { label: "沈む", frame: "band", enter: "soft", leave: "soft", on: "line", partners: [0, 1], tone: "cool", drop: 14 },
   "3": { label: "決意", frame: "eyes", enter: "eyes", leave: "eyes", ms: 800, on: "line", partners: [1, 2], se: "whoosh", dim: true },
 };
 // 消える動きの長さ（ms）。CSS の .vn-cutin.leave と合わせる
