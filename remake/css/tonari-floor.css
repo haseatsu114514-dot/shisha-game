@@ -108,7 +108,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   width: 200px; height: 168px; padding: 0; border: none; background: none; border-radius: 16px;
 }
 /* 選んだ卓は、卓の札の枠（空席は番号札の光）で示す。押し所の四角い枠は札とずれて見えるので出さない（TFL50） */
-.tf-seat:focus-visible { outline: none; }
+.tonari-floor .tf-seat:focus-visible { outline: none; } /* 共通の「.tonari-floor button:focus-visible」より強く */
 .tf-spot[data-selected="true"] .tf-plate { box-shadow: 0 0 0 3px #fff1af, 0 0 12px #fff1afaa, 0 4px 10px #000a; }
 .tf-medal { position: absolute; inset: 0; display: block; }
 .tonari-floor[data-style="medal"] .tf-medal { display: none; }
@@ -166,6 +166,8 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   font-size: var(--tf-small); font-weight: 700; line-height: 1; color: #d9f5e0; background: #1d3a2bf2; box-shadow: 0 0 0 2px #7fd39a;
 }
 .tf-tag-want .tf-icon { width: 22px; height: 22px; }
+/* 見出し（話したそう・炭の調整など）は、箱の大枠から少し離して浮かせる（枠と枠がくっつかない。2026-11-20 オーナー「ウインドウとウインドウがくっついてるの気になる。少しだけ上に」・TFL53） */
+.tf-bubble > .tf-tag-want { margin-bottom: 6px; }
 .tf-tag-box {
   position: relative; display: grid; grid-template-columns: auto auto; gap: 4px 5px; padding: 6px; border-radius: 14px; min-height: 44px;
   --tf-tag-art: url("../img/ui/tonari-floor/tag-box-green.webp");
@@ -273,7 +275,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   animation: tf-pop 1.5s var(--ease-out, ease) forwards;
 }
 /* 見出しのある札では、見出しの所に重ねて出す */
-.tf-spot[data-head="true"] .tf-pop { bottom: -32px; }
+.tf-spot[data-head="true"] .tf-pop { bottom: -38px; } /* 見出しの高さ30＋間2＋浮かせた6 */
 .tf-bubble:has(.tf-pop) :is(.tf-tag-want, .tf-tag-anger) { visibility: hidden; }
 .tf-pop .tf-icon { width: 27px; height: 27px; }
 .tf-pop .tf-icon svg { stroke-width: 2.6; }
@@ -396,6 +398,9 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-preset-box { position: relative; display: grid; min-height: 0; }
 /* ボタンの段: シャッフルとフィーバーを、一行ずつのボタンで縦に並べる（親指の届く右下） */
 .tf-actions { display: grid; gap: 6px; }
+/* 親指ボタンの出る端末では、二つのボタンは画面外の右へ移る（下の「画面外の右」）。列はミックスの一覧だけになる */
+.tonari-floor[data-gutter="true"] .tf-presets { grid-template-rows: minmax(0, 1fr); }
+.tonari-floor[data-gutter="true"] .tf-actions { display: none; }
 .tf-preset-list { display: grid; grid-auto-rows: minmax(0, 1fr); gap: 4px; min-height: 0; }
 .tf-preset {
   position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; align-content: center; gap: 2px 4px; min-height: var(--tf-tap); padding: 2px 4px 2px 4px;
@@ -854,3 +859,35 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   .tf-spot[data-smoke="true"] .tf-smoke i:first-child { opacity: 0.7; translate: 6px -50px; scale: 1.4; }
   .tf-confetti { display: none; }
 }
+
+/* ---- 画面外の右（親指ボタンの所。会話の SKIP・次へ の位置）に置いた、シャッフルとフィーバー（TFL54） ----
+   2026-11-20 オーナー「フィーバーとかシャッフルボタンは画面外の右側の、普段はオートとかスキップとかあるような画面外UIにボタンとして置いて」。
+   置き場所は js/core/side-area.js の sideSlot（親指ボタンの出る端末＝横に余白のあるスマホだけ）。層はステージと同じ倍率で縮むので、寸法はステージ上の px。
+   字は実寸 9.5px を下回らない（side-area.css の LIME と同じ）。上がフィーバー、親指にいちばん近い下の端がシャッフル */
+.side-slot[data-slot="floor"] { grid-template-rows: auto auto; justify-items: start; }
+.side-slot[data-slot="floor"]:not([data-mode="live"]) { visibility: hidden; }
+.side-slot :is(.tf-shuffle, .tf-bonus) {
+  box-sizing: border-box; width: 96px; margin: 0; pointer-events: auto; cursor: pointer; touch-action: manipulation;
+  font-family: var(--font); font-size: max(17px, calc(9.5px / var(--k, 1))); font-weight: 800; line-height: 1; letter-spacing: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.side-slot :is(.tf-shuffle, .tf-bonus):focus-visible { outline: 3px solid #fff1af; outline-offset: 3px; }
+.side-slot .tf-shuffle { height: 88px; flex-direction: column; gap: 3px; padding: 4px 2px; color: #2a1a08; }
+.side-slot .tf-shuffle .tf-shuffle-main { flex-direction: column; gap: 2px; }
+.side-slot .tf-shuffle .tf-icon { width: 24px; height: 24px; }
+.side-slot .tf-shuffle .tf-shuffle-cost { font-size: max(16px, calc(9px / var(--k, 1))); }
+.side-slot .tf-shuffle .tf-shuffle-cost .tf-icon { width: 16px; height: 16px; }
+.side-slot .tf-shuffle[data-wait="true"] .tf-shuffle-cost { font-size: max(20px, calc(11px / var(--k, 1))); }
+.side-slot .tf-bonus { height: 100px; display: grid; align-content: center; justify-items: center; gap: 5px; padding: 6px 7px 8px; color: #fff1c4; }
+.side-slot .tf-bonus-head { flex-direction: column; gap: 3px; }
+.side-slot .tf-bonus-head b { text-align: center; color: #a8947c; }
+.side-slot .tf-bonus-lv { position: absolute; right: -4px; top: -4px; font-size: max(15px, calc(8.5px / var(--k, 1))); }
+.side-slot .tf-bonus-gauge { width: 100%; }
+.side-slot .tf-bonus[data-fever="ready"] { border-image-source: url("../img/ui/tonari-floor/fever-button-ready.webp"); box-shadow: 0 0 0 3px #ffd98a, 0 0 22px #ffb45acc; animation: tf-ready 1.1s ease-in-out infinite; }
+.side-slot .tf-bonus[data-fever="ready"] .tf-bonus-lamp { background-image: url("../img/ui/tonari-floor/lamp-on.webp"); background-color: #c9742a; }
+.side-slot .tf-bonus[data-fever="on"] { border-image-source: url("../img/ui/tonari-floor/fever-button-on.webp"); box-shadow: 0 0 0 3px #d9c2ff, 0 0 26px #b592ffaa; }
+.side-slot .tf-bonus[data-fever="on"] .tf-bonus-lamp { background-image: url("../img/ui/tonari-floor/lamp-fever.webp"); background-color: #8a6ad0; }
+.side-slot .tf-bonus:is([data-fever="ready"], [data-fever="on"]) .tf-bonus-head b { color: #fff1c4; }
+.side-slot .tf-bonus[data-fever="on"] .tf-fever-levels > i > i { background: linear-gradient(90deg, #b592ff, #f0e4ff); }
+@media (prefers-reduced-motion: reduce) { .side-slot .tf-bonus[data-fever="ready"] { animation: none; } }
+

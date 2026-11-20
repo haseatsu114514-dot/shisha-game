@@ -887,6 +887,55 @@ await suite("tonari-floor", async (check) => {
   }
 
   // たまに遊びに来る本編の人物: 顔アイコンで出て、その人の気分と言葉で返す。精算に名前が残り、好感度は動かない。
+  // 親指ボタンの出る端末（横に余白のあるスマホ）では、シャッフルとフィーバーは画面外の右（会話の SKIP・次へ の所）に置く。
+  // 右の列はミックスの一覧だけになる。余白の無い端末・PC では右の列の下のまま（ほかのケース）。（TFL54）
+  await run("touch-side-pad", async (page) => {
+    await setup(page);
+    await page.evaluate(async () => {
+      const side = await import("./js/core/side-area.js");
+      localStorage.setItem("suien_side_pad", "on");
+      side.refreshSideArea();
+      C.fresh();
+      window.done = C.view.runTonariFloor({ seed: 5, level: 1, chapter: 1, night: true, fans: 12, topSales: 1000,
+        art: C.data.bgUrl("res://assets/backgrounds/bg_tonari_inside.png", "night") }).then((r) => { window.result = r; });
+    });
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.sidePad), "on");
+    // 導入の間は、まだ店の中（余白には出さない）
+    assert.equal(await page.locator(`[data-test="side-slot-floor"] ${t("shuffle-side")}`).count(), 0);
+    await page.locator(t("option-start")).click();
+    await afterBand(page);
+    const place = await page.evaluate(() => {
+      const rect = (n) => n.getBoundingClientRect();
+      const stage = rect(document.getElementById("stage")), slot = document.querySelector('[data-test="side-slot-floor"]');
+      const shuffle = document.querySelector('[data-test="tonari-floor-shuffle-side"]'), bonus = document.querySelector('[data-test="tonari-floor-bonus"]');
+      const list = rect(document.querySelector(".tf-preset-box")), side = rect(document.querySelector(".tf-presets"));
+      return { gutter: document.querySelector(".tonari-floor").dataset.gutter, inSlot: [slot.contains(shuffle), slot.contains(bonus)],
+        outside: [rect(shuffle), rect(bonus)].every((r) => r.left >= stage.right - 1), order: rect(bonus).bottom <= rect(shuffle).top + 1,
+        big: [rect(shuffle), rect(bonus)].every((r) => r.width >= 44 && r.height >= 44), listFill: side.bottom - list.bottom };
+    });
+    assert.deepEqual([place.gutter, place.inSlot, place.outside, place.order, place.big], ["true", [true, true], true, true, true], JSON.stringify(place));
+    assert(place.listFill <= 12, `右の列は、ミックスの一覧だけで下まで使う: ${place.listFill}`);
+    // 余白のボタンも、そのまま押せる（シャッフルは「4秒」が秒読みになる）
+    await page.locator(t("shuffle-side")).click();
+    assert.equal(await page.evaluate(() => C.view.floorTest.api.state().shuffles), 1);
+    await page.evaluate(() => C.view.floorTest.api.tick(2));
+    assert.equal(await page.locator(t("shuffle-count")).textContent(), "3秒");
+    // 接客の画面の間は、余白のボタンも隠れる
+    await page.evaluate(() => C.view.floorTest.api.tick(8));
+    const id = await page.evaluate(() => { const a = C.view.floorTest.api; for (let i = 0; i < 60 && !a.state().tables.some((x) => x.phase === "order"); i++) a.tick(1);
+      return a.state().tables.find((x) => x.phase === "order")?.id; });
+    assert(id, "注文待ちの卓がある");
+    await page.locator(`[data-test="tonari-floor-table-${id}"]`).click({ force: true });
+    assert.equal(await page.locator('[data-test="side-slot-floor"]').evaluate((n) => getComputedStyle(n).visibility), "hidden");
+    // 営業を閉じると、余白の入れ物は空になる
+    await page.evaluate(() => C.view.floorTest.api.act({ type: "finish" }));
+    await page.locator(t("result")).waitFor();
+    await page.locator(t("option-continue")).click();
+    await page.waitForFunction(() => window.result !== undefined);
+    assert.equal(await page.locator('[data-test="side-slot-floor"]').evaluate((n) => n.childElementCount), 0);
+    await page.evaluate(() => localStorage.removeItem("suien_side_pad"));
+  }, { viewport: { width: 852, height: 393 }, isMobile: true, hasTouch: true });
+
   await run("pc-visitor", async (page) => {
     await setup(page);
     await page.evaluate(() => {

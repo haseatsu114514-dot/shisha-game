@@ -11,6 +11,7 @@ import { showScreen, clearScreen, retire, toast } from "../core/ui.js";
 import { SE, playBgm, preloadBgm, requestedBgm } from "../core/audio.js";
 import { faceIconUrl } from "../core/data.js";
 import { buildVersioned } from "../core/asset-version.js";
+import { sideSlot, releaseSideSlot } from "../core/side-area.js";
 import {
   createFloorNight, floorTick, floorAct, floorTap, floorHint, floorResult, floorUrgency, floorWaitLeft,
   floorStayLeft, floorCoalLeft, floorTendDue, floorMaking, floorHand, floorShuffleLeft, floorTimeLeft, floorStage, floorBill, floorFeverLevel,
@@ -293,6 +294,8 @@ export function runTonariFloor({
       document.removeEventListener("visibilitychange", onVisibility);
       host.removeEventListener("keydown", onKey);
       if (floorTest.api?.host === host) floorTest.api = null;
+      document.removeEventListener("sidepadchange", placeActions);
+      if (shuffleButton.parentElement !== actions) releaseSideSlot("floor");
       retire(host);
       // 営業の画面のままなら片付ける（本編のHUDが戻る）。LOAD などで別の画面に替わっていれば触らない。
       if (mount) host.remove();
@@ -307,7 +310,25 @@ export function runTonariFloor({
       host.dataset.mode = next;
       const blocked = next !== "live";
       for (const node of [spotsBox, top, side, ticker]) node.inert = blocked;
+      placeActions();
     }
+    // シャッフルとフィーバーのボタンは、親指ボタンの出る端末（横に余白のあるスマホ）では、画面外の右（会話の SKIP・次へ の所）に置く
+    // （2026-11-20 オーナー「フィーバーとかシャッフルボタンは画面外の右側の、普段はオートとかスキップとかあるような画面外UIにボタンとして置いて」・TFL54）。
+    // 余白の無い端末（PC・16:9）では、右の列の下（ボタンの段）のまま。置き場所が変わってもボタンは同じ物なので、表示の更新はそのまま効く
+    function placeActions() {
+      if (!active) return;
+      const slot = host.isConnected ? sideSlot("floor", host) : null;
+      if (slot) {
+        if (bonusButton.parentElement !== slot) slot.replaceChildren(bonusButton, shuffleButton); // 親指にいちばん近い下の端に、よく押すシャッフル
+        slot.dataset.mode = mode;
+        slot.inert = mode !== "live";
+      } else if (shuffleButton.parentElement !== actions) {
+        releaseSideSlot("floor");
+        actions.replaceChildren(shuffleButton, bonusButton);
+      }
+      host.dataset.gutter = String(!!slot);
+    }
+    document.addEventListener("sidepadchange", placeActions);
     // ---- 時計（営業の時間。止まっている間も、画面の動きは CSS が進める） ----
     function clock() {
       if (!alive()) return cancel();
@@ -655,6 +676,7 @@ export function runTonariFloor({
       const feverOn = state.feverLeft > 0;
       const level = floorFeverLevel(state);
       host.dataset.fever = feverOn ? "on" : level ? "ready" : "";
+      bonusButton.dataset.fever = host.dataset.fever; // 画面外の右に置いた時の見た目用（host の外なので、ボタン自身に持たせる）
       bonusButton.disabled = feverOn || !level || !state.tables.some((x) => x.phase === "enjoy");
       bonusButton.dataset.level = String(feverOn ? state.feverLevel : level);
       feverLevels.querySelectorAll(":scope > i").forEach((seg, i) => {
