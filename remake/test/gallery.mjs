@@ -201,7 +201,13 @@ const adoptedStills = [
   ["cg_ch4_young_sumi_water", 4, "other", "十五年前の一杯の水"],
   ["cg_ch4_noor_pencil_x", 4, "other", "消さなかった×"],
   ["cg_ch4_creek_dhow", 4, "other", "クリークの荷積み"],
+  ["cg_ch5_party_toast", 5, "other", "世界一の乾杯"],
   ["cg_ch5_doctor_yunomi", 5, "other", "湯のみを包む博士"],
+  ["cg_ch5_tsumugi_serves_hajime", 5, "tsumugi", "最初は、ゆっくりどうぞ"],
+  ["cg_ch5_adam_two_bowls", 5, "other", "どの顔だった"],
+  ["cg_ch5_regular_hose_lap", 5, "other", "今日は時間、あるから"],
+  ["cg_ch5_cocreation_notes", 5, "other", "数字の隣に味の言葉"],
+  ["cg_ch5_sumi_pulls_chair", 5, "other", "おかえりの椅子"],
 ];
 const unlockedStills = galleryEntries(actualManifest, actualCatalog, empty, new Set(adoptedStills.map(([id]) => id)));
 for (const [id, chapter, char, title] of adoptedStills) {
