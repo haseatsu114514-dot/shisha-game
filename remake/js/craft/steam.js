@@ -54,6 +54,7 @@ export function refreshStock() {
 }
 /** K06で増えた1回は範囲が半分。合算時は最後の1回がその分（根性★で増えた分は全範囲）。 */
 const halfLastRefresh = (stock) => stock > 1 && growthSkill(state, "K06");
+// メンタル回復はどれか1つで効く（重ねても増えない）。盤の右のパネルがそれを知らせる（growth-board-data.js の OVERLAPS）。判定を変えたらそちらも直す
 export function refreshEffect(cs = null) {
   const level = step("guts");
   return { radius: REFRESH_RADII[level - 1] + (growthPerks(state)?.breath || 0),

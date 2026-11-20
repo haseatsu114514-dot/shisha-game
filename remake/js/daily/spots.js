@@ -1,7 +1,7 @@
 // 第1章のスポット定義と「行く」の中身（訪問・施設・休む）。
 // どの行動にも必ず報酬（好感度・ステ・体力・お金のどれか）が付く。
-import { state, markMet } from "../core/state.js";
-import { growthEnabled, hidaneTotal } from "../core/growth.js";
+import { state, save, markMet } from "../core/state.js";
+import { EXP, gainExp, growthEnabled, hidaneTotal } from "../core/growth.js";
 import { refreshPlaceCue } from "../core/transitions.js";
 import { DB } from "../core/data.js";
 import { earnStat, gainAffinity, visitAffinity, addStamina, addMoney, affinityLevel, releaseAffinity, AFFINITY_RANK_PTS, setStoryAffinityCap, ensureAffinityLevel } from "../core/stats.js";
@@ -632,39 +632,57 @@ const rivalDeliveryPending = (charId, s = state) => (s?.chapter || 1) === 1
   && ["minto", "adam"].includes(charId) && !s?.flags?.[`_delivery_${charId}_done`]
   && !!(s?.flags?.[`_delivery_${charId}_told`] || s?.flags?.[`_delivery_${charId}`] || s?.flags?._delivery_batch_started);
 
-export async function visitRival(spot) {
-  if (!spot || isClosed(spot)) return false;
-  const owner = state;
-  if (rivalDeliveryPending(spot.charId, owner)) {
-    const charId = spot.charId;
+const deliveriesInFlight = new WeakSet();
+
+/** 昼の任意訪問・帰り道の案内のどちらからも、手渡し完了時だけ同じ報酬を確定する。 */
+export async function deliverToRival(spot) {
+  const owner = state, charId = spot?.charId;
+  if (!owner || !rivalDeliveryPending(charId, owner) || isClosed(spot) || deliveriesInFlight.has(owner)) return false;
+  deliveriesInFlight.add(owner);
+  try {
     const f = owner.flags;
     refreshPlaceCue(spot.id);
     f[`_delivery_${charId}`] = true;
     playBgm("bgm_rival_shop");
     if (charId === "minto") {
+      // 荷物だけを渡し、客としての初回接客は自由行動に残す。
       const result = await play("remake_delivery_minto_handoff", { bg: "res://assets/backgrounds/peppermint.png" });
       if (state !== owner || !result || result.cancelled) return false;
       f.known_name_minto = true;
       f._met_minto = true;
       markMet("minto");
     } else {
+      // EDENの初来店は従来どおりスミさんの指定による無料体験。
       if (!(await visitChar(charId)) || state !== owner) return false;
     }
-    addMoney(RIVAL_DELIVERY_PAY);
-    toast(`配達の手当 +${RIVAL_DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
     f[`_delivery_${charId}_done`] = true;
+    addMoney(RIVAL_DELIVERY_PAY);
+    gainExp(EXP.tutorial, { key: `ch1_delivery_${charId}`, tag: "配達" });
+    save(); // 手当・経験値・納品済みは同じ保存に入り、再入店やLOADで増やさない。
+    toast(`配達の手当 +${RIVAL_DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
     return true;
+  } finally {
+    deliveriesInFlight.delete(owner);
   }
+}
+
+export async function visitRival(spot, { scout = false } = {}) {
+  if (!spot || isClosed(spot)) return false;
+  const owner = state;
+  if (rivalDeliveryPending(spot.charId, owner)) return deliverToRival(spot);
   refreshPlaceCue(spot.id);
-  addMoney(-(spot.cost || 0));
-  addStamina(spot.stamina || -16);
+  const charge = () => { addMoney(-(spot.cost || 0)); addStamina(spot.stamina || -16); };
+  if (!scout) charge();
   playBgm("bgm_rival_shop");
   // 相席予定の日には「一人占め」の昼挨拶を出さない。台詞正本・実遭遇の処理は維持する。
   const welcome = spot.charId === "minto" && state.slot === 0 && hiyoriShopEncounterDue(spot)
     ? null : `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
   const completed = await visitChar(spot.charId, { welcome });
   // 配達やチュートリアルの面識ではなく、自主来店の会話を終えてから地図に出す。
-  if (completed && state === owner) state.flags[`_spot_guide_${spot.charId}`] = true;
+  if (completed && state === owner) {
+    if (scout) charge(); // 偵察は読了しなければ料金も体力消費も確定しない。
+    state.flags[`_spot_guide_${spot.charId}`] = true;
+  }
   return completed;
 }
 

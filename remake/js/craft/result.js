@@ -1,4 +1,5 @@
 import { resultSaveButton } from "./result-save.js";
+import { craftStageEnabled } from "./stage-layout.js";
 import { improvementOf, goodPointOf } from "./advice.js";
 import { actualExpressionCard } from "./flavor-guide.js";
 // 大会の発表まわり: 中間発表／RESULT 10 COUNT（プチュン=1位確定・パリン=敗北）／
@@ -18,11 +19,13 @@ import { castCh1Votes, isSakuraiVotes, SAKURAI, sakuraiFocusOf, ch1RoundPoints }
 import { evaluationOf, judgeComment, judgeDeductionReason } from "./feedback.js";
 import { craftRecognition } from "./recognition.js";
 import { VOTE_SCALE, voteStack as stackOf, judgePanel as panelOf, judgeLegend as legendOf, countUp, JUDGE_LOOK } from "./tournament-graphics.js";
-import { stageLights, voteCeremony, showSting, showConfetti, sparkBurst, haloOf, crestSvg, metalOf, bustOf, flyToken,
-  localPoint, holdOrTap, showMoves } from "./tournament-show.js";
+import { stageLights, voteCeremony, showSting, showConfetti, sparkBurst, bustOf, flyToken,
+  localPoint, showMoves, showMode, resultSplash } from "./tournament-show.js";
 
 export const CONTESTANTS = ["naru", "adam", "minto", "hajime"];
 const RIVAL_COLOR = { naru: "#f0d8a0", adam: "#c9463a", minto: "#7fe0c2" };
+/** 第2章以降のライバルの台の色（名前で決めていない人は、並びの順に） */
+const RIVAL_PALETTE = ["#f0a8d0", "#8fd0ff", "#f0d8a0", "#c9463a"];
 const JUDGES = [
   { id: "maezono" },
   { id: "dr_kemuri", label: "チャコール博士" },
@@ -266,24 +269,34 @@ function sakuraiBoard(p, index) {
  * kind: premium（残り2〜3でフライングプチュン）/ win（0でプチュン）/ close（プチュ…→パリン）/ lose（即パリン）/ disaster（ヒビ→バキン）
  * カウント中の画面はクリックを吸わない（自動で進む）
  */
-export async function resultCountdown(cs, kind, attempt = null) {
+/**
+ * @param opts 第2〜4章から使う時の差し替え（TSH10）。contestants＝出場者の並び（左から）、event＝大会名、
+ *             sub＝見出しの下の一行、nameOf＝表示名、colorOf＝ライバルの台の色
+ */
+export async function resultCountdown(cs, kind, attempt = null, opts = {}) {
+  // はじめは右端（光が最後に巡る位置）。ほかの人は渡された順のまま。
+  const contestants = [...(opts.contestants || CONTESTANTS)].sort((a, b) => (a === "hajime") - (b === "hajime"));
+  const nameOfId = opts.nameOf || nameOf;
+  const colorOf = (id, i) => opts.colorOf?.(id) || RIVAL_COLOR[id] || RIVAL_PALETTE[i % RIVAL_PALETTE.length];
+  const sub = opts.sub || (attempt?.rulesVersion >= 2 ? "最後の調整と、残る1点の行方。" : "最後の10点が、動く。");
   stopBgm(0.4);
-  const fast = !!autoSkill();
+  // 自動操作と会話の早送り（試験）では早回し。端末の「動きを減らす」でも数字は進める（間を置く演出なので省かない）。
+  const fast = !!autoSkill() || showMode() === "off";
   const tick = fast ? 60 : 620;
   const num = el("div.rc-num");
   const ring = el("div.rc-ring", { "aria-hidden": "true", html: '<svg viewBox="0 0 240 240"><circle class="rc-ring-track" cx="120" cy="120" r="110"/><circle class="rc-ring-progress" cx="120" cy="120" r="110"/></svg>' });
   const cuts = el("div.rc-cuts");
   // 出場者4人を、カウントの左右に2人ずつ立たせる（TSH03）。数字が進むたびに光が1人ずつ巡る。
-  const cards = CONTESTANTS.map((id) => el(`div.rc-card${id === "hajime" ? ".me" : ""}`, { dataset: { id } }, [
-    bustOf(id, { cls: ".rc-bust", face: "serious", name: nameOf(id) }),
-    el("i.rc-shisha", { style: { background: id === "hajime" ? mixColor(cs.mix) : RIVAL_COLOR[id] } }),
-    el("span", { text: nameOf(id) }),
+  const cards = contestants.map((id, i) => el(`div.rc-card${id === "hajime" ? ".me" : ""}`, { dataset: { id } }, [
+    bustOf(id, { cls: ".rc-bust", face: "serious", name: nameOfId(id) }),
+    el("i.rc-shisha", { style: { background: id === "hajime" ? mixColor(cs.mix) : colorOf(id, i) } }),
+    el("span", { text: id === "hajime" ? "はじめ" : nameOfId(id) }),
   ]));
   const pray = el("div.rc-pray", cards);
-  const screen = el("div.count-screen.ts-count", { dataset: { test: "result-count" } }, [header("SMOKE CROWN CUP / FINAL JUDGING", "結果発表", attempt?.rulesVersion >= 2 ? "最後の調整と、残る1点の行方。" : "最後の10点が、動く。"), cuts, el("i.rc-pulse", { "aria-hidden": "true" }), ring, num, pray, el("i.rc-heart", { "aria-hidden": "true" }), el("div.rc-crt")]);
+  const screen = el("div.count-screen.ts-count", { dataset: { test: "result-count" } }, [header(`${opts.event || "SMOKE CROWN CUP"} / FINAL JUDGING`, "結果発表", sub), cuts, el("i.rc-pulse", { "aria-hidden": "true" }), ring, num, pray, el("i.rc-heart", { "aria-hidden": "true" }), el("div.rc-crt")]);
   stageLights(screen, { beams: 4, dust: 18, tone: "cool" });
   showScreen("count", screen);
-  // 光の巡り: はじめで終わる順（残り1〜0は全員を照らす）。
+  // 光の巡り: 左から1・3・2・4番目の順（はじめは右端なので、最後に照らされる）。残り1〜0は全員を照らす。
   const spotOrder = [0, 2, 1, 3];
   const mainLeaf = Object.entries(cs.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0).sort((a, b) => b[1] - a[1])[0]?.[0];
   const leafName = DB.flavorById?.[mainLeaf]?.short_name || DB.flavorById?.[mainLeaf]?.name || "葉";
@@ -485,6 +498,8 @@ export function resultTable(cs, rank, attempt = null) {
       const review = evaluationOf(score || 0);
       return el(`b.craft-evaluation.${review.tone}`, { text: review.mark, "aria-label": review.label });
     };
+    const save = resultSaveButton(cs);
+    const actionsInFooter = craftStageEnabled() && !renewalCraft(cs);
     const detail = el("div.rt-detail", [el("div.rt-detail-scroll", {
       tabindex: "0", role: "region", "aria-label": "あなたの一台の評価",
     }, [
@@ -502,23 +517,23 @@ export function resultTable(cs, rank, attempt = null) {
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
       el("small.rt-judge-comment", { text: `上園「${judgeComment(cs)}」` }),
       el("div.rt-deductions", JUDGES.map(judge => el("small.rt-judge-deduction", { text: `${judgeName(judge.id)}：${judgeDeductionReason(cs, judge.id).text}`, dataset: { judge: judge.id } }))),
-      resultSaveButton(cs),
+      actionsInFooter ? null : save,
     ])]);
     const btn = el("button.btn.primary", { dataset: { test: "result-next" }, onclick: () => { SE.select(); retireScreen(); resolve(); } }, [
       el("span.btn-label", { text: rank === 1 ? "表彰のあとへ" : "……結果を受け止める" }),
     ]);
-    const screen = el("div.result-table", { dataset: { test: "tournament-result", rank } }, [
+    const screen = el("div.result-table", { dataset: { test: "tournament-result", rank, ...(actionsInFooter ? { craftVersion: "sakurai" } : {}) } }, [
       el("i.rt-rays", { "aria-hidden": "true" }),
       el("div.rt-hero", [
         el("span.rt-emblem", { "aria-hidden": "true", dataset: { rank } }, [el("b", { text: rank === 1 ? "1" : String(rank) }), el("small", { text: rank === 1 ? "ST" : "TH" })]),
         header("SMOKE CROWN CUP ／ FINAL RESULT", rank === 1 ? "CHAMPION" : `${rank}位`, rank === 1 ? "逢縁 はじめ · 次の舞台へ" : "この一台の記録を、次の挑戦へ。"),
       ]),
-      el("div.rt-layout", [el("section.rt-ranking", [el("div.rt-ranking-head", [el("h2", { text: "最終順位 · 審査員の持ち点" }), judgeLegend()]), el("div.rt-rows", rows)]), detail]), btn,
+      el("div.rt-layout", [el("section.rt-ranking", actionsInFooter ? { tabindex: "0", "aria-label": "最終順位 · 審査員の持ち点" } : {}, [el("div.rt-ranking-head", [el("h2", { text: "最終順位 · 審査員の持ち点" }), judgeLegend()]), el("div.rt-rows", rows)]), detail]), actionsInFooter ? save : null, btn,
     ]);
     stageLights(screen, { beams: rank === 1 ? 4 : 2, dust: rank === 1 ? 24 : 10, tone: rank === 1 ? "gold" : "cool" });
     showScreen("result", screen);
     // 順位表の前に、結果の大見出し（優勝は冠・光・紙吹雪。TSH03）。押すとすぐ順位表へ。
-    resultSplash(rank).then(() => {
+    resultSplash(rank, { event: "SMOKE CROWN CUP" }).then(() => {
       if (!screen.isConnected) return;
       screen.classList.add("ts-revealed");
       if (rank === 1) {
@@ -532,39 +547,4 @@ export function resultTable(cs, rank, attempt = null) {
   });
 }
 
-/**
- * 結果の大見出し。1位は「CHAMPION」（冠と月桂冠・後光・紙吹雪・はじめの立ち絵）、それ以外は順位だけを静かに出す。
- * 動きを見せない時（自動操作・動きを減らす）は何も出さない。押すと閉じる。
- */
-async function resultSplash(rank) {
-  if (!showMoves()) return;
-  const win = rank === 1, metal = metalOf(rank);
-  // 優勝は冠と月桂冠に「1 ST」。届かなかった時は月桂冠だけを順位の後ろに薄く敷く。
-  const crest = crestSvg({ metal, crown: win });
-  if (win) crest.append(el("b", { text: "1" }), el("small", { text: "ST" }));
-  const node = el(`div.ts-splash${win ? ".win" : ""}`, { dataset: { test: "result-splash", rank, metal }, tabindex: "-1", role: "status",
-    "aria-label": win ? "優勝" : `${rank}位` }, [
-    win ? haloOf() : null,
-    el("i.ts-splash-floor", { "aria-hidden": "true" }),
-    bustOf("hajime", { cls: ".ts-splash-bust", face: win ? "smile" : "serious", zoom: 1.5, headTop: 0.06, name: "はじめ" }),
-    el("div.ts-splash-copy", [
-      crest,
-      el("small.ts-splash-eyebrow", { text: "SMOKE CROWN CUP ／ FINAL RESULT" }),
-      el("h2", { text: win ? "CHAMPION" : `${rank}位` }),
-      el("p", { text: win ? "逢縁 はじめ" : "この一台の記録を、次の挑戦へ。" }),
-    ]),
-    el("span.ts-splash-tap", { text: "タップで順位表へ" }),
-  ]);
-  stageLights(node, { beams: win ? 5 : 2, dust: win ? 30 : 8, tone: win ? "gold" : "cool" });
-  layers.fx.append(node);
-  await sleep(30);
-  node.classList.add("show");
-  node.focus({ preventScroll: true });
-  if (win) { SE.fanfare(); SE.crowd(2.6); showConfetti(node, { count: 150, ms: 5200 }); flash("gold"); }
-  else SE.stamp();
-  await holdOrTap(node, win ? 3600 : 2200);
-  node.classList.add("out");
-  await sleep(380);
-  node.remove();
-}
 

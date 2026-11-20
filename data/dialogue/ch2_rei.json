@@ -61,6 +61,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "店のロックが、二曲ぶん流れた。拍を取っていた指が、ふっと止まる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "「イエス」という名のミックスが、静かにテーブルに置かれた。"
         },
         {
@@ -1252,6 +1257,116 @@
         {
           "type": "remember",
           "memory_id": "rei_reach"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "outing_rei_1",
+      "comment": "#3097 PR-A（計画 §3-2 の 2-2）。クラウドの♥3の友人の外出。LIME lime_outing_rei_1 で誘われ、仕事の後、柚ヶ谷の駅の向こうのライブハウスの前で、扉から漏れる音を一緒に聞く（休みの日のLIME lime_rei_holiday の「扉が開くたびに、少しだけ」の続き）。はじめは曲を知らないまま、拍につられたのを見たクラウドが一方的に「同士」と言う。ライブの中へは入らない（第3章の出発前の ch3_prep_rei_live と、♥5の ch2_rei_sixth の「一番後ろ」を先取りしない）。本名・笑顔の練習・「嘘」には触れない。誘いは ch2_rei_second（最初の「同士」）を読んだ後、♥5の締めくくり（「友達」と言い直す）の前にだけ届く（daily/phone.js）。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
+        "topic": "ライブハウスの前"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "仕事を終えたあと、柚ヶ谷の駅の向こうで、クラウドと待ち合わせた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……来た。こっち"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通りの向かいに、地下へ下りる階段がある。看板の灯りの下で、扉は閉まっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "中には、入らないんですよね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……入らない。今夜のは、もう売り切れてた"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "でも、扉が開くたびに、少しだけ漏れてくる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "階段を上がってきた客が、扉を押した。ドラムの低い音が、一瞬だけ通りまで転がり出る。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "扉が閉まると、また静かになった。クラウドは目を閉じて、指で拍を取っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（店で一台を作る時と、同じ拍の取り方だ）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……扉の向こうは、別の世界。TRPGと、少し似てる"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "全部は聞こえない。だから、続きは自分の中で鳴らす"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次に扉が開いた時、聞こえてきたのは手拍子だった。さっきより、ずっと速い。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "気づくと、俺も指で鞄の縁を叩いていた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "surprise",
+          "text": "……今、拍、取ってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、あ、つられただけです"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……やっぱり、同士だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（また同士にされた。曲名は、一つも知らないのに）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドは一歩こちらへ寄ってから、自分で気づいたように、半歩戻った。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……たぶん、次が最後の曲"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後に扉が開いた時、通りに流れてきたのは、静かなギターだった。二人とも、何も言わなかった。"
         }
       ]
     },

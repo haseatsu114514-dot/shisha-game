@@ -27,6 +27,7 @@ import { craftConditions, heatDelta, pullResult, isIdealTemperature, isRainbowTe
 import { buildThermometer } from "./thermometer.js";
 import { attackGuide, attackRange, inAttackRange, attackScore, ATTACK_BAND } from "./attack-band.js";
 import { renewalCraft } from "../core/craft-version.js";
+import { assistEffect } from "./retry-assist-level.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { impact, exhale, smokeRing } from "./fx.js";
 import { mixColor } from "./art.js";
@@ -221,7 +222,7 @@ async function pullGame(cs, mode) {
   let pulls = 0, justs = 0, criticals = 0, smokeRings = 0, failed = null, coals = null;
   // 熱管理だけ: 炭が燃え進んで熱が落ちる速さと、洞察で小さくなる揺らぎ
   const clarity = mode.drift ? skill.clarity(cs) : 1;
-  const baseCool = mode.drift ? rand(0.006, 0.013) * (cs.retryAssist ? .55 : 1) : 0;
+  const baseCool = mode.drift ? rand(0.006, 0.013) * assistEffect(cs).cool : 0;
   let coolRate = 0, elapsed = 0;
   const wobblePhase = rand(0, 6.28);
   const wobble = () => (mode.drift ? conditions.sparsity * 0.05 * Math.sin(elapsed * Math.PI * 2 / 2.6) + 0.014 * (1 - 0.7 * clarity) * Math.sin(elapsed * 1.7 + wobblePhase) : 0);

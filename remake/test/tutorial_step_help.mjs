@@ -75,16 +75,13 @@ async function harness(mode = "tutorial", override = null) {
   };
 }
 
-test("hole demo appears once in lesson, including when skipped, and is saved", async () => {
+// #3815: 穴あけのお手本動画は廃止。レッスンの工程はお手本を自動で開かない（残るお手本は「?」の中の入口から開く）。
+test("lesson steps no longer auto-open a demo or record it as seen (#3815)", async () => {
   const h = await harness();
-  await h.mod.namespace.showStepDemo(h.cs, "holes");
-  await h.mod.namespace.showStepDemo(h.cs, "holes");
-  assert.deepEqual(h.demos, ["holes"]);
-  assert.equal(h.statePort.state.flags.seenDemo.holes, true);
-  assert.equal(h.saved, 1);
-  const drill = await harness("drill");
-  await drill.mod.namespace.showStepDemo(drill.cs, "holes");
-  assert.equal(drill.demos.length, 0);
+  assert.equal(h.mod.namespace.showStepDemo, undefined, "no automatic lesson demo entry point");
+  const done = h.explain(); h.close(); assert.equal(await done, true);
+  assert.deepEqual(h.demos, [], "the lesson explanation does not open a demo");
+  assert.equal(h.statePort.state.flags.seenDemo, undefined);
 });
 
 test("demo sheet pauses the craft clock during replay", async () => {

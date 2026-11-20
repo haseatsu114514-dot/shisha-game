@@ -447,7 +447,7 @@ reset({ slot: 2, flags: { _confession_due: "minto", _minto_identity_revealed: tr
 assert.equal(await romance.maybeConfession(async () => {}), true); assert.equal(plays.length, 1); assert(!state.flags._minto_name_known); assert.equal(state.flags._confession_due, "minto");
 
 // 外出後の話は後日読んでも時間が食い違わない。私的LIMEに店の呼び込み口調を持ち込まない。
-const afterOutings = allMessages.filter((m) => m.id.startsWith("lime_after_outing_")); assert.equal(afterOutings.length, 8);
+const afterOutings = allMessages.filter((m) => m.id.startsWith("lime_after_outing_")); assert.equal(afterOutings.length, 10); // 神崎・クラウドの2通（#3097）を含む
 for (const message of afterOutings) { const text = JSON.stringify(message); assert(!/昨日|昨夜/.test(text)); assert(text.includes("この前")); }
 const privateMinto = allMessages.filter((m) => m.sender === "minto" && m.id !== "lime_minto_day4");
 for (const message of privateMinto) assert(!/♡|生きてる〜|おはよっ|チェキ/.test(JSON.stringify(message)), message.id);
@@ -494,6 +494,29 @@ reset({ chapter: 1, day: 5, contacts: ["hiyori"], affinity: { hiyori: 33 }, flag
 reset({ chapter: 2, day: 5, contacts: ["hiyori"], affinity: { hiyori: 33 }, flags: { ...hiyoriReturned } }); assert(!hiyoriOuting(), "第2章では誘わない");
 reset({ chapter: 1, day: 5, contacts: ["hiyori"], affinity: { hiyori: 33 }, flags: { ...hiyoriReturned, _invited_lime_outing_hiyori_1: true, _outing_done_hiyori: true } });
 assert(!hiyoriOuting()); assert(phone.morningMessages().some((m) => m.id === "lime_after_outing_hiyori"), "ひよりの外出の後日談も『この前』で届く");
+// 神崎・クラウドの♥3の外出（#3097）。第2章だけ。場面が前提にする話（銭湯の紹介・最初の「同士」）を読んだ後、♥5の締めくくりの前に届く。
+// ♥3の判定は affinity_level の汎用判定（この試験では affinityLevel が常に5）。
+assert.equal(invitationById.lime_outing_kumicho_1.accept_event, "outing_kumicho_1"); assert.equal(invitationById.lime_outing_kumicho_1.time_slot, "noon");
+assert.equal(invitationById.lime_outing_kumicho_1.closed_on, 0); assert.equal(invitationById.lime_outing_kumicho_1.private_schedule, "holiday_or_temporary");
+assert.equal(invitationById.lime_outing_rei_1.accept_event, "outing_rei_1"); assert.equal(invitationById.lime_outing_rei_1.time_slot, "night"); assert(invitationById.lime_outing_rei_1.after_close);
+const rivalOuting = (id) => phone.morningMessages().some((m) => m.id === `lime_outing_${id}_1`);
+const rivalOutingReady = { kumicho: { _kumicho_sento_introduced: true }, rei: { _ch2_read_ch2_rei_second: true } };
+for (const id of ["kumicho", "rei"]) {
+  const base = { chapter: 2, day: 5, contacts: [id], affinity: { [id]: 33 } };
+  reset({ ...base, flags: { ...rivalOutingReady[id] } }); assert(rivalOuting(id), `${id}: 第2章の♥3で誘う`);
+  reset({ ...base }); assert(!rivalOuting(id), `${id}: 場面が前提にする話を読む前は誘わない`);
+  reset({ ...base, flags: { ...rivalOutingReady[id] }, finales: { [id]: { route: "friend" } } }); assert(!rivalOuting(id), `${id}: ♥5の締めくくりの後は誘わない`);
+  reset({ ...base, chapter: 3, flags: { ...rivalOutingReady[id] } }); assert(!rivalOuting(id), `${id}: 第2章の外では誘わない`);
+  reset({ ...base, flags: { ...rivalOutingReady[id], [`_invited_lime_outing_${id}_1`]: true, [`_outing_done_${id}`]: true } });
+  assert(!rivalOuting(id)); assert(phone.morningMessages().some((m) => m.id === `lime_after_outing_${id}`), `${id}: 外出の後日談も『この前』で届く`);
+}
+// 神崎の店の定休日（day % 7 === 0）以外は、臨時休業の一言を添えて誘う（なると同じ holiday_or_temporary）。
+reset({ chapter: 2, day: 5, contacts: ["kumicho"], affinity: { kumicho: 33 }, flags: { _kumicho_sento_introduced: true } });
+const kumichoTemporary = phone.morningMessages().find((m) => m.id === "lime_outing_kumicho_1");
+assert(kumichoTemporary.temporary_closed); assert.match(kumichoTemporary.messages[0].text, /臨時/);
+reset({ chapter: 2, day: 7, contacts: ["kumicho"], affinity: { kumicho: 33 }, flags: { _kumicho_sento_introduced: true } });
+const kumichoHoliday = phone.morningMessages().find((m) => m.id === "lime_outing_kumicho_1");
+assert(!kumichoHoliday.temporary_closed); assert.equal(kumichoHoliday.closed_on, 0);
 reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori: true, _hiyori_charm_done: true } });
 assert(phone.morningMessages().some((m) => m.id === "lime_hiyori_charm"), "相席のあと、席の話が届く");
 reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori: true, _hiyori_peach_talk_done: true } });

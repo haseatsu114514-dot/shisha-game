@@ -10,7 +10,7 @@ import { trainRide } from "../core/scene-motions.js";
 import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 import { state, save, timeOfDay } from "../core/state.js";
-import { growthEnabled, hidaneTotal } from "../core/growth.js";
+import { growthEnabled, hidaneTotal, readyLessons } from "../core/growth.js";
 import { SE } from "../core/audio.js";
 import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel } from "./spots.js";
 import { updateHud } from "./hud.js";
@@ -73,6 +73,23 @@ const firstFreeDay = () => state.chapter === 1 && state.day <= 2;
 
 let interrupt = null;
 /** ピン地図・街歩きに共通する、未決定の行き先選択状態。 */
+/**
+ * その行き先で心得の盤の授業を相談できる相手（SBD141）。相談が始まる処理（calendar.js・ch2-preparation.js・ch5-shops.js・ch5-dubai.js）と同じ人を返す:
+ * 第5章の通い店は talkWith、ドバイの屋敷などは teacher、ライバルの店は charId、SHISHARK はサメちゃん、tonari はスミさん（バイト上がり）とつむぎ（客席）、
+ * 第1・2章の Dr.fookah は2階の凛想。ひよりは店に居合わせた時だけなので、ピンには出さない
+ */
+export function spotTeachers(s, chapter = state?.chapter) {
+  if (!s) return [];
+  if (s.talkWith || s.teacher) return [s.talkWith || s.teacher];
+  if (s.kind === "rival" && s.charId) return [s.charId];
+  if (s.kind === "samechan") return ["samechan"];
+  if (s.kind === "tonari") return ["sumi", "tsumugi"];
+  if (s.id === "shop" && s.kind === "shop" && chapter <= 2) return ["rio"];
+  return [];
+}
+/** その行き先で今相談できる授業（灯してあって、♥も届いていて、まだ習っていない） */
+export const spotLessons = (s) => growthEnabled() ? spotTeachers(s).flatMap((who) => readyLessons(who)) : [];
+
 export const isChoosingDestination = () => !!document.querySelector("#screen [data-destination-selection]:not(.done)");
 /** 表示中のマップを外から閉じる（LIME で誘いに乗ったときなど）。マップが無ければ何もしない */
 export function interruptMap(value) {
@@ -323,6 +340,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
         event.preventDefault();
         go(s);
       };
+      const lessons = av.why === "locked" ? [] : spotLessons(s);
       const pv = av.why === "locked" ? null : spotPreview(s);
       const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
       if (preview) {
@@ -366,8 +384,10 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       // 今は入れない行き先は、理由（本日定休日・夜から営業・今日はもう行った 等）を見える文字で添える（#3555。読み上げだけだった）。
       // 説明文は増やさず（#2853 の「店名と写真だけ」）、小さな札で見せる。入れる行き先は料金、入れない時はその理由。
       // 体力は数字で見せない（ゲージでなんとなく把握するゲーム性・MAP04）。料金はピンから外し、ここで見せる（MAP05）。
-      const tags = !av.ok ? (av.why && av.why !== "locked" ? [["mi-why", av.why, "map-why"]] : [])
-        : [s.cost && !freeGuide(s) ? ["mi-cost", `料金 ${yen(s.cost)}`, "map-cost"] : null].filter(Boolean);
+      // 授業を相談できる店は、その授業の名前を札で添える（SBD141）。入れない日も出す（明日以降に来ればよいと分かる）
+      const lessonTag = lessons.length ? ["mi-lesson", `授業の相談「${lessons.map((l) => l.name).join("」「")}」`, "map-lesson"] : null;
+      const tags = !av.ok ? [av.why && av.why !== "locked" ? ["mi-why", av.why, "map-why"] : null, lessonTag].filter(Boolean)
+        : [s.cost && !freeGuide(s) ? ["mi-cost", `料金 ${yen(s.cost)}`, "map-cost"] : null, lessonTag].filter(Boolean);
       const tagRow = tags.length ? el("div.mi-tags", tags.map(([cls, text, test]) => el(`span.mi-tag.${cls}`, { text, dataset: { test } }))) : null;
       info.replaceChildren(...[
         el("div.mi-banner", { text: label }),
@@ -489,6 +509,9 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       const facility = !(s.id === "trpg_bar" && hasStoreLogo(s.id)) && !locked && !(!known && s.unknownLabel) && s.facilityIcon !== false ? createMapFacilityIcon(s.id) : null;
       const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 82, height: 46 }) : null;
       const hidane = s.id === "kannon" && growthEnabled() ? hidaneTotal() : 0;
+      // 灯した授業を相談できる店（SBD141）: 看板の左に「相談」の吹き出し。右上の「!」・火種の数、上の顔とは別の場所に置く
+      const lessons = locked ? [] : spotLessons(s);
+      const lessonMark = lessons.length ? el("i.lesson-badge", { text: "相談", dataset: { test: `map-lesson-${s.id}` } }) : null;
       const badge = locked ? null
         : hidane > 0 ? el("i.evt-badge.hidane-badge", { text: String(Math.min(99, hidane)), "aria-label": `火種 ${hidane}・内省で灯せる`, dataset: { test: "kannon-hidane" } })
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
@@ -500,12 +523,13 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && s.facilityIcon !== false && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}${closed ? ".closed" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
-        "aria-label": `${pinSpeech(s, locked, caption)}${s.cost && !freeGuide(s) ? `・利用料 ${yen(s.cost)}` : ""}${av.tag ? `（${av.tag}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
+        "aria-label": `${pinSpeech(s, locked, caption)}${s.cost && !freeGuide(s) ? `・利用料 ${yen(s.cost)}` : ""}${av.tag ? `（${av.tag}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}${lessons.length ? `・授業「${lessons.map((l) => l.name).join("」「")}」を相談できる` : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
         el("div.pin-visual", [
           el("div.shield", [
             badge,
+            lessonMark,
             el("div.ico", [facility || logo || (locked || !known && s.unknownLabel
               ? el("span", { text: "？" }) : pinSymbol(s))]),
           ]),

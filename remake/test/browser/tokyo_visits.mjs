@@ -256,7 +256,8 @@ await suite("tokyo-visits", async check => {
     assert.equal(await page.locator(".lime-chat-row").count(), 0);
     const value = await get(page);
     assert.deepEqual(value.tokyoVisits.plans, []);
-    assert.equal(value.schema, 28); // 旧セーブは現在のSCHEMAへ移行される
+    // 旧セーブは現在のSCHEMAへ移行される（版を上げるたびに書き換えないよう、ゲームの SCHEMA と比べる）
+    assert.equal(value.schema, await page.evaluate(async () => (await import("./js/core/state.js")).SCHEMA));
     await page.locator(t("phone-close")).click();
   });
 });

@@ -13,6 +13,7 @@ const DB = { dialogues: {} }, loaded = new Set(), scenes = [];
 const storage = new Map();
 globalThis.localStorage = { getItem: k => storage.get(k) ?? null, setItem: (k,v) => storage.set(k,String(v)) };
 let current, cancelled = false, swap = false, choices = [], trial = false, rehearsal = false, rewards = 0;
+let sumiCallRead = false, companion = null; // 第4章の時差の電話（ch4_story_sumi_call）の既読と、同じ便で来た恋人
 const context = vm.createContext({ console });
 const noop = () => {};
 const readDialogues = async (file, ids) => {
@@ -34,7 +35,8 @@ const values = {
   modal: async () => choices.shift(), layers: { hud: { firstElementChild: null } },
   readDialogues, loadMukaiShift: async () => {}, creekSpotScenes: x => x,
   addStamina: n => { current.stamina += n; }, earnStat: () => rewards++, gainAffinity: () => rewards++,
-  spendableMoney: () => current.money, chapterFourProgress: () => ({ startDay: current.day, read: {} }),
+  spendableMoney: () => current.money, chapterFourProgress: () => ({ startDay: current.day, read: sumiCallRead ? { ch4_story_sumi_call: true } : {} }),
+  CH4_SUMI_CALL: 'ch4_story_sumi_call', overseasCompanion: () => ({ companion }),
   innTrialDue: () => trial, rehearsalDue: () => rehearsal, chainVisitDue: () => null,
 };
 const stateModule = new vm.SyntheticModule(['state','save','timeOfDay','markMet'], function() {
@@ -102,4 +104,49 @@ for (const [,base,,rest] of cases) for (const suffix of revisits(rest)) {
     assert([...line.text].reduce((n,c)=>n+(c.codePointAt(0)<=255?0.5:1),0)<=48);
   }
 }
-console.log('PASS rest variations: real chapter loaders/visits, rotation, SAVE/LOAD, cancellation, menus and unchanged rewards');
+// スミさんからの夜の電話（#3097 計画 4-1）: DAY7 の時差の電話を読んだ後の夜だけ、宿で休むと休む場面の代わりに一本ずつ順に読む。
+// 昼・電話の前は休む巡回のまま。電話は休む巡回を進めず、一度きり。中断・保存の切り替えでは進めない。つむぎが同じ便なら _c を飛ばす。
+{
+  const calls = ['ch4_sumi_call_b', 'ch4_sumi_call_c', 'ch4_sumi_call_d', 'ch4_sumi_call_e'];
+  assert.deepEqual([...inn.namespace.SUMI_NIGHT_CALLS], calls);
+  for (const id of calls) {
+    const scene = DB.dialogues[id];
+    assert(loaded.has(id) && scene?.lines?.length, `${id}: in the real chapter load list`);
+    assert(!scene.metadata && scene.lines.every(line => !line.type), `${id}: no rewards, flags or branches in the script`);
+    assert(scene.lines.some(line => line.speaker === 'sumi'), `${id}: Sumi talks`);
+    assert(scene.lines.every(line => ['', 'hajime', 'sumi'].includes(line.speaker)), `${id}: only Sumi and Hajime on the phone`);
+    assert(!scene.lines.some(line => /大会|審査|優勝|シェイク|路地裏/.test(line.text)), `${id}: no tournament or Sumi's Dubai past`);
+  }
+  const innVisit = cases[2][2], restKey = '_spot_turn_ch4_dubai_inn';
+  const rest = async (slot) => {
+    current.slot = slot; current.stamina = 10;
+    const result = await innVisit();
+    assert.equal(result.used, true); assert(current.stamina > 10, 'a call night is still a rest');
+    return scenes.at(-1);
+  };
+  replace(newState()); current.money = 12345; scenes.length = 0; rewards = 0; sumiCallRead = false; companion = null;
+  assert.equal(await rest(1), 'ch4_inn_rest', 'before the DAY7 call, a night rest is a rest');
+  sumiCallRead = true;
+  assert.equal(await rest(0), 'ch4_inn_rest_b', 'a daytime rest after the call is still a rest');
+  for (const id of calls) {
+    assert.equal(await rest(1), id, 'night rests after the call read the calls in order');
+    assert(saveToSlot('suien_remake_slot1')); replace(loadFromSlot('suien_remake_slot1'));
+  }
+  assert.equal(current.flags[restKey], 2, 'calls do not advance the rest rotation');
+  assert.equal(current.flags._ch4_dubai_talks.sumi_call, calls.length);
+  assert.equal(await rest(1), 'ch4_inn_rest_c', 'after the four calls, the night rest returns to the rest rotation');
+  assert.equal(current.money, 12345); assert.equal(rewards, 0, 'calls give no affinity or stats');
+  // 中断・別の保存への切り替えでは、電話も休む巡回も進めない
+  replace(newState()); current.slot = 1; current.stamina = 10;
+  cancelled = true; assert.equal((await innVisit()).used, false); cancelled = false;
+  assert.equal(current.flags._ch4_dubai_talks, undefined); assert.equal(current.flags[restKey], undefined); assert.equal(current.stamina, 10);
+  const abandoned = current; swap = true; assert.equal((await innVisit()).used, false); swap = false;
+  assert.equal(abandoned.flags._ch4_dubai_talks, undefined, 'a switched save does not count the call');
+  assert.equal(await rest(1), calls[0], 'the interrupted call is read again');
+  // つむぎが同じ便で来ていれば、tonari のつむぎの話は飛ばす
+  replace(newState()); companion = 'tsumugi'; scenes.length = 0;
+  for (let i = 0; i < 4; i++) await rest(1);
+  assert.deepEqual(scenes, ['ch4_sumi_call_b', 'ch4_sumi_call_d', 'ch4_sumi_call_e', 'ch4_inn_rest'], 'Tsumugi travelling with Hajime is not drawing at tonari');
+  sumiCallRead = false; companion = null;
+}
+console.log('PASS rest variations: real chapter loaders/visits, rotation, SAVE/LOAD, cancellation, menus, unchanged rewards and Sumi\'s night calls');

@@ -510,6 +510,92 @@
           "text": "さて。こっちでも、気になる縁はあるかい？"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_tokyo_room_rest_rain",
+      "comment": "#3097 計画 3-1（PR-G）・RLS10 奥の部屋で休む・雨の日版。2回目以降の雨の日だけ、巡回の代わりに読む（ch3-tokyo-daily.js の roomRestId。巡回の回数は進めない）。第3章はムカイさんを厚く描く（2026-11-18 オーナー指定）。昼夜・味覚回復・恋愛の成立に依存しない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の部屋の窓を、雨が叩いている。庇に当たる音が、部屋じゅうに響いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "濡れた上着を椅子の背に掛けると、すぐに戸が二回、ノックされた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "はじめくん。開けるぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは、針金のハンガーと、たたんだ古新聞を持っていた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "上着はこっちに吊るせ。椅子だと、背の形に跡が残る"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "新聞は、靴に詰めておけ。朝には乾く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "靴が濡れてるの、分かったんですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "入口の床に、足跡が一列あった。……濡れた靴は、歩き方が変わる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（足跡ひとつで、そこまで見てるのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われたとおり、靴の中に新聞を丸めて詰めた。インクの匂いが、少しだけした。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "雨の日は、横になる前に窓を少し開けとくといい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "濡れませんか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "庇がある。……雨の音は、閉めきるより少し入れた方が、よく眠れる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんが出ていってから、窓を指一本ぶんだけ開けた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "細い隙間から、雨の音と、湿った土の匂いが入ってくる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "目を閉じると、聞こえる音がだんだん減っていって、気づいたら眠っていた。"
+        }
+      ]
     }
   ]
 }

@@ -109,6 +109,34 @@ async function openSaveScreen(page) {
   await settle(page);
 }
 
+// 会話の送り記号「▼」: #3726 A-2 の巡回で実寸 9.8px だった。1枚目を打ち終えて、送り記号が出ている間に測る
+async function openConversationNext(page) {
+  await page.evaluate(async () => {
+    const vn = await import("./js/vn/engine.js");
+    window.PD = vn.play({ dialogue_id: "__phone_density_next", lines: [
+      { speaker: "sumi", portrait: false, text: "送り記号の確認。" },
+      { speaker: "sumi", portrait: false, text: "二枚目。" },
+    ] });
+  });
+  await page.locator(".vn-next.show").waitFor();
+  await settle(page);
+}
+
+// くじの黒板（ガラガラの横の看板）: #3726 A-2 の巡回で「ラストワン賞あり」が実寸 7.3px だった。
+// 開発用のプレビュー（景品は渡さない）で抽選器の舞台を出す。動きを減らす設定で、カメラの寄り・フェードを止めて測る
+// 動きを減らす設定の舞台は 0.9 秒で札へ移り、黒板ごと消える（motions/garagara.js の sleep(900)）。
+// 遅い CI では測る前に消えて「文字を測る部品が見えていない」になるため、ページの時計を止めて黒板を出したままにする。
+// 時計を止めても黒板は描かれる（舞台は時刻を待たずに組み立てる）。止めたまま検査を終える（くじは最後に開く）
+async function openKuji(page, spec) {
+  await page.evaluate(async () => (await import("./js/core/ui.js")).clearScreen());
+  await page.clock.install();
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 10));
+  await page.evaluate(async spec => {
+    window.PD = (await import("./js/daily/kuji.js")).previewReveal(spec);
+  }, spec);
+  await page.locator(".mo-garagara .kj-sign-text").waitFor();
+}
+
 // 開く・閉じる演出（無限に回る飾りは除く）が終わるまで待つ
 function settle(page) {
   return page.waitForFunction(() => document.getAnimations().every(a => a.playState !== "running" || a.effect?.getComputedTiming().iterations === Infinity));
@@ -125,10 +153,17 @@ const SCREENS = [
   { id: "modal", open: openModal, targets: [".modal-actions > .btn"], texts: [".modal-box"] },
   { id: "shop-entry", open: openShopEntry, targets: ['[data-test="shop-entry-back"]'], texts: [] },
   { id: "shop-floor", open: openShopFloor, targets: ['[data-test="shop-leave"]'], texts: [] },
-  { id: "menu", open: openMenu, targets: ['[data-test="menu-close"]'], texts: [] },
+  // MENU の「?」（体力・見出しの説明）: #3726 A-2 の巡回で実寸 10.8px（Safari のバーで 9.4px）だった。押せる範囲は透明な ::before なので文字だけ見る
+  { id: "menu", open: openMenu, targets: ['[data-test="menu-close"]'], texts: [".dmenu .dm-help"], required: [".dmenu .dm-help"] },
   { id: "gallery", open: openGalleryScreen, targets: [".gal-tabs > .gal-tab", ".gal-close"],
     texts: [".gal-head", ".gal-characters", ".gal-note", "#gallery-items"] },
   { id: "save-screen", open: openSaveScreen, targets: [], texts: [".saveload-modal .ss-list"] },
+  { id: "conversation-next", open: openConversationNext, targets: [], texts: [".vn-next"], required: [".vn-next"] },
+  // 黒板の字は大きくしても書ける面（.kj-sign-text）からはみ出さない（fits）
+  { id: "kuji-sign", open: page => openKuji(page, "C@g1000"), targets: [], texts: [".mo-garagara .kj-sign-text"],
+    required: [".kj-sign-title", ".kj-sign-row", ".kj-sign-note"], fits: ".mo-garagara .kj-sign-text", reducedMotion: "reduce" },
+  { id: "kuji-sign-last", open: page => openKuji(page, "LAST@g1000"), targets: [], texts: [".mo-garagara .kj-sign-text"],
+    required: [".kj-sign-title", ".kj-sign-note"], fits: ".mo-garagara .kj-sign-text", reducedMotion: "reduce" },
 ];
 
 // ノッチ（safe-area）の模擬（#3001）。headless では env(safe-area-inset-*) が 0 なので、base.css の --stage-safe-l/r と同じ式で
@@ -169,7 +204,7 @@ function edgeBoxes({ left, right }) {
 }
 
 // 見えている要素だけ、実寸（getBoundingClientRect は拡縮後）と文字の実寸を集める。
-function measure({ targets, texts }) {
+function measure({ targets, texts, required = [], fits = null }) {
   const k = Number(getComputedStyle(document.querySelector("#stage")).getPropertyValue("--k"));
   const shown = node => node.checkVisibility({ visibilityProperty: true, opacityProperty: true }) && node.getClientRects().length > 0;
   const label = node => `${node.className || node.tagName}「${node.textContent.trim().slice(0, 12)}」`;
@@ -198,7 +233,26 @@ function measure({ targets, texts }) {
     });
   }
   for (const selector of texts) document.querySelectorAll(selector).forEach(node => shown(node) && fonts.push(...textNodesUnder(node)));
-  return { k, density: document.documentElement.dataset.density ?? null, taps, fonts, gaps };
+  // required: 文字を測る部品が見えていること（見えずに測り漏れるのを防ぐ）
+  const missing = required.filter(selector => ![...document.querySelectorAll(selector)].some(node => shown(node) && textNodesUnder(node).length));
+  // fits: 囲み（書ける面）の中身がはみ出していない。縦は中の段（子要素の行の高さの箱）、横は文字の行そのもので見る
+  // （文字の行の箱は書体の上下の余白を含み、詰めた行の高さより縦に少し大きいので、縦には使わない）
+  const overflow = [];
+  const fmt = r => [r.left, r.top, r.right, r.bottom].map(v => v.toFixed(1)).join(",");
+  for (const box of fits ? document.querySelectorAll(fits) : []) {
+    const outer = box.getBoundingClientRect(), out = (a, b) => a < b - 0.5;
+    for (const child of box.children) {
+      const r = child.getBoundingClientRect();
+      if (out(r.left, outer.left) || out(outer.right, r.right) || out(r.top, outer.top) || out(outer.bottom, r.bottom)) overflow.push(`${label(child)} ${fmt(r)} ⊄ ${fmt(outer)}`);
+    }
+    const walker = document.createTreeWalker(box, NodeFilter.SHOW_TEXT);
+    for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+      if (!t.textContent.trim()) continue;
+      const range = document.createRange(); range.selectNodeContents(t);
+      for (const r of range.getClientRects()) if (out(r.left, outer.left) || out(outer.right, r.right)) overflow.push(`「${t.textContent.trim()}」 ${fmt(r)} ⊄ ${fmt(outer)}`);
+    }
+  }
+  return { k, density: document.documentElement.dataset.density ?? null, taps, fonts, gaps, missing, overflow };
 }
 
 await suite("phone-density", async check => {
@@ -206,14 +260,16 @@ await suite("phone-density", async check => {
     for (const screen of SCREENS) {
       await check(`${name}-${screen.id}`, async page => {
         await screen.open(page);
-        const m = await page.evaluate(measure, { targets: screen.targets, texts: screen.texts });
+        const m = await page.evaluate(measure, { targets: screen.targets, texts: screen.texts, required: screen.required, fits: screen.fits });
         if (process.env.PD_DUMP) console.log(JSON.stringify(m, null, 1));
         assert.equal(m.density, "phone", `--k=${m.k} でスマホ規格が立っていない`);
         assert.deepEqual(m.taps.filter(t => t.missing).map(t => t.where), [], "測る部品が見えていない");
+        assert.deepEqual(m.missing, [], "文字を測る部品が見えていない");
         assert.deepEqual(m.taps.filter(t => t.h < MIN_TAP).map(t => `${t.where} ${t.h.toFixed(1)}px`), [], `タップ部品の実寸が ${MIN_TAP}px 未満`);
         assert.deepEqual(m.fonts.filter(f => f.px < MIN_TEXT).map(f => `${f.where} ${f.px.toFixed(1)}px`), [], `文字の実寸が ${MIN_TEXT}px 未満`);
         assert.deepEqual(m.gaps.filter(g => g.stage < MIN_GAP_STAGE - 0.5).map(g => `${g.where} ${g.stage.toFixed(1)}px`), [], `隣のタップ部品との間隔がステージ上 ${MIN_GAP_STAGE}px 未満`);
-      }, { viewport, ...touch });
+        assert.deepEqual(m.overflow, [], "文字が書ける面からはみ出している");
+      }, { viewport, ...touch, ...(screen.reducedMotion ? { reducedMotion: screen.reducedMotion } : {}) });
     }
   }
 
@@ -290,5 +346,12 @@ await suite("phone-density", async check => {
     });
     // #3100 / #3103: 紙テーマの操作文字はPCでも22px。タップ領域と選択肢位置は維持。
     assert.equal(vn, "44px 22px 254px");
+    // #3726 A-2 で大きくした MENU の「?」・送り記号・くじの黒板は、PC では従来の大きさのまま
+    assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector(".vn-next")).fontSize), "18px");
+    await openMenu(page);
+    assert.equal(await page.evaluate(() => [...document.querySelectorAll(".dmenu .dm-help")].map(n => { const s = getComputedStyle(n); return `${s.fontSize} ${s.width}`; }).join("|")), "16px 26px|16px 26px");
+    await page.locator('[data-test="menu-close"]').click();
+    await openKuji(page, "C@g1000");
+    assert.equal(await page.evaluate(() => [".kj-sign-title", ".kj-sign-row", ".kj-sign-note"].map(sel => getComputedStyle(document.querySelector(`.mo-garagara ${sel}`)).fontSize).join(" ")), "21px 20px 13px");
   }, { viewport: { width: 1280, height: 720 } });
 });

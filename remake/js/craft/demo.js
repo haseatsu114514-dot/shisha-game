@@ -1,18 +1,7 @@
 // 実プレイ映像と、撮影し直さず直せる字幕・矢印のキューシート。
+// 穴あけのお手本動画は廃止（#3815・オーナー指示「穴あけのゲームだけどお手本動画は廃止」）。
+// 押し加減は「穴を開ける」の中の目盛りと「?」の説明で伝える。ほかの工程のお手本は残す。
 export const STEP_DEMOS = Object.freeze({
-  // 2026-11-13 に今の画面（一枚の舞台・リングの自動送り）で撮り直した（CRN）。時刻は撮った時の出来事から
-  holes: {
-    title: "穴あけのお手本",
-    src: "./media/demo-holes.mp4",
-    cues: [
-      { from: 0, to: 3.6, text: "穴あけだ。まず配置を選べ。外周と中周に、均等な穴を作る", arrow: { x: .72, y: .75, rotate: 0 } },
-      { from: 3.6, to: 5.7, text: "光を見ろ。カウントのあと、目印の近くを針が動きだす", arrow: { x: .30, y: .50, rotate: 0 } },
-      { from: 5.7, to: 14.4, text: "光が目印に重なったら押す。押す長さで深さが決まる。短すぎると浅く、長く押すほど大きい穴になるぞ", arrow: { x: .30, y: .50, rotate: 0 } },
-      { from: 14.4, to: 16.4, text: "外周が揃った。埋まったら次のリングへ進む", arrow: { x: .30, y: .50, rotate: 0 } },
-      { from: 16.4, to: 24.3, text: "次は中周。熱を通す穴を、一つずつ", arrow: { x: .30, y: .50, rotate: 0 } },
-      { from: 24.3, to: Infinity, text: "よし、開通。結果を見て、間隔を確かめろ", arrow: { x: .80, y: .93, rotate: 0 } },
-    ],
-  },
   pull: {
     title: "吸い出しのお手本",
     src: "./media/demo-pull.mp4",
@@ -29,23 +18,10 @@ export const STEP_DEMOS = Object.freeze({
 });
 
 /**
- * 桜井版（リニューアル前の作業台・CRN16）のお手本。穴あけは「次のリングへ」を押す前の画面で撮った映像と字幕。
+ * 桜井版（CRN16）のお手本。前の穴あけの映像は #3815 で廃止したので、いまは無い。
  * 吸い出しのお手本はリニューアルの画面（行き先・弧）を映しているので、桜井版には出さない。
  */
-export const CLASSIC_STEP_DEMOS = Object.freeze({
-  holes: {
-    title: "穴あけのお手本",
-    src: "./media/demo-holes-classic.mp4",
-    cues: [
-      { from: 0, to: 3.4, text: "穴あけだ。まず配置を選べ。外周と中周に、均等な穴を作る", arrow: { x: .80, y: .24, rotate: 90 } },
-      { from: 3.4, to: 6.5, text: "光を見ろ。カウントのあと、目印の周りを回りだす", arrow: { x: .36, y: .42, rotate: 135 } },
-      { from: 6.5, to: 14.5, text: "光が目印に重なったら押す。押す長さで深さが決まる。短すぎると浅く、長く押すほど大きい穴になるぞ", arrow: { x: .36, y: .42, rotate: 135 } },
-      { from: 14.5, to: 16.5, text: "外周が揃った。次のリングへ進め", arrow: { x: .79, y: .80, rotate: 0 } },
-      { from: 16.5, to: 25, text: "次は中周。熱を通す穴を、一つずつ", arrow: { x: .36, y: .42, rotate: 135 } },
-      { from: 25, to: Infinity, text: "よし、開通。結果を見て、間隔を確かめろ", arrow: { x: .865, y: .78, rotate: 0 } },
-    ],
-  },
-});
+export const CLASSIC_STEP_DEMOS = Object.freeze({});
 
 /** version は作業台の data-craft-version（"sakurai" で桜井版のお手本） */
 export function demoFor(step, version = "renewal") { return (version === "sakurai" ? CLASSIC_STEP_DEMOS : STEP_DEMOS)[step] || null; }

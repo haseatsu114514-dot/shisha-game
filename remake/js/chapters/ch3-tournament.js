@@ -1,5 +1,6 @@
 import { playEntrance } from "./tournament-entrance.js";
 import { defeatFade } from "../core/transitions.js";
+import { sceneMoment } from "../core/scene-motions.js";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
 import { createChapterActions } from "../core/chapter-actions.js";
@@ -15,6 +16,7 @@ import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { maxStamina } from "../core/stats.js";
 import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
+import { chosenAssistLevel } from "../craft/retry-assist-level.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 import { applyAssistRecovery } from "./tournament-resources.js";
@@ -34,7 +36,8 @@ import * as broadcast from "../craft/broadcast.js";
 import { voteStack, judgePanel, judgeLegend, craftReviewBlock } from "../craft/tournament-graphics.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
-import { contestCeremony, liveOf } from "../craft/tournament-show.js";
+import { contestCeremony, liveOf, intervalCard, resultSplash, countdownKind, showConfetti } from "../craft/tournament-show.js";
+import { resultCountdown } from "../craft/result.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { adjustmentLines, resultLines, defeatLines } from "./ch3-verdict.js";
@@ -188,7 +191,9 @@ async function commentary(owner, event) {
   // 会話には中継の枠を付ける（TSH05。票が出てからは順位の札も）。台本の選び方・既読の記録は変えない。
   const p = progress();
   const result = await playTournamentEvent(owner.cs, event, { signal: controller.signal,
-    live: liveOf("HAZE: NATIONAL TOKYO", event, p.voted ? standings(p) : [], who => displayName(who, state)) });
+    live: liveOf("HAZE: NATIONAL TOKYO", event, p.voted ? standings(p) : [], who => displayName(who, state)),
+    // 合間の掛け合いの前にアイキャッチ（TSH11。いまの順位つき。既読なら出さない）。
+    card: intervalCard(event, p.voted ? standings(p) : []) });
   if (owner.controller === controller) owner.controller = null;
   if (!live(owner) || !result) return false;
   progress().craft = clone(owner.cs);
@@ -246,12 +251,13 @@ function renderReady(owner) {
       const p = progress();
       void warmGameOver();
       if (p.entry) restoreResources(state, p.entry);
-      const assisted = p.retryAssist === true;
+      const assisted = p.retryAssist === true, assistLevel = chosenAssistLevel(p);
       startAttempt(state, null);
       applyAssistRecovery(state, assisted, maxStamina());
       owner.cs = newSession("tournament");
       owner.cs.eventTitle = "HAZE: NATIONAL TOKYO";
       owner.cs.retryAssist = assisted;
+      owner.cs.retryAssistLevel = assistLevel;
       p.craft = clone(owner.cs);
       save();
       await drive(owner);
@@ -322,7 +328,8 @@ function voteReason(p, cs, final = false) {
   return lines;
 }
 
-function renderVotes(owner, final = false) {
+/** splash: この場で結果が決まった時だけ、票が出そろった後に大見出しを出す（TSH10） */
+function renderVotes(owner, final = false, { splash = false } = {}) {
   playBgm("bgm_judging");
   // 途中の持ち点は判の一打、最終結果は会場の拍手（1位はファンファーレも）。第1章の結果発表（craft/result.js）とそろえる。
   const reaction = () => {
@@ -371,8 +378,19 @@ function renderVotes(owner, final = false) {
     sting: { eyebrow: "HAZE: NATIONAL TOKYO", title: final ? "FINAL VOTE" : "JUDGES' VOTE", sub: final ? "最後の票が入ります" : "審査員の票が入ります" },
   });
   owner.votesShown = shown;
-  if (show.moved) show.done.then(() => { if (live(owner) && screen.isConnected) reaction(); });
-  else reaction();
+  // 票が出そろったら（TSH10）: この場で結果が決まった時だけ大見出し、優勝なら板に紙吹雪。押す所へフォーカスを戻す。
+  const finish = async () => {
+    if (!live(owner) || !screen.isConnected) return;
+    reaction();
+    if (!final || !splash) return;
+    const rank = p.result.rank;
+    await resultSplash(rank, { event: "HAZE: NATIONAL TOKYO" });
+    if (!live(owner) || !screen.isConnected) return;
+    if (rank === 1) showConfetti(screen, { count: 90 });
+    screen.querySelector(".ch2-contest-actions .btn.primary")?.focus({ preventScroll: true });
+  };
+  if (show.moved) show.done.then(finish);
+  else finish();
 }
 
 async function renderDefeat(owner, variant = null) {
@@ -510,12 +528,39 @@ async function drive(owner) {
       if (!await commentary(owner, "tasting")) return;
       // 結果発表前の掛け合い（#3060）。
       if (!await commentary(owner, "preresult")) return;
+      // この場で結果が決まった（LOAD後の再表示ではない）。結果の板の前に10カウントを流す印（TSH10）。
+      owner.revealNow = progress().attempts ?? true;
       checkpoint("result");
+      owner.hush = true; // この場で発表へ進んだ時だけ、結果の前に会場の光を絞る（#3965）。再開では出さない
     } else if (p.stage === "votes") { renderVotes(owner); return; }
     else if (p.stage === "result") {
       // この場で結果を出したことを覚える。敗北の入り（#2688 A19）は、この場で負けが決まった時だけ出す
       if (p.result) owner.resultShown = true;
-      playBgm("bgm_judging"); renderVotes(owner, true); return;
+      playBgm("bgm_judging");
+      // この場で結果が決まった時だけ、板の前に10カウント（TSH10）。LOAD後の再表示・旧保存では流さない。
+      const reveal = !!p.result && owner.revealNow === (p.attempts ?? true);
+      owner.revealNow = null;
+      // この場で発表へ進んだ時だけ、結果の前に会場の光を絞る（#3965 TMG62）。
+      const hush = owner.hush;
+      owner.hush = false;
+      if (reveal) {
+        hud(owner);
+        // 光が絞られて暗くなった所に10カウントの画面を置き、光が開くと数え始める（TMG62 と TSH10 をつなぐ）。
+        let counting = null;
+        const startCount = () => {
+          counting = resultCountdown(owner.cs || clone(p.craft), countdownKind(p.result.rank), null, { contestants: CONTESTANTS,
+            event: "HAZE: NATIONAL TOKYO", sub: "審査員3人、最後の持ち点の行方。", nameOf: who => displayName(who, state) });
+        };
+        if (hush) await sceneMoment("stageHush", startCount);
+        else startCount();
+        await counting;
+        if (!live(owner)) return;
+        playBgm("bgm_judging"); renderVotes(owner, true, { splash: true }); return;
+      }
+      // 光を絞り、暗い間に結果の画面を出す。見せるだけで、順位・点・保存地点は変えない
+      if (hush) await sceneMoment("stageHush", () => { if (live(owner)) renderVotes(owner, true); });
+      else renderVotes(owner, true);
+      return;
     }
     else if (p.stage === "defeat") { await renderDefeat(owner); return; }
     else if (p.stage === "victory") {
