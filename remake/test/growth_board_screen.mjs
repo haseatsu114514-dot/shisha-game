@@ -67,7 +67,9 @@ const modules = {
   "./growth-board-help.js": { openBoardHelp: async () => {} },
   // 演出の部品（SBD104）は飾りだけ。この検査では動きを減らす設定と同じ扱いにして、規則と表示だけを見る
   "./growth-fx.js": { reducedMotion: () => true, igniteAt() {}, runAlongPath() {}, flyHidane: async () => {}, bump() {}, commitCutIn: async () => {},
-    emberField: () => new Element(), HIDANE_COLOR: { any: "#fff1d0", body: "#ef8a5e", sense: "#58a6ff", wisdom: "#7bd36d" } },
+    emberField: () => new Element(), HIDANE_COLOR: { any: "#fff1d0", body: "#ef8a5e", sense: "#58a6ff", wisdom: "#7bd36d" },
+    // 手応えの強化（SBD132）の部品も飾りだけ
+    FX: {}, flashAt() {}, ringPulse() {}, popGain() {}, popOn() {}, popIn() {}, kick() {}, edgeFlash() {}, commitBanner: async () => {} },
   "../core/data.js": { displayName: id => id, faceIconUrl: () => null, portraitInfo: () => null, faceFrame: () => null },
   "../core/portrait-style.js": { portraitStyle: () => "classic" },
   "../core/stats.js": { affinityLevel: () => 0 }, "../core/growth.js": growth, "../core/growth-board.js": { ...board, pathTo: (...args) => { routeLookups++; return board.pathTo(...args); } },

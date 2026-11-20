@@ -81,7 +81,7 @@ export const HELP_PAGES = Object.freeze([
   ]) },
   { id: "how", title: "操作", build: () => el("ul.gh-list.gh-plain", [
     row(el("span.gh-key", { text: "1" }), "マスを押す", "右に、灯すと何が変わるかが出る"),
-    row(el("span.gh-key", { text: "2" }), "「灯す」→「決定」", "仮置きを重ねて、最後にまとめて決める"),
+    row(el("span.gh-key", { text: "2" }), "「灯す」→「決定」", "選んだマスをもう一度押しても灯る。最後にまとめて決める"),
     row(el("span.gh-key", { text: "◎" }), "目標にする", "欲しいマスに印。「目標まで灯す」で道をまとめて"),
     row(el("span.gh-key", { text: "→" }), "近い目的地", "何も選んでいない時、右に近いスキルや授業が3つ"),
     row(el("span.gh-key", { text: "＋" }), "拡大・移動", "− 全体 ＋ と、ドラッグ・スクロール"),

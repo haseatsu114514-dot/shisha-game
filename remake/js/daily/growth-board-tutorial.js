@@ -47,7 +47,7 @@ export const TUTORIAL_STEPS = Object.freeze([
   { id: "light", title: "灯す", target: ".gb-light", wait: "pending",
     text: ["このマスで伸びる力は右に出る。", "「灯す」を押そう。"] },
   { id: "more", title: "続けて灯す", target: '[data-test="board-viewport"]',
-    text: ["灯したマスの隣が、新しく光る。", "残りの火種も、好きな道へ灯してみよう。"] },
+    text: ["灯したマスの隣が、新しく光る。", "選んだマスは、もう一度押しても灯る。", "残りの火種も、好きな道へ灯してみよう。"] },
   { id: "side", title: "右のパネル", target: '[data-test="board-preview"]',
     text: ["マスを選ぶと、ここに中身が出る。", "選んでいない時は、盤の伸びと「近い目的地」。", "伸びのアイコンは、押すと名前が出る。", "欲しいマスは「目標にする」で印をつけておける。"] },
   { id: "decide", title: "決定", target: '[data-test="board-decide"]',
