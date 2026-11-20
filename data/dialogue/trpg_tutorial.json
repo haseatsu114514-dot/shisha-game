@@ -43,6 +43,13 @@
       "speaker": "sai",
       "role": "店長／はじめての人へ",
       "face": "normal",
+      "text": "GMは、物語で出会う人の役も演じます",
+      "panel": "table"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
       "text": "遊ぶ人はPL。PLは、物語の中の役を一人ずつ演じます",
       "panel": "table"
     },
@@ -64,7 +71,7 @@
       "speaker": "sai",
       "role": "店長／はじめての人へ",
       "face": "normal",
-      "text": "困った場面では『どうする？』と聞かれます。誰が何をするか、選ぶだけ",
+      "text": "GMが『どうする？』と聞いたら、誰がどう動くか選んでください",
       "panel": "declare"
     },
     {
