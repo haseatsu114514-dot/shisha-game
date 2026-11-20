@@ -305,6 +305,8 @@ async function readUntil(page, selector) {
 }
 const openAxeBar = async (page) => {
   await seedDaily(page);
+  // 10投の難しさ（#3779）: 初級をクリア済みにして、押せる段（初級・中級）と閉じた段（上級）を並べる
+  await page.evaluate(() => { const s = window.lookMore.core.state; s.growth = { ...(s.growth || {}), playTiers: { axe: { cleared: ["easy"] } } }; });
   await page.evaluate(async () => { window.lookMore.left = false; void (await import("./js/daily/axe-bar.js")).visitAxeBar().then(() => { window.lookMore.left = true; }); });
   await readUntil(page, t("axe-bar-menu"));
 };
@@ -367,8 +369,10 @@ async function leftovers(page) {
   assertReadable(await inkOn(page, ".axe-bar-menu .axe-bar-division-note"), "部門の説明");
   assertReadable(await inkOn(page, ".axe-bar-menu .axe-bar-lesson"), "教わるの札");
   assertReadable(await inkOn(page, '.axe-bar-menu .axe-bar-divisions .btn[aria-pressed="true"]'), "選んでいる部門", { gold: true });
-  assertReadable(await inkOn(page, '.axe-bar-menu .axe-bar-divisions .btn[aria-pressed="false"]'), "選んでいない部門");
-  const other = page.locator('.axe-bar-menu .axe-bar-divisions .btn[aria-pressed="false"]').first();
+  assertReadable(await inkOn(page, '.axe-bar-menu .axe-bar-divisions .btn[aria-pressed="false"]:not(:disabled)'), "選んでいない部門");
+  assertReadable(await inkOn(page, ".axe-bar-menu .axe-bar-divisions .axe-bar-tier:disabled .axe-bar-tier-lock"), "閉じた段の開き方");
+  assertReadable(await inkOn(page, ".axe-bar-menu .axe-bar-tier-line"), "段の記録の一行");
+  const other = page.locator('.axe-bar-menu .axe-bar-divisions .btn[aria-pressed="false"]:not(:disabled)').first();
   const label = await other.textContent();
   await press(page, other);
   assert.equal(await page.locator('.axe-bar-menu .axe-bar-divisions .btn[aria-pressed="true"]').textContent(), label, "部門を選び直せる");
@@ -411,7 +415,8 @@ async function leftovers(page) {
 
 const AXE_PARTS = [[".axe-bar-menu .venue-host", [""]], [".axe-bar-menu .venue-host-copy small", [""]], [".axe-bar-menu .venue-host-copy strong", [""]], [".axe-bar-menu .venue-host-copy p", [""]],
   [".axe-bar-menu .axe-bar-lesson", [""]], [".axe-bar-menu .axe-bar-division-label", [""]], [".axe-bar-menu .axe-bar-division-note", [""]],
-  ['.axe-bar-menu .axe-bar-divisions .btn[aria-pressed="true"]', [""]], [".axe-bar-menu .axe-bar-records", [""]]];
+  ['.axe-bar-menu .axe-bar-divisions .btn[aria-pressed="true"]', [""]], [".axe-bar-menu .axe-bar-divisions .axe-bar-tier:disabled", [""]],
+  [".axe-bar-menu .axe-bar-tier-lock", [""]], [".axe-bar-menu .axe-bar-tier-line", [""]], [".axe-bar-menu .axe-bar-records", [""]]];
 const CLEAR_PARTS = [["#screen .end-screen.clear .end-actions .btn.primary", [""]], ['#screen .end-screen.clear [data-test="end-title"]', [""]]];
 const RESULT_PARTS = [[".result-panel", ALL], [".result-title", [""]], [".result-label", [""]], [".result-hero-value", [""]], [".result-value", [""]], [".result-grid", [""]], [".result-next", [""]]];
 const STATUS_PARTS = [["#modal .st-tab.on", [""]], ["#modal .st-tab:not(.on)", [""]]];

@@ -1,4 +1,5 @@
 import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-mastery.js";
+import { emit } from "../core/bus.js";
 // 「てつこといっしょ / TETSUKO TIME」（#2454）の画面と本編との確定点。猫の状態・反応・自律行動は tetsuko-model.js。
 //
 // 動線（オーナー判断 2026-11-04・実装計画 §1）: mukai で行動を使う → 帰りに裏口をのぞく（ch3-tokyo-daily.js の
@@ -12,6 +13,7 @@ import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-ma
 // どれも下のボタン1回でも同じ結果（筆圧・精度・時間制限は求めない）。「帰る」は膝に乗られている時も含めて、いつでも押せる。
 // 手応えの作り直し（§10・2026-11-11）: ごきげんのハート・おねだりの吹き出し・なでる場所・飛びつきと空振り・擬音と小さな粒・
 // 触らずにいると見守ったことになる。常に出す文字は道具の名前だけにし、反応の一行は少しで消す。
+// ハートは来訪をまたいで溜まる（§11・#3779）。1回の来訪で溜まるのはハート1つ分まで。
 //
 // 素材は Codex への依頼（asset_sources/tetsuko-care/README.md）。設計・コード担当は別個体の猫や未承認の素材を生成・採用しない。
 //
@@ -21,7 +23,7 @@ import { TOKYO_OUTINGS } from "../chapters/ch3-outing-progress.js";
 import {
   OUTINGS_FLAG, TETSUKO_TIME_FLAG, readTetsukoRecord, tetsukoVisits, createSession, openingReaction, act, canAct, toyOut,
   autonomous, autoDelay, placeProp, canPlaceProp, takePhoto, farewell, sessionResult, moodOf, moodLabel, propById, momentById, propUnlocked,
-  MOMENTS, PROPS, SLOTS, SLOT_NAMES, discoveryGuide, invite, peakReaction, seekMoment, joyHearts, JOY_MAX, JOY_HEARTS, PLAY_AUTO_CATCH,
+  MOMENTS, PROPS, SLOTS, SLOT_NAMES, discoveryGuide, invite, peakReaction, seekMoment, joyHearts, JOY_MAX, JOY_HEARTS, PLAY_AUTO_CATCH, VISIT_JOY,
 } from "./tetsuko-model.js";
 import { ART_READY, PROP_SURFACE_LIFT, hasPose, poseUrl, artAttrs, hasUi, tkIconUrl } from "./tetsuko-art.js";
 import { tetsukoTheme } from "./tetsuko-theme.js";
@@ -40,13 +42,15 @@ export const TETSUKO_STAMINA = TOKYO_OUTINGS.find(outing => outing.id === "tetsu
  * 本編アダプターの確定点（#2454 §10-4・実装計画 §3）。DOM を持たない同期の純関数。
  * 意味のあるふれあい（result.meaningful）で、まだ確定していない訪問キー（result.visitKey）のときだけ、
  * この一回の処理の中で (a) 来訪記録 _ch3_outings.tetsuko を +1、(b) _tetsuko_time に小物の配置・発見・
- * アルバム・おやつの日・ごきげんの通算回数・訪問キーを書き、{ committed:true, stamina:12 } を返す。呼び出し側が同じ処理の中で
- * addStamina(12) と toast を出す。それ以外は { committed:false } で、保存には一切触らない。
+ * アルバム・おやつの日・とっておきの通算回数・溜まったごきげん（affection）・訪問キーを書き、{ committed:true, stamina:12 } を返す。
+ * 呼び出し側が同じ処理の中で addStamina(12) と toast を出す。それ以外は { committed:false } で、保存には一切触らない。
  * #2455: 確定後に共通の達人進捗を記録し、認定時の火種は growth の購読先で精算する。
+ * #3779: ごきげんは来訪をまたいで溜まる。この回の分（result.care・上限 VISIT_JOY）を足し、ハートが初めて5つそろった確定で
+ * "tetsuko-hearts"（{ state, affection, full: true }）を一度だけ知らせる（火種は growth の購読先が精算する）。5つの後は5つのまま。
  * 直接増やさないもの: 経験値・能力・好感度・お金・日付・時間帯。
  * 「少し構っていく」（台本だけ読む短い経路）も同じ確定点を通る（result に小物・発見が無ければ記録を保つ）。
  * @param {object} value 現在のセーブ
- * @param {{ meaningful?: boolean, visitKey?: string, props?: object, found?: string[], album?: object[], treatDay?: number|null, peaks?: number }} [result]
+ * @param {{ meaningful?: boolean, visitKey?: string, props?: object, found?: string[], album?: object[], treatDay?: number|null, peaks?: number, care?: number }} [result]
  * @returns {{ committed: boolean, stamina?: number }}
  */
 export function settleTetsukoTime(value, result) {
@@ -62,11 +66,14 @@ export function settleTetsukoTime(value, result) {
     found: [...record.found, ...(Array.isArray(result.found) ? result.found : [])],
     album: Array.isArray(result.album) ? result.album : record.album,
     treatDay: result.treatDay === undefined ? record.treatDay : result.treatDay,
-    // ごきげんがいっぱいになった通算の回数（手帳に出すだけ）。壊れた値は足さない。
+    // とっておきを見た通算の回数（手帳に出すだけ）。壊れた値は足さない。
     peaks: record.peaks + Math.max(0, Math.floor(Number(result.peaks) || 0)),
+    // 溜まったごきげん: この回の分は VISIT_JOY まで（1回では5つにならない）。壊れた値・「少し構っていく」（care が無い）は足さない。
+    affection: record.affection + Math.min(VISIT_JOY, Math.max(0, Math.floor(Number(result.care) || 0))),
   } } });
   value.flags[TETSUKO_TIME_FLAG] = { ...next, sessions: record.sessions + 1, lastKey: result.visitKey };
   recordPlayMastery(value, "tetsuko", result, `${value.cycle || 1}:${result.visitKey}`);
+  if (record.affection < JOY_MAX && next.affection >= JOY_MAX) emit("tetsuko-hearts", { state: value, affection: next.affection, full: true });
   return { committed: true, stamina: TETSUKO_STAMINA };
 }
 
@@ -152,7 +159,7 @@ const STEP_MS = 1000, STEP_REDUCED_MS = 700, FAREWELL_MS = 1400, FAREWELL_REDUCE
 const STROKE_PX = 80, STROKE_GAP_MS = 420, BRUSH_PX = 100, BRUSH_GAP_MS = 520;
 const TOY_SWING_PX = 170, TOY_SWING_GAP_MS = 480, TOY_STILL_MS = 750, TOY_CATCH_PX = 300, TOY_HELD_MS = 1700;
 const POUNCE_MS = 380, POUNCE_HIT_PX = 150, POUNCE_LEAD = 0.5, HEADING_FRESH_MS = 140;
-const TOAST_MS = 3200, CAPTION_MS = 3800, PHOTO_HOLD_MS = 6500, PEAK_DELAY_MS = 900, PEAK_GLOW_MS = 2400, HEART_FLY_MS = 480, GHOST_MS = 1500;
+const TOAST_MS = 3200, JOY_TOAST_MS = 5000, CAPTION_MS = 3800, PHOTO_HOLD_MS = 6500, PEAK_DELAY_MS = 900, PEAK_GLOW_MS = 2400, HEART_FLY_MS = 480, GHOST_MS = 1500;
 /** この長さだけ触らずにいると、隣で見守っていることになる（見守る＝操作と同じ扱い）。 */
 export const WATCH_IDLE_MS = 7000;
 // 一瞬だけのしぐさの絵（鳴く・つつく）は、この長さで表情の絵に戻す（口を開けたまま止まらない）。
@@ -452,10 +459,13 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       });
       if (bump) { joyBar.classList.remove("bump"); void joyBar.offsetWidth; joyBar.classList.add("bump"); }
     }
-    function gainJoy() {
+    function joyAttrs() {
       joyBar.dataset.value = String(session.joy);
       joyBar.dataset.hearts = String(joyHearts(session));
       joyBar.setAttribute("aria-label", `ごきげん ${joyHearts(session)} / ${JOY_HEARTS}`);
+    }
+    function gainJoy() {
+      joyAttrs();
       clearTimeout(joyTimer);
       if (reduced || !host.isConnected) { renderJoy(); return; }
       // 猫のところからハートが一つ飛んできて、着いたところで満ちる。
@@ -580,10 +590,13 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       wakeCaption();
     }
     // 反応の一行は少しで消える（見つけた・撮った札が出ている間は残す）。読み上げと検査のために文は残る。
-    function wakeCaption() {
+    // ms: とっておきの札のように長く出す物は、その間は帯を消さない（ふだんは CAPTION_MS。後から来た反応で短くはしない）。
+    let captionUntil = 0;
+    function wakeCaption(ms = CAPTION_MS) {
       caption.dataset.stale = "false";
+      captionUntil = Math.max(captionUntil, Date.now() + ms);
       clearTimeout(capTimer);
-      capTimer = setTimeout(() => { caption.dataset.stale = "true"; }, CAPTION_MS);
+      capTimer = setTimeout(() => { caption.dataset.stale = "true"; }, captionUntil - Date.now());
     }
     function show(reaction) {
       if (!reaction || reaction.quiet) return;
@@ -663,10 +676,22 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         ]),
         kind === "found" ? el("i.tt-stamp", { "aria-hidden": "true" }) : null,
       ]);
-      chips.replaceChildren(card);
+      for (const old of chips.querySelectorAll(".tt-toast:not(.tt-toast-joy)")) old.remove();
+      chips.append(card);
       wakeCaption();
       setTimeout(() => card.remove(), TOAST_MS);
       if (kind === "found") { bookButton.classList.remove("got"); void bookButton.offsetWidth; bookButton.classList.add("got"); }
+    }
+    // とっておきの時の札: ハートが初めて5つそろった時と、この回のお世話が上限に届いた時（今日は満足。ハートはまた来た時に）。
+    function joyToast(full) {
+      const card = el("div.tt-toast.tt-toast-joy", { dataset: { kind: full ? "full" : "visit", test: "tetsuko-joy-note" } }, [
+        el("span.tt-toast-heart", { "aria-hidden": "true", html: HEART_SVG }),
+        el("p", [el("small", { text: "ごきげん" }), el("b", { text: full ? "ハートが5つそろった！" : "今日は、もう満足らしい。" })]),
+      ]);
+      for (const old of chips.querySelectorAll(".tt-toast-joy")) old.remove();
+      chips.prepend(card);
+      wakeCaption(JOY_TOAST_MS);
+      setTimeout(() => card.remove(), JOY_TOAST_MS);
     }
     // 撮った写真が、猫のところから手帳へ飛んでいく（動きを減らす設定では飛ばさない）。
     function flyToBook(momentId) {
@@ -919,7 +944,8 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       schedule();
     }
 
-    // -- ごきげんがいっぱいになったら、少し間を置いて「とっておき」（段階ごとのしぐさ）。ハートは空に戻り、またためられる。
+    // -- ハートが初めて5つそろった時と、この回のお世話が上限に届いた時に、少し間を置いて「とっておき」（段階ごとのしぐさ）。
+    //    ハートは減らず、来訪をまたいで溜まったまま（§11）。
     function queuePeak(reaction) {
       if (!reaction?.joy?.peak) return;
       clearTimeout(peakTimer);
@@ -937,6 +963,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       clearTimeout(peakGlowTimer);
       peakGlowTimer = setTimeout(() => { host.dataset.peak = ""; }, PEAK_GLOW_MS);
       show(reaction);
+      joyToast(!!reaction.full);
       schedule();
     }
 
@@ -1228,6 +1255,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     signal?.addEventListener?.("abort", abort, { once: true });
     // 開いた時の居場所・表情を先に決めてから出す（ベンチから滑ってこない）。
     show(openingReaction(session));
+    joyAttrs();
     renderJoy();
     showScreen("tetsuko-time", host);
     aimWhenShown();

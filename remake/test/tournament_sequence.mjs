@@ -20,6 +20,8 @@ async function run(failure=null,{pullMode="success",insight=30}={}){
   play:async(id)=>{const dlg=typeof id==='string'?dialogues[id]:id;trace.push(typeof id==='string'?id:id.dialogue_id);for(const l of dlg?.lines||[])if(l.text)texts.push({at:trace.length,text:l.text});return {id};},
   computeShisha:()=>({aroma:50,craftQuality:70}),showStandings:async n=>{trace.push('standings:'+n);if(n===2){ended=true;throw end;}},
   buildGameOver:()=>el(),showScreen:()=>{ended=true;},block(){},judge(){},judgeOf:x=>x,burst(){},clearComments(){}};
+ // 会場の会話は中継の枠つきの playLive で読む（TSH04）。読んだ順の記録は play と同じ。
+ values.playLive=values.play;values.ch1LiveStandings=()=>[];
  const ctx=vm.createContext({console,window:{__remake:{craftTest:{auto:true}}},location:{reload(){}},setTimeout,clearTimeout});
  const mod=new vm.SourceTextModule(source,{context:ctx});
  await mod.link(async spec=>{

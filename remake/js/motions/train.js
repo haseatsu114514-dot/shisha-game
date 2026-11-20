@@ -103,7 +103,7 @@ function crowdRow(baked, scale, order, x0, available, overlap = 30) {
     const img = svg("image", { href: baked.get(CROWD[i]) ?? CROWD[i], x: 0, y: 0, width: w, height: h, preserveAspectRatio: "none" });
     if (flip) img.setAttribute("transform", `translate(${w} 0) scale(-1 1)`);
     const bob = svg("g", {}, [img]);
-    return { g: svg("g", { transform: `translate(${x.toFixed(1)} ${TOP})` }, [bob]), bob };
+    return { g: svg("g", { transform: `translate(${x.toFixed(1)} ${TOP})` }, [bob]), bob, left: x, right: x + w };
   });
   return panels.filter(Boolean);
 }
@@ -166,12 +166,13 @@ function carriage(P, id, passengers, available, look = {}, baked = { front: new 
     const [left, top, width, height] = portrait.bounds;
     const scale = 740 / height;
     // 群衆と同じ頭の高さ・同じ揺れ。顔を描かず、髪型や持ち物の輪郭でさりげなく見せる。
+    const poseX = 1660 - (left + width / 2) * scale;
     const guest = svg("g", { class: "train-guest" }, [svg("image", {
-      href: baked.guest ?? passengerUrl(passengers.cameo), x: 1660 - (left + width / 2) * scale, y: 145 - top * scale,
+      href: baked.guest ?? passengerUrl(passengers.cameo), x: poseX, y: 145 - top * scale,
       width: 896 * scale, height: 1200 * scale,
     })]);
     body.push(guest);
-    panels.push({ bob: guest });
+    panels.push({ bob: guest, left: poseX, right: poseX + 896 * scale });
   }
   body.push(...near.map((p) => p.g));
   // 足元へ向かって暗く
@@ -183,7 +184,7 @@ function carriage(P, id, passengers, available, look = {}, baked = { front: new 
     body.push(svg("line", { x1: SLANT + x0, y1: -60, x2: x0, y2: H + 80, stroke: P.rim, "stroke-width": w, opacity: o }));
     body.push(svg("line", { x1: SPAN - x0, y1: -60, x2: SPAN - SLANT - x0, y2: H + 80, stroke: P.rim, "stroke-width": w, opacity: o }));
   }
-  const people = panels.map((p, i) => ({ bob: p.bob, phase: i * 1.7, amp: 2 + (i % 3) }));
+  const people = panels.map((p, i) => ({ bob: p.bob, left: p.left, right: p.right, phase: i * 1.7, amp: 2 + (i % 3) }));
   return { g: svg("g", { "clip-path": `url(#${id}-car)` }, body), straps, people, lights };
 }
 
@@ -262,6 +263,7 @@ const X1 = -SLANT - 330; // 滑り込み終えた位置（左上の角まで覆�
 const DRIFT = 1000, VD = 0.62; // 乗っている間の流れ（最初 VD px/ms で、DRIFT 進んだ所で止まる。最後尾の切り口を画面に入れない）
 const XEND = -SPAN - 160; // 左の画面外（最後尾の切り口と影まで抜ける）
 const BEAM = 760; // 日差しの帯の間隔
+const POSE_PAD = 80; // 画面外判定の余裕。揺れと吊り革の幅を含む。
 
 /** 3次エルミート補間（滑り込みの終わりの速さを、乗っている間の流れの速さにそろえる） */
 function hermite(u, p0, p1, m0, m1) {
@@ -371,10 +373,12 @@ export async function c(mid, opts = {}) {
     const id = `mo-train-${++serial}`;
     const car = carriage(P, id, prep.passengers, prep.available, { glow: tone === "day" ? 0.5 : 0.42 }, baked);
     const light = tone === "day" ? daylight(P, id, sun) : cabinLight(P, id);
-    const pan = svg("g", {}, [...edgeShadows(id), car.g, light.g]);
-    const rock = svg("g", {}, [pan]);
-    const art = stageSvg([rock]);
+    const art = stageSvg([...edgeShadows(id), car.g, light.g]);
     art.setAttribute("preserveAspectRatio", "xMidYMid slice");
+    // 車両全体の移動と揺れはルートSVGの合成層へ。中のSVG座標で毎フレーム
+    // 動かすと、光や乗客まで広くラスタライズし直してフレームが落ちていた（#3653）。
+    art.style.transformOrigin = `${W / 2}px ${H + 220}px`;
+    art.style.willChange = "transform";
     node.append(art);
     // 位置は時刻から決める（描画が遅れても、覆い終える時刻と走り去る時刻はずれない）
     const t0 = performance.now();
@@ -387,14 +391,23 @@ export async function c(mid, opts = {}) {
     };
     const render = (now = performance.now()) => {
       const t = (now - t0) / 1000;
-      const sway = 0.16 * Math.sin((t / 1.2) * Math.PI * 2);
-      rock.setAttribute("transform", `translate(0 ${jolt(t).toFixed(2)}) rotate(${sway.toFixed(3)} ${W / 2} ${H + 220})`);
-      pan.setAttribute("transform", `translate(${xAt(now).toFixed(1)} 0)`);
-      for (const [i, st] of car.straps.entries()) {
-        const angle = -sway * 4 + 2.5 * Math.sin((t / 1.2) * Math.PI * 2 - 1.1 + i * 0.35);
+      const beat = (t / 1.2) * Math.PI * 2;
+      const sway = 0.16 * Math.sin(beat);
+      const x = xAt(now);
+      art.style.transform = `translate3d(0,${jolt(t).toFixed(2)}px,0) rotate(${sway.toFixed(3)}deg) translateX(${x.toFixed(1)}px)`;
+      // 画面外の部品は更新しない。切り口付近の揺れ・吊り革の幅を余白に含める。
+      const left = -x - POSE_PAD, right = -x + W + POSE_PAD;
+      for (let i = 0; i < car.straps.length; i++) {
+        const st = car.straps[i];
+        if (st.x < left || st.x > right) continue;
+        const angle = -sway * 4 + 2.5 * Math.sin(beat - 1.1 + i * 0.35);
         st.g.setAttribute("transform", `rotate(${angle.toFixed(2)} ${st.x} ${RAIL_Y})`);
       }
-      for (const p of car.people) p.bob.setAttribute("transform", `translate(0 ${(p.amp * 0.5 * Math.sin(t * 7.5 + p.phase) + jolt(t - 0.04) * 0.4).toFixed(2)})`);
+      const passengerJolt = jolt(t - 0.04) * 0.4;
+      for (const p of car.people) {
+        if (p.right < left || p.left > right) continue;
+        p.bob.setAttribute("transform", `translate(0 ${(p.amp * 0.5 * Math.sin(t * 7.5 + p.phase) + passengerJolt).toFixed(2)})`);
+      }
       car.lights.setAttribute("transform", `translate(${(-((t * 1100) % 820)).toFixed(1)} 0)`);
       light.flow?.setAttribute("transform", `translate(${(-((t * 520) % BEAM)).toFixed(1)} 0)`);
     };

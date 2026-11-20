@@ -290,6 +290,9 @@
 .tt-toast small { font-size: 14px; font-weight: 700; color: var(--tt-lav); }
 .tt-toast b { font-size: 17px; color: var(--tt-ink); }
 .tt-toast .tt-thumb { width: 40px; height: 40px; border-radius: 6px; }
+/* とっておきの札（ハートが5つそろった・今日は、もう満足。§11）のハート */
+.tt-toast-heart { display: block; flex: none; width: 36px; height: 36px; margin-left: 4px; }
+.tt-toast-heart svg { display: block; width: 100%; height: 100%; fill: #f2607c; stroke: var(--tk-ink, #3b2416); stroke-width: 1.8; stroke-linejoin: round; }
 .tt-stamp { display: inline-block; width: 26px; height: 26px; flex: none; transform: rotate(-12deg); opacity: .85;
   background: radial-gradient(circle at 50% 66%, var(--tt-lav) 0 30%, transparent 32%), radial-gradient(circle at 22% 38%, var(--tt-lav) 0 11%, transparent 13%),
     radial-gradient(circle at 40% 20%, var(--tt-lav) 0 11%, transparent 13%), radial-gradient(circle at 62% 20%, var(--tt-lav) 0 11%, transparent 13%), radial-gradient(circle at 80% 38%, var(--tt-lav) 0 11%, transparent 13%); }
