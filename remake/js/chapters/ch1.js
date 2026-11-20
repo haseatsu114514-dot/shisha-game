@@ -759,7 +759,7 @@ async function tournamentDay() {
   openTournamentBench(cs);
   await waitBenchReady(cs);
   bc.block(cs, "pull");
-  if (await runPull(cs) === false) return;
+  if (await runPull(cs, { holdFailedResult: true }) === false) return;
   if (cs.failed) return failedOut(cs.failed, cs);
   // 固定の「個性も薄い」ではなく、実配合と提供時の温度から一口の感想を2行だけ差し込む。
   const served = DB.dialogues.ch1_tournament_served;
@@ -784,7 +784,7 @@ async function tournamentDay() {
     openTournamentBench(cs);
     await waitBenchReady(cs);
     bc.block(cs, "adjust");
-    await runCare(cs, { round });
+    await runCare(cs, { round, holdFailedResult: true });
     if (cs.failed) return failedOut(cs.failed, cs);
     await sleep(900);
     bc.clearComments();

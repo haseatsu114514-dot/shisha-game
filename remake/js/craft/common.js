@@ -34,7 +34,7 @@ export const skill = {
 };
 
 /** 工程の結果カード。自動操作中は少し待って勝手に閉じる */
-export function resultCard(panel, { title, lines = [], summary = [], advice = "", button = "次へ" }) {
+export function resultCard(panel, { title, lines = [], summary = [], advice = "", button = "次へ", holdUntilExit = false }) {
   const { evaluation, hasAudience } = presentBenchResult(panel, title, advice);
   // 結果を読むとき、直前の判定文字を重ねない。
   panel.querySelectorAll(".stamp").forEach((stamp) => stamp.remove());
@@ -45,9 +45,13 @@ export function resultCard(panel, { title, lines = [], summary = [], advice = ""
         if (btn.disabled) return;
         btn.disabled = true;
         SE.select();
-        card.classList.remove("show");
-        card.classList.add("done");
-        setTimeout(() => card.remove(), 300);
+        // 遷移先を待つ大会の敗北では、カードを消して元の操作を見せ直さない。
+        if (holdUntilExit) card.inert = true;
+        else {
+          card.classList.remove("show");
+          card.classList.add("done");
+          setTimeout(() => card.remove(), 300);
+        }
         resolve();
       },
     }, [el("span.btn-label", { text: button })]);

@@ -12,12 +12,12 @@ prepareAppearanceCatalog();
 const t = name => `[data-test="ch2-tournament-${name}"]`;
 const dt = name => `[data-test="${name}"]`;
 const get = page => page.evaluate(()=>structuredClone(window.__remake.state));
-async function seed(page, { known = false, stage = '', auto = 'good', progress = null, strawberryTrial = null } = {}) {
+async function seed(page, { known = false, stage = '', auto = 'good', progress = null, strawberryTrial = null, lovers = ['minto'] } = {}) {
   page.setDefaultTimeout(30000);
   await page.evaluate(async opts => {
     const core = await import('./js/core/state.js'); const s = core.newGame();
     Object.assign(s,{ chapter:2,day:28,slot:0,phase:'daily',money:23456,stamina:100,
-      flavorStock:{double_apple:40,mint:12},lovers:['minto'],loverSince:{minto:10},lastDate:{minto:25},contacts:['sumi','minto'],
+      flavorStock:{double_apple:40,mint:12},lovers:opts.lovers,loverSince:{minto:10},lastDate:{minto:25},contacts:['sumi','minto'],
       keepsakes:['qa_memory'],relationshipMemories:['tsumugi_creature'] });
     // 予告1の自動再生は chapter_preview.mjs が専任で検証する。ここでは既読にして大会本体に集中する。
     s.flags = { _elapsed_calendar:true,_ch1_cleared:true,_ch2_day1:{startDay:15,stage:'complete'},_ch2_eve_done:true,_ch2_taste_distant:true,_ch2_preview_seen:true };
@@ -36,7 +36,7 @@ async function seed(page, { known = false, stage = '', auto = 'good', progress =
     vn.hooks.onLine=(id,line)=>{if(window.__trace.at(-1)!==id)window.__trace.push(id);if(line.text)window.__texts.push(line.text);};
     (await import('./js/craft/session.js')).craftTest.auto=opts.auto;
     void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
-  }, {known,stage,auto,progress,strawberryTrial});
+  }, {known,stage,auto,progress,strawberryTrial,lovers});
 }
 // 応援・祝福のトークが先に並ぶ場合も、返信を選びながら最後の「スマホを閉じる」まで読む（#1653 ⑦）。
 async function phone(page,touch=false) {
@@ -683,6 +683,39 @@ await suite('ch2-tournament',async check=>{
     await press(t('retry')); await page.locator(t('ready')).waitFor();
     assert.equal((await get(page)).flags._ch2_tournament.attempts,2);
   },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
+  for (const step of ['pull','care']) for (const touch of [false,true]) await check(`burn-failure-waits-on-result-${step}-${touch?'touch':'pc'}`,async page=>{
+    // 実際に吸い出し・調整で焦がして、CONTINUEの背景だけを保留する。結果承認後も作業台の操作欄へ戻らない。
+    let releaseArt;
+    const artGate = new Promise(resolve => { releaseArt = resolve; });
+    await page.route(/\/ui\/continue\/backdrop_stage\.(?:png|webp)$/, async route => {
+      await artGate;
+      await route.continue();
+    });
+    try {
+      await seed(page,{stage:'craft',auto:'burn',lovers:[],progress:{attempts:1,step:step==='pull'?8:9,craft:{
+        mode:'tournament',chapter:2,eventTitle:'HAZE: OPEN CLOUD',equip:{bowl:'egyptian',charcoal:'cube_charcoal'},
+        mix:{strawberry:8},steam:{temp:.84,score:73,hits:1},tournamentStory:{seen:['interlude_pull','serve','interlude1']},
+        ...(step==='care'?{pull:{temp:.87,score:65,pulls:2},pullDone:true}:{}),
+      }}});
+      await page.waitForFunction(()=>window.__remake.state.flags._ch2_tournament?.stage==='defeat');
+      assert.equal((await get(page)).flags._ch2_tournament.failure,'burnt','温度で本当に敗北している');
+      // 結果カードが以前は300msで取り除かれた。まだ次の画面が準備できていないフレームを確かめる。
+      await page.waitForTimeout(480);
+      assert.equal(await page.locator(t('defeat')).count(),0,'保留中の素材を待つ');
+      await capture(page,`loss-held-${step}-${touch?'touch':'pc'}`);
+      assert(await page.locator('.bench .result-card.show').isVisible(),'準備中は焦げた結果を表示し続ける');
+      assert(await page.locator('.bench .result-card').evaluate(card=>card.inert),'結果カードは再操作できない');
+      assert(await page.locator('.bench .result-card [data-test="step-next"]').isDisabled(),'結果の再確定はできない');
+      assert.equal(await page.locator('[data-test="pull-stop"]:visible, [data-test="pull-serve"]:visible').count(),0,
+        '前の吸い出し操作を再表示しない');
+    } finally { releaseArt(); }
+    await page.locator(t('defeat')).waitFor();
+    assert.equal(await page.locator('.bench,.result-card').count(),0);
+    const retry=page.locator(t('retry'));
+    if(touch) await retry.tap();else await retry.click();
+    await page.locator(t('ready')).waitFor();
+    assert.equal((await get(page)).flags._ch2_tournament.losses,1);
+  },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true}:{});
   await check('burn-failure-reload-and-retry',async page=>{
     await seed(page,{stage:'ready',auto:'burn'});await page.locator(t('craft-start')).click();
     // 初期温度で焦げる工程が変わる。最大でも同じ一台の2回の調整まで進め、失敗は必須とする。
