@@ -69,24 +69,46 @@ await suite("issue439", async (check) => {
         for (const id of Object.keys(I.data.DB.characters)) { I.core.state.met[id] = true; I.core.state.flags[`_intro_${id}`] = true; }
         Object.assign(I.core.state.flags, { _spot_guide_adam: true, _spot_guide_minto: true });
         I.core.state.flags._gym_member = true; I.core.state.flags._morning_8 = true; I.core.state.flags._lime_opened = true;
+        I.core.state.flags._kannon_growth_intro_done = true;
         I.core.state.reel.installed = false;
+        I.facilityState = () => {
+          const s = I.core.state;
+          return { money: s.money, stamina: s.stamina, guts: s.stats.guts, xp: s.growth?.xp || 0, slot: s.slot,
+            count: s.reel.count, affinity: { ...s.affinity }, kannonVisit: s.spotVisits?.kannon || 0 };
+        };
+        I.beforeFacility = I.facilityState();
         I.run = (await import("./js/daily/calendar.js")).runDaily({ nightEvents: {}, onQuit() {} });
       });
-      await page.locator('[data-test="pin-kannon"]').click();
-      await page.locator('[data-test="map-go"]').click();
-      await page.waitForFunction(() => I.core.state.slot === 1 && !!document.querySelector('#screen .map:not(.done)'));
-      // 施設の行動の成長: 旧しくみ（?growth=0）は主な能力に2P、心得の盤（通常プレイの既定・SBD97）は経験値で、能力は書き換えない
+      const press = selector => options.hasTouch ? page.locator(selector).tap() : page.locator(selector).click();
+      await press('[data-test="pin-kannon"]');
+      await press('[data-test="map-go"]');
       const board = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled());
-      const first = await page.evaluate(() => ({ guts: I.core.state.stats.guts, xp: I.core.state.growth?.xp || 0, slot: I.core.state.slot, count: I.core.state.reel.count, affinity: { ...I.core.state.affinity } }));
-      if (board) { assert.equal(first.guts, 10); assert(first.xp > 0, "観音堂の行動で経験値"); }
-      else assert.equal(first.guts, 12);
-      assert.equal(first.slot, 1); assert.equal(first.count, 0);
-      await page.locator('[data-test="pin-choizap"]').click();
-      await page.locator('[data-test="map-go"]').click();
-      if (board) await page.waitForFunction((xp) => (I.core.state.growth?.xp || 0) > xp, first.xp);
-      else await page.waitForFunction(() => I.core.state.stats.charm === 12);
-      const second = await page.evaluate(() => ({ charm: I.core.state.stats.charm, affinity: { ...I.core.state.affinity } }));
+      if (board) {
+        await page.locator('[data-test="kannon-reflect"]').waitFor();
+        assert.deepEqual(await page.locator("#modal.show .modal-actions button").allTextContents(), ["盤を開く", "戻る"]);
+        await press('[data-test="kannon-reflect"]');
+        await page.locator('[data-test="growth-board"][data-mode="light"]').waitFor();
+        await press('[data-test="board-close"]');
+        await page.locator("#screen .map:not(.done)").waitFor();
+        assert.deepEqual(await page.evaluate(() => I.facilityState()), await page.evaluate(() => I.beforeFacility));
+      } else {
+        await page.waitForFunction(() => I.core.state.slot === 1 && !!document.querySelector("#screen .map:not(.done)"));
+        const legacy = await page.evaluate(() => I.facilityState());
+        assert.equal(legacy.guts, 12);
+        assert.equal(legacy.count, 0);
+      }
+      const first = await page.evaluate(() => I.facilityState());
+      await press('[data-test="pin-choizap"]');
+      await press('[data-test="map-go"]');
+      // 盤専用でなくなっていない施設は、従来どおり1行動を使って経験値（旧モードでは能力）を得る。
+      await page.waitForFunction(({ slot, xp, board }) => I.core.state.day === 8 && I.core.state.slot === slot + 1
+        && (board ? (I.core.state.growth?.xp || 0) > xp : I.core.state.stats.charm === 12),
+      { slot: first.slot, xp: first.xp, board });
+      const second = await page.evaluate(() => ({ charm: I.core.state.stats.charm, affinity: { ...I.core.state.affinity },
+        stamina: I.core.state.stamina, count: I.core.state.reel.count }));
       assert.equal(second.charm, board ? 10 : 12); assert.deepEqual(second.affinity, first.affinity);
+      assert.equal(second.stamina, first.stamina - 8);
+      assert.equal(second.count, first.count);
     }, options);
 
     await check(`rain-window-and-date-${label}`, async (page) => {
@@ -187,4 +209,4 @@ await suite("issue439", async (check) => {
     assert.equal(await page.locator(".mo-lime").count(), 0);
     await page.locator(".vn-next.show").waitFor(); await page.keyboard.press("Enter"); await page.evaluate(() => I.talk);
   });
-});
+}, { acknowledgeGrowth: false });
