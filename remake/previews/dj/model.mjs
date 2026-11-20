@@ -9,6 +9,10 @@
 // 2026-11-11 renewal (DJS20〜): the floor is the crowd's heat. It starts at 様子見 (50) and each thing the player does moves it by a
 // visible step (entry, every beat of the fader, the transition's rank, the pick), so a clean set warms the room up to 最高潮 by the end
 // instead of pinning the meter at 100 after one mix. ▶ is judged against the nearest phrase head.
+// 2026-11-20 (#2456 §4・§4-2, DJK): the entry is judged in beats and is much more forgiving (it was ±30 / 60 / 120 ms). A ▶ a little early
+// is held for the entry line (予約) and comes in exactly on it; a little late starts at once where it would have been had it been on time,
+// so the phrases still line up. Further out than the OK band the ▶ is not taken (it shakes its head; nothing is lost). After the grace
+// bars the outgoing track only stops once the incoming one can be heard, so a forgotten fader never leaves the room in silence.
 import { TRACKS } from './tracks.mjs';
 export const PHRASE = 32;      // 8 bars of 4/4
 export const LEAD = 16;        // the next entry cue is at least 4 bars away
@@ -17,6 +21,7 @@ export const LEAD = 16;        // the next entry cue is at least 4 bars away
 export const QUICK_GRID = 16;
 export const quickEntry = () => ({ grid: QUICK_GRID, lead: 8 });
 export const GRACE = 32;       // after the 8 bars the outgoing deck keeps playing up to 8 more bars if the fader has not crossed
+export const HANDOVER = .5;    // past the grace the outgoing deck hands over only once the fader is at least half way to the incoming one (both at −3 dB)
 export const SYNC_BAND = .06;  // the two tracks count as in time within ±0.06 beat (30 ms at 120 BPM); past it the room hears the beats rub
 export const SNAP_BAND = .035; // a turn of the platter that lands within ±0.035 beat is caught by QUANTIZE and snaps onto the beat
 export const DRIFT_BEATS = 3;  // a slip builds up over 3 beats (the track runs a little fast or slow), then stays until it is fixed
@@ -100,19 +105,34 @@ export const FOLLOW_FLOOR = { hit: .003, miss: -.008 };
 /** The crowd's mood from the floor meter: 0 帰りそう / 1 しらけ気味 / 2 様子見 / 3 ノってきた / 4 最高潮 (4 is also the +5 bonus line). */
 export const MOODS = Object.freeze(['帰りそう', 'しらけ気味', '様子見', 'ノってきた', '最高潮']);
 export const moodOf = floor => floor >= .8 ? 4 : floor >= .6 ? 3 : floor >= .4 ? 2 : floor >= .2 ? 1 : 0;
-export function gradeOf(errorMs, allowance = 0) { const v = Math.abs(errorMs) - allowance; return v <= 30 ? 'PERFECT' : v <= 60 ? 'GOOD' : v <= 120 ? 'OK' : errorMs < 0 ? 'EARLY' : 'LATE'; }
-/** ▶ on a deck. The incoming deck of an open cue starts quantized to the master's nearest beat; anything else starts at once. */
+/** The ▶ timing bands, in beats either side of the entry line (#2456 §4: PERFECT ±½ beat, GOOD ±2, OK ±4 — 120 BPM: ±0.25 / 1 / 2 s).
+ *  Past OK the ▶ is not taken. The main game's headphones (allowance, ms) widen every band a little. */
+export const ENTRY_BANDS = Object.freeze({ PERFECT: .5, GOOD: 2, OK: 4 });
+/** The entry part of a transition's score, by grade (EARLY / LATE only for a record made outside the bands). */
+export const ENTRY_SCORE = Object.freeze({ PERFECT: 100, GOOD: 85, OK: 60, EARLY: 30, LATE: 30 });
+export function gradeOf(errorMs, allowance = 0, bpm = 120) {
+  const v = Math.abs(errorMs) - allowance, beat = 60000 / bpm, within = band => v <= ENTRY_BANDS[band] * beat + 1e-9;
+  return within('PERFECT') ? 'PERFECT' : within('GOOD') ? 'GOOD' : within('OK') ? 'OK' : errorMs < 0 ? 'EARLY' : 'LATE';
+}
+/** How far from the entry line (beats) a ▶ is still taken: the OK band plus the headphones. */
+export const entryReach = (m, bpm) => ENTRY_BANDS.OK + (m.allowance || 0) * bpm / 60000;
+/** ▶ on a deck. The incoming deck of an open cue comes in on the entry line (early: held for it, late: as if it had been on time);
+ *  a ▶ further than the OK band from the nearest line is not taken (false). Anything else starts at once. */
 export function playDeck(m, id, now) {
   const d = m.decks[id];
   if (d.playing || !d.track) return false;
   const c = m.cue;
   if (c && c.to === id && m.decks[c.from].playing && !c.pressed) {
-    const from = m.decks[c.from], fb = beatAt(from, now), n = Math.round(fb);
-    // Judge against the nearest entry line: past the middle of the gap the player is aiming at the next one (a little early there is EARLY, not a huge LATE).
-    if (fb - c.start > m.grid / 2) { c.start += m.grid; c.end += m.grid; c.missed++; }
-    const errorMs = (fb - c.start) * 60 / from.bpm * 1000, grade = gradeOf(errorMs, m.allowance || 0);
-    d.beat = 0; d.at = from.at + (n - from.beat) * 60 / from.bpm; // beat 0 on the master's nearest beat (may be a few ms ahead)
-    c.pressed = { errorMs, grade, beat: n, at: now }; m.lastPlay = { id, errorMs, grade };
+    const from = m.decks[c.from], fb = beatAt(from, now);
+    // Judge against the nearest entry line: past the middle of the gap the player is aiming at the next one.
+    const head = fb - c.start > m.grid / 2 ? c.start + m.grid : c.start;
+    if (Math.abs(fb - head) > entryReach(m, from.bpm)) return false; // まだ早い／間に合わなかった: not taken, nothing lost (the next count comes round)
+    if (head !== c.start) { c.start = head; c.end = head + PHRASE; c.missed++; }
+    const errorMs = (fb - c.start) * 60 / from.bpm * 1000, grade = gradeOf(errorMs, m.allowance || 0, from.bpm), reserved = fb < c.start;
+    // B's beat 0 sits on the entry line: a little early waits for it (予約), a little late starts at once at the beat it would be on by now,
+    // so the two tracks' phrases line up either way (QUANTIZE + the phrase assist of #2456 §4).
+    d.beat = 0; d.at = from.at + (c.start - from.beat) * 60 / from.bpm;
+    c.pressed = { errorMs, grade, beat: c.start, at: now, reserved }; m.lastPlay = { id, errorMs, grade, at: d.at, reserved };
     m.phase = 'mix'; m.fader = { reached: null, checks: 0, hits: 0, combo: 0, best: 0, lastBeat: 0, last: null, inTime: 0, off: false, fixes: 0, drifts: planDrifts(m) };
     m.floor = clamp(m.floor + GRADE_FLOOR[grade], 0, 1);
   } else {
@@ -205,9 +225,9 @@ export const RANK_LINES = Object.freeze({ S: 90, A: 75, B: 55 });
 export const rankFromScore = total => total >= RANK_LINES.S ? 'S' : total >= RANK_LINES.A ? 'A' : total >= RANK_LINES.B ? 'B' : 'C';
 /** Beat: how much of the 8 bars the two tracks were in time (1 when nothing slipped). Fader: how much of the 8 bars rode the guide line;
  *  never reaching the incoming deck caps it at 30, reaching it late at 60. */
-export function scoreTransition({ sync = 1, playMs, reached, follow, allowance = 0 }) {
+export function scoreTransition({ sync = 1, playMs, reached, follow, allowance = 0, grade = null, bpm = 120 }) {
   const beat = scoreFromRatio(sync);
-  const entry = scoreFromErr(playMs, 30 + allowance, 60 + allowance, 120 + allowance);
+  const entry = ENTRY_SCORE[grade] ?? ENTRY_SCORE[gradeOf(playMs, allowance, bpm)]; // the entry's grade (#2456 §4: in beats)
   const followScore = scoreFromRatio(follow);
   const fader = reached == null ? 30 : reached > 1 ? Math.min(60, followScore) : followScore;
   const total = Math.round((beat + entry + fader) / 3);
@@ -223,7 +243,7 @@ export function scoreSet(m) {
 }
 function finishTransition(m, now, view) {
   const c = m.cue, from = m.decks[c.from], to = m.decks[c.to], f = m.fader;
-  const score = scoreTransition({ sync: f.checks ? f.inTime / f.checks : 1, playMs: Math.abs(c.pressed.errorMs), reached: f.reached, follow: f.checks ? f.hits / f.checks : 0, allowance: m.allowance || 0 });
+  const score = scoreTransition({ sync: f.checks ? f.inTime / f.checks : 1, playMs: Math.abs(c.pressed.errorMs), reached: f.reached, follow: f.checks ? f.hits / f.checks : 0, allowance: m.allowance || 0, grade: c.pressed.grade, bpm: from.bpm });
   const record = { ...score, from: from.track, to: to.track, grade: c.pressed.grade, missed: c.missed, combo: f.best, pick: m.pendingPick?.rating || null, drifts: f.drifts.filter(d => d.started).length, fixes: f.fixes };
   if (to.bpm !== from.bpm) { anchor(to, now); to.bpm = from.bpm; view.retuned = c.to; } // a slip still building when the 8 bars end: the tempo goes back
   m.transitions.push(record); view.transition = record; m.pendingPick = null;
@@ -241,7 +261,7 @@ function finishTransition(m, now, view) {
 /** Advance the set to `now`. Returns what the host must apply to audio (snapped / stopped / select) and the view state. */
 export function updateSet(m, now) {
   const dt = m.lastUpdate == null ? 0 : Math.max(0, now - m.lastUpdate); m.lastUpdate = now;
-  const view = { mode: m.phase, progress: 0, remaining: 0, open: false, snapped: null, stopped: null, select: null, transition: null, finished: null, follow: null, guide: null, rolled: false, retuned: null, sync: null, slipped: false };
+  const view = { mode: m.phase, progress: 0, remaining: 0, open: false, snapped: null, stopped: null, select: null, transition: null, finished: null, follow: null, guide: null, rolled: false, retuned: null, sync: null, slipped: false, reserved: false, untilIn: 0, stuck: false };
   if (!m.running) { view.mode = 'idle'; return view; }
   const c = m.cue;
   if (c) {
@@ -251,6 +271,7 @@ export function updateSet(m, now) {
       view.remaining = c.start - fb; view.open = fb >= c.start;
     } else if (m.phase === 'mix') {
       const progress = (fb - c.start) / PHRASE; view.progress = clamp(progress, 0, 1); view.remaining = c.end - fb;
+      if (fb < c.start) { view.reserved = true; view.untilIn = c.start - fb; } // 予約: ▶ was pressed a little early, the track comes in on the line
       // ズレ (DJG): at its beat the incoming track runs a little fast or slow for DRIFT_BEATS beats (the host applies the rate: view.retuned),
       // then keeps its tempo but stays out of time until the player turns its platter back (nudgeDeck). QUANTIZE only catches a turn that lands close.
       const f = m.fader, into = fb - c.start;
@@ -263,9 +284,12 @@ export function updateSet(m, now) {
       f.off = off; view.sync = { error, off, deck: c.to };
       view.follow = followCheck(m, into, !off);
       view.guide = guideAt(progress);
-      const crossed = toward(m) >= .9;
-      if (crossed && m.fader.reached == null) m.fader.reached = Math.max(0, progress);
-      if (progress >= 1 && (crossed || progress >= 1 + GRACE / PHRASE)) finishTransition(m, now, view);
+      const crossed = toward(m) >= .9, overtime = progress >= 1 + GRACE / PHRASE;
+      if (crossed && m.fader.reached == null && !overtime) m.fader.reached = Math.max(0, progress);
+      // 無音にしない (#2456 §4-2): past the grace the outgoing deck stops only once the incoming one can be heard. Until then it keeps
+      // playing (stuck) and the navi asks for the fader; the transition still scores as never reached (30).
+      view.stuck = overtime && toward(m) < HANDOVER;
+      if (progress >= 1 && (crossed || (overtime && !view.stuck))) finishTransition(m, now, view);
     }
   }
   floorStep(m, quality(m, now), dt);

@@ -5433,14 +5433,11 @@
           "next_false": ""
         },
         {
-          "speaker": "sumi",
-          "face": "smile",
-          "text": "ご苦労さん。今日はシフトはいい。あとは好きに使え"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "ありがとうございます。助かります"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch1_day2_shift_done",
+          "next_true": "rep_after_shift",
+          "next_false": "rep_free_day"
         }
       ],
       "branches": {
@@ -5454,6 +5451,30 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "はい。規則の紙も、もらってきました"
+          }
+        ],
+        "rep_free_day": [
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "ご苦労さん。今日はシフトはいい。あとは好きに使え"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとうございます。助かります"
+          }
+        ],
+        "rep_after_shift": [
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "ご苦労さん。今日はこれで上がっていいぞ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとうございます。お疲れさまでした"
           }
         ]
       }

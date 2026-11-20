@@ -16,7 +16,12 @@ export class DJAudio {
   get now() { return this.context?.currentTime || 0; }
   /** Decoded data for a track key, fetched once. Needs the audio context. */
   track(key) {
-    if (!this.cache.has(key)) this.cache.set(key, this.loadTrack(this.context, key).then(t => { if (!t.buffer) { const b = this.context.createBuffer(1, t.samples.length, t.sampleRate); b.copyToChannel(t.samples, 0); t.buffer = b; } return t; }));
+    if (!this.cache.has(key)) {
+      const loading = this.loadTrack(this.context, key).then(t => { if (!t.buffer) { const b = this.context.createBuffer(1, t.samples.length, t.sampleRate); b.copyToChannel(t.samples, 0); t.buffer = b; } return t; });
+      this.cache.set(key, loading);
+      // A failed load is not kept: the next ▶ (or the next pick) fetches it again (#2456 review 3).
+      loading.catch(() => { if (this.cache.get(key) === loading) this.cache.delete(key); });
+    }
     return this.cache.get(key);
   }
   async ensure(id) {
@@ -28,6 +33,7 @@ export class DJAudio {
     if (this.busy || this.disposed) return false;
     this.busy = true;
     const revision = ++this.revision;
+    let onAir = false; // set while the next track loads during a running set: its failure must not take the playing track down
     try {
       if (!this.context) {
         if (!this.Context) throw new Error('Web Audioが利用できません');
@@ -47,7 +53,7 @@ export class DJAudio {
         this.initialResume.catch(() => {});
         await Promise.all([this.ensure(0), this.ensure(1)]);
       }
-      if (deckId !== null) await this.ensure(deckId);
+      if (deckId !== null) { onAir = this.mix.running; await this.ensure(deckId); onAir = false; }
       await (this.initialResume || this.context.resume()); this.initialResume = null;
       if (this.disposed || revision !== this.revision) {
         try { await this.context.suspend(); } catch { /* A concurrent dispose may close it. */ }
@@ -60,6 +66,7 @@ export class DJAudio {
       this.setMix(this.mix.mix); this.setVolume(this.volume);
       return true;
     } catch (error) {
+      if (onAir) throw error; // the next track did not load: the set keeps playing and ▶ tries again (#2456 review 3)
       this.initialResume = null;
       if (this.context) pauseMix(this.mix, this.now);
       this.clearVoices();
@@ -89,8 +96,9 @@ export class DJAudio {
     const first = track.firstBeat || 0;
     source.loopStart = first; source.loopEnd = first + track.beats * 60 / track.nativeBpm;
     const b = beatAt(d, now);
-    // A quantized ▶ may anchor beat 0 a few ms ahead: start the source at that audio time.
-    if (b < 0) source.start(d.at, first); else source.start(now, first + mod(b, track.beats) * 60 / track.nativeBpm);
+    // A ▶ pressed a little early is held for the entry line (予約, #2456 §4): beat 0 is still ahead, so start the source when it comes
+    // (counted from now, so a pause and resume while it waits still lands on the line).
+    if (b < 0) source.start(now - b * 60 / d.bpm, first); else source.start(now, first + mod(b, track.beats) * 60 / track.nativeBpm);
     if (old) {
       this.retiring.add(old); old.gain.gain.cancelScheduledValues(now);
       old.gain.gain.setValueAtTime(old.gain.gain.value, now); old.gain.gain.linearRampToValueAtTime(0, now + .008);

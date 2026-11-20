@@ -2,7 +2,7 @@
 // Actual modules + controlled WebAudio; no real browser/listening claim.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {createSet,makeDeck,playDeck,pauseMix,resumeMix,beatAt,phaseError,gains,updateSet,nudgeDeck,SYNC_BAND,SNAP_BAND,DRIFT_BEATS,SYNC_FLOOR,SLIP_FLOOR,quality,floorStep,scoreTransition,scoreFromErr,scoreFromRatio,rankFromScore,scoreSet,lowCutDb,LOW_CUT_DB,PHRASE,LEAD,GRACE,FOLLOW_BAND,toward,gradeOf,dancerPose,guideAt,keyMatch,energyMatch,pickRating,chooseTrack,REQUESTS,PICK_FLOOR,GRADE_FLOOR,RANK_FLOOR,FOLLOW_FLOOR,FLOOR_WARM,FOLLOW_SWEET,MOODS,moodOf,followHint,QUICK_GRID,quickEntry,RANK_LINES} from '../previews/dj/model.mjs';
+import {createSet,makeDeck,playDeck,pauseMix,resumeMix,beatAt,phaseError,gains,updateSet,nudgeDeck,SYNC_BAND,SNAP_BAND,DRIFT_BEATS,SYNC_FLOOR,SLIP_FLOOR,quality,floorStep,scoreTransition,scoreFromErr,scoreFromRatio,rankFromScore,scoreSet,lowCutDb,LOW_CUT_DB,PHRASE,LEAD,GRACE,FOLLOW_BAND,toward,gradeOf,ENTRY_BANDS,dancerPose,guideAt,keyMatch,energyMatch,pickRating,chooseTrack,REQUESTS,PICK_FLOOR,GRADE_FLOOR,RANK_FLOOR,FOLLOW_FLOOR,FLOOR_WARM,FOLLOW_SWEET,MOODS,moodOf,followHint,QUICK_GRID,quickEntry,RANK_LINES} from '../previews/dj/model.mjs';
 import {FEEL,applyFeelOverrides} from '../previews/dj/feel.mjs';
 import {DJSfx} from '../previews/dj/sfx.mjs';
 import {renderTrack,peakAt} from '../previews/dj/synth.mjs';
@@ -36,13 +36,27 @@ await check('cue view: bars remaining, open window, a missed head rolls to the n
  v=updateSet(m,sec(a,32.5));assert(v.open);near(v.remaining,-.5);
  v=updateSet(m,sec(a,64.1));assert.equal(m.cue.start,64);assert.equal(m.cue.end,96);assert.equal(m.cue.missed,1);assert(v.open,'the head that just passed is still playable (late)');v=updateSet(m,sec(a,130));assert.equal(m.cue.start,128);assert.equal(m.cue.missed,3);
 });
-await check('quantized ▶: the incoming deck lands on the master\'s nearest beat and the error is graded in ms',()=>{
- for(const [beat,ms,grade,snap] of [[31.9,-50,'GOOD',32],[32.02,10,'PERFECT',32],[32.9,450,'LATE',33],[31.5,-250,'EARLY',32],[33.4,700,'LATE',33]]){
-  const m=createSet(S1);playDeck(m,0,0);const a=m.decks[0],t=sec(a,beat);updateSet(m,t);assert(playDeck(m,1,t));
-  near(m.lastPlay.errorMs,ms,1e-6);assert.equal(m.lastPlay.grade,grade);assert.equal(m.cue.pressed.beat,snap);assert.equal(m.phase,'mix');
-  near(m.decks[1].at,sec(a,snap));near(beatAt(m.decks[1],sec(a,snap)),0);near(beatAt(m.decks[1],sec(a,snap+1)),1);near(phaseError(a,m.decks[1],sec(a,40)),0);
+await check('#2456 §4 forgiving entry: graded in beats (PERFECT ±½・GOOD ±2・OK ±4); early is held for the line (予約), late comes in phrase-aligned; outside the bands the ▶ is not taken',()=>{
+ // 120 BPM: a beat is 500 ms. Every accepted ▶ puts B's beat 0 exactly on the entry line, so the two tracks' phrases line up.
+ for(const [beat,ms,grade,reserved] of [[31.9,-50,'PERFECT',true],[32.02,10,'PERFECT',false],[31.5,-250,'PERFECT',true],[32.9,450,'GOOD',false],[30.5,-750,'GOOD',true],[34.5,1250,'OK',false],[28,-2000,'OK',true],[36,2000,'OK',false]]){
+  const m=createSet(S1);playDeck(m,0,0);const a=m.decks[0],t=sec(a,beat);updateSet(m,t);assert(playDeck(m,1,t),`${beat} is taken`);
+  near(m.lastPlay.errorMs,ms,1e-6);assert.equal(m.lastPlay.grade,grade);assert.equal(m.lastPlay.reserved,reserved);assert.equal(m.cue.pressed.reserved,reserved);assert.equal(m.cue.pressed.beat,32);assert.equal(m.phase,'mix');
+  near(m.decks[1].at,sec(a,32));near(m.lastPlay.at,sec(a,32));near(beatAt(m.decks[1],sec(a,32)),0);near(beatAt(m.decks[1],sec(a,33)),1);near(phaseError(a,m.decks[1],sec(a,40)),0);
+  const v=updateSet(m,t);assert.equal(v.reserved,reserved,'the view says the track is waiting for the line');if(reserved)near(v.untilIn,32-beat,1e-6);
+  if(reserved){const w=updateSet(m,sec(a,32.01));assert(!w.reserved,'in on the line');}
  }
- for(const [ms,g] of [[0,'PERFECT'],[30,'PERFECT'],[31,'GOOD'],[60,'GOOD'],[61,'OK'],[120,'OK'],[-121,'EARLY'],[121,'LATE']])assert.equal(gradeOf(ms),g);
+ // outside the OK band the ▶ is not taken (nothing changes, nothing is lost): too early before the count, too late after the bar of いま！
+ for(const beat of [27.9,36.1,40,47.9]){const m=createSet(S1);playDeck(m,0,0);const a=m.decks[0],t=sec(a,beat);updateSet(m,t);const floor=m.floor;assert.equal(playDeck(m,1,t),false,`${beat} is not taken`);
+  assert.equal(m.phase,'cue');assert.equal(m.cue.pressed,null);assert.equal(m.lastPlay,null);assert(!m.decks[1].playing);near(m.floor,floor);}
+ // aiming at the next line: past the middle of the gap the nearest line is the next one (4-bar lines)
+ {const m=createSet(S1,Math.random,quickEntry());playDeck(m,0,0);const a=m.decks[0];assert.equal(m.cue.start,16);updateSet(m,sec(a,25));assert.equal(playDeck(m,1,sec(a,25)),false,'7 beats before the next line');
+  assert(playDeck(m,1,sec(a,29)));assert.equal(m.cue.start,32);assert.equal(m.cue.missed,1);assert.equal(m.lastPlay.grade,'OK');assert(m.lastPlay.reserved);}
+ // the main game's headphones widen every band by 10 ms
+ {const m=createSet(S1,Math.random,{allowance:10});playDeck(m,0,0);const a=m.decks[0],t=sec(a,32)-2.009;updateSet(m,t);assert(playDeck(m,1,t),'2009 ms early is taken with the headphones');assert.equal(m.lastPlay.grade,'OK');}
+ {const m=createSet(S1);playDeck(m,0,0);const a=m.decks[0],t=sec(a,32)-2.009;updateSet(m,t);assert.equal(playDeck(m,1,t),false,'and not without');}
+ for(const [ms,g] of [[0,'PERFECT'],[250,'PERFECT'],[251,'GOOD'],[1000,'GOOD'],[1001,'OK'],[2000,'OK'],[-2000,'OK'],[-2001,'EARLY'],[2001,'LATE']])assert.equal(gradeOf(ms),g,`${ms}`);
+ assert.equal(gradeOf(250,0,122),'GOOD','the bands are beats: a beat is shorter at 122 BPM');assert.equal(gradeOf(255,10),'PERFECT','headphones');
+ assert.deepEqual(ENTRY_BANDS,{PERFECT:.5,GOOD:2,OK:4});assert(Object.isFrozen(ENTRY_BANDS));
  const m=createSet(S1);playDeck(m,0,0);playDeck(m,1,sec(m.decks[0],32));assert.equal(playDeck(m,1,20),false);
 });
 await check('mix: crossing 0.9 toward the incoming deck records progress; B→A is measured mirrored',()=>{
@@ -80,7 +94,14 @@ await check('grace: without a crossing the outgoing deck keeps playing up to 8 m
  const m=createSet(S1);playDeck(m,0,0);const a=m.decks[0],t0=sec(a,32);updateSet(m,t0);playDeck(m,1,t0);
  let v;for(let i=1;i<=32;i++){m.mix=Math.min(.88,guideAt(i/32));v=updateSet(m,t0+sec(a,i)+.001);}assert.equal(v.mode,'mix');assert(m.decks[0].playing);near(v.progress,1,1e-3);assert.equal(m.fader.hits,32);
  m.mix=.95;v=updateSet(m,t0+sec(a,40));assert(v.transition);near(v.transition.reached,40/32);assert.equal(v.transition.parts[2],60,'a late crossing caps the fader at 60 even when every beat was on the line');
- const m2=createSet(S1);playDeck(m2,0,0);updateSet(m2,t0);playDeck(m2,1,t0);v=updateSet(m2,t0+sec(a,PHRASE+GRACE));assert(v.transition);assert.equal(v.transition.reached,null);assert.equal(v.transition.parts[2],30);
+ // the fader never moved (#2456 §4-2 無音にしない): past the grace the outgoing deck does not stop into silence. It keeps playing (stuck) until the
+ // incoming one can be heard (the fader half way), then hands over, scored as never reached.
+ const m2=createSet(S1);playDeck(m2,0,0);updateSet(m2,t0);playDeck(m2,1,t0);v=updateSet(m2,t0+sec(a,PHRASE+GRACE));assert.equal(v.transition,null);assert(v.stuck);assert.equal(m2.phase,'mix');assert(m2.decks[0].playing&&m2.decks[1].playing);
+ v=updateSet(m2,t0+sec(a,PHRASE+GRACE+20));assert(v.stuck&&!v.transition,'it waits as long as it takes; the outgoing track loops');assert(quality(m2,t0+sec(a,PHRASE+GRACE+20))>.5,'the room still hears the outgoing track');
+ m2.mix=.45;v=updateSet(m2,t0+sec(a,PHRASE+GRACE+21));assert(v.stuck&&!v.transition,'not yet: the incoming track is quieter than the outgoing one');
+ m2.mix=.55;v=updateSet(m2,t0+sec(a,PHRASE+GRACE+22));assert(!v.stuck);assert(v.transition);assert.equal(v.transition.reached,null);assert.equal(v.transition.parts[2],30);assert.equal(m2.master,1);assert(m2.decks[1].playing);
+ // crossing after the grace is still "never reached" (30), not a late crossing (60)
+ const m3=createSet(S1);playDeck(m3,0,0);updateSet(m3,t0);playDeck(m3,1,t0);updateSet(m3,t0+sec(a,PHRASE+GRACE+1));m3.mix=1;v=updateSet(m3,t0+sec(a,PHRASE+GRACE+2));assert(v.transition);assert.equal(v.transition.reached,null);assert.equal(v.transition.parts[2],30);
 });
 // One transition ridden along the guide line from the cued phrase head.
 function ride(m){
@@ -158,10 +179,13 @@ await check('ズレ → 採点: fixed within a beat or two the ビート item st
 await check('scores: thresholds, ビート = share of beats in time, fader = share of beats on the guide line (late 60, never 30), ranks, FLOOR bonus',()=>{
  for(const [v,p] of [[1,100],[.9,100],[.89,85],[.75,85],[.74,60],[.5,60],[.49,30],[0,30]])assert.equal(scoreTransition({sync:v,playMs:0,reached:.5,follow:1}).parts[0],p);
  assert.equal(scoreTransition({playMs:0,reached:.5,follow:1}).parts[0],100,'nothing slipped');
- for(const [v,p] of [[30,100],[31,85],[60,85],[61,60],[120,60],[121,30]])assert.equal(scoreTransition({playMs:v,reached:.5,follow:1}).parts[1],p);
+ // 入り (#2456 §4): by the entry's grade; without one, the error in ms is graded in beats at the tempo (120 BPM: 250 / 1000 / 2000 ms)
+ for(const [v,p] of [[250,100],[251,85],[1000,85],[1001,60],[2000,60],[2001,30]])assert.equal(scoreTransition({playMs:v,reached:.5,follow:1}).parts[1],p,`${v}`);
+ for(const [g,p] of [['PERFECT',100],['GOOD',85],['OK',60],['EARLY',30],['LATE',30]])assert.equal(scoreTransition({playMs:9999,grade:g,reached:.5,follow:1}).parts[1],p,g);
+ assert.equal(scoreTransition({playMs:250,bpm:122,reached:.5,follow:1}).parts[1],85);assert.equal(scoreTransition({playMs:260,allowance:10,reached:.5,follow:1}).parts[1],100);
  for(const [r,p] of [[.9,100],[.89,85],[.75,85],[.74,60],[.5,60],[.49,30],[0,30]])assert.equal(scoreFromRatio(r),p);
  for(const [reached,follow,p] of [[null,1,30],[1.5,1,60],[1.5,.6,60],[1.5,.4,30],[.5,1,100],[1,.8,85],[0,.6,60]])assert.equal(scoreTransition({playMs:0,reached,follow}).parts[2],p,`${reached} ${follow}`);
- const s=scoreTransition({sync:.8,playMs:70,reached:.2,follow:.8});assert.deepEqual(s.parts,[85,60,85]);assert.equal(s.total,Math.round((85+60+85)/3));assert.equal(s.rank,'A');
+ const s=scoreTransition({sync:.8,playMs:1500,reached:.2,follow:.8});assert.deepEqual(s.parts,[85,60,85]);assert.equal(s.total,Math.round((85+60+85)/3));assert.equal(s.rank,'A');
  const set=(totals,floor)=>scoreSet({transitions:totals.map(total=>({total})),floor,set:{name:'X'}});
  assert.deepEqual([set([80],.8).total,set([80],.8).bonus],[85,5]);assert.deepEqual([set([80],.29).total,set([80],.29).bonus],[75,-5]);assert.equal(set([80,70],.5).total,75);assert.equal(set([100],1).total,100);assert.equal(set([80],.799).bonus,0);
  for(const [s,a,b] of [[30,60,120],[25,50,100]]){assert.equal(scoreFromErr(s,s,a,b),100);assert.equal(scoreFromErr(s+.001,s,a,b),85);assert.equal(scoreFromErr(b+.001,s,a,b),30);}
@@ -188,7 +212,8 @@ await check('floor: silence and clashing beats bring it down, a clean blend lift
  // DJS20: a good sound warms the room slowly (FLOOR_WARM), a bad sound cools it at full speed.
  const f=createSet(S1);floorStep(f,1,10);near(f.floor,.5+.45*10*.06*FLOOR_WARM);const cool=createSet(S1);floorStep(cool,0,5);near(cool.floor,.5-.55*5*.06);floorStep(f,0,100);near(f.floor,0);
  const g=createSet(S1);playDeck(g,0,0);updateSet(g,sec(g.decks[0],32));playDeck(g,1,sec(g.decks[0],32));near(g.floor,.5+GRADE_FLOOR.PERFECT);
- const h=createSet(S1);playDeck(h,0,0);updateSet(h,sec(h.decks[0],33));playDeck(h,1,sec(h.decks[0],33));near(h.floor,.5+GRADE_FLOOR.LATE);
+ const h=createSet(S1);playDeck(h,0,0);updateSet(h,sec(h.decks[0],33));playDeck(h,1,sec(h.decks[0],33));near(h.floor,.5+GRADE_FLOOR.GOOD,1e-9);
+ const o=createSet(S1);playDeck(o,0,0);updateSet(o,sec(o.decks[0],34.5));playDeck(o,1,sec(o.decks[0],34.5));assert.equal(o.lastPlay.grade,'OK');near(o.floor,.5+GRADE_FLOOR.OK,1e-9);
  assert(GRADE_FLOOR.PERFECT>GRADE_FLOOR.GOOD&&GRADE_FLOOR.GOOD>0&&GRADE_FLOOR.OK===0&&GRADE_FLOOR.EARLY<0&&GRADE_FLOOR.LATE<0);assert(RANK_FLOOR.S>RANK_FLOOR.A&&RANK_FLOOR.B===0&&RANK_FLOOR.C<0);assert(FOLLOW_FLOOR.hit>0&&FOLLOW_FLOOR.miss<0);
 });
 await check('floor (DJS20): one perfect transition warms the room by a step, it takes a whole clean set to reach 最高潮; a sloppy one cools it',()=>{
@@ -196,17 +221,18 @@ await check('floor (DJS20): one perfect transition warms the room by a step, it 
  const m=createSet(S1);playDeck(m,0,0);const a=m.decks[0],t0=sec(a,32);updateSet(m,t0);playDeck(m,1,t0);
  for(let b=1;b<=32;b++){m.mix=guideAt(b/32);updateSet(m,t0+sec(a,b+.01));}
  assert.equal(m.transitions[0].rank,'S');assert(m.floor>.72&&m.floor<.85,`one perfect transition: ${m.floor}`);assert(moodOf(m.floor)>=3);
- // sloppy: LATE entry (150 ms), the fader left behind for the whole 8 bars and pushed over at the end
- const s=createSet(S1);playDeck(s,0,0);updateSet(s,t0+.15);playDeck(s,1,t0+.15);assert.equal(s.lastPlay.grade,'LATE');
- for(let b=1;b<=32;b++)updateSet(s,t0+sec(a,b+.01));s.mix=1;updateSet(s,t0+sec(a,33));
- assert.equal(s.transitions.length,1);assert(s.floor<.3,`a sloppy transition cools the room: ${s.floor}`);assert(moodOf(s.floor)<=1);
+ // sloppy: an OK entry (2½ beats late; #2456 §4 takes it), the fader left behind for the whole 8 bars and pushed over at the end
+ const s=createSet(S1);playDeck(s,0,0);const ts=t0+sec(a,2.5);updateSet(s,ts);playDeck(s,1,ts);assert.equal(s.lastPlay.grade,'OK');
+ for(let b=3;b<=32;b++)updateSet(s,t0+sec(a,b+.01));s.mix=1;updateSet(s,t0+sec(a,33));
+ assert.equal(s.transitions.length,1);assert(s.floor<.45,`a sloppy transition cools the room: ${s.floor}`);assert(moodOf(s.floor)<=2);assert(m.floor-s.floor>.3,`far below the clean one: ${m.floor} vs ${s.floor}`);
  assert.deepEqual([0,.19,.2,.39,.4,.59,.6,.79,.8,1].map(moodOf),[0,0,1,1,2,2,3,3,4,4]);assert.equal(MOODS.length,5);assert.equal(MOODS[moodOf(.5)],'様子見','the set opens with the room watching');
 });
-await check('▶ is judged against the nearest phrase head (DJS20): a little before the next head is EARLY/PERFECT, not a huge LATE',()=>{
+await check('▶ is judged against the nearest phrase head (DJS20): a little before the next head is PERFECT/OK, not a huge LATE',()=>{
  const m=createSet(S1);playDeck(m,0,0);const a=m.decks[0];updateSet(m,sec(a,40));assert.equal(m.cue.start,32,'the first head has passed, the window is still open');
  const t=sec(a,64)-.02;updateSet(m,t);playDeck(m,1,t);assert.equal(m.cue.start,64,'aimed at the next head');assert.equal(m.cue.missed,1);assert.equal(m.lastPlay.grade,'PERFECT');near(m.lastPlay.errorMs,-20,1e-6);assert.equal(m.cue.pressed.beat,64);
- const e=createSet(S1);playDeck(e,0,0);const te=sec(a,64)-.1;updateSet(e,te);playDeck(e,1,te);assert.equal(e.lastPlay.grade,'OK');assert(e.lastPlay.errorMs<0);
- const l=createSet(S1);playDeck(l,0,0);const tl=sec(a,32+15);updateSet(l,tl);playDeck(l,1,tl);assert.equal(l.cue.start,32,'before the middle it is still the head that just passed');assert.equal(l.lastPlay.grade,'LATE');
+ const e=createSet(S1);playDeck(e,0,0);const te=sec(a,64)-1.6;updateSet(e,te);playDeck(e,1,te);assert.equal(e.lastPlay.grade,'OK');assert(e.lastPlay.errorMs<0);assert(e.lastPlay.reserved);
+ const l=createSet(S1);playDeck(l,0,0);const tl=sec(a,32+3);updateSet(l,tl);playDeck(l,1,tl);assert.equal(l.cue.start,32,'before the middle it is still the head that just passed');assert.equal(l.lastPlay.grade,'OK');assert(!l.lastPlay.reserved);
+ const x=createSet(S1);playDeck(x,0,0);const tx=sec(a,32+15);updateSet(x,tx);assert.equal(playDeck(x,1,tx),false,'15 beats after a head and 17 before the next: not taken (#2456 §4)');
  // the guide line starts from the head that was judged
  updateSet(m,sec(a,64+16));near(updateSet(m,sec(a,64+16)).progress,.5,1e-6);
 });
@@ -221,7 +247,8 @@ await check('entry lines every 4 bars (DJF03): the game waits 2〜6 bars in ever
  // a line that goes by rolls to the next one 4 bars on (view.rolled tells the screen once); ▶ past the middle aims at the next line
  let v=updateSet(m,sec(a,15));assert(!v.rolled&&!v.open);v=updateSet(m,sec(a,20));assert(v.open&&!v.rolled,'just past the line: still playable (late)');
  v=updateSet(m,sec(a,32.1));assert(v.rolled);assert.deepEqual([m.cue.start,m.cue.end,m.cue.missed],[32,64,1]);assert.equal(updateSet(m,sec(a,33)).rolled,false);
- const l=createSet(S1,()=>0,quickEntry(S1));playDeck(l,0,0);let t=sec(a,16+7);updateSet(l,t);playDeck(l,1,t);assert.equal(l.cue.start,16);assert.equal(l.lastPlay.grade,'LATE');
+ const l=createSet(S1,()=>0,quickEntry(S1));playDeck(l,0,0);let t=sec(a,16+7);updateSet(l,t);assert.equal(playDeck(l,1,t),false,'7 beats late: not taken (#2456 §4)');assert.equal(l.cue.start,16);assert.equal(l.lastPlay,null);
+ t=sec(a,16+3.5);updateSet(l,t);assert(playDeck(l,1,t));assert.equal(l.cue.start,16);assert.equal(l.lastPlay.grade,'OK');
  const n=createSet(S1,()=>0,quickEntry(S1));playDeck(n,0,0);t=sec(a,32)-.02;updateSet(n,sec(a,25));playDeck(n,1,t);assert.equal(n.cue.start,32,'past the middle: judged against the next line');assert.equal(n.lastPlay.grade,'PERFECT');near(n.lastPlay.errorMs,-20,1e-6);
  // the whole set scores exactly as on the 8-bar grid, and takes fewer beats
  const beats=(opts)=>{const x=createSet(S1,()=>0,opts);playDeck(x,0,0);let r=ride(x);chooseTrack(x,0,r.now+3);r=ride(x);assert(r.v.finished);return {result:x.result,sec:r.now};};
@@ -295,9 +322,9 @@ await check('sound effects (DJF02): silent without oscillators (no throw); with 
  const fetched=[],realFetch=globalThis.fetch;globalThis.fetch=async url=>{fetched.push(String(url));return {ok:true,arrayBuffer:async()=>new ArrayBuffer(8)};};
  try{
   const a=new DJAudio(Rich,{setIndex:0,loadTrack});await a.play(0);const c=a.context,s=new DJSfx(a),own=made.length;c.currentTime=5;
-  for(const [name,arg] of [['tick',{at:5.05,last:true}],['entry',{grade:'PERFECT'}],['entry',{grade:'GOOD'}],['entry',{grade:'OK'}],['entry',{grade:'LATE'}],['combo',{combo:8}],['combo',{combo:32}],['broken',{}],['nope',{}],['slip',{}],['fix',{}],['transition',{rank:'S'}],['transition',{rank:'C'}],['pick',{rating:'◎'}],['pick',{rating:'△'}],['finish',{rank:'A'}],['stamp',{}]]){
+  for(const [name,arg] of [['tick',{at:5.05,last:true}],['entry',{grade:'PERFECT'}],['entry',{grade:'GOOD'}],['entry',{grade:'OK'}],['entry',{grade:'LATE'}],['combo',{combo:8}],['combo',{combo:32}],['broken',{}],['nope',{}],['reserve',{}],['slip',{}],['fix',{}],['transition',{rank:'S'}],['transition',{rank:'C'}],['pick',{rating:'◎'}],['pick',{rating:'△'}],['finish',{rank:'A'}],['stamp',{}]]){
    const n=made.length;assert.equal(s.play(name,arg),true,name);assert(made.length>n,`${name} builds nodes`);assert.equal(s.last,name);}
-  assert.equal(s.count,17);assert.equal(s.play('no-such-sound'),false);assert.equal(s.count,17);
+  assert.equal(s.count,18);assert.equal(s.play('no-such-sound'),false);assert.equal(s.count,18);
   assert.deepEqual(fetched.map(u=>u.split('/assets/audio/se/')[1]).sort(),['crowd_applause_01.mp3','minigame/axe_cheer.wav'],'the two recorded crowds, fetched once');
   const fxNodes=made.slice(own),osc=fxNodes.filter(n=>n.kind==='osc');assert(osc.every(o=>o.started>=5&&o.stopped>o.started),'every tone is scheduled now or later and stops');assert(osc.some(o=>Math.abs(o.started-5.05)<1e-9),'the count-in click lands on its beat time');
   assert(fxNodes.length>20&&!fxNodes.some(n=>n.to.includes(a.output)||n.to.includes(a.analyser)),'effects never go through the music output (the meters stay the music)');assert(s.bus.to.includes(c.destination));
@@ -310,11 +337,30 @@ await check('audio: first ▶ loads the two deck tracks and starts exactly one s
  assert.deepEqual(loads,['danceMonster','digitalLemonade']);assert.equal(a.context.sources.length,1);assert.deepEqual(a.mix.decks.map(d=>d.playing),[true,false]);near(a.voices[0].source.playbackRate.value,1);near(a.voices[0].source.started.offset,.006);near(a.voices[0].source.loopStart,.006);
  assert.equal(await a.play(0),false);assert.equal(a.context.sources.length,1);await a.dispose();
 });
-await check('audio: quantized ▶ schedules the source on the master\'s next beat, at the master\'s tempo (a 120 BPM track is sped up to 122)',async()=>{
+await check('audio: an early ▶ schedules the source on the entry line (予約), at the master\'s tempo (a 120 BPM track is sped up to 122)',async()=>{
  const a=new DJAudio(Context,{setIndex:2,loadTrack});await a.play(0);const c=a.context,A=a.mix.decks[0];
- c.currentTime=sec(A,31.9);a.update();await a.play(1);const v=a.voices[1].source;near(v.started.t,sec(A,32));near(v.started.offset,.006);assert.equal(a.mix.lastPlay.grade,'GOOD');
+ c.currentTime=sec(A,31.9);a.update();await a.play(1);const v=a.voices[1].source;near(v.started.t,sec(A,32));near(v.started.offset,.006);assert.equal(a.mix.lastPlay.grade,'PERFECT');assert(a.mix.lastPlay.reserved);
  near(v.playbackRate.value,122/120);near(a.voices[0].source.playbackRate.value,1);assert.equal(typeof a.pitch,'undefined');assert.equal(typeof a.sync,'undefined','no tempo controls');
  assert.equal(await a.play(1),false);assert.equal(live(c).length,2);await a.dispose();
+});
+await check('audio (#2456 §4): a ▶ held for the line still lands on it after a pause and resume; a ▶ a little late starts at once, phrase-aligned',async()=>{
+ const a=new DJAudio(Context,{setIndex:0,loadTrack});await a.play(0);const c=a.context,A=a.mix.decks[0];
+ c.currentTime=sec(A,30.5);a.update();assert(await a.play(1));assert.equal(a.mix.lastPlay.grade,'GOOD');assert(a.mix.lastPlay.reserved);near(a.voices[1].source.started.t,sec(A,32));near(a.voices[1].source.started.offset,0);
+ c.currentTime=sec(A,31);await a.pause();assert.deepEqual(a.mix.resumeDecks,[0,1]);c.currentTime=100;assert(await a.start());
+ const v=a.voices[1].source;near(v.started.t,100+sec(A,1),1e-9);near(v.started.offset,0);near(beatAt(a.mix.decks[0],100+sec(A,1)),32,1e-9);assert.equal(a.update().reserved,true);
+ c.currentTime=100+sec(A,1.01);assert.equal(a.update().reserved,false,'in on the line');near(phaseError(a.mix.decks[0],a.mix.decks[1],c.currentTime),0,1e-9);await a.dispose();
+ const b=new DJAudio(Context,{setIndex:0,loadTrack});await b.play(0);const d=b.context,B=b.mix.decks[0];
+ d.currentTime=sec(B,33.5);b.update();assert(await b.play(1));assert.equal(b.mix.lastPlay.grade,'GOOD');assert(!b.mix.lastPlay.reserved);
+ const s=b.voices[1].source;near(s.started.t,sec(B,33.5));near(s.started.offset,sec(B,1.5),1e-9);near(beatAt(b.mix.decks[1],d.currentTime),1.5,1e-9);await b.dispose();
+});
+await check('audio (#2456 review 3): a track that failed to load is fetched again on the next ▶, and the playing track keeps going meanwhile',async()=>{
+ let failing=false;const tries=[];const flaky=async(c,key)=>{tries.push(key);if(failing&&key==='digitalLemonade')throw Error('音源読み込み失敗: Digital Lemonade');return loadTrack(c,key);};
+ const a=new DJAudio(Context,{setIndex:0,loadTrack:flaky});assert(await a.play(0));const c=a.context,A=a.mix.decks[0];
+ a.cache.delete('digitalLemonade');a.tracks[1]=null;failing=true;tries.length=0; // the next track is not loaded yet and the network is down
+ c.currentTime=sec(A,31.9);a.update();await assert.rejects(a.play(1),/Digital Lemonade/);
+ assert(a.mix.running&&A.playing,'the set keeps playing');assert(a.voices[0]&&!a.voices[0].stopped,'the playing voice is untouched');assert(!a.mix.decks[1].playing);assert.equal(a.mix.cue.pressed,null);assert.equal(a.cache.has('digitalLemonade'),false,'the failure is not cached');
+ failing=false;c.currentTime=sec(A,32.2);a.update();assert(await a.play(1),'▶ again loads it and comes in');assert.deepEqual(tries,['digitalLemonade','digitalLemonade']);assert(a.mix.decks[1].playing);assert.equal(a.mix.lastPlay.grade,'PERFECT');
+ await a.dispose();
 });
 await check('audio: a slip changes the incoming deck\'s rate and back; the platter re-seeks it onto the beat; the outgoing deck stops; both 選曲 candidates are prefetched and the pick loads once',async()=>{
  loads.length=0;const a=new DJAudio(Context,{setIndex:1,loadTrack,rng:()=>0});await a.play(0);const c=a.context,A=a.mix.decks[0];
