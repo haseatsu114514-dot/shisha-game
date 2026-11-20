@@ -52,8 +52,11 @@ assert(events.every(e => Object.isFrozen(e) && e.lifted === liftRivalScore(e.riv
 assert(events.some(e => e.p > 0 && e.lifted !== e.rival)); checks++;
 assert(events.filter(e => e.p === 0).every(e => Object.is(e.rival, e.lifted))); checks++;
 equal([...new Set(events.map(e => e.p))], [0, .5, 1]);
-// オーナー承認の強化版も別の固定値で全4投票/全順位/持ち込みを検査。旧ゴールデン値は上で維持する。
-equal(tournament.RIVAL_QUALITY, { saku: 86, steve: 85, volk: 88 });
+// オーナー承認の強化版（版2）も別の固定値で全4投票/全順位/持ち込みを検査。旧ゴールデン値は上で維持する。
+// 新しい挑戦は版3（#3916 WIN11）だが、版2で始めた途中保存はこの値で最後まで進むので、版2に固定して同じ値を検査し続ける。
+equal(tournament.V2_RIVAL_QUALITY, { saku: 86, steve: 85, volk: 88 });
+equal(tournament.RIVAL_QUALITY, { saku: 84.5, steve: 83.5, volk: 86.5 });
+equal(tournament.TOURNAMENT_RULES_VERSION, 3);
 const currentDigest = createHash("sha256"), currentEvents = [];
 setRivalScoreObserver(event => currentEvents.push(event));
 for (const seed of [1, 7, 42, 7317, 0xffffffff]) {
@@ -61,7 +64,8 @@ for (const seed of [1, 7, 42, 7317, 0xffffffff]) {
     for (const p of [0, .5, 1]) {
       const value = { chapter: 3, day: 42, weatherSeed: seed, flags: {} };
       const progress = tournament.startAttempt(value, { careHistory: [] });
-      equal(progress.rulesVersion, 2);
+      equal(progress.rulesVersion, 3);
+      progress.rulesVersion = 2;
       for (let round = 0; round < 4; round++) {
         assert(tournament.castVotes(progress, round, performance, { emil: -1, dr_kemuri: .5, sui: 1 }, p));
         if (p === 0) currentDigest.update(JSON.stringify([progress.votes, progress.lastVotes, progress.quality, tournament.standings(progress)]));
