@@ -13,7 +13,7 @@ import { emit } from "../core/bus.js";
 import { hiyoriRoute, hiyoriFinaleReady } from "../core/hiyori-route.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { samechanMilestoneDue, playSamechanMilestone } from "./samechan-bonds.js";
-import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
+import { dateScene, dateVenue, relationshipDayTotal, advanceDateTopic } from "./date-scene.js";
 import { playSamechanDate, samechanDateGap, samechanDateReady } from "./samechan-date.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
 import { petitAfterDate } from "./petit-shuraba.js";
@@ -268,7 +268,9 @@ export async function playDate(id) {
   const venue = dateVenue(id);
   state.lastDate[id] = state.day;
   bond.private = true;
-  await play(dateScene(id, venue), { growthScene: true });
+  const result = await play(dateScene(id, venue), { growthScene: true });
+  // 読み終えた時だけ、次のデートの話題へ進める（#4030。中断・LOADでは同じ話題のまま）
+  if (result && !result.cancelled) advanceDateTopic(id);
   gainAffinity(id, 10);
   bond.private = false;
   // プチ修羅場（恋人が2人以上・一度きり）: 着信・気づきかけ・帰り道の誤爆。デートの場所のまま読み、報酬は無い
