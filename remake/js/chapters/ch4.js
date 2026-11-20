@@ -256,7 +256,8 @@ async function renderCompanionChoice(owner) {
     lovers.length ? "ドバイへ一緒に行く恋人を、1人まで選べる。選ばなかった恋人も、別の便で応援に来られる。"
       : "今回は、一緒に行く恋人はいない。",
     [...lovers.map(id => button(owner, displayName(id, state, { context: "private" }), `companion-${id}`, choose(id))),
-      button(owner, "同行なし", "companion-none", choose(null), !lovers.length)]);
+      button(owner, "同行なし", "companion-none", choose(null), !lovers.length)],
+    chapterFourPrepPending(state) ? "準備初日の昼はtonariで特訓。夜は地図で行き先を選べる。" : "");
 }
 
 /** 読んだ後にその場にいる人へ、心得の盤で灯した授業を相談できる場面（SBD91。灯していなければ何も起きない） */
