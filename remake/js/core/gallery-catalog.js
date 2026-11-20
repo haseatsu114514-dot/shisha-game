@@ -9,10 +9,10 @@ export const CHAR_LABELS = {
   rio: "凛想", mashiro: "ましろ", other: "その他",
 };
 const cgChars = Object.fromEntries(Object.entries({
-  ageha: ["cg_ageha_first_purikura", "cg_ch2_ageha_purikura_strip", "cg_ageha_confession", "cg_ch2_ageha_lesson"],
+  ageha: ["cg_ageha_first_purikura", "cg_ch2_ageha_purikura_strip", "cg_ageha_confession", "cg_ch2_ageha_lesson", "cg_ch2_ageha_white_bear"],
   minto: ["cg_ch1_minto_casual_reveal", "cg_minto_casual", "cg_minto_cheki", "cg_minto_confession", "cg_minto_first_cheki"],
   tsumugi: ["cg_ch1_tsumugi_heart_art", "cg_tsumugi_confession", "cg_tsumugi_smoke_color"],
-  naru: ["cg_naru_after_hours", "cg_naru_last_chance", "cg_naru_next_entry"],
+  naru: ["cg_naru_after_hours", "cg_naru_last_chance", "cg_naru_next_entry", "cg_ch2_naru_score_sheet"],
   rio: ["cg_rio_confession"],
   mashiro: ["cg_ch3_childhood_offered_hand", "cg_saku_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession", "cg_ch3_mashiro_no_craft_day"],
 }).flatMap(([char, ids]) => ids.map(id => [id, char])));
@@ -55,6 +55,11 @@ export function galleryStats(entries) {
   return stats;
 }
 const labels = {
+  cg_ch2_kanzaki_id_check: "神崎煙草店の年齢確認",
+  cg_ch2_naru_score_sheet: "光る採点表",
+  cg_ch2_rest_notebook: "ノートを閉じた日",
+  cg_ch2_rei_earphone: "片耳ぶんの一曲",
+  cg_ch2_ageha_white_bear: "白いクマと閉店後",
   cg_ch2_sofa_wet_cloth: "焦げ跡と濡れ布",
   cg_ch2_ageha_lesson: "あげはの吸い方講座",
   cg_ch3_mashiro_no_craft_day: "作らないと決めた昼",
