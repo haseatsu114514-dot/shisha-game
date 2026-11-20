@@ -146,6 +146,7 @@ async function readScene(owner, id) {
   if (id === "ch4_sumi_return" && !chapterFourRead(state, id)) {
     await planeRide(() => setBg(bgUrl(CH4_SCENE_BG[id]), { instant: true }), { to: "home" });
     if (!current(owner)) return false;
+    showScreen("homecoming", null); // 帰国済みの表示。読了するまで保存の段は進めない。
   }
   await setBg(bgUrl(CH4_SCENE_BG[id] || camelSceneBg(id) || (CH4_BEACH_SCENE_FILES.ch4_beach.includes(id) ? CH4_BEACH_BG : null)
     || CH4_EVENING_BG));
