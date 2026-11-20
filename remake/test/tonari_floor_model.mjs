@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createFloorNight, floorTick, floorAct, floorTap, floorResult, floorAdvice, floorUrgency, pickNight,
-  floorSendOff, floorBill, floorFace, floorAirFull, floorBonusTimeLength, FLOOR_TABLE_COUNT } from "../js/daily/tonari-floor-model.js";
+  floorSendOff, floorBill, floorFace, floorWaitLeft, floorAirFull, floorBonusTimeLength, FLOOR_TABLE_COUNT } from "../js/daily/tonari-floor-model.js";
 import { MIXES, WISHES, GUESTS, CALLS, NIGHTS, FAMILIES, PRICE, RANKS, VERBS, SENDS, SEND_LINES } from "../js/daily/tonari-floor-data.js";
 import { playFloorBot } from "./tonari_floor_bot.mjs";
 
@@ -82,6 +82,12 @@ test("同じ種なら同じ一晩。操作も経過も元の state を書き換�
   const seated = act(later, { type: "seat", tableId: 3 });
   assert.equal(at(later, 3).phase, "empty");
   assert.equal(at(seated, 3).phase, "order");
+  // 注文を待たせている残り: 18刻みから減り、0 で満足が下がり始める
+  assert.equal(floorWaitLeft(seated, 3), 18);
+  assert.equal(floorWaitLeft(floorTick(seated, 5), 3), 13);
+  const waited = floorTick(seated, 30);
+  assert.equal(floorWaitLeft(waited, 3), 0);
+  assert.ok(at(waited, 3).mood < at(seated, 3).mood);
   assert.equal(seated.t, later.t, "操作は時間を使わない");
 });
 
@@ -150,6 +156,10 @@ test("合図: 正しい手入れで満足が上がり、外すと下がる。夢
   assert.ok(at(good, 1).mood > at(s, 1).mood && at(bad, 1).mood < at(s, 1).mood);
   assert.equal(good.counts.care, 1);
   assert.equal(bad.counts.careMiss, 1);
+  // 卓の札に出す残り: 合図は消えるまで、くつろいでいる卓・空席には出さない
+  assert.equal(floorWaitLeft(s, 1), at(s, 1).call.until - s.t);
+  assert.equal(floorWaitLeft(good, 1), null);
+  assert.equal(floorWaitLeft(s, 2), null);
   assert.equal(at(good, 1).call, null);
   assert.ok(floorUrgency(s, 1) >= 0 && floorUrgency(s, 1) <= 1);
   // 応えないまま時間が過ぎると、合図は消えて満足が下がる

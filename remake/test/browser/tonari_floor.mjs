@@ -1,5 +1,6 @@
 // tonari フロア営業: 勤務札→導入→営業→締め→日当の流れ、実画面の操作（PC／横持ちタッチ）、時計の停止、LOAD の境界。
 // 卓で選ぶ場面は「接客ビュー」（店内がその卓へ寄り、左に選択肢の列・下に客のドック・選んだあとに判定の印）。
+// 卓の上には「卓の札」（用件・卓番号と客・顔とコース・滞在の残りの円・待たせている残り秒）、下の帯に出来事の行。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
@@ -154,6 +155,16 @@ await suite("tonari-floor", async (check) => {
       assert.equal(await api((a) => a.mode()), "live");
       await tick(6);
       assert.equal(await page.locator(".tf-door-chip").count(), 1);
+      // 入口の列: 枠は3つ。来店は下の帯の出来事の行にも出る
+      assert.equal(await page.locator(".tf-door-slot").count(), 2);
+      assert.match(await page.locator(".tf-door h2").innerText(), /入口\s*1組/);
+      const g1 = await api((a) => a.state().guests.g1);
+      assert.equal(await page.locator(`${t("log")} p`).last().innerText(), `${g1.name}が来店しました`);
+      // 卓の札: 空席は灰色の札。入口に客がいる間は「ご案内」が出る
+      const tag = (id) => page.locator(`.tf-spot[data-id="${id}"] .tf-bubble`);
+      const tagText = (id) => tag(id).innerText().then((text) => text.replace(/\s+/g, " ").trim());
+      assert.equal(await tagText(1), "ご案内 1 空席");
+      assert.equal(await page.locator('.tf-spot[data-id="1"]').getAttribute("data-tone"), "act");
       // 画面の外へはみ出さない・押せる大きさ（実画素で40px以上）
       const boxes = await page.evaluate(() => {
         const stage = document.getElementById("stage").getBoundingClientRect();
@@ -179,8 +190,22 @@ await suite("tonari-floor", async (check) => {
       assert.match(await page.locator(t("dock")).innerText(), /1卓\s*空席/);
       await table(1).click();
       assert.equal(await api((a) => a.state().tables[0].phase), "order");
-      const g1 = await api((a) => a.state().guests.g1);
       assert.match(await page.locator(t("dock")).innerText(), new RegExp(`1卓\\s*${g1.name}`));
+      assert.equal(await page.locator(`${t("log")} p`).last().innerText(), `${g1.name}を1卓へお通ししました`);
+      // 卓の札: 用件・卓番号・顔とコース・待たせている残り秒（注文は9秒から）
+      assert.equal(await tagText(1), "注文 1 ふつう 9");
+      assert.equal(await page.locator('.tf-spot[data-id="1"]').getAttribute("data-mood"), "flat");
+      assert.equal(await tagText(2), "2 空席");
+      const tagBox = await page.evaluate(() => {
+        const rect = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, w: r.width, h: r.height }; };
+        const spot = '.tf-spot[data-id="1"]';
+        const course = rect(`${spot} .tf-tag-course`), cell = rect(`${spot} .tf-tag-cell + .tf-tag-cell`);
+        return { box: rect(`${spot} .tf-tag-box`), seat: rect(`${spot} .tf-seat`), hud: rect(".tf-top"), door: rect(".tf-door"), bottom: rect(".tf-bottom"),
+          courseInside: course.bottom <= cell.bottom + 1 && course.left >= cell.left - 1 && course.right <= cell.right + 1 };
+      });
+      assert(tagBox.courseInside, "コースの文字が札の中に収まる");
+      assert(tagBox.box.left >= tagBox.seat.left - 2 && tagBox.box.right <= tagBox.seat.right + 2 && tagBox.box.bottom <= tagBox.seat.bottom + 2, "札は、卓のボタン（押し所）の上に重なる");
+      assert(tagBox.box.top >= tagBox.hud.bottom && tagBox.box.left >= tagBox.door.right - 2 && tagBox.box.bottom <= tagBox.bottom.top, "札が帯や入口の列に被らない");
       assert.equal(await page.locator(t("dock-bill")).innerText(), "900円", "席と初杯");
       if (platform === "pc") {
         // マウスを乗せた卓の様子に替わる（押さなくても見られる）
@@ -224,10 +249,18 @@ await suite("tonari-floor", async (check) => {
       await page.locator(t("shelf-1")).click(); // 受渡棚からも運べる
       assert.equal(await api((a) => a.state().tables[0].phase), "enjoy");
       assert.equal(await page.locator('[data-test="tonari-floor-table-1"]').evaluate((n) => n.closest(".tf-spot").dataset.smoke), "true");
+      // くつろいでいる卓の札: 緑の札に「くつろぎ中」、滞在の残りの円が出て、残り秒は消える。客のひとことは下の帯の行に出る
+      assert.equal(await tagText(1), "くつろぎ中 1 ふつう");
+      assert.equal(await page.locator('.tf-spot[data-id="1"]').getAttribute("data-tone"), "fine");
+      assert.equal(await page.locator('.tf-spot[data-id="1"] .tf-tag-pie').evaluate((n) => getComputedStyle(n).opacity), "1");
+      assert.match(await page.locator(`${t("log")} p`).last().innerText(), /^1卓「.+」$/);
+      assert.equal(await page.locator(".tf-say").count(), 0, "卓の上の吹き出しは使わない");
       // 合図: 5つの手入れは固定の並び。正しい手入れで満足が上がる
       for (let i = 0; i < 80 && !(await api((a) => a.state().tables[0].call)); i++) await tick(1);
       const call = await api((a) => a.state().tables[0].call.type);
       const mood = await api((a) => a.state().tables[0].mood);
+      assert.match(await tagText(1), /^\S+ 1 ふつう \d+$/, "合図の札には、消えるまでの残り秒が出る");
+      assert.equal(await page.locator('.tf-spot[data-id="1"]').getAttribute("data-tone"), "act");
       await table(1).click();
       assert.deepEqual(await page.locator(".tf-sheet .tf-option b").allInnerTexts().then((list) => list.map((s) => s.replace(/\s/g, ""))),
         ["炭を替える", "炭を下ろす", "飲み物を聞く", "ひと声かける", "そっとしておく"]);
@@ -300,6 +333,18 @@ await suite("tonari-floor", async (check) => {
       await page.locator(t("option-confirm-delegate")).click();
       await page.locator(t("result")).waitFor();
       assert.match(await page.locator(t("rank")).innerText(), /大入り|上々|まずまず|ばたばた/);
+      // 結果: 売上の内訳（項目ごと）と合計。内訳の合計は、店の売上と一致する
+      const slip = await page.evaluate(() => {
+        const yen = (text) => Number(text.replace(/[^0-9]/g, ""));
+        const rows = [...document.querySelectorAll(".tf-slip-items div")].map((n) => [n.querySelector("dt").textContent, n.querySelector("dd").textContent]);
+        const card = document.querySelector(".tf-slip").getBoundingClientRect(), stage = document.getElementById("stage").getBoundingClientRect();
+        return { names: rows.map((r) => r[0]), sum: rows.slice(1).reduce((total, r) => total + yen(r[1]), 0), total: yen(document.querySelector('[data-test="tonari-floor-final-sales"]').textContent),
+          top: yen(rows[4][1]), inside: card.top >= stage.top - 1 && card.bottom <= stage.bottom + 1 };
+      });
+      assert.deepEqual(slip.names, ["お迎えした組", "席料と初杯", "シーシャ（一台）", "もう一杯", "延長（トップ替え）"]);
+      assert.equal(slip.sum, slip.total);
+      assert.equal(slip.top, 800);
+      assert(slip.inside, "結果の札が舞台に収まる");
       await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/tonari-floor-${platform}-result.png` }).catch(() => {});
       await page.locator(t("option-continue")).click();
       await page.waitForFunction(() => window.result !== undefined);
@@ -372,18 +417,23 @@ await suite("tonari-floor", async (check) => {
       const idle = await page.locator('.tf-spot[data-id="4"] .tf-who img').getAttribute("src");
       await api((a) => { a.state().tables[3].mood = 95; a.tick(1); });
       assert.notEqual(await page.locator('.tf-spot[data-id="4"] .tf-who img').getAttribute("src"), idle);
-      // 奥の客のひとことは、上の帯に隠れない
+      // 奥の卓の札は、座った客の頭の上に出て、上の帯に隠れない。客のひとことは下の帯の行に出る
       await api((a) => { for (let i = 0; i < 40 && !a.state().queue.length; i++) a.tick(1); });
       await page.locator(t("table-1")).click();
       await page.locator(t("table-1")).click();
       await page.locator(".tf-sheet .tf-option").first().click();
       await api((a) => a.tick(15));
       await page.locator(t("table-1")).click();
-      const say = await page.evaluate(() => { const spot = document.querySelector('.tf-spot[data-id="1"]'); const r = spot.querySelector(".tf-say").getBoundingClientRect(); const hud = document.querySelector(".tf-top").getBoundingClientRect();
-        return { top: r.top, hudBottom: hud.bottom, on: spot.querySelector(".tf-say").dataset.on, seatTop: spot.querySelector(".tf-seat").getBoundingClientRect().top, bottom: r.bottom }; });
-      assert.equal(say.on, "true");
-      assert(say.bottom <= say.seatTop + 2, "奥の席のひとことは頭の上");
-      assert(say.top >= say.hudBottom - 4, `奥の卓のひとことが上の帯に被る: ${say.top} < ${say.hudBottom}`);
+      const back = await page.evaluate(() => {
+        const rect = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right }; };
+        const spot = '.tf-spot[data-id="1"]';
+        return { tag: rect(`${spot} .tf-bubble`), seat: rect(`${spot} .tf-seat`), hud: rect(".tf-top"), door: rect(".tf-door"),
+          log: document.querySelector('[data-test="tonari-floor-log"] p:last-child').textContent };
+      });
+      assert(back.tag.bottom <= back.seat.top + 2, "奥の席の札は頭の上");
+      assert(back.tag.top >= back.hud.bottom - 2, `奥の卓の札が上の帯に被る: ${back.tag.top} < ${back.hud.bottom}`);
+      assert(back.tag.left >= back.door.right - 2, "奥の左の卓の札が入口の列に被る");
+      assert.match(back.log, /^1卓「.+」$/);
       await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/tonari-floor-${platform}-seated.png` }).catch(() => {});
     }, options);
   }

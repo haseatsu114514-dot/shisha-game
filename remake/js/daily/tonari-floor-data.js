@@ -136,7 +136,7 @@ export const SENDS = Object.freeze([
 ]);
 /** 声かけへの返事。 */
 export const SEND_LINES = Object.freeze({
-  extend: "じゃあ、もう少しだけ。違う香りも試したいな",
+  extend: "じゃあ、もう少しだけ。違う香りも試したい",
   extendMiss: "いえ、今日はこれで",
   thanks: Object.freeze(["ごちそうさま。また来ます", "いい時間でした。ありがとう"]),
   thanksLow: "……どうも",

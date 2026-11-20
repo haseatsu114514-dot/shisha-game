@@ -509,6 +509,19 @@ export function floorUrgency(s, tableId) {
 }
 export const floorQueueUrgency = (s, entry) => Math.max(0, Math.min(1, (s.t - entry.since) / T.queue));
 
+/**
+ * 待たせている卓の、残りの猶予（刻み）。合図は消えるまで、注文・提供・会計は満足が下がり始めるまで。
+ * 0 は「もう下がり始めている」。待たせていない卓（くつろぎ中・空席・レジをスミさんに頼んだ日の会計）は null。
+ */
+export function floorWaitLeft(s, tableId) {
+  const table = tableOf(s, tableId);
+  if (!table || s.done) return null;
+  if (table.call) return Math.max(0, table.call.until - s.t);
+  const grace = table.phase === "order" ? T.orderGrace : table.phase === "wait" ? T.waitGrace
+    : table.phase === "bill" && !planOf(s).register ? T.billGrace : null;
+  return grace == null ? null : Math.max(0, grace - (s.t - table.since));
+}
+
 /** くつろいでいる卓の、滞在の残り（1→0）。番号札の輪で、いつ席が空くかを見せる。 */
 export function floorStayLeft(s, tableId) {
   const table = tableOf(s, tableId);
@@ -550,13 +563,13 @@ export function floorBill(s, tableId) {
 /** スミさんの一言（今いちばん先に見るところ）。台詞なので句点で終えない。 */
 export function floorAdvice(s) {
   if (s.done) return { kind: "done", tableId: null, text: "お疲れさん" };
-  if (s.bonusTimeLeft > 0) return { kind: "bonusTime", tableId: null, text: "……いい煙だ。今のうちに、手を進めておけ" };
+  if (s.bonusTimeLeft > 0) return { kind: "bonusTime", tableId: null, text: "……いい煙だ。今のうちに手を進めろ" };
   const tables = s.tables;
   const enjoying = tables.filter((t) => t.phase === "enjoy").length;
-  if (s.air >= AIR.full && enjoying >= 2) return { kind: "bonusTimeReady", tableId: null, text: "店がいい空気だ。ボーナスタイム、いけるぞ" };
+  if (s.air >= AIR.full && enjoying >= 2) return { kind: "bonusTimeReady", tableId: null, text: "いい空気だ。ボーナスタイム、いけるぞ" };
   const urgent = (list) => list.sort((a, b) => floorUrgency(s, b.id) - floorUrgency(s, a.id))[0];
   const empty = tables.find((t) => t.phase === "empty");
-  if (s.queue.length && empty) return { kind: "seat", tableId: empty.id, text: "入口でお客さんが待ってる。空いた卓へ通せ" };
+  if (s.queue.length && empty) return { kind: "seat", tableId: empty.id, text: "入口にお客さんだ。空いた卓へ通せ" };
   const calling = urgent(tables.filter((t) => t.call));
   if (calling && floorUrgency(s, calling.id) > 0.5) return { kind: "call", tableId: calling.id, text: `${calling.id}卓が呼んでる。様子を見てこい` };
   const ready = tables.find((t) => t.delivery?.ready);
@@ -565,11 +578,11 @@ export function floorAdvice(s) {
   const ordering = urgent(tables.filter((t) => t.phase === "order"));
   if (ordering) return { kind: "order", tableId: ordering.id, text: `${ordering.id}卓、注文を聞いてこい` };
   const billing = urgent(tables.filter((t) => t.phase === "bill"));
-  if (billing && !planOf(s).register) return { kind: "bill", tableId: billing.id, text: `${billing.id}卓がお会計だ。顔を見て、ひと声かけろ` };
+  if (billing && !planOf(s).register) return { kind: "bill", tableId: billing.id, text: `${billing.id}卓がお会計だ。顔を見て声をかけろ` };
   const dirty = tables.find((t) => t.phase === "dirty");
   if (dirty) return { kind: "clean", tableId: dirty.id, text: s.queue.length ? `${dirty.id}卓を片付ければ、次を通せる` : `${dirty.id}卓、手が空いたら片付けだ` };
-  if (s.air >= AIR.full) return { kind: "bonusTimeReady", tableId: null, text: "ボーナスタイムは、卓が埋まった時に使え" };
-  if (tables.some((t) => t.delivery && !t.delivery.ready)) return { kind: "idle", tableId: null, text: "いま仕込んでる。上がったら運んでくれ" };
+  if (s.air >= AIR.full) return { kind: "bonusTimeReady", tableId: null, text: "ボーナスタイムは、混んだ時に使え" };
+  if (tables.some((t) => t.delivery && !t.delivery.ready)) return { kind: "idle", tableId: null, text: "いま仕込んでる。上がったら運べ" };
   return { kind: "idle", tableId: null, text: enjoying ? "いい調子だ。卓の様子を見ておけ" : "次のお客さんまで、少し間がある" };
 }
 
