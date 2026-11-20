@@ -1,29 +1,73 @@
-/* 会話カットイン（立ち絵版・#2990。remake/js/vn/conversation-cutin.js）。
-   見た目と出入りの動きは Draft PR #2931 のデモ（#2924）が正本。座標は舞台 1280×720 の px。 */
+/* 会話カットイン（はじめの顔の帯。remake/js/vn/conversation-cutin.js）。座標は舞台 1280×720 の px。
+   2026-11-20 再設計（docs/owner_requests.md CCR01〜05）: 金の細い線＋淡いラベンダーの光、中は今の背景のぼかし、帽子が線の手前に出る。
+   試作の値は asset_sources/conversation-cutin-redesign-20261120/README.md。 */
 .vn-cutin-layer { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
 #vn:not(.active) .vn-cutin-layer { visibility: hidden; }
 #vn.sepia .vn-cutin-layer { filter: sepia(0.75) contrast(0.95) brightness(0.92); }
 #vn.flashback .vn-cutin-layer { filter: grayscale(1) contrast(0.92); }
+
 .vn-cutin { position: absolute; pointer-events: none; animation: .22s ease-out both; }
+.vn-cutin-shadow { position: absolute; inset: 0; filter: drop-shadow(0 14px 22px rgba(4, 0, 10, .55)); }
+.vn-cutin-clip, .vn-cutin-over { position: absolute; inset: 0; overflow: hidden; }
+.vn-cutin-over { overflow: visible; }
+/* 中: 今の背景を大きくぼかして敷き、夜紫を重ねる。背景が取れない時は夜紫だけ */
+.vn-cutin-bg { position: absolute; inset: -30px; background: #2a1a3c center 40% / cover no-repeat; filter: blur(6px) saturate(1.05) brightness(.82); transform: scale(1.5); }
+.vn-cutin-tint { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(26, 14, 42, .78) 0%, rgba(48, 28, 74, .42) 50%, rgba(70, 42, 100, .2) 100%); }
+.vn-cutin-halo { position: absolute; inset: 0; mix-blend-mode: screen;
+  background: radial-gradient(ellipse 34% 62% at var(--hx, 50%) var(--hy, 50%), rgba(255, 226, 186, .34), rgba(214, 170, 255, .14) 55%, transparent 78%); }
+.vn-cutin-art { position: absolute; max-width: none; max-height: none;
+  filter: drop-shadow(0 0 10px rgba(12, 5, 24, .6)) drop-shadow(0 0 1px rgba(232, 206, 255, .55)); }
+.vn-cutin-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 62%, rgba(14, 7, 24, .55) 100%); }
+.vn-cutin-sheen { position: absolute; inset: 0; opacity: 0; background: linear-gradient(112deg, transparent 42%, rgba(255, 236, 200, .42) 50%, transparent 58%) 130% 0 / 260% 100% no-repeat; }
 .vn-cutin svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.vn-cutin svg polygon { fill: none; stroke: #c9b491; stroke-width: 2.5; }
-.vn-cutin-clip { position: absolute; inset: 0; overflow: hidden;
-  background: repeating-linear-gradient(128deg, transparent 0 23px, #e7d3f21a 23px 24px), linear-gradient(135deg, #685272, #34253f); }
-.vn-cutin-art { position: absolute; max-width: none; max-height: none; }
-.vn-cutin[data-enter="slide"] { animation-name: vn-cutin-slide; }
-.vn-cutin[data-enter="fade"] { animation-name: vn-cutin-fade; animation-duration: .3s; }
-.vn-cutin[data-enter="rise"] { animation-name: vn-cutin-rise; animation-duration: .3s; }
-.vn-cutin[data-enter="wipe"] { animation-name: vn-cutin-wipe; animation-duration: .18s; transform-origin: left center; }
-/* 案4 余白に沈む: 暗い枠背景。消えるときだけ0.3秒で薄れる */
-.vn-cutin.sink { animation-duration: .4s; }
-.vn-cutin.sink .vn-cutin-clip { background: repeating-linear-gradient(128deg, transparent 0 23px, #e7d3f212 23px 24px), linear-gradient(135deg, #40334a, #1d1524); }
-/* 案5 胸に落ちる: 枠線だけ琥珀色 */
-.vn-cutin.amber svg polygon { stroke: #e0a85a; }
-.vn-cutin.leave { animation: vn-cutin-out .3s ease-in forwards; }
-.vn-cutin[data-still="true"] { animation: none; }
-@keyframes vn-cutin-slide { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
-@keyframes vn-cutin-fade { from { opacity: 0; } }
-@keyframes vn-cutin-out { to { opacity: 0; } }
+.vn-cutin-glow { fill: none; stroke: rgba(196, 160, 255, .5); stroke-width: 5; filter: blur(3px); }
+.vn-cutin-edge { fill: none; stroke: #e7c98f; stroke-width: 1.6; }
+.vn-cutin-accent { fill: none; stroke: rgba(231, 201, 143, .55); stroke-width: 1; }
+.vn-cutin-inner { fill: none; stroke: rgba(231, 201, 143, .38); stroke-width: 1; }
+
+/* 受け取る: 線だけ琥珀色 */
+.vn-cutin[data-tone="amber"] .vn-cutin-edge { stroke: #f0b060; }
+.vn-cutin[data-tone="amber"] .vn-cutin-glow { stroke: rgba(255, 190, 110, .5); }
+/* 沈む: 色を落とした暗い青紫。顔の後ろの光は無し */
+.vn-cutin[data-tone="cool"] .vn-cutin-tint { background: linear-gradient(100deg, rgba(10, 8, 26, .9) 0%, rgba(22, 20, 52, .66) 60%, rgba(30, 30, 70, .5) 100%); }
+.vn-cutin[data-tone="cool"] .vn-cutin-halo { display: none; }
+.vn-cutin[data-tone="cool"] .vn-cutin-art { filter: saturate(.72) brightness(.9) drop-shadow(0 0 10px rgba(6, 4, 20, .7)); }
+
+/* 決意: 全幅の目元の帯。帯より上の画面を暗くし、帯の中に細い光の筋 */
+.vn-cutin[data-frame="eyes"] .vn-cutin-tint { background: linear-gradient(90deg, rgba(20, 10, 32, .94) 0%, rgba(46, 26, 70, .5) 40%, rgba(46, 26, 70, .5) 60%, rgba(20, 10, 32, .94) 100%); }
+.vn-cutin-streak { position: absolute; left: 0; height: 1px; opacity: .35; background: linear-gradient(90deg, transparent, rgba(255, 240, 214, .5) 30%, rgba(255, 240, 214, .5) 60%, transparent); }
+.vn-cutin-streak.s0 { top: 34px; width: 70%; }
+.vn-cutin-streak.s1 { top: 68px; width: 100%; }
+.vn-cutin-streak.s2 { top: 104px; width: 55%; }
+.vn-cutin-streak.s3 { top: 148px; width: 85%; }
+.vn-cutin-dim { position: absolute; inset: 0 0 240px 0; background: linear-gradient(180deg, rgba(8, 3, 16, .5) 70%, transparent); animation: vn-cutin-fade .14s ease-out both; }
+
+/* 出る動き */
+.vn-cutin[data-enter="cut"] { animation: vn-cutin-wipe .2s cubic-bezier(.2, .8, .2, 1) both; }
+.vn-cutin[data-enter="cut"] .vn-cutin-art { animation: vn-cutin-art-slide .38s cubic-bezier(.2, .8, .2, 1) both; }
+.vn-cutin[data-enter="soft"] { animation: vn-cutin-fade .5s ease-out both; }
+.vn-cutin[data-enter="soft"] .vn-cutin-art { animation: vn-cutin-art-sink .7s ease-out both; }
+.vn-cutin[data-enter="rise"] { animation: vn-cutin-rise .36s cubic-bezier(.2, .8, .2, 1) both; }
+.vn-cutin[data-enter="eyes"] { animation: vn-cutin-wipe .16s cubic-bezier(.2, .8, .2, 1) both; }
+.vn-cutin[data-enter="eyes"] .vn-cutin-art { animation: vn-cutin-art-slide-r .5s cubic-bezier(.2, .8, .2, 1) both; }
+.vn-cutin[data-enter="eyes"] .vn-cutin-streak { animation: vn-cutin-streak .45s ease-out both; }
+.vn-cutin:is([data-enter="cut"], [data-enter="rise"], [data-enter="eyes"]) .vn-cutin-sheen { animation: vn-cutin-sheen .6s ease-out .06s both; }
+/* 消える動き（長さは conversation-cutin.js の LEAVE_MS と合わせる） */
+.vn-cutin.leave[data-leave="cut"] { animation: vn-cutin-wipe-out .16s ease-in both; }
+.vn-cutin.leave[data-leave="soft"] { animation: vn-cutin-fade-out .3s ease-in both; }
+.vn-cutin.leave[data-leave="eyes"] { animation: vn-cutin-squash .16s ease-in both; }
+.vn-cutin-dim.leave { animation: vn-cutin-fade-out .18s ease-in both; }
+.vn-cutin[data-still="true"], .vn-cutin[data-still="true"] *, .vn-cutin-dim[data-still="true"] { animation: none !important; }
+
+@keyframes vn-cutin-wipe { from { clip-path: inset(-60px 100% -60px 0); } to { clip-path: inset(-60px -60px -60px 0); } }
+@keyframes vn-cutin-wipe-out { from { clip-path: inset(-60px -60px -60px 0); opacity: 1; } to { clip-path: inset(-60px 100% -60px 0); opacity: .4; } }
+@keyframes vn-cutin-art-slide { from { transform: translateX(-34px); } to { transform: none; } }
+@keyframes vn-cutin-art-slide-r { from { transform: translateX(46px); } to { transform: none; } }
+@keyframes vn-cutin-art-sink { from { transform: translateY(-8px); } to { transform: none; } }
+@keyframes vn-cutin-sheen { 0% { opacity: 1; background-position: 130% 0; } 100% { opacity: 0; background-position: -40% 0; } }
+@keyframes vn-cutin-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes vn-cutin-fade-out { from { opacity: 1; } to { opacity: 0; } }
 @keyframes vn-cutin-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-@keyframes vn-cutin-wipe { from { transform: scaleX(0); } to { transform: none; } }
-@media (prefers-reduced-motion: reduce) { .vn-cutin { animation: none; } }
+@keyframes vn-cutin-squash { from { transform: scaleY(1); opacity: 1; } to { transform: scaleY(.04); opacity: 0; } }
+@keyframes vn-cutin-streak { from { transform: translateX(-30%); opacity: .9; } to { transform: none; opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .vn-cutin, .vn-cutin *, .vn-cutin-dim { animation: none !important; } }
