@@ -145,7 +145,8 @@ export function playRollShow(host, show) {
 
   const animate = (target, frames, options) => {
     if (!target) return null;
-    const animation = target.animate(frames, { fill: "both", ...options });
+    // 1文字の札（.c）の動きは、終わったら効果を残さない。残すと字ごとに重ね順の箱ができ、縁が隣の字の塗りにかぶる。
+    const animation = target.animate(frames, { fill: target.classList?.contains("c") ? "backwards" : "both", ...options });
     animations.push(animation);
     return animation;
   };
@@ -546,7 +547,7 @@ export function playRollShow(host, show) {
         animate(c, [{ opacity: 0, scale: "1.8" }, { opacity: 1, scale: "1" }], { duration: 200, delay: n * 40, easing: EASE.out });
         // 字が力尽きて、ばらばらに崩れ落ちる。
         animate(c, [{ translate: "0 0", rotate: "0deg" }, { translate: `${rand(-14, 14)}px ${rand(30, 70)}px`, rotate: rand(-28, 28) + "deg" }],
-          { duration: 700, delay: 760 + n * 70, easing: "cubic-bezier(.5,0,.8,.4)", composite: "add" });
+          { duration: 700, delay: 760 + n * 70, easing: "cubic-bezier(.5,0,.8,.4)", composite: "add", fill: "both" });
       });
       after(120, () => { shake(18, 560, .8); blink(["#000", "#c9d6ee", "#000", "#3b4a63"], 520, .8); sound("boom"); });
       if (!still) animate(camera, [{ rotate: "0deg" }, { rotate: "2.6deg" }], { duration: 1400, delay: 500, easing: EASE.soft });

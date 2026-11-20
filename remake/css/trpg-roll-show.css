@@ -71,6 +71,7 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-word {
   --fill: linear-gradient(180deg, #ffffff 0%, #fff6dc 45%, #e8d3a0 55%, #ffffff 100%);
   --edge: #1a0f04; --depth: #5a3a10; --stroke: .2em;
   display: inline-flex; align-items: baseline; white-space: nowrap; font-weight: 900; line-height: 1; letter-spacing: -.02em;
+  isolation: isolate; /* 縁（字の本体）は全部下、塗り（::after・z-index 1）は全部上。隣の字の縁が塗りにかぶらない */
 }
 html:root .trpg-root .trpg-roll-show .trpg-rs-word > .c {
   position: relative; display: inline-block; color: var(--edge); -webkit-text-stroke: var(--stroke) var(--edge); paint-order: stroke fill;
@@ -80,7 +81,7 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-word > .c {
 /* 「……」は字の大きさのままだと丸い粒が並ぶので、小さく詰める。 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-word > .c.dot { font-size: .5em; letter-spacing: -.12em; --stroke: .26em; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-word > .c::after {
-  content: attr(data-c); position: absolute; left: 0; top: 0; -webkit-text-stroke: 0; text-shadow: none;
+  content: attr(data-c); position: absolute; left: 0; top: 0; z-index: 1; -webkit-text-stroke: 0; text-shadow: none;
   color: transparent; background: var(--fill); -webkit-background-clip: text; background-clip: text;
 }
 
@@ -100,7 +101,7 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-head > strong {
 html:root .trpg-root .trpg-roll-show .trpg-rs-head > span { font-size: 20px; font-weight: 700; color: #f2dca6; letter-spacing: .08em; text-shadow: 0 2px 6px #000; }
 /* 目標の盾: 真鍮の六角に大きく「30」。届けば CLEAR の判、届かなければ「届かず」。 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal {
-  position: absolute; right: 56px; top: 30px; width: 150px; height: 168px; display: grid; place-content: center; justify-items: center; gap: 0; opacity: 0;
+  position: absolute; right: 40px; top: 22px; width: 176px; height: 200px; display: grid; place-content: center; justify-items: center; gap: 0; opacity: 0;
   clip-path: polygon(50% 0, 100% 22%, 100% 74%, 50% 100%, 0 74%, 0 22%);
   background: linear-gradient(160deg, #fff4c8 0%, #e2b24e 32%, #8a5a14 60%, #d9a640 82%, #fff0b8 100%);
   color: #2a1800;
@@ -109,12 +110,12 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-goal::before {
   content: ""; position: absolute; inset: 7px; clip-path: inherit; background: radial-gradient(circle at 40% 30%, #2a5a55, #0b2b2f 70%); z-index: -1;
 }
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal { isolation: isolate; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-goal > small { font-size: 14px; font-weight: 900; letter-spacing: .35em; color: #ffd76a; margin-left: .35em; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-goal > b { font-size: 76px; font-weight: 900; line-height: .95; color: #fff3c4; text-shadow: 0 4px 0 #8a5a14, 0 0 18px #ffcf4a88; font-variant-numeric: tabular-nums; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-goal > small { font-size: 13px; font-weight: 900; letter-spacing: .35em; color: #ffd76a; margin-left: .35em; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-goal > b { font-size: 70px; font-weight: 900; line-height: 1.05; color: #fff3c4; text-shadow: 0 4px 0 #8a5a14, 0 0 18px #ffcf4a88; font-variant-numeric: tabular-nums; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal > span { font-size: 15px; font-weight: 700; color: #f2dca6; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-stamp {
   position: absolute; left: 50%; top: 50%; translate: -50% -50%; rotate: -12deg; opacity: 0; padding: 4px 10px; border: 4px solid; border-radius: 6px;
-  font-size: 30px; font-weight: 900; letter-spacing: .06em; white-space: nowrap; background: #000a;
+  font-size: 24px; font-weight: 900; letter-spacing: .06em; white-space: nowrap; background: #000c;
 }
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal[data-result="clear"] .trpg-rs-stamp { color: #ffe36e; border-color: #ffe36e; text-shadow: 0 0 10px #ffb84a; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal[data-result="clear"] .trpg-rs-stamp::after { content: "CLEAR!"; }
@@ -198,20 +199,20 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="critical"] .trpg-rs
 html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="fumble"] .trpg-rs-ring { border-color: #8ea2c4; box-shadow: 0 0 30px #3b4a63; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-spark { position: absolute; left: 50%; top: 50%; height: 6px; border-radius: 3px; z-index: 3; box-shadow: 0 0 10px #fff9; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-plus {
-  position: absolute; top: 300px; translate: -50% -50%; z-index: 1; opacity: 0; font-size: 84px; font-weight: 900; line-height: 1; color: #ffd76a;
+  position: absolute; top: 300px; translate: -50% -50%; z-index: 1; opacity: 0; font-size: 70px; font-weight: 900; line-height: 1; color: #ffd76a;
   -webkit-text-stroke: 10px #1a0f04; paint-order: stroke fill; text-shadow: 0 6px 0 #5a3a10, 0 10px 14px #000a;
 }
 html:root .trpg-root .trpg-roll-show .trpg-rs-plus.a { left: 610px; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-plus.b { left: 972px; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-plus.b { left: 962px; }
 html:root .trpg-root .trpg-roll-show[data-thrown] .trpg-rs-plus.a { opacity: 1; }
 /* 補正: 真鍮の大きなチップ。誰の何の能力かを添える。 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-chip {
-  position: absolute; left: 1005px; top: 228px; z-index: 1; display: grid; place-items: center; align-content: center; gap: 0; width: 144px; height: 144px; border-radius: 50%; opacity: 0;
+  position: absolute; left: 1014px; top: 236px; z-index: 1; display: grid; place-items: center; align-content: center; gap: 0; width: 128px; height: 128px; border-radius: 50%; opacity: 0;
   color: #3a2a10; background: radial-gradient(circle at 35% 28%, #fff7d2, #e8bd5c 45%, #a7731f 80%, #6a450c);
   box-shadow: inset 0 0 0 6px #ffe39a, inset 0 0 0 11px #9c6c1c, inset 0 -8px 16px #5a3a0a88, 0 0 30px #ffcf4a55, 5px 10px 16px #000a;
 }
-html:root .trpg-root .trpg-roll-show .trpg-rs-chip > small { max-width: 108px; overflow: hidden; white-space: nowrap; font-size: 17px; font-weight: 900; letter-spacing: .04em; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-chip > b { font-size: 52px; font-weight: 900; line-height: 1; text-shadow: 0 2px 0 #fff3c4, 0 -1px 0 #6a450c; letter-spacing: -.04em; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-chip > small { max-width: 96px; overflow: hidden; white-space: nowrap; font-size: 17px; font-weight: 900; letter-spacing: .04em; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-chip > b { font-size: 46px; font-weight: 900; line-height: 1; text-shadow: 0 2px 0 #fff3c4, 0 -1px 0 #6a450c; letter-spacing: -.04em; }
 
 /* ======== ため: 「あと N 以上で成功！」の帯 ======== */
 html:root .trpg-root .trpg-roll-show .trpg-rs-need {
