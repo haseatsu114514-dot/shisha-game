@@ -1,5 +1,4 @@
-// tonari フロア営業の記号と客の影絵。コードで描く仮の絵で、Codex の絵が届いたら tonari-floor-stage.js の FLOOR_ART に
-// 登録して差し替える（依頼の内容と置き場は asset_sources/ui/tonari-floor-20261120/README.md）。
+// tonari フロア営業の記号・満足の顔・客の影絵。客の顔は tonari-floor-stage.js の FLOOR_ART に登録する。
 import { el } from "../core/util.js";
 import { buildVersioned } from "../core/asset-version.js";
 import { FLOOR_ART, artUrl, personIds } from "./tonari-floor-stage.js";
@@ -57,9 +56,21 @@ const GLYPHS = {
   markBad: '<path d="M5.5 5.5l13 13M18.500 5.500l-13 13"/>',
 };
 
+// icons.webp は8列×3行。満足の顔と、アトラスにない記号は元のSVGを使う。
+const ICON_TILE = {
+  order: 0, cook: 1, add: 2, ease: 3, thin: 4, harsh: 5, glass: 6, drink: 6, ask: 7,
+  talk: 8, bill: 9, clean: 10, alert: 11, clock: 12, coin: 13, pause: 14, shuffle: 15,
+  lamp: 16, wishFruit: 17, wishSweet: 18, wishFresh: 19, wishDeep: 20, star: 21, door: 22, anger: 23, moodMad: 23,
+};
+
 export function glyph(name, className = "") {
+  const tile = ICON_TILE[name];
   return el(`span.tf-icon${className ? "." + className : ""}`, {
     "aria-hidden": true,
+    ...(tile === undefined ? {} : {
+      dataset: { atlas: "true" },
+      style: { "--tf-icon-position": `${(tile % 8) * 100 / 7}% ${Math.floor(tile / 8) * 50}%` },
+    }),
     html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${GLYPHS[name] || GLYPHS.alert}</svg>`,
   });
 }

@@ -20,7 +20,7 @@ import { RANKS,
   MIXES, WISHES, VERBS, CALLS, MOODS, PRICE, VISITORS,
 } from "./tonari-floor-data.js";
 import { glyph, guestArt } from "./tonari-floor-art.js";
-import { FLOOR_ART, artUrl, currentStage, spotCenter } from "./tonari-floor-stage.js";
+import { FLOOR_ART, artUrl, currentStage, floorArtPath, spotCenter } from "./tonari-floor-stage.js";
 
 /**
  * 検査用。manual を立てると実時間では進まず、api.tick(n) で刻みを送る。
@@ -70,9 +70,14 @@ function wishChip(id) {
 /** ミックスの属性の印: メイン（大きい。その気分の客に ◎）と、サブ（小さい。○）。 */
 function attrBadge(id) {
   const { main, sub } = MIXES[id];
+  const part = (attr, secondary = false) => {
+    const sprite = artUrl(floorArtPath(`attr-${attr}${secondary ? "-sub" : ""}`));
+    return el(secondary ? "i.tf-attr-sub" : "i.tf-attr-main", {
+      style: { "--c": WISH[attr].color, "--tf-attr-art": `url("${buildVersioned(sprite)}")` },
+    }, [glyph(WISH_ICON[attr])]);
+  };
   return el("span.tf-attr", { role: "img", "aria-label": `${WISH[main].label}がメイン${sub ? `、${WISH[sub].label}がサブ` : ""}`, dataset: { main, sub: sub || "" } }, [
-    el("i.tf-attr-main", { style: { "--c": WISH[main].color } }, [glyph(WISH_ICON[main])]),
-    sub ? el("i.tf-attr-sub", { style: { "--c": WISH[sub].color } }, [glyph(WISH_ICON[sub])]) : null,
+    part(main), sub ? part(sub, true) : null,
   ]);
 }
 
@@ -261,6 +266,18 @@ export function runTonariFloor({
     const layer = el("div.tf-layer");
     const banner = el("div.tf-banner", { "aria-hidden": true });
     const cutinBand = el("div.tf-cutin", { "aria-hidden": true });
+    // 帯の表示は短いので、開店前に画像の読み込みを始める。
+    const cutinImages = new Map();
+    for (const [name, path] of Object.entries(cutins || {})) {
+      const url = artUrl(path);
+      if (!url) continue;
+      const src = /^(data:|blob:)/.test(url) ? url : buildVersioned(url);
+      const image = el("img.tf-cutin-art", { src, alt: "", decoding: "async", draggable: false });
+      image.addEventListener("load", () => {
+        if (image.parentNode === cutinBand) cutinBand.dataset.art = "true";
+      }, { once: true });
+      cutinImages.set(name, image);
+    }
     const flash = el("div.tf-flash", { "aria-hidden": true });
     const announce = el("p.tf-sr", { "aria-live": "polite", "aria-atomic": "true" });
     const host = el("section.tonari-floor", { "aria-label": "tonari フロア営業", dataset: {
@@ -380,9 +397,9 @@ export function runTonariFloor({
     }
     // 画面を横切る帯。art＝絵の登録名（open / fever / close）。絵が届いていれば、帯の中に敷く
     function cutin(title, sub, kind = "", art = "") {
-      const src = artUrl(cutins?.[art]);
-      cutinBand.replaceChildren(src ? el("img.tf-cutin-art", { src, alt: "", decoding: "async", draggable: false }) : "", el("b", { text: title }), sub ? el("small", { text: sub }) : "");
-      cutinBand.dataset.art = String(!!src);
+      const image = cutinImages.get(art);
+      cutinBand.replaceChildren(image || "", el("b", { text: title }), sub ? el("small", { text: sub }) : "");
+      cutinBand.dataset.art = String(!!image?.naturalWidth);
       cutinBand.dataset.kind = kind;
       cutinBand.dataset.on = "false";
       void cutinBand.offsetWidth; // 同じ帯を続けて出す時に、動きを最初からやり直す
