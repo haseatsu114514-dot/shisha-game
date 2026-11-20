@@ -128,8 +128,9 @@ await suite("kannondo-day3", async (check) => {
       assert.equal(grant.starter, true);
       assert.equal(grant.taught, false);
       assert.equal(grant.done, false);
-      assert.equal(grant.earned, 6);
-      assert.equal(grant.fire, 6);
+      // 最初の火種は「手元が3つになるまで」（SBD153。前は6つ）
+      assert.equal(grant.earned, 3);
+      assert.equal(grant.fire, 3);
 
       // Real document reload during the board instructions: grant is checkpointed,
       // the lesson remains pending, and no second trip/second reward is finalized.
@@ -141,7 +142,7 @@ await suite("kannondo-day3", async (check) => {
       assert.deepEqual(await snapshot(page, true), grant);
       const node = await useTutorial(page, press, label);
       const after = await snapshot(page, true);
-      assert.deepEqual(after, { ...start, fire: 5, earned: 6, nodes: [node], starter: true, taught: true, intro: true, done: true });
+      assert.deepEqual(after, { ...start, fire: 2, earned: 3, nodes: [node], starter: true, taught: true, intro: true, done: true });
 
       await press(t("hud-menu"));
       await page.locator(t("menu-close")).waitFor();
@@ -194,7 +195,7 @@ await suite("kannondo-day3", async (check) => {
     await page.locator(map).waitFor();
     const left = await snapshot(page, true);
     assert(left.done && left.starter && !left.taught);
-    assert.equal(left.fire, 6);
+    assert.equal(left.fire, 3);
     await openVisit(page, press);
     await displayedTemple(page, overcastScene);
     await press(t("kannon-reflect"));

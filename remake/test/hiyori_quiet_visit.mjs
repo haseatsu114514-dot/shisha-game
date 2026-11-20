@@ -212,6 +212,39 @@ await check('after tonari return, the charm visit plays once and repeats resume'
   assert.equal(s.flags._hiyori_repeat_count,1);
   assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),false);
 });
+// #3097 PR-C: 第2章の普段の相席2本（ch2_home.json）。第2章のいつもの相席の代わりに一本ずつ・一度だけ。巡回は進めない。
+// ひびの回の後だけ。第1章・台本の未読込では出さない。途中でやめたら既読にしない
+await check('chapter 2 everyday seats replace the repeat once each, without advancing it',async f=>{
+  const s=f.core.state,p=f.spots.spotById('naru'),ids=[...f.hiyori.HIYORI_CH2_TALKS];
+  assert.deepEqual(ids,['ch2_hiyori_health_check','ch2_hiyori_capsule_toy']);
+  s.chapter=2;f.setPlay(async()=>done);
+  assert.equal(f.hiyori.hiyoriChapterTalkDue(),null,'not before the chapter 2 scripts are loaded');
+  for(const d of JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch2_home.json',import.meta.url))).dialogues)if(ids.includes(d.dialogue_id))f.db.dialogues[d.dialogue_id]=d;
+  delete s.flags._hiyori_cracks_done;assert.equal(f.hiyori.hiyoriChapterTalkDue(),null,'only after the cracks scene');s.flags._hiyori_cracks_done=true;
+  s.chapter=1;assert.equal(f.hiyori.hiyoriChapterTalkDue(),null,'chapter 2 only');s.chapter=2;
+  // 中断は未読・好感度なし
+  f.setPlay(async()=>({cancelled:true,visited:[]}));
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),false);
+  assert.equal(s.flags[`_talk_seen_${ids[0]}`],undefined);assert.equal(s.affinity.hiyori||0,0);assert.equal(s.flags._hiyori_encounter_day,undefined);
+  f.setPlay(async()=>done);
+  for(const id of ids){
+    const before=s.affinity.hiyori||0;
+    assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);
+    assert.equal(f.plays.at(-1)[0],id);assert.equal(s.flags[`_talk_seen_${id}`],true);
+    assert(s.affinity.hiyori>before,'the same affinity as a usual seat');
+    assert.equal(s.flags._hiyori_repeat_count,undefined,'the repeat rotation does not advance');
+    s.day++;
+  }
+  assert.equal(f.hiyori.hiyoriChapterTalkDue(),null);
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);
+  assert.equal(f.plays.at(-1)[0],'hiyori_shop_repeat_0','then the usual seats resume from the start');
+  assert.equal(s.flags._hiyori_repeat_count,1);
+  // 再会の後の一度きりの回（shop_charm）が先。第2章の相席はその次の相席で読む
+  for(const id of ids)delete s.flags[`_talk_seen_${id}`];
+  s.flags._hiyori_tonari_return_done=true;s.day++;
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);assert.equal(f.plays.at(-1)[0],'hiyori_shop_charm');
+  s.day++;assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);assert.equal(f.plays.at(-1)[0],ids[0]);
+});
 // #3693: 締めくくりを友人として迎えた後は、相席・約束の席のいつもの小会話の代わりに♥5後の場面を一度ずつ。巡回は進めない。
 // 途中でやめた約束の席は既読にしない。台本を読めない時はいつもの小会話。恋人には出さない
 await check('bond-after scenes replace the shop and promised-seat repeats after a friend finale',async f=>{
