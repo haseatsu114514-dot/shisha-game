@@ -47,6 +47,8 @@ html:root[data-density="phone"] body:not(:root) .pull-btns.with-options .btn:not
 }
 
 /* ---------------------------------------------------------------- 確認ダイアログ・閉じる系 */
+/* #3203: 縮小された舞台に全画面のぼかしを掛けると、地図とHUDが四隅へ鏡写しになる場合がある。暗幕の色だけで区切る。 */
+html:root[data-density="phone"] #modal > .modal-backdrop { backdrop-filter: none; }
 html:root[data-density="phone"] body:not(:root) .modal-body { font-size: var(--phone-text); line-height: 1.6; }
 html:root[data-density="phone"] body:not(:root) .modal-actions { gap: var(--phone-gap); }
 html:root[data-density="phone"] body:not(:root) .dmenu .dm-close { min-height: var(--phone-tap); font-size: var(--phone-text); }
