@@ -18,10 +18,11 @@ const chapterNightSource = chapterSource.slice(start, end);
 let state = {};
 const calls = [], saves = [];
 let actionEnds = 0, reportMode = 'normal';
+const destinations = [], tonariPicks = [];
 let coldDraws = 0;
 const noop = () => {}, asyncNoop = async () => {};
 const unexpected = async () => { throw new Error('Unexpected unrelated chapter event'); };
-const spots = { minto: { id: 'minto' }, adam: { id: 'adam' }, c_station: { id: 'c_station' } };
+const spots = { minto: { id: 'minto' }, adam: { id: 'adam' }, c_station: { id: 'c_station' }, tonari: { id: 'tonari', kind: 'tonari' } };
 const chapterDialogues = JSON.parse(await fs.readFile(new URL('../../data/dialogue/ch1_main.json', import.meta.url), 'utf8')).dialogues;
 const DB = { flavorById: {}, lime: [], dialogues: Object.fromEntries(chapterDialogues.map(d => [d.dialogue_id, d])) };
 const originalSalary = structuredClone(DB.dialogues.ch1_salaryman_regular);
@@ -58,9 +59,10 @@ const overrides = {
   paidAction: async fn => ({ value: await fn(), spent: 0 }), play,
   chooseSpot: async opts => {
     assert(calls.length < 100, 'Calendar did not progress');
-    calls.push({ type: 'map', pin: opts.guide?.pin }); return opts.guide?.pin || 'rest';
+    calls.push({ type: 'map', pin: opts.guide?.pin }); return opts.guide?.pin || destinations.shift() || 'rest';
   },
   spotById: id => spots[id] || { id, kind: 'rest', stamina: 0 },
+  tonariMenu: async () => tonariPicks.shift() || null,
   visitChar: async id => { state.story[id] = (state.story[id] || 0) + 1; calls.push({ type: 'visit', id }); },
   // This ports-only fixture checks the night flow around the shared rival handoff.
   deliverToRival: async ({ id }) => {
@@ -80,8 +82,9 @@ const overrides = {
   invitationCost: () => 0, invitationGrowth: () => ({}), isFriendEvent: () => false,
   isFinaleEvent: () => false, CHAR_STAT: {}, storeInvitationSpot: () => false,
   openingStatus: () => ({ ok: true }), VISIT_BG: {}, currentCondition: () => ({ health: 'green' }),
-  // #2213 B03/B02: the DAY2 fixed shift runs its story hook (the regular's scene) as that shift's customer.
-  doBaito: async ({ story } = {}) => { calls.push({ type: 'shift', day: state.day, slot: state.slot }); await story?.(); },
+  // #3819: there is no DAY2 fixed shift. The next shift the player takes runs its story hook (the regular's scene)
+  // as that shift's customer.
+  doBaito: async ({ story } = {}) => { calls.push({ type: 'shift', day: state.day, slot: state.slot, story: !!story }); await story?.(); },
 };
 const context = vm.createContext({
   console, DB, play, TOURNAMENT_DAY: 14,
@@ -129,6 +132,7 @@ function reset({ day = 2, slot = 0, flags = {}, money = 10000, stamina = 80 } = 
     flags: { _errand_scout_done: true, _c_station_registered: true, [`_morning_${day}`]: true, ...flags },
     story: {}, met: {}, visitedDay: {}, stats: {}, inbox: [], deferredNightEvents: [], restDay: null });
   calls.length = 0; saves.length = 0; actionEnds = 0; coldDraws = 0; reportMode = 'normal';
+  destinations.length = 0; tonariPicks.length = 0;
 }
 const countScene = id => calls.filter(x => x.type === 'scene' && x.id === id).length;
 const countArrival = () => calls.filter(x => x.type === 'beat' && x.text === salary.beat).length;
@@ -151,19 +155,31 @@ const completed = { _delivery_batch_started: true, _delivery_minto_told: true, _
   _delivery_minto_done: true, _delivery_adam_done: true };
 const run = (nightEvents = events) => calendar.namespace.runDaily({ untilDay: state.day + 1, nightEvents });
 
-// #2213 B02/B03: a fresh DAY2 night is the fixed shift; the regular's scene is that shift's customer,
-// then the free deliveries on the way home and one report. No separate night visit remains.
+// #3819: a fresh DAY2 delivers on the way from the registration, reports once, and keeps both slots free.
+// There is no fixed shift and no night visit for the regular: his story waits for the next shift (or DAY8's night).
 reset();
 await run();
 assert.equal(countScene(reportId), 1);
-assert.equal(countScene(salaryId), 1, 'Existing customer conversation was lost');
-assert.equal(countArrival(), 0, 'The fixed shift must not add a second night arrival');
-assert.deepEqual(calls.filter(x => x.type === 'shift').map(x => [x.day, x.slot]), [[2, 1]]);
-const shiftAt = calls.findIndex(x => x.type === 'shift'), salaryAt = calls.findIndex(x => x.id === salaryId);
-assert(shiftAt < salaryAt && salaryAt < calls.findIndex(x => x.type === 'map' && x.pin === 'minto'));
+assert.equal(countScene(salaryId), 0, 'The regular is not read on DAY2 without a shift');
+assert.equal(countArrival(), 0, 'No night visit is forced on DAY2');
+assert.deepEqual(calls.filter(x => x.type === 'shift'), []);
 assert(calls.findIndex(x => x.type === 'visit' && x.id === 'adam') < calls.findIndex(x => x.id === reportId));
-assert.equal(state.flags._ev_salaryman, true);
+assert.equal(calls.find(x => x.id === reportId).slot, 0, 'The report comes before the free day');
+assert.equal(state.flags._ev_salaryman, undefined);
 assert.equal(state.flags._night_event_day, undefined);
+assert.deepEqual(state.deferredNightEvents.map(entry => entry.id), [salary.id], 'The regular stays queued');
+assert.equal(state.money, 14000); assert.equal(state.stamina, 94); assert.equal(actionEnds, 2);
+assert.equal(state.day, 3); assert.equal(state.slot, 0);
+console.log('delivery night: fresh DAY2 delivers after the registration, no fixed shift, regular queued PASS');
+
+// The next shift the player takes (DAY3, free noon) reads the regular as that shift's customer. No night arrival.
+reset({ day: 3, flags: { ...completed, _delivery_report_done: true } });
+state.deferredNightEvents = [{ id: salary.id, chapter: 1, originalDay: 2, deferredOn: 1, reason: 'scheduled' }];
+destinations.push('tonari'); tonariPicks.push('baito');
+await run();
+assert.deepEqual(calls.filter(x => x.type === 'shift').map(x => [x.day, x.slot, x.story]), [[3, 0, true]]);
+assert.equal(countScene(salaryId), 1); assert.equal(countArrival(), 0);
+assert.equal(state.flags._ev_salaryman, true);
 assert.equal(state.deferredNightEvents.length, 0);
 {
   const actual = calls.find(x => x.type === 'scene' && x.id === salaryId).dialogue;
@@ -173,9 +189,22 @@ assert.equal(state.deferredNightEvents.length, 0);
   assert.deepEqual(actual.branches, originalSalary.branches);
   assert.deepEqual(DB.dialogues.ch1_salaryman_regular, originalSalary, 'Do not mutate shared dialogue data');
 }
-assert.equal(state.money, 14000); assert.equal(state.stamina, 94); assert.equal(actionEnds, 2);
-assert.equal(state.day, 3); assert.equal(state.slot, 0);
-console.log('delivery night: fresh DAY2 fixed shift carries the regular, then deliveries and report PASS');
+// A later shift, once the regular is read, is an ordinary shift.
+reset({ day: 4, flags: { ...completed, _delivery_report_done: true, _ev_salaryman: true } });
+destinations.push('tonari'); tonariPicks.push('baito');
+await run();
+assert.deepEqual(calls.filter(x => x.type === 'shift').map(x => [x.day, x.story]), [[4, false]]);
+assert.equal(countScene(salaryId), 0);
+// Without any shift through DAY7, the regular is read on DAY8's night (before DAY10's follow-up).
+for (const day of [7, 8]) {
+  reset({ day, slot: 2, flags: { ...completed, _delivery_report_done: true } });
+  state.deferredNightEvents = [{ id: salary.id, chapter: 1, originalDay: 2, deferredOn: 1, reason: 'scheduled' }];
+  await run();
+  assert.equal(countScene(salaryId), day === 8 ? 1 : 0, `DAY${day}`);
+  assert.equal(countArrival(), day === 8 ? 1 : 0);
+}
+assertSalaryOpening(false);
+console.log('delivery night: the regular joins the next shift, or DAY8 night without one PASS');
 // A legacy save that reported before reading the regular (old DAY2 flow).
 const reportCheckpoint = { chapter: 1, day: 2, slot: 2, money: 14000, stamina: 60,
   flags: { _errand_scout_done: true, _c_station_registered: true, _morning_2: true, ...completed, _delivery_report_done: true },
@@ -183,16 +212,15 @@ const reportCheckpoint = { chapter: 1, day: 2, slot: 2, money: 14000, stamina: 6
 
 reset({ flags: { _delivery_minto_told: true, _delivery_adam_told: true } });
 await run();
-assert.equal(countScene(reportId), 0); assert.equal(countScene(salaryId), 1); assert.equal(countArrival(), 1);
+assert.equal(countScene(reportId), 0); assert.equal(countScene(salaryId), 0); assert.equal(countArrival(), 0);
+assert.equal(state.flags._delivery_minto_done && state.flags._delivery_adam_done, true, 'Legacy deliveries finish on the way home');
 assert.equal(state.money, 14000); assert.equal(actionEnds, 2);
-assertSalaryOpening(false);
-console.log('delivery night: legacy non-batch arrival retained PASS');
+console.log('delivery night: legacy non-batch deliveries on the way home, regular waits PASS');
 
 reset(); replaceState(structuredClone(reportCheckpoint));
 await run();
-assert.equal(countScene(reportId), 0); assert.equal(countScene(salaryId), 1); assert.equal(countArrival(), 1);
+assert.equal(countScene(reportId), 0); assert.equal(countScene(salaryId), 0); assert.equal(countArrival(), 0);
 assert.equal(state.money, 14000); assert.equal(actionEnds, 0);
-assertSalaryOpening(false);
 const finished = structuredClone(state);
 replaceState(structuredClone(finished)); calls.length = 0;
 await calendar.namespace.runDaily({ untilDay: finished.day, nightEvents: events });
@@ -200,25 +228,27 @@ assert.equal(countScene(reportId), 0); assert.equal(countScene(salaryId), 0);
 assert.deepEqual(state, finished);
 console.log('delivery night: real saved report and completed-event checkpoints do not replay PASS');
 
-reset({ day: 3, slot: 2, flags: completed, money: 14000, stamina: 60 });
+reset({ day: 8, slot: 2, flags: completed, money: 14000, stamina: 60 });
 state.deferredNightEvents = [{ id: salary.id, chapter: 1, originalDay: 2, deferredOn: 2, reason: 'rest' }];
 await run();
 assert.equal(countScene(reportId), 1); assert.equal(countScene(salaryId), 1); assert.equal(countArrival(), 0);
-assert.equal(state.money, 14000); assert.equal(actionEnds, 0); assert.equal(state.flags._night_event_day, '1:3');
+assert.equal(state.money, 14000); assert.equal(actionEnds, 0); assert.equal(state.flags._night_event_day, '1:8');
 assertSalaryOpening(true);
 console.log('delivery night: delayed report joins the actual deferred night plan PASS');
 
-reset({ slot: 2, flags: { ...completed, _private_night_day: 2 }, money: 14000, stamina: 60 });
+reset({ day: 8, slot: 2, flags: { ...completed, _private_night_day: 8 }, money: 14000, stamina: 60 });
+state.deferredNightEvents = [{ id: salary.id, chapter: 1, originalDay: 2, deferredOn: 1, reason: 'scheduled' }];
 await run();
 assert.equal(countScene(reportId), 1); assert.equal(countScene(salaryId), 0);
 assert.equal(state.deferredNightEvents.length, 1, 'Booked night must preserve the deferred customer event');
-state.slot = 2; state.flags._morning_3 = true; calls.length = 0;
+state.slot = 2; state.flags._morning_9 = true; calls.length = 0;
 await run();
 assert.equal(countScene(reportId), 0); assert.equal(countScene(salaryId), 1); assert.equal(countArrival(), 1);
 assertSalaryOpening(false);
 console.log('delivery night: same-visit cue never persists into the following day PASS');
 
-reset({ slot: 2, flags: completed, money: 14000, stamina: 60 });
+reset({ day: 8, slot: 2, flags: completed, money: 14000, stamina: 60 });
+state.deferredNightEvents = [{ id: salary.id, chapter: 1, originalDay: 2, deferredOn: 1, reason: 'scheduled' }];
 await run({ 2: { ...salary, pin: 'c_station' } });
 assert.equal(countScene(reportId), 1); assert.equal(countScene(salaryId), 1); assert.equal(countArrival(), 1);
 assertSalaryOpening(false);
@@ -238,14 +268,12 @@ for (const mode of ['cancel', 'load']) {
 
 reset({ stamina: 15 });
 await run();
-// #2213 B01/B03: the free deliveries cost no stamina; only the fixed shift warns, and it cannot be skipped.
-const shiftWarnings = calls.filter(x => x.type === 'stamina-warning');
-assert.equal(shiftWarnings.length, 1, 'The mandatory shift warns before spending stamina');
-assert(shiftWarnings.every(x => x.options.length === 1 && x.options[0].value === true));
-assert.equal(calls.filter(x => x.type === 'shift').length, 1, 'The fixed shift still happens');
+// #2213 B01・#3819: the free deliveries cost no stamina, and DAY2 has no mandatory shift to warn about.
+assert.deepEqual(calls.filter(x => x.type === 'stamina-warning'), [], 'No forced action warns on DAY2');
+assert.deepEqual(calls.filter(x => x.type === 'shift'), [], 'No fixed shift on DAY2');
 assert.equal(state.flags._delivery_minto_done && state.flags._delivery_adam_done, true, 'Both deliveries still finish');
-assert.equal(coldDraws, 1, 'The mandatory shift still receives the normal cold-risk draw');
-console.log('delivery night: red stamina warns without cancelling the fixed shift or cold draws PASS');
+assert.equal(state.stamina, 29, 'Deliveries spend no stamina (15 + 14 from sleep)');
+console.log('delivery night: red stamina on DAY2 has no forced shift, deliveries still finish PASS');
 
 for (const afterClose of [false, true]) {
   reset({ slot: afterClose ? 2 : 0, flags: { ...completed, _delivery_report_done: true }, stamina: 15 });

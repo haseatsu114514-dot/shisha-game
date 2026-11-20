@@ -2490,6 +2490,74 @@
       ]
     },
     {
+      "id": "lime_ch2_sumi_commute_tonari",
+      "sender": "sumi",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch2_commute_tonari",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "電車で店の名前を出したらしいな"
+        },
+        {
+          "sender": "sumi",
+          "text": "聞かれたなら、それでいい。こっちから言って回るなよ"
+        },
+        {
+          "sender": "sumi",
+          "text": "来たら、お前が出ろ。顔は覚えてるな"
+        }
+      ],
+      "replies": [
+        {
+          "text": "スーツの人でした",
+          "response": "スーツなら、電車に何十人もいる。顔を見とけ",
+          "affinity": 1
+        },
+        {
+          "text": "来たら、俺が作ります",
+          "response": "おう。名前で来た客を、名前だけで帰すなよ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch2_tsumugi_train_window",
+      "sender": "tsumugi",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch2_commute_window_sent",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おはようございます。電車の窓の写真、届きました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "光が横に流れるのは、止まってる窓じゃ見られない線ですね"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……資料に、なりました。今日、少しだけ描いてみます"
+        }
+      ],
+      "replies": [
+        {
+          "text": "描けたら見たい",
+          "response": "……描けたら、です。線が、まだ揺れてるので",
+          "affinity": 2
+        },
+        {
+          "text": "また撮ったら送るね",
+          "response": "はい。……ぶれてる写真のほうが、好きです",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_ageha_ch2_goodday",
       "sender": "ageha",
       "chapter": 2,
@@ -2790,6 +2858,74 @@
         }
       ],
       "chapter": 1
+    },
+    {
+      "id": "lime_ch2_samechan_resting_shark",
+      "sender": "samechan",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_talk_seen_ch2_samechan_resting_shark",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "図鑑の続きじゃ。ネムリブカは、夜になると岩場を出て、狩りに行くのじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "昼のうちにちゃんと休んでおるから、夜に動けるのじゃぞ。……お主もじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "「勇者の帳面は、角を折らずに運んだ。礼はいらぬ」……と、コロちゃんが申しておる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "今日は早めに寝ます",
+          "response": "うむ。それでこそ、ネムリブカの仲間じゃ",
+          "affinity": 2
+        },
+        {
+          "text": "図鑑、今度見せてください",
+          "response": "うむ！ 次は、寝顔のよいサメの頁からじゃ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_ch2_sumi_salaryman",
+      "sender": "sumi",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_talk_seen_ch2_shift_talk_salaryman",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "この前の鉄仮面さんの席、片づけたのはお前だったな"
+        },
+        {
+          "sender": "sumi",
+          "text": "ホースの掛け方、見たか"
+        },
+        {
+          "sender": "sumi",
+          "text": "顔に出ねえ客ほど、手元と息に出る。覚えとけ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ちゃんと掛けてありました",
+          "response": "おう。あれも、あの人の「ごちそうさん」だ",
+          "affinity": 2
+        },
+        {
+          "text": "息、もっと見るようにします",
+          "response": "それでいい。見すぎて、手を止めるなよ",
+          "affinity": 1
+        }
+      ]
     },
     {
       "id": "lime_samechan_opening",
@@ -3821,6 +3957,35 @@
           "affinity": 1
         }
       ]
+    },
+    {
+      "id": "lime_wang_tonari_visit",
+      "important": true,
+      "sender": "master_hookah",
+      "chapter": 5,
+      "region": "home",
+      "trigger_condition": "ch5_started",
+      "trigger_day": 6,
+      "type": "invitation",
+      "time_slot": "noon",
+      "reminder_spot": "tonari",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "日本に着いた。本店の用の途中で、少しだけ寄り道ができた"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "今日の昼、tonariへ寄ってもいいかな。一台、客として座りたい"
+        }
+      ],
+      "accept_event": "ch5_wang_tonari_visit",
+      "accept_text": "お待ちしてます",
+      "decline_response": {
+        "sender": "master_hookah",
+        "text": "分かった。日本には、もう少しいる。また聞くよ"
+      },
+      "reminder_text": "まだ日本にいる。昼のtonariに、寄ってもいいかな"
     },
     {
       "id": "lime_taiyo_01",

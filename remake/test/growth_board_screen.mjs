@@ -165,26 +165,27 @@ await closeScenario(scenario);
 Object.assign(g, { nodes: [], paid: {}, hidane: { any: 20, body: 0, sense: 0, wisdom: 0 }, earned: 20, target: "K07" });
 s.chapter = 2;
 scenario = (await openScenario()).done;
-assert.match(targetLine(), /火種11・色の台座1（色火あと1）/);
+// 「空気を読む」は v14（SBD149）で色の台座のすぐ隣へ（授業と入れ替え）: 紋から 能力3＋台座1＋スキル5＝火種9
+assert.match(targetLine(), /火種9・色の台座1（色火あと1）/);
 root.querySelector('[data-test="board-towards"]').click();
 assert.deepEqual(["B3", "B6", "B9"].map(id => button(id).dataset.status), ["pending", "pending", "pending"]);
 assert.equal(whiteFire(), 17);
-assert.match(targetLine(), /火種8・色の台座1（色火あと1）・次は色火が足りない/);
+assert.match(targetLine(), /火種6・色の台座1（色火あと1）・次は色火が足りない/);
 button("B9").click(); root.querySelector('[data-test="board-undo"]').click();
 assert.equal(whiteFire(), 18, "Undo returns the provisional payment");
 button("K07").click();
-assert.match(targetLine(), /火種9・色の台座1（色火あと1）/);
+assert.match(targetLine(), /火種7・色の台座1（色火あと1）/);
 root.querySelector('[data-test="board-towards"]').click();
 root.querySelector('[data-test="board-decide"]').click(); await scenario;
 assert.deepEqual(g.nodes, ["B3", "B6", "B9"], "The already-paid path stays committed");
 scenario = (await openScenario()).done;
 assert.equal(whiteFire(), 17);
-assert.match(targetLine(), /火種8・色の台座1（色火あと1）/);
+assert.match(targetLine(), /火種6・色の台座1（色火あと1）/);
 await closeScenario(scenario);
 
 s.chapter = 1; g.ringsOpen = 1;
 scenario = (await openScenario()).done;
-assert.match(targetLine(), /火種8・色の台座1（色火あと1）・次は結界の先/);
+assert.match(targetLine(), /火種6・色の台座1（色火あと1）・次は結界の先/);
 await closeScenario(scenario);
 
 Object.assign(g, { nodes: [], paid: {}, hidane: { any: 20, body: 0, sense: 2, wisdom: 0 }, earned: 20, target: "M-S2" });
@@ -195,7 +196,7 @@ assert.match(targetLine(), /次は授業の錠/);
 await closeScenario(scenario);
 
 Object.assign(g, { nodes: ["B3", "B6", "B9"], paid: { B3: { any: 1 }, B6: { any: 1 }, B9: { any: 1 } },
-  hidane: { any: 17, body: 0, sense: 0, wisdom: 0 }, earned: 198, target: "K07" });
+  hidane: { any: 17, body: 0, sense: 0, wisdom: 0 }, earned: 204, target: "K07" });
 scenario = (await openScenario()).done;
 assert.match(targetLine(), /色の台座1（白火も可）/);
 button("BG1").click();
@@ -205,7 +206,7 @@ button("K07").click(); root.querySelector('[data-test="board-towards"]').click()
 assert.equal(button("K07").dataset.status, "pending", "The capped white fire crosses the gate");
 await closeScenario(scenario);
 
-Object.assign(g, { nodes: [], paid: {}, hidane: { any: 0, body: 0, sense: 13, wisdom: 0 }, earned: 198, target: null });
+Object.assign(g, { nodes: [], paid: {}, hidane: { any: 0, body: 0, sense: 13, wisdom: 0 }, earned: 204, target: null });
 scenario = (await openScenario()).done;
 button("B3").click();
 assert.equal(button("B3").dataset.status, "available");

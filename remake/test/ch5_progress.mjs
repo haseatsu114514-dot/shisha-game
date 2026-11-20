@@ -3,8 +3,9 @@ import { readFileSync } from "node:fs";
 import { newState } from "../js/core/state.js";
 import { selectStoryEnding } from "../js/core/story-routes.js";
 import { chapterDay, relationshipElapsedDay } from "../js/core/chapter-clock.js";
+import { invitationVisitSpot, visitReminderSpot } from "../js/daily/invitations.js";
 import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SCENES, CH5_MATCH_SCENES, CH5_AFTERMATH,
-  CH5_ENDING_IDS, CH5_SCENE_FILES, canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress,
+  CH5_ENDING_IDS, CH5_SCENE_FILES, CH5_GUEST_VISITS, canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveEndingContext, beginChapterFiveFinale,
   completeChapterFiveScene, recordChapterFiveSecondCup, chapterFiveSecondCupVotes, chapterFiveVoteTally,
@@ -1206,6 +1207,28 @@ for (const [base, change] of [
     if (line.speaker) assert(!/。$/.test(line.text), `${id}: ${line.text}`);
     if (line.speaker === "mashiro") assert(!/私|あたし/.test(line.text), `${id}: ${line.text}`);
   }
+}
+
+// ---- 日本へ寄る人の tonari の一台（#4010）: 自由行動の並びに入れず、本人のLIMEの誘いを受けた昼に tonari で読む ----
+{
+  const scenes = Object.fromEntries(readData("dialogue/ch5_main").dialogues.map(d => [d.dialogue_id, d]));
+  const lime = readData("lime_messages").messages;
+  for (const [who, scene] of Object.entries(CH5_GUEST_VISITS)) {
+    assert(scenes[scene]?.lines?.length, `${scene}: 台本`);
+    assert(CH5_SCENE_FILES.ch5_main.includes(scene), `${scene}: 第5章で読み込む`);
+    assert(!CH5_FREE_SCENES.some(entry => entry.id === scene), `${scene}: 勝負までの自由場面の並びは変えない`);
+    const invite = lime.find(m => m.accept_event === scene);
+    assert.equal(invite?.sender, who, `${scene}: 本人から誘う`);
+    assert.deepEqual([invite.type, invite.chapter, invite.region, invite.time_slot], ["invitation", 5, "home", "noon"]);
+    assert.equal(visitReminderSpot(invite), "tonari");
+    assert.equal(invitationVisitSpot({ event: scene }, invite), "tonari", "約束の行き先は tonari");
+    assert(scenes[scene].lines.some(line => line.speaker === who));
+  }
+  // 王煙楼: 約束（段階3でLIMEを交換）を聞いた人にだけ届く。lime_wang_08（4日目）の「寄る日を考えよう」の後
+  const wang = lime.find(m => m.accept_event === CH5_GUEST_VISITS.master_hookah);
+  assert(wang.trigger_condition === "ch5_started" && wang.trigger_day > lime.find(m => m.id === "lime_wang_08").trigger_day);
+  const body = JSON.stringify(scenes[CH5_GUEST_VISITS.master_hookah].lines);
+  assert.doesNotMatch(body, /ライチ|シェイク|先生/, "前夜祭の味・師弟の話は持ち込まない");
 }
 
 console.log("PASS: Chapter 5 runner state keeps the road to the SHISHA-9000 finale in order");

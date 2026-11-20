@@ -1,7 +1,7 @@
 import { shiftBasePay, shiftPayNote } from "../core/shift-pay.js";
 import { CHARM_BONUS } from "../core/stat-step-tables.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
-import { callingSalesBonus } from "../core/growth-effects.js";
+import { callingSalesBonus, growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
 import { on } from "../core/bus.js";
 import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
@@ -176,7 +176,9 @@ async function baitoShift({ called, story, owner, signal }) {
   const extra = called ? CALLED_BONUS : 0;
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
   const basePay = shiftBasePay(owner);
-  const pay = basePay + bonus + extra + rainPay + condition.shiftBonus + callingBonus;
+  // 仕事が早い（心得の盤のスキル K27。SBD154）: 基本の日当の1割を上乗せ
+  const quickPay = growthSkill(owner, "K27") ? Math.round(basePay * SKILL_TUNING.baitoPay) : 0;
+  const pay = basePay + bonus + extra + rainPay + condition.shiftBonus + callingBonus + quickPay;
   await shiftClose();
   const closing = state.chapter >= 5 ? { lines: [
     { speaker: "", face: "", text: "今日の仕事を終えて、手取りを帳面に記した。" },
@@ -349,6 +351,8 @@ export const CH2_SHIFT_TALKS = Object.freeze([
   { id: "ch2_shift_talk_three_shops", when: (s) => !!(s.met?.ageha && s.met?.kumicho && s.met?.rei) },
   // DAY6の「しばらく飯はうちで食ってけ」の後
   { id: "ch2_shift_talk_supper", when: (s) => !!s.flags?._ch2_read_ch2_lingering_smell },
+  // #3097 PR-I: 鉄仮面さんの「炭、きれいだった」（DAY6の二人の炭替え）の続き。顔に出ない客の息を見る
+  { id: "ch2_shift_talk_salaryman", when: (s) => !!s.flags?._ch2_read_ch2_coal_together },
   { id: "ch2_shift_talk_receipts", when: (s) => (ch2DayOf(s) ?? 3) >= 3 },
   { id: "ch2_shift_talk_student", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
   // つむぎが店にいる時だけ。DAY13（つむぎの色の夜）とは別の日

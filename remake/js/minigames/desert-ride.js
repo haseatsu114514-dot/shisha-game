@@ -12,6 +12,7 @@ import { BOOST, EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickC
 import { TIERS, TIER_LABEL } from "../core/play-tiers.js";
 import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose, spinFrames } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
+import { installRotateGuard, rotateGuarded } from "../core/rotate-guard.js";
 import { withMinigameLoading } from "./minigame-loading.js";
 
 // ブーストは人物を包む炎のオーラ・砂煙・周辺の速度線と効果音で伝える。曲のテンポは変えない。
@@ -253,6 +254,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = null, speedUp = 1 } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
+  if (signal?.aborted) return Promise.resolve({ results: [], practiced: false });
+  installRotateGuard(); // 本編では起動時、単体試遊ではここで回転案内を見張る。
   const bgmBefore = currentBgm();
   let rideBgm = null;
   const restoreBgm = () => { if (rideBgm && currentBgm() === rideBgm) playBgm(bgmBefore); };
@@ -302,6 +305,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       input.left = input.right = false;
       for (const release of releaseButtons) release();
     };
+    const isInterrupted = () => document.hidden || rotateGuarded();
     let pose = "rider";
     let paused = false;
     let game = null, mode = null, bot = null, botMemo = {}, botLag = 0, last = 0, world = null, particles = [], popT = 0, popText = "", popKind = "";
@@ -338,6 +342,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       clearTimeout(cutinTimer);
       window.removeEventListener("keydown", onKey, true);
       window.removeEventListener("keyup", onKeyUp, true);
+      document.removeEventListener("rotateguardchange", onInterruption);
+      document.removeEventListener("visibilitychange", onInterruption);
+      window.removeEventListener("blur", resetInput);
       signal?.removeEventListener("abort", finish);
       rideSe.dispose();
       resetBgmTempo();
@@ -346,17 +353,17 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       restoreBgm();
       resolve({ results, practiced });
     };
-    if (signal?.aborted) { finish(); return; }
     signal?.addEventListener("abort", finish, { once: true });
 
     // ---- 入力 -------------------------------------------------------------------------
     const skipGoal = () => { if (goal && goal.t >= FEEL.goalSkipAfter) goal.t = Math.max(goal.t, FEEL.goalAfter); };
     const act = () => {
+      if (isInterrupted()) return;
       if (goal) { skipGoal(); return; } // ゴールの余韻は押して飛ばせる
       if (game && !game.finished && mode && countdown <= 0) { const kind = press(game); if (kind) onPress(kind); }
     };
     const doBoost = () => {
-      if (!game || game.finished || !mode || countdown > 0) return;
+      if (isInterrupted() || !game || game.finished || !mode || countdown > 0) return;
       const kind = boost(game);
       if (kind) { onBoostEvent(kind); return; }
       hudNodes.gaugeFeedback?.cancel();
@@ -367,7 +374,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       { duration: 260, easing: "ease-out" });
     };
     const onKey = event => {
-      if (!root.isConnected) return;
+      if (!root.isConnected || isInterrupted()) return;
       if (["ArrowLeft", "a", "A"].includes(event.key)) { input.left = true; event.preventDefault(); }
       else if (["ArrowRight", "d", "D"].includes(event.key)) { input.right = true; event.preventDefault(); }
       else if ([" ", "ArrowUp", "w", "W"].includes(event.key) && mode) { if (!event.repeat) act(); event.preventDefault(); }
@@ -379,6 +386,14 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (["ArrowLeft", "a", "A"].includes(event.key)) input.left = false;
       if (["ArrowRight", "d", "D"].includes(event.key)) input.right = false;
     };
+    // 縦持ちやタブ切替の間は滑らない。持ち越されたキー・押しっぱなしも解除する。
+    const onInterruption = () => {
+      last = performance.now();
+      if (isInterrupted()) { resetInput(); rideSe.stop(); }
+    };
+    document.addEventListener("rotateguardchange", onInterruption);
+    document.addEventListener("visibilitychange", onInterruption);
+    window.addEventListener("blur", resetInput);
     window.addEventListener("keydown", onKey, true);
     window.addEventListener("keyup", onKeyUp, true);
     const holdButton = (label, cls, test, on, off, artKey) => {
@@ -393,7 +408,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         image.src = imgFileUrl(file);
       }
       const pointers = new Set();
-      const down = event => { event.preventDefault(); unlockAudio(); pointers.add(event.pointerId); button.setPointerCapture?.(event.pointerId); button.classList.add("on"); on(); };
+      const down = event => { if (isInterrupted()) return; event.preventDefault(); unlockAudio(); pointers.add(event.pointerId); button.setPointerCapture?.(event.pointerId); button.classList.add("on"); on(); };
       const up = event => { pointers.delete(event.pointerId); if (!pointers.size) { button.classList.remove("on"); off(); } };
       releaseButtons.push(() => { pointers.clear(); button.classList.remove("on"); });
       button.addEventListener("pointerdown", down);
@@ -598,7 +613,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       cancelAnimationFrame(frame);
       rideSe.ready().then(() => {
         if (done || mode !== kind || runId !== thisRun) return;
-        if (countdown > 0) rideSe.play("countdown", SE_GAIN.countdown, COUNTDOWN / countdownTotal); // 短い合図は、同じ音を速く
+        if (countdown > 0 && !isInterrupted()) rideSe.play("countdown", SE_GAIN.countdown, COUNTDOWN / countdownTotal); // 短い合図は、同じ音を速く
         last = performance.now();
         frame = requestAnimationFrame(tick);
       });
@@ -951,8 +966,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     // ---- ループ -------------------------------------------------------------------------
     function tick(now) {
       if (done || !mode) return;
-      if (paused) { last = now; frame = requestAnimationFrame(tick); return; }
-      const real = Math.min(0.05, (now - last) / 1000) * speedUp;
+      if (paused || isInterrupted()) { last = now; frame = requestAnimationFrame(tick); return; }
+      const real = Math.min(0.05, Math.max(0, now - last) / 1000) * speedUp;
       last = now;
       if (goal) { tickGoal(real); return; }
       if (countdown > 0) {

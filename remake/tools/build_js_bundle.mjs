@@ -58,7 +58,8 @@ const options = {
   outfile: path.join(OUTDIR, "main.js"),
   sourcemap: false,
   legalComments: "none",
-  minify: false,
+  // Only trim the generated download; keep identifiers and syntax unchanged.
+  minifyWhitespace: true,
   logLevel: "warning",
   banner: { js: banner },
 };

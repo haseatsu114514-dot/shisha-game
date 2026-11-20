@@ -59,7 +59,7 @@ import { playCh1Title } from "./ch1-title-motion.js";
 import { giveSumiRig, giveEarlyHomeRig } from "../daily/home-rig.js";
 import { judgeNaruMatch, naruMatchReviewLines } from "./naru-match.js";
 import { configureFirstBrew, firstBrewOrder, rememberFirstBrew, serveFirstBrew } from "./first-brew.js";
-import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
+import { recordTournamentLoss, retryAssistOffer, applyRetryAssistChoice } from "./retry-assist.js";
 import { chosenAssistLevel } from "../craft/retry-assist-level.js";
 
 const BG = (name) => `res://assets/backgrounds/${name}.png`;
@@ -327,7 +327,9 @@ const sketchScene = (id, bg) => async () => {
 const once = (key, fn) => ({ id: key, doneKeys: [key], run: async (context) => { await fn(context); setFlag(key); }, done: () => flag(key) });
 
 export const NIGHT_EVENTS = {
-  2: { label: "常連さんの話", schedule: "regular", pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
+  // #3819: DAY2は固定のシフトを入れない。常連さんの話は、次に入ったシフトの接客で読む（daily/calendar.js の regularCustomerStory）。
+  // DAY7までシフトに入らなかった時だけ、DAY8以降の夜に読む（DAY10の「常連さんの変化」より前）。
+  2: { label: "常連さんの話", schedule: "regular", freeNights: [2, 3, 4, 5, 6, 7], pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
   3: { id: "_ev_first_practice", doneKeys: ["_tsumugi_contest_progress", "_ev_first_practice"], schedule: "preparation", deadline: 6,
     label: "基礎の確認", pin: "tonari", teaser: "tonari", beat: "夜。つむぎの途中の絵を見にtonariへ。閉店後はスミさんと練習を相談する──",
     done: () => flag("_tsumugi_contest_progress") && flag("_ev_first_practice"),
@@ -1028,11 +1030,12 @@ async function showGameOver({ rank = 0, reason = "rank", variant = null, cs = nu
     context: !preview && owner?.phase === "tournament"
       ? recordContinueContext(owner, owner.tournament, owner.tournament.attempts, craftContinueContext(cs, { chapter: 1, reason, rank }))
       : craftContinueContext(cs, { chapter: 1, reason, rank }),
-    onRetry: async () => {
+    // 3敗目からは、再挑戦を押した同じ画面で難易度を選ぶ（WIN14）。
+    difficulty: tournament ? retryAssistOffer(tournament) : 0,
+    onRetry: async level => {
       if (!owner) { location.reload(); return; }
-      const assisted = await chooseRetryAssist(tournament, () => state === owner && owner.tournament === tournament && root.isConnected);
-      if (assisted === null) { if (state === owner && root.isConnected) await showGameOver({ reason, rank, cs, variant: root.continueVariant, preview }); return; }
-      if (state !== owner || !root.isConnected) return;
+      if (state !== owner || owner.tournament !== tournament || !root.isConnected) return;
+      applyRetryAssistChoice(tournament, level);
       save();
       retire(root);
       // 再挑戦は、一筆を逆向きに流して色を戻す（#2688 A19・F4。暗い煙ワイプはタイトル→開始と会場入りだけ）

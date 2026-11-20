@@ -26,7 +26,7 @@ import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { fortuneHere, fortunePosition } from "./fortune-schedule.js";
 import { openingStatus, rioUnavailable } from "./spot-hours.js";
 
-import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
+import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue, chapterRainScene } from "./spot-encounters.js";
 
 export const VISIT_COST = 3000;
 // 東京のシーシャ屋は少し相場が上がって一台4,000円（2026-11-02 オーナー「東京編はシーシャ屋の値段4000円にしたい　少し相場上がって」）。
@@ -282,6 +282,7 @@ export function afterChapterVisitDue(charId, s = state) {
  * 既読は `_talk_seen_<scene>`。好感度は通い訪問と同じ+5。
  * prep は、東京・ドバイへ発つ前の地元の準備3日（chapters/departure-prep.js）だけ読む送り出しの会話（第3・4章・N3a）。
  * 出発後（その章の大会の前後とも）には出ないので、大会後の分岐は持たない。台本は data/dialogue/ch3_ch4_home.json を準備期間に読み込む。
+ * untilRift は、なるとの対峙（naruRiftActive）より前だけ読む会話。対峙の後、なるは店を長く休むため。
  * サメちゃんの店（SHISHARK）は来店の処理が別なので、同じ扱いの会話を daily/samechan.js の SAMECHAN_PREP_TALKS に持つ。
  */
 export const CHAPTER_TALKS = Object.freeze({
@@ -291,20 +292,32 @@ export const CHAPTER_TALKS = Object.freeze({
     { chapter: 2, scene: "ch2_rio_strawberry" },
     // #3097 第1弾: 柚ヶ谷の匂いを嗅ぎ当て、吸う人の顔の報告を受け取る（ルート・♥段階・大会の前後に依存しない普段の会話）
     { chapter: 2, scene: "ch2_rio_city_scent" },
+    // #3097 PR-C: 朝の満員電車は柔軟剤の見本市。匂わない車両をはじめに聞く（はじめは試作を吸わない）
+    { chapter: 2, scene: "ch2_rio_rush_hour" },
     { chapter: 3, scene: "ch3_prep_rio", prep: true },
     { chapter: 4, scene: "ch4_prep_rio", prep: true },
   ]),
   adam: Object.freeze([
     // #3097 第1弾: 柚ヶ谷の林檎を買いに行くため、券売機の押し方を習う（はじめは吸った感想を言わない）
     { chapter: 2, scene: "ch2_adam_ticket_machine" },
+    // #3097 PR-C: 券売機の回の続き（柚ヶ谷で迷って買った七つの林檎）と、初めての客への「在庫切れ」
+    { chapter: 2, scene: "ch2_adam_yuzugaya_apples" },
+    { chapter: 2, scene: "ch2_adam_out_of_stock" },
     { chapter: 3, scene: "ch3_prep_adam", prep: true },
     { chapter: 4, scene: "ch4_prep_adam", prep: true },
   ]),
   minto: Object.freeze([
     // #3097 第1弾: 通勤客向けのチェキのフレームの試し撮り。営業中の口調だけで、正体・ルート・♥段階に依存しない
     { chapter: 2, scene: "ch2_minto_commute_frame" },
+    // #3097 PR-C: 客の忘れ物の定期券と、ミントの強さの札。営業中の口調だけ（年齢・正体・♥段階に触れない）
+    { chapter: 2, scene: "ch2_minto_lost_pass" },
+    { chapter: 2, scene: "ch2_minto_mint_scale" },
     { chapter: 3, scene: "ch3_prep_minto", prep: true },
     { chapter: 4, scene: "ch4_prep_minto", prep: true },
+  ]),
+  naru: Object.freeze([
+    // #3097 PR-C: 看板の電球の付け替え。DAY3の祝いの後、DAY11の対峙より前だけ（対峙の後は店を長く休む）
+    { chapter: 2, scene: "ch2_naru_sign_light", flag: "_ch2_naru_warm_done", untilRift: true },
   ]),
 });
 /**
@@ -318,7 +331,7 @@ const inDeparturePrep = (s = state) => {
 export function chapterTalkDue(charId, s = state) {
   if (!((s?.story?.[charId] || 0) >= 1)) return null;
   return (CHAPTER_TALKS[charId] || []).find(talk => (s?.chapter || 1) === talk.chapter && s.phase === "daily"
-    && (!talk.prep || inDeparturePrep(s))
+    && (!talk.prep || inDeparturePrep(s)) && (!talk.untilRift || !naruRiftActive(s))
     && !s.flags?.[`_talk_seen_${talk.scene}`] && (!talk.flag || s.flags?.[talk.flag])
     && DB.dialogues[talk.scene]?.lines?.length)?.scene || null;
 }
@@ -659,7 +672,7 @@ export async function deliverToRival(spot) {
     addMoney(RIVAL_DELIVERY_PAY);
     gainExp(EXP.tutorial, { key: `ch1_delivery_${charId}`, tag: "配達" });
     save(); // 手当・経験値・納品済みは同じ保存に入り、再入店やLOADで増やさない。
-    toast(`配達の手当 +${RIVAL_DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
+    toast(`配達の手当 +${RIVAL_DELIVERY_PAY.toLocaleString()}円`, { kind: "good" });
     return true;
   } finally {
     deliveriesInFlight.delete(owner);
@@ -711,7 +724,10 @@ export async function visitSpot(spot) {
     state.flags._ev_reviewer_payoff = true;
     id = "ch1_reviewer_payoff";
   }
-  await play(id, { bg: bgRef(spot.bg), growthScene: true }); // bgUrl が昼夜差分（_day/_night）を選ぶ
+  // 第2章の雨の日は、引いた回をその章の雨の台本に差し替えて一度だけ読む（#3097 PR-B）。夜の束の施設は昼だけ。
+  // 巡回は引いた回を読んだものとして進め、経験値も引いた回の鍵で数える（差し替えた台本の ID では増やさない）。
+  const rain = turn && id === turn.id && !nightBundle(spot) ? chapterRainScene(spot.id, state, DB.dialogues, isRainy()) : null;
+  await play(rain || id, { bg: bgRef(spot.bg), growthScene: true, ...(rain ? { growthKey: id } : {}) }); // bgUrl が昼夜差分（_day/_night）を選ぶ
   if (state !== owner) return;
   // 読んだ束だけ次へ送る。寄り道会話・記事の噂の来店では送らない。
   if (turn && id === turn.id) state.flags[turn.key] = turn.count + 1;
@@ -748,8 +764,11 @@ export async function restAtHome(spot, { fullDay = false } = {}) {
   delete state.flags._cold_pending;
   delete state.flags._overwork;
   state.flags._home_tonight = state.slot >= 1;
-  const turn = fullDay ? null : isRainy() && quietTurn("rest", REST_RAIN_SCENES, "rain") || quietTurn("rest", REST_SCENES);
-  const result = await play(fullDay ? "remake_rest_day" : turn?.id || REST_SCENES[0]);
+  const rainy = !fullDay && isRainy();
+  const turn = fullDay ? null : rainy && quietTurn("rest", REST_RAIN_SCENES, "rain") || quietTurn("rest", REST_SCENES);
+  // 第2章の雨の日は、雨の回を章の台本に一度だけ差し替える（#3097 PR-B。休む回は経験値の付かない場面で、巡回はそのまま進む）
+  const rain = rainy ? chapterRainScene("rest", state, DB.dialogues, true) : null;
+  const result = await play(fullDay ? "remake_rest_day" : rain || turn?.id || REST_SCENES[0]);
   if (state !== owner || !result || result.cancelled) return;
   if (turn) owner.flags[turn.key] = turn.count + 1;
   if (owner.chapter === 2) owner.flags._ch2_rest_taken = true;

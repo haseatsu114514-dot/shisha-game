@@ -16,7 +16,7 @@
 ### 共通前文
 
 ```text
-Create one finished visual novel event CG (a story still) for the Japanese shisha-bar game "Suien Zensen -EN:CODE-". Opaque landscape 16:9, at the largest 16:9 size the tool can make (at least 1672x941). Japanese 2D anime illustration in the same hand as the attached approved event CG: clean confident outlines, cel shading with two or three clearly shaped shadow steps, warm cinematic light, a detailed painted background with a fine pixel-painter texture; not 3D, not photographic, no airbrush skin gloss, no rim-light glow, no floating sparkles or light particles. The approved event CG is a rendering-style reference only: do not copy its people, composition, props or equipment. Every named character must be exactly the same person as their attached approved sprite: same face design, eye shape and color, hairstyle and hair color, age, build and outfit; do not drift toward a generic pretty face. Unless the scene says otherwise, the viewer is the protagonist Hajime: never show his face; at most his hands, sleeves, shoulder, back or the back of his head (short black hair under a black cap, black zip hoodie over a black t-shirt). Put every important face, hand and prop within the top 65% of the image, because a dialogue window covers the bottom 25%. No text, letters, numbers, logos, UI, borders or watermark anywhere; any paper, sign, label, bag, phone or monitor screen is blank or unreadable. Unnamed customers, workers and passers-by are ordinary adults with plain everyday faces and clothes, never caricatures.
+Create one finished visual novel event CG (a story still) for the Japanese shisha-bar game "Suien Zensen -EN:CODE-". Opaque landscape 16:9, at the largest 16:9 size the tool can make (at least 1672x941). Japanese 2D anime illustration in the same hand as the attached approved event CG: clean confident outlines, cel shading with two or three clearly shaped shadow steps, warm cinematic light, a detailed painted background with a fine pixel-painter texture; not 3D, not photographic, no airbrush skin gloss, no rim-light glow, no floating sparkles or light particles. The approved event CG is a rendering-style reference only: do not copy its people, composition, props or equipment. Every named character must be exactly the same person as their attached approved sprite: same face design, eye shape and color, hairstyle and hair color, age, build and outfit; do not drift toward a generic pretty face. Unless the scene says otherwise, the viewer is the protagonist Hajime: never show his face; at most his hands, sleeves, shoulder, back or the back of his head (short black hair under a black cap, black zip hoodie over a black t-shirt). Put every important face, hand and prop within the top 65% of the image, because a dialogue window covers the bottom 25%. No text, letters, numbers, logos, UI, borders or watermark anywhere; any paper, sign, label, bag, phone or monitor screen is blank or unreadable. Unnamed customers, workers and passers-by are ordinary adults with plain everyday faces and clothes, never caricatures. Do not add props the scene does not describe: no extra candles, potted plants, flowers, watches, bracelets, rings or decorations beyond what the character's sprite wears and the scene text names.
 ```
 
 ### 機材の文（機材が写るシーンだけ。`docs/shisha_reference.md` §4.2 の英文そのまま）
@@ -29,13 +29,13 @@ Draw the hookah with correct structure. From top to bottom: a few small cube cha
 
 # 第2章
 
-## 2-07 `cg_ch2_sofa_wet_cloth`（試作）
+## 2-07 `cg_ch2_sofa_wet_cloth`
 
 **参照**：本人 `assets/sprites/characters/sumi/chr_sumi_serious.png`／場所 `assets/backgrounds/bg_tonari_inside_night.png`／画風 `assets/cgs/cg_ending_tonari_night.png`
 **台本**：`ch2_sofa_burn`「スミさんが炭を金属の皿へ戻し、焦げ跡に濡れた布を当てる。」
 
 ```text
-Scene: chapter 2, night, just before closing at tonari, the small shisha cafe where Hajime works (use the attached room for its irregular Turkish mosaic pendant lamps, dark wood and green leather sofas). Hajime was changing coals and dropped a red-hot coal from his tongs onto a customer's green leather sofa. It is already handled: Sumi (46, the owner; same man as the attached sprite: black flat cap, square black glasses, short beard, charcoal shirt with rolled sleeves, brown waist apron) has put the coal back on a small metal dish and is now pressing a folded wet cloth onto the black scorch mark on the seat with one steady hand, leaning in, eyes on the cloth, calm and focused, not angry. Camera at sofa-seat height. Foreground left: Hajime's own hand frozen in the air, still holding the empty plain steel tongs. Center: Sumi's hand, the wet cloth and the black scorch on the green leather; a thin last wisp of smoke fading. On the low table beside it: the small metal dish with one fingertip-sized cube coal, grey ash with a faint red glow. Background: the customers have stepped back; show only their legs and shoes and a table leg, no faces. Sumi's face is seen in three-quarter profile or partly under his cap brim, not a big close-up. No flames, no injury, no burn on skin, no full hookah in frame. The feeling: the shop protecting its guests in a few quiet seconds.
+Scene: chapter 2, night, just before closing at tonari, the small shisha cafe where Hajime works (use the attached room for its irregular Turkish mosaic pendant lamps, dark wood and green leather sofas). Hajime was changing coals and dropped a red-hot coal from his tongs onto a customer's green leather sofa. It is already handled: Sumi (46, the owner; same man as the attached sprite: black flat cap, square black glasses, short beard, charcoal shirt with rolled sleeves, brown waist apron) has put the coal back on a small metal dish and is now pressing a folded wet cloth onto the black scorch mark on the seat with one steady hand, leaning in, eyes on the cloth, calm and focused, not angry. Camera at sofa-seat height, but frame it so the wet cloth and the black scorch sit in the upper half of the image (the sofa seat at mid-height, not near the bottom edge). Foreground left: Hajime's own hand frozen in the air, still holding the empty plain steel tongs. Center: Sumi's hand, the wet cloth and the black scorch on the green leather; a thin last wisp of smoke fading. On the low table beside it: the small metal dish with one fingertip-sized cube coal, grey ash with a faint red glow. Background: the customers have stepped back; show only their legs and shoes and a table leg, no faces. Sumi's face is seen in three-quarter profile or partly under his cap brim, not a big close-up. No flames, no injury, no burn on skin, no full hookah in frame. The feeling: the shop protecting its guests in a few quiet seconds.
 ```
 
 **3案の振り方**
@@ -45,7 +45,7 @@ Scene: chapter 2, night, just before closing at tonari, the small shisha cafe wh
 
 **検品**：炭は指先大で炎なし。台が写っていない。スミさんの帽子・眼鏡・ひげが立ち絵と同じ。
 
-## 2-11 `cg_ch2_ageha_lesson`（試作）
+## 2-11 `cg_ch2_ageha_lesson`
 
 **参照**：本人 `assets/sprites/characters/ageha/chr_ageha_normal.png`・`chr_ageha_surprise.png`／場所 `assets/backgrounds/bg_c_station_night.png`／画風 `assets/cgs/cg_ageha_confession.png`／機材の写真1枚
 **台本**：`ch2_ageha_lesson`「水を飲んでいた俺は、盛大にむせた。」〜「え、何。ハジメっち、なんでむせてんの？」
@@ -63,7 +63,7 @@ HMD       : シリコンボウル＋ロータス型HMD（蓋あり）
 ```
 
 ```text
-Scene: chapter 2, day 9, late in a flavor tasting event held in the guest seating of C.STATION Yuzugaya, a bright chain shisha lounge (use the attached room). Two first-time customers, an ordinary adult pair in their twenties in casual clothes, sit stiffly side by side on a sofa, dead serious, listening. Ageha (22; the same bright, friendly, youthful face as her sprite with amber eyes and soft cheeks, honey-blonde twin ponytails with pink and cream bear hair clips, leopard jacket over a pink crop top, black choker, gold heart necklace) sits next to them and earnestly demonstrates how to hold the hose handle, as if about to show a slow, deep inhale. She has just turned her head toward the viewer with an innocent, puzzled look ("Huh? Why are you choking?"), because in the foreground Hajime's hand holding a glass of water has jolted and water is splashing over the rim: he just choked on his drink. The joke is that the lesson is completely innocent and everyone else is completely serious. Ageha's pose is natural and relaxed, not suggestive, not exaggerated. Bright, even ceiling light. One finished hookah stands on the low table in front of them.
+Scene: chapter 2, day 9, late in a flavor tasting event held in the guest seating of C.STATION Yuzugaya, a bright chain shisha lounge (use the attached room). Two first-time customers, an ordinary adult pair in their twenties in casual clothes, sit stiffly side by side on a sofa, dead serious, listening. Ageha (22; the same bright, friendly, youthful face as her sprite with amber eyes and soft cheeks, honey-blonde twin ponytails with pink and cream bear hair clips, leopard jacket over a pink crop top, black choker, gold heart necklace) sits next to them and earnestly demonstrates how to hold the hose handle, as if about to show a slow, deep inhale. She has just turned her head toward the viewer with an innocent, puzzled look ("Huh? Why are you choking?"), because in the foreground Hajime's hand holding a glass of water has jolted and water is splashing over the rim: he just choked on his drink. The glass and the splash stay within the top 65% of the image. The joke is that the lesson is completely innocent and everyone else is completely serious. Ageha's pose is natural and relaxed, not suggestive, not exaggerated. Bright, even ceiling light. One finished hookah stands on the low table in front of them.
 Hardware note: the hookah is a modest prop on the table at the same depth as the three of them; its single hose runs from the side port across the table to the handle in Ageha's hand; no smoke from the hookah.
 ```
 
@@ -159,13 +159,13 @@ Scene: chapter 2, the night of the prefectural tournament, after closing at MELT
 
 # 第3章
 
-## 3-01 `cg_ch3_mashiro_no_craft_day`（試作）
+## 3-01 `cg_ch3_mashiro_no_craft_day`
 
 **参照**：本人 `assets/sprites/characters/mashiro/chr_mashiro_normal.png`・`chr_mashiro_smile.png`／場所 `assets/backgrounds/bg_mukai_shop_day.png`／画風 `assets/cgs/cg_mashiro_double_apple.png`
 **台本**：`ch3_rest_before_recovery`「ましろは自分の作業台にも布をかけた。」〜「お茶、飲む？」（選択肢の前）
 
 ```text
-Scene: chapter 3, Tokyo, midday at mukai, a small shisha cafe with no customers yet (use the attached room: blue-grey walls, olive bench, tall windows). Hajime cannot make anything today; his sense of taste feels far away. Mashiro (22; same woman as the attached sprite: pale ash-blonde hair in two long braids with soft bangs, sleepy half-lidded golden eyes, beige oversized knit cardigan over a white blouse with a small ribbon, long sage-green skirt) has already closed the flavor tins and put the tongs back on the shelf. Now, across the workbench, she drapes a cloth over HER OWN workbench too: she is taking a break as well, not only for him. She looks at the viewer with a soft, unhurried, sleepy expression. Foreground: Hajime's empty hands resting on the counter, palms down, holding nothing. Background: the empty wall-side sofa seat with cushions, room enough for two. Daylight. No hookah, no readable labels, no food.
+Scene: chapter 3, Tokyo, midday at mukai, a small shisha cafe with no customers yet (use the attached room: blue-grey walls, olive bench, tall windows). Hajime cannot make anything today; his sense of taste feels far away. Mashiro (22; same woman as the attached sprite: pale ash-blonde hair in two long braids with soft bangs, sleepy half-lidded golden eyes, beige oversized knit cardigan over a white blouse with a small ribbon, long sage-green skirt) has already closed the flavor tins and put the tongs back on the shelf. Now, across the workbench, she drapes a cloth over HER OWN workbench too: she is taking a break as well, not only for him. She looks at the viewer with a soft, unhurried, sleepy expression. Foreground: Hajime's empty hands resting on the counter, palms down, holding nothing; the counter edge sits at about mid-height of the image so his hands are fully visible above the bottom 35%. Background: the empty wall-side sofa seat with cushions, room enough for two. Daylight. No hookah, no readable labels, no food.
 ```
 
 **3案の振り方**
@@ -256,13 +256,13 @@ Scene: chapter 3, after closing at mukai, night (use the attached room). Counter
 
 # 第4章
 
-## 4-03 `cg_ch4_traveler_chair`（試作）
+## 4-03 `cg_ch4_traveler_chair`
 
 **参照**：顔 `assets/sprites/characters/sheikh/chr_sheikh_normal.png`（顔とひげだけ）／旅装 `remake/img/loading/sheikh-traveler-1.webp`（茶色いフードの外套だけ。吹き出し・文字・はじめの絵は写さない）／場所 `assets/backgrounds/bg_dubai_souq_day.png`／画風 `assets/cgs/cg_ch4_dubai_arrival.png`
 **台本**：`ch4_stranger_first`「一緒に日陰へ入る。男は名乗らないまま、椅子を一つ引いた。」〜場面の最後
 
 ```text
-Scene: chapter 4, Dubai, the edge of a souq at midday (use the attached market for color and architecture). Off the bright main lane, in the deep shade of a narrow side passage. A man in plain travel clothes: a dusty brown hooded travel cloak over a simple beige robe, the hood up but pulled back enough to show his face. He has the same face as the attached sprite (age 52, neatly trimmed beard, calm eyes) but must look like an ordinary traveler: NO white kandura showing, NO gold trim, NO black agal, no jewelry, no rings. Without giving his name, he has just pulled out a simple chair for the viewer, one hand on its backrest, and nods toward it. On a small side table next to the chair: a bottle of water and a glass. In the lower-left foreground, Hajime's hand holds a smartphone with a translation app open; the screen is plain and light with no readable text. Contrast: white-hot sun on the main lane behind, cool blue shade in the passage. Kind, unhurried, a little mysterious. No hookah, no shop signs, no text. Use the attached comic panel only for the cloak's color and shape; never copy its speech bubbles, its text or its drawing of Hajime.
+Scene: chapter 4, Dubai, the edge of a souq at midday (use the attached market for color and architecture). Off the bright main lane, in the deep shade of a narrow side passage. A man in plain travel clothes: a dusty brown hooded travel cloak over a simple beige robe, the hood up but pulled back enough to show his face. He has the same face as the attached sprite (age 52, neatly trimmed beard, calm eyes) but must look like an ordinary traveler: NO white kandura showing, NO gold trim, NO black agal, no jewelry, no rings. Without giving his name, he has just pulled out a simple chair for the viewer, one hand on its backrest, and nods toward it. On a small side table next to the chair: a bottle of water and a glass. In the left foreground, Hajime's hand holds a smartphone with a translation app open, raised so the whole phone stays within the top 65% of the image; the screen is plain and light with no readable text, no icons or symbols. Contrast: white-hot sun on the main lane behind, cool blue shade in the passage. Kind, unhurried, a little mysterious. No hookah, no shop signs, no text. Use the attached comic panel only for the cloak's color and shape; never copy its speech bubbles, its text or its drawing of Hajime.
 ```
 
 **3案の振り方**
@@ -410,7 +410,7 @@ Scene: chapter 4, Dubai Creek, daytime. An old wooden dhow with a high curved bo
 
 # 第5章
 
-## 5-10 `cg_ch5_doctor_yunomi`（試作）
+## 5-10 `cg_ch5_doctor_yunomi`
 
 **参照**：本人 `assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png`・`chr_dr_kemuri_smile.png`／場所 `assets/backgrounds/bg_tonari_inside_day.png`／画風 `assets/cgs/cg_ch1_dr_kemuri_hook.png`
 **台本**：`ch5_unrecorded_day`「戻ると、博士は湯のみを両手で包んでいた。大会の映像は止まったままだ。」〜「……さて。勝負の日の話を、しましょうか」

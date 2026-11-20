@@ -1,5 +1,5 @@
 import { modal } from "../core/ui.js";
-import { retryAssistLevelFor, RETRY_ASSIST_LOSSES_PER_LEVEL } from "../craft/retry-assist-level.js";
+import { retryAssistLevelFor } from "../craft/retry-assist-level.js";
 
 export function recordTournamentLoss(tournament) {
   // 同じ敗北画面の再表示では数え直さない。旧セーブの挑戦数から敗北を推測しない。
@@ -13,29 +13,35 @@ export function recordTournamentLoss(tournament) {
 
 export const offersRetryAssist = tournament => retryAssistLevelFor(tournament.losses) > 0;
 
-const EASY = "イージー：針がゆっくり動き、判定が広がります。";
-const VERY_EASY = "ベリーイージー：針がとてもゆっくり動き、判定が大きく広がります。";
-const SHARED = "蒸らしの雑念と調整中の冷え方も穏やかになり、体力も最大まで回復します。";
-const BR = "<br>"; // 本文は HTML として入る（core/ui.js の modal）。行ごとに改行する
+/** コンティニュー画面で選べるいちばんやさしい段（0: 聞かない・1: イージーまで・2: ベリーイージーまで）。 */
+export const retryAssistOffer = tournament => retryAssistLevelFor(tournament?.losses);
 
-/** 選べる段に応じた問いの本文。3敗でイージー、6敗でベリーイージーも選べる（WIN13）。 */
-export function retryAssistBody(level, losses = 0) {
-  if (level >= 2) return ["今回だけ難易度を下げますか？", EASY, VERY_EASY, `どちらも${SHARED.replace("も穏やか", "が穏やか")}`].join(BR);
-  const more = Math.max(1, RETRY_ASSIST_LOSSES_PER_LEVEL * 2 - (Number(losses) || 0));
-  return ["今回だけ難易度を下げますか？", `${EASY}${SHARED}`, `あと${more}回負けると、ベリーイージーも選べます。`].join(BR);
+/**
+ * コンティニュー画面（gameover.js）で選んだ難易度を、次の一台だけに記録する（WIN14）。
+ * 選べない段や想定外の値はノーマル。戻り値は救済の有無。
+ */
+export function applyRetryAssistChoice(tournament, level) {
+  const offered = retryAssistOffer(tournament);
+  const chosen = Number.isInteger(level) && level > 0 && level <= offered ? level : 0;
+  tournament.retryAssist = chosen > 0;
+  tournament.retryAssistLevel = chosen;
+  return tournament.retryAssist;
 }
 
-/** 選べる段の選択肢。いちばんやさしい段を先頭（決定キー）に置く。 */
+/** 選べる段の選択肢。いちばんやさしい段を先頭（決定キー）に置く。名前だけで、効き目の説明は出さない。 */
 export function retryAssistOptions(level) {
   return [
-    ...(level >= 2 ? [{ label: "ベリーイージーで挑戦", value: 2, primary: true, test: "retry-assist-yes" },
-      { label: "イージーで挑戦", value: 1, test: "retry-assist-easy" }]
-      : [{ label: "イージーで挑戦", value: 1, primary: true, test: "retry-assist-yes" }]),
-    { label: "ノーマルで挑戦", value: 0, test: "retry-assist-no" },
-    { label: "選択に戻る", value: null, test: "retry-assist-cancel" },
+    ...(level >= 2 ? [{ label: "ベリーイージー", value: 2, primary: true, test: "retry-assist-yes" },
+      { label: "イージー", value: 1, test: "retry-assist-easy" }]
+      : [{ label: "イージー", value: 1, primary: true, test: "retry-assist-yes" }]),
+    { label: "ノーマル", value: 0, test: "retry-assist-no" },
   ];
 }
 
+/**
+ * コンティニュー画面を通らずに大会の一台を始める時だけ使う問い（第4章で、画面の選択を持たない旧保存）。
+ * 「選択に戻る」で取り消せる。
+ */
 export async function chooseRetryAssist(tournament, isCurrent = () => true) {
   if (!isCurrent()) return null;
   const attempt = tournament.attempts;
@@ -45,8 +51,8 @@ export async function chooseRetryAssist(tournament, isCurrent = () => true) {
   const level = retryAssistLevelFor(tournament.losses);
   const chosen = await modal({
     title: "コンティニュー",
-    body: retryAssistBody(level, tournament.losses),
-    options: retryAssistOptions(level),
+    body: "難易度を下げる？",
+    options: [...retryAssistOptions(level), { label: "選択に戻る", value: null, test: "retry-assist-cancel" }],
   });
   if (!isCurrent() || tournament.attempts !== attempt) return null;
   if (!Number.isInteger(chosen) || chosen < 0 || chosen > level) return null;

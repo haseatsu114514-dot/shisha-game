@@ -1,5 +1,6 @@
 import { createSet, resumeMix, playDeck, pauseMix, beatAt, gains, lowCutDb, mod, updateSet, chooseTrack, nudgeDeck } from './model.mjs';
-import { TRACKS, SETS, buildTrackData } from './tracks.mjs';
+import { TRACKS, SETS, buildTrackData, previewBeat } from './tracks.mjs';
+import { FEEL } from './feel.mjs';
 export class DJAudio {
   constructor(Context = globalThis.AudioContext, options = {}) {
     this.set = SETS[options.setIndex ?? 0];
@@ -12,11 +13,17 @@ export class DJAudio {
     this.Context = Context; this.mix = createSet(this.set, options.rng || Math.random, { allowance: options.allowance || 0, ...(options.entry || {}) }); this.context = null; this.voices = [null, null];
     this.cache = new Map(); this.tracks = [null, null]; // decoded track data per deck
     this.retiring = new Set(); this.volume = .18; this.muted = false; this.busy = false; this.disposed = false; this.revision = 0;
+    this.previewing = null; this.previewGen = 0; // 試聴 (DJK06): the card being listened to, and a counter so a slow load never plays after another card was picked
   }
   get now() { return this.context?.currentTime || 0; }
   /** Decoded data for a track key, fetched once. Needs the audio context. */
   track(key) {
-    if (!this.cache.has(key)) this.cache.set(key, this.loadTrack(this.context, key).then(t => { if (!t.buffer) { const b = this.context.createBuffer(1, t.samples.length, t.sampleRate); b.copyToChannel(t.samples, 0); t.buffer = b; } return t; }));
+    if (!this.cache.has(key)) {
+      const loading = this.loadTrack(this.context, key).then(t => { if (!t.buffer) { const b = this.context.createBuffer(1, t.samples.length, t.sampleRate); b.copyToChannel(t.samples, 0); t.buffer = b; } return t; });
+      this.cache.set(key, loading);
+      // A failed load is not kept: the next ▶ (or the next pick) fetches it again (#2456 review 3).
+      loading.catch(() => { if (this.cache.get(key) === loading) this.cache.delete(key); });
+    }
     return this.cache.get(key);
   }
   async ensure(id) {
@@ -28,6 +35,7 @@ export class DJAudio {
     if (this.busy || this.disposed) return false;
     this.busy = true;
     const revision = ++this.revision;
+    let onAir = false; // set while the next track loads during a running set: its failure must not take the playing track down
     try {
       if (!this.context) {
         if (!this.Context) throw new Error('Web Audioが利用できません');
@@ -35,7 +43,7 @@ export class DJAudio {
         const context = this.context;
         context.addEventListener('statechange', () => {
           if (this.context === context && context.state !== 'running' && this.mix.running) {
-            ++this.revision; pauseMix(this.mix, this.now); this.clearVoices();
+            ++this.revision; this.stopPreview(); pauseMix(this.mix, this.now); this.clearVoices();
             this.onInterrupted?.(context.state);
           }
         });
@@ -47,7 +55,7 @@ export class DJAudio {
         this.initialResume.catch(() => {});
         await Promise.all([this.ensure(0), this.ensure(1)]);
       }
-      if (deckId !== null) await this.ensure(deckId);
+      if (deckId !== null) { onAir = this.mix.running; await this.ensure(deckId); onAir = false; }
       await (this.initialResume || this.context.resume()); this.initialResume = null;
       if (this.disposed || revision !== this.revision) {
         try { await this.context.suspend(); } catch { /* A concurrent dispose may close it. */ }
@@ -60,6 +68,7 @@ export class DJAudio {
       this.setMix(this.mix.mix); this.setVolume(this.volume);
       return true;
     } catch (error) {
+      if (onAir) throw error; // the next track did not load: the set keeps playing and ▶ tries again (#2456 review 3)
       this.initialResume = null;
       if (this.context) pauseMix(this.mix, this.now);
       this.clearVoices();
@@ -89,8 +98,9 @@ export class DJAudio {
     const first = track.firstBeat || 0;
     source.loopStart = first; source.loopEnd = first + track.beats * 60 / track.nativeBpm;
     const b = beatAt(d, now);
-    // A quantized ▶ may anchor beat 0 a few ms ahead: start the source at that audio time.
-    if (b < 0) source.start(d.at, first); else source.start(now, first + mod(b, track.beats) * 60 / track.nativeBpm);
+    // A ▶ pressed a little early is held for the entry line (予約, #2456 §4): beat 0 is still ahead, so start the source when it comes
+    // (counted from now, so a pause and resume while it waits still lands on the line).
+    if (b < 0) source.start(now - b * 60 / d.bpm, first); else source.start(now, first + mod(b, track.beats) * 60 / track.nativeBpm);
     if (old) {
       this.retiring.add(old); old.gain.gain.cancelScheduledValues(now);
       old.gain.gain.setValueAtTime(old.gain.gain.value, now); old.gain.gain.linearRampToValueAtTime(0, now + .008);
@@ -113,7 +123,7 @@ export class DJAudio {
     this.voices = [null, null]; this.retiring.clear();
   }
   async pause() {
-    ++this.revision;
+    ++this.revision; this.stopPreview();
     if (!this.context || this.disposed) return;
     pauseMix(this.mix, this.now); // Freeze positions even if suspend() fails.
     this.clearVoices();
@@ -132,18 +142,49 @@ export class DJAudio {
   }
   setVolume(value) {
     this.volume = Math.max(0, Math.min(.5, Number(value)));
-    if (this.output) this.output.gain.setTargetAtTime(this.muted || !this.mix.running ? 0 : this.volume, this.now, .012);
+    const duck = this.previewing ? FEEL.preview.duck : 1; // 試聴のあいだ、手元で聞こえる今の曲を少し下げる（フロアの曲は流れ続けた扱い）
+    if (this.output) this.output.gain.setTargetAtTime(this.muted || !this.mix.running ? 0 : this.volume * duck, this.now, .012);
+  }
+  /** 試聴 (DJK06, #2456 §3): the player listens to a candidate for a few seconds, like a DJ on one ear of the headphones. Its loudest
+   *  bars play at the playing tempo on their own path (not the meters), and the music the player hears dips meanwhile. The floor, the
+   *  beats, the decks and the scores are untouched. A newer call (another card) or stopPreview() cancels it. Resolves true if it plays. */
+  async preview(key) {
+    const gen = ++this.previewGen; this.stopPreview();
+    if (!key || !TRACKS[key] || !this.context || this.disposed || this.context.state !== 'running' || !this.mix.running) return false;
+    let t; try { t = await this.track(key); } catch { return false; }
+    if (gen !== this.previewGen || this.disposed || !this.context || this.context.state !== 'running' || !this.mix.running) return false;
+    const c = this.context, now = this.now, P = FEEL.preview, len = Math.max(.5, P.seconds), master = this.mix.decks[this.mix.master];
+    const source = c.createBufferSource(), gain = c.createGain();
+    source.buffer = t.buffer; source.playbackRate.value = (master?.bpm || t.nativeBpm) / t.nativeBpm;
+    source.connect(gain); gain.connect(c.destination);
+    const level = this.muted ? 0 : this.volume * P.level * 10 ** ((t.trimDb || 0) / 20);
+    gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(level, now + .06);
+    gain.gain.setValueAtTime(level, now + len - .25); gain.gain.linearRampToValueAtTime(0, now + len);
+    source.start(now, (t.firstBeat || 0) + previewBeat(t, P.bars) * 60 / t.nativeBpm, len + .05);
+    const voice = { key, source, gain, until: now + len, stopped: false };
+    source.onended = () => { source.disconnect(); gain.disconnect(); if (this.previewing === voice) { this.previewing = null; this.setVolume(this.volume); } };
+    this.previewing = voice; this.setVolume(this.volume);
+    return true;
+  }
+  /** Stop the preview at once (a pick, a pause, another card) and bring the music back up. */
+  stopPreview() {
+    const v = this.previewing; if (!v) return;
+    this.previewing = null;
+    if (!v.stopped) { v.stopped = true; const now = this.now; try { v.gain.gain.cancelScheduledValues(now); v.gain.gain.setValueAtTime(v.gain.gain.value, now); v.gain.gain.linearRampToValueAtTime(0, now + .03); v.source.stop(now + .04); } catch { /* already ended */ } }
+    this.setVolume(this.volume);
   }
   applyRate(id) { const t = this.tracks[id]; if (t) this.voices[id]?.source.playbackRate.setValueAtTime(this.mix.decks[id].bpm / t.nativeBpm, this.now); }
   async play(id) { return this.start(id); }
   /** 選曲: load the picked candidate on the empty deck (see model chooseTrack). */
   choose(index) {
     const picked = chooseTrack(this.mix, index, this.now);
+    if (picked) { ++this.previewGen; this.stopPreview(); }
     if (picked && this.context) { this.tracks[picked.id] = null; this.ensure(picked.id).catch(() => {}); }
     return picked;
   }
   /** Advance the set and apply what changed to the audio graph. Call every frame. */
   update() {
+    if (this.previewing && this.now >= this.previewing.until) this.stopPreview(); // the few seconds are over
     const view = updateSet(this.mix, this.now);
     if (view.retuned != null) this.applyRate(view.retuned); // a slip starts or settles: the incoming track runs a little fast or slow (DJG)
     if (view.stopped != null) this.killVoice(view.stopped);
@@ -161,7 +202,7 @@ export class DJAudio {
   }
   async dispose() {
     if (this.disposed) return;
-    this.disposed = true; ++this.revision;
+    this.disposed = true; ++this.revision; ++this.previewGen; this.stopPreview();
     pauseMix(this.mix, this.now); this.clearVoices();
     this.output?.disconnect(); this.analyser?.disconnect();
     await this.context?.close();

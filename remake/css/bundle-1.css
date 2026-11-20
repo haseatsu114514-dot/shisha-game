@@ -6263,6 +6263,12 @@ body:not(:root) .axe-bar-menu .axe-bar-tools > .gear-offer { flex: 0 1 auto; min
 .trpg-root.trpg-cinematic .trpg-spot:focus-visible { background: #a59d6640; box-shadow: 0 0 0 7px #f5d8a423, 0 0 30px #f5d8a452; }
 .trpg-root.trpg-cinematic .trpg-spot:is(:hover, :focus-visible) > span { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
 .trpg-root.trpg-cinematic .trpg-spot[data-label-side="above"] > span { top: auto; bottom: 57px; }
+/* 画面の端に近い印（view.js の data-label-align）は、名札を内側へ寄せる。中央揃えだと名札が画面の外へ切れた（#3199）。 */
+.trpg-root.trpg-cinematic .trpg-spot[data-label-align="start"] > span { left: 0; }
+.trpg-root.trpg-cinematic .trpg-spot[data-label-align="end"] > span { left: auto; right: 0; }
+.trpg-root.trpg-cinematic .trpg-spot[data-label-align] > span { transform: translate(0, -4px); }
+.trpg-root.trpg-cinematic .trpg-spot[data-label-align]:is(:hover, :focus-visible) > span,
+.trpg-root.trpg-cinematic[data-art="none"] .trpg-spot[data-label-align] > span { transform: none; }
 .trpg-root.trpg-cinematic .trpg-spot.checked { width: 42px; height: 42px; min-height: 42px; background: #142d318c; border-color: #d8e7cf7a; box-shadow: 0 2px 10px #0003; }
 .trpg-root.trpg-cinematic .trpg-spot.checked::before { animation: none; border-color: #cee0c63d; }
 .trpg-root.trpg-cinematic .trpg-spot.checked i { color: #d3e0c8; font-size: 13px; }
@@ -7887,6 +7893,10 @@ html:root .trpg-root.trpg-cinematic .trpg-builder-origin:hover:not(:disabled) { 
 html:root .trpg-root.trpg-cinematic .trpg-builder-origin.selected { border-color: #8a6524; background: #f7e7bf; box-shadow: inset 0 0 0 2px #d9ad4f; }
 html:root .trpg-root.trpg-cinematic .trpg-builder-origin-art { border-color: #c9b07a; }
 html:root .trpg-root.trpg-cinematic .trpg-builder :is(.trpg-builder-points, .trpg-builder-easy, .trpg-builder-hint, .trpg-builder-stat-help, .trpg-builder-stat-rows dt, .trpg-builder-stat-rows dd > span) { color: #3d2c16; }
+/* 「残り N 点」（能力を自分で振る）: 深緑の箱の時の淡い黄・淡い緑のままで、紙の上では読めなかった（#3199）。
+   紙の上で読める濃さにする。残っている時は琥珀、振り終えた（0点）時は緑。 */
+html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-points strong { color: #7d420c; }
+html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-points[data-left="0"] strong { color: #276032; }
 html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-stat-rows i b { background: #d8cbad; }
 html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-stat-rows i b.lit { background: linear-gradient(180deg, #e7b955, #b8862c); }
 html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-button:not(.trpg-builder-origin):not(.trpg-help-button) { border-color: #8a6524; background: #2f5a55; color: #fff6df; }
@@ -8505,6 +8515,15 @@ html:root[data-density="phone"] .trpg-campaign[data-view="shelf"] .trpg-campaign
 @media (min-width: 1001px) and (min-height: 601px) {
   html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene { min-height: 132px; }
   html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene .trpg-dice-row { margin: 8px 0; }
+  /* 「判定の詳細」を開いた時（#3199・TRF24 の残件）: 見通しの表がトレイ・切り札の札の下に積まれ、卓の中を下へ送らないと見えなかった
+     （切り札の札がある判定で 145px はみ出し）。開いている間だけ、トレイと切り札の札を左、詳細（判定の説明・見通しの表）を右に並べる。
+     決まりの一文・成功のごほうび・誰が何で は上に通しで残す。表の数字は今までと同じ（見せ方だけ）。 */
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-auto-flow: row dense; column-gap: 28px; align-items: start;
+  }
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) > * { grid-column: 1 / -1; }
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) > :is(.trpg-roll-scene, .trpg-aid, .trpg-aid-spent) { grid-column: 1; }
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-roll-details[open] { grid-column: 2; grid-row: span 2; max-width: none; margin: 8px 0 0; }
 }
 
 /* ---- 役の姿は「紙のコマ」（TRF26）: 暗い場面に立つ時（判定のカットイン・物語の中の役の台詞）は、人物のまわりに生成りの紙の縁を付ける。
@@ -8664,6 +8683,49 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trp
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { min-height: 380px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) > p.trpg-roll-chance > small { display: none; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) > .trpg-roll-details { top: 208px; }
+
+/* ---- 横持ちの再実測（#3199・2026-11-20）: 本編と同じ条件で残っていた「読めない・押せない」所 ---- */
+/* 本棚（過去プレイを再生）と店の「？」の紙（shelf-help.js の openShelfPanel）: 本文 8〜9px・「閉じる」「次へ」などの札 26〜29px だった。
+   卓の中の紙（メモ・遊び方）と同じく、箱を画面いっぱいまで広げ、文字と札を規格の大きさにする。中身は読み物なので、長い時は箱の中を送る。 */
+html:root[data-density="phone"] .trpg-root .trpg-overlay.trpg-shelf-help { padding: 22px 34px; }
+html:root[data-density="phone"] .trpg-root .trpg-modal.trpg-shelf-help-card { width: 1200px; max-height: 676px; padding: 18px 28px 16px; }
+html:root[data-density="phone"] .trpg-root .trpg-shelf-help-card > h2 { margin-bottom: 8px; }
+html:root[data-density="phone"] .trpg-root .trpg-shelf-help-card .trpg-modal-body :is(p, li, span, strong, small, h4) { font-size: var(--phone-sub); line-height: 1.5; }
+html:root[data-density="phone"] .trpg-root .trpg-shelf-help-card .trpg-modal-body h3 { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root .trpg-shelf-help-card .trpg-modal-body .trpg-button { min-height: var(--phone-tap); font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-root .trpg-shelf-help-card .trpg-modal-actions { margin-top: 10px; }
+html:root[data-density="phone"] .trpg-root .trpg-shelf-help-card .trpg-modal-actions .trpg-button { min-height: var(--phone-tap); padding: 0 22px; font-size: var(--phone-text); }
+/* 店の見出しの「本棚」の札の下の一行（過去プレイを再生）も補足の大きさに */
+html:root[data-density="phone"] .trpg-campaign-meta [data-test="trpg-bookshelf-open"] small { font-size: var(--phone-sub); line-height: 1.25; }
+
+/* 探索の上の札: 危機（警戒・アンコール・霧晴れ）の数が実寸 7px だった。調べるたびに増える数なので、手がかりの行と同じ補足の大きさに。
+   札の幅は中身に合わせ、入りきらない画面では2行に折る（820px 固定だと、長い題の物語で文字が札の外へはみ出していた）。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic[data-phase="explore"] .trpg-stage-cue { width: max-content; max-width: 1200px; flex-wrap: wrap; row-gap: 0; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-cue .trpg-stage-risk { font-size: var(--phone-sub); }
+/* 調べる場所の名札: 230px の上限のまま文字だけ大きくしたので、長い名札（「譜面台 · アンコール＋1」など）は文字が札の外へはみ出していた。
+   札の幅は中身に合わせる。画面の端に近い印の名札は内側へ寄せる（data-label-align・trpg-stage.css）。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot > span { max-width: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot[data-label-align] > span { transform: none; }
+
+/* チュートリアルの図: 図の下の説明（GM＝… / 30以上で成功… / 切り札は一人一度…）と GM・PL の札が実寸 8〜9px だった */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-tutorial-panel { width: 960px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-tutorial-panel :is(p, .trpg-tutorial-seats b) { font-size: var(--phone-sub); line-height: 1.5; }
+
+/* キャラ作り「能力を自分で振る」: 4つ目の能力（度胸）が箱の下に切れて、中を送らないと −／＋ を押せなかった（844×390・844×340）。
+   スマホでは能力を2列×2段に並べ（点の棒は出さず、数字「＋3」だけ）、右の紙を少し広げる。「？」で説明を開いた時は読み物なので従来の1列。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder[data-help="closed"]:has(.trpg-builder-stat-rows[data-mode="advanced"]) { grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder[data-help="closed"] .trpg-builder-stat-rows[data-mode="advanced"] { grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); column-gap: 12px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder[data-help="closed"] .trpg-builder-stat-rows[data-mode="advanced"] dd > i { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder[data-help="closed"] .trpg-builder-stat-rows[data-mode="advanced"] dd > span { min-width: 2em; text-align: center; }
+
+/* 判定の卓「判定の詳細」: 見立ての加点がまだ分からない判定では見込みが「約29〜48%」の幅になり、Safari のバーが出た低い画面（844×340）では
+   数字が2行に折れて表がボタンの下に切れていた。見込みの数字は1行にし、実寸 13px（本文より大きい）にする。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-odds strong { font-size: calc(13 * var(--roll-unit, 1px)); white-space: nowrap; }
+
+/* キャラクターシートの役の名前・結末の評価の名前と結末の一文: 低い画面（844×340）で実寸 10.4〜10.9px だった */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet .trpg-sheet-head h3 { font-size: calc(var(--phone-text) * 1.15); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-ending-rating strong { font-size: max(22px, var(--phone-text)); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-ending > p:not([class]) { font-size: max(23px, var(--phone-sub)); }
 /* A paper scenario on a small table. Scoped to the preview / mounted minigame. */
 #trpg-app { position: absolute; inset: 0; }
 .trpg-screen { position: absolute; inset: 0; background: #171c1e; }
@@ -11290,6 +11352,8 @@ html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 140px; }
 .gb-hint { margin-top: auto !important; color: var(--text-dim); font-size: 13px; }
 .gb-side-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .gb-side-actions .btn { min-height: 44px; min-width: 120px; }
+/* 支払いの行とボタンを包む枠（#3987）。PC では枠を作らず、今までどおり説明の続きに並ぶ。スマホ横はパネル下端に残す（下のスマホ横の盤） */
+.gb-side-foot { display: contents; }
 .gb-footer { display: flex; gap: 16px; align-items: center; padding: 10px 18px; border-top: 1px solid rgba(244, 210, 122, 0.35); background: rgba(10, 6, 16, 0.75); }
 .gb-wallet { display: flex; gap: 12px; align-items: center; flex: none; }
 /* 火種は色と形で見分ける（SBD62）: 白火＝白金の丸、紅火＝炎、蒼火＝しずく、翠火＝角（キューブ炭） */
@@ -11855,8 +11919,19 @@ html:root[data-density="phone"] body:not(:root) .gboard .gb-zoom .gb-icon { min-
 html:root[data-density="phone"] body:not(:root) .gboard .gb-side { gap: 3px; font-size: max(var(--phone-sub), calc(12.5px / var(--k, 1))); line-height: 1.42; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-p-title { font-size: max(var(--phone-text), calc(13px / var(--k, 1))); line-height: 1.42; }
 html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-p-sub, .gb-p-state, .gb-p-quality, .gb-p-reward, .gb-p-total, .gb-p-next, .gb-p-lock, .gb-p-target, .gb-bar, .gb-bar-sum, .gb-bar-note, .gb-feat, .gb-goals-head, .gb-goal-name, .gb-goal-fire b, .gb-goal-lock, .gb-goal-now) { font-size: max(var(--phone-sub), calc(12.5px / var(--k, 1))); }
-/* 長い要マス・授業の説明はスクロールできるまま、操作だけをパネル下端に残す。 */
-html:root[data-density="phone"] body:not(:root) .gboard .gb-side-actions { position: sticky; bottom: 0; z-index: 1; flex: none; padding-block: 4px; background: rgba(10, 6, 16, 0.96); }
+/* 見出し「心得の盤」と紋の字（才・感・理）は 24px のままだと 844×340（--k 0.47）で実寸 11.3px。盤の文字の下限 11.5px を割らない（#3121） */
+html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-title, .gb-hub-text) { font-size: max(24px, calc(11.5px / var(--k, 1))); }
+/* 長い要マス・授業の説明はスクロールできるまま、支払いの行（.gb-p-state）と操作だけをパネル下端の枠に残す。
+   ボタンだけを残していた時は、844×390 で一番下の「白火1で払う」が固定のボタンの後ろに隠れた（#3987）。
+   枠は左右に 4px 張り出し、文の幅は説明と同じ。上に細い線を引き、後ろの説明の字が透けないよう枠の色（--foot-bg）で塗る。
+   ボタンの段そのものには色を塗らない（枠の色に任せる）。説明が枠の後ろへ続く間（data-more。growth-board-screen.js）は、
+   枠のすぐ上で説明を枠の色へ薄れさせて、送れば続きがあると知らせる */
+html:root[data-density="phone"] body:not(:root) .gboard .gb-side-foot { --foot-bg: #0a0610; position: sticky; bottom: 0; z-index: 1; flex: none; display: flex; flex-direction: column; gap: 3px; margin-inline: -4px; padding: 4px; border-top: 1px solid rgba(244, 210, 122, 0.35); background: var(--foot-bg); }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-side > .gb-side-foot > .gb-side-actions { margin-top: 0; background: none; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-side[data-more="true"] > .gb-side-foot::before { content: ""; position: absolute; inset: auto 0 100%; height: 24px; background: linear-gradient(transparent, color-mix(in srgb, var(--foot-bg) 85%, transparent)); pointer-events: none; }
+/* 紙の盤（既定のUIデザイン）では枠も紙の色にする。暗い帯が紙の説明の上に載って見えないように。字は紙の上の色のまま
+   （新版の盤は夜紫の面なので、暗い枠のまま） */
+html:root[data-ui-theme="paper"]:not([data-look="neo"])[data-density="phone"] body:not(:root) .gboard .gb-side-foot { --foot-bg: var(--paper); border-top-color: var(--paper-line); }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-art { height: 84px; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-art span { font-size: 44px; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-art-icon { width: 64px; height: 64px; }
@@ -12317,6 +12392,32 @@ body:not(:root) .map .mi-tag.mi-lesson { color: #10261a; background: #9be7b4; wh
 .gfx-cutin.t-peak .gfx-cutin-icon { width: 108px; height: 108px; box-shadow: 0 0 24px #ffe08a; }
 html:root[data-density="phone"] body:not(:root) .gfx-cutin.t-peak .gfx-cutin-text strong { font-size: 48px; }
 @media (prefers-reduced-motion: reduce) { .gboard.peak-burst .gb-reveal { animation: none !important; } }
+
+/* ================= 授業の札の段階（2026-11-20 SBD155）=================
+   道が届いたか・♥が足りたかで、札の後ろの光と下の印を変える。札そのもの（顔・金の枠。#2129）は変えない。
+   lp-far＝まだ遠い（沈める）／lp-heart＝道は届いた。あとは♥だけ（桃色に脈打つ）／lp-road＝♥は足りた。あとは道だけ（金の点線の輪がゆっくり回る）／
+   lp-open＝♥を問わない授業で道がまだ（細い点線の輪だけ）／lp-ready＝今教われる（今までの金の息づき）／lp-talk＝灯した。会いに行く（緑の光）／lp-done＝習得（今までの灯した姿） */
+.gboard .gb-nodes .gb-node.lesson.lp-far .gb-face { opacity: 0.55; }
+.gboard .gb-nodes .gb-node.lesson:is(.lp-heart, .lp-road, .lp-open, .lp-ready, .lp-talk, .lp-done) .gb-face { opacity: 1; }
+.gb-node.lesson:is(.lp-heart, .lp-road, .lp-open, .lp-talk)::before { content: ""; position: absolute; left: 50%; top: 50%; width: calc(var(--fh) + 40px); height: calc(var(--fh) + 40px);
+  translate: -50% -50%; border-radius: 50%; pointer-events: none; }
+.gb-node.lesson.lp-heart::before { background: radial-gradient(circle, rgba(236, 96, 140, 0.7) 0%, rgba(226, 85, 127, 0.32) 46%, transparent 70%); animation: gb-lp-heartbeat 1.25s ease-in-out infinite; }
+@keyframes gb-lp-heartbeat { 0%, 100% { scale: 0.92; opacity: 0.75; } 14% { scale: 1.1; opacity: 1; } 28% { scale: 0.96; opacity: 0.8; } 42% { scale: 1.06; opacity: 1; } 60% { scale: 0.92; opacity: 0.75; } }
+.gb-node.lesson.lp-road::before { width: calc(var(--fh) + 14px); height: calc(var(--fh) + 14px); border: 2px dashed rgba(255, 224, 138, 0.9);
+  background: radial-gradient(circle, rgba(244, 210, 122, 0.24), transparent 70%); animation: gb-lp-turn 14s linear infinite; }
+.gb-node.lesson.lp-open::before { width: calc(var(--fh) + 12px); height: calc(var(--fh) + 12px); border: 1.5px dashed rgba(255, 233, 184, 0.42); }
+@keyframes gb-lp-turn { to { rotate: 360deg; } }
+.gb-node.lesson.lp-talk::before { background: radial-gradient(circle, rgba(155, 231, 180, 0.6) 0%, rgba(155, 231, 180, 0.22) 46%, transparent 70%); animation: gb-lp-glow 1.8s ease-in-out infinite; }
+@keyframes gb-lp-glow { 50% { opacity: 0.55; } }
+/* 下の印: あと♥1（道は届いた。明るい桃色で脈打つ）・♥達成（金の縁） */
+.gb-lesson-tag.t-heart.only { background: linear-gradient(180deg, #ff7aa6, #d83e74); animation: gb-tag-heart 1.25s ease-in-out infinite; }
+.gboard .gb-nodes .gb-node > .gb-lesson-tag.t-heart.only { box-shadow: 0 0 0 2px rgba(10, 6, 16, 0.9), 0 0 10px #ff7aa6; }
+/* 「相談」の印: 吹き出しの絵のぶんの左の余白が、札の印の基の指定（余白 0 8px）に負けて、絵が「相」の字に重なっていた（PC幅。スマホ幅は別の指定で空いていた） */
+.gboard .gb-nodes .gb-node > .gb-lesson-tag.t-talk { padding-left: 21px; }
+@keyframes gb-tag-heart { 14%, 42% { scale: 1.12; } 28%, 60% { scale: 1; } }
+.gb-lesson-tag.t-road { color: #ffe9b8; background: #2a1c0c; border: 1.5px solid #ffe08a; }
+.gh-tag.gb-lesson-tag.t-heart.only { animation: none; }
+@media (prefers-reduced-motion: reduce) { .gb-node.lesson::before, .gb-lesson-tag.t-heart.only { animation: none !important; } }
 
 /* ===== css/rule-sheet.css ===== */
 .modal-box.rule-sheet-modal { width: min(560px, 94%); max-height: min(96%, 700px); padding: 12px 24px; }

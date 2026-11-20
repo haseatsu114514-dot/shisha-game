@@ -94,6 +94,22 @@ export function chapterFourRetryContext(value) {
     retryAssist: false };
 }
 
+/** コンティニュー画面で選んだ難易度（WIN14）を、次の一台を始めるまで保存する。0 はノーマル。 */
+export function recordChapterFourRetryChoice(value, level) {
+  const p = chapterFourMatch(value);
+  p.retryChoice = Number.isInteger(level) && level > 0 ? level : 0;
+  return p.retryChoice;
+}
+
+/** 保存した難易度の選択を一度だけ取り出す。画面の選択を持たない保存（旧版）は null。 */
+export function takeChapterFourRetryChoice(value) {
+  const p = chapterFourMatch(value);
+  if (!Number.isInteger(p.retryChoice)) return null;
+  const level = p.retryChoice;
+  delete p.retryChoice;
+  return level;
+}
+
 export function recoverChapterFourStep(value) {
   const p = chapterFourMatch(value);
   // flags._ch4.match の旧形式もそのまま読み、未確定工程の資源だけ戻す。

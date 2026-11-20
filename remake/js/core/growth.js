@@ -34,10 +34,10 @@ export const MAX_LEVEL = 99; // 2周目の終わりにやり込んで届く上�
 export const BOARD_TOTAL = BOARD_KEYS.reduce((n, b) => n + STAT_SQUARES[b]
   + BOARD_SHAPES[b].cells.filter(([, kind]) => kind === "gate").length, 0) + [...SKILLS,...STAT_UPGRADES].reduce((n, s) => n + s.cost, 0);
 /** 盤の型の版。違う版の灯し方は、使った火種を返して最初から（習得した授業は残す） */
-export const BOARD_VERSION = 13; // 4: 授業の小道、5: 授業20、6: 1レベル1つ、7: 3盤とも7割、8: 3盤を同じ大きさに・1レベル2つ、9: 紋を下に・関門の先に授業、10: 関門を紋のそばに・極みは盤を埋めたご褒美、11: 3枚の形をそれぞれ変える、12: 紋の場所も盤ごと・授業は章の順に遠く（2026-10-30）、13: 輪つきの木・要のマス・アイコン（2026-10-31）
+export const BOARD_VERSION = 15; // 15: ユニークなスキル3つ（聞き上手・くじ運・仕事が早い。2026-11-20 SBD154）、14: ♥5の授業を奥へ（第1章の人はスキルの先・あとの章の人は台座の先のいちばん奥。2026-11-20 SBD149）、 4: 授業の小道、5: 授業20、6: 1レベル1つ、7: 3盤とも7割、8: 3盤を同じ大きさに・1レベル2つ、9: 紋を下に・関門の先に授業、10: 関門を紋のそばに・極みは盤を埋めたご褒美、11: 3枚の形をそれぞれ変える、12: 紋の場所も盤ごと・授業は章の順に遠く（2026-10-30）、13: 輪つきの木・要のマス・アイコン（2026-10-31）
 /**
  * レベルアップ1回でもらう万能の火種（1.5）。2026-10-30 オーナー「いろんな盤をあけてく爽快感も欲しい」→「1レベル2つ・盤を細かく」（SBD60）:
- * どのレベルも2つ。盤は198（3盤とも66）で、1周目（中央 Lv.57、約140）で3つの盤どれも7割。
+ * どのレベルも2つ。盤は204（3盤とも68。v15 でユニークなスキルを各盤1つ足した。その前は198）で、1周目（中央 Lv.57、約140＋優勝などの上乗せ）で3つの盤どれも約7割。
  */
 export const HIDANE_PER_LEVEL = 2;
 export const hidaneForLevel = () => HIDANE_PER_LEVEL;
@@ -759,6 +759,7 @@ export function gaugeInfo(g = state?.growth) {
 
 // 自由行動の確定（paidAction）と好感度の段から呼ばれる入口を登録する。
 setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp, recipe: awardRecipeExp, scene: awardSceneExp, affinity: awardAffinityStepExp, perks: growthPerks,
+  skill: growthSkill,
   committed: s => { if (s.growth?.respec) { syncRespecOpportunity(s.growth, s); closeRespecOpportunity(s.growth); } },
   capacityBonus: s => growthLesson(s, "M-B4") ? LESSON_TUNING.stamina : 0,
   sleepMultiplier: s => (growthSkill(s, "K03") ? 1 + SKILL_TUNING.sleep : 1)

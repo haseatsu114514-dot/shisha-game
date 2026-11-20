@@ -15,7 +15,7 @@ import { chapterDay } from "../core/chapter-clock.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { maxStamina } from "../core/stats.js";
-import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
+import { recordTournamentLoss, retryAssistOffer, applyRetryAssistChoice } from "./retry-assist.js";
 import { chosenAssistLevel } from "../craft/retry-assist-level.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
@@ -410,11 +410,11 @@ async function renderDefeat(owner, variant = null) {
   await warmGameOver();
   if (!live(owner)) return;
   hud(owner, true); // MENU は SAVE/LOAD を残す。モーダル中は共通の時計と音が止まる。
-  const root = buildGameOver({ context, variant,
-    onRetry: () => perform(owner, async () => {
-      const assisted = await chooseRetryAssist(p, () => live(owner) && root.isConnected && progress() === p);
+  // 3敗目からは、再挑戦を押した同じ画面で難易度を選ぶ（WIN14）。
+  const root = buildGameOver({ context, variant, difficulty: retryAssistOffer(p),
+    onRetry: level => perform(owner, async () => {
       if (!live(owner) || !root.isConnected || progress() !== p) return;
-      if (assisted === null) { await renderDefeat(owner, root.continueVariant); return; }
+      applyRetryAssistChoice(p, level);
       owner.cs = null;
       checkpoint("ready");
       renderReady(owner);
