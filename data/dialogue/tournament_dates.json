@@ -506,6 +506,61 @@
           "text": "……それ、うちが言いたかったやつ"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "屋台の明かりから少し離れたところで、あげはがスマホを出した。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……ね、一枚撮って。うちの手"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "手？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "震えてる手。……いつか「こんな日もあったね」って、言いたいから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出された手のひらに、スマホを向けた。シャッターを押す間も、指先は細かく揺れていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面の手は、少しぶれていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "……ぶれてる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "うける。ちゃんと震えてんじゃん、うち"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはが、今日初めて声を出して笑った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "消す？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "消さない。待ち受けにはしないけど、一番上に置いとく"
+        },
+        {
           "type": "choice",
           "id": "tournament_date_choice_ageha",
           "choices": [
@@ -531,6 +586,21 @@
             "text": "黙ったまま、つないだ手の震えが止まるのを待った。"
           },
           {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "……止まったかも。今撮ったら、ぶれないかな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "撮る？"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "撮んない。止まったとこは、ハジメっちだけ知ってればいい"
+          },
+          {
             "speaker": "",
             "face": "",
             "text": "約束した時間に、宿のロビーまで二人で歩いた。"
@@ -543,12 +613,18 @@
             "text": "今日、会えてよかった"
           },
           {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "明日、客席から手ぇ振る。ぶれてても、気にしないで"
+          },
+          {
             "speaker": "",
             "face": "",
             "text": "あげはは手を離す前に、一度だけ強く握った。震えたままの指で、ピースを作って見せた。"
           }
         ]
-      }
+      },
+      "comment": "#4010 で増補: 震える日を打ち明けた後、あげはが震えている自分の手を撮らせる（いつか「こんな日もあったね」と言いたい）。写真はぶれて、それで初めて声を出して笑う（盛り上げ係を休んだ日の一度だけの笑い）。待ち受けにはしないが一番上に置く（lover_ageha_lv1 の待ち受け・lv5 の撮らなかった日と重ねない）。stay は震えが止まっても撮らない、home は客席から手を振る約束。"
     },
     {
       "dialogue_id": "tournament_date_mashiro",
@@ -614,6 +690,36 @@
             "speaker": "",
             "face": "",
             "text": "彼女は俺の肩に少し寄りかかり、お茶が冷めるまで黙っていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "しばらくして、ましろちゃんがポケットから小さなキッチンタイマーを出した。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "これ、mukaiのを借りてきたの"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "……三十分にしとくねぇ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "ましろちゃんが時間を決めるなんて、珍しいね"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "決めないと、ずっとここにいちゃうもん。明日のはじめくんの分、残しとかないと"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "小さなタイマーが、二人のあいだで時間を刻みはじめた。"
           }
         ],
         "eve_dubai": [
@@ -651,9 +757,54 @@
             "speaker": "",
             "face": "",
             "text": "彼女は俺の肩に少し寄りかかり、湯気が消えるまで黙っていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "しばらくして、ましろちゃんがポケットから小さなキッチンタイマーを出した。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "これ、日本から持ってきたの。僕の、お茶用"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "……三十分にしとくねぇ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "ましろちゃんが時間を決めるなんて、珍しいね"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "決めないと、ずっとここにいちゃうもん。明日のはじめくんの分、残しとかないと"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "小さなタイマーが、二人のあいだで時間を刻みはじめた。"
           }
         ],
         "stay": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "タイマーが鳴る少し前、ましろちゃんの指が、そっとボタンを押した。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "……今の、見なかったことにしてねぇ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "見てない。何も鳴ってない"
+          },
           {
             "speaker": "",
             "face": "",
@@ -676,6 +827,16 @@
           {
             "speaker": "",
             "face": "",
+            "text": "ちょうど、タイマーが小さく鳴った。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "……鳴っちゃった。えらいねぇ、僕たち"
+          },
+          {
+            "speaker": "",
+            "face": "",
             "text": "ましろちゃんは空いたカップを二つ重ねて持ち、もう片方の手をゆっくり振った。"
           }
         ],
@@ -693,7 +854,8 @@
             "text": "約束した時間に、宿のロビーまで二人で戻った。"
           }
         ]
-      }
+      },
+      "comment": "#4010 で増補: 前夜（東京・ドバイの両方）に、ましろちゃんが小さなキッチンタイマーを三十分にかける（決めないとずっとここにいちゃう・明日のはじめの分を残す）。stay は鳴る前に自分で止める、home は鳴って「えらいねぇ、僕たち」。lover_mashiro_lv2 のお茶のタイマー（手を借りる）と同じ持ち物だが、こちらは時間を区切る使い方。"
     },
     {
       "dialogue_id": "tournament_date_samechan",
