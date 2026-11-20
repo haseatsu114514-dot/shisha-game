@@ -699,6 +699,15 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
   grid-column: 2 !important; grid-row: 3 !important; justify-self: stretch; min-height: var(--ph-tap) !important; margin: 0 !important; padding: 4px 14px !important; font-size: var(--ph-sub) !important; line-height: 1.2 !important;
 }
 
+/* ================================================================ 雑念よけ
+   雑念の場（784×414）は大きさを保つ。下の操作の列（180px）は残りの高さに合わせて縮む。
+   小さい画面では 場＋列 が舞台の高さを超え、ボタンの下が数 px 切れていた。スティックのつまみは、縮んでも真ん中に来るよう中心から置く */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .steam-play { flex: none !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .dodge-controls { flex: 1 1 auto !important; height: auto !important; min-height: var(--ph-tap) !important; max-height: 180px !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .dodge-controls :is(.btn.dodge-action, .slash-control) { height: 100% !important; min-height: 0 !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .dodge-controls > .dodge-pad { width: auto !important; height: 100% !important; max-height: 176px; aspect-ratio: 1; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .dodge-controls > .dodge-pad > .dodge-knob { left: calc(50% - 44px) !important; top: calc(50% - 54px) !important; }
+
 /* ================================================================ 吸い出し・調整
    半円のダイヤルを舞台の中央に大きく。下の列は 左＝状態（葉の持ち・回数）／右＝提供（整え終える）＋金の「吸う」。
    針の現在位置の札はダイヤルの真下。 */
