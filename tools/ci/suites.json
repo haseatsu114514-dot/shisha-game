@@ -28,6 +28,12 @@
       "run": ["node remake/test/play_mastery.mjs"]
     },
     {
+      "id": "play-tiers",
+      "title": "Mini-game three tiers (#3779): unlocks, clear records, old-save import and the one-time top-tier fire",
+      "kind": "quick",
+      "run": ["node remake/test/play_tiers.mjs"]
+    },
+    {
       "id": "promo-site",
       "title": "公式プロモーションサイト（promo/）の参照切れ・ページ内リンク・人物と店の対応・使っていない絵",
       "kind": "quick",

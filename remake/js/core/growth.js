@@ -15,6 +15,7 @@ import { masteryHooks } from "./flavor-mastery.js";
 import { syncRespecOpportunity, closeRespecOpportunity } from "./growth-respec.js";
 import { KUJI_LIMITED_GRADES } from "./rules.js";
 import { syncPlayMastery, masteryRecord, masteryLine, PLAY_MASTERY } from "./play-mastery.js";
+import { syncPlayTiers, tierCleared, TIER_GAMES, TIER_LABEL } from "./play-tiers.js";
 export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
 export function setGrowthPreview(on) {
@@ -575,7 +576,9 @@ function bestAxeRank(s) {
 }
 function playRewardMet(reward, s) {
   if (reward.master) return masteryRecord(s, reward.game).done;
+  if (reward.tier) return tierCleared(s, reward.game, reward.tier);
   if (reward.game === "axe") { const rank = bestAxeRank(s); return !!rank && atLeast(rank, reward.rank); }
+  if (reward.game === "trpg" && reward.scenario) return !!s.trpg?.cleared?.[reward.scenario];
   if (reward.game === "trpg") {
     const cleared = Object.values(s.trpg?.cleared || {});
     if (reward.stars) return cleared.some((c) => (c?.stars || 0) >= reward.stars);
@@ -593,6 +596,7 @@ function playRewardMet(reward, s) {
  */
 export function claimPlayRewards(g, s = state) {
   syncPlayMastery(s);
+  syncPlayTiers(s);
   const out = [];
   for (const reward of PLAY_REWARDS) {
     if (g.rewards[reward.id] || !playRewardMet(reward, s)) continue;
@@ -789,4 +793,11 @@ on("play-mastery", ({ state: owner, game, newly }) => {
   if (owner !== state) return;
   settleGrowth();
   emit("notice", { text: newly ? `認定：${PLAY_MASTERY[game].title}` : masteryLine(owner, game) });
+});
+
+// ミニゲームの段を初めてクリアした（#3779）。上級なら白火をその場で精算する。下の段の一言は各ゲームの結果の画面が出す。
+on("play-tier", ({ state: owner, game, newlyHard }) => {
+  if (owner !== state || !newlyHard) return;
+  settleGrowth();
+  emit("notice", { text: `${TIER_GAMES[game]?.title || ""} ${TIER_LABEL.hard}クリア` });
 });
