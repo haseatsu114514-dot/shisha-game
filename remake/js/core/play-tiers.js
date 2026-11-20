@@ -18,7 +18,7 @@ export const TIER_HARD_GIFT = 1;
 
 /** 対象のゲームと、その段の「クリア」の線（画面の説明と正本に同じ文を使う）。 */
 export const TIER_GAMES = Object.freeze({
-  axe: Object.freeze({ title: "斧投げ", clear: "その部門の10投でBランク以上" }),
+  axe: Object.freeze({ title: "斧投げ", clear: "その部門の10投で、初級はB・中級と上級はAランク以上" }),
   camel: Object.freeze({ title: "ラクダレース", clear: "その大会で3位以内" }),
   desert: Object.freeze({ title: "サンドボード", clear: "その段でヌールより先にゴール" }),
   dj: Object.freeze({ title: "DJ", clear: "そのセットをBランク以上で回しきる" }),
@@ -113,6 +113,13 @@ const LEGACY = {
   },
   // DJ: SET 1・2・3 の自己ベストが B 以上
   dj: (s) => [["1", "easy"], ["2", "normal"], ["3", "hard"]].filter(([id]) => passB(object(object(s?.dj?.sets)[id]).best?.rank)).map(([, t]) => t),
+  // 斧投げ: Barの10投の自己ベスト・前回のうち、部門の分かる記録がその段の線（レクは満点の .45＝B、アマ・プロは .62＝A）以上。
+  // レク＝初級・アマ＝中級・プロ＝上級。部門の無い古い記録と3投練習からは推測しない
+  axe: (s) => {
+    const league = object(object(s?.flags?._axe_bar_records).league);
+    const tier = { rec: "easy", am: "normal", pro: "hard" }, line = { rec: 0.45, am: 0.62, pro: 0.62 };
+    return [league.best, league.last].map(object).filter((e) => tier[e.division] && e.maximum > 0 && e.total / e.maximum >= line[e.division]).map((e) => tier[e.division]);
+  },
   // サンドボード: 段ができる前の勝負は今の中級。ヌールに勝っていれば中級までクリア
   desert: (s) => (Number.isInteger(s?.desert?.wins) && s.desert.wins > 0 ? ["normal"] : []),
 };

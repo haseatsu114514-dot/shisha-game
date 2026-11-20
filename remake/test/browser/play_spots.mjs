@@ -181,7 +181,7 @@ await suite("play-spots", async runCheck => {
     await capture(page, label + "-axe-return");
     assert.deepEqual(after.affinity, before.affinity); assert.deepEqual(after.met, before.met); assert.deepEqual(after.story, before.story);
     for (const key of ["hiyoriFlags", "lovers", "relationshipMemories"]) assert.deepEqual(after[key], before[key]);
-    // #3779 新しい保存の10投は初級（レク）。段のクリアは10投の B 以上だけで、3投練習・B に届かない10投（弱い投げで全部落とす）は数えない
+    // #3779 新しい保存の10投は初級（レク）。初級のクリアは10投の B 以上だけで、3投練習・B に届かない10投（弱い投げで全部落とす）は数えない
     assert.equal(after.records[mode].last.division, "rec");
     const passedB = mode === "league" && after.records.league.last.total / after.records.league.last.maximum >= .45;
     if (aimed && mode === "league") assert(passedB, `Aimed 10 throws reach B at REC (${after.records.league.last.total} points)`);
@@ -210,7 +210,7 @@ await suite("play-spots", async runCheck => {
       { tier: "easy", name: "初級 レク", lock: null, disabled: false, pressed: false },
       { tier: "normal", name: "中級 アマ", lock: null, disabled: false, pressed: true },
       { tier: "hard", name: "上級 プロ", lock: "中級クリアで開く", disabled: true, pressed: false }]);
-    assert.match(await page.locator(t("axe-bar-tier-line")).textContent(), /^初級✓ 中級— 上級— · 上級クリアで白火1 · クリア：その部門の10投でBランク以上$/);
+    assert.match(await page.locator(t("axe-bar-tier-line")).textContent(), /^初級✓ 中級— 上級— · 上級クリアで白火1 · クリア：その部門の10投で、初級はB・中級と上級はAランク以上$/);
     await hit(page, "axe-bar-tier-easy");
     assert.deepEqual((await tierRow(page)).map(row => row.pressed), [true, false, false]);
     assert.match(await page.locator(t("axe-bar-division-note")).textContent(), /何も閉じない/);
@@ -235,7 +235,7 @@ await suite("play-spots", async runCheck => {
         { tier: "normal", name: "中級 アマ", lock: "初級クリアで開く", disabled: true, pressed: false },
         { tier: "hard", name: "上級 プロ", lock: "中級クリアで開く", disabled: true, pressed: false }]);
       assert.equal(await page.locator(".axe-bar-division-label").textContent(), "10投の難しさ");
-      assert.equal(await page.locator(t("axe-bar-tier-line")).textContent(), "初級— 中級— 上級— · 上級クリアで白火1 · クリア：その部門の10投でBランク以上");
+      assert.equal(await page.locator(t("axe-bar-tier-line")).textContent(), "初級— 中級— 上級— · 上級クリアで白火1 · クリア：その部門の10投で、初級はB・中級と上級はAランク以上");
       await capture(page, label + "-axe-tiers");
       for (const id of ["normal", "hard"]) {
         const closed = page.locator(t("axe-bar-tier-" + id));
