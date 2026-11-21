@@ -172,6 +172,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_halloween_active", "progression"],
   ["_ch2_kumicho_public_reveal", "person"],
   ["_ch2_morning_departed", "progression"],
+  ["_ch2_stay_local_since", "progression"],
   ["_ch2_naru_hurt", "person"],
   ["_ch2_naru_listened", "person"],
   ["_ch2_naru_warm_customers", "person"],
@@ -229,6 +230,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_evening", "progression"],
   ["_ch3_tokyo_proposal_day", "progression"],
   ["_ch3_intro", "progression"],
+  ["_ch3_free_night_guide", "ui"],
+  ["_ch3_lime_contact_guide", "ui"],
   ["_ch3_japan_first_representative", "progression"],
   ["_ch3_mukai_work_intro_read", "person"],
   ["_ch3_opening_read", "progression"],
@@ -260,6 +263,15 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_prep_clinic", "progression"],
   ["_ch3_prep_farewell", "progression"],
   ["_ch3_preview_seen", "progression"],
+  // 第3章の来店後に届くLIMEの既読条件（#3097）。
+  ["_ch3_read_ch3_mashiro_play_1", "progression"],
+  ["_ch3_read_ch3_mashiro_play_2", "progression"],
+  ["_ch3_read_ch3_mukai_latte_cat", "progression"],
+  ["_ch3_read_ch3_mukai_no_hat", "progression"],
+  ["_ch3_read_ch3_saku_bakery", "progression"],
+  ["_ch3_read_ch3_saku_missed", "progression"],
+  ["_ch3_read_ch3_steve_two_timers", "progression"],
+  ["_ch3_read_ch3_tsumugi_slump", "progression"],
   ["_ch3_read_ch3_mashiro_glass_cloth", "progression"], // 布巾の場面（#3081）。LIMEの trigger_flag に字面で出る
   ["_ch3_read_ch3_saku_lime", "progression"],
   ["_ch3_read_ch3_saku_steve_notes", "progression"], // スティーブ×綾取（#3468 C案）。第4章のLIMEの trigger_flag に字面で出る
@@ -277,6 +289,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_trial_steve", "progression"],
   ["_ch3_tokyo_call_night", "progression"],
   ["_ch3_room_rests", "progression"], // 東京の奥の部屋で休んだ回数（ch3-tokyo-daily.js の小品の巡回）。周回では持ち越さない
+  ["_ch3_home_calls", "progression"], // 東京の奥の部屋で休んだ時に読んだ地元からの電話（ch3-outing-progress.js の HOME_CALLS・#3097 第2弾）
   ["_ch4", "progression"],
   ["_camel_cups", "unlock"], // 大会の解放・中級認定・上級称号を周回へ残す
   ["_camel_name_done", "progression"], // ハビーバの名前の由来（ミニゲームのドラマ・SPC26）
@@ -292,6 +305,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
+  ["_ch4_home_calls", "progression"], // ドバイの昼に宿で休んだ時に読んだ地元からの電話（ch4-dubai-local.js の HOME_DAY_CALLS・#3097 第2弾）
   ["_visit_chains", "progression"], // 通いの続きの小さな出来事（第3〜5章・段の既読と選んだ答え。chapters/visit-chains.js）。周回では持ち越さない
   ["_ch4_dubai_nights", "progression"], // ドバイの夜がにぎわう店に夜に行った回数（店ごと・ch4-dubai-local.js）。周回では持ち越さない
   ["_ch4_longlong", "progression"], // 龍龍水煙所のドバイの店の段階の既読・通いの回数（ch4-longlong.js）
@@ -628,6 +642,10 @@ export const FLAG_EXACT_RULES = [
   ["_talk_seen_ch3_prep_rei_live", "person"], // クラウドのライブの夜（第3章の準備期間・RVE07）
   ["_talk_seen_ch3_prep_rio", "person"],
   ["_talk_seen_ch3_prep_tsumugi", "person"], // #3097 PR-I（上の3つと同じ）
+  // 第5章の来店後に届くLIMEの既読条件（#3097）。
+  ["_talk_seen_ch5_adam_shop", "person"],
+  ["_talk_seen_ch5_rei_shop", "person"],
+  ["_talk_seen_ch5_rio_naru_order", "person"],
   ["_tsumugi_contest_art_seen", "person"],
   ["_tsumugi_contest_draft_hands", "person"],
   ["_tsumugi_contest_draft_window", "person"],

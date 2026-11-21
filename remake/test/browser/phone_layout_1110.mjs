@@ -61,9 +61,18 @@ await suite("phone-layout-1110", async check => {
         const get = s => document.querySelector(s).getBoundingClientRect().toJSON();
         const preview = document.querySelector(".equipment-set-preview");
         return { panel: get(".bench-panel"), choices: get(".opt-grid"),
-          previewScrolls: preview.scrollHeight > preview.clientHeight && getComputedStyle(preview).overflowY === "auto" };
+          // 一式の札は、長い表を中で送る（以前の配置）か、名前だけに畳んで収める（PHN: 表は「性能を見比べる」の中）
+          previewScrolls: preview.scrollHeight > preview.clientHeight && getComputedStyle(preview).overflowY === "auto",
+          preview: preview.getBoundingClientRect().toJSON(), previewOverflow: preview.scrollHeight - preview.clientHeight,
+          rowsOnScreen: !!preview.querySelector("dl")?.getClientRects().length };
       });
-      assert(within(setup.choices, setup.panel) && setup.previewScrolls, `Setup actions cut: ${JSON.stringify(setup)}`);
+      const previewFits = setup.previewOverflow <= 1 && within(setup.preview, setup.panel);
+      assert(within(setup.choices, setup.panel) && (setup.previewScrolls || previewFits), `Setup actions cut: ${JSON.stringify(setup)}`);
+      if (!setup.rowsOnScreen) { // 画面から外した表は、見比べのダイアログで読める
+        await page.locator('[data-test="setup-compare"]').click();
+        await page.locator('#modal .equipment-compare-set .equipment-guide-rows').waitFor();
+        await page.locator('[data-test="setup-compare-close"]').click();
+      }
       if (process.env.ARTIFACT_DIR) await page.screenshot({ path: `${process.env.ARTIFACT_DIR}/phone-layout-1110-${device}-setup.png` });
       await page.evaluate(() => { void phoneOptions.steps.stepPlace(phoneOptions.cs); });
       await page.locator('.bench[data-step="place"] .opt-grid').waitFor();

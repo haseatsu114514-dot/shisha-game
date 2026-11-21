@@ -454,6 +454,9 @@ function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
   const fixed = chapterFeatureEnabled(state.chapter, "sumiStoryShifts") && (state.day === 3 || state.day === 8);
   const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
   if (!fixed && !slacking) return null;
+  // 急な誘いは、前の依頼から3日以上の間隔を取る。物語の固定の誘いは日付どおりに届ける。
+  if (!fixed && (state.inbox || []).some(item => item.msg?.accept_event === "__sumi_baito__"
+    && state.day - item.day > 0 && state.day - item.day < 3)) return null;
   // #2088: 夜のtonariに外せない予定がある日は「シフトには入れない」と断るので、サボり気味の催促は出さない（翌日以降に再送）。
   // DAY3・DAY8 の固定の誘いは台本の一部なので残す
   if (!fixed && fixedNight?.(state.day)) return null;
@@ -1512,7 +1515,7 @@ export function limeCoach(onOpen) {
 
 /** 章の旅程相談。既存端末とアカウントを使い、当日招待の失効・報酬処理へ流さない。 */
 export async function openContactLime({ contacts, summary, actions, onAction, signal = null,
-  title = "恋人との連絡", empty = "連絡先を交換した恋人ができると、ここから連絡できます。" }) {
+  title = "恋人との連絡", empty = "連絡先を交換した恋人ができると、ここから連絡できます。", guide = "" }) {
   const owner = state;
   const ui = phoneShell({ time: clockNow(), title: `DAY ${chapterDay(state)}` });
   let resolveClose;
@@ -1527,6 +1530,10 @@ export async function openContactLime({ contacts, summary, actions, onAction, si
     ui.header.replaceChildren(el("span.lime-logo", { text: "LIME" }), el("span.lime-title", { text: title }));
     ui.chat.classList.add("list");
     ui.chat.replaceChildren();
+    if (guide) {
+      ui.chat.append(el("p.lime-tip", { text: guide, dataset: { test: "lime-contact-guide" } }));
+      guide = "";
+    }
     for (const id of contacts()) {
       const account = accountFor(id);
       ui.chat.append(el("button.lime-chat-row", { dataset: { test: `lime-contact-${id}` }, onclick: () => showThread(id) }, [

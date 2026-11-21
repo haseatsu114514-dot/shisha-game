@@ -4,7 +4,9 @@
 
 Codex への依頼は [Issue #3327](https://github.com/haseatsu114514-dot/shisha-game/issues/3327)。
 
-## いまある絵（調べた結果）
+クラウドの専用ハガルは後続の [#3716](https://github.com/haseatsu114514-dot/shisha-game/pull/3716) でカシスの実と葉の意匠を採用済み。再制作時は採用素材と `data/equipment.json` の `suyaki_rei` を参照する。
+
+## 依頼を出した時点の素材
 
 | 絵 | 状態 |
 |---|---|
@@ -41,7 +43,7 @@ Codex への依頼は [Issue #3327](https://github.com/haseatsu114514-dot/shisha
 | あげは | ホワイトグミベア | 「縁にクマのシールつき」・ギャル・カワイイは最強 | 淡いピンクがかった生成りの土、縁の下に少しすり切れた白いクマのシール、小さなハートと点の彫り |
 | ましろ | ブラックティー | いつも眠たげ・濃い葉が好き・「ほかの葉を消さない一割」 | 煤けた紅茶色の土、縁から下へ紅茶の染み、小さな茶葉1枚と細い線1本 |
 | 神崎（組長） | ドラゴンフルーツ | 「兄弟の盃」・竜二・閉店後の一服 | 炭色の土、盃のように少し開いた口（脚はある）、鱗（竜とドラゴンフルーツの皮）の浅彫りの帯、縁にマゼンタの細い線。紋・文字は無し |
-| レヰ | ローズ | V系・黒とワインレッド・「友達のしるし」 | 黒い土にワインレッドの染み、薔薇1輪と脚に巻く細い茨の浅彫り。髑髏・文字は無し |
+| クラウド | カシス意匠の専用ハガル | V系・黒とワインレッド・「友達のしるし」 | カシスの実と葉。採用済みの意匠は `bowl_empty_rei.png` と #3716 を参照 |
 | 綾取 | アールグレイ | 綾取（あやとり）・「返事の欄の続き」・福岡から持ってきた | 生成りに灰青の化粧土、器に巻くあやとりの糸の線、ベルガモットの小さな印、脚に空欄の小さな枠 |
 | ヌール | ダブルアップル | 14歳で父に教わった・砂漠ツアーのガイド | 砂色の土、砂丘の風紋の線、縁の近くに小さなりんごとアニスの星 |
 | スティーブ | マウンテンミスト | レトロな柄シャツ・低い熱で待つ・「縁が少し欠け」 | 生成りにレモン色とライム色の帯、柄シャツのような小さな幾何学模様、縁の外側だけ小さな欠け |
@@ -137,7 +139,7 @@ Design for ましろ (black tea; sleepy; likes dark leaves but adds only a littl
 Design for 神崎 / シーシャ組長 (dragon fruit; treats sharing a session like exchanging sake cups): deep charcoal-black clay; the top of the cup opens slightly wider, like the silhouette of a sake cup (sakazuki), but it is still a proper hookah bowl with the full long stem; a band of shallow carved overlapping scales (dragon scales / dragon-fruit skin) around the cup; one thin vivid magenta-pink inlay line along the outer rim edge. No crests, no family emblems, no letters.
 
 --- 11/23: assets/ui/making/bowl_empty_rei.png ---
-Design for レヰ (rose; visual-kei café owner who dresses in black and wine red): matte black clay with a deep wine-red wash; one shallow carved rose on the cup with a thin thorny stem winding down around the stem of the bowl; gothic but simple. No skulls, no crosses, no letters.
+採用済みのため再生成なし。補修時は #3716 のカシスの実と葉の意匠を持つ採用済みの画像を参照する。
 
 --- 12/23: assets/ui/making/bowl_empty_saku.png ---
 Design for 綾取 (Earl Grey; his surname means the string game "ayatori"; the gift continues his "reply column"): cream clay with a soft grey-blue slip; incised crossing string lines like a cat's-cradle string figure wrapping around the cup; one small bergamot (citrus) mark; a small blank incised rectangular panel on the stem, left empty like an answer box. Light and youthful.

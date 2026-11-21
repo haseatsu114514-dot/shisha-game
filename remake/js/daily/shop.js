@@ -139,6 +139,12 @@ function productArt(item, flavor, size = 66) {
   const art = EQUIP_ART[item.art || item.id];
   return art ? el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: item.id } }, [artImg(art, 60)]) : textArt();
 }
+/** 制作の機材選びも、ショップで採用済みの商品の絵を使う（PHN）。絵の無い機材は null（札は文字だけになる）。 */
+export function equipmentProductArt(id, size = 96) {
+  const item = DB.equipById?.[id];
+  if (!item || !(SHOP_EQUIPMENT_ART[item.art || item.id] || EQUIP_ART[item.art || item.id])) return null;
+  return productArt(item, false, size);
+}
 function shopHeader(sub, money, name = "Dr.fookah", branded = false) {
   return el("header.shop-head", [branded ? el("h2.shop-brand", [storeLogo("shop", { width: 100, height: 44 }), el("span", { text: name })]) : el("h2", { text: name }), el("span.shop-sub", { text: sub }), money]);
 }

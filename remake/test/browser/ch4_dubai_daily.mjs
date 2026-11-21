@@ -212,6 +212,32 @@ await suite("ch4-dubai-daily", async check => {
     assert((await backlog(page)).some(text => text.startsWith("夜のFESTAは、人でいっぱいだった。")));
   });
 
+  // #3097 第2弾（VOL20）: 昼に宿で休むと、日本（夜）の地元の人から電話が来る（休む場面の代わり・休む巡回は進めない）。
+  // LIMEの連絡先にいて、今ドバイにいない人だけ。
+  await check("a-daytime-rest-at-the-inn-brings-a-call-from-home", async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_festa", "ch4_dubai_souq", "ch4_stranger_first", "ch4_stranger_second", "ch4_dubai_cafe", "ch4_inn_tool_care"]) p.read[id] = true;
+      p.firstDay = 1; p.secondDay = 3;
+      value.day = p.startDay + 4; value.slot = 0; p.day = 5; value.stamina = 40;
+      value.met.da_silva = true;
+      value.contacts = ["sumi", "adam"];
+      value.flags._spot_turn_ch4_dubai_inn = 1; // 初回の休み（部屋の場面）は済んでいる
+      value.flags._ch4_inn_trial = { result: "good", feedbackRead: true, day: 3 }; // 宿の試作の選択肢を出さない
+    });
+    await loadSlot(page, 0);
+    const day = (await get(page)).day;
+    await dubaiMap(page, { day, slot: 0 });
+    await go(page, "ch4_dubai_inn");
+    await dubaiMap(page, { day, slot: 1 });
+    const state = await get(page);
+    assert.deepEqual(state.flags._ch4_home_calls, { ch4_home_call_adam_apple: true }, "Adam calls from Japan");
+    assert.equal(state.flags._spot_turn_ch4_dubai_inn, 1, "the call does not advance the rest rotation");
+    assert(state.stamina > 40, "the call is still a rest");
+    assert((await backlog(page)).includes("夜の八時だ。店を開けたところだ"), "the call is read in the real game");
+  });
+
   // 初日の街回り（SPC28 4-1）: 同じ便で来た恋人がいれば、恋人となるのどちらと回るかを選ぶ（恋人が先）。
   // 恋人を選ぶと、なるは一人で走りに行き、恋人と回る。昼の行動を一つ使い、好感度・お金は変えない。
   await check("first-day-walk-with-the-lover-who-came-along", async page => {

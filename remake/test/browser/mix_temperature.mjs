@@ -121,8 +121,9 @@ await suite("mix-temperature", async check => {
 
       // The real timer, forecast and steam path retain exactly the selected preview.
       await page.evaluate(() => {
+        // PST01: 緑・虹を 0.7 倍にしたので、虹の中心（ミントは 0.648）近くに着く気温にする（蒸らしは上限の10分のまま）
         Object.assign(QA.cs, { water: 0.5, steamSeconds: 600, steamVariation: { offset: 0, transfer: 1 },
-          environment: { rainy: false, ambientC: 23, humidityPercent: 52 }, place: "four", pack: "normal",
+          environment: { rainy: false, ambientC: 33, humidityPercent: 52 }, place: "four", pack: "normal",
           equip: { ...QA.cs.equip, charcoal: "cube_charcoal" },
           heat: { heatPower: 100, heatStability: 100, burnRisk: 0, aromaRetention: 100, score: 100 },
           holes: { total: 24, minimumComplete: true, evenness: 1, outerEven: 1, innerExcess: 0, inner: 2, score: 100 } });
@@ -262,9 +263,10 @@ await suite("mix-temperature", async check => {
     await page.locator('[data-test="pull-stop"]:enabled').waitFor(); await expectBands(page, 1.3);
     await keep(page); await keep(page); await page.locator('[data-test="pull-serve"]').click();
     await page.locator('[data-test="step-next"]:enabled').waitFor();
-    const result = await page.evaluate(() => ({ actual: QA.cs.pull, strain: QA.cs.strain || 0,
+    const result = await page.evaluate(() => ({ actual: QA.cs.pull, strain: QA.cs.strain || 0, bands: QA.conditions.temperatureBands(QA.cs),
       effect: document.querySelector(".bench").dataset.thermalBand, haze: document.querySelector(".bench").dataset.thermalHaze }));
-    assert(result.actual.temp > .75 && result.actual.inZone && !result.actual.over && !result.actual.optimal);
+    // 緑の上側（虹より熱い）で出しても疲れない。PST01 で帯を狭めたので、絶対値（旧 0.75）ではなくこの葉の虹の上端で比べる
+    assert(result.actual.temp > result.bands.optimal[1] && result.actual.inZone && !result.actual.over && !result.actual.optimal);
     assert.equal(result.strain, 0); assert.equal(result.effect, "ready"); assert.equal(result.haze, "0");
     await finishResult(page);
   });
@@ -359,12 +361,14 @@ await suite("mix-temperature", async check => {
       a.mix = { mint: 12 }; b.mix = { vanilla: 12 };
       const ma = thermometer.buildThermometer({ cs: a }), mb = thermometer.buildThermometer({ cs: b });
       session.stepPanel("pull", "セッション分離").append(el("div", [ma.root, mb.root]));
-      ma.update(.76); mb.update(.76);
+      // ミントの緑の上側（バニラには熱すぎる温度）。PST01 で帯を狭めたので、絶対値（旧 0.76）ではなくミントの帯から取る
+      const hot = conditions.temperatureBands(a).ideal[1] - .01;
+      ma.update(hot); mb.update(hot);
       const before = { a: ma.root.classList.contains("ok"), b: mb.root.classList.contains("ok"), bt: mb.root.dataset.tolerance };
       a.mix = { double_apple: 12 }; ma.update(.54);
       const isolated = before.a && !before.b && mb.root.dataset.tolerance === before.bt && conditions.temperatureBands(b).t === .8;
       // Stale fixed-band flags must not determine burn risk when the real temperature is available.
-      const base = { equip: {}, mix: { mint: 12 }, pull: { score: 80, temp: .76, pulls: 2, over: true } };
+      const base = { equip: {}, mix: { mint: 12 }, pull: { score: 80, temp: hot, pulls: 2, over: true } };
       const mintRisk = score.computeShisha(base).burnRisk;
       const mintCenterRisk = score.computeShisha({ ...base, pull: { ...base.pull, temp: .648, over: false } }).burnRisk;
       const afBase = { ...base, mix: { cotton_candy: 12 }, pull: { ...base.pull, temp: .58, over: false } };

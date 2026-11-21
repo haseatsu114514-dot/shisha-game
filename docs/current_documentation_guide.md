@@ -8,8 +8,16 @@
 4. 仕様・オーナー要望: [master_spec.md](master_spec.md)（採用済みの最新仕様を新しい順に。2026-06 の第1〜4部は `archive/` へ移した）と [owner_requests.md](owner_requests.md)（2026-10 以降の新しい順の台帳。冒頭の「読み方」から。2026-09 以前は `archive/`）。
 5. 物語・人物: [brand/](../brand/README.md)（`story_and_structure.md`・`character_profiles.md`）と `data/characters.json`・`data/story_routes.json`。
 6. ゲームの規則・台詞の書き方: [gameplay_agent_reference.md](gameplay_agent_reference.md)。画像・素材: [asset_ai_guidance.md](asset_ai_guidance.md)。シーシャの工程・機材・用語の参照先一覧: [shisha_reference.md](shisha_reference.md)。
-7. 成長（経験値・レベル・心得の盤）: 決定は [stat-design/ADDENDUM-BOARD-LAYOUT.md](stat-design/ADDENDUM-BOARD-LAYOUT.md)、実装仕様は [stat-design/SPEC.md](stat-design/SPEC.md)（第2版）。第2版の3能力は `GROWTH_BOARD=false` の裏で未公開。プレイヤーに見える能力は従来の5種類（`gameplay_agent_reference.md`）。
+7. 成長（経験値・レベル・心得の盤）: 決定は [stat-design/ADDENDUM-BOARD-LAYOUT.md](stat-design/ADDENDUM-BOARD-LAYOUT.md)、実装仕様は [stat-design/SPEC.md](stat-design/SPEC.md)（第2版）。心得の盤は通常プレイで有効。見える能力と成長の現在の扱いは [実装メモ](stat-design/README.md) と `gameplay_agent_reference.md` を参照。
 8. レビュー範囲: [review_scope.md](review_scope.md)。
+
+## 現行設定の確認
+
+ゲームの設定を引用するレビュー、紹介文、小説、画像指示にも適用する。
+
+1. GitHub の `main` の SHA を確認する。ユーザーが特定の版や作業ブランチを指定したときは、その ref を使う。手元の `HEAD` や `origin/main` と差がある場合は、GitHub から該当ファイルをその ref で読む。
+2. 人物の現在の表示名・本名・所属は [人物データ](../data/characters.json)、外見は同データの外見設定と採用済み立ち絵、章の大筋は [物語構成](../brand/story_and_structure.md) を参照する。場面の描写・口調・名乗る順番は、その場面を実際に再生する [台本](../data/dialogue/) と呼び出し元を確認する。初対面、再訪、大会前夜などは場面ごとに照合する。
+3. 過去の要望欄・レビュー・候補の画像プロンプトで見つけた名称や設定は、採用決定と現在の正本で照合する。旧名を直すときは `python3 tools/check_legacy_terms.py` で横断確認し、会話ID・素材キー・旧セーブ変換などは用途を個別に調べる。
 
 ## UIの文字基準（#1352）
 
@@ -21,8 +29,9 @@
 ## 二次資料・履歴の扱い
 
 - [archive/](archive/README.md) は日付付きの引き継ぎ・計画・記録の**履歴**。ブランチ名・SHA・CI結果・「未接続」「予約待ち」は当時の状態で、新しい台詞・設定・実装の根拠にしない。`docs/qa/` は検証記録。どちらも `.claudeignore` で自動参照から外してあり、必要なときだけ開く。
-- `docs/reports/` と `docs/design/` に残るのはオーナー未決定の提案・設計案。採用扱いにしない。決まったら正本へ反映し、ファイルは `archive/` へ移す。
+- `docs/reports/` と `docs/design/` は調査・検証記録と提案。採用状況は当時の記録と最新のオーナー判断を照合する。決まった内容は正本へ反映し、役目を終えた資料は `archive/` へ移す。
 - 改稿前の台本（旧 `data/dialogue/_legacy/`）・旧設定資料集は2026-11-02に削除した。旧 `web/`・Godot版は廃止済みで、`docs/master_spec.md` に残る `web/js/` 等のパスは履歴。
+- `asset_sources/` の生成時プロンプトや候補メモは、画像の出典を追うための記録。作り直すときは現行のキャラ設定・採用画像・台本を先に確認し、旧プロンプトから設定や名前を引き継がない。
 - 旧資料の整理・削除は、参照先と失われる情報を確認したうえで行う。日付付きの新規MDは必要な場合だけ作り、`docs/` 直下に増やさず `archive/` か該当する正本へ。
 
 ## docs/ の構成（2026-11-02 整理）

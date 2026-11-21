@@ -564,7 +564,9 @@ function burstRank(b, grade) {
   if (!hud || !root.isConnected || craftTest.auto || document.hidden) return;
   if (globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
   root.querySelector(":scope > .craft-rank-burst")?.remove();
-  const box = root.getBoundingClientRect(), k = box.width / 1280 || 1, target = hud.getBoundingClientRect();
+  // 余白にランクを大きく写している時（スマホで親指ボタンがある時・js/core/side-area.js）は、そこへ収める
+  const side = document.querySelector('[data-test="side-rank"]:not([hidden])');
+  const box = root.getBoundingClientRect(), k = box.width / 1280 || 1, target = (side ?? hud).getBoundingClientRect();
   const burst = el("img.craft-rank-burst", { src: rankArt(grade), alt: "", draggable: false, dataset: { grade } });
   // 着地点（帯のランク）の中心と大きさを、作業台の座標で渡す。
   burst.style.setProperty("--to-x", `${((target.left + target.width / 2) - box.left) / k}px`);
@@ -594,7 +596,8 @@ function updateBenchRank() {
   if (renewal ? progress?.grade && before && !dodging && order.indexOf(progress.grade) > order.indexOf(before) : progress?.grade && progress.grade !== before) burstRank(bench, progress.grade);
   bench.rankHud.root.dataset.provisional = String(!final);
   bench.rankHud.root.setAttribute("aria-label", final ? "制作ランク" : "制作ランク（暫定）");
-  bench.rankHud.root.querySelector(".craft-rank-caption").textContent = final ? "RANK" : "RANK（暫定）";
+  // 「（暫定）」は分けておく（スマホの上のレールは幅が要るので「RANK」だけを出す・css/craft-phone.css）。文は今までと同じ
+  bench.rankHud.root.querySelector(".craft-rank-caption").replaceChildren("RANK", ...(final ? [] : [el("span.craft-rank-provisional", { text: "（暫定）" })]));
 }
 
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */

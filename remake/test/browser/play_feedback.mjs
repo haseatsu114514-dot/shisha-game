@@ -134,17 +134,29 @@ await suite('play-feedback', async check => {
       // 配達で通る実visitCharは面識だけで解放しない。
       await F.spots.visitChar('adam');
       const tutorial = can('kannon');
-      s.spotVisits = { kannon: 1 }; const legacyVisited = can('kannon');
+      s.spotVisits = { kannon: 1 };
+      const legacyDay1 = can('kannon');
+      // #3955: 観音堂はDAY3の本筋まで閉じる。DAY3以降は旧セーブの訪問を引き継ぐ。
+      s.day = 3;
+      const legacyDay3 = can('kannon');
+      s.day = 1;
       delete s.spotVisits.kannon;
       for (const char of ['adam', 'naru', 'minto']) {
         s.stamina = 100;
         await F.spots.visitRival(F.spots.spotById(char));
       }
-      const unlocked = ['kannon', 'cafe', 'c_station', 'choizap'].map(can);
+      const destinations = ['kannon', 'cafe', 'c_station', 'choizap'];
+      const day1 = destinations.map(can);
+      s.day = 3;
+      const unlocked = destinations.map(can);
       F.core.save(); F.core.load();
-      return { tutorial, legacyVisited, unlocked, restored: ['kannon', 'cafe', 'c_station', 'choizap'].map(can) };
+      return { tutorial, legacyDay1, legacyDay3, day1, unlocked, restored: destinations.map(can) };
     });
-    assert.equal(result.tutorial, false); assert.equal(result.legacyVisited, true); // #780: 喫茶店は紹介の完読（_cafe_introduced）か訪問後に出る。ライバル訪問だけでは解放しない。
+    assert.equal(result.tutorial, false);
+    assert.equal(result.legacyDay1, false);
+    assert.equal(result.legacyDay3, true);
+    // #780: 喫茶店は紹介の完読（_cafe_introduced）か訪問後に出る。ライバル訪問だけでは解放しない。
+    assert.deepEqual(result.day1, [false, false, true, true]);
     assert.deepEqual(result.unlocked, [true, false, true, true]);
     assert.deepEqual(result.restored, result.unlocked);
     await page.evaluate(() => F.openMap()); await page.locator('[data-spot="kannon"]').waitFor();

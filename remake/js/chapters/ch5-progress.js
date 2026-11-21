@@ -18,12 +18,8 @@
 //   cleared    : スタッフロール（#517）を最後まで流したら _ch5_staff_roll_done → 周回を解放してタイトルへ。以後の再開は完了カード
 //     post-ending: 恋人が2人以上なら、スタッフロールの後に修羅場→一人ずつの話し直しを読んでからタイトルへ（IR32。postEnding）
 //
-// 触らないもの（オーナー判断待ち）:
-//   Q13 会場の固有名・Q14 客席の台詞は台本側が空白のまま。表示名は「会場」で固定する。
-//   Q17 reflection は既存エンジンが処理するので、ここでは場面の順序だけを持つ。
-//   Q20 スタッフロールの後の本格的な修羅場は IR32 で接続した（打ち上げで済んでいれば修羅場は繰り返さず、話し直しだけ。PTY04）。
-//   ch5_dream_in / ch5_dream_out は挿入位置が未決のため接続しない（対象外）。
-//   ch5_reflection_placeholder はテスト専用なので接続しない。
+// 会場のSMOKE LABと客席は ch5_main.json。二杯目の前の振り返りは会話エンジンが既読の交流から選ぶ。
+// 打ち上げで修羅場を読んだ場合、スタッフロール後は話し直しだけが続く（PTY04）。
 import { selectPostEndingConflict } from "../core/story-routes.js";
 import { STORY_BGM } from "../core/story-audio.js";
 import { CH5_PROLOGUE } from "./ch5-prologue.js";

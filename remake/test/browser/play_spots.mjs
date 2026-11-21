@@ -137,6 +137,12 @@ async function declare(page) {
   if (await card.count() && await card.isVisible()) { await card.click(); await lines(page); }
 }
 async function roll(page) { await declare(page); await hit(page, "trpg-roll"); await page.locator(t("trpg-settle")).waitFor(); await hit(page, "trpg-settle"); await lines(page); }
+async function returnFromTable(page) {
+  await page.locator(t("trpg-replay-save-question")).waitFor();
+  await hit(page, "trpg-replay-save-no");
+  await hit(page, "trpg-finish");
+  await hit(page, "trpg-reflect-good");
+}
 async function manualSave(page) {
   await hit(page, "hud-menu"); await hit(page, "menu-tab-system"); await hit(page, "menu-save"); await hit(page, "slot-1");
   await page.waitForFunction(() => localStorage.getItem("suien_remake_slot1") !== null);
@@ -394,7 +400,7 @@ await suite("play-spots", async runCheck => {
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
     assert.equal(saved.slot, 2); assert.equal(saved.day, 16); assert(saved.trpg.cleared["ordinary-cup"]);
     assert.equal(saved.money, before.money - 500); assert.equal(saved.stamina, before.stamina); assert.deepEqual(saved.stats, before.stats);
-    await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-good");
+    await returnFromTable(page);
     await hit(page, "trpg-campaign-close"); await hit(page, "ch2-morning-home"); await page.locator(map).waitFor();
     assert.equal(await page.locator(map).getAttribute("data-region"), "home");
     const after = await value(page); assert.equal(after.money, before.money - 500 - 200, "One return ticket after the night table"); assert.equal(after.day, 17); assert.equal(after.slot, 0, "Table must consume exactly one night");
@@ -454,7 +460,7 @@ await suite("play-spots", async runCheck => {
       assert.equal(saved.stamina, before.stamina); assert.deepEqual(saved.stats, before.stats);
       assert.deepEqual(withoutHostIntros(saved.met), before.met);
       for (const key of ["affinity", "story", "lovers", "relationshipMemories"]) assert.deepEqual(saved[key], before[key]);
-      await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-good");
+      await returnFromTable(page);
       await hit(page, "trpg-campaign-close"); await hit(page, "ch2-morning-home"); await page.locator(map).waitFor();
       assert.equal(await page.locator(map).getAttribute("data-region"), "home");
       const after = await value(page); assert.equal(after.day, 23); assert.equal(after.slot, 0);

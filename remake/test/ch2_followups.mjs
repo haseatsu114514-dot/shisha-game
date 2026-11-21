@@ -32,7 +32,7 @@ const states = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay"],
 }, { context });
 const mocks = {
   "../core/travel-budget.js": { spendableMoney: value => value.money },
-  "./ch2-commute.js": { normalizeCommuteState() {}, chooseMorningCity: async () => {}, returnCityHome: async () => {} },
+  "./ch2-commute.js": { normalizeCommuteState() {}, chooseMorningCity: async () => {}, readMorningStationCommute: async () => {}, returnCityHome: async () => {} },
   "../core/data.js": { DB, bgUrl: x => x },
   "../core/city-locations.js": { CH2_CITY_NAME: "柚ヶ谷", HOME_CITY_NAME: "橙須" },
   "../core/stats.js": {
@@ -336,7 +336,17 @@ fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // + 地元の雨の回4本（ch2_home.json）と、行き帰りの電車の小品4本（ch2_city.json・#3097 PR-B）
 // + 地元の普段の会話10本（みんと2・凛想1・サメちゃん2・ひより2・アダム2・なる1。ch2_home.json・#3097 PR-C）
 // + tonariのつむぎがいる日の3本とシフト上がりの第3弾5本（ch2_tonari_talks.json・#3097 PR-D）
-assert.equal(Object.keys(loaderDB.dialogues).length, 127 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+// + 地元の普段の会話の続き5本（みんと・凛想・アダム・サメちゃん・ひより 各1。ch2_home.json・#3097 第2弾 VOL20）
+// + 同じ5人の続き5本（#3097 第3弾）
+// + 第2章で初めて家で休んだ時のノートの場面（ch2_home.json・#3957）
+// + tonariの窓際の席のつむぎ3本と、なるのモンブランの続き1本（ch2_home.json・#3097 第5弾）
+assert.equal(Object.keys(loaderDB.dialogues).length, 142 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+assert(loaderDB.dialogues.ch2_rest_notebook?.lines?.length, "first chapter 2 rest scene is loaded");
+for (const id of ["ch2_minto_nickname_notes", "ch2_rio_plain_lunch", "ch2_adam_apple_errand", "ch2_samechan_poster", "ch2_hiyori_mirror_pose",
+  "ch2_minto_umbrella_day", "ch2_rio_label_words", "ch2_adam_peel_record", "ch2_samechan_menu_letters", "ch2_hiyori_commute_poem"])
+  assert(loaderDB.dialogues[id]?.lines?.length, `#3097 VOL20: ${id}`);
+for (const id of ["ch2_tsumugi_charcoal_bread", "ch2_tsumugi_train_cat", "ch2_tsumugi_customer_seat", "ch2_naru_montblanc"])
+  assert(loaderDB.dialogues[id]?.lines?.length, `#3097 第5弾: ${id}`);
 for (const id of ["ch2_minto_lost_pass", "ch2_minto_mint_scale", "ch2_rio_rush_hour", "ch2_samechan_remora_seat", "ch2_samechan_spare_teeth",
   "ch2_hiyori_health_check", "ch2_hiyori_capsule_toy", "ch2_adam_yuzugaya_apples", "ch2_adam_out_of_stock", "ch2_naru_sign_light"]) {
   assert(loaderDB.dialogues[id]?.lines?.length, `#3097 PR-C: ${id}`);
@@ -366,7 +376,7 @@ for (const entry of Object.values(CH2_VISIT_STORIES).flat()) assert(loaderDB.dia
 assert.equal(loaderDB.dialogues.ch2_kumicho_second.metadata.flavor_lesson, undefined);
 assert.deepEqual(loaderDB.dialogues.ch2_kumicho_fourth.metadata.flavor_lesson, { dragonfruit: 1 });
 assert.equal(loaderDB.dialogues.ch2_rei_first.metadata.flavor_lesson, undefined);
-assert.deepEqual(loaderDB.dialogues.ch2_rei_fourth.metadata.flavor_lesson, { rose: 1 });
+assert.deepEqual(loaderDB.dialogues.ch2_rei_fourth.metadata.flavor_lesson, { cassis: 1 });
 assert(loaderDB.dialogues.remake_ch2_rei_trpg);
 assert(loaderDB.dialogues.remake_ch2_ageha_aquarium);
 assert(loaderDB.dialogues.remake_ch2_kumicho_sento);

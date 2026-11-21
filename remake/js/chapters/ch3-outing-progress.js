@@ -6,6 +6,7 @@ import { tokyoWindowReserved, tokyoGymWindowAllowed } from "../core/tokyo-clock.
 import { visitAffinity } from "../core/stats.js";
 import { shiftBasePay } from "../core/shift-pay.js";
 import { rainyFor } from "../daily/weather.js";
+import { tournamentFinished } from "../core/story-context.js";
 
 /**
  * after=この必須場面を読んでから、before=この場面を読む前まで。met=この人物と面識がある時だけ。repeat=自由時間ごとに選べる。
@@ -102,6 +103,52 @@ export function roomRestId(value) {
 export function recordRoomRest(value) {
   if (roomRestId(value) === ROOM_REST_RAIN) return;
   value.flags[ROOM_REST_FLAG] = roomRestCount(value) + 1;
+}
+
+// 奥の部屋で休むと届く、地元からの電話（#3097 第2弾・2026-11-21 オーナー「交友を1章以降も厚く」）。台本は data/dialogue/ch3_home_calls.json。
+// 初回の休み（部屋の場面）の後、休むたびに未読の一本を、休む場面の代わりに読む（一度きり。休む場面の巡回は進めない）。
+// LIMEの連絡先にいる人だけ。night は夜だけ読める電話（閉店後の店・夜更けの話）。夜は、本筋の場面や遠くからの電話が入る夜には出さない。
+// 全国大会の前の暮らしの電話なので、大会の後は出さない（交流の時系列ルール。core/story-context.js）。
+export const HOME_CALL_FLAG = "_ch3_home_calls";
+export const HOME_CALLS = Object.freeze([
+  { scene: "ch3_home_call_sumi_fan", from: "sumi" },
+  { scene: "ch3_home_call_adam_exit", from: "adam" },
+  { scene: "ch3_home_call_samechan_movie", from: "samechan", night: true },
+  { scene: "ch3_home_call_rio_face", from: "rio" },
+  { scene: "ch3_home_call_sumi_pocket", from: "sumi", night: true },
+  { scene: "ch3_home_call_kumicho_bow", from: "kumicho" },
+  { scene: "ch3_home_call_rei_last_song", from: "rei", night: true },
+  // #3097 第3弾: みんと（東京編のチェキの枠）・スミさん（冷蔵庫のプリン）・サメちゃん（東京の水族館のシロワニ）
+  { scene: "ch3_home_call_minto_frame", from: "minto" },
+  { scene: "ch3_home_call_sumi_pudding", from: "sumi", night: true },
+  { scene: "ch3_home_call_samechan_aquarium", from: "samechan" },
+  // VOL23: つむぎ・あげは・ひよりからも届く。店を持つ人たちの日常の電話も増やす。
+  { scene: "ch3_home_call_tsumugi_reserved_seat", from: "tsumugi" },
+  { scene: "ch3_home_call_ageha_curtain", from: "ageha" },
+  { scene: "ch3_home_call_hiyori_umbrella", from: "hiyori" },
+  { scene: "ch3_home_call_adam_menu_back", from: "adam" },
+  { scene: "ch3_home_call_rio_attachment", from: "rio" },
+  { scene: "ch3_home_call_kumicho_glasses", from: "kumicho" },
+  { scene: "ch3_home_call_rei_wrong_case", from: "rei", night: true },
+].map(call => Object.freeze(call)));
+export const HOME_CALL_IDS = Object.freeze(HOME_CALLS.map(call => call.scene));
+/**
+ * 今、奥の部屋で休むと届く電話の台本ID（読むだけ）。無ければ null（いつもの休む場面を読む）。
+ * @param options.night 夜の休みか
+ * @param options.busy その夜に本筋の場面か遠くからの電話が入っているか（ch3-tokyo-daily.js が判定する。夜だけ見る）
+ * @param options.away (id) => 今は地元にいない人か（東京へ来ている恋人など）
+ */
+export function homeCallId(value, { night = false, busy = false, away = () => false } = {}) {
+  if (value?.chapter !== 3 || tournamentFinished(value, 3) || !roomRestCount(value) || night && busy) return null;
+  const read = value.flags?.[HOME_CALL_FLAG] || {};
+  const contacts = Array.isArray(value.contacts) ? value.contacts : [];
+  return HOME_CALLS.find(call => !read[call.scene] && (night || !call.night)
+    && contacts.includes(call.from) && !away(call.from))?.scene || null;
+}
+/** 電話を読んだ記録（読了後）。休む場面の巡回の回数は進めない。 */
+export function recordHomeCall(value, scene) {
+  if (!HOME_CALL_IDS.includes(scene)) return;
+  value.flags[HOME_CALL_FLAG] = { ...(value.flags[HOME_CALL_FLAG] || {}), [scene]: true };
 }
 
 /** 台本ID。手伝いは味が戻る前後、公園は昼夜、通う行き先は回数で読み分ける。 */

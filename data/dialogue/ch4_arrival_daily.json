@@ -458,6 +458,342 @@
         }
       ],
       "comment": "接続済み（#3097・IR18 と同じ仕組み）。前夜祭の日、恋人でないましろの ch4_mashiro_dubai_friend（視察の到着）を読んだ後、前夜祭が始まる前に任意で一度読める。恋人版の夕方とは同じ日に重ならない。同行者には出ない。前夜の過ごし方・修羅場には数えない。"
+    },
+    {
+      "dialogue_id": "ch4_tsumugi_dubai_friend_evening",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第4章の交流）。前夜祭の日、恋人でないつむぎの ch4_*_dubai_friend（友人版の到着）を読んだ後、前夜祭が始まる前に任意で一度読める（ch4-progress.js の CH4_FRIEND_ARRIVAL_EVENING_SCENES。ましろの友人版の夕方と同じ仕組み）。到着の場面は「前夜祭に顔を出してくる」で終わるので、出かける前の短い時間にする。友人なので恋愛を示す台詞・夜の約束はしない。大会の結果に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前夜祭へ出かける前、ロビーのソファを通ると、つむぎがまだスケッチブックを開いていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。出かける前に、ひとつだけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出されたページには、tonariのカウンターが描いてあった。奥の窓際の席だけが、空いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつもの席だ。誰も座ってないね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。今日は、私がここにいるので"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……帰ったら、ここに私を描き足します"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、その日はいつもの一台を出すよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。いつもの、で"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは小さく頭を下げて、空いた席の椅子の脚に、細い線を一本だけ足した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_minto_dubai_friend_evening",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第4章の交流）。前夜祭の日、恋人でないみんとの ch4_*_dubai_friend（友人版の到着）を読んだ後、前夜祭が始まる前に任意で一度読める（ch4-progress.js の CH4_FRIEND_ARRIVAL_EVENING_SCENES。ましろの友人版の夕方と同じ仕組み）。到着の場面は「前夜祭に顔を出してくる」で終わるので、出かける前の短い時間にする。友人なので恋愛を示す台詞・夜の約束はしない。大会の結果に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前夜祭へ出かける前、ロビーの隅で、みんとがうちわの柄を握って何か練習していた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "あ、はじめくん。見て見て、振り方の練習"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "振り方に、練習がいるの？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "いるよ〜。速すぎると字が読めないし、遅いと元気がないの"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "お店でも、お客さんに手を振る時は、ちょっとだけゆっくりにしてるんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとがうちわを、ゆっくり左右に振った。大きな字が、ちゃんと読めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "読める。ちょうどいい"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "でしょ♡ ……お客さんの側に座るのって、思ったより忙しいね"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "だから明日は、振らない時間も作るの。じっと見てたい時も、あると思うから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "うちわはスーツケースの上に立てかけられた。柄に巻いた緑のリボンが、少し揺れた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_rio_dubai_friend_evening",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第4章の交流）。前夜祭の日、恋人でない凛想の ch4_*_dubai_friend（友人版の到着）を読んだ後、前夜祭が始まる前に任意で一度読める（ch4-progress.js の CH4_FRIEND_ARRIVAL_EVENING_SCENES。ましろの友人版の夕方と同じ仕組み）。到着の場面は「前夜祭に顔を出してくる」で終わるので、出かける前の短い時間にする。友人なので恋愛を示す台詞・夜の約束はしない。大会の結果に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前夜祭へ出かける前、ロビーで凛想さんが、ブースの棚の写真を見返していた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……モルモットくん。うちの袋、見てきた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どんな顔で並んでました？"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "澄ました顔。隣の国の袋のほうが、ずっと派手"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "でもね、手に取った人が二人いた。一人は袋を裏返して、一人は匂いを嗅いでた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "嗅いだ人の顔、見ました？"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "……見た。眉が、ほんの少しだけ動いた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは写真を閉じて、鞄の中の書類の束をそろえた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "顔を見るのは、君から教わった。……仕事のついでって、こういうのもあるんだね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "顔を持って帰ってこいって、先に言ったのは凛想さんですよ"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "そうだった？ ……じゃあ、おあいこ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_ageha_dubai_friend_evening",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第4章の交流）。前夜祭の日、恋人でないあげはの ch4_*_dubai_friend（友人版の到着）を読んだ後、前夜祭が始まる前に任意で一度読める（ch4-progress.js の CH4_FRIEND_ARRIVAL_EVENING_SCENES。ましろの友人版の夕方と同じ仕組み）。到着の場面は「前夜祭に顔を出してくる」で終わるので、出かける前の短い時間にする。友人なので恋愛を示す台詞・夜の約束はしない。大会の結果に触れない。バイトが育った（ch4_ageha_dubai_friend）の続き。教えるのが苦手だったあげはが、言葉にするところから練習した。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前夜祭へ出かける前、ロビーへ下りると、あげはがソファで携帯を見て笑っていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、見て。店から写真きた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面の中で、MELTY PUFFのカウンターに立った新しいバイトの子が、ぎこちなくピースをしていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "この子ね、最初はお客さんの顔を見るのも怖がってたの。でも今日、ひとりで店を回してる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "あげはが教えたんだね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……教えるの、ずっと下手だったんだよ、うち。感覚で全部やってたから"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "だから、言葉にするとこから練習した。……ハジメっちのやり方、ちょっと借りた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺の？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "手順を一個ずつ確かめるやつ。ダチの技は、使っていいでしょ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは返信の画面で、何度か親指を止めてから、短く「さすが」とだけ送った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_samechan_dubai_friend_evening",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第4章の交流）。前夜祭の日、恋人でないサメちゃんの ch4_*_dubai_friend（友人版の到着）を読んだ後、前夜祭が始まる前に任意で一度読める（ch4-progress.js の CH4_FRIEND_ARRIVAL_EVENING_SCENES。ましろの友人版の夕方と同じ仕組み）。到着の場面は「前夜祭に顔を出してくる」で終わるので、出かける前の短い時間にする。友人なので恋愛を示す台詞・夜の約束はしない。大会の結果に触れない。到着の場面の「一番座り心地のよい席」の続き。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前夜祭へ出かける前、ロビーを通ると、サメちゃんがソファに座ったり立ったりを繰り返していた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……む。このソファは、深すぎる。一度沈むと、立つのに力が要る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "明日の客席の、予習ですか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "うむ。座り心地は、店の命じゃからの。人の店でも、つい確かめてしまう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、すでに宿の椅子を七つ確かめた。報告書もある"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "書いておらぬ！ ……頭の中にしか、書いておらぬ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いちばん良かったのは、どれでした"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "窓際の、背もたれの低いやつじゃ。外の海が見える"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "帰ったら、店にも一つ、ああいう椅子を置こうかのう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんはもう一度だけソファに沈んで、今度は一息で立ってみせた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_hiyori_dubai_friend_evening",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第4章の交流）。前夜祭の日、恋人でないひよりの ch4_*_dubai_friend（友人版の到着）を読んだ後、前夜祭が始まる前に任意で一度読める（ch4-progress.js の CH4_FRIEND_ARRIVAL_EVENING_SCENES。ましろの友人版の夕方と同じ仕組み）。到着の場面は「前夜祭に顔を出してくる」で終わるので、出かける前の短い時間にする。友人なので恋愛を示す台詞・夜の約束はしない。大会の結果に触れない。元バイトの先輩（ch4_hiyori_dubai_friend）として、閉店後のtonariの静かな一台を思い出す。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前夜祭へ出かける前、ロビーの窓辺で、ひよりさんが外の夕日を見ていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……沈んでいく太陽、砂の国でも儚いのね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "時差、大丈夫ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "大丈夫じゃない。でも、寝たら負けな気がして"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……ねえ。tonariで働いてた頃のこと、ちょっと思い出してたの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "閉店の片付けのあと、灯りを半分落とした店で、まかないの一台を吸うのが好きだった"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "吸ってる間、誰もしゃべらないの。すごく静かで"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……明日のはじめくんのも、そういう煙だといいな。拍手より先に、静かになるやつ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……静かな煙、ですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんは窓から離れて、大きく伸びをした。儚い背中には、見えなかった。"
+        }
+      ]
     }
   ],
   "comment": "#3097 別便で来た人と、到着の後に過ごす夕方の場面（接続済み・2026-11-12 オーナー決定で広げた。サメちゃん・ひよりの2本は ch4_main.json）。前夜祭の日、その人の到着場面を読んだ後、前夜祭が始まる前に任意で一度だけ読める（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue、ch4.js の renderEve）。恋人5人は恋人版の到着の後、恋人でないましろは友人版の到着（視察）の後だけ。同行者には到着場面が無いので出ない。報酬なし。前夜の過ごし方・修羅場には数えない。"

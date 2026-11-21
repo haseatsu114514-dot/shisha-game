@@ -83,7 +83,9 @@ await suite("debug-tools", async check => {
       const r = model.floorResult(api.state());
       return { done: api.state().done, night: api.state().night, came: r.came, served: r.served };
     });
-    assert.deepEqual([result.done, result.night, result.came], [true, "full", 11]);
+    // 客は一人ずつ数える（二人連れは一人ずつ別の卓。TFL51）。閉店が近づくと来なくなるので、来た人数は回し方で少し変わる
+    assert.deepEqual([result.done, result.night], [true, "full"]);
+    assert.ok(result.came >= 12, `満席の日は大勢来る: ${result.came}`);
     assert.ok(result.served >= 8, `ボットで回しきれる: ${result.served}`);
     await page.locator(t("tonari-floor-result")).waitFor();
     await page.locator(t("tonari-floor-option-continue")).click();

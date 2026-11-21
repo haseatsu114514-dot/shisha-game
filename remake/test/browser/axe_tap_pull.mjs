@@ -180,6 +180,53 @@ await suite('axe-tap-pull', async check => {
     assert.deepEqual(await storageSnapshot(page), before);
   });
 
+  for (const [label, context, touch] of [
+    ['pc', { viewport: { width: 1280, height: 720 } }, false],
+    ['touch-landscape', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
+    ['touch-short', { viewport: { width: 740, height: 320 }, isMobile: true, hasTouch: true }, true],
+  ]) await check(`${label}-aim-controls-in-front-of-hand`, async page => {
+    await start(page, touch);
+    for (const step of ['horizontal', 'vertical', 'power']) {
+      await page.waitForTimeout(320);
+      await page.keyboard.press('Space');
+      await phase(page, step);
+      await root(page).evaluate(game => {
+        const hand = game.querySelector('.axe-hand-front');
+        const target = game.querySelector('.axe-target');
+        if (hand.querySelector('use').getAttribute('opacity') !== '1') throw new Error('the foreground hand must be shown');
+        // Include the decorative SVG in hit testing temporarily to observe its paint order.
+        const originalPointerEvents = hand.style.pointerEvents;
+        hand.style.pointerEvents = 'all';
+        try {
+          for (const name of ['axe-focus', 'axe-reaim']) {
+            const button = game.querySelector(`[data-test="${name}"]`);
+            const box = button.getBoundingClientRect();
+            const layers = document.elementsFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+            const index = node => layers.findIndex(layer => node.contains(layer));
+            const [control, foreground, board] = [button, hand, target].map(index);
+            if (!(control >= 0 && control < foreground && foreground < board)) {
+              throw new Error(`${name} must paint above the hand, and the hand above the board (layers ${control}, ${foreground}, ${board})`);
+            }
+          }
+        } finally { hand.style.pointerEvents = originalPointerEvents; }
+      });
+    }
+    const activate = locator => touch ? locator.tap() : locator.click();
+    const focus = page.locator('[data-test="axe-focus"]');
+    await activate(focus);
+    await page.locator('.axe-stability-meter[data-focused="true"]').waitFor();
+    for (const caption of ['集中中', '使用済み']) {
+      const disabled = focus.filter({ hasText: caption });
+      await disabled.waitFor();
+      assert(await disabled.isDisabled());
+      assert.equal(await disabled.evaluate(button => getComputedStyle(button).opacity), '1',
+        `The arm must not show through the ${caption} label`);
+    }
+    await activate(page.locator('[data-test="axe-reaim"]'));
+    await phase(page, 'choice');
+    assert.equal(await root(page).getAttribute('data-player-throws'), '0');
+  }, context);
+
   await check('touch-cancel-and-second-finger', async page => {
     await start(page, true);
     for (const operation of ['cancel', 'second-finger']) {
@@ -278,6 +325,51 @@ await suite('axe-tap-pull', async check => {
 
 // 2026-11-13 オーナー「狙いの定め方が分かりずらい、的の真ん中かキルショットのやつとか」: 金の三角が止めたい所を指し、針が重なると緑になる
 await suite('axe-tap-pull-aim-guide', async check => {
+  await check('called-throws-spend-on-landing-and-skip-closed-rows', async page => {
+    await start(page);
+    await page.clock.install({ time: new Date('2026-11-19T12:00:00Z') });
+    await page.clock.pauseAt(new Date('2026-11-19T12:00:01Z'));
+    await page.clock.runFor(300);
+    const picker = page.locator('[data-test="axe-call-picker"]');
+    const remaining = () => page.locator('.axe-score-calls').first().getAttribute('data-remaining');
+    const blue = await page.evaluate(async () => {
+      const { KILLS, AIM_RANGE } = await import('./js/minigames/axe-model.js');
+      const target = KILLS.find(k => k.id === 'upper-left');
+      return { x: (target.x / AIM_RANGE + 1) / 2, y: (target.y / AIM_RANGE + 1) / 2 };
+    });
+    await picker.click();
+    assert.equal(await page.locator('.axe-call-iris').getAttribute('data-cue'), 'declare');
+    await stanceAt(page, blue);
+    await flickFromHandle(page);
+    await page.clock.runFor(2300);
+    await phase(page, 'result');
+    assert.equal(await remaining(), '1');
+    assert.equal(await page.locator('.axe-call-iris').getAttribute('data-cue'), 'hit');
+    assert.equal(await page.locator('.axe-prize-score').textContent(), await page.locator('.axe-score-burst').textContent());
+    assert.equal(await root(page).getAttribute('data-outcome'), 'killshot');
+    assert.equal(await page.locator('[data-test="axe-call-verdict"]').getAttribute('data-result'), 'hit');
+    await ready(page).click();
+    await stanceAt(page);
+    await page.clock.runFor(320);
+    for (const id of ['lower-left', 'lower-right', '', 'lower-left']) {
+      await picker.click();
+      assert.equal(await root(page).getAttribute('data-called'), id);
+      assert.equal(await remaining(), '1');
+    }
+    await flickFromHandle(page);
+    await page.clock.runFor(2300);
+    await phase(page, 'result');
+    assert.equal(await root(page).getAttribute('data-outcome'), 'killshot-miss');
+    assert.equal(await page.locator('.axe-call-iris').getAttribute('data-cue'), 'miss');
+    assert.equal(await page.locator('.axe-prize-score').count(), 0);
+    assert.equal(await page.locator('[data-test="axe-call-verdict"]').getAttribute('data-result'), 'miss');
+    assert.equal(await remaining(), '0');
+    await ready(page).click();
+    await phase(page, 'choice');
+    await page.clock.runFor(320);
+    assert(await picker.isDisabled());
+    assert.equal(await page.locator('[data-test="axe-call-verdict"]').isVisible(), false);
+  });
   await check('gold-marks-point-at-the-bull-then-at-the-declared-blue', async page => {
     await page.goto(new URL('axe-throw.html', baseURL).href);
     await page.locator('[data-test="axe-start"]').click(); await phase(page, 'choice');
@@ -292,10 +384,35 @@ await suite('axe-tap-pull-aim-guide', async check => {
     await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]').dataset.onTarget === 'true', null, { polling: 'raf', timeout: 5000 });
     assert.equal(await root(page).getAttribute('data-aim-goal'), 'bull');
     assert.equal(await page.locator('.axe-x-needle').getAttribute('stroke'), '#8ff0a4', 'the needle turns green over the mark');
-    assert.equal(await page.locator('.axe-gauge-label[data-gauge="horizontal"]').isVisible(), true);
+    assert.match(await page.locator('[data-test="axe-aim-prompt"]').innerText(), /ねらい 1 \/ 2\s+左右の針を止める/);
+    assert.equal(await page.locator('.axe-gauge-label').count(), 0, 'the steps label replaces the axis pictograms');
     await page.locator('[data-test="axe-reaim"]:not([disabled])').click(); await phase(page, 'choice');
-    // 青を宣言すると、印はその青を指す（左上の青は真ん中より左）
-    await page.locator('[data-call="upper-left"]:not([disabled])').click();
+    const picker = page.locator('[data-test="axe-call-picker"]');
+    const cancel = page.locator('[data-test="axe-call-cancel"]');
+    const remaining = page.locator('.axe-score-calls').first();
+    assert.equal(await cancel.isVisible(), false);
+    for (const [index, id] of ['upper-left', 'lower-left', 'upper-right', 'lower-right', ''].entries()) {
+      await picker.click();
+      assert.equal(await root(page).getAttribute('data-called'), id);
+      assert.equal(await cancel.isVisible(), Boolean(id));
+      assert.equal(await remaining.getAttribute('data-remaining'), '2');
+      if (id) {
+        assert.equal(await page.locator('.axe-call-iris').getAttribute('data-cue'), index ? 'turn' : 'declare');
+        assert.equal(await picker.locator('.selected').getAttribute('data-blue'), id);
+        assert.equal(await page.locator('.axe-declare').getAttribute('data-kind'), index ? 'retarget' : 'challenge');
+      }
+    }
+    assert.equal(await page.locator('.axe-call-iris').count(), 0);
+    await picker.focus();
+    await page.keyboard.press('Space');
+    assert.equal(await root(page).getAttribute('data-called'), 'upper-left');
+    await page.keyboard.press('Escape');
+    assert.equal(await root(page).getAttribute('data-called'), '');
+    await page.keyboard.press('Enter');
+    await cancel.click();
+    assert.equal(await root(page).getAttribute('data-called'), '');
+    await picker.click();
+    assert.match(await picker.getAttribute('aria-label'), /左上.*宣言中/);
     await page.mouse.click(p.x, p.y); await phase(page, 'horizontal');
     assert.equal(await root(page).getAttribute('data-called'), 'upper-left', 'a tap away from the centre keeps the call');
     assert(await markX() < 330 - 60, 'the mark moves to the upper-left blue');

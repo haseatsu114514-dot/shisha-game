@@ -30,6 +30,9 @@ const due = (id, value) => chapterFiveFirstTalkDue(id, value)?.scene || null;
   const value = freeSave();
   assert.equal(due("rei", value), "ch5_rei_shop");
   assert.equal(due("kumicho", value), "ch2_kumicho_after_ch2");
+  const afterBrotherhoodCup = structuredClone(value);
+  afterBrotherhoodCup.finales.kumicho = { day: 25, chapter: 2, route: "friend" };
+  assert.equal(due("kumicho", afterBrotherhoodCup), "ch2_kumicho_after_ch2", "the same first visit plays after Kanzaki's finale");
   assert.equal(due("adam", value), null, "Adam's first Chapter 5 visit is the EDEN free scene");
   assert.equal(completeChapterFiveScene(value, "ch5_free_eden_adam"), true);
   assert.equal(due("adam", value), "ch5_adam_shop", "Adam's talk follows the EDEN free scene");
@@ -103,11 +106,12 @@ for (const [id, talk] of Object.entries(CH5_FIRST_TALKS)) {
   const text = scene.lines.map(line => line.text).join("\n");
   assert.doesNotMatch(text, /勝負(?:に|は)(?:勝|負)|勝負の後|引き分け/, `${talk.scene}: written before the match`);
 }
-// 神崎: 一人称は俺・はじめは「あんちゃん」。「〜しやす」は使わない（characters.json の voice）。素性は語らない。
+// 神崎: 一人称は俺。兄弟の盃の前後で読む初回来店では、関係の段階を示す呼称を省く。素性は語らない。
 {
   const lines = scenesOf("ch2_kumicho").ch2_kumicho_after_ch2.lines;
   const kanzaki = lines.filter(line => line.speaker === "kumicho").map(line => line.text).join("\n");
-  assert.match(kanzaki, /あんちゃん/);
+  assert.match(kanzaki, /昔の俺/);
+  assert.doesNotMatch(kanzaki, /あんちゃん|兄弟/, "the shared first visit works before and after the brotherhood cup");
   assert.doesNotMatch(kanzaki, /しやす|しやし|小僧|僕|私/);
   assert.doesNotMatch(kanzaki, /組|カタギ|足を洗|極道/, "Kanzaki's past stays unconfirmed");
   const all = lines.map(line => line.text).join("\n");

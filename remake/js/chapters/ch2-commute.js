@@ -3,7 +3,7 @@ import { state, save } from "../core/state.js";
 import { DB, bgUrl } from "../core/data.js";
 import { modal, setBg, showScreen } from "../core/ui.js";
 import { play } from "../vn/engine.js";
-import { CH2_CITY_NAME, HOME_CITY_NAME, HOME_CITY_READING } from "../core/city-locations.js";
+import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { STATION_FARE, prepareStationTrip } from "../daily/station-travel.js";
 import { travelsBetweenCities } from "../core/travel-budget.js";
 const regions = [{ id: "home" }, { id: "widehanga" }];
@@ -47,25 +47,46 @@ export function normalizeCommuteState(value) {
   value.flags._ch2_commute_v1 = true;
 }
 
+function rideToYuzugaya() {
+  const ticket = { speaker: "", face: "", text: `片道切符を200円で買い、${CH2_CITY_NAME}行きの電車に乗った。` };
+  return ride("morning", ticket, { dialogue_id: "__ch2_morning_train", lines: [ticket] });
+}
+
+/** 朝の街選択を省いた日も、昼に駅から出れば従来の電車の小品を読める。 */
+export async function readMorningStationCommute({ to }) {
+  if (to !== "widehanga" || state.slot !== 0 || !(state.flags._ch2_stay_local_since < state.day)) return;
+  if (!commuteSceneDue(state, "morning", DB.dialogues)) return;
+  const owner = state;
+  const result = await rideToYuzugaya();
+  if (state === owner && result && !result.cancelled) save();
+}
+
 export async function chooseMorningCity() {
   if (state.flags._ch2_morning_departed === state.day) return;
   const owner = state, day = state.day;
+  if (state.flags._ch2_stay_local_since < day && state.flags._ch2_region === "home") {
+    state.flags._ch2_morning_departed = day;
+    save();
+    return;
+  }
   await setBg(bgUrl("bg_home", "day"), { instant: true });
   if (state !== owner || state.day !== day) return;
   showScreen("home", el("main.ch2-morning-home"));
   const canGo = state.money >= STATION_FARE * 2;
-  const destination = await modal({ title: "今日はどこに行こう？", body: `${HOME_CITY_NAME}（${HOME_CITY_READING}）の自宅から出発する。${CH2_CITY_NAME}へは片道200円。帰りの切符代200円も残しておこう。${canGo ? "" : "今は往復分が足りないので、地元で過ごそう。"}`, options: [
-    { label: `地元・${HOME_CITY_NAME}へ`, value: "home", test: "ch2-morning-home" },
+  const fareNotice = `${CH2_CITY_NAME}へは片道200円。帰りの切符代も200円必要。${canGo ? "" : "今は往復分が足りない。"}`;
+  const localNotice = `地元を選ぶと、次の朝から地元の地図が開く。${CH2_CITY_NAME}へは地図の駅からも行ける。`;
+  const destination = await modal({ title: "今日はどこに行こう？", body: fareNotice + localNotice, options: [
+    { label: `地元・${HOME_CITY_NAME}で過ごす`, value: "home", test: "ch2-morning-home" },
     ...canGo ? [{ label: `${CH2_CITY_NAME}へ（片道200円）`, value: "widehanga", test: "ch2-morning-city" }] : [],
   ] });
   if (state !== owner || state.day !== day) return;
   if (destination === "widehanga") {
     const trip = prepareStationTrip(state, regions, "widehanga");
     if (!trip?.commit(state, { persist: () => { state.flags._ch2_morning_departed = day; save(); } })) return;
-    const ticket = { speaker: "", face: "", text: `片道切符を200円で買い、${CH2_CITY_NAME}行きの電車に乗った。` };
-    await ride("morning", ticket, { dialogue_id: "__ch2_morning_train", lines: [ticket] });
+    await rideToYuzugaya();
   } else {
     state.flags._ch2_region = "home";
+    state.flags._ch2_stay_local_since = day;
     state.flags._ch2_morning_departed = day;
     save();
   }

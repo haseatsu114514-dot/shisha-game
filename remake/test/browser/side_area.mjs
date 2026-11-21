@@ -283,6 +283,64 @@ await suite("side-area", async check => {
     await idle(page, "next").waitFor({ state: "attached" });
   }, { ...PHONE, pageEntry: `${baseURL}?look=neo` });
 
+  // シーシャ作り（桜井版）の作業台（PHN19・2026-11-20 オーナー「ランクを入れる場所をもっと確保したい　？マークの位置とかサイドバーに入れてもいいかも」）:
+  // 「?」は右の上、外観を選ぶは左の下、ランクは右の下へ大きく写す。作業台の中の元のボタン・ランクは見えなくし、押すと元のボタンが働く
+  const lowPhone = { ...PHONE, viewport: { width: 740, height: 320 } };
+  for (const [label, device] of [["craft-pads-and-rank", PHONE], ["craft-pads-and-rank-740x320", lowPhone]]) await check(label, async page => {
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"); core.newGame();
+      core.state.flags.seenStepIntro = { setup: true, water: true, mix: true };
+      const [S, water, practice] = await Promise.all(["session", "water-view", "practice"].map((name) => import(`./js/craft/${name}.js`)));
+      const cs = S.newSession("rehearsal");
+      const bench = S.openBench(cs, { steps: practice.CRAFT_STEPS });
+      while (!bench.root.isConnected) await new Promise(requestAnimationFrame);
+      await bench.ready;
+      window.QA = { bench };
+      water.stepWater(cs).catch(() => {});
+    });
+    await page.locator(t("water-confirm")).waitFor();
+    assert.equal(await page.locator(".bench").getAttribute("data-craft-version"), "sakurai");
+    await live(page, "help").waitFor();
+    await live(page, "look").waitFor();
+    const g = await geometry(page);
+    assert.deepEqual(g.buttons.map((b) => `${b.side}:${b.id}`).sort(), ["l:look", "r:help"]);
+    assertPlacement(g, "作業台");
+    // 作業台の中の「?」・外観・ランクは見えない（場所は残す。ランクの読み上げは元のランクが持つ）
+    const inStage = await page.evaluate(() => [".bench-guide > summary", ".bench-top > .bench-appearance-button"].map((sel) => getComputedStyle(document.querySelector(`.bench ${sel}`)).visibility)
+      .concat(getComputedStyle(document.querySelector(".bench-top > .craft-rank")).opacity));
+    assert.deepEqual(inStage, ["hidden", "hidden", "0"]);
+    // ランク: まだ点が無い間は「—」。右の余白の下（切り欠きの帯より下）で、ステージに掛からない
+    const rank = async () => page.evaluate(() => {
+      const n = document.querySelector('[data-test="side-rank"]'), r = n.getBoundingClientRect(), stage = document.getElementById("stage").getBoundingClientRect();
+      const img = n.querySelector("img");
+      return { hidden: n.hidden, grade: n.dataset.grade, src: img.hidden ? "" : img.getAttribute("src"), left: r.left - stage.right, top: (r.top - stage.top) / stage.height, bottom: r.bottom - innerHeight,
+        width: r.width, inStage: document.querySelector(".bench-top > .craft-rank").dataset.grade };
+    });
+    const before = await rank();
+    assert.equal(before.hidden, false); assert.equal(before.grade, "unavailable"); assert.equal(before.src, "");
+    assert(before.left >= -0.5 && before.top >= 0.7 && before.bottom <= 0.5, JSON.stringify(before));
+    // 点が付いたら同じ絵を大きく（帯の中のランクより大きい）
+    await page.evaluate(() => QA.bench.rankHud.update({ grade: "A", progress: .5, artwork: { wide: "img/ui/craft-rank/rank-A.webp", compact: "img/ui/craft-rank/rank-A.webp" } }));
+    await page.waitForFunction(() => document.querySelector('[data-test="side-rank"]').dataset.grade === "A");
+    const after = await rank();
+    assert.match(after.src, /rank-A\.webp$/);
+    const railHeight = await page.evaluate(() => document.querySelector(".bench-top").getBoundingClientRect().height);
+    assert(after.width > railHeight, `余白のランク（幅 ${after.width}px）は上の帯（高さ ${railHeight}px）の中より大きい`);
+    // 「?」: 余白から開いて閉じる。開いている間は押された色
+    await page.locator(t("side-help")).tap();
+    await page.locator(".bench-guide[open]").waitFor();
+    await page.waitForFunction(() => document.querySelector('[data-test="side-help"]').getAttribute("aria-pressed") === "true");
+    await page.locator(t("bench-guide-close")).tap();
+    await page.locator(".bench-guide[open]").waitFor({ state: "detached" });
+    await page.waitForFunction(() => document.querySelector('[data-test="side-help"]').getAttribute("aria-pressed") === "false");
+    // 外観: 余白から押すと作業台の「外観を選ぶ」が働く（ここでは押されたことだけを確かめ、選ぶ画面は開かない）
+    await page.evaluate(() => QA.bench.root.addEventListener("click", (e) => {
+      if (e.target.closest('[data-test="bench-appearance-open"]')) { window.lookPressed = true; e.stopPropagation(); }
+    }, true));
+    await page.locator(t("side-look")).tap();
+    await page.waitForFunction(() => window.lookPressed === true);
+  }, device);
+
   // 選択肢の高さ: 会話欄の上 3択以上は 62px、2択は 130px（舞台上の px）。
   // 沿革: 当初 94px（オーナー「2択が上すぎる」「もう少し上」2026-11-13・YHK14）→ 2026-11-14 のオーナー指示で 2択をさらに 18px 上げて 112px（#3646）
   // → 2026-11-18 オーナー「やや位置が下なのでもう気持ち上」で さらに 18px 上げて 130px（#3813）。最新の明示指示が正。

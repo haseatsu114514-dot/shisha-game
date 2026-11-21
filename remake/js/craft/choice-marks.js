@@ -26,3 +26,19 @@ export function holePatternMark(rings) {
   })).join("");
   return mark(`<circle cx="24" cy="24" r="21" opacity=".65"/>${dots}`);
 }
+
+/** アルミを付けるか（PHN）: 付ける＝穴の並んだ面、付けない＝通気の切れ込みのある蓋。 */
+export function foilMark(on) {
+  if (on) return holePatternMark([{ r: .78, targets: 12 }, { r: .46, targets: 6 }]);
+  const slots = [0, 60, 120, 180, 240, 300].map(a => `<path d="M24 9v7" transform="rotate(${a} 24 24)"/>`).join("");
+  return mark(`<circle cx="24" cy="24" r="21" opacity=".65"/><circle cx="24" cy="24" r="6"/>${slots}`);
+}
+
+/** 炭の組み合わせ（PHN）: 同じ炭＝同じ四角3つ、混ぜる＝1つだけ大きい四角（キューブ）。 */
+export function coalMixMark(mixed, count = 3) {
+  const spots = count === 3 ? [[24,12],[13,30],[35,30]] : [[15,15],[33,15],[15,33],[33,33]];
+  return mark('<circle cx="24" cy="24" r="21" opacity=".6"/>' + spots.map(([x,y], i) => {
+    const big = mixed && i === 0, half = big ? 6.5 : 4.5;
+    return `<rect x="${x-half}" y="${y-half}" width="${half*2}" height="${half*2}" rx="${big ? 1 : 2.5}" ${big ? 'fill="currentColor"' : 'fill="none"'} transform="rotate(18 ${x} ${y})"/>`;
+  }).join(""));
+}

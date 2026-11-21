@@ -50,6 +50,9 @@ async function fixture() {
     ["/remake/js/core/audio.js", { SE: { select() {} } }],
     ["/remake/js/craft/common.js", { autoSkill: () => auto }],
     ["/remake/js/craft/flavor-guide.js", { equipmentUse: () => ({ use: "fixture" }), equipmentGuide: () => new Element("section") }],
+    // 機材の札に出す絵と、アルミの有無の図（PHN）。絵そのものは対象外なので空の部品を返す
+    ["/remake/js/daily/shop.js", { equipmentProductArt: () => new Element("span") }],
+    ["/remake/js/craft/choice-marks.js", { foilMark: () => new Element("span") }],
     ["/remake/js/craft/session.js", { stepPanel: () => (panel = new Element("section")), waitBenchReady: async () => {}, refreshBench() {}, explainStepOnce: async () => true }],
   ]);
   // Fail on unexpected dependency calls; unused gameplay/rendering is not simulated.

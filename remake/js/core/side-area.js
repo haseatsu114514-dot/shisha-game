@@ -4,6 +4,7 @@
 //   A 煙と縁    … 余白が少しでもあれば出す。
 //   B 縦書きの帯 … 章・街・日付と時間帯を、ステージの端に沿った1列で。余白がステージ上 60px 以上。
 //   C 親指ボタン … 会話の AUTO／SKIP／LOG／用語／設定／「次へ」、地図の LIME／MENU。余白 118px 以上のタッチ端末だけ。
+//                 ミニゲームが自分のボタンを右の親指の位置へ置く場所（sideSlot。フロア営業のシャッフル・フィーバー・TFL54）も、同じ条件で出す。
 // 寸法は主流のスマホ（19:9〜20:9。余白はステージ上で片側 120〜160px）に合わせてある。余白が足りない端末・PC・
 // 16:9 の画面では C を出さず、ステージの中のボタンを今までどおり使う。
 // 試遊ページ（camel-race.html など。共通の画面当て core/stage-fit.js を使う単体ページ）は standalone で呼び、A だけ出す
@@ -97,7 +98,7 @@ function padAllowed() {
 const coarsePointer = () => typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;
 
 const html = () => document.documentElement;
-let dom = null;      // { l, r, strip, chapter, city, when, pads: { id: button } }
+let dom = null;      // { l, r, rIn, strip, chapter, city, when, rank, pads: { id: button }, slots: { id: 入れ物 } }
 let deps = {};
 let standalone = false; // 試遊ページ: 煙と縁だけ
 let geom = { k: 1, g: 0, tier: "none", key: "" };
@@ -115,6 +116,11 @@ function build(viewport) {
   // 縦書きの1列。読み上げは HUD・MENU・セーブ一覧が同じ内容を持つので、飾りとして扱う。
   const strip = el("p.side-strip", { "aria-hidden": "true", hidden: true, dataset: { test: "side-strip" } }, [chapter, city, el("i"), when]);
   l.inner.append(strip);
+  // シーシャ作りの間のランク（PHN19）: 作業台の上の帯のランクを、右の余白の下の端に大きく写す。読み上げは作業台の元のランクが持つ
+  const rank = el("div.side-rank", { hidden: true, "aria-hidden": "true", dataset: { test: "side-rank" } }, [
+    el("small", { text: "RANK" }), el("img", { alt: "", draggable: false, decoding: "async", hidden: true }), el("b", { text: "—" }),
+  ]);
+  r.inner.append(rank);
   const pads = {};
   const button = (id, name, children) => pads[id] = el("button.side-btn", {
     type: "button", "aria-label": name, dataset: { pad: id, test: `side-${id}`, live: "false" },
@@ -124,6 +130,8 @@ function build(viewport) {
   l.inner.append(el("div.side-pad.bottom", [
     button("auto", "AUTO", [el("span", { text: "AUTO" })]),
     button("log", "LOG", [el("span", { text: "LOG" })]),
+    // シーシャ作りの間（PHN19）: 外観を選ぶ（めったに使わないので左の下。会話の LOG と同じ席）
+    button("look", "外観を選ぶ", [el("span", { text: "外観" })]),
   ]));
   r.inner.append(
     el("div.side-pad.top", [
@@ -131,6 +139,9 @@ function build(viewport) {
       button("config", "設定", [el("span", { text: "設定" })]),
       button("lime", "LIME", [el("span.side-lime", { text: "LIME" }), el("em.side-badge", { hidden: true })]),
       button("menu", "MENU", [el("i.side-bars"), el("span", { text: "MENU" }), el("em.side-badge.fire", { hidden: true }), el("i.side-dot", { hidden: true })]),
+      // シーシャ作りの間（PHN19）: 作業台の「?」（操作の説明）と大会の手応え。上の帯を工程だけにする
+      button("help", "操作の説明", [el("span.side-help", { text: "?" })]),
+      button("reception", "ここまでの審査員の手応え", [el("span", { text: "手応え" })]),
     ]),
     el("div.side-pad.bottom", [
       button("skip", "SKIP", [el("span", { text: "SKIP" })]),
@@ -139,7 +150,7 @@ function build(viewport) {
   );
   pads.auto.setAttribute("aria-pressed", "false");
   pads.skip.setAttribute("aria-pressed", "false");
-  return { l: l.node, r: r.node, strip, chapter, city, when, pads };
+  return { l: l.node, r: r.node, rIn: r.inner, strip, chapter, city, when, rank, pads, slots: {} };
 }
 
 // ---------------------------------------------------------------- 置き場所と段
@@ -170,8 +181,37 @@ function applyMode() {
   // DS風（retro）は自前の操作の面を持ち、ぼかし・グラデーションを使わない様式なので、余白は今までどおりにする。
   const enabled = config.sideArea !== "plain" && root.dataset.look !== "retro" && geom.tier !== "none";
   root.dataset.side = enabled ? geom.tier : "off";
-  root.dataset.sidePad = enabled && !standalone && geom.tier === "wide" && coarsePointer() && padAllowed() ? "on" : "off";
+  const pad = enabled && !standalone && geom.tier === "wide" && coarsePointer() && padAllowed() ? "on" : "off";
+  const changed = root.dataset.sidePad !== pad;
+  root.dataset.sidePad = pad;
   sync();
+  // 親指ボタンの出し入れ（画面の向き・設定）を、自分のボタンを余白へ置いている画面に知らせる（sideSlot）
+  if (changed) document.dispatchEvent(new CustomEvent("sidepadchange", { detail: { on: pad === "on" } }));
+}
+
+/**
+ * 画面が自分のボタンを、右の余白の親指の位置（会話の SKIP・次へ の所）に置くための入れ物（TFL54）。
+ * 親指ボタンが出ない端末（PC・16:9・余白が狭い）では null を返すので、呼んだ側はステージの中に置いたままにする。
+ * owner はその画面の根の要素。owner がページから外れたら、入れ物は空になる（片付け忘れの保険）。
+ * 親指ボタンの出し入れは document の "sidepadchange" で知らせる。
+ */
+export function sideSlot(id, owner) {
+  if (!dom || standalone || html().dataset.sidePad !== "on") return null;
+  let slot = dom.slots[id];
+  if (!slot) {
+    slot = dom.slots[id] = el("div.side-pad.bottom.side-slot", { dataset: { slot: id, test: `side-slot-${id}` } });
+    dom.rIn.append(slot);
+  }
+  slot.owner = owner || null;
+  return slot;
+}
+/** 入れ物を空にして返す（画面を閉じる時）。 */
+export function releaseSideSlot(id) {
+  const slot = dom?.slots[id];
+  if (!slot) return;
+  slot.replaceChildren();
+  slot.owner = null;
+  delete slot.dataset.mode;
 }
 
 /** 設定を変えた時に呼ぶ（scenes/title.js の設定）。 */
@@ -187,6 +227,29 @@ function updateStrip() {
   setText(dom.chapter, info.chapter);
   setText(dom.city, info.city);
   setText(dom.when, info.when);
+}
+
+// ---------------------------------------------------------------- ランク（シーシャ作りの間）
+
+/** 作業台のランクを右の余白の下へ大きく写す（PHN19）。親指ボタンを出している時だけ（<html data-side-rank="on"> の間、作業台の元のランクは css/side-area.css で見えなくする）。 */
+function syncRank() {
+  const node = dom.rank;
+  const source = html().dataset.sidePad === "on" ? document.querySelector("#screen .bench:not(.done) .bench-top > .craft-rank") : null;
+  if (node.hidden !== !source) node.hidden = !source;
+  setAttr(html(), "data-side-rank", source ? "on" : "off");
+  if (!source) { delete node.dataset.grade; return; }
+  const grade = source.dataset.grade || "unavailable";
+  const before = node.dataset.grade;
+  if (before === grade) return;
+  node.dataset.grade = grade;
+  const [, picture, mark] = node.children;
+  // 絵は作業台のランクと同じ物（js/craft/session.js の rankArt）。まだ無い間は「—」
+  const art = grade === "unavailable" ? "" : source.querySelector(":is(.craft-rank-wide, .craft-rank-compact) > img")?.getAttribute("src") || "";
+  picture.hidden = !art;
+  if (art) picture.setAttribute("src", art);
+  mark.textContent = grade === "unavailable" ? "—" : grade;
+  // 上がった・下がった時は小さく弾ませる（作業台の大きな演出 craft-rank-burst はここへ収まる）
+  if (before && art) { node.classList.remove("pop"); void node.offsetWidth; node.classList.add("pop"); }
 }
 
 // ---------------------------------------------------------------- 親指ボタン
@@ -206,6 +269,17 @@ function hitsHidden(nodes) {
   try { return nodes.map(hits); } finally { root.classList.remove("side-probe"); }
 }
 const vnButton = (id) => document.querySelector(`#vn .vn-ctl[data-test="vn-${id}"]`);
+/** シーシャ作りの作業台で、余白へ出すボタン（PHN19）。無い・隠れている物は null。 */
+function craftTargets() {
+  const bench = document.querySelector("#screen .bench:not(.done)");
+  if (!bench) return {};
+  const usable = (node) => node && !node.closest("[hidden]") && !node.disabled ? node : null;
+  return {
+    help: usable(bench.querySelector(".bench-head .bench-guide > summary")),
+    look: usable(bench.querySelector(".bench-top > .bench-appearance-button")),
+    reception: usable(bench.querySelector('[data-test="judge-reception"]')),
+  };
+}
 const hudButton = (id) => document.querySelector(`#hud .hud-right > .hud-${id}`);
 /** 元の設定ボタンを一瞬戻し、モーダル・カットインに遮られていないか確かめる。 */
 const vnLive = () => !!document.getElementById("vn")?.classList.contains("active")
@@ -219,7 +293,7 @@ function setBadge(node, text) {
 function syncPads() {
   const { pads } = dom;
   const active = html().dataset.sidePad === "on";
-  const live = { lime: false, menu: false, auto: false, skip: false, log: false, glossary: false, config: false, next: false };
+  const live = { lime: false, menu: false, auto: false, skip: false, log: false, glossary: false, config: false, next: false, help: false, look: false, reception: false };
   if (active) {
     if (vnLive()) {
       live.auto = live.skip = live.log = live.glossary = live.config = true;
@@ -240,6 +314,15 @@ function syncPads() {
         if (dot.hidden === gain) dot.hidden = !gain;
       }
     }
+    // シーシャ作り: 作業台のボタンが今押せる時だけ出す（説明を開いている間の「?」は、閉じるために出したまま）。
+    // 会話・地図の操作と同じ席を使うので、そちらが出ている間は出さない。
+    const targets = live.glossary || live.lime || live.menu ? {} : craftTargets();
+    if (targets.help || targets.look || targets.reception) {
+      const order = ["help", "look", "reception"].filter((id) => targets[id]);
+      const hit = hitsHidden(order.map((id) => targets[id]));
+      order.forEach((id, i) => { live[id] = hit[i] || (id === "help" && !!targets.help.closest("details")?.open); });
+      if (live.help) setAttr(pads.help, "aria-pressed", targets.help.closest("details")?.open ? "true" : "false");
+    }
   }
   for (const [id, node] of Object.entries(pads)) setAttr(node, "data-live", String(live[id]));
 }
@@ -247,6 +330,10 @@ function syncPads() {
 function press(id, event) {
   if (html().dataset.sidePad !== "on") return;
   if (id === "next") { if (vnLive()) deps.advance?.(); }
+  else if (id === "help" || id === "look" || id === "reception") {
+    const target = craftTargets()[id];
+    if (target && (hitsHidden([target])[0] || (id === "help" && target.closest("details")?.open))) target.click();
+  }
   else if (id === "lime" || id === "menu") { const target = hudButton(id); if (target && hitsHidden([target])[0]) target.click(); }
   else { const target = vnButton(id); if (target && vnLive()) target.click(); }
   // 指で押した後は、キーボードの Enter／Space が会話の送りに戻るようフォーカスを残さない。
@@ -262,6 +349,8 @@ function sync() {
   if (!dom) return;
   updateStrip();
   syncPads();
+  syncRank();
+  for (const [id, slot] of Object.entries(dom.slots)) if (slot.owner && !slot.owner.isConnected) releaseSideSlot(id);
 }
 function scheduleSync(delay = 80) {
   if (syncTimer || !dom) return;
@@ -295,12 +384,12 @@ export function initSideArea({ stage, advance, standalone: alone = false, readSe
   if (standalone) return; // 帯・ボタンの追随（HUD・会話・場面の監視）は本編だけ
   on("hud", () => scheduleSync());
   document.addEventListener("lookchange", applyMode);
-  // 場面の変化（会話の開始・終了、モーダル、HUD の出し入れ、選択肢、AUTO／SKIP の切り替え）で合わせ直す。
+  // 場面の変化（会話の開始・終了、モーダル、HUD の出し入れ、選択肢、AUTO／SKIP の切り替え、作業台の「?」の開閉）で合わせ直す。
   // 見るのは class などの切り替えと、層の直下の出し入れだけ（会話の文字送りは 1 字ごとに中身を書き換えるので見ない）。
   const changed = (records) => {
     if (html().dataset.side !== "off" && records.some((record) => !record.target.closest?.(".side"))) scheduleSync();
   };
-  new MutationObserver(changed).observe(document.body, { subtree: true, attributes: true, attributeFilter: ["class", "data-screen", "hidden", "aria-pressed"] });
+  new MutationObserver(changed).observe(document.body, { subtree: true, attributes: true, attributeFilter: ["class", "data-screen", "hidden", "aria-pressed", "open", "data-grade"] });
   const layers = new MutationObserver(changed);
   for (const id of ["screen", "vn", "hud", "fx", "modal"]) {
     const layer = document.getElementById(id);

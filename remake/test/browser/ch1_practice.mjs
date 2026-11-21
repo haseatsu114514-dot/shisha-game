@@ -211,7 +211,9 @@ await suite("ch1-practice", async run => {
       for (const round of [1, 2]) {
         await page.evaluate(round => { P.craft.craftTest.auto = null; P.running = P.pull.runCare(P.cs, { round }); }, round);
         await page.locator('[data-test="care-coals"]').waitFor();
-        await assertFits(page, ".care-coal, .care-coals-ask, .care-coals-lead");
+        await assertFits(page, ".care-coal, .care-coals-lead");
+        // 案内を個別に確認し、文が出ない場合も失敗させる。
+        await assertFits(page, ".care-coals-ask");
         if (round === 1) await page.screenshot({ path: `${shots}/${device}-care-menu.png` });
         await page.evaluate(() => P.craft.craftTest.auto = "good");
         await select(page, '[data-test="care-coal-1"]', touch);

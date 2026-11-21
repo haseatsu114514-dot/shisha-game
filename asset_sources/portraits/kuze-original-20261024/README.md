@@ -1,6 +1,6 @@
-# 綾取朔・通常立ち絵
+# 綾取陣の初回立ち絵
 
-第3章の「余白」店主、綾取朔の初回 normal 立ち絵。正本は `data/characters.json` と `brand/character_profiles.md`。現行採用のヴォルクやレヰの立ち絵に合わせ、成人向けの2Dノベル絵として制作した。採用済みの表示画風を優先した。
+綾取陣の初回の通常立ち絵と生成時の資料。東京の店は「煙幕」。現在の人物像と採用画像は [人物設定](../../../brand/character_profiles.md) と [人物データ](../../../data/characters.json) を参照する。
 
 - `normal-first-pass.png`: image_gen.imagegen による初回原画。指示は `normal-prompt.txt`。
 - `normal-source.png`: 初回原画を参照して、同ツールで輪郭と透過を整えた原画。指示は `cleanup-prompt.txt`。

@@ -7,12 +7,14 @@
 <div id="modal"></div>
 <script type="module">
 import * as core from "./js/core/state.js";
+import { installSaveFailedNotice } from "./js/core/save-failed-notice.js";
 import { layers } from "./js/core/ui.js";
 import { openMenu } from "./js/daily/menu.js";
 import { createChapterMenu } from "./js/core/chapter-menu.js";
 
 layers.modal = document.querySelector("#modal");
 core.config.mute = true;
+installSaveFailedNotice();
 const menu = document.querySelector("#menu");
 const chapter = new URLSearchParams(location.search).has("chapter");
 const player = core.load() || core.newGame();
