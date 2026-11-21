@@ -466,7 +466,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   const pacingNode = el("div.camel-pacing", { hidden: true, dataset: { test: "camel-pacing" } }, [pacingText, reserveText]);
   // 息の予告はムチのボタンのすぐ上に積む（2026-11-11。画面の中央下は SUV とはじめを見せる）。
   const controls = el("div.camel-controls", [voiceButton, el("div.camel-control-stack", [pacingNode, signalButton])]);
-  const closeButton = el("button.camel-close", { type: "button", text: "やめる", dataset: { test: "camel-close" } });
+  const closeButton = el("button.camel-close", { type: "button", text: "✕", title: "やめる", "aria-label": "やめる", dataset: { test: "camel-close" } });
   // 一時停止（2026-11-13・CRF13）。走っている間と合図の間だけ出す。Esc・P でも止まる。
   const pauseButton = el("button.camel-close.camel-pause", { type: "button", html: '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.6" height="12" rx="1" fill="currentColor"/><rect x="9.4" y="2" width="3.6" height="12" rx="1" fill="currentColor"/></svg>', "aria-label": "一時停止", title: "一時停止（Esc）", hidden: true, dataset: { test: "camel-pause" } });
   // 助手席のファーリスの声（上の中央、進み具合の下）。顔のアイコンが読めなければ名前だけ。
