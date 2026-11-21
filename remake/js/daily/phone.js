@@ -454,6 +454,9 @@ function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
   const fixed = chapterFeatureEnabled(state.chapter, "sumiStoryShifts") && (state.day === 3 || state.day === 8);
   const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
   if (!fixed && !slacking) return null;
+  // 急な誘いは、前の依頼から3日以上の間隔を取る。物語の固定の誘いは日付どおりに届ける。
+  if (!fixed && (state.inbox || []).some(item => item.msg?.accept_event === "__sumi_baito__"
+    && state.day - item.day > 0 && state.day - item.day < 3)) return null;
   // #2088: 夜のtonariに外せない予定がある日は「シフトには入れない」と断るので、サボり気味の催促は出さない（翌日以降に再送）。
   // DAY3・DAY8 の固定の誘いは台本の一部なので残す
   if (!fixed && fixedNight?.(state.day)) return null;
