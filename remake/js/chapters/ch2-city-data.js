@@ -90,7 +90,7 @@ export async function loadPreparationDialogues() {
     // ♥3の友人の外出（LIME lime_outing_kumicho_1・lime_outing_kuraudo_1 の accept_event。daily/calendar.js が再生する・#3097）
     ch2_kumicho: ["ch2_kumicho_bond_finale", "outing_kumicho_1"],
     // クラウドのライブの夜（第3章の出発前の準備期間だけ。ch2-preparation.js の kuraudoLiveDue・RVE07）
-    ch2_kuraudo: ["ch2_kuraudo_bond_finale", "ch3_prep_kuraudo_live", "outing_kuraudo_1"] };
+    ch2_rei: ["ch2_kuraudo_bond_finale", "ch3_prep_kuraudo_live", "outing_kuraudo_1"] };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
   // 昼の本筋（耳鼻科・なるの店のまかない。SPC28）
   for (const scene of CH2_DAY_SCENES) (files[scene.file] ||= []).push(scene.id);

@@ -207,7 +207,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   const first = !state.flags._ch2_talks?.[id];
   // クラウドのライブの夜（2026-11-11 オーナー「推奨で全部」RVE07）: 第2章で余りチケットを受け取った人（_ch2_kuraudo_ticket）が、
   // 第3章の東京へ発つ前の準備期間にクラウドの店へ来たら、いつもの会話・段階・締めくくりより先に一度だけ。
-  const live = id === "kuraudo" && !first && kuraudoLiveDue(state) ? REI_LIVE_SCENE : null;
+  const live = id === "kuraudo" && !first && kuraudoLiveDue(state) ? KURAUDO_LIVE_SCENE : null;
   // 東京・ドバイへ発つ前の送り出しの会話（#3097 PR-I。daily/spots.js の CHAPTER_TALKS の prep）。ライブの夜と同じく、
   // いつもの会話・続編・段階・締めくくりより先に一来店に一本・一度だけ。あげはの途中の質問が残る来店では次の来店へ残す。
   const send = !first && !live && !(id === "ageha" && questionVisitDue("ageha")) ? chapterTalkDue(id) : null;
