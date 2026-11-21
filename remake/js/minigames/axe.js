@@ -30,7 +30,7 @@ function decodeArt(url) {
 }
 // The WATL board (five 2x10 planks, calm light centre) from Codex, #2198 / AXR06. The older square board stays in the repository.
 const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp"),
-  // 一人称レーンの背景（#3639）。laneAim は同じレーンに右手の構えを描き込んだ狙い中専用の絵で、自分の狙いの間だけ重ねる。
+  // 一人称レーンの背景（#3639）。laneAim から右手と斧を切り抜き、自分の構え中だけ前景に重ねる。
   lane: imgFileUrl("backgrounds/bg_axe_lane.webp"), laneAim: imgFileUrl("backgrounds/bg_axe_lane_aim.webp") };
 // ゲージ・札の絵の部品（#3207・AXR14）と、見出しの板・投げ数の溝・黒板の窓・ランクの丸・帯・木片（#3423・AXQ03）。
 // 木片以外は CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間や結果の出遅れを防ぐ。
@@ -59,20 +59,18 @@ const { x: CX, y: CY, radius: R } = TARGET;
 // #3807: frame the lane and the scoring board with one camera. The hand stays at arm's length.
 const FPS_CENTER_Y = 211;
 const FPS_BOARD_TRANSFORM = `translate(${CX} ${FPS_CENTER_Y}) scale(.895) translate(${-CX} ${-CY})`;
-// Outline in the original 1280×720 aiming photo. Keep the gap between the arms open to the lane.
+// Right hand, sleeve and axe in the aiming bitmap's 1671×941 coordinate space.
 const HAND_SILHOUETTE = [
-  "M825 142 Q778 177 765 224 Q756 261 766 286 Q815 250 854 255 L868 260 L825 354",
-  "Q816 350 808 359 Q802 368 787 370 Q776 372 781 382 Q782 387 790 390",
-  "Q773 390 769 402 Q765 412 777 424 Q764 423 761 434 Q757 445 768 452",
-  "Q755 454 757 465 Q758 476 769 482 L756 507 Q738 507 722 508",
-  "Q711 509 704 526 Q691 542 680 565 Q670 585 640 607 Q621 605 604 621",
-  "Q591 635 581 642 L565 655 Q551 661 544 666 L478 720 H677 Q692 705 695 682 Q701 694 734 702",
-  "Q750 707 755 689 L763 645 Q782 649 788 636 L787 628 Q798 623 797 611",
-  "L795 606 Q809 601 806 582 L805 578 Q819 575 811 561 Q817 543 802 532",
-  "L817 502 Q839 516 878 552 Q875 575 890 596 Q931 646 960 720 H1263",
-  "Q1195 663 1116 613 Q1047 565 992 519 Q959 484 942 488 Q911 471 899 447",
-  "Q890 430 885 404 Q882 389 864 378 L923 278 L955 294 L986 245 L956 230",
-  "L959 220 Q960 210 937 201 Q915 190 910 195 L904 205 Q857 184 825 142 Z",
+  "M1270 187 C1236 188 1185 231 1165 283 Q1199 259 1214 283 L1215 291 L1137 357",
+  "Q1124 346 1115 351 Q1107 354 1102 368 Q1084 366 1082 384 Q1076 385 1075 396",
+  "Q1063 398 1063 419 Q1053 431 1058 447 Q1062 460 1075 463",
+  "C1075 483 1079 504 1090 520 L1098 539 Q1085 558 1095 581",
+  "C1104 606 1108 636 1111 664 Q1114 698 1122 722 C1132 772 1142 807 1148 848 Q1155 900 1187 941 H1632",
+  "C1574 897 1503 852 1430 813 C1389 787 1350 766 1325 746 C1278 707 1247 669 1224 636",
+  "C1205 611 1200 596 1189 582 Q1179 561 1171 539 Q1163 514 1156 511",
+  "Q1152 491 1154 473 C1158 450 1165 432 1170 407 Q1172 400 1166 392 L1157 382 L1222 323",
+  "L1226 335 L1261 308 L1264 298 L1270 297 Q1275 280 1266 260 Q1261 247 1252 258",
+  "Q1252 219 1270 187 Z",
 ].join(" ");
 // Solid plank edges inside the 1254px artwork (alpha 250+, asset_sources/ui/axe-watl-20261101/adoption.json); the transparent margin is not wood.
 const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 1190 / 1254 };
@@ -282,12 +280,12 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     artBoard.insertBefore(svg("image", { class: "axe-lane-bg", href: ART.lane,
       x: CX - w / 2, y: -65, width: w, height: h }), artBoard.firstChild);
 
-    // The aiming photo includes the lane. Reuse only the foreground at its original size and position.
+    // Fit the drawn-back arm alongside the scoring board and leave room for the flick surface.
     const handId = artId + "-hands", clipId = handId + "-outline", frontId = handId + "-front";
     artBoard.append(svg("defs", {}, [
       svg("clipPath", { id: clipId }, [svg("path", { d: HAND_SILHOUETTE })]),
-      svg("svg", { id: handId, x: -245, y: -107, width: 1150, height: 646.875, viewBox: "0 0 1280 720" }, [
-        svg("image", { href: ART.laneAim, width: 1280, height: 720, "clip-path": `url(#${clipId})` })]),
+      svg("svg", { id: handId, x: -97, y: -110, width: 979, height: 706, viewBox: "0 0 1671 941", preserveAspectRatio: "none" }, [
+        svg("image", { href: ART.laneAim, width: 1671, height: 941, preserveAspectRatio: "none", "clip-path": `url(#${clipId})` })]),
     ]));
     laneAimImage = svg("use", { class: "axe-lane-aim", href: "#" + handId, opacity: 0 });
     artBoard.append(laneAimImage);
