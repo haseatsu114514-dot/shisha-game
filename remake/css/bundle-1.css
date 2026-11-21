@@ -15905,6 +15905,79 @@ body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px;
 .shop-step:not(:disabled):hover { box-shadow: inset 0 0 0 2px #ac8ebc; }
 .shop-quantity output { min-width: 28px; text-align: center; font-size: 20px; font-variant-numeric: tabular-nums; }
 .shop-paper .shop-owned { width: 142px; flex: none; color: var(--shop-purple); font-size: 16px; }
+
+/* 旧版のフレーバー・機材売り場は、大きなカードを縦にめくる。会計はスクロール枠の外に残す。 */
+:root[data-look="classic"] .shop-paper .shop-body:has(> .shop-row.product) {
+  padding-block: 6px;
+  overscroll-behavior-y: contain;
+}
+:root[data-look="classic"] .shop-paper .shop-row.product {
+  --shop-step-size: max(56px, var(--shop-tap, 0px));
+  min-height: 138px;
+  padding: 12px 18px;
+  gap: 20px;
+  border: 1px solid var(--shop-line);
+  border-radius: 6px;
+}
+:root[data-look="classic"] .shop-paper .shop-row.product:not(.selected, .errand) { background: #fffcf8; }
+:root[data-look="classic"] .shop-paper .shop-row.product + .shop-row.product { margin-top: 10px; }
+:root[data-look="classic"] .shop-row.product .shop-product { gap: 20px; }
+:root[data-look="classic"] .shop-row.product .shop-product-art {
+  width: 112px;
+  height: 112px;
+  margin: 0;
+}
+:root[data-look="classic"] .shop-row.product .shop-product-art > :not(.shop-type-mark) { scale: 1.65; }
+:root[data-look="classic"] .shop-row.product .shop-type-mark {
+  grid-template-columns: minmax(0, 1fr);
+  width: 96px;
+  min-height: 52px;
+  height: auto;
+  padding: 4px;
+  text-align: center;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+  font-size: max(16px, var(--shop-text, 0px)) !important;
+}
+:root[data-look="classic"] .shop-row.product .shop-main { gap: 4px; overflow-wrap: anywhere; }
+:root[data-look="classic"] .shop-row.product .shop-main b {
+  font-size: max(28px, calc(var(--shop-label, 0px) + 4px));
+  font-weight: 700;
+  line-height: 1.3;
+}
+:root[data-look="classic"] .shop-row.product :is(.shop-feature-tags, .shop-stock small, .shop-price.expense) {
+  font-size: max(18px, var(--shop-text, 0px));
+}
+:root[data-look="classic"] .shop-row.product .shop-stock {
+  width: auto;
+  min-width: 126px;
+  white-space: nowrap;
+}
+:root[data-look="classic"] .shop-row.product .shop-stock span { font-size: max(22px, var(--shop-text, 0px)); }
+:root[data-look="classic"] .shop-row.product .shop-price {
+  width: auto;
+  min-width: 140px;
+  font-size: max(28px, var(--shop-label, 0px));
+}
+:root[data-look="classic"] .shop-row.product :is(.shop-quantity, .shop-owned) {
+  width: auto;
+  min-width: calc(2 * var(--shop-step-size) + 2ch + 18px);
+  font-size: max(22px, var(--shop-text, 0px));
+}
+:root[data-look="classic"] .shop-row.product .shop-quantity output { font-size: inherit; }
+:root[data-look="classic"] .shop-row.product .shop-owned { text-align: right; }
+:root[data-look="classic"] .shop-row.product .shop-step {
+  width: var(--shop-step-size);
+  height: var(--shop-step-size);
+}
+@media (orientation: landscape) and (max-height: 360px) and (pointer: coarse) {
+  :root[data-look="classic"] .shop-paper .shop-row.product {
+    min-height: 128px;
+    padding-block: 4px;
+  }
+}
+
 .shop-paper .shop-foot { height: 92px; flex: none; margin: 0; padding: 10px 26px; gap: 16px; border-top: 1px solid var(--shop-line); background: #ece5ee99; }
 .shop-back { min-width: 164px; min-height: 72px; padding: 10px 22px; font-weight: 700 !important; font-size: 22px !important; color: #58386c; border: 2px solid #9676a8; border-radius: 4px; background: #fffcf8; }
 .shop-back:hover { background: #ebe0f0; }
