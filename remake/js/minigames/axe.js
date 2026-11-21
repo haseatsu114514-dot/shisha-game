@@ -30,7 +30,7 @@ function decodeArt(url) {
 }
 // The WATL board (five 2x10 planks, calm light centre) from Codex, #2198 / AXR06. The older square board stays in the repository.
 const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp"),
-  // 一人称レーンの背景（#3639）。laneAim は同じレーンに右手の構えを描き込んだ狙い中専用の絵で、自分の狙いの間だけ重ねる。
+  // 一人称レーンの背景（#3639）。laneAim から右手と斧を切り抜き、自分の構え中だけ前景に重ねる。
   lane: imgFileUrl("backgrounds/bg_axe_lane.webp"), laneAim: imgFileUrl("backgrounds/bg_axe_lane_aim.webp") };
 // ゲージ・札の絵の部品（#3207・AXR14）と、見出しの板・投げ数の溝・黒板の窓・ランクの丸・帯・木片（#3423・AXQ03）。
 // 木片以外は CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間や結果の出遅れを防ぐ。
@@ -59,20 +59,18 @@ const { x: CX, y: CY, radius: R } = TARGET;
 // #3807: frame the lane and the scoring board with one camera. The hand stays at arm's length.
 const FPS_CENTER_Y = 211;
 const FPS_BOARD_TRANSFORM = `translate(${CX} ${FPS_CENTER_Y}) scale(.895) translate(${-CX} ${-CY})`;
-// Outline in the original 1280×720 aiming photo. Keep the gap between the arms open to the lane.
+// Right hand and axe in the 1280×720 SVG viewBox, independent of the bitmap resolution.
 const HAND_SILHOUETTE = [
-  "M825 142 Q778 177 765 224 Q756 261 766 286 Q815 250 854 255 L868 260 L825 354",
+  "M825 142 Q781 175 765 227 Q756 258 765 286 C795 262 841 241 869 262 L825 355",
   "Q816 350 808 359 Q802 368 787 370 Q776 372 781 382 Q782 387 790 390",
-  "Q773 390 769 402 Q765 412 777 424 Q764 423 761 434 Q757 445 768 452",
-  "Q755 454 757 465 Q758 476 769 482 L756 507 Q738 507 722 508",
-  "Q711 509 704 526 Q691 542 680 565 Q670 585 640 607 Q621 605 604 621",
-  "Q591 635 581 642 L565 655 Q551 661 544 666 L478 720 H677 Q692 705 695 682 Q701 694 734 702",
-  "Q750 707 755 689 L763 645 Q782 649 788 636 L787 628 Q798 623 797 611",
-  "L795 606 Q809 601 806 582 L805 578 Q819 575 811 561 Q817 543 802 532",
-  "L817 502 Q839 516 878 552 Q875 575 890 596 Q931 646 960 720 H1263",
-  "Q1195 663 1116 613 Q1047 565 992 519 Q959 484 942 488 Q911 471 899 447",
-  "Q890 430 885 404 Q882 389 864 378 L923 278 L955 294 L986 245 L956 230",
-  "L959 220 Q960 210 937 201 Q915 190 910 195 L904 205 Q857 184 825 142 Z",
+  "L785 397 Q773 397 769 407 Q765 416 775 424 Q764 425 761 435 Q757 445 767 452",
+  "Q756 454 757 465 Q758 476 769 480 C738 544 704 607 666 664",
+  "Q662 678 679 691 Q696 703 714 701 Q724 699 728 683 C730 673 734 658 737 646 C756 595 783 546 811 503",
+  "Q821 512 841 522 Q864 535 879 551 Q872 577 890 592 Q911 608 927 645 Q946 692 963 720 H1262",
+  "C1214 684 1160 641 1113 610 Q1080 590 1053 565 Q1030 548 1009 533",
+  "Q990 517 979 508 Q951 484 940 488 Q928 476 916 467 Q895 447 886 411",
+  "Q879 387 864 378 L921 279 L955 294 L986 245 L955 230",
+  "L959 219 Q956 209 935 201 Q917 191 912 195 Q907 199 904 206 Q858 187 825 142 Z",
 ].join(" ");
 // Solid plank edges inside the 1254px artwork (alpha 250+, asset_sources/ui/axe-watl-20261101/adoption.json); the transparent margin is not wood.
 const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 1190 / 1254 };
