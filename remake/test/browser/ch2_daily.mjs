@@ -286,7 +286,7 @@ await suite('ch2-daily',async check=>{
     await setup(page,{unknown:true});await begin(page);await wide(page,true);
     for(const id of ['ageha','kumicho','kuraudo']) {
       if ((await value(page)).flags._ch2_region === 'home') await wide(page, true);
-      await act(page,`ch2_${id}`,{touch:true});
+      await act(page,id === 'kuraudo' ? 'ch2_rei' : `ch2_${id}`,{touch:true}); // 店IDは ch2_rei（人物IDと分離）
     }
     await travelToCity(page,'home',{touch:true}); await act(page,'rest',{touch:true});
     let v=await value(page);assert.equal(v.day,18);assert.equal(v.slot,0);assert.equal(v.money,27000-stationFares(page));

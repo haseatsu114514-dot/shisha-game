@@ -10,6 +10,8 @@ const evidence = path.resolve(root, process.env.ARTIFACT_DIR || ".codex/artifact
 fs.mkdirSync(evidence, { recursive: true });
 const map = '[data-destination-selection]:not(.done)';
 const t = name => `[data-test="${name}"]`;
+// ピンと visitedDay は店ID（shopId）キー。クラウドの店IDは ch2_rei のまま（人物ID kuraudo とは分離）。
+const spotId = id => id === "kuraudo" ? "ch2_rei" : `ch2_${id}`;
 const data = JSON.parse(fs.readFileSync(path.join(root, "data/dialogue/ch2_preparation.json")));
 const followups = Object.fromEntries(data.dialogues.filter(d => d.dialogue_id.endsWith("_followup")).map(d => [d.dialogue_id, d]));
 const current = page => page.evaluate(() => structuredClone(window.__remake.state));
@@ -44,7 +46,7 @@ async function setup(page, id, stop = null) {
   await page.locator(map).waitFor();
 }
 async function go(page, id, touch) {
-  if (touch) await page.locator(t(`pin-ch2_${id}`)).tap(); else await page.locator(t(`pin-ch2_${id}`)).click();
+  if (touch) await page.locator(t(`pin-${spotId(id)}`)).tap(); else await page.locator(t(`pin-${spotId(id)}`)).click();
   if (touch) await page.locator(t("map-go")).tap(); else await page.locator(t("map-go")).click();
 }
 async function reload(page) {
@@ -68,7 +70,7 @@ await suite("ch2-followups", async check => {
       const after = await current(page);
       assert.equal(after.money, before.money - 3000); assert.equal(after.flags._ch2_talks[id], 10);
       assert.equal(after.visits[id], 98); assert.equal(after.flags._ch2_followup_done[id], true);
-      assert.equal(after.visitedDay[`ch2_${id}`], 16); assert(after.stamina < before.stamina);
+      assert.equal(after.visitedDay[spotId(id)], 16); assert(after.stamina < before.stamina);
       // 旧しくみ（?growth=0）は通常の成長候補1つ（1P）、心得の盤（通常プレイの既定・SBD97）は経験値で、能力は書き換えない
       const board = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled());
       if (board) { assert.deepEqual(after.stats, before.stats); assert((after.growth?.xp || 0) > (before.growth?.xp || 0), "The visit earns EXP"); }
@@ -76,7 +78,7 @@ await suite("ch2-followups", async check => {
       unchangedRecords(before,after);
       const trace = await page.evaluate(() => window.__followupTrace);
       assert.deepEqual(trace.filter(l => l.scene === `remake_ch2_${id}_followup`).map(({ speaker, face, text }) => ({ speaker, face, text })), followups[`remake_ch2_${id}_followup`].lines);
-      await page.locator(t(`pin-ch2_${id}`)).click(); assert.equal(await page.locator(t("map-go")).count(),0);
+      await page.locator(t(`pin-${spotId(id)}`)).click(); assert.equal(await page.locator(t("map-go")).count(),0);
       await reload(page); const saved = await current(page);
       for (const key of ["money","stats","slot","visitedDay","visits","flags","reel"]) assert.deepEqual(saved[key], after[key], key);
     }, id === "kuraudo" ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});

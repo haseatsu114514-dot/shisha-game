@@ -85,7 +85,7 @@ async function playAttempt(page,touch=false,reloadCare=false) {
   assert.equal(p.craft.chapter,2);
   assert.deepEqual(p.craft.tournamentStory.seen,['opening','packed','waiting','interlude_pull','serve','interlude1','interlude2','interlude3','tasting','preresult']);
   assert(Number.isFinite(p.craft.tournamentStory.servedAroma));
-  assert(await page.locator('.ch2-contest-rival img').evaluateAll(async imgs=>{await Promise.all(imgs.map(i=>i.decode()));return imgs.every(i=>i.naturalWidth>0);}));assert.deepEqual(p.craft.audienceIds.slice().sort(),['dr_charcoal','uezono','sensu']);
+  assert(await page.locator('.ch2-contest-rival img').evaluateAll(async imgs=>{await Promise.all(imgs.map(i=>i.decode()));return imgs.every(i=>i.naturalWidth>0);}));assert.deepEqual(p.craft.audienceIds.slice().sort(),['dr_charcoal','sensu','uezono']);
   // 同じ配分で計算された総合値がそのまま章2の記録に残る。
   assert.equal(p.result.total,p.craft.total);
   // #1107 B2: ロートスHMDはアルミ穴あけを飛ばすので、穴あけの重みを外し残り4工程を各25%で割り直す（finalizeと同じ配分）。

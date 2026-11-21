@@ -199,7 +199,7 @@ await suite("ch3-tournament", async check => {
       assert.equal(state.flags._ch3_tournament.voted, round);
       assert.equal(state.flags._ch3_tournament.history.length, 0);
       assert.deepEqual(await page.locator("[data-contestant]").evaluateAll(nodes =>
-        nodes.map(node => node.dataset.contestant).sort()), ["hajime", "ayatori", "steve", "volk"]);
+        nodes.map(node => node.dataset.contestant).sort()), ["ayatori", "hajime", "steve", "volk"]);
       assert.deepEqual(await page.locator(".judge-chip").evaluateAll(nodes =>
         nodes.map(node => node.dataset.judge).sort()), ["dr_charcoal", "emil", "sensu"]);
       assert.match(await page.locator(".ch2-contest-judges").textContent(), /エミル|Emil/);

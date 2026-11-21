@@ -166,7 +166,9 @@ async function manualToMap(page, { watch = null, captureUnknown = null, inside =
       return document.querySelector('#bg > .bg-img:last-child')?.style.backgroundImage.includes(ROOMS[id].split("/").at(-1)) && portrait?.complete && portrait.naturalWidth > 0;
     }, watch)) {
       const portrait = await page.locator(`.vn-portraits img[data-speaker="${watch}"].active`).evaluate(node => ({ src: node.getAttribute("src"), width: node.naturalWidth, height: node.naturalHeight }));
-      if (watch !== "ageha") assert(portrait.src.endsWith(`/chr_${watch}_normal.webp`), `Wrong normal portrait: ${JSON.stringify(portrait)}`);
+      // 立ち絵ファイル名（art stem）は人物IDと分離して保持される（portrait-resolver.js の ART_STEMS）。
+      const artStem = { kuraudo: "rei", uezono: "maezono", ayatori: "saku", sensu: "sui", dr_charcoal: "dr_kemuri" }[watch] || watch;
+      if (watch !== "ageha") assert(portrait.src.endsWith(`/chr_${artStem}_normal.webp`), `Wrong normal portrait: ${JSON.stringify(portrait)}`);
       // A portrait can arrive before its entrance animation finishes and before
       // the new text replaces the preceding narration. Capture settled dialogue.
       await page.waitForTimeout(1200);

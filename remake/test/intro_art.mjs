@@ -117,6 +117,10 @@ try {
   await page.emulateMedia({ reducedMotion: "no-preference" });
 
   // 新しい26表情は会話エンジンが実画像を読み、同じ枠で表情を切り替える。
+  const artStems = await page.evaluate(async (ids) => {
+    const resolver = await import("./js/core/portrait-resolver.js");
+    return Object.fromEntries(ids.map((id) => [id, resolver.characterArtStem(id)]));
+  }, Object.keys(faces));
   let count = 0;
   for (const [id, variants] of Object.entries(faces)) {
     for (const face of variants) {
@@ -141,7 +145,7 @@ try {
       if (id === "hajime") {
         assert.equal(await page.locator(".vn-portraits img").count(), 0, "通常会話で主人公の立ち絵が出た");
       } else {
-        await page.waitForFunction((suffix) => [...document.querySelectorAll(".vn-portraits img")].some((im) => im.src.endsWith(suffix) && im.complete && im.naturalWidth > 0), `chr_${id}_${face}.webp`);
+        await page.waitForFunction((suffix) => [...document.querySelectorAll(".vn-portraits img")].some((im) => im.src.endsWith(suffix) && im.complete && im.naturalWidth > 0), `chr_${artStems[id] || id}_${face}.webp`);
       }
       await page.keyboard.press("Enter");
       await page.waitForTimeout(330);
