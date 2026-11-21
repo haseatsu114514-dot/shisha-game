@@ -285,7 +285,8 @@ await suite("side-area", async check => {
 
   // シーシャ作り（桜井版）の作業台（PHN19・2026-11-20 オーナー「ランクを入れる場所をもっと確保したい　？マークの位置とかサイドバーに入れてもいいかも」）:
   // 「?」は右の上、外観を選ぶは左の下、ランクは右の下へ大きく写す。作業台の中の元のボタン・ランクは見えなくし、押すと元のボタンが働く
-  await check("craft-pads-and-rank", async page => {
+  const lowPhone = { ...PHONE, viewport: { width: 740, height: 320 } };
+  for (const [label, device] of [["craft-pads-and-rank", PHONE], ["craft-pads-and-rank-740x320", lowPhone]]) await check(label, async page => {
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js"); core.newGame();
       core.state.flags.seenStepIntro = { setup: true, water: true, mix: true };
@@ -338,7 +339,7 @@ await suite("side-area", async check => {
     }, true));
     await page.locator(t("side-look")).tap();
     await page.waitForFunction(() => window.lookPressed === true);
-  }, PHONE);
+  }, device);
 
   // 選択肢の高さ: 会話欄の上 3択以上は 62px、2択は 130px（舞台上の px）。
   // 沿革: 当初 94px（オーナー「2択が上すぎる」「もう少し上」2026-11-13・YHK14）→ 2026-11-14 のオーナー指示で 2択をさらに 18px 上げて 112px（#3646）

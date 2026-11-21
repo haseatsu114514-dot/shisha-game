@@ -4572,11 +4572,13 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 }
 /* はじめの絵（左の窓）: 手元や体が下のほうにある場面は、絵を持ち上げて一言の札の上に出す（PHN17）。
    絵は窓の下へ 64px はみ出して置いてある（craft-stage.css の bottom: -64px）ので、その範囲で持ち上げても下に隙間ができない。
-   頭が上のレールのすぐ下にある場面（機材・水入れの立ち姿、炭焼き、蒸らし）は動かさない。 */
+   頭が上のレールのすぐ下にある場面（機材・水入れの立ち姿、炭焼き）は動かさない。 */
 /* 持ち上げる量は、絵の上端が画面の上から 40px 以内に収まる分まで（worker_scenes）。配合・吸い出しは54px、詰め方・穴あけは38px */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-worker:is([data-scene="mix"], [data-scene="pull"], [data-scene="inhale"]) .bench-worker-stage { bottom: -10px !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-worker:is([data-scene="pack"], [data-scene="holes"]) .bench-worker-stage { bottom: -26px !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"][data-mode="tutorial"] .bench-worker:is([data-step=""], [data-step="mix"]) .bench-worker-stage { bottom: -64px !important; } /* 初回の配合は立ち絵（頭がレールのすぐ下） */
+/* 蒸らしの立ち絵は、帽子の上端を作業風景のマスクの中に収める。 */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-worker[data-scene="focus"] .worker-actor { top: -25%; }
 /* 一言の札: 2行までは定位置、長い講評は上へ伸ばして切らない */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-left .bench-audience {
   height: auto !important; min-height: 104px !important; max-height: 300px !important; overflow: hidden !important; align-items: center;
@@ -4633,6 +4635,8 @@ html[data-density="phone"] body[data-screen="bench"] #stage #toasts .toast {
   max-width: 100%; padding: 10px 22px !important; font-size: max(22px, calc(12px / var(--k, 1))) !important; line-height: 1.3 !important; text-align: center;
   box-shadow: 0 6px 18px #000a;
 }
+/* 水入れを終えたら水位は配合の左列で知らせる。上のレールの工程を覆わない。 */
+html[data-density="phone"] body.craft-stage[data-screen="bench"]:has(.bench[data-craft-version="sakurai"]:not([data-step="setup"])) #stage #toasts .toast.water-level { display: none; }
 
 /* ================================================================ 作業台から開くダイアログ（葉の特徴・機材の見比べ）: 夜紫の板・読める字 */
 html[data-density="phone"] body[data-screen="bench"] #stage #modal .modal-backdrop { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: #0c0614c7 !important; }
@@ -4679,11 +4683,15 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-side {
   position: relative !important; grid-column: 1; grid-row: 1; display: flex !important; flex-direction: column; align-items: stretch !important; gap: 8px !important; padding: 0 !important; min-height: 0; overflow: hidden !important;
 }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-side:has(> .mix-water-level) {
+  --mix-water-space: calc(var(--ph-sub) * 1.3 + 18px);
+  --mix-water-art-offset: .13;
+}
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-vessel {
-  --vs: clamp(.3, calc(var(--k, .54) * 1.9 - .52), .56); flex: none !important; width: 100% !important; height: calc(330px * var(--vs) + 30px) !important; min-height: 0 !important; max-height: none !important; overflow: hidden !important;
+  --vs: clamp(.3, calc(var(--k, .54) * 1.9 - .52), .56); flex: none !important; width: 100% !important; height: calc(330px * var(--vs) + 30px - var(--mix-water-space, 0px)) !important; min-height: 0 !important; max-height: none !important; overflow: hidden !important;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-vessel-art {
-  inset: auto 0 0 0 !important; height: 100% !important; transform: scale(var(--vs)) !important; transform-origin: 50% 100% !important;
+  inset: auto 0 0 0 !important; height: 100% !important; transform: scale(calc(var(--vs) - var(--mix-water-art-offset, 0))) !important; transform-origin: 50% 100% !important;
 }
 /* レシピ名（「📖 氷レモネード」）は器の上の余白へ重ねる。行を足すと、下の「フレーバーの持ち」が押し出されて切れる */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .recipe-line:not(:empty) {
@@ -4729,7 +4737,7 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste .flavor-axis-track { grid-area: 2 / 1 / 3 / -1 !important; height: 10px !important; border-radius: 5px !important; }
 /* 予想の代わりに文が出る回（第2章の大会: 味覚の不調）は、器を小さくして文を全部見せる */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-side:has(> .mix-taste > p) .mix-vessel {
-  --vs: clamp(.24, calc(var(--k, .54) * .58), .32); height: clamp(0px, calc((var(--k, .54) - .5) * 99999px), calc(330px * var(--vs) + 30px)) !important; /* 低い画面（--k < .5）は器を畳んで文に場所を譲る */
+  --vs: clamp(.24, calc(var(--k, .54) * .58), .32); height: clamp(0px, calc((var(--k, .54) - .5) * 99999px), calc(330px * var(--vs) + 30px - var(--mix-water-space, 0px))) !important; /* 低い画面（--k < .5）は器を畳んで文に場所を譲る */
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste > b { display: block; margin: 0 0 4px !important; font-size: var(--ph-sub) !important; line-height: 1.25 !important; color: var(--ph-gold); }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-taste > p { margin: 0 !important; font-size: var(--ph-sub) !important; line-height: 1.34 !important; color: var(--ph-ink); }
@@ -4740,6 +4748,11 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-life-preview > b { font-size: var(--ph-sub) !important; line-height: 1.2 !important; white-space: nowrap; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-life-preview .mix-life-note { display: none !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-life-preview .mix-life-leaves { display: flex; align-items: center; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-water-level {
+  display: block; align-self: center; margin: 0; padding: 4px 10px; border-block-start: 1px solid #a98fc455;
+  font-size: var(--ph-sub); line-height: 1.3; text-align: center; color: var(--ph-dim);
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-water-level[data-band="ideal"] { color: #a8e1c2; }
 /* 色の見方（柱の左上）: 浮いた2行の字ではなく、色の見本つきの小さな札にする。詰め方でも同じ札を出す（切り抜かない） */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] :is(.mix, .packing) > .mix-temperature-preview { overflow: visible !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] :is(.mix, .packing) .mix-temperature-preview > .mix-temperature-legend {
@@ -4762,16 +4775,23 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
   grid-column: 2; grid-row: 1; display: flex !important; flex-direction: column; gap: 8px !important; min-height: 0; padding: 0 4px 0 0 !important; overflow: hidden auto !important;
   overscroll-behavior: contain; scroll-padding: 0 !important; scrollbar-width: thin;
 }
-/* 一覧の頭（心得で増える「単体で勝負」「香りの記憶」）: 押す所1つぶんの高さの1行。記憶を開いても行は増やさず、同じ行を横へ送る
-   （開くたびに葉の行が下へ押し出されると、選んだ後に量を直しづらい）。ひらめきの文は一枚の舞台で隠してある（stage_src.css） */
+/* 一覧の頭は1行。記憶を開いた時は候補に場所を渡し、候補だけ横へ送る。 */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head { display: none !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall) {
   flex: none !important; display: flex !important; flex-wrap: nowrap !important; align-items: stretch !important; gap: 10px !important; height: var(--ph-tap) !important; margin: 0 !important; padding: 0 !important;
-  overflow: auto hidden !important; overscroll-behavior-x: contain; scrollbar-width: none;
+  min-width: 0; overflow: hidden !important;
 }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head:has(> .mix-recall[open]) { padding-right: 48px !important; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head:has(> .mix-recall[open]) > [data-test="mix-single-style"] { display: none !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall { flex: none; display: flex !important; align-items: stretch; gap: 10px; margin: 0 !important; padding: 0 !important; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall > .chips { display: flex !important; flex-wrap: nowrap !important; align-items: stretch; gap: 10px !important; margin: 0 !important; padding: 0 !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall[open] { flex: 1; min-width: 0; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall[open]::details-content { display: contents; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall > .chips {
+  flex: 1; min-width: 0; display: flex !important; flex-wrap: nowrap !important; align-items: stretch; gap: 10px !important; margin: 0 !important; padding: 0 !important;
+  overflow: auto hidden; overscroll-behavior-x: contain; scrollbar-width: none; scroll-snap-type: x proximity;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall[open]:has(.chips > .btn:nth-child(2))::after {
+  content: "↔"; align-self: center; color: var(--ph-gold); font-size: var(--ph-text); pointer-events: none;
+}
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall:not([open]) > .chips { display: none !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > [data-test="mix-single-style"],
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall > summary,
@@ -4784,6 +4804,9 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
   border-image: url("../img/ui/craft-glass/key.webp") 88 88 128 88 fill / 21px 21px 31px 21px / 4.3px 4.2px 4.8px 4.2px stretch;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall > summary::-webkit-details-marker { display: none; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall .chips > .btn {
+  max-width: 100%; padding: 0 16px !important; white-space: normal !important; text-wrap: balance; scroll-snap-align: start;
+}
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall > summary::after { content: "›"; font-size: 1.2em; line-height: 1; color: var(--ph-gold); }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall[open] > summary { color: var(--ph-gold); }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall[open] > summary::after { content: "‹"; }
@@ -5202,8 +5225,19 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat > .heat-stage { left: 43px !important; top: 0 !important; bottom: 0; display: grid; align-items: center; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-carrier-head > div { display: none !important; } /* 札そのものに「上から見た炭壺」の名前がある */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .coal-carrier-view { order: -1; transform: scale(.32) !important; margin-right: -133px !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-carrier-head { flex-direction: column; align-items: center; gap: 2px; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-collected-label {
+  display: inline; font-size: var(--ph-sub); line-height: 1.1; white-space: nowrap; color: var(--ph-dim);
+}
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-collected-count {
-  font-size: var(--ph-text) !important; font-weight: 800; letter-spacing: .04em; color: var(--ph-gold); white-space: nowrap;
+  font-size: var(--ph-text) !important; font-weight: 800; line-height: 1.15; letter-spacing: .04em; color: var(--ph-gold); white-space: nowrap;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .coal-stored {
+  animation: ph-coal-into-pot .3s ease-out; filter: drop-shadow(0 0 3px #ffd48a);
+}
+@keyframes ph-coal-into-pot { from { opacity: 0; translate: 0 -44px; } }
+@media (prefers-reduced-motion: reduce) {
+  html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .coal-stored { animation: none; }
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-feedback { flex: 1 1 auto !important; min-width: 0; margin-left: 10px !important; gap: 12px !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info :is(.heat-feedback, .heat-feedback *) { font-size: var(--ph-sub) !important; white-space: nowrap; }
@@ -5256,6 +5290,17 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
    雑念の場（784×414）は大きさを保つ。下の操作の列（180px）は残りの高さに合わせて縮む。
    小さい画面では 場＋列 が舞台の高さを超え、ボタンの下が数 px 切れていた。スティックのつまみは、縮んでも真ん中に来るよう中心から置く */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .steam-play { flex: none !important; }
+/* 作業風景の上の空きに時計を置く。弾幕と操作列の高さはそのまま確保する。 */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-play > .dodge-timer {
+  position: fixed; top: calc(var(--ph-top) + 12px); left: 174px; width: 150px; height: 52px;
+  padding: 5px 10px; transform: translateX(-50%); opacity: 1;
+  background: #181223; border: 1px solid #c9a7e67a; border-radius: 9px; box-shadow: 0 4px 8px #0007;
+}
+/* 弾の当たり判定は要素の寸法を使うので、雑念の文字は縁取りで見分けやすくする。 */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .dodge .dodge-word {
+  -webkit-text-stroke: .35px currentColor;
+  background: linear-gradient(90deg, #20182d00, #302039e8 12% 88%, #20182d00);
+}
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .dodge-controls { flex: 1 1 auto !important; height: auto !important; min-height: var(--ph-tap) !important; max-height: 180px !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .dodge-controls :is(.btn.dodge-action, .slash-control) { height: 100% !important; min-height: 0 !important; }
 /* 札が低くなっても、名前は札の下の銅の縁に乗せない（下に実寸7px以上）。絵を札の高さに合わせて縮める */
@@ -5329,6 +5374,13 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns:not(.with-options) > [data-test="pull-stop"] { grid-column: 3 !important; width: auto !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns:not(.with-options) > [data-test="pull-serve"] { grid-column: 2 !important; width: auto !important; min-width: 172px !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns > [data-test="pull-serve"] .btn-label { font-size: var(--ph-text) !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns > [data-test="pull-serve"]:has(.pull-serve-status:not([hidden])) {
+  flex-direction: column !important; gap: 4px !important;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-serve-status { font-size: var(--ph-sub); }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns > [data-test="pull-serve"]:has(.pull-serve-status:not([hidden])):disabled {
+  opacity: 1; filter: none; color: var(--ph-dim);
+}
 /* 金の「吸う」: ホースの絵と2字を大きく。「（針を止める）」は「?」で読む */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns > [data-test="pull-stop"] .btn-label { font-size: max(34px, calc(18px / var(--k, 1))) !important; letter-spacing: .12em; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns > [data-test="pull-stop"] .pull-btn-note { display: none; }
@@ -5657,6 +5709,22 @@ body.reduce-shake .side-smoke, :root[data-side-calm="on"] .side-smoke { animatio
 }
 /* 元のボタンが押せない間（会話の外・モーダルの下 など）は出さない */
 .side-btn[data-live="false"] { opacity: 0; visibility: hidden; pointer-events: none; }
+/* 作業台では高さが低い画面でも、余白操作の実寸を確保する。 */
+body[data-screen="bench"] .side-pad { --craft-pad-size: max(88px, calc(44.1px / var(--k, 1))); }
+body[data-screen="bench"] .side-btn:is([data-pad="help"], [data-pad="reception"], [data-pad="look"]) {
+  width: var(--craft-pad-size); height: var(--craft-pad-size);
+}
+body[data-screen="bench"] .side[data-side="l"] .side-pad {
+  right: clamp(0px, calc((var(--side-g) - var(--craft-pad-size)) / 2), 26px);
+}
+body[data-screen="bench"] .side[data-side="r"] .side-pad {
+  left: clamp(0px, calc((var(--side-g) - var(--craft-pad-size)) / 2), 26px);
+}
+/* 右上を2段使う時も、下端を切り欠きが来る縦30%の手前に揃える。 */
+body[data-screen="bench"] .side-pad.top:has(> [data-pad="reception"][data-live="true"]) {
+  top: clamp(0px, calc(216px - 2 * var(--craft-pad-size) - 8px), 22px);
+  gap: 8px;
+}
 .side-btn:active { transform: scale(.94); }
 .side-btn:focus-visible { outline: 3px solid #e3bd6e; outline-offset: 3px; }
 /* AUTO・SKIP が入っている間 */
