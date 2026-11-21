@@ -44,6 +44,21 @@ for (const chapter of [4, 5]) { s.chapter = chapter; assert.ok(bonds.friendMessa
   assert.ok(daily.every(m => m.type === "chat" && m.friend), "第5章はお誘いを出さない");
   s.phase = savedPhase; s.inbox = savedInbox;
 }
+{
+  const value = core.newGame();
+  Object.assign(value, { chapter: 5, phase: "daily", day: 50, contacts: ["sumi"],
+    finales: { sumi: { route: "friend", day: 30 } } });
+  const topics = DB.friends.friends.sumi.chats;
+  assert.equal(topics.length, 6);
+  for (let i = 0; i <= topics.length; i++) {
+    const [message] = bonds.friendMessages();
+    assert.equal(message?.type, "chat");
+    assert.deepEqual(message.messages, topics[i % topics.length].m);
+    value.inbox.push({ id: message.id, day: value.day, read: true, msg: message });
+    value.day += 5;
+  }
+  core.setState(s);
+}
 s.chapter = 2; s.phase = "chapter2";
 assert.deepEqual(bonds.friendMessages({ sceneChapter: true }), [], "第1・2章は従来の朝の端末だけ");
 
@@ -91,11 +106,13 @@ for (const chapter of [1, 2, 3, 4, 5, 6, "1", "3", undefined, null, 0, false, Na
   assert.ok(ofAdam.length >= 3, `第1・2章の分(2)を使い切ったあと、離れた場所からの雑談(later)が続く: ${seen}`);
 }
 
-// #2025: 第3〜4章のヒロインの近況（読むだけ・各2通）。ひより・サメちゃんは第3・4章、
+// #2025: 第3〜4章のヒロインの近況（読むだけ）。ひより・サメちゃんは第3・4章、
 // 東京で一緒に働くましろは第4章だけ。凛想は LM07 の later で既に届く。恋人には届かない。
 {
   const people = DB.casualLime.people;
-  for (const id of ["hiyori", "samechan", "mashiro", "rio"]) assert.equal(people[id]?.later?.length, 2, `${id}: 近況は2通`);
+  for (const id of ["hiyori", "samechan", "mashiro", "rio"]) {
+    assert.equal(people[id].chats.length + people[id].later.length, 6, `${id}: 雑談は合計6本`);
+  }
   assert.deepEqual(people.mashiro.chapters, [4], "ましろは東京で会えている第3章には送ってこない");
   const ids = ["hiyori", "samechan", "mashiro"];
   const make = chapter => {
@@ -107,7 +124,7 @@ for (const chapter of [1, 2, 3, 4, 5, 6, "1", "3", undefined, null, 0, false, Na
   };
   const drain = () => {
     const got = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 20; i++) {
       const [m] = casual.casualMessages({ sceneChapter: true });
       if (m) {
         assert.ok(m.casual && m.type === "chat" && !m.replies?.length, `${m.id}: 読むだけ`);
@@ -122,11 +139,11 @@ for (const chapter of [1, 2, 3, 4, 5, 6, "1", "3", undefined, null, 0, false, Na
   make(3);
   const ch3 = drain();
   assert.deepEqual([...new Set(ch3.map(m => m.sender))].sort(), ["hiyori", "samechan"], `第3章: ${ch3.map(m => m.id)}`);
-  assert.equal(ch3.length, 4, "ひより・サメちゃんの近況が各2通ずつ一度だけ");
+  assert.equal(ch3.length, 12, "ひより・サメちゃんの近況が各6本ずつ一度だけ");
   make(4);
   const ch4 = drain();
   assert.deepEqual([...new Set(ch4.map(m => m.sender))].sort(), ids.slice().sort(), `第4章: ${ch4.map(m => m.id)}`);
-  assert.equal(ch4.filter(m => m.sender === "mashiro").length, 2);
+  for (const id of ids) assert.equal(ch4.filter(m => m.sender === id).length, 6);
   const lover = make(4);
   lover.lovers = ["hiyori"];
   assert.ok(!drain().some(m => m.sender === "hiyori"), "恋人には恋人のLIMEが届くので近況の雑談は来ない");
