@@ -175,3 +175,51 @@ Chromiumで第1章6日目夜の斧投げBarの初回レッスンを再生した�
 - 途中の単体プレビュー計測ではChromium停止と待ち時間切れが発生した。本編の計測と対象ブラウザ回帰は最終配置で成功した。
 - 背景台帳はGitの登録内容から135枚の照合に成功。既存の `bg_smoke_lab.png` の寸法警告が1件あった。
 - 画像更新コミットは [`fae94771c4`](https://github.com/haseatsu114514-dot/shisha-game/commit/fae94771c47ab58239e7e6ebc6ef657ffbe3b2e7)。計測と最終配置を含む `codex/axe-one-hand` のpush後のheadは [Draft PR #4124のコミット一覧](https://github.com/haseatsu114514-dot/shisha-game/pull/4124/commits) に記録する。
+
+## フェーズ4b — 一人称の構図の再配置（2026-11-21）
+
+通常構え（A）は、右下から的へ伸びる腕が手首に向かって細く見えるようにし、手を中央右寄りの中段に置いた。斧は手の先で立て、背と上縁が見える斧頭を的の右側の上半分に大きく見せた。引き構え（B）は、右側の前腕をほぼ垂直にして手を右上の内側へ上げ、峰と柄の芯が見える斧頭を上端にかけた。
+
+編集前に作業フォルダ内で307,200バイトのランダムファイルをコピーし、内容の一致とSHA-256を確認した。Codex内蔵画像編集の入力はフェーズ3のゲーム原画とその編集途中の画像。原画をLanczosで1920×1080の共有PNGに変換し、既存の `build_images.encode` で表示用WebPを出力した。新しい絵に合わせて `HAND_SILHOUETTE` と表示座標を更新し、背景台帳には平均輝度とLFSポインタのGit blobを記録した。
+
+- Aは [原画1670×941](../../../asset_sources/axe-one-hand-20261121/bg_axe_lane_aim_ready.png)、[共有PNG](../../../assets/backgrounds/bg_axe_lane_aim_ready.png)、[表示用WebP](../../../remake/img/backgrounds/bg_axe_lane_aim_ready.webp)。
+- Bは [原画1672×941](../../../asset_sources/axe-one-hand-20261121/bg_axe_lane_aim_windup.png)、[共有PNG](../../../assets/backgrounds/bg_axe_lane_aim.png)、[表示用WebP](../../../remake/img/backgrounds/bg_axe_lane_aim.webp)。
+
+<details>
+<summary>採用画像の生成指示</summary>
+
+Aはフェーズ3の通常構えを編集した。
+
+> Use case: precise-object-edit. Edit the supplied existing 16:9 game illustration, pose A of a first-person recreational target lane. Keep the fixed camera, entire round wooden target, wood lane, fencing, red floor line, existing warm amber lighting and detailed painted game-art finish. Recompose only the existing dark-sleeved right forearm, hand, wooden handle and forged steel axe. The player reaches straight forward toward the lane, from the bottom right into the distance. Draw a long diagonal foreshortened sleeve with a wide near end at the lower right frame edge, smoothly tapering into a narrower distant wrist; the raised hand is mid-height, center-right around x=72%, y=48%. Its wooden handle stands steeply upright just beyond the fist, a slight inward lean. Enlarge the head on screen (about twice the visible width of the old head), wholly in the upper half between x=64–74%, y=15–35%, just to the right of the target. Preserve the exact distinctive rear three-quarter view of the original axe: the blunt rectangular forged poll and narrow top ridge facing the eye, the thin blade pointing away and receding along the lane, with restrained highlights and the same wood. Keep the subject right of x=63%; leave x>=83% empty of the subject between y=10% and 67% for game controls. Continue the arm off the lower edge, with no interior cut at the bottom. Preserve the bright hand and charcoal cuff. One arm, one hand, one axe. No text, UI, borders, extra people or props. Output the full widescreen illustration.
+
+Bはフェーズ3の引き構えの前腕を起こし、フリック操作面に近い高さで袖の幅を調整した。
+
+> Use case: precise-object-edit. Edit the existing 16:9 game illustration of the static first-person windup pose. Preserve the fixed lane camera, entire round wooden target, red floor line, warm amber light, fencing, and painted game-art finish. Change only the screen placement and perspective of the single right forearm, fist and original long-handled axe. In the final game viewport the forearm has to fit a thin vertical slot. Compose it around x=71%: the nearly vertical dark charcoal sleeve is only 8–9% of image width at all heights y=45–70%, with its left and right edges clearly visible and modest flare below 75%. Wrist bows slightly inward, sleeve runs vertically to and beyond the bottom border. Preserve a natural adult fist with the same charcoal cuff and warm skin, centered x=70%, y=28%, its overall size moderate, around 9% of image width. Put the much larger forged steel axe head above the fist at x=70%, y=0–15%, with its taper just touching the upper frame edge. Preserve the same blunt rectangular poll and narrow raised upper spine projecting away into the lane. The axe is rear-facing, edge-on with very little of either side showing, and the original wooden handle is aligned through the center of the head. Keep the original proportions of the long wooden handle, the same light on skin, same deep charcoal sleeve fabric, and a distinct silhouette. No added HUD, extra people, equipment or props. This is a single complete 16:9 game-art frame.
+
+Bの斧頭を大きくし、握りの下に見える柄尻を短くした。
+
+> Use case: precise-object-edit. Edit this exact existing 16:9 first-person video-game target lane illustration. Keep the full scene and the narrow straight upright charcoal right forearm exactly where they are, the hand at exactly the same height near the upper right, and the same amber lighting. Make just two local corrections to the axe: (1) Enlarge the forged steel head about 45% in apparent size, emphasizing the wide rectangular blunt back and top ridge in foreshortening. Keep the head above the fist at the top border; a little of the tapered far corner can extend past the top edge. Preserve the same rear-facing angle, forged steel, wooden shaft and eye, with no broadside blade face visible. (2) Shorten the wooden heel sticking out below the gripping little finger so just a small rounded end of wood shows there, like the original grip at the heel of the handle. Preserve the original single hand, vertical sleeve width and position, wooden lane, complete target and painted style. Return the full landscape frame, without text or UI.
+
+</details>
+
+### 計測と実画面
+
+Chromiumで第1章6日目夜の本編の初回レッスンと単体プレビューを計測した。1280×720はマウス、844×390と740×320は横持ちタッチのエミュレーション。SVG輪郭を画面座標に投影し、アルファ値128以上の画素で操作ボタン、的の板、得点欄との交差を数えた。横と縦の照準が取り得る範囲の右端から手元までにも余白があり、既存の最前面レイヤーで右手が明るく見えることを確認した。
+
+| ビューポート | 横照準 | 縦照準 | フリック待ち | フリック保持中 | 照準右端からの余白 | フリック面までの最短距離（A／B） |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1280×720 | 0 px² | 0 px² | 0 px² | 0 px² | 7.25 CSS px | 4.95／7.50 CSS px |
+| 844×390 | 0 px² | 0 px² | 0 px² | 0 px² | 4.03 CSS px | 2.98／4.75 CSS px |
+| 740×320 | 0 px² | 0 px² | 0 px² | 0 px² | 3.17 CSS px | 2.52／3.50 CSS px |
+
+| ビューポート | 通常構え | 引き構え |
+| --- | --- | --- |
+| 1280×720 | [フリック入力前](pose-ready-1280x720.png) | [ドラッグ中](pose-windup-1280x720.png) |
+| 844×390 | [フリック入力前](pose-ready-844x390.png) | [タッチ操作中](pose-windup-844x390.png) |
+
+### テストと保存
+
+- `node --test remake/test/axe_*.mjs` は105件成功。 `axe_tap_pull.mjs` の `aim-controls-clear-of-hand` は3サイズすべて成功。両ポーズの輪郭、フリックの保持・解除・取り消し、ボタンへの入力到達を確認した。
+- Chromiumの一括実行では描画プロセスの停止と読み込みのタイムアウトが発生した。サイズごとに起動し直して、本編・プレビュー各12画面の計測と対象回帰に成功した。
+- 背景台帳は135枚の照合に成功した。既存の `bg_smoke_lab.png` の寸法警告が1件あった。
+- `codex/axe-one-hand` へ画像とQA画像4枚をpushし、公開時のhead `07111b5c827c6bb4d1663ecf4fc56029ad48ea9e` が `git ls-remote` とDraft PR #4124で一致することを確認した。この検証記録を含むブランチの最新headはPRのコミット一覧で確認できる。[Draft PR #4124のコミット一覧](https://github.com/haseatsu114514-dot/shisha-game/pull/4124/commits)
