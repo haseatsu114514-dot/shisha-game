@@ -6002,6 +6002,1314 @@
       ],
       "id": "L43",
       "type": "chat"
+    },
+    {
+      "id": "lime_ch2_sumi_cup_cloth",
+      "sender": "sumi",
+      "chapter": 2,
+      "region": "home",
+      "type": "chat",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "カウンターの布、干した場所がいつもと違うぞ"
+        },
+        {
+          "sender": "sumi",
+          "text": "日が当たるとこに移した。お前の分も一緒に干しといたからな"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch2_rio_packing_tape",
+      "sender": "rio",
+      "chapter": 2,
+      "region": "home",
+      "type": "chat",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "messages": [
+        {
+          "sender": "rio",
+          "text": "荷造りのテープ、端だけ折ってみたの"
+        },
+        {
+          "sender": "rio",
+          "text": "爪で探さなくて済むって、納品先の人が笑った"
+        },
+        {
+          "sender": "rio",
+          "text": "開けるところまで考えたの、今回が初めてかも"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch2_hiyori_blank_badge",
+      "sender": "hiyori",
+      "chapter": 2,
+      "region": "home",
+      "type": "chat",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "総務に来客用の名札が十枚。私は真っ白なのを一枚つけてみたの"
+        },
+        {
+          "sender": "hiyori",
+          "text": "同僚に「忘れ物係ですか」って聞かれた"
+        },
+        {
+          "sender": "hiyori",
+          "text": "肩書きがなくても、こう見えるらしいわ"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch2_adam_apple_label",
+      "sender": "adam",
+      "chapter": 2,
+      "region": "home",
+      "type": "chat",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "林檎の箱の札を裏返したら、店の電話番号を書いた紙が出てきた"
+        },
+        {
+          "sender": "adam",
+          "text": "開店した日に、俺が書いた字だ"
+        },
+        {
+          "sender": "adam",
+          "text": "数字の横に林檎が二つある。昔からよく描けていない"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch2_minto_empty_tray",
+      "sender": "minto",
+      "chapter": 2,
+      "region": "home",
+      "type": "chat",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "今日、空のお盆でお客さんの席まで行っちゃったの"
+        },
+        {
+          "sender": "minto",
+          "text": "堂々と戻ったら「かっこいい」と言われた"
+        },
+        {
+          "sender": "minto",
+          "text": "次はちゃんと、お水を載せて登場するね"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch2_tsumugi_eraser_dust",
+      "sender": "tsumugi",
+      "chapter": 2,
+      "region": "home",
+      "type": "chat",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "消しゴムのかすを、窓の外の猫がじっと見てました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "机の上で動かしたら、首も一緒に動くんです"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……あの子には、生き物に見えたのかな"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_mukai_drawer",
+      "sender": "mukai_master",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "ch3_started",
+      "trigger_day": 3,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mukai_master",
+          "text": "はじめくん。奥の部屋の引き出し、途中で固くなるだろう"
+        },
+        {
+          "sender": "mukai_master",
+          "text": "左の角を押して引けば開く。中は空けてある。使ってくれ"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_mukai_tray",
+      "sender": "mukai_master",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "flag",
+      "trigger_flag": "_mukai_shift_day",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mukai_master",
+          "text": "はじめくん。手伝ってくれて助かった"
+        },
+        {
+          "sender": "mukai_master",
+          "text": "シフト表に名前を書いたら、常連に「もうここの人か」って聞かれた"
+        },
+        {
+          "sender": "mukai_master",
+          "text": "手伝いだと答えたら、「次もいるか聞いただけ」だそうだ"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_mukai_foam_tail",
+      "sender": "mukai_master",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch3_read_ch3_mukai_latte_cat",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mukai_master",
+          "text": "泡の猫。尻尾を足したら、カップの縁にくっついた"
+        },
+        {
+          "sender": "mukai_master",
+          "text": "次はもっと内側に描く。てつこは見本にすると、いつも途中で向こうを向く"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_mukai_hat_hook",
+      "sender": "mukai_master",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch3_read_ch3_mukai_no_hat",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mukai_master",
+          "text": "帽子の乾き具合、もう見なくていい。かぶれるようになった"
+        },
+        {
+          "sender": "mukai_master",
+          "text": "あの客、また来た。席に着くなり、まず俺の帽子を見て笑った"
+        },
+        {
+          "sender": "mukai_master",
+          "text": "コーヒーの方は、いつも通りおかわりした"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_mashiro_water_pitcher",
+      "sender": "mashiro",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "ch3_started",
+      "trigger_day": 4,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "はじめくん。裏の水差し、ふたが落ちやすいから、注ぐとき押さえてねぇ"
+        },
+        {
+          "sender": "mashiro",
+          "text": "僕、さっき落とした。手を洗うつもりが、袖口まで洗っちゃった"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_mashiro_timer_cloth",
+      "sender": "mashiro",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch3_read_ch3_mashiro_play_1",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "タイマー、二つ置けるように布を折ってみたよぉ"
+        },
+        {
+          "sender": "mashiro",
+          "text": "机が鳴らなくなった。うっかり寝ても、鳴ったら起こしてねぇ"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_mashiro_cup_handles",
+      "sender": "mashiro",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch3_read_ch3_mashiro_play_2",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "この前のカップ、取っ手をこっちに向けておいた"
+        },
+        {
+          "sender": "mashiro",
+          "text": "形は違うのに、隣に並ぶと、お揃いに見えてきたよぉ"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_mashiro_bookmark",
+      "sender": "mashiro",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_mashiro",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "紅茶の本に、前に挟んだレシートが残ってたよぉ"
+        },
+        {
+          "sender": "mashiro",
+          "text": "牛乳と食パンだけ。僕、こんなに薄いしおりでも見つけられるんだぁ"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_saku_yellow_sign",
+      "sender": "saku",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch3_read_ch3_saku_bakery",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "あの黄色い看板の店、袋を落とさなくなったねって言われた"
+        },
+        {
+          "sender": "saku",
+          "text": "小さい頃、走るたびに底からパンが出てたって"
+        },
+        {
+          "sender": "saku",
+          "text": "僕が忘れた方を、向こうが覚えてたよ"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_saku_blank_card",
+      "sender": "saku",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch3_read_ch3_saku_missed",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "返事の欄、「温かい」の下に一行空けたよ"
+        },
+        {
+          "sender": "saku",
+          "text": "同じ人でも次に来た日は違うこと言うから、書き足す方の場所"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_steve_corner_mark",
+      "sender": "steve",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch3_read_ch3_steve_lime",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "ヘイ、ハジメ。顔を書くカードの角に印をつけた"
+        },
+        {
+          "sender": "steve",
+          "text": "手が離せない時も、束から抜く一枚だけは分かる"
+        },
+        {
+          "sender": "steve",
+          "text": "今朝、裏に書けたのは『眼鏡を外した』。そういうのも残してみる"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_steve_pizza_crust",
+      "sender": "steve",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch3_read_ch3_steve_two_timers",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "この前のピザ、箱を少し開けといたら、湯気が逃げた"
+        },
+        {
+          "sender": "steve",
+          "text": "耳がまだカリッとしてた。俺はやっぱり端から食う"
+        },
+        {
+          "sender": "steve",
+          "text": "ノー、ノー。まだ測ってない。ピザは秒まで測らない"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_sumi_delivery_stamp",
+      "sender": "sumi",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "flag",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "tonariの納品の紙に、お前の字が残ってた。表は店の印、裏は買い足す洗剤"
+        },
+        {
+          "sender": "sumi",
+          "text": "見たんで買ってきた。帰ってから、もう一本買わなくていいぞ"
+        }
+      ],
+      "trigger_flag": "_ch3_registration_read"
+    },
+    {
+      "id": "lime_ch3_tsumugi_pencil_stub",
+      "sender": "tsumugi",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "flag",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "短くなりすぎて、もう指で持てない鉛筆があったんです"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "でも寝かせると線が柔らかくなるので、窓の曇りを描く時だけ使ってます"
+        }
+      ],
+      "trigger_flag": "_ch3_read_ch3_tsumugi_slump"
+    },
+    {
+      "id": "lime_ch3_ageha_pouch_pin",
+      "sender": "ageha",
+      "chapter": 3,
+      "region": "tokyo",
+      "trigger_condition": "ch3_started",
+      "trigger_day": 11,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ハジメっち、ポーチの安全ピン、今日ついに使った"
+        },
+        {
+          "sender": "ageha",
+          "text": "ソファのクッションのほつれを裏から留めたら、反対側の糸が先にほどけた"
+        },
+        {
+          "sender": "ageha",
+          "text": "帰りに糸買う。平成のギャルも、縫えるとこは縫うし"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_minto_door_closes",
+      "sender": "minto",
+      "chapter": 3,
+      "region": "tokyo",
+      "type": "chat",
+      "trigger_condition": "flag",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "お客さんが帰ったあと、ドアが静かに閉まるようにしたの"
+        },
+        {
+          "sender": "minto",
+          "text": "そしたら外から手を振る人が見えた。今までは先にベルを聞いてたから"
+        },
+        {
+          "sender": "minto",
+          "text": "閉まるまで見てると、もう一回ばいばいできるね"
+        }
+      ],
+      "trigger_flag": "_ch3_read_ch3_minto_small_lies"
+    },
+    {
+      "id": "lime_ch3_rio_sample_date",
+      "sender": "rio",
+      "chapter": 3,
+      "region": "tokyo",
+      "type": "chat",
+      "trigger_condition": "affinity_level",
+      "messages": [
+        {
+          "sender": "rio",
+          "text": "試香の箱の底に、いつ開けたかだけ書いた紙が出てきたの"
+        },
+        {
+          "sender": "rio",
+          "text": "その日の帰りに、雨で配達の伝票がにじんだのは覚えてる"
+        },
+        {
+          "sender": "rio",
+          "text": "次は香りの感想も、一行つけて残す"
+        }
+      ],
+      "trigger_value": 4
+    },
+    {
+      "id": "lime_ch3_hiyori_person_at_window",
+      "sender": "hiyori",
+      "chapter": 3,
+      "region": "tokyo",
+      "type": "chat",
+      "trigger_condition": "flag",
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "会社の窓のそばで、失恋した人の顔を練習してたの"
+        },
+        {
+          "sender": "hiyori",
+          "text": "下の通りから清掃のおじさんと目が合った"
+        },
+        {
+          "sender": "hiyori",
+          "text": "先に手を振られて、笑って振り返しちゃった。練習は中止"
+        }
+      ],
+      "trigger_flag": "_ch3_read_hiyori_tokyo_contact"
+    },
+    {
+      "id": "lime_ch3_samechan_counter_wave",
+      "sender": "samechan",
+      "chapter": 3,
+      "region": "tokyo",
+      "type": "chat",
+      "trigger_condition": "ch3_started",
+      "trigger_day": 10,
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "お主、コロちゃんも閉店時には手を振ったほうがよいと思わんか"
+        },
+        {
+          "sender": "samechan",
+          "text": "振ってみたら、通りがかった人が知らずに振り返したのじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "次は、わしも隣で振ることにした"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_home_sumi_door_bell",
+      "sender": "sumi",
+      "chapter": 4,
+      "trigger_condition": "ch4_started",
+      "trigger_day": 4,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "入口のベルが鳴らねえと思ったら、紐が壁に貼りついてた"
+        },
+        {
+          "sender": "sumi",
+          "text": "外して鳴らしたら、常連が二人いっぺんに入口を見た"
+        },
+        {
+          "sender": "sumi",
+          "text": "あの音も、店の一部だったらしい"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_home_mukai_corner",
+      "sender": "mukai_master",
+      "chapter": 4,
+      "trigger_condition": "ch4_started",
+      "trigger_day": 3,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mukai_master",
+          "text": "空調の風が来る角だけ、クッションを一つ足した"
+        },
+        {
+          "sender": "mukai_master",
+          "text": "座りにくいと思ってたが、そこがいいと言う人もいる"
+        },
+        {
+          "sender": "mukai_master",
+          "text": "片づける時は、置いたままにしてる"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_home_adam_candle",
+      "sender": "adam",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "客の誕生日に、林檎へろうそくを立ててみた"
+        },
+        {
+          "sender": "adam",
+          "text": "転がるので、下を一切れ取って皿に置いた"
+        },
+        {
+          "sender": "adam",
+          "text": "先にその一切れを食べた客が、そこが甘いと教えてくれた"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_home_kumicho_new_hello",
+      "sender": "kumicho",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "kumicho",
+          "text": "若いのが、店先で挨拶の練習をしてやして"
+        },
+        {
+          "sender": "kumicho",
+          "text": "声がでかい。けど、座った客に水を出す手は静かだ"
+        },
+        {
+          "sender": "kumicho",
+          "text": "あの手つきで挨拶できりゃ、立派なもんでさ"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_home_rei_dice_pouch",
+      "sender": "rei",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "rei",
+          "text": "小さい布袋を買った。机の引き出しのダイスを入れた"
+        },
+        {
+          "sender": "rei",
+          "text": "振ると、ガラスみたいな音がする"
+        },
+        {
+          "sender": "rei",
+          "text": "盤の上で転がす音とは、ちょっと違う"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_home_minto_window_star",
+      "sender": "minto",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "窓に星のシール貼ったよ。外から見たら、ひとつだけ逆さでさ"
+        },
+        {
+          "sender": "minto",
+          "text": "直しかけたら、お客さんが「それが目印だから」って"
+        },
+        {
+          "sender": "minto",
+          "text": "うちの星、そこだけ逆さが正解になりました"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_home_rio_cup_position",
+      "sender": "rio",
+      "chapter": 4,
+      "trigger_condition": "ch4_started",
+      "trigger_day": 5,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "rio",
+          "text": "机の右側にカップを置いたら、なぜか何度も左を探したの"
+        },
+        {
+          "sender": "rio",
+          "text": "計量のメモも、ペンも、置く場所が決まってる。慣れてるんだね"
+        },
+        {
+          "sender": "rio",
+          "text": "出先では逆に、どこでも置けるだけで少し楽かも"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_home_hiyori_meeting",
+      "sender": "hiyori",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "朝の会議で、静かにうなずく係に徹する予定だったの"
+        },
+        {
+          "sender": "hiyori",
+          "text": "椅子が急にぐらついて「壊れる！」って叫んじゃった"
+        },
+        {
+          "sender": "hiyori",
+          "text": "でも言ってよかった。ねじが一本、床にあったし"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_home_samechan_mug",
+      "sender": "samechan",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "サメの取っ手のマグを買った。コロちゃん用じゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "口をつけると鼻に尾びれが当たるので、花を挿した"
+        },
+        {
+          "sender": "samechan",
+          "text": "店の隅に置いたら、今日一番よく見られたぞ"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_home_ageha_laces",
+      "sender": "ageha",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "靴ひも片っぽだけ蛍光にした。片方ちぎれちゃって"
+        },
+        {
+          "sender": "ageha",
+          "text": "そしたら、どこで買ったのか聞かれた笑"
+        },
+        {
+          "sender": "ageha",
+          "text": "ギャルの完成形、だいたい途中でできる説ある"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_home_tsumugi_floor_light",
+      "sender": "tsumugi",
+      "chapter": 4,
+      "trigger_condition": "ch4_started",
+      "trigger_day": 6,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "……夕方、床の長い光を描いたんです"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "消えていくとき、最初に見えなくなったのが椅子の脚で"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……あとから、そこだけ先に消しました"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_home_volk_jam_lid",
+      "sender": "volk",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "ジャムの瓶の蓋が固くて、しばらく開かなかった"
+        },
+        {
+          "sender": "volk",
+          "text": "ちょうど紅茶が飲める温度になった"
+        },
+        {
+          "sender": "volk",
+          "text": "次も同じように、とはいかん。蓋は洗っておいた"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_noor_map_rest_mark",
+      "sender": "noor",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_noor",
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "きょうの案内、地図にお茶休憩の丸を三つ書いたの"
+        },
+        {
+          "sender": "noor",
+          "text": "お客さんにどこがいちばんよかったか聞いたら、一つ目の丸だって！"
+        },
+        {
+          "sender": "noor",
+          "text": "あそこ、おばさんがミントをもう一枝くれるからね"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_sumi_catering_form",
+      "sender": "sumi",
+      "chapter": 5,
+      "trigger_condition": "flag",
+      "trigger_flag": "_intro_ch5_catering_business",
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "出張の申込用紙、控えは予約帳の隣だ"
+        },
+        {
+          "sender": "sumi",
+          "text": "どんな集まりか書く欄を広くした。もう一行ぐらいあった方がいいと思ってな"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_adam_sign_arrow",
+      "sender": "adam",
+      "chapter": 5,
+      "trigger_condition": "flag",
+      "trigger_flag": "_talk_seen_ch5_adam_shop",
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "例の札に、常連が小さい矢印を足した"
+        },
+        {
+          "sender": "adam",
+          "text": "『同志』ではなく、その上のダブルアップルを指している。……正しい"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_rei_quiet_chorus",
+      "sender": "rei",
+      "chapter": 5,
+      "trigger_condition": "flag",
+      "trigger_flag": "_talk_seen_ch5_rei_shop",
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "rei",
+          "text": "こないだ話した、二番のあとで音が止まる曲。今日は店でかけた"
+        },
+        {
+          "sender": "rei",
+          "text": "あの間に、客が入るところを間違えて歌った。……俺も同じところで入った"
+        },
+        {
+          "sender": "rei",
+          "text": "二人で黙ったら、ちょうど正しいところからまた始まった"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_kumicho_low_seat",
+      "sender": "kumicho",
+      "chapter": 5,
+      "trigger_condition": "flag",
+      "trigger_flag": "ch2_kumicho_after_ch2_done",
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "kumicho",
+          "text": "店を閉めてから、たまにはと思って客席に座りやした"
+        },
+        {
+          "sender": "kumicho",
+          "text": "棚からは何でも手が届くのに、客席だと湯呑みが遠くてね"
+        },
+        {
+          "sender": "kumicho",
+          "text": "今朝から、卓の真ん中より少し手前に置くことにしやした"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_rio_order_copy",
+      "sender": "rio",
+      "chapter": 5,
+      "trigger_condition": "flag",
+      "trigger_flag": "_talk_seen_ch5_rio_naru_order",
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "rio",
+          "text": "あの注文書、次の便を決める時にも見返した"
+        },
+        {
+          "sender": "rio",
+          "text": "数だけなら棚を見れば分かる。二口目の話は、控えにも写しておいた"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_hiyori_clock_out",
+      "sender": "hiyori",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 8,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "本日の特技。終業のチャイムにだけ、部署で一番速く反応すること"
+        },
+        {
+          "sender": "hiyori",
+          "text": "それを駆使して、ついに定時で帰りました。褒めていいよ"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_samechan_water_jug",
+      "sender": "samechan",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 10,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "お主、水差しにサメのシールを貼ったのじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "水を注ぐたびに、コロちゃんが『潮が満ちるぞ』と言う"
+        },
+        {
+          "sender": "samechan",
+          "text": "一人で注いで一人でしゃべると、ちと忙しいのじゃ"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_minto_menu_hearts",
+      "sender": "minto",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 12,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "閉店後、メニューの星を数えたら、お値段の数より多かったの"
+        },
+        {
+          "sender": "minto",
+          "text": "いくつか消したら、急に他のお店みたいで全部戻した"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_ageha_new_shoes",
+      "sender": "ageha",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 14,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ハジメっち、今日ね、常連さんが新しい靴で来た"
+        },
+        {
+          "sender": "ageha",
+          "text": "帰りぎわにうちが気づいたら、ぱっと笑って、片足くるっと回してくれてさ"
+        },
+        {
+          "sender": "ageha",
+          "text": "あの顔見れたから、今日はもう満点〜"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_mukai_master_stairs_lamp",
+      "sender": "mukai_master",
+      "chapter": 5,
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch5_tokyo_attic",
+      "region": "tokyo",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mukai_master",
+          "text": "屋根裏の毛布を干した。椅子の上に戻してある"
+        },
+        {
+          "sender": "mukai_master",
+          "text": "帰りが遅くなる日は、階段の灯りをそのまま使え"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_mashiro_tetsuko_sleep_talk",
+      "sender": "mashiro",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 5,
+      "region": "tokyo",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "はじめくん、昨夜、てつこちゃんの寝言を聞いたの"
+        },
+        {
+          "sender": "mashiro",
+          "text": "起こさないように戸を閉めたのに、寝言のほうがちょっと大きかったよぉ"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_saku_borrowed_pencil",
+      "sender": "saku",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 7,
+      "region": "tokyo",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "開店前に棚を片づけたら、知らない鉛筆が一本あった"
+        },
+        {
+          "sender": "saku",
+          "text": "僕の字ばかりの店に、僕じゃない筆跡が増えるかも。とりあえず削った"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_steve_chair_felt",
+      "sender": "steve",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 9,
+      "region": "tokyo",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "ヘイ、ハジメ。店の椅子の脚にフェルトを貼った"
+        },
+        {
+          "sender": "steve",
+          "text": "それだけなのに、常連に『今日は静かですね』って言われた"
+        },
+        {
+          "sender": "steve",
+          "text": "俺はいつもと同じ声でしゃべってるんだぞ"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_volk_gauge_fingerprint",
+      "sender": "volk",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 11,
+      "region": "tokyo",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "温度計の目盛りが、一本だけ曇っていた"
+        },
+        {
+          "sender": "volk",
+          "text": "客に指紋だと言われた。確かめるたびに、俺が触っていた場所だ"
+        },
+        {
+          "sender": "volk",
+          "text": "測る前に拭く。手順が一つ増えた"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_noor_map_weight",
+      "sender": "noor",
+      "chapter": 5,
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch5_dubai_guest",
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "今朝、ツアーの地図が風で飛びそうになったの"
+        },
+        {
+          "sender": "noor",
+          "text": "父がコップで押さえてくれた。重しなのに、冷たい水まで入ってた"
+        },
+        {
+          "sender": "noor",
+          "text": "飲んでから行けってことだよね。ちゃんと飲んだ！"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_da_silva_garden_rainbow",
+      "sender": "da_silva",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 6,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "ハジメ！ 庭に水まいたら、ちっちゃい虹が出た"
+        },
+        {
+          "sender": "da_silva",
+          "text": "客に見せようと指さしたら、ホースが俺の靴に向いた"
+        },
+        {
+          "sender": "da_silva",
+          "text": "で、虹は消えて、靴だけぐっしょり。逃げ足速えな"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_tsumugi_door_paper",
+      "sender": "tsumugi",
+      "chapter": 5,
+      "region": "home",
+      "type": "chat",
+      "trigger_condition": "ch5_started",
+      "trigger_day": 6,
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "……引き戸に挟んでた紙、今日は風で落ちなかったんです"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "はさむ向きだけ変えました。裏まで描いてよかった"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "入口から見ると、葉っぱが一枚だけ見えます"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_minto_street_menu",
+      "sender": "minto",
+      "chapter": 5,
+      "region": "home",
+      "type": "chat",
+      "trigger_condition": "ch5_started",
+      "trigger_day": 16,
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "閉店の札を出したところで、通りから新作のこと聞かれたの"
+        },
+        {
+          "sender": "minto",
+          "text": "もうお鍋は片づけちゃってたから、食べ方だけ教えたよ"
+        },
+        {
+          "sender": "minto",
+          "text": "味を覚えててくれたら、次は席で出せるね"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_rio_bare_shelf",
+      "sender": "rio",
+      "chapter": 5,
+      "region": "home",
+      "type": "chat",
+      "trigger_condition": "ch5_started",
+      "trigger_day": 18,
+      "messages": [
+        {
+          "sender": "rio",
+          "text": "入荷を待って、一段だけ棚を空けてた。今日はようやく埋まったの"
+        },
+        {
+          "sender": "rio",
+          "text": "毎日そこに手を伸ばして、空だって気づいてたのにね"
+        },
+        {
+          "sender": "rio",
+          "text": "届いたら、今度は空けてたことを忘れそう"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_sumi_bent_key",
+      "sender": "sumi",
+      "chapter": 5,
+      "region": "home",
+      "type": "chat",
+      "trigger_condition": "ch5_started",
+      "trigger_day": 20,
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "古い引き出しの鍵、半分までしか回らなかっただろ"
+        },
+        {
+          "sender": "sumi",
+          "text": "今日直した。今度は中の物がすぐ出てくる"
+        },
+        {
+          "sender": "sumi",
+          "text": "それでも手を添えちまうな。長いこと、その開け方だったから"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_hiyori_reception_pen",
+      "sender": "hiyori",
+      "chapter": 5,
+      "region": "home",
+      "type": "chat",
+      "trigger_condition": "ch5_started",
+      "trigger_day": 22,
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "受付のペンが一本だけ、紐が短いせいでいつも置いていかれるの"
+        },
+        {
+          "sender": "hiyori",
+          "text": "長いのに替えたら、遠くの人から順に手が伸びた"
+        },
+        {
+          "sender": "hiyori",
+          "text": "昔の私も、ちょっとだけ遠いと諦めてたかも"
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_ageha_small_plate",
+      "sender": "ageha",
+      "chapter": 5,
+      "region": "home",
+      "type": "chat",
+      "trigger_condition": "ch5_started",
+      "trigger_day": 24,
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ハジメっち、クマのお皿、向きで顔が全然違うの知ってた？"
+        },
+        {
+          "sender": "ageha",
+          "text": "うち、ずっと斜めに置いてたから、微妙な顔だと思ってた"
+        },
+        {
+          "sender": "ageha",
+          "text": "今日から真正面。ちゃんと笑ってたわ"
+        }
+      ]
     }
   ]
 }
