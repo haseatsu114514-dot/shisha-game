@@ -273,7 +273,7 @@ await suite("tonari-floor", async (check) => {
           cost: n.querySelector(".tf-shuffle-cost").textContent.trim(),
           clock: !!n.querySelector(".tf-shuffle-cost svg"),
           emblem: emblem?.naturalWidth === 160 && emblem.alt === "" && emblem.getAttribute("aria-hidden") === "true",
-          frame: getComputedStyle(n).borderImageSource,
+          frame: getComputedStyle(n).backgroundImage, // 絵は原画の半分の寸法でそのまま敷く（九分割の継ぎ目を出さない。TFL57）
         };
       });
       assert.deepEqual([shuffleSkin.label, shuffleSkin.cost, shuffleSkin.clock, shuffleSkin.emblem], ["シャッフル", "4秒", true, true]);
@@ -395,7 +395,7 @@ await suite("tonari-floor", async (check) => {
       assert.match(await page.locator(t("shuffle-busy")).innerText(), /入れ替え中/);
       assert.equal(await page.locator(".tf-preset-list").evaluate((n) => getComputedStyle(n).visibility), "hidden", "入れ替えの最中は、ミックスを見せない");
       assert.equal(await page.locator(t("shuffle-side")).isDisabled(), true);
-      assert.match(await page.locator(t("shuffle-side")).evaluate((n) => getComputedStyle(n).borderImageSource), /\/bar-shuffle-off\.webp/);
+      assert.match(await page.locator(t("shuffle-side")).evaluate((n) => getComputedStyle(n).backgroundImage), /\/bar-shuffle-off\.webp/);
       assert.equal(await lastLog(), "ミックスを入れ替える（4秒かかる）");
       // その間は、注文待ちの卓を押しても列は開かない（客は待っている）
       await table(1).click();
