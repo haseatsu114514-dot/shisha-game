@@ -451,6 +451,10 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* かかる秒数（名前の下。ボタンの中に収める） */
 .tf-shuffle-cost { display: inline-flex; align-items: center; gap: 2px; font-size: 17px; font-weight: 700; line-height: 1; color: #7c1f1a; }
 .tonari-floor .tf-shuffle .tf-shuffle-cost .tf-icon { width: 16px; height: 16px; }
+/* シャッフルのボタンは、ふだんは札の紋と「シャッフル」の字だけ。押すと紋と字が消え、残りの秒数がボタンのまん中に出る
+   （2026-11-21 オーナー「シャッフルのボタンはカードとシャッフルの文字だけでいい。押したあとは秒数を真ん中に出したい」・TFL58） */
+.tf-shuffle:not([data-wait="true"]) .tf-shuffle-cost { display: none; }
+.tf-shuffle[data-wait="true"] :is(.tf-shuffle-emblem, .tf-shuffle-main > span) { display: none; }
 .tf-shuffle-big { flex: 0 0 auto; flex-direction: row; min-width: 270px; padding: 2px 22px; gap: 12px; font-size: var(--tf-text);
   background: none; border: 2px solid transparent; border-image: url("../img/ui/tonari-floor/bar-shuffle.webp") 28 fill / 14px / 0 stretch; } /* 幅が変わるので九分割 */
 .tf-shuffle-big:disabled { background: none; border-image-source: url("../img/ui/tonari-floor/bar-shuffle-off.webp"); }
@@ -885,20 +889,19 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .side-slot :is(.tf-shuffle, .tf-bonus):active:not(:disabled) { translate: 0 3px; }
 .side-slot .tf-shuffle {
   --tf-pad-image: url("../img/ui/tonari-floor/pad-shuffle.webp");
-  position: relative; height: 88px; display: grid; grid-template-rows: 31px auto auto; /* 中身は絵の面（下の厚み 約6px より上）に収める（TFL57） */
-  place-items: center; place-content: start center; gap: 1px; padding: 5px 4px 0; color: #2a1a08;
+  position: relative; height: 88px; display: grid; grid-template-rows: auto auto; /* 中身は絵の面（下の厚み 約6px より上）のまん中に（TFL57・58） */
+  place-items: center; place-content: center; gap: 4px; padding: 0 4px 6px; color: #2a1a08;
 }
 .side-slot .tf-shuffle:disabled { --tf-pad-image: url("../img/ui/tonari-floor/pad-shuffle-off.webp"); }
 .side-slot .tf-shuffle-main { display: contents; }
 .side-slot .tf-shuffle-main > span { scale: 0.9 1; }
-.side-slot .tf-shuffle-emblem { width: 28px; height: 28px; }
+.side-slot .tf-shuffle-emblem { width: 32px; height: 32px; }
 .side-slot .tf-shuffle-cost { font-size: max(15px, calc(8.5px / var(--k, 1))); }
 .side-slot .tf-shuffle-cost .tf-icon { width: 16px; height: 16px; }
 .side-slot .tf-shuffle[data-wait="true"] { color: #fff1c4; }
-.side-slot .tf-shuffle[data-wait="true"] .tf-shuffle-emblem { visibility: hidden; }
 .side-slot .tf-shuffle[data-wait="true"] .tf-shuffle-cost {
-  position: absolute; top: 5px; left: 50%; translate: -50% 0; width: 40px; height: 40px; /* 輪は絵の上の縁の内側に収める */
-  display: grid; place-items: center; gap: 0; font-size: max(22px, calc(11px / var(--k, 1)));
+  position: absolute; top: calc(50% - 3px); left: 50%; translate: -50% -50%; width: 56px; height: 56px; /* 輪と秒数は、絵の面のまん中（下の厚みの分だけ上） */
+  display: grid; place-items: center; gap: 0; font-size: max(28px, calc(14px / var(--k, 1)));
   background: url("../img/ui/tonari-floor/wait-ring.webp") center / contain no-repeat;
 }
 .side-slot .tf-shuffle[data-wait="true"] .tf-shuffle-cost::before {
