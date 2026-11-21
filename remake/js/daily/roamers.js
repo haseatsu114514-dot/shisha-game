@@ -19,6 +19,7 @@ import { allSpots, isUnlocked, isClosed } from "./spots.js";
 import { hiyoriShopLocation } from "./hiyori.js";
 import { cityGuestVisit } from "./city-guests.js";
 import { ryujiAtMeltyPuff, reiGreetingDue } from "../core/ryuji-visit.js";
+import { chainVisitDue, playChainStage } from "../chapters/visit-chain-play.js";
 import { recordChapterFiveTalk } from "../chapters/visit-chains.js";
 
 /** 人ごとの、読み終えた回数（数）。台本の flag_count 条件で読める（第5章の博士の「記録」など）。 */
@@ -162,13 +163,21 @@ export async function meetRoamer(spot, scheduled, { bg } = {}) {
   const unsubscribe = on("hud", () => { if (state !== owner) controller.abort(); });
   active = true;
   try {
-    try { await loadScenes(); } catch { return false; } // 来店は済んでいるので、読めない会話は出さない
+    const chain = entry.id === "hiyori" ? await chainVisitDue("ch5_roam_hiyori", owner) : null;
+    if (!chain) {
+      try { await loadScenes(); } catch { return false; } // 来店は済んでいるので、読めない会話は出さない
+    }
     if (state !== owner || controller.signal.aborted || isPlaying()) return false;
     const scene = roamerScene(entry.id, owner);
-    const result = await play(scene, { ...(bg ? { bg } : {}), signal: controller.signal });
-    if (state !== owner || controller.signal.aborted || !result || result.cancelled) return false;
-    owner.flags[roamSeenFlag(entry.id)] = roamerCount(entry.id, owner) + 1;
-    recordChapterFiveTalk(owner, scene);
+    const read = async id => {
+      const result = await play(id, { ...(bg ? { bg } : {}), signal: controller.signal });
+      return state === owner && !controller.signal.aborted && !!result && !result.cancelled;
+    };
+    if (!await (chain ? playChainStage(chain, read) : read(scene))) return false;
+    if (!chain) {
+      owner.flags[roamSeenFlag(entry.id)] = roamerCount(entry.id, owner) + 1;
+      recordChapterFiveTalk(owner, scene);
+    }
     owner.flags[ROAM_DAY_FLAG] = { ...(owner.flags[ROAM_DAY_FLAG] || {}), [entry.id]: dayStamp(owner) };
     if (entry.bond) gainAffinity(entry.id, visitAffinity("talk", owner));
     save();

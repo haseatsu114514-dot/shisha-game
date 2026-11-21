@@ -124,8 +124,10 @@ export function chapterFiveDubaiLeisureSpots(value = state) {
   return [camel && chapterFiveCamelMeetDue(value) ? Object.freeze({ ...camel, ...CH5_CAMEL_SHOP_AT }) : camel, ...desertChapterFiveSpots(value, value.day)]
     .filter(Boolean)
     .map(entry => {
+      const noorTalk = entry.id === CH5_NOOR_DESK_ID || entry.id === DESERT_SPOT_IDS.desk;
+      const chain = noorTalk && desertCafeVisit(value, value.day)?.kind === "talk" && chainStageAt(value, CH5_NOOR_DESK_ID);
       const reunion = entry.id !== CH5_NOOR_DESK_ID && !value.flags?.[reunionOf(entry).flag];
-      return !entry.unavailable && reunion ? Object.freeze({ ...entry, hasNew: () => true }) : entry;
+      return !entry.unavailable && (chain || reunion) ? Object.freeze({ ...entry, hasNew: () => true }) : entry;
     });
 }
 /** 地図で選んだ行き先を、今行ける時だけ返す（行けない行き先は処理しない）。 */
@@ -483,6 +485,9 @@ async function visitNoorCafe(spot, owner) {
     save();
     return { used: true, exerted: false };
   }
+  const chain = await visitNoorChain(owner, DESERT_CAFE_PRICE);
+  if (chain) return chain;
+  if (state !== owner) return unused;
   const result = await desert.performDesertSpot(spot, { day: state.day, showHud, naru: false, scene: chapterFiveNoorScene });
   // 第5章で出会いを読み終えたら、砂丘の前の再会（久しぶり）は読まない
   if (state === owner && desertProgress(owner).talks > 0 && !owner.flags[DUNES_AGAIN.flag]) { owner.flags[DUNES_AGAIN.flag] = true; save(); }
@@ -491,10 +496,30 @@ async function visitNoorCafe(spot, owner) {
 
 async function visitNoorDesk(spot, owner) {
   if (!owner.finales?.[DESERT_GUIDE] || !desertDaytime(owner)) return unused;
+  const chain = await visitNoorChain(owner, 0);
+  if (chain) return chain;
+  if (state !== owner) return unused;
   const day = owner.day;
   const visit = desertCafeVisit(owner, day);
   if (visit?.kind !== "talk") return unused;
   if (!await read(visit.id, spot.preview, owner) || !completeDesertCafeVisit(owner, visit, day)) return unused;
+  return { used: true, exerted: false };
+}
+
+async function visitNoorChain(owner, fee) {
+  const day = owner.day;
+  if (desertCafeVisit(owner, day)?.kind !== "talk") return null;
+  const chain = await chainVisitDue(CH5_NOOR_DESK_ID, owner);
+  if (!chain || state !== owner) return null;
+  if (fee > spendableMoney(owner)) {
+    toast(`お金が足りない（${fee.toLocaleString("ja-JP")}円）`, { se: "error" });
+    return unused;
+  }
+  if (!await playChainStage(chain, id => read(id, "bg_dubai_cafe_salim_day", owner)) || !completeDesertReunion(owner, day)) return unused;
+  if (fee) {
+    addMoney(-fee);
+    gainAffinity(DESERT_GUIDE, visitAffinity("talk"));
+  }
   return { used: true, exerted: false };
 }
 
