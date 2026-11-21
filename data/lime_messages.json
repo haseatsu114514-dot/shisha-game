@@ -6838,21 +6838,21 @@
       ]
     },
     {
-      "id": "lime_ch5_sumi_catering_form",
+      "id": "lime_ch5_sumi_reservation_card",
       "sender": "sumi",
       "chapter": 5,
-      "trigger_condition": "flag",
-      "trigger_flag": "_intro_ch5_catering_business",
       "region": "home",
       "type": "chat",
+      "trigger_condition": "ch5_started",
+      "trigger_day": 5,
       "messages": [
         {
           "sender": "sumi",
-          "text": "出張の申込用紙、控えは予約帳の隣だ"
+          "text": "予約の札、予約帳の隣からカウンターに戻したぞ"
         },
         {
           "sender": "sumi",
-          "text": "どんな集まりか書く欄を広くした。もう一行ぐらいあった方がいいと思ってな"
+          "text": "客から字が小さくて読めないって言われた。次からは、両面に大きく書こう"
         }
       ]
     },
