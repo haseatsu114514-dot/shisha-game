@@ -11,6 +11,7 @@
 // 現在地は flags._ch2_region = "tokyo"（HUD の街の札）。台詞の正本は data/dialogue/ch3_*.json と ch3_tokyo_daily.json。
 import { state, save, timeOfDay } from "../core/state.js";
 import { DB, bgUrl, displayName } from "../core/data.js";
+import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { layers, setBg, toast, modal } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
@@ -346,7 +347,7 @@ async function readStory(io, scene) {
         save();
       }
       if (!state.flags._ch3_registration_read) {
-        if (!await io.readScene({ id: "ch3_registration", bg: "bg_tournament_stage" })) return false;
+        if (!await io.readScene({ id: "ch3_registration", bg: TOURNAMENT_VENUE_BG[3] })) return false;
         state.flags._ch3_registration_read = true;
         save();
       }

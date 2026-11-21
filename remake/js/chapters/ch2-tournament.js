@@ -6,6 +6,7 @@ import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 // HAZE: OPEN CLOUD。一試合の制作と、各工程の確定済み状態だけを保存する。
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FILES, loadTournamentCraftDialogue } from "../core/data.js";
+import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { el, yen } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
@@ -157,7 +158,7 @@ export async function runChapterTwoTournament() {
     Object.assign(DB.dialogues, Object.fromEntries(REQUIRED.map(key => [key, dialogues[key]])));
     recoverStep(state);
     save();
-    await enterScene(bgUrl("bg_tournament_stage", "day"));
+    await enterScene(bgUrl(TOURNAMENT_VENUE_BG[2], "day"));
     if (live(owner)) await drive(owner);
   });
 }
