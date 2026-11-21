@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-20 15:43 UTC",
+ "generated": "2026-11-21 10:43 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -620,7 +620,8 @@
   "trpg_smoke-robot_room.png",
   "trpg_stage-ghost_room.png",
   "bg_axe_lane.png",
-  "bg_axe_lane_aim.png"
+  "bg_axe_lane_aim.png",
+  "bg_axe_lane_aim_ready.png"
  ],
  "cgs": [
   "cg_ageha_confession.png",
@@ -3803,6 +3804,7 @@
   "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
   "backgrounds/bg_axe_lane.png",
   "backgrounds/bg_axe_lane_aim.png",
+  "backgrounds/bg_axe_lane_aim_ready.png",
   "ui/scene_props/shisha_home_stand_stainless.png",
   "cgs/cg_ch2_ageha_lesson.png",
   "cgs/cg_ch2_sofa_wet_cloth.png",

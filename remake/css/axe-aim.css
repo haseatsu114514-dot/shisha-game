@@ -23,6 +23,11 @@
 .axe-first-person[data-hand-pose="ready"] .axe-hand-pose[data-pose="ready"],
 .axe-first-person[data-hand-pose="windup"] .axe-hand-pose[data-pose="windup"] { opacity: 1; }
 
+/* 先読み済みの絵をレーン側と前景側で同時に切り替える。 */
+.axe-first-person .axe-hand-pose { opacity: 0; }
+.axe-first-person[data-hand-pose="ready"] .axe-hand-pose[data-pose="ready"],
+.axe-first-person[data-hand-pose="windup"] .axe-hand-pose[data-pose="windup"] { opacity: 1; }
+
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-panel {
   position: absolute; z-index: 7; top: calc(var(--axe-inset-t) + 91px); left: var(--axe-inset-l);
   width: min(280px, 25%); display: grid; justify-items: start; gap: 10px;
