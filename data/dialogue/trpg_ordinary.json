@@ -3405,6 +3405,10 @@
     "with-detour": "trpg_ordinary_debrief_with_detour"
   },
   "campaign": {
+    "aftermath": {
+      "true": "次にオルが来た晩は、注文を聞く前に、いつもの席へ案内できた。",
+      "bad": "オルの帰る時刻になった。レシピ帳の「オルの一台」は空欄のままだ。"
+    },
     "seats": [
       {
         "actor": "hiyori",

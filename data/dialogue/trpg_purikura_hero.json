@@ -3474,6 +3474,10 @@
     "with-detour": "trpg_purikura_hero_debrief_with_detour"
   },
   "campaign": {
+    "aftermath": {
+      "true": "勇者のもとに魔王から写真が届いた。裏には「今度も隣を空けておく」とある。",
+      "bad": "焼き増しを渡そうとすると、魔王はもういない。何を伝えたかったのか、聞きそびれた。"
+    },
     "seats": [
       {
         "actor": "sai",

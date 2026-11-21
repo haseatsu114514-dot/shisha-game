@@ -3558,6 +3558,10 @@
     "with-detour": "trpg_leaf_mail_debrief_with_detour"
   },
   "campaign": {
+    "aftermath": {
+      "true": "ミトンは届いた返事を鞄にしまった。今夜はもう、宛先を知っている。",
+      "bad": "夜が明けた。ミトンは封を切らずに、夜番の詰所へ手紙を持ち帰った。"
+    },
     "seats": [
       {
         "actor": "tsumugi",

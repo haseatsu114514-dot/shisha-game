@@ -161,9 +161,12 @@ assert(!T.TIER_GAMES.ichidai, "the card game is on hold");
   const start = g.earned;
   growth.settleGrowth();
   assert(!g.rewards["trpg-finale"]);
-  s.trpg.cleared[finale.scenario] = { stars: 1 };
+  s.trpg.cleared[finale.scenario] = { ending: "together", stars: 0, firstEndingPlays: { bad: 1 } };
   growth.settleGrowth();
   assert(g.rewards["trpg-finale"]);
-  assert.equal(g.earned - start, 1);
+  assert.equal(g.earned - start, 1, "bad still earns the first clear gift");
+  s.trpg.cleared[finale.scenario].firstEndingPlays.normal = 2;
+  growth.settleGrowth();
+  assert.equal(g.earned - start, 1, "a new ending does not issue the finale gift again");
 }
 console.log("play_tiers: ok");

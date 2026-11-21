@@ -3454,6 +3454,10 @@
     "with-detour": "trpg_apple_thief_debrief_with_detour"
   },
   "campaign": {
+    "aftermath": {
+      "true": "白林檎館から届いた次の封筒は、林檎の木の下で開くお茶会の招待状だった。",
+      "bad": "次の予告状を前に、主人は眠れず、白林檎館の灯りは朝まで消えなかった。"
+    },
     "seats": [
       {
         "actor": "adam",

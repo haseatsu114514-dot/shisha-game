@@ -3644,6 +3644,10 @@
     "with-detour": "trpg_moonflower_encore_debrief_with_detour"
   },
   "campaign": {
+    "aftermath": {
+      "true": "翌年の演奏会の招待状には、伯爵の手で開演と終演の時刻が書いてあった。",
+      "bad": "伯爵が求めた一曲は決まらず、その譜面台は次の年まで空いたままだった。"
+    },
     "seats": [
       {
         "actor": "rei",

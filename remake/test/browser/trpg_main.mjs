@@ -392,7 +392,11 @@ await suite("trpg-main", async check => {
     ["ordinary-pc", "ordinary-cup", { viewport: { width: 1280, height: 720 } }],
     ["shark-touch", "shark-last-order", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
   ]) await check(label, async page => {
-    await prepare(page); const baseline = await storageSnapshot(page);
+    // With the choices in play(), these seeds reach the true and bad branches through settled checks.
+    const desktop = label === "ordinary-pc";
+    const story = desktop ? ordinary : shark, tier = desktop ? "true" : "bad";
+    const tierLabel = desktop ? "トゥルーエンド" : "バッドエンド";
+    await prepare(page, { seed: desktop ? 11 : 1 }); const baseline = await storageSnapshot(page);
     await open(page); await assertShelfControls(page);
     // TRF13: a new club starts at rank 1 with no growth point yet.
     assert.equal(await button(page, "trpg-club-rank").getAttribute("data-rank"), "1");
@@ -413,6 +417,7 @@ await suite("trpg-main", async check => {
     assert.equal(storage.local.qa_unrelated, "keep"); assert.equal(storage.session.qa_unrelated, "keep");
     const savedEnding = JSON.parse(storage.local.suien_remake_save);
     assert.equal(ending.trpg.cleared[id].plays, 1);
+    assert.deepEqual(ending.trpg.cleared[id].firstEndingPlays, { [tier]: 1 });
     assert.deepEqual(savedEnding.trpg.cleared[id], ending.trpg.cleared[id], "Progress must save before the replay decision");
     assert.equal(savedEnding.trpg.cleared[id].records, undefined, "No replay is saved before consent");
     await button(page, "trpg-replay-save-question").waitFor();
@@ -426,6 +431,10 @@ await suite("trpg-main", async check => {
     await hit(page, "trpg-replay-save-yes");
     await button(page, "trpg-replay-save-question").waitFor({ state: "detached" });
     assert.equal(await button(page, "trpg-replay-saved-status").textContent(), "本棚にリプレイを保存しました。");
+    assert.equal(await button(page, "trpg-ending-kicker").textContent(), tierLabel);
+    assert.equal(await button(page, "trpg-ending-line").textContent(), story.campaign.aftermath[tier]);
+    await assertFits(page, '[data-test="trpg-ending-kicker"], [data-test="trpg-ending-line"]');
+    await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-ending-" + label + ".png" });
     const optedIn = JSON.parse((await storageSnapshot(page)).local.suien_remake_save);
     assert.equal(optedIn.trpg.cleared[id].records.length, 1);
     assert.equal(optedIn.trpg.cleared[id].plays, savedEnding.trpg.cleared[id].plays);
@@ -448,6 +457,8 @@ await suite("trpg-main", async check => {
     assert.deepEqual(savedReturn.growth?.rewards, savedEnding.growth?.rewards);
     const [first] = optedIn.trpg.cleared[id].records;
     assert.equal(first.play, 1);
+    assert.equal(first.ending, tierLabel + " · " + ending.trpg.cleared[id].endingTitle);
+    assert.equal(first.endingLine, story.campaign.aftermath[tier]);
     assert(first.lines.length > 0, "the ending and epilogue are in the save before closing the table");
     assert(first.rolls.length > 0 && first.choices.length > 0);
     const storageBeforeReading = await storageSnapshot(page);
@@ -462,6 +473,10 @@ await suite("trpg-main", async check => {
     const bookshelf = button(page, "trpg-bookshelf"), firstEntry = button(page, "trpg-shelf-run-" + id + "-1");
     assert.equal(await bookshelf.getAttribute("role"), "dialog");
     assert.match(await firstEntry.textContent(), /第1回.*再生/);
+    const tierList = button(page, "trpg-shelf-endings-" + id);
+    assert.equal(await tierList.locator("li", { hasText: tierLabel }).textContent(), tierLabel + " · 第1回で到達");
+    assert.equal(await tierList.locator("li", { hasText: "未記録" }).count(), 2);
+    await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-ending-records-" + label + ".png" });
     await hit(page, "trpg-shelf-run-" + id + "-1");
     const scene = button(page, "trpg-replay-scene"), progress = button(page, "trpg-replay-progress");
     const pageCount = first.stages.length + 1;
@@ -537,6 +552,7 @@ await suite("trpg-main", async check => {
     const legacy = button(page, "trpg-shelf-story-shark-last-order");
     assert.match(await legacy.textContent(), /詳しい記録のない回は、結末の概要だけ残っています/);
     assert.equal(await legacy.locator("button").count(), 0, "an old summary has no replay button");
+    assert.equal(await legacy.locator("li", { hasText: "未記録" }).count(), 3, "an old summary does not earn tiers retroactively");
     await hit(page, "trpg-bookshelf-close");
     const banner = button(page, "trpg-club-rank");
     assert.equal(await banner.getAttribute("data-rank"), "2");
@@ -620,6 +636,7 @@ await suite("trpg-main", async check => {
     assert.match(await button(page, "trpg-memory-endings").textContent(), /見た結末 1 \/ 4/);
     assert.equal(await button(page, "trpg-play-ordinary-cup").textContent(), "もう一度遊ぶ");
     assert(await button(page, "trpg-play-ordinary-cup").isEnabled());
+    assert.equal(await button(page, "trpg-preparation-notice").count(), 0, "a shelf with just a playable cleared book is ready");
   });
   await check("authored-replacement-on-a-free-shift", async page => {
     await prepare(page, { day: 5 });

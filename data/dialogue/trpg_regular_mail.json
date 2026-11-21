@@ -3005,6 +3005,10 @@
     "with-detour": "trpg_regular_mail_debrief_with_detour"
   },
   "campaign": {
+    "aftermath": {
+      "true": "翌晩、ミトンの鞄には、返事の手紙が一通入っていた。",
+      "bad": "窓の灯りが最後の一つまで消えた。手紙は今夜の配達に間に合わなかった。"
+    },
     "seats": [
       {
         "actor": "sai",

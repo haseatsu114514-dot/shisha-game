@@ -19,7 +19,7 @@ export function savedTrpgRecords(memory) {
 }
 
 /** Snapshot the result and the authored blocks that the ending callback has just finished. */
-export function buildTrpgPlayRecord(table, result, memory, state, play, characters = []) {
+export function buildTrpgPlayRecord(table, result, memory, state, play, characters = [], outcome = null) {
   const name = id => displayName(characters, id);
   const sheets = { ...sheetsOf(table) };
   const companions = [];
@@ -92,8 +92,8 @@ export function buildTrpgPlayRecord(table, result, memory, state, play, characte
   }
 
   return {
-    play, chapter: memory.chapter, day: chapterDay(state), title: table.title, ending: memory.endingTitle,
-    endingLine: ending.line || "", participants: memory.participants.map(name), choices, rolls, lines, stages,
+    play, chapter: memory.chapter, day: chapterDay(state), title: table.title, ending: outcome ? outcome.label + " · " + memory.endingTitle : memory.endingTitle,
+    endingLine: outcome?.line || ending.line || "", participants: memory.participants.map(name), choices, rolls, lines, stages,
   };
 }
 

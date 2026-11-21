@@ -2910,6 +2910,10 @@
     "with-detour": "trpg_regular_harbor_debrief_with_detour"
   },
   "campaign": {
+    "aftermath": {
+      "true": "次の寄港の日、オルは迷わず「波止場の灯」の扉を開けた。",
+      "bad": "出航の鐘が鳴った。オルの注文を聞き直す時間はもうなかった。"
+    },
     "seats": [
       {
         "actor": "sai",
