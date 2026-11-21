@@ -191,14 +191,12 @@ await suite('axe-tap-pull', async check => {
   ]) await check(`${label}-aim-controls-clear-of-hand`, async page => {
     await start(page, touch);
     const activate = locator => touch ? locator.tap() : locator.click();
-    for (const step of ['horizontal', 'vertical', 'power']) {
-      await activate(ready(page));
-      await phase(page, step);
+    const checkHand = async (step, pose) => {
       const controls = step === 'power' ? ['axe-focus', 'axe-reaim', 'axe-pull-handle'] : ['axe-focus', 'axe-reaim', 'axe-action'];
-      const layout = await root(page).evaluate((game, controls) => {
+      const layout = await root(page).evaluate((game, { controls, pose }) => {
         const hand = game.querySelector('.axe-hand-front');
         // The full hand outline includes the sleeve underneath the foreground copy.
-        const silhouette = game.querySelector('.axe-lane-aim');
+        const silhouette = game.querySelector(`.axe-lane-aim use[data-pose="${pose}"]`);
         const artwork = game.querySelector(silhouette.getAttribute('href'));
         const clip = artwork.querySelector('image').getAttribute('clip-path').slice(4, -1);
         const outline = new Path2D(game.querySelector(`${clip} path`).getAttribute('d'));
@@ -224,13 +222,36 @@ await suite('axe-tap-pull', async check => {
         const layer = node => Number(getComputedStyle(node).zIndex);
         return {
           blockers,
-          shown: hand.querySelector('use').getAttribute('opacity') === '1',
+          shown: hand.querySelector('.axe-hand-front-img').getAttribute('opacity') === '1',
+          poses: [...game.querySelectorAll('.axe-hand-pose')].filter(node => Number(getComputedStyle(node).opacity) > 0).map(node => node.dataset.pose),
           front: layer(hand) > Math.max(...['.axe-target', '.axe-panel', '.axe-timing'].map(selector => layer(game.querySelector(selector)))),
         };
-      }, controls);
-      assert.deepEqual(layout.blockers, [], `${step}: each control must be reachable and clear of the hand silhouette`);
+      }, { controls, pose });
+      assert.deepEqual(layout.poses, [pose, pose], `${step}: both layers must show the current pose`);
+      assert.deepEqual(layout.blockers, [], `${step}/${pose}: each control must be reachable and clear of the hand silhouette`);
       assert(layout.shown && layout.front, `${step}: the hand must stay visible in the foreground`);
+    };
+    for (const step of ['horizontal', 'vertical', 'power']) {
+      await activate(ready(page));
+      await phase(page, step);
+      await checkHand(step, 'ready');
     }
+    const grip = await handle(page).boundingBox();
+    const point = { x: grip.x + grip.width / 2, y: grip.y + grip.height / 2 };
+    if (touch) {
+      const cdp = await page.context().newCDPSession(page);
+      try {
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point] });
+        await checkHand('power', 'windup');
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
+      } finally { await cdp.detach(); }
+    } else {
+      await page.mouse.move(point.x, point.y);
+      await page.mouse.down();
+      await checkHand('power', 'windup');
+      await page.mouse.up();
+    }
+    await checkHand('power', 'ready');
     const focus = page.locator('[data-test="axe-focus"]');
     await activate(focus);
     await page.locator('.axe-stability-meter[data-focused="true"]').waitFor();

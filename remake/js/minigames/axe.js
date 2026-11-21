@@ -30,8 +30,9 @@ function decodeArt(url) {
 }
 // The WATL board (five 2x10 planks, calm light centre) from Codex, #2198 / AXR06. The older square board stays in the repository.
 const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp"),
-  // 一人称レーンの背景（#3639）。laneAim から右手と斧を切り抜き、自分の構え中だけ前景に重ねる。
+  // 一人称レーンの背景（#3639）と、引いた時の手元の原画。
   lane: imgFileUrl("backgrounds/bg_axe_lane.webp"), laneAim: imgFileUrl("backgrounds/bg_axe_lane_aim.webp") };
+const READY_HAND_ART = imgFileUrl("backgrounds/bg_axe_lane_aim_ready.webp");
 // ゲージ・札の絵の部品（#3207・AXR14）と、見出しの板・投げ数の溝・黒板の窓・ランクの丸・帯・木片（#3423・AXQ03）。
 // 木片以外は CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間や結果の出遅れを防ぐ。
 const UI_ART = ["gauge-frame", "gauge-needle", "button-throw-orange", "button-throw-green", "tag-slate", "tag-slate-blue", "tag-selected", "tag-selected-amber",
@@ -60,7 +61,7 @@ const { x: CX, y: CY, radius: R } = TARGET;
 const FPS_CENTER_Y = 211;
 const FPS_BOARD_TRANSFORM = `translate(${CX} ${FPS_CENTER_Y}) scale(.895) translate(${-CX} ${-CY})`;
 // Right hand, sleeve and axe in the aiming bitmap's 1671×941 coordinate space.
-const HAND_SILHOUETTE = [
+const WINDUP_HAND_SILHOUETTE = [
   "M1270 187 C1236 188 1185 231 1165 283 Q1199 259 1214 283 L1215 291 L1137 357",
   "Q1124 346 1115 351 Q1107 354 1102 368 Q1084 366 1082 384 Q1076 385 1075 396",
   "Q1063 398 1063 419 Q1053 431 1058 447 Q1062 460 1075 463",
@@ -71,6 +72,19 @@ const HAND_SILHOUETTE = [
   "Q1152 491 1154 473 C1158 450 1165 432 1170 407 Q1172 400 1166 392 L1157 382 L1222 323",
   "L1226 335 L1261 308 L1264 298 L1270 297 Q1275 280 1266 260 Q1261 247 1252 258",
   "Q1252 219 1270 187 Z",
+].join(" ");
+// 通常の構え。原画（1672×941）から、的へ向けた斧と右腕を切り抜く。
+const READY_HAND_SILHOUETTE = [
+  "M998 251 C993 269 1018 287 1032 290 Q1032 276 1040 276 Q1061 277 1071 287 L1073 299",
+  "Q1080 300 1079 312 L1084 343 Q1092 365 1105 389 L1131 445",
+  "Q1145 442 1155 444 Q1174 439 1181 457 Q1197 495 1225 530 Q1238 536 1250 553",
+  "C1266 580 1284 614 1301 639 C1325 678 1354 701 1381 729",
+  "C1434 782 1510 831 1557 872 Q1596 908 1632 941 H1212",
+  "Q1191 897 1192 853 Q1190 810 1185 775 Q1175 730 1174 697 C1172 654 1161 630 1161 594",
+  "Q1158 603 1143 606 Q1114 609 1114 587 L1116 574 Q1103 577 1097 563 Q1091 553 1098 548",
+  "Q1084 544 1090 524 Q1080 520 1083 498 Q1072 498 1074 487 L1081 475 Q1074 448 1091 446 H1096",
+  "Q1085 424 1079 412 L1043 350 Q1039 340 1029 345 C1011 352 1003 377 1010 400",
+  "C991 389 977 364 972 344 C964 308 976 272 998 251 Z",
 ].join(" ");
 // Solid plank edges inside the 1254px artwork (alpha 250+, asset_sources/ui/axe-watl-20261101/adoption.json); the transparent margin is not wood.
 const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 1190 / 1254 };
@@ -273,26 +287,35 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       svg("stop", { offset: "0", "stop-color": "#000", "stop-opacity": .42 }), svg("stop", { offset: ".7", "stop-color": "#000", "stop-opacity": .2 }),
       svg("stop", { offset: "1", "stop-color": "#000", "stop-opacity": 0 })])]),
     boardScaleArt);
-  let laneAimImage = null, handFront = null, handFrontImage = null;
+  let laneHands = null, handFront = null, frontHands = null;
   if (tapPull) {
     // Fit the narrower lane to the original camera; the board and its shadow meet the rear floor seam.
     const w = 1000, h = 562.5;
     artBoard.insertBefore(svg("image", { class: "axe-lane-bg", href: ART.lane,
       x: CX - w / 2, y: -65, width: w, height: h }), artBoard.firstChild);
 
-    // Fit the drawn-back arm alongside the scoring board and leave room for the flick surface.
-    const handId = artId + "-hands", clipId = handId + "-outline", frontId = handId + "-front";
-    artBoard.append(svg("defs", {}, [
-      svg("clipPath", { id: clipId }, [svg("path", { d: HAND_SILHOUETTE })]),
-      svg("svg", { id: handId, x: -97, y: -110, width: 979, height: 706, viewBox: "0 0 1671 941", preserveAspectRatio: "none" }, [
-        svg("image", { href: ART.laneAim, width: 1671, height: 941, preserveAspectRatio: "none", "clip-path": `url(#${clipId})` })]),
-    ]));
-    laneAimImage = svg("use", { class: "axe-lane-aim", href: "#" + handId, opacity: 0 });
-    artBoard.append(laneAimImage);
+    const handId = artId + "-hands", frontId = handId + "-front";
+    const handArt = svg("defs");
+    laneHands = svg("g", { class: "axe-lane-aim", opacity: 0 });
     // Keep the lower-right sleeve behind the action button, as in the original framing.
-    handFrontImage = svg("use", { class: "axe-hand-front-img", href: "#" + handId, opacity: 0, "clip-path": `url(#${frontId})` });
+    frontHands = svg("g", { class: "axe-hand-front-img", opacity: 0, "clip-path": `url(#${frontId})` });
+    const poses = {
+      ready: { href: READY_HAND_ART, outline: READY_HAND_SILHOUETTE, sourceWidth: 1672, x: 146, y: 54, width: 650, height: 570 },
+      windup: { href: ART.laneAim, outline: WINDUP_HAND_SILHOUETTE, sourceWidth: 1671, x: -97, y: -110, width: 979, height: 706 },
+    };
+    for (const [pose, { href, outline, sourceWidth, ...frame }] of Object.entries(poses)) {
+      const id = handId + "-" + pose, clipId = id + "-outline";
+      handArt.append(
+        svg("clipPath", { id: clipId }, [svg("path", { d: outline })]),
+        svg("svg", { id, ...frame, viewBox: `0 0 ${sourceWidth} 941`, preserveAspectRatio: "none" }, [
+          svg("image", { href, width: sourceWidth, height: 941, preserveAspectRatio: "none", "clip-path": `url(#${clipId})` }),
+        ]),
+      );
+      for (const layer of [laneHands, frontHands]) layer.append(svg("use", { class: "axe-hand-pose", href: "#" + id, "data-pose": pose }));
+    }
+    artBoard.append(handArt, laneHands);
     handFront = svg("svg", { viewBox: "-170 -65 1000 562.5", class: "axe-hand-front", "aria-hidden": "true" }, [
-      svg("defs", {}, [svg("clipPath", { id: frontId }, [svg("path", { d: "M-170 -65H830V396H565V497.5H-170Z" })])]), handFrontImage]);
+      svg("defs", {}, [svg("clipPath", { id: frontId }, [svg("path", { d: "M-170 -65H830V396H565V497.5H-170Z" })])]), frontHands]);
   }
   // Painted markings at the official proportions: 20 mm black lines, red bulls, blue killshots.
   // WATL: the inner killshot is outlined in red pen, the outer may be red; the pen lines sit inside each circle so the blue reads at its true size.
@@ -747,13 +770,15 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
                   throw new Error("Axe lesson incomplete");
               }));
         }
-        if (!companion) return Promise.all([...Object.values(ART).map(decodeArt), ...UI_ART.map(decodeArt), ...lessonArt]);
+        const artwork = [...Object.values(ART), ...UI_ART];
+        if (tapPull) artwork.push(READY_HAND_ART);
+        if (!companion) return Promise.all([...artwork.map(decodeArt), ...lessonArt]);
         portraitKey = companion.portraitKey || manifest.titleArts?.find(entry => entry.file.endsWith(companion.titleSuffix))?.character;
         if (!portraitKey || !companion.faces.every(face => manifest.portraits?.[portraitKey]?.faces?.includes(face)))
           throw new Error("Companion artwork missing from catalogue");
         showFace(companion.faces[0]);
         return Promise.all([
-          ...[...Object.values(ART), ...UI_ART, ...companion.faces.map(face => faceArt(portraitKey, face).src)].map(decodeArt),
+          ...[...artwork, ...companion.faces.map(face => faceArt(portraitKey, face).src)].map(decodeArt),
           ...(versus ? [fetch(new URL("../../../data/dialogue/axe_versus.json", import.meta.url), { signal: AbortSignal.any([lifetime.signal, timeout.signal]) })
             .then(response => { if (!response.ok) throw new Error("Axe match dialogue unavailable"); return response.json(); })
             .then(data => {
@@ -1050,11 +1075,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       const pose = ["horizontal", "vertical", "power"].includes(phase) && actor === "player" ? (pullInput?.pulling ? "windup" : "ready") : "rest";
       if (hands.dataset.pose !== pose) { hands.dataset.pose = pose; hands.setAttribute("transform", HAND_POSES[pose]); hands.setAttribute("opacity", 1); }
     }
-    // 一人称の構え絵と狙いの案内（#3639）: 自分が狙う間だけ構え（右手と斧）の絵を重ね、投げた瞬間に素のレーンへ戻して飛ぶ斧へ繋ぐ。
-    // 最前面の手元（型抜き複写）も同じ条件で出し入れする。
-    const aimShown = actor === "player" && ["choice", "horizontal", "vertical", "power"].includes(phase) ? 1 : 0;
-    if (laneAimImage) laneAimImage.setAttribute("opacity", aimShown);
-    if (handFrontImage) handFrontImage.setAttribute("opacity", aimShown);
+    if (tapPull) {
+      // 狙いの間は構えを出し、フリックを保持している間だけ引いた絵に切り替える。
+      const aimShown = actor === "player" && ["choice", "horizontal", "vertical", "power"].includes(phase) ? 1 : 0;
+      const handPose = aimShown && pullInput?.pulling ? "windup" : "ready";
+      if (root.dataset.handPose !== handPose) root.dataset.handPose = handPose;
+      laneHands.setAttribute("opacity", aimShown);
+      frontHands.setAttribute("opacity", aimShown);
+    }
     if (aimPrompt) {
       const step = aimSteps[phase];
       aimPrompt.hidden = !step || actor !== "player" || isPaused();

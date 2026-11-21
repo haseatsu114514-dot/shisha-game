@@ -76,6 +76,17 @@
    "luma": 46,
    "blob": "a546e26ea1ceeb9e0f882f186f1d732151755686"
   },
+  "bg_axe_lane_aim_ready.png": {
+   "place": "axe_lane_aim_ready",
+   "time": "",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 47,
+   "blob": "5c572f0059810b626ba26e9ed8e3c093958925bc"
+  },
   "bg_axe_lounge_night.png": {
    "place": "axe_lounge",
    "time": "night",

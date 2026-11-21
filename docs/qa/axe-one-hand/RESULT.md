@@ -1,5 +1,42 @@
 # 斧投げの片手構え（2026-11-21）
 
+## 通常構えと引き構えの切り替え
+
+右手で柄尻を握ったまま、通常時は刃を的へ向ける。フリック待ちで操作面や的を押している間、または Space を保持している間は、右肩側へ引いた現行の絵へ切り替わる。離すか取り消すと通常の構えに戻り、投擲中は飛ぶ斧へ引き継ぐ。
+
+レーン背景と的は共通で、[通常構えのWebP](../../../remake/img/backgrounds/bg_axe_lane_aim_ready.webp) と[引き構えのWebP](../../../remake/img/backgrounds/bg_axe_lane_aim.webp) から、それぞれのSVG輪郭で右手・袖・斧を抜き出す。操作受付前に両画像をデコードし、レーン側と前景側の表示を同時に切り替える。
+
+Codex内蔵の画像編集を開始する前に、作業フォルダ内にコピーした現行WebPが278,134バイト、1920×1080で、PRの現行ファイルとバイト単位で一致することを確認した。[生成原画](../../../asset_sources/axe-one-hand-20261121/bg_axe_lane_aim_ready.png) は1672×941。引き構えの素材と同じ寸法にそろえるため、[共有PNG](../../../assets/backgrounds/bg_axe_lane_aim_ready.png) をLanczosで1920×1080に変換し、既存の画像ビルド手順で表示用WebPを作成した。
+
+<details>
+<summary>通常構えの生成指示</summary>
+
+> Use case: precise-object-edit. Create a NEW companion 16:9 game bitmap from the attached approved first-person recreational axe-throwing lane image. Preserve the identical camera, framing, round wood target, lattice dividers, red floor line, floorboards, amber lighting, hand skin, charcoal sleeve fabric, short wooden axe handle and compact black steel axe. Redraw only the one right forearm, hand and held axe in its forward READY pose: the arm reaches forward at chest height from the lower-right edge, the wrist is in front of the body, the axe head is one compact hand-span above and to the LEFT of the knuckles, at mid-upper height, with the bright curved cutting edge visibly on the LEFT side facing the round wood target. The handle slopes up-left toward the target and head, contrasting clearly with the reference's up-right backward pose. Right fist grips the absolute bottom end of the handle, with the pinky against the rounded widened wooden pommel and just a small end cap below the fist. One natural hand only. Preserve the entire round target and an open right-side UI gutter. As composition anchors in full-frame coordinates, place the axe head roughly at x=64–68%, y=31–40%, and the right fist around x=69%, y=51%; keep the outer edge of the compact fist and sleeve near or left of x=73% down to y=67%. Below that level the sleeve broadens gradually toward the bottom edge without touching the right edge. Realistic, warm painted game artwork matching the supplied reference. Render at 2048×1152 or larger exact 16:9 if supported. No text, logos, UI, second hand or people. Keep the rest of the background fixed and fill the previous arm area with the lane behind it.
+
+</details>
+
+### 実画面
+
+Chromiumで第1章6日目夜の斧投げBarの初回レッスンを開き、フリック待ちと操作中を同じ段階で撮影した。1280×720はマウス、844×390は横持ちのタッチエミュレーション。
+
+| ビューポート | 通常構え | 引き構え |
+| --- | --- | --- |
+| 1280×720 | [入力前](pose-ready-1280x720.png) | [ドラッグ中](pose-windup-1280x720.png) |
+| 844×390 | [入力前](pose-ready-844x390.png) | [タッチ操作中](pose-windup-844x390.png) |
+
+### 重なりと回帰テスト
+
+本編の初回レッスンで、画面座標に投影したSVG輪郭と、表示中の操作ボタンの矩形との交差を計測した。全サイズでボタン中央にポインターが届き、入力の取り消しで通常構えに戻り、続けてフリックで投げられた。
+
+| ビューポート | 通常構え・横／縦／フリック待ちの最大交差 | 引き構え・操作中の最大交差 | フリック操作面との最短距離（通常／引き） |
+| --- | ---: | ---: | ---: |
+| 1280×720 | 0 px² | 0 px² | 14.50／3.54 CSS px |
+| 844×390 | 0 px² | 0 px² | 7.42／1.80 CSS px |
+| 740×320 | 0 px² | 0 px² | 6.28／1.53 CSS px |
+
+- `axe_tap_pull.mjs` の3サイズ回帰に、保持中の引き構えとボタンの重なり、マウスを離した後とタッチを取り消した後の通常構えへの復帰を追加した。
+- `node --test remake/test/axe_*.mjs` は105件成功。背景台帳は135枚の照合に成功し、既存の `bg_smoke_lab.png` の寸法警告が1件あった。
+
 ## オーナー指摘後の修正
 
 右手の小指が柄尻の膨らみに掛かる位置で握り、右肩側へ引いた片手構えにした。濃色の袖が右下から入り、斧頭は画面右上寄りで刃が上を向く。ゲーム画面は既存のレーン背景とSVGの的を使い、再調整した `HAND_SILHOUETTE` で手元だけを重ねる。的の板全体と右上の得点表示が見えるよう、手元の表示範囲を調整した。
