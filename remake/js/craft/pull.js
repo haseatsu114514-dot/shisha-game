@@ -54,7 +54,14 @@ const HOSE_ICON = `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" s
   <path d="m38.8 7.8 3.4-3.6" stroke="currentColor" stroke-width="3.2"/>
 </svg>`;
 // 針の位置の帯（0〜1）。下げ吸い=左、キープ=中、上げ吸い=右。芯に止めると上げ下げが強い。
+// PST02（2026-11-20 オーナー「上げ吸い下げ吸いも狭くしたり」）: 本番の上げ吸い・下げ吸いは区間も芯も約2割狭い。キープは広くなる。
 export const ZONES = [
+  { id: "down", from: 0, to: 0.27, just: [0.111, 0.163], label: "下げ吸い", mark: "▼", delta: -0.1, justDelta: -0.16 },
+  { id: "keep", from: 0.27, to: 0.73, just: [0.468, 0.532], label: "キープ", mark: "＝", delta: 0, justDelta: 0 },
+  { id: "up", from: 0.73, to: 1, just: [0.837, 0.889], label: "上げ吸い", mark: "▲", delta: 0.1, justDelta: 0.16 },
+];
+/** レッスン（チュートリアル）は今までの区間のまま（PST04）。 */
+export const LESSON_ZONES = [
   { id: "down", from: 0, to: 0.34, just: [0.14, 0.205], label: "下げ吸い", mark: "▼", delta: -0.1, justDelta: -0.16 },
   { id: "keep", from: 0.34, to: 0.66, just: [0.468, 0.532], label: "キープ", mark: "＝", delta: 0, justDelta: 0 },
   { id: "up", from: 0.66, to: 1, just: [0.795, 0.86], label: "上げ吸い", mark: "▲", delta: 0.1, justDelta: 0.16 },
@@ -89,10 +96,10 @@ let dials = 0;
 export { LEAF_MAX } from "./flavor-life.js";
 /**
  * 吸い出しの手触りの調整値（CRN・P8）。試遊ページの ?tune=pull.period:1.2 で差し替えて試せる。
- * period: 針が端から端まで動く秒（腕前・集中で伸び縮みする前）／keepSlope: キープ帯の左右の傾き
+ * period: 針が端から端まで動く秒（腕前・集中で伸び縮みする前。PST03: 2026-11-20 に 1.5→1.1 秒）／lessonPeriod: レッスンの秒（今までの 1.5×1.3 のまま）／keepSlope: キープ帯の左右の傾き
  * sideBias: 上げ・下げの吸いに一律で足す熱（少し温まりやすく）／harshAt: これより熱い一口で疲れる（緑上端〜危険帯の相対位置）
  */
-export const PULL_TUNING = { period: 1.5, keepSlope: .18, sideBias: .015, harshAt: .76 };
+export const PULL_TUNING = { period: 1.1, lessonPeriod: 1.95, keepSlope: .18, sideBias: .015, harshAt: .76 };
 /** TH94・TH95: 吸い出し・熱管理とも一度に吸えるのは5回まで。左の赤い葉の持ちの右に、回数を5つの点で並べる。 */
 export const MAX_PULLS = 5;
 
@@ -145,6 +152,9 @@ async function pullGame(cs, mode, holdFailedResult) {
   await waitBenchReady(cs, mode.store);
   if(state!==owner)return false;
   const tutorial = cs.mode === "tutorial";
+  // 本番は上げ吸い・下げ吸いの区間が狭い（PST02）。レッスンは今までの区間（PST04）
+  const zones = tutorial ? LESSON_ZONES : ZONES;
+  const side = zones[0].to, grad = (f) => (side * f).toFixed(3), gradR = (f) => (1 - side * f).toFixed(3);
   if (mode.store === "pull" && !cs.pullDone) startNaruFinish(cs, growthLesson(state, "M-W3"));
   const context=craftContext(cs);
   // 吸い出しを終える操作は、練習・チュートリアルでも「提供する」（2026-11-12 オーナー）。
@@ -202,10 +212,15 @@ async function pullGame(cs, mode, holdFailedResult) {
     ? mode.drift ? "温度を戻すのは炭。交換する数と置き方で決まる。そのあとの吸いは味の確かめで、温度は少ししか動かない。1〜2口で整え終えよう"
     : "中央のキープは左寄りで微減、右寄りで微増。右の上げ吸いは温度を上げ、左の下げ吸いは温度を下げる。雨の日は上げ吸いを増やそう。吸い終わってから次の針を止める"
     : mode.hint);
+  // スマホは「技」の札だけを出す。文はここで読む（PHN18・css/craft-phone.css。PC は今までどおり画面に出る）
+  if (effectVisible("technique")) panel.closest?.(".bench")?.querySelector?.(".bench-guide-tip > p")?.after?.(el("div.bench-guide-extra.bench-guide-phone", [
+    el("ul", [el("li", [el("b", { text: "技" }), el("span", { text: "技術でゲージがゆっくり" })])]),
+  ]));
   const gameClock = createCraftClock(panel);
   const concentration = mode.focus(cs);
   // 疲れが付くと途中から針が速く、成功帯が狭くなるので、毎回計算し直す。
-  const slowNow = () => skill.slow(cs) * (tutorial ? 1.3 : 1) * concentration.slow;
+  const slowNow = () => skill.slow(cs) * concentration.slow;
+  const basePeriod = tutorial ? PULL_TUNING.lessonPeriod : PULL_TUNING.period; // レッスンは今までの速さ（1.5秒×1.3）
   const widenNow = () => skill.window(cs, "pull") * (tutorial ? 1.4 : 1) * concentration.window;
   let widen = widenNow();
   let coreTemp = mode.start(cs);
@@ -233,8 +248,8 @@ async function pullGame(cs, mode, holdFailedResult) {
   const id = ++dials;
   const dial = el("div.pull-dial", { html: `<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
     <defs><linearGradient id="dial-grad-${id}" x1="0" x2="1" y1="0" y2="0">
-      <stop offset="0" stop-color="#149cfc"/><stop offset=".2" stop-color="#206bb9"/><stop offset=".38" stop-color="#454a69"/>
-      <stop offset=".5" stop-color="#887c70"/><stop offset=".62" stop-color="#714341"/><stop offset=".8" stop-color="#ff7525"/><stop offset="1" stop-color="#ff431b"/>
+      <stop offset="0" stop-color="#149cfc"/><stop offset="${grad(.59)}" stop-color="#206bb9"/><stop offset="${grad(1.12)}" stop-color="#454a69"/>
+      <stop offset=".5" stop-color="#887c70"/><stop offset="${gradR(1.12)}" stop-color="#714341"/><stop offset="${gradR(.59)}" stop-color="#ff7525"/><stop offset="1" stop-color="#ff431b"/>
     </linearGradient><radialGradient id="dial-shade-${id}" cx=".5" cy="1" r=".72">
       <stop offset=".35" stop-color="#000" stop-opacity=".34"/><stop offset=".72" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".26"/>
     </radialGradient></defs>
@@ -242,8 +257,8 @@ async function pullGame(cs, mode, holdFailedResult) {
     <path class="dial-ring" d="${dialSector(0, 1)}" fill="url(#dial-grad-${id})"/>
     <path class="dial-shade" d="${dialSector(0, 1)}" fill="url(#dial-shade-${id})"/>
     <path class="dial-gloss" d="${dialSector(0, 1, DIAL.r1 - 18, DIAL.r1)}"/>
-    ${[ZONES[0].to, ZONES[1].to].map((p) => `<path class="pg-divider" d="M${dialPoint(p, DIAL.r0 - 4)}L${dialPoint(p, DIAL.r1 + 2)}"/>`).join("")}
-    ${ZONES.map((z) => `<g class="pg-zone z-${z.id}"><path class="pg-sense-extra"/><path class="pg-just"/></g>`).join("")}
+    ${[zones[0].to, zones[1].to].map((p) => `<path class="pg-divider" d="M${dialPoint(p, DIAL.r0 - 4)}L${dialPoint(p, DIAL.r1 + 2)}"/>`).join("")}
+    ${zones.map((z) => `<g class="pg-zone z-${z.id}"><path class="pg-sense-extra"/><path class="pg-just"/></g>`).join("")}
     <path class="dial-rim" d="${dialSector(0, 1)}"/>
     ${renewal ? `<path class="pg-draw-arc" pathLength="1" d="M${dialPoint(0, DIAL.r1 + 12)}A${DIAL.r1 + 12} ${DIAL.r1 + 12} 0 0 1 ${dialPoint(1, DIAL.r1 + 12)}"/>` : ""}
     <g class="pg-needle" data-test="pull-needle">
@@ -255,7 +270,7 @@ async function pullGame(cs, mode, holdFailedResult) {
     <circle class="dial-pivot-rim" cx="${DIAL.cx}" cy="${DIAL.cy}" r="9"/>
     <circle class="dial-pivot" cx="${DIAL.cx}" cy="${DIAL.cy}" r="5"/>
   </svg>` });
-  const labels = el("div.pull-dial-labels", ZONES.filter(z => z.id !== "keep").map(z => el(`div.pull-zone-label.l-${z.id}`, [
+  const labels = el("div.pull-dial-labels", zones.filter(z => z.id !== "keep").map(z => el(`div.pull-zone-label.l-${z.id}`, [
     el("b", { text: z.id === "keep" ? z.label : `${z.mark} ${z.label}` }),
     el("span", { text: z.id === "keep" ? "この温度を維持" : z.id === "down" ? "温度を下げる" : "温度を上げる" }),
   ].filter(Boolean))));
@@ -271,7 +286,7 @@ async function pullGame(cs, mode, holdFailedResult) {
   const needle = dial.querySelector(".pg-needle");
   const justs$ = [...dial.querySelectorAll(".pg-just")];
   const senseExtras = [...dial.querySelectorAll(".pg-sense-extra")];
-  const placeJusts = () => ZONES.forEach((z, i) => {
+  const placeJusts = () => zones.forEach((z, i) => {
     const span = (z.just[1] - z.just[0]) * widen;
     const base = effectVisible("sense") ? span / (1 + 0.45 * effectTier("sense")) : span;
     const extra = senseExtra(base);
@@ -284,7 +299,7 @@ async function pullGame(cs, mode, holdFailedResult) {
   const moveNeedle = (at) => {
     needle.setAttribute("transform", `rotate(${((at - 0.5) * 180).toFixed(2)} ${DIAL.cx} ${DIAL.cy})`);
     needle.dataset.pos = (at * 100).toFixed(2);
-    const zone = ZONES.find(z => at >= z.from && at <= z.to) || ZONES[1];
+    const zone = zones.find(z => at >= z.from && at <= z.to) || zones[1];
     if (currentZone.dataset.zone !== zone.id) currentZone.dataset.zone = zone.id;
     const label = zone.id === "keep" ? at < .5 ? "キープ左・微減" : "キープ右・微増" : zone.label;
     if (currentZoneLabel.textContent !== label) currentZoneLabel.textContent = label;
@@ -296,7 +311,9 @@ async function pullGame(cs, mode, holdFailedResult) {
   const drawStatus = el("span.pull-draw-status", { role: "status", dataset: { test: "pull-draw-status" } });
   // TH89: 蛇腹のホースと硬い持ち手・吸い口。ペンに見えないよう、筒の太さと曲がりで描く。
   const inhale = el("span.pull-btn-icon", { "aria-hidden": "true", html: HOSE_ICON });
-  const pullLabel = el("span.btn-label", { text: "吸う（針を止める）" });
+  // 「（針を止める）」は分けておく（スマホは絵と「吸う」だけを大きく出す・css/craft-phone.css）。文は今までと同じ
+  const pullIdle = () => ["吸う", el("span.pull-btn-note", { text: "（針を止める）" })];
+  const pullLabel = el("span.btn-label", pullIdle());
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" }, disabled: true }, [inhale, pullLabel]);
   const deepBtn = mode.store === "pull" && !tutorial && growthLesson(state,"M-S4") ? el("button.btn", { text:"ズボー", title:"一気に深く吸って熱を大きく上げる", "aria-label":"ズボー（一気に深く）", disabled:true, dataset:{test:"pull-deep"} }) : null;
   const blindBtn = mode.store==="pull"&&!tutorial&&growthLesson(state,"M-B3")?el("button.btn.ghost.small",{
@@ -398,7 +415,7 @@ async function pullGame(cs, mode, holdFailedResult) {
   // 針（左→右→左の往復）。熱管理では同じ時間で炭の熱も動く。
   let pos = 0, dir = 1, raf = 0, last = 0, running = false, choosing = false, drawing = false, finished = false, abandoned = false;
   let stopBubbles = () => {};
-  let period = PULL_TUNING.period * slowNow();
+  let period = basePeriod * slowNow();
   const loop = (now) => {
     raf = 0;
     if (!running || drawing || finished) return;
@@ -431,7 +448,7 @@ async function pullGame(cs, mode, holdFailedResult) {
   });
 
   const actionAt = (at) => {
-    const z = ZONES.find((zz) => at >= zz.from && at <= zz.to) || ZONES[1];
+    const z = zones.find((zz) => at >= zz.from && at <= zz.to) || zones[1];
     const jw = (z.just[1] - z.just[0]) * widen;
     const isJust = at >= z.just[0] && at <= z.just[0] + jw;
     // キープ中央は維持。半円の色に合わせ、左寄りは微減、右寄りは微増。
@@ -453,7 +470,7 @@ async function pullGame(cs, mode, holdFailedResult) {
   // 吸いすぎ・過熱の吸い出しで、はじめが疲れる。針と成功帯にすぐ反映する（TH29）。
   const strain = () => {
     if (!strainBench(cs)) return;
-    period = PULL_TUNING.period * slowNow(); widen = widenNow(); placeJusts();
+    period = basePeriod * slowNow(); widen = widenNow(); placeJusts();
     if (T >= harshTemp) SE.miss();
   };
   const doPull = async (at = pos, deep = false) => {
@@ -462,7 +479,7 @@ async function pullGame(cs, mode, holdFailedResult) {
     // 葉が傷むほど、止めた針が狙いから少しずれて落ち着く（止まり方のズレ TH27）。傷が浅いうちはほぼ0。
     const landed = clamp(at + leafStopDrift(leafDamageRatio(cs.leaf), rand(-1, 1)), 0, 1);
     const { z, isJust, delta, critical } = deep
-      ? { z:{...ZONES[2],label:"ズボー",mark:"▲▲"}, isJust:false, delta:LESSON_TUNING.deepHeat, critical:false } : actionAt(landed);
+      ? { z:{...zones[2],label:"ズボー",mark:"▲▲"}, isJust:false, delta:LESSON_TUNING.deepHeat, critical:false } : actionAt(landed);
     drawing = true;
     cancelAnimationFrame(raf);
     raf = 0;
@@ -563,7 +580,7 @@ async function pullGame(cs, mode, holdFailedResult) {
       setBenchDraw(cs, null);
       drawing = false;
       delete play.dataset.draw;
-      pullLabel.textContent = "吸う（針を止める）";
+      pullLabel.replaceChildren(...pullIdle());
       drawStatus.textContent = "";
       if (!failed && !finished && !abandoned && play.isConnected) {
         render();

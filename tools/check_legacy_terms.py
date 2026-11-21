@@ -29,8 +29,8 @@ SCAN_ROOTS = [
     REPO / "CLAUDE.md",
 ]
 
-# 旧キャラ名・旧設定の検査は、台詞以外のゲームデータと公式サイトにも適用する。
-CURRENT_NAME_ONLY_DIRS = (REPO / "remake" / "data", REPO / "promo")
+# 旧キャラ名・旧設定の検査は、補助データ・公式サイト・制作スキルにも適用する。
+CURRENT_NAME_ONLY_DIRS = (REPO / "remake" / "data", REPO / "promo", REPO / ".claude" / "skills")
 CURRENT_NAME_EXTENSIONS = {".json", ".js", ".mjs", ".html", ".md", ".txt"}
 
 SKIP_PATTERNS = {
@@ -151,15 +151,17 @@ MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -
 # 2026-11-04 追加（#2528 残骸チェック）: 改名済みキャラの旧ローマ字。英字は前後が英数字でない時だけ検出する
 # （内部ID kuyuri / sui / maezono / samechan / dr_kemuri の小文字表記・ファイル名は対象外）。
 RENAMED_ROMAJI_RE = re.compile(r"(?<![A-Za-z0-9_])(?:Kuze|KUZE|Asagiri|ASAGIRI|REI|Rin|RIN|Nagumo|NAGUMO|Maezono|MAEZONO|Hatano|HATANO|Fushimi|FUSHIMI)(?![A-Za-z0-9_])|Dr\.? ?Kemuri")
-RENAMED_ROMAJI_FIX = "旧キャラ名（英字・旧表記） → Ayatori（saku）／Usuba（hiyori）／†黒羅雨℃†（rei）／Rio（rio）／Sui・姓は Sensu（sui）／Uezono（maezono）／Shiomi（samechan）／Dr. Charcoal（dr_kemuri）に統一（#2528）"
+# 制作時の英字の仮名も現行資料では検出する。過去の生成プロンプトは作成時の記録として扱う。
+CURRENT_ROMAJI_NAMES = re.compile(r"(?<![A-Za-z0-9_])(?:Rei|Usuba|USUBA|Shiomi|SHIOMI)(?![A-Za-z0-9_])")
+RENAMED_ROMAJI_FIX = "旧キャラ名（英字・旧表記） → data/characters.json の現行名と照合する"
 
 
 JSON_STRING_RE = re.compile(r'"(?:[^"\\]|\\.)*"')
 
 
-def has_renamed_romaji(line: str, json_strings: bool = False) -> bool:
+def has_renamed_romaji(line: str, json_strings: bool = False, *, pattern=RENAMED_ROMAJI_RE) -> bool:
     """Keep raw checks and also inspect decoded JSON text on its original line."""
-    if RENAMED_ROMAJI_RE.search(line):
+    if pattern.search(line):
         return True
     if json_strings:
         for match in JSON_STRING_RE.finditer(line):
@@ -167,7 +169,7 @@ def has_renamed_romaji(line: str, json_strings: bool = False) -> bool:
                 value = json.loads(match.group())
             except json.JSONDecodeError:
                 continue
-            if RENAMED_ROMAJI_RE.search(value):
+            if pattern.search(value):
                 return True
     return False
 
@@ -234,11 +236,14 @@ def scan_file(path: Path, errors: list, warnings: list, *, current_names_only: b
         return
 
     rel = path.relative_to(REPO)
+    is_current = not rel.as_posix().startswith(HISTORY_PATHS)
     for i, line in enumerate(lines, 1):
         if is_doc_context(path, line):
             continue
 
-        if not str(rel).startswith(HISTORY_PATHS):
+        if is_current:
+            if has_renamed_romaji(line, path.suffix == ".json", pattern=CURRENT_ROMAJI_NAMES):
+                errors.append(f"{rel}:{i}: {RENAMED_ROMAJI_FIX}")
             for term, fix in LEGACY_ERROR_CURRENT.items():
                 if term in line:
                     errors.append(f"{rel}:{i}: 旧名 '{term}' → {fix}")

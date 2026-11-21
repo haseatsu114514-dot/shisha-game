@@ -330,6 +330,7 @@
           "face": "",
           "text": "差し出されたイヤホンの片方を、耳に入れた。静かなギターが、ゆっくり鳴る。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch2_rei_earphone"},
         {
           "type": "condition",
           "condition_type": "flag",
@@ -351,6 +352,7 @@
           "face": "normal",
           "text": "（味は遠いままだ。でも、音が消えたあとの静けさは、ちゃんと聞こえた）"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "rei",
           "face": "normal",

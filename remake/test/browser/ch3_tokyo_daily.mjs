@@ -66,6 +66,8 @@ await suite("ch3-tokyo-daily", async check => {
     await page.locator(dt("rule-sheet-close")).click();
     // DAY2 の朝: 初出勤（配達）で昼を使い、夜の行動の地図が出る。
     await tokyoMap(page, { day: 33, slot: 1 });
+    const freeGuide = page.locator('.map-notice', { hasText: '今夜は、地図から好きな行き先を選べる。' });
+    await freeGuide.waitFor();
     let state = await get(page);
     assert.equal(state.flags._ch3_intro.routeVersion, 3);
     assert.equal(state.flags._ch3_intro.stage, 3, "DAY1 opening, DAY1 arrival and DAY2 work are read");
@@ -81,16 +83,27 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(await page.locator(dt("pin-tonari")).count(), 0, "The hometown is not on the Tokyo map");
     // 地元との連絡は地図の行き先ではなく、右上の LIME のトーク一覧の一番上の行（オーナー決定 2026-11-02）。
     assert.equal(await page.locator(dt("pin-ch3_tokyo_lime")).count(), 0, "No map pin for hometown contacts");
-    const slotBefore = (await get(page)).slot;
+    const beforeContacts = await get(page);
     await page.locator(dt("hud-phone")).click();
     await page.locator(dt("lime-shortcut-tokyo_contacts")).click();
     await page.locator(".lime-title", { hasText: "地元との連絡" }).waitFor({ timeout: 30000 });
+    assert.match(await page.locator(dt("lime-contact-guide")).innerText(), /届いた話はトーク.*電話印/);
+    assert.match(await page.locator(".lime-empty").innerText(), /連絡先を交換した恋人や地元の友人/);
     await page.locator(dt("phone-close")).last().click();
     await tokyoMap(page, { day: 33 });
-    assert.equal((await get(page)).slot, slotBefore, "Opening hometown contacts uses no time");
+    const afterContacts = await get(page);
+    for (const key of ["day", "slot", "money", "stamina", "inbox", "tokyoVisits"])
+      assert.deepEqual(afterContacts[key], beforeContacts[key], `Reading the guide changed ${key}`);
 
     // 保存→リロード→同じ時間帯（DAY2の夜）の東京の地図から再開。
     await loadSlot(page, 0);
+    await tokyoMap(page, { day: 33, slot: 1 });
+    assert.equal(await freeGuide.count(), 0);
+    await page.locator(dt("hud-phone")).click();
+    await page.locator(dt("lime-shortcut-tokyo_contacts")).click();
+    await page.locator(".lime-title", { hasText: "地元との連絡" }).waitFor();
+    assert.equal(await page.locator(dt("lime-contact-guide")).count(), 0);
+    await page.locator(dt("phone-close")).last().click();
     await tokyoMap(page, { day: 33, slot: 1 });
 
     // 夜: mukai で手伝う（日当）→ 帰りに裏口のてつこ（行動を使わない）。

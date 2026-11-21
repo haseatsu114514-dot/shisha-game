@@ -849,11 +849,13 @@
           "face": "",
           "text": "三人は別々の道へ歩き出した。言わなかったことはまだある。それでも、今夜は黙ったまま別れなかった。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch3_liars_night"},
         {
           "speaker": "",
           "face": "",
           "text": "スマホには、大会のあとに会う約束が残っている。"
         },
+        {"type": "hide_cg"},
         {
           "type": "hide_portrait",
           "char_id": "hajime"
@@ -1242,6 +1244,7 @@
           "speaker": "",
           "text": "俺は綾取から目を外し、客へ向き直った。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch3_national_ask_customer"},
         {
           "speaker": "hajime",
           "face": "normal",
@@ -1252,6 +1255,7 @@
           "face": "normal",
           "text": "……熱くはないです。軽いけど、嫌な軽さじゃない"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",
@@ -1967,6 +1971,7 @@
           "face": "",
           "text": "綾取がノートを開くと、黄ばんだ紙がもう一枚。並べると、ケーキが一つになった。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch3_half_cake"},
         {
           "speaker": "mashiro",
           "face": "smile",
@@ -2002,6 +2007,7 @@
           "face": "normal",
           "text": "……うん。合わせるのは、会った時でいい"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",

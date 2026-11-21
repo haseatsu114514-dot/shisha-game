@@ -1,5 +1,5 @@
 {
-  "comment": "第5章正史台本。自由行動の期限なし。章進行（対決・真エンディング含む全場面）は remake/js/chapters/ch5-progress.js ほかで接続済み。未接続は ch5_dream_in・ch5_dream_out（挿入位置が未決）と ch5_reflection_placeholder（テスト専用）のみ。",
+  "comment": "第5章正史台本。自由行動の期限なし。章進行（対決・真エンディング含む全場面）は remake/js/chapters/ch5-progress.js ほかで接続済み。",
   "dialogues": [
     {
       "dialogue_id": "ch5_opening",
@@ -615,6 +615,7 @@
           "face": "",
           "text": "帰郷した夜、水を先に出した客がいた。今日はホースを膝に置いて、待っている。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_regular_hose_lap"},
         {
           "speaker": "hajime",
           "face": "serious",
@@ -635,6 +636,7 @@
           "face": "normal",
           "text": "うん。今日は時間、あるから"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",
@@ -1151,11 +1153,13 @@
           "face": "",
           "text": "博士が胸ポケットのペンを抜いた。画面の数字と、俺の言葉を、メモに並べて書く。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_cocreation_notes"},
         {
           "speaker": "",
           "face": "",
           "text": "隣で、9000が二人の手元を見ていた。今日の一台も、記録に加わる。"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",
@@ -1190,6 +1194,7 @@
           "face": "",
           "text": "tonariへ帰ると、先に戻っていたスミさんが、カウンターの椅子を引いた。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_sumi_pulls_chair"},
         {
           "speaker": "sumi",
           "face": "smile",
@@ -1205,6 +1210,7 @@
           "face": "normal",
           "text": "（混ざったままで、俺だった）"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "sumi",
           "face": "normal",
@@ -1624,6 +1630,7 @@
           "face": "",
           "text": "順に吸う。アダムは黙って、こちらの顔を見ていた。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_adam_two_bowls"},
         {
           "speaker": "adam",
           "face": "normal",
@@ -1649,6 +1656,7 @@
           "face": "smile",
           "text": "……分かる日が来たな"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "hajime",
           "face": "smile",
@@ -1929,42 +1937,6 @@
       "comment": "出典: NEW-TEXT.md §5。接続済み（ch5-progress.js CH5_MATCH_SCENES.afterglow）。勝利時だけ ch5_second_cup_result の後に一度読み、読了で CH5_AFTERMATH の後日談へ進む。敗北・引き分け時には読まない。Q13の会場はSMOKE LAB、Q14の客はtonariの常連と博士が募った一般客で決定済み。拍手の行に人数は出さず、customer は既存の酸っぱい顔の人。9000の小さな関節音は ch5_match_day_arrival の同じ描写を受ける。"
     },
     {
-      "dialogue_id": "ch5_dream_in",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "灯りを消しても、画面の中の手つきが、まぶたの裏に残っていた。",
-          "comment": "※仮置き"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……もう寝ろ、俺）",
-          "comment": "※仮置き"
-        }
-      ],
-      "comment": "出典: NEW-TEXT.md §6。未接続（コード側も意図的に接続しない: ch5-progress.js 冒頭の「触らないもの」参照）。場面全体と2行の文面は※仮置き。ch5_dream直前の候補1はch5_unrecorded_dayを読んだ日の夜、候補2は対決前夜（優先3件§5末尾の暗転と§6当日朝の間）。候補を選ばず両方保持。暗転・dream_digitalは演出想定のみで実フィールドを追加しない。日の進め方は①待ち（Q11）。"
-    },
-    {
-      "dialogue_id": "ch5_dream_out",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "洗ったカップを、水切りかごに伏せた。",
-          "comment": "※仮置き"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……受け取れなかったな）",
-          "comment": "※仮置き"
-        }
-      ],
-      "comment": "出典: NEW-TEXT.md §7。未接続（コード側も意図的に接続しない: ch5-progress.js 冒頭の「触らないもの」参照）。差し込み位置と2行の文面は※仮置き。ch5_dream末行「目を覚ますと、机の上に昨日のカップがあった。まず、それを洗った。」直後の想定。候補1（ch5_unrecorded_dayの夜）なら自由行動、候補2（対決前夜）なら優先3件§6「休業日の朝の店は、音が少ない。」へ。候補は未選択。夢でお茶を出した人物や関係状態は決めない（Q16・Q17）。"
-    },
-    {
       "dialogue_id": "ch5_schedule_contact",
       "lines": [
         {
@@ -2212,7 +2184,7 @@
           "speaker": "",
           "face": "",
           "text": "SMOKE LABに着いた。白い廊下の先で、博士の研究室の扉が開いていた。",
-          "comment": "Q13: 会場はSMOKE LAB（2026-11-02 DXM02）。背景の切り替え行（#2222）はこの行の直後に足す"
+          "comment": "会場はSMOKE LAB（DXM02）。この行の直後に店から研究所へ背景が切り替わる。"
         },
         {
           "type": "bg",
@@ -2395,25 +2367,7 @@
           "text": "……はい"
         }
       ],
-      "comment": "出典: CH5-PRIORITY3-TEXT.md §6。接続済み（ch5-progress.js CH5_MATCH_SCENES.arrival）。日程決定後の「会場へ行く」で、確認「この先、勝負の終わりまで自由行動に戻れません。会場へ向かいますか」を出す（Q15の現行実装は ch5.js renderScheduled）。「向かう」で _ch5_match_started を立て、本場面→ch5_copy_first_cup へ進む。「まだ行かない」は日程を維持してカードに留まり、取り消しは別操作。会場SMOKE LAB（Q13）と常連・博士が募った客（Q14）は本文に記載済み。Q18の博士は同一人物。9000の照合と博士の「誤差」は、記録と今日の違い・票の割れへの前振り（DXM01）。つむぎ・千須の客席描写も本文にある。背景は店を出る冒頭に合わせてtonari昼のままで、会場への背景切替（#2222）と9000のスチルなどの演出は仮置きとして保持。検品札と職人の話は doctor_after_match、上着の匂いは return_to_tonari で扱う。"
-    },
-    {
-      "dialogue_id": "ch5_reflection_placeholder",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ボウルの縁に置いた指を、一度離した。",
-          "comment": "※仮置き"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "息を吐いて、もう一度、トングを持った。",
-          "comment": "※仮置き"
-        }
-      ],
-      "comment": "出典: CH5-PRIORITY3-TEXT.md §7テスト用の最小の仮置き。未接続（コード側も意図的に接続しない: ch5-progress.js 冒頭の「触らないもの」参照）。差し込み先はch5_relationship_before_second_cupのlines[3]（0始まり、4行目）の{\"type\": \"reflection\"}の位置。前はスミ「はじめ。終わったら、店で一服するぞ」、はじめ「……はい」、後は地の文「客席に、tonariへ来た酸っぱい顔の人がいた。今日はホースを膝に置いて、待っている。」。既存対象エントリは変更しない。中身はQ17/Q16判断待ちで2行とも全差し替え前提。F案（間だけ）の採用を意味しない。reflection演出は※仮置きでエンジン効果未確認。_ch5_reflection_variant記録枠は※仮置きで実フラグを作らない。A・G案の個別後日談と同じ判定、複数交際ending_relationship_pendingの扱いはQ16待ち。D案の優勝前提はQ5待ち、B案ならましろの一人称は僕。主題・酸っぱい顔の客の回想・関係状態を確定しない。"
+      "comment": "出典: CH5-PRIORITY3-TEXT.md §6。接続済み（ch5-progress.js CH5_MATCH_SCENES.arrival）。日程決定後の「会場へ行く」で、確認「この先、勝負の終わりまで自由行動に戻れません。会場へ向かいますか」を出す（Q15の現行実装は ch5.js renderScheduled）。「向かう」で _ch5_match_started を立て、本場面→ch5_copy_first_cup へ進む。「まだ行かない」は日程を維持してカードに留まり、取り消しは別操作。会場SMOKE LAB（Q13）と常連・博士が募った客（Q14）は本文に記載済み。Q18の博士は同一人物。9000の照合と博士の「誤差」は、記録と今日の違い・票の割れへの前振り（DXM01）。つむぎ・千須の客席描写も本文にある。冒頭はtonari。SMOKE LAB到着で背景を切り替え、9000の姿を初めて見るところでスチルを出す。検品札と職人の話は doctor_after_match、上着の匂いは return_to_tonari で扱う。"
     },
     {
       "dialogue_id": "ch5_prep_trial_heat",
@@ -3286,6 +3240,7 @@
           "face": "",
           "text": "キッチンタイマーが鳴った。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_tsumugi_serves_hajime"},
         {
           "speaker": "tsumugi",
           "face": "baito_normal",
@@ -3301,6 +3256,7 @@
           "face": "normal",
           "text": "……うまい。熱が、ちょうどいい"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "tsumugi",
           "face": "baito_normal",

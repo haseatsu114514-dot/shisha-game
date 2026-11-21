@@ -2,6 +2,31 @@
   "comment": "第2章の地元（橙須）で読む短い会話（VOL13）。施設の寄り道（daily/spot-encounters.js の chapter: 2）と、Dr.fookah 2階の凛想の会話（daily/spots.js の CHAPTER_TALKS）、SHISHARKのサメちゃんの第2章の会話（daily/samechan.js の SAMECHAN_CH2_TALK・#3097 PR-I）、地元の普段の会話（みんと・凛想・アダム・なるは daily/spots.js の CHAPTER_TALKS、サメちゃんは SAMECHAN_CH2_TALKS、ひよりの相席は daily/hiyori.js の HIYORI_CH2_TALKS・#3097 PR-C）、tonariの大会準備で一台作る場面（chapters/ch2-craft-prep.js・ch2_prep_*）。第2章の準備期間に ch2-city-data.js の loadPreparationDialogues で読み込む。施設の能力の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
   "dialogues": [
     {
+      "dialogue_id": "ch2_rest_notebook",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "練習ノートに、手が伸びかけた。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ch2_rest_notebook"
+        },
+        {
+          "speaker": "",
+          "text": "ページに挟んだ指を抜き、ノートを閉じた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今日は、書かない）"
+        },
+        {
+          "type": "hide_cg"
+        }
+      ]
+    },
+    {
       "dialogue_id": "cafe_ch2_commute",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_cafe_day.png"
@@ -4299,6 +4324,1140 @@
           "speaker": "",
           "face": "",
           "text": "店に入る前に、もう一度振り返った。看板の十文字は、一つも欠けずに灯っていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_minto_nickname_notes",
+      "comment": "#3097 第2弾・VOL20（2026-11-21 オーナー「交友を1章以降も厚く」）。地元の普段の会話の続き。みんと（daily/spots.js の CHAPTER_TALKS）。客のあだ名の手帳（客の好みや様子を細かく見て声をかける戦略家・characters.json）。営業中の口調だけで、年齢・正体・♥段階に触れない。はじめは吸った味の感想を言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "PEPPERMINTのカウンターの内側で、みんとが小さな手帳に何か書き込んでいた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "あ、はじめくん！ いらっしゃいませ〜♡ ちょっと待ってね、忘れないうちに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何を書いてるんですか"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "あだ名。お客さんの。本名は聞かないから、みんとが勝手につけてるの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手帳の一ページに、短い言葉がずらりと並んでいる。「傘の人」「ミント二倍さん」「月曜の眼鏡さん」。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「傘の人」？"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "晴れの日も傘を持ってくるの。たぶん、なくすのが怖い人"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "次に来たら「今日も傘、一緒ですね」って言うの。それだけで、ちょっと笑ってくれるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一回来ただけの人も、全部書いてるんですか"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "書くよ〜。二回目に来てくれたとき、一回目のこと覚えてたら、うれしいでしょ？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとはページをめくって、ペンの先で一行を指した。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "ちなみに、これがはじめくん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、俺もあるんですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指の先には「よく来る、まじめな子」と書いてあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その横に、小さく「最近ちょっと疲れてる」。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……疲れてる、ですか"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "見たまんまだよ〜。だから今日の席は、窓際にしといた♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "外が見えると、ちょっと休まるから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手帳はぱたんと閉じられて、レジの下の引き出しにしまわれた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あの手帳、何冊目なんだろう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_rio_plain_lunch",
+      "comment": "#3097 第2弾・VOL20（2026-11-21 オーナー「交友を1章以降も厚く」）。地元の普段の会話の続き。凛想（daily/spots.js の CHAPTER_TALKS）。試香の日の昼は匂いの強いものを食べない（塩だけのおにぎり）。はじめは「顔で答える係」（第1章からの試香モルモットの役目）。味の不調（_ch2_taste_distant）の前後どちらでも読める。恋愛を進めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の2階。凛想さんが机の端で、銀紙を開いていた。中身は、海苔も巻いていない白いおにぎりだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "お昼、それだけですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "午後に試香があるの。昼は、匂いの強いものは食べない"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "塩だけ。ほんとは塩も無い方がいいけど、それだと午後に倒れる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "毎回、そうなんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "毎回。ニンニクは金曜の夜だけ。土日で抜けるから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんはおにぎりを小さく三口で食べ終えると、窓を少しだけ開けた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……で、モルモットくん。君、今日のお昼は何食べた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "駅の立ち食いそばです。かき揚げの"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "……油と、ネギ。午後の試香、君は外す"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "冗談。君は鼻じゃなくて、顔で答える係だから"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "でも、次に来る日は、お昼はおにぎりにしといて。私の分も、一個買っとくから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……具は、何がいいですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "具は無し。塩だけ。それがいちばん、ごまかしがきかない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開けた窓から、外の風が入ってきた。2階には、もう何の匂いも残っていなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_adam_apple_errand",
+      "comment": "#3097 第2弾・VOL20（2026-11-21 オーナー「交友を1章以降も厚く」）。地元の普段の会話の続き。アダム（daily/spots.js の CHAPTER_TALKS。柚ヶ谷の林檎・在庫切れの後）。皮が途切れた日は遠出しない決まり（ch2_adam_ticket_machine）で、はじめに柚ヶ谷の林檎を一つだけ頼む。はじめは毎日切符を買う（同じ場面）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "EDENのカウンターに、林檎が一つだけ置いてあった。皮が、途中で切れている。"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "来たか。……見ての通りだ。今朝、皮が途切れた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "途切れた日は、遠出しないんでしたっけ"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "決まりだ。だが今日は、柚ヶ谷に林檎が入る日でな"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "お前は、毎日あの電車に乗るのだろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "乗ります。……買ってきましょうか"
+        },
+        {
+          "speaker": "adam",
+          "face": "intense",
+          "text": "頼む。品種は、ここに書いた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出されたのは、例の紙ナプキンだった。裏の七つの品種の名前の一つに、丸がついている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一つだけでいいんですか"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "一つでいい。……今日の俺の運は、一つ分しかない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "運の量で、林檎の数が決まるんですか"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "決まりだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは切れた皮を拾って、もう一度、林檎に巻きつけようとした。うまくいかなかった。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……代わりに、切符代は俺が持つ。礼だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "どうせ毎日買ってるので、ついでです"
+        },
+        {
+          "speaker": "adam",
+          "face": "surprise",
+          "text": "……そうか。お前は毎日、あの丸と戦っているのだったな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、アダムは紙ナプキンの余白に、小さく「はじめに頼む」と書き足していた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_samechan_poster",
+      "comment": "#3097 第2弾・VOL20（2026-11-21 オーナー「交友を1章以降も厚く」）。地元の普段の会話の続き。サメちゃん（daily/samechan.js の SAMECHAN_CH2_TALKS）。古いサメ映画のポスターを、どの席からもサメと目が合わない位置に貼る（好きなものほど客に押しつけない）。怖いのを強がる（characters.json）。実在の作品名・絵柄は出さない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "SHISHARKの壁に、新しいポスターが貼られていた。古いサメ映画のものだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水面の下から、大きな影が浮かんでくる絵だった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "お主、よいところに！ 見よ。わしの宝物のポスターじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……怖そうですね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "怖いのは、サメが出てくるまでの音じゃ。出てきてしまえば、むしろ……"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "いや、何でもない。出てきても、わしは平気じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、二度目に見た時も毛布をかぶっていた"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃん！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんはポスターの角を指で押さえて、曲がっていないか何度も確かめた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……この位置なら、どの席からも、サメと目が合わぬ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "目が合わないように貼ってるんですか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "吸っておる最中に、サメににらまれては落ち着かぬじゃろう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "好きなものほど、客に押しつけてはならん。わしが見たい時は、カウンターの中から見る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの内側に回ってみると、ちょうど正面に、サメの影の目があった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ここからだと、ばっちり目が合いますね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ。特等席じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_hiyori_mirror_pose",
+      "comment": "#3097 第2弾・VOL20（2026-11-21 オーナー「交友を1章以降も厚く」）。地元の普段の会話の続き。ひよりの相席（daily/hiyori.js の HIYORI_CH2_TALKS）。儚く見える角度の研究で首がつりそうになり、素の大きな反応が出る（characters.json）。店名を出さず、斧投げの前後・恋人／友人のどちらでも読める。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "相席になったひよりさんが、窓ガラスに映る自分を、横目でじっと見ていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……はじめくん。今の私、儚く見える？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "窓に映ってるのを、見てたんですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "角度の研究。斜め四十五度で少しうつむくと、風に消えそうに見えるらしいの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……どう？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "首、痛くないですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "痛い！ 実はさっきから、つりそう！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんは首を押さえて、背もたれにどさっと寄りかかった。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "会社の窓でもやってたら、課長に「寝違えた？」って湿布もらったの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いい課長さんですね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "いい人なのよ。仕事は、鬼みたいに振ってくるけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんの襟元から、湿布の白い角がのぞいていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……儚い女はね、湿布を貼らないの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "貼ってていいと思います"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……そう？ じゃあ、貼ったまま儚くする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんは首をまっすぐにしたまま、窓の外を見た。さっきより、ずっと楽そうだった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_minto_umbrella_day",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第2章の交流）。地元の普段の会話の続き。みんと（daily/spots.js の CHAPTER_TALKS。あだ名の手帳 ch2_minto_nickname_notes の後）。いつも傘を持ってくる「傘の人」が、今日は傘を忘れて来た。店の置き傘を貸した。営業中の口調だけで、年齢・正体・♥段階に触れない。天気は決めない（帰り道に降り出した話）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "PEPPERMINTの入口の傘立てに、見慣れない黒い傘が一本だけ立っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくん、いらっしゃ〜い♡ 聞いて聞いて、事件なの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "事件ですか"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "「傘の人」がね、昨日、傘を忘れてきたの！ あの人が！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "晴れの日も持ってくる人が、ですか"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "そう。しかも帰る時に、ちょうど降り出しちゃって"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "だから、お店の置き傘を貸したの。「今日だけは、みんとの傘です」って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "喜んでました？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "すっごく困った顔してた。……でも、ちゃんと持って帰ってくれた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは傘立ての黒い傘を、指でちょんとつついた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "で、今朝これが届いてたの。お店の傘と、同じ長さの新しい傘"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "返すだけじゃなくて、一本増えたんですね"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "そういうこと♡ 次に来たら、手帳に一行足さなきゃ。「傘を増やす人」"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_rio_label_words",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第2章の交流）。地元の普段の会話の続き。凛想（daily/spots.js の CHAPTER_TALKS。塩だけのおにぎり ch2_rio_plain_lunch の後）。日本向けの袋に貼るラベルの言葉を、吸う人に伝わる方で選ぶ（はじめは客の言い方で答える。吸った味の感想は言わない）。恋愛を進めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Dr.fookahの2階。凛想さんの机に、小さなラベルの試し刷りが二枚並んでいた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "モルモットくん、ちょうどいい。どっちが伝わる？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一枚には「清涼感：強」、もう一枚には「ミント、かなり強め」と書いてある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……お客さんなら、こっちです。「かなり強め」"
+        },
+        {
+          "speaker": "rio",
+          "face": "surprise",
+          "text": "即答だね。理由は？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "tonariで「清涼感」って言う人、いないんです。みんな「スースーする」とか「強い」とか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "強めの日は、吸う前に一回こっちを見て、身構えてから吸ってくれますし"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "……身構えてから、か。いいね、その顔"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは「清涼感：強」の方を裏返して、机の端へ寄せた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "会議では、こっちの言葉が通るんだけどね。数字っぽいから"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "でも、袋を手に取るのは会議室の人じゃない。……採用。これで刷る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺の一言で決めていいんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "君の一言じゃないよ。tonariのお客さんたちの一言。君は運んできただけ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_adam_peel_record",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第2章の交流）。地元の普段の会話の続き。アダム（daily/spots.js の CHAPTER_TALKS。林檎のお使い ch2_adam_apple_errand の後）。毎朝の林檎の皮の長さを記録した手帳。はじめが買ってきた林檎の皮は、一度も途切れなかった。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "EDENのカウンターで、アダムが分厚い手帳を開いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ページには、日付と数字が縦に並んでいる。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "来たか。……見ろ。これが、俺の朝だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "数字……長さですか"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "皮の長さだ。毎朝、一つ剥いて測る。途切れた日は、赤で書く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ページをめくるたびに、赤い数字がところどころ混じっている。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "そして、これが昨日。お前が柚ヶ谷から運んできた林檎だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指の先の数字は、ほかの日よりずっと大きく、黒いインクで丸く囲まれていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "途切れなかったんですね"
+        },
+        {
+          "speaker": "adam",
+          "face": "intense",
+          "text": "一度もな。皮が、カウンターの端から床まで届いた"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "……人の手を経た林檎は、剥きやすいのかもしれん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "電車に揺られただけですよ"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "揺られた分だけ、果実もほぐれる。……俺の決まりに、一行足す"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは手帳の余白に、小さく「たまに、人に頼む」と書き足した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_samechan_menu_letters",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第2章の交流）。地元の普段の会話の続き。サメちゃん（daily/samechan.js の SAMECHAN_CH2_TALKS。ポスター ch2_samechan_poster の後）。黒板のメニューの字を、サメの歯みたいに尖らせるか、読みやすくするかで迷う（店作りには真面目・characters.json）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "SHISHARKの黒板の前で、サメちゃんがチョークを持ったまま固まっていた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……お主。この字、読めるか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黒板には、先の尖ったギザギザの字で、フレーバーの名前が並んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……「ア」……「アップル」、ですかね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "む……やはり読みにくいか。サメの歯の形にしたのじゃが"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、これを三晩かけて書いた。そして三晩、消すか迷っている"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃん！ 二晩じゃ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "一番上のタイトルだけ、ギザギザにするのはどうですか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……タイトルだけ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "店の名前は、尖ってても読めます。味の名前は、すぐ読めた方が、お客さんも頼みやすいので"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……なるほどのう。牙は、看板だけで見せればよいのじゃな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんは味の名前だけを消して、丸い字で書き直し始めた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一番上の「SHISHARK」だけが、尖ったまま残った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_hiyori_commute_poem",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第2章の交流）。地元の普段の会話の続き。ひよりの相席（daily/hiyori.js の HIYORI_CH2_TALKS。儚い角度 ch2_hiyori_mirror_pose の後）。儚いポエムを読み上げるが、中身は通勤電車の話で、はじめに当てられる。店名を出さず、斧投げの前後・恋人／友人のどちらでも読める。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "相席になったひよりさんが、スマホの画面を胸に当てて、深く息を吸った。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……はじめくん。聞いて。今朝、詩ができたの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "詩、ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "名もなき箱に揺られて、私は今日も、誰かの肩の重さを知る"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "扉が開くたび、私の一部が、どこかの駅にこぼれていく……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……満員電車の話ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "なんで分かるの！？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も毎日乗ってるので。肩の重さ、分かります"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……そうなのよ。今朝は特に、隣の人の傘の先が、ずっと私のすねにいたの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "でもね、詩にしたら、ちょっと許せた。儚さって、便利でしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "傘の人には、言わなかったんですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……言えなかった。儚い女は、すねの痛みを口にしないの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんはスマホに一行足して、保存した。題名は「すね」だった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_tsumugi_charcoal_bread",
+      "comment": "#3097 第5弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」「埋めるのを進めて」・第2章の交流）。地元の普段の会話。つむぎ（daily/spots.js の CHAPTER_TALKS。tonariへ客として来て、窓際の常連席のつむぎと話す。これまで第2章のつむぎはシフト上がりの会話だけだった）。絵を描く木炭と、消しゴム代わりの食パン。大会・味の感想・コンテストの結果・煙の色に触れない（味の不調の前後、恋人・友人どちらでも読める）。恋愛を進めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席に座ると、窓際のつむぎが、黒い棒で紙をこすっていた。指の先まで黒い。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "それ、……炭？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "木炭です。絵を描くための炭です。シーシャの炭より、ずっと軽いです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙の上の猫は、輪郭がぼんやりしていた。煙の尾だけが、やけに濃い。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "消しゴムは使わないの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "消す時は、これです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが鞄から出したのは、袋に入った食パンだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……パン？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "木炭は、パンで消えます。学校で、最初に習いました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白いところを小さく丸めて押し当てると、猫の耳のあたりの黒が、ふわっと薄くなった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの向こうから、スミさんの声がした。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……炭を消すのに、パンか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。こすらないで、押すだけです。こすると、紙が毛羽立つので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "シーシャの炭は、一度火が入ったら、もう戻せないのに"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "はい。……だから、こっちの炭は、迷ってもいい炭です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "消した耳の跡に、さっきより細い線が、もう一度引かれた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_tsumugi_train_cat",
+      "comment": "#3097 第5弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」「埋めるのを進めて」・第2章の交流）。地元の普段の会話。つむぎ（daily/spots.js の CHAPTER_TALKS。tonariへ客として来て、窓際の常連席のつむぎと話す。これまで第2章のつむぎはシフト上がりの会話だけだった）。窓辺で寝ている猫を、柚ヶ谷へ向かう電車に一度だけ乗せる（木炭の回の後）。大会・味の感想・コンテストの結果・煙の色に触れない（味の不調の前後、恋人・友人どちらでも読める）。恋愛を進めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席に座ると、窓際のつむぎがタブレットから顔を上げた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はじめさん。最近、柚ヶ谷のほうへ、よく行っていますよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。用事が多くて、電車でね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "電車の窓から、何が見えますか。……この子を、一回乗せてみたくて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面の中で、葉の耳の猫が、いつもの窓辺に丸くなっていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "ずっと窓辺で寝ているので。たまには、出かけてもいいかなって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "行きは、ビルがだんだん高くなっていく。帰りの夜は、窓に自分の顔が映って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その向こうを、街の灯りが横に流れていくんだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……顔と灯りが、重なるんですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは少し考えてから、電車の窓を一枚描いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ガラスに映った猫の顔の上を、細い光の線が横切っていく。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "乗せました。でも、降りる駅は、まだ決めていません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "決めないんだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "決めると、帰ってこない猫になりそうなので。……この子は、橙須に帰ってくる猫です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "描き終えた窓の端に、小さな橙色の灯りが、一つだけ足された。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_tsumugi_customer_seat",
+      "comment": "#3097 第5弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」「埋めるのを進めて」・第2章の交流）。地元の普段の会話。つむぎ（daily/spots.js の CHAPTER_TALKS。tonariへ客として来て、窓際の常連席のつむぎと話す。これまで第2章のつむぎはシフト上がりの会話だけだった）。客席から見るスミさんの背中と、炭を並べる三回の音（電車の猫の回の後）。はじめは受け取った一台の味を言わない。大会・味の感想・コンテストの結果・煙の色に触れない（味の不調の前後、恋人・友人どちらでも読める）。恋愛を進めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席に座ると、窓際のつむぎと並ぶ席になった。こちら側から店を見るのは、久しぶりだ。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさんが、お客さんの席にいます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "たまにはね。今日は、作ってもらう側"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの向こうで、スミさんが炭を並べている。客席から見ると、背中が思ったより大きい。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "こっちから見るスミさん、好きです。手元は見えないけど、音で分かるので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "音？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "トングが、カチ、カチ、カチって三回鳴ったら、もうすぐです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……毎日そばにいたのに、気づかなかった"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "中にいると、聞こえないんだと思います。自分の手の音なので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カチ、カチ、カチ。三つ目の音のあと、スミさんが台を抱えてこちらへ来た。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……何、にやけてんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いえ、なんでもないです。……ありがとうございます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客の席で受け取る一台は、いつもより少しだけ大きく見えた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_naru_montblanc",
+      "comment": "#3097 第5弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」「埋めるのを進めて」・第2章の交流）。地元の普段の会話。なる（daily/spots.js の CHAPTER_TALKS。看板の電球 ch2_naru_sign_light の後。DAY3の祝いの後、DAY11の対峙より前だけ）。電球の回の「モンブランって、何を合わせるんですか」「それは、今度な」の続き。菓子の名前で頼む客は、その菓子を食べた日を頼んでいる。はじめは吸った感想を言わない。大会に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "KEMURIKUSAのカウンターで、なるが小皿に栗の甘露煮を一粒のせていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "おう、はじめ。この前の続きな。モンブランの話"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "覚えてたんですね"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "約束は約束だろ。……って言っても、モンブランって名前の葉はねえんだよ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "だから、似せる。甘いのを二つ。それと、ほんの少しだけ、焦がしたみたいなやつ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "焦がしたやつ、ですか"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "下の土台とか、栗の皮の渋いとこ。あれがないと、ただの甘い煙になる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるはボウルの縁を指で叩きながら、葉を盛る順番を、口の中で数えていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "で、この栗は何のためだと思う？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……お客さんに、見せるため？"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "半分正解。吸う前に一粒食ってもらう。モンブランの気分になってから、煙が来る"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "菓子の名前で頼んでくる客ってさ、その菓子を食べた日のことも、一緒に頼んでんだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……食べた日のこと"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "誕生日とか、帰り道とか。俺は、そこまで作りたいわけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕方の常連が来るまで、あと少し。なるは栗の小皿を、カウンターの真ん中へ置き直した。"
         }
       ]
     }

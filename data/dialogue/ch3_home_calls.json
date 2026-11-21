@@ -677,6 +677,219 @@
           "text": "通話が切れた。三秒より少しだけ長く、そのまま目を閉じていた。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_home_call_minto_frame",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第3章の交流）。みんとからの電話（昼でも夜でも読める）。新しいチェキの枠「東京編」の題材を聞く。物語の電話（ch3_minto_small_lies の年齢の嘘・食事）とは別の話。営業中の口調だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の部屋で横になると、スマホが震えた。出ると、明るい声が飛び込んできた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくーん！ 今、ちょっとだけいい？ 休憩中なの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いいですよ。どうしたんですか"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "新しいチェキの枠を作ってるの。「東京編」。でも、東京っぽいものが思いつかなくて"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくんのいる所って、どんな感じ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "高架下の商店街です。上を電車が通るたびに、店の窓が少し鳴ります"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "窓が鳴るの！？ 何それ、かわいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "かわいい、ですかね"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "かわいいよ〜。じゃあ枠の上のほうに、電車の線を一本入れよっと"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "写真、一枚送って。上を電車が通ってるとこ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "撮れたら送ります"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "やった♡ ……あ、お客さん来た。じゃあね、ちゃんと休むんだよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れた。ちょうど電車が通って、奥の部屋の窓が小さく鳴った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_home_call_sumi_pudding",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第3章の交流）。スミさんからの電話（夜だけ）。出発前にはじめが冷蔵庫に入れたままのプリンを、賞味期限の日にスミさんが食べながら確認する。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜。奥の部屋で横になっていると、スマホが震えた。「tonari 炭吉」。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい、はじめです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "冷蔵庫の、奥のプリン。お前のか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あ……たぶん、出発の前に買ったやつです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そうか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少し間があった。電話の向こうで、スプーンが器に当たる小さな音がした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……スミさん、今、食べてます？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "確認だ。食っていいか、の"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "食べながら確認しないでください"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "賞味期限が、今日までだった。お前が帰るまで待ってたら、捨てることになる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "……捨てるよりは、いいだろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。おいしかったですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "甘かった。……帰ったら、同じのを買っとく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れた。冷蔵庫の奥に同じプリンが一つ並ぶところを、なんとなく思い浮かべた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_home_call_samechan_aquarium",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第3章の交流）。サメちゃんからの電話（昼でも夜でも読める）。東京の水族館のシロワニ（見た目は怖いが、おとなしいサメ）に憧れていて、暇ができたらよろしく伝えてほしいと頼む。コロちゃんが本心をばらす。泳ぎの話はしない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の部屋で横になると、スマホが震えた。画面には、サメの絵文字が一つだけ。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "お主！ 東京には、大きな水族館があるそうじゃな！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありますね。行ったことはないですけど"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "行かぬのか！？ ……いや、修行中じゃったな。すまぬ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "東京の水族館には、シロワニという、牙のすごいサメがおるのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "見た目は怖いが、性格はおとなしい。わしの憧れじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、自分も見た目ほど怖くないと言いたいのだ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "ち、違う！ わしは見た目も中身も怖いのじゃ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "どっちも、おとなしいと思います"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……むう。とにかく、暇ができたら、シロワニによろしく伝えるのじゃぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。行けたら、伝えます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れた。サメによろしく伝える方法を、少しだけ考えた。"
+        }
+      ]
     }
   ]
 }

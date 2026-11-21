@@ -304,6 +304,7 @@
           "face": "",
           "text": "なるの手が止まった。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch2_naru_score_sheet"},
         {
           "speaker": "naru",
           "face": "normal",
@@ -330,6 +331,7 @@
           "face": "",
           "text": "いつもの笑みが、なるの顔から消えていた。"
         },
+        {"type": "hide_cg"},
         {
           "type": "choice",
           "id": "ch2_naru_response",

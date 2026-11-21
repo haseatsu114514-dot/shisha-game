@@ -296,6 +296,7 @@
           "face": "",
           "text": "太陽は笑って、空いた椅子と水を指した。今の一言は、スマホを通さず日本語だった。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch4_festa_welcome"},
         {
           "speaker": "",
           "face": "",
@@ -321,6 +322,7 @@
           "face": "excited",
           "text": "来たな、日本の二人！　まず座れ！　暑かった、だろ？　水、飲め！"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",
@@ -662,6 +664,7 @@
           "face": "",
           "text": "トングを差し出すと、男は受け取って柄を一度拭いた。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch4_traveler_tongs"},
         {
           "speaker": "traveler",
           "face": "normal",
@@ -672,6 +675,7 @@
           "face": "",
           "text": "空いた手を握って、開く。ドバイへ来てから、一番軽かった。"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",
@@ -952,6 +956,7 @@
           "duck": true,
           "text": "歓声が、一瞬だけ止んだ。男は急ぐでもなく、自分の台の前に立つ。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch4_sheikh_reveal"},
         {
           "type": "motion",
           "id": "unveil",
@@ -977,6 +982,7 @@
           "face": "normal",
           "text": "約束どおり、また吸いに来た。今日は私にも作らせてくれ。……君も、全てを出すといい"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "master_hookah",
           "face": "serious",
@@ -1463,6 +1469,7 @@
           "face": "normal",
           "text": "注文より先に、水が置かれた"
         },
+        {"type": "show_cg", "cg_id": "cg_ch4_young_sumi_water"},
         {
           "speaker": "sheikh",
           "face": "normal",
@@ -1473,6 +1480,7 @@
           "face": "normal",
           "text": "カルダモンだけの、軽い一台だった"
         },
+        {"type": "hide_cg"},
         {
           "type": "condition",
           "condition_type": "finale_seen",

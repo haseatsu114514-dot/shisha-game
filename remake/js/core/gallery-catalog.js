@@ -9,12 +9,12 @@ export const CHAR_LABELS = {
   rio: "凛想", mashiro: "ましろ", other: "その他",
 };
 const cgChars = Object.fromEntries(Object.entries({
-  ageha: ["cg_ageha_first_purikura", "cg_ch2_ageha_purikura_strip", "cg_ageha_confession", "cg_ch2_ageha_lesson"],
+  ageha: ["cg_ageha_first_purikura", "cg_ch2_ageha_purikura_strip", "cg_ageha_confession", "cg_ch2_ageha_lesson", "cg_ch2_ageha_white_bear"],
   minto: ["cg_ch1_minto_casual_reveal", "cg_minto_casual", "cg_minto_cheki", "cg_minto_confession", "cg_minto_first_cheki"],
-  tsumugi: ["cg_ch1_tsumugi_heart_art", "cg_tsumugi_confession", "cg_tsumugi_smoke_color"],
-  naru: ["cg_naru_after_hours", "cg_naru_last_chance", "cg_naru_next_entry"],
+  tsumugi: ["cg_ch1_tsumugi_heart_art", "cg_tsumugi_confession", "cg_tsumugi_smoke_color", "cg_ch5_tsumugi_serves_hajime"],
+  naru: ["cg_naru_after_hours", "cg_naru_last_chance", "cg_naru_next_entry", "cg_ch2_naru_score_sheet"],
   rio: ["cg_rio_confession"],
-  mashiro: ["cg_ch3_childhood_offered_hand", "cg_saku_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession", "cg_ch3_mashiro_no_craft_day"],
+  mashiro: ["cg_ch3_childhood_offered_hand", "cg_saku_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession", "cg_ch3_mashiro_no_craft_day", "cg_ch3_half_cake"],
 }).flatMap(([char, ids]) => ids.map(id => [id, char])));
 const charTag = char => Object.hasOwn(CHAR_LABELS, char) ? char : "other";
 // IDに cheki を含むが通常のスチルとして扱うもの（オーナー指示 2026-11-18: cg_minto_cheki はツーショット写真でありチェキではない）。
@@ -55,6 +55,27 @@ export function galleryStats(entries) {
   return stats;
 }
 const labels = {
+  cg_ch5_party_toast: "世界一の乾杯",
+  cg_ch5_tsumugi_serves_hajime: "最初は、ゆっくりどうぞ",
+  cg_ch5_adam_two_bowls: "どの顔だった",
+  cg_ch5_regular_hose_lap: "今日は時間、あるから",
+  cg_ch5_cocreation_notes: "数字の隣に味の言葉",
+  cg_ch5_sumi_pulls_chair: "おかえりの椅子",
+  cg_ch4_festa_welcome: "FESTAの椅子と水",
+  cg_ch4_traveler_tongs: "返したトング",
+  cg_ch4_sheikh_reveal: "四つ目の台",
+  cg_ch4_young_sumi_water: "十五年前の一杯の水",
+  cg_ch4_noor_pencil_x: "消さなかった×",
+  cg_ch4_creek_dhow: "クリークの荷積み",
+  cg_ch3_liars_night: "嘘つきたちの夜",
+  cg_ch3_national_ask_customer: "炭より先に、客の返事",
+  cg_ch3_half_cake: "半分ずつのケーキ",
+  cg_ch3_mukai_latte_cat: "そっぽを向く泡の猫",
+  cg_ch2_kanzaki_id_check: "神崎煙草店の年齢確認",
+  cg_ch2_naru_score_sheet: "光る採点表",
+  cg_ch2_rest_notebook: "ノートを閉じた日",
+  cg_ch2_rei_earphone: "片耳ぶんの一曲",
+  cg_ch2_ageha_white_bear: "白いクマと閉店後",
   cg_ch2_sofa_wet_cloth: "焦げ跡と濡れ布",
   cg_ch2_ageha_lesson: "あげはの吸い方講座",
   cg_ch3_mashiro_no_craft_day: "作らないと決めた昼",

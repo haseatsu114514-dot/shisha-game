@@ -1512,7 +1512,7 @@ export function limeCoach(onOpen) {
 
 /** 章の旅程相談。既存端末とアカウントを使い、当日招待の失効・報酬処理へ流さない。 */
 export async function openContactLime({ contacts, summary, actions, onAction, signal = null,
-  title = "恋人との連絡", empty = "連絡先を交換した恋人ができると、ここから連絡できます。" }) {
+  title = "恋人との連絡", empty = "連絡先を交換した恋人ができると、ここから連絡できます。", guide = "" }) {
   const owner = state;
   const ui = phoneShell({ time: clockNow(), title: `DAY ${chapterDay(state)}` });
   let resolveClose;
@@ -1527,6 +1527,10 @@ export async function openContactLime({ contacts, summary, actions, onAction, si
     ui.header.replaceChildren(el("span.lime-logo", { text: "LIME" }), el("span.lime-title", { text: title }));
     ui.chat.classList.add("list");
     ui.chat.replaceChildren();
+    if (guide) {
+      ui.chat.append(el("p.lime-tip", { text: guide, dataset: { test: "lime-contact-guide" } }));
+      guide = "";
+    }
     for (const id of contacts()) {
       const account = accountFor(id);
       ui.chat.append(el("button.lime-chat-row", { dataset: { test: `lime-contact-${id}` }, onclick: () => showThread(id) }, [

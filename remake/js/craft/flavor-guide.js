@@ -74,7 +74,8 @@ export function mixForecastCard(cs, { precision = 0, mastery, aroma } = {}) {
     el("p.flavor-guide-note", { text: "葉を足すと、仕上がりの予想を表示します。" })]);
   const rangeLabel = precision < .35 ? "広い" : precision < .7 ? "ほどほど" : "絞れる";
   const content = [
-    el("small.flavor-guide-caption", { text: `仕上がりの目安 · 予想幅：${rangeLabel}` }),
+    // 文は「仕上がりの目安 · 予想幅：○○」のまま。見出しと予想幅を分けておく（スマホの小さな札では見出しを頭に、予想幅を棒の下へ置く・css/craft-phone.css）
+    el("small.flavor-guide-caption", [el("span.forecast-caption-title", { text: "仕上がりの目安" }), el("span.forecast-caption-sep", { text: " · " }), el("span.forecast-caption-range", { text: `予想幅：${rangeLabel}` })]),
     flavorAxes(forecast.axes, { forecast: true }),
     forecast.expressive ? el("div.flavor-heat-choices", [
       el("span", [el("b", { text: "低め" }), ` ${forecast.lowLabel}`]),

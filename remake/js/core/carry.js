@@ -172,6 +172,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_halloween_active", "progression"],
   ["_ch2_kumicho_public_reveal", "person"],
   ["_ch2_morning_departed", "progression"],
+  ["_ch2_stay_local_since", "progression"],
   ["_ch2_naru_hurt", "person"],
   ["_ch2_naru_listened", "person"],
   ["_ch2_naru_warm_customers", "person"],
@@ -229,6 +230,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_evening", "progression"],
   ["_ch3_tokyo_proposal_day", "progression"],
   ["_ch3_intro", "progression"],
+  ["_ch3_free_night_guide", "ui"],
+  ["_ch3_lime_contact_guide", "ui"],
   ["_ch3_japan_first_representative", "progression"],
   ["_ch3_mukai_work_intro_read", "person"],
   ["_ch3_opening_read", "progression"],
@@ -293,6 +296,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
+  ["_ch4_home_calls", "progression"], // ドバイの昼に宿で休んだ時に読んだ地元からの電話（ch4-dubai-local.js の HOME_DAY_CALLS・#3097 第2弾）
   ["_visit_chains", "progression"], // 通いの続きの小さな出来事（第3〜5章・段の既読と選んだ答え。chapters/visit-chains.js）。周回では持ち越さない
   ["_ch4_dubai_nights", "progression"], // ドバイの夜がにぎわう店に夜に行った回数（店ごと・ch4-dubai-local.js）。周回では持ち越さない
   ["_ch4_longlong", "progression"], // 龍龍水煙所のドバイの店の段階の既読・通いの回数（ch4-longlong.js）

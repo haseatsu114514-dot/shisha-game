@@ -108,7 +108,10 @@ try {
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
   const images=[], colors={}, glows=[], hazes={}, rainbow={};
   for (const [temp, expected] of [[.2,'cold'],[.4,'warming'],[.46,'ready'],[.54,'optimal'],[.70,'hot'],[.83,'fire'],[.96,'inferno']]) {
-    await page.evaluate(t=>{T.session.stepPanel('pull','温度のイメージ');T.session.setBenchTemperature(cs,t);},temp);
+    // 見本の温度は共有帯（温度計の目盛り）の上の位置。この一台の帯へ写して置く（PST01 で本番の緑・虹を狭めたため。冒頭の帯の判定と同じ写し方）
+    await page.evaluate(t=>{T.session.stepPanel('pull','温度のイメージ');T.session.setBenchTemperature(cs,T.conditions.visualTemperature(t,T.conditions.temperatureBands(cs)));},temp);
+    // 背景は次の描画で塗り替わる。前の見本の絵を測らないよう、2コマ待ってから測る
+    await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
     assert.equal(await band(),expected); images.push(await pixels());
     colors[expected] = await mean();
     hazes[expected] = await haze();

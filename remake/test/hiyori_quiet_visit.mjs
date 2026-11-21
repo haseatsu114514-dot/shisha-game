@@ -216,7 +216,7 @@ await check('after tonari return, the charm visit plays once and repeats resume'
 // ひびの回の後だけ。第1章・台本の未読込では出さない。途中でやめたら既読にしない
 await check('chapter 2 everyday seats replace the repeat once each, without advancing it',async f=>{
   const s=f.core.state,p=f.spots.spotById('naru'),ids=[...f.hiyori.HIYORI_CH2_TALKS];
-  assert.deepEqual(ids,['ch2_hiyori_health_check','ch2_hiyori_capsule_toy']);
+  assert.deepEqual(ids,['ch2_hiyori_health_check','ch2_hiyori_capsule_toy','ch2_hiyori_mirror_pose','ch2_hiyori_commute_poem']); // mirror_pose は #3097 第2弾、commute_poem は第3弾
   s.chapter=2;f.setPlay(async()=>done);
   assert.equal(f.hiyori.hiyoriChapterTalkDue(),null,'not before the chapter 2 scripts are loaded');
   for(const d of JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch2_home.json',import.meta.url))).dialogues)if(ids.includes(d.dialogue_id))f.db.dialogues[d.dialogue_id]=d;

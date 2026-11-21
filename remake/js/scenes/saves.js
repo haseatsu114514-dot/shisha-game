@@ -1,7 +1,7 @@
 // セーブ／ロードの枠選び（オートセーブ＋手動1枠）。タイトルの「ロード」と、日常の MENU から開く。
 import { el, yen } from "../core/util.js";
 import { layers, modal, toast } from "../core/ui.js";
-import { SCHEMA, SAVE_SLOTS, readSlot, save, saveToSlotResult, loadFromSlot, state } from "../core/state.js";
+import { SCHEMA, SAVE_SLOTS, readSlot, autoSaveResult, saveToSlotResult, loadFromSlot, state } from "../core/state.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { cycleBadgeText, overwriteCycleNote } from "../core/cycle-display.js";
 import { CH5_PROLOGUE } from "../chapters/ch5-prologue.js";
@@ -153,7 +153,10 @@ function pickSlot(mode) {
 /** 保存できる場面では、AUTOへの保存成功か明示的な破棄を待ってから場面を終了する。 */
 export async function returnToTitle({ current, leave, canSave = () => true }) {
   if (canSave()) {
-    while (!save()) {
+    for (;;) {
+      const { saved, conflict } = autoSaveResult();
+      if (saved) break;
+      if (conflict) return; // 保存層から別タブの進行を読む選択肢を表示済み。
       const choice = await modal({
         title: "オートセーブできませんでした",
         body: "保存せずにタイトルへ戻ると、前回の保存以降の進行は失われます。",
@@ -189,8 +192,9 @@ export async function saveFlow() {
       });
       if (!ok) continue;
     }
-    const { autoSaved, manualSaved } = saveToSlotResult(key);
+    const { autoSaved, manualSaved, conflict } = saveToSlotResult(key);
     if (manualSaved && autoSaved) { SE.save(); toast(`${slot.label} と AUTO に保存した`, { kind: "good", ms: 4000 }); }
+    else if (manualSaved && conflict) { SE.save(); toast(`${slot.label} に保存した。AUTO には別のタブの進行が残ります。`, { kind: "warn", ms: 5000 }); }
     else if (manualSaved) { SE.save(); toast(`${slot.label} は保存済み。AUTO 更新は失敗`, { kind: "warn", ms: 5000 }); }
     else if (autoSaved) toast(`${slot.label} は前のまま。AUTO は保存済み`, { kind: "warn", ms: 5000 });
     else toast(`${slot.label} は前のまま。AUTO も保存できませんでした`, { kind: "warn", ms: 5000 });

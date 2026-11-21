@@ -115,6 +115,10 @@ assert.equal(played.filter(id => id === "arrival-sequence").length, 1);
 assert(played.indexOf("arrival-sequence") < played.indexOf("ch1_tournament_opening"), "arrival sequence precedes the opening");
 assert.deepEqual(saves[0].tournament.entryResources.flavorStock, {}, "entry does not grant private lemon");
 assert(!played.includes("remake_flavor_rescue") && !played.includes("remake_flavor_brought"), "morning does not branch on private stock");
+const chapterOneDialogues = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/remake_ch1.json", import.meta.url), "utf8")).dialogues;
+for (const id of ["remake_flavor_rescue", "remake_flavor_brought"]) {
+  assert(!chapterOneDialogues.some(scene => scene.dialogue_id === id), `${id} must stay out of the active chapter script`);
+}
 assert.equal(sessions[0].stamina, 52);
 assert.equal(entrant.tournament.voteAttempt.style, "sakurai", "試合を始める時の設定の方式で票の記録を始める");
 assert.equal(session.voteStyle, "sakurai", "桜井式の試合の一台には攻めの帯の印が付く");

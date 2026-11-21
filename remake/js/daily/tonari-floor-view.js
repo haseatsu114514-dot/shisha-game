@@ -11,6 +11,7 @@ import { showScreen, clearScreen, retire, toast } from "../core/ui.js";
 import { SE, playBgm, preloadBgm, requestedBgm } from "../core/audio.js";
 import { faceIconUrl } from "../core/data.js";
 import { buildVersioned } from "../core/asset-version.js";
+import { sideSlot, releaseSideSlot } from "../core/side-area.js";
 import {
   createFloorNight, floorTick, floorAct, floorTap, floorHint, floorResult, floorUrgency, floorWaitLeft,
   floorStayLeft, floorCoalLeft, floorTendDue, floorMaking, floorHand, floorShuffleLeft, floorTimeLeft, floorStage, floorBill, floorFeverLevel,
@@ -204,11 +205,13 @@ export function runTonariFloor({
     const cam = el("div.tf-cam", {}, [room, spotsBox]);
     const stageBox = el("div.tf-stage", {}, [cam]);
 
-    // 上の帯: 左に仕込み中の一台（同時に仕込める枠）、まん中に残り時間、右に店の売上
-    const makingList = el("div.tf-making-list");
-    // 順番待ちの台数は、器の印の隅の小さな数（＋N）。枠の外へはみ出す札にしない（文字の上に文字を重ねない。TFL45）
-    const makingMore = el("i.tf-making-more", { hidden: true });
-    const making = el("div.tf-making", { dataset: test("making") }, [el("small", {}, [glyph("cook"), el("span.tf-sr", { text: "仕込み中" }), makingMore]), makingList]);
+    // 上の帯は、触らない情報だけを小さく（2026-11-20 オーナー「UIシンプルにしたい。タイマーのサイズとか余計な情報入れない感じ。
+    // タップしやすいサイズ感はいるから、触らないとこと、うまいことUIを組んで」・TFL49）。左に仕込み中、画面のまん中に残り時間と売上、右に休止
+    // （2026-11-20 オーナー「中央に制限時間とか置いて欲しい」・TFL50）
+    // 仕込み中: 器の印と、同時に仕込める枠の数だけ丸（満ちていく進み）。順番待ちの台数は「＋N」。どの卓の何かは、卓の札と読み上げに出す
+    const makingPips = el("span.tf-making-pips", { "aria-hidden": true }, Array.from({ length: floorSlots }, () => el("i", { dataset: { on: "false" } })));
+    const makingMore = el("i.tf-making-more", { hidden: true, "aria-hidden": true });
+    const making = el("div.tf-making", { role: "img", "aria-label": "仕込み中: なし", dataset: test("making") }, [glyph("cook"), makingPips, makingMore]);
     const clockText = el("b", { text: "0:00", dataset: test("time-left") });
     const clockBar = el("i");
     const salesText = el("strong", { text: yen(0), dataset: test("sales") });
@@ -218,34 +221,29 @@ export function runTonariFloor({
       [outlookFill, ...RANKS.filter((r) => r.min > 0).map((r) => el("b", { style: { left: `${r.min}%` }, dataset: { rank: r.id } }))]);
     const top = el("header.tf-top", {}, [
       making,
-      el("div.tf-clock", {}, [el("small", {}, [glyph("clock"), el("span.tf-sr", { text: "残り時間" })]), clockText, el("span.tf-clock-bar", {}, [clockBar])]),
-      el("div.tf-sales", {}, [el("small", {}, [glyph("coin"), el("span.tf-sr", { text: "店の売上" })]), el("span.tf-sales-main", {}, [salesText, outlookBar])]),
+      el("div.tf-top-mid", {}, [
+        el("div.tf-clock", {}, [el("small", {}, [glyph("clock"), el("span.tf-sr", { text: "残り時間" })]), clockText, el("span.tf-clock-bar", {}, [clockBar])]), // 残り時間は小さく
+        el("div.tf-sales", {}, [el("small", {}, [glyph("coin"), el("span.tf-sr", { text: "店の売上" })]), el("span.tf-sales-main", {}, [salesText, outlookBar])]),
+      ]),
       el("button.tf-pause-button", { type: "button", "aria-label": "休止", dataset: test("pause"), onclick: () => openPause() }, [glyph("pause")]),
     ]);
     // 右の列: ミックスの一覧（原作の、控えの列にあたる）。押すと、いちばん急ぎの注文待ちの卓へそのまま出す。全部は並ばないので、シャッフルで入れ替える
     const handList = el("div.tf-preset-list");
-    // 上の行: 出す先の卓の番号（色は、その客の気分）と、シャッフル。一行に並べる（小さい画面でも、5つの札が上下の帯に被らない）
-    const targetChip = el("b.tf-target", { dataset: { ...test("target"), on: "false" } });
+    // 出す先の卓は、店内の卓の札の点線の枠と、列の縁の色（その客の気分）で示す（TFL52 で列の上の番号の丸は無くし、空いた分を一覧に回した）
     // シャッフルは入れ替えに時間がかかる（その間はミックスを出せない）。かかる秒数を、ボタンの中に出す
     const shuffleCost = `${seconds(floorShuffleTime)}秒`;
-    const shuffleFace = () => [el("span.tf-shuffle-main", {}, [glyph("shuffle"), el("span", { text: "シャッフル" })]), el("small.tf-shuffle-cost", {}, [glyph("clock"), el("span", { text: shuffleCost })])];
+    // 押すと、この「N秒」がそのまま秒読みになる（2026-11-20 オーナー「一回押すとその文字が4秒カウントになる感じで」・TFL50）
+    const shuffleFace = () => [el("span.tf-shuffle-main", {}, [glyph("shuffle"), el("span", { text: "シャッフル" })]), el("small.tf-shuffle-cost", {}, [glyph("clock"), el("span", { text: shuffleCost, dataset: test("shuffle-count") })])];
     const shuffleButton = el("button.tf-shuffle", { type: "button", "aria-label": `シャッフル（${shuffleCost}かかる）`, dataset: test("shuffle-side"), onclick: () => doShuffle() }, shuffleFace());
     // 入れ替えの最中に、一覧の上へ掛ける札（進みの棒つき）
     const busyBar = el("i");
     const busyCover = el("div.tf-presets-busy", { "aria-hidden": true, dataset: test("shuffle-busy") }, [glyph("shuffle"), el("b", { text: "入れ替え中" }), el("span.tf-bar", {}, [busyBar])]);
-    // 右の列は、上の帯の下から画面の下まで。上にシャッフル、まん中にミックスの一覧、下にフィーバー（あとで足す）
+    // 右の列は、画面の上の端から下の端まで。上にミックスの一覧、下にボタンの段（シャッフルとフィーバー。フィーバーはあとで足す）（TFL52）
+    const actions = el("div.tf-actions", {}, [shuffleButton]);
     const side = el("aside.tf-presets", { "aria-label": "ミックスの一覧とフィーバー", dataset: { ...test("presets"), busy: "false" } }, [
-      el("div.tf-presets-head", {}, [targetChip, shuffleButton]), el("div.tf-preset-box", {}, [handList, busyCover]),
+      el("div.tf-preset-box", {}, [handList, busyCover]), actions,
     ]);
-    // 下の帯: 選んでいる卓（番号・客・気分か出している一台・ご利用）／出来事の行とはじめの心の声／フィーバーのゲージ
-    const dockNo = el("b.tf-dock-no"), dockWho = el("span.tf-dock-who"), dockName = el("b"), dockSub = el("small");
-    const dockBill = el("strong", { dataset: test("dock-bill") }), dockEmpty = el("p.tf-dock-empty");
-    const dock = el("aside.tf-dock", { "aria-label": "選んでいる卓の様子", dataset: { ...test("dock"), on: "false" } }, [
-      dockNo, dockWho,
-      el("div.tf-dock-main", {}, [dockName, dockSub]),
-      el("div.tf-dock-bill", {}, [el("small", {}, [glyph("coin"), el("span.tf-sr", { text: "ご利用" })]), dockBill]),
-      dockEmpty,
-    ]);
+    // 下の帯は、出来事の行とはじめの心の声だけ（押すと、心の声が指す卓へ）。選んでいる卓のドックは無くした（卓の札と同じ情報のため。TFL49）
     const logLines = el("div.tf-log", { "aria-hidden": true, dataset: test("log") });
     const hintText = el("p", { dataset: test("advice") });
     const hajimeFace = faceIconUrl("hajime");
@@ -254,15 +252,15 @@ export function runTonariFloor({
       el("span.tf-advice", {}, [hajimeFace ? el("img", { src: hajimeFace, alt: "はじめ", draggable: false }) : null, hintText]),
     ]);
     const feverLevels = el("span.tf-fever-levels", { "aria-hidden": true }, [1, 2, 3].map((n) => el("i", { dataset: { n } }, [el("i")])));
-    // フィーバーのボタンとゲージは、右の列の下に置く（下の帯は、卓のドックと出来事の行だけにして広く使う。
-    // 2026-11-20 オーナー「フィーバーボタンやゲージとか一部のボタンをサイドバーに移動したり、スペースを活用して欲しい」）
+    // フィーバーのボタンとゲージは、右の列のボタンの段（シャッフルの下）に置く（2026-11-20 オーナー「フィーバーボタンやゲージとか一部のボタンを
+    // サイドバーに移動したり、スペースを活用して欲しい」・TFL41／「右のサイドバーにボタンとして設置したい」・TFL52）。一行の名前と、その下の細いゲージ
     const feverLabel = el("b", { text: "フィーバー" }), feverLv = el("i.tf-bonus-lv");
     const bonusButton = el("button.tf-bonus", { type: "button", dataset: test("bonus"), onclick: () => useFever() }, [
-      el("span.tf-bonus-head", {}, [el("span.tf-bonus-lamp", {}, [glyph("lamp")]), feverLabel]),
-      el("span.tf-bonus-gauge", {}, [feverLevels, feverLv]),
+      el("span.tf-bonus-head", {}, [el("span.tf-bonus-lamp", {}, [glyph("lamp")]), feverLabel, feverLv]),
+      el("span.tf-bonus-gauge", {}, [feverLevels]),
     ]);
-    side.append(bonusButton);
-    const bottom = el("footer.tf-bottom", {}, [dock, ticker]);
+    actions.append(bonusButton);
+    const bottom = el("footer.tf-bottom", {}, [ticker]);
     const layer = el("div.tf-layer");
     const banner = el("div.tf-banner", { "aria-hidden": true });
     const cutinBand = el("div.tf-cutin", { "aria-hidden": true });
@@ -296,6 +294,8 @@ export function runTonariFloor({
       document.removeEventListener("visibilitychange", onVisibility);
       host.removeEventListener("keydown", onKey);
       if (floorTest.api?.host === host) floorTest.api = null;
+      document.removeEventListener("sidepadchange", placeActions);
+      if (shuffleButton.parentElement !== actions) releaseSideSlot("floor");
       retire(host);
       // 営業の画面のままなら片付ける（本編のHUDが戻る）。LOAD などで別の画面に替わっていれば触らない。
       if (mount) host.remove();
@@ -310,7 +310,25 @@ export function runTonariFloor({
       host.dataset.mode = next;
       const blocked = next !== "live";
       for (const node of [spotsBox, top, side, ticker]) node.inert = blocked;
+      placeActions();
     }
+    // シャッフルとフィーバーのボタンは、親指ボタンの出る端末（横に余白のあるスマホ）では、画面外の右（会話の SKIP・次へ の所）に置く
+    // （2026-11-20 オーナー「フィーバーとかシャッフルボタンは画面外の右側の、普段はオートとかスキップとかあるような画面外UIにボタンとして置いて」・TFL54）。
+    // 余白の無い端末（PC・16:9）では、右の列の下（ボタンの段）のまま。置き場所が変わってもボタンは同じ物なので、表示の更新はそのまま効く
+    function placeActions() {
+      if (!active) return;
+      const slot = host.isConnected ? sideSlot("floor", host) : null;
+      if (slot) {
+        if (bonusButton.parentElement !== slot) slot.replaceChildren(bonusButton, shuffleButton); // 親指にいちばん近い下の端に、よく押すシャッフル
+        slot.dataset.mode = mode;
+        slot.inert = mode !== "live";
+      } else if (shuffleButton.parentElement !== actions) {
+        releaseSideSlot("floor");
+        actions.replaceChildren(shuffleButton, bonusButton);
+      }
+      host.dataset.gutter = String(!!slot);
+    }
+    document.addEventListener("sidepadchange", placeActions);
     // ---- 時計（営業の時間。止まっている間も、画面の動きは CSS が進める） ----
     function clock() {
       if (!alive()) return cancel();
@@ -563,22 +581,21 @@ export function runTonariFloor({
 
     function syncMaking() {
       const list = floorMaking(state);
+      const active = list.slice(0, floorSlots);
+      [...makingPips.children].forEach((pip, i) => {
+        const m = active[i];
+        pip.dataset.on = String(!!m);
+        pip.style.setProperty("--p", m ? `${Math.round((1 - m.left / m.total) * 100)}%` : "0%");
+      });
       const key = list.map((m) => `${m.tableId}/${m.active}`).join(",");
-      if (makingList.dataset.key !== key) {
-        makingList.dataset.key = key;
-        const rows = list.slice(0, floorSlots).map((m) => el("div.tf-making-row", { dataset: { table: m.tableId } }, [
-          el("b", { text: String(m.tableId) }), attrBadge(m.mix), el("span", { text: m.label }), el("i.tf-bar", {}, [el("i")]),
-        ]));
-        while (rows.length < floorSlots) rows.push(el("div.tf-making-row.empty", {}, [el("span.tf-sr", { text: "空き" })]));
-        makingList.replaceChildren(...rows);
-        const waiting = Math.max(0, list.length - floorSlots);
-        makingMore.hidden = !waiting;
-        makingMore.replaceChildren(...(waiting ? [el("span.tf-sr", { text: "待ち" }), `＋${waiting}`, el("span.tf-sr", { text: "台" })] : []));
-      }
-      for (const m of list.slice(0, floorSlots)) {
-        const bar = makingList.querySelector(`[data-table="${m.tableId}"] .tf-bar i`);
-        if (bar) bar.style.width = `${Math.round((1 - m.left / m.total) * 100)}%`;
-      }
+      if (making.dataset.key === key) return;
+      making.dataset.key = key;
+      const waiting = Math.max(0, list.length - floorSlots);
+      makingMore.hidden = !waiting;
+      makingMore.textContent = waiting ? `＋${waiting}` : "";
+      making.dataset.busy = String(active.length);
+      making.setAttribute("aria-label", list.length
+        ? `仕込み中: ${active.map((m) => `${m.tableId}卓 ${m.label}`).join("、")}${waiting ? `。順番待ち ${waiting}台` : ""}` : "仕込み中: なし");
     }
     // ミックスを出す先: 選んでいる卓が注文待ちならその卓、でなければいちばん急ぎの注文待ちの卓
     function targetTable() {
@@ -593,9 +610,8 @@ export function runTonariFloor({
       const key = `${state.hand.join(",")}/${wish || ""}/${target?.id || ""}`;
       if (handList.dataset.key !== key) {
         handList.dataset.key = key;
-        targetChip.textContent = target ? String(target.id) : "";
-        targetChip.dataset.on = String(!!target);
-        targetChip.setAttribute("aria-label", target ? `${target.id}卓（${WISH[wish].label}の気分）へ出す` : "");
+        side.dataset.target = target ? String(target.id) : "";
+        side.setAttribute("aria-label", target ? `ミックスの一覧（押すと${target.id}卓・${WISH[wish].label}の気分へ出す）とフィーバー` : "ミックスの一覧とフィーバー");
         side.dataset.wish = wish || "";
         side.style.setProperty("--c", wish ? WISH[wish].color : "transparent");
         handList.replaceChildren(...hand.map((mix, i) => el("button.tf-preset", {
@@ -611,39 +627,16 @@ export function runTonariFloor({
       busyBar.style.width = `${Math.round((1 - wait / floorShuffleTime) * 100)}%`;
       shuffleButton.disabled = wait > 0;
       shuffleButton.dataset.wait = String(wait > 0);
+      const count = wait > 0 ? `${seconds(wait)}秒` : shuffleCost;
+      const countText = shuffleButton.querySelector('[data-test="tonari-floor-shuffle-count"]');
+      if (countText.textContent !== count) countText.textContent = count;
       // 合う一台が並んでいない時は、シャッフルを光らせる
       shuffleButton.dataset.call = String(!!target && wait === 0 && hand.every((mix) => mix.rating === "none"));
     }
-    function syncDock() {
-      const table = state.tables[selected - 1];
-      const guest = table.guestId ? state.guests[table.guestId] : null;
-      const key = `${selected}/${guest?.id || table.phase}`;
-      if (dock.dataset.key !== key) {
-        dock.dataset.key = key;
-        dock.dataset.on = String(!!guest);
-        dockNo.textContent = `${selected}卓`;
-        dockWho.replaceChildren(guest ? artOf(guest) : "");
-        dockName.textContent = guest ? guest.name : "";
-        dockSub.dataset.key = "";
-        if (!guest) dockSub.replaceChildren();
-        dockEmpty.textContent = guest ? "" : table.phase === "cool" ? "片付け中" : "空席";
-      }
-      if (!guest) return;
-      // 名前の下: 注文を聞くまでは客の気分、出したあとは一台（属性の印と名前）
-      const subKey = table.mix || guest.order.wish;
-      if (dockSub.dataset.key !== subKey) {
-        dockSub.dataset.key = subKey;
-        dockSub.replaceChildren(...(table.mix ? [attrBadge(table.mix), el("span", { text: mixName(table.mix) })] : [wishChip(guest.order.wish)]));
-      }
-      const bill = yen(floorBill(state, selected)?.total || 0);
-      if (dockBill.textContent !== bill) dockBill.textContent = bill;
-    }
-
     function sync() {
       state.tables.forEach((table, i) => syncSpot(refs.spots[i], table));
       syncMaking();
       syncHand();
-      syncDock();
       clockText.textContent = floorTimeLeft(state);
       clockBar.style.width = `${Math.max(0, 100 - (state.t / state.length) * 100).toFixed(1)}%`;
       host.dataset.late = String(state.length - state.t <= 60); // 残り30秒で時計を赤くする
@@ -683,6 +676,7 @@ export function runTonariFloor({
       const feverOn = state.feverLeft > 0;
       const level = floorFeverLevel(state);
       host.dataset.fever = feverOn ? "on" : level ? "ready" : "";
+      bonusButton.dataset.fever = host.dataset.fever; // 画面外の右に置いた時の見た目用（host の外なので、ボタン自身に持たせる）
       bonusButton.disabled = feverOn || !level || !state.tables.some((x) => x.phase === "enjoy");
       bonusButton.dataset.level = String(feverOn ? state.feverLevel : level);
       feverLevels.querySelectorAll(":scope > i").forEach((seg, i) => {
@@ -707,7 +701,6 @@ export function runTonariFloor({
         spot.root.dataset.selected = String(spot.root.dataset.id === String(id));
         spot.seat.tabIndex = spot.root.dataset.id === String(id) ? 0 : -1;
       }
-      syncDock();
       syncHand(); // ミックスを出す先（選んでいる注文待ちの卓）が変わる
       if (focus) refs.spots[id - 1].seat.focus({ preventScroll: true });
     }
@@ -1020,7 +1013,7 @@ export function runTonariFloor({
       const record = topSales > 0 && result.sales > topSales; // これまでの売上の最高を超えた
       const drinks = result.groups.reduce((sum, row) => sum + Math.round((row.drink || 0) / PRICE.drink), 0);
       const items = [
-        ["お迎えした組", `${result.served}／${result.came}組`],
+        ["お迎えしたお客さん", `${result.served}／${result.came}人`],
         ["チャージ", yen(result.items.charge)],
         ["シーシャ", yen(result.items.shisha)],
         [`ドリンク（${drinks}杯）`, yen(result.items.drink)],
@@ -1043,14 +1036,14 @@ export function runTonariFloor({
             el("div.tf-slip-side", {}, [
               el("div.tf-stamp", { dataset: { ...test("rank"), rank: result.rank } }, [el("i", { "aria-hidden": true }), el("b", { text: result.stamp })]),
               el("p.tf-slip-fans", { dataset: { ...test("fans"), down: String(result.fans < 0) }, text: `店のファン ${result.fans >= 0 ? "＋" : "−"}${Math.abs(result.fans)}人（合計 ${Math.max(0, fans + result.fans)}人）` }),
-              el("p.tf-slip-stages", {}, MOODS.filter((m) => result.stages[m.id]).map((m) => el("span", { style: { "--c": m.color }, text: `${m.label} ${result.stages[m.id]}組` }))),
+              el("p.tf-slip-stages", {}, MOODS.filter((m) => result.stages[m.id]).map((m) => el("span", { style: { "--c": m.color }, text: `${m.label} ${result.stages[m.id]}人` }))),
               el("h3", { text: "好評だったミックス" }),
               el("ul.tf-slip-mixes", {}, result.mixes.length ? result.mixes.map((m, i) => el("li", {}, [
                 el("span", {}, [el("b", { text: String(i + 1) }), attrBadge(m.id), el("span.tf-mix-text", {}, [el("span.tf-slip-mix", {}, mixSpans(m.id)), recipeNode(m.id)])]), el("small", { text: `${floorStage(m.avg).label}・${m.n}台` }),
               ])) : [el("li", {}, [el("small", { text: "提供できた一台がありませんでした" })])]),
             ]),
           ]),
-          el("p.tf-slip-counts", { text: `いい調整 ${result.counts.tend}回・いいケア ${result.counts.care}回・追加ドリンク ${result.counts.drink}杯・おかわり ${result.counts.extend}組・フィーバー ${result.fevers}回${result.streak >= 2 ? `・ぴったり ${result.streak}連続` : ""}` }),
+          el("p.tf-slip-counts", { text: `いい調整 ${result.counts.tend}回・いいケア ${result.counts.care}回・追加ドリンク ${result.counts.drink}杯・おかわり ${result.counts.extend}人・フィーバー ${result.fevers}回${result.streak >= 2 ? `・ぴったり ${result.streak}連続` : ""}` }),
           // 大入りの夜は、紙吹雪で祝う（文字は足さない）
           result.rank === "S" ? el("div.tf-confetti", { "aria-hidden": true }, Array.from({ length: 22 }, (_, i) => el("i", { style: { "--i": String(i) } }))) : null,
           el("p.tf-slip-sumi", {}, [

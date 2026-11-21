@@ -149,6 +149,7 @@
           "face": "",
           "text": "神崎さんは生年月日を指で押さえて確かめ、両手で丁寧に返してくれた。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch2_kanzaki_id_check"},
         {
           "speaker": "kumicho",
           "face": "normal",
@@ -174,6 +175,7 @@
           "face": "normal",
           "text": "煙を出す店は、二十歳前の客を座らせられねえ。どこの若えのでも、決まりは決まりでさ"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",

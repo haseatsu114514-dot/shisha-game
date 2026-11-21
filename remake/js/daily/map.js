@@ -109,6 +109,7 @@ const backgroundOf = (region) => typeof region?.background === "function" ? regi
  * @param opts.guide    { pin, title, text, free } 1日目の案内・配達用。その1か所だけ選べるようにして光らせる。
  *                      free（表示する一言）があれば、その行き先は代金がかからない
  * @param opts.onShown  マップと解禁の余韻を出し終えたとき（LIME の初回案内など）
+ * @param opts.onStationDeparture 運賃の確定後、出発時に読む章固有の場面
  * @param opts.onBeforeGo (spot) => boolean | Promise<boolean>。false ならマップを開いたまま移動を中止する。
  * 戻り値: スポットID。interruptMap(v) で外から閉じたときは v
  */
@@ -191,7 +192,7 @@ function fitMapCrop(pins) {
   stage.style.setProperty("--map-crop", `${Math.round(crop)}px`);
 }
 
-function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = "", guide = null, onShown = null, onBeforeGo = null, visitBlock = null, regions = null, regionId = null, onRegionChange = null }, initialUrl, initialBackdrop) {
+function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = "", guide = null, onShown = null, onBeforeGo = null, visitBlock = null, regions = null, regionId = null, onRegionChange = null, onStationDeparture = null }, initialUrl, initialBackdrop) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
@@ -431,6 +432,10 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
               region = item; selected = null; root.dataset.region = item.id;
               onRegionChange?.(item.id);
               SE.select(); updateHud();
+              if (onStationDeparture && !walk) {
+                await onStationDeparture(trip);
+                if (!stationActive()) return;
+              }
               const arrive = () => stationArrival(trip, async () => {
                 if (!stationActive()) return;
                 await setMapBackground();
@@ -444,15 +449,19 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
               if (!stationActive()) return;
             } finally { moving = false; }
           };
+        const shortOnFare = state.money < trip.required;
         const confirm = el("button.mi-go", { type: "button", text: `${yen(trip.fare)}で移動する`,
-          dataset: { test: "station-confirm" }, disabled: state.money < trip.required, onclick: depart(false) });
+          dataset: { test: "station-confirm" }, disabled: shortOnFare, onclick: depart(false) });
         const walkHome = trip.walkable() ? el("button.mi-go", { type: "button", text: "歩いて帰る（かなり疲れる）",
           dataset: { test: "station-walk" }, onclick: depart(true) }) : null;
-        info.replaceChildren(el("div.mi-banner", { text: walkHome ? "帰り道" : "乗車の確認" }),
+        const fareNote = state.chapter === 2 && trip.required > trip.fare
+          ? ` ／ 帰りも${yen(trip.required - trip.fare)}必要${shortOnFare ? "（往復分が不足）" : ""}`
+          : shortOnFare ? " ／ 帰りの切符代も残す必要があります" : "";
+        info.replaceChildren(...[el("div.mi-banner", { text: walkHome ? "帰り道" : "乗車の確認" }),
           el("p.mi-desc", { text: `${region.label} → ${item.label} ／ 片道 ${yen(trip.fare)}` }),
-          el("p", { text: `所持金 ${yen(state.money)}${state.money < trip.required ? " ／ 帰りの切符代も残す必要があります" : ""}` }),
+          el("p", { text: `所持金 ${yen(state.money)}${fareNote}` }),
           walkHome ? el("p.mi-desc", { text: "電車に乗れないので、歩いて帰れる。お金は使わず、かなり疲れる。時間は進まない。" }) : null,
-          walkHome || confirm, el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
+          walkHome || confirm, el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel })].filter(Boolean));
       };
       const openStationAfterFailure = () => {
         info.replaceChildren(el("p.mi-desc", { text: "移動できませんでした。運賃は使っていません。駅から選び直してください。" }),
