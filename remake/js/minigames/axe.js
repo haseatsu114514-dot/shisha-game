@@ -300,7 +300,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     frontHands = svg("g", { class: "axe-hand-front-img", opacity: 0, "clip-path": `url(#${frontId})` });
     const poses = {
       ready: { href: READY_HAND_ART, outline: READY_HAND_SILHOUETTE, sourceWidth: 1671, x: 30, y: 44, width: 850, height: 520 },
-      windup: { href: ART.laneAim, outline: WINDUP_HAND_SILHOUETTE, sourceWidth: 1670, x: 94, y: 44, width: 709, height: 608 },
+      windup: { href: ART.laneAim, outline: WINDUP_HAND_SILHOUETTE, sourceWidth: 1670, x: 108, y: 44, width: 689, height: 608 },
     };
     for (const [pose, { href, outline, sourceWidth, ...frame }] of Object.entries(poses)) {
       const id = handId + "-" + pose, clipId = id + "-outline";

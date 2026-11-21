@@ -125,3 +125,53 @@ Chromiumで、第1章6日目夜の斧投げBarの初回レッスンから横の�
 ## Draft PR
 
 [Draft PR #4124](https://github.com/haseatsu114514-dot/shisha-game/pull/4124)（`codex/axe-one-hand`）。
+
+## フェーズ3 — サイズ感と一人称目線（2026-11-21）
+
+オーナー指摘（19:47〜19:49）に合わせ、通常構えと引き構えの2枚をCodex内蔵画像編集で作り直した。同じ右腕、濃色の袖、木の柄、鋼の斧頭、琥珀色の照明でそろえた。斧頭は背と上縁が見える向きにし、刃は的の方向へ向けた。通常構えは低く前に出し、引き構えは斧頭を右上に上げた。
+
+編集前にフェーズ2の両原画と生成記録を読み、作業フォルダ内で307,200バイトのランダムデータをコピーした。コピー元とコピー先は `cmp` とSHA-256で一致した。
+
+- [通常原画](../../../asset_sources/axe-one-hand-20261121/bg_axe_lane_aim_ready.png) は1671×941。[共有PNG](../../../assets/backgrounds/bg_axe_lane_aim_ready.png) と[表示用WebP](../../../remake/img/backgrounds/bg_axe_lane_aim_ready.webp) は1920×1080。WebPは283,398バイト。
+- [引き構え原画](../../../asset_sources/axe-one-hand-20261121/bg_axe_lane_aim_windup.png) は1670×941。[共有PNG](../../../assets/backgrounds/bg_axe_lane_aim.png) と[表示用WebP](../../../remake/img/backgrounds/bg_axe_lane_aim.webp) は1920×1080。WebPは297,996バイト。
+- 共有PNGはLanczosで変換し、既存の `build_images.encode` でWebPを生成した。新しい手元画像に合わせて `HAND_SILHOUETTE` と各画像の表示座標を更新し、背景台帳の平均輝度とLFSポインタのGit blobを合わせた。
+
+<details>
+<summary>内蔵画像編集への指示</summary>
+
+通常構えはフェーズ2の通常・引き構え原画を参照した。
+
+> Use case: precise-object-edit. Asset: pose A, a static first-person background bitmap for an original recreational target-lane video game. Image 1 is the exact room/camera/pose-A edit target. Image 2 shows the alternate pose and the same adult's skin, dark charcoal sleeve and warm lighting. Preserve the room, perspective, 16:9 composition, whole round target, red line, wood boards, mesh, and amber spotlights exactly. Redraw only the one right forearm, hand and axe. It is seen directly with the player's own eyes, looking along the room. The axe is held low and out in front on the right; the long wooden haft recedes from the foreground grip toward the head and target, with distinct perspective foreshortening. The head sits to the right of the board around x=62–66%, y=33–46%, large in physical scale and visually substantial dark forged steel. Critical: rotate the axe around the wooden shaft so the broad flat cheeks are edge-on to the eye. The camera sees the blunt flat rectangular poll at the near end and a narrow upper ridge of steel receding into depth toward the wooden target. The thin cutting bit is at the distant end aimed away at the board, mostly occluded by the near end in projection. Do not show the broad crescent profile, flat side or a bright curved silver cutting edge facing camera. The head should look like the rear of an axe, with the haft seated through its eye and no extra protrusions. Grip the very bottom of the solid hardwood handle, fingers naturally wrapping one end, a small rounded heel just below the little finger. Give the adult forearm real girth and foreshorten its length, charcoal sleeve entering from bottom-right. Warm light on knuckles, cuff and rear of steel matching the reference. Keep the fist at approximately x=68%, y=56%, its entire silhouette at x<73% down to y=67%, then let the forearm broaden toward the bottom-right; leave the board fully visible. Maintain the visual style of the input. No added lettering, graphics, GUI, people, logos or a second hand.
+
+引き構えの初回版はフェーズ2の引き構え原画と今回の通常構えを参照した。計測で斧頭の一部がフリック操作面にかかった。
+
+> Use case: precise-object-edit. Asset: pose B, the alternate static hand bitmap for a recreational target-lane video game. Image 1 is the precise room and raised-pose edit target; image 2 is approved pose A supplying the exact enlarged long-handled axe, adult hand, skin, charcoal sleeve and amber light. Keep the same exact fixed eye-level camera, complete round board and single amber-lit lane with red floor line. Redraw only the one right arm and held axe, now drawn up near the player's own right shoulder. View from the player's own eyes. The substantial dark forged steel head is up at the right, around x=72–78%, y=13–30%. Its rectangular blunt rear poll and narrow upper ridge are the surfaces the eye sees. The ridge recedes diagonally away and slightly up-left toward the lane to a thin cutting edge at the far end; the edge aims forward into the range. Treat the broad cheeks as nearly edge-on, so the apparent shape of the head is narrow in the width of the screen but has strong depth, with no side-profile crescent or silver curved stripe aimed at the camera. Match the specific rear-facing poll, worn warm highlights, realistic long hardwood haft and dark steel of image 2. Angle that shaft up-right from the grasp to the head as the hand comes in closer to the right shoulder. Preserve a natural right-hand grip at the exact base with the rounded heel just beyond the little finger. The adult fist around x=68%, y=40% and closer, visibly thicker adult forearm feel foreshortened from this eye position. Keep the right outline of the fist and forearm at x<72% between y=37% and y=65% for game controls; below y=66% the sleeve can flare and connect to the viewer off the bottom-right. Stay clear of the target and leave an unobstructed right margin beside the hand. Match the render style of the references. Exact wide 16:9, no UI, text, extra people, second hand, or changes to the room.
+
+引き構えの採用版では初回版と今回の通常構えを参照し、斧頭と柄を手首に近い縦の位置に収めた。
+
+> Use case: precise-object-edit. Revise only the foreground hand, sleeve and axe of image 1, a static still for a recreational target-lane game. Use image 2 to match the exact same adult's hand, long hardwood handle, edge-on forged steel axe, charcoal sleeve and amber lighting. Keep the image 1 camera and detailed room fixed, same 16:9 wide framing and unblocked round board. This is the raised pose near the viewer's right shoulder. Bring the axe head screen-left so it is vertically aligned over the right wrist, with the head between x=66% and 73%, tip at y=12–16%, and the lower rim of the steel above y=32%. Show the blunt back and upper ridge from the player's eyes, with the cutting edge far away and foreshortened into depth. Conceal the broad flat cheeks as before. Change the haft angle in screen space so it rises steeply from the hand with only slight rightward lean, while angled away from the camera in depth. A long shaft with the same wood and width as image 2. Keep the dark charcoal sleeve and a natural sturdy adult hand. Close all fingers around the end of the haft, with the little finger directly against the slight flare and a short heel below it, as in image 2. The grip should be centered near x=68%, y=47%, spanning x=63.5–73% at most. Composition constraint for UI: keep all foreground subject pixels to the left of x=73.5% above y=64%; keep the subject entirely to the right of x=63% at all heights. The sleeve continues into and off the lower-right edge, with its rightward flare mostly below y=69%. Keep the wrist and forearm naturally broad and foreshortened. Preserve the current warm painted game-art appearance. No UI or lettering.
+
+</details>
+
+### 画面と操作の計測
+
+Chromiumで第1章6日目夜の斧投げBarの初回レッスンを再生した。1280×720はマウス、844×390と740×320は横持ちタッチのエミュレーションを使った。既存手順に従い、画面座標へ投影したSVG輪郭と操作ボタンの交差をアルファ値128以上の画素で数えた。的の板と得点欄の矩形でも交差0を確認した。縦照準の横線の右端から引き構えの輪郭までは、1280×720で1.25、844×390で1.03、740×320で0.17 CSS pxの余白があった。
+
+| ビューポート | 横の照準 | 縦の照準 | フリック待ち | フリック保持中 | 操作面までの最短距離（通常／引き） |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1280×720 | 0 px² | 0 px² | 0 px² | 0 px² | 7.91／3.50 CSS px |
+| 844×390 | 0 px² | 0 px² | 0 px² | 0 px² | 4.01／1.75 CSS px |
+| 740×320 | 0 px² | 0 px² | 0 px² | 0 px² | 3.38／1.50 CSS px |
+
+| ビューポート | 通常構え | 引き構え |
+| --- | --- | --- |
+| 1280×720 | [入力前](pose-ready-1280x720.png) | [ドラッグ中](pose-windup-1280x720.png) |
+| 844×390 | [入力前](pose-ready-844x390.png) | [タッチ操作中](pose-windup-844x390.png) |
+
+### テストと保存
+
+- `node --test remake/test/axe_*.mjs` は105件成功。
+- `axe_tap_pull.mjs` の3サイズの `aim-controls-clear-of-hand` は全件成功。保持・解除・タッチ取り消し後のポーズと、ボタン中央への入力到達を確認した。本編の計測から続けてフリックで投げられた。
+- 途中の単体プレビュー計測ではChromium停止と待ち時間切れが発生した。本編の計測と対象ブラウザ回帰は最終配置で成功した。
+- 背景台帳はGitの登録内容から135枚の照合に成功。既存の `bg_smoke_lab.png` の寸法警告が1件あった。
+- 画像更新コミットは [`fae94771c4`](https://github.com/haseatsu114514-dot/shisha-game/commit/fae94771c47ab58239e7e6ebc6ef657ffbe3b2e7)。計測と最終配置を含む `codex/axe-one-hand` のpush後のheadは [Draft PR #4124のコミット一覧](https://github.com/haseatsu114514-dot/shisha-game/pull/4124/commits) に記録する。
