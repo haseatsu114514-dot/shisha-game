@@ -109,7 +109,7 @@ gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s
  const kuraudo=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch2_rei.json',import.meta.url))).dialogues;
  for(const [dialogues,id,flavor,legacy] of [[kumicho,'ch2_kumicho','dragonfruit','ch2_kumicho_second'],[kuraudo,'ch2_kuraudo','rose','ch2_kuraudo_first']]){
   const fourth=dialogues.find(d=>d.dialogue_id===id+'_fourth');
-  const currentFlavor = id === 'ch2_rei' ? 'cassis' : flavor;
+  const currentFlavor = id === 'ch2_kuraudo' ? 'cassis' : flavor;
   assert.deepEqual(fourth.metadata.flavor_lesson,{[currentFlavor]:1});
   const fresh=core.newGame();
   learnFlavorStory(fresh,fourth,DB.flavorById);
