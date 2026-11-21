@@ -3650,6 +3650,10 @@
     "with-detour": "trpg_shark_debrief_with_detour"
   },
   "campaign": {
+    "aftermath": {
+      "true": "港に三人の航路図が貼られた。翌朝の船も、背びれを避けて入港した。",
+      "bad": "港に二つ目の背びれの知らせが届き、「夜凪」の明日の予約はすべて取り消された。"
+    },
     "seats": [
       {
         "actor": "samechan",

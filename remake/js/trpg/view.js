@@ -161,7 +161,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   let frames = [], cursor = 0, afterTalk = null, afterFocus = null, busy = false, disposed = false, choiceField = null;
   let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false, searchTimer = null;
   // 演出（TRF08〜10）: 転生は1卓に一度（しおりから再開した卓は、もう物語の中）。場面の題の札は場面ごとに一度。
-  let incarnated = resumed, staging = null, endingRevealed = false, sceneFx = null, clueFx = null, clubGained = null;
+  let incarnated = resumed, staging = null, endingRevealed = false, campaignEnding = null, sceneFx = null, clueFx = null, clubGained = null;
   const effects = [], carded = new Set();
   /** 重ねた演出を覚えておく（卓を片付ける時にまとめて止める）。終わったものは外す。 */
   function stageFx(...list) {
@@ -771,8 +771,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     } else {
       const result = session.result(), ending = scenario.endings[result.ending];
       scene.append(el("div.trpg-ending", [
-        el("div.trpg-kicker", { text: presentation.endingKicker }), el("h2", { text: ending.title, dataset: { test: "trpg-ending-title" } }),
-        el("p", { text: ending.line }),
+        el("div.trpg-kicker", { text: campaignEnding?.label || presentation.endingKicker, dataset: { test: "trpg-ending-kicker" } }), el("h2", { text: ending.title, dataset: { test: "trpg-ending-title" } }),
+        el("p", { text: campaignEnding?.line || ending.line, dataset: { test: "trpg-ending-line" } }),
         replayStatus ? el("p.trpg-modal-intro", { role: "status", text: replayStatus, dataset: { test: "trpg-replay-saved-status" } }) : null,
         el("p.trpg-ending-heat", { dataset: { test: "trpg-ending-heat", tier: String(heatTier(result.heat.value)) } },
           [el("strong", { text: result.heat.night }), el("span", { text: "盛り上がり " + result.heat.value + "/" + result.heat.max }),
@@ -1367,6 +1367,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
             // 本編の卓は、今夜の卓で部の実績がどれだけ増えたかを返す（TRF13）。試遊の卓は何も返さない。
             const completion = onComplete(result);
             clubGained = completion?.club || null;
+            campaignEnding = completion?.outcome || null;
             renderBody();
             if (completion?.chooseReplay) askReplaySave(completion.chooseReplay);
           });

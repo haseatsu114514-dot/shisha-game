@@ -3749,6 +3749,10 @@
     "with-detour": "trpg_mist_kingdom_debrief_with_detour"
   },
   "campaign": {
+    "aftermath": {
+      "true": "霧の外で、ミナの望んだ一台を囲んだ。王女の笑い声を、みんなが覚えていた。",
+      "bad": "王国の消えた朝、ミナの望みをもう一度たずねようにも、霧に道はなかった。"
+    },
     "seats": [
       {
         "actor": "sai",
