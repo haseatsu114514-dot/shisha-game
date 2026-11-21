@@ -62,6 +62,10 @@ export function liftFor(power) {
 export const BOARD = { left: -23.125 * INCH, right: 23.125 * INCH, top: -24 * INCH, bottom: 24 * INCH };
 /** Gauges sweep this far from the centre, so misses into plain wood exist. */
 export const AIM_RANGE = 1.2;
+/** 横流れの縁マグネット（2026-11-22 オーナー要望のアシスト）: drift を持つ投げだけ、着地点が板の左右の外へ
+ *  margin 以内ではみ出す時は、外れ幅 × pull だけ内側へ引き戻して刺さる側に倒す。得点圏への引き寄せはしない
+ *  （得点は刃の触れた所で決まる正本を守る）。drift の無い投げ（ゲージ・相手）には一切触らない。 */
+export const DRIFT_MAGNET = { margin: .18, pull: .35 };
 /** strain: how much a rotation outside the green band shakes the arm (power off the band by .12, the stick window's edge, sways 1.48x).
  *  Visible on the white blade marker while the power is live (2026-11-13 指摘7: 「帯内＝揺れが収まる」). */
 export const SWAY = { min: .03, max: .11, fatigueStart: 3000, fatigueFull: 16000, focusDuration: 1200, focusScale: .18, strain: 4 };
@@ -156,8 +160,8 @@ export function canCall(id, history, throws) {
  * Resolve one throw. history is this thrower's own resolved shots in the game.
  * options: { division, throws, suddenDeath } — sudden death forces the called target and ignores closures and call limits.
  */
-export function resolveThrow({ x, y, power, called = null }, history = [], options = {}) {
-  finite(x, y, power);
+export function resolveThrow({ x, y, power, called = null, drift = 0 }, history = [], options = {}) {
+  finite(x, y, power, drift);
   const { division = "rec", throws = history.length + 1, suddenDeath = false } = options;
   if (!Object.hasOwn(DIVISIONS, division)) throw new RangeError("Unknown division");
   if (Math.abs(x) > AIM_RANGE || Math.abs(y) > AIM_RANGE || power < 0 || power > 1)
@@ -165,7 +169,16 @@ export function resolveThrow({ x, y, power, called = null }, history = [], optio
   if (suddenDeath ? !KILLS.some(k => k.id === called) : called !== null && !canCall(called, history, throws))
     throw new RangeError("Unavailable Killshot call");
   const index = history.length, half = halfOf(index, throws);
-  const landing = { x, y: y + liftFor(power) };
+  // drift: 横方向の流れ（弾いた向きの傾きから来る横速度。axe-pull-model の tilt が源）。
+  // 刃は放した狙いの真っ直ぐ先から横へずれて刺さる。板の内外・得点はすべて着地点（landing）で判定する。
+  const landing = { x: x + drift, y: y + liftFor(power) };
+  // 縁マグネット: 横へ流れた投げが板の縁すれすれで落ちる時だけ、少し内側へ引き戻す（DRIFT_MAGNET）。
+  if (drift) {
+    if (landing.x > BOARD.right && landing.x - BOARD.right <= DRIFT_MAGNET.margin)
+      landing.x = BOARD.right - (landing.x - BOARD.right) * DRIFT_MAGNET.pull;
+    else if (landing.x < BOARD.left && BOARD.left - landing.x <= DRIFT_MAGNET.margin)
+      landing.x = BOARD.left + (BOARD.left - landing.x) * DRIFT_MAGNET.pull;
+  }
   const onBoard = landing.x >= BOARD.left && landing.x <= BOARD.right && landing.y >= BOARD.top && landing.y <= BOARD.bottom;
   const validPower = power >= POWER.stickMin && power <= POWER.stickMax;
   const stuck = validPower && onBoard;
@@ -174,18 +187,18 @@ export function resolveThrow({ x, y, power, called = null }, history = [], optio
   if (stuck) {
     if (called) {
       const target = KILLS.find(k => k.id === called);
-      distance = bladeDistance(x, landing.y, target.x, target.y);
+      distance = bladeDistance(landing.x, landing.y, target.x, target.y);
       score = distance <= target.inner + 1e-9 ? 8 : distance <= target.outer + 1e-9 ? 7 : 0;
       outcome = score ? "killshot" : "killshot-miss";
       if (score) zone = { kind: "kill", cluster: null };
     } else {
-      zone = scoreBlade(x, landing.y, { closed: closuresOf(history, index, throws, division), division });
+      zone = scoreBlade(landing.x, landing.y, { closed: closuresOf(history, index, throws, division), division });
       score = zone.score;
       outcome = zone.kind === "bull" ? "bull" : score ? "hit" : "miss";
       zone = { kind: zone.kind, cluster: zone.cluster };
     }
   } else outcome = onBoard ? "drop" : called ? "killshot-miss" : "miss";
-  return { aim: { x, y }, power, called, landing, rotation, stuck, score, outcome, zone, half, distance,
+  return { aim: { x, y }, power, called, drift, landing, rotation, stuck, score, outcome, zone, half, distance,
     dropReason: !onBoard ? "off-board" : stuck ? null : power < POWER.stickMin ? "weak" : "rotation" };
 }
 export const totalOf = throws => throws.reduce((sum, shot) => sum + shot.score, 0);

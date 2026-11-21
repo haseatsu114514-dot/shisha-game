@@ -4,16 +4,24 @@
   --axe-inset-r: max(28px, calc((env(safe-area-inset-right, 0px) - max(0px, (100dvw - 1280px * var(--k, 1)) / 2)) / var(--k, 1) + 14px));
   --axe-inset-t: max(14px, calc(env(safe-area-inset-top, 0px) / var(--k, 1) + 8px));
   --axe-inset-b: max(18px, calc(env(safe-area-inset-bottom, 0px) / var(--k, 1) + 8px));
-  --axe-flick-bottom: calc(var(--axe-inset-b) + 220px);
+  --axe-flick-bottom: calc(var(--axe-inset-b) + 32px);
   --axe-ink: #fff4df;
   --axe-brass: #ecc18a;
   --axe-blue: #bce9f5;
 }
+/* ？／✕は全ミニゲーム共通で右上へ（2026-11-21 オーナー指示で統一）。斧では得点ピルの上（ピルは inset-t+68px から）に収まる。 */
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header {
-  position: absolute; inset: var(--axe-inset-t) auto auto var(--axe-inset-l); display: flex; width: max-content; gap: 12px;
+  position: absolute; inset: var(--axe-inset-t) var(--axe-inset-r) auto auto; display: flex; width: max-content; gap: 12px;
   min-height: var(--help-hit); padding: 0; margin: 0; border: 0; background: none; box-shadow: none;
 }
 .axe-game.axe-first-person .axe-header .axe-help { margin: 0; }
+/* 一人称でも ？と✕の丸同士を寄せる（axe-throw.css の寄せを margin: 0 が消さないように）。 */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header .axe-close { margin-left: calc(var(--help-size) - var(--help-hit) - 6px); }
+
+/* 先読み済みの絵をレーン側と前景側で同時に切り替える。 */
+.axe-first-person .axe-hand-pose { opacity: 0; }
+.axe-first-person[data-hand-pose="ready"] .axe-hand-pose[data-pose="ready"],
+.axe-first-person[data-hand-pose="windup"] .axe-hand-pose[data-pose="windup"] { opacity: 1; }
 
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-panel {
   position: absolute; z-index: 7; top: calc(var(--axe-inset-t) + 91px); left: var(--axe-inset-l);
@@ -174,13 +182,18 @@
   padding: 0 4px 0 0; border: 0; border-radius: 0; box-shadow: none;
   background: none !important; touch-action: none; pointer-events: auto;
 }
-.axe-first-person .axe-flick-emblem { height: 100%; width: 130px; display: grid; justify-items: center; pointer-events: none; }
+.axe-first-person .axe-flick-emblem { height: 100%; width: 192px; display: grid; justify-items: center; pointer-events: none; }
+.axe-first-person .axe-flick-arrow { transform-box: fill-box; transform-origin: 50% 100%; }
+@media (prefers-reduced-motion: no-preference) {
+  .axe-first-person .axe-flick-arrow { animation: axe-arrow-stretch 1.7s ease-in-out infinite; }
+}
+@keyframes axe-arrow-stretch { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.09); } }
 .axe-first-person .axe-flick-arrows { height: 100%; width: 100%; overflow: visible; }
 .axe-first-person .axe-swipe-grip { transform: translateY(var(--axe-swipe-y, 0px)); }
 .axe-first-person:not([data-reduced-motion="true"]) .axe-pull-handle[data-demonstrate="true"] .axe-swipe-grip {
   animation: axe-swipe-demo 1.05s ease-in-out both;
 }
-@keyframes axe-swipe-demo { 0%, 20% { transform: none; } 70% { transform: translateY(-82px); } 100% { transform: none; } }
+@keyframes axe-swipe-demo { 0%, 20% { transform: none; } 70% { transform: translateY(-178px); } 100% { transform: none; } }
 .axe-first-person .axe-swipe-release { display: none; }
 .axe-first-person[data-phase="flight"][data-actor="player"]:not([data-reduced-motion="true"]) .axe-swipe-release {
   display: block; position: absolute; z-index: 5; pointer-events: none; right: calc(var(--axe-inset-r) + 52px);
