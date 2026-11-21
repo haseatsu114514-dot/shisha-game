@@ -155,7 +155,7 @@ for (const [,base,,rest] of cases) for (const suffix of revisits(rest)) {
 {
   const homeCalls = [...local.HOME_DAY_CALL_IDS];
   Object.assign(DB.dialogues, await readDialogues('ch4_home_calls', homeCalls));
-  assert.equal(homeCalls.length, 12);
+  assert.equal(homeCalls.length, 20);
   for (const { scene: id, from } of local.HOME_DAY_CALLS) {
     const scene = DB.dialogues[id];
     assert(scene?.lines?.length >= 10 && !scene.metadata && scene.lines.every(line => !line.type), `${id}: a full scene without rewards`);
@@ -178,10 +178,15 @@ for (const [,base,,rest] of cases) for (const suffix of revisits(rest)) {
   assert.equal(await rest(1), 'ch4_inn_rest_b', 'night rests stay with the rest rotation (Sumi owns the night calls)');
   assert(saveToSlot('suien_remake_slot1')); replace(loadFromSlot('suien_remake_slot1'));
   assert.equal(await rest(0), 'ch4_home_call_kumicho_coffee', 'Rio is in Dubai, so she does not call from home');
-  assert.equal(await rest(0), 'ch4_inn_rest_c', 'nobody left to call');
+  assert.equal(await rest(0), 'ch4_home_call_adam_bookmark', 'a second call can follow the first round');
+  assert.deepEqual(Object.keys(current.flags[local.HOME_DAY_CALL_FLAG]).sort(),
+    ['ch4_home_call_adam_apple', 'ch4_home_call_adam_bookmark', 'ch4_home_call_kumicho_coffee']);
+  assert.equal(await rest(0), 'ch4_inn_rest_c', 'both of Rio’s calls are skipped while she is in Dubai');
   assert.equal(current.flags[restKey], 3, 'calls do not advance the rest rotation');
-  assert.deepEqual(Object.keys(current.flags[local.HOME_DAY_CALL_FLAG]).sort(), ['ch4_home_call_adam_apple', 'ch4_home_call_kumicho_coffee']);
-  present = []; assert.equal(await rest(0), 'ch4_home_call_rio_scent', 'after Rio goes home... or never came, she can call');
+  present = [];
+  assert.equal(await rest(0), 'ch4_home_call_rio_scent', 'Rio can call when she is not in Dubai');
+  assert.equal(await rest(0), 'ch4_home_call_rio_delivery', 'Rio’s second call can be read once');
+  assert.equal(await rest(0), 'ch4_inn_rest_d', 'exhausted calls return to the rest rotation');
   assert.equal(current.money, 12345); assert.equal(rewards, 0, 'calls give no affinity or stats');
   // 中断・別の保存への切り替えでは、電話の記録も休む巡回も進めない
   replace(newState()); Object.assign(current, { chapter: 4, contacts: ['sumi', 'minto'] }); current.flags[restKey] = 1;
@@ -196,6 +201,8 @@ for (const [,base,,rest] of cases) for (const suffix of revisits(rest)) {
   assert.equal(at({}, { daytime: false }), null); assert.equal(at({}, { rested: 0 }), null);
   assert.equal(at({ chapter: 5 }), null); assert.equal(at({ phase: 'aftermath' }), null);
   assert.equal(at({}, { present: ['adam'] }), null); assert.equal(at({ contacts: [] }), null);
+  assert.equal(at({ contacts: ['volk'] }), 'ch4_home_call_volk_door');
+  assert.equal(at({ contacts: ['volk'] }, { present: ['volk'] }), null);
   assert.equal(local.recordHomeDayCall({ flags: {} }, 'ch4_inn_rest_b'), false, 'only home calls are recorded');
   present = [];
 }
