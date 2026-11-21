@@ -5086,6 +5086,16 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
   grid-row: 4; height: 56px !important; min-height: 0 !important; overflow: hidden !important;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-feedback .stamp { font-size: max(28px, calc(15px / var(--k, 1))) !important; white-space: nowrap; }
+/* 低い横持ちでは、読みやすい大きさのまま長い判定を2行に収める。 */
+@media (max-height: 360px) {
+  html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-feedback {
+    height: max(56px, calc(42px / var(--k, 1))) !important;
+  }
+  html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-feedback .stamp {
+    inline-size: max-content; max-inline-size: calc(100% - 8px);
+    line-height: 1.05; white-space: normal; text-align: center; text-wrap: balance;
+  }
+}
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-plan,
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-depth-hint {
   grid-row: 5; grid-column: 1; align-self: center; font-size: var(--ph-sub) !important; line-height: 1.36 !important; color: var(--ph-ink);
