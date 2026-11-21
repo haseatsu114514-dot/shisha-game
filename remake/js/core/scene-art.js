@@ -2,6 +2,11 @@
 import { DB, img } from "./data.js";
 import { state } from "./state.js";
 import { on } from "./bus.js";
+import { TOURNAMENT_VENUE_BG } from "./tournament-venues.js";
+
+const tournamentRigs = positions => positions.map(([x, y, h]) => ({
+  file: "shisha_c_station.png", x, y, h, ratio: 424 / 768,
+}));
 
 // 承認済みv3原画をそのまま使う。cropは透明な余白だけを表示から外す座標。
 // x/yは接地点、hは台本体の高さ。机の手前左と、その右側の床へ置く。
@@ -34,9 +39,12 @@ export const SCENE_PROPS = {
     { file: "shisha_hideaway.png", x: 1165, y: 520, h: 172, ratio: 368 / 768 },
   ],
   // 大会会場（#3282 B10・2026-11-13 に描き直した絵）: 4つの作業台の天板（y≈347）の中央へ重ねる。台の中心は x=274・509・765・1003。
-  "bg_tournament_stage.png": [274, 509, 765, 1003].map((x) => ({
-    file: "shisha_c_station.png", x, y: 347, h: 124, ratio: 424 / 768,
-  })),
+  [`${TOURNAMENT_VENUE_BG[1]}.png`]: tournamentRigs([274, 509, 765, 1003].map(x => [x, 347, 124])),
+  // 採用された各会場の天板に接地させ、奥の卓は遠近に合わせて小さくする（#3620）。
+  [`${TOURNAMENT_VENUE_BG[2]}.png`]: tournamentRigs([[366, 357, 116], [556, 357, 116], [754, 358, 116], [949, 358, 116]]),
+  [`${TOURNAMENT_VENUE_BG[3]}.png`]: tournamentRigs([[468, 391, 108], [691, 385, 91], [859, 381, 80], [995, 380, 71]]),
+  [`${TOURNAMENT_VENUE_BG[4]}.png`]: tournamentRigs([[294, 383, 101], [484, 388, 111], [699, 397, 123], [958, 405, 136]]),
+  [`${TOURNAMENT_VENUE_BG[5]}.png`]: tournamentRigs([[490, 381, 116], [793, 381, 116]]),
   "bg_fookah_showroom.png": [
     { file: "shisha_fookah.png", x: 300, y: 462, h: 230, ratio: 522 / 768 },
     { file: "shisha_fookah.png", x: 955, y: 468, h: 230, ratio: 522 / 768 },
