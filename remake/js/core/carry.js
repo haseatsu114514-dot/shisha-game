@@ -263,6 +263,15 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_prep_clinic", "progression"],
   ["_ch3_prep_farewell", "progression"],
   ["_ch3_preview_seen", "progression"],
+  // 第3章の来店後に届くLIMEの既読条件（#3097）。
+  ["_ch3_read_ch3_mashiro_play_1", "progression"],
+  ["_ch3_read_ch3_mashiro_play_2", "progression"],
+  ["_ch3_read_ch3_mukai_latte_cat", "progression"],
+  ["_ch3_read_ch3_mukai_no_hat", "progression"],
+  ["_ch3_read_ch3_saku_bakery", "progression"],
+  ["_ch3_read_ch3_saku_missed", "progression"],
+  ["_ch3_read_ch3_steve_two_timers", "progression"],
+  ["_ch3_read_ch3_tsumugi_slump", "progression"],
   ["_ch3_read_ch3_mashiro_glass_cloth", "progression"], // 布巾の場面（#3081）。LIMEの trigger_flag に字面で出る
   ["_ch3_read_ch3_saku_lime", "progression"],
   ["_ch3_read_ch3_saku_steve_notes", "progression"], // スティーブ×綾取（#3468 C案）。第4章のLIMEの trigger_flag に字面で出る
@@ -633,6 +642,10 @@ export const FLAG_EXACT_RULES = [
   ["_talk_seen_ch3_prep_rei_live", "person"], // クラウドのライブの夜（第3章の準備期間・RVE07）
   ["_talk_seen_ch3_prep_rio", "person"],
   ["_talk_seen_ch3_prep_tsumugi", "person"], // #3097 PR-I（上の3つと同じ）
+  // 第5章の来店後に届くLIMEの既読条件（#3097）。
+  ["_talk_seen_ch5_adam_shop", "person"],
+  ["_talk_seen_ch5_rei_shop", "person"],
+  ["_talk_seen_ch5_rio_naru_order", "person"],
   ["_tsumugi_contest_art_seen", "person"],
   ["_tsumugi_contest_draft_hands", "person"],
   ["_tsumugi_contest_draft_window", "person"],

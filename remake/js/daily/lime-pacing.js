@@ -13,7 +13,8 @@
 // 決まり:
 // 1. 朝は softCap 通まで（must が softCap を超えて重なった朝だけ hardCap 通まで）。仕事の連絡は通数に数えない。
 //    softCap 通届いた翌朝は、must のほかは afterBusyCap 通まで（にぎやかな朝と静かな朝が交互になる）。
-//    章の◯日目の連絡（lime_exchanged）だけは、その日を逃すと届かないので、静かな朝の番でも枠が空いていれば届く。
+//    ふだんの雑談が2朝続いたら、次の朝の雑談や期限のない近況は翌朝以降に回す。
+//    章の◯日目の連絡（lime_exchanged）は、期限内に枠が空いていれば静かな朝でも届く。
 // 2. ふだんの雑談は、同じ人から続けて届かない。間隔は仲の深さで決まる（gapDays）。知り合ったばかりの人ほど、用事のない連絡は少ない。
 // 3. 届く順は「待っている度合い」（urgency）: 会った後の続き → 間隔の倍以上待っている人の雑談 → 日付の連絡 → 間隔を過ぎた人の雑談。
 //    雑談どうしは、間隔に対していちばん長く連絡のない人から（特定の人に偏らず、いろんな人から届く）。
@@ -68,9 +69,17 @@ export function storyPaceClass(m) {
   return "ambient";
 }
 
+/** 配信済みのいつもの雑談か。セーブ済みの受信箱も、元のメッセージから判定できる。 */
+function isAmbientMessage(m) {
+  if (m.lover) return String(m.id).startsWith("_lover_morning_");
+  if (m.friend || m.casual || m.accept_event === "__hiyori_shop__") return true;
+  return !!m.trigger_condition && m.trigger_condition !== "tournament_day" && !m.origin_id && storyPaceClass(m) === "ambient";
+}
+
 /** 受信箱から、朝の配分に使う履歴をまとめる（仕事の連絡は数えない）。 */
 export function pacingHistory(inbox = state.inbox || [], day = state.day) {
   const lastBySender = new Map();
+  const recentAmbientDays = new Set();
   let lastAny = -Infinity, yesterday = 0, unread = 0;
   for (const item of inbox) {
     if (!item?.msg || isWorkInvite(item.msg)) continue;
@@ -79,9 +88,10 @@ export function pacingHistory(inbox = state.inbox || [], day = state.day) {
     if (at > (lastBySender.get(sender) ?? -Infinity)) lastBySender.set(sender, at);
     if (at > lastAny && at <= day) lastAny = at;
     if (at === day - 1) yesterday++;
+    if ((at === day - 1 || at === day - 2) && isAmbientMessage(item.msg)) recentAmbientDays.add(at);
     if (!item.read) unread++;
   }
-  return { lastBySender, lastAny, yesterday, unread };
+  return { lastBySender, lastAny, yesterday, restFromSmallTalk: recentAmbientDays.size === 2, unread };
 }
 
 /** その人のふだんの雑談が、間隔に対してどれだけ待っているか（1以上で届けられる。大きいほど先）。 */
@@ -96,4 +106,7 @@ export function overdue(sender, history, day = state.day) {
 export const urgency = (cls, wait = 0) => cls === "react" ? 3 : cls === "timed" ? 2 : Math.min(2.9, wait);
 
 /** 今朝、must のほかに届けてよい通数（決まり1）。 */
-export const dayCap = (history) => history.yesterday >= LIME_PACING.softCap ? LIME_PACING.afterBusyCap : LIME_PACING.softCap;
+export function dayCap(history, kind) {
+  if (history.restFromSmallTalk && kind !== "react") return 0;
+  return history.yesterday >= LIME_PACING.softCap ? LIME_PACING.afterBusyCap : LIME_PACING.softCap;
+}

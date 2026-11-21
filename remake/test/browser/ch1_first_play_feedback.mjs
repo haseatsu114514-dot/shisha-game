@@ -72,10 +72,17 @@ await suite("ch1-first-play-feedback", async check => {
     for (let i = 0; i < 12; i++) await punch(false, 0);
     assert.equal(await stamp.innerText(), "RING COMPLETE");
     await id(page, "hole-done").click();
+    if (!hold) {
+      await id(page, "step-next").waitFor();
+      const comment = id(page, "craft-feedback");
+      const initial = await comment.evaluate(note => note.querySelector('.audience-page[data-on="true"]')?.textContent ?? note.textContent);
+      assert.match(initial, /穴が浅い.*少し長く押せ/, "The first visible page gives Sumi's correction");
+    }
     await id(page, "step-details").click();
     assert.match(await page.locator(".rc-lines").innerText(), new RegExp(`EXCELLENT ${hold ? 1 : 0}・GOOD 0`));
     assert.match(await page.locator(".rc-lines").innerText(), new RegExp(`浅い穴：${hold ? 23 : 24}回`));
-  });
+    if (!hold) assert.match(await page.locator(".rc-lines li").first().innerText(), /短いタップで穴が浅くなった。少し長く押してから離そう/);
+  }, hold ? {} : touchOptions);
 
   await check("touch-read-and-reply", async page => {
     await startDaily(page);

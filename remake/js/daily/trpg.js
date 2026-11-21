@@ -136,7 +136,7 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
       await arrivals.playArrival(venue, { read, save: owner, ctx: { idle } });
     }
     if (abort.signal.aborted || !currentVisit() || !host.isConnected) return { completed: false };
-    controller = mountTrpgCampaign(host, { getState: () => state, save, nightBusy, signal: abort.signal, resources: library,
+    controller = mountTrpgCampaign(host, { getState: () => state, save, nightBusy, signal: abort.signal, resources: library, campaignEndings: true,
       greeted: arrivals.arrivalGreeted(venue, owner) });
     return await controller.finished;
   } finally {

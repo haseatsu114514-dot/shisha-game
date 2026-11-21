@@ -80,6 +80,12 @@ function validate(rel) {
       }
     }
   }
+  if (catalog.scenarios.some(book => book.id === s.id) || s.campaign.aftermath) {
+    for (const tier of ["true", "bad"]) {
+      const line = s.campaign.aftermath?.[tier];
+      need(typeof line === "string" && line.trim() && width(line) <= 48, "campaign.aftermath." + tier + " は全角48字以内の後日談");
+    }
+  }
   // Campaign seats.
   const cs = s.campaign.seats;
   need(cs.find(x => x.actor === gm)?.required === true && cs.find(x => x.actor === "hajime")?.required === true, "campaign.seats: GMとはじめは required");

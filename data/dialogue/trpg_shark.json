@@ -523,15 +523,15 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "わしがGM、お主たちが店番じゃ",
+          "text": "わしが場面を話す。お主たちは店番として動くのじゃ",
           "castIntro": true,
-          "smallTableText": "わしがGM、お主が店番じゃ。空いた役はわしが兼ねるぞ"
+          "smallTableText": "わしが場面を話す。お主は店番じゃ。空いた役はわしが兼ねるぞ"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "その約束があると、逆に何が起こるか気になるな"
+          "text": "全員帰れるって先に聞くと、逆に途中が怖いな"
         },
         {
           "speaker": "hiyori",
@@ -554,10 +554,10 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……予告編、もう見たいです",
+          "text": "……閉店の札、サメにも見せておきます？",
           "variants": {
             "regularb": {
-              "text": "……予告編、もう見たいです",
+              "text": "閉店の札、サメにも見せておきます？",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -567,7 +567,7 @@
           "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
-          "text": "海上ラウンジ「夜凪」。岸の灯りは、まだ遠い"
+          "text": "海上ラウンジ「夜凪」。岸までは、三百メートル"
         },
         {
           "speaker": "samechan",
@@ -597,13 +597,13 @@
           "speaker": "hajime",
           "role": "{pc}／物語",
           "face": "normal",
-          "text": "……閉店してから来てくれない？"
+          "text": "すみません、ラストオーダーは終わってます！"
         },
         {
           "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "サメは営業時間を知らぬのじゃ"
+          "text": "あやつ、入口の札を読まぬのじゃ"
         },
         {
           "speaker": "samechan",
@@ -616,14 +616,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "続編より先に、今ここで助かる方法を考えたいな……",
+          "text": "……続編は後。まず、あの背びれは何を追ってるの？",
           "variants": {
             "adam": {
-              "text": "続編の主役は、生き残った者だけだ。まずはこの一夜を越えよう",
+              "text": "続編はまだ早い。まずはあの背びれが何を追うかだ",
               "face": "normal"
             },
             "regulara": {
-              "text": "続編より先に、今ここで助かる方法を考えたいな……",
+              "text": "続編は後にして、まず背びれが何を追うか見ましょう",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -977,13 +977,13 @@
           "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "使えるのは、この店にあるものだけじゃぞ"
+          "text": "店の道具を一つ、救助艇までの逃げ道を一つ選ぶのじゃ"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "見立ては決まった。道具と逃げ道を組み合わせよう"
+          "text": "サメが何を追うか。さっきの読みを作戦にしよう"
         },
         {
           "speaker": "hiyori",
@@ -1043,7 +1043,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "みんな、合図を待って……"
+          "text": "ここからは全員で動くんだ。最後の作戦を決めよう"
         }
       ]
     },
@@ -1060,7 +1060,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "映画だと見落とすけど、店の準備が一番えらいな"
+          "text": "閉店作業に救命胴衣が入ってる店、俺は初めてだ"
         },
         {
           "speaker": "hiyori",
@@ -1947,14 +1947,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……閉店の曲まで小さくするのね。静かな夜でよかった",
+          "text": "……私、艇に乗るまで息を止めてたみたい",
           "variants": {
             "adam": {
-              "text": "終幕は静かに。この海には、拍手より似合う音がある",
+              "text": "やれやれ。拍手の代わりに、今は波の音を聞こう",
               "face": "normal"
             },
             "regulara": {
-              "text": "……閉店の曲まで小さくするのね。静かな夜でよかった",
+              "text": "艇に着くまで、息を止めてたみたいです",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1964,7 +1964,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "静かに逃げるサメ映画、新しいな"
+          "text": "……今だけ、少しそのまま聞いてたいな"
         }
       ]
     },
@@ -3058,19 +3058,19 @@
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
           "voice": "korochan",
-          "text": "ふはは、停電と浸水。B級映画の定番である"
+          "text": "停電、浸水。これで予告に使える場面が二つである"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "コロちゃん、楽しそうに言わないで！"
+          "text": "予告の前に、床がもう海なんだけど！"
         },
         {
           "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "さあ、どうする？ 手を選ぶのじゃ"
+          "text": "水が入ってきたぞ。まずはこの場をしのぐのじゃ"
         }
       ]
     },
@@ -3650,6 +3650,10 @@
     "with-detour": "trpg_shark_debrief_with_detour"
   },
   "campaign": {
+    "aftermath": {
+      "true": "港に三人の航路図が貼られた。翌朝の船も、背びれを避けて入港した。",
+      "bad": "港に二つ目の背びれの知らせが届き、「夜凪」の明日の予約はすべて取り消された。"
+    },
     "seats": [
       {
         "actor": "samechan",
