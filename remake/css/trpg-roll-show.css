@@ -345,7 +345,7 @@ html:root .trpg-root .trpg-roll-show[data-tone="fumble"][data-phase="verdict"] .
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-logo[hidden] { display: none; }
 /* スキル発動のカットイン（TRF38 で作り直し）: 傾けない水平の帯。帯の中に「顔＋文字の塊」を1つ、上下左右の真ん中に置く。
    文字の塊は左揃え: 1行目＝SKILL! のロゴと「○○の切り札」、2行目＝技の名前、3行目＝効き目の札。 */
-html:root .trpg-root .trpg-roll-show .trpg-rs-skill { position: absolute; left: 0; right: 0; top: 230px; height: 240px; z-index: 6; opacity: 0; pointer-events: none; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill { position: absolute; left: 0; right: 0; top: 232px; height: 280px; z-index: 6; opacity: 0; pointer-events: none; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-band {
   position: absolute; inset: 0; transform-origin: 50% 50%;
   background: linear-gradient(90deg, transparent 0, #4a2a00f2 10%, #a86a00f2 50%, #4a2a00f2 90%, transparent 100%);
@@ -362,11 +362,11 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-skill-face {
 }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill[data-kind="reroll"] .trpg-rs-skill-face { box-shadow: 0 0 0 6px #8ff0d8, 0 0 0 10px #031a16, 0 10px 20px #000c; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-face img { position: absolute; max-width: none; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding-bottom: 22px; } /* 塊を少し上へ: 効き目の札の下に帯の縁までの余白 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; } /* 帯を高くして、上のSKILLのロゴ・下の効き目の札とも帯の縁に付かない */
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-kicker { display: flex; align-items: center; gap: 12px; height: 72px; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-logo { display: block; height: 72px; width: auto; filter: drop-shadow(0 3px 6px #000a); }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-kicker > small { font-size: 24px; font-weight: 900; letter-spacing: .08em; color: #fff; -webkit-text-stroke: 6px #1a0f04; paint-order: stroke fill; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy > strong { display: block; font-size: 76px; line-height: 1; margin-bottom: .14em; } /* 文字の厚みと影（下へ約.2em）が下の札にかからない間 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy > strong { display: block; font-size: 76px; line-height: 1; margin-bottom: .22em; } /* 文字の厚みと影（下へ約.2em）が下の札にかからない間 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-word.skill { --fill: linear-gradient(180deg, #ffffff 0%, #fff6d0 40%, #ffd76a 58%, #fff3c4 100%); --edge: #1a0f04; --depth: #7a4a00; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill[data-kind="reroll"] .trpg-rs-word.skill { --fill: linear-gradient(180deg, #ffffff 0%, #e4fff8 40%, #6ff0d0 58%, #e0fff7 100%); --edge: #031a16; --depth: #0b4a40; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy > em { padding: 3px 16px; border-radius: 6px; font-size: 24px; font-weight: 900; color: #1a0f04; background: #fff3c4; box-shadow: 0 0 0 3px #1a0f04; }
