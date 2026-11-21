@@ -6,6 +6,7 @@ from urllib.request import urlretrieve
 
 from fontTools.ttLib import TTFont
 from fontTools import subset
+from fontTools.varLib.instancer import instantiateVariableFont
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = "https://raw.githubusercontent.com/google/fonts/main/ofl/notosansjp/"
@@ -43,6 +44,10 @@ def main():
         sub = subset.Subsetter(options=options)
         sub.populate(text=text + "「」？？？")
         sub.subset(font)
+        # 可変フォントのデフォルトインスタンスは Thin(100) で、iOS Safari が
+        # デフォルトインスタンスのまま描くと名前などが細くなる。軸 100–900 は
+        # 残しつつデフォルトだけ 700 に寄せる（部分インスタンス化）。
+        instantiateVariableFont(font, {"wght": (100, 700, 900)})
         font.flavor = "woff2"
         font.save(DEST / "NotoSansJP-Intro.woff2")
     urlretrieve(SOURCE + "OFL.txt", DEST / "OFL-NotoSansJP.txt")
