@@ -887,7 +887,8 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns:not(.with-options) > [data-test="pull-serve"] { grid-column: 2 !important; width: auto !important; min-width: 172px !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns > [data-test="pull-serve"] .btn-label { font-size: var(--ph-text) !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns > [data-test="pull-serve"]:has(.pull-serve-status:not([hidden])) {
-  flex-direction: column !important; gap: 4px !important;
+  /* 44pxの操作枠内に「提供する」と残りの口数を収める。枠絵の太さは border-image-width が決める。 */
+  flex-direction: column !important; gap: 4px !important; border-width: 8px !important;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-serve-status { font-size: var(--ph-sub); }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns > [data-test="pull-serve"]:has(.pull-serve-status:not([hidden])):disabled {
