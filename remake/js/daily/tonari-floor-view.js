@@ -231,10 +231,22 @@ export function runTonariFloor({
     const handList = el("div.tf-preset-list");
     // 出す先の卓は、店内の卓の札の点線の枠と、列の縁の色（その客の気分）で示す（TFL52 で列の上の番号の丸は無くし、空いた分を一覧に回した）
     // シャッフルは入れ替えに時間がかかる（その間はミックスを出せない）。かかる秒数を、ボタンの中に出す
-    const shuffleCost = `${seconds(floorShuffleTime)}秒`;
-    // 押すと、この「N秒」がそのまま秒読みになる（2026-11-20 オーナー「一回押すとその文字が4秒カウントになる感じで」・TFL50）
-    const shuffleFace = () => [el("span.tf-shuffle-main", {}, [glyph("shuffle"), el("span", { text: "シャッフル" })]), el("small.tf-shuffle-cost", {}, [glyph("clock"), el("span", { text: shuffleCost, dataset: test("shuffle-count") })])];
-    const shuffleButton = el("button.tf-shuffle", { type: "button", "aria-label": `シャッフル（${shuffleCost}かかる）`, dataset: test("shuffle-side"), onclick: () => doShuffle() }, shuffleFace());
+    const shuffleSeconds = seconds(floorShuffleTime);
+    const shuffleCost = `${shuffleSeconds}秒`;
+    const countNumber = () => el("span", { text: String(shuffleSeconds) });
+    const sideCount = countNumber();
+    // 右の列では時計の横、親指ボタンの入れ替え中は輪の中に同じ秒数を出す。
+    const shuffleFace = (number) => [
+      el("span.tf-shuffle-main", {}, [
+        el("img.tf-shuffle-emblem", { src: artUrl(floorArtPath("emblem-shuffle")), alt: "", "aria-hidden": "true", draggable: "false" }),
+        el("span", { text: "シャッフル" }),
+      ]),
+      el("small.tf-shuffle-cost", {}, [
+        glyph("clock"),
+        el("span", { dataset: test("shuffle-count") }, [number, el("span.tf-shuffle-unit", { text: "秒" })]),
+      ]),
+    ];
+    const shuffleButton = el("button.tf-shuffle", { type: "button", "aria-label": `シャッフル（${shuffleCost}かかる）`, dataset: test("shuffle-side"), onclick: () => doShuffle() }, shuffleFace(sideCount));
     // 入れ替えの最中に、一覧の上へ掛ける札（進みの棒つき）
     const busyBar = el("i");
     const busyCover = el("div.tf-presets-busy", { "aria-hidden": true, dataset: test("shuffle-busy") }, [glyph("shuffle"), el("b", { text: "入れ替え中" }), el("span.tf-bar", {}, [busyBar])]);
@@ -624,12 +636,13 @@ export function runTonariFloor({
       const wait = floorShuffleLeft(state);
       side.dataset.busy = String(wait > 0);
       for (const row of handList.children) row.disabled = wait > 0;
-      busyBar.style.width = `${Math.round((1 - wait / floorShuffleTime) * 100)}%`;
+      const progress = `${Math.round((1 - wait / floorShuffleTime) * 100)}%`;
+      busyBar.style.width = progress;
+      shuffleButton.style.setProperty("--p", progress);
       shuffleButton.disabled = wait > 0;
       shuffleButton.dataset.wait = String(wait > 0);
-      const count = wait > 0 ? `${seconds(wait)}秒` : shuffleCost;
-      const countText = shuffleButton.querySelector('[data-test="tonari-floor-shuffle-count"]');
-      if (countText.textContent !== count) countText.textContent = count;
+      const count = String(wait > 0 ? seconds(wait) : shuffleSeconds);
+      if (sideCount.textContent !== count) sideCount.textContent = count;
       // 合う一台が並んでいない時は、シャッフルを光らせる
       shuffleButton.dataset.call = String(!!target && wait === 0 && hand.every((mix) => mix.rating === "none"));
     }
@@ -837,7 +850,7 @@ export function runTonariFloor({
         const wait = floorShuffleLeft(state) > 0;
         extra = el("button.tf-shuffle.tf-shuffle-big", { type: "button", disabled: wait, "aria-label": `シャッフル（${shuffleCost}かかる）`,
           dataset: { ...test("shuffle"), wait: String(wait), call: String(!wait && options.every((node) => node.dataset.rating === "none")) },
-          onclick: () => doShuffle() }, shuffleFace());
+          onclick: () => doShuffle() }, shuffleFace(countNumber()));
       } else {
         const call = CALLS[table.call.type];
         kindLabel = table.call.coal ? "炭の調整" : "ケア";

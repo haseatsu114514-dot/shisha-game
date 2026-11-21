@@ -122,6 +122,14 @@ export const HOME_CALLS = Object.freeze([
   { scene: "ch3_home_call_minto_frame", from: "minto" },
   { scene: "ch3_home_call_sumi_pudding", from: "sumi", night: true },
   { scene: "ch3_home_call_samechan_aquarium", from: "samechan" },
+  // VOL23: つむぎ・あげは・ひよりからも届く。店を持つ人たちの日常の電話も増やす。
+  { scene: "ch3_home_call_tsumugi_reserved_seat", from: "tsumugi" },
+  { scene: "ch3_home_call_ageha_curtain", from: "ageha" },
+  { scene: "ch3_home_call_hiyori_umbrella", from: "hiyori" },
+  { scene: "ch3_home_call_adam_menu_back", from: "adam" },
+  { scene: "ch3_home_call_rio_attachment", from: "rio" },
+  { scene: "ch3_home_call_kumicho_glasses", from: "kumicho" },
+  { scene: "ch3_home_call_rei_wrong_case", from: "rei", night: true },
 ].map(call => Object.freeze(call)));
 export const HOME_CALL_IDS = Object.freeze(HOME_CALLS.map(call => call.scene));
 /**

@@ -5106,11 +5106,18 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .craft-sense-band .effect-badge { margin-right: 0 !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .effect-line { display: none !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-feedback {
-  grid-row: 4; height: calc(var(--ph-text) * 2.7) !important; min-height: 0 !important; overflow: hidden !important;
+  grid-row: 4; height: 56px !important; min-height: 0 !important; overflow: hidden !important;
 }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-feedback .stamp {
-  width: 100%; font-size: var(--ph-text) !important; line-height: 1.2; text-align: center;
-  white-space: normal; text-wrap: balance;
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-feedback .stamp { font-size: max(28px, calc(15px / var(--k, 1))) !important; white-space: nowrap; }
+/* 低い横持ちでは、読みやすい大きさのまま長い判定を2行に収める。 */
+@media (max-height: 360px) {
+  html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-feedback {
+    height: max(56px, calc(42px / var(--k, 1))) !important;
+  }
+  html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-feedback .stamp {
+    inline-size: max-content; max-inline-size: calc(100% - 8px);
+    line-height: 1.05; white-space: normal; text-align: center; text-wrap: balance;
+  }
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-plan,
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-depth-hint {
@@ -5426,7 +5433,7 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
   width: auto !important; min-width: 0 !important; height: var(--ph-tap) !important; min-height: 0 !important; margin: 0 !important; padding: 0 10px !important; align-items: center !important; justify-content: center !important;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .care-coals .care-place .btn-label { font-size: var(--ph-text) !important; line-height: 1.1 !important; white-space: nowrap; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .care-coals > .care-coals-ask { margin: 2px 0 0 !important; font-size: max(28px, calc(15px / var(--k, 1))) !important; font-weight: 700; line-height: 1.2 !important; color: #fff; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .care-coals > .care-coals-ask { margin: 2px 0 0 !important; font-size: max(28px, calc(15px / var(--k, 1))) !important; font-weight: 700; line-height: 1.4 !important; color: #fff; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .care-coals > .care-coal-btns { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)) !important; grid-auto-flow: column; gap: 10px !important; min-height: 0; margin: 0 !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .care-coals .care-coal { width: auto !important; min-width: 0 !important; height: 100% !important; min-height: var(--ph-tap) !important; margin: 0 !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .care-coals .care-coal .btn-label { font-size: var(--ph-text) !important; line-height: 1.1 !important; white-space: nowrap; }

@@ -13,6 +13,41 @@ const t = id => `[data-test="${id}"]`;
 
 
 await suite('craft-phone-layout', async check => {
+  for (const [width, height] of [[844, 390], [844, 340], [740, 320]]) {
+    await check(`holes-feedback-${width}x${height}`, async page => {
+      await page.evaluate(async () => {
+        const { newGame } = await import('./js/core/state.js');
+        const { newSession, openBench } = await import('./js/craft/session.js');
+        const { runHoles } = await import('./js/craft/holes.js');
+        newGame();
+        const cs = newSession('rehearsal');
+        cs.foilOptIn = true;
+        const bench = openBench(cs, { steps: [['holes', 'FOIL']] });
+        await bench.ready;
+        runHoles(cs).catch(() => {});
+      });
+      assert.equal(await page.locator('.bench').getAttribute('data-craft-version'), 'sakurai');
+      await page.locator(t('hole-start')).tap();
+      const punch = page.locator(`${t('hole-punch')}:not([disabled])`);
+      await punch.waitFor({ timeout: 15000 });
+      await page.waitForFunction(() => !document.querySelector('.countdown'), null, { timeout: 15000 });
+      await punch.tap();
+      const verdict = page.locator(`${t('hole-feedback')} > .stamp`);
+      assert.equal(await verdict.textContent(), '浅い穴。大きく減点');
+      await page.waitForTimeout(200); // 判定が表示枠の中央に出そろうまで。
+      const visible = await verdict.evaluate(node => {
+        const frame = node.parentElement.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const ink = range.getBoundingClientRect();
+        return { left: ink.left - frame.left, right: frame.right - ink.right,
+          top: ink.top - frame.top, bottom: frame.bottom - ink.bottom };
+      });
+      assert(Object.values(visible).every(gap => gap >= -1),
+        `穴あけの判定文が表示枠に収まる: ${JSON.stringify(visible)}`);
+    }, { viewport: { width, height }, isMobile: true, hasTouch: true });
+  }
+
   for (const [width, height, grown] of CASES) await check(`${width}x${height}${grown ? '-grown' : ''}`, async page => {
     const settle = (ms = 450) => page.waitForTimeout(ms); // 工程の入りの動き（0.22秒）が済むまで
     const clean = async label => { await settle(); assert.deepEqual(await page.evaluate(audit), [], `${label} (${width}x${height}${grown ? '・育成済み' : ''})`); };
@@ -118,16 +153,6 @@ await suite('craft-phone-layout', async check => {
     await page.locator(`${t('hole-punch')}:not([disabled])`).waitFor({ timeout: 15000 });
     await page.waitForFunction(() => !document.querySelector('.countdown'), null, { timeout: 15000 });
     await clean('穴あけ: 刺す');
-    await page.locator(t('hole-punch')).tap();
-    const stamp = page.locator(`${t('hole-feedback')} .stamp`);
-    await stamp.waitFor();
-    assert.match(await stamp.textContent(), /浅い穴。大きく減点/);
-    assert(await stamp.evaluate(node => {
-      const range = document.createRange();
-      range.selectNodeContents(node);
-      const text = range.getBoundingClientRect(), frame = node.parentElement.getBoundingClientRect();
-      return text.left >= frame.left && text.right <= frame.right;
-    }), '短押しの判定を先頭から末尾まで横に切らない');
     if (grown) {
       const side = await page.evaluate(() => {
         const box = s => document.querySelector(s)?.getBoundingClientRect(), punch = box('[data-test="hole-punch"]'), hint = box('[data-test="hole-depth-hint"]'), badge = box('.hr-side > .effect-badge');

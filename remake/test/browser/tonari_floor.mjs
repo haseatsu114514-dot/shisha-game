@@ -264,9 +264,20 @@ await suite("tonari-floor", async (check) => {
       const wishColor = await page.evaluate((id) => { const probe = Object.assign(document.createElement("i"), { style: `color:${C.floorData.WISHES.find((w) => w.id === id).color}` }); document.body.append(probe); const c = getComputedStyle(probe).color; probe.remove(); return c; }, first[0].main);
       assert(badge.main >= 16 && badge.sub < badge.main * 0.7, JSON.stringify(badge));
       assert.equal(badge.color, wishColor);
-      // シャッフルは、金のボタン（印と名前）
-      assert.deepEqual(await page.locator(t("shuffle-side")).evaluate((n) => [n.querySelector(".tf-shuffle-main > span:not(.tf-icon)").textContent, n.querySelector(".tf-shuffle-cost").textContent.trim(), !!n.querySelector("svg"), getComputedStyle(n).backgroundImage.includes("gradient")]),
-        ["シャッフル", "4秒", true, true]);
+      // シャッフルは金の横長ボタン。紋の画像と時計付きの「4秒」が載る。
+      await page.locator(`${t("shuffle-side")} .tf-shuffle-emblem`).evaluate((img) => img.decode());
+      const shuffleSkin = await page.locator(t("shuffle-side")).evaluate((n) => {
+        const emblem = n.querySelector("img.tf-shuffle-emblem");
+        return {
+          label: n.querySelector(".tf-shuffle-main > span").textContent,
+          cost: n.querySelector(".tf-shuffle-cost").textContent.trim(),
+          clock: !!n.querySelector(".tf-shuffle-cost svg"),
+          emblem: emblem?.naturalWidth === 160 && emblem.alt === "" && emblem.getAttribute("aria-hidden") === "true",
+          frame: getComputedStyle(n).borderImageSource,
+        };
+      });
+      assert.deepEqual([shuffleSkin.label, shuffleSkin.cost, shuffleSkin.clock, shuffleSkin.emblem], ["シャッフル", "4秒", true, true]);
+      assert.match(shuffleSkin.frame, /\/bar-shuffle\.webp/);
       assert.equal(await spot(1).getAttribute("data-target"), "true");
       assert.equal(await page.locator(t("screen")).getAttribute("data-ordering"), "true");
       // 画面の外へはみ出さない・押せる大きさ（実画素で40px以上）
@@ -384,6 +395,7 @@ await suite("tonari-floor", async (check) => {
       assert.match(await page.locator(t("shuffle-busy")).innerText(), /入れ替え中/);
       assert.equal(await page.locator(".tf-preset-list").evaluate((n) => getComputedStyle(n).visibility), "hidden", "入れ替えの最中は、ミックスを見せない");
       assert.equal(await page.locator(t("shuffle-side")).isDisabled(), true);
+      assert.match(await page.locator(t("shuffle-side")).evaluate((n) => getComputedStyle(n).borderImageSource), /\/bar-shuffle-off\.webp/);
       assert.equal(await lastLog(), "ミックスを入れ替える（4秒かかる）");
       // その間は、注文待ちの卓を押しても列は開かない（客は待っている）
       await table(1).click();
@@ -915,13 +927,24 @@ await suite("tonari-floor", async (check) => {
     });
     assert.deepEqual([place.gutter, place.inSlot, place.outside, place.order, place.big], ["true", [true, true], true, true, true], JSON.stringify(place));
     assert(place.listFill <= 12, `右の列は、ミックスの一覧だけで下まで使う: ${place.listFill}`);
-    // 余白のボタンも、そのまま押せる（シャッフルは「4秒」が秒読みになる）
-    await page.locator(t("shuffle-side")).click();
+    // 余白ではボタン全体に専用の絵を敷く。押したら紋の代わりに輪を出し、残り秒を表示する。
+    const shuffle = page.locator(t("shuffle-side"));
+    const skin = () => shuffle.evaluate((n) => getComputedStyle(n).backgroundImage);
+    assert.match(await skin(), /\/pad-shuffle\.webp/);
+    await shuffle.click();
     assert.equal(await page.evaluate(() => C.view.floorTest.api.state().shuffles), 1);
+    assert.match(await skin(), /\/pad-shuffle-off\.webp/);
+    assert.match(await shuffle.locator(".tf-shuffle-cost").evaluate((n) => getComputedStyle(n).backgroundImage), /\/wait-ring\.webp/);
+    assert.equal(await shuffle.locator(".tf-shuffle-emblem").isVisible(), false);
+    const progress = () => shuffle.evaluate((n) => n.style.getPropertyValue("--p"));
+    assert.equal(await progress(), "0%");
     await page.evaluate(() => C.view.floorTest.api.tick(2));
     assert.equal(await page.locator(t("shuffle-count")).textContent(), "3秒");
-    // 接客の画面の間は、余白のボタンも隠れる
+    assert.equal(await progress(), "25%");
     await page.evaluate(() => C.view.floorTest.api.tick(8));
+    assert.match(await skin(), /\/pad-shuffle\.webp/);
+    assert.equal(await shuffle.locator(".tf-shuffle-emblem").isVisible(), true);
+    // 接客の画面の間は、余白のボタンも隠れる
     const id = await page.evaluate(() => { const a = C.view.floorTest.api; for (let i = 0; i < 60 && !a.state().tables.some((x) => x.phase === "order"); i++) a.tick(1);
       return a.state().tables.find((x) => x.phase === "order")?.id; });
     assert(id, "注文待ちの卓がある");
