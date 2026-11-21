@@ -34,7 +34,7 @@ import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
 import { runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
   eveningRecord, EVENING_WINDOW } from "./ch3-story-wiring.js";
-import { loverMilestonesDue, readLoverMilestone, pendingLoverLime } from "./lover-entry.js";
+import { loverMilestonesDue, prepareLoverMilestones, readLoverMilestone, pendingLoverLime } from "./lover-entry.js";
 import { mashiroTimeOpen, spendMashiroTime } from "./mashiro-time.js";
 import { petitAfterDate } from "../daily/petit-shuraba.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
@@ -258,6 +258,7 @@ export async function runChapterThreeTokyo(io) {
     ...Object.entries(RIVAL_OUTING_FILES).map(([file, ids]) => readDialogues(file, ids).then(found => Object.assign(DB.dialogues, found))),
     loadMukaiShift(),
     refreshOptional(),
+    prepareLoverMilestones(["mashiro"]), // 交際済みの保存で地図のmukaiに節目の新着を出す
   ]);
   if (state !== owner) return;
   socialDefinitions = definitions;
@@ -317,7 +318,7 @@ async function meetTokyoVisitor({ plan, window, definitions }) {
   }, { consumed: ok => ok === true, exp: personExp(id) });
   if (!done || state !== owner) return false;
   save();
-  if (kind === "date" && loverMilestonesDue([id]).length) await readLoverMilestone(id);
+  if (kind === "date") await readLoverMilestone(id);
   return state === owner;
 }
 
@@ -414,7 +415,10 @@ async function settleEvening(io) {
   }
   state.flags._ch3_evening = eveningRecord(result);
   save();
-  if (result.kind === "date") for (const id of result.participants) if (loverMilestonesDue([id]).length) await readLoverMilestone(id);
+  if (result.kind === "date") for (const id of result.participants) {
+    if (state !== owner) break;
+    await readLoverMilestone(id);
+  }
 }
 
 /** 今、奥の部屋で休むと届く地元からの電話（ch3-outing-progress.js の HOME_CALLS）。夜は本筋の場面・遠くからの電話の夜を避ける。 */
@@ -452,6 +456,7 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
   if (entry.region !== TOKYO) return null;
   const owner = state;
   await refreshOptional();
+  if (state !== owner) return unused;
   if (entry.place === "shop") { await openShop({ branch: "tokyo" }); return unused; }
   if (entry.place === "shrine") { await keepDailyHud(() => reflectAt("tokyo_shrine")); return unused; }
   if (entry.place === "club") {
@@ -535,6 +540,7 @@ async function readOptionalHere(io, scene, staminaGuard, owner, stamina = -10) {
   addStamina(stamina);
   earnSceneCompletion(scene.id, owner);
   await refreshOptional();
+  if (scene.file === "confession" && state === owner) await prepareLoverMilestones(["mashiro"]);
   return { used: true, exerted: true, exp: personExp(scene.host || OPTIONAL_HOST[optionalPlace(scene)]) };
 }
 
@@ -592,7 +598,10 @@ async function readRivalFinale(who, place, staminaGuard, owner) {
 async function visitMukai(io, staminaGuard, owner) {
   // 恋人のましろとは、節目が無い日も一日に一度いっしょに過ごせる（BLC03・chapters/mashiro-time.js）。
   // 締めくくりを友人として迎えた後は、♥5後の場面を「ましろちゃんと話す」で読む（#3693。5本の後は短い汎用）。
-  const bond = mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() }) ? "lover" : questionVisitDue("mashiro") ? "question"
+  const loverReady = await prepareLoverMilestones(["mashiro"]);
+  if (state !== owner) return unused;
+  if (!loverReady && owner.lovers?.includes("mashiro")) toast("恋人の会話を読み込めませんでした。もう一度お試しください");
+  const bond = loverReady && mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() }) ? "lover" : questionVisitDue("mashiro") ? "question"
     : finaleAtVisit("mashiro") ? "finale" : bondAfterNext(state, "mashiro") ? "after" : null;
   const scenes = optionalAt("mukai");
   const outings = outingsAt("mukai");

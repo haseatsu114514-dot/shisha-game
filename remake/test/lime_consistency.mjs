@@ -70,7 +70,8 @@ const values = {
   "chapter-features.js": { chapterFeatureEnabled },
   "hiyori-route.js": { hiyoriEventStatus: () => "disabled", hiyoriRoute: () => db.hiyori?.route || {}, hiyoriFinaleReady: () => false },
   "util.js": { el, clamp, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${Number(n).toLocaleString("ja-JP")}` },
-  "data.js": { DB: db, displayName: (id) => id, limeAccountName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
+  "data.js": { DB: db, loadLoverEvents: async () => db, loadConfessionDialogue: async () => db,
+    displayName: (id) => id, limeAccountName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
   "lime-icons.js": { customLimeIconUrl: () => null },
   "ui.js": { layers, toast: (text) => nudges.push(text) }, "state.js": { state, save: noop, STAT_JA, hasAffinity, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
   "stats.js": { setStoryAffinityCap() {}, affinityGateWaiting: () => false, gainStat: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
@@ -99,7 +100,8 @@ async function load(name) {
 }
 const statsModule = await load("production-stats.js"); await statsModule.evaluate();
 const actualStats = statsModule.namespace;
-Object.assign(values["stats.js"], { bond: actualStats.bond, privateBondScope: actualStats.privateBondScope, releaseLoveAffinity: actualStats.releaseLoveAffinity });
+Object.assign(values["stats.js"], { bond: actualStats.bond, prepareLoveAffinity: actualStats.prepareLoveAffinity,
+  privateBondScope: actualStats.privateBondScope, releaseLoveAffinity: actualStats.releaseLoveAffinity });
 const phoneModule = await load("phone.js"); await phoneModule.evaluate();
 const phone = phoneModule.namespace, romance = (await load("romance.js")).namespace;
 const clone = (v) => JSON.parse(JSON.stringify(v));

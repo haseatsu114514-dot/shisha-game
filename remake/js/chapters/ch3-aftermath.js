@@ -1,10 +1,10 @@
 import { guardCompletionCardInput } from "./completion-card-input.js";
 // 全国大会の勝利後。結果発表は大会ランナーが読了・保存し、ここでは再生しない。
-import { DB, bgUrl, displayName } from "../core/data.js";
+import { DB, bgUrl, displayName, loadConfessionDialogue } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, enterScene, modal, withChapterLoading, withSceneLoading } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, modal, toast, withChapterLoading, withSceneLoading } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { playBgm } from "../core/audio.js";
@@ -129,12 +129,6 @@ export async function runChapterThreeAftermath() {
       const dialogues = await withSceneLoading(readDialogues("ch3_main", IDS), "帰り道の場面を準備しています…");
       if (!live(owner)) return;
       Object.assign(DB.dialogues, Object.fromEntries(IDS.map(id => [id, dialogues[id]])));
-    }
-    if (!state.flags._ch3_cleared || agehaConfessionDue(state)) {
-      // 再会の後の帰り際（#1930）。返事の場面まで揃えてから入口を出す。
-      const confession = await withSceneLoading(readDialogues("confession", AGEHA_CONFESSION_SCENES), "帰り道の場面を準備しています…");
-      if (!live(owner)) return;
-      Object.assign(DB.dialogues, Object.fromEntries(AGEHA_CONFESSION_SCENES.map(id => [id, confession[id]])));
     }
     if (!live(owner)) return;
     if (!state.flags._ch3_cleared) await withSceneLoading(loadDetours(owner), "帰り道の場面を準備しています…");
@@ -293,6 +287,14 @@ function renderAgehaConfession(owner) {
   if (beginAgehaConfessionDay(state)) { syncTokyoVisits(state); save(); }
   card(owner, "ageha-confession", `DAY ${chapterDay(state)}・昼 ／ 帰り際`, "翌日、もう一度MELTY PUFFに寄った。帰り際、あげはに呼び止められた。", [
     button(owner, "続きを読む", "ageha-confession-continue", async () => {
+      try { await withSceneLoading(loadConfessionDialogue(), "帰り道の場面を準備しています…"); } catch {
+        if (live(owner)) toast("会話を読み込めませんでした。もう一度お試しください");
+        return;
+      }
+      if (!live(owner) || !agehaConfessionDue(state)) return;
+      for (const id of AGEHA_CONFESSION_SCENES) {
+        if (!DB.dialogues[id]?.lines?.length) throw new Error(`台本がありません: ${id}`);
+      }
       const result = await playScene(owner, { id: "confession_ageha", bg: "bg_street_night" });
       if (!live(owner) || !result || result.cancelled) return;
       const answer = confessionAnswer(result.visited, "ageha");

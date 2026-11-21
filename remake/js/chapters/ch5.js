@@ -8,7 +8,7 @@ import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
 import { canReflect } from "../daily/reflection.js";
-import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
+import { loverMilestonesDue, prepareLoverMilestones, readLoverMilestone } from "./lover-entry.js";
 import { state, save } from "../core/state.js";
 import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withSceneLoading, toast } from "../core/ui.js";
 import { sceneMoment } from "../core/scene-motions.js";
@@ -178,7 +178,13 @@ async function readScene(owner, id, { keepHud = false } = {}) {
   // 試作の返り（#1666）は同じ場面の末尾に続けて読み、読了の確定も親場面と一緒にする。
   // 恋人のましろの訪問（#2024 A2）も同じく末尾に続け、親場面と一緒に確定する。
   // 勝負のあと・前半（勝敗で台本が分かれる）の末尾には、勝敗共通の千須への返事を続ける（STK05）。
-  const loverEcho = chapterFiveLoverEcho(state, id, { milestoneDue: loverMilestonesDue(["mashiro"]).length > 0 });
+  let loverEcho = chapterFiveLoverEcho(state, id);
+  if (loverEcho.length) {
+    const ready = await prepareLoverMilestones(["mashiro"]);
+    if (!current(owner)) return false;
+    if (!ready) { toast("会話を読み込めませんでした。もう一度お試しください"); return false; }
+    loverEcho = chapterFiveLoverEcho(state, id, { milestoneDue: loverMilestonesDue(["mashiro"]).length > 0 });
+  }
   const echo = [...chapterFiveSceneTail(id), ...chapterFivePrepEcho(state, id), ...loverEcho].map(echoId => {
     if (!DB.dialogues[echoId]) throw new Error(`台本がありません: ${echoId}`);
     return DB.dialogues[echoId].lines;
@@ -224,7 +230,7 @@ async function readScene(owner, id, { keepHud = false } = {}) {
  * 読了と既読の保存は romance.js が持つ。中断すれば未読のまま残る。
  */
 async function readLoverMilestoneAt(owner, id) {
-  if (!current(owner) || !loverMilestonesDue([id]).length) return false;
+  if (!current(owner)) return false;
   const controller = owner.controller = new AbortController();
   try { return await readLoverMilestone(id, { signal: controller.signal }); }
   finally { if (owner.controller === controller) owner.controller = null; }

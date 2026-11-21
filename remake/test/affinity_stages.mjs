@@ -15,10 +15,12 @@ const limeData = JSON.parse(fs.readFileSync(new URL('../../data/lime_messages.js
 async function fixture() {
   const memory = new Map(), events = [], plays = [], timers = new Map();
   let serial = 0, playImpl = async scene => ({ id: typeof scene === 'string' ? scene : scene.dialogue_id, visited: [] });
+  let loadConfession = async () => { throw Error('Unexpected confession load'); };
   const db = { dialogues: Object.fromEntries(data.flatMap(d => d.dialogues || []).map(d => [d.dialogue_id,d])), hiyori: data[8], equipById: {}, flavorById: {}, characters: {}, lime: limeData.messages, limeTemplates: clone(limeData.templates) };
   const context = vm.createContext({ console, AbortController, setTimeout: fn => { timers.set(++serial,fn); return serial; }, clearTimeout: id => timers.delete(id), localStorage: { getItem: k => memory.get(k) ?? null, setItem: (k,v) => memory.set(k,v), removeItem: k => memory.delete(k) } });
   const known = {
-    MAX_MONEY: 999999, TOURNAMENT_DAY: 14, DB: db, callName: String,
+    MAX_MONEY: 999999, TOURNAMENT_DAY: 14, DB: db, callName: String, relationshipDayTotal: () => 8,
+    loadConfessionDialogue: () => loadConfession(),
     emit: (type,payload) => events.push({type,payload}),
     clamp: (v,a,b) => Math.max(a,Math.min(b,v)),
     play: async (...args) => { plays.push(args); return playImpl(...args); }, isPlaying: () => false,
@@ -52,6 +54,7 @@ async function fixture() {
   const fresh=() => { const s=core.newGame(); Object.assign(s,{phase:'daily',day:8,slot:1}); return s; };
   fresh();
   return { core, stats, fresh, db, plays, events, memory, stages: ns('core/affinity-stages.js'), hiyoriRoute: ns('core/hiyori-route.js'), spots: ns('daily/spots.js'), bonds: ns('daily/bonds.js'), phone: ns('daily/phone.js'), samechan: ns('daily/samechan.js'), romance: ns('daily/romance.js'), sharkBond: ns('daily/samechan-bonds.js'), setPlay: fn => playImpl=fn,
+    setConfessionLoader: fn => { loadConfession = fn; },
     tick: () => { for (const [id,fn] of [...timers]) { timers.delete(id); fn(); } },
     roundTrip: () => { core.save(); core.newGame(); assert(core.load()); return core.state; },
   };
@@ -64,6 +67,35 @@ async function check(name,run) {
 }
 const done = { id:'port-scene',visited:[] };
 const close = (a,b) => assert(Math.abs(a-b)<1e-8,`${a} != ${b}`);
+await check('night confession: 503 keeps the reservation and retry accepts once', async f => {
+  const id = 'rio', scene = `confession_${id}`, s = f.core.state;
+  s.slot = 2;
+  s.finales[id] = { route: 'romance', chapter: 1, day: s.day };
+  s.romanceChoices.bond_q1_rio = { char: id, value: 1 };
+  s.flags._confession_due = id;
+  const script = f.db.dialogues[scene];
+  delete f.db.dialogues[scene];
+  let requests = 0, beats = 0;
+  f.setConfessionLoader(async () => {
+    if (++requests === 1) throw Error('HTTP 503');
+    f.db.dialogues[scene] = script;
+  });
+  f.setPlay(async input => {
+    if (input === scene) f.romance.onDialogueEnter(`${scene}_accept`);
+    else if (input.dialogue_id === `remake_confession_gate_${id}`) s.flags._confession_go = true;
+    return done;
+  });
+  const beat = async () => { beats++; };
+  assert.equal(await f.romance.maybeConfession(beat), false);
+  assert.equal(s.flags._confession_due, id);
+  assert.equal(beats, 0);
+  assert.deepEqual(await Promise.all([f.romance.maybeConfession(beat), f.romance.maybeConfession(beat)]), [true, false]);
+  assert.equal(requests, 2);
+  assert.equal(beats, 1);
+  assert.equal(s.lovers.join(), id);
+  assert.equal(s.flags._confession_due, undefined);
+  assert.equal(await f.romance.maybeConfession(beat), false);
+});
 await check('five social shop routes: ordinary gains are independent of every unread stage', async f => {
   for (const [id,seq] of Object.entries(f.spots.VISIT_SEQ).filter(([id]) => id !== "sumi")) for (let stage=0;stage<seq.length;stage++) {
     const s=f.fresh(); s.story[id]=stage;

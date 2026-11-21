@@ -48,7 +48,7 @@ const values = {
   "ui.js": { withScenePreparation: task => task, imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, gainCard: noop, dayCard: async () => {}, modal: async (opts) => { guards.push(state.stamina); guardBodies.push(opts.body); return decisions.length ? decisions.shift() : true; },
     toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { const info = await mid?.(); dawns.push({ ...info, absoluteDay: state.day, hudLeft: values["hud.js"].daysLeft() }); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
   "transitions.js": { refreshPlaceCue: noop },
-  "data.js": { sceneBg: () => ({}), DB: db, loadCinemaDialogue: async () => db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
+  "data.js": { sceneBg: () => ({}), DB: db, loadCinemaDialogue: async () => db, loadLoverEvents: async () => db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
   "audio.js": { SE: { select: noop, cancel: noop }, playBgm: noop },
   "engine.js": { isPlaying: () => false, play: async (id) => played.push(id) }, "glossary.js": { glossaryPanel: () => "" },
   "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => modules.get("chapter-clock.js").namespace.chapterDaysLeft(state), setPhoneBadge: noop, presentSleepRecovery: async () => {} },

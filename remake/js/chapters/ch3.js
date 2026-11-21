@@ -1,12 +1,12 @@
 // 第3章・東京到着から全国大会前夜までを、場面単位で保存する。
-import { DB, bgUrl, displayName } from "../core/data.js";
+import { DB, bgUrl, displayName, loadConfessionDialogue } from "../core/data.js";
 import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardSceneExp, consultLessons, readyLessons } from "../core/growth.js";
 import { state, save, loadFromSlot, requestResumeOnBoot, timeOfDay } from "../core/state.js";
-import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withScenePreparation, loadingNotice, withSceneLoading } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast, withScenePreparation, loadingNotice, withSceneLoading } from "../core/ui.js";
 import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -19,7 +19,7 @@ import { onDialogueEnter } from "../daily/romance.js";
 import { pendingFriendLime, readFriendLime } from "./friend-entry.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale, recordRomanceChoice, bondCondition } from "../daily/bonds.js";
 import { CH3_CONFESSION_IDS, confessionAnswer } from "./ch3-romance-entry.js";
-import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
+import { loverMilestonesDue, prepareLoverMilestones, readLoverMilestone } from "./lover-entry.js";
 import { MUKAI_DELIVERY_STEPS, runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime,
@@ -55,7 +55,9 @@ const FILES = {
   ch3_departure: CH3_PREP_SCENES,
 };
 // 任意8場面・前夜デート・前夜の修羅場未遂（#1176 GAP 3-B）。既存ファイルの配列へ足し、新しいファイルはそのまま加える。
-for (const [file, ids] of Object.entries(CH3_STORY_DIALOGUE_FILES)) FILES[file] = [...(FILES[file] || []), ...ids];
+for (const [file, ids] of Object.entries(CH3_STORY_DIALOGUE_FILES)) {
+  if (file !== "confession") FILES[file] = [...(FILES[file] || []), ...ids];
+}
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -375,6 +377,16 @@ async function readScene(owner, scene) {
 
 async function readDialogueScene(owner, scene) {
   if (!current(owner)) return false;
+  if (scene.file === "confession") {
+    try { await withSceneLoading(loadConfessionDialogue(), "告白の場面を準備しています…"); } catch {
+      if (current(owner)) toast("会話を読み込めませんでした。もう一度お試しください");
+      return false;
+    }
+    if (!current(owner)) return false;
+    for (const id of CH3_STORY_DIALOGUE_FILES.confession) {
+      if (!DB.dialogues[id]?.lines?.length) throw new Error(`台本がありません: ${id}`);
+    }
+  }
   const original = DB.dialogues[scene.id];
   const source = original && chapterThreeWorkDialogue(state, original);
   if (!source) throw new Error(`台本がありません: ${scene.id}`);
@@ -477,6 +489,8 @@ async function renderStage(owner) {
   }
   const background = bgUrl(scene.bg, timeOfDay());
   await withScenePreparation(enterScene(background));
+  if (!current(owner)) return;
+  await prepareLoverMilestones(["mashiro"]);
   if (!current(owner)) return;
   card(owner, "scene", `DAY ${scene.day}・${scene.label}`, `${scene.location}へ向かう。`, [
     button(owner, "続きを読む", "continue", async () => {
@@ -696,7 +710,8 @@ async function playEvening(owner, result, { plan = null, window = null, definiti
 async function readLoverMilestoneAt(owner, id) {
   // 場面カードの東京では現在地の印が地元のまま。地元が舞台の節目は帰郷してから（#2024）
   const home = playerRegion(state) === "home";
-  if (!current(owner) || !loverMilestonesDue([id], { home }).length) return;
+  if (!current(owner) || !await prepareLoverMilestones([id]) || !current(owner)
+    || !loverMilestonesDue([id], { home }).length) return;
   showScreen("none", null);
   hud(owner);
   const controller = owner.controller = new AbortController();

@@ -25,7 +25,7 @@ import { openShop } from "../daily/shop.js";
 import { TOKYO_VISIT_COST, quietTurn } from "../daily/spots.js";
 import { modal } from "../core/ui.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_SHIFT_STAMINA, mukaiShiftPay } from "./tokyo-mukai.js";
-import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
+import { loverMilestonesDue, prepareLoverMilestones, readLoverMilestone } from "./lover-entry.js";
 import { reflectAt } from "../daily/reflection.js";
 import { TOKYO_OUTINGS, outingDialogueId, outingCounts, OUTINGS_FLAG } from "./ch3-outing-progress.js";
 import { consultLessons } from "../core/growth.js";
@@ -254,9 +254,13 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   if (spot.shift) {
     // 恋人のましろがいる時は、シフトに入るか、二人で過ごすかを選ぶ（BLC03）。恋人でなければ今までどおりシフトだけ。
     // 締めくくりを友人として迎えた後は、シフトか「ましろちゃんと話す」（♥5後の場面・#3693）を選ぶ。
+    const loverReady = await prepareLoverMilestones(["mashiro"]);
+    if (state !== owner) return { used: false, exerted: false };
+    if (!loverReady && owner.lovers?.includes("mashiro")) toast("恋人の会話を読み込めませんでした。もう一度お試しください");
     const mashiroMilestoneDue = () => loverMilestonesDue(["mashiro"]).length > 0;
+    const loverTime = loverReady && mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() });
     const friendTalk = bondAfterNext(state, "mashiro");
-    if (friendTalk && !mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() })) {
+    if (friendTalk && !loverTime) {
       const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
         { label: "ましろちゃんと話す", value: "friend", test: "tokyo-mukai-friend", primary: friendTalk.kind === "story" },
         { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
@@ -275,7 +279,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
         return { used: true, exerted: true };
       }
     }
-    if (mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() })) {
+    if (loverTime) {
       const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
         { label: "ましろちゃんと過ごす（恋人）", value: "lover", test: "tokyo-mukai-lover", primary: true },
         { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },

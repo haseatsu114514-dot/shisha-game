@@ -39,6 +39,7 @@ assert.equal(classifyFlag(MASHIRO_TIME_FLAG), "person");
 
 // ---- 進行: 実物の state・stats で、交際の初日から Lv5 の節目まで ---------------------------------
 Object.assign(DB.dialogues, scenes, milestones);
+DB.loverEventsLoaded = true;
 function lover(extra = {}) {
   const value = newState();
   Object.assign(value, { chapter: 3, day: 40, slot: 1, lovers: ["mashiro"], contacts: ["mashiro"], loverEventsSeen: [] }, extra);

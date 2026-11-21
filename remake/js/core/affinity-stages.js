@@ -164,6 +164,7 @@ export function pendingAffinityStage(s, id, db = {}) {
 
 /** 恋人の絆は普通のハートと別。追加b台本がある段階は両方の実読了が必要。 */
 export function pendingLoveStage(s, id, db = {}) {
+  if (db.loverEventsLoaded === false) return undefined; // 上限は台本を読んでから決まる
   // ひより等の未接続プレビューを新しい条件にしない。実装済みの共通ladderだけ。
   const opening = db.dialogues?.[`lover_${id}_lv1`];
   if (!opening?.lines?.length || opening.metadata?.preview_only) return null;

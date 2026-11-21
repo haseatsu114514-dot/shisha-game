@@ -1,9 +1,9 @@
 // 関係の表示は、実際の回答・読了・交際から組み立てる。表示だけで保存データを補わない。
-import { DB } from "../core/data.js";
+import { DB, loadConfessionDialogue } from "../core/data.js";
 import { state } from "../core/state.js";
 import { affinityLevel, affinityGateWaiting } from "../core/stats.js";
 import { BOND_QUESTIONS, BOND_FINALES, questionVisitDue, finaleDue, finaleHeart, settledFriend, finaleReachable } from "./bonds.js";
-import { romanceRouteOpen, confessionHeld } from "./romance.js";
+import { romanceRouteOpen, romanceRouteEligible, confessionHeld } from "./romance.js";
 import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 
 const meetingPlace = {
@@ -13,6 +13,12 @@ const meetingPlace = {
   volk: "鉄の煙", master_hookah: "龍龍水煙所", da_silva: "シェイクの屋敷の中庭", sheikh: "シェイクの屋敷",
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
+
+export function prepareRelationshipStatus() {
+  const owner = state;
+  if (!Object.keys(owner.finales || {}).some(id => owner.met[id] && romanceRouteEligible(id) && !romanceRouteOpen(id))) return null;
+  return loadConfessionDialogue().catch(() => null);
+}
 
 // 段階の仕組み（♥3で方向を選ぶ・♥5で特別なイベントと贈り物）は人間関係タブの全体ガイドに一度だけ置く。
 // ここでは次の一手だけを示し、各人の行では反復しない。

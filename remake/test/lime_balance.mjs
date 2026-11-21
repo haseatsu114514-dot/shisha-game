@@ -44,7 +44,8 @@ const values = {
   "chapter-features.js": { chapterFeatureEnabled },
   "hiyori-route.js": { hiyoriEventStatus: () => "disabled", hiyoriRoute: () => ({}), hiyoriFinaleReady: () => false },
   "util.js": { el, clamp, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${n}` },
-  "data.js": { DB: db, displayName: (id) => id, limeAccountName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
+  "data.js": { DB: db, loadLoverEvents: async () => db, loadConfessionDialogue: async () => db,
+    displayName: (id) => id, limeAccountName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
   "lime-icons.js": { customLimeIconUrl: () => null },
   "ui.js": { layers, toast: noop }, "state.js": { state, save: noop, STAT_JA, hasAffinity, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
   "stats.js": { setStoryAffinityCap() {}, affinityGateWaiting: () => false, gainStat: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }),
@@ -71,7 +72,8 @@ async function load(name) {
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod;
 }
 const statsModule = await load("production-stats.js"); await statsModule.evaluate();
-Object.assign(values["stats.js"], { bond: statsModule.namespace.bond, privateBondScope: statsModule.namespace.privateBondScope, releaseLoveAffinity: statsModule.namespace.releaseLoveAffinity });
+Object.assign(values["stats.js"], { bond: statsModule.namespace.bond, prepareLoveAffinity: statsModule.namespace.prepareLoveAffinity,
+  privateBondScope: statsModule.namespace.privateBondScope, releaseLoveAffinity: statsModule.namespace.releaseLoveAffinity });
 const phoneModule = await load("phone.js"); await phoneModule.evaluate();
 const phone = phoneModule.namespace, romance = (await load("romance.js")).namespace;
 
