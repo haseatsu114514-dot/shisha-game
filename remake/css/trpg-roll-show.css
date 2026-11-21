@@ -367,7 +367,7 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy { display: flex; flex-d
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-kicker { display: flex; align-items: center; gap: 12px; height: 72px; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-logo { display: block; height: 72px; width: auto; filter: drop-shadow(0 3px 6px #000a); }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-kicker > small { font-size: 24px; font-weight: 900; letter-spacing: .08em; color: #fff; -webkit-text-stroke: 6px #1a0f04; paint-order: stroke fill; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy > strong { display: block; font-size: 80px; line-height: 1; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy > strong { display: block; font-size: 76px; line-height: 1; margin-bottom: .24em; } /* 文字の厚みと影（下へ約.2em）が下の札にかからない間 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-word.skill { --fill: linear-gradient(180deg, #ffffff 0%, #fff6d0 40%, #ffd76a 58%, #fff3c4 100%); --edge: #1a0f04; --depth: #7a4a00; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill[data-kind="reroll"] .trpg-rs-word.skill { --fill: linear-gradient(180deg, #ffffff 0%, #e4fff8 40%, #6ff0d0 58%, #e0fff7 100%); --edge: #031a16; --depth: #0b4a40; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-copy > em { padding: 3px 16px; border-radius: 6px; font-size: 24px; font-weight: 900; color: #1a0f04; background: #fff3c4; box-shadow: 0 0 0 3px #1a0f04; }
