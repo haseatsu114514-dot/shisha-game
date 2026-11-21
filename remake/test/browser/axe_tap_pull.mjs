@@ -34,8 +34,12 @@ async function throwAxe(page, { touch = false, power = .62, from = 'board', lean
 }
 // キーボード: Space で構え、Space で横・縦の針を止める
 async function keyStance(page) {
-  await page.waitForTimeout(300);
-  for (const next of ['horizontal', 'vertical', 'power']) { await page.keyboard.press('Space'); await phase(page, next); await page.waitForTimeout(320); }
+  for (const next of ['horizontal', 'vertical', 'power']) {
+    await ready(page).waitFor({ state: 'attached' });
+    await page.keyboard.press('Space');
+    await phase(page, next);
+  }
+  await handle(page).waitFor();
 }
 // 着地点（刃先の印）と、触れて決めた狙い（金の輪）の横の差（的の絵の座標。半径164）
 const driftX = page => page.evaluate(() => { const x = s => Number(/translate\(([-\d.]+)/.exec(document.querySelector(s).getAttribute('transform'))?.[1]); return x('.axe-impact-mark') - x('.axe-fixed-aim'); });
@@ -184,34 +188,49 @@ await suite('axe-tap-pull', async check => {
     ['pc', { viewport: { width: 1280, height: 720 } }, false],
     ['touch-landscape', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
     ['touch-short', { viewport: { width: 740, height: 320 }, isMobile: true, hasTouch: true }, true],
-  ]) await check(`${label}-aim-controls-in-front-of-hand`, async page => {
+  ]) await check(`${label}-aim-controls-clear-of-hand`, async page => {
     await start(page, touch);
-    for (const step of ['horizontal', 'vertical', 'power']) {
-      await page.waitForTimeout(320);
-      await page.keyboard.press('Space');
-      await phase(page, step);
-      await root(page).evaluate(game => {
-        const hand = game.querySelector('.axe-hand-front');
-        const target = game.querySelector('.axe-target');
-        if (hand.querySelector('use').getAttribute('opacity') !== '1') throw new Error('the foreground hand must be shown');
-        // Include the decorative SVG in hit testing temporarily to observe its paint order.
-        const originalPointerEvents = hand.style.pointerEvents;
-        hand.style.pointerEvents = 'all';
-        try {
-          for (const name of ['axe-focus', 'axe-reaim']) {
-            const button = game.querySelector(`[data-test="${name}"]`);
-            const box = button.getBoundingClientRect();
-            const layers = document.elementsFromPoint(box.x + box.width / 2, box.y + box.height / 2);
-            const index = node => layers.findIndex(layer => node.contains(layer));
-            const [control, foreground, board] = [button, hand, target].map(index);
-            if (!(control >= 0 && control < foreground && foreground < board)) {
-              throw new Error(`${name} must paint above the hand, and the hand above the board (layers ${control}, ${foreground}, ${board})`);
-            }
-          }
-        } finally { hand.style.pointerEvents = originalPointerEvents; }
-      });
-    }
     const activate = locator => touch ? locator.tap() : locator.click();
+    for (const step of ['horizontal', 'vertical', 'power']) {
+      await activate(ready(page));
+      await phase(page, step);
+      const controls = step === 'power' ? ['axe-focus', 'axe-reaim', 'axe-pull-handle'] : ['axe-focus', 'axe-reaim', 'axe-action'];
+      const layout = await root(page).evaluate((game, controls) => {
+        const hand = game.querySelector('.axe-hand-front');
+        // The full hand outline includes the sleeve underneath the foreground copy.
+        const silhouette = game.querySelector('.axe-lane-aim');
+        const artwork = game.querySelector(silhouette.getAttribute('href'));
+        const clip = artwork.querySelector('image').getAttribute('clip-path').slice(4, -1);
+        const outline = new Path2D(game.querySelector(`${clip} path`).getAttribute('d'));
+        const view = artwork.viewBox.baseVal;
+        const { a, b, c, d, e, f } = silhouette.getScreenCTM();
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        const blockers = controls.filter(name => {
+          const button = game.querySelector(`[data-test="${name}"]`);
+          const box = button.getBoundingClientRect();
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+          if (!button.contains(hit)) return true;
+          canvas.width = Math.ceil(box.width);
+          canvas.height = Math.ceil(box.height);
+          context.setTransform(a, b, c, d, e - box.left, f - box.top);
+          context.translate(artwork.x.baseVal.value, artwork.y.baseVal.value);
+          context.scale(artwork.width.baseVal.value / view.width, artwork.height.baseVal.value / view.height);
+          context.translate(-view.x, -view.y);
+          context.fill(outline);
+          const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+          return data.some((value, index) => index % 4 === 3 && value >= 128);
+        });
+        const layer = node => Number(getComputedStyle(node).zIndex);
+        return {
+          blockers,
+          shown: hand.querySelector('use').getAttribute('opacity') === '1',
+          front: layer(hand) > Math.max(...['.axe-target', '.axe-panel', '.axe-timing'].map(selector => layer(game.querySelector(selector)))),
+        };
+      }, controls);
+      assert.deepEqual(layout.blockers, [], `${step}: each control must be reachable and clear of the hand silhouette`);
+      assert(layout.shown && layout.front, `${step}: the hand must stay visible in the foreground`);
+    }
     const focus = page.locator('[data-test="axe-focus"]');
     await activate(focus);
     await page.locator('.axe-stability-meter[data-focused="true"]').waitFor();
