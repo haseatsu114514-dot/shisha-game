@@ -110,6 +110,35 @@ function checkRules(name, rows) {
   } });
 }
 
+// ---------------------------------------------------------------- 雑談が2朝続いたら間を置く。仕事や期限のある連絡は同じ扱いにしない。
+{
+  const chats = ["L09", "lime_ch3_ageha_pouch_pin"];
+  const tokyoMornings = (yesterday) => run({ chapter: 3, startDay: 53, days: 2,
+    setup: (s) => {
+      Object.assign(s.flags, { _ch3_intro: { startDay: 43, stage: 3, titleSeen: true, routeVersion: 3 }, _elapsed_calendar: true, _ch2_region: "tokyo" });
+      contact(s, "steve", "ageha");
+      s.limeRead.push(...DB.lime.filter((m) => !chats.includes(m.id)).map((m) => m.id));
+      s.inbox.push({ day: 51, read: true, msg: byId("lime_adam_bond_a") }, { day: 52, read: true, msg: yesterday });
+    }, opts: () => ({ invitations: false }) }).rows;
+  const ids = (row) => row.map((m) => m.id).sort();
+  const [quiet, next] = tokyoMornings(byId("L23"));
+  assert.deepEqual(quiet, [], "雑談が2朝続いた後は、いつもの雑談と期限のない近況を待たせる");
+  assert.deepEqual(ids(next), chats, "後に回した連絡は翌朝届く");
+  assert.deepEqual(ids(tokyoMornings(DB.limeTemplates.sumi_baito)[0]), chats, "仕事だけの朝は雑談が続いたことにしない");
+
+  const due = ["lime_kumicho_day9", "lime_rei_bond_a"];
+  const { rows } = run({ chapter: 2, startDay: 23, days: 1,
+    setup: (s) => {
+      Object.assign(s.flags, { _ch2_day1: { startDay: 15 }, _elapsed_calendar: true, _ch2_region: "home", _ch2_read_ch2_rei_third: true });
+      contact(s, "kumicho", "rei");
+      s.limeRead.push(...DB.lime.filter((m) => !due.includes(m.id)).map((m) => m.id));
+      s.inbox.push({ day: 21, read: true, msg: byId("lime_adam_bond_a") }, { day: 22, read: true, msg: byId("L23") });
+    } });
+  assert.deepEqual(ids(counted(rows[0])), due, "章の日付がある連絡と、場面を読んだ後の続きは届く");
+  assert(rows[0].some(pacing.isWorkInvite), "仕事の誘いは雑談を待たせる朝にも届く");
+  console.log("[LM08] PASS consecutive small talk leaves breathing room, with dated messages, scene follow-ups and work preserved");
+}
+
 // ---------------------------------------------------------------- 第2章: 第1章の6人と仲が良く（友人2・恋人1）、新しい4人にも通う
 {
   const { rows } = run({ chapter: 2, startDay: 15, days: 13,
