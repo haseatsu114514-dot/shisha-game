@@ -2646,7 +2646,7 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
    「？」: 見た目は細い線の丸（::before）。大きさは #4131 の共通標準（丸38px・押せる箱52px、--q-* 式）で、カードの右上のまま。
    スマホでは、時計の上の英字「CAMEL RACE」、遊び方の「HOW TO PLAY n/3」（下の点で分かる）と大会選びの「HABIBA RACING CLUB」、
    大会選びの前置きの一文と時間の決まり（カードの title へ）、各大会の「CUP 01」の英字を出さない。 */
-.camel-game { --q-hit: max(52px, calc(48px / var(--k, 1))); --q-font: max(24px, calc(13.5px / var(--k, 1))); --q-dot: calc(var(--q-font) + 14px); }
+.camel-game { --q-hit: max(58px, calc(54px / var(--k, 1))); --q-font: max(27px, calc(15px / var(--k, 1))); --q-dot: calc(var(--q-font) + 16px); }
 .camel-game .camel-sheet .camel-card .camel-help.camel-help { right: 4px; top: 4px; isolation: isolate; width: var(--q-hit); height: var(--q-hit);
   border: 0; background: transparent; color: var(--cr-gold); font-size: var(--q-font); }
 .camel-game .camel-sheet .camel-card .camel-help.camel-help::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box;
@@ -2872,7 +2872,7 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .camel-close:hover, .camel-close:focus-visible { border-color: #2a1a0e; background: linear-gradient(180deg, #f6e6c0, #d9b77e); }
 
 /* #4131: レース中の「やめる」は文字ピルをやめ、右上の丸い✕へ統一する。
-   大きさは共通標準（#4131）: 押せる箱は --q-hit（52px）、見た目の丸は --q-dot（38px）を ::before の木の札で描く。 */
+   大きさは共通標準（#4131・2026-11-22 もう一回り拡大）: 押せる箱は --q-hit（58px）、見た目の丸は --q-dot（43px）を ::before の木の札で描く。 */
 .camel-close { display: grid; place-items: center; width: var(--q-hit); min-width: var(--q-hit); height: var(--q-hit); min-height: var(--q-hit);
   padding: 0; border: 0; border-radius: 50%; background: transparent; box-shadow: none; isolation: isolate; font-size: var(--q-font); line-height: 1; }
 .camel-close::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box;
@@ -2992,8 +2992,10 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 }
 
 /* ---- 2026-11-13 桜井スキルでの添削（CRF13〜） ---- */
-/* 一時停止のボタン: 「やめる」と同じ板で、その左隣。走っている間と合図の間だけ出る */
-.camel-pause { right: calc(1.6cqw + var(--q-dot) + 6px); display: grid; place-items: center; min-width: var(--q-hit); padding-inline: 0; }
+/* 一時停止のボタン: 「やめる」と同じ板で、その左隣。走っている間と合図の間だけ出る。
+   位置は丸の隣接（--q-dot + 6px）が基本。ただし箱（--q-hit）が /k で膨らむ小さい画面では、
+   箱の重なりが深くなって互いの中心を覆うため、中心が覆われない下限（--q-hit / 2 + 7px）も保証する */
+.camel-pause { right: calc(1.6cqw + max(var(--q-dot) + 6px, var(--q-hit) / 2 + 7px)); display: grid; place-items: center; min-width: var(--q-hit); padding-inline: 0; }
 .camel-pause svg { width: 1.25em; height: 1.25em; display: block; }
 .camel-pause[hidden] { display: none; }
 .camel-game[data-paused="true"] .camel-controls, .camel-game[data-paused="true"] .camel-close { visibility: hidden; }
@@ -4583,8 +4585,10 @@ html:root[data-density="phone"] body:not(:root) .ichi-vs-player:has(.ichi-vs-rin
 .dr-title { margin: 4px 0 10px; font-size: 52px; line-height: 1; letter-spacing: .08em; font-weight: 900; color: #3a2520; }
 .dr-lead { margin: 0 0 14px; font-size: 18px; color: #4a3a34; }
 /* 遊び方: 右上の「？」を押した時だけ、カードの上に重ねて見せる（常時は出さない） */
-.dr-help-btn { position: absolute; right: 18px; top: 18px; width: 64px; height: 64px; padding: 0; display: grid; place-items: center; border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,255,255,.7); color: #b2652f; font: 900 34px/1 var(--font); cursor: pointer; }
-.dr-help-btn:is(:hover, :focus-visible) { background: #fff; outline: 3px solid rgba(212,82,31,.5); outline-offset: 2px; }
+.dr-help-btn { position: absolute; right: 18px; top: 18px; width: var(--q-hit); height: var(--q-hit); padding: 0; display: grid; place-items: center; isolation: isolate; border: 0; border-radius: 50%; background: transparent; color: #b2652f; font: 900 var(--q-font)/1 var(--font); cursor: pointer; }
+.dr-help-btn::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box; width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,255,255,.7); pointer-events: none; }
+.dr-help-btn:is(:hover, :focus-visible) { outline: 3px solid rgba(212,82,31,.5); outline-offset: 2px; }
+.dr-help-btn:is(:hover, :focus-visible)::before { background: #fff; }
 .dr-help { display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .dr-menu[data-help="open"] > :not(.dr-help) { display: none; }
 .dr-help[hidden] { display: none; }
@@ -4665,9 +4669,9 @@ html:root[data-density="phone"] #stage[data-wide] .dr-touch.dr-boost { width: 14
 html:root[data-density="phone"] #stage[data-wide] .dr-button { min-height: var(--phone-tap); font-size: 28px; }
 
 /* ---- 「？」の統一と、常に出す文をもう一段減らす（#2729・2026-11-08 オーナー指摘「文字が多い・？が大きい」）:
-   「？」は見た目を細い線の丸（::before）にし、大きさは #4131 の共通標準（丸38px・押せる箱52px、--q-* 式）。カードの右上のまま。
+   「？」は見た目を細い線の丸（::before）にし、大きさは #4131 の共通標準（丸43px・押せる箱58px、--q-* 式、2026-11-22 もう一回り拡大）。カードの右上のまま。
    スマホでは、メニューの前置きの一文（相手は滑走中の「VS ヌール」で分かる）と、結果・練習のおわりの英字の見出しを出さない。 ---- */
-.desert-ride { --q-hit: max(52px, calc(48px / var(--k, 1))); --q-font: max(24px, calc(13.5px / var(--k, 1))); --q-dot: calc(var(--q-font) + 14px); }
+.desert-ride { --q-hit: max(58px, calc(54px / var(--k, 1))); --q-font: max(27px, calc(15px / var(--k, 1))); --q-dot: calc(var(--q-font) + 16px); }
 .desert-ride .dr-help-btn.dr-help-btn { right: 8px; top: 8px; isolation: isolate; width: var(--q-hit); height: var(--q-hit);
   border: 0; background: transparent; color: #b2652f; font-size: var(--q-font); }
 .desert-ride .dr-help-btn.dr-help-btn::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box;
@@ -5695,8 +5699,8 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
 /* 帰る＝裏口の戸の色 */
 .tetsuko-time .tt-tool[data-test="tetsuko-time-back"] { background: var(--tk-door); color: var(--tk-cream); }
 .tetsuko-time .tt-tool[data-test="tetsuko-time-back"] .tt-tool-label { color: var(--tk-cream); }
-.tetsuko-time .tt-help-btn { width: 52px; padding: 0; border-radius: 50%; height: 52px; align-self: center; }
-.tt-help-q { font-size: 28px; font-weight: 900; line-height: 1; color: var(--tk-ink); }
+.tetsuko-time .tt-help-btn { width: var(--q-hit); padding: 0; border-radius: 50%; height: var(--q-hit); align-self: center; }
+.tt-help-q { font-size: var(--q-font); font-weight: 900; line-height: 1; color: var(--tk-ink); }
 .tetsuko-time .tt-tool.new::after, .tetsuko-time .tt-new { border: 2px solid var(--tk-ink); background: var(--tk-pink); color: var(--tk-ink); }
 .tetsuko-time :is(.tt-tool, .tt-act, .tt-item, .tt-card, .tt-slot-hit):focus-visible { outline: 3px solid var(--tk-door); outline-offset: 3px; }
 
@@ -5900,8 +5904,8 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
 /* スマホ規格（#2851・#2729）: 題の札の英字（TETSUKO TIME・実寸 7.6px）は飾りなので出さない（読み上げ・題の文字には残る）。 */
 html:root[data-density="phone"] .tetsuko-time .tt-logo-roman { display: none; }
 /* 「？」の統一（#2729・2026-11-08 オーナー指摘「？が大きい」）: 見た目は細い線の丸（::before）。
-   大きさは #4131 の共通標準（丸38px・押せる箱52px、--q-* 式）。置き場は右上の道具の列の「帰る」の隣へ（並びだけ。DOM の順は変えない）。 */
-.tetsuko-time { --q-hit: max(52px, calc(48px / var(--k, 1))); --q-font: max(24px, calc(13.5px / var(--k, 1))); --q-dot: calc(var(--q-font) + 14px); }
+   大きさは #4131 の共通標準（丸43px・押せる箱58px、--q-* 式、2026-11-22 もう一回り拡大）。置き場は右上の道具の列の「帰る」の隣へ（並びだけ。DOM の順は変えない）。 */
+.tetsuko-time { --q-hit: max(58px, calc(54px / var(--k, 1))); --q-font: max(27px, calc(15px / var(--k, 1))); --q-dot: calc(var(--q-font) + 16px); }
 .tetsuko-time .tt-tools > .tt-help-btn.tt-help-btn { order: 1; position: relative; isolation: isolate; align-self: center;
   width: var(--q-hit); min-width: var(--q-hit); height: var(--q-hit); padding: 0; border: 0; border-radius: 50%; background: transparent; box-shadow: none; }
 .tetsuko-time .tt-tools > [data-test="tetsuko-time-back"] { order: 2; }

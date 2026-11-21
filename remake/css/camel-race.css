@@ -322,7 +322,7 @@
    「？」: 見た目は細い線の丸（::before）。大きさは #4131 の共通標準（丸38px・押せる箱52px、--q-* 式）で、カードの右上のまま。
    スマホでは、時計の上の英字「CAMEL RACE」、遊び方の「HOW TO PLAY n/3」（下の点で分かる）と大会選びの「HABIBA RACING CLUB」、
    大会選びの前置きの一文と時間の決まり（カードの title へ）、各大会の「CUP 01」の英字を出さない。 */
-.camel-game { --q-hit: max(52px, calc(48px / var(--k, 1))); --q-font: max(24px, calc(13.5px / var(--k, 1))); --q-dot: calc(var(--q-font) + 14px); }
+.camel-game { --q-hit: max(58px, calc(54px / var(--k, 1))); --q-font: max(27px, calc(15px / var(--k, 1))); --q-dot: calc(var(--q-font) + 16px); }
 .camel-game .camel-sheet .camel-card .camel-help.camel-help { right: 4px; top: 4px; isolation: isolate; width: var(--q-hit); height: var(--q-hit);
   border: 0; background: transparent; color: var(--cr-gold); font-size: var(--q-font); }
 .camel-game .camel-sheet .camel-card .camel-help.camel-help::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box;
@@ -548,7 +548,7 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .camel-close:hover, .camel-close:focus-visible { border-color: #2a1a0e; background: linear-gradient(180deg, #f6e6c0, #d9b77e); }
 
 /* #4131: レース中の「やめる」は文字ピルをやめ、右上の丸い✕へ統一する。
-   大きさは共通標準（#4131）: 押せる箱は --q-hit（52px）、見た目の丸は --q-dot（38px）を ::before の木の札で描く。 */
+   大きさは共通標準（#4131・2026-11-22 もう一回り拡大）: 押せる箱は --q-hit（58px）、見た目の丸は --q-dot（43px）を ::before の木の札で描く。 */
 .camel-close { display: grid; place-items: center; width: var(--q-hit); min-width: var(--q-hit); height: var(--q-hit); min-height: var(--q-hit);
   padding: 0; border: 0; border-radius: 50%; background: transparent; box-shadow: none; isolation: isolate; font-size: var(--q-font); line-height: 1; }
 .camel-close::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box;
@@ -668,8 +668,10 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 }
 
 /* ---- 2026-11-13 桜井スキルでの添削（CRF13〜） ---- */
-/* 一時停止のボタン: 「やめる」と同じ板で、その左隣。走っている間と合図の間だけ出る */
-.camel-pause { right: calc(1.6cqw + var(--q-dot) + 6px); display: grid; place-items: center; min-width: var(--q-hit); padding-inline: 0; }
+/* 一時停止のボタン: 「やめる」と同じ板で、その左隣。走っている間と合図の間だけ出る。
+   位置は丸の隣接（--q-dot + 6px）が基本。ただし箱（--q-hit）が /k で膨らむ小さい画面では、
+   箱の重なりが深くなって互いの中心を覆うため、中心が覆われない下限（--q-hit / 2 + 7px）も保証する */
+.camel-pause { right: calc(1.6cqw + max(var(--q-dot) + 6px, var(--q-hit) / 2 + 7px)); display: grid; place-items: center; min-width: var(--q-hit); padding-inline: 0; }
 .camel-pause svg { width: 1.25em; height: 1.25em; display: block; }
 .camel-pause[hidden] { display: none; }
 .camel-game[data-paused="true"] .camel-controls, .camel-game[data-paused="true"] .camel-close { visibility: hidden; }
