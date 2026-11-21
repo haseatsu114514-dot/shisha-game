@@ -647,7 +647,7 @@
     },
     {
       "dialogue_id": "epilogue_noor",
-      "comment": "DSR20 ヌールの後日談。恋人がヌール一人の時だけ（selectStoryEnding）。ヌールが日本へ来て、今度ははじめがガイドをする（ch4_noor_cafe_4 の約束）。大会の結果には触れない。能力値は上げない。",
+      "comment": "DSR20 ヌールの後日談。恋人がヌール一人の時だけ（selectStoryEnding）。ヌールが日本へ来て、今度ははじめがガイドをする（ch4_noor_cafe_4 の約束）。大会の結果には触れない。能力値は上げない。 #4010（#4017）で増補: 「一日一か所」のあとに、一か所目を聞かれたはじめが何も思いつかず tonari の床を指す（ch4_noor_cafe_4 の「ハジメが『ここ』って指す場所がいい」の回収）と、遠距離のテレビ電話の画面の端にいつも映っていたキッチンタイマー（画面の外は、こうなってた）。二か所目は明日、迷ったら二人で迷う（ch4_noor_cafe_4 の「先に迷うガイド」の呼応）。スミさんは黙って炭を起こす人のまま。",
       "metadata": {
         "private_scene": true
       },
@@ -706,6 +706,101 @@
           "speaker": "noor",
           "face": "normal",
           "text": "全部は無理。……一日一か所にして、何回も来るから"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "じゃあ、一か所目。ガイドさん、どこに連れてってくれるの？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、……今からですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "頭の中で、駅前と、商店街と、いつもの帰り道を並べてみた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "どれも、案内するほどの場所に思えない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ここ、です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指さしたのは、tonariの床だった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……一か所目、もう着いてる"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ガイド、楽だね！　歩かなくていい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。地元を案内するなんて、考えたことがなくて"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "いいの。ハジメが「ここ」って指したんだから、ここがいちばん上"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは店の中をゆっくり見回して、カウンターの端で目を止めた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "あ、このタイマー"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "キッチンタイマーですか？　蒸らしに使ってるやつです"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "テレビ電話の時、画面の端にいつも映ってた子。こんなに小さかったんだ"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……画面の外は、こうなってたんだね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はタイマーには触らずに、カウンターの木目を指でなぞった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "二か所目は、明日ね。今夜のうちに考えといて、ガイドさん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……地図、買ってきます"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "いらない。迷ったら、二人で迷えばいいから"
         },
         {
           "speaker": "",

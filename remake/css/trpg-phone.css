@@ -146,3 +146,46 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trp
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { min-height: 380px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) > p.trpg-roll-chance > small { display: none; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) > .trpg-roll-details { top: 208px; }
+
+/* ---- 横持ちの再実測（#3199・2026-11-20）: 本編と同じ条件で残っていた「読めない・押せない」所 ---- */
+/* 本棚（過去プレイを再生）と店の「？」の紙（shelf-help.js の openShelfPanel）: 本文 8〜9px・「閉じる」「次へ」などの札 26〜29px だった。
+   卓の中の紙（メモ・遊び方）と同じく、箱を画面いっぱいまで広げ、文字と札を規格の大きさにする。中身は読み物なので、長い時は箱の中を送る。 */
+html:root[data-density="phone"] .trpg-root .trpg-overlay.trpg-shelf-help { padding: 22px 34px; }
+html:root[data-density="phone"] .trpg-root .trpg-modal.trpg-shelf-help-card { width: 1200px; max-height: 676px; padding: 18px 28px 16px; }
+html:root[data-density="phone"] .trpg-root .trpg-shelf-help-card > h2 { margin-bottom: 8px; }
+html:root[data-density="phone"] .trpg-root .trpg-shelf-help-card .trpg-modal-body :is(p, li, span, strong, small, h4) { font-size: var(--phone-sub); line-height: 1.5; }
+html:root[data-density="phone"] .trpg-root .trpg-shelf-help-card .trpg-modal-body h3 { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root .trpg-shelf-help-card .trpg-modal-body .trpg-button { min-height: var(--phone-tap); font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-root .trpg-shelf-help-card .trpg-modal-actions { margin-top: 10px; }
+html:root[data-density="phone"] .trpg-root .trpg-shelf-help-card .trpg-modal-actions .trpg-button { min-height: var(--phone-tap); padding: 0 22px; font-size: var(--phone-text); }
+/* 店の見出しの「本棚」の札の下の一行（過去プレイを再生）も補足の大きさに */
+html:root[data-density="phone"] .trpg-campaign-meta [data-test="trpg-bookshelf-open"] small { font-size: var(--phone-sub); line-height: 1.25; }
+
+/* 探索の上の札: 危機（警戒・アンコール・霧晴れ）の数が実寸 7px だった。調べるたびに増える数なので、手がかりの行と同じ補足の大きさに。
+   札の幅は中身に合わせ、入りきらない画面では2行に折る（820px 固定だと、長い題の物語で文字が札の外へはみ出していた）。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic[data-phase="explore"] .trpg-stage-cue { width: max-content; max-width: 1200px; flex-wrap: wrap; row-gap: 0; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-cue .trpg-stage-risk { font-size: var(--phone-sub); }
+/* 調べる場所の名札: 230px の上限のまま文字だけ大きくしたので、長い名札（「譜面台 · アンコール＋1」など）は文字が札の外へはみ出していた。
+   札の幅は中身に合わせる。画面の端に近い印の名札は内側へ寄せる（data-label-align・trpg-stage.css）。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot > span { max-width: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot[data-label-align] > span { transform: none; }
+
+/* チュートリアルの図: 図の下の説明（GM＝… / 30以上で成功… / 切り札は一人一度…）と GM・PL の札が実寸 8〜9px だった */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-tutorial-panel { width: 960px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-tutorial-panel :is(p, .trpg-tutorial-seats b) { font-size: var(--phone-sub); line-height: 1.5; }
+
+/* キャラ作り「能力を自分で振る」: 4つ目の能力（度胸）が箱の下に切れて、中を送らないと −／＋ を押せなかった（844×390・844×340）。
+   スマホでは能力を2列×2段に並べ（点の棒は出さず、数字「＋3」だけ）、右の紙を少し広げる。「？」で説明を開いた時は読み物なので従来の1列。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder[data-help="closed"]:has(.trpg-builder-stat-rows[data-mode="advanced"]) { grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder[data-help="closed"] .trpg-builder-stat-rows[data-mode="advanced"] { grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); column-gap: 12px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder[data-help="closed"] .trpg-builder-stat-rows[data-mode="advanced"] dd > i { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder[data-help="closed"] .trpg-builder-stat-rows[data-mode="advanced"] dd > span { min-width: 2em; text-align: center; }
+
+/* 判定の卓「判定の詳細」: 見立ての加点がまだ分からない判定では見込みが「約29〜48%」の幅になり、Safari のバーが出た低い画面（844×340）では
+   数字が2行に折れて表がボタンの下に切れていた。見込みの数字は1行にし、実寸 13px（本文より大きい）にする。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-odds strong { font-size: calc(13 * var(--roll-unit, 1px)); white-space: nowrap; }
+
+/* キャラクターシートの役の名前・結末の評価の名前と結末の一文: 低い画面（844×340）で実寸 10.4〜10.9px だった */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet .trpg-sheet-head h3 { font-size: calc(var(--phone-text) * 1.15); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-ending-rating strong { font-size: max(22px, var(--phone-text)); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-ending > p:not([class]) { font-size: max(23px, var(--phone-sub)); }

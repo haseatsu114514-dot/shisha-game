@@ -113,4 +113,31 @@ await suite("page-boot", async check => {
     await page.locator('[data-test="desert-page-start"]').waitFor({ timeout: 30000 });
     assert.equal(await page.locator('[data-test="build-tag"]').count(), 0);
   }, noServiceWorker);
+
+  await check("standalone-games-honor-the-saved-shake-and-flash-setting", async page => {
+    const games = [
+      { file: "desert-ride.html", start: "desert-page-start", root: "desert-ride" },
+      { file: "camel-race.html", start: "camel-menu-quick", root: "camel-game" },
+      { file: "axe-throw.html", start: "axe-start", root: "axe-game" },
+      { file: "ichidai.html?kit=a&seed=801", start: "ichi-menu-quick", root: "ichi-vs" },
+    ];
+    for (const reduceShake of [true, false]) {
+      await page.evaluate(value => {
+        localStorage.setItem("suien_remake_config", JSON.stringify({ reduceShake: value, mute: true }));
+      }, reduceShake);
+      for (const { file, start, root } of games) {
+        await page.goto(new URL(file, baseURL).href);
+        if (root === "desert-ride") {
+          assert.equal(await page.locator('[data-test="desert-page-reduce"]').isChecked(), reduceShake, file);
+        }
+        await page.locator(`[data-test="${start}"]`).click();
+        const game = page.locator(`[data-test="${root}"]`);
+        await game.waitFor({ state: "attached" });
+        const reduced = root === "ichi-vs"
+          ? await game.evaluate(node => node.classList.contains("is-still"))
+          : await game.getAttribute("data-reduced-motion") === "true";
+        assert.equal(reduced, reduceShake, file);
+      }
+    }
+  }, { ...noServiceWorker, reducedMotion: "no-preference" });
 }, { entry: new URL("desert-ride.html", baseURL).href, readySelector: '[data-test="desert-page-start"]' });

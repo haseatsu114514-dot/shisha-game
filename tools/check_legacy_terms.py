@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """旧名・旧ステータス・旧設定の残存チェッカー。
 
-P2 CI/ローカル用: data/, remake/js/, brand/story_and_structure.md, docs/ を走査し、
+CI/ローカル用: ゲームデータ、ランタイム、公式サイト、現行の設定文書を走査し、
 旧名・旧ステータスが残っていたら失敗させる。
 lint_dialogue.py が対話 JSON だけを見るのに対し、こちらはソースコードと設定文書全般をカバーする。
 
 使い方:
     python3 tools/check_legacy_terms.py          # 全対象走査
     python3 tools/check_legacy_terms.py --characters-only  # キャラ名・みんとの外見だけ検証
-    python3 tools/check_legacy_terms.py --fix     # 安全な置換だけ自動適用（dry-run表示後）
 """
 
 import json
@@ -29,6 +28,10 @@ SCAN_DIRS = [
 SCAN_ROOTS = [
     REPO / "CLAUDE.md",
 ]
+
+# 旧キャラ名・旧設定の検査は、補助データ・公式サイト・制作スキルにも適用する。
+CURRENT_NAME_ONLY_DIRS = (REPO / "remake" / "data", REPO / "promo", REPO / ".claude" / "skills")
+CURRENT_NAME_EXTENSIONS = {".json", ".js", ".mjs", ".html", ".md", ".txt"}
 
 SKIP_PATTERNS = {
     "data.js",
@@ -84,7 +87,7 @@ LEGACY_ERROR_CURRENT = {
     "炭場 創": "チャコール博士の本名は火浦 理一",
     "炭場創": "チャコール博士の本名は火浦 理一",
     "前園": "上園 文太郎（ID uezono）に統一",
-    # 2026-11-14 追加（オーナー決定）: kuraudo の芸名「鴉葬レヰ」→「†玖羅雨℃†」（読みはクラウド、単名。当時は本名の田中健太と旧内部IDを維持）。
+    # 現行の芸名は「†黒羅雨℃†」。読みはクラウド。本名と内部ID kuraudo は維持（#3664）。
     "鴉葬レヰ": "†黒羅雨℃†（kuraudo・読みはクラウド）に統一",
     "鴉葬": "†黒羅雨℃†（kuraudo）に統一",
     "レヰ": "クラウド（kuraudo）に統一",
@@ -92,8 +95,8 @@ LEGACY_ERROR_CURRENT = {
     # 2026-11-15 追加（オーナー決定・#3667）: kuraudo の店名「零-ZERO-」→「貴方ノ為ノ此ノ煙。」（句点まで正式な店名。内部IDとロゴのファイル名 zero は維持）。
     "零-ZERO-": "クラウド（kuraudo）の店名は「貴方ノ為ノ此ノ煙。」に統一",
     # 2026-11-15 追加（オーナー最終決定・#3664）: 芸名の頭の字「玖」→「黒」（†黒羅雨℃†。玖は同梱フォントに無く、途中案の紅も不採用）。
-    "†玖羅雨℃†": "†黒羅雨℃†（kuraudo）に統一",
-    "†紅羅雨℃†": "†黒羅雨℃†（kuraudo）に統一",
+    "玖羅雨℃": "†黒羅雨℃†（kuraudo）に統一",
+    "紅羅雨℃": "†黒羅雨℃†（kuraudo）に統一",
 }
 # 2026-11-14: docs/reports/ も日付つきの検証記録（履歴）として扱う。鴉葬レヰ時代のレポートを現行の事実へ書き換えないため。
 HISTORY_PATHS = ("docs/archive/", "docs/qa/", "docs/owner_requests.md", "docs/reports/")
@@ -148,15 +151,17 @@ MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -
 # 2026-11-04 追加（#2528 残骸チェック）: 改名済みキャラの旧ローマ字。英字は前後が英数字でない時だけ検出する
 # （内部ID kuyuri / sensu / uezono / samechan / dr_charcoal の小文字表記・ファイル名は対象外）。
 RENAMED_ROMAJI_RE = re.compile(r"(?<![A-Za-z0-9_])(?:Kuze|KUZE|Asagiri|ASAGIRI|REI|Rin|RIN|Nagumo|NAGUMO|Maezono|MAEZONO|Hatano|HATANO|Fushimi|FUSHIMI)(?![A-Za-z0-9_])|Dr\.? ?Kemuri")
-RENAMED_ROMAJI_FIX = "旧キャラ名（英字・旧表記） → Ayatori（ayatori）／Usuba（hiyori）／†黒羅雨℃†（kuraudo）／Rio（rio）／Sui・姓は Sensu（sensu）／Uezono（uezono）／Shiomi（samechan）／Dr. Charcoal（dr_charcoal）に統一（#2528）"
+# 制作時の英字の仮名も現行資料では検出する。過去の生成プロンプトは作成時の記録として扱う。
+CURRENT_ROMAJI_NAMES = re.compile(r"(?<![A-Za-z0-9_])(?:Rei|Usuba|USUBA|Shiomi|SHIOMI)(?![A-Za-z0-9_])")
+RENAMED_ROMAJI_FIX = "旧キャラ名（英字・旧表記） → data/characters.json の現行名と照合する"
 
 
 JSON_STRING_RE = re.compile(r'"(?:[^"\\]|\\.)*"')
 
 
-def has_renamed_romaji(line: str, json_strings: bool = False) -> bool:
+def has_renamed_romaji(line: str, json_strings: bool = False, *, pattern=RENAMED_ROMAJI_RE) -> bool:
     """Keep raw checks and also inspect decoded JSON text on its original line."""
-    if RENAMED_ROMAJI_RE.search(line):
+    if pattern.search(line):
         return True
     if json_strings:
         for match in JSON_STRING_RE.finditer(line):
@@ -164,7 +169,7 @@ def has_renamed_romaji(line: str, json_strings: bool = False) -> bool:
                 value = json.loads(match.group())
             except json.JSONDecodeError:
                 continue
-            if RENAMED_ROMAJI_RE.search(value):
+            if pattern.search(value):
                 return True
     return False
 
@@ -219,8 +224,9 @@ def is_doc_context(path: Path, line: str) -> bool:
     return False
 
 
-def scan_file(path: Path, errors: list, warnings: list):
-    if path.suffix not in EXTENSIONS:
+def scan_file(path: Path, errors: list, warnings: list, *, current_names_only: bool = False):
+    extensions = CURRENT_NAME_EXTENSIONS if current_names_only else EXTENSIONS
+    if path.suffix not in extensions:
         return
     if should_skip(path):
         return
@@ -230,18 +236,24 @@ def scan_file(path: Path, errors: list, warnings: list):
         return
 
     rel = path.relative_to(REPO)
+    is_current = not rel.as_posix().startswith(HISTORY_PATHS)
     for i, line in enumerate(lines, 1):
         if is_doc_context(path, line):
             continue
+
+        if is_current:
+            if has_renamed_romaji(line, path.suffix == ".json", pattern=CURRENT_ROMAJI_NAMES):
+                errors.append(f"{rel}:{i}: {RENAMED_ROMAJI_FIX}")
+            for term, fix in LEGACY_ERROR_CURRENT.items():
+                if term in line:
+                    errors.append(f"{rel}:{i}: 旧名 '{term}' → {fix}")
 
         for term, fix in LEGACY_ERROR.items():
             if term in line:
                 errors.append(f"{rel}:{i}: 旧名 '{term}' → {fix}")
 
-        if not str(rel).startswith(HISTORY_PATHS):
-            for term, fix in LEGACY_ERROR_CURRENT.items():
-                if term in line:
-                    errors.append(f"{rel}:{i}: 旧名 '{term}' → {fix}")
+        if current_names_only:
+            continue
 
         for term, fix in LEGACY_STAT_ERROR.items():
             if term in line:
@@ -274,6 +286,11 @@ def main() -> int:
                 if path.is_file():
                     scan_file(path, errors, warnings)
 
+    for d in CURRENT_NAME_ONLY_DIRS:
+        for path in sorted(d.rglob("*")):
+            if path.is_file():
+                scan_file(path, errors, warnings, current_names_only=True)
+
     for path in SCAN_ROOTS:
         if path.is_file():
             scan_file(path, errors, warnings)
@@ -290,7 +307,7 @@ def main() -> int:
             print("   " + e)
         return 1
 
-    total = sum(1 for d in SCAN_DIRS if d.is_dir()
+    total = sum(1 for d in [*SCAN_DIRS, *CURRENT_NAME_ONLY_DIRS] if d.is_dir()
                 for _ in d.rglob("*") if _.is_file()) + len(SCAN_ROOTS)
     print(f"✅ OK — 旧名・旧設定の残存なし（{total} ファイル走査）")
     return 0

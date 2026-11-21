@@ -3,6 +3,8 @@
 // 座標: z はコースに沿った距離（m）、x はコース中央からの横位置（-1〜1 がコース幅、|x|>EDGE は端の深い砂）。
 // 2026-11-02 オーナー「もっとスピード感・ゲーム性を」: 空中トリック（大ジャンプ中に ← → で回転）、ブースト（ゲージ満タンで超加速・岩を砕く）、
 // ヌールとの競走（同じコースを自動で滑るヌールより先にゴールすれば勝ち）を足した。
+// 2026-11-20 オーナー「各ミニゲームに三段階の難易度を追加」（#3779）: ヌールとの勝負に初級・中級・上級（TIER_TUNING）。中級は前と同じ。
+import { TIERS } from "../core/play-tiers.js";
 
 // 2026-11-13 オーナー「もっとコースを複雑にしたり少し長くしたい」で 1,700 → 2,000m（1本 約50秒 → 約55〜58秒）。
 export const COURSE = Object.freeze({ length: 2000, practiceLength: 800, laneHalf: 1 });
@@ -74,6 +76,34 @@ export const SPIN = Object.freeze({ rate: 1.7, finishRate: 3.2, tolerance: 0.1, 
 // 上限を超えた分は settle 秒/秒までの速さで戻す。
 // 2026-11-13 オーナー「接戦っぽくしたい」で gap 20 → 12・span 50 → 40（近くで競り合う時間を長く）。
 export const RUBBER = Object.freeze({ gap: 12, span: 40, catchUp: 1.25, easeOff: 0.75, lead: 3, lag: 3, keep: 0.5, holdUntil: 0.6, settleAt: 0.95, lastStretch: 0.3, settle: 0.3, ease: 6 });
+// 三段階（#3779・core/play-tiers.js）: ヌールとの勝負（「滑る」）だけに効く。なるとの勝負と練習は段の外（中級のコース・なるの値のまま）。
+// 中級は今の遊びと同じ（上書きなし）。ここが段ごとの調整値の一か所で、前と違うのは書いた値だけ（コースの4本・カーブ・得点・評価の境目は同じ）。
+// - rocks: 岩の多さ。中級の同じコース（起伏・カーブ・長さは同じ）から作る。
+//   thin: 岩の列（同じ距離に並ぶ岩）を、この数ごとに1つだけ残す（初級は2つに1つ。本番の4本で岩 31/23/18/36 → 17/12/8/21）。
+//   fill: 岩の無い長い区間に岩を1つ足す（上級。同 → 35/30/22/40）。前の岩から before m・起伏の後は afterBump m（大ジャンプの着地から曲がる間。
+//   64 では上級のヌールが着地の先の岩をかすめて転ぶコースがあった）・次の岩や起伏まで after m を空ける。
+// - noor: ヌールの滑り（RIVALS.noor の上書き）。charge＝ゲージの溜まり（ブーストの回数）、boostAt＝使い始める量、startSpeed＝出だしの速さ、
+//   skill＝着地の腕（"perfect" は着地を決める。中級のヌールは "rival"＝着地が少し遅い）。
+// - rubber: いい勝負の手加減（RUBBER の上書き）。easeOff が小さいほど・lag／keep が長いほど、大きく離された時に待ってくれる。
+// 目安（2026-11-20 に remake/test/desert_ride.mjs のボットで照合。本番の4本×滑る位置10通り）: 初級は着地の甘い滑り（B評価の目安）で 100%。
+// 中級は前と同じ（同じ滑りで 10%・着地を決めると 100%）。上級は着地を決める滑り（A評価の目安）で 33%、回って決める滑り（S）なら 100%。
+// 上級のヌールのゴールは 57〜58 秒で、なる（53〜56 秒）よりは遅い。初級のヌールは 62 秒前後。
+// 上級の charge は 1 にすると、ブーストで岩へ突っ込んで転ぶコースが出た（0.95 と出だし +0.2 で同じくらいの速さにした）。
+export const TIER_TUNING = Object.freeze({
+  easy: Object.freeze({
+    rocks: Object.freeze({ thin: 2 }),
+    noor: Object.freeze({ startSpeed: SPEED.start - 2, charge: 0.55, boostAt: 0.45 }),
+    rubber: Object.freeze({ easeOff: 0.6, lag: 4, keep: 1 }),
+  }),
+  normal: Object.freeze({ rocks: Object.freeze({}), noor: Object.freeze({}), rubber: Object.freeze({}) }),
+  hard: Object.freeze({
+    rocks: Object.freeze({ fill: Object.freeze({ before: 32, afterBump: 84, after: 32 }) }),
+    noor: Object.freeze({ skill: "perfect", charge: 0.95, startSpeed: SPEED.start + 0.2 }),
+    rubber: Object.freeze({ easeOff: 0.88, lag: 2, keep: 0.25 }),
+  }),
+});
+/** 段の名前をそろえる（知らない値・段なしは中級＝段ができる前の遊び）。 */
+export const tierOf = tier => TIERS.includes(tier) ? tier : "normal";
 // ブーストの代償（2026-11-13。それまでは純粋な得で、突っ込むほど良かった）: 岩を砕くたびに残り時間が smashCost 秒減る
 // （smashFloor 秒までは残す＝砕いた直後に切れて次の岩で転ばない）。端の深い砂（|x|>EDGE）に入ると、その場でブーストが切れる。
 // practiceRecoverWindow: 練習の立て直しの猶予（初めてでも間に合う長さ）。
@@ -294,25 +324,59 @@ export function upcomingCurve(course, z, lookAhead = 110) {
   return best;
 }
 
-/** コース定義（id か seed）から本番の1本を作る。同じ引数なら同じコース。 */
-export function buildCourse({ id, seed } = {}) {
+/**
+ * 段の岩（#3779・TIER_TUNING の rocks）。中級のコースの features から作り、起伏は動かさない（跳ぶ所・稼ぎ場は同じ）。
+ * 初級は岩の列を間引くだけ（減らすので、抜けられる幅・岩どうしの間隔は中級以上）。
+ * 上級は岩の無い長い区間の真ん中に岩を1つ足す（前後の岩・起伏の着地から十分に離す。位置は seed で決まる）。
+ */
+function tierFeatures(features, tier, seed, length) {
+  const { thin = 1, fill = null } = TIER_TUNING[tierOf(tier)].rocks;
+  let list = features;
+  if (thin > 1) {
+    const rows = [...new Set(list.filter(f => f.kind === "rock").map(f => f.z))].sort((a, b) => a - b);
+    const keep = new Set(rows.filter((z, i) => i % thin === 0));
+    list = list.filter(f => f.kind !== "rock" || keep.has(f.z));
+  }
+  if (fill) {
+    const random = rng((seed * 7919 + 13) >>> 0), added = [];
+    const spots = [...list.map(f => ({ z: f.z, kind: f.kind })), { z: length - 140, kind: "end" }].sort((a, b) => a.z - b.z);
+    let free = LAYOUT.start;
+    for (const spot of spots) {
+      const latest = spot.z - fill.after;
+      if (latest >= free) added.push(rock(Math.round((free + latest) / 2), (random() < 0.5 ? -1 : 1) * (0.25 + random() * 0.55)));
+      free = Math.max(free, spot.z + (spot.kind === "bump" ? fill.afterBump : fill.before));
+    }
+    list = [...list, ...added].sort((a, b) => a.z - b.z);
+  }
+  return list;
+}
+
+/**
+ * コース定義（id か seed）から本番の1本を作る。同じ引数なら同じコース。
+ * tier（#3779）: 初級・上級は岩の多さだけを変える（tierFeatures）。起伏・カーブ・長さ・名前は中級の同じコースのまま。中級・段なしは前と同じ。
+ */
+export function buildCourse({ id, seed, tier } = {}) {
   const pack = (id && packById(id)) || (seed != null && packBySeed(seed)) || null;
-  if (!pack) return generateCourse(seed ?? DEFAULT_SEED);
-  const course = generateCourse(pack.seed);
-  if (!pack.curves) return decorateCourse({ ...course, id: pack.id, name: pack.name, curves: course.curves });
-  return decorateCourse({ ...course, id: pack.id, name: pack.name, curves: closeCurves(pack.curves, course.length) });
+  const level = tierOf(tier);
+  const course = generateCourse(pack ? pack.seed : seed ?? DEFAULT_SEED);
+  const tiered = level === "normal" ? null : { features: tierFeatures(course.features, level, course.seed, course.length), tier: level };
+  if (!pack) return tiered ? decorateCourse({ ...course, ...tiered }) : course;
+  return decorateCourse({ ...course, ...tiered, id: pack.id, name: pack.name, curves: pack.curves ? closeCurves(pack.curves, course.length) : course.curves });
 }
 
-/** runSeed から COURSE_PACKS の1本を決めて作る（決定的）。 */
-export function pickCourse(runSeed) {
+/** runSeed から COURSE_PACKS の1本を決めて作る（決定的）。段（tier）が違っても、同じ runSeed なら同じ名前のコース。 */
+export function pickCourse(runSeed, tier) {
   const index = Math.floor(rng(runSeed)() * COURSE_PACKS.length);
-  return buildCourse({ id: COURSE_PACKS[index].id });
+  return buildCourse({ id: COURSE_PACKS[index].id, tier });
 }
 
-/** rival: rivalRun() の結果（本番のヌール）。あれば、ゴールの順を競い、先着で加点する。 */
-export function createGame(course, { rival = null, charge = 1 } = {}) {
+/**
+ * rival: rivalRun() の結果（本番のヌール）。あれば、ゴールの順を競い、先着で加点する。
+ * tier: ヌールとの勝負の段（#3779。結果に残す）。なるとの勝負・練習・検査は null（段の外）。
+ */
+export function createGame(course, { rival = null, charge = 1, tier = null } = {}) {
   return {
-    course, rival, chargeRate: charge, t: 0, z: 0, x: 0, vx: 0, speed: SPEED.start, rivalClock: 0, rivalRate: 1, rivalFinishT: null,
+    course, rival, tier: TIERS.includes(tier) ? tier : null, chargeRate: charge, t: 0, z: 0, x: 0, vx: 0, speed: SPEED.start, rivalClock: 0, rivalRate: 1, rivalFinishT: null,
     air: 0, airTotal: 0, airPeak: 0, airKind: null, landingPress: null, lastJumpT: -9,
     rot: 0, spinDir: 0, spinHold: false, spinArmed: null, lastTrick: null,
     gauge: 0, chargedAt: -9, boostT: 0, carving: false, carveT: 0,
@@ -646,15 +710,15 @@ export function step(game, input, dt) {
 }
 
 /** 相手の再生を進める（RUBBER）。差が開くと追いつく／手加減する。追いついた分はゴール手前までに返す。 */
-export function rubberCaps(progress) {
-  const R = RUBBER, p = Math.max(0, Math.min(1, progress));
+export function rubberCaps(progress, rubber = RUBBER) {
+  const R = rubber, p = Math.max(0, Math.min(1, progress));
   return { lead: R.lead * Math.max(0, Math.min(1, (R.settleAt - p) / (R.settleAt - R.holdUntil))), lag: R.keep + (R.lag - R.keep) * Math.min(1, (1 - p) / R.lastStretch) };
 }
 function stepRival(game, dt) {
-  const rival = game.rival, R = RUBBER;
+  const rival = game.rival, R = rival.rubber || RUBBER; // 段ごとの手加減（rivalRun が持たせる。無ければ中級）
   const rivalZ = rivalAt(rival, game.rivalClock).z;
   const lead = game.z - rivalZ, dev = game.rivalClock - game.t;
-  const caps = rubberCaps(Math.max(game.z, rivalZ) / game.course.length);
+  const caps = rubberCaps(Math.max(game.z, rivalZ) / game.course.length, R);
   let target = 1;
   if (lead > R.gap) target = 1 + (R.catchUp - 1) * Math.min(1, (lead - R.gap) / R.span);
   else if (lead < -R.gap && rival.easeOff !== false) target = 1 - (1 - R.easeOff) * Math.min(1, (-lead - R.gap) / R.span);
@@ -720,11 +784,14 @@ export function summary(game) {
     good: game.stats.good, nearMiss: game.stats.nearMiss, seed: game.course.seed,
     tricks: game.stats.tricks, bestTrick: game.stats.bestTrick, boosts: game.stats.boosts, smashed: game.stats.smashed,
     recoveries: game.stats.recoveries, carves: game.stats.carves, courseId: game.course.id ?? null, courseName: game.course.name ?? null,
-    race: game.race ? { ...game.race } : null,
+    race: game.race ? { ...game.race } : null, ...(game.tier ? { tier: game.tier } : {}),
   };
 }
 
-/** 保存する記録の形を検査して整える（形が合わなければ null）。 */
+/** 結果の段（#3779）。段の無い結果（段ができる前の保存・なるとの勝負）は中級＝今の遊びとして扱う。 */
+export const resultTier = value => tierOf(value?.tier);
+
+/** 保存する記録の形を検査して整える（形が合わなければ null）。段（tier）は知っている値だけ残す（無ければ resultTier で中級）。 */
 export function readResult(value) {
   if (!value || typeof value !== "object" || value.finished !== true) return null;
   if (value.rulesVersion != null && value.rulesVersion !== 1 && value.rulesVersion !== RULES_VERSION) return null;
@@ -735,7 +802,8 @@ export function readResult(value) {
     ? { won: value.race.won, gap: Math.round(value.race.gap * 10) / 10, who: value.race.who === "naru" ? "naru" : "noor" } : null;
   return { ...(value.rulesVersion === RULES_VERSION ? { rulesVersion: RULES_VERSION } : {}), finished: true, score: Math.round(score), rank: value.rank, time: Math.round(time * 10) / 10, maxCombo: Math.round(maxCombo), falls: Math.round(falls),
     bigJumps: Math.round(n(value.bigJumps) ?? 0), perfect: Math.round(n(value.perfect) ?? 0), good: Math.round(n(value.good) ?? 0), nearMiss: Math.round(n(value.nearMiss) ?? 0),
-    tricks: Math.round(n(value.tricks) ?? 0), bestTrick: Math.round(n(value.bestTrick) ?? 0), boosts: Math.round(n(value.boosts) ?? 0), race };
+    tricks: Math.round(n(value.tricks) ?? 0), bestTrick: Math.round(n(value.bestTrick) ?? 0), boosts: Math.round(n(value.boosts) ?? 0), race,
+    ...(TIERS.includes(value.tier) ? { tier: value.tier } : {}) };
 }
 
 // 自動操作がブーストを使い始めるゲージの量。2026-11-13 にゲージが「使わないと減る」ようになったので、満タンまで待たずに使う（減る前に使い切る）
@@ -854,9 +922,12 @@ const RIVAL_SAMPLE = 1 / 30;
 /**
  * 本番の競走相手（who: "noor"／"naru"、`RIVALS`）の滑り。同じコースを自動操作で最後まで滑り、ゴールの時刻と、1/30 秒ごとの位置・姿勢を返す。
  * 同じコースなら毎回同じ（決定的）。人物とは当たらない（並んで滑るだけ）。
+ * tier（#3779）: ヌールの段（TIER_TUNING の noor・rubber を重ねる）。なるは段の外（いつも同じ）。
  */
-export function rivalRun(course, { who = "noor", maxTime = 200 } = {}) {
-  const { skill, startX, only360, startSpeed, easeOff = true, charge = 1, boostAt = 1 } = RIVALS[who] || RIVALS.noor;
+export function rivalRun(course, { who = "noor", maxTime = 200, tier } = {}) {
+  const tuned = who === "noor" || !RIVALS[who] ? TIER_TUNING[tierOf(tier)] : null;
+  const { skill, startX, only360, startSpeed, easeOff = true, charge = 1, boostAt = 1 } = { ...(RIVALS[who] || RIVALS.noor), ...tuned?.noor };
+  const rubber = tuned && Object.keys(tuned.rubber).length ? Object.freeze({ ...RUBBER, ...tuned.rubber }) : RUBBER;
   const game = createGame(course, { charge }), memo = { lane: startX, only360, boostAt, finishBoostAt: RIVAL_FINISH_BOOST_AT }, samples = [];
   game.x = startX; game.speed = startSpeed;
   const snap = () => samples.push({ t: game.t, z: game.z, x: game.x, vx: game.vx, air: game.air, airTotal: game.airTotal, airPeak: game.airPeak, airKind: game.airKind,
@@ -867,7 +938,8 @@ export function rivalRun(course, { who = "noor", maxTime = 200 } = {}) {
     botStep(game, skill, memo, 1 / 60);
     if (game.t >= next - 1e-9 || game.finished) { snap(); next += RIVAL_SAMPLE; }
   }
-  return Object.freeze({ who: RIVALS[who] ? who : "noor", finishTime: game.finishTime ?? game.t, samples, falls: game.falls, easeOff });
+  return Object.freeze({ who: RIVALS[who] ? who : "noor", finishTime: game.finishTime ?? game.t, samples, falls: game.falls, easeOff, rubber,
+    ...(tuned ? { tier: tierOf(tier) } : {}) });
 }
 
 /**

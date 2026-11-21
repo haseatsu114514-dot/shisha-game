@@ -11,8 +11,9 @@ import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { DEPARTURE_PREP_DAYS } from "../core/chapter-clock.js";
 import { runDaily } from "../daily/calendar.js";
 import { ensureRioBeforeTokyo } from "../daily/shop-greeting.js";
-import { allSpots, CHAPTER_TALKS } from "../daily/spots.js";
+import { allSpots, CHAPTER_TALKS, chapterTalkDue } from "../daily/spots.js";
 import { SAMECHAN_PREP_TALKS } from "../daily/samechan.js";
+import { HIYORI_PREP_TALKS } from "../daily/hiyori.js";
 import { trpgSpot } from "../daily/trpg.js";
 import { MAP, loadChapterTwoDialogues, loadPreparationDialogues } from "./ch2-city-data.js";
 import { CITY_SHOP, knownCityOutings } from "./ch2-outings.js";
@@ -52,9 +53,10 @@ export function markDeparted(value = state) {
   return true;
 }
 
-// クラウドのライブの夜が待っている間は、貴方ノ為ノ此ノ煙。 に「！」（chapters/ch2-preparation.js の kuraudoLiveDue・RVE07）
-const withKuraudoLive = spot => spot.charId === "kuraudo" ? { ...spot, hasNew: () => kuraudoLiveDue(state) || !!spot.hasNew?.() } : spot;
-const cityRegion = () => [...PREPARATION_SPOTS.map(withKuraudoLive), CITY_SHOP, ...knownCityOutings(state).filter(spot => spot.kind !== "trpg"), trpgSpot()].filter(Boolean);
+// クラウドのライブの夜（chapters/ch2-preparation.js の kuraudoLiveDue・RVE07）と送り出しの会話（#3097 PR-I）が待っている間は、
+// 貴方ノ為ノ此ノ煙。 に「！」（神崎・あげはの店は daily/spots.js の hasNewStory が送り出しの会話も見る）
+const withReiLive = spot => spot.charId === "kuraudo" ? { ...spot, hasNew: () => kuraudoLiveDue(state) || !!chapterTalkDue("kuraudo") || !!spot.hasNew?.() } : spot;
+const cityRegion = () => [...PREPARATION_SPOTS.map(withReiLive), CITY_SHOP, ...knownCityOutings(state).filter(spot => spot.kind !== "trpg"), trpgSpot()].filter(Boolean);
 const atHome = spot => (spot?.region || "home") === "home";
 
 /**
@@ -98,18 +100,25 @@ export function departurePrepDefinition({ destination, nightEvents = {}, morning
 }
 
 /**
- * 地元の常連（アダム・みんと・凛想・サメちゃん）が、準備期間の来店で一度だけ話す送り出しの会話（N3a）
- * （daily/spots.js の CHAPTER_TALKS の prep と daily/samechan.js の SAMECHAN_PREP_TALKS）。台本は data/dialogue/ch3_ch4_home.json。
+ * 地元の常連（アダム・みんと・凛想・サメちゃん・つむぎ・ひより）と柚ヶ谷の三人（あげは・神崎・クラウド）が、準備期間の来店で
+ * 一度だけ話す送り出しの会話（N3a・#3097 PR-I）。daily/spots.js の CHAPTER_TALKS の prep・daily/samechan.js の SAMECHAN_PREP_TALKS・
+ * daily/hiyori.js の HIYORI_PREP_TALKS。
  */
 export const departureTalkScenes = () => [
   ...Object.values(CHAPTER_TALKS).flat().filter(talk => talk.prep).map(talk => talk.scene),
   ...Object.values(SAMECHAN_PREP_TALKS),
+  ...Object.values(HIYORI_PREP_TALKS),
 ];
+// 台本のファイル。第3章の分と最初の4人の第4章の分は ch3_ch4_home.json、#3097 PR-I で足した第4章の5人の分は ch4_prep_home.json
+// （章ごとの台詞量をファイル名の章接頭辞で数えるので、第4章の分は ch4_ で始まるファイルに置く）。
+export const DEPARTURE_TALK_FILES = Object.freeze(["ch3_ch4_home", "ch4_prep_home"]);
 /** 送り出しの会話は寄り道なので、読み込めなくても準備期間は始める（会話が出ないだけ）。 */
 async function loadDepartureTalks() {
   const ids = departureTalkScenes();
   try {
-    const dialogues = await readDialogues("ch3_ch4_home", ids);
+    const dialogues = Object.assign({}, ...await Promise.all(DEPARTURE_TALK_FILES.map(name => readDialogues(name, []))));
+    const missing = ids.filter(id => !dialogues[id]?.lines?.length);
+    if (missing.length) throw new Error(`送り出しの台本が不足しています ${missing.join(", ")}`);
     Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
   } catch (error) {
     console.warn("[departure-prep] 地元の送り出しの会話を読み込めませんでした", error);

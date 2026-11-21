@@ -26,6 +26,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "炭が馴染むまで、神崎さんは何も言わなかった。壁の時計の音が、やけに大きく聞こえる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "出てきたシーシャは、見たことのない質感だった。ドラゴンフルーツの煙に、重みと長い余韻がある。"
         },
         {
@@ -1050,6 +1055,111 @@
       ]
     },
     {
+      "dialogue_id": "outing_kumicho_1",
+      "comment": "#3097 PR-A（計画 §3-2 の 2-1・見本②）。神崎の♥3の友人の外出。LIME lime_outing_kumicho_1 で誘われ、remake_ch2_kumicho_sento で勧められた駅裏の銭湯へ一緒に行く。素性・スランプ・味の不調には触れない。誘いは銭湯の紹介を読んだ後、♥5の締めくくり（呼び方が「兄弟」に変わる）の前にだけ届く（daily/phone.js）。銭湯の背景 bg_yuzugaya_sento.webp は台本の metadata から引けないため、昼の通りの絵を使う。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "topic": "銭湯"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼下がり。駅裏の銭湯の暖簾の前で、神崎さんが手ぬぐいを肩にかけて待っていた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、あんちゃん。来なすったか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "誘ってもらえるとは、思ってませんでした"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "俺のほうが、一人で来すぎなんでさ。たまには連れがいてもいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "脱衣所で、神崎さんは自分の籠の横に、もう一つ籠を並べてくれた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "サウナは下の段から。最初から上へ行くのは、素人の見栄ですわ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（素人の見栄……俺、上に行こうとしてた）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "下の段に並んで座る。砂時計が落ちきるまで、神崎さんは一言もしゃべらなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "熱波の風が来た。体感、百五十度。神崎さんの言っていたことは、大げさじゃなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "っ、……水風呂、行ってきます"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "待ちな。汗を流してからだ。……水は、みんなで使うもんでね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一桁の水に肩まで沈んで、外の椅子に並んで座った。頭の中が、急に静かになる。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……どうです。何も考えなくていい時間ってのは"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭のことも、葉のことも、いまは浮かんでこないです"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "それでいい。考えすぎた頭で作る煙は、角が立つんですわ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "同じ湯に浸かって、同じ椅子で黙る。……盃を交わすのと、そう変わらねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "盃、ですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……映画の話だ。気にしなさんな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、神崎さんは番台で瓶の牛乳を二本買って、一本をこちらへ差し出した。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch2_kumicho_bond_finale",
       "comment": "#2027 好感度MAXの締めくくり（友情のみ）。閉店後に使い込んだドラゴンフルーツの素焼きを、盃の代わりに渡す。",
       "metadata": {
@@ -1162,7 +1272,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "そいつは、あんちゃんがこいつで作った煙を吸ってから決めやす"
+          "text": "そいつは、兄弟がこいつで作った煙を吸ってから決めやす"
         },
         {
           "speaker": "hajime",
@@ -1220,7 +1330,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "……おう、あんちゃん。世界から、よく戻りなすった"
+          "text": "……おう。世界から、よく戻りなすった"
         },
         {
           "speaker": "hajime",
@@ -1240,7 +1350,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "県大会の日、あんちゃんに『スジの通った一台』と言いやしたね"
+          "text": "県大会の日に『スジの通った一台』と言いやしたね"
         },
         {
           "speaker": "hajime",
@@ -1255,7 +1365,7 @@
         {
           "speaker": "kumicho",
           "face": "serious",
-          "text": "……だが、あの日のあんちゃんの目は、炭より先に持ち点の表を見てた"
+          "text": "……だが、あの日は炭より先に持ち点の表を見てやした"
         },
         {
           "speaker": "hajime",
@@ -1300,7 +1410,7 @@
         {
           "speaker": "kumicho",
           "face": "smile",
-          "text": "世界の舞台のあんちゃんは、持ち点の表じゃなく、吸う人の顔を見てた"
+          "text": "世界の舞台じゃ、持ち点の表より、吸う人の顔を見てやした"
         },
         {
           "speaker": "kumicho",

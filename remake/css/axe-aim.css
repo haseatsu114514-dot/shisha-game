@@ -1,0 +1,311 @@
+/* First-person controls use the quiet edges of the lane. */
+.axe-game[data-input-mode="tap-pull"].axe-first-person {
+  --axe-inset-l: max(28px, calc((env(safe-area-inset-left, 0px) - max(0px, (100dvw - 1280px * var(--k, 1)) / 2)) / var(--k, 1) + 14px));
+  --axe-inset-r: max(28px, calc((env(safe-area-inset-right, 0px) - max(0px, (100dvw - 1280px * var(--k, 1)) / 2)) / var(--k, 1) + 14px));
+  --axe-inset-t: max(14px, calc(env(safe-area-inset-top, 0px) / var(--k, 1) + 8px));
+  --axe-inset-b: max(18px, calc(env(safe-area-inset-bottom, 0px) / var(--k, 1) + 8px));
+  --axe-flick-bottom: calc(var(--axe-inset-b) + 220px);
+  --axe-ink: #fff4df;
+  --axe-brass: #ecc18a;
+  --axe-blue: #bce9f5;
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header {
+  position: absolute; inset: var(--axe-inset-t) auto auto var(--axe-inset-l); display: flex; width: max-content; gap: 12px;
+  min-height: var(--help-hit); padding: 0; margin: 0; border: 0; background: none; box-shadow: none;
+}
+.axe-game.axe-first-person .axe-header .axe-help { margin: 0; }
+
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-panel {
+  position: absolute; z-index: 7; top: calc(var(--axe-inset-t) + 91px); left: var(--axe-inset-l);
+  width: min(280px, 25%); display: grid; justify-items: start; gap: 10px;
+  pointer-events: none; text-align: left; font-family: system-ui, sans-serif; color: var(--axe-ink);
+  text-shadow: 0 1px 3px #090705, 0 0 8px #090705;
+}
+.axe-game.axe-first-person .axe-aim-panel .axe-aim-prompt {
+  position: static; display: grid; gap: 6px; width: 100%; transform: none;
+  border: 0; border-left: 3px solid var(--axe-brass); padding: 7px 9px 9px 15px; margin: 0;
+  border-radius: 0; background: linear-gradient(90deg, #130e0ae8, #130e0ad0 78%, #130e0a00);
+  box-shadow: none; text-align: left; white-space: normal; color: var(--axe-ink);
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt-title { letter-spacing: .035em; color: var(--axe-brass); font: 700 22px/1.15 system-ui, sans-serif; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt-sub { letter-spacing: 0; color: inherit; font: 750 29px/1.23 system-ui, sans-serif; }
+.axe-first-person:is([data-phase="horizontal"],[data-phase="vertical"]) .axe-aim-prompt-title::after {
+  content: ""; display: inline-block; width: 42px; height: 4px; margin: 0 0 .2em .65em;
+  background: linear-gradient(to right, var(--axe-brass) 46%, transparent 46% 54%, #77614d 54%);
+}
+.axe-first-person[data-phase="vertical"] .axe-aim-prompt-title::after {
+  background: linear-gradient(to right, var(--axe-brass) 46%, transparent 46% 54%, var(--axe-brass) 54%);
+}
+/* The same illustrated brass and enamel used by the axe lounge's own equipment tags. */
+.axe-first-person .axe-call-controls { display: flex; align-items: center; gap: 8px; pointer-events: none; }
+.axe-first-person .axe-call-controls button {
+  display: flex; align-items: center; justify-content: center; gap: 5px; height: 104px;
+  padding: 8px 36px; border: 0; border-radius: 0; box-shadow: none;
+  color: #fff3d4; cursor: pointer; pointer-events: auto; touch-action: manipulation;
+  text-shadow: 0 2px 3px #102130; font: 800 23px/1.2 system-ui, sans-serif;
+}
+.axe-first-person .axe-call-toggle {
+  background: url("../img/ui/axe_throw/tag-slate-blue.webp") center / 100% 87% no-repeat;
+}
+.axe-first-person .axe-call-toggle:not([data-target=""]) {
+  background-image: url("../img/ui/axe_throw/tag-selected.webp");
+}
+.axe-first-person .axe-call-controls button:active { translate: 0 2px; }
+.axe-first-person .axe-call-controls button:disabled { opacity: .55; cursor: default; }
+.axe-first-person .axe-call-dial { flex: none; width: 43px; height: 43px; color: #f8ddaa; }
+.axe-first-person .axe-call-dial [data-blue] { fill: #4fa8d3; stroke: #142333; stroke-width: 1.5px; }
+.axe-first-person .axe-call-dial .selected { fill: #fff6cb; stroke: #442d13; stroke-width: 2px; r: 8px; }
+.axe-first-person .axe-call-name { white-space: nowrap; }
+.axe-first-person .axe-call-count { color: #d5ecf5; font: 700 22px/1 system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+.axe-first-person .axe-call-controls .axe-call-cancel {
+  width: 102px; padding: 8px 18px; background: url("../img/ui/axe_throw/tag-slate.webp") center / 92% 82% no-repeat;
+}
+.axe-first-person .axe-call-cancel svg { width: 43px; height: 43px; }
+.axe-first-person :is(.axe-call-controls button, .axe-pull-handle):focus-visible { outline: 3px solid #ffed9c; outline-offset: -4px; }
+
+/* The left wall is clear of both the scoring board and the hands. */
+.axe-game.axe-first-person .axe-declare:is([data-kind="challenge"],[data-kind="retarget"]),
+.axe-game.axe-first-person .axe-call-verdict {
+  position: absolute; z-index: 9; left: var(--axe-inset-l); right: auto; top: calc(var(--axe-inset-t) + 305px);
+  margin: 0; border: 0; border-radius: 0; box-shadow: none; transform: none; pointer-events: none;
+  display: flex; align-items: center; justify-content: center; gap: 8px; text-align: left;
+}
+.axe-game.axe-first-person .axe-declare:is([data-kind="challenge"],[data-kind="retarget"])::before { content: none; }
+.axe-game.axe-first-person .axe-declare[data-kind="challenge"] {
+  box-sizing: border-box; width: max-content; max-width: 305px; min-height: 72px;
+  padding: 9px 21px; gap: 9px; justify-content: flex-start;
+  border-inline-start: 4px solid #ffdf8a; background: linear-gradient(90deg,#26160cf2 30%,#29190ed9 84%,transparent);
+  animation: axe-challenge-stamp .29s ease-out both;
+}
+.axe-game.axe-first-person .axe-declare[data-kind="challenge"] strong,
+.axe-game.axe-first-person .axe-declare[data-kind="challenge"] span {
+  color: #fff2cd; text-shadow: 0 2px 2px #1c1009; letter-spacing: .025em; font: 800 23px/1.25 system-ui, sans-serif;
+}
+.axe-game.axe-first-person .axe-declare[data-kind="challenge"] span { color: #ffca74; }
+.axe-game.axe-first-person .axe-declare[data-kind="retarget"] {
+  top: calc(var(--axe-inset-t) + 300px); padding: 4px 12px; min-width: 0; background: #17130cd9;
+  animation: axe-turn-tick .18s ease-out both;
+}
+.axe-game.axe-first-person .axe-declare[data-kind="retarget"] strong { color: #ffe0a3; font: 750 24px/1.2 system-ui, sans-serif; }
+.axe-game.axe-first-person .axe-call-verdict {
+  top: calc(var(--axe-inset-t) + 94px); gap: 8px; width: 270px; height: 93px; justify-content: flex-start;
+  box-sizing: border-box; padding: 13px 34px 13px 37px; background: url("../img/ui/axe_throw/tag-slate.webp") center / 100% 100% no-repeat;
+  color: #f0d9bc; text-shadow: 0 1px 3px #10151a; animation: axe-challenge-stamp .25s ease-out both;
+}
+.axe-first-person .axe-call-verdict[data-result="hit"] { background-image: url("../img/ui/axe_throw/tag-selected.webp"); color: #fff3ae; }
+.axe-first-person .axe-call-verdict > i {
+  flex: none; width: 46px; height: 46px; display: grid; place-items: center; border: 3px solid currentColor; border-radius: 50%;
+}
+.axe-first-person .axe-call-verdict > i::before { content: ""; width: 28px; height: 5px; background: currentColor; transform: rotate(-38deg); }
+.axe-first-person .axe-call-verdict[data-result="hit"] > i::before {
+  width: 26px; height: 12px; border: solid currentColor; border-width: 0 0 5px 5px; background: none; transform: rotate(-45deg);
+}
+.axe-first-person .axe-call-verdict small, .axe-first-person .axe-call-verdict strong { display: block; font: 750 19px/1.32 system-ui, sans-serif; }
+.axe-first-person .axe-call-verdict strong { font-size: 30px; line-height: 1.12; }
+@keyframes axe-challenge-stamp { from { opacity: .35; transform: translateX(-24px) rotate(-4deg) scale(1.12); } to { opacity: 1; transform: none; } }
+@keyframes axe-turn-tick { from { transform: translateX(-6px); } to { transform: none; } }
+
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-board-pane > .axe-call-status[data-kind="called"] {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; clip-path: inset(50%); overflow: hidden;
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-board-pane > .axe-call-status[data-kind="sudden-death"] {
+  top: calc(var(--axe-inset-t) + 2px); width: 39%; padding: 6px 12px;
+  border-width: 0 0 1px; border-radius: 0; background: #122128e8; font-size: 24px;
+}
+
+/* Score alternatives share their markup and use the same live readings. */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill {
+  top: calc(var(--axe-inset-t) + 68px); right: var(--axe-inset-r); width: max-content; max-width: calc(100% - 220px);
+  padding: 0; border: 0; border-radius: 0; display: block; background: none; box-shadow: none;
+}
+.axe-first-person .axe-score-pill > :not(.axe-score-figures),
+.axe-first-person .axe-side .axe-match-score,
+.axe-first-person .axe-panel .axe-live-reason,
+.axe-first-person[data-phase="result"]:not([data-tutorial="true"]) .axe-panel .axe-result-card > :is(.axe-result-label, .axe-result-value, .axe-result-tip) {
+  position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important;
+  margin: -1px !important; border: 0 !important; clip-path: inset(50%); overflow: hidden; white-space: nowrap;
+}
+.axe-first-person .axe-score-figures {
+  --axe-score-columns: minmax(154px, auto);
+  display: grid; grid-template-columns: var(--axe-score-columns); gap: 2px 15px;
+  padding: 9px 13px 11px 16px; border-right: 2px solid #ba905e;
+  background: linear-gradient(270deg, #100d0aed, #100d0ad4 88%, #100d0a00);
+  color: var(--axe-ink); font: 650 23px/1.15 system-ui, sans-serif;
+  text-shadow: 0 1px 2px #080603; font-variant-numeric: tabular-nums;
+}
+.axe-first-person .axe-score-reading { display: flex; align-items: baseline; justify-content: space-between; gap: 11px; white-space: nowrap; }
+.axe-first-person .axe-score-reading > strong { font-size: 46px; font-weight: 790; line-height: 1.02; color: #fff3dc; }
+/* Reuse the lesson's total value in the score display, without a second lettering box. */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total.axe-score-reading {
+  display: flex; min-width: 0; order: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; text-align: start;
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total.axe-score-reading::before { content: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total.axe-score-reading > span {
+  display: block; color: inherit; font: inherit;
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total.axe-score-reading > strong {
+  font: 790 46px/1.42 system-ui, sans-serif; color: #fff3dc; text-shadow: inherit;
+}
+.axe-first-person .axe-score-reading[data-reading="latest"] > strong { color: #ffd290; }
+.axe-first-person .axe-score-reading[data-reading="opponent"] > strong { color: var(--axe-blue); }
+.axe-first-person .axe-score-round { order: -1; padding: 0 0 4px; color: var(--axe-brass); font-size: 20px; text-align: right; white-space: nowrap; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person[data-score-layout="top"] .axe-score-pill { top: var(--axe-inset-t); }
+.axe-first-person[data-score-layout="top"] .axe-score-figures {
+  border-right: 0; border-top: 2px solid #ba905e; padding: 7px 12px 8px;
+  display: flex; align-items: baseline; background: #100d0ae8;
+}
+.axe-first-person[data-score-layout="top"] .axe-score-reading + .axe-score-reading { border-left: 1px solid #bda17f55; padding-left: 11px; }
+.axe-first-person[data-score-layout="top"] .axe-score-round { order: 1; }
+@media (max-width: 640px) and (orientation: landscape) {
+  .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill { top: var(--axe-inset-t); }
+  .axe-first-person .axe-score-figures { display: flex; align-items: baseline; border-right: 0; border-top: 2px solid #ba905e; padding: 6px 10px; background: #100d0ae8; }
+  .axe-first-person .axe-score-round { order: 1; }
+}
+
+/* Keep the large swipe surface above the sleeve on the right. */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-timing {
+  inset: auto var(--axe-inset-r) var(--axe-flick-bottom) auto; width: 270px; pointer-events: none;
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-track {
+  width: 100%; margin: 0; border: 0; border-radius: 0; background: none;
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-handle {
+  inset: 0; width: 100%; height: 100%; display: grid; align-content: end; justify-content: end;
+  padding: 0 4px 0 0; border: 0; border-radius: 0; box-shadow: none;
+  background: none !important; touch-action: none; pointer-events: auto;
+}
+.axe-first-person .axe-flick-emblem { height: 100%; width: 130px; display: grid; justify-items: center; pointer-events: none; }
+.axe-first-person .axe-flick-arrows { height: 100%; width: 100%; overflow: visible; }
+.axe-first-person .axe-swipe-grip { transform: translateY(var(--axe-swipe-y, 0px)); }
+.axe-first-person:not([data-reduced-motion="true"]) .axe-pull-handle[data-demonstrate="true"] .axe-swipe-grip {
+  animation: axe-swipe-demo 1.05s ease-in-out both;
+}
+@keyframes axe-swipe-demo { 0%, 20% { transform: none; } 70% { transform: translateY(-82px); } 100% { transform: none; } }
+.axe-first-person .axe-swipe-release { display: none; }
+.axe-first-person[data-phase="flight"][data-actor="player"]:not([data-reduced-motion="true"]) .axe-swipe-release {
+  display: block; position: absolute; z-index: 5; pointer-events: none; right: calc(var(--axe-inset-r) + 52px);
+  bottom: calc(var(--axe-flick-bottom) + 100px); width: 32px; height: 74px;
+  background: linear-gradient(#fff4c1, #eab864 45%, transparent);
+  clip-path: polygon(50% 0, 100% 25%, 62% 17%, 50% 100%, 38% 17%, 0 25%);
+  animation: axe-swipe-away .24s ease-out both;
+}
+@keyframes axe-swipe-away { from { opacity: .95; transform: translateY(12px); } to { opacity: 0; transform: translateY(-38px); } }
+.axe-first-person .axe-call-iris {
+  stroke: #fff1ac; opacity: 0; transform-origin: 0 0; animation: axe-iris-open .75s cubic-bezier(.12,.65,.22,1) both;
+}
+.axe-first-person .axe-call-iris[data-cue="turn"] { stroke: #c1f6ff; animation-duration: .3s; }
+.axe-first-person .axe-call-iris:is([data-cue="release"],[data-cue="miss"]) { animation-name: axe-iris-close; animation-duration: .48s; }
+.axe-first-person .axe-call-iris[data-cue="miss"] { stroke: #c9d0ce; }
+.axe-first-person[data-phase="flight"][data-actor="player"]:not([data-called=""]) .axe-flight-trail { stroke: #ffcc79; stroke-width: 6px; }
+.axe-first-person .axe-call-iris[data-cue="hit"] { stroke: #ffd67c; animation-duration: .85s; }
+@keyframes axe-iris-open {
+  from { transform: scale(.56) rotate(-25deg); opacity: .94; }
+  36% { opacity: 1; }
+  to { transform: scale(1.35) rotate(10deg); opacity: 0; }
+}
+@keyframes axe-iris-close {
+  from { transform: scale(1.14); opacity: .9; }
+  to { transform: scale(.46); opacity: 0; }
+}
+.axe-first-person[data-reduced-motion="true"] :is(.axe-call-iris,.axe-flick-emblem .axe-flick-arrows) { animation: none; transform: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-panel { right: var(--axe-inset-r); bottom: var(--axe-inset-b); pointer-events: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-panel button { pointer-events: auto; }
+/* Use the clear floor on the left for the controls throughout aiming and throwing. */
+.axe-game[data-input-mode="tap-pull"].axe-first-person:is([data-phase="horizontal"], [data-phase="vertical"], [data-phase="power"]) .axe-panel {
+  right: auto; left: var(--axe-inset-l); padding: 0;
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person[data-phase="power"] .axe-panel {
+  overflow: visible;
+}
+.axe-game.axe-first-person[data-phase="power"] .axe-panel :is(.axe-live-score, .axe-stability-meter) { max-width: 260px; }
+.axe-game.axe-first-person[data-phase="power"] .axe-panel .axe-controls {
+  display: grid; grid-template-columns: 130px 154px; gap: 8px; width: max-content;
+}
+.axe-game.axe-first-person[data-phase="power"] .axe-panel .axe-controls .axe-button {
+  min-height: 100px; padding: 4px 8px; color: var(--axe-ink); font: 700 23px/1.22 system-ui, sans-serif;
+}
+/* 無効状態は札を透かさず文字色で示す。 */
+.axe-game.axe-first-person .axe-panel .axe-controls .axe-button:disabled { opacity: 1; color: #bbc1bf; }
+/* Keep the game goal clear of the blade and the judge's close-up, including on a successful call. */
+.axe-game.axe-first-person[data-phase="result"] .axe-declare[data-kind="goal"] {
+  left: var(--axe-inset-l); top: calc(var(--axe-inset-t) + 210px); width: 326px; max-width: 26%;
+  box-sizing: border-box; min-width: 0; gap: 3px; padding: 14px 42px 13px 58px; justify-items: start;
+  text-align: left; overflow: hidden; white-space: normal; overflow-wrap: anywhere; transform: none;
+  border: 2px solid #efc374; border-inline-start: 5px solid #ffdc8d; border-radius: 0 14px 0 14px;
+  background: linear-gradient(112deg, #59422c, #2c2131 22%, #171d32 72%, #3a304c);
+  box-shadow: inset 0 0 0 3px #211a29, 0 3px 8px #130c10;
+  animation: axe-award-enter .38s cubic-bezier(.16,.8,.23,1) both;
+}
+.axe-game.axe-first-person[data-phase="result"] .axe-declare[data-kind="goal"]::before {
+  content: ""; position: absolute; inset: 10px auto auto 8px; z-index: 0; width: 45px; height: 56px;
+  background: linear-gradient(145deg,#fffde3 28%,#ffdb72 50%,#ff986c 85%); border: 0; border-image: none;
+  clip-path: polygon(48% 0,56% 33%,83% 13%,68% 40%,100% 45%,66% 54%,82% 81%,57% 65%,46% 100%,41% 64%,13% 87%,31% 57%,0 49%,32% 40%,16% 14%,39% 33%);
+}
+.axe-game.axe-first-person[data-phase="result"] .axe-declare[data-kind="goal"]::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(118deg,transparent 19%,#fff8c94a 21%,transparent 24%,transparent 27%,#ffce8d4d 28%,transparent 29%);
+  animation: axe-award-sheen .58s ease-out both;
+}
+.axe-game.axe-first-person[data-phase="result"] .axe-declare[data-kind="goal"] strong {
+  font: 950 44px/1.12 system-ui,sans-serif; letter-spacing: .02em; color: #fff3ce; text-shadow: 0 2px 1px #301622;
+}
+.axe-game.axe-first-person[data-phase="result"] .axe-declare[data-kind="goal"] span { color: #ffe5b3; font: 720 24px/1.18 system-ui,sans-serif; text-shadow: none; }
+.axe-first-person .axe-award-sparks {
+  position: absolute; right: 4px; top: 6%; height: 88%; width: 39px; pointer-events: none;
+  animation: axe-award-sparks .6s ease-out both;
+}
+@keyframes axe-award-sparks { from { opacity: .35; transform: translate(-8px,6px) scale(.7); } to { opacity: 1; transform: none; } }
+@keyframes axe-award-enter { from { opacity: .55; transform: translateX(-9px) scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes axe-award-sheen { from { transform: translateX(-48%); } to { transform: translateX(95%); } }
+.axe-game.axe-first-person[data-reduced-motion="true"] .axe-declare[data-kind="goal"]::after { display: none; }
+.axe-first-person .axe-score-reading[data-reading="latest"] strong.axe-prize-score {
+  font: 950 66px/1.03 system-ui,sans-serif; color: #fff2c5; text-shadow: 0 2px 1px #141321;
+}
+@supports (background-clip: text) {
+  .axe-first-person .axe-score-reading[data-reading="latest"] strong.axe-prize-score {
+    background: linear-gradient(163deg,#fff 15%,#ff809e 28%,#ffd56a 43%,#96fa96 59%,#6fe5ff 73%,#bb9cfe 86%);
+    background-clip: text; color: transparent; -webkit-text-stroke: 1px #171324;
+    filter: drop-shadow(0 1px 0 #080910); text-shadow: none;
+  }
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-side {
+  left: var(--axe-inset-l); bottom: var(--axe-inset-b); width: min(338px, 27.5%); pointer-events: none;
+}
+.axe-game.axe-first-person .axe-side .axe-companion {
+  grid-template-columns: 64px minmax(0, 1fr); gap: 11px; align-items: center; display: grid;
+  padding: 8px 9px 8px 0; border: 0; border-radius: 0; overflow: hidden; box-shadow: none;
+  background: linear-gradient(90deg, #1c130ce8, #1c130cba 80%, #1c130c00);
+}
+.axe-game.axe-first-person:is([data-phase="horizontal"], [data-phase="vertical"], [data-phase="power"], [data-phase="flight"]) .axe-side .axe-companion { display: none; }
+.axe-game.axe-first-person .axe-side .axe-companion::before { content: none; }
+.axe-first-person .axe-side .axe-portrait-frame { float: none; width: 64px; height: 64px; margin: 0; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-side .axe-companion > .axe-companion-copy { display: block; min-width: 0; }
+.axe-game.axe-first-person .axe-side .axe-companion strong,
+.axe-game.axe-first-person .axe-side .axe-companion .axe-comment { display: block; margin: 0; font-family: system-ui, sans-serif; }
+.axe-game.axe-first-person .axe-side .axe-companion strong { color: var(--axe-brass); font-size: 22px; line-height: 1.25; }
+.axe-game.axe-first-person .axe-side .axe-companion .axe-comment { color: var(--axe-ink); font-weight: 600; font-size: 23px; line-height: 1.3; overflow-wrap: anywhere; }
+
+.axe-game.axe-first-person[data-phase="result"]:not([data-tutorial="true"]) .axe-panel .axe-result-card {
+  display: block; padding: 4px 9px 7px; border: 0; border-bottom: 1px solid #b58b5b; box-shadow: none;
+  background: linear-gradient(90deg, #18110c10, #18110cd9);
+}
+.axe-game.axe-first-person[data-phase="result"]:not([data-tutorial="true"]) .axe-panel .axe-result-card::before { content: none; }
+.axe-first-person .axe-zoom figcaption { background: #130e0bdd; border: 0; border-bottom: 1px solid #b58b5b; border-radius: 0; }
+.axe-first-person .axe-zoom figcaption :is(strong, .axe-zoom-power) {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; clip-path: inset(50%); overflow: hidden;
+}
+.axe-first-person .axe-zoom figcaption span { font: 700 22px/1.2 system-ui, sans-serif; }
+
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-zoom {
+  left: var(--axe-inset-l); right: auto; bottom: calc(var(--axe-inset-b) + 104px); width: 158px;
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person[data-phase="summary"] .axe-score-pill {
+  top: var(--axe-inset-t); width: min(710px, 70%);
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person[data-phase="summary"] .axe-score-figures {
+  display: flex; justify-content: flex-end; border-right: 0; border-top: 2px solid #ba905e; background: #100d0ae8;
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person[data-phase="summary"] .axe-scoreboard {
+  position: static !important; width: 100% !important; height: auto !important; margin: 5px 0 0 !important;
+  clip-path: none; background: #100d0ae8;
+}

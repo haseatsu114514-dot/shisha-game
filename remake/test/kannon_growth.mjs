@@ -3,18 +3,25 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 const root = new URL("../js/", import.meta.url), storage = new Map(), modules = new Map();
-let core, growth, sceneHook = null, modalHook = null, importHook = null, cardHook = null, choice = "reflect", scenes = [], opened = [], cards = [];
+let core, growth, sceneHook = null, modalHook = null, importHook = null, cardHook = null, choice = true,
+  scenes = [], backgrounds = [], menus = [], opened = [], cards = [];
 const context = vm.createContext({ console, Math, Map, Set, JSON, Date,
   localStorage: { getItem: k => storage.get(k) ?? null, setItem: (k,v) => storage.set(k,String(v)), removeItem: k => storage.delete(k) },
 });
 const mocks = {
   "core/stats.js": { affinityLevel: () => 0, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], maxStamina: () => 100, setExpHooks() {} },
-  "core/ui.js": { modal: async () => { modalHook?.(); return choice; }, gainCard: card => { cards.push(card); cardHook?.(); } },
+  "core/data.js": { sceneBg: (ref, time) => ({ url: `${ref}_${time}`, tint: null }) },
+  "core/ui.js": {
+    modal: async ({ options }) => { menus.push(Array.from(options, option => option.test)); modalHook?.(); return choice; },
+    setBg: async url => { backgrounds.push(url); },
+    dropRetired() {},
+    gainCard: card => { cards.push(card); cardHook?.(); },
+  },
   "vn/engine.js": { play: async id => {
     scenes.push(id);
     return sceneHook ? sceneHook(id) : { id, visited: [id] };
   } },
-  "daily/growth-board-screen.js": { openBoard: async ({ place }) => { opened.push(place); return []; } },
+  "daily/growth-board-screen.js": { openBoard: async ({ place, onExit }) => { opened.push(place); onExit?.(); return []; } },
 };
 async function load(url) {
   if (modules.has(url.href)) return modules.get(url.href);
@@ -34,23 +41,33 @@ async function load(url) {
 async function ns(path) { const m = await load(new URL(path,root)); await m.evaluate(); return m.namespace; }
 core = await ns("core/state.js"); growth = await ns("core/growth.js");
 assert.equal((await ns("core/carry.js")).flagVerdict("_kannon_growth_intro_done"), "carry");
+assert.equal((await ns("core/carry.js")).flagVerdict("_ch1_day3_kannon_done"), "reset");
 const plain = value => JSON.parse(JSON.stringify(value));
 function setup() {
   const s = core.newGame(); Object.assign(s,{ phase:"daily", day:3, slot:0, stamina:80 });
   growth.setGrowthPreview(true); growth.ensureGrowth().hidane.any = 2;
-  choice="reflect"; scenes=[]; opened=[]; cards=[]; sceneHook=null; modalHook=null; importHook=null; cardHook=null;
+  choice=true; scenes=[]; backgrounds=[]; menus=[]; opened=[]; cards=[]; sceneHook=null; modalHook=null; importHook=null; cardHook=null;
   return s;
 }
 const resources = s => plain({ day:s.day, slot:s.slot, stamina:s.stamina, stats:s.stats, reel:s.reel, growth:s.growth });
 let s = setup(), before = resources(s);
 assert.equal(await growth.reflectAtSpot("kannon"),true);
-assert.deepEqual(scenes,["kannon_growth_intro","reflect_kannon"]);
+assert.deepEqual(scenes,["kannon_growth_intro"]);
+assert.deepEqual(backgrounds,["bg_kannon_day"]);
+assert.deepEqual(menus,[["kannon-reflect","kannon-back"]]);
 assert.deepEqual(opened,["kannon"]);
 assert.equal(s.flags._kannon_growth_intro_done,true);
 assert.deepEqual(resources(s),before,"導入だけでは時間・体力・経験値・火種・旧能力・スロットを変えない");
-core.load(); scenes=[]; opened=[];
+core.load(); scenes=[]; opened=[]; backgrounds=[];
+core.state.slot=1; core.state.growth.hidane.any=0;
 await growth.reflectAtSpot("kannon");
-assert.deepEqual(scenes,["reflect_kannon"],"保存後の再訪は導入を繰り返さない");
+assert.deepEqual(opened,["kannon"],"火種がなくても盤を開ける");
+assert.deepEqual(backgrounds,["bg_kannon_night"]);
+assert.deepEqual(scenes,[],"保存後の再訪は導入を繰り返さない");
+s=setup();
+assert.equal(await growth.reflectAtSpot("kannon", { direct: true, onExit: () => { s.flags._ch1_day3_kannon_done=true; } }),true);
+assert.equal(s.flags._ch1_day3_kannon_done,true);
+assert.deepEqual(scenes,["kannon_growth_intro"]); assert.deepEqual(opened,["kannon"]); assert.deepEqual(menus,[]);
 for (const result of [undefined, { id:"kannon_growth_intro",visited:[],cancelled:true }, { id:"other",visited:["other"] }]) {
   s=setup(); sceneHook=() => result;
   await growth.reflectAtSpot("kannon");
@@ -66,16 +83,14 @@ for (const where of ["modal","intro"]) {
   assert.equal(core.state.flags._kannon_growth_intro_done,undefined);
   assert.deepEqual(opened,[],"LOAD後の古い継続処理は盤を開かない");
 }
-for (const selected of ["visit",null]) {
-  s=setup(); choice=selected;
-  assert.equal(await growth.reflectAtSpot("kannon"),selected !== "visit");
-  assert.deepEqual(scenes,[]); assert.deepEqual(opened,[]);
-  assert.equal(s.flags._kannon_growth_intro_done,undefined);
-}
+s=setup(); choice=false;
+assert.equal(await growth.reflectAtSpot("kannon"),false);
+assert.deepEqual(scenes,[]); assert.deepEqual(opened,[]);
+assert.equal(s.flags._kannon_growth_intro_done,undefined);
 s=setup(); growth.setGrowthPreview(false);
 assert.equal(await growth.reflectAtSpot("kannon"),false);
 assert.deepEqual(scenes,[]); assert.deepEqual(opened,[]);
-console.log("[kannon growth] PASS: first completion, reload, no resource/reel changes, missing/cancelled scene, owner changes at modal/intro, visit/back and flag off");
+console.log("[kannon growth] PASS: DAY3 direct and manual board-only, day/night backgrounds, first completion, reload, zero fire, no resource/reel changes, missing/cancelled scene, owner changes at modal/intro, back and flag off");
 
 // 相談候補を調べてからVN/UIを読み込む間にも、LOAD・中断・条件変更が起こりうる。
 for (const boundary of ["../vn/engine.js", "./ui.js"]) {

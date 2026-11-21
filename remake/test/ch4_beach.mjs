@@ -11,7 +11,7 @@ import { CH4_BEACH_SCENES, CH4_BEACH_SCENE_FILES, CH4_BEACH_PICKS, CH4_BEACH_RES
   chapterFourBeachDue, chapterFourBeachPickCount, chapterFourBeachRecord, commitChapterFourBeach } from "../js/chapters/ch4-beach.js";
 import { classifyFlag } from "../js/core/carry.js";
 import { CH4_MORNING_SCENES, CH4_MORNING_FILES, CH4_MORNING_FLAG, CH4_MORNING_CHEERS_MAX, chapterFourMorningCheers,
-  chapterFourMorningDue, chapterFourMorningScript } from "../js/chapters/ch4-morning.js";
+  chapterFourMorningDue, chapterFourMorningScript, CH4_AFTER_SCENES, chapterFourResultScript } from "../js/chapters/ch4-morning.js";
 import { CH4_LOVERS_CALL, CH4_LOVERS_FILES, CH4_LOVERS_FLAG, CH4_LOVERS_PETIT, CH4_LOVERS_SCENES, chapterFourLoversDue, chapterFourLoversHere,
   chapterFourLoversScript } from "../js/chapters/ch4-lovers.js";
 import { PETIT_KEYS, PETIT_LAST_FLAG, petitSeenFlag } from "../js/core/petit-shuraba.js";
@@ -195,6 +195,38 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
   value.flags[CH4_MORNING_FLAG] = true;
   assert.equal(chapterFourMorningDue(value, false), false, "once");
   assert.equal(classifyFlag(CH4_MORNING_FLAG), "progression");
+}
+// ---- 結果発表のあと（#3097 第3弾・VOL23）: 朝と同じ顔ぶれが客席から降りてくる。恋人には恋人の台本。誰もいなければ元のまま
+{
+  const rows = readData("dialogue/ch4_morning").dialogues;
+  const dialogues = Object.fromEntries(rows.map(row => [row.dialogue_id, row]));
+  const speakersOf = row => new Set([...row.lines.map(line => line.speaker)].filter(Boolean));
+  for (const [id, scene] of Object.entries({ ...CH4_AFTER_SCENES.cheers })) {
+    assert(dialogues[scene], `${scene}: exists`);
+    assert.deepEqual([...speakersOf(dialogues[scene])].filter(who => who !== "hajime"), [id], `${scene}: only ${id} and Hajime speak`);
+  }
+  for (const [id, scene] of Object.entries(CH4_AFTER_SCENES.lovers)) {
+    assert(dialogues[scene], `${scene}: exists`);
+    assert.deepEqual([...speakersOf(dialogues[scene])].filter(who => who !== "hajime"), [id], `${scene}: only ${id} and Hajime speak`);
+  }
+  for (const id of ["noor", "adam", "kumicho", "kuraudo", "ayatori", "steve", "volk"]) assert(!CH4_AFTER_SCENES.lovers[id], `${id}: friend lines only`);
+  const result = readData("dialogue/ch4_main").dialogues.find(row => row.dialogue_id === "ch4_result");
+  const value = arriveAll(eveSave({ lovers: ["minto", "rio", "samechan"], companion: "rio", met: { noor: true },
+    finales: { adam: { day: 9, chapter: 1, route: "friend" } } }));
+  const script = chapterFourResultScript(result, value, dialogues);
+  assert.equal(script.dialogue_id, "ch4_result");
+  const texts = script.lines.map(line => line.text);
+  assert.deepEqual(texts.slice(0, result.lines.length), result.lines.map(line => line.text), "the result scene itself comes first");
+  const expected = [CH4_AFTER_SCENES.open, CH4_AFTER_SCENES.lovers.minto, CH4_AFTER_SCENES.lovers.rio, CH4_AFTER_SCENES.lovers.samechan,
+    CH4_AFTER_SCENES.cheers.tsumugi, CH4_AFTER_SCENES.more, CH4_AFTER_SCENES.close].flatMap(id => dialogues[id].lines.map(line => line.text));
+  assert.deepEqual(texts.slice(result.lines.length), expected, "same faces as the morning; lovers get their own lines");
+  assert(!texts.includes(dialogues[CH4_AFTER_SCENES.cheers.minto].lines[0].text), "a lover does not also read the friend lines");
+  // 誰も来ていない（旧保存）: 結果発表の台本をそのまま読む
+  const alone = eveSave({ eve: false });
+  assert.equal(chapterFourResultScript(result, alone, dialogues), result);
+  // 結果発表を読む入口（ch4.js の readScene）が、この台本を使う
+  const ch4 = readFileSync(new URL("../js/chapters/ch4.js", import.meta.url), "utf8");
+  assert.match(ch4, /id === "ch4_result" \? chapterFourResultScript\(source, state, DB\.dialogues\)/);
 }
 // ---- 「みんな来ちゃった」（4-2・SPC28）: 日本から来た恋人が2人以上の時、砂浜の前に一度。内心のあと、読める時はノックが重なる
 {

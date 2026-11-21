@@ -13,7 +13,7 @@ await suite("debug-tools", async check => {
     const games = [
       ["axe", "axe-game"], ["camel", "camel-game"], ["desert", "desert-ride"],
       ["dj-1", "dj-frame"], ["dj-2", "dj-frame"], ["dj-3", "dj-frame"],
-      ["tetsuko", "tetsuko-cat"], ["trpg", "trpg-play-ordinary-cup"], ["ichidai", "ichi-game"],
+      ["tetsuko", "tetsuko-cat"], ["trpg", "trpg-play-ordinary-cup"], ["ichidai", "ichi-game"], ["floor", "tonari-floor-intro"],
     ];
     await page.evaluate(() => localStorage.setItem("suien_remake_save", '{"debugSentinel":true}'));
     for (const [id, screen] of games) {
@@ -53,6 +53,50 @@ await suite("debug-tools", async check => {
     await page.locator(t("title-new")).waitFor({ timeout: 30000 });
     assert.equal(await page.locator(t("debug-toggle")).innerText(), "DBG");
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+
+  // tonari フロア営業: デバッグの試遊は本編の状態に触れず、最後まで回すと元の画面へ戻る。休止の窓に本編メニューは出さない。
+  await check("floor-minigame-plays-through-without-save", async page => {
+    await page.evaluate(() => localStorage.setItem("suien_remake_save", '{"debugSentinel":true}'));
+    await openPanel(page);
+    assert.deepEqual(await page.locator('[data-test^="debug-minigame-floor"]').allInnerTexts(),
+      ["フロア営業（はじめて）", "フロア営業（いつもの夜）", "フロア営業（満席の日）"]);
+    // 実時間では進めず、検査の側から刻みを送る
+    await page.evaluate(async () => { const view = await import("./js/daily/tonari-floor-view.js"); view.floorTest.manual = true; window.floorView = view; });
+    await page.locator(t("debug-minigame-floor-full")).click();
+    await page.locator(t("tonari-floor-intro")).waitFor({ timeout: 30000 });
+    assert.match(await page.locator(t("tonari-floor-intro")).innerText(), /満席の日/);
+    assert.equal(await page.locator(t("tonari-floor-screen")).evaluate(node => node.parentElement.dataset.test), "debug-minigame-host");
+    assert.equal(await page.evaluate(() => document.body.dataset.screen), "title", "本編の画面は差し替えない");
+    await page.locator(t("tonari-floor-option-start")).click();
+    await page.locator(t("tonari-floor-pause")).click();
+    assert.deepEqual(await page.locator(`${t("tonari-floor-pause-panel")} .tf-option b`).allInnerTexts(), ["つづける", "ゆっくりにする", "早じまいにする"]);
+    await page.locator(t("tonari-floor-option-resume")).click();
+    const result = await page.evaluate(async () => {
+      const [bot, model] = await Promise.all([import("./test/tonari_floor_bot.mjs"), import("./js/daily/tonari-floor-model.js")]);
+      const api = window.floorView.floorTest.api;
+      for (let i = 0; i < 3000 && !api.state().done; i++) {
+        const action = api.mode() === "live" ? bot.floorBotAction(api.state(), {}) : null;
+        if (action) api.act(action);
+        if (api.mode() === "live") api.tick(2);
+        if (i % 50 === 0) await new Promise(r => setTimeout(r, 0));
+      }
+      const r = model.floorResult(api.state());
+      return { done: api.state().done, night: api.state().night, came: r.came, served: r.served };
+    });
+    // 客は一人ずつ数える（二人連れは一人ずつ別の卓。TFL51）。閉店が近づくと来なくなるので、来た人数は回し方で少し変わる
+    assert.deepEqual([result.done, result.night], [true, "full"]);
+    assert.ok(result.came >= 12, `満席の日は大勢来る: ${result.came}`);
+    assert.ok(result.served >= 8, `ボットで回しきれる: ${result.served}`);
+    await page.locator(t("tonari-floor-result")).waitFor();
+    await page.locator(t("tonari-floor-option-continue")).click();
+    // 終えると、試遊は自分で閉じて元の画面（タイトル）へ戻る
+    await page.locator(t("title-new")).waitFor({ timeout: 30000 });
+    await page.waitForFunction(() => !document.querySelector('[data-test="debug-minigame-host"]'));
+    assert.equal(await page.locator(t("tonari-floor-screen")).count(), 0);
+    assert.equal(await page.locator(t("debug-toggle")).innerText(), "DBG");
+    assert.equal(await page.evaluate(() => document.body.dataset.screen), "title");
+    assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), '{"debugSentinel":true}', "本編のセーブに触れない");
+  });
 
   await check("normal-minigame-gates-remain-active", async page => {
     await page.goto(`${baseURL}?debug=0`, { waitUntil: "load" });
@@ -414,7 +458,7 @@ await suite("debug-tools", async check => {
     await page.locator("#boot").waitFor({ state: "detached" });
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
     assert.equal(saved.chapter, 2);
-    assert.equal(saved.schema, 28);
+    assert.equal(saved.schema, await page.evaluate(async () => (await import("./js/core/state.js")).SCHEMA)); // 現在の版へ移行される
     assert.equal(saved.money, 16666);
     assert.equal(saved.flags._ch2_day1.startDay, 15);
     assert.equal(saved.flags._ch2_day1.stage, "departure");

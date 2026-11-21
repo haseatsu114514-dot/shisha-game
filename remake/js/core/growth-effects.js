@@ -6,7 +6,9 @@ import { STAMINA_CONDITIONS } from "./condition.js";
 
 /** 調整用の初期値。通常マスの百分率とは別に重ねる（SPEC 2.5）。 */
 export const SKILL_TUNING = Object.freeze({ sleep: .1, first: .2, mastery: .2, leaf: .2, holesSeconds: 6, strain: .75,
-  forecastRead: .15, bargain: .1, critical: 1.5, criticalCap: 3, momentum: 2, smokeRing: 1, afterglowSeconds: 3, afterglowSpeed: .65 });
+  forecastRead: .15, bargain: .1, critical: 1.5, criticalCap: 3, momentum: 2, smokeRing: 1, afterglowSeconds: 3, afterglowSpeed: .65,
+  // SBD154: 聞き上手＝通いの小会話の好感度に足す点、くじ運＝後ろ半分の上の賞が前半へ移る確率、仕事が早い＝基本の日当に掛ける割合
+  listen: 2, kujiLuck: .5, baitoPay: .1 });
 const skillIds = new Set(SKILLS.map(s => s.id));
 const lessonIds = new Set(LESSONS.map(s => s.id));
 export const LESSON_TUNING = Object.freeze({ stamina: 20, mix: 4, cardamomPenalty: .5, lavenderSleep: .2, single: 4, flowerLayer: 2, blindSwing: 3, dragonStreak: 3, deepHeat: .27, sharkRadius: 1.5, climateVariation: .5, callingSales: 1000, grapeReception: 2 });

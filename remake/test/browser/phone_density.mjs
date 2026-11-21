@@ -109,6 +109,45 @@ async function openSaveScreen(page) {
   await settle(page);
 }
 
+// 会話の送り記号「▼」: #3726 A-2 の巡回で実寸 9.8px だった。1枚目を打ち終えて、送り記号が出ている間に測る
+async function openConversationNext(page) {
+  await page.evaluate(async () => {
+    const vn = await import("./js/vn/engine.js");
+    window.PD = vn.play({ dialogue_id: "__phone_density_next", lines: [
+      { speaker: "sumi", portrait: false, text: "送り記号の確認。" },
+      { speaker: "sumi", portrait: false, text: "二枚目。" },
+    ] });
+  });
+  await page.locator(".vn-next.show").waitFor();
+  await settle(page);
+}
+
+// くじの黒板（ガラガラの横の看板）: #3726 A-2 の巡回で「ラストワン賞あり」が実寸 7.3px だった。
+// 開発用のプレビュー（景品は渡さない）で抽選器の舞台を出す。動きを減らす設定で、カメラの寄り・フェードを止めて測る
+// 動きを減らす設定の舞台は 0.9 秒で札へ移り、黒板ごと消える（motions/garagara.js の sleep(900)）。
+// 遅い CI では測る前に消えて「文字を測る部品が見えていない」になるため、ページの時計を止めて黒板を出したままにする。
+// 時計を止めても黒板は描かれる（舞台は時刻を待たずに組み立てる）。止めたまま検査を終える（くじは最後に開く）
+// 止める時刻は 1 秒先に取る。入れた時計は止めるまで進み続けるので、近すぎる時刻（以前は 10ms 先）だと負荷の高い時に
+// 止める前に過ぎて "Cannot fast-forward to the past" になった。先へ進めた分はくじを開く前なので、黒板の 0.9 秒には掛からない
+async function openKuji(page, spec) {
+  await page.evaluate(async () => (await import("./js/core/ui.js")).clearScreen());
+  await page.clock.install();
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await page.evaluate(async spec => {
+    window.PD = (await import("./js/daily/kuji.js")).previewReveal(spec);
+  }, spec);
+  await page.locator(".mo-garagara .kj-sign-text").waitFor();
+}
+// 黒板の字を測る時（動きを減らす設定のスマホのケース）は、字が実際に見えてから測る。
+// 黒板は出た直後、重ねる面（.kuji-overlay）のフェード（kj-fade。実時間で進む）の最初のコマまで不透明度が 0 ちょうど。
+// その瞬間に測ると、字は置いてあるのに「文字を測る部品が見えていない」になる（kuji.js の取り込みが増えて舞台が早く組み上がり、
+// 上の待ちが一瞬で終わるようになって表に出た。2026-11-20 #4019）。測るのと同じ見え方（不透明度も見る）で待つ。
+// PC の確認（desktop-unchanged）は字の大きさを読むだけなので、この待ちは使わない
+async function openKujiShown(page, spec) {
+  await openKuji(page, spec);
+  await page.waitForFunction(() => document.querySelector(".mo-garagara .kj-sign-title")?.checkVisibility({ visibilityProperty: true, opacityProperty: true }));
+}
+
 // 開く・閉じる演出（無限に回る飾りは除く）が終わるまで待つ
 function settle(page) {
   return page.waitForFunction(() => document.getAnimations().every(a => a.playState !== "running" || a.effect?.getComputedTiming().iterations === Infinity));
@@ -125,10 +164,17 @@ const SCREENS = [
   { id: "modal", open: openModal, targets: [".modal-actions > .btn"], texts: [".modal-box"] },
   { id: "shop-entry", open: openShopEntry, targets: ['[data-test="shop-entry-back"]'], texts: [] },
   { id: "shop-floor", open: openShopFloor, targets: ['[data-test="shop-leave"]'], texts: [] },
-  { id: "menu", open: openMenu, targets: ['[data-test="menu-close"]'], texts: [] },
+  // MENU の「?」（体力・見出しの説明）: #3726 A-2 の巡回で実寸 10.8px（Safari のバーで 9.4px）だった。押せる範囲は透明な ::before なので文字だけ見る
+  { id: "menu", open: openMenu, targets: ['[data-test="menu-close"]'], texts: [".dmenu .dm-help"], required: [".dmenu .dm-help"] },
   { id: "gallery", open: openGalleryScreen, targets: [".gal-tabs > .gal-tab", ".gal-close"],
     texts: [".gal-head", ".gal-characters", ".gal-note", "#gallery-items"] },
   { id: "save-screen", open: openSaveScreen, targets: [], texts: [".saveload-modal .ss-list"] },
+  { id: "conversation-next", open: openConversationNext, targets: [], texts: [".vn-next"], required: [".vn-next"] },
+  // 黒板の字は大きくしても書ける面（.kj-sign-text）からはみ出さない（fits）
+  { id: "kuji-sign", open: page => openKujiShown(page, "C@g1000"), targets: [], texts: [".mo-garagara .kj-sign-text"],
+    required: [".kj-sign-title", ".kj-sign-row", ".kj-sign-note"], fits: ".mo-garagara .kj-sign-text", reducedMotion: "reduce" },
+  { id: "kuji-sign-last", open: page => openKujiShown(page, "LAST@g1000"), targets: [], texts: [".mo-garagara .kj-sign-text"],
+    required: [".kj-sign-title", ".kj-sign-note"], fits: ".mo-garagara .kj-sign-text", reducedMotion: "reduce" },
 ];
 
 // ノッチ（safe-area）の模擬（#3001）。headless では env(safe-area-inset-*) が 0 なので、base.css の --stage-safe-l/r と同じ式で
@@ -169,7 +215,7 @@ function edgeBoxes({ left, right }) {
 }
 
 // 見えている要素だけ、実寸（getBoundingClientRect は拡縮後）と文字の実寸を集める。
-function measure({ targets, texts }) {
+function measure({ targets, texts, required = [], fits = null }) {
   const k = Number(getComputedStyle(document.querySelector("#stage")).getPropertyValue("--k"));
   const shown = node => node.checkVisibility({ visibilityProperty: true, opacityProperty: true }) && node.getClientRects().length > 0;
   const label = node => `${node.className || node.tagName}「${node.textContent.trim().slice(0, 12)}」`;
@@ -198,22 +244,145 @@ function measure({ targets, texts }) {
     });
   }
   for (const selector of texts) document.querySelectorAll(selector).forEach(node => shown(node) && fonts.push(...textNodesUnder(node)));
-  return { k, density: document.documentElement.dataset.density ?? null, taps, fonts, gaps };
+  // required: 文字を測る部品が見えていること（見えずに測り漏れるのを防ぐ）
+  const missing = required.filter(selector => ![...document.querySelectorAll(selector)].some(node => shown(node) && textNodesUnder(node).length));
+  // fits: 囲み（書ける面）の中身がはみ出していない。縦は中の段（子要素の行の高さの箱）、横は文字の行そのもので見る
+  // （文字の行の箱は書体の上下の余白を含み、詰めた行の高さより縦に少し大きいので、縦には使わない）
+  const overflow = [];
+  const fmt = r => [r.left, r.top, r.right, r.bottom].map(v => v.toFixed(1)).join(",");
+  for (const box of fits ? document.querySelectorAll(fits) : []) {
+    const outer = box.getBoundingClientRect(), out = (a, b) => a < b - 0.5;
+    for (const child of box.children) {
+      const r = child.getBoundingClientRect();
+      if (out(r.left, outer.left) || out(outer.right, r.right) || out(r.top, outer.top) || out(outer.bottom, r.bottom)) overflow.push(`${label(child)} ${fmt(r)} ⊄ ${fmt(outer)}`);
+    }
+    const walker = document.createTreeWalker(box, NodeFilter.SHOW_TEXT);
+    for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+      if (!t.textContent.trim()) continue;
+      const range = document.createRange(); range.selectNodeContents(t);
+      for (const r of range.getClientRects()) if (out(r.left, outer.left) || out(outer.right, r.right)) overflow.push(`「${t.textContent.trim()}」 ${fmt(r)} ⊄ ${fmt(outer)}`);
+    }
+  }
+  return { k, density: document.documentElement.dataset.density ?? null, taps, fonts, gaps, missing, overflow };
+}
+
+// #4035 B4: 文字は舞台上24px、タップは縦横とも縮小後39px。ノートの縦スクロールは許容する。
+async function checkSlotDensity(page) {
+  const checkLayout = async (root, { targets = [], required, fits } = {}) => {
+    await page.waitForFunction(selector => document.querySelector(selector)?.checkVisibility({
+      visibilityProperty: true, opacityProperty: true,
+    }), root);
+    const m = await page.evaluate(measure, { targets, texts: [root], required, fits });
+    if (process.env.PD_DUMP) console.log(JSON.stringify({ root, ...m }, null, 1));
+    assert.equal(m.density, "phone", root);
+    assert.ok(m.fonts.length, `${root} の文字が測れていない`);
+    assert.deepEqual(m.missing, [], root);
+    assert.deepEqual(m.fonts.filter(f => f.px / m.k < 23.99), [], `${root} の文字が舞台上24px未満`);
+    assert.deepEqual(m.taps.filter(t => t.missing || Math.min(t.h, t.w) < 38.99), [], `${root} のタップ部品が実寸39px未満`);
+    assert.deepEqual(m.overflow, [], `${root} のカードから文字がはみ出している`);
+    assert.ok(await page.locator(root).evaluate(node => {
+      const box = node.getBoundingClientRect();
+      const stage = document.querySelector("#screen").getBoundingClientRect();
+      return node.scrollWidth <= node.clientWidth + 1
+        && box.left >= stage.left - 0.5 && box.right <= stage.right + 0.5
+        && box.top >= stage.top - 0.5 && box.bottom <= stage.bottom + 0.5;
+    }), `${root} が舞台からはみ出しているか、横スクロールがある`);
+  };
+  await page.evaluate(async () => {
+    const { newGame } = await import("./js/core/state.js");
+    const { clearScreen } = await import("./js/core/ui.js");
+    newGame();
+    clearScreen();
+    void (await import("./js/daily/reel.js")).installReel();
+  });
+
+  const next = '[data-test="reel-intro-next"]';
+  await checkLayout(".reel-intro .ri-panel", { targets: [next], required: [".ri-text"] });
+  for (let i = 0; i < 5; i++) {
+    assert.equal(await page.locator(next).textContent(), "次へ");
+    await page.locator(next).tap();
+  }
+  await checkLayout(".ri-panel.sys", { targets: [next], required: [".rn-tile-head", ".rn-tile-body", ".cue-chip"], fits: ".rn-tile" });
+  // 844×390ではカードの末尾と閉じるボタンまで一度に見える。
+  assert.ok(await page.locator(".ri-panel.sys").evaluate(node => node.scrollHeight <= node.clientHeight + 1));
+  await page.locator(next).tap();
+  await checkLayout(".reel-night.show .rn-label");
+  await page.locator(".reel-night").waitFor({ state: "detached" });
+
+  await page.evaluate(async () => {
+    const { state } = await import("./js/core/state.js");
+    const { layers } = await import("./js/core/ui.js");
+    const { mountReel } = await import("./js/daily/reel.js");
+    state.reel.settingDraws = 1;
+    Object.assign(state.reel.note, {
+      history: [{ kind: "BIG", games: 12345, chapter: 5, day: 123 }],
+      freezeLog: [{ chapter: 4, day: 123, spin: 123456 }],
+      periods: { 0: { spins: 148, big: 2, reg: 1, bell: 6 } },
+    });
+    void mountReel(layers.screen);
+  });
+  const lamp = page.locator('[data-test="reel-lamp"]');
+  // ランプは見た目より当たり判定が広い。中心から上下左右19.5pxの点が同じ操作先かを見る。
+  assert.ok(await lamp.evaluate(node => {
+    const r = node.getBoundingClientRect();
+    return [[-19.5, 0], [19.5, 0], [0, -19.5], [0, 19.5]].every(([dx, dy]) =>
+      document.elementFromPoint(r.x + r.width / 2 + dx, r.y + r.height / 2 + dy)?.closest(".rw-lamp-wrap") === node.parentElement);
+  }), "ランプの当たり判定が実寸39px未満");
+  await lamp.tap();
+
+  const close = '[data-test="reel-note-close"]';
+  const notePages = [
+    [".rn-table", ".rn-history small", ".rn-hall"],
+    [".rn-card .cue-chip"],
+    [".rn-setting small", ".rn-hint-head"],
+  ];
+  for (const [index, required] of notePages.entries()) {
+    // 末尾のページ送りまでスクロールし、実際のタップで次のページへ進む。
+    if (index > 0) await page.locator(".reel-note .ri-next").tap();
+    await checkLayout(".reel-note .rn-panel", { targets: [close], required, fits: ".rn-tile" });
+  }
+  await page.locator(close).tap();
+  await page.locator(".reel-note").waitFor({ state: "detached" });
+
+  await page.evaluate(async () => (await import("./js/daily/reel.js")).force("big", "before"));
+  await checkLayout(".rc-board", { required: [".rc-aim", ".rc-label"] });
+  await page.locator(".reel-cutin").waitFor({ state: "detached" });
+  await checkLayout(".rw-bubble.show");
+
+  await page.evaluate(async () => (await import("./js/daily/reel.js")).force("freeze"));
+  await checkLayout(".rc-freeze-text");
+  await checkLayout(".rc-freeze-sub");
+  assert.ok(await page.locator(".rc-freeze-label").evaluate(node => {
+    // 実時間で出現を待つと拡大が終わっていることがあるので、出現直後のコマを再現する。
+    node.style.animationName = "none";
+    void node.offsetWidth;
+    node.style.removeProperty("animation-name");
+    const animation = node.getAnimations()[0];
+    if (!animation) return false;
+    animation.pause();
+    animation.currentTime = 1;
+    const rect = node.getBoundingClientRect();
+    const frame = node.closest(".rc-freeze").getBoundingClientRect();
+    return rect.left >= frame.left - 0.5 && rect.right <= frame.right + 0.5;
+  }), "FREEZE BONUS の出現時に文字が切れている");
 }
 
 await suite("phone-density", async check => {
+  await check("iphone-landscape-slot", checkSlotDensity, { viewport: PHONES[0][1], ...touch });
   for (const [name, viewport] of PHONES) {
     for (const screen of SCREENS) {
       await check(`${name}-${screen.id}`, async page => {
         await screen.open(page);
-        const m = await page.evaluate(measure, { targets: screen.targets, texts: screen.texts });
+        const m = await page.evaluate(measure, { targets: screen.targets, texts: screen.texts, required: screen.required, fits: screen.fits });
         if (process.env.PD_DUMP) console.log(JSON.stringify(m, null, 1));
         assert.equal(m.density, "phone", `--k=${m.k} でスマホ規格が立っていない`);
         assert.deepEqual(m.taps.filter(t => t.missing).map(t => t.where), [], "測る部品が見えていない");
+        assert.deepEqual(m.missing, [], "文字を測る部品が見えていない");
         assert.deepEqual(m.taps.filter(t => t.h < MIN_TAP).map(t => `${t.where} ${t.h.toFixed(1)}px`), [], `タップ部品の実寸が ${MIN_TAP}px 未満`);
         assert.deepEqual(m.fonts.filter(f => f.px < MIN_TEXT).map(f => `${f.where} ${f.px.toFixed(1)}px`), [], `文字の実寸が ${MIN_TEXT}px 未満`);
         assert.deepEqual(m.gaps.filter(g => g.stage < MIN_GAP_STAGE - 0.5).map(g => `${g.where} ${g.stage.toFixed(1)}px`), [], `隣のタップ部品との間隔がステージ上 ${MIN_GAP_STAGE}px 未満`);
-      }, { viewport, ...touch });
+        assert.deepEqual(m.overflow, [], "文字が書ける面からはみ出している");
+      }, { viewport, ...touch, ...(screen.reducedMotion ? { reducedMotion: screen.reducedMotion } : {}) });
     }
   }
 
@@ -290,5 +459,12 @@ await suite("phone-density", async check => {
     });
     // #3100 / #3103: 紙テーマの操作文字はPCでも22px。タップ領域と選択肢位置は維持。
     assert.equal(vn, "44px 22px 254px");
+    // #3726 A-2 で大きくした MENU の「?」・送り記号・くじの黒板は、PC では従来の大きさのまま
+    assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector(".vn-next")).fontSize), "18px");
+    await openMenu(page);
+    assert.equal(await page.evaluate(() => [...document.querySelectorAll(".dmenu .dm-help")].map(n => { const s = getComputedStyle(n); return `${s.fontSize} ${s.width}`; }).join("|")), "16px 26px|16px 26px");
+    await page.locator('[data-test="menu-close"]').click();
+    await openKuji(page, "C@g1000");
+    assert.equal(await page.evaluate(() => [".kj-sign-title", ".kj-sign-row", ".kj-sign-note"].map(sel => getComputedStyle(document.querySelector(`.mo-garagara ${sel}`)).fontSize).join(" ")), "21px 20px 13px");
   }, { viewport: { width: 1280, height: 720 } });
 });

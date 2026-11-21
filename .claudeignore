@@ -11,6 +11,7 @@ asset_sources/
 # 履歴・隔離済みの旧資料（必要なときだけ明示的に開く）
 docs/archive/
 docs/qa/
+docs/reports/
 
 # 生成物（正本は生成元）
 remake/data/manifest.json

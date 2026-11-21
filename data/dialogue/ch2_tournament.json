@@ -570,6 +570,16 @@
         {
           "speaker": "",
           "face": "",
+          "text": "講評のとき、会長は俺の台を一口だけ吸って、ホースを置いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（地元大会では、二口吸ってくれたのに）"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "壇上を降りかけたところで、審査員席を離れた千須が、俺の前で足を止めた。"
         },
         {
@@ -847,6 +857,7 @@
           "face": "",
           "text": "棚のホワイトグミベアを手に取る。甘い匂いに、少しだけ口元がゆるんだ。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch2_ageha_white_bear"},
         {
           "speaker": "ageha",
           "face": "smile",
@@ -861,7 +872,8 @@
           "speaker": "",
           "face": "",
           "text": "あげはは小さく笑って、店の明かりを落とした。"
-        }
+        },
+        {"type": "hide_cg"}
       ],
       "branches": {
         "secret": [

@@ -228,6 +228,595 @@
           "text": "舞台の上は、今朝の時点で28度……それだけだ"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch4_tournament_after_open",
+      "comment": "導入（来てくれた人がいる時だけ）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電話を切ると、客席との境の柵の向こうで、誰かが俺の名前を呼んでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "来てくれた人たちが、係の人に頭を下げながら、通路を降りてくる。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_tsumugi",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……描けました。最後に、炭を一つ離すところ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出されたタブレットの中で、線だけの俺の手が、トングを止めていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺、こんな顔で待ってたんだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はい。浮かれてない顔でした"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_tsumugi_lover",
+      "comment": "来てくれた人の一言（恋人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……途中から、描くのを忘れてました"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はじめさんが炭を離した時、私まで息を止めてて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "見ててくれたんだね。ありがとう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは白いままのページを胸に抱えて、俺の袖の端を小さくつまんだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_minto",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "一番乗りは、みんとね♡ はじめくん、世界一おめでとっ"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "最後の方、お客さんがホースを置くまで、ずっと待ってたでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……そんなところまで、見えてたの？"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "見えるよぉ。魅せ方の勉強だもん。今日のは、ちゃんと素敵だった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_minto_lover",
+      "comment": "来てくれた人の一言（恋人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくーん！ ……あ、だめ、走ったら係の人に怒られる"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "おめでとっ♡ ほんとはね、途中で一回、見てられなくなったの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "数字で抜かれた時？"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "うん。でも、はじめくんが目の前のお客さんだけ見てたから、大丈夫だった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_rio",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……おめでとう、モルモットくん。いいデータが取れた"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "君の客、最後の一口の前に、一回だけ目を閉じてた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "凛想さん、台じゃなくてそっちを見てたんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "台より顔。……そう教えたのは、君でしょ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_rio_lover",
+      "comment": "来てくれた人の一言（恋人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……おめでとう。今日は、モルモットくんって呼ぶのはやめとく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、じゃあ何て"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "……はじめくん。世界一の人を、試香には使えないでしょ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんはそう言って、すぐに目をそらした。耳の先が、少し赤かった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_ageha",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっちー！ 最前で叫んでたの、聞こえた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "聞こえた。名前、三回は分かったよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "でもね、最後のほうは、うちも黙ってた。叫ぶとこじゃないって、なんか分かった"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "おめでと。ちゃんと、すごかった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_ageha_lover",
+      "comment": "来てくれた人の一言（恋人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち！ ……やば、手が震えてる。うちのほうが"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "最前で叫ぶつもりだったのに、最後のほう、声が出なかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "見ててくれたのは、ちゃんと分かってたよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは笑って、俺の肩に額を一回だけぶつけた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_mashiro",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "はじめくん、おめでとぉ……僕、ちゃんと見てたよぉ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "二回目の調整のあと、お客さんの肩、すとんって力が抜けてた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんにも、見えてたんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ん、mukaiのお客さんと、同じ顔だった。ムカイさんにも報告するね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_mashiro_lover",
+      "comment": "来てくれた人の一言（恋人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "はじめくん……おめでとぉ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "客席でね、途中からずっと、手を握ってたの。自分の手だけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "今なら、こっちの手が空いてるよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんは少しだけ迷ってから、温かい手で、俺の手をそっと握った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_samechan",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お主、やりおったな。……客席の座り心地も、悪くなかったぞ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、途中から一度も座っていない。余が証人である"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "言うでない！ ……最後の炭は、立って見たかったのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。立ってくれてたの、見えました"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_samechan_lover",
+      "comment": "来てくれた人の一言（恋人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お主……いや、はじめよ。よう、やった"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "わしは途中から、目を閉じておった。見たら、声が出てしまいそうでな"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は泣いていた。余は見ていた"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "……コロちゃん！ 今日だけは、見逃せ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_hiyori",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……最後のほう、会場が静かになったの。拍手より先に"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺、客の顔しか見てなくて。気づかなかったです"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "それでいいの。……あ、泣いてないから。これは砂のせい"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "おめでとう、はじめくん。閉店後のtonariみたいな煙だった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_hiyori_lover",
+      "comment": "来てくれた人の一言（恋人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……はじめくん。おめでとう"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "儚い女の顔、用意してきたのに。全部どこかへ行っちゃった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "今の顔のほうが、俺は好きです"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……そういうの、ここで言う？ 砂のせいにできないじゃない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_noor",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ！ おめでとう！ 最後は静かすぎて、私が咳をしそうだった"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "父にも動画を送ったよ。いつか、カフェでハジメの一台を出してほしいって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "次にドバイへ来たら、オアシスで作らせてください"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "カシコマリ！ その日は、炭を私が起こしておくね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_adam",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "同志よ、……見事だった"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "客席の空調が強くてな。俺のリンゴの匂いは、届かなかったかもしれん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "届いてました。たぶん、二口目のあたりで"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "……そうか。ならば今日の勝利の半分は、ダブルアップルのものだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_kumicho",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん。……スジの通った一台でしたわ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは色付き眼鏡を少し上げて、また指で目頭を押さえた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "また、映画の話ですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……ああ。とびきりの、いい映画だった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_kuraudo",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……おめでとう。キミの一曲目、ちゃんと聴けた"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "最後の一口のところ、曲が終わる前の無音みたいだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "無音、ですか"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "うん。いちばん好きなところ。次のライブまで、覚えておく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_ayatori",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "おめでとう。予想、外れたよ。君、最後まで客席を見なかった"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "ノートに書いとく。「外れて嬉しい」の欄が、また増えちゃった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "綾取さんのノート、そんな欄があるんですか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "君のせいで、できたんだよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_steve",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ！ コングラッチュレーション！"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "二度目の調整、こっちのタイマーで測ってた。客が吸い終わるまで、ちゃんと待ったな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "スティーブのタイマーのおかげです"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "いや、今日のはハジメの秒数だ。カードに書いておく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_after_cheer_volk",
+      "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "二度目の調整のあと、炭を離すまで、四秒あった"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "正しい間だ、……おめでとう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "客席から、測ってたんですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "癖だ。舞台の上は、最後には29度あった。それでも、お前は急がなかった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tournament_after_more",
+      "comment": "続き（ほかにも来ている人がいる時）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "後ろの方では、ほかのみんなも手を振ってくれていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tournament_after_close",
+      "comment": "締め（来てくれた人がいる時だけ）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "表彰式の呼び出しが流れた。みんなに背中を押されて、壇上へ戻る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……帰ったら、一人ずつに一台だな）"
+        }
+      ]
     }
   ]
 }

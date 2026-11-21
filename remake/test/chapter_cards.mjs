@@ -74,5 +74,10 @@ for (const chapter of [4, 5]) {
     if (chapter === 4) { assert.equal(inserted.length, 1); assert.equal(inserted[0], extra); }
     else { assert.equal(inserted.length, extra.length); extra.forEach((item, index) => assert.equal(inserted[index], item)); }
   }
+  // #3938: only the completion card is a chapter-clear screen (the level-up plate moves off its text).
+  calls.length = 0;
+  runner.namespace.card(owner, "complete", "完", "説明");
+  assert.equal(calls.at(-1).root.selector, "main.ch2-contest.chapter-clear");
+  assert.equal(calls.at(-1).root.props.dataset.test, `ch${chapter}-complete`);
 }
 console.log("PASS: real chapter 4/5 cards preserve HUD order, DOM, defaults, notes and node identity");

@@ -2,6 +2,11 @@
 import { DB, img } from "./data.js";
 import { state } from "./state.js";
 import { on } from "./bus.js";
+import { TOURNAMENT_VENUE_BG } from "./tournament-venues.js";
+
+const tournamentRigs = positions => positions.map(([x, y, h]) => ({
+  file: "shisha_c_station.png", x, y, h, ratio: 424 / 768,
+}));
 
 // 承認済みv3原画をそのまま使う。cropは透明な余白だけを表示から外す座標。
 // x/yは接地点、hは台本体の高さ。机の手前左と、その右側の床へ置く。
@@ -22,11 +27,9 @@ const HOME_SCENE_PROPS = [
 ];
 const isHome = (url) => /^bg_home(?:_(?:overcast_)?(?:day|night))?\.png$/.test(sceneFile(url));
 
-const C_STATION_SCENE_PROPS = [
-  { file: "shisha_c_station.png", x: 448, y: 311, h: 140, ratio: 491 / 768 },
-  { file: "shisha_c_station.png", x: 160, y: 447, h: 280, ratio: 491 / 768 },
-  { file: "shisha_c_station.png", x: 1180, y: 438, h: 275, ratio: 491 / 768 },
-];
+// C.STATION の店内（bg_c_station_day / bg_c_station_night）には台を重ねない（#3818）。
+// オーナー「ソファの上とか変なとこにシーシャの画像合成されてて違和感　これはなくしたい　基本的にシーシャの絵はマップ内に書き込んであるの以外入れない」。
+// 下の一覧（ほかの店・大会会場）の重ねをやめるかどうかはオーナー判断待ちなので、今は変えない。
 export const SCENE_PROPS = {
   // 隠れ家（#3282 B6・2026-11-13 に描き直した絵）: 台を描いていない絵なので、中央の卓・中の卓・右の卓の天板へ重ねる。
   // x は台の中心、y は台の底（卓の天板の中ほど）、h は高さ。奥の卓ほど小さく、手前の卓ほど大きい。
@@ -35,12 +38,13 @@ export const SCENE_PROPS = {
     { file: "shisha_hideaway.png", x: 925, y: 492, h: 152, ratio: 368 / 768 },
     { file: "shisha_hideaway.png", x: 1165, y: 520, h: 172, ratio: 368 / 768 },
   ],
-  "bg_c_station_day.png": C_STATION_SCENE_PROPS,
-  "bg_c_station_night.png": C_STATION_SCENE_PROPS,
   // 大会会場（#3282 B10・2026-11-13 に描き直した絵）: 4つの作業台の天板（y≈347）の中央へ重ねる。台の中心は x=274・509・765・1003。
-  "bg_tournament_stage.png": [274, 509, 765, 1003].map((x) => ({
-    file: "shisha_c_station.png", x, y: 347, h: 124, ratio: 424 / 768,
-  })),
+  [`${TOURNAMENT_VENUE_BG[1]}.png`]: tournamentRigs([274, 509, 765, 1003].map(x => [x, 347, 124])),
+  // 採用された各会場の天板に接地させ、奥の卓は遠近に合わせて小さくする（#3620）。
+  [`${TOURNAMENT_VENUE_BG[2]}.png`]: tournamentRigs([[366, 357, 116], [556, 357, 116], [754, 358, 116], [949, 358, 116]]),
+  [`${TOURNAMENT_VENUE_BG[3]}.png`]: tournamentRigs([[468, 391, 108], [691, 385, 91], [859, 381, 80], [995, 380, 71]]),
+  [`${TOURNAMENT_VENUE_BG[4]}.png`]: tournamentRigs([[294, 383, 101], [484, 388, 111], [699, 397, 123], [958, 405, 136]]),
+  [`${TOURNAMENT_VENUE_BG[5]}.png`]: tournamentRigs([[490, 381, 116], [793, 381, 116]]),
   "bg_fookah_showroom.png": [
     { file: "shisha_fookah.png", x: 300, y: 462, h: 230, ratio: 522 / 768 },
     { file: "shisha_fookah.png", x: 955, y: 468, h: 230, ratio: 522 / 768 },
@@ -72,12 +76,7 @@ function homeProps(available) {
 }
 function propsFor(url, { homeRigs = true } = {}) {
   const available = new Set(DB.manifest.sceneProps || []);
-  if (isHome(url)) {
-    // 昼・夜の自室背景は台をローテーブルの真ん中へ描き込んだ絵（#3418・2026-11-18 オーナー採用の背景リメイク、昼夜ペア）。
-    // 所持品の台を重ねると台が二重になるので、昼と夜は小道具を出さない。曇天は描き込みが無いので従来どおり重ねる。
-    if (sceneFile(url) === "bg_home_day.png" || sceneFile(url) === "bg_home_night.png") return [];
-    return homeRigs ? homeProps(available) : [];
-  }
+  if (isHome(url)) return homeRigs ? homeProps(available) : [];
   return (SCENE_PROPS[sceneFile(url)] || []).filter((p) => available.has(p.file));
 }
 export function sceneArtUrls(url, options) {

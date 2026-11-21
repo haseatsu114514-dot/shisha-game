@@ -13,6 +13,19 @@
   <link rel="stylesheet" href="css/phone-density.css">
   <link rel="stylesheet" href="css/store-logos.css">
   <link rel="stylesheet" href="css/side-area.css">
+  <style>
+    /* 横持ち試遊の設立画面で、台詞と2つの返事を画面内に収める。 */
+    html[data-density="phone"] .trpg-club-proposal:not(.trpg-club-founded) {
+      width: 100%;
+      max-width: 1020px;
+    }
+    html[data-density="phone"] .trpg-club-proposal:not(.trpg-club-founded) > .trpg-button {
+      min-height: calc(var(--phone-tap) + 1px);
+    }
+    html[data-density="phone"] .trpg-club-proposal:not(.trpg-club-founded) > .trpg-button + .trpg-button {
+      margin-inline-start: var(--phone-gap);
+    }
+  </style>
 </head>
 <body class="trpg-preview">
   <div id="viewport"><div id="stage"><main id="trpg-app" tabindex="-1"></main></div></div>

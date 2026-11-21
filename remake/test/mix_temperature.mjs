@@ -6,7 +6,7 @@ import { DB } from "../js/core/data.js";
 import { temperatureBands, IDEAL, OPTIMAL, visualTemperature, isIdealTemperature, isOptimalTemperature,
   temperatureAfterSteam, pullResult, DANGER_TEMP, BURST_TEMP, COLD_OUT, isBurnt, isColdOut } from "../js/craft/conditions.js";
 import { thermalBand, envAt } from "../js/craft/thermal.js";
-import { temperatureFitness, makerMixProfile, isRainbowTemperature } from "../js/craft/temperature-model.js";
+import { temperatureFitness, makerMixProfile, isRainbowTemperature, BAND_TIGHTNESS } from "../js/craft/temperature-model.js";
 
 const flavors = JSON.parse(fs.readFileSync(new URL("../../data/flavors.json", import.meta.url))).flavors;
 DB.flavorById = Object.fromEntries(flavors.map(f => [f.id, f]));
@@ -14,8 +14,10 @@ const near = (actual, expected, label = "") => assert(Math.abs(actual - expected
 const checkModel = (cs, expected, catalog, width = 1.04) => {
   const bands = temperatureBands(cs, catalog);
   near(bands.t, expected, "t");
-  bands.ideal.forEach((value, i) => near(value, .54 * expected + (i ? 1 : -1) * .12 * width, "ideal"));
-  bands.optimal.forEach((value, i) => near(value, .54 * expected + (i ? 1 : -1) * .05 * width, "optimal"));
+  // PST01: 本番は緑・虹とも 0.7 倍、レッスンは今までの幅
+  const tight = cs?.mode === "tutorial" ? 1 : BAND_TIGHTNESS;
+  bands.ideal.forEach((value, i) => near(value, .54 * expected + (i ? 1 : -1) * .12 * tight * width, "ideal"));
+  bands.optimal.forEach((value, i) => near(value, .54 * expected + (i ? 1 : -1) * .05 * tight * width, "optimal"));
   near(bands.center, .54 * expected, "center");
   for (const band of [bands.ideal, bands.optimal]) assert(band.every(Number.isFinite) && band[1] > band[0] && band[0] > 0);
   return bands;
@@ -26,10 +28,15 @@ for (const flavor of flavors) checkModel({ mix: { [flavor.id]: 12 } }, flavor.he
 const vanilla = checkModel({ mix: { vanilla: 12 } }, .8);
 const apple = checkModel({ mix: { double_apple: 12 } }, 1);
 const mint = checkModel({ mix: { mint: 12 } }, 1.2);
-near(vanilla.ideal[0], .3072); near(vanilla.ideal[1], .5568);
-near(vanilla.optimal[0], .38); near(vanilla.optimal[1], .484);
-near(mint.ideal[0], .5232); near(mint.ideal[1], .7728);
-near(mint.optimal[0], .596); near(mint.optimal[1], .7);
+assert.equal(BAND_TIGHTNESS, .7, "PST01: 本番の緑・虹は 0.7 倍");
+near(vanilla.ideal[0], .34464); near(vanilla.ideal[1], .51936);
+near(vanilla.optimal[0], .3956); near(vanilla.optimal[1], .4684);
+near(mint.ideal[0], .56064); near(mint.ideal[1], .73536);
+near(mint.optimal[0], .6116); near(mint.optimal[1], .6844);
+// PST04: レッスンは今までの幅（緑 ±.12・虹 ±.05 × 道具の補正）
+const lessonVanilla = checkModel({ mode: "tutorial", mix: { vanilla: 12 } }, .8);
+near(lessonVanilla.ideal[0], .3072); near(lessonVanilla.ideal[1], .5568);
+near(lessonVanilla.optimal[0], .38); near(lessonVanilla.optimal[1], .484);
 console.log("[mix temperature] PASS: every real flavor, including vanilla / AF apple / AF mint examples");
 
 checkModel({ mix: { vanilla: 9, mint: 3 } }, .9);
@@ -84,9 +91,12 @@ for (const flavor of flavors) {
     if (isIdealTemperature(temp, bands)) assert.equal(effect.fire + effect.dark + effect.sparks, 0);
   }
 }
-// ミントは作り分ける葉なので、おいしく作れる範囲全体が虹（2026-11-10）。高めの.76も炎ではなく虹。
-assert.equal(thermalBand(.76, mint).id, "optimal");
-assert.equal(envAt(.76, mint).fire, 0);
+// ミントは作り分ける葉なので、おいしく作れる範囲全体が虹（2026-11-10）。緑の上端近くの高め（PST01 で上端は .735）も炎ではなく虹。
+const mintHigh = mint.ideal[1] - .005;
+assert(mintHigh > mint.optimal[1], "高め（虹の中心帯より上）を見る");
+assert.equal(thermalBand(mintHigh, mint).id, "optimal");
+assert.equal(envAt(mintHigh, mint).fire, 0);
+assert.notEqual(thermalBand(.76, mint).id, "optimal", "PST01: 締めた後の .76 は緑の外");
 assert(visualTemperature(.76, mint) > mint.ideal[1] && visualTemperature(.76, mint) < DANGER_TEMP);
 // 虹（2026-11-10 オーナー指示）: どの配合にもあり、最適温を含み適温帯に収まる。作り分ける葉が多いほど広く、
 // 作り分ける葉だけなら適温帯と同じ。虹の端でも採点の適合度は90以上（表示だけの帯で採点は変えない）。

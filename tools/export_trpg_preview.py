@@ -43,13 +43,13 @@ def main():
              "remake/js/core/chapter-clock.js", "remake/js/core/rules.js", "remake/js/core/venue-host.js", "remake/css/venue-host.css"}
     files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/js/trpg").decode().splitlines())
     files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/css/trpg-stage.css", "remake/img/ui/trpg").decode().splitlines())
-    files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/css/trpg-theme.css", "remake/css/trpg-phone.css", "remake/css/phone-density.css",
+    files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/css/trpg-theme.css", "remake/css/trpg-phone.css", "remake/css/trpg-roll-show.css", "remake/css/phone-density.css",
                      "remake/css/settings.css", "remake/js/core/stage-fit.js", "remake/css/ui-paper.css",
                      "remake/img/ui/paper").decode().splitlines())
     files.update("data/" + file for file in catalog.get("characterProfiles", []))
     if catalog.get("club", {}).get("file"):
         files.add("data/" + catalog["club"]["file"])
-    files.update("remake/fonts/ShipporiMinchoB1-" + weight + ".woff2" for weight in ["Medium", "Bold"])
+    files.update(f"remake/fonts/NotoSansJP-{part}.woff2" for part in ["Medium", "Bold", "Supp-Medium", "Supp-Bold"])
 
     def portrait(actor, face="normal"):
         meta = manifest["portraits"][actor]

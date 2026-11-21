@@ -1,6 +1,7 @@
 import { recordPlayMastery, syncPlayMastery } from "../core/play-mastery.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { isTrpgRegular } from "./regulars.js";
+import { buildTrpgPlayRecord } from "./play-record.js";
 // Campaign rules only. All mutations are explicit; this module has no DOM/storage.
 const clone = value => JSON.parse(JSON.stringify(value));
 const excluded = new Set(["sumi", "naru", "salaryman"]);
@@ -128,12 +129,12 @@ export function castTrpgTable(state, catalog, scenario, options = {}) {
 }
 
 /**
- * 今夜、棚の本（入荷済みを含む・まだ結末を見ていない本）のどれかで卓を囲めるか。本棚の画面の「今は遊べる本と仲間が
+ * 今夜、棚の本（入荷済み・遊び終えた本を含む）のどれかで卓を囲めるか。本棚の画面の「今は遊べる本と仲間が
  * 揃っていません」と同じ見方で、来店のやり取りの出し分けに使う（daily/trpg.js）。状態は変えない。
  */
 export function tablePlayableTonight(state, catalog, scenarios, options = {}) {
   const shelved = id => state?.trpg?.owned?.includes(id) || state?.trpg?.stock?.includes(id);
-  return (scenarios || []).some(scenario => shelved(scenario.id) && !state.trpg.cleared?.[scenario.id]
+  return (scenarios || []).some(scenario => shelved(scenario.id)
     && castTrpgTable(state, catalog, scenario, { ...options, onShelf: true }).ok);
 }
 
@@ -177,7 +178,7 @@ export function materializeTrpgCast(scenario, assignments) {
     });
   }
   table.presentation.prepareIdle = "準備を選ぼう。仲間がいれば、切り札も頼める";
-  table.presentation.endingIdle = "この晩の話は、ここまで。遊んだ記録は自動で残ります";
+  table.presentation.endingIdle = "この晩の話は、ここまで。本棚で遊んだ記録を見返せます";
   table.presentation.exitText = "中断した物語は、また遊べます。今夜の行動は使いません。";
   return table;
 }
@@ -216,6 +217,24 @@ export function clubGain(before, after) {
     rankUp: after.rank > before.rank, growthUp: after.growth - before.growth, next: after.next };
 }
 
+export const TRPG_END_LABELS = Object.freeze({ true: "トゥルーエンド", normal: "ノーマルエンド", bad: "バッドエンド" });
+
+/** Older saves lack this index; keep only first visits that correspond to an actual play. */
+export function firstTrpgEndingPlays(memory) {
+  const firsts = {};
+  for (const tier of Object.keys(TRPG_END_LABELS)) {
+    const play = memory?.firstEndingPlays?.[tier];
+    if (Number.isSafeInteger(play) && play > 0 && play <= memory.plays) firsts[tier] = play;
+  }
+  return firsts;
+}
+
+/** The three stars come from the hypothesis, the proposal and two successful checks. */
+export function trpgCampaignEnding(scenario, result) {
+  const tier = ["bad", "normal", "normal", "true"][result.rating.stars];
+  return { tier, label: TRPG_END_LABELS[tier], line: scenario.campaign.aftermath?.[tier] || scenario.endings[result.ending].line };
+}
+
 /** A play beats the kept memory when it earns more stars, or as many stars with a livelier table. */
 function betterPlay(next, kept) {
   if (!kept) return true;
@@ -243,10 +262,19 @@ export function completeTrpgTable(state, catalog, scenario, ticket, result, opti
     // The player's own character, as built for this table: name, origin and stats (older saves may also carry a look).
     ...(result.pc && typeof result.pc.name === "string" ? { pc: clone(result.pc) } : {}),
   };
-  state.trpg.cleared[scenario.id] = { ...(betterPlay(memory, kept) ? memory : kept), endingsSeen: seen, plays };
+  const firsts = firstTrpgEndingPlays(kept);
+  if (options.outcome) firsts[options.outcome.tier] ??= plays;
+  state.trpg.cleared[scenario.id] = { ...(betterPlay(memory, kept) ? memory : kept), endingsSeen: seen, plays,
+    ...(Object.keys(firsts).length ? { firstEndingPlays: firsts } : {}),
+    ...(kept?.records !== undefined ? { records: kept.records } : {}) };
   if (state.trpg.bookmark?.id === scenario.id) delete state.trpg.bookmark;
   state.slot++;
   recordPlayMastery(state, "trpg", result, `${state.cycle || 1}:${scenario.id}:${plays}`);
+  // 本編の完了はここで確定。再生データは選ばれた時だけ作り、進行セーブを妨げない。
+  if (options.recordTable && options.onReplayOffer) {
+    const ended = { chapter: state.chapter, day: state.day, flags: state.flags };
+    options.onReplayOffer(() => buildTrpgPlayRecord(options.recordTable, result, memory, ended, plays, options.characters, options.outcome));
+  }
   return true;
 }
 

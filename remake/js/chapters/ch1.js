@@ -32,8 +32,8 @@ import { storySeen } from "../daily/spots.js";
 import { recordCg } from "../scenes/gallery.js";
 import { newSession, openBench, tickerSay, waitBenchReady, runDrill } from "../craft/session.js";
 import * as bc from "../craft/broadcast.js";
-import { playTournamentEvent } from "../craft/tournament-story.js";
-import { servedEvaluationLines } from "../craft/served-eval.js";
+import { playTournamentEvent, playLive } from "../craft/tournament-story.js";
+import { servedEvaluationLines, servedMixWords, servedLemonOnly } from "../craft/served-eval.js";
 import { naruTastingLine } from "../craft/naru-tasting.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime, regulationFor } from "../craft/steps.js";
 import { stepWater } from "../craft/water-view.js";
@@ -52,14 +52,15 @@ import { warmCraftAssets } from "../craft/readiness.js";
 import { playTsumugiStory, playTsumugiSketch } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
-import { outcomeOf, showStandings, resultCountdown, sensuCutin, resultTable } from "../craft/result.js";
+import { outcomeOf, showStandings, resultCountdown, sensuCutin, resultTable, ch1LiveStandings } from "../craft/result.js";
 import { beginCh1Votes, castCh1Votes, isSakuraiVotes } from "../craft/ch1-votes.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
 import { giveSumiRig, giveEarlyHomeRig } from "../daily/home-rig.js";
 import { judgeNaruMatch, naruMatchReviewLines } from "./naru-match.js";
 import { configureFirstBrew, firstBrewOrder, rememberFirstBrew, serveFirstBrew } from "./first-brew.js";
-import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
+import { recordTournamentLoss, retryAssistOffer, applyRetryAssistChoice } from "./retry-assist.js";
+import { chosenAssistLevel } from "../craft/retry-assist-level.js";
 
 const BG = (name) => `res://assets/backgrounds/${name}.png`;
 const TONARI = BG("bg_tonari_inside");
@@ -256,10 +257,13 @@ function showResumeError() {
 }
 
 async function dailyPart() {
+  const owner = state;
   syncNightQueue(NIGHT_EVENTS);
   const deferFlags = state.deferredNightEvents.filter((entry) => entry.chapter === state.chapter).flatMap((entry) => entry.doneKeys || []);
   await playTsumugiStory(Math.max(1, state.day - 1), { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N), deferFlags });
+  if (state !== owner) return;
   await runDaily({ nightEvents: NIGHT_EVENTS, beforeHomecoming: giveEarlyHomeRig });
+  if (state !== owner) return;
   await tournamentDay();
 }
 
@@ -269,6 +273,7 @@ async function tutorial(progress = null) {
   if (!progress || !flag("_tutorial_done")) {
     await play("remake_tutorial_intro", { bg: TONARI });
     const cs = newSession("tutorial");
+    if (progress) cs.onboarding = true;
     if (progress?.firstOrderDone) configureFirstBrew(cs);
     openBench(cs, { steps: TUTORIAL_STEPS });
     await stepMix(cs);
@@ -323,7 +328,9 @@ const sketchScene = (id, bg) => async () => {
 const once = (key, fn) => ({ id: key, doneKeys: [key], run: async (context) => { await fn(context); setFlag(key); }, done: () => flag(key) });
 
 export const NIGHT_EVENTS = {
-  2: { label: "常連さんの話", schedule: "regular", pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
+  // #3819: DAY2は固定のシフトを入れない。常連さんの話は、次に入ったシフトの接客で読む（daily/calendar.js の regularCustomerStory）。
+  // DAY7までシフトに入らなかった時だけ、DAY8以降の夜に読む（DAY10の「常連さんの変化」より前）。
+  2: { label: "常連さんの話", schedule: "regular", freeNights: [2, 3, 4, 5, 6, 7], pin: "tonari", teaser: "tonari", beat: "夜。常連さんの話を聞きに、tonariへ──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
   3: { id: "_ev_first_practice", doneKeys: ["_tsumugi_contest_progress", "_ev_first_practice"], schedule: "preparation", deadline: 6,
     label: "基礎の確認", pin: "tonari", teaser: "tonari", beat: "夜。つむぎの途中の絵を見にtonariへ。閉店後はスミさんと練習を相談する──",
     done: () => flag("_tsumugi_contest_progress") && flag("_ev_first_practice"),
@@ -642,6 +649,7 @@ function prepareTournamentAttempt(newTournament) {
 function startTournamentCraft() {
   const cs = newSession("tournament");
   cs.retryAssist = state.tournament.retryAssist === true;
+  cs.retryAssistLevel = chosenAssistLevel(state.tournament); // 3敗ごとに一段ずつ判定が広がる（WIN13）
   // 桜井式の試合だけ、吸い出し・調整の温度計に「攻めの帯」を出す（craft/attack-band.js）。
   if (isSakuraiVotes(state.tournament.voteAttempt)) cs.voteStyle = "sakurai";
   // シーシャ作りの版（CRN16）は、試合を始めた時の審査の方式にそろえる（桜井式＝桜井版・いままで＝リニューアル）。試合の途中で設定を変えても混ざらない
@@ -658,6 +666,19 @@ function openTournamentMenu() {
   const inBench = () => state?.phase === "tournament" && document.body.dataset.screen === "bench";
   if (!inBench()) return;
   return openMenu({ canSave: inBench, current: inBench, saveRule: "このセーブから再開すると、大会の作業は最初からやり直す。" });
+}
+
+// 会場での会話に付ける中継の枠（TSH04）。順位は確定済みの票を読むだけで、票・進行には触れない。
+let livePhase = "";
+/** 会場の会話の共通の指定（舞台の背景＋中継の枠）。場面の名前を渡すと、以後の会話の帯にも残る。 */
+function venue(scene = null, extra = {}) {
+  if (scene) livePhase = scene;
+  return { bg: STAGE, live: { event: "SMOKE CROWN CUP", phase: livePhase, standings: ch1LiveStandings(state.tournament) }, ...extra };
+}
+/** 合間のアイキャッチ。いまの順位（票が出ている時だけ）を一行添える。 */
+function interval(sub, title = "INTERVAL") {
+  const mine = ch1LiveStandings(state.tournament).find((row) => row.me);
+  return { title, sub, note: mine ? `はじめ 現在${mine.rank}位 ・ ${mine.points}pt` : "" };
 }
 
 async function tournamentDay() {
@@ -686,15 +707,15 @@ async function tournamentDay() {
   await playTournamentArrival();
   await withLoadingNotice(openingBgmReady, loadingNotice("音楽を準備しています…"));
   playBgm("bgm_tournament_edm");
-  await play("ch1_tournament_opening", { bg: STAGE });
+  await playLive("ch1_tournament_opening", venue("開会"));
   const regulation = regulationFor({ mode: "tournament" });
   const challenge = regulation?.flavor === "mint" ? "ミント" : "レモン";
   const source = regulation?.supply ? `${challenge}は主催者が支給！ 他の葉は持ち込みです！` : "葉は自分で持ち込むこと！";
-  await play({ dialogue_id: "ch1_tournament_rule_recap", lines: [
+  await playLive({ dialogue_id: "ch1_tournament_rule_recap", lines: [
     { speaker: "pakki", face: "excited", text: `本日の課題はッ！ ${challenge}を2g以上！ ${source}` },
     // 桜井式の試合だけ、票の取り方を先に伝える（SKR04・#171 How to Play）。
     ...(isSakuraiVotes(state.tournament.voteAttempt) ? SAKURAI_RULE_LINES : []),
-  ] }, { bg: STAGE });
+  ] }, venue());
   await withLoadingNotice(Promise.all([assetsReady, craftBgmReady]), loadingNotice("大会の準備をしています…"));
   await entrance();
 
@@ -702,10 +723,10 @@ async function tournamentDay() {
   playBgm("bgm_tournament_craft");
   const cs = startTournamentCraft();
   // 開始前の掛け合い（#3060）。入場のあと、4台の前で合図を待つ。
-  await playTournamentEvent(cs, "prestart", { bg: STAGE });
+  await playTournamentEvent(cs, "prestart", venue("ROUND 1 ／ 準備"));
   await roundCut("ROUND 1", "準備");
-  await play("remake_round1_intro", { bg: STAGE });
-  await playTournamentEvent(cs, "opening", { bg: STAGE });
+  await playLive("remake_round1_intro", venue());
+  await playTournamentEvent(cs, "opening", venue());
   openTournamentBench(cs);
   await waitBenchReady(cs);
   tickerSay("パッキー「さあ4人一斉にスタート！ 制限時間は60分ッ！」");
@@ -717,7 +738,7 @@ async function tournamentDay() {
   bc.judge(cs, bc.judgeOf(cs.mixInfo.score), "配合");
   bc.block(cs, "pack");
   await stepPack(cs);
-  await playTournamentEvent(cs, "packed", { bg: STAGE });
+  await playTournamentEvent(cs, "packed", venue());
   bc.burst(cs, "good", 1);
   bc.block(cs, "foil");
   await runHoles(cs);
@@ -725,40 +746,40 @@ async function tournamentDay() {
   bc.block(cs, "coalfire");
   await runHeat(cs);
   await stepSteamTime(cs);
-  await playTournamentEvent(cs, "waiting", { bg: STAGE });
+  await playTournamentEvent(cs, "waiting", venue());
   bc.block(cs, "steam");
   await runSteamDodge(cs);
   await sleep(900);
   bc.clearComments();
-  await play("ch1_tournament_match", { bg: STAGE });
-  await play("ch1_tournament_r1_end", { bg: STAGE });
+  await playLive("ch1_tournament_match", venue());
+  await playLive("ch1_tournament_r1_end", venue());
   await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs, state.tournament);
   save();
-  await playTournamentEvent(cs, "interlude1", { bg: STAGE });
+  await playTournamentEvent(cs, "interlude1", venue("ROUND 1 終了", { card: interval("ROUND 1 → ROUND 2") }));
 
   // ROUND 2 ── 吸い出し・提供
   await roundCut("ROUND 2", "吸い出し・提供");
   openTournamentBench(cs);
   await waitBenchReady(cs);
   bc.block(cs, "pull");
-  if (await runPull(cs) === false) return;
+  if (await runPull(cs, { holdFailedResult: true }) === false) return;
   if (cs.failed) return failedOut(cs.failed, cs);
   // 固定の「個性も薄い」ではなく、実配合と提供時の温度から一口の感想を2行だけ差し込む。
   const served = DB.dialogues.ch1_tournament_served;
   const servedLines = served.lines.slice();
   servedLines.splice(1, 0, ...servedEvaluationLines(cs));
-  await play({ ...served, lines: servedLines }, { bg: STAGE });
+  await playLive({ ...served, lines: servedLines }, venue("ROUND 2 ／ 吸い出し・提供"));
   cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
   bc.burst(cs, "serve", 1);
   await sleep(900);
   bc.clearComments();
   // 審査員への提供開始の掛け合い（#3060）。4台が審査席に並び、一口目を待つ間。
-  await playTournamentEvent(cs, "serve", { bg: STAGE });
-  await play("ch1_tournament_r2_end", { bg: STAGE });
+  await playTournamentEvent(cs, "serve", venue());
+  await playLive("ch1_tournament_r2_end", venue());
   cs.stats = computeShisha(cs);
   await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs, state.tournament);
   save();
-  await playTournamentEvent(cs, "interlude2", { bg: STAGE });
+  await playTournamentEvent(cs, "interlude2", venue("ROUND 2 終了", { card: interval("ROUND 2 → ROUND 3") }));
 
   // ROUND 3・4 ── 同じ一台を2回調整する。温度・炭交換・葉の持ちは連続する。
   for (const round of [1, 2]) {
@@ -766,22 +787,22 @@ async function tournamentDay() {
     openTournamentBench(cs);
     await waitBenchReady(cs);
     bc.block(cs, "adjust");
-    await runCare(cs, { round });
+    await runCare(cs, { round, holdFailedResult: true });
     if (cs.failed) return failedOut(cs.failed, cs);
     await sleep(900);
     bc.clearComments();
     cs.stats = null;
-    await play(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", { bg: STAGE });
+    await playLive(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", venue(`ROUND ${round + 2} ／ 調整 ${round}回目`));
     if (round === 1) { cs.stats = computeShisha(cs); await showStandings(3, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality, cs.care.score), cs, state.tournament); save(); }
   }
 
-  await playTournamentEvent(cs, "interlude3", { bg: STAGE });
+  await playTournamentEvent(cs, "interlude3", venue("全工程 終了", { card: interval("全工程 終了", "FINAL JUDGING") }));
 
   // 審査は完成品と2回の調整の実績で決まる。
   playBgm("bgm_judging");
-  await play("remake_judging_intro", { bg: STAGE });
+  await playLive("remake_judging_intro", venue("最終審査"));
   finalize(cs);
-  await playTournamentEvent(cs, "tasting", { bg: STAGE });
+  await playTournamentEvent(cs, "tasting", venue());
   // 最終工程と試飲の表示後に4回目を確定。最後の1点・同点規則はVOTE01に委ねる。
   if (state.tournament.rulesVersion >= 2) castCh1Votes(state.tournament, 3, cs);
   const rank = state.tournament.rulesVersion >= 2 ? state.tournament.voteAttempt.result.rank : outcomeOf(cs.total).rank;
@@ -799,26 +820,26 @@ async function tournamentDay() {
     const judging = DB.dialogues.ch1_tournament_judging;
     const judgingLines = judging.lines.map(line =>
       line.cue === "naru_tasting" ? { ...line, text: naruTastingLine(cs) } : line);
-    await play({ ...judging, lines: judgingLines }, { bg: STAGE });
+    await playLive({ ...judging, lines: judgingLines }, venue());
     // 結果発表前の掛け合い（#3060）。会長の二口と選手席の待ち時間の後、みんととアダムが集計を待つ。
-    await playTournamentEvent(cs, "preresult", { bg: STAGE, context: { win: true } });
+    await playTournamentEvent(cs, "preresult", venue("まもなく結果発表", { context: { win: true } }));
     await resultCountdown(cs, out.kind, state.tournament);
     retireScreen(); // カウント画面は次の場面で片付く
     playBgm("bgm_aftermath");
     await sensuCutin(1, state.tournament);
-    await play("ch1_tournament_reveal", { bg: STAGE });
+    await playLive("ch1_tournament_reveal", venue("結果発表"));
     await resultTable(cs, 1, state.tournament);
     state.tournament.victory.revealed = true;
     save();
     await victory(cs);
   } else {
     // 結果発表前の掛け合い（#3060）。届かなかった流れは講評の直後、選手席で集計を待つ。
-    await playTournamentEvent(cs, "preresult", { bg: STAGE });
+    await playTournamentEvent(cs, "preresult", venue("まもなく結果発表"));
     await resultCountdown(cs, out.kind, state.tournament);
     retireScreen();
     await sensuCutin(out.rank, state.tournament);
     await resultTable(cs, out.rank, state.tournament);
-    await play("ch1_tournament_defeat", { bg: STAGE });
+    await playLive("ch1_tournament_defeat", venue("結果発表"));
     await play("remake_defeat_follow", { bg: TONARI_N });
     await showGameOver({ rank: out.rank, cs });
   }
@@ -844,6 +865,10 @@ async function victory(cs) {
     clearContinueHistory(owner);
     owner.tournament.retryAssist = false;
     v.comment = (cs ? craftRecognition(cs) : null)?.comment || null;
+    // 優勝の夜にスミさんへ答える配合（#3916）。旧保存・記録なしは台本の中立文のまま。
+    v.mix = (cs ? servedMixWords(cs) : null) || null;
+    // レモンだけで勝った保存は、スミさんが昔の自分の話を他人事として笑い、第4章で会長が明かす。
+    if (cs && servedLemonOnly(cs)) setFlag("_ch1_lemon_single");
     addMoney(PRIZE);
     delete owner.tournament.stockSnap;
     delete owner.tournament.entryResources;
@@ -854,6 +879,9 @@ async function victory(cs) {
   const after = DB.dialogues.ch1_tournament_after;
   const tonariAt = after.lines.findIndex(line => line.type === "bg" && line.bg?.includes("bg_tonari_inside"));
   const lobby = BG("bg_c_station_lobby");
+  // 優勝の夜、スミさんに答える配合（#3916）。記録が無ければ台本の中立文のまま。
+  const withMix = lines => lines.map(line => line.cue === "ch1_mix" && v.mix
+    ? { ...line, text: `${v.mix}${flag("_ch1_lemon_single") ? "だけ" : ""}です` } : line);
   // 大会後の数日は日常のslotを進めず描く。LOADでも各段の場所・時間を背景から確立する。
   const inScene = (bg, run) => async () => {
     await setBg(bgUrl(bg));
@@ -872,7 +900,7 @@ async function victory(cs) {
         ], close_label: "……はい。ありがとうございます、スミさん",
       },
     ], { time: "PM 6:52", title: "表彰式のあと" })),
-    inScene(TONARI_N, () => play({ ...after, lines: after.lines.slice(tonariAt) })),
+    inScene(TONARI_N, () => play({ ...after, lines: withMix(after.lines.slice(tonariAt)) })),
     inScene(TONARI_N, () => play("interval_day1_naru_lime")),
     inScene(TONARI_N, () => gainStat("guts", 1)),
     // 優勝の夜。記録を続ける博士の伏線へ。
@@ -956,7 +984,7 @@ export async function showClear() {
     } catch { toast("第2章を読み込めなかった。通信を確認して、もう一度試してください"); }
     finally { playing = false; next.disabled = false; }
   } });
-  const root = el("div.end-screen.clear", [
+  const root = el("div.end-screen.clear.chapter-clear", [
     el("div.end-title", { text: "第1章 クリア" }),
     el("div.end-sub", { text: "SMOKE CROWN CUP 優勝 ── 勝ちは、始まりだった。" }),
     el("div.end-body", [
@@ -1003,11 +1031,12 @@ async function showGameOver({ rank = 0, reason = "rank", variant = null, cs = nu
     context: !preview && owner?.phase === "tournament"
       ? recordContinueContext(owner, owner.tournament, owner.tournament.attempts, craftContinueContext(cs, { chapter: 1, reason, rank }))
       : craftContinueContext(cs, { chapter: 1, reason, rank }),
-    onRetry: async () => {
+    // 3敗目からは、再挑戦を押した同じ画面で難易度を選ぶ（WIN14）。
+    difficulty: tournament ? retryAssistOffer(tournament) : 0,
+    onRetry: async level => {
       if (!owner) { location.reload(); return; }
-      const assisted = await chooseRetryAssist(tournament, () => state === owner && owner.tournament === tournament && root.isConnected);
-      if (assisted === null) { if (state === owner && root.isConnected) await showGameOver({ reason, rank, cs, variant: root.continueVariant, preview }); return; }
-      if (state !== owner || !root.isConnected) return;
+      if (state !== owner || owner.tournament !== tournament || !root.isConnected) return;
+      applyRetryAssistChoice(tournament, level);
       save();
       retire(root);
       // 再挑戦は、一筆を逆向きに流して色を戻す（#2688 A19・F4。暗い煙ワイプはタイトル→開始と会場入りだけ）

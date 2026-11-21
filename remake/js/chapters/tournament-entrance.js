@@ -5,6 +5,7 @@ import { el, sleep } from "../core/util.js";
 import { layers } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { vnTest } from "../vn/engine.js";
+import { stageLights } from "../craft/tournament-show.js";
 
 // 章ごとの入場カード。ring＝二つ名、note＝スミさんの一言。face は顔アイコンの id（内部名と違う人物だけ）。
 export const ENTRANCE_CARDS = Object.freeze({
@@ -58,6 +59,8 @@ export async function playEntrance(chapterOrCards, { auto = Boolean(window.__rem
   const cards = Array.isArray(chapterOrCards) ? chapterOrCards : ENTRANCE_CARDS[chapterOrCards];
   if (!cards?.length || !layers?.fx) return;
   const host = el("div.entrance");
+  // 舞台の光（TSH12）。カードの形・出る順・間は変えない。
+  stageLights(host, { beams: 4, dust: 16 });
   layers.fx.append(host);
   try {
     for (const c of cards) {
@@ -70,7 +73,8 @@ export async function playEntrance(chapterOrCards, { auto = Boolean(window.__rem
           el("div.ent-note", { text: `スミ「${me && heroNote ? heroNote : c.note}」` }),
         ]),
       ]);
-      host.replaceChildren(card);
+      host.querySelector(".ent-card")?.remove();
+      host.append(card);
       await sleep(30);
       card.classList.add("in");
       me ? SE.fanfare() : SE.select();

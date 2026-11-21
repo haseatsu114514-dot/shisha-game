@@ -2,7 +2,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
 import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather, dropRetired, gainCard } from "../core/ui.js";
-import { state, save, markMet } from "../core/state.js";
+import { state, save } from "../core/state.js";
 import { openMenu as openFullMenu } from "./menu.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina, currentCondition } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
@@ -18,7 +18,7 @@ import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf, tomorrowForecast } from "./weather.js";
-import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, isUnlocked, storyCount, CHAR_STAT, bgRef, VISIT_BG, facilityGrowth } from "./spots.js";
+import { spotById, deliverToRival, visitRival, visitSpot, restAtHome, isClosed, isUnlocked, storyCount, CHAR_STAT, bgRef, VISIT_BG, facilityGrowth } from "./spots.js";
 import { doFortune } from "./fortune.js";
 import { syncFortune } from "./fortune-schedule.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
@@ -41,7 +41,7 @@ import { petitAfterVisit } from "./petit-shuraba.js";
 import { strainMorning, maybeStrainTalk, maybeStrainReunion, strainAfterVisit } from "./lover-strain.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
-import { presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
+import { EXP, gainExp, presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
 import { takeChapterBoardNotice, chapterBoardCards, respecMapNotice, takeRespecCloseWarning } from "../core/growth-chapter-notice.js";
 
 const SLEEP_RECOVERY = 14;
@@ -108,6 +108,7 @@ export async function runDaily(def) {
     announceChapterBoard();
     if (state.chapter === 1 && state.day === 1 && state.slot === 0 && !state.flags._errand_scout_done) {
       await day1Errands();
+      if (state !== owner) return;
       save();
     }
     // 旧DAY1夜の保存も、退勤後は再勤務・配達へ戻さない。
@@ -117,17 +118,35 @@ export async function runDaily(def) {
       state.slot = 2;
       save();
     }
-    // DAY2の出発前に二軒分をtonariでまとめて受注する（登録より先）。
+    // #3819: DAY2の朝、スミさんが「C.STATIONで大会の登録を済ませてこい。ついでに二軒へ届け物を」と頼む。
+    // 依頼の説明（tonari）→ 登録 → その足で PEPPERMINT → EDEN → tonariへ報告。この日は固定のシフトを入れない。
     if (state.chapter === 1 && !(await briefDeliveryBatch())) return;
-    // なるの紹介を受けた翌朝、配達前に無料の参加登録を済ませる。
+    // なるの紹介を受けた翌朝、配達の前に無料の参加登録を済ませる。
     if (state.chapter === 1 && state.day >= 2
       && (state.day <= DELIVERY_LAST_DAY || state.flags._delivery_schedule_v2)
       && state.flags._errand_scout_done
       && (state.flags._delivery_schedule_v2 || !(state.flags._delivery_adam_done && state.flags._delivery_minto_done))) {
       state.flags._delivery_schedule_v2 = true;
       if (!state.flags._c_station_registered && state.slot < 2 && !restingToday()) await registerTournament();
+      if (state !== owner) return;
+    }
+    // 登録のついでの配達（行動枠・体力を使わない）。休業の店は従来どおり帰り道の配達へ回す。
+    if (state.chapter === 1 && state.slot < 2) {
+      for (let delivery = dueDelivery({ errand: true }); delivery; delivery = dueDelivery({ errand: true })) {
+        const delivered = await deliver(delivery, { errand: true });
+        if (state !== owner) return;
+        if (!delivered) break;
+      }
+      if (await reportDeliveryBatch() === false) return;
     }
     await chapterDef.morningDeparture?.();
+    if (state !== owner) return;
+    // DAY3の朝、地図へ出る前に観音堂へ。昼枠を使わず、昼より先へ進んだ旧セーブは巻き戻さない。
+    if (state.chapter === 1 && state.day === 3 && state.slot === 0 && !state.flags._ch1_day3_kannon_done) {
+      await reflectAtSpot("kannon", { direct: true, onExit: () => { owner.flags._ch1_day3_kannon_done = true; } });
+      if (state !== owner) return;
+      updateHud();
+    }
     while (state.slot < 2) {
       const story = await chapterDef.slotEvent?.();
       if (story) {
@@ -142,15 +161,16 @@ export async function runDaily(def) {
           continue;
         }
       }
-      if (fixedShiftDue()) await fixedShift();
-      else await takeAction();
+      await takeAction();
+      if (state !== owner) return;
       updateHud();
       save();
     }
-    // #2213 B01: 配達はシフト後の帰り道。行動枠・体力は使わない。
+    // 登録のついでに届けられなかった店（休業など）は、その日の行動の後の帰り道に。行動枠・体力は使わない。
     for (let delivery = dueDelivery(); delivery; delivery = dueDelivery()) {
-      if (!(await deliver(delivery))) break;
-      if (state !== owner) return; // 配達中のLOADは読み込んだ日常が引き継ぐ。古い流れで次の届け先へ進まない
+      const delivered = await deliver(delivery);
+      if (state !== owner) return; // 配達中のLOAD後に、古い流れで次の届け先へ進まない。
+      if (!delivered) break;
     }
     // 2件の納品後、最終報告のため一度だけ職場へ戻る。
     const reported = state.chapter === 1 ? await reportDeliveryBatch() : null;
@@ -199,7 +219,7 @@ async function morning() {
   const strained = strainMorning();
   const n = strained + deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false,
     exclude: chapterDef.withLovers?.() || [] }) + extra;
-  if (n) pushNotice(n, { onOpen: (sender) => {
+  if (n) pushNotice(n, { onDayOneHint: save, onOpen: (sender) => {
     if (isChoosingDestination() && !layers.modal.classList.contains("show")) phoneButton({ sender });
     else queuedLimeSender = sender;
   } });
@@ -304,40 +324,56 @@ const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
  * 偵察を終えたら退勤済みのまま帰宅。参加登録と配達2件は翌日へ。
  */
 async function day1Errands() {
-  const f = state.flags;
+  const owner = state, f = owner.flags;
   const lemon = DB.flavorById.lemon;
   if (!f._errand_shop_done && (!lemon || ownsFlavor("lemon"))) f._errand_shop_done = true;
+  const onShown = () => pushNotice(1, {
+    dayOneReminder: true, onDayOneHint: save, onOpen: sender => phoneButton({ sender }),
+  });
   if (!f._errand_shop_done) {
     if (!f._errand_shop_told) {
-      await play("remake_day1_errand_shop", { bg: TONARI_BG });
+      const request = await play("remake_day1_errand_shop", { bg: TONARI_BG });
+      if (state !== owner || request?.cancelled) return;
       f._errand_shop_told = true;
       save();
     }
-    await chooseSpot({ guide: { pin: "shop", text: "Dr.fookahでレモンを仕入れる。看板を2回タップ。" } });
+    while (await chooseSpot({ guide: { pin: "shop", text: "Dr.fookahでレモンを仕入れる。看板を2回タップ。" }, onShown }) !== "shop") {
+      if (state !== owner) return;
+    }
+    if (state !== owner) return;
     await openShop({ errand: "lemon", expense: true, expenseFlag: "_errand_lemon_expensed" });
+    if (state !== owner) return;
     f._errand_shop_done = true;
     save();
     await bannersIdle();
+    if (state !== owner) return;
   }
   if (!f._lemon_gift_read) {
     const gift = await play("remake_lemon_gift", { bg: TONARI_BG });
-    if (gift?.cancelled) return;
+    if (state !== owner || gift?.cancelled) return;
     f._lemon_gift_read = true;
     save();
   }
   const naru = spotById("naru");
   if (!naru || (!f._errand_naru_visited && (isClosed(naru) || spendableMoney(state) < (naru.cost || 0)))) { f._errand_scout_done = true; return; }
   if (!f._errand_scout_told) {
-    await play("remake_day1_errand_scout", { bg: TONARI_BG });
+    const request = await play("remake_day1_errand_scout", { bg: TONARI_BG });
+    if (state !== owner || request?.cancelled) return;
     f._errand_scout_told = true;
     save();
   }
-  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。" } });
   if (!f._errand_naru_visited) {
-    await visitRival(naru);
+    while (await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。" }, onShown }) !== "naru") {
+      if (state !== owner) return;
+    }
+    if (state !== owner) return;
+    const completed = await visitRival(naru, { scout: true });
+    if (state !== owner) return;
+    if (!completed) { f._errand_scout_done = true; return; }
     state.visitedDay.naru = state.day;
     f._errand_naru_visited = true;
-    save();
+    gainExp(EXP.tutorial, { key: "ch1_scout", tag: "偵察" });
+    save(); // 訪問済みと経験値を一緒に保存。旧保存・再開では後から加算しない。
   }
   f._errand_scout_done = true;
   state.slot = 2; // 偵察でこの日は終了。消耗・費用・行動後処理は従来の1回だけ。
@@ -361,8 +397,9 @@ async function registerTournament() {
 
 /**
  * 第1章は、スミさんの届け物でEDEN・PEPPERMINTの初来店を必ず通す（DL01）。DAY1 のおつかいに続けて
- * DAY2朝に二軒分をまとめて受注し、夜のシフト後の帰り道にPEPPERMINT→EDEN。納品後にtonariへ一度だけ報告する。
- * #2213 B01: 配達は帰り道の無料の手順（行動枠・体力を使わない）。手当はバイト代への上乗せで残す。
+ * DAY2朝に「登録のついでに」二軒分をまとめて受注し、C.STATIONの登録の足でPEPPERMINT→EDEN。納品後にtonariへ一度だけ報告する。
+ * #3819: DAY2は固定のシフトを入れない（常連さんの話は、次に入ったシフトの接客で読む。regularCustomerStory）。
+ * #2213 B01: 配達は無料の手順（行動枠・体力を使わない）。届けられなかった店は、その日の帰り道に回す。
  * EDENは従来の無料体験、PEPPERMINTは店内で荷物だけを渡し一服は任意。
  * 自分で先に行った旧セーブの店は飛ばし、DAY2 を過ぎた旧セーブには割り込まない
  */
@@ -371,36 +408,11 @@ const DELIVERIES = [
   { charId: "adam", scene: "remake_delivery_eden", text: "EDENに古いダブルアップルを届ける。" },
 ];
 const DELIVERY_LAST_DAY = 2;
-const DELIVERY_PAY = 2000;
 
-/** #2213 B03: 勤務を固定するのは第1章DAY2の夜だけ。二軒分を受注した日は、夜の行動枠がそのままシフトになる。
- * 旧方式で配達を済ませた保存には、後からシフトを足さない。 */
-const fixedShiftTonight = () => state.chapter === 1 && state.day === DELIVERY_LAST_DAY
-  && !!state.flags._delivery_batch_started && !state.flags._ch1_day2_shift_done && !restingToday()
-  && (!DELIVERIES.every(d => state.flags[`_delivery_${d.charId}_done`]) || !state.flags._delivery_report_done);
-function fixedShiftDue() {
-  if (state.slot !== 1 || !fixedShiftTonight()) return false;
-  const inv = state.pendingInvite;
-  return !(inv && (inv.day ?? state.day) === state.day && inv.slot === state.slot); // 旧セーブで先にした約束は守る
-}
-
-async function fixedShift() {
-  const spot = spotById("tonari");
-  await beat("夜。今日はtonariのシフトに入る日だ──");
-  await staminaGuard(-24, { mandatory: true });
-  state.visitedDay.tonari_baito = state.day;
-  const { spent } = await paidAction(async () => {
-    await doBaito({ story: regularCustomerStory });
-    return true;
-  }, { ...facilityGrowth(spot), exp: TONARI_EXP.baito });
-  state.visitedDay.tonari = state.day;
-  state.flags._ch1_day2_shift_done = true;
-  state.slot = 2;
-  await afterAction({ exerted: true, spent });
-}
-
-/** #2213 B02: 常連の鉄仮面さん（サラリーマン）の話（夜イベント「常連さんの話」）は、固定シフトの接客として流す。
- * シフトに入れなかった日（休養など）は、夜イベントの定義どおり後日の夜に読む。 */
+/** #2213 B02・#3819: 常連の鉄仮面さん（サラリーマン）の話（夜イベント「常連さんの話」）は、DAY2より後に初めて入った
+ * シフトの接客として流す（自分で入ったシフトも、スミさんのLIMEで呼ばれたシフトも）。DAY7までにシフトへ入らなかった時は、
+ * 夜イベントの定義（ch1.js の freeNights）どおり DAY8 以降の夜に読む。 */
+const carriedShiftStory = () => state.chapter === 1 && state.day >= 2 && !state.flags._ev_salaryman ? regularCustomerStory : null;
 async function regularCustomerStory() {
   const scene = DB.dialogues.ch1_salaryman_regular;
   if (state.flags._ev_salaryman || !scene) return null;
@@ -470,9 +482,10 @@ function pendingDelivery(charId) {
   return d;
 }
 
-function dueDelivery() {
-  // 帰り道（その日の行動枠を使い終えた後）だけ。
-  if (state.chapter !== 1 || state.day < 2 || state.slot < 2 || !state.flags._errand_scout_done
+function dueDelivery({ errand = false } = {}) {
+  // 帰り道（その日の行動枠を使い終えた後）か、朝に受注した日の「登録のついで」（errand。行動枠を使う前）。
+  if (errand ? state.slot >= 2 || !state.flags._delivery_batch_started : state.slot < 2) return null;
+  if (state.chapter !== 1 || state.day < 2 || !state.flags._errand_scout_done
     || (state.day > DELIVERY_LAST_DAY && !state.flags._delivery_schedule_v2) || restingToday()) return null;
   for (const d of DELIVERIES) {
     if (!pendingDelivery(d.charId)) continue;
@@ -483,7 +496,7 @@ function dueDelivery() {
   return null;
 }
 
-async function deliver({ charId, scene, text }, { guide = true } = {}) {
+async function deliver({ charId, scene, text }, { guide = true, errand = false } = {}) {
   const owner = state;
   const f = state.flags;
   if (!f[`_delivery_${charId}_told`]) {
@@ -493,27 +506,10 @@ async function deliver({ charId, scene, text }, { guide = true } = {}) {
     save();
   }
   if (guide) {
-    await chooseSpot({ guide: { pin: charId, text, free: "配達（帰り道・代金なし）" } });
-    if (state !== owner) return false;
+    const destination = await chooseSpot({ guide: { pin: charId, text, free: errand ? "配達（登録のついで・代金なし）" : "配達（帰り道・代金なし）" } });
+    if (state !== owner || destination !== charId) return false;
   }
-  f[`_delivery_${charId}`] = true;
-  playBgm("bgm_rival_shop");
-  if (charId === "minto") {
-    // 最初の背景・人物・台詞から店内。客としての初回接客は自由行動に残す。
-    const result = await play("remake_delivery_minto_handoff", { bg: "res://assets/backgrounds/peppermint.png" });
-    if (state !== owner || result?.cancelled) return false;
-    f.known_name_minto = true;
-    f._met_minto = true;
-    markMet("minto");
-  } else {
-    // EDENの初来店は従来どおりスミさんの指定による体験。
-    if ((await visitChar(charId)) === false || state !== owner) return false;
-  }
-  addMoney(DELIVERY_PAY);
-  toast(`配達の手当 +${DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
-  f[`_delivery_${charId}_done`] = true;
-  save(); // 手当と納品済みを同じ境界で保存し、LOADで二重に払わない。
-  return true;
+  return deliverToRival(spotById(charId));
 }
 
 // ---------------------------------------------------------------- 行動
@@ -589,17 +585,24 @@ async function takeAction() {
   const visitBlock = spot => fixedNightVisitBlock(chapterDef.nightEvents, spot);
   const ev = nightPlan(chapterDef.nightEvents)[0];
   syncSamechanKnowledge();
-  const mapOptions = chapterDef.mapOptions?.() || {};
+  const mapOptions = { ...chapterDef.mapOptions?.() };
+  if (mapOptions.eventPinLabel && ev?.label && !ev.done?.()) {
+    const tonight = `${mapOptions.eventPinLabel}：${ev.label}`;
+    const reminder = mapOptions.reminder || respecMapNotice(state);
+    mapOptions.reminder = [tonight, reminder].filter(Boolean).join(" ／ ");
+  }
   const spotId = await chooseSpot({
     ...mapOptions,
-    reminder: mapOptions.reminder || respecMapNotice(state), // 組み直しが開いている間の一言（SPEC 5.2。上の帯はピンと重なるので右下の案内に添える）
+    reminder: mapOptions.reminder || respecMapNotice(state),
     visitBlock,
     eventPin: ev && !ev.done?.() ? ev.pin : null,
     onShown: () => {
+      mapOptions.onShown?.();
       if (queuedLimeSender) { const sender = queuedLimeSender; queuedLimeSender = null; phoneButton({ sender }); }
       else limeCoach(phoneButton);
     }, // 通知を先にタップした場合は、マップが開いたところで目的のトークへ
     onBeforeGo: async (destination) => {
+      if (destination.boardOnly) return true; // 行動枠も約束も進めない
       const spendsAction = !["shop", "fortune"].includes(destination.kind)
         && !(typeof pendingDelivery === "function" && pendingDelivery(destination.charId));
       // 組み直しが開いている間の最初の行動は、確定する前に閉じることを一度だけ知らせる（SPEC 5.2）
@@ -617,17 +620,26 @@ async function takeAction() {
   if (!spot) throw new Error(`行き先が見つかりません: ${spotId}`);
   const blocked = visitBlock(spot);
   if (blocked) { toast(blocked.why); return; }
+  if (spot.boardOnly) {
+    await reflectAtSpot(spot.id);
+    return;
+  }
   if (spot.kind === "rival" && typeof pendingDelivery === "function" && pendingDelivery(spot.charId)) {
     if (!openingStatus(spot, state).ok || isClosed(spot)) return;
     await deliver(pendingDelivery(spot.charId), { guide: false });
     return;
   }
-  const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => performSpotAction(spot), {
-    ...facilityGrowth(spot),
-    consumed: (result) => result.used && spot.kind === "spot",
-    exp: (result) => result.exp || spotExpTarget(spot),
-  });
-  if (!used) return;
+  const spotOwner = state, saveGate = { release: null };
+  let outcome;
+  try {
+    outcome = await paidAction(() => performSpotAction(spot, saveGate), {
+      ...facilityGrowth(spot),
+      consumed: (result) => result.used && spot.kind === "spot",
+      exp: (result) => result.exp || spotExpTarget(spot),
+    });
+  } finally { saveGate.release?.(); }
+  const { value: { used, exerted, slotsUsed = 1 }, spent } = outcome;
+  if (!used || state !== spotOwner) return;
   state.visitedDay[spot.id] = state.day;
   // 章が足す、行き先の行動を終えた後の記録（第5章の店めぐり帳の判子など）。保存は下の afterAction が行う
   chapterDef.afterSpot?.(spot);
@@ -640,7 +652,7 @@ async function takeAction() {
   await afterAction({ exerted, spent });
 }
 
-async function performSpotAction(spot) {
+async function performSpotAction(spot, saveGate) {
   const actionOwner = state;
   const scheduledGuestSpot = hiyoriShopLocation();
   const scheduledCityVisit = cityGuestAtShop(spot);
@@ -676,8 +688,10 @@ async function performSpotAction(spot) {
   let slotsUsed = 1;
   let exp = null;
   if (spot.kind === "tonari") {
-    const sub = await tonariMenu();
-    if (!sub) return { used: false, exerted };
+    const selected = await tonariMenu();
+    const floor = selected === "baito_floor";
+    const sub = floor ? "baito" : selected; // 同じ勤務。固定夜・訪問日・体力・成長の経路を分けない。
+    if (state !== actionOwner || !sub) return { used: false, exerted };
     exp = TONARI_EXP[sub] || null;
     if (sub === "ichidai") {
       const { visitIchidaiTable } = await import("./ichidai-table.js");
@@ -691,10 +705,6 @@ async function performSpotAction(spot) {
       // 料金・体力・読了と一緒に行動を保存済み。共通末尾で二重に進めない。
       return { used: completed, exerted: completed, slotsUsed: 0 };
     }
-    if (sub === "baito" && fixedShiftTonight()) {
-      toast("今日は夜にシフトが入っている");
-      return { used: false, exerted };
-    }
     const makanai = sub === "practice" || sub === "strawberry";
     // 旧セーブの苺専用記録も、同じ日のまかないとして扱う。
     if (state.visitedDay[`tonari_${sub}`] === state.day || makanai &&
@@ -703,6 +713,12 @@ async function performSpotAction(spot) {
       return { used: false, exerted };
     }
     if (!(await staminaGuard(sub === "baito" ? -24 : -16))) return { used: false, exerted };
+    if (state !== actionOwner) return { used: false, exerted: false };
+    if (floor && saveGate) {
+      const { holdActionSave } = await import("../core/state.js");
+      if (state !== actionOwner) return { used: false, exerted: false };
+      saveGate.release = holdActionSave(actionOwner);
+    }
     exerted = true;
     state.visitedDay[makanai ? "tonari_practice" : `tonari_${sub}`] = state.day;
     // #2213 B04: 「まかないで練習」はシフト上がりのメニューで選ぶ（tonari.js）。独立の行動としては選べない。
@@ -711,7 +727,10 @@ async function performSpotAction(spot) {
       addStamina(-16);
       const { masteryGained } = await runStrawberryTrial({ bg: TONARI_BG, isCurrent: () => state === actionOwner });
       if (masteryGained) toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
-    } else if (sub === "baito") await doBaito();
+    } else if (sub === "baito") {
+      // 本編の「常連さんの話」を読むシフト（carriedShiftStory）は、いつものシフトとして進む（フロア営業の札は、その間は出ない。tonari.js）
+      if (await doBaito({ floor, story: carriedShiftStory() }) === false || state !== actionOwner) return { used: false, exerted: false };
+    }
     else if (await tonariCustomer() === false) return { used: false, exerted: false };
   } else if (spot.kind === "samechan") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
@@ -737,8 +756,6 @@ async function performSpotAction(spot) {
     else if (await staminaGuard(-14)) { used = await visitRio(); exerted = used; if (used) await consultLessons("rio"); }
     else used = false;
   } else if (spot.kind === "spot") {
-    // 観音堂で内省（心得の盤 SPEC 2.8）: 火種を灯す。時間も体力も使わない。true=行動にしない
-    if (await reflectAtSpot(spot.id) === true) return { used: false, exerted: false };
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
     if (await visitSpot(spot) === false) return { used: false, exerted: false };
     exerted = spot.stamina < 0;
@@ -855,7 +872,7 @@ async function meetInvitation(inv) {
     // スミさんのLIMEで急に呼ばれたシフト。そのまま tonari で働く（給料に上乗せ）
     state.visitedDay.tonari_baito = state.day;
     state.visitedDay.tonari = state.day;
-    await doBaito({ called: true });
+    await doBaito({ called: true, story: carriedShiftStory() });
   } else if (inv.event === "__mukai_baito__") {
     // ムカイさんのLIMEで呼ばれた東京の mukai のシフト（VOL10）。シフトの中身は章の側（chapters/tokyo-mukai.js）
     if (!await chapterDef.mukaiShift?.({ called: true })) return false;

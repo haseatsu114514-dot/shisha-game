@@ -66,6 +66,8 @@ await suite("ch3-tokyo-daily", async check => {
     await page.locator(dt("rule-sheet-close")).click();
     // DAY2 の朝: 初出勤（配達）で昼を使い、夜の行動の地図が出る。
     await tokyoMap(page, { day: 33, slot: 1 });
+    const freeGuide = page.locator('.map-notice', { hasText: '今夜は、地図から好きな行き先を選べる。' });
+    await freeGuide.waitFor();
     let state = await get(page);
     assert.equal(state.flags._ch3_intro.routeVersion, 3);
     assert.equal(state.flags._ch3_intro.stage, 3, "DAY1 opening, DAY1 arrival and DAY2 work are read");
@@ -81,16 +83,27 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(await page.locator(dt("pin-tonari")).count(), 0, "The hometown is not on the Tokyo map");
     // 地元との連絡は地図の行き先ではなく、右上の LIME のトーク一覧の一番上の行（オーナー決定 2026-11-02）。
     assert.equal(await page.locator(dt("pin-ch3_tokyo_lime")).count(), 0, "No map pin for hometown contacts");
-    const slotBefore = (await get(page)).slot;
+    const beforeContacts = await get(page);
     await page.locator(dt("hud-phone")).click();
     await page.locator(dt("lime-shortcut-tokyo_contacts")).click();
     await page.locator(".lime-title", { hasText: "地元との連絡" }).waitFor({ timeout: 30000 });
+    assert.match(await page.locator(dt("lime-contact-guide")).innerText(), /届いた話はトーク.*電話印/);
+    assert.match(await page.locator(".lime-empty").innerText(), /連絡先を交換した恋人や地元の友人/);
     await page.locator(dt("phone-close")).last().click();
     await tokyoMap(page, { day: 33 });
-    assert.equal((await get(page)).slot, slotBefore, "Opening hometown contacts uses no time");
+    const afterContacts = await get(page);
+    for (const key of ["day", "slot", "money", "stamina", "inbox", "tokyoVisits"])
+      assert.deepEqual(afterContacts[key], beforeContacts[key], `Reading the guide changed ${key}`);
 
     // 保存→リロード→同じ時間帯（DAY2の夜）の東京の地図から再開。
     await loadSlot(page, 0);
+    await tokyoMap(page, { day: 33, slot: 1 });
+    assert.equal(await freeGuide.count(), 0);
+    await page.locator(dt("hud-phone")).click();
+    await page.locator(dt("lime-shortcut-tokyo_contacts")).click();
+    await page.locator(".lime-title", { hasText: "地元との連絡" }).waitFor();
+    assert.equal(await page.locator(dt("lime-contact-guide")).count(), 0);
+    await page.locator(dt("phone-close")).last().click();
     await tokyoMap(page, { day: 33, slot: 1 });
 
     // 夜: mukai で手伝う（日当）→ 帰りに裏口のてつこ（行動を使わない）。
@@ -468,6 +481,38 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(state.flags._ch3_intro.stage, 20, "Every Tokyo scene is read before the national match");
     assert.equal(state.flags._ch3_evening?.kind, "rest");
     assert.equal(await page.locator('[data-test="ch3-intro-tournament"]').count(), 1);
+  });
+
+  // #3097 第2弾: 奥の部屋で休むと、地元から電話が来る（休む場面の代わりに一本。夜だけの電話は夜に）。休む場面の巡回は進めない。
+  await check("resting-in-the-back-room-brings-a-call-from-home", async page => {
+    // DAY6 は本筋の場面が無い一日（次は DAY7 の夜のなるへの連絡）。昼と夜を、それぞれの時間帯から始めた保存で休む。
+    const rest = async (slot, flags) => {
+      await seed(page, { _ch3_room_rests: 1, ...flags });
+      const start = await page.evaluate(async slot => {
+        const core = await import("./js/core/state.js");
+        const progress = await import("./js/chapters/ch3-progress.js");
+        const value = core.state, intro = value.flags._ch3_intro;
+        intro.stage = progress.CH3_INTRO_SCENES.findIndex(scene => scene.id === "ch3_naru_contact_before_tournament");
+        value.day = intro.startDay + 5; value.slot = slot; value.phase = "daily"; value.stamina = 30;
+        Object.assign(value.met, { mukai_master: true, mashiro: true });
+        value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+        core.save();
+        return value.day;
+      }, slot);
+      await loadSlot(page, 0);
+      await tokyoMap(page, { day: start, slot });
+      await go(page, "ch3_tokyo_room");
+      await tokyoMap(page, slot ? { day: start + 1, slot: 0 } : { day: start, slot: 1 });
+      return get(page);
+    };
+    let state = await rest(0, {});
+    assert.deepEqual(state.flags._ch3_home_calls, { ch3_home_call_sumi_fan: true }, "Sumi's daytime call replaces the rest scene");
+    assert.equal(state.flags._ch3_room_rests, 1, "The rest rotation does not move");
+    assert(state.stamina > 30, "Resting still restores stamina");
+    // 夜: 本筋も遠くからの電話も無い夜なので、夜だけの電話（ポケットの誤発信）
+    state = await rest(1, { _ch3_home_calls: { ch3_home_call_sumi_fan: true } });
+    assert.deepEqual(Object.keys(state.flags._ch3_home_calls).sort(), ["ch3_home_call_sumi_fan", "ch3_home_call_sumi_pocket"]);
+    assert.equal(state.flags._ch3_room_rests, 1);
   });
 
   // VOL15: 辻占のオババは東京にも現れる（理由は語らない）。地図の行き先になり、時間を使わずに3,000円で占う。

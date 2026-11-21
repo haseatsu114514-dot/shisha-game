@@ -6,7 +6,7 @@ import { advanceToChapterFour, CH4_PROLOGUE, completeChapterFourScene, chapterFo
   chapterFourAfterDefeat, CH4_PRIZE } from "../js/chapters/ch4-progress.js";
 import { chapterFourMatch, startChapterFourCraft, beginChapterFourStep, finishChapterFourStep,
   recoverChapterFourStep, resetChapterFourCraft, CH4_JUDGES, CH4_CONTESTANTS, CH4_RIVAL_CURVE, chapterFourStandings,
-  CH4_RULES_VERSION, CH4_SPEND, CH4_LEGACY_SPEND, CH4_LEGACY_RIVAL_CURVE, CH4_VOTE_AFTER_STEPS, chapterFourRetryContext } from "../js/chapters/ch4-tournament-state.js";
+  CH4_RULES_VERSION, CH4_SPEND, CH4_LEGACY_SPEND, CH4_LEGACY_RIVAL_CURVE, CH4_V3_RIVAL_CURVE, CH4_VOTE_AFTER_STEPS, chapterFourRetryContext } from "../js/chapters/ch4-tournament-state.js";
 import { liftRivalScore, setRivalScoreObserver } from "../js/core/ngplus-difficulty.js";
 // Shared score/served-eval imports browser audio; only its visibility observer runs at module load.
 globalThis.document = { addEventListener() {} };
@@ -101,7 +101,7 @@ function drive(value, cs, { failAt = -1, failureKind = "burnt" } = {}) {
   divergent.careHistory[0].score = 76;
   divergent.careHistory[1].score = 96;
   const p = drive(entry(), divergent);
-  assert.equal(p.result.rulesVersion, 3);
+  assert.equal(p.result.rulesVersion, CH4_RULES_VERSION);
   assert(new Set(CH4_JUDGES.map(j => JSON.stringify(p.votes[j]))).size > 1, "審査員別の重みが実票に出る");
   const agreed = drive(entry(), craft(100));
   assert.equal(new Set(CH4_JUDGES.map(j => JSON.stringify(agreed.votes[j]))).size, 1, "一致も正当な結果");
@@ -369,11 +369,14 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
 }
 // 2026-11-03: 新しい一台は版2、途中/結果の旧保存は版1で完走し、再挑戦でだけ更新する。
 {
-  assert.equal(CH4_RULES_VERSION, 3);
+  // 版4（#3916 WIN12）: 新しい一台は版3から各回−2.5の曲線。版2・版3で始めた途中保存は版2・版3の曲線のまま。
+  assert.equal(CH4_RULES_VERSION, 4);
   assert.deepEqual(CH4_SPEND, [2, 3, 2, 3]);
   assert.deepEqual(CH4_LEGACY_SPEND, [2, 3, 2, 3]);
-  assert.deepEqual(CH4_RIVAL_CURVE, { naru: [87, 94, 94.5, 92.5],
+  assert.deepEqual(CH4_V3_RIVAL_CURVE, { naru: [87, 94, 94.5, 92.5],
     master_hookah: [87.5, 87.5, 87.5, 87.5], sheikh: [90, 88, 88.25, 94] });
+  assert.deepEqual(CH4_RIVAL_CURVE, { naru: [84.5, 91.5, 92, 90],
+    master_hookah: [85, 85, 85, 85], sheikh: [87.5, 85.5, 85.75, 91.5] });
   const run = (value, cs) => {
     setState(value);
     startChapterFourCraft(value, cs);
@@ -482,8 +485,8 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   assert.equal(ngMatch.result.win, true);
   assert.equal(observed.length, 12);
   observed.forEach((row, index) => {
-    const round = Math.floor(index / 3), id = Object.keys(CH4_RIVAL_CURVE)[index % 3];
-    assert.equal(row.rival, CH4_RIVAL_CURVE[id][round]);
+    const round = Math.floor(index / 3), id = Object.keys(CH4_V3_RIVAL_CURVE)[index % 3];
+    assert.equal(row.rival, CH4_V3_RIVAL_CURVE[id][round]); // run() は版2のシナリオ（版2・版3の曲線）
     assert.equal(row.p, 1); assert.equal(row.lifted, liftRivalScore(row.rival, 1, 4));
   });
 
@@ -492,9 +495,9 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   beginChapterFourStep(failed); finishChapterFourStep(failed, { ...craft(), failed: "burnt" });
   assert.equal(prior.result.rulesVersion, 1);
   assert(resetChapterFourCraft(failed));
-  assert.equal(prior.rulesVersion, 3); assert.equal(prior.result, null);
+  assert.equal(prior.rulesVersion, CH4_RULES_VERSION); assert.equal(prior.result, null);
   assert.equal(prior.history[0].rulesVersion, 1, "Retry keeps the legacy result history");
-  startChapterFourCraft(failed, craft()); assert.equal(prior.rulesVersion, 3);
+  startChapterFourCraft(failed, craft()); assert.equal(prior.rulesVersion, CH4_RULES_VERSION);
 
   const mistakes = entry();
   const retry = chapterFourMatch(mistakes);
@@ -507,7 +510,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
 }
 // 不正な採点・保存は工程や一部の票を進める前に拒否する。
 {
-  for (const invalid of [null, 0, 4, "2", NaN]) {
+  for (const invalid of [null, 0, 5, "2", NaN]) {
     const value = entry(); chapterFourMatch(value).rulesVersion = invalid;
     assert.throws(() => chapterFourMatch(value), /採点規則/);
   }

@@ -44,6 +44,7 @@ import { buildRigRecord } from "./rig-record.js";
 import { buildRivalWindows } from "./rival-windows.js";
 import { demoFor, openDemoSheet } from "./demo.js";
 import { craftStageEnabled } from "./stage-layout.js";
+import { assistBenchNote } from "./retry-assist-level.js";
 
 // ライバルの顔アイコンを読むまでの間（作業台の準備が済んでから）
 const RIVAL_FACE_DELAY_MS = 1200;
@@ -159,7 +160,8 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   const audience = buildAudience(cs);
   const title = el("div.bench-title");
   const hint = el("div.bench-hint");
-  const phaseProgress = buildCraftProgress(steps);
+  const iconRail = craftStageEnabled() && !renewalCraft(cs);
+  const phaseProgress = buildCraftProgress(steps, { iconRail });
   const progress = phaseProgress.root, progressCount = phaseProgress.count;
   const guide = buildGuide();
   const panel = el("div.bench-panel");
@@ -168,7 +170,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   worker.footer.append(leaf.root);
   // 版（リニューアル／桜井版・CRN16）は CSS とカウントダウン（core/ui.js）が見る
   const root = el("div.bench", { dataset: { mode: cs.mode, chapter: cs.chapter, craftVersion: renewalCraft(cs) ? "renewal" : "sakurai" } }, [
-    el("div.bench-top", [el("span.bench-mode", [craftMode(cs, MODE_LABEL), el(cs.retryAssist ? "small.retry-assist" : "small", { text: cs.retryAssist ? "今回のみ操作補助" : craftModeNote(cs, MODE_NOTE) })]), progress]),
+    el("div.bench-top", [el("span.bench-mode", [craftMode(cs, MODE_LABEL), el(cs.retryAssist ? "small.retry-assist" : "small", { text: cs.retryAssist ? assistBenchNote(cs) : craftModeNote(cs, MODE_NOTE) })]), progress]),
     el("div.bench-left", [
       worker.root,
       audience?.root,
@@ -199,7 +201,13 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
     const workerStage = worker.root.querySelector(".bench-worker-stage");
     const railHost = craftStageEnabled() ? root.querySelector(".bench-top") : workerStage;
     workerStage?.append(bench.record.aura);
-    railHost?.append(bench.record.root);
+    if (iconRail) {
+      // 工程と出来栄えは別の情報。採点履歴は既存の「?」で、時計を止めて読める。
+      const record = el("section.craft-record-review", { "aria-label": "工程ごとの仕上がり" }, [
+        el("strong", { text: "この一台の仕上がり" }), bench.record.root,
+      ]);
+      guide.note.after(record);
+    } else railHost?.append(bench.record.root);
     bench.record.restore(cs);
     // ライバルの小窓（CFX04）: 大会だけ。隣の台の進み具合を工程ごとの灯で見せる
     bench.rivals = buildRivalWindows(cs);
@@ -378,7 +386,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.guide.root.open = false;
   b.guide.root.hidden = !hintText && !lesson;
   b.guide.note.textContent = lesson?.detail || hintText;
-  b.phaseProgress.update(id === "care" && b.cs.careRound ? `care${b.cs.careRound}` : id, titleText);
+  b.phaseProgress.update(id === "care" && b.cs.careRound ? `care${b.cs.careRound}` : id, titleText, lessonStep);
   // 短い操作案内は、隠れている見出しではなく既存のスミさんの欄へ。
   // 蒸らし弾幕中は従来どおり無言とし、説明は「?」で読み返せる。
   const coaching = lesson && lessonStep !== "steam" ? `スミ「${lesson.brief}」` : hintText;
@@ -403,17 +411,6 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   if (id === "steam") b.thermal.update(temperatureAfterSteam(b.cs, 0));
   if (["pull", "care"].includes(id)) b.thermal.update(b.cs.care?.temp ?? b.cs.pull?.temp ?? b.cs.steam?.temp ?? 0);
   return b.panel;
-}
-
-/** 初回レッスンの工程だけ、操作開始前にお手本を一度見せる。 */
-export async function showStepDemo(cs, step) {
-  const b = bench;
-  if (cs.mode !== "tutorial" || craftTest.auto || !b || !demoFor(step, b.root.dataset.craftVersion) || b.cs !== cs || !b.root.isConnected) return;
-  const seenDemo = state.flags.seenDemo ||= {};
-  if (seenDemo[step]) return;
-  seenDemo[step] = true; // とばしても既読。再度見たいときは brief のリンクから開ける。
-  if (!cs.preview) save();
-  await openDemoSheet(b.root, step);
 }
 
 /** 同じ一台の実温度を、蒸らし以降の背景と煙の絵へ返す。 */
@@ -567,7 +564,9 @@ function burstRank(b, grade) {
   if (!hud || !root.isConnected || craftTest.auto || document.hidden) return;
   if (globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
   root.querySelector(":scope > .craft-rank-burst")?.remove();
-  const box = root.getBoundingClientRect(), k = box.width / 1280 || 1, target = hud.getBoundingClientRect();
+  // 余白にランクを大きく写している時（スマホで親指ボタンがある時・js/core/side-area.js）は、そこへ収める
+  const side = document.querySelector('[data-test="side-rank"]:not([hidden])');
+  const box = root.getBoundingClientRect(), k = box.width / 1280 || 1, target = (side ?? hud).getBoundingClientRect();
   const burst = el("img.craft-rank-burst", { src: rankArt(grade), alt: "", draggable: false, dataset: { grade } });
   // 着地点（帯のランク）の中心と大きさを、作業台の座標で渡す。
   burst.style.setProperty("--to-x", `${((target.left + target.width / 2) - box.left) / k}px`);
@@ -597,7 +596,8 @@ function updateBenchRank() {
   if (renewal ? progress?.grade && before && !dodging && order.indexOf(progress.grade) > order.indexOf(before) : progress?.grade && progress.grade !== before) burstRank(bench, progress.grade);
   bench.rankHud.root.dataset.provisional = String(!final);
   bench.rankHud.root.setAttribute("aria-label", final ? "制作ランク" : "制作ランク（暫定）");
-  bench.rankHud.root.querySelector(".craft-rank-caption").textContent = final ? "RANK" : "RANK（暫定）";
+  // 「（暫定）」は分けておく（スマホの上のレールは幅が要るので「RANK」だけを出す・css/craft-phone.css）。文は今までと同じ
+  bench.rankHud.root.querySelector(".craft-rank-caption").replaceChildren("RANK", ...(final ? [] : [el("span.craft-rank-provisional", { text: "（暫定）" })]));
 }
 
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */

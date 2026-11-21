@@ -22,7 +22,7 @@ const statePort = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay
 const mocks = {
   "remake/js/core/data.js": { DB, bgUrl: x => x },
   "remake/js/core/travel-budget.js": { spendableMoney: value => value.money },
-  "remake/js/chapters/ch2-commute.js": { normalizeCommuteState() {}, chooseMorningCity: async () => {}, returnCityHome: async () => {} },
+  "remake/js/chapters/ch2-commute.js": { normalizeCommuteState() {}, chooseMorningCity: async () => {}, readMorningStationCommute: async () => {}, returnCityHome: async () => {} },
   "remake/js/core/city-locations.js": { CH2_CITY_NAME: "柚ヶ谷", HOME_CITY_NAME: "橙須", CITY_BACKGROUNDS: { c_station_night: "c" },
     CH2_SCENE_BACKGROUNDS: { naruWindow: "res://assets/backgrounds/bg_kemurikusa_outside_night.png", venueBench: "bench" } },
   "remake/js/core/stats.js": { affinityLevel: () => 1, releaseAffinity: () => 0,
@@ -42,7 +42,8 @@ const mocks = {
   "remake/js/daily/spots.js": { allSpots: () => [{ id: "tonari", kind: "tonari" }], VISIT_COST: 3000,
     isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn,
     CHAR_STAT: { adam: "guts", minto: "charm" }, VISIT_BG: { adam: "bg_eden_shop", minto: "peppermint" },
-    bgRef: name => `res://assets/backgrounds/${name}.png`, setChapterVisitDue: fn => { visitDue = fn; }, hasNewEvent: () => false },
+    bgRef: name => `res://assets/backgrounds/${name}.png`, setChapterVisitDue: fn => { visitDue = fn; }, hasNewEvent: () => false,
+    chapterTalkDue: () => null }, // 柚ヶ谷の店の出発前の送り出し（#3097 PR-I）は第3・4章だけ。ch2_followups.mjs・departure_home_talks.mjs で確認する
   "remake/js/daily/hiyori.js": { setHiyoriExtraShops: () => {} },
   "remake/js/daily/roamers.js": { addRoamerSpots: () => {} }, // よその店に居合わせる人（第2章は柚ヶ谷の店も登録する）
   "remake/js/daily/trpg.js": { trpgSpot: () => null, maybeRecruitTrpgMember: async () => false },

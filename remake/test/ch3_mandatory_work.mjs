@@ -21,14 +21,18 @@ for (const file of ["ch3_double_apple", "ch3_main", "ch3_rivals"])
     all[d.dialogue_id] = d;
 const text = dialogue => dialogue.lines.map(line => line.text || "").join("\n");
 
-// 既定の制作風景はそのまま、店仕事の場所だけを指定できる。
+// 制作場所の明示指定を優先し、大会はその制作を保存した章の会場を使う。
 {
-  const source = fs.readFileSync(new URL("../js/craft/worker.js", import.meta.url), "utf8");
-  const helper = name => vm.runInNewContext(source.match(new RegExp(`^export const ${name} = (.+);$`, "m"))[1]);
-  const bg = helper("benchBgRef"), tag = helper("benchPlaceTag");
-  assert.equal(bg({ venueBg: "bg_mukai_shop" }), "bg_mukai_shop");
+  globalThis.document = {}; // audio.js のブラウザイベント登録用。
+  const { benchBgRef: bg, benchPlaceTag: tag } = await import("../js/craft/worker.js");
+  delete globalThis.document;
+  assert.equal(bg({ mode: "tournament", chapter: 3, venueBg: "bg_mukai_shop" }), "bg_mukai_shop");
   assert.equal(tag({ venueLabel: "MUKAI" }), "MUKAI");
   assert.equal(bg({ mode: "tournament" }), "bg_tournament_stage");
+  assert.equal(bg({ mode: "tournament", chapter: 2 }), "bg_tournament_yuzugaya_dusk");
+  assert.equal(bg({ mode: "tournament", chapter: 3 }), "bg_tournament_tokyo_day");
+  assert.equal(bg({ mode: "tournament", chapter: 4 }), "bg_tournament_dubai_dusk");
+  assert.equal(bg({ mode: "tournament", chapter: 5 }), "bg_smoke_lab_duel_day");
   assert.equal(bg({ venue: "home" }), "bg_home");
   assert.equal(bg({ mode: "tutorial" }), "bg_tonari_inside");
   assert.equal(tag({ mode: "tutorial" }), "TONARI");

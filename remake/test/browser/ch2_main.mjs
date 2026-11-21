@@ -479,6 +479,13 @@ await suite('ch2-main', async check => {
     await assertFits(page, '[data-test="ch2-main-back-map"]');
     await page.locator(test('back-map')).tap();
     await page.locator(test('map')).waitFor();
+    await assertFits(page, '.ch2-map-main .map-info > h2.mi-banner');
+    const bannerFits = await page.locator('.ch2-map-main .map-info > h2.mi-banner').evaluate(node => {
+      const text = document.createRange();
+      text.selectNodeContents(node);
+      return text.getBoundingClientRect().right <= node.parentElement.getBoundingClientRect().right;
+    });
+    assert(bannerFits, 'The delivery heading wraps inside the map card');
     await page.screenshot({ path: path.join(evidence, 'small-landscape-city-map.png') });
   }, { viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true });
 

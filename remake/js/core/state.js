@@ -7,11 +7,11 @@ import { MAX_MONEY, TOURNAMENT_DAY, KUJI_TICKET_MAX } from "./rules.js";
 import { MASTERY_THRESHOLDS, RENAMED_MASTERY_KEYS, learnFlavorStory } from "./flavor-mastery.js";
 import { emit } from "./bus.js";
 import { recordGalleryProgress } from "./gallery-progress.js";
-import { STARTER_HIDANE, STARTER_FLAG } from "./growth-starter.js";
+import { LEGACY_STARTER_HIDANE, STARTER_FLAG } from "./growth-starter.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 28; // 28: 初回の白火6を累計獲得へ計上 / 27: 好感度名簿と既知キャラの初期♥1 / 26: キャラID改名（IDREN01）の旧セーブ付け替え / 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: 凛想の味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 29; // 29: TRPGの完了記録を本棚で閲覧 / 28: 初回の白火6を累計獲得へ計上 / 27: 好感度名簿と既知キャラの初期♥1 / 26: キャラID改名（IDREN01）の旧セーブ付け替え / 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: 凛想の味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 // 実際の任意交流で好感度を育てられる人物。占い・STATUS・初対面報酬で共用する。
 // ひよりは交流機会が少なくても対象に残す（Issue #2750）。
@@ -394,6 +394,7 @@ function migrate(s) {
   }
   // スキーマ14。旧無料プレビューの試遊から購入・クリアを推測しない。
   const trpg = record(s.trpg);
+  // スキーマ29。旧セーブの完了概要は維持し、保存されていない卓の台詞・選択・出目は補わない。
   const ids = value => [...new Set((Array.isArray(value) ? value : []).filter(id => typeof id === "string" && id))];
   // スキーマ15。MAXや過去の卓から設立・入部を推測せず、購入とクリアは保持する。
   const club = record(trpg.club);
@@ -522,11 +523,11 @@ function migrate(s) {
   if (!Number.isFinite(s.playMs) || s.playMs < 0) s.playMs = 0;
   if (s.playMsFull !== true) s.playMsFull = false;
   // schema27以前は初回の白火6を所持にだけ加算した。実際に渡した印がある保存だけ、
-  // 所持・支払を動かさず累計へ一度だけ足す。すでに198を通常獲得した保存も没収しない。
+  // 所持・支払を動かさず累計へ一度だけ足す。すでに上限まで通常獲得した保存も没収しない。
   if (oldSchema < 28 && s.flags[STARTER_FLAG] === true && s.growth && typeof s.growth === "object"
     && !Array.isArray(s.growth) && s.growth.starterAccounted !== true) {
     const earned = s.growth.earned;
-    s.growth.earned = (Number.isFinite(earned) && earned > 0 ? Math.floor(earned) : 0) + STARTER_HIDANE;
+    s.growth.earned = (Number.isFinite(earned) && earned > 0 ? Math.floor(earned) : 0) + LEGACY_STARTER_HIDANE;
     s.growth.starterAccounted = true;
   }
   s.schema = SCHEMA;
@@ -551,7 +552,14 @@ export function playTimeMs(value = state) {
   return value === state && playClockAt !== null ? saved + Math.max(0, Date.now() - playClockAt) : saved;
 }
 
-export function setState(s) {
+// このタブの進行の基になったAUTO原文。枠の表示・確認だけでは更新しない。
+let autoBaseRaw = null;
+function readRaw(key) {
+  try { return localStorage.getItem(key); } catch { return null; }
+}
+
+export function setState(s, baseRaw = readRaw(SAVE_KEY)) {
+  autoBaseRaw = baseRaw;
   state = s;
   playClockAt = s && pageVisible() ? Date.now() : null;
   emit("hud"); // ロード・はじめからでも、前の残量と通知を画面に持ち越さない。
@@ -572,7 +580,22 @@ function noteSaveResult(saved) {
   try { emit(saved ? "save-recovered" : "save-failed"); } catch { /* 通知の失敗で遊びを止めない */ }
 }
 
-function writeSave(target = state) {
+// 任意の長い勤務は、体力・台詞・給料・枠を分割して保存しない。LOADされた別ownerは妨げない。
+const actionSaveHolds = new WeakMap();
+export function holdActionSave(owner) {
+  actionSaveHolds.set(owner, (actionSaveHolds.get(owner) || 0) + 1);
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    const count = actionSaveHolds.get(owner) - 1;
+    if (count) actionSaveHolds.set(owner, count); else actionSaveHolds.delete(owner);
+  };
+}
+
+function writeSave(target = state, { manualLoad = false, expectedRaw = autoBaseRaw } = {}) {
+  // 一時保留は容量エラーではない。最後の安全なAUTOを保ち、呼出側の行動末で通常保存する。
+  if (target && actionSaveHolds.has(target)) return { raw: null, saved: false };
   if (!target) return { raw: null, saved: false };
   // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
   try {
@@ -589,7 +612,11 @@ function writeSave(target = state) {
   let raw = null;
   try {
     raw = JSON.stringify(target);
+    if (!manualLoad && localStorage.getItem(SAVE_KEY) !== expectedRaw) {
+      return { raw, saved: false, conflict: true };
+    }
     localStorage.setItem(SAVE_KEY, raw);
+    autoBaseRaw = raw;
     lastComplementedAutosaveRaw = raw;
     noteSaveResult(true);
     return { raw, saved: true };
@@ -600,13 +627,20 @@ function writeSave(target = state) {
   }
 }
 
-export function save() {
-  return writeSave().saved;
+export function autoSaveResult() {
+  const result = writeSave();
+  if (result.conflict) {
+    try { emit("save-conflict"); } catch { /* 通知の失敗でもAUTOの上書きは防ぐ */ }
+  }
+  return result;
 }
 
-export function peekSave() {
+export function save() {
+  return autoSaveResult().saved;
+}
+
+function parseSave(raw) {
   try {
-    const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return null;
     const s = JSON.parse(raw);
     return s && typeof s === "object" ? s : null;
@@ -615,13 +649,18 @@ export function peekSave() {
   }
 }
 
+export function peekSave() {
+  return parseSave(readRaw(SAVE_KEY));
+}
+
 export function load() {
-  const s = peekSave();
+  const raw = readRaw(SAVE_KEY);
+  const s = parseSave(raw);
   if (!s) return null;
   // 移行で想定外の例外が出ても、タイトルやブートを巻き込まず読み込み失敗にする。
   let migrated = null;
   try { migrated = migrate(s); } catch { migrated = null; }
-  return migrated ? setState(migrated) : null;
+  return migrated ? setState(migrated, raw) : null;
 }
 
 // ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に1枠）
@@ -634,12 +673,8 @@ const BOOT_LOAD_KEY = "suien_remake_boot_load";
 
 /** 枠の中身（無い・壊れている→null） */
 export function readSlot(key) {
-  try {
-    const s = JSON.parse(localStorage.getItem(key) || "null");
-    return s && typeof s === "object" && s.day ? s : null;
-  } catch {
-    return null;
-  }
+  const s = parseSave(readRaw(key));
+  return s?.day ? s : null;
 }
 /** 外から受け取ったセーブが、読み込みと同じ移行を通せるか（保存はしない。形式は変えない） */
 export function isLoadableSave(s) {
@@ -658,17 +693,19 @@ export function peekLatestSave() {
 }
 export const anySlotSaved = () => SAVE_SLOTS.some((s) => readSlot(s.key));
 
-/** 今の状態を手動の枠に書く（オートセーブも同時に更新） */
+/** 今の状態を手動の枠に書く。別タブの保存と競合していなければAUTOも更新する。 */
 export function saveToSlot(key) {
   return saveToSlotResult(key).manualSaved;
 }
 
 /** 手動枠と AUTO それぞれの実際の書き込み結果。既存の保存順序は維持する。 */
 export function saveToSlotResult(key) {
-  const { raw, saved: autoSaved } = writeSave();
+  if (state && actionSaveHolds.has(state)) return { autoSaved: false, manualSaved: false };
+  const { raw, saved: autoSaved, conflict } = writeSave();
+  if (key === SAVE_KEY) return { autoSaved, manualSaved: autoSaved };
   try {
     localStorage.setItem(key, raw === null ? JSON.stringify(state) : raw);
-    return { autoSaved, manualSaved: true };
+    return { autoSaved, manualSaved: true, conflict };
   } catch {
     return { autoSaved, manualSaved: false };
   }
@@ -676,8 +713,9 @@ export function saveToSlotResult(key) {
 
 /** 枠から読み込んで今の状態にする。以後のオートセーブもこのデータから続く */
 export function loadFromSlot(key, { validate } = {}) {
-  const s = readSlot(key);
-  if (!s) return null;
+  const sourceRaw = readRaw(key);
+  const s = parseSave(sourceRaw);
+  if (!s?.day) return null;
   // 移行で想定外の例外が出ても、進行中の状態と保存元を保ったまま読み込み失敗にする。
   let migrated = null;
   try { migrated = migrate(s); } catch { migrated = null; }
@@ -685,10 +723,10 @@ export function loadFromSlot(key, { validate } = {}) {
   // 外部JSONなどの候補は、移行後の形を検証してから保存・公開する。
   try { if (validate && validate(migrated) === false) return null; } catch { return null; }
   // 保存の成否が決まるまで候補を公開しない。hud購読者は旧画面を破棄しうる。
-  const { saved } = writeSave(migrated);
+  const { raw, saved } = writeSave(migrated, { manualLoad: key !== SAVE_KEY, expectedRaw: sourceRaw });
   // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。
   if (!saved && key !== SAVE_KEY) return null;
-  return setState(migrated);
+  return setState(migrated, saved ? raw : sourceRaw);
 }
 
 /** ゲーム中にロードしたとき: いったん読み直して、タイトルを飛ばしてそのまま再開する */

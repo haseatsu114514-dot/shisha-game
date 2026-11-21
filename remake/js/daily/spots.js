@@ -1,7 +1,7 @@
 // 第1章のスポット定義と「行く」の中身（訪問・施設・休む）。
 // どの行動にも必ず報酬（好感度・ステ・体力・お金のどれか）が付く。
-import { state, markMet } from "../core/state.js";
-import { growthEnabled, hidaneTotal } from "../core/growth.js";
+import { state, save, markMet } from "../core/state.js";
+import { EXP, gainExp, growthEnabled, hidaneTotal } from "../core/growth.js";
 import { refreshPlaceCue } from "../core/transitions.js";
 import { DB } from "../core/data.js";
 import { earnStat, gainAffinity, visitAffinity, addStamina, addMoney, affinityLevel, releaseAffinity, AFFINITY_RANK_PTS, setStoryAffinityCap, ensureAffinityLevel } from "../core/stats.js";
@@ -26,7 +26,7 @@ import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { fortuneHere, fortunePosition } from "./fortune-schedule.js";
 import { openingStatus, rioUnavailable } from "./spot-hours.js";
 
-import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
+import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue, chapterRainScene } from "./spot-encounters.js";
 
 export const VISIT_COST = 3000;
 // 東京のシーシャ屋は少し相場が上がって一台4,000円（2026-11-02 オーナー「東京編はシーシャ屋の値段4000円にしたい　少し相場上がって」）。
@@ -78,10 +78,11 @@ export const SPOTS = [
     pool: ["cafe_herb_tea", "cafe_baked", "cafe_counter_watch", "cafe_terrace", "cafe_record", "cafe_crowd", "cafe_cold_brew", "cafe_naru_break", "cafe_master_quiz"],
     openSlots: [0], desc: "なる行きつけの喫茶。昼だけ開く。" },
   { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 18, y: 57, theme: "park", glyph: "観", requiresMet: "adam", stat: "guts", stamina: -4,
+    get boardOnly() { return growthEnabled(); }, // 開発用の旧成長モードだけは従来の通常訪問
     first: "ch1_kannon_visit", bg: "bg_kannon_day",
     pool: ["kannon_cat", "kannon_pigeons", "kannon_sweep", "kannon_incense", "kannon_steps", "kannon_banners", "kannon_adam", "kannon_oldman"],
     nightPool: ["venue_kannon_night", "venue_kannon_night_c", "venue_kannon_night_b", "venue_kannon_night_d"],
-    desc: "昼は猫と街の人、夜は静かな境内。" },
+    desc: "心得の盤を開く場所。時間も体力も使わない。" },
   { id: "choizap", kind: "spot", label: "CHOI-ZAP", area: "ジム", x: 20, y: 24, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
     first: "ch1_choizap_first", bg: "bg_choizap",
     pool: ["choizap_lesson", "choizap_scenery", "choizap_mirror", "choizap_dumbbell", "choizap_stretch", "choizap_posture", "choizap_oldman", "choizap_minto"],
@@ -96,7 +97,7 @@ export const SPOTS = [
 /** 行き先の中の様子（マップ右下のプレビュー）。入ったときの背景と同じ絵を指す */
 export const SPOT_PREVIEW = {
   tonari: "bg_tonari_inside", naru: "kemurikusa", adam: "bg_eden_shop", minto: "peppermint",
-  shop: "bg_fookah_showroom", cafe: "bg_cafe", kannon: "bg_kannon_day", choizap: "bg_choizap",
+  shop: "bg_fookah_showroom", cafe: "bg_cafe", kannon: "bg_kannon", choizap: "bg_choizap",
   c_station: "bg_c_station", rest: "bg_home", fortune: "bg_street",
 };
 /** 第2章以降、SHISHARKを追加。保存を切り替えても古いピンを残さない。 */
@@ -277,11 +278,17 @@ export function afterChapterVisitDue(charId, s = state) {
 /**
  * その章の間だけ店で読める短い会話（第2章の凛想・VOL13）。段階会話より先に、一来店に一本ずつ・一度だけ。
  * flag は読める時期（味の不調の後など）。台本は章の準備期間に読み込む（data/dialogue/ch2_home.json）ので、未読込なら出さない。
- * 初対面の固有会話（VISIT_SEQ の1本目）を読んだ相手だけ（呼び名・面識を前提にするため）。
- * 既読は `_talk_seen_<scene>`。好感度は通い訪問と同じ+5。
+ * 初対面の固有会話（VISIT_SEQ の1本目）を読んだ相手だけ（呼び名・面識を前提にするため）。柚ヶ谷の三人は、第2章の最初の来店の会話
+ * （remake_ch2_<id>_chat。flags._ch2_talks）を読んだ相手だけ。
+ * 既読は `_talk_seen_<scene>`。好感度は通い訪問と同じ+5。flag が「!」で始まる時は、その旗が立っていない時だけ読む。
  * prep は、東京・ドバイへ発つ前の地元の準備3日（chapters/departure-prep.js）だけ読む送り出しの会話（第3・4章・N3a）。
- * 出発後（その章の大会の前後とも）には出ないので、大会後の分岐は持たない。台本は data/dialogue/ch3_ch4_home.json を準備期間に読み込む。
+ * 出発後（その章の大会の前後とも）には出ないので、大会後の分岐は持たない。台本は準備期間に読み込む（第3章は data/dialogue/ch3_ch4_home.json、
+ * #3097 PR-I で足した第4章のつむぎ・ひより・柚ヶ谷の三人は data/dialogue/ch4_prep_home.json）。
+ * untilRift は、なるとの対峙（naruRiftActive）より前だけ読む会話。対峙の後、なるは店を長く休むため。
  * サメちゃんの店（SHISHARK）は来店の処理が別なので、同じ扱いの会話を daily/samechan.js の SAMECHAN_PREP_TALKS に持つ。
+ * ひより（tonariに仕事帰りに寄る）も同じ理由で daily/hiyori.js の HIYORI_PREP_TALKS に持つ。
+ * つむぎは tonari の客席の来店（daily/tonari.js の tonariCustomer → visitChar）、柚ヶ谷の三人は柚ヶ谷の店の来店
+ * （chapters/ch2-preparation.js の visitPreparationSpot）で読む。
  */
 export const CHAPTER_TALKS = Object.freeze({
   rio: Object.freeze([
@@ -290,20 +297,70 @@ export const CHAPTER_TALKS = Object.freeze({
     { chapter: 2, scene: "ch2_rio_strawberry" },
     // #3097 第1弾: 柚ヶ谷の匂いを嗅ぎ当て、吸う人の顔の報告を受け取る（ルート・♥段階・大会の前後に依存しない普段の会話）
     { chapter: 2, scene: "ch2_rio_city_scent" },
+    // #3097 PR-C: 朝の満員電車は柔軟剤の見本市。匂わない車両をはじめに聞く（はじめは試作を吸わない）
+    { chapter: 2, scene: "ch2_rio_rush_hour" },
+    // #3097 第2弾（VOL20）: 試香の日の昼は塩だけのおにぎり。はじめは「顔で答える係」（味の不調の前後どちらでも読める）
+    { chapter: 2, scene: "ch2_rio_plain_lunch" },
+    // #3097 第3弾: 袋のラベルの言葉を、吸う人に伝わる方で選ぶ（はじめは客の言い方で答える）
+    { chapter: 2, scene: "ch2_rio_label_words" },
     { chapter: 3, scene: "ch3_prep_rio", prep: true },
     { chapter: 4, scene: "ch4_prep_rio", prep: true },
   ]),
   adam: Object.freeze([
     // #3097 第1弾: 柚ヶ谷の林檎を買いに行くため、券売機の押し方を習う（はじめは吸った感想を言わない）
     { chapter: 2, scene: "ch2_adam_ticket_machine" },
+    // #3097 PR-C: 券売機の回の続き（柚ヶ谷で迷って買った七つの林檎）と、初めての客への「在庫切れ」
+    { chapter: 2, scene: "ch2_adam_yuzugaya_apples" },
+    { chapter: 2, scene: "ch2_adam_out_of_stock" },
+    // #3097 第2弾（VOL20）: 皮が途切れた日は遠出しない決まりで、柚ヶ谷の林檎を一つだけ頼まれる
+    { chapter: 2, scene: "ch2_adam_apple_errand" },
+    // #3097 第3弾: 皮の長さの手帳。はじめが運んだ林檎は途切れなかった
+    { chapter: 2, scene: "ch2_adam_peel_record" },
     { chapter: 3, scene: "ch3_prep_adam", prep: true },
     { chapter: 4, scene: "ch4_prep_adam", prep: true },
   ]),
   minto: Object.freeze([
     // #3097 第1弾: 通勤客向けのチェキのフレームの試し撮り。営業中の口調だけで、正体・ルート・♥段階に依存しない
     { chapter: 2, scene: "ch2_minto_commute_frame" },
+    // #3097 PR-C: 客の忘れ物の定期券と、ミントの強さの札。営業中の口調だけ（年齢・正体・♥段階に触れない）
+    { chapter: 2, scene: "ch2_minto_lost_pass" },
+    { chapter: 2, scene: "ch2_minto_mint_scale" },
+    // #3097 第2弾（VOL20）: 客のあだ名の手帳。営業中の口調だけ（年齢・正体・♥段階に触れない）
+    { chapter: 2, scene: "ch2_minto_nickname_notes" },
+    // #3097 第3弾: 「傘の人」が傘を忘れた日（手帳の回の続き）
+    { chapter: 2, scene: "ch2_minto_umbrella_day" },
     { chapter: 3, scene: "ch3_prep_minto", prep: true },
     { chapter: 4, scene: "ch4_prep_minto", prep: true },
+  ]),
+  // #3097 PR-I: 窓際の席のつむぎ（tonariの客席）。同行・応援の話はしない（第4章はドバイへ必ず応援に来る・SPC17）
+  tsumugi: Object.freeze([
+    // #3097 第5弾: 第2章、客としてtonariへ来た日の窓際の席（木炭と食パン・電車に乗せる猫・客席から聞く炭の音）。
+    // 大会・味の感想・コンテストの結果・煙の色に触れない
+    { chapter: 2, scene: "ch2_tsumugi_charcoal_bread" },
+    { chapter: 2, scene: "ch2_tsumugi_train_cat" },
+    { chapter: 2, scene: "ch2_tsumugi_customer_seat" },
+    { chapter: 3, scene: "ch3_prep_tsumugi", prep: true },
+    { chapter: 4, scene: "ch4_prep_tsumugi", prep: true },
+  ]),
+  // #3097 PR-I: 柚ヶ谷の三人（第2章の通い訪問の店）
+  ageha: Object.freeze([
+    { chapter: 3, scene: "ch3_prep_ageha", prep: true },
+    { chapter: 4, scene: "ch4_prep_ageha", prep: true },
+  ]),
+  kumicho: Object.freeze([
+    { chapter: 3, scene: "ch3_prep_kumicho", prep: true },
+    { chapter: 4, scene: "ch4_prep_kumicho", prep: true },
+  ]),
+  kuraudo: Object.freeze([
+    // 第2章で余りチケットを受け取った人は、ライブの夜（ch3_prep_kuraudo_live）が東京への送り出しを兼ねるので出さない
+    { chapter: 3, scene: "ch3_prep_kuraudo", prep: true, flag: "!_ch2_kuraudo_ticket" },
+    { chapter: 4, scene: "ch4_prep_kuraudo", prep: true },
+  ]),
+  naru: Object.freeze([
+    // #3097 PR-C: 看板の電球の付け替え。DAY3の祝いの後、DAY11の対峙より前だけ（対峙の後は店を長く休む）
+    { chapter: 2, scene: "ch2_naru_sign_light", flag: "_ch2_naru_warm_done", untilRift: true },
+    // #3097 第5弾: 電球の回の「それは、今度な」の続き（モンブランの組み方）。同じく祝いの後・対峙より前だけ
+    { chapter: 2, scene: "ch2_naru_montblanc", flag: "_ch2_naru_warm_done", untilRift: true },
   ]),
 });
 /**
@@ -314,11 +371,13 @@ const inDeparturePrep = (s = state) => {
   const prep = s?.chapter === 3 ? s.flags?._ch3_prep : s?.chapter === 4 ? s.flags?._ch4_prep : null;
   return !!prep && !prep.departed && Number.isInteger(prep.startDay);
 };
+// 読める時期の旗。「!」で始まる旗は、立っていない時だけ（バイトの接客の trigger_flag と同じ書き方）
+const talkFlagMet = (flags, flag) => !flag || (flag.startsWith("!") ? !flags?.[flag.slice(1)] : !!flags?.[flag]);
 export function chapterTalkDue(charId, s = state) {
-  if (!((s?.story?.[charId] || 0) >= 1)) return null;
+  if (!((s?.story?.[charId] || 0) >= 1) && !((s?.flags?._ch2_talks?.[charId] || 0) >= 1)) return null;
   return (CHAPTER_TALKS[charId] || []).find(talk => (s?.chapter || 1) === talk.chapter && s.phase === "daily"
-    && (!talk.prep || inDeparturePrep(s))
-    && !s.flags?.[`_talk_seen_${talk.scene}`] && (!talk.flag || s.flags?.[talk.flag])
+    && (!talk.prep || inDeparturePrep(s)) && (!talk.untilRift || !naruRiftActive(s))
+    && !s.flags?.[`_talk_seen_${talk.scene}`] && talkFlagMet(s.flags, talk.flag)
     && DB.dialogues[talk.scene]?.lines?.length)?.scene || null;
 }
 /**
@@ -384,6 +443,7 @@ export function shortNormalVisit(spot) {
 /** 店主の固有イベントと、初めて訪れる施設のイベントを同じ印で案内する。 */
 export function hasNewEvent(spot) {
   if (isClosed(spot)) return false;
+  if (spot.boardOnly) return !state.flags._kannon_growth_intro_done;
   // 章の側の行き先（第3章の東京など）は、自分で新しい話があるかを返せる。
   if (typeof spot.hasNew === "function") return !!spot.hasNew();
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
@@ -429,8 +489,11 @@ export function visitedToday(spotId) {
 }
 
 export function isUnlocked(spot) {
-  // 初回受領後は使い切っても内省の場所を残す。紹介・訪問の記録は変更しない。
-  if (spot.id === "kannon" && growthEnabled() && (state.growth?.earned > 0 || hidaneTotal() > 0)) return true;
+  if (spot.boardOnly) {
+    // 初回の本筋より先に盤の説明を始めない。導入済み・旧セーブでは火種を使い切っても入口を残す。
+    if (state.chapter === 1 && state.day < 3 && !state.flags._kannon_growth_intro_done) return false;
+    if (state.flags._kannon_growth_intro_done || state.flags._delivery_adam_done || state.growth?.earned > 0 || hidaneTotal() > 0) return true;
+  }
   if (spot.id === "rojiura_cinema") return cinemaDiscovered(state);
   if (spot.kind === "fortune") return fortuneHere(state);
   if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;
@@ -627,39 +690,57 @@ const rivalDeliveryPending = (charId, s = state) => (s?.chapter || 1) === 1
   && ["minto", "adam"].includes(charId) && !s?.flags?.[`_delivery_${charId}_done`]
   && !!(s?.flags?.[`_delivery_${charId}_told`] || s?.flags?.[`_delivery_${charId}`] || s?.flags?._delivery_batch_started);
 
-export async function visitRival(spot) {
-  if (!spot || isClosed(spot)) return false;
-  const owner = state;
-  if (rivalDeliveryPending(spot.charId, owner)) {
-    const charId = spot.charId;
+const deliveriesInFlight = new WeakSet();
+
+/** 昼の任意訪問・帰り道の案内のどちらからも、手渡し完了時だけ同じ報酬を確定する。 */
+export async function deliverToRival(spot) {
+  const owner = state, charId = spot?.charId;
+  if (!owner || !rivalDeliveryPending(charId, owner) || isClosed(spot) || deliveriesInFlight.has(owner)) return false;
+  deliveriesInFlight.add(owner);
+  try {
     const f = owner.flags;
     refreshPlaceCue(spot.id);
     f[`_delivery_${charId}`] = true;
     playBgm("bgm_rival_shop");
     if (charId === "minto") {
+      // 荷物だけを渡し、客としての初回接客は自由行動に残す。
       const result = await play("remake_delivery_minto_handoff", { bg: "res://assets/backgrounds/peppermint.png" });
       if (state !== owner || !result || result.cancelled) return false;
       f.known_name_minto = true;
       f._met_minto = true;
       markMet("minto");
     } else {
+      // EDENの初来店は従来どおりスミさんの指定による無料体験。
       if (!(await visitChar(charId)) || state !== owner) return false;
     }
-    addMoney(RIVAL_DELIVERY_PAY);
-    toast(`配達の手当 +${RIVAL_DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
     f[`_delivery_${charId}_done`] = true;
+    addMoney(RIVAL_DELIVERY_PAY);
+    gainExp(EXP.tutorial, { key: `ch1_delivery_${charId}`, tag: "配達" });
+    save(); // 手当・経験値・納品済みは同じ保存に入り、再入店やLOADで増やさない。
+    toast(`配達の手当 +${RIVAL_DELIVERY_PAY.toLocaleString()}円`, { kind: "good" });
     return true;
+  } finally {
+    deliveriesInFlight.delete(owner);
   }
+}
+
+export async function visitRival(spot, { scout = false } = {}) {
+  if (!spot || isClosed(spot)) return false;
+  const owner = state;
+  if (rivalDeliveryPending(spot.charId, owner)) return deliverToRival(spot);
   refreshPlaceCue(spot.id);
-  addMoney(-(spot.cost || 0));
-  addStamina(spot.stamina || -16);
+  const charge = () => { addMoney(-(spot.cost || 0)); addStamina(spot.stamina || -16); };
+  if (!scout) charge();
   playBgm("bgm_rival_shop");
   // 相席予定の日には「一人占め」の昼挨拶を出さない。台詞正本・実遭遇の処理は維持する。
   const welcome = spot.charId === "minto" && state.slot === 0 && hiyoriShopEncounterDue(spot)
     ? null : `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
   const completed = await visitChar(spot.charId, { welcome });
   // 配達やチュートリアルの面識ではなく、自主来店の会話を終えてから地図に出す。
-  if (completed && state === owner) state.flags[`_spot_guide_${spot.charId}`] = true;
+  if (completed && state === owner) {
+    if (scout) charge(); // 偵察は読了しなければ料金も体力消費も確定しない。
+    state.flags[`_spot_guide_${spot.charId}`] = true;
+  }
   return completed;
 }
 
@@ -688,7 +769,10 @@ export async function visitSpot(spot) {
     state.flags._ev_reviewer_payoff = true;
     id = "ch1_reviewer_payoff";
   }
-  await play(id, { bg: bgRef(spot.bg), growthScene: true }); // bgUrl が昼夜差分（_day/_night）を選ぶ
+  // 第2章の雨の日は、引いた回をその章の雨の台本に差し替えて一度だけ読む（#3097 PR-B）。夜の束の施設は昼だけ。
+  // 巡回は引いた回を読んだものとして進め、経験値も引いた回の鍵で数える（差し替えた台本の ID では増やさない）。
+  const rain = turn && id === turn.id && !nightBundle(spot) ? chapterRainScene(spot.id, state, DB.dialogues, isRainy()) : null;
+  await play(rain || id, { bg: bgRef(spot.bg), growthScene: true, ...(rain ? { growthKey: id } : {}) }); // bgUrl が昼夜差分（_day/_night）を選ぶ
   if (state !== owner) return;
   // 読んだ束だけ次へ送る。寄り道会話・記事の噂の来店では送らない。
   if (turn && id === turn.id) state.flags[turn.key] = turn.count + 1;
@@ -725,11 +809,20 @@ export async function restAtHome(spot, { fullDay = false } = {}) {
   delete state.flags._cold_pending;
   delete state.flags._overwork;
   state.flags._home_tonight = state.slot >= 1;
-  const turn = fullDay ? null : isRainy() && quietTurn("rest", REST_RAIN_SCENES, "rain") || quietTurn("rest", REST_SCENES);
-  const result = await play(fullDay ? "remake_rest_day" : turn?.id || REST_SCENES[0]);
+  const rainy = !fullDay && isRainy();
+  const turn = fullDay ? null : rainy && quietTurn("rest", REST_RAIN_SCENES, "rain") || quietTurn("rest", REST_SCENES);
+  // 第2章の雨の日は、雨の回を章の台本に一度だけ差し替える（#3097 PR-B。休む回は経験値の付かない場面で、巡回はそのまま進む）
+  const rain = rainy ? chapterRainScene("rest", state, DB.dialogues, true) : null;
+  const result = await play(fullDay ? "remake_rest_day" : rain || turn?.id || REST_SCENES[0]);
   if (state !== owner || !result || result.cancelled) return;
   if (turn) owner.flags[turn.key] = turn.count + 1;
-  if (owner.chapter === 2) owner.flags._ch2_rest_taken = true;
+  if (owner.chapter === 2) {
+    if (!owner.flags._ch2_rest_taken) {
+      await play("ch2_rest_notebook");
+      if (state !== owner) return;
+    }
+    owner.flags._ch2_rest_taken = true;
+  }
 }
 
 /** 好感度の段階（♥の数） */

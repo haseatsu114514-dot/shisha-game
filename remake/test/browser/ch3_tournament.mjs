@@ -5,9 +5,9 @@ import { suite, assertFits } from "./support.mjs";
 const t = name => `[data-test="ch3-tournament-${name}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
 
-async function seed(page, auto = "good", overrides = {}) {
+async function seed(page, auto = "good", overrides = {}, { atPull = false } = {}) {
   page.setDefaultTimeout(30000);
-  await page.evaluate(async ({ auto, overrides }) => {
+  await page.evaluate(async ({ auto, overrides, atPull }) => {
     const core = await import("./js/core/state.js");
     const value = core.newGame();
     const { CH3_INTRO_SCENES } = await import("./js/chapters/ch3-progress.js");
@@ -26,8 +26,20 @@ async function seed(page, auto = "good", overrides = {}) {
     const vn = await import("./js/vn/engine.js");
     vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
     const craft = await import("./js/craft/session.js"); craft.craftTest.auto = auto;
+    if (atPull) {
+      const { startAttempt, tournamentProgress, castVotes } = await import("./js/chapters/ch3-tournament-state.js");
+      const cs = Object.assign(craft.newSession("tournament"), {
+        mix: { chocolate: 8 }, steam: { temp: .84, score: 73, hits: 1 },
+        tournamentStory: { seen: ["interlude_pull", "serve"] },
+      });
+      startAttempt(value, cs);
+      const p = tournamentProgress(value);
+      p.step = 8;
+      castVotes(p, 0, 67);
+      core.save();
+    }
     void (await import("./js/chapters/ch3-tournament.js")).runChapterThreeTournament();
-  }, { auto, overrides });
+  }, { auto, overrides, atPull });
 }
 
 await suite("ch3-tournament", async check => {
@@ -126,6 +138,30 @@ await suite("ch3-tournament", async check => {
     assert.equal(after.flavorStock.chocolate ?? 0, 0,
       "The supplied challenge leaf never lands in the private stock (no carry-over)");
   }, { reducedMotion: "reduce" });
+  await check("burned-pull-keeps-result-until-continue", async page => {
+    let releaseArt;
+    const artGate = new Promise(resolve => { releaseArt = resolve; });
+    await page.route(/\/ui\/continue\/backdrop_stage\.(?:png|webp)$/, async route => {
+      await artGate;
+      await route.continue();
+    });
+    try {
+      await seed(page, "burn", {}, { atPull: true });
+      await page.waitForFunction(() => window.__remake.state.flags._ch3_tournament?.stage === "defeat");
+      assert.equal((await get(page)).flags._ch3_tournament.failure, "burnt");
+      // 結果の「次へ」は自動操作が押す。以前は300msで札が消え、素材待ちの間に操作欄が現れた。
+      await page.waitForTimeout(480);
+      assert.equal(await page.locator(t("defeat")).count(), 0, "CONTINUE art is still pending");
+      assert(await page.locator(".bench .result-card.show").isVisible(), "The failure result remains visible");
+      assert(await page.locator(".bench .result-card").evaluate(card => card.inert));
+      assert.equal(await page.locator('[data-test="pull-stop"]:visible,[data-test="pull-serve"]:visible').count(), 0);
+    } finally { releaseArt(); }
+    await page.locator(t("defeat")).waitFor();
+    assert.equal(await page.locator(".bench,.result-card").count(), 0);
+    await page.locator(t("retry")).click();
+    await page.locator(t("ready")).waitFor();
+    assert.equal((await get(page)).flags._ch3_tournament.losses, 1);
+  });
   await check("burned-pull-still-counts-as-a-loss", async page => {
     await seed(page, "burn");
     await page.locator(t("entry")).waitFor();
@@ -292,6 +328,44 @@ await suite("ch3-tournament", async check => {
     // STK23: あげはの再会を帰郷した夜へ移したので、第3章は帰郷した夜（DAY 16）で終わる。
     assert.match(await page.locator('[data-test="slot-0"]').innerText(), /第3章\s*DAY 16[\s\S]*第3章クリア/);
   }, { reducedMotion: "reduce" });
+  // 結果発表（TSH10）: その場で優勝が決まると 10カウント → 板（票）→ CHAMPION → 板に紙吹雪。押す所へフォーカスが戻る。
+  await check("result-reveal-champion-splash-and-confetti", async page => {
+    // 自動操作（craftTest.auto）では演出を省くので、手で遊ぶ時と同じ状態で流す。
+    await seed(page, null);
+    await page.locator(t("entry")).waitFor();
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const model = await import("./js/chapters/ch3-tournament-state.js");
+      (await import("./js/vn/engine.js")).vnTest.turbo = false;
+      const p = model.tournamentProgress(core.state);
+      const craft = { holes: { score: 92 }, heat: { score: 92 }, mix: { chocolate: 6, mint: 6 }, careHistory: [{ score: 94 }, { score: 95 }],
+        total: 93, parts: { holes: 92, heat: 92, shisha: 90, care1: 94, care2: 95 }, tournamentStory: { seen: ["tasting", "preresult"] } };
+      Object.assign(p, { stage: "tasting", step: 11, voted: 4, attempts: 1, craft });
+      p.votes = Object.fromEntries(model.JUDGES.map(judge => [judge, { hajime: 6, ayatori: 2, steve: 1, volk: 1 }]));
+      p.lastVotes = Object.fromEntries(model.JUDGES.map(judge => [judge, { first: "hajime", second: "ayatori", points: { hajime: 2, ayatori: 1 } }]));
+      p.quality = { hajime: 93, ayatori: 82, steve: 80, volk: 84 };
+      const rows = model.standings(p);
+      p.result = { attempt: 1, total: 93, rank: rows.find(row => row.id === "hajime").rank, win: true, rows, votes: structuredClone(p.votes), careHistory: craft.careHistory };
+      p.history = [structuredClone(p.result)];
+      core.state.met.emil = true;
+      core.save();
+      void (await import("./js/chapters/ch3-tournament.js")).runChapterThreeTournament();
+    });
+    await page.locator('[data-test="result-count"]').waitFor();
+    await page.locator(t("result")).and(page.locator('[data-ceremony="done"]')).waitFor({ timeout: 30000 });
+    const splash = page.locator('[data-test="result-splash"]');
+    await splash.waitFor();
+    assert.equal(await splash.locator("h2").textContent(), "CHAMPION");
+    assert.match(await splash.locator(".ts-splash-eyebrow").textContent(), /HAZE: NATIONAL TOKYO/);
+    await page.waitForTimeout(800);
+    await assertFits(page, '[data-test="result-splash"] h2, [data-test="result-splash"] p');
+    await splash.click();
+    await splash.waitFor({ state: "detached" });
+    await page.locator(`${t("result")} .ts-confetti`).waitFor({ state: "attached" });
+    await page.locator(t("continue")).and(page.locator(":focus")).waitFor();
+    await assertFits(page, `${t("continue")}`);
+  });
+
   await check("actual-losing-rank-reads-defeat-and-retries-without-win", async page => {
     await seed(page);
     await page.locator(t("entry")).waitFor();

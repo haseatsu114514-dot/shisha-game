@@ -33,9 +33,9 @@ OUT_ROOT = ROOT / "asset_sources/reference-sheets"
 
 # ゲーム本編（登場紹介）と同じしっぽり明朝。無ければIPAゴシックへ
 FONT_FILES = {
-    "black": ["remake/fonts/ShipporiMinchoB1-Bold.woff2"],
-    "bold": ["remake/fonts/ShipporiMinchoB1-Bold.woff2"],
-    "medium": ["remake/fonts/ShipporiMinchoB1-Medium.woff2"],
+    "black": ["remake/fonts/NotoSansJP-Bold.woff2"],
+    "bold": ["remake/fonts/NotoSansJP-Bold.woff2"],
+    "medium": ["remake/fonts/NotoSansJP-Medium.woff2"],
 }
 FALLBACK_FONT = "/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf"
 

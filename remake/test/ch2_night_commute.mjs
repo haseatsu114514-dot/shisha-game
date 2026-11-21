@@ -8,7 +8,9 @@ import { pathToFileURL } from 'node:url';
 const root = process.env.A1044_SOURCE_ROOT ? pathToFileURL(path.resolve(process.env.A1044_SOURCE_ROOT) + '/') : new URL('../../', import.meta.url);
 const read = p => fs.readFileSync(new URL(p, root), 'utf8');
 const context = vm.createContext({});
-let state, log, mode, saves;
+let state, log, mode, saves, lastDialogue;
+// #3097 PR-B: 行き帰りの電車の小品の台本。最後の節で入れるまでは空（従来の短い場面のまま）
+const commuteDB = { dialogues: {} };
 const reset = () => { state = { chapter: 2, day: 18, slot: 2, money: 1000, flags: { _ch2_region: 'widehanga', _ch2_preparation_started: true } }; log = []; mode = 'ok'; saves = 0; statePort.setExport('state', state); };
 const statePort = new vm.SyntheticModule(['state','save'], function() { this.setExport('state', state); this.setExport('save', () => saves++); }, {context});
 const ui = new vm.SyntheticModule(['setBg','modal','showScreen'], function() {
@@ -16,14 +18,14 @@ const ui = new vm.SyntheticModule(['setBg','modal','showScreen'], function() {
   for (const n of ['modal','showScreen']) this.setExport(n, () => { throw Error('Unexpected '+n); });
 }, {context});
 const playPort = new vm.SyntheticModule(['play'], function() { this.setExport('play', async d => {
-  log.push(d.dialogue_id);
+  log.push(d.dialogue_id); lastDialogue = d;
   if (mode === 'throw') throw Error('controlled VN failure');
   if (mode === 'replace') { state = {...state, flags:{...state.flags}}; statePort.setExport('state', state); }
   return {cancelled: mode === 'cancel'};
 }); }, {context});
 const ports = new Map([['remake/js/core/state.js',statePort],['remake/js/core/ui.js',ui],['remake/js/vn/engine.js',playPort]]);
 function fixed(names, values) { return new vm.SyntheticModule(names, function(){ for(const n of names) this.setExport(n,values[n]); },{context}); }
-ports.set('remake/js/core/data.js', fixed(['bgUrl'],{bgUrl:id=>id}));
+ports.set('remake/js/core/data.js', fixed(['bgUrl','DB'],{bgUrl:id=>id,DB:commuteDB}));
 ports.set('remake/js/core/util.js', fixed(['el'],{el:()=>{throw Error('Unexpected el');}}));
 ports.set('remake/js/core/city-locations.js',fixed(['CH2_CITY_NAME','HOME_CITY_NAME','HOME_CITY_READING'],{CH2_CITY_NAME:'柚ヶ谷',HOME_CITY_NAME:'地元',HOME_CITY_READING:'じもと'}));
 ports.set('remake/js/core/rules.js',fixed(['TOURNAMENT_DAY'],{TOURNAMENT_DAY:99}));
@@ -66,7 +68,7 @@ const runDailySource = calendar.slice(calendar.indexOf('export async function ru
 const morningSource = calendar.slice(calendar.indexOf('async function morning()'), calendar.indexOf('\n/** HUD'));
 const nightSource = calendar.slice(calendar.indexOf('async function endDay('));
 // #2213 B01: 配達はその日の行動枠の後（帰り道）に確認する。実 dueDelivery で、第2章・配達期間外は割り込まないことを通す。
-const dueDeliverySource = calendar.slice(calendar.indexOf('function dueDelivery()'), calendar.indexOf('\nasync function deliver('));
+const dueDeliverySource = calendar.slice(calendar.indexOf('function dueDelivery('), calendar.indexOf('\nasync function deliver('));
 for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
   const trace = [], snapshots = [];
   const fixture = { chapter, day: 15, slot: 2, stamina: 60, money: 1000, flags: { _morning_15: true }, visitedDay: {} };
@@ -263,3 +265,77 @@ state.pendingInvite = unknown;
 await invitationContext.travelToInvitation(unknown);
 assert.equal(state.flags._ch2_region, 'widehanga'); assert.equal(state.money, 10000);
 console.log('PASS: #1925 actual normal/after-close/rest invitation paths return before meeting; home/city/unknown venues; one fare, one action/reward; cancel/error/LOAD stops meeting and retry avoids duplicate fare');
+
+// #3097 PR-B: 行き帰りの電車の小品（実 ch2-commute.js）。朝の上り・夜の下りの順に交互に一本ずつ、一日一本まで。第2章だけ。
+// 切符の一文はそのまま先頭に残し、運賃・保存の流れは変えない。台本の末尾の旗で次へ進む（ここでは再生の代わりに旗を立てる）。
+{
+  const cityScenes = JSON.parse(read('data/dialogue/ch2_city.json')).dialogues;
+  const { COMMUTE_SCENES, commuteSceneDue } = commute.namespace;
+  for (const scene of COMMUTE_SCENES) {
+    const dlg = cityScenes.find(d => d.dialogue_id === scene.id);
+    assert(dlg?.lines?.length, `${scene.id} exists`);
+    assert(JSON.stringify(dlg).includes(`"${scene.flag}"`), `${scene.id} records ${scene.flag} at its end`);
+    assert(!/大会|本番|県大会|優勝|審査|味/.test(JSON.stringify(dlg)), `${scene.id}: any day of the preparation, before or after the taste trouble`);
+    commuteDB.dialogues[scene.id] = dlg;
+  }
+  assert.equal(COMMUTE_SCENES.map(scene => scene.leg).join(), 'morning,return,morning,return');
+  const { CH2_COMMUTE_IDS } = await import(new URL('remake/js/chapters/ch2-city-data.js', root));
+  assert.equal(COMMUTE_SCENES.map(scene => scene.id).join(), CH2_COMMUTE_IDS.join(), 'the chapter 2 loader publishes every commute scene');
+  const readTo = n => Object.fromEntries(COMMUTE_SCENES.slice(0, n).map(scene => [scene.flag, true]));
+  // 朝: 並びの最初の一本。台本が無ければ出さない。第2章の外では出さない
+  assert.equal(commuteSceneDue({ chapter: 2, day: 18, flags: {} }, 'morning', commuteDB.dialogues), 'ch2_commute_morning_regulars');
+  assert.equal(commuteSceneDue({ chapter: 2, day: 18, flags: {} }, 'return', commuteDB.dialogues), null, 'the next one is a morning scene');
+  assert.equal(commuteSceneDue({ chapter: 2, day: 18, flags: {} }, 'morning', {}), null);
+  for (const chapter of [1, 3, 4, 5]) assert.equal(commuteSceneDue({ chapter, day: 18, flags: {} }, 'morning', commuteDB.dialogues), null, `chapter ${chapter}`);
+  // 帰り: 実 returnCityHome。切符の一文の後に小品を読み、運賃は一回だけ
+  reset(); Object.assign(state.flags, readTo(1));
+  await commute.namespace.returnCityHome();
+  assert.equal(lastDialogue.dialogue_id, 'ch2_commute_return_tonari');
+  assert.match(lastDialogue.lines[0].text, /柚ヶ谷の駅で、地元へ戻る片道切符を200円で買った。/);
+  assert.equal(lastDialogue.lines.length, commuteDB.dialogues.ch2_commute_return_tonari.lines.length + 1);
+  assert.equal(state.money, 800); assert.equal(state.flags._ch2_commute_day, 18); assert.equal(state.flags._ch2_region, 'home');
+  // 昼の約束へ向かうために地元へ戻る時（slot 0）は、夜の電車の小品を読まない
+  reset(); Object.assign(state.flags, readTo(1)); state.slot = 0;
+  await commute.namespace.returnCityHome(); assert.equal(lastDialogue.dialogue_id, '__ch2_return_train');
+  assert.equal(state.flags._ch2_commute_day, undefined);
+  // 同じ日の二本目は出さない（朝に読んだ日の帰りは、いつもの短い場面）
+  reset(); Object.assign(state.flags, readTo(1), { _ch2_commute_day: 18 });
+  await commute.namespace.returnCityHome();
+  assert.equal(lastDialogue.dialogue_id, '__ch2_return_train');
+  assert.equal(lastDialogue.lines.map(line => line.speaker).join(), ',hajime');
+  assert.equal(commuteSceneDue({ ...state, day: 19 }, 'morning', commuteDB.dialogues), null, 'tonari scene is still next');
+  // 四本を読み終えたら、いつもの短い場面に戻る。第5章の帰り道にも出さない
+  reset(); Object.assign(state.flags, readTo(4));
+  await commute.namespace.returnCityHome(); assert.equal(lastDialogue.dialogue_id, '__ch2_return_train');
+  reset(); state.chapter = 5;
+  await commute.namespace.returnCityHome(); assert.equal(lastDialogue.dialogue_id, '__ch2_return_train');
+  assert.equal(state.flags._ch2_commute_day, undefined);
+  // 小品の途中で閉じたら帰宅しない（従来と同じ）。台本の旗は立たないので、次の帰りに読み直す
+  reset(); Object.assign(state.flags, readTo(1)); mode = 'cancel';
+  assert.equal(await commute.namespace.returnCityHome(), false); mode = 'ok';
+  assert(!state.flags._ch2_commute_tonari);
+  // 地元の翌朝は選択なし。昼に駅から柚ヶ谷へ向かうと、確定済みの運賃を使って朝の小品を読む。
+  reset(); state.slot = 0;
+  Object.assign(state.flags, { _ch2_region: 'home', _ch2_stay_local_since: 17 });
+  await commute.namespace.chooseMorningCity();
+  assert.deepEqual(log, []); assert.equal(state.flags._ch2_morning_departed, 18);
+  state.flags._ch2_region = 'widehanga'; state.money -= 200; // 駅で精算済み
+  await commute.namespace.readMorningStationCommute({ to: 'widehanga' });
+  await commute.namespace.readMorningStationCommute({ to: 'widehanga' });
+  assert.deepEqual(log, ['ch2_commute_morning_regulars']);
+  assert.match(lastDialogue.lines[0].text, /片道切符を200円で買い/);
+  assert.equal(state.money, 800); assert.equal(state.slot, 0);
+  // 窓の写真は、つむぎと連絡先を交換している時だけ送る。後日の LIME は送った時だけ届く
+  const windowScene = commuteDB.dialogues.ch2_commute_return_window;
+  const photo = windowScene.lines.find(line => line.type === 'condition');
+  assert.equal(photo.condition_type, 'contact'); assert.equal(photo.char_id, 'tsumugi');
+  assert(JSON.stringify(windowScene.branches[photo.next_true]).includes('"_ch2_commute_window_sent"'));
+  assert(!JSON.stringify(windowScene.branches[photo.next_false]).includes('_ch2_commute_window_sent'));
+  const limes = JSON.parse(read('data/lime_messages.json')).messages;
+  for (const [id, sender, flag] of [['lime_ch2_sumi_commute_tonari', 'sumi', '_ch2_commute_tonari'], ['lime_ch2_tsumugi_train_window', 'tsumugi', '_ch2_commute_window_sent']]) {
+    const lime = limes.find(m => m.id === id);
+    assert.equal(lime?.sender, sender); assert.equal(lime.chapter, 2);
+    assert.equal(lime.trigger_condition, 'flag'); assert.equal(lime.trigger_flag, flag);
+  }
+}
+console.log('PASS: #3097 PR-B commute scenes alternate morning/return, one a day, chapter 2 only, after the ticket line with one fare; the photo LIME needs a contact');

@@ -3,7 +3,8 @@ import { state, save } from "../core/state.js";
 import { loadTournamentCraftDialogue } from "../core/data.js";
 import { awardTournamentExp } from "../core/growth.js";
 import { maxStamina } from "../core/stats.js";
-import { chooseRetryAssist } from "./retry-assist.js";
+import { chooseRetryAssist, applyRetryAssistChoice } from "./retry-assist.js";
+import { chosenAssistLevel } from "../craft/retry-assist-level.js";
 import { applyAssistRecovery } from "./tournament-resources.js";
 import { play } from "../vn/engine.js";
 import { modal, retireScreen } from "../core/ui.js";
@@ -20,9 +21,11 @@ import { computeShisha, finalize } from "../craft/score.js";
 import { block, clearComments } from "../craft/broadcast.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
-import { showChapterFourStandings } from "./ch4-standings.js";
+import { chapterFourMorningCheers } from "./ch4-morning.js";
+import { showChapterFourStandings, chapterFourNameOf } from "./ch4-standings.js";
+import { liveOf, intervalCard } from "../craft/tournament-show.js";
 import { chapterFourMatch, startChapterFourCraft, recoverChapterFourStep, chapterFourRetryContext,
-  beginChapterFourStep, finishChapterFourStep, chapterFourStandings } from "./ch4-tournament-state.js";
+  beginChapterFourStep, finishChapterFourStep, chapterFourStandings, takeChapterFourRetryChoice } from "./ch4-tournament-state.js";
 import { chapterFourCraftAdvice, chapterFourCustomerLines } from "./ch4-verdict.js";
 import { readChapterFourStaffCheckpoint } from "./ch4-staff-work.js";
 import { CH4_STAFF_IDS } from "./ch4-staff-work-progress.js";
@@ -43,13 +46,17 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
   const p = recoverChapterFourStep(state);
   if (!p.craft && !p.result) {
     // 第1〜3章と同じ補助を次の一台だけに適用。中断再開では聞き直さない。
+    // 難易度はコンティニュー画面で選んだもの（WIN14）。画面の選択を持たない旧保存だけ、ここで聞く。
     const retry = chapterFourRetryContext(state);
-    const assisted = await chooseRetryAssist(retry, () => live() && !p.craft && !p.result);
+    const picked = takeChapterFourRetryChoice(state);
+    const assisted = picked === null ? await chooseRetryAssist(retry, () => live() && !p.craft && !p.result)
+      : applyRetryAssistChoice(retry, picked);
     requireCurrent();
     if (assisted === null) return false;
     applyAssistRecovery(state, assisted, maxStamina());
     const cs = newSession("tournament");
     cs.retryAssist = assisted === true;
+    cs.retryAssistLevel = chosenAssistLevel(retry); // 3敗ごとに一段ずつ判定が広がる（WIN13）
     cs.eventTitle = "HAZE: GRAND SMOKE";
     cs.eventNote = "世界大会・一台を二度調整";
     if (!startChapterFourCraft(state, cs)) throw new Error("世界大会の開始地点を確認できません");
@@ -59,15 +66,25 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
     playBgm("bgm_tournament_craft");
     // 制作中の掛け合い（#2031）。工程の前に一度だけ読み、既読は制作保存に残す（再挑戦では最初から）。
     // 作り始める直前（開始前）と吸い出しの前（審査員への提供開始）の掛け合い（#3060）。
+    // 吸い出しの前は、4人の心の声（interlude_pull。#3097 第2弾）の後に提供の掛け合い。
     const stepEvent = p.step === 8 ? "serve" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : TOURNAMENT_STORY_STEPS.get(p.step);
-    for (const event of p.step === 0 ? ["prestart", stepEvent] : [stepEvent]) {
+    const stepEvents = p.step === 0 ? ["prestart", stepEvent] : p.step === 8 ? ["interlude_pull", stepEvent] : [stepEvent];
+    for (const event of stepEvents) {
       if (!event || p.craft.tournamentStory?.seen?.includes(event)) continue;
+      // 心の声は提供の掛け合いより前だけ。提供の掛け合いを読んだ保存には、後から出さない。
+      if (event === "interlude_pull" && p.craft.tournamentStory?.seen?.includes("serve")) continue;
       // 台本は直前に見せた途中順位と同じ並び（はじめの順位・先頭・先頭と同じ持ち点か）だけを語る。
       const rows = chapterFourStandings(p);
       const me = rows.find(row => row.id === "hajime"), top = rows[0];
       const context = { rank: me?.rank ?? null, leader: top?.id ?? null,
         tied: rows[1]?.points === top?.points, level: me?.points === top?.points };
-      const told = await playTournamentEvent(p.craft, event, { context });
+      // 会話には中継の枠を付ける（TSH05。票が出てからは順位の札も）。
+      const told = await playTournamentEvent(p.craft, event, { context,
+        // 審査員の一言に続く客席の声（大会の朝に一言をくれた人。恋人が先。提供後は二人目、調整1回目の後は一人目）。
+        supporters: chapterFourMorningCheers(state).cheers.slice(0, 2),
+        live: liveOf("HAZE: GRAND SMOKE", event, p.voted ? rows : [], chapterFourNameOf),
+        // 合間の掛け合いの前にアイキャッチ（TSH11。いまの順位つき。既読なら出さない）。
+        card: intervalCard(event, p.voted ? rows : []) });
       requireCurrent();
       if (!told) return false;
       save();
@@ -119,17 +136,19 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
     if (completed === false) { recoverChapterFourStep(state); save(); return false; }
     if (p.step === 8 && !cs.failed) cs.servedQuality = computeShisha(cs).craftQuality;
     if (p.step === 10 && !cs.failed) { cs.stats = computeShisha(cs); finalize(cs); }
-    const votedBefore = p.voted;
+    const votedBefore = p.voted, votesBefore = structuredClone(p.votes);
     finishChapterFourStep(state, cs);
     if (p.result) awardTournamentExp(p.result.rank, cs);
     save();
     // 投票が動いた工程の後は、第2・3章と同じく途中順位を見せる（最後の票は結果画面が見せる）。
-    if (p.voted > votedBefore && !p.result) { await showChapterFourStandings(p); requireCurrent(); }
+    if (p.voted > votedBefore && !p.result) { await showChapterFourStandings(p, { before: votesBefore }); requireCurrent(); }
+    // 最後の票は結果の画面が見せる。その出発点（最後の回を入れる前の票）を、この場の結果表示へ渡す（保存はしない）。
+    else if (p.voted > votedBefore && p.result) lastVotesBefore = votesBefore;
   }
   requireCurrent();
   // 結果発表前の掛け合い（#3060）。最後の票の画面の前に一度だけ読み、既読は制作保存に残す。
   if (p.result && !p.result.failure && p.craft && !p.craft.tournamentStory?.seen?.includes("preresult")) {
-    const told = await playTournamentEvent(p.craft, "preresult");
+    const told = await playTournamentEvent(p.craft, "preresult", { live: liveOf("HAZE: GRAND SMOKE", "preresult", [], chapterFourNameOf) });
     requireCurrent();
     if (!told) return false;
     save();
@@ -137,4 +156,13 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
   clearComments();
   retireScreen();
   return chapterFourMatch(state).result;
+}
+
+// この場で最後の票を入れた時だけ残る、入れる前の票（結果の画面の「票が入る進行」の出発点）。LOAD 後の再表示では空。
+let lastVotesBefore = null;
+/** 結果の画面が一度だけ受け取る。 */
+export function takeChapterFourLastVotes() {
+  const votes = lastVotesBefore;
+  lastVotesBefore = null;
+  return votes;
 }

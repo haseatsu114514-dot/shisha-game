@@ -306,7 +306,7 @@
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "千須会長も序盤から配点！ 最後の1点は二度目の調整を見て投じますッ！"
+          "text": "千須会長も序盤から配点！ 最後の1点は、会長がもう一口吸いたい台へッ！"
         },
         {
           "speaker": "pakki",
@@ -542,7 +542,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "吸い込んで、吐いて、少し間を置いて、また吸い込んだ。もう一口。"
+          "text": "ゆっくり吐く。審査席の上で、煙が少し遅れて、もう一度香った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……今の匂い。閉店後のtonariみたいだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "千須の手が止まった。少し間を置いて、また吸い込む。もう一口。"
         },
         {
           "speaker": "hajime",
@@ -731,7 +741,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "千須豪の最後の1点が、二度目の調整を見た評価として投入された。"
+          "text": "千須豪の最後の1点が、もう一口吸った台へ投じられた。"
         },
         {
           "speaker": "pakki",
@@ -742,7 +752,7 @@
           "speaker": "pakki",
           "face": "smile",
           "beat": 800,
-          "text": "逢縁はじめ選手ッ！！！ 工程ごとの票を積み重ね、優勝ですッ！！"
+          "text": "逢縁はじめ選手ッ！！！ 会長の最後の票まで届いて、優勝ですッ！！"
         },
         {
           "speaker": "hajime",
@@ -811,7 +821,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（会長も、最後の調整まで見てくれた。俺の一台は、どう届いたんだろう）"
+          "text": "（会長、俺の台だけもう一口吸ってた。なんでだろう）"
         },
         {
           "speaker": "",
@@ -1111,6 +1121,54 @@
           "next_true": "ta_growth_echo"
         },
         {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "で、本番は何で行った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "cue": "ch1_mix",
+          "text": "練習してきた組み合わせです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "特別なことは何も。いつもの手順で作っただけです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "グラスを持つスミさんの手が、途中で止まった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "surprise",
+          "text": "……それでか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが、肩を揺らして笑った。こらえきれずに、少しむせる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、……そんなにおかしかったですか？"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch1_lemon_single",
+          "next_true": "mix_lemon_single",
+          "next_false": "mix_any"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんはそれ以上言わず、使い込んだトングを布巾で拭いた。"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "祝いに、自分用の一台を作って吸った。馬鹿みたいに、うまい。どの一服よりも濃い。"
@@ -1163,7 +1221,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ふと思い出して、鞄から採点表を出して開いた。会長の欄には、二度目の調整について小さく「味を保った」とあった。"
+          "text": "ふと思い出して、鞄から採点表を出して開いた。会長の欄の隅に、小さく「もう一口」とあった。"
         },
         {
           "speaker": "",
@@ -1174,6 +1232,11 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（……褒められてる、んだよな。勝ったんだし）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（凝った配合でもない。なんで勝てたのか、自分でもよく分からない）"
         },
         {
           "speaker": "",
@@ -1563,6 +1626,45 @@
             "face": "sad",
             "text": "（……そうだった。今度、飲むんだ）"
           }
+        ],
+        "mix_lemon_single": [
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "いや。昔、大会にレモンだけで出たバカがいてな"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "みんな何種類も混ぜてくるのに、そいつだけ一本で来た"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "その人、どうなったんですか"
+          },
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "……さあな。客席じゅうに笑われてたよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（スミさんの昔の知り合いかな。……なんか、楽しそうだ）"
+          }
+        ],
+        "mix_any": [
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "いや、……いい配合だ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（絶対、何かある顔だ）"
+          }
         ]
       }
     },
@@ -1604,6 +1706,16 @@
           "speaker": "adam",
           "face": "serious",
           "text": "……俺のダブルアップルレモン。ファースト・ドローで、完璧に仕上がる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蜜を煮たようなリンゴの香りが、真っ先に客席へ流れた。アダムの台だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（立ち上がりから、もうアダムさんの台だって分かる）"
         }
       ],
       "branches": {
@@ -1740,6 +1852,11 @@
           "speaker": "naru",
           "face": "normal",
           "text": "炭の持ちも、葉の状態も変わってくる。ここからが大事だよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "最後にいちばん可愛い顔を見せるのが、みんとの仕事だもん♡"
         },
         {
           "speaker": "hajime",

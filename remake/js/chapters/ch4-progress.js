@@ -14,6 +14,7 @@ import { DEPARTURE_PREP_DAYS } from "../core/chapter-clock.js";
 import { resetChapterFourCraft } from "./ch4-tournament-state.js";
 import { OVERSEAS_HEROINES, overseasCompanion, overseasGuests } from "../core/overseas-companion.js";
 import { STORY_BGM } from "../core/story-audio.js";
+import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 
 // 新規優勝のみ: 第1章50,000円／第2章100,000円／第3章200,000円／第4章500,000円／第5章は賞金なし。
 export const CH4_PRIZE = 500000;
@@ -29,7 +30,7 @@ export const CH4_PLACE_BG = Object.freeze({
   center_cafe: "bg_dubai_cafe_day",
   alley_cafe: "bg_dubai_alley_cafe_night",
   inn: "bg_dubai_inn_day",
-  venue: "bg_dubai_grand_smoke_stage",
+  venue: TOURNAMENT_VENUE_BG[4],
   shop: "bg_fookah_dubai",          // Dr.fookah ドバイ店（NF03）
 });
 
@@ -52,11 +53,11 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_wang_reception_forced_in: "bg_dubai_inn_night",
   ch4_wang_reception: "bg_dubai_grand_smoke_stage",
   ch4_stranger_third: "bg_dubai_alley_cafe_night",
-  ch4_tournament_start: "bg_dubai_grand_smoke_stage",
-  ch4_final: "bg_dubai_grand_smoke_stage",
-  ch4_defeat: "bg_dubai_grand_smoke_stage",
-  ch4_result: "bg_dubai_grand_smoke_stage",
-  ch4_sensu_old_rival: "bg_dubai_grand_smoke_stage",
+  ch4_tournament_start: TOURNAMENT_VENUE_BG[4],
+  ch4_final: TOURNAMENT_VENUE_BG[4],
+  ch4_defeat: TOURNAMENT_VENUE_BG[4],
+  ch4_result: TOURNAMENT_VENUE_BG[4],
+  ch4_sensu_old_rival: TOURNAMENT_VENUE_BG[4],
   ch4_ending: "bg_dubai_sheikh_residence",
   ch4_sumi_return: "bg_tonari_inside_night",      // 帰国後のtonari。仮置き bg（#1177 でドバイ素材に差し替え）
   ch4_two_tables: "bg_tonari_inside_night",       // 仮置き bg（#1177 でドバイ素材に差し替え）
@@ -90,12 +91,13 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_samechan_dubai_evening: "bg_dubai_inn_night",
   ch4_hiyori_dubai_evening: "bg_dubai_inn_night",
   ch4_mashiro_dubai_friend_evening: "bg_dubai_inn_night",
+  ...Object.fromEntries(["tsumugi", "minto", "rio", "ageha", "samechan", "hiyori"].map(id => [`ch4_${id}_dubai_friend_evening`, "bg_dubai_inn_night"])),
   // 大会当日の朝（4-4・SPC28・ch4-morning.js が組み立てる）。宿のロビー
   ch4_tournament_morning: "bg_dubai_inn_day",
   ch4_lovers_eve: "bg_dubai_inn_day",
   // ドバイの本筋の夜（SPC27・下の CH4_STORY_NIGHTS と同じ）
   ch4_story_briefing: "bg_dubai_grand_smoke_stage",
-  ch4_story_venue: "bg_dubai_grand_smoke_stage",
+  ch4_story_venue: TOURNAMENT_VENUE_BG[4],
   ch4_story_market: "bg_dubai_souq_day",
   ch4_story_sumi_call: "bg_dubai_inn_night",
   ch4_story_press: "bg_dubai_grand_smoke_stage",
@@ -170,8 +172,8 @@ export const CH4_TOURNAMENT_SCENES = Object.freeze({
   start: "ch4_tournament_start", win: "ch4_final", loss: "ch4_defeat",
 });
 
-// 自由行動で再生する場面（接続する全ID）。ch4_return（空場面）は接続しない。到着した人と過ごす dubai_evening 系は自由行動ではなく、
-// 前夜祭の日の到着の後に読む（下の CH4_ARRIVAL_EVENING_SCENES・CH4_FRIEND_ARRIVAL_EVENING_SCENES）。
+// 自由行動で再生する場面。到着した人と過ごす dubai_evening 系は、前夜祭の日の到着の後に読む
+// （CH4_ARRIVAL_EVENING_SCENES・CH4_FRIEND_ARRIVAL_EVENING_SCENES）。
 const FREE_SCENES = Object.freeze({
   souq: "ch4_dubai_souq", souqRevisit: "ch4_dubai_souq_revisit",
   festa: "ch4_festa", festaRevisit: "ch4_festa_revisit",
@@ -190,7 +192,12 @@ export const CH4_ARRIVAL_EVENING_SCENES = Object.freeze({
   ageha: "ch4_ageha_dubai_evening", mashiro: "ch4_mashiro_dubai_evening",
   samechan: "ch4_samechan_dubai_evening", hiyori: "ch4_hiyori_dubai_evening",
 });
-export const CH4_FRIEND_ARRIVAL_EVENING_SCENES = Object.freeze({ mashiro: "ch4_mashiro_dubai_friend_evening" });
+// 恋人でない人の夕方（友人版の到着の後）。ましろ（#3097）に、#3097 第3弾で残りの6人を足した（前夜祭へ出かける前の短い時間）。
+export const CH4_FRIEND_ARRIVAL_EVENING_SCENES = Object.freeze({
+  tsumugi: "ch4_tsumugi_dubai_friend_evening", minto: "ch4_minto_dubai_friend_evening", rio: "ch4_rio_dubai_friend_evening",
+  ageha: "ch4_ageha_dubai_friend_evening", mashiro: "ch4_mashiro_dubai_friend_evening",
+  samechan: "ch4_samechan_dubai_friend_evening", hiyori: "ch4_hiyori_dubai_friend_evening",
+});
 const CH4_MAIN_EVENING_SCENES = Object.freeze([CH4_ARRIVAL_EVENING_SCENES.samechan, CH4_ARRIVAL_EVENING_SCENES.hiyori]);
 
 // 台本の読み込み対象（ch4.js が FILES に使う）。
@@ -242,7 +249,7 @@ export const CH4_GUEST_ARRIVAL_SCENES = Object.freeze({
 // （ch4-dubai-daily.js の夜。期限の出会いや店の手伝いがある夜は次の夜へ送る）。前夜（DAY13）に入ったら、未読でも足さない。
 export const CH4_STORY_NIGHTS = Object.freeze([
   { id: "ch4_story_briefing", day: 1, label: "出場者説明会", beat: "夜。大会の運営に呼ばれて、会場の会議室へ──", bg: "bg_dubai_grand_smoke_stage" },
-  { id: "ch4_story_venue", day: 3, label: "会場の下見", beat: "夜。本番の会場を、一度見ておくことにした──", bg: "bg_dubai_grand_smoke_stage" },
+  { id: "ch4_story_venue", day: 3, label: "会場の下見", beat: "夜。本番の会場を、一度見ておくことにした──", bg: TOURNAMENT_VENUE_BG[4] },
   { id: "ch4_story_market", day: 5, label: "勝負の炭と葉", beat: "夕方。勝負に使う炭と葉を探しに、スークへ──", bg: "bg_dubai_souq_day" },
   { id: "ch4_story_sumi_call", day: 7, label: "時差の電話", beat: "夜。宿の部屋で、スマホが鳴った──", bg: "bg_dubai_inn_night" },
   { id: "ch4_story_press", day: 9, label: "記者会見", beat: "夜。日本代表の記者会見に呼ばれた──", bg: "bg_dubai_grand_smoke_stage" },

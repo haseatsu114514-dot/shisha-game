@@ -1,5 +1,5 @@
 {
-  "comment": "すれ違い（恋人の裏の数値）が溜まりきった夜の別れ話（2026-11-13 オーナー「彼女のストレスみたいな裏ステータスが一定に行くと別れ話になって、引き止めないと友達に戻る」「なぜ別れ話になったかわかりやすいように、構ってくれないしとか」「引き止めは何度でも」・台帳 STR）。決まりは remake/js/core/lover-strain.js、再生は remake/js/daily/lover-strain.js。一晩に読むのは「切り出し open →（二度目からの一言 again）→ 理由 why_<理由> → 問いかけと答え ask」をつないだ一つの会話。理由は、誘いを断り続けた decline／LIMEを開かない unread／ほかの誰かの気配 suspect（女の勘。二股を言い当てたり確かめたりはしない。表に出るのは最後の修羅場）。答えは3つ: 向き合うと約束して引き止める keep／言い訳で引き止める excuse（次が早い）／受け入れる end（友達に戻る）。必ず読む場面なので能力・お金・体力の報酬は無く、数値は台詞に出さない。第5章に大会は無いので、言い訳は「店のこと」と言う。やり直し（復縁）は strain_reunion_<ID>: 友達に戻った相手に、章をまたいだ後、はじめのほうから一度だけ申し込める（台帳 STR11）。申し込むかどうかの一拍は daily/lover-strain.js が出し、ここは彼女の返事（一つだけ条件を言って受ける）。",
+  "comment": "すれ違い（恋人の裏の数値）が溜まりきった夜の別れ話（2026-11-13 オーナー「彼女のストレスみたいな裏ステータスが一定に行くと別れ話になって、引き止めないと友達に戻る」「なぜ別れ話になったかわかりやすいように、構ってくれないしとか」「引き止めは何度でも」・台帳 STR）。決まりは remake/js/core/lover-strain.js、再生は remake/js/daily/lover-strain.js。一晩に読むのは「切り出し open →（二度目からの一言 again）→ 理由 why_<理由> → 問いかけと答え ask」をつないだ一つの会話。理由は、誘いを断り続けた decline／LIMEを開かない unread／ほかの誰かの気配 suspect（女の勘。二股を言い当てたり確かめたりはしない。表に出るのは最後の修羅場）。答えは3つ: 向き合うと約束して引き止める keep／言い訳で引き止める excuse（次が早い）／受け入れる end（友達に戻る）。必ず読む場面なので能力・お金・体力の報酬は無く、数値は台詞に出さない。第5章に大会は無いので、言い訳は「店のこと」と言う。遠くに住むましろ・ヌールは、帰り道ではなく夜の電話・テレビ電話で切り出す（台帳 STR12・#4021）。やり直し（復縁）は strain_reunion_<ID>: 友達に戻った相手に、章をまたいだ後、はじめのほうから一度だけ申し込める（台帳 STR11）。申し込むかどうかの一拍は daily/lover-strain.js が出し、ここは彼女の返事（一つだけ条件を言って受ける）。",
   "dialogues": [
     {
       "dialogue_id": "strain_talk_open_tsumugi",
@@ -1553,6 +1553,494 @@
           "speaker": "",
           "face": "",
           "text": "ひよりさんは、社員証の紐を指に巻いて、少しだけ笑った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_open_mashiro",
+      "comment": "別れ話・切り出し・ましろ（一人称「僕」・ゆっくり「〜ねぇ」「〜よぉ」。はじめは「ましろちゃん」）。遠くに住む恋人なので、別れ話は帰り道ではなく夜の電話（daily/lover-strain.js が「電話がかかってきた」の一拍と自室の背景で出す）。会えないこと自体は責めない（会う誘いを断る・LIMEを開かない・女の勘だけで溜まる。台帳 STR12）。",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……はじめくん。起きてた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "起きてるよ。ましろちゃんこそ、眠くないの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "眠いよぉ。……でも、今日は、寝る前に言うって決めてたの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_again_mashiro",
+      "comment": "二度目からの一言（切り出しの後に挟む）",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "……この電話、前にもしたねぇ。同じところに、戻っちゃった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_decline_mashiro",
+      "comment": "理由: 誘いを断り続けた",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "誘っても、来られないって、ずっと言われてる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "遠いのは、知ってるよぉ。……でも、構ってもらえないと、お茶が一杯ずつ冷めるの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_unread_mashiro",
+      "comment": "理由: LIMEを開かない",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "LIME、何日も、既読にならないねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "遠いから、読むしかないのに。……読まれないと、僕、ここにいないみたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_suspect_mashiro",
+      "comment": "理由: ほかの誰かの気配（女の勘。確かめはしない。第3章で味の名前で人を試したことを謝っているので、試さない）",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "serious",
+          "text": "電話の声がね、最近、少しだけ遠いの。距離の分じゃなくて"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "理由は聞かないよぉ。……人を試すのは、もうやめたから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……ましろちゃんは、試さない。だから、余計にこたえる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_ask_mashiro",
+      "comment": "問いかけと答え。keep=向き合うと約束して引き止める / excuse=言い訳で引き止める / end=受け入れて友達に戻る",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "serious",
+          "text": "……だからね。友達に、戻らない？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "友達なら、遠くても、待たなくていいから"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "これからは、ちゃんと向き合う",
+              "next": "keep"
+            },
+            {
+              "text": "「忙しかった」と言う",
+              "next": "excuse"
+            },
+            {
+              "text": "「……わかった」と答える",
+              "next": "end"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "keep": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "ごめん。さみしい思いをさせた。これからは、ちゃんと時間を作る"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "surprise",
+            "text": "……ほんと？"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "……じゃあ、もう一回だけ、待つねぇ。冷めたお茶は、淹れ直せばいいから"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_keep"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "電話の向こうで、ましろちゃんが小さくあくびをした。切るまで、しばらく何も言わなかった。"
+          }
+        ],
+        "excuse": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……忙しかったんだ。店のことで、手いっぱいで"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "……知ってるよぉ。忙しいのは、声で分かるもん"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "sad",
+            "text": "もう少しだけ待つ。でも、冷めたお茶は、まだそのままだよ"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_excuse"
+          }
+        ],
+        "end": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……わかった。ごめん、ましろちゃん"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "sad",
+            "text": "……ん。……今日から、友達のましろねぇ"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "東京に来たら、mukaiには寄ってね。お茶は、変わらず出すから"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_end"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「おやすみ」と言ったあと、電話が切れるまで、少しだけ間があった。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "strain_reunion_mashiro",
+      "comment": "やり直し（復縁）・ましろ。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（電話。再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電話をかけると、ましろちゃんは三回目の呼び出しで出た。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "ましろちゃん。もう一度、付き合ってほしい"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "……え。……今、眠気、飛んじゃった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、さみしい思いをさせた。今度は、ちゃんと向き合う"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "……友達に戻っても、はじめくんの分のカップ、しまえなかったの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "今度、冷めそうになったら、すぐ言うねぇ。だから、ちゃんと聞いて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。約束する"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……ん。また、よろしくねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電話の向こうで、カップを二つ並べる音がした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_open_noor",
+      "comment": "別れ話・切り出し・ヌール（一人称「私」・「ハジメ」。はじめは「ヌールさん」と敬語）。テレビ電話。遠くに住む恋人なので、別れ話は帰り道ではなく夜の電話（daily/lover-strain.js が「電話がかかってきた」の一拍と自室の背景で出す）。会えないこと自体は責めない（会う誘いを断る・LIMEを開かない・女の勘だけで溜まる。台帳 STR12）。 時差は五時間（日本の夜はドバイの夕方）。",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……ハジメ。今、話せる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "話せます。ヌールさん、店は？"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "父に頼んできた。……今日は、ガイドの声じゃない話をしに来たの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_again_noor",
+      "comment": "二度目からの一言（切り出しの後に挟む）",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……この話、前にもしたよね。同じ砂に、また埋まっちゃった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_decline_noor",
+      "comment": "理由: 誘いを断り続けた",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "誘っても、断られてばっかり。……私、何回も線を引き直したよ"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "遠いのは、最初から分かってた。……でも、構ってもらえないのは、さみしい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_unread_noor",
+      "comment": "理由: LIMEを開かない",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "LIME、何日も開いてないでしょ。こっちは、時差の分も待ってるのに"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "返事はいらないって言ったけど、……読まれないのは、なしだよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_suspect_noor",
+      "comment": "理由: ほかの誰かの気配（女の勘。確かめはしない）",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "画面のハジメ、最近、こっちを見てない時がある"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ガイドはね、お客さんの目がどこを見てるか、分かっちゃうの、……聞かないけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……ヌールさんには、画面越しでも見えている）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_ask_noor",
+      "comment": "問いかけと答え。keep=向き合うと約束して引き止める / excuse=言い訳で引き止める / end=受け入れて友達に戻る",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……だからね。友達に、戻らない？"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "友達なら、時差を数えなくていい。……私、数えるの、疲れちゃった"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "これからは、ちゃんと向き合う",
+              "next": "keep"
+            },
+            {
+              "text": "「忙しかった」と言う",
+              "next": "excuse"
+            },
+            {
+              "text": "「……わかった」と答える",
+              "next": "end"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "keep": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "ごめんなさい。さみしい思いをさせました。これからは、ちゃんと時間を作ります"
+          },
+          {
+            "speaker": "noor",
+            "face": "surprise",
+            "text": "……ほんとに？"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "……じゃあ、もう一回だけ。次に黙ったら、夜中でもかけるからね"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_keep"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "画面の端で、ヌールさんが目元を手の甲でこすった。それから、いつもの顔で笑った。"
+          }
+        ],
+        "excuse": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……忙しかったんです。店のことで、手いっぱいで"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "……知ってる。ハジメの後ろ、いつも散らかってるもん"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "もう少しだけ待つ。でも、さみしいのは、まだ残ってるからね"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_excuse"
+          }
+        ],
+        "end": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……わかりました。ごめんなさい、ヌールさん"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "……うん、……分かった"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "友達のガイドに戻るね。ドバイに来たら、砂丘はちゃんと案内するから"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_end"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "画面が暗くなる前に、ヌールさんは小さく手を振った。いつもより、ずっと小さく。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "strain_reunion_noor",
+      "comment": "やり直し（復縁）・ヌール。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（テレビ電話。再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "テレビ電話をかけると、ヌールさんは店のエプロンのまま出た。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "ヌールさん。もう一度、付き合ってほしいです"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……え？　今、なんて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、さみしい思いをさせました。今度は、ちゃんと向き合います"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……日本の時計、ホームから消せなかったの。友達に戻ってからも"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "条件、ひとつ。黙る時は、先に「黙る」って言うこと"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "分かりました。約束します"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "……よし、合格。また、よろしくね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面の向こうで、ヌールさんがスマホの時計を指で二回叩いた。"
         }
       ]
     }

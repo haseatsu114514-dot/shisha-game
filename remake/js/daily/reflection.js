@@ -1,6 +1,6 @@
 // 内省（SPEC 第2版 2.8）: 参拝の場所で静かに振り返ると、学んだことが火になる。盤で火種を灯せるのはこの時だけ。
 // 時間を使わない（行動の回数も体力も減らない）。大会前夜に火種が残っていれば、強制の場面で盤を開く。
-import { state, save } from "../core/state.js";
+import { state, save, timeOfDay } from "../core/state.js";
 import { play } from "../vn/engine.js";
 import { growthEnabled, growthView, openGrowthBoard } from "../core/growth.js";
 import { hasUsableHidane } from "../core/growth-board.js";
@@ -9,7 +9,7 @@ import { openingStatus, MOSQUE_VISITING_HOURS } from "./spot-hours.js";
 
 /** 場所ごとの場面と背景。新設の弁天堂・モスクの背景は画像が届くまで近い背景で代える */
 export const REFLECT_PLACES = {
-  kannon: { scene: "reflect_kannon", bg: "res://assets/backgrounds/bg_kannon_night.png", label: "観音堂" },
+  kannon: { scene: "reflect_kannon", bg: "bg_kannon", label: "観音堂" },
   // 東京は公園の池に浮かぶ弁天堂（IR26・SBD98）。昼夜で bg_tokyo_benten_{day,night} に切り替わる。id の tokyo_shrine は仮置きの「路地裏の神社」の時のまま（互換）
   tokyo_shrine: { scene: "reflect_tokyo_shrine", bg: "bg_tokyo_benten", label: "池の弁天堂" },
   dubai_mosque: { scene: "reflect_dubai_mosque", bg: "res://assets/backgrounds/bg_dubai_map_dusk.png", label: "見学できるモスク", ...MOSQUE_VISITING_HOURS },
@@ -21,6 +21,46 @@ export const REFLECT_PLACES = {
 export const canReflect = (s = state) => !!s && growthEnabled() && hasUsableHidane(growthView(s), s); // 地図を描くだけで成長データを作らない
 /** その場所で振り返れるか。観音堂だけは、最初の火種をまだ渡していなければ火種が0でも開ける（はじめての案内・growth-board-tutorial.js） */
 export const canReflectAt = (place, s = state) => canReflect(s) || (place === "kannon" && !!s && growthEnabled() && starterPending(s));
+
+/** 観音堂は残り火種に関係なく盤だけ。地図からは開く／戻る、DAY3の本筋ではそのまま盤を開く。 */
+export async function visitKannondo({ direct = false, onExit = null } = {}) {
+  const owner = state;
+  if (!owner || !growthEnabled()) return false;
+  const { chapter, day, slot, phase } = owner;
+  const current = () => state === owner && growthEnabled()
+    && owner.chapter === chapter && owner.day === day && owner.slot === slot && owner.phase === phase;
+  const { bg, label } = REFLECT_PLACES.kannon;
+  // 初回の強制移動は、導入会話の背景切り替えに任せて二度切り替えない。
+  if (!direct || owner.flags._kannon_growth_intro_done) {
+    const { sceneBg } = await import("../core/data.js");
+    const { setBg, dropRetired } = await import("../core/ui.js");
+    if (!current()) return false;
+    const { url, tint } = sceneBg(bg, timeOfDay());
+    await setBg(url, { tint, fast: true });
+    if (!current()) return false;
+    dropRetired();
+  }
+  if (!direct) {
+    const { modal } = await import("../core/ui.js");
+    if (!current()) return false;
+    const go = await modal({ title: label, className: "kannondo-dialog", body: "火種を心得の盤に灯せる。時間も体力も使わない。", options: [
+      { label: "盤を開く", value: true, primary: true, test: "kannon-reflect" },
+      { label: "戻る", value: false, test: "kannon-back" },
+    ] });
+    if (!go || !current()) return false;
+  }
+  if (!owner.flags._kannon_growth_intro_done) {
+    const id = "kannon_growth_intro";
+    const result = await play(id, { bg });
+    if (!current() || result?.cancelled || result?.id !== id || !result.visited?.includes(id)) return false;
+    owner.flags._kannon_growth_intro_done = true;
+    save();
+  }
+  const lit = await openGrowthBoard({ place: "kannon", onExit: onExit && (() => { if (current()) onExit(); }) });
+  if (!current() || lit === null) return false;
+  save();
+  return true;
+}
 
 /**
  * 大会前夜の内省の導入。地元の観音堂へは帰宅（または前夜の早寝）のあとに出かけ直すので、その流れに合わせる（#2775）。

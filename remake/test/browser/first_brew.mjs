@@ -123,8 +123,8 @@ await suite("first-brew", async check => {
   await check("holes-and-steam-help", async page => {
     await init(page);
     await page.evaluate(async () => { await T.open(); window.running = T.holes.runHoles(cs); });
-    await page.locator('.bench-demo-skip').click();
-    await page.locator('.bench-demo-sheet').waitFor({ state: 'detached' });
+    await page.locator('[data-test="hole-start"]').waitFor();
+    assert.equal(await page.locator('.bench-demo-sheet').count(), 0, "穴あけのお手本は廃止（#3815）");
     await page.locator('[data-test="hole-start"]').click();
     await page.waitForTimeout(3500); await guide(page).click(); await page.waitForTimeout(100);
     const hole = await page.locator(".foil-target-plane > .foil-cursor").getAttribute("style");
@@ -174,6 +174,60 @@ await suite("first-brew", async check => {
     await page.waitForFunction(heart => document.querySelector('.dodge-heart').style.transform !== heart, before.heart);
     await page.keyboard.up("ArrowRight");
   });
+
+  for (const touch of [false, true]) await check(`onboarding-warmup-${touch ? "touch" : "pc"}`, async page => {
+    await init(page);
+    await page.evaluate(async () => {
+      await T.open();
+      cs.onboarding = true;
+      window.running = T.holes.runHoles(cs);
+    });
+    await page.locator('[data-test="hole-start"]').click();
+    const holeStart = page.locator('[data-test="hole-warmup-start"]');
+    await holeStart.waitFor();
+    const holes = page.locator(".foil-holes .foil-hole");
+    if (touch) await page.locator('[data-test="hole-punch"]').tap();
+    else {
+      await page.keyboard.down("Space");
+      await page.waitForTimeout(220);
+      await page.keyboard.up("Space");
+    }
+    await holes.first().waitFor();
+    assert.equal(await page.locator(".countdown").count(), 0);
+    assert.equal(await page.evaluate(() => cs.holes == null), true);
+    await shot(page, `onboarding-holes-${touch ? "touch" : "pc"}`);
+    await holeStart.click();
+    await page.locator(".countdown").waitFor();
+    assert.equal(await holes.count(), 0, "Warm-up holes must be cleared before scoring starts");
+    await page.locator(".countdown").waitFor({ state: "detached" });
+    await page.evaluate(async () => {
+      await T.open();
+      cs.onboarding = true;
+      cs.mix = { lemon: 9, mint: 3 };
+      cs.steamSeconds = 300;
+      window.running = T.steam.runSteamDodge(cs);
+    });
+    await page.locator('.bench-guide[open] [data-test="bench-guide-close"]').click();
+    const steamStart = page.locator('[data-test="steam-warmup-start"]');
+    await steamStart.waitFor();
+    const heart = page.locator(".dodge-heart");
+    const center = await heart.getAttribute("style");
+    if (touch) {
+      const box = await page.locator('[data-test="dodge"]').boundingBox();
+      await page.touchscreen.tap(box.x + box.width * .75, box.y + box.height * .7);
+    } else {
+      await page.keyboard.down("ArrowRight");
+      await page.waitForTimeout(200);
+      await page.keyboard.up("ArrowRight");
+    }
+    assert.notEqual(await heart.getAttribute("style"), center);
+    assert.equal(await page.locator(".dodge-word, .dodge-object, .countdown").count(), 0);
+    await shot(page, `onboarding-steam-${touch ? "touch" : "pc"}`);
+    await steamStart.click();
+    await page.locator(".countdown").waitFor();
+    assert.equal(await heart.getAttribute("style"), center, "Warm-up movement must not change the starting position");
+    assert.equal(await page.evaluate(() => cs.steam == null), true);
+  }, touch ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
 
   await check("care-help-and-draw", async page => {
     await init(page);
@@ -226,8 +280,28 @@ await suite("first-brew", async check => {
       assert.equal(actual.stock, stock, "店の支給葉は手持ちを消費しない");
       assert(actual.trace.some(l => /サッパリ/.test(l.text)), "注文が先に提示される");
       assert(actual.trace.some(l => l.id === "ch1_tutorial_oneesan" && l.text.includes(expected)), "実配合への感想がある");
+      // #3987: 注文時に言った「ミントは好き」を、ミントを入れなかった一台の感想でも拾う
+      assert.equal(actual.trace.some(l => l.id === "ch1_tutorial_oneesan" && /ミントは、また今度/.test(l.text)), flavor !== "mint" && mint === 0,
+        "ミントを入れなかった時だけ、次はミントもと返す");
     }, flavor === "orange" ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
   }
+
+  // #3987: 実配合ごとの感想の分岐。ミント抜き（レモン・オレンジ）だけが、注文時のミントの好みに触れる
+  await check("first-customer-mint-preference", async page => {
+    await init(page);
+    const rows = await page.evaluate(async () => {
+      const { DB } = await import("./js/core/data.js");
+      const branches = DB.dialogues.remake_first_brew_response.branches;
+      return [{ lemon: 12 }, { orange: 12 }, { lemon: 6, orange: 6 }, { lemon: 9, mint: 3 }, { orange: 9, mint: 3 }, { mint: 12 }].map(mix => {
+        const key = T.first.firstBrewResponse(mix);
+        return { mix, key, texts: (branches[key] || []).map(l => l.text) };
+      });
+    });
+    for (const { mix, key, texts } of rows) {
+      assert(texts.length, `${key} の感想がある`);
+      assert.equal(texts.some(t => /ミントは、また今度/.test(t)), !mix.mint, `${JSON.stringify(mix)}: ミント抜きの時だけ次はミントもと返す`);
+    }
+  });
 
   await check("loss-boundary-save-and-assist", async page => {
     await init(page);
@@ -252,9 +326,12 @@ await suite("first-brew", async check => {
     const windows = await page.evaluate(async () => {
       const { skill } = await import("./js/craft/common.js"); const cs = T.session.newSession("tournament");
       const ordinary = { slow: skill.slow(cs), window: skill.window(cs) }; cs.retryAssist = true;
-      return { ordinary, easier: { slow: skill.slow(cs), window: skill.window(cs) }, stats: T.core.state.stats };
+      const easier = { slow: skill.slow(cs), window: skill.window(cs) }; cs.retryAssistLevel = 2;
+      return { ordinary, easier, easiest: { slow: skill.slow(cs), window: skill.window(cs) }, stats: T.core.state.stats };
     });
     assert(windows.easier.slow > windows.ordinary.slow && windows.easier.window > windows.ordinary.window);
+    // 6敗で選べるベリーイージー（WIN13）は、イージーより、さらに針が遅く判定が広い。
+    assert(windows.easiest.slow > windows.easier.slow && windows.easiest.window > windows.easier.window);
   });
 
   await check("third-recorded-loss-continue-retry", async page => {
@@ -286,7 +363,7 @@ await suite("first-brew", async check => {
     await shot(page, "continue-assist-question");
     await page.locator('[data-test="retry-assist-yes"]').click();
     await page.locator('.bench[data-mode="tournament"]').waitFor({ timeout: 45000 });
-    assert.match(await page.locator(".bench-mode").innerText(), /今回のみ操作補助/);
+    assert.match(await page.locator(".bench-mode").innerText(), /今回のみイージー/);
     assert.equal(await page.evaluate(() => T.core.state.tournament.retryAssist), true);
     await shot(page, "assisted-tournament");
   });

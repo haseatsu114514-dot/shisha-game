@@ -369,7 +369,9 @@ export async function playFinale(id, { bg = null, deferSave = false, signal = nu
   const result = await play(script, { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal, growthScene: true });
   if (state !== owner || (!result || result.cancelled) || signal?.aborted) return false;
   const route = isLover(id) ? "lover" : romanceChosen(id) ? "romance" : "friend";
-  if (!state.owned.includes(def.gift)) await giftOpen(def.gift); // 箱がほどけて専用ハガルが出てくる（受け取りの通知はこの後）
+  // 箱がほどけて専用ハガルが出てくる（受け取りの通知はこの後）。2周目以降は前の周回から持っていても、
+  // この周の締めくくりとして箱を開ける（専用ハガルは周回で引き継ぐ・NGC01。所持は二重にしない）
+  if (!state.owned.includes(def.gift) || (state.cycle || 1) > 1) await giftOpen(def.gift);
   if (state !== owner || signal?.aborted) return false;
   state.finales ||= {};
   state.finales[id] = { day: state.day, chapter: state.chapter, route };

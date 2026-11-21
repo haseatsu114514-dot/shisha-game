@@ -1,6 +1,6 @@
 // 効果音の試聴ページ（audio-preview.html）。新しく入れた録音と、前の合成音を聴き比べる。
 // 音はゲーム本編と同じ core/audio.js をそのまま鳴らす。出典は asset_sources/music/main-se-20261111/。
-import { SE, SYNTH_SE, unlockAudio, preloadSe, applyVolumes, playBgm, stopBgm } from "./core/audio.js";
+import { SE, SYNTH_SE, unlockAudio, preloadSe, applyVolumes, playBgm, stopBgm, recordedSeFiles } from "./core/audio.js";
 import { config } from "./core/state.js";
 
 // now: 今ゲームで鳴る音。before: 前に鳴っていた音（null は「前は無音」）。
@@ -48,11 +48,10 @@ export const BGM_PREVIEW_ROWS = [
 
 const list = document.getElementById("list"), status = document.getElementById("status");
 let ready = null;
+const legacySeVolume = Math.max(Number(config.seVolume) || 0, 0.7);
 function unlock() {
   if (ready) return ready;
-  config.mute = false; delete config.muted;
-  config.seVolume = Math.max(Number(config.seVolume) || 0, .7); // このページの中だけ。設定は保存しない
-  unlockAudio(); applyVolumes();
+  unlockAudio();
   status.textContent = "録音を読み込んでいます…";
   ready = preloadSe().then(ok => {
     status.textContent = ok ? "録音を読み込みました。「今の音」は録音で鳴ります。"
@@ -67,8 +66,217 @@ const make = (tag, props = {}, children = []) => {
   node.append(...children);
   return node;
 };
+const recorded = recordedSeFiles();
+const auditionGroups = [
+  {
+    title: "第1章のタイトルコール",
+    current: [{ label: "今の短いジングル", file: recorded.jingle[0] }],
+    candidates: [
+      { label: "A 明るいファンファーレ", file: "trpg/jingle_success.wav" },
+      { label: "B 終演のジングル", file: "trpg/jingle_ending.wav" },
+      { label: "C 力強い一撃", file: "axe_throw/killshot.wav" },
+    ],
+  },
+  {
+    title: "登場カットイン",
+    current: [
+      { label: "鋭く入る（判の音）", synth: SE.stamp },
+      { label: "静かに切り替わる（打撃）", synth: SE.hit },
+      { label: "弾んで入る（選択音2回）", file: recorded.select[0], repeatAfter: 0.12 },
+      { label: "静かに浮かぶ（無音）" },
+      { label: "旧絵柄・動き軽減（選択音）", file: recorded.select[0] },
+    ],
+    candidates: [
+      { label: "A 重い判の音", file: "camel_race/stamp_drop.wav" },
+      { label: "B 短い打撃", file: "axe_throw/hit_1.wav" },
+      { label: "C やわらかい風切り", file: recorded.whoosh[0] },
+      { label: "D 勢いのある風切り", file: "camel_race/overtake_whoosh.wav" },
+    ],
+  },
+  {
+    title: "ロード完了",
+    current: [{ label: "今の演出（無音）" }],
+    candidates: [
+      { label: "A セーブ完了音", file: recorded.save[0] },
+      { label: "B 入手のチャイム", file: recorded.get[0] },
+      { label: "C やわらかいベル", file: recorded.affinity[0] },
+    ],
+  },
+];
+
+const auditionList = document.getElementById("audition-list");
+const auditionStatus = document.getElementById("audition-status");
+const auditionStop = document.getElementById("audition-stop");
+const players = [];
+const auditionBuffers = new Map();
+let auditionContext, audition, seTailUntil = 0, previewRequest = 0;
+
+function coreSeVolume(volume) {
+  config.mute = false;
+  delete config.muted;
+  config.seVolume = volume;
+  applyVolumes();
+}
+
+function stopAudition(message = "") {
+  previewRequest++;
+  if (audition) {
+    audition.sources.forEach(source => { source.stop(); source.disconnect(); });
+    audition.volume?.disconnect();
+    clearTimeout(audition.timer);
+    if (audition.synth) coreSeVolume(0);
+    audition.button.setAttribute("aria-pressed", "false");
+    audition = null;
+    auditionStop.disabled = true;
+    auditionStatus.textContent = message;
+  }
+  return previewRequest;
+}
+
+function stopPacked() {
+  stopBgm(0);
+  const button = document.querySelector("#bgm-list button[data-playing='1']");
+  if (button) {
+    button.dataset.playing = "";
+    button.textContent = "再生";
+  }
+}
+
+function stopPreviewBgm() {
+  players.forEach(player => player.pause());
+  stopPacked();
+}
+
+// 無音に近い余韻を除いた RMS を近づけ、ピークと増幅率に上限を設ける。
+function recordingGain(buffer) {
+  const channels = Array.from({ length: buffer.numberOfChannels }, (_, index) => buffer.getChannelData(index));
+  let peak = 0, squared = 0, count = 0;
+  for (const samples of channels) for (const sample of samples) peak = Math.max(peak, Math.abs(sample));
+  if (!peak) return 1;
+  for (const samples of channels) for (const sample of samples) {
+    if (Math.abs(sample) < peak * 0.032) continue;
+    squared += sample * sample;
+    count++;
+  }
+  return Math.min(2.5, 0.135 / Math.sqrt(squared / count), 0.75 / peak);
+}
+
+function loadAudition(file) {
+  if (!auditionBuffers.has(file)) {
+    const url = new URL(`../../assets/audio/se/${file}`, import.meta.url);
+    const loading = fetch(url).then(response => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.arrayBuffer();
+    }).then(data => auditionContext.decodeAudioData(data)).then(buffer => ({
+      buffer,
+      gain: recordingGain(buffer),
+    })).catch(error => {
+      auditionBuffers.delete(file);
+      throw error;
+    });
+    auditionBuffers.set(file, loading);
+  }
+  return auditionBuffers.get(file);
+}
+
+function waitForCoreTail() {
+  const remaining = seTailUntil - performance.now();
+  return remaining > 0 ? new Promise(resolve => setTimeout(resolve, remaining)) : Promise.resolve();
+}
+
+async function playAudition(group, sample, button) {
+  const wasPlaying = audition?.button === button;
+  const request = stopAudition("試聴を停止しました。");
+  stopPreviewBgm();
+  coreSeVolume(0);
+  if (wasPlaying) return;
+  if (!sample.file && !sample.synth) {
+    auditionStatus.textContent = `${group.title} — ${sample.label}`;
+    return;
+  }
+
+  const active = { button, sources: [], timer: null, synth: false };
+  audition = active;
+  auditionStop.disabled = false;
+  button.setAttribute("aria-pressed", "true");
+  const label = `${group.title} — ${sample.label}`;
+  auditionStatus.textContent = `読み込み中 — ${label}`;
+  const finish = () => {
+    if (audition === active) stopAudition(`再生終了 — ${label}`);
+  };
+  try {
+    if (sample.synth) {
+      unlockAudio();
+      await waitForCoreTail();
+      if (request !== previewRequest) return;
+      active.synth = true;
+      coreSeVolume(0.7);
+      sample.synth();
+      seTailUntil = performance.now() + 230;
+      active.timer = setTimeout(finish, 230);
+    } else {
+      const Context = window.AudioContext || window.webkitAudioContext;
+      if (!Context) throw new Error("Web Audio unavailable");
+      auditionContext ||= new Context();
+      await auditionContext.resume();
+      const { buffer, gain } = await loadAudition(sample.file);
+      if (request !== previewRequest) return;
+      const volume = auditionContext.createGain();
+      active.volume = volume;
+      volume.gain.value = sample.repeatAfter && buffer.duration > sample.repeatAfter ? gain / 2 : gain;
+      volume.connect(auditionContext.destination);
+      const at = auditionContext.currentTime;
+      for (const delay of sample.repeatAfter ? [0, sample.repeatAfter] : [0]) {
+        const source = auditionContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(volume);
+        active.sources.push(source);
+        source.start(at + delay);
+      }
+      active.sources.at(-1).onended = finish;
+    }
+    auditionStatus.textContent = `再生中 — ${label}`;
+  } catch {
+    if (request === previewRequest) stopAudition(`再生できませんでした — ${label}。もう一度押してください。`);
+  }
+}
+
+for (const group of auditionGroups) {
+  const choices = (label, samples, current = false) => make("fieldset", {}, [
+    make("legend", { textContent: label }),
+    make("div", { className: "buttons" }, samples.map(sample => {
+      const button = make("button", { type: "button", textContent: sample.label, className: current ? "old" : "" });
+      if (sample.file || sample.synth) button.setAttribute("aria-pressed", "false");
+      button.addEventListener("click", () => void playAudition(group, sample, button));
+      return button;
+    })),
+  ]);
+  auditionList.append(make("section", { className: "row audition" }, [
+    make("h3", { textContent: group.title }),
+    choices("今の音", group.current, true),
+    choices("候補", group.candidates),
+  ]));
+}
+
+auditionStop.addEventListener("click", () => stopAudition("試聴を停止しました。"));
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) stopAudition("試聴を停止しました。");
+});
+
 for (const [index, row] of AUDIO_PREVIEW_ROWS.entries()) {
-  const play = fn => async () => { await unlock(); fn(); };
+  const play = fn => async () => {
+    const request = stopAudition();
+    const wasLoaded = await unlock();
+    await waitForCoreTail();
+    if (request !== previewRequest) return;
+    coreSeVolume(legacySeVolume);
+    fn();
+    // 元の合成音は再生後に取り消せない。次の合成音を鳴らす前に余韻を待つ。
+    const crowd = index === 0 || index === AUDIO_PREVIEW_ROWS.length - 1;
+    if (fn === row.before || !wasLoaded || index === AUDIO_PREVIEW_ROWS.length - 1) {
+      seTailUntil = performance.now() + (crowd ? 2600 : 900);
+    }
+  };
   list.append(make("section", { className: "row" }, [
     make("div", {}, [
       make("h2", { textContent: row.name }),
@@ -85,8 +293,6 @@ for (const [index, row] of AUDIO_PREVIEW_ROWS.entries()) {
 }
 
 const bgmList = document.getElementById("bgm-list");
-const players = [];
-const stopPacked = () => stopBgm(0);
 for (const [index, row] of BGM_PREVIEW_ROWS.entries()) {
   const info = [
     make("h2", { textContent: row.name }),
@@ -98,9 +304,11 @@ for (const [index, row] of BGM_PREVIEW_ROWS.entries()) {
   if (row.key) {
     const button = make("button", { type: "button", textContent: "再生", id: `bgm-${index}` });
     button.addEventListener("click", async () => {
+      const request = stopAudition();
       await unlock();
+      if (request !== previewRequest) return;
       for (const other of players) other.pause();
-      if (button.dataset.playing === "1") { stopPacked(); button.dataset.playing = ""; button.textContent = "再生"; return; }
+      if (button.dataset.playing === "1") { stopPacked(); return; }
       playBgm(row.key);
       button.dataset.playing = "1"; button.textContent = "停止";
     });
@@ -108,9 +316,8 @@ for (const [index, row] of BGM_PREVIEW_ROWS.entries()) {
   } else {
     const player = make("audio", { controls: true, preload: "none", src: `../assets/audio/bgm/${row.file}`, id: `bgm-${index}` });
     player.addEventListener("play", () => {
+      stopAudition();
       stopPacked();
-      const packedBtn = document.querySelector("#bgm-list button[data-playing='1']");
-      if (packedBtn) { packedBtn.dataset.playing = ""; packedBtn.textContent = "再生"; }
       for (const other of players) if (other !== player) other.pause();
     });
     players.push(player);

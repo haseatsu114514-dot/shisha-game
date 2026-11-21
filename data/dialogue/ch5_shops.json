@@ -192,6 +192,47 @@
       ]
     },
     {
+      "dialogue_id": "ch5_ageha_lover_two_hands",
+      "comment": "恋人のあげはの店の一度きりの場面 1/2（#4010）。恋人のあげはの時だけ、第5章の柚ヶ谷の MELTY PUFF で読む（chapters/ch5-shops.js の extras。lover: ageha）。ほかの恋人の第3章の東京の合流（ch3_visit_*_meetup・_date）に当たる場面で、あげはは第4章から恋人になるので第5章の地元に置いた。「震える日」（lover_ageha_lv3・lv5）は、はじめが知っている前提で話す。報酬の行は書かない（代金・体力・好感度は来店の精算）。 震える日の営業中、あげはがはじめをカウンターの内側に呼び、フォイルだけ張ってもらう。二人で作った一台に、客が「今日の、おいしい」と言う。「二人で作ったの、内緒ね」。",
+      "metadata": { "private_scene": true },
+      "lines": [
+        { "speaker": "", "face": "", "text": "MELTY PUFFのカウンターの向こうで、あげはが小さく手招きした。" },
+        { "speaker": "ageha", "face": "normal", "text": "ハジメっち、ちょい、こっち、……内側" },
+        { "speaker": "hajime", "face": "surprise", "text": "内側って、カウンターの？" },
+        { "speaker": "ageha", "face": "normal", "text": "今日、震える日。フォイルだけ、張ってほしいの。そこから先は、うちがやる" },
+        { "speaker": "", "face": "", "text": "ボウルを受け取って、フォイルを張った。張り終えると、あげはが指で縁を一周なぞって確かめる。" },
+        { "speaker": "ageha", "face": "smile", "text": "……きれいじゃん。ハジメっちの張り方、端がぴしっとしてる" },
+        { "speaker": "", "face": "", "text": "あげはは穴をあけ、炭を置いた。指は細かく揺れていたけれど、置く位置は迷わなかった。" },
+        { "speaker": "", "face": "", "text": "できた一台を、窓ぎわの常連の席へ運ぶ。しばらくして、客がカウンターへ顔を向けた。" },
+        { "speaker": "", "face": "", "text": "「あげはちゃん、今日の、おいしい」" },
+        { "speaker": "ageha", "face": "smile", "text": "でしょ！　今日のは、とくべつ" },
+        { "speaker": "", "face": "", "text": "客が席に戻ると、あげはは俺の袖を、カウンターの陰で引いた。" },
+        { "speaker": "ageha", "face": "normal", "text": "……二人で作ったの、内緒ね。うちの店、うちの手で回してることになってるから" },
+        { "speaker": "hajime", "face": "smile", "text": "言わないよ。フォイル係は、裏方だから" },
+        { "speaker": "ageha", "face": "smile", "text": "裏方、最強、……震える日、また頼むかも" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_ageha_lover_closing",
+      "comment": "恋人のあげはの店の一度きりの場面 2/2（#4010）。恋人のあげはの時だけ、第5章の柚ヶ谷の MELTY PUFF で読む（chapters/ch5-shops.js の extras。lover: ageha）。ほかの恋人の第3章の東京の合流（ch3_visit_*_meetup・_date）に当たる場面で、あげはは第4章から恋人になるので第5章の地元に置いた。「震える日」（lover_ageha_lv3・lv5）は、はじめが知っている前提で話す。報酬の行は書かない（代金・体力・好感度は来店の精算）。 ch5_ageha_lover_two_hands の後の来店。閉店後、カウンターの内側に二つ目の丸椅子が置いてある。内側は、これまであげはだけの場所だった。「震えない日も、ここ座ってていいから」。ほかの恋人・修羅場・大会には触れない。",
+      "metadata": { "private_scene": true },
+      "lines": [
+        { "speaker": "", "face": "", "text": "閉店後のMELTY PUFF。灯りを半分落とした店の、カウンターの内側に、丸椅子が二つ並んでいた。" },
+        { "speaker": "hajime", "face": "normal", "text": "椅子、増えてる" },
+        { "speaker": "ageha", "face": "normal", "text": "増やした。……内側の椅子、ずっと一個だったんだよね" },
+        { "speaker": "ageha", "face": "normal", "text": "店始めた時に決めたの。カウンターの中は、うちだけ。震えても、誰にも見られないように" },
+        { "speaker": "", "face": "", "text": "あげはは、片方の丸椅子を足で少しだけ引いた。" },
+        { "speaker": "ageha", "face": "smile", "text": "でも、こないだフォイル張ってもらって、思った。……見られても、べつにいっか、って" },
+        { "speaker": "hajime", "face": "normal", "text": "座っていいの？" },
+        { "speaker": "ageha", "face": "smile", "text": "座って。ここ、ハジメっちの席。客席じゃないほう" },
+        { "speaker": "", "face": "", "text": "並んで座ると、カウンターの向こうの、誰もいない客席がよく見えた。" },
+        { "speaker": "ageha", "face": "normal", "text": "震える日だけじゃなくて、震えない日も、ここ座ってていいから" },
+        { "speaker": "hajime", "face": "smile", "text": "じゃあ、毎回ここに座る" },
+        { "speaker": "ageha", "face": "smile", "text": "毎回は、客の時もあって。……うちの一台、外から吸ってほしい日もあるし" },
+        { "speaker": "", "face": "", "text": "あげはは笑って、二つの丸椅子の脚を、そっと揃えた。" }
+      ]
+    },
+    {
       "dialogue_id": "ch5_adam_shop",
       "comment": "第5章の一度だけの会話（N3・chapters/ch5-first-talks.js）。EDENの最初の来店は任意場面 ch5_free_eden_adam（二つのダブルアップル）なので、その次の来店で読む。世界大会の後・博士との勝負の前。葉の今日に加えて、吸う客の今日にも合わせるようになったアダム（characters.json の growth_stats）。札は表向きの品書きで、勧めるのは結局ダブルアップル（EDENの営業設定）。",
       "lines": [

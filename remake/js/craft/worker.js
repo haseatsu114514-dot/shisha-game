@@ -1,15 +1,24 @@
 // 工程に応じた人物・手元を既存の台へ重ねる。実入力の穴あけと吸引中の泡を表示する。
 import { el } from "../core/util.js";
 import { bgUrl, makingUrl, portraitInfo } from "../core/data.js";
-import { timeOfDay } from "../core/state.js";
+import { state, timeOfDay } from "../core/state.js";
+import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { artImg, artHeight } from "./art.js";
 import { buildWorkerActions, workerSceneKey, readyWorkerImage } from "./worker-scenes.js";
 import { buildWorkerHoles } from "./worker-holes.js";
 import { imageReady } from "../core/ui.js";
 import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 
-/** 作業台の背景（店仕事の指定を優先。既定は大会＝会場、家＝自宅、それ以外＝tonari） */
-export const benchBgRef = (cs) => cs?.venueBg || (cs?.mode === "tournament" ? "bg_tournament_stage" : cs?.venue === "home" ? "bg_home" : "bg_tonari_inside");
+/** 作業台の背景。店仕事の明示指定を優先し、大会は保存された制作の章に合わせる。 */
+export function benchBgRef(cs) {
+  if (cs?.venueBg) return cs.venueBg;
+  if (cs?.mode === "tournament") {
+    // 制作に章番号がない旧セーブも、再開した章の会場に戻す。
+    const chapter = cs.chapter ?? state?.chapter;
+    return TOURNAMENT_VENUE_BG[chapter] ?? TOURNAMENT_VENUE_BG[1];
+  }
+  return cs?.venue === "home" ? "bg_home" : "bg_tonari_inside";
+}
 /** 作業風景の左上の場所の札 */
 export const benchPlaceTag = (cs) => cs?.venueLabel || (cs?.mode === "tournament" ? cs.eventTitle || "SMOKE CROWN CUP" : cs?.venue === "home" ? "HOME" : "TONARI");
 

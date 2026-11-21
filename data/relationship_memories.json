@@ -64,13 +64,13 @@
       "id": "minto_faces",
       "char_id": "minto",
       "dialogue_id": "ch1_minto_fifth",
-      "echo": "（店で笑うみんとも、二人でお茶するみんとも、彼女だった）"
+      "echo": "（店で笑うみんとも、二人でお茶する栞さんも、彼女だった）"
     },
     {
       "id": "minto_rest",
       "char_id": "minto",
       "dialogue_id": "ch1_minto_private_1",
-      "echo": "（みんととお茶する時、俺も急いで話さなくなった）"
+      "echo": "（栞さんとお茶する時、俺も急いで話さなくなった）"
     },
     {
       "id": "tsumugi_creature",

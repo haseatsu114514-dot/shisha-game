@@ -1,5 +1,5 @@
 {
-  "comment": "第3・4章の出発前の準備3日（VOL02）に、地元の常連が準備期間の来店で一度だけ話す送り出しの会話（N3a）。第3章は県大会の後に東京へ発つまで、第4章は全国大会の後にドバイへ発つまで。アダム・みんと・凛想は daily/spots.js の CHAPTER_TALKS（prep）、サメちゃんは daily/samechan.js の SAMECHAN_PREP_TALKS が出し、chapters/departure-prep.js が準備期間に読み込む。出発後は出ないので、その章の大会後の分岐は持たない。恋人でも友人でも、ドバイへ同行・別便で応援する恋人でも不自然にならない店の会話にし、同行・見送り・応援には触れない。味覚は第3章では原因を断定せず遠いまま、第4章はダブルアップルの判別（ch3_taste_return）の後の「少し戻った」まで（回復しきったとは書かない）。アダムの第4章は、第5章の ch5_free_eden_adam（#1588）の「分かる日が来たな」を先取りしない（作り手の違いまで分かったら聞かせろ、で止める）。凛想の第4章は、第3章で頼まれた「向こうの顔」の報告を既読の分岐で返す。第4章の出発前は全国大会から日がたっているので、優勝を初耳の知らせとしては扱わない。能力・好感度の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
+  "comment": "第3・4章の出発前の準備3日（VOL02）に、地元の常連が準備期間の来店で一度だけ話す送り出しの会話（N3a）。第3章は県大会の後に東京へ発つまで、第4章は全国大会の後にドバイへ発つまで。アダム・みんと・凛想・つむぎ（tonariの客席）・柚ヶ谷のあげは・神崎・クラウド（#3097 PR-I）は daily/spots.js の CHAPTER_TALKS（prep）、サメちゃんは daily/samechan.js の SAMECHAN_PREP_TALKS、ひより（仕事帰りのtonari）は daily/hiyori.js の HIYORI_PREP_TALKS が出し、chapters/departure-prep.js が準備期間に読み込む。出発後は出ないので、その章の大会後の分岐は持たない。恋人でも友人でも、ドバイへ同行・別便で応援する恋人でも不自然にならない店の会話にし、同行・見送り・応援には触れない。味覚は第3章では原因を断定せず遠いまま、第4章はダブルアップルの判別（ch3_taste_return）の後の「少し戻った」まで（回復しきったとは書かない）。アダムの第4章は、第5章の ch5_free_eden_adam（#1588）の「分かる日が来たな」を先取りしない（作り手の違いまで分かったら聞かせろ、で止める）。凛想の第4章は、第3章で頼まれた「向こうの顔」の報告を既読の分岐で返す。第4章の出発前は全国大会から日がたっているので、優勝を初耳の知らせとしては扱わない。能力・好感度の伸びは来店の処理が付けるので、台本に報酬の文は書かない。#3097 PR-I で足した5人の第4章の分は、章ごとの台詞量をファイル名の章接頭辞で数えるため data/dialogue/ch4_prep_home.json に置く。",
   "dialogues": [
     {
       "dialogue_id": "ch3_prep_adam",
@@ -550,6 +550,355 @@
           "speaker": "",
           "face": "",
           "text": "サメちゃんはうなずいて、コロちゃんの頭を指先で軽くなでた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_prep_tsumugi",
+      "comment": "#3097 PR-I（計画 3-3）。東京へ発つ前の準備3日、tonariの客席の来店で一度だけ（daily/spots.js の CHAPTER_TALKS・visitChar）。窓際の席のつむぎ。味の不調の時期なので味の話はしない。窓側の雲は、第4章のドバイ到着（ch4_tsumugi_dubai_friend「飛行機の窓、ずっと雲でした」）と第4章の送り出しの分岐へつながる。恋愛は進めない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際のいつもの席で、つむぎがタブレットから顔を上げた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。東京、もうすぐですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。あと何日かで、新幹線に乗るよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "席は、もう決めましたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "席？　まだ、何も考えてなかった"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……窓側がいいです。煙はないけど、雲があるので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが画面をこちらへ傾けた。窓枠の中で、煙の尾の猫が雲を見上げている。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……描いてたら、窓の外ばかり見る猫になりました"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "雲も、同じ形では二度と来ません。見てるうちに、着きます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、窓側にする。雲、ちゃんと見ておくよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。私は、ここの煙を描いておきます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎはまた画面に目を落とした。猫の尾の煙が、少しだけ長く伸びた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_prep_hiyori",
+      "comment": "#3097 PR-I（計画 3-3）。東京へ発つ前の準備3日、tonariでの再会（_hiyori_tonari_return_done）の後、夜のtonariの対面（客席・シフト）で一度だけ（daily/hiyori.js の HIYORI_PREP_TALKS・meetHiyoriAtTonari）。客席でもシフト中でも通る書き出し。総務の荷造りの見立て（第4章の送り出しの分岐が受ける）。恋人でも友人でも通る普段の会話で、恋愛は進めない。味の話はしない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端で、仕事帰りのひよりさんが、紅茶の煙を細く吐いていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……はじめくん、東京へ行くんだってね。この街の煙を置いて",
+          "inner": "スミさんに聞いた。というか、聞き出した"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。もうすぐです"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "荷物は？　もう詰めた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "着替えとノートは入れました。あとは、まだ迷ってて"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "保険証、充電器、常備薬。それと、着いた日の晩ごはんの店",
+          "inner": "総務三年目。出張の手配なら、誰にも負けない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "晩ごはんの店まで、ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "着いた日は、知らない店を探す元気なんて残ってないの。経験者は語る"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "あと、充電器は二つね。一つは、必ずどこかで消えるから",
+          "inner": "私の充電器も、先月儚く消えた"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……私の心配も、一緒に詰めていって。かさばらないから",
+          "inner": "今のは決まった。かなり儚かった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。ちゃんと入れていきます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんは満足そうにうなずいて、また紅茶の煙を細く吐いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_prep_ageha",
+      "comment": "#3097 PR-I（計画 3-3）。東京へ発つ前の準備3日、MELTY PUFFの来店で一度だけ（daily/spots.js の CHAPTER_TALKS・chapters/ch2-preparation.js の visitPreparationSpot）。県大会の別れ際の「落ち着いたら、また一台作ろ」「次は、うちの店ね」（ch2_tournament_farewell）を、帰郷の再会 ch3_ageha_reunion（「グミベア、楽しみにしてました」）まで残す。手の震え・前夜の点の話は再会で本人が話すので触れない。味の話はしない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ch2_ageha_entry.webp"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "MELTY PUFFの扉を開けると、あげはがカウンターで、グミベアを色ごとに分けていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "え、ハジメっち？　東京の前に、来てくれたんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "発つ前に、一度顔を出しておきたくて"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "うれし。……でも、約束の一台は、まだね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "県大会の悔しいの、まだちょい残ってんの。うち、落ち着いてから作りたいし"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっちが東京から帰ってくるころが、ちょうどいいっしょ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小皿に、白いグミが一つだけ置かれた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "今日は白いのだけ。赤いのは、帰ってきてから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、赤いのを楽しみにしておきます"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "東京の店でかわいいメニュー見つけたら、写真送って。字の書き方とか見たいし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。見つけたら送ります"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは残りのグミを袋に戻して、口をきゅっと結んだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_prep_kumicho",
+      "comment": "#3097 PR-I（計画 3-3）。東京へ発つ前の準備3日、神崎煙草店の来店で一度だけ（daily/spots.js の CHAPTER_TALKS・chapters/ch2-preparation.js の visitPreparationSpot）。盃の喩えを「映画の話だ」でごまかす癖と、「火の前じゃ、礼儀が先ですわ」。県大会の日に持ち点の表を見ていた話は第5章（ch2_kumicho_after_ch2）まで言わない。素性・味の話には触れない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ch2_kumicho_entry.webp"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎煙草店の暖簾をくぐると、神崎さんが炭の箱を棚へ戻していた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、あんちゃん。東京へ発つって話は、聞いてやすぜ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。荷物をまとめたら、発ちます"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "座んなせえ。門出の一服くらい、出させてもらいやす"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらく待つと、ドラゴンフルーツの一台が組み上がった。ホースが、両手で差し出される。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smug",
+          "text": "旅立つ若い衆には、出立の盃ってのが筋でしてね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……いや、映画の話だ。気にしなさんな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口だけ吸って、ホースを返した。神崎さんは、黙ってうなずいた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "向こうの店に入ったら、まず店主に頭を下げなせえ。火の前じゃ、礼儀が先ですわ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "腕を見せるのは、そのあとでいい。あんちゃんなら、それで通りやす"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。最初に、頭を下げます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは湯呑みの番茶をすすって、目を細めた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_prep_kuraudo",
+      "comment": "#3097 PR-I（計画 3-3）。東京へ発つ前の準備3日、「貴方ノ為ノ此ノ煙。」の来店で一度だけ（daily/spots.js の CHAPTER_TALKS・chapters/ch2-preparation.js の visitPreparationSpot）。第2章で余りチケットを受け取った人（_ch2_kuraudo_ticket）はライブの夜 ch3_prep_kuraudo_live が送り出しを兼ねるので出さない。本名・笑顔の練習・「嘘」・同士の呼び方には触れない。引き出した一枚は第4章の送り出しの分岐でかける。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、クラウドがカウンターで、CDのケースを一枚ずつ拭いていた。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……東京、行くって聞いた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。何日かしたら、発ちます"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "移動、長いだろ。何、聴く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "何も、決めてなかったです"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "長い移動は、アルバムを一枚。頭から終わりまで、飛ばさないで"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "曲の順番には、作った人の考えがある。通して聴くと、それが分かる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一枚通して聴いたこと、あんまりないかもしれません"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "……なら、ちょうどいい。一枚、自分で選んで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドは拭き終えたケースを棚に戻し、別の一枚を少しだけ手前に引き出した。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……これは、帰ってきたらかける。先に、向こうで何を選んだか教えて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。選んだ一枚、覚えておきます"
         }
       ]
     }

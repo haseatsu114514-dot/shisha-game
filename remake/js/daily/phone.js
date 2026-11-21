@@ -14,7 +14,8 @@ import { state } from "../core/state.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
-import { gainAffinity, affinityLevel, applyStats, bond } from "../core/stats.js";
+import { gainAffinity, affinityLevel, AFFINITY_RANK_PTS, applyStats, bond } from "../core/stats.js";
+import { gainExp, growthEnabled } from "../core/growth.js";
 import { SE } from "../core/audio.js";
 import { hooks } from "../vn/engine.js";
 import { formatHtml } from "../vn/text.js";
@@ -62,9 +63,23 @@ function invitationAvailable(m, { fixedNight = () => false } = {}) {
   if (m.time_slot === "night" && fixedNight(state.day)) return false;
   // 誘い（恋人のデート・外出・交友のお誘い）は地元で会う約束。東京・ドバイにいる間は乗れず、帰ってから届く
   // （IR16・#2024）。東京にいる間のムカイさんのシフトの誘いだけは、その街の仕事の連絡なので届く。雑談・噂は止めない
+  // その街で会う約束の誘い（LIME の region がその街。東京のライバルの♥3の外出・#3097 PR-H）も、その街にいる間は届く
   if (m.type === "invitation" && awayFromHome(state)
-    && !(m.accept_event === "__mukai_baito__" && state.flags?._ch2_region === "tokyo")) return false;
+    && !(m.accept_event === "__mukai_baito__" && state.flags?._ch2_region === "tokyo")
+    && !(m.region && m.region === state.flags?._ch2_region)) return false;
   return true;
+}
+
+// 東京の日常ループ（版3）で、本筋の場面が昼の行動を使う日（core/tokyo-clock.js の TOKYO_FREE_TIMES_V3 に昼の空きが無い日。
+// 試験の依存を増やさないため写し）。東京で会う約束の昼の誘いは、この日には届かない。
+const TOKYO_STORY_NOONS = new Set([1, 2, 3, 4, 8, 11, 13]);
+/** 東京の今日の昼が、本筋の場面にも恋人の東京訪問の約束にも使われていない空き時間か（読むだけ）。 */
+function tokyoNoonOpen() {
+  if (state.chapter !== 3 || state.flags?._ch3_intro?.routeVersion !== 3) return false;
+  const day = chapterDay(state), id = `d${day}-noon`;
+  if (day > 13 || TOKYO_STORY_NOONS.has(day)) return false;
+  return !(state.tokyoVisits?.plans || []).some((plan) => plan.status !== "returned"
+    && [plan.meetup, plan.date].some((time) => time?.id === id && time.day === state.day && time.slot === 0));
 }
 
 /** 私的な待ち合わせを配信時に確定。定休日を待つ物語は臨時休暇、仕事後が重なる大事な物語も臨時休暇にする。 */
@@ -241,6 +256,16 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (m.id === "lime_outing_rio_1" && !chapterFeatureEnabled(state.chapter || 1, "rioHomeOuting")) return false;
   // ひよりの♥3の外出（#2025）は第1章の昼だけ。tonariでの再会（スミさんのLIME）の後に届き、夜や締めくくりの前提は増やさない。
   if (m.id === "lime_outing_hiyori_1" && !(chapterFeatureEnabled(state.chapter, "hiyoriHomeOuting") && state.flags._hiyori_tonari_return_done)) return false;
+  // 神崎・クラウドの♥3の外出（#3097）は、場面が前提にする話（神崎の銭湯の紹介・クラウドの最初の「同士」）を読んだ後、
+  // ♥5の締めくくり（呼び方が「兄弟」に変わる・「同士」を「友達」と言い直す）の前にだけ届く。章は LIME の chapter: 2 で絞る。
+  if (m.id === "lime_outing_kumicho_1" && !(state.flags._kumicho_sento_introduced && !state.finales?.kumicho)) return false;
+  if (m.id === "lime_outing_kuraudo_1" && !(state.flags._ch2_read_ch2_kuraudo_second && !state.finales?.kuraudo)) return false;
+  // 綾取・スティーブ・ヴォルクの♥3の外出（#3097 PR-H）は、この周回で LIME を交換した後（交換の場面の既読。持ち越さない印）、
+  // ♥5の締めくくりの前に、東京の昼の空き時間にだけ届く（章と街は LIME の chapter: 3・region: "tokyo"）。日を改めて
+  // 届け直さない（important を付けない）ので、東京の14日の空き時間を誘いで塞がない。届かなかった分は大会後の寄り道で読む
+  // （ch3-aftermath-progress.js）。受けた約束が体調や予定の重なりで流れた時だけ、次の空きに届け直す（rescheduleInvitation）。
+  if (/^lime_outing_(ayatori|steve|volk)_1$/.test(m.id)
+    && !(state.flags[`_ch3_read_ch3_${m.sender}_lime`] && !state.finales?.[m.sender] && tokyoNoonOpen())) return false;
   // 綾取がドバイへ応援に来た保存（SPC22。core/overseas-companion.js の guests）では、東京の煙幕から配信を見る前提の第4章のLIMEは届かない。
   const guests = state.flags?._overseas_companion?.guests;
   if (/^lime_ch4_ayatori_/.test(m.id) && Array.isArray(guests) && guests.includes("ayatori")) return false;
@@ -345,7 +370,6 @@ export function morningMessages(opts = {}) {
 function paceMorning(cands, blocked, inbox) {
   const { softCap, hardCap, backlog, quietDays } = LIME_PACING;
   const history = pacingHistory(inbox);
-  const cap = dayCap(history);
   const out = [];
   const taken = new Set(blocked);
   const groups = new Set();
@@ -366,10 +390,10 @@ function paceMorning(cands, blocked, inbox) {
   const ambientOk = (c, ignoreGap) => history.unread < backlog && (c.wait >= 1 || ignoreGap)
     && !(c.exclusive && (openInvite || out.some(meetInvite))) && !(c.m.replies?.length && out.some(needsReply));
   const tryTake = (c, ignoreGap = false) => {
-    // 朝は softCap 通まで。にぎやかな朝の翌朝（cap が小さい朝）は、必ず届く連絡のほかは cap 通まで。
+    // 朝は softCap 通まで。連日の受信を避けるため、任意の連絡の枠は前日までの受信と連絡の種類で決める。
     // 章の◯日目の連絡だけは、その日を逃すと届かないので、枠が空いていれば届く
     if (counted() >= softCap || out.length >= hardCap || taken.has(c.m.sender)) return false;
-    if (optional >= cap && !c.expiring) return false;
+    if (!c.expiring && optional >= dayCap(history, c.cls)) return false;
     if (c.cls === "ambient") {
       if (!ambientOk(c, ignoreGap) || c.group && groups.has(c.group)) return false;
       // 知り合いの雑談は、友人のLIMEが届けられる朝には出さない（友人が先・LM05）
@@ -429,6 +453,9 @@ function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
   const fixed = chapterFeatureEnabled(state.chapter, "sumiStoryShifts") && (state.day === 3 || state.day === 8);
   const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
   if (!fixed && !slacking) return null;
+  // 急な誘いは、前の依頼から3日以上の間隔を取る。物語の固定の誘いは日付どおりに届ける。
+  if (!fixed && (state.inbox || []).some(item => item.msg?.accept_event === "__sumi_baito__"
+    && state.day - item.day > 0 && state.day - item.day < 3)) return null;
   // #2088: 夜のtonariに外せない予定がある日は「シフトには入れない」と断るので、サボり気味の催促は出さない（翌日以降に再送）。
   // DAY3・DAY8 の固定の誘いは台本の一部なので残す
   if (!fixed && fixedNight?.(state.day)) return null;
@@ -683,7 +710,7 @@ function flushOrClearNotice() {
   queuedNotice = null;
   if (pending.owner === state && pending.chapter === state.chapter) {
     const unread = unreadCount();
-    if (unread > 0) renderNotice(Math.min(pending.count, unread), { onOpen: pending.onOpen });
+    if (unread > 0) renderNotice(Math.min(pending.count, unread), pending);
   }
   if (!hasActivePushNotice()) disconnectNoticeObserver();
 }
@@ -723,31 +750,45 @@ function syncNoticeObserver() {
   }
 }
 
-function renderNotice(count, { onOpen = null } = {}) {
+// 初日のスミさんへの返信だけ、期限を既存の通知に添える。進行や返事は強制しない。
+function dayOneLimeReply() {
+  if (state.chapter !== 1 || state.day !== 1 || state.flags._lime_opened) return null;
+  return state.inbox.find(item => originId(item) === "L21" && item.day === 1 && !item.dayOneHintShown && !item.read && !item.done
+    && item.replyState === "waiting" && !isMissedReply(item));
+}
+
+function renderNotice(count, { onOpen = null, onDayOneHint = null } = {}) {
+  const owner = state;
+  const dayOneReply = onOpen && dayOneLimeReply();
+  const text = dayOneReply ? "スミさんのLIMEは今日中なら返信できます" : `新着メッセージが${count}件あります`;
   const senders = [...new Set(state.inbox.filter((i) => !i.read).map(accountOf))].slice(0, 4);
   const newest = [...state.inbox].reverse().find((i) => !i.read);
   let opened = false;
   const card = el(onOpen ? "button.lime-push" : "div.lime-push", onOpen ? {
     type: "button", dataset: { test: "lime-notice" },
-    "aria-label": "新着メッセージのトークを開く",
+    "aria-label": dayOneReply ? `${text}。トークを開く` : "新着メッセージのトークを開く",
     onclick: () => {
-      if (opened) return;
+      if (opened || state !== owner || !activeNotices.has(card)) return;
       opened = true;
       activeNotices.delete(card);
       card.remove();
       syncNoticeObserver();
-      onOpen(newest ? accountOf(newest) : null);
+      onOpen(dayOneReply ? accountOf(dayOneReply) : newest ? accountOf(newest) : null);
     },
   } : {}, [
     el("div.lp-icon", [el("span", { text: "LIME" })]),
     el("div.lp-body", [
       el("div.lp-top", [el("b", { text: "LIME" }), el("small", { text: "いま" })]),
-      el("div.lp-text", { text: `新着メッセージが${count}件あります` }),
+      el("div.lp-text", { text }),
     ]),
     el("div.lp-faces", senders.map((s) => avatar(s, true))),
   ]);
   activeNotices.add(card);
   layers.toasts.append(card);
+  if (dayOneReply) {
+    dayOneReply.dayOneHintShown = true;
+    onDayOneHint?.();
+  }
   SE.phoneReceive();
   syncNoticeObserver();
   requestAnimationFrame(() => card.classList.add("show"));
@@ -758,28 +799,34 @@ function renderNotice(count, { onOpen = null } = {}) {
       card.remove();
       syncNoticeObserver();
     }, 500);
-  }, 3200);
+  }, dayOneReply ? 5000 : 3200);
 }
 
 /** 朝の通知（スマホのプッシュ通知風）。マップ画面でのみ表示し、会話や他画面ではマップへ戻るまで待機する */
-export function pushNotice(count, { onOpen = null } = {}) {
+export function pushNotice(count, { onOpen = null, onDayOneHint = null, dayOneReminder = false } = {}) {
   if (!count) return;
+  const sameSession = queuedNotice && queuedNotice.owner === state
+    && queuedNotice.chapter === state.chapter && queuedNotice.day === state.day;
+  if (dayOneReminder) {
+    if (!dayOneLimeReply()) return;
+    // 朝の通知が待機中なら再利用。朝を通過済みの旧セーブでも案内を出す。
+    if (sameSession) { flushOrClearNotice(); return; }
+  }
   if (!mapNoticeReady()) {
-    const sameSession = queuedNotice && queuedNotice.owner === state
-      && queuedNotice.chapter === state.chapter && queuedNotice.day === state.day;
     queuedNotice = {
       owner: state,
       chapter: state.chapter,
       day: state.day,
       count: sameSession ? queuedNotice.count + count : count,
       onOpen: onOpen || queuedNotice?.onOpen || null,
+      onDayOneHint: onDayOneHint || (sameSession ? queuedNotice.onDayOneHint : null),
     };
     clearVisibleNotices();
     syncNoticeObserver();
     return;
   }
   queuedNotice = null;
-  renderNotice(count, { onOpen });
+  renderNotice(count, { onOpen, onDayOneHint });
 }
 
 /**
@@ -1000,10 +1047,27 @@ function phoneShell({ time, title }) {
   return ui;
 }
 
+/** 好感度がすでにMAXなら、日常の雑談の好感度を少量のEXPに置き換える。 */
+function settleMaxAffinityChat(item, ui, replied = false) {
+  const m = item.msg;
+  if (m.type !== "chat" || !(m.casual || m.friend) || m.lover || isLover(m.sender) || !growthEnabled()
+    || affinityLevel(m.sender) !== AFFINITY_RANK_PTS.length - 1) return false;
+  // 既読・返信済みの同じ話題があっても、再案内や再表示ではEXPを入れない。
+  const origin = originId(item);
+  if (item.id === origin && !state.inbox.some(other => other !== item && originId(other) === origin
+    && (replied ? other.replyState === "replied" : other.read))) {
+    const got = gainExp(5, { key: "lime_chat", silent: true });
+    if (got > 0) ui.note(`EXP +${got}`); // スマホ内だけに表示し、トーク履歴やHUDには重ねて残さない
+  }
+  return true;
+}
+
 /** 読み終えたときの報酬（返信の無いメッセージ）。噂は洞察、ふつうの連絡は少しだけ好感度 */
-function readReward(m) {
+function readReward(item, ui) {
+  const m = item.msg;
   if (m.type === "rumor") applyStats({ insight: 2 });
   else if (m.type !== "invitation" && !(m.replies && m.replies.length) && m.sender !== "???" && m.sender !== "sumi") {
+    if (settleMaxAffinityChat(item, ui)) return;
     // 恋人の読むだけの連絡（朝のひとこと）は、私的なやりとりとして絆に積もる（LM01: 返事1点ぶん）
     const lover = isLover(m.sender);
     bond.private = lover;
@@ -1056,10 +1120,12 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       if (!alive()) break;
     }
     if (!alive()) return; // 読み終える前に戻ったら、既読・報酬を付けない
-    item.read = true;
-    if (!state.limeRead.includes(m.id)) state.limeRead.push(m.id);
-    syncMintoKnowledge();
-    readReward(m);
+    if (!item.read) {
+      item.read = true;
+      if (!state.limeRead.includes(m.id)) state.limeRead.push(m.id);
+      syncMintoKnowledge();
+      readReward(item, ui);
+    }
   }
   if (!alive()) return;
   if (item.done) {
@@ -1182,17 +1248,19 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     const responseMedia = replyMedia(item, r.response_media);
     if (responseMedia) item.log.push({ me: false, ...responseMedia });
     if (r.response) item.log.push({ me: false, text: r.response });
-    bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
-    try {
-      // 雑談は選んだ返事に応じて1〜2点。0点も尊重し、恋人の絆の倍率は従来どおり。
-      const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
-      gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1), {
-        source: "lime",
-        // 確定した返信だけに添える。履歴には保存せず、再表示では通知しない。
-        onGain: () => ui.note(isLover(m.sender) ? "♡ 心の距離がほんの少し近づいた" : "♡ ほんの少し仲良くなった"),
-      });
-    } finally {
-      bond.private = false;
+    // 雑談は選んだ返事に応じて1〜2点。0点・約束などの返事・恋人の絆は従来どおり。
+    const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
+    if (!(points > 0 && !r.action && settleMaxAffinityChat(item, ui, true))) {
+      bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
+      try {
+        gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1), {
+          source: "lime",
+          // 確定した返信だけに添える。履歴には保存せず、再表示では通知しない。
+          onGain: () => ui.note(isLover(m.sender) ? "♡ 心の距離がほんの少し近づいた" : "♡ ほんの少し仲良くなった"),
+        });
+      } finally {
+        bond.private = false;
+      }
     }
     // 以降は表示のみ。古い画面/セーブの待機処理を新しい画面へ持ち越さない。
     await ui.bubble(r.text, true);
@@ -1446,7 +1514,7 @@ export function limeCoach(onOpen) {
 
 /** 章の旅程相談。既存端末とアカウントを使い、当日招待の失効・報酬処理へ流さない。 */
 export async function openContactLime({ contacts, summary, actions, onAction, signal = null,
-  title = "恋人との連絡", empty = "連絡先を交換した恋人ができると、ここから連絡できます。" }) {
+  title = "恋人との連絡", empty = "連絡先を交換した恋人ができると、ここから連絡できます。", guide = "" }) {
   const owner = state;
   const ui = phoneShell({ time: clockNow(), title: `DAY ${chapterDay(state)}` });
   let resolveClose;
@@ -1461,6 +1529,10 @@ export async function openContactLime({ contacts, summary, actions, onAction, si
     ui.header.replaceChildren(el("span.lime-logo", { text: "LIME" }), el("span.lime-title", { text: title }));
     ui.chat.classList.add("list");
     ui.chat.replaceChildren();
+    if (guide) {
+      ui.chat.append(el("p.lime-tip", { text: guide, dataset: { test: "lime-contact-guide" } }));
+      guide = "";
+    }
     for (const id of contacts()) {
       const account = accountFor(id);
       ui.chat.append(el("button.lime-chat-row", { dataset: { test: `lime-contact-${id}` }, onclick: () => showThread(id) }, [

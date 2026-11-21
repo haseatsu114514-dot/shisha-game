@@ -1,4 +1,4 @@
-// すれ違い（恋人の裏の数値・台帳 STR）: 実際の画面で、朝の予兆（LIMEと、はじめの独り言）・夜の帰り道の別れ話と3つの答え・
+// すれ違い（恋人の裏の数値・台帳 STR）: 実際の画面で、朝の予兆（LIMEと、はじめの独り言）・夜の帰り道の別れ話と3つの答え・遠くの恋人の電話（STR12）・
 // 友達に戻った後の扱い・実際の一日の流れ（朝と夜）へのつながりを確かめる。決まりと台本の検査は remake/test/lover_strain.mjs。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
@@ -108,6 +108,32 @@ await suite("lover-strain", async check => {
     assert(at(result.againRead, "この話、二回目だね") > 0 && at(result.againRead, "ずっと既読がつかないの") > 0, "The second time has its own line and the new reason");
     assert.equal(result.final.strain.minto.talks, 2);
     assert.deepEqual(result.final.lovers, ["minto", "rio"]);
+  });
+
+  // 遠くに住む恋人（STR12）: 帰り道ではなく、夜に電話（ましろ）・テレビ電話（ヌール）がかかってくる。理由と答えは同じ
+  await check("a-faraway-lover-calls-at-night-instead-of-waiting-on-the-street", async page => {
+    await setup(page);
+    const result = await page.evaluate(async () => {
+      const out = {};
+      const s = H.fresh(["noor"], { noor: [10, "unread"] }, { _met_noor: true });
+      s.chapter = 5; s.met.noor = true;
+      out.noor = await H.talk(0); out.noorBeat = H.beat; out.noorRead = H.read(); out.afterNoor = H.snap();
+      const m = H.fresh(["mashiro"], { mashiro: [10, "suspect"] });
+      m.chapter = 5; m.met.mashiro = true;
+      out.mashiro = await H.talk(2); out.mashiroBeat = H.beat; out.mashiroRead = H.read(); out.afterMashiro = H.snap();
+      return out;
+    });
+    assert.equal(result.noor, true);
+    assert.equal(result.noorBeat, "——夜、ヌールさんからテレビ電話がかかってきた。");
+    assert(result.noorRead.some(text => text.includes("LIME、何日も開いてないでしょ")), "Noor names the reason");
+    assert(result.noorRead.some(text => text.includes("友達に、戻らない？")));
+    assert.deepEqual(result.afterNoor.lovers, ["noor"], "Held back: still lovers");
+    assert.equal(result.afterNoor.strain.noor.v, 1);
+    assert.equal(result.mashiro, true);
+    assert.equal(result.mashiroBeat, "——夜、ましろちゃんから電話がかかってきた。");
+    assert(result.mashiroRead.some(text => text.includes("人を試すのは、もうやめたから")), "Mashiro senses it without testing him");
+    assert.deepEqual(result.afterMashiro.lovers, [], "Accepted: back to friends");
+    assert.deepEqual(result.afterMashiro.friend, ["_friend_mashiro"]);
   });
 
   // 言い訳は引き止められるが、次が早い。受け入れると友達に戻り、恋人としての連絡が止まる。

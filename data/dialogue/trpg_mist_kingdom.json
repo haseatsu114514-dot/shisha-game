@@ -1,12 +1,12 @@
 {
   "id": "mist-kingdom",
-  "version": 2,
+  "version": 3,
   "title": "朝霧の王国と、最後の一台",
-  "subtitle": "霧の王女と、煙の選手権",
+  "subtitle": "霧の王女と、ほほえむ王",
   "author": "宵原ねむ",
   "collection": "船灯文庫・小さな卓の冒険 06",
   "duration": "約10分",
-  "premise": "朝霧の出る朝だけ現れる王国。霧の中にしかいられない小さな王女は、今年最後の霧が晴れる前に『最後の一台』を決める選手権を開いた。出場者たちは、彼女の本当の望みに届くだろうか。",
+  "premise": "朝霧の出る朝だけ現れる王国。霧の中にしかいられない王女は、今年最後の霧が晴れる前に『最後の一台』を決めたい。けれど玉座の霧の王は、いつも笑顔で『もう一度、最初から』と言う。",
   "fiction": {
     "town": "朝霧の王国",
     "shop": "霧の王宮",
@@ -48,7 +48,7 @@
     {
       "id": "sai",
       "part": "GM",
-      "role": "案内と、霧の王国",
+      "role": "案内と、霧の王",
       "color": "#c9b8de",
       "costumeRole": "herald"
     },
@@ -235,40 +235,40 @@
     "words": [
       {
         "id": "memory",
-        "label": "思い出を聞く",
-        "description": "王女が話したいことを、急がず聞く。",
+        "label": "断って、思い出を聞く",
+        "description": "やり直さずに、ミナの話を急がず最後まで聞く。",
         "response": "trpg_mist_kingdom_choice_words_memory"
       },
       {
         "id": "stay",
-        "label": "夜明けまで隣にいる",
-        "description": "霧が晴れるその時まで、そばにいる。",
+        "label": "断って、夜明けまで隣に",
+        "description": "やり直さなくていい。霧が晴れるまで、そばにいる。",
         "response": "trpg_mist_kingdom_choice_words_stay"
       },
       {
         "id": "learn",
-        "label": "作り方を教わる",
-        "description": "王女の一台の作り方を、霧の外へ持ち帰る。",
+        "label": "断って、作り方を教わる",
+        "description": "やり直さずに、ミナの一台を霧の外へ持ち帰る。",
         "response": "trpg_mist_kingdom_choice_words_learn"
       }
     ],
     "tactic": [
       {
         "id": "bell",
-        "label": "鐘を鳴らして霧を呼び戻す",
-        "description": "塔の古い鐘。その音は霧を呼ぶと言われる。",
+        "label": "鐘を鳴らして、我に返る",
+        "description": "塔の古い鐘。霧を呼び、頷きかけた人々も我に返るという。",
         "response": "trpg_mist_kingdom_choice_tactic_bell"
       },
       {
         "id": "hurry",
-        "label": "消える前に急いで仕上げる",
-        "description": "迷う時間を削って、手を止めずに進める。",
+        "label": "頷く前に、手を動かす",
+        "description": "返事は後回し。手を止めずに、一台を仕上げにかかる。",
         "response": "trpg_mist_kingdom_choice_tactic_hurry"
       },
       {
         "id": "guide",
-        "label": "王女を霧の濃い場所へ案内する",
-        "description": "霧の残る奥の間へ、小さな手を引いていく。",
+        "label": "ミナの手を引いて、奥へ",
+        "description": "王の笑顔から離れて、霧の残る奥の間へミナを連れていく。",
         "response": "trpg_mist_kingdom_choice_tactic_guide"
       }
     ]
@@ -488,22 +488,22 @@
   "endings": {
     "garden-scent": {
       "title": "生まれた庭の香り",
-      "line": "王妃の庭で、花の香りの一台を。ミナは庭の思い出を語り、花の中で笑ったまま霧に溶けた。",
+      "line": "やり直しを断り、王妃の庭で花の香りの一台を。ミナは思い出を語り、花の中で笑ったまま霧に溶けた。",
       "dialogue": "trpg_mist_kingdom_ending_garden-scent"
     },
     "until-dawn": {
       "title": "霧が晴れるまで",
-      "line": "霧の濃いバルコニーで、長く香る一台を囲む。ミナは最後まで袖をつかんだまま、笑って光に溶けた。",
+      "line": "やり直しを断り、霧の濃いバルコニーで長く香る一台を囲む。ミナは袖をつかんだまま、笑って光に溶けた。",
       "dialogue": "trpg_mist_kingdom_ending_until-dawn"
     },
     "named-blend": {
       "title": "ミナの一台",
-      "line": "王女の合わせた茶の香りを、作り方ごと教わった。霧の外でその一台を作るたび、あの子を思い出す。",
+      "line": "やり直しを断り、王女の茶の香りを作り方ごと教わった。霧の外でその一台を作るたび、あの子を思い出す。",
       "dialogue": "trpg_mist_kingdom_ending_named-blend"
     },
     "together": {
       "title": "霧のあとに残る香り",
-      "line": "王女の望みとは少し違った。それでも、みんなで作った一台の香りに、彼女の気配が残っていた。",
+      "line": "王女の望みとは少し違った。それでも、やり直さずに作った一台の香りに、彼女の気配が残っていた。",
       "dialogue": "trpg_mist_kingdom_ending_together"
     }
   },
@@ -518,7 +518,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "最後の物語の前に、役を決めましょう。どんな出場者にしますか？"
+          "text": "皆さんが演じるのは、選手権の出場者です。まず、どんな人か決めましょう"
         }
       ]
     },
@@ -557,30 +557,30 @@
         {
           "speaker": "sai",
           "face": "normal",
-          "text": "ここまで、いろいろな物語を遊びましたね。最後は私がGMを務めます",
+          "text": "ここまで、いろいろな物語を遊びましたね。最後の一冊は、私が用意しました",
           "castIntro": true,
-          "smallTableText": "私がGMを務めます。空いた役もお手伝いしますね"
+          "smallTableText": "最後の一冊は、私が用意しました。空いた役もお手伝いしますね"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "朝霧の王国ですか。最後は、どんな物語になるんだろう"
+          "text": "王国で開く選手権ですか？ 俺たちは、何を競うんです？"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "normal",
-          "text": "朝霧に包まれた王国です。どんな一台が残るでしょうね"
+          "face": "smile",
+          "text": "シーシャの香りを競います。今朝は王女も、気に入った一台を選ぶそうですよ"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "選手権と聞いては黙っていられない。腕が、もう騒いでいる",
+          "text": "番号札は一番がいい。最後に名前を呼ばれた時、映えるからな",
           "variants": {
             "regulara": {
-              "text": "選手権と聞いては黙っていられない。腕が、もう騒いでいる",
+              "text": "せっかくの選手権です。番号札は一番を取っておきましょう",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -590,10 +590,10 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "わしは勝ち負けに興味はないのじゃ。王宮の椅子が見たい",
+          "text": "では、わしは椅子を選ぶ。王宮なら、さぞ座り心地がよかろう",
           "variants": {
             "regularb": {
-              "text": "私は勝ち負けに興味はないのです。王宮の椅子が見たい",
+              "text": "では、私は椅子を選びます。立ったまま審査を待つのは大変ですから",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -604,10 +604,10 @@
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
           "voice": "korochan",
-          "text": "余も王である。霧の国の王族には、王として礼を尽くそう",
+          "text": "余の玉座より立派なら、座り心地まで確かめておくように",
           "variants": {
             "regularb": {
-              "text": "そんな役なのですね。続きも気になります",
+              "text": "私の番号が呼ばれたら、教えてくださいね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -673,7 +673,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "審査員席には霧の大臣と料理長。玉座では、白い髭の老王が目を細めている"
+          "text": "審査員席には霧の大臣と料理長。玉座では、霧の王が目を細めて微笑んでいる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "（あの王さまの笑い方……どこかで見たような）"
         },
         {
           "speaker": "sai",
@@ -697,19 +703,25 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "今、透けた……。王女さま、儚すぎませんか"
+          "text": "椅子の模様が、王女さまの手を透かして見えた……"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "王女の願いが気になりますね。続きをどうぞ"
+          "text": "どんな一台を探しているのか、そばにいる侍従長に聞いてみましょう"
         },
         {
           "speaker": "sai",
           "role": "侍従長ミルテ／物語",
           "face": "normal",
           "text": "姫さまは、霧のある間しかおられません。今朝は、今年最後の朝霧なのです"
+        },
+        {
+          "speaker": "sai",
+          "role": "侍従長ミルテ／物語",
+          "face": "normal",
+          "text": "いつも選ぶ前に霧が晴れます。今朝こそ、姫さまの望む一台を……"
         }
       ]
     },
@@ -749,7 +761,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "今の鐘、時計みたいなものか……。少し急ごう"
+          "text": "鐘が鳴るたびに霧が薄くなるのか。次は、何を聞こう？"
         }
       ]
     },
@@ -775,7 +787,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "霧晴れが二つ進みます。まだ調べる時間はありますよ"
+          "text": "霧晴れが二つ進みます。まだ聞けるので、質問を選んでください"
         }
       ]
     },
@@ -789,7 +801,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "……間に合った。王宮の真ん中は、まだ白い霧の中にある"
+          "text": "間に合った。王宮の真ん中は、まだ白い霧の中にある"
+        },
+        {
+          "speaker": "sai",
+          "role": "霧の王／物語",
+          "face": "normal",
+          "text": "おや、急ぐのですね。……続きも気になりますね"
         },
         {
           "speaker": "hajime",
@@ -810,6 +828,12 @@
           "role": "GM／場面",
           "face": "normal",
           "text": "回廊の端は、消えてしまった。霧晴れが一つ進む"
+        },
+        {
+          "speaker": "sai",
+          "role": "霧の王／物語",
+          "face": "normal",
+          "text": "ほら、ゆっくりでいいのですよ。まだ、決めなくても"
         },
         {
           "speaker": "sai",
@@ -839,9 +863,9 @@
         },
         {
           "speaker": "sai",
-          "role": "GM／卓の会話",
+          "role": "霧の王／物語",
           "face": "normal",
-          "text": "誰も消えていませんよ。物語を続けましょう"
+          "text": "大丈夫ですよ。誰も消えていません。……ゆっくりで、いいのですから"
         }
       ]
     },
@@ -908,7 +932,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "審査員、今それ！？"
+          "text": "大臣、くしゃみも審査結果に入ります！？"
         },
         {
           "speaker": "sai",
@@ -928,7 +952,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "言葉も一台も、まっすぐミナのもとへ届いた"
+          "text": "言葉も一台も、まっすぐ届いた。王宮じゅうが、しんと静まる"
         },
         {
           "speaker": "samechan",
@@ -947,7 +971,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ミナは一台の前に座り、ゆっくりと目を閉じる"
+          "text": "王は笑顔のまま、ほんの少しだけ首をかしげた"
         }
       ]
     },
@@ -961,13 +985,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "言葉が少しつかえた。ミナはくすっと笑って、続きを待ってくれる"
+          "text": "言葉が少しつかえた。王は急かさず、にこにこと続きを待っている"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "（緊張した……。でも、ちゃんと待ってくれた）"
+          "text": "（緊張した……。でも、最後まで言えた）"
         }
       ]
     },
@@ -981,26 +1005,19 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ミナの裾が椅子の脚に引っかかり、一台がかたんと揺れる"
+          "text": "首を横に振った勢いで、胸の番号札が王の足元へ飛んでいく"
         },
         {
-          "speaker": "samechan",
+          "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "椅子の脚じゃと！？ わしとしたことが！",
-          "variants": {
-            "regularb": {
-              "text": "椅子の脚じゃと！？ 失礼しました！",
-              "face": "normal",
-              "role": "PL／卓の会話"
-            }
-          }
+          "text": "札が！ すみません、拾います！"
         },
         {
           "speaker": "sai",
-          "role": "霧の王女ミナ／物語",
+          "role": "霧の王／物語",
           "face": "normal",
-          "text": "ふふ。にぎやかな朝って、いいね"
+          "text": "落としましたよ。大事な札でしょう？"
         }
       ]
     },
@@ -1098,6 +1115,12 @@
           "text": "香りと、一台を置く場所を選びましょう。王女は何を望んでいるでしょうね"
         },
         {
+          "speaker": "sai",
+          "role": "霧の王／物語",
+          "face": "normal",
+          "text": "どれも、よい香りですね。……決めてしまうのは、少し惜しい気もしますが"
+        },
+        {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
@@ -1144,13 +1167,37 @@
           "text": "一台の香りが、霧の中にゆっくり広がる。ミナが、そっと近づいてくる"
         },
         {
+          "speaker": "sai",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "一台とミナのあいだに、霧の王が静かに立つ。出場者たちの、ちょうど向かいに"
+        },
+        {
+          "speaker": "sai",
+          "role": "霧の王／物語",
+          "face": "normal",
+          "text": "よい一台ですね。でも、渡してしまえば、この朝は終わります"
+        },
+        {
+          "speaker": "sai",
+          "role": "霧の王／物語",
+          "face": "normal",
+          "text": "霧が晴れないように、選手権をもう一度、最初から、……ね？"
+        },
+        {
+          "speaker": "sai",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "王宮じゅうが、にこやかに頷く。ミナも頷きかけて、小さく唇をかんだ"
+        },
+        {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "椅子は用意したぞ。あとは、お主の言葉じゃ",
           "variants": {
             "regularb": {
-              "text": "椅子は用意したぞ。あとは、あなたの言葉です",
+              "text": "椅子は整えました。あとは、あなたの言葉です",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1160,7 +1207,19 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "……最後に、ミナにどんな言葉を添えよう"
+          "text": "（サイさんの提案に、首を横に振ったことは……一度もない）"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "（でも今のミナに、今日の一台を渡したい）"
+        },
+        {
+          "speaker": "sai",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "部長。ミナは、あなたの言葉を待っています。王にどう答えますか？"
         }
       ]
     },
@@ -1178,34 +1237,70 @@
         },
         {
           "speaker": "sai",
-          "role": "GM／場面",
-          "face": "normal",
-          "text": "回廊の端の柱が、朝日に透けて、すうっと薄くなる"
-        },
-        {
-          "speaker": "sai",
           "role": "霧の王女ミナ／物語",
           "face": "normal",
           "text": "……もう、晴れちゃうの？ まだ、最後の一台を見てないのに"
         },
         {
+          "speaker": "sai",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、ここからは少しだけ、私も物語の中へ入りますね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "（サイさんがGMの席を立って……俺たちの向かいに座った）"
+        },
+        {
+          "speaker": "sai",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "玉座の霧の王が立ち上がり、出場者たちの前へ、にこやかに歩み出る"
+        },
+        {
+          "speaker": "sai",
+          "role": "霧の王／物語",
+          "face": "normal",
+          "text": "皆さん、ゆっくりでいいのですよ。最後の一台は、まだ決めなくてもいいでしょう"
+        },
+        {
+          "speaker": "sai",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "王宮じゅうの人が、にこにこと頷く。その間にも、霧は晴れていく"
+        },
+        {
+          "speaker": "sai",
+          "role": "侍従長ミルテ／物語",
+          "face": "normal",
+          "text": "いつもこうなのです。王さまのお言葉には、誰も首を横に振れなくて"
+        },
+        {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "柱が消えておる！ まだ座り心地を確かめておらんのに！",
+          "text": "わしまで頷きかけたのじゃ！ 柱が消えかけておるのに！",
           "variants": {
             "regularb": {
-              "text": "柱が消えている！ まだ座り心地を確かめておらんのに！",
+              "text": "私まで頷きかけました！ 柱が消えかけているのに！",
               "face": "normal",
               "role": "PL／卓の会話"
             }
           }
         },
         {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "（首が勝手に……部長にされた時と、同じ感じだ）"
+        },
+        {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "では、出場者の皆さん。霧が晴れる前に、どうしますか？"
+          "text": "ミナに渡す時間を作りましょう。霧が晴れる前に、どう動きますか？"
         }
       ]
     },
@@ -1219,49 +1314,41 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "これで、朝霧の王国の物語はおしまいです"
+          "text": "これで、朝霧の王国の物語はおしまいです。私も、GMの席に戻りますね"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "選手権なのに、最後は誰が勝ったかより、ミナの話になりましたね"
+          "text": "サイさん。さっき俺……サイさんの提案を、断りましたよね"
+        },
+        {
+          "speaker": "sai",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……断られたのは、初めてでしたか？ 気づきませんでした"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "気づいておらんかったのか！？ わしは毎回、頷いておるのじゃぞ",
+          "variants": {
+            "regularb": {
+              "text": "気づいていなかったんですか！？ 私は毎回、頷いています",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "勝敗は霧と共に晴れた。残ったのは、林檎の……いや、一台の香りだ",
+          "face": "intense",
+          "text": "俺もだ。……お前の今夜の一手は、この店の歴史に残るぞ",
           "variants": {
             "regulara": {
-              "text": "勝敗は霧と共に晴れた。残ったのは、林檎の……いや、一台の香りだ",
-              "face": "normal",
-              "role": "PL／卓の会話"
-            }
-          }
-        },
-        {
-          "speaker": "samechan",
-          "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "わしは満足じゃ。審査員席、なかなかの座り心地じゃったぞ",
-          "variants": {
-            "regularb": {
-              "text": "私は満足です。審査員席、なかなかの座り心地でしたぞ",
-              "face": "normal",
-              "role": "PL／卓の会話"
-            }
-          }
-        },
-        {
-          "speaker": "samechan",
-          "role": "コロちゃん／卓の会話",
-          "face": "ventriloquism",
-          "voice": "korochan",
-          "text": "余も満足である。小さな王女に、また会いたいものだ",
-          "variants": {
-            "regularb": {
-              "text": "そんな役なのですね。続きも気になります",
+              "text": "私もです。今夜の一手は、この店の歴史に残りますね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1270,14 +1357,32 @@
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "最後の一台、ちゃんと届けられてよかったです"
+          "face": "normal",
+          "text": "どうして最後に、自分で王さまを演じたんですか？"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "ありがとうございます。皆さんのおかげで、よい卓になりました"
+          "text": "私は、見ているのが好きなんです。ずっと、GMの席から"
+        },
+        {
+          "speaker": "sai",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "でも、最後の一冊くらいは、向かいに座ってみたかったんです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "また一緒に遊びましょう。今度は、俺の隣の席で"
+        },
+        {
+          "speaker": "sai",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "では、本を閉じましょう。続きも気になりますね"
         }
       ]
     },
@@ -1291,7 +1396,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "霧が濃いうちに間に合いましたね。きれいな朝でした"
+          "text": "霧が濃いうちに間に合いましたね。王の『ゆっくり』にも、乗りませんでした"
         },
         {
           "speaker": "hajime",
@@ -1311,7 +1416,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "ずいぶん霧が晴れましたね。急いだ朝も物語のうちです"
+          "text": "ずいぶん霧が晴れましたね。王の『ゆっくり』に、少し付き合わせてしまいました"
         },
         {
           "speaker": "adam",
@@ -1320,7 +1425,7 @@
           "text": "間に合うか分からない。それこそが、最高の演出だ",
           "variants": {
             "regulara": {
-              "text": "間に合うか分からない。それこそが、最高の演出だ",
+              "text": "間に合うか分からない。それも、物語の楽しみですね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1583,8 +1688,14 @@
         {
           "speaker": "hajime",
           "role": "{pc}／物語",
+          "face": "serious",
+          "text": "王さま、ごめんなさい。やり直しは、しません"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
           "face": "normal",
-          "text": "庭のこと、聞かせて。急がなくていいから"
+          "text": "ミナ、庭のこと聞かせて。急がなくていい。最後まで聞くから"
         }
       ]
     },
@@ -1597,8 +1708,14 @@
         {
           "speaker": "hajime",
           "role": "{pc}／物語",
+          "face": "serious",
+          "text": "いいえ。やり直さなくても、大丈夫です"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
           "face": "normal",
-          "text": "霧が晴れるまで、ここにいるよ。最後まで、隣に"
+          "text": "霧が晴れるまで、ここにいるよ。最後まで、ミナの隣に"
         }
       ]
     },
@@ -1608,6 +1725,12 @@
         "preview_only": true
       },
       "lines": [
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "serious",
+          "text": "断ります。やり直したら、覚えたことも消えちゃうから"
+        },
         {
           "speaker": "hajime",
           "role": "{pc}／物語",
@@ -1626,13 +1749,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "塔の鐘を力いっぱい鳴らす。低い音に誘われて、霧がまた流れ込む"
+          "text": "塔の鐘を力いっぱい鳴らす。低い音に、頷いていた人々がはっと顔を上げる"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "excited",
-          "text": "霧が戻ってきた！ 鐘、効くんだ！"
+          "text": "首が戻った！ 鐘、効くんだ！"
         }
       ]
     },
@@ -1646,7 +1769,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "迷う時間を、手を動かす時間に。三人の段取りが、ぐっと速くなる"
+          "text": "頷く代わりに、手を動かす。三人の段取りが、ぐっと速くなる"
         },
         {
           "speaker": "hajime",
@@ -1684,9 +1807,15 @@
       "lines": [
         {
           "speaker": "sai",
+          "role": "霧の王／物語",
+          "face": "normal",
+          "text": "……では、その選択で"
+        },
+        {
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "王妃の庭に、白い花の香りがふわりと広がる"
+          "text": "王が、そっと道を空ける。王妃の庭に、白い花の香りがふわりと広がった"
         },
         {
           "speaker": "sai",
@@ -1698,7 +1827,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ミナは庭の思い出を、一つずつ話した。霧が、その声をやさしく包む"
+          "text": "ミナは庭でよく転んだと笑った。王も離れたところで、同じように笑った"
         },
         {
           "speaker": "sai",
@@ -1719,7 +1848,7 @@
           "text": "生まれた場所の香りか。帰る場所は、鼻が覚えているものだ",
           "variants": {
             "regulara": {
-              "text": "生まれた場所の香りか。帰る場所は、鼻が覚えているものだ",
+              "text": "生まれた場所の香りですね。帰る場所は、鼻が覚えているものです",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1741,6 +1870,12 @@
       "lines": [
         {
           "speaker": "sai",
+          "role": "霧の王／物語",
+          "face": "normal",
+          "text": "……では、その選択で。霧が晴れるまで、どうぞごゆっくり"
+        },
+        {
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "朝霧のバルコニーで、霧の果実の一台がゆっくり香り続ける"
@@ -1755,7 +1890,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc}たちは、ミナと並んで城下を眺めた。誰も、急がなかった"
+          "text": "{pc}たちは、ミナと並んで城下を眺めた。もう誰も『もう一度』とは言わなかった"
         },
         {
           "speaker": "sai",
@@ -1773,10 +1908,10 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "よい席じゃった。わしは、また霧の朝に座りに来るぞ",
+          "text": "椅子を見に来たはずが、隣に誰が座っておるかばかり見ておった",
           "variants": {
             "regularb": {
-              "text": "よい席でした。私は、また霧の朝に座りに来るぞ",
+              "text": "よい席でした。また、霧の朝に座りに来ます",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1798,6 +1933,12 @@
       "lines": [
         {
           "speaker": "sai",
+          "role": "霧の王／物語",
+          "face": "normal",
+          "text": "……では、その選択で。最後の一台は、教わる一台ですね"
+        },
+        {
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "選手権の舞台。ミナは自分で合わせた茶の香りを、一つずつ教えてくれた"
@@ -1812,7 +1953,7 @@
           "speaker": "hajime",
           "role": "{pc}／物語",
           "face": "smile",
-          "text": "作れるよ。作るたびに、ミナのこと思い出す"
+          "text": "作れるよ。忘れないうちに、霧の外で最初の一台を作ってみる"
         },
         {
           "speaker": "sai",
@@ -1833,7 +1974,7 @@
           "text": "名前のついた一台は、作り手がいる限り消えない。俺が保証しよう",
           "variants": {
             "regulara": {
-              "text": "名前のついた一台は、作り手がいる限り消えない。私が保証しよう",
+              "text": "名前のついた一台は、作り手がいる限り消えません。私が保証します",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1869,7 +2010,13 @@
           "speaker": "sai",
           "role": "霧の王女ミナ／物語",
           "face": "normal",
-          "text": "……でも、みんなで作ってくれたんだね。にぎやかな香り"
+          "text": "……でも、やり直さなくていいって、言ってくれたね"
+        },
+        {
+          "speaker": "sai",
+          "role": "霧の王／物語",
+          "face": "normal",
+          "text": "……では、その選択で。にぎやかな一台でしたね"
         },
         {
           "speaker": "sai",
@@ -1881,11 +2028,11 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
-          "voice": "korochan",
           "text": "余は感じる。この香りに、小さな王女がまだいる",
+          "voice": "korochan",
           "variants": {
             "regularb": {
-              "text": "そんな役なのですね。続きも気になります",
+              "text": "香りの中に、王女さまがまだいるみたいです",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1895,7 +2042,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "消えてしまっても、残るものがあるのですね"
+          "text": "あの香りがしたら、私は今朝のミナの顔を思い出します"
         }
       ]
     },
@@ -1983,7 +2130,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "{pc}が薄れる回廊へ走る。みんな、こっち！"
+          "text": "{pc}は、頷きかけた首をこらえて、みんなを作業台へ引っぱります"
         },
         {
           "speaker": "sai",
@@ -2130,8 +2277,8 @@
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
-          "face": "normal",
-          "text": "{pc}がミナの隣に座って、選んだ言葉を添えます"
+          "face": "serious",
+          "text": "{pc}は王の向かいに立って……首を、横に振ります"
         },
         {
           "speaker": "sai",
@@ -2151,10 +2298,10 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:samechan}は黙って、ミナの椅子をちょうどよい向きに直すのじゃ",
+          "text": "{pc:samechan}は黙って、ミナの椅子を王の向かいに置くのじゃ",
           "variants": {
             "regularb": {
-              "text": "{pc:samechan}は黙って、ミナの椅子をちょうどよい向きに直すのです",
+              "text": "{pc:samechan}は黙って、ミナの椅子を王の向かいに置きます",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -2178,10 +2325,10 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}がひざまずき、一台を恭しく王女へ捧げる",
+          "text": "{pc:adam}は王に一礼し、その横を通って一台をミナへ捧げる！",
           "variants": {
             "regulara": {
-              "text": "{pc:adam}がひざまずき、一台を恭しく王女へ捧げる",
+              "text": "{pc:adam}は王に一礼し、その横を通って一台をミナへ捧げます",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -2369,7 +2516,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "……触れたら崩れそうな、白い押し花。王妃の庭の花よ"
+          "text": "触れたら崩れそうな、白い押し花。王妃の庭の花らしい"
         },
         {
           "speaker": "hajime",
@@ -2733,7 +2880,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "窓辺の帳面に、霧の晴れた時刻。……毎朝、少しずつ早くなってる"
+          "text": "窓辺の帳面に、霧の晴れた時刻。毎朝、少しずつ早くなっている"
         },
         {
           "speaker": "hajime",
@@ -3334,12 +3481,12 @@
       ]
     }
   ],
-  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。ひよりGMの回なので「儚さ」（霧の中にだけいる王女）を軸にする。",
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。サイGMの最終シナリオ（部員6人の物語を遊び終えると入荷）。ふだん見守る側のサイが初めてGMの席から物語へ降り、霧の王として、威圧も悪役の演技もしない笑顔の提案（『まだ決めなくてもいい』『もう一度、最初から』）で一行の前に立ちはだかる。見せ場は、部長（はじめ）が初めてサイの提案を断ること。サイは自分の断れなさに無自覚のまま受け入れる。霧の中にだけいる王女の儚さは、物語の地に残す。",
   "presentation": {
     "theme": "mist",
     "number": "06",
     "genre": "剣と魔法 / 霧の選手権",
-    "tagline": "部員の物語を遊び終えたら、サイが開く最後の一冊。",
+    "tagline": "最後の一冊。今夜は、サイも物語の中へ。",
     "image": "../../img/backgrounds/trpg_mist-kingdom_room.webp",
     "choiceArt": {
       "src": "../../img/ui/trpg/choices-mist-kingdom.webp",
@@ -3354,9 +3501,9 @@
     },
     "sceneAlt": "霧に包まれた王宮の広間。玉座、王妃の肖像、霧の窓、審査員席、香り棚と、薄れかけた回廊。",
     "location": "朝霧の王国 / 霧の王宮",
-    "atmosphere": "白い霧。薄れていく回廊。小さな王女の、透けそうな笑顔。",
-    "coverHeading": "霧が晴れたら、あの子は消える。",
-    "coverRule": "四箇所を調べ、王女の望みを見立て、最後の一台を届ける。",
+    "atmosphere": "白い霧。薄れていく回廊。透けそうな王女と、ほほえむ王。",
+    "coverHeading": "ほほえむ王の『もう一度』を、断れるか。",
+    "coverRule": "四箇所を調べ、王女の望みを見立てる。最後は、王の提案に答える。",
     "titleLines": [
       "朝霧の王国と、",
       "最後の一台"
@@ -3364,26 +3511,26 @@
     "fields": {
       "flavor": "香り",
       "place": "一台を置く場所",
-      "words": "王女に添える言葉",
-      "tactic": "晴れていく霧への手"
+      "words": "王に返す言葉",
+      "tactic": "王の笑顔と、晴れる霧への手"
     },
     "prepareTitle": "どの香りを、どこに置く？",
     "prepareDescription": "香りを一つ、場所を一つ。見立てた王女の望みを、一台にしよう。",
-    "serveTitle": "最後の一台を、王女の前に。",
-    "serveDescription": "一台に添える、最後の言葉を選ぶ。",
+    "serveTitle": "王の『もう一度』に、答える。",
+    "serveDescription": "やり直しを断る言葉を選ぶ。王女の望みに届く言葉で。",
     "hypothesisTitle": "霧の王女は、最後に何を望んでいる？",
     "arrivalRole": "侍従長ミルテ／物語",
     "riskLabel": "霧晴れ",
-    "exploreIdle": "……調べられるのは四箇所まで。メモと相談は、何度でもどうぞ",
-    "listenIdle": "……まずは、侍従長の話を聞いてみて。サイコロは二つよ",
-    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
-    "serveIdle": "……ここが見せ場。あの子に、最後の一台を届けてあげて",
-    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
+    "exploreIdle": "調べられるのは四箇所までです。メモと相談は、何度でもどうぞ",
+    "listenIdle": "まずは、侍従長の話を聞いてみましょう。サイコロは二つです",
+    "prepareIdle": "準備を選びましょう。仲間がいれば、切り札も頼めますよ",
+    "serveIdle": "ここが見せ場です。王に、どう答えますか？",
+    "endingIdle": "この晩の話は、ここまでです。また、別の本でお会いしましょう",
     "phases": {
       "listen": {
         "kicker": "01 / 話を聞く",
         "title": "霧の王宮へ、ようこそ",
-        "description": "選手権の朝。霧の中にだけいる王女が、出場者を待っている。",
+        "description": "選手権の朝。霧の中にだけいる王女と、ほほえむ王が、出場者を待っている。",
         "button": "話を聞く"
       },
       "interview": {
@@ -3399,9 +3546,9 @@
         "button": "見立てを話す"
       },
       "twist": {
-        "kicker": "04 / 霧が晴れる",
-        "title": "王国の端が、薄れていく",
-        "description": "霧が晴れ始めた。消えてしまう前に、手を打とう。",
+        "kicker": "04 / 霧の王",
+        "title": "玉座の王が、立ち上がる",
+        "description": "霧が晴れ始めた。玉座の王は笑顔で『まだ決めなくていい』と言う。",
         "button": "この手で切り抜ける"
       },
       "prepare": {
@@ -3411,10 +3558,10 @@
         "button": "一台を作る"
       },
       "serve": {
-        "kicker": "06 / 王女に届ける",
-        "title": "最後の一台",
-        "description": "霧が晴れる前に、一台と言葉をあの子のもとへ。",
-        "button": "王女に届ける"
+        "kicker": "06 / 王に答える",
+        "title": "もう一度、最初から？",
+        "description": "王が出場者の向かいに立つ。その提案を断って、一台をあの子のもとへ。",
+        "button": "王に答える"
       },
       "ending": {
         "kicker": "霧が晴れたあと",
@@ -3422,7 +3569,7 @@
         "description": "霧の王国は、光の中へ。さて、この朝の物語の感想は？"
       }
     },
-    "help": "侍従長に二つ質問し、王宮を最大四箇所調べます。新しい場所を調べるたび霧晴れが一つ進みます。三つ以上の手がかりで王女の望みを見立てたあと、晴れていく霧を切り抜け、香り・置く場所・添える言葉を決めます。相談とメモの再読は無料。見立てが合うと一台を作る判定に＋5。",
+    "help": "侍従長に二つ質問し、王宮を最大四箇所調べます。新しい場所を調べるたび霧晴れが一つ進みます。三つ以上の手がかりで王女の望みを見立て、霧の王の提案と晴れていく霧を切り抜けたら、香りと置く場所を決めます。最後に、王の『もう一度』を断る言葉を選びます。相談とメモの再読は無料。見立てが合うと一台を作る判定に＋5。",
     "exitText": "物語をここで中断して、本棚へ戻ります。次に遊ぶと、王女の望みが違っているかもしれません。",
     "endingKicker": "AFTER THE MIST / この朝の結末",
     "stats": {
@@ -3435,9 +3582,9 @@
     "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
     "sheetTitle": "キャラクターシート",
     "target": "GMの裁定 · 目標値30（19以上でひと手間）",
-    "twistTitle": "霧が晴れていく。どうする？",
-    "interviewIdle": "……聞けるのは二つまで。何を聞くのかしら？",
-    "twistIdle": "……霧が晴れていくわ。手を選んで、誰が動くか決めて",
+    "twistTitle": "王は笑い、霧は晴れていく。どうする？",
+    "interviewIdle": "聞けるのは二つまでです。何を聞きますか？",
+    "twistIdle": "霧が晴れていきますね。手を選んで、誰が動くか決めてください",
     "planTitle": "最後の一台の作戦"
   },
   "intro": "trpg_mist_kingdom_intro",
@@ -3480,7 +3627,7 @@
       ]
     },
     "twist": {
-      "title": "晴れていく霧に、間に合わせる",
+      "title": "王の笑顔に頷かず、霧に間に合わせる",
       "hint": "宣言した出場者の能力で判定。どの出目でも物語は続きます。",
       "success": "trpg_mist_kingdom_twist_success",
       "mixed": "trpg_mist_kingdom_twist_mixed",
@@ -3491,8 +3638,8 @@
           "actor": "hajime",
           "sheet": "hajime",
           "stat": "nerve",
-          "label": "消えかけの回廊へ、先に走る",
-          "detail": "{pc}が薄れる回廊へ飛び込み、みんなを導く",
+          "label": "頷かずに、みんなを作業台へ",
+          "detail": "{pc}が王の笑顔に頷かず、仲間の手を作業台へ戻す",
           "declare": "trpg_mist_kingdom_declare_twist_run"
         },
         {
@@ -3553,7 +3700,7 @@
       ]
     },
     "serve": {
-      "title": "最後の一台を、ミナに届ける",
+      "title": "王の提案を断り、最後の一台を届ける",
       "hint": "宣言した出場者の能力で判定。どの出目でも結末へ進みます。",
       "success": "trpg_mist_kingdom_serve_success",
       "mixed": "trpg_mist_kingdom_serve_mixed",
@@ -3565,8 +3712,8 @@
           "actor": "hajime",
           "sheet": "hajime",
           "stat": "talk",
-          "label": "選んだ言葉を、ミナに添える",
-          "detail": "{pc}がミナの隣に座り、一台と一緒に言葉を渡す",
+          "label": "王の向かいで、首を横に振る",
+          "detail": "{pc}が王の笑顔を正面から見て、選んだ言葉で断る",
           "declare": "trpg_mist_kingdom_declare_serve_word"
         },
         {
@@ -3574,8 +3721,8 @@
           "actor": "samechan",
           "sheet": "samechan",
           "stat": "eye",
-          "label": "ミナの椅子を、そっと整える",
-          "detail": "{pc:samechan}が言葉より先に、居心地のいい席を作る",
+          "label": "ミナの椅子を、王の向かいに置く",
+          "detail": "{pc:samechan}が言葉より先に、ミナが王と向き合える席を作る",
           "declare": "trpg_mist_kingdom_declare_serve_seat"
         },
         {
@@ -3583,8 +3730,8 @@
           "actor": "adam",
           "sheet": "adam",
           "stat": "nerve",
-          "label": "ひざまずいて、一台を捧げる",
-          "detail": "{pc:adam}が選手権らしく、恭しく一台を差し出す",
+          "label": "王に一礼して、一台を捧げる",
+          "detail": "{pc:adam}が王の横を堂々と通り、恭しく一台をミナへ差し出す",
           "declare": "trpg_mist_kingdom_declare_serve_offer"
         }
       ]
@@ -3602,6 +3749,10 @@
     "with-detour": "trpg_mist_kingdom_debrief_with_detour"
   },
   "campaign": {
+    "aftermath": {
+      "true": "霧の外で、ミナの望んだ一台を囲んだ。王女の笑い声を、みんなが覚えていた。",
+      "bad": "王国の消えた朝、ミナの望みをもう一度たずねようにも、霧に道はなかった。"
+    },
     "seats": [
       {
         "actor": "sai",

@@ -1,5 +1,6 @@
 // 第3章・東京到着から全国大会前夜までを、場面単位で保存する。
 import { DB, bgUrl, displayName } from "../core/data.js";
+import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
@@ -451,13 +452,13 @@ async function renderStage(owner) {
     return;
   }
   if (scene.id === "ch3_opening" && state.flags._ch3_opening_read) {
-    await withScenePreparation(enterScene(bgUrl("bg_tournament_stage")));
+    await withScenePreparation(enterScene(bgUrl(TOURNAMENT_VENUE_BG[3])));
     if (!current(owner)) return;
     card(owner, "scene", "DAY 1・全国大会の参加登録", "東京駅から会場へ。受付で出場手続きを済ませ、競技規則を受け取る。", [
       button(owner, state.flags._ch3_rules_read ? "mukaiへ向かう"
         : state.flags._ch3_registration_read ? "競技規則を確認する" : "参加登録をする", "continue", async () => {
         if (!state.flags._ch3_registration_read) {
-          if (!await readScene(owner, { id: "ch3_registration", bg: "bg_tournament_stage" })) return;
+          if (!await readScene(owner, { id: "ch3_registration", bg: TOURNAMENT_VENUE_BG[3] })) return;
           state.flags._ch3_registration_read = true;
           save();
         }

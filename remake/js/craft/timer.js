@@ -14,6 +14,10 @@ import { basicsExperienced } from "./practice-history.js";
 export async function runSteamTimer(cs) {
   const panel = stepPanel("steam", "蒸らし", "分・秒ボタンで蒸らし時間を設定し、スタートで開始する", { brief: "", lessonStep: "timer" });
   if (!await explainStepOnce(cs, "timer", "steam")) return;
+  // スマホで画面から外した補足の2文は「?」で読む（PHN）
+  panel.closest?.(".bench")?.querySelector?.(".bench-guide-tip > p")?.after?.(el("div.bench-guide-extra.bench-guide-phone", [
+    el("p", { text: "雑念回避は、選んだ蒸らし時間をその長さに縮めて遊びます。蒸らし後の温度は、気温や炭の状態で目安から前後します。" }),
+  ]));
   let seconds = normalizeSteamSeconds(cs.steamSeconds ?? 0);
   const canZero = cs.mode !== "tutorial" && growthLesson(state,"M-W4");
   const minimumSeconds = cs.mode === "tutorial" ? 180 : canZero ? 0 : 10;
@@ -37,11 +41,15 @@ export async function runSteamTimer(cs) {
     const playSeconds = steamPlaySeconds(seconds) * (cs.mode === "tutorial" ? 0.7 : 1);
     const shortened = canShorten && cs.steamShorten;
     const effective = shortened ? Math.min(playSeconds, SHORT_DODGE_SECONDS) : playSeconds;
-    durationHint.textContent = seconds < minimumSeconds
-      ? "時間を設定すると、雑念回避の長さが分かります。"
+    // 要点（約○秒）と補足を分けておく。スマホは要点だけを画面に出し、補足は「?」で読む（PHN・css/craft-phone.css）。文は今までと同じ。
+    const [main, more] = seconds < minimumSeconds
+      ? ["時間を設定すると、雑念回避の長さが分かります。", ""]
       : shortened
-        ? `雑念回避は約${Math.ceil(effective)}秒に短縮。蒸らし時間・温度・採点はそのままです。`
-        : `雑念回避は約${Math.ceil(effective)}秒。選んだ蒸らし時間をこの長さに縮めて遊びます。`;
+        ? [`雑念回避は約${Math.ceil(effective)}秒に短縮。`, "蒸らし時間・温度・採点はそのままです。"]
+        : [`雑念回避は約${Math.ceil(effective)}秒。`, "選んだ蒸らし時間をこの長さに縮めて遊びます。"];
+    durationHint.textContent = `${main}${more}`;
+    durationHint.dataset.empty = String(seconds < minimumSeconds); // 時間を決める前の案内（スマホは画面に出さない・css/craft-phone.css）
+    durationHint.replaceChildren?.(el("span.steam-duration-main", { text: main }), ...(more ? [el("span.steam-duration-more", { text: more })] : []));
     if (shorten) {
       shorten.setAttribute("aria-pressed", String(!!cs.steamShorten));
       shorten.textContent = cs.steamShorten ? "雑念回避：短め（押すと元に戻す）" : "慣れたので雑念回避を短めにする";

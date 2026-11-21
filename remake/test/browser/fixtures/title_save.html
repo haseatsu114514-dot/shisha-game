@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<base href="../../../">
+<title>タイトルへ戻る前の保存テスト</title>
+<button id="menu">MENU</button>
+<div id="modal"></div>
+<script type="module">
+import * as core from "./js/core/state.js";
+import { installSaveFailedNotice } from "./js/core/save-failed-notice.js";
+import { layers } from "./js/core/ui.js";
+import { openMenu } from "./js/daily/menu.js";
+import { createChapterMenu } from "./js/core/chapter-menu.js";
+
+layers.modal = document.querySelector("#modal");
+core.config.mute = true;
+installSaveFailedNotice();
+const menu = document.querySelector("#menu");
+const chapter = new URLSearchParams(location.search).has("chapter");
+const player = core.load() || core.newGame();
+if (!core.peekSave()) {
+  Object.assign(player, { phase: "daily", chapter: chapter ? 4 : 1, day: 5 });
+  if (!core.save()) throw new Error("DAY5の準備に失敗");
+  player.day = 7;
+}
+const owner = { active: true, state: player, controller: new AbortController() };
+const leave = () => { sessionStorage.setItem("left", "yes"); };
+owner.controller.signal.addEventListener("abort", leave);
+const chapterMenu = createChapterMenu({
+  current: session => session.active && session.state === core.state,
+  test: id => id, title: "第四章 MENU",
+});
+const qa = window.qa = { core, player, owner, fail: true, canSave: true };
+const setItem = Storage.prototype.setItem;
+Storage.prototype.setItem = function(key, value) {
+  if (this === localStorage && key === core.SAVE_KEY) {
+    sessionStorage.setItem("attempts", Number(sessionStorage.getItem("attempts")) + 1);
+    if (qa.fail) throw new DOMException("test quota", "QuotaExceededError");
+  }
+  return setItem.call(this, key, value);
+};
+menu.onclick = () => {
+  qa.done = chapter ? chapterMenu(owner) : openMenu({ tab: "system", canSave: () => qa.canSave, leave });
+};
+menu.dataset.ready = "true";
+</script>
+</html>

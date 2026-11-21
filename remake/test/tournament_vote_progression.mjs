@@ -97,6 +97,8 @@ async function standingsHarness(auto = null) {
     evaluationOf: () => ({ tone: "good", mark: "○" }), craftRecognition: () => ({ summary: "制作の記録" }),
     autoSkill: () => auto,
     on: (type, fn) => { assert.equal(type, "hud"); hud.add(fn); return () => hud.delete(fn); },
+    // 票が入る演出（TSH02）は実際の配置が要るので browser/ch1_tournament.mjs で確かめる。ここでは「動かさない」時と同じ形で返す。
+    stageLights: () => {}, voteCeremony: () => ({ done: Promise.resolve(), skip() {}, moved: false }),
   };
   const modules = new Map();
   async function link(spec) {

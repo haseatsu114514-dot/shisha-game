@@ -4,13 +4,33 @@ import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-ma
 // 2026-11-02 オーナー「ヌールはシーシャ屋もしつつガイドもしてる。シーシャの方へ行くと交流が深まり、好感度3ぐらいでサンドボードに誘われる。
 // 最初は無料、その後は相場」（DSR21）: 宿の隣のカフェ・オアシス（ヌールの父の店。表にツアーデスク）で一台頼んで話すと好感度が上がる。
 // 段階の会話は♥0・1・2・3で読み、♥3の誘いで砂丘へ。2回目以降の砂丘は 6,000円（相場: ガイド付きのサンドボード単体 約150ディルハム）。
-import { readResult, rankAtLeast, RANK_ORDER, RULES_VERSION } from "../minigames/desert-ride-model.js";
+import { readResult, resultTier, rankAtLeast, RANK_ORDER, RULES_VERSION } from "../minigames/desert-ride-model.js";
+import { recordTierClear, tierLine } from "../core/play-tiers.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
 import { camelRaceRecord, CAMEL_STAGES } from "./ch4-camel-progress.js";
 
 export const DESERT_FLAG = "_ch4_desert";
 export const DESERT_GUIDE = "noor";
+// 第5章、恋人のヌール（ドバイに住む）: はじめがドバイへ着いた時の出迎えと、その夜（#4010）。ほかの恋人の第4章の
+// 「別便の到着」（ch4_*_dubai_girlfriend）と「到着の夕方」（ch4_*_dubai_evening）に当たる。台本は data/dialogue/ch5_dubai.json、
+// 再生は chapters/ch5-dubai.js（goToDubai・dubaiNight）。読んだ印は周回で持ち越さない（core/carry.js の progression）。
+// 帰る時の見送り（札を預ける）と、次に着いた時の二度目の出迎え（札に星を足す）も一度ずつ。
+export const NOOR_LOVER_SCENES = Object.freeze({ welcome: "ch5_noor_lover_welcome", night: "ch5_noor_lover_night",
+  farewell: "ch5_noor_lover_farewell", again: "ch5_noor_lover_again" });
+/** その場面の前に読んでおく場面（夜と見送りは出迎えの後、二度目の出迎えは見送りの後） */
+const NOOR_LOVER_AFTER = Object.freeze({ night: "welcome", farewell: "welcome", again: "farewell" });
+export const noorLoverReadFlag = kind => `_ch5_noor_lover_${kind}`;
+/**
+ * 今読む恋人の場面の ID（kind: "welcome" 着いた時 / "night" ドバイの夜 / "farewell" 帰る時 / "again" 次に着いた時）。
+ * 恋人でない・第5章でない・修羅場が未解決・読んだ後・前に読む場面がまだなら null
+ */
+export function noorLoverSceneDue(value, kind) {
+  const flags = value?.flags || {};
+  if (!NOOR_LOVER_SCENES[kind] || value?.chapter !== 5 || !(value.lovers || []).includes(DESERT_GUIDE) || flags._story_shuraba_unresolved) return null;
+  if (NOOR_LOVER_AFTER[kind] && !flags[noorLoverReadFlag(NOOR_LOVER_AFTER[kind])]) return null;
+  return flags[noorLoverReadFlag(kind)] ? null : NOOR_LOVER_SCENES[kind];
+}
 // DSR20（ヒロイン化）: 誘いの後に♥3の問い（恋愛／友情。bond_q1_noor）と♥4の会話。段階を読み終えた♥5で締めくくり（daily/bonds.js の
 // BOND_FINALES.noor・専用ハガル）。最後の問い（bond_q2_noor）で恋愛を選ぶと、次の砂丘（ツアー代なし）の夕日で告白（confession_noor）。
 // 締めくくりのあと砂丘へ行けないまま帰国した時は、第5章のドバイの最初の砂丘が約束の日（chapters/ch5-dubai.js）。同じ告白を、
@@ -234,10 +254,12 @@ export function desertRecords(value) {
   const raw = value?.desert && typeof value.desert === "object" && !Array.isArray(value.desert) ? value.desert : {};
   const best = readResult(raw.best);
   const legacyBest = readResult(raw.legacyBest);
+  // 初級の自己ベスト（#3779）。初級は自己ベスト・評価のご褒美（bestRank）に数えないので、別に持つ
+  const easyBest = readResult(raw.easyBest);
   const ranks = [best?.rank, legacyBest?.rank, raw.bestRank].filter(rank => RANK_ORDER.includes(rank));
   const bestRank = ranks.sort((a, b) => RANK_ORDER.indexOf(b) - RANK_ORDER.indexOf(a))[0] ?? null;
   const firstClear = raw.firstClear && Number.isInteger(raw.firstClear.day) ? { chapter: raw.firstClear.chapter ?? null, day: raw.firstClear.day } : null;
-  return { runs: integer(raw.runs) ?? 0, best, ...(legacyBest ? { legacyBest } : {}), bestRank, firstClear, rewarded: raw.rewarded === true, wins: integer(raw.wins) ?? 0,
+  return { runs: integer(raw.runs) ?? 0, best, ...(legacyBest ? { legacyBest } : {}), ...(easyBest ? { easyBest } : {}), bestRank, firstClear, rewarded: raw.rewarded === true, wins: integer(raw.wins) ?? 0,
     naruMet: raw.naruMet === true, naruWins: integer(raw.naruWins) ?? 0 };
 }
 
@@ -255,34 +277,45 @@ export function markNaruMet(value) {
  * 完走を記録する。自己ベストは点数で比べる。初めての完走だけ awardExp（growth.js の awardActionExp）を呼ぶ。二度目以降は呼ばない。
  * 競走でヌールに勝った回数（wins）も数える。
  * なる（裏の相手）に勝った回数は naruWins。
- * 戻り値: { entry, newBest, firstClear, exp, won, firstWin, who, firstNaruWin, thirdWin } か、形の合わない結果なら null。
+ * 三段階（#3779・core/play-tiers.js）: ヌールより先にゴールしたら、その段（result.tier。段の無い結果は中級）のクリアを recordTierClear で確定する。
+ * 初級は楽なので、自己ベスト（best）・評価のご褒美（bestRank）・勝ち数（wins＝なるが来る・初勝利の場面）・達人認定には数えない
+ * （初級の自己ベストは easyBest に別に持つ）。完走の数と初めての完走の報酬は段を問わない。中級・上級は前と同じに数える。
+ * 戻り値: { entry, newBest, firstClear, exp, won, firstWin, who, firstNaruWin, thirdWin, tier, tierAdded } か、形の合わない結果なら null。
+ * newBest は初級なら初級の自己ベストの更新。tierAdded は新しくクリアした段（core/play-tiers.js の tierUnlockNote に渡す）。
  */
 export function recordDesertResult(value, data, { awardExp = null } = {}) {
   const result = readResult(data);
   if (!value || typeof value !== "object" || !result) return null;
   syncPlayMastery(value);
   const before = desertRecords(value);
+  const tier = resultTier(result), counted = tier !== "easy";
   const sameRules = before.best && (before.best.rulesVersion ?? 1) === (result.rulesVersion ?? 1);
   // 旧ルールの高得点を残し、新ルールの初回は必ず新しいベストとして扱う。
   if (before.best?.rulesVersion === RULES_VERSION && result.rulesVersion !== RULES_VERSION) return null;
-  const legacyBest = before.legacyBest || (!sameRules && before.best ? before.best : null);
-  const newBest = !sameRules || result.score > before.best.score;
+  const legacyBest = before.legacyBest || (counted && !sameRules && before.best ? before.best : null);
+  const newBest = counted ? !sameRules || result.score > before.best.score : !before.easyBest || result.score > before.easyBest.score;
+  const easyBest = !counted && newBest ? result : before.easyBest;
   const firstClear = !before.firstClear;
   const who = result.race?.who === "naru" ? "naru" : "noor", won = result.race?.won === true;
-  const firstWin = won && who === "noor" && before.wins === 0, firstNaruWin = won && who === "naru" && before.naruWins === 0;
-  const thirdWin = won && who === "noor" && before.wins === DESERT_THIRD_WIN - 1;
-  const desert = { ...(legacyBest ? { legacyBest } : {}), runs: before.runs + 1, best: newBest ? result : before.best,
+  const noorWin = counted && won && who === "noor";
+  const firstWin = noorWin && before.wins === 0, firstNaruWin = won && who === "naru" && before.naruWins === 0;
+  const thirdWin = noorWin && before.wins === DESERT_THIRD_WIN - 1;
+  const desert = { ...(legacyBest ? { legacyBest } : {}), runs: before.runs + 1, best: counted && newBest ? result : before.best, ...(easyBest ? { easyBest } : {}),
     firstClear: before.firstClear || { chapter: Number.isInteger(value.chapter) ? value.chapter : null, day: Number.isInteger(value.day) ? value.day : 0 },
-    rewarded: before.rewarded, wins: before.wins + (won && who === "noor" ? 1 : 0), naruMet: before.naruMet, naruWins: before.naruWins + (won && who === "naru" ? 1 : 0) };
+    rewarded: before.rewarded, wins: before.wins + (noorWin ? 1 : 0), naruMet: before.naruMet, naruWins: before.naruWins + (won && who === "naru" ? 1 : 0) };
   let exp = 0;
   if (!before.rewarded) {
     desert.rewarded = true;
     exp = awardExp ? awardExp({ key: "desert_ride", place: "dubai_dunes", person: DESERT_GUIDE }) : 0;
   }
-  desert.bestRank = before.bestRank && rankAtLeast(before.bestRank, desert.best.rank) ? before.bestRank : desert.best.rank;
+  const rank = counted ? desert.best.rank : null;
+  desert.bestRank = before.bestRank && (!rank || rankAtLeast(before.bestRank, rank)) ? before.bestRank : rank;
   value.desert = desert;
-  recordPlayMastery(value, "desert", result, `${value.cycle || 1}:${desert.runs}`);
-  return { entry: result, newBest, firstClear, exp, won, firstWin, who, firstNaruWin, thirdWin };
+  // 段のクリアは記録を書き終えてから、達人認定より先に（上級なら growth.js がその場で白火を精算する）。
+  // 認定が先だと、growth.js の精算が旧保存の取り込み（勝ち数があれば中級クリア）を先に済ませ、初めての中級クリアが知らされない
+  const tierAdded = won && who === "noor" ? recordTierClear(value, "desert", tier) : [];
+  if (counted) recordPlayMastery(value, "desert", result, `${value.cycle || 1}:${desert.runs}`);
+  return { entry: result, newBest, firstClear, exp, won, firstWin, who, firstNaruWin, thirdWin, tier, tierAdded };
 }
 
 /** 遊びのご褒美の判定（growth.js が読む）: 自己ベストが need 以上か。 */

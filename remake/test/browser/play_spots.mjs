@@ -57,8 +57,14 @@ async function value(page) {
       story: s.story, met: Object.fromEntries(Object.entries(s.met).filter(([id]) => !hosts.includes(id))), reel: s.reel, records: s.flags._axe_bar_records || null,
       axeVisited: s.visitedDay.axe_bar || null, trpg: s.trpg,
       hiyoriFlags: Object.fromEntries(Object.entries(s.flags).filter(([key]) => key.includes("hiyori"))),
-      lovers: s.lovers, relationshipMemories: s.relationshipMemories });
+      lovers: s.lovers, relationshipMemories: s.relationshipMemories, tiers: s.growth?.playTiers?.axe || null });
   }, HOST_INTROS);
+}
+// #3779 10投の難しさの札（初級 レク・中級 アマ・上級 プロ）: 段・押せるか・選んでいるか・閉じた段の開き方
+async function tierRow(page) {
+  return page.locator(".axe-bar-divisions .axe-bar-tier").evaluateAll(nodes => nodes.map(node => ({ tier: node.dataset.tier,
+    name: node.querySelector(".axe-bar-tier-name").textContent, lock: node.querySelector(".axe-bar-tier-lock")?.textContent || null,
+    disabled: node.disabled, pressed: node.getAttribute("aria-pressed") === "true" })));
 }
 async function go(page, id) {
   await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]')); // #796: 新ピンの解錠演出中は選択を受け付けない
@@ -131,6 +137,12 @@ async function declare(page) {
   if (await card.count() && await card.isVisible()) { await card.click(); await lines(page); }
 }
 async function roll(page) { await declare(page); await hit(page, "trpg-roll"); await page.locator(t("trpg-settle")).waitFor(); await hit(page, "trpg-settle"); await lines(page); }
+async function returnFromTable(page) {
+  await page.locator(t("trpg-replay-save-question")).waitFor();
+  await hit(page, "trpg-replay-save-no");
+  await hit(page, "trpg-finish");
+  await hit(page, "trpg-reflect-good");
+}
 async function manualSave(page) {
   await hit(page, "hud-menu"); await hit(page, "menu-tab-system"); await hit(page, "menu-save"); await hit(page, "slot-1");
   await page.waitForFunction(() => localStorage.getItem("suien_remake_slot1") !== null);
@@ -158,7 +170,12 @@ await suite("play-spots", async runCheck => {
     await assertFits(page, ".axe-game button:visible");
     await finishAxe(page, count, false, aimed);
     await capture(page, label + "-axe-result");
-    await page.evaluate(() => { window.oldAxeFinish = document.querySelector('[data-test="axe-action"]'); });
+    await page.evaluate(() => {
+      window.oldAxeFinish = document.querySelector('[data-test="axe-action"]');
+      window.axeToasts = []; // #3779 結果の一言（初めてクリアした段）を、締めの会話の間に消える前に拾う
+      new MutationObserver(list => { for (const m of list) for (const n of m.addedNodes) if (n.classList?.contains("toast")) window.axeToasts.push(n.textContent); })
+        .observe(document.getElementById("toasts"), { childList: true });
+    });
     await hit(page, "axe-action"); await page.locator(map).waitFor();
     const after = await value(page);
     assert.equal(after.money, before.money - 3000); assert.equal(after.stamina, before.stamina - 10 + 14, "Night play is followed by one sleep recovery");
@@ -170,6 +187,12 @@ await suite("play-spots", async runCheck => {
     await capture(page, label + "-axe-return");
     assert.deepEqual(after.affinity, before.affinity); assert.deepEqual(after.met, before.met); assert.deepEqual(after.story, before.story);
     for (const key of ["hiyoriFlags", "lovers", "relationshipMemories"]) assert.deepEqual(after[key], before[key]);
+    // #3779 新しい保存の10投は初級（レク）。初級のクリアは10投の B 以上だけで、3投練習・B に届かない10投（弱い投げで全部落とす）は数えない
+    assert.equal(after.records[mode].last.division, "rec");
+    const passedB = mode === "league" && after.records.league.last.total / after.records.league.last.maximum >= .45;
+    if (aimed && mode === "league") assert(passedB, `Aimed 10 throws reach B at REC (${after.records.league.last.total} points)`);
+    assert.deepEqual(after.tiers?.cleared || [], passedB ? ["easy"] : [], "Only a 10-throw game at B or better clears its tier");
+    assert.equal((await page.evaluate(() => window.axeToasts)).includes("初級をクリア。中級が開いた。"), passedB, "The result tells when a tier opens");
     await page.evaluate(() => { oldAxeFinish.click(); oldAxeFinish.click(); });
     assert.deepEqual(await value(page), after, "A stale finish button must not charge or record twice");
     await hit(page, "pin-axe_bar"); assert.equal(await page.locator(t("map-go")).count(), 0, "The bar is closed next morning");
@@ -187,7 +210,51 @@ await suite("play-spots", async runCheck => {
     await hit(page, "axe-bar-gear-open"); await assertFits(page, ".axe-bar-menu button");
     await capture(page, label + "-axe-shop");
     await hit(page, "axe-bar-gear-back"); await assertFits(page, ".axe-bar-menu button");
+    if (!(aimed && mode === "league")) return;
+    // #3779 初級をクリアした次の夜（保存・読込の後）: 中級が開いて既定になり、上級は閉じたまま。選び直して、開いた中級（アマ）の10投を始められる
+    assert.deepEqual(await tierRow(page), [
+      { tier: "easy", name: "初級 レク", lock: null, disabled: false, pressed: false },
+      { tier: "normal", name: "中級 アマ", lock: null, disabled: false, pressed: true },
+      { tier: "hard", name: "上級 プロ", lock: "中級クリアで開く", disabled: true, pressed: false }]);
+    assert.match(await page.locator(t("axe-bar-tier-line")).textContent(), /^初級✓ 中級— 上級— · 上級クリアで白火1 · クリア：その部門の10投で、初級はB・中級と上級はAランク以上$/);
+    await hit(page, "axe-bar-tier-easy");
+    assert.deepEqual((await tierRow(page)).map(row => row.pressed), [true, false, false]);
+    assert.match(await page.locator(t("axe-bar-division-note")).textContent(), /何も閉じない/);
+    await hit(page, "axe-bar-tier-normal");
+    assert.match(await page.locator(t("axe-bar-division-note")).textContent(), /半分（5投）のあいだ閉じる/);
+    const chosen = await value(page);
+    await hit(page, "axe-bar-league"); await phase(page, "choice");
+    assert.equal(await page.locator(t("axe-game")).getAttribute("data-division"), "am", "The chosen open tier starts its division");
+    await hit(page, "axe-cancel"); await page.locator(map).waitFor();
+    assert.deepEqual(await value(page), chosen, "A cancelled game records no clear");
+    assert.deepEqual(chosen.tiers, { cleared: ["easy"], last: "normal" }, "Only the last chosen tier is remembered");
   }, options);
+
+  // #3779 新しい保存: 初級（レク）だけが開いていて、中級・上級は押せず、開き方を札に出す。PC と横持ちタッチで札が収まり、
+  // 閉じた札を実際に押しても選ばれない。開いた初級の10投を始めて取り消しても、何も記録しない
+  for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(label + "-axe-tiers-locked-until-cleared", async page => {
+      await setup(page); const before = await value(page);
+      await go(page, "axe_bar"); await assertFits(page, ".axe-bar-menu button"); await assertFits(page, ".axe-bar-tier-lock");
+      assert.deepEqual(await tierRow(page), [
+        { tier: "easy", name: "初級 レク", lock: null, disabled: false, pressed: true },
+        { tier: "normal", name: "中級 アマ", lock: "初級クリアで開く", disabled: true, pressed: false },
+        { tier: "hard", name: "上級 プロ", lock: "中級クリアで開く", disabled: true, pressed: false }]);
+      assert.equal(await page.locator(".axe-bar-division-label").textContent(), "10投の難しさ");
+      assert.equal(await page.locator(t("axe-bar-tier-line")).textContent(), "初級— 中級— 上級— · 上級クリアで白火1 · クリア：その部門の10投で、初級はB・中級と上級はAランク以上");
+      await capture(page, label + "-axe-tiers");
+      for (const id of ["normal", "hard"]) {
+        const closed = page.locator(t("axe-bar-tier-" + id));
+        if (label === "touch") await closed.tap({ force: true }); else await closed.click({ force: true });
+      }
+      assert.deepEqual((await tierRow(page)).map(row => row.pressed), [true, false, false], "A closed tier cannot be chosen");
+      assert.match(await page.locator(t("axe-bar-division-note")).textContent(), /何も閉じない/);
+      await hit(page, "axe-bar-league"); await phase(page, "choice");
+      assert.equal(await page.locator(t("axe-game")).getAttribute("data-division"), "rec");
+      await hit(page, "axe-cancel"); await page.locator(map).waitFor();
+      assert.deepEqual(await value(page), before, "Looking at the tiers and cancelling record nothing");
+    }, options);
+  }
 
   await check("first-play-owner-lesson-then-paid-game", async page => {
     await setup(page, { lessonDone: false }); const before = await value(page);
@@ -333,7 +400,7 @@ await suite("play-spots", async runCheck => {
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
     assert.equal(saved.slot, 2); assert.equal(saved.day, 16); assert(saved.trpg.cleared["ordinary-cup"]);
     assert.equal(saved.money, before.money - 500); assert.equal(saved.stamina, before.stamina); assert.deepEqual(saved.stats, before.stats);
-    await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-good");
+    await returnFromTable(page);
     await hit(page, "trpg-campaign-close"); await hit(page, "ch2-morning-home"); await page.locator(map).waitFor();
     assert.equal(await page.locator(map).getAttribute("data-region"), "home");
     const after = await value(page); assert.equal(after.money, before.money - 500 - 200, "One return ticket after the night table"); assert.equal(after.day, 17); assert.equal(after.slot, 0, "Table must consume exactly one night");
@@ -393,7 +460,7 @@ await suite("play-spots", async runCheck => {
       assert.equal(saved.stamina, before.stamina); assert.deepEqual(saved.stats, before.stats);
       assert.deepEqual(withoutHostIntros(saved.met), before.met);
       for (const key of ["affinity", "story", "lovers", "relationshipMemories"]) assert.deepEqual(saved[key], before[key]);
-      await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-good");
+      await returnFromTable(page);
       await hit(page, "trpg-campaign-close"); await hit(page, "ch2-morning-home"); await page.locator(map).waitFor();
       assert.equal(await page.locator(map).getAttribute("data-region"), "home");
       const after = await value(page); assert.equal(after.day, 23); assert.equal(after.slot, 0);

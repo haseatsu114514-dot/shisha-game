@@ -8,7 +8,7 @@ import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { state, save } from "../core/state.js";
-import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast, withChapterLoading, withSceneLoading } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast, withChapterLoading, withSceneLoading, retireScreen } from "../core/ui.js";
 import { saveFlow } from "../scenes/saves.js";
 import { planeRide } from "../core/scene-motions.js";
 import { defeatFade } from "../core/transitions.js";
@@ -35,10 +35,12 @@ import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionC
 import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
+import { retryAssistOffer } from "./retry-assist.js";
+import { chapterFourRetryContext, recordChapterFourRetryChoice } from "./ch4-tournament-state.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
-import { CH4_MORNING_FILES, CH4_MORNING_FLAG, chapterFourMorningDue, chapterFourMorningScript } from "./ch4-morning.js";
+import { CH4_MORNING_FILES, CH4_MORNING_FLAG, chapterFourMorningDue, chapterFourMorningScript, chapterFourResultScript } from "./ch4-morning.js";
 import { CH4_LOVERS_FILES, CH4_LOVERS_FLAG, CH4_LOVERS_PETIT, CH4_LOVERS_SCENE, chapterFourLoversDue, chapterFourLoversScript } from "./ch4-lovers.js";
 import { markPetit } from "../core/petit-shuraba.js";
 import { strainSuspect } from "../core/lover-strain.js";
@@ -137,8 +139,10 @@ async function readScene(owner, id) {
   if (!source) throw new Error(`台本がありません: ${id}`);
   // 台本の metadata.bg は持ち込まず、ch4-progress.js の対応表（仮置き）で背景を決める。
   const craft = chapterFourProgress(state).match?.craft;
+  // 結果発表の後ろには、来てくれた人の一言をつなぐ（ch4-morning.js・#3097 第3弾）
   const actual = id === "ch4_final" && craft ? chapterFourFinalDialogue(source, state, craft)
-    : id === "ch4_defeat" && craft ? chapterFourDefeatDialogue(source, state, craft) : source;
+    : id === "ch4_defeat" && craft ? chapterFourDefeatDialogue(source, state, craft)
+    : id === "ch4_result" ? chapterFourResultScript(source, state, DB.dialogues) : source;
   const dialogue = { ...actual, metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   hud();
@@ -146,6 +150,7 @@ async function readScene(owner, id) {
   if (id === "ch4_sumi_return" && !chapterFourRead(state, id)) {
     await planeRide(() => setBg(bgUrl(CH4_SCENE_BG[id]), { instant: true }), { to: "home" });
     if (!current(owner)) return false;
+    showScreen("homecoming", null); // 帰国済みの表示。読了するまで保存の段は進めない。
   }
   await setBg(bgUrl(CH4_SCENE_BG[id] || camelSceneBg(id) || (CH4_BEACH_SCENE_FILES.ch4_beach.includes(id) ? CH4_BEACH_BG : null)
     || CH4_EVENING_BG));
@@ -252,8 +257,9 @@ async function renderCompanionChoice(owner) {
   card(owner, "companion", "出発前・同行の選択",
     lovers.length ? "ドバイへ一緒に行く恋人を、1人まで選べる。選ばなかった恋人も、別の便で応援に来られる。"
       : "今回は、一緒に行く恋人はいない。",
-    [...lovers.map(id => button(owner, DB.characters[id]?.name || id, `companion-${id}`, choose(id))),
-      button(owner, "同行なし", "companion-none", choose(null), !lovers.length)]);
+    [...lovers.map(id => button(owner, displayName(id, state, { context: "private" }), `companion-${id}`, choose(id))),
+      button(owner, "同行なし", "companion-none", choose(null), !lovers.length)],
+    chapterFourPrepPending(state) ? "準備初日の昼はtonariで特訓。夜は地図で行き先を選べる。" : "");
 }
 
 /** 読んだ後にその場にいる人へ、心得の盤で灯した授業を相談できる場面（SBD91。灯していなければ何も起きない） */
@@ -570,13 +576,41 @@ async function showChapterFourCommittedResult(result) {
   const notes = [result.failure ? "完了した工程から振り返ろう。" : `はじめは${result.rank}位。審査員三人、それぞれの10点が出揃った。`,
     ...(result.failure ? [] : [`総合 ${result.total.toFixed(1)} ／ ${parts}`]),
     ...craftReviewLines(match?.craft)];
-  const { chapterFourStandingsView } = await import("./ch4-standings.js");
+  const { chapterFourStandingsView, playChapterFourVotes, CH4_CONTEST_MODAL, chapterFourNameOf } = await import("./ch4-standings.js");
+  const show_ = await import("../craft/tournament-show.js");
   // 結果発表: 会場の拍手（1位はファンファーレも）。制作を完了できなかった時は鳴らさない。
-  if (!result.failure) { SE.crowd?.(2.4); if (result.rank === 1) SE.fanfare?.(); }
-  await modal({ title: result.failure ? "制作を完了できなかった" : `世界大会 ${result.rank}位`,
-    body: match?.votes ? chapterFourStandingsView({ ...match, votes: result.votes || match.votes }, { rows: result.rows, notes, test: "ch4-result", final: true })
-      : notes.join("\n"),
+  const reaction = () => { if (!result.failure) { SE.crowd?.(2.4); if (result.rank === 1) SE.fanfare?.(); } };
+  const votes = result.votes || match?.votes;
+  const view = match?.votes ? chapterFourStandingsView({ ...match, votes }, { rows: result.rows, notes, test: "ch4-result", final: true }) : null;
+  // この場で最後の票を入れた時だけ、票が入る進行を見せる（TSH05）。出そろうまで、見出しの順位と講評の行は伏せる。
+  const before = view && !result.failure ? (await import("./ch4-tournament.js")).takeChapterFourLastVotes() : null;
+  // この場で結果が決まった時だけ、持ち点の前に10カウント（TSH10）。LOAD後の再表示では流さない。
+  if (before && match?.craft) {
+    const { resultCountdown } = await import("../craft/result.js");
+    const { CH4_CONTESTANTS } = await import("./ch4-tournament-state.js");
+    await resultCountdown(match.craft, show_.countdownKind(result.rank), null, { contestants: CH4_CONTESTANTS,
+      event: "HAZE: GRAND SMOKE", sub: "審査員3人、最後の持ち点の行方。", nameOf: chapterFourNameOf });
+    retireScreen();
+  }
+  const closed = modal({ title: result.failure ? "制作を完了できなかった" : before ? "世界大会の結果" : `世界大会 ${result.rank}位`,
+    body: view || notes.join("\n"), className: view ? CH4_CONTEST_MODAL : "",
     options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
+  const show = view ? playChapterFourVotes(view, match, { before, rows: result.rows, votes, final: true, late: [...view.querySelectorAll(":scope > .ch2-contest-note")] }) : { moved: false };
+  // 票が出そろったら: 見出しに順位、拍手。この場で決まった時は大見出し（モーダルの上）と、優勝なら紙吹雪（TSH10）。
+  const finish = async () => {
+    const box = view?.closest(".modal-box"), title = box?.querySelector("h3");
+    if (view && !title?.isConnected) return;
+    if (title && before) title.textContent = `世界大会 ${result.rank}位`;
+    reaction();
+    if (!before || !box) return;
+    await show_.resultSplash(result.rank, { event: "HAZE: GRAND SMOKE", host: layers.modal });
+    if (!box.isConnected) return;
+    if (result.rank === 1) show_.showConfetti(box, { count: 80 });
+    box.querySelector(".modal-actions .btn.primary")?.focus({ preventScroll: true });
+  };
+  if (show.moved) show.done.then(finish);
+  else finish();
+  await closed;
 }
 
 async function runTournament(owner) {
@@ -628,10 +662,12 @@ async function renderDefeat(owner, variant = null, { fresh = false } = {}) {
   await warmGameOver();
   if (!current(owner)) return;
   hud();
-  const root = buildGameOver({ context, variant,
-    onRetry: () => perform(owner, async () => {
+  // 3敗目からは、再挑戦を押した同じ画面で難易度を選ぶ（WIN14）。選んだ段は次の一台の開始まで保存する。
+  const root = buildGameOver({ context, variant, difficulty: retryAssistOffer(chapterFourRetryContext(state)),
+    onRetry: level => perform(owner, async () => {
       if (!root.isConnected || chapterFourTournamentOutcome(state) !== "loss") return;
       if (!chapterFourAfterDefeat(state)) return;
+      recordChapterFourRetryChoice(state, level);
       save();
       await renderStage(owner);
     }),

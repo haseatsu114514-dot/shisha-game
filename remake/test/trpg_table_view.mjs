@@ -161,9 +161,11 @@ for (const scenario of scenarios) {
   });
   test(scenario.id + ': support cancellation does not spend; confirmed help and reroll share seat receipts', () => {
     const mounted = mount(scenario); const { api, root, q, drain, roll, declare, interview, twist } = mounted; q('trpg-start').click(); drain(); declare('listen'); roll();
-    const actor = scenario.cast.find(c => c.abilityType === 'reroll').id;
+    const reroller = scenario.cast.find(c => c.abilityType === 'reroll');
+    const pcName = api.snapshot().pc.name;
+    assert.equal(root.querySelector('.trpg-roll-trump').textContent, pcName + 'の「' + reroller.ability + '」 · 連携札1枚');
     q('trpg-reroll-1').click();
-    assert(q('trpg-reroll-receipt').textContent.includes(actor));
+    assert(q('trpg-reroll-receipt').textContent.endsWith(pcName + 'の振り直し'));
     assert.equal(root.querySelectorAll('.trpg-reroll-stamp').length, 1);
     for (const die of root.querySelectorAll('.trpg-die')) {
       const face = die.querySelector('.trpg-d20-value'); assert(face, 'd20 has a numeric face');
@@ -171,18 +173,23 @@ for (const scenario of scenarios) {
       assert(Number(face.textContent) >= 1 && Number(face.textContent) <= 20);
       assert.equal(die.querySelectorAll('.trpg-pip').length, 0, 'No d6 pips remain');
     }
-    assert.equal(api.snapshot().used[actor], true); q('trpg-settle').click(); drain(); interview();
+    assert.equal(api.snapshot().used[reroller.id], true); q('trpg-settle').click(); drain(); interview();
     for (const spot of scenario.spots.slice(0, 3)) { q('trpg-spot-' + spot.id).click(); drain(); }
     q('trpg-interpret').click(); q('trpg-hypothesis-' + scenario.hypotheses[0].id).click(); drain(); twist();
     for (const field of Object.keys(api.snapshot().plan).filter(f => scenario.flow?.prepare?.includes(f) || !scenario.flow && ['aroma', 'seat'].includes(f))) {
       q('trpg-choice-tab-' + field).click(); q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click();
     }
     q('trpg-prepare-open').click(); declare('prepare'); const helper = scenario.checks.prepare.helper;
+    const helperRole = api.snapshot().companions[helper];
+    const helperName = scenario.companionBuilds[helper][helper].find(role => role.id === helperRole).name;
+    const aid = root.querySelector('.trpg-aid');
+    assert(aid.querySelector('strong').textContent.startsWith(helperName + 'の「'));
+    assert(aid.querySelector('.trpg-aid-art').querySelector('img').getAttribute('src').endsWith('/costumes/' + scenario.id + '/' + helper + '_' + helperRole + '.webp'));
     const before = JSON.stringify(api.snapshot()); q('trpg-support-' + helper).checked = true; q('trpg-support-' + helper).change(); q('trpg-check-back').click();
     assert.equal(JSON.stringify(api.snapshot()), before);
     q('trpg-prepare-open').click(); declare('prepare'); assert(!q('trpg-support-' + helper).checked); q('trpg-support-' + helper).checked = true; roll();
     assert(q('trpg-actor-receipt').textContent.includes(scenario.cast.find(c => c.id === 'hajime').sheet.name), 'the roll names the declared character');
-    assert(q('trpg-helper-receipt').textContent.includes(helper)); assert.equal(api.snapshot().used[helper], true);
+    assert(q('trpg-helper-receipt').textContent.endsWith(helperName + ' ＋7')); assert.equal(api.snapshot().used[helper], true);
     const seat = root.querySelectorAll('.trpg-table-person').find(n => n.dataset.speaker === helper);
     assert.equal(seat.querySelector('.trpg-seat-ability').dataset.spent, 'true');
     q('trpg-settle').click(); drain();
@@ -206,6 +213,7 @@ for (const scenario of scenarios) {
       for (const field of scenario.flow.serve) q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click();
       q('trpg-serve-open').click(); declare('serve'); roll(); q('trpg-settle').click(); drain();
       const club = root.querySelector('[data-test="trpg-ending-club"]');
+      extra.afterEnding?.(mounted);
       const out = { cover, club: club && { up: club.dataset.up, text: club.textContent }, completions: mounted.completions };
       mounted.api.destroy(); return out;
     };
@@ -219,6 +227,28 @@ for (const scenario of scenarios) {
     const steady = play({ growth: 1, onComplete: () => ({ club: { gained: 1, points: 8, rank: 2, name: 'なじみの部', growth: 1, rankUp: false, growthUp: 0, next: { ...next, need: 8 } } }) });
     assert.equal(steady.club.up, 'false'); assert.match(steady.club.text, /部の実績 ＋1次のランクまで あと 8/); assert.doesNotMatch(steady.club.text, /能力＋/);
     assert.equal(play({ growth: 1, onComplete: () => ({ club: { gained: 0, rankUp: false, growthUp: 0, next } }) }).club, null, 'nothing gained, nothing shown');
+    for (const action of ['yes', 'no', 'escape', 'load']) {
+      const decisions = [];
+      const ending = play({
+        onComplete: () => ({ chooseReplay: keep => { decisions.push(keep); return keep ? '本棚にリプレイを保存しました。' : 'リプレイは保存しませんでした。'; } }),
+        afterEnding: ({ api, root, q }) => {
+          const prompt = q('trpg-replay-save-question'), yes = q('trpg-replay-save-yes'), no = q('trpg-replay-save-no');
+          assert.equal(prompt.getAttribute('role'), 'dialog');
+          assert.equal(documentPort.activeElement, prompt, 'held Enter cannot accept a focused save button');
+          assert.match(prompt.textContent, /保存しますか？.*本編の進行は残ります/);
+          assert.deepEqual(decisions, [], 'reaching the prompt does not save a replay');
+          if (action === 'load') { api.destroy(); yes.click(); assert.deepEqual(decisions, []); return; }
+          if (action === 'escape') {
+            for (const close of root.events.keydown) close({ key: 'Escape', target: prompt, preventDefault() {} });
+          } else (action === 'yes' ? yes : no).click();
+          yes.click(); no.click();
+          assert.equal(root.querySelector('[data-test="trpg-replay-save-question"]'), null);
+          assert.deepEqual(decisions, [action === 'yes'], 'repeated clicks and Escape cannot accept twice');
+          assert.equal(documentPort.activeElement, q('trpg-finish'));
+        },
+      });
+      assert.equal(ending.completions, 1, 'the replay choice or LOAD cannot spend a second action');
+    }
   });
   // じっくり調べる（目星・TRF14）: 見立ての卓で一度だけ振れる。出目と結果の帯・違いそうな見立ての付箋が出て、しおりにも残る。
   test(scenario.id + ': a closer look rolls once on the guess board, marks the wrong guesses and is kept in the bookmark', () => {

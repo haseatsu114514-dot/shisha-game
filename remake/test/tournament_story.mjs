@@ -269,10 +269,68 @@ assert(!nationalInterludeSpeakers.some(s=>['uezono','naru','adam','minto','ageha
  const ch1=src('ch1.js');
  for (const event of banter[1]) assert.match(ch1,new RegExp(`playTournamentEvent\\(cs, "${event}"`),`ch1 plays ${event}`);
  // 優勝の流れでも、会長の二口（judging）の後・カウントの前に結果発表前を読む。
- assert.match(ch1,/play\(\{ \.\.\.judging, lines: judgingLines \}, \{ bg: STAGE \}\);\s*\/\/[^\n]*\n\s*await playTournamentEvent\(cs, "preresult", \{ bg: STAGE, context: \{ win: true \} \}\);\s*await resultCountdown/);
+ assert.match(ch1,/playLive\(\{ \.\.\.judging, lines: judgingLines \}, venue\(\)\);\s*\/\/[^\n]*\n\s*await playTournamentEvent\(cs, "preresult", venue\("[^"]*", \{ context: \{ win: true \} \}\)\);\s*await resultCountdown/);
+ // 第2〜4章の合間の掛け合いの前にアイキャッチ（TSH11）。中身は tournament-show.js の intervalCard。
+ for (const file of ['ch2-tournament.js','ch3-tournament.js']) assert.match(src(file),/card: intervalCard\(event, p\.voted \? standings\(p\) : \[\]\)/,file);
+ assert.match(src('ch4-tournament.js'),/card: intervalCard\(event, p\.voted \? rows : \[\]\)/);
+ const show=fs.readFileSync(new URL('../js/craft/tournament-show.js',import.meta.url),'utf8');
+ for (const event of ['interlude_pull','interlude1','interlude2','interlude3']) assert.match(show,new RegExp(`\\n  ${event}: \\["`),event);
+ // 会場の会話は舞台の背景と中継の枠（TSH04）を venue() でそろえる。
+ assert.match(ch1,/function venue\(scene = null, extra = \{\}\) \{[\s\S]*?return \{ bg: STAGE, live: \{ event: "SMOKE CROWN CUP", phase: livePhase, standings: ch1LiveStandings\(state\.tournament\) \}, \.\.\.extra \};/);
  assert.match(src('ch2-tournament.js'),/commentary\(owner, "preresult"\)/);
  assert.match(src('ch2-tournament.js'),/commentary\(owner, interlude\)\) return;\s*\/\/[^\n]*\n\s*if \(p\.step === 8 && !await commentary\(owner, "serve"\)\) return;/,'ch2 serve follows interlude_pull');
  assert.match(src('ch3-tournament.js'),/p\.step === 0 \? "prestart" : p\.step === 8 \? "serve"/);assert.match(src('ch3-tournament.js'),/commentary\(owner, "preresult"\)/);
- assert.match(src('ch4-tournament.js'),/p\.step === 8 \? "serve"/);assert.match(src('ch4-tournament.js'),/p\.step === 0 \? \["prestart", stepEvent\]/);assert.match(src('ch4-tournament.js'),/playTournamentEvent\(p\.craft, "preresult"\)/);
+ assert.match(src('ch4-tournament.js'),/p\.step === 8 \? "serve"/);assert.match(src('ch4-tournament.js'),/p\.step === 0 \? \["prestart", stepEvent\]/);assert.match(src('ch4-tournament.js'),/playTournamentEvent\(p\.craft, "preresult"/);
+}
+// #3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」）: 第4章の心の声・区切りの一言・客席の声、第3章の手を離した後。
+{
+ const {tournamentStoryLeadIn,CH4_STANDS_IDS}=await import('../js/craft/tournament-story-data.js');
+ const c4={...base,chapter:4},c3={...base,chapter:3},before=JSON.stringify([c3,c4]);
+ const allText=d=>d.lines.map(l=>l.text).join('\n');
+ const srcOf=name=>fs.readFileSync(new URL(`../js/chapters/${name}`,import.meta.url),'utf8');
+ // 第4章: 吸い出しの前の4人の心の声（第2章の interlude_pull_2 に当たる）。4人だけで、声に出さない。
+ const pull=tournamentStoryDialogue(c4,'interlude_pull',()=>0);
+ assert(pull.lines.length>=4&&pull.lines.length<=7);
+ assert.deepEqual(pull.lines.map(l=>l.speaker).filter(Boolean),['naru','master_hookah','sheikh','hajime']);
+ assert(pull.lines.filter(l=>l.speaker).every(l=>/^（.*）$/.test(l.text)),'chapter4 interlude_pull is inner voice');
+ assert.doesNotMatch(allText(pull),/\d|点|先頭|順位|優勝/);
+ // 第4章: 提供後・調整1回目の後の審査員の一言（第2章の区切りの実況に当たる）。結果・点数は言わない
+ const judges=['sensu','emil','da_silva'];
+ for (const event of ['interlude1','interlude2']) {
+  const lead=tournamentStoryLeadIn(c4,event);
+  assert(lead&&lead.lines.length>=2&&lead.lines.length<=4,`chapter4 ${event} round-end`);
+  assert(lead.lines.some(l=>judges.includes(l.speaker))&&lead.lines.every(l=>['',...judges].includes(l.speaker)));
+  assert.doesNotMatch(allText(lead),/\d|点|先頭|順位|優勝|なる選手/);
+ }
+ for (const event of ['opening','packed','waiting','serve','interlude_pull','interlude3','preresult']) assert.equal(tournamentStoryLeadIn(c4,event),null);
+ // 客席の声: 調整1回目の後は来てくれた人の一人目、提供後は二人目（いる時だけ）。朝の一言のある全員に台本があり、知らない人・来ていない時は出さない
+ const plain=tournamentStoryLeadIn(c4,'interlude2').lines.length,plain1=tournamentStoryLeadIn(c4,'interlude1').lines.length;
+ assert.equal(tournamentStoryLeadIn(c4,'interlude1',{supporters:['ageha']}).lines.length,plain1,'One supporter: only after the first adjustment');
+ const two=tournamentStoryLeadIn(c4,'interlude1',{supporters:['ageha','adam']}).lines.slice(plain1);
+ assert(two.length===2&&two.some(l=>l.speaker==='adam')&&!two.some(l=>l.speaker==='ageha'),'The second supporter calls after the serve');
+ assert(tournamentStoryLeadIn(c4,'interlude2',{supporters:['ageha','adam']}).lines.slice(plain).some(l=>l.speaker==='ageha'));
+ assert.equal(tournamentStoryLeadIn(c4,'interlude2',{supporters:['naru']}).lines.length,plain);
+ assert.equal(tournamentStoryLeadIn(c4,'interlude2',{supporters:[]}).lines.length,plain);
+ const morning=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch4_morning.json',import.meta.url))).dialogues.map(d=>d.dialogue_id);
+ assert.deepEqual([...CH4_STANDS_IDS].sort(),morning.filter(id=>id.startsWith('ch4_morning_cheer_')).map(id=>id.slice('ch4_morning_cheer_'.length)).sort());
+ for (const who of CH4_STANDS_IDS) {
+  const lead=tournamentStoryLeadIn(c4,'interlude2',{supporters:[who]});
+  assert.equal(lead.lines.length,plain+2,`${who} calls from the stands`);
+  const stands=lead.lines.slice(plain);
+  assert(stands.every(l=>['','hajime',who].includes(l.speaker)),`${who}: only that person and Hajime`);
+  assert.doesNotMatch(allText({lines:stands}),/\d|点|先頭|順位|優勝|勝っ|負け/,`${who}: no result or score`);
+ }
+ // 第3章: 最後の調整の後、手を離した四人の待ち時間。全国の4人と客席のましろ（地の文）だけ。結果・味の回復は言わない
+ const wait3=tournamentStoryDialogue(c3,'interlude3',()=>0);
+ assert(wait3.lines.length>=4&&wait3.lines.length<=7);
+ assert(wait3.lines.every(l=>['','hajime','ayatori','steve','volk'].includes(l.speaker)));
+ assert.match(allText(wait3),/ましろ/);
+ assert.doesNotMatch(allText(wait3),/\d|点|優勝|代表|順位|味がしない|味が戻/);
+ assert.equal(tournamentStoryLeadIn(c3,'interlude3'),null);
+ assert.equal(JSON.stringify([c3,c4]),before,'New tournament talk must not alter craft/results');
+ // 各章の runner が呼ぶ: 第3章は講評の前（講評を読んだ保存には出さない）、第4章は吸い出しの前（提供の掛け合いの前だけ）
+ assert.match(srcOf('ch3-tournament.js'),/!owner\.cs\.tournamentStory\?\.seen\?\.includes\("tasting"\) && !await commentary\(owner, "interlude3"\)\) return;\s*if \(!await commentary\(owner, "tasting"\)\) return;/);
+ assert.match(srcOf('ch4-tournament.js'),/p\.step === 8 \? \["interlude_pull", stepEvent\]/);
+ assert.match(srcOf('ch4-tournament.js'),/supporters: chapterFourMorningCheers\(state\)\.cheers\.slice\(0, 2\)/);
 }
 console.log('PASS: four tournaments, judges, packings, mix, crowds, temperature/care callbacks, legacy saves and no score mutation');

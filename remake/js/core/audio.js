@@ -566,6 +566,20 @@ const BLIP = {
   mashiro: 880, samechan: 1250,
 };
 
+/** 心得の盤で続けて灯す時の音の階段（半音の数。五音音階で2オクターブ） */
+const BOARD_SCALE = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24];
+/**
+ * 心得の盤の火の音（SBD138①）: 録音の焚き火のはぜる音（RECORDED_SE.crackle と同じ CC0 の録音）を、合成の音階に重ねる。
+ * 音階（続けて灯すほど上がる）は合成のまま残し、録音で火の手触りを足す。録音がまだ読めていなければ読み込みだけ始め、合成だけ鳴らす
+ */
+function boardCrackle({ gain = .45, rate = 1, delay = 0 } = {}) {
+  const files = RECORDED_SE.crackle.files, ready = files.filter((file) => seBuffers.has(file));
+  if (!ready.length) { files.forEach(loadSeBuffer); return; }
+  const choices = ready.filter((file) => file !== lastVariant.get("board-crackle"));
+  const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
+  lastVariant.set("board-crackle", file);
+  recordedVoice(file, { gain, rate, delay });
+}
 export const SE = {
   click: () => tone({ freq: 1200, to: 900, type: "triangle", dur: 0.05, vol: 0.12 }),
   select: () => { tone({ freq: 660, type: "triangle", dur: 0.08, vol: 0.18 }); tone({ freq: 990, type: "triangle", dur: 0.1, vol: 0.14, delay: 0.05 }); },
@@ -580,6 +594,12 @@ export const SE = {
   punch: () => { tone({ freq: 2400, to: 1400, type: "square", dur: 0.03, vol: 0.08 }); noise({ dur: 0.05, vol: 0.12, filter: 5000, type: "highpass" }); },
   perfect: () => { tone({ freq: 1320, type: "triangle", dur: 0.09, vol: 0.18 }); tone({ freq: 1760, type: "triangle", dur: 0.14, vol: 0.16, delay: 0.06 }); },
   good: () => tone({ freq: 990, type: "triangle", dur: 0.1, vol: 0.14 }),
+  // 続けて決めた時の音（n＝何連続め）。続くほど、音階を一つずつ上がる（8つめで頭打ち）
+  chain: (n = 1) => {
+    const f = 1047 * 2 ** ([0, 2, 4, 5, 7, 9, 11, 12][Math.min(8, Math.max(1, Math.round(n))) - 1] / 12);
+    tone({ freq: f, type: "triangle", dur: 0.09, vol: 0.18 });
+    tone({ freq: f * 1.5, type: "triangle", dur: 0.14, vol: 0.16, delay: 0.06 });
+  },
   miss: () => tone({ freq: 220, to: 160, type: "sawtooth", dur: 0.16, vol: 0.08 }),
   just: () => { tone({ freq: 1568, type: "sine", dur: 0.3, vol: 0.2 }); tone({ freq: 2093, type: "sine", dur: 0.4, vol: 0.14, delay: 0.04 }); noise({ dur: 0.25, vol: 0.08, filter: 8000, type: "highpass" }); },
   crackle: () => { for (let i = 0; i < 4; i++) noise({ dur: 0.03, vol: 0.1, filter: 2500 + Math.random() * 3000, delay: Math.random() * 0.25, q: 2 }); },
@@ -631,13 +651,27 @@ export const SE = {
   // 能力ボーナスの通知に合わせた短い上昇音。通常の通知音より控えめにする。
   slotBonus: () => [784, 1175, 1568].forEach((freq, i) => tone({ freq, type: "triangle", dur: i === 2 ? 0.18 : 0.1, vol: 0.08, delay: i * 0.07 })),
   // 心得の盤: 仮置きは短い火の音、確定は柔らかい和音。いずれもオリジナル合成音。
-  boardLight: () => {
+  // 続けて灯すほど音が一段ずつ上がる（step＝この決定までに仮置きした数−1。五音の階段で、2オクターブ上で止まる。SBD132）。
+  boardLight: (step = 0) => {
     if (!seEnabled()) return;
-    [659, 988].forEach((freq, i) => tone({ freq, type: "sine", dur: .18, vol: .09, delay: i * .045 }));
+    const at = Math.max(0, Math.min(BOARD_SCALE.length - 1, Math.floor(step) || 0)), base = 659 * 2 ** (BOARD_SCALE[at] / 12);
+    [base, base * 1.5].forEach((freq, i) => tone({ freq, type: "sine", dur: .2, vol: i ? .08 : .11, delay: i * .045, attack: .003 }));
+    // 火が付く手触り: はぜる音を、段が上がるほど少し高く（速く）
+    boardCrackle({ gain: .42, rate: 1 + at * .04 });
+  },
+  // 決定で火が走る時の、マス一つぶんの短い音（同じ階段を上る）
+  boardSpark: (step = 0) => {
+    if (!seEnabled()) return;
+    const at = Math.max(0, Math.min(BOARD_SCALE.length - 1, Math.floor(step) || 0)), freq = 523 * 2 ** (BOARD_SCALE[at] / 12);
+    tone({ freq, type: "triangle", dur: .12, vol: .06, attack: .002 });
+    if (at % 2 === 0) boardCrackle({ gain: .28, rate: 1.15 + at * .03 }); // 一マスおきに小さくはぜる（重ねすぎない）
   },
   boardCommit: () => {
     if (!seEnabled()) return;
     [523, 659, 784, 1047].forEach((freq, i) => tone({ freq, type: "sine", dur: .32, vol: .07, delay: i * .065 }));
+    // 締め: 低く遅いはぜる音（火が一度に燃え上がる）を和音の頭に重ねる
+    boardCrackle({ gain: .7, rate: .8 });
+    boardCrackle({ gain: .4, rate: 1.1, delay: .12 });
   },
   puka: () => { tone({ freq: 880, to: 1760, type: "sine", dur: 0.16, vol: 0.2 }); tone({ freq: 1760, type: "sine", dur: 0.28, vol: 0.12, delay: 0.14 }); },
   pugo: () => { tone({ freq: 140, to: 70, type: "sine", dur: 0.22, vol: 0.3 }); noise({ dur: 0.08, vol: 0.12, filter: 500 }); },
@@ -736,6 +770,13 @@ export function playAxeSe(id, { scored = true, rate = 1 } = {}) {
 // 斧投げの合成音（録音が読めるまでの代わり）。共通の音量・ミュート・非表示停止を通す。
 // 風切り→木への衝突→割れ・軋みを別の帯域にする。
 function axeSynth(id, { scored = true } = {}) {
+  if (id === "goalFanfare") {
+    // A single ascending phrase through the existing SE bus, in place of the result cheer.
+    for (const [freq, delay, dur] of [[587, 0, .09], [740, .09, .09], [880, .18, .12], [1175, .30, .26]]) {
+      tone({ freq, delay, dur, type: "triangle", vol: .19, attack: .008 });
+    }
+    return;
+  }
   if (id === "killshot") { axeSynth("stick"); SE.perfect(); return; }
   if (id === "bounce") { tone({ freq: 240, to: 150, type: "triangle", dur: .08, vol: .12 }); noise({ dur: .03, vol: .08, filter: 2600 }); return; }
   if (id === "stop") { SE.select(); return; }

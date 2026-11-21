@@ -73,8 +73,9 @@ for (const key of ["affinity", "affinityCarry", "loveCarry", "lovers", "loveLeve
 }
 assert.equal(next.money, pkg.money);
 assert.ok(next.money <= MAX_MONEY);
-assert.ok(!next.owned.includes("suyaki_minto"));
-assert.equal(next.equip.bowl, initial.equip.bowl);
+// 好感度の締めくくりでもらった専用ハガルは引き継ぎ、装備したまま始まる（台帳 NGC01）
+assert.ok(next.owned.includes("suyaki_minto"));
+assert.equal(next.equip.bowl, "suyaki_minto");
 assert.ok(Object.values(next.equip).every(id => next.owned.includes(id)));
 assert.deepEqual(next.keepsakes, pkg.keepsakes);
 assert.ok(next.keepsakes.every(id => KEEPSAKE_ORIGINS[id] && KEEPSAKE_ORIGINS[id] !== "person"));

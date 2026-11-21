@@ -60,7 +60,7 @@ export const LONGLONG_VISIT_STORIES = Object.freeze([
 ].map(entry => Object.freeze(entry)));
 export const longlongStoryRead = (flags, scene) => flags?._ch4_longlong?.read?.[scene] === true;
 // 第4・5章ドバイの太陽・シェイク（2026-11-11 オーナー「ルートを新設」RVE03。chapters/dubai-bonds.js）。
-// 太陽は第4章のFESTAで段階1〜3（prelude: FESTAは第4章だけなので締めくくりの前提にしない）、第5章の屋敷の中庭で段階4・5。
+// 太陽は第4章のFESTAで段階1〜3（prelude: FESTAは第4章だけなので締めくくりの前提にしない）、第5章の屋敷の中庭で段階4〜6。
 // シェイクは第5章の屋敷で段階1〜5。既読は flags._dubai_bonds.read。
 export const DUBAI_BOND_FLAG = "_dubai_bonds";
 export const DUBAI_BOND_STORIES = Object.freeze({
@@ -70,6 +70,9 @@ export const DUBAI_BOND_STORIES = Object.freeze({
     { scene: "ch4_festa_bond_3", heart: 3, where: "festa", prelude: true },
     { scene: "ch5_taiyo_bond_4", heart: 2, where: "courtyard" },
     { scene: "ch5_taiyo_bond_5", heart: 3, where: "courtyard" },
+    // ♥4（#4010）。屋敷では♥2・♥3の次が♥5の締めくくりで、♥4に上がった時に読む場面が無かった。
+    // 後から足した段階なので、締めくくりを読み終えた保存には出さない（late。chapters/dubai-bonds.js）。
+    { scene: "ch5_taiyo_bond_6", heart: 4, where: "courtyard", late: true },
   ].map(entry => Object.freeze(entry))),
   sheikh: Object.freeze([
     { scene: "ch5_sheikh_bond_1", heart: 1, where: "residence" },

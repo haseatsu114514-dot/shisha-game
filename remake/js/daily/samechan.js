@@ -53,6 +53,16 @@ export function samechanPrepTalkDue(value = state) {
   return scene && !value.flags?.[`_talk_seen_${scene}`] && DB.dialogues[scene]?.lines?.length ? scene : null;
 }
 const isPrepTalk = id => Object.values(SAMECHAN_PREP_TALKS).includes(id);
+// #3097 PR-I: 第2章の普段の会話。初来店の後、いつもの来店の代わりに一度だけ（ソファ・開店祝いより先。第2章の間しか読めないため）。
+// 台本は data/dialogue/ch2_home.json を第2章の準備期間に読み込むので、未読込なら出さない。既読は `_talk_seen_<scene>`。恋愛・♥段階に触れない。
+// #3097 PR-C で2本（コバンザメ席・予備のグラス）を足し、一来店に一本ずつ並びの順に読む。
+export const SAMECHAN_CH2_TALK = "ch2_samechan_resting_shark";
+// #3097 第2弾（VOL20）で ch2_samechan_poster（サメ映画のポスターを、どの席からも目が合わない位置に貼る）を足した
+// #3097 第3弾で ch2_samechan_menu_letters（黒板の字をサメの歯の形にするか迷う）を足した
+export const SAMECHAN_CH2_TALKS = Object.freeze([SAMECHAN_CH2_TALK, "ch2_samechan_remora_seat", "ch2_samechan_spare_teeth", "ch2_samechan_poster",
+  "ch2_samechan_menu_letters"]);
+const ch2TalkDue = () => state.chapter === 2
+  && SAMECHAN_CH2_TALKS.find(id => !state.flags[`_talk_seen_${id}`] && !!DB.dialogues[id]?.lines?.length) || null;
 
 /**
  * 来店で入る好感度の種類（BLC01）。ほかの店（daily/spots.js）と同じ分け方で、量は core/stats.js の visitAffinity。
@@ -103,6 +113,8 @@ export function samechanVisitDialogue() {
       if (DB.dialogues[event.dialogue]?.lines?.length) return event.dialogue;
     }
   }
+  const ch2Talk = count >= 1 ? ch2TalkDue() : null;
+  if (ch2Talk) return ch2Talk;
   if (count >= 1 && sofaTestDue()) return sofaTest.dialogue;
   if (count >= 1 && mintoGiftDue()) return mintoGift.dialogue;
   return `samechan_shop_repeat_${(count - 1) % 2}`;
@@ -245,7 +257,7 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     addStamina(spot.stamina || 0);
     const event = [...entryEvents, ...SAMECHAN_HEART_EVENTS, cinemaImpression, unwellVisit, sofaTest, mintoGift, ...laterVisits].find(e => e.dialogue === dialogue);
     if (event) state.flags[event.flag] = true;
-    if (isPrepTalk(dialogue)) state.flags[`_talk_seen_${dialogue}`] = true;
+    if (isPrepTalk(dialogue) || SAMECHAN_CH2_TALKS.includes(dialogue)) state.flags[`_talk_seen_${dialogue}`] = true;
     markBondAfterRead(state, "samechan", bondAfter);
     if (readQuestion) {
       state.flags[questionDoneKey("samechan")] = true;

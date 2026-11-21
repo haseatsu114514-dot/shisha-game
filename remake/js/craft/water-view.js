@@ -5,7 +5,7 @@ import { state } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, benchRoot, craftTest, setBenchWater } from "./session.js";
 import { STEP_BRIEFS } from "./bench-ui.js";
-import { waterQuantity, changeWater, waterComfort, STEM_TIP } from "./water.js";
+import { waterQuantity, changeWater, waterComfort, STEM_TIP, WATER } from "./water.js";
 
 function ensureStyle() {
   if (document.querySelector('link[data-craft-water]')) return;
@@ -176,7 +176,9 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
     const settled = !direction && Math.abs(wave) < 0.01 && Math.abs(velocity) < 0.01;
     if (settled) { wave = 0; velocity = 0; }
     render();
-    if (!settled) raf = requestAnimationFrame(frame);
+    // 説明・MENU を開いている間は上の stop() が wake() で次のコマを予約済み。ここで重ねて予約すると、波が収まるまで
+    // 1コマごとに予約が倍々に増えて画面が固まる（注いだ直後に「?」を開くと再現した・PHN）。予約は常に1つだけ。
+    if (!settled && !raf) raf = requestAnimationFrame(frame);
   }
   render();
   if (signal?.aborted) cancel();
@@ -191,7 +193,10 @@ export async function stepWater(cs) {
   const panel = stepPanel("setup", "水入れ", cs.mode === "tutorial"
     ? "スミ「注ぐときは長押し。二本の線を目安に、こぼして戻してもいい」"
     : "長押しで注ぐ・こぼす。水量を決めてから配合へ進む", { brief: STEP_BRIEFS.water, lessonStep: "water" });
-  const view = mountWater(panel, { quantity: cs.water, isCurrent: () => state === ownerState && !!benchRoot(cs) });
+  // DBG「自動で成功」は目安（二本の線のあいだ）の真ん中で確定する（#3938。空のまま確定して「水なし」になっていた）。
+  // 「自動で失敗」・手動は今の水量のまま（開始時は空）。
+  const quantity = craftTest.auto === "good" ? WATER.neutral : cs.water;
+  const view = mountWater(panel, { quantity, isCurrent: () => state === ownerState && !!benchRoot(cs) });
   benchRoot(cs)?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", [el("p", { text: WATER_HELP })]));
   if (craftTest.auto) queueMicrotask(view.confirm);
   cs.water = await view.result;
@@ -202,6 +207,6 @@ export async function stepWater(cs) {
     shallow: "浅め。煙が冷えきらず、喉に当たるかも",
     deep: "深め。吸い心地が重くなりそう",
     none: "ステムが水に届いていない。煙が冷えないぞ",
-  }[waterComfort(cs.water).band]);
+  }[waterComfort(cs.water).band], { kind: "water-level" });
   return cs.water;
 }

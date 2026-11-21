@@ -14,17 +14,20 @@ export const CONTESTANTS = Object.freeze(["hajime", "ayatori", "steve", "volk"])
 const tieOrder = (a, b) => CONTESTANTS.indexOf(a) - CONTESTANTS.indexOf(b);
 export const JUDGES = Object.freeze(["emil", "dr_charcoal", "sensu"]);
 export const SPEND = Object.freeze([2, 3, 2, 3]);
-// 2026-11-03「3・4章を難しく調整」: 全国で練習の手応えを求める暫定値（実機調整前）。
-// 試合途中の旧保存は旧基準で最後まで進め、新しい挑戦だけ版2を使う。
-export const TOURNAMENT_RULES_VERSION = 2;
+// 試合途中の旧保存は旧基準で最後まで進め、新しい挑戦だけ最新の版を使う。
+// 版2（2026-11-03「3・4章を難しく調整」）は ふつうの腕前で約36%と厳しすぎたため、
+// 版3（2026-11-20 #3916・WIN11「大会自体、7.6.5.3割」）で3人とも−1.5にして約5割にした
+// （`node remake/tools/balance/measure.mjs --chapter 3 --n 300 --seed 1`）。
+export const TOURNAMENT_RULES_VERSION = 3;
 export const LEGACY_RIVAL_QUALITY = Object.freeze({ ayatori: 82, steve: 80, volk: 84 });
-export const RIVAL_QUALITY = Object.freeze({ ayatori: 86, steve: 85, volk: 88 });
+export const V2_RIVAL_QUALITY = Object.freeze({ ayatori: 86, steve: 85, volk: 88 });
+export const RIVAL_QUALITY = Object.freeze({ ayatori: 84.5, steve: 83.5, volk: 86.5 });
 
 const rulesVersion = p => p.rulesVersion === undefined ? 1 : p.rulesVersion;
 function rivalQuality(p) {
   const version = rulesVersion(p);
-  if (version !== 1 && version !== TOURNAMENT_RULES_VERSION) throw new Error("全国大会の採点規則を確認できません");
-  return version === 1 ? LEGACY_RIVAL_QUALITY : RIVAL_QUALITY;
+  if (version !== 1 && version !== 2 && version !== TOURNAMENT_RULES_VERSION) throw new Error("全国大会の採点規則を確認できません");
+  return version === 1 ? LEGACY_RIVAL_QUALITY : version === 2 ? V2_RIVAL_QUALITY : RIVAL_QUALITY;
 }
 
 // 柑橘への好みと、直後の一口との比較は別。千須は台本どおり水を飲む。

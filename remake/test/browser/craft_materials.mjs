@@ -27,6 +27,21 @@ async function demoKeyboardLoop(page) {
     assert.equal(focus.inside, true, `${key} #${i}: focus left the demo sheet to ${focus.at}`);
   }
 }
+// #3815: 穴あけのお手本は廃止。シート自体の検査は、残っている吸い出しのお手本（第1章大会の旧方式＝リニューアルの「?」）で行う。
+async function setupPullDemo(page) {
+  await page.evaluate(async () => {
+    const core = await import("./js/core/state.js"); core.newGame(); core.config.craftVersion = "renewal";
+    window.F = { core, session: await import("./js/craft/session.js"), demo: await import("./js/craft/demo.js") };
+    F.cs = F.session.newSession("tournament");
+    await F.session.openBench(F.cs).ready;
+    // 本番の吸い出しと同じく、工程の素材がそろってから札を出す（読み込み中の作業台は押せない）。
+    await F.session.waitBenchReady(F.cs, "pull");
+    F.session.stepPanel("pull", "吸い出し", "針を止めて吸い、温度を合わせる");
+    F.pullCues = F.demo.STEP_DEMOS.pull.cues.map(c => c.text);
+  });
+  assert.equal(await page.locator(".bench").getAttribute("data-craft-version"), "renewal");
+  await page.waitForFunction(() => { const bench = document.querySelector(".bench"); return !bench.inert && !bench.hasAttribute("aria-busy"); });
+}
 async function setup(page) {
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"); core.newGame();
@@ -199,7 +214,8 @@ await suite("craft-materials", async check => {
         const raf = requestAnimationFrame.bind(window); window.requestAnimationFrame = callback => raf(() => callback(F.clock));
         F.running = F.holes.runHoles(F.cs);
       });
-      await click(page, '.bench-demo-skip', touch);
+      await page.locator('[data-test="hole-template-outer12-middle12"]').waitFor();
+      assert.equal(await page.locator(".bench-demo-sheet").count(), 0, "穴あけのお手本は廃止（#3815）");
       await click(page, '[data-test="hole-template-outer12-middle12"]', touch);
       assert.equal(await page.locator('.ht-option').count(), 1);
       assert.equal(await page.locator(".ht-preview .foil-hole").count(), 0, "Template already has punched holes");
@@ -294,11 +310,11 @@ await suite("craft-materials", async check => {
       await page.locator('[data-test="pack-confirm"]').waitFor();
       await click(page, '[data-test="opt-fluffy"]', touch);
       await click(page, '[data-test="pack-confirm"]', touch);
-      await click(page, '.bench-demo-skip', touch);
       await page.locator('[data-test="hole-start"]').waitFor();
+      assert.equal(await page.locator(".bench-demo-sheet").count(), 0, "穴あけのお手本は廃止（#3815）");
       await page.locator('[data-preview-step="holes"]').click();
-      await click(page, '.bench-demo-skip', touch);
       await page.locator('[data-test="hole-start"]').waitFor();
+      assert.equal(await page.locator(".bench-demo-sheet").count(), 0);
       assert.equal(await page.locator(".foil-cursor").count(), 0);
       await page.locator('[data-preview-step="pack"]').click();
       await page.locator('[data-test="pack-confirm"]').waitFor();
@@ -307,11 +323,8 @@ await suite("craft-materials", async check => {
     }, options);
   }
   await check("demo-reopen-keyboard-background", async page => {
-    await page.route("**/media/demo-holes-classic.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
-    await setup(page);
-    await page.evaluate(() => { F.running = F.holes.runHoles(F.cs); });
-    await page.locator(".bench-demo-skip").click();
-    await page.locator('[data-test="hole-start"]').waitFor();
+    await page.route("**/media/demo-pull.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
+    await setupPullDemo(page);
     await page.locator(".bench-guide > summary").click();
     await page.locator(".bench-demo-link").click();
     await page.waitForFunction(() => document.activeElement?.classList.contains("bench-demo-skip"));
@@ -341,17 +354,38 @@ await suite("craft-materials", async check => {
   for (const [device, touch, options] of [["pc", false, {}], ["touch", true,
     { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     await check(`demo-decode-error-${device}`, async page => {
-      // A successful HTTP response with undecodable media exercises the real media error event.
-      await page.route("**/media/demo-holes-classic.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
-      await setup(page);
-      await page.evaluate(() => { F.running = F.holes.runHoles(F.cs); });
+      // Hold the invalid response until keyboard focus is on the native video controls.
+      const { promise: waitForError, resolve: releaseError } = Promise.withResolvers();
+      await page.route("**/media/demo-pull.mp4", async route => {
+        await waitForError;
+        await route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" });
+      });
+      await setupPullDemo(page);
+      // 自動では開かない。「?」の中の「お手本を見る」から開く。
+      assert.equal(await page.locator(".bench-demo-sheet").count(), 0);
+      await click(page, ".bench-guide > summary", touch);
+      await click(page, ".bench-guide .bench-demo-link", touch);
       const sheet = page.locator(".bench-demo-sheet");
-      await sheet.waitFor();
+      const video = sheet.locator("video");
+      try {
+        await video.waitFor({ state: "visible" });
+        await page.keyboard.press("Tab");
+        assert.equal(await video.evaluate(node => node === document.activeElement), true);
+      } finally {
+        releaseError();
+      }
       await page.waitForFunction(() => document.querySelector(".bench-demo-stage")?.hidden);
+      const summary = sheet.locator(".bench-demo-instructions summary");
+      assert.equal(await summary.evaluate(node => node === document.activeElement), true,
+        "the text instructions receive focus when the video fails");
+      await page.keyboard.press("Tab");
+      assert.equal(await sheet.evaluate(node => node.contains(document.activeElement)), true,
+        "Tab stays in the demo after focus moves away from the failed video");
+      await sheet.locator(".bench-demo-skip").focus();
       await demoKeyboardLoop(page);
       assert.match(await page.locator(".bench-demo-status").innerText(), /動画を再生できません/);
       assert.equal(await page.locator(".bench-demo-instructions").evaluate(n => n.open), true);
-      const expected = await page.evaluate(async () => (await import("./js/craft/demo.js")).CLASSIC_STEP_DEMOS.holes.cues.map(c => c.text));
+      const expected = await page.evaluate(() => F.pullCues);
       assert.deepEqual(await page.locator(".bench-demo-instructions li").allTextContents(), expected);
       const contrasts = await page.locator(".bench-demo-card").evaluate(card => {
         const luma = css => css.match(/[\d.]+/g).slice(0, 3).map(Number).map(n => {
@@ -363,18 +397,19 @@ await suite("craft-materials", async check => {
           return { text: n.textContent, ratio: (Math.max(fg, bg) + .05) / (Math.min(fg, bg) + .05) };
         });
       });
-      assert.equal(contrasts.length, 8);
+      assert.equal(contrasts.length, 2 + await page.evaluate(() => F.pullCues.length));
       assert(contrasts.every(row => row.ratio >= 4.5), JSON.stringify(contrasts));
       await page.locator(".bench-demo-instructions summary").scrollIntoViewIfNeeded();
       await assertFits(page, ".bench-demo-instructions summary");
       await capture(page, `2447-demo-error-${device}`);
       await click(page, ".bench-demo-finish", touch);
       await sheet.waitFor({ state: "detached" });
-      await page.locator('[data-test="hole-start"]').waitFor();
-      assert.equal(await page.locator(".bench-panel").evaluate(n => n.inert), false);
       assert.equal(await page.locator(".bench").getAttribute("data-demo-paused"), null);
+      // 開いた元の「?」へ戻り、作業はその「?」が閉じるまで止まったまま。
+      assert.equal(await page.locator(".bench-demo-link").evaluate(n => n === document.activeElement), true);
+      assert.equal(await page.locator(".bench-guide").evaluate(n => n.open), true);
+      assert.equal(await page.locator(".bench-panel").evaluate(n => n.inert), true);
       // Reopen through the real help entry; skipping remains available after another error.
-      await click(page, ".bench-guide > summary", touch);
       await click(page, ".bench-guide .bench-demo-link", touch);
       await sheet.waitFor();
       await demoKeyboardLoop(page);
@@ -386,21 +421,20 @@ await suite("craft-materials", async check => {
     }, options);
     await check(`demo-stall-and-interrupt-${device}`, async page => {
       const pending = [];
-      await page.route("**/media/demo-holes-classic.mp4", route => { pending.push(route); });
-      await setup(page);
+      await page.route("**/media/demo-pull.mp4", route => { pending.push(route); });
+      await setupPullDemo(page);
       await page.evaluate(async () => {
-        F.demo = await import("./js/craft/demo.js");
         F.beforeDemo = JSON.stringify(F.core.state);
         F.beforeDemoInert = [...document.querySelector(".bench").children].map(n => n.inert);
         F.plays = [];
         // Controlled promises/events test autoplay and delayed callbacks without relying on network timing.
         HTMLMediaElement.prototype.play = function () { return new Promise((resolve, reject) => F.plays.push({ resolve, reject })); };
-        F.startDemo = () => F.demo.openDemoSheet(document.querySelector(".bench"), "holes");
+        F.startDemo = () => F.demo.openDemoSheet(document.querySelector(".bench"), "pull");
         F.demoTask = F.startDemo();
       });
       await page.locator(".bench-demo-sheet").waitFor();
       await demoKeyboardLoop(page);
-      assert.equal(await page.locator(".bench-demo-instructions li").count(), 6, "Instructions exist before any media event");
+      assert.equal(await page.locator(".bench-demo-instructions li").count(), await page.evaluate(() => F.pullCues.length), "Instructions exist before any media event");
       await page.evaluate(() => F.plays[0].reject(new DOMException("fixture autoplay policy", "NotAllowedError")));
       await page.waitForFunction(() => document.querySelector(".bench-demo-status")?.textContent.includes("自動再生できません"));
       assert.equal(await page.locator(".bench-demo-stage").evaluate(n => n.hidden), false, "Manual video controls stay available");

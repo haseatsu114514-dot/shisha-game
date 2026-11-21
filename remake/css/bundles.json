@@ -33,6 +33,7 @@
     "worker-scenes.css",
     "craft-header.css",
     "tournament.css",
+    "tournament-show.css",
     "motions.css"
    ]
   },
@@ -86,6 +87,7 @@
     "wide-craft.css",
     "phone-layout.css",
     "craft-stage.css",
+    "craft-phone.css",
     "side-area.css",
     "look-neo.css",
     "look-neo-board.css",

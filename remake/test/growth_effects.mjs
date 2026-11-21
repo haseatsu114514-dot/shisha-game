@@ -421,9 +421,10 @@ const boundaryVote=(scenario,seed,{p})=>{
 const withoutGrape=boundaryVote({id:"without",final:82},1,{p:0}),withGrape=boundaryVote({id:"with",final:84},1,{p:0});
 assert.equal(withoutGrape.rank,2);assert.equal(withGrape.rank,1,"既存の総票・同点規則のまま境界例では勝敗が変わる");
 assert.equal(withoutGrape.votes.hajime,9);assert.equal(withGrape.votes.hajime,11);
-// 版2の新規挑戦にも同じ+2の境界効果がある。敵値やassertを下げず、明示的な新基準を別に固定する。
-const currentBoundary=createCh3TournamentEvaluate({performanceOf:s=>({rounds:[84,88,84,s.final]})});
-const currentWithout=currentBoundary({id:"without",final:86},1,{p:0}),currentWith=currentBoundary({id:"with",final:88},1,{p:0});
+// 最新の版の新規挑戦にも同じ+2の境界効果がある。敵値やassertを下げず、明示的な新基準を別に固定する。
+// 版3（#3916 WIN11・相手が各−1.5）では境界が1点下がるので、出来を1点下げた同じ形の例で固定する（票は版2の例と同じ10→12）。
+const currentBoundary=createCh3TournamentEvaluate({performanceOf:s=>({rounds:[83,88,83,s.final]})});
+const currentWithout=currentBoundary({id:"without",final:85},1,{p:0}),currentWith=currentBoundary({id:"with",final:87},1,{p:0});
 assert.equal(currentWithout.rank,2);assert.equal(currentWith.rank,1);
 assert.equal(currentWithout.votes.hajime,10);assert.equal(currentWith.votes.hajime,12);
 console.log("[grape lesson] PASS: family/unique-most, learned/off/failure, +2 once/cap/SAVE/LOAD, legacy/current C3 rules and exact +2 boundaries",JSON.stringify(voteImpact));

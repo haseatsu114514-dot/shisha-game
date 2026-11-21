@@ -3,6 +3,8 @@ import { DB } from "../core/data.js";
 import { leafDamageRatio, LEAF_DAMAGE } from "./flavor-life.js";
 
 // 基準帯は互換用の読み取り専用定数。一台の配合で上書きしない。
+/** 本番の緑（適温）・虹（最適）の帯の幅の倍率。IDEAL・OPTIMAL は写し先の基準（中心.54±.12／±.05）のまま。 */
+export const BAND_TIGHTNESS = 0.7;
 export const IDEAL = Object.freeze([0.42, 0.66]);
 export const OPTIMAL = Object.freeze([0.49, 0.59]);
 export const DANGER_TEMP = 0.90;
@@ -44,7 +46,10 @@ export function temperatureBands(cs, flavorById = DB.flavorById) {
   // 試作HMD装備中は、熱が蓋全体に回る分だけこの縮みが半分になる（M-W9）。
   const damageResist = cs?.equip?.hms === PROTO_HMD_ID ? PROTO_HMD_DAMAGE_RESIST : 1;
   const damageScale = 1 - LEAF_DAMAGE.bandNarrow * leafDamageRatio(cs?.leaf) * damageResist;
-  const halfIdeal = .12 * totalWidthScale * damageScale, halfOptimal = .05 * totalWidthScale * damageScale;
+  // 帯の締め（PST01・2026-11-20 オーナー「判定甘すぎる…虹ゲージを全体的に小さく、緑も」）: 本番は緑・虹とも 0.7 倍。
+  // レッスン（チュートリアル）は今までの幅のまま。採点（temperatureFitness）も同じ帯を使うので、温度合わせが全体に厳しくなる。
+  const tightness = cs?.mode === "tutorial" ? 1 : BAND_TIGHTNESS;
+  const halfIdeal = .12 * tightness * totalWidthScale * damageScale, halfOptimal = .05 * tightness * totalWidthScale * damageScale;
   // 表情対応の葉だけをグラム比で反映。少量を足して全配合の中央狙いを消せない。
   const expressionWeight = entries.reduce((sum, [id, w]) =>
     sum + (flavorById?.[id]?.thermal_expression?.quality === "range" ? w : 0), 0);

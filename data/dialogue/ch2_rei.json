@@ -61,12 +61,17 @@
         {
           "speaker": "",
           "face": "",
+          "text": "店のロックが、二曲ぶん流れた。拍を取っていた指が、ふっと止まる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "「イエス」という名のミックスが、静かにテーブルに置かれた。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（花の香りの奥に、お茶みたいな渋みがある）"
+          "text": "（甘酸っぱい香りの奥に、お茶みたいな渋みがある）"
         },
         {
           "speaker": "hajime",
@@ -106,17 +111,17 @@
         {
           "speaker": "kuraudo",
           "face": "serious",
-          "text": "……薔薇は、攻めすぎると棘が出る。香りがとがる"
+          "text": "……カシスは、熱を急ぐと甘い香りが先に出すぎる"
         },
         {
           "speaker": "kuraudo",
           "face": "serious",
-          "text": "そこを越えると、芳香剤みたいになる。それが苦手な奴は多い"
+          "text": "イエスは、あとから紅茶が来る。その余韻まで残したい"
         },
         {
           "speaker": "kuraudo",
           "face": "serious",
-          "text": "だから、上げない。中温の、ぎりぎりで止める"
+          "text": "だから、焦って熱を足さない。香りが出るまで待つ"
         },
         {
           "speaker": "hajime",
@@ -189,7 +194,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "ドアを開けると、薄暗い店内に目が慣れるまで少し時間がかかった。"
+            "text": "ドアを開けると、棚にCDがジャケットを表にして並んでいた。"
           },
           {
             "speaker": "",
@@ -199,7 +204,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "首から手の甲まで続くタトゥーが、ろうそくの照明に浮かび上がっている。"
+            "text": "トングを持つ手の甲に、タトゥーが見えた。"
           },
           {
             "speaker": "",
@@ -280,7 +285,7 @@
         {
           "speaker": "kuraudo",
           "face": "serious",
-          "text": "……カシスと薔薇とブラックティー。言えなかった愛してる、の感じを混ぜた"
+          "text": "……カシスとチェリーとブラックティー。言えなかった愛してる、の感じを混ぜた"
         },
         {
           "speaker": "hajime",
@@ -725,7 +730,7 @@
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp",
         "flavor_lesson": {
-          "rose": 1
+          "cassis": 1
         }
       },
       "lines": [
@@ -812,7 +817,7 @@
         {
           "speaker": "kuraudo",
           "face": "normal",
-          "text": "……例えば、ローズも、棘が出ないところで止める。人に届く香りに、したいから"
+          "text": "……カシスも、甘さが出るまで待つ。香りがちゃんと届くように"
         },
         {
           "speaker": "kuraudo",
@@ -840,6 +845,41 @@
           "text": "言葉を探さずに、一緒に煙の行方を見た。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "入口の戸が開いて、次の客が顔をのぞかせた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドは一瞬、口の端を上げかけて、やめた。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……いらっしゃい。今日は、カシスがいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は少し驚いた顔をしてから、「じゃあ、それで」と笑った。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "surprise",
+          "text": "……笑われた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "今のは、怖がられてないです"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……練習より、香りの話のほうが、早いのか"
+        },
+        {
           "type": "remember",
           "memory_id": "kuraudo_smile"
         },
@@ -848,7 +888,8 @@
           "face": "",
           "text": "……【魅力】が上がった。"
         }
-      ]
+      ],
+      "comment": "#4010 で増補（♥3が短かった）: 笑顔の練習の話のあと、次の客にクラウドが笑いかけるのをやめて香りを勧めると、客のほうが笑う（練習より香りの話のほうが早い）。思い出の remember と報酬の行はそのまま最後。"
     },
     {
       "dialogue_id": "ch2_kuraudo_fifth",
@@ -1256,6 +1297,116 @@
       ]
     },
     {
+      "dialogue_id": "outing_kuraudo_1",
+      "comment": "#3097 PR-A（計画 §3-2 の 2-2）。クラウドの♥3の友人の外出。LIME lime_outing_kuraudo_1 で誘われ、仕事の後、柚ヶ谷の駅の向こうのライブハウスの前で、扉から漏れる音を一緒に聞く（休みの日のLIME lime_kuraudo_holiday の「扉が開くたびに、少しだけ」の続き）。はじめは曲を知らないまま、拍につられたのを見たクラウドが一方的に「同士」と言う。ライブの中へは入らない（第3章の出発前の ch3_prep_kuraudo_live と、♥5の ch2_kuraudo_sixth の「一番後ろ」を先取りしない）。本名・笑顔の練習・「嘘」には触れない。誘いは ch2_kuraudo_second（最初の「同士」）を読んだ後、♥5の締めくくり（「友達」と言い直す）の前にだけ届く（daily/phone.js）。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
+        "topic": "ライブハウスの前"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "仕事を終えたあと、柚ヶ谷の駅の向こうで、クラウドと待ち合わせた。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……来た。こっち"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通りの向かいに、地下へ下りる階段がある。看板の灯りの下で、扉は閉まっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "中には、入らないんですよね"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……入らない。今夜のは、もう売り切れてた"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "でも、扉が開くたびに、少しだけ漏れてくる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "階段を上がってきた客が、扉を押した。ドラムの低い音が、一瞬だけ通りまで転がり出る。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "扉が閉まると、また静かになった。クラウドは目を閉じて、指で拍を取っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（店で一台を作る時と、同じ拍の取り方だ）"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……扉の向こうは、別の世界。TRPGと、少し似てる"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "全部は聞こえない。だから、続きは自分の中で鳴らす"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次に扉が開いた時、聞こえてきたのは手拍子だった。さっきより、ずっと速い。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "気づくと、俺も指で鞄の縁を叩いていた。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "surprise",
+          "text": "……今、拍、取ってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、あ、つられただけです"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "……やっぱり、同士だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（また同士にされた。曲名は、一つも知らないのに）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドは一歩こちらへ寄ってから、自分で気づいたように、半歩戻った。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……たぶん、次が最後の曲"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後に扉が開いた時、通りに流れてきたのは、静かなギターだった。二人とも、何も言わなかった。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch2_kuraudo_bond_finale",
       "comment": "#2027 好感度MAXの締めくくり（友情のみ）。店を始めた頃からカシスだけを詰めた素焼きのハガルを渡し、「同士」を「友達」と言い直す（はじめは「月光花」のサビしか知らないと、クラウドは聞いたうえで言っていた。2026-11-13 オーナー訂正）。",
       "metadata": {
@@ -1292,12 +1443,12 @@
         {
           "speaker": "kuraudo",
           "face": "normal",
-          "text": "……薔薇しか詰めてないハガル。店を始めた頃から"
+          "text": "……カシスしか詰めてないハガル。店を始めた頃から"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "表に返して、カウンターの上をこちらへ滑らせる。薔薇が、ふっと香った。"
+          "text": "表に返して、カウンターの上をこちらへ滑らせる。カシスが、ふっと香った。"
         },
         {
           "speaker": "kuraudo",
@@ -1318,12 +1469,12 @@
         {
           "speaker": "kuraudo",
           "face": "normal",
-          "text": "薔薇は、上げすぎると棘が出る。……このハガルは、その手前を覚えてる"
+          "text": "カシスの甘さが出るまで待つ。……このハガルで、何度もやった"
         },
         {
           "speaker": "kuraudo",
           "face": "normal",
-          "text": "キミなら、棘の手前で止められる。何度も、話の続きを待ってくれたから"
+          "text": "キミなら、待てる。何度も、話の続きを待ってくれたから"
         },
         {
           "speaker": "kuraudo",

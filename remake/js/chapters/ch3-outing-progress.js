@@ -5,6 +5,8 @@ import { chapterThreeActivityWindow } from "./ch3-activity-progress.js";
 import { tokyoWindowReserved, tokyoGymWindowAllowed } from "../core/tokyo-clock.js";
 import { visitAffinity } from "../core/stats.js";
 import { shiftBasePay } from "../core/shift-pay.js";
+import { rainyFor } from "../daily/weather.js";
+import { tournamentFinished } from "../core/story-context.js";
 
 /**
  * after=この必須場面を読んでから、before=この場面を読む前まで。met=この人物と面識がある時だけ。repeat=自由時間ごとに選べる。
@@ -73,10 +75,81 @@ const MUKAI_HELP_TALKS = Object.freeze({
   back: Object.freeze(["ch3_outing_mukai_help", "ch3_outing_mukai_help_d", "ch3_outing_mukai_help_b",
     "ch3_outing_mukai_help_e", "ch3_outing_mukai_help_c", "ch3_outing_mukai_help_f"]),
 });
+// 雨の日の版（#3097 計画 3-1・PR-G）。雨の日だけ、通常の巡回の代わりに読む（第1章の観音堂・カフェの雨の回と同じ考え方）。
+// 手伝いは、最初の1回と味が戻った後の1回目だけは通常の場面（導入と「味、ちゃんと戻ってきたねぇ」）を優先する。
+// 手伝いの雨版は味が戻る前後のどちらでも読める台本で、雨の回数（mukai_help_rain）で巡回する。手伝いの回数は通常どおり数える。
+// 公園の雨版は昼夜で1本ずつ。雨で歩いた回は、昼夜の巡回の回数を進めない（晴れの日に初回の場面から読める）。
+const MUKAI_HELP_RAIN = Object.freeze(["ch3_outing_mukai_help_rain", "ch3_outing_mukai_help_rain_b"]);
+const PARK_RAIN = Object.freeze({ day: "ch3_outing_park_walk_day_rain", night: "ch3_outing_park_walk_night_rain" });
 // 公園の2回目からの巡回（昼夜それぞれ。#3097 で b・c に d・e、さらに f・g、RLS09 で h を足した）
 const PARK_REVISITS = Object.freeze(["b", "c", "d", "e", "f", "g", "h"]);
 const visitCount = raw => Math.max(0, Math.floor(Number(raw)) || 0);
 const RECOVERY_SCENE = "ch3_taste_return";
+
+// 奥の部屋で休む（ch3-tokyo-daily.js）: 初回は ch3_tokyo_room_rest、2回目からは日常の小品を巡回する（#3097。公園の散歩と同じ読み分け）。
+// 雨の日の版（#3097 計画 3-1・PR-G）は、2回目以降の雨の日だけ巡回の代わりに読み、巡回の回数は進めない。
+const ROOM_REST_FLAG = "_ch3_room_rests";
+const ROOM_REST_AGAIN = Object.freeze(["b", "c", "d", "e", "f", "g", "h", "i", "j", "k"].map(suffix => `ch3_tokyo_room_rest_${suffix}`)); // #3097 第2弾で f〜h、RLS09 で i〜k
+const ROOM_REST_RAIN = "ch3_tokyo_room_rest_rain";
+export const ROOM_REST_IDS = Object.freeze(["ch3_tokyo_room_rest", ...ROOM_REST_AGAIN, ROOM_REST_RAIN]);
+const roomRestCount = value => visitCount(value?.flags?.[ROOM_REST_FLAG]);
+/** 奥の部屋で休む回の台本ID（読むだけ）。 */
+export function roomRestId(value) {
+  const count = roomRestCount(value);
+  if (count && rainyFor(value)) return ROOM_REST_RAIN;
+  return count ? ROOM_REST_AGAIN[(count - 1) % ROOM_REST_AGAIN.length] : "ch3_tokyo_room_rest";
+}
+/** 奥の部屋で休んだ回を記録する（読了後）。雨の日の版を読んだ回は、晴れの日の巡回を進めない。 */
+export function recordRoomRest(value) {
+  if (roomRestId(value) === ROOM_REST_RAIN) return;
+  value.flags[ROOM_REST_FLAG] = roomRestCount(value) + 1;
+}
+
+// 奥の部屋で休むと届く、地元からの電話（#3097 第2弾・2026-11-21 オーナー「交友を1章以降も厚く」）。台本は data/dialogue/ch3_home_calls.json。
+// 初回の休み（部屋の場面）の後、休むたびに未読の一本を、休む場面の代わりに読む（一度きり。休む場面の巡回は進めない）。
+// LIMEの連絡先にいる人だけ。night は夜だけ読める電話（閉店後の店・夜更けの話）。夜は、本筋の場面や遠くからの電話が入る夜には出さない。
+// 全国大会の前の暮らしの電話なので、大会の後は出さない（交流の時系列ルール。core/story-context.js）。
+export const HOME_CALL_FLAG = "_ch3_home_calls";
+export const HOME_CALLS = Object.freeze([
+  { scene: "ch3_home_call_sumi_fan", from: "sumi" },
+  { scene: "ch3_home_call_adam_exit", from: "adam" },
+  { scene: "ch3_home_call_samechan_movie", from: "samechan", night: true },
+  { scene: "ch3_home_call_rio_face", from: "rio" },
+  { scene: "ch3_home_call_sumi_pocket", from: "sumi", night: true },
+  { scene: "ch3_home_call_kumicho_bow", from: "kumicho" },
+  { scene: "ch3_home_call_kuraudo_last_song", from: "kuraudo", night: true },
+  // #3097 第3弾: みんと（東京編のチェキの枠）・スミさん（冷蔵庫のプリン）・サメちゃん（東京の水族館のシロワニ）
+  { scene: "ch3_home_call_minto_frame", from: "minto" },
+  { scene: "ch3_home_call_sumi_pudding", from: "sumi", night: true },
+  { scene: "ch3_home_call_samechan_aquarium", from: "samechan" },
+  // VOL23: つむぎ・あげは・ひよりからも届く。店を持つ人たちの日常の電話も増やす。
+  { scene: "ch3_home_call_tsumugi_reserved_seat", from: "tsumugi" },
+  { scene: "ch3_home_call_ageha_curtain", from: "ageha" },
+  { scene: "ch3_home_call_hiyori_umbrella", from: "hiyori" },
+  { scene: "ch3_home_call_adam_menu_back", from: "adam" },
+  { scene: "ch3_home_call_rio_attachment", from: "rio" },
+  { scene: "ch3_home_call_kumicho_glasses", from: "kumicho" },
+  { scene: "ch3_home_call_kuraudo_wrong_case", from: "kuraudo", night: true },
+].map(call => Object.freeze(call)));
+export const HOME_CALL_IDS = Object.freeze(HOME_CALLS.map(call => call.scene));
+/**
+ * 今、奥の部屋で休むと届く電話の台本ID（読むだけ）。無ければ null（いつもの休む場面を読む）。
+ * @param options.night 夜の休みか
+ * @param options.busy その夜に本筋の場面か遠くからの電話が入っているか（ch3-tokyo-daily.js が判定する。夜だけ見る）
+ * @param options.away (id) => 今は地元にいない人か（東京へ来ている恋人など）
+ */
+export function homeCallId(value, { night = false, busy = false, away = () => false } = {}) {
+  if (value?.chapter !== 3 || tournamentFinished(value, 3) || !roomRestCount(value) || night && busy) return null;
+  const read = value.flags?.[HOME_CALL_FLAG] || {};
+  const contacts = Array.isArray(value.contacts) ? value.contacts : [];
+  return HOME_CALLS.find(call => !read[call.scene] && (night || !call.night)
+    && contacts.includes(call.from) && !away(call.from))?.scene || null;
+}
+/** 電話を読んだ記録（読了後）。休む場面の巡回の回数は進めない。 */
+export function recordHomeCall(value, scene) {
+  if (!HOME_CALL_IDS.includes(scene)) return;
+  value.flags[HOME_CALL_FLAG] = { ...(value.flags[HOME_CALL_FLAG] || {}), [scene]: true };
+}
 
 /** 台本ID。手伝いは味が戻る前後、公園は昼夜、通う行き先は回数で読み分ける。 */
 export function outingDialogueId(value, outing, window = null) {
@@ -89,10 +162,12 @@ export function outingDialogueId(value, outing, window = null) {
     return count === 0 || outing.talks.length === 1 ? outing.talks[0] : outing.talks[1 + (count - 1) % (outing.talks.length - 1)];
   }
   if (outing.id === "mukai_help") {
+    if (rainyOuting(value, outing.id)) return MUKAI_HELP_RAIN[visitCount(outingCounts(value).mukai_help_rain) % MUKAI_HELP_RAIN.length];
     const back = tasteRecovered(value), talks = MUKAI_HELP_TALKS[back ? "back" : "lost"];
     return talks[visitCount(outingCounts(value)[back ? "mukai_help_back" : "mukai_help"]) % talks.length];
   }
   if (outing.id === "park_walk") {
+    if (rainyOuting(value, outing.id)) return PARK_RAIN[(window?.slot ?? value.slot) ? "night" : "day"];
     const base = `ch3_outing_park_walk_${(window?.slot ?? value.slot) ? "night" : "day"}`;
     const count = outingCounts(value)[`park_walk_${(window?.slot ?? value.slot) ? "night" : "day"}`] || 0;
     // 昼夜を別に数える。旧セーブの合計から時間帯を推測せず、それぞれの初回から読む（SPV04）。
@@ -100,7 +175,19 @@ export function outingDialogueId(value, outing, window = null) {
   }
   return `ch3_outing_${outing.id}`;
 }
-export const OUTING_DIALOGUE_IDS = Object.freeze([...MUKAI_HELP_TALKS.lost, ...MUKAI_HELP_TALKS.back,
+/**
+ * 今日の手伝い・公園を雨の日の版で読むか（読むだけ）。雨は保存済みの天気の種で決まる（daily/weather.js）。
+ * 手伝いの最初の1回と、味が戻った後の1回目は、雨でも通常の場面を読む。
+ */
+export function rainyOuting(value, id) {
+  if (id !== "mukai_help" && id !== "park_walk") return false;
+  if (!rainyFor(value)) return false;
+  if (id === "park_walk") return true;
+  const counts = outingCounts(value);
+  return visitCount(counts.mukai_help) > 0 && (!tasteRecovered(value) || visitCount(counts.mukai_help_back) > 0);
+}
+export const OUTING_DIALOGUE_IDS = Object.freeze([...MUKAI_HELP_TALKS.lost, ...MUKAI_HELP_TALKS.back, ...MUKAI_HELP_RAIN,
+  ...Object.values(PARK_RAIN),
   "ch3_outing_enmaku_notes", "ch3_outing_enmaku_answer", "ch3_outing_mukai_steve", "ch3_outing_steve_timer",
   "ch3_outing_park_walk_day", "ch3_outing_park_walk_night", "ch3_outing_tetsuko",
   "ch3_outing_tetsuko_brush", "ch3_outing_tetsuko_wait", "ch3_outing_tetsuko_trust",
@@ -138,7 +225,10 @@ export function outingCounts(value) {
 export function recordChapterThreeOuting(value, id, slot = value.slot) {
   const counts = outingCounts(value);
   const next = { ...counts, [id]: (counts[id] || 0) + 1 };
-  if (id === "park_walk") {
+  // 雨の日の版を読んだ回（回数を記録する前に判定する。読み分けと同じ条件）
+  const rain = rainyOuting(value, id);
+  if (rain) next[`${id}_rain`] = visitCount(counts[`${id}_rain`]) + 1;
+  if (id === "park_walk" && !rain) {
     const key = `park_walk_${slot ? "night" : "day"}`;
     next[key] = (counts[key] || 0) + 1;
   }

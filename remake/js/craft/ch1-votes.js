@@ -53,6 +53,12 @@ function checkBudget(p, round) {
       throw new Error("第1章の持ち点が一致しません");
   }
 }
+/**
+ * 千須の最後の1点の入れ先。2回目の調整の出来ではなく、会長がもう一口吸った台へ入れる。
+ * 物語では、はじめの一台が昔のスミさんの煙と同じ香り方をしていた（第4章で明かす）。配合・調整の出来によらず、
+ * この1点を含めた総得票で1位ならクリア（2026-11-20 オーナー指示・#3916）。
+ */
+export const CH1_LAST_POINT = "hajime";
 /** その回に審査員が入れる点（1位に点−1・2位に1）。千須だけ最後の回は1点を残し、最後の1点に回す。 */
 export const ch1RoundPoints = (judge, round) => SPEND[round] - (judge === "sensu" && round === 3 ? 1 : 0);
 export function castCh1Votes(attempt, round, cs) {
@@ -77,8 +83,7 @@ export function castCh1Votes(attempt, round, cs) {
   }
   p.voted++;
   if (round === 3) {
-    const last = CH1_CONTESTANTS.slice().sort((a, b) =>
-      (b === "hajime" ? mine[4] : CH1_RIVALS[b][4]) - (a === "hajime" ? mine[4] : CH1_RIVALS[a][4]) || byId(a, b))[0];
+    const last = CH1_LAST_POINT;
     p.lastPoint = last;
     p.beforeLast = structuredClone(p.votes);
     p.votes.sensu[last]++;
@@ -102,7 +107,7 @@ export function ch1Standings(p, mineTotal) {
 // ---------------------------------------------------------------- 桜井式（試作・rulesVersion 3）
 // 2026-11-13 オーナー「桜井式も作ってみて　なお気に入らなかったら戻せるようにはしといて」（SKR04）。
 // 案は docs/reports/sakurai_review_20261113.md の柱1〜4（1回ごとの勝負・審査員の見る所・攻めの帯・ライバルの票田）。
-// 持ち点（各10点を 2・3・2・3 点）・1位に点−1と2位に1・基礎票・千須の最後の1点・同点の決め方は、いままでと同じ。
+// 持ち点（各10点を 2・3・2・3 点）・1位に点−1と2位に1・基礎票・千須の最後の1点（はじめへ）・同点の決め方は、いままでと同じ。
 // 数値は試作値。根拠（remake/tools/balance/measure.mjs --votes sakurai）は docs/master_spec.md の 2026-11-13 の節。
 export const SAKURAI = Object.freeze({
   /** 攻めの帯で提供・調整を終えた回の上積み（その回の、はじめへの全審査員の評価に足す） */
@@ -125,15 +130,16 @@ export const SAKURAI = Object.freeze({
     dr_charcoal: Object.freeze({ heatStability: .35, safety: .35, pull: .30 }),
     sensu: Object.freeze({ draw: .35, smoke: .35, pull: .30 }),
   }),
-  /** ライバルの評価。準備の回は CH1_RIVALS の穴あけ・炭焼き。なる＝味、アダム＝火、みんと＝煙が強く、最後の調整はみんとが攻めてくる */
+  /** ライバルの評価。準備の回は CH1_RIVALS の穴あけ・炭焼き。なる＝味、アダム＝火、みんと＝煙が強い。最後の調整は、なるが崩れず（100）、みんとが攻めてくる（101）。
+   * 2026-11-20（#3916）: ふつうの腕前の勝率を約7割にするため、みんとの提供を各+1、なるの調整2回目を98→100にした */
   rivals: Object.freeze({
     serve: Object.freeze({
       naru: Object.freeze({ uezono: 84, dr_charcoal: 79, sensu: 80 }),
       adam: Object.freeze({ uezono: 78, dr_charcoal: 85, sensu: 78 }),
-      minto: Object.freeze({ uezono: 79, dr_charcoal: 76, sensu: 84 }),
+      minto: Object.freeze({ uezono: 80, dr_charcoal: 77, sensu: 85 }),
     }),
     care1: Object.freeze({ naru: 98, adam: 93, minto: 96 }),
-    care2: Object.freeze({ naru: 98, adam: 92, minto: 101 }),
+    care2: Object.freeze({ naru: 100, adam: 92, minto: 101 }),
   }),
 });
 /** 途中経過に出す、その回の審査員の見る所（一語）。 */
@@ -202,8 +208,8 @@ function castSakurai(p, round, cs) {
   p.attacks[round] = sakuraiAttack(cs, round);
   p.voted++;
   if (round === 3) {
-    // 千須の最後の1点は、2回目の調整がいちばん良かった一台へ（いままでと同じ。攻めの帯の上積みも含む）。
-    const last = CH1_CONTESTANTS.slice().sort((a, b) => views.sensu[b] - views.sensu[a] || byId(a, b))[0];
+    // 千須の最後の1点は、いままでの審査と同じく、もう一口吸った台（はじめ）へ（CH1_LAST_POINT）。
+    const last = CH1_LAST_POINT;
     p.lastPoint = last;
     p.beforeLast = structuredClone(p.votes);
     p.votes.sensu[last]++;

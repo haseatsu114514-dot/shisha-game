@@ -9,7 +9,7 @@ import { romanceIntent, createRomanceHesitation } from "../core/romance-hesitati
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
 import { createNameFit } from "./name-fit.js";
-import { conversationCutinCue, conversationCutinAllowed, createConversationCutin } from "./conversation-cutin.js";
+import { conversationCutinCue, conversationCutinAllowed, conversationCutinSrc, createConversationCutin } from "./conversation-cutin.js";
 import { uiThemeFrame } from "../core/ui-theme.js";
 import { fortuneChoiceIndex } from "../core/fortune-effects.js";
 import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
@@ -27,7 +27,7 @@ import { dialoguePages } from "./layout.js";
 import { glossaryPanel } from "./glossary.js";
 import { createTypedHtml } from "./typed-html.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
-import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
+import { needsIntro, playIntro, prefetchIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
 import { chekiShot, tarotFlip, limeExchange, purikuraShot, sceneMoment, gazeCutin } from "../core/scene-motions.js";
 import { showShishaDiagram, hideShishaDiagram } from "./shisha-diagram.js";
@@ -69,7 +69,7 @@ function warnVn(kind, detail) {
 const log = [];
 let dom = null;
 let nameFit = null;
-let cutin = null; // 会話カットイン（立ち絵版・#2990）
+let cutin = null; // 会話カットイン（はじめの顔の帯。#2990・2026-11-20 再設計 CCR）
 let settingsReady = null;
 let openVnConfig = null;
 let running = null;     // 再生中の会話の状態
@@ -176,10 +176,10 @@ function buildDom() {
   dom.skipBtn.setAttribute("aria-pressed", "false");
   dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"), ctl("設定", openSettings, "vn-config"));
   host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.cutin, dom.box, dom.choices, dom.controls, dom.log);
-  cutin = createConversationCutin(dom.cutin);
+  cutin = createConversationCutin(dom.cutin, { sound: (name) => SE[name]?.() });
   nameFit = createNameFit(dom.name);
   host.addEventListener("pointerup", (e) => {
-    if (!running || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
+    if (!running || dom.log.classList.contains("show") || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
     if (performance.now() < running.openLockUntil) return;
     if (autoMode || skipMode) { setAuto(false); setSkip(false); }
     advance();
@@ -331,6 +331,7 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * @param opts.fromLine 主列の開始位置（含む）。既読キーは元の行位置を保つ
  * @param opts.toLine 主列の終了位置（含まない）。分岐は通常どおり再生する
  * @param opts.growthScene 自分で選んだ固有場面。全編の正常完読を自由行動の経験値候補にする
+ * @param opts.growthKey growthScene の経験値を数える場面 ID。巡回の回を章の台本に差し替えて読む時、引いた回の鍵で数える（#3097）
  * @param opts.previewProtagonist 比較プレビューでだけ主人公の立ち絵も表示する（本編は非表示）
  * 範囲指定でも各playの終了時に台本の報酬を処理する。報酬つき台本を分割する用途には使わない。
  */
@@ -369,6 +370,7 @@ export function play(idOrDlg, opts = {}) {
       currentId: dlg.dialogue_id || "", // 表示中の台本。jumpTo で jump 先へ進む
       dlg,
       growthScene: opts.growthScene === true && opts.fromLine == null && opts.toLine == null && !!dlg.lines?.length,
+      growthKey: typeof opts.growthKey === "string" && opts.growthKey ? opts.growthKey : null,
       queue: queuedLines(dlg.dialogue_id, dlg.lines).slice(opts.fromLine ?? 0, opts.toLine),
       branches: dlg.branches || {},
       resolve,
@@ -394,6 +396,7 @@ export function play(idOrDlg, opts = {}) {
     };
     autoFxGap = 0;
     cutin?.clear();
+    dom.log.classList.remove("show");
     dom.portraits.replaceChildren();
     dom.choices.replaceChildren();
     dom.text.innerHTML = "";
@@ -566,8 +569,9 @@ function finish(cancelled = false) {
   if (!cancelled && r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
   if (!cancelled && meta.flavor_lesson) notifyMastery(learnFlavorStory(state, r.dlg, DB.flavorById));
   if (!cancelled) awardLoverSceneExp(r.id, r.owner);
-  if (!cancelled && r.growthScene) earnSceneCompletion(r.id, r.owner);
+  if (!cancelled && r.growthScene) earnSceneCompletion(r.growthKey || r.id, r.owner);
   layers.vn.classList.remove("active");
+  dom.log.classList.remove("show");
   document.body.classList.remove("in-vn", "vn-open", "vn-lift-props");
   dom.cg.classList.remove("show");
   releaseCg();
@@ -652,6 +656,9 @@ function next() {
       if (vnTest.turbo) continue;
       const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context), purikura: () => purikuraShot(),
         dragon: () => sceneMoment("dragonSmoke"), // dragon: 第4章 前夜祭の龍の煙（#2688 A5）
+        taste: () => sceneMoment("tasteFade"), // taste: 第2章 一口ぶんの煙から甘さの色だけが抜ける（#3965）
+        // unveil: 第4章 四つ目の台に立つ男の影がほどけて本人の姿になる（#3965）。立ち絵は会話と同じ枠取りで渡す
+        unveil: () => sceneMoment("shadowUnveil", unveilFigure(line.char_id, line.face)),
         // gaze: 修羅場で恋人たちの視線が刺さる。その場にいる恋人は呼び出し側が play の cast で渡す（無ければ会ったことのある恋人全員）。
         // "brief": true はプチ修羅場の短い版
         gaze: () => gazeCutin(r.cast || (state.lovers || []).filter((id) => state.met?.[id]), { brief: line.brief === true }) }[line.id];
@@ -673,7 +680,7 @@ function next() {
       if (id !== "hajime") { queueIntro({ id, variant, override: line.intro || {} }); continue; }
       if (vnTest.turbo) { markIntroSeen(id, variant); continue; }
       r.ready = false;
-      playIntro(id, { variant, override: line.intro || {} }).then(() => { if (running === r) { r.ready = true; next(); } });
+      playIntro(id, { variant, override: line.intro || {}, waitAssets: introAssetWait(r) }).then(() => { if (running === r) { r.ready = true; next(); } });
       return;
     }
     if (type === "hide_portrait") {
@@ -882,8 +889,13 @@ async function visualSettled(node, ms = 800) {
 function queueIntro(cue) {
   if (!running.pendingIntros.some((pending) => pending.id === cue.id && (pending.variant || "") === (cue.variant || ""))) {
     running.pendingIntros.push(cue);
+    // 紹介の絵と書体を今から取り始める。本人の行を読んでいる間に届けば、送った後に待たない（#2444 観察4）
+    if (!vnTest.turbo) prefetchIntro(cue.id, cue);
   }
 }
+
+/** 紹介の絵・書体の待ちにも、ほかの素材の待ちと同じ読み込みの表示を添える（▼は送った時点で消えている。#2444 観察4） */
+const introAssetWait = (r) => (ready) => waitSceneAssets(ready, r);
 
 // 読み進めた時点で、本人の立ち絵と発話を見た紹介だけを出す。
 function introThenShow(line, show = showLine) {
@@ -899,7 +911,7 @@ function introThenShow(line, show = showLine) {
   }
   r.ready = false;
   (async () => {
-    for (const { id, variant, override } of due) await playIntro(id, { variant, override, onAppear: () => speakerBgm(id) });
+    for (const { id, variant, override } of due) await playIntro(id, { variant, override, onAppear: () => speakerBgm(id), waitAssets: introAssetWait(r) });
     if (running !== r) return;
     r.ready = true;
     if (line) show(line); else finish();
@@ -913,7 +925,7 @@ async function showLine(line) {
   clearTimeout(autoTimer);
   const images = linePortraits(line);
   const cutinCue = line._romanceTransient || skipMode || vnTest.turbo ? null : conversationCutinCue(r.currentId || r.id, line);
-  const cutinSrc = cutinCue ? portraitInfo("hajime", cutinCue.face, "new")?.src : null;
+  const cutinSrc = cutinCue ? conversationCutinSrc(cutinCue) : null;
   if (cutinSrc) images.push(cutinSrc);
   // 選択したUIの書体で折り返す。初回だけ代替フォントでページを決めない。
   const fontReady = Promise.all([dom.text, dom.name].map(node => {
@@ -1008,11 +1020,19 @@ async function showLine(line) {
     r.spoken.add(line.portrait);
     if (needsIntro(line.portrait)) queueIntro({ id: line.portrait });
   }
-  if (cutinSrc) showCutin(r, cutinCue, cutinSrc);
   renderPage();
+  // 文字送りを始めてから出す（相手の行の型は、文字送りが終わるまで待つ）
+  if (cutinSrc) showCutin(r, cutinCue, cutinSrc);
 }
 
-/** 会話カットイン（#2990）。台本で決めた行だけ、出せる条件（1会話1回・相手の立ち絵の枚数）を満たす時に出す */
+/** 帯の中に敷く、今の背景の絵（CSS の background-image の値）。取れない時は空 */
+function cutinBackdrop() {
+  const top = [...(document.getElementById("bg")?.children || [])].filter((n) => n.classList.contains("bg-img")).at(-1);
+  const image = top ? getComputedStyle(top).backgroundImage : "";
+  return image && image !== "none" ? image : "";
+}
+
+/** 会話カットイン（#2990・2026-11-20 再設計 CCR）。台本で決めた行だけ、出せる条件（1会話1回・相手の立ち絵の枚数）を満たす時に出す */
 function showCutin(r, cue, src) {
   const shown = [...dom.portraits.querySelectorAll("img")];
   const ok = conversationCutinAllowed(cue, {
@@ -1024,7 +1044,7 @@ function showCutin(r, cue, src) {
   });
   if (!ok) return;
   r.cutinShown = true;
-  cutin?.show(cue, src, { still: reducedMotion() });
+  cutin?.show(cue, src, { still: reducedMotion(), bg: cutinBackdrop(), typing: !!r.typing });
 }
 
 // 報酬キュー: 「……【技術】と【センス】が少し上がった。」の規定フレーズを読んで加算する
@@ -1189,6 +1209,8 @@ function completeTyping() {
   r.shown = total;
   renderTyped(total);
   dom.next.classList.add("show");
+  // 相手の行の会話カットインは、台詞が出切ってから出す
+  cutin?.reveal();
   kickAuto();
 }
 
@@ -1228,6 +1250,15 @@ function updatePortraits(speaker, face, explicit = false) {
   for (const img of dom.portraits.querySelectorAll("img")) img.classList.toggle("active", img.dataset.speaker === speaker);
   layoutPortraits();
   return entrance;
+}
+
+/** 演出（motions/moments.js の shadowUnveil）へ渡す、会話と同じ大きさ・足元の立ち絵。絵が無ければ null（演出は何もしない） */
+function unveilFigure(charId, face = "normal") {
+  const info = charId ? portraitInfo(charId, face) : null;
+  if (!info) return null;
+  const img = el("img", { src: info.src, alt: "", draggable: "false" });
+  frame(img, info);
+  return img;
 }
 
 /** 透過余白の差を補正し、本体の高さ・足元位置をキャラ間でそろえる */

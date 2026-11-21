@@ -36,8 +36,8 @@ export const STATE_KEY_RULES = {
   story: { verdict: "reset", note: "§2.4" },
   visits: { verdict: "reset", note: "§2.2" },
   visitedDay: { verdict: "reset", note: "§2.2" },
-  owned: { verdict: "conditional", note: "購入・報酬品は引き継ぐ。gift 由来の装備と、くじ限定の台（KJ05）はリセット（§2.1）" },
-  equip: { verdict: "conditional", note: "贈答品の枠はパッケージに入れない（§2.1）" },
+  owned: { verdict: "conditional", note: "購入・報酬品は引き継ぐ。好感度の締めくくりでもらった専用ハガル（gift）も引き継ぐ（台帳 NGC01）。くじ限定の台（KJ05）だけリセット（§2.1）" },
+  equip: { verdict: "conditional", note: "引き継いだ所持にある装備の枠だけ残す（§2.1）" },
   flavors: { verdict: "carry", note: "図鑑記録（§2.1）" },
   flavorMastery: { verdict: "carry", note: "系統ごとのXP（§2.1）" },
   flavorLessons: { verdict: "carry", note: "受講済みレッスン（§2.1）" },
@@ -81,6 +81,7 @@ export const STATE_KEY_RULES = {
 };
 
 // data/equipment.json の gift フィールドが付いた装備 = キャラから贈られた専用ハガル。
+// 周回では引き継ぐ（2026-11-20 オーナー「好感度はリセット。ただし好感度イベントでもらったものや経験値や授業スキルは引き継ぐ」・台帳 NGC01）。
 // 分類網羅テストが data 側と一致するか照合する。
 export const GIFT_EQUIPMENT_IDS = [
   "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_saku", "suyaki_mashiro", "suyaki_minto", "suyaki_naru", "suyaki_noor",
@@ -135,7 +136,9 @@ export const FLAG_EXACT_RULES = [
   ["_cafe_introduced", "progression"],
   ["_ch1_cleared", "progression"],
   ["_ch1_day2_shift_done", "progression"],
+  ["_ch1_day3_kannon_done", "progression"],
   ["_ch1_early", "progression"],
+  ["_ch1_lemon_single", "progression"], // 第1章の大会をレモンだけで勝った（#3916）。優勝の夜と第4章の会話が変わる
   ["_ch1_eve", "progression"],
   ["_ch1_mid", "progression"],
   ["_ch1_opening", "progression"],
@@ -154,7 +157,14 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_cleared", "progression"],
   ["_ch2_coal_role_coals", "progression"],
   ["_ch2_coal_role_plate", "progression"],
+  // #3097 PR-B: 行き帰りの電車の小品（chapters/ch2-commute.js）。読んだ日と各回の既読。window_sent は写真をつむぎへ送った（後日の LIME の条件）
+  ["_ch2_commute_day", "progression"],
+  ["_ch2_commute_doze", "progression"],
+  ["_ch2_commute_regulars", "progression"],
+  ["_ch2_commute_tonari", "progression"],
   ["_ch2_commute_v1", "progression"],
+  ["_ch2_commute_window", "progression"],
+  ["_ch2_commute_window_sent", "person"],
   ["_ch2_day1", "progression"],
   ["_ch2_deliveries", "progression"],
   ["_ch2_eve_done", "progression"],
@@ -162,6 +172,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_halloween_active", "progression"],
   ["_ch2_kumicho_public_reveal", "person"],
   ["_ch2_morning_departed", "progression"],
+  ["_ch2_stay_local_since", "progression"],
   ["_ch2_naru_hurt", "person"],
   ["_ch2_naru_listened", "person"],
   ["_ch2_naru_warm_customers", "person"],
@@ -176,11 +187,13 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_kumicho_sixth", "person"],
   ["_ch2_read_ch2_kumicho_third", "person"],
   ["_ch2_read_ch2_lingering_smell", "progression"], // スミさんの飯の接客回（baito_ch2_staff_meal）の条件
+  ["_ch2_read_ch2_naru_lunch", "person"], // 試煙会（remake_ch2_ageha_tasting）で、前日の昼に聞いた苺の依頼を受けるか（#3922）
   ["_ch2_read_ch2_naru_warm", "person"],
   ["_ch2_read_ch2_naru_window", "person"], // 前夜の振り返りで、休みの店の前に送ったLIMEの返事を待つか（#2720）
   ["_ch2_read_ch2_pre_tournament_realisation", "progression"],
   ["_ch2_read_ch2_kuraudo_fifth", "person"],
   ["_ch2_read_ch2_kuraudo_fourth", "person"],
+  ["_ch2_read_ch2_kuraudo_second", "person"], // 最初の「同士」の回。♥3の外出の誘い lime_outing_kuraudo_1 の条件（daily/phone.js）
   ["_ch2_read_ch2_kuraudo_sixth", "person"],
   ["_ch2_read_ch2_kuraudo_third", "person"], // クラウドの本名の回。LIME lime_kuraudo_bond_a の条件
   ["_ch2_read_ch2_slump_taste", "progression"],
@@ -217,6 +230,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_evening", "progression"],
   ["_ch3_tokyo_proposal_day", "progression"],
   ["_ch3_intro", "progression"],
+  ["_ch3_free_night_guide", "ui"],
+  ["_ch3_lime_contact_guide", "ui"],
   ["_ch3_japan_first_representative", "progression"],
   ["_ch3_mukai_work_intro_read", "person"],
   ["_ch3_opening_read", "progression"],
@@ -240,6 +255,7 @@ export const FLAG_EXACT_RULES = [
   ["_petit_seen_notice_tsumugi", "progression"],
   ["_petit_seen_sumi", "progression"],
   ["_tetsuko_time", "progression"], // てつこといっしょ（#2454）: 小物の配置・しぐさ図鑑・アルバム。来訪記録 _ch3_outings と同じく周回で持ち越さない
+  ["_tonari_floor", "progression"], // tonari フロア営業: 回した回数・最高の評価・店のファンの合計。シフトの記録 _shift_mix_* と同じく周回で持ち越さない
   ["_ch3_naru_party_ready", "progression"],
   ["_ch3_pizza_party", "progression"],
   ["_minto_calling_paid", "progression"],
@@ -247,6 +263,15 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_prep_clinic", "progression"],
   ["_ch3_prep_farewell", "progression"],
   ["_ch3_preview_seen", "progression"],
+  // 第3章の来店後に届くLIMEの既読条件（#3097）。
+  ["_ch3_read_ch3_mashiro_play_1", "progression"],
+  ["_ch3_read_ch3_mashiro_play_2", "progression"],
+  ["_ch3_read_ch3_mukai_latte_cat", "progression"],
+  ["_ch3_read_ch3_mukai_no_hat", "progression"],
+  ["_ch3_read_ch3_ayatori_bakery", "progression"],
+  ["_ch3_read_ch3_ayatori_missed", "progression"],
+  ["_ch3_read_ch3_steve_two_timers", "progression"],
+  ["_ch3_read_ch3_tsumugi_slump", "progression"],
   ["_ch3_read_ch3_mashiro_glass_cloth", "progression"], // 布巾の場面（#3081）。LIMEの trigger_flag に字面で出る
   ["_ch3_read_ch3_ayatori_lime", "progression"],
   ["_ch3_read_ch3_ayatori_steve_notes", "progression"], // スティーブ×綾取（#3468 C案）。第4章のLIMEの trigger_flag に字面で出る
@@ -264,10 +289,12 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_trial_steve", "progression"],
   ["_ch3_tokyo_call_night", "progression"],
   ["_ch3_room_rests", "progression"], // 東京の奥の部屋で休んだ回数（ch3-tokyo-daily.js の小品の巡回）。周回では持ち越さない
+  ["_ch3_home_calls", "progression"], // 東京の奥の部屋で休んだ時に読んだ地元からの電話（ch3-outing-progress.js の HOME_CALLS・#3097 第2弾）
   ["_ch4", "progression"],
   ["_camel_cups", "unlock"], // 大会の解放・中級認定・上級称号を周回へ残す
   ["_camel_name_done", "progression"], // ハビーバの名前の由来（ミニゲームのドラマ・SPC26）
   ["_camel_master_done", "progression"], // 上級を勝ち切った日の房飾り（SPC26）
+  ["_camel_stable_turn", "progression"], // ラクダレース場の待ち時間の場面を読んだ本数（#3097 計画 4-6・ch4-camel-progress.js）。周回では持ち越さない
   ["_club_yoru_request", "progression"], // クラブSEAMの常連のリクエスト（SPC26）
   ["_club_yoru_last_set", "progression"], // 閉店前にヨルと交代で回す夜（SPC26）
   ["_ch4_morning_done", "progression"], // 大会当日の朝を読み終えた（ch4-morning.js・SPC28）。周回では持ち越さない
@@ -278,6 +305,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
+  ["_ch4_home_calls", "progression"], // ドバイの昼に宿で休んだ時に読んだ地元からの電話（ch4-dubai-local.js の HOME_DAY_CALLS・#3097 第2弾）
   ["_visit_chains", "progression"], // 通いの続きの小さな出来事（第3〜5章・段の既読と選んだ答え。chapters/visit-chains.js）。周回では持ち越さない
   ["_ch4_dubai_nights", "progression"], // ドバイの夜がにぎわう店に夜に行った回数（店ごと・ch4-dubai-local.js）。周回では持ち越さない
   ["_ch4_longlong", "progression"], // 龍龍水煙所のドバイの店の段階の既読・通いの回数（ch4-longlong.js）
@@ -497,11 +525,16 @@ export const FLAG_EXACT_RULES = [
   ["_outing_done_adam", "person"],
   ["_outing_done_ageha", "person"],
   ["_outing_done_hiyori", "person"],
+  ["_outing_done_kumicho", "person"],
   ["_outing_done_minto", "person"],
   ["_outing_done_naru", "person"],
+  ["_outing_done_kuraudo", "person"],
   ["_outing_done_rio", "person"],
+  ["_outing_done_ayatori", "person"], // 綾取・スティーブ・ヴォルクの♥3の外出（#3097 PR-H）。東京の約束か大会後の寄り道で立つ
   ["_outing_done_samechan", "person"],
+  ["_outing_done_steve", "person"],
   ["_outing_done_tsumugi", "person"],
+  ["_outing_done_volk", "person"],
   ["_overwork", "progression"],
   ["_pakki_first_spin_pending", "pending"],
   ["_prep_flavor", "progression"],
@@ -556,12 +589,18 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_cafe_ch2_clock", "progression"], // #3097 第2弾（daily/spot-encounters.js の第2章の回）
   ["_spot_seen_cafe_ch2_commute", "progression"],
   ["_spot_seen_cafe_ch2_foam", "progression"], // #3097 第1弾（daily/spot-encounters.js の第2章の回）
+  ["_spot_seen_cafe_ch2_uezono", "person"], // #3097 PR-I 喫茶こはくの上園さん（第2章）
   ["_spot_seen_cafe_ch2_taste", "progression"],
   ["_spot_seen_cafe_uezono_break", "person"],
   ["_spot_seen_cafe_master_quiz", "progression"],
   ["_spot_seen_cafe_naru_break", "person"],
   ["_spot_seen_cafe_naru_rio", "person"],
   ["_spot_seen_ch1_tsumugi_low_water", "person"],
+  // #3097 PR-B: 第2章の地元の雨の回（daily/spot-encounters.js の chapterRainScene）
+  ["_spot_seen_cafe_ch2_rain", "progression"],
+  ["_spot_seen_ch2_rest_rain", "progression"],
+  ["_spot_seen_choizap_ch2_rain", "progression"],
+  ["_spot_seen_cs_ch2_rain", "progression"],
   ["_spot_seen_choizap_ch2_neck", "progression"], // #3097 第2弾
   ["_spot_seen_choizap_ch2_numbers", "progression"],
   ["_spot_seen_choizap_ch2_stairs", "progression"], // #3097 第1弾
@@ -592,9 +631,21 @@ export const FLAG_EXACT_RULES = [
   ["_sumi_rig_received_day", "progression"],
   // 凛想が味の不調に気づいた回（第2章）を読んだか。第3・4章の出発前の凛想の会話が分岐に使う（data/dialogue/ch3_ch4_home.json）
   ["_talk_seen_ch2_rio_taste", "person"],
+  // #3097 PR-I: サメちゃんの第2章の会話（daily/samechan.js）と、鉄仮面さんのシフト上がり（daily/tonari.js）。後日の LIME の条件に使う
+  ["_talk_seen_ch2_samechan_resting_shark", "person"],
+  ["_talk_seen_ch2_shift_talk_salaryman", "person"],
+  // 第3章の出発前の送り出しを読んだか（#3097 PR-I）。第4章の出発前のその人の会話が、報告の分岐に使う（data/dialogue/ch4_prep_home.json）
+  ["_talk_seen_ch3_prep_hiyori", "person"],
+  ["_talk_seen_ch3_prep_kumicho", "person"],
+  ["_talk_seen_ch3_prep_kuraudo", "person"],
   // 第3章の出発前に凛想から「向こうの顔」を頼まれたか。第4章の出発前の凛想の会話が、その報告の分岐に使う
   ["_talk_seen_ch3_prep_kuraudo_live", "person"], // クラウドのライブの夜（第3章の準備期間・RVE07）
   ["_talk_seen_ch3_prep_rio", "person"],
+  ["_talk_seen_ch3_prep_tsumugi", "person"], // #3097 PR-I（上の3つと同じ）
+  // 第5章の来店後に届くLIMEの既読条件（#3097）。
+  ["_talk_seen_ch5_adam_shop", "person"],
+  ["_talk_seen_ch5_kuraudo_shop", "person"],
+  ["_talk_seen_ch5_rio_naru_order", "person"],
   ["_tsumugi_contest_art_seen", "person"],
   ["_tsumugi_contest_draft_hands", "person"],
   ["_tsumugi_contest_draft_window", "person"],
@@ -682,6 +733,8 @@ export const FLAG_FAMILY_RULES = [
   ["_motion_seen_*", "ui"],
   ["_lime_exchange_shown_*", "ui"],
   ["_flavor_*", "unlock"],
+  ["_date_topic_*", "progression"], // 恋人のデートの話題の進み（#4030・daily/date-scene.js の dateTopicFlag）。周回では最初の話題から
+  ["_ch5_noor_lover_*", "progression"], // 第5章、恋人のヌールの出迎え・夜・見送り・二度目の出迎えを読んだ（#4010・ch4-desert-progress.js の noorLoverReadFlag）
   ["_*_affinity_question_done", "person"],
   ["_*_affinity_released_pts", "person"],
   ["_*_affinity_stage_released_pts", "person"],
@@ -786,10 +839,10 @@ export function buildCarryPackage(s) {
   for (const grade of KUJI_LIMITED_GRADES) delete data.kuji[grade];
   data.reel = clone(s?.reel ?? {});
   data.best = clone(s?.best ?? {});
-  // 装備: 贈答品とくじ限定の台（KJ05）を除いた所持だけを引き継ぐ。装備中の枠も、残った所持にあるものだけを残す
-  // （空いた枠を既定装備に戻すのは周回開始側の仕事で、ここでは枠ごと落とす）。
-  const gift = new Set([...GIFT_EQUIPMENT_IDS, ...KUJI_ONLY_EQUIPMENT]);
-  data.owned = (Array.isArray(s?.owned) ? s.owned : []).filter((id) => !gift.has(id));
+  // 装備: くじ限定の台（KJ05）を除いた所持を引き継ぐ。好感度の締めくくりでもらった専用ハガルも引き継ぐ（NGC01）。
+  // 装備中の枠も、残った所持にあるものだけを残す（空いた枠を既定装備に戻すのは周回開始側の仕事で、ここでは枠ごと落とす）。
+  const dropped = new Set(KUJI_ONLY_EQUIPMENT);
+  data.owned = (Array.isArray(s?.owned) ? s.owned : []).filter((id) => !dropped.has(id));
   const ownedSet = new Set(data.owned);
   data.equip = Object.fromEntries(Object.entries(s?.equip ?? {}).filter(([, id]) => ownedSet.has(id)));
   // 記念品: 由来が明示されていて人物由来でないものだけ（未分類は持ち越さない）

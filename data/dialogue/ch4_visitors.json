@@ -30,6 +30,61 @@
           "text": "鞄の取っ手には、几帳面な字の荷札が揺れている。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "荷札の宛先は、宿の名前ではなかった。「はじめのところ」とだけ書いてある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……この宛先で、届くんですか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "届いたではないか。わしごと"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんは、上着のポケットから小さな紙を出した。機内で書いたらしい、短い箇条書きだ。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "着いたら言うことを、書いておいたのじゃ。一つ目は、もう言った"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙を読む目が、二つ目のところで止まった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめよ。二つ目は「会いたかった」じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃん！　読み上げる順番というものが……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんは紙を畳んで、コロちゃんの口をそっと押さえた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……コロちゃんではなく、わしが言う。会いたかったのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺もです"
+        },
+        {
           "speaker": "samechan",
           "face": "normal",
           "text": "うむ。まず荷物を置こう。観光の話はそれからじゃ"
@@ -44,7 +99,8 @@
           "face": "normal",
           "text": "案内の地図、一緒に見ましょう"
         }
-      ]
+      ],
+      "comment": "#4010 で増補（恋人の到着が、ほかの恋人の460〜540字より短かった）: 荷札の宛先が「はじめのところ」、機内で書いた「着いたら言うこと」の二つ目をコロちゃんが先に読み上げ、本人が言い直す（会いたかったのじゃ）。"
     },
     {
       "dialogue_id": "ch4_hiyori_dubai_girlfriend",
@@ -86,8 +142,49 @@
           "face": "smile",
           "text": "ん……約束。目覚ましは、三回かけておく",
           "inner": "三回目で起きる。会うために来たんだから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エレベーターへ向かいかけて、ひよりさんが振り返った。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……ねえ。会うまでの間、飛行機の中で、台詞を考えてたの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "台詞、ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "「砂の国まで、あなたに会いに来たの」……どう？ 儚い？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "儚いっていうより、まっすぐです"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……まっすぐ。それ、全然儚くないじゃない"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "でも、いっか。ちゃんと言えたから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エレベーターの扉が閉まる前に、ひよりさんは一度だけ、小さく手を振った。"
         }
-      ]
+      ],
+      "comment": "#3097 第3弾で増補（恋人の到着が175字と、ほかの恋人の460〜540字より短かった。#4010 のサメちゃんと同じ扱い）: 機内で考えた儚い台詞を言ってみて、まっすぐだと言われる。夜の約束は足さない。"
     },
     {
       "dialogue_id": "ch4_samechan_dubai_friend",

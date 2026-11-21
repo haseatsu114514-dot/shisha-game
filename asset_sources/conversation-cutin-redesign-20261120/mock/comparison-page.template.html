@@ -1,0 +1,393 @@
+<title>会話カットイン再設計案</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Zen+Old+Mincho:wght@700&display=swap">
+<style>
+/* 配置: 1列。先頭に実画面の舞台（16:9）と切り替え、その下に理由・変更点・置き場・絵の一覧。色はゲーム新版の夜紫と金の罫線。 */
+:root {
+  color-scheme: dark;
+  --ink: #120a1c;
+  --surface: #1c1230;
+  --surface-2: #261a3d;
+  --text: #f2ecf8;
+  --muted: #b9adc9;
+  --gold: #e7c98f;
+  --gold-line: rgba(231, 201, 143, .3);
+  --lav: #c4a0ff;
+  --keep: #9ad8b4;
+  --drop: #ff9d9d;
+  --font-display: "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+}
+body { background: var(--ink); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.8; }
+.page > * { min-width: 0; }
+.page { max-width: 1040px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 44px; }
+h1 { font-family: var(--font-display); font-size: clamp(26px, 5vw, 38px); line-height: 1.3; margin: 0; letter-spacing: .04em; text-wrap: balance; }
+h2 { font-family: var(--font-display); font-size: 22px; line-height: 1.4; margin: 0 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--gold-line); letter-spacing: .04em; }
+h3 { font-size: 15px; margin: 0 0 4px; color: var(--gold); font-weight: 700; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 46em; margin-top: 12px; }
+.note { color: var(--muted); font-size: 13px; }
+
+/* 舞台 */
+.demo { display: grid; gap: 12px; }
+.tabs, .modes { display: flex; flex-wrap: wrap; gap: 8px; }
+.tabs button, .modes button, .replay {
+  font: inherit; font-size: 14px; color: var(--text); background: var(--surface); border: 1px solid rgba(196, 160, 255, .28);
+  border-radius: 999px; padding: 6px 14px; cursor: pointer; line-height: 1.5;
+}
+.tabs button[aria-pressed="true"] { background: var(--surface-2); border-color: var(--gold); color: var(--gold); }
+.modes { align-items: center; justify-content: space-between; }
+.seg { display: inline-flex; border: 1px solid var(--gold-line); border-radius: 999px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; background: transparent; padding: 7px 18px; }
+.seg button[aria-pressed="true"] { background: var(--gold); color: #24160a; font-weight: 700; }
+.replay { border-color: var(--gold-line); }
+button:focus-visible { outline: 2px solid var(--lav); outline-offset: 2px; }
+.stage-wrap { position: relative; aspect-ratio: 16 / 9; max-width: 100%; overflow: hidden; border-radius: 8px; background: #07040c; border: 1px solid var(--gold-line); }
+.stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; transform: scale(var(--k, 1)); }
+.stage > img { position: absolute; inset: 0; width: 1280px; height: 720px; max-width: none; display: block; }
+.caption { display: grid; gap: 4px; background: var(--surface); border-radius: 8px; padding: 12px 16px; }
+.caption b { color: var(--gold); font-weight: 700; }
+
+/* 再設計案のカットイン（舞台 1280×720 の座標） */
+.cx-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.cx { position: absolute; }
+.cx-plate { position: absolute; inset: 0; overflow: hidden; }
+.cx-bg { position: absolute; inset: -30px; background-size: cover; background-position: 30% 40%; filter: blur(6px) saturate(1.05) brightness(.82); transform: scale(1.5); }
+.cx-tint { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(26,14,42,.78) 0%, rgba(48,28,74,.42) 50%, rgba(70,42,100,.2) 100%); }
+.cx.cool .cx-tint { background: linear-gradient(100deg, rgba(10,8,26,.9) 0%, rgba(22,20,52,.66) 60%, rgba(30,30,70,.5) 100%); }
+.cx-halo { position: absolute; inset: 0; background: radial-gradient(ellipse 34% 62% at var(--hx) var(--hy), rgba(255,226,186,.34), rgba(214,170,255,.14) 55%, transparent 78%); mix-blend-mode: screen; }
+.cx.cool .cx-halo { display: none; }
+.cx-art { position: absolute; max-width: none; max-height: none; filter: drop-shadow(0 0 10px rgba(12,5,24,.6)) drop-shadow(0 0 1px rgba(232,206,255,.55)); }
+.cx.cool .cx-art { filter: saturate(.72) brightness(.9) drop-shadow(0 0 10px rgba(6,4,20,.7)); }
+.cx-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 62%, rgba(14,7,24,.55) 100%); }
+.cx-sheen { position: absolute; inset: 0; background: linear-gradient(112deg, transparent 42%, rgba(255,236,200,.42) 50%, transparent 58%) no-repeat; background-size: 260% 100%; background-position: 130% 0; opacity: 0; }
+.cx svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.cx-edge-glow { fill: none; stroke: rgba(196,160,255,.5); stroke-width: 5; filter: blur(3px); }
+.cx-edge { fill: none; stroke: #e7c98f; stroke-width: 1.6; }
+.cx.amber .cx-edge { stroke: #f0b060; }
+.cx.amber .cx-edge-glow { stroke: rgba(255,190,110,.5); }
+.cx-edge2 { fill: none; stroke: rgba(231,201,143,.38); stroke-width: 1; }
+.cx-accent { fill: none; stroke: rgba(231,201,143,.55); stroke-width: 1; }
+.cx-drop { position: absolute; inset: 0; filter: drop-shadow(0 14px 22px rgba(4,0,10,.55)); }
+.cx-dim { position: absolute; inset: 0 0 240px 0; background: linear-gradient(180deg, rgba(8,3,16,.5) 70%, transparent); }
+.cx.eyes .cx-tint { background: linear-gradient(90deg, rgba(20,10,32,.94) 0%, rgba(46,26,70,.5) 40%, rgba(46,26,70,.5) 60%, rgba(20,10,32,.94) 100%); }
+.cx-streak { position: absolute; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,240,214,.5) 30%, rgba(255,240,214,.5) 60%, transparent); opacity: .35; }
+
+/* 出入り */
+.cx.in-cut { animation: cx-wipe .2s cubic-bezier(.2,.8,.2,1) both; }
+.cx.in-cut .cx-art { animation: cx-art-slide .38s cubic-bezier(.2,.8,.2,1) both; }
+.cx.in-cut .cx-sheen, .cx.in-rise .cx-sheen, .cx.in-eyes .cx-sheen { animation: cx-sheen .6s ease-out .06s both; }
+.cx.in-soft { animation: cx-fade .5s ease-out both; }
+.cx.in-soft .cx-art { animation: cx-art-sink .7s ease-out both; }
+.cx.in-rise { animation: cx-rise .36s cubic-bezier(.2,.8,.2,1) both; }
+.cx.in-eyes { animation: cx-wipe .16s cubic-bezier(.2,.8,.2,1) both; }
+.cx.in-eyes .cx-art { animation: cx-art-slide-r .5s cubic-bezier(.2,.8,.2,1) both; }
+.cx.in-eyes .cx-streak { animation: cx-streak .45s ease-out both; }
+.cx-dim.in { animation: cx-fade .14s ease-out both; }
+.cx.out-cut { animation: cx-wipe-out .16s ease-in both; }
+.cx.out-soft { animation: cx-fade-out .32s ease-in both; }
+.cx.out-eyes { animation: cx-squash .16s ease-in both; }
+.cx-dim.out { animation: cx-fade-out .2s ease-in both; }
+@keyframes cx-wipe { from { clip-path: inset(-60px 100% -60px 0); } to { clip-path: inset(-60px -60px -60px 0); } }
+@keyframes cx-wipe-out { from { clip-path: inset(-60px -60px -60px 0); opacity: 1; } to { clip-path: inset(-60px 100% -60px 0); opacity: .4; } }
+@keyframes cx-art-slide { from { transform: translateX(-34px); } to { transform: none; } }
+@keyframes cx-art-slide-r { from { transform: translateX(46px); } to { transform: none; } }
+@keyframes cx-art-sink { from { transform: translateY(-8px); } to { transform: none; } }
+@keyframes cx-sheen { 0% { opacity: 1; background-position: 130% 0; } 100% { opacity: 0; background-position: -40% 0; } }
+@keyframes cx-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cx-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes cx-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes cx-squash { from { transform: scaleY(1); opacity: 1; } to { transform: scaleY(.04); opacity: 0; } }
+@keyframes cx-streak { from { transform: translateX(-30%); opacity: .9; } to { transform: none; opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .cx, .cx *, .cx-dim { animation: none !important; } }
+
+/* 文の部分 */
+.reasons { display: grid; gap: 14px; counter-reset: r; padding: 0; margin: 0; list-style: none; }
+.reasons li { display: grid; grid-template-columns: 2.2em 1fr; gap: 4px 6px; }
+.reasons li::before { counter-increment: r; content: counter(r); font-family: var(--font-display); font-size: 22px; color: var(--gold); line-height: 1.3; }
+.reasons li > div { min-width: 0; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px 28px; }
+.cols > div { min-width: 0; }
+.cols ul, .plain { margin: 6px 0 0; padding-left: 1.2em; display: grid; gap: 6px; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 10px; border-bottom: 1px solid rgba(196,160,255,.14); }
+th { color: var(--muted); font-weight: 500; font-size: 12px; letter-spacing: .08em; }
+td.q { min-width: 15em; }
+.tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 9px; border-radius: 999px; white-space: nowrap; border: 1px solid currentColor; }
+.tag.keep { color: var(--keep); }
+.tag.drop { color: var(--drop); }
+.tag.add { color: var(--gold); }
+.where { color: var(--muted); font-size: 12px; display: block; }
+.still { display: grid; gap: 10px; }
+.still img { width: 100%; height: auto; display: block; border-radius: 8px; border: 1px solid var(--gold-line); }
+.art { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px 22px; }
+.art > div { min-width: 0; border-top: 1px solid var(--gold-line); padding-top: 10px; }
+.ask { margin: 0; padding-left: 1.4em; display: grid; gap: 10px; }
+.ask b { color: var(--gold); }
+</style>
+
+<div class="page">
+  <header>
+    <h1>会話カットイン 再設計案</h1>
+    <p class="lede">はじめの顔のカットインを、絵・枠・出し方・置き場の4点から作り直す案です。下の画面は本編の会話画面（新版の見た目）で、いまの版と再設計案を同じ場面で切り替えられます。再設計案の絵は仮のもの（今の立ち絵の原画を寄せて切り抜いただけ）で、方向が決まったら Codex で専用の絵に差し替えます。</p>
+  </header>
+
+  <section class="demo" aria-label="見比べ">
+    <div class="tabs" id="tabs" role="group" aria-label="場面"></div>
+    <div class="stage-wrap" id="wrap">
+      <div class="stage" id="stage">
+        <img id="shot" alt="">
+        <div class="cx-layer" id="layer"></div>
+      </div>
+    </div>
+    <div class="modes">
+      <div class="seg" role="group" aria-label="版">
+        <button type="button" id="mode-old" aria-pressed="false">いまの版</button>
+        <button type="button" id="mode-new" aria-pressed="true">再設計案</button>
+      </div>
+      <button type="button" class="replay" id="replay">もう一度見る</button>
+    </div>
+    <div class="caption" id="caption"></div>
+    <p class="note">背景と直前の流れは撮影用に短くしています（本編では各場面の背景になります）。再設計案の動きはこのページでの再現で、音は入っていません。</p>
+  </section>
+
+  <section>
+    <h2>安っぽく見える理由</h2>
+    <ol class="reasons">
+      <li><div><h3>絵が立ち絵の流用</h3><p>全身の立ち絵（896×1200）から顔のあたりを切り抜いて縮めています。顔は元の絵で幅150pxほどしかなく、スマホの高精細な画面では線が甘くなります。体も胸の途中で切れるので、「小さい立ち絵が箱に入っている」ように見えます。2026-11-07 に決めた「残す案が決まったら専用の絵を2〜3枚作る」が、まだ済んでいません。</p></div></li>
+      <li><div><h3>枠が新版の画面と別の絵柄</h3><p>枠は紫のベタ塗りに斜線と薄茶の細い線です。新版の「夜紫の半透明の面と金の細い罫線」に合わず、影も光もないので、画面に紙を貼ったように見えます。</p></div></li>
+      <li><div><h3>置き場所がぶつかる</h3><p>相手の台詞の行では、枠の真下に相手の名前が来て、相手の顔の枠に見えます。新版はウインドウの上の縁が無いので、枠の下端が宙に浮きます。相手が2人いる大会の場面では、目元の帯が左の人物の顔に重なります。</p></div></li>
+      <li><div><h3>出たまま動かない</h3><p>台詞と同時に出て、次の行へ進むまで止まったまま残ります。止まった絵をじっくり見られるので、粗が目立ちます。音も、画面側の反応もありません。</p></div></li>
+      <li><div><h3>最初に見る2回が、台詞の内容と合っていない</h3><p>序盤のアピール用に足した2か所です。冒頭の「なんか、負けられないなあ」は軽い口調なのに、決意の目元帯が出ます。つむぎの「……猫です」は、はじめの顔の話ではないのに、驚いた顔が出ます。</p></div></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>変えること</h2>
+    <div class="cols">
+      <div>
+        <h3>デザイン</h3>
+        <ul>
+          <li>カットイン専用の胸から上の絵を Codex で描く。立ち絵と同じ人・同じ画風のまま、顔を大きく、手や首の小さな仕草を入れる。</li>
+          <li>枠は金の細い線と淡いラベンダーの光。中は同じ部屋の背景をぼかしたもの。帽子が枠の上へ少しはみ出す。</li>
+          <li>宙に浮く箱をやめ、画面の左端から出る帯にする。形は「寄りの帯」と「目元の帯」の2つだけ。感情の違いは絵・色・動きで出す。</li>
+        </ul>
+      </div>
+      <div>
+        <h3>出るタイミング</h3>
+        <ul>
+          <li>相手の行（その顔）：相手の顔と同じ高さに、台詞が出切ってから差し込む。約1秒で自分から消える。</li>
+          <li>はじめ自身の行：名前のすぐ上。帯が先に開いてから台詞が出て、次の行へ進むまで残る。</li>
+          <li>決意：画面を横切る目元の帯を0.9秒だけ。</li>
+          <li>既存の効果音から短い音を付ける。SKIP・LOG・動きを減らす設定での扱いは今のまま。</li>
+        </ul>
+      </div>
+      <div>
+        <h3>頻度</h3>
+        <ul>
+          <li>出すのは3種類の場面だけ：相手がはじめの顔に触れた行／大会の決意と敗北／絆の締めくくり。</li>
+          <li>目安は1章あたり「その顔」2〜3回、大会で1回、締めくくりは相手ごとに1回。1会話1回は今のまま。</li>
+          <li>内容に合わない2か所を外し、台本に元からある「その顔」の台詞へ置き直す。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>置き場の見直し</h2>
+    <p class="note" style="margin-bottom:10px">いまの20か所と、足す候補です。台詞は書き換えません。</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>種類</th><th>台詞</th><th>判定</th><th>理由・変更</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Codex で描く絵</h2>
+    <p style="margin-bottom:14px">最初は4枚で、いまの型をすべて置き換えられます。1回の生成で1枚、1024×1024、胸から上、背景は単色（透過はこちらで抜きます）。参照には同じ表情の今の立ち絵と、画風の基準2枚を渡します。貼り付け用の依頼文はリポジトリに保存しました。</p>
+    <div class="art">
+      <div><h3>動揺</h3><p>目を見開き、片手が帽子のつばへ上がりかける。「その顔（軽い）」に使う。</p></div>
+      <div><h3>沈み</h3><p>視線を落とし、つばの影が目元にかかる。肩が少し落ちる。「その顔（重い）」と敗北に使う。</p></div>
+      <div><h3>受け取る</h3><p>目を細めた小さな笑み。会釈の手前まで頭を下げる。絆の締めくくりに使う。</p></div>
+      <div><h3>決意</h3><p>つばを指でつまんで下げ、あごを引いて前を見据える。目元の帯に使うので顔を大きく描く。</p></div>
+    </div>
+    <p class="note" style="margin-top:12px">あとで足すなら「照れ」（頬の赤み、首の後ろへ手）。「顔、赤いよ」と言われる行が3つあります。</p>
+  </section>
+
+  <section class="still">
+    <h2>別案：枠なし</h2>
+    <img src="{{still-fore}}" alt="枠を使わず、画面の左手前にはじめの上半身を出した試作。奥にスミさんが立っている">
+    <p>枠を使わず、画面の左手前にはじめが立つ形です。貼り付けた感じは消えますが、カットインというより「主人公の立ち絵が出た」見え方になります。本編ではじめの立ち絵はほぼ出ないので、画面の約束事が変わります。相手が2人いる場面では左の人物と重なるため使えません。おすすめは枠ありの案です。</p>
+  </section>
+
+  <section>
+    <h2>決めてほしいこと</h2>
+    <ol class="ask">
+      <li><b>枠ありか、枠なしか。</b>おすすめは枠あり（上の画面の再設計案）です。</li>
+      <li><b>決意を、画面を横切る帯にしてよいか。</b>0.9秒のあいだ相手の顔が隠れます。代わりに、相手が2人いても同じ形で出せます。</li>
+      <li><b>冒頭の1回を外してよいか。</b>序盤のアピールは、アダム初回の「ふっ……その顔」へ移す案です。</li>
+      <li><b>絵は最初の4枚でよいか。</b>照れの絵も先に欲しければ5枚にします。</li>
+    </ol>
+  </section>
+</div>
+
+<script>
+const IMG = {{IMG_JSON}};
+const BAND = { w: 500, h: 250, poly: [[0,26],[500,0],[452,232],[0,250]], accent: [[512,2],[464,234]], scale: .96, fx: 262, fy: 158, breakout: 40 };
+const SCENES = [
+  { id: "face-light", tab: "その顔（軽い）", where: "第1章 つむぎ「……急に、そんな顔しないでください」",
+    cut: { ...BAND, y: 104, art: "bust-surprise", bg: "bg_title", enter: "cut", leave: "cut", hold: 1150 },
+    now: "左の横長の帯が0.9秒出ます。立ち絵を縮めて切り抜いた絵なので、顔が小さく、線が甘く見えます。",
+    next: "相手の顔と同じ高さに差し込み、約1秒で自分から消えます。操作は要りません。" },
+  { id: "face-heavy", tab: "その顔（重い）", where: "第2章 つむぎ「はい。……お水が要る顔でした」",
+    cut: { ...BAND, y: 104, art: "bust-sad", fy: 168, breakout: 0, bg: "bg_tonari_inside_night", enter: "soft", leave: "soft", hold: 0 },
+    now: "縦長の枠の真下に「つむぎ」の名前が来るので、つむぎの顔の枠に見えます。",
+    next: "0.5秒かけて静かに現れ、次の行へ進むまで残ります。名前から離れた、相手の顔の高さに出ます。" },
+  { id: "receive", tab: "受け取る", where: "スミさんの締めくくり「……ありがとうございます。大事に使います」",
+    cut: { ...BAND, y: 226, art: "bust-smile", bg: "bg_tonari_inside_night", enter: "rise", leave: "soft", hold: 0, amber: true },
+    now: "紫のベタ塗りの枠が、新版の画面と別の絵柄です。枠の下端が宙に浮いています。",
+    next: "はじめ自身の台詞なので、名前のすぐ上に出ます。枠線は琥珀色。次の行へ進むまで残ります。" },
+  { id: "sink", tab: "沈む", where: "地元大会の敗北「（……そうか。届かなかった）」",
+    cut: { ...BAND, y: 226, art: "bust-sad", fy: 172, breakout: 0, bg: "bg_title", enter: "soft", leave: "soft", hold: 0, cool: true },
+    now: "枠の形も置き方も「受け取る」と同じで、場面の重さの違いが出ていません。",
+    next: "色を落とした帯が、ゆっくり現れてゆっくり消えます。" },
+  { id: "resolve", tab: "決意", where: "世界大会の開始「うん。全員に、勝ちたい」",
+    cut: { eyes: true, x: 0, y: 128, w: 1280, h: 190, poly: [[0,28],[1280,0],[1280,162],[0,190]], art: "eyes-serious", bg: "bg_title", hold: 800 },
+    now: "目元の帯が、左に立つなるの顔に重なっています。",
+    next: "画面を横切る目元の帯が0.9秒だけ出ます。相手が2人いても同じ形で出せます。" },
+];
+const ROWS = [
+  ["その顔", "つむぎ「……急に、そんな顔しないでください」", "第1章", "keep", "顔に触れた台詞。軽い型（約1秒）。"],
+  ["その顔", "つむぎ「はい。……お水が要る顔でした」", "第2章", "keep", "重い型（次の行まで残る）。"],
+  ["その顔", "なる「その顔なら大丈夫だ」", "第4章", "keep", ""],
+  ["その顔", "つむぎ「……寝不足ですね。目の下、ちょっと暗いです」", "第5章", "keep", ""],
+  ["その顔", "つむぎ「……猫です。葉っぱと煙が、ついてるだけで」", "第1章 つむぎ初回", "drop", "はじめの顔の話ではない。直前のはじめも普通の表情で、驚く理由がない。"],
+  ["決意", "「なんか、負けられないなあ」", "第1章 冒頭", "drop", "軽い口調の台詞。決意の帯は大会の本番まで取っておく。"],
+  ["決意", "「……よろしくお願いします。最後まで、手順通りに作ります」", "第2章 県大会", "keep", "全幅の目元帯へ。"],
+  ["決意", "「作ってから、決めます。よろしくお願いします」", "第3章 全国大会", "keep", "全幅の目元帯へ。"],
+  ["決意", "「うん。全員に、勝ちたい」", "第4章 世界大会", "keep", "全幅の目元帯へ。今はなるの顔に重なっている。"],
+  ["決意", "「……はい」", "第5章 二台目の前", "keep", "全幅の目元帯へ。"],
+  ["沈む", "「（……そうか。届かなかった）」", "第1章 敗北", "keep", ""],
+  ["沈む", "「……俺、シーシャ、向いてないのかな」", "第2章 店の裏口", "keep", ""],
+  ["沈む", "「……もう少し、待てた気がする」", "第3章 敗北", "keep", ""],
+  ["沈む", "「……届かなかった。悔しいな」", "第4章 敗北", "keep", ""],
+  ["沈む", "「……はい。店へ帰って、一服します」", "第5章 敗北", "keep", ""],
+  ["受け取る", "「……ありがとうございます。大事に使います」", "スミさんの締めくくり", "keep", ""],
+  ["受け取る", "「……大事に詰めます。アダムさん、ありがとうございます」", "アダムの締めくくり", "keep", ""],
+  ["受け取る", "「大事に使います。ありがとうございます」", "サメちゃんの締めくくり", "keep", ""],
+  ["受け取る", "「はい、大事に使います」", "ヴォルクの締めくくり", "keep", ""],
+  ["受け取る", "「ありがとうございます。最初の一台、また吸わせてください」", "第5章 勝利", "keep", ""],
+  ["その顔", "アダム「ふっ……その顔。ダブルアップルの魔力に堕ちたようだな」", "第1章 アダム初回", "add", "序盤のアピールはここが自然。"],
+  ["その顔", "凛想「もらった。……何、その顔。むせた？」", "第1章", "add", ""],
+  ["その顔", "組長「顔が固えぞ。取って食いやしねえ」", "第2章", "add", ""],
+  ["その顔", "あげは「……そんな顔、しないでよ」", "第2章", "add", ""],
+  ["その顔", "ましろ「顔、赤いよぉ。炭、熱すぎた？」", "第3章", "add", "照れの絵が要る。"],
+  ["その顔", "ヌール「……あれ、顔赤いよ？ もう日焼けした？」", "第4章", "add", "照れの絵が要る。"],
+  ["その顔", "スミさん「帰ってきてから、ずっと落ち着かねえ顔してんな」", "第5章", "add", ""],
+];
+const TAG = { keep: "残す", drop: "外す", add: "足す候補" };
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls) => { const n = document.createElement(tag); if (cls) n.className = cls; return n; };
+const px = (n, o) => { for (const [k, v] of Object.entries(o)) n.style[k] = `${v}px`; };
+const clip = (poly) => `polygon(${poly.map(([x, y]) => `${x}px ${y}px`).join(",")})`;
+const NS = "http://www.w3.org/2000/svg";
+let scene = SCENES[0], mode = "new", timers = [];
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function art(c) {
+  const img = el("img", "cx-art");
+  img.alt = "";
+  img.src = IMG[c.art];
+  if (c.eyes) px(img, { left: 600 - 300 * 1.75, top: 86 - 110 * 1.75, width: 600 * 1.75, height: 240 * 1.75 });
+  else px(img, { left: c.fx - 330 * c.scale, top: c.fy - 230 * c.scale, width: 660 * c.scale, height: 560 * c.scale });
+  return img;
+}
+function line(svg, cls, pts) { const p = document.createElementNS(NS, "polyline"); p.setAttribute("class", cls); p.setAttribute("points", pts.map((q) => q.join(",")).join(" ")); svg.append(p); }
+function mount(c) {
+  const layer = $("layer");
+  layer.replaceChildren();
+  let dim = null;
+  if (c.eyes) { dim = el("div", "cx-dim in"); layer.append(dim); }
+  const n = el("div", "cx" + (c.eyes ? " eyes" : "") + (c.amber ? " amber" : "") + (c.cool ? " cool" : ""));
+  px(n, { left: c.x || 0, top: c.y, width: c.w, height: c.h });
+  const drop = el("div", "cx-drop"), plate = el("div", "cx-plate");
+  plate.style.clipPath = clip(c.poly);
+  const bg = el("div", "cx-bg");
+  bg.style.backgroundImage = `url(${IMG[c.bg]})`;
+  plate.append(bg, el("div", "cx-tint"));
+  if (c.eyes) for (const [top, w] of [[34, 70], [68, 100], [104, 55], [148, 85]]) { const s = el("div", "cx-streak"); s.style.top = `${top}px`; s.style.width = `${w}%`; plate.append(s); }
+  else { const h = el("div", "cx-halo"); h.style.setProperty("--hx", `${c.fx}px`); h.style.setProperty("--hy", `${c.fy}px`); plate.append(h); }
+  plate.append(art(c), el("div", "cx-shade"), el("div", "cx-sheen"));
+  drop.append(plate);
+  n.append(drop);
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${c.w} ${c.h}`);
+  if (c.eyes) { line(svg, "cx-edge-glow", c.poly.slice(0, 2)); line(svg, "cx-edge", c.poly.slice(0, 2)); line(svg, "cx-edge2", [c.poly[3], c.poly[2]]); }
+  else { line(svg, "cx-edge-glow", c.poly); line(svg, "cx-edge", c.poly); line(svg, "cx-accent", c.accent); }
+  n.append(svg);
+  if (c.breakout) { // 帽子だけ枠線の手前に出す
+    const top = el("div", "cx-plate");
+    top.style.overflow = "visible";
+    top.style.clipPath = clip([[0, -c.breakout], [c.w - 24, -c.breakout], [c.poly[1][0] - 24, c.poly[1][1] + 2], [c.poly[0][0], c.poly[0][1] + 2]]);
+    top.append(art(c));
+    n.append(top);
+  }
+  n.classList.add(c.eyes ? "in-eyes" : `in-${c.enter}`);
+  layer.append(n);
+  return { n, dim };
+}
+function leave(c, m) {
+  if (still) { $("layer").replaceChildren(); return; }
+  m.n.className = m.n.className.replace(/\bin-\w+/, "") + (c.eyes ? " out-eyes" : ` out-${c.leave}`);
+  if (m.dim) m.dim.className = "cx-dim out";
+  timers.push(setTimeout(() => $("layer").replaceChildren(), 400));
+}
+function play() {
+  timers.forEach(clearTimeout);
+  timers = [];
+  $("layer").replaceChildren();
+  $("shot").src = IMG[(mode === "old" ? "before-" : "base-") + scene.id];
+  $("shot").alt = `${scene.where}（${mode === "old" ? "いまの版" : "再設計案"}）`;
+  const cap = $("caption");
+  cap.replaceChildren();
+  const head = el("p"); const b = el("b"); b.textContent = scene.where; head.append(b);
+  const body = el("p"); body.textContent = mode === "old" ? scene.now : scene.next;
+  cap.append(head, body);
+  $("replay").hidden = mode === "old";
+  if (mode === "old") return;
+  const c = scene.cut;
+  timers.push(setTimeout(() => {
+    const m = mount(c);
+    // 次の行まで残る型は、このページでは3秒で消して出入りを両方見せる
+    timers.push(setTimeout(() => leave(c, m), c.hold || 3000));
+  }, 320));
+}
+function setMode(v) { mode = v; $("mode-old").setAttribute("aria-pressed", String(v === "old")); $("mode-new").setAttribute("aria-pressed", String(v === "new")); play(); }
+for (const s of SCENES) {
+  const b = el("button");
+  b.type = "button";
+  b.textContent = s.tab;
+  b.setAttribute("aria-pressed", String(s === scene));
+  b.addEventListener("click", () => { scene = s; for (const x of $("tabs").children) x.setAttribute("aria-pressed", String(x === b)); play(); });
+  $("tabs").append(b);
+}
+$("mode-old").addEventListener("click", () => setMode("old"));
+$("mode-new").addEventListener("click", () => setMode("new"));
+$("replay").addEventListener("click", play);
+for (const [kind, text, where, tag, why] of ROWS) {
+  const tr = el("tr");
+  const a = el("td"); a.textContent = kind;
+  const q = el("td", "q"); q.textContent = text; const w = el("span", "where"); w.textContent = where; q.append(w);
+  const t = el("td"); const chip = el("span", `tag ${tag}`); chip.textContent = TAG[tag]; t.append(chip);
+  const y = el("td"); y.textContent = why;
+  tr.append(a, q, t, y);
+  $("rows").append(tr);
+}
+const fit = () => $("stage").style.setProperty("--k", String($("wrap").clientWidth / 1280));
+new ResizeObserver(fit).observe($("wrap"));
+fit();
+play();
+</script>

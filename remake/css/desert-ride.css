@@ -80,8 +80,9 @@
 .dr-touch.on, .dr-touch:active { background: rgba(255,214,150,.78); color: #3a2520; transform: scale(.97); }
 .dr-touch.dr-jump.on, .dr-touch.dr-jump:active { background: rgba(255,170,90,.92); }
 @media (hover: hover) and (pointer: fine) { .dr-touch { opacity: .55; } .dr-touch:hover { opacity: .9; } .desert-ride:not([data-gauge="full"]) .dr-touch.dr-boost { opacity: .3; } }
-/* やめる: ✕ の丸ボタン（64px）。HUD 右の箱の下に置き、下辺のタッチボタンとは離す */
-.dr-quit { position: absolute; right: 22px; top: 204px; width: 64px; height: 64px; padding: 0; display: grid; place-items: center; border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,248,236,.82); color: #4a2f28; font: 900 30px/1 var(--font); cursor: pointer; }
+/* やめる: ✕ の丸ボタン（#4131 共通標準: 箱 --q-hit・丸 --q-dot を ::before で描く）。HUD 右の箱の下に置き、下辺のタッチボタンとは離す */
+.dr-quit { position: absolute; right: 22px; top: 204px; width: var(--q-hit); height: var(--q-hit); padding: 0; display: grid; place-items: center; isolation: isolate; border: 0; border-radius: 50%; background: transparent; color: #4a2f28; font: 900 var(--q-font)/1 var(--font); cursor: pointer; }
+.dr-quit::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box; width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,248,236,.82); pointer-events: none; }
 .dr-quit[hidden] { display: none; }
 
 /* ---- カード（メニュー・リザルト） ---- */
@@ -92,8 +93,10 @@
 .dr-title { margin: 4px 0 10px; font-size: 52px; line-height: 1; letter-spacing: .08em; font-weight: 900; color: #3a2520; }
 .dr-lead { margin: 0 0 14px; font-size: 18px; color: #4a3a34; }
 /* 遊び方: 右上の「？」を押した時だけ、カードの上に重ねて見せる（常時は出さない） */
-.dr-help-btn { position: absolute; right: 18px; top: 18px; width: 64px; height: 64px; padding: 0; display: grid; place-items: center; border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,255,255,.7); color: #b2652f; font: 900 34px/1 var(--font); cursor: pointer; }
-.dr-help-btn:is(:hover, :focus-visible) { background: #fff; outline: 3px solid rgba(212,82,31,.5); outline-offset: 2px; }
+.dr-help-btn { position: absolute; right: 18px; top: 18px; width: var(--q-hit); height: var(--q-hit); padding: 0; display: grid; place-items: center; isolation: isolate; border: 0; border-radius: 50%; background: transparent; color: #b2652f; font: 900 var(--q-font)/1 var(--font); cursor: pointer; }
+.dr-help-btn::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box; width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,255,255,.7); pointer-events: none; }
+.dr-help-btn:is(:hover, :focus-visible) { outline: 3px solid rgba(212,82,31,.5); outline-offset: 2px; }
+.dr-help-btn:is(:hover, :focus-visible)::before { background: #fff; }
 .dr-help { display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .dr-menu[data-help="open"] > :not(.dr-help) { display: none; }
 .dr-help[hidden] { display: none; }
@@ -139,7 +142,7 @@
   .dr-combo { min-height: 28px; }
   .dr-gauge { height: 24px; }
   .dr-time { font-size: 26px; }
-  .dr-quit { top: 252px; width: 84px; height: 84px; font-size: 38px; }
+  .dr-quit { top: 252px; width: var(--q-hit); height: var(--q-hit); font-size: var(--q-font); }
   .dr-help-btn { width: 84px; height: 84px; font-size: 44px; }
   .dr-button { min-height: 84px; }
   .dr-caption { top: 92px; font-size: 28px; }
@@ -174,9 +177,9 @@ html:root[data-density="phone"] #stage[data-wide] .dr-touch.dr-boost { width: 14
 html:root[data-density="phone"] #stage[data-wide] .dr-button { min-height: var(--phone-tap); font-size: 28px; }
 
 /* ---- 「？」の統一と、常に出す文をもう一段減らす（#2729・2026-11-08 オーナー指摘「文字が多い・？が大きい」）:
-   「？」は見た目を舞台上 31〜35px の細い線の丸（::before）にし、押せる範囲はボタンの箱そのもの（透明）で実寸 40px 以上。カードの右上のまま。
+   「？」は見た目を細い線の丸（::before）にし、大きさは #4131 の共通標準（丸43px・押せる箱58px、--q-* 式、2026-11-22 もう一回り拡大）。カードの右上のまま。
    スマホでは、メニューの前置きの一文（相手は滑走中の「VS ヌール」で分かる）と、結果・練習のおわりの英字の見出しを出さない。 ---- */
-.desert-ride { --q-hit: max(44px, calc(40px / var(--k, 1))); --q-font: max(20px, calc(11.5px / var(--k, 1))); --q-dot: calc(var(--q-font) + 11px); }
+.desert-ride { --q-hit: max(58px, calc(54px / var(--k, 1))); --q-font: max(27px, calc(15px / var(--k, 1))); --q-dot: calc(var(--q-font) + 16px); }
 .desert-ride .dr-help-btn.dr-help-btn { right: 8px; top: 8px; isolation: isolate; width: var(--q-hit); height: var(--q-hit);
   border: 0; background: transparent; color: #b2652f; font-size: var(--q-font); }
 .desert-ride .dr-help-btn.dr-help-btn::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box;
@@ -528,3 +531,40 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-row strong { font-si
 html:root[data-density="phone"] .desert-ride .dr-result .dr-rows { gap: 0 16px; padding: 6px 10px; border-width: 16px 32px; border-image-width: 16px 32px; }
 html:root[data-density="phone"] .desert-ride .dr-card.dr-result .dr-button.dr-button { min-width: 0; flex: 1 1 0; font-size: 28px; }
 html:root[data-density="phone"] .desert-ride .dr-result .dr-result-side { padding-top: 16px; }
+
+/* ---- 三段階（#3779・2026-11-20 オーナー「各ミニゲームに三段階の難易度を追加」）:
+   メニューの「滑る」の上に、ヌールとの勝負の段の札（初級・中級・上級）。札はメニューのボタンと同じ .btn で、選んでいる段は主のボタンの色。
+   閉じた段は押せず、下の一言に開く条件（点線の縁）。結果のカードは記録の板の上に段の札（左の見出しの列は高さに余裕が無い）、初めてクリアした時は記録の板の下に一言。
+   段を替えるのはメニュー（結果の「段を選ぶ」）。スマホは文字を舞台上 24px 以上にして、札は指で押せる高さ ---- */
+.dr-tiers { display: flex; justify-content: center; gap: 12px; margin: 0 0 14px; }
+.dr-tiers:empty { display: none; }
+.desert-ride .dr-tier { min-width: 150px; min-height: 64px; padding: 6px 18px; align-items: center; justify-content: center; gap: 0; text-align: center; line-height: 1.2; }
+.desert-ride .dr-tier b { font-size: 24px; font-weight: 900; letter-spacing: .12em; }
+.desert-ride .dr-tier small { font-size: 14px; font-weight: 700; letter-spacing: .02em; opacity: .85; white-space: nowrap; }
+.desert-ride .dr-tier[data-state="chosen"] { box-shadow: 0 0 0 3px rgba(178, 101, 47, .45); }
+.desert-ride .dr-tier[data-state="chosen"] b::before { content: "✓ "; font-size: .8em; }
+.desert-ride .dr-tier:disabled { opacity: .62; border-style: dashed; background: transparent; }
+.desert-ride .dr-tier[data-fresh="true"] small { opacity: 1; color: #b2652f; }
+.desert-ride .dr-tier.primary[data-fresh="true"] small { color: inherit; }
+.dr-best-slot:empty { display: none; }
+.dr-best-slot .dr-best { margin: 0 0 10px; }
+
+.dr-result .dr-result-tags { display: flex; justify-content: flex-start; gap: 10px; margin: -10px 0 -6px; }
+.dr-result-tier { padding: 3px 14px; font-size: 18px; font-weight: 900; letter-spacing: .14em; color: #fff7e8; border-radius: 4px;
+  background: linear-gradient(180deg, #d98a2b, #9a5212); box-shadow: 0 2px 0 rgba(40, 12, 4, .5), inset 0 0 0 2px rgba(255, 210, 150, .5); }
+.dr-result-tier[data-tier="easy"] { background: linear-gradient(180deg, #3f9a84, #1f6352); }
+.dr-result-tier[data-tier="hard"] { background: linear-gradient(180deg, #c8402a, #7c1a0e); }
+.dr-result .dr-tier-note { align-self: flex-end; margin: -4px 0 0; padding: 6px 18px; font-size: 18px; font-weight: 900; letter-spacing: .04em; color: #ffe9c4;
+  background: rgba(140, 50, 16, .72); border: 1px solid rgba(255, 190, 120, .6); border-radius: 4px; }
+
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .desert-ride .dr-tier { min-width: 230px; min-height: 84px; }
+  .desert-ride .dr-tier b { font-size: 28px; }
+  .desert-ride .dr-tier small, .dr-result-tier, .dr-result .dr-tier-note { font-size: 24px; }
+}
+html:root[data-density="phone"] .desert-ride .dr-tier { min-width: 230px; min-height: var(--phone-tap, 84px); }
+html:root[data-density="phone"] .desert-ride .dr-tier b { font-size: 28px; }
+html:root[data-density="phone"] .desert-ride :is(.dr-tier small, .dr-result-tier, .dr-result .dr-tier-note) { font-size: 24px; }
+/* 結果のボタンが4つ（もう一度・なると勝負・段を選ぶ・下りる）の時は2つずつ2段に（スマホは1段に詰めると文字が2行に折れる） */
+.desert-ride .dr-result .dr-actions:has(> .dr-button:nth-child(4)) > .dr-button,
+html:root[data-density="phone"] .desert-ride .dr-card.dr-result .dr-actions:has(> .dr-button:nth-child(4)) > .dr-button.dr-button { flex: 1 1 calc(50% - 8px); }

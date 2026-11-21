@@ -49,13 +49,14 @@ export function buildHeatView(types, { count = 3, compact = false } = {}) {
     el("b", { text: c.label }), el("span", { text: "焼成中" }),
   ]));
   const counter = el("span.heat-collected-count", { text: "0 / " + coals.length, dataset: { test: "coal-count" } });
+  const collectedLabel = el("span.heat-collected-label", { text: "取った炭" });
   const stored = el("ol.coal-carrier-coals", { "aria-hidden": "true", dataset: { test: "coal-carrier-coals" } });
   const carrier = el("div.coal-carrier-view", [
     artImg("heat_carrier.png", compact ? 164 : 195, "coal-carrier-art"), stored,
   ]);
   const feedback = el("div.heat-feedback", { "aria-live": "polite", dataset: { test: "heat-feedback" } });
   const info = el("section.heat-info", { "aria-label": "上から見た炭壺", dataset: { test: "coal-carrier" } }, [
-    el("div.heat-carrier-head", [el("div", [el("h2", { text: "炭壺" }), el("small", { text: "上から" })]), counter]),
+    el("div.heat-carrier-head", [el("div", [el("h2", { text: "炭壺" }), el("small", { text: "上から" })]), collectedLabel, counter]),
     carrier, feedback,
     el("ol.heat-picks", { "aria-label": "各炭の取り出し結果" }, rows),
   ]);

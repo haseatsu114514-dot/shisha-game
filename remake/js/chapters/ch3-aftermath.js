@@ -1,3 +1,4 @@
+import { guardCompletionCardInput } from "./completion-card-input.js";
 // 全国大会の勝利後。結果発表は大会ランナーが読了・保存し、ここでは再生しない。
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
@@ -85,7 +86,8 @@ function menuButton(owner) {
 function card(owner, name, title, description, actions = [], note = "", sceneId = "", extra = []) {
   layers.hud.replaceChildren();
   layers.hud.classList.remove("show");
-  showScreen("ch3-aftermath", el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
+  // 完了カードは章のクリア画面（レベルアップの札を本文の外へ寄せる・#3938）。
+  const panel = el(`main.ch2-contest${name === "complete" ? ".chapter-clear" : ""}`, { dataset: { test: test(name), scene: sceneId } }, [
     el("header.ch2-contest-header", [
       el("div", [el("p", { text: "第三章 ／ 嘘つきたちの夜" }), el("h1", { text: title })]),
       menuButton(owner),
@@ -103,7 +105,8 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
         if (live(owner)) await renderStage(owner);
       }),
     ] : [])]),
-  ]));
+  ]);
+  showScreen("ch3-aftermath", name === "complete" ? guardCompletionCardInput(panel) : panel);
 }
 
 /** 勝利確定済み保存から再開できる。敗北・審査途中では状態を一切変更しない。 */
@@ -268,7 +271,8 @@ async function playScene(owner, scene) {
     await enterScene(scene.bg ? bgUrl(scene.bg, sceneTime(scene)) : null);
   }
   if (!live(owner)) return false;
-  showScreen("none", null);
+  // 帰郷の帯は列車を降りてから切り替える。読了前に保存の段は進めない。
+  showScreen(scene.homecoming ? "homecoming" : "none", null);
   // 制御行とカットインは読了後のcheckpointまで未確定。会話中の保存は出さない。
   layers.hud.replaceChildren();
   layers.hud.classList.remove("show");

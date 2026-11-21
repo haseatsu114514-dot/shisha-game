@@ -1,5 +1,5 @@
 {
-  "comment": "第2章の隣町到着・入口の挨拶・準備中の室内見学。本編DAY1と独立試遊が共有する台本。報酬・有料行動は含めず、読了・セーブは各呼出元が管理する。",
+  "comment": "第2章の隣町到着・入口の挨拶・準備中の室内見学。本編DAY1と独立試遊が共有する台本。報酬・有料行動は含めず、読了・セーブは各呼出元が管理する。 第2章の準備期間の行き帰りの電車の小品（ch2_commute_*。chapters/ch2-commute.js が切符の一文の続きとして読む・#3097 PR-B）も置く。",
   "dialogues": [
     {
       "dialogue_id": "ch2_city_arrival",
@@ -620,7 +620,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "赤と黒の髪が振り向く。首から続く刺青と、じっとこちらを見る目。"
+            "text": "振り向いた人の黒髪に、深い赤の筋が混じっていた。首に刺青が見える。"
           },
           {
             "speaker": "kuraudo",
@@ -1195,6 +1195,290 @@
           "text": "扉を出る前に、もう一度会釈する。クラウドは短く頷き、飾ってあるCDへ目を戻した。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch2_commute_morning_regulars",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "乗る車両も、立つ場所も、いつの間にか決まっていた。ドアの横の、手すりの前。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "向かいのドアには、新聞を小さく折りたたんで読む人がいる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "座席の端には、窓に頭を預けて眠る学生。膝の上で、単語帳が開いたままだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "毎朝、同じ顔ぶれだ。名前も知らないし、話したこともない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（tonariの常連さんも、最初はこんな感じだったのかな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電車が大きく揺れて、学生の単語帳が床に落ちた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "拾って渡すと、学生は寝ぼけた顔のまま、小さく頭を下げた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……あ、どうも。いつもの人だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……いつもの人？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "学生はそれだけ言うと、また窓に頭を預けた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（向こうからも、俺が見えてたのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "柚ヶ谷に着くまで、少しだけ背筋を伸ばして立っていた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_commute_regulars"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_commute_return_tonari",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りの電車は、仕事帰りの人で混んでいた。吊り革につかまって、暗い窓を見る。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣に立ったスーツの人が、すん、と鼻を鳴らした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……すみません、甘い匂いがして。シーシャ、ですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あ、はい、……匂いますか"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "いい匂いですよ。柚ヶ谷のお店ですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いえ、地元の店で働いてて。今日は、柚ヶ谷に用があって"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "へえ。そのお店、なんていうんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "tonari、です"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "となり……隣町から帰ってきて、tonari"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スーツの人は自分で言って、少し笑った。つられて、俺も笑った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "覚えやすいな。今度、寄ってみます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の駅で、スーツの人は会釈して降りていった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホを出して、スミさんに短く送った。『電車で、tonariの名前を聞かれました』"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……来てくれたら、いいな）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_commute_tonari"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_commute_morning_doze",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今朝は珍しく、座席が一つ空いていた。座った途端、まぶたが重くなる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……一駅だけ。一駅だけ、目を閉じよう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電車の揺れは、ゆっくりで、規則正しい。そこまでは覚えている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "肩を、とん、と叩かれた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……いつもの人。柚ヶ谷ですよね。次、です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "顔を上げると、単語帳の学生だった。窓の外に、ガラスの塔が二本見えている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あ、……ありがとう。助かりました"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "この前、単語帳拾ってもらったんで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "学生はそれだけ言って、もう単語帳に目を落としていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（名前も知らない人に、降りる駅まで覚えられてた）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "改札を抜けながら、あくびを一つかみ殺した。今日は、ちゃんと起きていよう。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_commute_doze"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_commute_return_window",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の下りは、すいていた。ドアの横に立って、暗い窓をのぞく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓には、自分の顔が映っている。その向こうを、街の灯りが横に流れていった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "踏切の赤い灯りが、一瞬だけ、窓の中の俺の顔を横切る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……煙みたいだ。流れて、混ざって、すぐに消える）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "思わずスマホを構えて、一枚撮った。光の線がぶれて、顔は半分しか写っていない。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "contact",
+          "char_id": "tsumugi",
+          "threshold": 2,
+          "next_true": "photo_sent",
+          "next_false": "photo_kept"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "地元の駅のアナウンスが流れた。窓の灯りが、ゆっくり止まっていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（帰ったら、今日のノートを書こう。……光の線のことも、少しだけ）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_commute_window"
+        }
+      ],
+      "branches": {
+        "photo_sent": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "少し迷ってから、つむぎに送った。『電車の窓です。絵の資料に、なるかな』"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_ch2_commute_window_sent"
+          }
+        ],
+        "photo_kept": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎなら、この線をどう描くだろう。そう思って、写真はしまっておいた。"
+          }
+        ]
+      }
     }
   ]
 }

@@ -12,9 +12,7 @@ description: ストーリー矛盾・設定齟齬・旧名/旧設定の残存・
 - **読む**: `data/dialogue/**`・`data/*.json`・`brand/story_and_structure.md`・
   `brand/character_profiles.md`・（必要時のみ）`remake/js/`・`docs/master_spec.md`
 - **読まない**: `remake/data/manifest.json`（生成物）・外部ライブラリ・`assets/**`
-- ⚠️ 正本に見えて**旧設定の残骸**であるファイルは根拠にしない。brand/docs 内に
-  旧タイトル「煙の向こう側」「ケムリの向こう側」等が残存することがある。**矛盾したら docs/gameplay_agent_reference.md が正**。
-  `docs/archive/` は履歴で根拠にしない（旧設定資料集は2026-11-02に削除済み）。
+- 作業前のref確認と場面ごとの正本の選び方は [現行設定の確認手順](../../../docs/current_documentation_guide.md#現行設定の確認) に従う。
 
 ## 自動チェックを先に走らせる
 
@@ -22,7 +20,7 @@ description: ストーリー矛盾・設定齟齬・旧名/旧設定の残存・
 
 ```bash
 python3 tools/lint_dialogue.py        # 台詞JSON: 旧名・未登録speaker・改行・報酬キュー
-python3 tools/check_legacy_terms.py   # コード・設定文書全般の旧名残存（--fix で安全な置換）
+python3 tools/check_legacy_terms.py   # コード・設定文書全般の旧名残存
 python3 tools/check_char_consistency.py 2>/dev/null; python3 tools/check_speakers.py 2>/dev/null
 ```
 

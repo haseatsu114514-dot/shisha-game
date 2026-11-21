@@ -77,9 +77,10 @@ for (const score of [60, 70, 80, 86, 90, 100]) {
   for (const judge of CH1_JUDGES) assert.equal(attack[judge] - plain[judge], ATTACK_BAND.bonus);
   const failed = craft({ attack: [3] }); failed.careHistory[1].failed = "burnt";
   assert.deepEqual(sakuraiMine(failed, 3), plain);
-  // 調整2回目を真ん中で終えると、最後に攻めてくるみんとに1位と千須の最後の1点を取られる。攻めると取り返せる。
+  // 調整2回目を真ん中で終えると、最後に攻めてくるみんとにその回の1位を取られる。攻めると取り返せる。
+  // 千須の最後の1点は、どちらでも、もう一口吸った台（はじめ）へ入る（#3916）。
   const center = match(craft());
-  assert.equal(center.lastPoint, "minto");
+  assert.equal(center.lastPoint, "hajime");
   assert.equal(center.picks[3].uezono.first, "minto");
   const bold = match(craft({ attack: [3] }));
   assert.equal(bold.lastPoint, "hajime");
@@ -89,9 +90,10 @@ for (const score of [60, 70, 80, 86, 90, 100]) {
 
 // 逆転: 出だしでつまずいても、後半を攻めれば勝てる（いままでの審査では前半で決まっていた）。
 {
-  const slip = craft({ heat: 70, pull: 100, care: [100, 100] });
+  // 千須の最後の1点がはじめへ入る（#3916）ので、調整を満点にすれば攻めずに届く。手本は調整97点の一台にする。
+  const slip = craft({ heat: 70, pull: 100, care: [97, 97] });
   assert.notEqual(match(slip).result.rank, 1, "攻めなければ届かない");
-  assert.equal(match(craft({ heat: 70, attack: [1, 2, 3] })).result.rank, 1, "攻めれば逆転できる");
+  assert.equal(match(craft({ heat: 70, care: [97, 97], attack: [1, 2, 3] })).result.rank, 1, "攻めれば逆転できる");
   assert.notEqual(match(slip, "classic").result.rank, 1, "いままでの審査では前半の失敗を取り返せない");
 }
 

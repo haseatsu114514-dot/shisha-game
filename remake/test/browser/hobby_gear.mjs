@@ -184,7 +184,7 @@ await suite("hobby-gear", async check => {
     });
     const buy = page.locator(t("gear-buy-gear_headphones"));
     await buy.waitFor();
-    assert.match(await buy.innerText(), /22,000.*▶の判定が前後10ミリ秒広い/);
+    assert.match(await buy.innerText(), /22,000.*▶の判定が前後¼拍広い（PERFECT の幅が1\.5倍）/); // DJK07: +10ms → ¼拍
     await buy.click();
     await page.locator(t("gear-owned-gear_headphones")).waitFor();
     assert.equal((await saved(page)).money, 8000);
@@ -194,7 +194,7 @@ await suite("hobby-gear", async check => {
     assert.equal(new URL(await frame.getAttribute("src")).searchParams.get("phones"), "1");
     const inside = page.frameLocator(t("dj-frame"));
     await inside.locator("#set-gear").waitFor();
-    assert.equal(await inside.locator("#set-gear").innerText(), "ヘッドホン：▶の判定が10ms広い");
+    assert.equal(await inside.locator("#set-gear").innerText(), "ヘッドホン：▶の判定が¼拍広い（PERFECT 1.5倍）");
     await page.evaluate(() => G.abort.abort());
     await page.evaluate(() => G.flow);
   });

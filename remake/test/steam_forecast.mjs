@@ -1,4 +1,4 @@
-// 実際のタイマー操作で天候・予測を読み、全工程の温度計位置と弾幕背後の時計を確かめる。
+// 実際のタイマー操作で天候・予測を読み、全工程の温度計位置と弾幕中の時計を確かめる。
 // CHROME_EXECUTABLE_PATH=/usr/bin/chromium SHOTS=<任意> node remake/test/steam_forecast.mjs
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -199,7 +199,8 @@ try {
     assert(await page.locator('.bench-worker-name').isHidden());
     assert.equal(await page.locator('.bench-title').textContent(), '蒸らし');
     assert(await page.locator('.bench-title').isHidden());
-    assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし');
+    // #3923: 工程帯は番号と一文字の並列をやめ、作業の絵＋今の工程名だけにした
+    assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '蒸らし');
     // 今の工程の札の高さ: 新しい配置（既定）は上のレールの札 44、旧配置は帯の札 49
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight),
       await page.evaluate(() => document.body.classList.contains('craft-stage')) ? 44 : 49);
@@ -231,15 +232,21 @@ try {
     assert.equal(await page.locator('.dodge-hud, .dodge-hits, [data-test="timer-stop"]').count(), 0);
     assert.equal(await page.locator('[data-test="steam-clock"]').count(), 1, 'Remaining time was duplicated');
     const clockLook = await page.locator('[data-test="steam-clock"]').evaluate(n => {
-      const r = n.getBoundingClientRect(), field = n.closest('.dodge')?.getBoundingClientRect(), css = getComputedStyle(n);
-      return { inField: !!field, centered: field && Math.abs(r.x + r.width / 2 - field.x - field.width / 2) < 1 && Math.abs(r.y + r.height / 2 - field.y - field.height / 2) < 1,
-        contained: field && r.left > field.left && r.right < field.right && r.top > field.top && r.bottom < field.bottom,
-        wide: field && r.width > field.width / 2, opacity: Number(css.opacity), pointer: css.pointerEvents,
+      const r = n.getBoundingClientRect(), field = document.querySelector('.dodge').getBoundingClientRect(), css = getComputedStyle(n);
+      const photo = document.querySelector('.bench-left').getBoundingClientRect();
+      return { centered: Math.abs(r.x + r.width / 2 - field.x - field.width / 2) < 1 && Math.abs(r.y + r.height / 2 - field.y - field.height / 2) < 1,
+        contained: r.left > field.left && r.right < field.right && r.top > field.top && r.bottom < field.bottom,
+        inPhoto: r.left >= photo.left && r.right <= photo.right && r.right < field.left,
+        wide: r.width > field.width / 2, opacity: Number(css.opacity), pointer: css.pointerEvents,
         behind: Number(css.zIndex) < Number(getComputedStyle(document.querySelector('.dodge-heart')).zIndex) };
     });
-    assert(clockLook.inField && clockLook.centered && clockLook.contained && clockLook.wide && clockLook.behind, JSON.stringify(clockLook));
-    assert(clockLook.opacity > 0 && clockLook.opacity <= .2, 'Background timer is too prominent');
-    assert.equal(clockLook.pointer, 'none', 'Background timer blocked movement');
+    if (mobile) {
+      assert(clockLook.inPhoto && clockLook.opacity === 1, JSON.stringify(clockLook));
+    } else {
+      assert(clockLook.centered && clockLook.contained && clockLook.wide && clockLook.behind, JSON.stringify(clockLook));
+      assert(clockLook.opacity > 0 && clockLook.opacity <= .2, 'Background timer is too prominent');
+    }
+    assert.equal(clockLook.pointer, 'none', 'Timer blocked movement');
     await page.waitForFunction(() => !document.querySelector('[data-test="dodge-refresh"]').disabled);
     const remaining = await page.locator('[data-test="steam-clock"] .clock-value').textContent();
     const precision = page.locator('[data-test="dodge-precision"]');
@@ -265,7 +272,7 @@ try {
     console.log(`[precision] PASS: ${name} real ${mobile ? 'touch' : 'mouse'} stick ${normalSpeed.toFixed(0)} -> ${slowSpeed.toFixed(0)} -> ${restoredSpeed.toFixed(0)} px/s; Enter toggles independently of refresh`);
     await page.waitForSelector('.dodge-object');
     await page.waitForTimeout(1200);
-    assert.notEqual(await page.locator('[data-test="steam-clock"] .clock-value').textContent(), remaining, 'Background clock stopped counting down');
+    assert.notEqual(await page.locator('[data-test="steam-clock"] .clock-value').textContent(), remaining, 'Clock stopped counting down');
     await screenshot(page, `steam-live-${name}`);
     if (mobile) {
       await pressWhileSteering(page, '[data-test="dodge-precision"]');
@@ -293,7 +300,7 @@ try {
       assert.equal(await skilled.evaluate(() => cs.steamPrediction.precision), 1);
       await screenshot(skilled, 'timer-insight-five'); await skilled.close();
     }
-    console.log(`[steam forecast] PASS: ${name} timer/reset, rainy estimate, Hajime waiting, same thermometer in four stages, centered faint background clock, four controls and refresh recharge start`);
+    console.log(`[steam forecast] PASS: ${name} timer/reset, rainy estimate, Hajime waiting, same thermometer in four stages, readable clock, four controls and refresh recharge start`);
   }
   assert.deepEqual(errors, []);
 } finally { await browser.close(); }

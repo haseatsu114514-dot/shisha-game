@@ -804,7 +804,7 @@
         {
           "speaker": "kuraudo",
           "face": "normal",
-          "text": "（ここからがサビだ。……薔薇は、走らせない）"
+          "text": "（ここからがサビだ。……カシスは、走らせない）"
         },
         {
           "speaker": "ageha",
@@ -1174,6 +1174,16 @@
           "text": "票は、吸い終えた煙の数だ。客の呼吸は、まだ続いている"
         },
         {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "ハジメ。さっき、ホースを両手で差し出していたね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "県大会のとき、神崎さんに言われたんです。客は、手元の顔から味わうって"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（客の呼吸……。俺の客も、まだ一台の途中にいる）"
@@ -1222,6 +1232,11 @@
           "speaker": "sheikh",
           "face": "smile",
           "text": "まだ、残っているだろう。受け止めるのは私だと、言ったはずだ"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "はじめ、顔上げろ。……下ばっか見てると、煙の色が見えねえぞ"
         },
         {
           "speaker": "hajime",
@@ -1315,12 +1330,22 @@
         },
         {
           "speaker": "",
-          "text": "上園が肩を揺らして笑った。会長は目を閉じたまま、二口目を吸っている。"
+          "text": "上園が肩を揺らして笑った。会長は目を閉じたまま、一口ずつ吸ってはホースを置いていく。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
           "text": "（……笑ってる場合じゃないのに。少しだけ、肩の力が抜けた）"
+        },
+        {
+          "speaker": "uezono",
+          "face": "smile",
+          "text": "なる選手の台は焼き菓子の匂いだねえ。一口で、誰の台か分かるよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一口で、誰の台か分かる。……俺の台は、どうなんだろう）"
         }
       ]
     },
@@ -1784,6 +1809,344 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（路地裏で一緒に吸った人と、同じ列に並んでる。……俺の一台を、始めよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude_pull_4",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・蒸らしの後、吸い出しの前。4人の心の声（第2章の interlude_pull_2 に当たる）。提供の掛け合い（serve_4）の前に一度だけ。順位・点数・結果は言わない。シェイクの「あの路地」は前夜の路地裏（ch4_stranger_third。期限の夜に必ず読む）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蒸らしのタイマーが、四つの台でばらばらに鳴り終えた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "（バニラは、まだ奥で寝てる。起こすのは、二口目からだ）"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "（審査席の三人と、その後ろの客席の全員。……今日の客は、多いね）"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "（先生に習った手順で。あの路地で受け取った一台の、続きを出す）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一口目の温度。それから、吸う人の顔だ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_roundend_4_served",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・提供後の票と途中順位の後、合間の掛け合い（interlude1_4）の前に読む審査員の一言（第2章の roundend_2_served に当たる。tournament-story-data.js の tournamentStoryLeadIn）。順位・点数は言わない（パッキーの順位の実況は interlude1_4_* が受け持つ）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "審査席の三人が、最初の一口を終えてホースを置いた。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "一口目、四台とも、いい顔してたぜ！ ……でも、勝負はここからだな"
+        },
+        {
+          "speaker": "sensu",
+          "face": "normal",
+          "text": "出したときの熱は、もう台に残っていない。足すか、引くかだ"
+        },
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "四台とも、道具の手入れが行き届いていた。次は、使い方を見せてもらおう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_roundend_4_care1",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の票と途中順位の後、合間の掛け合い（interlude2_4）の前。審査員の一言の後に、客席の応援の声（stands_4_<id>。大会の朝に一言をくれた人の一人目＝恋人が先。ch4-morning.js の chapterFourMorningCheers）が続く。来てくれた人がいなければ、この2行だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一度目の調整が終わった。審査席のペンが、また札の上で止まる。"
+        },
+        {
+          "speaker": "sensu",
+          "face": "normal",
+          "text": "吸われた分だけ、台は変わる。変わった台に、今の手を合わせられるか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_tsumugi",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（tsumugi）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_tsumugi）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席の一番後ろで、つむぎのペンが、まだ動いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（描いてくれてる。……なら、手は止めない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_minto",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（minto）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_minto）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席の前の方で、みんとが両手でハートを作っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくーん、褒めるとこ、まだいっぱい取っとくからね〜♡"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_rio",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（rio）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_rio）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席の端で、凛想さんがノートを開いていた。目が合うと、ペン先でこちらを指す。"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "……いい顔。最重要サンプル、記録続行"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_ageha",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（ageha）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_ageha）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっちー！ まだまだいけるよー！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "本当に、いちばん前の列から聞こえた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_mashiro",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（mashiro）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_mashiro）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席で、ましろちゃんが自分の肩をとんとんと叩いて見せた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……肩、上がってたか。ありがとう、ましろちゃん）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_samechan",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（samechan）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_samechan）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お主ー！ 背筋じゃー！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の席の人が、サメのパペットから少しだけ身を引いていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_hiyori",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（hiyori）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_hiyori）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席の真ん中で、ひよりさんが目元を押さえていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……砂！ 砂が入っただけだから！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_noor",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（noor）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_noor）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメー！ 足腰、まだ大丈夫ー？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんの声は、通訳アプリより先に届いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_adam",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（adam）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_adam）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "どこからか、リンゴの匂いがした。客席で、アダムさんが腕を組んで立っている。"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "……同志よ、顔を上げろ。林檎は逃げん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_kumicho",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（kumicho）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_kumicho）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席の神崎さんが、腕を組んだまま、一度だけ深くうなずいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（筋は、通ってる。……そう言われた気がした）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_kuraudo",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（kuraudo）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_kuraudo）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席のクラウドさんが、目を閉じて、膝の上で拍を取っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一曲目は、もう終わった。……ここからが、サビだ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_ayatori",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（ayatori）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_ayatori）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "……ほら、また最初に客席見た！ ノートに書いとくね！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取さんが、客席から閉じたノートを振っていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_steve",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（steve）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_steve）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ！ 急ぐなよー！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブさんの声は、客席のどこにいても分かった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_stands_4_volk",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第4章・調整1回目の後の客席の声（volk）。roundend_4_care1 の後に、来てくれた人の一人目だけ読む。朝の一言（ch4_morning_cheer_volk）を受ける。順位・点数・結果は言わない。恋人でも友人でも同じ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席で、ヴォルクさんが温度計を膝に置いていた。目が合うと、指を一本立てる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……朝より、一度上がった。たぶん、そう言ってる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude3_3",
+      "comment": "#3097 第2弾（2026-11-21 オーナー「大会中の途中の会話とかも厚くしたい」） 第3章・二度目の調整の後、講評（tasting）の前。手を離した四人の待ち時間（第2章の interlude3_2・第1章の interlude3_1 に当たる）。ch3-tournament.js が講評を読む前に一度だけ（講評を読んだ保存には後から出さない）。綾取は仕掛けの後の勝負の顔。ましろは客席（ch3_national_adjustment と同じ）。結果・点数は言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の調整が終わった。四人が台から手を離し、審査席が順に吸い比べていく。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "……もう炭は戻さなくていい。分かってるのに、手がトングを探してる"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "試喫の客が、ホースを置いた。……理由は、終わってから聞く"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smug",
+          "text": "ねえ、君。待たされたの、まだちょっと悔しいからね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺も、手が勝手に動いて、悔しかったです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席で、ましろが小さく手を振っていた。綾取の方にも、同じだけ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（どっちにも、同じだけ。……ましろちゃんらしいな）"
         }
       ]
     }

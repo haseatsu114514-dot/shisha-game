@@ -79,7 +79,8 @@ async function act(page,id,{touch=false}={}) {
   if (before.slot === 1) await page.waitForFunction(day => __remake.state.day > day, before.day);
   const after = await value(page);
   if (after.day > before.day) {
-    await page.locator(t('ch2-morning-home')).click();
+    await page.locator(`${map}, ${t('ch2-morning-home')}, ${t('ch2-tournament-entry')}`).first().waitFor();
+    if (await page.locator(t('ch2-morning-home')).isVisible()) await page.locator(t('ch2-morning-home')).click();
     recordReturnFare(page, before, await value(page));
   }
   await page.locator(`${map}, ${t('ch2-tournament-entry')}`).first().waitFor();
@@ -250,8 +251,13 @@ await suite('ch2-daily',async check=>{
     assert.equal(await page.locator(t('map-go')).count(),0);
     await travelToCity(page,'home');await act(page,'rest');
     v=await value(page);assert.equal(v.day,17);assert.equal(v.slot,0);
-    assert.equal(v.inbox.filter(i=>i.id==='lime_ch2_ageha_after_visit').length,1);
-    await wide(page);await act(page,'ch2_ageha');v=await value(page);assert.equal(v.money,30000-stationFares(page));assert.equal(v.flags._ch2_talks.ageha,2);
+    assert.equal(await page.locator(t('ch2-morning-home')).count(),0,'The next morning opens the local map directly');
+    assert.equal(v.flags._ch2_region,'home');
+    const unread = v.inbox.filter(i=>i.id==='lime_ch2_ageha_after_visit');
+    assert.equal(unread.length,1);assert.equal(unread[0].read,false);
+    await wide(page);
+    assert.equal((await value(page)).flags._ch2_commute_regulars,true,'The morning train scene remains available through the station');
+    await act(page,'ch2_ageha');v=await value(page);assert.equal(v.money,30000-stationFares(page));assert.equal(v.flags._ch2_talks.ageha,2);
     assert((await page.evaluate(()=>window.__dailyTrace)).includes('remake_ch2_ageha_followup'));
     assert.equal(v.flags._ch2_followup_done.ageha,true);
     await reloadSave(page);v=await value(page);assert.equal(v.day,17);assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.ageha,2);
@@ -343,6 +349,7 @@ await suite('ch2-daily',async check=>{
     await setup(page, { money: 1950 });
     await page.evaluate(() => { __remake.state.flags._kumicho_sento_introduced = true; });
     await page.locator(t('ch2-morning-city')).waitFor();
+    assert.match(await page.locator('.modal-body').innerText(), /片道200円.*帰りの切符代も200円必要/);
     await capture(page, 'morning-city-choice.png');
     assert.equal((await value(page)).flags._ch2_region, 'home');
     await page.locator(t('ch2-morning-city')).click();
@@ -359,6 +366,17 @@ await suite('ch2-daily',async check=>{
     await reloadSave(page); assert.equal((await value(page)).money, 200);
     assert.equal((await value(page)).flags._ch2_region, 'widehanga');
   });
+  await check('outbound-needs-both-fares-at-morning-choice-and-station', async page => {
+    await setup(page, { money: 399 });
+    assert.equal(await page.locator(t('ch2-morning-city')).count(), 0);
+    assert.match(await page.locator('.modal-body').innerText(), /往復分が足りない/);
+    await begin(page); await settled(page);
+    await page.locator(t('station-open')).click();
+    await page.locator(t('station-destination-widehanga')).click();
+    assert.match(await page.locator('.map-info').innerText(), /片道 200円[\s\S]*帰りも200円必要（往復分が不足）/);
+    assert(await page.locator(t('station-confirm')).isDisabled());
+    assert.equal((await value(page)).money, 399);
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
   await check('city-night-buys-one-return-ticket-and-wakes-at-home', async page => {
     await setup(page, { money: 5000 });
     await page.evaluate(() => Object.assign(__remake.state.flags, { _ageha_aquarium_introduced: true, _kumicho_sento_introduced: true }));

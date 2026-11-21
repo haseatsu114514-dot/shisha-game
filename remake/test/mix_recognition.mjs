@@ -26,7 +26,8 @@ assert.equal(recognitionId({ holes: { score: 95, outerEven: .9 } }), "holes");
 assert.equal(recognitionId({ holes: { score: 95 } }), null);
 assert.equal(recognitionId({ steam: { score: 100, hits: 0 } }), "steam");
 assert.equal(recognitionId({ pull: { ...warm, failed: "leaf" } }), null);
-assert.equal(recognitionId({ mix: { mint: 12 }, pull: warm }), "serve"); // Same temperature is within this leaf's green band.
+assert.equal(recognitionId({ mix: { mint: 12 }, pull: { temp: .6, score: 90 } }), "serve"); // Within this leaf's green band (mint center .648; PST01 narrower band).
+assert.equal(recognitionId({ mix: { mint: 12 }, pull: warm }), null); // .54 is below mint's narrower green band (PST01).
 assert.equal(recognitionId({ mix: { mint: 12 }, pull: { temp: .45, score: 90 } }), null); // A high saved score does not override the actual temperature.
 assert.equal(recognitionId({ pull: warm, careHistory: [warm, warm] }, { careRounds: 1 }), "care");
 for (const id of ["steady", "recovered", "care", "serve", "heat", "holes", "steam"]) {

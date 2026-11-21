@@ -21,6 +21,16 @@ for (const coals of [0, 2]) {
   assert.ok(at("……今日も、薄く感じます。だから、聞きます") > at("昨日、分からないって言ってたよね。その一口、どう？"));
   assert.ok(at("熱いか、軽いか。それだけ、教えてください") > at("……今日も、薄く感じます。だから、聞きます"));
 }
+// 客の返事がどの調整結果でも、CGは返事の直後に消える。
+for (const craft of [null, ...[care(0), care(2), care(0, { over: true }), care(1, { under: true })]
+  .map(entry => ({ careHistory: [entry] }))]) {
+  const lines = adjustmentLines(adj, craft);
+  const show = lines.findIndex(line => line.type === "show_cg" && line.cg_id === "cg_ch3_national_ask_customer");
+  const answer = lines.findIndex((line, index) => index > show && line.speaker === "customer");
+  assert(show > 0 && answer > show);
+  assert.equal(lines[show - 1].text, "俺は綾取から目を外し、客へ向き直った。");
+  assert.equal(lines[answer + 1].type, "hide_cg");
+}
 // 教訓の心の声は置かない（全体講評C3）
 assert.doesNotMatch(text(adj), /待つって、手を抜くことじゃなかった/);
 

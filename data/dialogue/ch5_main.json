@@ -1,5 +1,5 @@
 {
-  "comment": "第5章正史台本。自由行動の期限なし。章進行（対決・真エンディング含む全場面）は remake/js/chapters/ch5-progress.js ほかで接続済み。未接続は ch5_dream_in・ch5_dream_out（挿入位置が未決）と ch5_reflection_placeholder（テスト専用）のみ。",
+  "comment": "第5章正史台本。自由行動の期限なし。章進行（対決・真エンディング含む全場面）は remake/js/chapters/ch5-progress.js ほかで接続済み。",
   "dialogues": [
     {
       "dialogue_id": "ch5_opening",
@@ -58,7 +58,7 @@
         },
         {
           "speaker": "dr_charcoal",
-          "face": "evil",
+          "face": "smile",
           "duck": true,
           "text": "ええ。そして、君の作り方を終わらせる装置でもあります"
         },
@@ -410,11 +410,13 @@
           "speaker": "",
           "text": "戻ると、博士は湯のみを両手で包んでいた。大会の映像は止まったままだ。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_doctor_yunomi"},
         {
           "speaker": "dr_charcoal",
           "face": "normal",
           "text": "……さて。勝負の日の話を、しましょうか"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "text": "どちらが正しいかは決めないまま、椅子を戻した。日を決めるかどうかは、まだこれからだった。"
@@ -551,7 +553,7 @@
         },
         {
           "speaker": "dr_charcoal",
-          "face": "evil",
+          "face": "smile",
           "text": "今のが、君の一番いい日です。9000は、それを明日も出せる"
         },
         {
@@ -613,6 +615,7 @@
           "face": "",
           "text": "帰郷した夜、水を先に出した客がいた。今日はホースを膝に置いて、待っている。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_regular_hose_lap"},
         {
           "speaker": "hajime",
           "face": "serious",
@@ -633,6 +636,7 @@
           "face": "normal",
           "text": "うん。今日は時間、あるから"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",
@@ -1149,11 +1153,13 @@
           "face": "",
           "text": "博士が胸ポケットのペンを抜いた。画面の数字と、俺の言葉を、メモに並べて書く。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_cocreation_notes"},
         {
           "speaker": "",
           "face": "",
           "text": "隣で、9000が二人の手元を見ていた。今日の一台も、記録に加わる。"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",
@@ -1188,6 +1194,7 @@
           "face": "",
           "text": "tonariへ帰ると、先に戻っていたスミさんが、カウンターの椅子を引いた。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_sumi_pulls_chair"},
         {
           "speaker": "sumi",
           "face": "smile",
@@ -1203,6 +1210,7 @@
           "face": "normal",
           "text": "（混ざったままで、俺だった）"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "sumi",
           "face": "normal",
@@ -1622,6 +1630,7 @@
           "face": "",
           "text": "順に吸う。アダムは黙って、こちらの顔を見ていた。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_adam_two_bowls"},
         {
           "speaker": "adam",
           "face": "normal",
@@ -1647,6 +1656,7 @@
           "face": "smile",
           "text": "……分かる日が来たな"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "hajime",
           "face": "smile",
@@ -1666,6 +1676,192 @@
           "speaker": "",
           "face": "",
           "text": "次に差し出されたのは、水の入ったグラスだった。今日は、飲み干してから店を出た。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_wang_tonari_visit",
+      "comment": "#4010 第5章、王煙楼が日本に寄って tonari の一台を吸う（段階3 ch4_longlong_fourth の「いつか日本へ寄ったら、tonariの一台も吸ってみたいね」と、第5章のLIME lime_wang_08「tonariへ寄る日を、そろそろ考えよう」の回収）。王煙楼のLIMEの誘い lime_wang_tonari_visit（連絡先は段階3で交換するので、約束を聞いた人にだけ届く）を受けると、昼の tonari で読む（daily/calendar.js の約束の再生。reminder_spot: tonari）。締めくくり（専用ハガル）を読んだかは前提にしない。日本の店で覚えた言葉の順（bond_after_master_hookah_4「いらっしゃい」「ごゆっくり」・ch4_longlong_visit_f「お疲れさまでした」）を、言われる側・言う側を入れ替えて回収する（読んでいなくても、本人の一言で通じる）。水煙袋の紙の火種（段階1 ch4_longlong_second「その日まで息を細くしておきなさい」）を、はじめの息で立てる。スミさんとは初対面の職人どうしで、旧友・師弟にしない（会釈と短い言葉だけ）。王煙楼は格言で語らず、炭の置き方と手で見せる。シェイクとの師弟・大会の勝敗・ライチには触れない。時間帯は言わない（飛行機が夜、は予定の話）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariの扉が、静かに開いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "旅の上着を腕にかけた王煙楼が、入口で一度立ち止まった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の中を、端から端までゆっくり見る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いらっしゃいませ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "……日本の店で、最初に覚えた言葉だ。言われる側になるのは、初めてだね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥で、スミさんが顔を上げた。目が合うと、どちらからともなく小さく会釈する。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……ごゆっくり"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "laugh",
+          "text": "二つ目の言葉も、ここで聞けた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓ぎわの席を勧めると、王煙楼は腰を下ろす前に、もう一度入口を振り返った。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "扉から、どの席も見えるね。急いでいる客も、座る前に一息つける"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……今日は、どれくらいいられますか"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "surprise",
+          "text": "……それは、私が聞くことだ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "君の一台が、終わるまで。飛行機は、まだ先だからね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、tonariのいつもの葉で作ります。常連さんが、いちばんよく頼むやつです"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "いい。旅の客には、その店のいつものがいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉を詰め、炭を置く。キッチンタイマーを回すと、王煙楼はタイマーではなく、俺の手元を見ていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最初の煙を確かめてから、ホースを渡した。王煙楼は二口吸って、三口目の前に一つだけ息を待った。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "炭が、客の吸う速さを覚えている。……この置き方は、あの人に習ったのかな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼がカウンターのほうを見ると、スミさんは手を止めずに答えた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……そいつの手だ。俺は、教えただけだ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "そうか。なら、いい店だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一台が細くなった頃、王煙楼は鞄から細い金属の道具を出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手のひらに載るほどの、水煙袋だった。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "火種は、君に頼みたい。約束だったからね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙をよった火種を受け取る。……息を、細く。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吹きかけると、紙の先に小さな火が立った。飛ばない。消えない。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "……もう、飛ばないね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼は水煙袋に火を移して、数口だけ吸った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥で、スミさんが手を止めて見ていた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "……息で、火を立てるのか"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "速い息では、立たない。彼は、立てた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは何も言わずに、また灰皿を拭きはじめた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りぎわ、王煙楼は入口で振り返り、二人に向かって頭を下げた。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "お疲れさまでした"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……帰る客に言う言葉を、帰る客が言っていった）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターに、燃え残った火種の紙が一本残っていた。それを、手帳のあいだに挟んだ。"
         }
       ]
     },
@@ -1739,42 +1935,6 @@
         }
       ],
       "comment": "出典: NEW-TEXT.md §5。接続済み（ch5-progress.js CH5_MATCH_SCENES.afterglow）。勝利時だけ ch5_second_cup_result の後に一度読み、読了で CH5_AFTERMATH の後日談へ進む。敗北・引き分け時には読まない。Q13の会場はSMOKE LAB、Q14の客はtonariの常連と博士が募った一般客で決定済み。拍手の行に人数は出さず、customer は既存の酸っぱい顔の人。9000の小さな関節音は ch5_match_day_arrival の同じ描写を受ける。"
-    },
-    {
-      "dialogue_id": "ch5_dream_in",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "灯りを消しても、画面の中の手つきが、まぶたの裏に残っていた。",
-          "comment": "※仮置き"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……もう寝ろ、俺）",
-          "comment": "※仮置き"
-        }
-      ],
-      "comment": "出典: NEW-TEXT.md §6。未接続（コード側も意図的に接続しない: ch5-progress.js 冒頭の「触らないもの」参照）。場面全体と2行の文面は※仮置き。ch5_dream直前の候補1はch5_unrecorded_dayを読んだ日の夜、候補2は対決前夜（優先3件§5末尾の暗転と§6当日朝の間）。候補を選ばず両方保持。暗転・dream_digitalは演出想定のみで実フィールドを追加しない。日の進め方は①待ち（Q11）。"
-    },
-    {
-      "dialogue_id": "ch5_dream_out",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "洗ったカップを、水切りかごに伏せた。",
-          "comment": "※仮置き"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……受け取れなかったな）",
-          "comment": "※仮置き"
-        }
-      ],
-      "comment": "出典: NEW-TEXT.md §7。未接続（コード側も意図的に接続しない: ch5-progress.js 冒頭の「触らないもの」参照）。差し込み位置と2行の文面は※仮置き。ch5_dream末行「目を覚ますと、机の上に昨日のカップがあった。まず、それを洗った。」直後の想定。候補1（ch5_unrecorded_dayの夜）なら自由行動、候補2（対決前夜）なら優先3件§6「休業日の朝の店は、音が少ない。」へ。候補は未選択。夢でお茶を出した人物や関係状態は決めない（Q16・Q17）。"
     },
     {
       "dialogue_id": "ch5_schedule_contact",
@@ -1874,7 +2034,7 @@
           "id": "ch5_schedule_contact_choice",
           "choices": [
             {
-              "text": "日を決めて連絡する",
+              "text": "明日を勝負の日にする",
               "next": "decide"
             },
             {
@@ -2024,11 +2184,11 @@
           "speaker": "",
           "face": "",
           "text": "SMOKE LABに着いた。白い廊下の先で、博士の研究室の扉が開いていた。",
-          "comment": "Q13: 会場はSMOKE LAB（2026-11-02 DXM02）。背景の切り替え行（#2222）はこの行の直後に足す"
+          "comment": "会場はSMOKE LAB（DXM02）。この行の直後に店から研究所へ背景が切り替わる。"
         },
         {
           "type": "bg",
-          "bg": "res://assets/backgrounds/bg_smoke_lab.png"
+          "bg": "res://assets/backgrounds/bg_smoke_lab_duel_day.png"
         },
         {
           "speaker": "",
@@ -2207,25 +2367,7 @@
           "text": "……はい"
         }
       ],
-      "comment": "出典: CH5-PRIORITY3-TEXT.md §6。接続済み（ch5-progress.js CH5_MATCH_SCENES.arrival）。日程決定後の「会場へ行く」で、確認「この先、勝負の終わりまで自由行動に戻れません。会場へ向かいますか」を出す（Q15の現行実装は ch5.js renderScheduled）。「向かう」で _ch5_match_started を立て、本場面→ch5_copy_first_cup へ進む。「まだ行かない」は日程を維持してカードに留まり、取り消しは別操作。会場SMOKE LAB（Q13）と常連・博士が募った客（Q14）は本文に記載済み。Q18の博士は同一人物。9000の照合と博士の「誤差」は、記録と今日の違い・票の割れへの前振り（DXM01）。つむぎ・千須の客席描写も本文にある。背景は店を出る冒頭に合わせてtonari昼のままで、会場への背景切替（#2222）と9000のスチルなどの演出は仮置きとして保持。検品札と職人の話は doctor_after_match、上着の匂いは return_to_tonari で扱う。"
-    },
-    {
-      "dialogue_id": "ch5_reflection_placeholder",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ボウルの縁に置いた指を、一度離した。",
-          "comment": "※仮置き"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "息を吐いて、もう一度、トングを持った。",
-          "comment": "※仮置き"
-        }
-      ],
-      "comment": "出典: CH5-PRIORITY3-TEXT.md §7テスト用の最小の仮置き。未接続（コード側も意図的に接続しない: ch5-progress.js 冒頭の「触らないもの」参照）。差し込み先はch5_relationship_before_second_cupのlines[3]（0始まり、4行目）の{\"type\": \"reflection\"}の位置。前はスミ「はじめ。終わったら、店で一服するぞ」、はじめ「……はい」、後は地の文「客席に、tonariへ来た酸っぱい顔の人がいた。今日はホースを膝に置いて、待っている。」。既存対象エントリは変更しない。中身はQ17/Q16判断待ちで2行とも全差し替え前提。F案（間だけ）の採用を意味しない。reflection演出は※仮置きでエンジン効果未確認。_ch5_reflection_variant記録枠は※仮置きで実フラグを作らない。A・G案の個別後日談と同じ判定、複数交際ending_relationship_pendingの扱いはQ16待ち。D案の優勝前提はQ5待ち、B案ならましろの一人称は僕。主題・酸っぱい顔の客の回想・関係状態を確定しない。"
+      "comment": "出典: CH5-PRIORITY3-TEXT.md §6。接続済み（ch5-progress.js CH5_MATCH_SCENES.arrival）。日程決定後の「会場へ行く」で、確認「この先、勝負の終わりまで自由行動に戻れません。会場へ向かいますか」を出す（Q15の現行実装は ch5.js renderScheduled）。「向かう」で _ch5_match_started を立て、本場面→ch5_copy_first_cup へ進む。「まだ行かない」は日程を維持してカードに留まり、取り消しは別操作。会場SMOKE LAB（Q13）と常連・博士が募った客（Q14）は本文に記載済み。Q18の博士は同一人物。9000の照合と博士の「誤差」は、記録と今日の違い・票の割れへの前振り（DXM01）。つむぎ・千須の客席描写も本文にある。冒頭はtonari。SMOKE LAB到着で背景を切り替え、9000の姿を初めて見るところでスチルを出す。検品札と職人の話は doctor_after_match、上着の匂いは return_to_tonari で扱う。"
     },
     {
       "dialogue_id": "ch5_prep_trial_heat",
@@ -3098,6 +3240,7 @@
           "face": "",
           "text": "キッチンタイマーが鳴った。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_tsumugi_serves_hajime"},
         {
           "speaker": "tsumugi",
           "face": "baito_normal",
@@ -3113,6 +3256,7 @@
           "face": "normal",
           "text": "……うまい。熱が、ちょうどいい"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "tsumugi",
           "face": "baito_normal",

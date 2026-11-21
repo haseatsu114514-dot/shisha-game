@@ -185,9 +185,12 @@
 .mo-coin-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
 .mo-coin-word { position: absolute; left: 50%; top: 548px; transform: translateX(-50%); font-size: 38px; font-weight: 900; letter-spacing: 0.24em; padding-left: 0.24em; white-space: nowrap; }
 .mo-coin-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 8px; transform: translateX(-8px); }
-/* c: tonari の吊り札（#3254 の表と裏の絵）を1回返す。店内は隠さず、上だけ少し落として札を読ませる */
-.mo-shop-shade { position: absolute; inset: 0; background: linear-gradient(#000a, #0004 38%, #0000 62%); }
-.mo-shop-sign { position: absolute; left: 340px; top: -10px; width: 600px; height: 400px; }
+/* c: tonari の吊り札（#3254 の表と裏の絵）を1回返す。店内は隠さず、札の周りだけ少し落として札を読ませる */
+.mo-shop-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 58% at 50% 50%, #000a, #0004 60%, #0000); }
+/* 札は画面の真ん中に出す（オーナー「もっと下げて真ん中に出したい」#3813）。絵（1536×1024）の板は y419〜994 なので、
+   top 84px で板の中心が舞台の高さ 720 のちょうど真ん中（360px）に来る。以前は top -10px（吊り輪が画面の上端・板の中心 266px）。
+   上から下りてくる距離は shift.js の SHOP_SIGN_OFF。 */
+.mo-shop-sign { position: absolute; left: 340px; top: 84px; width: 600px; height: 400px; }
 .mo-shop-swing { position: absolute; inset: 0; transform-origin: 50% 4%; perspective: 1400px; }
 .mo-shop-flip { position: absolute; inset: 0; transform-style: preserve-3d; }
 .mo-shop-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
@@ -1042,6 +1045,27 @@ html:root[data-density="phone"] body:not(.game-ds) .kj-actions .btn { min-height
 /* A8 混ざる煙（TMG60）: 煙の絵（smoke/haze）を人ごとの色で塗った煙。縦に立てて昇らせ、重なりは足し合わせて明るく混ざる */
 .mo-mixed-plume { position: absolute; left: 260px; top: 170px; width: 760px; height: 420px; opacity: 0; mix-blend-mode: screen;
   -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; filter: blur(1.5px); }
+/* #3965 の3つは、横長の画面で左右の余白まで暗くする。層は舞台の大きさのまま、暗い面だけ余白へ広げる（絵は舞台の枠で切る） */
+.mo-moment:is(.mo-taste, .mo-hush, .mo-unveil) { overflow: visible; }
+:is(.mo-iris, .mo-taste-dim) { --g: 0px; position: absolute; inset: 0 calc(-1 * var(--g)); opacity: 0; }
+#stage[data-wide] :is(.mo-iris, .mo-taste-dim) { --g: var(--stage-gutter, 0px); }
+/* 光を絞る暗い面（第3章の結果発表の前・第4章の四つ目の台）。--mo-hole が光の輪の大きさ、--mo-x／--mo-y が光の中心（舞台比） */
+.mo-iris { background: radial-gradient(ellipse 72% 96% at calc(var(--g) + (100% - 2 * var(--g)) * var(--mo-x, .5)) var(--mo-y, 40%),
+  transparent calc(var(--mo-hole) * .34), #06040cb8 calc(var(--mo-hole) * .78), #06040cf2 var(--mo-hole)); }
+/* 第2章 味が遠のく: 煙の絵（smoke/haze）の形に切った白い煙へ、同じ形の甘さの色を重ねる。抜けるのは色の層と輪郭だけ */
+.mo-taste-dim { background: radial-gradient(ellipse at 50% 40%, #0b081452 10%, #0b0814b3 100%); }
+.mo-taste-puff { position: absolute; inset: 0; overflow: hidden; opacity: 0; transform-origin: 50% 70%; }
+.mo-taste-wisp { position: absolute; }
+.mo-taste-wisp.w1 { left: 110px; top: 130px; width: 1060px; height: 440px; }
+.mo-taste-wisp.w2 { left: 330px; top: 20px; width: 760px; height: 360px; transform: rotate(-7deg) scaleX(-1); }
+.mo-taste-wisp.w3 { left: 250px; top: 250px; width: 820px; height: 330px; transform: rotate(5deg); }
+.mo-taste-plain, .mo-taste-sweet { position: absolute; inset: 0; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.mo-taste-plain { background: #efecf4; opacity: .9; }
+.mo-taste-sweet { background: linear-gradient(100deg, #ff5f9e, #ff9e62 55%, #ff6f8e); opacity: 1; }
+/* 第4章 四つ目の台に立つ男: 会話と同じ枠取りの立ち絵（高さ・足元・--ax は engine.js の frame が付ける）と、その影 */
+.mo-unveil-stand { position: absolute; inset: 0; overflow: hidden; opacity: 0; }
+.mo-unveil-figure { position: absolute; left: 69%; width: auto; max-width: none; transform: translateX(var(--ax, -50%)); opacity: 0; -webkit-user-drag: none; }
+.mo-unveil-figure.shadow { opacity: 1; filter: brightness(0); }
 
 /* ===== css/motions/gaze.css ===== */
 /* 修羅場の「視線」カットイン（motions/gaze.js）。恋人たちの目元の帯が左右から差し込まれる */

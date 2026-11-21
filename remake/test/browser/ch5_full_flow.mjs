@@ -14,7 +14,7 @@ const matchScene = id => `${dt("ch5-match")}[data-scene="${id}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
 const arm = page => page.evaluate(async () => {
   const vn = await import("./js/vn/engine.js");
-  // 選択肢は常に先頭（schedule_contact では「日を決めて連絡する」= decide）。
+  // 選択肢は常に先頭（schedule_contact では「明日を勝負の日にする」= decide）。
   vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
 });
 const committed = (page, id) => page.waitForFunction(sceneId => window.__remake.state.flags._ch5.read[sceneId] === true, id);
@@ -238,9 +238,28 @@ await suite("ch5-full-flow", async check => {
     await page.locator(dt("ch5-second-cup")).waitFor();
     state = await get(page);
     assert.equal(state.flags._ch5.secondCup ?? null, null, "The second cup is not decided before it is made");
-    await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "good"; });
+    const copy = await page.evaluateHandle(async () => {
+      const { craftTest } = await import("./js/craft/session.js");
+      craftTest.auto = "good";
+      const served = new Set(), care = new Set();
+      // 自動操作が次の工程へ進む前に、提供カードと二度の調整案内を拾う。
+      const observer = new MutationObserver(() => {
+        const summary = document.querySelector('.bench:not(.done)[data-step="serve"] .rc-summary > p');
+        const lead = document.querySelector('.bench:not(.done) .care-coals-lead')?.firstChild?.textContent;
+        if (summary) served.add(summary.textContent);
+        if (lead?.includes("温度が下がってきた")) care.add(lead);
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      return () => { observer.disconnect(); return { served: [...served], care: [...care] }; };
+    });
     await page.locator(dt("ch5-second-cup-start")).click();
     await page.locator(matchScene("ch5_second_cup_result")).waitFor({ timeout: 180000 });
+    const labels = await copy.evaluate(read => read());
+    await copy.dispose();
+    assert.deepEqual(labels.served, ["お客さんへシーシャを提供した。しばらく吸ってもらおう"]);
+    assert.equal(labels.care.length, 2, "Both post-service care rounds show the recipient");
+    assert.match(labels.care[0], /^提供して約20分。お客さんが吸ううちに/);
+    assert.match(labels.care[1], /^お客さんが吸ううちに、再び/);
     state = await get(page);
     const cup = state.flags._ch5.secondCup;
     assert(cup && cup.total > 0, "The made cup is recorded");

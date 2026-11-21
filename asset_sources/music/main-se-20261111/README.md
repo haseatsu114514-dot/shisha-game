@@ -11,7 +11,7 @@
 | `parin` ガラス | `glass_break.wav` | Till Behrend「Glass Break」 | 大会で負けた時に画面が割れる |
 | `shutter` | `camera_shutter.wav` | themightyglider「Camera」 | てつこの写真 |
 | `mew` 鳴き声 | `cat_mew_01.wav`・`_02.wav` | Kerzoven「Cat Purr & Meow」／IgnasD「Meow」 | てつこが鳴く |
-| `crackle` 炭 | `fire_crackle_01〜03.wav` | AntumDeluge「Fire Crackling」 | 炭を焼き始める・家シーシャ・くじ・占い |
+| `crackle` 炭 | `fire_crackle_01〜03.wav` | AntumDeluge「Fire Crackling」 | 炭を焼き始める・家シーシャ・くじ・占い・心得の盤で火を灯す時（合成の音階に重ねる。2026-11-20 SBD138①） |
 | `affinity`・`affinityUp` ベル | `heart_bell.wav` | Spring Spring「Pleasing Bell Sound Effect」 | 好感度の通知（段階アップ・恋人は高さを変えて2回） |
 | `save` | `ui_save.wav` | Kenney「Interface Sounds」confirmation_002 | セーブ完了 |
 

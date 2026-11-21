@@ -349,6 +349,7 @@
           "face": "",
           "text": "泡の上に、丸い背中と、そっぽを向いた顔ができていく。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch3_mukai_latte_cat"},
         {
           "speaker": "mashiro",
           "face": "smile",
@@ -359,6 +360,7 @@
           "face": "smile",
           "text": "……そこだけは、うまく描ける"
         },
+        {"type": "hide_cg"},
         {
           "type": "choice",
           "id": "mukai_latte_pause",

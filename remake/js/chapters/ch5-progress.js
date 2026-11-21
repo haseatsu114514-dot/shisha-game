@@ -3,7 +3,8 @@
 //
 // 流れ（骨格）:
 //   prologue   : 橋渡し → 帰郷 → 自由行動へ
-//   free       : tonari の自由場面（任意）→「博士に連絡する」で日程の場面へ
+//   free       : tonari の自由場面 →「博士に連絡する」で日程の場面へ。連絡は閉店後の練習と試作を終えてから（chapterFiveCallOpen・
+//                2026-11-20 オーナー）。その後は期限なしで、好きな日に決められる
 //     prep     : 「閉店後の練習」のあと、試作→スミさんの返答→再調整の選択（#1666。結果は試合と後日談に返る）
 //     trial    : prep を終えた夜の tonari で、任意で一度だけ本物の一台を作ってスミさんに吸ってもらう
 //                （#2020 F・ch5-sumi-trial.js。進行は止めない。講評は二杯目の前の試作の返りの後に一行で返る）
@@ -17,15 +18,15 @@
 //   cleared    : スタッフロール（#517）を最後まで流したら _ch5_staff_roll_done → 周回を解放してタイトルへ。以後の再開は完了カード
 //     post-ending: 恋人が2人以上なら、スタッフロールの後に修羅場→一人ずつの話し直しを読んでからタイトルへ（IR32。postEnding）
 //
-// 触らないもの（オーナー判断待ち）:
-//   Q13 会場の固有名・Q14 客席の台詞は台本側が空白のまま。表示名は「会場」で固定する。
-//   Q17 reflection は既存エンジンが処理するので、ここでは場面の順序だけを持つ。
-//   Q20 スタッフロールの後の本格的な修羅場は IR32 で接続した（打ち上げで済んでいれば修羅場は繰り返さず、話し直しだけ。PTY04）。
-//   ch5_dream_in / ch5_dream_out は挿入位置が未決のため接続しない（対象外）。
-//   ch5_reflection_placeholder はテスト専用なので接続しない。
+// 会場のSMOKE LABと客席は ch5_main.json。二杯目の前の振り返りは会話エンジンが既読の交流から選ぶ。
+// 打ち上げで修羅場を読んだ場合、スタッフロール後は話し直しだけが続く（PTY04）。
 import { selectPostEndingConflict } from "../core/story-routes.js";
 import { STORY_BGM } from "../core/story-audio.js";
+import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
+import { CH5_PROLOGUE } from "./ch5-prologue.js";
 import { SUMI_TRIAL_IDS, sumiTrialRecall } from "./ch5-sumi-trial.js";
+
+export { CH5_PROLOGUE };
 
 // ---- 背景の対応表（1か所に集約）----------------------------------------------------
 // 第5章の勝負会場は SMOKE LAB。その他は既存 bg を使用する。
@@ -46,6 +47,7 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_free_mashiro_visit_lover: "bg_tonari_inside_day",        // ましろの訪問の末尾に続く（表示は親場面の bg）
   ch5_free_mashiro_visit_lover_memory: "bg_tonari_inside_day",
   ch5_free_eden_adam: "bg_eden_shop",                // #1588 EDENの任意場面（第1・2章のEDENと同じ背景）
+  ch5_wang_tonari_visit: "bg_tonari_inside",        // #4010 王煙楼が tonari の一台を吸う（昼の約束）
   ch5_prep_trial_heat: "bg_tonari_inside_night",     // 仮置き bg（閉店後の試作。以下 ch5_prep_* も同じ）
   ch5_prep_trial_pack: "bg_tonari_inside_night",
   ch5_prep_trial_aroma: "bg_tonari_inside_night",
@@ -57,24 +59,24 @@ export const CH5_SCENE_BG = Object.freeze({
   ...Object.fromEntries(SUMI_TRIAL_IDS.map(id => [id, id.includes("_recall_") ? "bg_tournament_stage" : "bg_tonari_inside_night"])),
   ch5_schedule_contact: "bg_tonari_inside_night",    // 仮置き bg（閉店後の場面）
   ch5_timeout: "bg_tonari_inside_night",             // 仮置き bg
-  ch5_match_day_arrival: "bg_tonari_inside_day",      // 休業日の朝の店から始まる場面なので tonari・昼（会場 SMOKE LAB の背景と切り替えは #2222 待ち）
-  ch5_copy_first_cup: "bg_smoke_lab",
-  ch5_relationship_before_second_cup: "bg_smoke_lab",
-  ch5_second_cup_result: "bg_smoke_lab",
-  ch5_second_cup_result_afterglow: "bg_smoke_lab",
-  ch5_second_cup_defeat: "bg_smoke_lab",
+  ch5_match_day_arrival: "bg_tonari_inside_day",      // 台本の会場到着まで休業日の tonari・昼
+  ch5_copy_first_cup: TOURNAMENT_VENUE_BG[5],
+  ch5_relationship_before_second_cup: TOURNAMENT_VENUE_BG[5],
+  ch5_second_cup_result: TOURNAMENT_VENUE_BG[5],
+  ch5_second_cup_result_afterglow: TOURNAMENT_VENUE_BG[5],
+  ch5_second_cup_defeat: TOURNAMENT_VENUE_BG[5],
   ch5_prep_recall_heat_adjusted: "bg_tournament_stage", // 二杯目の前の末尾に続く（表示は親場面の bg）
   ch5_prep_recall_heat_kept: "bg_tournament_stage",
   ch5_prep_recall_pack_adjusted: "bg_tournament_stage",
   ch5_prep_recall_pack_kept: "bg_tournament_stage",
   ch5_prep_recall_aroma_adjusted: "bg_tournament_stage",
   ch5_prep_recall_aroma_kept: "bg_tournament_stage",
-  ch5_doctor_after_match: "bg_smoke_lab",
-  ch5_doctor_after_match_loss: "bg_smoke_lab",        // 勝負のあと・前半（負け。挙手に合わせて2通り）
-  ch5_doctor_after_match_loss_close: "bg_smoke_lab",
-  ch5_doctor_after_match_tie: "bg_smoke_lab",         // 勝負のあと・前半（同数）
-  ch5_sensu_after_match: "bg_smoke_lab",                // 前半の末尾に続く千須への返事（表示は親場面の bg）
-  ch5_doctor_cocreation: "bg_smoke_lab",              // 勝負のあと・後半（検品札→一緒に作る一台。勝敗共通）
+  ch5_doctor_after_match: TOURNAMENT_VENUE_BG[5],
+  ch5_doctor_after_match_loss: TOURNAMENT_VENUE_BG[5],        // 勝負のあと・前半（負け。挙手に合わせて2通り）
+  ch5_doctor_after_match_loss_close: TOURNAMENT_VENUE_BG[5],
+  ch5_doctor_after_match_tie: TOURNAMENT_VENUE_BG[5],         // 勝負のあと・前半（同数）
+  ch5_sensu_after_match: TOURNAMENT_VENUE_BG[5],                // 前半の末尾に続く千須への返事（表示は親場面の bg）
+  ch5_doctor_cocreation: TOURNAMENT_VENUE_BG[5],              // 勝負のあと・後半（検品札→一緒に作る一台。勝敗共通）
   ch5_return_to_tonari: "bg_tonari_inside_night",    // 仮置き bg
   ch5_prep_answer_heat_adjusted: "bg_tonari_inside_night", // 帰店後の末尾に続く（表示は親場面の bg）
   ch5_prep_answer_heat_kept: "bg_tonari_inside_night",
@@ -153,13 +155,6 @@ export const CH5_SCENE_BGM = Object.freeze({
 });
 
 // ---- 場面表 -------------------------------------------------------------------------
-// プロローグ。橋渡しの位置は※仮置き（CH4-CONNECTION-DESIGN。ch4_two_tables の後という説もある）。
-// ch5_opening は data/story_routes.json の before_match[0] と一致させる。
-export const CH5_PROLOGUE = Object.freeze([
-  { id: "ch5_bridge_after_return", label: "ドバイのあと", location: "tonari" },
-  { id: "ch5_opening", label: "帰郷", location: "橙須" },
-].map(scene => Object.freeze(scene)));
-
 // 自由行動で再生する場面。tonari の3件は昼→夕→夜の順に1回ずつ（台本コメントの時間帯に合わせる）。
 // そのあと、後輩スタッフのつむぎの6場面（接客→はじめに作る→満席の夜→開店前の練習→相談相手→店先の黒板）を順に1回ずつ（#2606）。
 // 閉店後の練習（試作）より後に置き、勝負までの流れを遅らせない。
@@ -176,6 +171,11 @@ export const CH5_FREE_SCENES = Object.freeze([
   { id: "ch5_tsumugi_menu_board", label: "店先の黒板", location: "tonari" },
   { id: "ch5_free_eden_adam", label: "二つのダブルアップル", location: "EDEN" },
 ].map(scene => Object.freeze(scene)));
+
+// 第5章に日本へ寄る人の、tonari での一台（#4010）。本人のLIMEの誘い（data/lime_messages.json の reminder_spot: tonari）を
+// 受けた昼に、daily/calendar.js の約束として読む。自由行動の並び（CH5_FREE_SCENES）には入れず、勝負までの流れを変えない。
+//   王煙楼: 段階3（ch4_longlong_fourth）で連絡先を交換した時の「いつか日本へ寄ったら、tonariの一台も」の回収
+export const CH5_GUEST_VISITS = Object.freeze({ master_hookah: "ch5_wang_tonari_visit" });
 
 // 恋人のましろの来訪で、訪問の末尾に続ける台本（#2024 A2。使い方は下の chapterFiveLoverEcho）。
 export const CH5_MASHIRO_LOVER_ECHO = Object.freeze({
@@ -274,6 +274,7 @@ export const CH5_SCENE_FILES = Object.freeze({
     ...CH5_PROLOGUE.map(scene => scene.id),
     "ch5_unrecorded_day",
     ...CH5_FREE_SCENES.map(scene => scene.id),
+    ...Object.values(CH5_GUEST_VISITS),
     ...PREP_TRIAL_IDS.flatMap(trial => [chapterFivePrepScene("trial", trial), chapterFivePrepScene("adjust", trial)]),
     chapterFivePrepScene("keep"), ...PREP_ECHO_IDS, ...SUMI_TRIAL_IDS,
     ...Object.values(CH5_MASHIRO_LOVER_ECHO),
@@ -434,6 +435,22 @@ export function chapterFivePrepPending(value) {
   return progress.part === "free" && progress.read[PREP_PRACTICE] === true
     && (progress.prep === undefined || progress.prep.adjusted === null);
 }
+
+/**
+ * 博士に連絡できる（勝負の日を決められる）自由行動か。2026-11-20 オーナー「好きなタイミングで準備できたら挑める。
+ * ある程度ストーリーが進んだら、ゆっくり準備してもいい」: tonari の「閉店後の練習」と試作（試す→スミさんの返答→
+ * 直すか、このまま覚えるか）を終えてから。試作の結果は勝負の二杯目に返るので、ここを準備の区切りにする。
+ * 期限は置かない（日常ループの untilDay は日を決めるまで Infinity のまま）。読むだけで保存は変えない。
+ */
+export function chapterFiveCallOpen(value) {
+  if (value?.chapter !== 5) return false;
+  let progress;
+  try { progress = chapterFiveProgress(value); } catch { return false; } // 地図を出すだけの判定なので、読めない保存では止めない
+  return progress.part === "free" && progress.read[PREP_PRACTICE] === true
+    && !!progress.prep && progress.prep.adjusted !== null;
+}
+/** 博士に連絡できるようになった時の知らせ（試作を終えた時に一度）。 */
+export const CH5_CALL_OPEN_NOTE = "準備の区切りがついた。勝負の日は、自宅の電話で博士と決められる";
 
 /** 試作の場面を読み終えたら、何を試したかを保存する。 */
 export function recordChapterFivePrepTrial(value, trial) {

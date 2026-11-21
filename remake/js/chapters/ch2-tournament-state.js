@@ -10,10 +10,12 @@ export const CH2_PRIZE = 100000;
 export const CONTESTANTS = ["hajime", "ageha", "kumicho", "kuraudo"];
 export const JUDGES = ["uezono", "dr_charcoal", "sensu"];
 export const SPEND = [2, 3, 2, 3];
-// 初期調整値。章2の比較用の出来であり、キャラクターの能力値ではない。
-// あげは77は上園の好み補正(+4)で81となり、神崎80・クラウド79を上回る（#1649）。はじめがどの出来でも
-// 上園の上位2人に入り、毎回の票に強さが出る。はじめの全審査員1位の境目（チャコール博士の83）は変えない。
-export const RIVAL_QUALITY = { ageha: 77, kumicho: 80, kuraudo: 78 };
+// 章2の比較用の出来であり、キャラクターの能力値ではない。
+// あげは83は上園の好み補正(+4)で87となり、神崎86・クラウド85（+1）を上回る（#1649）。上園の票には毎回あげはが強く出る。
+// はじめが全審査員で1位を取る境目はチャコール博士の89（神崎86+3）。
+// 2026-11-20（#3916・WIN10）: ふつうの腕前の優勝率を約6割にするため、3人とも77/80/78から+6した
+// （`node remake/tools/balance/measure.mjs --chapter 2 --n 300 --seed 1`）。
+export const RIVAL_QUALITY = { ageha: 83, kumicho: 86, kuraudo: 84 };
 
 // 審査員の品質比重・好み比重の正本定義（qualityWeight + prefWeight = 1.0）。
 // maxPrefDelta は設定パラメータではなく、BASE_PREF_SCALE * prefWeight から一意に導出する。
