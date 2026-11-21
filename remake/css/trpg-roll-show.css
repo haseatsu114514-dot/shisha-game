@@ -118,9 +118,9 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-goal::before {
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal::after {
   background-image: url('../img/ui/trpg/roll-ui/goal-shield-frame.webp');
 }
-html:root .trpg-root .trpg-roll-show .trpg-rs-goal > small { font-size: 14px; font-weight: 900; letter-spacing: .2em; color: #ffd76a; margin-left: .2em; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-goal > b { font-size: 56px; font-weight: 900; line-height: 1; color: #fff3c4; text-shadow: 0 4px 0 #8a5a14, 0 0 18px #ffcf4a88; font-variant-numeric: tabular-nums; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-goal > span { font-size: 15px; font-weight: 700; color: #f2dca6; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-goal > small { font-size: 14px; font-weight: 900; letter-spacing: .1em; color: #ffd76a; margin-left: .1em; margin-bottom: 2px; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-goal > b { font-size: 50px; font-weight: 900; line-height: 1; color: #fff3c4; text-shadow: 0 4px 0 #8a5a14, 0 0 18px #ffcf4a88; font-variant-numeric: tabular-nums; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-goal > span { font-size: 14px; font-weight: 700; color: #f2dca6; margin-top: 2px; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-stamp {
   position: absolute; left: 50%; top: 50%; translate: -50% -50%; rotate: -8deg; opacity: 0; padding: 2px 6px; border: 2px solid; border-radius: 5px;
   font-size: 18px; /* 判は「30」の上に押す（六角形の幅の広い真ん中。下に置くと斜めの縁からはみ出した） */ font-weight: 900; line-height: 1.15; letter-spacing: .06em; white-space: nowrap; background: #000c;
