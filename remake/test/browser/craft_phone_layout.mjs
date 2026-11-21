@@ -158,7 +158,7 @@ await suite('craft-phone-layout', async check => {
     await page.locator(t('dodge-pad')).waitFor();
     await clean('雑念よけ');
     const [clock, dodge] = await Promise.all([page.locator(t('steam-clock')).boundingBox(), page.locator(t('dodge')).boundingBox()]);
-    assert(clock.y + clock.height <= dodge.y, '残り時間は弾幕と重ならない');
+    assert(clock.x + clock.width <= dodge.x, '残り時間は弾幕と重ならない');
 
     // 吸い出し: 下の列（葉の持ち・回数／提供／吸う）が重ならない
     await start('() => { QA.cs.steam = { temp: .5, hits: 0, score: 100, seconds: 300, min: 5 }; return QA.pull.runPull(QA.cs); }');

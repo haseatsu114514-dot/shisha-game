@@ -5282,12 +5282,13 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 /* ================================================================ 雑念よけ
    雑念の場（784×414）は大きさを保つ。下の操作の列（180px）は残りの高さに合わせて縮む。
    小さい画面では 場＋列 が舞台の高さを超え、ボタンの下が数 px 切れていた。スティックのつまみは、縮んでも真ん中に来るよう中心から置く */
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .steam-play { flex: none !important; gap: 6px; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam > .steam-play { flex: none !important; }
+/* 作業風景の上の空きに時計を置く。弾幕と操作列の高さはそのまま確保する。 */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-play > .dodge-timer {
-  position: static; width: 150px; height: 52px; padding: 5px 10px; transform: none; opacity: 1;
+  position: fixed; top: calc(var(--ph-top) + 12px); left: 174px; width: 150px; height: 52px;
+  padding: 5px 10px; transform: translateX(-50%); opacity: 1;
   background: #181223; border: 1px solid #c9a7e67a; border-radius: 9px; box-shadow: 0 4px 8px #0007;
 }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-play > .dodge { top: 0; }
 /* 弾の当たり判定は要素の寸法を使うので、雑念の文字は縁取りで見分けやすくする。 */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .dodge .dodge-word {
   -webkit-text-stroke: .35px currentColor;
