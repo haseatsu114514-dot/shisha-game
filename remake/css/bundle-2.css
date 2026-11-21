@@ -3055,6 +3055,7 @@ html:root body[data-screen="bench"] #toasts .toast.good { color: var(--good-ink,
 html:root[data-density="phone"] #stage {
   --phone-text: max(22px, calc(11.5px / var(--k, 1)));   /* 本文・選択肢・ボタンの文字 */
   --phone-sub: max(18px, calc(11.5px / var(--k, 1)));    /* 補助文（出すなら）。出さないときは display: none */
+  --tournament-phone-sub: max(24px, var(--phone-sub));   /* 大会の補助文（#4035 B6） */
   --phone-tap: max(72px, calc(39px / var(--k, 1)));      /* タップ部品の高さ */
   --phone-gap: 12px;                                      /* 隣り合うタップ部品の間隔 */
   --phone-ctl: max(24px, calc(13px / var(--k, 1)));     /* 会話の操作ボタンの文字（オーナー指示 2026-11-08「少し大きく」） */
