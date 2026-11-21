@@ -19,7 +19,7 @@
     },
     "visual_concepts": [
       "22s japanese young man, ordinary and friendly face, short messy black hair, wearing a simple white t-shirt and a tonari logo apron, relaxed posture, casual cafe staff aesthetic",
-      "young japanese male cafe worker, plain looking but empathetic eyes, dark hair, wearing a casual apron with a shisha mouthpiece hanging from his neck, warm and welcoming atmosphere"
+      "young japanese male cafe worker, plain looking but empathetic eyes, dark hair, wearing a casual apron, with an unadorned neckline as in the approved portrait, warm and welcoming atmosphere"
     ],
     "intro_cutin": {
       "title": "tonariの見習い",
@@ -876,9 +876,9 @@
     "role": "sub_character",
     "age": null,
     "nationality": "Japan",
-    "affiliation": "アーケード脇の路上（週2日だけ出店）",
+    "affiliation": "橙須や東京の路上",
     "play_style": "N/A",
-    "description": "アーケードの外れに週2日だけ現れる路上のタロット占い師。折りたたみの机に紫の布、使い込まれたタロットの束。魔女のような深いローブを被った老婆で、フードの陰で顔はよく見えない。だいぶ怪しい佇まいだが、占いの腕は本物らしい。一人称は「アタシ」、笑い声は「ヒヒ」。相性占い（3,000円）で「次に会う相手との縁」を見てくれる。\n※システム上は好感度を持たないちょい役。占いの効果は「指名した相手と次に会ったとき、好感度の伸びが1.5倍」。",
+    "description": "昼も夜も、街のどこかにふらっと現れるタロット占い師。折りたたみの机に紫の布、使い込まれたタロットの束。魔女のような深いローブを被った老婆で、フードの陰で顔はよく見えない。だいぶ怪しい佇まいだが、占いの腕は本物らしい。一人称は「アタシ」、笑い声は「ヒヒ」。相性占い（3,000円）で「次に会う相手との縁」を見てくれる。\nオババ本人に好感度はない。占いは、指名した相手と次に会ったときの好感度の伸びを一度だけ後押しする。",
     "background_secret": "夜はどこかの店で煙を吸っているらしいが、誰も店にいるところを見たことがない。フードの下の素顔を見た者もいない。",
     "favorite_flavor": "不明",
     "specialty_flavor": "不明",

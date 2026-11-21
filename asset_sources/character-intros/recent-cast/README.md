@@ -21,7 +21,7 @@
 再構築：
 
 ```sh
-python3 remake/tools/build_manifest.py --intros-only kuze steve volk mashiro maki sai uranaishi
+python3 remake/tools/build_manifest.py --intros-only saku steve volk mashiro maki sai uranaishi
 python3 remake/tools/build_intro_font.py
 CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/recent_intros.mjs
 ```

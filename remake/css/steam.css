@@ -46,15 +46,15 @@
 .steam .dodge-controls { align-self: center; margin-right: 0; }
 .dodge-controls { width: 752px; }
 /* フィールドの左右も、ウインドウ上側と同じ17pxの余白に揃える。 */
-.steam-play { width: 784px; flex: 1; display: grid; justify-items: center; align-items: start; }
+.steam-play { position: relative; width: 784px; flex: 1; display: grid; justify-items: center; align-items: start; }
 /* 上に少し余裕を取り、操作欄との間隔も残す。 */
 .steam-play > .dodge { top: 4px; }
 /* 残り時間は視線を弾幕から離さず読める、奥の薄い7セグ。 */
-.dodge .dodge-timer { position: absolute; left: 50%; top: 50%; width: 448px; height: 158px; transform: translate(-50%, -50%); color: var(--mental-ink); opacity: .16; z-index: 1; pointer-events: none; user-select: none; transition: color .25s ease; }
-.dodge { --mental-ink: #86d6c5; }
-.dodge[data-mental="clear"] { --mental-ink: #a8e6ff; }
-.dodge[data-mental="unsteady"] { --mental-ink: #e4bc77; }
-.dodge[data-mental="shaken"] { --mental-ink: #ef8795; }
+.steam-play > .dodge-timer { position: absolute; left: 50%; top: 211px; width: 448px; height: 158px; transform: translate(-50%, -50%); color: var(--mental-ink); opacity: .16; z-index: 1; pointer-events: none; user-select: none; transition: color .25s ease; }
+.steam-play { --mental-ink: #86d6c5; }
+.steam-play:has(.dodge[data-mental="clear"]) { --mental-ink: #a8e6ff; }
+.steam-play:has(.dodge[data-mental="unsteady"]) { --mental-ink: #e4bc77; }
+.steam-play:has(.dodge[data-mental="shaken"]) { --mental-ink: #ef8795; }
 .bench[data-art-skin] .dodge { border-image: none; border: 1px solid #c5ae815c; border-radius: 10px; background: #131123; box-shadow: inset 0 0 0 3px #a9946614, 0 4px 16px #0007; }
 .dodge::before { content: ""; position: absolute; inset: 4px; border: 1px solid #d3b98116; border-radius: 6px; z-index: 3; pointer-events: none; }
 .dodge-world-layers { position: absolute; inset: 0; pointer-events: none; z-index: 0; }

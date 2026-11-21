@@ -376,7 +376,7 @@ for (const entry of Object.values(CH2_VISIT_STORIES).flat()) assert(loaderDB.dia
 assert.equal(loaderDB.dialogues.ch2_kumicho_second.metadata.flavor_lesson, undefined);
 assert.deepEqual(loaderDB.dialogues.ch2_kumicho_fourth.metadata.flavor_lesson, { dragonfruit: 1 });
 assert.equal(loaderDB.dialogues.ch2_rei_first.metadata.flavor_lesson, undefined);
-assert.deepEqual(loaderDB.dialogues.ch2_rei_fourth.metadata.flavor_lesson, { rose: 1 });
+assert.deepEqual(loaderDB.dialogues.ch2_rei_fourth.metadata.flavor_lesson, { cassis: 1 });
 assert(loaderDB.dialogues.remake_ch2_rei_trpg);
 assert(loaderDB.dialogues.remake_ch2_ageha_aquarium);
 assert(loaderDB.dialogues.remake_ch2_kumicho_sento);

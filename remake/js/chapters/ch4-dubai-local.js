@@ -29,7 +29,7 @@ export const dubaiDaytime = slot => (slot ?? 0) === 0;
 
 /**
  * クリーク沿いの場面（SPV03）。昼・夜それぞれを順番に読む（daily/spots.js の quietTurn。鍵は CREEK_TURN。第5章のドバイも同じ）。
- * 岸から眺める場面だけ。渡し舟に乗る `ch4_creek_abra` は、渡し舟で渡る案が不採用（DBS12）なのでつながない。
+ * 渡し舟は岸から眺める（DBS12）。
  * 歩く場面は ch4_dubai_daily.json、荷積みと釣りは ch4_spots.json（CREEK_SPOT_IDS）。
  */
 export const CREEK_SCENES = Object.freeze({
@@ -129,10 +129,19 @@ export const HOME_DAY_CALLS = Object.freeze([
   { scene: "ch4_home_call_samechan_shark", from: "samechan" },
   { scene: "ch4_home_call_minto_mint", from: "minto" },
   { scene: "ch4_home_call_saku_menu", from: "saku" },
+  { scene: "ch4_home_call_volk_door", from: "volk" },
   { scene: "ch4_home_call_rei_sound", from: "rei" },
   { scene: "ch4_home_call_hiyori_train", from: "hiyori" },
   { scene: "ch4_home_call_steve_timer", from: "steve" },
   { scene: "ch4_home_call_ageha_gold", from: "ageha" },
+  // #3097・VOL23: 二本目の電話は、まだ一度も話していない相手からの電話の後。
+  { scene: "ch4_home_call_adam_bookmark", from: "adam" },
+  { scene: "ch4_home_call_rio_delivery", from: "rio" },
+  { scene: "ch4_home_call_minto_coaster", from: "minto" },
+  { scene: "ch4_home_call_samechan_shade", from: "samechan" },
+  { scene: "ch4_home_call_rei_sleeves", from: "rei" },
+  { scene: "ch4_home_call_hiyori_announcement", from: "hiyori" },
+  { scene: "ch4_home_call_ageha_clip", from: "ageha" },
 ].map(call => Object.freeze(call)));
 // 電話の中で、かけてきた人のほかに話す人（mukai の開店前のムカイさん）
 export const HOME_DAY_CALL_EXTRA_SPEAKERS = Object.freeze({ ch4_home_call_mashiro_chai: Object.freeze(["mukai_master"]) });

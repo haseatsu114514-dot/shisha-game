@@ -110,6 +110,22 @@ body.reduce-shake .side-smoke, :root[data-side-calm="on"] .side-smoke { animatio
 }
 /* 元のボタンが押せない間（会話の外・モーダルの下 など）は出さない */
 .side-btn[data-live="false"] { opacity: 0; visibility: hidden; pointer-events: none; }
+/* 作業台では高さが低い画面でも、余白操作の実寸を確保する。 */
+body[data-screen="bench"] .side-pad { --craft-pad-size: max(88px, calc(44.1px / var(--k, 1))); }
+body[data-screen="bench"] .side-btn:is([data-pad="help"], [data-pad="reception"], [data-pad="look"]) {
+  width: var(--craft-pad-size); height: var(--craft-pad-size);
+}
+body[data-screen="bench"] .side[data-side="l"] .side-pad {
+  right: clamp(0px, calc((var(--side-g) - var(--craft-pad-size)) / 2), 26px);
+}
+body[data-screen="bench"] .side[data-side="r"] .side-pad {
+  left: clamp(0px, calc((var(--side-g) - var(--craft-pad-size)) / 2), 26px);
+}
+/* 右上を2段使う時も、下端を切り欠きが来る縦30%の手前に揃える。 */
+body[data-screen="bench"] .side-pad.top:has(> [data-pad="reception"][data-live="true"]) {
+  top: clamp(0px, calc(216px - 2 * var(--craft-pad-size) - 8px), 22px);
+  gap: 8px;
+}
 .side-btn:active { transform: scale(.94); }
 .side-btn:focus-visible { outline: 3px solid #e3bd6e; outline-offset: 3px; }
 /* AUTO・SKIP が入っている間 */

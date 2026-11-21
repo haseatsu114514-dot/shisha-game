@@ -21,7 +21,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SC
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
 
-// 場面表の全IDが台本に実在し、本文がある。夢の場面とテスト専用場面は接続しない。
+// 場面表の全IDが台本に実在し、本文がある。廃止した夢の前後と振り返りの仮台本は通しの台本にも登録しない。
 const files = { ch5_main: readData("dialogue/ch5_main").dialogues, ending: readData("dialogue/ending").dialogues,
   relationship_conflicts: readData("dialogue/relationship_conflicts").dialogues };
 const connected = [];
@@ -31,8 +31,9 @@ for (const [file, ids] of Object.entries(CH5_SCENE_FILES)) {
     connected.push(id);
   }
 }
-for (const id of ["ch5_dream_in", "ch5_dream_out", "ch5_reflection_placeholder"])
-  assert(!connected.includes(id), `${id} must stay unconnected`);
+for (const id of ["ch5_dream_in", "ch5_dream_out", "ch5_reflection_placeholder"]) {
+  assert(!files.ch5_main.some(row => row.dialogue_id === id), `${id} must stay out of the active chapter script`);
+}
 assert.equal(new Set(connected).size, connected.length, "A scene is listed twice");
 // 背景の対応表は全接続場面を覆い、実在の bg だけを使う。
 for (const id of connected) assert(CH5_SCENE_BG[id], `bg missing for ${id}`);

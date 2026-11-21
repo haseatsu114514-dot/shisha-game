@@ -1,13 +1,13 @@
 [
   {
-    "id": "kuze",
+    "id": "saku",
     "color": "#8c7564",
     "secondary": "#dcc4a1",
     "shadow": "#26191b",
     "expression": "normal",
     "portrait": "assets/sprites/characters/kuze/chr_kuze_normal.png",
     "motif_label": "味カード・手帳・茶の香り",
-    "caption_source": "data/characters.json: kuze.intro_cutin",
+    "caption_source": "data/characters.json: saku.intro_cutin",
     "backgrounds": {
       "illustrated": {
         "src": "asset_sources/character-intros/recent-cast/backgrounds/kuze.png",

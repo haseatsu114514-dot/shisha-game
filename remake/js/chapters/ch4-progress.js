@@ -171,8 +171,8 @@ export const CH4_TOURNAMENT_SCENES = Object.freeze({
   start: "ch4_tournament_start", win: "ch4_final", loss: "ch4_defeat",
 });
 
-// 自由行動で再生する場面（接続する全ID）。ch4_return（空場面）は接続しない。到着した人と過ごす dubai_evening 系は自由行動ではなく、
-// 前夜祭の日の到着の後に読む（下の CH4_ARRIVAL_EVENING_SCENES・CH4_FRIEND_ARRIVAL_EVENING_SCENES）。
+// 自由行動で再生する場面。到着した人と過ごす dubai_evening 系は、前夜祭の日の到着の後に読む
+// （CH4_ARRIVAL_EVENING_SCENES・CH4_FRIEND_ARRIVAL_EVENING_SCENES）。
 const FREE_SCENES = Object.freeze({
   souq: "ch4_dubai_souq", souqRevisit: "ch4_dubai_souq_revisit",
   festa: "ch4_festa", festaRevisit: "ch4_festa_revisit",

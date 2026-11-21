@@ -665,6 +665,7 @@ console.log("PASS: park day/night rotation, old saves, SAVE/LOAD and duplicate c
   assert.equal(homeCallId(value), "ch3_home_call_adam_exit");
   assert.equal(homeCallId(value, { night: true }), "ch3_home_call_adam_exit");
   assert.equal(homeCallId(value, { away: id => id === "adam" }), "ch3_home_call_rio_face", "Someone visiting Tokyo does not call from home");
+  value.contacts.push("tsumugi", "ageha", "hiyori");
   const read = [];
   for (let turn = 0; turn < 20; turn++) { // 昼と夜の休みを交互に（夜だけの電話は昼には来ない）
     const call = homeCallId(value, { night: turn % 2 === 0 });

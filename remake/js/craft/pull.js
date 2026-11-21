@@ -320,7 +320,11 @@ async function pullGame(cs, mode, holdFailedResult) {
     text:"味の名前を伏せる",title:"白紙の味カード。審査員の受け止めの振れ幅が大きくなる",dataset:{test:"pull-blind"},"aria-pressed":String(!!cs.blindService),
     onclick:()=>{if(state!==owner||drawing||finished)return;cs.blindService=!cs.blindService;blindBtn.setAttribute("aria-pressed",String(cs.blindService));},
   }):null;
-  const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' }), el("span.btn-label", { text: serveBtnLabel })]);
+  const serveStatus = el("span.pull-serve-status", { role: "status", dataset: { test: "pull-serve-status" } });
+  const serveIcon = el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' });
+  const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [
+    serveIcon, el("span.btn-label", { text: serveBtnLabel }), serveStatus,
+  ]);
   // 吸った回数の点。無傷で吸える回数を超える点は橙の枠で、吸いすぎの範囲だと分かるようにする。
   const pips = Array.from({ length: MAX_PULLS }, (_, i) => el(`i.pull-pip${i >= mode.safe ? ".over" : ""}`, { "aria-hidden": "true" }));
   const pullCount = el("b.pull-count-num");
@@ -389,10 +393,14 @@ async function pullGame(cs, mode, holdFailedResult) {
       // CRN10: 蒸らしの集中が、この吸い出しの針と芯に効いていることを見せる
       focusNote?.tag && el("span.pull-tag.focus", { text: focusNote.tag.text, title: focusNote.line, dataset: { tone: focusNote.tag.tone, test: "pull-focus" } }),
     ].filter(Boolean));
-    pips.forEach((pip, i) => pip.classList.toggle("on", i < pulls));
-    setText(pullCount, `${pulls}/${MAX_PULLS}`);
+    const completed = pulls - Number(drawing);
+    const remaining = Math.max(0, mode.min - completed);
+    pips.forEach((pip, i) => pip.classList.toggle("on", i < completed));
+    setText(pullCount, `${completed}/${MAX_PULLS}`);
     setData(counter, "pulls", pulls);
-    setAttr(counter, "aria-label", `吸った回数 ${pulls}/${MAX_PULLS}回`);
+    setAttr(counter, "aria-label", `吸い終えた回数 ${completed}回、上限${MAX_PULLS}回`);
+    setText(serveStatus, drawing ? "吸引中" : remaining ? `あと${remaining}口` : "");
+    setFlag(serveStatus, "hidden", !drawing && remaining === 0);
     setFlag(serveBtn, "disabled", !running || drawing || finished || pulls < mode.min || !!failed);
     setFlag(pullBtn, "disabled", !running || drawing || finished || !!failed || pulls >= MAX_PULLS);
     if (deepBtn) setFlag(deepBtn, "disabled", pullBtn.disabled);
@@ -718,6 +726,9 @@ async function pullGame(cs, mode, holdFailedResult) {
       await sleep(60);
       // テスト用（craftTest.aim = "attack"）: 攻めの帯で終えるまで、残りの口数で帯に入る吸い方を先読みして吸う。
       const attackAim = auto === "good" && attacking && craftTest.aim === "attack";
+      const [downZone, keepZone, upZone] = zones;
+      const justCenter = zone => zone.just[0] + (zone.just[1] - zone.just[0]) * widen / 2;
+      const beforeJust = zone => (zone.from + zone.just[0]) / 2;
       const times = attackAim ? MAX_PULLS : auto === "good" ? (mode.drift ? 2 : 3) : auto === "burn" ? 5 : mode.drift ? 1 : 5;
       for (let i = 0; i < times && running; i++) {
         let at;
@@ -726,11 +737,11 @@ async function pullGame(cs, mode, holdFailedResult) {
           // 先読みで見つけた吸い方の1口目
         } else if (auto === "good") {
           const goal = autoGoal(), diff = goal - T, response = Math.abs(heatDelta(cs, .18));
-          const keep = clamp(.5 + diff / response, .341, .659);
-          const candidates = [.141, .3, keep, .75, .796];
+          const keep = clamp(.5 + diff / response, keepZone.from + .001, keepZone.to - .001);
+          const candidates = [justCenter(downZone), beforeJust(downZone), keep, beforeJust(upZone), justCenter(upZone)];
           at = candidates.sort((a, b) => Math.abs(T + pullHeat(actionAt(a).delta) - goal) - Math.abs(T + pullHeat(actionAt(b).delta) - goal))[0];
         } else if (auto === "burn") {
-          at = .83; // テスト用: 右のジャスト上げ吸いを重ねて焦がす
+          at = justCenter(upZone); // テスト用: 右のジャスト上げ吸いを重ねて焦がす
         } else {
           at = rand(0, 1) < 0.5 ? 0.7 : 0.75;
           // 雑な吸い方の自動操作でも、焦がす一手は打たない（大会の敗北テストを安定させる）。

@@ -29,6 +29,7 @@ import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { flavorFeatureCard, flavorTags, mixForecastCard, equipmentUse, equipmentGuide } from "./flavor-guide.js";
 import { equipmentPreview } from "./equipment-preview.js";
+import { waterComfort } from "./water.js";
 
 // 章ごとの課題。第1章レモン・第2章の新作苺・第3章ドバジ チョコレート。
 // オーナー決定（2026-10-28 13:29）：課題フレーバーは大会が当日 supply で用意し、本番中は無制限に使える。
@@ -489,9 +490,14 @@ export async function stepMix(cs) {
       || (insightful ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && (state.flags[`_note_${r.hint_note}`] || r.id === "sumi_basic")) : null)
     : null;
   const recall = cs.mode !== "tutorial" ? growthRecallOptions(state, DB.recipes, DB.flavorById, ids) : [];
+  const waterBand = Number.isFinite(cs.water) ? waterComfort(cs.water).band : null;
+  const waterNote = waterBand ? el("p.mix-water-level", {
+    text: "水位 " + { none: "先端に届かず", shallow: "浅め", ideal: "目安内", deep: "深め" }[waterBand],
+    role: "status", dataset: { band: waterBand, test: "mix-water-level" },
+  }) : null;
 
   panel.append(el("div.mix", [
-    el("div.mix-side", [vessel, taste, lifePreview, recipeLine]),
+    el("div.mix-side", [vessel, taste, lifePreview, recipeLine, waterNote]),
     // ひらめきは葉の組み合わせの助言なので葉の一覧の頭に置き、決定欄に隠れないようにする（#907）。
     // 見出しとまとめて1要素にし、一覧の子の数（行数に応じた配置の切り替え）を変えない。
     el(cs.orderFlavorIds ? "div.mix-list.mix-list-supplied" : "div.mix-list", [el("div.mix-list-head", [singleStyle,

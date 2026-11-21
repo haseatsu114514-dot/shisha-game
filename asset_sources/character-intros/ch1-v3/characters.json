@@ -203,7 +203,7 @@
     }
   },
   {
-    "id": "rin",
+    "id": "rio",
     "name": "凛想",
     "full": "",
     "title": "問屋街の魔女",
@@ -222,7 +222,7 @@
     },
     "portrait_sha256": "f44c1306d2b6c7140b6eec8183fabe4813ea7507ed76f1b47c2b24e692d76466",
     "portrait_authority": "採用済みゲーム立ち絵",
-    "caption_source": "data/characters.json: rin.intro_cutin",
+    "caption_source": "data/characters.json: rio.intro_cutin",
     "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
     "backgrounds": {
       "illustrated": {
@@ -261,8 +261,8 @@
     }
   },
   {
-    "id": "nagumo",
-    "name": "須井修二",
+    "id": "sui",
+    "name": "千須豪",
     "full": "",
     "title": "C.STATION会長・審査員長",
     "line": "吸えば分かる",
@@ -280,7 +280,7 @@
     },
     "portrait_sha256": "589da38a726d6057f4536684554f9174ae7ea0890b2bd8bc87846088cea3c086",
     "portrait_authority": "採用済みゲーム立ち絵",
-    "caption_source": "data/characters.json: nagumo.intro_cutin",
+    "caption_source": "data/characters.json: sui.intro_cutin",
     "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
     "backgrounds": {
       "illustrated": {
