@@ -631,7 +631,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "物語の前に、役を決めましょう。どんな夜番にしますか？"
+          "text": "この町では、夜の見回り役を夜番と呼びます。どんな役にしますか？"
         }
       ]
     },
@@ -773,33 +773,33 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "今夜は、この店の常連さんたちと郵便猫の物語を遊びましょう"
+          "text": "今夜は月夜の郵便です。私は町の様子を話し、出会う人を演じます"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "『葉っぱ耳の郵便猫』……絵本のTRPGって、はじめてだな"
+          "text": "俺たちは、夜番がどう動くかを決めるんですね"
         },
         {
           "speaker": "sai",
           "role": "",
           "face": "normal",
-          "text": "私はGMと郵便猫を。皆さんは、この町の夜番をお願いします",
+          "text": "はい。私は進行役のGMです。迷ったら、そのまま聞いてください",
           "castIntro": true,
-          "smallTableText": "私がGMを務めます。空いた役もお手伝いしますね"
+          "smallTableText": "私は進行役のGMです。空いた役もやりますから、ご安心を"
         },
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "夜の見回りね。……私も夜風は苦手だが"
+          "text": "見回りか。坂の上まで行くなら、帰りは下りだな"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……夜番なら、慣れている"
+          "text": "……登る前から帰りの相談か"
         },
         {
           "speaker": "sai",
@@ -835,19 +835,19 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "猫！？ ……あ、いえ。いい猫だな"
+          "text": "お、あの猫、封筒をくわえたままこっちを見てるぞ"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "葉っぱの耳に、煙のしっぽ。変わった郵便屋さんですね"
+          "text": "届け先を、俺たちに聞きに来たのかな"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "今夜の郵便屋さんです。どんな配達になるでしょうね"
+          "text": "何かお困りみたいですね。まずは話を聞いてみましょう"
         },
         {
           "speaker": "sai",
@@ -873,13 +873,13 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……宛先がないと、困るな"
+          "text": "……宛名が読めないと、配れないな"
         },
         {
           "speaker": "hajime",
           "role": "{pc}／物語",
           "face": "normal",
-          "text": "こんばんは、ミトン。その手紙、届け先がわからないの？"
+          "text": "一緒に探すよ。ミトン、まだ読めるところを教えてくれる？"
         },
         {
           "speaker": "sai",
@@ -925,13 +925,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……おや。でも、まだ読める字もあるわ"
+          "text": "くしゃみひとつで、届け先がまた遠くなったぞ"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "大丈夫ですよ。物語の続きは聞けます"
+          "text": "まだ字が残っています。気になることをミトンに聞いてください"
         }
       ]
     },
@@ -1083,7 +1083,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "そこ！？ 届くかな……"
+          "text": "パン屋さん、すみません！ その手紙、焼かないでください！"
         },
         {
           "speaker": "sai",
@@ -1169,7 +1169,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "完璧ね。……私が儚く消える前に、出発するか"
+          "text": "よし、支度はできた。あとは坂に文句を言わずに歩くか"
         }
       ]
     },
@@ -1215,7 +1215,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "えっ、暗い！？ ……あ、ううん。闇も儚くていいな"
+          "text": "手が見えん。……おい、包んでるのは俺の指だ"
         },
         {
           "speaker": "sai",
@@ -1569,13 +1569,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……風。私も、飛ばされちゃう……"
+          "text": "おい、手紙のほうが先に帰り道を決めたぞ！"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "手紙が月の方へ飛んでいく！ 追いかけないと！"
+          "text": "帰り道はあとで考えよう！ 手紙が屋根を越える！"
         },
         {
           "speaker": "sai",
@@ -1621,7 +1621,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "凧揚げなら任せて！ ……じゃなくて、任せろ"
+          "text": "凧なら任せろ。まさか郵便を釣る日が来るとはな"
         }
       ]
     },
@@ -1661,13 +1661,13 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "手がかりを見直して、道と包み方を選ぼう"
+          "text": "宛先を考えたときの手がかり、今度は道と包み方に使えるな"
         },
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "支度なら任せて。……まあ、段取りは得意なの"
+          "text": "坂を登るなら、手紙と足もとのどっちも気をつけよう"
         }
       ]
     },
@@ -1687,13 +1687,13 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "最後は、どうやって渡そう"
+          "text": "もう着いたな。あとは相手が受け取りやすい渡し方を選ぼう"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……渡し方は、考えよう"
+          "text": "……灯りはある。起きてるかどうかは、まだ分からないな"
         }
       ]
     },
@@ -2145,13 +2145,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "その夜、丘の灯りは、いつもより少しだけ明るく見えた"
+          "text": "灯台守はランタンを持ち、夜番が階段を下りるまで見送った"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "（あたりまえの灯りにも、届く言葉があるんだな）"
+          "text": "（帰りの階段は、来たときより足もとがよく見えたな）"
         }
       ]
     },
@@ -2195,13 +2195,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "遠くても、同じ月……。いい話だな"
+          "text": "窓が二つあるなら、月の話はまだ続くんだな"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "（遠くの窓まで、ちゃんと届いたな）"
+          "text": "（返事が着くころ、あの子は窓のそばで待ってるかな）"
         }
       ]
     },
@@ -2245,13 +2245,13 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "（描いた人に、ありがとう……か）"
+          "text": "（送り主の名前はなくても、足あとで分かるんだな）"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "物語の中のお話ですよ"
+          "text": "返事は絵葉書にするそうですよ。宛名は、ミトンさんへ"
         }
       ]
     },
@@ -2309,13 +2309,13 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "まっすぐ届けられましたね。ミトンも喜んでいます"
+          "text": "みなさん、行き先を決めてから迷わず動けましたね"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "迷わず届くと、気持ちいいな"
+          "text": "どうするか決めたら、案外、足は軽かったな"
         }
       ]
     },
@@ -2335,7 +2335,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "寄り道したぶん、町に詳しくなったな"
+          "text": "歩いたぶんだけ、今度は道を聞かずに済むな"
         }
       ]
     },
@@ -2361,37 +2361,37 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "皆さんの想像の中で、元気に走っていましたね"
+          "text": "ミトンはきっと、皆さんのことを次の夜番にも話しますよ"
         },
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ミトンのぬいぐるみが出たら、三つ買う……じゃなくて、ほしいな"
+          "text": "次の当番もやるよ。帰りが下り坂のときはな"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……描いた本人に聞けば、分かるか"
+          "text": "……じゃあ、次までに靴を替えてこい"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "（よく分からないけど、褒めてるのは分かる）"
+          "text": "俺は洗濯ばさみですね。次の手紙は飛ばさないぞ"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "サイさんのGM、静かなのに、ちゃんとどきどきした"
+          "text": "サイさん、坂を歩いただけなのに、町に知り合いができた気がします"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "ありがとうございます。次の物語もご用意しておきます"
+          "text": "ええ。次に来たときは、町の人も覚えていてくれそうですね"
         }
       ]
     },
