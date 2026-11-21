@@ -59,18 +59,18 @@ const { x: CX, y: CY, radius: R } = TARGET;
 // #3807: frame the lane and the scoring board with one camera. The hand stays at arm's length.
 const FPS_CENTER_Y = 211;
 const FPS_BOARD_TRANSFORM = `translate(${CX} ${FPS_CENTER_Y}) scale(.895) translate(${-CX} ${-CY})`;
-// Right hand and axe in the 1280×720 SVG viewBox, independent of the bitmap resolution.
+// Right hand, sleeve and axe in the aiming bitmap's 1671×941 coordinate space.
 const HAND_SILHOUETTE = [
-  "M825 142 Q781 175 765 227 Q756 258 765 286 C795 262 841 241 869 262 L825 355",
-  "Q816 350 808 359 Q802 368 787 370 Q776 372 781 382 Q782 387 790 390",
-  "L785 397 Q773 397 769 407 Q765 416 775 424 Q764 425 761 435 Q757 445 767 452",
-  "Q756 454 757 465 Q758 476 769 480 C738 544 704 607 666 664",
-  "Q662 678 679 691 Q696 703 714 701 Q724 699 728 683 C730 673 734 658 737 646 C756 595 783 546 811 503",
-  "Q821 512 841 522 Q864 535 879 551 Q872 577 890 592 Q911 608 927 645 Q946 692 963 720 H1262",
-  "C1214 684 1160 641 1113 610 Q1080 590 1053 565 Q1030 548 1009 533",
-  "Q990 517 979 508 Q951 484 940 488 Q928 476 916 467 Q895 447 886 411",
-  "Q879 387 864 378 L921 279 L955 294 L986 245 L955 230",
-  "L959 219 Q956 209 935 201 Q917 191 912 195 Q907 199 904 206 Q858 187 825 142 Z",
+  "M1270 187 C1236 188 1185 231 1165 283 Q1199 259 1214 283 L1215 291 L1137 357",
+  "Q1124 346 1115 351 Q1107 354 1102 368 Q1084 366 1082 384 Q1076 385 1075 396",
+  "Q1063 398 1063 419 Q1053 431 1058 447 Q1062 460 1075 463",
+  "C1075 483 1079 504 1090 520 L1098 539 Q1085 558 1095 581",
+  "C1104 606 1108 636 1111 664 Q1114 698 1122 722 C1132 772 1142 807 1148 848 Q1155 900 1187 941 H1632",
+  "C1574 897 1503 852 1430 813 C1389 787 1350 766 1325 746 C1278 707 1247 669 1224 636",
+  "C1205 611 1200 596 1189 582 Q1179 561 1171 539 Q1163 514 1156 511",
+  "Q1152 491 1154 473 C1158 450 1165 432 1170 407 Q1172 400 1166 392 L1157 382 L1222 323",
+  "L1226 335 L1261 308 L1264 298 L1270 297 Q1275 280 1266 260 Q1261 247 1252 258",
+  "Q1252 219 1270 187 Z",
 ].join(" ");
 // Solid plank edges inside the 1254px artwork (alpha 250+, asset_sources/ui/axe-watl-20261101/adoption.json); the transparent margin is not wood.
 const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 1190 / 1254 };
@@ -280,12 +280,12 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     artBoard.insertBefore(svg("image", { class: "axe-lane-bg", href: ART.lane,
       x: CX - w / 2, y: -65, width: w, height: h }), artBoard.firstChild);
 
-    // The aiming photo includes the lane. Reuse only the foreground at its original size and position.
+    // Fit the drawn-back arm alongside the scoring board and leave room for the flick surface.
     const handId = artId + "-hands", clipId = handId + "-outline", frontId = handId + "-front";
     artBoard.append(svg("defs", {}, [
       svg("clipPath", { id: clipId }, [svg("path", { d: HAND_SILHOUETTE })]),
-      svg("svg", { id: handId, x: -245, y: -107, width: 1150, height: 646.875, viewBox: "0 0 1280 720" }, [
-        svg("image", { href: ART.laneAim, width: 1280, height: 720, "clip-path": `url(#${clipId})` })]),
+      svg("svg", { id: handId, x: -97, y: -110, width: 979, height: 706, viewBox: "0 0 1671 941", preserveAspectRatio: "none" }, [
+        svg("image", { href: ART.laneAim, width: 1671, height: 941, preserveAspectRatio: "none", "clip-path": `url(#${clipId})` })]),
     ]));
     laneAimImage = svg("use", { class: "axe-lane-aim", href: "#" + handId, opacity: 0 });
     artBoard.append(laneAimImage);

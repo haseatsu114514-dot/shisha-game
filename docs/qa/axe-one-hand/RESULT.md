@@ -1,5 +1,45 @@
 # 斧投げの片手構え（2026-11-21）
 
+## オーナー指摘後の修正
+
+右手の小指が柄尻の膨らみに掛かる位置で握り、右肩側へ引いた片手構えにした。濃色の袖が右下から入り、斧頭は画面右上寄りで刃が上を向く。ゲーム画面は既存のレーン背景とSVGの的を使い、再調整した `HAND_SILHOUETTE` で手元だけを重ねる。的の板全体と右上の得点表示が見えるよう、手元の表示範囲を調整した。
+
+内蔵画像編集の開始前に、作業フォルダ内の現行WebPのコピーが305,948バイト、1920×1080で、表示用ファイルとバイト単位で一致することを `cmp` で確認した。現行の原画PNGとWebPから構えを編集し、レーン・的・床・照明・画角を引き継いだ。[採用原画](../../../asset_sources/axe-one-hand-20261121/bg_axe_lane_aim_windup.png) は1671×941。[共有PNG](../../../assets/backgrounds/bg_axe_lane_aim.png) にLanczosで1920×1080へ変換し、既存の `build_images.encode` で[表示用WebP](../../../remake/img/backgrounds/bg_axe_lane_aim.webp) を作成した。WebPは278,134バイト。背景台帳の平均輝度とLFSポインタのGit blobを更新した。
+
+<details>
+<summary>採用画像の生成指示</summary>
+
+入力1は柄尻を握る構えに直した候補、入力2は前の片手版の表示用WebP。
+
+> Use case: precise-object-edit. Full 16:9 in-game fixed camera at a recreational axe-throwing lane. Edit image 1, using image 2 to retain the same room, centered round target, floor lines, dark lattice, lighting, camera and crop. The single dark-sleeved right arm is drawn back at the right shoulder for a one-handed throw. Preserve the visually distinct windup in image 1: fist grips the absolute end just at the widened pommel, the short wood handle slopes gently toward the upper right and the steel blade's curved cutting edge is uppermost toward the ceiling. Important production framing change: shrink the axe and the fist modestly and use a slender forward profile rather than a sprawling large arm. Seen from behind the fingers, the fist should be compact and more edge-on with less palm visible, the pinky right above the end cap. Position the fist centered around 69% of image width, 44% of height. The rear-facing head and handle are an upper-right silhouette between 68% and 80% of width, with the highest cutting edge about 16–20% of image height, and the lower end of the steel above 34% of image height. Local space to preserve the game touchscreen controls: from y=39% to y=65%, leave the part of the right side beyond x=73% completely empty room, so the hand and upper charcoal sleeve must fit in a narrow visual band from x=67% to x=73% during those rows. From about 66% of the image height down, the dark sleeve angles and flares naturally toward the bottom-right corner close to the viewer, connected to the same right wrist. Leave the target fully unobscured and show the full upturned axe blade with room above and to the right. Realistic small sports hatchet, believable adult wrist anatomy, dark charcoal sleeve, existing warm material appearance. No overlay, text, or graphic.
+
+</details>
+
+### 修正前後の実画面
+
+Chromiumで第1章6日目夜の斧投げBarの初回レッスンを開き、横の照準を撮影した。844×390は横持ちタッチのエミュレーション。
+
+| ビューポート | 修正前（片手版 `9729ad615a`） | 修正後 |
+| --- | --- | --- |
+| 1280×720 | [Before](windup-before-1280x720.png) | [After](windup-after-1280x720.png) |
+| 844×390 | [Before](windup-before-844x390.png) | [After](windup-after-844x390.png) |
+
+単体プレビューと本編の初回レッスンを #4115 と同じ方法で計測した。操作ボタンの矩形と画面座標に変換したSVG輪郭の交差を数え、ボタン中央へのポインター到達と、フリックで先へ進めることを確認した。
+
+| ビューポート | 横の照準 | 縦の照準 | フリック待ち | フリック操作面までの最短距離 |
+| --- | ---: | ---: | ---: | ---: |
+| 1280×720 | 0 px² | 0 px² | 0 px² | 3.54 CSS px |
+| 844×390 | 0 px² | 0 px² | 0 px² | 1.80 CSS px |
+| 740×320 | 0 px² | 0 px² | 0 px² | 1.53 CSS px |
+
+### 修正後のテスト
+
+- `node --test remake/test/axe_*.mjs` は105件成功。
+- `python3 tools/background_catalog.py check` はCIと同じくGitの登録内容から134枚を照合。既存の `bg_smoke_lab.png` の寸法警告が1件。
+- [Draft PR #4124](https://github.com/haseatsu114514-dot/shisha-game/pull/4124) の同じブランチで確認。ブラウザスイートの実行結果はPR本文に記録する。
+
+## 初回の片手化
+
 ## 構成と差し替え
 
 一人称の狙い画面は、`bg_axe_lane.webp` のレーンにSVGの的と得点表示を重ねる。変更前の `bg_axe_lane_aim.webp` は、レーンと両手で握った斧を一枚に描いた1280×720の画像だった。[axe.js](../../../remake/js/minigames/axe.js) の `HAND_SILHOUETTE` がそこから手と斧を切り抜き、`.axe-lane-aim` と `.axe-hand-front` で重ねていた。輪郭は表示用で、投擲・得点判定の座標とは独立している。
