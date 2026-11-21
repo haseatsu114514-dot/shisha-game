@@ -14,7 +14,7 @@ const matchScene = id => `${dt("ch5-match")}[data-scene="${id}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
 const arm = page => page.evaluate(async () => {
   const vn = await import("./js/vn/engine.js");
-  // 選択肢は常に先頭（schedule_contact では「日を決めて連絡する」= decide）。
+  // 選択肢は常に先頭（schedule_contact では「明日を勝負の日にする」= decide）。
   vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
 });
 const committed = (page, id) => page.waitForFunction(sceneId => window.__remake.state.flags._ch5.read[sceneId] === true, id);

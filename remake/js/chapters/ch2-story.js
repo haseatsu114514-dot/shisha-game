@@ -3,8 +3,9 @@ import { state, save, markMet } from "../core/state.js";
 import { imageReady, setBg } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { MAP, ROOMS } from "./ch2-city-data.js";
-import { CH2_NIGHTS, CH2_FREE_NIGHTS, chapterTwoDaySceneDue, syncAgehaVibes } from "./ch2-story-data.js";
+import { CH2_NIGHTS, CH2_FREE_NIGHTS, C_STATION_TASTING_BG, chapterTwoDaySceneDue, syncAgehaVibes } from "./ch2-story-data.js";
 import { grantStrawberrySample } from "./ch2-strawberry-trial.js";
+import { CITY_BACKGROUNDS } from "../core/city-locations.js";
 import { recordSentLime } from "./ch2-lime.js";
 
 // 会話途中では完了にしない。連続する場面は一つずつ保存し、LOAD時に読了分を飛ばす。
@@ -12,18 +13,28 @@ async function readStep(step) {
   const owner = state;
   const flag = `_ch2_read_${step.id}`;
   if (owner.flags[flag] || (step.when && !step.when(owner))) return;
-  if (!DB.dialogues[step.id]) throw new Error(`台本がありません: ${step.id}`);
-  if (!step.bg && ["remake_ch2_eve_arrival", "remake_ch2_eve_rei", "ch2_pre_tournament_realisation"].includes(step.id)) {
-    if (!await imageReady(MAP.night, 15000)) throw new Error("大会前夜の街を読み込めませんでした");
-    await setBg(MAP.night);
-  }
-  const place = (step.bg && (bgUrl(step.bg) || step.bg)) || (step.room && ROOMS[step.room]);
+  const original = DB.dialogues[step.id];
+  let script = step.id;
+  if (!original) throw new Error(`台本がありません: ${step.id}`);
+  const eve = ["remake_ch2_eve_arrival", "remake_ch2_eve_rei", "ch2_pre_tournament_realisation"].includes(step.id);
+  const place = step.bg ? bgUrl(step.bg) || step.bg : step.room ? ROOMS[step.room] : eve ? MAP.night : null;
   if (place) {
-    if (!await imageReady(place, 15000)) throw new Error(`場面の背景を読み込めませんでした: ${step.bg || step.room}`);
-    await setBg(place);
+    const loaded = await imageReady(place, 15000);
+    if (state !== owner) throw new Error(`中断した場面: ${step.id}`);
+    const alternate = eve && place !== MAP.night ? MAP.night
+      : place === C_STATION_TASTING_BG ? CITY_BACKGROUNDS.c_station : null;
+    const fallback = !loaded && await imageReady(alternate, 1800) ? alternate : null;
+    if (!loaded) {
+      console.warn("[ch2 story] 背景を読み込めませんでした", step.id, place);
+      // 背景だけ代替する。台本の読み込み失敗は引き続き再試行の対象。
+      if (original.metadata?.bg) script = { ...original, metadata: { ...original.metadata, bg: null } };
+    }
+    if (state !== owner) throw new Error(`中断した場面: ${step.id}`);
+    await setBg(loaded ? place : fallback, { tint: fallback === CITY_BACKGROUNDS.c_station ? "night" : null });
+    if (state !== owner) throw new Error(`中断した場面: ${step.id}`);
   }
   syncAgehaVibes(owner.flags);
-  const result = await play(step.id);
+  const result = await play(script);
   if (state !== owner || !result || result.cancelled) throw new Error(`未読の場面: ${step.id}`);
   owner.flags[flag] = true;
   if (step.flag) owner.flags[step.flag] = true;
@@ -40,7 +51,7 @@ async function readStep(step) {
 
 /**
  * 昼の本筋（CH2_DAY_SCENES）を、出かける前の朝に読む。最後まで読んだ時だけ印を付け、昼の行動を使う。
- * day は章内日（呼ぶ側の ch2-preparation.js が第2章の開始日から数える）。背景が読めない・中断・LOAD は何もしない（同じ朝にもう一度）。
+ * day は章内日（呼ぶ側の ch2-preparation.js が第2章の開始日から数える）。中断・LOAD では確定しない（同じ朝にもう一度）。
  */
 export async function readChapterTwoDayScene(day) {
   const owner = state;

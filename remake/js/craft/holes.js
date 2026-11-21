@@ -116,6 +116,11 @@ export async function runHoles(cs) {
   }
   await waitBenchReady(cs, "holes");
   const tutorial = cs.mode === "tutorial";
+  let warmup = tutorial && cs.onboarding && !autoSkill();
+  const owner = gameState;
+  const root = benchRoot(cs);
+  const isCurrent = () => gameState === owner && benchRoot(cs) === root;
+  let finishWarmup;
   // 穴あけのお手本動画は廃止（#3815）。押し加減は「穴を開ける」の中の目盛りと「?」の説明で伝える。
   const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始すると、光る目印の近くを針が動く", { brief: "穴の配置を選んでから、穴あけを始める" });
   const template = await chooseTemplate(panel, cs);
@@ -131,7 +136,7 @@ export async function runHoles(cs) {
   const goodWin = HOLES_TUNING.goodDeg * craftCondition(cs).window * (tutorial ? HOLES_TUNING.lessonGood : 1) * assistEffect(cs).holesGood;
   const limit = tutorial ? HOLES_TUNING.lessonTimeLimit : HOLES_TUNING.timeLimit + (growthSkill(gameState, "K01") ? SKILL_TUNING.holesSeconds : 0);
   // 操作の詳しい説明・凡例・採点は「?」へ。基本画面には置かない（ミニゲームUI共通の方針）。
-  benchRoot(cs)?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", { dataset: { test: "hole-guide" } }, [
+  root?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", { dataset: { test: "hole-guide" } }, [
     el("ul", [
       ["狙う", "光る目印の近くを針が行き来する。重なったところで押す"],
       ["押し加減", "少し押し込んでから離す。短すぎると浅い穴になり、大きく減点される。長く押すほど穴が大きくなる"],
@@ -181,12 +186,14 @@ export async function runHoles(cs) {
   const nextBtn = renewal ? null : el("button.btn.small", { text: "次のリングへ", dataset: { test: "hole-next" } });
   // 文は「穴あけを終えて結果へ」のまま。前半を分けておく（スマホの狭い列では「結果へ」だけを出す・css/craft-phone.css）
   const doneBtn = renewal ? null : el("button.btn.small.ghost", { dataset: { test: "hole-done" } }, [el("span.hole-done-lead", { text: "穴あけを終えて" }), "結果へ"]);
+  const begin = warmup ? el("button.btn.small", { text: "穴あけを始める", dataset: { test: "hole-warmup-start" } }) : null;
+  const row = el("div.hr-row", [begin || nextBtn, begin ? null : doneBtn]);
   const side = el("div.hr-side", [el("small.ht-current", { text: template.label }), ringLabel,
       effectVisible("technique") ? effectBadge("technique", "技") : null,
       senseBand(basePerfWin, 12), effectLine("technique", "技", "技術で針がゆっくり"),
       el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), feedback, plan,
       el("p.hr-depth-hint", { dataset: { test: "hole-depth-hint" }, text: "押す長さで深さが変わる。短すぎると浅く、長いほど大きい穴に。" }),
-      punchBtn, renewal ? null : el("div.hr-row", [nextBtn, doneBtn])]);
+      punchBtn, begin || !renewal ? row : null]);
   panel.append(el("div.holes", [el("div.hr-stage", [disc]), side]));
 
   // ---- 状態
@@ -296,6 +303,7 @@ export async function runHoles(cs) {
     putProp(punchBtn, "disabled", finished || ringComplete());
     if (nextBtn) putProp(nextBtn, "disabled", finished || !ringComplete() || ri === state.length - 1);
     if (doneBtn) putProp(doneBtn, "disabled", finished || !ready);
+    if (warmup) return;
     // 初めの一行は操作の案内（新しい配置では常設しない・CSL15）。完成などの知らせは出す。
     putData(plan, "tone", ready || ringComplete() || elapsed >= limit ? "notice" : "hint");
     putText(plan, ready ? renewal ? "選んだ配置が完成。結果へ" : "選んだ配置が完成。結果を確認しよう"
@@ -343,6 +351,16 @@ export async function runHoles(cs) {
     SE.foilPunch();
     const dRef = referenceDegrees(offset, h);
     const near = ring.holes.some((hole) => referenceDegrees(angDiff(hole.a, a), h) < goodWin * 0.8);
+    if (warmup) {
+      holesLayer.replaceChildren();
+      addHoleDot(a, ring.r, dRef <= goodWin ? "good" : "rough", depth);
+      const size = { shallow: "浅い穴", small: "小さい穴", wide: "少し大きい穴", large: "大きい穴" }[depth];
+      const aim = dRef <= goodWin ? "目印のそばに開いた" : "目印からズレた";
+      putText(plan, `${aim}。深さは「${size}」。押す長さを変えて試せる。`);
+      sweepStart = t;
+      drawNeedle(t);
+      return;
+    }
     const size = HOLE_SIZES[depth];
     const sizeNote = depth === "small" ? "" : depth === "wide" ? "・少し大きい" : depth === "large" ? "・大きい" : "・浅い";
     let kind;
@@ -425,9 +443,10 @@ export async function runHoles(cs) {
   const loop = () => {
     raf = 0;
     if (finished || complete()) return;
+    if (warmup && !isCurrent()) { finishWarmup(false); return; }
     elapsed = clockNow();
     if (gameClock.paused) {
-      if (!gameClock.onPauseChange) raf = requestAnimationFrame(loop);
+      if (warmup || !gameClock.onPauseChange) raf = requestAnimationFrame(loop);
       return;
     }
     // 押しすぎは離さなくても刺し抜ける。押しっぱなしで止まらない。
@@ -436,7 +455,7 @@ export async function runHoles(cs) {
     // 一刺しのあとも針を止めない。描画だけ停止すると処理落ちや判定の飛びに見える。
     drawNeedle(elapsed);
     highlightNext();
-    drawTime();
+    if (!warmup) drawTime();
     hud();
     raf = requestAnimationFrame(loop);
   };
@@ -449,6 +468,11 @@ export async function runHoles(cs) {
   const finish = () => {
     if (finished || !complete()) return;
     finished = true;
+    cleanup();
+    state.forEach(closeRing);
+    done();
+  };
+  const cleanup = () => {
     cancelAnimationFrame(raf);
     raf = 0;
     gameClock.dispose();
@@ -456,8 +480,6 @@ export async function runHoles(cs) {
     globalThis.window?.removeEventListener("pointerup", pointerEnd);
     globalThis.window?.removeEventListener("pointercancel", pointerEnd);
     globalThis.window?.removeEventListener("keyup", keyEnd);
-    state.forEach(closeRing);
-    done();
   };
 
   // ---- 入力（押し始め／離す）
@@ -482,7 +504,35 @@ export async function runHoles(cs) {
   drawMarkers();
   hud();
   drawNeedle(0);
+  if (warmup) {
+    putText(ringLabel, "練習・採点なし");
+    timeBar.parentElement.style.visibility = "hidden";
+    putData(plan, "tone", "warmup");
+    plan.setAttribute("aria-live", "polite");
+    putText(plan, "針と目印が重なったら押す。少し待って離す。Spaceでも操作できます。");
+    t0 = gameClock.now();
+    const start = await new Promise(resolve => {
+      finishWarmup = resolve;
+      begin.addEventListener("click", () => resolve(true), { once: true });
+      raf = requestAnimationFrame(loop);
+    });
+    cancelAnimationFrame(raf);
+    raf = 0;
+    if (!start || !isCurrent()) { cleanup(); return; }
+    warmup = false;
+    t0 = null;
+    press = null;
+    sweepStart = elapsed = 0;
+    holesLayer.replaceChildren();
+    timeBar.parentElement.style.removeProperty("visibility");
+    if (renewal) row.remove();
+    else row.replaceChildren(nextBtn, doneBtn);
+    drawMarkers();
+    drawNeedle(0);
+    hud();
+  }
   await countdown();
+  if (!isCurrent()) { cleanup(); return; }
   t0 = gameClock.now();
   if (!gameClock.onPauseChange || !gameClock.paused) raf = requestAnimationFrame(loop);
 

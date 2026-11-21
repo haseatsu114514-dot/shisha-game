@@ -276,10 +276,12 @@ await suite("ch4-dubai-daily", async check => {
     const cafe = page.locator(dt("pin-ch4_dubai_cafe"));
     assert.equal(await festa.locator(".pin-status").innerText(), "今夜の予定");
     assert.match(await festa.getAttribute("aria-label"), /今夜の予定/);
+    assert.match(await page.locator(dt("map-reminder")).innerText(), /今夜の予定：FESTA/);
     assert.equal(await cafe.locator(".evt-badge.story").innerText(), "!");
     await go(page, "ch4_dubai_festa");
     await dubaiMap(page, { day: 54, slot: 1 });
     assert.doesNotMatch(await festa.getAttribute("aria-label"), /今夜の予定/);
+    assert.doesNotMatch(await page.locator(".map-info").innerText(), /今夜の予定：FESTA/);
     assert.equal(await cafe.locator(".evt-badge.story").innerText(), "!");
     const meetingCount = async () => (await backlog(page)).filter(line => line.startsWith("FESTAのブースに入ると")).length;
     assert.equal(await meetingCount(), 1);

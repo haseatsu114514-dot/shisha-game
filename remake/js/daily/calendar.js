@@ -585,10 +585,15 @@ async function takeAction() {
   const visitBlock = spot => fixedNightVisitBlock(chapterDef.nightEvents, spot);
   const ev = nightPlan(chapterDef.nightEvents)[0];
   syncSamechanKnowledge();
-  const mapOptions = chapterDef.mapOptions?.() || {};
+  const mapOptions = { ...chapterDef.mapOptions?.() };
+  if (mapOptions.eventPinLabel && ev?.label && !ev.done?.()) {
+    const tonight = `${mapOptions.eventPinLabel}：${ev.label}`;
+    const reminder = mapOptions.reminder || respecMapNotice(state);
+    mapOptions.reminder = [tonight, reminder].filter(Boolean).join(" ／ ");
+  }
   const spotId = await chooseSpot({
     ...mapOptions,
-    reminder: mapOptions.reminder || respecMapNotice(state), // 組み直しが開いている間の一言（SPEC 5.2。上の帯はピンと重なるので右下の案内に添える）
+    reminder: mapOptions.reminder || respecMapNotice(state),
     visitBlock,
     eventPin: ev && !ev.done?.() ? ev.pin : null,
     onShown: () => {

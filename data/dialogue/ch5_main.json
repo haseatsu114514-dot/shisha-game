@@ -2034,7 +2034,7 @@
           "id": "ch5_schedule_contact_choice",
           "choices": [
             {
-              "text": "日を決めて連絡する",
+              "text": "明日を勝負の日にする",
               "next": "decide"
             },
             {

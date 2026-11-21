@@ -104,14 +104,14 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "（『良かった』いただきました、……ふふ）",
+          "text": "（……また来てくれるといいな）",
           "portrait": "hajime",
           "portrait_face": "smile"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（こういうの聞くとさ、つい思っちゃうんだよな。いつか自分の店、持てたりして、って）",
+          "text": "（いつか俺にも、自分の店があったら。……まだ実感もないし、口に出すのは照れるけど）",
           "portrait": "hajime",
           "portrait_face": "normal"
         },
@@ -126,7 +126,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（店の名前は、実はもう決めてある。内装のイメージも、なんとなく。……まあ、ずっと先の話だけど）"
+          "text": "（カウンターの高さとか、閉店前に流す曲とか。気づくと、そんなことを考えてる）"
         },
         {
           "speaker": "",
@@ -152,7 +152,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "なんか、ああいうの聞くと頑張れますよね、……えへへ"
+          "text": "ああいうふうに言ってもらえると、明日も作りたくなりますね"
         },
         {
           "speaker": "",
@@ -1552,17 +1552,17 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "はい。……今の俺、ちょっと店長っぽくなかったですか"
+          "text": "はい。……あのグラスも、下げてきます"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "洗い物まで終わらせてからな"
+          "text": "まだ座ってるだろ。帰られてからでいい"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "急に現実、……はい、やります"
+          "text": "あ、そうでしたね。じゃあ、こっちから"
         },
         {
           "speaker": "",

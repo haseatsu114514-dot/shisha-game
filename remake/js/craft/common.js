@@ -75,7 +75,7 @@ export function keys(map, { actionSpace = false } = {}) {
     if (globalThis.document?.querySelector(".bench-guide[open]")) return;
     // 説明・体調を開く操作を、ミニゲームのSpace/Enterに流さない。
     if (e.target?.closest?.(".bench-condition")) return;
-    if ((e.key === " " || e.key === "Enter") && e.target?.closest?.(".bench-guide, .timer-button")) return;
+    if ((e.key === " " || e.key === "Enter") && e.target?.closest?.(".bench-guide, .timer-button, .craft-warmup-start")) return;
     // 蒸らしはSpaceをリフレッシュに予約する。Enterはフォーカス中のボタンを操作する。
     if ((e.key === "Enter" || (e.key === " " && !actionSpace)) && e.target?.closest?.(".dodge-action")) return;
     // 操作ボタンにフォーカスがある間は、ブラウザのボタン起動に任せる。

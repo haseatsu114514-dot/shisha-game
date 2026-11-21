@@ -1,4 +1,5 @@
 import { guardCompletionCardInput } from "./completion-card-input.js";
+import { ROOMS } from "./ch2-city-data.js";
 import { playEntrance } from "./tournament-entrance.js";
 import { defeatFade } from "../core/transitions.js";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
@@ -456,8 +457,13 @@ async function drive(owner) {
       // 章の最後に、はじめのいない店であげはの心の声（#929）。読了時だけ記録し、クリア済みの旧セーブにも一度だけ出す。
       // 完了カードも閉店後のMELTY PUFFのまま出す（昼の大会ステージへ戻さない）。
       const closedRoom = bgUrl(CH2_SCENE_BACKGROUNDS.agehaClosed);
-      if (!await imageReady(closedRoom, 15000)) throw new Error("閉店後のMELTY PUFFを読み込めませんでした");
-      await enterScene(closedRoom);
+      const loaded = await imageReady(closedRoom, 15000);
+      if (!live(owner)) return;
+      if (!loaded) console.warn("[ch2 tournament] 閉店後のMELTY PUFFを読み込めませんでした", closedRoom);
+      const fallback = !loaded && await imageReady(ROOMS.ageha, 1800) ? ROOMS.ageha : null;
+      if (!live(owner)) return;
+      await enterScene(loaded ? closedRoom : fallback, { tint: fallback ? "night" : null });
+      if (!live(owner)) return;
       if (!state.flags._ch2_read_ch2_tournament_ageha_heart) {
         if (!await read(owner, "ageha_heart")) return;
         state.flags._ch2_read_ch2_tournament_ageha_heart = true; save();

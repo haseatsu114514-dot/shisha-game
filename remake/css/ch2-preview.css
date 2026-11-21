@@ -132,7 +132,9 @@
 .ch2-main .ch2-map-main { background: linear-gradient(0deg, #0c08154d, transparent 45%); }
 .ch2-main .ch2-map-main .map-pins { inset: 0; }
 .ch2-main .ch2-map-main .map-info { width: 300px; padding: 18px 22px; }
-.ch2-main .ch2-map-main .mi-banner { margin-top: 0; }
+html:root body.ch2-main #stage #screen .ch2-map-main .map-info > h2.mi-banner {
+  margin-top: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere;
+}
 .ch2-main .ch2-map-main .mi-desc { font-size: 16px; }
 .ch2-main .ch2-map-main .mi-foot { margin-bottom: 12px; }
 .ch2-main .ch2-map-main .spot-pin .sub-label { max-width: 240px; }

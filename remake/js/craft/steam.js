@@ -155,6 +155,7 @@ export async function runSteamDodge(cs) {
   let wordsCut = 0, totalWordsCut = 0, maxCombo = 0, slashCooldown = SLASH_RECHARGE_SECONDS;
   let afterglowUntil = 0, afterglows = 0, sharkPulses = 0;
   const shark = hasAttackTraining(state.flags) && growthLesson(state,"M-W7");
+  let warmingUp = false;
   let running = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : table.waveEvery;
   let peakMind = initialMind, clearSeconds = 0;
   let warning = null, spawnCount = 0, raf = 0;
@@ -171,10 +172,10 @@ export async function runSteamDodge(cs) {
     return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height];
   };
   listen(box, "pointerdown", (e) => {
-    if (!running) return;
+    if ((!running && !warmingUp) || e.target.closest(".steam-warmup")) return;
     e.preventDefault(); box.setPointerCapture(e.pointerId); moveTo(...toLocal(e));
   });
-  listen(box, "pointermove", (e) => { if (running && (e.buttons || e.pointerType === "mouse")) moveTo(...toLocal(e)); });
+  listen(box, "pointermove", (e) => { if ((running || warmingUp) && !e.target.closest(".steam-warmup") && (e.buttons || e.pointerType === "mouse")) moveTo(...toLocal(e)); });
 
   const movePad = (e) => {
     const r = pad.getBoundingClientRect(), radius = r.width * 0.34;
@@ -189,7 +190,7 @@ export async function runSteamDodge(cs) {
   };
   const resetPad = () => { padPointer = null; axisX = axisY = 0; knob.style.transform = ""; pad.classList.remove("held"); };
   listen(pad, "pointerdown", (e) => {
-    if (!running || padPointer !== null) return;
+    if ((!running && !warmingUp) || padPointer !== null) return;
     e.preventDefault(); padPointer = e.pointerId; pad.setPointerCapture(e.pointerId); pad.classList.add("held"); movePad(e);
   });
   listen(pad, "pointermove", (e) => { if (e.pointerId === padPointer) movePad(e); });
@@ -320,7 +321,7 @@ export async function runSteamDodge(cs) {
   listen(slashBtn, "click", e => { if (e.detail === 0) slash(); });
   const direction = { ArrowLeft: "l", ArrowRight: "r", ArrowUp: "u", ArrowDown: "d", a: "l", d: "r", w: "u", s: "d" };
   const unkey = keys(Object.fromEntries([
-    ...Object.entries(direction).map(([key, value]) => [key, () => { if (running) keysDown.add(value); }]),
+    ...Object.entries(direction).map(([key, value]) => [key, () => { if (running || warmingUp) keysDown.add(value); }]),
     [" ", (e) => { if (!e.repeat) refresh(); }],
     ["x", (e) => { if (!e.repeat) refresh(); }],
     ["X", (e) => { if (!e.repeat) refresh(); }],
@@ -359,11 +360,54 @@ export async function runSteamDodge(cs) {
     box.classList.remove("warning");
   };
 
+  const moveInput = (dt) => {
+    const x = axisX + (keysDown.has("r") ? 1 : 0) - (keysDown.has("l") ? 1 : 0);
+    const y = axisY + (keysDown.has("d") ? 1 : 0) - (keysDown.has("u") ? 1 : 0);
+    const length = Math.max(1, Math.hypot(x, y));
+    if (padPointer === null) knob.style.transform = x || y ? `translate(${x / length * 26}px, ${y / length * 26}px)` : "";
+    const speed = precise ? STEAM_TUNING.preciseSpeed : STEAM_TUNING.speed;
+    moveTo(hx + x / length * speed * dt, hy + y / length * speed * dt);
+  };
+
   clock.update(seconds);
   refreshLabel();
   slashLabel();
   try {
     if (!await explainTutorialStep(cs, "steam") || !isCurrent()) return;
+    if (tutorial && cs.onboarding && !autoSkill()) {
+      warmingUp = true;
+      const start = el("button.btn.primary.craft-warmup-start", { text: "蒸らしを始める", dataset: { test: "steam-warmup-start" } });
+      const practice = el("div.steam-warmup", [
+        el("b", { text: "移動の練習・採点なし" }),
+        el("p", { text: "矢印キー、画面のドラッグ、スティックでハートを動かせます。" }),
+        start,
+      ]);
+      box.append(practice);
+      clock.root.style.visibility = "hidden";
+      const gameClock = createCraftClock(panel);
+      let last = gameClock.now();
+      await new Promise(resolve => {
+        start.addEventListener("click", resolve, { once: true, signal: input.signal });
+        const practiceFrame = () => {
+          if (!isCurrent()) return resolve();
+          const now = gameClock.now();
+          if (!gameClock.paused) moveInput(Math.min(.05, (now - last) / 1000));
+          last = now;
+          raf = requestAnimationFrame(practiceFrame);
+        };
+        raf = requestAnimationFrame(practiceFrame);
+      });
+      cancelAnimationFrame(raf);
+      raf = 0;
+      gameClock.dispose();
+      warmingUp = false;
+      keysDown.clear();
+      resetPad();
+      moveTo(W / 2, H / 2);
+      practice.remove();
+      clock.root.style.removeProperty("visibility");
+      if (!isCurrent()) return;
+    }
     await countdown();
     if (!isCurrent()) return;
     running = true; precisionBtn.disabled = false; refreshLabel(); slashLabel();
@@ -397,12 +441,7 @@ export async function runSteamDodge(cs) {
         if (!refreshes && time >= refreshReadyAt) refreshes = stock;
         refreshLabel(); slashLabel();
         renderTemperature(temperatureAfterSteam(cs, Math.min(1, time / dur) * seconds, heatJitter));
-        let x = axisX + (keysDown.has("r") ? 1 : 0) - (keysDown.has("l") ? 1 : 0);
-        let y = axisY + (keysDown.has("d") ? 1 : 0) - (keysDown.has("u") ? 1 : 0);
-        const length = Math.max(1, Math.hypot(x, y));
-        if (padPointer === null) knob.style.transform = x || y ? `translate(${x / length * 26}px, ${y / length * 26}px)` : "";
-        const speed = precise ? STEAM_TUNING.preciseSpeed : STEAM_TUNING.speed;
-        moveTo(hx + x / length * speed * dt, hy + y / length * speed * dt);
+        moveInput(dt);
         if (time >= nextSpawn && time < dur - 0.8) { spawn(); nextSpawn = time + spawnEvery * rand(0.8, 1.15) * (1 - 0.2 * time / dur); }
         if (time >= nextWave && time < dur - 2) {
           const random = () => rand(0, 1);

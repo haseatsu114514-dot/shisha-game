@@ -291,6 +291,28 @@ await suite('ch2-tournament',async check=>{
     }
   });
 
+  await check('complete-survives-missing-closed-shop-background', async page => {
+    let failures = 0;
+    await page.route('**/bg_ch2_ageha_closed_night.webp', route => {
+      failures++;
+      return route.fulfill({ status: 200, contentType: 'image/webp', body: 'invalid' });
+    });
+    await seed(page, { stage: 'complete' });
+    await page.locator(t('complete')).waitFor();
+    assert(failures > 0, 'The closing scene must have requested the broken asset');
+    assert((await get(page)).flags._ch2_read_ch2_tournament_ageha_heart);
+    const lines = await page.evaluate(() => window.__trace);
+    assert.equal(lines.filter(id => id === 'ch2_tournament_ageha_heart').length, 1);
+    await page.evaluate(async () => {
+      const core = await import('./js/core/state.js');
+      core.state.phase = 'cleared';
+      core.state.flags._ch2_cleared = true;
+      core.save();
+    });
+    await page.locator(t('chapter-three')).click();
+    await page.waitForFunction(() => window.__remake.state.chapter === 3);
+  }, { reducedMotion: 'reduce' });
+
   await check('chapter-three-prologue-resumes-anonymous-research',async page=>{
     await page.evaluate(async()=>{
       const core=await import('./js/core/state.js'),s=core.newGame();
