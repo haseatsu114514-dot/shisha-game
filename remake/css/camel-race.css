@@ -668,8 +668,10 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 }
 
 /* ---- 2026-11-13 桜井スキルでの添削（CRF13〜） ---- */
-/* 一時停止のボタン: 「やめる」と同じ板で、その左隣。走っている間と合図の間だけ出る */
-.camel-pause { right: calc(1.6cqw + var(--q-dot) + 6px); display: grid; place-items: center; min-width: var(--q-hit); padding-inline: 0; }
+/* 一時停止のボタン: 「やめる」と同じ板で、その左隣。走っている間と合図の間だけ出る。
+   位置は丸の隣接（--q-dot + 6px）が基本。ただし箱（--q-hit）が /k で膨らむ小さい画面では、
+   箱の重なりが深くなって互いの中心を覆うため、中心が覆われない下限（--q-hit / 2 + 7px）も保証する */
+.camel-pause { right: calc(1.6cqw + max(var(--q-dot) + 6px, var(--q-hit) / 2 + 7px)); display: grid; place-items: center; min-width: var(--q-hit); padding-inline: 0; }
 .camel-pause svg { width: 1.25em; height: 1.25em; display: block; }
 .camel-pause[hidden] { display: none; }
 .camel-game[data-paused="true"] .camel-controls, .camel-game[data-paused="true"] .camel-close { visibility: hidden; }
