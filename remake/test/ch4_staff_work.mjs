@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 import * as progress from "../js/chapters/ch4-staff-work-progress.js";
+import { TOURNAMENT_VENUE_BG } from "../js/core/tournament-venues.js";
 import { craftContext } from "../js/craft/context.js";
 import { paginate } from "../js/vn/text.js";
 const PORTRAIT_FACES = JSON.parse(fs.readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8")).portraits;
@@ -259,17 +260,18 @@ for (const mutate of [value => delete value.flags._ch4.routeVersion, value => va
 // 表示アダプタが共有careを一度だけ使い、実選択を即保存、hookを必ず復元することも確認する。
 {
   const context = vm.createContext({ AbortController, DOMException });
-  const value = notice(), initial = preserved(value), hooks = { onChoice: null }; let captured, careCalls = 0, saves = 0, retires = 0, playCancel = false, fetches = 0;
+  const value = notice(), initial = preserved(value), hooks = { onChoice: null }; let captured, background, careCalls = 0, saves = 0, retires = 0, playCancel = false, fetches = 0;
   const window = { addEventListener() {}, removeEventListener() {} };
   let active = true;
   const exports = {
     "../core/state.js": { state: value, save: () => saves++ },
+    "../core/tournament-venues.js": { TOURNAMENT_VENUE_BG },
     "../core/chapter-clock.js": { atChapterFinalDay: () => false },
     "../core/data.js": { DB: { dialogues: all }, bgUrl: id => id, CHAPTER_DIALOGUE_FILES: { ch4Staff: "ch4_staff_work" } },
     "../core/chapter-data.js": { readDialogues: async (name, required) => {
       fetches++; assert.equal(name, "ch4_staff_work"); assert.deepEqual([...required], Object.values(ids)); return all;
     } },
-    "../core/ui.js": { setBg: async () => {}, showScreen: () => {}, retireScreen: () => retires++ },
+    "../core/ui.js": { setBg: async bg => { background = bg; }, showScreen: () => {}, retireScreen: () => retires++ },
     "../vn/engine.js": { hooks, play: async source => {
       const selected = source.dialogue_id === ids.preparation ? ["ch4_staff_prep_choice", "tools"]
         : source.dialogue_id === ids.order ? ["ch4_staff_order_choice", "strength"] : null;
@@ -318,6 +320,7 @@ for (const mutate of [value => delete value.flags._ch4.routeVersion, value => va
   assert.equal(craftContext(captured).recipient, "共用ブースのお客さん"); assert.deepEqual(preserved(value), before);
   date(value, 14); value.flags._ch4.part = "tournament";
   assert(await api.readChapterFourStaffCheckpoint(ids.echo, { isCurrent: () => active }));
+  assert.equal(background, "bg_tournament_dubai_dusk");
   const once = saves; assert(await api.readChapterFourStaffCheckpoint(ids.echo)); assert.equal(saves, once);
   assert.equal(hooks.onChoice, previous);
   active = false; assert.equal(await api.adjustChapterFourStaffService("strength", { isCurrent: () => active }), null);

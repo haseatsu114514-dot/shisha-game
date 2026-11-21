@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-20 15:43 UTC",
+ "generated": "2026-11-21 09:08 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -569,6 +569,7 @@
   "bg_shishark_preparing_night.png",
   "bg_shop.png",
   "bg_smoke_lab.png",
+  "bg_smoke_lab_duel_day.png",
   "bg_station_walk_night.png",
   "bg_steve_shop.png",
   "bg_steve_shop_day.png",
@@ -593,7 +594,10 @@
   "bg_tonari_inside_overcast_night.png",
   "bg_tonari_opening_coal.png",
   "bg_toosu_park_day.png",
+  "bg_tournament_dubai_dusk.png",
   "bg_tournament_stage.png",
+  "bg_tournament_tokyo_day.png",
+  "bg_tournament_yuzugaya_dusk.png",
   "bg_volk_shop.png",
   "bg_volk_shop_day.png",
   "bg_yohaku_shop.png",
@@ -2924,6 +2928,7 @@
   "backgrounds/bg_shishark_preparing_night.png",
   "backgrounds/bg_shop.png",
   "backgrounds/bg_smoke_lab.png",
+  "backgrounds/bg_smoke_lab_duel_day.png",
   "backgrounds/bg_station_walk_night.png",
   "backgrounds/bg_steve_shop.png",
   "backgrounds/bg_steve_shop_day.png",
@@ -2948,7 +2953,10 @@
   "backgrounds/bg_tonari_inside_overcast_night.png",
   "backgrounds/bg_tonari_opening_coal.png",
   "backgrounds/bg_toosu_park_day.png",
+  "backgrounds/bg_tournament_dubai_dusk.png",
   "backgrounds/bg_tournament_stage.png",
+  "backgrounds/bg_tournament_tokyo_day.png",
+  "backgrounds/bg_tournament_yuzugaya_dusk.png",
   "backgrounds/bg_volk_shop.png",
   "backgrounds/bg_volk_shop_day.png",
   "backgrounds/bg_yohaku_shop.png",

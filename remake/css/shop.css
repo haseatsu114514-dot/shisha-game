@@ -82,12 +82,15 @@ body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px;
 }
 :root[data-look="classic"] .shop-row.product .shop-product-art > :not(.shop-type-mark) { scale: 1.65; }
 :root[data-look="classic"] .shop-row.product .shop-type-mark {
+  grid-template-columns: minmax(0, 1fr);
   width: 96px;
   min-height: 52px;
   height: auto;
   padding: 4px;
   text-align: center;
   white-space: normal !important;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
   font-size: max(16px, var(--shop-text, 0px)) !important;
 }
 :root[data-look="classic"] .shop-row.product .shop-main { gap: 4px; overflow-wrap: anywhere; }

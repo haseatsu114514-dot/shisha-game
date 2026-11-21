@@ -4,6 +4,7 @@
   --axe-inset-r: max(28px, calc((env(safe-area-inset-right, 0px) - max(0px, (100dvw - 1280px * var(--k, 1)) / 2)) / var(--k, 1) + 14px));
   --axe-inset-t: max(14px, calc(env(safe-area-inset-top, 0px) / var(--k, 1) + 8px));
   --axe-inset-b: max(18px, calc(env(safe-area-inset-bottom, 0px) / var(--k, 1) + 8px));
+  --axe-flick-bottom: calc(var(--axe-inset-b) + 220px);
   --axe-ink: #fff4df;
   --axe-brass: #ecc18a;
   --axe-blue: #bce9f5;
@@ -161,9 +162,9 @@
   .axe-first-person .axe-score-round { order: 1; }
 }
 
-/* The visible right-hand swipe surface is large; the playing surface remains a throw start, too. */
+/* Keep the large swipe surface above the sleeve on the right. */
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-timing {
-  inset: auto var(--axe-inset-r) var(--axe-inset-b) auto; width: 270px; pointer-events: none;
+  inset: auto var(--axe-inset-r) var(--axe-flick-bottom) auto; width: 270px; pointer-events: none;
 }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-track {
   width: 100%; margin: 0; border: 0; border-radius: 0; background: none;
@@ -183,7 +184,7 @@
 .axe-first-person .axe-swipe-release { display: none; }
 .axe-first-person[data-phase="flight"][data-actor="player"]:not([data-reduced-motion="true"]) .axe-swipe-release {
   display: block; position: absolute; z-index: 5; pointer-events: none; right: calc(var(--axe-inset-r) + 52px);
-  bottom: calc(var(--axe-inset-b) + 100px); width: 32px; height: 74px;
+  bottom: calc(var(--axe-flick-bottom) + 100px); width: 32px; height: 74px;
   background: linear-gradient(#fff4c1, #eab864 45%, transparent);
   clip-path: polygon(50% 0, 100% 25%, 62% 17%, 50% 100%, 38% 17%, 0 25%);
   animation: axe-swipe-away .24s ease-out both;
@@ -209,10 +210,12 @@
 .axe-first-person[data-reduced-motion="true"] :is(.axe-call-iris,.axe-flick-emblem .axe-flick-arrows) { animation: none; transform: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-panel { right: var(--axe-inset-r); bottom: var(--axe-inset-b); pointer-events: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-panel button { pointer-events: auto; }
-/* Keep the aim controls above the foreground arm, which still draws in front of the target. */
-.axe-game[data-input-mode="tap-pull"].axe-first-person:is([data-phase="horizontal"], [data-phase="vertical"], [data-phase="power"]) .axe-panel { z-index: 7; }
+/* Use the clear floor on the left for the controls throughout aiming and throwing. */
+.axe-game[data-input-mode="tap-pull"].axe-first-person:is([data-phase="horizontal"], [data-phase="vertical"], [data-phase="power"]) .axe-panel {
+  right: auto; left: var(--axe-inset-l); padding: 0;
+}
 .axe-game[data-input-mode="tap-pull"].axe-first-person[data-phase="power"] .axe-panel {
-  top: auto; right: auto; left: var(--axe-inset-l); bottom: var(--axe-inset-b); padding: 0; overflow: visible;
+  overflow: visible;
 }
 .axe-game.axe-first-person[data-phase="power"] .axe-panel :is(.axe-live-score, .axe-stability-meter) { max-width: 260px; }
 .axe-game.axe-first-person[data-phase="power"] .axe-panel .axe-controls {
@@ -221,7 +224,7 @@
 .axe-game.axe-first-person[data-phase="power"] .axe-panel .axe-controls .axe-button {
   min-height: 100px; padding: 4px 8px; color: var(--axe-ink); font: 700 23px/1.22 system-ui, sans-serif;
 }
-/* 集中中・使用済みの札も袖を透かさず、無効状態は文字色で示す。 */
+/* 無効状態は札を透かさず文字色で示す。 */
 .axe-game.axe-first-person .axe-panel .axe-controls .axe-button:disabled { opacity: 1; color: #bbc1bf; }
 /* Keep the game goal clear of the blade and the judge's close-up, including on a successful call. */
 .axe-game.axe-first-person[data-phase="result"] .axe-declare[data-kind="goal"] {

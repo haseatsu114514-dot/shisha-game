@@ -1100,6 +1100,19 @@ await closeThread(session);
 assert.equal(JSON.stringify(db.limeTemplates), sumiTemplateBefore);
 console.log("PASS #2035 sumi: equivalence / boundaries / independent copies / saved acceptance", sumiCases, sumiGenerated);
 
+// 急なシフトの誘いは受信箱に残る直近の日付から間隔を取る。旧保存も同じ履歴から判定する。
+for (const chapter of [1, 2]) {
+  for (const gap of [1, 2, 3]) {
+    reset({ chapter, day: 10, lastBaitoDay: 3,
+      inbox: [item(savedSumi, { chapter, day: 10 - gap, read: true, done: true, result: "declined" })] });
+    assert.equal(!!phone.testSumiBaitoInvite(), gap === 3, `第${chapter}章: 前のシフトの誘いから${gap}日`);
+  }
+}
+reset({ chapter: 1, day: 8, lastBaitoDay: 7,
+  inbox: [item(savedSumi, { day: 7, read: true, done: true, result: "declined" })] });
+assert.equal(phone.testSumiBaitoInvite()?.id, "_sumi_baito_inv_d8", "固定のシフトは急な誘いの間隔に関わらず届く");
+
+
 // #2035: only the temporary-closure preface moved; use actual dateSchedule.
 const prefaceDBBefore = JSON.stringify(db.limeTemplates);
 let closureCases = 0, closureNull = 0, closureNoon = 0, closureNight = 0, closurePrepended = 0;

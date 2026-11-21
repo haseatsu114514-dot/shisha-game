@@ -209,7 +209,10 @@ export function buildAudience(cs) {
         mark.hidden = false; mark.textContent = evaluation.mark;
         mark.setAttribute("aria-label", evaluation.label); root.dataset.tone = evaluation.tone;
         caption.textContent = [id === "hajime" ? "心の声" : "", title.replace(/\s*結果$/, "")].filter(Boolean).join("・");
-        setNote(text || feedbackLine(id, step, evaluation));
+        // 穴あけのレッスンから深さの助言が届いたら、札の最初のページに直し方まで収める。
+        const shallowLesson = cs.mode === "tutorial" && id === "sumi" && step === "holes"
+          && text && cs.holes?.holeSizes?.shallow > 0;
+        setNote(shallowLesson ? "穴が浅いな。少し長く押せ" : text || feedbackLine(id, step, evaluation));
         if (reception && Number.isFinite(score)) {
           const key = step === "care" && cs.careRound ? `care${cs.careRound}` : step;
           cs.judgeReception ??= {};
