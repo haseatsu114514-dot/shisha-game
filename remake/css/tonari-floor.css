@@ -444,7 +444,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-shuffle[data-wait="true"] { opacity: 1; }
 :where(.tonari-floor) button.tf-shuffle[data-wait="true"] { color: #fff1c4; }
 .tf-shuffle[data-wait="true"] .tf-shuffle-cost { font-size: 22px; color: #fff1c4; text-shadow: 0 1px 2px #000c; }
-.tonari-floor .tf-shuffle[data-wait="true"] .tf-shuffle-cost .tf-icon { width: 20px; height: 20px; }
+.tonari-floor .tf-shuffle[data-wait="true"] .tf-shuffle-cost .tf-icon { width: 20px; height: 20px; translate: 0 0.1em; } /* 時計の印を、数字の高さのまん中にそろえる（数字は字の下寄りに座るため。TFL59） */
 .tf-shuffle[data-call="true"] { animation: tf-shuffle-call 0.9s ease-in-out infinite; }
 @keyframes tf-shuffle-call { 50% { filter: drop-shadow(0 0 3px #fff1af) drop-shadow(0 0 8px #ffd98a); scale: 1.04; } } /* 光は絵の形に沿わせる（四角い輪にしない） */
 .tf-shuffle-main { display: inline-flex; align-items: center; gap: 4px; }
@@ -900,7 +900,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .side-slot .tf-shuffle-cost .tf-icon { width: 16px; height: 16px; }
 .side-slot .tf-shuffle[data-wait="true"] { color: #fff1c4; }
 .side-slot .tf-shuffle[data-wait="true"] .tf-shuffle-cost {
-  position: absolute; top: calc(50% - 3px); left: 50%; translate: -50% -50%; width: 56px; height: 56px; /* 輪と秒数は、絵の面のまん中（下の厚みの分だけ上） */
+  position: absolute; top: calc(50% + 1px); left: 50%; translate: -50% -50%; width: 56px; height: 56px; /* 輪と秒数は、押し込まれた絵（厚み無し）の面のまん中（TFL59） */
   display: grid; place-items: center; gap: 0; font-size: max(28px, calc(14px / var(--k, 1)));
   background: url("../img/ui/tonari-floor/wait-ring.webp") center / contain no-repeat;
 }
