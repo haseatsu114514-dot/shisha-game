@@ -291,7 +291,7 @@ function dubaiNightEvent(io) {
   }
   const last = due[due.length - 1];
   return withOverdueStory({
-    id: `dubai-night:${last.id}`, schedule: "fixed", pin: last.pin, label: "ドバイの夜", beat: last.beat,
+    id: `dubai-night:${last.id}`, schedule: "fixed", pin: last.pin, label: ({ ch4_festa: "FESTA", ch4_stranger_first: "スーク", ch4_stranger_second: "路地裏のカフェ" })[last.id], beat: last.beat,
     done: () => !dueMandatory(),
     run: async () => {
       for (const scene of due) {

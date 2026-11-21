@@ -588,7 +588,8 @@ async function takeAction() {
   const mapOptions = chapterDef.mapOptions?.() || {};
   const spotId = await chooseSpot({
     ...mapOptions,
-    reminder: mapOptions.reminder || respecMapNotice(state), // 組み直しが開いている間の一言（SPEC 5.2。上の帯はピンと重なるので右下の案内に添える）
+    reminder: [mapOptions.reminder, mapOptions.eventPinLabel && ev?.label && !ev.done?.()
+      ? `${mapOptions.eventPinLabel}：${ev.label}` : null].filter(Boolean).join(" ／ ") || respecMapNotice(state),
     visitBlock,
     eventPin: ev && !ev.done?.() ? ev.pin : null,
     onShown: () => {

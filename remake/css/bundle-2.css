@@ -5498,6 +5498,7 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
    絵・印・光るボタンで伝わっている説明の文は、画面に置かない（読みたい時は「?」）。結果の数や、課題の条件は残す。 */
 /* 穴あけ: 押し加減は「穴を開ける」の中の目盛り（小さい穴→大きい穴）で、次にすることは光るボタンで分かる */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > :is(.hr-depth-hint, .hr-plan) { visibility: hidden !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-plan[data-tone="warmup"] { visibility: visible !important; }
 /* 穴の配置: 配置の違いは図で選ぶ。違いの説明は「穴数と熱の回り方」を開いて読む */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hole-chooser .ht-description { display: none !important; }
 /* 吸い出し: 「▼下げ吸い／▲上げ吸い」の矢印と色で分かるので、「温度を下げる／上げる」の補足は出さない */

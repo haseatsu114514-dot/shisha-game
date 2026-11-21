@@ -13043,7 +13043,9 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin.t-peak .gfx-cutin-tex
 .ch2-main .ch2-map-main { background: linear-gradient(0deg, #0c08154d, transparent 45%); }
 .ch2-main .ch2-map-main .map-pins { inset: 0; }
 .ch2-main .ch2-map-main .map-info { width: 300px; padding: 18px 22px; }
-.ch2-main .ch2-map-main .mi-banner { margin-top: 0; }
+html:root body.ch2-main #stage #screen .ch2-map-main .map-info > h2.mi-banner {
+  margin-top: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere;
+}
 .ch2-main .ch2-map-main .mi-desc { font-size: 16px; }
 .ch2-main .ch2-map-main .mi-foot { margin-bottom: 12px; }
 .ch2-main .ch2-map-main .spot-pin .sub-label { max-width: 240px; }
@@ -13823,6 +13825,22 @@ body:not(:root) .map .spot-pin.pin-station { width: auto; min-width: 112px; }
 .dodge-object.clock::after { content: ""; position: absolute; left: 8px; top: 3px; width: 6px; height: 7px; border-left: 2px solid #edf6ff; border-bottom: 2px solid #edf6ff; }
 .dodge-object.spark { background: #f8d485; clip-path: polygon(50% 0, 62% 37%, 100% 50%, 62% 63%, 50% 100%, 38% 63%, 0 50%, 38% 37%); }
 .dodge-object.smoke { width: 28px; height: 28px; background: radial-gradient(circle at 35% 35%, #e7e1ff, #8a78b3); border: 2px solid #b7a8d5; border-radius: 45% 60% 40% 60%; opacity: 0.9; }
+.steam-warmup {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 4;
+  max-width: min(330px, 55%);
+  padding: 12px 16px;
+  border: 1px solid #9a80b3;
+  border-radius: 8px;
+  background: #211832f5;
+  color: #f6ecff;
+  font-size: 22px;
+}
+.steam-warmup > :is(b, p) { color: inherit; font-size: inherit; }
+.steam-warmup p { margin: 4px 0 8px; line-height: 1.35; }
+.steam-warmup .btn { width: 100%; }
 .dodge-controls { display: flex; width: 620px; justify-content: space-between; align-items: center; gap: 22px; }
 .dodge-pad { position: relative; width: 128px; height: 128px; flex: none; border-radius: 50%; border: 2px solid #a4b4b6; background: radial-gradient(circle, #36464b, #0f161b 70%); touch-action: none; cursor: grab; outline-offset: 3px; }
 .dodge-pad > span { position: absolute; inset: 0; display: grid; place-items: center; font-size: 100px; color: #72898e; line-height: 1; }

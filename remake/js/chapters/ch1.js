@@ -273,6 +273,7 @@ async function tutorial(progress = null) {
   if (!progress || !flag("_tutorial_done")) {
     await play("remake_tutorial_intro", { bg: TONARI });
     const cs = newSession("tutorial");
+    if (progress) cs.onboarding = true;
     if (progress?.firstOrderDone) configureFirstBrew(cs);
     openBench(cs, { steps: TUTORIAL_STEPS });
     await stepMix(cs);

@@ -623,7 +623,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
       notice ? el("div.map-notice", { text: notice }) : null,
       revealNotice, mapStatus,
       guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [
-        el("b", { text: "GUIDE" }), el("span", { text: guide.text }),
+        el("b", { text: "次にやること" }), el("span", { text: guide.text }),
         tomorrowForecast() ? el("span.map-guide-forecast", { text: `明日は${tomorrowForecast()}` }) : null,
       ]) : null,
       info,
