@@ -91,7 +91,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     return el("span.trpg-missing-costume", { text: "衣装未収録" });
   }
   function pcFace(seat, playerId) {
-    if (!incarnated || playerId === gm || !pcOf(playerId)) return realFace(playerId);
+    return incarnated ? roleFace(seat, playerId) : realFace(playerId);
+  }
+  function roleFace(seat, playerId) {
+    if (playerId === gm || !pcOf(playerId)) return realFace(playerId);
     const role = sheets[seat]?.archetype || sheets[seat]?.option;
     const url = costumeUrl(scenario.id, playerId, role);
     if (!url) return missingCostume();
@@ -1046,11 +1049,17 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const canReroll = result.special !== "critical" && result.grade !== "success" && !state.used[actor] && state.teamwork > 0 && cast[actor];
     return { title: scenario.checks[result.kind].title, who: pc?.name || (result.actor && cast[result.actor] ? name(result.actor) : ""), statName: result.stat ? statLabel(result.stat) : "",
       skill: result.helper && cast[result.helper] ? skillOf(result.helper, "support", "＋" + DICE.support + "  成功しやすくなる") : null,
-      rerollHint: canReroll ? name(actor) + "の「" + cast[actor].ability + "」 · 連携札1枚" : "" };
+      rerollHint: canReroll ? skillLabel(actor) + " · 連携札1枚" : "" };
+  }
+  function skillOwnerName(id) {
+    return pcOf(id)?.name || name(id);
+  }
+  function skillLabel(id) {
+    return skillOwnerName(id) + "の「" + cast[id].ability + "」";
   }
   /** スキルのカットインに出す、使った人と技（TRF31）。 */
   function skillOf(id, kind, effect) {
-    return { kind, who: name(id), name: cast[id].ability, effect, face: pcFace(seatOf(id), id) };
+    return { kind, who: skillOwnerName(id), name: cast[id].ability, effect, face: roleFace(seatOf(id), id) };
   }
   // The die travels and casts its shadow; the body inside spins, so the shadow stays on the felt.
   function die(value, rolling = false) {
@@ -1202,12 +1211,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const support = helper && !session.snapshot().used[helper] && session.snapshot().teamwork > 0
       ? el("input", { type: "checkbox", dataset: { test: "trpg-support-" + helper } }) : null;
     if (support) body.append(el("label.trpg-aid", [support, seatMark(helper),
-      el("span.trpg-aid-art", { "aria-hidden": "true" }, pcFace(seatOf(helper), helper)), el("span", [
-      el("strong", { text: name(helper) + "の「" + cast[helper].ability + "」" }),
+      el("span.trpg-aid-art", { "aria-hidden": "true" }, roleFace(seatOf(helper), helper)), el("span", [
+      el("strong", { text: skillLabel(helper) }),
       el("small", { text: "＋" + DICE.support + " · 連携札1枚" }),
     ])]));
     if (support) support.addEventListener("change", () => { if (support.checked) audio.play("card"); updateForecast(); });
-    if (helper && !support) body.append(el("p.trpg-aid-spent", { text: name(helper) + "の切り札は使えない" }));
+    if (helper && !support) body.append(el("p.trpg-aid-spent", { text: skillOwnerName(helper) + "の切り札は使えない" }));
     body.append(el("details.trpg-roll-details", { dataset: { test: "trpg-roll-details" } }, [
       el("summary", { text: "判定の詳細", dataset: { test: "trpg-details-toggle" } }),
       el("p", { text: check.hint }), forecast,
@@ -1285,10 +1294,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     }
     if (result.momentum) receipts.append(el("p.trpg-ability-receipt.trpg-momentum-receipt", { text: "勢い ＋" + result.momentum * DICE.momentum }));
     if (result.helper) receipts.append(el("p.trpg-ability-receipt", { dataset: { test: "trpg-helper-receipt" } },
-      [seatMark(result.helper), name(result.helper) + " ＋" + DICE.support]));
+      [seatMark(result.helper), skillOwnerName(result.helper) + " ＋" + DICE.support]));
     if (result.rerolled) {
       receipts.append(el("p.trpg-ability-receipt", { dataset: { test: "trpg-reroll-receipt" } },
-        [seatMark(session.rerollActor), name(session.rerollActor) + "の振り直し"]));
+        [seatMark(session.rerollActor), skillOwnerName(session.rerollActor) + "の振り直し"]));
       if (rerolledDie !== null) {
         const target = body.querySelectorAll(".trpg-die")[rerolledDie];
         target.classList.add("rethrown");
@@ -1310,7 +1319,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (session.rules.inspectionPressure) receipts.append(el("p.trpg-ability-receipt.trpg-roll-consequence", { text: RISK + (result.grade === "success" ? " ±0" : " ＋" + session.rules.checkPressure[result.grade]) }));
     // クリティカルは最高の出目なので振り直しは出さない。使えない時も何も出さない（決まりは「？」に）。
     if (result.special !== "critical" && !session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
-      body.append(el("p.trpg-roll-trump", { text: name(session.rerollActor) + "の「" + cast[session.rerollActor].ability + "」 · 連携札1枚" }));
+      body.append(el("p.trpg-roll-trump", { text: skillLabel(session.rerollActor) + " · 連携札1枚" }));
       body.append(el("div.trpg-rerolls", [0, 1].map(i =>
       button("", "trpg-reroll-" + i, () => {
         if (settleGuard || session.snapshot().used[session.rerollActor] || session.snapshot().teamwork < 1) return;
@@ -1452,8 +1461,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
             el("strong", { text: scenario.checks[check.kind].title }),
             check.approach ? el("em", { text: (sheets[check.sheet]?.name || "") + (check.actor && cast[check.actor] ? "（" + name(check.actor) + "）" : "") + " · " + pcText(approachesOf(scenario, check.kind).find(a => a.id === check.approach)?.label || "") + " · " + statLabel(check.stat) + "＋" + check.base }) : null,
             el("span", { text: check.dice.join(" ＋ ") + " ＋ 補正" + check.bonus + " ＝ " + check.total + " · " + LABELS[check.grade] }),
-            el("small", { text: [check.helper ? name(check.helper) + "の助力" : "",
-              check.rerolled ? name(session.rerollActor) + "の振り直し" : "", check.hypothesisBonus ? "見立て＋" + check.hypothesisBonus : "",
+            el("small", { text: [check.helper ? skillOwnerName(check.helper) + "の助力" : "",
+              check.rerolled ? skillOwnerName(session.rerollActor) + "の振り直し" : "", check.hypothesisBonus ? "見立て＋" + check.hypothesisBonus : "",
               check.special ? SPECIALS[check.special] + (check.inspired ? "連携札＋1" : "") : "", check.near ? "あと" + check.near : "",
               check.reward ? "ごほうび：" + ({ question: "質問＋1", hint: "GMのヒント", finale: "会心のクライマックス" }[check.reward.type] || "") : ""].filter(Boolean).join(" · ") || "基本の判定" }),
           ]), i === 0 && result.search ? el("article.trpg-recap-check", { dataset: { grade: result.search.grade, test: "trpg-recap-search" } }, [
