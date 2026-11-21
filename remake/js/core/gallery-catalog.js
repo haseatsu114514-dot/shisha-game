@@ -11,7 +11,7 @@ export const CHAR_LABELS = {
 const cgChars = Object.fromEntries(Object.entries({
   ageha: ["cg_ageha_first_purikura", "cg_ch2_ageha_purikura_strip", "cg_ageha_confession", "cg_ch2_ageha_lesson", "cg_ch2_ageha_white_bear"],
   minto: ["cg_ch1_minto_casual_reveal", "cg_minto_casual", "cg_minto_cheki", "cg_minto_confession", "cg_minto_first_cheki"],
-  tsumugi: ["cg_ch1_tsumugi_heart_art", "cg_tsumugi_confession", "cg_tsumugi_smoke_color"],
+  tsumugi: ["cg_ch1_tsumugi_heart_art", "cg_tsumugi_confession", "cg_tsumugi_smoke_color", "cg_ch5_tsumugi_serves_hajime"],
   naru: ["cg_naru_after_hours", "cg_naru_last_chance", "cg_naru_next_entry", "cg_ch2_naru_score_sheet"],
   rio: ["cg_rio_confession"],
   mashiro: ["cg_ch3_childhood_offered_hand", "cg_saku_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession", "cg_ch3_mashiro_no_craft_day", "cg_ch3_half_cake"],
@@ -55,6 +55,12 @@ export function galleryStats(entries) {
   return stats;
 }
 const labels = {
+  cg_ch5_party_toast: "世界一の乾杯",
+  cg_ch5_tsumugi_serves_hajime: "最初は、ゆっくりどうぞ",
+  cg_ch5_adam_two_bowls: "どの顔だった",
+  cg_ch5_regular_hose_lap: "今日は時間、あるから",
+  cg_ch5_cocreation_notes: "数字の隣に味の言葉",
+  cg_ch5_sumi_pulls_chair: "おかえりの椅子",
   cg_ch4_festa_welcome: "FESTAの椅子と水",
   cg_ch4_traveler_tongs: "返したトング",
   cg_ch4_sheikh_reveal: "四つ目の台",

@@ -615,6 +615,7 @@
           "face": "",
           "text": "帰郷した夜、水を先に出した客がいた。今日はホースを膝に置いて、待っている。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_regular_hose_lap"},
         {
           "speaker": "hajime",
           "face": "serious",
@@ -635,6 +636,7 @@
           "face": "normal",
           "text": "うん。今日は時間、あるから"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",
@@ -1151,11 +1153,13 @@
           "face": "",
           "text": "博士が胸ポケットのペンを抜いた。画面の数字と、俺の言葉を、メモに並べて書く。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_cocreation_notes"},
         {
           "speaker": "",
           "face": "",
           "text": "隣で、9000が二人の手元を見ていた。今日の一台も、記録に加わる。"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "",
           "face": "",
@@ -1190,6 +1194,7 @@
           "face": "",
           "text": "tonariへ帰ると、先に戻っていたスミさんが、カウンターの椅子を引いた。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_sumi_pulls_chair"},
         {
           "speaker": "sumi",
           "face": "smile",
@@ -1205,6 +1210,7 @@
           "face": "normal",
           "text": "（混ざったままで、俺だった）"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "sumi",
           "face": "normal",
@@ -1624,6 +1630,7 @@
           "face": "",
           "text": "順に吸う。アダムは黙って、こちらの顔を見ていた。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_adam_two_bowls"},
         {
           "speaker": "adam",
           "face": "normal",
@@ -1649,6 +1656,7 @@
           "face": "smile",
           "text": "……分かる日が来たな"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "hajime",
           "face": "smile",
@@ -3286,6 +3294,7 @@
           "face": "",
           "text": "キッチンタイマーが鳴った。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch5_tsumugi_serves_hajime"},
         {
           "speaker": "tsumugi",
           "face": "baito_normal",
@@ -3301,6 +3310,7 @@
           "face": "normal",
           "text": "……うまい。熱が、ちょうどいい"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "tsumugi",
           "face": "baito_normal",

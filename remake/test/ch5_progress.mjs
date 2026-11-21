@@ -516,7 +516,8 @@ for (const [total, category, expected] of [[90, "steady", "win"], [76, "recovere
   const body = scene.lines.filter(line => !line.cue);
   const voice = body.findIndex(line => line.text === "9000がなぞるのは、大会の日の俺だ。店の声は、記録にない。");
   assert(voice > 0 && body[voice].speaker === "", "The line is narration, not Hajime's inner voice");
-  assert.equal(body[voice - 1].text, "うん。今日は時間、あるから");
+  assert.equal(body[voice - 2].text, "うん。今日は時間、あるから");
+  assert.equal(body[voice - 1].type, "hide_cg");
   // ch5.js は cue の行を場面本体から外し、制作のあとに読む。
   const runner = readFileSync(new URL("../js/chapters/ch5.js", import.meta.url), "utf8");
   for (const cue of ["second_cup_adjust", "second_cup_newcomer"]) assert(runner.includes(`"${cue}"`), cue);
