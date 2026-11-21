@@ -42,8 +42,9 @@ Chromiumで、第1章6日目夜の斧投げBarの初回レッスンから横の�
 
 - `node --test remake/test/axe_*.mjs` は105件成功。
 - `python3 tools/background_catalog.py check` は134枚の照合に成功。既存の `bg_smoke_lab.png` に寸法警告1件。
-- `axe-throw` ブラウザスイートと `axe_bar_discovery.mjs` は検証中。
+- ローカルChromiumで `axe_tap_pull.mjs` 17件（#4115の3サイズ回帰を含む）、`axe_lesson.mjs` 7件、`axe_bar_discovery.mjs` 12件が成功。途中で止まった実行は、環境を整えて残りのケースを再実行した。
+- GitHub Actionsで `tools/ci/suites.json` の `axe-throw` スイートを実行し、`axe_tap_pull`・`axe_throw`・`axe_versus`・`axe_polish`・`axe_lesson`・`axe_menu_decor`・`axe_bgm_788`・`axe_audio_performance` の8本が成功。quickと `CI / result` も成功。[実行ログ（実装コミット `67dc6915b6`）](https://github.com/haseatsu114514-dot/shisha-game/actions/runs/44889025520)
 
 ## Draft PR
 
-PR作成後に番号を記録する。
+[Draft PR #4124](https://github.com/haseatsu114514-dot/shisha-game/pull/4124)（`codex/axe-one-hand`）。
