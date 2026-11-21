@@ -3155,6 +3155,61 @@
           "inner": "今日いちばんの報酬、もらった"
         }
       ]
+    },
+    {
+      "dialogue_id": "roam_hiyori_d",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ひよりは、冷えたグラスをそっと置いた。" },
+        { "speaker": "hiyori", "face": "normal", "text": "氷の音が止まるとね、ちょっとだけ寂しいね……" },
+        { "speaker": "hajime", "face": "normal", "text": "もう溶けました？" },
+        { "speaker": "hiyori", "face": "normal", "text": "いや、歯に当たるのが怖くて飲んでない" },
+        { "speaker": "hajime", "face": "normal", "text": "じゃあ、まだ鳴りますね" },
+        { "speaker": "hiyori", "face": "smile", "text": "そう、まだある。でもそっと置くのが私です", "inner": "氷で歯をやられるのは嫌です" }
+      ]
+    },
+    {
+      "dialogue_id": "roam_hiyori_e",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ひよりは椅子の背に、仕事の鞄を立てかけた。" },
+        { "speaker": "hiyori", "face": "normal", "text": "鞄を置いた瞬間が、すごく好き" },
+        { "speaker": "hajime", "face": "normal", "text": "席に着いたって感じがする？" },
+        { "speaker": "hiyori", "face": "normal", "text": "うん。仕事の鍵もまとめて、手から離れるから" },
+        { "speaker": "hajime", "face": "normal", "text": "持ったまま一息つくのと、違うんですね" },
+        { "speaker": "hiyori", "face": "smile", "text": "違うよ。今日は手の中にホースだけ。軽いね", "inner": "帰りに持つの忘れそう" }
+      ]
+    },
+    {
+      "dialogue_id": "roam_hiyori_f",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ひよりが、控えめに手を振った。" },
+        { "speaker": "hiyori", "face": "normal", "text": "今日、仕事で「声がよく通る」って褒められたんだ" },
+        { "speaker": "hajime", "face": "normal", "text": "おお。いいことじゃないですか" },
+        { "speaker": "hiyori", "face": "normal", "text": "うん。注文の声まで響いたら、ちょっと恥ずかしい" },
+        { "speaker": "hajime", "face": "normal", "text": "ここなら小さい声でも聞こえますよ" },
+        { "speaker": "hiyori", "face": "smile", "text": "……じゃあ、小さく頼んでみる。お水ください", "inner": "ちゃんと最後まで聞こえたかな" }
+      ]
+    },
+    {
+      "dialogue_id": "roam_hiyori_g",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ひよりは上着の袖口を指で直した。" },
+        { "speaker": "hiyori", "face": "normal", "text": "この袖、机に置くと氷の水が染みてくるね" },
+        { "speaker": "hajime", "face": "normal", "text": "ナプキン、もう一枚使います？" },
+        { "speaker": "hiyori", "face": "normal", "text": "ありがと。ずっと机の端に肘置いてた" },
+        { "speaker": "hajime", "face": "normal", "text": "そっちの方が楽な座り方なんですね" },
+        { "speaker": "hiyori", "face": "smile", "text": "うん。水だけ動いてくれると大変助かります", "inner": "袖、実はもう少し濡れてる" }
+      ]
+    },
+    {
+      "dialogue_id": "roam_hiyori_h",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ひよりは小机を見てから、椅子を少し引いた。" },
+        { "speaker": "hiyori", "face": "normal", "text": "鞄、ここまで寄せると気づくね。椅子と脚がぶつかる" },
+        { "speaker": "hajime", "face": "normal", "text": "無理に奥へ入れなくていいですよ" },
+        { "speaker": "hiyori", "face": "normal", "text": "でも、通る人が引っかからない所がいいの" },
+        { "speaker": "hajime", "face": "normal", "text": "だったら、膝の内側で立ててみましょうか" },
+        { "speaker": "hiyori", "face": "smile", "text": "……うん。手を離しても倒れない。今度もやってみる", "inner": "明日もこの鞄、持つことにしよ" }
+      ]
     }
   ]
 }

@@ -5,18 +5,18 @@
 // 最初に乗る日は、Dr.fookah の裏口で店員に乗せてもらう話になる（ch5_tokyo_van_first）。
 // 行き先: mukai（手伝い）・Smoke & Glory（スティーブ）・鉄の煙（ヴォルク）・煙幕（綾取）・公園・裏口のてつこ・東京の店・屋根裏・地元へ帰る。
 // 第3章の東京と同じく、CHOI-ZAP（会員の時だけ）とクラブSEAM（夜だけ・時間は使わない）にも寄れる（#2033）。
-// ましろ（ヒロイン）は第5章の店の会話に出さない。恋人の時だけ、mukai で「ましろちゃんと過ごす（恋人）」を選べる
-// （BLC03・chapters/mashiro-time.js。地元の恋人のデートにあたり、恋人の節目の続きをここで読む）。
+// mukai では、ましろとの小会話と関係別の時間をシフトと別に選べる。
 // 綾取の煙幕は、期間限定の間借りが好評につき全国大会のあとも延長営業している（#3676・2026-11-15 オーナー指示）。
 // 第3章の帰郷の朝（ch3_enmaku_cleanup）で延長が決まる。福岡の店はバイトが回している。
 // 台詞は data/dialogue/ch5_tokyo.json（てつこと夜の公園は第3章の場面を使う）。現在地は flags._ch2_region = "tokyo"。
+import { chapterFiveTalkIds } from "./ch5-talks.js";
 import { state, save, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
 import { setBg, toast } from "../core/ui.js";
 import { vanRide } from "../core/scene-motions.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
-import { chainStageAt } from "./visit-chains.js";
+import { chainStageAt, recordChapterFiveTalk } from "./visit-chains.js";
 import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
 import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity, earnSceneCompletion } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
@@ -40,6 +40,8 @@ const ATTIC_FLAG = "_ch5_tokyo_attic"; // ムカイさんに屋根裏を貸し�
 const VAN_FLAG = "_ch5_tokyo_van"; // Dr.fookah の配送便に乗せてもらう話を読んだ（最初に「東京へ」を選んだ日）
 const HOME_ID = "ch5_tokyo_home";
 const TALKS_FLAG = "_ch5_tokyo_talks"; // 小会話の巡回の回数（人ごと）
+const MASHIRO_TALKS = chapterFiveTalkIds("ch5_tokyo_mashiro");
+const MASHIRO_PLACE = "ch5_tokyo_mashiro";
 const MASHIRO_TIME_STAMINA = -10; // 第3章の mukai で過ごす時間と同じ（ch3-tokyo-daily.js の readMashiroBond）
 const ATTIC_BG = "bg_mukai_attic"; // ムカイさんの店の上の屋根裏（2026-11-02 採用）。夜は既存の夜の暗転を共用する
 
@@ -60,16 +62,16 @@ export const TOKYO_SPOTS = Object.freeze([
     desc: "ムカイさんの店のシフト。日当は大会実績で変わる。帰りに裏口のてつこにも会える。" }),
   rivalSpot({ id: "ch5_tokyo_steve", charId: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙", face: "steve",
     preview: "bg_steve_shop", stamina: -16, stat: "technique",
-    talks: ["ch5_tokyo_steve", "ch5_tokyo_steve_b", "ch5_tokyo_steve_c"], desc: "タイマーの並ぶ店。二口目までの一台。" }),
+    talks: chapterFiveTalkIds("ch5_tokyo_steve"), desc: "タイマーの並ぶ店。二口目までの一台。" }),
   rivalSpot({ id: "ch5_tokyo_volk", charId: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙", face: "volk",
     preview: "bg_volk_shop", stamina: -16, stat: "insight",
-    talks: ["ch5_tokyo_volk", "ch5_tokyo_volk_b", "ch5_tokyo_volk_c"], desc: "温度計の立つ店。測ってから、客に聞く。" }),
+    talks: chapterFiveTalkIds("ch5_tokyo_volk"), desc: "温度計の立つ店。測ってから、客に聞く。" }),
   // 綾取の煙幕（延長営業・#3676）。第3章の東京の地図の位置（45.3, 49.7）は、第5章だけにある帰りの配送便の札・屋根裏と重なるので、
   // 鉄の煙と公園のあいだの空いた所に置く（PC・スマホ横の両方で、ほかのピンや札と重ならないことを確かめた）。
   // ♥5の締めくくりは第3章だけなので TOKYO_FINALES には入れない。会っている保存だけ地図に出る（charId）。
   rivalSpot({ id: "ch5_tokyo_saku", charId: "saku", label: "煙幕", area: "綾取の店", x: 58, y: 62, theme: "rival", glyph: "煙", face: "saku",
     preview: "bg_yohaku_shop", stamina: -16, stat: "insight",
-    talks: ["ch5_tokyo_saku", "ch5_tokyo_saku_b", "ch5_tokyo_saku_c"], desc: "好評につき延長中の間借り店。お茶と、ノートの続き。" }),
+    talks: chapterFiveTalkIds("ch5_tokyo_saku"), desc: "好評につき延長中の間借り店。お茶と、ノートの続き。" }),
   spot({ id: "ch5_tokyo_park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園", preview: "bg_tokyo_park",
     stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   // 裏口のてつこは地図の行き先にせず、mukai のシフトの帰りに会う（VOL11）。
@@ -123,7 +125,7 @@ export const tokyoSpotsNow = (value = state) => TOKYO_SPOTS.map(entry => entry.i
 export const inTokyo = (value = state) => value?.flags?._ch2_region === TOKYO;
 const REST_SCENES = ["ch5_tokyo_attic_rest", "ch5_tokyo_attic_rest_b", "ch5_tokyo_attic_rest_c"];
 const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_tokyo_van_first", "ch5_tokyo_go", "ch5_tokyo_back", "ch5_tokyo_arrival", "ch5_tokyo_park_day", ...REST_SCENES, "ch5_tokyo_fortune",
-  "ch5_tokyo_gym_day", "ch5_tokyo_gym_night", "ch5_steve_bond_finale", "ch5_volk_bond_finale"]);
+  "ch5_tokyo_gym_day", "ch5_tokyo_gym_night", "ch5_steve_bond_finale", "ch5_volk_bond_finale", ...MASHIRO_TALKS]);
 // てつこのお世話は第3章の続き（通うほど懐いていく。回数も第3章と同じ記録。ch3-outing-progress.js の stages・loop）
 const TETSUKO = TOKYO_OUTINGS.find(outing => outing.id === "tetsuko");
 // 公園と CHOI-ZAP は、昼・夜それぞれの小品を順番に読む（SPV03。daily/spots.js の quietTurn）。
@@ -252,35 +254,37 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   }
   if (!spot.talks) return null;
   if (spot.shift) {
-    // 恋人のましろがいる時は、シフトに入るか、二人で過ごすかを選ぶ（BLC03）。恋人でなければ今までどおりシフトだけ。
-    // 締めくくりを友人として迎えた後は、シフトか「ましろちゃんと話す」（♥5後の場面・#3693）を選ぶ。
     const mashiroMilestoneDue = () => loverMilestonesDue(["mashiro"]).length > 0;
-    const friendTalk = bondAfterNext(state, "mashiro");
-    if (friendTalk && !mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() })) {
+    const loverTime = mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() });
+    const friendTalk = loverTime ? null : bondAfterNext(state, "mashiro");
+    const friendScene = friendTalk?.kind === "story" ? friendTalk : null;
+    if (loverTime || friendScene || state.met?.mashiro) {
       const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
-        { label: "ましろちゃんと話す", value: "friend", test: "tokyo-mukai-friend", primary: friendTalk.kind === "story" },
+        ...(loverTime ? [{ label: "ましろちゃんと過ごす（恋人）", value: "lover", test: "tokyo-mukai-lover", primary: true }] : []),
+        ...(friendScene || state.met?.mashiro ? [{ label: "ましろちゃんと話す", value: "talk", test: "tokyo-mukai-friend", primary: !!friendScene }] : []),
         { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
         { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
       if (!pick || state !== owner) return { used: false, exerted: false };
-      if (pick === "friend") {
-        try { await loadBondAfterScenes(DB); } catch {
-          toast("会話を読み込めませんでした。行動は使っていません");
-          return { used: false, exerted: false };
+      if (pick === "talk") {
+        if (friendScene) {
+          try { await loadBondAfterScenes(DB); } catch {
+            toast("会話を読み込めませんでした。行動は使っていません");
+            return { used: false, exerted: false };
+          }
+          if (state !== owner || staminaGuard && !(await staminaGuard(MASHIRO_TIME_STAMINA))) return { used: false, exerted: false };
+          if (!await read(friendScene.scene, spot.preview, owner)) return { used: false, exerted: false };
+          markBondAfterRead(state, "mashiro", friendScene);
+          addStamina(MASHIRO_TIME_STAMINA);
+          gainAffinity("mashiro", visitAffinity("talk"));
+          return { used: true, exerted: true };
         }
-        if (state !== owner || staminaGuard && !(await staminaGuard(MASHIRO_TIME_STAMINA))) return { used: false, exerted: false };
-        if (!await read(friendTalk.scene, spot.preview, owner)) return { used: false, exerted: false };
-        markBondAfterRead(state, "mashiro", friendTalk);
-        addStamina(MASHIRO_TIME_STAMINA);
-        gainAffinity("mashiro", visitAffinity("talk"));
-        return { used: true, exerted: true };
+        const count = owner.flags[TALKS_FLAG]?.[MASHIRO_PLACE] || 0;
+        const scene = MASHIRO_TALKS[count % MASHIRO_TALKS.length];
+        if (!await read(scene, spot.preview, owner)) return { used: false, exerted: false };
+        (owner.flags[TALKS_FLAG] ||= {})[MASHIRO_PLACE] = count + 1;
+        recordChapterFiveTalk(owner, scene);
+        return { used: true, exerted: false };
       }
-    }
-    if (mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() })) {
-      const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
-        { label: "ましろちゃんと過ごす（恋人）", value: "lover", test: "tokyo-mukai-lover", primary: true },
-        { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
-        { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
-      if (!pick || state !== owner) return { used: false, exerted: false };
       if (pick === "lover") {
         if (staminaGuard && !(await staminaGuard(MASHIRO_TIME_STAMINA))) return { used: false, exerted: false };
         if (!await spendMashiroTime({ read: scene => read(scene, spot.preview, owner), milestoneDue: mashiroMilestoneDue,
@@ -334,7 +338,10 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   if (fee) addMoney(-fee);
   if (spot.pay) addMoney(spot.pay);
   addStamina(spot.stamina);
-  if (!chain && !after) talks[spot.id] = visits + 1;
+  if (!chain && !after) {
+    talks[spot.id] = visits + 1;
+    recordChapterFiveTalk(owner, scene);
+  }
   // 好感度は通いと同じ値（core/stats.js の visitAffinity。第5章はゆっくりの 10・5）。1回目は段階会話、2回目からは小会話。
   // ヴォルクは第3章の終盤に会うので、ここへ通って♥5に届き、授業（♥5）を相談できる（IR23）
   if (spot.charId) { gainAffinity(spot.charId, visitAffinity(visits ? "talk" : "story")); markMet(spot.charId); }
