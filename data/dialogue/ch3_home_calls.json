@@ -890,6 +890,773 @@
           "text": "通話が切れた。サメによろしく伝える方法を、少しだけ考えた。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_home_call_tsumugi_reserved_seat",
+      "comment": "つむぎが窓際の席から電話をする。人のいない絵に、はじめが覚えている客の手の跡を探す。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の部屋の椅子に腰を下ろすと、つむぎさんから電話が来た。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はじめさん、いま少しだけ聞いてもいいですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。どうしました？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "tonariにいるんです。窓のそばで、空いてる席を描いてて"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "椅子には座ってないのに、誰かいるみたいに見えるんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、いつもの椅子ですか。床に傷が二本あって"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。椅子を引いたら、ちょうど脚の幅だけ線が見えました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "窓から離れる方に、短い傷もありません？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受話口から、椅子の脚をそっと持ち上げる音がした。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "あります。まっすぐじゃなくて、少し曲がってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "荷物の多い人が、椅子を横にずらすんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "連れの人が来ると、椅子を戻して荷物を足元に置いて"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "ああ。ここで待ち合わせる人、よく見ます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "座ってるところ、描き足すんですか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "いえ、線を一本残します。どっちに動いたか、分かるように"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉛筆が紙を引っかく音がした。途中で止まり、もう一度だけ鳴った。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今、隣の席に人が来ました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ちょっと、電話を切った方がいいですか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。今度は、待ってる人の手を見たいんです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電話が切れた。自分の椅子を窓の方へずらしてみた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ここの床にも二本、脚が行ったり来たりした跡があった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_home_call_ageha_curtain",
+      "comment": "あげはがプリクラ機のカーテンの隙間を直す。写る人のための工夫から、店での記念写真の話をする。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはさんから電話が来た。出た途端、布を引く音がした。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ハジメっち、プリ撮るとこにいてさ。今の音、うるさかった？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "布が、しゃっと鳴ったくらいです"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うちの店のカーテンね、閉めても横が指一本ぶん開くの"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "この前、お客さんがいっぺん出てきて、外から見えないか聞いてて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "撮るところを見られると、表情も変わりそうですね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "そ。友だちとだけやる顔とか、あるじゃん"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "でも洗濯ばさみで止めたら、中で開け方が分かんないって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "引くとこに、片方だけ目印をつけるとか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "待って。うち、でっかい星のクリップ持ってるわ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電話の向こうで二度、布を引く音がした。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "星ごと引いたら開いた！　これなら中から見えてるし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あげはさんは、普段どんな顔で撮るんですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "一枚目はバチバチに決めるじゃん。二枚目ね、油断すんのよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "こっち見ろって言われて横向いたとこを撮られてる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それは撮り直すんですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "残す。あとで見ると、誰といたかまで思い出せるし"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受話口の奥で短い電子音がして、続けてあげはさんが笑った。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あ、今の、星つけてるうちが写った。これも残そ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れたあと、星のクリップを持った手の写真が届いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_home_call_hiyori_umbrella",
+      "comment": "ひよりが会議室へ借りた傘を届ける。傘を借りやすく返しやすくする小さな工夫。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の部屋で目を閉じると、枕元でスマホが震えた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……はじめくん、私、傘を一本届けに来たの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え、こっちにですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "会社の会議室よ。朝、入口に置いた傘が残ってて"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "名札はついてないけど、閉じ方でなんとなく分かるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "閉じ方に、癖が出るんですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "巻く前に布を一枚ずつ伸ばす人がいてね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "前に私の傘を返すときも、黙ってそうしてた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "向こうで扉を軽く叩く音がした。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "あ、やっぱり。机に立てかけておくね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホを持ち直す音がした。急にひとりごとのような声になった。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……こうして持ち主の元に帰るのね。傘には居場所があっていいわ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ひよりさん、いま会議室ですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "廊下の端。誰もいなくなったから、続けられるの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "でも、入口の貸し傘は、もう名前を書かなくてもいいようにしたいの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "借りる人が、ですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "そう。借りた人を探すより、返すところを広くした方が早いの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "濡れた傘を持って、入口に立たせておきたくないでしょう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ああ。帰りたいときですもんね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "そうなの。私も、帰る間際にそこだけ相談してくる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話の最後に、床を鳴らす足音がした。さっきより歩幅が大きかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_home_call_adam_menu_back",
+      "comment": "アダムが、EDENで選べる葉を一枚の紙で案内する。表と裏の使い分けを考える。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の部屋で水を飲んでいると、アダムさんから電話が来た。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "お前、客席に置いた紙の裏まで読むか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "裏ですか。ひっくり返すように書いてあれば"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "EDENのメニューの話だ。表の下に、こう書いてみた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受話口の向こうで、紙をめくる音がした。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "林檎は裏に続く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "裏にもあるんですか、って聞かれそうですね"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "そう聞いた客がめくった直後、一度で全部は読めないと言った"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "全部を一晩で吸えるのは俺くらいだ。読むだけなら、読めるはずだが"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どれが今日あるやつか、知らないと読む場所が分からないかも"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "ああ。今日ある缶は、俺なら見なくても言える"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "表は今日の分だけにして、裏は残しておくとか"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "それだと、欠けている顔まで見せられるな"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "いつか選びたい客もいる。消すには惜しい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙を折る音がした。沈黙の間に、机を二度、指で叩く音がした。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "表の右下を少し残そう。客が次の来店で聞く名前は、そこに書く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "紙の方を持ってきてくれたら、聞きやすいですね"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "うむ。俺の字を読めるかは、別の試練だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そこは、読みやすく書いてください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が終わりかけて、太いペンを探す音がした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_home_call_rio_attachment",
+      "comment": "凛想が、袋の注意書きを客席で読むときの見え方を聞く。仕事上の呼び方を使わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "体を横にしたところで、凛想さんから電話が来た。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "ひとつ聞いていい？　新しい葉を開けるとき、袋のどこを見る？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "名前は先に見ます。開ける直前に、開け口を探して"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "その横に小さい注意書きがあると、気づく？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "台の支度をしながらだと、気づかないかもしれません"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "そうよね。売り場では両手で持つから、読めると思ってたの"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "一階に並べてみたら、透明の棚札に隠れる高さだった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "袋を持ち上げて、縁に指を滑らせる音がした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "空けておいた作業台も、使い始めたら手元が狭いんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ひっくり返して見るのも、最初の一回くらいかな"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "次に開けるときは、もう知ってる顔で手を動かす？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。袋を見ずに、はさみだけ取ります"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "それなら、開け口のすぐ下に字を置いてみる"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "切られる前に、一度は目が行くでしょう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺の手が、けっこう雑に見えてきました"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "雑なら、雑なまま開けても読めるところに書くわ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんが笑った。向こうで小さな紙をはがす音が続いた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "いま貼り直した。明日、私も手に物を持って確かめる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "片手にペンとか。俺はいつも、持ったまま忘れるんで"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "じゃあ、ペンで。ありがと"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れてから、水のふたを握ったままだったのに気がついた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_home_call_kumicho_glasses",
+      "comment": "神崎が、常連の忘れた眼鏡を座った席まで渡す。呼称を固定しない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホを枕元に置いたとき、神崎さんから着信があった。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、今いいか。客が忘れた眼鏡を預かってやしてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。何か、困ったことでも？"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "探しに来たらすぐ分かるように、入口に置こうと思ったんだが"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "若いのが言うには、眼鏡のない人に札を見せてもしょうがねえって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ああ。俺も、夜は電気のスイッチを手探りで探します"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんたも探すか。俺はよく、かけたまんま探す"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつも座るとこなら、見えなくても行けるんですけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電話の向こうで、椅子の脚が床をこする音がした。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "じゃあ、あの人が座る席まで持っていくか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "わざわざ入口まで来て、聞き返すのも気が引けるだろうしな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日も、そこに来るんですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "来りゃ同じ席だ。入口じゃあ、誰が見てるかも分からねえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "短く扉の鈴が鳴った。神崎さんの声が少し離れた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……おう。今日は、こっちが先だったな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事までは聞こえなかった。次に聞こえたのは、ケースを開ける音だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "神崎さん？"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "戻しといた。眼鏡かけたら、まずメニューの値段を見てる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それなら、もう困ってないですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "そうだな。悪かった、付き合わせて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホを手探りで拾えるように、枕のすぐ脇に戻した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_home_call_rei_wrong_case",
+      "comment": "クラウドが店で別々になったCDとケースを戻す。閉店後、客が気にした曲の名前を控える。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の部屋の電気を消す前に、クラウドさんから電話が来た。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "起きてた。よかった。あの、今の音、聞こえた？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "耳をすませると、硬い物が一つ、机の上で鳴った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ええ。何かを置きました？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "CDのケース。中にあるのは、違うやつだった"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "もう三枚。店でかけてるうちに、入れ違えたみたいで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "棚に並べると、どれが違うか分からないですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "今日、客に今の曲は何かって聞かれて、ジャケットを見せたんだ"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "向こうが知ってて、指でジャケットを裏返された"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そこで違うって分かったんですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "うん。もう一回ちゃんと教えてくれって。好きだったんだと思う"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "薄いプラスチックのふたを開ける音がした。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "この一枚、前に自分で選んだのに、最近は最後まで聴いてなかった"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "客が帰ってから聴き直したら、途中で拍が一つ抜けるとこがあって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その人も、そこで気になったのかもしれませんね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "今度、聞いてみる。次は曲の名前、紙に書いて渡そうかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ジャケットの絵も、見たいんじゃないですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……うん。今度は中身まで見せる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電話口で、ケースのふたがかちりと閉じた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "一枚戻った。キミ、そろそろ寝ていいよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電話が切れた後も、部屋で鳴った小さな音の続きを待っていた。"
+        }
+      ]
     }
   ]
 }
