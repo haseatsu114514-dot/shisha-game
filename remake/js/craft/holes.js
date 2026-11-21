@@ -118,6 +118,8 @@ export async function runHoles(cs) {
   const tutorial = cs.mode === "tutorial";
   let warmup = tutorial && cs.onboarding && !autoSkill();
   const owner = gameState;
+  const root = benchRoot(cs);
+  const isCurrent = () => gameState === owner && benchRoot(cs) === root;
   let finishWarmup;
   // 穴あけのお手本動画は廃止（#3815）。押し加減は「穴を開ける」の中の目盛りと「?」の説明で伝える。
   const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始すると、光る目印の近くを針が動く", { brief: "穴の配置を選んでから、穴あけを始める" });
@@ -134,7 +136,7 @@ export async function runHoles(cs) {
   const goodWin = HOLES_TUNING.goodDeg * craftCondition(cs).window * (tutorial ? HOLES_TUNING.lessonGood : 1) * assistEffect(cs).holesGood;
   const limit = tutorial ? HOLES_TUNING.lessonTimeLimit : HOLES_TUNING.timeLimit + (growthSkill(gameState, "K01") ? SKILL_TUNING.holesSeconds : 0);
   // 操作の詳しい説明・凡例・採点は「?」へ。基本画面には置かない（ミニゲームUI共通の方針）。
-  benchRoot(cs)?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", { dataset: { test: "hole-guide" } }, [
+  root?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", { dataset: { test: "hole-guide" } }, [
     el("ul", [
       ["狙う", "光る目印の近くを針が行き来する。重なったところで押す"],
       ["押し加減", "少し押し込んでから離す。短すぎると浅い穴になり、大きく減点される。長く押すほど穴が大きくなる"],
@@ -441,7 +443,7 @@ export async function runHoles(cs) {
   const loop = () => {
     raf = 0;
     if (finished || complete()) return;
-    if (warmup && (gameState !== owner || !panel.isConnected)) { finishWarmup(false); return; }
+    if (warmup && !isCurrent()) { finishWarmup(false); return; }
     elapsed = clockNow();
     if (gameClock.paused) {
       if (warmup || !gameClock.onPauseChange) raf = requestAnimationFrame(loop);
@@ -516,7 +518,7 @@ export async function runHoles(cs) {
     });
     cancelAnimationFrame(raf);
     raf = 0;
-    if (!start || gameState !== owner || !panel.isConnected) { cleanup(); return; }
+    if (!start || !isCurrent()) { cleanup(); return; }
     warmup = false;
     t0 = null;
     press = null;
@@ -530,7 +532,7 @@ export async function runHoles(cs) {
     hud();
   }
   await countdown();
-  if (gameState !== owner || !panel.isConnected) { cleanup(); return; }
+  if (!isCurrent()) { cleanup(); return; }
   t0 = gameClock.now();
   if (!gameClock.onPauseChange || !gameClock.paused) raf = requestAnimationFrame(loop);
 
