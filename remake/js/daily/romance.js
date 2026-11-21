@@ -166,6 +166,8 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
 async function playNightConfession(beat, { busyNight, companion, current }) {
   const candidates = [state.flags._confession_due, ...Object.keys(state.finales || {})].filter(nightWalkEligible);
   if (candidates.some(id => !DB.dialogues[`confession_${id}`])) {
+    // 今夜は誰の告白も起きないと分かる場合、台本の取得も次の機会へ回す。
+    if ((state.flags._confession_wait || 0) > state.day || busyNight && !candidates.includes(companion)) return false;
     try { await loadConfessionDialogue(); } catch { return false; }
     if (!current() || isPlaying()) return false;
   }

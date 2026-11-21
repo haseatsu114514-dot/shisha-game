@@ -67,7 +67,7 @@ async function check(name,run) {
 }
 const done = { id:'port-scene',visited:[] };
 const close = (a,b) => assert(Math.abs(a-b)<1e-8,`${a} != ${b}`);
-await check('night confession: 503 keeps the reservation and retry accepts once', async f => {
+await check('night confession: load only when possible, keep the reservation on 503 and accept once on retry', async f => {
   const id = 'rio', scene = `confession_${id}`, s = f.core.state;
   s.slot = 2;
   s.finales[id] = { route: 'romance', chapter: 1, day: s.day };
@@ -86,6 +86,12 @@ await check('night confession: 503 keeps the reservation and retry accepts once'
     return done;
   });
   const beat = async () => { beats++; };
+  assert.equal(await f.romance.maybeConfession(beat, { busyNight: true, companion: 'minto' }), false);
+  s.flags._confession_wait = s.day + 1;
+  assert.equal(await f.romance.maybeConfession(beat), false);
+  assert.equal(requests, 0);
+  assert.equal(s.flags._confession_due, id);
+  s.day++;
   assert.equal(await f.romance.maybeConfession(beat), false);
   assert.equal(s.flags._confession_due, id);
   assert.equal(beats, 0);
