@@ -370,7 +370,6 @@ export function morningMessages(opts = {}) {
 function paceMorning(cands, blocked, inbox) {
   const { softCap, hardCap, backlog, quietDays } = LIME_PACING;
   const history = pacingHistory(inbox);
-  const cap = dayCap(history);
   const out = [];
   const taken = new Set(blocked);
   const groups = new Set();
@@ -391,10 +390,10 @@ function paceMorning(cands, blocked, inbox) {
   const ambientOk = (c, ignoreGap) => history.unread < backlog && (c.wait >= 1 || ignoreGap)
     && !(c.exclusive && (openInvite || out.some(meetInvite))) && !(c.m.replies?.length && out.some(needsReply));
   const tryTake = (c, ignoreGap = false) => {
-    // 朝は softCap 通まで。にぎやかな朝の翌朝（cap が小さい朝）は、必ず届く連絡のほかは cap 通まで。
+    // 朝は softCap 通まで。連日の受信を避けるため、任意の連絡の枠は前日までの受信と連絡の種類で決める。
     // 章の◯日目の連絡だけは、その日を逃すと届かないので、枠が空いていれば届く
     if (counted() >= softCap || out.length >= hardCap || taken.has(c.m.sender)) return false;
-    if (optional >= cap && !c.expiring) return false;
+    if (!c.expiring && optional >= dayCap(history, c.cls)) return false;
     if (c.cls === "ambient") {
       if (!ambientOk(c, ignoreGap) || c.group && groups.has(c.group)) return false;
       // 知り合いの雑談は、友人のLIMEが届けられる朝には出さない（友人が先・LM05）
