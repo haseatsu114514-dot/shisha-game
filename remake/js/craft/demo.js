@@ -102,7 +102,12 @@ export function openDemoSheet(root, step) {
       if (closed || !sheet.isConnected) return;
       status.textContent = message;
       instructions.open = true;
-      if (broken) { stage.hidden = true; caption.hidden = true; }
+      if (broken) {
+        const lostVideoFocus = stage.contains(doc.activeElement) || doc.activeElement === doc.body;
+        stage.hidden = true;
+        caption.hidden = true;
+        if (lostVideoFocus) summary.focus();
+      }
     };
     const unavailable = () => showInstructions("動画を再生できません。下の手順を確認して、作業へ進めます。", true);
     const stalled = () => showInstructions("動画の読み込みが止まっています。下の手順を確認して、待たずに作業へ進めます。");
