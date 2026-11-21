@@ -175,6 +175,12 @@
       "run": ["node --experimental-vm-modules remake/test/tournament_craft_runner.mjs"]
     },
     {
+      "id": "hud-bus-offs",
+      "title": "Daily HUD replaces its bus subscriptions on reinitialization",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/hud_bus_offs.mjs"]
+    },
+    {
       "id": "craft-rank-hud",
       "title": "Craft rank display-only snapshots, accessibility and lifecycle",
       "kind": "quick",
