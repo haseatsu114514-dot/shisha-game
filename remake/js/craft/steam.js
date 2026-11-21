@@ -132,9 +132,9 @@ export async function runSteamDodge(cs) {
   const vignette = el("i.dodge-vignette", { "aria-hidden": "true" });
   const renderTemperature = (temp) => { thermometer.update(temp); setBenchTemperature(cs, temp); };
   renderTemperature(temperatureAfterSteam(cs, 0, heatJitter));
-  box.append(world.root, vignette, clock.root, mental.root, heart);
+  box.append(world.root, vignette, mental.root, heart);
   const steamRoot = el("div.steam", [
-    el("div.steam-play", [box]),
+    el("div.steam-play", [clock.root, box]),
     el("div.dodge-controls", [refreshBtn, slashControl, precisionBtn, pad]),
     thermometer.root,
   ]);

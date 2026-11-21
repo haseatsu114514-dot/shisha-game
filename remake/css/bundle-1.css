@@ -13736,6 +13736,7 @@ body:not(:root) .map .spot-pin.pin-station { width: auto; min-width: 112px; }
 .heat-carrier-head h2 { margin: 0; font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 27px; line-height: 1.2; }
 .heat-carrier-head small { font-size: 12px; letter-spacing: .02em; }
 .heat-collected-count { font-size: 23px; letter-spacing: .08em; white-space: nowrap; }
+.heat-collected-label, .mix-water-level { display: none; }
 .coal-carrier-view { position: relative; width: 195px; height: 232px; margin: 2px auto 0; pointer-events: none; }
 .coal-carrier-art { pointer-events: none; image-rendering: auto; }
 .coal-carrier-coals { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; pointer-events: none; }
@@ -14502,6 +14503,11 @@ body:not(:root) .map .spot-pin.pin-station { width: auto; min-width: 112px; }
 .pull-serve-icon svg { display: block; width: 100%; height: 100%; }
 /* 状態の読み上げだけ残す。注意書きや別ウインドウは表示しない（TH71）。 */
 .pull-draw-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.pull-serve-status { color: #d8c9e6; font-size: .8em; line-height: 1.1; }
+.pull-btns [data-test="pull-serve"]:has(.pull-serve-status:not([hidden])) {
+  display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 3px;
+}
+.pull-btns [data-test="pull-serve"]:has(.pull-serve-status:not([hidden])) .pull-serve-icon { display: none; }
 .bench[data-art-skin] .pull-btns .btn { height: 96px; padding: 14px 20px; border-radius: 14px; font-size: 27px; font-weight: 700; border-width: 2px; }
 .pull-btns .btn-label { font-family: "Craft Mincho", var(--font); font-weight: 700; letter-spacing: .035em; }
 .bench[data-art-skin] .pull-btns .btn.primary { flex: 1.75; border-color: #eaca88; color: #ffe9c4; background: radial-gradient(ellipse at 50% 0%, #cd8f4930, transparent 75%), linear-gradient(135deg, #3f2b31, #211528 70%, #382132); box-shadow: inset 0 0 0 2px #e3bd6666, inset 0 0 0 5px #62402152, inset 0 0 30px #e5a64b1c, 0 0 8px #f2c57280, 0 0 24px #d9955024; text-shadow: 0 0 9px #ffce8099, 0 1px 2px #573821; }
@@ -16064,15 +16070,15 @@ body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px;
 .steam .dodge-controls { align-self: center; margin-right: 0; }
 .dodge-controls { width: 752px; }
 /* フィールドの左右も、ウインドウ上側と同じ17pxの余白に揃える。 */
-.steam-play { width: 784px; flex: 1; display: grid; justify-items: center; align-items: start; }
+.steam-play { position: relative; width: 784px; flex: 1; display: grid; justify-items: center; align-items: start; }
 /* 上に少し余裕を取り、操作欄との間隔も残す。 */
 .steam-play > .dodge { top: 4px; }
 /* 残り時間は視線を弾幕から離さず読める、奥の薄い7セグ。 */
-.dodge .dodge-timer { position: absolute; left: 50%; top: 50%; width: 448px; height: 158px; transform: translate(-50%, -50%); color: var(--mental-ink); opacity: .16; z-index: 1; pointer-events: none; user-select: none; transition: color .25s ease; }
-.dodge { --mental-ink: #86d6c5; }
-.dodge[data-mental="clear"] { --mental-ink: #a8e6ff; }
-.dodge[data-mental="unsteady"] { --mental-ink: #e4bc77; }
-.dodge[data-mental="shaken"] { --mental-ink: #ef8795; }
+.steam-play > .dodge-timer { position: absolute; left: 50%; top: 211px; width: 448px; height: 158px; transform: translate(-50%, -50%); color: var(--mental-ink); opacity: .16; z-index: 1; pointer-events: none; user-select: none; transition: color .25s ease; }
+.steam-play { --mental-ink: #86d6c5; }
+.steam-play:has(.dodge[data-mental="clear"]) { --mental-ink: #a8e6ff; }
+.steam-play:has(.dodge[data-mental="unsteady"]) { --mental-ink: #e4bc77; }
+.steam-play:has(.dodge[data-mental="shaken"]) { --mental-ink: #ef8795; }
 .bench[data-art-skin] .dodge { border-image: none; border: 1px solid #c5ae815c; border-radius: 10px; background: #131123; box-shadow: inset 0 0 0 3px #a9946614, 0 4px 16px #0007; }
 .dodge::before { content: ""; position: absolute; inset: 4px; border: 1px solid #d3b98116; border-radius: 6px; z-index: 3; pointer-events: none; }
 .dodge-world-layers { position: absolute; inset: 0; pointer-events: none; z-index: 0; }

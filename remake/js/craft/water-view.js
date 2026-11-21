@@ -207,6 +207,6 @@ export async function stepWater(cs) {
     shallow: "浅め。煙が冷えきらず、喉に当たるかも",
     deep: "深め。吸い心地が重くなりそう",
     none: "ステムが水に届いていない。煙が冷えないぞ",
-  }[waterComfort(cs.water).band]);
+  }[waterComfort(cs.water).band], { kind: "water-level" });
   return cs.water;
 }
