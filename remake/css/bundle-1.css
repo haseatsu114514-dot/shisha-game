@@ -8869,7 +8869,7 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-head > span { font-size: 20px; fon
 /* 目標の盾: 真鍮の六角に大きく「30」。届けば CLEAR の判、届かなければ「届かず」。 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal {
   position: absolute; right: 40px; top: 22px; width: 176px; height: 200px; display: grid; place-content: center; justify-items: center; gap: 0; opacity: 0;
-  padding-bottom: 48px; isolation: isolate;
+  padding-bottom: 0; isolation: isolate; /* 字は六角形の真ん中（縁がまっすぐな幅の広い所）に。上へ寄せると斜めの縁にかかった */
   clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
   background-color: #d9a640;
 }
@@ -8886,12 +8886,12 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-goal::before {
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal::after {
   background-image: url('../img/ui/trpg/roll-ui/goal-shield-frame.webp');
 }
-html:root .trpg-root .trpg-roll-show .trpg-rs-goal > small { font-size: 14px; font-weight: 900; letter-spacing: .35em; color: #ffd76a; margin-left: .35em; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-goal > b { font-size: 60px; font-weight: 900; line-height: 1.05; color: #fff3c4; text-shadow: 0 4px 0 #8a5a14, 0 0 18px #ffcf4a88; font-variant-numeric: tabular-nums; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-goal > small { font-size: 14px; font-weight: 900; letter-spacing: .2em; color: #ffd76a; margin-left: .2em; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-goal > b { font-size: 56px; font-weight: 900; line-height: 1; color: #fff3c4; text-shadow: 0 4px 0 #8a5a14, 0 0 18px #ffcf4a88; font-variant-numeric: tabular-nums; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal > span { font-size: 15px; font-weight: 700; color: #f2dca6; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-stamp {
-  position: absolute; left: 50%; top: 75%; translate: -50% -50%; rotate: -12deg; opacity: 0; padding: 2px 6px; border: 2px solid; border-radius: 5px;
-  font-size: 18px; font-weight: 900; line-height: 1.15; letter-spacing: .06em; white-space: nowrap; background: #000c;
+  position: absolute; left: 50%; top: 50%; translate: -50% -50%; rotate: -8deg; opacity: 0; padding: 2px 6px; border: 2px solid; border-radius: 5px;
+  font-size: 18px; /* 判は「30」の上に押す（六角形の幅の広い真ん中。下に置くと斜めの縁からはみ出した） */ font-weight: 900; line-height: 1.15; letter-spacing: .06em; white-space: nowrap; background: #000c;
 }
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal[data-result="clear"] .trpg-rs-stamp { color: #ffe36e; border-color: #ffe36e; text-shadow: 0 0 10px #ffb84a; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-goal[data-result="clear"] .trpg-rs-stamp::after { content: "CLEAR!"; }
