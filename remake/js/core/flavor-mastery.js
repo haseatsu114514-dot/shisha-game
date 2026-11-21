@@ -46,8 +46,9 @@ export function learnFlavorStory(s, dialogue, flavors = {}, options = {}) {
   const lesson = dialogue?.metadata?.flavor_lesson;
   const key = dialogue?.dialogue_id;
   if (!key || !lesson || s.flavorLessons?.includes(key)) return [];
-  const former = FOURTH_FLAVOR_LESSONS[key];
-  if (former) {
+  // 旧セーブの補完では当時の配合を使い、今の会話で味が変わった場合は台本の配合を使う。
+  const former = FOURTH_FLAVOR_LESSONS[key]?.filter(([, mix]) => Object.keys(mix).every(id => Object.hasOwn(lesson, id)));
+  if (former?.length) {
     const received = s.flavorLessons || [];
     const gains = former.filter(([id]) => !received.includes(id))
       .flatMap(([, mix]) => gainFlavorExperience(s, mix, 12, flavors, options));

@@ -6,7 +6,7 @@
 参照画像はリポジトリのファイルを、エージェントが自分で読み込んで渡す（オーナーに保存・添付を頼まない）。
 
 - ① 対象の表情の現行PNG `assets/sprites/characters/<id>/chr_<id>_<face>.png`（表情差分では、②の前に合格済みの新しい通常原画 `asset_sources/portraits/<id>-remaster-v2/normal-source.png` も入れ、顔の同一性と頭の大きさの基準にする）
-- ② 須井 `assets/sprites/characters/nagumo/chr_nagumo_normal.png`（大人の男性の頭身の目標。6.93頭身）。女性（マキ・辻占のオババ）は、標準枠の女性の凛想 `assets/sprites/characters/rin/chr_rin_normal.png`（6.53頭身）を使い、文中の Sui / he を Rio / she に直す
+- ② 千須 `assets/sprites/characters/sui/chr_sui_normal.png`（大人の男性の頭身の目標。6.93頭身）。女性（マキ・辻占のオババ）は、標準枠の女性の凛想 `assets/sprites/characters/rio/chr_rio_normal.png`（6.53頭身）を使い、文中の Sensu / he を Rio / she に直す
 - ③ みんと `assets/sprites/characters/minto/chr_minto_normal.png`・④ あげは `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ## 生成後チェック（1枚ごと）
@@ -22,12 +22,12 @@
 
 ### 組長（神崎竜二）（`kumicho`）・normal
 
-現在 6.29頭身 → 目標 6.7頭身（頭を約6%小さく）。参照：① `assets/sprites/characters/kumicho/chr_kumicho_normal.png` ／ ② 須井 ／ ③ みんと ／ ④ あげは
+現在 6.29頭身 → 目標 6.7頭身（頭を約6%小さく）。参照：① `assets/sprites/characters/kumicho/chr_kumicho_normal.png` ／ ② 千須 ／ ③ みんと ／ ④ あげは
 
 ```
 Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, outfit, accessories and colors as image 1. Change ONLY two things: the head-to-body proportion below and the rendering style standard below.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and colors. (2) approved Sui normal sprite: the TARGET head-to-body proportion of an adult man ONLY (not his face, hair, build or suit). (3) approved Minto normal sprite and (4) approved Ageha normal sprite: the TARGET rendering style ONLY. Never copy the faces, hair, bodies or outfits of images 2, 3 and 4.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and colors. (2) approved Sensu normal sprite: the TARGET head-to-body proportion of an adult man ONLY (not his face, hair, build or suit). (3) approved Minto normal sprite and (4) approved Ageha normal sprite: the TARGET rendering style ONLY. Never copy the faces, hair, bodies or outfits of images 2, 3 and 4.
 
 Character: Kanzaki Ryuji 'the Shisha Kumicho', mature middle-aged Japanese man with stern authority, slicked-back salt-and-pepper hair, moustache, brown aviator sunglasses, beige windowpane double-breasted suit, black shirt, purple tie and pocket square, black leather shoes.
 Expression and pose to keep exactly as image 1 (normal: stern composed expression, both hands in trouser pockets, confident stance)
@@ -41,12 +41,12 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### スティーブ（`steve`）・normal
 
-現在 8.04頭身 → 目標 7.4頭身（頭を約9%大きく）。参照：① `assets/sprites/characters/steve/chr_steve_normal.png` ／ ② 須井 ／ ③ みんと ／ ④ あげは
+現在 8.04頭身 → 目標 7.4頭身（頭を約9%大きく）。参照：① `assets/sprites/characters/steve/chr_steve_normal.png` ／ ② 千須 ／ ③ みんと ／ ④ あげは
 
 ```
 Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, outfit, accessories and colors as image 1. Change ONLY two things: the head-to-body proportion below and the rendering style standard below.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and colors. (2) approved Sui normal sprite: the TARGET head-to-body proportion of an adult man ONLY (not his face, hair, build or suit). (3) approved Minto normal sprite and (4) approved Ageha normal sprite: the TARGET rendering style ONLY. Never copy the faces, hair, bodies or outfits of images 2, 3 and 4.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and colors. (2) approved Sensu normal sprite: the TARGET head-to-body proportion of an adult man ONLY (not his face, hair, build or suit). (3) approved Minto normal sprite and (4) approved Ageha normal sprite: the TARGET rendering style ONLY. Never copy the faces, hair, bodies or outfits of images 2, 3 and 4.
 
 Character: Steve A. Ash, 30-year-old white American man, clearly obese rounded silhouette with large capable hands, short slightly tousled dark brown hair, short beard, glasses, patterned retro teal-and-cream shirt with abstract motifs (no letters), dark practical apron, brown trousers and shoes, holding a tiny kitchen timer and a recipe card.
 Expression and pose to keep exactly as image 1 (normal: warm focused small smile, timer held up in one hand, recipe card in the other)
@@ -60,12 +60,12 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### ヴォルク（`volk`）・normal
 
-現在 9.04頭身 → 目標 7.4頭身（頭を約22%大きく）。参照：① `assets/sprites/characters/volk/chr_volk_normal.png` ／ ② 須井 ／ ③ みんと ／ ④ あげは
+現在 9.04頭身 → 目標 7.4頭身（頭を約22%大きく）。参照：① `assets/sprites/characters/volk/chr_volk_normal.png` ／ ② 千須 ／ ③ みんと ／ ④ あげは
 
 ```
 Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, outfit, accessories and colors as image 1. Change ONLY two things: the head-to-body proportion below and the rendering style standard below.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and colors. (2) approved Sui normal sprite: the TARGET head-to-body proportion of an adult man ONLY (not his face, hair, build or suit). (3) approved Minto normal sprite and (4) approved Ageha normal sprite: the TARGET rendering style ONLY. Never copy the faces, hair, bodies or outfits of images 2, 3 and 4.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and colors. (2) approved Sensu normal sprite: the TARGET head-to-body proportion of an adult man ONLY (not his face, hair, build or suit). (3) approved Minto normal sprite and (4) approved Ageha normal sprite: the TARGET rendering style ONLY. Never copy the faces, hair, bodies or outfits of images 2, 3 and 4.
 
 Character: Volk Ivanov, adult Russian man, tall and broad-shouldered, angular masculine face, very short ash-blond hair, pale blue eyes, black turtleneck, long charcoal coat, belt, black trousers and boots.
 Expression and pose to keep exactly as image 1 (normal: serious reserved expression, arms relaxed at his sides, upright stance)
@@ -93,11 +93,11 @@ HEAD SIZE: in image 1 her head is smaller relative to her body than in image 2 (
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure at least 1300 px tall. Include all hair tips, horns, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background. No floor, cast shadow, glow, border, text or watermark. Preserve image 1's original colors, saturation and light-dark range.
 ```
 
-## 表情差分：サイ・レヰ・マキ・太陽（TS11）
+## 表情差分：サイ・クラウド・マキ・太陽（TS11）
 
-2026-11-02 オーナー「推奨のをお願い」で、通常はサイB・レヰC-v2・マキB・太陽Bに決まった。残りの表情を、この新しい通常と同じ頭の大きさで作る。全表情が合格したら、キャラ単位で組み込む。
+2026-11-02 オーナー「推奨のをお願い」で、通常はサイB・クラウドC-v2・マキB・太陽Bに決まった。残りの表情を、この新しい通常と同じ頭の大きさで作る。全表情が合格したら、キャラ単位で組み込む。
 
-参照画像（エージェントが自分で読み込んで渡す）：① 対象の表情の現行PNG `assets/sprites/characters/<id>/chr_<id>_<face>.png` ／ ② 合格した通常の原画 `asset_sources/portraits/<id>-remaster-v2/normal-source.png` ／ ③ 頭身の文脈（男性は須井、マキは凛想）／ ④ みんと ／ ⑤ あげは（画風だけ）。
+参照画像（エージェントが自分で読み込んで渡す）：① 対象の表情の現行PNG `assets/sprites/characters/<id>/chr_<id>_<face>.png` ／ ② 合格した通常の原画 `asset_sources/portraits/<id>-remaster-v2/normal-source.png` ／ ③ 頭身の文脈（男性は千須、マキは凛想）／ ④ みんと ／ ⑤ あげは（画風だけ）。
 
 合格の条件：②と同じ頭の大きさ（会話画面で±5%以内。`tools/portrait_metrics.py grid --image` で測る）、①の表情・手・ポーズのまま、髪・手・靴が切れていない。
 
@@ -106,7 +106,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 #### smile
 
 ```
-Identity-preserving redraw of a full-body visual-novel sprite: 六角サイ (sai) SMILE expression. Reference roles IN ORDER: image 1 is the current smile sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new sai normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sui is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+Identity-preserving redraw of a full-body visual-novel sprite: 六角サイ (sai) SMILE expression. Reference roles IN ORDER: image 1 is the current smile sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new sai normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sensu is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
 
 Character: Rokukaku Sai, 28-year-old Japanese male board-game cafe owner, slim tall adult, tidy black hair with a loose swept side part and a small curled lock, dark green waistcoat over an ivory shirt with rolled sleeves, long charcoal cafe apron with small brass fastenings, small hexagonal brass pin, short pencil in the apron pocket, dark trousers, brown leather shoes. No glasses. Kind, calmly unreadable; never a villain.
 Expression and pose to keep from image 1 (smile): narrow closed smiling eyes (curved lines, no irises), a slightly wider gentle closed-mouth smile, both empty hands loosely clasped in front of the apron, listening head tilt. Match image 2's head size, NOT image 1's smaller head.
@@ -119,7 +119,7 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 #### serious
 
 ```
-Identity-preserving redraw of a full-body visual-novel sprite: 六角サイ (sai) SERIOUS expression. Reference roles IN ORDER: image 1 is the current serious sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new sai normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sui is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+Identity-preserving redraw of a full-body visual-novel sprite: 六角サイ (sai) SERIOUS expression. Reference roles IN ORDER: image 1 is the current serious sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new sai normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sensu is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
 
 Character: Rokukaku Sai, 28-year-old Japanese male board-game cafe owner, slim tall adult, tidy black hair with a loose swept side part and a small curled lock, dark green waistcoat over an ivory shirt with rolled sleeves, long charcoal cafe apron with small brass fastenings, small hexagonal brass pin, short pencil in the apron pocket, dark trousers, brown leather shoes. No glasses. Kind, calmly unreadable; never a villain.
 Expression and pose to keep from image 1 (serious): eyes narrowly open with calm grey irises, composed small closed mouth, one hand raised palm-up at chest height as if explaining, the other hand resting at the apron. Match image 2's head size, NOT image 1's smaller head.
@@ -132,7 +132,7 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 #### surprise
 
 ```
-Identity-preserving redraw of a full-body visual-novel sprite: 六角サイ (sai) SURPRISE expression. Reference roles IN ORDER: image 1 is the current surprise sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new sai normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sui is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+Identity-preserving redraw of a full-body visual-novel sprite: 六角サイ (sai) SURPRISE expression. Reference roles IN ORDER: image 1 is the current surprise sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new sai normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sensu is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
 
 Character: Rokukaku Sai, 28-year-old Japanese male board-game cafe owner, slim tall adult, tidy black hair with a loose swept side part and a small curled lock, dark green waistcoat over an ivory shirt with rolled sleeves, long charcoal cafe apron with small brass fastenings, small hexagonal brass pin, short pencil in the apron pocket, dark trousers, brown leather shoes. No glasses. Kind, calmly unreadable; never a villain.
 Expression and pose to keep from image 1 (surprise): eyes open showing grey irises, small open mouth, one hand touching his chin, the other forearm across his waist. Match image 2's head size, NOT image 1's smaller head.
@@ -145,7 +145,7 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 #### thinking
 
 ```
-Identity-preserving redraw of a full-body visual-novel sprite: 六角サイ (sai) THINKING expression. Reference roles IN ORDER: image 1 is the current thinking sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new sai normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sui is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+Identity-preserving redraw of a full-body visual-novel sprite: 六角サイ (sai) THINKING expression. Reference roles IN ORDER: image 1 is the current thinking sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new sai normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sensu is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
 
 Character: Rokukaku Sai, 28-year-old Japanese male board-game cafe owner, slim tall adult, tidy black hair with a loose swept side part and a small curled lock, dark green waistcoat over an ivory shirt with rolled sleeves, long charcoal cafe apron with small brass fastenings, small hexagonal brass pin, short pencil in the apron pocket, dark trousers, brown leather shoes. No glasses. Kind, calmly unreadable; never a villain.
 Expression and pose to keep from image 1 (thinking): half-open eyes glancing aside, index finger resting on his lips, the other arm across his waist supporting that elbow. Match image 2's head size, NOT image 1's smaller head.
@@ -155,14 +155,16 @@ Japanese 2D visual-novel game art in the same artist's hand as the approved Mint
 Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
 ```
 
-### 鴉葬レヰ（`rei`）　②＝`rei-remaster-v2/normal-source.png（推奨C-v2）`
+### †黒羅雨℃†（`rei`）
+
+再制作時の人物基準は [`data/characters.json`](../../../data/characters.json) の `rei.visual_concepts` と採用済みの通常立ち絵。TS11当時の生成原画・指示は制作記録として `rei-remaster-v2/` に保存。
 
 #### sad
 
 ```
-Identity-preserving redraw of a full-body visual-novel sprite: 鴉葬レヰ (rei) SAD expression. Reference roles IN ORDER: image 1 is the current sad sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new rei normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sui is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+Identity-preserving redraw of a full-body visual-novel sprite: †黒羅雨℃† (rei) SAD expression. Reference roles IN ORDER: image 1 is the current sad sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new rei normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sensu is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
 
-Character: レヰ, 25-year-old Japanese visual-kei cafe manager, lean androgynous adult man, asymmetric layered hair deep blood-red on one side and jet black on the other, pale skin, dark eyeliner, burgundy eyes, rose and floral tattoos on neck and hands, black nails, fitted black velvet long coat with red lining, red/silver floral trim, silver buttons and waist chains, black shirt and waistcoat, narrow black trousers, black leather boots. Shy and serious behind the bold look; never sneering.
+Character: クラウド, 25-year-old Japanese visual-kei cafe manager. Match the approved portrait: layered black hair with irregular deep burgundy streaks interspersed on both sides, an embroidered black long coat with red lining, and the existing silver accents, waist chain, and visible neck and hand tattoos. Keep the eye makeup restrained and the expression approachable. Use the character design in the approved portrait and `data/characters.json` (id: rei).
 Expression and pose to keep from image 1 (sad): eyes lowered or closed, head tilted down, small downturned mouth, one hand gripping the coat front at his chest. Match image 2's head size, NOT image 1's smaller head.
 
 Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rio sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
@@ -173,9 +175,9 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 #### serious
 
 ```
-Identity-preserving redraw of a full-body visual-novel sprite: 鴉葬レヰ (rei) SERIOUS expression. Reference roles IN ORDER: image 1 is the current serious sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new rei normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sui is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+Identity-preserving redraw of a full-body visual-novel sprite: †黒羅雨℃† (rei) SERIOUS expression. Reference roles IN ORDER: image 1 is the current serious sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new rei normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sensu is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
 
-Character: レヰ, 25-year-old Japanese visual-kei cafe manager, lean androgynous adult man, asymmetric layered hair deep blood-red on one side and jet black on the other, pale skin, dark eyeliner, burgundy eyes, rose and floral tattoos on neck and hands, black nails, fitted black velvet long coat with red lining, red/silver floral trim, silver buttons and waist chains, black shirt and waistcoat, narrow black trousers, black leather boots. Shy and serious behind the bold look; never sneering.
+Character: クラウド, 25-year-old Japanese visual-kei cafe manager. Match the approved portrait: layered black hair with irregular deep burgundy streaks interspersed on both sides, an embroidered black long coat with red lining, and the existing silver accents, waist chain, and visible neck and hand tattoos. Keep the eye makeup restrained and the expression approachable. Use the character design in the approved portrait and `data/characters.json` (id: rei).
 Expression and pose to keep from image 1 (serious): level focused gaze, closed mouth, the same cuff-adjusting pose as the normal. Match image 2's head size, NOT image 1's smaller head.
 
 Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rio sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
@@ -186,9 +188,9 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 #### smile
 
 ```
-Identity-preserving redraw of a full-body visual-novel sprite: 鴉葬レヰ (rei) SMILE expression. Reference roles IN ORDER: image 1 is the current smile sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new rei normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sui is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+Identity-preserving redraw of a full-body visual-novel sprite: †黒羅雨℃† (rei) SMILE expression. Reference roles IN ORDER: image 1 is the current smile sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new rei normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sensu is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
 
-Character: レヰ, 25-year-old Japanese visual-kei cafe manager, lean androgynous adult man, asymmetric layered hair deep blood-red on one side and jet black on the other, pale skin, dark eyeliner, burgundy eyes, rose and floral tattoos on neck and hands, black nails, fitted black velvet long coat with red lining, red/silver floral trim, silver buttons and waist chains, black shirt and waistcoat, narrow black trousers, black leather boots. Shy and serious behind the bold look; never sneering.
+Character: クラウド, 25-year-old Japanese visual-kei cafe manager. Match the approved portrait: layered black hair with irregular deep burgundy streaks interspersed on both sides, an embroidered black long coat with red lining, and the existing silver accents, waist chain, and visible neck and hand tattoos. Keep the eye makeup restrained and the expression approachable. Use the character design in the approved portrait and `data/characters.json` (id: rei).
 Expression and pose to keep from image 1 (smile): soft small closed-mouth smile with slightly narrowed eyes, the same cuff-adjusting pose. Match image 2's head size, NOT image 1's smaller head.
 
 Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rio sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
@@ -199,9 +201,9 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 #### surprise
 
 ```
-Identity-preserving redraw of a full-body visual-novel sprite: 鴉葬レヰ (rei) SURPRISE expression. Reference roles IN ORDER: image 1 is the current surprise sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new rei normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sui is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+Identity-preserving redraw of a full-body visual-novel sprite: †黒羅雨℃† (rei) SURPRISE expression. Reference roles IN ORDER: image 1 is the current surprise sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new rei normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sensu is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
 
-Character: レヰ, 25-year-old Japanese visual-kei cafe manager, lean androgynous adult man, asymmetric layered hair deep blood-red on one side and jet black on the other, pale skin, dark eyeliner, burgundy eyes, rose and floral tattoos on neck and hands, black nails, fitted black velvet long coat with red lining, red/silver floral trim, silver buttons and waist chains, black shirt and waistcoat, narrow black trousers, black leather boots. Shy and serious behind the bold look; never sneering.
+Character: クラウド, 25-year-old Japanese visual-kei cafe manager. Match the approved portrait: layered black hair with irregular deep burgundy streaks interspersed on both sides, an embroidered black long coat with red lining, and the existing silver accents, waist chain, and visible neck and hand tattoos. Keep the eye makeup restrained and the expression approachable. Use the character design in the approved portrait and `data/characters.json` (id: rei).
 Expression and pose to keep from image 1 (surprise): eyes wide, lips slightly parted, hands near the chest and cuff as in image 1. Match image 2's head size, NOT image 1's smaller head.
 
 Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rio sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
@@ -268,7 +270,7 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 #### excited
 
 ```
-Identity-preserving redraw of a full-body visual-novel sprite: ダ・シルヴァ太陽 (da_silva) EXCITED expression. Reference roles IN ORDER: image 1 is the current excited sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new da_silva normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sui is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+Identity-preserving redraw of a full-body visual-novel sprite: ダ・シルヴァ太陽 (da_silva) EXCITED expression. Reference roles IN ORDER: image 1 is the current excited sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new da_silva normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sensu is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
 
 Character: Da Silva Taiyo, 28-year-old Brazilian man, tanned athletic adult, dark curly mid-short hair, warm brown eyes, red/yellow tropical floral dark-green short-sleeve shirt open over a white tank top, ivory wide trousers, brown crossed-strap leather sandals, green/yellow wristband. No props.
 Expression and pose to keep from image 1 (excited): big open-mouth laugh with a wink, one arm raised high reaching outward with an open five-finger hand, the other fist pumped near his shoulder. Match image 2's head size, NOT image 1's smaller head.
@@ -281,7 +283,7 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 #### serious
 
 ```
-Identity-preserving redraw of a full-body visual-novel sprite: ダ・シルヴァ太陽 (da_silva) SERIOUS expression. Reference roles IN ORDER: image 1 is the current serious sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new da_silva normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sui is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+Identity-preserving redraw of a full-body visual-novel sprite: ダ・シルヴァ太陽 (da_silva) SERIOUS expression. Reference roles IN ORDER: image 1 is the current serious sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new da_silva normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sensu is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
 
 Character: Da Silva Taiyo, 28-year-old Brazilian man, tanned athletic adult, dark curly mid-short hair, warm brown eyes, red/yellow tropical floral dark-green short-sleeve shirt open over a white tank top, ivory wide trousers, brown crossed-strap leather sandals, green/yellow wristband. No props.
 Expression and pose to keep from image 1 (serious): calm level gaze, closed mouth, arms folded across his chest. Match image 2's head size, NOT image 1's smaller head.
@@ -294,7 +296,7 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 #### smile
 
 ```
-Identity-preserving redraw of a full-body visual-novel sprite: ダ・シルヴァ太陽 (da_silva) SMILE expression. Reference roles IN ORDER: image 1 is the current smile sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new da_silva normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sui is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+Identity-preserving redraw of a full-body visual-novel sprite: ダ・シルヴァ太陽 (da_silva) SMILE expression. Reference roles IN ORDER: image 1 is the current smile sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new da_silva normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sensu is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
 
 Character: Da Silva Taiyo, 28-year-old Brazilian man, tanned athletic adult, dark curly mid-short hair, warm brown eyes, red/yellow tropical floral dark-green short-sleeve shirt open over a white tank top, ivory wide trousers, brown crossed-strap leather sandals, green/yellow wristband. No props.
 Expression and pose to keep from image 1 (smile): confident teeth-showing smile, one arm reaching forward and down with an open hand, the other hand in his trouser pocket. Match image 2's head size, NOT image 1's smaller head.
@@ -307,7 +309,7 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 #### surprise
 
 ```
-Identity-preserving redraw of a full-body visual-novel sprite: ダ・シルヴァ太陽 (da_silva) SURPRISE expression. Reference roles IN ORDER: image 1 is the current surprise sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new da_silva normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sui is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
+Identity-preserving redraw of a full-body visual-novel sprite: ダ・シルヴァ太陽 (da_silva) SURPRISE expression. Reference roles IN ORDER: image 1 is the current surprise sprite: keep its exact expression, mouth, head angle, hand and shoulder positions, pose, clothing, accessories and colors. Image 2 is the APPROVED new da_silva normal original: use THIS SAME person's face design, age, head size and head-to-body ratio (about 7 heads tall), linework and figure scale, so that image 2 and this sprite can switch in the game without the head changing size. Image 3 Sensu is head-to-body proportion context only, never identity. Images 4 Minto and 5 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes.
 
 Character: Da Silva Taiyo, 28-year-old Brazilian man, tanned athletic adult, dark curly mid-short hair, warm brown eyes, red/yellow tropical floral dark-green short-sleeve shirt open over a white tank top, ivory wide trousers, brown crossed-strap leather sandals, green/yellow wristband. No props.
 Expression and pose to keep from image 1 (surprise): wide eyes, small open mouth, one arm reaching outward with a spread hand, the other hand in his trouser pocket. Match image 2's head size, NOT image 1's smaller head.
@@ -319,14 +321,14 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 
 ## 作り直し：辻占のオババ・シェイク・王煙楼（TS12）
 
-1回目（TS10）は「頭を約○%大きく」の指示で、頭が2〜9%しか大きくならず、規格（6.4〜7.7頭身）に届かなかった。フード・頭巾・長いひげで頭頂やあごが隠れているのが原因とみられる。今回は**画像の中の大きさをpxで**指定する。参照画像は①現行の通常、②須井（頭身の文脈だけ）、③みんと・④あげは（画風だけ）。
+1回目（TS10）は「頭を約○%大きく」の指示で、頭が2〜9%しか大きくならず、規格（6.4〜7.7頭身）に届かなかった。フード・頭巾・長いひげで頭頂やあごが隠れているのが原因とみられる。今回は**画像の中の大きさをpxで**指定する。参照画像は①現行の通常、②千須（頭身の文脈だけ）、③みんと・④あげは（画風だけ）。
 
 合格の条件：目の高さからあごまでの長さが、全身の高さ（頭・フードの上端〜靴底）の目安の値以上。全身1400pxなら、辻占のオババ 約85px・シェイク 約100px・王煙楼 約85px。顔・年齢・衣装・ポーズは①のまま。
 
 ### 辻占のオババ（`uranaishi`）・normal
 
 ```
-Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Sui is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
+Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Sensu is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
 
 Character: the street fortune teller, an elderly woman with a warm knowing smile, silver hair with small braids, wrinkles, a deep purple layered hooded robe with burgundy sash and lining, gold ornaments and tassels, three tarot cards fanned in one hand, the other palm open and extended toward the viewer, brown shoes.
 
@@ -340,7 +342,7 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 ### シェイク（`sheikh`）・normal
 
 ```
-Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Sui is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
+Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Sensu is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
 
 Character: Sheikh Al-Ghariyan, a 52-year-old Emirati man with a calm composed face, tan skin, dark beard with grey, white ghutra headcloth with a black agal, white kandura with a gold-trimmed outer robe, ring and wristwatch, black and gold shoes, one hand lowered and the other near his abdomen.
 
@@ -354,7 +356,7 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 ### 王煙楼（`master_hookah`）・normal
 
 ```
-Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Sui is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
+Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Sensu is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
 
 Character: Wang Yanlou, a stern 58-year-old Chinese shisha master, white hair tied in a long braid, long white beard tied at the end, wrinkles, arms folded, crimson frog-button jacket with a half cape and gold cuffs, black trousers and shoes, one coiled hose with a rigid brass handle stored at the waist.
 
@@ -373,22 +375,22 @@ TS12 と同じく、頭の大きさは「○%大きく」ではなく**画像の
 
 参照画像（エージェントが自分で読み込んで渡す）：
 - ① 採用した原画（887×1774。ゲーム用より大きい）：ファーリス `asset_sources/ch4-camel-race/originals/saif-normal-A-v2.png`・ハリール `asset_sources/ch4-camel-race/originals/rashid-normal-B.png`
-- ② 須井 `assets/sprites/characters/nagumo/chr_nagumo_normal.png`（大人の男性の頭身の目標。6.93頭身）
+- ② 千須 `assets/sprites/characters/sui/chr_sui_normal.png`（大人の男性の頭身の目標。6.93頭身）
 - ③ みんと `assets/sprites/characters/minto/chr_minto_normal.png`・④ あげは `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風だけ）
 
 合格の条件（全身1400px＝髪・グトラの上端〜靴底に換算）：
 
 | キャラ | いま | 目標 | 確かめ方 |
 |---|---|---|---|
-| ファーリス（`saif`） | 頭（頭頂〜あご）約162px・目〜あご約69px | 頭 約200px（7.0頭身。6.4〜7.7なら合格）・目〜あご 約85px | `portrait_metrics.py grid --image` → `calc` |
-| ハリール（`rashid`） | 目〜あご 約73px（頭頂は推定） | 目〜あご 約100px（約7頭身） | 同上。頭頂はグトラの下を目〜あごの長さから推定 |
+| ファーリス（`faris`） | 頭（頭頂〜あご）約162px・目〜あご約69px | 頭 約200px（7.0頭身。6.4〜7.7なら合格）・目〜あご 約85px | `portrait_metrics.py grid --image` → `calc` |
+| ハリール（`khalil`） | 目〜あご 約73px（頭頂は推定） | 目〜あご 約100px（約7頭身） | 同上。頭頂はグトラの下を目〜あごの長さから推定 |
 
 顔・年齢・表情・ポーズ・服・小物・色は①のまま。身長（`spriteScale`：ファーリス 1.05＝183cm、ハリール 1.0＝172cm）は変えない。原画は `asset_sources/portraits/<id>-remaster-v2/normal-source.png` に保存する。
 
-### ファーリス（`saif`）・normal
+### ファーリス（`faris`）・normal
 
 ```
-Redraw the attached APPROVED game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Sui is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
+Redraw the attached APPROVED game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Sensu is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
 
 Character: Faris, a 24-year-old Emirati young man, tall and slim, warm brown skin, short cropped black hair, a neat thin beard line along the jaw with a small chin beard, big friendly eyes, an easy relaxed smile. Black staff polo shirt (a tiny plain patch where a shop logo would be, no letters), sand-colored chinos, thin leather cord bracelets on one wrist, white sneakers. One hand holds a small round brass tobacco tin near his chest, the other hand rests in his trouser pocket; weight on one leg. Not a real person.
 
@@ -399,10 +401,10 @@ Japanese 2D visual-novel game art in the same artist's hand as the approved Mint
 Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
 ```
 
-### ハリール（`rashid`）・normal
+### ハリール（`khalil`）・normal
 
 ```
-Redraw the attached APPROVED game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Sui is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
+Redraw the attached APPROVED game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Sensu is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
 
 Character: Khalil, a 56-year-old Emirati camel trainer, quiet and composed, sun-tanned face with deep wrinkles, short grey-streaked beard and moustache, a white-and-red checkered ghutra headcloth with a black agal worn casually with one end over the shoulder, a white ankle-length kandura, a worn sand-colored multi-pocket vest over it, dark brown leather shoes. One hand holds a small key-fob sized remote control with a short cord at chest height, the other hand rests in the vest pocket. Not a real person.
 
@@ -420,7 +422,7 @@ Output ONE complete figure on a tall canvas about 1085x1450, the figure at least
 共通の前文（各表情の英文の先頭に付ける。`<NAME>` はファーリスなら Faris、ハリールなら Khalil）：
 
 ```
-Expression variant of the SAME character. Reference roles IN ORDER: image 1 is the APPROVED new <NAME> normal original: keep this exact person's face design, age, hair, skin tone, outfit, accessories, colors, head size and head-to-body ratio (about 7 heads tall), linework, figure height and standing position, so that image 1 and this sprite can switch in the game without the head changing size or the feet moving. Image 2 Sui is head-to-body proportion context only, never identity. Images 3 Minto and 4 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes. Change only the facial expression and the small matching pose change described below. Do not add props that are not in image 1.
+Expression variant of the SAME character. Reference roles IN ORDER: image 1 is the APPROVED new <NAME> normal original: keep this exact person's face design, age, hair, skin tone, outfit, accessories, colors, head size and head-to-body ratio (about 7 heads tall), linework, figure height and standing position, so that image 1 and this sprite can switch in the game without the head changing size or the feet moving. Image 2 Sensu is head-to-body proportion context only, never identity. Images 3 Minto and 4 Ageha are rendering-style context only; never copy their faces, hair, bodies or clothes. Change only the facial expression and the small matching pose change described below. Do not add props that are not in image 1.
 
 Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rio sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
 
@@ -447,7 +449,7 @@ Codex が上の3つの英文で各3案（計9案）を生成した。頭身は�
 | スティーブ | 8.04→7.4（頭を9%大きく） | A 6.89／6.80、B 6.99／6.98、C 6.88／6.74 |
 | ヴォルク | 9.04→7.4（頭を22%大きく） | A 7.70／7.53、B 7.70／7.64、C 7.92／7.72 |
 
-- 拡大率の指定は効かず、元の頭身にかかわらず約6.8〜7.7頭身に寄った。参照②（須井・6.93頭身）に引っ張られたとみられる。残りの人は拡大率を書かず、「image 2 と同じ約7頭身」と書くほうが確実。
+- 拡大率の指定は効かず、元の頭身にかかわらず約6.8〜7.7頭身に寄った。参照②（千須・6.93頭身）に引っ張られたとみられる。残りの人は拡大率を書かず、「image 2 と同じ約7頭身」と書くほうが確実。
 - 頭頂・あごの読み取りには1枚あたり±4px（約±0.2頭身）の差が出る。境目の案は2人で測る。
 - 頭身のほかに、余白の不足（スティーブA・ヴォルクAは足底が画像の端に接する）、透明度の低いノイズ、髪・靴の艶の残りがあった。
 
@@ -458,7 +460,7 @@ Codex が上の3つの英文で各3案（計9案）を生成した。頭身は�
 | キャラ | 現在 | 頭の拡大 | 表情 | 人物の行の出典 |
 |---|---:|---:|---|---|
 | 六角サイ（`sai`） | 8.39 | 約13% | normal・smile・serious・surprise・thinking | asset_sources/venue-staff/sai/normal-prompt.txt |
-| 鴉葬レヰ（`rei`） | 8.67 | 約17% | normal・smile・serious・surprise・sad | asset_sources/ch2-characters/rei/normal-prompt.txt |
+| †黒羅雨℃†（`rei`） | 8.67 | 約17% | normal・smile・serious・surprise・sad | asset_sources/ch2-characters/rei/normal-prompt.txt |
 | 斧崎マキ（`maki`） | 8.74 | 約18% | normal・smile・serious・surprise・excited | asset_sources/venue-staff/maki/normal-prompt.txt |
 | 辻占のオババ（`uranaishi`） | 8.78 | 約19% | normal・smile・serious・surprise・sad | asset_sources/portraits/style-unify-20261026/uranaishi/normal-prompt.txt |
 | シェイク（`sheikh`） | 8.88 | 約20% | normal・smile・serious・surprise・smug | asset_sources/portraits/expressions-5-20261102/sheikh/prompt.txt |

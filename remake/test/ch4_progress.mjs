@@ -18,7 +18,7 @@ import { OVERSEAS_HEROINES, OVERSEAS_GUESTS, chooseOverseasCompanion } from "../
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
 
-// 場面表の全IDが台本に実在し、本文がある。空場面と恋人線は接続しない。
+// 場面表の全IDが台本に実在し、本文がある。
 const files = { ch4_main: readData("dialogue/ch4_main").dialogues, ch4_spots: readData("dialogue/ch4_spots").dialogues,
   ch4_arrival_daily: readData("dialogue/ch4_arrival_daily").dialogues };
 const connected = [];
@@ -30,7 +30,7 @@ for (const [file, ids] of Object.entries(CH4_SCENE_FILES)) {
 }
 for (const id of [...CH4_PROLOGUE, ...CH4_RESOLUTION].map(scene => scene.id)
   .concat(CH4_MANDATORY.flatMap(entry => [entry.id, entry.lead]).filter(Boolean))) assert(connected.includes(id), id);
-assert(!connected.includes("ch4_return"), "ch4_return must stay unconnected");
+assert(!files.ch4_spots.some(row => row.dialogue_id === "ch4_return"), "the retired empty scene stays out of the active script");
 // 到着の後の夕方（IR18）。別便で来る7人の恋人版と、恋人でないましろの友人版（#3097・2026-11-12 オーナー決定で広げた）。
 // サメちゃん・ひよりは ch4_main、ほかの6本は ch4_arrival_daily から読み込む（_legacy へ移さない）。
 assert.deepEqual(Object.keys(CH4_ARRIVAL_EVENING_SCENES), OVERSEAS_HEROINES);

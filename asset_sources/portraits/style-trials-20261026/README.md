@@ -1,6 +1,6 @@
 # 立ち絵・画風統一の試作（6人）
 
-> **レヰの新しい服装デザインは [新A・B・C比較](../../rei-look-929/README.md) へ。** このページのレヰは旧衣装の画風試作で、新デザインの採用候補ではありません。
+> 画風試作の記録。現在のクラウドの衣装は [人物データ](../../../data/characters.json) と実際に採用されている立ち絵を参照する。
 
 みんと・あげはの正式立ち絵を画風の基準に、各キャラの通常立ち絵を1枚ずつ生成した比較用候補です。凛想は対象外です。ゲーム内の画像は変更していません。採用前の試作で、位置合わせ・透過端・本人性の最終調整は未実施です。
 
@@ -12,13 +12,13 @@
 |---|---|
 | <img src="../../../assets/sprites/characters/minto/chr_minto_normal.png" width="210" alt="基準 みんと"> | <img src="../../../assets/sprites/characters/ageha/chr_ageha_normal.png" width="210" alt="基準 あげは"> |
 
-### 鴉葬レヰ（あそう れい）
+### クラウド
 
 線と刺繍を整理。背景のにじみが残るため、採用前に透過を要修正。
 
 | 現行 | 試作 |
 |---|---|
-| <img src="../../../assets/sprites/characters/rei/chr_rei_normal.png" width="280" alt="鴉葬レヰ（あそう れい） 現行"> | <img src="rei/normal-preview.jpg" width="280" alt="鴉葬レヰ（あそう れい） 試作"> |
+| <img src="../../../assets/sprites/characters/rei/chr_rei_normal.png" width="280" alt="クラウドの採用立ち絵への参照"> | <img src="rei/normal-preview.jpg" width="280" alt="クラウド 試作"> |
 
 [試作の透過PNG原画](rei/normal-source.png) · [生成指示](rei/normal-prompt.txt)
 
