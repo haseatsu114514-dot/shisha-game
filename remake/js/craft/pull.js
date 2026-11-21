@@ -718,6 +718,9 @@ async function pullGame(cs, mode, holdFailedResult) {
       await sleep(60);
       // テスト用（craftTest.aim = "attack"）: 攻めの帯で終えるまで、残りの口数で帯に入る吸い方を先読みして吸う。
       const attackAim = auto === "good" && attacking && craftTest.aim === "attack";
+      const [downZone, keepZone, upZone] = zones;
+      const justCenter = zone => zone.just[0] + (zone.just[1] - zone.just[0]) * widen / 2;
+      const beforeJust = zone => (zone.from + zone.just[0]) / 2;
       const times = attackAim ? MAX_PULLS : auto === "good" ? (mode.drift ? 2 : 3) : auto === "burn" ? 5 : mode.drift ? 1 : 5;
       for (let i = 0; i < times && running; i++) {
         let at;
@@ -726,11 +729,11 @@ async function pullGame(cs, mode, holdFailedResult) {
           // 先読みで見つけた吸い方の1口目
         } else if (auto === "good") {
           const goal = autoGoal(), diff = goal - T, response = Math.abs(heatDelta(cs, .18));
-          const keep = clamp(.5 + diff / response, .341, .659);
-          const candidates = [.141, .3, keep, .75, .796];
+          const keep = clamp(.5 + diff / response, keepZone.from + .001, keepZone.to - .001);
+          const candidates = [justCenter(downZone), beforeJust(downZone), keep, beforeJust(upZone), justCenter(upZone)];
           at = candidates.sort((a, b) => Math.abs(T + pullHeat(actionAt(a).delta) - goal) - Math.abs(T + pullHeat(actionAt(b).delta) - goal))[0];
         } else if (auto === "burn") {
-          at = .83; // テスト用: 右のジャスト上げ吸いを重ねて焦がす
+          at = justCenter(upZone); // テスト用: 右のジャスト上げ吸いを重ねて焦がす
         } else {
           at = rand(0, 1) < 0.5 ? 0.7 : 0.75;
           // 雑な吸い方の自動操作でも、焦がす一手は打たない（大会の敗北テストを安定させる）。

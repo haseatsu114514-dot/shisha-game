@@ -201,7 +201,7 @@ await suite("ch1-eve", async check => {
     await page.locator(`[data-test="drill-${kind}"]`).click(); await finish(page);
     const result = await snapshot(page);
     assert.deepEqual(result.steps, [`drill:${kind}`]); assert.equal(result.benches, 1);
-    assert.equal(result.state.best[kind], 2);
+    assert.equal(result.state.best[kind], 2, "good auto play finishes the real drill at the top tier");
     assert.deepEqual(result.state.stats, { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 });
     assert.equal(result.state.rehearsal, null);
   });
@@ -302,7 +302,7 @@ await suite("ch1-eve", async check => {
     await page.evaluate(() => { E.vn.vnTest.choose = () => 0; E.run(); }); await finish(page);
     const result = await snapshot(page);
     assert.equal(result.state.rehearsal, "rough");
-    assert.equal(result.state.flags._craft_practice_runs[0].success, false);
+    assert.equal(result.state.flags._craft_practice_runs[0].success, false, "the burn driver produces a failed practice run");
     assert.equal(result.state.flags._craft_practice_runs.length, 1);
     assert.equal(result.state.stats.guts, 10); assert(result.done);
   });
@@ -341,7 +341,7 @@ await suite("ch1-eve", async check => {
     await finish(page);
     const after = await snapshot(page);
     assert.equal(after.state.stamina, 57, "Incomplete drill cost was charged twice on restart");
-    assert.equal(after.state.best.pull, 2); assert(after.done);
+    assert.equal(after.state.best.pull, 2, "the restarted real pull drill still records the top tier"); assert(after.done);
     assert.deepEqual(after.state.flavorStock, before.state.flavorStock);
   });
 
