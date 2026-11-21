@@ -161,9 +161,11 @@ for (const scenario of scenarios) {
   });
   test(scenario.id + ': support cancellation does not spend; confirmed help and reroll share seat receipts', () => {
     const mounted = mount(scenario); const { api, root, q, drain, roll, declare, interview, twist } = mounted; q('trpg-start').click(); drain(); declare('listen'); roll();
-    const actor = scenario.cast.find(c => c.abilityType === 'reroll').id;
+    const reroller = scenario.cast.find(c => c.abilityType === 'reroll');
+    const pcName = api.snapshot().pc.name;
+    assert.equal(root.querySelector('.trpg-roll-trump').textContent, pcName + 'の「' + reroller.ability + '」 · 連携札1枚');
     q('trpg-reroll-1').click();
-    assert(q('trpg-reroll-receipt').textContent.includes(actor));
+    assert(q('trpg-reroll-receipt').textContent.endsWith(pcName + 'の振り直し'));
     assert.equal(root.querySelectorAll('.trpg-reroll-stamp').length, 1);
     for (const die of root.querySelectorAll('.trpg-die')) {
       const face = die.querySelector('.trpg-d20-value'); assert(face, 'd20 has a numeric face');
@@ -171,18 +173,23 @@ for (const scenario of scenarios) {
       assert(Number(face.textContent) >= 1 && Number(face.textContent) <= 20);
       assert.equal(die.querySelectorAll('.trpg-pip').length, 0, 'No d6 pips remain');
     }
-    assert.equal(api.snapshot().used[actor], true); q('trpg-settle').click(); drain(); interview();
+    assert.equal(api.snapshot().used[reroller.id], true); q('trpg-settle').click(); drain(); interview();
     for (const spot of scenario.spots.slice(0, 3)) { q('trpg-spot-' + spot.id).click(); drain(); }
     q('trpg-interpret').click(); q('trpg-hypothesis-' + scenario.hypotheses[0].id).click(); drain(); twist();
     for (const field of Object.keys(api.snapshot().plan).filter(f => scenario.flow?.prepare?.includes(f) || !scenario.flow && ['aroma', 'seat'].includes(f))) {
       q('trpg-choice-tab-' + field).click(); q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click();
     }
     q('trpg-prepare-open').click(); declare('prepare'); const helper = scenario.checks.prepare.helper;
+    const helperRole = api.snapshot().companions[helper];
+    const helperName = scenario.companionBuilds[helper][helper].find(role => role.id === helperRole).name;
+    const aid = root.querySelector('.trpg-aid');
+    assert(aid.querySelector('strong').textContent.startsWith(helperName + 'の「'));
+    assert(aid.querySelector('.trpg-aid-art').querySelector('img').getAttribute('src').endsWith('/costumes/' + scenario.id + '/' + helper + '_' + helperRole + '.webp'));
     const before = JSON.stringify(api.snapshot()); q('trpg-support-' + helper).checked = true; q('trpg-support-' + helper).change(); q('trpg-check-back').click();
     assert.equal(JSON.stringify(api.snapshot()), before);
     q('trpg-prepare-open').click(); declare('prepare'); assert(!q('trpg-support-' + helper).checked); q('trpg-support-' + helper).checked = true; roll();
     assert(q('trpg-actor-receipt').textContent.includes(scenario.cast.find(c => c.id === 'hajime').sheet.name), 'the roll names the declared character');
-    assert(q('trpg-helper-receipt').textContent.includes(helper)); assert.equal(api.snapshot().used[helper], true);
+    assert(q('trpg-helper-receipt').textContent.endsWith(helperName + ' ＋7')); assert.equal(api.snapshot().used[helper], true);
     const seat = root.querySelectorAll('.trpg-table-person').find(n => n.dataset.speaker === helper);
     assert.equal(seat.querySelector('.trpg-seat-ability').dataset.spent, 'true');
     q('trpg-settle').click(); drain();
