@@ -140,7 +140,7 @@ export const HOME_DAY_CALLS = Object.freeze([
   { scene: "ch4_home_call_minto_coaster", from: "minto" },
   { scene: "ch4_home_call_samechan_shade", from: "samechan" },
   { scene: "ch4_home_call_rei_sleeves", from: "rei" },
-  { scene: "ch4_home_call_hiyori_umbrella", from: "hiyori" },
+  { scene: "ch4_home_call_hiyori_announcement", from: "hiyori" },
   { scene: "ch4_home_call_ageha_clip", from: "ageha" },
 ].map(call => Object.freeze(call)));
 // 電話の中で、かけてきた人のほかに話す人（mukai の開店前のムカイさん）

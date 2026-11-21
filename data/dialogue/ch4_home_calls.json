@@ -1340,8 +1340,8 @@
       ]
     },
     {
-      "dialogue_id": "ch4_home_call_hiyori_umbrella",
-      "comment": "退勤したひよりが、役を忘れてビルの傘立てを気にする。",
+      "dialogue_id": "ch4_home_call_hiyori_announcement",
+      "comment": "総務のひよりが、点検の案内放送を吹き込む。",
       "lines": [
         {
           "speaker": "",
@@ -1351,67 +1351,67 @@
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "もしもし、異国のはじめくん。今夜の私は雨に置いていかれた女です"
+          "text": "……遠い国のはじめくん。エレベーターまでの道のりは、険しかった？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ひよりさん、傘を忘れたんですか"
+          "text": "いえ、部屋を出てまっすぐですけど"
         },
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "私はちゃんと持ってるの。会社の置き傘のほうがなくなってて"
+          "text": "じゃあ、これ聞いて。明日、点検のため西側のエレベーターは止まります"
         },
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "貸して返らないんじゃなくて、みんな入口までさすのよ"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "そこから駅へ行く人が持ってって、別の階の傘立てに戻すの"
+          "text": "東側をご利用ください。はじめくんなら、どっちに歩く？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "階が違うと、借りた人のほうも気づかなさそうです"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "そう。で、柄に戻す階を書いた。名前より先に分かるでしょう"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "……しまった。今日は儚げに話すって決めてたのに"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "どこに返すか書いてあったら、俺も助かります"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "そ、そう？ じゃあ、それでいいか"
+          "text": "俺の部屋なら東って分かりますけど、初めての建物だと迷います"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "受話口で、ぱさっと傘を開く音がした。"
+          "text": "向こうで紙がひっくり返る音がした。"
         },
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "じゃあね。雨が止む前に、せっかくの傘を使って帰るから"
+          "text": "やっぱりね。原稿に全部方角で書いてあるの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "玄関から見て右、でいいのよね。そこに自販機もあるし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それなら分かります。今の声も、聞き取りやすかったです"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "ほんと？ 私、もう一回だけ儚げに録ってみようかと思ってたけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大事なところだけ、声が小さくなったら困ります"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "そうね。迷った人を、自販機のところまで送り届けなくちゃ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "電話のあと、窓から見える日傘を数えた。どれも違う色だった。"
+          "text": "紙の上をペンが走った。録り直す声は、さっきより少し大きかった。"
         }
       ]
     },
