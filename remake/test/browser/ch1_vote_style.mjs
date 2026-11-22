@@ -12,10 +12,10 @@ const benchVersion = (page) => page.locator(".bench").first().getAttribute("data
 const LONG = 150000;
 
 /** 新しい試合の規則（rulesVersion 2）で第1章の大会を始める。開発ジャンプは旧規則になるため、ここで版を付ける。 */
-async function startTournament(page, { aim = null } = {}) {
-  await page.evaluate((aim) => {
+async function startTournament(page, { aim = null, auto = "good" } = {}) {
+  await page.evaluate(({ aim, auto }) => {
     window.__remake.vnTest.turbo = true;
-    window.__remake.craftTest.auto = "good";
+    window.__remake.craftTest.auto = auto;
     window.__remake.craftTest.aim = aim;
     window.__ch1VoteStyleRun = (async () => {
       const { newGame } = await import("./js/core/state.js");
@@ -27,7 +27,7 @@ async function startTournament(page, { aim = null } = {}) {
       s.tournament.rulesVersion = 2;
       return ch1.devTournament();
     })();
-  }, aim);
+  }, { aim, auto });
 }
 const voteAttempt = (page) => page.evaluate(() => structuredClone(window.__remake.state.tournament?.voteAttempt ?? null));
 const ruleText = (page) => page.evaluate(async () => (await import("./js/scenes/rule-sheet.js")).ruleSheetPanel(1).textContent);
@@ -38,7 +38,7 @@ await suite("ch1-vote-style", async (check) => {
     assert.deepEqual(await page.locator(`${t("cfg-craft-version")} button`).allTextContents(), ["リニューアル", "桜井版"]);
     assert.equal(await page.locator(t("cfg-vote-style")).count(), 0, "審査の方式だけの設定は無い（版で決まる）");
     assert.equal(await checkedVersion(page), "renewal", "何も選んでいない端末はリニューアル");
-    assert(!(await ruleText(page)).includes("第四条"), "リニューアル（いままでの審査）の規則に審査の条は無い");
+    assert.match(await ruleText(page), /第四条　審査.*その回までに仕上げた工程/);
     // 桜井版を選ぶと保存され、次に開いても桜井版のまま。競技規則に桜井式の審査の条が出る。
     await page.locator(`${t("cfg-craft-version")} button[value="sakurai"]`).click();
     assert.equal(await page.evaluate((key) => JSON.parse(localStorage.getItem(key)).craftVersion, CONFIG_KEY), "sakurai");
@@ -47,7 +47,19 @@ await suite("ch1-vote-style", async (check) => {
     assert.equal(await checkedVersion(page), "sakurai", "選んだ版は保たれる");
     assert.match(await ruleText(page), /第四条　審査.*その回に仕上げた工程だけ.*攻めの帯/);
     await page.locator(`${t("cfg-craft-version")} button[value="renewal"]`).click();
-    assert(!(await ruleText(page)).includes("第四条"), "リニューアルへ戻すと、いままでの規則");
+    assert.match(await ruleText(page), /その回までに仕上げた工程/, "リニューアルへ戻すと、いままでの規則");
+  });
+
+  await check("venue-menu-rereads-scoring", async (page) => {
+    await startTournament(page, { auto: null });
+    await page.locator(t("hud-menu")).click({ timeout: LONG });
+    await page.locator(t("menu-tab-system")).click();
+    await page.locator(t("menu-rules")).click();
+    const rules = page.locator(t("rule-sheet"));
+    assert.match(await rules.innerText(), /審査員3人が各10点.*2・3・2・3点.*その回までに仕上げた工程/);
+    await page.locator(t("rule-sheet-close")).click();
+    assert(await page.locator(".bench").isVisible());
+    assert.equal((await voteAttempt(page)).voted, 0, "規則の確認で試合の工程を進めない");
   });
 
   await check("sakurai-match-attack-band-and-board", async (page) => {

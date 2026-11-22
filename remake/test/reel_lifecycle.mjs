@@ -72,15 +72,11 @@ async function checkInstallation(label, run, touch = false, preview = false) {
     for (const [scroll, client] of widths) assert(scroll <= client + 1, "遊び方が横にはみ出した");
   };
   const readIntro = async () => {
-    for (let i = 0; i < 4; i++) await tap();
-    const text = await page.locator('[data-test="reel-intro"] .ri-text').innerText();
-    if (preview) {
-      assert.match(text, /図柄が揃うと経験値が入るよ/);
-      assert.doesNotMatch(text, /外れても|回したぶんだけ/);
-    } else assert.match(text, /外れても大丈夫。回したぶんだけ/);
+    const text = page.locator('[data-test="reel-intro"] .ri-text');
+    assert.match(await text.innerText(), /インストール完了/);
     await tap();
-    await page.locator('[data-test="reel-guide-card"]').waitFor();
-    await assertGuide(preview);
+    assert.match(await text.innerText(), /体力を使う自由行動で、スロットがかってに1回転/);
+    assert.equal(await page.locator('[data-test="reel-guide-card"]').count(), 0, "詳しい遊び方はノートで確認する");
     assert.equal(await page.evaluate(() => installProbe.core.state.reel.count), 0, "説明中に先に抽選した");
     await tap();
   };
@@ -185,9 +181,8 @@ try {
   });
   assert(await page.evaluate(() => window.introBox === document.querySelector('.reel-intro')), "再表示で初回説明が作り直された");
   assert(await page.evaluate(() => window.introSpin === window.introRemount), "初回説明中に回転処理が重複した");
-  // Read all five dialogue pages, then the guide card added to the introduction.
-  for (let i = 0; i < 5; i++) await page.click('[data-test="reel-intro"]');
-  await page.locator('[data-test="reel-guide-card"]').waitFor({ timeout: 10000 });
+  await page.click('[data-test="reel-intro"]');
+  await page.getByRole('button', { name: '説明を閉じる' }).waitFor();
   await page.click('[data-test="reel-intro"]');
   await waitForSpin(page.evaluate(() => window.introSpin), "intro spin");
   assert.equal(await page.locator('.reel-intro').count(), 0);
@@ -335,7 +330,7 @@ try {
 
   await checkInstallation("reload-during-explanation", async ({ page, boot, tap, readIntro, finish }) => {
     await page.evaluate(() => startInstall());
-    await tap(); await tap();
+    await tap();
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem(installProbe.core.SAVE_KEY)).flags._pakki_first_spin_pending), true);
     await boot(true);
     await page.evaluate(() => startInstall());
@@ -385,7 +380,8 @@ try {
   await checkInstallation("existing-action-result-is-not-drawn-again", async ({ page, tap, finish }) => {
     await page.evaluate(() => { startInstall(); installProbe.reel.onAction({ spent: 10 }); });
     const before = await page.evaluate(() => installSnapshot());
-    for (let i = 0; i < 6; i++) await tap();
+    await tap();
+    await page.getByRole('button', { name: '説明を閉じる' }).click();
     await finish();
     const after = await page.evaluate(() => installSnapshot());
     assert.equal(after.count, before.count); assert.deepEqual(after.stats, before.stats);
