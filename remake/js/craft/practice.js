@@ -20,7 +20,7 @@ export { practiceRecords, recordPractice } from "./practice-history.js";
 
 export const CRAFT_STEPS = [["setup", "SETUP"], ["mix", "MIX"], ["pack", "PACK"], ["holes", "FOIL"], ["place", "SET"], ["heat", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"], ["care1", "調整1回目"], ["care2", "調整2回目"]];
 
-export async function runFullPractice({ coached = false, adjustments = true, kind = "practice", staffPractice = false, isCurrent = null, note = null, onStep = null } = {}) {
+export async function runFullPractice({ coached = false, adjustments = true, kind = "practice", orderId = kind, staffPractice = false, isCurrent = null, note = null, onStep = null } = {}) {
   // 呼出し元が指定した制作だけを中断判定する。既存の自由練習等は従来どおり。
   const owner = state;
   const checkCurrent = () => {
@@ -31,6 +31,8 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
   const cs = newSession(coached ? "tutorial" : "rehearsal");
   cs.practiceKind = kind;
   cs.staffPractice = staffPractice;
+  const preparationKey = JSON.stringify([owner.chapter, staffPractice, orderId]);
+  if (!coached) cs.preparation = { previous: owner.flags._craft_last_preparation?.[preparationKey] };
   if (staffPractice) { cs.eventTitle = "PRACTICE"; cs.eventNote = "まかないで練習"; }
   if (note) cs.eventNote = note;
   openBench(cs, { steps: adjustments ? CRAFT_STEPS : CRAFT_STEPS.filter(([id]) => !id.startsWith("care")) });
@@ -65,6 +67,9 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
     checkCurrent();
   }
   if (!recordPractice(cs, kind)) throw new Error("Practice interrupted before serving");
+  if (cs.preparation && cs.mixInfo && cs.holes) {
+    (owner.flags._craft_last_preparation ||= {})[preparationKey] = { mix: { ...cs.mix }, foil: cs.preparation.foil };
+  }
   if (cs.mode !== "tutorial" && growthSkill(state, "K24")) finalize(cs);
   const key = !coached && `_mastery_practice_${masteryDay(state)}_${kind}`;
   cs.masteryGained = false;
