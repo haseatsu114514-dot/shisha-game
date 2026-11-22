@@ -806,7 +806,7 @@ try {
   else assert(friendsLime.charmUp);
   log("HF09 friends: shared cadence (1 friend LIME per 2 days, oldest contact first, 4+ days per person), invites 6+ days apart after a chat, never with a story/lover invitation (Sumi's shift call may overlap), holiday/after-close, none for lovers/pending romance/tournament");
 
-  // #2025: ひよりの友人の一服も2本を交互に読む。章や大会の前後に依存しない日常の話題。
+  // #2025: ひよりの友人の一服を4本順番に読む。章や大会の前後に依存しない日常の話題。
   const hiyoriHangouts = await page.evaluate(async () => {
     const { fresh, core, bonds, vn, DB = window.__remake.DB } = window.T;
     const variants = DB.friends.friends.hiyori.hangouts;
@@ -815,7 +815,7 @@ try {
       fresh({ chapter, tournament: { phase: tournamentPhase },
         finales: { hiyori: { day: 1, chapter: 1, route: "friend" } } });
       const rows = [];
-      for (let visit = 0; visit < 3; visit++) {
+      for (let visit = 0; visit < 5; visit++) {
         vn.backlog().length = 0;
         await bonds.playFriendHangout("hiyori");
         rows.push(vn.backlog().map(line => line.text).join("|"));
@@ -828,17 +828,17 @@ try {
     }
     return { variants, results };
   });
-  assert.equal(hiyoriHangouts.variants.length, 2, "ひよりの友人の一服は2本");
+  assert.equal(hiyoriHangouts.variants.length, 4, "ひよりの友人の一服は4本");
   for (const { rows, count } of hiyoriHangouts.results) {
-    assert.equal(count, 3);
+    assert.equal(count, 5);
     for (let visit = 0; visit < rows.length; visit++) {
-      const expected = hiyoriHangouts.variants[visit % 2];
+      const expected = hiyoriHangouts.variants[visit % hiyoriHangouts.variants.length];
       for (const line of [expected.arrive, expected.mid, expected.close]) assert(rows[visit].includes(line.text), rows[visit]);
     }
-    assert.notEqual(rows[0], rows[1], "2回目は別の一服を読む");
-    assert.equal(rows[0], rows[2], "3回目は最初の一服へ戻る");
+    assert.equal(new Set(rows.slice(0, 4)).size, 4, "4回目まで別の一服を読む");
+    assert.equal(rows[0], rows[4], "5回目は最初の一服へ戻る");
   }
-  log("#2025 hiyori friend hangouts: 2 variants alternate across save/load in chapters 1/2, before/after tournament");
+  log("#2025 hiyori friend hangouts: 4 variants rotate across save/load in chapters 1/2, before/after tournament");
 
   // Same-visit Rio question: the live shop entrypoint grants the sample and charges stamina once.
   for (const options of [

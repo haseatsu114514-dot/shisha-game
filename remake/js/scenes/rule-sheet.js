@@ -1,10 +1,9 @@
 import { el } from "../core/util.js";
 import { modal } from "../core/ui.js";
-import { state } from "../core/state.js";
+import { config, state } from "../core/state.js";
 import { REGULATION, regulationFor } from "../craft/steps.js";
-import { config } from "../core/state.js";
 import { voteStyleFrom } from "../core/vote-style.js";
-import { isSakuraiVotes, SAKURAI } from "../craft/ch1-votes.js";
+import { ch1RoundPoints, isSakuraiVotes, SAKURAI } from "../craft/ch1-votes.js";
 
 export function ruleSheetPanel(chapter = state?.chapter || 1) {
   const regulation = chapter === state?.chapter ? regulationFor({ mode: "tournament" }) : REGULATION[chapter];
@@ -25,17 +24,26 @@ export function ruleSheetPanel(chapter = state?.chapter || 1) {
     article("一", "課題", challenge),
     article("二", "材料", stock),
     article("三", "一台の進行", "一台を制作し、吸い出して提供する。その後も同じ一台を二度調整する。"),
-    // 桜井式の審査（第1章・SKR04）だけ、票の取り方を条文にする。試合中はその試合の方式、試合前は今の設定に従う。
-    chapter === 1 && sakuraiRules() ? article("四", "審査", SAKURAI_ARTICLE) : null,
+    chapter === 1 ? article("四", "審査", ch1Judging()) : null,
     el("p.rule-sheet-foot", { text: "大会運営委員会" }),
   ]);
 }
 
 const focusText = Object.entries(SAKURAI.focus).map(([id, f]) => `${{ uezono: "上園", dr_charcoal: "チャコール博士", sensu: "千須" }[id]}は${f.detail}`).join("、");
-const SAKURAI_ARTICLE = `審査員3人が各10点を、準備・提供・調整1回目・調整2回目の4回に分けて入れる（2・3・2・3点）。各回は、その回に仕上げた工程だけで決め、1位に「その回の点−1」、2位に1点。提供の回は、${focusText}を見る。温度計の「攻めの帯」で提供・調整を終えると、その回の審査が伸びる。千須は最後の1点を、もう一口吸いたい一台へ入れる。`;
-function sakuraiRules() {
-  const attempt = state?.tournament?.voteAttempt;
-  return attempt ? isSakuraiVotes(attempt) : voteStyleFrom(config) === "sakurai";
+const roundPoints = SAKURAI.rounds.map((_, round) => ch1RoundPoints("uezono", round)).join("・");
+const ALLOCATION = `審査員3人が各10点を、準備・提供・調整1回目・調整2回目の4回に分けて入れる（${roundPoints}点）。各回は1位に「その回の点−1」、2位に1点。千須は最終回の持ち点から1点を残し、もう一口吸いたい一台へ入れる。`;
+function ch1Judging() {
+  const tournament = state?.chapter === 1 ? state.tournament : null;
+  const attempt = tournament?.voteAttempt;
+  // 試合中は開始時の方式。票の記録がない旧版の試合は、一台の総合点で順位が決まる。
+  if (state?.chapter === 1 && state.phase === "tournament" && !attempt && tournament?.rulesVersion < 2) {
+    return "一台の総合点で順位を決める。";
+  }
+  const sakurai = attempt ? isSakuraiVotes(attempt) : voteStyleFrom(config) === "sakurai";
+  const evaluation = sakurai
+    ? `各回は、その回に仕上げた工程だけで決める。提供の回は、${focusText}を見る。温度計の「攻めの帯」で提供・調整を終えると、その回の審査が伸びる。`
+    : "各回は、その回までに仕上げた工程の成績で決める。";
+  return ALLOCATION + evaluation;
 }
 
 export const openRuleSheet = () => modal({

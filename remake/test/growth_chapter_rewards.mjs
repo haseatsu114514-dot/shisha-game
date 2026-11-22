@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 import { chapterFiveUnrecordedDialogue } from "../js/chapters/ch5-unrecorded.js";
+import { trackCompletionTaps } from "../js/chapters/completion-card-input.js";
 globalThis.document = { addEventListener() {} }; globalThis.window = {};
 const storage = new Map();
 globalThis.localStorage = { getItem: k => storage.get(k) ?? null, setItem: (k,v) => storage.set(k,String(v)), removeItem: k => storage.delete(k) };
@@ -31,6 +32,7 @@ async function runner(name,progress,exposed){
     setBg:async()=>{},enterScene:async()=>{},playBgm:noop,toast:noop,hooks:{},
     save:()=>{snapshots.push(JSON.parse(JSON.stringify(core.state)));if(pauseAtSave)owner.active=false;},
     presentNight:async()=>{nightBefore=JSON.parse(JSON.stringify(core.state));growth.settleGrowth();},
+    trackCompletionTaps,
     play:async()=>{if(swap){core.newGame();syncBindings();replacement=JSON.stringify(core.state);}return {id:"fixture",visited:[],cancelled:cancel};},
     newSession:()=>craft,openBench:noop,waitBenchReady:async()=>{},CRAFT_STEPS:[],
     stepSetup:noop,stepWater:noop,stepMix:noop,stepPack:noop,runHoles:noop,stepPlace:noop,runHeat:noop,

@@ -72,6 +72,13 @@ loaded.audio.unlockAudio();
 assert.equal(await loaded.audio.preloadSe(), true);
 assert.equal(loaded.requests.length, new Set(loaded.requests).size, "concurrent warmups fetch each file once");
 assert.equal(loaded.timers.size, 0, "load timeout timers are cleaned up");
+for (const [id, file, gain] of [["ch1Title", "trpg/jingle_success.wav", .4], ["whoosh", "ui_whoosh.wav", .35]]) {
+  loaded.audio.SE[id]();
+  const source = loaded.sources.at(-1);
+  assert.equal(source.buffer.file, file.split("/").at(-1), id);
+  assert.equal(source.destination.gain.value, gain, id);
+  assert(loaded.requests.includes(`../assets/audio/se/${file}`), id);
+}
 for (const id of ["click", "select", "cancel", "whoosh", "jingle", "card", "phone", "doorbell", "coalSnip", "coalPlace", "foilPunch", "bubbling"]) loaded.audio.SE[id]();
 assert.equal(loaded.oscillators(), 0, "loaded effects use decoded recordings");
 assert(loaded.sources.every(source => source.buffer.file), "all effect files are present");

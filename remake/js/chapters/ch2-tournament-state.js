@@ -75,7 +75,7 @@ export function startAttempt(value, craft) {
   p.attempts++;
   Object.assign(p, { stage: "craft", step: 0, craft: copy(craft), rollback: null,
     votes: Object.fromEntries(JUDGES.map(id => [id, Object.fromEntries(CONTESTANTS.map(c => [c, 0]))])),
-    baseVotes: initialBaseVotes(CONTESTANTS), voted: 0, result: null, failure: null });
+    baseVotes: initialBaseVotes(CONTESTANTS), voted: 0, lastVotes: null, roundVotes: [], result: null, failure: null });
   value.phase = "tournament";
   return p;
 }
@@ -120,6 +120,7 @@ export function castVotes(p, round, performance, prefByJudge = null) {
     row[second]++;
   }
   p.lastVotes = lastVotes;
+  (p.roundVotes ||= [])[round] = lastVotes;
   p.voted++;
   p.quality = quality;
   return true;

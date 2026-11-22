@@ -328,6 +328,31 @@ await suite("ch1-tournament", async check => {
     }
   });
 
+  await check("preparation-reserves-price-and-practices-announced-mix", async page => {
+    await init(page);
+    await page.evaluate(() => {
+      T.core.state.money = 1550; T.core.state.day = 7;
+      window.preparing = T.preparation.prepareFlavorStock();
+    });
+    const button = id => page.locator(`[data-test="${id}"]`);
+    await button("prep-flavor-blueberry").click();
+    await page.locator('[data-tab="kuji"]').click();
+    assert(await button("kuji-g1000").isDisabled(), "くじで指定品代を使わない");
+    await page.locator('[data-tab="flavor"]').click();
+    await button("buy-mint").click();
+    assert(await button("shop-checkout").isDisabled(), "ほかの葉で指定品代を使わない");
+    await button("minus-mint").click();
+    await button("buy-blueberry").click(); await button("shop-checkout").click(); await button("shop-leave").click();
+    await page.evaluate(() => window.preparing);
+    assert.equal(await page.evaluate(() => T.core.state.money), 0, "所持金で足りるときは経費にしない");
+    await page.evaluate(async () => {
+      window.cs = T.session.newSession("rehearsal"); cs.practiceKind = "midcheck"; await T.open(cs);
+      window.mixing = T.steps.stepMix(cs);
+    });
+    await button("mix-ok").click(); await page.evaluate(() => window.mixing);
+    assert.deepEqual(await page.evaluate(() => cs.mix), { blueberry: 10, mint: 2 });
+  });
+
   await check("preparation-low-money-stock-and-save", async page => {
     await init(page);
     await page.evaluate(() => {

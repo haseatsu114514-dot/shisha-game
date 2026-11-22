@@ -171,6 +171,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_followup_done", "progression"],
   ["_ch2_halloween_active", "progression"],
   ["_ch2_kumicho_public_reveal", "person"],
+  ["_ch2_last_yuzugaya_day", "progression"],
   ["_ch2_morning_departed", "progression"],
   ["_ch2_stay_local_since", "progression"],
   ["_ch2_naru_hurt", "person"],
@@ -364,6 +365,7 @@ export const FLAG_EXACT_RULES = [
   ["_strain_end", "person"],
   ["_strain_reunion_go", "person"], // やり直しを申し込むかの答え（core/lover-strain.js の STRAIN_REUNION_FLAG）。再生の前後で消す
   ["_confession_wait", "pending"],
+  ["_craft_last_preparation", "progression"], // 同じ練習・注文の配合と穴配置。周回内の制作記録
   ["_craft_practice_runs", "progression"],
   ["_day1_shift_ended", "progression"],
   ["_delivery_adam", "person"],

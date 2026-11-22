@@ -187,4 +187,50 @@ await suite('craft-rank-wire', async check => {
     assert(!overlaps(boxes.appearance, boxes.rank), `Appearance covered by rank: ${JSON.stringify(boxes)}`);
     await page.locator('.bench-appearance-button').click({ trial: true });
   }, options);
+
+  for (const [name, options] of [
+    ['final-care-pc', {}],
+    ['final-care-touch', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  ]) await check(name, async page => {
+    await page.evaluate(async () => {
+      const core = await import('./js/core/state.js');
+      const session = await import('./js/craft/session.js');
+      const { CRAFT_STEPS } = await import('./js/craft/practice.js');
+      const { runCare } = await import('./js/craft/pull.js');
+      core.newGame().chapter = 5;
+      const cs = session.newSession('tournament');
+      cs.pull = { temp: .56 };
+      window.finalCare = { cs, refreshBench: session.refreshBench };
+      await session.openBench(cs, { steps: CRAFT_STEPS }).ready;
+      void runCare(cs, { round: 1 });
+    });
+    const placement = page.locator('[data-test="care-place-outer"]');
+    await placement.waitFor();
+    const layout = await page.evaluate(() => {
+      const { cs, refreshBench } = window.finalCare;
+      cs.pullDone = true;
+      cs.stats = { craftQuality: 85 };
+      refreshBench();
+      const burst = document.querySelector('.craft-rank-burst[data-grade="A"]');
+      const animation = burst.getAnimations()[0];
+      // 最大表示が落ち着いたところで、実際の札との位置関係を測る。
+      animation.currentTime = 600;
+      const rankStyle = getComputedStyle(burst);
+      const panel = burst.parentElement.querySelector('.bench-right');
+      return {
+        burst: burst.getBoundingClientRect().toJSON(),
+        opacity: Number(rankStyle.opacity),
+        panelInFront: Number(getComputedStyle(panel).zIndex) > Number(rankStyle.zIndex),
+        buttons: [...panel.querySelectorAll('.care-place, .care-coal')].map(button => button.getBoundingClientRect().toJSON()),
+      };
+    });
+    assert(layout.burst.width > 0 && layout.opacity > .9, 'The large rank remains visible');
+    assert(layout.buttons.length > 3 && layout.buttons.every(button => !overlaps(layout.burst, button)),
+      'The large rank leaves the coal choices clear');
+    assert(layout.panelInFront, 'The coal choices remain in front when the rank flies back');
+    await page.locator('.craft-rank-burst').waitFor({ state: 'detached' });
+    if (options.hasTouch) await placement.tap();
+    else await placement.click();
+    assert.equal(await placement.getAttribute('aria-pressed'), 'true');
+  }, options);
 });

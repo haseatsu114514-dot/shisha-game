@@ -1178,7 +1178,7 @@ export const GUIDE = [
   { head: "ガックン", body: "リールがガクッ＝章の始まり・設定変更後・ロード後の合図" },
   { head: "水色の吹き出し", body: "設定のヒント（確定ではない）" },
 ];
-/** 初回説明とノートで共有する、現在の成長モードの遊び方。旧モードの説明は残す。 */
+/** 現在の成長モードに合わせたノートの遊び方。 */
 export function guideTiles() {
   return growthEnabled() ? GUIDE.map((g) => g === LEGACY_REWARD_GUIDE ? EXP_REWARD_GUIDE : g) : GUIDE;
 }
@@ -1190,7 +1190,7 @@ const DETAIL_GUIDE = [
 ];
 const CUE_JA = { blue: "青", green: "緑", red: "赤" };
 
-/** ラミネートの遊技説明のようなカード（ノートの遊び方と、初回の説明で使う） */
+/** ラミネートの遊技説明のようなカード */
 function guideCard(tiles = guideTiles()) {
   const art = (g) => {
     if (g.art === "lamp") return el("span.rn-art.lamp", [pakkiFace()]);
@@ -1293,13 +1293,9 @@ export function openNote() {
 
 // 初回のみ: パッキーのアプリ説明（タップ・キー送り）
 const INTRO_LINES = [
-  "ボクはパッキー！ C.STATIONのシーシャ大会を盛り上げる、煙のマスコットだよ。よろしくね！",
-  "ぷぷぷっ！ C.STATION公式アプリ『MOKUMOKUパッキー』、インストール完了〜！",
-  "キミが体力を使って自由行動するたび、ボクのスロットがかってに1回転するよ。回すんじゃない——回っちゃうんだ。",
-  "ルールはシンプル！ ボクの顔が光ったら——大当たりっ！ それだけ！",
-  "外れても大丈夫。回したぶんだけ、がんばりがちゃーんと積もるよ。ボクの顔をタップすると記録ノートも見られるからね！",
+  "ボクはパッキー！ C.STATION公式アプリ『MOKUMOKUパッキー』、インストール完了〜！",
+  "体力を使う自由行動で、スロットがかってに1回転！ ボクの顔をタップするとノートが見られるよ",
 ];
-// 初回のみ: パッキーの説明のあとに、遊び方カードを1枚（システムの説明）。ノートの遊び方で読み返せる
 let installation = null;
 /** 会場で導入し、説明直後に最初の一回を体験する。再訪・再開では増やさない。 */
 export function installReel() {
@@ -1331,20 +1327,17 @@ export function installReel() {
 
 function showIntro() {
   const owner = state;
-  const lines = [...INTRO_LINES];
-  if (growthEnabled()) lines[lines.length - 1] = "図柄が揃うと経験値が入るよ！ ボクの顔をタップすると、記録ノートも見られるよ！";
-  const pages = [...lines.map((text) => ({ text })), { card: true }];
   return new Promise((resolve) => {
     let i = 0, closed = false;
     const previousFocus = document.activeElement;
     const text = el("div.ri-text", { "aria-live": "polite" });
-    const face = pakkiFace(".big");
-    const app = el("span.ri-app", { text: "MOKUMOKUパッキー" });
     const next = el("button.btn.ri-next", {
       type: "button", dataset: { test: "reel-intro-next" },
       style: { marginLeft: "auto", minHeight: "calc(44px / var(--k, 1))" },
     });
-    const panel = el("div.ri-panel", [el("div.ri-head", [face, app]), text, next]);
+    const panel = el("div.ri-panel", [
+      el("div.ri-head", [pakkiFace(".big"), el("span.ri-app", { text: "MOKUMOKUパッキー" })]), text, next,
+    ]);
     const box = el("div.reel-intro", {
       role: "dialog", "aria-modal": "true", "aria-label": "MOKUMOKUパッキーの説明", dataset: { test: "reel-intro" },
     }, [panel]);
@@ -1368,15 +1361,9 @@ function showIntro() {
       resolve(read);
     };
     const unsubscribe = on("hud", () => { if (state !== owner) close(false); });
-    // 設定の説明はパッキーの台詞ではなくシステムの説明として見せる
     const render = () => {
-      const page = pages[i];
-      if (page.card) text.replaceChildren(guideCard());
-      else text.textContent = page.text;
-      panel.classList.toggle("sys", !!page.card);
-      face.style.display = page.card ? "none" : ""; // .rw-face の display:block が hidden に勝つため
-      app.textContent = page.card ? "パッキースロットの遊び方" : "MOKUMOKUパッキー";
-      next.textContent = page.card ? "説明を閉じる" : "次へ";
+      text.textContent = INTRO_LINES[i];
+      next.textContent = i === INTRO_LINES.length - 1 ? "説明を閉じる" : "次へ";
     };
     // 受付会話の最後のタップは pointerup の時点でこの説明を開く。同じタップの互換 mousedown・click が
     // 後から説明に届くと、フォーカスが外れて1ページ目が飛ばされる。この箱の上で押し始めた入力だけを受ける。
@@ -1392,8 +1379,7 @@ function showIntro() {
       if (closed || !box.isConnected || stale || (!isTouch && event.detail > 1)) return;
       if (state !== owner) { close(false); return; }
       i += 1;
-      if (i === 2) SE.puka();
-      if (i < pages.length) { render(); SE.click(); return; }
+      if (i < INTRO_LINES.length) { render(); SE.puka(); return; }
       close(true);
     });
     box.addEventListener("keydown", (event) => {

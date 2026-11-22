@@ -3481,6 +3481,30 @@
     "twistIdle": "門番を通り抜けるには、どんな手が使えそうですか？",
     "planTitle": "魔王と撮る、最高の一枚の作戦"
   },
+  "pictureBook": {
+    "pages": [
+      {
+        "image": "../../img/ui/trpg/picturebook/purikura-hero/01.webp",
+        "alt": "きらめく顔と服が写った写真と、箱型のカメラ",
+        "text": "きらめき王国では、写真を撮ると顔も服もきらきらに写った。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/purikura-hero/02.webp",
+        "alt": "広場の噴水と、貼り紙のある掲示板",
+        "text": "王国の広場には噴水があり、勇者募集の貼り紙が出ていた。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/purikura-hero/03.webp",
+        "alt": "撮影城の遠景。塔の窓のそばにシャッター音を表す短い線がある",
+        "text": "魔王プリズマに撮られると、写真も本物も色あせる。撮影城から、今日もシャッターの音。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/purikura-hero/04.webp",
+        "alt": "首からカメラを下げて歩く、白ひげの写真屋のおじいさん",
+        "text": "そこへ、首からカメラを下げた写真屋のおじいさんがやって来た。"
+      }
+    ]
+  },
   "debrief": {
     "smooth": "trpg_purikura_hero_debrief_smooth",
     "with-detour": "trpg_purikura_hero_debrief_with_detour"

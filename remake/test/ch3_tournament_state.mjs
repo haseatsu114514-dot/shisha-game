@@ -78,6 +78,7 @@ assert.equal(withoutWater.votes.dr_charcoal.hajime, 2);
 let prior = copy(p.votes);
 for (const [round, quality] of [95, 40, 97, 95].entries()) {
   assert.equal(castVotes(p, round, quality), true);
+  assert.deepEqual(p.roundVotes[round], p.lastVotes);
   for (const judge of JUDGES) {
     const last = p.lastVotes[judge];
     const gained = Object.fromEntries(CONTESTANTS.map(id => [id, p.votes[judge][id] - prior[judge][id]])

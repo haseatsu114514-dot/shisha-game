@@ -3,13 +3,19 @@ const ART_STEMS = Object.freeze({ kuraudo: "rei", uezono: "maezono", ayatori: "s
 export const characterArtStem = id => Object.hasOwn(ART_STEMS, id) ? ART_STEMS[id] : id;
 
 // 本編と独立ページのミニゲームで同じ manifest の画風・表情差分を選ぶ。
-export function resolvePortrait(manifest, speaker, face = "normal", style = "new") {
+export function resolvePortrait(manifest, speaker, face = "normal", style = "new", requestedCostume) {
   style = style === "classic" ? "classic" : "new";
   const folder = ({ tumugi: "tsumugi", hazime: "hajime", oneesan: "minto" })[speaker] || speaker;
   const p = manifest.portraits?.[folder];
   if (!p) return null;
   const candidate = style === "new" ? manifest.portraitVariants?.new?.[folder] : null;
   let f = face || "normal";
+  const styleFaces = style === "new" ? candidate?.faces : p.faces;
+  // 通常の水着が揃った画風だけ切り替える。揃っていなければ元の表情で解決する。
+  if (speaker !== "oneesan" && requestedCostume === "swim" && styleFaces?.includes("swim_normal")) {
+    const swimFace = `swim_${f}`;
+    f = styleFaces.includes(swimFace) ? swimFace : "swim_normal";
+  }
   if (speaker === "oneesan") {
     f = f.startsWith("ura_") ? f : `ura_${f}`;
     if (!p.faces.includes(f)) f = "ura_normal";

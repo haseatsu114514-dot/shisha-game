@@ -194,7 +194,7 @@ const heart = tournament.ch2_tournament_ageha_heart;
 assert(!all(heart).some((l) => l.speaker === "hajime"), "はじめはこの場にいない");
 const voice = heart.lines.filter((l) => l.speaker === "ageha").map((l) => l.text);
 assert(voice.length >= 4 && voice.every((t) => /^（.*）$/.test(t)), "あげはの台詞はすべて心の声");
-assert.match(voice.join("\n"), /崩れ/); assert.match(voice.at(-1), /こんなの、ズルいよ/);
+assert.match(voice.join("\n"), /崩れ/); assert.match(voice.at(-1), /こんなの、ずるいよ/);
 assert.doesNotMatch(heart.lines.map((l) => l.text || "").join("\n"), /震え/, "震えは秘密を知る保存だけ");
 assert.match(heart.branches.secret.map((l) => l.text).join("\n"), /震え/);
 assert(!all(heart).some((l) => ["apply", "note", "set_flag"].includes(l.type)));

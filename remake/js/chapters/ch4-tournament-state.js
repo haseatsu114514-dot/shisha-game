@@ -161,13 +161,17 @@ export function chapterFourStandings(p) {
 
 function commitChapterFourVote(p, craft, quality, rules, round) {
   p.quality = quality;
+  const picks = {};
+  const firstPoints = rules.spend[round] - 1;
   for (const judge of CH4_JUDGES) {
     const hajimeScore = rulesVersion(p) >= 3 ? chapterFourJudgeQuality(craft, round, judge) : p.quality.hajime;
     const score = id => id === "hajime" ? hajimeScore : p.quality[id];
     const [first, second] = [...CH4_CONTESTANTS].sort((a, b) => score(b) - score(a) || byTie(a, b));
-    p.votes[judge][first] += rules.spend[round] - 1;
+    picks[judge] = { points: { [first]: firstPoints, [second]: 1 } };
+    p.votes[judge][first] += firstPoints;
     p.votes[judge][second] += 1;
   }
+  (p.roundVotes ||= [])[round] = picks;
   p.voted++;
 }
 
@@ -224,6 +228,6 @@ export function resetChapterFourCraft(value) {
   if (!p.result || p.result.win) return false;
   if (p.entry) restore(value, p.entry);
   Object.assign(p, { rulesVersion: CH4_RULES_VERSION, step: 0, craft: null, rollback: null, result: null,
-    voted: 0, votes: emptyVotes(), baseVotes: initialBaseVotes(CH4_CONTESTANTS), quality: null });
+    voted: 0, votes: emptyVotes(), baseVotes: initialBaseVotes(CH4_CONTESTANTS), roundVotes: [], quality: null });
   return true;
 }

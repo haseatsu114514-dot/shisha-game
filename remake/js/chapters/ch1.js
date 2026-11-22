@@ -550,7 +550,7 @@ async function naruMatch(progress) {
   if (!progress.stockDone) { await prepareFlavorStock(); requireCurrent(); progress.stockDone = true; save(); }
   if (!progress.practiceDone) {
     beginEvePractice(progress);
-    const cs = await runFullPractice({ kind: "midcheck", note: "なるとの一台勝負（スミさん審査）",
+    const cs = await runFullPractice({ kind: "midcheck", orderId: "naru_match", note: "なるとの一台勝負（スミさん審査）",
       onStep: (step) => { if (NARU_MATCH_ASIDES[step]) toast(NARU_MATCH_ASIDES[step], { ms: 3200 }); },
       isCurrent: () => { requireCurrent(); return true; } });
     requireCurrent();

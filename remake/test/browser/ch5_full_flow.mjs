@@ -423,6 +423,13 @@ await suite("ch5-full-flow", async check => {
     assert(await page.locator(dt("map-go")).isVisible());
     // 昼: 配送便で東京へ → 最初は Dr.fookah の店員に乗せてもらう話 → 夜に着いてムカイさんに屋根裏を借りる → 屋根裏で寝る。
     await page.locator(dt("map-go")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch2_region === "tokyo", null, { polling: 10 });
+    // 移動演出中に閉じた場合、行動を使っていない保存は元の地図に戻る。
+    const transitSave = await page.evaluate(async () => (await import("./js/core/state.js")).peekSave());
+    assert.notEqual(transitSave.flags._ch2_region, "tokyo");
+    await loadSlot(page, 0);
+    await mapReady(page, { day: 51, slot: 0 });
+    await go(page, "ch5_to_tokyo");
     const tokyoMap = (day, slot) => page.waitForFunction(([day, slot]) => {
       const s = window.__remake?.state;
       return s && s.day === day && s.slot === slot && document.querySelector('.map:not(.done):not([data-revealing="true"])[data-region="tokyo"] [data-test=pin-ch5_tokyo_mukai]')
@@ -630,6 +637,12 @@ await suite("ch5-full-flow", async check => {
       s.pendingInvite = { event: "date_tsumugi", sender: "tsumugi", slot: 1, day: 52, originId: "_date_inv_tsumugi_test_d52", afterClose: true };
     });
     const beforeFlight = await get(page);
+    // 最初の確認で日程変更を承諾しても、搭乗を取り消せば、今日の約束のまま。
+    await go(page, "ch5_to_dubai");
+    await page.locator(dt("ch5-date-leave")).click();
+    await page.locator(dt("ch5-dubai-cancel")).click({ timeout: 60000 });
+    await mapReady(page, { day: 52, slot: 0 });
+    assert.deepEqual(unchangedAppointment(await get(page)), unchangedAppointment(beforeFlight));
     await go(page, "ch5_to_dubai");
     await page.locator(dt("ch5-date-leave")).click();
     await page.locator(dt("ch5-dubai-go")).click({ timeout: 60000 });

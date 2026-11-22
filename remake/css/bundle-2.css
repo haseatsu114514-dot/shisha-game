@@ -3323,14 +3323,6 @@ html:root[data-density="phone"] .reel-intro .cue-chip {
   min-width: 1.25em;
   min-height: 1.25em;
 }
-html:root[data-density="phone"] .reel-intro .ri-panel.sys {
-  width: min(1160px, calc(100% - 32px));
-  max-height: calc(100% - 32px);
-  overflow-y: auto;
-}
-html:root[data-density="phone"] .reel-intro .ri-panel.sys .rn-card {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
 html:root[data-density="phone"] body:not(:root) .reel-widget .rw-bubble.cue {
   font-size: max(var(--slot-phone-text), calc(12px / var(--k, 1)));
 }
@@ -4086,8 +4078,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list { grid-column: 2
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head { display: none !important; }
 /* 心得の「単体で勝負」と「香りの記憶」だけは一覧の頭に残す（見出しの文と助言は隠したまま）。
    以前は見出しごと隠れて、覚えた心得が押せなかった（growth_levelup の single-leaf-style-lesson）。 */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall) { display: flex !important; flex: none; flex-wrap: wrap; align-items: center; gap: 8px; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head > :not([data-test="mix-single-style"]):not(.mix-recall) { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall, > .mix-reuse) { display: flex !important; flex: none; flex-wrap: wrap; align-items: center; gap: 8px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head > :not([data-test="mix-single-style"], .mix-recall, .mix-reuse) { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row { display: flex !important; min-height: 0 !important; height: 116px !important; flex: none; padding: 4px 12px 4px 6px !important; gap: 12px !important; align-items: center !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row > * { grid-area: auto !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-name { padding-left: 0 !important; }
@@ -4777,7 +4769,7 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 }
 /* 一覧の頭は1行。記憶を開いた時は候補に場所を渡し、候補だけ横へ送る。 */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head { display: none !important; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall) {
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall, > .mix-reuse) {
   flex: none !important; display: flex !important; flex-wrap: nowrap !important; align-items: stretch !important; gap: 10px !important; height: var(--ph-tap) !important; margin: 0 !important; padding: 0 !important;
   min-width: 0; overflow: hidden !important;
 }
@@ -4794,11 +4786,13 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall:not([open]) > .chips { display: none !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > [data-test="mix-single-style"],
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-reuse,
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall > summary,
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall .chips > .btn {
   flex: none !important; box-sizing: border-box; height: var(--ph-tap) !important; min-height: 0 !important; margin: 0 !important; padding: 0 24px !important;
   display: inline-flex !important; align-items: center; justify-content: center; gap: 8px; font-size: var(--ph-sub) !important; font-weight: 700; line-height: 1.1 !important; white-space: nowrap !important;
 }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head:has(> .mix-reuse) { height: auto !important; flex-wrap: wrap !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall > summary {
   list-style: none; cursor: pointer; color: var(--ph-ink); background: #2a1c40 padding-box; border-style: solid; border-color: transparent;
   border-image: url("../img/ui/craft-glass/key.webp") 88 88 128 88 fill / 21px 21px 31px 21px / 4.3px 4.2px 4.8px 4.2px stretch;
@@ -5060,6 +5054,8 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
   -webkit-mask-image: linear-gradient(#000 calc(100% - 26px), #0000); mask-image: linear-gradient(#000 calc(100% - 26px), #0000);
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hole-chooser .ht-title { flex: none; font-size: var(--ph-sub) !important; line-height: 1.2 !important; color: var(--ph-gold); letter-spacing: .08em; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hole-chooser .hole-reuse { min-height: var(--ph-tap); font-size: var(--ph-sub) !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hole-chooser .hole-reuse-hint { font-size: var(--ph-sub); }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hole-chooser .ht-option {
   flex: none !important; display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; gap: 12px !important; width: 100% !important; min-width: 0 !important;
   min-height: var(--ph-tap) !important; margin: 0 !important; padding: 0 14px !important; font-size: var(--ph-text) !important;

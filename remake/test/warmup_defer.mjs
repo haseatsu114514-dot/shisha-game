@@ -278,7 +278,7 @@ console.log("[warmup defer] PASS: title prepares the dialogue frame, map entranc
   await ui.imageReady('a', 100, { keep: true });
   assert.equal(requested.length, 5, 'oldest decoded reference was released');
 }
-// 作業台の素材（pin）は上限の外。1工程で上限を超えるので、上限に入れると同じ作業台の中で追い出し合う（craft_readiness）。
+// 通常の画像と作業台では別々の上限を使い、最近使った工程は再表示に残す。
 {
   const { ui, requested } = await loadUi({ imageSize: 2048 });
   await ui.imageReady('bench', 100, { keep: true, pin: true });
@@ -287,6 +287,10 @@ console.log("[warmup defer] PASS: title prepares the dialogue frame, map entranc
   assert.equal(requested.length, 5, 'pinned bench art survives the decoded budget');
   await ui.imageReady('a', 100, { keep: true });
   assert.equal(requested.length, 6, 'other kept art stays bounded and does not count the pinned bench');
+  for (let i = 1; i <= 8; i++) await ui.imageReady(`bench-${i}`, 100, { keep: true, pin: true });
+  assert.equal(ui.imageReady.isReady('bench'), false, 'oldest craft art is released beyond 128 MiB');
+  assert.equal(ui.imageReady.isReady('bench-8'), true, 'current craft art stays ready');
+  assert.equal(ui.imageReady.isReady('a'), true, 'craft art does not displace other cached art');
 }
 {
   const { ui, requested } = await loadUi();

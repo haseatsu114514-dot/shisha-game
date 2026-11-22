@@ -1186,6 +1186,14 @@ html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > .trpg-but
 /* しおりのある本: 「続きから遊ぶ」「最初から」を横に並べる */
 html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > .trpg-button[data-test^="trpg-resume-"] { grid-column: 1; }
 html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > .trpg-button[data-test^="trpg-resume-"] + .trpg-button { grid-column: 2; }
+html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy:not(:has(> [data-test^="trpg-resume-"])) > .trpg-button:has(+ .trpg-picturebook-open) { grid-column: 1; }
+html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy:has(> .trpg-picturebook-open):has(> [data-test^="trpg-resume-"]) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > .trpg-picturebook-open { grid-column: -2 / -1; }
+html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy:has(> .trpg-picturebook-open) > .trpg-button {
+  padding-inline: 4px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
 /* 遊び終えた本: 結末の名前・星・見た結末の数。日付と顔ぶれは1行、その夜の呼び名と役は title で */
 html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-memory { margin: 0; padding: 0; border: 0; background: none; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; }
 html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-memory > strong { flex: 1 1 100%; min-width: 0; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

@@ -39,6 +39,7 @@ const mocks = {
     return { id };
   } },
   "remake/js/daily/calendar.js": { runDaily: async def => { state.def = def; } },
+  "remake/js/daily/night-events.js": { nightPlan: () => [] },
   "remake/js/daily/spots.js": { allSpots: () => [{ id: "tonari", kind: "tonari" }], VISIT_COST: 3000,
     isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn,
     CHAR_STAT: { adam: "guts", minto: "charm" }, VISIT_BG: { adam: "bg_eden_shop", minto: "peppermint" },

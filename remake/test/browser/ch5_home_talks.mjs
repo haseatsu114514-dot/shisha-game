@@ -132,7 +132,7 @@ await suite("ch5-home-talks", async check => {
     await mapReady(page, { day: 51, slot: 1, region: "widehanga" });
     let state = await get(page);
     let text = await logText(page);
-    assert.match(text, /炭より先に持ち点の表を見てやした/, "Kanzaki says he saw through the Chapter 2 win");
+    assert.match(text, /炭より先に持ち点の表を見てなすった/, "Kanzaki says he saw through the Chapter 2 win");
     assert.match(text, /世界から、よく戻りなすった/);
     assert.doesNotMatch(text, /昼の神崎煙草店/, "the one-time talk has its own arrival, no day greeting");
     assert.equal(state.flags.ch2_kumicho_after_ch2_done, true);

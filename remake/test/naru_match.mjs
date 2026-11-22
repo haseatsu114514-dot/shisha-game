@@ -4,7 +4,7 @@ import { DB } from "../js/core/data.js";
 import { temperatureBands } from "../js/craft/temperature-model.js";
 import { judgeNaruMatch, naruMatchReviewLines, NARU_MATCH_BASELINE, NARU_MATCH_DRAW_MARGIN } from "../js/chapters/naru-match.js";
 
-// #1089 DAY7 なる戦: 実制作の値となるの基準点で勝ち／負け／引分けが決まり、講評の内容が変わること。
+// #1089 DAY7 なる戦: 実制作の値となるの基準点で勝ち／負け／引き分けが決まり、講評の内容が変わること。
 DB.flavorById = { lemon: { short_name: "AF レモン", heat_tolerance: 1 } };
 const dialogues = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/remake_ch1.json", import.meta.url))).dialogues;
 const review = dialogues.find(d => d.dialogue_id === "remake_naru_match_review");
@@ -57,7 +57,7 @@ for (const reason of ["burnt", "cold", "leaf"]) {
 // #2515 の保存済み failed:true にも、理由を決めつけない共通講評を使う。
 assert.equal(text({ result: "lose", score: 0, heat: "failed", served: "unknown", failed: true }), text(judgeNaruMatch({ failed: "cold" })));
 assert.match(text({ result: "win", heat: "hajime", served: "ideal" }), /今日の一台は、はじめだ/);
-assert.match(text({ result: "draw", heat: "naru", served: "hot" }), /引分け/);
+assert.match(text({ result: "draw", heat: "naru", served: "hot" }), /引き分け/);
 // なるが店を出てからスミさんが締める。報酬は従来のDAY7と同じ洞察+2の一度だけ。
 for (const result of ["win", "draw", "lose"]) {
   const lines = naruMatchReviewLines(review, { result, heat: "naru", served: "ideal" });

@@ -25,6 +25,14 @@ export const CH4_BEACH_SCENES = Object.freeze({
     ayatori: "ch4_beach_ayatori", steve: "ch4_beach_steve", volk: "ch4_beach_volk",
   }),
 });
+
+/** 選んだ相手の個別会話だけ水着にする。ヌールは仕事服で来る。 */
+export function chapterFourBeachCostume(speaker, scene) {
+  if (speaker === "noor" || !Object.hasOwn(CH4_BEACH_SCENES.people, speaker)
+    || CH4_BEACH_SCENES.people[speaker] !== scene) return undefined;
+  return { speaker, key: "swim" };
+}
+
 /** 台本の読み込み対象（ch4.js が FILES に使う）。 */
 export const CH4_BEACH_SCENE_FILES = Object.freeze({
   ch4_beach: Object.freeze([CH4_BEACH_SCENES.open, ...Object.values(CH4_BEACH_SCENES.people), CH4_BEACH_SCENES.close]),
