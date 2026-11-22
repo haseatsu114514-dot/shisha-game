@@ -630,7 +630,7 @@ test('all 24 NPC portraits render in .trpg-speaker-art without disturbing unpict
 test('speaker dock aligns expressions and role costumes consistently across scenes and aliased scenarios', async () => {
   const framesList = JSON.parse(await readFile(new URL('../img/ui/trpg/costumes/frames.json', import.meta.url), 'utf8'));
   const costumeFrames = Object.fromEntries(framesList.map(f => [`${f.scenario}/${f.character}/${f.role_id}`, f]));
-  const mail = JSON.parse(await readFile(new URL('../../data/dialogue/trpg_regular_mail.json', import.meta.url), 'utf8'));
+  const { pictureBook, ...mail } = JSON.parse(await readFile(new URL('../../data/dialogue/trpg_regular_mail.json', import.meta.url), 'utf8'));
   const mounted = mount(mail, { costumeFrames }), { api, root, q } = mounted;
   let enteredStory = false;
   const seen = new Set();
