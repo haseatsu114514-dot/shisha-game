@@ -26,7 +26,7 @@ export function beginCh1Votes(attempt, { style = null } = {}) {
   if (attempt.voteAttempt) return attempt.voteAttempt;
   const sakurai = style === "sakurai";
   return attempt.voteAttempt = { rulesVersion: sakurai ? CH1_SAKURAI_VERSION : CH1_VOTE_VERSION,
-    ...(sakurai ? { style: "sakurai", views: [], picks: [], attacks: [] } : {}),
+    picks: [], ...(sakurai ? { style: "sakurai", views: [], attacks: [] } : {}),
     voted: 0, votes: emptyVotes(), baseVotes: initialBaseVotes(CH1_CONTESTANTS), finalVotes: null, result: null };
 }
 export const isSakuraiVotes = (p) => p?.style === "sakurai" && p?.rulesVersion === CH1_SAKURAI_VERSION;
@@ -68,12 +68,14 @@ export function castCh1Votes(attempt, round, cs) {
   const mine = ch1Parts(cs, round), limit = [2, 3, 4, 5][round];
   checkBudget(p, round);
   p.finalVotes = round === 3 ? emptyVotes() : null;
+  const picks = {};
   for (const judge of CH1_JUDGES) {
     const weights = CH1_WEIGHTS[judge];
     const scores = Object.fromEntries(CH1_CONTESTANTS.map(id => [id,
       evaluated(id === "hajime" ? mine : CH1_RIVALS[id], weights, limit)]));
     const [first, second] = CH1_CONTESTANTS.slice().sort((a, b) => scores[b] - scores[a] || byId(a, b));
     const amount = SPEND[round] - (judge === "sensu" && round === 3 ? 1 : 0);
+    picks[judge] = { first, second, points: { [first]: amount - 1, [second]: 1 } };
     p.votes[judge][first] += amount - 1;
     p.votes[judge][second]++;
     if (round === 3) {
@@ -81,6 +83,7 @@ export function castCh1Votes(attempt, round, cs) {
       p.finalVotes[judge][second]++;
     }
   }
+  (p.picks ||= [])[round] = picks;
   p.voted++;
   if (round === 3) {
     const last = CH1_LAST_POINT;
@@ -102,6 +105,14 @@ export function ch1Standings(p, mineTotal) {
     .map((id, index) => ({ id, rank: index + 1, points: points(id) }));
   return { rank: rows.find(row => row.id === "hajime").rank, rows, votes: structuredClone(p.votes),
     baseVotes: structuredClone(p.baseVotes || {}), lastPoint: p.lastPoint };
+}
+
+/** 最後の1点だけを外した順位。出来栄え・最終回の票も本来の同点判定に従う。 */
+export function ch1BeforeLastStandings(p, mineTotal) {
+  const id = p?.lastPoint;
+  if (!id || !p.beforeLast || !(p.finalVotes?.sensu?.[id] > 0)) return null;
+  const finalVotes = { ...p.finalVotes, sensu: { ...p.finalVotes.sensu, [id]: p.finalVotes.sensu[id] - 1 } };
+  return ch1Standings({ ...p, votes: p.beforeLast, finalVotes }, mineTotal).rows;
 }
 
 // ---------------------------------------------------------------- 桜井式（試作・rulesVersion 3）

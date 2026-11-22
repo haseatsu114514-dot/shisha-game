@@ -5,6 +5,7 @@ import { el } from "../core/util.js";
 import { state } from "../core/state.js";
 import { modal } from "../core/ui.js";
 import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics.js";
+import { tournamentResultReason } from "../craft/tournament-result-reason.js";
 import { contestCeremony } from "../craft/tournament-show.js";
 import { CH4_JUDGES, CH4_CONTESTANTS, chapterFourStandings } from "./ch4-tournament-state.js";
 
@@ -27,7 +28,9 @@ function avatar(id) {
 
 export function chapterFourStandingsView(p, { rows = chapterFourStandings(p), notes = null, test = "ch4-standings", final = false } = {}) {
   const lead = notes || [NOTES[Math.max(0, Math.min(NOTES.length - 1, p.voted - 1))]];
+  const reason = final && p.result && !p.result.failure ? tournamentResultReason(rows, { rounds: p.roundVotes, quality: p.quality }) : null;
   return el("div.ch4-standings", { dataset: { test } }, [
+    reason ? el("div.tournament-result-reason", { text: reason, dataset: { test: "tournament-result-reason" } }) : null,
     ...lead.map(text => el("p.ch2-contest-note", { text })),
     p.baseVotes ? el("p.ch2-contest-note", { text: "全出場者に基礎票1点" }) : null,
     el("section.ch2-contest-board", [judgeLegend(CH4_JUDGES), el("ol.ch2-contest-ranking", rows.map(row =>
@@ -51,7 +54,8 @@ export function playChapterFourVotes(view, p, { before, rows = chapterFourStandi
   if (!before) return { moved: false, done: Promise.resolve() };
   return contestCeremony({
     root: view, judges: CH4_JUDGES, contestants: CH4_CONTESTANTS, votes, before, base: p.baseVotes || {}, rows, quality: p.quality || {},
-    buttons: [...(view.closest(".modal-box")?.querySelectorAll(".modal-actions button") || [])], late,
+    buttons: [...(view.closest(".modal-box")?.querySelectorAll(".modal-actions button") || [])],
+    late: [...late, view.querySelector(".tournament-result-reason")],
     sting: { eyebrow: "HAZE: GRAND SMOKE", title: final ? "FINAL VOTE" : "JUDGES' VOTE", sub: final ? "最後の票が入ります" : "審査員の票が入ります" },
   });
 }

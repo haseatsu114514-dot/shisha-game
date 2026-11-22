@@ -514,6 +514,14 @@ await suite('ch2-tournament',async check=>{
     await board.and(page.locator('[data-ceremony="done"]')).waitFor({timeout:1000});
     assert.deepEqual(await contestPoints(page),expected.after);
     assert.equal(await page.locator('.ts-token, .judge-chip.ts-casting, .ts-wait').count(),0,'No ceremony leftovers');
+    if(final){
+      const reason=board.locator(dt('tournament-result-reason'));
+      const details=board.locator(t('vote-reason'));
+      assert.equal(await reason.textContent(),'提供後の投票で、2位より5点多く取った。最終14点差。');
+      assert(await reason.evaluate(node=>parseFloat(getComputedStyle(node).fontSize)>=24),'The result reason is displayed as a larger line');
+      assert.equal(await details.evaluate(node=>node.open),false);
+      assert.equal(await details.locator('p').first().isVisible(),false);
+    }
     await next.and(page.locator(':enabled')).waitFor();
     assert.equal(await next.evaluate(button=>document.activeElement===button),true);
     // 押す所は、解説・振り返り・講評が重なっても枠の中に見えている（TSH06）。
