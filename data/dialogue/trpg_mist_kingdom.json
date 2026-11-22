@@ -3587,6 +3587,30 @@
     "twistIdle": "霧が晴れていきますね。手を選んで、誰が動くか決めてください",
     "planTitle": "最後の一台の作戦"
   },
+  "pictureBook": {
+    "pages": [
+      {
+        "image": "../../img/ui/trpg/picturebook/mist-kingdom/01.webp",
+        "alt": "白い朝霧の中にのぞく、旗を掲げた塔の先",
+        "text": "夜明け前。霧の中に、旗を掲げた塔の先が見えてくる。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/mist-kingdom/02.webp",
+        "alt": "朝霧に浮かぶ石橋と、その先にかすむ王宮の入口",
+        "text": "朝霧が出ると、霧の王宮へ渡る橋が現れる。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/mist-kingdom/03.webp",
+        "alt": "霧色の髪の王女ミナと、隣でほほえむ霧の王",
+        "text": "今年最後の朝、霧の王女ミナは気に入った一台を選びたい。霧の王は、ほほえんでいる。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/mist-kingdom/04.webp",
+        "alt": "胸に番号札をつけ、王宮で列に並ぶ出場者たち",
+        "text": "『煙の選手権』を前に、番号札をつけた出場者が列に並ぶ。"
+      }
+    ]
+  },
   "intro": "trpg_mist_kingdom_intro",
   "listen": "trpg_mist_kingdom_listen",
   "checks": {
