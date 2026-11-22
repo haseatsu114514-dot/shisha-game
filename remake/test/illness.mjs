@@ -40,7 +40,7 @@ const values = {
   "lover-strain.js": { strainMorning: () => 0, maybeStrainTalk: async () => false, maybeStrainReunion: async () => false, strainAfterVisit() {}, strainOf: () => 0, STRAIN_SIGN2: 7 }, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
   "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
-  "state.js": { state, hasAffinity, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
+  "state.js": { state, hasAffinity, holdActionSave: () => noop, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
     visitedDay: { ...state.visitedDay }, stamina: state.stamina, rest: state.restDay ? { ...state.restDay } : null,
     queue: JSON.parse(JSON.stringify(state.deferredNightEvents || [])), appointment: state.pendingInvite ? { ...state.pendingInvite } : null }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },

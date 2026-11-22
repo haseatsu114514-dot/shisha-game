@@ -293,11 +293,19 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         el("p", { role: "status", text: "選んだ物語を読み込んでいます…" }),
         el("button.trpg-button", { type: "button", text: closeLabel, onclick: close, dataset: { test: "trpg-campaign-close" } }),
       ]));
-      const sessionResources = scenario.dialogues ? resources : await loadTrpgResources({
-        scenarioId: scenario.id, shared: resources, signal: abort.signal, preloadAssets: false,
-      });
-      if (disposed || getState() !== state) return;
-      scenario = sessionResources.scenario || scenario;
+      let sessionResources = resources;
+      if (!scenario.dialogues) {
+        root = el("div.trpg-loading", [
+          el("p", { role: "status", text: "選んだ物語を読み込んでいます…" }),
+          el("button.trpg-button", { type: "button", text: closeLabel, onclick: close }),
+        ]);
+        host.replaceChildren(root);
+        sessionResources = await loadTrpgResources({
+          scenarioId: scenario.id, shared: resources, signal: abort.signal, preloadAssets: false,
+        });
+        if (disposed || getState() !== state) { close(); return; }
+        scenario = sessionResources.scenario;
+      }
       const table = materializeTrpgCast(scenario, cast.assignments);
       await runTrpg(host, { resources: { ...sessionResources, scenario: table }, signal: abort.signal, seed,
         allowReplay: false, closeLabel: "カフェへ戻る", warmStart: ownsGear(state, "gear_dice"),
