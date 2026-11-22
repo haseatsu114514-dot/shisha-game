@@ -7310,6 +7310,58 @@
           "text": "今日から真正面。ちゃんと笑ってたわ"
         }
       ]
+    },
+    {
+      "id": "lime_tsumugi_note_day5",
+      "sender": "tsumugi",
+      "chapter": 1,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 5,
+      "trigger_end_day": 6,
+      "min_sender_gap_days": 2,
+      "type": "chat",
+      "messages": [
+        "……新しい子を描きました",
+        "耳の葉っぱが、今日は二枚です"
+      ],
+      "replies": [
+        {
+          "text": "見たい",
+          "response": "……はい。今度、席で見せます",
+          "affinity": 2
+        },
+        {
+          "text": "二枚の日もあるんだ",
+          "response": "……はい。その日の子です",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_tsumugi_note_day10",
+      "sender": "tsumugi",
+      "chapter": 1,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 10,
+      "trigger_end_day": 10,
+      "min_sender_gap_days": 2,
+      "type": "chat",
+      "messages": [
+        "……スケッチブック、新しくしました",
+        "最初のページは、まだ白いままです"
+      ],
+      "replies": [
+        {
+          "text": "何を描くの？",
+          "response": "……まだ決めてません。決めない日も、いいので",
+          "affinity": 1
+        },
+        {
+          "text": "楽しみにしてる",
+          "response": "……はい。見せられる日が来たら",
+          "affinity": 2
+        }
+      ]
     }
   ]
 }

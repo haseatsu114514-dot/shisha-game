@@ -24,7 +24,6 @@ import { loverMessages, isLover, dateSchedule } from "./romance.js";
 import { bondInvites, friendMessages } from "./bonds.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { hiyoriEventStatus } from "../core/hiyori-route.js";
-import { tsumugiMessages } from "./tsumugi-schedule.js";
 import { casualMessages } from "./casual-lime.js";
 import { LIME_PACING, isWorkInvite, storyPaceClass, pacingHistory, overdue, urgency, dayCap, bondInvitation } from "./lime-pacing.js";
 
@@ -239,6 +238,13 @@ function eligible(m, { tournamentDay = false } = {}) {
   // 大会当日の応援は、本文がある相手のうち連絡先を交換した人から。trigger_flag は応援を言える関係になった印（ひより等）
   if (cond === "tournament_day") return tournamentDay && hasContact(m.sender) && (!m.trigger_flag || !!state.flags[m.trigger_flag]);
   if (tournamentDay) return false;
+  // hasContact は旧セーブの連絡先も補完するため、配信期間・受信間隔の対象外なら先に除く。
+  if (m.trigger_end_day != null) {
+    const day = m.chapter ? chapterDay(state) : state.day;
+    if (day < m.trigger_day || day > m.trigger_end_day) return false;
+  }
+  if (m.min_sender_gap_days && (state.inbox || []).some(item => item.msg?.sender === m.sender
+    && item.chapter === state.chapter && state.day - item.day < m.min_sender_gap_days)) return false;
   if (!hasContact(m.sender)) return false;
   if (m.type === "invitation" && state.flags[`_invited_${m.id}`]) return false;
   if (m.exclude_flag && state.flags[m.exclude_flag]) return false;
@@ -272,6 +278,7 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (cond === "hiyori_tonari") return hiyoriEventStatus("tonari_return") === "ready";
   if (cond === "story_count") return (state.story[m.sender] || 0) >= (m.trigger_value || 1);
   if (cond === "lime_exchanged") {
+    if (m.trigger_end_day != null) return true;
     const day = m.chapter ? chapterDay(state) : state.day;
     return needsResend(m.id) || m.trigger_day <= day && day - m.trigger_day <= 1;
   }
@@ -329,7 +336,7 @@ export function morningMessages(opts = {}) {
   const mukai = mukaiBaitoInvite(opts);
   if (mukai && !blocked.has("mukai_master") && !delivered.has(mukai.id)) add(mukai, "work");
   // 物語のLIME。大事な外出の誘いは、通常の雑談より先に届ける。
-  const messages = [...DB.lime, ...tsumugiMessages(state, DB.friends)].sort((a, b) => (Number(importantInvite(b)) + (b.priority || 0)) - (Number(importantInvite(a)) + (a.priority || 0)));
+  const messages = [...DB.lime].sort((a, b) => (Number(importantInvite(b)) + (b.priority || 0)) - (Number(importantInvite(a)) + (a.priority || 0)));
   // 大会の朝は3通までなので、応援は仲の深い相手から届く（同じ深さなら台本順）。
   if (opts.tournamentDay) messages.sort((a, b) => affinityLevel(b.sender) - affinityLevel(a.sender));
   for (const template of messages) {
