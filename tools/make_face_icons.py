@@ -58,6 +58,9 @@ DEFAULT = {"f": 0.20, "dx": 0.0, "dy": 0.0}
 TUNE = {
     # マスコット。2026-10-09 に目・口・蝶ネクタイまで寄せたが、頭の巻き毛が切れたため（#575）、巻き毛の先から蝶ネクタイまで収める
     "pakki":   {"f": 0.70, "dx": -0.03, "dy": 0.12},
+    # Issue #3789: 後ろで高く結い上げたポニーテールに HEAD_ROOM が反応して枠が引き上がり、俯き構図と相まって
+    # 他キャラより目の位置が沈むため、頭頂余白引き上げを抑止し icon_box 基準で実測差分 dy=+0.07 だけ目線を揃える
+    "hiyori":  {"dy": 0.07, "allow_cut": True},
 }
 # 別衣装のアイコン: 出力名 → (キャラのフォルダ, 表情)。
 # minto_private = 本名「栞」を聞いた後の私的な場面（LIME・恋人の絆）で使う私服の顔
@@ -96,11 +99,14 @@ def face_box(char_id: str, im: Image.Image, style: str = CLASSIC) -> tuple[int, 
         return None
     left, top, right, bottom = bbox
     cw, ch = right - left, bottom - top
-    p = {**DEFAULT, **TUNE.get(char_id, {})}
+    custom = TUNE.get(char_id, {})
+    p = {**DEFAULT, **custom}
     entry = metrics_entry(char_id, style)
-    if char_id not in TUNE and entry and "chin" in entry:
+    if not p.get("abs") and "f" not in custom and entry and "chin" in entry:
         bx, by, bside = icon_box(entry, load_metrics()["spec"]["icon"])
-        x0, y0, side = int(round(bx)), int(round(by)), int(round(bside))
+        x0 = int(round(bx + bside * p["dx"]))
+        y0 = int(round(by + bside * p["dy"]))
+        side = int(round(bside))
     elif p.get("abs"):
         side = int(im.height * p["side"])
         x0 = int(im.width * p["cx"] - side / 2)

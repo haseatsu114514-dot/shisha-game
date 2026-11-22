@@ -18,13 +18,14 @@ export function portraitUrl(manifest, id, face = "normal") {
 export function portraitTop(manifest, id, width, headY) {
   const p = resolvePortrait(manifest, id, "normal", portraitStyle());
   if (!p) return "0px";
-  return (headY - (1 - p.h - p.b - p.topOverhang) * width / p.aspect) + "px";
+  // 常に "normal" 立ち絵を使うため、他表情の掲げた小物分（topOverhang）で頭上に余白を空けない
+  return (headY - (1 - p.h - p.b) * width / p.aspect) + "px";
 }
 
 /** Where the top of the head sits in a standing portrait, as a fraction of the image height (short characters start lower). */
 export function portraitHeadTop(manifest, id) {
   const p = resolvePortrait(manifest, id, "normal", portraitStyle());
-  return p ? Math.max(0, 1 - p.h - p.b - p.topOverhang) : 0.05;
+  return p ? Math.max(0, 1 - p.h - p.b) : 0.05;
 }
 
 export function portraitAx(manifest, id) {

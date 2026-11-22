@@ -37,7 +37,7 @@
  "face_hiyori.png": {
   "sprite": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
   "blob": "f8b98f6bca9263402491b3f13650e4eb44a7cd4d",
-  "webp": "378af90fb732fe5d59a1b4e36cd1fdb851316d10"
+  "webp": "87e4df1c888b2c8eb2a0dd11b9aa806e1f5672a5"
  },
  "face_khalil.png": {
   "sprite": "assets/sprites/characters/khalil/chr_khalil_normal.png",
@@ -98,6 +98,16 @@
   "sprite": "assets/sprites/characters/pakki/chr_pakki_normal.png",
   "blob": "416a8717cc7ca68f30cfe615c24a42a3906b0800",
   "webp": "1e2f8b111e221e51afa308a2a7339c1c520999c6"
+ },
+ "face_regulara.png": {
+  "sprite": "assets/sprites/characters/regulara/chr_regulara_normal.png",
+  "blob": "3a8b616303c7d250e5c466e829ef8ccac5f2af6f",
+  "webp": "83257e0b935be13033cd51881678588a119a9970"
+ },
+ "face_regularb.png": {
+  "sprite": "assets/sprites/characters/regularb/chr_regularb_normal.png",
+  "blob": "182df0af399dfc4f1e0e069eeedbc309d7835bbb",
+  "webp": "a893f3396a5343fb402aaf7b8fb2519ad30a1f51"
  },
  "face_rei.png": {
   "sprite": "assets/sprites/characters/rei/chr_rei_normal.png",
@@ -217,7 +227,7 @@
  "new/face_hiyori.png": {
   "sprite": "assets/sprites/character_variants/new/hiyori/chr_hiyori_normal.png",
   "blob": "82e5a5c77d2a215aebb66fa0876d12fe12a1b3be",
-  "webp": "b84ce8dfb638903aa598fd6496eea3d091a16f7f"
+  "webp": "a3eab28e2615e5db0e7a14d541e693bfc44cd8a3"
  },
  "new/face_khalil.png": {
   "sprite": "assets/sprites/character_variants/new/khalil/chr_khalil_normal.png",
@@ -273,6 +283,16 @@
   "sprite": "assets/sprites/character_variants/new/pakki/chr_pakki_normal.png",
   "blob": "57c129021c0a30eaa78582cf9a3f65839ea243c5",
   "webp": "43ef313b0ebaecacda7d31567f3e57e8072fed18"
+ },
+ "new/face_regulara.png": {
+  "sprite": "assets/sprites/character_variants/new/regulara/chr_regulara_normal.png",
+  "blob": "3a8b616303c7d250e5c466e829ef8ccac5f2af6f",
+  "webp": "83257e0b935be13033cd51881678588a119a9970"
+ },
+ "new/face_regularb.png": {
+  "sprite": "assets/sprites/character_variants/new/regularb/chr_regularb_normal.png",
+  "blob": "182df0af399dfc4f1e0e069eeedbc309d7835bbb",
+  "webp": "a893f3396a5343fb402aaf7b8fb2519ad30a1f51"
  },
  "new/face_rei.png": {
   "sprite": "assets/sprites/character_variants/new/rei/chr_rei_normal.png",
@@ -353,25 +373,5 @@
   "sprite": "assets/sprites/character_variants/new/yoru/chr_yoru_normal.png",
   "blob": "5edf17b268713794db659accaf818a130e3ecff1",
   "webp": "72255ec49d1df6b3790998cc3de3fb6f8a47ccb6"
- },
- "face_regulara.png": {
-  "sprite": "assets/sprites/characters/regulara/chr_regulara_normal.png",
-  "blob": "3a8b616303c7d250e5c466e829ef8ccac5f2af6f",
-  "webp": "83257e0b935be13033cd51881678588a119a9970"
- },
- "face_regularb.png": {
-  "sprite": "assets/sprites/characters/regularb/chr_regularb_normal.png",
-  "blob": "182df0af399dfc4f1e0e069eeedbc309d7835bbb",
-  "webp": "a893f3396a5343fb402aaf7b8fb2519ad30a1f51"
- },
- "new/face_regulara.png": {
-  "sprite": "assets/sprites/character_variants/new/regulara/chr_regulara_normal.png",
-  "blob": "3a8b616303c7d250e5c466e829ef8ccac5f2af6f",
-  "webp": "83257e0b935be13033cd51881678588a119a9970"
- },
- "new/face_regularb.png": {
-  "sprite": "assets/sprites/character_variants/new/regularb/chr_regularb_normal.png",
-  "blob": "182df0af399dfc4f1e0e069eeedbc309d7835bbb",
-  "webp": "a893f3396a5343fb402aaf7b8fb2519ad30a1f51"
  }
 }
