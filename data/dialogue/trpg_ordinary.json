@@ -3412,7 +3412,7 @@
   "pictureBook": {
     "pages": [
       {
-        "image": "../../img/backgrounds/trpg_ordinary_room.webp",
+        "image": "../../img/ui/trpg/picturebook/ordinary-cup/teahouse-room.webp",
         "alt": "雨の港を望む茶房のカウンターに、カップとノートが置かれている",
         "text": "閉店まで、もう少し。"
       },
