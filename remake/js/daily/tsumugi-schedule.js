@@ -22,20 +22,3 @@ export function tsumugiAtTonari(save) {
   const slot = save.day < 10 && save.day % 4 === 0 ? 0 : 1;
   return save.slot === slot;
 }
-
-/** 既存の汎用雑談を二度だけ早期にも使う。贈り物に言及する友情成立後の文は使わない。 */
-export function tsumugiMessages(save, friends) {
-  if (save.chapter !== 1) return [];
-  const recent = (save.inbox || []).some(item => item.msg?.sender === "tsumugi"
-    && item.chapter === save.chapter && save.day - item.day < 2);
-  if (recent) return [];
-  return [5, 10].flatMap((day, index) => {
-    const chat = friends?.friends?.tsumugi?.chats?.[index];
-    // #1507 TL-05: 2通目（スケッチブック）は提出日 DAY11 と重ならないよう当日限り
-    const lastDay = day + (index === 1 ? 0 : 1);
-    if (!chat || save.day < day || save.day > lastDay) return [];
-    return [{ id: `lime_tsumugi_note_day${day}`, sender: "tsumugi", chapter: 1,
-      trigger_condition: "lime_exchanged", trigger_day: day, type: "chat",
-      messages: chat.m.slice(), replies: chat.r }];
-  });
-}

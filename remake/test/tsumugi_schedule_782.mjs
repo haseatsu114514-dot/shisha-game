@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
 import path from "node:path";
-import { TSUMUGI_STORY, tsumugiAtTonari, tsumugiMessages } from "../js/daily/tsumugi-schedule.js";
+import { TSUMUGI_STORY, tsumugiAtTonari } from "../js/daily/tsumugi-schedule.js";
 
 const flags = Object.fromEntries(TSUMUGI_STORY.map(step => [step.flag, true]));
 const state = { chapter: 1, day: 6, slot: 0, flags: { ...flags }, story: {}, met: {}, contacts: [], inbox: [] };
@@ -32,18 +32,7 @@ assert.equal(tsumugiAtTonari({ ...state, day: 7, flags: { ...flags, _tsumugi_sto
 assert.equal(tsumugiAtTonari({ ...state, chapter: 2, slot: 1, flags: {} }), true);
 assert.equal(JSON.stringify(state), baseline, "在店照会が状態を書き換えた");
 
-const friends = JSON.parse(await fs.readFile(new URL("../data/friends.json", import.meta.url), "utf8"));
-for (const [index, day] of [5, 10].entries()) {
-  const messages = tsumugiMessages({ ...state, day }, friends);
-  assert.equal(messages.length, 1);
-  assert.equal(messages[0].trigger_day, day);
-  assert.deepEqual(messages[0].messages, friends.friends.tsumugi.chats[index].m);
-  assert.equal(tsumugiMessages({ ...state, day, inbox: [{ day: day - 1, chapter: 1, msg: { sender: "tsumugi" } }] }, friends).length, 0);
-  assert.equal(tsumugiMessages({ ...state, day, inbox: [{ day, chapter: 1, msg: { sender: "tsumugi" } }] }, friends).length, 0);
-}
-assert.deepEqual(tsumugiMessages({ ...state, chapter: 2, day: 5 }, friends), []);
-assert.deepEqual(tsumugiMessages({ ...state, day: 8 }, friends), []);
-
+// 朝の LIME の本文・配信日は lime_consistency.mjs で deliverMorning を通して検証する。
 // 本番固定runnerを実行し、既読・一度きり・旧セーブ補完を確認。
 const plays = [], saves = [];
 const context = vm.createContext({ console });
@@ -89,7 +78,7 @@ await story.namespace.playTsumugiStory(13);
 assert.deepEqual(plays, TSUMUGI_STORY.map(step => step.dialogue));
 assert.equal(JSON.stringify(state), saved);
 assert.equal(saves.length, 4);
-console.log("[782] 昼夜/固定日/延期/旧セーブ/一度きり/既存文の配信候補: PASS");
+console.log("[782] 昼夜/固定日/延期/旧セーブ/一度きり: PASS");
 
 // #1901: 実際のメニュー・hasNewStory・在店判定を通す。表示用の照会は保存も報酬も進めない。
 {
