@@ -221,12 +221,14 @@ await suite("ch4-full-flow", async check => {
         await page.locator(beachHub).filter({ hasText: `あと${remaining}か所` }).waitFor();
         await page.locator(dt(`ch4-beach-${id}`)).click();
       }
-      await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor();
+      // 前夜カードの場面は自由行動の既読次第。砂浜を終えてサメちゃんと夕方を過ごせるまで待つ。
+      const samechanEvening = page.locator(dt("ch4-eve")).locator(dt("ch4-arrival-evening-samechan"));
+      await samechanEvening.waitFor();
       const after = await get(page);
       assert.deepEqual(after.flags._ch4_beach, { picks: ["samechan", "tsumugi", "mashiro"] });
       for (const key of ["affinity", "money", "stats", "day", "slot"]) assert.deepEqual(after[key], before[key], key);
       await holdReading(page);
-      await page.locator(dt("ch4-arrival-evening-samechan")).click();
+      await samechanEvening.click();
       await readToPortrait(page, "serious", samechanArt("serious"));
       assert.deepEqual([...swimRequests].sort(), withSwim
         ? ["swim_normal", "swim_smile"].map(face => new URL(samechanArt(face), page.url()).pathname)
