@@ -85,7 +85,155 @@ async function loadSlot(page, slot) {
   await page.locator(dt(`slot-${slot}`)).click();
 }
 
+const beachHub = dt("ch4-beach");
+const samechanArrival = `${dt("ch4-arrival")}[data-scene="ch4_samechan_dubai_friend"]`;
+const samechanArt = (face, style = "new") =>
+  `img/sprites/${style === "new" ? "character_variants/new" : "characters"}/samechan/chr_samechan_${face}.webp`;
+
+async function seedBeach(page, withSwim) {
+  await seed(page);
+  await page.evaluate(async withSwim => {
+    const core = await import("./js/core/state.js");
+    const progress = await import("./js/chapters/ch4-progress.js");
+    const { chooseOverseasCompanion } = await import("./js/core/overseas-companion.js");
+    const { DB, useManifest } = await import("./js/core/data.js");
+    window.__beachVN = await import("./js/vn/engine.js");
+    const value = core.state;
+    value.finales.samechan = { day: 21, chapter: 2, route: "friend" };
+    value.met.samechan = true;
+    value.flags._intro_samechan = true;
+    if (!progress.advanceToChapterFour(value) || !chooseOverseasCompanion(value, null)) throw new Error("Chapter 4 setup failed");
+    value.flags._ch4.titleSeen = true;
+    for (const id of progress.CH4_PREP_SCENES) {
+      if (!progress.completeChapterFourScene(value, id)) throw new Error(`Preparation setup: ${id}`);
+    }
+    value.day += 3;
+    if (!progress.departChapterFour(value)) throw new Error("Dubai departure setup failed");
+    for (const { id } of progress.CH4_PROLOGUE.slice(progress.CH4_PREP_SCENES.length)) {
+      if (!progress.completeChapterFourScene(value, id)) throw new Error(`Prologue setup: ${id}`);
+    }
+    value.day = value.flags._ch4.startDay + progress.CH4_DAILY_EVE_DAY - 1;
+    if (!progress.enterChapterFourEve(value)) throw new Error("Festival eve setup failed");
+    for (const { id, scene } of progress.chapterFourArrivalsDue(value)) {
+      if (id !== "samechan" && !progress.completeChapterFourScene(value, scene)) throw new Error(`Arrival setup: ${scene}`);
+    }
+    core.config.portraitStyle = "new";
+    core.saveConfig();
+    if (!core.saveToSlot(core.SAVE_SLOTS[1].key)) throw new Error("Could not save before the beach");
+    if (withSwim) {
+      const manifest = structuredClone(DB.manifest);
+      for (const face of ["swim_normal", "swim_smile"]) {
+        manifest.portraitVariants.new.samechan.faces.push(face);
+        manifest.webp.push(`sprites/character_variants/new/samechan/chr_samechan_${face}.png`);
+      }
+      useManifest(manifest);
+    }
+    await (await import("./js/chapters/ch4.js")).resumeChapterFour();
+  }, withSwim);
+}
+
+async function readToPortrait(page, face, src) {
+  await page.waitForFunction(face => {
+    const image = document.querySelector('.vn-portraits img.active[data-speaker="samechan"]');
+    if (image?.dataset.face === face) return image.complete && image.naturalWidth > 0;
+    window.__beachVN.tapAdvance();
+    return false;
+  }, face, { polling: 80 });
+  const image = page.locator(`.vn-portraits img.active[data-speaker="samechan"][data-face="${face}"]`);
+  assert.equal(await image.getAttribute("src"), src);
+}
+
+async function finishReading(page) {
+  await arm(page);
+  await page.waitForFunction(() => {
+    const vn = window.__beachVN;
+    if (!vn.isPlaying()) return true;
+    vn.tapAdvance();
+    return false;
+  }, undefined, { polling: 80 });
+}
+
+const holdReading = page => page.evaluate(() => {
+  window.__beachVN.vnTest.turbo = false;
+});
+
 await suite("ch4-full-flow", async check => {
+  for (const [label, withSwim, cancel] of [
+    ["beach-regular-portraits", false, false],
+    ["beach-swim-portraits", true, false],
+    ["beach-swim-abort", true, true],
+  ]) {
+    await check(label, async page => {
+      const swimRequests = new Set();
+      page.on("request", request => {
+        const url = new URL(request.url());
+        if (/\/chr_[^/]+_swim_[^/]+\.(?:webp|png)$/.test(url.pathname)) swimRequests.add(url.pathname);
+      });
+      if (withSwim) {
+        for (const face of ["normal", "smile"]) {
+          await page.route(`**/${samechanArt(`swim_${face}`)}`, async route => {
+            const url = new URL(samechanArt(face), page.url()).href;
+            await route.fulfill({ response: await route.fetch({ url }) });
+          });
+        }
+      }
+      await seedBeach(page, withSwim);
+      await page.locator(samechanArrival).waitFor();
+      await page.locator(dt("ch4-continue")).click();
+      await readToPortrait(page, "serious", samechanArt("serious"));
+      await finishReading(page);
+      await page.locator(beachHub).waitFor();
+      assert.equal(swimRequests.size, 0, "Arrival, beach opening and selection use regular artwork");
+
+      const before = await get(page);
+      await holdReading(page);
+      await page.locator(dt("ch4-beach-samechan")).click();
+      await readToPortrait(page, "serious", samechanArt(withSwim ? "swim_normal" : "serious"));
+      if (cancel) {
+        assert.equal(before.flags._ch4_beach, undefined);
+        assert.equal((await get(page)).flags._ch4_beach, undefined);
+        // 同じページで別の保存をLOADし、章の再開処理で進行中の個別会話を中断する。
+        assert.equal(await page.evaluate(async () => {
+          const core = await import("./js/core/state.js");
+          if (!core.loadFromSlot(core.SAVE_SLOTS[1].key)) return false;
+          await (await import("./js/chapters/ch4.js")).resumeChapterFour();
+          return true;
+        }), true);
+        await page.locator(samechanArrival).waitFor();
+        assert.equal(await page.locator(".vn-portraits img").count(), 0);
+        assert.equal((await get(page)).flags._ch4_beach, undefined);
+        await page.locator(dt("ch4-continue")).click();
+        await readToPortrait(page, "serious", samechanArt("serious"));
+        return;
+      }
+      await readToPortrait(page, "smile", samechanArt(withSwim ? "swim_smile" : "smile"));
+      if (withSwim) {
+        for (const [style, face] of [["classic", "smile"], ["new", "swim_smile"]]) {
+          await page.evaluate(async style => {
+            (await import("./js/core/state.js")).config.portraitStyle = style;
+            (await import("./js/vn/engine.js")).refreshPortraits();
+          }, style);
+          await readToPortrait(page, "smile", samechanArt(face, style));
+        }
+      }
+      await finishReading(page);
+      for (const [id, remaining] of [["tsumugi", 2], ["mashiro", 1]]) {
+        await page.locator(beachHub).filter({ hasText: `あと${remaining}か所` }).waitFor();
+        await page.locator(dt(`ch4-beach-${id}`)).click();
+      }
+      await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor();
+      const after = await get(page);
+      assert.deepEqual(after.flags._ch4_beach, { picks: ["samechan", "tsumugi", "mashiro"] });
+      for (const key of ["affinity", "money", "stats", "day", "slot"]) assert.deepEqual(after[key], before[key], key);
+      await holdReading(page);
+      await page.locator(dt("ch4-arrival-evening-samechan")).click();
+      await readToPortrait(page, "serious", samechanArt("serious"));
+      assert.deepEqual([...swimRequests].sort(), withSwim
+        ? ["swim_normal", "swim_smile"].map(face => new URL(samechanArt(face), page.url()).pathname)
+        : []);
+    }, { reducedMotion: "reduce" });
+  }
+
   // #3938: 出発カードの表示名だけ。恋人・応援の判定や保存のIDは元のまま。
   for (const [label, known, selected, partnered = true] of [
     ["companion-picker-private-name-unknown", false, "mashiro"],
@@ -505,5 +653,5 @@ await suite("ch4-full-flow", async check => {
   }, { reducedMotion: "reduce" });
 });
 
-// ドバイ14日ルートの必須の仕事も、同じCI入口から確認する。
-await import("./ch4_staff_work.mjs");
+// ドバイ14日ルートの必須の仕事も同じCI入口から確認する。単独再実行時はこのファイルのケースだけを選ぶ。
+if (!process.env.CASE_FILTER) await import("./ch4_staff_work.mjs");
