@@ -13,6 +13,10 @@
           "text": "初めて訪ねるmukai。高架下の商店街を抜け、機材ケースを抱えたまま店の戸をくぐった。"
         },
         {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_mukai_shop.png"
+        },
+        {
           "speaker": "mukai_master",
           "face": "normal",
           "text": "はじめくん。スミから聞いてるよ。まず荷物、そこへ"
@@ -398,7 +402,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "閉店後のmukaiに、水タバコの呼吸音だけが、静かに続いていた。"
+          "text": "閉店後のmukaiに、シーシャの呼吸音だけが、静かに続いていた。"
         }
       ]
     },
@@ -418,7 +422,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……なんとか。ご飯は食べました"
+          "text": "……なんとか。ごはんは食べました"
         },
         {
           "type": "condition",
@@ -503,7 +507,7 @@
     {
       "dialogue_id": "ch3_daily_cup_1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png"
       },
       "lines": [
         {
@@ -540,7 +544,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……今日のは、すこし、あったかい感じがする"
+          "text": "……今日のは、少し、あったかい感じがする"
         },
         {
           "speaker": "mashiro",
@@ -550,7 +554,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "甘さはぼんやりしていても、温かさや煙の重さはつかめる。言葉にできるものから、すこしずつ。"
+          "text": "甘さはぼんやりしていても、温かさや煙の重さはつかめる。言葉にできるものから、少しずつ。"
         },
         {
           "speaker": "hajime",
@@ -746,7 +750,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ホースを置くまでの間。あと、熱いって言ったあとの顔"
+          "text": "ホースを置くまでの間。あと、強くなったって言ったあとの顔"
         },
         {
           "speaker": "mashiro",
@@ -833,7 +837,7 @@
     {
       "dialogue_id": "ch3_taste_return",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png"
       },
       "lines": [
         {
