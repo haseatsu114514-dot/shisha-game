@@ -112,7 +112,7 @@ export const tierOf = tier => TIERS.includes(tier) ? tier : "normal";
 // 使わないと減る（同「ブーストは使わないとじわじわ減ってく仕様も欲しい」）: 最後に貯まってから decayDelay 秒たつと、毎秒 decay ずつ減る
 // （満タンから空まで約30秒。ブースト中・ゴール後は減らない）。
 export const CHARGE = 0.85;
-export const BOOST = Object.freeze({ minGauge: 0.3, duration: 3, land: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3, recoverWindow: 0.45, practiceRecoverWindow: 0.9,
+export const BOOST = Object.freeze({ minGauge: 0.25, duration: 3, land: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3, recoverWindow: 0.45, practiceRecoverWindow: 0.9,
   smashCost: 0.35, smashFloor: 0.2, decay: 0.033, decayDelay: 2.5 });
 // 評価の境目は DEFAULT_SEED（コース「稜線」）で合わせた: 空中で回って着地も決める＝S、回らないが着地を決めてブーストも使う＝A、
 // 着地が「良い」止まり＝B、ジャンプを使わず避けるだけ＝C（remake/test/desert_ride.mjs のボットで照合）。
@@ -808,7 +808,9 @@ export function readResult(value) {
 
 // 自動操作がブーストを使い始めるゲージの量。2026-11-13 にゲージが「使わないと減る」ようになったので、満タンまで待たずに使う（減る前に使い切る）
 const BOT_BOOST_AT = 0.35;
-// ライバルのゴール前の使い切りは従来どおり。プレイヤーの自動操作はプレイヤーと同じ最低量を使う。
+// 自動操作の継ぎ足し・ゴール前の既定の最低量。評価照合とライバルの滑りは従来の30%を基準にする。
+const BOT_MIN_GAUGE = 0.3;
+// ライバルはゴール前にこの量から使い切る。
 const RIVAL_FINISH_BOOST_AT = 0.15;
 const BOT_PLANS = Object.freeze([[0, 0], ...[-1, 1].flatMap(dir => [0.2, 0.45, 0.8, 1.4].map(hold => [dir, hold]))]);
 const BOT_LOOK = Object.freeze({ horizon: 2.2, dt: 1 / 20, every: 3, commit: 0.35 });
@@ -902,9 +904,9 @@ export function botControl(game, skill = "perfect", memo = {}) {
   else if (jumps && game.fallT <= 0) {
     // ゲージを無駄にしない使い方: 満タンで使う／加速中は、あふれない分だけ継ぎ足す／ゴールが近づいたら残りを使い切る
     const remaining = game.course.length - game.z, room = 1 - game.boostT / BOOST.duration;
-    const finishBoostAt = memo.finishBoostAt ?? BOOST.minGauge;
+    const finishBoostAt = memo.finishBoostAt ?? BOT_MIN_GAUGE;
     if (game.boostT <= 0 ? game.gauge >= (memo.boostAt ?? BOT_BOOST_AT) || (game.gauge >= finishBoostAt && remaining <= SPEED.boost * BOOST.duration * game.gauge + 20)
-      : game.gauge >= BOOST.minGauge && game.gauge <= room) action = "boost";
+      : game.gauge >= BOT_MIN_GAUGE && game.gauge <= room) action = "boost";
   }
   return { input, action };
 }
@@ -913,7 +915,7 @@ export function botControl(game, skill = "perfect", memo = {}) {
 export function botStep(game, skill, memo, dt) {
   const { input, action } = botControl(game, skill, memo);
   if (action === "press") press(game);
-  else if (action === "boost") applyBoost(game, memo.finishBoostAt ?? BOOST.minGauge);
+  else if (action === "boost") applyBoost(game, memo.finishBoostAt ?? BOT_MIN_GAUGE);
   step(game, input, dt);
   return game;
 }
