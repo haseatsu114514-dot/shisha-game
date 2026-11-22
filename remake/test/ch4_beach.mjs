@@ -8,7 +8,7 @@ import { CH4_PROLOGUE, CH4_PREP_SCENES, CH4_DAILY_TOURNAMENT_DAY, advanceToChapt
   departChapterFour, enterChapterFourEve, syncChapterFourDay } from "../js/chapters/ch4-progress.js";
 import { OVERSEAS_HEROINES, OVERSEAS_GUESTS, chooseOverseasCompanion } from "../js/core/overseas-companion.js";
 import { CH4_BEACH_SCENES, CH4_BEACH_SCENE_FILES, CH4_BEACH_PICKS, CH4_BEACH_RESIDENTS, CH4_BEACH_RIVALS, chapterFourBeachCast,
-  chapterFourBeachDue, chapterFourBeachPickCount, chapterFourBeachRecord, commitChapterFourBeach } from "../js/chapters/ch4-beach.js";
+  chapterFourBeachCostume, chapterFourBeachDue, chapterFourBeachPickCount, chapterFourBeachRecord, commitChapterFourBeach } from "../js/chapters/ch4-beach.js";
 import { classifyFlag } from "../js/core/carry.js";
 import { CH4_MORNING_SCENES, CH4_MORNING_FILES, CH4_MORNING_FLAG, CH4_MORNING_CHEERS_MAX, chapterFourMorningCheers,
   chapterFourMorningDue, chapterFourMorningScript, CH4_AFTER_SCENES, chapterFourResultScript } from "../js/chapters/ch4-morning.js";
@@ -61,6 +61,18 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
     assert(!/みんな|全員|二人|三人|ふたり/.test(text), `${id} does not count the people`);
   }
   assert.equal(classifyFlag("_ch4_beach"), "progression");
+}
+
+// ---- 衣装は選択した相手本人の個別会話だけ。ヌールは仕事服。
+{
+  for (const [id, scene] of Object.entries(CH4_BEACH_SCENES.people)) {
+    assert.deepEqual(chapterFourBeachCostume(id, scene), id === "noor" ? undefined : { speaker: id, key: "swim" });
+  }
+  for (const scene of [CH4_BEACH_SCENES.open, CH4_BEACH_SCENES.close, CH4_BEACH_SCENES.people.minto,
+    "ch4_tsumugi_dubai_friend", undefined]) {
+    assert.equal(chapterFourBeachCostume("tsumugi", scene), undefined);
+  }
+  assert.equal(chapterFourBeachCostume("unknown", CH4_BEACH_SCENES.people.tsumugi), undefined);
 }
 
 // ---- 顔ぶれ: 恋人ゼロ・同行なし → いつも来るつむぎ・ましろ（友人版）。到着を読むまでは砂浜にいない。

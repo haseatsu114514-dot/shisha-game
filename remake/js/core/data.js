@@ -366,8 +366,8 @@ export function sceneBg(ref, time) {
 
 export const bgUrl = (ref, timeOfDay) => sceneBg(ref, timeOfDay).url;
 
-export function portraitInfo(speaker, face, style = portraitStyle()) {
-  const resolved = resolvePortrait(DB.manifest, speaker, face, style);
+export function portraitInfo(speaker, face, style = portraitStyle(), costume) {
+  const resolved = resolvePortrait(DB.manifest, speaker, face, style, costume);
   if (!resolved) return null;
   const { folder } = resolved;
   return {
