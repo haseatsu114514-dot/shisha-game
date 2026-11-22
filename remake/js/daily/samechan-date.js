@@ -1,7 +1,7 @@
 // Samechanのデートは、VN読了後に料金・行動・選択した成長を一緒に確定する。
 import { DB } from "../core/data.js";
 import { state, save, STAT_KEYS } from "../core/state.js";
-import { addMoney, addStamina, gainStat, gainAffinity, bond } from "../core/stats.js";
+import { addMoney, addStamina, gainStat, gainAffinity, prepareLoveAffinity, privateBondScope } from "../core/stats.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { dateVenue, dateScene, relationshipDayTotal, relationshipDayOf, dateTopic, advanceDateTopic } from "./date-scene.js";
 import { playSamechanMilestone } from "./samechan-bonds.js";
@@ -42,9 +42,13 @@ export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = 
   const venue = dateVenue("samechan", old?.stamp === stamp ? old.venue : null);
   const choiceFlags = { a: `_samechan_date_${stamp}_a`, b: `_samechan_date_${stamp}_b` };
   const choice = state.flags[choiceFlags.a] ? "a" : state.flags[choiceFlags.b] ? "b" : null;
-  const owner = state, previousPrivate = bond.private, startSlot = state.slot;
-  playing = true; bond.private = true;
+  const owner = state, startDay = state.day, startSlot = state.slot;
+  playing = true;
+  let restorePrivate;
   try {
+    await prepareLoveAffinity(["samechan"]);
+    if (state !== owner || state.day !== startDay || state.slot !== startSlot || !samechanDateReady() || isPlaying()) return no;
+    restorePrivate = privateBondScope();
     if (invite) state.pendingInvite = invite; // 中断保存は予約あり・未払い。calendarは同じ場面へ戻れる。
     state.flags._samechan_date = { stamp, venue: venue.id, complete: false };
     save();
@@ -70,9 +74,9 @@ export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = 
     if (invite) state.pendingInvite = null;
     state.flags._samechan_date.complete = true;
     save(); // 日付・支払・選択・成長・行動まで一緒に確定。後続の絆の中断でデートを失わない。
-    bond.private = previousPrivate;
+    restorePrivate();
     await petitAfterDate("samechan"); // プチ修羅場（恋人が2人以上・一度きり）。デートは確定済みで、報酬は無い
-    await playSamechanMilestone();
+    if (state === owner) await playSamechanMilestone();
     return { done: true, spent };
-  } finally { bond.private = previousPrivate; playing = false; }
+  } finally { restorePrivate?.(); playing = false; }
 }

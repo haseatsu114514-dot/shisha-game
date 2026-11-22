@@ -8,7 +8,7 @@
 // 上級を初めてクリアすると白火1つ（PLAY_REWARDS "desert-hard"）。初級の結果は自己ベスト・Aランクのご褒美・達人認定に数えない（ch4-desert-progress.js）。
 // ゲーム本体は minigames/desert-ride.js（保存を読まない）。台詞は data/dialogue/ch4_desert.json。
 import { state, save, config } from "../core/state.js";
-import { DB } from "../core/data.js";
+import { DB, loadConfessionDialogue } from "../core/data.js";
 import { showScreen, setBg, layers, toast } from "../core/ui.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { play } from "../vn/engine.js";
@@ -16,7 +16,7 @@ import { awardActionExp } from "../core/growth.js";
 import { syncPlayTiers, openTiers, defaultTier, rememberTier, tierRecord, tierUnlockNote, TIER_HARD_GIFT } from "../core/play-tiers.js";
 
 export * from "./ch4-desert-progress.js";
-import { addMoney, gainAffinity, visitAffinity, privateBondScope } from "../core/stats.js";
+import { addMoney, gainAffinity, visitAffinity, prepareLoveAffinity, privateBondScope } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
 import { DESERT_TALKS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, NOOR_FARIS_SCENES, noorFarisDue, completeNoorFaris, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, NOOR_VISIT_CONFESSION_FLAG, noorConfessionWaiting, noorStoryDue, completeNoorStory, DESERT_SCENES, DESERT_CAFE_PRICE, desertCafeVisit, completeDesertCafeVisit, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, NOOR_STORY_FILE, NOOR_STORY_DIALOGUE_IDS, NOOR_CONFESSION_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
@@ -28,14 +28,19 @@ export function loadDesertDialogues() {
   if (!dialogueTask) dialogueTask = Promise.all([
     readDialogues(DESERT_DIALOGUE_FILE, DESERT_DIALOGUE_IDS),
     readDialogues(NOOR_STORY_FILE, [...NOOR_STORY_DIALOGUE_IDS, ...Object.values(NOOR_FARIS_SCENES)]),
-    readDialogues("confession", NOOR_CONFESSION_DIALOGUE_IDS),
-  ]).then(([dialogues, stories, confession]) => {
+  ]).then(([dialogues, stories]) => {
     for (const id of DESERT_DIALOGUE_IDS) DB.dialogues[id] = dialogues[id];
     for (const id of [...NOOR_STORY_DIALOGUE_IDS, ...Object.values(NOOR_FARIS_SCENES)]) DB.dialogues[id] = stories[id];
-    for (const id of NOOR_CONFESSION_DIALOGUE_IDS) DB.dialogues[id] = confession[id];
-    return { ...dialogues, ...stories, ...confession };
+    return { ...dialogues, ...stories };
   }).catch(error => { dialogueTask = null; throw error; });
   return dialogueTask;
+}
+
+export async function loadNoorConfession() {
+  await loadConfessionDialogue();
+  for (const id of NOOR_CONFESSION_DIALOGUE_IDS) {
+    if (!DB.dialogues[id]?.lines?.length) throw new Error(`台本がありません: ${id}`);
+  }
 }
 
 const firstLine = id => DB.dialogues[id]?.lines?.[0]?.text || "";
@@ -129,6 +134,14 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     if (destination.kind !== "desert") return false;
     const status = desertOutingStatus(owner, day);
     if (!status.ok) return false;
+    const confessionDay = status.invited === true;
+    if (confessionDay) {
+      try { await loadNoorConfession(); } catch {
+        if (current()) toast("会話を読み込めませんでした。もう一度お試しください");
+        return false;
+      }
+    } else if (owner.lovers?.includes(DESERT_GUIDE)) await prepareLoveAffinity([DESERT_GUIDE], { signal });
+    if (!current()) return false;
     const [{ runDesertRide }, { DESERT_BG, DESERT_DUSK_BG, loadDesertArt }] = await Promise.all([
       import("../minigames/desert-ride.js"), import("../minigames/desert-ride-art.js")]);
     if (!current()) return false;
@@ -145,7 +158,6 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     const before = desertRecords(owner);
     const name = DB.characters[DESERT_GUIDE]?.display_name || "ヌール", naruName = DB.characters.naru?.display_name || "なる";
     // 締めくくりで「二人で見たい」と答えた後の砂丘: 滑ったあと夕日で告白（DSR20）。この日はなるを呼ばない
-    const confessionDay = status.invited === true;
     // 第5章（帰国後にまたドバイへ来た日・naru: false）は、なるは地元の KEMURIKUSA にいるので砂丘に来ない。ヌールとだけ滑る
     const rivals = !naru || (confessionDay && !before.naruMet) ? ["noor"] : desertRivals(owner);
     // ヌールに勝った後の最初の外出: なるが砂丘に来て勝負を持ちかける（一度だけ）

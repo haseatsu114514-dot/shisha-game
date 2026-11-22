@@ -40,6 +40,7 @@ async function fixture({ lover = false, reply = response, invitation = false, co
     'travel-budget.js': { spendableMoney: () => 30000 },
     'stats.js': { gainAffinity: (id, pts, opts) => { current.gains.push({ id, pts, private: bond.private });
       if (pts > 0) { current.affinity += pts; opts?.onGain?.(.2125); } },
+      prepareLoveAffinity: async () => true,
       AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66],
       affinityLevel: () => lover || current.affinity >= 66 ? 5 : current.affinity >= 48 ? 4 : 1,
       applyStats: ({ insight }) => { current.insights += insight; }, bond },

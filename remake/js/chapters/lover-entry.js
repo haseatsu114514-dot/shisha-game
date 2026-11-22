@@ -4,6 +4,7 @@
 // 大会当日の朝の応援（gameday）も、第1・2章と同じ文面の表を使う（第3章の全国大会・IR19）。
 // 恋人の絆は、ここでは足さない（LIMEの返信で phone.js が足す分と、節目の読了で解放される分だけ）。
 import { state, save } from "../core/state.js";
+import { prepareLoveAffinity, releaseLoveAffinity } from "../core/stats.js";
 import { loverMessages, loverMilestoneDue, playLoverMilestone } from "../daily/romance.js";
 import { openPhone } from "../daily/phone.js";
 
@@ -50,8 +51,15 @@ export async function readTournamentCheers({ away = [], time = "AM 7:40" } = {})
 export const loverMilestonesDue = (ids = state.lovers || [], { home } = {}) =>
   [...new Set(ids)].filter(id => (state.lovers || []).includes(id) && !!loverMilestoneDue(id, { home }));
 
+/** カードや場所の選択肢を作る前に節目と保留中の絆を確認する。 */
+export async function prepareLoverMilestones(ids) {
+  const owner = state;
+  if (!await prepareLoveAffinity(ids) || state !== owner) return false;
+  for (const id of ids) if (!loverMilestoneDue(id)) releaseLoveAffinity(id);
+  return true;
+}
+
 /** 会えた恋人の未読の節目を一つだけ読む。読了と既読は romance.js が保存する。 */
 export async function readLoverMilestone(id, { signal = null, home } = {}) {
-  if (!loverMilestonesDue([id], { home }).length) return false;
   return playLoverMilestone(id, { signal, home });
 }

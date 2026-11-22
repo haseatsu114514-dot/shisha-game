@@ -10,6 +10,7 @@ async function setup(page) {
       view: await import("./js/daily/relationship-status.js"), vn: await import("./js/vn/engine.js"),
       ch1: await import("./js/chapters/ch1.js"), data: await import("./js/core/data.js"),
     };
+    await R.data.loadDeferredDialogues();
     R.ch1.setupHooks();
     R.fresh = () => {
       const s = R.core.newGame();

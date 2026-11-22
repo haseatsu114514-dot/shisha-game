@@ -9,6 +9,7 @@ async function setup(page) {
       phone: await import('./js/daily/phone.js'), daily: await import('./js/daily/calendar.js'),
       hiyori: await import('./js/daily/hiyori.js'), spots: await import('./js/daily/spots.js'),
       ch1: await import('./js/chapters/ch1.js'), vn: await import('./js/vn/engine.js'), ui: await import('./js/core/ui.js') };
+    await H.data.loadDeferredDialogues();
     H.ch1.setupHooks(); H.vn.vnTest.turbo = true; H.vn.vnTest.choose = () => 0;
     H.fresh = () => {
       const s = H.core.newGame();
@@ -54,6 +55,7 @@ await suite('hiyori-gate', async check => {
         H.stats.ensureAffinityLevel('hiyori', 4);
         const guarantee = { points: s.affinity.hiyori, guaranteed, again: s.flags._hiyori_affinity_waiting_pts || 0 };
         s = H.fresh(); s.lovers = ['hiyori']; s.loveLevel.hiyori = 1;
+        await H.stats.prepareLoveAffinity(['hiyori']);
         H.stats.bond.private = true; H.stats.gainAffinity('hiyori', 10); H.stats.bond.private = false;
         const lover = s.lovePts.hiyori;
         H.stats.gainAffinity('minto', 10);

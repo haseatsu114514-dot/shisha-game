@@ -556,6 +556,7 @@ async function takeAction() {
     await travelToInvitation(inv);
     if (inv.event === "date_samechan") {
       const result = await playSamechanDate({ invite: inv, cost: invitationCost(inv.event), advanceSlot: true });
+      if (state !== invOwner) return;
       if (result.done) { completeInvitation(inv); await afterAction({ exerted: true, spent: result.spent }); }
       return;
     }
@@ -563,6 +564,7 @@ async function takeAction() {
     if (state.slot === 1) state.flags._private_night_day = state.day;
     if (state.slot === 1) state.flags._private_night_char = inv.sender;
     const { value: met, spent } = await paidAction(() => meetInvitation(inv), { ...invitationGrowth(inv.event), primary: CHAR_STAT[inv.sender], exp: invitationExp(inv) });
+    if (state !== invOwner) return;
     if (!met) {
       if (state.flags._private_night_day === state.day && state.flags._private_night_char === inv.sender) {
         delete state.flags._private_night_day;
@@ -889,6 +891,7 @@ async function meetInvitation(inv) {
     addStamina(-10);
   } else if (/^date_/.test(inv.event)) {
     await playDate(inv.sender); // 恋人とのデート（絆・ステ・体力はデート側で）
+    if (state !== owner) return false;
     // ひよりの feelings_spoken（#1434 決定B）。恋人・絆Lv2以降のデートの帰りに一度だけ。条件は route.events。
     if (inv.sender === "hiyori") await playHiyoriEvent("feelings_spoken");
   } else if (isFriendEvent(inv.event)) {
@@ -899,6 +902,7 @@ async function meetInvitation(inv) {
   } else if (isFinaleEvent(inv.event)) {
     // 私的な約束で会う締めくくり（みんと）。専用ハガルの贈呈・ルートの記録は bonds.js
     await playFinale(inv.sender);
+    if (state !== owner) return false;
     gainAffinity(inv.sender, 10);
     addStamina(-10);
   } else {
@@ -1025,12 +1029,14 @@ async function endDay({ returnedToTonari = false } = {}) {
   }
   // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）
   // 告白は第1〜3章の物語。第5章（confessions: false）では夜に告白の場面を始めない。
+  const strainOwner = state;
   const confessed = chapterDef.confessions === false ? false
     : await maybeConfession(beat, { busyNight: metTonight || rested || state.flags._eve_slept === state.day, companion });
+  if (state !== strainOwner) return;
   if (confessed) { delete state.flags._home_tonight; await bannersIdle(); }
   // 別れ話（すれ違いが溜まりきった恋人が帰り道で待っている。daily/lover-strain.js）。告白・約束・休養・夜の予定・大会前夜の夜と、
   // 夜を家で過ごした日（帰り道が無い）には重ねない
-  const strainOwner = state;
+  if (state !== strainOwner) return;
   const strainBusy = confessed || metTonight || rested || nightCount > 0
     || !!state.flags._home_tonight || state.flags._eve_slept === state.day || tournamentEve() || finalEve();
   const talked = await maybeStrainTalk(beat, { busyNight: strainBusy });

@@ -258,8 +258,8 @@ export async function runChapterFourDubai(io) {
   if (companionLover(owner)) await readDialogues(COMPANION_TIME_FILE, COMPANION_TIME_IDS).then(found => Object.assign(DB.dialogues, found)).catch(() => {});
   // 初日の街回り（ch4-tour.js）。まだ回っていないDAY1の昼だけ読む。読めなければ街回りは出さずに地図を開く
   if (chapterFourTourDue(owner)) await readDialogues("ch4_tour", CH4_TOUR_IDS).then(found => Object.assign(DB.dialogues, found)).catch(() => {});
-  // LOAD・再開でも最初の地図から、ヌールの MENU の案内（♥5の締めくくり・告白を選べる）を合わせる。どちらも台詞が読み込まれているかを見る
-  // （daily/bonds.js の finaleDue・daily/romance.js の romanceRouteOpen。第5章は ch5-dubai.js の preloadNoorScenes）。読めなくても地図は開く
+  // LOAD・再開でも最初の地図から、ヌールの MENU の案内（♥5の締めくくり）を合わせる。
+  // （daily/bonds.js の finaleDue。第5章は ch5-dubai.js の preloadNoorScenes）。読めなくても地図は開く
   if (owner.met?.noor) await import("./ch4-desert.js").then(desert => desert.loadDesertDialogues()).catch(() => {});
   if (state !== owner) return;
   state.flags._ch2_region = DUBAI;

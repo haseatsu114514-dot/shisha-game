@@ -307,7 +307,10 @@ async function loverActions(owner, { home = false } = {}) {
     await friend.readFriendLime({ exclude });
     if (current(owner)) await renderStage(owner);
   }));
-  const [id] = home ? lover.loverMilestonesDue((state.lovers || []).filter(who => !TOKYO_RESIDENT_IDS.includes(who)), { home }) : [];
+  const nearby = home ? (state.lovers || []).filter(who => !TOKYO_RESIDENT_IDS.includes(who)) : [];
+  const ready = await lover.prepareLoverMilestones(nearby);
+  if (!current(owner)) return [];
+  const [id] = ready ? lover.loverMilestonesDue(nearby, { home }) : [];
   if (id) actions.push(button(owner, `${displayName(id, state, { context: "private" })}と過ごす`, "lover-milestone", async () => {
     showScreen("none", null);
     hud();

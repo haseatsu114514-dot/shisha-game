@@ -145,8 +145,8 @@ async function loadDubaiScenes() {
 
 /**
  * ヌールに会ったことのある保存を再開・LOAD した時は、最初の行動の前にカフェ・オアシスと砂丘の台詞（ch4_desert.json）を読んでおく。
- * MENU の人間関係の「次にカフェ・オアシスで会うと」（daily/bonds.js の finaleDue）と「告白を選べる」（daily/romance.js の romanceRouteOpen）は
- * 締めくくり・告白の台詞が読み込まれているかを見るので、カフェか砂丘へ行くまで出なかった（地元にいても同じなので、ドバイにいる時に限らない）。
+ * MENU の人間関係の「次にカフェ・オアシスで会うと」（daily/bonds.js の finaleDue）に使う。
+ * 告白の台本は人間関係タブか、砂丘で約束の続きを読む直前に取得する。
  * 読めなくても地図は開く（カフェ・砂丘を選んだ時に読み直し、失敗ならそこで知らせる）。東京の preloadTokyoScenes と同じ（ch5-daily.js）。
  */
 export async function preloadNoorScenes(value = state) {
@@ -438,7 +438,8 @@ async function visitDunes(spot, owner) {
   let desert, romance;
   try {
     [desert, romance] = await Promise.all([import("./ch4-desert.js"), import("../daily/romance.js")]);
-    await desert.loadDesertDialogues(); // 告白を待たれているか（romanceRouteOpen）は、告白の台本を読み込んだ後に分かる
+    await desert.loadDesertDialogues();
+    if (state === owner && !owner.flags[DUNES_AGAIN.flag] && noorConfessionWaiting(owner)) await desert.loadNoorConfession();
   } catch {
     toast(LOAD_FAILED);
     return unused;

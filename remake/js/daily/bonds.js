@@ -12,7 +12,7 @@
 // - 友人になった後（友情の締めくくり・告白で友達のまま）は、たまにシーシャのお誘いか雑談のLIMEが届く（HF09）。
 //   文面と間隔は remake/data/friends.json。友人のLIMEは全員あわせて数日に1通、お誘いは全員あわせて週に1回ほど、
 //   物語・恋人の誘いと同じ朝には重ねない（スミさんのバイトの誘いとは重なってよい）。恋人と告白待ちの相手には届かない。
-import { DB, callName } from "../core/data.js";
+import { DB, callName, loadConfessionDialogue } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { affinityLevel, AFFINITY_GATE_CHOICES, releaseAffinity } from "../core/stats.js";
 import { AGEHA_AFFINITY_VISITS, questionComplete, questionDoneKey, CH2_VISIT_STORIES, ch2VisitStoriesDone, mashiroScenesRead, samechanHeartEventsDone } from "../core/affinity-stages.js";
@@ -20,7 +20,7 @@ import { emit } from "../core/bus.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
 import { play } from "../vn/engine.js";
 import { giftOpen } from "../core/scene-motions.js";
-import { isLover, romanceRouteOpen } from "./romance.js";
+import { isLover, NO_CONFESSION_FINALE_CHAPTER, romanceRouteOpen } from "./romance.js";
 import { VISIT_SEQ, storyCount, hasContact } from "./spots.js";
 import { hiyoriRoute, hiyoriStoriesDone, hiyoriFinaleReady } from "../core/hiyori-route.js";
 import { noorStoriesDone } from "../chapters/ch4-desert-progress.js";
@@ -373,6 +373,12 @@ export async function playFinale(id, { bg = null, deferSave = false, signal = nu
   // この周の締めくくりとして箱を開ける（専用ハガルは周回で引き継ぐ・NGC01。所持は二重にしない）
   if (!state.owned.includes(def.gift) || (state.cycle || 1) > 1) await giftOpen(def.gift);
   if (state !== owner || signal?.aborted) return false;
+  const reserve = route === "romance" && !def.laterConfession && !def.ownConfession
+    && state.chapter < NO_CONFESSION_FINALE_CHAPTER && !state.flags._confession_due;
+  if (reserve && !DB.dialogues[`confession_${id}`]) {
+    try { await loadConfessionDialogue(); } catch { /* 締めくくりは確定し、帰り道で告白の候補を引き直す */ }
+    if (state !== owner || signal?.aborted || finaleSeen(id)) return false;
+  }
   state.finales ||= {};
   state.finales[id] = { day: state.day, chapter: state.chapter, route };
   if (def.flag) state.flags[def.flag] = true;
@@ -383,7 +389,7 @@ export async function playFinale(id, { bg = null, deferSave = false, signal = nu
   }
   grantGift(def.gift);
   // 恋愛ルート: 告白を予約（一日の終わりに、再生前にもう一度ルートを確かめる）
-  if (route === "romance" && !def.laterConfession && !def.ownConfession && romanceRouteOpen(id) && !state.flags._confession_due) state.flags._confession_due = id;
+  if (reserve && romanceRouteOpen(id) && !state.flags._confession_due) state.flags._confession_due = id;
   if (!deferSave) save(); // 有料訪問はcalendarの支払い/行動確定と同時に保存する。
   return true;
 }

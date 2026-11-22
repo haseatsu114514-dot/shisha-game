@@ -6,7 +6,7 @@ async function prepare(page, id = "ageha", many = false, start = true) {
   await page.evaluate(async ({ id, many, ids, start }) => {
     window.H = { core: await import("./js/core/state.js"), vn: await import("./js/vn/engine.js"),
       data: await import("./js/core/data.js"), romance: await import("./js/daily/romance.js") };
-    await H.data.loadDeferredDialogues();
+    await Promise.all([H.data.loadDeferredDialogues(), H.data.loadConfessionDialogue()]);
     const stages = await import("./js/core/affinity-stages.js");
     const intro = await import("./js/vn/intro.js");
     (await import("./js/chapters/ch1.js")).setupHooks();

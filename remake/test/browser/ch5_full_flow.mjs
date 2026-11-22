@@ -1301,7 +1301,8 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.money, before.money - 3000);
     assert.equal(state.flags._confession_due, undefined, "Noor's confession is her own sunset scene, never the night walk");
     const after = await page.evaluate(async () => {
-      const { relationshipStatus } = await import("./js/daily/relationship-status.js");
+      const { prepareRelationshipStatus, relationshipStatus } = await import("./js/daily/relationship-status.js");
+      await prepareRelationshipStatus();
       const spots = (await import("./js/chapters/ch5-dubai.js")).chapterFiveDubaiLeisureSpots();
       return { status: relationshipStatus("noor").label, ids: spots.map(spot => spot.id), dunes: spots.find(spot => spot.id === "ch4_dubai_dunes")?.desc || "" };
     });

@@ -27,6 +27,7 @@ export const DB = {
   equipById: {},
   baito: [],          // バイトの接客イベント（ch1 で使うカテゴリのみ）
   dialogues: {},      // dialogue_id -> dialogue
+  loverEventsLoaded: false, // 節目なしと、台本の取得前を区別する
   relationshipMemories: {}, // 実際に読んだ交流の記憶（id -> 記録）
   glossary: [],
   lime: [],
@@ -47,7 +48,6 @@ export const DB = {
 const DIALOGUE_FILES = [
   "ch1_main", "ch1_tournament", "ch1_sumi", "ch1_naru", "ch1_adam", "ch1_minto",
   "ch1_tsumugi", "ch1_rio", "ch1_ageha", "ch1_spots", "ch1_events", "ch1_incognito",
-  "confession", "lover_events", // 告白・恋人の節目イベント（正本は旧版と共通）
   "remake_ch1", // リメイク版の進行で使う短い場面（旧版 web/ は読まない）
   "ch1_interval",
   "ch1_bonds", // 交友の締めくくり（好感度MAX）と途中の恋愛／友情の質問（daily/bonds.js）
@@ -106,12 +106,14 @@ export function loadDeferredDialogues() {
   return deferredDialoguesPromise;
 }
 
-function dialogueLoader(file) {
+function dialogueLoader(file, onLoaded = () => {}) {
   let promise;
   return () => {
     if (!promise) {
       promise = getJSON(`${ROOT}data/dialogue/${file}.json`).then((data) => {
-        for (const d of data.dialogues || []) DB.dialogues[d.dialogue_id] = d;
+        if (!Array.isArray(data.dialogues)) throw new Error(`${file}: 台本の形式を確認してください`);
+        Object.assign(DB.dialogues, Object.fromEntries(data.dialogues.map(d => [d.dialogue_id, d])));
+        onLoaded();
         return DB;
       }).catch((error) => {
         promise = null; // 先読み失敗後は入口から再試行できる
@@ -125,6 +127,8 @@ function dialogueLoader(file) {
 export const loadCinemaDialogue = dialogueLoader(CINEMA_DIALOGUE_FILE);
 export const loadTournamentCraftDialogue = dialogueLoader(TOURNAMENT_CRAFT_DIALOGUE_FILE);
 export const loadVenueArrivals = dialogueLoader(VENUE_ARRIVAL_DIALOGUE_FILE);
+export const loadConfessionDialogue = dialogueLoader("confession");
+export const loadLoverEvents = dialogueLoader("lover_events", () => { DB.loverEventsLoaded = true; });
 
 export async function loadAll(onProgress = () => {}, onManifest = () => {}) {
   globalThis.performance?.setResourceTimingBufferSize?.(1000);

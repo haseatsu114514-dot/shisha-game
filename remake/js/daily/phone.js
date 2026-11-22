@@ -14,7 +14,7 @@ import { state } from "../core/state.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
-import { gainAffinity, affinityLevel, AFFINITY_RANK_PTS, applyStats, bond } from "../core/stats.js";
+import { gainAffinity, affinityLevel, AFFINITY_RANK_PTS, applyStats, bond, prepareLoveAffinity } from "../core/stats.js";
 import { gainExp, growthEnabled } from "../core/growth.js";
 import { SE } from "../core/audio.js";
 import { hooks } from "../vn/engine.js";
@@ -1120,6 +1120,10 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       if (!alive()) break;
     }
     if (!alive()) return; // 読み終える前に戻ったら、既読・報酬を付けない
+    if (!item.read && !(m.replies?.length) && m.type !== "invitation" && m.type !== "rumor" && isLover(m.sender)) {
+      await prepareLoveAffinity([m.sender]);
+      if (!alive()) return;
+    }
     if (!item.read) {
       item.read = true;
       if (!state.limeRead.includes(m.id)) state.limeRead.push(m.id);
@@ -1234,6 +1238,12 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     }
     const r = await ui.choose(m.replies);
     if (!r || !alive() || state !== session || item.done) return;
+    // 雑談は選んだ返事に応じて1〜2点。0点・約束などの返事・恋人の絆は従来どおり。
+    const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
+    if (points > 0 && isLover(m.sender)) {
+      await prepareLoveAffinity([m.sender]);
+      if (!alive() || item.done) return;
+    }
     if (!forced && isMissedReply(item)) {
       expireMissedReply();
       return;
@@ -1248,8 +1258,6 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     const responseMedia = replyMedia(item, r.response_media);
     if (responseMedia) item.log.push({ me: false, ...responseMedia });
     if (r.response) item.log.push({ me: false, text: r.response });
-    // 雑談は選んだ返事に応じて1〜2点。0点・約束などの返事・恋人の絆は従来どおり。
-    const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
     if (!(points > 0 && !r.action && settleMaxAffinityChat(item, ui, true))) {
       bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
       try {

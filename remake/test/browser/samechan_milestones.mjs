@@ -32,6 +32,7 @@ await suite("samechan-milestones", async check => {
     await check(`${mode}-live-private-growth-in-order`, async page => {
       await setup(page);
       const r = await page.evaluate(async () => {
+        await K.data.loadLoverEvents(); // 同期の絆加算と候補判定を直接呼ぶ
         const s = K.core.state, records = [];
         for (let level = 1; level <= 5; level++) {
           // The same live private-affinity function used by LIME/dates; no public shop growth.
@@ -110,6 +111,7 @@ await suite("samechan-milestones", async check => {
     await check(`${mode}-friend-chapter-missing-fragment-and-level-boundaries`, async page => {
       await setup(page);
       const r = await page.evaluate(async () => {
+        await K.data.loadLoverEvents(); // 台本の欠損を読み込み後に作る
         const s = K.core.state, checks = [];
         for (const kind of ["friend", "chapter1", "low-level", "missing-scene", "missing-fragment"]) {
           s.lovers = ["samechan"]; s.chapter = 2; s.loveLevel.samechan = 3;

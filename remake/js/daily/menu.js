@@ -21,7 +21,7 @@ import { saveFlow, loadWithRecovery, returnToTitle } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { isRainy } from "./weather.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
-import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
+import { relationshipStatus, recentMemoryEcho, prepareRelationshipStatus } from "./relationship-status.js";
 import { triedLater, comboName } from "./cafe-ideas.js";
 import { tierFx, STATUS_PEOPLE, giftNote, recipeDetails } from "./status.js";
 import { fullscreenButton } from "../scenes/save-transfer.js";
@@ -107,6 +107,7 @@ function menuOrigin() {
 
 function showMenu(initial, { saveOk, saveRule }) {
   return new Promise((resolve) => {
+    const owner = state;
     const previousFocus = document.activeElement;
     const tabs = new Map();
     let active = initial;
@@ -136,7 +137,13 @@ function showMenu(initial, { saveOk, saveRule }) {
         button.tabIndex = on ? 0 : -1;
       }
       panel.setAttribute("aria-labelledby", `dm-tab-${id}`);
-      panel.replaceChildren(...render(id).filter(Boolean));
+      const pending = id === "people" && prepareRelationshipStatus();
+      if (pending) {
+        panel.replaceChildren();
+        void pending.then(() => {
+          if (state === owner && root.isConnected && active === id) panel.replaceChildren(...render(id).filter(Boolean));
+        });
+      } else panel.replaceChildren(...render(id).filter(Boolean));
       panel.scrollTop = 0;
       if (focus) tabs.get(id)?.focus({ preventScroll: true });
     };

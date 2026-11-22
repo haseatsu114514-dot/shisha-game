@@ -96,6 +96,7 @@ try {
     fortune.second = state.affinity.rio;
     // 恋人の絆: 私的な場面でだけ、従来の半分
     state = fresh({ lovers: ["tsumugi"], loveLevel: { tsumugi: 1 }, lovePts: { tsumugi: 9 } });
+    await stats.prepareLoveAffinity(["tsumugi"]);
     stats.gainAffinity("tsumugi", 10);
     const shop = state.lovePts.tsumugi;
     stats.bond.private = true;
@@ -179,6 +180,7 @@ try {
     await vn.play("ch1_minto_phantom_smell");
     const shopNames = [...new Set(names().filter((l) => DB.dialogues.ch1_minto_phantom_smell.lines.some((x) => x.speaker === "minto" && x.text === l.text)).map((l) => l.name))];
     // 告白（分岐先の受け入れも私的な場面のまま）
+    await data.loadConfessionDialogue();
     vn.backlog().length = 0;
     window.T.pick("付き合ってください");
     await vn.play("confession_minto");

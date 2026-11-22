@@ -5,10 +5,10 @@
 // 恋人に自分から会いに行くボタンは置かない（オーナー指定: 恋人とは LIME の誘いや連絡でつながる）。
 // 2人以上と付き合うと、うしろめたさが積もり、大会当日に修羅場が起きる。
 // 文面の正本: 告白=data/dialogue/confession.json、節目=lover_events.json、LIME・デート=remake/data/lover.json
-import { DB, callName } from "../core/data.js";
+import { DB, callName, loadConfessionDialogue } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { chapterDay, departurePrep } from "../core/chapter-clock.js";
-import { gainAffinity, releaseLoveAffinity, privateBondScope, addStamina, bond, AFFINITY_RANK_PTS } from "../core/stats.js";
+import { gainAffinity, releaseLoveAffinity, prepareLoveAffinity, privateBondScope, addStamina, AFFINITY_RANK_PTS } from "../core/stats.js";
 import { emit } from "../core/bus.js";
 import { hiyoriRoute, hiyoriFinaleReady } from "../core/hiyori-route.js";
 import { play, isPlaying } from "../vn/engine.js";
@@ -36,7 +36,8 @@ export const NO_CONFESSION_FINALE_CHAPTER = 5;
  * 告白できる相手か。交友の締めくくり（daily/bonds.js）で恋愛ルートに入り（答えた質問がすべて恋愛寄り）、
  * まだ恋人でも「友達のまま」でもない。予約（締めくくりの直後）と再生（夜の帰り道）の両方でこれを確かめる
  */
-export function romanceRouteOpen(id) {
+export function romanceRouteEligible(id) {
+  const finale = state.finales?.[id];
   // あげはの告白は日常の帰り道ではなく、第3章の帰郷後（chapters/ch3-romance-entry.js）だけ。
   if (id === "ageha") return false;
   // 第5章で初めて届いた締めくくりでは告白しない（オーナー既定 B・2026-11-02。正本は「恋愛ルートは第3章までに着地」）。
@@ -44,7 +45,7 @@ export function romanceRouteOpen(id) {
   // 関係の表示も「告白を選べる」にしない。
   // ただしヌールは、第5章のドバイで迎えた締めくくりでも砂丘の夕日で告白できる（2026-11-07 オーナー決定「ノールの告白は第5章でも可能にする」。
   // 台帳 CHB12 の既定 B をヌールだけ外す）。ヌールの告白は自分の場面（OWN_CONFESSION_SCENE）なので、夜の帰り道の予約は今までどおり入らない。
-  if (id !== "noor" && (state.finales?.[id]?.chapter || 0) >= NO_CONFESSION_FINALE_CHAPTER) return false;
+  if (id !== "noor" && (finale?.chapter || 0) >= NO_CONFESSION_FINALE_CHAPTER) return false;
   if (id === "hiyori") {
     const route = hiyoriRoute();
     if (!hiyoriFinaleReady() || !state.flags[route.finale?.flag]
@@ -52,7 +53,7 @@ export function romanceRouteOpen(id) {
   }
   // サメちゃんの恋愛の入口（最後の問い）は第2・3章だけ（chapter-features.js の samechanRomance）。そこで迎えた締めくくりの告白は、
   // ほかの相手と同じく持ち越して第5章の地元の夜に届く（第3章の準備3日と東京の夜は confessionHeld が持ち越す・IR36）。
-  const samechanFinaleChapter = state.finales?.samechan?.chapter || state.chapter;
+  const samechanFinaleChapter = finale?.chapter || state.chapter;
   if (id === "samechan" && (!(samechanFinaleChapter >= 2 && samechanFinaleChapter <= 3)
     || !state.flags[questionDoneKey("samechan")]
     || state.romanceChoices?.bond_q1_samechan?.char !== id
@@ -60,9 +61,11 @@ export function romanceRouteOpen(id) {
     || !(state.romanceChoices?.bond_q1_samechan?.value > 0)
     || !(state.romanceChoices?.bond_q2_samechan?.value > 0))) return false;
   const answers = Object.values(state.romanceChoices || {}).filter((a) => a?.char === id);
-  return !!id && state.finales?.[id]?.route === "romance" && answers.length > 0 && answers.every((a) => a.value > 0)
-    && !isLover(id) && !state.flags[`_friend_${id}`] && !!DB.dialogues[`confession_${id}`];
+  return !!id && finale?.route === "romance" && answers.length > 0 && answers.every((a) => a.value > 0)
+    && !isLover(id) && !state.flags[`_friend_${id}`];
 }
+
+export const romanceRouteOpen = id => romanceRouteEligible(id) && !!DB.dialogues[`confession_${id}`];
 
 // ---------------------------------------------------------------- 付き合う
 
@@ -129,6 +132,8 @@ const gateScene = (id) => ({
 // ヌールはドバイの砂丘の夕日（chapters/ch4-desert.js の confession_noor・DSR20。第4章と第5章のドバイ）だけで告白する。
 const OWN_CONFESSION_SCENE = Object.freeze(["mashiro", "noor"]);
 const nightWalkConfession = (id) => !OWN_CONFESSION_SCENE.includes(id) && romanceRouteOpen(id);
+const nightWalkEligible = (id) => !OWN_CONFESSION_SCENE.includes(id) && romanceRouteEligible(id);
+let confessionPlaying = null;
 
 /**
  * 今夜は帰り道の告白を始めない時期か（予約は残し、遠出から帰ってきてから）。
@@ -149,8 +154,23 @@ export const confessionHeld = (value = state) => !!departurePrep(value) || awayF
  * @returns 何か起きたか
  */
 export async function maybeConfession(beat, { busyNight = false, companion = null } = {}) {
-  if (state.phase !== "daily" || state.slot < 2) return false; // 昼の行動から仕事後の夜へ飛ばない
-  if (confessionHeld()) return false; // 出発前・東京・ドバイでは予約を残して、帰ってきてから
+  if (!state) return false;
+  const owner = state, day = state.day;
+  const current = () => state === owner && state.day === day && state.phase === "daily" && state.slot >= 2 && !confessionHeld();
+  if (!current() || confessionPlaying === owner || isPlaying()) return false;
+  confessionPlaying = owner;
+  try { return await playNightConfession(beat, { busyNight, companion, current }); }
+  finally { if (confessionPlaying === owner) confessionPlaying = null; }
+}
+
+async function playNightConfession(beat, { busyNight, companion, current }) {
+  const candidates = [state.flags._confession_due, ...Object.keys(state.finales || {})].filter(nightWalkEligible);
+  if (candidates.some(id => !DB.dialogues[`confession_${id}`])) {
+    // 今夜は誰の告白も起きないと分かる場合、台本の取得も次の機会へ回す。
+    if ((state.flags._confession_wait || 0) > state.day || busyNight && !candidates.includes(companion)) return false;
+    try { await loadConfessionDialogue(); } catch { return false; }
+    if (!current() || isPlaying()) return false;
+  }
   let id = state.flags._confession_due;
   if (id && !nightWalkConfession(id)) { delete state.flags._confession_due; id = null; }
   // 2人目の恋愛ルートなど、予約の空きを待っていた相手を拾う（締めくくりの順）
@@ -162,11 +182,13 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
   if ((state.flags._confession_wait || 0) > state.day || busyNight && companion !== id) return false;
   delete state.flags._confession_due;
   await beat(companion === id ? "——別れ際、もう少しだけ話したくなった。" : id === "ageha" ? "——と、そのとき。" : `（……${privateCall(id)}の顔が、ふと浮かんだ）`);
+  if (!current() || !nightWalkConfession(id)) return false;
   // 恋人がいる時の迷いは、正式な返事の直前に共通VNで確認する。
   if (!state.lovers.length && id !== "ageha") {
     // あげは以外は、主人公が踏み出すかどうかから（あげはだけは向こうから来る）
     delete state.flags._confession_go;
     await play(gateScene(id), { bg: STREET });
+    if (!current()) return false;
     if (!state.flags._confession_go) {
       state.flags._confession_due = id;
       state.flags._confession_wait = state.day + 2;
@@ -189,11 +211,14 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
         { speaker: "minto", face: "ura_smile", text: "……うん。その呼び方、ちょっと照れるけど。ちゃんと、私に話しかけてくれてる感じがする" },
       ],
     });
+    if (!current()) return false;
     state.flags._minto_name_known = true;
     save();
   }
   await play(`confession_${id}`, { ...(DB.dialogues[`confession_${id}`]?.metadata?.bg ? {} : { bg: STREET }), romanceWarningGuilt: true });
+  if (!current()) return false;
   if (id === "samechan" && isLover(id)) await playSamechanMilestone();
+  if (!current()) return false;
   save();
   return true;
 }
@@ -229,11 +254,15 @@ export function loverMilestoneDue(id, { home = !awayFromHome() } = {}) {
 
 /** 実際に会った私的な場面の読了後、未読の節目を一つだけ読む。読了前の保存では未読のまま。 */
 export async function playLoverMilestone(id, { signal = null, home } = {}) {
-  if (milestonePlaying || isPlaying()) return false;
+  if (milestonePlaying || isPlaying() || signal?.aborted || !isLover(id)) return false;
   if (id === "samechan") return playSamechanMilestone({ signal });
-  const eventId = loverMilestoneDue(id, { home });
+  const owner = state;
+  if (DB.loverEventsLoaded === false && !await prepareLoveAffinity([id], { signal })) return false;
+  if (state !== owner || signal?.aborted || !isLover(id) || milestonePlaying || isPlaying()) return false;
+  const due = () => loverMilestoneDue(id, { home });
+  const eventId = due() || (releaseLoveAffinity(id) && due());
   if (!eventId) return false;
-  const owner = state, restorePrivate = privateBondScope();
+  const restorePrivate = privateBondScope();
   milestonePlaying = true;
   try {
     if (signal?.aborted) return false;
@@ -265,16 +294,21 @@ export async function playDate(id) {
     console.error(`[romance] Missing date scene for ${id}`);
     return;
   }
+  const owner = state, day = state.day;
+  await prepareLoveAffinity([id]);
+  if (state !== owner || state.day !== day || !isLover(id) || isPlaying()) return;
   const venue = dateVenue(id);
   state.lastDate[id] = state.day;
-  bond.private = true;
-  const result = await play(dateScene(id, venue), { growthScene: true });
-  // 読み終えた時だけ、次のデートの話題へ進める（#4030。中断・LOADでは同じ話題のまま）
-  if (result && !result.cancelled) advanceDateTopic(id);
-  gainAffinity(id, 10);
-  bond.private = false;
+  const restorePrivate = privateBondScope();
+  try {
+    const result = await play(dateScene(id, venue), { growthScene: true });
+    if (state !== owner) return;
+    if (result && !result.cancelled) advanceDateTopic(id); // 読了時に次の話題へ進める（#4030）
+    gainAffinity(id, 10);
+  } finally { restorePrivate(); }
   // プチ修羅場（恋人が2人以上・一度きり）: 着信・気づきかけ・帰り道の誤爆。デートの場所のまま読み、報酬は無い
   await petitAfterDate(id);
+  if (state !== owner) return;
   addStamina(-10);
   save();
   await playLoverMilestone(id);
