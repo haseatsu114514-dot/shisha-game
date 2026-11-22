@@ -594,6 +594,7 @@ try {
     });
   // ダイス劇場（TRF29）: 振ってから評価が出るまでは画面いっぱい。出目・合計・評価は判定の値そのまま。タップで結果の卓へ飛ばせる。
   for (const [label, options] of [["roll-show-pc", {}], ["roll-show-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    const choiceSheets = new Set(), verdictLogos = new Set();
     await run(label, { seed: "3" }, options, async page => {
       const show = page.locator(".trpg-roll-show");
       const seen = () => show.evaluate(node => {
@@ -604,6 +605,7 @@ try {
           settle: !!document.querySelector('[data-test="trpg-settle"]:not(:disabled)') };
       });
       await hit(page, '[data-test="trpg-start"]'); await nextLines(page); await declare(page);
+      assert.equal(choiceSheets.size, 0, "The first check opens before any illustrated choice sheet is needed");
       await hit(page, '[data-test="trpg-roll"]');
       await show.waitFor();
       const pending = (await page.evaluate(() => __trpg.snapshot())).pending;
@@ -618,6 +620,7 @@ try {
       // 評価は Codex のロゴ（#4082）を叩きつけ、日本語の読みを下に添える。
       await show.locator('.trpg-rs-verdict[data-logo="true"] .trpg-rs-logo[src*="roll-logos/partial.webp"]').waitFor({ state: "visible" });
       assert.equal(await show.locator(".trpg-rs-logo").evaluate(n => n.naturalWidth > 0), true, "The PARTIAL logo is decoded");
+      assert.deepEqual([...verdictLogos], ["partial.webp"], "The first roll requests its actual verdict");
       // 評価が出るまで待つと、劇場は自分で閉じて結果の卓になる。卓は同じ動き・音を繰り返さない。
       await show.locator('.trpg-rs-sum strong').filter({ hasText: String(pending.dice[0] + pending.dice[1] + pending.bonus) }).waitFor();
       await page.locator('[data-test="trpg-settle"]').waitFor();
@@ -640,7 +643,11 @@ try {
       assert.equal(await page.locator('[data-test="trpg-roll-total"] strong').textContent(), "合計 " + (rerolled.dice[0] + rerolled.dice[1] + rerolled.bonus));
       await hit(page, '[data-test="trpg-settle"]'); await nextLines(page);
       assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.length, 1);
-    });
+    }, page => page.on("request", request => {
+      const path = new URL(request.url()).pathname;
+      if (path.includes("/trpg/choices-")) choiceSheets.add(path);
+      if (path.includes("/trpg/roll-logos/") && !path.endsWith("/skill.webp")) verdictLogos.add(path.split("/").pop());
+    }));
   }
   await run("roll-show-reduced-motion", { seed: "3" }, { reducedMotion: "reduce" }, async page => {
     await hit(page, '[data-test="trpg-start"]'); await nextLines(page); await declare(page);

@@ -8,10 +8,10 @@ import { initCraftStage } from "./craft/stage-layout.js";
 import { initIchidaiSwitch } from "./daily/ichidai-table.js";
 import { loadAll, loadDeferredDialogues, DB, bgUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
-import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
+import { initLayers, imageReady, FRAME_ART } from "./core/ui.js";
 import { loadConfig, saveConfig, state, load, peekSave, consumeResumeOnBoot, requestResumeOnBoot, tickPlayTime } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
-import { applyUiTheme } from "./core/ui-theme.js";
+import { applyUiTheme, uiThemeFrame } from "./core/ui-theme.js";
 import { initLook, migrateLook, normalizeLook } from "./core/look.js";
 import { installLooks } from "./looks/index.js";
 import { installRotateGuard } from "./core/rotate-guard.js";
@@ -127,20 +127,22 @@ export async function boot() {
   }, { label: "ゲームを準備しています…", ...bootComic });
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
   const resumeRequested = consumeResumeOnBoot();
+  let trial;
   if (resumeRequested && load()) resumeGame();
   // TRPGの試遊（TRF21）: ?trial=trpg で、タイトルの代わりに本編と同じボドゲカフェを使い捨ての状態で開く。
   // セーブは読み書きしない。「タイトルへ戻る」でふだんのタイトルへ。
   else if (new URLSearchParams(location.search).get("trial") === "trpg") {
     try {
-      const trial = await (await import("./daily/trpg-trial.js")).openTrpgTrial();
-      trial.finished.finally(() => showTitle(titleArt));
+      trial = await (await import("./daily/trpg-trial.js")).openTrpgTrial();
     } catch { showTitle(titleArt); } // 試遊を用意できなかった時は、ふだんのタイトルへ
   }
   else showTitle(titleArt);
   // タイトルを描けたことを確認してから、読み込み画面を閉じる。
   $("#boot").classList.add("done");
   setTimeout(() => $("#boot")?.remove(), 700);
-  warmUp();
+  if (trial) {
+    trial.finished.finally(() => { showTitle(titleArt); warmUp(); });
+  } else warmUp();
 }
 
 /** タイトルを見ている間に、日常でよく出る絵を裏で読んでおく（初めて出る場面で絵が遅れないように） */
@@ -153,7 +155,8 @@ async function warmUp() {
   const jobs = [
     () => loadVnFonts(),
     () => loadDeferredDialogues(),
-    () => warmUiArt({ deferStores: true }),
+    // 店ロゴ・顔アイコン・地図の部品は、地図を開くときに uiArtReady と storeLogosReady が読む。
+    () => imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep: true }),
     // 制作の枠・札・ゲージの絵（CSSの背景）。初めての作業台で枠が遅れて出ないように（CRN）
     () => import("./craft/skin.js").then(m => m.warmCraftStyleImages()),
     // 次のロード画面の漫画を先に決めて2コマを取得しておく（core/loading.js の warmNextLoadingComic は

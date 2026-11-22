@@ -72,7 +72,7 @@ export function mountTrpgCollection(host, {
       el("small", { text: "背景と、今夜の仲間を迎えています……" }), ...actions(),
     ]));
     try {
-      resources = await loadTrpgLibrary({ signal: request.signal });
+      resources = await loadTrpgLibrary({ signal: request.signal, preloadAssets: false });
       await fontsReady(request.signal);
       if (disposed || ticket !== generation) return;
       if (initialScenarioId) open(initialScenarioId); else library();
