@@ -89,10 +89,10 @@ await suite("relationship-ui", async check => {
       // 開始時から知っているスミさん・つむぎ（#2750）は、新しいゲームの最初から♥1で並ぶ。
       await page.evaluate(() => {
         const s = R.fresh(); s.chapter = 5;
-        for (const id of ["kumicho", "rei", "mashiro"]) {
+        for (const id of ["kumicho", "kuraudo", "mashiro"]) {
           s.affinity[id] = 66; s.contacts.push(id);
         }
-        s.relationshipMemories = ["kumicho_hands", "rei_listen", "mashiro_pace"];
+        s.relationshipMemories = ["kumicho_hands", "kuraudo_listen", "mashiro_pace"];
       });
       await status(page);
       assert.deepEqual(await page.locator(".pp-row").evaluateAll(rows => rows.map(r => r.dataset.person)), ["sumi", "tsumugi"]);
@@ -105,7 +105,7 @@ await suite("relationship-ui", async check => {
       // 本編の名乗り・記憶記録を通す。ましろは好感度0でも面識と記憶を表示する。
       for (const [id, chapter, introduction, memoryScene, memoryId] of [
         ["kumicho", 2, "ch2_city_kumicho", "ch2_kumicho_first", "kumicho_hands"],
-        ["rei", 2, "ch2_city_rei", "ch2_rei_first", "rei_listen"],
+        ["kuraudo", 2, "ch2_city_kuraudo", "ch2_kuraudo_first", "kuraudo_listen"],
         ["mashiro", 3, "ch3_mukai_arrival", null, "mashiro_pace"],
       ]) {
         const introduced = await page.evaluate(async ({ id, chapter, introduction, memoryScene, memoryId }) => {
@@ -380,15 +380,15 @@ await suite("relationship-ui", async check => {
     // #2028: 綾取・ヴォルクも♥5の締めくくりがあるので人間関係に出る。「次に〜で会うと」は東京の店に会える間だけ。
     // 綾取は大会後の煙幕の片づけの朝から（店を畳む）、ヴォルクは帰郷の夜から（鉄の煙の寄り道と同じ）約束しない。
     // 第3章の後に♥5へ届いた時も、もう会えない店の「話を進めると、特別なイベントへ」は出さない。
-    if (device === "pc") await check("pc-saku-and-volk-rows-promise-only-while-they-can-be-met", async page => {
+    if (device === "pc") await check("pc-ayatori-and-volk-rows-promise-only-while-they-can-be-met", async page => {
       await setup(page);
       await page.evaluate(async () => {
         const city = await import("./js/chapters/ch2-city-data.js");
-        Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_rivals", ["ch3_saku_bond_finale"]),
+        Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_rivals", ["ch3_ayatori_bond_finale"]),
           await city.readDialogues("ch3_volk", ["ch3_volk_bond_finale"]));
         const s = R.fresh(); s.chapter = 3;
-        for (const id of ["saku", "volk"]) { s.met[id] = true; s.affinity[id] = 66; s.contacts.push(id); }
-        Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_read_ch3_saku_missed: true, _ch3_read_ch3_saku_cleanup: true, _ch3_read_ch3_saku_liar: true, _ch3_read_ch3_saku_first_reply: true, _ch3_outings: { enmaku_answer: 1 },
+        for (const id of ["ayatori", "volk"]) { s.met[id] = true; s.affinity[id] = 66; s.contacts.push(id); }
+        Object.assign(s.flags, { _lime_contact_ayatori: true, _ch3_read_ch3_ayatori_lime: true, _ch3_read_ch3_ayatori_missed: true, _ch3_read_ch3_ayatori_cleanup: true, _ch3_read_ch3_ayatori_liar: true, _ch3_read_ch3_ayatori_first_reply: true, _ch3_outings: { enmaku_answer: 1 },
           _lime_contact_volk: true, _ch3_read_ch3_volk_lime: true, _ch3_read_ch3_volk_second: true,
           _ch3_read_ch3_volk_third: true, _ch3_read_ch3_volk_fourth: true, _ch3_read_ch3_volk_fifth: true, _ch3_read_ch3_volk_revisit: true });
         R.core.save();
@@ -399,19 +399,19 @@ await suite("relationship-ui", async check => {
         return await row.locator(".pp-next").count() ? await row.locator(".pp-next").textContent() : null;
       };
       await status(page);
-      assert.equal(await next("saku"), "次に煙幕で会うと、特別なイベントへ。");
+      assert.equal(await next("ayatori"), "次に煙幕で会うと、特別なイベントへ。");
       assert.equal(await next("volk"), "次に鉄の煙で会うと、特別なイベントへ。");
       await page.locator('[data-person="volk"]').scrollIntoViewIfNeeded();
-      await assertFits(page, '[data-person="saku"] .pp-next, [data-person="volk"] .pp-next');
+      await assertFits(page, '[data-person="ayatori"] .pp-next, [data-person="volk"] .pp-next');
       await closeStatus(page);
-      for (const [later, saku, volk] of [
+      for (const [later, ayatori, volk] of [
         [s => { s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: R.bonds.VOLK_LAST_AFTERMATH_STAGE }; }, null, "次に鉄の煙で会うと、特別なイベントへ。"],
         [s => { s.flags._ch3_aftermath.stage += 1; }, null, null],
         [s => { s.chapter = 5; delete s.flags._ch3_aftermath; delete s.flags._lime_contact_volk; }, null, null],
       ]) {
         await page.evaluate(src => { (0, eval)(src)(R.core.state); R.core.save(); }, later.toString());
         await status(page);
-        assert.equal(await next("saku"), saku, later.toString());
+        assert.equal(await next("ayatori"), ayatori, later.toString());
         assert.equal(await next("volk"), volk, later.toString());
         await closeStatus(page);
       }

@@ -75,8 +75,8 @@
 .ch2-pin.c-station .ch2-pin-title { font-size: 18px; }
 .ch2-pin.ageha { width: 215px; }
 .ch2-pin.ageha .ch2-pin-title { font-size: 18px; }
-.ch2-pin.rei { width: 238px; }
-.ch2-pin.rei .ch2-pin-title { font-size: 17px; }
+.ch2-pin.kuraudo { width: 238px; }
+.ch2-pin.kuraudo .ch2-pin-title { font-size: 17px; }
 .ch2-pin.station { width: 205px; border-color: #d8e4e9; background: #152c3bf2; }
 .ch2-pin.station::after { background: #152c3b; border-color: #d8e4e9; }
 .ch2-pin.station .ch2-pin-num { font-size: 22px; color: #dfebef; }

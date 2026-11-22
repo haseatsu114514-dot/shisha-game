@@ -35,7 +35,7 @@ for (const id of ["naru", "tsumugi", "mukai_master"]) {
   assert.equal(names[id], real, `${id}: full name`);
 }
 // 本名を隠している人・源氏名の人は、LIMEでも本名を出さない
-for (const id of ["minto", "rei", "ageha", "samechan"]) {
+for (const id of ["minto", "kuraudo", "ageha", "samechan"]) {
   for (const secret of ["木成頼", "栞", "田中", "健太", "夜長", "千代子", "暑海", "なぎさ"]) {
     assert.ok(!names[id].includes(secret), `${id}: ${secret} stays hidden`);
   }

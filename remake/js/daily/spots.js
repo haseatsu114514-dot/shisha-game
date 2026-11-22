@@ -89,7 +89,7 @@ export const SPOTS = [
     nightPool: ["venue_choizap_night", "venue_choizap_night_c", "venue_choizap_night_b", "venue_choizap_night_d"],
     desc: "昼夜使える無人ジム。入会はアプリから。" },
   { id: "c_station", kind: "spot", label: "C.STATION", area: "大会運営", x: 54, y: 66, theme: "stadium", glyph: "C", cost: 2500, requiresMet: "naru", stat: "insight", stamina: -16,
-    first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_sui_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
+    first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_sensu_glimpse", "cs_kemuri_solo", "cs_uezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
     desc: "大会を運営するチェーン店。噂も集まる。" },
   { id: "rest", kind: "rest", label: "家", area: "自宅", x: 89, y: 44, theme: "rest", glyph: "休", stamina: 55,
     desc: "体を休める。体力が大きく戻る。" },
@@ -351,10 +351,10 @@ export const CHAPTER_TALKS = Object.freeze({
     { chapter: 3, scene: "ch3_prep_kumicho", prep: true },
     { chapter: 4, scene: "ch4_prep_kumicho", prep: true },
   ]),
-  rei: Object.freeze([
-    // 第2章で余りチケットを受け取った人は、ライブの夜（ch3_prep_rei_live）が東京への送り出しを兼ねるので出さない
-    { chapter: 3, scene: "ch3_prep_rei", prep: true, flag: "!_ch2_rei_ticket" },
-    { chapter: 4, scene: "ch4_prep_rei", prep: true },
+  kuraudo: Object.freeze([
+    // 第2章で余りチケットを受け取った人は、ライブの夜（ch3_prep_kuraudo_live）が東京への送り出しを兼ねるので出さない
+    { chapter: 3, scene: "ch3_prep_kuraudo", prep: true, flag: "!_ch2_kuraudo_ticket" },
+    { chapter: 4, scene: "ch4_prep_kuraudo", prep: true },
   ]),
   naru: Object.freeze([
     // #3097 PR-C: 看板の電球の付け替え。DAY3の祝いの後、DAY11の対峙より前だけ（対峙の後は店を長く休む）

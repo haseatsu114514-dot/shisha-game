@@ -1114,7 +1114,7 @@
       }
     },
     {
-      "dialogue_id": "ch1_rei_cameo",
+      "dialogue_id": "ch1_kuraudo_cameo",
       "comment": "第2章のクラウドのカメオ来店。名前と正体は伏せ、話者名なしの「」で通す。煙を曲にたとえる感想と、帰り際の丁寧な挨拶で印象を残す",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png"

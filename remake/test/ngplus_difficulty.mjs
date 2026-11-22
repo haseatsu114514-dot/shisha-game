@@ -29,6 +29,10 @@ for (const rival of [-100, 0, .1, 82.333333333, 100]) {
 }
 
 // 版1の旧保存を、変更前のcastVotes/standingsで取得したゴールデン値と比較。全4投票と全順位を保持。
+// Serialize to the historical fixture's vocabulary ONLY for this comparison. No scores, ordering
+// or expected hashes may change when character identifiers change.
+const fixtureVotes = data => JSON.stringify(data).replace(/"(ayatori|dr_charcoal|sensu)"/g,
+  (_, key) => JSON.stringify(({ ayatori: "saku", dr_charcoal: "dr_kemuri", sensu: "sui" })[key]));
 const digest = createHash("sha256");
 const events = [];
 setRivalScoreObserver(event => events.push(event));
@@ -40,8 +44,8 @@ for (const seed of [1, 7, 42, 7317, 0xffffffff]) {
       delete progress.rulesVersion; // 版のない旧保存。新規挑戦の版2と混ぜない。
       delete progress.baseVotes; // 旧保存には基礎票も無い。
       for (let round = 0; round < 4; round++) {
-        tournament.castVotes(progress, round, performance, { emil: -1, dr_kemuri: .5, sui: 1 }, p);
-        if (p === 0) digest.update(JSON.stringify([progress.votes, progress.lastVotes, progress.quality, tournament.standings(progress)]));
+        tournament.castVotes(progress, round, performance, { emil: -1, dr_charcoal: .5, sensu: 1 }, p);
+        if (p === 0) digest.update(fixtureVotes([progress.votes, progress.lastVotes, progress.quality, tournament.standings(progress)]));
       }
     }
   }
@@ -54,8 +58,8 @@ assert(events.filter(e => e.p === 0).every(e => Object.is(e.rival, e.lifted))); 
 equal([...new Set(events.map(e => e.p))], [0, .5, 1]);
 // オーナー承認の強化版（版2）も別の固定値で全4投票/全順位/持ち込みを検査。旧ゴールデン値は上で維持する。
 // 新しい挑戦は版3（#3916 WIN11）だが、版2で始めた途中保存はこの値で最後まで進むので、版2に固定して同じ値を検査し続ける。
-equal(tournament.V2_RIVAL_QUALITY, { saku: 86, steve: 85, volk: 88 });
-equal(tournament.RIVAL_QUALITY, { saku: 84.5, steve: 83.5, volk: 86.5 });
+equal(tournament.V2_RIVAL_QUALITY, { ayatori: 86, steve: 85, volk: 88 });
+equal(tournament.RIVAL_QUALITY, { ayatori: 84.5, steve: 83.5, volk: 86.5 });
 equal(tournament.TOURNAMENT_RULES_VERSION, 3);
 const currentDigest = createHash("sha256"), currentEvents = [];
 setRivalScoreObserver(event => currentEvents.push(event));
@@ -67,8 +71,8 @@ for (const seed of [1, 7, 42, 7317, 0xffffffff]) {
       equal(progress.rulesVersion, 3);
       progress.rulesVersion = 2;
       for (let round = 0; round < 4; round++) {
-        assert(tournament.castVotes(progress, round, performance, { emil: -1, dr_kemuri: .5, sui: 1 }, p));
-        if (p === 0) currentDigest.update(JSON.stringify([progress.votes, progress.lastVotes, progress.quality, tournament.standings(progress)]));
+        assert(tournament.castVotes(progress, round, performance, { emil: -1, dr_charcoal: .5, sensu: 1 }, p));
+        if (p === 0) currentDigest.update(fixtureVotes([progress.votes, progress.lastVotes, progress.quality, tournament.standings(progress)]));
       }
     }
   }

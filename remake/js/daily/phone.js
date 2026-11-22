@@ -45,7 +45,7 @@ const regionMatches = (save, region) => region === "home" ? !awayFromHome(save)
 const LIME_REPLY_NUDGE_DAYS = 3;
 
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
-const POLITE = new Set(["sumi", "sui", "maezono"]);
+const POLITE = new Set(["sumi", "sensu", "uezono"]);
 const originId = (item) => item.originId || item.msg?.origin_id || item.id;
 const importantInvite = (m) => m.type === "invitation" && !!m.important;
 const needsResend = (id) => (state.inbox || []).some((item) => originId(item) === id && item.needsResend);
@@ -259,16 +259,16 @@ function eligible(m, { tournamentDay = false } = {}) {
   // 神崎・クラウドの♥3の外出（#3097）は、場面が前提にする話（神崎の銭湯の紹介・クラウドの最初の「同士」）を読んだ後、
   // ♥5の締めくくり（呼び方が「兄弟」に変わる・「同士」を「友達」と言い直す）の前にだけ届く。章は LIME の chapter: 2 で絞る。
   if (m.id === "lime_outing_kumicho_1" && !(state.flags._kumicho_sento_introduced && !state.finales?.kumicho)) return false;
-  if (m.id === "lime_outing_rei_1" && !(state.flags._ch2_read_ch2_rei_second && !state.finales?.rei)) return false;
+  if (m.id === "lime_outing_kuraudo_1" && !(state.flags._ch2_read_ch2_kuraudo_second && !state.finales?.kuraudo)) return false;
   // 綾取・スティーブ・ヴォルクの♥3の外出（#3097 PR-H）は、この周回で LIME を交換した後（交換の場面の既読。持ち越さない印）、
   // ♥5の締めくくりの前に、東京の昼の空き時間にだけ届く（章と街は LIME の chapter: 3・region: "tokyo"）。日を改めて
   // 届け直さない（important を付けない）ので、東京の14日の空き時間を誘いで塞がない。届かなかった分は大会後の寄り道で読む
   // （ch3-aftermath-progress.js）。受けた約束が体調や予定の重なりで流れた時だけ、次の空きに届け直す（rescheduleInvitation）。
-  if (/^lime_outing_(saku|steve|volk)_1$/.test(m.id)
+  if (/^lime_outing_(ayatori|steve|volk)_1$/.test(m.id)
     && !(state.flags[`_ch3_read_ch3_${m.sender}_lime`] && !state.finales?.[m.sender] && tokyoNoonOpen())) return false;
   // 綾取がドバイへ応援に来た保存（SPC22。core/overseas-companion.js の guests）では、東京の煙幕から配信を見る前提の第4章のLIMEは届かない。
   const guests = state.flags?._overseas_companion?.guests;
-  if (/^lime_ch4_saku_/.test(m.id) && Array.isArray(guests) && guests.includes("saku")) return false;
+  if (/^lime_ch4_ayatori_/.test(m.id) && Array.isArray(guests) && guests.includes("ayatori")) return false;
   if (cond === "hiyori_tonari") return hiyoriEventStatus("tonari_return") === "ready";
   if (cond === "story_count") return (state.story[m.sender] || 0) >= (m.trigger_value || 1);
   if (cond === "lime_exchanged") {

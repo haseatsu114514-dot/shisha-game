@@ -106,10 +106,10 @@ gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s
  let complete=loadOld({story:{naru:5},flavorLessons:['ch1_naru_first','ch1_naru_third'],flavorMastery:{vanilla:24}});
  assert.equal(complete.flavorMastery.vanilla,24);
  const kumicho=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch2_kumicho.json',import.meta.url))).dialogues;
- const rei=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch2_rei.json',import.meta.url))).dialogues;
- for(const [dialogues,id,flavor,legacy] of [[kumicho,'ch2_kumicho','dragonfruit','ch2_kumicho_second'],[rei,'ch2_rei','rose','ch2_rei_first']]){
+ const kuraudo=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch2_rei.json',import.meta.url))).dialogues;
+ for(const [dialogues,id,flavor,legacy] of [[kumicho,'ch2_kumicho','dragonfruit','ch2_kumicho_second'],[kuraudo,'ch2_kuraudo','rose','ch2_kuraudo_first']]){
   const fourth=dialogues.find(d=>d.dialogue_id===id+'_fourth');
-  const currentFlavor = id === 'ch2_rei' ? 'cassis' : flavor;
+  const currentFlavor = id === 'ch2_kuraudo' ? 'cassis' : flavor;
   assert.deepEqual(fourth.metadata.flavor_lesson,{[currentFlavor]:1});
   const fresh=core.newGame();
   learnFlavorStory(fresh,fourth,DB.flavorById);
@@ -123,8 +123,8 @@ gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s
   learnFlavorStory(old,fourth,DB.flavorById);
   assert.deepEqual(old.flavorMastery,{[flavor]:12});
  }
- const visitedCloud=loadOld({flavorLessons:['ch2_rei_first'],flavorMastery:{rose:12}});
- learnFlavorStory(visitedCloud,rei.find(d=>d.dialogue_id==='ch2_rei_fourth'),DB.flavorById);
+ const visitedCloud=loadOld({flavorLessons:['ch2_kuraudo_first'],flavorMastery:{rose:12}});
+ learnFlavorStory(visitedCloud,kuraudo.find(d=>d.dialogue_id==='ch2_kuraudo_fourth'),DB.flavorById);
  assert.deepEqual(visitedCloud.flavorMastery,{rose:12,cassis:12});
  s=core.newGame();
 }

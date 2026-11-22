@@ -203,10 +203,10 @@ check("中断した初対面pendingは無関係な相手の会話では精算せ
 });
 
 check("章で保証された既知は台詞分岐を変えず、面識欠損の修復を初対面へ戻さない", () => {
-  affinityCalls.length=0;vnState.met={};vnState.flags={_affinity_first_meeting_pending_dr_kemuri:true};
-  const r=fakeRunning(['dr_kemuri']);
-  assert.equal(vnState.met.dr_kemuri,undefined,'the existing doctor_first recognition branch stays available');
-  assert.equal(r.metBefore.dr_kemuri,true);vnState.met.dr_kemuri=true;r.encountered.add('dr_kemuri');
+  affinityCalls.length=0;vnState.met={};vnState.flags={_affinity_first_meeting_pending_dr_charcoal:true};
+  const r=fakeRunning(['dr_charcoal']);
+  assert.equal(vnState.met.dr_charcoal,undefined,'the existing doctor_first recognition branch stays available');
+  assert.equal(r.metBefore.dr_charcoal,true);vnState.met.dr_charcoal=true;r.encountered.add('dr_charcoal');
   port.completeDialogueAffinity(r);assert.equal(affinityCalls.length,0);
   const unrelated=fakeRunning();unrelated.encountered.add('sumi');port.completeDialogueAffinity(unrelated);
   assert.equal(affinityCalls.length,0);

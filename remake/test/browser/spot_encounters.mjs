@@ -77,19 +77,19 @@ await suite("spot-encounters", async check => {
         const grown = Object.entries(E.core.state.stats).filter(([key, value]) => value > stats[key])
           .map(([key, value]) => [key, value - stats[key]]);
         rows.push({ trace: E.trace, lines: E.lines(), cost: money - E.core.state.money, grown, xp: (E.core.state.growth?.xp || 0) - xp,
-          firstAffinity: E.core.state.affinity.maezono || 0 });
+          firstAffinity: E.core.state.affinity.uezono || 0 });
       }
-      return { rows, board: (await import("./js/core/growth-mode.js")).growthEnabled(), unchanged: before === E.relationship(), met: E.core.state.met.maezono,
-        seen: E.core.state.flags._spot_seen_cafe_maezono_break };
+      return { rows, board: (await import("./js/core/growth-mode.js")).growthEnabled(), unchanged: before === E.relationship(), met: E.core.state.met.uezono,
+        seen: E.core.state.flags._spot_seen_cafe_uezono_break };
     });
     assert(r.unchanged && r.met && r.seen);
     assert.deepEqual(r.rows.map(row => row.firstAffinity), [0, 0, 0, 0, 0, 0, 0, 0], '会長と同じく、上園との施設遭遇では好感度を付けない');
     assert.equal(r.rows[0].trace[0], "ch1_cafe_visit");
     assert.equal(r.rows[1].trace[0], "cafe_naru_break");
-    assert.equal(r.rows[3].trace[0], "cafe_maezono_break");
+    assert.equal(r.rows[3].trace[0], "cafe_uezono_break");
     assert.equal(r.rows[5].trace[0], "cafe_master_quiz");
     assert(r.rows[3].lines.some(t => t.includes("HOOKAH PRESSって雑誌")));
-    for (const n of [2, 4, 6, 7]) assert(!/naru|maezono|master/.test(r.rows[n].trace[0]));
+    for (const n of [2, 4, 6, 7]) assert(!/naru|uezono|master/.test(r.rows[n].trace[0]));
     assert(r.rows.every(row => row.cost === 800));
     // #784: 好感度の上がらない施設は、旧しくみ（?growth=0）では主な能力（喫茶はセンス）1つに2P。
     // 心得の盤（通常プレイの既定・SBD97）では経験値になり、能力は書き換えない
@@ -191,7 +191,7 @@ await suite("spot-encounters", async check => {
     const r = await page.evaluate(async () => {
       const s = E.core.state, out = {};
       // 寄り道会話は読み終えた後にして、静かな回だけを見る
-      for (const id of ["cafe_naru_break", "cafe_maezono_break", "cafe_master_quiz", "kannon_adam", "kannon_oldman",
+      for (const id of ["cafe_naru_break", "cafe_uezono_break", "cafe_master_quiz", "kannon_adam", "kannon_oldman",
         "kannon_adam_pakki", "choizap_naru", "choizap_oldman", "choizap_minto"]) s.flags[`_spot_seen_${id}`] = true;
       s.spotVisits = { cafe: 1, kannon: 1, choizap: 1 };
       const visit = async (id, { night = false, rain = false } = {}) => {

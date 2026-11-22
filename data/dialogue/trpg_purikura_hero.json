@@ -64,9 +64,9 @@
       }
     },
     {
-      "id": "rei",
+      "id": "kuraudo",
       "part": "PLAYER",
-      "role": "{pc:rei}／黒衣の吟遊詩人",
+      "role": "{pc:kuraudo}／黒衣の吟遊詩人",
       "color": "#b0102a",
       "ability": "黒薔薇のフィナーレ",
       "abilityText": "魔王の前でポーズを決めるとき、判定に一度だけ＋7",
@@ -85,7 +85,7 @@
       },
       "alternatives": {
         "regularb": {
-          "role": "{pc:rei}／黒衣の吟遊詩人",
+          "role": "{pc:kuraudo}／黒衣の吟遊詩人",
           "color": "#8faeaa"
         }
       }
@@ -121,11 +121,11 @@
         },
         {
           "id": "listen_watch",
-          "actor": "rei",
-          "sheet": "rei",
+          "actor": "kuraudo",
+          "sheet": "kuraudo",
           "stat": "eye",
           "label": "広場の様子を、黙って見て回る",
-          "detail": "{pc:rei}が外套の陰から、広場と空をじっと見渡す",
+          "detail": "{pc:kuraudo}が外套の陰から、広場と空をじっと見渡す",
           "declare": "trpg_purikura_hero_declare_listen_watch"
         }
       ]
@@ -158,11 +158,11 @@
         },
         {
           "id": "prepare_angle",
-          "actor": "rei",
-          "sheet": "rei",
+          "actor": "kuraudo",
+          "sheet": "kuraudo",
           "stat": "eye",
           "label": "いちばん映える光を探す",
-          "detail": "{pc:rei}が鏡の角度を変えながら、光の向きを確かめる",
+          "detail": "{pc:kuraudo}が鏡の角度を変えながら、光の向きを確かめる",
           "declare": "trpg_purikura_hero_declare_prepare_angle"
         }
       ]
@@ -173,7 +173,7 @@
       "success": "trpg_purikura_hero_serve_success",
       "mixed": "trpg_purikura_hero_serve_mixed",
       "trouble": "trpg_purikura_hero_serve_trouble",
-      "helper": "rei",
+      "helper": "kuraudo",
       "approaches": [
         {
           "id": "serve_call",
@@ -195,11 +195,11 @@
         },
         {
           "id": "serve_rose",
-          "actor": "rei",
-          "sheet": "rei",
+          "actor": "kuraudo",
+          "sheet": "kuraudo",
           "stat": "nerve",
           "label": "外套を翻し、全力の決めポーズ",
-          "detail": "{pc:rei}が薔薇を掲げ、誰より大きく決めポーズを取る",
+          "detail": "{pc:kuraudo}が薔薇を掲げ、誰より大きく決めポーズを取る",
           "declare": "trpg_purikura_hero_declare_serve_rose"
         }
       ]
@@ -231,11 +231,11 @@
         },
         {
           "id": "twist_petal",
-          "actor": "rei",
-          "sheet": "rei",
+          "actor": "kuraudo",
+          "sheet": "kuraudo",
           "stat": "hand",
           "label": "薔薇の花びらで、目をくらます",
-          "detail": "{pc:rei}が外套を翻し、薔薇の花びらを門の前に舞わせる",
+          "detail": "{pc:kuraudo}が外套を翻し、薔薇の花びらを門の前に舞わせる",
           "declare": "trpg_purikura_hero_declare_twist_petal"
         }
       ]
@@ -287,7 +287,7 @@
   ],
   "consult": {
     "ageha": "trpg_purikura_hero_consult_ageha",
-    "rei": "trpg_purikura_hero_consult_rei"
+    "kuraudo": "trpg_purikura_hero_consult_kuraudo"
   },
   "hypotheses": [
     {
@@ -724,20 +724,20 @@
       ]
     },
     {
-      "dialogue_id": "trpg_purikura_hero_make_rei_rei_nocturne",
+      "dialogue_id": "trpg_purikura_hero_make_kuraudo_kuraudo_nocturne",
       "metadata": {
         "preview_only": true,
         "making": true
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……俺の役は、ノクターン。黒衣の吟遊詩人"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "serious",
           "text": "薔薇を一輪、持ってる。歌は……夜にしか歌わない"
@@ -749,7 +749,7 @@
           "text": "外套の裏地は、何色にしますか？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
           "text": "……赤。そこは、こだわった"
@@ -757,20 +757,20 @@
       ]
     },
     {
-      "dialogue_id": "trpg_purikura_hero_make_rei_rei_shion",
+      "dialogue_id": "trpg_purikura_hero_make_kuraudo_kuraudo_shion",
       "metadata": {
         "preview_only": true,
         "making": true
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……シオン。人見知りの魔法使い"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "魔法は強い。でも、人と目が合うと、詠唱が止まる"
@@ -782,7 +782,7 @@
           "text": "人と目が合うと詠唱が止まるのですね。では、その役で"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "serious",
           "text": "……役の話だ"
@@ -822,7 +822,7 @@
           "text": "ハジメっち、プリ撮るなら剣よりプリ帳でしょ！"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……魔王の話と聞いた。プリは聞いてない",
@@ -868,10 +868,10 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc:rei}は広場の隅で、黒い外套をなびかせておる。誰とも目を合わせずに"
+          "text": "{pc:kuraudo}は広場の隅で、黒い外套をなびかせておる。誰とも目を合わせずに"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……役でも、目は合わせない",
@@ -974,7 +974,7 @@
           "text": "そのとき空からカシャリ。通りすがりの人が、また一人色あせた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "surprise",
           "text": "……今のが、魔王のシャッターか",
@@ -1067,13 +1067,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:rei}は、広場を黙って見て回る。空の様子も",
+          "text": "……{pc:kuraudo}は、広場を黙って見て回る。空の様子も",
           "variants": {
             "regularb": {
-              "text": "……{pc:rei}は、広場を黙って見て回る。空の様子も",
+              "text": "……{pc:kuraudo}は、広場を黙って見て回る。空の様子も",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1134,13 +1134,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "……{pc:rei}が外套を翻す。舞え、薔薇……門番の目を、奪え",
+          "text": "……{pc:kuraudo}が外套を翻す。舞え、薔薇……門番の目を、奪え",
           "variants": {
             "regularb": {
-              "text": "……{pc:rei}が外套を翻す。舞え、薔薇……門番の目を、奪え",
+              "text": "……{pc:kuraudo}が外套を翻す。舞え、薔薇……門番の目を、奪え",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1201,13 +1201,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:rei}は鏡の角度を変えて、いちばん映える光を探す",
+          "text": "……{pc:kuraudo}は鏡の角度を変えて、いちばん映える光を探す",
           "variants": {
             "regularb": {
-              "text": "……{pc:rei}は鏡の角度を変えて、いちばん映える光を探す",
+              "text": "……{pc:kuraudo}は鏡の角度を変えて、いちばん映える光を探す",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1268,13 +1268,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "……{pc:rei}は薔薇を掲げる。今宵、最高の一枚を……！",
+          "text": "……{pc:kuraudo}は薔薇を掲げる。今宵、最高の一枚を……！",
           "variants": {
             "regularb": {
-              "text": "……{pc:rei}は薔薇を掲げる。今宵、最高の一枚を……！",
+              "text": "……{pc:kuraudo}は薔薇を掲げる。今宵、最高の一枚を……！",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1321,7 +1321,7 @@
           "text": "門は開いた。だが写真が堀に落ち、全員が水をかぶった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "surprise",
           "text": "……外套が、重い",
@@ -1440,7 +1440,7 @@
           "text": "シャッターの光が弾け、撮影の間いっぱいにきらきらが舞った"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
           "text": "……いい画だ",
@@ -1533,13 +1533,13 @@
       ]
     },
     {
-      "dialogue_id": "trpg_purikura_hero_consult_rei",
+      "dialogue_id": "trpg_purikura_hero_consult_kuraudo",
       "metadata": {
         "preview_only": true
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……魔王の部屋。人が見ていない所に、本音が出る",
@@ -1552,7 +1552,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "鏡の間と、玉座。一人の時間の跡が、残ってるはずだ",
@@ -1591,7 +1591,7 @@
           "text": "友達欲しくて撮ってたとか、不器用すぎ。……でも、ちょっと分かる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……声をかけるのは、難しい。俺も、分かる",
@@ -1624,7 +1624,7 @@
           "text": "自信ないから盛りを借りる、か。でも借り物じゃ、本人が映えないって"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……見た目を作るのは、悪くない。自分で作るなら",
@@ -1657,7 +1657,7 @@
           "text": "プリ帳なくすの、マジで泣くやつ。うちなら三日寝込む"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……思い出は、取り戻せる。まだ、どこかにあるなら",
@@ -1746,7 +1746,7 @@
           "text": "うちの勇者、武器よりデコ道具でかばんがパンパン"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……照明で、写りは変わる。大事だ",
@@ -1791,7 +1791,7 @@
           "text": "プリズマ！ {pc:ageha}が、あんたに会いに来た！"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "serious",
           "text": "……ここが、見せ場だ",
@@ -1884,7 +1884,7 @@
           "text": "撮影の間に、まあるいリングライトがともった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……目に光が入る。写りの基本だ",
@@ -1911,7 +1911,7 @@
           "text": "窓を開けると、やわらかな月明かりが差しこんだ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
           "text": "……月明かり。影がやさしくなる。好きな光だ",
@@ -1938,7 +1938,7 @@
           "text": "城の空に、ぱっと大輪の花火が上がった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……花火。一瞬で消えるから、きれいだ",
@@ -2115,7 +2115,7 @@
           "text": "交換用に一枚ちょうだい。うちのプリ帳に貼るから"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
           "text": "……俺も、一枚。その……欲しい",
@@ -2178,7 +2178,7 @@
           "text": "フハハ！ 我、盛れている……！ 撮り直しは要らぬ！"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
           "text": "……自分で作った顔が、いちばん似合う",
@@ -2247,7 +2247,7 @@
           "text": "続きのページ、今日のうちらで埋まったじゃん"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
           "text": "……次のページが白いの、ちょっと楽しみだな",
@@ -2338,7 +2338,7 @@
           "text": "いろいろな出来事がありましたね。それも一枚に残りました"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
           "text": "……失敗した一枚も、あとで見ると好きになる",
@@ -2383,7 +2383,7 @@
           "text": "門番くん、証明写真のときより顔がやわらかいですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
           "text": "……俺も、もう一枚くらいなら撮ってもいい",
@@ -2536,7 +2536,7 @@
           "text": "『一緒に撮ろう』『い、一緒に……』。何度も練習した跡だ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……いい部屋だ。撮影に、使いたい",
@@ -2673,7 +2673,7 @@
           "text": "魔王は撮るたび隣を空けて、しばらく待つのじゃ。誰も来んがの"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……誰かを、待ってる",
@@ -2828,7 +2828,7 @@
           "text": "『ピース、指の角度が分からん』『笑顔、失敗』と書いてある"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……いい部屋だ。撮影に、使いたい",
@@ -2965,7 +2965,7 @@
           "text": "撮影の前に、それを自分の顔に塗るのだとか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……盛りを、借りてるのか",
@@ -3120,7 +3120,7 @@
           "text": "中は白紙。最後のページにだけ『月の夜に、またみんなで』とある"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……いい部屋だ。撮影に、使いたい",
@@ -3251,7 +3251,7 @@
           "text": "盛りを吸う、魔法のカメラじゃ。吸った盛りで、白紙の帳面を埋めておる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……白紙の帳面。アルバムか",
@@ -3292,7 +3292,7 @@
       ]
     },
     {
-      "dialogue_id": "trpg_purikura_hero_make_rei_rei_nocturne_regularb",
+      "dialogue_id": "trpg_purikura_hero_make_kuraudo_kuraudo_nocturne_regularb",
       "metadata": {
         "making": true
       },
@@ -3312,7 +3312,7 @@
       ]
     },
     {
-      "dialogue_id": "trpg_purikura_hero_make_rei_rei_shion_regularb",
+      "dialogue_id": "trpg_purikura_hero_make_kuraudo_kuraudo_shion_regularb",
       "metadata": {
         "making": true
       },
@@ -3501,9 +3501,9 @@
         "required": true
       },
       {
-        "actor": "rei",
+        "actor": "kuraudo",
         "candidates": [
-          "rei",
+          "kuraudo",
           "regularb"
         ],
         "required": false
@@ -3597,8 +3597,8 @@
         }
       ]
     },
-    "rei": {
-      "rei": [
+    "kuraudo": {
+      "kuraudo": [
         {
           "id": "nocturne",
           "name": "ノクターン",
@@ -3611,7 +3611,7 @@
             "talk": 2,
             "nerve": 4
           },
-          "making": "trpg_purikura_hero_make_rei_rei_nocturne"
+          "making": "trpg_purikura_hero_make_kuraudo_kuraudo_nocturne"
         },
         {
           "id": "shion",
@@ -3625,7 +3625,7 @@
             "talk": 1,
             "nerve": 3
           },
-          "making": "trpg_purikura_hero_make_rei_rei_shion"
+          "making": "trpg_purikura_hero_make_kuraudo_kuraudo_shion"
         }
       ],
       "regularb": [
@@ -3641,7 +3641,7 @@
             "talk": 2,
             "nerve": 4
           },
-          "making": "trpg_purikura_hero_make_rei_rei_nocturne_regularb"
+          "making": "trpg_purikura_hero_make_kuraudo_kuraudo_nocturne_regularb"
         },
         {
           "id": "shion",
@@ -3655,7 +3655,7 @@
             "talk": 1,
             "nerve": 3
           },
-          "making": "trpg_purikura_hero_make_rei_rei_shion_regularb"
+          "making": "trpg_purikura_hero_make_kuraudo_kuraudo_shion_regularb"
         }
       ]
     }

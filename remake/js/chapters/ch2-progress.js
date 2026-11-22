@@ -33,7 +33,7 @@ export function scheduleChapterTwoTrpgNight(value, startDay) {
 }
 
 export function cityVisits(value) {
-  const ids = ["ageha", "kumicho", "rei", "c_station"];
+  const ids = ["ageha", "kumicho", "kuraudo", "c_station"];
   return new Set(ids.filter(id => value.flags[`_ch2_city_visit_${id}`]));
 }
 

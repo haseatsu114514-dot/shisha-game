@@ -124,10 +124,10 @@ test('face icons follow the selected portrait style', () => {
  state.config.portraitStyle='classic';
 });
 test('face frames are looked up per portrait style', () => {
- data.DB.manifest.faceFrames={classic:{sui:{box:[1,2,3]}},new:{sui:{box:[4,5,6],eye:[7,8],unit:9}}};
- assert.deepEqual(data.faceFrame('sui').box,[1,2,3]);
- assert.deepEqual(data.faceFrame('sui','new').box,[4,5,6]);
- assert.equal(data.faceFrame('sui','nanami'),null);
+ data.DB.manifest.faceFrames={classic:{sensu:{box:[1,2,3]}},new:{sensu:{box:[4,5,6],eye:[7,8],unit:9}}};
+ assert.deepEqual(data.faceFrame('sensu').box,[1,2,3]);
+ assert.deepEqual(data.faceFrame('sensu','new').box,[4,5,6]);
+ assert.equal(data.faceFrame('sensu','nanami'),null);
  assert.equal(data.faceFrame('missing','new'),null);
 });
 // Execute production openConfig with a tiny DOM adapter, without importing unrelated scenes.
@@ -254,10 +254,10 @@ for(const choice of ['new','classic']) {
   displayName:id=>id,portraitInfo:(...args)=>{calls.push(args);return data.portraitInfo(...args);},faceIconUrl:()=>null,faceFrame:data.faceFrame,
   imageReady:async url=>loaded.push(url),growthSkill:()=>false,innerVoiceLine:()=>'',watchLine:()=>'',autoWrap:text=>text});
  vm.runInContext(executable(audienceSource)+';this.api={buildAudience,faceCrop};',ctx);
- for(const id of ['hajime','sumi','sui','maezono','dr_kemuri','emil','pakki','da_silva']) {
+ for(const id of ['hajime','sumi','sensu','uezono','dr_charcoal','emil','pakki','da_silva']) {
   ctx.api.buildAudience({mode:'tutorial',audienceIds:[id]});
   // #2680: 審査員の顔は設定中の画風の絵を、その画風の絵で測った枠で出す（新版が無い人は現行）。
-  const image=nodes.filter(n=>n.selector==='img').at(-1),p=data.portraitInfo(id,id==='sui'?'serious':'normal');
+  const image=nodes.filter(n=>n.selector==='img').at(-1),p=data.portraitInfo(id,id==='sensu'?'serious':'normal');
   assert.equal(image.src,p.src);
   if(choice==='classic') assert.equal(p.style,'classic');
   const crop=ctx.api.faceCrop(p);

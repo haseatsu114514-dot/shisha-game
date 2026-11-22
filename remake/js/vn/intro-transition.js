@@ -24,17 +24,17 @@ const HEAD = { top: 16, height: 280, faceX: 268 };
 // oneesan は同じ minto の立ち絵を使う。pakki はマスコットの両目の中点を画像で測った（旧版）。
 const STANDING_FACE_X = {
   classic: {
-    adam: 430.5, ageha: 477.5, da_silva: 504.5, dr_kemuri: 398, emil: 474,
-    hajime: 544.5, hiyori: 419, kumicho: 482.5, saku: 421.5, maezono: 413,
+    adam: 430.5, ageha: 477.5, da_silva: 504.5, dr_charcoal: 398, emil: 474,
+    hajime: 544.5, hiyori: 419, kumicho: 482.5, ayatori: 421.5, uezono: 413,
     maki: 479, mashiro: 443, master_hookah: 413.5, minto: 485, mukai_master: 410.5,
-    sui: 407, naru: 450.5, noor: 400.5, pakki: 488, rei: 465, rio: 404, sai: 466.5,
+    sensu: 407, naru: 450.5, noor: 400.5, pakki: 488, kuraudo: 465, rio: 404, sai: 466.5,
     samechan: 460.5, sheikh: 426, steve: 493.5, sumi: 432, tsumugi: 428,
     uranaishi: 406.5, volk: 478, yoru: 411.5,
   },
   new: {
-    adam: 429, ageha: 480, da_silva: 503, dr_kemuri: 385, emil: 476.5, hajime: 483.5,
-    hiyori: 502, kumicho: 471.5, saku: 419.5, maezono: 408, maki: 479, mashiro: 444,
-    master_hookah: 410, minto: 419, mukai_master: 384, sui: 402.5, naru: 430, rei: 471,
+    adam: 429, ageha: 480, da_silva: 503, dr_charcoal: 385, emil: 476.5, hajime: 483.5,
+    hiyori: 502, kumicho: 471.5, ayatori: 419.5, uezono: 408, maki: 479, mashiro: 444,
+    master_hookah: 410, minto: 419, mukai_master: 384, sensu: 402.5, naru: 430, kuraudo: 471,
     sai: 480.5, samechan: 458.5, sheikh: 397, steve: 474.5, sumi: 417, tsumugi: 435,
     uranaishi: 384.5, volk: 485, yoru: 417,
   },
@@ -43,10 +43,10 @@ const STANDING_FACE_X = {
 // 完成絵の frame に当てはめて着地点を出す。個別の安全余白で顔が右へずれる絵にも追従する。
 // pakki は前髪で目が隠れるため口の中心を画像で測った。
 const GRAPHIC_FACE_X = {
-  adam: 490, ageha: 536, da_silva: 520, dr_kemuri: 448, emil: 520,
-  hajime: 576, hiyori: 400, kumicho: 512, saku: 528, maezono: 496,
+  adam: 490, ageha: 536, da_silva: 520, dr_charcoal: 448, emil: 520,
+  hajime: 576, hiyori: 400, kumicho: 512, ayatori: 528, uezono: 496,
   maki: 528, mashiro: 496, master_hookah: 500, minto: 512, mukai_master: 535,
-  sui: 448, naru: 464, noor: 470, oneesan: 480, pakki: 520, rei: 496,
+  sensu: 448, naru: 464, noor: 470, oneesan: 480, pakki: 520, kuraudo: 496,
   rio: 512, sai: 512, samechan: 528, sheikh: 505, steve: 560, sumi: 480,
   tsumugi: 512, uranaishi: 480, volk: 544, yoru: 520,
 };

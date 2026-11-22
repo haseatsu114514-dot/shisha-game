@@ -344,7 +344,7 @@ def faces_in(cid, prefix):
 
 
 def load_characters():
-    chars = {c["id"]: c for c in json.loads((ROOT / "data/characters.json").read_text(encoding="utf-8"))}
+    chars = {c.get("art_stem", c["id"]): c for c in json.loads((ROOT / "data/characters.json").read_text(encoding="utf-8"))}
     k = ROOT / "data/dialogue/samechan.json"
     if k.exists():
         prof = json.loads(k.read_text(encoding="utf-8")).get("profile")

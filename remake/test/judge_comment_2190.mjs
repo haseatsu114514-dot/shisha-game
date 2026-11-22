@@ -32,7 +32,7 @@ newGame();
   finalize(cs);
   assert.deepEqual([cs.pull, ...cs.careHistory].map(result => [result.score, result.inZone]), [[100, true], [100, true], [100, true]]);
   assert.equal(evaluationOf(cs.parts.shisha).mark, "○", "An actual composite cup score can remain below the temperature scores");
-  assert.match(feedbackLine("maezono", "pull", evaluationOf(cs.parts.shisha)), /温度をもっと揃えたい/, "Reproduce the original cause");
+  assert.match(feedbackLine("uezono", "pull", evaluationOf(cs.parts.shisha)), /温度をもっと揃えたい/, "Reproduce the original cause");
   const restored = saved(cs), before = JSON.stringify(restored);
   assert.match(judgeComment(restored), /提供も2回の調整も、いい温度だった/);
   assert.equal(JSON.stringify(restored), before);
@@ -86,11 +86,11 @@ for (const makeUnknown of [
   cs => { cs.careHistory = [, round()]; },
 ]) {
   const cs = cup(); makeUnknown(cs);
-  assert.equal(judgeComment(cs), feedbackLine("maezono", "default", evaluationOf(80)));
+  assert.equal(judgeComment(cs), feedbackLine("uezono", "default", evaluationOf(80)));
   assert.equal(allRecordedTemperaturesIdeal(cs), false);
   assert.doesNotMatch(improvementOf(cs), /今回の記録を見て/, "Unverified records do not select the success fallback");
 }
-assert.equal(judgeComment(undefined), feedbackLine("maezono", "default", evaluationOf(0)));
+assert.equal(judgeComment(undefined), feedbackLine("uezono", "default", evaluationOf(0)));
 
 // Only the final temperature-related fallback changes; known causes keep their existing priority.
 for (const part of ["shisha", "care1", "care2"]) {
@@ -123,6 +123,6 @@ for (const [part, expected] of [["holes", /穴を均等/], ["heat", /炭の全�
 }
 
 // Stage-specific feedback and the established evaluation thresholds remain unchanged.
-assert.equal(feedbackLine("maezono", "pull", evaluationOf(80)), "いいねえ。次は温度をもっと揃えたいね");
+assert.equal(feedbackLine("uezono", "pull", evaluationOf(80)), "いいねえ。次は温度をもっと揃えたいね");
 assert.deepEqual([64, 65, 89, 90].map(value => evaluationOf(value).mark), ["△", "○", "○", "◎"]);
 console.log("PASS: saved stage temperatures drive final comments; composite quality, legacy data and leaf narrowing stay separate");

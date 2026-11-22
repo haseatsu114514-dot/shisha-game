@@ -54,18 +54,18 @@ assert.match(eve[1].text, /戻ってきた/); assert.doesNotMatch(text(main.ch2_
 const farewell = text(tournament.ch2_tournament_farewell);
 assert.doesNotMatch(farewell, /理由は、聞かないで|消えた|もう帰るんですか/);
 assert.match(farewell, /悔しい/); assert.match(farewell, /おめでと、ハジメっち/); assert.match(farewell, /うちの店/);
-for (const id of ["kumicho", "rei", "ageha"]) assert(tournament.ch2_tournament_farewell.lines.some((l) => l.speaker === id), id);
+for (const id of ["kumicho", "kuraudo", "ageha"]) assert(tournament.ch2_tournament_farewell.lines.some((l) => l.speaker === id), id);
 assert(tournament.ch2_tournament_farewell.lines.some((l) => l.flag === "_ch2_ageha_secret"), "手の震えは秘密を知る保存だけ");
 assert.doesNotMatch(tournament.ch2_tournament_farewell.lines.map((l) => l.text || "").join("\n"), /震え/);
 assert.doesNotMatch(text(tournament.ch2_tournament_lobby), /帰って|来ないで/);
 const waiting = craft.tournament_craft_waiting_2.lines;
-for (const id of ["kumicho", "rei", "ageha"]) assert(waiting.some((l) => l.speaker === id), `制作中の ${id}`);
-assert(waiting.some((l) => ["maezono", "dr_kemuri", "sui"].includes(l.speaker)), "審査員の短い反応");
+for (const id of ["kumicho", "kuraudo", "ageha"]) assert(waiting.some((l) => l.speaker === id), `制作中の ${id}`);
+assert(waiting.some((l) => ["uezono", "dr_charcoal", "sensu"].includes(l.speaker)), "審査員の短い反応");
 assert.doesNotMatch(waiting.map((l) => l.text).join("\n"), /やもん|決めてん/);
 
 // クラウド再訪: 一回目は分からなかったと言ってから、曲の感想に具体的に答え、同じ空返事を繰り返さない（2026-11-13 はじめは詳しくない）
-const rei = prep.remake_ch2_rei_repeat.lines.filter((l) => l.speaker === "hajime").map((l) => l.text);
-assert.match(rei[1], /サビ|音/); assert.equal(new Set(rei).size, rei.length);
+const kuraudo = prep.remake_ch2_kuraudo_repeat.lines.filter((l) => l.speaker === "hajime").map((l) => l.text);
+assert.match(kuraudo[1], /サビ|音/); assert.equal(new Set(kuraudo).size, kuraudo.length);
 
 // 第3章（未接続）: なるへははじめから連絡し、あげはとは和解ではなく続いた友情
 assert.match(ch3.ch3_naru_reconcile.lines[0].text, /自分から/);
@@ -77,14 +77,14 @@ assert(!night(2) && !night(8), "自由な夜を塞がない");
 const ids = (day) => night(day).steps.map((s) => s.id);
 assert.deepEqual(ids(5), ["ch2_kumicho_greeting", "ch2_slump_taste"]);
 assert.deepEqual(ids(12), ["ch2_minto_warning", "ch2_naru_window"]);
-assert.deepEqual(ids(13).slice(0, 3), ["ch2_tsumugi_color", "remake_ch2_eve_arrival", "remake_ch2_eve_rei"]);
+assert.deepEqual(ids(13).slice(0, 3), ["ch2_tsumugi_color", "remake_ch2_eve_arrival", "remake_ch2_eve_kuraudo"]);
 const when = (day, id, flags) => { const step = night(day).steps.find((s) => s.id === id); return !step.when || step.when({ flags }); };
 assert(when(5, "ch2_kumicho_greeting", {}) && !when(5, "ch2_kumicho_greeting", { _ch2_read_ch2_slump_taste: true }), "味の不調のあとに挨拶を戻さない");
 assert(!when(12, "ch2_naru_window", {}), "DAY11の記録がない旧セーブには足さない");
 assert(when(12, "ch2_naru_window", { _ch2_naru_listened: true }) && when(12, "ch2_naru_window", { _ch2_naru_hurt: true }));
 assert(!when(12, "ch2_naru_window", { _ch2_naru_hurt: true, _ch2_read_ch2_tsumugi_color: true }));
-assert(when(13, "remake_ch2_eve_rei", {}) && !when(13, "remake_ch2_eve_rei", { _ch2_read_ch2_pre_tournament_realisation: true }) && !when(13, "remake_ch2_eve_rei", { _ch2_eve_done: true }));
-const greeting = main.ch2_kumicho_greeting, window = isolation.ch2_naru_window, eveRei = remake.remake_ch2_eve_rei;
+assert(when(13, "remake_ch2_eve_kuraudo", {}) && !when(13, "remake_ch2_eve_kuraudo", { _ch2_read_ch2_pre_tournament_realisation: true }) && !when(13, "remake_ch2_eve_kuraudo", { _ch2_eve_done: true }));
+const greeting = main.ch2_kumicho_greeting, window = isolation.ch2_naru_window, eveRei = remake.remake_ch2_eve_kuraudo;
 for (const scene of [greeting, window, eveRei]) {
   assert(!all(scene).some((l) => l.type === "apply" || l.type === "note"), `${scene.dialogue_id}: 強制の夜に報酬を付けない`);
 }
@@ -92,7 +92,7 @@ const told = greeting.lines.findIndex((l) => l.speaker === "sumi" && /落とし�
 const advice = greeting.lines.findIndex((l) => l.speaker === "kumicho" && /生焼け/.test(l.text || ""));
 assert(told > 0 && advice > told, "神崎は事故を見ていない。スミから聞いてから助言する");
 assert.doesNotMatch(text(greeting), /ヤクザ|組長|極道/, "素性は大会の入場で本人が明かす");
-for (const [scene, id] of [[greeting, "kumicho"], [eveRei, "rei"]]) {
+for (const [scene, id] of [[greeting, "kumicho"], [eveRei, "kuraudo"]]) {
   const cond = scene.lines.find((l) => l.type === "condition" && l.char_id === id);
   assert(scene.branches[cond.next_false].some((l) => l.flag === `_met_${id}`), `${id}: 初対面なら名乗って面識を記録`);
 }
@@ -138,7 +138,7 @@ assert(main.ch2_sofa_burn.lines.indexOf(practice) < main.ch2_sofa_burn.lines.fin
 // S13: DAY9の開場前、博士が吸う間隔から不調に気づき、温度計を貸そうとする。選択は記録だけ（効果なし）
 assert.deepEqual(ids(9), ["ch2_kemuri_thermometer", "remake_ch2_ageha_tasting", "ch2_ageha_lesson", "ch2_strawberry_sample"]); // 吸い方講座（SPC28 2-5 A）
 assert(when(9, "ch2_kemuri_thermometer", {}) && !when(9, "ch2_kemuri_thermometer", { _ch2_read_remake_ch2_ageha_tasting: true }), "試煙会の後へ差し込まない");
-const doctor = all(thermo).filter((l) => l.speaker === "dr_kemuri");
+const doctor = all(thermo).filter((l) => l.speaker === "dr_charcoal");
 assert(doctor.length >= 3 && doctor.every((l) => ["normal", "smile"].includes(l.face)), "博士に悪い顔をさせない");
 assert.match(doctor.map((l) => l.text).join("\n"), /吸う間隔[\s\S]*逢縁くん[\s\S]*温度計/);
 assert.doesNotMatch(doctor.map((l) => l.text).join("\n"), /俺|私の舌|おいし|甘/, "博士は自分の舌の事情も、味の感想も言わない");
@@ -211,8 +211,8 @@ for (const scene of [ageha.remake_ch2_ageha_tasting, tournament.ch2_tournament_e
   assert(hide > lines.findIndex((l) => l.speaker === "volk"), `${scene.dialogue_id}: 去ったら立ち絵を下げる`);
 }
 assert(ageha.remake_ch2_ageha_tasting.lines.some((l) => l.type === "set_flag" && l.flag === "_ch2_scout_seen"), "第3章の面識判定は、必ず読む試煙会の目撃で立つ");
-assert(!all(remake.remake_ch2_eve_rei).some((l) => l.speaker === "volk" || l.char_id === "volk" || l.flag === "_ch2_scout_seen"), "前夜に偵察の男を出さない");
-assert.match(remake.remake_ch2_eve_rei.lines.at(-1).text, /^クラウドは.*歩いていった。$/, "一曲の余韻のまま、あげはの場面へ続く");
+assert(!all(remake.remake_ch2_eve_kuraudo).some((l) => l.speaker === "volk" || l.char_id === "volk" || l.flag === "_ch2_scout_seen"), "前夜に偵察の男を出さない");
+assert.match(remake.remake_ch2_eve_kuraudo.lines.at(-1).text, /^クラウドは.*歩いていった。$/, "一曲の余韻のまま、あげはの場面へ続く");
 assert.doesNotMatch(text(main.ch2_pre_tournament_realisation), /背の高い|うちの店にも来てた|メモだけ/, "前夜のあげはの噂話も外す");
 assert(!all(main.ch2_pre_tournament_realisation).some((l) => /^_ch2_scout/.test(l.flag || "")), "前夜は偵察の記録で分岐しない");
 assert.doesNotMatch(text(tournament.ch2_tournament_entrance), /会場の外/, "入場の独白は前夜の目撃を前提にしない");

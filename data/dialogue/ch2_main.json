@@ -1510,7 +1510,7 @@
           "text": "一口。煙は濃い。熱も低い。甘さだけが、来ない。次の一口まで、長く待った。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "吸う間隔が、地元大会より長い。……味を、探していますね"
         },
@@ -1525,7 +1525,7 @@
           "text": "博士……どうして、それを"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "記録と比べただけです。理由までは、数字に出ません"
         },
@@ -1535,7 +1535,7 @@
           "text": "博士は白衣の胸ポケットから、細い温度計を抜いた。三色のペンの隣に、挿してあった。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "逢縁くん。舌が遠い日は、温度計が代わりになります。貸しましょうか"
         },
@@ -1594,7 +1594,7 @@
             "text": "受け取った温度計は、軽かった。金属の先だけが、指より冷たい。"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "返すのは、いつでも。数字は、舌の調子に左右されませんから"
           }
@@ -1610,7 +1610,7 @@
             "text": "……いえ。今は、自分の舌で確かめたいです"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "そうですか。要る日が来たら、言ってください"
           },

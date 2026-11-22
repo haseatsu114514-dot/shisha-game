@@ -28,7 +28,7 @@
    "ax": 0.5786,
    "aspect": 0.7467
   },
-  "dr_kemuri": {
+  "dr_charcoal": {
    "faces": [
     "evil",
     "normal",
@@ -92,7 +92,7 @@
    "ax": 0.5009,
    "aspect": 0.7467
   },
-  "maezono": {
+  "uezono": {
    "faces": [
     "excited",
     "normal",
@@ -138,7 +138,7 @@
    "ax": 0.5828,
    "aspect": 0.7467
   },
-  "sui": {
+  "sensu": {
    "faces": [
     "normal",
     "serious",
@@ -238,7 +238,7 @@
    "ax": 0.5069,
    "aspect": 0.7467
   },
-  "rei": {
+  "kuraudo": {
    "faces": [
     "normal",
     "sad",
@@ -313,7 +313,7 @@
    "ax": 0.5502,
    "aspect": 0.7467
   },
-  "saku": {
+  "ayatori": {
    "faces": [
     "nervous",
     "normal",
@@ -1469,7 +1469,7 @@
     }
    }
   },
-  "sui": {
+  "sensu": {
    "color": "#afbccc",
    "secondary": "#e7edf4",
    "shadow": "#152539",
@@ -1502,7 +1502,7 @@
     }
    }
   },
-  "maezono": {
+  "uezono": {
    "color": "#398384",
    "secondary": "#bfe5df",
    "shadow": "#062d30",
@@ -1535,7 +1535,7 @@
     }
    }
   },
-  "dr_kemuri": {
+  "dr_charcoal": {
    "color": "#c5a467",
    "secondary": "#ead9ad",
    "shadow": "#302823",
@@ -1740,7 +1740,7 @@
     }
    }
   },
-  "rei": {
+  "kuraudo": {
    "color": "#b0102a",
    "secondary": "#eadcc0",
    "shadow": "#210c17",
@@ -1804,7 +1804,7 @@
     }
    }
   },
-  "saku": {
+  "ayatori": {
    "color": "#8c7564",
    "secondary": "#dcc4a1",
    "shadow": "#26191b",
@@ -3984,7 +3984,7 @@
   },
   "st_sui_ack": {
    "kind": "stamp",
-   "owner": "sui",
+   "owner": "sensu",
    "src": "img/ui/lime/stamps/st_sui_ack.png",
    "width": 320,
    "height": 320,
@@ -3994,7 +3994,7 @@
   },
   "st_sui_cheer": {
    "kind": "stamp",
-   "owner": "sui",
+   "owner": "sensu",
    "src": "img/ui/lime/stamps/st_sui_cheer.png",
    "width": 320,
    "height": 320,
@@ -4004,7 +4004,7 @@
   },
   "im_sui_ready": {
    "kind": "image",
-   "owner": "sui",
+   "owner": "sensu",
    "src": "img/ui/lime/images/im_sui_ready.webp",
    "width": 960,
    "height": 720,
@@ -4174,7 +4174,7 @@
   },
   "st_saku_ack": {
    "kind": "stamp",
-   "owner": "saku",
+   "owner": "ayatori",
    "src": "img/ui/lime/stamps/st_saku_ack.png",
    "width": 320,
    "height": 320,
@@ -4184,7 +4184,7 @@
   },
   "st_saku_guess": {
    "kind": "stamp",
-   "owner": "saku",
+   "owner": "ayatori",
    "src": "img/ui/lime/stamps/st_saku_guess.png",
    "width": 320,
    "height": 320,
@@ -4288,7 +4288,7 @@
     "ax": 0.4995,
     "aspect": 0.7467
    },
-   "dr_kemuri": {
+   "dr_charcoal": {
     "faces": [
      "evil",
      "normal",
@@ -4437,7 +4437,7 @@
     "ax": 0.4997,
     "aspect": 0.7467
    },
-   "saku": {
+   "ayatori": {
     "faces": [
      "nervous",
      "normal",
@@ -4493,7 +4493,7 @@
     "ax": 0.5003,
     "aspect": 0.7467
    },
-   "sui": {
+   "sensu": {
     "faces": [
      "normal",
      "serious",
@@ -4546,7 +4546,7 @@
     "ax": 0.4993,
     "aspect": 0.7467
    },
-   "rei": {
+   "kuraudo": {
     "faces": [
      "normal",
      "sad",
@@ -4559,7 +4559,7 @@
     "ax": 0.5002,
     "aspect": 0.7467
    },
-   "maezono": {
+   "uezono": {
     "faces": [
      "excited",
      "normal",
@@ -4747,7 +4747,7 @@
     "ax": 0.4998,
     "aspect": 0.7467
    },
-   "dr_kemuri": {
+   "dr_charcoal": {
     "faces": [
      "evil",
      "normal",
@@ -4864,7 +4864,7 @@
     "ax": 0.4998,
     "aspect": 0.7467
    },
-   "saku": {
+   "ayatori": {
     "faces": [
      "nervous",
      "normal",
@@ -4913,7 +4913,7 @@
     "ax": 0.5005,
     "aspect": 0.7467
    },
-   "sui": {
+   "sensu": {
     "faces": [
      "normal",
      "serious",
@@ -4976,7 +4976,7 @@
     "ax": 0.4999,
     "aspect": 0.7467
    },
-   "rei": {
+   "kuraudo": {
     "faces": [
      "normal",
      "sad",
@@ -4988,7 +4988,7 @@
     "ax": 0.5003,
     "aspect": 0.7467
    },
-   "maezono": {
+   "uezono": {
     "faces": [
      "excited",
      "normal",
@@ -5225,7 +5225,7 @@
     ],
     "unit": 120.7
    },
-   "dr_kemuri": {
+   "dr_charcoal": {
     "box": [
      317,
      81,
@@ -5273,7 +5273,7 @@
     ],
     "unit": 123.2
    },
-   "maezono": {
+   "uezono": {
     "box": [
      305,
      35,
@@ -5364,7 +5364,7 @@
     ],
     "unit": 98.2
    },
-   "rei": {
+   "kuraudo": {
     "box": [
      350,
      -11,
@@ -5424,7 +5424,7 @@
     ],
     "unit": 118.8
    },
-   "sui": {
+   "sensu": {
     "box": [
      313,
      45,
@@ -5568,7 +5568,7 @@
     ],
     "unit": 108.3
    },
-   "saku": {
+   "ayatori": {
     "box": [
      322,
      2,
@@ -5678,7 +5678,7 @@
     ],
     "unit": 115.4
    },
-   "dr_kemuri": {
+   "dr_charcoal": {
     "box": [
      294,
      55,
@@ -5762,7 +5762,7 @@
     ],
     "unit": 125.1
    },
-   "maezono": {
+   "uezono": {
     "box": [
      296,
      34,
@@ -5877,7 +5877,7 @@
     ],
     "unit": 98.2
    },
-   "rei": {
+   "kuraudo": {
     "box": [
      360,
      43,
@@ -5913,7 +5913,7 @@
     ],
     "unit": 104.3
    },
-   "saku": {
+   "ayatori": {
     "box": [
      315,
      54,
@@ -5985,7 +5985,7 @@
     ],
     "unit": 122.5
    },
-   "sui": {
+   "sensu": {
     "box": [
      310,
      48,

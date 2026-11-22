@@ -352,8 +352,8 @@
       ]
     },
     {
-      "dialogue_id": "ch4_home_call_rei_sound",
-      "comment": "クラウドからの電話。開店前に、ドバイの音を電話越しに聴かせてほしいと頼む。汽笛のあとの間で、その日の一曲目が決まる。第3章の電話（ch3_home_call_rei_last_song）を読んでいなくても通じる。",
+      "dialogue_id": "ch4_home_call_kuraudo_sound",
+      "comment": "クラウドからの電話。開店前に、ドバイの音を電話越しに聴かせてほしいと頼む。汽笛のあとの間で、その日の一曲目が決まる。第3章の電話（ch3_home_call_kuraudo_last_song）を読んでいなくても通じる。",
       "lines": [
         {
           "speaker": "",
@@ -361,7 +361,7 @@
           "text": "スマホが鳴った。表示は「†黒羅雨℃†」。今度は、出てすぐに声がした。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……今、平気？ 店、開ける前"
         },
@@ -371,7 +371,7 @@
           "text": "平気です。宿で休んでました"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "そっちの音、少し聴かせてほしい"
         },
@@ -381,7 +381,7 @@
           "text": "音、ですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "今日の一曲目が、まだ決まってない。遠くの音を聴くと、決まることがある"
         },
@@ -396,7 +396,7 @@
           "text": "しばらくして、クラウドさんの小さな息の音がした。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……汽笛のあとの間がいい。一曲目、決まった"
         },
@@ -406,7 +406,7 @@
           "text": "どんな曲ですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "帰ってきたら、その日の一曲目にかける"
         },
@@ -702,7 +702,7 @@
       ]
     },
     {
-      "dialogue_id": "ch4_home_call_saku_menu",
+      "dialogue_id": "ch4_home_call_ayatori_menu",
       "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第4章の交流）。綾取からの電話。延長営業中の煙幕（#3676）で、材料を先に見せるか名前を伏せるかを客に選ばせる自分の店のやり方（story_and_structure.md 第3章）と比べて、ドバイの店の頼み方を聞く。ドバイへ来るかどうかの話はしない。",
       "lines": [
         {
@@ -711,7 +711,7 @@
           "text": "スマホが鳴った。出ると、少し緊張した声がした。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "nervous",
           "text": "あ、あの、綾取です。今、大丈夫かな"
         },
@@ -721,12 +721,12 @@
           "text": "大丈夫です。宿で休んでました"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "よかった。……ひとつ、店のことで聞きたくて"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "そっちのお店って、お客さんに材料を見せる？ それとも、名前だけ？"
         },
@@ -736,7 +736,7 @@
           "text": "メニューに、味の名前が並んでます。でも常連さんは、メニューを見ないで頼んでました"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "見ないで？"
         },
@@ -746,12 +746,12 @@
           "text": "店の人に、いつもの、って。それだけで出てくるみたいです"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "……いつもの、かぁ。いいなぁ。煙幕には、まだそれが無いんだ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "延長してから、二回来てくれた人はいるんだけどね。三回目で、言ってもらえるかな"
         },
@@ -761,7 +761,7 @@
           "text": "電話の向こうで、ノートのページをめくる音がした。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "書いとく。「いつもの、を言ってもらえる店」。……ありがとう、参考になった"
         },
@@ -1269,7 +1269,7 @@
       ]
     },
     {
-      "dialogue_id": "ch4_home_call_rei_sleeves",
+      "dialogue_id": "ch4_home_call_kuraudo_sleeves",
       "comment": "店のCDを客が手に取れるようにするクラウド。",
       "lines": [
         {
@@ -1278,7 +1278,7 @@
           "text": "宿の小さな机でスマホが鳴った。出ると、ケースの開く音がした。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "キミ、CDは裏も見る？"
         },
@@ -1288,12 +1288,12 @@
           "text": "買うときなら。曲の名前を知りたいので"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "店に飾ってるやつ、裏を見たいって人が来た"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "棚から取って渡したら、すぐ返された。触っちゃいけないと思ったって"
         },
@@ -1303,7 +1303,7 @@
           "text": "俺も、飾ってあるものは店の人に聞いちゃいますね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "聞かなくても見ていい棚が、あったらいいのか"
         },
@@ -1313,12 +1313,12 @@
           "text": "一枚だけ、手に取れるところへ出しておくとか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……出すなら、裏が先に見える向きにしてみる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "最初に好きになった曲が、八曲目だった。表からは分かんない"
         },
@@ -1328,7 +1328,7 @@
           "text": "知ってる曲かもしれないです。帰ったら見せてください"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "うん。知らなかったら、タイトルだけ覚えて帰っていいよ"
         },

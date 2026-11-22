@@ -96,9 +96,9 @@ const kept = value => Object.fromEntries(keptKeys.map(key => [key, structuredClo
 {
   const characters = JSON.parse(readFileSync(new URL("../../data/characters.json", import.meta.url)));
   for (const id of OVERSEAS_GUESTS) assert(characters.some(c => c.id === id), id);
-  assert.deepEqual([...OVERSEAS_GUESTS], ["adam", "kumicho", "rei", "saku", "steve", "volk"]);
+  assert.deepEqual([...OVERSEAS_GUESTS], ["adam", "kumicho", "kuraudo", "ayatori", "steve", "volk"]);
   const none = atDeparture([]);
-  none.affinity = { ...none.affinity, adam: 999, kumicho: 999, rei: 999, saku: 999, steve: 999, volk: 999 };
+  none.affinity = { ...none.affinity, adam: 999, kumicho: 999, kuraudo: 999, ayatori: 999, steve: 999, volk: 999 };
   assert.deepEqual(overseasGuestVisitors(none), [], "好感度の数値だけでは来ない");
   assert(chooseOverseasCompanion(none, null));
   assert.deepEqual(overseasGuests(none), []);
@@ -107,16 +107,16 @@ const kept = value => Object.fromEntries(keptKeys.map(key => [key, structuredClo
   const value = atDeparture(["tsumugi"]), before = kept(value);
   value.finales = {
     steve: { day: 30, chapter: 3, route: "friend" }, adam: { day: 9, chapter: 1, route: "friend" },
-    rei: { day: 20, chapter: 2, route: "friend" }, saku: { day: 31, chapter: 3, route: "friend" },
+    kuraudo: { day: 20, chapter: 2, route: "friend" }, ayatori: { day: 31, chapter: 3, route: "friend" },
     sumi: { day: 12, chapter: 1, route: "friend" }, // スミさんは留守番
   };
-  assert.deepEqual(overseasGuestVisitors(value), ["adam", "rei", "saku", "steve"]);
+  assert.deepEqual(overseasGuestVisitors(value), ["adam", "kuraudo", "ayatori", "steve"]);
   assert(chooseOverseasCompanion(value, "tsumugi"));
-  assert.deepEqual(overseasGuests(value), ["adam", "rei", "saku", "steve"]);
+  assert.deepEqual(overseasGuests(value), ["adam", "kuraudo", "ayatori", "steve"]);
   assert.deepEqual(overseasCompanion(value), { decided: true, companion: "tsumugi", supports: ["mashiro"] }, "ヒロインの応援には混ぜない");
   assert.deepEqual(kept(value), before);
   value.finales.volk = { day: 70, chapter: 4, route: "friend" };
-  assert.deepEqual(overseasGuests(value), ["adam", "rei", "saku", "steve"], "出発後に締めくくりを読んでも足さない");
+  assert.deepEqual(overseasGuests(value), ["adam", "kuraudo", "ayatori", "steve"], "出発後に締めくくりを読んでも足さない");
 
   const old = atDeparture([]);
   old.finales = { adam: { day: 9, chapter: 1, route: "friend" } };

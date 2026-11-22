@@ -2698,7 +2698,7 @@
       ]
     },
     {
-      "dialogue_id": "cafe_ch2_maezono",
+      "dialogue_id": "cafe_ch2_uezono",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_cafe_day.png"
       },
@@ -2714,7 +2714,7 @@
           "text": "撮り終えたところで、こちらに気づいて手を上げる。テーブルには、開いたままのノート。"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "おや、逢縁くん。こんにちは"
         },
@@ -2724,17 +2724,17 @@
           "text": "上園さん、こんにちは。お仕事ですか"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "normal",
           "text": "ええ。今日は、おいしいもののほうの記事でねえ"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "ここのプリン、ずっと書きたかったんです。逢縁くんも、どうです"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "ひと口目の感想を、聞かせてほしいなあ"
         },
@@ -2749,7 +2749,7 @@
           "text": "マスターが運んできたのは、固めのプリンだった。ほろ苦そうなカラメルが、縁まで流れている。"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "normal",
           "text": "マスター、この固さの秘密、記事に書いてもいいですか"
         },
@@ -2759,7 +2759,7 @@
           "text": "蒸す時間と、冷やす時間です。……何分かは、お教えできません"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "いいねえ。秘密があるほうが、おいしそうに書けるんです"
         },
@@ -2771,22 +2771,22 @@
           "next_false": "taste_near"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "うんうん、ちゃんと見てるねえ。私のノートより、ずっと細かい"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "normal",
           "text": "私はねえ、いつも先に言っちゃうんです"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "excited",
           "text": "おいしいねえ、って"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "理由は、あとから探しに行く。言葉は、おいしいの後ろからついてくるんです"
         },
@@ -2796,7 +2796,7 @@
           "text": "先に、ですか"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "先に。……おかげで、締め切りはいつもぎりぎりなんだけどねえ"
         },
@@ -2811,7 +2811,7 @@
           "text": "その下は、まだ真っ白だ。"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "excited",
           "text": "いやあ。プリンも、おいしいねえ"
         },
@@ -2821,7 +2821,7 @@
           "text": "上園さんは最後のひと口を惜しむように食べて、伝票を手に立ち上がった。"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "記事が出たら、読んでくださいね。一行目だけは、もう決まってますから"
         },
@@ -2834,7 +2834,7 @@
         },
         {
           "type": "set_flag",
-          "flag": "_spot_seen_cafe_ch2_maezono"
+          "flag": "_spot_seen_cafe_ch2_uezono"
         }
       ],
       "branches": {

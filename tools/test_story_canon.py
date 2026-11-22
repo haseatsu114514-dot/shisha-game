@@ -81,7 +81,7 @@ class CanonRegressionTests(unittest.TestCase):
 
     def test_r3_confirmed_character_fields(self):
         old = [
-            {'id': 'sui', 'affiliation': 'シーステーション会長',
+            {'id': 'sensu', 'affiliation': 'シーステーション会長',
              'description': 'シーステーションを築いた'},
             {'id': 'adam', 'affiliation': 'Eden', 'description': 'Edenに所属する'},
         ]
@@ -89,7 +89,7 @@ class CanonRegressionTests(unittest.TestCase):
         self.assertEqual(len(errors), 4)
         self.assertTrue(all('characters.json:' in error for error in errors))
         current = [
-            {'id': 'sui', 'affiliation': 'C.STATION会長',
+            {'id': 'sensu', 'affiliation': 'C.STATION会長',
              'description': 'C.STATIONを築いた'},
             {'id': 'adam', 'affiliation': 'EDEN', 'description': 'EDENに所属する',
              'visual_concepts': ['Eden shop outfit']},
@@ -147,7 +147,7 @@ class CanonRegressionTests(unittest.TestCase):
             self.assertTrue(text_errors({'speaker': 'hajime', 'text': text}), text)
 
     def test_voice_rules_are_speaker_specific(self):
-        for who, text in [('hajime', '僕の煙だ'), ('dr_kemuri', '僕が作った'), ('tsumugi', 'はじめくん')]:
+        for who, text in [('hajime', '僕の煙だ'), ('dr_charcoal', '僕が作った'), ('tsumugi', 'はじめくん')]:
             self.assertTrue(text_errors({'speaker': who, 'text': text}))
         for who, text in [('mashiro', '僕、お茶にする'), ('samechan', 'わしも行くのじゃ'),
                           ('hajime', '（今日は休もう）'), ('hajime', '「いつもの」ですね')]:

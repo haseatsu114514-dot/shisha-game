@@ -20,7 +20,7 @@ async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = c
     // 盤側の挙動は spot_encounters.mjs / paid_action_growth.mjs が受け持つ。
     localStorage.setItem("suien_growth_preview", "0");
     const core = await import("./js/core/state.js"), s = core.newGame();
-    s.flags._rei_trpg_introduced = true; s.flags._axe_bar_legacy_access = true; // #577: 既存店舗の精算・取消回帰は互換保存として維持
+    s.flags._kuraudo_trpg_introduced = true; s.flags._axe_bar_legacy_access = true; // #577: 既存店舗の精算・取消回帰は互換保存として維持
     if (lessonDone) s.flags._axe_lesson_done = true; // AXR08: 初回の店主レッスンは first-play の検査で扱う
     Object.assign(s.flags, { _axe_bar_sighting_done: true, _axe_bar_sighting_day: day - 1, _axe_bar_sighting_chapter: chapter }); // 目撃後の既存店舗回帰
     Object.assign(s, { chapter, day, slot, money, phase: "daily", stamina: 80 });

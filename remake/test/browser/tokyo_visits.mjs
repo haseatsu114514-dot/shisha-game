@@ -129,7 +129,7 @@ await suite("tokyo-visits", async check => {
       // 綾取への一台（DAY9・必須の店仕事）の調整は、既存の制作の自動操作で一度だけ行う。
       (await import("./js/craft/session.js")).craftTest.auto = "good";
       const { state } = await import("./js/core/state.js");
-      for (const id of ["mashiro", "mukai", "saku", "steve", "volk", "naru", "pakki"]) {
+      for (const id of ["mashiro", "mukai", "ayatori", "steve", "volk", "naru", "pakki"]) {
         state.met[id] = true; state.flags[`_intro_${id}`] = true;
       }
     });
@@ -147,7 +147,7 @@ await suite("tokyo-visits", async check => {
         await page.locator(t("rule-sheet-close")).click();
       }
       // 綾取への一台は、注文→一度だけの調整→反応まで読み終えてから次のカードへ進む（調整は時間のかかる工程）。
-      if (id === "ch3_saku_mukai_visit") {
+      if (id === "ch3_ayatori_mukai_visit") {
         await page.waitForFunction(() => window.__remake.state.flags._ch3_intro.work?.service?.feedbackRead, null, { timeout: 60000 });
         assert.equal((await get(page)).flags._ch3_intro.work.service.careDone, true);
       }

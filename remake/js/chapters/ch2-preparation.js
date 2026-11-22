@@ -24,14 +24,14 @@ import { CH2_VISIT_STORIES, ch2VisitDone, ch2VisitReady } from "../core/affinity
 import { BOND_QUESTIONS, BOND_FINALES, playQuestionVisit, questionVisitDue, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { consultLessons } from "../core/growth.js";
 import { readDialogues } from "../core/chapter-data.js";
-import { reiStickerDue } from "../core/ryuji-visit.js";
+import { kuraudoStickerDue } from "../core/ryuji-visit.js";
 import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
 import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
 
-const stat = { ageha: "sense", kumicho: "guts", rei: "charm" };
+const stat = { ageha: "sense", kumicho: "guts", kuraudo: "charm" };
 // day % 7（1=月曜）。第2章の準備期間（通算16〜27日）では各店とも1日だけ休む（#2027）。
 // 定休日の私的な誘いは daily/romance.js の dateSchedule に同じ曜日を書いている。
-export const CH2_CLOSED_ON = Object.freeze({ kumicho: 0, rei: 1 });
+export const CH2_CLOSED_ON = Object.freeze({ kumicho: 0, kuraudo: 1 });
 // 通い訪問の小会話。初回相談と続編だけを前提にし、来店数で巡回する（#2027）
 // あげはの b〜d は ch2_ageha_story.json（VOL13）。大会の前後どちらに読んでも成り立つ話だけにする（出発前の準備期間でも読む）。
 // あげはの f（ズボーの誤解・SPC02）は ch2_preparation.json。早めに読めるよう2番目に置く。
@@ -39,20 +39,20 @@ const REPEAT_POOL = {
   ageha: ["remake_ch2_ageha_repeat", "remake_ch2_ageha_repeat_f", "remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "remake_ch2_ageha_repeat_e",
     "remake_ch2_ageha_repeat_g", "remake_ch2_ageha_repeat_h", "remake_ch2_ageha_repeat_i"], // #3097: g〜i（ch2_ageha_story.json）
   kumicho: ["remake_ch2_kumicho_repeat", "remake_ch2_kumicho_repeat_b", "remake_ch2_kumicho_repeat_c", "remake_ch2_kumicho_repeat_d", "remake_ch2_kumicho_repeat_e"],
-  rei: ["remake_ch2_rei_repeat", "remake_ch2_rei_repeat_b", "remake_ch2_rei_repeat_c", "remake_ch2_rei_repeat_d", "remake_ch2_rei_repeat_e"],
+  kuraudo: ["remake_ch2_kuraudo_repeat", "remake_ch2_kuraudo_repeat_b", "remake_ch2_kuraudo_repeat_c", "remake_ch2_kuraudo_repeat_d", "remake_ch2_kuraudo_repeat_e"],
 };
 /** クラウドのライブの夜（RVE07）。台本は data/dialogue/ch2_rei.json（柚ヶ谷の台本と一緒に ch2-city-data.js が読み込む）。 */
-export const REI_LIVE_SCENE = "ch3_prep_rei_live";
+export const KURAUDO_LIVE_SCENE = "ch3_prep_kuraudo_live";
 /** クラウドのプリクラのシールの後日（#3468 A案）。台本は data/dialogue/ch2_deliveries.json。 */
-const REI_STICKER_SCENE = "remake_ch2_rei_purikura_after";
+const KURAUDO_STICKER_SCENE = "remake_ch2_kuraudo_purikura_after";
 /**
  * 第3章の東京へ発つ前の準備期間（core/chapter-clock.js の departurePrep と同じ判定）の夜に、チケットを受け取っていて、まだ読んでいない。
  * 場面は終演後の夜なので、昼の来店では出さない（その日の夜にまた寄れば読める）。
  */
-export function reiLiveDue(value) {
+export function kuraudoLiveDue(value) {
   const prep = value?.chapter === 3 ? value.flags?._ch3_prep : null;
-  return !!prep && !prep.departed && Number.isInteger(prep.startDay) && (value.slot ?? 0) >= 1 && !!value.flags._ch2_rei_ticket
-    && !value.flags[`_talk_seen_${REI_LIVE_SCENE}`] && !!DB.dialogues[REI_LIVE_SCENE]?.lines?.length;
+  return !!prep && !prep.departed && Number.isInteger(prep.startDay) && (value.slot ?? 0) >= 1 && !!value.flags._ch2_kuraudo_ticket
+    && !value.flags[`_talk_seen_${KURAUDO_LIVE_SCENE}`] && !!DB.dialogues[KURAUDO_LIVE_SCENE]?.lines?.length;
 }
 function repeatScene(id) {
   const pool = (REPEAT_POOL[id] || []).filter(scene => DB.dialogues[scene]?.lines?.length);
@@ -61,15 +61,15 @@ function repeatScene(id) {
 const descriptions = {
   ageha: "平成ギャルの店。あげはと香りの話を。",
   kumicho: "黒革の応接室で、神崎と仕事の話をする。",
-  rei: "CDとギターの店。クラウドと曲の話をする。",
+  kuraudo: "CDとギターの店。クラウドと曲の話をする。",
 };
 const unknownDescriptions = {
   ageha: "クマとギャル小物が並ぶシーシャ店。",
   kumicho: "看板は煙草店。事務所のようにも見える。",
-  rei: "CDとギターと薔薇の、V系コンセプト店。",
+  kuraudo: "CDとギターと薔薇の、V系コンセプト店。",
 };
 export const PREPARATION_SPOTS = STOPS.filter(stop => ROOMS[stop.id]).map(stop => ({
-  ...stop, id: `ch2_${stop.id}`, charId: stop.id, kind: "rival", region: "widehanga",
+  ...stop, id: (stop.shopId || `ch2_${stop.id}`), charId: stop.id, kind: "rival", region: "widehanga",
   label: stop.name, area: CH2_CITY_NAME, closedOn: CH2_CLOSED_ON[stop.id],
   theme: "store", glyph: "煙", cost: VISIT_COST, stamina: -16, desc: descriptions[stop.id],
   unknownDesc: unknownDescriptions[stop.id],
@@ -82,7 +82,7 @@ export const PREPARATION_SPOTS = STOPS.filter(stop => ROOMS[stop.id]).map(stop =
 // あげはの店（ヒロイン）は、第5章の通いの小会話として chapters/ch5-shops.js が出す。
 // 神崎・クラウドも第5章の最初の来店だけは、一度だけの会話を chapters/ch5-shops.js が先に出す（ch5-first-talks.js）。
 // 神崎のその会話は第2章の後日談 ch2_kumicho_after_ch2 を世界大会の後の場面に書き直したもので、上の決まりの唯一の例外。
-export const CITY_REGULARS = Object.freeze(["kumicho", "rei"]);
+export const CITY_REGULARS = Object.freeze(["kumicho", "kuraudo"]);
 /** 第5章の柚ヶ谷に出す店（会ったことのある神崎・クラウドだけ）。 */
 export const cityRegularSpots = (value = state) => PREPARATION_SPOTS.filter(spot => CITY_REGULARS.includes(spot.charId) && value.met?.[spot.charId]);
 let regularScenes = null;
@@ -205,9 +205,9 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (spot.kind === "trpg") return null;
   if (isClosed(spot) || spendableMoney(state) < (spot.cost || 0)) return { used: false, exerted: false };
   const first = !state.flags._ch2_talks?.[id];
-  // クラウドのライブの夜（2026-11-11 オーナー「推奨で全部」RVE07）: 第2章で余りチケットを受け取った人（_ch2_rei_ticket）が、
+  // クラウドのライブの夜（2026-11-11 オーナー「推奨で全部」RVE07）: 第2章で余りチケットを受け取った人（_ch2_kuraudo_ticket）が、
   // 第3章の東京へ発つ前の準備期間にクラウドの店へ来たら、いつもの会話・段階・締めくくりより先に一度だけ。
-  const live = id === "rei" && !first && reiLiveDue(state) ? REI_LIVE_SCENE : null;
+  const live = id === "kuraudo" && !first && kuraudoLiveDue(state) ? KURAUDO_LIVE_SCENE : null;
   // 東京・ドバイへ発つ前の送り出しの会話（#3097 PR-I。daily/spots.js の CHAPTER_TALKS の prep）。ライブの夜と同じく、
   // いつもの会話・続編・段階・締めくくりより先に一来店に一本・一度だけ。あげはの途中の質問が残る来店では次の来店へ残す。
   const send = !first && !live && !(id === "ageha" && questionVisitDue("ageha")) ? chapterTalkDue(id) : null;
@@ -235,7 +235,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
     ? agehaLaterScene(state, DB.dialogues) : null;
   const repeat = !first && !followup && !story && !stage && !finale && !later && !sole;
   // MELTY PUFFでの挨拶回を読んだ日より後に一度だけ、いつもの小会話の代わりにシールの後日（#3468 A案）。好感度・能力は小会話と同じ。
-  const sticker = id === "rei" && repeat && reiStickerDue(state) && DB.dialogues[REI_STICKER_SCENE]?.lines?.length ? REI_STICKER_SCENE : null;
+  const sticker = id === "kuraudo" && repeat && kuraudoStickerDue(state) && DB.dialogues[KURAUDO_STICKER_SCENE]?.lines?.length ? KURAUDO_STICKER_SCENE : null;
   // ♥5の締めくくりの後（#3693）: いつもの小会話の代わりに、♥5後の場面を一度ずつ。読み終えたら短い汎用（core/bond-after.js）。
   const after = repeat && !sticker ? bondAfterNext(state, id) : null;
   if (after) {
@@ -311,7 +311,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   else if (stage) state.flags[`_ch2_read_${stage.scene}`] = true;
   if (story) { state.flags[`_ch2_read_${story}`] = true; syncAgehaVibes(state.flags); }
   if (sole) state.flags[`_talk_seen_${sole}`] = true;
-  if (sticker) state.flags._rei_purikura_after = true;
+  if (sticker) state.flags._kuraudo_purikura_after = true;
   markBondAfterRead(state, id, after);
   if (later) {
     const extra = AGEHA_LATER_SCENES.find(item => item.id === later);

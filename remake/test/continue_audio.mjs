@@ -138,7 +138,7 @@ config.seVolume = 1; config.bgmVolume = 0; config.voiceBlip = true;
 audio.applyVolumes();
 const talking = audio.createContinueAudio();
 const oldPitches = { naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100,
-  rio: 760, pakki: 900, sui: 280, maezono: 380, dr_kemuri: 520, salaryman: 360,
+  rio: 760, pakki: 900, sensu: 280, uezono: 380, dr_charcoal: 520, salaryman: 360,
   ageha: 1200, mashiro: 880, samechan: 1250, unknown: 600 };
 function blip(play, speaker, random) {
   const oldRandom = Math.random;

@@ -59,7 +59,7 @@
         "text": "なぜか部長にされてて……TRPGの部活、一緒にどうですか？"
       }
     ],
-    "invite_rei": [
+    "invite_kuraudo": [
       {
         "speaker": "hajime",
         "face": "normal",
@@ -139,14 +139,14 @@
         "text": "入ろう。店が休みの夜なら、物語の仕掛けを考えに行ける"
       }
     ],
-    "rei": [
+    "kuraudo": [
       {
-        "speaker": "rei",
+        "speaker": "kuraudo",
         "face": "surprise",
         "text": "……部長。キミが？"
       },
       {
-        "speaker": "rei",
+        "speaker": "kuraudo",
         "face": "smile",
         "text": "……入る。店が休みの夜なら行ける。回してみたい本も、ある"
       }
@@ -275,9 +275,9 @@
         "text": "人の役を借りて、仲間と物語を作る。TRPGという遊びだ"
       }
     ],
-    "topic_rei": [
+    "topic_kuraudo": [
       {
-        "speaker": "rei",
+        "speaker": "kuraudo",
         "face": "normal",
         "text": "……休みの日はTRPGをやってる。サイコロで話が変わるんだ"
       }

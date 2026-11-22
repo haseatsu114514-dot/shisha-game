@@ -219,7 +219,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_ch2_delivery_rei",
+      "dialogue_id": "remake_ch2_delivery_kuraudo",
       "lines": [
         {
           "speaker": "",
@@ -237,7 +237,7 @@
           "text": "あの……田中さん、ですか？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……そう"
         },
@@ -247,7 +247,7 @@
           "text": "（「貴方ノ為ノ此ノ煙。」の†黒羅雨℃†さんが、田中さん……）"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "スミさんは、昔からそっちで呼ぶ"
         },
@@ -257,7 +257,7 @@
           "text": "スミさんからの荷物です。カシスのフレーバーだそうです"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……ありがとう。待ってた"
         },
@@ -267,12 +267,12 @@
           "text": "クラウドは包みを受け取ると、宛名をそっと指でなぞった。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……店の名前で書いてくれって、何度も頼んでる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "わざわざ、ありがとう。スミさんに、確かに受け取ったと伝えてくれ"
         },
@@ -284,7 +284,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_ch2_rei_trpg",
+      "dialogue_id": "remake_ch2_kuraudo_trpg",
       "lines": [
         {
           "speaker": "",
@@ -297,7 +297,7 @@
           "text": "それ、変わったサイコロですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……TRPG用。休みの日に、遊んでる"
         },
@@ -307,12 +307,12 @@
           "text": "クラウドさんが？ 音楽以外にも、趣味があるんですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……音楽も好きだ。でも、こっちは別の世界に入り浸れる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "誰かの役になって、みんなで話を作る。気づくと何時間も経ってる"
         },
@@ -322,17 +322,17 @@
           "text": "ゲームの世界を、みんなで歩く感じですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……そう。思い通りにならないところも、面白い"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "駅の北側に、六角サイさんのボドゲカフェがある。夜はTRPGバーになる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "初めてでも、遊び方を教えてくれる。気になったら、寄ってみるといい"
         },
@@ -1438,7 +1438,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_ch2_rei_melty_greeting",
+      "dialogue_id": "remake_ch2_kuraudo_melty_greeting",
       "lines": [
         {
           "speaker": "",
@@ -1446,7 +1446,7 @@
           "text": "入口のベルが鳴った。ピンクと豹柄の店内に、黒いロングコートの裾が入ってくる。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "こんにちは。「貴方ノ為ノ此ノ煙。」の、クラウドです"
         },
@@ -1456,7 +1456,7 @@
           "text": "え、クラウドくん？ どしたの、こっちの店まで"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "同じ柚ヶ谷の店なのに、挨拶がまだだったから。これ、うちのショップカード"
         },
@@ -1471,7 +1471,7 @@
           "text": "クラウドは俺に気づくと、小さく会釈した。俺も会釈を返して、ソファに座り直す。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "長居はしない。お客さん、来てるし"
         },
@@ -1491,7 +1491,7 @@
           "text": "クラウドはプリクラ機の看板を見上げた。白い光と、ハートの吹き出しと、目の大きな見本写真。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……撮る。こういうの、ちゃんと入ったことない"
         },
@@ -1531,7 +1531,7 @@
           "text": "白くするやつ、切った。クラウドくんの黒、ちゃんと黒で写したいじゃん。髪の赤も、ワインのまま"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "surprise",
           "text": "いいの？ いつもの設定なんでしょ"
         },
@@ -1541,7 +1541,7 @@
           "text": "盛るって、白くすることじゃないし。その人の好きな色が残ってる方が、絶対盛れてる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……ありがとう。じゃあ、あげはさんのピンクも、そのままで"
         },
@@ -1561,7 +1561,7 @@
           "text": "撮り終えた二人は、機械の横の落書きの画面へ移った。ソファからでも、画面の端が少し見える。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "この縁、使っていい？ 小さい薔薇の"
         },
@@ -1576,7 +1576,7 @@
           "text": "あ、薔薇の上には乗せないようにする"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "うん。その星、もう半歩だけ右"
         },
@@ -1586,7 +1586,7 @@
           "text": "半歩？ ……ここ？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "そこ。薔薇の葉と、角がそろう"
         },
@@ -1601,7 +1601,7 @@
           "text": "……いや、二ミリ下"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "二ミリ"
         },
@@ -1626,7 +1626,7 @@
           "text": "やば、あと十秒！ 文字、文字！"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……黒も盛れた、で"
         },
@@ -1651,12 +1651,12 @@
           "text": "はい、半分こ。クラウドくんの好きなとこに貼ってね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "うん。貼る場所、考えておく"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "今度は、ちゃんと一台吸いに来る"
         },
@@ -1673,7 +1673,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_ch2_rei_purikura_after",
+      "dialogue_id": "remake_ch2_kuraudo_purikura_after",
       "lines": [
         {
           "speaker": "",
@@ -1696,7 +1696,7 @@
           "text": "そこに貼ったんですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "うん。ここなら日に焼けない。盤を出した時だけ、見える"
         },
@@ -1706,7 +1706,7 @@
           "text": "いい場所ですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "貼る時、二ミリずれた。……あげはさんには、言わないで"
         },

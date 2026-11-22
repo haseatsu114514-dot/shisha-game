@@ -26,9 +26,9 @@ async function setup(page, { knownDoctor = true, knownRei = false, legacy = fals
     // 第1章クリア済み。朝の通常地図へ進んでも初回LIME案内を再開しない。
     value.flags._lime_tut = 1;
     value.flags._lime_opened = true;
-    value.met = { hajime: true, sumi: true, minto: true, tsumugi: true, dr_kemuri: knownDoctor, rei: knownRei };
-    value.flags._intro_dr_kemuri = knownDoctor;
-    value.flags._intro_rei = knownRei;
+    value.met = { hajime: true, sumi: true, minto: true, tsumugi: true, dr_charcoal: knownDoctor, kuraudo: knownRei };
+    value.flags._intro_dr_charcoal = knownDoctor;
+    value.flags._intro_kuraudo = knownRei;
     // met is deliberately known without _met_*: name knowledge is not inferred from a spare flag.
     value.affinity = { tsumugi: 31, minto: 30 };
     value.affinityCarry = { tsumugi: .25 };
@@ -211,15 +211,15 @@ await suite('ch2-main', async check => {
     await begin(page);
     assert.equal(await musicOf(page), 'bgm_yuzugaya');
     for (const id of ['ch2_aquarium', 'ch2_sento', 'trpg_bar']) assert.equal(await page.locator(test(`pin-${id}`)).count(), 0, 'A meeting is not a spot introduction');
-    for (const id of ['ageha', 'rei', 'c_station', 'kumicho']) await visit(page, id, id !== 'c_station', true);
-    for (const id of ['ageha', 'rei', 'kumicho']) {
+    for (const id of ['ageha', 'kuraudo', 'c_station', 'kumicho']) await visit(page, id, id !== 'c_station', true);
+    for (const id of ['ageha', 'kuraudo', 'kumicho']) {
       const music = await page.evaluate(() => window.__ch2SceneMusic);
       assert.equal(music.find(row => row.id === `ch2_city_${id}_inside`)?.key, 'bgm_yuzugaya');
     }
     // VOL13: 街の遊び場の紹介は初日に続けて読まず、DAY2以降にその店へ初めて通った時に読む（ch2_daily で確認）
     for (const id of ['ch2_aquarium', 'ch2_sento', 'trpg_bar']) assert.equal(await page.locator(test(`pin-${id}`)).count(), 0, 'Deliveries do not read the city introductions');
     const intros = await page.evaluate(() => window.__ch2SceneMusic.map(row => row.id));
-    for (const id of ['remake_ch2_rei_trpg', 'remake_ch2_ageha_aquarium', 'remake_ch2_kumicho_sento']) assert(!intros.includes(id), `${id} waits for the first own visit`);
+    for (const id of ['remake_ch2_kuraudo_trpg', 'remake_ch2_ageha_aquarium', 'remake_ch2_kumicho_sento']) assert(!intros.includes(id), `${id} waits for the first own visit`);
     await screenshot(page, 'city-after-deliveries.png');
     await page.locator(test('station')).tap();
     assert.match(await page.locator('.map-info .mi-desc').innerText(), /三軒への配達と会場の確認を終えた。/);
@@ -230,30 +230,30 @@ await suite('ch2-main', async check => {
     const value = await page.evaluate(() => window.__remake.state);
     assert.equal(value.chapter, 2); assert.equal(value.day, 16); assert.equal(value.slot, 0);
     assert.equal(value.flags._ch2_day1.stage, 'complete');
-    assert.deepEqual(value.flags._ch2_deliveries.done, { ageha: true, rei: true, kumicho: true });
+    assert.deepEqual(value.flags._ch2_deliveries.done, { ageha: true, kuraudo: true, kumicho: true });
     assert.equal(value.flags._ch2_deliveries.reported, true);
     assert.equal(value.keepsakes.filter(id => id === 'ageha_first_purikura').length, 1);
-    for (const id of ['ageha', 'rei', 'kumicho']) assert.equal(value.flags[`_ch2_city_inside_${id}`], true);
+    for (const id of ['ageha', 'kuraudo', 'kumicho']) assert.equal(value.flags[`_ch2_city_inside_${id}`], true);
     assert.equal(await page.locator(test('next-day')).count(), 0);
     await screenshot(page, 'touch-first-day-complete.png');
-    await preserved(page, before, { firstMeetings: ['ageha', 'rei', 'kumicho'] });
+    await preserved(page, before, { firstMeetings: ['ageha', 'kuraudo', 'kumicho'] });
     await reloadSaved(page);
     await page.locator('[data-test="ch2-morning-home"]').waitFor();
     assert.equal(await musicOf(page), 'bgm_yuzugaya', 'LOAD after sleep restores morning music');
     assert.equal(await page.evaluate(() => window.__remake.state.day), 16, 'Loading completion advanced the date again');
-    await preserved(page, before, { firstMeetings: ['ageha', 'rei', 'kumicho'] });
+    await preserved(page, before, { firstMeetings: ['ageha', 'kuraudo', 'kumicho'] });
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
 
   await check('autosave-resumes-partial-city-without-replaying-opening', async page => {
-    const before = await setup(page); await begin(page); await visit(page, 'rei', true);
+    const before = await setup(page); await begin(page); await visit(page, 'kuraudo', true);
     await reloadSaved(page); await page.locator(test('map')).waitFor();
     assert.equal(await musicOf(page), 'bgm_yuzugaya', 'LOAD in the city must replace title music');
-    assert.equal(await page.locator(test('pin-rei')).getAttribute('data-read'), 'true');
+    assert.equal(await page.locator(test('pin-kuraudo')).getAttribute('data-read'), 'true');
     assert.equal(await page.locator(test('pin-ageha')).getAttribute('data-read'), 'false');
     assert.equal(await page.locator('#vn.active').count(), 0);
     assert.equal(await page.evaluate(() => window.__remake.state.day), 15);
-    assert.equal(await page.evaluate(() => window.__remake.state.flags._ch2_city_inside_rei), true);
-    await preserved(page, before, { firstMeetings: ['rei'] });
+    assert.equal(await page.evaluate(() => window.__remake.state.flags._ch2_city_inside_kuraudo), true);
+    await preserved(page, before, { firstMeetings: ['kuraudo'] });
   });
 
   await check('manual-save-caption-and-loading-earlier-city-point', async page => {
@@ -269,7 +269,7 @@ await suite('ch2-main', async check => {
     assert.match(await page.locator('.map-info .mi-desc').innerText(), /残りの包みを届けてから、スミさんへ報告しよう。/);
     assert.doesNotMatch(await page.locator('.ch2-route-note').innerText(), /残りの包みを届けてから、スミさんへ報告しよう。/);
     assert.equal(await page.locator(test('go')).count(), 0);
-    await visit(page, 'ageha'); await visit(page, 'rei'); await page.locator(test('station')).click(); await page.locator(test('go')).click(); await page.locator('[data-test="ch2-morning-home"]').waitFor();
+    await visit(page, 'ageha'); await visit(page, 'kuraudo'); await page.locator(test('station')).click(); await page.locator(test('go')).click(); await page.locator('[data-test="ch2-morning-home"]').waitFor();
     await page.locator('[data-test="ch2-morning-home"]').click();
     await page.locator('[data-destination-selection]:not(.done)').waitFor();
     await page.locator('[data-test="hud-menu"]').click(); await page.locator('[data-test="menu-tab-system"]').click(); await page.locator('[data-test="menu-load"]').click();
@@ -298,7 +298,7 @@ await suite('ch2-main', async check => {
   });
 
   await check('actual-name-knowledge-prevents-duplicate-meetings', async page => {
-    await setup(page, { knownDoctor: true, knownRei: true }); await begin(page); await visit(page, 'rei');
+    await setup(page, { knownDoctor: true, knownRei: true }); await begin(page); await visit(page, 'kuraudo');
     const text = await page.evaluate(async () => (await import('./js/vn/engine.js')).backlog().map(line => line.text).join('\n'));
     assert(!text.includes('私はチャコール博士'));
     assert(!text.includes('店長の、クラウド。クラウド'));
@@ -312,9 +312,9 @@ await suite('ch2-main', async check => {
     assert(text.includes('審査のあとも'));
     assert(!text.includes('私はチャコール博士'));
     assert(!text.includes('どうして俺の名前を'));
-    assert.equal(await page.evaluate(() => window.__remake.state.met.dr_kemuri), true);
-    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('suien_remake_save')).met.dr_kemuri), true);
-    assert.equal(await page.evaluate(() => window.__remake.state.flags._affinity_first_meeting_pending_dr_kemuri), undefined);
+    assert.equal(await page.evaluate(() => window.__remake.state.met.dr_charcoal), true);
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('suien_remake_save')).met.dr_charcoal), true);
+    assert.equal(await page.evaluate(() => window.__remake.state.flags._affinity_first_meeting_pending_dr_charcoal), undefined);
     await preserved(page, before);
   });
 
@@ -324,23 +324,23 @@ await suite('ch2-main', async check => {
     await page.evaluate(async () => {
       const vn = await import('./js/vn/engine.js');
       const prev = vn.hooks.onEnter;
-      vn.hooks.onEnter = (id, target) => { prev?.(id, target); if (id === 'ch2_city_rei_inside') window.__remake.vnTest.turbo = false; };
+      vn.hooks.onEnter = (id, target) => { prev?.(id, target); if (id === 'ch2_city_kuraudo_inside') window.__remake.vnTest.turbo = false; };
     });
-    await page.locator(test('pin-rei')).click(); await page.locator(test('go')).click();
+    await page.locator(test('pin-kuraudo')).click(); await page.locator(test('go')).click();
     // 挨拶→配達の受け渡しを turbo で抜け、店内会話に入って止まるのを待つ（店頭カードは挟まない）。
-    await page.waitForFunction(() => window.__ch2Main?.scene === 'ch2_city_rei_inside');
+    await page.waitForFunction(() => window.__ch2Main?.scene === 'ch2_city_kuraudo_inside');
     await page.locator('#vn.active .vn-box').waitFor();
     assert.equal(await page.locator(test('stop')).count(), 0, '配達は店頭カードを挟まず店内へ入る');
     // 店内に入る前に配達の受け渡しは確定済み。中断で面識・配達完了は巻き戻らない。
-    assert.equal(await page.evaluate(() => window.__remake.state.flags._ch2_deliveries.done.rei), true);
-    assert.equal(await page.evaluate(() => window.__remake.state.met.rei), true);
+    assert.equal(await page.evaluate(() => window.__remake.state.flags._ch2_deliveries.done.kuraudo), true);
+    assert.equal(await page.evaluate(() => window.__remake.state.met.kuraudo), true);
     await reloadSaved(page); await page.locator(test('map')).waitFor();
-    assert.equal(await page.evaluate(() => !!window.__remake.state.flags._ch2_city_inside_rei), false, '未読の店内は完了扱いにしない');
-    assert.equal(await page.evaluate(() => window.__remake.state.flags._ch2_deliveries.done.rei), true);
-    assert.equal(await page.evaluate(() => window.__remake.state.met.rei), true, '完読した顔合わせの面識は残る');
-    assert.equal(await page.locator(test('pin-rei')).getAttribute('data-read'), 'true');
-    assert.equal(await page.locator(test('pin-rei')).locator('.pin-status').textContent(), 'お届け済み');
-    await preserved(page, before, { firstMeetings: ['rei'] });
+    assert.equal(await page.evaluate(() => !!window.__remake.state.flags._ch2_city_inside_kuraudo), false, '未読の店内は完了扱いにしない');
+    assert.equal(await page.evaluate(() => window.__remake.state.flags._ch2_deliveries.done.kuraudo), true);
+    assert.equal(await page.evaluate(() => window.__remake.state.met.kuraudo), true, '完読した顔合わせの面識は残る');
+    assert.equal(await page.locator(test('pin-kuraudo')).getAttribute('data-read'), 'true');
+    assert.equal(await page.locator(test('pin-kuraudo')).locator('.pin-status').textContent(), 'お届け済み');
+    await preserved(page, before, { firstMeetings: ['kuraudo'] });
   });
 
   await check('legacy-cleared-save-can-enter-day-one', async page => {
@@ -378,7 +378,7 @@ await suite('ch2-main', async check => {
     assert(branch.flags._ch2_looked_ch2_c_station);
     assert.equal(branch.flags._ch2_city_visit_c_station, undefined, 'The branch is distinct from checking the tournament hall');
     assert.equal(branch.money, after.money); assert.equal(branch.slot, after.slot);
-    await visit(page, 'rei');
+    await visit(page, 'kuraudo');
     assert.equal(await page.locator(test('pin-trpg_bar')).count(), 0, 'A delivery greeting is not the TRPG introduction (VOL13)');
     await page.reload(); await page.locator('[data-test="title-load"]').click(); await page.locator('[data-test="slot-0"]').click();
     await page.locator(test('map')).waitFor();
@@ -449,7 +449,7 @@ await suite('ch2-main', async check => {
     await page.locator('#rotate-hint').waitFor({ state: 'visible' });
     await page.setViewportSize({ width: 568, height: 320 });
     await page.locator('#rotate-hint').waitFor({ state: 'hidden' });
-    for (const id of ['ageha', 'kumicho', 'rei']) {
+    for (const id of ['ageha', 'kumicho', 'kuraudo']) {
       await page.locator(test(`pin-${id}`)).scrollIntoViewIfNeeded();
       // 通常表示のスマホ横では、札（.sub-label・.pin-status）の詰めた行の高さ（phone-density の line-height 1.15〜1.2）で
       // scrollHeight が 1〜4px 余り、assertFits の textFits が通らない（2026-11-10 実測。origin/main の通常表示でも同じで、本PRの変更ではない）。
@@ -465,14 +465,14 @@ await suite('ch2-main', async check => {
       });
       assert(pin.inside && pin.labelsFit && pin.widthFits, `Clipped pin: ${JSON.stringify(pin)}`);
     }
-    await page.locator(test('pin-rei')).tap();
+    await page.locator(test('pin-kuraudo')).tap();
     await page.locator(test('go')).scrollIntoViewIfNeeded();
     await assertFits(page, '[data-test="ch2-main-go"]');
     await page.locator(test('go')).tap();
     // J05: 配達は店頭カードを挟まず、そのまま店内→地図へ戻る（訪問済みで戻るのを待つ）。
-    await page.waitForFunction(() => document.querySelector('[data-test="ch2-main-pin-rei"]')?.getAttribute('data-read') === 'true');
+    await page.waitForFunction(() => document.querySelector('[data-test="ch2-main-pin-kuraudo"]')?.getAttribute('data-read') === 'true');
     // 配達後の再訪では従来の店頭カードが出る。小画面でも操作が収まる。
-    await page.locator(test('pin-rei')).tap();
+    await page.locator(test('pin-kuraudo')).tap();
     await page.locator(test('go')).tap();
     await page.locator(test('stop')).waitFor();
     await page.locator(test('back-map')).scrollIntoViewIfNeeded();

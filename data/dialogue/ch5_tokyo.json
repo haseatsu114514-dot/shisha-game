@@ -211,44 +211,44 @@
       "comment": "綾取の煙幕は好評につき全国大会のあとも延長営業している（#3676・2026-11-15 オーナー指示）。第5章の東京の通い（小会話の巡回・chapters/ch5-tokyo.js）。ましろは出さない。一本目は第3章の帰郷の朝の「君の分の空欄。世界の大会が終わったら書く」（ch3_enmaku_cleanup）の回収。",
       "lines": [
         { "speaker": "", "face": "", "text": "路地の「煙幕」。黒板の『好評につき延長』の下に、小さく『まだ延長中』と足してあった。" },
-        { "speaker": "saku", "face": "smile", "text": "あ、世界から帰ってきた人だ。いらっしゃい" },
+        { "speaker": "ayatori", "face": "smile", "text": "あ、世界から帰ってきた人だ。いらっしゃい" },
         { "speaker": "hajime", "face": "smile", "text": "まだ延長中なんですね" },
-        { "speaker": "saku", "face": "smug", "text": "延長の延長。噂って、流すより止める方が難しいんだよ" },
+        { "speaker": "ayatori", "face": "smug", "text": "延長の延長。噂って、流すより止める方が難しいんだよ" },
         { "speaker": "hajime", "face": "normal", "text": "福岡のお店は、大丈夫なんですか" },
-        { "speaker": "saku", "face": "normal", "text": "バイトの子が回してくれてる。たまに「店長、いつ帰るんですか」って来るけど" },
-        { "speaker": "saku", "face": "normal", "text": "それより、これ。君の分の空欄" },
+        { "speaker": "ayatori", "face": "normal", "text": "バイトの子が回してくれてる。たまに「店長、いつ帰るんですか」って来るけど" },
+        { "speaker": "ayatori", "face": "normal", "text": "それより、これ。君の分の空欄" },
         { "speaker": "", "face": "", "text": "綾取がノートを開く。優勝の日の欄の隣に、新しい字が一行だけ増えていた。" },
-        { "speaker": "saku", "face": "smile", "text": "「予想、外れ。本人は、もっと先まで行った」。……世界の後に書くって、約束したからね" },
+        { "speaker": "ayatori", "face": "smile", "text": "「予想、外れ。本人は、もっと先まで行った」。……世界の後に書くって、約束したからね" },
         { "speaker": "hajime", "face": "normal", "text": "（予想が外れたことを、うれしそうに書く人だ）" },
-        { "speaker": "saku", "face": "smile", "text": "一台どうぞ。今日は、材料を先に見る？　伏せる？" }
+        { "speaker": "ayatori", "face": "smile", "text": "一台どうぞ。今日は、材料を先に見る？　伏せる？" }
       ]
     },
     {
-      "dialogue_id": "ch5_tokyo_saku_b",
+      "dialogue_id": "ch5_tokyo_ayatori_b",
       "comment": "綾取の煙幕は好評につき全国大会のあとも延長営業している（#3676・2026-11-15 オーナー指示）。第5章の東京の通い（小会話の巡回・chapters/ch5-tokyo.js）。ましろは出さない。第3章の「閉めたら、東京の客の続きは聞けない」（ch3_rivals）を受ける。",
       "lines": [
         { "speaker": "", "face": "", "text": "夜の煙幕。客席の仕切りの布が、一枚増えていた。" },
-        { "speaker": "saku", "face": "normal", "text": "延長したら、常連が増えちゃってさ。席が足りない" },
+        { "speaker": "ayatori", "face": "normal", "text": "延長したら、常連が増えちゃってさ。席が足りない" },
         { "speaker": "hajime", "face": "surprise", "text": "布で、席を増やしたんですか" },
-        { "speaker": "saku", "face": "smug", "text": "増えたように見えるだけ。奥が読めない店は、狭くても広く見える" },
+        { "speaker": "ayatori", "face": "smug", "text": "増えたように見えるだけ。奥が読めない店は、狭くても広く見える" },
         { "speaker": "hajime", "face": "normal", "text": "……それ、組織の技術ですか" },
-        { "speaker": "saku", "face": "normal", "text": "間借りの知恵。借りた店は、壁に釘を打てないから" },
+        { "speaker": "ayatori", "face": "normal", "text": "間借りの知恵。借りた店は、壁に釘を打てないから" },
         { "speaker": "", "face": "", "text": "綾取は布の端を直して、客の答えをノートに書き足した。" },
-        { "speaker": "saku", "face": "smile", "text": "東京の客の続き、まだ聞けてる。……閉めなくて、よかった" }
+        { "speaker": "ayatori", "face": "smile", "text": "東京の客の続き、まだ聞けてる。……閉めなくて、よかった" }
       ]
     },
     {
-      "dialogue_id": "ch5_tokyo_saku_c",
+      "dialogue_id": "ch5_tokyo_ayatori_c",
       "comment": "綾取の煙幕は好評につき全国大会のあとも延長営業している（#3676・2026-11-15 オーナー指示）。第5章の東京の通い（小会話の巡回・chapters/ch5-tokyo.js）。ましろは出さない。予想ごっこ（外れた方がボウルを洗う）。",
       "lines": [
         { "speaker": "", "face": "", "text": "開店前の煙幕。綾取が、空の皿を三枚並べていた。" },
-        { "speaker": "saku", "face": "smile", "text": "予想ごっこ、しよ。今日の最初の客、何を頼むと思う？" },
+        { "speaker": "ayatori", "face": "smile", "text": "予想ごっこ、しよ。今日の最初の客、何を頼むと思う？" },
         { "speaker": "hajime", "face": "normal", "text": "……ミントですかね。今日、暑いので" },
-        { "speaker": "saku", "face": "smug", "text": "僕はチャイ。外れた方が、ボウルを洗う" },
+        { "speaker": "ayatori", "face": "smug", "text": "僕はチャイ。外れた方が、ボウルを洗う" },
         { "speaker": "", "face": "", "text": "扉が開いた。最初の客は、メニューも見ずに「いつもの、伏せた方で」と言った。" },
-        { "speaker": "saku", "face": "surprise", "text": "……二人とも外れ" },
+        { "speaker": "ayatori", "face": "surprise", "text": "……二人とも外れ" },
         { "speaker": "hajime", "face": "smile", "text": "じゃあ、二人で洗いますか" },
-        { "speaker": "saku", "face": "smile", "text": "うん。外れた日の流しは、二人の方が早い" }
+        { "speaker": "ayatori", "face": "smile", "text": "うん。外れた日の流しは、二人の方が早い" }
       ]
     },
     {

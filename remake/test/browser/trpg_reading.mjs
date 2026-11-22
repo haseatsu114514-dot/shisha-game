@@ -142,7 +142,7 @@ await suite("trpg-reading", async check => {
       Object.assign(s, { chapter: 2, phase: "daily", day: 3, slot: 1, money: 3000, stamina: 52 });
       for (const id of ["hiyori", "samechan", "tsumugi", "adam"]) { s.met[id] = true; s.affinity[id] = 66; s.flags[`_trpg_topic_${id}`] = true; }
       s.trpg.club = { founded: { chapter: 2, day: 1 }, members: Object.fromEntries(["hiyori", "samechan", "tsumugi", "adam"].map(id => [id, { chapter: 2, day: 2 }])) };
-      Object.assign(s.flags, { _rei_trpg_introduced: true, _intro_sai: true, _trpg_tutorial_seen: true });
+      Object.assign(s.flags, { _kuraudo_trpg_introduced: true, _intro_sai: true, _trpg_tutorial_seen: true });
       s.trpg.stock = ["ordinary-cup"]; s.trpg.owned = ["ordinary-cup"];
       s.trpg.cleared["ordinary-cup"] = { chapter: 2, day: 2, gm: "hiyori", participants: ["hajime", "hiyori", "adam", "tsumugi"], ending: "quiet",
         endingTitle: "雨音のある一台", variant: "smooth", plan: {}, version: 1, stars: 3, heat: 9, night: "盛り上がった夜", endingsSeen: ["quiet"], plays: 1, records: [record] };

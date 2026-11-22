@@ -14,18 +14,18 @@ async function setup(page, { money = 36000, unknown = false, reel = false, guest
     const value = core.newGame();
     // These map-flow cases start the morning after a recent shift; the optional shift invite has its own coverage.
     Object.assign(value, { chapter: 2, phase: 'daily', day: 15, slot: 2, money, stamina, weatherSeed, lastBaitoDay: 15 });
-    value.flags = { _rei_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true },
+    value.flags = { _kuraudo_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true },
       _ch2_city_visit_c_station: true, _lime_tut: 1, _lime_opened: true,
       _hiyori_meeting_done: true, _hiyori_message_delivered: true };
     value.stats = { technique: 31, sense: 31, guts: 31, charm: 31, insight: 31 };
     value.flavorStock = { mint: 21.5, double_apple: 6 }; value.keepsakes = ['qa_old_keepsake'];
     value.relationshipMemories = ['qa_old_memory']; value.loverSince = { minto: 10 }; value.lastDate = { minto: 13 };
     value.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true,
-      ageha: !unknown, kumicho: !unknown, rei: !unknown, volk: !unknown };
+      ageha: !unknown, kumicho: !unknown, kuraudo: !unknown, volk: !unknown };
     value.contacts = ['sumi', 'naru'];
     value.reel.installed = reel;
     if (reel) Object.assign(value.reel, { introDone: true, settingGuideDone: true });
-    for (const id of ['ageha', 'kumicho', 'rei']) value.flags[`_intro_${id}`] = !unknown;
+    for (const id of ['ageha', 'kumicho', 'kuraudo']) value.flags[`_intro_${id}`] = !unknown;
     if (guest) {
       const { trainPassengers } = await import('./js/motions/train-passengers.js');
       for (let weatherSeed = 0; weatherSeed < 10000; weatherSeed++) {
@@ -111,7 +111,7 @@ await suite('ch2-daily',async check=>{
       const s = core.newGame();
       Object.assign(s, { chapter: 2, phase: 'daily', day: 22, slot: 0, money: 30000 });
       s.trpg.club.founded = { chapter: 2, day: 15 };
-      Object.assign(s.flags, { _rei_trpg_introduced: true, _intro_sai: true,
+      Object.assign(s.flags, { _kuraudo_trpg_introduced: true, _intro_sai: true,
         _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true } });
       // #3135 以降、未設立の入店は設立会話が先に立つ。この検査は地図プレビューなので、既に設立済みにする。
       s.trpg.club.founded = { chapter: 2, day: 1 };
@@ -276,21 +276,21 @@ await suite('ch2-daily',async check=>{
   });
   await check('installed-reel-preserves-draw-on-reload',async page=>{
     await setup(page,{reel:true});await begin(page);await wide(page);await act(page,'ch2_rei');
-    let v=await value(page);assert(v.reel.count>0);assert.equal(v.reel.lastChapter,2);assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.rei,1);
+    let v=await value(page);assert(v.reel.count>0);assert.equal(v.reel.lastChapter,2);assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.kuraudo,1);
     const drawn=structuredClone(v); // リプレイで複数回転する場合も、確定した抽選と報酬をそのまま保存する。
     await reloadSave(page);v=await value(page);assert.equal(v.reel.count,drawn.reel.count,'Loading must not reroll the same visit');
     assert.equal(v.money,drawn.money);assert.deepEqual(v.stats,drawn.stats);
-    assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.rei,1);
+    assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.kuraudo,1);
   });
   await check('touch-three-owners-and-fixed-day3-night',async page=>{
     await setup(page,{unknown:true});await begin(page);await wide(page,true);
-    for(const id of ['ageha','kumicho','rei']) {
+    for(const id of ['ageha','kumicho','kuraudo']) {
       if ((await value(page)).flags._ch2_region === 'home') await wide(page, true);
-      await act(page,`ch2_${id}`,{touch:true});
+      await act(page,id === 'kuraudo' ? 'ch2_rei' : `ch2_${id}`,{touch:true}); // 店IDは ch2_rei（人物IDと分離）
     }
     await travelToCity(page,'home',{touch:true}); await act(page,'rest',{touch:true});
     let v=await value(page);assert.equal(v.day,18);assert.equal(v.slot,0);assert.equal(v.money,27000-stationFares(page));
-    assert(v.flags._ch2_naru_warm_done);for(const id of ['ageha','kumicho','rei'])assert.equal(v.flags._ch2_talks[id],1);
+    assert(v.flags._ch2_naru_warm_done);for(const id of ['ageha','kumicho','kuraudo'])assert.equal(v.flags._ch2_talks[id],1);
     const trace=await page.evaluate(()=>window.__dailyTrace);assert.equal(trace.filter(id=>id==='ch2_naru_warm').length,1);
     // 旧しくみは店主3人の訪問の分（6P）だけで、固定のなるの夜は伸ばさない。心得の盤は能力を書き換えず、訪問の経験値だけ
     if(await page.evaluate(async()=>(await import('./js/core/growth-mode.js')).growthEnabled())){
@@ -323,7 +323,7 @@ await suite('ch2-daily',async check=>{
   await check('room-image-failure-preserves-cost-and-action',async page=>{
     let bad=true;await page.route('**/bg_ch2_rei_entry.webp',r=>bad?r.fulfill({status:200,contentType:'image/webp',body:'bad image'}):r.continue());
     await setup(page);await begin(page);await wide(page);await go(page,'ch2_rei');
-    await page.locator(map).waitFor();let v=await value(page);assert.equal(v.money,36000-stationFares(page));assert.equal(v.slot,0);assert.equal(v.flags._ch2_talks?.rei,undefined);
+    await page.locator(map).waitFor();let v=await value(page);assert.equal(v.money,36000-stationFares(page));assert.equal(v.slot,0);assert.equal(v.flags._ch2_talks?.kuraudo,undefined);
     bad=false;await act(page,'ch2_rei');v=await value(page);assert.equal(v.money,33000-stationFares(page));assert.equal(v.slot,1);
   });
   for (const [id, flag, cost, recovery] of [

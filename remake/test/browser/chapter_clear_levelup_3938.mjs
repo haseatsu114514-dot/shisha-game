@@ -8,7 +8,7 @@ const dt = name => `[data-test="${name}"]`;
 const PREFIX = { 2: "ch2-tournament", 3: "ch3-aftermath", 4: "ch4", 5: "ch5" };
 // 150 EXP times the chapter multiplier (growth.js CHAPTER_MULT: 1.25 / 1.5 / 1.75 / 2).
 const CLEAR_EXP = { 2: 188, 3: 225, 4: 263, 5: 300 };
-const PEOPLE = ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "sui", "hajime", "sumi", "naru"];
+const PEOPLE = ["ageha", "kumicho", "kuraudo", "pakki", "uezono", "dr_charcoal", "sensu", "hajime", "sumi", "naru"];
 
 // A save just before the chapter's last scene (chapter 2: its completion card, see below), resumed in place.
 async function openLastStep(page, chapter, level) {

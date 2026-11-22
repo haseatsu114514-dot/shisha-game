@@ -499,10 +499,10 @@ assert(!hiyoriOuting()); assert(phone.morningMessages().some((m) => m.id === "li
 // ♥3の判定は affinity_level の汎用判定（この試験では affinityLevel が常に5）。
 assert.equal(invitationById.lime_outing_kumicho_1.accept_event, "outing_kumicho_1"); assert.equal(invitationById.lime_outing_kumicho_1.time_slot, "noon");
 assert.equal(invitationById.lime_outing_kumicho_1.closed_on, 0); assert.equal(invitationById.lime_outing_kumicho_1.private_schedule, "holiday_or_temporary");
-assert.equal(invitationById.lime_outing_rei_1.accept_event, "outing_rei_1"); assert.equal(invitationById.lime_outing_rei_1.time_slot, "night"); assert(invitationById.lime_outing_rei_1.after_close);
+assert.equal(invitationById.lime_outing_kuraudo_1.accept_event, "outing_kuraudo_1"); assert.equal(invitationById.lime_outing_kuraudo_1.time_slot, "night"); assert(invitationById.lime_outing_kuraudo_1.after_close);
 const rivalOuting = (id) => phone.morningMessages().some((m) => m.id === `lime_outing_${id}_1`);
-const rivalOutingReady = { kumicho: { _kumicho_sento_introduced: true }, rei: { _ch2_read_ch2_rei_second: true } };
-for (const id of ["kumicho", "rei"]) {
+const rivalOutingReady = { kumicho: { _kumicho_sento_introduced: true }, kuraudo: { _ch2_read_ch2_kuraudo_second: true } };
+for (const id of ["kumicho", "kuraudo"]) {
   const base = { chapter: 2, day: 5, contacts: [id], affinity: { [id]: 33 } };
   reset({ ...base, flags: { ...rivalOutingReady[id] } }); assert(rivalOuting(id), `${id}: 第2章の♥3で誘う`);
   reset({ ...base }); assert(!rivalOuting(id), `${id}: 場面が前提にする話を読む前は誘わない`);
@@ -513,7 +513,7 @@ for (const id of ["kumicho", "rei"]) {
 }
 // 綾取・スティーブ・ヴォルクの♥3の外出（#3097 PR-H）。東京の日常ループ（版3）の昼の空きにだけ、この周回で LIME を交換した後
 // （交換の場面の既読）・♥5の締めくくりの前に届く。地元で会う誘いと違い、東京にいる間に届く（region: "tokyo"）。日を改めて届け直さない。
-for (const id of ["saku", "steve", "volk"]) {
+for (const id of ["ayatori", "steve", "volk"]) {
   const invite = invitationById[`lime_outing_${id}_1`];
   assert.equal(invite.accept_event, `outing_${id}_1`); assert.equal(invite.time_slot, "noon");
   assert.equal(invite.chapter, 3); assert.equal(invite.region, "tokyo"); assert(!invite.important, `${id}: 日を改めて届け直さない`);

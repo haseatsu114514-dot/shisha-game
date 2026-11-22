@@ -17,7 +17,7 @@ export const SCHEMA = 29; // 29: TRPGの完了記録を本棚で閲覧 / 28: 初
 // ひよりは交流機会が少なくても対象に残す（Issue #2750）。
 export const AFFINITY_CHARACTERS = Object.freeze([
   "sumi", "tsumugi", "naru", "adam", "minto", "rio", "hiyori", "samechan",
-  "ageha", "kumicho", "rei", "mashiro", "saku", "steve", "volk",
+  "ageha", "kumicho", "kuraudo", "mashiro", "ayatori", "steve", "volk",
   "da_silva", "master_hookah", "sheikh", "noor",
 ]);
 const affinitySet = new Set(AFFINITY_CHARACTERS);
@@ -134,7 +134,7 @@ export function newState() {
 
 // スキーマ26（IDREN01・2026-11-05 オーナー決定）: キャラIDを現名に合わせて改名。
 // 旧IDで保存されたセーブは、読み込み時にここで新IDへ付け替える（移行処理以外では旧IDを使わない）。
-export const CHAR_ID_RENAMES = { nagumo: "sui", rin: "rio", kuze: "saku", saif: "faris", rashid: "khalil" };
+export const CHAR_ID_RENAMES = { nagumo: "sensu", rin: "rio", kuze: "ayatori", saif: "faris", rashid: "khalil" };
 const CHAR_ID_TOKEN = /(?<![A-Za-z0-9])(nagumo|rin|kuze|saif|rashid)(?![A-Za-z0-9])/g;
 const renameIdToken = (v) => (typeof v === "string" ? v.replace(CHAR_ID_TOKEN, (m) => CHAR_ID_RENAMES[m]) : v);
 const renameExactId = (v) => (typeof v === "string" && CHAR_ID_RENAMES[v] ? CHAR_ID_RENAMES[v] : v);
@@ -484,7 +484,7 @@ function migrate(s) {
     const readFourth = [
       [(s.story?.naru || 0) >= 5, "ch1_naru_fourth", { vanilla: 1 }],
       [!!s.flags?._ch2_read_ch2_kumicho_fourth, "ch2_kumicho_fourth", { dragonfruit: 1 }],
-      [!!s.flags?._ch2_read_ch2_rei_fourth, "ch2_rei_fourth", { rose: 1 }],
+      [!!s.flags?._ch2_read_ch2_kuraudo_fourth, "ch2_kuraudo_fourth", { rose: 1 }],
     ];
     for (const [read, dialogue_id, flavor_lesson] of readFourth) {
       if (read) learnFlavorStory(s, { dialogue_id, metadata: { flavor_lesson } }, {}, { growth: false });

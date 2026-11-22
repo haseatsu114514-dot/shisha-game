@@ -98,8 +98,8 @@ for (const chapter of chapters) for (const day of [1, 2, 13, 14])
 reset(); await rig.giveEarlyHomeRig(); // Missing gift dialogue still grants/saves, as before.
 assert.deepEqual(plays(), []); assert(state.owned.includes(rig.SUMI_RIG)); assert.equal(saves.length, 1);
 // Actual complete shifts: count is incremented before eligibility; first eligible cameo wins.
-const cameoFlags = ['_ev_rei_cameo', '_ev_reviewer_cameo', '_ev_maezono_cameo'];
-const cameoScenes = ['ch1_rei_cameo', 'ch1_reviewer_cameo', 'ch1_maezono_cameo'];
+const cameoFlags = ['_ev_kuraudo_cameo', '_ev_reviewer_cameo', '_ev_uezono_cameo'];
+const cameoScenes = ['ch1_kuraudo_cameo', 'ch1_reviewer_cameo', 'ch1_uezono_cameo'];
 for (const chapter of chapters) for (const day of [1, 2, 3, 4, 5, 6, 13, 14])
   for (const count of [1, 2, 3, 4, 5]) for (const mask of [0, 1, 3, 7]) for (const agehaScript of [false, true]) {
     const flags = Object.fromEntries(cameoFlags.filter((_, i) => mask & (1 << i)).map(k => [k, true]));

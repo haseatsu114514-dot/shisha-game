@@ -1150,11 +1150,11 @@ const CHAPTER_MAPS = {
       const core = await import("./js/core/state.js");
       const value = core.newGame();
       Object.assign(value, { chapter: 2, phase: "daily", day: 15, slot: 2, money: 36000, stamina: 100, weatherSeed: 7, lastBaitoDay: 15 });
-      value.flags = { _rei_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: "complete", titleSeen: true },
+      value.flags = { _kuraudo_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: "complete", titleSeen: true },
         _ch2_city_visit_c_station: true, _lime_tut: 1, _lime_opened: true, _hiyori_meeting_done: true, _hiyori_message_delivered: true };
-      value.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true, ageha: true, kumicho: true, rei: true, volk: true };
+      value.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true, ageha: true, kumicho: true, kuraudo: true, volk: true };
       value.contacts = ["sumi", "naru"];
-      for (const id of ["ageha", "kumicho", "rei"]) value.flags[`_intro_${id}`] = true;
+      for (const id of ["ageha", "kumicho", "kuraudo"]) value.flags[`_intro_${id}`] = true;
       core.save();
       window.__remake.vnTest.turbo = true;
       (await import("./js/chapters/ch1.js")).setupHooks();
@@ -1171,8 +1171,8 @@ const CHAPTER_MAPS = {
       Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 30000, stamina: 100, weatherSeed: 5, contacts: ["sumi"] });
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
         _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1, _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
-      for (const who of ["ageha", "kumicho", "rei", "hajime", "sumi"]) value.flags[`_intro_${who}`] = true;
-      Object.assign(value.met, { ageha: true, kumicho: true, rei: true, naru: true, adam: true, minto: true });
+      for (const who of ["ageha", "kumicho", "kuraudo", "hajime", "sumi"]) value.flags[`_intro_${who}`] = true;
+      Object.assign(value.met, { ageha: true, kumicho: true, kuraudo: true, naru: true, adam: true, minto: true });
       if (!progress.advanceToChapterThree(value)) throw new Error("第3章へ入れない");
       value.flags._ch3_prep.step = 3;
       Object.assign(value.flags._ch3_intro, { titleSeen: true, routeVersion: 2 });
@@ -1189,7 +1189,7 @@ const CHAPTER_MAPS = {
       Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 30000, stamina: 100, weatherSeed: 5, contacts: ["sumi"] });
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
         _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1, _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
-      for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "sui"]) value.flags[`_intro_${who}`] = true;
+      for (const who of ["hajime", "sumi", "pakki", "uezono", "dr_charcoal", "sensu"]) value.flags[`_intro_${who}`] = true;
       if (!progress.advanceToChapterThree(value)) throw new Error("第3章へ入れない");
       value.day += 3;
       if (!progress.departChapterThree(value)) throw new Error("東京へ出発できない");
@@ -1209,7 +1209,7 @@ const CHAPTER_MAPS = {
       Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
         _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
-      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sensu", "dr_charcoal"]) value.flags[`_intro_${who}`] = true;
       Object.assign(value.met, { naru: true, da_silva: true });
       if (!progress.advanceToChapterFour(value)) throw new Error("第4章へ入れない");
       value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
@@ -1244,7 +1244,7 @@ const CHAPTER_MAPS = {
           aftermath: 0, finale: 0, finaleScenes: null, won: null, secondCup: null },
         _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true, _ch5_region_started: true, _spot_guide_naru: true,
         _ch5_catering: { next: 81, offers: 0, offer: null, served: {}, last: null } };
-      Object.assign(value.met, { naru: true, adam: true, minto: true, ageha: true, kumicho: true, rei: true, steve: true, volk: true });
+      Object.assign(value.met, { naru: true, adam: true, minto: true, ageha: true, kumicho: true, kuraudo: true, steve: true, volk: true });
       await (0, eval)(common)(core, value, 5);
       core.save();
     }, SEED_COMMON);
@@ -1432,7 +1432,7 @@ async function openDubaiCard(page) {
     Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
       _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
-    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sensu", "dr_charcoal"]) value.flags[`_intro_${who}`] = true;
     Object.assign(value.met, { naru: true });
     if (!progress.advanceToChapterFour(value)) throw new Error("第4章へ入れない");
     value.flags._overseas_companion = { decided: true, companion: null, supports: [] };

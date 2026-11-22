@@ -13,7 +13,7 @@ const ENCOUNTERS = {
     // 味の不調（第2章DAY5の夜から）を知っている時だけ
     { id: "cafe_ch2_taste", chapter: 2, flag: "_ch2_taste_distant" },
     // #3097 PR-I: 上園さんがプリンの記事を書きに来ている。面識がある時だけ。味の不調の前後で、はじめの答え方だけが分かれる
-    { id: "cafe_ch2_maezono", chapter: 2, met: "maezono" },
+    { id: "cafe_ch2_uezono", chapter: 2, met: "uezono" },
     // #3097 第1弾: 隣町で流行りの泡のコーヒーをマスターが試す（味の感想は書かない）
     { id: "cafe_ch2_foam", chapter: 2 },
     // #3097 第2弾: 柚ヶ谷へ通う客のために五分進めた時計（大会・味に触れない）
@@ -21,7 +21,7 @@ const ENCOUNTERS = {
     { id: "cafe_naru_break", met: "naru", rift: true },
     // 仕入れ帰りのなると、持ち帰りのコーヒーを買いに来た凛想（REL01）
     { id: "cafe_naru_rio", met: ["naru", "rio"], rift: true, rioIn: true },
-    { id: "cafe_maezono_break" },
+    { id: "cafe_uezono_break" },
     { id: "cafe_master_quiz" },
   ],
   kannon: [
@@ -55,7 +55,7 @@ const ENCOUNTERS = {
     // #3097 第2弾: マニュアルに無い帰りの飴（チェーンの店ごとの一個）
     { id: "cs_ch2_candy", chapter: 2 },
     // 博士の二面性をそれとなく見せる一度きりの回（#1696）。面識は登録時の顔合わせか大会でできる。
-    { id: "cs_kemuri_sample", met: "dr_kemuri" },
+    { id: "cs_kemuri_sample", met: "dr_charcoal" },
   ],
 };
 

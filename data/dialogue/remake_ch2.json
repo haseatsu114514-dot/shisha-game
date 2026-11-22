@@ -305,7 +305,7 @@
       }
     },
     {
-      "dialogue_id": "remake_ch2_eve_rei",
+      "dialogue_id": "remake_ch2_eve_kuraudo",
       "comment": "DAY13・大会前夜（#929の強制イベント）。あげはが搬入の確認へ行った間に、下見に来たクラウドがベンチの端に座る。顔の硬さに気づき、イヤホンの片方で一曲だけ聴かせる。味の遠さは残したまま、音の間は届く。報酬なし。",
       "lines": [
         {
@@ -316,12 +316,12 @@
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "rei",
+          "char_id": "kuraudo",
           "next_true": "known",
           "next_false": "first"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……顔、硬い。一曲だけ、聴く？"
         },
@@ -334,16 +334,16 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ch2_rei_ticket",
+          "flag": "_ch2_kuraudo_ticket",
           "next_true": "ticket"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "最後の音が消えたあと、[pause]三秒くらい空白がある"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "そこが好き。音はないのに、まだ曲の中にいる感じがする"
         },
@@ -354,7 +354,7 @@
         },
         {"type": "hide_cg"},
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……明日、いい煙にしよう。お互い"
         },
@@ -367,20 +367,20 @@
       "branches": {
         "known": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……下見？ 俺も"
           }
         ],
         "first": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……明日、隣の台。「貴方ノ為ノ此ノ煙。」の、クラウド"
           },
           {
             "type": "set_flag",
-            "flag": "_met_rei"
+            "flag": "_met_kuraudo"
           },
           {
             "speaker": "hajime",
@@ -395,7 +395,7 @@
             "text": "（知らない曲だ。……ポケットの中の、端の折れたチケットを思い出した）"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……来週、隣は空けとく。この曲、そこでやるから"
           }

@@ -151,7 +151,7 @@ remake/
 ```
 
 立ち絵・背景・作業台の素材（`assets/ui/making/`）を追加・差し替えたら `python3 remake/tools/build_manifest.py` を1回実行する
-（Pillow・numpy・scipy が必要）。人物だけの追加は `--portraits-only kumicho rei volk` で他の採用済み画像を維持して更新できる。立ち絵の余白と足元位置、作業台素材の中身の範囲（bbox）を測って
+（Pillow・numpy・scipy が必要）。人物だけの追加は `--portraits-only kumicho kuraudo volk` で他の採用済み画像を維持して更新できる。立ち絵の余白と足元位置、作業台素材の中身の範囲（bbox）を測って
 `remake/data/manifest.json` に書き出す。コールドオープンの一台と制作画面の静止モックアップの素材は
 この実測値から位置を計算して組む。制作画面には独立した一台のパネルを表示しない。それ以外の変更にビルドは要らない。
 文字だけの仮置きCG（無地に説明文の画像）は一覧に載せない＝場面では飛ばし、ギャラリーにも出さない。本物の絵に差し替えて再実行すれば出る。

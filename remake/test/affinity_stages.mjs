@@ -349,7 +349,7 @@ await check('hiyori ♥4 peach talk and ♥5 promise (#2025) follow the ♥3 que
   }
 });
 await check('chapter2 actual flags: chat/followup/ageha three visits are independent completion evidence', async f => {
-  for(const id of ['ageha','kumicho','rei']) {
+  for(const id of ['ageha','kumicho','kuraudo']) {
     const s=f.fresh();assert.equal(f.stats.affinityPointCap(id),Infinity);
     s.flags._ch2_talks={[id]:1};assert.equal(f.stats.affinityPointCap(id),Infinity);
     s.flags._ch2_followup_done={[id]:true};
@@ -360,11 +360,12 @@ await check('chapter2 actual flags: chat/followup/ageha three visits are indepen
     }
   }
 });
-await check('chapter2 kumicho/rei finale (#2027): after every visit story and ♥5 only, once, with the gift', async f => {
-  for (const id of ['kumicho','rei']) {
+await check('chapter2 kumicho/kuraudo finale (#2027): after every visit story and ♥5 only, once, with the gift', async f => {
+  for (const id of ['kumicho','kuraudo']) {
+    const gift=id==='kuraudo'?'suyaki_rei':`suyaki_${id}`;
     const s=f.core.state;s.chapter=2;s.met[id]=true;s.affinity[id]=66;
     f.db.dialogues[`ch2_${id}_bond_finale`]={dialogue_id:`ch2_${id}_bond_finale`,lines:[{speaker:'',face:'',text:'x'}]};
-    f.db.equipById[`suyaki_${id}`]={id:`suyaki_${id}`,name:id,gift:{from:id}};
+    f.db.equipById[gift]={id:gift,name:id,gift:{from:id}};
     assert.equal(f.bonds.finaleDue(id),false,'no visit story has been read');
     const entries=f.stages.CH2_VISIT_STORIES[id];
     const read=e=>{ if(e.done)(s.flags[e.done]||={})[id]=true; else s.flags[`_ch2_read_${e.scene}`]=true; };
@@ -375,11 +376,11 @@ await check('chapter2 kumicho/rei finale (#2027): after every visit story and �
     s.affinity[id]=65;assert.equal(f.bonds.finaleDue(id),false,'needs ♥5');s.affinity[id]=66;
     assert.equal(f.bonds.finaleAtVisit(id),true,'met at the shop, day or night');
     assert.equal(await f.bonds.playFinale(id),true);
-    assert.equal(s.owned.filter(x=>x===`suyaki_${id}`).length,1);
+    assert.equal(s.owned.filter(x=>x===gift).length,1);
     assert.equal(s.finales[id].route,'friend','no romance question: friendship landing');
     assert.equal(f.bonds.finaleDue(id),false);
     assert.equal(await f.bonds.playFinale(id),false,'once');
-    assert.equal(s.owned.filter(x=>x===`suyaki_${id}`).length,1);
+    assert.equal(s.owned.filter(x=>x===gift).length,1);
   }
 });
 await check('ageha ♥3 question (#1988): after the newcomer visit, once, recorded only by the actual answer', async f => {
@@ -730,44 +731,44 @@ await check('Ayatori (#2028): chapter 3 finale after the LIME detour and the ans
   const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
   for (const d of rivals) f.db.dialogues[d.dialogue_id] = d;
   const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_saku');
-  assert.equal(gear.gift.from, 'saku');
+  assert.equal(gear.gift.from, 'ayatori');
   f.db.equipById.suyaki_saku = gear;
   f.db.flavorById.absal_earlgrey = { id: 'absal_earlgrey' };
   f.db.friends = JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
-  assert.equal(f.bonds.BOND_FINALES.saku.gift, 'suyaki_saku');
+  assert.equal(f.bonds.BOND_FINALES.ayatori.gift, 'suyaki_saku');
   // IR22: 煙幕に何度でも通えて♥5に届く（AFB02）ので、仮の♥1をやめてほかの人物と同じ♥5
-  assert.equal(f.bonds.finaleHeart('saku'), 5, 'the same ♥5 gate as everyone else');
-  assert.equal(f.bonds.BOND_FINALES.saku.heart, undefined);
-  const s = f.core.state; s.chapter = 3; s.met.saku = true; s.affinity.saku = 66;
-  assert.equal(f.bonds.finaleDue('saku'), false, 'affinity alone does not open the finale');
-  s.flags._lime_contact_saku = true; s.flags._ch3_read_ch3_saku_lime = true;
-  assert.equal(f.bonds.finaleDue('saku'), false, 'the answer outing comes first');
+  assert.equal(f.bonds.finaleHeart('ayatori'), 5, 'the same ♥5 gate as everyone else');
+  assert.equal(f.bonds.BOND_FINALES.ayatori.heart, undefined);
+  const s = f.core.state; s.chapter = 3; s.met.ayatori = true; s.affinity.ayatori = 66;
+  assert.equal(f.bonds.finaleDue('ayatori'), false, 'affinity alone does not open the finale');
+  s.flags._lime_contact_ayatori = true; s.flags._ch3_read_ch3_ayatori_lime = true;
+  assert.equal(f.bonds.finaleDue('ayatori'), false, 'the answer outing comes first');
   s.flags._ch3_outings = { enmaku_answer: 1 };
-  assert.equal(f.bonds.finaleDue('saku'), false, 'the later Enmaku visits come first');
-  for (const scene of ['ch3_saku_missed', 'ch3_saku_cleanup', 'ch3_saku_liar', 'ch3_saku_first_reply']) s.flags[`_ch3_read_${scene}`] = true;
+  assert.equal(f.bonds.finaleDue('ayatori'), false, 'the later Enmaku visits come first');
+  for (const scene of ['ch3_ayatori_missed', 'ch3_ayatori_cleanup', 'ch3_ayatori_liar', 'ch3_ayatori_first_reply']) s.flags[`_ch3_read_${scene}`] = true;
   for (const pts of [9, 33, 48, 65]) {
-    s.affinity.saku = pts;
-    assert.equal(f.bonds.finaleDue('saku'), false, `${pts}pt (below ♥5) keeps the finale closed`);
-    assert.equal(f.bonds.finaleAtVisit('saku'), false);
+    s.affinity.ayatori = pts;
+    assert.equal(f.bonds.finaleDue('ayatori'), false, `${pts}pt (below ♥5) keeps the finale closed`);
+    assert.equal(f.bonds.finaleAtVisit('ayatori'), false);
   }
-  s.affinity.saku = 66; assert.equal(f.bonds.finaleAtVisit('saku'), true, '♥5 opens it on the next visit');
-  s.chapter = 4; assert.equal(f.bonds.finaleDue('saku'), false, 'only on the chapter 3 cards');
-  assert.equal(await f.bonds.playFinale('saku'), false); s.chapter = 3;
+  s.affinity.ayatori = 66; assert.equal(f.bonds.finaleAtVisit('ayatori'), true, '♥5 opens it on the next visit');
+  s.chapter = 4; assert.equal(f.bonds.finaleDue('ayatori'), false, 'only on the chapter 3 cards');
+  assert.equal(await f.bonds.playFinale('ayatori'), false); s.chapter = 3;
   f.setPlay(async () => ({ cancelled: true }));
-  assert.equal(await f.bonds.playFinale('saku'), false, 'cancel records nothing');
-  assert(!s.finales?.saku); assert(!s.owned.includes('suyaki_saku'));
+  assert.equal(await f.bonds.playFinale('ayatori'), false, 'cancel records nothing');
+  assert(!s.finales?.ayatori); assert(!s.owned.includes('suyaki_saku'));
   f.setPlay(async () => done);
-  assert.equal(await f.bonds.playFinale('saku'), true);
+  assert.equal(await f.bonds.playFinale('ayatori'), true);
   const after = f.roundTrip();
-  assert.equal(after.finales.saku.route, 'friend');
+  assert.equal(after.finales.ayatori.route, 'friend');
   assert.equal(after.flags._confession_due, undefined);
   assert.equal(after.owned.filter(id => id === 'suyaki_saku').length, 1);
   assert.equal(after.flavorStock.absal_earlgrey, 50);
-  assert.equal(await f.bonds.playFinale('saku'), false, 'once');
-  assert.equal(f.bonds.settledFriend('saku'), true);
+  assert.equal(await f.bonds.playFinale('ayatori'), false, 'once');
+  assert.equal(f.bonds.settledFriend('ayatori'), true);
   after.day += 10;
   const lime = f.bonds.friendMessages({ sceneChapter: true });
-  assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['saku', 'chat']], 'chat only on the scene-card chapters');
+  assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['ayatori', 'chat']], 'chat only on the scene-card chapters');
 });
 await check('Steve (#2028): ♥5 finale after the LIME detour and the timer outing, only while he can be met in Tokyo, hagal once, then friend LIME', async f => {
   const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
@@ -807,7 +808,7 @@ await check('Steve (#2028): ♥5 finale after the LIME detour and the timer outi
   assert.equal(f.bonds.finaleDue('steve'), false, 'from the cleanup morning he cannot be met');
   assert.equal(f.bonds.finaleReachable('steve'), false);
   // 綾取も同じ窓（煙幕の片づけの朝からは店を畳む）。ヴォルクだけは鉄の煙の寄り道と同じく、片づけの朝まで会える。
-  assert.equal(f.bonds.finaleReachable('saku'), false, 'Ayatori shares the window: packing the shop that morning');
+  assert.equal(f.bonds.finaleReachable('ayatori'), false, 'Ayatori shares the window: packing the shop that morning');
   assert.equal(f.bonds.finaleReachable('volk'), true, 'Volk can still be met at Iron Smoke on the cleanup morning');
   delete s.flags._ch3_aftermath;
   s.flags._ch3_cleared = true; assert.equal(f.bonds.finaleDue('steve'), false); delete s.flags._ch3_cleared;
@@ -991,28 +992,28 @@ await check('Volk and Steve (#2705・2026-11-07): chapter 5 Tokyo finale on ♥5
 await check('Ayatori (#2028): the finale and the MENU promise only while 煙幕 can be visited', async f => {
   const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
   for (const d of rivals) f.db.dialogues[d.dialogue_id] = d;
-  const s = f.core.state; s.chapter = 3; s.met.saku = true; s.affinity.saku = 66;
-  Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_read_ch3_saku_missed: true, _ch3_read_ch3_saku_cleanup: true, _ch3_read_ch3_saku_liar: true, _ch3_read_ch3_saku_first_reply: true, _ch3_outings: { enmaku_answer: 1 } });
-  assert.equal(f.bonds.finaleDue('saku'), true);
-  assert.equal(f.bonds.finaleReachable('saku'), true);
+  const s = f.core.state; s.chapter = 3; s.met.ayatori = true; s.affinity.ayatori = 66;
+  Object.assign(s.flags, { _lime_contact_ayatori: true, _ch3_read_ch3_ayatori_lime: true, _ch3_read_ch3_ayatori_missed: true, _ch3_read_ch3_ayatori_cleanup: true, _ch3_read_ch3_ayatori_liar: true, _ch3_read_ch3_ayatori_first_reply: true, _ch3_outings: { enmaku_answer: 1 } });
+  assert.equal(f.bonds.finaleDue('ayatori'), true);
+  assert.equal(f.bonds.finaleReachable('ayatori'), true);
   s.flags._ch3_prep = { departed: false };
-  assert.equal(f.bonds.finaleDue('saku'), false, 'not before leaving for Tokyo');
+  assert.equal(f.bonds.finaleDue('ayatori'), false, 'not before leaving for Tokyo');
   s.flags._ch3_prep.departed = true;
-  s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: f.bonds.SAKU_LAST_AFTERMATH_STAGE };
-  assert.equal(f.bonds.finaleDue('saku'), true, 'the day after the win');
+  s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: f.bonds.AYATORI_LAST_AFTERMATH_STAGE };
+  assert.equal(f.bonds.finaleDue('ayatori'), true, 'the day after the win');
   s.flags._ch3_naru_party_ready = true;
-  assert.equal(f.bonds.finaleDue('saku'), false, 'the party night has no detour');
+  assert.equal(f.bonds.finaleDue('ayatori'), false, 'the party night has no detour');
   delete s.flags._ch3_naru_party_ready;
   s.flags._ch3_aftermath.stage += 1;
-  assert.equal(f.bonds.finaleDue('saku'), false, 'the cleanup morning: packing the shop');
-  assert.equal(f.bonds.finaleReachable('saku'), false);
+  assert.equal(f.bonds.finaleDue('ayatori'), false, 'the cleanup morning: packing the shop');
+  assert.equal(f.bonds.finaleReachable('ayatori'), false);
   delete s.flags._ch3_aftermath;
   for (const chapter of [4, 5]) {
     s.chapter = chapter;
-    assert.equal(f.bonds.finaleReachable('saku'), false, `chapter ${chapter}: no MENU promise of 煙幕`);
+    assert.equal(f.bonds.finaleReachable('ayatori'), false, `chapter ${chapter}: no MENU promise of 煙幕`);
   }
   // 日常ループでは昼にも夜にも読むので、LIME交換と締めくくりの入りで時間帯を言わない。
-  const texts = ['ch3_saku_lime', 'ch3_saku_bond_finale'].flatMap(id => {
+  const texts = ['ch3_ayatori_lime', 'ch3_ayatori_bond_finale'].flatMap(id => {
     const d = f.db.dialogues[id]; return [...d.lines, ...Object.values(d.branches || {}).flat()];
   }).map(line => line.text || '').join('\n');
   assert.doesNotMatch(texts, /今夜|閉店後の煙幕/, 'no time of day in the openings');
@@ -1284,7 +1285,7 @@ await check('Issue #2750: known characters begin at ♥1 and excluded characters
     assert.equal(f.stats.affinityLevel(id), 1);
   }
   const before = f.events.filter(event => event.type === 'affinity-gain').length;
-  for (const id of ['sui', 'maezono', 'dr_kemuri', 'emil', 'mukai_master', 'uranaishi']) {
+  for (const id of ['sensu', 'uezono', 'dr_charcoal', 'emil', 'mukai_master', 'uranaishi']) {
     f.core.markMet(id);
     assert.equal(f.stats.gainAffinity(id, 100, { firstMeeting: true }), undefined);
     assert.equal(f.stats.ensureAffinityLevel(id, 5), 0);
@@ -1300,26 +1301,26 @@ await check('Issue #2750: known characters begin at ♥1 and excluded characters
 await check('Issue #2750: schema 26 save migrates without losing earned hearts', async f => {
   const old = f.core.newGame();
   old.schema = 26;
-  old.met = { sui: true, mukai_master: true, hiyori: true };
-  old.affinity = { sumi: 48, sui: 33, mukai_master: 20, hiyori: 9 };
-  old.affinityCarry = { sui: 0.5, hiyori: 0.25 };
+  old.met = { sensu: true, mukai_master: true, hiyori: true };
+  old.affinity = { sumi: 48, sensu: 33, mukai_master: 20, hiyori: 9 };
+  old.affinityCarry = { sensu: 0.5, hiyori: 0.25 };
   old.flags._affinity_first_meeting_pending_tsumugi = true;
-  old.flags._affinity_first_meeting_pending_sui = true;
-  old.flags._fortune_choice_sight = { char: 'sui', chapter: 1, from: 1, until: 3 };
-  old.fortune = { char: 'sui' };
+  old.flags._affinity_first_meeting_pending_sensu = true;
+  old.flags._fortune_choice_sight = { char: 'sensu', chapter: 1, from: 1, until: 3 };
+  old.fortune = { char: 'sensu' };
   f.memory.set(f.core.SAVE_KEY, JSON.stringify(old));
   assert(f.core.load());
   const s = f.core.state;
   assert.equal(s.affinity.sumi, 48);
   assert.equal(s.affinity.tsumugi, 9);
   assert.equal(s.affinity.hiyori, 9);
-  assert.equal(s.affinity.sui, undefined);
+  assert.equal(s.affinity.sensu, undefined);
   assert.equal(s.affinity.mukai_master, undefined);
-  assert.equal(s.affinityCarry.sui, undefined);
+  assert.equal(s.affinityCarry.sensu, undefined);
   assert.equal(s.affinityCarry.hiyori, 0.25);
   assert.equal(s.met.tsumugi, true);
   assert.equal(s.flags._affinity_first_meeting_pending_tsumugi, undefined);
-  assert.equal(s.flags._affinity_first_meeting_pending_sui, undefined);
+  assert.equal(s.flags._affinity_first_meeting_pending_sensu, undefined);
   assert.equal(s.flags._fortune_choice_sight, undefined);
   assert.equal(s.fortune, undefined);
 });

@@ -303,7 +303,7 @@ async function renderStage(owner) {
 }
 
 /** 読んだ後にその場にいる人へ、心得の盤で灯した授業を相談できる場面（SBD91。灯していなければ何も起きない） */
-const LESSON_AFTER_SCENE = Object.freeze({ ch5_doctor_cocreation: "dr_kemuri" });
+const LESSON_AFTER_SCENE = Object.freeze({ ch5_doctor_cocreation: "dr_charcoal" });
 
 async function renderScene(owner, scene, dayLabel) {
   await enterScene(bgUrl(CH5_SCENE_BG[scene.id]));
@@ -326,7 +326,7 @@ const SCAN_SCENES = Object.freeze({ ch5_opening: { from: "???", to: "挑戦状" 
 /** これまでに会った人の登場カットインの色（スタッフロール前の煙・#2688 A8）。主な人から最大8色 */
 function metColors() {
   const art = DB.manifest?.introArt || {};
-  const order = ["sumi", "naru", "tsumugi", "minto", "adam", "ageha", "mashiro", "saku", "hiyori", "samechan", "noor", "sheikh", "dr_kemuri"];
+  const order = ["sumi", "naru", "tsumugi", "minto", "adam", "ageha", "mashiro", "ayatori", "hiyori", "samechan", "noor", "sheikh", "dr_charcoal"];
   return order.filter(id => state.met?.[id] && art[id]?.color).map(id => art[id].color).slice(0, 8);
 }
 

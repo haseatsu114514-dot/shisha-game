@@ -65,10 +65,10 @@ const done={id:'controlled-complete',visited:[]};
 const FIRST_VISIT=9,TWO_VISITS=22,REPEAT_VISIT=6;
 const first=(f,id)=>{const s=f.fresh();delete s.met[id];s.story[id]=0;s.affinity[id]=0;s.flags._cafe_introduced=true;return s;};
 await check('known legacy identity repair never creates or keeps first-meeting pending',async f=>{
- const s=first(f,'dr_kemuri');s.affinityCarry.dr_kemuri=.25;s.flags._affinity_first_meeting_pending_dr_kemuri=true;
- f.core.markMet('dr_kemuri',{known:true});assert.equal(s.met.dr_kemuri,true);
- assert.equal(s.flags._affinity_first_meeting_pending_dr_kemuri,undefined);assert.equal(s.affinity.dr_kemuri,0);assert.equal(s.affinityCarry.dr_kemuri,.25);
- const loaded=f.roundTrip();assert.equal(loaded.flags._affinity_first_meeting_pending_dr_kemuri,undefined);assert.equal(loaded.affinity.dr_kemuri,0);assert.equal(loaded.affinityCarry.dr_kemuri,.25);
+ const s=first(f,'dr_charcoal');s.affinityCarry.dr_charcoal=.25;s.flags._affinity_first_meeting_pending_dr_charcoal=true;
+ f.core.markMet('dr_charcoal',{known:true});assert.equal(s.met.dr_charcoal,true);
+ assert.equal(s.flags._affinity_first_meeting_pending_dr_charcoal,undefined);assert.equal(s.affinity.dr_charcoal,0);assert.equal(s.affinityCarry.dr_charcoal,.25);
+ const loaded=f.roundTrip();assert.equal(loaded.flags._affinity_first_meeting_pending_dr_charcoal,undefined);assert.equal(loaded.affinity.dr_charcoal,0);assert.equal(loaded.affinityCarry.dr_charcoal,.25);
 });
 for(const id of ['naru','adam','minto','rio','tsumugi','sumi'])await check(`${id} first complete guarantees displayed heart1 without reading next scene`,async f=>{
  const s=first(f,id);assert.equal(f.stats.affinityLevel(id),0);

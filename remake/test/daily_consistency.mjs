@@ -50,7 +50,7 @@ async function load(name) { if (mods.has(name)) return mods.get(name); const mod
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod; }
 const module = await load("tonari.js"); await module.evaluate(); const tonari = module.namespace;
 const byid = Object.fromEntries(events.map((e) => [e.id, e]));
-function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, stamina: 74, flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true }, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {}, visits: {}, contacts: [], visitedDay: {}, lovers: [], loveLevel: {}, finales: {}, spotVisits: {} }, overrides);
+function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, stamina: 74, flags: { _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true, _ev_uezono_cameo: true }, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {}, visits: {}, contacts: [], visitedDay: {}, lovers: [], loveLevel: {}, finales: {}, spotVisits: {} }, overrides);
   // 既読段階を注入する在店fixtureでは、その段階を読める♥も明示する（加算の検証は別suite）。
   if (!overrides.affinity) state.affinity = Object.fromEntries(Object.entries(state.story).map(([id,n]) => [id,[0,9,20,33,48,66][Math.min(5,n)] || 0]));
   // DAY8の接客fixtureは、それまでの必須場面を読了した通常営業。
@@ -61,7 +61,7 @@ const custom = (id, fields = {}) => ({ id, category: "regular", text: "注文を
 // #1178 C1-01: 読み込んだ常連回は面識・在店予定を守り、別IDの同じ客も連日出さない。
 assert(byid.baito_tsumugi_art, "つむぎの絵の接客回がロード対象にない");
 reset(); db.baito = [byid.baito_tsumugi_art]; await tonari.doBaito(); assert.equal(selected(), undefined);
-for (const known of [{ met: { tsumugi: true } }, { flags: { _met_tsumugi: true, _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true } }, { story: { tsumugi: 1 } }]) {
+for (const known of [{ met: { tsumugi: true } }, { flags: { _met_tsumugi: true, _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true, _ev_uezono_cameo: true } }, { story: { tsumugi: 1 } }]) {
   reset(known); db.baito = [byid.baito_tsumugi_art]; await tonari.doBaito();
   assert.equal(selected(), "baito_baito_tsumugi_art");
 }
@@ -73,7 +73,7 @@ reset({ met: { tsumugi: true }, baitoRecent: [{ id: "baito_tsumugi_rain", chapte
 db.baito = [byid.baito_tsumugi_art]; await tonari.doBaito(); assert.equal(selected(), undefined);
 // 未対面つむぎは雨でも閉店でも選ばない。旧進行とmet/flagの各記録なら永久封鎖しない。
 reset(); rainy = true; db.baito = [byid.baito_tsumugi_rain]; await tonari.doBaito(); assert.equal(selected(), undefined); assert(plays.some((s) => s.dialogue_id === "remake_baito_routine"));
-for (const known of [{ met: { tsumugi: true } }, { flags: { _met_tsumugi: true, _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true } }, { story: { tsumugi: 1 } }]) {
+for (const known of [{ met: { tsumugi: true } }, { flags: { _met_tsumugi: true, _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true, _ev_uezono_cameo: true } }, { story: { tsumugi: 1 } }]) {
   reset(known); rainy = true; db.baito = [byid.baito_tsumugi_rain]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_tsumugi_rain");
 }
 reset(); db.baito = [byid.baito_tsumugi_closing]; await tonari.doBaito(); assert.equal(selected(), undefined);
@@ -162,14 +162,14 @@ reset(); rainy = true; db.baito = [byid.baito_atmosphere_02]; await tonari.doBai
 reset(); db.baito = [byid.baito_atmosphere_02]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_atmosphere_02");
 reset(); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_mysterious_customer");
 reset({ usedBaito: ["baito_mysterious_customer"] }); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), undefined);
-reset({ flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true, _minto_identity_revealed: true } }); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), undefined);
+reset({ flags: { _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true, _ev_uezono_cameo: true, _minto_identity_revealed: true } }); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), undefined);
 reset(); db.baito = [byid.baito_rainy_day]; await tonari.doBaito(); assert.equal(selected(), undefined);
 reset(); rainy = true; db.baito = [byid.baito_regular_01, byid.baito_rainy_day]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_rainy_day");
 // chapter1の正体を伏せた3客はそれぞれ一度きり、chapter2に持ち越さない。
 reset({ day: 6, baitoCount: 1, flags: {} }); db.baito = [byid.baito_regular_01];
 await tonari.doBaito(); await tonari.doBaito(); await tonari.doBaito(); await tonari.doBaito();
-for (const scene of ["ch1_rei_cameo", "ch1_reviewer_cameo", "ch1_maezono_cameo"]) assert.equal(plays.filter((s) => s === scene).length, 1);
-reset({ chapter: 2, baitoCount: 1, flags: {} }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(!plays.includes("ch1_rei_cameo"));
+for (const scene of ["ch1_kuraudo_cameo", "ch1_reviewer_cameo", "ch1_uezono_cameo"]) assert.equal(plays.filter((s) => s === scene).length, 1);
+reset({ chapter: 2, baitoCount: 1, flags: {} }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(!plays.includes("ch1_kuraudo_cameo"));
 // 報酬/choicesは保持。昼シフト後のUIと台本にレジ締めや閉店を持ち込まない。
 reset(); db.baito = [byid.baito_regular_01]; await tonari.doBaito({ called: true }); assert.equal(money[0], 13000); assert(!JSON.stringify(menus).includes("閉店"));
 // 体力の消耗後の色で制作の売上上乗せを決める。基本給・急なシフト・雨の手当は維持。
@@ -269,8 +269,8 @@ console.log("[remake daily] customer flags/chapter/weather/time, legacy one-off 
 const cityModule = await load("city-guests.js"); await cityModule.evaluate();
 const cityGuests = cityModule.namespace;
 const guestScript = JSON.parse(await fs.readFile(new URL("data/dialogue/ch2_city_guests.json", dataRoot), "utf8")).dialogues;
-const guestIds = ["ageha", "kumicho", "rei"];
-const guestSpots = { ageha: "minto", kumicho: "adam", rei: "tonari" };
+const guestIds = ["ageha", "kumicho", "kuraudo"];
+const guestSpots = { ageha: "minto", kumicho: "adam", kuraudo: "tonari" };
 function guestState(id, day = 17, extra = {}) {
   reset({ chapter: 2, phase: "daily", day, slot: 0, weatherSeed: 0, stamina: 90, money: 10000,
     met: Object.fromEntries([...guestIds, "minto", "adam", "sumi"].map(id => [id, true])),

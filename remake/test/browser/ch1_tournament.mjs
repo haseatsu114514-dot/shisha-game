@@ -167,7 +167,7 @@ await suite("ch1-tournament", async check => {
         if (variant === "current-read") state.flags._ev_first_practice = true;
         if (baselineArrival) T.data.DB.dialogues.ch1_tournament_arrival = baselineArrival;
         // 初登場カットインは3.6秒固定。既読セーブを想定し、会話のSKIPだけを検証する。
-        for (const id of ["sumi", "pakki", "sui", "maezono", "dr_kemuri", "naru", "adam", "minto"]) intro.markIntroSeen(id);
+        for (const id of ["sumi", "pakki", "sensu", "uezono", "dr_charcoal", "naru", "adam", "minto"]) intro.markIntroSeen(id);
         vn.vnTest.turbo = false;
         window.openingRead = false;
         window.skipTrace = [];
@@ -374,7 +374,7 @@ await suite("ch1-tournament", async check => {
   ]) await check(`results-${label}`, async page => {
     await init(page);
     await page.evaluate(() => {
-      ["naru", "adam", "minto", "sui", "maezono", "dr_kemuri"].forEach(T.core.markMet);
+      ["naru", "adam", "minto", "sensu", "uezono", "dr_charcoal"].forEach(T.core.markMet);
       window.cs = { mix: { blueberry: 10, mint: 2 }, total: 84.4, parts: { holes: 95, heat: 100, shisha: 78, care1: 86, care2: 91 }, arcade: { total: 92340 }, bonusNotes: ["前日リハーサルの手応え"] };
     });
     if (label === "desktop") {
@@ -397,9 +397,9 @@ await suite("ch1-tournament", async check => {
         [row.dataset.id, parseInt(row.querySelector('.sd-points').textContent,10)])),
     }));
     assert.deepEqual(interim.judges, {
-      maezono:{spent:7,left:'投入 7 ／ 残り 3'},
-      dr_kemuri:{spent:6,left:'投入 6 ／ 残り 4'},
-      sui:{spent:0,left:'10点を保留中'},
+      uezono:{spent:7,left:'投入 7 ／ 残り 3'},
+      dr_charcoal:{spent:6,left:'投入 6 ／ 残り 4'},
+      sensu:{spent:0,left:'10点を保留中'},
     });
     assert.deepEqual(interim.points,{adam:5,naru:3,minto:2,hajime:3});
     // The second feed line starts after a 0.5s delay and slides in for 0.5s.
@@ -444,11 +444,11 @@ await suite("ch1-tournament", async check => {
     await page.evaluate(() => window.standings);
     assert.equal(await page.locator('[data-test="standings"], .fx-dim').count(), 0);
     if (label === "portrait") await page.setViewportSize(viewport);
-    await page.evaluate(() => { window.cut = T.result.suiCutin(1); });
+    await page.evaluate(() => { window.cut = T.result.sensuCutin(1); });
     await page.locator('.nc-cut.show').waitFor();
     await page.waitForTimeout(550);
     await assertFits(page, '.sui-cut, .nc-row, .nc-cut');
-    await capture(page, `sui-${label}`);
+    await capture(page, `sensu-${label}`);
     await page.evaluate(() => window.cut);
     await page.evaluate(() => { window.finalResult = T.result.resultTable(cs, 1); });
     await page.locator('[data-test="result-next"]').waitFor();
@@ -491,7 +491,7 @@ await suite("ch1-tournament", async check => {
   for (const [round, key] of [[1, "Enter"], [2, "Space"]]) await check(`standings-round${round}-${key}`, async page => {
     await init(page);
     await page.evaluate(async round => {
-      T.core.markMet("maezono");
+      T.core.markMet("uezono");
       // Build the real VN controls without starting a scene, then use their
       // normal handlers to leave AUTO/SKIP enabled while reading the board.
       await T.vn.play({ dialogue_id: "__standings_controls", lines: [] }, { signal: AbortSignal.abort() });
@@ -523,7 +523,7 @@ await suite("ch1-tournament", async check => {
   // 票が入る演出（TSH02）: 入れる前の値から始まり、審査員ごとに票が入って、入れた後の値で終わる。板を押すと早送り。
   const startVoteBoard = page => page.evaluate(async () => {
     const votes = await import("./js/craft/ch1-votes.js");
-    ["naru", "adam", "minto", "sui", "maezono", "dr_kemuri"].forEach(T.core.markMet);
+    ["naru", "adam", "minto", "sensu", "uezono", "dr_charcoal"].forEach(T.core.markMet);
     window.cs = { mix: { lemon: 8, mint: 4 }, holes: { score: 93 }, heat: { score: 95 },
       stats: { aroma: 88, taste: 86, heatStability: 84, burnRisk: 14, draw: 82, smoke: 85, craftQuality: 88, duration: 80 },
       pull: { score: 92, attack: true }, careHistory: [{ score: 99, attack: true }, { score: 104, attack: true }], care: { score: 99 },
@@ -543,7 +543,7 @@ await suite("ch1-tournament", async check => {
     Object.fromEntries(rows.map(row => [row.dataset.id, parseInt(row.querySelector('.sd-points').textContent, 10)])));
   const boardSpent = page => page.locator('[data-test="standings"] .judge-chip').evaluateAll(chips =>
     Object.fromEntries(chips.map(chip => [chip.dataset.judge, [Number(chip.dataset.spent), chip.querySelectorAll('.judge-pips .on').length, chip.querySelector('.judge-left').textContent]])));
-  const settled = { maezono: [5, 5, '投入 5 ／ 残り 5'], dr_kemuri: [5, 5, '投入 5 ／ 残り 5'], sui: [5, 5, '投入 5 ／ 残り 5'] };
+  const settled = { uezono: [5, 5, '投入 5 ／ 残り 5'], dr_charcoal: [5, 5, '投入 5 ／ 残り 5'], sensu: [5, 5, '投入 5 ／ 残り 5'] };
   for (const mode of ["plays-through", "tap-skips", "key-skips", "reduced-motion"]) await check(`vote-ceremony-${mode}`, async page => {
     await init(page);
     const expected = await startVoteBoard(page);
@@ -558,7 +558,7 @@ await suite("ch1-tournament", async check => {
     } else {
       assert.equal(await board.getAttribute("data-ceremony"), "running");
       assert.deepEqual(await boardPoints(page), expected.before, "The board starts from the points before this round");
-      assert.deepEqual(await boardSpent(page), { maezono: [2, 2, '投入 2 ／ 残り 8'], dr_kemuri: [2, 2, '投入 2 ／ 残り 8'], sui: [2, 2, '投入 2 ／ 残り 8'] });
+      assert.deepEqual(await boardSpent(page), { uezono: [2, 2, '投入 2 ／ 残り 8'], dr_charcoal: [2, 2, '投入 2 ／ 残り 8'], sensu: [2, 2, '投入 2 ／ 残り 8'] });
       assert.equal(await next.isDisabled(), true);
       assert.equal(await page.locator('.ts-sting').count(), 1, "The vote opens with the heading band");
       if (mode === "plays-through") {
@@ -611,12 +611,12 @@ await suite("ch1-tournament", async check => {
     assert.equal(await page.locator('.rc-card.spot').count(), 1, "The spotlight visits one finalist per count");
     await assertFits(page, '.count-screen .tournament-heading, .rc-ring, .rc-pray, .rc-card');
     await capture(page, `count-finalists-${touch ? "touch" : "pc"}`);
-    await page.evaluate(async () => { await countdown; (await import("./js/core/ui.js")).retireScreen(); window.cut = T.result.suiCutin(1, attempt); });
+    await page.evaluate(async () => { await countdown; (await import("./js/core/ui.js")).retireScreen(); window.cut = T.result.sensuCutin(1, attempt); });
     const final = page.locator('[data-test="final-vote"]');
     await final.and(page.locator('.show')).waitFor();
     const finalPoints = () => final.locator('.nc-row').evaluateAll(rows => Object.fromEntries(rows.map(row => [row.dataset.id, parseInt(row.querySelector('.nc-pt').textContent, 10)])));
     const before4 = Object.fromEntries(result.rows.map(row => [row.id, row.points
-      - ["maezono", "dr_kemuri", "sui"].reduce((n, judge) => n + (lastRound[judge]?.[row.id] || 0), 0)]));
+      - ["uezono", "dr_charcoal", "sensu"].reduce((n, judge) => n + (lastRound[judge]?.[row.id] || 0), 0)]));
     assert.deepEqual(await finalPoints(), before4, "The final board starts before the last round's votes");
     assert.equal(await final.locator('.nc-caller').count(), 3);
     // 押すと、残りの間を詰めて最後まで進む。

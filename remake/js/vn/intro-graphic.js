@@ -1,3 +1,4 @@
+import { characterArtStem } from "../core/portrait-resolver.js";
 // 登場カットインのグラフィック絵柄（2026-10-31 オーナー試作）。
 // 目を髪で隠した平面ポスター調の人物絵と、それに合わせて描き直した背景。
 // 設定「登場カットインの絵柄」で旧（立ち絵）へいつでも戻せる。素材と指示文: asset_sources/character-intros/graphic-20261031/
@@ -54,10 +55,11 @@ const FRAME_OVERRIDES = {
 // FRAMES:END
 
 /** 頭の大きさをそろえた配置があるか（テスト用） */
-export const hasScaledFrame = (id) => Object.hasOwn(FRAME_OVERRIDES, id);
+export const hasScaledFrame = (id) => Object.hasOwn(FRAME_OVERRIDES, characterArtStem(id));
 
 /** 新しい絵柄で出す素材。旧絵柄の設定か、素材の無い人物は null */
 export function graphicIntro(id, style) {
+  id = characterArtStem(id); // Graphic frames and filenames are indexed by the art, not the save ID.
   if (style === "classic" || !PORTRAITS.has(id)) return null;
   return {
     portrait: `${ROOT}${id}.webp`,

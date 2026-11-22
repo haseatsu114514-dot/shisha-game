@@ -66,7 +66,7 @@ await suite("ch1-vote-style", async (check) => {
     assert.deepEqual(p.attacks, [false, true, true, true], "提供・調整2回とも攻めの帯で終えた");
     assert.equal(p.lastPoint, "hajime", "攻めた2回目の調整が千須の最後の1点を取る");
     assert.equal(p.result.rank, 1);
-    for (const round of [1, 2, 3]) for (const judge of ["maezono", "dr_kemuri", "sui"])
+    for (const round of [1, 2, 3]) for (const judge of ["uezono", "dr_charcoal", "sensu"])
       assert(p.views[round][judge].hajime >= 4, "攻めた回の評価に上積みが入っている");
     assert.match(await ruleText(page), /第四条　審査/, "桜井式の試合中の規則に審査の条がある");
   }, { pageEntry: `${baseURL}?craft=sakurai` });

@@ -234,8 +234,8 @@ const storyChatsRead = allMessages.filter((m) => m.type === "chat" && m.trigger_
 // #2024: 第3〜5章の物語のLIME（region で届く街を決める）と、遠征中に地元の誘いを帰るまで止めること。
 const awayStory = {
   3: ["lime_ch3_sumi_tokyo_settle"],
-  4: ["lime_ch4_sumi_settle", "lime_ch4_tsumugi_counter", "lime_ch4_mashiro_mukai", "lime_ch4_ageha_melty", "lime_ch4_saku_stream", "lime_ch4_sumi_eve"],
-  5: ["lime_ch5_saku_title", "lime_ch5_kumicho_title", "lime_ch5_rei_title"],
+  4: ["lime_ch4_sumi_settle", "lime_ch4_tsumugi_counter", "lime_ch4_mashiro_mukai", "lime_ch4_ageha_melty", "lime_ch4_ayatori_stream", "lime_ch4_sumi_eve"],
+  5: ["lime_ch5_ayatori_title", "lime_ch5_kumicho_title", "lime_ch5_kuraudo_title"],
 };
 const limeById = (id) => allMessages.find((m) => m.id === id);
 {
@@ -325,7 +325,7 @@ for (const companion of ["ageha", null]) {
   reset({ chapter: 4, day: 60, flags: { ...storyDone, _ch2_region: "home", _ch4_prep: { startDay: 60, days: 3, step: 0, departed: false },
     _ch4: { startDay: 63, day: 1, stage: 0, part: "prologue", read: {} },
     _overseas_companion: { decided: true, companion, supports: ["tsumugi", "mashiro"] } },
-    contacts: ["sumi", "tsumugi", "mashiro", "ageha", "saku"], lovers: ["ageha", "tsumugi"], loverSince: { ageha: 1, tsumugi: 1 }, loveLevel: { ageha: 1, tsumugi: 1 } });
+    contacts: ["sumi", "tsumugi", "mashiro", "ageha", "ayatori"], lovers: ["ageha", "tsumugi"], loverSince: { ageha: 1, tsumugi: 1 }, loveLevel: { ageha: 1, tsumugi: 1 } });
   const got = [];
   for (let day = 60; day <= 74; day++) {
     state.day = day;
@@ -346,12 +346,12 @@ for (const companion of ["ageha", null]) {
   assert(got.some((g) => g.dubai && g.id.startsWith("_lover_morning_tsumugi")), "ドバイにいない恋人の朝のひとことは届く");
 }
 // 綾取がドバイへ応援に来た保存（SPC22）では、東京の煙幕から配信を見る前提の第4章のLIMEは届かない。来ていなければ届く。
-for (const guests of [["saku"], []]) {
+for (const guests of [["ayatori"], []]) {
   reset({ chapter: 4, day: 71, flags: { ...storyDone, _ch2_region: "dubai", _ch4_prep: { startDay: 60, days: 3, step: 0, departed: true },
-    _ch4: { startDay: 63, day: 9, stage: 0, part: "free", read: {} }, _ch3_read_ch3_saku_steve_notes: true,
-    _overseas_companion: { decided: true, companion: null, supports: ["tsumugi", "mashiro"], guests } }, contacts: ["saku"] });
+    _ch4: { startDay: 63, day: 9, stage: 0, part: "free", read: {} }, _ch3_read_ch3_ayatori_steve_notes: true,
+    _overseas_companion: { decided: true, companion: null, supports: ["tsumugi", "mashiro"], guests } }, contacts: ["ayatori"] });
   const ids = phone.morningMessages({ fixedNight: () => false, invitations: false }).map(m => m.id);
-  assert.equal(ids.some(id => /^lime_ch4_saku_/.test(id)), guests.length === 0, `綾取のドバイ来訪 ${JSON.stringify(guests)}: ${ids}`);
+  assert.equal(ids.some(id => /^lime_ch4_ayatori_/.test(id)), guests.length === 0, `綾取のドバイ来訪 ${JSON.stringify(guests)}: ${ids}`);
 }
 console.log("[#2024] PASS Dubai story LIME: once each in its Dubai window, none on prep days, nothing from the companion");
 
@@ -359,7 +359,7 @@ console.log("[#2024] PASS Dubai story LIME: once each in its Dubai window, none 
 {
   const run = (overrides, days, region = () => "home") => {
     reset({ chapter: 5, day: 100, flags: { ...storyDone, _ch5: { startDay: 100, stage: 2, part: "free" }, _elapsed_calendar: true, ...overrides },
-      contacts: ["saku", "kumicho", "rei"] });
+      contacts: ["ayatori", "kumicho", "kuraudo"] });
     const got = [];
     for (let day = 100; day < 100 + days; day++) {
       state.day = day;
@@ -383,8 +383,8 @@ console.log("[#2024] PASS Dubai story LIME: once each in its Dubai window, none 
   }
   // 神崎の店で第5章の会話（世界一の祝い）を読んだ後は、同じ祝いのLIMEを重ねない。
   // クラウドの店の会話は動画の話で祝いの言葉を言わないので、LIMEはその前後どちらでも読める文にしてある。
-  const met = run({ ch2_kumicho_after_ch2_done: true, _talk_seen_ch5_rei_shop: true }, 10).map((g) => g.id);
-  assert(met.includes("lime_ch5_saku_title") && met.includes("lime_ch5_rei_title") && !met.includes("lime_ch5_kumicho_title"),
+  const met = run({ ch2_kumicho_after_ch2_done: true, _talk_seen_ch5_kuraudo_shop: true }, 10).map((g) => g.id);
+  assert(met.includes("lime_ch5_ayatori_title") && met.includes("lime_ch5_kuraudo_title") && !met.includes("lime_ch5_kumicho_title"),
     `神崎の店で第5章の会話を読んだ後は、神崎の祝いのLIMEを重ねない: ${met}`);
   console.log("[#2024] PASS chapter 5 congratulations arrive once at home, wait while away, kumicho skips after the in-person talk");
 }

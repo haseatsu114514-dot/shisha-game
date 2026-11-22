@@ -19,8 +19,8 @@ const makeState = () => {
 };
 const craft = { careHistory: [], total: 0 };
 
-assert.deepEqual(CONTESTANTS, ["hajime", "saku", "steve", "volk"]);
-assert.deepEqual(JUDGES, ["emil", "dr_kemuri", "sui"]);
+assert.deepEqual(CONTESTANTS, ["hajime", "ayatori", "steve", "volk"]);
+assert.deepEqual(JUDGES, ["emil", "dr_charcoal", "sensu"]);
 assert.equal(SPEND.reduce((sum, value) => sum + value, 0), 10);
 const value = makeState(), before = copy(value);
 assert.equal(tournamentProgress(value).stage, "entry");
@@ -30,7 +30,7 @@ assert.equal(startAttempt(value, craft).attempts, 1); // 二度押しでも二�
 assert.deepEqual(p.tastingPlan, buildTastingPlan(p.tastingSeed));
 for (const round of p.tastingPlan) for (const judge of JUDGES) {
   assert.deepEqual([...round[judge].order].sort(), [...CONTESTANTS].sort());
-  if (judge === "sui") assert.equal(round[judge].waterAfterSaku, true);
+  if (judge === "sensu") assert.equal(round[judge].waterAfterSaku, true);
 }
 
 // 現在工程だけはLOAD時に戻り、確定済みの前工程は戻らない。
@@ -48,31 +48,31 @@ assert.equal(committed.stamina, 75);
 assert.equal(committed.flags._ch3_tournament.step, 1);
 
 // 柑橘の残り香は直後の試喫だけ。水を飲めばゼロ、次が他人ならはじめに作用しない。
-const direct = { order: ["saku", "hajime", "volk", "steve"], waterAfterSaku: false };
+const direct = { order: ["ayatori", "hajime", "volk", "steve"], waterAfterSaku: false };
 assert.deepEqual(tastingEffect(direct, "emil"), { ...direct, affected: "hajime", delta: -2 });
-assert.deepEqual(tastingEffect(direct, "dr_kemuri"), { ...direct, affected: "hajime", delta: 2 });
+assert.deepEqual(tastingEffect(direct, "dr_charcoal"), { ...direct, affected: "hajime", delta: 2 });
 assert.equal(tastingEffect({ ...direct, waterAfterSaku: true }, "emil").delta, 0);
-assert.equal(tastingEffect({ order: ["saku", "steve", "hajime", "volk"], waterAfterSaku: false }, "emil").affected, "steve");
-assert.equal(tastingEffect({ order: ["hajime", "volk", "steve", "saku"], waterAfterSaku: false }, "emil").affected, null);
+assert.equal(tastingEffect({ order: ["ayatori", "steve", "hajime", "volk"], waterAfterSaku: false }, "emil").affected, "steve");
+assert.equal(tastingEffect({ order: ["hajime", "volk", "steve", "ayatori"], waterAfterSaku: false }, "emil").affected, null);
 const plans = Array.from({ length: 32 }, (_, seed) => buildTastingPlan(seed)[0].emil);
-assert(plans.some(plan => plan.order[0] === "saku"));
-assert(plans.some(plan => plan.order[0] !== "saku"));
+assert(plans.some(plan => plan.order[0] === "ayatori"));
+assert(plans.some(plan => plan.order[0] !== "ayatori"));
 assert(plans.some(plan => plan.waterAfterSaku));
 assert(plans.some(plan => !plan.waterAfterSaku));
 const withWater = startAttempt(makeState(), craft);
 const withoutWater = startAttempt(makeState(), craft);
 // この数値の旧残り香テストは、保存互換の版1としてそのまま残す。
 withWater.rulesVersion = 1; withoutWater.rulesVersion = 1;
-withWater.tastingPlan[1].dr_kemuri = { ...direct, waterAfterSaku: true };
-withoutWater.tastingPlan[1].dr_kemuri = direct;
+withWater.tastingPlan[1].dr_charcoal = { ...direct, waterAfterSaku: true };
+withoutWater.tastingPlan[1].dr_charcoal = direct;
 castVotes(withWater, 0, 83);
 castVotes(withoutWater, 0, 83);
 assert.deepEqual(withWater.votes, withoutWater.votes, "The pre-service poll cannot taste Ayatori's aroma");
 assert(JUDGES.every(judge => withWater.lastVotes[judge].tactic === null));
 castVotes(withWater, 1, 83);
 castVotes(withoutWater, 1, 83);
-assert.equal(withWater.votes.dr_kemuri.hajime, 0);
-assert.equal(withoutWater.votes.dr_kemuri.hajime, 2);
+assert.equal(withWater.votes.dr_charcoal.hajime, 0);
+assert.equal(withoutWater.votes.dr_charcoal.hajime, 2);
 
 // 4回の票は各審査員10点。投票の再呼出し、JSON保存・再開でも加算しない。
 let prior = copy(p.votes);
@@ -99,7 +99,7 @@ assert.deepEqual(standings(p).map(row => [row.id, row.rank]),
 
 // 不正な持ち点でも全審査員を一部だけ確定しない。
 const bad = startAttempt(makeState(), craft);
-bad.votes.sui.saku = 10;
+bad.votes.sensu.ayatori = 10;
 const untouched = copy(bad.votes);
 assert.throws(() => castVotes(bad, 0, 90), /持ち点/);
 assert.deepEqual(bad.votes, untouched);
@@ -148,9 +148,9 @@ assert.throws(() => tournamentProgress({ chapter: 2, flags: {} }), /第3章/);
 
 // 新しい挑戦は最新の版（版3・#3916 WIN11）。旧保存の残り票と確定済みの結果は再評価しない。
 assert.equal(TOURNAMENT_RULES_VERSION, 3);
-assert.deepEqual(LEGACY_RIVAL_QUALITY, { saku: 82, steve: 80, volk: 84 });
-assert.deepEqual(V2_RIVAL_QUALITY, { saku: 86, steve: 85, volk: 88 });
-assert.deepEqual(RIVAL_QUALITY, { saku: 84.5, steve: 83.5, volk: 86.5 });
+assert.deepEqual(LEGACY_RIVAL_QUALITY, { ayatori: 82, steve: 80, volk: 84 });
+assert.deepEqual(V2_RIVAL_QUALITY, { ayatori: 86, steve: 85, volk: 88 });
+assert.deepEqual(RIVAL_QUALITY, { ayatori: 84.5, steve: 83.5, volk: 86.5 });
 {
   const fresh = makeState(), current = startAttempt(fresh, craft);
   assert.equal(current.rulesVersion, 3);

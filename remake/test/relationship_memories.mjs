@@ -178,7 +178,7 @@ try {
     };
     core.newGame();
     Object.assign(core.state, { chapter: 3, phase: "daily" });
-    for (const id of ["mashiro_pace", "saku_decide", "steve_wait", "volk_measure"]) relationships.rememberRelationship(id);
+    for (const id of ["mashiro_pace", "ayatori_decide", "steve_wait", "volk_measure"]) relationships.rememberRelationship(id);
     const ch3 = await read("ch3_tournament_eve");
     core.newGame();
     Object.assign(core.state, { chapter: 4, phase: "daily" });

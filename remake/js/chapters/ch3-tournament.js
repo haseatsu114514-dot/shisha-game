@@ -163,7 +163,7 @@ async function read(owner, name) {
   if (!live(owner)) return false;
   showScreen("none", null);
   // 大会場面内で初めて名乗る人物の表示名を解禁する。未読で中断したら戻す。
-  const reveals = name === "tournament_day" ? ["saku", "steve", "volk", ...JUDGES] : [];
+  const reveals = name === "tournament_day" ? ["ayatori", "steve", "volk", ...JUDGES] : [];
   const newlyMet = reveals.filter(who => !state.met[who]);
   const newMetFlags = reveals.filter(who => !state.flags[`_met_${who}`]);
   for (const who of reveals.filter(who => who !== "emil")) markMet(who);
@@ -313,7 +313,7 @@ function voteReason(p, cs, final = false) {
   if (parts.length) {
     const weakest = parts.reduce((low, part) => part.score < low.score ? part : low);
     const step = weakest.label === "アルミ穴あけ" ? "holes" : weakest.label === "炭の温度" ? "heat" : weakest.label.includes("調整") ? "care" : "pull";
-    const judge = step === "pull" ? "emil" : "dr_kemuri";
+    const judge = step === "pull" ? "emil" : "dr_charcoal";
     lines.push(`${weakest.label}：${evaluationOf(weakest.score).mark}　${displayName(judge, state)}「${feedbackLine(judge, step, evaluationOf(weakest.score))}」`);
   }
   const affected = JUDGES.filter(judge => last[judge]?.tactic?.affected);

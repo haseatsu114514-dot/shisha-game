@@ -67,9 +67,9 @@ export const TOKYO_SPOTS = Object.freeze([
   // 綾取の煙幕（延長営業・#3676）。第3章の東京の地図の位置（45.3, 49.7）は、第5章だけにある帰りの配送便の札・屋根裏と重なるので、
   // 鉄の煙と公園のあいだの空いた所に置く（PC・スマホ横の両方で、ほかのピンや札と重ならないことを確かめた）。
   // ♥5の締めくくりは第3章だけなので TOKYO_FINALES には入れない。会っている保存だけ地図に出る（charId）。
-  rivalSpot({ id: "ch5_tokyo_saku", charId: "saku", label: "煙幕", area: "綾取の店", x: 58, y: 62, theme: "rival", glyph: "煙", face: "saku",
+  rivalSpot({ id: "ch5_tokyo_saku", charId: "ayatori", label: "煙幕", area: "綾取の店", x: 58, y: 62, theme: "rival", glyph: "煙", face: "ayatori",
     preview: "bg_yohaku_shop", stamina: -16, stat: "insight",
-    talks: ["ch5_tokyo_saku", "ch5_tokyo_saku_b", "ch5_tokyo_saku_c"], desc: "好評につき延長中の間借り店。お茶と、ノートの続き。" }),
+    talks: ["ch5_tokyo_saku", "ch5_tokyo_ayatori_b", "ch5_tokyo_ayatori_c"], desc: "好評につき延長中の間借り店。お茶と、ノートの続き。" }),
   spot({ id: "ch5_tokyo_park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園", preview: "bg_tokyo_park",
     stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   // 裏口のてつこは地図の行き先にせず、mukai のシフトの帰りに会う（VOL11）。

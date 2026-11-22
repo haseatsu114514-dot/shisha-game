@@ -34,13 +34,13 @@ await suite("ch2-rain-j08", async (check) => {
         _ch2_city_visit_c_station: true,
         _ageha_aquarium_introduced: true,
         _kumicho_sento_introduced: true,
-        _rei_trpg_introduced: true,
+        _kuraudo_trpg_introduced: true,
         _lime_tut: 1,
         _lime_opened: true,
         _hiyori_meeting_done: true,
         _hiyori_message_delivered: true,
       };
-      s.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true, ageha: true, kumicho: true, rei: true };
+      s.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true, ageha: true, kumicho: true, kuraudo: true };
       core.save();
       window.__remake.vnTest.turbo = true;
       (await import("./js/chapters/ch1.js")).setupHooks();

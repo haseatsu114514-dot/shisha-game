@@ -320,8 +320,8 @@
       ]
     },
     {
-      "dialogue_id": "ch4_prep_rei",
-      "comment": "#3097 PR-I（計画 4-4）。ドバイへ発つ前の準備3日、「貴方ノ為ノ此ノ煙。」の来店で一度だけ（daily/spots.js の CHAPTER_TALKS・chapters/ch2-preparation.js の visitPreparationSpot）。クラウドは♥5ならドバイへ来る（ch4_rei_dubai は驚きの場面）ので、同行・応援には触れない。本番の前の晩は、いつもの一枚。第3章の送り出しを読んだ時はアルバムの報告と引き出しておいた一枚、ライブの夜を読んだ時は「一番後ろまで」を返す（どちらか一方）。本名・笑顔の練習・「嘘」・同士には触れない。",
+      "dialogue_id": "ch4_prep_kuraudo",
+      "comment": "#3097 PR-I（計画 4-4）。ドバイへ発つ前の準備3日、「貴方ノ為ノ此ノ煙。」の来店で一度だけ（daily/spots.js の CHAPTER_TALKS・chapters/ch2-preparation.js の visitPreparationSpot）。クラウドは♥5ならドバイへ来る（ch4_kuraudo_dubai は驚きの場面）ので、同行・応援には触れない。本番の前の晩は、いつもの一枚。第3章の送り出しを読んだ時はアルバムの報告と引き出しておいた一枚、ライブの夜を読んだ時は「一番後ろまで」を返す（どちらか一方）。本名・笑顔の練習・「嘘」・同士には触れない。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
@@ -333,14 +333,14 @@
             "text": "東京への新幹線で、言われたとおり、一枚通して聴きました"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "smile",
             "text": "……そうか。なら、引き出しといたやつ、今日かける"
           }
         ],
         "live": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……ライブの夜、一番後ろまで、って言った"
           },
@@ -358,7 +358,7 @@
           "text": "店に入ると、クラウドがCDの棚の前で、一枚を出しては戻していた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……ドバイ、もうすぐだろ"
         },
@@ -370,19 +370,19 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_talk_seen_ch3_prep_rei",
+          "flag": "_talk_seen_ch3_prep_kuraudo",
           "next_true": "album",
           "next_false": ""
         },
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_talk_seen_ch3_prep_rei_live",
+          "flag": "_talk_seen_ch3_prep_kuraudo_live",
           "next_true": "live",
           "next_false": ""
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "本番の前の晩は、いつもの一枚を聴く。新しいのは、聴かない"
         },
@@ -392,7 +392,7 @@
           "text": "新しいのは、だめなんですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "気になって、眠れなくなる。だから、いつもの"
         },
@@ -402,7 +402,7 @@
           "text": "いつもの一枚……俺なら、いつもの一台ですかね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……それ。いつものを、いつもどおりに"
         },

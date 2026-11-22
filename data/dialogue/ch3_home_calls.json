@@ -593,8 +593,8 @@
       ]
     },
     {
-      "dialogue_id": "ch3_home_call_rei_last_song",
-      "comment": "クラウドからの電話（夜だけ）。閉店前の最後の一曲を電話越しに聴かせる。最後の音が消えたあとの三秒の空白が好き（story_and_structure.md 第2章の前夜）。出発前の会話（ch3_prep_rei のアルバム）やライブの夜を読んでいなくても通じる。",
+      "dialogue_id": "ch3_home_call_kuraudo_last_song",
+      "comment": "クラウドからの電話（夜だけ）。閉店前の最後の一曲を電話越しに聴かせる。最後の音が消えたあとの三秒の空白が好き（story_and_structure.md 第2章の前夜）。出発前の会話（ch3_prep_kuraudo のアルバム）やライブの夜を読んでいなくても通じる。",
       "lines": [
         {
           "speaker": "",
@@ -607,7 +607,7 @@
           "text": "……クラウドさん？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……ああ。ごめん。何から話すか、決めてなかった"
         },
@@ -617,7 +617,7 @@
           "text": "決めてから、かけてくれてもいいですよ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "決めてたら、かけなかった"
         },
@@ -627,12 +627,12 @@
           "text": "電話の向こうで、小さく音楽が鳴っている。店のスピーカーの音だ。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "閉店の前に、最後の一曲をかける。それが終わったら、看板を消す"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "今日の最後の一曲、そっちにも聞かせたくなった"
         },
@@ -652,7 +652,7 @@
           "text": "消えたあとも、クラウドは何も言わなかった。俺も、何も言わなかった。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……この三秒が、好きなんだ"
         },
@@ -662,12 +662,12 @@
           "text": "東京の部屋でも、ちゃんと三秒でした"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……そう。なら、よかった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "看板、消してくる、……おやすみ"
         },
@@ -1548,7 +1548,7 @@
       ]
     },
     {
-      "dialogue_id": "ch3_home_call_rei_wrong_case",
+      "dialogue_id": "ch3_home_call_kuraudo_wrong_case",
       "comment": "クラウドが店で別々になったCDとケースを戻す。閉店後、客が気にした曲の名前を控える。",
       "lines": [
         {
@@ -1557,7 +1557,7 @@
           "text": "奥の部屋の電気を消す前に、クラウドさんから電話が来た。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "起きてた。よかった。あの、今の音、聞こえた？"
         },
@@ -1572,12 +1572,12 @@
           "text": "ええ。何かを置きました？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "CDのケース。中にあるのは、違うやつだった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "もう三枚。店でかけてるうちに、入れ違えたみたいで"
         },
@@ -1587,12 +1587,12 @@
           "text": "棚に並べると、どれが違うか分からないですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "今日、客に今の曲は何かって聞かれて、ジャケットを見せたんだ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "向こうが知ってて、指でジャケットを裏返された"
         },
@@ -1602,7 +1602,7 @@
           "text": "そこで違うって分かったんですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "うん。もう一回ちゃんと教えてくれって。好きだったんだと思う"
         },
@@ -1612,12 +1612,12 @@
           "text": "薄いプラスチックのふたを開ける音がした。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "この一枚、前に自分で選んだのに、最近は最後まで聴いてなかった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "客が帰ってから聴き直したら、途中で拍が一つ抜けるとこがあって"
         },
@@ -1627,7 +1627,7 @@
           "text": "その人も、そこで気になったのかもしれませんね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "今度、聞いてみる。次は曲の名前、紙に書いて渡そうかな"
         },
@@ -1637,7 +1637,7 @@
           "text": "ジャケットの絵も、見たいんじゃないですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……うん。今度は中身まで見せる"
         },
@@ -1647,7 +1647,7 @@
           "text": "電話口で、ケースのふたがかちりと閉じた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "一枚戻った。キミ、そろそろ寝ていいよ"
         },

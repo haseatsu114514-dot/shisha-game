@@ -262,7 +262,7 @@
           "text": "千須豪（せんす ごう）会長ッ！"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "serious",
           "text": "……お手並み拝見といこう。吸えば分かる"
         },
@@ -272,7 +272,7 @@
           "text": "相変わらず厳しィィィ！ さあ続きまして！ シーシャ機材発明家、チャコール博士こと火浦理一さんッ！"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "……データは嘘をつきません。今日も粛々と記録させていただきます"
         },
@@ -282,16 +282,16 @@
           "text": "そしてゲスト審査員！ シーシャはおいしいねえ、でおなじみ！ 上園文太郎さんッ！"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "どうも。いや〜、若い子たちの熱気がビシビシ伝わってくるねえ！ シーシャはおいしいねえ"
         },
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ev_maezono_cameo",
-          "next_true": "maezono_recall",
-          "next_false": "maezono_chk_met"
+          "flag": "_ev_uezono_cameo",
+          "next_true": "uezono_recall",
+          "next_false": "uezono_chk_met"
         },
         {
           "speaker": "pakki",
@@ -325,7 +325,7 @@
         }
       ],
       "branches": {
-        "maezono_recall": [
+        "uezono_recall": [
           {
             "speaker": "hajime",
             "face": "surprise",
@@ -342,16 +342,16 @@
             "text": "（『おいしいねえ』って、そういうことか。……知ってる顔がいると、少し落ち着く）"
           }
         ],
-        "maezono_chk_met": [
+        "uezono_chk_met": [
           {
             "type": "condition",
             "condition_type": "flag",
-            "flag": "_met_maezono",
-            "next_true": "maezono_met",
+            "flag": "_met_uezono",
+            "next_true": "uezono_met",
             "next_false": ""
           }
         ],
-        "maezono_met": [
+        "uezono_met": [
           {
             "speaker": "hajime",
             "face": "normal",
@@ -560,7 +560,7 @@
           "text": "（同じ台をもう一度……。他の審査員は、講評のあと手を伸ばしていない。……何か引っかかったのか？）"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "serious",
           "beat": 600,
           "text": "……ほう"
@@ -577,7 +577,7 @@
           "text": "パッキーが、マイクを下ろしたまま黙った。"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "おや。パッキーくんが黙るなんて、珍しいねえ"
         },
@@ -938,7 +938,7 @@
           "text": "だが千須は、まずなるの前で足を止めた。"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "鳴切くん。あの配合、自分で？"
         },
@@ -948,17 +948,17 @@
           "text": "……はい"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "技術は今日一番面白かった。だが、届け先が見えん"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "serious",
           "text": "あれが『伝わる形』で出ていたら、もっと面白い勝負になったよ"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "また大会で会おう。その時は、答えを持ってきなさい"
         },
@@ -968,7 +968,7 @@
           "text": "なるが何か言うより先に、千須はもう歩き出していた。そして、俺の前で止まる。"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "……逢縁くん"
         },
@@ -978,7 +978,7 @@
           "text": "[shiver]は、はいっ[/shiver]"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "duck": true,
           "text": "……懐かしい店の味だ。人が帰ってくる店の"
@@ -1762,7 +1762,7 @@
           "text": "……最後の一口で、それまでの評価が台無しですよ〜♪ ぷぷぷっ！ 全員頑張ってね！"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "……出した後の手を見ている。そこに、その作り手の店が出る"
         },

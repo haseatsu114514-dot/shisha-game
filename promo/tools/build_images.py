@@ -44,6 +44,7 @@ GAME = ROOT / "remake" / "img"
 RECORD = OUT / "sources.json"
 
 # 人物紹介に出す人（第1〜2章で出会う人だけ。docs/marketing/sns_operation.md の出す順番に合わせる）
+# These are physical names of the source illustrations and the exported promo images.
 CAST_MAIN = ["hajime", "sumi", "naru", "adam", "minto", "tsumugi", "rio", "hiyori", "samechan", "ageha", "kumicho", "rei"]
 CAST_SUB = ["pakki", "sui", "dr_kemuri", "maezono"]
 # ヒーローで順に見せる人。第3章で出会うましろは載せない
@@ -482,7 +483,7 @@ def sync_html() -> None:
 
     def place(match: re.Match) -> str:
         cid, style = match.group(1), match.group(2)
-        frame = frames.get(cid)
+        frame = frames.get("rei" if cid == "kuraudo" else cid)
         if not frame:
             return match.group(0)
         accent = re.search(r"--accent:[^;]+", style).group(0)

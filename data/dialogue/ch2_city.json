@@ -77,7 +77,7 @@
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "dr_kemuri",
+          "char_id": "dr_charcoal",
           "next_true": "doctor_known",
           "next_false": "doctor_first"
         },
@@ -120,7 +120,7 @@
       "branches": {
         "doctor_known": [
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "おや。逢縁くん。案内板とにらめっこ？"
           },
@@ -130,12 +130,12 @@
             "text": "博士。……ちょうど、会場を探していて"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "県大会ホールなら、交差点を渡って右。C.STATION柚ヶ谷店と同じビルだよ"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "君、本番の前に街を見るんだね。下見も、同じ手順を再現する準備のうちだ"
           },
@@ -145,14 +145,14 @@
             "text": "準備って……道に迷ってるだけですよ"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "場所や室温が違えば、同じ作り方でも味は変わる。じゃ、準備があるから"
           }
         ],
         "doctor_first": [
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "その機材ケース。中身は、HMDかな"
           },
@@ -167,7 +167,7 @@
             "text": "これ便利ですよね。店でも、ずっと助けられてます"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "でしょ？ それ作ったの、俺だもん"
           },
@@ -178,10 +178,10 @@
           },
           {
             "type": "set_flag",
-            "flag": "_met_dr_kemuri"
+            "flag": "_met_dr_charcoal"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "失礼。逢縁くん、地元大会以来だね"
           },
@@ -191,12 +191,12 @@
             "text": "審査のあとも、ずっと記録してましたよね"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "片づけの手順まで、気になってね。今回も審査員をやるよ"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "会場なら交差点を渡って右。C.STATION柚ヶ谷店と同じビルだ"
           }
@@ -575,12 +575,12 @@
       ]
     },
     {
-      "dialogue_id": "ch2_city_rei",
+      "dialogue_id": "ch2_city_kuraudo",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "rei",
+          "char_id": "kuraudo",
           "next_true": "known",
           "next_false": "first"
         }
@@ -613,7 +613,7 @@
             "text": "こんにちは。こちら、シーシャのお店ですよね？"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "surprise",
             "text": "……あ"
           },
@@ -623,7 +623,7 @@
             "text": "振り向いた人の黒髪に、深い赤の筋が混じっていた。首に刺青が見える。"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……煙、平気か"
           },
@@ -633,16 +633,16 @@
             "text": "平気です。毎日、煙の中で働いてるので"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "そう。……店長の†黒羅雨℃†。クラウドでいい"
           },
           {
             "type": "set_flag",
-            "flag": "_met_rei"
+            "flag": "_met_kuraudo"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……今、店で流す曲を選んでた。開店の準備中なんだ"
           },
@@ -652,7 +652,7 @@
             "text": "tonariの逢縁です。県大会に出るので、まず、ご挨拶をと思って"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "serious",
             "text": "……tonari。スミさんの店か"
           },
@@ -662,7 +662,7 @@
             "text": "返事を待つ。少し離れた通りで、車のクラクションが鳴った。"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "俺も、出る"
           },
@@ -682,7 +682,7 @@
             "text": "その「イエス」って、ミックスの名前ですか？"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "ああ。カシスが軸"
           },
@@ -692,7 +692,7 @@
             "text": "カシス、扱い方で印象が変わりますよね"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "甘くするだけじゃない。残すところと、引くところがある"
           },
@@ -702,18 +702,18 @@
             "text": "さっきより、言葉が少し長くなった。視線も、一度こちらへ戻った。"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "いつか、吸ってから聞いてくれ"
           },
           {
             "type": "jump",
-            "next_id": "ch2_city_rei_farewell"
+            "next_id": "ch2_city_kuraudo_farewell"
           }
         ],
         "known": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "tonariの。街を見てるのか"
           },
@@ -723,7 +723,7 @@
             "text": "はい。少しだけ、店の中も見せてもらえますか？"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……まだ、準備中だけど。それでいいなら"
           }
@@ -731,7 +731,7 @@
       }
     },
     {
-      "dialogue_id": "ch2_city_rei_farewell",
+      "dialogue_id": "ch2_city_kuraudo_farewell",
       "lines": [
         {
           "speaker": "hajime",
@@ -875,8 +875,8 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ch2_city_visit_rei",
-          "next_true": "echo_rei",
+          "flag": "_ch2_city_visit_kuraudo",
+          "next_true": "echo_kuraudo",
           "next_false": ""
         },
         {
@@ -939,7 +939,7 @@
             "text": "神崎さんの低い声。握手の時、控えめだった手の力。"
           }
         ],
-        "echo_rei": [
+        "echo_kuraudo": [
           {
             "speaker": "",
             "face": "",
@@ -1122,7 +1122,7 @@
       ]
     },
     {
-      "dialogue_id": "ch2_city_rei_inside",
+      "dialogue_id": "ch2_city_kuraudo_inside",
       "lines": [
         {
           "speaker": "",
@@ -1130,7 +1130,7 @@
           "text": "ポスターを留め終えたクラウドが、扉を開けた。中は黒と深い赤で、奥の幕は閉じていた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "少しなら。まだ準備中だから"
         },
@@ -1140,7 +1140,7 @@
           "text": "ありがとうございます。……CDが、こんなに。全部クラウドさんのですか？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "持ってきたのは一部。好きな盤は、見える所に置きたい"
         },
@@ -1155,7 +1155,7 @@
           "text": "このギターも、お店で弾くんですか？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "小さいイベントで、たまに。何もない日は、曲の話くらいはできる"
         },
@@ -1165,7 +1165,7 @@
           "text": "あまり詳しくないんですけど、聴いてみたいです"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……最初なら、聴きやすいのから。今度、選んでおく"
         },
@@ -1180,12 +1180,12 @@
           "text": "席ごとに、ちゃんと明るいんですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "手元が見えないと、客も困るだろ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "次は、音を鳴らしてる時に来て。そのほうが、この店らしい"
         },
