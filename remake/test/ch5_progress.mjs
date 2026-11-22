@@ -4,6 +4,7 @@ import { newState } from "../js/core/state.js";
 import { selectStoryEnding } from "../js/core/story-routes.js";
 import { chapterDay, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 import { invitationVisitSpot, visitReminderSpot } from "../js/daily/invitations.js";
+import { exhibitionResultReason } from "../js/craft/tournament-result-reason.js";
 import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SCENES, CH5_MATCH_SCENES, CH5_AFTERMATH,
   CH5_ENDING_IDS, CH5_SCENE_FILES, CH5_GUEST_VISITS, canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
@@ -342,7 +343,12 @@ assert.equal(chapterFiveSecondCupVotes(100, true), chapterFiveSecondCupVotes(0))
 }
 
 // 二本目の完成後は票・結果を保存から読む。同数は勝ちにならず、敗北と同じ後日談へ進む。
-for (const [total, category, expected] of [[90, "steady", "win"], [76, "recovered", "tie"], [55, "offband", "loss"]]) {
+for (const [total, category, expected, reason] of [
+  [90, "steady", "win", "二台目の挙手で12票差をつけ、合計10票差で逆転した。"],
+  [76, "recovered", "tie", "二台目で2票差を返し、合計で並んだ。"],
+  [73, "offband", "loss", "二台目は同票。一台目の2票差が残った。"],
+  [55, "offband", "loss", "二台目で18票差がつき、合計で20票届かなかった。"],
+]) {
   const match = toBeforeSecond();
   assert.equal(recordChapterFiveSecondCup(match, { total, category }), true);
   const tally = chapterFiveVoteTally(match);
@@ -351,6 +357,7 @@ for (const [total, category, expected] of [[90, "steady", "win"], [76, "recovere
   assert.equal(tally.total.hajime, tally.first.hajime + tally.second.hajime);
   assert.equal(tally.total.machine, tally.first.machine + tally.second.machine);
   assert.equal(chapterFiveMatchOutcome(match), expected);
+  assert.equal(exhibitionResultReason(tally), reason);
   const result = expected === "win" ? [CH5_MATCH_SCENES.win, CH5_MATCH_SCENES.afterglow] : [CH5_MATCH_SCENES.loss];
   for (const id of result) assert.equal(completeChapterFiveScene(match, id), true);
   const resumed = JSON.parse(JSON.stringify(match));

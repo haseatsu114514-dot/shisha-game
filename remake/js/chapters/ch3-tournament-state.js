@@ -106,7 +106,7 @@ export function startAttempt(value, craft) {
     ^ Math.imul(p.attempts, 0x85ebca6b)) >>> 0;
   Object.assign(p, {
     rulesVersion: TOURNAMENT_RULES_VERSION, stage: "craft", step: 0, craft: copy(craft), rollback: null,
-    votes: initialVotes(), baseVotes: initialBaseVotes(CONTESTANTS), voted: 0, lastVotes: null, result: null, failure: null, defeatRead: false,
+    votes: initialVotes(), baseVotes: initialBaseVotes(CONTESTANTS), voted: 0, lastVotes: null, roundVotes: [], result: null, failure: null, defeatRead: false,
     tastingSeed: seed, tastingPlan: buildTastingPlan(seed),
   });
   value.phase = "tournament";
@@ -183,6 +183,7 @@ export function castVotes(p, round, performance, prefByJudge = null, carryP = 0)
     for (const [id, amount] of Object.entries(points)) p.votes[judge][id] += amount;
   }
   p.lastVotes = additions;
+  (p.roundVotes ||= [])[round] = additions;
   p.voted++;
   p.quality = quality;
   return true;

@@ -16767,6 +16767,23 @@ html:root[data-density="phone"] body:not(:root) .bench .bench-top > .btn { align
 @keyframes nc-stamp-in { from { opacity: 0; transform: translate(-50%, -50%) rotate(-10deg) scale(2.4); } }
 
 /* ---- 最終結果 */
+.tournament-result-reason,
+.ch2-contest:has(> .ch2-contest-board) > .tournament-result-reason {
+  color: #fff1d0;
+  font-size: max(24px, var(--phone-ctl, 24px));
+  font-weight: 800;
+  line-height: 1.35;
+}
+.tournament-heading > .tournament-result-reason { margin-top: 4px; }
+details.ch2-contest-reason { display: block; }
+details.ch2-contest-reason > summary, .tournament-result-details > summary {
+  color: #e8c27a;
+  cursor: pointer;
+  font-size: var(--tournament-phone-sub, 17px);
+  font-weight: 700;
+}
+details.ch2-contest-reason.ts-wait { visibility: hidden; }
+details.ch2-contest-reason[open] > summary, .tournament-result-details[open] > summary { margin-bottom: 6px; }
 .result-table { padding: 26px 44px 24px; display: grid; grid-template-rows: 128px minmax(0, 1fr) 54px; gap: 16px; align-items: stretch; justify-content: stretch; overflow: hidden; }
 .rt-rays { position: absolute; inset: 0; background: repeating-conic-gradient(from 0deg at 50% 0%, #f6c95e12 0 6deg, transparent 6deg 18deg); -webkit-mask: radial-gradient(ellipse 70% 80% at 50% 0%, #000 20%, transparent 70%); mask: radial-gradient(ellipse 70% 80% at 50% 0%, #000 20%, transparent 70%); animation: rays-breathe 3s ease-in-out infinite alternate; pointer-events: none; }
 .rt-confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 2; }
