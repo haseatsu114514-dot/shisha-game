@@ -54,6 +54,7 @@ const mocks = {
     return { id, visited: [id] };
   } },
   "../daily/calendar.js": { runDaily: async def => { options = def; } },
+  "../daily/night-events.js": { nightPlan: () => [] },
   "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000, isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn,
     CHAR_STAT: {}, VISIT_BG: {}, bgRef: x => x, setChapterVisitDue: () => {}, hasNewEvent: () => false, chapterTalkDue: id => sendOffs[id] || null },
   "../daily/hiyori.js": { setHiyoriExtraShops: () => {} },
@@ -84,7 +85,7 @@ const mocks = {
   "./ch2-craft-prep.js": { craftPrepDue: () => null, offerCraftPrep: async () => null },
   "./visit-chain-play.js": { chainVisitDue: async () => null, playChainStage: async () => false }, // 通いの続き（#3097）は visit_chains.mjs・ch2_story_visits.mjs
   // あげはの店に通う回は ch2_ageha_story.mjs で確認する。ここでは従来の chat/followup/repeat だけを見る
-  "./ch2-story-data.js": { agehaStoryScene: () => agehaStory, agehaLaterScene: () => agehaLater, AGEHA_BADDAY: { id: "remake_ch2_ageha_badday", fromDay: 7 }, AGEHA_LATER_SCENES, syncAgehaVibes: () => 0 },
+  "./ch2-story-data.js": { agehaStoryScene: () => agehaStory, agehaLaterScene: () => agehaLater, AGEHA_BADDAY: { id: "remake_ch2_ageha_badday", fromDay: 7 }, AGEHA_LATER_SCENES, chapterTwoDaySceneDue: () => null, syncAgehaVibes: () => 0 },
   // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
   "../core/growth.js": { consultLessons: async () => [] },
   // 第5章の柚ヶ谷の通い訪問（#2033）が小会話を読み込む。ここでは第2章の訪問だけを見る

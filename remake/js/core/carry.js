@@ -171,6 +171,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_followup_done", "progression"],
   ["_ch2_halloween_active", "progression"],
   ["_ch2_kumicho_public_reveal", "person"],
+  ["_ch2_last_yuzugaya_day", "progression"],
   ["_ch2_morning_departed", "progression"],
   ["_ch2_stay_local_since", "progression"],
   ["_ch2_naru_hurt", "person"],
