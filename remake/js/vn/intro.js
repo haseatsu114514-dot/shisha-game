@@ -184,9 +184,8 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
 function introSound(motion, cue) {
   if (cue === "reduced") return SE.select();
   if (motion === "bounce" && cue === "appear") { SE.select(); setTimeout(() => SE.select(), 120); }
-  if (cue !== "name") return;
-  if (motion === "sharp") SE.stamp();
-  else if (motion === "still") SE.hit();
+  if (motion === "sharp" && cue === "enter") SE.whoosh();
+  if (motion === "still" && cue === "name") SE.hit();
 }
 
 /** 一言が2行の時は400ms長く見せる */
