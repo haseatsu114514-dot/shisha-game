@@ -21,7 +21,7 @@ const mocks = {
   "core/audio.js": { SE: {} },
 };
 const modules = new Map();
-async function load(url) {
+function load(url) {
   if (modules.has(url.href)) return modules.get(url.href);
   const path = url.href.slice(root.href.length), values = mocks[path];
   // 同じ依存を並行リンクしても二重に状態モジュールを作らない。
@@ -29,9 +29,12 @@ async function load(url) {
   const mod = values ? new vm.SyntheticModule(Object.keys(values), function() {
     for (const [k,v] of Object.entries(values)) this.setExport(k,v);
   }, { context, identifier: url.href }) : new vm.SourceTextModule(source, { context, identifier: url.href });
-  modules.set(url.href,mod); await mod.link(s => load(new URL(s,url))); return mod;
+  modules.set(url.href, mod);
+  return mod;
 }
-const reelModule = await load(new URL("daily/reel.js", root)); await reelModule.evaluate();
+const reelModule = load(new URL("daily/reel.js", root));
+await reelModule.link((spec, referencing) => load(new URL(spec, referencing.identifier)));
+await reelModule.evaluate();
 const reel = reelModule.namespace;
 const core = modules.get(new URL("core/state.js",root).href).namespace;
 const stats = modules.get(new URL("core/stats.js",root).href).namespace;
