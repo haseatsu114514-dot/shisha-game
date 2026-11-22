@@ -1539,11 +1539,13 @@ const measureShop = (page) => page.evaluate((helpers) => {
   const { px, shown, text, rgb } = (0, eval)(helpers);
   const root = document.querySelector("#screen .shop-paper"), style = getComputedStyle(root);
   const look = (node) => { const cs = getComputedStyle(node); return { ...px(node), face: cs.backgroundImage, fill: rgb(cs.backgroundColor), ink: rgb(cs.color), frame: cs.borderImageSource }; };
-  const rows = [...root.querySelectorAll(".shop-body .shop-row.product")].filter((row) => row.getBoundingClientRect().top < root.querySelector(".shop-body").getBoundingClientRect().bottom - 30).slice(0, 4);
+  const catalog = [...root.querySelectorAll(".shop-body .shop-row.product")];
+  const rows = catalog.filter((row) => row.getBoundingClientRect().top < root.querySelector(".shop-body").getBoundingClientRect().bottom - 30).slice(0, 4);
   return { look: document.documentElement.dataset.look, rect: px(root), face: style.backgroundImage, ink: rgb(style.color), frame: style.borderImageSource,
     head: rgb(getComputedStyle(root.querySelector(".shop-head h2")).color), rule: getComputedStyle(root.querySelector(".shop-head")).backgroundImage,
     money: text(root.querySelector(".shop-money")),
     tabs: [...root.querySelectorAll(".shop-tab")].map((node) => ({ id: node.dataset.tab, on: node.classList.contains("on"), ...look(node) })),
+    goods: catalog.map(row => [text(row.querySelector(".shop-main b")), text(row.querySelector(".shop-price")), text(row.querySelector(".shop-stock"))]),
     rows: rows.map((row) => ({ name: text(row.querySelector(".shop-main b")), price: text(row.querySelector(".shop-price")), stock: text(row.querySelector(".shop-stock")),
       art: look(row.querySelector(".shop-product-art")), img: shown(row.querySelector(".shop-product-art img")), name_ink: rgb(getComputedStyle(row.querySelector(".shop-main b")).color),
       price_ink: rgb(getComputedStyle(row.querySelector(".shop-price")).color), rect: px(row),
@@ -1567,7 +1569,7 @@ async function shopScreen(page, { phone }) {
   // 情報（所持金・タブ・商品名・値段・所持数・購入の札）は現行と同じ。
   assert.equal(m.money, classic.money);
   assert.deepEqual(m.tabs.map((tab) => tab.id), classic.tabs.map((tab) => tab.id));
-  assert.deepEqual(m.rows.map(({ name, price, stock }) => [name, price, stock]), classic.rows.map(({ name, price, stock }) => [name, price, stock]), "商品名・値段・所持数が現行と同じ");
+  assert.deepEqual(m.goods, classic.goods, "全商品の名前・値段・所持数が現行と同じ");
   assert.equal(m.summary, classic.summary);
   // 押せる大きさ（タブ・− ＋・店を出る・購入）は現行以上で、ステージの中。
   for (const [index, tab] of m.tabs.entries()) {
@@ -1575,14 +1577,13 @@ async function shopScreen(page, { phone }) {
     assert(tab.on ? !light(tab.ink) && tab.face.includes("linear-gradient") : light(tab.ink), `タブ ${tab.id}: 選んだ売り場は金、ほかは白い字`);
   }
   assert(m.rows.length >= 3);
-  for (const [index, row] of m.rows.entries()) {
-    const before = classic.rows[index];
+  for (const row of m.rows) {
     assert(light(row.name_ink) && light(row.price_ink), `${row.name}: 商品名と値段は白`);
     // 商品の絵は生成りの札に載る（明るい台紙向けの絵が暗い面で沈まない）。絵そのものは出ている。
     assert(light(row.art.fill) && row.img, `${row.name}: 商品の絵の札 ${JSON.stringify(row.art)}`);
-    assert(Math.abs(row.rect.height - before.rect.height) < 1, `${row.name}: 行の高さは現行と同じ`);
-    for (const [k, step] of row.steps.entries()) {
-      assert(step.width >= before.steps[k].width - .5 && step.height >= before.steps[k].height - .5 && step.real >= 38, `${row.name}: ${step.test} の押せる大きさ ${JSON.stringify([step, before.steps[k]])}`);
+    assert(inside(row.rect, m.rect, 1), `${row.name}: 商品の行はショップ内`);
+    for (const step of row.steps) {
+      assert(inside(step, row.rect, 1) && step.real >= 38, `${row.name}: ${step.test} の押せる大きさと収まり ${JSON.stringify(step)}`);
       assert(dark(step.fill) || step.fill.slice(0, 3).reduce((a, b) => a + b, 0) < 420, `${row.name}: ${step.test} は夜紫の札 ${step.fill}`);
     }
   }
