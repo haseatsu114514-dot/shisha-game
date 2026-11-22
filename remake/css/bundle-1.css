@@ -14,12 +14,12 @@
    サブセットは従来と同じ字種（ゲーム内使用文字＋安全集合）に絞ってある。
    Noto Sans JP に無い ≒（U+2252）だけは Zen Kaku Gothic New の補完フェイスで受ける
    （範囲の正本は remake/fonts/supplement-ranges.txt、生成は remake/tools/build_font.py） */
-@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Medium.woff2") format("woff2"); font-weight: 100 599; font-display: block; }
-@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Bold.woff2") format("woff2"); font-weight: 600 900; font-display: block; }
-@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Supp-Medium.woff2") format("woff2"); font-weight: 100 599; font-display: block; unicode-range: U+2252; }
-@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Supp-Bold.woff2") format("woff2"); font-weight: 600 900; font-display: block; unicode-range: U+2252; }
+@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Medium.woff2?v=20261122") format("woff2"); font-weight: 100 599; font-display: block; }
+@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Bold.woff2?v=20261122") format("woff2"); font-weight: 600 900; font-display: block; }
+@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Supp-Medium.woff2?v=20261122") format("woff2"); font-weight: 100 599; font-display: block; unicode-range: U+2252; }
+@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Supp-Bold.woff2?v=20261122") format("woff2"); font-weight: 600 900; font-display: block; unicode-range: U+2252; }
 /* HUDの日付・時間帯などのドット書体（DotGothic16・SIL OFL）。廃止した予告のCSSから移した。 */
-@font-face { font-family: "Suien Dot"; src: url("../../assets/fonts/DotGothic16-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Suien Dot"; src: url("../../assets/fonts/DotGothic16-Regular.woff2?v=20261122") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
 
 :root {
   /* 日常パート: 閉店後のtonariの色（夜の藍・琥珀の灯り） */
@@ -10154,7 +10154,7 @@ body:not(:root) .vn-choices:has(> .vn-choice:nth-child(6)) > .vn-choice {
 
 /* ===== css/intro.css ===== */
 /* PR226で採用したイラスト背景・極太ゴシック・組版。未制作の人物は従来の紹介を使う。 */
-@font-face { font-family:"Intro Gothic"; src:url("../fonts/NotoSansJP-Intro.woff2") format("woff2"); font-weight:100 900; font-display:block; }
+@font-face { font-family:"Intro Gothic"; src:url("../fonts/NotoSansJP-Intro.woff2?v=20261122") format("woff2"); font-weight:100 900; font-display:block; }
 .cutin.art-intro { background:#101820; font-family:"Intro Gothic",var(--font); }
 .art-intro .ci-art-background { position:absolute; inset:0; width:1280px; height:720px; object-fit:cover; pointer-events:none; }
 .art-intro .ci-art-veil { position:absolute; inset:0; background:linear-gradient(90deg,var(--portrait-bg) 0%,var(--portrait-bg) 32%,color-mix(in srgb,var(--portrait-bg) 91%,transparent) 41%,color-mix(in srgb,var(--portrait-bg) 10%,transparent) 62%,transparent 68%),linear-gradient(0deg,#0d1420bf 0%,#0d142080 23%,transparent 43%); }
@@ -13294,7 +13294,7 @@ body:not(:root) .map .spot-pin.pin-station { width: auto; min-width: 112px; }
    大会中（data-mode="tournament"）は黒×ネオンの「スタイリッシュ職人バトル」。
    それ以外（練習・リハーサル・レッスン）は閉店後のtonariの暖色。
    ============================================================ */
-@font-face { font-family: "Craft Mincho"; src: url("../fonts/ZenOldMincho-Craft.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Craft Mincho"; src: url("../fonts/ZenOldMincho-Craft.woff2?v=20261122") format("woff2"); font-weight: 700; font-display: swap; }
 .bench {
   position: absolute;
   inset: 0;
