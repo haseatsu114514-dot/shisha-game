@@ -161,6 +161,8 @@ function checkRules(name, rows) {
     } });
   checkRules("第2章", rows);
   const all = rows.flat(), ids = all.map((m) => m.id);
+  const busyReplies = rows.filter(row => counted(row).filter(needsReply).length >= 2).length;
+  assert(busyReplies <= 5, `第2章: 返事のある連絡が重なる朝（${busyReplies}朝）`);
   // 旧: 13日で37通・3通の朝が12日続いた。新: 1日2通を超えない
   assert(counted(all).length <= 13 * LIME_PACING.softCap, `第2章: 13日で${counted(all).length}通`);
   assert.equal(longestRun(rows, (r) => counted(r).length >= 3), 0, "第2章: 3通の朝は無い");
