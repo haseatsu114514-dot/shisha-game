@@ -308,7 +308,7 @@ await suite('ch2-main', async check => {
   await check('missing-doctor-met-flag-still-remembers-chapter-one-judge', async page => {
     const before = await setup(page, { knownDoctor: false }); await begin(page);
     const text = await page.evaluate(async () => (await import('./js/vn/engine.js')).backlog().map(line => line.text).join('\n'));
-    assert(text.includes('地元大会以来だね'));
+    assert(text.includes('地元大会以来ですね'));
     assert(text.includes('審査のあとも'));
     assert(!text.includes('私はチャコール博士'));
     assert(!text.includes('どうして俺の名前を'));
