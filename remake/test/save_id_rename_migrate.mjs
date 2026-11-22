@@ -4,6 +4,8 @@
 // node --experimental-vm-modules remake/test/save_id_rename_migrate.mjs
 import assert from "node:assert/strict";
 import * as core from "../js/core/state.js";
+import { GALLERY_PROGRESS_KEY, readGalleryProgress } from "../js/core/gallery-progress.js";
+import { CYCLE_META_KEY, readCycleMeta } from "../js/core/cycle-meta.js";
 
 const files = new Map();
 globalThis.localStorage = {
@@ -144,6 +146,34 @@ function loadSave(save) {
 }
 
 
+
+// 11月5日版のIDは schema 26、または新しい版で一度セーブし直した枠にも残っている。
+for (const schema of [26, core.SCHEMA]) {
+  const old = {
+    schema, day: 3, met: { kuyuri: true, suhail: true }, affinity: { kuyuri: 42 }, story: { kuyuri: 5 },
+    contacts: ["kuyuri", "rio"], lovers: ["kuyuri"], owned: ["suyaki_kuyuri"], equip: { bowl: "suyaki_kuyuri" },
+    flags: { _kuyuri_sample: true }, romanceChoices: { bond_q1_kuyuri: { char: "kuyuri", value: 1, day: 2 } },
+  };
+  const s = loadSave(old);
+  assert.equal(s.affinity.rio, 42);
+  assert.equal(s.story.rio, 5);
+  assert.equal(s.met.faris, true);
+  assert.equal(s.flags._rio_sample, true);
+  assert(s.contacts.includes("rio") && !s.contacts.includes("kuyuri"));
+  assert.deepEqual(s.lovers, ["rio"]);
+  assert.deepEqual(s.owned, ["suyaki_rio"]);
+  assert.equal(s.equip.bowl, "suyaki_rio");
+  assert.equal(s.romanceChoices.bond_q1_rio.char, "rio");
+  const manual = core.SAVE_SLOTS[1].key;
+  files.set(manual, JSON.stringify({ ...old, affinity: { kuyuri: 42, rio: 50 } }));
+  assert.equal(core.loadFromSlot(manual).affinity.rio, 50, "新しいID側の数値を保持");
+}
+files.set(GALLERY_PROGRESS_KEY, JSON.stringify({ routeRecords: { kuyuri: { becameLover: true } } }));
+assert.equal(readGalleryProgress().routeRecords.rio.becameLover, true);
+files.set(CYCLE_META_KEY, JSON.stringify({ version: 1, carryPackage: {
+  fromCycleId: "cycle1", fromCycle: 1, data: { owned: ["suyaki_kuyuri"] },
+} }));
+assert.deepEqual(readCycleMeta().carryPackage.data.owned, ["suyaki_rio"]);
 
 // Current cast IDs are not another save migration. Physical art and item identifiers are independent.
 {

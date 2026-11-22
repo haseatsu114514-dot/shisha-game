@@ -246,6 +246,11 @@ def scan_file(path: Path, errors: list, warnings: list, *, current_names_only: b
                 errors.append(f"{rel}:{i}: {RENAMED_ROMAJI_FIX}")
             for term, fix in LEGACY_ERROR_CURRENT.items():
                 if term in line:
+                    # 保存済みのIDを読むための対応表だけは、正しい移行先への宣言を許す。
+                    if (rel.as_posix() == "remake/js/core/legacy-cast-save.js"
+                            and term in {"kuyuri", "suhail"}
+                            and line.strip() == f'{term}: "{fix.split()[0]}",'):
+                        continue
                     errors.append(f"{rel}:{i}: 旧名 '{term}' → {fix}")
 
         for term, fix in LEGACY_ERROR.items():

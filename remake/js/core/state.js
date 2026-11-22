@@ -2,6 +2,7 @@
 // 旧版と localStorage を共有しないよう、キーはリメイク専用。
 // 状態の形を変えたら SCHEMA を上げ、migrate() に1段足す（互換コードはここだけに置く）。
 
+import { parseCastSave } from "./legacy-cast-save.js";
 import { setPortraitStyleSource } from "./portrait-style.js";
 import { MAX_MONEY, TOURNAMENT_DAY, KUJI_TICKET_MAX } from "./rules.js";
 import { MASTERY_THRESHOLDS, RENAMED_MASTERY_KEYS, learnFlavorStory } from "./flavor-mastery.js";
@@ -245,6 +246,8 @@ function migrate(s) {
   const oldSchema = Number(s.schema) || 0;
   // 未来版は解釈・再保存せず、保存元とプレイ中の状態を保ったまま読込失敗にする。
   if (oldSchema > SCHEMA) return null;
+  // 既定値で補う前に判定する。計測開始前の保存には、プレイ時間と全期間を計った印が無い。
+  s.playMsFull = s.playMsFull === true && Number.isFinite(s.playMs) && s.playMs >= 0;
   // 欠落キーの補完は「キーが無い場合」だけを見るため、null や型の違う値が残ると
   // 後段の移行処理が例外で落ちる。新規の形と突き合わせ、型の合わない値は既定値へ戻す。
   // （解釈できる部分はそのまま進め、解釈できない部分だけを無効化する）
@@ -521,7 +524,6 @@ function migrate(s) {
   s.kujiTickets = Number.isInteger(s.kujiTickets) && s.kujiTickets > 0 ? Math.min(KUJI_TICKET_MAX, s.kujiTickets) : 0;
   // プレイ時間（#2902）。数え始める前の保存は 0 から数え、最初からの時間ではないことを残す。
   if (!Number.isFinite(s.playMs) || s.playMs < 0) s.playMs = 0;
-  if (s.playMsFull !== true) s.playMsFull = false;
   // schema27以前は初回の白火6を所持にだけ加算した。実際に渡した印がある保存だけ、
   // 所持・支払を動かさず累計へ一度だけ足す。すでに上限まで通常獲得した保存も没収しない。
   if (oldSchema < 28 && s.flags[STARTER_FLAG] === true && s.growth && typeof s.growth === "object"
@@ -601,7 +603,7 @@ function writeSave(target = state, { manualLoad = false, expectedRaw = autoBaseR
   try {
     const oldRaw = localStorage.getItem(SAVE_KEY);
     if (oldRaw && oldRaw !== lastComplementedAutosaveRaw) {
-      const oldSave = JSON.parse(oldRaw);
+      const oldSave = parseCastSave(oldRaw);
       if (oldSave && typeof oldSave === "object") recordGalleryProgress(oldSave);
       lastComplementedAutosaveRaw = oldRaw;
     }
@@ -642,7 +644,7 @@ export function save() {
 function parseSave(raw) {
   try {
     if (!raw) return null;
-    const s = JSON.parse(raw);
+    const s = parseCastSave(raw);
     return s && typeof s === "object" ? s : null;
   } catch {
     return null;

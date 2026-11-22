@@ -713,10 +713,25 @@ function paintedBox(node) {
 const KEEP_WORDS = ["上書き"];
 const keepWords = (html) => KEEP_WORDS.reduce((s, word) => s.replaceAll(word, [...word].join("\u2060")), html);
 
+/** 小窓の先頭と末尾で Tab を折り返す。途中の入力欄はブラウザの標準順序で移動する。 */
+function trapModalTab(event, box) {
+  const nodes = [...box.querySelectorAll("button, a[href], input, select, textarea, [tabindex], [contenteditable=true]")]
+    .filter(node => node.tabIndex >= 0 && !node.matches(":disabled") && !node.closest("[inert]")
+      && node.getClientRects().length && getComputedStyle(node).visibility === "visible");
+  const first = nodes[0], last = nodes.at(-1);
+  const active = document.activeElement;
+  if (!nodes.includes(active) || active === (event.shiftKey ? first : last)) {
+    event.preventDefault();
+    (event.shiftKey ? last : first)?.focus();
+  }
+}
+
 export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "" }) {
   return new Promise((resolve) => {
     const previousFocus = document.activeElement;
-    const box = el(`div.modal-box${className ? "." + className : ""}`, [
+    const box = el(`div.modal-box${className ? "." + className : ""}`, {
+      role: "dialog", "aria-modal": "true", ...(title ? { "aria-label": title } : {}),
+    }, [
       title ? el("h3", { text: title }) : null,
       typeof body === "string" ? el("div.modal-body", { html: keepWords(body) }) : el("div.modal-body", [body]),
       el("div.modal-actions", options.map((o) =>
@@ -737,7 +752,11 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
     const primary = buttons.find((button) => button.classList.contains("primary")) || buttons[0];
     const dismiss = [...buttons].reverse().find((button) => !button.classList.contains("primary")) || primary;
     const onKeyDown = (e) => {
-      if (!layers.modal.classList.contains("show") || e.repeat) return;
+      if (!box.isConnected || !layers.modal.classList.contains("show")) return;
+      // 設定からセーブの引っ越しを開いた場合は、一番上の小窓の中を巡る。
+      const top = layers.modal.lastElementChild;
+      if (e.key === "Tab") { trapModalTab(e, top); return; }
+      if (top !== box || e.repeat) return;
       if (e.key === "Escape") { e.preventDefault(); dismiss?.click(); }
       if (e.key === "Enter" && !e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]")) {
         e.preventDefault(); primary?.click();

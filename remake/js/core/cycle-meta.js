@@ -7,6 +7,7 @@
 // 初回のスタッフロールを流し終えたときと、スタッフロール済みの保存で出す完了カード（第五章・完）。
 // 後者は、この接続より前に見終えた保存の取りこぼしを拾い、スタッフロール後に盤を使った分を
 // その周回のパッケージへ反映する。
+import { parseCastSave } from "./legacy-cast-save.js";
 import { buildCarryPackage } from "./carry.js";
 import { recordRouteTrueEnd } from "./gallery-progress.js";
 
@@ -76,7 +77,7 @@ export function normalizeCycleMeta(value) {
 /** メタ層を読む。読み込みだけでは保存しない。壊れた保存でも例外にしない。 */
 export function readCycleMeta() {
   let value;
-  try { value = JSON.parse(localStorage.getItem(CYCLE_META_KEY) || "null"); } catch { /* 初回・保存不可 */ }
+  try { value = parseCastSave(localStorage.getItem(CYCLE_META_KEY) || "null"); } catch { /* 初回・保存不可 */ }
   return normalizeCycleMeta(value);
 }
 
