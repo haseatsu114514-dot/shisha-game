@@ -264,7 +264,7 @@
         {
           "speaker": "dr_charcoal",
           "face": "normal",
-          "text": "9000は、この手を休まずに出せます。眠れなかった日も、舌が遠い日も"
+          "text": "寝不足の日も、味が遠い日も、9000なら同じ手順で作れます"
         },
         {
           "speaker": "hajime",
@@ -313,7 +313,7 @@
         },
         {
           "speaker": "",
-          "text": "博士が止めた画面を、俺も伏せた。店の入口で、鈴が鳴った。",
+          "text": "店の入口で、鈴が鳴った。",
           "id": "ch5_counter_work"
         },
         {
@@ -366,12 +366,12 @@
         {
           "speaker": "dr_charcoal",
           "face": "normal",
-          "text": "私は、ただ待っていただけですが"
+          "text": "ああ、私のことはお気遣いなく"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。今は、お客さんなので"
+          "text": "博士もお客さんですから"
         },
         {
           "speaker": "",
@@ -380,7 +380,7 @@
         {
           "speaker": "dr_charcoal",
           "face": "normal",
-          "text": "失敗しなくて済む装置を、作っています。作れない日の職人ごと、救える装置を"
+          "text": "一台出すのが怖い日に、頼れる道具にしたいんです"
         },
         {
           "speaker": "hajime",
@@ -419,7 +419,7 @@
         {"type": "hide_cg"},
         {
           "speaker": "",
-          "text": "どちらが正しいかは決めないまま、椅子を戻した。日を決めるかどうかは、まだこれからだった。"
+          "text": "博士の向かいに座り直した。"
         }
       ],
       "branches": {
@@ -722,7 +722,7 @@
           "speaker": "dr_charcoal",
           "face": "serious",
           "beat": 800,
-          "text": "……二本の合計は、君です。おめでとうございます"
+          "text": "……君の勝ちです。おめでとうございます"
         },
         {
           "speaker": "dr_charcoal",
