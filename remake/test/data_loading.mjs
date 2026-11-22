@@ -113,7 +113,9 @@ assert.deepEqual(limeIds.slice(storyLimeStart, numberedLimeStart), [
 // L01〜L43 の増量分は番号順でひとまとまり。
 assert.deepEqual(limeIds.slice(numberedLimeStart, numberedLimeStart + 43), Array.from({ length: 43 }, (_, i) => `L${String(i + 1).padStart(2, "0")}`));
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
-assert.equal(all.DB.lime.length, 237); // 139 + 王煙楼8・アダム2・クラウド2（好感度キャラのLIMEをそろえる）+ 太陽6（RVE03）+ 王煙楼の大会後1（RVE07）+ スティーブ×綾取の後日1（#3468 C案）+ ヌールの帰国後の時差2 + ひよりの夢の話1（SPC11）+ 神崎・クラウドの♥3の外出の誘いと後日4（#3097） + サメちゃん・スミさん（鉄仮面さん）の第2章の後日2（#3097 PR-I） + 行き帰りの電車の小品の後日2（スミさん・つむぎ・#3097 PR-B） + 王煙楼の第5章の tonari への誘い1（#4010） + 綾取・スティーブ・ヴォルクの♥3の外出の誘いと後日6（#3097 PR-H） + 第2〜5章の雑談60（#3097）
+assert(limeIds.includes("lime_tsumugi_note_day5"));
+assert(limeIds.includes("lime_tsumugi_note_day10"));
+assert.equal(all.DB.lime.length, 239); // 139 + 王煙楼8・アダム2・クラウド2（好感度キャラのLIMEをそろえる）+ 太陽6（RVE03）+ 王煙楼の大会後1（RVE07）+ スティーブ×綾取の後日1（#3468 C案）+ ヌールの帰国後の時差2 + ひよりの夢の話1（SPC11）+ 神崎・クラウドの♥3の外出の誘いと後日4（#3097） + サメちゃん・スミさん（鉄仮面さん）の第2章の後日2（#3097 PR-I） + 行き帰りの電車の小品の後日2（スミさん・つむぎ・#3097 PR-B） + 王煙楼の第5章の tonari への誘い1（#4010） + 綾取・スティーブ・ヴォルクの♥3の外出の誘いと後日6（#3097 PR-H） + 第2〜5章の雑談60（#3097）
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
