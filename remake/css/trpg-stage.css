@@ -1127,7 +1127,7 @@
   }
   .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="rolling"] .trpg-die[data-throw="a"] .trpg-die-body { animation: trpg-spin-a 1s cubic-bezier(.25,.6,.3,1) both, trpg-d20-frames .42s steps(1, end) 2 both; }
   .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="rolling"] .trpg-die[data-throw="b"] .trpg-die-body { animation: trpg-spin-b 1.04s cubic-bezier(.25,.6,.3,1) .04s both, trpg-d20-frames .46s steps(1, end) .04s 2 both reverse; }
-  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-die.rethrown .trpg-die-body { animation: trpg-respin .82s cubic-bezier(.25,.6,.3,1) both, trpg-d20-reframes .82s steps(1, end) both; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage:not([data-shown="true"]) .trpg-die.rethrown .trpg-die-body { animation: trpg-respin .82s cubic-bezier(.25,.6,.3,1) both, trpg-d20-reframes .82s steps(1, end) both; }
   .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="rolling"] .trpg-die .trpg-d20-value { opacity: 0; }
 }
 @keyframes trpg-d20-frames {

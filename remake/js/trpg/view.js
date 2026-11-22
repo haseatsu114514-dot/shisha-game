@@ -160,6 +160,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const log = [];
   let frames = [], cursor = 0, afterTalk = null, afterFocus = null, busy = false, disposed = false, choiceField = null;
   let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false, searchTimer = null;
+  let activeRollShow = null;
   let pictureBook = null;
   // 演出（TRF08〜10）: 転生は1卓に一度（しおりから再開した卓は、もう物語の中）。場面の題の札は場面ごとに一度。
   let incarnated = resumed, staging = null, endingRevealed = false, campaignEnding = null, sceneFx = null, clueFx = null, clubGained = null;
@@ -1034,7 +1035,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (!overlay) return null;
     const special = result.special === "critical" || result.special === "fumble" ? result.special : "";
     const near = nearMissOf(result);
-    const show = playRollShow(overlay, {
+    activeRollShow = playRollShow(overlay, {
       title, who, rule: DICE.success + "以上で成功", dice: result.dice, thrown, bonus: result.bonus, bonusLabel: result.bonus === result.base && statName ? statName : "補正",
       total: result.total, goal: DICE.success, mixed: DICE.mixed, grade: result.grade, special: result.special || "",
       sound: kind => { if (!disposed) audio.play(kind); },
@@ -1046,10 +1047,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         audio.play(special || result.grade);
         if (special) stageFx(impact(root, special));
       },
-      onDone: () => { if (!disposed) onDone(); },
+      onDone: () => {
+        activeRollShow = null;
+        if (!disposed) onDone();
+      },
     });
-    if (show) stageFx(show);
-    return show;
+    return activeRollShow;
   }
   /** 判定の卓の題と、動く役（劇場の見出し）。仲間の切り札を使った判定は、そのカットインも。振り直せる時は、その知らせも。 */
   function showCopy(result) {
@@ -1241,12 +1244,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       modalCloser = null;
       pop.box.querySelectorAll("input,button").forEach(n => { n.disabled = true; });
       pop.box.focus({ preventScroll: true });
-      const thrown = [die(1, true), die(1, true)];
-      thrown.forEach((node, i) => { node.dataset.throw = "ab"[i]; });
-      body.querySelector(".trpg-dice-row").replaceChildren(...thrown, el("span.trpg-dice-bonus", { text: "＋" + result.bonus }));
       settleGuard = false;
       // 画面いっぱいの劇場で見せられる時は、卓の窓は結果が出るまで下で待つ（TRF29）。音は劇場が着地に合わせて鳴らす。
       if (rollShow(result, { ...showCopy(result), onDone: () => showRollResult(pop, body, null, true) })) return;
+      const thrown = [die(1, true), die(1, true)];
+      thrown.forEach((node, i) => { node.dataset.throw = "ab"[i]; });
+      body.querySelector(".trpg-dice-row").replaceChildren(...thrown, el("span.trpg-dice-bonus", { text: "＋" + result.bonus }));
       audio.play("roll");
       const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (!reduced) {
@@ -1734,6 +1737,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     disposed = true;
     entrance.cancel();
     pictureBook?.abort();
+    activeRollShow?.cancel();
+    activeRollShow = null;
     for (const effect of effects) effect.cancel();
     if (timer) clearTimeout(timer);
     clearTimeout(tipTimer); clearTimeout(searchTimer);
