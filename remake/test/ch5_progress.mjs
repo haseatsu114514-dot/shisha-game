@@ -462,7 +462,7 @@ for (const [total, category, expected] of [[90, "steady", "win"], [76, "recovere
   assert(/^合計は、9000です。/.test(texts(loss)[1]) && !texts(loss)[1].includes("減"), "A wide loss must not claim 9000 lost hands");
   assert(!texts(loss)[2].includes("減"), texts(loss)[2]);
   for (const id of [loss, lossClose, tie]) {
-    assert(texts(id).includes("あの人、今日は時間があるって言ってました"), id);
+    assert(texts(id).includes("二台目の前に話したお客さん、今日は時間があるって言ってました"), id);
     assert(!texts(id).some(text => /正解の味|誤差だと思っていた|おめでとう/.test(text)), `${id}: the doctor must not concede`);
     assert(!lines(id).some(line => line.face === "evil"), `${id}: no villain face`);
     assert(!lines(id).some(line => line.speaker === "hajime" && /^（/.test(line.text)), `${id}: no added monologue`);
@@ -742,7 +742,7 @@ for (const scenes of [
     "三ヶ月目に決めた名前は、もう書けなかった。あれは、俺ひとりの城の名前だった。",
     "店はもう、お前が回してる。俺が言うことも、だいぶ減ったな",
     "スミさん。tonariって、どうしてこの名前なんですか",
-    "客の隣に座れる店にしたかった、……それだけだ",
+    "客の隣に座れる店にしたかった……それだけだ",
     "tonariは任せた。お前の店の名前は、その先まで取っとけ"].map(at);
   assert(order.every((index, i) => index >= 0 && (i === 0 || index === order[i - 1] + 1)), `ending_normal order: ${order}`);
   assert.deepEqual(order.map(index => normal[index][0]), ["", "", "sumi", "hajime", "sumi", "sumi"]);
