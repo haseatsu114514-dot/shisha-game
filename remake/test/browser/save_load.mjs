@@ -1,6 +1,6 @@
 // Existing production save APIs and save/load UI; no gameplay source changes.
 import assert from "node:assert/strict";
-import { suite, assertFits, storageSnapshot } from "./support.mjs";
+import { suite, baseURL, assertFits, storageSnapshot } from "./support.mjs";
 
 async function prepare(page) {
   await page.evaluate(async () => {
@@ -34,6 +34,64 @@ async function prepare(page) {
 }
 
 await suite("save-load", async check => {
+  await check("published-update-resumes-autosave", async page => {
+    const entry = new URL(baseURL);
+    let latestBuild = "aaaaaaa";
+    await page.route(url => url.origin === entry.origin && url.pathname === entry.pathname, async route => {
+      const response = await route.fetch();
+      const build = new URL(route.request().url()).searchParams.get("v") || "aaaaaaa";
+      const body = (await response.text()).replace('content="dev" data-built', `content="${build}" data-built`);
+      await route.fulfill({ response, body });
+    });
+    await page.route("**/build.json?*", route => route.fulfill({ json: { build: latestBuild } }));
+    await page.reload();
+    await page.locator('[data-test="title-new"]').click();
+    await page.waitForFunction(() => document.body.dataset.screen !== "title" && !!localStorage.getItem("suien_remake_save"));
+    latestBuild = "bbbbbbb";
+    await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
+    const update = page.locator('[data-test="update-go"]');
+    await update.waitFor();
+    assert.match(await update.textContent(), /オートセーブから再開/);
+    await update.click();
+    await page.waitForURL(url => url.searchParams.get("v") === latestBuild);
+    await page.waitForFunction(() => !document.querySelector("#boot") &&
+      !!document.body.dataset.screen && document.body.dataset.screen !== "title" && window.__remake?.state?.day === 1);
+  }, { serviceWorkers: "block" });
+
+  await check("title-sees-autosave-from-another-tab", async page => {
+    const load = page.locator('[data-test="title-load"]');
+    assert(await load.isDisabled());
+    const writer = await page.context().newPage();
+    try {
+      await writer.goto(page.url());
+      await writer.locator('[data-test="title-new"]').waitFor();
+      const saved = await writer.evaluate(async () => {
+        const core = await import("./js/core/state.js");
+        Object.assign(core.newGame(), { day: 7, phase: "daily" });
+        core.save();
+        return localStorage.getItem(core.SAVE_SLOTS[0].key);
+      });
+      await page.locator('[data-test="title-load"]:enabled').waitFor();
+      assert.match(await load.innerText(), /DAY 7/);
+      await page.locator('[data-test="title-new"]').click();
+      await page.locator('[data-test="cancel-new"]').click();
+      assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), saved);
+
+      await page.locator('[data-test="title-new"]').click();
+      const newer = await writer.evaluate(async () => {
+        const core = await import("./js/core/state.js");
+        core.state.day = 8;
+        if (!core.save()) throw new Error("The other tab could not save DAY 8");
+        return localStorage.getItem(core.SAVE_SLOTS[0].key);
+      });
+      await page.locator('[data-test="confirm-new"]').click();
+      await page.getByText(/別のタブでオートセーブが更新されました/).waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), newer);
+    } finally {
+      await writer.close();
+    }
+  });
+
   await check("one-manual-slot-and-retired-data-survive-reopen", async page => {
     await prepare(page);
     const retired = await page.evaluate(async () => {
@@ -105,6 +163,17 @@ await suite("save-load", async check => {
     await button("slot-1").click();
     await button("confirm-load").click();
     await card("ドバイのあと").waitFor();
+    // 履歴キャッシュへの退避・復帰。退避時に終了した章のボタンを、再開した場面で再び使えること。
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: "domcontentloaded" }),
+      page.evaluate(() => {
+        window.dispatchEvent(new PageTransitionEvent("pagehide", { persisted: true }));
+        window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true }));
+      }),
+    ]);
+    await card("ドバイのあと").waitFor();
+    await button("ch5-menu").click();
+    await button("ch5-load").waitFor();
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
 
   await check("paper-landscape-cards-fit-and-remain-readable", async page => {

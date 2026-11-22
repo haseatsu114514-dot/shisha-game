@@ -115,6 +115,11 @@ await suite("save-transfer", async check => {
     await exportButton.click();
     const dialog = page.locator(".xfer-layer");
     await dialog.waitFor({ state: "visible" });
+    await page.locator('[data-test="export-close"]').focus();
+    await page.keyboard.press("Tab");
+    assert(await dialog.evaluate(node => node.contains(document.activeElement)));
+    await page.keyboard.press("Shift+Tab");
+    assert(await page.locator('[data-test="export-close"]').evaluate(node => node === document.activeElement));
     await page.evaluate(() => {
       window.exportEffects = { downloads: 0, copies: 0 };
       const click = HTMLAnchorElement.prototype.click;
@@ -137,6 +142,11 @@ await suite("save-transfer", async check => {
     await dialog.waitFor({ state: "detached" });
     assert(await page.locator('[data-test="save-transfer"]').isVisible());
     assert(await exportButton.evaluate(button => document.activeElement === button));
+    await page.locator('[data-test="cfg-close"]').focus();
+    await page.keyboard.press("Tab");
+    assert(await page.locator(".cfg-modal").evaluate(node => node.contains(document.activeElement)));
+    await page.keyboard.press("Shift+Tab");
+    assert(await page.locator('[data-test="cfg-close"]').evaluate(node => node === document.activeElement));
   });
 
   await check("retired-slots-are-ignored-on-transfer", async page => {

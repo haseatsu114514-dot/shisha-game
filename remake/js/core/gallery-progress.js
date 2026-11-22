@@ -1,4 +1,5 @@
 // コレクションの記録はセーブ枠と別。明示的なクリア・実際に受け取った写真だけを残す。
+import { parseCastSave } from "./legacy-cast-save.js";
 export const GALLERY_PROGRESS_KEY = "suien_remake_gallery_progress";
 export const PHOTO_KEEPSAKES = {
   minto_first_cheki: "cg_minto_first_cheki",
@@ -69,7 +70,7 @@ export function readGalleryProgress() {
   try { raw = localStorage.getItem(GALLERY_PROGRESS_KEY); } catch { /* 初回・保存不可 */ }
   if (progressCacheValue && progressCacheRaw === raw) return progressCacheValue;
   let value;
-  try { value = JSON.parse(raw || "null"); } catch { /* 初回・保存不可 */ }
+  try { value = parseCastSave(raw || "null"); } catch { /* 初回・保存不可 */ }
   const result = normalizeGalleryProgress(value);
   progressCacheRaw = raw;
   progressCacheValue = result;

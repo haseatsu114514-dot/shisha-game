@@ -82,6 +82,8 @@ for (const [name, key, load] of loaders) {
   assert.equal(loaded.day, 5);
   assert.equal(loaded.stats.technique, 25);
   assert.equal(loaded.reel.count, 3);
+  assert.equal(loaded.playMs, 0);
+  assert.equal(loaded.playMsFull, false, name + ": 計測開始前の時間は合計に含まれない");
 }
 
 console.log("corrupt save migrate: PASS (repro shape, null containers, type mismatches, graceful rejection, legacy compatibility)");

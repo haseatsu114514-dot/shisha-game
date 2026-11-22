@@ -1,6 +1,7 @@
 // セーブの書き出し／読み込みと、全画面・ホーム画面追加の案内（#2856）。
 // iOS のホーム画面アプリは Safari と保存領域が別なので、セーブを文字列／ファイルで持ち運べるようにする。
 // 各セーブ枠の生データは変えず、持ち出し用の外装で累積記録と一緒に包む。
+import { parseCastSave } from "../core/legacy-cast-save.js";
 import { el } from "../core/util.js";
 import { layers, toast } from "../core/ui.js";
 import { SAVE_SLOTS, readSlot, isLoadableSave } from "../core/state.js";
@@ -68,7 +69,7 @@ const fromBase64 = (b64) => new TextDecoder("utf-8", { fatal: true }).decode(Uin
 
 function readTransferSlot(raw) {
   try {
-    const s = JSON.parse(raw);
+    const s = parseCastSave(raw);
     return Number.isSafeInteger(s?.day) && s.day >= 1 && isLoadableSave(s) ? s : null;
   } catch { return null; }
 }
@@ -173,17 +174,22 @@ const HOME_HELP = [
   "ホーム画面版は Safari と保存場所が別なので、先にここで「書き出し」してから、ホーム画面版で「読み込み」してください。",
 ];
 
+// 同じハンドラを登録し、いま開いている設定のボタンだけを更新する。
+function syncFullscreenButton() {
+  const btn = document.querySelector('[data-test="fullscreen"]');
+  if (btn) btn.textContent = isFullscreen() ? "全画面を解除" : "全画面";
+}
+
 /** 全画面ボタン（対応端末）／ホーム画面追加の案内ボタン（iPhone）。出さない場面は null */
 export function fullscreenButton() {
   const kind = fullscreenEntry();
   if (!kind) return null;
   if (kind === "fullscreen") {
     const btn = el("button.btn.small.xfer-btn", { type: "button", text: isFullscreen() ? "全画面を解除" : "全画面", dataset: { test: "fullscreen" },
-      onclick: async () => { await toggleFullscreen(); sync(); } });
+      onclick: async () => { await toggleFullscreen(); syncFullscreenButton(); } });
     // Esc 等でボタン以外から全画面が切り替わっても、表示名を実状態へ追随させる
-    const sync = () => { btn.textContent = isFullscreen() ? "全画面を解除" : "全画面"; };
-    document.addEventListener("fullscreenchange", sync);
-    document.addEventListener("webkitfullscreenchange", sync);
+    document.addEventListener("fullscreenchange", syncFullscreenButton);
+    document.addEventListener("webkitfullscreenchange", syncFullscreenButton);
     return btn;
   }
   return el("button.btn.small.xfer-btn", { type: "button", text: "全画面で遊ぶには", dataset: { test: "a2hs-help" },

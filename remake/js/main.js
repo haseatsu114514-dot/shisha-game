@@ -9,7 +9,7 @@ import { initIchidaiSwitch } from "./daily/ichidai-table.js";
 import { loadAll, loadDeferredDialogues, DB, bgUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
-import { loadConfig, saveConfig, state, load, peekSave, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
+import { loadConfig, saveConfig, state, load, peekSave, consumeResumeOnBoot, requestResumeOnBoot, tickPlayTime } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
 import { initLook, migrateLook, normalizeLook } from "./core/look.js";
@@ -40,6 +40,13 @@ try { const q = new URLSearchParams(location.search).get("debug"); if (q !== nul
 /** 廃止したDS風表示の選択（"normal"/"ds"）を保存していたキー。起動時に消す。 */
 export const LEGACY_TITLE_LAYOUT_KEY = "suien_title_layout";
 
+export function resumeAfterUpdate({ request = false } = {}) {
+  const canResume = state && document.body.dataset.screen !== "title" &&
+    new URLSearchParams(location.search).get("trial") !== "trpg" && !!peekSave()?.day;
+  if (canResume && request) requestResumeOnBoot();
+  return !!canResume;
+}
+
 export async function boot() {
   initStageFit($("#stage")); // 画面の当て方は共通部品（core/stage-fit.js・#3076）
   installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
@@ -69,6 +76,13 @@ export async function boot() {
   window.addEventListener("pointerdown", unlockAudio);
   window.addEventListener("keydown", unlockAudio);
   document.addEventListener("visibilitychange", tickPlayTime); // タブが隠れている間はプレイ時間を数えない（#2902）
+  // 第3〜5章は離脱時に操作を取り消す。履歴から復元されたら、最後に保存した場面から再開する。
+  window.addEventListener("pageshow", event => {
+    if (event.persisted && state?.chapter >= 3 && state.chapter <= 5 && document.body.dataset.screen !== "title") {
+      requestResumeOnBoot();
+      location.reload();
+    }
+  });
 
   // 起動の待ち時間も、ゲーム内と同じ共通ロード画面（背景イラスト案B・ロゴ・発光ゲージ）で見せる。
   // 静的な #boot はモジュール読込前と起動失敗時の受け皿として残し、ゲートが閉じた後に役目を終える。

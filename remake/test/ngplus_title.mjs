@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import * as legacyCastSave from "../js/core/legacy-cast-save.js";
 import * as craftVersion from "../js/core/craft-version.js";
 
 const read = (path) => fs.readFile(new URL(path, import.meta.url), "utf8");
@@ -98,6 +99,7 @@ function makeFixture(opts = {}) {
   const el = makeEl();
   const difficultyForRun = function difficultyForRun() { return 0; };
   const modules = {
+    "../core/legacy-cast-save.js": legacyCastSave,
     "../core/util.js": { el },
     "../core/img-file.js": { imgFileUrl: (p) => `/img/${p}` },
     "../core/data.js": { DB: { manifest: {}, gallery: [] }, bgUrl: (id) => `bg:${id}` },
