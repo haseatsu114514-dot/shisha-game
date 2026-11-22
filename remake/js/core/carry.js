@@ -295,6 +295,8 @@ export const FLAG_EXACT_RULES = [
   ["_camel_name_done", "progression"], // ハビーバの名前の由来（ミニゲームのドラマ・SPC26）
   ["_camel_master_done", "progression"], // 上級を勝ち切った日の房飾り（SPC26）
   ["_camel_stable_turn", "progression"], // ラクダレース場の待ち時間の場面を読んだ本数（#3097 計画 4-6・ch4-camel-progress.js）。周回では持ち越さない
+  ["_club_yoru_first_done", "person"], // クラブSEAMで針間ヨルと初対面の会話を読み終えた
+  ["_club_yoru_a_talk", "progression"], // DJで初めてA以上を出した後のヨルとの会話を読み終えた
   ["_club_yoru_request", "progression"], // クラブSEAMの常連のリクエスト（SPC26）
   ["_club_yoru_last_set", "progression"], // 閉店前にヨルと交代で回す夜（SPC26）
   ["_ch4_morning_done", "progression"], // 大会当日の朝を読み終えた（ch4-morning.js・SPC28）。周回では持ち越さない
@@ -306,6 +308,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
   ["_ch4_home_calls", "progression"], // ドバイの昼に宿で休んだ時に読んだ地元からの電話（ch4-dubai-local.js の HOME_DAY_CALLS・#3097 第2弾）
+  ["_ch4_inn_trial", "progression"], // ドバイの宿での試作結果・講評の読了・実施日（ch4-dubai-daily.js）
   ["_visit_chains", "progression"], // 通いの続きの小さな出来事（第3〜5章・段の既読と選んだ答え。chapters/visit-chains.js）。周回では持ち越さない
   ["_ch4_dubai_nights", "progression"], // ドバイの夜がにぎわう店に夜に行った回数（店ごと・ch4-dubai-local.js）。周回では持ち越さない
   ["_ch4_longlong", "progression"], // 龍龍水煙所のドバイの店の段階の既読・通いの回数（ch4-longlong.js）
@@ -313,6 +316,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_evening", "progression"],
   ["_ch4_prep", "progression"],
   ["_ch4_preview_seen", "progression"],
+  ["_ch4_rehearsal", "progression"], // 大会前日リハーサルの結果と講評の読了（ch4-dubai-daily.js）
   ["_ch4_sheikh_revealed", "progression"],
   ["_overseas_companion", "progression"],
   ["_ch4_strategy", "progression"],
@@ -321,9 +325,14 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_match_scheduled", "progression"],
   ["_ch5_match_started", "progression"],
   ["_ch5_region_started", "progression"],
+  ["_ch5_staff_roll_done", "progression"],
   ["_ch5_sumi_trial", "progression"], // 第5章の決戦前の実制作練習（閉店後にスミさんが吸う一台・#2020 F。chapters/ch5-sumi-trial.js）。周回では作り直す
   ["_ch5_tokyo_attic", "progression"],
+  ["_ch5_tokyo_van", "progression"], // 初回の東京行き配送便に乗せてもらう会話を読み終えた（ch5-tokyo.js）
   ["_ch5_dubai_letter", "progression"],
+  ["_ch5_dubai_letters", "progression"], // 読んだドバイ招待状の通数（ch5-travel.js）
+  ["_ch5_dubai_ticket", "progression"], // 招待状に同封された往復切符の所持（ch5-travel.js）
+  ["_ch5_dubai_back_day", "progression"], // ドバイから帰国した通算日（ch5-travel.js）
   ["_ch5_dubai_guest", "progression"],
   ["_ch5_dubai_talks", "progression"],
   ["_ch5_dubai_flights", "progression"],
@@ -344,6 +353,9 @@ export const FLAG_EXACT_RULES = [
   ["_cheat_go", "progression"],
   ["_cinema_visit", "progression"],
   ["_city_guest_day", "progression"],
+  ["_coal_cube_learned", "unlock"], // キューブ炭の授業（M-W1）
+  ["_coal_four_unlocked", "unlock"], // 炭の4点置き（M-W2）
+  ["_coal_mix_unlocked", "unlock"], // フラット炭とキューブ炭の混ぜ置き（M-W2）
   ["_cold_pending", "pending"],
   ["_confession_due", "pending"],
   ["_confession_go", "person"],
@@ -365,13 +377,20 @@ export const FLAG_EXACT_RULES = [
   ["_delivery_schedule_v2", "progression"],
   ["_elapsed_calendar", "progression"],
   ["_errand_lemon_expensed", "progression"],
+  ["_errand_mint_expensed", "progression"], // 買い出しで店の経費を使ったかを記録する旧既定キー（daily/shop.js）
+  ["_errand_naru_visited", "progression"],
   ["_errand_scout_done", "progression"],
+  ["_errand_scout_told", "progression"],
   ["_errand_shop_done", "progression"],
+  ["_errand_shop_told", "progression"],
+  ["_lemon_gift_read", "progression"], // 第1章初日のレモン贈答の場面を読み終えた（daily/calendar.js）
   ["_ev_ageha_cameo", "person"],
   ["_ev_baito_regular_02", "progression"],
   ["_ev_day5", "progression"],
   ["_ev_first_practice", "progression"],
   ["_ev_last_night", "progression"],
+  ["_ev_meet_rivals", "progression"],
+  ["_ev_midcheck", "progression"],
   ["_ev_uezono_cameo", "person"],
   ["_ev_rehearsal", "progression"],
   ["_ev_kuraudo_cameo", "person"],
@@ -379,6 +398,7 @@ export const FLAG_EXACT_RULES = [
   ["_ev_reviewer_payoff", "progression"],
   ["_ev_rio_monitor", "person"],
   ["_ev_salaryman", "progression"],
+  ["_ev_salaryman_change", "progression"],
   ["_ev_tsumugi_sketch", "person"],
   ["_eve_slept", "progression"], // #2088 前夜の早寝（その夜の告白を後回し）
   ["_fit_since", "progression"],
@@ -472,6 +492,9 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_steve", "person"],
   ["_lime_contact_tsumugi", "person"],
   ["_lime_contact_volk", "person"],
+  ["_hint_invite", "ui"], // LIMEの誘いの初回案内（daily/phone.js）
+  ["_hint_mukai_baito", "ui"], // LIMEのmukaiのシフトの初回案内（daily/phone.js）
+  ["_hint_sumi_baito", "ui"], // LIMEのスミさんのシフトの初回案内（daily/phone.js）
   ["_lime_opened", "ui"],
   ["_lime_tut", "ui"],
   ["_lotos_vent_hint", "ui"],
@@ -626,6 +649,7 @@ export const FLAG_EXACT_RULES = [
   ["_stk_title_customer_half", "progression"],
   ["_stk_title_customer_met", "progression"],
   ["_story_shuraba_unresolved", "pending"],
+  ["_sumi_attack_learned", "unlock"], // 蒸らし中に雑念を斬るアタックの授業（M-S1）
   ["_sumi_double_apple_received", "person"],
   ["_sumi_rig_home_seen", "progression"],
   ["_sumi_rig_received_day", "progression"],
