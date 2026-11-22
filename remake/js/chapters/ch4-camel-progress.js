@@ -148,9 +148,9 @@ export function camelRaceDestination(value) {
   }
   if (camel.stage === CAMEL_STAGES.met) {
     const ready = camel.meetDay === null || day > camel.meetDay;
-    return { ...base, label: "Dr.fookah ドバイ店で、ファーリスとまた話す", description: "昼に見せたいものがあると言っていた。", consumes: false,
+    return { ...base, label: "Dr.fookah ドバイ店で、ファーリスとまた話す", description: "朝に見せたいものがあると言っていた。", consumes: false,
       ok: ready, why: ready ? "" : "今日はもう話した。また明日、店に顔を出そう",
-      purpose: ready ? "「昼に見せたいもの」の続きを聞く。時間は使わない。" : "今日はもう話した。また明日、店に顔を出そう。" };
+      purpose: ready ? "「朝に見せたいもの」の続きを聞く。時間は使わない。" : "今日はもう話した。また明日、店に顔を出そう。" };
   }
   const track = { ...base, background: CAMEL_TRACK_BG, consumes: true };
   if (camel.stage === CAMEL_STAGES.invited) {
