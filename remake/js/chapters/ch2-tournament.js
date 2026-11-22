@@ -1,4 +1,4 @@
-import { guardCompletionCardInput } from "./completion-card-input.js";
+import { guardCompletionCardInput, trackCompletionTaps } from "./completion-card-input.js";
 import { ROOMS } from "./ch2-city-data.js";
 import { playEntrance } from "./tournament-entrance.js";
 import { defeatFade } from "../core/transitions.js";
@@ -99,7 +99,7 @@ function card(owner, name, title, description, actions = [], extra = []) {
     el("p.ch2-contest-description", { text: description }), ...extra,
     el("div.ch2-contest-actions", actions),
   ]);
-  return showScreen("ch2-tournament", name === "complete" ? guardCompletionCardInput(panel) : panel);
+  return showScreen("ch2-tournament", name === "complete" ? guardCompletionCardInput(panel, owner.completionTaps) : panel);
 }
 async function read(owner, name) {
   if (!live(owner)) return false;
@@ -108,7 +108,9 @@ async function read(owner, name) {
   showScreen("none", null); hud(owner, true);
   const controller = new AbortController(); owner.controller = controller;
   const script = name === "stations" ? strawberryTournamentMemory(DB.dialogues[key], state) : key;
-  const result = await play(script, { signal: controller.signal });
+  const taps = name === "ageha_heart" ? trackCompletionTaps() : null;
+  const result = await play(script, { signal: controller.signal, onAdvanceInput: taps?.record });
+  if (result && !result.cancelled) owner.completionTaps = taps;
   if (owner.controller === controller) owner.controller = null;
   return live(owner) && !!result && !result.cancelled;
 }
