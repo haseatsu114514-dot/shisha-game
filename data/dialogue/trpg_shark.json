@@ -3488,6 +3488,30 @@
     "twistIdle": "暗闇じゃ。手を選んで、誰が動くか決めるのじゃ",
     "planTitle": "みんなの脱出プラン"
   },
+  "pictureBook": {
+    "pages": [
+      {
+        "image": "../../img/ui/trpg/picturebook/shark-last-order/01.webp",
+        "alt": "沖から見たベルカの岸辺。遠くに小さな灯りが並ぶ",
+        "text": "ベルカ沖。岸までは、三百メートル。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/shark-last-order/02.webp",
+        "alt": "海に浮かぶラウンジ「夜凪」と、そこに延びる桟橋",
+        "text": "海に浮かぶラウンジ「夜凪」。桟橋が軋む。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/shark-last-order/03.webp",
+        "alt": "帳簿を開いたカウンターのそばで、店番が床を拭いている",
+        "text": "閉店の曲が鳴り、店番は濡れた床を拭いている。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/shark-last-order/04.webp",
+        "alt": "電飾の下がった窓の向こうを、サメの背びれが横切る",
+        "text": "曲が二番に入ったところで、窓の向こうを背びれが横切った。"
+      }
+    ]
+  },
   "intro": "trpg_shark_intro",
   "listen": "trpg_shark_listen",
   "checks": {
