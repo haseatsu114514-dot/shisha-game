@@ -6,7 +6,7 @@
   "author": "汐見しお",
   "collection": "常連卓 01",
   "duration": "約10分",
-  "premise": "閉店前の喫煙茶房。旅人は『世界一普通の一台を』と頼んだ。レシピ帳に、その名前はない。店番たちは、何を用意するだろう。 サイの店の常連たちと、気軽に遊ぶ一冊。",
+  "premise": "港町の閉店まぎわ、旅人がシーシャを頼んだ。「世界一普通の一台を」。メニューにない注文を、あなたならどう受ける？",
   "fiction": {
     "town": "港町ノーラ",
     "shop": "波止場の灯",
@@ -16,14 +16,14 @@
     {
       "id": "sai",
       "part": "GM",
-      "role": "案内と、旅人オル",
+      "role": "旅人オル、漁師の親方など",
       "color": "#dab978",
       "costumeRole": "oru"
     },
     {
       "id": "hajime",
       "part": "PLAYER",
-      "role": "{pc}／見習い店番",
+      "role": "{pc}／茶房の店番",
       "color": "#89bbc4",
       "ability": "ひらめき",
       "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
@@ -45,7 +45,7 @@
       "part": "PLAYER",
       "role": "{pc:regulara}／香りの案内役",
       "color": "#c8a375",
-      "ability": "舞台の支度",
+      "ability": "香りの仕込み",
       "abilityText": "一台を準備するとき、判定に一度だけ＋7",
       "abilityType": "prepare",
       "sheet": {
@@ -88,7 +88,7 @@
   "checks": {
     "listen": {
       "title": "旅人の言葉を待つ",
-      "hint": "宣言した店番の能力で判定。結果にかかわらず、店内の探索へ進みます。",
+      "hint": "選んだ行動で判定します。成功すると、オルにもう一つ質問できます。",
       "success": "trpg_regular_harbor_listen_success",
       "mixed": "trpg_regular_harbor_listen_mixed",
       "trouble": "trpg_regular_harbor_listen_trouble",
@@ -99,7 +99,7 @@
           "sheet": "hajime",
           "stat": "talk",
           "label": "向かいに座って、話しかける",
-          "detail": "{pc}が旅人の正面へ。ひと言ずつ、ゆっくり聞く",
+          "detail": "{pc}が旅人の向かいに座って、旅のことを聞く",
           "declare": "trpg_regular_harbor_declare_listen_talk"
         },
         {
@@ -124,7 +124,7 @@
     },
     "prepare": {
       "title": "選んだ香りを、一台にする",
-      "hint": "宣言した店番の能力で判定。香りと席の準備を、一台にします。",
+      "hint": "香りと席が決まったら、提供の支度をします。",
       "success": "trpg_regular_harbor_prepare_success",
       "mixed": "trpg_regular_harbor_prepare_mixed",
       "trouble": "trpg_regular_harbor_prepare_trouble",
@@ -172,8 +172,8 @@
           "actor": "hajime",
           "sheet": "hajime",
           "stat": "talk",
-          "label": "席へ案内して、声をかける",
-          "detail": "{pc}が選んだ言葉を、自分の声で添える",
+          "label": "椅子を引き、旅人を案内する",
+          "detail": "{pc}が旅人を席まで案内し、選んだ言葉を添える",
           "declare": "trpg_regular_harbor_declare_serve_word"
         },
         {
@@ -181,8 +181,8 @@
           "actor": "regularb",
           "sheet": "regularb",
           "stat": "nerve",
-          "label": "黙って、絵を一枚添える",
-          "detail": "{pc:regularb}が言葉の代わりに、港の小さなスケッチを",
+          "label": "港のスケッチを添える",
+          "detail": "{pc:regularb}が港のスケッチを一台に添える",
           "declare": "trpg_regular_harbor_declare_serve_sketch"
         },
         {
@@ -190,8 +190,8 @@
           "actor": "regulara",
           "sheet": "regulara",
           "stat": "talk",
-          "label": "一台の説明をして、下がる",
-          "detail": "{pc:regulara}が香りの話を少しだけ。あとは任せる",
+          "label": "香りをひとこと説明する",
+          "detail": "{pc:regulara}が旅人に選んだ香りを伝える",
           "declare": "trpg_regular_harbor_declare_serve_host"
         }
       ]
@@ -374,13 +374,13 @@
       {
         "id": "mix",
         "label": "旅人と漁師を引き合わせる",
-        "description": "せっかくの縁。同じ卓で話してもらう。",
+        "description": "オルに漁師たちを紹介して、話すきっかけを作る。",
         "response": "trpg_regular_harbor_choice_tactic_mix"
       },
       {
         "id": "dim",
         "label": "灯りを落として、静かに",
-        "description": "店の灯りを一段落とし、夜の店にする。",
+        "description": "灯りを落として、親方たちに声を抑えてもらう。",
         "response": "trpg_regular_harbor_choice_tactic_dim"
       }
     ]
@@ -451,8 +451,8 @@
           "lines": "trpg_regular_harbor_ask_quiet_today"
         },
         "shop": {
-          "title": "灯りが静かだった",
-          "text": "外から見て、灯りが静かな店だと思ったから入った。",
+          "title": "窓辺の明かり",
+          "text": "外から見た店の窓辺が、静かそうだった。",
           "lines": "trpg_regular_harbor_ask_quiet_shop"
         }
       }
@@ -486,12 +486,12 @@
         },
         "bag": {
           "title": "帰る前の寄り道",
-          "text": "荷札は帰りの便。旅人は『帰る前に、いつもの時間を思い出したくて』と言った。",
+          "text": "荷札の裏に翌朝の船の切符。オルは、帰る前にいつもの時間を思い出したいと言った。",
           "lines": "trpg_regular_harbor_home_bag"
         },
         "counter": {
           "title": "昔のメニュー",
-          "text": "棚のそばには古いメニューが残る。旅人は思い出話ができそうな席を見ている。",
+          "text": "オルは棚のそばの古いメニューを指して、いつごろのものか聞いた。",
           "lines": "trpg_regular_harbor_home_counter"
         },
         "cup": {
@@ -501,7 +501,7 @@
         },
         "notebook": {
           "title": "いつもの理由",
-          "text": "ノートに『何を好きかに加え、なぜ戻ってくるかも聞いてみる』とある。",
+          "text": "ノートに『毎週紅茶を頼む人。昔の店で飲んだ味だそうだ』とある。",
           "lines": "trpg_regular_harbor_home_notebook"
         }
       },
@@ -557,7 +557,7 @@
         },
         "bag": {
           "title": "一日ぶりの会話",
-          "text": "荷札の道は、人の少ない道。旅人は『最後に話したのは、朝だったかな』と言う。",
+          "text": "出発地は山の向こうの宿場。オルが最後に誰かと話したのは、朝だった。",
           "lines": "trpg_regular_harbor_company_bag"
         },
         "counter": {
@@ -567,12 +567,12 @@
         },
         "cup": {
           "title": "おすすめを聞く",
-          "text": "旅人は飲み物も店番に尋ねた。味を知るまでの会話も楽しんでいる。",
+          "text": "オルは店番のおすすめを頼むと、今度はその作り方を尋ねた。",
           "lines": "trpg_regular_harbor_company_cup"
         },
         "notebook": {
-          "title": "一台が話の入口",
-          "text": "ノートに『隣に座って、一台を話の入口にした日』という記録がある。",
+          "title": "隣り合った客の話",
+          "text": "ノートに『隣の客と意気投合。最後まで二人で話していた』とある。",
           "lines": "trpg_regular_harbor_company_notebook"
         }
       },
@@ -603,22 +603,22 @@
   "endings": {
     "rain": {
       "title": "雨音のある一台",
-      "line": "普通とは、何も求められずに過ごせる時間だった。",
+      "line": "オルは雨の音を聞きながら、ようやくひと息ついた。",
       "dialogue": "trpg_regular_harbor_ending_rain"
     },
     "home": {
       "title": "帰り道の一台",
-      "line": "普通とは、旅先で思い出した、いつもの時間だった。",
+      "line": "一台の香りで、オルは実家の台所を思い出した。",
       "dialogue": "trpg_regular_harbor_ending_home"
     },
     "company": {
       "title": "話の始まる一台",
-      "line": "普通とは、誰かに今日のことを話せる時間だった。",
+      "line": "オルの鳥の話で、閉店を待つ茶房に笑い声が上がった。",
       "dialogue": "trpg_regular_harbor_ending_company"
     },
     "discovery": {
       "title": "一緒に見つけた一台",
-      "line": "用意したものをきっかけに、二人で普通を探し始めた。",
+      "line": "片づけの手を止めた店番たちは、オルが話し終えるまで待った。",
       "dialogue": "trpg_regular_harbor_ending_discovery"
     }
   },
@@ -634,7 +634,7 @@
           "speaker": "sai",
           "role": "",
           "face": "normal",
-          "text": "今夜は、この店の常連さんたちと港町の物語を遊びましょう"
+          "text": "今夜の舞台は港町です。閉店まぎわの店に、一台を頼む人がやってきます"
         },
         {
           "speaker": "hajime",
@@ -646,7 +646,7 @@
           "speaker": "sai",
           "role": "",
           "face": "normal",
-          "text": "ええ、シーシャです。私はGMとして、お客さんも演じます",
+          "text": "ええ。お客さん役は私がやります。店番は皆さんにお任せしますね",
           "castIntro": true,
           "smallTableText": "私がGMを務めます。空いた役もお手伝いしますね"
         },
@@ -666,7 +666,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc}はカウンターで、最後のカップを拭いている"
+          "text": "{pc}はカウンターで、洗い終えたカップを拭いている"
         },
         {
           "speaker": "sai",
@@ -694,7 +694,7 @@
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "……まだ、いいかな。世界一普通の一台を、お願いしたい"
         },
@@ -708,7 +708,7 @@
           "speaker": "hajime",
           "role": "",
           "face": "normal",
-          "text": "メニューに「普通」の欄があれば早いのに。まずは聞いてみよう"
+          "text": "「普通」で頼まれたら困るなあ。何が好きか、聞いてみよう"
         }
       ]
     },
@@ -726,18 +726,18 @@
         },
         {
           "speaker": "regulara",
-          "text": "メニューにないなら、本人が一番の手がかりだね",
+          "text": "この店、メニューを開いても「普通」なんて書いてないな",
           "face": "normal"
         },
         {
           "speaker": "hajime",
-          "role": "{pc}",
-          "text": "外は冷えたでしょう。よければ、旅のお話を聞かせてください",
+          "role": "{pc}／物語",
+          "text": "お入りください。外、冷えたでしょう",
           "face": "normal"
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "ありがとう、……何から話そうかな"
         }
@@ -756,13 +756,14 @@
         },
         {
           "speaker": "regulara",
-          "text": "香りに迷ったら、オルさんが何を話したか思い出そう",
+          "text": "じゃあ、棚の瓶を見てくるよ。何にしようか",
           "face": "normal"
         },
         {
           "speaker": "regularb",
-          "text": "席なら、どこを見ていたか。手がかりはメモにありますよ",
-          "face": "normal"
+          "text": "椅子なら片づけました。オルさんにはどの席がいいですかね？",
+          "face": "normal",
+          "role": "PL／卓の会話"
         }
       ]
     },
@@ -775,18 +776,20 @@
         {
           "speaker": "sai",
           "role": "GM／場面",
-          "text": "一台の準備ができた。店の客も減り、雨音が少し近く聞こえる",
+          "text": "一台の支度が整った。オルがカウンターの向こうをのぞき込む",
           "face": "normal"
         },
         {
           "speaker": "hajime",
-          "text": "香りと席は決まった。あとは、どう声をかけるかだな",
-          "face": "normal"
+          "text": "お待たせしました。お席はこちらです",
+          "face": "normal",
+          "role": "{pc}／物語"
         },
         {
-          "speaker": "regularb",
-          "text": "話を続けるのも、しばらく待つのも、この店の接客ですよ",
-          "face": "normal"
+          "speaker": "sai",
+          "text": "オルは外套を腕にかけて立ち上がった",
+          "face": "normal",
+          "role": "GM／場面"
         }
       ]
     },
@@ -798,40 +801,40 @@
       "lines": [
         {
           "speaker": "sai",
-          "text": "今夜のお客さんは、ここまでです。覚えておきたいことはありますか？",
+          "text": "今夜はここまでです。オルさんを迎えてみて、どうでしたか？",
           "face": "normal"
         },
         {
           "speaker": "hajime",
-          "text": "仕込みの話だと思ってたけど、オルさんの過ごす時間まで考えてた",
+          "text": "メニューから選ぶほうが楽ですけど、オルさんの話を聞けてよかったです",
           "face": "normal"
         },
         {
           "speaker": "regulara",
-          "text": "次からメニューに「普通」と書くなら、横に大きく空欄を作ろうか",
+          "text": "次に「普通の一台」と頼まれたら、また一から聞くんだろうな",
           "face": "normal"
         },
         {
           "speaker": "regularb",
-          "text": "私なら「まず、お話を聞かせてください」って書き添えます",
+          "text": "メニューの余白に「お話を聞かせてください」って書いておこうか",
           "face": "normal"
         },
         {
           "speaker": "sai",
-          "text": "では、その欄を残して、本を閉じましょう",
+          "text": "いいですね。では、余白を残して閉店しましょう",
           "face": "normal"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "サイさんのGM、すごく話しやすかったです"
+          "text": "サイさん、店番の役なのに、本当に閉店作業をした気分です"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "ありがとうございます。落ち着いて話せる卓になりましたね"
+          "text": "ふふ。うちの片づけは私がしますから、そこまでで大丈夫ですよ"
         }
       ]
     },
@@ -868,8 +871,9 @@
         },
         {
           "speaker": "regulara",
-          "text": "まずは客を座らせよう。落ち着ける席がいい",
-          "face": "normal"
+          "text": "椅子、こっちにありますよ",
+          "face": "normal",
+          "role": "{pc:regulara}／物語"
         }
       ]
     },
@@ -882,17 +886,17 @@
         {
           "speaker": "sai",
           "role": "GM／場面",
-          "text": "{pc}は思わず『一番人気なら』と言う。旅人は、少しだけ首を振った",
+          "text": "奥で椅子を引く音が響いて、オルは言いかけた言葉を飲み込んだ",
           "face": "normal"
         },
         {
           "speaker": "hajime",
-          "text": "メニューに先にしゃべらせるところだった。オルさんに聞こう",
+          "text": "今の、聞こえなかったな。もう一度、聞いてみよう",
           "face": "normal"
         },
         {
           "speaker": "sai",
-          "text": "ええ。一台を決めるのは、店とオルさんの様子を見てからでも",
+          "text": "オルさんはまだ帰りません。聞いておきたいことはありますか？",
           "face": "normal"
         }
       ]
@@ -906,13 +910,14 @@
         {
           "speaker": "sai",
           "role": "GM／場面",
-          "text": "{pc:regulara}が棚を整え、{pc}が一台を用意する。選んだ香りが、静かに開いた",
+          "text": "香りを確かめてから、一台を盆に載せた",
           "face": "normal"
         },
         {
           "speaker": "regulara",
-          "text": "……あとは、客に出そう",
-          "face": "normal"
+          "text": "お待たせしました。もうすぐお持ちしますね",
+          "face": "normal",
+          "role": "{pc:regulara}／物語"
         }
       ]
     },
@@ -925,13 +930,14 @@
         {
           "speaker": "sai",
           "role": "GM／場面",
-          "text": "最初は香りが強すぎた。少し落ち着かせてから、旅人の席へ運ぶ",
+          "text": "最初は香りが強く出すぎた。少し落ち着くまで、置いておく",
           "face": "normal"
         },
         {
           "speaker": "hajime",
-          "text": "急いで出すより、今の方がよさそうだ",
-          "face": "normal"
+          "text": "……よし、これなら出せそうだ",
+          "face": "normal",
+          "role": "{pc}／物語"
         }
       ]
     },
@@ -944,18 +950,20 @@
         {
           "speaker": "sai",
           "role": "GM／場面",
-          "text": "用意した一台は、思った仕上がりにならない。店の道具で整え直すことにした",
+          "text": "ひと吸いすると、香りが弱い。もう一度、仕上がりを見直すことになった",
           "face": "normal"
         },
         {
           "speaker": "regulara",
-          "text": "……やり直せばいい。道具を見直そう",
-          "face": "normal"
+          "text": "ちょっと待って。作り直してくる",
+          "face": "normal",
+          "role": "{pc:regulara}／物語"
         },
         {
           "speaker": "regularb",
-          "text": "待ってる間の席なら、こっちで用意しますね",
-          "face": "normal"
+          "text": "そのあいだ、私は選んだ席を片づけておきます",
+          "face": "normal",
+          "role": "PL／卓の会話"
         }
       ]
     },
@@ -968,14 +976,14 @@
         {
           "speaker": "sai",
           "role": "GM／場面",
-          "text": "{pc:regularb}が椅子を引き、{pc}が旅人を案内する。落ち着いたところで、一台を置いた",
+          "text": "オルが腰を下ろすのを待って、一台をテーブルに置いた",
           "face": "normal"
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
-          "text": "……いい席だね。ありがとう"
+          "text": "待ってるうちに、外套もずいぶん乾いたよ。ありがとう"
         }
       ]
     },
@@ -988,14 +996,14 @@
         {
           "speaker": "sai",
           "role": "GM／場面",
-          "text": "席の説明が少し長くなる。旅人と顔を見合わせ、二人とも小さく笑った",
+          "text": "オルが荷物を置き直すのを少し待ってから、一台を置いた",
           "face": "normal"
         },
         {
-          "speaker": "hajime",
-          "role": "PL／卓の会話",
+          "speaker": "sai",
+          "role": "旅人オル／物語",
           "face": "normal",
-          "text": "（席を案内しただけで、店の紹介まで始めちゃった）"
+          "text": "ごめん、ごめん。いつも足元に全部置いちゃうんだ"
         }
       ]
     },
@@ -1008,13 +1016,13 @@
         {
           "speaker": "sai",
           "role": "GM／場面",
-          "text": "{pc}が声をかけると、椅子がこつんと鳴った。気まずい間のあと、旅人が先に口を開く",
+          "text": "台を置くと机ががたつく。オルがコースターを一枚、短い脚の下に挟んだ",
           "face": "normal"
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
-          "text": "そんなに構えなくていいよ。俺も、普通が何か、うまく言えないんだ",
+          "role": "旅人オル／物語",
+          "text": "よし、これでもう動かない。船の上でもよくやるんだ",
           "face": "normal"
         }
       ]
@@ -1029,25 +1037,25 @@
           "speaker": "regulara",
           "role": "",
           "face": "normal",
-          "text": "{pc:regulara}は言う。香りの名だけで、客の望みを決めてはいけない"
+          "text": "香りで迷ってるなら、メニューのどこを見てたか思い出してみよう"
         },
         {
           "speaker": "regulara",
           "role": "",
           "face": "normal",
-          "text": "メニューと飲み物を見よう。そこに、この店の日常がある"
+          "text": "飲み物はどうだ？ 一台より気軽に頼めるだろ"
         },
         {
           "speaker": "hajime",
           "role": "",
           "face": "normal",
-          "text": "『普通』っていうフレーバーを探すんじゃないんだな"
+          "text": "先に頼んだ飲み物か。何を選んだか見てくる"
         },
         {
           "speaker": "regulara",
           "role": "",
           "face": "normal",
-          "text": "……そう。この一台を選ぶ理由を、探そう"
+          "text": "頼むよ。こっちは棚を見ておく"
         }
       ]
     },
@@ -1061,19 +1069,19 @@
           "speaker": "regularb",
           "role": "",
           "face": "normal",
-          "text": "……同じ部屋でも、席によって見えるものが違う。窓、棚、人の顔"
+          "text": "窓の席って、雨の音で向こうの話し声が聞こえないんですよ"
         },
         {
           "speaker": "hajime",
           "role": "",
           "face": "normal",
-          "text": "座る場所も、一台の一部か"
+          "text": "人と話したい人なら、奥よりカウンターか"
         },
         {
           "speaker": "regularb",
           "role": "",
           "face": "normal",
-          "text": "はい。旅人が、どこを見てるかも気になります"
+          "text": "ええ。さっきからどこを見てるか、気になります"
         }
       ]
     },
@@ -1099,7 +1107,7 @@
           "speaker": "regulara",
           "role": "",
           "face": "normal",
-          "text": "紅茶の行を、指でなぞっていたな。さて、どの香りで旅人を迎えようか"
+          "text": "オルさん、値段は見てなかったな"
         }
       ]
     },
@@ -1131,7 +1139,7 @@
           "speaker": "regularb",
           "role": "",
           "face": "normal",
-          "text": "……この席から、旅人は何を見たいんでしょう"
+          "text": "雨粒が流れるの、ずっと見ていられますね"
         }
       ]
     },
@@ -1163,7 +1171,7 @@
           "speaker": "hajime",
           "role": "",
           "face": "normal",
-          "text": "歩いてきた道も、普通を知る手がかりになりそうだ"
+          "text": "これだけ乗り継いだら、俺ならもう声も出ないな"
         }
       ]
     },
@@ -1189,7 +1197,7 @@
           "speaker": "hajime",
           "role": "",
           "face": "normal",
-          "text": "同じ部屋でも、椅子一つで過ごし方が変わるな"
+          "text": "あの椅子が空いたのに、座らないんだな"
         }
       ]
     },
@@ -1221,7 +1229,7 @@
           "speaker": "regulara",
           "role": "",
           "face": "normal",
-          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
+          "text": "紅茶、手を温めるのにちょうどよかったみたいだな"
         }
       ]
     },
@@ -1247,7 +1255,7 @@
           "speaker": "hajime",
           "role": "",
           "face": "normal",
-          "text": "この店の人も、毎日少しずつ違う客を見てたんだな"
+          "text": "テーブルを空けておけば、呼ばれたときにすぐ行けるな"
         }
       ]
     },
@@ -1273,7 +1281,7 @@
           "speaker": "regulara",
           "role": "",
           "face": "normal",
-          "text": "家でも淹れる紅茶、か。さて、どの香りで旅人を迎えようか"
+          "text": "家でも淹れるなら、紅茶の香りは覚えてそうだな"
         }
       ]
     },
@@ -1299,7 +1307,7 @@
           "speaker": "regularb",
           "role": "",
           "face": "normal",
-          "text": "……この席から、旅人は何を見たいんでしょう"
+          "text": "窓の外より、写真のほうが気になるみたいですね"
         }
       ]
     },
@@ -1319,7 +1327,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "荷札は帰りの便"
+          "text": "荷札の裏に、翌朝の船の切符が挟まっている"
         },
         {
           "speaker": "sai",
@@ -1331,7 +1339,7 @@
           "speaker": "hajime",
           "role": "",
           "face": "normal",
-          "text": "歩いてきた道も、普通を知る手がかりになりそうだ"
+          "text": "まだ出るまで時間はあるな。ゆっくりしてもらおう"
         }
       ]
     },
@@ -1357,13 +1365,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "旅人は思い出話ができそうな席を見ている"
+          "text": "オルは古いメニューを指して、いつごろのものか聞いた"
         },
         {
           "speaker": "hajime",
-          "role": "",
+          "role": "{pc}／物語",
           "face": "normal",
-          "text": "同じ部屋でも、椅子一つで過ごし方が変わるな"
+          "text": "よかったら、席までお持ちしますよ"
         }
       ]
     },
@@ -1395,7 +1403,7 @@
           "speaker": "regulara",
           "role": "",
           "face": "normal",
-          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
+          "text": "旅から帰って一杯目の紅茶って、うまいんだよな"
         }
       ]
     },
@@ -1415,13 +1423,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ノートに『何を好きかに加え、なぜ戻ってくるかも聞いてみる』とある"
+          "text": "ノートに『毎週紅茶を頼む人。昔の店で飲んだ味だそうだ』とある"
         },
         {
           "speaker": "hajime",
           "role": "",
           "face": "normal",
-          "text": "この店の人も、毎日少しずつ違う客を見てたんだな"
+          "text": "同じ紅茶でも、その人には思い出のある味なのか"
         }
       ]
     },
@@ -1447,7 +1455,7 @@
           "speaker": "regulara",
           "role": "",
           "face": "normal",
-          "text": "果実に興味あり、か。さて、どの香りで旅人を迎えようか"
+          "text": "果実の香りは、ここの常連もよく頼むんだ"
         }
       ]
     },
@@ -1473,7 +1481,7 @@
           "speaker": "regularb",
           "role": "",
           "face": "normal",
-          "text": "……この席から、旅人は何を見たいんでしょう"
+          "text": "窓より、あっちの笑い声が気になるみたいですね"
         }
       ]
     },
@@ -1493,7 +1501,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "荷札の道は、人の少ない道"
+          "text": "荷札の出発地は、山をひとつ越えた先の宿場だ"
         },
         {
           "speaker": "sai",
@@ -1505,7 +1513,7 @@
           "speaker": "hajime",
           "role": "",
           "face": "normal",
-          "text": "歩いてきた道も、普通を知る手がかりになりそうだ"
+          "text": "あの山を一人で？ 俺なら道を聞くだけで半日かかりそうだ"
         }
       ]
     },
@@ -1531,7 +1539,7 @@
           "speaker": "hajime",
           "role": "",
           "face": "normal",
-          "text": "同じ部屋でも、椅子一つで過ごし方が変わるな"
+          "text": "混んできたら、カウンターにもう一脚出そう"
         }
       ]
     },
@@ -1557,13 +1565,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "味を知るまでの会話も楽しんでいる"
+          "text": "勧めた飲み物を頼むと、オルは店番にその作り方を尋ねた"
         },
         {
           "speaker": "regulara",
           "role": "",
           "face": "normal",
-          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
+          "text": "その話、俺も聞きたいな。家で作ってみたいし"
         }
       ]
     },
@@ -1583,13 +1591,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ノートに『隣に座って、一台を話の入口にした日』という記録がある"
+          "text": "ノートに『隣の客と意気投合。最後まで二人で話していた』とある"
         },
         {
           "speaker": "hajime",
           "role": "",
           "face": "normal",
-          "text": "この店の人も、毎日少しずつ違う客を見てたんだな"
+          "text": "閉店の時間、どうやって言い出したんだろうな"
         }
       ]
     },
@@ -1607,7 +1615,7 @@
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "text": "外を歩いてたときは、雨が止んでほしかった。……今は、もう少しだけ",
           "face": "normal"
         },
@@ -1639,33 +1647,33 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "text": "家の近くにも、こんな店があったんだ。そこで、よく紅茶の話をしていた",
           "face": "normal"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
-          "text": "オルは古いメニューを眺めながら、カップを両手で包んだ",
+          "text": "店番が古いメニューを持ってくると、オルは両手で受け取った",
           "face": "normal"
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
-          "text": "帰ったら、いつもの紅茶を淹れようかな。今日はもう、その帰り道なんだな",
+          "role": "旅人オル／物語",
+          "text": "明日の船で帰るんだ。着いたらまず、紅茶を淹れるよ",
           "face": "normal"
         },
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……思い出の香りか。帰る店があるのは、いい"
+          "text": "メニューまで持っていっていいか聞きそうな顔だな"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "帰り道の途中、か。いい言葉だな"
+          "text": "写しなら渡せるかも。あとで一枚、書いておこう"
         }
       ]
     },
@@ -1677,7 +1685,7 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "text": "長い道だったよ。橋を渡るときにね、面白い鳥がいて……",
           "face": "normal"
         },
@@ -1689,21 +1697,21 @@
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
-          "text": "普通って、こうやって一日を誰かに話すことだったのかもしれないな",
+          "role": "旅人オル／物語",
+          "text": "港までずっと一人だったから、誰かにこの話をしたかったんだ",
           "face": "normal"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "漁師の親方も身を乗り出し、鳥の話で盛り上がった"
+          "text": "鳥の首がどっちを向いたか、オルが身ぶりで見せると、親方が噴き出した"
         },
         {
           "speaker": "hajime",
-          "role": "PL／卓の会話",
+          "role": "{pc}／物語",
           "face": "smile",
-          "text": "普通の夜って、こういうのかもな"
+          "text": "親方、その鳥に心当たりあるんですか？"
         }
       ]
     },
@@ -1715,33 +1723,33 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "text": "考えてくれたんだね。ありがとう。少し、俺の話をしてもいいかな",
           "face": "normal"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
-          "text": "旅人の話を聞き、{pc}たちは席や言葉を少し変える。一台は、その相談の入口になった",
+          "text": "店番たちは片づけの手を止めた。オルは一台を前に、旅先でのことを話した",
           "face": "normal"
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
-          "text": "頼んだ俺も、何が欲しいか分かっていなかったんだ。一緒に考えられて、よかった",
+          "role": "旅人オル／物語",
+          "text": "「普通」なんて言うより、最初からこの話をすればよかったね",
           "face": "normal"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……答えは、一緒に探してもいいんですね"
+          "text": "私も椅子を持ってきます。オルさんの話、もう少し聞きたいな"
         },
         {
           "speaker": "hajime",
-          "role": "PL／卓の会話",
+          "role": "{pc}／物語",
           "face": "normal",
-          "text": "当てられなくても、届くことってあるんだな"
+          "text": "その話、どこまで聞きましたっけ？"
         }
       ]
     },
@@ -1751,7 +1759,7 @@
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
-          "text": "紅茶という静かな主役。今夜は、そこに任せてみよう",
+          "text": "紅茶でいこう。最初のひと吸いで、ふっと香るくらい",
           "face": "normal"
         }
       ]
@@ -1762,7 +1770,7 @@
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
-          "text": "果実の甘さ。この店の原点が、ここにあるのかもしれない",
+          "text": "果実にしよう。うちでよく出るやつ、まだ残ってたと思う",
           "face": "normal"
         }
       ]
@@ -1806,7 +1814,7 @@
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
-          "text": "古い写真のそば。今の店と、前の店が少し重なる",
+          "text": "あの写真のそばにしようか。片づけたら、椅子が入るね",
           "face": "normal"
         }
       ]
@@ -1847,14 +1855,14 @@
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
-          "text": "静かな夜でしたね。旅人も、少しは休めたでしょう",
+          "text": "もう閉店ですね。最後の一台は、片づけが始まる前に出せました",
           "face": "normal"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "うまくいくと、物語が静かに流れるんだな"
+          "text": "漁師さんが五人来たときは、片づけどころじゃないと思いましたよ"
         }
       ]
     },
@@ -1864,14 +1872,14 @@
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
-          "text": "聞き直した時間も、この一台に残りましたね",
+          "text": "お疲れさまでした。次にあの人数が来たら、どうしましょうか？",
           "face": "normal"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……寄り道した分だけ、話が増えました"
+          "text": "親方には、先に大きいカップを出しますか"
         }
       ]
     },
@@ -2025,7 +2033,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:regularb}は何も言わず、港のスケッチを一枚添えます"
+          "text": "{pc:regularb}は港のスケッチを一枚添えます。さっき窓から描いた絵です"
         },
         {
           "speaker": "sai",
@@ -2045,7 +2053,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:regulara}は香りの説明を少しだけして、静かに下がるよ"
+          "text": "{pc:regulara}は何の香りか、最初に一言だけ伝えるよ"
         },
         {
           "speaker": "sai",
@@ -2072,13 +2080,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "好きなものは、新しい香りを確かめること"
+          "text": "新しい香りが届くと、真っ先に瓶を開けます"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "では、その役で。物語を始めましょう"
+          "text": "では、その役でお願いしますね"
         }
       ]
     },
@@ -2099,13 +2107,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "好きなものは、旅先で見つけた香り"
+          "text": "よその港で見つけた香りを、瓶に入れて持ち歩いてます"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "では、その役で。物語を始めましょう"
+          "text": "では、その役でお願いしますね"
         }
       ]
     },
@@ -2126,13 +2134,13 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "好きなものは、雨の日の窓"
+          "text": "雨が降ったら、窓辺で港の絵を描いてます"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "では、その役で。物語を始めましょう"
+          "text": "では、その役でお願いしますね"
         }
       ]
     },
@@ -2153,13 +2161,13 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "好きなものは、窓辺の日だまり"
+          "text": "窓辺から動きませんよ。日が当たってるうちはね"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "では、その役で。物語を始めましょう"
+          "text": "では、その役でお願いしますね"
         }
       ]
     },
@@ -2211,7 +2219,7 @@
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "朝から船と汽車を三つ。どこも、人でいっぱいだったよ"
         },
@@ -2231,13 +2239,13 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "普段？ 薄い紅茶かな。香りが強すぎないのがいい"
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "飲みながら、何も考えない時間が好きなんだ"
         }
@@ -2251,7 +2259,7 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "仕事の打ち合わせが続いてね。ずっと話してた"
         },
@@ -2277,9 +2285,9 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
-          "text": "外から見たら、灯りが静かでね。ここなら、と思った"
+          "text": "窓の明かりが見えたんだ。あの席なら、静かに座れそうだなって"
         },
         {
           "speaker": "regulara",
@@ -2297,13 +2305,13 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "明日の朝の便で、生まれた町へ帰るんだ"
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "帰る前に、一息つきたくてね"
         }
@@ -2317,7 +2325,7 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "家では毎晩、同じ紅茶を淹れてた。母の真似でね"
         },
@@ -2337,19 +2345,19 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "昼間、昔よく行った店を探したんだ。もう、なかったけど"
         },
         {
           "speaker": "hajime",
-          "role": "PL／卓の会話",
+          "role": "{pc}／物語",
           "face": "sad",
           "text": "……そうだったんですか"
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "だから、似た灯りを見つけて、つい入っちゃった"
         }
@@ -2363,7 +2371,7 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "この店、窓と棚の感じが、昔の店に似てるんだ"
         },
@@ -2383,13 +2391,13 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "山の道を、ずっと一人で歩いてきたよ。静かだった"
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "最後に人と話したのは、朝だったかな"
         }
@@ -2403,7 +2411,7 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "いつも？ 店の人に、おすすめを聞くのが好きなんだ"
         },
@@ -2423,7 +2431,7 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "今日ね、橋で面白い鳥を見たんだ。誰にも言えなくて"
         },
@@ -2449,7 +2457,7 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
           "text": "奥から笑い声が聞こえてね。楽しそうだなって"
         },
@@ -2497,7 +2505,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……懐かしい匂いは、覚えている"
+          "text": "旅先であえて「いつもの」を頼むなら、知ってる香りがいいのかな"
         },
         {
           "speaker": "regularb",
@@ -2509,7 +2517,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "思い出を見えるところに置くのですね。では、その見立てで"
+          "text": "懐かしいものが欲しい、という読みですね"
         }
       ]
     },
@@ -2535,7 +2543,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "にぎやかな方へ、ですね。では、その見立てで"
+          "text": "じゃあ、話しやすい席も考えてみましょうか"
         }
       ]
     },
@@ -2553,7 +2561,7 @@
         },
         {
           "speaker": "sai",
-          "role": "漁師の親方",
+          "role": "漁師の親方／物語",
           "face": "normal",
           "text": "おう、閉める前に一杯頼むぜ！ 五人だ！"
         },
@@ -2591,7 +2599,7 @@
         },
         {
           "speaker": "sai",
-          "role": "漁師の親方",
+          "role": "漁師の親方／物語",
           "face": "normal",
           "text": "おう、奥か。いい席じゃねえか"
         }
@@ -2607,13 +2615,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc}は旅人に、漁師たちの話の輪をそっと示す"
+          "text": "{pc}は親方を指して、あの人はこの港のことに詳しいとオルに伝えた"
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
-          "text": "……俺も、混ざっていいのかな"
+          "text": "じゃあ今度、港のことを聞いてみようかな"
         }
       ]
     },
@@ -2627,13 +2635,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "灯りを一段落とすと、漁師たちも声をひそめた"
+          "text": "店番は灯りを落とし、親方の耳元で、少し声を抑えてほしいと頼んだ"
         },
         {
           "speaker": "sai",
-          "role": "漁師の親方",
+          "role": "漁師の親方／物語",
           "face": "normal",
-          "text": "なんだ、いい雰囲気じゃねえか"
+          "text": "おっと、外と同じ声でしゃべってたか。悪いな"
         }
       ]
     },
@@ -2651,7 +2659,7 @@
         },
         {
           "speaker": "sai",
-          "role": "漁師の親方",
+          "role": "漁師の親方／物語",
           "face": "normal",
           "text": "いい店だな、ここは。また来るぜ"
         },
@@ -2677,9 +2685,9 @@
         },
         {
           "speaker": "sai",
-          "role": "旅人オル",
+          "role": "旅人オル／物語",
           "face": "normal",
-          "text": "大丈夫。賑やかなのも、たまにはいいね"
+          "text": "俺は待てるよ。先に、あの人たちを座らせてあげて"
         }
       ]
     },
@@ -2693,13 +2701,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "運ぶ席を取り違え、親方の前に紅茶が置かれた"
+          "text": "お冷やを出すつもりが、親方の前に店番の紅茶を置いてしまった"
         },
         {
           "speaker": "sai",
-          "role": "漁師の親方",
+          "role": "漁師の親方／物語",
           "face": "normal",
-          "text": "お、紅茶か。船でもやろう。カップは揺れに強いのにしてくれ！"
+          "text": "お、紅茶か。揺れねえところで飲むのは久しぶりだ！"
         },
         {
           "speaker": "sai",
@@ -2770,7 +2778,7 @@
       ]
     }
   ],
-  "_comment": "tonari店長スミ、常連つむぎ・サラリーマンとはじめの部員ゼロ期卓。既存短編を常連の配役で遊ぶ別冊。",
+  "_comment": "六角サイがGMを務め、はじめと店の常連二人で遊ぶ港町の短編。",
   "flow": {
     "prepare": [
       "aroma",
@@ -2807,7 +2815,7 @@
     "theme": "harbor",
     "number": "R1",
     "genre": "日常ミステリー",
-    "tagline": "閉店後の常連たちと、その人にとっての「普通」を、探す。",
+    "tagline": "閉店まぎわの港町。旅人の「普通の一台」を探す。",
     "image": "../../img/backgrounds/trpg_ordinary_room.webp",
     "sceneAlt": "雨の港を望む茶房。メニュー、窓辺、荷札、カウンター、カップとノート。",
     "location": "港町ノーラ / 波止場の灯",
@@ -2825,7 +2833,7 @@
     },
     "prepareTitle": "旅人に、どんな時間を用意する？",
     "prepareDescription": "香りを一つ、席を一つ。手がかりを組み合わせて提案しよう。",
-    "serveTitle": "一台を置いた、そのあとに。",
+    "serveTitle": "一台を出すとき、どう声をかける？",
     "serveDescription": "旅人に添える、最初の言葉を選ぶ。",
     "hypothesisTitle": "旅人の「普通」は、どんな時間？",
     "arrivalRole": "旅人オル／物語",
@@ -2844,7 +2852,7 @@
       "interview": {
         "kicker": "02 / 旅人と話す",
         "title": "旅人に、何を聞く？",
-        "description": "聞ける質問は二つ。答えは旅人ごとに違う。",
+        "description": "オルに聞きたいことを選ぼう。",
         "button": "話を聞き終えて、店内を調べる"
       },
       "explore": {
@@ -2856,13 +2864,13 @@
       "twist": {
         "kicker": "04 / 思わぬ来客",
         "title": "雨宿りの漁師たち",
-        "description": "店が急に賑やかに。旅人の一台を守りながら切り抜けよう。",
+        "description": "閉店まぎわにお客が五人。オルを待たせずに案内しよう。",
         "button": "この手で切り抜ける"
       },
       "prepare": {
         "kicker": "05 / 一台を用意する",
         "title": "香りと、過ごす場所",
-        "description": "香りも席も、相手の過ごす時間の一部。",
+        "description": "オルに出す香りと、案内する席を選ぼう。",
         "button": "一台を準備する"
       },
       "serve": {
@@ -2874,11 +2882,11 @@
       "ending": {
         "kicker": "卓を囲んで",
         "title": "おつかれさま",
-        "description": "みんなで考えた一台と、過ごす時間。どんな「普通」になっただろう。"
+        "description": "オルが頼んだ「普通の一台」は、どんな一台だった？"
       }
     },
-    "help": "旅人に二つ質問し、店内を調べて三つ以上の手がかりから仮説を立てます。途中で思わぬ来客があり、切り抜け方を選びます。最後に香り・席・声のかけ方を選びます。探索・相談・メモの再読に回数制限はありません。",
-    "exitText": "この卓はここで終わります。もう一度遊ぶと、別の旅人が訪れるかもしれません。",
+    "help": "旅人に質問し、店内を調べて三つ以上の手がかりから仮説を立てます。途中で思わぬ来客があり、切り抜け方を選びます。最後に香り・席・声のかけ方を選びます。探索・相談・メモの再読に回数制限はありません。",
+    "exitText": "この卓はここで終わります。次に遊ぶと、オルの頼みたい一台が変わることがあります。",
     "endingKicker": "この晩の結末",
     "stats": {
       "eye": "観察",
@@ -2912,7 +2920,7 @@
   "campaign": {
     "aftermath": {
       "true": "次の寄港の日、オルは迷わず「波止場の灯」の扉を開けた。",
-      "bad": "出航の鐘が鳴った。オルの注文を聞き直す時間はもうなかった。"
+      "bad": "閉店の札を返してからも、オルの注文を聞き直せばよかったと気にかかった。"
     },
     "seats": [
       {
@@ -3076,7 +3084,7 @@
     "topics": [
       {
         "id": "journey",
-        "label": "どこから来たのか",
+        "label": "どこから来て、どこへ行くのか",
         "description": "旅の道のりを聞く"
       },
       {
