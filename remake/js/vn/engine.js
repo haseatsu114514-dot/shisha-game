@@ -182,7 +182,7 @@ function buildDom() {
     if (!running || dom.log.classList.contains("show") || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
     if (performance.now() < running.openLockUntil) return;
     if (autoMode || skipMode) { setAuto(false); setSkip(false); }
-    advance();
+    advance(e);
   });
   window.addEventListener("keydown", (e) => {
     if (!running || !layers.vn.classList.contains("active")) return;
@@ -375,6 +375,7 @@ export function play(idOrDlg, opts = {}) {
       branches: dlg.branches || {},
       resolve,
       cancelOnSkip: !!opts.cancelOnSkip,
+      onAdvanceInput: opts.onAdvanceInput,
       cast: Array.isArray(opts.cast) ? opts.cast : null, // motion "gaze" に出す人（その場にいる恋人）
       previewProtagonist: opts.previewProtagonist === true,
       waitingChoice: false,
@@ -586,8 +587,11 @@ function finish(cancelled = false) {
   r.resolve({ id: r.id, visited: r.visited, ...(cancelled ? { cancelled: true } : {}) });
 }
 
-function advance() {
-  if (!running || !running.ready || running.waitingChoice) return;
+function advance(event) {
+  if (!running || running.waitingChoice) return;
+  // 章末のCGを閉じている間も、会話を送ろうとした入力として通知する。
+  running.onAdvanceInput?.(event);
+  if (!running.ready) return;
   if (running.typing) return completeTyping();
   if (running.pages && running.pageIdx < running.pages.length - 1) {
     running.pageIdx++;
