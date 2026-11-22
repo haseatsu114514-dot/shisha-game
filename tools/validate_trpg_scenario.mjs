@@ -13,6 +13,19 @@ import { isTrpgRegular } from "../remake/js/trpg/regulars.js";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = rel => JSON.parse(fs.readFileSync(path.join(root, rel), "utf8"));
 const catalog = read("data/trpg_catalog.json");
+// 本棚には表示・配役に必要な情報だけを載せる。台本の詳細は一冊選んでから読む。
+function shelfEntry({ version, title, author, collection, duration, presentation, cast, campaign, endings }) {
+  const { theme, number, genre, image, sceneAlt, location, tagline, backdrop } = presentation;
+  return { version, title, author, collection, duration,
+    presentation: { theme, number, genre, image, sceneAlt, location, tagline, backdrop },
+    cast: cast.map(({ id, part, color }) => ({ id, part, color })), campaign: { seats: campaign.seats },
+    endings: Object.fromEntries(Object.entries(endings).map(([id, { title }]) => [id, { title }])) };
+}
+if (process.argv[2] === "--update-shelf") {
+  for (const book of catalog.scenarios) book.shelf = shelfEntry(read("data/" + book.file));
+  fs.writeFileSync(path.join(root, "data/trpg_catalog.json"), JSON.stringify(catalog, null, 2) + "\n");
+  process.exit(0);
+}
 const characters = read("data/characters.json");
 for (const file of catalog.characterProfiles || []) { const o = read("data/" + file); if (o.profile?.id) characters.push(o.profile); }
 const people = new Set(characters.map(c => c.id));
@@ -234,6 +247,7 @@ function validate(rel) {
   if (total > 170) warn("標準ルートの台詞が " + total + " 行。長すぎるかも");
   const entry = catalog.scenarios.find(e => e.file === rel.replace(/^data\//, ""));
   if (entry) {
+    need(JSON.stringify(entry.shelf) === JSON.stringify(shelfEntry(s)), "本棚の索引を更新してください: node tools/validate_trpg_scenario.mjs --update-shelf");
     need(entry.id === s.id, "catalog の id と scenario.id が違う");
     need(Number.isInteger(entry.price) && entry.price >= 300 && entry.price <= 1500, "catalog.price は300〜1500円");
     need(s.zeroMemberCast ? gm === "sai" && (entry.zeroMemberCast?.includes(gm) || entry.member === "ageha")

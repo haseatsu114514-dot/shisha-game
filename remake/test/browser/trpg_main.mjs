@@ -191,12 +191,23 @@ await suite("trpg-main", async check => {
   await check("zero-members-regular-table", async page => {
     await prepare(page);
     await page.evaluate(() => { __remake.state.trpg.club.members = {}; });
+    const books = new Set(await page.evaluate(async () => (await (await fetch("../data/trpg_catalog.json")).json()).scenarios.map(b => b.file)));
+    const scripts = new Set(), costumes = new Set();
+    page.on("request", req => {
+      const path = new URL(req.url()).pathname;
+      const file = path.split("/data/")[1];
+      if (books.has(file)) scripts.add(file);
+      if (path.includes("/trpg/costumes/") && path.endsWith(".webp")) costumes.add(path);
+    });
     await open(page);
     assert.deepEqual((await snapshot(page)).trpg.club.members, {});
     assert.equal(await button(page, "trpg-book-regular-harbor").getAttribute("data-locked"), "false");
     await hit(page, "trpg-buy-regular-harbor");
     assert(await button(page, "trpg-play-regular-harbor").isEnabled());
+    assert.equal(scripts.size, 0, "Browsing and buying need only the shelf index");
+    assert.equal(costumes.size, 0, "The shelf does not download costumes for owned books");
     await play(page, "regular-harbor", { expectTutorial: true });
+    assert.deepEqual([...scripts], ["dialogue/trpg_regular_harbor.json"]);
     const done = await snapshot(page);
     assert(done.trpg.cleared["regular-harbor"]);
     assert.deepEqual(new Set(done.trpg.cleared["regular-harbor"].participants), new Set(["sai", "hajime", "regulara", "regularb"]));

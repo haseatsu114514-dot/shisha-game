@@ -61,6 +61,13 @@ try {
   const bundleCount = JSON.parse(fs.readFileSync(path.join(remake, "css/bundles.json"), "utf8")).segments.length;
   assert.equal(links.length, bundleCount);
   for (const href of links) assert.match(href, /^css\/[\w./-]+\.css\?v=abc1234$/, href);
+  for (const group of ["camel-race", "desert-ride", "ichidai", "tetsuko"]) {
+    const template = html.match(new RegExp('<template id="styles-' + group + '">([\\s\\S]*?)<\\/template>'));
+    assert.ok(template, group);
+    const files = [...template[1].matchAll(/href="([^"]+)"/g)].map(m => m[1]);
+    assert.ok(files.length, group);
+    for (const href of files) assert.match(href, /^css\/[\w-]+\.css\?v=abc1234$/, href);
+  }
   assert.match(html, /href="fonts\/NotoSansJP-Medium\.woff2"/);
   assert.match(html, /<link rel="preload" as="image" href="img\/ui\/ui_title_logo_rich\.webp">/);
   // 起動画面の背景は共通ロード画面の CSS（css/loading.css → bundle-2.css）にある。画像の url() は版を付けない

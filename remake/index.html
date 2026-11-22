@@ -88,6 +88,19 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="水煙前線">
 <!-- 文字は同梱フォントのみ（remake/fonts/）。外部フォントは読まない＝端末で見た目が変わらない -->
+  <link rel="stylesheet" href="css/bundle-base.css">
+  <!-- 各ゲームの初回に、この位置で CSS を有効にする。後続の共通スタイルとの優先順も保つ。 -->
+  <template id="styles-camel-race"><link href="css/camel-race.css" rel="stylesheet"></template>
+  <template id="styles-ichidai">
+    <link href="css/ichidai.css" rel="stylesheet">
+    <link href="css/ichidai-skin-signs.css" rel="stylesheet">
+    <link href="css/ichidai-lines.css" rel="stylesheet">
+  </template>
+  <template id="styles-desert-ride"><link href="css/desert-ride.css" rel="stylesheet"></template>
+  <template id="styles-tetsuko">
+    <link href="css/tetsuko-time.css" rel="stylesheet">
+    <link href="css/tetsuko-theme.css" rel="stylesheet">
+  </template>
   <link rel="stylesheet" href="css/bundle-1.css">
   <link rel="stylesheet" href="css/motions/bundle.css">
   <link rel="stylesheet" href="css/vn/bundle.css">

@@ -66,4 +66,14 @@ finish("external", 1010);
 p = load.snapshot("external-http2");
 assert.equal(p.externalRequests, 1); assert.equal(p.externalNetworkBodyBytes, 1000);
 assert.equal(p.resources.find((r) => r.external).sourceBytes, null, "External audio must not masquerade as a bundled file");
+for (const workerSource of ["network", "http-cache", "cache-storage", "fallback-code", "unknown"]) {
+  request(workerSource, workerSource + ".json");
+  response(workerSource, { fromServiceWorker: true, serviceWorkerResponseSource: workerSource === "unknown" ? undefined : workerSource,
+    headers: { "Content-Length": "20" } });
+  finish(workerSource, 0);
+  const r = load.snapshot(workerSource).resources.at(-1);
+  assert.equal(r.workerSource, workerSource);
+  assert.equal(r.cached, ["http-cache", "cache-storage"].includes(workerSource));
+  assert.equal(r.networkBodyBytes, workerSource === "network" ? 20 : 0);
+}
 console.log("PASS load recorder: body bytes, cache/304, ranges, partial/aborted audio, gzip, unique sizes, redirects and failures");

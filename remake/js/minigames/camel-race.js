@@ -6,6 +6,7 @@
 // スマホは下の2つの大きなボタン（ムチは押し続ける）。
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
+import { withMinigameStyles } from "./minigame-styles.js";
 import { installRotateGuard, rotateGuarded } from "../core/rotate-guard.js";
 import { el } from "../core/util.js";
 import { TIER_LABEL } from "../core/play-tiers.js";
@@ -398,7 +399,11 @@ const active = new WeakMap();
  * @param best 以前の自己ベスト（リザルトで更新を知らせる）
  * 戻り値: { completed, cancelled, runs: [採点…], best: 最高の採点, last: 最後の採点 }
  */
-export function runCamelRace({ host = document.getElementById("stage"), signal = null, seed = null, tutorial = true, allowRetry = true,
+export function runCamelRace(options = {}) {
+  return withMinigameStyles("camel-race", options.signal, () => startCamelRace(options));
+}
+
+function startCamelRace({ host = document.getElementById("stage"), signal = null, seed = null, tutorial = true, allowRetry = true,
   pilot = null, timeScale = 1, best = null, cups = null, cupRecords = {}, debugTools = false, reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);

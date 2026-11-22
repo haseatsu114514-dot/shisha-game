@@ -3,6 +3,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+export function responseCacheInfo(response) {
+  const workerSource = response.fromServiceWorker ? response.serviceWorkerResponseSource || "unknown" : null;
+  return {
+    workerSource,
+    cached: !!(response.fromDiskCache || response.fromPrefetchCache || workerSource === "http-cache" || workerSource === "cache-storage"),
+  };
+}
+
 export async function recordLoad(page, base) {
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Network.enable");
@@ -56,7 +64,9 @@ export async function recordLoad(page, base) {
     r.contentLength = Number(e.response.headers["Content-Length"] || e.response.headers["content-length"]) || null;
     r.contentRange = e.response.headers["Content-Range"] || e.response.headers["content-range"] || null;
     r.compressed = !!(e.response.headers["Content-Encoding"] || e.response.headers["content-encoding"]);
-    r.cached ||= !!(e.response.fromDiskCache || e.response.fromPrefetchCache || e.response.fromServiceWorker);
+    const { workerSource, cached } = responseCacheInfo(e.response);
+    r.workerSource = workerSource;
+    r.cached ||= cached;
     r.headerBytes = e.response.encodedDataLength || 0;
   });
   cdp.on("Network.responseReceivedExtraInfo", (e) => {
@@ -102,6 +112,13 @@ export async function recordLoad(page, base) {
       // 未完の非圧縮音声はencodedDataLengthに未反映の受信分があるのでdecodedも使う（途中時点の下限）。
       let body = r.cached || r.revalidated ? 0
         : Math.max(0, totalEncodedBytes == null ? Math.max(receivedEncodedBytes, r.compressed ? 0 : r.decodedBodyBytes) : totalEncodedBytes - headerBytes);
+      if (r.workerSource && !r.cached && !r.revalidated) {
+        // The page target reports zero loadingFinished bytes for SW fetches.
+        // Only a confirmed network source can be attributed to the network.
+        body = r.workerSource === "network"
+          ? ((r.complete && !r.failed && r.contentLength) || Math.max(receivedEncodedBytes, r.compressed ? 0 : r.decodedBodyBytes))
+          : 0;
+      }
       // HTTP/2では応答イベントのヘッダ量が0でも、完了量にはプロトコルの分が含まれることがある。
       // 完了した本文のContent-Lengthが分かるときは、それを上限にする（途中の音声は膨らませない）。
       if (r.complete && !r.failed && r.contentLength) body = Math.min(body, r.contentLength);
@@ -141,7 +158,7 @@ export async function recordLoad(page, base) {
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, JSON.stringify({
       measuredAt: new Date().toISOString(), base, ...metadata,
-      methodology: "Chromium CDP Network events, subtracting known response headers and capping completed bodies at Content-Length when available; cache/304 bodies count as zero network bytes. Unfinished/canceled audio is a lower bound at the snapshot, not a complete download. uniqueSourceBytes sums the full local files actually requested, once per URL, separately from external transfers and partial media buffering or cache. Interpret transfers with the chosen host's caching/compression/range behavior; local observations are not public hosting measurements.",
+      methodology: "Chromium CDP Network events, subtracting known response headers and capping completed bodies at Content-Length when available. Cache/304 bodies count as zero network bytes. Service worker network responses use the completed Content-Length or observed body bytes; unattributed worker bytes are excluded. Unfinished/canceled audio is a lower bound at the snapshot, not a complete download. uniqueSourceBytes sums the full local files actually requested, once per URL, separately from external transfers and partial media buffering or cache. Interpret transfers with the chosen host's caching/compression/range behavior; local observations are not public hosting measurements.",
       phases,
     }, null, 2) + "\n");
   }

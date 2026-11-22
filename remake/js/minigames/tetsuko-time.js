@@ -1,4 +1,5 @@
 import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-mastery.js";
+import { withMinigameStyles } from "./minigame-styles.js";
 import { emit } from "../core/bus.js";
 // 「てつこといっしょ / TETSUKO TIME」（#2454）の画面と本編との確定点。猫の状態・反応・自律行動は tetsuko-model.js。
 //
@@ -197,7 +198,11 @@ const BIT = Object.freeze({ heart: "♥", spark: "✦", note: "♪", zzz: "z" })
  * @param {AbortSignal} [ctx.signal] 中断シグナル（pagehide などで閉じる）
  * @returns {Promise<object>} sessionResult。中断・LOAD では { meaningful:false }
  */
-export async function openTetsukoTime({ value = null, visitKey = null, bg = null, isCurrent = () => true, signal = null } = {}) {
+export function openTetsukoTime(options = {}) {
+  return withMinigameStyles("tetsuko", options.signal, () => startTetsukoTime(options));
+}
+
+async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCurrent = () => true, signal = null } = {}) {
   const idle = { meaningful: false, visitKey };
   if (signal?.aborted || !isCurrent() || !value) return idle;
   const [{ el }, ui, audio, data, kit] = await Promise.all([

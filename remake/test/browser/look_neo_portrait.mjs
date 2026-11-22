@@ -668,7 +668,11 @@ await suite("look_neo_portrait", async (check) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator(shellFor("title")).waitFor({ timeout: 10000 });
     await page.setViewportSize(WIDE.viewport);
-    await page.waitForFunction(() => document.querySelector(".retro-shell").hidden && !document.documentElement.dataset.retroShell);
+    await page.waitForFunction(() => !document.querySelector(".retro-shell") && !window.__retroLook && !document.documentElement.dataset.retroShell);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator(shellFor("title")).waitFor();
+    await page.setViewportSize(WIDE.viewport);
+    await page.waitForFunction(() => !document.querySelector(".retro-shell"));
     assert.equal((await rootState(page)).viewportOpacity, "1");
   }, { ...WIDE, pageEntry: entry });
 

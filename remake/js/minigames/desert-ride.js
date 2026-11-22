@@ -5,6 +5,7 @@
 // 2026-11-02 オーナー「もっとスピード感やエフェクトを派手に」: 速さで広がる視界（人物の大きさは保つ）・傾くカメラ・強いスピード線・砂しぶき・
 // 着地の輪・得点の浮き出し・トリックのスロー・ブーストの残像。動き軽減ではカメラの動き・揺れ・スロー・閃光・速度線を止める。
 // 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。
+import { withMinigameStyles } from "./minigame-styles.js";
 import { el } from "../core/util.js";
 import { SE, unlockAudio, createDesertRideSe, desertZapGap, currentBgm, playBgm, preloadBgm, resetBgmTempo } from "../core/audio.js";
 import { BOOST, EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
@@ -249,7 +250,11 @@ const HOWTO = {
  * @param opts.onTier 段を選んだ時に呼ぶ（本編は rememberTier と保存）
  * onResult は { tiers, cleared, note } を返してよい（記録した後の開いた段・クリア済みの段・結果のカードの一言。本編は tierUnlockNote）
  */
-export function runDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, best = null, legacyBest = null, seed, courseId, rivals = ["noor"],
+export function runDesertRide(options = {}) {
+  return withMinigameStyles("desert-ride", options.signal, () => startDesertRide(options));
+}
+
+function startDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, best = null, legacyBest = null, seed, courseId, rivals = ["noor"],
   tiers = TIERS, tier = "normal", cleared = [], tierNotes = null, easyBest = null, onTier = null,
   reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = null, speedUp = 1 } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));

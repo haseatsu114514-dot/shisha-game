@@ -549,6 +549,9 @@ await suite("ichidai", async (check) => {
   // 本編（index.html）の一台勝負でも、札は A 案の組み（ichidai-skin-signs.css）で出る。拡大札の人物は顔が欄に収まり、文は切れない。
   // 準備の場の葉の名前は2行まで・長音や小さい字で行を始めない・右上の残り枚数の丸に隠れない（2026-11-13 #3257 第2段階の確かめ直し）
   await check("in-game-cards-use-the-adopted-design", async (page) => {
+    const earlyStyles = await page.evaluate(() => performance.getEntriesByType("resource")
+      .filter(r => /\/css\/(?:camel-race|desert-ride|ichidai|tetsuko)[\w-]*\.css(?:\?|$)/.test(r.name)).map(r => r.name));
+    assert.deepEqual(earlyStyles, [], "タイトルでは各ミニゲームの専用 CSS を取得しない");
     await page.evaluate(async () => {
       const { runIchidai } = await import("./js/minigames/ichidai.js");
       window.__run = runIchidai({ host: document.getElementById("stage"), config: { kit: "a", tournament: "practice", level: 1 }, seed: 7, opponent: { id: "sumi", name: "スミさん" } });
