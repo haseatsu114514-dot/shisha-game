@@ -27,6 +27,7 @@ export const DB = {
   equipById: {},
   baito: [],          // バイトの接客イベント（ch1 で使うカテゴリのみ）
   dialogues: {},      // dialogue_id -> dialogue
+  confessionDialogueLoaded: false,
   loverEventsLoaded: false, // 節目なしと、台本の取得前を区別する
   relationshipMemories: {}, // 実際に読んだ交流の記憶（id -> 記録）
   glossary: [],
@@ -127,7 +128,7 @@ function dialogueLoader(file, onLoaded = () => {}) {
 export const loadCinemaDialogue = dialogueLoader(CINEMA_DIALOGUE_FILE);
 export const loadTournamentCraftDialogue = dialogueLoader(TOURNAMENT_CRAFT_DIALOGUE_FILE);
 export const loadVenueArrivals = dialogueLoader(VENUE_ARRIVAL_DIALOGUE_FILE);
-export const loadConfessionDialogue = dialogueLoader("confession");
+export const loadConfessionDialogue = dialogueLoader("confession", () => { DB.confessionDialogueLoaded = true; });
 export const loadLoverEvents = dialogueLoader("lover_events", () => { DB.loverEventsLoaded = true; });
 
 export async function loadAll(onProgress = () => {}, onManifest = () => {}) {
