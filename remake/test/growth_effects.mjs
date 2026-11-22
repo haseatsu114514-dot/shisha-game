@@ -266,6 +266,11 @@ const prices=()=>SHOP_FLAVORS.map(id=>shopFlavorPrice(DB.flavorById[id],SHOP_FLA
 const firstPrices=prices();assert.equal(firstPrices.filter((price,i)=>price<DB.flavorById[SHOP_FLAVORS[i]].price).length,2);
 assert.deepEqual(prices(),firstPrices);assert.equal(JSON.stringify(core.state),shopBefore);
 core.save();core.load();assert.deepEqual(prices(),firstPrices);
+const {WIDEHANGA_FLAVORS} = await import("../js/daily/shop-catalogs.js");
+const day19 = { ...core.state, chapter: 2, day: 19, weatherSeed: 123 };
+const availableDeals = WIDEHANGA_FLAVORS.filter(id => shopFlavorPrice(DB.flavorById[id], WIDEHANGA_FLAVORS, day19) < DB.flavorById[id].price);
+assert.equal(availableDeals.length, 2);
+assert(availableDeals.every(id => (DB.flavorById[id].chapter_min || 1) <= 2), "未発売のライム・ビスケットで柚ヶ谷の特価枠を消費しない");
 growth.setGrowthPreview(false);assert.deepEqual(prices(),SHOP_FLAVORS.map(id=>DB.flavorById[id].price));
 // 単体の美学は、授業を習い選んだ一種の一台だけ。旧来の単体を弱くしない。
 growth.setGrowthPreview(true);core.newGame();growth.ensureGrowth().nodes=["M-S2"];

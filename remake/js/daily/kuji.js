@@ -157,7 +157,7 @@ export function kujiClerkLine(box, { first = false, rio = false, rioName = "凛�
 }
 
 /** ショップの「くじ」タブの中身。shop はその店（grades を参照） */
-export function kujiRows(rerender, shop = "home") {
+export function kujiRows(rerender, shop = "home", budget = () => spendableMoney(state)) {
   const view = currentRows = {};
   const session = state, boxes = state.kuji;
   const { chapter, day, slot, phase } = state;
@@ -198,7 +198,7 @@ export function kujiRows(rerender, shop = "home") {
     const drawn = box.drawn, order = box.order;
     // pay: "money"＝1回の値段を払う、"ticket"＝くじ券1枚で1回（限定台くじだけ。お金は使わない）
     const affordable = (count, pay) => pay === "ticket" ? !!g.limited && count === 1 && kujiTickets() >= 1
-      : spendableMoney(state) >= price * count;
+      : budget() >= price * count;
     const buyButton = (count, label, test, pay = "money") => {
       const button = el("button.btn.small", {
         text: label,
