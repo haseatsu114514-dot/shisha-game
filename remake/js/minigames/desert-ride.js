@@ -366,9 +366,11 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (isInterrupted() || !game || game.finished || !mode || countdown > 0) return;
       const kind = boost(game);
       if (kind) { onBoostEvent(kind); return; }
+      rideSe.cue("boostShort");
       hudNodes.gaugeFeedback?.cancel();
       const highlight = { outline: "2px solid #fff2c4", outlineOffset: "2px" };
-      hudNodes.gaugeFeedback = hudNodes.gaugeBox.animate(reducedMotion
+      const calm = reducedMotion || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      hudNodes.gaugeFeedback = hudNodes.gaugeBox.animate(calm
         ? [highlight, { outlineColor: "transparent" }]
         : [{ ...highlight, translate: "-4px" }, { ...highlight, translate: "4px" }, { outlineColor: "transparent", translate: "0" }],
       { duration: 260, easing: "ease-out" });
@@ -408,7 +410,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         image.src = imgFileUrl(file);
       }
       const pointers = new Set();
-      const down = event => { if (isInterrupted()) return; event.preventDefault(); unlockAudio(); pointers.add(event.pointerId); button.setPointerCapture?.(event.pointerId); button.classList.add("on"); on(); };
+      const down = event => { if (isInterrupted()) return; event.preventDefault(); unlockAudio({ warm: false }); pointers.add(event.pointerId); button.setPointerCapture?.(event.pointerId); button.classList.add("on"); on(); };
       const up = event => { pointers.delete(event.pointerId); if (!pointers.size) { button.classList.remove("on"); off(); } };
       releaseButtons.push(() => { pointers.clear(); button.classList.remove("on"); });
       button.addEventListener("pointerdown", down);
@@ -439,7 +441,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     );
     root.append(el("span.dr-recover-hint", { text: "立て直せる！" }));
     // 画面の上の方をタップしてもジャンプ（ボタンの外に指が出ても続けられる）
-    canvas.addEventListener("pointerdown", event => { if (mode) { event.preventDefault(); unlockAudio(); act(); } });
+    canvas.addEventListener("pointerdown", event => { if (mode) { event.preventDefault(); unlockAudio({ warm: false }); act(); } });
     quit.addEventListener("click", () => {
       if (!mode) return;
       if (goal) { goal.t = FEEL.goalAfter; return; } // ゴールした後は「やめる」ではなく結果へ（記録は残っている）
@@ -558,6 +560,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (preparing) return;
       preparing = true;
       try {
+        unlockAudio({ warm: false });
         const runArt = loadDesertArt({ rivals: kind === "practice" ? [] : [who] });
         const tintWho = kind === "practice" ? null : rivals.includes(who) ? who : "noor";
         if (runArt.pending() || !rideSe.isReady()) {
@@ -572,7 +575,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function startRun(kind, who = raceWith) {
       const thisRun = ++runId;
       resetInput();
-      unlockAudio();
+      unlockAudio({ warm: false });
       rideSe.stop();
       raceWith = rivals.includes(who) ? who : "noor";
       rideBgm = RIDE_BGM[kind === "practice" ? "practice" : raceWith];
