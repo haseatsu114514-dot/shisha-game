@@ -289,15 +289,11 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     const ticket = { ...cast, chapter: state.chapter, day: state.day, slot: state.slot, seed, growth };
     lastGain = null;
     try {
-      if (!scenario.dialogues) host.replaceChildren(el("div.trpg-loading", [
-        el("p", { role: "status", text: "選んだ物語を読み込んでいます…" }),
-        el("button.trpg-button", { type: "button", text: closeLabel, onclick: close, dataset: { test: "trpg-campaign-close" } }),
-      ]));
       let sessionResources = resources;
       if (!scenario.dialogues) {
         root = el("div.trpg-loading", [
           el("p", { role: "status", text: "選んだ物語を読み込んでいます…" }),
-          el("button.trpg-button", { type: "button", text: closeLabel, onclick: close }),
+          el("button.trpg-button", { type: "button", text: closeLabel, onclick: close, dataset: { test: "trpg-campaign-close" } }),
         ]);
         host.replaceChildren(root);
         sessionResources = await loadTrpgResources({
