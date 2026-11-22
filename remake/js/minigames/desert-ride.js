@@ -453,7 +453,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function showMenu(message = "") {
       rideSe.stop();
       resetBgmTempo();
-      mode = null; game = null; tut = null; bot = null; goal = null; pendingResult = null; hitStopT = 0; orbs = []; fxCtx.clearRect(0, 0, W, H);
+      mode = null; game = null; tut = null; bot = null; goal = null; pendingResult = null; hitStopT = 0; orbs = []; clearOrbCanvas();
       controls.hidden = true; quit.hidden = true; caption.textContent = ""; delete caption.dataset.kind; hud.replaceChildren();
       startPop.classList.remove("show"); versus.classList.remove("show");
       setPhase("menu");
@@ -589,7 +589,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       resetBgmTempo();
       lead = 0; curveCueOn = false;
       particles = []; rings = []; floaters = []; clearTimeout(cutinTimer); cutin.classList.remove("show"); cutin.replaceChildren(); popT = 0; slowT = 0; halfShown = 0; bot = null; botMemo = {}; botLag = 0; zapClock = 0.35; zapBurstT = 0; zapBurstShown = false;
-      hitStopT = 0; shake = { t: 0, life: 1, ax: 0, ay: 0 }; flash = { t: 0, life: 1, peak: 0 }; flashDarkT = 0; lastLand = null; auraStartT = -1; pendingChips = []; orbs = []; orbBank = 0; lastGauge = 0; gaugePulseT = 0; rivalFx = { dust: [], rings: [], last: null, boostStartT: -9 }; fxCtx.clearRect(0, 0, W, H); smashFlash.clear(); goal = null; pendingResult = null;
+      hitStopT = 0; shake = { t: 0, life: 1, ax: 0, ay: 0 }; flash = { t: 0, life: 1, peak: 0 }; flashDarkT = 0; lastLand = null; auraStartT = -1; pendingChips = []; orbs = []; orbBank = 0; lastGauge = 0; gaugePulseT = 0; rivalFx = { dust: [], rings: [], last: null, boostStartT: -9 }; clearOrbCanvas(); smashFlash.clear(); goal = null; pendingResult = null;
       Object.assign(view, { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0, boost: 0 });
       shownKmh = 0; // スタートの合図の間は止まっている（2026-11-13 オーナー「スタートのカウントのときも30キロあるのおかしい」）
       // スタートの合図: その相手との最初の一本は 3・2・1・GO を COUNTDOWN 秒で。2本目からは同じ合図を短く（すぐ滑り直せる）
@@ -1610,7 +1610,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       // コースの外の深い砂: 端からなだらかに濃くする（縁をくっきり描かない）
       for (let i = points.length - 1; i > 0; i--) {
         const far = points[i], near = points[i - 1];
-        const fade = 1 - Math.min(1, far.dz / 220);
+        if (far.dz >= 220) continue; // この先は左右とも完全に透明
+        const fade = 1 - far.dz / 220;
         for (const [from, to, alpha] of [[1.0, 1.12, 0.05], [1.12, 1.3, 0.09], [1.3, 3.2, 0.13]]) {
           ctx.fillStyle = `rgba(120,70,30,${alpha * fade})`;
           for (const side of [-1, 1]) {
@@ -2477,9 +2478,14 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     }
     /** HUD の上の面に、ゲージへ飛ぶ光の粒を描く。行き先は、ゲージの今の端。
      * 矩形は ResizeObserver で保持し、毎フレーム getBoundingClientRect を読まない（書いた直後に読むと強制同期レイアウトになる。2026-11-14 軽量化）。 */
-    let orbRects = null, orbRectsDirty = true;
-    function drawOrbs() {
+    let orbRects = null, orbRectsDirty = true, orbCanvasDirty = false;
+    function clearOrbCanvas() {
+      if (!orbCanvasDirty) return;
       fxCtx.clearRect(0, 0, W, H);
+      orbCanvasDirty = false;
+    }
+    function drawOrbs() {
+      clearOrbCanvas();
       if (hudNodes?.gaugeBox) { const gain = gaugePulseT > 0 ? "on" : ""; if (hudNodes.gaugeBox.dataset.gain !== gain) hudNodes.gaugeBox.dataset.gain = gain; }
       if (!orbs.length || !hudNodes?.gaugeBox) return;
       if (orbRectsDirty || !orbRects) {
@@ -2497,6 +2503,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       fxCtx.lineCap = "round"; fxCtx.lineJoin = "round";
       for (const o of orbs) {
         if (o.age < 0) continue;
+        orbCanvasDirty = true;
         const k = Math.min(1, o.age / o.life), e = k * k; // 加速しながらゲージへ吸い込まれる
         const cx = (o.x0 + tx) / 2 + o.bend, cy = Math.min(o.y0, ty) - o.lift;
         const x = (1 - e) * (1 - e) * o.x0 + 2 * (1 - e) * e * cx + e * e * tx, y = (1 - e) * (1 - e) * o.y0 + 2 * (1 - e) * e * cy + e * e * ty;

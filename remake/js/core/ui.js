@@ -415,7 +415,12 @@ export async function smokeWipe(mid, { color = "light" } = {}) {
   const veil = el("div.wipe-smoke");
   const haze = el("div.wipe-haze", { style: { backgroundImage: `url("${smokeArt().haze}")` } });
   w.append(veil, haze);
-  const rise = (ms) => haze.animate([{ top: "125%", opacity: 0 }, { top: "23%", opacity: 0.6, offset: 0.5 }, { top: "-75%", opacity: 0 }], { duration: ms, easing: "cubic-bezier(.45,0,.55,1)" });
+  // smokeCurtain と同じ軌道。煙の高さは親の半分なので、親の102%の移動は煙自身の204%。
+  const rise = (ms) => haze.animate([
+    { transform: "translateY(0%)", opacity: 0 },
+    { transform: "translateY(-204%)", opacity: 0.6, offset: 0.5 },
+    { transform: "translateY(-400%)", opacity: 0 },
+  ], { duration: ms, easing: "cubic-bezier(.45,0,.55,1)" });
   SE.whoosh();
   try {
     // 1. 床から煙が昇って覆う（上下を返して、逆向きのにじみを下から上へ）
