@@ -212,7 +212,7 @@ export function createMapScene(shell, painter) {
     const banner = text(info?.querySelector(".mi-banner"));
     shell.setStatus(guide && !selected ? banner || "どこへ行く？" : "どこへ行く？", hud?.moves ? `行動 あと${hud.moves}回` : hud?.phase || "");
 
-    // 下端の一言: 案内・約束の知らせ・期限・明日の天気（行き先を選んでいる間は、現行と同じく案内と知らせだけ）
+    // 下端の一言: 案内・約束の知らせ・期限・明日の天気。選択中は、現行の行き先に添えた一言も写す
     // 案内の箱にボタンがある間（駅の行き先・配達メモなど）は、その箱の見出しと説明を出す
     if (actions.length) {
       shell.setCaption([...(info?.querySelectorAll(".mi-desc, p") || [])].map(text).filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(" "), banner);
@@ -222,9 +222,10 @@ export function createMapScene(shell, painter) {
       ? [...node.children].map(text).filter(Boolean).join("：") : text(node))).filter(Boolean).join(" ");
     const lead = guide || notice;
     const reminder = selected ? "" : text(info?.querySelector(".mi-reminder"));
+    const visitHint = selected ? text(info?.querySelector('[data-test="map-visit-hint"]')) : "";
     const hint = selected || lead || reminder ? "" : text(info?.querySelector(".mi-desc"));
     const foot = selected ? "" : text(info?.querySelector(".mi-foot"));
-    if (!actions.length) shell.setCaption([lead, reminder, hint, foot].filter(Boolean).join("　"), guide ? "GUIDE" : "");
+    if (!actions.length) shell.setCaption([lead, reminder, visitHint || hint, foot].filter(Boolean).join("　"), guide ? "GUIDE" : "");
 
     // 本体のボタン（HUD の LIME・MENU。章によって data-test が違うので、HUD の部品の名前で探す）
     const reel = map.querySelector(".reel-widget .rw-lamp-wrap");
