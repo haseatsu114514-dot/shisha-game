@@ -436,6 +436,23 @@
 
 /* 同じアルミと作業パネルで、開始前だけ配置を選ぶ。 */
 .ht-preview { width: 430px; height: 430px; cursor: default; touch-action: auto; }
+.foil-reuse-dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.foil-reuse-dot > .foil-hole { pointer-events: none; }
+.foil-reuse-dot:is([aria-pressed="true"], :focus-visible) {
+  outline: 3px solid #ffbf52;
+  background: #3c1d08a6;
+  z-index: 1;
+}
+.hole-reuse[aria-pressed="true"] { box-shadow: inset 0 0 0 2px currentColor; }
 .ht-side { flex: 1; min-width: 0; max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; scrollbar-width: thin; }
 .ht-side > * { flex-shrink: 0; }
 .ht-title { font-size: 22px; color: var(--accent); }
