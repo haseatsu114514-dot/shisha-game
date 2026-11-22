@@ -179,6 +179,7 @@ function storyOpenByHeart(id) {
 /** 店に通って親しくなってから、店内で正体がつながる一度だけの会話。 */
 export const mintoIdentityRevealDue = () => !state.flags._minto_identity_revealed
   && storyCount("minto") >= 2 && affinityLevel("minto") >= 3;
+const mintoRevealAtVisit = charId => charId === "minto" && mintoIdentityRevealDue() && !!DB.dialogues.ch1_minto_identity_reveal;
 /** 夜の2階で試作品を確かめる一度きりの回（#1696）。固有会話3本目の後、新しい話が無い来店で読む。 */
 const RIO_PROTOTYPE = "ch1_rio_prototype_night";
 const RIO_PROTOTYPE_SEEN = `_spot_seen_${RIO_PROTOTYPE}`;
@@ -386,6 +387,21 @@ export function chapterTalkDue(charId, s = state) {
  */
 let chapterVisitDue = () => false;
 export function setChapterVisitDue(fn) { chapterVisitDue = typeof fn === "function" ? fn : () => false; }
+
+/** 第2章の地元の店で、今の来店で章内の短い会話へ進めるか。 */
+export function hasChapterTwoVisitContinuation(spot) {
+  if (state.chapter !== 2 || (spot.region || "home") !== "home") return false;
+  const tonari = spot.kind === "tonari";
+  const showroom = spot.id === "shop";
+  if (!tonari && !showroom && spot.kind !== "rival") return false;
+  const charId = tonari ? "tsumugi" : showroom ? "rio" : spot.charId;
+  if (!chapterTalkDue(charId) || chapterVisitDue(charId) || afterChapterVisitDue(charId)
+    || mintoRevealAtVisit(charId) || questionVisitDue(charId)) return false;
+  if (tonari) return state.visitedDay.tonari_customer !== state.day && tsumugiAtTonari(state);
+  if (showroom) return !rioUnavailable(state);
+  return true;
+}
+
 /** 次に会うと新しいイベントがあるか（固有会話・途中の質問・好感度MAXの締めくくり）。 */
 export function hasNewStory(charId) {
   if (chapterVisitDue(charId) || chapterTalkDue(charId)) return true;
@@ -571,7 +587,7 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     }
     const afterChapter = afterChapterVisitDue(charId);
     // 正体がつながる回・途中の質問を読む来店では、章の間だけの会話は次の来店へ残す（下の分岐の順と同じ）。
-    const mintoReveal = charId === "minto" && mintoIdentityRevealDue() && !!DB.dialogues.ch1_minto_identity_reveal;
+    const mintoReveal = mintoRevealAtVisit(charId);
     const chapterTalk = afterChapter || mintoReveal || questionVisitDue(charId) ? null : chapterTalkDue(charId);
     // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。章明けの再訪・章の間だけの会話・♥5後の場面は自前の来店描写があるので挨拶を挟まない。
     if (welcome && state === owner && idx > 0 && !afterChapter && !chapterTalk && bondAfter?.kind !== "story" && DB.dialogues[welcome]) {
