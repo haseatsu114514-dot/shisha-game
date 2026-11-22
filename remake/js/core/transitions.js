@@ -172,7 +172,12 @@ function smokeCurtain(host, { fast = false, reduced = false } = {}) {
           const easing = "cubic-bezier(.45,0,.55,1)";
           // 2枚のマスクを少しずらして送り、境目の形を変えながら昇らせる。煙は境目の高さについていく。
           const wipe = move(old, [MASK("50% 0%, 50% 0%"), { ...MASK("50% 46%, 50% 56%"), offset: 0.5 }, MASK("50% 100%, 50% 100%")], ms, { easing, fill: "forwards" });
-          move(haze, [{ top: "125%", opacity: 0 }, { top: "23%", opacity: 0.55, offset: 0.5 }, { top: "-75%", opacity: 0 }], ms, { easing, fill: "forwards" });
+          // 煙の高さは親の50%。top:125% は固定し、同じ高さ（125→23→−75%）を transform で通る。
+          move(haze, [
+            { transform: "translateY(0%)", opacity: 0 },
+            { transform: "translateY(-204%)", opacity: 0.55, offset: 0.5 },
+            { transform: "translateY(-400%)", opacity: 0 },
+          ], ms, { easing, fill: "forwards" });
           await wipe;
         }
         old.remove();
