@@ -11,6 +11,7 @@ import { playIncarnation, playSceneCard, playResultCut, playClueCard, impact } f
 import { playRollShow, preloadSkillLogo } from "./roll-show.js";
 import { createD20, restPose } from "./dice3d.js";
 import { autoWrap } from "../vn/text.js";
+import { hasPictureBook, playPictureBook } from "./picture-book.js";
 
 // 調べる場所の印の半径（見える輪。スマホでは押せる範囲が広いが、輪は同じ大きさ）。ワイドでの上下の切り方に使う
 const ROOM_SPOT_REACH = 28;
@@ -159,6 +160,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const log = [];
   let frames = [], cursor = 0, afterTalk = null, afterFocus = null, busy = false, disposed = false, choiceField = null;
   let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false, searchTimer = null;
+  let pictureBook = null;
   // 演出（TRF08〜10）: 転生は1卓に一度（しおりから再開した卓は、もう物語の中）。場面の題の札は場面ごとに一度。
   let incarnated = resumed, staging = null, endingRevealed = false, campaignEnding = null, sceneFx = null, clueFx = null, clubGained = null;
   const effects = [], carded = new Set();
@@ -617,8 +619,15 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     root.classList.add("trpg-idle"); next.hidden = true;
     setSpeech(text); // 待機の一言は字が小さい（.trpg-idle）ので、その大きさで測る
   }
-  function start() {
-    if (busy || overlay || session.snapshot().phase !== "cover") return;
+  async function start() {
+    if (busy || overlay || pictureBook || session.snapshot().phase !== "cover") return;
+    if (!resumed && hasPictureBook(scenario)) {
+      pictureBook = new AbortController();
+      root.dataset.phase = "picturebook";
+      const read = await playPictureBook(root, { scenario, signal: pictureBook.signal });
+      pictureBook = null;
+      if (disposed || !read) return;
+    }
     session.start(); syncChrome();
     audio.play("open");
     // Session zero: everyone at the table says who they will play before the story begins.
@@ -1724,6 +1733,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (disposed) return;
     disposed = true;
     entrance.cancel();
+    pictureBook?.abort();
     for (const effect of effects) effect.cancel();
     if (timer) clearTimeout(timer);
     clearTimeout(tipTimer); clearTimeout(searchTimer);

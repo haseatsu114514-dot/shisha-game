@@ -7090,7 +7090,7 @@ body:not(:root) .axe-bar-menu .axe-bar-tools > .gear-offer { flex: 0 1 auto; min
 .trpg-library[data-many="true"] .trpg-library-cast { gap: 8px; margin-bottom: 8px; }
 .trpg-library[data-many="true"] .trpg-library-cast > div { font-size: 12px; }
 .trpg-library[data-many="true"] .trpg-library-face { width: 28px; height: 32px; }
-.trpg-library[data-many="true"] .trpg-library-copy > button { min-height: 44px; font-size: 15px; }
+.trpg-library[data-many="true"] :is(.trpg-library-copy, .trpg-library-actions) > button { min-height: 44px; font-size: 15px; }
 .trpg-library .trpg-scene-fallback { position: relative; width: 100%; height: 100%; display: grid; place-items: center; }
 .trpg-library .trpg-scene-fallback-title, .trpg-campaign .trpg-scene-fallback-title { font-size: 18px; letter-spacing: .2em; color: #ffffff59; }
 .trpg-campaign-books[data-many="true"] { grid-template-columns: repeat(3, 1fr); gap: 14px; }
@@ -8496,6 +8496,14 @@ html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > .trpg-but
 /* しおりのある本: 「続きから遊ぶ」「最初から」を横に並べる */
 html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > .trpg-button[data-test^="trpg-resume-"] { grid-column: 1; }
 html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > .trpg-button[data-test^="trpg-resume-"] + .trpg-button { grid-column: 2; }
+html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy:not(:has(> [data-test^="trpg-resume-"])) > .trpg-button:has(+ .trpg-picturebook-open) { grid-column: 1; }
+html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy:has(> .trpg-picturebook-open):has(> [data-test^="trpg-resume-"]) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > .trpg-picturebook-open { grid-column: -2 / -1; }
+html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy:has(> .trpg-picturebook-open) > .trpg-button {
+  padding-inline: 4px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
 /* 遊び終えた本: 結末の名前・星・見た結末の数。日付と顔ぶれは1行、その夜の呼び名と役は title で */
 html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-memory { margin: 0; padding: 0; border: 0; background: none; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; }
 html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-memory > strong { flex: 1 1 100%; min-width: 0; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -9308,6 +9316,86 @@ html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] :is(.trp
 .trpg-cover-rule { color: #b6bfb3; margin: 20px 0; padding-left: 14px; border-left: 2px solid #a59470; font-size: 18px; line-height: 1.7; }
 .trpg-cover-actions { display: flex; gap: 14px; margin-top: auto; }
 .trpg-cover-actions .primary { flex: 1; min-height: 68px; font-size: 23px; }
+.trpg-picturebook {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(160deg, #1d3a44, #0c1b22 70%);
+  touch-action: manipulation;
+  cursor: pointer;
+  outline: none;
+}
+.trpg-picturebook::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, #081519bf, transparent 22%, transparent 69%, #081519b3);
+}
+.trpg-picturebook-image {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.trpg-picturebook-header {
+  position: absolute;
+  top: 28px;
+  left: 42px;
+  right: 42px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  color: #fff0d2;
+  text-shadow: 0 2px 8px #071719;
+}
+.trpg-picturebook-title { font-size: 22px; font-weight: 600; letter-spacing: .06em; }
+.trpg-picturebook-number { font-size: 20px; font-variant-numeric: tabular-nums; letter-spacing: .08em; }
+.trpg-picturebook-tools, .trpg-picturebook-nav { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.trpg-picturebook-caption {
+  position: absolute;
+  inset: auto 42px 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  min-height: 116px;
+  padding: 19px 26px;
+  border: 1px solid #fff0c9;
+  outline: 1px solid #9a815c;
+  outline-offset: -6px;
+  background: linear-gradient(125deg, #f3e8cc, #ded0ad);
+  box-shadow: 0 8px 30px #08151980;
+  color: #263331;
+}
+.trpg-picturebook:not([data-page]) .trpg-picturebook-caption { visibility: hidden; }
+.trpg-picturebook-text { margin: 0; font-size: 26px; line-height: 1.65; letter-spacing: .03em; overflow-wrap: anywhere; }
+.trpg-picturebook .trpg-button { min-height: 50px; padding: 8px 17px; font-size: 18px; white-space: nowrap; }
+.trpg-picturebook .trpg-picturebook-close { width: 50px; padding: 0; font-size: 25px; }
+@keyframes trpg-picturebook-appear { from { opacity: .65; } }
+@media (prefers-reduced-motion: no-preference) {
+  .trpg-picturebook[data-motion="full"] .trpg-picturebook-image { animation: trpg-picturebook-appear .24s ease-out; }
+}
+html:root[data-density="phone"] .trpg-picturebook-header { inset: 18px 24px auto; }
+html:root[data-density="phone"] .trpg-picturebook-caption { inset: auto 24px 20px; gap: 16px; padding: 16px 20px; }
+html:root[data-density="phone"] .trpg-picturebook :is(.trpg-picturebook-title, .trpg-picturebook-text) { font-size: var(--phone-text, 30px); }
+html:root[data-density="phone"] .trpg-picturebook-number { font-size: var(--phone-sub, 25px); }
+html:root[data-density="phone"] .trpg-picturebook .trpg-button {
+  min-width: calc(44px / var(--k, 1));
+  min-height: max(var(--phone-tap, 72px), calc(44px / var(--k, 1)));
+  padding-inline: 12px;
+  font-size: var(--phone-text, 30px);
+}
+html:root[data-density="phone"] .trpg-picturebook .trpg-picturebook-close {
+  width: max(var(--phone-tap, 72px), calc(44px / var(--k, 1)));
+  padding: 0;
+}
 .trpg-overlay { position: absolute; inset: 0; background: #081414c9; display: grid; place-items: center; z-index: 40; padding: 70px; }
 .trpg-modal { position: relative; width: 810px; max-height: 575px; padding: 30px 34px 26px; background: #e4dcc5; color: #263331; border: 1px solid #fbebc7; box-shadow: 0 16px 60px #0008; display: flex; flex-direction: column; }
 .trpg-modal h2 { margin: 0 0 16px; font-size: 28px; font-weight: 700; }
@@ -9486,7 +9574,12 @@ html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] :is(.trp
 .trpg-library-cast > div { display: flex; align-items: center; gap: 5px; font-size: 14px; color: #d6e0d3; }
 .trpg-library-face { display: block; width: 37px; height: 42px; overflow: hidden; position: relative; border-radius: 5px; background: var(--person-color); }
 .trpg-library-face img { position: absolute; width: 140px; height: auto; left: 50%; transform: translateX(-50%); }
-.trpg-library-copy > button { margin-top: auto; min-height: 48px; width: 100%; display: flex; align-items: center; justify-content: space-between; font-size: 19px; }
+.trpg-library-copy > :is(button, .trpg-library-actions) { margin-top: auto; }
+.trpg-library-copy > button,
+.trpg-library-actions > button { min-height: 48px; width: 100%; display: flex; align-items: center; justify-content: space-between; font-size: 19px; }
+.trpg-library-actions { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 8px; }
+.trpg-library-actions > button { min-width: 0; padding-inline: 8px; }
+.trpg-library-actions > .trpg-picturebook-open { justify-content: center; }
 .trpg-library-footer { position: absolute; left: 43px; right: 43px; bottom: 23px; display: flex; justify-content: space-between; gap: 20px; color: #9fbbb1; font-size: 12px; }
 @keyframes trpg-rain { to { background-position: 40px 80px; } }
 @keyframes trpg-breathe { to { opacity: .5; } }
@@ -9706,7 +9799,7 @@ body[data-screen="trpg"] #hud { visibility: hidden; }
   /* 顔の切り抜きは保ったまま、枠ごと大きくする */
   html:root .trpg-root.trpg-library .trpg-library-face { zoom: calc(.75 / var(--k, 1)); }
   html:root .trpg-root.trpg-library .trpg-library-cast { gap: calc(8px / var(--k, 1)); margin-bottom: calc(8px / var(--k, 1)); }
-  html:root .trpg-root.trpg-library .trpg-library-copy > button { min-height: var(--lib-target); font-size: var(--lib-body); }
+  html:root .trpg-root.trpg-library :is(.trpg-library-copy, .trpg-library-actions) > button { min-height: var(--lib-target); font-size: var(--lib-body); }
 }
 
 /* ===== css/vn.css ===== */
@@ -13745,6 +13838,23 @@ body:not(:root) .map .spot-pin.pin-station { width: auto; min-width: 112px; }
 
 /* 同じアルミと作業パネルで、開始前だけ配置を選ぶ。 */
 .ht-preview { width: 430px; height: 430px; cursor: default; touch-action: auto; }
+.foil-reuse-dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.foil-reuse-dot > .foil-hole { pointer-events: none; }
+.foil-reuse-dot:is([aria-pressed="true"], :focus-visible) {
+  outline: 3px solid #ffbf52;
+  background: #3c1d08a6;
+  z-index: 1;
+}
+.hole-reuse[aria-pressed="true"] { box-shadow: inset 0 0 0 2px currentColor; }
 .ht-side { flex: 1; min-width: 0; max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; scrollbar-width: thin; }
 .ht-side > * { flex-shrink: 0; }
 .ht-title { font-size: 22px; color: var(--accent); }
@@ -14842,6 +14952,12 @@ body:not(:root) .bench-top:has(> .bench-mode) > .craft-rank { flex-basis: 100px;
   animation: craft-rank-burst 2.1s cubic-bezier(.2, .8, .2, 1) forwards;
 }
 body.craft-stage .craft-rank-burst { --from-x: 837px; --from-y: 330px; }
+/* 提供後に作業台を開き直す時点から、調整のランクは作業風景側に出す。
+   帯や余白へ戻る途中も炭の札を手前に保つ。 */
+.bench[data-mode="tournament"][data-chapter="5"]:is(:not([data-step]), [data-step="care"]) > .craft-rank-burst { --from-x: 200px; }
+.bench[data-mode="tournament"][data-chapter="5"][data-step="care"]:has(> .craft-rank-burst) > .bench-right:has(.care-places) {
+  z-index: 31;
+}
 @keyframes craft-rank-burst {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(.6); }
   12% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
@@ -16783,6 +16899,23 @@ html:root[data-density="phone"] body:not(:root) .bench .bench-top > .btn { align
 @keyframes nc-stamp-in { from { opacity: 0; transform: translate(-50%, -50%) rotate(-10deg) scale(2.4); } }
 
 /* ---- 最終結果 */
+.tournament-result-reason,
+.ch2-contest:has(> .ch2-contest-board) > .tournament-result-reason {
+  color: #fff1d0;
+  font-size: max(24px, var(--phone-ctl, 24px));
+  font-weight: 800;
+  line-height: 1.35;
+}
+.tournament-heading > .tournament-result-reason { margin-top: 4px; }
+details.ch2-contest-reason { display: block; }
+details.ch2-contest-reason > summary, .tournament-result-details > summary {
+  color: #e8c27a;
+  cursor: pointer;
+  font-size: var(--tournament-phone-sub, 17px);
+  font-weight: 700;
+}
+details.ch2-contest-reason.ts-wait { visibility: hidden; }
+details.ch2-contest-reason[open] > summary, .tournament-result-details[open] > summary { margin-bottom: 6px; }
 .result-table { padding: 26px 44px 24px; display: grid; grid-template-rows: 128px minmax(0, 1fr) 54px; gap: 16px; align-items: stretch; justify-content: stretch; overflow: hidden; }
 .rt-rays { position: absolute; inset: 0; background: repeating-conic-gradient(from 0deg at 50% 0%, #f6c95e12 0 6deg, transparent 6deg 18deg); -webkit-mask: radial-gradient(ellipse 70% 80% at 50% 0%, #000 20%, transparent 70%); mask: radial-gradient(ellipse 70% 80% at 50% 0%, #000 20%, transparent 70%); animation: rays-breathe 3s ease-in-out infinite alternate; pointer-events: none; }
 .rt-confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 2; }

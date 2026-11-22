@@ -3409,6 +3409,30 @@
     "twistIdle": "どう切り抜ける？ 手を選んで、誰が動くか決めよう",
     "planTitle": "旅人への提案"
   },
+  "pictureBook": {
+    "pages": [
+      {
+        "image": "../../img/ui/trpg/picturebook/ordinary-cup/teahouse-room.webp",
+        "alt": "雨の港を望む茶房のカウンターに、カップとノートが置かれている",
+        "text": "閉店まで、もう少し。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/ordinary-cup/nora-harbor.webp",
+        "alt": "雨の港町ノーラの遠景。波止場の灯りが水面に映っている",
+        "text": "港町ノーラ。雨ににじむ港の灯り。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/ordinary-cup/harbor-teahouse.webp",
+        "alt": "閉店前の茶房。店番がカウンターでカップを拭いている",
+        "text": "茶房「波止場の灯」には、雨宿りの客がまだ残っている。店番は最後のカップを拭いている。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/ordinary-cup/oru-arrival.webp",
+        "alt": "濡れた外套の旅人オルが、灯りの漏れる戸口に立っている",
+        "text": "閉店の札に手をかけたとき、濡れた外套の旅人オルが戸口に立った。"
+      }
+    ]
+  },
   "debrief": {
     "smooth": "trpg_ordinary_debrief_smooth",
     "with-detour": "trpg_ordinary_debrief_with_detour"

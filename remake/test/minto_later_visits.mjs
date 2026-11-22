@@ -19,7 +19,7 @@ for (const scene of [timer, cheki]) {
   assert(!/大会|本番|予選|優勝|ドバイ|東京|精肉|自己破産|木成頼|栞/.test(textOf(scene)));
   for (const line of scene.lines) {
     if (!line.text) continue;
-    assert(!line.text.endsWith("。"), line.text);
+    assert.equal(line.text.endsWith("。"), line.speaker === "", line.text);
     assert(!line.text.includes("\n"));
     assert(["", "minto", "hajime"].includes(line.speaker));
   }

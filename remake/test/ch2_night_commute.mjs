@@ -8,14 +8,18 @@ import { pathToFileURL } from 'node:url';
 const root = process.env.A1044_SOURCE_ROOT ? pathToFileURL(path.resolve(process.env.A1044_SOURCE_ROOT) + '/') : new URL('../../', import.meta.url);
 const read = p => fs.readFileSync(new URL(p, root), 'utf8');
 const context = vm.createContext({});
-let state, log, mode, saves, lastDialogue;
+let state, log, mode, saves, lastDialogue, morningChoice;
 // #3097 PR-B: 行き帰りの電車の小品の台本。最後の節で入れるまでは空（従来の短い場面のまま）
 const commuteDB = { dialogues: {} };
 const reset = () => { state = { chapter: 2, day: 18, slot: 2, money: 1000, flags: { _ch2_region: 'widehanga', _ch2_preparation_started: true } }; log = []; mode = 'ok'; saves = 0; statePort.setExport('state', state); };
 const statePort = new vm.SyntheticModule(['state','save'], function() { this.setExport('state', state); this.setExport('save', () => saves++); }, {context});
 const ui = new vm.SyntheticModule(['setBg','modal','showScreen'], function() {
   this.setExport('setBg', async () => { log.push('background'); });
-  for (const n of ['modal','showScreen']) this.setExport(n, () => { throw Error('Unexpected '+n); });
+  this.setExport('showScreen', () => {});
+  this.setExport('modal', async options => {
+    assert(morningChoice, 'Unexpected morning choice');
+    return morningChoice(options);
+  });
 }, {context});
 const playPort = new vm.SyntheticModule(['play'], function() { this.setExport('play', async d => {
   log.push(d.dialogue_id); lastDialogue = d;
@@ -26,7 +30,7 @@ const playPort = new vm.SyntheticModule(['play'], function() { this.setExport('p
 const ports = new Map([['remake/js/core/state.js',statePort],['remake/js/core/ui.js',ui],['remake/js/vn/engine.js',playPort]]);
 function fixed(names, values) { return new vm.SyntheticModule(names, function(){ for(const n of names) this.setExport(n,values[n]); },{context}); }
 ports.set('remake/js/core/data.js', fixed(['bgUrl','DB'],{bgUrl:id=>id,DB:commuteDB}));
-ports.set('remake/js/core/util.js', fixed(['el'],{el:()=>{throw Error('Unexpected el');}}));
+ports.set('remake/js/core/util.js', fixed(['el'],{el:node=>node}));
 ports.set('remake/js/core/city-locations.js',fixed(['CH2_CITY_NAME','HOME_CITY_NAME','HOME_CITY_READING'],{CH2_CITY_NAME:'柚ヶ谷',HOME_CITY_NAME:'地元',HOME_CITY_READING:'じもと'}));
 ports.set('remake/js/core/rules.js',fixed(['TOURNAMENT_DAY'],{TOURNAMENT_DAY:99}));
 ports.set('remake/js/core/chapter-clock.js',fixed(['chapterDay','atChapterFinalDay'],{chapterDay:s=>s.day,atChapterFinalDay:s=>s.day>=99}));
@@ -339,3 +343,67 @@ console.log('PASS: #1925 actual normal/after-close/rest invitation paths return 
   }
 }
 console.log('PASS: #3097 PR-B commute scenes alternate morning/return, one a day, chapter 2 only, after the ticket line with one fare; the photo LIME needs a contact');
+
+// #3947: Confirm the shortcut at the actual choice boundary with the exact round-trip budget.
+function repeatMorning(flags = {}) {
+  reset();
+  Object.assign(state, { slot: 0, money: 400 });
+  for (const { flag } of commute.namespace.COMMUTE_SCENES) state.flags[flag] = true;
+  Object.assign(state.flags, { _ch2_region: 'home', _ch2_last_yuzugaya_day: 17, ...flags });
+}
+const choose = commute.namespace.chooseMorningCity;
+repeatMorning();
+morningChoice = ({ body, options }) => {
+  assert.match(body, /帰りの切符代も200円必要/);
+  assert.equal(state.money, 400);
+  const shortcut = options.find(option => option.test === 'ch2-morning-repeat');
+  assert.match(shortcut.label, /前回と同じ街.*片道200円/);
+  return shortcut.value;
+};
+await choose();
+await choose();
+assert.deepEqual(log, ['background']);
+assert.equal(saves, 1);
+assert.equal(state.flags._ch2_last_yuzugaya_day, 18);
+assert.equal(state.flags._ch2_morning_departed, 18);
+assert.equal(state.flags._ch2_region, 'widehanga');
+assert.equal(state.money, 200);
+assert.equal(state.slot, 0);
+
+for (const [flags, notices, scene] of [
+  [{ _ch2_last_yuzugaya_day: undefined }, [], '__ch2_morning_train'],
+  [{ _ch2_last_yuzugaya_day: 16 }, [], '__ch2_morning_train'],
+  [{}, ['今夜の予定は「試煙会」。'], '__ch2_morning_train'],
+  [{ _ch2_commute_regulars: false }, [], 'ch2_commute_morning_regulars'],
+]) {
+  repeatMorning(flags);
+  morningChoice = ({ body, options }) => {
+    if (notices.length) assert(body.includes(notices[0]));
+    assert(!options.some(option => option.test === 'ch2-morning-repeat'));
+    return options.find(option => option.test === 'ch2-morning-city').value;
+  };
+  await choose(() => notices);
+  assert.deepEqual(log, ['background', scene]);
+  assert.equal(state.money, 200);
+}
+repeatMorning();
+state.money = 399;
+morningChoice = ({ options }) => {
+  assert(!options.some(option => option.value === 'widehanga'));
+  return 'home';
+};
+await choose();
+assert.equal(state.money, 399);
+assert.equal(state.flags._ch2_last_yuzugaya_day, 17);
+
+repeatMorning();
+morningChoice = () => {
+  state = structuredClone(state);
+  statePort.setExport('state', state);
+  return 'widehanga';
+};
+await choose();
+assert.equal(state.money, 400);
+assert.equal(state.flags._ch2_region, 'home');
+assert.equal(saves, 0);
+console.log('PASS: #3947 repeat city confirms once, preserves the fare and slot, and keeps first visits and unread scenes on the ordinary route');

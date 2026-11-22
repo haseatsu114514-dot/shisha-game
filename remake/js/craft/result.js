@@ -15,10 +15,11 @@ import { renewalCraft } from "../core/craft-version.js";
 import { craftRankProgress } from "./rank-hud.js";
 import { mixColor } from "./art.js";
 import { SENSU_BAR } from "./score.js";
-import { castCh1Votes, isSakuraiVotes, SAKURAI, sakuraiFocusOf, ch1RoundPoints } from "./ch1-votes.js";
+import { castCh1Votes, isSakuraiVotes, SAKURAI, sakuraiFocusOf, ch1RoundPoints, ch1BeforeLastStandings } from "./ch1-votes.js";
 import { evaluationOf, judgeComment, judgeDeductionReason } from "./feedback.js";
 import { craftRecognition } from "./recognition.js";
 import { VOTE_SCALE, voteStack as stackOf, judgePanel as panelOf, judgeLegend as legendOf, countUp, JUDGE_LOOK } from "./tournament-graphics.js";
+import { tournamentResultReason } from "./tournament-result-reason.js";
 import { stageLights, voteCeremony, showSting, showConfetti, sparkBurst, bustOf, flyToken,
   localPoint, showMoves, showMode, resultSplash } from "./tournament-show.js";
 
@@ -78,7 +79,7 @@ const ordered = (values) => CONTESTANTS.slice().sort((a, b) => values[b] - value
 const rankOf = (id, values) => 1 + CONTESTANTS.filter(other => values[other] > values[id]).length;
 const header = (eyebrow, title, sub, live = false) => el("header.tournament-heading", [
   el("span.tournament-eyebrow", [live ? el("i.tournament-live", { text: "LIVE" }) : null, eyebrow]),
-  el("h1", { text: title }), el("p", { text: sub }),
+  el("h1", { text: title }), typeof sub === "string" ? el("p", { text: sub }) : sub,
 ]);
 
 /** 会話の中継の枠に出す、いまの順位（確定済みの票を読むだけ。票の無い旧試合は空）。 */
@@ -487,7 +488,10 @@ export function resultTable(cs, rank, attempt = null) {
     const table = attempt?.rulesVersion >= 2 ? attempt.voteAttempt.votes : pointTable(rank);
     const baseVotes = attempt?.voteAttempt?.baseVotes;
     const t = totals(table, JUDGES.length, baseVotes);
-    const order = attempt?.rulesVersion >= 2 ? attempt.voteAttempt.result.rows.map(row => row.id) : ordered(t);
+    const progress = attempt?.rulesVersion >= 2 ? attempt.voteAttempt : null;
+    const standings = progress?.result.rows || ordered(t).map(id => ({ id, rank: rankOf(id, t), points: t[id] }));
+    const reason = tournamentResultReason(standings, { rounds: progress?.picks, beforeLast: ch1BeforeLastStandings(progress, cs.total) });
+    const order = standings.map(row => row.id);
     const P = cs.parts || {};
     const rows = order.map((id, i) => el(`div.rt-row${id === "hajime" ? ".me" : ""}`, { style: { "--i": String(3 - i) }, dataset: { id, rank: String(attempt?.rulesVersion >= 2 ? i + 1 : rankOf(id, t)) } }, [
       el("span.rt-rank.rank-medal", { text: `${attempt?.rulesVersion >= 2 ? i + 1 : rankOf(id, t)}位` }), faceOf(id, ".rt-face"),
@@ -504,6 +508,7 @@ export function resultTable(cs, rank, attempt = null) {
       tabindex: "0", role: "region", "aria-label": "あなたの一台の評価",
     }, [
       el("h4", { text: "あなたの一台" }),
+      progress?.lastPoint && progress.beforeLast ? el("small", { text: `千須の最後の1点は、${nameOf(progress.lastPoint)}へ。` }) : null,
       Number.isFinite(cs.pull?.temp) && !cs.pull.failed ? actualExpressionCard(cs, cs.pull.temp) : null,
       ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["調整1回目", P.care1], ["調整2回目", P.care2]]
         .filter(([k]) => !(k === "穴あけ" && cs.foilSkipped)).map(([k, v]) =>
@@ -526,7 +531,9 @@ export function resultTable(cs, rank, attempt = null) {
       el("i.rt-rays", { "aria-hidden": "true" }),
       el("div.rt-hero", [
         el("span.rt-emblem", { "aria-hidden": "true", dataset: { rank } }, [el("b", { text: rank === 1 ? "1" : String(rank) }), el("small", { text: rank === 1 ? "ST" : "TH" })]),
-        header("SMOKE CROWN CUP ／ FINAL RESULT", rank === 1 ? "CHAMPION" : `${rank}位`, rank === 1 ? "逢縁 はじめ · 次の舞台へ" : "この一台の記録を、次の挑戦へ。"),
+        header("SMOKE CROWN CUP ／ FINAL RESULT", rank === 1 ? "CHAMPION" : `${rank}位`, reason
+          ? el("div.tournament-result-reason", { text: reason, dataset: { test: "tournament-result-reason" } })
+          : rank === 1 ? "逢縁 はじめ · 次の舞台へ" : "この一台の記録を、次の挑戦へ。"),
       ]),
       el("div.rt-layout", [el("section.rt-ranking", actionsInFooter ? { tabindex: "0", "aria-label": "最終順位 · 審査員の持ち点" } : {}, [el("div.rt-ranking-head", [el("h2", { text: "最終順位 · 審査員の持ち点" }), judgeLegend()]), el("div.rt-rows", rows)]), detail]), actionsInFooter ? save : null, btn,
     ]);

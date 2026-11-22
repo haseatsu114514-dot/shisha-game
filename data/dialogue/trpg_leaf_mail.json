@@ -3553,6 +3553,30 @@
     "twistIdle": "……手紙が飛んでいきます。手を選んで、誰が動くか決めてください",
     "planTitle": "みんなの配達プラン"
   },
+  "pictureBook": {
+    "pages": [
+      {
+        "image": "../../img/ui/trpg/picturebook/leaf-mail/01.webp",
+        "alt": "大きな月の下、石畳の坂に街灯がともっている",
+        "text": "時計坂の町。大きな月が、坂の石畳を白く照らしている。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/leaf-mail/02.webp",
+        "alt": "詰所の戸口で、夜番が手にしたランタンを見ている",
+        "text": "詰所の前で、夜番がランタンの火を確かめている。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/leaf-mail/03.webp",
+        "alt": "葉っぱの形の耳をした猫が、封筒をくわえて歩いている",
+        "text": "石畳に、猫の足音がひとつ。葉っぱの耳の猫が、手紙をくわえてやってきた。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/leaf-mail/04.webp",
+        "alt": "郵便猫ミトンが、夜番の足もとに封筒を下ろしている",
+        "text": "ミトンは夜番の前に、宛名のにじんだ封筒をそっと下ろした。"
+      }
+    ]
+  },
   "debrief": {
     "smooth": "trpg_leaf_mail_debrief_smooth",
     "with-detour": "trpg_leaf_mail_debrief_with_detour"

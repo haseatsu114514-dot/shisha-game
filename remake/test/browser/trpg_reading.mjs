@@ -5,6 +5,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, baseURL } from "./support.mjs";
+import { startTrpgStory } from "./trpg_start.mjs";
 
 const PHONE = { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" };
 const LOW = { width: 844, height: 340 }; // Safari のバーが出た横持ち
@@ -31,7 +32,7 @@ async function rollAndSettle(page) {
 }
 const phase = page => page.evaluate(() => window.__trpg.snapshot().phase);
 async function toExplore(page) {
-  await hit(page, "trpg-start"); await lines(page); await rollAndSettle(page);
+  await startTrpgStory(page); await lines(page); await rollAndSettle(page);
   for (let n = 0; n < 2; n++) {
     const topic = page.locator('[data-test^="trpg-topic-"]:not([disabled]):not(.selected)').first();
     if (!await topic.count()) break;
@@ -92,6 +93,30 @@ async function assertReadable(page, scope, label, { taps = true } = {}) {
 }
 
 await suite("trpg-reading", async check => {
+  await check("picture-book-controls-phone", async page => {
+    await hit(page, "trpg-start");
+    const overlay = control(page, "trpg-picturebook");
+    const next = control(page, "trpg-picturebook-next");
+    await overlay.locator('[data-test="trpg-picturebook-next"]:enabled').waitFor();
+    assert.equal(await page.locator(".trpg-root").getAttribute("data-phase"), "picturebook");
+    assert.equal(await phase(page), "cover", "the table remains unstarted while reading");
+    assert.equal(await control(page, "trpg-picturebook-number").textContent(), "1/4");
+    await hit(page, "trpg-picturebook-next");
+    await page.locator('[data-test="trpg-picturebook"][data-page="2"]').waitFor();
+    for (const size of [PHONE.viewport, LOW]) {
+      await resize(page, size);
+      await assertReadable(page, ".trpg-picturebook", `picture book ${size.width}x${size.height}`);
+    }
+    await hit(page, "trpg-picturebook-back");
+    await page.locator('[data-test="trpg-picturebook"][data-page="1"]').waitFor();
+    await hit(page, "trpg-picturebook-skip");
+    await page.locator('[data-test="trpg-picturebook"][data-page="4"]').waitFor();
+    assert.equal(await next.textContent(), "物語へ入る");
+    await hit(page, "trpg-picturebook-next");
+    await overlay.waitFor({ state: "detached" });
+    assert(await control(page, "trpg-next").isVisible(), "the usual opening conversation follows the picture book");
+  }, { ...PHONE, ...preview("scenario=ordinary-cup") });
+
   // 試遊の部活提案は、背の低い横画面で2つ目の返事が画面下へ押し出されていた。
   const campaignProposal = {
     pageEntry: new URL("trpg-campaign-preview.html?harness=1", baseURL).href,
@@ -246,7 +271,7 @@ await suite("trpg-reading", async check => {
     assert(layout.cells.every(cell => cell.inside && cell.lines < 1.8), `${label}: all three odds are visible on one line ${JSON.stringify(layout)}`);
   }
   await check("roll-details-pc", async page => {
-    await hit(page, "trpg-start"); await lines(page); await declare(page);
+    await startTrpgStory(page); await lines(page); await declare(page);
     await assertDetailsFit(page, "listen");
     await hit(page, "trpg-details-toggle");
     await hit(page, "trpg-roll"); await control(page, "trpg-settle").waitFor(); await hit(page, "trpg-settle"); await lines(page);

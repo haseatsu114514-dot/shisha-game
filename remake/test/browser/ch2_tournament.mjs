@@ -514,6 +514,14 @@ await suite('ch2-tournament',async check=>{
     await board.and(page.locator('[data-ceremony="done"]')).waitFor({timeout:1000});
     assert.deepEqual(await contestPoints(page),expected.after);
     assert.equal(await page.locator('.ts-token, .judge-chip.ts-casting, .ts-wait').count(),0,'No ceremony leftovers');
+    if(final){
+      const reason=board.locator(dt('tournament-result-reason'));
+      const details=board.locator(t('vote-reason'));
+      assert.equal(await reason.textContent(),'提供後の投票で、2位より5点多く取った。最終14点差。');
+      assert(await reason.evaluate(node=>parseFloat(getComputedStyle(node).fontSize)>=24),'The result reason is displayed as a larger line');
+      assert.equal(await details.evaluate(node=>node.open),false);
+      assert.equal(await details.locator('p').first().isVisible(),false);
+    }
     await next.and(page.locator(':enabled')).waitFor();
     assert.equal(await next.evaluate(button=>document.activeElement===button),true);
     // 押す所は、解説・振り返り・講評が重なっても枠の中に見えている（TSH06）。
@@ -615,8 +623,8 @@ await suite('ch2-tournament',async check=>{
     // #1653: 優勝時だけ、結果カードの前に決着の間を置く
     assert.match(afterText,/県代表の座は──/);assert(afterText.indexOf('県代表の座は──')<afterText.indexOf('スジの通った一台'));
     // #929: 章の最後に、はじめのいない店であげはの心の声。読了を記録し、再読込で繰り返さない
-    assert.match(afterText,/こんなの、ズルいよ/);assert(s.flags._ch2_read_ch2_tournament_ageha_heart);
-    assert(afterText.indexOf('こんなの、ズルいよ')>afterText.indexOf('味の輪郭は戻らない'));
+    assert.match(afterText,/こんなの、ずるいよ/);assert(s.flags._ch2_read_ch2_tournament_ageha_heart);
+    assert(afterText.indexOf('こんなの、ずるいよ')>afterText.indexOf('味の輪郭は戻らない'));
     assert.match(afterText,/おめでとうの文字が届いていた/);
     // #1653 ⑦: 祝福は実際のLIMEで届き、ありがとうは選んだ返信として履歴に残る。第1章の応援文は第2章で届かない
     const congrats=s.inbox.find(i=>i.id==='ch2_congrats_minto');
@@ -627,7 +635,7 @@ await suite('ch2-tournament',async check=>{
     assert.match(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage),/bg_ch2_ageha_closed_night/,'complete card must keep the closed MELTY PUFF background');
     await reload(page);await page.locator(t('complete')).waitFor();s=await get(page);
     assert.equal(s.flags._ch2_tournament.history.length,1);assert.equal(s.inbox.filter(i=>i.id.startsWith('ch2_tournament_sumi_')).length,2);
-    assert(!/ズルいよ/.test(await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'))),'complete reload must not replay the ending');
+    assert(!/ずるいよ/.test(await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'))),'complete reload must not replay the ending');
     await assertFits(page,'.ch2-contest .btn');
     await capture(page,'pc-complete');
   });

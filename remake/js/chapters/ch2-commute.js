@@ -61,10 +61,16 @@ export async function readMorningStationCommute({ to }) {
   if (state === owner && result && !result.cancelled) save();
 }
 
-export async function chooseMorningCity() {
+export async function chooseMorningCity(morningNotices = () => []) {
   if (state.flags._ch2_morning_departed === state.day) return;
   const owner = state, day = state.day;
-  if (state.flags._ch2_stay_local_since < day && state.flags._ch2_region === "home") {
+  const home = state.flags._ch2_region === "home";
+  const canGo = state.money >= STATION_FARE * 2;
+  const sameCity = home && state.flags._ch2_last_yuzugaya_day === day - 1;
+  const notices = sameCity ? morningNotices() : [];
+  const shortcut = sameCity && canGo && state.slot === 0 && !notices.length
+    && !commuteSceneDue(state, "morning", DB.dialogues);
+  if (home && state.flags._ch2_stay_local_since < day && !shortcut) {
     state.flags._ch2_morning_departed = day;
     save();
     return;
@@ -72,18 +78,26 @@ export async function chooseMorningCity() {
   await setBg(bgUrl("bg_home", "day"), { instant: true });
   if (state !== owner || state.day !== day) return;
   showScreen("home", el("main.ch2-morning-home"));
-  const canGo = state.money >= STATION_FARE * 2;
   const fareNotice = `${CH2_CITY_NAME}へは片道200円。帰りの切符代も200円必要。${canGo ? "" : "今は往復分が足りない。"}`;
-  const localNotice = `地元を選ぶと、次の朝から地元の地図が開く。${CH2_CITY_NAME}へは地図の駅からも行ける。`;
-  const destination = await modal({ title: "今日はどこに行こう？", body: fareNotice + localNotice, options: [
+  const localNotice = `${CH2_CITY_NAME}へは地元の地図の駅からも行ける。`;
+  const destination = await modal({ title: "今日はどこに行こう？", body: [
+    ...notices, shortcut ? "帰りの切符代も200円必要。" : fareNotice + localNotice,
+  ].join("<br>"), options: [
     { label: `地元・${HOME_CITY_NAME}で過ごす`, value: "home", test: "ch2-morning-home" },
-    ...canGo ? [{ label: `${CH2_CITY_NAME}へ（片道200円）`, value: "widehanga", test: "ch2-morning-city" }] : [],
+    ...canGo ? [{
+      label: shortcut ? `前回と同じ街・${CH2_CITY_NAME}へ（片道200円）` : `${CH2_CITY_NAME}へ（片道200円）`,
+      value: "widehanga", primary: shortcut, test: shortcut ? "ch2-morning-repeat" : "ch2-morning-city",
+    }] : [],
   ] });
   if (state !== owner || state.day !== day) return;
   if (destination === "widehanga") {
     const trip = prepareStationTrip(state, regions, "widehanga");
-    if (!trip?.commit(state, { persist: () => { state.flags._ch2_morning_departed = day; save(); } })) return;
-    await rideToYuzugaya();
+    if (!trip?.commit(state, { persist: () => {
+      state.flags._ch2_morning_departed = day;
+      state.flags._ch2_last_yuzugaya_day = day;
+      save();
+    } })) return;
+    if (!shortcut) await rideToYuzugaya();
   } else {
     state.flags._ch2_region = "home";
     state.flags._ch2_stay_local_since = day;

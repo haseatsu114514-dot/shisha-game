@@ -3006,6 +3006,30 @@
     "twistIdle": "手紙を追う方法と、誰が動くかを決めましょう",
     "planTitle": "みんなの配達プラン"
   },
+  "pictureBook": {
+    "pages": [
+      {
+        "image": "../../img/ui/trpg/picturebook/regular-mail/01.webp",
+        "alt": "大きな月の下に、時計塔と石畳の坂が見える",
+        "text": "時計坂の町。大きな月が、坂の石畳を白く照らしている。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/regular-mail/02.webp",
+        "alt": "詰所の戸口で、夜番が火のともったランタンを手にしている",
+        "text": "夜番は詰所の前で、ランタンの火を確かめている。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/regular-mail/03.webp",
+        "alt": "葉っぱの耳と煙のような尻尾の猫が、封筒をくわえて歩いてくる",
+        "text": "石畳に、猫の足音がひとつ。葉っぱの耳の猫が、手紙をくわえてやってきた。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/regular-mail/04.webp",
+        "alt": "郵便猫ミトンが、ランタンのそばで夜番の足元に座っている",
+        "text": "郵便猫ミトンはランタンをひょいとよけ、夜番の足元に座った。"
+      }
+    ]
+  },
   "debrief": {
     "smooth": "trpg_regular_mail_debrief_smooth",
     "with-detour": "trpg_regular_mail_debrief_with_detour"

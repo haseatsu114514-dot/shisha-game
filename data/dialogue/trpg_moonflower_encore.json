@@ -3482,6 +3482,30 @@
     "twistIdle": "……燭台の火が消えた。どうやって切り抜ける？",
     "planTitle": "最後の一曲のセットリスト"
   },
+  "pictureBook": {
+    "pages": [
+      {
+        "image": "../../img/ui/trpg/picturebook/moonflower-encore/01.webp",
+        "alt": "月の下、丘の上に建つ月光花城の窓に灯りがともる",
+        "text": "月の丘を登りきると、月光花城の窓からギターと拍手が聞こえてくる。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/moonflower-encore/02.webp",
+        "alt": "燭台のそばで、マント姿の伯爵がギターを弾き、隣で楽団員がドラムを叩く",
+        "text": "大広間の舞台では、吸血鬼のバンド「ノクターン」が演奏している。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/moonflower-encore/03.webp",
+        "alt": "青白い鬼火の向こうで、客席の幽霊たちが拍手をしている",
+        "text": "曲が終わるたび、青白い鬼火の向こうの客席からアンコールが上がる。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/moonflower-encore/04.webp",
+        "alt": "家令が片手を上げ、振り向いた三人に声をかける",
+        "text": "九度目の拍手が響くなか、家令が三人を呼び止めた。"
+      }
+    ]
+  },
   "intro": "trpg_moonflower_encore_intro",
   "listen": "trpg_moonflower_encore_listen",
   "checks": {

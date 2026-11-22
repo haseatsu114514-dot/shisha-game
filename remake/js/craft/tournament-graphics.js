@@ -73,3 +73,12 @@ export function craftReviewBlock(lines, test = "craft-review") {
     el("b.ch2-contest-reason-tag", { text: "振り返り" }), ...lines.map(text => el("p", { text })),
   ]);
 }
+
+/** 最終結果では、速報の解説を開いて読めるようにする。 */
+export function voteReasonBlock(lines, test, final) {
+  if (!lines?.length) return null;
+  return el(final ? "details.ch2-contest-reason" : "div.ch2-contest-reason", { dataset: { test } }, [
+    final ? el("summary", { text: "最後の投票の解説" }) : el("b.ch2-contest-reason-tag", { text: "解説" }),
+    ...lines.map(text => el("p", { text })),
+  ]);
+}
