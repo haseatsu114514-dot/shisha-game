@@ -37,6 +37,8 @@ const server = createServer((req, res) => {
     body = `<p>${revision}</p>`; type = 'text/html';
   } else if (pathname === '/remake/pwa-fresh.js') {
     body = `export default ${revision};`; type = 'text/javascript';
+  } else if (pathname === '/remake/pwa-fresh.woff2') {
+    body = `font revision ${revision}`; type = 'font/woff2';
   } else if (pathname === '/data/dialogue/pwa_probe.json') {
     body = JSON.stringify({ dialogues: [{ dialogue_id: 'pwa_probe', lines: [{ text: String(revision) }] }] }); type = 'application/json';
   } else if (pathname === imagePath) {
@@ -83,13 +85,13 @@ try {
         } : { controller: null, registrations: [] });
 
         // route を付けると HTTP キャッシュが無効になるため、鮮度検査を必ず先に行う。
-        const fetchFresh = () => page.evaluate(async () => Promise.all(['./pwa-fresh.html', './pwa-fresh.js', '../data/dialogue/pwa_probe.json']
+        const fetchFresh = () => page.evaluate(async () => Promise.all(['./pwa-fresh.html', './pwa-fresh.js', './pwa-fresh.woff2?v=test', '../data/dialogue/pwa_probe.json']
           .map(async url => (await fetch(url)).text())));
         const first = await fetchFresh(); revision = 2;
         const second = await fetchFresh();
         record({ event: 'freshness', first, second });
         if (serviceWorkers === 'allow') {
-          assert.deepEqual(second, ['<p>2</p>', 'export default 2;', JSON.stringify({ dialogues: [{ dialogue_id: 'pwa_probe', lines: [{ text: '2' }] }] })]);
+          assert.deepEqual(second, ['<p>2</p>', 'export default 2;', 'font revision 2', JSON.stringify({ dialogues: [{ dialogue_id: 'pwa_probe', lines: [{ text: '2' }] }] })]);
           assert(second.every((body, i) => body !== first[i]));
         } else assert.deepEqual(second, first, '対照群では max-age による旧本文が残る');
         // 実台詞ローダの no-cache も max-age を越えて更新を取る。

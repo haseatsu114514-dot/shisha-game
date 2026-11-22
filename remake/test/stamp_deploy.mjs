@@ -23,6 +23,10 @@ try {
   for (const page of TRIAL_PAGES) fs.copyFileSync(path.join(remake, page), path.join(out, page));
   fs.copyFileSync(path.join(remake, "conversation-preview.html"), path.join(out, "conversation-preview.html"));
   fs.cpSync(path.join(remake, "css"), path.join(out, "css"), { recursive: true });
+  fs.cpSync(path.join(remake, "fonts"), path.join(out, "fonts"), { recursive: true });
+  const sharedFonts = path.join(site, "assets/fonts");
+  fs.mkdirSync(sharedFonts, { recursive: true });
+  fs.writeFileSync(path.join(sharedFonts, "DotGothic16-Regular.woff2"), "");
   fs.writeFileSync(path.join(out, "js/main.js"), 'import "./core/a.js";\nexport function boot() {}\n');
   fs.writeFileSync(path.join(out, "js/bundle/main.js"), 'export function boot() {}\n');
   fs.writeFileSync(path.join(out, "js/core/a.js"), "export {};\n");
@@ -55,24 +59,29 @@ try {
   assert.match(html, /<meta name="suien-build" content="abc1234" data-built="2026-11-06 21:00">/);
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(out, "build.json"), "utf8")), { build: "abc1234", builtAt: "2026-11-06 21:00" });
 
-  // index.html の CSS はすべて版付き。フォントの先読み・画像は変えない（CSS 側と URL がずれて二重に読まないように）
+  // index.html の CSS とフォント先読みは同じ版。画像の URL はそのまま
   const links = [...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map((m) => m[1]);
   // CSS はバンドル化されているので、本数は bundles.json の区間の数と一致する
   const bundleCount = JSON.parse(fs.readFileSync(path.join(remake, "css/bundles.json"), "utf8")).segments.length;
   assert.equal(links.length, bundleCount);
   for (const href of links) assert.match(href, /^css\/[\w./-]+\.css\?v=abc1234$/, href);
-  assert.match(html, /href="fonts\/NotoSansJP-Medium\.woff2"/);
+  for (const weight of ["Medium", "Bold"]) {
+    assert(html.includes(`href="fonts/NotoSansJP-${weight}.woff2?v=abc1234"`));
+  }
   assert.match(html, /<link rel="preload" as="image" href="img\/ui\/ui_title_logo_rich\.webp">/);
   // 起動画面の背景は共通ロード画面の CSS（css/loading.css → bundle-2.css）にある。画像の url() は版を付けない
   const lastBundle = JSON.parse(fs.readFileSync(path.join(remake, "css/bundles.json"), "utf8")).segments.at(-1).out;
   assert.match(fs.readFileSync(path.join(out, "css", lastBundle), "utf8"), /url\("\.\.\/img\/ui\/loading\/loading_bg\.webp"\)/);
 
-  // CSS の @import も版付き。画像・フォントの url() はそのまま
+  // CSS の @import とフォントの url() も版付き
   const trpg = fs.readFileSync(path.join(out, "css/trpg.css"), "utf8");
   assert.match(trpg, /@import url\("venue-host\.css\?v=abc1234"\)/);
-  const base = fs.readFileSync(path.join(out, "css/base.css"), "utf8");
-  assert.match(base, /url\("\.\.\/fonts\/NotoSansJP-Medium\.woff2"\)/);
-  assert.doesNotMatch(base, /\?v=/);
+  for (const [filename, count] of Object.entries({ "base.css": 5, "bundle-1.css": 7, "bundle-2.css": 2 })) {
+    const css = fs.readFileSync(path.join(out, "css", filename), "utf8");
+    const fontUrls = [...css.matchAll(/url\("([^"\n]+\.woff2[^"\n]*)"\)/g)].map(match => match[1]);
+    assert.equal(fontUrls.length, count, filename);
+    for (const url of fontUrls) assert.match(url, /\.woff2\?v=abc1234$/, `${filename}: ${url}`);
+  }
 
   // 試遊ページ: 版の meta・CSS と起動スクリプトの ?v=。本体は page-boot.js が js-<版>/ から読む
   for (const page of TRIAL_PAGES) {

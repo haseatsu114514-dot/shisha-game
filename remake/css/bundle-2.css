@@ -1094,7 +1094,7 @@
 /* 会話枠の共通組版。テーマは装飾を変え、本文・操作の安全領域を共有する。 */
 @font-face {
   font-family: "Suien Name";
-  src: url("../fonts/ZenOldMincho-Name-Bold.woff2") format("woff2");
+  src: url("../fonts/ZenOldMincho-Name-Bold.woff2?v=20261122") format("woff2");
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -1381,7 +1381,7 @@ html[data-ui-theme]:not([data-ui-theme="classic"]) .spot-pin .sub-label { border
 /* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* 本文の上辺へ名前札と操作札を載せる。読む面の高さを見出しで使わない。 */
 @font-face {
-  font-family:"Suien Blue Mincho"; src:url("../fonts/ZenOldMincho-Blue-Regular.woff2") format("woff2");
+  font-family:"Suien Blue Mincho"; src:url("../fonts/ZenOldMincho-Blue-Regular.woff2?v=20261122") format("woff2");
   font-style:normal; font-weight:400; font-display:block;
 }
 html:root[data-ui-theme] {
@@ -3205,7 +3205,7 @@ html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-controls .vn-
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-text { font-size: 32px; line-height: 46px; min-height: 92px; }
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-box.has-inner .vn-text { line-height: 44px; min-height: 44px; }
 /* 紙の横持ち会話で、操作を左右に出せるときは上の帯を本文に使う。
-   176px の枠の中央に50pxの行を置く。短いページは文字送りの前に行数が確定するので、途中で本文がずれない。
+   176px の枠の中央に50px×2行分の本文領域を置き、ページの行数にかかわらず1行目をそろえる。
    本心つき・枠内に操作が残るときは、従来どおり別の行や操作の領域を確保する。 */
 /* 約1024px の本文の右で送り印を出し、右端の煙との間も空ける。 */
 html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box {
@@ -3216,9 +3216,6 @@ html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:
 }
 html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box:not(.has-inner) .vn-text {
   font-size: 36px; line-height: 50px; min-height: 100px;
-}
-html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box:not(.has-inner) .vn-text[data-page-lines="1"] {
-  padding-top: 25px;
 }
 /* 名札の短い名前を読みやすくする。長い名前は実際の字幅に合わせる name-fit.js に従う。 */
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-box .vn-name {
