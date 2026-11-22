@@ -3292,6 +3292,30 @@
     "planTitle": "怪盗を迎える作戦",
     "riskLabel": "警戒"
   },
+  "pictureBook": {
+    "pages": [
+      {
+        "image": "../../img/ui/trpg/picturebook/apple-thief/01.webp",
+        "alt": "火のともった燭台のそばに、林檎が一つある",
+        "text": "燭台の灯り。林檎の香り。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/apple-thief/02.webp",
+        "alt": "ミルト湖のほとりに立つ白林檎館と、窓の灯り",
+        "text": "ミルト湖のほとり、白林檎館。今宵は館の夜会だ。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/apple-thief/03.webp",
+        "alt": "玄関の戸口で、給仕が客の外套を受け取っている",
+        "text": "玄関では、給仕が客の外套を受け取っている。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/apple-thief/04.webp",
+        "alt": "館の扉の下から、一枚のカードがのぞいている",
+        "text": "そのとき、扉の隙間から一枚のカードが滑り込んだ。"
+      }
+    ]
+  },
   "intro": "trpg_apple_thief_intro",
   "listen": "trpg_apple_thief_listen",
   "checks": {
