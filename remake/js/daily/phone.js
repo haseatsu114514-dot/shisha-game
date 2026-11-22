@@ -1075,8 +1075,13 @@ function readReward(item, ui) {
   if (m.type === "rumor") applyStats({ insight: 2 });
   else if (m.type !== "invitation" && !(m.replies && m.replies.length) && m.sender !== "???" && m.sender !== "sumi") {
     if (settleMaxAffinityChat(item, ui)) return;
-    // 恋人の読むだけの連絡（朝のひとこと）は、私的なやりとりとして絆に積もる（LM01: 返事1点ぶん）
     const lover = isLover(m.sender);
+    // 返事を読むだけにした報告は、指定された好感度に返信と同じ倍率を掛ける。
+    if (!lover && Number.isFinite(m.read_affinity)) {
+      gainAffinity(m.sender, m.read_affinity, { source: "lime", remote: true });
+      return;
+    }
+    // 恋人の読むだけの連絡（朝のひとこと）は、私的なやりとりとして絆に積もる（LM01: 返事1点ぶん）
     bond.private = lover;
     try {
       gainAffinity(m.sender, lover ? 3 : 2, { remote: true });
