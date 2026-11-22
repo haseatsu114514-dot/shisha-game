@@ -137,13 +137,13 @@ function showMenu(initial, { saveOk, saveRule }) {
         button.tabIndex = on ? 0 : -1;
       }
       panel.setAttribute("aria-labelledby", `dm-tab-${id}`);
+      panel.replaceChildren(...render(id).filter(Boolean));
       const pending = id === "people" && prepareRelationshipStatus();
       if (pending) {
-        panel.replaceChildren();
-        void pending.then(() => {
-          if (state === owner && root.isConnected && active === id) panel.replaceChildren(...render(id).filter(Boolean));
+        void pending.then(changed => {
+          if (changed && state === owner && root.isConnected && active === id) panel.replaceChildren(...render(id).filter(Boolean));
         });
-      } else panel.replaceChildren(...render(id).filter(Boolean));
+      }
       panel.scrollTop = 0;
       if (focus) tabs.get(id)?.focus({ preventScroll: true });
     };

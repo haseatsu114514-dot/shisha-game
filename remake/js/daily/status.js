@@ -131,13 +131,13 @@ export function openStatus() {
   const show = (id) => {
     active = id;
     tabs.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.tab === id));
+    body.replaceChildren(id === "me" ? meTab() : id === "people" ? peopleTab() : itemsTab(showRecipe));
     const pending = id === "people" && prepareRelationshipStatus();
     if (pending) {
-      body.replaceChildren();
-      void pending.then(() => {
-        if (state === owner && body.isConnected && active === id) body.replaceChildren(peopleTab());
+      void pending.then(changed => {
+        if (changed && state === owner && body.isConnected && active === id) body.replaceChildren(peopleTab());
       });
-    } else body.replaceChildren(id === "me" ? meTab() : id === "people" ? peopleTab() : itemsTab(showRecipe));
+    }
   };
   const showRecipe = (id) => {
     // ヒントだけの配合や、旧セーブに残った未知のIDから詳細を開かない。
