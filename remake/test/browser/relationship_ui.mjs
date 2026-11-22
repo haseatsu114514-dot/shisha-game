@@ -82,9 +82,10 @@ await suite("relationship-ui", async check => {
       await setup(page);
       await page.evaluate(async () => {
         const city = await import("./js/chapters/ch2-city-data.js");
+        const { readDialogues } = await import("./js/core/chapter-data.js");
         await city.loadCityDialogues();
         await city.loadPreparationDialogues();
-        Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_double_apple", ["ch3_mukai_arrival"]));
+        Object.assign(R.data.DB.dialogues, await readDialogues("ch3_double_apple", ["ch3_mukai_arrival"]));
       });
       // 好感度・連絡先・思い出だけでは、未対面の人物を明かさない。
       // 開始時から知っているスミさん・つむぎ（#2750）は、新しいゲームの最初から♥1で並ぶ。
@@ -343,8 +344,8 @@ await suite("relationship-ui", async check => {
     if (device === "pc") await check("pc-steve-row-promises-only-while-he-can-be-met", async page => {
       await setup(page);
       await page.evaluate(async () => {
-        const city = await import("./js/chapters/ch2-city-data.js");
-        Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_rivals", ["ch3_steve_bond_finale"]));
+        const { readDialogues } = await import("./js/core/chapter-data.js");
+        Object.assign(R.data.DB.dialogues, await readDialogues("ch3_rivals", ["ch3_steve_bond_finale"]));
         const s = R.fresh(); s.chapter = 3;
         s.met.steve = true; s.affinity.steve = 66; s.contacts.push("steve");
         Object.assign(s.flags, { _lime_contact_steve: true, _ch3_read_ch3_steve_lime: true, _ch3_read_ch3_steve_two_timers: true, _ch3_read_ch3_steve_empty_seat: true, _ch3_read_ch3_steve_tongs: true, _ch3_read_ch3_steve_watch: true, _ch3_outings: { steve_timer: 1 } });
@@ -384,9 +385,9 @@ await suite("relationship-ui", async check => {
     if (device === "pc") await check("pc-ayatori-and-volk-rows-promise-only-while-they-can-be-met", async page => {
       await setup(page);
       await page.evaluate(async () => {
-        const city = await import("./js/chapters/ch2-city-data.js");
-        Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_rivals", ["ch3_ayatori_bond_finale"]),
-          await city.readDialogues("ch3_volk", ["ch3_volk_bond_finale"]));
+        const { readDialogues } = await import("./js/core/chapter-data.js");
+        Object.assign(R.data.DB.dialogues, await readDialogues("ch3_rivals", ["ch3_ayatori_bond_finale"]),
+          await readDialogues("ch3_volk", ["ch3_volk_bond_finale"]));
         const s = R.fresh(); s.chapter = 3;
         for (const id of ["ayatori", "volk"]) { s.met[id] = true; s.affinity[id] = 66; s.contacts.push(id); }
         Object.assign(s.flags, { _lime_contact_ayatori: true, _ch3_read_ch3_ayatori_lime: true, _ch3_read_ch3_ayatori_missed: true, _ch3_read_ch3_ayatori_cleanup: true, _ch3_read_ch3_ayatori_liar: true, _ch3_read_ch3_ayatori_first_reply: true, _ch3_outings: { enmaku_answer: 1 },
