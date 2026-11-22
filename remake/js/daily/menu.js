@@ -90,6 +90,7 @@ async function runAction(action, { canSave, current, leave, saveRule }) {
   if (action === "board") await openGrowthBoard();
   if (action === "config") await (await import("../scenes/title.js")).openConfig();
   if (action === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
+  if (action === "day2-guide") await (await import("../scenes/day2-guide.js")).openDay2Guide();
   if (action === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
   // タイトルへ戻る時も、手動セーブと同じ時だけ保存する。途中の状態は残さず、行動前のオートセーブへ戻す（#638）。
   if (action === "title") await returnToTitle({ canSave, current, leave });
@@ -489,6 +490,7 @@ const SYSTEM = [
   { id: "glossary", label: "用語集" },
   { id: "rules", label: "大会の規則" },
   { id: "title", label: "タイトルへ戻る" },
+  { id: "day2-guide", label: "DAY2の案内", visible: () => state.chapter === 1 && state.phase === "daily" && state.day >= 2 },
 ];
 
 /** 全画面ボタンはタイトルの部品（.btn.xfer-btn）なので、MENUのほかの操作と同じ札の見た目にそろえる（#3555）。 */
@@ -502,7 +504,7 @@ function systemFullscreenButton() {
 function systemTab(choose, saveOk, saveRule) {
   return [
     ...tabHeading("システム", ["行動のたびに自動でセーブされている。", saveRule, "タイトルへ戻ると、行動前のオートセーブから再開する。"], "system"),
-    el("div.dm-system", SYSTEM.map((s) => el(`button.dm-btn.dm-sys${s.primary ? ".primary" : ""}`, {
+    el("div.dm-system", SYSTEM.filter((s) => !s.visible || s.visible()).map((s) => el(`button.dm-btn.dm-sys${s.primary ? ".primary" : ""}`, {
       type: "button", text: s.label, dataset: { test: `menu-${s.id}` },
       disabled: s.id === "save" && !saveOk,
       onclick: () => choose(s.id),
