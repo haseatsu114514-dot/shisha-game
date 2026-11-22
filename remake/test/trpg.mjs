@@ -739,10 +739,10 @@ test("a full session talks to the story's character, survives a twist and reads 
   }
 });
 
-test("role costumes: 99 origin outfits are keyed, and a built sheet resolves to that character's art", async () => {
+test("role costumes: 125 origin outfits are keyed, and a built sheet resolves to that character's art", async () => {
   const { COSTUME_KEYS, hasCostume, costumeUrl, costumeKey } = await import("../js/trpg/costumes.js");
   const retired = ["リラ", "りら", "かこ", "ナンディ", "チャド", "焚口ショウ", "mystery_girl", "カフカ", "lira", "kako", "nandi", "chad", "takiguchi", "kafka"];
-  assert.equal(COSTUME_KEYS.size, 99);
+  assert.equal(COSTUME_KEYS.size, 125);
   for (const key of COSTUME_KEYS) {
     const [scenarioId, characterId, roleId] = key.split("/");
     assert(scenarioId && characterId && roleId, key);
@@ -780,6 +780,13 @@ test("role costumes: 99 origin outfits are keyed, and a built sheet resolves to 
   assert.match(costumeUrl("regular-mail", "hajime", "watch"), /\/img\/ui\/trpg\/costumes\/leaf-mail\/hajime_watch\.webp$/);
   assert(hasCostume("regular-harbor", "hajime", "sailor"));
   assert.match(costumeUrl("regular-harbor", "hajime", "sailor"), /\/img\/ui\/trpg\/costumes\/ordinary-cup\/hajime_sailor\.webp$/);
+  // The two regulars wear their own versions of every role they can fill.
+  assert(hasCostume("regular-mail", "regulara", "yura"));
+  assert.match(costumeUrl("regular-mail", "regulara", "yura"), /\/img\/ui\/trpg\/costumes\/leaf-mail\/regulara_yura\.webp$/);
+  assert(hasCostume("regular-harbor", "regularb", "leaf"));
+  assert.match(costumeUrl("regular-harbor", "regularb", "leaf"), /\/img\/ui\/trpg\/costumes\/ordinary-cup\/regularb_leaf\.webp$/);
+  assert(hasCostume("mist-kingdom", "regulara", "orchard"));
+  assert(hasCostume("purikura-hero", "regularb", "nocturne"));
 
   const mail = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_regular_mail.json", import.meta.url), "utf8"));
   const table = new TrpgSession(mail, { profileId: mail.profiles[0].id, seed: 1 });

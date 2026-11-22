@@ -644,8 +644,8 @@ test('speaker dock aligns expressions and role costumes consistently across scen
     if (enteredStory) {
       assert.match(src, /costumes\/leaf-mail\/hajime_\w+\.webp$/);
       const regular = root.querySelector('[data-speaker="regulara"]');
-      assert(regular.querySelector('.trpg-missing-costume'));
-      assert.equal(regular.querySelector('img'), null);
+      assert.equal(regular.querySelector('.trpg-missing-costume'), null);
+      assert.match(regular.querySelector('img').getAttribute('src'), /costumes\/leaf-mail\/regulara_\w+\.webp$/);
     } else {
       assert.doesNotMatch(src, /costumes/);
     }
