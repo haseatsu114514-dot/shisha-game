@@ -790,7 +790,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "多分、炭の最後の位置が"
+          "text": "たぶん、炭の最後の位置が"
         },
         {
           "speaker": "naru",
@@ -877,7 +877,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "え？　なんでって……"
+          "text": "え？ なんでって……"
         },
         {
           "speaker": "",
@@ -985,7 +985,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（──多分、気のせいだ）"
+          "text": "（──たぶん、気のせいだ）"
         }
       ],
       "branches": {
@@ -1352,7 +1352,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "なるの店に入ると、カウンターに若い客が2人いた。"
+          "text": "なるの店に入ると、カウンターに若い客が二人いた。"
         },
         {
           "speaker": "",
@@ -1387,7 +1387,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "蒸らしが全然足りてねえ。このボウルなら、最低5分は待て"
+          "text": "蒸らしが全然足りてねえ。このボウルなら、最低五分は待て"
         },
         {
           "speaker": "naru",
