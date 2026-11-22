@@ -34,17 +34,15 @@ const CRACK = '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><
 // 評価のロゴ（Codex 作・#4082・asset_sources/trpg-roll-logos/）。評価の色（tone）→ 絵の名前。
 const LOGO_FILES = Object.freeze({ critical: "critical", fumble: "fumble", success: "success", mixed: "partial", trouble: "miss", skill: "skill" });
 const logoUrl = kind => LOGO_FILES[kind] ? new URL(`../../img/ui/trpg/roll-logos/${LOGO_FILES[kind]}.webp`, import.meta.url).href : "";
-const preloaded = new Map();
-/** 判定の卓を開いた時に呼ぶ。評価の瞬間までにロゴを読み終えておく（読めなければ文字のまま）。 */
-export function preloadRollLogos() {
-  if (typeof Image !== "function") return;
-  for (const kind of Object.keys(LOGO_FILES)) {
-    if (preloaded.has(kind)) continue;
-    const img = new Image();
-    img.decoding = "async";
-    img.src = logoUrl(kind);
-    preloaded.set(kind, img);
-  }
+// スキルのカットインは投げた直後に出るので、切り札を選べる時だけ先に読む。
+// 評価のロゴは、出目が決まった時に劇場の img が必要な1枚を読み始める。
+let skillLogoRequested = false;
+export function preloadSkillLogo() {
+  if (skillLogoRequested || typeof Image !== "function" || calm()) return;
+  skillLogoRequested = true;
+  const img = new Image();
+  img.decoding = "async";
+  img.src = logoUrl("skill");
 }
 const live = host => typeof document?.createElement === "function" && typeof host?.animate === "function" && host.isConnected !== false;
 const calm = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -261,6 +259,7 @@ export function playRollShow(host, show) {
     if (solid) {
       solid.d3.tone(hot ? "critical" : cold ? "fumble" : "ivory");
       solid.d3.draw(solid.R);
+      solid.atRest = true;
       if (!quiet) animate(die.querySelector(".trpg-rs-d3"), [{ filter: "brightness(1.9)" }, { filter: "brightness(1)" }], { duration: big ? 420 : 300, easing: "ease-out", fill: "none" });
     }
     if (quiet) return;
@@ -380,7 +379,9 @@ export function playRollShow(host, show) {
         const after = solid.landAt != null ? t - solid.landAt : -1;
         if (after >= 0 && after < 360) { theta = .1 * Math.sin(after / 360 * Math.PI * 3) * (1 - after / 360); axis = [1, 0, 0]; }
         if (e < 1 || (after >= 0 && after < 360)) moving = true;
-        solid.d3.draw(pose(solid.R, axis, theta));
+        // 先に止まったダイスと、振り直しで残したダイスは同じ絵を保つ。
+        if (theta || !solid.atRest) solid.d3.draw(pose(solid.R, axis, theta));
+        solid.atRest = theta === 0;
       }
       if (moving || t < 400) requestAnimationFrame(frame);
     };

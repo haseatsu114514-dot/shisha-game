@@ -8808,7 +8808,7 @@ html:root .trpg-root .trpg-overlay:has(> .trpg-roll-show) > .trpg-modal { opacit
 /* ======== 背景の層 ======== */
 /* 幕: 卓のフェルトを真上から照らす。斜めに払うように入る。 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-veil {
-  position: absolute; inset: 0; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  position: absolute; inset: 0;
   background:
     radial-gradient(ellipse 55% 60% at 50% 44%, #2c8f86b3 0%, #0d4a4ccc 38%, #03121af5 100%),
     repeating-linear-gradient(115deg, #ffffff06 0 2px, transparent 2px 9px),

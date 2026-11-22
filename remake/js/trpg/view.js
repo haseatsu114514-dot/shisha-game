@@ -8,7 +8,7 @@ import { createTrpgAudio } from "./audio.js";
 import { checkForecast, declarationChanceLabels, rerollOdds, rollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { playIncarnation, playSceneCard, playResultCut, playClueCard, impact } from "./stage-fx.js";
-import { playRollShow, preloadRollLogos } from "./roll-show.js";
+import { playRollShow, preloadSkillLogo } from "./roll-show.js";
 import { createD20, restPose } from "./dice3d.js";
 import { autoWrap } from "../vn/text.js";
 
@@ -137,7 +137,6 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const RISK = presentation.riskLabel || "危機";
   // Illustrated choices come from a tile atlas; a field without a row (or a scenario without art yet) uses text cards.
   const atlas = presentation.choiceArt || null;
-  if (atlas) { const warm = new Image(); warm.src = new URL(atlas.src, import.meta.url).href; warm.decode().catch(() => {}); }
   const tileStyle = (row, column) => atlas && Number.isInteger(row)
     ? { "--tile-x": column * 50 + "%", "--tile-y": (atlas.rowCount > 1 ? row * 100 / (atlas.rowCount - 1) : 0) + "%" } : null;
   const audio = providedAudio || createTrpgAudio(presentation.theme);
@@ -1178,7 +1177,6 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function openCheck(kind, approachId = null) {
     if (busy || overlay || session.snapshot().pending) return;
-    preloadRollLogos();
     const check = scenario.checks[kind], helper = check.helper || null;
     const declared = approachBase(scenario, kind, approachId, sheets).approach;
     const body = el("div", [el("p.trpg-roll-instruction", { text: DICE.success + "以上で成功" }), stakeLine(kind), actorPanel(declared), el("div.trpg-roll-scene",
@@ -1210,12 +1208,15 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     }
     const support = helper && !session.snapshot().used[helper] && session.snapshot().teamwork > 0
       ? el("input", { type: "checkbox", dataset: { test: "trpg-support-" + helper } }) : null;
-    if (support) body.append(el("label.trpg-aid", [support, seatMark(helper),
-      el("span.trpg-aid-art", { "aria-hidden": "true" }, roleFace(seatOf(helper), helper)), el("span", [
-      el("strong", { text: skillLabel(helper) }),
-      el("small", { text: "＋" + DICE.support + " · 連携札1枚" }),
-    ])]));
-    if (support) support.addEventListener("change", () => { if (support.checked) audio.play("card"); updateForecast(); });
+    if (support) {
+      preloadSkillLogo();
+      body.append(el("label.trpg-aid", [support, seatMark(helper),
+        el("span.trpg-aid-art", { "aria-hidden": "true" }, roleFace(seatOf(helper), helper)), el("span", [
+          el("strong", { text: skillLabel(helper) }),
+          el("small", { text: "＋" + DICE.support + " · 連携札1枚" }),
+        ])]));
+      support.addEventListener("change", () => { if (support.checked) audio.play("card"); updateForecast(); });
+    }
     if (helper && !support) body.append(el("p.trpg-aid-spent", { text: skillOwnerName(helper) + "の切り札は使えない" }));
     body.append(el("details.trpg-roll-details", { dataset: { test: "trpg-roll-details" } }, [
       el("summary", { text: "判定の詳細", dataset: { test: "trpg-details-toggle" } }),
@@ -1319,6 +1320,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (session.rules.inspectionPressure) receipts.append(el("p.trpg-ability-receipt.trpg-roll-consequence", { text: RISK + (result.grade === "success" ? " ±0" : " ＋" + session.rules.checkPressure[result.grade]) }));
     // クリティカルは最高の出目なので振り直しは出さない。使えない時も何も出さない（決まりは「？」に）。
     if (result.special !== "critical" && !session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
+      preloadSkillLogo();
       body.append(el("p.trpg-roll-trump", { text: skillLabel(session.rerollActor) + " · 連携札1枚" }));
       body.append(el("div.trpg-rerolls", [0, 1].map(i =>
       button("", "trpg-reroll-" + i, () => {
