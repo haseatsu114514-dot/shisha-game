@@ -41,6 +41,44 @@ async function phoneSettled(page) {
 async function open(page) { await page.evaluate(() => { void import("./js/chapters/ch3-social.js").then(module => module.openTokyoLime()); }); }
 async function close(page) { await page.locator(t("lime-back")).click(); await page.locator(t("phone-close")).click(); await page.locator(".phone-overlay").waitFor({ state: "detached" }); }
 await suite("tokyo-visits", async check => {
+  await check("contacts-preserve-unread-until-lover-reply", async page => {
+    await seed(page, { lovers: ["minto"] });
+    await page.locator(t("phone-close")).click();
+    await page.locator(".phone-overlay").waitFor({ state: "detached" });
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      const { deliverLimeMessage } = await import("./js/daily/phone.js");
+      deliverLimeMessage({ id: "ordinary", sender: "minto", type: "chat", messages: ["通常の未読"] });
+      const old = deliverLimeMessage({ id: "old-invite", sender: "sumi", type: "invitation", messages: ["昨日の誘い"] });
+      old.day = state.day - 1;
+    });
+    const before = await get(page);
+    await open(page);
+    await page.locator(t("lime-contact-minto")).click();
+    assert.equal(await page.locator(".lime-name").innerText(), "栞");
+    assert.doesNotMatch(await page.locator(".lime-chat").innerText(), /通常の未読/);
+    const opened = await get(page);
+    for (const key of ["inbox", "limeRead", "lovePts", "affinity", "flags"]) assert.deepEqual(opened[key], before[key], key);
+
+    await page.locator(t("lime-travel-lover")).click();
+    await page.locator(t("reply-0")).click();
+    await page.locator(t("phone-next")).click();
+    await page.locator(t("lime-contact-minto")).waitFor();
+    const replied = await get(page);
+    const id = "_lover_private_account_minto";
+    assert.deepEqual(replied.inbox.slice(0, before.inbox.length), before.inbox);
+    assert.deepEqual(replied.limeRead, [...before.limeRead, id]);
+    const message = replied.inbox.find(item => item.id === id);
+    assert(message.read && message.done && message.replyState === "replied");
+    // 初期の魅力で1点の恋人返信は、絆1点と繰越0.5点。
+    assert.equal(replied.lovePts.minto, 1);
+    assert.equal(replied.loveCarry.minto, 0.5);
+
+    await page.locator(t("lime-contact-minto")).click();
+    await close(page);
+    const closed = await get(page);
+    for (const key of ["inbox", "limeRead", "lovePts", "loveCarry", "day", "slot"]) assert.deepEqual(closed[key], replied[key], key);
+  });
   await check("story-call-history-after-completion-and-load", async page => {
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js"), progress = await import("./js/chapters/ch3-progress.js");
@@ -259,5 +297,23 @@ await suite("tokyo-visits", async check => {
     // 旧セーブは現在のSCHEMAへ移行される（版を上げるたびに書き換えないよう、ゲームの SCHEMA と比べる）
     assert.equal(value.schema, await page.evaluate(async () => (await import("./js/core/state.js")).SCHEMA));
     await page.locator(t("phone-close")).click();
+    await page.locator(".phone-overlay").waitFor({ state: "detached" });
+
+    // 帰郷前のあげはは、連絡先だけで一日一話。読み返しても既読や好感度を重ねない。
+    await page.evaluate(() => { window.__remake.state.contacts.push("ageha"); });
+    await open(page);
+    await page.locator(t("lime-contact-ageha")).click();
+    assert.equal(await page.locator(t("lime-travel-offer")).count(), 0);
+    await page.locator(t("lime-travel-chat")).click();
+    const first = await get(page);
+    const id = "_tokyo_ageha_story_gummy";
+    assert.deepEqual(first.limeRead, [...value.limeRead, id]);
+    assert(first.inbox.at(-1).id === id && first.inbox.at(-1).read && first.inbox.at(-1).done);
+    const points = state => (state.affinity.ageha || 0) + (state.affinityCarry?.ageha || 0);
+    assert.equal(points(first), points(value) + 0.85 * 0.25, "one LIME affinity gain, including its carry");
+    await page.locator(t("lime-travel-chat")).click();
+    await close(page);
+    const again = await get(page);
+    for (const key of ["inbox", "limeRead", "affinity", "affinityCarry", "day", "slot"]) assert.deepEqual(again[key], first[key], key);
   });
 });

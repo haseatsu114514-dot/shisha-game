@@ -6,7 +6,7 @@ import { state, save } from "../core/state.js";
 import { gainAffinity } from "../core/stats.js";
 import { visitContacts, tokyoVisitState, playerRegion, characterRegion, syncTokyoVisits,
   proposeTokyoVisit, bookTokyoVisit } from "../core/tokyo-visits.js";
-import { openContactLime, deliverLimeMessage, registerLimeReplyAction } from "../daily/phone.js";
+import { openLime, deliverLimeMessage, registerLimeReplyAction } from "../daily/phone.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { pendingLoverLime, readLoverLime } from "./lover-entry.js";
 import { chapterThreeStoryContacts } from "./ch3-story-lime.js";
@@ -178,8 +178,7 @@ export async function openTokyoLime({ signal = null } = {}) {
     ? "届いた話はトークで読める。自分から相談したいときは、電話印（☎）の「地元との連絡」を開こう。" : "";
   if (guide) state.flags._ch3_lime_contact_guide = true;
   save();
-  await openContactLime({ contacts, summary, actions, signal: closer.signal, title: "地元との連絡", guide,
-    empty: "連絡先を交換した恋人や地元の友人がいると、ここから連絡できます。", onAction: (id, action) => {
+  const onAction = (id, action) => {
     if (action === "lover") {
       loverRead = id;
       closer.abort();
@@ -225,10 +224,15 @@ export async function openTokyoLime({ signal = null } = {}) {
       notes[id] = "訪問は保留にした。次に都合が合う時、ここからまた相談できる。";
     }
     save();
-  } });
-  signal?.removeEventListener("abort", forward);
-  if (!loverRead || signal?.aborted) return;
+  };
+  try {
+    await openLime({ contactView: {
+      contacts, summary, actions, onAction, signal: closer.signal, title: "地元との連絡", guide,
+      empty: "連絡先を交換した恋人や地元の友人がいると、ここから連絡できます。",
+    } });
+  } finally { signal?.removeEventListener("abort", forward); }
+  if (!loverRead || state !== owner || signal?.aborted) return;
   await readLoverLime({ senders: [loverRead], home: playerRegion(state) === "home" });
-  if (!signal?.aborted) await openTokyoLime({ signal });
+  if (state === owner && !signal?.aborted) await openTokyoLime({ signal });
 }
 
