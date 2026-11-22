@@ -78,26 +78,27 @@ let weatherKey = "";
 const bgReady = new Map(); // url -> { promise, image, keep }（一度読んだ絵は即座に出す）
 // Retain only a bounded decoded working set. CSS/DOM own visible images separately.
 const IMAGE_CACHE_ENTRIES = 128, KEPT_IMAGE_BYTES = 48 * 1024 * 1024;
-// pin（制作画面の素材。craft/readiness.js）は、この上限にも件数の上限にも数えず、手放さない。
-// 制作画面を開き直すたびに素材を取り直すと準備の幕が出てしまうため（test/browser/craft_readiness.mjs）。
-// 数は工程ごとの素材（高々百枚ほど）に限られる。ほかの絵は今までどおり上限の中で保つ。
-function trimImages() {
+// 作業台の再表示には現在・次の工程を残す。通常の画面を開いても追い出さず、
+// 工程や章が増えたときには作業台の中で古い順に解放する。
+const CRAFT_IMAGE_BYTES = 128 * 1024 * 1024;
+function trimImages(pin) {
+  const budget = pin ? CRAFT_IMAGE_BYTES : KEPT_IMAGE_BYTES;
   let bytes = 0, count = 0;
   for (const entry of bgReady.values()) {
-    if (entry.pin) continue;
+    if (entry.pin !== pin) continue;
     bytes += entry.bytes || 0;
     count++;
   }
   for (const [url, entry] of bgReady) {
-    if (!entry.done || entry.pin) continue; // never evict shared in-flight requests
-    if (entry.image && bytes > KEPT_IMAGE_BYTES) {
-      bytes -= entry.bytes || 0;
-      entry.image = null; entry.bytes = 0;
-    }
+    if (bytes <= budget && count <= IMAGE_CACHE_ENTRIES) break;
+    if (!entry.done || entry.pin !== pin) continue;
     if (count > IMAGE_CACHE_ENTRIES) {
       bytes -= entry.bytes || 0;
       count--;
       bgReady.delete(url);
+    } else if (entry.image && bytes > budget) {
+      bytes -= entry.bytes || 0;
+      entry.image = null; entry.bytes = 0;
     }
   }
 }
@@ -119,7 +120,7 @@ export function imageReady(url, ms = 1500, { keep = false, pin = false } = {}) {
         entry.done = true;
         if (!entry.keep) entry.image = null;
         else entry.bytes = (i.naturalWidth || 0) * (i.naturalHeight || 0) * 4;
-        trimImages();
+        trimImages(entry.pin);
         resolve(true);
       });
       i.onerror = () => { bgReady.delete(url); entry.image = null; resolve(false); };
@@ -127,7 +128,10 @@ export function imageReady(url, ms = 1500, { keep = false, pin = false } = {}) {
     });
   } else {
     if (keep) entry.keep = true;
-    if (pin) entry.pin = true;
+    if (pin && !entry.pin) {
+      entry.pin = true;
+      if (entry.done) trimImages(true);
+    }
   }
   const p = entry.promise;
   if (ms === null) return p; // explicit retry: observe this transfer until it settles

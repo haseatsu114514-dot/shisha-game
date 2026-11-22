@@ -41,6 +41,6 @@ export function craftAssetUrls(mode = "tournament", { step = "setup", cs = null,
   ].filter(Boolean))];
 }
 export function warmCraftAssets(mode, options) {
-  // pin: 開き直しで取り直さない（core/ui.js の画像保持の上限に数えない）。
+  // 開き直す工程の素材を、作業台専用の容量上限内で再利用する。
   return Promise.all(craftAssetUrls(mode, options).map(url => imageReady(url, 15000, { keep: true, pin: true })));
 }

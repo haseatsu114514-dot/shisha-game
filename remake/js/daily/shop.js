@@ -58,15 +58,21 @@ export function addFlavorStock(id, grams) {
 }
 export const ownsFlavor = (id) => flavorStock(id) > 0;
 /** 目利きの掘り出し物。同じ日・同じ店では再表示やLOADで品と値段を引き直さない。 */
-export function shopFlavorPrice(item, catalog, s = state) {
-  if (!item || !growthSkill(s,"K23") || !catalog.includes(item.id)) return item?.price;
+function bargainFlavors(catalog, s) {
+  if (!growthSkill(s, "K23")) return [];
   const hash = id => {
     let value = ((s.weatherSeed || 0) + (s.chapter || 1) * 7919 + (s.day || 1) * 3571) | 0;
     for (const char of id) value = Math.imul(value ^ char.charCodeAt(0),16777619);
     return value >>> 0;
   };
-  const deals = [...new Set(catalog)].sort((a,b) => hash(a)-hash(b) || a.localeCompare(b)).slice(0,2);
-  return deals.includes(item.id) ? Math.round(item.price * (1-SKILL_TUNING.bargain)) : item.price;
+  return [...new Set(catalog)].filter(id => releasedFlavor(id, s.chapter))
+    .sort((a, b) => hash(a) - hash(b) || a.localeCompare(b)).slice(0, 2);
+}
+function priceWithBargain(item, deals) {
+  return item && deals.includes(item.id) ? Math.round(item.price * (1 - SKILL_TUNING.bargain)) : item?.price;
+}
+export function shopFlavorPrice(item, catalog, s = state) {
+  return priceWithBargain(item, bargainFlavors(catalog, s));
 }
 /** 持っているフレーバー（店の品＋限定サンプル・もらった葉）。はじめはブロンドリーフのみ */
 export function ownedFlavorIds() {
@@ -255,7 +261,19 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const errandName = errand ? shopProductName(DB.flavorById[errand] || {}) : "";
     const errandBox = errand ? el("div.shop-errand", { role: "status" }) : null;
     const live = () => !finished && state === session && root.isConnected;
-    const onExpense = (id) => expense && errand === id && flavorStock(id) < minStock && !state.flags[expenseFlag];
+    const deals = bargainFlavors(flavorIds, session);
+    const priceOf = item => priceWithBargain(item, deals);
+    const errandPrice = priceOf(DB.flavorById[errand]) || 0;
+    const onExpense = id => errand === id && flavorStock(id) < minStock && (expense === "shortfall"
+      ? spendableMoney(state) < errandPrice
+      : expense && !state.flags[expenseFlag]);
+    // 指定品をカートに入れていない支払いでは、その箱の代金を残す。くじにも同じ予算を使う。
+    const purchaseBudget = (errandBoxes = 0) => {
+      const money = spendableMoney(state);
+      if (!errand || onExpense(errand)) return money;
+      const boxes = Math.ceil((minStock - flavorStock(errand)) / FLAVOR_BOX_GRAMS);
+      return Math.max(0, money - Math.max(0, boxes - errandBoxes) * errandPrice);
+    };
     const errandReady = () => flavorStock(errand) >= minStock;
     let refusedAt = -Infinity, refusedReady;
     const refuseOtherPurchase = () => {
@@ -284,7 +302,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
         if (!item || !Number.isInteger(quantity) || quantity < 1 || quantity > (flavor ? 99 : 1)
           || !flavor && (!forSale(item, stockChapter) || state.owned.includes(id))) { cart.delete(id); continue; }
         const free = flavor && onExpense(id);
-        rows.push({ item, flavor, quantity, free, cost: (flavor ? shopFlavorPrice(item,flavorIds) : item.buy_price) * (quantity - (free ? 1 : 0)) });
+        rows.push({ item, flavor, quantity, free, cost: (flavor ? priceOf(item) : item.buy_price) * (quantity - (free ? 1 : 0)) });
       }
       return rows;
     };
@@ -313,7 +331,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       const fGuide = flavor ? flavorThermalGuide(item) : null;
       modal({ title: shopProductName(item), className: "shop-dialog", body: el("div.shop-detail", [
         productArt(item, flavor, 112), el("span.shop-detail-category", { text: flavor ? CAT_LABEL[item.category] : TYPE_LABEL[item.type] }),
-        el("p", { text: flavor ? `所持 ${flavorStock(item.id)}g ／ 1箱 ${FLAVOR_BOX_GRAMS}g・${yen(shopFlavorPrice(item,flavorIds))}${shopFlavorPrice(item,flavorIds)<item.price ? "（掘り出し物）" : ""}` : `${yen(item.buy_price)}${item.capacity ? ` ／ 容量 ${item.capacity}g` : ""}` }),
+        el("p", { text: flavor ? `所持 ${flavorStock(item.id)}g ／ 1箱 ${FLAVOR_BOX_GRAMS}g・${yen(priceOf(item))}${priceOf(item)<item.price ? "（掘り出し物）" : ""}` : `${yen(item.buy_price)}${item.capacity ? ` ／ 容量 ${item.capacity}g` : ""}` }),
         current ? el("p.shop-current", { text: `${item.type === "homeware" ? "家で使用中" : "装備中"}：${current.name}${current.capacity ? `（${current.capacity}g）` : ""}` }) : null,
         flavor ? flavorFeatureCard(item, { description: shopText(item.description), makerLabel: shopText(fGuide?.makerLabel || "") })
           : equipmentGuide(item, current?.id),
@@ -326,11 +344,11 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       return el(`div.shop-row.product${selected ? ".selected" : ""}${needed ? ".errand" : ""}`, [
         el("button.shop-product", { dataset: { test: `detail-${item.id}` }, "aria-label": `${name}の詳細`, onclick: () => detail(item, flavor) }, [
           productArt(item, flavor), el("span.shop-main", [el("b", { text: name }),
-            el("small.shop-feature-tags", { text: flavor ? `${shopFlavorPrice(item,flavorIds)<item.price ? "掘り出し物 · " : ""}${flavorTags(item)}` : equipmentUse(item).use }),
+            el("small.shop-feature-tags", { text: flavor ? `${priceOf(item)<item.price ? "掘り出し物 · " : ""}${flavorTags(item)}` : equipmentUse(item).use }),
           ]),
         ]),
         el("span.shop-stock", flavor ? [el("small", { text: "所持" }), el("span", { text: `${flavorStock(item.id)}g` })] : [el("small", { text: item.type === "hms" ? "HMD" : TYPE_LABEL[item.type] })]),
-        el(`span.shop-price${flavor && onExpense(item.id) ? ".expense" : ""}`, { text: flavor && onExpense(item.id) ? "経費・1箱無料" : priceText(flavor ? shopFlavorPrice(item,flavorIds) : item.buy_price) }),
+        el(`span.shop-price${flavor && onExpense(item.id) ? ".expense" : ""}`, { text: flavor && onExpense(item.id) ? "経費・1箱無料" : priceText(flavor ? priceOf(item) : item.buy_price) }),
         owned ? el("span.shop-owned", { text: Object.values(state.equip).includes(item.id) ? "装備中" : "所持済み" }) : quantityPicker(item, flavor),
       ]);
     };
@@ -370,6 +388,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
         const done = errandReady();
         errandBox.classList.toggle("done", done);
         errandBox.textContent = done ? `✓ ${errandName}を仕入れた。店を出て戻ろう` : `${errandName}を1箱選んで、下のボタンで購入${onExpense(errand) ? "（1箱は店の経費）" : ""}`;
+        if (!done && purchaseBudget() < spendableMoney(state)) errandBox.textContent += `（指定品の代金 ${priceText(errandPrice)} を確保）`;
         if (firstErrand) {
           const step = done ? "leave" : count ? "purchase" : tab !== "flavor" ? "return-tab"
             : category !== "all" && category !== DB.flavorById[errand].category ? "return-filter" : "select";
@@ -391,12 +410,13 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       const items = groupShopFlavors(flavorIds.filter(listed).map((id) => DB.flavorById[id]).filter((f) => f && (category === "all" || category === f.category)));
       if (firstErrand) items.sort((a, b) => Number(b.id === errand) - Number(a.id === errand));
       body.replaceChildren(...(tab === "flavor" ? items.map((f) => productRow(f, true))
-        : tab === "equip" ? DB.equipment.filter(item => forSale(item, stockChapter)).map((e) => productRow(e, false)) : tab === "kuji" ? kujiRows(() => { if (live()) render(); }, kujiShop) : sellRows()));
+        : tab === "equip" ? DB.equipment.filter(item => forSale(item, stockChapter)).map((e) => productRow(e, false)) : tab === "kuji" ? kujiRows(() => { if (live()) render(); }, kujiShop, purchaseBudget) : sellRows()));
       body.scrollTop = scroll;
-      summary.replaceChildren(el("small", { text: "合計" }), el("strong", { text: priceText(total) }), el("span", { text: spendableMoney(state) >= total ? `購入後 ${priceText(state.money - total)}` : `あと ${priceText(total - spendableMoney(state))}` }));
+      const budget = purchaseBudget(cart.get(errand) || 0);
+      summary.replaceChildren(el("small", { text: "合計" }), el("strong", { text: priceText(total) }), el("span", { text: budget >= total ? `購入後 ${priceText(state.money - total)}` : `あと ${priceText(total - budget)}` }));
       summary.disabled = !count;
       summary.setAttribute("aria-label", `選択した${count}点の内容を確認。合計${yen(total)}`);
-      checkout.disabled = !count || total > spendableMoney(state);
+      checkout.disabled = !count || total > budget;
       summary.hidden = checkout.hidden = !count && (tab === "kuji" || tab === "sell");
       checkout.textContent = count ? `${count}${rows.every((r) => r.flavor) ? "箱" : "点"}を購入する →` : "商品を選んでください";
       pointTo(checkout, errandBox?.dataset.guideStep === "purchase" && !checkout.disabled);
@@ -411,7 +431,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       const rows = order(), total = rows.reduce((n, r) => n + r.cost, 0);
       if (!rows.length) return;
       if (firstErrand && rows.some(r => !r.flavor || r.item.id !== errand)) { refuseOtherPurchase(); return; }
-      if (spendableMoney(state) < total) { SE.error(); toast("お金が足りない", { kind: "warn" }); render(); return; }
+      if (purchaseBudget(cart.get(errand) || 0) < total) { SE.error(); toast("お金が足りない", { kind: "warn" }); render(); return; }
       // 非同期処理を挟まず、支払いと全商品の反映を終えてから一度保存する。
       addMoney(-total);
       for (const { item, flavor, quantity, free } of rows) {

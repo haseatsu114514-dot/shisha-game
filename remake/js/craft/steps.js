@@ -347,7 +347,9 @@ export async function stepMix(cs) {
   const ids = mixFlavorIds(cs);
   const limit = (id) => cs.staffPractice ? staffStock(state, id) + flavorStock(id) : (consumes && !supplied(id) ? flavorStock(id) : Infinity);
   const practiceFlavor = cs.mode === "rehearsal" && !cs.staffPractice ? state.flags._prep_flavor : null;
-  cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? (practiceFlavor === "lemon" ? { lemon: 10, mint: 2 } : { [practiceFlavor]: 10, lemon: 2 }) : {};
+  // DAY7は買い出しで案内したミントを合わせる。前日リハーサルでは課題の葉を確保する。
+  const sideFlavor = cs.practiceKind === "midcheck" || practiceFlavor === "lemon" ? "mint" : "lemon";
+  cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? { [practiceFlavor]: 10, [sideFlavor]: 2 } : {};
   const lcd = el("div.lcd");
   const vessel = el("div.mix-vessel", { dataset: { test: "mix-vessel" } });
   const taste = el("div.mix-taste", { "aria-live": "polite", dataset: { test: "mix-taste" } });

@@ -2,7 +2,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
 import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather, dropRetired, gainCard } from "../core/ui.js";
-import { state, save } from "../core/state.js";
+import { state, save, holdActionSave } from "../core/state.js";
 import { openMenu as openFullMenu } from "./menu.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina, currentCondition } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
@@ -671,7 +671,10 @@ async function performSpotAction(spot, saveGate) {
     return { used: completed, exerted: completed };
   }
   if (chapterDef.performSpot) {
-    const result = await chapterDef.performSpot(spot, { staminaGuard });
+    const result = await chapterDef.performSpot(spot, { staminaGuard,
+      // 移動先・同行の会話・使った行動を、同じ時点のセーブにする。
+      holdSaveUntilActionEnds: () => { saveGate.release ??= holdActionSave(actionOwner); },
+    });
     if (result) {
       // 第3章以降の店の人が、配合を教える／名前を付けた一台を受け取る（#2020 G・daily/recipe-finds.js）
       if (result.used && state === actionOwner) await recipeFindAfterVisit(spot, { bg: roamerBg() });
@@ -717,8 +720,6 @@ async function performSpotAction(spot, saveGate) {
     if (!(await staminaGuard(sub === "baito" ? -24 : -16))) return { used: false, exerted };
     if (state !== actionOwner) return { used: false, exerted: false };
     if (floor && saveGate) {
-      const { holdActionSave } = await import("../core/state.js");
-      if (state !== actionOwner) return { used: false, exerted: false };
       saveGate.release = holdActionSave(actionOwner);
     }
     exerted = true;

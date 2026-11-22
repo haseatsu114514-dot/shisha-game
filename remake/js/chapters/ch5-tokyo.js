@@ -195,7 +195,7 @@ async function read(id, bg, owner, tod = timeOfDay()) {
 const TOKYO_TEACHERS = Object.freeze({ ch5_tokyo_volk: "volk" });
 
 /** 東京の行き先と「東京へ」の処理。対象外の行き先は null（日常ループの通常の処理へ）。 */
-export async function performTokyoSpot(spot, { staminaGuard } = {}) {
+export async function performTokyoSpot(spot, { staminaGuard, holdSaveUntilActionEnds } = {}) {
   if (spot.id !== TO_TOKYO_SPOT.id && spot.region !== TOKYO) return null;
   const owner = state;
   try { await loadTokyoScenes(); } catch {
@@ -206,7 +206,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   if (spot.id === TO_TOKYO_SPOT.id || spot.id === HOME_ID) {
     const blocked = tokyoVanBlock(state);
     if (blocked) { toast(blocked.why); return { used: false, exerted: false }; }
-    return spot.id === HOME_ID ? goHome(owner) : goToTokyo(owner);
+    return spot.id === HOME_ID ? goHome(owner, holdSaveUntilActionEnds) : goToTokyo(owner, holdSaveUntilActionEnds);
   }
   if (spot.reflect) { await reflectAt(spot.reflect); return { used: false, exerted: false }; }
   if (spot.id === "ch5_tokyo_shop") {
@@ -349,7 +349,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
 }
 
 /** 配送便で東京へ（昼に出て夜に着く。今日の昼と夜の2行動）。着いた夜は屋根裏で寝る。 */
-async function goToTokyo(owner) {
+async function goToTokyo(owner, holdSaveUntilActionEnds) {
   // 最初に選んだ日は、Dr.fookah の裏口で配送便に乗せてもらう話になる（読むだけでは行動を使わない）。
   if (!state.flags[VAN_FLAG]) {
     if (!await read("ch5_tokyo_van_first", "bg_shop", owner)) return { used: false, exerted: false };
@@ -357,8 +357,8 @@ async function goToTokyo(owner) {
     save();
   }
   if (!await read("ch5_tokyo_go", "bg_street", owner)) return { used: false, exerted: false };
+  holdSaveUntilActionEnds?.();
   state.flags._ch2_region = TOKYO;
-  save();
   // 配送便の車窓。道路の灯が流れて、夜の東京に着く（#2688 A4）
   await vanRide(() => showBg(state.flags[ATTIC_FLAG] ? "bg_tokyo_map_night" : "bg_mukai_shop", "night"), { to: "tokyo" });
   if (state !== owner) return { used: false, exerted: false };
@@ -370,10 +370,10 @@ async function goToTokyo(owner) {
 }
 
 /** 帰りの配送便（昼に出て夜に地元へ着く。今日の昼と夜の2行動）。 */
-async function goHome(owner) {
+async function goHome(owner, holdSaveUntilActionEnds) {
   if (!await read("ch5_tokyo_back", "bg_street", owner)) return { used: false, exerted: false };
+  holdSaveUntilActionEnds?.();
   state.flags._ch2_region = "home";
-  save();
   // 配送便の車窓で地元の夜へ（#2688 A4）
   await vanRide(() => showBg("bg_osu_map_night", "night"), { to: "town" });
   return { used: true, exerted: false, slotsUsed: TOKYO_VAN_SLOTS };
