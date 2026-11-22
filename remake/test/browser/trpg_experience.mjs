@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { startTrpgStory } from "./trpg_start.mjs";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = new URL("trpg-preview.html", process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
@@ -180,8 +181,8 @@ async function settle(page) {
   await dialogue(page);
 }
 async function begin(page, { keyboard = false } = {}) {
+  await startTrpgStory(page, keyboard);
   if (keyboard) {
-    await control(page, "trpg-start").press("Enter");
     const before = await page.locator(".trpg-speech p").textContent();
     await page.keyboard.down("Enter");
     const once = await page.locator(".trpg-speech p").textContent();
@@ -190,7 +191,7 @@ async function begin(page, { keyboard = false } = {}) {
     await page.keyboard.up("Enter");
     assert.notEqual(once, before, "One Enter press advances the dialogue");
     assert.equal(repeated, once, "Holding Enter does not skip another dialogue line");
-  } else await hit(page, "trpg-start");
+  }
   assert(await page.locator(".trpg-dock").evaluate(n => n.checkVisibility({ opacityProperty: true, visibilityProperty: true })),
     "Conversation appears as subtitles while a character speaks");
   if (keyboard) await page.screenshot({ path: path.join(artifacts, "ordinary-conversation-pc.png") });
@@ -528,7 +529,7 @@ try {
   await run("shark-insight-hidden", { scenario: "shark-last-order", seed: "9", traveler: "vibration" }, {}, page => shark(page, false));
   for (const [label, scenario] of [["ordinary", "ordinary-cup"], ["shark", "shark-last-order"]])
     await run(label + "-portrait-roll-resources-and-paused-effects", { scenario, seed: "9" }, { hasTouch: true }, async page => {
-      await hit(page, "trpg-start"); await dialogue(page); await declare(page);
+      await startTrpgStory(page); await dialogue(page); await declare(page);
       await page.setViewportSize({ width: 390, height: 844 });
       await page.waitForFunction(() => Math.abs(Number(document.getElementById("stage").style.getPropertyValue("--k")) - 390 / 1280) < 1e-9);
       await hit(page, "trpg-roll"); await control(page, "trpg-settle").waitFor();

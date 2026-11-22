@@ -3,6 +3,7 @@ import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
 import { travelToCity as travel } from "./station_helpers.mjs";
 import { flickFromHandle, stanceAt } from "./axe_flick_input.mjs";
+import { startTrpgStory } from "./trpg_start.mjs";
 const shots = process.env.COMPARISON_DIR;
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
@@ -388,7 +389,7 @@ await suite("play-spots", async runCheck => {
     await travel(page, "widehanga"); await go(page, "trpg_bar");
     assert.equal(await page.locator(t("trpg-buy-ordinary-cup")).count(), 0);
     assert(await page.locator(t("trpg-play-ordinary-cup")).isEnabled());
-    await hit(page, "trpg-play-ordinary-cup"); await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
+    await hit(page, "trpg-play-ordinary-cup"); await lines(page); await startTrpgStory(page); await lines(page); await roll(page);
     await interviewStep(page);
     for (const id of ["menu", "window", "bag"]) { await hit(page, "trpg-spot-" + id); await lines(page); }
     await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-quiet"); await lines(page); await twistStep(page);
@@ -431,7 +432,7 @@ await suite("play-spots", async runCheck => {
       const bought = await value(page);
       assert.equal(bought.money, before.money - 800); assert.equal(bought.slot, 1); assert.equal(bought.stamina, before.stamina);
       assert.deepEqual(bought.trpg.owned, ["shark-last-order"]);
-      await hit(page, "trpg-play-shark-last-order"); await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
+      await hit(page, "trpg-play-shark-last-order"); await lines(page); await startTrpgStory(page); await lines(page); await roll(page);
       const inProgress = await value(page);
       const { bookmark, ...inProgressTrpg } = inProgress.trpg;
       assert.deepEqual({ ...inProgress, trpg: inProgressTrpg }, bought,
