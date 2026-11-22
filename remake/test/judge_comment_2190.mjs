@@ -8,6 +8,7 @@ import { improvementOf } from "../js/craft/advice.js";
 const round = (inZone = true) => ({ temp: .54, score: inZone ? 95 : 40, inZone });
 const cup = (quality = 80) => ({ parts: { shisha: quality }, pull: round(), careHistory: [round(), round()] });
 const saved = cs => JSON.parse(JSON.stringify(cs));
+const repeat = /同じ手順でもう一台作り、今回の仕上がりを再現/;
 
 // Reproduce the score-axis mismatch with the actual flavor data and production scoring.
 globalThis.document = { addEventListener() {} };
@@ -41,8 +42,8 @@ newGame();
   Object.assign(stronger.heat, { score: 95, heatPower: 95, heatStability: 95, burnRisk: 5, aromaRetention: 95 });
   delete stronger.stats; finalize(stronger);
   assert.equal(evaluationOf(stronger.parts.shisha).mark, "○");
-  assert.match(improvementOf(stronger), /今回の記録を見て、次に試すことを選ぼう/,
-    "The real composite-quality fallback does not contradict three recorded temperature successes");
+  assert.match(improvementOf(stronger), /蒸らしでは雑念が近づく前に、心を空いている方へ動か/,
+    "Recorded steam results can explain what to practice despite three recorded temperature successes");
 }
 
 // The complete cup can be ○/△ while all three recorded temperature results succeeded.
@@ -51,7 +52,7 @@ for (const quality of [40, 65, 80, 89, 90, 100]) {
   assert.match(judgeComment(cs), /提供も2回の調整も、いい温度だった/);
   assert.doesNotMatch(judgeComment(cs), /もっと揃え|合わなかった/);
   assert.equal(allRecordedTemperaturesIdeal(cs), true);
-  assert.match(improvementOf(cs), /今回の記録を見て、次に試すことを選ぼう/);
+  assert.match(improvementOf(cs), repeat);
   assert.equal(JSON.stringify(cs), before, "Final comments do not mutate saved craft data");
 }
 
@@ -71,7 +72,7 @@ for (const index of [0, 1, 2]) {
   cs.leaf = { hp: 2, max: 5, burn: 1, dmg: 10, steps: 10 };
   assert(!isIdealTemperature(cs.pull.temp, temperatureBands(cs)), "Fixture reproduces the later narrower band");
   assert.match(judgeComment(saved(cs)), /提供も2回の調整も、いい温度だった/);
-  assert.match(improvementOf(saved(cs)), /今回の記録を見て、次に試すことを選ぼう/);
+  assert.match(improvementOf(saved(cs)), repeat);
 }
 
 // Missing, invalid, skipped and failed records must not manufacture thermal praise or blame.
@@ -88,21 +89,20 @@ for (const makeUnknown of [
   const cs = cup(); makeUnknown(cs);
   assert.equal(judgeComment(cs), feedbackLine("uezono", "default", evaluationOf(80)));
   assert.equal(allRecordedTemperaturesIdeal(cs), false);
-  assert.doesNotMatch(improvementOf(cs), /今回の記録を見て/, "Unverified records do not select the success fallback");
+  assert.doesNotMatch(improvementOf(cs), /熱を戻して|少し下げて/, "Unverified records without a temperature miss do not invent thermal blame");
 }
 assert.equal(judgeComment(undefined), feedbackLine("uezono", "default", evaluationOf(0)));
 
-// Only the final temperature-related fallback changes; known causes keep their existing priority.
+// A low composite score or an in-zone score cannot turn a good temperature into a miss.
 for (const part of ["shisha", "care1", "care2"]) {
   const cs = cup();
   cs.parts = { holes: 95, heat: 95, shisha: 95, care1: 95, care2: 95, [part]: 70 };
   if (part !== "shisha") cs.careHistory[part === "care1" ? 0 : 1].score = 70;
-  assert.match(improvementOf(cs), /今回の記録を見て、次に試すことを選ぼう/);
+  assert.match(improvementOf(cs), repeat);
   delete cs.pull.inZone;
-  assert.match(improvementOf(cs), part === "shisha" ? /配合と、提供時の温度/ : part === "care1" ? /交換する炭の数/ : /葉を残し、適温/,
-    "Legacy records retain the existing weakest-part fallback");
+  assert.match(improvementOf(cs), repeat, "An in-band legacy temperature also rules out a thermal correction");
 }
-for (const [part, expected] of [["holes", /穴を均等/], ["heat", /炭の全面/]]) {
+for (const [part, expected] of [["holes", /針が目印に重なったところ/], ["heat", /炭の全面/]]) {
   const cs = cup(); cs.parts[part] = 10;
   assert.match(improvementOf(cs), expected, "Known holes/heat practice stays actionable");
 }
@@ -119,7 +119,7 @@ for (const [part, expected] of [["holes", /穴を均等/], ["heat", /炭の全�
   cs.pull.pulls = 2;
   assert.match(improvementOf(cs), /調整2回目で葉が尽きた/, "Leaf failure retains its existing cause");
   cs.careHistory[1] = { score: 0, temp: .54, pulls: 1, failed: "unknown", inZone: false };
-  assert.match(improvementOf(cs), /配合と、提供時の温度/, "Unknown failures retain the existing fallback");
+  assert.equal(improvementOf(cs), "", "Unknown failure without actionable evidence does not recommend repeating it");
 }
 
 // Stage-specific feedback and the established evaluation thresholds remain unchanged.
