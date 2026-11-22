@@ -2913,6 +2913,30 @@
     "twistIdle": "どう切り抜ける？ 手を選んで、誰が動くか決めよう",
     "planTitle": "旅人への提案"
   },
+  "pictureBook": {
+    "pages": [
+      {
+        "image": "../../img/ui/trpg/picturebook/regular-harbor/01.webp",
+        "alt": "雨の港町。波止場の灯りが水面に映っている",
+        "text": "港町ノーラ。雨ににじむ港の灯り。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/regular-harbor/02.webp",
+        "alt": "雨の窓辺で、小さな卓を囲む茶房の客",
+        "text": "茶房「波止場の灯」には、雨を避けた人たちがまだ残っている。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/regular-harbor/03.webp",
+        "alt": "カウンターで布を使ってカップを拭く店番の手元",
+        "text": "閉店まで、もう少し。店番はカウンターで、洗い終えたカップを拭いている。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/regular-harbor/04.webp",
+        "alt": "濡れた外套のオルが、閉店の札のある戸口に立っている",
+        "text": "閉店の札を裏返しかけたとき、濡れた外套の旅人オルが戸口に立った。"
+      }
+    ]
+  },
   "debrief": {
     "smooth": "trpg_regular_harbor_debrief_smooth",
     "with-detour": "trpg_regular_harbor_debrief_with_detour"
