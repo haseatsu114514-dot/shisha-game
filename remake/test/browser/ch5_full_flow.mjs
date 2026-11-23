@@ -1267,6 +1267,7 @@ await suite("ch5-full-flow", async check => {
     await visitPin(page, "ch4_dubai_camel");
     await page.locator(dt("camel-tutorial")).waitFor({ timeout: 90000 });
     await page.locator(dt("camel-tutorial-skip")).click();
+    await page.locator('[data-test="camel-cup"][data-cup="practice"]').click();
     await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
     await page.locator(dt("camel-finish")).click();
     await chapterFiveDubaiMap(page, 61, 1);

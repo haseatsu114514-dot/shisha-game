@@ -175,15 +175,30 @@ export function voteScore(G, p, s, pts, extra = 0) {
   return impressionOf(p, s, extra, G.R.impress);
 }
 const NO_VOTE = -99;
+const flavorCount = p => Object.values(p.bowl).filter(n => n > 0).length;
+
+/** ボウルの構成で決まる人物能力の発動条件。 */
+export function personFitsBowl(p, id) {
+  if (!p.main) return false;
+  switch (id) {
+    case "adam": return flavorCount(p) === 1;
+    case "mashiro": return sidesOf(p).length >= 2;
+    case "minto": return Object.keys(p.bowl).some(k => FLAVOR[k].kind === "cool" && p.bowl[k] >= 2);
+    case "naru": return FLAVOR[p.main].kind === "sweet";
+    case "tsumugi": return FLAVOR[p.main].kind === "floral";
+    default: return true;
+  }
+}
+
 export function scorePuff(p, h, q, fl = {}) {
   const f = FLAVOR[p.main];
   if (!f || !leavesOf(p)) return { zone: "cold", pts: 0, parts: [{ label: "燃え尽き", n: 0 }], rich: false };
-  const sd = sidesOf(p), tot = leavesOf(p), kinds = Object.keys(p.bowl).filter((k) => p.bowl[k] > 0).length;
+  const sd = sidesOf(p), tot = leavesOf(p), kinds = flavorCount(p);
   let z = rawZone(f, h, scorchLineOf(p));
   let usedLotus = false, usedSilicone = false, saved = false;
   if (z === "scorch" && fl.blow) { z = "band"; saved = true; } // ブロー: 焦げライン以上なら適温として採点
   if (z === "scorch" && p.bowlId === "silicone" && !p.usedSilicone) { z = "off"; usedSilicone = true; saved = true; }
-  if (z === "offLo" && (sd.includes("peach") || (p.person === "tsumugi" && f.kind === "floral"))) z = "band";
+  if (z === "offLo" && (sd.includes("peach") || (p.person === "tsumugi" && personFitsBowl(p, "tsumugi")))) z = "band";
   if (z === "offHi" && (sd.includes("cool_mint") || hasTool(p, "ice_hose"))) z = "band";
   if ((z === "offLo" || z === "offHi") && p.hmd === "lotus" && !p.usedLotus) { z = "band"; usedLotus = true; }
   if (z === "offLo" || z === "offHi") z = "off";
@@ -200,9 +215,9 @@ export function scorePuff(p, h, q, fl = {}) {
     if (kinds === 1 && p.bowlId === "clay") add("素焼きハガル", 1);
     if (kinds === 1 && f.id === "double_apple") add("原点", 1); // ダブルアップル【原点】: 単品なら毎口+1
     if (kinds === 1 && p.person === "adam") add("アダム", 1);
-    if (sd.length >= 2 && p.person === "mashiro") add("ましろ", 1);
+    if (p.person === "mashiro" && personFitsBowl(p, "mashiro")) add("ましろ", 1);
     if (fl.lastOfSession && p.bowl.jasmine >= 2) add("ジャスミン", 1);
-    if (z === "just") { add(q.style, q.just || 0); if (p.person === "naru" && f.kind === "sweet") add("なる", 1); }
+    if (z === "just") { add(q.style, q.just || 0); if (p.person === "naru" && personFitsBowl(p, "naru")) add("なる", 1); }
     else add(q.style, q.band || 0);
   } else if (z === "off") {
     add("ズレ", saved ? 1 : (q.offZero ? 0 : 1));
@@ -250,7 +265,6 @@ export function createGame(cfg) {
   G.P = cfg.players.map((pc, i) => newPlayer(G, i, pc));
   const n = G.P.length;
   G.lead = Number.isInteger(cfg.first) && cfg.first >= 0 && cfg.first < n ? cfg.first : Math.floor(nextRand(G) * n);
-  if (tour.task) for (const p of G.P) { p.bowl[tour.task] = 3; fixMain(p); }
   say(G, `${tour.name}。先手は${G.P[G.lead].name}。`);
   if (G.R.prepack) for (const p of G.P) { // 入門: 一式の配合で詰めてある（場からは取らない）。準備は炭だけ
     for (const [id, k] of p.plan) { const take = Math.min(k, BOWL[p.bowlId].cap - leavesOf(p)); if (take > 0) p.bowl[id] = (p.bowl[id] || 0) + take; }
@@ -338,7 +352,6 @@ export function canPlay(G, p, id, target = null) {
   const c = CARD[id], w = G.wait;
   if (!w || w.player !== p.index) return fail("いまは自分の番ではない");
   if (c.type === "coal") return fail("炭カードは炭焼き場に置く");
-  if (id === "repack") return fail("このカードはまだ使えない");
   const inPrep = w.type === "prep", inMain = w.type === "main", inReact = w.type === "react";
   if (c.when === "puff") {
     if (G.R.reactAfterReveal ? !inReact : !(inMain && G.phase === "serve")) return fail(G.R.reactAfterReveal ? "審査カードをめくったあとに使う" : "提供の自分のターンに、この一口に仕込む");
@@ -729,7 +742,7 @@ function resolveJudge(G) {
     let lost = null, lostN = 0;
     if (s.zone === "scorch") {
       p.scorchCount++;
-      const safe = p.person === "minto" && Object.keys(p.bowl).some((k) => FLAVOR[k].kind === "cool" && p.bowl[k] >= 2);
+      const safe = p.person === "minto" && personFitsBowl(p, "minto");
       if (!safe && p.main) { lost = p.main; lostN = Math.min(G.R.scorchLoss, p.bowl[p.main]); p.bowl[p.main] -= lostN; fixMain(p); }
     }
     res[i] = { h, zone: s.zone, pts, parts, lost, lostN, rank: RANK[s.zone], duel: pf.duel, imp, bonus, worn: [] };

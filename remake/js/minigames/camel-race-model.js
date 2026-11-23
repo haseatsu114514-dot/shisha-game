@@ -22,7 +22,7 @@ export const RACE = Object.freeze({
 // tier: ミニゲームの三段階（#3779・core/play-tiers.js）。入門＝初級・標準＝中級・上級＝上級。練習は段の外。
 // 段の「クリア」は、その大会で3位以内（camelCupQualified）。解放は今までどおり（入門3位以内で標準、標準の中級認定で上級）。
 export const CAMEL_CUPS = Object.freeze([
-  { id: "practice", name: "練習レース", length: 1000, rivalBoost: 0.2, note: "操作を練習。初回完走のご褒美はそのまま" },
+  { id: "practice", name: "練習レース", length: 1000, rivalBoost: -0.9, note: "操作を練習。初回完走のご褒美はそのまま" },
   { id: "rookie", tier: "easy", name: "入門大会", length: 700, rivalBoost: -0.9, note: "3位以内で標準大会へ" },
   { id: "standard", tier: "normal", name: "標準大会", length: 1000, rivalBoost: 0.2, note: "入賞・声20点・スタミナ20点・連打1回以内で中級認定" },
   { id: "expert", tier: "hard", name: "上級大会", length: 1300, rivalBoost: 0.55, note: "3位以内で上級クリア（白火1）。1位・S・連打なしで称号" },
@@ -46,6 +46,7 @@ export const PLAYER = Object.freeze({
   staminaDrain: 0.9,     // ムチを入れていない間の消耗（1秒あたり）
   staminaRecover: 2.6,   // ムチを入れていない間の回復 ×調子（調子0.9なら +2.3/秒）
   rhythmDecay: 0.07,     // 1秒あたりの割合で調子が落ちる（PERFECT なら高いまま、GOOD だけなら中くらいで釣り合う）
+  warning: 40,           // スタミナ表示で注意に切り替わる
   tired: 30,             // これを下回ると速度が落ち始める
 });
 
@@ -460,12 +461,14 @@ export function scoreRace(state) {
   const timingRaw = judged ? 35 * (stats.perfect + stats.good * 0.6) / judged : 0;
   const timing = clamp(timingRaw - stats.miss * 2 - stats.spam, 0, 35);
   // ムチとスタミナ: スパートでムチを入れたか（8: 3秒で満点）、息が無いのに押し続けていないか（9）、
-  // 息を残しすぎていないか（8: 残り0〜30で満点。使い切って勝つのがいちばん）。
+  // 息を使いつつ減速ラインを割らずに終えたか（8: 残り30〜40で満点）。
   const spurt = 8 * clamp(stats.spurtWhip / 3, 0, 1);
   const pressed = stats.whipTime + stats.emptyWhip;
   const efficiency = pressed > 0 ? 9 * clamp(1 - stats.emptyWhip / pressed, 0, 1) : 4;
   const remain = player.stamina;
-  const pacing = remain <= 30 ? 8 : clamp(8 - (remain - 30) / 7, 0, 8);
+  const pacing = Math.floor(remain < PLAYER.tired
+    ? 8 * Math.max(0, remain) / PLAYER.tired
+    : clamp(8 - Math.max(0, remain - PLAYER.warning) / 7, 0, 8));
   const stamina = clamp(Math.round(spurt + efficiency + pacing), 0, 25);
   const total = clamp(Math.round(rankPoints + timing + stamina), 0, 100);
   return { total, grade: gradeOf(total), rank, time: state.finishedAt, cup: state.cup,
@@ -494,11 +497,11 @@ export function simulateRace({ seed = 1, policy = "perfect", cup = "practice", d
   return { state, score: scoreRace(state) };
 }
 
-/** 上手なムチ: スパートでは使い切る。中盤は息が満ちている時だけ短く入れ、スパートの前に貯め直す。 */
+/** 上手なムチ: スパートでは減速ラインまで使う。中盤は息が満ちている時だけ短く入れ、スパートの前に貯め直す。 */
 const smartWhip = state => {
   const { player } = state;
   if (!whipReady(state)) return false;
-  if (inSpurt(state)) return true;
+  if (inSpurt(state)) return player.stamina > PLAYER.tired + 1; // 1フレームぶんの消費で減速ラインを割らない
   // 競り合いは、スパートのぶんを残して抜き切る。
   if (player.duel) return player.stamina > 50;
   const progress = player.distance / state.length;

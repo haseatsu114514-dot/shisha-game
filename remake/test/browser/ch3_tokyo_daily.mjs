@@ -173,7 +173,7 @@ await suite("ch3-tokyo-daily", async check => {
     await page.locator(dt("tetsuko-note")).filter({ hasText: "はじめて前足が出た" }).waitFor();
     // 二重押ししても確定は一度だけ。
     await page.locator(dt("tetsuko-time-back")).click();
-    await page.locator(dt("tetsuko-time-back")).click({ timeout: 500 }).catch(() => {});
+    await page.locator(dt("tetsuko-quit-confirm")).click();
     await page.waitForFunction(() => window.__remake.state.flags._ch3_outings?.tetsuko === 1, null, { timeout: 30000 });
     const settled = await get(page);
     const maximum = await page.evaluate(async () => (await import("./js/core/stats.js")).maxStamina());
@@ -214,6 +214,7 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(await screen.getAttribute("data-stage"), "3", "An old save that reached her lap starts close");
     const mid = await get(page);
     await page.locator(dt("tetsuko-time-back")).click();
+    await page.locator(dt("tetsuko-quit-confirm")).click();
     await tokyoMap(page, { day: 34, slot: 1 });
     const after = await get(page);
     assert.equal(after.flags._ch3_outings.tetsuko, 4, "No visit is counted");
@@ -262,6 +263,7 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(await page.locator(dt("tetsuko-book-first_paw")).getAttribute("data-found"), "true", "The first paw is in the notebook");
     await page.locator(dt("tetsuko-panel-close")).click();
     await page.locator(dt("tetsuko-time-back")).click();
+    await page.locator(dt("tetsuko-quit-confirm")).click();
     await page.waitForFunction(() => window.__remake.state.flags._ch3_outings?.tetsuko === 6, null, { timeout: 30000 });
     const after = await get(page);
     assert.equal(after.flags._tetsuko_time.props.floor, "box", "The box stays where it was put");

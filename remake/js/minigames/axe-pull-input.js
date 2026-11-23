@@ -6,6 +6,8 @@
 // - キーボード: 矢印で狙い、Space を押している長さで強さ、離すと投げる（今までどおり）。
 import { flickPower, flickRead } from './axe-pull-model.js';
 
+export const KEYBOARD_HOLD_MS = 1000;
+
 // prepare: 的に触れた時、狙う前に呼ぶ（結果の表示中に的へ触れたら、次の投へ進めてそのまま狙う。2026-11-13 指摘8）。
 // aimOnTouch: false なら、的に触れても狙いは動かさず、投げられる時（canPull）だけそこから弾ける（狙いはゲージで決める。2026-11-13）。
 export function attachAxePullInput({ root, board, handle, signal, canAim, canPull, onAim, onPower, onRelease, onCancel, prepare = () => {}, aimOnTouch = true, target = { x: 330, y: 245, radius: 164 } }) {
@@ -152,7 +154,7 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
       if (!Number.isFinite(delta) || delta < 0) throw new RangeError('Invalid active input time');
       if (!flick) return;
       if (!available() || !unchangedGeometry()) { cancel(); return; }
-      if (flick.id === 'keyboard') { flick.elapsed += delta; power = clamp(flick.elapsed / 1200, 0, 1); onPower(power); }
+      if (flick.id === 'keyboard') { flick.elapsed += delta; power = clamp(flick.elapsed / KEYBOARD_HOLD_MS, 0, 1); onPower(power); }
     },
     get pulling() { return flick !== null; },
     // Display travel is independent of the release speed used for scoring.

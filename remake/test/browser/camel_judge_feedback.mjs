@@ -264,6 +264,7 @@ await suite("camel-judge-feedback", async check => {
     await page.goto(new URL("camel-race.html?pilot=perfect", baseURL).href);
     await page.locator('[data-test="camel-menu-start"]').click();
     await page.locator('[data-test="camel-tutorial-skip"]').click();
+    await page.locator('[data-test="camel-cup"][data-cup="practice"]').click();
     await page.waitForFunction(() => window.__camelRace?.fx.phase === "race", null, { timeout: 15000 });
     assert.equal((await fx(page)).coach, "voice");
     await page.waitForFunction(() => document.querySelector('[data-test="camel-voice"]').dataset.cue === "on");

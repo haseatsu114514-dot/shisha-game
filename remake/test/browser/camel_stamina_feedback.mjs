@@ -50,6 +50,7 @@ await suite('camel-stamina-feedback', async check => {
     assert.equal(overlaps(boxes['.camel-pacing'], boxes['.camel-voice']), false);
     assert.equal(overlaps(boxes['.camel-pacing'], boxes['.camel-signal']), false);
     await page.locator('[data-test="camel-close"]').click();
+    await page.locator('[data-test="camel-pause-quit"]').click();
     await page.locator('[data-test="camel-game"]').waitFor({ state: 'detached' });
     await page.locator('[data-test="camel-menu-quick"]').click();
     assert.match(await page.locator('[data-test="camel-pacing"]').textContent(), /回復/);
@@ -62,6 +63,7 @@ await suite('camel-stamina-feedback', async check => {
     assert.equal(await page.locator('[data-test="camel-spectators"]').count(), 0);
     assert.equal(await page.locator('[data-test="camel-game"]').getAttribute('data-reduced-motion'), 'true');
     await page.locator('[data-test="camel-close"]').click();
+    await page.locator('[data-test="camel-pause-quit"]').click();
     await page.locator('[data-test="camel-game"]').waitFor({ state:'detached' });
   }, { reducedMotion:'reduce' });
 }, { entry:new URL('camel-race.html',baseURL).href, readySelector:'[data-test="camel-menu-quick"]' });

@@ -15,10 +15,17 @@ export const HELP = Object.freeze([
   ]) }),
   Object.freeze({ title: "画面のしるし", rows: Object.freeze([
     // ハートは来訪をまたいで溜まる（§11・#3779）。1回ではハート1つまで。
-    Object.freeze({ icon: "heart", name: "ごきげん", text: "色々お世話すると、来るたびに少しずつたまる。" }),
+    Object.freeze({ icon: "heart", name: "ごきげん", text: "ごきげんは来訪をまたいでたまる。" }),
     Object.freeze({ icon: "wish", name: "吹き出し", text: "てつこが、今してほしいこと。" }),
     Object.freeze({ icon: "tap", name: "置いた物", text: "タップすると、てつこを誘える。" }),
     Object.freeze({ icon: "watch", name: "見守る", text: "何もしないでいると、隣で見守ったことになる。" }),
+  ]) }),
+  Object.freeze({ title: "ごきげんの上限", rows: Object.freeze([
+    Object.freeze({ icon: "heart", name: "5ハート", text: "20点で1つ、100点で5つ。1回の来訪は20点まで。" }),
+    Object.freeze({ icon: "heart", name: "達成", text: "5つそろうまで最短5回。達成後は5つのまま。" }),
+    Object.freeze({ icon: "watch", name: "見守る", text: "1回の来訪で段階0〜2は1点、段階3は3点まで。" }),
+    Object.freeze({ icon: "hand", name: "お世話", text: "なでる・ブラシは各5点、じゃらし・おやつは各6点まで。" }),
+    Object.freeze({ icon: "wish", name: "ほかの加点", text: "小物・おねだりは各4点、新しい発見は3点まで。" }),
   ]) }),
   Object.freeze({ title: "上の道具", rows: Object.freeze([
     Object.freeze({ icon: "photo", name: "撮影", text: "しぐさが見えたら、撮影ボタンかPキーで撮る。" }),

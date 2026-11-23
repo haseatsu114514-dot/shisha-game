@@ -586,10 +586,12 @@ await suite("debug-tools", async check => {
     // Camel race: starts bgm_camel_race on race start and restores title when closed via its own button.
     await page.locator(t("debug-minigame-camel")).click();
     await page.locator(t("camel-tutorial-skip")).click();
+    await page.locator('[data-test="camel-cup"][data-cup="practice"]').click();
     await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "bgm_camel_race"
       && window.__bgmElements.some(a => a.src.startsWith("blob:") && !a.paused && a.volume > 0));
     await waitTitleStopped();
     await page.locator(t("camel-close")).click();
+    await page.locator(t("camel-pause-quit")).click();
     await waitTitleRestored();
 
     // DESERT RIDE: starts bgm_ethnic12 in practice and restores title when leaving via its own buttons.
@@ -600,6 +602,7 @@ await suite("debug-tools", async check => {
       && window.__bgmElements.some(a => a.src.startsWith("blob:") && !a.paused && a.volume > 0));
     await waitTitleStopped();
     await page.locator(t("desert-quit")).click();
+    await page.locator(t("desert-quit-confirm")).click();
     await page.locator(t("desert-leave")).click();
     await waitTitleRestored();
 
@@ -647,6 +650,7 @@ await suite("debug-tools", async check => {
     await page.locator(t("tetsuko-cat")).waitFor({ timeout: 30000 });
     await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "bgm_tetsuko_time");
     await page.locator(t("tetsuko-time-back")).click();
+    await page.locator(t("tetsuko-quit-confirm")).click();
     await waitTitleRestored();
 
     // Switching directly from tetsuko (which replaced #screen) to ichidai stops bgm_tetsuko_time and restores title on exit.

@@ -87,8 +87,10 @@ await suite("ch4-camel-race", async check => {
     await page.waitForFunction(() => window.__remake.state.flags._ch4_camel?.watched === true);
     await page.locator(dt("camel-tutorial")).waitFor({ timeout: 60000 });
     await page.locator(dt("camel-tutorial-skip")).click();
+    await page.locator('[data-test="camel-cup"][data-cup="practice"]').click();
     await page.waitForFunction(() => document.querySelector(".camel-game")?.dataset.phase === "race");
     await page.locator(dt("camel-close")).click();
+    await page.locator(dt("camel-pause-quit")).click();
     await page.locator(dt("ch4-free")).waitFor();
     state = await get(page);
     assert.equal(state.flags._ch4_camel.plays, 0);
@@ -372,6 +374,7 @@ await suite("ch4-camel-race-controls", async check => {
     await page.locator(".camel-feedback.show").waitFor();
     assert.match(await page.locator(".camel-feedback").textContent(), /PERFECT|GOOD|無駄な声|連打/);
     await page.locator(dt("camel-close")).click();
+    await page.locator(dt("camel-pause-quit")).click();
     await page.locator(dt("camel-menu-quick")).waitFor();
   });
   // 砂煙の絵（CR-WD03）とスタート・ゴールの柱の絵（CR-WD01）、ほかの調教師の車の絵（CR-WD05）、距離板と道の絵（CR-WD02・CR-WD04）、
@@ -393,6 +396,7 @@ await suite("ch4-camel-race-controls", async check => {
     assert.equal(await game.evaluate(node => node.classList.contains("cr-remote")), false, "the controls keep the CSS look without the remote art");
     await page.waitForFunction(() => Number(document.querySelector(".camel-clock-time")?.textContent.slice(2)) > 3, null, { timeout: 15000 });
     await page.locator(dt("camel-close")).click();
+    await page.locator(dt("camel-pause-quit")).click();
     await page.locator(dt("camel-menu-quick")).waitFor();
   }, { ignoreFailedResource: failure => dustArt.test(failure) });
   // 始める前のロード（2026-11-11 オーナー「加速すると処理重い。ゲーム開始前に漫画付きロードとか挟んでもいい」）:

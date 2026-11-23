@@ -209,6 +209,7 @@ export function createSession(value, { visitKey = null } = {}) {
     // 今回の訪問で新しく使えるようになった小物（もようがえの「新」）
     newProps: unlockedProps(stage, metMashiro).filter(prop => !before.has(prop.id)).map(prop => prop.id),
     meaningful: false,
+    photoTaken: false,
     // 画面に出ている猫: 居場所・姿勢・表情。今見えているしぐさ（写真に撮れる瞬間）
     cat: { spot: stage >= 3 ? "front" : "bench", pose: "sit", face: stage === 0 ? "serious" : "normal", flip: false, inside: null, art: null },
     moment: null,
@@ -708,6 +709,7 @@ export function takePhoto(session) {
   if (index >= 0) session.album[index] = entry;
   else if (session.album.length < ALBUM_LIMIT) session.album.push(entry);
   else return false;
+  session.photoTaken = true;
   return true;
 }
 
@@ -721,6 +723,7 @@ export function farewell(session) {
 export function sessionResult(session) {
   return {
     meaningful: !!session.meaningful,
+    photoTaken: session.photoTaken,
     visitKey: session.visitKey,
     props: { ...session.props },
     found: [...session.found],

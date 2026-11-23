@@ -1,3 +1,4 @@
+import { openMinigamePause } from "./minigame-pause.js";
 // Caller awaits preceding VN. Practice never reads or writes story/save state.
 import { el } from "../core/util.js";
 import { buildVersioned } from "../core/asset-version.js";
@@ -156,11 +157,12 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   let declareTimer = 0, declareNode = null, declareMarker = null, clearedGoals = new Set();
   let held = 0, focusUntil = -1, focusUsed = false, helpPanel = null, coachPanel = null, coachLines = null, quiver = null;
   const taught = new Set();
+  let pauseDialog = null;
   let pullInput = null, rawPower = 0, windowFocused = true;
   // 接触の止め（ヒットストップ）: この投で板に当たった音を鳴らしたか、止めの間のフレーム数、着弾の揺れの位相（投ごとに変える）
   let contacted = null, holdFrame = 0, shakePhase = [0, 0], missNote = "";
   const T = AXE_FEEL.tempo, C = AXE_FEEL.cue;
-  const isPaused = () => document.hidden || !windowFocused || Boolean(helpPanel || coachPanel);
+  const isPaused = () => document.hidden || !windowFocused || Boolean(helpPanel || coachPanel || pauseDialog?.open);
   const suddenDeath = () => versus && inSuddenDeath(match);
   /** The thrower's newest resolved shot: a sudden-death round once the ten throws are in, else the game history. */
   const latest = id => { const round = match?.suddenDeath.at(-1); return round?.[id] && match[id].length === rules.throws ? round[id] : (versus ? match[id] : shots).at(-1); };
@@ -187,7 +189,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const heading = el("header.axe-header", [el("div", [el("h1", { text: tutorial ? "AXE LESSON" : "AXE THROW" }),
     el("p", { text: subtitle + (tutorial ? "" : " · " + DIVISIONS[division].name) })]), round, rulesButton,
     // #2834: 「やめる」も「？」と同じ丸い札（✕）。名前は読み上げ用の文字で付ける。
-    el("button.axe-button.axe-close.axe-help", { type: "button", title: "やめる", dataset: { test: "axe-cancel" }, onclick: () => cleanup(false) },
+    el("button.axe-button.axe-close.axe-help", { type: "button", title: "やめる", dataset: { test: "axe-cancel" }, onclick: askQuit },
       [el("span", { "aria-hidden": "true", text: "✕" }), el("span.axe-quiet", { text: "やめる" })])]);
   // 一人称の得点はレーンの端にまとめる。？／×は左上に独立させ、投げる面を空ける。
   const scorePill = tapPull ? el("div.axe-score-pill", { dataset: { test: "axe-score-pill" } }) : null;
@@ -949,7 +951,20 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (actor === "opponent" && turnOf(match) === "player") return T.autoToPlayer;
     return 0;
   }
+  function askQuit() {
+    if (phase === "closed" || pauseDialog?.open) return;
+    if (phase === "summary" && (!series || seriesWinner())) { cleanup(true); return; }
+    if (["loading", "failed"].includes(phase) || phase === "choice" && shots.length === 0 && gameIndex === 0 && !coachPanel) {
+      cleanup(false);
+      return;
+    }
+    pullInput?.cancel();
+    pauseDialog = openMinigamePause(root, { id: "axe", onResume: () => { stamp = null; render(); root.focus(); }, onQuit: () => cleanup(false) });
+    stamp = null;
+    render();
+  }
   function key(event) {
+    if (pauseDialog?.open || event.defaultPrevented) return;
     if (event.key === "Tab") {
       const nodes = [...root.querySelectorAll('button:not([disabled]):not([hidden]),.axe-target[aria-disabled="false"]')].filter(n => n.getClientRects().length);
       const index = nodes.indexOf(document.activeElement);
@@ -957,7 +972,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     }
     if (event.key === "Escape") {
       event.preventDefault(); event.stopPropagation();
-      if (tapPull && called && actor === "player" && !suddenDeath() && ["choice", "power"].includes(phase)) selectCall(null); else cleanup(false);
+      if (event.repeat) return;
+      if (helpPanel) { helpPanel.querySelector("button")?.click(); return; }
+      if (tapPull && called && actor === "player" && !suddenDeath() && ["choice", "power"].includes(phase)) selectCall(null);
+      else askQuit();
       return;
     }
     if (event.key.toLowerCase() === "f" && !event.ctrlKey && !event.metaKey && !event.altKey) {
@@ -994,7 +1012,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (!hud) return strength;
     const label = powerActive ? "③ 回転 " + Math.round(power * 100) + "% · " + strength : "③ 回転";
     if (powerLabel.textContent !== label) powerLabel.textContent = label;
-    const readout = phase !== "power" ? strength : strength === "適正" ? "いま放す！" : power < POWER.sweetMin ? "緑の帯まで待つ" : "回りすぎ · 次の緑で放す";
+    const readout = phase !== "power" ? strength : tapPull ? "上へ弾く／Spaceは緑の帯で離す" : strength === "適正" ? "いま放す！" : power < POWER.sweetMin ? "緑の帯まで待つ" : "回りすぎ · 次の緑で放す";
     if (powerReadout.textContent !== readout) powerReadout.textContent = readout;
     const gaugeLabel = label + "。緑は適正、茶色は刺さる範囲";
     if (gauge.getAttribute("aria-label") !== gaugeLabel) gauge.setAttribute("aria-label", gaugeLabel);

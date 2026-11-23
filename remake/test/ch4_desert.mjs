@@ -226,6 +226,24 @@ test("three tiers: a win clears its tier; easy runs never count toward the best,
   assert.deepEqual([tierless.tier, tierless.tierAdded, tierless.firstWin, desertRecords(old).bestRank], ["normal", ["easy", "normal"], true, "A"]);
 });
 
+test("display bests migrate by opponent and tier without changing the reward record", () => {
+  const version = { rulesVersion: 2 };
+  const noor = { won: false, gap: 0.4, who: "noor" };
+  const naru = { won: true, gap: 1, who: "naru" };
+  const value = fresh();
+  value.desert = { best: result(18000, "S", { ...version, race: naru }),
+    easyBest: result(4000, "B", { ...version, race: noor, tier: "easy" }) };
+  const scores = () => Object.fromEntries(Object.entries(desertRecords(value).bests).map(([key, top]) => [key, top.score]));
+  assert.deepEqual(scores(), { easy: 4000, naru: 18000 });
+
+  assert(recordDesertResult(value, result(8000, "A", { ...version, race: noor, tier: "normal" })).newBest);
+  assert(recordDesertResult(value, result(10000, "A", { ...version, race: noor, tier: "hard" })).newBest);
+  assert(!recordDesertResult(value, result(7000, "A", { ...version, race: noor, tier: "normal" })).newBest);
+  assert.deepEqual(scores(), { easy: 4000, normal: 8000, hard: 10000, naru: 18000 });
+  assert.equal(desertRecords(value).best.score, 18000);
+  assert.equal(desertRecords(value).bestRank, "S");
+});
+
 // growth.js が聞いている本編と同じ並び: 中級の初勝利は達人認定の精算（旧保存の取り込み）に飲まれず「中級クリア」を知らせ、上級の初勝利で白火1つ（一度だけ）
 test("three tiers with the growth board listening: the first middle-tier win still reports its clear, and the first hard win pays one white fire once", async () => {
   const storage = new Map();

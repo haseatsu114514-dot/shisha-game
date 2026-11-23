@@ -285,7 +285,7 @@ await suite("play-spots", async runCheck => {
     await go(page, "axe_bar"); await hit(page, "axe-bar-back"); await page.locator(map).waitFor();
     assert.deepEqual(await value(page), before);
     await go(page, "axe_bar"); await hit(page, "axe-bar-practice"); await phase(page, "choice");
-    await hit(page, "axe-action"); await hit(page, "axe-cancel"); await page.locator(map).waitFor();
+    await hit(page, "axe-action"); await hit(page, "axe-cancel"); await hit(page, "axe-quit-confirm"); await page.locator(map).waitFor();
     assert.deepEqual(await value(page), before);
     await page.evaluate(() => { spotCore.state.money = 2999; });
     await go(page, "axe_bar"); assert(await page.locator(t("axe-bar-practice")).isDisabled());

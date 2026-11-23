@@ -43,6 +43,7 @@ async function open(page, { visits = 5, record = { sessions: 3, peaks: 3 }, agai
 // 帰って、結果を同じ確定点で確定する（本編の呼び出し側と同じ順）。
 async function leaveAndSettle(page) {
   await page.locator(dt("tetsuko-time-back")).click();
+  await page.locator(dt("tetsuko-quit-confirm")).click();
   await page.waitForFunction(() => window.__tetsukoResult, null, { timeout: 30000 });
   return await page.evaluate(async () => {
     const time = await import("./js/minigames/tetsuko-time.js");
@@ -60,6 +61,7 @@ await suite("tetsuko-feel", async check => {
     await page.keyboard.press("p");
     assert.equal(await note.count(), 0, "No photo without a moment");
     await page.locator(dt("tetsuko-time-back")).click();
+    await page.locator(dt("tetsuko-quit-confirm")).click();
     await shot.waitFor({ state: "detached" });
 
     await open(page, { record: { sessions: 3, props: { floor: "box", bed: "bed" } } });

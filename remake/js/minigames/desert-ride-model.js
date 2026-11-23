@@ -791,6 +791,21 @@ export function summary(game) {
 /** 結果の段（#3779）。段の無い結果（段ができる前の保存・なるとの勝負）は中級＝今の遊びとして扱う。 */
 export const resultTier = value => tierOf(value?.tier);
 
+/** 自己ベスト表示の区分。報酬と段の判定は従来どおり resultTier を使う。 */
+export const desertBestKey = result => result.race?.who === "naru" ? "naru" : resultTier(result);
+export function desertDisplayBests({ best, easyBest, bests } = {}) {
+  const records = {};
+  // 本編の総合ベストには対戦相手と段が残る。旧試遊ページの総合ベストは区分できない。
+  const knownKey = best?.finished ? desertBestKey(best) : null;
+  for (const key of [...TIERS, "naru"]) {
+    const top = bests?.[key] ?? (key === "easy" ? easyBest : key === knownKey ? best : null);
+    if (top?.rulesVersion === RULES_VERSION && Number.isFinite(top.score) && RANK_ORDER.includes(top.rank)) {
+      records[key] = { score: top.score, rank: top.rank, rulesVersion: top.rulesVersion };
+    }
+  }
+  return records;
+}
+
 /** 保存する記録の形を検査して整える（形が合わなければ null）。段（tier）は知っている値だけ残す（無ければ resultTier で中級）。 */
 export function readResult(value) {
   if (!value || typeof value !== "object" || value.finished !== true) return null;
@@ -810,8 +825,6 @@ export function readResult(value) {
 const BOT_BOOST_AT = 0.35;
 // 自動操作の継ぎ足し・ゴール前の既定の最低量。評価照合とライバルの滑りは従来の30%を基準にする。
 const BOT_MIN_GAUGE = 0.3;
-// ライバルはゴール前にこの量から使い切る。
-const RIVAL_FINISH_BOOST_AT = 0.15;
 const BOT_PLANS = Object.freeze([[0, 0], ...[-1, 1].flatMap(dir => [0.2, 0.45, 0.8, 1.4].map(hold => [dir, hold]))]);
 const BOT_LOOK = Object.freeze({ horizon: 2.2, dt: 1 / 20, every: 3, commit: 0.35 });
 /**
@@ -930,7 +943,7 @@ export function rivalRun(course, { who = "noor", maxTime = 200, tier } = {}) {
   const tuned = who === "noor" || !RIVALS[who] ? TIER_TUNING[tierOf(tier)] : null;
   const { skill, startX, only360, startSpeed, easeOff = true, charge = 1, boostAt = 1 } = { ...(RIVALS[who] || RIVALS.noor), ...tuned?.noor };
   const rubber = tuned && Object.keys(tuned.rubber).length ? Object.freeze({ ...RUBBER, ...tuned.rubber }) : RUBBER;
-  const game = createGame(course, { charge }), memo = { lane: startX, only360, boostAt, finishBoostAt: RIVAL_FINISH_BOOST_AT }, samples = [];
+  const game = createGame(course, { charge }), memo = { lane: startX, only360, boostAt, finishBoostAt: BOOST.minGauge }, samples = [];
   game.x = startX; game.speed = startSpeed;
   const snap = () => samples.push({ t: game.t, z: game.z, x: game.x, vx: game.vx, air: game.air, airTotal: game.airTotal, airPeak: game.airPeak, airKind: game.airKind,
     landingPress: game.landingPress, fallT: game.fallT, landedAt: game.landedAt, rot: game.rot, boostT: game.boostT });

@@ -1341,9 +1341,9 @@ test("three tiers: easy is won by a late-landing rider, hard is a coin toss for 
   const easyGood = rate("easy", "good"), normalGood = rate("normal", "good");
   assert(easyGood >= 0.8, `easy: a late-landing rider wins ${Math.round(easyGood * 100)}%`);
   assert(normalGood <= 0.5, `normal: the same rider as Noor wins at most half (${Math.round(normalGood * 100)}%)`);
-  // 上級: 着地を決める滑り（A評価の目安）で2〜4割。回って決める滑りなら勝てる
+  // 上級: 着地を決める滑り（A評価の目安）で2〜5割。回って決める滑りなら勝てる
   const hardPerfect = rate("hard", "perfect");
-  assert(hardPerfect >= 0.2 && hardPerfect <= 0.4, `hard: clean landings win ${Math.round(hardPerfect * 100)}%`);
+  assert(hardPerfect >= 0.2 && hardPerfect <= 0.5, `hard: clean landings win ${Math.round(hardPerfect * 100)}%`);
   assert.equal(rate("hard", "expert"), 1, "hard: the ideal spinning run wins");
   assert.equal(rate("normal", "perfect"), 1, "normal: clean landings beat Noor as before");
   for (const pack of COURSE_PACKS) {

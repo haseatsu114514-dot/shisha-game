@@ -268,6 +268,7 @@ await suite("axe-versus", async check => {
     await page.keyboard.press("Escape");
     await phase(page, "flight");
     await page.locator('[data-test="axe-cancel"]').click();
+    await page.locator('[data-test="axe-quit-confirm"]').click();
     const cancelled = await page.evaluate(() => window.matchPromise);
     assert(cancelled.cancelled && !cancelled.completed);
     assert.equal(cancelled.match.winner, null); assert.equal(cancelled.match.player.length, 1); assert.equal(cancelled.match.opponent.length, 0);

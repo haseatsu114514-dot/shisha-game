@@ -2,8 +2,8 @@
 // 自己ベストはこのページだけの localStorage（suien_desert_ride_preview）に残す。
 // 三段階（#3779）: このページでは初級・中級・上級とも開いている。?tier=easy|normal|hard で最初に選んでおく段（既定は中級＝前と同じ遊び）。
 // 初級の自己ベストは別の鍵（suien_desert_ride_preview_easy）。初級の勝ちでは、なる（好敵手）は来ない（本編と同じ）。
-import { BOOST, RULES_VERSION } from "./minigames/desert-ride-model.js";
-import { TIERS } from "./core/play-tiers.js";
+import { BOOST, RULES_VERSION, desertBestKey, desertDisplayBests } from "./minigames/desert-ride-model.js";
+import { TIERS, TIER_LABEL } from "./core/play-tiers.js";
 import { el } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
 import { initSideArea } from "./core/side-area.js";
@@ -19,7 +19,8 @@ initSideArea({ stage, standalone: true }); // 左右の余白の煙と縁（YHK�
 const readBest = (key = KEY) => { try { const v = JSON.parse(localStorage.getItem(key) || "null"); return v && Number.isFinite(v.score) ? v : null; } catch { return null; } };
 let reduce = calmFlash();
 function menu(message = "狙いは、S。") {
-  const best = readBest();
+  const best = readBest(), easyBest = readBest(EASY_KEY);
+  const bests = desertDisplayBests({ easyBest, bests: best?.bests });
   const reduceBox = el("input", { type: "checkbox", dataset: { test: "desert-page-reduce" }, onchange: e => { reduce = e.target.checked; } });
   reduceBox.checked = reduce;
   const start = tutorial => async () => {
@@ -31,18 +32,22 @@ function menu(message = "狙いは、S。") {
     const seedParam = params.get("seed");
     const seed = seedParam != null && seedParam !== "" && Number.isFinite(Number(seedParam)) ? Number(seedParam) : undefined;
     const tier = TIERS.includes(params.get("tier")) ? params.get("tier") : "normal";
-    const { results } = await runDesertRide({ host: stage, tutorial, best, legacyBest: best?.legacyBest, rivals, reducedMotion: reduce, courseId, seed, tiers: TIERS, tier, easyBest: readBest(EASY_KEY), onResult: result => {
+    const { results } = await runDesertRide({ host: stage, tutorial, best, legacyBest: best?.legacyBest, rivals, reducedMotion: reduce, courseId, seed, tiers: TIERS, tier, bests, onResult: result => {
       if (result.tier === "easy") {
         const easy = readBest(EASY_KEY);
-        if (!easy || result.score > easy.score) try { localStorage.setItem(EASY_KEY, JSON.stringify({ score: result.score, rank: result.rank, rulesVersion: RULES_VERSION })); } catch { /* 保存できない環境 */ }
+        if (easy?.rulesVersion !== RULES_VERSION || result.score > easy.score) try { localStorage.setItem(EASY_KEY, JSON.stringify({ score: result.score, rank: result.rank, rulesVersion: RULES_VERSION })); } catch { /* 保存できない環境 */ }
         return;
       }
       const prev = readBest();
       const beatNoor = !!prev?.beatNoor || (result.race?.who === "noor" && result.race.won);
       const sameRules = prev?.rulesVersion === RULES_VERSION;
+      const bests = desertDisplayBests({ bests: prev?.bests });
+      const key = desertBestKey(result), prior = bests[key];
+      if (!prior || result.score > prior.score) bests[key] = { score: result.score, rank: result.rank, rulesVersion: RULES_VERSION };
+      const unclassifiedBest = prev?.unclassifiedBest || (sameRules && !prev.bests ? { score: prev.score, rank: prev.rank } : null);
       const legacyBest = prev?.legacyBest || (prev && !sameRules ? { score: prev.score, rank: prev.rank } : null);
       const top = !sameRules || result.score > prev.score ? { score: result.score, rank: result.rank } : { score: prev.score, rank: prev.rank };
-      try { localStorage.setItem(KEY, JSON.stringify({ ...top, rulesVersion: RULES_VERSION, ...(legacyBest ? { legacyBest } : {}), beatNoor })); } catch { /* 保存できない環境 */ }
+      try { localStorage.setItem(KEY, JSON.stringify({ ...top, rulesVersion: RULES_VERSION, ...(legacyBest ? { legacyBest } : {}), ...(unclassifiedBest ? { unclassifiedBest } : {}), bests, beatNoor })); } catch { /* 保存できない環境 */ }
     } });
     app.hidden = false;
     const last = results.at(-1);
@@ -55,7 +60,14 @@ function menu(message = "狙いは、S。") {
     el("p", { text: message }),
     best && best.rulesVersion !== RULES_VERSION ? el("p", { text: `旧ルールの記録 ${best.score.toLocaleString("ja-JP")}点 ／ ${best.rank}（別記録）`, dataset: { test: "desert-page-legacy-best" } }) : null,
     best?.legacyBest ? el("p", { text: `旧ルールの記録 ${best.legacyBest.score.toLocaleString("ja-JP")}点 ／ ${best.legacyBest.rank}（別記録）`, dataset: { test: "desert-page-legacy-best" } }) : null,
-    best?.rulesVersion === RULES_VERSION ? el("p", { text: `自己ベスト ${best.score.toLocaleString("ja-JP")}点 ／ ${best.rank}`, dataset: { test: "desert-page-best" } }) : null,
+    ...[...TIERS, "naru"].filter(key => bests[key]).map(key => el("p", {
+      text: `${key === "naru" ? "なる戦" : TIER_LABEL[key]}の自己ベスト ${bests[key].score.toLocaleString("ja-JP")}点 ／ ${bests[key].rank}`,
+      dataset: { test: "desert-page-best", bestKey: key },
+    })),
+    best?.unclassifiedBest || (best?.rulesVersion === RULES_VERSION && !best.bests) ? el("p", {
+      text: `区分前の記録 ${(best.unclassifiedBest || best).score.toLocaleString("ja-JP")}点 ／ ${(best.unclassifiedBest || best).rank}`,
+      dataset: { test: "desert-page-unclassified-best" },
+    }) : null,
     el("div.row", [
       el("button.btn.primary", { type: "button", text: "滑る", dataset: { test: "desert-page-start" }, onclick: start(false) }),
       el("button.btn", { type: "button", text: "練習から始める", dataset: { test: "desert-page-tutorial" }, onclick: start(true) }),
@@ -63,7 +75,7 @@ function menu(message = "狙いは、S。") {
     el("p", { style: { marginTop: "16px" } }, [el("label", [reduceBox, el("span", { text: "動きを減らす（揺れ・閃光・速度線なし）" })])]),
     best?.beatNoor ? el("p", { text: "ヌールに勝った。なるが、砂丘で待っている。", dataset: { test: "desert-page-naru" } }) : null,
     // キーの説明は PC だけ（スマホは画面のボタンと、ゲームの中の「？」で足りる）
-    el("p.dr-page-keys", { text: `PC: ← → で移動（空中では回転）、Space でジャンプ／着地、ゲージが目印（${BOOST.minGauge * 100}%）に届いたら ↓ でブースト。スマホは画面のボタン。`, style: { fontSize: "15px", color: "#5a3a2a" } }),
+    el("p.dr-page-keys", { text: `PC: ← → で移動（大ジャンプ中は回転）、Space でジャンプ／着地、ゲージが目印（${BOOST.minGauge * 100}%）に届いたら ↓ でブースト。スマホは画面のボタン。`, style: { fontSize: "15px", color: "#5a3a2a" } }),
   ].filter(Boolean));
 }
 menu();

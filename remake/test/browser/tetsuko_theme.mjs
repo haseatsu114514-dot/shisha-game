@@ -201,6 +201,7 @@ await suite("tetsuko-theme", async check => {
     // 遊べることは変わらない。帰ると HUD が戻る。
     await page.locator(dt("tetsuko-pet")).click();
     await page.locator(dt("tetsuko-time-back")).click();
+    await page.locator(dt("tetsuko-quit-confirm")).click();
     await page.waitForFunction(() => window.__remake.state.flags._ch3_outings?.tetsuko === 6, null, { timeout: 30000 });
     await page.waitForFunction(() => document.querySelector('.map:not(.done) [data-test="pin-ch3_tokyo_mukai"]'), null, { timeout: 60000 });
     assert.equal(await page.locator(dt("tetsuko-time-screen")).count(), 0);
@@ -228,6 +229,7 @@ await suite("tetsuko-theme", async check => {
       await page.locator(dt(panel)).waitFor({ state: "hidden" });
     }
     await page.locator(dt("tetsuko-time-back")).click();
+    await page.locator(dt("tetsuko-quit-confirm")).click();
     await page.waitForFunction(() => !document.querySelector('[data-test="tetsuko-time-screen"]'), null, { timeout: 30000 });
   }, { viewport: { width: 844, height: 340 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
 
@@ -240,6 +242,7 @@ await suite("tetsuko-theme", async check => {
     assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector(".tetsuko-time > .tt-logo")).opacity), "1", "The title plate is there at once");
     assert.equal(await hudVisibility(page), "hidden");
     await page.locator(dt("tetsuko-time-back")).click();
+    await page.locator(dt("tetsuko-quit-confirm")).click();
     await page.waitForFunction(() => !document.querySelector('[data-test="tetsuko-time-screen"]'), null, { timeout: 30000 });
   }, { reducedMotion: "reduce" });
   for (const phone of [false, true]) await check(`tetsuko-discover-choose-place-photograph-${phone ? "phone" : "desktop"}`, async page => {

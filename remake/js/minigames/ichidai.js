@@ -25,7 +25,7 @@
 // 案内（2026-11-11 オーナー「熱が冷めるのが自動で処理されなかったり」「急に消えたり」「あまりカード慣れてない人には自動でガイドが進み
 // 遊びやすいよう。次何をすればいいか」）: 「ガイド」が入っているあいだ（既定）
 //   ・ターンのはじめに炭が弱るのは、自動で進む（火の小さい炭から。CPUと同じ決め方。ガイドを切っても自動）。
-//   ・「つぎ」に、いま打つとよい1手を出し、押す場所を光らせる。1手打つたびに次の手へ進む。「おすすめで進める」でその手を打てる。
+//   ・「つぎ」に、いま打つとよい1手を出し、押す場所を光らせる。1手打つたびに次の手へ進む。入門では「おすすめで進める」でその手を打てる。
 //   ・炭が灰になる・火が下がる・器具が押し出されるときは、その場所に合図を出してから消す（何が起きたかは案内の札にも1行出す）。
 //
 // 4人対戦（1:1:1:1。2026-11-11 オーナー「みんなのやると狭くなるからライバルは簡易的にUIして表情やセリフメインに」）:
@@ -36,6 +36,7 @@ import { el } from "../core/util.js";
 import { DB, faceFrame, portraitInfo, useManifest } from "../core/data.js";
 import { portraitAsset } from "../core/portrait-resolver.js";
 import { SE, unlockAudio } from "../core/audio.js";
+import { openMinigamePause } from "./minigame-pause.js";
 import { KINDS, FLAVOR, CARD, BOWL, HMD, JUDGE, PUFFS, TOURNAMENTS, KITS, BASIC_KITS, INTRO, KIT, TYPE_LABEL, WHEN_LABEL, RARITIES, SERIES_SIZE, numberOf, rarityOf } from "./ichidai-data.js";
 import { RULES, ZONE_LABEL, createGame, act, heatOf, leavesOf, firepower, sidesOf, slotsOf, roundsOf, sessionOf,
   judgedHeat, rawZone, scorchLineOf, scorePuff, impressionOf, puffPreview, unseenPuffs, packLimit,
@@ -180,6 +181,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   const ctrl = new AbortController();
   const dead = () => ctrl.signal.aborted;
   let G = null, cfg = config ? { ...config } : null;
+  let quitDialog = null, quitPending = null, resumeQuit = null;
   let pending = null;            // 人の入力を待つ Promise の resolve
   const ui = { sel: null, picks: new Set(), counts: {}, note: "", toast: "", fast: false, sheet: null, peek: null, lastLog: 0, turnKey: null, moods: {}, feed: [], assist: assist !== false, last: "", heatSeen: null };
   // 相手になれる人たち（先頭が1対1の相手）。info[席の番号] ＝ その席の人（0 は自分）
@@ -353,7 +355,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
 
   function close(completed) {
     if (dead()) return;
-    ctrl.abort(); pending?.(null);
+    ctrl.abort(); pending?.(null); resumeQuit?.();
     for (const t of Object.values(talkers)) t.clear();
     for (const st of Object.values(seats)) { clearTimeout(st.motionTimer); clearTimeout(st.talkTimer); clearTimeout(st.blinkTimer); }
     clearTimeout(fidgetTimer);
@@ -364,7 +366,13 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   }
   signal?.addEventListener("abort", () => close(false), { once: true });
   window.addEventListener("pagehide", () => close(false), { once: true, signal: ctrl.signal });
-  root.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.preventDefault(); if (!sheet.hidden && (ui.sheet === "help" || ui.sheet === "info")) closeSheet(); else askQuit(); } });
+  root.addEventListener("keydown", event => {
+    if (event.key !== "Escape" || quitDialog?.open) return;
+    event.preventDefault(); event.stopPropagation();
+    if (event.repeat) return;
+    if (ui.sheet === "help" || ui.sheet === "info") closeSheet();
+    else askQuit();
+  });
 
   // 人の入力を進行へ渡す。進行が演出の途中（相手の札が飛んでいる・炭の印を出している など）でまだ受け付けていないときは、
   // 押した操作を1つだけ預かり、受け付けられるようになったらすぐ打つ（2026-11-11 オーナー「処理されなかったり」: 画面はもう自分の番の
@@ -502,6 +510,8 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   async function loop() {
     const mine = G;
     while (!dead() && G === mine) {
+      if (quitPending) await quitPending;
+      if (dead() || G !== mine) return;
       render();
       if (G.over) { await showEnd(); return; }
       const w = G.wait;
@@ -518,6 +528,8 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       }
       else if (human(w.player)) { action = await humanInput(); if (!action) return; }
       else { await sleep(cpuDelay(w), ctrl.signal); cpuTurnKey = turnKeyOf(w); if (dead() || G !== mine) return; if (human(w.player)) continue; action = aiAct(G, w.player); } // 待つあいだに人の入力へ戻されたら、打たせない
+      if (quitPending) await quitPending;
+      if (dead() || G !== mine) return;
       const from = flySource(w, action);
       const before = G.log.length, priorScores = G.P.map((p) => p.score), r = act(G, action);
       if (!r.ok) { if (human(w.player)) { say(r.reason); sfx("cancel"); } else { console.error("ichidai: CPUの入力が通らない", action, r.reason); close(false); return; } continue; }
@@ -1215,7 +1227,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       out.push(...lines.slice(1).filter((n) => n.classList.contains("is-keep")));
     }
     // 「おすすめで進める」で、「つぎ」の手をそのまま打てる
-    if (hint) buttons.push(el("button.ichi-btn.is-assist", { type: "button", dataset: { test: "ichi-do-hint" }, title: "「つぎ」の手を、そのまま打つ", onclick: () => { sfx("select"); submit(hint.action); } }, [el("small", { text: "おすすめで" }), "進める"]));
+    if (cfg.intro && hint) buttons.push(el("button.ichi-btn.is-assist", { type: "button", dataset: { test: "ichi-do-hint" }, title: "「つぎ」の手を、そのまま打つ", onclick: () => { sfx("select"); submit(hint.action); } }, [el("small", { text: "おすすめで" }), "進める"]));
     // 自分の手で起きたこと（炭が弱った・灰になった など）
     if (mine && ui.last) out.push(el("small.ichi-last", { dataset: { test: "ichi-last" }, text: `↳ ${ui.last}` }));
     if (ui.toast) out.push(el("em.ichi-toast", { text: ui.toast, dataset: { test: "ichi-toast" } }));
@@ -1650,24 +1662,26 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
         el("div.ichi-help-buttons", [
           el("button.ichi-btn.is-small", { type: "button", text: "前へ", disabled: page === 0, onclick: () => { page--; sfx("click"); draw(); } }),
           el("button.ichi-btn.is-small", { type: "button", text: "次へ", disabled: page === pages.length - 1, dataset: { test: "ichi-help-next" }, onclick: () => { page++; sfx("click"); draw(); } }),
-          el("button.ichi-btn.is-small.is-primary", { type: "button", text: "とじる", dataset: { test: "ichi-help-close" }, onclick: () => { sfx("select"); closeSheet(); if (back === "quit") askQuit(); } }),
+          el("button.ichi-btn.is-small.is-primary", { type: "button", text: "とじる", dataset: { test: "ichi-help-close" }, onclick: () => { sfx("select"); closeSheet(); } }),
         ]),
       ]));
     };
-    if (back && back !== "help" && back !== "quit") return; // 審査・結果の札の上には重ねない
+    if (back && back !== "help") return; // 審査・結果の札の上には重ねない
     draw();
   }
   function askQuit() {
+    if (quitDialog?.open) return;
     if (ui.sheet === "info") { closeSheet(); return; }
-    if (ui.sheet && ui.sheet !== "help") return;
-    if (!G || G.over) { close(games.length > 0); return; }
-    openSheet("quit", el("div.ichi-quit", { dataset: { test: "ichi-quit-sheet" } }, [
-      el("h2", { text: "対戦をやめる？" }), el("p", { text: "この対戦は記録されない" }),
-      el("div.ichi-end-buttons", [
-        el("button.ichi-btn", { type: "button", text: "つづける", dataset: { test: "ichi-quit-no" }, onclick: () => { sfx("select"); closeSheet(); } }),
-        el("button.ichi-btn.is-primary", { type: "button", text: "やめる", dataset: { test: "ichi-quit-yes" }, onclick: () => { sfx("cancel"); close(games.length > 0); } }),
-      ]),
-    ]));
+    if (!G || ui.sheet === "end") { close(games.length > 0); return; }
+    if (G.over) {
+      sheet.querySelector('[data-test="ichi-next"]')?.click();
+      return;
+    }
+    quitPending = new Promise(resolve => { resumeQuit = resolve; });
+    quitDialog = openMinigamePause(root, { id: "ichi", title: "対戦をやめる？",
+      onResume: () => { sfx("select"); resumeQuit(); quitPending = null; },
+      onQuit: () => { sfx("cancel"); close(games.length > 0); },
+    });
   }
 
   if (cfg) startGame(); else showSetup();

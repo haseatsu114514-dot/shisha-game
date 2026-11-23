@@ -80,7 +80,8 @@ await suite("ichidai-phone-text", async (check) => {
   // 葉の盆: 2行名が右上の残り枚数の丸に隠れないこと（#3557。844x390 実プレイで ダブルアップル→「アッ」等）
   await check("market-844x390-leaf-names", async (page) => {
     await enterGame(page);
-    await page.locator(t("ichi-do-hint")).click();
+    for (const i of [0, 1, 2]) await page.locator(t(`ichi-hand-${i}`)).click();
+    await page.locator(t("ichi-embers")).click();
     await page.locator(t("ichi-market")).waitFor({ timeout: 15000 });
     await page.waitForFunction(() => {
       const nodes = [...document.querySelectorAll("*")].filter((n) => /あなたのターン/.test(n.textContent || ""));

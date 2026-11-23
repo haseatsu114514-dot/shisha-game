@@ -1,7 +1,7 @@
 // 表示専用。競走・採点・保存には触れず、いまの息を読みやすくする。
 import { PLAYER, WHIP, GRADES, inSpurt, whipReady, whipDrain, staminaRecovery, camelCupQualified, camelMastered, camelExpert } from "./camel-race-model.js";
 
-export const STAMINA_WARNING = 40;
+export const STAMINA_WARNING = PLAYER.warning;
 export const SPURT_RESERVE = WHIP.empty + WHIP.spurtDrain * 3;
 
 /** 数字は現在の消費/回復率の目安。未来の声の成功や順位を予言しない。 */

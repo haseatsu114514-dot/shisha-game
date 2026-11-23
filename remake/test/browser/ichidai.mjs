@@ -422,11 +422,11 @@ await suite("ichidai", async (check) => {
     assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "10", "めくった審査カードは山から減る");
     // やめる: 確かめてから。記録は残らない
     await page.locator(t("ichi-close")).click();
-    await page.locator(t("ichi-quit-sheet")).waitFor();
-    await page.locator(t("ichi-quit-no")).click();
+    await page.locator(t("ichi-pause")).waitFor();
+    await page.locator(t("ichi-resume")).click();
     assert.equal(await page.locator(t("ichi-game")).count(), 1);
     await page.locator(t("ichi-close")).click();
-    await page.locator(t("ichi-quit-yes")).click();
+    await page.locator(t("ichi-quit-confirm")).click();
     assert.match(await page.locator(t("ichi-menu-result")).innerText(), /まだ対戦していません/);
   }, page1("seed=11&foe=b&assist=0")); // 相手の一式は b に決め打ち（炭4つまでの一式で、相手の火力ゾーンの並びを確かめるため）。ガイドは切る（炭の手引きが出る）
 
