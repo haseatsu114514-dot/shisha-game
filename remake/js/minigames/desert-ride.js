@@ -14,6 +14,7 @@ import { TIERS, TIER_LABEL } from "../core/play-tiers.js";
 import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose, spinFrames } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { installRotateGuard, rotateGuarded } from "../core/rotate-guard.js";
+import { warmInBackground } from "../core/loading-prefetch.js";
 import { withMinigameLoading } from "./minigame-loading.js";
 
 // ブーストは人物を包む炎のオーラ・砂煙・周辺の速度線と効果音で伝える。曲のテンポは変えない。
@@ -264,8 +265,6 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
   const bgmBefore = currentBgm();
   let rideBgm = null;
   const restoreBgm = () => { if (rideBgm && currentBgm() === rideBgm) playBgm(bgmBefore); };
-  // メニューで選んでいる間にパック曲の取得・復号を済ませる。
-  for (const key of Object.values(RIDE_BGM)) void preloadBgm(key);
   const art = loadDesertArt({ rivals: [] });
   // 対戦相手の絵も、メニューで選んでいる間に読み始めておく（走る前の門で待ち直さない）。
   if (rivals.length) void loadDesertArt({ rivals }).whenReady().catch(() => {});
@@ -563,25 +562,35 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       if (preparing) return;
       preparing = true;
       try {
-        const runArt = loadDesertArt({ rivals: kind === "practice" ? [] : [who] });
         const tintWho = kind === "practice" ? null : rivals.includes(who) ? who : "noor";
+        // 練習か対戦相手が決まったら、最初に鳴らす曲だけを絵・効果音の準備中に先読みする。
+        const readyBgm = preloadBgm(RIDE_BGM[tintWho ?? "practice"]);
+        const runArt = loadDesertArt({ rivals: kind === "practice" ? [] : [who] });
         if (runArt.pending() || !rideSe.isReady()) {
           // 色付きの絵の先作りも門の中（漫画を読んでいる間）に済ませ、門が開いた直後の固まりをなくす。
           await withMinigameLoading(() => Promise.all([runArt.whenReady(), rideSe.ready()]).then(() => prewarmTints(tintWho)), { host, label: "砂丘へ向かっています…" }).catch(() => {});
         } else {
           prewarmTints(tintWho);
         }
-        if (!done) startRun(kind, who);
+        if (!done) startRun(kind, who, readyBgm);
       } finally { preparing = false; }
     }
-    function startRun(kind, who = raceWith) {
+    function startRun(kind, who = raceWith, readyBgm) {
       const thisRun = ++runId;
       resetInput();
       unlockAudio();
       rideSe.stop();
       raceWith = rivals.includes(who) ? who : "noor";
       rideBgm = RIDE_BGM[kind === "practice" ? "practice" : raceWith];
+      const ready = readyBgm ?? preloadBgm(rideBgm);
       playBgm(rideBgm);
+      // 再生要求を出した曲の準備ができてから、空き時間に残りを1曲ずつ読む。
+      const otherBgm = Object.values(RIDE_BGM).filter(key => key !== rideBgm);
+      void ready.then(loaded => {
+        if (loaded) return warmInBackground(otherBgm.map(key => () => preloadBgm(key)), {
+          isCurrent: () => !done && !preparing && runId === thisRun,
+        });
+      });
       mode = kind;
       panel.replaceChildren();
       // 段はヌールとの勝負だけ（なるとの勝負・練習は段の外）
