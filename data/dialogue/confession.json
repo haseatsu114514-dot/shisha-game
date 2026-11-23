@@ -35,7 +35,7 @@
         {
           "speaker": "minto",
           "face": "ura_sad",
-          "text": "お店では『はたち』で通してるけど。……ほんとは、今年で29歳"
+          "text": "お店では『はたち』で通してるけど。……ほんとは、今年で二十九歳"
         },
         {
           "speaker": "",
@@ -137,7 +137,7 @@
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "……もう少しだけ、ここを歩かない？　……手、つないでもいい？"
+          "text": "……もう少しだけ、ここを歩かない？ ……手、つないでもいい？"
         },
         {
           "speaker": "",
@@ -560,7 +560,7 @@
               "next_id": "confession_ageha_accept"
             },
             {
-              "text": "「友達として、これからも聞かせてください」",
+              "text": "「友達として、これからも聞かせてください」と返す",
               "next_id": "confession_ageha_reject"
             }
           ]
@@ -670,7 +670,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "駅までの道、あげはは珍しく口数が少なかった。つまんだ袖だけは、改札まで離れなかった。"
+          "text": "駅までの道、あげはは珍しく口数が少なかった。袖をつまんだ指だけは、改札まで離れなかった。"
         },
         {
           "type": "hide_cg"
@@ -1239,11 +1239,11 @@
           "type": "choice",
           "choices": [
             {
-              "text": "好きです。俺と付き合ってください",
+              "text": "「好きです。俺と付き合ってください」と伝える",
               "next_id": "confession_samechan_accept"
             },
             {
-              "text": "これからも、友達でいてください",
+              "text": "「これからも、友達でいてください」と答える",
               "next_id": "confession_samechan_reject"
             }
           ]
@@ -1502,7 +1502,7 @@
         },
         {
           "speaker": "hiyori",
-          "text": "はじめくん……。[shiver]私も、好き……[/shiver]",
+          "text": "はじめくん……[shiver]私も、好き……[/shiver]",
           "face": "love_blush"
         },
         {
@@ -1667,7 +1667,7 @@
               "next_id": "confession_noor_accept"
             },
             {
-              "text": "「大事な友だちでいてほしい」と答える",
+              "text": "「大事な友達でいてほしい」と答える",
               "next_id": "confession_noor_reject"
             }
           ]
@@ -1822,7 +1822,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……ヌールさんには、大事な友だちでいてほしいです"
+          "text": "……ヌールさんには、大事な友達でいてほしいです"
         },
         {
           "speaker": "noor",
@@ -1842,7 +1842,7 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "帰りの運転は、ガイドにお任せ。友だち価格で、ね"
+          "text": "帰りの運転は、ガイドにお任せ。友達価格で、ね"
         },
         {
           "speaker": "noor",
@@ -1861,7 +1861,7 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "ガイドの用件だけじゃないよ。友だちの連絡として。……ハジメが日本に帰っても、送っていい？"
+          "text": "ガイドの用件だけじゃないよ。友達の連絡として。……ハジメが日本に帰っても、送っていい？"
         },
         {
           "speaker": "hajime",
