@@ -183,22 +183,26 @@ async function baitoShift({ called, story, floor, owner, signal }) {
   // #2213 B02: 本編の常連の話を接客として読んだ日は、カメオ・通常の接客を重ねない
   const storyId = story ? await story() : null;
   if (!current()) return false; // 本編の場面の途中で LOAD した時は、ここで止める
+  let eventMoneyBonus = 0;
   if (storyId) rememberBaito(storyId, [storyId]);
   // 正体を伏せた客が一度だけ混ざる（後の章・大会当日で回収される伏線）
-  else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n === 2 && !state.flags._ev_kuraudo_cameo) {
-    state.flags._ev_kuraudo_cameo = true;
+  else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 2 && !state.flags._ev_kuraudo_cameo) {
     if (!await read("ch1_kuraudo_cameo", { bg: TONARI_BG })) return false;
+    state.flags._ev_kuraudo_cameo = true;
     rememberBaito("ch1_kuraudo_cameo", ["kuraudo"]);
   } else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 3 && state.day >= 4 && !state.flags._ev_reviewer_cameo) {
-    state.flags._ev_reviewer_cameo = true;
     if (!await read("ch1_reviewer_cameo", { bg: TONARI_BG })) return false;
+    state.flags._ev_reviewer_cameo = true;
     rememberBaito("ch1_reviewer_cameo", ["reviewer"]);
   } else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 4 && state.day >= 6 && !state.flags._ev_uezono_cameo) {
-    state.flags._ev_uezono_cameo = true;
     if (!await read("ch1_uezono_cameo", { bg: TONARI_BG })) return false;
+    state.flags._ev_uezono_cameo = true;
     rememberBaito("ch1_uezono_cameo", ["uezono"]);
   } else {
-    if (await customerEvent(condition, signal) === false) return false;
+    const before = owner.money;
+    if (await customerEvent(condition, signal) === false || !current()) return false;
+    // 選んだ接客の money_bonus は台本の apply で支払い済み。
+    eventMoneyBonus = owner.money - before;
   }
   if (!current()) return false;
   // フロア営業は「今日の注文」の代わり（その日の注文の想起は進めない）。
@@ -206,7 +210,7 @@ async function baitoShift({ called, story, floor, owner, signal }) {
   if (onFloor) {
     floorNight = await serveFloorOrder(owner, signal);
     if (!floorNight) return false;
-  } else await serveShiftOrder();
+  } else if (!await serveShiftOrder(owner, signal)) return false;
   if (!current()) return false;
   if (callingBonus && !await read("baito_minto_calling", { bg: TONARI_BG })) return false;
   const bonus = Math.round(CHARM_BONUS[step("charm") - 1] * condition.bonusRate);
@@ -227,28 +231,33 @@ async function baitoShift({ called, story, floor, owner, signal }) {
   addMoney(pay);
   toast(`シフトの日当 +${pay.toLocaleString("ja-JP")}円（${shiftPayNote(owner)}・各種ボーナス込み）`, { kind: "good" });
   if (callingBonus) owner.flags._minto_calling_paid = shiftKey; // 同じ行動枠の再開・再入力で上乗せを重ねない。
-  if (callingBonus) toast(`呼び込みの追加注文。店からの売上ボーナス +${callingBonus.toLocaleString()}円`, { kind: "good" });
+  if (callingBonus) toast(`呼び込みの追加注文。店からの売上ボーナス +${callingBonus.toLocaleString("ja-JP")}円`, { kind: "good" });
   if (floorBonus) toast(`フロアの売上ボーナス（${floorNight.stamp}）+${floorBonus.toLocaleString("ja-JP")}円`, { kind: "good" });
-  if (bonus) toast(`指名ボーナス（魅力）＋${bonus.toLocaleString()}円`, { kind: config.statEffectColors !== false ? "charm-bonus" : "good" });
-  if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString()}円`, { kind: "good" });
-  if (rainPay) toast(`雨の日の追加注文 +${rainPay.toLocaleString()}円`, { kind: "good" });
-  if (condition.shiftBonus) toast(`仕上げは好調。売上ボーナス +${condition.shiftBonus.toLocaleString()}円`, { kind: "good" });
-  if (condition.health === "red" && bonus > 0) toast("疲れで仕上げが不安定。売上ボーナスが半分になった", { kind: "warn" });
+  if (bonus) toast(`指名ボーナス（魅力）+${bonus.toLocaleString("ja-JP")}円`, { kind: config.statEffectColors !== false ? "charm-bonus" : "good" });
+  if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString("ja-JP")}円`, { kind: "good" });
+  if (rainPay) toast(`雨の日の追加注文 +${rainPay.toLocaleString("ja-JP")}円`, { kind: "good" });
+  if (condition.shiftBonus) toast(`仕上げは好調。売上ボーナス +${condition.shiftBonus.toLocaleString("ja-JP")}円`, { kind: "good" });
+  if (quickPay) toast(`仕事が早い。基本の日当の上乗せ +${quickPay.toLocaleString("ja-JP")}円`, { kind: "good" });
+  if (condition.health === "red" && (bonus > 0 || callingBonus > 0 || eventMoneyBonus > 0)) {
+    toast("疲れで仕上げが不安定。指名・呼び込み・接客のボーナスは半額", { kind: "warn" });
+  }
   // 基礎成長は訪問と同じ4。接客・片付けの両方を経験する。
   applyStats({ technique: 2, charm: 2 });
-  await afterShiftErrand();
-  if (!current()) return false;
-  await afterShift();
-  return current();
+  if (!await afterShiftErrand(owner, signal) || !current()) return false;
+  return await afterShift(owner, signal) && current();
 }
 
 /** 店の受け取りは実際のシフト後だけ。旧DAY4の既読記録もそのまま使う。 */
-async function afterShiftErrand() {
+async function afterShiftErrand(owner, signal) {
+  const current = () => state === owner && !signal.aborted;
+  if (!current()) return false;
   if (!chapterFeatureEnabled(state.chapter, "baitoCameos") || state.day < 4 || state.flags._ev_ageha_cameo
-    || !DB.dialogues.ch1_ageha_encounter) return;
-  await play("ch1_ageha_encounter");
-  state.flags._ev_ageha_cameo = true;
+    || !DB.dialogues.ch1_ageha_encounter) return true;
+  const result = await play("ch1_ageha_encounter", { signal });
+  if (!current() || result?.cancelled) return false;
+  owner.flags._ev_ageha_cameo = true;
   await setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
+  return current();
 }
 
 // home-shisha.js の tasteDistant と同じ時期（第2章DAY5〜第3章の東京で味が戻るまで）。shop.js などを連れてくるので
@@ -335,23 +344,40 @@ async function customerEvent(condition, signal) {
   rememberBaito(ev.id, customerFamilies(ev));
 }
 
-/** シフト後: スミ会話（必須）のあと、任意の授業だけを選ぶ。練習は店の固定イベントで（#783） */
-function afterShiftMenu() {
+/** シフト後: スミ会話（必須）のあと、授業か練習を一つ選ぶ。 */
+function afterShiftMenu(owner, signal) {
+  const current = () => state === owner && !signal.aborted;
+  if (!current()) return false;
   return new Promise((resolve) => {
+    let settled = false;
+    const finish = (value) => {
+      settled = true;
+      signal.removeEventListener("abort", abort);
+      if (value === false) root.remove();
+      else retire(root);
+      resolve(value);
+    };
+    const abort = () => finish(false);
     const opt = (title, desc, value, test) =>
-      el("button.big-choice", { dataset: { test }, onclick: () => { SE.select(); retire(root); resolve(value); } }, [el("b", { text: title }), el("small", { text: desc })]);
-    const root = showScreen("tonari", el("div.sub-menu", [
+      el("button.big-choice", { dataset: { test }, onclick: () => { if (!settled && current()) { SE.select(); finish(value); } } }, [el("b", { text: title }), el("small", { text: desc })]);
+    const choices = [
+      canStudyAttack() ? opt("蒸らしアタックの授業を受ける", "スミさんと蒸らしアタックを練習する", "attack", "after-attack") : null,
+      canStudyCubeCoals() ? opt("キューブ炭の授業を受ける", "スミさんと火の違いを確かめる", "cube_coals", "after-cube-coals") : null,
+      // 心得の盤で灯した授業: スミさんに相談して話を聞く（SBD50）
+      ...readyLessons("sumi").map((l) => opt(`スミさんに相談する（${l.name}）`, "授業。話を聞いて習得する", `lesson:${l.id}`, `after-lesson-${l.id}`)),
+      makanaiOpen() ? opt("まかないで練習", `空いた台で一台作る。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById?.[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "makanai", "after-makanai") : null,
+    ].filter(Boolean);
+    if (!choices.length) { resolve("none"); return; }
+    const root = el("div.sub-menu", [
       el("h2.sub-title", { text: "シフト上がり" }),
-      el("p.sub-lead", { text: "スミさんと話し終えて、まだ少しだけ時間がある。" }),
+      el("p.sub-lead", { text: "シフト上がりにできるのは1つだけ。" }),
       el("div.sub-choices", [
-        canStudyAttack() ? opt("蒸らしアタックの授業を受ける", "スミさん♥3・アタックを習得する", "attack", "after-attack") : null,
-        canStudyCubeCoals() ? opt("キューブ炭の授業を受ける", "スミさんと火の違いを確かめる", "cube_coals", "after-cube-coals") : null,
-        // 心得の盤で灯した授業: スミさんに相談して話を聞く（SBD50）
-        ...readyLessons("sumi").map((l) => opt(`スミさんに相談する（${l.name}）`, "授業。話を聞いて習得する", `lesson:${l.id}`, `after-lesson-${l.id}`)),
-        makanaiOpen() ? opt("まかないで練習", `空いた台で一台作る。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById?.[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "makanai", "after-makanai") : null,
+        ...choices,
         opt("まっすぐ上がる", "今日はここまで", "none", "after-none"),
       ]),
-    ]));
+    ]);
+    signal.addEventListener("abort", abort, { once: true });
+    showScreen("tonari", root);
   });
 }
 
@@ -360,22 +386,46 @@ const makanaiOpen = () => state.visitedDay?.tonari_practice !== state.day && sta
 
 /** #2213 B04: まかないの練習はシフトの中で選んだ日だけ。熟練度は旧・独立コマンドと同じ runner で育つ。
  * 行動枠・行動の体力・行動の学びはシフトの分だけで、旧・独立コマンドの分を重ねない。 */
-async function makanaiPractice() {
-  const owner = state;
-  state.visitedDay.tonari_practice = state.day;
-  await play("remake_staff_practice", { bg: TONARI_BG });
+async function makanaiPractice(owner, signal) {
+  const current = () => state === owner && !signal.aborted;
+  if (!current()) return false;
+  owner.visitedDay.tonari_practice = owner.day;
+  const result = await play("remake_staff_practice", { bg: TONARI_BG, signal });
+  if (!current() || result?.cancelled) return false;
   const { runFullPractice } = await import("../craft/practice.js");
-  const cs = await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === owner });
+  if (!current()) return false;
+  // LOAD で作業台が外れたとき、操作待ちの工程が残ってもシフトの待機は解く。
+  let abort;
+  const interrupted = new Promise((resolve) => {
+    abort = () => resolve(false);
+    signal.addEventListener("abort", abort, { once: true });
+  });
+  let cs;
+  try {
+    cs = await Promise.race([interrupted, runFullPractice({ kind: "self", staffPractice: true, isCurrent: current })]);
+  }
+  catch (error) {
+    if (!current() && error?.name === "AbortError") return false;
+    throw error;
+  } finally {
+    signal.removeEventListener("abort", abort);
+  }
+  if (!current()) return false;
   if (cs?.masteryGained) toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
+  return true;
 }
 
-async function afterShift() {
-  await afterShiftSumiTalk();
-  const pickAfter = await afterShiftMenu();
-  if (pickAfter === "makanai") await makanaiPractice();
-  if (pickAfter === "attack") await studyAttack();
-  if (pickAfter === "cube_coals") await studyCubeCoals();
-  if (String(pickAfter).startsWith("lesson:")) await consultLessons("sumi", { only: pickAfter.slice(7), bg: TONARI_BG });
+async function afterShift(owner, signal) {
+  const current = () => state === owner && !signal.aborted;
+  if (!await afterShiftSumiTalk(owner, signal) || !current()) return false;
+  const pickAfter = await afterShiftMenu(owner, signal);
+  if (!pickAfter || !current()) return false;
+  let result;
+  if (pickAfter === "makanai") result = await makanaiPractice(owner, signal);
+  else if (pickAfter === "attack") result = await studyAttack({ signal });
+  else if (pickAfter === "cube_coals") result = await studyCubeCoals({ signal });
+  else if (pickAfter.startsWith("lesson:")) result = await consultLessons("sumi", { only: pickAfter.slice(7), bg: TONARI_BG, signal });
+  return current() && result !== false;
 }
 
 // #3097 第1弾: 第2章のシフト上がりの会話（data/dialogue/ch2_tonari_talks.json・第2章の準備期間に読み込む）。
@@ -429,27 +479,31 @@ export function ch2ShiftTalkDue(s, dialogues, context = {}) {
  * #1081 B06: ひより前提を満たした後の最初のバイト上がりでは、このスミ会話の中で
  * 斧投げが露出する（露出フラグのみ。ひより前提チェーンは現状維持）。
  */
-async function afterShiftSumiTalk() {
+async function afterShiftSumiTalk(owner, signal) {
+  const current = () => state === owner && !signal.aborted;
+  if (!current()) return false;
   if (hasNewStory("sumi") || spotFollowupDue("sumi", state, DB.dialogues)) {
-    await visitChar("sumi");
+    if (await visitChar("sumi", { signal }) === false || !current()) return false;
   } else {
     // ♥5の締めくくりの後（#3693）: 定型の一言の代わりに、スミさんの♥5後の場面を一度ずつ。読み終えたら短い汎用（core/bond-after.js）。
     // 報酬はいつものバイト上がりと同じ（増やさない）。台本を読めなければ定型の一言へ戻す。中断したら既読にせず、次の上がりで読み直す。
-    const owner = state;
     let after = bondAfterNext(state, "sumi");
     if (after) { try { await loadBondAfterScenes(DB); } catch { after = null; } }
-    if (state !== owner) return;
+    if (!current()) return false;
     const ch2Talk = after ? null : ch2ShiftTalkDue(state, DB.dialogues, { tsumugiHere: tsumugiAtTonari(state) });
-    const result = await play(after?.scene || ch2Talk || "remake_sumi_after_shift", { bg: TONARI_BG });
-    if (state === owner && result && !result.cancelled) {
+    const result = await play(after?.scene || ch2Talk || "remake_sumi_after_shift", { bg: TONARI_BG, signal });
+    if (!current() || result?.cancelled) return false;
+    if (result) {
       markBondAfterRead(state, "sumi", after);
       if (ch2Talk) state.flags[`_talk_seen_${ch2Talk}`] = true;
     }
   }
   if (!axeThrowExposed() && hiyoriAxePrereqsMet()) {
-    await play("remake_sumi_axe_hint", { bg: TONARI_BG });
-    state.flags._axe_throw_unlocked = true;
+    const result = await play("remake_sumi_axe_hint", { bg: TONARI_BG, signal });
+    if (!current() || result?.cancelled) return false;
+    owner.flags._axe_throw_unlocked = true;
   }
+  return true;
 }
 
 export function chooseDrill({ title = "自主練", lead = "苦手な工程を反復しよう。能力値は増えません。", recommended = null, allowBack = false } = {}) {
@@ -485,13 +539,13 @@ const SHIFT_ORDERS = [
   { id: "double_apple", text: "ダブルアップルを。清涼感は少しだけ", mixes: [{ double_apple: 10, mint: 2 }, { double_apple: 12 }], labels: ["ダブルアップル＋ミント少量", "ダブルアップル単体"],
     reactions: ["shift_flavor_double_apple_mint", "shift_flavor_double_apple_solo"] },
   // 第2章（優勝後の橙須）は、仕事帰りや柚ヶ谷帰りの客が増える。第1章の4種とは別の注文を出す。
-  { id: "ch2_after_work", chapter: 2, text: "仕事帰りで頭が重いんだ。苦くなくて、すっと抜けるのを", mixes: [{ grapefruit: 8, mint: 4 }, { kiwi: 8, lemon: 4 }], labels: ["グレープフルーツ＋ミント", "キウイ＋レモン"],
+  { id: "ch2_after_work", chapter: 2, time_slot: "night", text: "仕事帰りで頭が重いんだ。苦くなくて、すっと抜けるのを", mixes: [{ grapefruit: 8, mint: 4 }, { kiwi: 8, lemon: 4 }], labels: ["グレープフルーツ＋ミント", "キウイ＋レモン"],
     reactions: ["shift_flavor_ch2_after_work_grapefruit_mint", "shift_flavor_ch2_after_work_kiwi_lemon"] },
   { id: "ch2_strawberry_light", chapter: 2, text: "苺がいいな。でも甘ったるいのは苦手で", mixes: [{ strawberry: 9, lemon: 3 }, { strawberry: 8, peach: 4 }], labels: ["苺＋レモン", "苺＋ピーチ"],
     reactions: ["shift_flavor_ch2_strawberry_light_strawberry_lemon", "shift_flavor_ch2_strawberry_light_strawberry_peach"] },
-  { id: "ch2_night_deep", chapter: 2, text: "夜だし、少しどっしりしたのを。甘さは控えめで", mixes: [{ black_tea: 9, lemon: 3 }, { caramel: 6, black_tea: 6 }], labels: ["紅茶＋レモン", "キャラメル＋紅茶"],
+  { id: "ch2_night_deep", chapter: 2, time_slot: "night", text: "夜だし、少しどっしりしたのを。甘さは控えめで", mixes: [{ black_tea: 9, lemon: 3 }, { caramel: 6, black_tea: 6 }], labels: ["紅茶＋レモン", "キャラメル＋紅茶"],
     reactions: ["shift_flavor_ch2_night_deep_black_tea_lemon", "shift_flavor_ch2_night_deep_caramel_black_tea"] },
-  { id: "ch2_tropical_compare", chapter: 2, text: "柚ヶ谷で濃いのを飲んできた。ここは、違う良さがほしい", mixes: [{ mango: 8, passion_fruit: 4 }, { watermelon: 9, mint: 3 }], labels: ["マンゴー＋パッションフルーツ", "スイカ＋ミント"],
+  { id: "ch2_tropical_compare", chapter: 2, text: "柚ヶ谷で濃いのを吸ってきた。ここは、違う良さがほしい", mixes: [{ mango: 8, passion_fruit: 4 }, { watermelon: 9, mint: 3 }], labels: ["マンゴー＋パッションフルーツ", "スイカ＋ミント"],
     reactions: ["shift_flavor_ch2_tropical_compare_mango_passion_fruit", "shift_flavor_ch2_tropical_compare_watermelon_mint"] },
   // #2020 E: 第3章以降は、任される中身も変える。二択の選び方は第2章と同じで、選ぶものが配合から
   // 「何を聞くか」「どう受け取るか」「どう伝えるか」へ広がる（labels がその言葉。mixes は出来上がった一台）。
@@ -540,13 +594,17 @@ const SHIFT_ORDERS = [
 function shiftOrderOfDay() {
   const seed = (state.weatherSeed || 0) ^ Math.imul(state.day + state.chapter * 31, 0x45d9f3b);
   // 章付きの注文はその章だけ。章付きが無い章は、章指定なしの4種から出す。
-  const pool = SHIFT_ORDERS.filter((o) => o.chapter === state.chapter
+  const slot = timeOfDay() === "night" ? "night" : "noon";
+  const available = SHIFT_ORDERS.filter((o) => !o.time_slot || o.time_slot === slot);
+  const pool = available.filter((o) => o.chapter === state.chapter
     && (!o.id.startsWith("ch5_tsumugi_") || tsumugiAtTonari(state)));
-  const orders = pool.length ? pool : SHIFT_ORDERS.filter((o) => !o.chapter);
+  const orders = pool.length ? pool : available.filter((o) => !o.chapter);
   return { order: orders[((seed ^ (seed >>> 16)) >>> 0) % orders.length], seed, orders };
 }
 
-async function finishShiftOrder(owner, key, order, index) {
+async function finishShiftOrder(owner, signal, key, order, index) {
+  const current = () => state === owner && !signal.aborted;
+  if (!current()) return false;
   // 注文と配合に対応した客の反応を返す（#1073）。給料・行動消費は従来どおり後続のcalendarで確定。
   // 同じ注文が前にもあったら、反応の前にはじめが前回の配合を思い出す（前回と同じか違うかで一行を変える・#1415）。
   const prev = state.flags[`_shift_mix_${order.id}`];
@@ -557,24 +615,25 @@ async function finishShiftOrder(owner, key, order, index) {
   const welcome = !recall && Number.isInteger(before) ? DB.dialogues[`shift_return_${order.id}_${before}`] : null;
   const opening = recall || welcome;
   const scene = DB.dialogues[order.reactions[index]];
-  const result = await play(opening && scene ? { ...scene, lines: [...opening.lines, ...scene.lines] } : order.reactions[index], { bg: TONARI_BG });
-  if (state !== owner || result?.cancelled) return false;
+  const result = await play(opening && scene ? { ...scene, lines: [...opening.lines, ...scene.lines] } : order.reactions[index], { bg: TONARI_BG, signal });
+  if (!current() || result?.cancelled) return false;
   // お客さんへの提供は業務。自分の熟練度を稼ぐ対象にはしない。
   state.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
   state.flags[`_shift_mix_${order.id}`] = index;
   return true;
 }
 
-async function serveShiftOrder() {
-  const owner = state;
+async function serveShiftOrder(owner, signal) {
+  const current = () => state === owner && !signal.aborted;
+  if (!current()) return false;
   const key = `_shift_order_${state.chapter}:${state.day}`;
-  if (state.flags[key]) return;
+  if (state.flags[key]) return true;
   const { order } = shiftOrderOfDay();
   const index = await modal({ title: order.title || "今日の注文",
     body: `${order.lead || "前のお客さんを見送って、次の卓につく。"}<br>「${order.text}」 ${order.ask || "店の葉で一台を作る。"}`,
-    options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })) });
-  if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return;
-  return finishShiftOrder(owner, key, order, index);
+    options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })), signal });
+  if (!current() || !Number.isInteger(index) || !order.mixes[index]) return false;
+  return finishShiftOrder(owner, signal, key, order, index);
 }
 
 // フロア営業の一晩。店の売上は画面の中だけで、はじめの財布・能力・私物は共通の勤務処理からだけ動く。
@@ -609,8 +668,8 @@ async function serveFloorOrder(owner, signal) {
   catch {
     if (!current()) return null;
     toast("フロアを読み込めなかった。今日はいつもの接客に入る", { kind: "warn" });
-    await serveShiftOrder();
-    return current() ? { bonus: 0, stamp: "", fallback: true } : null;
+    if (!await serveShiftOrder(owner, signal) || !current()) return null;
+    return { bonus: 0, stamp: "", fallback: true };
   }
   if (!current()) return null;
   const night = timeOfDay() === "night";
