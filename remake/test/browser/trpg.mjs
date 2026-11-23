@@ -594,7 +594,7 @@ try {
     });
   // ダイス劇場（TRF29）: 振ってから評価が出るまでは画面いっぱい。出目・合計・評価は判定の値そのまま。タップで結果の卓へ飛ばせる。
   for (const [label, options] of [["roll-show-pc", {}], ["roll-show-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
-    const choiceSheets = new Set(), verdictLogos = new Set();
+    const choiceSheets = new Set(), verdictLogos = new Set(), diceSprites = new Set();
     await run(label, { seed: "3" }, options, async page => {
       const show = page.locator(".trpg-roll-show");
       const seen = () => show.evaluate(node => {
@@ -643,9 +643,11 @@ try {
       assert.equal(await page.locator('[data-test="trpg-roll-total"] strong').textContent(), "合計 " + (rerolled.dice[0] + rerolled.dice[1] + rerolled.bonus));
       await hit(page, '[data-test="trpg-settle"]'); await nextLines(page);
       assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.length, 1);
+      assert.deepEqual([...diceSprites], [], "Canvas rolls and rerolls never request the fallback dice sprites");
     }, page => page.on("request", request => {
       const path = new URL(request.url()).pathname;
       if (path.includes("/trpg/choices-")) choiceSheets.add(path);
+      if (path.includes("/trpg/d20-")) diceSprites.add(path);
       if (path.includes("/trpg/roll-logos/") && !path.endsWith("/skill.webp")) verdictLogos.add(path.split("/").pop());
     }));
   }

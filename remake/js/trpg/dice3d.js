@@ -115,8 +115,8 @@ export function createD20(canvas) {
     }
     // 数字: 面の三角へ、正三角形の型を当てはめて描く（面と一緒に傾き、縮む）。
     for (const { face, n } of visible) {
-      const facing = n[2];
-      if (facing < 0.12) continue;
+      const inkAlpha = Math.min(1, (n[2] - 0.5) * 2.1);
+      if (inkAlpha <= 0) continue;
       const [p0, p1, p2] = face.order.map(i => P[i]);
       const [c0, c1, c2] = CANON;
       const dx1 = [c1[0] - c0[0], c1[1] - c0[1]], dx2 = [c2[0] - c0[0], c2[1] - c0[1]];
@@ -130,7 +130,7 @@ export function createD20(canvas) {
       ctx.font = `900 ${size}px ${font}`;
       ctx.textAlign = "center"; ctx.textBaseline = "middle";
       // 正面の面（出目）ほど濃く、斜めを向いた面ほど薄く。小さく描いても出目が読めるように。
-      ctx.globalAlpha = Math.max(0, Math.min(1, (facing - 0.5) * 2.1));
+      ctx.globalAlpha = inkAlpha;
       ctx.fillStyle = pal.ink;
       ctx.fillText(label, 0, 4);
       // 6 と 9 は下に線（上下の見分け）。

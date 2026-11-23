@@ -71,6 +71,7 @@ export function playRollShow(host, show) {
   const still = !!document.body?.classList.contains("reduce-shake");
   const sound = kind => { try { show.sound?.(kind); } catch { /* 音が出なくても演出は続ける */ } };
   const animations = [], timers = [];
+  let frameId = null;
   let done = false, judged = false;
 
   // ---- どのダイスを最後に残すか: 振り直しは投げた1個。20の目・ファンブルの1は最後に（いちばん揺さぶれる順）。 ----
@@ -85,8 +86,8 @@ export function playRollShow(host, show) {
 
   // ---- 部品 ----
   const dieNodes = dice.map((value, i) => el("div.trpg-rs-die", { dataset: { i: String(i) }, style: { left: REST[i][0] - SIZE / 2 + "px", top: REST[i][1] - SIZE / 2 + "px" } }, [
-    el("i.trpg-rs-halo"), el("i.trpg-rs-shadow"),
-    el("div.trpg-rs-spin", [el("span.trpg-rs-body"), el("canvas.trpg-rs-d3")]),
+    value === 20 && grade === "success" ? el("i.trpg-rs-halo") : null, el("i.trpg-rs-shadow"),
+    el("div.trpg-rs-spin", [el("canvas.trpg-rs-d3")]),
     el("i.trpg-rs-ring"), el("b.trpg-rs-num", { text: String(value), dataset: { digits: String(String(value).length) } }),
     el("span.trpg-rs-crack", { html: CRACK }),
   ]));
@@ -136,7 +137,8 @@ export function playRollShow(host, show) {
     skillLogo?.addEventListener?.("error", () => { skillLogo.hidden = true; skillWho.textContent = "SKILL!  " + skillWho.textContent; });
   }
   if (hintNode) camera.append(hintNode);
-  const lines = el("i.trpg-rs-lines"), rays = el("i.trpg-rs-rays"), vignette = el("i.trpg-rs-vignette"), tint = el("i.trpg-rs-tint");
+  const rays = tone === "success" || tone === "critical" ? el("i.trpg-rs-rays") : null;
+  const lines = el("i.trpg-rs-lines"), vignette = el("i.trpg-rs-vignette"), tint = el("i.trpg-rs-tint");
   const burst = el("div.trpg-rs-burst"), flash = el("i.trpg-rs-flash");
   const hint = el("small.trpg-rs-skip", { text: "タップでスキップ" });
   const fitBox = el("div.trpg-rs-fit", [camera]);
@@ -153,6 +155,7 @@ export function playRollShow(host, show) {
   const after = (ms, fn) => { timers.push(setTimeout(() => { if (!done) fn(); }, ms)); };
   function cleanup() {
     done = true; handle.playing = false;
+    if (frameId !== null) cancelAnimationFrame(frameId);
     for (const timer of timers) clearTimeout(timer);
     for (const animation of animations) { try { animation.cancel(); } catch { /* already gone */ } }
     host.removeEventListener("pointerdown", onPointer, true);
@@ -199,16 +202,16 @@ export function playRollShow(host, show) {
   const pixelRatio = (typeof devicePixelRatio === "number" ? devicePixelRatio : 1) * (node.getBoundingClientRect?.().width / (node.offsetWidth || 1) || 1) * fit;
   const solids = dieNodes.map((die, i) => {
     const d3 = createD20(die.querySelector(".trpg-rs-d3"));
-    if (!d3) return null;
+    if (!d3) {
+      die.querySelector(".trpg-rs-spin").prepend(el("span.trpg-rs-body"));
+      return null;
+    }
     d3.resize(SIZE, pixelRatio);
     die.dataset.render = "3d";
     const solid = { d3, R: restPose(dice[i]), axis: randomAxis(), turns: (i ? -1 : 1) * Math.PI * (6 + Math.random() * 3), progress: () => 1 };
     d3.draw(pose(solid.R, solid.axis, solid.turns));
     return solid;
   });
-  const clock = el("i.trpg-rs-clock");
-  node.append(clock);
-  const tick = solids.some(Boolean) ? animate(clock, [{ opacity: 0 }, { opacity: 0 }], { duration: 120000, fill: "none" }) : null;
 
   // ---- 画面の手応え: 揺れ（大→小に収束・少しランダム）、明暗のフラッシュ、寄り ----
   function shake(amp, ms = 420, vertical = .45) {
@@ -365,12 +368,13 @@ export function playRollShow(host, show) {
       solids[first].landAt = firstRest;
     } else solids[first].progress = () => 1;
   }
-  // 描画: 劇場の時計（一時停止・タブを離れた時に一緒に止まる）で姿勢を決める。着地のあとは、少し揺れて止まる。
-  if (tick) {
-    const t0 = tick.currentTime || 0;
-    const frame = () => {
+  // 投げ込みからの経過時間で回す。performance.now と rAF の時刻はデバッグの倍速にも一緒に追従する。
+  if (solids.some(Boolean)) {
+    const t0 = performance.now();
+    const frame = now => {
+      frameId = null;
       if (done) return;
-      const t = (tick.currentTime || 0) - t0;
+      const t = Math.max(0, now - t0);
       let moving = false;
       for (const solid of solids) {
         if (!solid) continue;
@@ -383,9 +387,9 @@ export function playRollShow(host, show) {
         if (theta || !solid.atRest) solid.d3.draw(pose(solid.R, axis, theta));
         solid.atRest = theta === 0;
       }
-      if (moving || t < 400) requestAnimationFrame(frame);
+      if (moving) frameId = requestAnimationFrame(frame);
     };
-    requestAnimationFrame(frame);
+    frameId = requestAnimationFrame(frame);
   }
 
   // ---- 3. ため: 「あと N 以上で成功！」・心音・寄り ----
