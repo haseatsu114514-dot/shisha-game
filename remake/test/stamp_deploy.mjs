@@ -83,7 +83,7 @@ try {
   // CSS の @import とフォントの url() も版付き
   const trpg = fs.readFileSync(path.join(out, "css/trpg.css"), "utf8");
   assert.match(trpg, /@import url\("venue-host\.css\?v=abc1234"\)/);
-  for (const [filename, count] of Object.entries({ "base.css": 5, "bundle-1.css": 7, "bundle-2.css": 2 })) {
+  for (const [filename, count] of Object.entries({ "base.css": 5, "bundle-base.css": 5, "bundle-1.css": 2, "bundle-2.css": 2 })) {
     const css = fs.readFileSync(path.join(out, "css", filename), "utf8");
     const fontUrls = [...css.matchAll(/url\("([^"\n]+\.woff2[^"\n]*)"\)/g)].map(match => match[1]);
     assert.equal(fontUrls.length, count, filename);

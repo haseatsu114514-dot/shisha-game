@@ -14,12 +14,14 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = rel => JSON.parse(fs.readFileSync(path.join(root, rel), "utf8"));
 const catalog = read("data/trpg_catalog.json");
 // 本棚には表示・配役に必要な情報だけを載せる。台本の詳細は一冊選んでから読む。
-function shelfEntry({ version, title, author, collection, duration, presentation, cast, campaign, endings }) {
+function shelfEntry({ version, title, author, collection, duration, presentation, cast, campaign, endings, pictureBook }) {
   const { theme, number, genre, image, sceneAlt, location, tagline, backdrop } = presentation;
   return { version, title, author, collection, duration,
     presentation: { theme, number, genre, image, sceneAlt, location, tagline, backdrop },
     cast: cast.map(({ id, part, color }) => ({ id, part, color })), campaign: { seats: campaign.seats },
-    endings: Object.fromEntries(Object.entries(endings).map(([id, { title }]) => [id, { title }])) };
+    endings: Object.fromEntries(Object.entries(endings).map(([id, { title }]) => [id, { title }])),
+    // 絵本の有無とページ文だけは棚でも要る（「絵本をみる」の表示と読み返し用。画像は開いた時に読む）
+    ...(pictureBook ? { pictureBook: { pages: pictureBook.pages.map(({ image, alt, text }) => ({ image, alt, text })) } } : {}) };
 }
 if (process.argv[2] === "--update-shelf") {
   for (const book of catalog.scenarios) book.shelf = shelfEntry(read("data/" + book.file));
