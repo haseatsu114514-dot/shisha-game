@@ -255,11 +255,11 @@ await suite("ch1-practice", async run => {
     await page.route("**/js/craft/practice.js", async route => {
       const response = await route.fetch();
       const source = await response.text();
-      const call = "  await runPull(cs);";
-      assert.equal(source.split(call).length, 2, "吸い出し直前の入力を一箇所だけ固定する");
+      const call = /^  await runPull\(cs(?=[,)])/gm;
+      assert.equal([...source.matchAll(call)].length, 1, "吸い出し直前の入力を一箇所だけ固定する");
       await route.fulfill({
         response,
-        body: source.replace(call, "  cs.steam.temp = 0.88;\n" + call),
+        body: source.replace(call, "  cs.steam.temp = 0.88;\n$&"),
       });
     });
     await page.reload();
