@@ -73,7 +73,7 @@ await suite("judge-comment-2190", async check => {
         assert.equal(await quality.locator(".craft-evaluation").textContent(), "○");
         await assertFits(page, ".rt-judge-comment");
         if (kind === "three-ideal-next") {
-          assert.match(await page.locator(".rt-next-tip").innerText(), /今回の記録を見て、次に試すことを選ぼう/);
+          assert.match(await page.locator(".rt-next-tip").innerText(), /蒸らしでは雑念が近づく前に、心を空いている方へ動か/);
           await page.locator(".rt-next-tip").scrollIntoViewIfNeeded();
           await assertFits(page, ".rt-next-tip");
         }
