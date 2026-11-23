@@ -118,7 +118,7 @@ html:root[data-density="phone"] body:not(:root) .bench .opt-grid .opt b { font-s
 html:root[data-density="phone"] body:not(:root) .bench .heat-carrier-head { padding-right: max(56px, calc(32px / var(--k, 1))); }
 
 /* 蒸らし時間: 雑念回避の長さの案内と温度の目安を規格の文字に（タイマーの絵の中のボタンは絵が固定なので変えない） */
-html:root[data-density="phone"] body:not(:root) .bench :is(.steam-timer > p, .steam-forecast-heading, .steam-forecast-value, .steam-forecast-note) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .bench :is(.steam-timer-actions > p, .steam-forecast-heading, .steam-forecast-value, .steam-forecast-note, .steam-startup-warning) { font-size: var(--phone-sub); }
 /* 雑念回避の丸い操作（リフレッシュ・アタック・精密）は絵と名前を上から詰めて置く部品。
    共通の .btn 規格（上下の余白・中央寄せ・phone-density.css）が掛かると名前が下へ押し出されて欠けるので、ここだけ元の並びに戻す */
 html:root[data-density="phone"] body:not(:root) .bench[data-art-skin] .btn.dodge-action { justify-content: flex-start; padding-block: 0; }

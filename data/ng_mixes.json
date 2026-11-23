@@ -33,7 +33,8 @@
       "flavors": ["blueberry", "pineapple"],
       "condition": "combined_over_10g",
       "penalty": -2.5,
-      "text": "フルーツだけで構成したが、ベースの厚みが足りない。果実感は華やかだが底が浅い。"
+      "text": "フルーツだけで構成したが、ベースの厚みが足りない。果実感は華やかだが底が浅い。",
+      "combined_ratio": 0.8333333333333334
     },
     {
       "id": "ng_pineapple_double_apple_heavy",

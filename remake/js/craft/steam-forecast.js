@@ -3,6 +3,7 @@ import { el } from "../core/util.js";
 import { temperatureBands, isIdealTemperature, isRainbowTemperature, DANGER_TEMP, temperatureAfterSteam, steamTemperatureRange } from "./conditions.js";
 import { steamClimate } from "./steam-climate.js";
 import { buildThermometer } from "./thermometer.js";
+import { hasStartupShortfall } from "./pull.js";
 import { effectBadge } from "./effect-visual.js";
 
 const weatherIcon = (rainy) => rainy
@@ -39,16 +40,23 @@ const temperatureName = (temp, bands) => isIdealTemperature(temp, bands)
   ? bands.expressionWeight >= .999 ? "適温" : isRainbowTemperature(temp, bands) ? "最適温" : "適温"
   : temp > bands.ideal[1] ? "熱い" : temp < .2 * bands.t ? "低温" : "ぬるい";
 
-export function buildSteamForecast(cs, thermometer) {
+export function buildSteamForecast(cs, thermometer, { canZero = false } = {}) {
   const rangeText = el("b.steam-forecast-value", { dataset: { test: "steam-forecast-text" } });
   const note = el("span.steam-forecast-note");
+  const warning = el("span.steam-startup-warning", { role: "status", dataset: { test: "steam-startup-warning" } });
   const root = el("div.steam-forecast", { dataset: { test: "steam-forecast" } }, [
     el("div.steam-forecast-heading", [effectBadge("insight", "察"), el("span", { text: "蒸らし後の温度の目安" }), rangeText]),
-    buildSteamWeather(cs), note,
+    buildSteamWeather(cs), note, warning,
   ]);
   return { root, update(seconds) {
-    const bounds = steamTemperatureRange(cs, seconds);
-    thermometer.update(temperatureAfterSteam({ ...cs, steamSeconds: Math.max(10, seconds) }, 0, cs.steamVariation ?? 0));
+    const selected = { ...cs, steamSeconds: seconds, zeroSteam: canZero && seconds === 0 };
+    const bounds = steamTemperatureRange(selected, seconds);
+    thermometer.update(temperatureAfterSteam(selected, 0, cs.steamVariation ?? 0));
+    const checkStartup = !!bounds || selected.zeroSteam;
+    const start = checkStartup ? temperatureAfterSteam(selected, seconds, cs.steamPrediction ?? 0) : null;
+    warning.textContent = checkStartup && hasStartupShortfall(selected, start)
+      ? "立ち上げ不足の目安：安全な回数の上げ吸いでは適温に届きにくい"
+      : "";
     thermometer.range(bounds);
     if (!bounds) {
       delete root.dataset.low; delete root.dataset.high;

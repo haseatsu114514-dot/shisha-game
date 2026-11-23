@@ -28,7 +28,7 @@ import { craftRankThresholds } from "./common.js";
 const STEPS = ["pack", "holes", "heat", "water", "steam", "pull", "care", "full"];
 // 1工程だけ遊ぶときに、前の工程の結果として置く値（session.js の drill() と同じ前提）
 const AFTER_HEAT = { place: "triangle", heat: { score: 80, heatPower: 60, heatStability: 60, burnRisk: 30, aromaRetention: 60, startup: 60, picks: ["just", "just", "pre"], just: 2 } };
-const AFTER_HOLES = { holes: { score: 85, total: 24, outer: 12, middle: 12, inner: 0, evenness: .85, outerEven: .85, precision: .85, completion: 1, innerExcess: 0, minimumComplete: true } };
+const AFTER_HOLES = { holes: { score: 85, total: 24, outer: 12, middle: 12, evenness: .85, outerEven: .85, precision: .85, completion: 1, minimumComplete: true } };
 
 // 通常の試遊も桜井版。旧版との比較はこの独立ページの明示URLだけに残す。
 const previewVersion = () => craftVersionFrom({ craftVersion: "sakurai" });

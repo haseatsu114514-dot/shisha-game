@@ -41,8 +41,8 @@ function ch1Judging() {
   }
   const sakurai = attempt ? isSakuraiVotes(attempt) : voteStyleFrom(config) === "sakurai";
   const evaluation = sakurai
-    ? `各回は、その回に仕上げた工程だけで決める。提供の回は、${focusText}を見る。温度計の「攻めの帯」で提供・調整を終えると、その回の審査が伸びる。`
-    : "各回は、その回までに仕上げた工程の成績で決める。";
+    ? `各回は、その回に仕上げた工程で決める。提供の回は、${focusText}を見て、制作ボーナスも反映する。温度計の「攻めの帯」で提供・調整を終えると、その回の審査が伸びる。`
+    : "各回は、その回までに仕上げた工程の成績で決める。提供の回には制作ボーナスも反映する。";
   return ALLOCATION + evaluation;
 }
 

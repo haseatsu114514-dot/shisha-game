@@ -73,7 +73,15 @@ for(const mode of ['practice','tutorial']) {
   f.get('timer-start').click();await f.pending;
   assert.deepEqual(f.cs,{...f.before,steamSeconds:300,steamMin:5});
 }
-console.log('PASS actual timer: selected duration, tutorial scale, reset and unchanged commit contract');
+{
+  const f = await timerFixture('tournament', true);
+  f.get('timer-preset-8').click();
+  f.get('steam-shorten').click();
+  assert.match(f.get('steam-duration-hint').textContent, /約10秒/);
+  f.get('timer-start').click(); await f.pending;
+  assert.deepEqual(f.cs, { ...f.before, steamSeconds: 480, steamMin: 8, steamShorten: true });
+}
+console.log('PASS actual timer: selected duration, presets, tutorial scale, reset and unchanged commit contract');
 
 // B08: 既習プレイヤーだけ、雑念回避の任意短縮を使える。初回・温度・採点・保存には触れない。
 {

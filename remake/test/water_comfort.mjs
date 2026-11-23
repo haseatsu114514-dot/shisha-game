@@ -25,9 +25,9 @@ check("named thresholds", () => {
   assert.ok(STEM_TIP < WATER.low && WATER.high < DEEP_WATER_LIMIT);
 });
 for (const [q, band, drawW, bubble] of [
-  [0, "none", -10, 0], [.30, "shallow", -5, .75], [.375, "shallow", -2.5, .75],
-  [.45, "ideal", 0, 1], [.50, "ideal", 0, 1], [.55, "ideal", 0, 1],
-  [.70, "deep", -4, 1], [.85, "deep", -8, 1], [1, "deep", -8, 1],
+  [0, "none", -10, 0], [.30, "shallow", -5, .75], [.37, "shallow", -2.5, .75],
+  [.44, "ideal", 0, 1], [.50, "ideal", 0, 1], [.56, "ideal", 0, 1],
+  [.705, "deep", -4, 1], [.85, "deep", -8, 1], [1, "deep", -8, 1],
 ]) check(`quantity ${q}: ${band}`, () => {
   const result = waterComfort(q);
   assert.equal(result.band, band);
@@ -70,10 +70,10 @@ const cs = {
 const before = structuredClone(cs);
 const ideal = computeShisha({ ...cs, water: .5 });
 const none = computeShisha({ ...cs, water: 0 });
-check("G6: complete stats match pre-connection score.js at unit 1 HEAD", () => {
-  // 8b843dc20 の computeShisha に同じ構成を渡した実測値。水接続で既定値を変えない。
-  assert.deepEqual(ideal, { draw: 80, smoke: 56, heatStability: 58, burnRisk: 25,
-    aroma: 69, taste: 42, duration: 47, craftQuality: 62, craftQualityRaw: 62.381 });
+check("G6: ideal water leaves the craft score unpenalized", () => {
+  // 同じ構成の水量適正時の内訳。穴数由来の熱安定減点は適用しない。
+  assert.deepEqual(ideal, { draw: 80, smoke: 56, heatStability: 59, burnRisk: 25,
+    aroma: 69, taste: 42, duration: 47, craftQuality: 63, craftQualityRaw: 62.558 });
 });
 check("G6: missing water and whole ideal band have identical complete stats", () => {
   for (const water of [undefined, NaN, "0", WATER.low, .5, WATER.high]) {

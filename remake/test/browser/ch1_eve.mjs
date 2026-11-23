@@ -267,6 +267,8 @@ await suite("ch1-eve", async check => {
       if (stage === "during-practice") {
         await advanceTo(page, '[data-test="water-confirm"]');
         await page.locator('[data-test="water-confirm"]').click();
+        const accept = page.locator('[data-test="water-empty-accept"]');
+        if (await accept.isVisible()) await accept.click();
         await advanceTo(page, '[data-test="mix-ok"]');
       }
       if (stage === "during-drill") await page.locator('[data-test="coal-0"]').waitFor();

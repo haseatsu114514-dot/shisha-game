@@ -86,6 +86,8 @@
 
 /* ---- 結果発表のカウント（共通の背景は下） */
 .count-screen, .sui-cut, .result-table { background: radial-gradient(ellipse 70% 55% at 50% 0%, #6a3f8a55, transparent 70%), linear-gradient(115deg, #100b1df7, #171124e8), url('../img/ui/continue/backdrop_stage.webp') center / cover; }
+.count-screen.is-counting { pointer-events: auto; cursor: pointer; }
+.count-screen .rc-skip { position: absolute; z-index: 5; right: 4%; top: 5%; }
 .count-screen .tournament-heading { position: absolute; left: 52px; top: 34px; width: calc(100% - 104px); }
 .count-screen .tournament-heading h1 { font-size: 40px; font-style: italic; }
 .count-screen::before { content: ""; position: absolute; left: 50%; top: -10%; width: 760px; height: 120%; transform: translateX(-50%); background: conic-gradient(from 180deg at 50% 0%, transparent 160deg, #fff3d61a 175deg, #fff3d626 180deg, #fff3d61a 185deg, transparent 200deg); pointer-events: none; animation: spot-sway 3.2s ease-in-out infinite alternate; }

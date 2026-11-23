@@ -225,18 +225,19 @@ export function runOne(id, operation, seed, config = plan, skillLookup = hasSkil
     // 桜井式は各回をその回の工程で決めるので、ch1.js と同じ順で投票する（提供の回は調整前の完成品）。
     ch1Votes.beginCh1Votes(attempt,{style:'sakurai'});
     assert.equal(ch1Votes.castCh1Votes(attempt,0,cs),true);
-    cs.pull=finishThermal(0);
+    cs.pull=finishThermal(0);cs.pullDone=true;
     cs.stats=score.computeShisha(cs);
-    assert.equal(ch1Votes.castCh1Votes(attempt,1,cs),true);
+    assert.equal(ch1Votes.castCh1Votes(attempt,1,cs,{serveBonus:score.bonusOf(cs).bonus}),true);
     cs.stats=null;
     cs.careHistory=[finishThermal(1),finishThermal(2)];
     score.finalize(cs);
     for(let round=2;round<4;round++) assert.equal(ch1Votes.castCh1Votes(attempt,round,cs),true);
   } else {
-    cs.pull=finishThermal(0);
+    cs.pull=finishThermal(0);cs.pullDone=true;
+    const serveBonus=score.bonusOf(cs).bonus;
     cs.careHistory=[finishThermal(1),finishThermal(2)];
     score.finalize(cs);
-    for(let round=0;round<4;round++) assert.equal(ch1Votes.castCh1Votes(attempt,round,cs),true);
+    for(let round=0;round<4;round++) assert.equal(ch1Votes.castCh1Votes(attempt,round,cs,{serveBonus}),true);
   }
   const outcome=attempt.voteAttempt.result;
   assert.equal(cs.foilSkipped,true);

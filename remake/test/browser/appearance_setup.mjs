@@ -3,6 +3,7 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { appearanceOptions } from "../../js/appearance/model.js";
+import { confirmWaterSetup } from "./water_setup.mjs";
 
 const repositoryRoot = fileURLToPath(new URL("../../../", import.meta.url));
 const catalogPath = "asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json";
@@ -50,8 +51,5 @@ export const confirmAppearanceSetup = waitForSetupContinuation;
 // Manual full-craft callers must also operate the real water step before mix.
 export async function confirmSetupWater(page, { touch = false } = {}) {
   await waitForSetupContinuation(page);
-  const confirm = page.locator('.bench [data-test="water-confirm"]');
-  await confirm.waitFor({ state: "visible" });
-  await confirm.scrollIntoViewIfNeeded();
-  if (touch) await confirm.tap(); else await confirm.click();
+  await confirmWaterSetup(page, { touch });
 }

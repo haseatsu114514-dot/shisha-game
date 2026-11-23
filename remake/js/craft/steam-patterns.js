@@ -15,12 +15,14 @@ const CHAPTER_STAGES = ["local", "local", "prefectural", "national", "world", "e
 /** cs.stage を明示すれば優先する（共通の大会runnerが設定で渡す口）。未指定の大会は章で決める。 */
 export function steamStageOf(cs) {
   if (Object.hasOwn(STEAM_STAGES, cs?.stage ?? "")) return cs.stage;
-  if (cs?.mode !== "tournament") return "practice";
-  const chapter = Number(cs.chapter);
-  return Number.isInteger(chapter) && chapter >= 1 && chapter <= 5 ? CHAPTER_STAGES[chapter] : "local";
+  const chapter = Number(cs?.chapter);
+  const knownChapter = Number.isInteger(chapter) && chapter >= 1 && chapter <= 5;
+  if (cs?.mode === "tournament") return knownChapter ? CHAPTER_STAGES[chapter] : "local";
+  return knownChapter && chapter >= 2 && ["drill", "rehearsal", "practice"].includes(cs?.mode)
+    ? CHAPTER_STAGES[chapter] : "practice";
 }
 
-// calm は導入前の定数そのまま。練習と第1章の大会はこの表で、通常プレイの手触りを変えない。
+// calm は導入前の定数そのまま。第1章とチュートリアルはこの表を使う。
 // eased は救済（retryAssist）とチュートリアル。calm の eased も導入前の緩い値と一致させる。
 export const STEAM_TABLES = Object.freeze([
   { id: "calm", rank: 0, spawnEvery: .46, speedScale: 1, objects: 2, waveEvery: 2.8, waveSpeed: 205, warn: .75,

@@ -13,8 +13,8 @@ import { assistEffect } from "./retry-assist-level.js";
 // D〜S の境目は従来どおり（gradeOf と同じ）。SS・SSS は表示だけの上の段で、完成品の点の現実的な上限（約86）でも
 // ほぼ完璧な一台なら SSS に届くよう 93・96 に置く（以前の 95・98 は、全工程満点でも総合が約97で届かなかった・CRN12）。
 export const CRAFT_RANK_THRESHOLDS = Object.freeze([0, 50, 65, 80, 90, 93, 96]);
-/** 桜井版（リニューアル前の作業台・CRN16）の境目。SS・SSS は以前の 95・98 */
-export const CLASSIC_CRAFT_RANK_THRESHOLDS = Object.freeze([0, 50, 65, 80, 90, 95, 98]);
+/** 桜井版の境目。標準ボウルでもほぼ満点なら SSS へ届く。 */
+export const CLASSIC_CRAFT_RANK_THRESHOLDS = Object.freeze([0, 50, 65, 80, 90, 95, 97]);
 /** この一台のランクの境目（シーシャ作りの版で変わるのは表示だけの上の段 SS・SSS だけ） */
 export const craftRankThresholds = (cs) => renewalCraft(cs) ? CRAFT_RANK_THRESHOLDS : CLASSIC_CRAFT_RANK_THRESHOLDS;
 export const gradeOf = (s) => (s >= CRAFT_RANK_THRESHOLDS[4] ? "S" : s >= CRAFT_RANK_THRESHOLDS[3] ? "A" : s >= CRAFT_RANK_THRESHOLDS[2] ? "B" : s >= CRAFT_RANK_THRESHOLDS[1] ? "C" : "D");

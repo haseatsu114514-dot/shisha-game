@@ -24,11 +24,11 @@ const WATER_TASTE_FACTOR = .5;
  * 値は完成品ステータス（0〜100）へ足す量。
  */
 export const CONFIG_EFFECTS = Object.freeze({
-  place: Object.freeze({ four: Object.freeze({ smoke: 14, burnRisk: 16 }) }),
+  place: Object.freeze({ four: Object.freeze({ smoke: 14, burnRisk: 11 }) }),
   pack: Object.freeze({
-    fluffy: Object.freeze({ draw: 12, taste: -6, burnRisk: 5 }),
+    fluffy: Object.freeze({ draw: 12, taste: -6, burnRisk: 3 }),
     normal: Object.freeze({}),
-    firm: Object.freeze({ draw: -12, taste: 14, duration: 10 }),
+    firm: Object.freeze({ draw: -12, taste: 10, duration: 10 }),
   }),
 });
 const EFFECT_WORDS = { smoke: "煙", burnRisk: "焦げやすさ", draw: "吸い心地の軽さ", taste: "味の濃さ", duration: "持ち" };
@@ -67,7 +67,7 @@ export function giftBowlEffect(cs) {
 }
 
 export function computeShisha(cs) {
-  const h = cs.holes || { total: 22, evenness: 0.6, outerEven: 0.6, innerExcess: 0, score: 60 };
+  const h = cs.holes || { outerEven: 0.6 };
   const c = cs.heat || { heatPower: 50, heatStability: 50, burnRisk: 30, aromaRetention: 55, score: 60 };
   const m = cs.mixInfo || { score: 60, intensity: 5, total: 12 };
   const bands = temperatureBands(cs);
@@ -87,9 +87,8 @@ export function computeShisha(cs) {
   const steamSeconds = steamSecondsOf(cs);
   const opening = steamOpening(steamSeconds);
 
-  // 最低1周を満たせば、少ない穴数を煙量や総合点の直接の減点にしない。
-  const holeDraw = h.minimumComplete ? 36 : (h.total - 14) * 3 + (h.inner >= 3 ? 6 : 0);
-  const baseDraw = 42 + holeDraw + packDraw;
+  // 穴の配置は熱安定に、詰め方は吸い心地に反映する。
+  const baseDraw = 78 + packDraw;
   const { drawW } = waterComfort(cs.water);
   const draw = clamp(baseDraw + maker.bonuses.draw + drawW, 0, 100);
   const smoke = clamp(baseDraw * 0.45 + c.heatPower * 0.35 + (fourFx.smoke || 0) + opening * 6 + coal.smokeBonus + maker.bonuses.smoke, 0, 100);
@@ -98,7 +97,7 @@ export function computeShisha(cs) {
   const safePulls = 3 + (maker.safePullsBonus || 0);
   const extraPulls = Math.max(0, (p.pulls || 3) - safePulls);
   const overheatedRisk = overheated ? Math.round(12 * (1 - 0.5 * (maker.makerWeights?.dobaj || 0))) : 0;
-  const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (fourFx.burnRisk || 0) + steamBurnRisk(steamSeconds) + overheatedRisk + (packFx.burnRisk || 0) + extraPulls * 5 + coal.burnRisk, 0, 100);
+  const burnRisk = clamp(8 + c.burnRisk * 0.55 + (fourFx.burnRisk || 0) + steamBurnRisk(steamSeconds) + overheatedRisk + (packFx.burnRisk || 0) + extraPulls * 5 + coal.burnRisk, 0, 100);
   const gift = giftBowlEffect(cs);
   const mastery = mixMasteryProfile(cs.masteryAtStart ? { flavorMastery: cs.masteryAtStart } : state, cs.mix, DB.flavorById);
   // 慣れた葉ほど香りを再現しやすい。甘さ・清涼感などの強さを品質点にしない。
@@ -131,7 +130,12 @@ export function bonusOf(cs = null) {
       if(layers){b+=layers*LESSON_TUNING.flowerLayer;notes.push(`花を重ねる・調整で${layers}層の香りが立った`);}
     }
     if(cs.mode==="tournament"&&cs.pullDone&&cs.blindService&&growthLesson(state,"M-B3")&&Number.isFinite(cs.blindVariance)){
-      const swing=Math.min(LESSON_TUNING.blindSwing,Math.max(-LESSON_TUNING.blindSwing,cs.blindVariance));
+      const limit = LESSON_TUNING.blindSwing;
+      const roll = clamp(cs.blindVariance, -limit, limit);
+      const mix = cs.mixInfo?.score, pull = cs.pull?.score;
+      // 確定した配合と提供の点で、保存した抽選値の範囲を寄せる。
+      const bias = Number.isFinite(mix) && Number.isFinite(pull) ? clamp((mix + pull) / 100 - 1, -1, 1) : 0;
+      const swing = roll * (1 - Math.abs(bias)) + limit * bias;
       b+=swing;notes.push(`白紙の味カード ${swing>=0?"+":""}${swing.toFixed(1)}`);
     }
   }

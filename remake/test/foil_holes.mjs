@@ -57,14 +57,13 @@ const holes = holesModule.namespace, logic = (await load("holes_logic.js")).name
 const templates = (await load("holes_templates.js")).namespace;
 const conditionsModule = await load("conditions.js"); await conditionsModule.evaluate();
 const conditions = conditionsModule.namespace;
-function rings(counts = [12, 0, 0], error = 0) { return logic.RINGS.map((ring, i) => ({ ...ring, taken: Array.from({ length: ring.targets }, (_, k) => k < counts[i]), extra: 0,
+function rings(counts = [12, 0], error = 0) { return logic.RINGS.map((ring, i) => ({ ...ring, taken: Array.from({ length: ring.targets }, (_, k) => k < counts[i]), extra: 0,
   holes: Array.from({ length: counts[i] }, (_, k) => ({ a: k * Math.PI * 2 / counts[i], d: error })) })); }
-const tally = { perfect: 0, good: 0, miss: 0, tooClose: 0, blank: 12, tooMany: 0 };
-const sparse = holes.evaluate(rings(), tally, 1, 11), full = holes.evaluate(rings([12, 8, 4]), { ...tally, blank: 0 }, 1, 11);
-assert.equal(sparse.score, full.score); assert(sparse.minimumComplete); assert.equal(sparse.timingTolerance, 1.35); assert.equal(full.timingTolerance, 1);
-assert.equal(sparse.densityProfile.density, 0.5); assert.equal(sparse.densityProfile.sparse, 0.5); assert.equal(full.densityProfile.sparse, 0);
-assert(holes.evaluate(rings([12, 0, 0], 6), tally, 1, 11).precision > holes.evaluate(rings([12, 8, 4], 6), tally, 1, 11).precision);
-assert.equal(holes.evaluate(rings([0, 0, 0]), tally, 1, 11).score, 0); assert(!holes.evaluate(rings([11, 0, 0]), tally, 1, 11).minimumComplete);
+const tally = { perfect: 0, good: 0, miss: 0, tooClose: 0, blank: 12 };
+const sparse = holes.evaluate(rings(), tally, 1, 11), full = holes.evaluate(rings([12, 12]), { ...tally, blank: 0 }, 1, 11);
+assert.equal(sparse.score, full.score); assert(sparse.minimumComplete);
+assert(Math.abs(holes.evaluate(rings([12, 0], 6), tally, 1, 11).precision - holes.evaluate(rings([12, 12], 6), tally, 1, 11).precision) < 1e-12);
+assert.equal(holes.evaluate(rings([0, 0]), tally, 1, 11).score, 0); assert(!holes.evaluate(rings([11, 0]), tally, 1, 11).minimumComplete);
 // 同じ24目印・同じ残り時間でも、浅い穴が混じるほど得点が落ちる。
 const depthLayout = (shallow) => [{ ...logic.RINGS[0], targets: 24, taken: new Array(24).fill(true),
   holes: Array.from({ length: 24 }, (_, k) => ({ a: k * Math.PI * 2 / 24, d: 0,
@@ -75,10 +74,9 @@ assert.equal(holes.evaluate(depthLayout(2), { ...tally, shallow: 2 }, 1, 11).sco
 const wrapped = rings(); wrapped[0].holes.forEach((hole, i) => hole.a += Math.PI * 2 * (i % 3 - 1));
 assert(Math.abs(holes.evaluate(wrapped, tally, 1, 11).evenness - 1) < 1e-12);
 assert(Math.abs(logic.circularAngleDistance(-0.01, Math.PI * 6 + 0.01) - 0.02) < 1e-12);
-assert.equal(logic.foilDensityProfile(rings([22, 8, 4])).density, 1);
 
 // 新しい種類は定義の追加と永続フラグで解放でき、0穴のリングは生成しない。
-const future = { id: "future-sparse", counts: { outer: 12, middle: 0, inner: 0 }, unlockFlag: "met_teacher" };
+const future = { id: "future-sparse", counts: { outer: 12, middle: 0 }, unlockFlag: "met_teacher" };
 assert.equal(templates.availableHoleTemplates({}, [...templates.HOLE_TEMPLATES, future]).length, 1);
 assert.equal(templates.availableHoleTemplates({ met_teacher: true }, [...templates.HOLE_TEMPLATES, future]).length, 2);
 assert.equal(templates.availableHoleTemplates({ _hole_outer24_unlocked: true }).length, 2);
@@ -88,7 +86,7 @@ const templateResults = templates.HOLE_TEMPLATES.map((template) => {
   const rs = templates.ringsForTemplate(template).map((ring) => ({ ...ring, taken: new Array(ring.targets).fill(true),
     holes: Array.from({ length: ring.targets }, (_, k) => ({ a: k * Math.PI * 2 / ring.targets, d: 0 })) }));
   const result = holes.evaluate(rs, tally, 1, 11);
-  assert.equal(result.score, full.score); assert.equal(result.total, 24); assert.equal(result.inner, 0);
+  assert.equal(result.score, full.score); assert.equal(result.total, 24);
   assert(logic.templateComplete(rs)); return result;
 });
 const outerOnly = { holes: templateResults[0], steamSeconds: 480 }, mixed = { holes: templateResults[1], steamSeconds: 480 };
@@ -96,8 +94,8 @@ assert(logic.foilHeatProfile(outerOnly.holes).stability > logic.foilHeatProfile(
 assert(Math.abs(conditions.heatDelta(outerOnly, .1)) < Math.abs(conditions.heatDelta(mixed, .1)));
 assert(conditions.temperatureAfterSteam(outerOnly) < conditions.temperatureAfterSteam(mixed));
 const few = { ...outerOnly, holes: sparse };
-assert(conditions.temperatureAfterSteam(few) < conditions.temperatureAfterSteam(outerOnly));
-assert(Math.abs(conditions.heatDelta(few, .1)) > Math.abs(conditions.heatDelta(outerOnly, .1)));
+assert.equal(conditions.temperatureAfterSteam(few), conditions.temperatureAfterSteam(outerOnly));
+assert.equal(conditions.heatDelta(few, .1), conditions.heatDelta(outerOnly, .1));
 assert(conditions.heatDelta({ ...outerOnly, environment: { rainy: true } }, .1) < conditions.heatDelta(outerOnly, .1));
 assert.equal(conditions.heatDelta({ ...outerOnly, environment: { rainy: true } }, -.1), conditions.heatDelta(outerOnly, -.1));
 
@@ -128,7 +126,7 @@ assert.equal(visualHoles.length, 2); assert.equal(visualHoles.at(-1).dots.length
 assert.deepEqual(visualHoles.at(-1).target, visualHoles.at(-1).dots.at(-1));
 assert.equal(visualHoles.at(-1).cs, probe.cs); assert.equal(probe.cs.holes, null);
 // 外周24穴: 選択前は時計が動かず、未完成ではクリック・Enterの全経路を拒否。
-let active = await start(); assert.match(find("hole-depth-hint").text, /押す長さで深さが変わる/);
+let active = await start(); assert.match(find("hole-depth-hint").text, /小穴で揃えると満点/);
 // CRN02: 「次のリングへ」「穴あけを終えて結果へ」のボタンと Enter の終了は無い
 assert.equal(find("hole-done"), undefined); assert.equal(find("hole-next"), undefined); assert.equal(keymap.Enter, undefined);
 await settle(); assert.equal(active.cs.holes, null); assert.equal(results.length, 0); assert.equal(delayed.length, 0);
@@ -147,7 +145,7 @@ assert.equal(panel.querySelector("b").style.width, completedTime, "completed foi
 assert.equal(active.cs.holes, null); assert.equal(results.length, 0);
 await advance(); await active.running;
 assert.equal(active.cs.holes.templateId, "outer24"); assert.equal(active.cs.holes.outer, 24);
-assert.equal(active.cs.holes.middle, 0); assert.equal(active.cs.holes.inner, 0); assert.equal(active.cs.holes.total, 24); assert(active.cs.holes.minimumComplete); assert.equal(active.cs.holes.densityProfile.sparse, 0);
+assert.equal(active.cs.holes.middle, 0); assert.equal(active.cs.holes.total, 24); assert(active.cs.holes.minimumComplete);
 assert(stamps.some((stamp) => stamp.text === "EXCELLENT"));
 // 外周12＋中周12: 外周だけでは終わらず、リングが埋まると中周へ自動で進む（CRN02）。
 active = await start(null, "outer12-middle12"); await punchCircle(12);
@@ -158,7 +156,7 @@ const mixedTime = panel.querySelector("b").style.width;
 await frame(now + 60000); assert.equal(panel.querySelector("b").style.width, mixedTime);
 assert.equal(active.cs.holes, null); await advance(); await active.running;
 assert.equal(active.cs.holes.templateId, "outer12-middle12"); assert.equal(active.cs.holes.outer, 12);
-assert.equal(active.cs.holes.middle, 12); assert.equal(active.cs.holes.inner, 0); assert.equal(active.cs.holes.grade, "S");
+assert.equal(active.cs.holes.middle, 12); assert.equal(active.cs.holes.grade, "S");
 // #3023: 弧の手前の端で刺してもミス（無効）にはならない。その目印の穴として成立し、
 // ズレのぶんだけ精度がなだらかに落ちる。余分な穴は増えず、入力・描画・結果で同じ穴を保持する。
 active = await start(null, "outer12-middle12", "rehearsal", {});
@@ -174,15 +172,15 @@ const roughResult = active.cs.holes;
 assert.equal(roughResult.tally.perfect + roughResult.tally.good, 0);
 assert.equal(roughResult.tally.rough, 24);
 assert.equal(roughResult.tally.miss, 0); assert.equal(roughResult.tally.tooClose, 0);
-assert.equal(roughResult.outer, 12); assert.equal(roughResult.middle, 12); assert.equal(roughResult.inner, 0);
+assert.equal(roughResult.outer, 12); assert.equal(roughResult.middle, 12);
 assert.equal(roughResult.total, 24); assert.equal(roughResult.dots.length, 24);
-assert.equal(roughResult.densityProfile.count, 24);
+assert.equal(roughResult.total, 24);
 assert(roughResult.precision > 0 && roughResult.precision < .5, "ズレた穴は0点ではなく低精度として残る");
 assert(roughResult.score < full.score && roughResult.score >= 60, "ズレた穴だけでも大きく減点されたうえで成立する");
 const detail = results.at(-1).lines.join("\n");
 assert.match(detail, /目印の達成：24\/24か所/);
 assert.match(detail, /穴あけ入力：24回 ／ ズレて開いた穴：24回/);
-assert.match(detail, /実際に開いた穴：外周 12・中周 12・内周 0（計 24 穴）/);
+assert.match(detail, /実際に開いた穴：外周 12・中周 12（計 24 穴）/);
 assert.match(detail, /ズレた穴も開いた穴として残り/);
 
 // 前回の24穴をそのまま使う場合は、穴径・位置・判定・時間を保って押し直さずに進む。
@@ -249,13 +247,13 @@ await advance(); await active.running;
 assert.equal(results.at(-1).button, "確認して次の工程へ");
 assert(active.cs.holes.minimumComplete); assert.equal(active.cs.holes.total, 24); assert.equal(active.cs.holes.timeRatio, 0);
 assert.equal(active.cs.holes.score, sparse.score - 5);
-// 両テンプレートの既存good/badフックを通し、少穴の品質計算も引き続き同じ尺度に保つ。
+// 両テンプレートの既存good/badフックを通し、実際に開けた穴を採点する。
 for (const template of templates.HOLE_TEMPLATES) {
   const scores = [];
   for (const level of ["good", "bad"]) {
     active = await start(level, template.id); await active.running; assert(active.cs.holes.minimumComplete);
     assert.equal(active.cs.holes.outer, template.counts.outer); assert.equal(active.cs.holes.middle, template.counts.middle);
-    assert.equal(active.cs.holes.inner, 0); scores.push(active.cs.holes.score);
+    scores.push(active.cs.holes.score);
   }
   assert(scores[0] > scores[1]);
 }
@@ -280,7 +278,7 @@ assert(logic.holeSizeStability(sized([1, 1.35, 1, 1.35])) < logic.holeSizeStabil
 assert.equal(logic.holeSizeStability([{ holes: [{ a: 0, d: 0 }] }]), 1, "legacy holes without a size count as standard");
 assert.equal(logic.holeSizeStability([{ holes: [] }]), 0);
 const tallyMiss = { ...tally, miss: 9, tooClose: 9 };
-assert.equal(holes.evaluate(rings([12, 0, 0]), tallyMiss, 1, 11).sizeStab, 1, "MISS counts no longer lower the size score by themselves");
+assert.equal(holes.evaluate(rings([12, 0]), tallyMiss, 1, 11).sizeStab, 1, "MISS counts no longer lower the size score by themselves");
 
 // 浅い打ち込みも1穴として成立し、次の目印へ進む。精度とサイズに加え深さで大きく減点する。
 const keyupBefore = winListeners.keyup?.length || 0;
@@ -330,4 +328,4 @@ assert.equal(shallowFeedback.summary[1], shallowFeedback.advice);
 assert.equal(shallowFeedback.lines[0], shallowFeedback.advice);
 assert.match(shallowFeedback.lines.join("\n"), /目印の達成：24\/24か所/);
 
-console.log("[remake foil] PASS: template selection, exact 24/0/0 and 12/12/0, guarded completion, timeout continuation, no ring skipping, unlock flags, density and shared thermal response, near-marker needle and press depth (#2937), offset holes stand as low-score holes (#3023)");
+console.log("[remake foil] PASS: template selection, exact 24/0 and 12/12, guarded completion, timeout continuation, no ring skipping, unlock flags, layout and shared thermal response, near-marker needle and press depth (#2937), offset holes stand as low-score holes (#3023)");

@@ -16,7 +16,7 @@ export const coalCount = (cs) => cs.place === "four" ? 4 : 3;
 // 炭1個あたりの性能。gentle はフラット系（序盤の穏やかな3個置きの対象）。表に無いIDはフラット扱い。
 const COAL_SPECS = {
   flat_charcoal: { gentle: true, power: 1, response: 1.00, width: 1.04, burnRisk: 0, smoke: 0, cool: 1.00 },
-  cube_charcoal: { gentle: false, power: 1.13, response: 1.12, width: 0.94, burnRisk: 3.5, smoke: 2, cool: 0.92 },
+  cube_charcoal: { gentle: false, power: 1.13, response: 1.12, width: 0.94, burnRisk: 2.5, smoke: 2, cool: 0.92 },
   // 高密度フラット炭（第2章〜）: 火力・反応はフラットと同じで、適温帯だけ少し広い。
   dense_flat_charcoal: { gentle: true, power: 1, response: 1.00, width: 1.06, burnRisk: 0, smoke: 0, cool: 1.00 },
 };

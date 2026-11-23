@@ -80,11 +80,11 @@ const cube = coalWarmth({ equip: { charcoal: "cube_charcoal" }, place: "triangle
 assert.deepEqual(coalTypes({ equip: { charcoal: "dense_flat_charcoal" }, place: "triangle" }), Array(3).fill("dense_flat_charcoal"));
 assert.deepEqual({ ...dense, widthFactor: flat.widthFactor }, flat);
 assert(Math.abs(dense.widthFactor - 1.06) < 1e-12 && Math.abs(flat.widthFactor - 1.04) < 1e-12);
-// 既存の炭の値は変えない（表から読むようにしただけ）。
+// 炭の火力・反応・焦げやすさ・煙量は配置分を合算する。
 assert.deepEqual([flat.power, flat.pullResponse, flat.burnRisk, flat.smokeBonus], [.9, .94, 0, 0]);
-assert(Math.abs(cube.power - 1.13) < 1e-12 && cube.burnRisk === 10.5 && cube.smokeBonus === 6 && cube.pullResponse === 1);
+assert(Math.abs(cube.power - 1.13) < 1e-12 && cube.burnRisk === 7.5 && cube.smokeBonus === 6 && cube.pullResponse === 1);
 const mixed = coalWarmth({ equip: { charcoal: "flat_charcoal" }, place: "triangle", coalTypes: ["cube_charcoal", "flat_charcoal", "flat_charcoal"] });
-assert(Math.abs(mixed.power - 3.13 / 3) < 1e-12 && mixed.burnRisk === 3.5);
+assert(Math.abs(mixed.power - 3.13 / 3) < 1e-12 && mixed.burnRisk === 2.5);
 assert.equal(coalTypes({ equip: { charcoal: "unknown_coal" } })[0], "flat_charcoal", "知らない炭はフラット扱い");
 
 // 3. 一台の点: 同じ操作なら、高級機材の差は小さい。

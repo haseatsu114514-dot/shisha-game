@@ -34,10 +34,8 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
   const finishMark = el("i.thermo-naru-finish", { hidden: true, "aria-hidden": "true", title: "焼き際の目安",
     dataset: { test: "naru-finish-range" }, style: { position: "absolute", left: "0", right: "0", boxSizing: "border-box",
       boxShadow: "inset 0 1px #8a4500, inset 0 -1px #8a4500", background: "#ffd16699", pointerEvents: "none", zIndex: "3" } });
-  // 桜井版の「攻めの帯」。第1章大会の審査加点と、共通の温度判定を混同しない。
-  const attackMark = attackGuide ? el("i.thermo-attack", { title: cs?.mode === "tournament" && (cs.chapter ?? 1) === 1
-    ? "攻めの帯：ここで終えると審査が伸びる。上を越えると味が崩れる"
-    : "攻めの帯：温度の評価は満点。吸いすぎの減点は残る。上を越えると味が崩れる",
+  // 第1章桜井式の「攻めの帯」。
+  const attackMark = attackGuide ? el("i.thermo-attack", { title: "攻めの帯：ここで終えると審査が伸びる。上を越えると味が崩れる",
     "aria-hidden": "true", dataset: { test: "attack-band" }, style: { position: "absolute", left: "0", right: "0", boxSizing: "border-box",
       // 虹（.thermo-optimal・z-index 5）が適温帯いっぱいに広がる配合でも隠れないよう、虹より上に重ねる。
       background: "repeating-linear-gradient(135deg, #ff2d9bdd 0 5px, #ff2d9b55 5px 10px)",

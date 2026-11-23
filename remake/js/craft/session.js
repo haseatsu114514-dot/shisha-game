@@ -22,12 +22,12 @@ import { runHoles } from "./holes.js";
 import { availableHoleTemplates } from "./holes_templates.js";
 import { runHeat } from "./heat.js";
 import { runSteamDodge } from "./steam.js";
-import { runPull } from "./pull.js";
+import { runCare, runPull } from "./pull.js";
 import { applyCraftSkin, craftSkinUrls } from "./skin.js";
 import { buildMixTemperatureGauge } from "./thermometer.js";
 import { buildThermalAtmosphere } from "./thermal.js";
 import { buildPanelSmoke } from "./smoke-art.js";
-import { temperatureAfterSteam } from "./conditions.js";
+import { temperatureAfterSteam, rollSteamVariation } from "./conditions.js";
 import { steamEnvironment, steamForecastProfile } from "./steam-climate.js";
 import { screenBlast } from "./blast.js";
 import { artImg } from "./art.js";
@@ -64,10 +64,11 @@ export const DRILLS = {
   heat: { label: "炭焼き", desc: "炭の全面が赤くなる頃合いを見極める", stats: ["sense", "insight"] },
   steam: { label: "蒸らし", desc: "待つ間の雑念を避け続ける", stats: ["guts", "insight"] },
   pull: { label: "吸い出し", desc: "吸い方で熱を適温へ運ぶ", stats: ["technique", "sense"] },
+  care: { label: "熱管理（本番）", desc: "炭の交換と吸い方で適温を保つ", stats: ["technique", "sense"] },
 };
 
 export function newSession(mode) {
-  const steamVariation = { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
+  const steamVariation = rollSteamVariation();
   const cs = {
     mode,
     // #3795: 全入口を桜井版へ。第1章大会の版は従来どおり試合の方式で確定する。
@@ -659,13 +660,14 @@ export async function runDrill(kind, { venue = null } = {}) {
 }
 
 async function drill(kind, { venue = null } = {}) {
-  const cs = newSession("drill");
+  const cs = kind === "care" ? (await import("./practice.js")).newCarePracticeSession("drill") : newSession("drill");
   if (venue) cs.venue = venue;
   const labels = { holes: "FOIL", heat: "HEAT", steam: "STEAM", pull: "PULL" };
-  openBench(cs, { steps: [[kind, labels[kind]]] });
+  openBench(cs, { steps: kind === "care" ? [["care1", "熱管理"]] : [[kind, labels[kind]]] });
   await waitBenchReady(cs);
   if (kind === "holes") { await runHoles(cs); return tier(cs.holes.score); }
   if (kind === "heat") { await runHeat(cs); return tier(cs.heat.score); }
+  if (kind === "care") { await runCare(cs, { round: 1 }); return tier(cs.care.score); }
   if (kind === "steam") { cs.steamMin = 5; await runSteamDodge(cs); return cs.steam.hits === 0 ? 2 : cs.steam.hits <= 2 ? 1 : 0; }
   cs.place = "triangle";
   cs.heat = { heatPower: 10, just: 1 };

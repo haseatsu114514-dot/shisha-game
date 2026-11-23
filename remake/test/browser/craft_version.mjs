@@ -62,7 +62,7 @@ await suite("craft-version", async (check) => {
     for (const { chapter, mode, version, attack } of evidence.rows) {
       const protectedMatch = chapter === 1 && mode === "tournament";
       assert.equal(version, protectedMatch ? "renewal" : "sakurai", `${chapter}/${mode}`);
-      assert.equal(attack, !protectedMatch, `${chapter}/${mode} attack`);
+      assert.equal(attack, false, `${chapter}/${mode} attack`);
     }
     assert.equal(evidence.care, "sakurai");
     assert.equal(evidence.flagsUnchanged, true);
@@ -109,7 +109,8 @@ await suite("craft-version", async (check) => {
       window.__remake.craftTest.aim = "attack";
       window.tutorialRun = chapter.devTutorial();
     });
-    await page.locator(t("attack-band")).waitFor({ timeout: LONG });
+    await page.locator(t("pull-temperature")).waitFor({ timeout: LONG });
+    assert.equal(await page.locator(t("attack-band")).count(), 0);
     assert.equal(await page.locator(".bench").getAttribute("data-craft-version"), "sakurai");
     assert.notEqual(await page.locator(".craft-rank").getAttribute("data-grade"), "unavailable");
     const fits = await page.locator(".craft-rank").evaluate(node => {
@@ -123,9 +124,8 @@ await suite("craft-version", async (check) => {
     const s = await seen(page);
     assert.equal(s.grades[0], "unavailable");
     assert(s.grades.some(grade => grade !== "unavailable"));
-    assert(s.attack);
-    assert(s.attackResults.length > 0, "攻めの帯で完了した結果を表示する");
-    assert(s.attackResults.every(text => !text.includes("審査 +") && text.includes("温度の評価は満点")), "大会以外で投票加点を約束しない");
+    assert.equal(s.attack, false);
+    assert.deepEqual(s.attackResults, [], "レッスンに攻めの帯は出さない");
     assert(!s.destination && !s.arc && !s.focus && !s.readyCue);
     assert.equal(await page.locator(".craft-rank").count(), 0, "レッスン後はランクも片付く");
   }, { pageEntry: `${baseURL}?craft=renewal`, ...(touch ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {}) });

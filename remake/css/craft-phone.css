@@ -793,13 +793,18 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-forecast .steam-weather,
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-forecast .steam-weather span { font-size: var(--ph-sub) !important; line-height: 1.25 !important; color: var(--ph-dim); }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-forecast .steam-forecast-note { display: none !important; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-timer > [data-test="steam-duration-hint"] {
-  grid-column: 2 !important; grid-row: 2 !important; margin: 0 !important; padding: 10px 6px 0 !important; font-size: var(--ph-sub) !important; line-height: 1.3 !important; text-align: center; color: var(--ph-ink);
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-timer-actions {
+  grid-column: 2; grid-row: 2 / 4; padding: 4px 6px 0; align-items: stretch; text-align: center;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-presets .btn { min-height: var(--ph-tap); font-size: var(--ph-sub); }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-startup-warning { font-size: var(--ph-sub); color: var(--ph-ink); }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] [data-test="steam-duration-hint"] {
+  font-size: var(--ph-sub) !important; line-height: 1.3 !important; color: var(--ph-ink);
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-timer .steam-duration-main { font-size: var(--ph-text) !important; font-weight: 700; color: #fff; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-timer .steam-duration-more { display: none; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-timer > .steam-shorten {
-  grid-column: 2 !important; grid-row: 3 !important; justify-self: stretch; min-height: var(--ph-tap) !important; margin: 0 !important; padding: 4px 14px !important; font-size: var(--ph-sub) !important; line-height: 1.2 !important;
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .steam-timer-actions > .steam-shorten {
+  min-height: var(--ph-tap) !important; margin: 0 !important; padding: 4px 14px !important; font-size: var(--ph-sub) !important; line-height: 1.2 !important;
 }
 
 /* ================================================================ 雑念よけ

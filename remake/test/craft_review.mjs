@@ -9,6 +9,8 @@ const warm = { temp: bands.ideal[1] - .01, pulls: 1, score: 100 };
 const steady = { pull: served, careHistory: [warm, served] };
 const repeat = "次の練習：同じ手順でもう一台作り、今回の仕上がりを再現しよう。";
 assert.match(goodPointOf(steady), /提供と2回の調整/);
+const ngReasons = ["配合の指摘1", "配合の指摘2"];
+assert.deepEqual(craftReviewLines({ ...steady, mixInfo: { ngReasons } }).slice(-2), ngReasons);
 const coldFinish = { ...steady, careHistory: [warm, { temp: .1, pulls: 1, score: 10 }] };
 assert.match(goodPointOf(coldFinish), /提供できた/);
 assert.match(improvementOf(coldFinish), /調整2回目.*熱を戻して/);

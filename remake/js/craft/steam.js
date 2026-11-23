@@ -11,10 +11,10 @@ import { tier01, step } from "../core/stats.js";
 import { growthPerks, growthSkill, growthFeature, growthLesson, settleGrowthPhase, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
 import { REFRESH_RADII, REFRESH_LABELS, refreshRestoresMental } from "../core/stat-step-tables.js";
 import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady, explainTutorialStep, benchRoot } from "./session.js";
-import { steamSecondsOf, steamPlaySeconds, steamTimeLabel, SHORT_DODGE_SECONDS } from "./steam-time.js";
+import { steamSecondsOf, steamDodgeSeconds, steamTimeLabel } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
-import { craftConditions, temperatureAfterSteam, steamFocusNote } from "./conditions.js";
+import { craftConditions, temperatureAfterSteam, steamFocusNote, rollSteamVariation } from "./conditions.js";
 import { renewalCraft } from "../core/craft-version.js";
 import { buildSteamTemperature } from "./steam-forecast.js";
 import { steamClimate } from "./steam-climate.js";
@@ -78,7 +78,7 @@ export async function runSteamDodge(cs) {
   const effect = refreshEffect(cs);
   const tutorial = cs.mode === "tutorial";
   const eased = tutorial || cs.retryAssist;
-  // #2519: 舞台の格で弾幕の難度表を選ぶ。練習と第1章の大会は導入前と同じ calm。
+  // #2519: 本番と自主練・リハーサルで章に応じた弾幕を使う。
   const stage = steamStageOf(cs), table = steamTableFor(stage), pace = steamPace(table, eased);
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
@@ -92,6 +92,7 @@ export async function runSteamDodge(cs) {
     await resultCard(panel,{title:"0分蒸らし",lines:["待たずに立ち上げる。吸い出しで低温から熱を運ぼう"]});
     return;
   }
+  cs.dragonCalm = !tutorial && growthLesson(state, "M-S7") && growthSkill(state, "K21");
   const panel = stepPanel("steam", "蒸らし", "雑念を避けよう。被弾するたび蒸らしの評価が下がり、アタックのコンボも途切れる。蒸らし後の温度は被弾では変わらない。アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。空振り・リフレッシュでは維持し、次の蒸らしでは0から始まる。", { brief: "" });
   const isCurrent = () => state === owner && benchRoot(cs) === root && panel.dataset.step === "steam";
   const W = 784, H = 414;
@@ -117,14 +118,15 @@ export async function runSteamDodge(cs) {
   ]);
   const slashControl = el("div.slash-control", [slashBtn, slashFeedback]);
   const precisionState = el("span.precision-state", { text: "オフ", "aria-hidden": "true" });
-  const precisionBtn = el("button.btn.dodge-action.dodge-precision", { disabled: true, "aria-pressed": "false", dataset: { test: "dodge-precision" } }, [
+  const precisionBtn = el("button.btn.dodge-action.dodge-precision", { disabled: true, "aria-pressed": "false", "aria-keyshortcuts": "Shift", title: "Shiftで精密モードを切り替える", dataset: { test: "dodge-precision" } }, [
     el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_precision_simple.png")]),
     el("span.precision-copy", [el("span.refresh-copy", { text: "精密" }), precisionState]),
   ]);
   const thermometer = buildSteamTemperature(cs);
-  const heatJitter = cs.steamVariation ?? { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
+  const heatJitter = cs.steamVariation ?? rollSteamVariation();
   // 心の重圧は舞台の格・直前の炭・救済から。演出だけに使い、採点と温度へは渡さない。
-  const mental = buildMentalTrace(W, H, { stagePressure: STEAM_STAGES[stage].pressure, heatScore: cs.heat?.score, retryAssist: cs.retryAssist === true });
+  const stagePressure = cs.mode === "tournament" || stage === cs.stage ? STEAM_STAGES[stage].pressure : 0;
+  const mental = buildMentalTrace(W, H, { stagePressure, heatScore: cs.heat?.score, retryAssist: cs.retryAssist === true });
   const initialMind = mental.update(0, 0);
   box.dataset.mental = initialMind;
   setPlayerMental(cs, initialMind);
@@ -140,9 +142,7 @@ export async function runSteamDodge(cs) {
   ]);
   panel.append(steamRoot);
 
-  // B08: 既習プレイヤーが短縮を選んだときは遊ぶ尺だけ縮める。弾の密度・採点・温度は変わらない。
-  let dur = steamPlaySeconds(seconds) * (tutorial ? 0.7 : 1);
-  if (cs.steamShorten && !tutorial) dur = Math.min(dur, SHORT_DODGE_SECONDS);
+  const dur = steamDodgeSeconds(cs, seconds);
   const focus = craftCondition(cs).focus;
   const hitR = steamHeartRadius(focus);
   heart.style.setProperty("--heart-size", `${HEART_SIZE}px`);
@@ -164,6 +164,7 @@ export async function runSteamDodge(cs) {
   const input = new AbortController();
   const listen = (target, type, fn) => target.addEventListener(type, fn, { signal: input.signal });
   let padPointer = null, axisX = 0, axisY = 0;
+  let dodgePointer = null, pointerTarget = null;
 
   const renderHeart = () => { heart.style.transform = `translate(${hx - 14}px, ${hy - 14}px)`; };
   const moveTo = (x, y) => { hx = clamp(x, 16, W - 16); hy = clamp(y, 16, H - 16); renderHeart(); };
@@ -171,11 +172,25 @@ export async function runSteamDodge(cs) {
     const r = box.getBoundingClientRect();
     return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height];
   };
-  listen(box, "pointerdown", (e) => {
-    if ((!running && !warmingUp) || e.target.closest(".steam-warmup")) return;
-    e.preventDefault(); box.setPointerCapture(e.pointerId); moveTo(...toLocal(e));
+  const acceptsPointer = e => (running || warmingUp) && !e.target.closest(".steam-warmup");
+  listen(box, "pointerdown", e => {
+    if (!acceptsPointer(e) || dodgePointer !== null || e.button !== 0) return;
+    e.preventDefault();
+    dodgePointer = e.pointerId;
+    box.setPointerCapture(e.pointerId);
+    pointerTarget = toLocal(e);
   });
-  listen(box, "pointermove", (e) => { if ((running || warmingUp) && !e.target.closest(".steam-warmup") && (e.buttons || e.pointerType === "mouse")) moveTo(...toLocal(e)); });
+  listen(box, "pointermove", e => {
+    if (acceptsPointer(e) && (e.pointerId === dodgePointer || (dodgePointer === null && e.pointerType === "mouse"))) {
+      pointerTarget = toLocal(e);
+    }
+  });
+  for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) listen(box, type, e => {
+    if (e.pointerId !== dodgePointer) return;
+    dodgePointer = null;
+    if (type !== "pointerup" || e.pointerType !== "mouse") pointerTarget = null;
+  });
+  listen(box, "pointerleave", () => { if (dodgePointer === null) pointerTarget = null; });
 
   const movePad = (e) => {
     const r = pad.getBoundingClientRect(), radius = r.width * 0.34;
@@ -195,7 +210,7 @@ export async function runSteamDodge(cs) {
   });
   listen(pad, "pointermove", (e) => { if (e.pointerId === padPointer) movePad(e); });
   for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) listen(pad, type, (e) => { if (e.pointerId === padPointer) resetPad(); });
-  listen(window, "blur", () => { keysDown.clear(); resetPad(); });
+  listen(window, "blur", () => { keysDown.clear(); resetPad(); pointerTarget = null; });
   const togglePrecision = () => {
     if (!running) return;
     precise = !precise;
@@ -319,9 +334,10 @@ export async function runSteamDodge(cs) {
   };
   listen(slashBtn, "pointerdown", e => { e.preventDefault(); slash(); });
   listen(slashBtn, "click", e => { if (e.detail === 0) slash(); });
-  const direction = { ArrowLeft: "l", ArrowRight: "r", ArrowUp: "u", ArrowDown: "d", a: "l", d: "r", w: "u", s: "d" };
+  const direction = { ArrowLeft: "l", ArrowRight: "r", ArrowUp: "u", ArrowDown: "d", a: "l", d: "r", w: "u", s: "d", A: "l", D: "r", W: "u", S: "d" };
   const unkey = keys(Object.fromEntries([
     ...Object.entries(direction).map(([key, value]) => [key, () => { if (running || warmingUp) keysDown.add(value); }]),
+    ["Shift", (e) => { if (!e.repeat) togglePrecision(); }],
     [" ", (e) => { if (!e.repeat) refresh(); }],
     ["x", (e) => { if (!e.repeat) refresh(); }],
     ["X", (e) => { if (!e.repeat) refresh(); }],
@@ -365,8 +381,19 @@ export async function runSteamDodge(cs) {
     const y = axisY + (keysDown.has("d") ? 1 : 0) - (keysDown.has("u") ? 1 : 0);
     const length = Math.max(1, Math.hypot(x, y));
     if (padPointer === null) knob.style.transform = x || y ? `translate(${x / length * 26}px, ${y / length * 26}px)` : "";
-    const speed = precise ? STEAM_TUNING.preciseSpeed : STEAM_TUNING.speed;
-    moveTo(hx + x / length * speed * dt, hy + y / length * speed * dt);
+    const distance = (precise ? STEAM_TUNING.preciseSpeed : STEAM_TUNING.speed) * dt;
+    if (x || y) {
+      pointerTarget = null;
+      moveTo(hx + x / length * distance, hy + y / length * distance);
+    } else if (pointerTarget) {
+      const dx = clamp(pointerTarget[0], 16, W - 16) - hx;
+      const dy = clamp(pointerTarget[1], 16, H - 16) - hy;
+      const travel = Math.hypot(dx, dy);
+      if (travel > 0) {
+        const fraction = Math.min(1, distance / travel);
+        moveTo(hx + dx * fraction, hy + dy * fraction);
+      }
+    }
   };
 
   clock.update(seconds);
@@ -403,6 +430,7 @@ export async function runSteamDodge(cs) {
       warmingUp = false;
       keysDown.clear();
       resetPad();
+      pointerTarget = null;
       moveTo(W / 2, H / 2);
       practice.remove();
       clock.root.style.removeProperty("visibility");
@@ -468,7 +496,7 @@ export async function runSteamDodge(cs) {
             wordsCut = 0;
             slashFeedback.textContent = "被弾。コンボが途切れた";
             slashLabel();
-            setPlayerMental(cs, cs.dragonCalm ? mental.update(time, hits) : mental.hit(time, hits)); // 龍の煙(M-S7)の後は心が乱れない
+            setPlayerMental(cs, cs.dragonCalm ? mental.update(time, hits) : mental.hit(time, hits)); // 龍の煙(M-S7)は蒸らし中の動揺を抑える
             reactAudience(cs, "miss");
             heart.classList.remove("hit"); void heart.offsetWidth; heart.classList.add("hit");
             SE.hit(); shake(box, 180);

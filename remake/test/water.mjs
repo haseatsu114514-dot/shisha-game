@@ -83,9 +83,11 @@ async function moduleAt(filename) {
 }
 const load = async relative => { const mod = await moduleAt(path.join(root, relative)); await mod.evaluate(); return mod.namespace; };
 const notices = [];
+let emptyChoice = false;
+const confirmations = [];
 const waterSounds = [];
 stub("js/core/audio.js", { SE: { pour: () => waterSounds.push(now) } });
-stub("js/core/ui.js", { toast: text => notices.push(text), retireScreen: () => {} });
+stub("js/core/ui.js", { modal: async options => { confirmations.push(options); return emptyChoice; }, toast: text => notices.push(text), retireScreen: () => {} });
 const model = await load("js/craft/water.js"), view = await load("js/craft/water-view.js");
 const state = await load("js/core/state.js"), tournament = await load("js/chapters/ch2-tournament-state.js");
 const history = await load("js/craft/practice-history.js");
@@ -142,6 +144,11 @@ await check("auto good confirms neutral water; auto bad and manual keep the curr
   const manual = {}; const pending = view.stepWater(manual);
   const confirm = document.body.descendants().filter(node => node.dataset.test === "water-confirm").at(-1);
   await Promise.resolve(); assert.equal(manual.water, undefined, "manual water waits for the confirm button");
+  fire(confirm, "click"); await Promise.resolve();
+  assert.equal(manual.water, undefined, "returning from confirmation leaves the water uncommitted");
+  assert.equal(confirmations.at(-1).title, "水が入っていません");
+  assert.equal(confirmations.at(-1).options.find(option => option.primary).value, false);
+  emptyChoice = true;
   fire(confirm, "click"); await pending;
   assert.equal(manual.water, 0); assert.equal(notices.at(-1), none);
 });
@@ -177,15 +184,15 @@ await check("water sound follows hold and stops on release, cancel and bounds", 
   }
 });
 await check("rates use elapsed seconds, including partitioned frames and long hold", () => {
-  near(model.changeWater(.5, "pour", 1), .62); near(model.changeWater(.5, "drain", 1), .47);
-  let q = .5; for (let i = 0; i < 100; i++) q = model.changeWater(q, "pour", .01); near(q, .62);
+  near(model.changeWater(.5, "pour", 1), .68); near(model.changeWater(.5, "drain", 1), .47);
+  let q = .5; for (let i = 0; i < 100; i++) q = model.changeWater(q, "pour", .01); near(q, .68);
   assert.equal(model.changeWater(.99, "pour", 30), 1); assert.equal(model.changeWater(.01, "drain", 30), 0);
 });
 await check("clamp, finite defaults and inclusive ideal boundaries", () => {
   for (const bad of [undefined, null, NaN, Infinity, -Infinity, "0.8", {}, []]) assert.equal(model.waterQuantity(bad), .5);
   assert.equal(model.waterQuantity(-1), 0); assert.equal(model.waterQuantity(2), 1);
-  assert.equal(model.waterBand(.45), "ideal"); assert.equal(model.waterBand(.55), "ideal");
-  assert.equal(model.waterBand(.4499), "low"); assert.equal(model.waterBand(.5501), "high");
+  assert.equal(model.waterBand(.44), "ideal"); assert.equal(model.waterBand(.56), "ideal");
+  assert.equal(model.waterBand(.4399), "low"); assert.equal(model.waterBand(.5601), "high");
   for (const dt of [-1, NaN, Infinity, 0]) assert.equal(model.changeWater(.5, "pour", dt), .5);
 });
 await check("first entry starts empty; an in-progress real amount is not reset", async () => {
@@ -195,18 +202,18 @@ await check("first entry starts empty; an in-progress real amount is not reset",
   resumed.cancel(); await assert.rejects(resumed.result, { name: "AbortError" });
 });
 await check("pour/drain operate continuously; wave never alters saved q", async () => {
-  const m = mounted({ quantity: .5 }); down(m); tick(1000); near(quantity(m), .62);
-  fire(window, "pointerup", { pointerId: 1 }); tick(1000); near(quantity(m), .62);
-  down(m, "drain"); tick(2000); near(quantity(m), .56);
-  fire(window, "pointerup", { pointerId: 1 }); tick(1000); near(await finish(m), .56);
+  const m = mounted({ quantity: .5 }); down(m); tick(1000); near(quantity(m), .68);
+  fire(window, "pointerup", { pointerId: 1 }); tick(1000); near(quantity(m), .68);
+  down(m, "drain"); tick(2000); near(quantity(m), .62);
+  fire(window, "pointerup", { pointerId: 1 }); tick(1000); near(await finish(m), .62);
 });
 for (const type of ["pointerup", "pointercancel", "lostpointercapture", "pointerleave", "pointerout"]) await check(`${type} stops until a new press`, async () => {
-  const m = mounted({ quantity: .5 }); down(m); tick(500); fire(m.button("pour"), type, { pointerId: 1 }); tick(2000); near(quantity(m), .56);
-  tick(500); near(quantity(m), .56); down(m); tick(500); near(await finish(m), .62);
+  const m = mounted({ quantity: .5 }); down(m); tick(500); fire(m.button("pour"), type, { pointerId: 1 }); tick(2000); near(quantity(m), .59);
+  tick(500); near(quantity(m), .59); down(m); tick(500); near(await finish(m), .68);
 });
 await check("captured pointer moving outside stops and moving back does not resume", async () => {
   const m = mounted({ quantity: .5 }); down(m); tick(500); fire(m.button("pour"), "pointermove", { pointerId: 1, clientX: 101, clientY: 20 });
-  tick(1000); fire(m.button("pour"), "pointermove", { pointerId: 1, clientX: 20, clientY: 20 }); tick(1000); near(await finish(m), .56);
+  tick(1000); fire(m.button("pour"), "pointermove", { pointerId: 1, clientX: 20, clientY: 20 }); tick(1000); near(await finish(m), .59);
 });
 for (const boundary of ["blur", "hidden", "menu", "load", "help"]) await check(`${boundary} stops and reopening does not resume`, async () => {
   const m = mounted({ quantity: .5 }); down(m); tick(500);
@@ -214,7 +221,7 @@ for (const boundary of ["blur", "hidden", "menu", "load", "help"]) await check(`
   if (boundary === "hidden") { document.hidden = true; fire(document, "visibilitychange"); }
   if (["menu", "load"].includes(boundary)) fire(document, "click");
   if (boundary === "help") { document.blocked = true; for (const o of [...observers]) o.fn(); }
-  tick(500); document.hidden = false; document.blocked = false; tick(1000); near(await finish(m), .56);
+  tick(500); document.hidden = false; document.blocked = false; tick(1000); near(await finish(m), .59);
 });
 await check("keyboard held input, release and repeat suppression after blur", async () => {
   const m = mounted({ quantity: .5 }); const b = m.button("drain"); fire(b, "keydown", { key: "Enter", repeat: false }); tick(1000);
@@ -236,7 +243,7 @@ await check("cancel, screen leave, state replacement and reentry never commit or
 });
 await check("confirmation commits once and includes elapsed time between frames", async () => {
   const m = mounted({ quantity: .5 }); down(m); now += 1000;
-  m.confirm(); m.confirm(); near(await m.result, .62); tick(2000); near(quantity(m), .62);
+  m.confirm(); m.confirm(); near(await m.result, .68); tick(2000); near(quantity(m), .68);
 });
 await check("view clamps repeated hold at empty/full, with exact scalar confirmation", async () => {
   const full = mounted({ quantity: .99 }); down(full); tick(10000); near(await finish(full), 1);
@@ -259,11 +266,11 @@ await check("new SAVE/LOAD retains confirmed q; in-flight SETUP restarts from ch
   assert.equal(tournament.tournamentProgress(state.state).step, 0); assert.equal(tournament.tournamentProgress(state.state).craft.water, undefined);
   tournament.finishStep(state.state, cs); state.saveToSlot("suien_remake_slot2");
   state.loadFromSlot("suien_remake_slot2"); const p = tournament.tournamentProgress(state.state);
-  assert.equal(p.step, 1); near(p.craft.water, .12); assert.equal(p.rollback, null);
+  assert.equal(p.step, 1); near(p.craft.water, .18); assert.equal(p.rollback, null);
   assert.equal(JSON.stringify({ equip: state.state.equip, stats: state.state.stats, stock: state.state.flavorStock }), original);
   assert.ok(!JSON.stringify(p.craft).match(/wave|velocity|pointer|direction/));
   tournament.beginStep(state.state); state.saveToSlot("suien_remake_slot3"); state.loadFromSlot("suien_remake_slot3"); tournament.recoverStep(state.state);
-  near(tournament.tournamentProgress(state.state).craft.water, .12); // 途中再開でも確定済みの実量は保たれる
+  near(tournament.tournamentProgress(state.state).craft.water, .18); // 途中再開でも確定済みの実量は保たれる
 });
 await check("full practice record saves only confirmed water, care-only records stay scoped", () => {
   state.newGame();

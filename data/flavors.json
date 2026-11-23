@@ -8,8 +8,6 @@
       "price": 1650,
       "description": "あげはが好きな白いグミベア。パイナップルを思わせるやわらかな甘さ。",
       "heat_tolerance": 0.9,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.0,
       "chapter_min": 2,
       "leaf": "blond",
       "stats": {
@@ -37,8 +35,6 @@
       "price": 1650,
       "description": "赤いグミベアのベリー系の甘酸っぱさ。",
       "heat_tolerance": 0.95,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.0,
       "chapter_min": 2,
       "leaf": "blond",
       "stats": {
@@ -66,8 +62,6 @@
       "price": 1650,
       "description": "博士が好む、スパイスと柑橘の効いたコーラの香り。",
       "heat_tolerance": 1.05,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.0,
       "chapter_min": 1,
       "leaf": "blond",
       "stats": {
@@ -95,8 +89,6 @@
       "price": 1650,
       "description": "輪郭のある甘酸っぱいラズベリー。",
       "heat_tolerance": 0.95,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.0,
       "chapter_min": 1,
       "leaf": "blond",
       "stats": {
@@ -124,8 +116,6 @@
       "price": 1550,
       "description": "黒すぐりの深い甘酸っぱさ。ベリーの濃さがミックスの底を支える。",
       "heat_tolerance": 0.95,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.0,
       "chapter_min": 1,
       "leaf": "blond",
       "stats": {
@@ -153,8 +143,6 @@
       "price": 1650,
       "description": "エミルの好むナッツ系。青い香ばしさと穏やかな甘さ。",
       "heat_tolerance": 0.9,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.0,
       "chapter_min": 3,
       "leaf": "blond",
       "stats": {
@@ -182,8 +170,6 @@
       "price": 1650,
       "description": "パッキーが気にする、ガムの軽い甘さとシナモンの刺激。",
       "heat_tolerance": 1.1,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.0,
       "chapter_min": 1,
       "leaf": "blond",
       "stats": {
@@ -211,8 +197,6 @@
       "price": 1650,
       "description": "華やかなベリーと花の重なり。",
       "heat_tolerance": 0.95,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.0,
       "chapter_min": 1,
       "leaf": "blond",
       "stats": {
@@ -240,8 +224,6 @@
       "price": 1650,
       "description": "白い花とやわらかな余韻をもつ香り。",
       "heat_tolerance": 0.9,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.0,
       "chapter_min": 1,
       "leaf": "blond",
       "stats": {
@@ -270,8 +252,6 @@
       "price": 1650,
       "description": "ダークリーフのアールグレイ。香りが出やすく、他の葉を消さない分量が大事。",
       "heat_tolerance": 1.1,
-      "smoke_weight": 1.35,
-      "steam_bias": 0.0,
       "chapter_min": 3,
       "leaf": "dark",
       "stats": {
@@ -299,9 +279,10 @@
       "price": 1650,
       "description": "千須が好む葉巻系の重いダークリーフ。主人公は制作しない。",
       "heat_tolerance": 1.15,
-      "smoke_weight": 1.4,
-      "steam_bias": 0.0,
       "chapter_min": 3,
+      "not_for_sale": true,
+      "competition_legal": false,
+      "serve_legal": false,
       "leaf": "dark",
       "stats": {
         "heat_resistance": 5,
@@ -328,8 +309,6 @@
       "price": 1750,
       "description": "発売されたばかりのナイトサイドの強い清涼ミント。ヴォルクは熱を精密に管理し、鋭い立ち上がりから最後の一口まで清涼感を揃える。",
       "heat_tolerance": 1.2,
-      "smoke_weight": 0.7,
-      "steam_bias": -1.0,
       "chapter_min": 3,
       "leaf": "blond",
       "stats": {
@@ -347,7 +326,8 @@
         "nicotine": 3
       },
       "ng_flavors": [],
-      "maker": "nightside"
+      "maker": "nightside",
+      "family": "mint"
     },
     {
       "id": "mint",
@@ -366,8 +346,6 @@
         "middle": { "sweetness": 4, "cooling": 7.5, "body": 3.4, "spiciness": 3 },
         "high": { "sweetness": 3.5, "cooling": 9, "body": 4, "spiciness": 3.6 }
       },
-      "smoke_weight": 0.7,
-      "steam_bias": -1.0,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 6,
@@ -404,8 +382,6 @@
         "middle": { "sweetness": 6.3, "body": 7, "spiciness": 6.5 },
         "high": { "sweetness": 5.2, "body": 7.8, "spiciness": 8 }
       },
-      "smoke_weight": 1.3,
-      "steam_bias": 0.5,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 5,
@@ -433,8 +409,6 @@
       "price": 1550,
       "description": "アルファーヘブンのブルーベリー。果実感の輪郭が出しやすく、ミックスの軸にも使える。",
       "heat_tolerance": 0.9,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.0,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 4,
@@ -463,8 +437,6 @@
       "description": "県特産の苺を使った限定ロット。想像する甘さは無く、輪郭の見えにくい高難度フレーバー。熱を入れすぎると青臭さが顔を出す。",
       "heat_tolerance": 0.85,
       "perceived_sweetness": 2,
-      "smoke_weight": 0.9,
-      "steam_bias": 0.5,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 4,
@@ -492,8 +464,6 @@
       "description": "アルファーヘブンのバニラ。甘みの厚みを乗せやすく、全体を丸くまとめる。",
       "heat_tolerance": 0.8,
       "mix_life": 0.9,
-      "smoke_weight": 1.1,
-      "steam_bias": 0.3,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 3,
@@ -520,8 +490,6 @@
       "price": 1550,
       "description": "アルファーヘブンのパイナップル。立ち上がりが明るく、攻めた温度帯でも輪郭が残る。",
       "heat_tolerance": 1.1,
-      "smoke_weight": 0.9,
-      "steam_bias": -0.3,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 4,
@@ -548,8 +516,6 @@
       "price": 1750,
       "description": "ドバジのココナッツ。甘い余韻が長く、重心を下げたいミックスで強い。",
       "heat_tolerance": 0.85,
-      "smoke_weight": 1.2,
-      "steam_bias": 0.6,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 4,
@@ -576,8 +542,6 @@
       "price": 1750,
       "description": "ドバジのマンゴー。トロピカルな甘みが一口目から広がり、果実系ミックスの華になる。",
       "heat_tolerance": 0.95,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.2,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 4,
@@ -604,15 +568,13 @@
       "price": 0,
       "description": "海外メーカーNIGHTSIDEの未発売サンプル。ベルガモットの紅茶香が長く残る。凛想さんから託された一袋。試香専用——未発売のため大会・接客では出せない。",
       "heat_tolerance": 1.15,
-      "smoke_weight": 1.05,
-      "steam_bias": 0.5,
       "requires_flag": "_rio_sample",
       "sample": true,
       "competition_legal": false,
       "serve_legal": false,
       "leaf": "blond",
       "stats": {
-        "heat_resistance": 4,
+        "heat_resistance": 5,
         "refreshing": 5,
         "sweet_natural": 3,
         "sweet_confection": 2,
@@ -637,8 +599,6 @@
       "price": 1700,
       "description": "NIGHTSIDEのアールグレイ。凛想の試作品とは別の正式発売品で、東京店でも買える。試香モニターの感想が最後の調整に生きたという。",
       "heat_tolerance": 1.15,
-      "smoke_weight": 1.05,
-      "steam_bias": 0.5,
       "chapter_min": 3,
       "leaf": "blond",
       "stats": {
@@ -667,8 +627,6 @@
       "price": 1550,
       "description": "Dr.fookah入荷の人気ロット。完熟ぶどうのジューシーな甘み。冷涼系とも甘系とも組みやすい万能株。",
       "heat_tolerance": 0.95,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.2,
       "requires_flag": "_flavor_grape",
       "unlockable": true,
       "chapter_min": 1,
@@ -698,8 +656,6 @@
       "price": 1750,
       "description": "Dr.fookah入荷の限定フローラル。華やかな薔薇の含み香で、余韻を伸ばす一台に化ける。扱いは少し気難しい。",
       "heat_tolerance": 0.8,
-      "smoke_weight": 0.95,
-      "steam_bias": 0.4,
       "requires_flag": "_flavor_rose",
       "unlockable": true,
       "chapter_min": 1,
@@ -730,8 +686,6 @@
       "description": "ドバジのピーチ。やわらかな桃の甘みが広がり、ミックスに丸みを足してくれる。",
       "heat_tolerance": 0.9,
       "mix_life": 0.9,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.2,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 3,
@@ -758,8 +712,6 @@
       "price": 1550,
       "description": "アルファーヘブンのオレンジ。柑橘の酸味と果実の甘みが両立し、爽快な立ち上がりを見せる。",
       "heat_tolerance": 1.0,
-      "smoke_weight": 0.9,
-      "steam_bias": -0.2,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 4,
@@ -795,8 +747,6 @@
         "middle": { "sweetness": 4.2, "cooling": 2.5, "body": 3, "sourness": 7 },
         "high": { "sweetness": 3.8, "cooling": 3, "body": 3.6, "sourness": 9 }
       },
-      "smoke_weight": 0.8,
-      "steam_bias": -0.5,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 4,
@@ -824,8 +774,6 @@
       "description": "アルファーヘブンのスイカ。みずみずしい果汁感が涼しげで、夏のミックスに欠かせない。",
       "heat_tolerance": 0.85,
       "mix_life": 0.9,
-      "smoke_weight": 0.9,
-      "steam_bias": 0.1,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 3,
@@ -852,8 +800,6 @@
       "price": 1550,
       "description": "Dr.fookah入荷のトロピカル枠。独特の甘酸っぱさがミックスに奥行きを加える。",
       "heat_tolerance": 0.95,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.3,
       "requires_flag": "_flavor_guava",
       "unlockable": true,
       "chapter_min": 1,
@@ -883,8 +829,6 @@
       "price": 1550,
       "description": "Dr.fookah入荷の希少枠。見た目に反して穏やかな甘みで、個性的なミックスの核になる。",
       "heat_tolerance": 0.9,
-      "smoke_weight": 1.05,
-      "steam_bias": 0.2,
       "requires_flag": "_flavor_dragonfruit",
       "unlockable": true,
       "chapter_min": 2,
@@ -914,8 +858,6 @@
       "price": 1550,
       "description": "アルファーヘブンのキウイ。酸味の主張が強く、柑橘系に近い使い方ができる果実枠。",
       "heat_tolerance": 0.95,
-      "smoke_weight": 0.9,
-      "steam_bias": -0.1,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 4,
@@ -943,8 +885,6 @@
       "description": "ドバジのメロン。濃厚な甘みが煙にしっかり乗り、甘系ミックスの芯になれる。",
       "heat_tolerance": 0.85,
       "mix_life": 0.9,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.3,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 3,
@@ -972,8 +912,6 @@
       "description": "ドバジのバナナ。クリーミーな甘さと重めの煙で、甘系の土台として優秀。",
       "heat_tolerance": 0.8,
       "mix_life": 0.9,
-      "smoke_weight": 1.1,
-      "steam_bias": 0.4,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 3,
@@ -1000,8 +938,6 @@
       "price": 1750,
       "description": "Dr.fookah入荷の華やか枠。上品な甘みとほのかな花香が、ミックスに繊細さを加える。",
       "heat_tolerance": 0.9,
-      "smoke_weight": 0.95,
-      "steam_bias": 0.1,
       "requires_flag": "_flavor_lychee",
       "unlockable": true,
       "chapter_min": 1,
@@ -1031,8 +967,6 @@
       "price": 1550,
       "description": "通常ミントよりさらに冷涼感を追求した上位ロット。清涼の刃でミックスを一気に引き締める。",
       "heat_tolerance": 1.25,
-      "smoke_weight": 0.65,
-      "steam_bias": -1.0,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 6,
@@ -1049,7 +983,8 @@
         "nicotine": 4
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "af",
+      "family": "mint"
     },
     {
       "id": "peppermint_shake",
@@ -1059,8 +994,6 @@
       "price": 1750,
       "description": "Dr.fookah入荷のデザート冷涼枠。ミントの冷たさにミルクのような甘さが重なる変わり種。",
       "heat_tolerance": 1.15,
-      "smoke_weight": 0.8,
-      "steam_bias": -0.6,
       "requires_flag": "_flavor_peppermint_shake",
       "unlockable": true,
       "chapter_min": 1,
@@ -1090,8 +1023,6 @@
       "price": 1550,
       "description": "Dr.fookah入荷の果実冷涼枠。グレープの甘酸っぱさに冷涼感を重ね、飲み物のような吸い心地。",
       "heat_tolerance": 1.0,
-      "smoke_weight": 0.9,
-      "steam_bias": -0.3,
       "requires_flag": "_flavor_ice_grape",
       "unlockable": true,
       "chapter_min": 1,
@@ -1121,8 +1052,6 @@
       "price": 1550,
       "description": "Dr.fookah入荷の柑橘冷涼枠。レモンの酸味をアイスで包み、鋭い輪郭と爽快感を両立させた一品。",
       "heat_tolerance": 1.1,
-      "smoke_weight": 0.8,
-      "steam_bias": -0.5,
       "requires_flag": "_flavor_ice_lemon",
       "unlockable": true,
       "chapter_min": 1,
@@ -1142,7 +1071,8 @@
         "nicotine": 3
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "af",
+      "family": "lemon"
     },
     {
       "id": "death_by_ice",
@@ -1153,8 +1083,6 @@
       "description": "Dr.fookah入荷の最強冷涼枠。限界を超えた冷涼感で口腔を凍てつかせる——扱いを誤るとミックスごと壊す劇薬。",
       "heat_tolerance": 1.3,
       "mix_life": 1.15,
-      "smoke_weight": 0.6,
-      "steam_bias": -1.0,
       "requires_flag": "_flavor_death_by_ice",
       "unlockable": true,
       "chapter_min": 2,
@@ -1184,8 +1112,6 @@
       "price": 1550,
       "description": "ブルーベリーの果実感にミントの清涼を重ねたプレミックス。初心者にも扱いやすい。",
       "heat_tolerance": 1.05,
-      "smoke_weight": 0.85,
-      "steam_bias": -0.4,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 5,
@@ -1212,8 +1138,6 @@
       "price": 1550,
       "description": "複数の柑橘を氷点下で閉じ込めたような味わい。酸味と冷涼感の掛け算が鮮烈。",
       "heat_tolerance": 1.1,
-      "smoke_weight": 0.8,
-      "steam_bias": -0.5,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 5,
@@ -1240,8 +1164,6 @@
       "price": 1550,
       "description": "ミックスベリーを凍らせたような果実冷涼感。甘さと冷たさのバランスが取りやすい万能枠。",
       "heat_tolerance": 1.0,
-      "smoke_weight": 0.85,
-      "steam_bias": -0.3,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 5,
@@ -1268,8 +1190,6 @@
       "price": 1750,
       "description": "Dr.fookah入荷のスパイス枠。エキゾチックな香気が煙に深みを与え、チャイ系ミックスの要。",
       "heat_tolerance": 1.1,
-      "smoke_weight": 1.1,
-      "steam_bias": 0.5,
       "requires_flag": "_flavor_cardamom",
       "unlockable": true,
       "chapter_min": 1,
@@ -1299,8 +1219,6 @@
       "price": 1550,
       "description": "アルファーヘブンのシナモン。温かみのあるスパイス感がスイーツ系のミックスに奥行きを出す。",
       "heat_tolerance": 1.05,
-      "smoke_weight": 1.1,
-      "steam_bias": 0.4,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 5,
@@ -1327,8 +1245,6 @@
       "price": 1750,
       "description": "アフサールのクローブ。重厚なスパイス香が煙の密度を底上げし、存在感のある一台になる。",
       "heat_tolerance": 1.1,
-      "smoke_weight": 1.15,
-      "steam_bias": 0.5,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 6,
@@ -1355,8 +1271,6 @@
       "price": 1750,
       "description": "Dr.fookah入荷のハーブスパイス枠。青い爽やかさとスパイスが同居する異色の一品。",
       "heat_tolerance": 1.0,
-      "smoke_weight": 0.95,
-      "steam_bias": 0.2,
       "requires_flag": "_flavor_basil",
       "unlockable": true,
       "chapter_min": 2,
@@ -1386,8 +1300,6 @@
       "price": 1750,
       "description": "Dr.fookah入荷のアニス単体。ダブルアップルの骨格を成す香りを、単独で操りたい上級者向け。",
       "heat_tolerance": 1.05,
-      "smoke_weight": 1.2,
-      "steam_bias": 0.5,
       "requires_flag": "_flavor_anise",
       "unlockable": true,
       "chapter_min": 1,
@@ -1417,8 +1329,6 @@
       "price": 1750,
       "description": "Dr.fookah入荷の甘草スパイス枠。独特の甘苦さが煙に残り、好みが極端に分かれる上級素材。",
       "heat_tolerance": 1.0,
-      "smoke_weight": 1.25,
-      "steam_bias": 0.6,
       "requires_flag": "_flavor_licorice",
       "unlockable": true,
       "chapter_min": 2,
@@ -1448,8 +1358,6 @@
       "price": 1750,
       "description": "アフサールのナツメグ。ほんのり甘いスパイスが煙を温かく包み、秋冬のミックスで映える。",
       "heat_tolerance": 1.0,
-      "smoke_weight": 1.1,
-      "steam_bias": 0.4,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 5,
@@ -1477,8 +1385,6 @@
       "description": "Dr.fookah入荷の刺激スパイス枠。ピリッとした辛みが他の香りを際立たせるアクセント要員。",
       "heat_tolerance": 1.15,
       "mix_life": 1.15,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.3,
       "requires_flag": "_flavor_black_pepper",
       "unlockable": true,
       "chapter_min": 2,
@@ -1509,8 +1415,6 @@
       "description": "Dr.fookah入荷の生姜スパイス枠。じんわりとした辛みが体を温め、冷涼系と合わせると面白い。",
       "heat_tolerance": 1.1,
       "mix_life": 1.1,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.2,
       "requires_flag": "_flavor_ginger",
       "unlockable": true,
       "chapter_min": 1,
@@ -1540,8 +1444,6 @@
       "price": 1550,
       "description": "Dr.fookah入荷のフローラル枠。リラックスを誘うハーブの香りが煙にやさしい余韻を残す。",
       "heat_tolerance": 0.85,
-      "smoke_weight": 0.9,
-      "steam_bias": 0.3,
       "requires_flag": "_flavor_lavender",
       "unlockable": true,
       "chapter_min": 1,
@@ -1571,8 +1473,6 @@
       "price": 1750,
       "description": "Dr.fookah入荷のフローラル枠。上品なジャスミンの花香が煙に華を添え、ミックスの品格を上げる。",
       "heat_tolerance": 0.9,
-      "smoke_weight": 0.9,
-      "steam_bias": 0.2,
       "requires_flag": "_flavor_jasmine",
       "unlockable": true,
       "chapter_min": 1,
@@ -1602,8 +1502,6 @@
       "price": 1550,
       "description": "アルファーヘブンのカモミール。穏やかなハーブの甘みでミックスを落ち着かせる、安らぎの花枠。",
       "heat_tolerance": 0.8,
-      "smoke_weight": 0.85,
-      "steam_bias": 0.2,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 4,
@@ -1631,8 +1529,6 @@
       "description": "Dr.fookah入荷の和フローラル枠。桜餅を思わせる甘く儚い香りが、日本らしい一台を作り出す。",
       "heat_tolerance": 0.85,
       "mix_life": 0.9,
-      "smoke_weight": 0.9,
-      "steam_bias": 0.3,
       "requires_flag": "_flavor_sakura",
       "unlockable": true,
       "chapter_min": 2,
@@ -1662,8 +1558,6 @@
       "price": 1550,
       "description": "アルファーヘブンのリリー。百合の凛とした花香が煙に気品を与え、フローラルミックスの軸になる。",
       "heat_tolerance": 0.85,
-      "smoke_weight": 0.9,
-      "steam_bias": 0.3,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 4,
@@ -1690,8 +1584,6 @@
       "price": 1550,
       "description": "Dr.fookah入荷のプレミアムローズ。白薔薇のやわらかく甘い香りが、余韻にまで残る繊細な一品。",
       "heat_tolerance": 0.8,
-      "smoke_weight": 0.9,
-      "steam_bias": 0.4,
       "requires_flag": "_flavor_white_rose",
       "unlockable": true,
       "chapter_min": 2,
@@ -1721,8 +1613,6 @@
       "price": 1750,
       "description": "Dr.fookah入荷のプレミアムローズ。紫薔薇の妖艶な香りが煙に奥深さを足し、記憶に残る一台を作る。",
       "heat_tolerance": 0.8,
-      "smoke_weight": 0.95,
-      "steam_bias": 0.4,
       "requires_flag": "_flavor_violet_rose",
       "unlockable": true,
       "chapter_min": 2,
@@ -1752,8 +1642,6 @@
       "price": 1750,
       "description": "Dr.fookah入荷のフローラル枠。クチナシの甘く濃密な香りが、一台の完成度を一段引き上げる。",
       "heat_tolerance": 0.85,
-      "smoke_weight": 0.9,
-      "steam_bias": 0.3,
       "requires_flag": "_flavor_gardenia",
       "unlockable": true,
       "chapter_min": 2,
@@ -1783,8 +1671,6 @@
       "price": 1750,
       "description": "ドバジのチョコレート。甘くビターな香りが煙を重厚に仕上げ、デザートミックスの王道。",
       "heat_tolerance": 0.85,
-      "smoke_weight": 1.15,
-      "steam_bias": 0.5,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 4,
@@ -1811,8 +1697,6 @@
       "price": 1750,
       "description": "Dr.fookah入荷の大人甘枠。苦みの奥に潜む甘さが煙に深みを与え、重厚な一台を求める人向け。",
       "heat_tolerance": 0.9,
-      "smoke_weight": 1.2,
-      "steam_bias": 0.6,
       "requires_flag": "_flavor_dark_chocolate",
       "unlockable": true,
       "chapter_min": 2,
@@ -1832,7 +1716,8 @@
         "nicotine": 6
       },
       "ng_flavors": [],
-      "maker": "dobaj"
+      "maker": "dobaj",
+      "family": "chocolate"
     },
     {
       "id": "caramel",
@@ -1842,8 +1727,6 @@
       "price": 1750,
       "description": "ドバジのキャラメル。焦がし砂糖の濃厚な甘みが煙にべっとり乗り、甘党を唸らせる。",
       "heat_tolerance": 0.8,
-      "smoke_weight": 1.15,
-      "steam_bias": 0.5,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 3,
@@ -1870,8 +1753,6 @@
       "price": 1550,
       "description": "アルファーヘブンのコットンキャンディ。綿菓子のふわっとした甘さが軽い煙に乗り、万人受けする。",
       "heat_tolerance": 0.8,
-      "smoke_weight": 0.9,
-      "steam_bias": 0.3,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 3,
@@ -1898,8 +1779,6 @@
       "price": 1650,
       "description": "レモンとライムの軽い酸味が重なる、爽やかなブロンドリーフ。熱を急がず、二口目まで柑橘の輪郭を残したい。",
       "heat_tolerance": 1.1,
-      "smoke_weight": 0.75,
-      "steam_bias": -0.4,
       "chapter_min": 3,
       "leaf": "blond",
       "stats": {
@@ -1927,8 +1806,6 @@
       "price": 1550,
       "description": "Dr.fookah入荷の変わり種スイーツ枠。香ばしさと甘さが交錯し、個性的なミックスに化ける。",
       "heat_tolerance": 0.9,
-      "smoke_weight": 1.05,
-      "steam_bias": 0.3,
       "requires_flag": "_flavor_popcorn",
       "unlockable": true,
       "chapter_min": 2,
@@ -1958,11 +1835,9 @@
       "price": 1750,
       "description": "ドバジのヘーゼルナッツ。ナッツの香ばしさとほのかな甘みが、ミックスに落ち着きを足す。",
       "heat_tolerance": 0.85,
-      "smoke_weight": 1.1,
-      "steam_bias": 0.4,
       "leaf": "blond",
       "stats": {
-        "heat_resistance": 5,
+        "heat_resistance": 4,
         "refreshing": 2,
         "sweet_natural": 3,
         "sweet_confection": 6,
@@ -1986,8 +1861,6 @@
       "price": 1750,
       "description": "Dr.fookah入荷のカフェ枠。ミルクフォームの甘さとコーヒーの苦みが煙の中で溶け合う。",
       "heat_tolerance": 0.95,
-      "smoke_weight": 1.1,
-      "steam_bias": 0.4,
       "requires_flag": "_flavor_cappuccino",
       "unlockable": true,
       "chapter_min": 1,
@@ -2017,8 +1890,6 @@
       "price": 1750,
       "description": "Dr.fookah入荷のカフェ枠。焙煎豆の深い苦みが煙に芯を通し、重厚な大人の一台になる。",
       "heat_tolerance": 1.0,
-      "smoke_weight": 1.1,
-      "steam_bias": 0.4,
       "requires_flag": "_flavor_coffee",
       "unlockable": true,
       "chapter_min": 1,
@@ -2049,8 +1920,6 @@
       "description": "Dr.fookah入荷の濃厚カフェ枠。凝縮された苦みと香りが煙に強烈な個性を与える上級素材。",
       "heat_tolerance": 1.05,
       "mix_life": 1.1,
-      "smoke_weight": 1.15,
-      "steam_bias": 0.5,
       "requires_flag": "_flavor_espresso",
       "unlockable": true,
       "chapter_min": 2,
@@ -2080,8 +1949,6 @@
       "price": 1750,
       "description": "アフサールのブラックティー。紅茶の渋みと落ち着いた香りが、スパイス系ミックスにも花系ミックスにも馴染む。",
       "heat_tolerance": 1.0,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.3,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 5,
@@ -2108,8 +1975,6 @@
       "price": 1750,
       "description": "アフサールのアールグレイ。ベルガモットの柑橘香と紅茶の渋みが調和した、落ち着きのある一台。ナイトサイドの試作品とは別のアプローチで、伝統的な茶葉感を前面に出している。",
       "heat_tolerance": 0.9,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.2,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 4,
@@ -2137,8 +2002,6 @@
       "price": 1550,
       "description": "アルファーヘブンのレモンティー。紅茶の落ち着きにレモンの酸味が加わり、爽やかさと深みを両立する。",
       "heat_tolerance": 1.05,
-      "smoke_weight": 0.95,
-      "steam_bias": 0.1,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 4,
@@ -2165,8 +2028,6 @@
       "price": 1750,
       "description": "ドバジのダブルアップル。AFより甘みが強くクリーミーな仕上がり。アニス感は控えめで、万人受けする柔らかさがある。",
       "heat_tolerance": 1.0,
-      "smoke_weight": 1.4,
-      "steam_bias": 0.6,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 5,
@@ -2194,8 +2055,6 @@
       "price": 1750,
       "description": "アフサールのダブルアップル。アニスとリコリスの主張が強く、伝統的な中東スタイル。癖が強い分、ハマる人にはたまらない。",
       "heat_tolerance": 1.1,
-      "smoke_weight": 1.5,
-      "steam_bias": 0.4,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 6,
@@ -2232,8 +2091,6 @@
         "middle": { "sweetness": 5.2, "cooling": 6.5, "body": 4.2, "spiciness": 2 },
         "high": { "sweetness": 5.8, "cooling": 8, "body": 5, "spiciness": 2.4 }
       },
-      "smoke_weight": 0.8,
-      "steam_bias": -0.8,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 5,
@@ -2262,8 +2119,6 @@
       "description": "アフサールのミント。スペアミントベースで、スパイシーなキックが残る。清涼感の奥にハーブの苦味が立つ、上級者好みの一品。",
       "heat_tolerance": 1.3,
       "mix_life": 1.1,
-      "smoke_weight": 0.9,
-      "steam_bias": -0.6,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 6,
@@ -2290,9 +2145,7 @@
       "category": "fruit",
       "price": 1750,
       "description": "アフサールの新作。華やかな苺の香りが早く立ち、早く抜ける。熱に弱く、炭を急ぐと香りが荒れる。第2章の県大会で課題として支給される。",
-      "heat_tolerance": 0.8,
-      "smoke_weight": 0.85,
-      "steam_bias": 0.4,
+      "heat_tolerance": 0.85,
       "chapter_min": 2,
       "not_for_sale": true,
       "leaf": "blond",
@@ -2322,8 +2175,6 @@
       "price": 1750,
       "description": "サメちゃんが好む単体フレーバー。香水のような独特の香りと、吸い終わりに残る爽やかさが特徴。",
       "heat_tolerance": 0.95,
-      "smoke_weight": 0.85,
-      "steam_bias": -0.2,
       "chapter_min": 2,
       "leaf": "blond",
       "stats": {
@@ -2352,8 +2203,6 @@
       "price": 1550,
       "description": "アルファーヘブンのグレープフルーツ。皮のほろ苦さと酸味で、甘い葉の後味を軽くする。",
       "heat_tolerance": 1.05,
-      "smoke_weight": 0.85,
-      "steam_bias": -0.4,
       "chapter_min": 1,
       "leaf": "blond",
       "stats": {
@@ -2381,8 +2230,6 @@
       "price": 1750,
       "description": "アフサールのハニー。蜂蜜のとろりとした甘さが、柑橘や紅茶の角をやわらげる。",
       "heat_tolerance": 0.85,
-      "smoke_weight": 1.1,
-      "steam_bias": 0.4,
       "chapter_min": 1,
       "leaf": "blond",
       "stats": {
@@ -2410,8 +2257,6 @@
       "price": 1750,
       "description": "ドバジのミルク。まろやかな乳の甘さが果実や紅茶を包み、デザートのような一台になる。",
       "heat_tolerance": 0.8,
-      "smoke_weight": 1.15,
-      "steam_bias": 0.4,
       "chapter_min": 2,
       "leaf": "blond",
       "stats": {
@@ -2439,8 +2284,6 @@
       "price": 1750,
       "description": "アフサールのレッドチェリー。濃い赤い実の甘酸っぱさに、洋酒のような香りが少し残る。",
       "heat_tolerance": 0.95,
-      "smoke_weight": 1.0,
-      "steam_bias": 0.1,
       "chapter_min": 2,
       "leaf": "blond",
       "stats": {
@@ -2468,8 +2311,6 @@
       "price": 1750,
       "description": "ドバジのパッションフルーツ。華やかな酸味と南国の香りが強く、少しでも存在感が出る。",
       "heat_tolerance": 1.0,
-      "smoke_weight": 0.95,
-      "steam_bias": -0.1,
       "chapter_min": 2,
       "leaf": "blond",
       "stats": {
@@ -2497,8 +2338,6 @@
       "price": 1550,
       "description": "アルファーヘブンのライム。レモンより青く鋭い酸味で、後味を短く切り上げる。",
       "heat_tolerance": 1.1,
-      "smoke_weight": 0.8,
-      "steam_bias": -0.5,
       "chapter_min": 3,
       "leaf": "blond",
       "stats": {
@@ -2526,12 +2365,10 @@
       "price": 1750,
       "description": "ドバジのビスケット。焼いた小麦の香ばしさとバターの甘さで、チョコや紅茶の土台になる。",
       "heat_tolerance": 0.85,
-      "smoke_weight": 1.1,
-      "steam_bias": 0.4,
       "chapter_min": 3,
       "leaf": "blond",
       "stats": {
-        "heat_resistance": 5,
+        "heat_resistance": 4,
         "refreshing": 1,
         "sweet_natural": 3,
         "sweet_confection": 7,

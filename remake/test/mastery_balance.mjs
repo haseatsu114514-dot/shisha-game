@@ -124,7 +124,9 @@ assert.notEqual(scoreScenario("unattended", mastered.flavorMastery, true).rank, 
 assert.equal(novice.cs.parts.care1, 76);
 assert.equal(novice.cs.parts.care2, 75);
 assert.equal(outcomeOf(SENSU_BAR - .1).rank, 3);
-assert.equal(outcomeOf(SENSU_BAR).rank, 1);
+assert.deepEqual(outcomeOf(SENSU_BAR), { rank: 1, kind: "win" });
+assert.equal(outcomeOf(90.9).kind, "win");
+assert.equal(outcomeOf(91).kind, "premium");
 assert.deepEqual(pointTable(1).sensu, { hajime: 10 }, "the story's voting method stays separate from flavor preferences");
 
 // The displayed mastery bonus, aroma and forecast all use the same selected mix's weighting.

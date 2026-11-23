@@ -12,7 +12,7 @@ const mind = await import('../js/craft/steam-mind.js');
 const deferred = () => { let resolve, reject; const promise = new Promise((a, b) => { resolve = a; reject = b; }); return { promise, resolve, reject }; };
 const flush = async () => { for (let n = 0; n < 16; n++) await Promise.resolve(); };
 
-async function harness({ manual = false, craft = {} } = {}) {
+async function harness({ manual = false, paused = true, craft = {}, lessons = [], skills = [] } = {}) {
   const ready = deferred(), help = deferred(), countdown = deferred(), sleeps = [], frames = new Map();
   const metrics = { score: 0, result: 0, unkey: 0, abort: 0, clockDisposed: 0, countdown: 0, mental: [] };
   const nodes = new Map();
@@ -21,14 +21,14 @@ async function harness({ manual = false, craft = {} } = {}) {
       super(); this.style = { setProperty() {} }; this.dataset = {}; this.inert = false;
       this.classList = { add() {}, remove() {}, toggle() {} };
     }
-    append() {} setAttribute() {} remove() {}
+    append() {} setAttribute() {} remove() {} closest() { return null; }
     querySelector() { return new Node(); }
     getBoundingClientRect() { return { left: 0, top: 0, width: 784, height: 414 }; }
   }
   const guide = new Node(), root = new Node(), panel = new Node();
   root.querySelector = () => guide;
   panel.dataset.step = 'steam';
-  let activeRoot = root, frameId = 0, stateModule;
+  let activeRoot = root, frameId = 0, stateModule, now = 0, keymap;
   const owner = { flags: {} }, cs = { mode: 'tutorial', steam: null, ...craft };
   const context = vm.createContext({
     window: new Node(), navigator: { getGamepads: () => [] },
@@ -40,7 +40,7 @@ async function harness({ manual = false, craft = {} } = {}) {
   const imports = {
     './effect-visual.js': { effectVisible: () => false, effectBadge: () => null, effectLine: () => null },
     '../core/state.js': { state: owner },
-    '../core/growth-effects.js': { useGrowthInsurance: () => false, growthCritical: () => false, settleGrowthPhase: (_s,_cs,_key,result) => result?.score, growthPerks: () => null, growthSkill: () => false, growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {} },
+    '../core/growth-effects.js': { useGrowthInsurance: () => false, growthCritical: () => false, settleGrowthPhase: (_s,_cs,_key,result) => result?.score, growthPerks: () => null, growthSkill: (_state, skill) => skills.includes(skill), growthFeature: () => false, growthLesson: (_state, lesson) => lessons.includes(lesson), LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {} },
     // 変化時だけ書く部品（#3500）。偽の要素では、書く側の挙動をそのまま写す。
     '../core/dom-write.js': { setText: (node, text) => { node.textContent = text; }, setAttr: (node, name, value) => node.setAttribute(name, value),
       setData: (node, key, value) => { node.dataset[key] = String(value); }, setFlag: (node, key, value) => { node[key] = value; } },
@@ -53,13 +53,13 @@ async function harness({ manual = false, craft = {} } = {}) {
       explainTutorialStep: () => help.promise, refreshBench: noop, reactAudience: noop, setPlayerMental: (_cs, level) => metrics.mental.push(level),
       setBenchTemperature: noop, scoreStep: () => metrics.score++ },
     './attack-training.js': { hasAttackTraining: () => false, ATTACK_LOCK_REASON: 'locked' },
-    './steam-time.js': { steamSecondsOf: () => 300, steamPlaySeconds: () => 30, steamTimeLabel: () => '5min', SHORT_DODGE_SECONDS: 8 },
+    './steam-time.js': { steamSecondsOf: () => 300, steamDodgeSeconds: () => 30, steamTimeLabel: () => '5min' },
     './digital-clock.js': { buildDigitalClock: () => ({ root: new Node(), update: noop }) },
-    './common.js': { autoSkill: () => manual ? null : 'good', resultCard: async () => { metrics.result++; }, keys: () => () => metrics.unkey++, popStamp: noop },
-    './conditions.js': { craftConditions: () => ({ rainy: false }), temperatureAfterSteam: () => .5, steamFocusNote: () => null },
+    './common.js': { autoSkill: () => manual ? null : 'good', resultCard: async () => { metrics.result++; }, keys: map => { keymap = map; return () => metrics.unkey++; }, popStamp: noop },
+    './conditions.js': { craftConditions: () => ({ rainy: false }), temperatureAfterSteam: () => .5, steamFocusNote: () => null, rollSteamVariation: () => ({ offset: 0, transfer: 1 }) },
     './steam-forecast.js': { buildSteamTemperature: () => ({ root: new Node(), update: noop }) },
     './steam-climate.js': { steamClimate: () => ({ transfer: 1 }) },
-    './steam-art.js': { buildSteamWorld: (_w, _h, level) => { metrics.worldInitial = level; return { root: new Node(), draw: noop }; }, HEART_ART: '', BULLET_ART: {} },
+    './steam-art.js': { buildSteamWorld: (_w, _h, level) => { metrics.worldInitial = level; return { root: new Node(), draw: (_time, x, y) => { metrics.cursor = [x, y]; } }; }, HEART_ART: '', BULLET_ART: {} },
     '../core/data.js': { makingUrl: () => '' },
     '../core/condition.js': { craftCondition: () => ({ focus: 1 }) },
     './steam-slash.js': { buildSharkFx: () => {throw Error('unlearned shark');}, sharkPulseTouchesBullet:()=>false, SLASH_ART: '', SLASH_RECHARGE_SECONDS: 1, slashProfile: () => ({ reach: 1, recharge: 1, tier: 1 }), slashAngle: noop, slashTouchesBullet: noop, buildSlashFx: noop, buildWordCutFx: noop },
@@ -67,7 +67,7 @@ async function harness({ manual = false, craft = {} } = {}) {
     // 難度表と心の状態は DOM を持たない純関数なので実物を使う（#2519）。
     './steam-patterns.js': { ...patterns },
     './steam-mind.js': { ...mind },
-    './clock.js': { createCraftClock: () => ({ now: () => 0, paused: true, dispose: () => metrics.clockDisposed++ }) },
+    './clock.js': { createCraftClock: () => ({ now: () => now, paused, dispose: () => metrics.clockDisposed++ }) },
     // シーシャ作りの版（CRN16）は本物を使う。この一台は版を持たないのでリニューアル
     '../core/craft-version.js': { ...craftVersion },
   };
@@ -86,6 +86,13 @@ async function harness({ manual = false, craft = {} } = {}) {
   await mod.evaluate();
   const run = mod.namespace.runSteamDodge(cs);
   return { cs, panel, root, guide, metrics, nodes, sleeps, frames, ready, help, countdown, run,
+    key: (key, repeat = false) => keymap[key]({ repeat }),
+    advanceFrame(ms) {
+      now += ms;
+      const [id, frame] = frames.entries().next().value;
+      frames.delete(id);
+      frame(now);
+    },
     replaceState: () => stateModule.setExport('state', { flags: {} }),
     replaceBench: () => { const next = new Node(); next.guide = { open: true }; activeRoot = next; return next; },
     async startCountdown() { ready.resolve(); await flush(); help.resolve(true); await flush(); assert.equal(metrics.countdown, 1); },
@@ -147,12 +154,46 @@ test('valid session still records one score and shows its result', async () => {
   ].sort(), 'presentation must not add saved result fields');
 });
 
+test('mouse and Shift precision share the per-frame speed limit', async () => {
+  const h = await harness({ manual: true, paused: false });
+  await h.startCountdown(); h.countdown.resolve(); await flush();
+  const pointer = new Event('pointermove');
+  Object.assign(pointer, { clientX: 700, clientY: 207, pointerType: 'mouse', pointerId: 1 });
+  h.nodes.get('div.dodge').dispatchEvent(pointer);
+  h.advanceFrame(50);
+  assert.deepEqual(h.metrics.cursor, [406.5, 207]);
+  h.key('Shift');
+  h.key('Shift', true);
+  h.advanceFrame(50);
+  assert.deepEqual(h.metrics.cursor, [412.5, 207]);
+  h.key('ArrowDown');
+  h.advanceFrame(50);
+  assert.deepEqual(h.metrics.cursor, [412.5, 213]);
+  h.replaceState(); h.advanceFrame(0); await h.run;
+  assertCancelled(h);
+});
+
+test('M-S7 and K21 grant calm before the dodge runs', async () => {
+  for (const [mode, lessons, skills, calm] of [
+    ['tournament', ['M-S7'], ['K21'], true],
+    ['tournament', [], ['K21'], false],
+    ['tournament', ['M-S7'], [], false],
+    ['tutorial', ['M-S7'], ['K21'], false],
+  ]) {
+    const h = await harness({ craft: { mode }, lessons, skills });
+    await h.startCountdown();
+    assert.equal(h.cs.dragonCalm, calm);
+    h.replaceState(); h.countdown.resolve(); await h.run;
+    assertCancelled(h);
+  }
+});
+
 for (const [craft, stage, table, level, pressure] of [
   [{ mode: 'tournament', chapter: 1, heat: { score: 85 } }, 'local', 'calm', 'steady', 0],
   [{ mode: 'tournament', chapter: 4, heat: { score: 59 } }, 'world', 'whirl', 'unsteady', .3],
   [{ mode: 'tournament', chapter: 4, heat: { score: 59 }, retryAssist: true }, 'world', 'whirl', 'steady', .25],
   [{ mode: 'tournament', chapter: 5, heat: { score: 59 } }, 'exhibition', 'storm', 'unsteady', .35],
-  [{ mode: 'rehearsal', chapter: 5 }, 'practice', 'calm', 'steady', 0],
+  [{ mode: 'rehearsal', chapter: 5 }, 'exhibition', 'storm', 'steady', 0],
   [{ mode: 'tournament', chapter: 9 }, 'local', 'calm', 'steady', .05],
   [{ mode: 'tournament', chapter: 1, stage: 'national' }, 'national', 'swell', 'steady', .15],
 ]) test(`stage and initial mind reach the presentation before countdown: ${JSON.stringify(craft)}`, async () => {

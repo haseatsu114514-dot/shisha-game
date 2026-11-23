@@ -40,6 +40,7 @@ function fakePage({ touch, waterError = null } = {}) {
     reload: async () => {}, waitForTimeout: async () => {},
     locator: selector => ({
       first() { return this; },
+      ...(selector.includes("water-empty-accept") ? { isVisible: async () => false } : {}),
       count: async () => 0,
       waitFor: async options => {
         assert(!/appearance-confirm/.test(selector), "appearance must not be awaited");

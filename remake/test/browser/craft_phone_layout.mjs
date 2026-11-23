@@ -100,6 +100,8 @@ await suite('craft-phone-layout', async check => {
     await page.locator('.bench-guide > summary').tap(); await page.locator(t('bench-guide-close')).waitFor();
     await clean('水入れ: 説明'); await page.locator(t('bench-guide-close')).tap();
     await page.locator(t('water-confirm')).tap();
+    const acceptEmpty = page.locator(t('water-empty-accept'));
+    if (await acceptEmpty.isVisible()) await acceptEmpty.tap();
 
     // 配合: 葉の行は1行ぶんの高さ。左の列（器・予想・持ち）が下の列に食い込まない
     await start('() => QA.steps.stepMix(QA.cs)');

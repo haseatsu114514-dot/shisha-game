@@ -45,7 +45,7 @@ await suite("ch1-vote-style", async (check) => {
     await page.reload(); await titleReady(page);
     await page.locator(t("title-config")).click();
     assert.equal(await checkedVersion(page), "sakurai", "選んだ版は保たれる");
-    assert.match(await ruleText(page), /第四条　審査.*その回に仕上げた工程だけ.*攻めの帯/);
+    assert.match(await ruleText(page), /第四条　審査.*その回に仕上げた工程.*制作ボーナス.*攻めの帯/);
     await page.locator(`${t("cfg-craft-version")} button[value="renewal"]`).click();
     assert.match(await ruleText(page), /その回までに仕上げた工程/, "リニューアルへ戻すと、いままでの規則");
   });

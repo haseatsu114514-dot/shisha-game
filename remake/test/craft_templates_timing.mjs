@@ -52,7 +52,7 @@ try {
     await page.waitForSelector('[data-test="hole-start"]');
     assert.equal(await page.locator(".countdown, .foil-cursor").count(), 0);
     assert.equal(await page.locator('.ht-option').count(), 1);
-    assert.equal(await page.locator('[data-test="hole-template-counts"]').textContent(), "外周12・中周12・内周0");
+    assert.equal(await page.locator('[data-test="hole-template-counts"]').textContent(), "外周12・中周12");
     await capture(page, `templates-initial-${name}`);
     // A serialized old session retains its previously available layouts.
     await page.evaluate(() => {
@@ -62,7 +62,7 @@ try {
     await page.locator('[data-test="hole-template-outer24"]').waitFor();
     assert.equal(await page.locator('[data-test="hole-preview"] [data-ring="outer"]').count(), 24);
     assert.equal(await page.locator('[data-test="hole-preview"] [data-ring="middle"]').count(), 0);
-    assert.equal(await page.locator('[data-test="hole-template-counts"]').textContent(), "外周24・中周0・内周0");
+    assert.equal(await page.locator('[data-test="hole-template-counts"]').textContent(), "外周24・中周0");
     await insidePanel(page, [".ht-preview", ".ht-side"]); await capture(page, `templates-outer-${name}`);
     // ネイティブのボタン操作で配置を切り替え、Spaceでも開始できる。
     await page.locator('[data-test="hole-template-outer12-middle12"]').click();
@@ -70,7 +70,7 @@ try {
     assert.equal(await page.locator('[data-test="hole-preview"] [data-ring="outer"]').count(), 12);
     assert.equal(await page.locator('[data-test="hole-preview"] [data-ring="middle"]').count(), 12);
     assert.equal(await page.locator('[data-test="hole-preview"] [data-ring="inner"]').count(), 0);
-    assert.equal(await page.locator('[data-test="hole-template-counts"]').textContent(), "外周12・中周12・内周0");
+    assert.equal(await page.locator('[data-test="hole-template-counts"]').textContent(), "外周12・中周12");
     await capture(page, `templates-mixed-${name}`);
     await page.locator(".ht-help summary").click();
     assert.match(await page.locator(".ht-help").textContent(), /安定.*ズレる/);

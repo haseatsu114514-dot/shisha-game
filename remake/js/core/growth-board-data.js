@@ -240,7 +240,7 @@ export const LESSONS = [
     text: "蒸らしを 00:00 で始められる。低温から吸いながら熱を立ち上げる", scene: "lesson_kumicho_zero" },
   { id: "M-B3", cell: "6,-1", board: "body", who: "ayatori", need: 5, ring: 3, sig: true, reward: "special", name: "白紙の味カード",
     hint: "綾取と仲良くなると、出し方の勝負どころを教えてもらえそう",
-    text: "提供の時に味の名前を伏せられる。審査員の受け止めの振れ幅が大きくなる", scene: "lesson_ayatori_blank" },
+    text: "提供の時に味の名前を伏せられる。配合と提供の出来がよいほど審査で有利になる", scene: "lesson_ayatori_blank" },
   { id: "M-S5", cell: "6,-3", board: "sense", who: "steve", need: 5, ring: 3, sig: true, reward: "special", name: "ピザとシーシャの夜",
     hint: "スティーブと仲良くなると、みんなで集まる夜に誘ってもらえそう",
     text: "仲間を誘って「ピザとシーシャの夜」を開ける。誘った人の好感度がまとめて上がる（同じ人は続けて呼べない）", scene: "lesson_steve_pizza" },
@@ -272,7 +272,7 @@ export const LESSONS = [
   // 大会後の会場の場面なので、店では相談しない）。博士は第5章で分かり、勝負のあとの会場で相談する。SHISHA-9000 は授業なし（ボスのまま）
   { id: "M-S7", cell: "3,-7", board: "sense", who: "master_hookah", need: 0, ring: 4, reward: "skill", name: "龍の煙",
     hint: "盤の道が届いたら、王煙楼が龍の煙の出し方を教えてくれそう",
-    text: "吸い出しをジャストで3回続けると、煙の輪が龍になって昇る。見ている人が静まり、その一台の残りの工程はメンタルが減らない（スモークリングが要る）", scene: "lesson_master_hookah_dragon" },
+    text: "蒸らしで雑念に当たっても心が乱れない。吸い出しをジャストで3回続けると龍の煙が昇る（スモークリングが要る）", scene: "lesson_master_hookah_dragon" },
   { id: "M-W9", cell: "3,-7", board: "wisdom", who: "dr_charcoal", need: 0, ring: 5, reward: "skill", name: "博士の試作HMD",
     hint: "盤の道が届いたら、博士が自慢の機材を見せてくれそう",
     text: "HMDに「博士の試作HMD」を選べる。熱が均一に回り、熱管理のジャスト帯が広がって、炭を替えても熱がぶれにくい", scene: "lesson_dr_charcoal_hmd", grants: ["dr_kemuri_proto_hmd"] },

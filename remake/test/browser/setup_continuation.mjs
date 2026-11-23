@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
 import { waitForSetupContinuation } from "./appearance_setup.mjs";
+import { confirmWaterSetup } from "./water_setup.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
@@ -114,8 +115,7 @@ await suite("setup-continuation", async check => {
     if (touch) await equipment.tap(); else await equipment.click();
     await waitForSetupContinuation(page);
     await assertFits(page, '[data-test="water-confirm"]');
-    const confirm = page.locator('[data-test="water-confirm"]');
-    if (touch) await confirm.tap(); else await confirm.click();
+    await confirmWaterSetup(page, { touch });
     await page.locator('[data-test="mix-ok"]').waitFor();
     const after = await page.evaluate(() => ({
       before, resources: { appearance: S.core.state.appearance, owned: S.core.state.owned, stats: S.core.state.stats, money: S.core.state.money },

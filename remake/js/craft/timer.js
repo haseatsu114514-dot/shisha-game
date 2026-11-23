@@ -5,14 +5,14 @@ import { stepPanel, explainStepOnce } from "./session.js";
 import { autoSkill } from "./common.js";
 import { artImg } from "./art.js";
 import { buildDigitalClock } from "./digital-clock.js";
-import { MAX_STEAM_SECONDS, normalizeSteamSeconds, steamPlaySeconds, SHORT_DODGE_SECONDS } from "./steam-time.js";
+import { MAX_STEAM_SECONDS, normalizeSteamSeconds, steamDodgeSeconds } from "./steam-time.js";
 import { buildSteamTemperature, buildSteamForecast } from "./steam-forecast.js";
 import { state } from "../core/state.js";
 import { growthLesson } from "../core/growth-effects.js";
 import { basicsExperienced } from "./practice-history.js";
 
 export async function runSteamTimer(cs) {
-  const panel = stepPanel("steam", "蒸らし", "分・秒ボタンで蒸らし時間を設定し、スタートで開始する", { brief: "", lessonStep: "timer" });
+  const panel = stepPanel("steam", "蒸らし", "分・秒ボタンか下の時間で蒸らし時間を設定し、スタートで開始する", { brief: "", lessonStep: "timer" });
   if (!await explainStepOnce(cs, "timer", "steam")) return;
   // スマホで画面から外した補足の2文は「?」で読む（PHN）
   panel.closest?.(".bench")?.querySelector?.(".bench-guide-tip > p")?.after?.(el("div.bench-guide-extra.bench-guide-phone", [
@@ -25,7 +25,7 @@ export async function runSteamTimer(cs) {
   const canShorten = cs.mode !== "tutorial" && basicsExperienced();
   const clock = buildDigitalClock("timer-display", { live: true, test: "timer-display" });
   const thermometer = buildSteamTemperature(cs);
-  const forecast = buildSteamForecast(cs, thermometer);
+  const forecast = buildSteamForecast(cs, thermometer, { canZero });
   const durationHint = el("p", { role: "status", "aria-live": "polite", dataset: { test: "steam-duration-hint" } });
   const shorten = canShorten ? el("button.btn.steam-shorten", {
     type: "button",
@@ -38,9 +38,8 @@ export async function runSteamTimer(cs) {
   const render = () => {
     clock.update(seconds);
     forecast.update(seconds);
-    const playSeconds = steamPlaySeconds(seconds) * (cs.mode === "tutorial" ? 0.7 : 1);
     const shortened = canShorten && cs.steamShorten;
-    const effective = shortened ? Math.min(playSeconds, SHORT_DODGE_SECONDS) : playSeconds;
+    const effective = steamDodgeSeconds({ ...cs, steamShorten: shortened }, seconds);
     // 要点（約○秒）と補足を分けておく。スマホは要点だけを画面に出し、補足は「?」で読む（PHN・css/craft-phone.css）。文は今までと同じ。
     const [main, more] = seconds < minimumSeconds
       ? ["時間を設定すると、雑念回避の長さが分かります。", ""]
@@ -77,7 +76,15 @@ export async function runSteamTimer(cs) {
         button("分", "timer-minute-up", 1, addMinute),
         button("秒", "timer-second-up", 2, addSecond), start,
         button("リセット", "timer-reset", 4, () => { SE.click(); seconds = 0; render(); }),
-      ]), durationHint, shorten, forecast.root, thermometer.root,
+      ]),
+      el("div.steam-timer-actions", [
+        el("div.steam-presets", [3, 5, 8].map(minutes => el("button.btn.small", {
+          type: "button", text: `${minutes}分`, dataset: { test: `timer-preset-${minutes}` },
+          onclick: () => { SE.click(); seconds = minutes * 60; render(); },
+        }))),
+        durationHint, shorten,
+      ]),
+      forecast.root, thermometer.root,
     ]));
     render();
     if (autoSkill()) { seconds = 300; render(); setTimeout(() => start.click(), 40); }
