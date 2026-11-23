@@ -254,9 +254,11 @@ await suite("trpg-main", async check => {
     await lines(page);
     assert.match(await page.locator(".trpg-table-person").first().textContent(), /六角サイ/);
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
-  for (const [label, options] of [
-    ["club-recruit-pc", { viewport: { width: 1280, height: 720 } }],
-    ["club-recruit-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  for (const [label, options, choice, reply] of [
+    ["club-recruit-pc", { viewport: { width: 1280, height: 720 } },
+      "time", "ええ。お仕事が片づいた夜なら、こちらの準備も手伝ってくださるんですね"],
+    ["club-recruit-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true },
+      "people", "ああ、まずはお一人。そこから手伝ってくださるんですね"],
   ]) await check(label, async page => {
     await prepare(page, { club: false }); const before = await storageSnapshot(page);
     await page.goto(new URL("trpg-campaign-preview.html", baseURL).href);
@@ -265,8 +267,9 @@ await suite("trpg-main", async check => {
     assert.equal(await button(page, "trpg-buy-shark-last-order").count(), 0);
     await assertShelfControls(page);
     await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-club-proposal-" + label + ".png" });
-    await hit(page, label === "club-recruit-pc" ? "trpg-club-choice-time" : "trpg-club-choice-people");
-    assert((await button(page, "trpg-club-founded").textContent()).includes(label === "club-recruit-pc" ? "営業が終わるまで" : "声をかけるところから"));
+    await hit(page, "trpg-club-choice-" + choice);
+    const founded = await button(page, "trpg-club-founded").textContent();
+    assert(founded.includes("「" + reply + "」"), founded);
     assert.equal(await button(page, "trpg-buy-shark-last-order").count(), 0, "MAX alone must not stock a book");
     const locked = button(page, "trpg-book-shark-last-order");
     assert.equal(await locked.getAttribute("data-locked"), "true");
