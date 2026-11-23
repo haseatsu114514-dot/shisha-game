@@ -97,7 +97,25 @@ function menu(result = null) {
       if (busy() || intro.inert) return; opponent = id;
       for (const b of picker.children) b.setAttribute("aria-pressed", String(b.dataset.companion === id));
     } })));
-  const message = el("p.axe-menu-message", { "aria-live": "polite", text: result?.completed ? (result.match ? (result.series?.bestOf > 1 ? "マッチ " + result.series.wins.player + "-" + result.series.wins.opponent + " · " : "") + ({player:"あなたの勝ち", opponent:(result.opponent === "adam" ? "アダム" : "ひより") + "の勝ち", draw:"引き分け"})[result.match.winner] + (result.match.suddenDeath ? "（サドンデス" + result.match.suddenDeath.rounds + "本）" : "") + " · " + result.match.playerTotal + " 対 " + result.match.opponentTotal + " / 前回の記録 " : "前回の記録  ") + result.total + " / " + result.maximum + "点 · 平均 " + result.stats.average.toFixed(2) : "狙いを定めて、気持ちいい一投を。" });
+  let messageText = "狙いを定めて、気持ちいい一投を。";
+  if (result?.completed) {
+    const series = result.series?.bestOf > 1 ? result.series : null;
+    messageText = (result.match ? "前回の記録 " : "前回の記録  ") + result.total + " / " + result.maximum + "点 · 平均 " + result.stats.average.toFixed(2);
+    if (result.match) {
+      const winner = series?.winner ?? result.match.winner;
+      const outcome = ({ player: "あなたの勝ち", opponent: (result.opponent === "adam" ? "アダム" : "ひより") + "の勝ち", draw: "引き分け" })[winner];
+      const opponentTotal = series ? series.games.reduce((sum, game) => sum + game.opponentTotal, 0) : result.match.opponentTotal;
+      const suddenDeath = series ? series.games.reduce((sum, game) => sum + (game.suddenDeath?.rounds ?? 0), 0) : result.match.suddenDeath?.rounds;
+      const score = result.total + " 対 " + opponentTotal;
+      messageText = outcome + (suddenDeath ? "（サドンデス" + suddenDeath + "本）" : "") + " · " + score + " / " + messageText;
+      if (series) {
+        const goalsDone = result.challenges.filter(goal => goal.state === "done").length;
+        messageText = "マッチ " + series.wins.player + "-" + series.wins.opponent + " · " + messageText
+          + " · RANK " + result.rank + " · チャレンジ " + goalsDone + "/" + result.challenges.length;
+      }
+    }
+  }
+  const message = el("p.axe-menu-message", { "aria-live": "polite", text: messageText });
   const rivals = el("div.axe-pickers.axe-menu-options", { role: "group", "aria-label": "対戦相手" }, ["hiyori", ...(adamUnlocked() ? ["adam"] : [])].map(id => el("button.axe-button", {
     type: "button", text: id === "adam" ? "アダム · 裏ボス" : "ひより", "aria-pressed": String(id === rival), dataset: { rival: id }, onclick: () => {
       if (busy() || intro.inert) return; rival = id; menu();

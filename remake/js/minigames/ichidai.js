@@ -1078,7 +1078,9 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     if (!ui.assist || !w || !human(w.player) || G.over || AUTO_WAITS.has(w.type)) return null;
     const key = `${G.log.length}:${w.type}:${w.n ?? ""}:${me.hand.join()}:${me.zone.map((c) => c.f).join()}:${me.stove.map((c) => c.stage).join()}:${me.cardsUsed}:${me.turn?.packed ?? ""}:${me.turn?.adds ?? ""}:${me.turn?.ashes ?? ""}:${heatOf(me)}:${leavesOf(me)}`;
     if (hintCache.key !== key) {
-      let a = null; try { a = aiAct(G, ME); } catch { a = null; }
+      const players = G.P.slice();
+      players[ME] = { ...me, turn: structuredClone(me.turn) };
+      let a = null; try { a = aiAct({ ...G, P: players }, ME); } catch { a = null; }
       const hint = a && describeHint(a, me, w);
       // 入門の一局: 手の下に「なぜ」を1行添える（カードを使う手は、カードの説明がもう付いている）
       if (hint && cfg?.intro && !hint.sub) hint.sub = INTRO_WHY[a.type === "end" && w.type === "prep" ? "end_prep" : a.type] || null;
@@ -1236,7 +1238,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   /** 「ふつうに吸う」なら、いまの一台の印象はいくつか（仕込んだカードも入れる）。相手のぶんも出して、一票の見込みを見せる */
   function impressionNow(p) {
     if (!p.main) return 0;
-    const pf = p.puff || {}, q = judgeNow(), s = scorePuff(p, judgedHeat(p, q, pf.tk || 0), q, { blow: pf.blow });
+    const pf = p.puff || {}, q = judgeNow(), s = scorePuff(p, judgedHeat(p, q, pf.tk || 0, heatNext(p)), q, { blow: pf.blow });
     const good = s.zone === "just" || s.zone === "band";
     return impressionOf(p, s, (pf.impress || 0) + (s.zone === "just" ? 2 * (pf.allIn || 0) : 0) + (good ? pf.warm || 0 : 0) + (p.sessImp || 0), G.R.impress);
   }
@@ -1592,9 +1594,10 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
         }
         resolve();
       };
+      const zone = ev.res[ME].zone;
       openSheet("score", el(`div.ichi-result${multi() ? ".is-many" : ""}`, { dataset: { test: "ichi-result" } }, [
-        !quick() && ev.res.some((r) => r.zone === "just" || r.zone === "scorch") ? el(`div.ichi-cutin-band.${ev.res.some((r) => r.zone === "scorch") ? "is-scorch" : "is-just"}`, { "aria-hidden": "true" },
-          el("b", { text: ev.res.some((r) => r.zone === "scorch") ? "焦げ" : "ジャスト" })) : null,
+        !quick() && (zone === "just" || zone === "scorch") ? el(`div.ichi-cutin-band.is-${zone}`, { "aria-hidden": "true" },
+          el("b", { text: zone === "scorch" ? "焦げ" : "ジャスト" })) : null,
         el("header", [el("small", { text: `ラウンド ${ev.round + 1}` }), puffCard(ev.puff)]),
         row(ME, "あなた"), ...rivalIds().map((i) => row(i, G.P[i].name)),
         !G.R.useVote ? null : el("p.ichi-result-vote", { text: multi()

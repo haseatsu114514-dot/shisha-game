@@ -93,11 +93,11 @@ export function djTalkAfterSet(s, results = []) {
   const flags = s?.flags || {};
   if (results.some(item => high(item?.rank)) && flags[CLUB_A_TALK_FLAG] !== true) return { scene: "ch3_club_a_talk", flag: CLUB_A_TALK_FLAG };
   const { sets } = djRecords(s);
+  const plays = Object.values(sets).reduce((sum, item) => sum + item.plays, 0);
+  if (plays >= CLUB_REQUEST_PLAYS && flags[CLUB_REQUEST_FLAG] !== true) return { scene: "ch3_club_request", flag: CLUB_REQUEST_FLAG };
   if (flags[CLUB_A_TALK_FLAG] === true && flags[CLUB_LAST_SET_FLAG] !== true && DJ_SETS.every(set => high(sets[set.id].best?.rank))) {
     return { scene: "ch3_club_last_set", flag: CLUB_LAST_SET_FLAG };
   }
-  const plays = Object.values(sets).reduce((sum, item) => sum + item.plays, 0);
-  if (plays >= CLUB_REQUEST_PLAYS && flags[CLUB_REQUEST_FLAG] !== true) return { scene: "ch3_club_request", flag: CLUB_REQUEST_FLAG };
   return null;
 }
 export function djNightChoices(value, window) {

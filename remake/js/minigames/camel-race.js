@@ -395,7 +395,7 @@ const active = new WeakMap();
  * @param tutorial 開始前のチュートリアルを出すか
  * @param pilot テスト・デモ用の自動操作（"perfect"／"good"／"none"／"spam"／関数）
  * @param timeScale テスト用の早回し
- * @param best 以前の自己ベスト（リザルトで更新を知らせる）
+ * @param best 以前の自己ベスト（大会ID付きの採点。大会別の保存が無いときに使用）
  * 戻り値: { completed, cancelled, runs: [採点…], best: 最高の採点, last: 最後の採点 }
  */
 export function runCamelRace({ host = document.getElementById("stage"), signal = null, seed = null, tutorial = true, allowRetry = true,
@@ -950,7 +950,10 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   const helpButton = back => el("button.camel-help", { type: "button", text: "？", "aria-label": "遊び方を見る", dataset: { test: "camel-help" },
     onclick: () => { sfx("click"); openTutorial(0, back); } });
   /** その大会の自己ベスト（保存された記録と、この訪問で走った分の高い方。無ければ -1）。札に出して、越える目標にする。 */
-  const cupBest = id => Math.max(-1, Number.isFinite(cupRecords[id]?.best?.total) ? Math.round(cupRecords[id].best.total) : -1, ...runs.filter(run => run.cup === id).map(run => run.total));
+  const cupBest = (id, records = runs) => {
+    const saved = cupRecords[id]?.best?.total ?? (best?.cup === id ? best.total : null);
+    return Math.max(-1, Number.isFinite(saved) ? Math.round(saved) : -1, ...records.filter(run => run.cup === id).map(run => run.total));
+  };
   function openCups() {
     setPhase("cups");
     hudNode.hidden = true;
@@ -2293,8 +2296,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     // 記録はゴールの瞬間に入っている（commitRun）。ここでは見せるだけ。
     const run = commitRun(), score = run;
     setPhase("result");
-    const previousBest = Math.max(best?.total ?? -1, ...runs.slice(0, -1).map(item => item.total));
-    const isBest = score.total > previousBest;
+    const previousBest = cupBest(run.cup, runs.slice(0, -1));
+    const isBest = previousBest >= 0 && score.total > previousBest;
     announce(`${score.rank}位でゴール。スコア${score.total}、評価${score.grade}。`);
     const resultMargins = margins || finishMargins(race);
     const resultEdge = score.rank === 1 ? resultMargins?.behind : resultMargins?.ahead;
@@ -2345,7 +2348,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         ["無駄な声", score.stats.spam ? `${score.stats.miss}（連打${score.stats.spam}）` : score.stats.miss], ["競り合い", `${score.stats.duelsWon}勝／${score.stats.duels}回`], ["ムチ", `${score.stats.whipTime}秒（スパート${score.stats.spurtWhip}秒）`]]
         .map(([label, value]) => el("li", [el("small", { text: label }), el("b", { text: String(value) })]))),
       nextNode,
-      isBest && (best !== null || runs.length > 1) ? el("p.camel-best", { text: "自己ベスト更新！", dataset: { test: "camel-new-best" } }) : null,
+      isBest ? el("p.camel-best", { text: "自己ベスト更新！", dataset: { test: "camel-new-best" } }) : null,
       camelMastered(run) ? el("p.camel-best", { text: "中級認定！ 連打に頼らず、声と息を合わせた走り。追加の火種は初回認定時のみ。" })
         : camelExpert(run) ? el("p.camel-best", { text: "称号獲得：砂漠の名調教師" })
         : run.cup === "expert" && camelCupQualified(run) ? el("p.camel-best", { text: "上級クリア！ 次は1位・S・連打なしで称号。", dataset: { test: "camel-top-clear" } }) : null,
