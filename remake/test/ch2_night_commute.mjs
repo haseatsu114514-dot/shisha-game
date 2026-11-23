@@ -172,6 +172,7 @@ const rewardTrace = [];
 const homeSpots = [{ id: 'tonari' }, { id: 'naru' }, { id: 'adam' }, { id: 'minto' }];
 const citySpot = { id: 'ch2_ageha', charId: 'ageha', region: 'widehanga' };
 let restedForInvite = false;
+let meetingCancelled = false;
 const invitationContext = vm.createContext({
   chapterDef: { nightEvents: {}, beforeInvitation, spotById: id => id === citySpot.id ? citySpot : null },
   ...Object.fromEntries(Object.keys(invitations.namespace).map(key => [key, invitations.namespace[key]])),
@@ -184,11 +185,12 @@ const invitationContext = vm.createContext({
   gainAffinity: (id, amount) => rewardTrace.push(`affinity:${id}:${amount}`),
   play: async () => { log.push('meeting:' + state.flags._ch2_region); return { cancelled: false }; },
   addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
-  playHiyoriHangout: async () => { log.push('meeting:' + state.flags._ch2_region); },
+  playHiyoriHangout: async () => { log.push('meeting:' + state.flags._ch2_region); return !meetingCancelled; },
   consultLessons: async () => [], // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
   takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "", // 章はじめの盤の知らせ（#1801 C10）
   bgRef: id => id, VISIT_BG: { hiyori: 'shop' },
-  completeInvitation: inv => { state.pendingInvite = null; rewardTrace.push('complete:' + inv.sender); },
+  completeInvitation: inv => rewardTrace.push('complete:' + inv.sender),
+  holdActionSave: () => () => {},
   paidAction: async fn => { rewardTrace.push('paidAction'); const value = await fn(); if (value) rewardTrace.push('reward'); return { value, spent: 1 }; },
   invitationExp: inv => ({ key: inv.sender, person: inv.sender }),
   afterAction: async () => { rewardTrace.push('afterAction'); },
@@ -205,10 +207,23 @@ vm.runInContext(takeSource + '\n' + invitationSource + '\n' + endSource, invitat
 });
 function resetInvite({ region = 'widehanga', spot = 'minto', late = false } = {}) {
   reset(); rewardTrace.length = 0; restedForInvite = late === 'rest';
+  meetingCancelled = false;
   Object.assign(state, { day: 22, slot: late ? 2 : 1, money: 10000, stamina: 80, visitedDay: {}, inbox: [] });
   state.flags._ch2_region = region;
   state.pendingInvite = { event: '__hiyori_shop__', sender: 'hiyori', visitSpot: spot, day: 22, slot: 1,
     ...(late === 'close' ? { afterClose: true, queuedAfterClose: true } : {}) };
+}
+for (const late of [false, 'close', 'rest']) {
+  resetInvite({ region: 'home', late });
+  const pending = state.pendingInvite, slot = state.slot;
+  meetingCancelled = true;
+  await (late ? invitationContext.endDay() : invitationContext.takeAction());
+  assert.equal(state.pendingInvite, pending); assert.equal(state.slot, slot);
+  assert.equal(state.money, 10000); assert.equal(state.stamina, 80);
+  assert.deepEqual(rewardTrace, ['paidAction']);
+  meetingCancelled = false;
+  await runInvite(late);
+  assert.equal(state.pendingInvite, null); assert.equal(state.money, 7000); assert.equal(state.stamina, 70);
 }
 async function runInvite(late = false) {
   if (late) await assert.rejects(invitationContext.endDay(), error => error === appointmentStop);
