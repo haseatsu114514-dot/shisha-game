@@ -483,6 +483,8 @@ export async function openConfig(opts = {}) {
     onchange: (e) => { config.shortSeen = e.target.checked; persist(); opts.onChange?.("shortSeen", config.shortSeen); },
   });
   shortSeen.checked = config.shortSeen;
+  const fastDaily = segRow("日常演出（スロット・朝・既読の帰宅）", "cfg-fast-daily", [["normal", "ふつう"], ["fast", "短く"]],
+    config.fastDaily ? "fast" : "normal", value => setConfig("fastDaily", value === "fast"));
   const effectColors = el("input", {
     type: "checkbox", dataset: { test: "cfg-stat-effect-colors" },
     onchange: (e) => { config.statEffectColors = e.target.checked; persist(); opts.onChange?.("statEffectColors", config.statEffectColors); },
@@ -520,6 +522,7 @@ export async function openConfig(opts = {}) {
       row("揺れ・閃光を減らす", reduceShake),
       row("文字送りの声", blip),
       row("見た演出を短く", shortSeen),
+      fastDaily,
       row("能力の効き目を色で表示", effectColors),
       ...(fullscreen ? [el("div.cfg-row", [el("span", { text: "全画面" }), fullscreen])] : []),
     ]),

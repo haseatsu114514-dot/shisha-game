@@ -372,6 +372,20 @@ await suite("spot-encounters", async check => {
       assert.equal(result.error, undefined);
       assert.deepEqual(result.trace, [], "盤専用の入口から、以前の施設会話には入らない");
       assert.deepEqual(result.after, result.before);
+      // 同じ地図の入口から、通常訪問を選ぶと境内の既存会話に入る。
+      await page.evaluate(() => {
+        delete E.core.state.visitedDay.kannon;
+        E.vn.vnTest.choose = () => 0;
+      });
+      await press(`${map} [data-spot="kannon"]`);
+      await press('[data-test="map-go"]');
+      await press('[data-test="kannon-visit"]');
+      await page.waitForFunction(() => E.core.state.slot === 1);
+      const courtyard = await page.evaluate(() => ({ ...E.kannonState(), trace: E.trace }));
+      assert(courtyard.trace.includes("kannon_adam"));
+      assert.equal(courtyard.visits, 2);
+      assert(courtyard.seen);
+
     }, options);
   }
 

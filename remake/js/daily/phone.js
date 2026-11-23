@@ -1054,16 +1054,30 @@ function phoneShell({ time, title }) {
   return ui;
 }
 
+const MAX_HEART_CHAT_EXP = 5;
+const isMaxHeartChat = m => m.type === "chat" && (m.casual || m.friend) && !m.lover && !isLover(m.sender)
+  && growthEnabled() && affinityLevel(m.sender) === AFFINITY_RANK_PTS.length - 1;
+
+function maxHeartChatRewardDue(item, replied) {
+  const origin = originId(item);
+  return item.id === origin && !state.inbox.some(other => other !== item && originId(other) === origin
+    && (replied ? other.replyState === "replied" : other.read));
+}
+
+function pendingMaxHeartChat(item) {
+  const m = item.msg;
+  if (item.done || !isMaxHeartChat(m)) return false;
+  if (!m.replies?.length) return !item.read && m.sender !== "sumi" && maxHeartChatRewardDue(item, false);
+  return !isMissedReply(item) && m.replies.some(r => !r.action && (r.affinity ?? 1) > 0) && maxHeartChatRewardDue(item, true);
+}
+
 /** 好感度がすでにMAXなら、日常の雑談の好感度を少量のEXPに置き換える。 */
 function settleMaxAffinityChat(item, ui, replied = false) {
   const m = item.msg;
-  if (m.type !== "chat" || !(m.casual || m.friend) || m.lover || isLover(m.sender) || !growthEnabled()
-    || affinityLevel(m.sender) !== AFFINITY_RANK_PTS.length - 1) return false;
+  if (!isMaxHeartChat(m)) return false;
   // 既読・返信済みの同じ話題があっても、再案内や再表示ではEXPを入れない。
-  const origin = originId(item);
-  if (item.id === origin && !state.inbox.some(other => other !== item && originId(other) === origin
-    && (replied ? other.replyState === "replied" : other.read))) {
-    const got = gainExp(5, { key: "lime_chat", silent: true });
+  if (maxHeartChatRewardDue(item, replied)) {
+    const got = gainExp(MAX_HEART_CHAT_EXP, { key: "lime_chat", silent: true });
     if (got > 0) ui.note(`EXP +${got}`); // スマホ内だけに表示し、トーク履歴やHUDには重ねて残さない
   }
   return true;
@@ -1185,7 +1199,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       [
         st === "busy"
           ? { label: "（今日はもう別の約束がある）", disabled: true }
-          : { label: `${go}（行動1回${cost ? `・${yen(cost)}必要${affordable ? "" : "・所持金不足"}` : ""}）`, text: go, go: true, disabled: !affordable, wrap: !!cost },
+          : { label: `${go}（行動1回${cost ? `・${yen(cost)}必要${affordable ? "" : "・所持金不足"}` : /^friend_/.test(m.accept_event) ? "・無料" : ""}）`, text: go, go: true, disabled: !affordable, wrap: !!cost },
         { text: no, go: false },
         ...(!forced ? [{ text: "あとで返事する（トーク一覧へ）", later: true }] : []),
       ],
@@ -1374,6 +1388,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
       const last = items.at(-1);
       const unread = items.some((i) => !i.read);
       const openInv = items.some((i) => i.msg.type === "invitation" && !i.done && inviteState(i, ui.inviteOptions) !== "expired");
+      const xpChat = items.some(pendingMaxHeartChat);
       const lastContent = [...(last.msg.messages || []), ...(last.read ? last.log || [] : [])]
         .map(messageContent).filter(Boolean).at(-1);
       const preview = lastContent?.kind === "text" ? plain(lastContent.text)
@@ -1389,7 +1404,8 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
         ]),
         el("div.lcr-side", [
           el("small", { text: dayLabel(last) }),
-          openInv ? el("span.lcr-tag", { text: "誘い" }) : last.msg.type === "chat" ? el("span.lcr-tag", { text: "雑談" }) : null,
+          openInv ? el("span.lcr-tag", { text: "誘い" }) : xpChat ? el("span.lcr-tag", { text: `♥5・基礎EXP +${MAX_HEART_CHAT_EXP}`,
+            title: "日常の雑談では好感度の代わりに経験値が入る。獲得量には章の倍率が掛かる。", dataset: { test: "lime-chat-exp" } }) : last.msg.type === "chat" ? el("span.lcr-tag", { text: "雑談" }) : null,
         ]),
       ]));
     }

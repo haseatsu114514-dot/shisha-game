@@ -7,12 +7,13 @@ export const LOVER_SCENE_EXP = 20;
 /** 完読した開始台本だけを数える。jump先・中断・別セーブ・既読の旧セーブへは再付与しない。 */
 export function awardLoverSceneExp(id, owner) {
   if (!owner || state !== owner) return 0;
-  const match = /^lover_(tsumugi|minto|rio|ageha|mashiro|samechan|hiyori)_lv[1-5](?:_b)?$/.exec(id || "");
-  const character = match?.[1] || (id === "hiyori_feelings_spoken" ? "hiyori" : null);
+  const match = /^lover_(tsumugi|minto|rio|ageha|mashiro|samechan|hiyori|noor)_lv[1-5](?:_b)?$/.exec(id || "");
+  const noorScene = /^ch5_noor_lover_(?:welcome|night|farewell|again)$/.test(id || "");
+  const character = match?.[1] || (noorScene ? "noor" : id === "hiyori_feelings_spoken" ? "hiyori" : null);
   if (!character || !state.lovers?.includes(character)) return 0;
   const key = `_lover_exp_${id}`;
   if (state.flags[key] || state.loverEventsSeen?.includes(id)
-    || state.flags[`_${id}_reward_done`]
+    || state.flags[noorScene ? `_${id}` : `_${id}_reward_done`]
     || id === "hiyori_feelings_spoken" && state.flags._hiyori_feelings_spoken) return 0;
   state.flags[key] = true;
   return gainExp(LOVER_SCENE_EXP, { key: character, tag: "会話", source: "lover", first: true });

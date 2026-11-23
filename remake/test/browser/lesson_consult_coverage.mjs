@@ -198,7 +198,7 @@ await suite("lesson-consult-coverage", async (check) => {
     assert.equal(volk.volkLime, true, "the exchange is recorded");
     assert.deepEqual(friendLime, [["steve", "chat"], ["volk", "chat"]], "friend LIMEs can arrive from both afterwards");
     assert.deepEqual(volkAgain.result, { used: true, exerted: true });
-    assert.equal(volkAgain.spent, 4000, "the next visit is an ordinary paid visit");
+    assert.equal(volkAgain.spent, 3500, "the next visit is an ordinary paid visit");
     // #3693: 締めくくりの次の来店は、小会話の代わりに♥5後の一本目（締めくくりで受け取った素焼きの回収）。小会話の巡回は進めない
     assert.equal(volkAgain.talks, 0, "the bond-after scene replaces the small talk without advancing the rotation");
     assert.deepEqual(volkAgain.bondAfter, ["bond_after_volk_1"], "Volk's first bond-after scene (he now owns the hagal)");
@@ -246,7 +246,7 @@ await suite("lesson-consult-coverage", async (check) => {
     assert.doesNotMatch(steve.text, /LIMEを交換しておきませんか|連絡先を交換した/, "already on LIME since chapter 3: no second exchange");
     assert.match(volk.text, /順番は違っても、両方を書くなら構わない[\s\S]*また来い/, "Volk's chapter 5 text");
     assert.doesNotMatch(volk.text, /書いたら、送れ|LIMEを交換してもらえますか|連絡先を登録し/, "Volk: already on LIME since chapter 3: no second exchange");
-    assert.deepEqual(after, { steve: { cost: 4000, ok: false }, volk: { cost: 4000, ok: false } }, "after the finale the usual 4,000 yen fee is back");
+    assert.deepEqual(after, { steve: { cost: 3500, ok: false }, volk: { cost: 3500, ok: false } }, "after the finale the usual 3,500 yen fee is back");
     assert.deepEqual(steveAgain.result, { used: false, exerted: false }, "an ordinary visit with 3,000 yen is still refused");
     assert.equal(steveAgain.spent, 0);
     assert.equal(steveAgain.talks, 0);

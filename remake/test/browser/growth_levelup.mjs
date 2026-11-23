@@ -407,7 +407,7 @@ await suite("growth-levelup", async (runCheck) => {
       window.k20Board=(await import("./js/daily/growth-board-screen.js")).openBoard({place:"kannon"});
     });
     const node=page.locator(t("board-node-K20"));await node.waitFor();assert.match(await node.getAttribute("class"),/gb-node stat/);
-    await node.click();assert.match(await page.locator(t("board-perk")).innerText(),/好感度.*＋4%/,"火種2のマスは恩恵も2マス分（SBD112）");
+    await node.click();assert.match(await page.locator(t("board-perk")).innerText(),/好感度.*＋5%/,"火種2のマスは恩恵も2マス分（SBD112）");
     assert.doesNotMatch(await page.locator(t("board-preview")).innerText(),/差し入れ|手土産/);
     assert.match(await page.locator(t("board-tab-body")).getAttribute("aria-label"),/\/27/);
     await page.locator(t("board-close")).click();
@@ -891,7 +891,7 @@ await suite("growth-levelup", async (runCheck) => {
       assert.equal(saved.reel, await page.evaluate(() => window.entryReel));
       assert.equal(await page.evaluate(async () => (await import("./js/core/stats.js")).maxStamina()), maximum);
       await tap(t("hud-menu"));
-      assert.equal(await page.locator(t("menu-board")).innerText(), "心得の盤を見る");
+      assert.equal(await page.locator(t("menu-board")).innerText(), "心得の盤を開く");
       await tap(t("menu-close"));
       await page.locator(".dmenu").waitFor({ state: "detached" });
       assert.equal(await page.evaluate(() => window.entryMenu), 2);
@@ -980,7 +980,7 @@ await suite("growth-levelup", async (runCheck) => {
     await check(`${label}-board-from-levelup`, async (page) => {
       const tap = (sel) => !options.hasTouch ? page.locator(sel).click() : page.locator(sel).tap();
       await setupDaily(page);
-      // レベルが上がったその場で火種は手持ちに入る（SBD108・SBD122）。メニューの盤は見るだけ
+      // レベルが上がったその場で火種は手持ちに入る（SBD108・SBD122）。閲覧用の入口から開く
       await page.evaluate(async () => {
         const g = await import("./js/core/growth.js");
         g.gainExp(g.totalExpFor(3));
@@ -989,7 +989,7 @@ await suite("growth-levelup", async (runCheck) => {
       const board = page.locator(t("growth-board"));
       await board.waitFor();
       assert.equal(await page.locator(BLOCKING).count(), 0);
-      // メニューからは見るだけ（灯すのは参拝の場所。SPEC 2.8）
+      // 閲覧用の入口では目標のみ設定できる
       assert.equal(await board.getAttribute("data-mode"), "view");
       assert.match(await page.locator(t("board-place")).innerText(), /見るだけ/);
       assert.match(await page.locator(t("board-wallet")).innerText(), /白火\s*4/, "Lv.1→3 で白火4");

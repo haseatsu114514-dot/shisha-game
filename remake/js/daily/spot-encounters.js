@@ -122,7 +122,7 @@ export function spotFollowupDue(charId, save, dialogues) {
 
 // #3097 PR-B: 地元の雨の回の章ごとの台本。雨の日、巡回が引いた回（施設の雨の回・静かな回、家で休む回）の代わりに一度だけ読む。
 // 巡回は引いた回を読んだものとして一つ進め、初回読了の経験値も引いた回の鍵で数える（daily/spots.js の visitSpot・restAtHome）。新しい場面 ID で経験値を増やさない。
-// 読んだ印は台本末尾の `_spot_seen_<id>`。観音堂は心得の盤を開く場所で、施設の回を読まないので置かない（daily/reflection.js）。
+// 読んだ印は台本末尾の `_spot_seen_<id>`。観音堂の通常の雨の回は weather.js にある。
 const CHAPTER_RAIN = {
   2: { cafe: "cafe_ch2_rain", choizap: "choizap_ch2_rain", c_station: "cs_ch2_rain", rest: "ch2_rest_rain" },
 };

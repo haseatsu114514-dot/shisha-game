@@ -61,8 +61,8 @@ async function fixture() {
 let failures=0,groups=0;
 async function check(name,fn){try{await fn(await fixture());groups++;console.log(`PASS ${name}`);}catch(e){failures++;console.error(`FAIL ${name}: ${e.stack}`);}}
 const done={id:'controlled-complete',visited:[]};
-// 初対面は9点・端数0。2回目以降は台帳 AFB01 の段階会話 16×0.85=13.6、通い 8×0.85=6.8。
-const FIRST_VISIT=9,TWO_VISITS=22,REPEAT_VISIT=6;
+// 初対面は9点・端数0。2回目以降は台帳 AFB01 の段階会話 15×0.85=12.75、通い 8×0.85=6.8。
+const FIRST_VISIT=9,TWO_VISITS=21,REPEAT_VISIT=6;
 const first=(f,id)=>{const s=f.fresh();delete s.met[id];s.story[id]=0;s.affinity[id]=0;s.flags._cafe_introduced=true;return s;};
 await check('known legacy identity repair never creates or keeps first-meeting pending',async f=>{
  const s=first(f,'dr_charcoal');s.affinityCarry.dr_charcoal=.25;s.flags._affinity_first_meeting_pending_dr_charcoal=true;
@@ -113,12 +113,12 @@ await check('name learned before cancelled first VN stays pending across SAVE/LO
  s=f.roundTrip();f.setPlay(async()=>done);
  assert.equal(await f.spots.visitChar('adam'),true);assert.equal(s.affinity.adam,9);assert.equal(s.affinityCarry.adam||0,0);
  assert.equal(s.flags._affinity_first_meeting_pending_adam,undefined);
- await f.spots.visitChar('adam');assert.equal(s.affinity.adam,22);
+ await f.spots.visitChar('adam');assert.equal(s.affinity.adam,21);
 });
 await check('LIME while a named first encounter is pending keeps its old formula and does not settle the face meeting',async f=>{
  let s=first(f,'adam');f.core.markMet('adam');
  f.stats.gainAffinity('adam',2,{remote:true});assert.equal(s.affinity.adam,1);assert.equal(s.flags._affinity_first_meeting_pending_adam,true);
- f.stats.gainAffinity('adam',1,{source:'lime'});assert.equal(s.affinity.adam,1);assert.equal(s.flags._affinity_first_meeting_pending_adam,true);
+ f.stats.gainAffinity('adam',1,{source:'lime'});assert.equal(s.affinity.adam,2);assert.equal(s.flags._affinity_first_meeting_pending_adam,true);
  s=f.roundTrip();f.setPlay(async()=>done);await f.spots.visitChar('adam');
  assert.equal(s.affinity.adam,9);assert.equal(s.affinityCarry.adam,0);assert.equal(s.flags._affinity_first_meeting_pending_adam,undefined);
 });
@@ -161,13 +161,11 @@ const close = (actual, expected) => assert(Math.abs(actual-expected)<1e-8, `${ac
 const heartEvents = f => f.events.filter(event => event.type === 'affinity-gain');
 await check('Samechan LIME without onGain stays quiet until the first integer heart gain', async f => {
  let s=f.fresh();s.chapter=2;s.affinity.samechan=8;
- for(let i=1;i<=4;i++){
-  assert.equal(f.stats.gainAffinity('samechan',1,{source:'lime'}),0);
-  assert.equal(s.affinity.samechan,8);close(s.affinityCarry.samechan,i*.2125);
-  f.tick();assert.equal(heartEvents(f).length,0,'carry alone must not queue a heart card');
- }
+ assert.equal(f.stats.gainAffinity('samechan',1,{source:'lime'}),0);
+ assert.equal(s.affinity.samechan,8);close(s.affinityCarry.samechan,.6375);
+ f.tick();assert.equal(heartEvents(f).length,0,'carry alone must not queue a heart card');
  assert.equal(f.stats.gainAffinity('samechan',1,{source:'lime'}),1);
- assert.equal(s.affinity.samechan,9);close(s.affinityCarry.samechan,.0625);
+ assert.equal(s.affinity.samechan,9);close(s.affinityCarry.samechan,.275);
  assert.equal(heartEvents(f).length,0,'integer gain uses the normal notification batch');
  f.tick();assert.deepEqual(clone(heartEvents(f).map(event=>event.payload)),[
   {id:'samechan',level:1,levelUp:true,prevPts:8,pts:9},
@@ -177,18 +175,18 @@ await check('Samechan LIME without onGain stays quiet until the first integer he
 await check('Samechan LIME onGain retains fractional feedback across SAVE/LOAD without heart cards', async f => {
  let s=f.fresh();s.chapter=2;s.affinity.samechan=8;
  const deltas=[],opts={source:'lime',onGain:delta=>deltas.push(delta)};
- for(let i=1;i<=5;i++){
-  assert.equal(f.stats.gainAffinity('samechan',1,opts),i<5?0:1);
-  assert.equal(deltas.length,i);close(deltas.at(-1),.2125);
+ for(let i=1;i<=2;i++){
+  assert.equal(f.stats.gainAffinity('samechan',1,opts),i<2?0:1);
+  assert.equal(deltas.length,i);close(deltas.at(-1),.6375);
   // Flush before LOAD too: changing owner must not hide an incorrectly queued duplicate card.
   f.tick();assert.equal(heartEvents(f).length,0,'reply feedback replaces the heart card');
   s=f.roundTrip();
-  assert.equal(s.affinity.samechan,i<5?8:9);
-  close(s.affinityCarry.samechan,i*.2125-(i<5?0:1));
+  assert.equal(s.affinity.samechan,i<2?8:9);
+  close(s.affinityCarry.samechan,i*.6375-(i<2?0:1));
   f.tick();assert.equal(deltas.length,i,'LOAD cannot replay reply feedback');
   assert.equal(heartEvents(f).length,0);
  }
- close(deltas.reduce((sum,delta)=>sum+delta,0),1.0625);
+ close(deltas.reduce((sum,delta)=>sum+delta,0),1.275);
  assert.equal(s.story.samechan||0,0,'numeric progress does not read an introduction or story');
  assert.equal(s.flags._samechan_first_encounter,undefined);
 });

@@ -184,10 +184,10 @@ await suite("hobby-gear", async check => {
     });
     const buy = page.locator(t("gear-buy-gear_headphones"));
     await buy.waitFor();
-    assert.match(await buy.innerText(), /22,000.*▶の判定が前後¼拍広い（PERFECT の幅が1\.5倍）/); // DJK07: +10ms → ¼拍
+    assert.match(await buy.innerText(), /20,000.*▶の判定が前後¼拍広い（PERFECT の幅が1\.5倍）/); // DJK07: +10ms → ¼拍
     await buy.click();
     await page.locator(t("gear-owned-gear_headphones")).waitFor();
-    assert.equal((await saved(page)).money, 8000);
+    assert.equal((await saved(page)).money, 10000);
     await page.locator(t("dj-set-1")).click();
     const frame = page.locator(t("dj-frame"));
     await frame.waitFor();

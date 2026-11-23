@@ -85,4 +85,6 @@ export const NODES = Object.freeze(buildNodes());
 export const NODE_BY_ID = Object.freeze(Object.fromEntries(NODES.map((n) => [n.id, n])));
 export const BOARD_TOTAL_COST = NODES.reduce((n, node) => n + node.cost, 0);
 export const boardNodes = (board) => NODES.filter((n) => n.board === board);
+// K20 は能力の恩恵を持つ追加マス。盤の進捗・極みには番号つきの能力マスを数える。
+export const isCoreStat = node => node?.kind === "stat" && Number.isInteger(node.index);
 

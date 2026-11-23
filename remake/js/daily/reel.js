@@ -11,7 +11,7 @@
 import { el, sleep } from "../core/util.js";
 import { layers, gainCard, toast } from "../core/ui.js";
 import { on } from "../core/bus.js";
-import { state, save, STAT_KEYS, STAT_JA } from "../core/state.js";
+import { state, save, STAT_KEYS, STAT_JA, config } from "../core/state.js";
 import { gainStat, step } from "../core/stats.js";
 import { DB, faceIconUrl } from "../core/data.js";
 import { SE } from "../core/audio.js";
@@ -652,9 +652,21 @@ export function mountReel(host, { delay = 500 } = {}) {
     try {
       if (!owner.reel.introDone && !await showIntro()) return;
       if (state !== owner) return;
-      if (notice) await presentSettingChange();
+      const skipAnimation = config?.fastDaily === true;
+      if (notice) await presentSettingChange({ skipAnimation });
+      if (state !== owner) return;
       // 取り出してから保存（演出の途中でリロードしても二重に適用しない。報酬は適用済み）
       const items = queue.splice(0, queue.length);
+      if (skipAnimation) {
+        for (const r of items) {
+          const bonus = r.overlap || r.role;
+          owner.reel.shown = isPekaRoll(r.role, r.overlap) ? bonusLine(bonus !== "reg") : r.stops;
+          announce(r);
+        }
+        if (items.length) setStops(owner.reel.shown);
+        save();
+        return;
+      }
       save();
       if (delay) await sleep(delay);
       while (items.length) {
@@ -684,6 +696,7 @@ export async function presentNow({ label = "今夜のスロット" } = {}) {
   requestAnimationFrame(() => host.classList.add("show"));
   // フェードインした時点で今夜の回転を始めておく。前回の停止出目を見せて待たない。
   await mountReel(host, { delay: 0 });
+  if (config?.fastDaily) { host.remove(); return; }
   await sleep(900);
   host.classList.remove("show");
   await sleep(300);
@@ -691,13 +704,14 @@ export async function presentNow({ label = "今夜のスロット" } = {}) {
 }
 
 /** 自動変更の通知。旧セーブの観音堂由来の未表示通知も、確定済みの結果として一度だけ表示する */
-async function presentSettingChange() {
+async function presentSettingChange({ skipAnimation = false } = {}) {
   const reel = state.reel;
   const weekly = reel.settingNotice === "weekly";
   reel.settingNotice = false;
   const hint = settingHint(ensureSetting(reel));
   rememberHint(hint);
   save();
+  if (skipAnimation) { toast(hint); return; }
   if (!alive()) return;
   widget.classList.add("setting-change");
   SE.reelWin();
@@ -1249,6 +1263,8 @@ export function openNote() {
       el("section.rn-setting-box", [
         el("h3", { text: "設定" }),
         el("p.rn-setting", { text: `今の設定は？？？。${s.settingChanges ? `これまでに${s.settingChanges}回変わったよ。` : ""}前回の抽選から7日たつか、章が変わると選び直されるよ` }),
+        el("p.rn-setting", { text: `抽選の配分：${Object.entries(SETTINGS).map(([id, setting]) => `設定${id} ${setting.weight}%`).join(" ／ ")}。高設定ほどベルとボーナスが出やすい。` }),
+        el("p.rn-setting", { text: `フリーズは1セーブにつき${FREEZE_CONTROL.maxPerSave}回まで。持ち物を引き継ぐ周回では、回数も引き継ぐ。` }),
         s.periodStats.current ? el("p.rn-setting", { text: periodLine("今の設定のあいだ", s.periodStats.current) }) : null,
         s.periodStats.past.length ? el("p.rn-setting", [el("small", { text: periodLine("前の設定のあいだ", s.periodStats.past[0]) })]) : null,
         el("h4.rn-hint-head", { text: s.settingSince ? `今の設定のヒント（第${s.settingSince.chapter}章 DAY${s.settingSince.day}から）` : "今の設定のヒント" }),

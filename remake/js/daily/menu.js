@@ -87,7 +87,13 @@ async function runAction(action, { canSave, current, leave, saveRule }) {
   if (action === "load") {
     if (await loadWithRecovery({ inGame: true })) { leave(); requestResumeOnBoot(); location.reload(); }
   }
-  if (action === "board") await openGrowthBoard();
+  if (action === "board") {
+    const { activeMapLessons } = await import("./map.js");
+    if (!current()) return;
+    const map = activeMapLessons();
+    await openGrowthBoard({ fromMenu: !!map, lessonVisit: map?.visit });
+    map?.refresh();
+  }
   if (action === "config") await (await import("../scenes/title.js")).openConfig();
   if (action === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
   if (action === "day2-guide") await (await import("../scenes/day2-guide.js")).openDay2Guide();
@@ -257,7 +263,7 @@ function summary() {
   const item = (label, value, cls = "", extra = null) => el(`span.dm-sum${cls}`, [el("small", { text: label }), value, extra]);
   const tip = el("p.dm-health-tip", { id: "dm-health-tip", hidden: true, dataset: { test: "menu-condition" } }, [
     el("b", { text: `体力 ${now.label}` }),
-    ` ── ${now.hint}。眠ると回復し、外出すると行き先に応じて疲れる。`,
+    ` ── ${now.hint}。眠ると回復し、外出すると行き先に応じて疲れる。バーは最大体力に対する残量、色は基礎体力に対する残量を示す。`,
   ]);
   const help = el("button.dm-help", { type: "button", text: "?", "aria-label": "体力の説明", "aria-expanded": "false", "aria-controls": "dm-health-tip",
     dataset: { test: "menu-condition-help" }, onclick: () => {
@@ -330,7 +336,7 @@ function growthCards(choose, select) {
         ]);
         return row;
       }),
-      el("div.dm-actions", [el("button.dm-btn.primary", { type: "button", text: hidane ? `心得の盤を見る（火種 ${hidane}）` : "心得の盤を見る",
+      el("div.dm-actions", [el("button.dm-btn.primary", { type: "button", text: hidane ? `心得の盤を開く（火種 ${hidane}）` : "心得の盤を開く",
         dataset: { test: "menu-board" }, onclick: () => choose("board") })]),
     ]),
   ];

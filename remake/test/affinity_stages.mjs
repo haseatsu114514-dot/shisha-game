@@ -167,7 +167,7 @@ await check('visitChar normal completion, same-owner concurrent entry and heart 
   assert.equal(s.story.naru,1); assert.equal(s.visits.naru,1); assert.equal(s.affinity.naru,9);assert.equal(s.affinityCarry.naru||0,0); // 初対面は♥1ちょうど
   assert.equal(f.stats.affinityLevel('naru'),1); assert.equal(f.spots.hasNewStory('naru'),true);
   f.setPlay(async()=>done); await f.spots.visitChar('naru'); // next visit reads only the newly eligible second scene
-  assert.equal(s.story.naru,2); assert.equal(s.affinity.naru,22); assert.equal(f.stats.affinityLevel('naru'),2); assert.equal(f.spots.hasNewStory('naru'),true); // ♥2で3本目が開く
+  assert.equal(s.story.naru,2); assert.equal(s.affinity.naru,21); assert.equal(f.stats.affinityLevel('naru'),2); assert.equal(f.spots.hasNewStory('naru'),true); // ♥2で3本目が開く
 });
 await check('question selected then cancelled: retain answer, resume reaction and complete once', async f => {
   const s=f.core.state; s.story.rio=3; s.affinity.rio=33;
@@ -188,7 +188,7 @@ for (const outcome of ['missing','abort','load','throw']) await check(`question 
   assert.equal(s.flags[f.stages.questionDoneKey('rio')],undefined);
 });
 await check('Rio third story at heart2 reaches heart3 and asks in the same visit, with one normal reward',async f=>{
-  const s=f.core.state;s.story.rio=2;s.affinity.rio=20;s.met.rio=true;
+  const s=f.core.state;s.story.rio=2;s.affinity.rio=21;s.met.rio=true;
   f.setPlay(async scene=>{
     if((typeof scene==='string'?scene:scene.dialogue_id)==='ch1_rio_bond_question') {
       assert.equal(s.affinity.rio,33,'ordinary story reward opens the question before it is played');
@@ -198,14 +198,14 @@ await check('Rio third story at heart2 reaches heart3 and asks in the same visit
   });
   assert.equal(await f.spots.visitChar('rio'),true);
   assert.equal(s.story.rio,3);assert.equal(s.affinity.rio,33);assert.equal(s.visits.rio,1);
-  close(s.affinityCarry.rio,.6);
+  close(s.affinityCarry.rio,.75);
   assert.equal(f.bonds.questionVisitDue('rio'),false);
   assert(s.flags[f.stages.questionDoneKey('rio')]);
   assert.deepEqual(f.plays.map(([x])=>typeof x==='string'?x:x.dialogue_id),['ch1_rio_third','ch1_rio_bond_question']);
   const loaded=f.roundTrip();assert.equal(loaded.affinity.rio,33);assert.equal(loaded.romanceChoices.bond_q1_rio.value,1);
 });
 for(const outcome of ['cancel','missing','throw','abort','load']) await check(`Rio joined question ${outcome}: no second story reward or invented answer`,async f=>{
-  const s=f.core.state;s.story.rio=2;s.affinity.rio=20;s.met.rio=true;const controller=new AbortController();
+  const s=f.core.state;s.story.rio=2;s.affinity.rio=21;s.met.rio=true;const controller=new AbortController();
   f.setPlay(async scene=>{
     const id=typeof scene==='string'?scene:scene.dialogue_id;
     if(id==='ch1_rio_third')return done;
@@ -217,7 +217,7 @@ for(const outcome of ['cancel','missing','throw','abort','load']) await check(`R
   const p=f.spots.visitChar('rio',{signal:controller.signal});
   if(outcome==='throw')await assert.rejects(p,/expected joined failure/);else assert.equal(await p,false);
   // The completed sample retains the existing afterStory boundary, also used by Tsumugi.
-  assert.equal(s.story.rio,3);assert.equal(s.affinity.rio,33);close(s.affinityCarry.rio,.6);
+  assert.equal(s.story.rio,3);assert.equal(s.affinity.rio,33);close(s.affinityCarry.rio,.75);
   assert(!s.flags[f.stages.questionDoneKey('rio')]);assert(!s.romanceChoices.bond_q1_rio);assert.equal(s.visits.rio||0,0);
   if(outcome!=='load'){
     f.roundTrip();const before=f.core.state.affinity.rio;
@@ -251,7 +251,7 @@ for(const value of [0,1]) await check(`Rio neutral route ${value}: six stories a
 });
 await check('Rio actual shop: interrupted joined question keeps the visit boundary; next-day saved answer grants one sample',async f=>{
   let s=f.core.state;Object.assign(s,{phase:'daily',day:5,slot:1,money:10000,stamina:100});
-  s.met.rio=true;s.story.rio=2;s.affinity.rio=20;
+  s.met.rio=true;s.story.rio=2;s.affinity.rio=21;
   const context=vm.createContext({console,visitChar:f.spots.visitChar,addStamina:f.stats.addStamina,cueTransition:()=>{},toast:()=>{},RIO_AWAY_DAY:1,FLAVOR_BOX_GRAMS:50});
   Object.defineProperty(context,'state',{get:()=>f.core.state});
   const hours=fs.readFileSync(path.join(sourceRoot,'daily/spot-hours.js'),'utf8');
@@ -290,35 +290,35 @@ await check('legacy current/carry/history stay intact; deferred ordinary credit 
   s=f.roundTrip();assert.equal(f.stats.releaseAffinity('tsumugi'),0);assert.equal(s.affinity.tsumugi,85);
   close(s.affinityCarry.tsumugi,.7);assert.equal(s.story.tsumugi||0,0);
 });
-await check('LIME .25/carry crosses unread hearts; old credit releases once without consuming fortune', async f => {
+await check('LIME .75/carry crosses unread hearts; old credit releases once without consuming fortune', async f => {
   const s=f.core.state;s.story.naru=0;s.affinity.naru=8;
-  for(let i=0;i<5;i++) f.stats.gainAffinity('naru',1,{source:'lime'});
-  close(s.affinityCarry.naru,.0625);assert.equal(s.affinity.naru,9);assert.equal(s.flags._naru_affinity_waiting_pts||0,0);
+  for(let i=0;i<2;i++) f.stats.gainAffinity('naru',1,{source:'lime'});
+  close(s.affinityCarry.naru,.275);assert.equal(s.affinity.naru,9);assert.equal(s.flags._naru_affinity_waiting_pts||0,0);
   f.tick();assert.equal(f.events.filter(e=>e.type==='affinity-gain').length,1);
   s.flags._naru_affinity_waiting_pts=1;s.fortune={char:'naru'};
   assert.equal(f.stats.releaseAffinity('naru'),1);assert(s.fortune);assert.equal(f.stats.releaseAffinity('naru'),0);
-  // 占いは会ったときだけ（台帳 URA07）。LIMEの返信・読むだけの連絡では倍にならず、効果も残る: round(2)×.25×.85 + .0625
-  f.stats.gainAffinity('naru',2,{source:'lime'});assert.deepEqual(s.fortune,{char:'naru'});assert.equal(s.affinity.naru,10);
-  close(s.affinityCarry.naru,.4875);
+  // 占いは会ったときだけ（台帳 URA07）。LIMEの返信・読むだけの連絡では倍にならず、効果も残る: round(2)×.75×.85 + .275
+  f.stats.gainAffinity('naru',2,{source:'lime'});assert.deepEqual(s.fortune,{char:'naru'});assert.equal(s.affinity.naru,11);
+  close(s.affinityCarry.naru,.55);
   f.stats.gainAffinity('naru',2,{remote:true});assert.deepEqual(s.fortune,{char:'naru'},'read-only LIME consumed the fortune');
   s.affinityCarry.naru=0;const metBefore=s.affinity.naru;
-  // 占いの相手は ×2（2026-11-02 台帳 URA。旧 ×1.5 から）: 会って +5 → round(10)×.85 = 8.5
-  f.stats.gainAffinity('naru',5);assert.equal(s.fortune,undefined);assert.equal(s.affinity.naru,metBefore+8);close(s.affinityCarry.naru,.5);
+  // 占いの相手は ×1.5。会って +5 → round(7.5)×.85 = 6.8
+  f.stats.gainAffinity('naru',5);assert.equal(s.fortune,undefined);assert.equal(s.affinity.naru,metBefore+6);close(s.affinityCarry.naru,.8);
   assert.equal(s.story.naru,0);
 });
 await check('LIME reply feedback follows actual fractional progress without ordinary story caps, SAVE/LOAD and integer rollover', async f => {
   let s = f.core.state; s.story.naru = 1; s.affinity.naru = 9;
   const deltas = [], opts = { source: 'lime', onGain: delta => deltas.push(delta) };
   for (let i=0;i<5;i++) { f.stats.gainAffinity('naru',1,opts); s=f.roundTrip(); }
-  assert.equal(deltas.length,5); deltas.forEach(delta=>close(delta,.2125));
-  assert.equal(s.affinity.naru,10); close(s.affinityCarry.naru,.0625);
+  assert.equal(deltas.length,5); deltas.forEach(delta=>close(delta,.6375));
+  assert.equal(s.affinity.naru,12); close(s.affinityCarry.naru,.1875);
   f.tick(); assert.equal(f.events.filter(e=>e.type==='affinity-gain').length,0,'reply feedback must not also show a heart card');
   s.affinity.naru=19;
-  f.stats.gainAffinity('naru',2,opts); assert.equal(deltas.length,6);close(deltas.at(-1),.425);assert.equal(s.story.naru,1);
+  f.stats.gainAffinity('naru',2,opts); assert.equal(deltas.length,6);close(deltas.at(-1),1.275);assert.equal(s.story.naru,1);
   s.affinity.naru=18; s.affinityCarry.naru=.9;
-  f.stats.gainAffinity('naru',1,opts); close(deltas.at(-1),.2125); assert.equal(s.affinity.naru,19);close(s.affinityCarry.naru,.1125);
+  f.stats.gainAffinity('naru',1,opts); close(deltas.at(-1),.6375); assert.equal(s.affinity.naru,19);close(s.affinityCarry.naru,.5375);
   const n=deltas.length; f.stats.gainAffinity('naru',0,opts); assert.equal(deltas.length,n);
-  // Existing private bond formula is separate from ordinary LIME's quarter scale.
+  // Existing private bond formula is separate from ordinary LIME's scale.
   s.lovers=['tsumugi']; s.lovePts.tsumugi=9; s.loveLevel.tsumugi=1;
   f.stats.bond.private=true; f.stats.gainAffinity('tsumugi',3,opts); f.stats.bond.private=false;
   close(deltas.at(-1),1.5); assert.equal(s.lovePts.tsumugi,10); close(s.loveCarry.tsumugi,.5);
@@ -597,7 +597,7 @@ await check('heart2.5 with heart2 seen uses daily talk and keeps the normal visi
 });
 await check('LIME-only heart3 unlocks oldest unread; a visit never chains heart2 into heart3',async f=>{
   const s=f.core.state;s.chapter=2;s.story.naru=2;s.affinity.naru=25;s.flags._cafe_introduced=true;
-  f.stats.gainAffinity('naru',40,{source:'lime'});assert.equal(s.affinity.naru,33);assert.equal(s.story.naru,2);
+  f.stats.gainAffinity('naru',13,{source:'lime'});assert.equal(s.affinity.naru,33);assert.equal(s.story.naru,2);
   f.setPlay(async()=>done);assert.equal(await f.spots.visitChar('naru'),true);assert.equal(s.story.naru,3);
   assert.deepEqual(f.plays.filter(([id])=>f.spots.VISIT_SEQ.naru.includes(id)).map(([id])=>id),['ch1_naru_third']);
   f.plays.length=0;assert.equal(await f.spots.visitChar('naru'),true);assert.equal(s.story.naru,4);
@@ -1106,23 +1106,23 @@ await check('Noor (DSR20): chapter 4 cafe finale after the cafe stages and the �
 });
 
 // IR23: ヴォルク・シェイク・太陽も通って♥5に届く（授業 M-W5・M-W8・M-B6 の♥5は下げない）。値は各行き先と同じ
-// visitAffinity（第4章 +8、第5章は1回目 +10・2回目から +5）と、第3章の鉄の煙の任意の場面の台本の報酬（2×6）。魅力は最低で数える。
+// visitAffinity（第4章 +8、第5章は1回目 +12・2回目から +7）と、第3章の鉄の煙の任意の場面の台本の報酬（2×6）。魅力は最低で数える。
 await check('IR23: Volk, the Sheikh and Taiyo reach ♥5 by visiting, with the shared visit values', async f => {
   const s = f.core.state, { gainAffinity, visitAffinity, affinityLevel } = f.stats;
   s.stats.charm = 0;
   const visitsTo5 = id => { let n = 0; while (affinityLevel(id) < 5 && n < 99) gainAffinity(id, visitAffinity(n++ ? 'talk' : 'story')); return n; };
-  assert.deepEqual([3, 4, 5].map(chapter => (s.chapter = chapter, [visitAffinity('story'), visitAffinity('talk')])), [[16, 8], [16, 8], [10, 5]]);
+  assert.deepEqual([3, 4, 5].map(chapter => (s.chapter = chapter, [visitAffinity('story'), visitAffinity('talk')])), [[15, 8], [15, 8], [12, 7]]);
   // シェイク: 第4章は名を伏せていて好感度が付かない。第5章のドバイの屋敷だけで（客間は無料・好きなだけ泊まれる）
   s.chapter = 5;
-  assert.equal(visitsTo5('sheikh'), 15, 'the Sheikh: 15 visits to the residence from zero');
+  assert.equal(visitsTo5('sheikh'), 11, 'the Sheikh: 11 visits to the residence from zero');
   // 太陽: 第4章の FESTA に5回（来店ごとに +8）通ってから、第5章の屋敷の中庭
   s.chapter = 4; for (let i = 0; i < 5; i++) gainAffinity('da_silva', visitAffinity('talk'));
   assert.equal(affinityLevel('da_silva'), 3, 'five FESTA visits in chapter 4 reach ♥3');
-  s.chapter = 5; assert.equal(visitsTo5('da_silva'), 7, 'then 7 visits in the courtyard');
+  s.chapter = 5; assert.equal(visitsTo5('da_silva'), 5, 'then 5 visits in the courtyard');
   // ヴォルク: 第3章の鉄の煙の任意の場面4本（二度目・七年分・頷く順番・大会のあとの記録）を読んでから、第5章の鉄の煙
   s.chapter = 3; for (let i = 0; i < 4; i++) gainAffinity('volk', 2 * 6);
   assert.equal(affinityLevel('volk'), 3, "Volk's four optional scenes in chapter 3 reach ♥3");
-  s.chapter = 5; assert.equal(visitsTo5('volk'), 5, 'then 5 visits to Iron Smoke in chapter 5');
+  s.chapter = 5; assert.equal(visitsTo5('volk'), 4, 'then 4 visits to Iron Smoke in chapter 5');
 });
 
 // #2028: 第3章のヴォルクのLIME交換（♥2）と締めくくり（♥5）に、実際の報酬で届くか。好感度を直接書かず、初対面の♥1、

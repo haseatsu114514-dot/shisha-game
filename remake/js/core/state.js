@@ -53,7 +53,7 @@ export function newState() {
     phase: "opening",          // opening | daily | tournament | aftermath | cleared
     day: 1,
     slot: 0,                   // 0=昼 1=夜 2=その日の行動は終了
-    money: 30000,
+    money: 27000,
     stamina: 100,
     stats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
     statXp: {},
@@ -767,6 +767,7 @@ export const config = {
   // 一度見た演出（連絡先交換・シフト終了）を2回目以降だけ短くする。初回は必ずフルで見せる。
   // 既定オフ＝現状どおり。くじ・チェキ・MG(#1081 H05)は短縮しない。既読判定は state.flags を使う。
   shortSeen: false,
+  fastDaily: false, // スロットと朝の演出を省略し、読了済みの定型帰宅を飛ばす
   statEffectColors: true, // 作り画面の能力補正を色と漢字で示す
   introArtStyle: "graphic", // 登場カットインの絵柄。"classic" で旧（立ち絵）に戻す（2026-10-31）
   introTransition: "morph", // 立ち絵からカットインへの変身のつなぎ: morph（2026-11-02 オーナー採用）/ none。card / slash は比較用に残す

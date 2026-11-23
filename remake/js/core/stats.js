@@ -182,7 +182,7 @@ export function applyStats(obj = {}) {
 // ---------------------------------------------------------------- 好感度（二層: ポイント→5段階）
 
 export const AFFINITY_RANK_PTS = [0, 9, 20, 33, 48, 66];
-export const ROMANCEABLE = ["tsumugi", "minto", "rio", "ageha", "mashiro", "hiyori", "samechan"];
+export const ROMANCEABLE = ["tsumugi", "minto", "rio", "ageha", "mashiro", "hiyori", "samechan", "noor"];
 
 // 実際に答えた既存の関係分岐。未接続キャラの条件は推測で足さない。
 export const AFFINITY_GATE_CHOICES = Object.freeze({
@@ -334,12 +334,12 @@ export const BOND_PACE = 0.5;
 
 /**
  * 店に通ったときの好感度（2026-11-02 オーナー指定・台帳 AFB01）。
- * 「1章のライバル3人のうち2人を、多少寄り道しても♥5にできる」ように、段階会話・節目・締めくくりは16、
+ * 「1章のライバル3人のうち2人を、多少寄り道しても♥5にできる」ように、段階会話・節目・締めくくりは15、
  * 通いの小会話・続き・質問の回は8（どちらも上の0.85を掛ける前の値）。♥5まで1人5〜6回の来店。
- * 第5章は「ゆっくり上げられる」程度にするため、従来の10・5のまま。
+ * 第5章でも緩やかに伸びるよう、物語12・小会話7。
  */
-export const VISIT_AFFINITY = Object.freeze({ story: 16, talk: 8 });
-export const SLOW_VISIT_AFFINITY = Object.freeze({ story: 10, talk: 5 });
+export const VISIT_AFFINITY = Object.freeze({ story: 15, talk: 8 });
+export const SLOW_VISIT_AFFINITY = Object.freeze({ story: 12, talk: 7 });
 /** 聞き上手（心得の盤のスキル K25。SBD154）: 通いの小会話の好感度に足す点。growth-effects.js の SKILL_TUNING.listen と同じ値 */
 export const LISTEN_BONUS = 2;
 export const visitAffinity = (kind, s = state) => (s?.chapter >= 5 ? SLOW_VISIT_AFFINITY : VISIT_AFFINITY)[kind]
@@ -376,8 +376,8 @@ function flushAffinityBatch() {
   for (const { owner, payload } of pending) if (owner === state) emit("affinity-gain", payload);
 }
 
-/** 占い師に見てもらった相手と次に会ったときだけ ×2（一度きり。2026-11-02 オーナー指定で1.5倍から・台帳 URA） */
-export const FORTUNE_AFFINITY_MULT = 2;
+/** 占い師に見てもらった相手と次に会ったときだけ ×1.5（一度きり）。 */
+export const FORTUNE_AFFINITY_MULT = 1.5;
 /** 会って話した加算か。LIME・読むだけの連絡（remote）は会っていないので、占いの効果を使わず残す（台帳 URA07） */
 export const fortuneInPerson = (opts = {}) => opts.source !== "lime" && !opts.remote;
 function fortuneMult(id, opts = {}) {
@@ -394,7 +394,7 @@ function fortuneMult(id, opts = {}) {
  * 恋人は店で会っても深まらず、bond.private の間だけ絆ポイントに入る。
  * 告白はMAXだけでは予約しない（交友の締めくくりで恋愛を選んだ相手だけ・daily/bonds.js）。
  */
-export const LIME_AFFINITY_SCALE = 0.25;
+export const LIME_AFFINITY_SCALE = 0.75;
 
 // LIMEの端数も実際に積もったときだけ、小さな返信内の通知へ渡す。
 // 上限の外に保留した分は上昇として見せず、通常のハート通知と重複させない。
@@ -487,7 +487,9 @@ export const STAMINA_LOW = 25;
 
 export function maxStamina({ forCondition = false } = {}) {
   // 盤の容量増加だけで体調や発病リスクを悪化させない。ゲージの容量と体調の基準を分ける。
-  return 100 + GUTS_STAMINA_BONUS[step("guts") - 1] + (forCondition ? 0 : (growthPerks(state)?.stamina || 0)
+  const baseBonus = Math.max(GUTS_STAMINA_BONUS[step("guts") - 1],
+    expHooks?.bodyStamina?.(state)?.base || 0);
+  return 100 + baseBonus + (forCondition ? 0 : (growthPerks(state)?.stamina || 0)
     + (expHooks?.enabled?.() ? expHooks.capacityBonus?.(state) || 0 : 0));
 }
 
@@ -518,7 +520,8 @@ export function addStamina(n, { sleep = false } = {}) {
 
 /** 行動前の警告にも、実際の消耗と同じ根性補正・丸め・最大値を使う。 */
 export function staminaAfter(n) {
-  const d = n < 0 ? n * (1 - 0.25 * tier01("guts")) : n;
+  const discount = n < 0 ? Math.max(0.25 * tier01("guts"), expHooks?.bodyStamina?.(state)?.discount || 0) : 0;
+  const d = n * (1 - discount);
   return clamp(Math.round(state.stamina + d), 0, maxStamina());
 }
 
