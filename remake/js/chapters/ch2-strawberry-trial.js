@@ -35,6 +35,7 @@ export async function runStrawberryTrial({ bg, isCurrent = null } = {}) {
   save();
   await play("ch2_strawberry_trial_intro", { bg });
   const cs = await runFullPractice({ kind: "self", orderId: "strawberry_trial", staffPractice: true, isCurrent: () => state === owner && (!isCurrent || isCurrent()) });
+  if (!cs) return { result: null, masteryGained: false };
   const result = strawberryTrialResult(cs);
   await play(`ch2_strawberry_trial_${result}`, { bg });
   if (state !== owner) return { result, masteryGained: false };

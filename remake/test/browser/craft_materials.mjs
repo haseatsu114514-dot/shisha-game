@@ -69,6 +69,7 @@ await suite("craft-materials", async check => {
           F.running = (async () => { await steps.stepSetup(F.cs); await steps.stepMix(F.cs); })();
         }, bowl);
         await click(page, `[data-test="opt-${bowl}"]`, touch);
+        await click(page, '[data-test="opt-false"]', touch);
         const plus = '[data-test="mix-plus-double_apple"]', minus = '[data-test="mix-minus-double_apple"]';
         const ok = page.locator('[data-test="mix-ok"]');
         await ok.waitFor();
@@ -214,6 +215,7 @@ await suite("craft-materials", async check => {
         const raf = requestAnimationFrame.bind(window); window.requestAnimationFrame = callback => raf(() => callback(F.clock));
         F.running = F.holes.runHoles(F.cs);
       });
+      await click(page, '.bench-guide[open] [data-test="bench-guide-close"]', touch);
       await page.locator('[data-test="hole-template-outer12-middle12"]').waitFor();
       assert.equal(await page.locator(".bench-demo-sheet").count(), 0, "穴あけのお手本は廃止（#3815）");
       await click(page, '[data-test="hole-template-outer12-middle12"]', touch);

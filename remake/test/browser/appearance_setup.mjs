@@ -27,15 +27,19 @@ export function prepareAppearanceCatalog(root = repositoryRoot) {
   fs.writeFileSync(target, text, { flag: "wx" });
 }
 
-// Setup now continues directly to water/mix. A missing next step is still an error.
+// Continue from the Lotos foil choice to water/mix when the starter HMD is equipped.
 // A loading gate that showed its comic (#1153) waits for a tap after preparation; tap through it.
-export async function waitForSetupContinuation(page) {
+export async function waitForSetupContinuation(page, { touch = false } = {}) {
   const next = page.locator('.bench [data-test="water-confirm"], .bench [data-test="mix-ok"]').first();
   const deadline = Date.now() + 25000;
   while (typeof next.isVisible === "function" && !(await next.isVisible())) {
     if (Date.now() > deadline) break;
     const ready = page.locator(".loading-gate.is-ready");
     if (await ready.count()) await ready.first().dispatchEvent("pointerdown").catch(() => {});
+    const noFoil = page.locator('.bench [data-test="opt-false"]');
+    if (await noFoil.isVisible()) {
+      if (touch) await noFoil.tap(); else await noFoil.click();
+    }
     await page.waitForTimeout(100);
   }
   await next.waitFor({ state: "visible" });
@@ -49,7 +53,7 @@ export const confirmAppearanceSetup = waitForSetupContinuation;
 
 // Manual full-craft callers must also operate the real water step before mix.
 export async function confirmSetupWater(page, { touch = false } = {}) {
-  await waitForSetupContinuation(page);
+  await waitForSetupContinuation(page, { touch });
   const confirm = page.locator('.bench [data-test="water-confirm"]');
   await confirm.waitFor({ state: "visible" });
   await confirm.scrollIntoViewIfNeeded();

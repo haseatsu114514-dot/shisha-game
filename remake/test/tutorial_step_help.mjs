@@ -236,3 +236,17 @@ test("step intro is skipped when the save already saw it (#3028)", async () => {
   assert.equal(h.guide.open, false);
   assert.equal(h.saved, 0);
 });
+
+for (const [mode, id, text, options] of [
+  ["rehearsal", "mix", "課題はストロベリーを4g以上", { hasRegulation: true }],
+  ["rehearsal", "timer", "分・秒ボタンで蒸らし時間を設定する", {}],
+  ["tournament", "timer", "分・秒ボタンで蒸らし時間を設定する", {}],
+]) test(`${mode} ${id} intro reads the current instructions`, async () => {
+  const h = await harness(mode);
+  h.b.guide.note.textContent = text;
+  const done = h.mod.namespace.explainStepOnce(h.cs, id, "steam", options);
+  assert.equal(h.guide.open, true);
+  assert.equal(h.b.guide.note.textContent, text);
+  h.close();
+  assert.equal(await done, true);
+});

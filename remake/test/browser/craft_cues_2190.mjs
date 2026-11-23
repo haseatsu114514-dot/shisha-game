@@ -57,6 +57,7 @@ await suite("craft-cues-2190", async check => {
         await C.session.waitBenchReady(cs);
         C.run = C.pull.runPull(cs);
       });
+      await page.locator('.bench-guide[open] [data-test="bench-guide-close"]').click();
       await page.locator('[data-test="pull-stop"]:not([disabled])').waitFor();
       const saved = await storageSnapshot(page);
       for (let i = 1; i <= 5; i++) {

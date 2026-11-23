@@ -76,10 +76,12 @@ export function buildHeatView(types, { count = 3, compact = false } = {}) {
     }, dataset: { test: "stored-coal-" + index, phase: timing.phase } }, [sprite]);
     stored.append(coal);
     counter.textContent = stored.children.length + " / " + coals.length;
-    rows[index].replaceChildren(el("b", { text: c.label + " " + timing.rating + "（" + timing.label + "）" }),
+    const kind = timing.critical ? "critical" : timing.rating.toLowerCase();
+    const label = timingLabel(kind, timing.rating);
+    rows[index].replaceChildren(el("b", { text: c.label + " " + label + "（" + timing.label + "）" }),
       el("span", { text: timing.errorText + (timing.automatic ? "・自動取り出し" : "") }));
     rows[index].dataset.rating = timing.rating;
-    feedback.replaceChildren(el("b.stamp." + timing.rating.toLowerCase(), { text: timingLabel(timing.rating.toLowerCase(), timing.rating) }),
+    feedback.replaceChildren(el("b.stamp." + kind, { text: label }),
       el("span.heat-error", { text: timing.errorText + (timing.automatic ? "・自動" : "") }));
   } };
 }
