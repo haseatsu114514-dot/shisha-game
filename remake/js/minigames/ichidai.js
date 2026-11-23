@@ -32,6 +32,7 @@
 //   相手3人は、卓の奥にバストアップを並べる（表情・しぐさ・一言）。数字は顔の横の小さな札（点・票・熱と帯・葉・手札）だけ。
 //   卓の奥には、相手ごとに炭（火力ゾーン）と仕込んだ一口のカードだけを置く。ボウル・HMD・器具・山札は出さない（顔をタップで開く）。
 //   自分の側（手前の半分・火力ゾーン・手札）は1対1と同じ。
+import { withMinigameStyles } from "./minigame-styles.js";
 import { el } from "../core/util.js";
 import { DB, faceFrame, portraitInfo, useManifest } from "../core/data.js";
 import { portraitAsset } from "../core/portrait-resolver.js";
@@ -165,7 +166,11 @@ const zoneBox = (label, cls, attrs, children) => el(`div.ichi-zone-box${cls}`, {
  * @param reducedMotion 試遊ページで保存済みの「揺れ・閃光を減らす」が有効か
  * 戻り値: { completed, cancelled, games:[{ winner（0=自分/1〜=相手の席/null=引き分け）, scores, votes, tournament, kit, level, players, rank }], last }
  */
-export function runIchidai({ host = document.getElementById("stage"), signal = null, seed = null, config = null, opponent = null,
+export function runIchidai(options = {}) {
+  return withMinigameStyles("ichidai", options.signal, () => startIchidai(options));
+}
+
+function startIchidai({ host = document.getElementById("stage"), signal = null, seed = null, config = null, opponent = null,
   tutorial = false, pilot = null, speed = 1, allowRetry = true, skin = null, opponentKit = null, opponents = null, assist = true, reducedMotion = false } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);

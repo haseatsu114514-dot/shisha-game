@@ -35,8 +35,10 @@ const server = createServer((req, res) => {
     body = '<p>outside remake scope</p>'; type = 'text/html';
   } else if (pathname === '/remake/pwa-fresh.html') {
     body = `<p>${revision}</p>`; type = 'text/html';
-  } else if (pathname === '/remake/pwa-fresh.js') {
+  } else if (pathname === '/remake/pwa-fresh.js' || /^\/remake\/js-[\w-]+\/bundle\/main\.js$/.test(pathname) || pathname === '/remake/js/page-boot.js') {
     body = `export default ${revision};`; type = 'text/javascript';
+  } else if (pathname === '/remake/css/pwa-fresh.css') {
+    body = `/* ${revision} */`; type = 'text/css';
   } else if (pathname === '/remake/pwa-fresh.woff2') {
     body = `font revision ${revision}`; type = 'font/woff2';
   } else if (pathname === '/data/dialogue/pwa_probe.json') {
@@ -94,6 +96,15 @@ try {
           assert.deepEqual(second, ['<p>2</p>', 'export default 2;', 'font revision 2', JSON.stringify({ dialogues: [{ dialogue_id: 'pwa_probe', lines: [{ text: '2' }] }] })]);
           assert(second.every((body, i) => body !== first[i]));
         } else assert.deepEqual(second, first, '対照群では max-age による旧本文が残る');
+        const fetchBuild = build => page.evaluate(async build => {
+          const urls = [`js-${build}/bundle/main.js`, `css/pwa-fresh.css?v=${build}`, `js/page-boot.js?v=${build}`];
+          return Promise.all(urls.map(async url => (await fetch(url)).text()));
+        }, build);
+        const firstBuild = await fetchBuild('abcd123');
+        revision = 3;
+        assert.deepEqual(await fetchBuild('abcd123'), firstBuild, '同じ版の URL は HTTP キャッシュを使う');
+        assert.deepEqual(await fetchBuild('beef456'), ['export default 3;', '/* 3 */', 'export default 3;']);
+        revision = 2;
         // 実台詞ローダの no-cache も max-age を越えて更新を取る。
         const readDialogue = () => page.evaluate(async () => {
           const { readDialogues } = await import('./js/core/chapter-data.js');

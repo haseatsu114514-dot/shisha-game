@@ -1,17 +1,15 @@
 {
  "segments": [
   {
-   "out": "bundle-1.css",
+   "out": "bundle-base.css",
    "files": [
     "base.css",
-    "axe-throw.css",
-    "camel-race.css",
-    "ichidai.css",
-    "ichidai-skin-signs.css",
-    "ichidai-lines.css",
-    "desert-ride.css",
-    "tetsuko-time.css",
-    "tetsuko-theme.css",
+    "axe-throw.css"
+   ]
+  },
+  {
+   "out": "bundle-1.css",
+   "files": [
     "trpg.css",
     "vn.css",
     "intro.css",

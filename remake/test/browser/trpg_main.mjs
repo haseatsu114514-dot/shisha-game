@@ -150,8 +150,13 @@ async function open(page, { nightBusy = false } = {}) {
   await button(page, "trpg-campaign-notice").waitFor();
 }
 async function snapshot(page) { return page.evaluate(() => structuredClone(__remake.state)); }
-async function play(page, id, { expectTutorial = false } = {}) {
+async function openTable(page, id) {
   await hit(page, "trpg-play-" + id);
+  // The selected script loads after the click. The table mounts before the tutorial or cover can be used.
+  await page.locator(".trpg-root.trpg-cinematic").waitFor();
+}
+async function play(page, id, { expectTutorial = false } = {}) {
+  await openTable(page, id);
   if (expectTutorial) {
     // The shopkeeper explains the first table on the cover, with a diagram for each idea.
     await button(page, "trpg-tutorial-panel").waitFor();
@@ -192,12 +197,23 @@ await suite("trpg-main", async check => {
   await check("zero-members-regular-table", async page => {
     await prepare(page);
     await page.evaluate(() => { __remake.state.trpg.club.members = {}; });
+    const books = new Set(await page.evaluate(async () => (await (await fetch("../data/trpg_catalog.json")).json()).scenarios.map(b => b.file)));
+    const scripts = new Set(), costumes = new Set();
+    page.on("request", req => {
+      const path = new URL(req.url()).pathname;
+      const file = path.split("/data/")[1];
+      if (books.has(file)) scripts.add(file);
+      if (path.includes("/trpg/costumes/") && path.endsWith(".webp")) costumes.add(path);
+    });
     await open(page);
     assert.deepEqual((await snapshot(page)).trpg.club.members, {});
     assert.equal(await button(page, "trpg-book-regular-harbor").getAttribute("data-locked"), "false");
     await hit(page, "trpg-buy-regular-harbor");
     assert(await button(page, "trpg-play-regular-harbor").isEnabled());
+    assert.equal(scripts.size, 0, "Browsing and buying need only the shelf index");
+    assert.equal(costumes.size, 0, "The shelf does not download costumes for owned books");
     await play(page, "regular-harbor", { expectTutorial: true });
+    assert.deepEqual([...scripts], ["dialogue/trpg_regular_harbor.json"]);
     const done = await snapshot(page);
     assert(done.trpg.cleared["regular-harbor"]);
     assert.deepEqual(new Set(done.trpg.cleared["regular-harbor"].participants), new Set(["sai", "hajime", "regulara", "regularb"]));
@@ -250,7 +266,7 @@ await suite("trpg-main", async check => {
     await open(page);
     await hit(page, "trpg-buy-" + finale.id);
     assert(await button(page, "trpg-play-" + finale.id).isEnabled());
-    await hit(page, "trpg-play-" + finale.id);
+    await openTable(page, finale.id);
     await lines(page);
     assert.match(await page.locator(".trpg-table-person").first().textContent(), /六角サイ/);
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
@@ -582,7 +598,7 @@ await suite("trpg-main", async check => {
     assert.equal(await banner.getAttribute("aria-label"), "部のランク 2、なじみの部。実績 6。次のランクまで あと10。はじめの役の成長点 ＋1");
     assert.match(await button(page, "trpg-club-growth").textContent(), /能力＋1/);
     await banner.scrollIntoViewIfNeeded(); await assertFits(page, '[data-test="trpg-club-rank"]');
-    await hit(page, "trpg-play-ordinary-cup"); await lines(page);
+    await openTable(page, "ordinary-cup"); await lines(page);
     assert.match(await page.locator('[data-test="trpg-cover-pc"] [data-test="trpg-growth"]').textContent(), /成長点 ＋1/);
     await hit(page, "trpg-build"); await hit(page, "trpg-builder-advanced");
     assert.match(await button(page, "trpg-stat-points").textContent(), new RegExp("残り 0 点 · 合計 " + (ordinary.builder.points + 1) + " 点"),
@@ -599,7 +615,7 @@ await suite("trpg-main", async check => {
     });
     await hit(page, "trpg-campaign-close"); await open(page);
     const before = await snapshot(page);
-    await hit(page, "trpg-play-ordinary-cup");
+    await openTable(page, "ordinary-cup");
     assert.equal(await page.locator(".trpg-table-person").count(), 4);
     // 相談は旅人への2つの質問（interview）の後に出る。ほかの卓の検査と同じく質問を終えてから数える。
     await lines(page); await startTrpgStory(page); await lines(page); await roll(page); await interviewStep(page);
@@ -617,7 +633,7 @@ await suite("trpg-main", async check => {
   });
   await check("bookmark-resume-and-replay", async page => {
     await prepare(page); await page.evaluate(() => { __remake.state.flags._trpg_tutorial_seen = true; }); await open(page); await hit(page, "trpg-buy-ordinary-cup");
-    await hit(page, "trpg-play-ordinary-cup");
+    await openTable(page, "ordinary-cup");
     await lines(page); await startTrpgStory(page); await lines(page); await roll(page); await interviewStep(page);
     await hit(page, "trpg-spot-menu"); await lines(page);
     const table = await page.evaluate(() => structuredClone(__remake.state.trpg.bookmark));
@@ -667,7 +683,7 @@ await suite("trpg-main", async check => {
     await page.evaluate(() => { __remake.state.trpg.shifts = [{ id: "hiyori", chapter: 2, day: 5, slot: 1, busy: true, reason: "残業中" }]; });
     await open(page); await hit(page, "trpg-buy-shark-last-order");
     assert((await button(page, "trpg-person-hiyori").textContent()).includes("残業中"));
-    await hit(page, "trpg-play-shark-last-order");
+    await openTable(page, "shark-last-order");
     assert(await page.locator('.trpg-table-person[data-speaker="adam"]').count());
     assert.equal(await page.locator('.trpg-table-person[data-speaker="hiyori"]').count(), 0);
     await lines(page); await startTrpgStory(page); await lines(page); await roll(page); await interviewStep(page);

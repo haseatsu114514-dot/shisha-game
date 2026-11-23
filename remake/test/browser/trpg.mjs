@@ -697,10 +697,12 @@ try {
     await page.locator(".trpg-library-books").evaluate(list => { list.scrollTop = 0; });
     await page.screenshot({ path: path.join(artifacts, "library-pc.png") });
     await hit(page, '[data-test="trpg-select-ordinary-cup"]');
+    await page.locator('[data-test="trpg-start"]').waitFor();
     assert.equal((await page.evaluate(() => __trpg.snapshot())).scenarioId, "ordinary-cup");
     await hit(page, '[data-test="trpg-exit"]');
     await page.locator('[data-test="trpg-select-shark-last-order"]').waitFor();
     await hit(page, '[data-test="trpg-select-shark-last-order"]');
+    await page.locator('[data-test="trpg-start"]').waitFor();
     assert.equal((await page.evaluate(() => __trpg.snapshot())).scenarioId, "shark-last-order");
     assert((await page.locator(".trpg-cover-person").first().textContent()).includes("サメちゃん"));
     await page.screenshot({ path: path.join(artifacts, "shark-cover.png") });
