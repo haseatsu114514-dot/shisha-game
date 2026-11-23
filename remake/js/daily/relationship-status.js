@@ -14,10 +14,20 @@ const meetingPlace = {
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
 
+function confessionStatusOpen(id) {
+  // 取得前は締めくくりの最終質問があるルートを、実際の回答から案内する。
+  return romanceRouteOpen(id) || (!DB.confessionDialogueLoaded && !!BOND_FINALES[id]?.question && romanceRouteEligible(id));
+}
+
 export function prepareRelationshipStatus() {
-  const owner = state;
-  if (!Object.keys(owner.finales || {}).some(id => owner.met[id] && romanceRouteEligible(id) && !romanceRouteOpen(id))) return null;
-  return loadConfessionDialogue().catch(() => null);
+  if (DB.confessionDialogueLoaded) return null;
+  const candidates = Object.keys(state.finales || {}).filter(id => state.met[id] && romanceRouteEligible(id) && !romanceRouteOpen(id));
+  if (!candidates.length) return null;
+  const before = candidates.map(id => [id, confessionStatusOpen(id)]);
+  return loadConfessionDialogue().then(
+    () => before.some(([id, wasOpen]) => wasOpen !== confessionStatusOpen(id)),
+    () => false,
+  );
 }
 
 // 段階の仕組み（♥3で方向を選ぶ・♥5で特別なイベントと贈り物）は人間関係タブの全体ガイドに一度だけ置く。
@@ -59,7 +69,7 @@ export function relationshipStatus(id) {
       ? "LIMEの雑談や一服の誘いで、交流は続く。"
       : "友人としての大きな節目を迎えた。");
   }
-  if (romanceRouteOpen(id)) {
+  if (confessionStatusOpen(id)) {
     if (id === "mashiro") return summary("romance", "告白を選べる", "寄り道から、休日にましろの部屋でお茶をする日へ。");
     if (id === "noor") return summary("romance", "告白を選べる", "次の砂丘（ツアー代なし）で、滑ったあとの夕日の時間へ。");
     // 出発前の準備・東京・ドバイでは帰り道の告白を始めない（romance.js の confessionHeld・IR33）

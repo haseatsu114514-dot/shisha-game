@@ -1,4 +1,4 @@
-import { guardCompletionCardInput } from "./completion-card-input.js";
+import { guardCompletionCardInput, trackCompletionTaps } from "./completion-card-input.js";
 // 全国大会の勝利後。結果発表は大会ランナーが読了・保存し、ここでは再生しない。
 import { DB, bgUrl, displayName, loadConfessionDialogue } from "../core/data.js";
 import { el } from "../core/util.js";
@@ -106,7 +106,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
       }),
     ] : [])]),
   ]);
-  showScreen("ch3-aftermath", name === "complete" ? guardCompletionCardInput(panel) : panel);
+  showScreen("ch3-aftermath", name === "complete" ? guardCompletionCardInput(panel, owner.completionTaps) : panel);
 }
 
 /** 勝利確定済み保存から再開できる。敗北・審査途中では状態を一切変更しない。 */
@@ -272,7 +272,10 @@ async function playScene(owner, scene) {
   layers.hud.classList.remove("show");
   const controller = new AbortController();
   owner.controller = controller;
-  const result = await play({ ...source, metadata: { ...source.metadata, bg: "" } }, { signal: controller.signal });
+  const taps = scene.id === "ch3_home_customer" || scene.id === "confession_ageha" ? trackCompletionTaps() : null;
+  const result = await play({ ...source, metadata: { ...source.metadata, bg: "" } },
+    { signal: controller.signal, onAdvanceInput: taps?.record });
+  if (result && !result.cancelled) owner.completionTaps = taps;
   if (owner.controller === controller) owner.controller = null;
   return result;
 }

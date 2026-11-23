@@ -9,7 +9,7 @@ import { chapterFeatureEnabled } from '../js/core/chapter-features.js';
 
 const source = await fs.readFile(new URL('../js/daily/phone.js', import.meta.url), 'utf8');
 const mediaCatalog = JSON.parse(await fs.readFile(new URL('../data/lime_media.json', import.meta.url), 'utf8'));
-const limeTemplates = JSON.parse(await fs.readFile(new URL("../../data/lime_messages.json", import.meta.url), "utf8")).templates;
+const { messages: limeMessages, templates: limeTemplates } = JSON.parse(await fs.readFile(new URL("../../data/lime_messages.json", import.meta.url), "utf8"));
 const response = { text: '頑張ります', response: 'うん、お互いにね', affinity: 1 };
 const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 const flush = async () => { for (let i = 0; i < 12; i++) await Promise.resolve(); };
@@ -29,16 +29,18 @@ async function fixture({ lover = false, reply = response, invitation = false, co
   let current = original;
   const bond = { private: false };
   const notes = [];
+  const gainSources = [];
   const noop = () => {};
   const imports = {
     'util.js': { el: element, sleep: async () => {}, fitOneLine: noop, yen: String },
     'data.js': { DB: { lime: [], limeTemplates, manifest: { limeMedia: mediaCatalog } }, displayName: String, limeAccountName: String, faceIconUrl: noop },
     'lime-icons.js': { customLimeIconUrl: () => null },
-    'ui.js': { layers: { modal: element('modal') }, toast: noop }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'casual-lime.js': { casualMessages: () => [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
+    'ui.js': { layers: { modal: element('modal') }, toast: noop }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, TSUMUGI_STORY: [] }, 'casual-lime.js': { casualMessages: () => [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
     'chapter-clock.js': { chapterDay: () => 5 },
     'chapter-features.js': { chapterFeatureEnabled },
     'travel-budget.js': { spendableMoney: () => 30000 },
     'stats.js': { gainAffinity: (id, pts, opts) => { current.gains.push({ id, pts, private: bond.private });
+      gainSources.push(opts?.source);
       if (pts > 0) { current.affinity += pts; opts?.onGain?.(.2125); } },
       prepareLoveAffinity: async () => true,
       AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66],
@@ -86,7 +88,7 @@ async function fixture({ lover = false, reply = response, invitation = false, co
       const hold = deferred(); held.push(hold); return hold.promise;
     }, media(content, sender, animate) { media.push({ content, sender, animate }); return Promise.resolve(); },
     note: value => notes.push(value) };
-  return { nodes, timers, api: phone.namespace, original, bond, item, ui, picks, bubbles, media, held, reply, notes,
+  return { nodes, timers, api: phone.namespace, original, bond, item, ui, picks, bubbles, media, held, reply, notes, gainSources,
     run: (target = item) => phone.namespace.testRunItem(target, ui, []),
     replaceState(value = { inbox: [], limeRead: [], gains: [], lovers: [] }) {
       current = value;
@@ -169,6 +171,23 @@ const finishRead = async f => { const run = f.run(); await f.finish(); await run
 const finishReply = async f => {
   const run = f.run(); f.picks.at(-1).resolve(f.reply); await f.finish(); await run;
 };
+
+test('a chapter 2 report grants the former reply reward once on reading', async () => {
+  const f = await fixture();
+  f.original.chapter = 2;
+  const report = limeMessages.find(m => m.id === 'lime_kuraudo_smile');
+  Object.assign(f.item, f.api.receiveItem(report));
+  const a = f.run(), b = f.run();
+  assert.deepEqual(f.original.gains, []);
+  await f.finish(); await Promise.all([a, b]);
+  assert.deepEqual(f.picks, []);
+  assert.deepEqual(f.original.gains, [{ id: 'kuraudo', pts: 2, private: false }]);
+  assert.deepEqual(f.gainSources, ['lime']);
+  const loaded = f.replaceState(JSON.parse(JSON.stringify(f.original)));
+  await f.run(loaded.inbox[0]);
+  assert.equal(loaded.gains.length, 1);
+  assert.deepEqual(f.gainSources, ['lime']);
+});
 
 test('maxed acquaintance: completed first read grants EXP once, including simultaneous reads and post-load reopen', async () => {
   const f = await fixture({ affinity: 66 }); setCasual(f);

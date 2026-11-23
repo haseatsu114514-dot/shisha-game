@@ -88,7 +88,7 @@ await suite("spot-encounters", async check => {
     assert.equal(r.rows[1].trace[0], "cafe_naru_break");
     assert.equal(r.rows[3].trace[0], "cafe_uezono_break");
     assert.equal(r.rows[5].trace[0], "cafe_master_quiz");
-    assert(r.rows[3].lines.some(t => t.includes("HOOKAH PRESSって雑誌")));
+    assert(r.rows[3].lines.some(t => t.includes("シーシャ情報サイト『HOOKAH PRESS』の編集長")));
     for (const n of [2, 4, 6, 7]) assert(!/naru|uezono|master/.test(r.rows[n].trace[0]));
     assert(r.rows.every(row => row.cost === 800));
     // #784: 好感度の上がらない施設は、旧しくみ（?growth=0）では主な能力（喫茶はセンス）1つに2P。

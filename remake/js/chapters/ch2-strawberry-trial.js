@@ -34,7 +34,7 @@ export async function runStrawberryTrial({ bg, isCurrent = null } = {}) {
   if (flavorStock(flavor) < grams) addFlavorStock(flavor, grams - flavorStock(flavor));
   save();
   await play("ch2_strawberry_trial_intro", { bg });
-  const cs = await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === owner && (!isCurrent || isCurrent()) });
+  const cs = await runFullPractice({ kind: "self", orderId: "strawberry_trial", staffPractice: true, isCurrent: () => state === owner && (!isCurrent || isCurrent()) });
   const result = strawberryTrialResult(cs);
   await play(`ch2_strawberry_trial_${result}`, { bg });
   if (state !== owner) return { result, masteryGained: false };

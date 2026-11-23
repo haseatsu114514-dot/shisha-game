@@ -295,8 +295,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list { grid-column: 2
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head { display: none !important; }
 /* 心得の「単体で勝負」と「香りの記憶」だけは一覧の頭に残す（見出しの文と助言は隠したまま）。
    以前は見出しごと隠れて、覚えた心得が押せなかった（growth_levelup の single-leaf-style-lesson）。 */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall) { display: flex !important; flex: none; flex-wrap: wrap; align-items: center; gap: 8px; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head > :not([data-test="mix-single-style"]):not(.mix-recall) { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall, > .mix-reuse) { display: flex !important; flex: none; flex-wrap: wrap; align-items: center; gap: 8px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head > :not([data-test="mix-single-style"], .mix-recall, .mix-reuse) { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row { display: flex !important; min-height: 0 !important; height: 116px !important; flex: none; padding: 4px 12px 4px 6px !important; gap: 12px !important; align-items: center !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row > * { grid-area: auto !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-name { padding-left: 0 !important; }

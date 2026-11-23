@@ -204,8 +204,10 @@ export function animateIntro(host, id, motion = "sharp", { sound = () => {}, ski
   // sharp: 帯が6px行き過ぎて戻る。着地で白い閃光と小さな揺れ、名前を判のように押す
   const fast = id === "adam";
   animate(".ci-art-background", [{ opacity: 0, transform: "scale(1.035)" }, { opacity: 1, transform: "none" }], { duration: 300 });
+  const ribbonDelay = 130;
   animate(".ci-ribbon", [{ transform: "translateX(1480px) rotate(4deg)" }, { transform: "translateX(-6px) rotate(4deg)", offset: .85 },
-    { transform: "rotate(4deg)" }], { duration: fast ? 260 : 300, delay: 130 });
+    { transform: "rotate(4deg)" }], { duration: fast ? 260 : 300, delay: ribbonDelay });
+  at(ribbonDelay, () => sound("enter"));
   animate(".ci-accent-line", [{ transform: "translateX(-1480px) rotate(4deg)" }, { transform: "rotate(4deg)" }], { duration: 420, delay: 180 });
   animate(".ci-flash", [{ opacity: 0 }, { opacity: .5, offset: .3 }, { opacity: 0 }], { duration: 120, delay: 400, easing: "linear" });
   for (const selector of [".ci-art-background", ".ci-ribbon"]) {
@@ -215,7 +217,6 @@ export function animateIntro(host, id, motion = "sharp", { sound = () => {}, ski
   animate(".ci-portrait", [{ opacity: 0, transform: "translateX(-130px)" }, { opacity: 1, transform: "none" }], { duration: fast ? 430 : 540, delay: 160 });
   animate(".ci-name-line", [{ opacity: 0, transform: "scale(1.15)" }, { opacity: 1, transform: "none" }],
     { duration: 160, delay: 380, easing: "cubic-bezier(.1,.9,.2,1)" });
-  at(380, () => sound("name"));
   textIn("translateX(30px)", [480, 700, 900], 440);
   return animations;
 }

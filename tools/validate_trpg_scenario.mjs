@@ -32,8 +32,12 @@ const people = new Set(characters.map(c => c.id));
 const manifest = read("remake/data/manifest.json");
 const MEMBERS = new Set(catalog.participants.map(p => p.id));
 // An image is in the game when it is on disk or tracked by git: CI's quick checkout holds text files only (images stay in the index).
-const tracked = new Set((() => { try { return execFileSync("git", ["ls-files", "remake/img"], { cwd: root, encoding: "utf8", maxBuffer: 64 << 20 }).split("\n"); } catch { return []; } })());
-const shipped = url => { const rel = path.relative(root, path.join(root, "remake/js/trpg", url)); return fs.existsSync(path.join(root, rel)) || tracked.has(rel.split(path.sep).join("/")); };
+const tracked = new Set((() => { try { return execFileSync("git", ["ls-files", "remake/img"], { cwd: root, encoding: "utf8", maxBuffer: 64 << 20 }).split("\n").filter(Boolean); } catch { return []; } })());
+const shipped = url => {
+  const file = path.join(root, "remake/js/trpg", url);
+  const rel = path.relative(root, file).split(path.sep).join("/");
+  return tracked.has(rel) || (fs.existsSync(file) && fs.statSync(file, { throwIfNoEntry: false })?.isFile());
+};
 const width = t => Array.from(t).reduce((n, c) => n + (c.codePointAt(0) <= 255 ? 0.5 : 1), 0);
 
 function validate(rel) {
@@ -168,6 +172,24 @@ function validate(rel) {
   if (pr.choiceArt) {
     need(shipped(pr.choiceArt.src), "選択肢の絵 " + pr.choiceArt.src + " が存在しない");
     for (const [field, row] of Object.entries(pr.choiceArt.rows || {})) need(Number.isInteger(row) && row < pr.choiceArt.rowCount, "choiceArt.rows." + field);
+  }
+  if (Object.hasOwn(s, "pictureBook")) {
+    const pages = s.pictureBook?.pages;
+    if (need(Array.isArray(pages) && pages.length >= 3 && pages.length <= 6, "pictureBook.pages は3〜6ページ")) {
+      for (const [i, page] of pages.entries()) {
+        const where = `pictureBook.pages[${i}]`;
+        if (!need(page && typeof page === "object" && !Array.isArray(page), where + " はページのオブジェクト")) continue;
+        if (page.image !== undefined && need(typeof page.image === "string" && page.image.trim(), where + ".image は画像パス")) {
+          need(shipped(page.image), where + ".image の画像 " + page.image + " が存在しない");
+        }
+        const text = typeof page.text === "string" ? page.text.trim() : "";
+        if (need(text, where + ".text が空か文字列ではない")) {
+          need(Array.from(text).length <= 60, where + ".text は60字以内");
+          const sentences = text.match(/[。！？!?]+/gu) || [];
+          need(text.endsWith("。") && sentences.length <= 2, where + ".text は「。」で終わる2文以内");
+        }
+      }
+    }
   }
   for (const phase of phasesOf(s)) need(pr.phases?.[phase]?.kicker && pr.phases[phase].title, "presentation.phases." + phase);
   // #3050: every seat shows whoever plays it, so no sheet or companion build carries its own role picture.

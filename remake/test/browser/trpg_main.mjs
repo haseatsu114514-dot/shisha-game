@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, storageSnapshot, assertFits, baseURL } from "./support.mjs";
+import { startTrpgStory } from "./trpg_start.mjs";
 
 const book = name => JSON.parse(fs.readFileSync(new URL("../../../data/dialogue/" + name + ".json", import.meta.url), "utf8"));
 const ordinary = book("trpg_ordinary"), shark = book("trpg_shark");
@@ -162,7 +163,7 @@ async function play(page, id, { expectTutorial = false } = {}) {
     assert.match(await page.locator(".trpg-speaker-label strong").textContent(), /六角サイ/);
     assert(!await button(page, "trpg-start").isVisible(), "the cover waits until the shopkeeper finishes");
   }
-  await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
+  await lines(page); await startTrpgStory(page); await lines(page); await roll(page);
   const shark = id === "shark-last-order";
   await interviewStep(page);
   for (const spot of shark ? ["radio", "leaves", "fan"] : ["menu", "window", "bag"]) { await hit(page, "trpg-spot-" + spot); await lines(page); }
@@ -218,6 +219,28 @@ await suite("trpg-main", async check => {
     assert.deepEqual(new Set(done.trpg.cleared["regular-harbor"].participants), new Set(["sai", "hajime", "regulara", "regularb"]));
     assert.deepEqual(done.trpg.club.members, {});
   });
+  await check("purchased-picture-book-reread", async page => {
+    await prepare(page, { slot: 0 });
+    await page.evaluate(() => { __remake.state.flags._intro_sai = true; });
+    await open(page);
+    await button(page, "trpg-buy-ordinary-cup").waitFor();
+    const reread = button(page, "trpg-picturebook-ordinary-cup");
+    assert.equal(await reread.count(), 0, "a stocked book must be purchased before rereading");
+    await hit(page, "trpg-buy-ordinary-cup");
+    assert(await button(page, "trpg-play-ordinary-cup").isDisabled(), "the group cannot play a table during the day");
+    assert(await reread.isEnabled(), "the owned book can be read without a table");
+    await assertShelfAtAGlance(page, { allowSideScroll: true });
+    const before = await snapshot(page), beforeStorage = await storageSnapshot(page);
+    await hit(page, "trpg-picturebook-ordinary-cup");
+    const overlay = button(page, "trpg-picturebook");
+    await overlay.locator('[data-test="trpg-picturebook-next"]:enabled').waitFor();
+    assert.equal(await button(page, "trpg-picturebook-number").textContent(), "1/4");
+    await hit(page, "trpg-picturebook-close");
+    await overlay.waitFor({ state: "detached" });
+    assert.deepEqual(await snapshot(page), before);
+    assert.deepEqual(await storageSnapshot(page), beforeStorage);
+    assert.equal(await button(page, "trpg-start").count(), 0);
+  }, { viewport: { width: 844, height: 340 }, isMobile: true, hasTouch: true });
   await check("nine-books-and-sai-finale", async page => {
     await prepare(page);
     const catalog = JSON.parse(fs.readFileSync(new URL("../../../data/trpg_catalog.json", import.meta.url), "utf8"));
@@ -580,7 +603,7 @@ await suite("trpg-main", async check => {
     await hit(page, "trpg-build"); await hit(page, "trpg-builder-advanced");
     assert.match(await button(page, "trpg-stat-points").textContent(), new RegExp("残り 0 点 · 合計 " + (ordinary.builder.points + 1) + " 点"),
       "the recommended sheet already spends the growth point");
-    await hit(page, "trpg-build-back"); await hit(page, "trpg-start"); await lines(page); await roll(page);
+    await hit(page, "trpg-build-back"); await startTrpgStory(page); await lines(page); await roll(page);
     // A bookmark keeps the growth the table started with, so "continue" replays to the same numbers.
     assert.equal((await snapshot(page)).trpg.bookmark.growth, 1);
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
@@ -595,7 +618,7 @@ await suite("trpg-main", async check => {
     await openTable(page, "ordinary-cup");
     assert.equal(await page.locator(".trpg-table-person").count(), 4);
     // 相談は旅人への2つの質問（interview）の後に出る。ほかの卓の検査と同じく質問を終えてから数える。
-    await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page); await interviewStep(page);
+    await lines(page); await startTrpgStory(page); await lines(page); await roll(page); await interviewStep(page);
     assert.equal(await page.locator('[data-test^="trpg-consult-"]').count(), 2);
     assert.equal(await button(page, "trpg-consult-regulara").count(), 1);
     assert.equal(await button(page, "trpg-consult-regularb").count(), 1);
@@ -611,7 +634,7 @@ await suite("trpg-main", async check => {
   await check("bookmark-resume-and-replay", async page => {
     await prepare(page); await page.evaluate(() => { __remake.state.flags._trpg_tutorial_seen = true; }); await open(page); await hit(page, "trpg-buy-ordinary-cup");
     await openTable(page, "ordinary-cup");
-    await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page); await interviewStep(page);
+    await lines(page); await startTrpgStory(page); await lines(page); await roll(page); await interviewStep(page);
     await hit(page, "trpg-spot-menu"); await lines(page);
     const table = await page.evaluate(() => structuredClone(__remake.state.trpg.bookmark));
     assert.equal(table.phase, "explore"); assert(table.actions.some(([key, id]) => key === "inspect" && id === "menu"));
@@ -627,6 +650,7 @@ await suite("trpg-main", async check => {
     // Continue: the same room with the same clue already found, then finish the story as usual.
     await hit(page, "trpg-resume-ordinary-cup");
     await button(page, "trpg-spot-window").waitFor();
+    assert.equal(await button(page, "trpg-picturebook").count(), 0, "resuming a bookmark skips the picture book");
     assert(await button(page, "trpg-spot-menu").evaluate(n => n.classList.contains("checked")), "the bookmarked clue is still found");
     for (const spot of ["window", "bag"]) { await hit(page, "trpg-spot-" + spot); await lines(page); }
     await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-quiet"); await lines(page);
@@ -662,7 +686,7 @@ await suite("trpg-main", async check => {
     await openTable(page, "shark-last-order");
     assert(await page.locator('.trpg-table-person[data-speaker="adam"]').count());
     assert.equal(await page.locator('.trpg-table-person[data-speaker="hiyori"]').count(), 0);
-    await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page); await interviewStep(page);
+    await lines(page); await startTrpgStory(page); await lines(page); await roll(page); await interviewStep(page);
     await hit(page, "trpg-consult-adam"); assert((await page.locator(".trpg-speech p").textContent()).includes("狙いを定めよう"));
     await lines(page); await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm");
     assert.deepEqual((await snapshot(page)).trpg.cleared, {});
@@ -767,7 +791,7 @@ await suite("trpg-main", async check => {
     // 卓は本編と同じもの: 始めて、しおりを挟んで本棚へ戻れる。
     await hit(page, "trpg-play-ordinary-cup");
     await button(page, "trpg-tutorial-panel").waitFor(); await lines(page);
-    await hit(page, "trpg-start"); await lines(page); await roll(page);
+    await startTrpgStory(page); await lines(page); await roll(page);
     await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm"); await button(page, "trpg-play-ordinary-cup").waitFor();
     assert.equal((await trial()).trpg.bookmark?.id, "ordinary-cup");
     // 始め方を選び直す。

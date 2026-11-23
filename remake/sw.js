@@ -13,7 +13,7 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET" || url.origin !== self.location.origin) return;
   // 画像・音声は通常のブラウザ経路を保つ。毎回 SW から取り直す必要はなく、
   // 画像の失敗・遅延を扱う呼び出し側の通信にも介入しない。
-  if (request.mode !== "navigate" && !/\.(?:html?|m?js|css|json)$/i.test(url.pathname)) return;
+  if (request.mode !== "navigate" && !/\.(?:html?|m?js|css|json|woff2)$/i.test(url.pathname)) return;
   // stamp_deploy.py gives published scripts/styles a new URL for each build.
   if (request.mode !== "navigate" && url.href.startsWith(self.registration.scope)) {
     const rel = url.href.slice(self.registration.scope.length).split("?")[0];

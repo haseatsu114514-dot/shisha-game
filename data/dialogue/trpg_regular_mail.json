@@ -6,7 +6,7 @@
   "author": "灯森こはる",
   "collection": "常連卓 02",
   "duration": "約10分",
-  "premise": "大きな月の夜、時計坂の町。郵便猫ミトンが、宛名のにじんだ手紙を持ってきた。『月のよく見える家の、だれかへ』。夜番たちは、誰に届けるだろう。 サイの店の常連たちと、気軽に遊ぶ一冊。",
+  "premise": "時計坂の町の夜番に、郵便猫ミトンが手紙を持ってきた。にじんだ宛名で読めるのは「月のよく見える家」だけ。心当たりを探しに、町を歩こう。",
   "fiction": {
     "town": "時計坂の町",
     "shop": "夜番の詰所",
@@ -23,7 +23,7 @@
     {
       "id": "hajime",
       "part": "PLAYER",
-      "role": "{pc}／新米の夜番",
+      "role": "{pc}／時計坂の夜番",
       "color": "#89bbc4",
       "ability": "ひらめき",
       "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
@@ -88,7 +88,7 @@
   "checks": {
     "listen": {
       "title": "ミトンの話を聞く",
-      "hint": "宣言した夜番の能力で判定。結果にかかわらず、話の続きを聞けます。",
+      "hint": "選んだ行動で判定します。成功すると、ミトンにもう一つ質問できます。",
       "success": "trpg_regular_mail_listen_success",
       "mixed": "trpg_regular_mail_listen_mixed",
       "trouble": "trpg_regular_mail_listen_trouble",
@@ -172,8 +172,8 @@
           "actor": "hajime",
           "sheet": "hajime",
           "stat": "talk",
-          "label": "自分の言葉で届ける",
-          "detail": "{pc}が選んだ渡し方で、手紙を差しだす",
+          "label": "ミトンから手紙を預かる",
+          "detail": "{pc}がミトンに合図をして、手紙を渡す役を引き受ける",
           "declare": "trpg_regular_mail_declare_serve_word"
         },
         {
@@ -190,8 +190,8 @@
           "actor": "regularb",
           "sheet": "regularb",
           "stat": "talk",
-          "label": "ひと言、口上を添える",
-          "detail": "{pc:regularb}が月にふさわしい一言を添える",
+          "label": "ミトンと渡し方を打ち合わせる",
+          "detail": "{pc:regularb}がミトンに、誰がいつ動くかを伝える",
           "declare": "trpg_regular_mail_declare_serve_speech"
         }
       ]
@@ -308,13 +308,13 @@
       {
         "id": "roof",
         "label": "屋根の道",
-        "description": "猫と月だけが知っている、屋根づたいの近道。",
+        "description": "ミトンが教えてくれた、屋根づたいの近道。",
         "response": "trpg_regular_mail_choice_route_roof"
       },
       {
         "id": "river",
         "label": "川沿いの道",
-        "description": "水面の月を追って、川下へ続く長い道。",
+        "description": "川下の町まで、土手づたいに歩く。",
         "response": "trpg_regular_mail_choice_route_river"
       },
       {
@@ -328,19 +328,19 @@
       {
         "id": "wax",
         "label": "封蝋",
-        "description": "赤い封蝋に月の印。昔ながらの、きちんとした手紙。",
+        "description": "封を赤い蝋で留め、月の印を押す。",
         "response": "trpg_regular_mail_choice_wrap_wax"
       },
       {
         "id": "flower",
         "label": "押し花",
-        "description": "丘の青い花を一輪。景色ごと届ける。",
+        "description": "丘に咲く青い花の押し花を、封筒に添える。",
         "response": "trpg_regular_mail_choice_wrap_flower"
       },
       {
         "id": "bell",
         "label": "小さな鈴",
-        "description": "封筒の角で、ちりんと鳴る。誰からか、音で分かる。",
+        "description": "封筒の外に、ミトンの首輪と同じ鈴を結ぶ。",
         "response": "trpg_regular_mail_choice_wrap_bell"
       }
     ],
@@ -374,7 +374,7 @@
       {
         "id": "kite",
         "label": "凧で捕まえる",
-        "description": "詰所の古い凧を上げ、風ごとすくう。",
+        "description": "詰所の古い凧を上げ、糸に手紙を引っかける。",
         "response": "trpg_regular_mail_choice_tactic_kite"
       },
       {
@@ -389,7 +389,7 @@
     {
       "id": "keeper",
       "ending": "lamp",
-      "arrival": "宛名は『月のよく見える家の、だれかへ』。灯りの油のにおいが、少しします",
+      "arrival": "読めるのは『月のよく見える家』です。灯りの油のにおいが、少しします",
       "likes": {
         "route": [
           "stairs"
@@ -404,7 +404,7 @@
       "evidence": {
         "bag": {
           "title": "たくさんの字",
-          "text": "封筒を月に透かすと、大きさの違う字がいくつも並んでいる。何人もで書いた手紙だ。",
+          "text": "封が浮いて見えた紙の端には、大小さまざまな字。何人かで書いた手紙らしい。",
           "lines": "trpg_regular_mail_keeper_bag"
         },
         "clock": {
@@ -413,8 +413,8 @@
           "lines": "trpg_regular_mail_keeper_clock"
         },
         "roof": {
-          "title": "月にいちばん近い窓",
-          "text": "屋根の上から見渡すと、月にいちばん近い窓は、丘の灯台のてっぺんだ。",
+          "title": "町でいちばん高い窓",
+          "text": "屋根の上から見える窓では、丘の灯台のてっぺんがいちばん高い。",
           "lines": "trpg_regular_mail_keeper_roof"
         },
         "bridge": {
@@ -424,12 +424,12 @@
         },
         "bakery": {
           "title": "ひとつだけのパン",
-          "text": "パン屋の主人いわく、丘のおじいさんは毎晩パンを一つだけ買い、ほとんど誰とも話さずに帰る。",
+          "text": "丘のおじいさんは毎晩パンを一つ買う。パン屋の主人とは挨拶を交わすくらい。",
           "lines": "trpg_regular_mail_keeper_bakery"
         },
         "board": {
           "title": "赤い封蝋の貼り紙",
-          "text": "掲示板に、灯台の古い貼り紙。角は赤い封蝋で留めてある。昔ながらの手紙が好きな人らしい。",
+          "text": "灯台守の署名がある古い貼り紙。赤い封蝋に、月の印が押してある。",
           "lines": "trpg_regular_mail_keeper_board"
         }
       },
@@ -459,7 +459,7 @@
     {
       "id": "child",
       "ending": "far-window",
-      "arrival": "宛名は『月のよく見える家の、だれかへ』。小さな子の、丸い字です",
+      "arrival": "読めるのは『月のよく見える家』です。小さな子の、丸い字です",
       "likes": {
         "route": [
           "river"
@@ -473,13 +473,13 @@
       },
       "evidence": {
         "bag": {
-          "title": "押し花の形",
-          "text": "封筒を月に透かすと、押し花の形が浮かぶ。丘に咲く、小さな青い花らしい。",
+          "title": "故郷の押し花",
+          "text": "封筒から、押し花の小さな青い花びらがのぞいている。時計坂の丘でよく見る花だ。",
           "lines": "trpg_regular_mail_child_bag"
         },
         "clock": {
           "title": "九時の約束",
-          "text": "時計塔の壁に、子どもの字で『九時に、ここで』。並んだ名前は二つ。片方だけ、色あせている。",
+          "text": "時計塔の壁に子どもの字で『九時に、ここで』。その下に、子どもの名前が二つ並んでいる。",
           "lines": "trpg_regular_mail_child_clock"
         },
         "roof": {
@@ -529,7 +529,7 @@
     {
       "id": "painter",
       "ending": "painter",
-      "arrival": "宛名は『月のよく見える家の、だれかへ』。書いた人は……ええと、ないしょです",
+      "arrival": "読めるのは『月のよく見える家』です。書いた人は……ええと、ないしょです",
       "likes": {
         "route": [
           "roof"
@@ -614,8 +614,8 @@
       "dialogue": "trpg_regular_mail_ending_painter"
     },
     "together": {
-      "title": "みんなで宛先を探しに行く手紙",
-      "line": "宛先はまだ分からない。だから、町のみんなと探しに出かけた。",
+      "title": "宛先探しは明日も",
+      "line": "夜番が道を聞いて回ると、窓から「明日も手伝うよ」と声が返ってきた。",
       "dialogue": "trpg_regular_mail_ending_together"
     }
   },
@@ -672,13 +672,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "好きなものは、町の灯り"
+          "text": "見回りに出たら、消えた街灯を放っておけないやつです"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "では、その役で。物語を始めましょう"
+          "text": "では、その役でお願いしますね"
         }
       ]
     },
@@ -699,13 +699,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "好きなものは、風見の動き"
+          "text": "風見が回るたびに、今夜はどの道が歩きやすいか考えてます"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "では、その役で。物語を始めましょう"
+          "text": "では、その役でお願いしますね"
         }
       ]
     },
@@ -726,13 +726,13 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "好きなものは、鐘の響き"
+          "text": "時計塔に通い詰めてます。鐘を聞けば、何時かすぐに分かります"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "では、その役で。物語を始めましょう"
+          "text": "では、その役でお願いしますね"
         }
       ]
     },
@@ -753,13 +753,13 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "好きなものは、月の観測"
+          "text": "よその町から、時計坂で月の高さを測りに来ました"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "では、その役で。物語を始めましょう"
+          "text": "では、その役でお願いしますね"
         }
       ]
     },
@@ -773,19 +773,19 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "今夜は月夜の郵便です。私は町の様子を話し、出会う人を演じます"
+          "text": "今夜は、見回りに出る夜番たちの話です。出会った人は私が演じます"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "俺たちは、夜番がどう動くかを決めるんですね"
+          "text": "夜番は俺たちですね。ランタンとか、持っていけますか？"
         },
         {
           "speaker": "sai",
           "role": "",
           "face": "normal",
-          "text": "はい。私は進行役のGMです。迷ったら、そのまま聞いてください",
+          "text": "ええ。詰所に道具が置いてあります。では、見回りに出るところから",
           "castIntro": true,
           "smallTableText": "私は進行役のGMです。空いた役もやりますから、ご安心を"
         },
@@ -799,7 +799,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……登る前から帰りの相談か"
+          "text": "……帰る相談は、見回りに出てからでも遅くないぞ"
         },
         {
           "speaker": "sai",
@@ -835,25 +835,31 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "お、あの猫、封筒をくわえたままこっちを見てるぞ"
+          "text": "猫だ。あれ、口に何かくわえてるぞ"
         },
         {
           "speaker": "hajime",
-          "role": "PL／卓の会話",
+          "role": "{pc}／物語",
           "face": "surprise",
-          "text": "届け先を、俺たちに聞きに来たのかな"
+          "text": "おいで。こっちは火がついてるから、気をつけて"
         },
         {
           "speaker": "sai",
-          "role": "GM／卓の会話",
+          "role": "GM／場面",
           "face": "normal",
-          "text": "何かお困りみたいですね。まずは話を聞いてみましょう"
+          "text": "猫はランタンをひょいとよけて、夜番の足元に座った"
         },
         {
           "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "こんばんは、夜番さん。郵便猫の、ミトンです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "うわ、しゃべった。そっか、郵便猫って本当に配達するのか"
         }
       ]
     },
@@ -867,25 +873,25 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ミトンは前足で、手紙をそっと差しだす。宛名のインクが、にじんでいる"
+          "text": "ミトンが前足で封筒を押し出す。宛名のインクが、ところどころにじんでいる"
         },
         {
           "speaker": "regularb",
-          "role": "PL／卓の会話",
+          "role": "{pc:regularb}／物語",
           "face": "normal",
-          "text": "……宛名が読めないと、配れないな"
+          "text": "ちょっと待って。ランタン、そっちに向けてもいいか？"
         },
         {
           "speaker": "hajime",
           "role": "{pc}／物語",
           "face": "normal",
-          "text": "一緒に探すよ。ミトン、まだ読めるところを教えてくれる？"
+          "text": "一緒に探そうか。ミトン、どこなら読める？"
         },
         {
           "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
-          "text": "はい。にじんでしまって、半分しか読めなくて……"
+          "text": "読めるところだけ、先にお伝えしますね"
         }
       ]
     },
@@ -899,13 +905,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ミトンは尻尾をゆらりと振った。安心して、話してくれそうだ"
+          "text": "ミトンは前足をそろえ、話す前に夜番たちを順番に見上げた"
         },
         {
           "speaker": "hajime",
-          "role": "PL／卓の会話",
+          "role": "{pc}／物語",
           "face": "smile",
-          "text": "よかった。ゆっくりでいいからね"
+          "text": "どうぞ。見回りなら、あとでも行けます"
         }
       ]
     },
@@ -919,19 +925,19 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ミトンが小さくくしゃみをする。宛名のにじみが、少し広がった"
+          "text": "ミトンがくしゃみをして、封筒の上に鼻先を押しつけてしまった"
         },
         {
           "speaker": "regulara",
-          "role": "PL／卓の会話",
+          "role": "{pc:regulara}／物語",
           "face": "normal",
-          "text": "くしゃみひとつで、届け先がまた遠くなったぞ"
+          "text": "大丈夫か？ 手紙は先に鞄に入れとこう"
         },
         {
           "speaker": "sai",
-          "role": "GM／卓の会話",
+          "role": "GM／場面",
           "face": "normal",
-          "text": "まだ字が残っています。気になることをミトンに聞いてください"
+          "text": "ミトンは鼻をこすりながら、前足で封筒を押しやった"
         }
       ]
     },
@@ -945,19 +951,19 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc}が手を伸ばすと、ミトンはびっくりして塀の上へ跳んだ"
+          "text": "ランタンの火がぱちっとはぜて、ミトンは塀の上へ跳んだ"
         },
         {
           "speaker": "hajime",
-          "role": "PL／卓の会話",
+          "role": "{pc}／物語",
           "face": "surprise",
-          "text": "わっ、ごめん！ 驚かせるつもりじゃ……"
+          "text": "ごめん。火、もっと離しておくよ"
         },
         {
           "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
-          "text": "……すみません、猫なので。話は、ここからします"
+          "text": "この高さならよく見えます。お話は、ここからでもいいですか？"
         }
       ]
     },
@@ -971,7 +977,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc}はしゃがんで、ミトンと目線を合わせる。『どうしたの？』"
+          "text": "{pc}はしゃがんで、ミトンに封筒の字を読んでもらいます"
         },
         {
           "speaker": "sai",
@@ -1011,7 +1017,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:regularb}は帽子を取って一礼。『ようこそ、月夜の郵便屋さん』"
+          "text": "{pc:regularb}は帽子を取って、ミトンにしゃべりやすい場所を聞こう"
         },
         {
           "speaker": "sai",
@@ -1031,7 +1037,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "風がやんだ一瞬、手紙は{pc}の手の中へ、すとんと落ちてきた"
+          "text": "風がやんだ一瞬、舞っていた手紙の端をつかんだ"
         },
         {
           "speaker": "sai",
@@ -1057,13 +1063,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ミトンの耳の葉っぱも一枚、月の方へ飛んでいった"
+          "text": "ミトンは葉っぱの耳をぺたんと伏せて、封筒をのぞき込んだ"
         },
         {
           "speaker": "sai",
-          "role": "GM／卓の会話",
+          "role": "郵便猫ミトン／物語",
           "face": "normal",
-          "text": "耳の葉がなくても、ミトンはミトンですね"
+          "text": "中身は飛んでいません。よかった……"
         }
       ]
     },
@@ -1123,7 +1129,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:regulara}は、縄と網を手早くみんなに配るぞ"
+          "text": "{pc:regulara}は、使えそうな道具を手分けして運ぶぞ"
         },
         {
           "speaker": "sai",
@@ -1163,13 +1169,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "支度はぴたりと整った。手紙は、出発を待っている"
+          "text": "封筒を包み直して、鞄の留め金をかちりと閉じた"
         },
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "よし、支度はできた。あとは坂に文句を言わずに歩くか"
+          "text": "よし、今度は鞄ごと飛ばされないようにな"
         }
       ]
     },
@@ -1193,9 +1199,9 @@
         },
         {
           "speaker": "sai",
-          "role": "GM／卓の会話",
+          "role": "GM／場面",
           "face": "normal",
-          "text": "月はまだ空にあります。配達を続けましょう"
+          "text": "次に風が来ても開かないよう、包みの口を折り返した"
         }
       ]
     },
@@ -1221,7 +1227,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ミトンの目がきらりと光って、手もとを照らしてくれた"
+          "text": "ミトンが窓の鎧戸を開けた。机の上に月明かりが差し込む"
         }
       ]
     },
@@ -1255,7 +1261,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:regulara}が支度するわ。段取りは任せろ"
+          "text": "{pc:regulara}が支度するよ。地図と道具、机に並べてくれ"
         },
         {
           "speaker": "sai",
@@ -1295,13 +1301,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "手紙は、まっすぐ届いた。窓の灯りが、ふっと揺れる"
+          "text": "鞄の留め金がすんなり開いた。封筒も傷んでいない"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……届いて、よかったな"
+          "text": "肝心の手紙は無事だな。さあ、どうぞ"
         }
       ]
     },
@@ -1315,13 +1321,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "渡すとき、{pc}は少し言葉に詰まった。でも、気持ちは伝わったようだ"
+          "text": "渡そうとしたとき、鞄の留め金が引っかかった。外すのに少し手間取る"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "（うまく言えなかったけど……届いたなら、いいか）"
+          "text": "ごめん、開いた。もう飛ばさないように両手で持っとこう"
         }
       ]
     },
@@ -1335,19 +1341,19 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "渡す直前、ミトンが大きなくしゃみ。封筒が、ころんと転がった"
+          "text": "鞄を開けたとたん、ミトンがくしゃみをした。手紙が足元に落ちる"
         },
         {
           "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
-          "text": "……すみません、月がまぶしくて"
+          "text": "ほ、ほこりが……。すみません、もう大丈夫です"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "拾い直して、もう一度。今度は、ちゃんと届いた"
+          "text": "ミトンは落ちた手紙を拾って、付いた砂を前足で払った"
         }
       ]
     },
@@ -1361,7 +1367,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc}が、選んだ渡し方で手紙を届けます"
+          "text": "渡すときは、{pc}がミトンから手紙を預かります"
         },
         {
           "speaker": "sai",
@@ -1401,7 +1407,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:regularb}が口上を添えよう。月にふさわしい一言を"
+          "text": "{pc:regularb}がミトンと相談して、渡すときの段取りを決めよう"
         },
         {
           "speaker": "sai",
@@ -1421,19 +1427,19 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……宛名が半分なら、残りの半分は町が知ってるはずだ"
+          "text": "字で分からなかったら、封筒に付いたものも見てみよう"
         },
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "におい、字の跡、町のうわさ。小さなものほど、行き先を教えてくれる"
+          "text": "灯りを近づければ、にじんだところも見えるかもしれない"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "手紙そのものと、町の人の話。両方見てみよう"
+          "text": "ミトンに頼んで、鞄の手紙を見せてもらおう"
         }
       ]
     },
@@ -1447,19 +1453,19 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……まず、この手紙を待つ人を探そう"
+          "text": "この時間なら、まだ窓が開いてる家もあるな"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "誰が書き、誰が待つか。それが分かれば、道は自然に決まる"
+          "text": "パン屋や橋にいる人なら、どの家に手紙が来そうか知ってるかもな"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "書いた人と、待ってる人……。そこから考えるのか"
+          "text": "じゃあ、灯りがついてるうちに聞きに行こう"
         }
       ]
     },
@@ -1473,13 +1479,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "毎晩の灯りに、町からのお礼……。いいな"
+          "text": "丘の灯りって、遠くから見えるもんな。お礼を言うなら灯台守だ"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……灯りをともす人も、一人だな"
+          "text": "あの灯りがつくなら、今夜も丘の上にいるはずだな"
         },
         {
           "speaker": "sai",
@@ -1499,19 +1505,19 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "遠くへ越した子に……。同じ月を、見てるといいな"
+          "text": "引っ越した子に出した手紙なら、この町の中で探しても見つからないな"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……手紙が届けば、また話せる"
+          "text": "町の外ね。川下には行ったことがある"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "遠い窓まで届けるのですね。では、その見立てで"
+          "text": "では、町の外も配達先の候補に入れましょう"
         }
       ]
     },
@@ -1525,13 +1531,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ミトンが自分で書いたの！？ ……なかなかやるな"
+          "text": "もしかして差出人もミトン？ どうやってペンを持ったんだ？"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……描いた人への手紙か"
+          "text": "ミトンが自分で出したなら、宛先に心当たりがあるわけだ"
         },
         {
           "speaker": "sai",
@@ -1551,13 +1557,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "そのとき、坂の上から大きな風が吹きおろした"
+          "text": "詰所の前に戻ったとき、坂を吹き下りてきた風で、ランタンの火が揺れた"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ミトンの前足から、手紙がふわりと舞い上がる"
+          "text": "ミトンが鞄から取り出したばかりの手紙が、風にさらわれる"
         },
         {
           "speaker": "sai",
@@ -1569,13 +1575,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "おい、手紙のほうが先に帰り道を決めたぞ！"
+          "text": "おい、手紙のほうが先に出発したぞ！"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "帰り道はあとで考えよう！ 手紙が屋根を越える！"
+          "text": "屋根の向こうに行っちゃう！ 早く追いかけよう"
         },
         {
           "speaker": "sai",
@@ -1595,7 +1601,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "夜番たちは石畳の坂を駆けだす。手紙は、屋根の向こうへひらひらと"
+          "text": "手紙が降りてきそうな場所まで、夜番たちは坂を駆けだす"
         },
         {
           "speaker": "hajime",
@@ -1681,19 +1687,19 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "月が、いちばん高くなった。届け先の窓に、灯りがひとつ"
+          "text": "鞄を持って戸を開けると、頭の真上に月があった"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "もう着いたな。あとは相手が受け取りやすい渡し方を選ぼう"
+          "text": "じゃあ行こうか。着いたら、どうやって渡そう？"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……灯りはある。起きてるかどうかは、まだ分からないな"
+          "text": "こんな時間だ。もう寝てるかもしれないぞ"
         }
       ]
     },
@@ -1707,13 +1713,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "屋根の道へ。瓦の上を行く、猫と月の近道だ"
+          "text": "ミトンが地図に前足を乗せて、屋根へ上がるはしごの場所を教えた"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……屋根の上なら、よく見える"
+          "text": "このはしごか。暗いから、登る前に足場を見よう"
         }
       ]
     },
@@ -1727,13 +1733,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "川沿いの道へ。水面の月が、ずっと先まで続いている"
+          "text": "地図で川沿いをたどると、下流の町まで一本の道が続いている"
         },
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "川は、遠くの町まで流れているんだな"
+          "text": "川を目印にすれば、暗くても迷わなさそうだな"
         }
       ]
     },
@@ -1747,7 +1753,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "坂の階段へ。百段の先に、丘の灯りが見える"
+          "text": "丘の灯りを目印に、百段の階段をのぼる道を選んだ"
         },
         {
           "speaker": "hajime",
@@ -1773,7 +1779,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "きちんとした手紙ね。背すじが伸びるな"
+          "text": "この印、つぶさないように気をつけて運ぼう"
         }
       ]
     },
@@ -1787,13 +1793,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "封筒に、丘の青い花の押し花を一輪"
+          "text": "丘に咲く青い花の押し花を、封筒にそっと添えた"
         },
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "花の色って、遠くからでも思い出せるんだな"
+          "text": "折れやすいから、手紙の広いほうを上にして入れよう"
         }
       ]
     },
@@ -1813,7 +1819,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "かわいい……！ あ、ううん。いいな"
+          "text": "あれ、ミトン。首輪にも同じ鈴が付いてるな"
         }
       ]
     },
@@ -1827,7 +1833,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "顔を見て、手渡ししよう。直接届けたい"
+          "text": "戸を叩こう。出てきてくれたら、顔を見て渡したい"
         }
       ]
     },
@@ -1875,7 +1881,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "みんなで、一通の手紙を……？"
+          "text": "渡し場か。川の向こうからも見える家なのかな"
         }
       ]
     },
@@ -1989,7 +1995,7 @@
           "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
-          "text": "書いたあと、女の子がずっと胸に抱えていたので……"
+          "text": "女の子、書いたばかりの手紙をしっかり胸に抱えていましたから……"
         },
         {
           "speaker": "regulara",
@@ -2029,7 +2035,7 @@
           "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
-          "text": "……ええと。拾いました。たぶん"
+          "text": "ええと……拾った、ということにしておいてくれませんか"
         },
         {
           "speaker": "sai",
@@ -2055,13 +2061,13 @@
           "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
-          "text": "屋根を歩いていると、丸い窓に月がまるごと映る家があって……"
+          "text": "屋根の上から、丸い窓に月が映るのをよく見ていて……"
         },
         {
           "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
-          "text": "あっ、いえ。なんでもないです"
+          "text": "あっ、ごめんなさい、今のは聞かなかったことに"
         }
       ]
     },
@@ -2099,9 +2105,9 @@
         },
         {
           "speaker": "sai",
-          "role": "GM／卓の会話",
+          "role": "GM／場面",
           "face": "normal",
-          "text": "ミトンも、少し誇らしそうですね"
+          "text": "ミトンは得意そうに、葉っぱの耳をぴんと立てた"
         }
       ]
     },
@@ -2145,13 +2151,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "灯台守はランタンを持ち、夜番が階段を下りるまで見送った"
+          "text": "灯台守はランタンを持ち、夜番の背中が見えなくなるまで外にいた"
         },
         {
           "speaker": "hajime",
-          "role": "PL／卓の会話",
+          "role": "{pc}／物語",
           "face": "smile",
-          "text": "（帰りの階段は、来たときより足もとがよく見えたな）"
+          "text": "おじいさん、まだ戸口にいる。もう一度手を振ってこよう"
         }
       ]
     },
@@ -2195,13 +2201,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "窓が二つあるなら、月の話はまだ続くんだな"
+          "text": "返事なら、今度は宛名が読めるといいな"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "（返事が着くころ、あの子は窓のそばで待ってるかな）"
+          "text": "うちの詰所にも、月が見える窓があるぞ。帰ったら教えとこう"
         }
       ]
     },
@@ -2239,19 +2245,19 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "にじんだ宛名の下に、肉球の判子がひとつ押してあった"
+          "text": "絵描きはその場で封を開いた。差出人の欄には、肉球の印が押してある"
         },
         {
           "speaker": "hajime",
-          "role": "PL／卓の会話",
+          "role": "{pc}／物語",
           "face": "normal",
-          "text": "（送り主の名前はなくても、足あとで分かるんだな）"
+          "text": "ミトン、宛名まで前足で押しちゃったのか？"
         },
         {
           "speaker": "sai",
-          "role": "GM／卓の会話",
+          "role": "GM／場面",
           "face": "normal",
-          "text": "返事は絵葉書にするそうですよ。宛名は、ミトンさんへ"
+          "text": "絵描きは椅子を寄せて、ミトンの分の便箋を探し始めた"
         }
       ]
     },
@@ -2265,37 +2271,37 @@
           "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
-          "text": "……ちがったみたい、です。でも、ありがとうございます"
+          "text": "すみません。ここに置いていっていいか、まだ自信がなくて"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "宛先は、まだわからない。夜番たちはミトンと、月の下の町を歩きだす"
+          "text": "夜番たちは、ミトンともう一度、宛先に心当たりがないか聞いて回った"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "パン屋も船頭も、窓から顔を出して『うちかもしれない』と言う"
+          "text": "話を聞きつけた町の人も、窓を開けて一緒に考えてくれた"
         },
         {
           "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
-          "text": "この町、月のよく見える家ばかりみたいです"
+          "text": "こんなに窓があったんですね。次から、屋根だけじゃなくこっちも見ます"
         },
         {
           "speaker": "hajime",
-          "role": "PL／卓の会話",
+          "role": "{pc}／物語",
           "face": "smile",
-          "text": "宛先を探して歩く夜も、悪くないな"
+          "text": "明日も来るよ。ミトン、今夜は手紙をだいじにしまっておこう"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "続きは、また今度。次の配達も楽しみですね"
+          "text": "ミトンが鞄を抱えてうなずいたところで、今夜はおしまいです"
         }
       ]
     },
@@ -2309,13 +2315,13 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "みなさん、行き先を決めてから迷わず動けましたね"
+          "text": "お疲れさまでした。あの風のなか、手紙をよくつかまえましたね"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "どうするか決めたら、案外、足は軽かったな"
+          "text": "手紙が飛んだときはどうなるかと思いましたよ"
         }
       ]
     },
@@ -2329,13 +2335,13 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "寄り道も配達のうちですね。いろいろな道を通りました"
+          "text": "お疲れさまでした。今夜はよく歩きましたね"
         },
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "歩いたぶんだけ、今度は道を聞かずに済むな"
+          "text": "次はちゃんと鞄に入れておこうぜ。手紙と鬼ごっこはもう十分だよ"
         }
       ]
     },
@@ -2349,19 +2355,19 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "これでおしまいです。配達を手伝ってくださって、ありがとうございました"
+          "text": "今夜の当番はここまでです。ありがとうございました"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "ミトン、いい猫だったな。配達の続きも見たくなった"
+          "text": "あ、もう終わりですか。ミトン、次は何を持ってくるんだろう"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "ミトンはきっと、皆さんのことを次の夜番にも話しますよ"
+          "text": "さあ。次は一通で済むといいですね"
         },
         {
           "speaker": "regulara",
@@ -2385,13 +2391,13 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "サイさん、坂を歩いただけなのに、町に知り合いができた気がします"
+          "text": "サイさん、次に読んだら、あのパン屋でパン買ってもいいですか？"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "ええ。次に来たときは、町の人も覚えていてくれそうですね"
+          "text": "ええ。朝のうちなら、焼きたてを分けてくれると思いますよ"
         }
       ]
     },
@@ -2405,13 +2411,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "郵便鞄の手紙を、月に透かしてみる"
+          "text": "封筒の封が少し浮いている。差し出された紙の端だけが見えた"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "中には、大きさの違う字がいくつも。何人もで書いた手紙らしい"
+          "text": "紙の端まで、大小さまざまな字で埋まっている。何人かが書いたようだ"
         },
         {
           "speaker": "hajime",
@@ -2463,7 +2469,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "月にいちばん近い窓は、丘の灯台のてっぺんだ"
+          "text": "見渡すかぎり、いちばん高い窓は丘の灯台のてっぺんにある"
         },
         {
           "speaker": "regulara",
@@ -2515,13 +2521,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "『丘のおじいさんは毎晩、パンを一つだけ。話す相手もいないらしくてね』"
+          "text": "『丘のおじいさんは毎晩パンを一つ。うちでは挨拶ぐらいしかしないけど』"
         },
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "毎晩、一人きり……。誰かが来たら、きっと嬉しいだろうな"
+          "text": "灯台の上からだと、話せるのはパンを買いに下りたときくらいか"
         }
       ]
     },
@@ -2541,13 +2547,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "貼り紙の角は、赤い封蝋で留めてある。昔ながらのやり方だ"
+          "text": "灯台守の署名の横に、月の印がついた赤い封蝋が押してある"
         },
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "封蝋……。きちんとした手紙が好きな人なんだな"
+          "text": "同じ月の印、詰所にもあったよな。手紙にも使えそうだ"
         }
       ]
     },
@@ -2561,19 +2567,19 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "郵便鞄の手紙を月に透かすと、小さな花の形が浮かぶ"
+          "text": "封筒の口から、小さな花びらが一枚のぞいている"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "押し花だ。丘に咲く、小さな青い花らしい"
+          "text": "丘でよく見る青い花だ。押し花にして入れたらしい"
         },
         {
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "押し花を入れた手紙……。思い出を一緒に送りたいんだな"
+          "text": "こっちの丘の花か。向こうの町じゃ咲かないのかな"
         }
       ]
     },
@@ -2593,7 +2599,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "『九時に、ここで』。並んだ名前は二つ。片方だけ、色あせている"
+          "text": "『九時に、ここで』。その下に、子どもの名前が二つ並んでいる"
         },
         {
           "speaker": "hajime",
@@ -2677,7 +2683,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……パン屋の窓、覚えておこう"
+          "text": "そうか、玄関で渡すより、朝の窓辺に置けばいいんだ"
         }
       ]
     },
@@ -2755,7 +2761,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……この猫の絵、古いな"
+          "text": "……見ろ、耳まで同じだ。昔からこの町にいたのか？"
         }
       ]
     },
@@ -2833,7 +2839,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……この猫、パン屋にもいた"
+          "text": "屋根裏か。誰の家のことだか、聞いておこう"
         }
       ]
     },
@@ -2864,7 +2870,7 @@
       ]
     }
   ],
-  "_comment": "tonari店長スミ、常連つむぎ・サラリーマンとはじめの部員ゼロ期卓。既存短編を常連の配役で遊ぶ別冊。",
+  "_comment": "六角サイがGMを務め、はじめと店の常連二人で遊ぶ郵便猫の短編。",
   "flow": {
     "prepare": [
       "route",
@@ -2901,7 +2907,7 @@
     "theme": "leaf",
     "number": "R2",
     "genre": "絵本ファンタジー",
-    "tagline": "閉店後の常連たちと、宛名のにじんだ手紙を、月の下で届ける。",
+    "tagline": "月のよく見える家へ。時計坂の夜番と郵便猫が、一通の手紙を預かった。",
     "image": "../../img/backgrounds/trpg_leaf-mail_room.webp",
     "choiceArt": {
       "src": "../../img/ui/trpg/choices-leaf-mail.webp",
@@ -2930,14 +2936,14 @@
     },
     "prepareTitle": "どの道で、どう包んで届ける？",
     "prepareDescription": "道を一つ、包み方を一つ。手がかりを組み合わせて決めよう。",
-    "serveTitle": "月がいちばん高いうちに。",
+    "serveTitle": "封筒を、どう渡す？",
     "serveDescription": "手紙の渡し方を、一つ選ぶ。",
     "hypothesisTitle": "この手紙は、だれへの手紙？",
     "arrivalRole": "郵便猫ミトン／物語",
-    "exploreIdle": "……気になる場所を、調べてください。相談も、何度でも",
-    "listenIdle": "……まずは、ミトンの話を聞きましょう。サイコロは二つです",
+    "exploreIdle": "宛先に心当たりはありますか？ 仲間にも相談できます",
+    "listenIdle": "まずはミトンの話を聞きましょう。サイコロは二つです",
     "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
-    "serveIdle": "……渡し方を決めたら、手紙を届けましょう",
+    "serveIdle": "渡し方を決めましょう。ミトンに歌ってもらうこともできます",
     "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
     "phases": {
       "listen": {
@@ -2949,7 +2955,7 @@
       "interview": {
         "kicker": "02 / ミトンと話す",
         "title": "ミトンに、何を聞く？",
-        "description": "聞ける質問は二つ。答えは、手紙の事情ごとに違う。",
+        "description": "手紙を預かった場所など、宛先の手がかりを聞いてみよう。",
         "button": "話を聞き終えて、町を調べる"
       },
       "explore": {
@@ -2967,7 +2973,7 @@
       "prepare": {
         "kicker": "05 / 配達の支度",
         "title": "届ける道と、包み方",
-        "description": "道も包みも、手紙を待つ人のために。",
+        "description": "宛先を見立てたら、町の地図と包みの道具を広げよう。",
         "button": "配達の支度をする"
       },
       "serve": {
@@ -2979,10 +2985,10 @@
       "ending": {
         "kicker": "卓を囲んで",
         "title": "おつかれさまでした",
-        "description": "みんなで届けた一通の手紙。宛先には、何が届いただろう。"
+        "description": "夜番とミトンは、手紙をどこまで届けられただろう。"
       }
     },
-    "help": "ミトンに二つ質問し、町を調べて三つ以上の手がかりから宛先を見立てます。途中で突風が吹き、手紙を取り戻す手を選びます。最後に届ける道・包み方・渡し方を選びます。探索・相談・メモの再読に回数制限はありません。",
+    "help": "ミトンに質問し、町を調べて三つ以上の手がかりから宛先を見立てます。途中で突風が吹き、手紙を取り戻す手を選びます。最後に届ける道・包み方・渡し方を選びます。探索・相談・メモの再読に回数制限はありません。",
     "exitText": "この卓はここで終わります。もう一度遊ぶと、別の宛先が待っているかもしれません。",
     "endingKicker": "この夜の結末",
     "stats": {
@@ -2996,9 +3002,33 @@
     "sheetTitle": "キャラクターシート",
     "target": "GMの裁定 · 目標値30（19以上でひと手間）",
     "twistTitle": "手紙が風に飛ばされた。どうする？",
-    "interviewIdle": "……ミトンに聞けるのは、二つまでです",
-    "twistIdle": "……手紙が飛んでいきます。手を選んで、誰が動くか決めてください",
+    "interviewIdle": "ミトンに聞けるのは二つまでです。何を聞きましょうか？",
+    "twistIdle": "手紙を追う方法と、誰が動くかを決めましょう",
     "planTitle": "みんなの配達プラン"
+  },
+  "pictureBook": {
+    "pages": [
+      {
+        "image": "../../img/ui/trpg/picturebook/regular-mail/01.webp",
+        "alt": "大きな月の下に、時計塔と石畳の坂が見える",
+        "text": "時計坂の町。大きな月が、坂の石畳を白く照らしている。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/regular-mail/02.webp",
+        "alt": "詰所の戸口で、夜番が火のともったランタンを手にしている",
+        "text": "夜番は詰所の前で、ランタンの火を確かめている。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/regular-mail/03.webp",
+        "alt": "葉っぱの耳と煙のような尻尾の猫が、封筒をくわえて歩いてくる",
+        "text": "石畳に、猫の足音がひとつ。葉っぱの耳の猫が、手紙をくわえてやってきた。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/regular-mail/04.webp",
+        "alt": "郵便猫ミトンが、ランタンのそばで夜番の足元に座っている",
+        "text": "郵便猫ミトンはランタンをひょいとよけ、夜番の足元に座った。"
+      }
+    ]
   },
   "debrief": {
     "smooth": "trpg_regular_mail_debrief_smooth",
@@ -3006,8 +3036,8 @@
   },
   "campaign": {
     "aftermath": {
-      "true": "翌晩、ミトンの鞄には、返事の手紙が一通入っていた。",
-      "bad": "窓の灯りが最後の一つまで消えた。手紙は今夜の配達に間に合わなかった。"
+      "true": "次の夜、ミトンは返事の手紙を鞄に入れて、また夜番の詰所に顔を出した。",
+      "bad": "朝になっても宛先が分からず、手紙はミトンの鞄に戻った。"
     },
     "seats": [
       {

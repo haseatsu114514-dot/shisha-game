@@ -73,7 +73,7 @@ function trpgAssetUrls({ manifest, tableTalk, tutorialLines = [] }, scenarios) {
   return urls;
 }
 
-/** 選んだシナリオ分の素材だけを先読みする（本棚表示では待たず、卓の開始時に使う）。 */
+/** 選んだシナリオ分の素材だけを先読みする。 */
 export async function preloadTrpgAssets(resources, scenario, { signal } = {}) {
   validateCast(resources, [scenario]);
   const urls = trpgAssetUrls(resources, [scenario]);
@@ -111,8 +111,8 @@ export async function loadTrpgLibrary({ signal, scenarioId = null, preloadAssets
   return resources;
 }
 
-export async function loadTrpgResources({ scenarioId = "ordinary-cup", ...options } = {}) {
-  const { scenarios, ...resources } = await loadTrpgLibrary({ scenarioId, ...options });
+export async function loadTrpgResources({ scenarioId = "ordinary-cup", signal, preloadAssets = true, ...options } = {}) {
+  const { scenarios, ...resources } = await loadTrpgLibrary({ scenarioId, signal, preloadAssets, ...options });
   return { ...resources, scenario: scenarios[0] };
 }
 
@@ -125,7 +125,7 @@ export async function runTrpg(host, options = {}) {
   const scenarioId = options.scenarioId || options.resources?.scenario?.id || "ordinary-cup";
   if (options.signal?.aborted) return { cancelled: true, scenarioId };
   let resources;
-  try { resources = options.resources || await loadTrpgResources({ scenarioId, signal: options.signal }); }
+  try { resources = options.resources || await loadTrpgResources({ scenarioId, signal: options.signal, preloadAssets: false }); }
   catch (error) { if (options.signal?.aborted) return { cancelled: true, scenarioId }; throw error; }
   const controller = mountTrpg(host, { ...resources, ...options });
   const cancel = () => controller.destroy();

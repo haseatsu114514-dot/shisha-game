@@ -50,6 +50,11 @@ const fresh = round => ({ voted: round,
 });
 let comparisons = 0;
 const compare = (left, right, label) => { assert.deepEqual(left, right, label); comparisons++; };
+function compareRecord(actual, expected, round, label) {
+  const { roundVotes, ...record } = actual;
+  compare(record, expected, label);
+  compare(roundVotes[round], expected.lastVotes, "display history retains the actual allocation");
+}
 for (let round = 0; round < SPEND.length; round++) for (const judge of JUDGES) {
   const bad = fresh(round);
   bad.votes[judge].hajime = 10;
@@ -72,7 +77,7 @@ for (const score of scores) for (const pref of prefs) {
   for (let round = 0; round < SPEND.length; round++) {
     const rows = JUDGES.map(judge => actual.votes[judge]);
     compare(castVotes(actual, round, score, pref), legacyCastVotes(expected, round, score, pref), "normal return");
-    compare(actual, expected, `normal record: score${score}/round${round}`);
+    compareRecord(actual, expected, round, `normal record: score${score}/round${round}`);
     JUDGES.forEach((judge, i) => assert.equal(actual.votes[judge], rows[i], "keep successful row identity"));
     const once = structuredClone(actual);
     compare(castVotes(actual, round, score, pref), false, "a committed vote cannot be cast twice");
@@ -87,7 +92,7 @@ for (const value of [undefined, null, false, "0", NaN, -1]) {
   const actual = fresh(0); actual.votes[JUDGES[2]].kuraudo = value;
   const expected = structuredClone(actual);
   compare(castVotes(actual, 0, 81), legacyCastVotes(expected, 0, 81), "legacy numeric handling return");
-  compare(actual, expected, "legacy numeric handling record");
+  compareRecord(actual, expected, 0, "legacy numeric handling record");
 }
 for (const round of [-1, 4, 1]) {
   const actual = fresh(0), before = structuredClone(actual);

@@ -342,6 +342,7 @@
       "trigger_day": 5,
       "trigger_condition": "lime_exchanged",
       "type": "chat",
+      "read_affinity": 2,
       "messages": [
         {
           "sender": "naru",
@@ -349,19 +350,11 @@
         },
         {
           "sender": "naru",
-          "text": "字は汚いけど読めるはず。大会前に目だけ通しとけ"
-        }
-      ],
-      "replies": [
-        {
-          "text": "ありがとうございます、読みます",
-          "response": "おう。使うかどうかはお前が決めろ。俺はただ渡しただけだ",
-          "affinity": 2
+          "text": "字は汚いけど、笑っていいから大会前に目だけ通しとけ"
         },
         {
-          "text": "なるさんの字、楽しみです",
-          "response": "うるせえ。……まあ、笑っていいから読め",
-          "affinity": 1
+          "sender": "naru",
+          "text": "使うかどうかは、お前が決めろ"
         }
       ]
     },
@@ -1038,6 +1031,7 @@
       "sender": "kumicho",
       "chapter": 2,
       "type": "chat",
+      "read_affinity": 2,
       "trigger_condition": "flag",
       "trigger_flag": "_ch2_read_ch2_kumicho_third",
       "messages": [
@@ -1054,19 +1048,11 @@
         },
         {
           "sender": "kumicho",
-          "text": "置き場所を決めときゃ、翌朝の手が迷わねえ。あんちゃんの卓はどうなってなさる"
-        }
-      ],
-      "replies": [
-        {
-          "text": "トングの場所は決めました",
-          "response": "上等でさ。次は炭受けの向きも揃えてみな",
-          "affinity": 2
+          "text": "置き場所を決めときゃ、翌朝の手が迷わねえ"
         },
         {
-          "text": "まだ散らかってます",
-          "response": "正直でよろしい。まずは一つ、置き場所を決めなせえ",
-          "affinity": 1
+          "sender": "kumicho",
+          "text": "まずはトング。慣れたら炭受けの向きも揃えてみなせえ"
         }
       ]
     },
@@ -1330,6 +1316,7 @@
       "sender": "kuraudo",
       "chapter": 2,
       "type": "chat",
+      "read_affinity": 2,
       "trigger_condition": "lime_exchanged",
       "trigger_day": 5,
       "messages": [
@@ -1340,18 +1327,10 @@
         {
           "sender": "kuraudo",
           "text": "朝に聴くと、いい。歌い出しの前の、息を吸う音が入ってる"
-        }
-      ],
-      "replies": [
-        {
-          "text": "聴いてみます",
-          "response": "……感想、急がなくていい",
-          "affinity": 2
         },
         {
-          "text": "息の音、好きなんですね",
-          "response": "……うん。始まる前が、一番緊張する",
-          "affinity": 1
+          "sender": "kuraudo",
+          "text": "……始まる前が、一番緊張する"
         }
       ]
     },
@@ -1360,6 +1339,7 @@
       "sender": "kuraudo",
       "chapter": 2,
       "type": "chat",
+      "read_affinity": 2,
       "trigger_condition": "flag",
       "trigger_flag": "_ch2_read_ch2_kuraudo_fourth",
       "messages": [
@@ -1369,19 +1349,11 @@
         },
         {
           "sender": "kuraudo",
-          "text": "泣かれなかった"
-        }
-      ],
-      "replies": [
-        {
-          "text": "やりましたね！",
-          "response": "……うん。練習じゃない方だった",
-          "affinity": 2
+          "text": "練習じゃない方。向こうも会釈した"
         },
         {
-          "text": "相手、どうでした？",
-          "response": "……会釈された。たぶん、成功",
-          "affinity": 1
+          "sender": "kuraudo",
+          "text": "泣かれなかった"
         }
       ]
     },
@@ -7308,6 +7280,58 @@
         {
           "sender": "ageha",
           "text": "今日から真正面。ちゃんと笑ってたわ"
+        }
+      ]
+    },
+    {
+      "id": "lime_tsumugi_note_day5",
+      "sender": "tsumugi",
+      "chapter": 1,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 5,
+      "trigger_end_day": 6,
+      "min_sender_gap_days": 2,
+      "type": "chat",
+      "messages": [
+        "……新しい子を描きました",
+        "耳の葉っぱが、今日は二枚です"
+      ],
+      "replies": [
+        {
+          "text": "見たい",
+          "response": "……はい。今度、席で見せます",
+          "affinity": 2
+        },
+        {
+          "text": "二枚の日もあるんだ",
+          "response": "……はい。その日の子です",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_tsumugi_note_day10",
+      "sender": "tsumugi",
+      "chapter": 1,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 10,
+      "trigger_end_day": 10,
+      "min_sender_gap_days": 2,
+      "type": "chat",
+      "messages": [
+        "……スケッチブック、新しくしました",
+        "最初のページは、まだ白いままです"
+      ],
+      "replies": [
+        {
+          "text": "何を描くの？",
+          "response": "……まだ決めてません。決めない日も、いいので",
+          "affinity": 1
+        },
+        {
+          "text": "楽しみにしてる",
+          "response": "……はい。見せられる日が来たら",
+          "affinity": 2
         }
       ]
     }

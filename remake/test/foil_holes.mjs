@@ -101,12 +101,13 @@ assert(Math.abs(conditions.heatDelta(few, .1)) > Math.abs(conditions.heatDelta(o
 assert(conditions.heatDelta({ ...outerOnly, environment: { rainy: true } }, .1) < conditions.heatDelta(outerOnly, .1));
 assert.equal(conditions.heatDelta({ ...outerOnly, environment: { rainy: true } }, -.1), conditions.heatDelta(outerOnly, -.1));
 
-async function start(auto = null, templateId = "outer24", mode = "drill") {
+async function start(auto = null, templateId = "outer24", mode = "drill", preparation = undefined, choose = true) {
   now = 1000; automated = auto; panel = null; keymap = null; frames.clear(); stamps.length = 0; delayed.length = 0; results.length = 0; visualHoles.length = 0;
-  const cs = { mode, holes: null, holeTemplateId: templateId };
+  const cs = { mode, holes: null, holeTemplateId: templateId, preparation };
   const running = holes.runHoles(cs); await settle();
-  if (!auto) {
+  if (!auto && choose) {
     assert(find("hole-preview")); assert.equal(frames.size, 0); assert.equal(keymap, null);
+    if (!preparation?.previous) assert.equal(find("hole-reuse"), undefined);
     fire(`hole-template-${templateId}`); fire("hole-start"); await settle();
   }
   seCalls.length = 0;
@@ -160,7 +161,7 @@ assert.equal(active.cs.holes.templateId, "outer12-middle12"); assert.equal(activ
 assert.equal(active.cs.holes.middle, 12); assert.equal(active.cs.holes.inner, 0); assert.equal(active.cs.holes.grade, "S");
 // #3023: 弧の手前の端で刺してもミス（無効）にはならない。その目印の穴として成立し、
 // ズレのぶんだけ精度がなだらかに落ちる。余分な穴は増えず、入力・描画・結果で同じ穴を保持する。
-active = await start(null, "outer12-middle12");
+active = await start(null, "outer12-middle12", "rehearsal", {});
 for (let n = 0; n < 12; n++) jab();
 assert(stamps.some((stamp) => stamp.text === "ズレたけど開いた"));
 assert.equal(delayed.length, 1, "ズレた穴だけでもリングは完成する");
@@ -183,6 +184,34 @@ assert.match(detail, /目印の達成：24\/24か所/);
 assert.match(detail, /穴あけ入力：24回 ／ ズレて開いた穴：24回/);
 assert.match(detail, /実際に開いた穴：外周 12・中周 12・内周 0（計 24 穴）/);
 assert.match(detail, /ズレた穴も開いた穴として残り/);
+
+// 前回の24穴をそのまま使う場合は、穴径・位置・判定・時間を保って押し直さずに進む。
+const savedFoil = JSON.parse(JSON.stringify(active.cs.preparation.foil));
+const previous = { foil: savedFoil };
+active = await start(null, "outer12-middle12", "rehearsal", { previous }, false);
+fire("hole-reuse"); fire("hole-start"); await active.running;
+assert.deepEqual(active.cs.holes, roughResult);
+assert.equal(seCalls.filter(id => id === "foilPunch").length, 0);
+assert.equal(keymap, null);
+
+// 配合画面で一括呼び出し済みなら、穴の選択が有効な状態で開く。中周の1穴だけ開け直せる。
+active = await start(null, "outer12-middle12", "rehearsal", { previous, reuseFoil: true }, false);
+assert.equal(find("hole-reuse")["aria-pressed"], "true");
+fire("hole-reuse-middle-2");
+assert.equal(find("hole-reuse-middle-2")["aria-pressed"], "true");
+fire("hole-start"); await settle();
+await pierce(50); await advance(); await active.running;
+assert.equal(seCalls.filter(id => id === "foilPunch").length, 1);
+const editedFoil = active.cs.preparation.foil;
+assert.equal(active.cs.holes.total, 24);
+assert.equal(active.cs.holes.tally.shallow, 1);
+assert.equal(active.cs.holes.tally.rough, 23);
+assert.equal(editedFoil.rings[1].holes[2].size, logic.HOLE_SIZES.shallow);
+assert.equal(JSON.stringify(editedFoil.rings[0]), JSON.stringify(savedFoil.rings[0]));
+assert.equal(JSON.stringify(editedFoil.rings[1].holes.filter(hole => hole.k !== 2)),
+  JSON.stringify(savedFoil.rings[1].holes.filter(hole => hole.k !== 2)));
+assert.equal(savedFoil.rings[1].holes[2].size, logic.HOLE_SIZES.small);
+
 // #3023: 既に開いた穴の真上で刺した場合は「近すぎたけど開いた」として、その目印の穴になる。
 active = await start(null, "outer24");
 await pierce(250, 800); // 弧の奥の端で刺す（ズレた穴）

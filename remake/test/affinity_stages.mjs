@@ -29,7 +29,7 @@ async function fixture() {
     maybeRecruitTrpgMember: async () => false, sharkSwim: async swap => swap(),
     withScenePreparation: task => task, imageReady: async () => false, toast() {}, setBg: async () => {}, sceneBg: () => ({}),
     hiyoriFirstMeetingReady: () => true,
-    tsumugiMessages: () => [], casualMessages: () => [], hooks: {}, giftOpen: async () => {},
+    casualMessages: () => [], hooks: {}, giftOpen: async () => {},
     openingStatus: () => ({ok:true}), refreshPlaceCue() {}, playBgm() {}, hiyoriShopEncounterDue: () => false,
   };
   const modules = new Map(), required = new Map();

@@ -9,6 +9,7 @@ Pages はファイルを10分キャッシュさせ、スマホは開いたまま
   index.html のために js/ も残す
 - index.html の CSS と、CSS の @import に ?v=<版>（スクリプトから差し込む CSS は
   js/core/asset-version.js が同じ版を付ける）
+- CSS の woff2 と HTML のフォント先読みも、同じ ?v=<版> にそろえる
 - index.html の <meta name="suien-build"> に版と公開日時を書く（タイトル画面の右下に出す）
 - remake/build.json に版と公開日時を書く。起動時とタブへ戻ったときにキャッシュなしで読み、
   開いている版が古ければ新しい版へ読み直す（index.html の起動スクリプト）
@@ -41,14 +42,19 @@ def replace_required(text: str, pattern: str, repl: str, what: str) -> str:
     return new
 
 
-def version_css_refs(text: str, base: str, remake: Path, build: str) -> str:
-    """href="…css" と url(…css) の相対パスを base（remake/ からのフォルダ）から解き、実在する CSS に ?v=<版>"""
+def version_asset_refs(text: str, base: str, remake: Path, build: str) -> str:
+    """href と url() の相対参照を解き、実在する CSS と woff2 に ?v=<版> を付ける。"""
 
     def versioned(ref: str) -> str:
-        if re.match(r"^(data:|https?:|//|#)", ref) or "?" in ref or not ref.endswith(".css"):
+        if re.match(r"^(data:|https?:|//|#)", ref):
             return ref
-        target = posixpath.normpath(posixpath.join(base, ref))
-        return f"{ref}?v={build}" if (remake / target).is_file() else ref
+        path, sep, query = ref.partition("?")
+        if not path.endswith((".css", ".woff2")):
+            return ref
+        if sep and (not path.endswith(".woff2") or not re.fullmatch(r"v=[\w-]+", query)):
+            return ref
+        target = posixpath.normpath(posixpath.join(base, path))
+        return f"{path}?v={build}" if (remake / target).is_file() else ref
 
     text = re.sub(r'url\((["\']?)([^"\')]+)\1\)', lambda m: f"url({m.group(1)}{versioned(m.group(2))}{m.group(1)})", text)
     return re.sub(r'href="([^"]+)"', lambda m: f'href="{versioned(m.group(1))}"', text)
@@ -81,7 +87,7 @@ def stamp(site: Path, build: str, built_at: str) -> None:
         html, re.escape(BUILD_META),
         f'<meta name="suien-build" content="{build}" data-built="{built_at}">', "版の meta",
     )
-    html = version_css_refs(html, "", remake, build)
+    html = version_asset_refs(html, "", remake, build)
     # 版付けの確認は、先頭の CSS リンク（バンドル化後は bundles.json の先頭）で行う
     first_css = "css/base.css"
     bundles_file = remake / "css" / "bundles.json"
@@ -93,7 +99,7 @@ def stamp(site: Path, build: str, built_at: str) -> None:
 
     for css in sorted((remake / "css").rglob("*.css")):
         text = css.read_text(encoding="utf-8")
-        new = version_css_refs(text, css.parent.relative_to(remake).as_posix(), remake, build)
+        new = version_asset_refs(text, css.parent.relative_to(remake).as_posix(), remake, build)
         if new != text:
             css.write_text(new, encoding="utf-8")
 
@@ -116,7 +122,7 @@ def stamp_trial_page(page: Path, remake: Path, build: str, built_at: str) -> Non
         sys.exit(f"stamp_deploy: {page.name} に版の meta があるのに js/page-boot.js の起動が無い")
     html = html.replace(BUILD_META, f'<meta name="suien-build" content="{build}" data-built="{built_at}">')
     html = html.replace('<script src="js/page-boot.js"', f'<script src="js/page-boot.js?v={build}"')
-    html = version_css_refs(html, "", remake, build)
+    html = version_asset_refs(html, "", remake, build)
     page.write_text(html, encoding="utf-8")
 
 

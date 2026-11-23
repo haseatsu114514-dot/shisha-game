@@ -24,7 +24,7 @@ import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK, applyCoalTraining } from "./coals.js";
 import { flavorFamilyGrams, configEffectLabel } from "./score.js";
 import { renewalCraft } from "../core/craft-version.js";
-import { FOIL_FREE_HMS } from "./holes_logic.js";
+import { FOIL_FREE_HMS, usesFoil } from "./holes_logic.js";
 import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { flavorFeatureCard, flavorTags, mixForecastCard, equipmentUse, equipmentGuide } from "./flavor-guide.js";
@@ -492,6 +492,22 @@ export async function stepMix(cs) {
       || (insightful ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && (state.flags[`_note_${r.hint_note}`] || r.id === "sumi_basic")) : null)
     : null;
   const recall = cs.mode !== "tutorial" ? growthRecallOptions(state, DB.recipes, DB.flavorById, ids) : [];
+  const previous = cs.preparation?.previous;
+  const previousGrams = Object.entries(previous?.mix || {});
+  const validAmounts = previousGrams.every(([id, grams]) => ids.includes(id) && Number.isInteger(grams) && grams > 0 && grams <= limit(id));
+  const previousTotal = validAmounts ? previousGrams.reduce((sum, [, grams]) => sum + grams, 0) : 0;
+  const canReuseMix = previousTotal >= 12 && previousTotal <= cap && evaluateMix({ ...cs, mix: previous.mix }).regOk;
+  const reuseFoil = usesFoil(cs) && cs.availableHoleTemplateIds?.includes(previous?.foil?.templateId);
+  const reuse = canReuseMix ? el("button.btn.ghost.small.mix-reuse", {
+    type: "button", text: reuseFoil ? "前回の配合と穴を呼び出す" : "前回の配合を呼び出す",
+    dataset: { test: "mix-reuse" }, onclick: () => {
+      cs.mix = { ...previous.mix };
+      if (previousGrams.length > 1 && cs.singleStyle) cs.singleStyle = false;
+      cs.preparation.reuseFoil = reuseFoil;
+      SE.select();
+      redraw();
+    },
+  }) : null;
   const waterBand = Number.isFinite(cs.water) ? waterComfort(cs.water).band : null;
   const waterNote = waterBand ? el("p.mix-water-level", {
     text: "水位 " + { none: "先端に届かず", shallow: "浅め", ideal: "目安内", deep: "深め" }[waterBand],
@@ -502,7 +518,7 @@ export async function stepMix(cs) {
     el("div.mix-side", [vessel, taste, lifePreview, recipeLine, waterNote]),
     // ひらめきは葉の組み合わせの助言なので葉の一覧の頭に置き、決定欄に隠れないようにする（#907）。
     // 見出しとまとめて1要素にし、一覧の子の数（行数に応じた配置の切り替え）を変えない。
-    el(cs.orderFlavorIds ? "div.mix-list.mix-list-supplied" : "div.mix-list", [el("div.mix-list-head", [singleStyle,
+    el(cs.orderFlavorIds ? "div.mix-list.mix-list-supplied" : "div.mix-list", [el("div.mix-list-head", [reuse, singleStyle,
       recall.length ? el("details.mix-recall", [el("summary", { text: "香りの記憶" }),
         el("div.chips", recall.map(option => el("button.btn.ghost.small", {
           text: option.name, dataset: { test: `mix-recall-${option.id}` }, onclick: () => {

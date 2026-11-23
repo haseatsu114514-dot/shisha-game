@@ -19,7 +19,7 @@ for (const scene of [side, quiet]) {
   assert(!/精肉|自己破産|木成頼|栞/.test(textOf(scene)), `${scene.dialogue_id}: no new or repeated secret`);
   for (const line of scene.lines) {
     if (!line.text) continue;
-    assert(!line.text.endsWith("。"), `${scene.dialogue_id}: ${line.text}`);
+    assert.equal(line.text.endsWith("。"), line.speaker === "", `${scene.dialogue_id}: ${line.text}`);
     assert(!line.text.includes("\n"), `${scene.dialogue_id}: no manual break`);
     assert(["", "minto", "hajime"].includes(line.speaker), line.speaker);
     if (line.speaker === "hajime") assert(/俺/.test(line.text) || !/私|僕/.test(line.text));

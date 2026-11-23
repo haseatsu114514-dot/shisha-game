@@ -123,13 +123,15 @@ const spotsModule = await loadWithStubs("remake/js/daily/spots.js", {
   "./weather.js": { isRainy: () => false, RAIN_SPOT_TEXTS: {} },
   "./bonds.js": { questionVisitDue: () => false, finaleAtVisit: () => false, afterStory: async () => true },
   "./spot-encounters.js": { spotFollowupDue: () => null },
+  "./spot-hours.js": await import(new URL("remake/js/daily/spot-hours.js", root)),
+  "./tsumugi-schedule.js": await import(new URL("remake/js/daily/tsumugi-schedule.js", root)),
   "./trpg.js": { maybeRecruitTrpgMember: async () => false, trpgSpot: () => null },
   "./axe-bar-data.js": { AXE_BAR: { id: "axe_bar" } },
 }, context);
 const spots = spotsModule.ns;
 function rioSave(patch = {}) {
   const value = { chapter: 2, phase: "daily", day: 20, slot: 1, story: { rio: 4 }, visits: { rio: 6 }, met: { rio: true }, contacts: [],
-    affinity: { rio: 40 }, lovers: [], flags: {}, ...patch };
+    affinity: { rio: 40 }, lovers: [], flags: {}, visitedDay: {}, ...patch };
   spotsModule.set("../core/state.js", "state", value);
   return value;
 }
@@ -138,6 +140,36 @@ async function visitRio(patch) {
   played = []; affinity = [];
   return spots.visitChar("rio");
 }
+
+// 「会話の続き」は地図で選んだ店にだけ出す。初回・別の用件が先の来店・今日は会えない相手には出さない。
+{
+  const at = id => spots.SPOTS.find(spot => spot.id === id);
+  const hasContinuation = id => spots.hasChapterTwoVisitContinuation(at(id));
+  state = rioSave({ story: {}, met: { minto: true } });
+  assert.equal(hasContinuation("minto"), false, "knowing Minto isn't enough before the first visit story");
+  state = rioSave({ story: { minto: 1 } });
+  assert.equal(hasContinuation("minto"), true, "ordinary revisit with an unread Chapter 2 talk");
+  spots.setChapterVisitDue(id => id === "minto");
+  assert.equal(hasContinuation("minto"), false, "the chapter's story visit takes precedence");
+  spots.setChapterVisitDue(null);
+  spotsModule.set("./bonds.js", "questionVisitDue", id => id === "minto");
+  assert.equal(hasContinuation("minto"), false, "a relationship question takes precedence");
+  spotsModule.set("./bonds.js", "questionVisitDue", () => false);
+
+  state = rioSave({ day: 21 });
+  assert.equal(hasContinuation("shop"), true, "Rio's upstairs conversation is available at night");
+  state.slot = 0;
+  assert.equal(hasContinuation("shop"), false, "buying supplies during the day doesn't reach Rio");
+  state = rioSave({ story: { tsumugi: 1 } });
+  assert.equal(hasContinuation("tonari"), true, "Tsumugi is at a table at night");
+  state.visitedDay.tonari_customer = state.day;
+  assert.equal(hasContinuation("tonari"), false, "the customer visit has already been used today");
+  state = rioSave({ story: { tsumugi: 1 }, slot: 0 });
+  assert.equal(hasContinuation("tonari"), false, "Tsumugi is not at tonari in this time slot");
+  state = rioSave({ chapter: 3, story: { minto: 1 } });
+  assert.equal(hasContinuation("minto"), false, "an earlier chapter's reprise isn't shown here");
+}
+
 state = rioSave(); played = []; affinity = [];
 assert.equal(spots.chapterTalkDue("rio"), "ch2_rio_strawberry", "Before the taste trouble, the strawberry talk");
 assert.equal(spots.hasNewStory("rio"), true, "地図の Dr.fookah に「！」");
@@ -287,6 +319,7 @@ const prepModule = await loadWithStubs("remake/js/chapters/ch2-preparation.js", 
   "../core/ui.js": { withScenePreparation: task => task, imageReady: async () => true, setBg: async () => {} },
   "../vn/engine.js": { play: async id => { prepPlayed.push(id); return { id }; } },
   "../daily/calendar.js": { runDaily: async def => { prepState.def = def; } },
+  "../daily/night-events.js": { nightPlan: () => [] },
   "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000, isClosed: () => false, CHAR_STAT: {}, VISIT_BG: {}, bgRef: x => x },
   "../daily/trpg.js": { trpgSpot: () => null, maybeRecruitTrpgMember: async () => false },
   "../daily/bonds.js": { BOND_QUESTIONS: { ageha: {} }, BOND_FINALES: {}, questionVisitDue: () => false, finaleAtVisit: () => false },
@@ -294,7 +327,7 @@ const prepModule = await loadWithStubs("remake/js/chapters/ch2-preparation.js", 
   "./ch2-city-data.js": { MAP: { day: "map", night: "night" }, STOPS: Object.keys(ROOMS).map(id => ({ id, name: id })), ROOMS },
   "./ch2-progress.js": { dayOneProgress: () => ({ startDay: 15 }) },
   "./ch2-story.js": { chapterTwoNights: () => ({}), storyVisitDue: () => null },
-  "./ch2-story-data.js": { agehaStoryScene: () => null, agehaLaterScene: () => null, AGEHA_LATER_SCENES: [], syncAgehaVibes: () => 0 },
+  "./ch2-story-data.js": { agehaStoryScene: () => null, agehaLaterScene: () => null, AGEHA_LATER_SCENES: [], chapterTwoDaySceneDue: () => null, syncAgehaVibes: () => 0 },
   "../core/affinity-stages.js": { CH2_VISIT_STORIES: {} },
   "../core/growth.js": { consultLessons: async () => [] },
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },

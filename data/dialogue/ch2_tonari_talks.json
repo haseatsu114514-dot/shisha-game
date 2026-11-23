@@ -1012,7 +1012,7 @@
         {
           "speaker": "sumi",
           "face": "thinking",
-          "text": "終わらせたくねえ本ってのがある、……店もな"
+          "text": "終わらせたくねえ本ってのがある。……店もな"
         },
         {
           "speaker": "",
@@ -1132,7 +1132,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "お客さんは言われた通りに吸って、細く煙を吐いた。"
+          "text": "お客さんは言われたとおりに吸って、細く煙を吐いた。"
         },
         {
           "speaker": "customer",
@@ -1222,7 +1222,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "止まりました、……壊れました？"
+          "text": "止まりました。……壊れました？"
         },
         {
           "speaker": "sumi",
@@ -1552,12 +1552,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "火傷の数だけ、上手くなるってことですか"
+          "text": "やけどの数だけ、上手くなるってことですか"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "ならねえ。火傷は、急いだ回数だ"
+          "text": "ならねえ。やけどは、急いだ回数だ"
         },
         {
           "speaker": "sumi",

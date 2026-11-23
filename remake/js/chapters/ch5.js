@@ -34,6 +34,7 @@ import { CRAFT_STEPS } from "../craft/practice.js";
 import { servedEvaluationLines } from "../craft/served-eval.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { craftReviewBlock } from "../craft/tournament-graphics.js";
+import { exhibitionResultReason } from "../craft/tournament-result-reason.js";
 import { naruTastingCategory } from "../craft/naru-tasting.js";
 import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_SCENE_FILES, CH5_PREP_TRIALS,
   chapterFiveAftermathScene, chapterFiveSceneTail,
@@ -463,8 +464,11 @@ async function renderMatch(owner) {
       }
       await renderStage(owner);
     }, true),
-  ], tally ? voteNote(tally) : "", first,
-  [craftReviewBlock(chapterFiveProgress(state).secondCup?.review, test("craft-review"))]);
+  ], "", first, [
+    tally ? el("div.tournament-result-reason", { text: exhibitionResultReason(tally), dataset: { test: "tournament-result-reason" } }) : null,
+    tally ? el("details.tournament-result-details", [el("summary", { text: "挙手の内訳" }), el("p.ch2-contest-note", { text: voteNote(tally) })]) : null,
+    craftReviewBlock(chapterFiveProgress(state).secondCup?.review, test("craft-review")),
+  ]);
 }
 
 // 挙手の数だけを並べる。審査員の採点表や恋愛の加点は出さない（第5章は観客投票）。

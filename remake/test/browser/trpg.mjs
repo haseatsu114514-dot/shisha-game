@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { startTrpgStory } from "./trpg_start.mjs";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = new URL("trpg-preview.html", process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
 const artifacts = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/trpg");
@@ -71,8 +72,7 @@ async function checkRoll(page, { support = null, reroll = false } = {}) {
   await nextLines(page);
 }
 async function begin(page, keyboard = false) {
-  const start = page.locator('[data-test="trpg-start"]');
-  if (keyboard) await start.press("Enter"); else await hit(page, '[data-test="trpg-start"]');
+  await startTrpgStory(page, keyboard);
   if (keyboard) {
     const line = await page.locator(".trpg-speech p").textContent();
     await page.locator('[data-test="trpg-log"]').press("Enter");
@@ -223,7 +223,7 @@ try {
   });
   await run("home-touch", { seed: "3", traveler: "home" },
     { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, async page => {
-      await page.locator('[data-test="trpg-start"]').tap();
+      await startTrpgStory(page);
       await nextLines(page); await checkRoll(page); await interviewStep(page);
       await explore(page); await finish(page, { aroma: "tea", seat: "shelf", approach: "memory" });
       assert.equal(await page.locator('[data-test="trpg-ending-title"]').textContent(), "帰り道の一台");
@@ -243,7 +243,7 @@ try {
         const actions = n.closest(".trpg-modal")?.querySelector(".trpg-modal-actions")?.getBoundingClientRect();
         return r.width > 0 && r.top >= stage.top - 1 && r.bottom <= (actions ? actions.top : stage.bottom) + 1 && r.left >= stage.left - 1 && r.right <= stage.right + 1;
       });
-      await page.locator('[data-test="trpg-start"]').tap();
+      await startTrpgStory(page);
       await nextLines(page);
       // 宣言の画面で、成功すると何がもらえるかを先に告げる。卓の上は短い札（TRF07）、文の説明は読み上げと「？」に。
       const stake = page.locator('.trpg-declare-stage [data-test="trpg-stake"]');
@@ -383,7 +383,7 @@ try {
       } }).observe(document.querySelector(".trpg-root"), { childList: true, subtree: true });
     });
     const staged = kind => page.evaluate(k => window.__staged.filter(entry => entry.kind.includes(k)), kind);
-    await page.locator('[data-test="trpg-start"]').click();
+    await startTrpgStory(page);
     // キャラ作りの時間は卓の会話: 座席の帯が出ていて、だれも役の姿ではない。
     assert.equal(await root.getAttribute("data-layer"), "table");
     assert(await page.locator(".trpg-table").evaluate(n => n.checkVisibility({ visibilityProperty: true, opacityProperty: true })));
@@ -483,7 +483,7 @@ try {
   for (const [label, options] of [["gm-faces-and-names-pc", {}],
     ["gm-faces-and-names-touch", { viewport: { width: 844, height: 340 }, isMobile: true, hasTouch: true }]]) {
     await run(label, { seed: "9" }, options, async page => {
-      await page.locator('[data-test="trpg-start"]').click();
+      await startTrpgStory(page);
       const report = await page.evaluate(async () => {
         const { displayName } = await import('./js/trpg/presentation.js');
         const [characters, catalog] = await Promise.all([fetch('../data/characters.json').then(r => r.json()), fetch('../data/trpg_catalog.json').then(r => r.json())]);
@@ -513,7 +513,7 @@ try {
 
   await run("reroll-cancel-and-low-motion", { seed: "8", traveler: "quiet" },
     { reducedMotion: "reduce" }, async page => {
-      await page.locator('[data-test="trpg-start"]').click();
+      await startTrpgStory(page);
       // 普段姿と役姿は静止したまま切り替え、スキップしても最初の台詞は残る。
       const before = await page.evaluate(() => {
         const next = document.querySelector('[data-test="trpg-next"]');
@@ -560,7 +560,7 @@ try {
     // "Leave it to the dice" is reproducible from the model, and cancelling keeps the confirmed character.
     await hit(page, '[data-test="trpg-build"]'); await hit(page, '[data-test="trpg-build-random"]'); await hit(page, '[data-test="trpg-build-back"]');
     assert.deepEqual((await page.evaluate(() => __trpg.snapshot())).pc, pc);
-    await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
+    await startTrpgStory(page); await nextLines(page);
     assert.match(await page.locator('[data-test="trpg-seat-pc-hajime"]').textContent(), /マル/);
     await hit(page, '[data-test="trpg-approach-listen_talk"]');
     assert.match(await page.locator(".trpg-speech p").textContent(), /^マルは/);
@@ -575,7 +575,7 @@ try {
     await fits(page);
     await nextLines(page);
     assert.equal(await page.locator('[data-test="trpg-tutorial-panel"]').count(), 0);
-    await hit(page, '[data-test="trpg-start"]');
+    await startTrpgStory(page);
     const first = await page.locator(".trpg-speech p").textContent();
     assert.match(first, /キャラ作り/, "the GM opens session zero");
     await nextLines(page);
@@ -594,6 +594,7 @@ try {
     });
   // ダイス劇場（TRF29）: 振ってから評価が出るまでは画面いっぱい。出目・合計・評価は判定の値そのまま。タップで結果の卓へ飛ばせる。
   for (const [label, options] of [["roll-show-pc", {}], ["roll-show-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    const choiceSheets = new Set(), verdictLogos = new Set();
     await run(label, { seed: "3" }, options, async page => {
       const show = page.locator(".trpg-roll-show");
       const seen = () => show.evaluate(node => {
@@ -603,7 +604,8 @@ try {
           label: node.querySelector(".trpg-rs-verdict strong").textContent, grade: node.dataset.grade, thrown: node.dataset.thrown ?? null,
           settle: !!document.querySelector('[data-test="trpg-settle"]:not(:disabled)') };
       });
-      await hit(page, '[data-test="trpg-start"]'); await nextLines(page); await declare(page);
+      await startTrpgStory(page); await nextLines(page); await declare(page);
+      assert.equal(choiceSheets.size, 0, "The first check opens before any illustrated choice sheet is needed");
       await hit(page, '[data-test="trpg-roll"]');
       await show.waitFor();
       const pending = (await page.evaluate(() => __trpg.snapshot())).pending;
@@ -618,6 +620,7 @@ try {
       // 評価は Codex のロゴ（#4082）を叩きつけ、日本語の読みを下に添える。
       await show.locator('.trpg-rs-verdict[data-logo="true"] .trpg-rs-logo[src*="roll-logos/partial.webp"]').waitFor({ state: "visible" });
       assert.equal(await show.locator(".trpg-rs-logo").evaluate(n => n.naturalWidth > 0), true, "The PARTIAL logo is decoded");
+      assert.deepEqual([...verdictLogos], ["partial.webp"], "The first roll requests its actual verdict");
       // 評価が出るまで待つと、劇場は自分で閉じて結果の卓になる。卓は同じ動き・音を繰り返さない。
       await show.locator('.trpg-rs-sum strong').filter({ hasText: String(pending.dice[0] + pending.dice[1] + pending.bonus) }).waitFor();
       await page.locator('[data-test="trpg-settle"]').waitFor();
@@ -640,10 +643,14 @@ try {
       assert.equal(await page.locator('[data-test="trpg-roll-total"] strong').textContent(), "合計 " + (rerolled.dice[0] + rerolled.dice[1] + rerolled.bonus));
       await hit(page, '[data-test="trpg-settle"]'); await nextLines(page);
       assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.length, 1);
-    });
+    }, page => page.on("request", request => {
+      const path = new URL(request.url()).pathname;
+      if (path.includes("/trpg/choices-")) choiceSheets.add(path);
+      if (path.includes("/trpg/roll-logos/") && !path.endsWith("/skill.webp")) verdictLogos.add(path.split("/").pop());
+    }));
   }
   await run("roll-show-reduced-motion", { seed: "3" }, { reducedMotion: "reduce" }, async page => {
-    await hit(page, '[data-test="trpg-start"]'); await nextLines(page); await declare(page);
+    await startTrpgStory(page); await nextLines(page); await declare(page);
     await page.evaluate(() => { window.__shows = 0; new MutationObserver(list => { for (const m of list) for (const n of m.addedNodes) if (n.classList?.contains("trpg-roll-show")) window.__shows++; }).observe(document.body, { childList: true, subtree: true }); });
     await hit(page, '[data-test="trpg-roll"]');
     await page.locator('[data-test="trpg-settle"]').waitFor();
@@ -651,7 +658,7 @@ try {
     assert.equal(await page.locator(".trpg-roll-stage").getAttribute("data-shown"), null);
   });
   await run("double-input-and-integration-abort", { seed: "13", traveler: "quiet" }, {}, async page => {
-    await hit(page, '[data-test="trpg-start"]'); await nextLines(page); await declare(page);
+    await startTrpgStory(page); await nextLines(page); await declare(page);
     await page.locator('[data-test="trpg-roll"]').evaluate(node => { node.click(); node.click(); });
     await page.locator('[data-test="trpg-settle"]').waitFor();
     await page.locator('[data-test="trpg-settle"]').evaluate(node => { node.click(); node.click(); });
@@ -679,7 +686,7 @@ try {
     const catalog = JSON.parse(fs.readFileSync(new URL("../../../data/trpg_catalog.json", import.meta.url), "utf8"));
     assert.equal(await page.locator(".trpg-library-book").count(), catalog.scenarios.length);
     // Every book on the long shelf scrolls fully into view, above the footer, with its open button unclipped.
-    const reach = await page.locator(".trpg-library-copy > button").evaluateAll(buttons => buttons.map(button => {
+    const reach = await page.locator(".trpg-library-copy button").evaluateAll(buttons => buttons.map(button => {
       button.scrollIntoView({ block: "nearest" });
       const r = button.getBoundingClientRect(), list = button.closest(".trpg-library-books").getBoundingClientRect();
       return r.top >= list.top - 1 && r.bottom <= list.bottom + 1 && button.scrollWidth <= button.clientWidth + 1 ? null : button.textContent;
@@ -697,6 +704,34 @@ try {
     assert.equal((await page.evaluate(() => __trpg.snapshot())).scenarioId, "shark-last-order");
     assert((await page.locator(".trpg-cover-person").first().textContent()).includes("サメちゃん"));
     await page.screenshot({ path: path.join(artifacts, "shark-cover.png") });
+  });
+  await run("library-picture-book-reread", {}, {}, async page => {
+    const overlay = page.locator('[data-test="trpg-picturebook"]');
+    const number = page.locator('[data-test="trpg-picturebook-number"]');
+    const opener = '[data-test="trpg-picturebook-ordinary-cup"]';
+    const shelfUrl = page.url();
+    assert.deepEqual(await page.locator(".trpg-library .trpg-picturebook-open").evaluateAll(buttons =>
+      buttons.map(button => button.dataset.test)), ["trpg-picturebook-ordinary-cup"]);
+    assert.deepEqual(await page.evaluate(() => performance.getEntriesByType("resource")
+      .filter(entry => new URL(entry.name).pathname.includes("/picturebook/")).map(entry => entry.name)), []);
+    await hit(page, opener);
+    await overlay.locator('[data-test="trpg-picturebook-next"]:enabled').waitFor();
+    assert.equal(await number.textContent(), "1/4");
+    assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "picturebook");
+    await hit(page, '[data-test="trpg-picturebook-next"]');
+    await page.locator('[data-test="trpg-picturebook"][data-page="2"]').waitFor();
+    assert.equal(await number.textContent(), "2/4");
+    await hit(page, '[data-test="trpg-picturebook-back"]');
+    await page.locator('[data-test="trpg-picturebook"][data-page="1"]').waitFor();
+    await hit(page, '[data-test="trpg-picturebook-skip"]');
+    await page.locator('[data-test="trpg-picturebook"][data-page="4"]').waitFor();
+    const last = page.locator('[data-test="trpg-picturebook-next"]');
+    assert.equal(await last.textContent(), "本棚に戻る");
+    await last.click();
+    await overlay.waitFor({ state: "detached" });
+    assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), "trpg-picturebook-ordinary-cup");
+    assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "library");
+    assert.equal(page.url(), shelfUrl);
   });
   const movies = [
     { label: "shark-scent-pc", profile: "scent", choices: { tool: "citrus", route: "pier", finale: "lure" }, ending: "海へ贈るラストオーダー", seed: 9, options: {} },
@@ -743,7 +778,7 @@ try {
     await page.waitForFunction(() => __trpg.audio().enabled && __trpg.audio().state === "running");
     await page.waitForFunction(() => __trpg.audio().samples >= 19); // 録音SEが全部読めた
     assert.equal((await page.evaluate(() => __trpg.audio())).ambience, 0); // BGMがあるテーマでは合成の環境音を重ねない
-    await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
+    await startTrpgStory(page); await nextLines(page);
     await hit(page, '[data-test="trpg-declare-back"]');
     assert.equal((await page.evaluate(() => __trpg.snapshot())).pending, null);
     assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.length, 0);
