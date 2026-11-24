@@ -1,7 +1,7 @@
 {
   "metadata": {
     "minigame": "axe-throw",
-    "description": "斧崎マキが案内する無料1投レッスン用のUI台詞（WATL 2026式の的・採点）。章・物語・関係・報酬は進行しない。first_*は斧投げBarで初めて投げる時、event_*はひよりの寄り道で投げる前（マキと面識がある時だけ）に、あいさつと締めだけを差し替える。"
+    "description": "斧崎マキが案内する無料1投レッスン用のUI台詞（WATL 2026式の的・採点）。章・物語・関係・報酬は進行しない。first_*は斧投げBarで初めて投げる時、event_*はひよりの寄り道で投げる前（マキと面識がある時だけ）に、あいさつと締めだけを差し替える。末尾が _tap の場面は、弾いて投げる操作用。"
   },
   "dialogues": [
     {
@@ -27,6 +27,32 @@
           "speaker": "maki",
           "face": "normal",
           "text": "横、縦、回転の順で止める。肩の力、抜きな！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_tutorial_welcome_tap",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "welcome_tap",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "よく来たね！　まずは無料で1投、あたしとやってみよう"
+        },
+        {
+          "id": "welcome_tap_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "点は記録に残らないし、お金も体力も使わないよ"
+        },
+        {
+          "id": "welcome_tap_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "横と縦を止めて狙い、上へ弾いて投げるよ。肩の力、抜きな！"
         }
       ]
     },
@@ -57,6 +83,32 @@
       ]
     },
     {
+      "dialogue_id": "axe_tutorial_first_welcome_tap",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "first_welcome_tap",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "お、斧は初めてだね？　本番の前に、あたしが1投だけ教えるよ"
+        },
+        {
+          "id": "first_welcome_tap_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "この1投はタダ。点も記録には残らないから安心しな"
+        },
+        {
+          "id": "first_welcome_tap_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "横と縦を止めて狙い、上へ弾いて投げるよ。肩の力、抜きな！"
+        }
+      ]
+    },
+    {
       "dialogue_id": "axe_tutorial_event_welcome",
       "metadata": {
         "minigame": "axe-throw"
@@ -79,6 +131,32 @@
           "speaker": "maki",
           "face": "normal",
           "text": "横、縦、回転の順で止める。肩の力、抜きな！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_tutorial_event_welcome_tap",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "event_welcome_tap",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "連れと一緒に来たんだね。投げる前に、1投だけ教えさせて"
+        },
+        {
+          "id": "event_welcome_tap_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "練習の1投だから、点は数えないよ"
+        },
+        {
+          "id": "event_welcome_tap_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "横と縦を止めて狙い、上へ弾いて投げるよ。肩の力、抜きな！"
         }
       ]
     },
@@ -205,6 +283,20 @@
       ]
     },
     {
+      "dialogue_id": "axe_tutorial_power_tap",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "power_tap",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "狙いが決まったら、的か右下から上へ、ひと息で弾く。速すぎても遅すぎても落ちるよ"
+        }
+      ]
+    },
+    {
       "dialogue_id": "axe_tutorial_result",
       "metadata": {
         "minigame": "axe-throw"
@@ -250,6 +342,32 @@
         },
         {
           "id": "finish_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "準備ができたら、自分の一投を楽しみな！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_tutorial_finish_tap",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "finish_tap",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "お疲れ！　横、縦、そして弾いて、よく投げたね。迷ったら、いつでも無料で復習できるよ"
+        },
+        {
+          "id": "finish_tap_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "記録は変わらないし、お金も体力も使わない。店の本番は別料金"
+        },
+        {
+          "id": "finish_tap_3",
           "speaker": "maki",
           "face": "normal",
           "text": "準備ができたら、自分の一投を楽しみな！"

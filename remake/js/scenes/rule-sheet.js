@@ -4,6 +4,9 @@ import { config, state } from "../core/state.js";
 import { REGULATION, regulationFor } from "../craft/steps.js";
 import { voteStyleFrom } from "../core/vote-style.js";
 import { ch1RoundPoints, isSakuraiVotes, SAKURAI } from "../craft/ch1-votes.js";
+import { JUDGE_PROFILES as CH2_JUDGE_PROFILES, SPEND as CH2_SPEND } from "../chapters/ch2-tournament-state.js";
+import { JUDGE_PROFILES as CH3_JUDGE_PROFILES, SPEND as CH3_SPEND } from "../chapters/ch3-tournament-state.js";
+import { CH4_JUDGE_WEIGHTS, CH4_SPEND } from "../chapters/ch4-tournament-state.js";
 
 export function ruleSheetPanel(chapter = state?.chapter || 1) {
   const regulation = chapter === state?.chapter ? regulationFor({ mode: "tournament" }) : REGULATION[chapter];
@@ -14,9 +17,10 @@ export function ruleSheetPanel(chapter = state?.chapter || 1) {
   const stock = chapter === 4
     ? "出発前に持ち込み申請した方針の葉は大会が預かり、当日は好きなだけ使える。ほかの葉は自分の在庫から持ち込む。事前に練習した葉ほど、本番で手に馴染む。"
     : "課題の葉は大会が用意し、当日は好きなだけ使える。ほかの葉は自分の在庫から持ち込む。事前に買って練習した葉ほど、本番で手に馴染む。";
-  const article = (number, title, body) => el("section.rule-article", [
-    el("h3", { text: `第${number}条　${title}` }), el("p", { text: body }),
+  const article = (number, title, ...body) => el("section.rule-article", [
+    el("h3", { text: `第${number}条　${title}` }), ...body.map(text => el("p", { text })),
   ]);
+  const judging = chapter === 1 ? [ch1Judging()] : laterJudging(chapter);
   return el("article.rule-sheet", { dataset: { test: "rule-sheet", chapter: String(chapter) }, "aria-label": `${tournament}の競技規則` }, [
     el("p.rule-sheet-eyebrow", { text: tournament }),
     el("h2", { text: "競技規則" }),
@@ -24,7 +28,7 @@ export function ruleSheetPanel(chapter = state?.chapter || 1) {
     article("一", "課題", challenge),
     article("二", "材料", stock),
     article("三", "一台の進行", "一台を制作し、吸い出して提供する。その後も同じ一台を二度調整する。"),
-    chapter === 1 ? article("四", "審査", ch1Judging()) : null,
+    judging ? article("四", "審査", ...judging) : null,
     el("p.rule-sheet-foot", { text: "大会運営委員会" }),
   ]);
 }
@@ -44,6 +48,45 @@ function ch1Judging() {
     ? `各回は、その回に仕上げた工程だけで決める。提供の回は、${focusText}を見る。温度計の「攻めの帯」で提供・調整を終えると、その回の審査が伸びる。`
     : "各回は、その回までに仕上げた工程の成績で決める。";
   return ALLOCATION + evaluation;
+}
+
+const allocation = spend =>
+  `審査員3人が各${spend.reduce((sum, points) => sum + points, 0)}点を、準備・提供・調整1回目・調整2回目の4回に分けて入れる（${spend.join("・")}点）。各審査員は、その回の評価で1位に「その回の点−1」、2位に1点を入れる。新しい試合では全出場者に基礎票1点が入る。`;
+const standings = order =>
+  `各回の審査で評価が同じなら${order}の順。最終順位は総得票で決め、同点なら好みなどの補正を加える前の最終回の出来栄え、そこも同じなら各回の審査と同じ順で決める。`;
+
+function laterJudging(chapter) {
+  if (chapter === 2) {
+    const { uezono, dr_charcoal, sensu } = CH2_JUDGE_PROFILES;
+    return [
+      `その回までの出来栄えを比べる。${uezono.label}は好みであげはに4点、クラウドに1点、${dr_charcoal.label}は神崎竜二に3点、${sensu.label}はクラウドに3点を評価に加える。`,
+      allocation(CH2_SPEND),
+      standings("あげは・はじめ・神崎竜二・クラウド"),
+    ];
+  }
+  if (chapter === 3) {
+    const { emil, dr_charcoal } = CH3_JUDGE_PROFILES;
+    return [
+      `エミル・チャコール博士・千須はその回までの出来栄えを比べる。綾取の柑橘にはエミルが${emil.citrus}点、博士が＋${dr_charcoal.citrus}点の補正をかける。`,
+      `試喫順は挑戦ごと、審査員と回ごとに決まり、綾取は先になりやすい。提供以降、水を挟まず綾取の直後に吸った台の評価は、エミルは${emil.contrast}点、博士は＋${dr_charcoal.contrast}点変わる。綾取の後に水を飲む割合はエミルが${emil.waterChance * 100}%、博士が${dr_charcoal.waterChance * 100}%で、千須は毎回飲む。`,
+      allocation(CH3_SPEND),
+      standings("はじめ・綾取・スティーブ・ヴォルク"),
+    ];
+  }
+  if (chapter === 4) {
+    const match = state?.chapter === 4 ? state.flags?._ch4?.match : null;
+    const legacy = match?.craft && (match.rulesVersion ?? 1) < 3;
+    const { sensu, da_silva, emil } = CH4_JUDGE_WEIGHTS;
+    return [
+      legacy
+        ? "千須・ダ・シルヴァ・エミルは、はじめの台をその回までに仕上げた工程の平均で評価し、最後の回は一台の総合点を見る。"
+        : `はじめの台は、穴あけ・炭の温度・提供・調整1回目・調整2回目・最終総合のうち、その回までに確定した項目で評価する。穴あけを省いた台は、その項目を外す。項目の重みは、千須が最終総合を${sensu[5]}、ダ・シルヴァが炭の温度を${da_silva[1]}、エミルが調整2回目を${emil[4]}とし、ほかの項目は各${sensu[0]}。各項目の点に重みをかけて足し、使った重みの合計で割る。`,
+      "相手の台には、各回ごとの出来栄えの点を使う。",
+      allocation(CH4_SPEND),
+      "各回の審査で評価が同じなら、はじめ・なる・シェイク・王 煙楼の順。最終順位は総得票で決め、同点なら最終回の出来栄え（はじめは一台の総合点）、そこも同じなら各回の審査と同じ順で決める。",
+    ];
+  }
+  return null;
 }
 
 export const openRuleSheet = () => modal({
