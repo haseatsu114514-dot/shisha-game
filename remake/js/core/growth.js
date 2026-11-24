@@ -649,19 +649,13 @@ export function claimPlayRewards(g, s = state) {
     // 第5章の限定台くじ（KJ05）は引き切っても火種を付けない。運とお金で盤を伸ばさない（#2455）
     if (KUJI_LIMITED_GRADES.includes(grade)) continue;
     if (!box || !Array.isArray(box.order) || box.drawn < box.order.length || box.emptyDay == null) continue;
-    const cycle = box.emptyCycle ?? s.cycle ?? 1;
-    const key = `kuji:${grade}:${s.chapter}:${box.emptyDay}:${cycle}`;
-    // 空箱も周回をまたいで残る。引き切った周回と日を照合し、周回未記録の旧箱は従来の記録も参照する。
-    const sameBox = (k) => {
-      const [kind, id, , day, claimedCycle] = k.split(":");
-      return kind === "kuji" && id === grade && day === String(box.emptyDay)
-        && (claimedCycle === String(cycle) || box.emptyCycle == null && claimedCycle == null);
-    };
-    if (g.rewards[key] || Object.keys(g.rewards).some(sameBox)) continue;
-    box.emptyCycle = cycle;
-    g.rewards[key] = true;
-    const low = BOARD_KEYS.reduce((best, k) => boardFill(g, k) < boardFill(g, best) ? k : best, BOARD_KEYS[0]);
-    out.push({ label: "くじのラストワン賞", grade, parts: giveSet(g, { [low]: KUJI_LAST_ONE_GIFT }) });
+    // 旧セーブでどれかの箱から受け取っていれば、全周回で受け取り済み。
+    if (Object.keys(g.rewards).some(key => key.startsWith("kuji:"))) break;
+    const low = BOARD_KEYS.reduce((best, k) => g.colorIssued[k] < g.colorIssued[best] ? k : best, BOARD_KEYS[0]);
+    const parts = giveFlexibleColor(g, low, KUJI_LAST_ONE_GIFT);
+    g.rewards[`kuji:${grade}:${s.chapter}:${box.emptyDay}`] = true;
+    out.push({ label: "くじのラストワン賞", parts });
+    break;
   }
   return out;
 }
