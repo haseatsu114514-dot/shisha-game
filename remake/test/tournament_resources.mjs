@@ -7,6 +7,8 @@ import { captureEntryResources, restoreEntryResources, applyAssistRecovery } fro
 import { beginCh1Votes, isSakuraiVotes } from "../js/craft/ch1-votes.js";
 import { voteStyleFrom } from "../js/core/vote-style.js";
 import { chosenAssistLevel } from "../js/craft/retry-assist-level.js";
+import { difficultyForRun } from "../js/core/ngplus-difficulty.js";
+import { difficultyEvidence } from "../js/core/cycle-start.js";
 globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};
 const { regulationFor } = await import("../js/craft/steps.js");
@@ -99,7 +101,7 @@ const context = vm.createContext({
   play: id => played.push(id),
   // 会場の会話は中継の枠つきの playLive で読む（TSH04）。ここでは読んだ台本だけを記録する。
   playLive: id => played.push(id), ch1LiveStandings: () => [],
-  captureEntryResources, restoreEntryResources, applyAssistRecovery, beginCh1Votes, maxStamina: () => 130, regulationFor, chosenAssistLevel,
+  captureEntryResources, restoreEntryResources, applyAssistRecovery, beginCh1Votes, difficultyForRun, difficultyEvidence, maxStamina: () => 130, regulationFor, chosenAssistLevel,
   // 審査の方式（SKR04）は試合を始める時のシーシャ作りの版で決まる（CRN16）。ここでは桜井版を選んだ端末として流す。
   voteStyleFrom: (config) => voteStyleFrom(config, ""), config: { craftVersion: "sakurai" }, isSakuraiVotes, SAKURAI_RULE_LINES: [],
   save: () => saves.push(copy(entrant)), toast: stub,

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const root = process.env.HEART1_ROOT || fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.HIYORI_SOURCE_ROOT || root;
 const supportRoot = process.env.HIYORI_SUPPORT_ROOT || root;
-const realPaths = ['core/bond-after.js','core/chapter-data.js','core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js', 'core/legacy-cast-save.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
+const realPaths = ['core/bond-after.js','core/chapter-data.js','core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/chapter-save.js', 'core/state.js', 'core/legacy-cast-save.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
 const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rio','ch1_bonds','samechan','hiyori','lover_events','cinema','remake_ch1','ch1_spots'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
