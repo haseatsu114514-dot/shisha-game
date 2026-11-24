@@ -10,6 +10,7 @@ const browser = await chromium.launch({
   chromiumSandbox: true,
   ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
 });
+const statSum = ({ stats }) => Object.values(stats).reduce((a, b) => a + b, 0);
 
 async function waitForSpin(task, label) {
   let timer;
@@ -49,8 +50,9 @@ async function checkInstallation(label, run, touch = false, preview = false) {
       window.installProbe = { core, reel, growth };
       window.startInstall = () => { window.installTask = reel.installReel(); };
       window.installSnapshot = () => ({
-        count: core.state.reel.count, stats: { ...core.state.stats }, statXp: { ...core.state.statXp },
-        xp: core.state.growth?.xp || 0, hidane: core.state.growth?.hidane || null,
+        count: core.state.reel.count, stats: { ...core.state.stats },
+        statXp: Object.fromEntries(core.STAT_KEYS.map(key => [key, core.state.statXp[key] || 0])),
+        xp: core.state.growth?.xp || 0, hidane: growth.hidaneTotal(),
         pending: core.state.reel.pending.length, flags: { ...core.state.flags },
         day: core.state.day, slot: core.state.slot, stamina: core.state.stamina, money: core.state.money,
       });
@@ -98,6 +100,8 @@ try {
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js");
     const reel = await import("./js/daily/reel.js");
+    const growth = await import("./js/core/growth.js");
+    const { on } = await import("./js/core/bus.js");
     const { layers } = await import("./js/core/ui.js");
     core.newGame();
     core.state.phase = "daily";
@@ -105,7 +109,7 @@ try {
     core.state.reel.installed = true; core.state.reel.introDone = true;
     layers.screen.replaceChildren();
     reel.onAction({ spent: 10 });
-    window.reelProbe = { core, reel, layers };
+    window.reelProbe = { core, reel, growth, on, layers };
     window.daySpin = reel.mountReel(layers.screen);
   });
   await page.waitForSelector('.rw-strip.spinning');
@@ -133,38 +137,56 @@ try {
   });
   for (const stop of final) assert(Math.abs(stop.y - stop.expected) < 0.1, "再表示したリールの最終出目が抽選結果と違う");
 
-  // 夜の行動を実際に抽選。表示は回転数・適用済み報酬を増やさない。
+  // 夜の回転では表示開始時の経験値・レベルを保ち、停止後に一度だけ入れる。
   await page.evaluate(() => {
-    const { core, reel, layers } = window.reelProbe;
+    const { core, reel, growth, on, layers } = window.reelProbe;
     layers.screen.replaceChildren();
     core.state.slot = 2;
+    growth.setGrowthPreview(true);
+    const g = growth.ensureGrowth();
+    growth.gainExp(growth.totalExpFor(g.level + 1) - g.xp - 1, { silent: true });
+    core.state.reel.lock = { count: core.state.reel.count, role: "bell", overlap: null, cue: "green" };
+    window.nightLevelUps = [];
+    on("level-up", () => nightLevelUps.push(document.querySelectorAll('.reel-night .rw-strip.spinning').length));
     reel.onAction({ spent: 10 });
-    window.nightBefore = JSON.stringify({ count: core.state.reel.count, stats: core.state.stats });
+    window.nightBefore = { count: core.state.reel.count, stats: { ...core.state.stats }, xp: g.xp };
     window.nightFirstFrame = null;
     const observer = new MutationObserver(() => {
       const host = document.querySelector('.reel-night.show');
       if (!host) return;
-      window.nightFirstFrame = host.querySelectorAll('.rw-strip.spinning').length;
+      window.nightFirstFrame = { spinning: host.querySelectorAll('.rw-strip.spinning').length, xp: g.xp,
+        applied: core.state.reel.pending[0].applied, levelUps: nightLevelUps.length };
       observer.disconnect();
     });
     observer.observe(layers.fx, { subtree: true, attributes: true });
     window.nightSpin = reel.presentNow();
   });
   await page.waitForSelector('.reel-night.show .rw-strip.spinning');
-  assert.equal(await page.evaluate(() => window.nightFirstFrame), 3, "夜の表示開始時に前回の停止出目が見えた");
+  const beforeNight = await page.evaluate(() => window.nightBefore);
+  assert.deepEqual(await page.evaluate(() => window.nightFirstFrame),
+    { spinning: 3, xp: beforeNight.xp, applied: false, levelUps: 0 }, "夜の表示開始時は回転中・未適用");
   await waitForSpin(page.evaluate(() => window.nightSpin), "night spin");
   const night = await page.evaluate(() => {
     const { core } = window.reelProbe;
     return {
-      sameRewards: window.nightBefore === JSON.stringify({ count: core.state.reel.count, stats: core.state.stats }),
+      count: core.state.reel.count,
+      stats: core.state.stats,
+      xp: core.state.growth.xp,
+      levelUps: window.nightLevelUps,
       pending: core.state.reel.pending.length,
+      savedPending: JSON.parse(localStorage.getItem(core.SAVE_KEY)).reel.pending.length,
       overlays: document.querySelectorAll('.reel-night').length,
     };
   });
-  assert(night.sameRewards, "夜の演出で報酬または回転数が二重加算された");
+  assert.equal(night.count, beforeNight.count);
+  assert.deepEqual(night.stats, beforeNight.stats);
+  assert.equal(night.xp, beforeNight.xp + 15);
+  assert.deepEqual(night.levelUps, [0], "レベルアップは3本の停止後に一度だけ発火する");
   assert.equal(night.pending, 0, "夜の回転が翌朝に残った");
+  assert.equal(night.savedPending, 0, "再生済みの保留を保存から除去した");
   assert.equal(night.overlays, 0, "終わった夜の筐体が残った");
   await page.evaluate(() => window.reelProbe.reel.presentNow());
+  assert.equal(await page.evaluate(() => window.reelProbe.core.state.growth.xp), night.xp);
   assert.equal(await page.locator('.reel-night').count(), 0, "表示済みの夜の回転がもう一度出た");
 
   // 初回説明中に再表示しても、説明・回転・報酬を重複させない。
@@ -190,30 +212,42 @@ try {
   console.log('[reel lifecycle] remount while spinning, correct stops, night spin once, no repeated rewards, intro remount: PASS');
 
   // #1359: 揃え演出（alignBonus）が例外で落ちても mountReel が固まらず、次の回転まで進める。
-  await page.evaluate(() => {
+  const oldBonus = await page.evaluate(() => {
     const { core, reel, layers } = window.reelProbe;
     layers.screen.replaceChildren();
     core.state.reel.pending.push({
       role: "big", variant: "before", ceiling: null, zone: null, n: 1,
       exp: 0, got: 0, quiet: true, target: null, stops: [0, 0, 0],
     });
+    core.save(); core.load();
     // 拡大盤の位置読み取り（DOMMatrixReadOnly）を壊し、alignBonus を reject させる
     window.__RealDOMMatrixReadOnly = window.DOMMatrixReadOnly;
     window.DOMMatrixReadOnly = class { constructor() { throw new Error("forced alignBonus failure (#1359)"); } };
     window.bonusFailSpin = reel.mountReel(layers.screen);
+    return { applied: core.state.reel.pending[0].applied, xp: core.state.growth.xp, stats: core.state.stats };
   });
+  assert.equal(oldBonus.applied, true, "旧形式のボーナスは読込時に適用済みになる");
   await waitForSpin(page.evaluate(() => window.bonusFailSpin), "bonus failure spin");
-  await page.evaluate(() => {
+  assert.equal(await page.evaluate(() => window.reelProbe.core.state.reel.pending.length), 0);
+  const oldMissApplied = await page.evaluate(() => {
     const { core, reel, layers } = window.reelProbe;
     window.DOMMatrixReadOnly = window.__RealDOMMatrixReadOnly;
     // busy が解除されていれば、次の回転も最後まで見せられる
     core.state.reel.pending.push({ role: "miss", stops: [1, 1, 2], ceilingRemain: 99, exp: 0, got: 0, quiet: true, target: null });
+    core.save(); core.load();
     window.afterFailSpin = reel.mountReel(layers.screen);
+    return core.state.reel.pending[0].applied;
   });
+  assert.equal(oldMissApplied, true);
   await waitForSpin(page.evaluate(() => window.afterFailSpin), "spin after bonus failure");
   assert.equal(await page.evaluate(() => window.reelProbe.core.state.reel.pending.length), 0, "ボーナス演出の失敗後に回転が再開できなかった");
+  assert.deepEqual(await page.evaluate(() => {
+    const { core } = window.reelProbe;
+    return { xp: core.state.growth.xp, stats: core.state.stats };
+  }), { xp: oldBonus.xp, stats: oldBonus.stats }, "旧形式の結果から追加の報酬を付与した");
   assert.deepEqual(errors, [], "bonus failure spin: browser errors");
   console.log("[reel lifecycle] bonus presentation failure does not wedge the reel: PASS");
+  await page.close();
 
   for (const touch of [false, true]) for (const preview of [false, true]) await checkInstallation(`first-spin-${preview ? "exp" : "legacy"}-${touch ? "touch" : "pc"}`, async ({ page, readIntro, finish, assertGuide }) => {
     const expected = await page.evaluate(() => {
@@ -294,12 +328,15 @@ try {
         assert.doesNotMatch(bubble, /上がった|【/);
       } else assert.match(bubble, /【.+】が.+上がった/);
       await waitForSpin(page.evaluate(() => window.savedSpin), "saved result");
-      await page.evaluate(() => installProbe.reel.presentNow());
       const after = await page.evaluate(() => installSnapshot());
-      for (const key of ['count', 'stats', 'statXp', 'xp', 'hidane', 'day', 'slot', 'money', 'stamina']) {
-        assert.deepEqual(after[key], before[key], `再表示で${key}を二重付与しない`);
+      for (const key of ['count', 'statXp', 'hidane', 'day', 'slot', 'money', 'stamina']) {
+        assert.deepEqual(after[key], before[key]);
       }
+      assert.equal(after.xp - before.xp, preview && !capped ? 15 : 0);
+      assert.equal(statSum(after) - statSum(before), preview ? 0 : 3);
       assert.equal(after.pending, 0);
+      await page.evaluate(() => installProbe.reel.presentNow());
+      assert.deepEqual(await page.evaluate(() => installSnapshot()), after, "再表示で二重付与しない");
       const cards = await page.evaluate(() => window.rewardCards);
       assert.equal(cards.length, capped ? 0 : 1, "結果カードも一度だけ、上限で0なら通知しない");
       if (!capped) {
@@ -357,12 +394,20 @@ try {
     await page.locator('.reel-night .rw-strip.spinning').first().waitFor();
     const committed = await page.evaluate(() => JSON.parse(localStorage.getItem(installProbe.core.SAVE_KEY)));
     assert.equal(committed.reel.count, 1);
+    assert.equal(committed.reel.pending[0].applied, false);
     assert(!committed.flags._pakki_first_spin_pending);
     await boot(true);
     await page.evaluate(() => installProbe.reel.installReel());
     const after = await page.evaluate(() => installSnapshot());
     assert.equal(after.count, committed.reel.count);
-    assert.deepEqual(after.stats, committed.stats, "途中再開で再抽選・二重報酬");
+    assert.deepEqual(after.stats, committed.stats, "導入済みの説明で体験を再抽選しない");
+    assert.equal(after.pending, 1);
+    await waitForSpin(page.evaluate(() => installProbe.reel.presentNow({ label: "前回のスロット" })), "resume first spin");
+    const resumed = await page.evaluate(() => installSnapshot());
+    assert.equal(resumed.count, committed.reel.count);
+    assert.equal(resumed.pending, 0);
+    assert.equal(resumed.stats[committed.reel.pending[0].target],
+      committed.stats[committed.reel.pending[0].target] + committed.reel.pending[0].exp);
     assert.equal(await page.locator('.reel-night, .reel-intro').count(), 0);
   });
 
@@ -380,11 +425,13 @@ try {
   await checkInstallation("existing-action-result-is-not-drawn-again", async ({ page, tap, finish }) => {
     await page.evaluate(() => { startInstall(); installProbe.reel.onAction({ spent: 10 }); });
     const before = await page.evaluate(() => installSnapshot());
+    const points = await page.evaluate(() => installProbe.core.state.reel.pending.reduce((sum, r) => sum + r.exp, 0));
     await tap();
     await page.getByRole('button', { name: '説明を閉じる' }).click();
     await finish();
     const after = await page.evaluate(() => installSnapshot());
-    assert.equal(after.count, before.count); assert.deepEqual(after.stats, before.stats);
+    assert.equal(after.count, before.count);
+    assert.equal(statSum(after) - statSum(before), points);
     assert.equal(after.pending, 0);
   });
 
