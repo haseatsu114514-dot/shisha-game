@@ -1,7 +1,7 @@
 // Isolated production session fixture; real gram/puff/help input, not NEW GAME coverage.
 import assert from 'node:assert/strict';
 import path from 'node:path';
-import { suite, assertFits, passTutorialLesson } from './support.mjs';
+import { suite, assertFits } from './support.mjs';
 import { assertParkedThermometer } from './craft_temperature_assertions.mjs';
 import { rotateThroughGuard } from './rotate_guard.mjs';
 const shots = process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser';
@@ -33,10 +33,7 @@ async function run(page, step) {
   await page.evaluate(step => { QA.run = step === 'mix' ? QA.steps.stepMix(QA.cs)
     : step === 'timer' ? QA.steps.stepSteamTime(QA.cs)
     : step === 'steam' ? QA.steam.runSteamDodge(QA.cs) : QA.pull.runPull(QA.cs); }, step);
-  const target = {mix:'mix-ok',timer:'timer-start',steam:'dodge-refresh',pull:'pull-stop'}[step];
-  // 吸い出しは、チュートリアルなら操作の前に説明を読んで閉じる（#4191）。
-  if (step === 'pull') await passTutorialLesson(page, `[data-test="${target}"]`);
-  else await test(page, target).waitFor();
+  await test(page, {mix:'mix-ok',timer:'timer-start',steam:'dodge-refresh',pull:'pull-stop'}[step]).waitFor();
 }
 async function overlap(page) {
   const result = await page.evaluate(() => {
