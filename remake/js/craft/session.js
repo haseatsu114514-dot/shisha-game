@@ -309,16 +309,16 @@ function waitGuideRead(b, current, panelId, text) {
 }
 
 /** 初回の操作説明を、時計・カウントダウンを始める前に既存ガイドで読む。 */
-export async function explainTutorialStep(cs, id) {
+export async function explainTutorialStep(cs, id, panelId = id) {
   const b = bench, owner = state;
-  const current = () => bench === b && state === owner && benchRoot(cs) === b?.root && b.panel.dataset.step === id;
+  const current = () => bench === b && state === owner && benchRoot(cs) === b?.root && b.panel.dataset.step === panelId;
   if (!current()) return false;
   if (cs.mode !== "tutorial") return true;
   const lesson = cs.lessonHelp?.[id] || TUTORIAL_STEP_HELP[id];
   b.explainedLessons ??= new Set();
   if (!lesson || b.explainedLessons.has(id)) return true;
   if (b.pendingHelp?.id === id) return (await b.pendingHelp.promise) && current();
-  const pending = waitGuideRead(b, current, id, lesson.detail);
+  const pending = waitGuideRead(b, current, panelId, lesson.detail);
   b.pendingHelp = { id, promise: pending };
   const acknowledged = await pending;
   b.pendingHelp = null;
@@ -337,7 +337,7 @@ export async function explainTutorialStep(cs, id) {
 // ブラウザテストの既定は、よその店の人（suien_roamers）と同じ流儀で案内を止める。
 const stepIntroOff = () => { try { return globalThis.localStorage?.getItem("suien_step_intro") === "off"; } catch { return false; } };
 
-export async function explainStepOnce(cs, id, panelId = id) {
+export async function explainStepOnce(cs, id, panelId = id, { hasRegulation = false } = {}) {
   const b = bench, owner = state;
   const current = () => bench === b && state === owner && benchRoot(cs) === b?.root && b.panel.dataset.step === panelId;
   if (!current()) return false;
@@ -345,9 +345,12 @@ export async function explainStepOnce(cs, id, panelId = id) {
   const seen = state.flags.seenStepIntro ||= {};
   if (seen[id]) return true;
   if (b.pendingIntro?.id === id) return (await b.pendingIntro.promise) && current();
-  // 大会の配合は練習用の固定文（ダブルアップル9g…）ではなく、当日の課題・在庫に合う本日の条件文を読む。
-  const tournamentMix = id === "mix" && cs.mode === "tournament" && !cs.lessonHelp?.[id]?.detail;
-  const text = cs.lessonHelp?.[id]?.detail || (tournamentMix ? "" : TUTORIAL_STEP_HELP[id]?.detail) || b.guide.note.textContent;
+  // 課題の配合と本番用タイマーでは、練習の固定レシピ・時間を案内しない。
+  const match = cs.mode === "tournament";
+  const rehearsal = cs.mode === "rehearsal";
+  const useCurrentHelp = (id === "mix" && (match || (rehearsal && hasRegulation)))
+    || (id === "timer" && (match || rehearsal));
+  const text = cs.lessonHelp?.[id]?.detail || (useCurrentHelp ? "" : TUTORIAL_STEP_HELP[id]?.detail) || b.guide.note.textContent;
   if (!text) { seen[id] = true; return true; }
   const pending = waitGuideRead(b, current, panelId, text);
   b.pendingIntro = { id, promise: pending };

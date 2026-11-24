@@ -65,6 +65,7 @@ await suite("craft-layout-2190", async check => {
       session.stepPanel("pull", "吸い出し", "");
       void pull.runPull(cs);
     });
+    await page.locator('.bench-guide[open] [data-test="bench-guide-close"]').click();
     for (let n = 0; n < 2; n++) {
       await page.locator('[data-test="pull-stop"]:not([disabled])').click();
       await page.waitForFunction(pulls => document.querySelector('[data-test="pull-count"]')?.dataset.pulls === String(pulls), n + 1);

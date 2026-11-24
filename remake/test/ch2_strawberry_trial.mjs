@@ -97,6 +97,14 @@ assert.deepEqual(played, ["ch2_strawberry_trial_intro", "ch2_strawberry_trial_no
 assert.equal(state.flags._ch2_strawberry_trial, undefined);
 
 played = [];
+practice = null;
+const interrupted = await runStrawberryTrial({ bg: "tonari" });
+assert.equal(interrupted.result, null);
+assert.equal(interrupted.masteryGained, false);
+assert.deepEqual(played, ["ch2_strawberry_trial_intro"]);
+assert.equal(state.flags._ch2_strawberry_trial, undefined);
+
+played = [];
 practice = { mix: { afsahr_strawberry: 8, double_apple: 4 }, pull: { over: true } };
 assert.equal((await runStrawberryTrial({ bg: "tonari" })).result, "hot");
 assert.deepEqual(played, ["ch2_strawberry_trial_intro", "ch2_strawberry_trial_hot"]);

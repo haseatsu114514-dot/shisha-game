@@ -6,11 +6,14 @@ import { DB } from "../core/data.js";
 import { temperatureBands, isIdealTemperature } from "./temperature-model.js";
 
 // 散文に出す香りの名前。短縮名の先頭メーカー表記（AF/NS/ドバジ 等）は落として葉の名だけにする。
-const MAKER_TOKENS = new Set(["AF", "NS", "ドバジ", "ナイトサイド", "アフサール"]);
-function aromaName(id, flavorById = DB.flavorById) {
-  const name = flavorById?.[id]?.short_name || flavorById?.[id]?.name || "選んだ葉";
+const MAKER_TOKENS = new Set(["AF", "NS", "ドバジ", "ナイトサイド", "アフサール", "フワリ", "フォースフェクタ"]);
+export function withoutMakerPrefix(name) {
   const sp = name.indexOf(" ");
   return sp > 0 && MAKER_TOKENS.has(name.slice(0, sp)) ? name.slice(sp + 1) : name;
+}
+
+function aromaName(id, flavorById = DB.flavorById) {
+  return withoutMakerPrefix(flavorById?.[id]?.short_name || flavorById?.[id]?.name || "選んだ葉");
 }
 
 // 実gから主役の香りを決める。銘柄違いの同系統（family）は合算し、代表はその中で一番多い葉。

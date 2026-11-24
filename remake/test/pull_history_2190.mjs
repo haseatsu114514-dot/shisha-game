@@ -1,6 +1,8 @@
 // Real runPull/runCare and production thermal/leaf calculations; DOM, audio and clocks are controlled ports.
 import assert from "node:assert/strict";
 import * as craftVersion from "../js/core/craft-version.js";
+import { HEAT_GRADES, replacementCoals } from "../js/craft/heat_logic.js";
+import { LESSON_TUNING } from "../js/core/growth-effects.js";
 import fs from "node:fs";
 import vm from "node:vm";
 
@@ -34,8 +36,12 @@ class Node {
   setAttribute(name, value) { this[name] = value; }
   addEventListener(type, handler) { (this.listeners[type] ??= []).push(handler); }
   remove() { this.isConnected = false; }
-  emit(type) { for (const handler of this.listeners[type] || []) handler({ preventDefault() {}, detail: 0 }); }
-  click() { if (!this.disabled) { this.emit("click"); this.onclick?.({ preventDefault() {}, detail: 0 }); } }
+  emit(type) {
+    const event = { preventDefault() {}, detail: 0 };
+    for (const handler of this.listeners[type] || []) handler(event);
+    this["on" + type]?.(event);
+  }
+  click() { if (!this.disabled) this.emit("click"); }
   walk(predicate) {
     for (const child of this.children) if (child instanceof Node) {
       if (predicate(child)) return child;
@@ -59,7 +65,7 @@ class Node {
   }
 }
 
-async function harness({ learned = false, noWobble = false } = {}) {
+async function harness({ learned = false, noWobble = false, lessons = [] } = {}) {
   let now = 1000, frameId = 0, panel;
   const frames = new Map(), metrics = { results: 0, temperature: null, pullHeat: [] };
   const context = vm.createContext({
@@ -77,16 +83,15 @@ async function harness({ learned = false, noWobble = false } = {}) {
     "../core/audio.js": { SE: new Proxy({}, { get: () => noop }), startBubbling: () => noop },
     "./session.js": { stepPanel: () => (panel = new Node()), refreshBench: noop, tickerSay: noop, reactAudience: noop,
       setBenchTemperature: (_cs, temp) => { metrics.temperature = temp; }, setBenchDraw: noop, failBench: async () => {}, setBenchLeaf: noop, dockBenchLeaf: noop,
-      strainBench: () => false, scoreStep: noop, waitBenchReady: async () => {}, craftTest: { auto: null, aim: null } },
-    "./common.js": { gradeOf, autoSkill: () => null, skill: { slow: () => 1, window: () => 1, clarity: () => noWobble ? 1 / .7 : 1 },
+      strainBench: () => false, scoreStep: noop, waitBenchReady: async () => {}, explainTutorialStep: async () => true, craftTest: { auto: null, aim: null } },
+    "./common.js": { gradeOf, autoSkill: () => null, skill: { slow: () => 1, window: cs => cs.retryAssist ? 5.8 : 1, clarity: () => noWobble ? 1 / .7 : 1 },
       resultCard: async () => { metrics.results++; }, keys: () => noop },
-    "./heat.js": { burnCoals: () => { throw Error("This fixture selects no replacement coals"); }, HEAT_GRADES: {} },
-    // 一台に最初の炭焼きの記録が無いので、トングで持ってくる炭は標準の焼き炭になる（#2213）。
-    "./heat_logic.js": { replacementCoals: () => ({ batch: null, picks: [] }) },
+    "./heat.js": { HEAT_GRADES },
+    "./heat_logic.js": { replacementCoals },
     "./conditions.js": conditions,
     "./fx.js": { impact: noop, exhale: async () => false, smokeRing: () => false },
     "./art.js": { mixColor: () => "#d9d2e6" },
-    "./thermometer.js": { buildThermometer: () => ({ root: new Node(), update: noop, preview: noop, pop: noop }) },
+    "./thermometer.js": { buildThermometer: () => ({ root: new Node(), update: noop, preview: value => { metrics.preview = value; }, pop: noop }) },
     // 桜井式の攻めの帯（SKR04）。この一台は練習なので帯は出ないが、読み込みは本物を使う。
     "./attack-band.js": attackBand,
     // シーシャ作りの版（CRN16）は本物を使う。この一台は版を持たないのでリニューアル
@@ -100,8 +105,8 @@ async function harness({ learned = false, noWobble = false } = {}) {
     "./context.js": { craftContext },
     "../core/state.js": { state: {} },
     "../core/growth-effects.js": { growthPerks: () => null, growthFeature: () => false, useGrowthInsurance: () => false,
-      growthSkill: () => false, growthLesson: (_s, id) => learned && id === "M-W3", growthCritical: () => false,
-      settleGrowthPhase: (s, cs, key, result) => result?.score, LESSON_TUNING: {}, SKILL_TUNING: {} },
+      growthSkill: () => false, growthLesson: (_s, id) => lessons.includes(id) || learned && id === "M-W3", growthCritical: () => false,
+      settleGrowthPhase: (s, cs, key, result) => result?.score, LESSON_TUNING, SKILL_TUNING: {} },
   };
   const source = fs.readFileSync(new URL("../js/craft/pull.js", import.meta.url), "utf8");
   const mod = new vm.SourceTextModule(source, { context });
@@ -124,13 +129,18 @@ async function harness({ learned = false, noWobble = false } = {}) {
     throw Error(`Native pull fixture did not reach the requested state: ${JSON.stringify({ now, frames: frames.size, button: find("pull-stop")?.disabled, pos: panel.querySelector(".pg-needle").dataset.pos, choosing: !!find("care-coal-0") })}`);
   };
   return {
-    metrics,
-    async run(cs, round, positions, coalCount = 2) {
+    metrics, zones: mod.namespace.ZONES,
+    async run(cs, round, positions, coalCount = 2, { beforeSwap, beforePull } = {}) {
       metrics.pullHeat = [];
       const running = round ? mod.namespace.runCare(cs, { round }) : mod.namespace.runPull(cs);
       // E06 案A: 調整の温度は炭で戻す。標準の置き方で2個替え、吸いは確かめの一口にする。
-      if (round) { await until(() => find(`care-coal-${coalCount}`)); find(`care-coal-${coalCount}`).click(); }
+      if (round) {
+        await until(() => find(`care-coal-${coalCount}`));
+        beforeSwap?.(find);
+        find(`care-coal-${coalCount}`).click();
+      }
       await until(() => find("pull-stop") && !find("pull-stop").disabled);
+      beforePull?.(find, panel);
       for (const target of positions) {
         await until(() => !find("pull-stop").disabled && Math.abs(Number(panel.querySelector(".pg-needle").dataset.pos) / 100 - target) < .015);
         const before = metrics.temperature;
@@ -260,3 +270,54 @@ for (const charcoal of ["flat_charcoal", "cube_charcoal"]) {
     "Lowering must not replenish the budget; previewing the next pull must not consume it either");
 }
 console.log("PASS E06: measured positive heat cap after flat/cube response, no lower-pull refund");
+
+// The placement preview can be reached by focus and uses the same coal grade as the swap.
+for (const grade of ["raw", "just"]) {
+  const h = await harness(), cs = fresh(480);
+  cs.heat = { picks: Array(3).fill(grade) };
+  cs.pull = { temp: .5 };
+  let forecast;
+  await h.run(cs, 1, [.5], 2, {
+    beforeSwap(find) {
+      const two = find("care-coal-2");
+      two.emit("focus");
+      const standard = h.metrics.preview;
+      assert(standard > h.metrics.temperature);
+      two.emit("blur");
+      assert.equal(h.metrics.preview, null);
+      find("care-place-inner").click();
+      forecast = h.metrics.preview;
+      assert(forecast > standard);
+      two.emit("pointerenter");
+      assert.equal(h.metrics.preview, forecast);
+    },
+    beforePull() { assert(Math.abs(h.metrics.temperature - forecast) < 1e-10); },
+  });
+}
+
+const assisted = await harness({ lessons: ["M-S4", "M-B3"] });
+const practice = fresh(480);
+practice.mix = { coconut: 12 };
+Object.assign(practice, { retryAssist: true, retryAssistLevel: 2 });
+await assisted.run(practice, 0, [.5, .5], 0, { beforePull(find, panel) {
+  const play = panel.querySelector(".pull-play");
+  const dial = play.querySelector(".pull-dial");
+  const spans = dial.querySelectorAll(".pg-just").map(node => +node.dataset.span);
+  assert(spans.every((span, i) => {
+    const zone = assisted.zones[i];
+    return span > 0 && span <= zone.to - zone.from + 1e-4;
+  }));
+  const pips = find("pull-count").children[0].children;
+  assert.deepEqual(Array.from(pips, pip => pip.classes.has("over")), [false, false, false, false, true]);
+  assert.equal(find("pull-blind"), null);
+  const deep = find("pull-deep");
+  const predicted = Math.min(1, assisted.metrics.temperature + conditions.heatDelta(practice, LESSON_TUNING.deepHeat));
+  deep.emit("focus");
+  assert.equal(assisted.metrics.preview, predicted);
+  deep.emit("pointerenter");
+  deep.emit("blur");
+  assert.equal(assisted.metrics.preview, predicted);
+  deep.emit("pointerleave");
+  assert.notEqual(assisted.metrics.preview, predicted);
+} });
+console.log("PASS pull previews: graded coal swap matches outcome after placement changes, assisted bounds and deep-pull focus/hover");

@@ -95,9 +95,7 @@ try {
       // runHeatは素材の準備を待ってから炭ごとの時刻を抽選する。
       // 抽選が終わるまで固定し、非同期の準備中に元へ戻さない。
       window.heatRun = T.heat.runHeat(cs);
-      // CRN09: 炭 i の取り頃は 5.8＋readyGap×i 秒に開く（同じ秒に抽選されても重ならない）
-      // ※readyGap の最小間隔はリニューアル版だけの仕様で、桜井版は間隔0（heat.js の spaceReadyTimes）。
-      // 2026-11-19 の全場面・桜井統一（#3795）以降、このテストの期待値も桜井版の間隔で測る。
+      // 炭 i の取り頃は桜井版でも 5.8＋readyGap×i 秒に開く。
       window.coalIdeal = 5.8 + (.5 * T.common.skill.window(cs)) / 2;
       window.coalGap = .75;
     });
@@ -114,21 +112,21 @@ try {
       const feedback = document.querySelector(".heat-feedback").getBoundingClientRect();
       return feedback.left >= carrier.left && feedback.right <= carrier.right && feedback.bottom <= carrier.bottom;
     }), "The feedback must stay inside the separate carrier card");
-    assert.match(await page.locator('[data-test="coal-timing-2"]').textContent(), /GOOD.*1\.15秒遅い/);
+    assert.match(await page.locator('[data-test="coal-timing-2"]').textContent(), /GOOD.*0\.35秒早い/);
     await page.evaluate(() => { window.coalClock = 1000 + (window.coalIdeal - .08) * 1000; });
     await page.locator('[data-test="coal-0"]').click();
     assert.equal(await heatFeedback.locator(".stamp").count(), 1, "Consecutive ratings must not stack");
-    assert.match(await page.locator('[data-test="coal-timing-0"]').textContent(), /PERFECT.*0\.08秒早い/);
+    assert.match(await page.locator('[data-test="coal-timing-0"]').textContent(), /EXCELLENT.*0\.08秒早い/);
     const first = await page.locator('[data-test="coal-timing-0"]').textContent();
     await insidePanel(page, [".heat-info", ".heat-feedback"]); await capture(page, `coal-live-${name}`);
     await page.evaluate(() => { window.coalClock = 1000 + (window.coalIdeal + window.coalGap + .35) * 1000; });
     await page.locator('[data-test="coal-1"]').click();
     await page.waitForSelector('[data-test="step-summary"]');
     const summary = await page.locator('[data-test="step-summary"]').textContent();
-    assert.match(summary, /奥 PERFECT：0\.08秒早い/);
-    assert.match(summary, /手前左 GOOD：1\.10秒遅い/);
-    assert.match(summary, /手前右 GOOD：1\.15秒遅い/);
-    // #3918 D: 工程点と「取り頃で取れた個数」を同じ欄で別々に示す（PERFECT 1・GOOD 2 → 取り頃 1/3個）
+    assert.match(summary, /奥 EXCELLENT：0\.08秒早い/);
+    assert.match(summary, /手前左 GOOD：0\.35秒遅い/);
+    assert.match(summary, /手前右 GOOD：0\.35秒早い/);
+    // #3918 D: 工程点と「取り頃で取れた個数」を同じ欄で別々に示す（EXCELLENT 1・GOOD 2 → 取り頃 1/3個）
     const heatScore = await page.evaluate(() => cs.heat.score);
     assert.match(summary, new RegExp(`工程点：${heatScore}点 ／ 取り頃：1/3個`));
     assert.doesNotMatch(summary, /タイミング精度|平均誤差/);

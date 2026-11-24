@@ -2376,7 +2376,8 @@ html .bench[data-mode] .ht-title { color: var(--lavender); }
 html .bench[data-mode] .ht-counts { color: var(--lavender); }
 html .bench[data-mode] :is(.ht-description, .ht-note, .ht-help, .ht-current) { color: var(--paper-muted); }
 html .bench[data-mode] .ht-help summary { color: var(--lavender); }
-html .bench[data-mode] .hr-feedback .stamp.perfect, html .bench[data-mode] .hr-feedback .stamp.just { color: var(--amber-ink); text-shadow: 0 0 10px #d8963f55; }
+html .bench[data-mode] .hr-feedback .stamp.perfect, html .bench[data-mode] .hr-feedback .stamp.just,
+html .bench[data-mode] .hr-feedback .stamp.critical { color: var(--amber-ink); text-shadow: 0 0 10px #d8963f55; }
 html .bench[data-mode] .hr-feedback .stamp.good { color: var(--good-ink); text-shadow: none; }
 html .bench[data-mode] .hr-feedback .stamp.miss { color: var(--paper-muted); }
 html .bench[data-mode] .hr-feedback .stamp.bad { color: var(--bad-ink); text-shadow: none; }

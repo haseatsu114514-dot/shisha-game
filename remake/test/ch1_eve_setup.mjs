@@ -29,7 +29,7 @@ await mod.evaluate();
 assert.equal(callbacks.size, 1);
 
 for (const blocked of [null, "water"]) {
-  let stage = "choice", auto;
+  let stage = "choice", auto, foiled = false;
   const input = [], saveBoundary = new Error("reached actual save call after MIX");
   const page = {
     setDefaultTimeout() {},
@@ -45,12 +45,16 @@ for (const blocked of [null, "water"]) {
     waitForTimeout: async () => { throw new Error(`blocked at ${stage}`); },
     locator: selector => ({
       isVisible: async () => selector.includes("choice-3") ? stage === "choice"
-        : selector.includes("water-confirm") ? stage === "water"
+        : selector.includes("opt-false") ? stage === "water" && !foiled
+        : selector.includes("water-confirm") ? stage === "water" && foiled
         : selector.includes("mix-ok") ? stage === "mix" : false,
       count: async () => 4,
       scrollIntoViewIfNeeded: async () => {},
       click: async () => {
         if (selector.includes("choice-0")) stage = "water";
+        else if (selector.includes("opt-false")) {
+          assert.equal(stage, "water"); foiled = true;
+        }
         else if (selector.includes("water-confirm")) {
           assert.equal(stage, "water"); input.push("water");
           if (blocked !== "water") stage = "mix";
