@@ -977,7 +977,7 @@
       ]
     },
     {
-      "dialogue_id": "ch5_rei_repeat",
+      "dialogue_id": "ch5_kuraudo_repeat",
       "lines": [
         { "speaker": "", "face": "", "text": "ターンテーブルの横に、白い糸が落ちていた。" },
         { "speaker": "kuraudo", "face": "normal", "text": "……針についたら、曲の頭で分かる" },
@@ -988,7 +988,7 @@
       ]
     },
     {
-      "dialogue_id": "ch5_rei_repeat_b",
+      "dialogue_id": "ch5_kuraudo_repeat_b",
       "lines": [
         { "speaker": "", "face": "", "text": "クラウドは、閉じたままのケースを指で叩いた。" },
         { "speaker": "kuraudo", "face": "normal", "text": "……この曲、頭の音を覚えてない" },
@@ -999,7 +999,7 @@
       ]
     },
     {
-      "dialogue_id": "ch5_rei_repeat_c",
+      "dialogue_id": "ch5_kuraudo_repeat_c",
       "lines": [
         { "speaker": "", "face": "", "text": "カシスの箱に、黒いペンで線が引かれていた。" },
         { "speaker": "kuraudo", "face": "normal", "text": "……線から下は、今使ってる分" },
@@ -1010,7 +1010,7 @@
       ]
     },
     {
-      "dialogue_id": "ch5_rei_repeat_d",
+      "dialogue_id": "ch5_kuraudo_repeat_d",
       "lines": [
         { "speaker": "", "face": "", "text": "店のスピーカーの間に、小さな時計があった。" },
         { "speaker": "kuraudo", "face": "normal", "text": "……秒針が目に入ると、曲が短く感じる" },
@@ -1021,7 +1021,7 @@
       ]
     },
     {
-      "dialogue_id": "ch5_rei_repeat_e",
+      "dialogue_id": "ch5_kuraudo_repeat_e",
       "lines": [
         { "speaker": "", "face": "", "text": "細い照明が、テーブルの端だけを照らしていた。" },
         { "speaker": "kuraudo", "face": "normal", "text": "……席の奥に置くと、赤が黒くなる" },
@@ -1032,7 +1032,7 @@
       ]
     },
     {
-      "dialogue_id": "ch5_rei_repeat_f",
+      "dialogue_id": "ch5_kuraudo_repeat_f",
       "lines": [
         { "speaker": "", "face": "", "text": "紙の束から、角が丸い一枚が出てきた。" },
         { "speaker": "kuraudo", "face": "normal", "text": "……これだけ、何度も指でめくった" },
@@ -1043,7 +1043,7 @@
       ]
     },
     {
-      "dialogue_id": "ch5_rei_repeat_g",
+      "dialogue_id": "ch5_kuraudo_repeat_g",
       "lines": [
         { "speaker": "", "face": "", "text": "灰皿の隣に、撥が置きっぱなしだった。" },
         { "speaker": "kuraudo", "face": "normal", "text": "……片づける場所、あとで分からなくなる" },
@@ -1054,7 +1054,7 @@
       ]
     },
     {
-      "dialogue_id": "ch5_rei_repeat_h",
+      "dialogue_id": "ch5_kuraudo_repeat_h",
       "lines": [
         { "speaker": "", "face": "", "text": "クラウドが、新しい紙に短い線を引いた。" },
         { "speaker": "kuraudo", "face": "normal", "text": "……無音の所。今、何か聞こえた？" },

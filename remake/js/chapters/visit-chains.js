@@ -169,7 +169,7 @@ export const VISIT_CHAINS = Object.freeze({
   ch5_volk_menu: chapterFiveChain("volk_menu", "ch5_tokyo_volk", "ch5_tokyo_volk_h"),
   ch5_adam_lid: chapterFiveChain("adam_lid", "adam", "ch5_adam_repeat_h"),
   ch5_kumicho_stone: chapterFiveChain("kumicho_stone", "ch2_kumicho", "ch5_kumicho_repeat_h"),
-  ch5_rei_silence: chapterFiveChain("rei_silence", "ch2_rei", "ch5_rei_repeat_h"),
+  ch5_rei_silence: chapterFiveChain("rei_silence", "ch2_rei", "ch5_kuraudo_repeat_h"),
   ch5_sumi_seat: chapterFiveChain("sumi_seat", "ch5_tonari_sumi", "ch5_tonari_sumi_h"),
   ch5_tsumugi_plate: chapterFiveChain("tsumugi_plate", "ch5_tonari_tsumugi", "ch5_tonari_tsumugi_h"),
   ch5_hiyori_bag: chapterFiveChain("hiyori_bag", "ch5_roam_hiyori", "roam_hiyori_h"),
