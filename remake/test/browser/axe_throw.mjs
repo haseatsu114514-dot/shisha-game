@@ -104,6 +104,31 @@ async function standalone(page, { touch = false, keyboard = false, league = fals
 }
 await suite("axe-throw", async run => {
   const check=(label,...args)=>!process.env.TEST_CASES || label.includes(process.env.TEST_CASES) ? run(label,...args) : Promise.resolve();
+  await check("solo-stance-with-deferred-art", async page => {
+    const held = new Set();
+    let release;
+    const delayed = new Promise(resolve => { release = resolve; });
+    await page.route(/\/(?:manifest\.json|rank-medallion\.webp|throwing_axe(?:_grip)?\.webp)$/, async route => {
+      held.add(new URL(route.request().url()).pathname.split("/").pop());
+      await delayed;
+      await route.continue();
+    });
+    try {
+      await page.evaluate(async () => {
+        const { runAxeThrow } = await import("./js/minigames/axe.js");
+        void runAxeThrow({ opponent: null, reducedMotion: true });
+      });
+      await pressReady(page);
+      await phase(page, "horizontal");
+      assert(!held.has("manifest.json"), "solo practice needs no portrait catalogue");
+      const warmArt = Promise.all(["throwing_axe_grip.webp", "rank-medallion.webp"].map(name =>
+        page.waitForResponse(response => response.url().endsWith("/" + name) && response.ok())));
+      release();
+      await warmArt;
+    } finally {
+      release();
+    }
+  });
   await check('front-perspective-actual-flight-frames',async page=>{
     await standalone(page);
     // Keep the pause target relative to the clock's installed time. A 100 ms

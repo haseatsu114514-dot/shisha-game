@@ -21,9 +21,9 @@ import { attachAxePullInput } from "./axe-pull-input.js";
 import { AXE_EQUIPMENT, AXE_EQUIPMENT_VERSION, axePower, axeGreenBand } from "./axe-equipment.js";
 const active = new WeakMap(), artReady = new Map();
 let instances = 0;
-function decodeArt(url) {
+function decodeArt(url, priority = "auto") {
   if (!artReady.has(url)) {
-    const image = new Image(); image.src = url;
+    const image = new Image(); image.fetchPriority = priority; image.src = url;
     artReady.set(url, image.decode().catch(error => { artReady.delete(url); throw error; }));
   }
   return artReady.get(url);
@@ -32,11 +32,14 @@ function decodeArt(url) {
 const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp"),
   // 一人称レーンの背景（#3639）。laneAim は同じレーンに右手の構えを描き込んだ狙い中専用の絵で、自分の狙いの間だけ重ねる。
   lane: imgFileUrl("backgrounds/bg_axe_lane.webp"), laneAim: imgFileUrl("backgrounds/bg_axe_lane_aim.webp") };
-// ゲージ・札の絵の部品（#3207・AXR14）と、見出しの板・投げ数の溝・黒板の窓・ランクの丸・帯・木片（#3423・AXQ03）。
-// 木片以外は CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間や結果の出遅れを防ぐ。
-const UI_ART = ["gauge-frame", "gauge-needle", "button-throw-orange", "button-throw-green", "tag-slate", "tag-slate-blue", "tag-selected", "tag-selected-amber",
-  "hud-plate", "score-slot", "chalk-window", "rank-medallion", "banner-orange", "banner-green", "wood-chips", "cut-mark"]
-  .map(name => imgFileUrl("ui/axe_throw/" + name + ".webp"));
+const uiArt = name => imgFileUrl("ui/axe_throw/" + name + ".webp");
+// 一人称の入口に出る札。投げる段階の取っ手・着弾・集計の絵は、操作可能になってから読む。
+const FIRST_PERSON_ENTRY_UI = ["button-throw-orange", "tag-slate-blue"];
+const FIRST_PERSON_LATER_UI = ["button-throw-green", "tag-slate", "tag-selected", "chalk-window", "rank-medallion", "banner-orange",
+  "score-slot", "wood-chips", "cut-mark"];
+// 旧ゲージ式は札・ゲージ・集計の絵をまとめて先読みする。
+const UI_ART = [...FIRST_PERSON_ENTRY_UI, ...FIRST_PERSON_LATER_UI, "gauge-frame", "gauge-needle", "tag-selected-amber", "hud-plate", "banner-green"];
+const SWIPE_GRIP_ART = uiArt("throwing_axe_grip");
 // 刺さった跡の絵（cut-mark.webp 128×256）。残った投の跡はこの絵を下に敷き、その上に点数を出す。
 const CUT_MARK = imgFileUrl("ui/axe_throw/cut-mark.webp");
 // 木片の絵（wood-chips.webp 512×256・4×2 のマス、1マス128）。刺さった所から飛ぶ破片を、マスごとに切り出して描く。
@@ -505,6 +508,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const gauge = el("div.axe-gauge", { role: "img", "aria-label": "回転ゲージ。緑の帯が刃から当たる回転" }, [
     el("span.axe-stick", { style: { "--from": POWER.stickMin * 100 + "%", "--size": (POWER.stickMax - POWER.stickMin) * 100 + "%" } }),
     el("span.axe-sweet", { style: { "--from": POWER.sweetMin * 100 + "%", "--size": (POWER.sweetMax - POWER.sweetMin) * 100 + "%" } }), powerFill, needle]);
+  const swipeGrip = svg("image", { x: 31, y: 113, width: 51, height: 60, transform: "rotate(18 56 144)" });
   const pullHandle = el("button.axe-pull-handle", { type: "button", "aria-label": "上へ素早く弾いて投げる（狙いはそのまま）。Space長押しでも投げられます", dataset: { test: "axe-pull-handle" } }, [
     el("span.axe-flick-emblem", { "aria-hidden": "true" }, [
       svg("svg", { viewBox: "0 0 112 184", class: "axe-flick-arrows", fill: "none" }, [
@@ -512,9 +516,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         svg("path", { d: "M43 137V63m26 74V63", stroke: "#886b48", "stroke-width": 2 }),
         svg("path", { d: "M56 135V39m-17 15 17-21 17 21", stroke: "#fff2bd", "stroke-width": 6, "stroke-linecap": "round", "stroke-linejoin": "round" }),
         svg("circle", { cx: 56, cy: 144, r: 24, fill: "#332822", stroke: "#ffda95", "stroke-width": 3 }),
-        svg("g", { class: "axe-swipe-grip" }, [
-          svg("image", { x: 31, y: 113, width: 51, height: 60, transform: "rotate(18 56 144)", href: imgFileUrl("ui/axe_throw/throwing_axe.webp") }),
-        ]),
+        svg("g", { class: "axe-swipe-grip" }, [swipeGrip]),
       ]),
     ]),
   ]);
@@ -728,45 +730,65 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   }
   function loadArt() {
     setPhase("loading");
+    const entryArt = tapPull
+      ? [ART.board, ART.lane, ART.laneAim, ...FIRST_PERSON_ENTRY_UI.map(uiArt)]
+      : [ART.board, ART.bg, ...UI_ART.map(uiArt)];
+    const pending = entryArt.map(url => decodeArt(url));
+    if (tapPull) pending.push(loadAimStyle());
     const timeout = new AbortController(), timer = setTimeout(() => timeout.abort(), 15000);
     const stopTimer = () => clearTimeout(timer);
     lifetime.signal.addEventListener("abort", stopTimer, { once: true });
-    fetch(new URL("../../data/manifest.json", import.meta.url), { cache: "no-cache", signal: AbortSignal.any([lifetime.signal, timeout.signal]) })
-      .then(response => { if (!response.ok) throw new Error("Axe artwork catalogue unavailable"); return response.json(); })
-      .then(manifest => {
-        if (phase === "closed") return;
-        portraitManifest = manifest;
-        const lessonArt = tapPull ? [loadAimStyle()] : [];
-        if (tutorial) {
-          if (!manifest.portraits?.maki?.faces?.includes("normal")) throw new Error("Teacher artwork missing from catalogue");
-          lessonArt.push(decodeArt(faceArt("maki", "normal").src),
-            fetch(new URL("../../../data/dialogue/axe_tutorial.json", import.meta.url), { signal: AbortSignal.any([lifetime.signal, timeout.signal]) })
-              .then(response => { if (!response.ok) throw new Error("Axe lesson unavailable"); return response.json(); })
-              .then(data => {
-                coachLines = Object.fromEntries(data.dialogues.map(dialogue => [dialogue.lines[0].id, dialogue.lines.map(line => line.text).join("\n")]));
-                if (!LESSON_STEPS.every(id => typeof coachLines[id] === "string")
-                  || lessonContext && !["welcome", "finish"].every(id => typeof coachLines[lessonContext + "_" + id] === "string"))
-                  throw new Error("Axe lesson incomplete");
-              }));
-        }
-        if (!companion) return Promise.all([...Object.values(ART).map(decodeArt), ...UI_ART.map(decodeArt), ...lessonArt]);
-        portraitKey = companion.portraitKey || manifest.titleArts?.find(entry => entry.file.endsWith(companion.titleSuffix))?.character;
-        if (!portraitKey || !companion.faces.every(face => manifest.portraits?.[portraitKey]?.faces?.includes(face)))
-          throw new Error("Companion artwork missing from catalogue");
-        showFace(companion.faces[0]);
-        return Promise.all([
-          ...[...Object.values(ART), ...UI_ART, ...companion.faces.map(face => faceArt(portraitKey, face).src)].map(decodeArt),
-          ...(versus ? [fetch(new URL("../../../data/dialogue/axe_versus.json", import.meta.url), { signal: AbortSignal.any([lifetime.signal, timeout.signal]) })
-            .then(response => { if (!response.ok) throw new Error("Axe match dialogue unavailable"); return response.json(); })
-            .then(data => {
-              matchLines = Object.fromEntries((opponent === "adam" ? data.axe_versus.adam.lines : data.axe_versus.lines).map(line => [line.id, line.text]));
-              if (!["before", "call", "hit", "bull", "killshot", "killshot-miss", "miss", "drop", "ahead", "behind", "level", "player", "opponent", "draw", "switch", "sudden", "sudden-call", "sudden-hit", "sudden-miss"].every(key => typeof matchLines[key] === "string"))
-                throw new Error("Axe match dialogue incomplete");
-            })] : []),
-        ]);
-      })
-      .then(() => { if (phase !== "closed") setPhase("choice"); }, () => { if (phase !== "closed") setPhase("failed"); })
+    const fileSignal = AbortSignal.any([lifetime.signal, timeout.signal]);
+    if (tutorial || companion) pending.push(loadCharacterArt(fileSignal));
+    Promise.all(pending).then(() => {
+      if (phase === "closed") return;
+      setPhase("choice");
+      if (tapPull) requestAnimationFrame(() => setTimeout(warmFollowupArt, 0));
+    }, () => { if (phase !== "closed") setPhase("failed"); })
       .finally(() => { stopTimer(); lifetime.signal.removeEventListener("abort", stopTimer); });
+  }
+  function warmFollowupArt() {
+    if (phase === "closed") return;
+    void decodeArt(SWIPE_GRIP_ART).catch(() => {});
+    swipeGrip.setAttribute("href", SWIPE_GRIP_ART);
+    for (const name of FIRST_PERSON_LATER_UI) void decodeArt(uiArt(name), "low").catch(() => {});
+  }
+  async function loadCharacterArt(fileSignal) {
+    const response = await fetch(new URL("../../data/manifest.json", import.meta.url), { cache: "no-cache", signal: fileSignal });
+    if (!response.ok) throw new Error("Axe artwork catalogue unavailable");
+    const manifest = await response.json();
+    if (phase === "closed") return;
+    portraitManifest = manifest;
+    if (tutorial) {
+      if (!manifest.portraits?.maki?.faces?.includes("normal")) throw new Error("Teacher artwork missing from catalogue");
+      const lessonArt = decodeArt(faceArt("maki", "normal").src);
+      const lessonText = fetch(new URL("../../../data/dialogue/axe_tutorial.json", import.meta.url), { signal: fileSignal })
+        .then(response => {
+          if (!response.ok) throw new Error("Axe lesson unavailable");
+          return response.json();
+        }).then(data => {
+          coachLines = Object.fromEntries(data.dialogues.map(dialogue => [dialogue.lines[0].id, dialogue.lines.map(line => line.text).join("\n")]));
+          if (!LESSON_STEPS.every(id => typeof coachLines[id] === "string")
+            || lessonContext && !["welcome", "finish"].every(id => typeof coachLines[lessonContext + "_" + id] === "string"))
+            throw new Error("Axe lesson incomplete");
+        });
+      return Promise.all([lessonArt, lessonText]);
+    }
+    portraitKey = companion.portraitKey || manifest.titleArts?.find(entry => entry.file.endsWith(companion.titleSuffix))?.character;
+    if (!portraitKey || !companion.faces.every(face => manifest.portraits?.[portraitKey]?.faces?.includes(face)))
+      throw new Error("Companion artwork missing from catalogue");
+    showFace(companion.faces[0]);
+    const pending = companion.faces.map(face => decodeArt(faceArt(portraitKey, face).src));
+    if (versus) pending.push(fetch(new URL("../../../data/dialogue/axe_versus.json", import.meta.url), { signal: fileSignal })
+      .then(response => {
+        if (!response.ok) throw new Error("Axe match dialogue unavailable");
+        return response.json();
+      }).then(data => {
+        matchLines = Object.fromEntries((opponent === "adam" ? data.axe_versus.adam.lines : data.axe_versus.lines).map(line => [line.id, line.text]));
+        if (!["before", "call", "hit", "bull", "killshot", "killshot-miss", "miss", "drop", "ahead", "behind", "level", "player", "opponent", "draw", "switch", "sudden", "sudden-call", "sudden-hit", "sudden-miss"].every(key => typeof matchLines[key] === "string"))
+          throw new Error("Axe match dialogue incomplete");
+      }));
+    return Promise.all(pending);
   }
   function canChooseCall() {
     return actor === "player" && (phase === "choice" || tapPull && phase === "power" && !pullInput?.pulling)

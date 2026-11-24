@@ -29,6 +29,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)'), coarse = matchMe
 const THUMB = document.documentElement.dataset.density === 'phone' ? 72 : 54; // crossfader cap width (style.css)
 const sideOf = id => id ? '右' : '左', deckOf = id => id ? 'B' : 'A';
 const pickOne = list => list[Math.floor(Math.random() * list.length)];
+const artUrl = key => `../../img/ui/dj/art-${key}.webp`;
 let pickIndex = null; // 試聴 (DJK06): the card picked to listen to (tap it again, or この曲にする, to load it)
 let audio, disposed = false, frame = 0, view = { mode: 'idle' }, message = '', subMessage = '', toastUntil = 0, judgeUntil = 0, shownPlay = null, lastCount = '', shownTracks = [null, null], shownSelect = null;
 let moodShown = null, helpManual = null, missStreak = 0, awaySince = 0, awaySaid = false, clashSince = 0, clashSaid = false, comboSaid = 0, shown = {}, particles = [];
@@ -81,11 +82,20 @@ function showDecks() {
     if (shownTracks[id] === state) return;
     shownTracks[id] = state; const key = id ? 'b' : 'a', t = TRACKS[d.track];
     $('track-' + key).textContent = t ? t.title : state === 'done' ? '—' : '— 選曲中 —';
-    $('platter-' + key).style.setProperty('--art', t ? `url('../../img/ui/dj/art-${d.track}.webp')` : 'none');
+    $('platter-' + key).style.setProperty('--art', t ? `url('${artUrl(d.track)}')` : 'none');
   });
 }
 buildBand();
 create();
+// The starting covers are requested by the decks. Fetch the other jackets in the background during the opening mix.
+window.addEventListener('load', () => {
+  for (const key of Object.keys(TRACKS)) {
+    if (SETS[setIndex].tracks.includes(key)) continue;
+    const art = document.createElement('link');
+    art.rel = 'prefetch'; art.as = 'image'; art.fetchPriority = 'low'; art.href = artUrl(key);
+    document.head.append(art);
+  }
+}, { once: true });
 export function snapshot() {
   const now = audio.now, m = audio.mix;
   return { set: setIndex, phase: m.phase, mode: view.mode, clock: now, state: audio.context?.state || 'not-started', running: m.running,
@@ -164,7 +174,7 @@ function renderPick(select) {
     const t = TRACKS[key], keyOk = keyMatch(now.track, key), askOk = energyMatch(select.request, now.track, key), d = t.energy - TRACKS[now.track].energy;
     const button = document.createElement('button'); button.type = 'button'; button.id = `pick-${index}`; button.className = 'pick-card'; button.setAttribute('aria-pressed', 'false');
     const flames = Array.from({ length: 5 }, (_, i) => `<i${i < t.energy ? '' : ' class="off"'}></i>`).join('');
-    button.innerHTML = `<span class="pick-art" style="--art:url('../../img/ui/dj/art-${key}.webp')"></span><b>${t.title}</b>`
+    button.innerHTML = `<span class="pick-art" style="--art:url('${artUrl(key)}')"></span><b>${t.title}</b>`
       + `<span class="pick-row"><small>ノリ</small><span class="energy" aria-label="盛り上がり ${t.energy}／5">${flames}</span><span>${d > 0 ? '今より上がる ↑' : d < 0 ? '今より落ち着く ↓' : '今と同じくらい →'}</span></span>`
       + `<span class="pick-row marks"><em class="${askOk ? 'ok' : 'ng'}">${askOk ? '✓ 声に合う' : '✕ 声と違う'}</em><em class="${keyOk ? 'ok' : 'ng'}">${keyOk ? '✓ なめらかにつながる' : '✕ 音がぶつかる'}</em></span>`
       + `<span class="pick-meta">キー ${t.camelot}・${t.bpm} BPM${m.set.detune === 'match' && t.bpm !== now.bpm ? ` → ${now.bpm.toFixed(0)}（自動）` : ''}</span>`
