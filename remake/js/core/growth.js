@@ -90,7 +90,7 @@ const boardHasRoom = (g, board) => BOARD_IDS[board].some((id) => !g.nodes.includ
 export function newGrowth() {
   return {
     level: 1,
-    xp: 0,                 // 累計経験値（行動の確定時にその場で入る）
+    xp: 0,                 // 累計経験値（スロット分は演出の停止・揃いで入る）
     settledXp: 0,          // 最後に寝た時点の累計（ゲージの濃い金）
     hidane: Object.fromEntries(HIDANE_KEYS.map((k) => [k, 0])), // 未使用の火種（万能と系統限定）
     earned: 0,             // これまでに受け取った火種の総数
@@ -361,9 +361,11 @@ export function holdExpChip() {
  * 経験値の唯一の入口（4.1 の gainExp）。章倍率を掛けて累計に足す。
  * レベルはその場で上がり、火種は手持ちに入る（SBD108・SBD122。その場で短い演出を出す）。戻り値=入った量。
  */
-export function gainExp(base, { key = null, tag = null, silent = false, source = null, first = false } = {}) {
+export function gainExp(base, { key = null, tag = null, silent = false, source = null, first = false, committedSlot = false } = {}) {
   // 恋人イベントだけは通常プレイでも貯める。精算・火種・盤の公開条件は変えない。
-  if ((!growthEnabled() && source !== "lover") || !state || !(base > 0)) return 0;
+  // スロットは抽選時の成長モードで精算する。
+  const settle = committedSlot || growthEnabled();
+  if ((!settle && source !== "lover") || !state || !(base > 0)) return 0;
   const g = ensureGrowth();
   const room = totalExpFor(MAX_LEVEL) - g.xp;
   const firstBonus = first && growthSkill(state, "K04") ? 1 + SKILL_TUNING.first : 1;
@@ -373,8 +375,8 @@ export function gainExp(base, { key = null, tag = null, silent = false, source =
   g.today.xp += amount;
   if (key) g.today.learned[key] = (g.today.learned[key] || 0) + amount;
   if (!silent) addToChip(amount, tag, source); // silent: 呼び出し側が自分の通知で見せる（スロットの結果カード）
-  // 盤が有効な時だけ、その場でレベルと火種にする（恋人EXPの先行保存だけの時は貯めるだけ）
-  if (growthEnabled()) applyLevels(g);
+  // 恋人EXPの先行保存だけの時は、盤が有効になってから精算する。
+  if (settle) applyLevels(g);
   emit("hud");
   return amount;
 }
@@ -383,9 +385,9 @@ export function gainExp(base, { key = null, tag = null, silent = false, source =
 // ハズレ・リプレイは無し。1章30回転の平均は約510（SPEC 1.4 の「スロット分は章の約2割」）。チェリー重複は REG/BIG
 export const SLOT_EXP = { cherry: 10, bell: 15, reg: 90, big: 130, rare: 130, freeze: 200 };
 /** スロットの当たり1回ぶんの経験値を入れる。通知はスロットの演出で出す。戻り値=入った量 */
-export function awardSlotExp(role) {
+export function awardSlotExp(role, { committed = false } = {}) {
   const base = SLOT_EXP[role];
-  return base ? gainExp(base, { key: "pakki_slot", silent: true }) : 0;
+  return base ? gainExp(base, { key: "pakki_slot", silent: true, committedSlot: committed }) : 0;
 }
 
 /**

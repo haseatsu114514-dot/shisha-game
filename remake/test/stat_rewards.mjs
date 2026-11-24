@@ -110,7 +110,7 @@ try {
   await page.evaluate(() => T.ui.bannersIdle());
 
   // 実スロットの抽選/コミット/演出を通す。上限適用後の実増加だけを表示し二重加算しない。
-  const reward = await page.evaluate(() => {
+  const beforeReward = await page.evaluate(() => {
     T.core.state.phase = "tournament"; T.reel.onAction({ spent: 10 }); // 前の行動の対象記録を区切る
     T.core.state.phase = "daily";
     for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 48;
@@ -126,15 +126,16 @@ try {
     }
     const before = { ...T.core.state.stats };
     T.reel.onAction({ spent: 10 });
-    const q = T.core.state.reel.pending[0];
-    const actual = T.core.state.stats[q.target] - before[q.target];
+    window.slotReward = T.core.state.reel.pending[0];
     window.presenting = T.reel.presentNow();
-    return { key: q.target, xp: q.exp, got: q.got, actual, after: { ...T.core.state.stats } };
+    return before;
   });
-  assert(reward.got > 0 && reward.got < reward.xp);
-  assert.equal(reward.got, reward.actual);
   await page.waitForSelector(".gain-card .gc-points", { timeout: 15000 });
-  assert.equal(await page.locator(".gc-points").textContent(), `+${reward.got}P`);
+  const applied = await page.evaluate(() => ({ result: window.slotReward, stats: { ...T.core.state.stats } }));
+  const { got, exp, target } = applied.result;
+  assert(got > 0 && got < exp);
+  assert.equal(got, applied.stats[target] - beforeReward[target]);
+  assert.equal(await page.locator(".gc-points").textContent(), `+${got}P`);
   assert.equal(await page.locator(".gc-top").textContent(), "SLOT BONUS");
   const slotCard = page.locator(".gain-card.stat.slot-bonus");
   assert.equal(await slotCard.count(), 1);
@@ -148,7 +149,7 @@ try {
   assert(glow.animated && glow.count === "1" && glow.seconds <= 1, "枠の光が短い一度の演出になっていない");
   assert.equal(await page.evaluate(() => T.bonusSounds), 1);
   await page.evaluate(() => window.presenting);
-  assert.deepEqual(await page.evaluate(() => ({ ...T.core.state.stats })), reward.after);
+  assert.deepEqual(await page.evaluate(() => ({ ...T.core.state.stats })), applied.stats);
   await page.evaluate(() => T.ui.bannersIdle());
   await page.evaluate(() => T.reel.presentNow());
   assert.equal(await page.locator(".gain-card.slot-bonus").count(), 0);
