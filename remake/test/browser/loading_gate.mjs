@@ -487,6 +487,40 @@ await suite("loading-gate", async check => {
     });
     assert.deepEqual(result, { rounds: true, skipped: true });
   });
+  await check("delayed-gate-loads-assets-only-when-needed", async page => {
+    await page.route("**/loading-gate-probe.html", route => route.fulfill({
+      contentType: "text/html", body: '<main id="stage"></main>',
+    }));
+    await page.route("**/loading-gate-panel.svg", route => route.fulfill({
+      contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="20"/>',
+    }));
+    await page.goto(new URL("loading-gate-probe.html", page.url()).href);
+    const assets = /\/(loading\.css|loading_bg\.webp|ui_title_logo_rich\.webp|loading-gate-panel\.svg)$/;
+    const requests = new Set();
+    page.on("request", request => {
+      const match = new URL(request.url()).pathname.match(assets);
+      if (match) requests.add(match[1]);
+    });
+    const fast = await page.evaluate(async () => {
+      const { withLoading } = await import("./js/core/loading.js");
+      const panel = { src: new URL("loading-gate-panel.svg", location.href).href, alt: "panel" };
+      const comics = [{ id: "probe", title: "probe", minChapter: 1, panels: [panel, panel] }];
+      window.probeGate = prepare => withLoading(prepare, { delayMs: 300, comics });
+      return window.probeGate(async () => "done");
+    });
+    assert.equal(fast, "done");
+    await page.waitForTimeout(350);
+    assert.equal(requests.size, 0, "fast preparation starts no loading-screen requests");
+    assert.equal(await page.locator(".loading-gate").count(), 0);
+
+    await page.evaluate(() => { window.probeGate(() => new Promise(resolve => { window.finishProbe = resolve; })); });
+    await page.locator(".loading-panels img").first().waitFor();
+    assert.deepEqual([...requests].sort(), ["loading-gate-panel.svg", "loading.css", "loading_bg.webp", "ui_title_logo_rich.webp"]);
+    await page.evaluate(() => window.finishProbe());
+    await page.locator(".loading-gate.is-ready").waitFor();
+    await page.keyboard.press("Enter");
+    await page.locator(".loading-gate").waitFor({ state: "detached" });
+  });
   await check("slow-comic-does-not-delay", async page => {
     await page.route('**/slow-panel.svg', async route => {
       await new Promise(resolve => setTimeout(resolve, 1000));
