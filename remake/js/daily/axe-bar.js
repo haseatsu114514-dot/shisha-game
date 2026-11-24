@@ -14,8 +14,8 @@ import { DIVISIONS } from "../minigames/axe-model.js";
 import { axeBarDiscovered, axeBarSightingDue } from "../core/axe-bar-discovery.js";
 import { playAxeBarSighting } from "./axe-bar-discovery.js";
 import { playBgm, currentBgm } from "../core/audio.js";
-import { TIERS, TIER_LABEL, TIER_GAMES, tierOpen, tierCleared, defaultTier, rememberTier, recordTierClear, tierLine, tierUnlockNote, syncPlayTiers } from "../core/play-tiers.js";
-import { AXE_TIER_DIVISION, axeTierClear, axeTierLock } from "./axe-bar-tiers.js";
+import { TIERS, TIER_LABEL, TIER_GAMES, TIER_RULE_LINE, PLAY_RULES, tierOpen, tierCleared, defaultTier, rememberTier, recordTierClear, tierLine, tierUnlockNote, syncPlayTiers } from "../core/play-tiers.js";
+import { AXE_TIER_DIVISION, axeTierClear, axeTierLock, axeTierBests } from "./axe-bar-tiers.js";
 import { gearOffer } from "../core/hobby-gear.js";
 import { arrivalsOff, arrivalGreeted, markArrival, leaveArrivalNote, readyArrivals, playArrival, playVenueTurn } from "./venue-arrivals.js";
 
@@ -120,9 +120,15 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       // #3779 10投の難しさ: 段は部門そのもの（初級 レク・中級 アマ・上級 プロ。axe-bar-tiers.js）。閉じた段は押せず、開き方を札に出す。
       // 既定は前に選んだ段（無ければ開いている中でいちばん上）。選び直しは覚えるだけで、保存は来店の確定（calendar）に任せる。
       const divisionNote = el("span.axe-bar-division-note", { dataset: { test: "axe-bar-division-note" } });
+      // 10投の自己ベストは段ごと（#4195 M-35）。選んでいる段の記録を10投の札に出す。
+      const leagueBests = axeTierBests(records.league);
+      const leagueBest = el("small", { dataset: { test: "axe-bar-league-best" } });
       const showTier = () => {
         for (const button of tierButtons) button.setAttribute("aria-pressed", String(button.dataset.tier === tier));
         divisionNote.textContent = DIVISIONS[AXE_TIER_DIVISION[tier]].note;
+        const top = leagueBests[tier], plays = records.league?.plays;
+        leagueBest.textContent = top ? `${TIER_LABEL[tier]}の自己ベスト ${top.total}点${plays ? ` · ${plays}回プレイ` : ""}`
+          : plays ? `${TIER_LABEL[tier]}はまだ記録なし · ${plays}回プレイ` : "まだ記録はありません";
       };
       const tierButtons = TIERS.map(id => {
         const open = tierOpen(owner, "axe", id), d = DIVISIONS[AXE_TIER_DIVISION[id]], lock = open ? "" : axeTierLock(id);
@@ -180,9 +186,11 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       updateGearButton();
       const playButtons = Object.entries(modes).map(([id, label]) => el("button.big-choice", {
         disabled: !available(), dataset: { test: "axe-bar-" + id }, onclick: () => { if (available()) pick(id); },
-      }, [el("b", { text: label }), el("small", { text: records[id] ? `自己ベスト ${records[id].best.total}点 · ${records[id].plays}回プレイ` : "まだ記録はありません" })]));
+      }, [el("b", { text: label }), id === "league" ? leagueBest
+        : el("small", { text: records[id] ? `練習の自己ベスト ${records[id].best.total}点 · ${records[id].plays}回プレイ` : `段の外の練習 · まだ記録はありません` })]));
       const divisions = el("div.axe-bar-divisions", { role: "group", "aria-label": "10投ゲームの難しさ（部門の閉じ方）" }, [el("span.axe-bar-division-label", { text: "10投の難しさ" }), ...tierButtons, divisionNote,
-        el("span.axe-bar-tier-line", { text: `${tierLine(owner, "axe")} · クリア：${TIER_GAMES.axe.clear}`, dataset: { test: "axe-bar-tier-line" } })]);
+        el("span.axe-bar-tier-line", { text: `${tierLine(owner, "axe")} · クリア：${TIER_GAMES.axe.clear}`, dataset: { test: "axe-bar-tier-line" } }),
+        el("span.axe-bar-tier-rule", { text: `${TIER_RULE_LINE}。${PLAY_RULES.practice}`, dataset: { test: "axe-bar-tier-rule" } })]);
       host.append(el("h2.sub-title", { text: AXE_BAR.label }),
         venueHost("maki", DB.dialogues[welcome]?.lines?.[0]?.text || "", DB), status,
         el("div.axe-bar-tools", [lesson, gearButton]),
@@ -216,15 +224,23 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     addCareer(records, result);
     const previous = records[mode];
     const newBest = !previous?.best || result.total > previous.best.total;
+    // 10投は段（部門）ごとの自己ベストも残す（#4195 M-35）。best は部門を問わない最高のまま（旧保存・ご褒美の互換）
+    const tierBests = mode === "league" ? axeTierBests(previous) : null;
+    const tierBestKey = mode === "league" ? TIERS.find(t => AXE_TIER_DIVISION[t] === result.division) : null;
+    const priorTierBest = tierBestKey ? tierBests[tierBestKey] : null;
+    if (tierBestKey && (!priorTierBest || result.total > priorTierBest.total)) tierBests[tierBestKey] = entry;
+    // マキの「自己ベスト」の締めは、前の記録を越えた時だけ（その段の初めての10投は数えない）
+    const tierRecordBeaten = !!priorTierBest && result.total > priorTierBest.total;
     records[mode] = { plays: (previous?.plays || 0) + 1, last: entry,
-      best: newBest ? entry : previous.best };
+      best: newBest ? entry : previous.best,
+      ...(tierBests && Object.keys(tierBests).length ? { bests: Object.fromEntries(Object.entries(tierBests).map(([t, e]) => [AXE_TIER_DIVISION[t], e])) } : {}) };
     // #3779 段のクリア: その部門の10投で、初級は B・中級と上級は A 以上だけ。初めての段なら一言（上級なら growth.js が白火を精算して知らせる）。
     // 達人の記録（精算を呼ぶ）より先に確定する
     const clearedTier = axeTierClear(result);
     const unlock = tierUnlockNote("axe", clearedTier ? recordTierClear(owner, "axe", clearedTier) : []);
     recordPlayMastery(owner, "axe", result, `${owner.cycle || 1}:${chapter}:${day}:${mode}:${records[mode].plays}`);
     addMoney(-AXE_BAR.playCost); addStamina(AXE_BAR.stamina); earnStat("guts", 1);
-    const outcome = result.total === 0 ? "miss" : previous && newBest ? "record" : "finish";
+    const outcome = result.total === 0 ? "miss" : previous && (newBest || tierRecordBeaten) ? "record" : "finish";
     const goals = (result.challenges || []).filter(goal => goal.state === "done").length;
     const summary = result.rank ? `RANK ${result.rank}・平均 ${result.stats.average.toFixed(2)}・チャレンジ ${goals}/${result.challenges.length}` : "";
     // 締めの会話（VAR01）。記録と精算は済んでいるので、読み切れなくても行動は使ったまま。
