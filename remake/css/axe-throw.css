@@ -737,11 +737,14 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game:not([data-phase="vertical"]) .axe-gauge-label[data-gauge="vertical"] { display: none; }
 .axe-help { position: relative; }
 /* 「？」と「✕」は見た目を文字ほどの小さな丸にし、押せる範囲（ボタンの箱）は透明なまま広く取る（#2729 オーナー指摘「？ボタンが大きい」）。
-   ほかのミニゲーム（#2991）と同じ大きさ: 丸は「？」の文字（実寸 11.5px 以上）＋11px、押せる箱は実寸 40px 以上（本編の #stage では --k で割り戻す）。
+   大きさは #2991 の式を土台に、2026-11-21〜22 オーナー指示（ミニゲーム全体で位置・サイズ感を統一、もう一回り大きく）で拡大:
+   丸は「？」の文字（実寸 15px 以上）＋16px、押せる箱は実寸 54px 以上（本編の #stage では --k で割り戻す）。
    丸は ::before で描く。箱は上下の負の余白で看板の高さを押し広げない。 */
 /* 看板は押せる箱が丸ごと収まる高さを保つ（箱が看板の外へはみ出さない）。 */
-.axe-game .axe-header { --help-font: max(20px, calc(11.5px / var(--k, 1))); --help-size: calc(var(--help-font) + 11px); --help-hit: max(44px, calc(40px / var(--k, 1)));
+.axe-game .axe-header { --help-font: max(27px, calc(15px / var(--k, 1))); --help-size: calc(var(--help-font) + 16px); --help-hit: max(58px, calc(54px / var(--k, 1)));
   min-height: calc(var(--help-hit) + 2px); }
+/* ？と✕は離れて見えないよう、丸同士が約6pxまで寄るよう✕の箱を重ねる（2026-11-21 オーナー指摘）。 */
+.axe-game .axe-header .axe-close { margin-left: calc(var(--help-size) - var(--help-hit) - 6px); }
 .axe-game .axe-header .axe-help { position: relative; display: grid; place-items: center; width: var(--help-hit); min-width: var(--help-hit); height: var(--help-hit); min-height: var(--help-hit);
   margin-block: calc((var(--help-size) - var(--help-hit)) / 2); padding: 0; border: 0; border-radius: 50%; background: transparent; box-shadow: none; font-size: var(--help-font); font-weight: 900; line-height: 1; }
 .axe-game .axe-header .axe-help::before { content: ""; position: absolute; left: 50%; top: 50%; width: var(--help-size); height: var(--help-size); transform: translate(-50%, -50%);
