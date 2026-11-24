@@ -1,5 +1,5 @@
 import { masteryLine } from "../core/play-mastery.js";
-import { tierLine, TIER_LABEL } from "../core/play-tiers.js";
+import { tierLine, TIER_LABEL, TIER_RULE_LINE } from "../core/play-tiers.js";
 // 東京の路地の地下のクラブ「SEAM」（第3章の夜の自由時間・DJS10/DJS12。第5章の東京に泊まっている夜も同じ・#2033）。店主は針間ヨル（characters.json の yoru）。
 // 初めて入る夜だけ出会いの場面（名乗るまで → 登場カットイン → ch3_club_first_after）、初めてAランク以上を出した夜だけヨルとの会話（ch3_club_a_talk）、通算3セット目の常連のリクエスト（ch3_club_request）、全セットA以上の夜の閉店前の交代（ch3_club_last_set）を一度ずつ流す（dj.js の djTalkAfterSet・SPC26）。
 // ミニゲームなので時間・お金・体力・好感度は変えない（#2113）。記録（state.dj）と既読フラグだけを保存する。
@@ -47,7 +47,8 @@ export function loadClubDialogues() {
 const firstLine = (dialogues, id) => dialogues[id]?.lines?.[0]?.text || "";
 const bestText = (s, id) => {
   const item = djRecords(s).sets[id];
-  if (!djSetOpen(s, id)) return `${DJ_SETS[id - 2]?.name || "前のセット"}を回しきると開く`;
+  // 開き方は全ミニゲーム共通（ひとつ下の段のクリア・#4195 M-35）。DJ のクリアは B 以上で回しきること
+  if (!djSetOpen(s, id)) return `${TIER_LABEL[DJ_SETS[id - 2]?.tier] || "ひとつ下"}クリア（${DJ_SETS[id - 2]?.name || "前のセット"}を B 以上）で開く`;
   return item.best ? `自己ベスト ${item.best.rank}・${item.best.total}点 · ${item.plays}回` : `${DJ_SETS[id - 1].tracks}曲をつなぐ · まだ記録はありません`;
 };
 
@@ -108,6 +109,7 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
           el("p", { text: masteryLine(owner, "dj"), dataset: { test: "dj-mastery" } }),
           // 三段階（#3779）: SET 1・2・3＝初級・中級・上級。B 以上で回しきるとその段をクリア、上級クリアで白火1つ
           el("p", { text: tierLine(owner, "dj"), dataset: { test: "dj-tiers" } }),
+          el("p.sub-note", { text: `${TIER_RULE_LINE}（クリアは B 以上で回しきる）`, dataset: { test: "dj-tier-rule" } }),
           el("div.sub-choices", DJ_SETS.map(set => el("button.big-choice", {
             type: "button", disabled: !djSetOpen(owner, set.id), dataset: { test: `dj-set-${set.id}`, tier: set.tier },
             onclick: () => { if (djSetOpen(owner, set.id)) resolve(set.id); },

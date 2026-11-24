@@ -52,13 +52,22 @@ check("djRecords tolerates missing and broken saves without changing them", () =
   assert.deepEqual(read.sets[3].best, { rank: "S", total: 95, floor: 0, chapter: null, day: null }); assert.equal(read.bestRank, "S");
   assert.equal(JSON.stringify(broken), copy);
 });
-check("SET 1 is always open; SET 2 / 3 open after the previous set is played through once", () => {
+check("SET 1 is always open; SET 2 / 3 open after clearing the set below (B or better), like every minigame tier (#4195 M-35)", () => {
   const s = {};
   assert.deepEqual([1, 2, 3, 4].map(id => dj.djSetOpen(s, id)), [true, false, false, false]);
   dj.recordDjResult(s, msg(1, "C", 30));
+  assert.deepEqual([1, 2, 3].map(id => dj.djSetOpen(s, id)), [true, false, false], "playing through below the clear line does not open the next tier");
+  dj.recordDjResult(s, msg(1, "B", 60));
   assert.deepEqual([1, 2, 3].map(id => dj.djSetOpen(s, id)), [true, true, false]);
   dj.recordDjResult(s, msg(2, "C", 20));
+  assert.deepEqual([1, 2, 3].map(id => dj.djSetOpen(s, id)), [true, true, false]);
+  dj.recordDjResult(s, msg(2, "A", 80));
   assert.deepEqual([1, 2, 3].map(id => dj.djSetOpen(s, id)), [true, true, true]);
+  // 前の決まり（下のセットの完走）で一度遊んだセットは閉じない。段の記録の無い旧保存は、下のセットの B 以上で開く
+  const played = { dj: { sets: { 1: { plays: 1, best: { rank: "C", total: 30, floor: 0 } }, 2: { plays: 1, best: { rank: "C", total: 20, floor: 0 } } } } };
+  assert.deepEqual([1, 2, 3].map(id => dj.djSetOpen(played, id)), [true, true, false]);
+  const legacy = { dj: { sets: { 1: { plays: 2, best: { rank: "B", total: 60, floor: 0 } } } } };
+  assert.deepEqual([1, 2, 3].map(id => dj.djSetOpen(legacy, id)), [true, true, false]);
 });
 check("the old chapter 3 free-time cards offer the club only in chapter 3 night free time (the daily-loop Tokyo map also opens it in chapter 5), unnamed until the first visit, without using the free time", () => {
   const first = dj.djNightChoices({ chapter: 3, flags: {} }, { id: "d5-1", slot: 1 });

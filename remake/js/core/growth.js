@@ -565,10 +565,11 @@ const RANK_ORDER = ["D", "C", "B", "A", "S"];
 export const AXE_RANKS = [["S", 0.8], ["A", 0.62], ["B", 0.45], ["C", 0.25], ["D", 0]];
 const rankOf = (total, max) => AXE_RANKS.find(([, min]) => (max > 0 ? total / max : 0) >= min)[0];
 const atLeast = (rank, need) => RANK_ORDER.indexOf(rank) >= RANK_ORDER.indexOf(need);
-/** 斧投げの自己ベストのランク（どのルールでも一番良いもの） */
+/** 斧投げの自己ベストのランク（どのルールでも一番良いもの）。3投練習は数えない（練習は段の外・#4195 M-35 の PLAY_RULES.practice） */
 function bestAxeRank(s) {
   let best = null;
-  for (const record of Object.values(s.flags?._axe_bar_records || {})) {
+  for (const [mode, record] of Object.entries(s.flags?._axe_bar_records || {})) {
+    if (mode === "practice") continue;
     const b = record?.best;
     if (!b || !(b.maximum > 0)) continue;
     const rank = rankOf(b.total, b.maximum);

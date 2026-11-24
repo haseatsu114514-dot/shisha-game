@@ -169,4 +169,9 @@ assert(!T.TIER_GAMES.ichidai, "the card game is on hold");
   growth.settleGrowth();
   assert.equal(g.earned - start, 1, "a new ending does not issue the finale gift again");
 }
+// #4195 M-35: 全ミニゲームで同じ言葉（段の開き方・自己ベスト・練習）。閉じた段の札は、ひとつ下の段のクリアを言う
+assert.equal(T.PLAY_RULES.tier, "初級は最初から。中級・上級は、ひとつ下の段をクリアすると開く");
+assert.match(T.TIER_RULE_LINE, /ひとつ下の段をクリア.*自己ベストは段ごと/);
+assert.match(T.PLAY_RULES.practice, /段の外/);
+assert.deepEqual(T.TIERS.map(t => T.tierLockNote(t)), ["", "初級クリアで開く", "中級クリアで開く"]);
 console.log("play_tiers: ok");

@@ -207,6 +207,25 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   assert(camelRaceRecord(value).cups.expert.mastered);
   // 三段階（#3779）: 入門・標準・上級大会の3位以内が初級・中級・上級のクリア
   assert.deepEqual(value.growth.playTiers.camel.cleared, ["easy", "normal", "hard"]);
+  // #4195 M-35: 上級は標準の3位以内（中級のクリア）で開く。中級認定は別の目標。練習レースの自己ベストは練習の記録に別に残す
+  {
+    const plain = dubaiFreeDay();
+    recordCamelRaceResult(plain, simulateRace({ cup: "rookie", policy: "good" }).score);
+    const qualifiedOnly = { ...simulateRace({ cup: "standard", policy: "good" }).score, rank: 3, parts: { timing: 0, stamina: 0 } };
+    assert(!camelMastered(qualifiedOnly));
+    recordCamelRaceResult(plain, qualifiedOnly);
+    assert.deepEqual(availableCamelCups(plain), CAMEL_CUPS.map(cup => cup.id), "標準の3位以内で上級が開く");
+    assert.equal(camelRaceRecord(plain).cups.standard.mastered, false);
+    assert.equal(camelRaceRecord(plain).practiceBest, undefined);
+    const practice = simulateRace({ cup: "practice", policy: "good" }).score;
+    recordCamelRaceResult(plain, practice);
+    assert.equal(camelRaceRecord(plain).practiceBest.total, Math.round(practice.total));
+    recordCamelRaceResult(plain, { ...practice, total: practice.total - 10 });
+    assert.equal(camelRaceRecord(plain).practiceBest.total, Math.round(practice.total), "低い練習は練習の自己ベストを下げない");
+    const played = dubaiFreeDay();
+    played.flags._camel_cups = { expert: { best: { total: 40, rank: 4, grade: "C" } } };
+    assert(availableCamelCups(played).includes("expert"), "一度走った大会は閉じない");
+  }
   const g = newGrowth();
   const rewards = claimPlayRewards(g, value);
   assert.deepEqual(rewards.find(row => row.label === "ラクダレース中級認定").parts, [{ kind: "any", n: 1 }]);
