@@ -1041,7 +1041,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     // ---- ループ -------------------------------------------------------------------------
     function tick(now) {
       if (done || !mode) return;
-      if (paused || isInterrupted()) { last = now; frame = requestAnimationFrame(tick); return; }
+      if (paused || pauseDialog?.open || isInterrupted()) { last = now; frame = requestAnimationFrame(tick); return; }
       const elapsed = Math.min(MAX_FRAME_ELAPSED, Math.max(0, now - last) / 1000);
       last = now;
       // 処理落ちで延びた分も、小さな更新に分けて同じ判定を通す。HUD・描画は表示するフレームに一度だけ。

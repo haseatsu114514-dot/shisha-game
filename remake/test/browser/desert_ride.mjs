@@ -358,12 +358,12 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(t("desert-result-tier")).innerText(), "上級");
     assert.equal(await page.locator(t("desert-result-tier")).getAttribute("data-tier"), "hard");
     assert.equal(await page.locator(t("desert-race")).getAttribute("data-won"), "true");
-    assert.match(await page.locator(t("desert-best")).innerText(), /^中級の自己ベスト更新/);
+    assert.match(await page.locator(t("desert-best")).innerText(), /^上級の自己ベスト更新/);
     // 段を替えるのはメニュー。前の段が選ばれたまま、その段の自己ベスト
     await page.locator(t("desert-choose-tier")).click();
     await phase(page, "menu");
     assert.equal(await tierChip(page, "hard").getAttribute("aria-checked"), "true");
-    assert.match(await page.locator(t("desert-best")).innerText(), /^中級の自己ベスト .*／ S/);
+    assert.match(await page.locator(t("desert-best")).innerText(), /^上級の自己ベスト .*／ S/);
     // 初級: 自己ベストは別（まだ無いので出さない）。着地が甘い滑りでも勝てる
     await tierChip(page, "easy").click();
     assert.equal(await page.locator(t("desert-best")).count(), 0, "easy has its own best");
@@ -537,7 +537,8 @@ await suite("desert-ride", async check => {
     });
     await phase(page, "practiced");
     const captions = await page.evaluate(() => window.__captions);
-    assert(captions.some(text => /空中で「左へ」か「右へ」を押し続けて回ろう/.test(text)), `the lesson teaches the spin (${captions.join(" / ")})`);
+    assert(captions.some(text => /大ジャンプ中の「左へ」「右へ」は回転。横には動かせない/.test(text)), `the lesson teaches the spin (${captions.join(" / ")})`);
+    assert(captions.some(text => /離すと次の半回転まで回る。着地前に回り切ろう/.test(text)), `the lesson teaches the spin release (${captions.join(" / ")})`);
     assert(captions.some(text => /ゲージが目印まで溜まったら「BOOST」で超加速/.test(text)), `the lesson explains stocked boost (${captions.join(" / ")})`);
     assert.match(await page.locator(t("desert-practiced")).innerText(), /練習おわり/);
     await page.locator(t("desert-start")).tap();
