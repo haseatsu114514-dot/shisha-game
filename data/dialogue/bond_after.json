@@ -31,7 +31,7 @@
         {"speaker": "customer", "face": "normal", "text": "アニキ、いやすか……って、見ねえ顔だな。新入りかい"},
         {"speaker": "hajime", "face": "normal", "text": "いえ、留守番です。神崎さんの……兄弟分、です"},
         {"speaker": "", "face": "", "text": "客の背筋が、音がしそうなほど伸びた。"},
-        {"speaker": "customer", "face": "surprise", "text": "きょ、兄弟分……！ し、失礼しやした"},
+        {"speaker": "customer", "face": "surprise", "text": "きょ、兄弟分……！ …失礼しやした"},
         {"speaker": "", "face": "", "text": "客は深々と頭を下げ、出された番茶を正座で飲み干して帰っていった。"},
         {"speaker": "", "face": "", "text": "戻ってきた神崎さんに話すと、湯呑みを持つ手が一度止まった。"},
         {"speaker": "kumicho", "face": "serious", "text": "……客の前で、兄弟分なんて言うんじゃねえ"},
@@ -927,7 +927,7 @@
         {"speaker": "", "face": "", "text": "真っ白だった縁が、薄く色づいている。サメちゃんは顔を近づけて、目を閉じた。"},
         {"speaker": "samechan", "face": "normal", "text": "……柑橘と、何かの花じゃな。それから、ほんの少しだけ、スプリングウォーター"},
         {"speaker": "hajime", "face": "smile", "text": "分かりますか。一回だけ、真似してみたんです"},
-        {"speaker": "samechan", "face": "surprise", "text": "わ、わしの好きな葉を、わしの渡した素焼きで……。お主、ずるいのじゃ"},
+        {"speaker": "samechan", "face": "surprise", "text": "…わしの好きな葉を、わしの渡した素焼きで……。お主、ずるいのじゃ"},
         {"speaker": "samechan", "face": "ventriloquism", "text": "側近、耳まで赤いのである", "voice": "korochan"},
         {"speaker": "samechan", "face": "serious", "text": "……それは、言わんでよいのじゃ"}
       ]
@@ -959,7 +959,7 @@
         {"speaker": "hajime", "face": "normal", "text": "……サメちゃん、見えてます？"},
         {"speaker": "samechan", "face": "serious", "text": "見ておる。コロちゃんの目で、見ておるのじゃ"},
         {"speaker": "samechan", "face": "ventriloquism", "text": "余は、側近の目をふさいでいるだけである", "voice": "korochan"},
-        {"speaker": "samechan", "face": "surprise", "text": "……う、うむ。……お主、終わったら教えるのじゃ"}
+        {"speaker": "samechan", "face": "surprise", "text": "………うむ。……お主、終わったら教えるのじゃ"}
       ]
     },
     {

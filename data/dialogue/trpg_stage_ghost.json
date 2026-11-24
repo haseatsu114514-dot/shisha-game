@@ -655,7 +655,7 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ほっ……い、いや。それは残念じゃのう"
+          "text": "ほっ………いや。それは残念じゃのう"
         }
       ]
     },
@@ -732,7 +732,7 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ゆ、幽霊劇か。わしは平気じゃぞ。まったく平気じゃ"
+          "text": "…幽霊劇か。わしは平気じゃぞ。まったく平気じゃ"
         },
         {
           "speaker": "samechan",
@@ -927,7 +927,7 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "{pc:samechan}が隣へ行くぞ。……こ、怖くはないのじゃ"
+          "text": "{pc:samechan}が隣へ行くぞ。………怖くはないのじゃ"
         },
         {
           "speaker": "adam",
@@ -987,7 +987,7 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "{pc:samechan}が舞台の真ん中に立つ。……ひ、膝は笑っておらぬ"
+          "text": "{pc:samechan}が舞台の真ん中に立つ。………膝は笑っておらぬ"
         },
         {
           "speaker": "adam",
@@ -1198,7 +1198,7 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "ひっ……わ、わしは平気じゃ。震えておるのはコロちゃんじゃ"
+          "text": "ひっ………わしは平気じゃ。震えておるのはコロちゃんじゃ"
         },
         {
           "speaker": "samechan",
@@ -1357,7 +1357,7 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "ひゃっ……い、今のは幽霊ではないな？ 道具じゃな？"
+          "text": "ひゃっ………今のは幽霊ではないな？ 道具じゃな？"
         },
         {
           "speaker": "adam",
@@ -1695,7 +1695,7 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "わ、わしは最初から平気じゃったぞ、……ほんとじゃぞ"
+          "text": "…わしは最初から平気じゃったぞ、……ほんとじゃぞ"
         },
         {
           "speaker": "samechan",
@@ -2143,7 +2143,7 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "灯りを全部消すのか。……つ、月があるなら、平気じゃ"
+          "text": "灯りを全部消すのか。………月があるなら、平気じゃ"
         }
       ]
     },
@@ -2268,7 +2268,7 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "だ、誰か座っておる……わけでは、ないのじゃな？"
+          "text": "…誰か座っておる……わけでは、ないのじゃな？"
         }
       ]
     },
