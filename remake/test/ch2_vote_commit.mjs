@@ -14,8 +14,8 @@ assert.throws(() => castVotes(p, 0, 88), /審査員の持ち点が不足して�
 assert.deepEqual(p, before, "不足時に先行審査員の票だけを書き込まない");
 console.log("PASS chapter 2 vote commit is atomic on insufficient later votes");
 
-// main 7fa356769 の変更前関数。正常時の票/品質/表示用記録をそのまま比較する。
-function legacyCastVotes(p, round, performance, prefByJudge = null) {
+// main 7fa356769 の変更前関数を基に、同点だけ出場順に合わせた比較用実装。
+function referenceCastVotes(p, round, performance, prefByJudge = null) {
   if (round !== p.voted || round < 0 || round >= SPEND.length) return false;
   const quality = { ...RIVAL_QUALITY, hajime: bounded(performance) };
   const lastVotes = {};
@@ -26,8 +26,7 @@ function legacyCastVotes(p, round, performance, prefByJudge = null) {
       ? evaluateJudgeScore(judge, quality.hajime, prefByJudge[judge])
       : quality.hajime;
     const scoreOf = (c) => (c === "hajime" ? hajimeScore : quality[c]) + (bias[c] || 0);
-    const order = CONTESTANTS.slice().sort((a, b) =>
-      scoreOf(b) - scoreOf(a) || a.localeCompare(b));
+    const order = CONTESTANTS.slice().sort((a, b) => scoreOf(b) - scoreOf(a));
     const amount = SPEND[round], row = p.votes[judge];
     const available = 10 - Object.values(row).reduce((sum, n) => sum + n, 0);
     if (available < amount) throw new Error("審査員の持ち点が不足しています");
@@ -50,6 +49,11 @@ const fresh = round => ({ voted: round,
 });
 let comparisons = 0;
 const compare = (left, right, label) => { assert.deepEqual(left, right, label); comparisons++; };
+for (const [score, first, second] of [[86.99, "ageha", "hajime"], [87, "hajime", "ageha"], [87.01, "hajime", "ageha"]]) {
+  const vote = fresh(1);
+  assert(castVotes(vote, 1, score));
+  compare(vote.lastVotes.uezono, { first, second, points: { [first]: 2, [second]: 1 } }, `上園の評価点 ${score}`);
+}
 function compareRecord(actual, expected, round, label) {
   const { roundVotes, ...record } = actual;
   compare(record, expected, label);
@@ -76,7 +80,7 @@ for (const score of scores) for (const pref of prefs) {
   const inputPref = structuredClone(pref);
   for (let round = 0; round < SPEND.length; round++) {
     const rows = JUDGES.map(judge => actual.votes[judge]);
-    compare(castVotes(actual, round, score, pref), legacyCastVotes(expected, round, score, pref), "normal return");
+    compare(castVotes(actual, round, score, pref), referenceCastVotes(expected, round, score, pref), "normal return");
     compareRecord(actual, expected, round, `normal record: score${score}/round${round}`);
     JUDGES.forEach((judge, i) => assert.equal(actual.votes[judge], rows[i], "keep successful row identity"));
     const once = structuredClone(actual);
@@ -91,7 +95,7 @@ for (const score of scores) for (const pref of prefs) {
 for (const value of [undefined, null, false, "0", NaN, -1]) {
   const actual = fresh(0); actual.votes[JUDGES[2]].kuraudo = value;
   const expected = structuredClone(actual);
-  compare(castVotes(actual, 0, 81), legacyCastVotes(expected, 0, 81), "legacy numeric handling return");
+  compare(castVotes(actual, 0, 81), referenceCastVotes(expected, 0, 81), "legacy numeric handling return");
   compareRecord(actual, expected, 0, "legacy numeric handling record");
 }
 for (const round of [-1, 4, 1]) {
@@ -99,4 +103,4 @@ for (const round of [-1, 4, 1]) {
   compare(castVotes(actual, round, 88), false, "out of range or wrong round returns false");
   compare(actual, before, "rejected round never writes");
 }
-console.log(`PASS chapter 2 atomic vote commit: ${comparisons} checks; old normal outputs and JSON SAVE preserved`);
+console.log(`PASS chapter 2 atomic vote commit: ${comparisons} checks; contestant-order ties and JSON SAVE verified`);

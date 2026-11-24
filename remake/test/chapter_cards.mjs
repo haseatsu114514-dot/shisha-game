@@ -8,17 +8,23 @@ for (const chapter of [4, 5]) {
   const plain = value => JSON.parse(JSON.stringify(value));
   const node = (selector, props = {}, children = []) => ({ selector,
     props: Array.isArray(props) ? {} : props, children: Array.isArray(props) ? props : children });
-  const values = { el: node, state: {}, DB: {}, CH4_SCENE_FILES: { ch4_spots: [] },
+  let creditsPending = true;
+  const values = { el: node, state: { flags: {} }, DB: {}, CH4_SCENE_FILES: { ch4_spots: [] },
     layers: { hud: { replaceChildren: () => calls.push("hud-clear"),
       classList: { remove: value => calls.push(`hud-remove:${value}`) } } },
     showScreen: (name, root) => calls.push({ name, root }),
-    createChapterActions: () => ({}), createChapterMenu: () => owner => calls.push({ menuOwner: owner }) };
-  const context = vm.createContext({ console });
+    createChapterMenu: () => owner => calls.push({ menuOwner: owner }),
+    chapterFourProgress: () => ({ read: {} }), chapterFiveCreditsPending: () => creditsPending,
+    canReflect: () => true, saveFlow: () => calls.push("manual-save"), save: () => calls.push("auto-save") };
+  const context = vm.createContext({ console, location: { reload: () => calls.push("title-reload") } });
   const source = readFileSync(new URL(`../js/chapters/ch${chapter}.js`, import.meta.url), "utf8");
-  const runner = new vm.SourceTextModule(source + "\nexport { card };", { context });
+  const runner = new vm.SourceTextModule(source + `
+    export { card, renderComplete };
+    export function openForTest() { return session = { state, active: true }; }
+  `, { context });
   await runner.link(async spec => {
-    if (spec === "../core/chapter-card.js") {
-      const helperSource = readFileSync(new URL("../js/core/chapter-card.js", import.meta.url), "utf8");
+    if (spec === "../core/chapter-card.js" || spec === "../core/chapter-actions.js") {
+      const helperSource = readFileSync(new URL(`../js/${spec.slice(3)}`, import.meta.url), "utf8");
       const helper = new vm.SourceTextModule(helperSource, { context });
       await helper.link(async dependency => {
         const names = dependency === "./util.js" ? ["el"] : ["showScreen"];
@@ -79,5 +85,26 @@ for (const chapter of [4, 5]) {
   runner.namespace.card(owner, "complete", "完", "説明");
   assert.equal(calls.at(-1).root.selector, "main.ch2-contest.chapter-clear");
   assert.equal(calls.at(-1).root.props.dataset.test, `ch${chapter}-complete`);
+
+  // 第5章は初回スタッフロールの前後を両方確認する。盤の入口は標準の操作の後ろに並ぶ。
+  for (const pending of chapter === 4 ? [false] : [true, false]) {
+    calls.length = 0;
+    creditsPending = pending;
+    runner.namespace.renderComplete(runner.namespace.openForTest());
+    const actions = calls.at(-1).root.children.at(-1).children;
+    assert.deepEqual(Array.from(actions, ({ selector, props }) => [selector, props.dataset.test, props.text]), [
+      chapter === 4 ? ["button.btn.primary", "ch4-chapter-five", "第5章へ進む"]
+        : ["button.btn.primary", "ch5-complete-credits", pending ? "スタッフロールへ" : "スタッフロールを見る"],
+      ["button.btn", `ch${chapter}-complete-save`, "ここまでをセーブ"],
+      ...(!pending ? [["button.btn", `ch${chapter}-complete-title`, "タイトルへ"]] : []),
+      ...(chapter === 5 ? [["button.btn", "ch5-reflect", "観音堂で盤を開く（時間は進まない）"]] : []),
+    ]);
+    await actions[1].props.onclick();
+    assert.equal(calls.at(-1), "manual-save");
+    if (!pending) {
+      await actions[2].props.onclick();
+      assert.deepEqual(calls.slice(-2), ["auto-save", "title-reload"]);
+    }
+  }
 }
-console.log("PASS: real chapter 4/5 cards preserve HUD order, DOM, defaults, notes and node identity");
+console.log("PASS: real chapter 4/5 cards preserve HUD order, DOM, and completion actions including the credits gate");
