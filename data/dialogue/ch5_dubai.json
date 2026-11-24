@@ -619,6 +619,204 @@
         {"speaker": "hajime", "face": "normal", "text": "（起きたら、ちゃんとたたんでおこう）"},
         {"speaker": "", "face": "", "text": "窓の方を向いて横になった。閉じたカーテンの向こうで、水の音だけが続いていた。"}
       ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_taiyo_d",
+      "lines": [
+        { "speaker": "", "face": "", "text": "太陽は中庭で、空の鉢を転がしていた。" },
+        { "speaker": "da_silva", "face": "normal", "text": "ほら、こいつ速いぜ。まっすぐ行かないけどな" },
+        { "speaker": "hajime", "face": "normal", "text": "どこに運ぶんです？" },
+        { "speaker": "da_silva", "face": "normal", "text": "日陰。重いのは持たない方が速いって聞いてさ" },
+        { "speaker": "hajime", "face": "normal", "text": "……転がる先、日なたですよ" },
+        { "speaker": "da_silva", "face": "smile", "text": "はは、じゃあ最後のとこだけ手伝ってくれ！" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_taiyo_e",
+      "lines": [
+        { "speaker": "", "face": "", "text": "太陽が葉の袋を開くと、果物の香りがした。" },
+        { "speaker": "da_silva", "face": "normal", "text": "これ、パインだと思うか？" },
+        { "speaker": "hajime", "face": "normal", "text": "匂いは、熟した方のパインっぽいです" },
+        { "speaker": "da_silva", "face": "normal", "text": "だよな。火が入ると、青い匂いに戻るんだぜ" },
+        { "speaker": "hajime", "face": "normal", "text": "じゃあ最初に匂いだけ嗅いでおきたいな" },
+        { "speaker": "da_silva", "face": "smile", "text": "いいぜ。袋、閉じないで持っててやる" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_taiyo_f",
+      "lines": [
+        { "speaker": "", "face": "", "text": "噴水の脇を通るたび、同じ場所だけ靴が濡れた。" },
+        { "speaker": "da_silva", "face": "normal", "text": "ここ、避けても足がちょっと濡れるんだ" },
+        { "speaker": "hajime", "face": "normal", "text": "風が変わるまで待ちます？" },
+        { "speaker": "da_silva", "face": "normal", "text": "俺はむしろ、ちょっと浴びていく" },
+        { "speaker": "hajime", "face": "normal", "text": "……通るたび、涼しいんだ" },
+        { "speaker": "da_silva", "face": "smile", "text": "そう！　庭番に言ったら、靴は乾かせってさ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_taiyo_g",
+      "lines": [
+        { "speaker": "", "face": "", "text": "中庭の日よけに、白いひもが一本下がっていた。" },
+        { "speaker": "da_silva", "face": "normal", "text": "これ引くの、俺に任せてくれ。いい音するんだ" },
+        { "speaker": "hajime", "face": "normal", "text": "布をしまうだけじゃないんですか？" },
+        { "speaker": "da_silva", "face": "normal", "text": "そうだけどな、端っこが最後にパンっていく" },
+        { "speaker": "hajime", "face": "normal", "text": "……あ、鳴った" },
+        { "speaker": "da_silva", "face": "smile", "text": "よし！　うまく鳴ると、仕事一個終わった気がする" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_taiyo_h",
+      "lines": [
+        { "speaker": "", "face": "", "text": "太陽の手のひらに、香りの強いパッションが載っていた。" },
+        { "speaker": "da_silva", "face": "normal", "text": "俺、これ割る前から酸っぱい顔になるんだ" },
+        { "speaker": "hajime", "face": "normal", "text": "吸うときもなります？" },
+        { "speaker": "da_silva", "face": "normal", "text": "葉の方は、後からちょっと来る。先に笑っても平気だ" },
+        { "speaker": "hajime", "face": "normal", "text": "……俺は後から、顔に出ましたね" },
+        { "speaker": "da_silva", "face": "smile", "text": "出てた！　次の一口は、顔の方を見てるぜ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_sheikh_d",
+      "lines": [
+        { "speaker": "", "face": "", "text": "卓の端で、葡萄の袋の口が折り返されていた。" },
+        { "speaker": "sheikh", "face": "normal", "text": "これは開けた日の印だ。君には何に見える" },
+        { "speaker": "hajime", "face": "normal", "text": "折った分だけ、中身が減ったのかと" },
+        { "speaker": "sheikh", "face": "normal", "text": "それでも通じる。よく使う袋ほど、折り目が増えるからな" },
+        { "speaker": "hajime", "face": "normal", "text": "日付を書かなくても分かるんですね" },
+        { "speaker": "sheikh", "face": "smile", "text": "使う者にはね。初めて来た人には、日付も書こう" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_sheikh_e",
+      "lines": [
+        { "speaker": "", "face": "", "text": "シェイクは客間の窓の留め具に手をかけた。" },
+        { "speaker": "sheikh", "face": "normal", "text": "閉めると静かになる。少し開けると、何が聞こえる？" },
+        { "speaker": "hajime", "face": "normal", "text": "水の音です。さっき、庭を通ったときの" },
+        { "speaker": "sheikh", "face": "normal", "text": "そう。どちらでも客は眠れると言うがね" },
+        { "speaker": "hajime", "face": "normal", "text": "俺なら、水が聞こえる方が好きです" },
+        { "speaker": "sheikh", "face": "smile", "text": "では、開け方を教えておこう。君が閉めたくなる時のために" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_sheikh_f",
+      "lines": [
+        { "speaker": "", "face": "", "text": "二種類のカップが、同じ盆に載っていた。" },
+        { "speaker": "sheikh", "face": "normal", "text": "客には取っ手のある方を先に勧めている" },
+        { "speaker": "hajime", "face": "normal", "text": "熱いとき、持ちやすいからですか" },
+        { "speaker": "sheikh", "face": "normal", "text": "そう思っていたが、両手で包む方が好きな客もいる" },
+        { "speaker": "hajime", "face": "normal", "text": "最初から両方置いてみたらどうです？" },
+        { "speaker": "sheikh", "face": "smile", "text": "ああ。盆に空きがあるなら、その方が話が早い" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_sheikh_g",
+      "lines": [
+        { "speaker": "", "face": "", "text": "シェイクが、音を立てずに引き出しを開けた。" },
+        { "speaker": "sheikh", "face": "normal", "text": "いい仕事だろう。閉めても静かだ" },
+        { "speaker": "hajime", "face": "normal", "text": "……どこまで引いたか、見なくても分かります？" },
+        { "speaker": "sheikh", "face": "normal", "text": "最後に、指に軽い抵抗が来る。触ってみるといい" },
+        { "speaker": "hajime", "face": "normal", "text": "ほんとだ。ここで止まるって、手が分かる" },
+        { "speaker": "sheikh", "face": "smile", "text": "作った人は、たぶん私より先に使い方を知っていたね" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_sheikh_h",
+      "lines": [
+        { "speaker": "", "face": "", "text": "中庭側の卓で、水差しの下に丸い影ができた。" },
+        { "speaker": "sheikh", "face": "normal", "text": "日が動くと、ここだけ水が温かくなる" },
+        { "speaker": "hajime", "face": "normal", "text": "席を移しますか？" },
+        { "speaker": "sheikh", "face": "normal", "text": "客に聞いたら、椅子はこのままがいいそうだ" },
+        { "speaker": "hajime", "face": "normal", "text": "じゃあ、水を先に移せば済むんだ" },
+        { "speaker": "sheikh", "face": "smile", "text": "そうだね。椅子まで動かす話にしたのは、私だった" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_cafe_chat_d",
+      "lines": [
+        { "speaker": "", "face": "", "text": "デスクに置いた地図が、端からくるりと丸まった。" },
+        { "speaker": "noor", "face": "normal", "text": "ハジメ、そこ押さえててくれる？" },
+        { "speaker": "hajime", "face": "normal", "text": "ここ、目印が消えかけてます" },
+        { "speaker": "noor", "face": "normal", "text": "雨で消えたの。道は残ってるから、あとで描き足す" },
+        { "speaker": "hajime", "face": "normal", "text": "俺が離すと、また丸まります" },
+        { "speaker": "noor", "face": "smile", "text": "うん。じゃあ先にこの石を載せよう。道は私が覚えてる" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_cafe_chat_e",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ヌールは小さな水のボトルを、机の影に寄せた。" },
+        { "speaker": "noor", "face": "normal", "text": "机に置くと、開ける前にぬるくなるね" },
+        { "speaker": "hajime", "face": "normal", "text": "ボトルの下、机も温かいです" },
+        { "speaker": "noor", "face": "normal", "text": "ほんとだ。どこへ置こうか。風はここがいいけど" },
+        { "speaker": "hajime", "face": "normal", "text": "水だけ、こっち側にどうです？" },
+        { "speaker": "noor", "face": "smile", "text": "あ、私の影に入った。じゃあまだ動かずにいよう" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_cafe_chat_f",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ヌールが、ツアーの写真を机いっぱいに広げた。" },
+        { "speaker": "noor", "face": "normal", "text": "この足跡さ、毎回、誰のか聞かれるの" },
+        { "speaker": "hajime", "face": "normal", "text": "ヌールのですか？" },
+        { "speaker": "noor", "face": "normal", "text": "私のはもっと線が近いよ。これは、歩くのが速い人" },
+        { "speaker": "hajime", "face": "normal", "text": "写真で歩き方まで分かるんですね" },
+        { "speaker": "noor", "face": "smile", "text": "うん。顔は写ってないけど、急いでたのは分かる" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_cafe_chat_g",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ヌールの靴の縁から、砂が少しずつ落ちていた。" },
+        { "speaker": "noor", "face": "normal", "text": "ここで落としたと思っても、座るとまた出てくる" },
+        { "speaker": "hajime", "face": "normal", "text": "今日、どっちの道を通ったんです？" },
+        { "speaker": "noor", "face": "normal", "text": "風が強い方。砂が入った分だけ、近かった" },
+        { "speaker": "hajime", "face": "normal", "text": "俺なら、靴を脱いでから座るかも" },
+        { "speaker": "noor", "face": "smile", "text": "それがいい。テーブルより先に椅子を出すね" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_cafe_chat_h",
+      "lines": [
+        { "speaker": "", "face": "", "text": "日よけの下で、ヌールが二枚の写真を並べた。" },
+        { "speaker": "noor", "face": "normal", "text": "同じ丘なんだけど、こっちは遠くに見えるでしょ" },
+        { "speaker": "hajime", "face": "normal", "text": "手前に足跡が一本だけありますね" },
+        { "speaker": "noor", "face": "normal", "text": "うん。歩く人がいるって分かると、私も遠く感じる" },
+        { "speaker": "hajime", "face": "normal", "text": "地図だと、距離は同じですか" },
+        { "speaker": "noor", "face": "smile", "text": "同じだよ。でも歩き出す前に、私はこっちも見せる" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_desk_chat",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ツアーデスクの前に、細い椅子が出ていた。" },
+        { "speaker": "noor", "face": "normal", "text": "ハジメ、ちょっと座って。ここから写真、見える？" },
+        { "speaker": "hajime", "face": "normal", "text": "上の方だけ見切れてます" },
+        { "speaker": "noor", "face": "normal", "text": "あ、立って掛けたときはちょうどよかったのに" },
+        { "speaker": "hajime", "face": "normal", "text": "地面が近い分、下から見えてるみたい" },
+        { "speaker": "noor", "face": "smile", "text": "そっか。椅子に座った人の方へ、少し下げるね" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_desk_chat_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ヌールは帳面の表紙を、風が抜ける方へ押さえた。" },
+        { "speaker": "noor", "face": "normal", "text": "紙がすぐめくれるから、風の向きが分かるよ" },
+        { "speaker": "hajime", "face": "normal", "text": "手で持っていても、めくれる？" },
+        { "speaker": "noor", "face": "normal", "text": "うん。押さえたところの反対から入ってくる" },
+        { "speaker": "hajime", "face": "normal", "text": "じゃあ、今はこっちが風上か" },
+        { "speaker": "noor", "face": "smile", "text": "そう。座るなら、そっちの方が涼しいよ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_noor_desk_chat_c",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ヌールが、札をデスクの端に立てた。" },
+        { "speaker": "noor", "face": "normal", "text": "遠くからも見える？　今日は、こっち向きにしたの" },
+        { "speaker": "hajime", "face": "normal", "text": "文字はまだ読めないけど、置いてあるのは分かります" },
+        { "speaker": "noor", "face": "normal", "text": "それでいいかも。あとは近くで聞いてくれたらね" },
+        { "speaker": "hajime", "face": "normal", "text": "じゃあ、近くで読んできます" },
+        { "speaker": "noor", "face": "smile", "text": "うん。どこで読めたか、教えて" }
+      ]
     }
   ]
 }

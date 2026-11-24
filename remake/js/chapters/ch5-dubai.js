@@ -10,6 +10,7 @@
 // 台詞は data/dialogue/ch5_dubai.json（クリーク沿いは第4章の場面を使う）。現在地は flags._ch2_region = "dubai"。
 // ラクダレース（第4章で走っていなければ店先の出会いから）・カフェ・オアシス（ヌールの締めくくりまで）・「ヌールと砂丘へ」（誘われていれば）にも
 // 行ける（chapterFiveDubaiLeisureSpots。2026-11-07 オーナー決定「第4章を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる」）。
+import { chapterFiveTalkIds } from "./ch5-talks.js";
 import { state, save, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
 import { modal, setBg, toast, layers } from "../core/ui.js";
@@ -18,7 +19,8 @@ import { showHud } from "../daily/hud.js";
 import { CAMEL_DAILY_SPOT_ID, CAMEL_SCENES, CAMEL_STAGES, CH4_CAMEL_SCENE_FILES, CH5_CAMEL_MEET, camelDailySpot, camelRaceRecord, camelSceneBg,
   chapterFiveCamelMeetDue, advanceChapterFiveCamelMeet } from "./ch4-camel-progress.js";
 import { DESERT_CAFE_PRICE, DESERT_GUIDE, DESERT_SPOT_IDS, NOOR_LOVER_SCENES, completeDesertReunion, desertChapterFiveSpots, desertProgress,
-  noorConfessionWaiting, noorLoverReadFlag, noorLoverSceneDue } from "./ch4-desert-progress.js";
+  noorConfessionWaiting, noorLoverReadFlag, noorLoverSceneDue, desertDaytime, desertCafeVisit, completeDesertCafeVisit,
+  CH5_NOOR_DESK_ID, CH5_NOOR_CAFE_CHATS, CH5_NOOR_DESK_CHATS } from "./ch4-desert-progress.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -47,11 +49,11 @@ const RESIDENCE_BG = "bg_dubai_sheikh_residence";
 const spot = fields => Object.freeze({ region: DUBAI, kind: "ch5_dubai", ...fields });
 export const DUBAI_SPOTS = Object.freeze([
   spot({ id: "ch5_dubai_sheikh", charId: "sheikh", label: "シェイクの屋敷", area: "中庭と低い卓の部屋", x: 19, y: 39, theme: "rival", glyph: "邸",
-    face: "sheikh", preview: RESIDENCE_BG, stamina: -10, stat: "insight", talks: ["ch5_dubai_sheikh", "ch5_dubai_sheikh_b", "ch5_dubai_sheikh_c"],
+    face: "sheikh", preview: RESIDENCE_BG, stamina: -10, stat: "insight", talks: chapterFiveTalkIds("ch5_dubai_sheikh"),
     teacher: "sheikh", desc: "シェイクと話す。屋敷では、王族ではなく友人として。" }),
   spot({ id: "ch5_dubai_taiyo", charId: "da_silva", label: "中庭の太陽", area: "シェイクの屋敷の中庭", x: 34, y: 32, theme: "rival", glyph: "陽",
     face: "da_silva", preview: RESIDENCE_BG, stamina: -10, stat: "charm", teacher: "da_silva",
-    talks: ["ch5_dubai_taiyo", "ch5_dubai_taiyo_b", "ch5_dubai_taiyo_c"],
+    talks: chapterFiveTalkIds("ch5_dubai_taiyo"),
     desc: "休暇で屋敷に遊びに来ている太陽。今日は審査じゃなく、ただのフェスタ。" }),
   spot({ id: "ch5_dubai_souq", label: "スーク", area: "旧市街の市場", x: 22, y: 58, theme: "shop", glyph: "市",
     preview: "bg_dubai_souq_day", stamina: -10, stat: "insight", talks: ["ch5_dubai_souq", "ch5_dubai_souq_b", "ch5_dubai_souq_c"],
@@ -121,7 +123,10 @@ export function chapterFiveDubaiLeisureSpots(value = state) {
   const camel = camelDailySpot(value, { region: DUBAI, kind: "ch5_dubai", stamina: 0 });
   return [camel && chapterFiveCamelMeetDue(value) ? Object.freeze({ ...camel, ...CH5_CAMEL_SHOP_AT }) : camel, ...desertChapterFiveSpots(value, value.day)]
     .filter(Boolean)
-    .map(entry => entry.unavailable || value.flags?.[reunionOf(entry).flag] ? entry : Object.freeze({ ...entry, hasNew: () => true }));
+    .map(entry => {
+      const reunion = entry.id !== CH5_NOOR_DESK_ID && !value.flags?.[reunionOf(entry).flag];
+      return !entry.unavailable && reunion ? Object.freeze({ ...entry, hasNew: () => true }) : entry;
+    });
 }
 /** 地図で選んだ行き先を、今行ける時だけ返す（行けない行き先は処理しない）。 */
 export const chapterFiveDubaiLeisureById = id => chapterFiveDubaiLeisureSpots().find(entry => entry.id === id && !entry.unavailable) || null;
@@ -129,7 +134,8 @@ export const chapterFiveDubaiLeisureById = id => chapterFiveDubaiLeisureSpots().
 const REST_SCENES = ["ch5_dubai_guest_rest", "ch5_dubai_guest_rest_b", "ch5_dubai_guest_rest_c"];
 const SCENES = DUBAI_SPOTS.flatMap(entry => entry.talks || [])
   .concat(["ch5_dubai_letter", ...DUBAI_LETTER_AGAIN, "ch5_dubai_go", "ch5_dubai_back", "ch5_dubai_arrival", ...REST_SCENES,
-    CAMEL_AGAIN.scene, DUNES_AGAIN.scene, CH5_CAMEL_MEET.scene, NOOR_CAFE_AGAIN, ...Object.values(CH5_NOOR_SCENES), ...Object.values(NOOR_LOVER_SCENES)]);
+    CAMEL_AGAIN.scene, DUNES_AGAIN.scene, CH5_CAMEL_MEET.scene, NOOR_CAFE_AGAIN, ...Object.values(CH5_NOOR_SCENES),
+    ...Object.values(NOOR_LOVER_SCENES), ...CH5_NOOR_CAFE_CHATS, ...CH5_NOOR_DESK_CHATS]);
 const CH4_SCENES = ["ch4_creek_walk_day", "ch4_creek_walk_night"];
 // クリーク沿いは第4章と同じ場面を、同じ順番の続きから読む（SPV03）
 
@@ -181,6 +187,7 @@ export async function performDubaiSpot(spot, { staminaGuard, holdSaveUntilAction
   if (spot.id === CAMEL_DAILY_SPOT_ID) return visitCamelTrack(owner);
   if (spot.id === DESERT_SPOT_IDS.dunes) return visitDunes(spot, owner);
   if (spot.id === DESERT_SPOT_IDS.desk) return visitNoorCafe(spot, owner);
+  if (spot.id === CH5_NOOR_DESK_ID) return visitNoorDesk(spot, owner);
   if (spot.reflect) {
     const hours = openingStatus(MOSQUE_VISITING_HOURS, state);
     if (!hours.ok) { toast(hours.why || "今は見学の時間ではない"); return unused; }
@@ -481,6 +488,15 @@ async function visitNoorCafe(spot, owner) {
   // 第5章で出会いを読み終えたら、砂丘の前の再会（久しぶり）は読まない
   if (state === owner && desertProgress(owner).talks > 0 && !owner.flags[DUNES_AGAIN.flag]) { owner.flags[DUNES_AGAIN.flag] = true; save(); }
   return result;
+}
+
+async function visitNoorDesk(spot, owner) {
+  if (!owner.finales?.[DESERT_GUIDE] || !desertDaytime(owner)) return unused;
+  const day = owner.day;
+  const visit = desertCafeVisit(owner, day);
+  if (visit?.kind !== "talk") return unused;
+  if (!await read(visit.id, spot.preview, owner) || !completeDesertCafeVisit(owner, visit, day)) return unused;
+  return { used: true, exerted: false };
 }
 
 /** 夜: ドバイにいれば屋敷の客間で寝る（帰らない）。 */

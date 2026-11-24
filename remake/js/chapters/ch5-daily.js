@@ -28,7 +28,8 @@ import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNigh
   chapterFiveTokyoPin, tokyoSpotsNow, preloadTokyoScenes } from "./ch5-tokyo.js";
 import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground, chapterFiveDubaiPin,
   chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes, dubaiBondHasNew } from "./ch5-dubai.js";
-import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop, chapterFiveShowroom } from "./ch5-shops.js";
+import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop, chapterFiveShowroom,
+  chapterFiveTonariTalks, performChapterFiveTonariTalk } from "./ch5-shops.js";
 import { chapterFiveCateringSpot, performCateringSpot, deliverCateringMorning, settleCateringWork, cateringBusyContacts, finishCateringSeason } from "./ch5-catering.js";
 import { introduceCateringBusiness } from "./ch5-catering-origin.js";
 import { CATERING_SPOT_ID, isTsumugiCateringAway } from "./ch5-catering-model.js";
@@ -102,6 +103,8 @@ export function chapterFiveDailyDefinition(io) {
       return Number.isInteger(match) ? match : Infinity;
     },
     nightEvents: {},
+    tonariTalks: chapterFiveTonariTalks,
+    performTonariTalk: performChapterFiveTonariTalk,
     // 出張シーシャの依頼（スミさんのLIME）と、期限の過ぎた依頼の片付け
     morningLime: () => deliverCateringMorning(),
     // 店めぐり帳: 行き先の行動を終えたら判子（帳面の店だけ）。帳面は右上の LIME の一番上の行から開く

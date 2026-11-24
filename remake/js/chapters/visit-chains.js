@@ -15,7 +15,7 @@
 // 決まる事実は呼び出し側が facts で渡し、台本は条件 chain_fact で読む（chapters/visit-chain-play.js）。
 // 交流の記憶は後の段の台本の remember 行（data/relationship_memories.json）で残し、大会前夜の振り返りに出る。
 // ここは DOM を持たない判定と記録だけ。再生・代金・体力・能力は各章（ch2-preparation.js・ch3-tokyo-daily.js・ch4-dubai-daily.js・
-// ch5-tokyo.js・ch5-dubai.js）。台詞は data/dialogue/visit_chains.json。周回では持ち越さない（core/carry.js の progression）。
+// ch5-shops.js・ch5-tokyo.js・ch5-dubai.js・daily/roamers.js）。台詞は data/dialogue/visit_chains.json。周回では持ち越さない。
 
 export const VISIT_CHAINS_FLAG = "_visit_chains";
 export const VISIT_CHAINS_FILE = "visit_chains";
@@ -153,6 +153,30 @@ export const VISIT_CHAINS = Object.freeze({
     ]),
   }),
 });
+
+const OPENING_TALKS = new Set([
+  "ch5_naru_shop_h",
+  "ch5_minto_shop_h",
+  "ch5_rio_shop_h",
+  "ch5_samechan_shop_h",
+  "ch5_ageha_shop_h",
+  "ch5_tokyo_saku_h",
+  "ch5_tokyo_volk_h",
+  "ch5_adam_repeat_h",
+  "ch5_kumicho_repeat_h",
+  "ch5_kuraudo_repeat_h",
+  "ch5_tonari_sumi_h",
+  "ch5_tonari_tsumugi_h",
+  "roam_hiyori_h",
+  "ch5_tokyo_mashiro_h",
+  "ch5_noor_cafe_chat_h",
+  "ch5_tonari_master_hookah_h",
+]);
+/** 読了を確定した入口だけが、既存の第5章の既読欄に記録する。 */
+export function recordChapterFiveTalk(value, id) {
+  const read = value?.flags?._ch5?.read;
+  if (value?.chapter === 5 && plain(read) && OPENING_TALKS.has(id)) read[id] = true;
+}
 
 /** 全部の段の台本 id（data/dialogue/visit_chains.json）。 */
 export const VISIT_CHAIN_DIALOGUE_IDS = Object.freeze(Object.values(VISIT_CHAINS).flatMap(chain => chain.stages.map(entry => entry.id)));

@@ -6,6 +6,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import * as chains from "../js/chapters/visit-chains.js";
+import { chapterFiveTalkIds } from "../js/chapters/ch5-talks.js";
+import { CH5_NOOR_CAFE_CHATS, CH5_NOOR_DESK_CHATS } from "../js/chapters/ch4-desert-progress.js";
 import * as longlongRules from "../js/chapters/ch4-longlong.js";
 
 const text = rel => readFileSync(new URL(rel, import.meta.url), "utf8");
@@ -125,7 +127,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   const money = { spent: 0 };
   const affinity = {};
   const stats = {};
-  const tokyo = await load("chapters/ch5-tokyo.js", {
+  const tokyo = await load("chapters/ch5-tokyo.js", { chapterFiveTalkIds,
     get state() { return state; }, save() {}, timeOfDay: () => "day", markMet() {}, DB, sceneBg: () => ({ url: "", tint: null }),
     setBg: async () => {}, toast() {}, vanRide: async () => {}, play, readDialogues,
     addMoney: n => { state.money += n; money.spent -= n; }, addStamina: n => { state.stamina += n; },
@@ -163,7 +165,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert(shown.some(t => t.includes("ぽつぽつ")), "選んだ答えの分岐を読んだ");
   assert.equal(steve().hasNew, undefined, "同じ日は次の段を出さない");
   await visit();
-  assert.equal(played.at(-1), "ch5_tokyo_steve", "同じ日にもう一度来たら、いつもの小会話");
+  assert.equal(played.at(-1), "ch5_tokyo_steve_d", "同じ日にもう一度来たら、いつもの小会話");
   state.day += 1;
   chooser = line => line.id === "guest_timer" ? 1 : 0;
   cancelNext = true;
@@ -181,14 +183,14 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert(chains.chainFinished(state, "ch5_steve_guest"));
   state.day += 1;
   await visit();
-  assert.equal(played.at(-1), "ch5_tokyo_steve_b", "終わった後は小会話の巡回の続き");
+  assert.equal(played.at(-1), "ch5_tokyo_steve_e", "終わった後は小会話の巡回の続き");
   assert(TOKYO_SPOTS.every(entry => !Object.hasOwn(entry, "hasNew")), "元の行き先は変えない");
 }
 
 // ---- 第5章のドバイ: 路地裏のカフェ（閉店後の段は夜だけ・代金なし） ---------------------------------------------
 {
   const gained = [];
-  const dubai = await load("chapters/ch5-dubai.js", {
+  const dubai = await load("chapters/ch5-dubai.js", { chapterFiveTalkIds, CH5_NOOR_CAFE_CHATS, CH5_NOOR_DESK_CHATS,
     get state() { return state; }, save() {}, timeOfDay: () => (state.slot ? "night" : "day"), markMet() {}, DB,
     sceneBg: () => ({ url: "", tint: null }), setBg: async () => {}, toast() {}, modal: async () => null, layers: { hud: {} },
     play, readDialogues, addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; }, earnStat() {}, gainAffinity: (id, n) => { gained.push([id, n]); },
@@ -252,7 +254,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert.equal(state.flags._ch5_dubai_talks.ch5_dubai_taiyo, 3, "小会話の巡回は進めない");
   assert.equal(dubaiBondHasNew(taiyo), false, "同じ日は次の段を出さない");
   await meet();
-  assert.equal(played.at(-1), "ch5_dubai_taiyo", "同じ日にもう一度来たら、いつもの小会話");
+  assert.equal(played.at(-1), "ch5_dubai_taiyo_d", "同じ日にもう一度来たら、いつもの小会話");
   state.day += 1;
   shown = [];
   await meet();
@@ -260,7 +262,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert(shown.some(t => t.includes("これを読んでから、帰る")) && shown.some(t => t === "「またあした」。"), "1段目の答えが返る");
   assert(!chains.chainFinished(state, "ch5_taiyo_flag"), "3段目（太陽の旗）が残っている");
   await meet();
-  assert.match(played.at(-1), /^ch5_dubai_taiyo(_[bc])?$/, "同じ日は小会話（巡回の続き）");
+  assert.match(played.at(-1), /^ch5_dubai_taiyo(_[b-h])?$/, "同じ日は小会話（巡回の続き）");
   state.day += 1;
   shown = [];
   await meet();
@@ -283,7 +285,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert.equal(played.at(-1), "ch5_chain_pair_1");
   assert.deepEqual(gained, [["sheikh", 5]], "いつもの小会話と同じ好感度");
   await call();
-  assert.equal(played.at(-1), "ch5_dubai_sheikh", "同じ日にもう一度来たら、いつもの小会話");
+  assert.equal(played.at(-1), "ch5_dubai_sheikh_d", "同じ日にもう一度来たら、いつもの小会話");
   state.day += 1;
   shown = [];
   await call();
