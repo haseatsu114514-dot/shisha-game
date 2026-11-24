@@ -1,7 +1,7 @@
 // 経験値ゲージ → 寝る前のレベルアップ → 火種の印を実DOMで確かめる（GROWTH_BOARD の裏。?growth=1 で有効）。
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { suite, baseURL, assertFits } from "./support.mjs";
+import { suite, baseURL, assertFits, passTutorialLesson } from "./support.mjs";
 
 const out = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
 fs.mkdirSync(out, { recursive: true });
@@ -693,6 +693,7 @@ await suite("growth-levelup", async (runCheck) => {
       await page.evaluate(()=>{window.tongSeen=null;window.tongWatch?.disconnect();window.tongWatch=new MutationObserver(()=>{
         const n=document.querySelector('[data-test="care-tong"]');if(n&&!window.tongSeen)window.tongSeen={text:n.textContent,fire:n.dataset.fireKeeper};
       });window.tongWatch.observe(document.body,{childList:true,subtree:true});});
+      await passTutorialLesson(page,`${t("care-coals")}:not(:has(button[disabled])) ${t("care-coal-2")}`);
       await page.locator(`${t("care-coals")}:not(:has(button[disabled])) ${t("care-coal-2")}`).click();
       await page.waitForFunction(()=>window.tongSeen&&cs.careCoals?.count===2,null,{timeout:20000});
       const seen=await page.evaluate(()=>window.tongSeen);

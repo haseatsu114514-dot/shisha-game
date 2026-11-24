@@ -85,6 +85,8 @@ await suite("craft-cues-2190", async check => {
       assert(await page.locator('[data-test="pull-stop"]').isDisabled());
       assert(!(await page.locator('[data-test="pull-serve"]').isDisabled()));
       await assertFits(page, '[data-test="craft-feedback"], [data-test="pull-count"], [data-test="pull-serve"]');
+      // 説明を閉じると焦点は「?」に戻る（#4191）。Space で説明を開き直さないよう、盤の外から押す。
+      await page.evaluate(() => document.activeElement?.blur());
       await page.keyboard.press("Space");
       assert.equal(await page.locator('[data-test="pull-count"]').getAttribute("data-pulls"), "5", "The existing cap blocks a sixth pull");
       assert.equal(await page.locator('.pull-play').getAttribute("data-draw"), null);

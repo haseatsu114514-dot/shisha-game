@@ -1,7 +1,7 @@
 // #533: 見比べて確定・針穴の残留・目印と光の分離を本番の工程で操作する。
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { suite, assertFits, storageSnapshot, baseURL } from "./support.mjs";
+import { suite, assertFits, storageSnapshot, baseURL, passTutorialLesson } from "./support.mjs";
 const shots = process.env.SHOTS;
 const ngMixes = JSON.parse(fs.readFileSync(new URL("../../../data/ng_mixes.json", import.meta.url), "utf8")).ng_mixes;
 const flavors = JSON.parse(fs.readFileSync(new URL("../../../data/flavors.json", import.meta.url), "utf8")).flavors;
@@ -312,10 +312,10 @@ await suite("craft-materials", async check => {
       await page.locator('[data-test="pack-confirm"]').waitFor();
       await click(page, '[data-test="opt-fluffy"]', touch);
       await click(page, '[data-test="pack-confirm"]', touch);
-      await page.locator('[data-test="hole-start"]').waitFor();
+      await passTutorialLesson(page, '[data-test="hole-start"]', { touch });
       assert.equal(await page.locator(".bench-demo-sheet").count(), 0, "穴あけのお手本は廃止（#3815）");
       await page.locator('[data-preview-step="holes"]').click();
-      await page.locator('[data-test="hole-start"]').waitFor();
+      await passTutorialLesson(page, '[data-test="hole-start"]', { touch });
       assert.equal(await page.locator(".bench-demo-sheet").count(), 0);
       assert.equal(await page.locator(".foil-cursor").count(), 0);
       await page.locator('[data-preview-step="pack"]').click();

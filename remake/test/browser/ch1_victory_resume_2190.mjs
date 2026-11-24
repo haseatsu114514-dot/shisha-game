@@ -87,7 +87,7 @@ await suite("ch1-victory-resume-2190", async check => {
             pointer: getComputedStyle(n).pointerEvents,
           };
         });
-        assert.deepEqual(geometry, { outside: false, overflows: false, overlaps: [], buttons: [true, true], pointer: "none" });
+        assert.deepEqual(geometry, { outside: false, overflows: false, overlaps: [], buttons: [true, true, true], pointer: "none" }); // 進む・セーブ・タイトル（#4211）
       }
       await unobscured(level);
       assert.deepEqual(await page.evaluate(async () => {

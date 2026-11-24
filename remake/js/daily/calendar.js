@@ -602,9 +602,10 @@ async function takeAction() {
     }, // 通知を先にタップした場合は、マップが開いたところで目的のトークへ
     onBeforeGo: async (destination) => {
       if (destination.boardOnly) return true; // 行動枠も約束も進めない
-      const spendsAction = !["shop", "fortune", "rest"].includes(destination.kind)
+      const spendsAction = !["shop", "fortune"].includes(destination.kind)
         && !(typeof pendingDelivery === "function" && pendingDelivery(destination.charId));
-      if (spendsAction && !await confirmRespecClose()) return false;
+      // 休養は組み直しの警告だけ出さない（D-09）。行動枠は使うので、LIMEのお誘いの確認は残す。
+      if (spendsAction && destination.kind !== "rest" && !await confirmRespecClose()) return false;
       return confirmLimeReminder(destination, { spendsAction });
     },
   });
