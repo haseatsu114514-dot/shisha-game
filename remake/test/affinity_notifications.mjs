@@ -71,10 +71,11 @@ try {
   assert.equal(minto.levelUp, true);
 
   await page.evaluate(() => T.ui.bannersIdle());
-  await page.evaluate(() => {
+  await page.evaluate(async () => {
     T.events.length = 0;
     T.core.state.lovers = ["minto"];
     T.core.state.loveLevel.minto = 1;
+    await T.stats.prepareLoveAffinity(["minto"]);
     T.stats.bond.private = false;
     T.stats.gainAffinity("minto", 10); // 店では恋人の絆を深めない
     T.stats.bond.private = true;

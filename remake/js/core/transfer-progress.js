@@ -1,4 +1,5 @@
 // セーブ引っ越しのスロット外記録。設定・本文既読・現在のstateには触れない。
+import { parseCastSave } from "./legacy-cast-save.js";
 import { GALLERY_PROGRESS_KEY, normalizeGalleryProgress, purikuraId } from "./gallery-progress.js";
 import { CYCLE_META_KEY, CYCLE_META_VERSION, normalizeCycleMeta } from "./cycle-meta.js";
 
@@ -25,7 +26,7 @@ export function parseTransferProgress(value) {
   if (!object(value)) throw Error("invalid progress envelope");
   return Object.fromEntries(Object.entries(value).map(([key, raw]) => {
     if (!TRANSFER_PROGRESS_KEYS.includes(key) || typeof raw !== "string") throw Error("unknown progress key");
-    return [key, normalize(key, JSON.parse(raw))];
+    return [key, normalize(key, parseCastSave(raw))];
   }));
 }
 
@@ -79,7 +80,7 @@ function mergeCycle(a, b) {
 export function mergedTransferProgress(progress) {
   return Object.entries(progress).map(([key, incoming]) => {
     const raw = localStorage.getItem(key);
-    const old = raw === null ? null : normalize(key, JSON.parse(raw));
+    const old = raw === null ? null : normalize(key, parseCastSave(raw));
     const value = old === null ? incoming : key === CG_KEY ? union(old, incoming)
       : key === GALLERY_PROGRESS_KEY ? mergeGallery(old, incoming) : mergeCycle(old, incoming);
     return { key, raw: JSON.stringify(value) };

@@ -29,6 +29,7 @@ const RECORDED_SE = {
   cancel: { files: ["ui_back.wav"], gain: .3 },
   whoosh: { files: ["ui_whoosh.wav"], gain: .35 },
   jingle: { files: ["ui_jingle.wav"], gain: .4 },
+  ch1Title: { files: ["trpg/jingle_success.wav"], gain: .4 },
   card: { files: ["ui_card.wav"], gain: .35 },
   phone: { files: ["lime_glass.wav"], gain: .4 },
   doorbell: { files: ["shop_bell.wav"], gain: 1 },
@@ -88,7 +89,7 @@ function loadSeBuffer(file) {
 
 const allSeFiles = () => [...new Set([...Object.values(RECORDED_SE).flatMap(s => s.files), WATER_LOOP, WATER_END])];
 // 最初の操作の直後に要る画面操作の音（タイトル・メニュー・保存）。残りは1本ずつ読む（#3500 D-1）。
-const FIRST_SE = ["click", "select", "cancel", "whoosh", "jingle", "card", "save"];
+const FIRST_SE = ["click", "select", "cancel", "whoosh", "jingle", "ch1Title", "card", "save"];
 let seWarm = null;
 
 /** 録音SEを全部、今すぐ読む（音の確認ページ・検査用）。全部読めたら true。 */
@@ -562,7 +563,7 @@ export function startBubbling({ strength = 1 } = {}) {
 // キャラ別の文字送りボイス（低い=スミさん、高い=みんと 等）
 const BLIP = {
   hajime: 440, sumi: 300, naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100, rio: 760,
-  pakki: 900, sui: 280, maezono: 380, dr_kemuri: 520, salaryman: 360, ageha: 1200,
+  pakki: 900, sensu: 280, uezono: 380, dr_charcoal: 520, salaryman: 360, ageha: 1200,
   mashiro: 880, samechan: 1250,
 };
 
@@ -818,6 +819,7 @@ export const SYNTH_SE = {};
 /** 録音のある効果音のIDと、そのファイル（試聴ページ用）。 */
 export const recordedSeFiles = () => Object.fromEntries(Object.entries(RECORDED_SE).map(([id, cue]) => [id, [...cue.files]]));
 const lastPlayedAt = new Map();
+SE.ch1Title = SE.jingle; // 章題の録音が未読込なら、従来の合成ジングルで補う。
 for (const id of Object.keys(RECORDED_SE)) {
   const fallback = SYNTH_SE[id] = SE[id];
   const { minGap } = RECORDED_SE[id];

@@ -12,18 +12,18 @@ async function setup(page, { money = 36000, unknown = false, reel = false, guest
     const core = await import('./js/core/state.js');
     const value = core.newGame();
     Object.assign(value, { chapter: 2, phase: 'daily', day: 15, slot: 2, money, stamina: 100, weatherSeed: 7 });
-    value.flags = { _rei_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true },
+    value.flags = { _kuraudo_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true },
       _ch2_city_visit_c_station: true, _lime_tut: 1, _lime_opened: true,
       _hiyori_meeting_done: true, _hiyori_message_delivered: true };
     value.stats = { technique: 31, sense: 31, guts: 31, charm: 31, insight: 31 };
     value.flavorStock = { mint: 21.5, double_apple: 6 }; value.keepsakes = ['qa_old_keepsake'];
     value.relationshipMemories = ['qa_old_memory']; value.loverSince = { minto: 10 }; value.lastDate = { minto: 13 };
     value.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true,
-      ageha: !unknown, kumicho: !unknown, rei: !unknown, volk: !unknown };
+      ageha: !unknown, kumicho: !unknown, kuraudo: !unknown, volk: !unknown };
     value.contacts = ['sumi', 'naru'];
     value.reel.installed = reel;
     if (reel) Object.assign(value.reel, { introDone: true, settingGuideDone: true });
-    for (const id of ['ageha', 'kumicho', 'rei']) value.flags[`_intro_${id}`] = !unknown;
+    for (const id of ['ageha', 'kumicho', 'kuraudo']) value.flags[`_intro_${id}`] = !unknown;
     if (guest) {
       const { trainPassengers } = await import('./js/motions/train-passengers.js');
       for (let weatherSeed = 0; weatherSeed < 10000; weatherSeed++) {

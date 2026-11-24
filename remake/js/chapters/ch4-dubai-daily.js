@@ -98,6 +98,7 @@ export const DUBAI_DAILY_IDS = Object.freeze([
 
 const read = id => chapterFourProgress(state).read[id] === true;
 const dubaiDay = (value = state) => Math.max(1, value.day - chapterFourProgress(value).startDay + 1);
+const innToolCareDue = () => dubaiDay() >= 2 && !read("ch4_inn_tool_care");
 /** 日常ループの最後の朝（DAY13＝前夜祭と前夜の日）の通算日。 */
 export const dubaiEveDay = (value = state) => chapterFourProgress(value).startDay + CH4_DAILY_EVE_DAY - 1;
 
@@ -142,7 +143,7 @@ function spotHasNew(entry) {
   if (entry.place === "naru") return nextTalk("naru", { once: true }) !== null;
   if (entry.place === "practice") return nextTalk("practice", { once: true }) !== null;
   if (entry.place === "longlong") return longlongHasNew(state, affinityLevel(LONGLONG_CHAR)) || finaleAtVisit(LONGLONG_CHAR);
-  if (entry.place === "inn") return (dubaiDay() >= 2 && !read("ch4_inn_tool_care")) || innTrialDue(state) || rehearsalDue(state)
+  if (entry.place === "inn") return innToolCareDue() || innTrialDue(state) || rehearsalDue(state)
     || companionTimeOpen(state); // 同行した恋人と過ごせる日（BLC08）
   return false;
 }
@@ -153,6 +154,10 @@ const camelSpot = () => camelDailySpot(state, { region: DUBAI, kind: "ch4_dubai"
 /** 今の時間（昼の暑さ）に合わせた行き先（ch4-dubai-local.js）。 */
 const spotNow = entry => {
   const current = dubaiSpotAt(entry, state.slot);
+  if (current?.place === "inn") {
+    const visitHint = innDayCallHint()?.short;
+    return visitHint ? { ...current, visitHint } : current;
+  }
   // 締めくくりは一台を頼む来店ではない。地図の所持金判定にも無料を伝える。
   return current?.place === "longlong" && finaleAtVisit(LONGLONG_CHAR)
     ? { ...current, cost: 0, desc: "王煙楼との締めくくり。今回は一台を頼まないので無料。" } : current;
@@ -258,8 +263,8 @@ export async function runChapterFourDubai(io) {
   if (companionLover(owner)) await readDialogues(COMPANION_TIME_FILE, COMPANION_TIME_IDS).then(found => Object.assign(DB.dialogues, found)).catch(() => {});
   // 初日の街回り（ch4-tour.js）。まだ回っていないDAY1の昼だけ読む。読めなければ街回りは出さずに地図を開く
   if (chapterFourTourDue(owner)) await readDialogues("ch4_tour", CH4_TOUR_IDS).then(found => Object.assign(DB.dialogues, found)).catch(() => {});
-  // LOAD・再開でも最初の地図から、ヌールの MENU の案内（♥5の締めくくり・告白を選べる）を合わせる。どちらも台詞が読み込まれているかを見る
-  // （daily/bonds.js の finaleDue・daily/romance.js の romanceRouteOpen。第5章は ch5-dubai.js の preloadNoorScenes）。読めなくても地図は開く
+  // LOAD・再開でも最初の地図から、ヌールの MENU の案内（♥5の締めくくり）を合わせる。
+  // （daily/bonds.js の finaleDue。第5章は ch5-dubai.js の preloadNoorScenes）。読めなくても地図は開く
   if (owner.met?.noor) await import("./ch4-desert.js").then(desert => desert.loadDesertDialogues()).catch(() => {});
   if (state !== owner) return;
   state.flags._ch2_region = DUBAI;
@@ -544,12 +549,23 @@ function sumiNightCallDue() {
 }
 
 /** 今、昼に宿で休むと読む地元からの電話（ch4-dubai-local.js の HOME_DAY_CALLS）。休む場面の巡回の回数は daily/spots.js の quietTurn の鍵。 */
-function homeDayCallDue() {
-  const call = homeDayCallId(state, { daytime: timeOfDay() !== "night", rested: Number(state.flags[INN_REST_TURN]) || 0,
+function homeDayCallDue(rested = innRestCount()) {
+  const call = homeDayCallId(state, { daytime: timeOfDay() !== "night", rested,
     present: chapterFourBeachCast(state) || [] });
   return call && DB.dialogues[call]?.lines?.length ? call : null;
 }
 const INN_REST_TURN = "_spot_turn_ch4_dubai_inn"; // quietTurn("ch4_dubai_inn", …) の回数の鍵
+const innRestCount = () => Number(state.flags[INN_REST_TURN]) || 0;
+
+/** 初回の休みが済んだと仮定して相手を確認し、休みを選べる昼だけ案内する。 */
+function innDayCallHint() {
+  const restLocked = rehearsalDue(state) ? state.flags[REHEARSAL_FLAG]?.result
+    : innToolCareDue() || (innTrialDue(state) && state.flags[INN_TRIAL_FLAG]?.result);
+  if (restLocked || !homeDayCallDue(1)) return null;
+  return innRestCount() > 0
+    ? { short: "休むと地元から電話", full: "昼に休むと、地元から電話が来る。" }
+    : { short: "一度休むと昼の電話も", full: "一度休むと、次の昼の休みに電話が来ることも。" };
+}
 
 // 通常・試作メニュー・前日リハーサルの「休む」は同じ巡回を使う。中断やLOADでは進めない。
 // スミさんの夜の電話がある夜は、休む場面の代わりに電話を読む（休む巡回は進めない）。
@@ -576,7 +592,7 @@ async function readInnRest(bg, owner) {
 /** 宿で休むか、持ってきた葉で一台試すかを選ぶ。最初の道具の手入れは従来どおり先に読む。 */
 async function visitInn(io, owner, staminaGuard) {
   if (rehearsalDue(state)) return visitRehearsal(owner, staminaGuard);
-  if (dubaiDay() >= 2 && !read("ch4_inn_tool_care"))
+  if (innToolCareDue())
     return { done: await keepDailyHud(() => io.readAndCommit("ch4_inn_tool_care")), trial: false };
   const pending = state.flags[INN_TRIAL_FLAG]?.result;
   // 同じ便で来た恋人と過ごす（BLC08・一日に一度・体力は戻らない）。試作の講評の途中（pending）は、先に講評を読む。
@@ -585,7 +601,8 @@ async function visitInn(io, owner, staminaGuard) {
   if (!pending) {
     const trialOpen = innTrialDue(state);
     const choice = await modal({ title: trialOpen ? "宿の作業台" : "宿",
-      body: trialOpen ? "持ってきた葉で一台試せる。試作は1行動・体力16。休むなら体力が戻る。" : "今日は、どう過ごそう。休むなら体力が戻る。",
+      body: (trialOpen ? "持ってきた葉で一台試せる。試作は1行動・体力16。休むなら体力が戻る。"
+        : "今日は、どう過ごそう。休むなら体力が戻る。") + (innDayCallHint()?.full || ""),
       options: [
         ...(companion ? [{ label: `${displayName(companion, state, { context: "private" })}と過ごす（同行）`, value: "companion", test: "ch4-inn-companion", primary: true }] : []),
         ...(trialOpen ? [{ label: "一台試作する", value: "trial", test: "ch4-inn-trial", primary: !companion }] : []),
@@ -617,7 +634,8 @@ async function visitInn(io, owner, staminaGuard) {
 async function visitRehearsal(owner, staminaGuard) {
   const bg = "bg_dubai_inn_night";
   if (!owner.flags[REHEARSAL_FLAG]?.result) {
-    const choice = await modal({ title: "前日リハーサル", body: "本番と同じ手順で一台作り、調整を2回まで通す。1行動・体力16。葉は減らず、能力値は増えない。",
+    const choice = await modal({ title: "前日リハーサル",
+      body: "本番と同じ手順で一台作り、調整を2回まで通す。1行動・体力16。葉は減らず、能力値は増えない。" + (innDayCallHint()?.full || ""),
       options: [
         { label: "リハーサルをする", value: "rehearsal", test: "ch4-rehearsal", primary: true },
         { label: "いつもの宿", value: "rest", test: "ch4-rehearsal-rest" },
@@ -702,11 +720,12 @@ async function readCafeChain(entry, due, owner) {
  */
 async function visitInnChain(owner, staminaGuard) {
   const trial = state.flags[INN_TRIAL_FLAG];
-  if (!chainStageAt(state, "inn") || rehearsalDue(state) || dubaiDay() >= 2 && !read("ch4_inn_tool_care")
+  if (!chainStageAt(state, "inn") || rehearsalDue(state) || innToolCareDue()
     || trial?.result && !trial.feedbackRead) return null;
   const due = await chainVisitDue("inn");
   if (!due || state !== owner) return null;
-  const pick = await modal({ title: "宿", body: "カフェで見た、ボウルだけを替える吸い方を試せる。1行動・体力10。<br>いつもの宿なら、休むこともできる。",
+  const pick = await modal({ title: "宿",
+    body: "カフェで見た、ボウルだけを替える吸い方を試せる。1行動・体力10。<br>いつもの宿なら、休むこともできる。" + (innDayCallHint()?.full || ""),
     options: [
       { label: due.stage.label, value: "chain", test: "ch4-inn-chain", primary: true },
       { label: "いつもの宿", value: "inn", test: "ch4-inn-chain-skip" },

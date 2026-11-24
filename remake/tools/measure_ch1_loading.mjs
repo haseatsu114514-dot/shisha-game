@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { responseCacheInfo } from './load-recorder.mjs';
 const require=createRequire(import.meta.url);
 const {chromium}=require('playwright');
 const root=path.resolve(new URL('../../',import.meta.url).pathname);
@@ -46,7 +47,14 @@ chromium.launch=async()=>{
    const cdp=await context.newCDPSession(page);await cdp.send('Network.enable');
    const map=new Map();
    cdp.on('Network.requestWillBeSent',e=>{if(!/^https?:/.test(e.request.url))return;const r={id:e.requestId,url:e.request.url,start:e.timestamp,wall:e.wallTime,kind:e.type};requests.push(r);map.set(e.requestId,r);});
-   cdp.on('Network.responseReceived',e=>{const r=map.get(e.requestId);if(r)Object.assign(r,{status:e.response.status,cached:e.response.fromDiskCache||e.response.fromServiceWorker,timing:e.response.timing});});
+   cdp.on('Network.responseReceived',e=>{
+    const r=map.get(e.requestId);
+    if(r){
+     const {cached,workerSource}=responseCacheInfo(e.response);
+     Object.assign(r,{status:e.response.status,workerSource,timing:e.response.timing});
+     r.cached ||= cached;
+    }
+   });
    cdp.on('Network.requestServedFromCache',e=>{const r=map.get(e.requestId);if(r)r.cached=true;});
    cdp.on('Network.loadingFinished',e=>{const r=map.get(e.requestId);if(r)Object.assign(r,{end:e.timestamp,bytes:e.encodedDataLength});});
    cdp.on('Network.loadingFailed',e=>{const r=map.get(e.requestId);if(r)Object.assign(r,{end:e.timestamp,error:e.errorText});});

@@ -119,7 +119,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "横になって目を閉じかけた時、スマホが鳴った。画面に、林檎の絵文字が二つ並んでいる。"
+          "text": "横になって目を閉じかけたとき、スマホが鳴った。画面に、林檎の絵文字が二つ並んでいる。"
         },
         {
           "speaker": "hajime",
@@ -250,7 +250,8 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "側近は、さっきから毛布を頭までかぶっておる"
+          "voice": "korochan",
+          "text": "側近は、さっきから毛布を頭までかぶっているのだ"
         },
         {
           "speaker": "samechan",
@@ -290,6 +291,7 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "三度そらした。勇者はじめよ、側近の代わりに礼を言う"
         },
         {
@@ -371,7 +373,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "帰りに、ごちそうさまって言ってました。来た時より、小さい声で"
+          "text": "帰りに、ごちそうさまって言ってました。来たときより、小さい声で"
         },
         {
           "speaker": "",
@@ -593,8 +595,8 @@
       ]
     },
     {
-      "dialogue_id": "ch3_home_call_rei_last_song",
-      "comment": "クラウドからの電話（夜だけ）。閉店前の最後の一曲を電話越しに聴かせる。最後の音が消えたあとの三秒の空白が好き（story_and_structure.md 第2章の前夜）。出発前の会話（ch3_prep_rei のアルバム）やライブの夜を読んでいなくても通じる。",
+      "dialogue_id": "ch3_home_call_kuraudo_last_song",
+      "comment": "クラウドからの電話（夜だけ）。閉店前の最後の一曲を電話越しに聴かせる。最後の音が消えたあとの三秒の空白が好き（story_and_structure.md 第2章の前夜）。出発前の会話（ch3_prep_kuraudo のアルバム）やライブの夜を読んでいなくても通じる。",
       "lines": [
         {
           "speaker": "",
@@ -607,7 +609,7 @@
           "text": "……クラウドさん？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……ああ。ごめん。何から話すか、決めてなかった"
         },
@@ -617,7 +619,7 @@
           "text": "決めてから、かけてくれてもいいですよ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "決めてたら、かけなかった"
         },
@@ -627,12 +629,12 @@
           "text": "電話の向こうで、小さく音楽が鳴っている。店のスピーカーの音だ。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "閉店の前に、最後の一曲をかける。それが終わったら、看板を消す"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "今日の最後の一曲、そっちにも聞かせたくなった"
         },
@@ -652,7 +654,7 @@
           "text": "消えたあとも、クラウドは何も言わなかった。俺も、何も言わなかった。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……この三秒が、好きなんだ"
         },
@@ -662,14 +664,14 @@
           "text": "東京の部屋でも、ちゃんと三秒でした"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……そう。なら、よかった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
-          "text": "看板、消してくる、……おやすみ"
+          "text": "看板、消してくる。……おやすみ"
         },
         {
           "speaker": "",
@@ -690,7 +692,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "はじめくーん！ 今、ちょっとだけいい？ 休憩中なの"
+          "text": "はじめくーん！　今、ちょっとだけいい？　休憩中なの"
         },
         {
           "speaker": "hajime",
@@ -715,7 +717,7 @@
         {
           "speaker": "minto",
           "face": "surprise",
-          "text": "窓が鳴るの！？ 何それ、かわいい"
+          "text": "窓が鳴るの！？　何それ、かわいい"
         },
         {
           "speaker": "hajime",
@@ -725,7 +727,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "かわいいよ〜。じゃあ枠の上のほうに、電車の線を一本入れよっと"
+          "text": "かわいいよ〜。じゃあ枠の上の方に、電車の線を一本入れよっと"
         },
         {
           "speaker": "minto",
@@ -740,7 +742,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "やった♡ ……あ、お客さん来た。じゃあね、ちゃんと休むんだよ"
+          "text": "やった♡　……あ、お客さん来た。じゃあね、ちゃんと休むんだよ"
         },
         {
           "speaker": "",
@@ -837,7 +839,7 @@
         {
           "speaker": "samechan",
           "face": "excited",
-          "text": "お主！ 東京には、大きな水族館があるそうじゃな！"
+          "text": "お主！　東京には、大きな水族館があるそうじゃな！"
         },
         {
           "speaker": "hajime",
@@ -847,7 +849,7 @@
         {
           "speaker": "samechan",
           "face": "serious",
-          "text": "行かぬのか！？ ……いや、修行中じゃったな。すまぬ"
+          "text": "行かぬのか！？　……いや、修行中じゃったな。すまぬ"
         },
         {
           "speaker": "samechan",
@@ -862,12 +864,13 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "側近は、自分も見た目ほど怖くないと言いたいのだ"
         },
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "ち、違う！ わしは見た目も中身も怖いのじゃ！"
+          "text": "ち、違う！　わしは見た目も中身も怖いのじゃ！"
         },
         {
           "speaker": "hajime",
@@ -898,17 +901,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "奥の部屋の椅子に腰を下ろすと、つむぎさんから電話が来た。"
+          "text": "奥の部屋の椅子に腰を下ろすと、つむぎから電話が来た。"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "はじめさん、いま少しだけ聞いてもいいですか"
+          "text": "はじめさん、今少しだけ聞いてもいいですか"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。どうしました？"
+          "text": "うん。どうしたの？"
         },
         {
           "speaker": "tsumugi",
@@ -923,7 +926,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "それ、いつもの椅子ですか。床に傷が二本あって"
+          "text": "それ、いつもの椅子？　床に傷が二本あって"
         },
         {
           "speaker": "tsumugi",
@@ -933,7 +936,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "窓から離れる方に、短い傷もありません？"
+          "text": "窓から離れる方に、短い傷もない？"
         },
         {
           "speaker": "",
@@ -948,7 +951,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "荷物の多い人が、椅子を横にずらすんです"
+          "text": "荷物の多い人が、椅子を横にずらすんだ"
         },
         {
           "speaker": "hajime",
@@ -963,7 +966,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "座ってるところ、描き足すんですか"
+          "text": "座ってるところ、描き足すの？"
         },
         {
           "speaker": "tsumugi",
@@ -983,7 +986,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ちょっと、電話を切った方がいいですか"
+          "text": "ちょっと、電話を切った方がいい？"
         },
         {
           "speaker": "tsumugi",
@@ -1009,7 +1012,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "あげはさんから電話が来た。出た途端、布を引く音がした。"
+          "text": "あげはから電話が来た。出た途端、布を引く音がした。"
         },
         {
           "speaker": "ageha",
@@ -1039,7 +1042,7 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "そ。友だちとだけやる顔とか、あるじゃん"
+          "text": "そ。友達とだけやる顔とか、あるじゃん"
         },
         {
           "speaker": "ageha",
@@ -1094,7 +1097,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "受話口の奥で短い電子音がして、続けてあげはさんが笑った。"
+          "text": "受話口の奥で短い電子音がして、続けてあげはが笑った。"
         },
         {
           "speaker": "ageha",
@@ -1130,7 +1133,7 @@
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "会社の会議室よ。朝、入口に置いた傘が残ってて"
+          "text": "会社の会議室。朝、入口に置いた傘が残ってて"
         },
         {
           "speaker": "hiyori",
@@ -1170,12 +1173,12 @@
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "……こうして持ち主の元に帰るのね。傘には居場所があっていいわ"
+          "text": "……こうして持ち主の元に帰るんだね。傘には居場所があっていいね"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ひよりさん、いま会議室ですか？"
+          "text": "ひよりさん、今会議室ですか？"
         },
         {
           "speaker": "hiyori",
@@ -1200,7 +1203,7 @@
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "濡れた傘を持って、入口に立たせておきたくないでしょう"
+          "text": "濡れた傘を持って、入口に立たせておきたくないでしょ"
         },
         {
           "speaker": "hajime",
@@ -1226,7 +1229,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "奥の部屋で水を飲んでいると、アダムさんから電話が来た。"
+          "text": "奥の部屋で水を飲んでいると、アダムから電話が来た。"
         },
         {
           "speaker": "adam",
@@ -1311,7 +1314,7 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "うむ。俺の字を読めるかは、別の試練だ"
+          "text": "ああ。俺の字を読めるかは、別の試練だ"
         },
         {
           "speaker": "hajime",
@@ -1337,7 +1340,7 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "ひとつ聞いていい？　新しい葉を開けるとき、袋のどこを見る？"
+          "text": "一つ聞いていい？　新しい葉を開けるとき、袋のどこを見る？"
         },
         {
           "speaker": "hajime",
@@ -1357,7 +1360,7 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "そうよね。売り場では両手で持つから、読めると思ってたの"
+          "text": "そうだよね。売り場では両手で持つから、読めると思ってた"
         },
         {
           "speaker": "rio",
@@ -1397,7 +1400,7 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "切られる前に、一度は目が行くでしょう"
+          "text": "切られる前に、一度は目が行くでしょ"
         },
         {
           "speaker": "hajime",
@@ -1407,7 +1410,7 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "雑なら、雑なまま開けても読めるところに書くわ"
+          "text": "雑なら、雑なまま開けても読めるところに書くよ"
         },
         {
           "speaker": "",
@@ -1417,7 +1420,7 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "いま貼り直した。明日、私も手に物を持って確かめる"
+          "text": "今貼り直した。明日、私も手に物を持って確かめる"
         },
         {
           "speaker": "hajime",
@@ -1473,7 +1476,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "あんたも探すか。俺はよく、かけたまんま探す"
+          "text": "あんちゃんも探すか。俺はよく、かけたまんま探す"
         },
         {
           "speaker": "hajime",
@@ -1528,7 +1531,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "戻しといた。眼鏡かけたら、まずメニューの値段を見てる"
+          "text": "返しときやした。眼鏡かけたら、まずメニューの値段を見てる"
         },
         {
           "speaker": "hajime",
@@ -1543,21 +1546,21 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スマホを手探りで拾えるように、枕のすぐ脇に戻した。"
+          "text": "通話が切れた。スマホを手探りで拾えるように、枕のすぐ脇に戻した。"
         }
       ]
     },
     {
-      "dialogue_id": "ch3_home_call_rei_wrong_case",
+      "dialogue_id": "ch3_home_call_kuraudo_wrong_case",
       "comment": "クラウドが店で別々になったCDとケースを戻す。閉店後、客が気にした曲の名前を控える。",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "奥の部屋の電気を消す前に、クラウドさんから電話が来た。"
+          "text": "奥の部屋の電気を消す前に、クラウドから電話が来た。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "起きてた。よかった。あの、今の音、聞こえた？"
         },
@@ -1572,12 +1575,12 @@
           "text": "ええ。何かを置きました？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "CDのケース。中にあるのは、違うやつだった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "もう三枚。店でかけてるうちに、入れ違えたみたいで"
         },
@@ -1587,12 +1590,12 @@
           "text": "棚に並べると、どれが違うか分からないですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "今日、客に今の曲は何かって聞かれて、ジャケットを見せたんだ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "向こうが知ってて、指でジャケットを裏返された"
         },
@@ -1602,7 +1605,7 @@
           "text": "そこで違うって分かったんですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "うん。もう一回ちゃんと教えてくれって。好きだったんだと思う"
         },
@@ -1612,12 +1615,12 @@
           "text": "薄いプラスチックのふたを開ける音がした。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "この一枚、前に自分で選んだのに、最近は最後まで聴いてなかった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "客が帰ってから聴き直したら、途中で拍が一つ抜けるとこがあって"
         },
@@ -1627,7 +1630,7 @@
           "text": "その人も、そこで気になったのかもしれませんね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "今度、聞いてみる。次は曲の名前、紙に書いて渡そうかな"
         },
@@ -1637,7 +1640,7 @@
           "text": "ジャケットの絵も、見たいんじゃないですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……うん。今度は中身まで見せる"
         },
@@ -1647,14 +1650,14 @@
           "text": "電話口で、ケースのふたがかちりと閉じた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "一枚戻った。キミ、そろそろ寝ていいよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "電話が切れた後も、部屋で鳴った小さな音の続きを待っていた。"
+          "text": "電話が切れた後も、受話口の向こうで鳴った小さな音の続きを待っていた。"
         }
       ]
     }

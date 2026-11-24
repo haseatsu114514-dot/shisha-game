@@ -13,7 +13,10 @@ const context = vm.createContext({ console, localStorage: {
   },
 } });
 const mod = new vm.SourceTextModule(fs.readFileSync(new URL("gallery-progress.js", root), "utf8"), { context });
-await mod.link(() => { throw Error("unexpected import"); });
+await mod.link(spec => {
+  assert.equal(spec, "./legacy-cast-save.js");
+  return new vm.SourceTextModule(fs.readFileSync(new URL(spec, root), "utf8"), { context });
+});
 await mod.evaluate();
 const g = mod.namespace;
 const copy = v => JSON.parse(JSON.stringify(v));
@@ -282,7 +285,7 @@ console.log("PASS: explicit route records, strict stage identity, normalization,
   const dummy = (values, name) => new vm.SyntheticModule(Object.keys(values), function () {
     for (const [key, value] of Object.entries(values)) this.setExport(key, value);
   }, { context: ctx, identifier: name });
-  const load = async url => {
+  const load = url => {
     if (files.has(url.href)) return files.get(url.href);
     const path = url.pathname;
     const m = path.endsWith("/util.js") ? dummy({ el: () => {} }, path)
@@ -294,10 +297,10 @@ console.log("PASS: explicit route records, strict stage identity, normalization,
       : path.endsWith("/carry.js") ? dummy({ buildCarryPackage: () => ({}) }, path)
       : new vm.SourceTextModule(fs.readFileSync(url, "utf8"), { context: ctx, identifier: url.href });
     files.set(url.href, m);
-    await m.link(spec => load(new URL(spec, url)));
     return m;
   };
-  const module = await load(new URL("../js/scenes/save-transfer.js", import.meta.url));
+  const module = load(new URL("../js/scenes/save-transfer.js", import.meta.url));
+  await module.link((spec, referencing) => load(new URL(spec, referencing.identifier)));
   await module.evaluate();
   const x = module.namespace;
   const cgKey = "suien_remake_gallery", gpKey = "suien_remake_gallery_progress", cmKey = "suien_remake_cycle";

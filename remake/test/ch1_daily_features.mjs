@@ -21,7 +21,7 @@ const ports = {
   dialogueSequence: fn => fn(),
   showScreen: (_id, node) => { queueMicrotask(() => find(node, 'after-none').onclick()); return node; },
   setBg: async (...args) => trace.push(['bg', ...args]), retire: noop,
-  SE: { select: noop }, playBgm: noop, modal: async () => null, toast: (...args) => trace.push(['toast', ...args]),
+  SE: { select: noop }, playBgm: noop, modal: async () => 0, toast: (...args) => trace.push(['toast', ...args]),
   addStamina: n => { state.stamina += n; trace.push(['stamina', n]); },
   addMoney: n => { state.money += n; trace.push(['money', n]); },
   applyStats: stats => trace.push(['stats', stats]), step: () => 1,
@@ -98,14 +98,14 @@ for (const chapter of chapters) for (const day of [1, 2, 13, 14])
 reset(); await rig.giveEarlyHomeRig(); // Missing gift dialogue still grants/saves, as before.
 assert.deepEqual(plays(), []); assert(state.owned.includes(rig.SUMI_RIG)); assert.equal(saves.length, 1);
 // Actual complete shifts: count is incremented before eligibility; first eligible cameo wins.
-const cameoFlags = ['_ev_rei_cameo', '_ev_reviewer_cameo', '_ev_maezono_cameo'];
-const cameoScenes = ['ch1_rei_cameo', 'ch1_reviewer_cameo', 'ch1_maezono_cameo'];
+const cameoFlags = ['_ev_kuraudo_cameo', '_ev_reviewer_cameo', '_ev_uezono_cameo'];
+const cameoScenes = ['ch1_kuraudo_cameo', 'ch1_reviewer_cameo', 'ch1_uezono_cameo'];
 for (const chapter of chapters) for (const day of [1, 2, 3, 4, 5, 6, 13, 14])
   for (const count of [1, 2, 3, 4, 5]) for (const mask of [0, 1, 3, 7]) for (const agehaScript of [false, true]) {
     const flags = Object.fromEntries(cameoFlags.filter((_, i) => mask & (1 << i)).map(k => [k, true]));
     reset({ chapter, day, baitoCount: count - 1, flags });
     if (agehaScript) DB.dialogues.ch1_ageha_encounter = {};
-    const expected = chapter !== 1 ? -1 : count === 2 && !(mask & 1) ? 0
+    const expected = chapter !== 1 ? -1 : count >= 2 && !(mask & 1) ? 0
       : count >= 3 && day >= 4 && !(mask & 2) ? 1 : count >= 4 && day >= 6 && !(mask & 4) ? 2 : -1;
     await tonari.doBaito();
     const ids = plays();

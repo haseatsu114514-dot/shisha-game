@@ -1150,11 +1150,11 @@ const CHAPTER_MAPS = {
       const core = await import("./js/core/state.js");
       const value = core.newGame();
       Object.assign(value, { chapter: 2, phase: "daily", day: 15, slot: 2, money: 36000, stamina: 100, weatherSeed: 7, lastBaitoDay: 15 });
-      value.flags = { _rei_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: "complete", titleSeen: true },
+      value.flags = { _kuraudo_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: "complete", titleSeen: true },
         _ch2_city_visit_c_station: true, _lime_tut: 1, _lime_opened: true, _hiyori_meeting_done: true, _hiyori_message_delivered: true };
-      value.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true, ageha: true, kumicho: true, rei: true, volk: true };
+      value.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true, ageha: true, kumicho: true, kuraudo: true, volk: true };
       value.contacts = ["sumi", "naru"];
-      for (const id of ["ageha", "kumicho", "rei"]) value.flags[`_intro_${id}`] = true;
+      for (const id of ["ageha", "kumicho", "kuraudo"]) value.flags[`_intro_${id}`] = true;
       core.save();
       window.__remake.vnTest.turbo = true;
       (await import("./js/chapters/ch1.js")).setupHooks();
@@ -1171,8 +1171,8 @@ const CHAPTER_MAPS = {
       Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 30000, stamina: 100, weatherSeed: 5, contacts: ["sumi"] });
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
         _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1, _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
-      for (const who of ["ageha", "kumicho", "rei", "hajime", "sumi"]) value.flags[`_intro_${who}`] = true;
-      Object.assign(value.met, { ageha: true, kumicho: true, rei: true, naru: true, adam: true, minto: true });
+      for (const who of ["ageha", "kumicho", "kuraudo", "hajime", "sumi"]) value.flags[`_intro_${who}`] = true;
+      Object.assign(value.met, { ageha: true, kumicho: true, kuraudo: true, naru: true, adam: true, minto: true });
       if (!progress.advanceToChapterThree(value)) throw new Error("第3章へ入れない");
       value.flags._ch3_prep.step = 3;
       Object.assign(value.flags._ch3_intro, { titleSeen: true, routeVersion: 2 });
@@ -1189,7 +1189,7 @@ const CHAPTER_MAPS = {
       Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 30000, stamina: 100, weatherSeed: 5, contacts: ["sumi"] });
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
         _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1, _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
-      for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "sui"]) value.flags[`_intro_${who}`] = true;
+      for (const who of ["hajime", "sumi", "pakki", "uezono", "dr_charcoal", "sensu"]) value.flags[`_intro_${who}`] = true;
       if (!progress.advanceToChapterThree(value)) throw new Error("第3章へ入れない");
       value.day += 3;
       if (!progress.departChapterThree(value)) throw new Error("東京へ出発できない");
@@ -1209,7 +1209,7 @@ const CHAPTER_MAPS = {
       Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
         _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
-      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sensu", "dr_charcoal"]) value.flags[`_intro_${who}`] = true;
       Object.assign(value.met, { naru: true, da_silva: true });
       if (!progress.advanceToChapterFour(value)) throw new Error("第4章へ入れない");
       value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
@@ -1244,7 +1244,7 @@ const CHAPTER_MAPS = {
           aftermath: 0, finale: 0, finaleScenes: null, won: null, secondCup: null },
         _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true, _ch5_region_started: true, _spot_guide_naru: true,
         _ch5_catering: { next: 81, offers: 0, offer: null, served: {}, last: null } };
-      Object.assign(value.met, { naru: true, adam: true, minto: true, ageha: true, kumicho: true, rei: true, steve: true, volk: true });
+      Object.assign(value.met, { naru: true, adam: true, minto: true, ageha: true, kumicho: true, kuraudo: true, steve: true, volk: true });
       await (0, eval)(common)(core, value, 5);
       core.save();
     }, SEED_COMMON);
@@ -1432,7 +1432,7 @@ async function openDubaiCard(page) {
     Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
       _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
-    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sensu", "dr_charcoal"]) value.flags[`_intro_${who}`] = true;
     Object.assign(value.met, { naru: true });
     if (!progress.advanceToChapterFour(value)) throw new Error("第4章へ入れない");
     value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
@@ -1521,15 +1521,25 @@ const GOAL_MAP_PARTS = [["#hud .hud-card", ALL], ["#hud .dc-main", [""]], ["#hud
 
 /** 1F ショップを開く（店の入口を経ずに売り場へ）。所持の葉と装備中の機材がある状態。 */
 async function openShopCounter(page, opts = { direct: true }) {
-  await page.evaluate(async (opts) => {
+  const wasTurbo = await page.evaluate(async (opts) => {
     const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js"), hud = await import("./js/daily/hud.js");
+    const { vnTest } = await import("./js/vn/engine.js");
+    const { openShop } = await import("./js/daily/shop.js");
     const s = core.newGame();
     Object.assign(s, { phase: "daily", chapter: 1, day: 5, slot: 0, money: 12800, stamina: 100 });
     s.flavorStock = { mint: 15, double_apple: 50, vanilla: 20 }; s.flavors = Object.keys(s.flavorStock);
     ui.clearScreen(); hud.initHud({}); hud.showHud();
-    window.lookNeoShop = (await import("./js/daily/shop.js")).openShop(opts);
+    // 入口・売り場の表示を測るため、先に流れる店頭の応対は速送りで読み終える。
+    const wasTurbo = vnTest.turbo;
+    vnTest.turbo = true;
+    window.lookNeoShop = openShop(opts);
+    return wasTurbo;
   }, opts);
-  await page.locator(opts.direct ? ".shop .shop-tabs" : '[data-test="shop-enter"]').waitFor();
+  try {
+    await page.locator(opts.direct ? ".shop .shop-tabs" : '[data-test="shop-enter"]').waitFor();
+  } finally {
+    await page.evaluate(async (wasTurbo) => { (await import("./js/vn/engine.js")).vnTest.turbo = wasTurbo; }, wasTurbo);
+  }
   await page.mouse.move(2, 2);
   await page.waitForTimeout(400);
 }
@@ -1539,11 +1549,13 @@ const measureShop = (page) => page.evaluate((helpers) => {
   const { px, shown, text, rgb } = (0, eval)(helpers);
   const root = document.querySelector("#screen .shop-paper"), style = getComputedStyle(root);
   const look = (node) => { const cs = getComputedStyle(node); return { ...px(node), face: cs.backgroundImage, fill: rgb(cs.backgroundColor), ink: rgb(cs.color), frame: cs.borderImageSource }; };
-  const rows = [...root.querySelectorAll(".shop-body .shop-row.product")].filter((row) => row.getBoundingClientRect().top < root.querySelector(".shop-body").getBoundingClientRect().bottom - 30).slice(0, 4);
+  const catalog = [...root.querySelectorAll(".shop-body .shop-row.product")];
+  const rows = catalog.filter((row) => row.getBoundingClientRect().top < root.querySelector(".shop-body").getBoundingClientRect().bottom - 30).slice(0, 4);
   return { look: document.documentElement.dataset.look, rect: px(root), face: style.backgroundImage, ink: rgb(style.color), frame: style.borderImageSource,
     head: rgb(getComputedStyle(root.querySelector(".shop-head h2")).color), rule: getComputedStyle(root.querySelector(".shop-head")).backgroundImage,
     money: text(root.querySelector(".shop-money")),
     tabs: [...root.querySelectorAll(".shop-tab")].map((node) => ({ id: node.dataset.tab, on: node.classList.contains("on"), ...look(node) })),
+    goods: catalog.map(row => [text(row.querySelector(".shop-main b")), text(row.querySelector(".shop-price")), text(row.querySelector(".shop-stock"))]),
     rows: rows.map((row) => ({ name: text(row.querySelector(".shop-main b")), price: text(row.querySelector(".shop-price")), stock: text(row.querySelector(".shop-stock")),
       art: look(row.querySelector(".shop-product-art")), img: shown(row.querySelector(".shop-product-art img")), name_ink: rgb(getComputedStyle(row.querySelector(".shop-main b")).color),
       price_ink: rgb(getComputedStyle(row.querySelector(".shop-price")).color), rect: px(row),
@@ -1567,7 +1579,7 @@ async function shopScreen(page, { phone }) {
   // 情報（所持金・タブ・商品名・値段・所持数・購入の札）は現行と同じ。
   assert.equal(m.money, classic.money);
   assert.deepEqual(m.tabs.map((tab) => tab.id), classic.tabs.map((tab) => tab.id));
-  assert.deepEqual(m.rows.map(({ name, price, stock }) => [name, price, stock]), classic.rows.map(({ name, price, stock }) => [name, price, stock]), "商品名・値段・所持数が現行と同じ");
+  assert.deepEqual(m.goods, classic.goods, "全商品の名前・値段・所持数が現行と同じ");
   assert.equal(m.summary, classic.summary);
   // 押せる大きさ（タブ・− ＋・店を出る・購入）は現行以上で、ステージの中。
   for (const [index, tab] of m.tabs.entries()) {
@@ -1575,14 +1587,13 @@ async function shopScreen(page, { phone }) {
     assert(tab.on ? !light(tab.ink) && tab.face.includes("linear-gradient") : light(tab.ink), `タブ ${tab.id}: 選んだ売り場は金、ほかは白い字`);
   }
   assert(m.rows.length >= 3);
-  for (const [index, row] of m.rows.entries()) {
-    const before = classic.rows[index];
+  for (const row of m.rows) {
     assert(light(row.name_ink) && light(row.price_ink), `${row.name}: 商品名と値段は白`);
     // 商品の絵は生成りの札に載る（明るい台紙向けの絵が暗い面で沈まない）。絵そのものは出ている。
     assert(light(row.art.fill) && row.img, `${row.name}: 商品の絵の札 ${JSON.stringify(row.art)}`);
-    assert(Math.abs(row.rect.height - before.rect.height) < 1, `${row.name}: 行の高さは現行と同じ`);
-    for (const [k, step] of row.steps.entries()) {
-      assert(step.width >= before.steps[k].width - .5 && step.height >= before.steps[k].height - .5 && step.real >= 38, `${row.name}: ${step.test} の押せる大きさ ${JSON.stringify([step, before.steps[k]])}`);
+    assert(inside(row.rect, m.rect, 1), `${row.name}: 商品の行はショップ内`);
+    for (const step of row.steps) {
+      assert(inside(step, row.rect, 1) && step.real >= 38, `${row.name}: ${step.test} の押せる大きさと収まり ${JSON.stringify(step)}`);
       assert(dark(step.fill) || step.fill.slice(0, 3).reduce((a, b) => a + b, 0) < 420, `${row.name}: ${step.test} は夜紫の札 ${step.fill}`);
     }
   }

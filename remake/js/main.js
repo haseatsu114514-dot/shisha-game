@@ -8,10 +8,10 @@ import { initCraftStage } from "./craft/stage-layout.js";
 import { initIchidaiSwitch } from "./daily/ichidai-table.js";
 import { loadAll, loadDeferredDialogues, DB, bgUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
-import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
-import { loadConfig, saveConfig, state, load, peekSave, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
+import { initLayers, imageReady, FRAME_ART } from "./core/ui.js";
+import { loadConfig, saveConfig, state, load, peekSave, consumeResumeOnBoot, requestResumeOnBoot, tickPlayTime } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
-import { applyUiTheme } from "./core/ui-theme.js";
+import { applyUiTheme, uiThemeFrame } from "./core/ui-theme.js";
 import { initLook, migrateLook, normalizeLook } from "./core/look.js";
 import { installLooks } from "./looks/index.js";
 import { installRotateGuard } from "./core/rotate-guard.js";
@@ -39,6 +39,13 @@ try { const q = new URLSearchParams(location.search).get("debug"); if (q !== nul
 
 /** 廃止したDS風表示の選択（"normal"/"ds"）を保存していたキー。起動時に消す。 */
 export const LEGACY_TITLE_LAYOUT_KEY = "suien_title_layout";
+
+export function resumeAfterUpdate({ request = false } = {}) {
+  const canResume = state && document.body.dataset.screen !== "title" &&
+    new URLSearchParams(location.search).get("trial") !== "trpg" && !!peekSave()?.day;
+  if (canResume && request) requestResumeOnBoot();
+  return !!canResume;
+}
 
 export async function boot() {
   initStageFit($("#stage")); // 画面の当て方は共通部品（core/stage-fit.js・#3076）
@@ -69,6 +76,13 @@ export async function boot() {
   window.addEventListener("pointerdown", unlockAudio);
   window.addEventListener("keydown", unlockAudio);
   document.addEventListener("visibilitychange", tickPlayTime); // タブが隠れている間はプレイ時間を数えない（#2902）
+  // 第3〜5章は離脱時に操作を取り消す。履歴から復元されたら、最後に保存した場面から再開する。
+  window.addEventListener("pageshow", event => {
+    if (event.persisted && state?.chapter >= 3 && state.chapter <= 5 && document.body.dataset.screen !== "title") {
+      requestResumeOnBoot();
+      location.reload();
+    }
+  });
 
   // 起動の待ち時間も、ゲーム内と同じ共通ロード画面（背景イラスト案B・ロゴ・発光ゲージ）で見せる。
   // 静的な #boot はモジュール読込前と起動失敗時の受け皿として残し、ゲートが閉じた後に役目を終える。
@@ -113,20 +127,22 @@ export async function boot() {
   }, { label: "ゲームを準備しています…", ...bootComic });
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
   const resumeRequested = consumeResumeOnBoot();
+  let trial;
   if (resumeRequested && load()) resumeGame();
   // TRPGの試遊（TRF21）: ?trial=trpg で、タイトルの代わりに本編と同じボドゲカフェを使い捨ての状態で開く。
   // セーブは読み書きしない。「タイトルへ戻る」でふだんのタイトルへ。
   else if (new URLSearchParams(location.search).get("trial") === "trpg") {
     try {
-      const trial = await (await import("./daily/trpg-trial.js")).openTrpgTrial();
-      trial.finished.finally(() => showTitle(titleArt));
+      trial = await (await import("./daily/trpg-trial.js")).openTrpgTrial();
     } catch { showTitle(titleArt); } // 試遊を用意できなかった時は、ふだんのタイトルへ
   }
   else showTitle(titleArt);
   // タイトルを描けたことを確認してから、読み込み画面を閉じる。
   $("#boot").classList.add("done");
   setTimeout(() => $("#boot")?.remove(), 700);
-  warmUp();
+  if (trial) {
+    trial.finished.finally(() => { showTitle(titleArt); warmUp(); });
+  } else warmUp();
 }
 
 /** タイトルを見ている間に、日常でよく出る絵を裏で読んでおく（初めて出る場面で絵が遅れないように） */
@@ -139,7 +155,8 @@ async function warmUp() {
   const jobs = [
     () => loadVnFonts(),
     () => loadDeferredDialogues(),
-    () => warmUiArt({ deferStores: true }),
+    // 店ロゴ・顔アイコン・地図の部品は、地図を開くときに uiArtReady と storeLogosReady が読む。
+    () => imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep: true }),
     // 制作の枠・札・ゲージの絵（CSSの背景）。初めての作業台で枠が遅れて出ないように（CRN）
     () => import("./craft/skin.js").then(m => m.warmCraftStyleImages()),
     // 次のロード画面の漫画を先に決めて2コマを取得しておく（core/loading.js の warmNextLoadingComic は

@@ -14,7 +14,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "20の目は必ず成功……！ 卓の空気が変わったな"
+          "text": "ほんとだ、20だ！"
         },
         {
           "speaker": "hiyori",
@@ -37,7 +37,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "20の目は必ず成功……！ 卓の空気が変わったな"
+          "text": "ほんとだ、20だ！"
         },
         {
           "speaker": "hiyori",
@@ -77,7 +77,7 @@
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……ゾロ目。ちょっとだけ、卓がざわついたね"
+          "text": "……あ、二つとも同じ目"
         },
         {
           "speaker": "hajime",
@@ -163,7 +163,7 @@
           "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "ゾロ目じゃな。卓が少し沸いたぞ"
+          "text": "おっ、きれいに揃ったのう。ゾロ目じゃ"
         },
         {
           "speaker": "hajime",
@@ -203,7 +203,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "この空気なら、次のサイコロも味方してくれる"
+          "text": "今、俺まで前のめりになってた"
         }
       ]
     },
@@ -237,7 +237,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "この空気なら、次のサイコロも味方してくれる"
+          "text": "今、俺まで前のめりになってた"
         }
       ]
     },
@@ -375,7 +375,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "excited",
-          "text": "この空気なら、次のサイコロも味方してくれる"
+          "text": "今、俺まで前のめりになってた"
         }
       ]
     },
@@ -518,10 +518,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_critical",
+      "dialogue_id": "trpg_talk_kuraudo_critical",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……20が出た。クリティカルだ"
@@ -533,7 +533,7 @@
           "text": "クラウドさん、今ちょっと声が上ずりました？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……ご褒美。連携札を1枚、返す"
@@ -541,10 +541,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_critical_full",
+      "dialogue_id": "trpg_talk_kuraudo_critical_full",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……20が出た。クリティカルだ"
@@ -556,7 +556,7 @@
           "text": "クラウドさん、今ちょっと声が上ずりました？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……札は満タンか。なら、拍手だけ贈る"
@@ -564,10 +564,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_fumble",
+      "dialogue_id": "trpg_talk_kuraudo_fumble",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "serious",
           "text": "……1が出た。ファンブルだ"
@@ -579,18 +579,18 @@
           "text": "うわ、ここで……"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……大丈夫。崩れたあとの一曲が、いちばん響く"
+          "text": "……ここからが面白い。描写、続けていいか？"
         }
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_double",
+      "dialogue_id": "trpg_talk_kuraudo_double",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……ゾロ目。いい音で揃った"
@@ -604,10 +604,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_heat_up",
+      "dialogue_id": "trpg_talk_kuraudo_heat_up",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……卓が温まってきた。語るの、楽しくなってきた"
@@ -621,13 +621,13 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_heat_max",
+      "dialogue_id": "trpg_talk_kuraudo_heat_max",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "serious",
-          "text": "……最高潮だ。このまま、最後の曲まで行く"
+          "text": "……最高潮か。俺まで声、でかくなってたな"
         },
         {
           "speaker": "hajime",
@@ -906,10 +906,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_near1",
+      "dialogue_id": "trpg_talk_kuraudo_near1",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……あと1。卓では『妖怪いちたりない』って呼ぶ"
@@ -923,10 +923,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_near2",
+      "dialogue_id": "trpg_talk_kuraudo_near2",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……あと2。半拍、遅れただけだ"
@@ -1003,7 +1003,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ヒントは助かる。あとは、俺たちの読みしだいだ"
+          "text": "じゃあ、残った札をもう一回見てみるか"
         }
       ]
     },
@@ -1048,7 +1048,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ヒントは助かる。あとは、俺たちの読みしだいだ"
+          "text": "じゃあ、残った札をもう一回見てみるか"
         }
       ]
     },
@@ -1073,7 +1073,7 @@
           "speaker": "adam",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "見事だ。褒美として、質問の幕をもう一つ上げよう"
+          "text": "見事だ。幕を閉じる前に、もう一つ質問していいぞ"
         },
         {
           "speaker": "hajime",
@@ -1099,7 +1099,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "助かります。あとは、俺たちの読みしだいですね"
+          "text": "助かります。札、もう一回見てもいいですか？"
         }
       ]
     },
@@ -1153,7 +1153,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ヒントは助かる。あとは、俺たちの読みしだいだ"
+          "text": "じゃあ、残った札をもう一回見てみるか"
         }
       ]
     },
@@ -1172,10 +1172,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_reward_question",
+      "dialogue_id": "trpg_talk_kuraudo_reward_question",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……いい出目だ。質問は、もう一つ聞いていい"
@@ -1189,10 +1189,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_reward_hint",
+      "dialogue_id": "trpg_talk_kuraudo_reward_hint",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……ご褒美だ。次の選択で、合わないものに印をつける"
@@ -1201,15 +1201,15 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "助かります。あとは、俺たちの読みしだいですね"
+          "text": "助かります。札、もう一回見てもいいですか？"
         }
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_reward_finale",
+      "dialogue_id": "trpg_talk_kuraudo_reward_finale",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……決まった。会心のクライマックスだ。結末に印をつける"
@@ -1246,7 +1246,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "助かります。あとは、俺たちの読みしだいですね"
+          "text": "助かります。札、もう一回見てもいいですか？"
         }
       ]
     },
@@ -1267,7 +1267,7 @@
         {
           "speaker": "sai",
           "face": "normal",
-          "text": "20です。見事な成功ですね"
+          "text": "20です。連携札を一枚戻しておきますね"
         }
       ]
     },
@@ -1277,7 +1277,7 @@
         {
           "speaker": "sai",
           "face": "normal",
-          "text": "20です。切り札も、よいところで効きましたね"
+          "text": "20です。連携札も二枚そろっていますね"
         }
       ]
     },
@@ -1287,7 +1287,7 @@
         {
           "speaker": "sai",
           "face": "normal",
-          "text": "思わぬ出来事ですね。では、この先を見てみましょう"
+          "text": "1が出ましたね。では、何が起きたかお話しします"
         }
       ]
     },
@@ -1317,7 +1317,7 @@
         {
           "speaker": "sai",
           "face": "normal",
-          "text": "よい卓になりましたね。続きをどうぞ"
+          "text": "お茶、すっかり冷めてましたね。もう一杯いかがですか"
         }
       ]
     },
@@ -1357,7 +1357,7 @@
         {
           "speaker": "sai",
           "face": "normal",
-          "text": "成功です。次の選択の手がかりをお渡しします"
+          "text": "成功です。次の札で、合わないものに印をつけておきます"
         }
       ]
     },
@@ -1367,7 +1367,7 @@
         {
           "speaker": "sai",
           "face": "normal",
-          "text": "成功です。今夜の結末に、よい余韻が残りますね"
+          "text": "成功です。結末に「会心のクライマックス」の印をつけておきます"
         }
       ]
     }

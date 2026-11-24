@@ -9,6 +9,8 @@ import { newState, setState, saveToSlot, loadFromSlot } from '../js/core/state.j
 import * as outings from '../js/chapters/ch3-outing-progress.js';
 import * as local from '../js/chapters/ch4-dubai-local.js';
 import { chapterFiveTalkIds } from '../js/chapters/ch5-talks.js';
+import { INN_TRIAL_FLAG } from '../js/chapters/ch4-inn-trial.js';
+import { REHEARSAL_FLAG } from '../js/chapters/ch4-rehearsal.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../js');
 const DB = { dialogues: {} }, loaded = new Set(), scenes = [];
 const storage = new Map();
@@ -16,6 +18,7 @@ globalThis.localStorage = { getItem: k => storage.get(k) ?? null, setItem: (k,v)
 let current, cancelled = false, swap = false, choices = [], trial = false, rehearsal = false, rewards = 0;
 let sumiCallRead = false, companion = null; // 第4章の時差の電話（ch4_story_sumi_call）の既読と、同じ便で来た恋人
 let present = []; // 今ドバイにいる人（ch4-beach.js の chapterFourBeachCast）。地元からの昼の電話（#3097 第2弾）の相手から外す
+let innDay = 1, toolCareRead = false, modalBody = '';
 const context = vm.createContext({ console });
 const noop = () => {};
 const readDialogues = async (file, ids) => {
@@ -30,15 +33,16 @@ const values = {
   ...outings, ...local, DB, TOKYO_VISIT_COST: 4000, MASHIRO_TIME_SCENES: [], MASHIRO_TIME_FILE: 'mashiro_time',
   CH5_CAMEL_MEET: { scene: 'ch5_dubai_camel_meet' }, CAMEL_SCENES: {}, DESERT_SPOT_IDS: {},
   DUBAI_LETTER_AGAIN: [], SHEIKH_BOND_IDS: [], TAIYO_BOND_IDS: [], CH4_PLACE_BG: {},
-  INN_TRIAL_IDS: [], REHEARSAL_IDS: [], CAFE_TASTE_IDS: [], FESTA_BOND_IDS: [],
+  INN_TRIAL_FLAG, REHEARSAL_FLAG, INN_TRIAL_IDS: [], REHEARSAL_IDS: [], CAFE_TASTE_IDS: [], FESTA_BOND_IDS: [],
   save: noop, timeOfDay: () => current.slot ? 'night' : 'day', markMet: noop,
   sceneBg: ref => ({ url: ref }), bgUrl: ref => ref, setBg: async () => {},
   play: async scene => { scenes.push(typeof scene === 'string' ? scene : scene.dialogue_id);
     if (swap) replace(newState()); return { cancelled }; },
-  modal: async () => choices.shift(), layers: { hud: { firstElementChild: null } },
+  modal: async ({ body }) => { modalBody = body; return choices.shift(); }, layers: { hud: { firstElementChild: null } },
   readDialogues, loadMukaiShift: async () => {}, creekSpotScenes: x => x,
   addStamina: n => { current.stamina += n; }, earnStat: () => rewards++, gainAffinity: () => rewards++,
-  spendableMoney: () => current.money, chapterFourProgress: () => ({ startDay: current.day, read: sumiCallRead ? { ch4_story_sumi_call: true } : {} }),
+  spendableMoney: () => current.money, chapterFourProgress: () => ({ startDay: current.day - innDay + 1,
+    read: { ch4_story_sumi_call: sumiCallRead, ch4_inn_tool_care: toolCareRead } }),
   CH4_SUMI_CALL: 'ch4_story_sumi_call', overseasCompanion: () => ({ companion }), chapterFourBeachCast: () => present,
   innTrialDue: () => trial, rehearsalDue: () => rehearsal, chainVisitDue: () => null,
 };
@@ -155,6 +159,7 @@ for (const [,base,,rest] of cases) for (const suffix of revisits(rest)) {
 // 地元からの昼の電話（#3097 第2弾・VOL20）: ドバイの昼に宿で休むと、日本（夜）の地元の人から一本ずつ。
 // 初回の休みの後から。LIMEの連絡先にいて、今ドバイにいない人だけ。夜はスミさんの電話・休む巡回のまま。電話は休む巡回を進めない。
 {
+  const innHint = () => inn.namespace.chapterFourDubaiDefinition({}).spotById('ch4_dubai_inn').visitHint || '';
   const homeCalls = [...local.HOME_DAY_CALL_IDS];
   Object.assign(DB.dialogues, await readDialogues('ch4_home_calls', homeCalls));
   assert.equal(homeCalls.length, 20);
@@ -175,7 +180,11 @@ for (const [,base,,rest] of cases) for (const suffix of revisits(rest)) {
   };
   replace(newState()); Object.assign(current, { chapter: 4, money: 12345, contacts: ['sumi', 'adam', 'rio', 'kumicho'] });
   scenes.length = 0; rewards = 0; sumiCallRead = false; companion = null; present = ['rio'];
+  assert.match(innHint(), /一度休むと.*電話/, 'the inn explains how a first rest can unlock daytime calls');
   assert.equal(await rest(0), 'ch4_inn_rest', 'the first rest keeps the room scene');
+  assert.equal(innHint(), '休むと地元から電話', 'after the first rest, the inn shows that a call is ready');
+  current.slot = 1;
+  assert.equal(innHint(), '', 'the hint is for daytime calls');
   assert.equal(await rest(0), 'ch4_home_call_adam_apple', 'a daytime rest brings the first call from home');
   assert.equal(await rest(1), 'ch4_inn_rest_b', 'night rests stay with the rest rotation (Sumi owns the night calls)');
   assert(saveToSlot('suien_remake_slot1')); replace(loadFromSlot('suien_remake_slot1'));
@@ -183,16 +192,39 @@ for (const [,base,,rest] of cases) for (const suffix of revisits(rest)) {
   assert.equal(await rest(0), 'ch4_home_call_adam_bookmark', 'a second call can follow the first round');
   assert.deepEqual(Object.keys(current.flags[local.HOME_DAY_CALL_FLAG]).sort(),
     ['ch4_home_call_adam_apple', 'ch4_home_call_adam_bookmark', 'ch4_home_call_kumicho_coffee']);
+  assert.equal(innHint(), '', 'a contact who is in Dubai cannot trigger the hint');
   assert.equal(await rest(0), 'ch4_inn_rest_c', 'both of Rio’s calls are skipped while she is in Dubai');
   assert.equal(current.flags[restKey], 3, 'calls do not advance the rest rotation');
   present = [];
   assert.equal(await rest(0), 'ch4_home_call_rio_scent', 'Rio can call when she is not in Dubai');
   assert.equal(await rest(0), 'ch4_home_call_rio_delivery', 'Rio’s second call can be read once');
+  assert.equal(innHint(), '', 'no hint remains after all eligible calls');
   assert.equal(await rest(0), 'ch4_inn_rest_d', 'exhausted calls return to the rest rotation');
   assert.equal(current.money, 12345); assert.equal(rewards, 0, 'calls give no affinity or stats');
   // 中断・別の保存への切り替えでは、電話の記録も休む巡回も進めない
   replace(newState()); Object.assign(current, { chapter: 4, contacts: ['sumi', 'minto'] }); current.flags[restKey] = 1;
   current.slot = 0; current.stamina = 10;
+  innDay = 3;
+  assert.equal(innHint(), '', 'tool care must be read before resting');
+  toolCareRead = true;
+  trial = true;
+  current.flags[INN_TRIAL_FLAG] = { result: 'good' };
+  assert.equal(innHint(), '', 'a pending trial evaluation must be read before resting');
+  delete current.flags[INN_TRIAL_FLAG];
+  choices = ['cancel'];
+  assert.equal((await innVisit()).used, false);
+  assert.match(modalBody, /昼に休むと.*電話/, 'the trial menu explains the rest option');
+  trial = false;
+  rehearsal = true;
+  current.flags[REHEARSAL_FLAG] = { result: 'good' };
+  assert.equal(innHint(), '', 'a pending rehearsal evaluation must be read before resting');
+  delete current.flags[REHEARSAL_FLAG];
+  choices = ['cancel'];
+  assert.equal((await innVisit()).used, false);
+  assert.match(modalBody, /昼に休むと.*電話/, 'the rehearsal menu explains the rest option');
+  rehearsal = false;
+  innDay = 1;
+  toolCareRead = false;
   cancelled = true; assert.equal((await innVisit()).used, false); cancelled = false;
   assert.equal(current.flags[local.HOME_DAY_CALL_FLAG], undefined); assert.equal(current.flags[restKey], 1);
   assert.equal(await rest(0), 'ch4_home_call_minto_mint', 'the interrupted call is read again');

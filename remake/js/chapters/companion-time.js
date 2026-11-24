@@ -7,7 +7,7 @@
 // DOM に触れないので、remake/test/companion_time.mjs が node で読み込んで確かめる。
 import { state } from "../core/state.js";
 import { DB } from "../core/data.js";
-import { gainAffinity, privateBondScope } from "../core/stats.js";
+import { gainAffinity, prepareLoveAffinity, privateBondScope } from "../core/stats.js";
 import { OVERSEAS_HEROINES, overseasCompanion } from "../core/overseas-companion.js";
 
 export const COMPANION_TIME_FILE = "ch4_companion";
@@ -50,8 +50,12 @@ export async function spendCompanionTime({ read }) {
   const owner = state;
   if (!companionTimeOpen(owner)) return false;
   const id = companionLover(owner), scene = companionTimeScene(owner);
+  const day = owner.day;
+  await prepareLoveAffinity([id]);
+  if (state !== owner || owner.day !== day || !companionTimeOpen(owner) || companionTimeScene(owner) !== scene) return false;
   const restore = privateBondScope();
   try { if (!await read(scene) || state !== owner) return false; } finally { restore(); }
+  if (owner.day !== day || !companionTimeOpen(owner) || companionTimeScene(owner) !== scene) return false;
   owner.flags[COMPANION_TIME_FLAG] = { read: [...record(owner).read, scene], day: owner.day };
   const scope = privateBondScope();
   try { gainAffinity(id, COMPANION_TIME_BOND); } finally { scope(); }

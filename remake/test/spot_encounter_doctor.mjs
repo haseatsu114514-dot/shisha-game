@@ -10,7 +10,7 @@ const SEEN = `_spot_seen_${ID}`;
 const read = (url) => JSON.parse(fs.readFileSync(new URL(url, import.meta.url), "utf8"));
 const dialogues = Object.fromEntries(read("../../data/dialogue/ch1_spots.json").dialogues.map((d) => [d.dialogue_id, d]));
 // 立ち絵はLFSでCIのquickには無いため、表情の一覧はmanifestを正とする。
-const faces = new Set(read("../data/manifest.json").portraits.dr_kemuri.faces);
+const faces = new Set(read("../data/manifest.json").portraits.dr_charcoal.faces);
 const save = (over = {}) => ({ slot: 0, chapter: 1, met: {}, flags: {}, ...over });
 
 let count = 0;
@@ -37,8 +37,8 @@ check("lines use only real speakers and doctor faces, keep text rules, and revea
   const dlg = dialogues[ID];
   const all = [...dlg.lines, ...Object.values(dlg.branches).flat()].filter((l) => !l.type);
   for (const l of all) {
-    assert(["", "hajime", "dr_kemuri", "staff_choizap"].includes(l.speaker), l.text);
-    if (l.speaker === "dr_kemuri") assert(faces.has(l.face), `face ${l.face}`);
+    assert(["", "hajime", "dr_charcoal", "staff_choizap"].includes(l.speaker), l.text);
+    if (l.speaker === "dr_charcoal") assert(faces.has(l.face), `face ${l.face}`);
     if (l.speaker) assert(!l.text.endsWith("。"), l.text);
     assert(!l.text.includes("\n"), l.text);
     assert(l.text.length <= 48, `${l.text.length}: ${l.text}`);
@@ -49,7 +49,7 @@ check("lines use only real speakers and doctor faces, keep text rules, and revea
 
 check("plays once at C.STATION after the first visit, only with the doctor met, then never again", () => {
   assert.equal(spotEncounterDue("c_station", 2, save(), dialogues), null, "unmet doctor");
-  const s = save({ met: { dr_kemuri: true } });
+  const s = save({ met: { dr_charcoal: true } });
   assert.equal(spotEncounterDue("c_station", 1, s, dialogues), null, "first visit is the introduction");
   assert.equal(spotEncounterDue("c_station", 2, s, dialogues), ID);
   s.slot = 1;
@@ -63,7 +63,7 @@ check("plays once at C.STATION after the first visit, only with the doctor met, 
   assert.equal(s.flags._spot_last_c_station, 3);
   for (let n = 4; n < 12; n++) assert.equal(spotEncounterDue("c_station", n, s, dialogues), null, `visit ${n}`);
   // 第2章の保存や大会後（ch1 aftermath）でも面識があれば同じ一度性で出る。
-  const later = save({ chapter: 2, met: { dr_kemuri: true } });
+  const later = save({ chapter: 2, met: { dr_charcoal: true } });
   assert.equal(spotEncounterDue("c_station", 2, later, dialogues), ID);
 });
 

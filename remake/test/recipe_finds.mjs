@@ -130,10 +130,10 @@ const hearts = levels => id => levels[id] || 0;
 }
 {
   // 返す会話は第3章の煙幕の通い（ch3_tokyo_enmaku）に限る。第5章の延長営業の煙幕（ch5_tokyo_saku・#3676）では、ヒントも返す会話も出ない
-  const s = fresh(5, { met: { saku: true }, recipes: { weekend_citron: { day: 40 } } });
-  assert.equal(recipeFindAt(s, "ch3_tokyo_enmaku", recipes, hearts({ saku: 5 })), null);
+  const s = fresh(5, { met: { ayatori: true }, recipes: { weekend_citron: { day: 40 } } });
+  assert.equal(recipeFindAt(s, "ch3_tokyo_enmaku", recipes, hearts({ ayatori: 5 })), null);
   s.flags[hintFlag(recipes.find(r => r.id === "weekend_citron"))] = true;
-  assert.equal(recipeFindAt(s, "ch3_tokyo_enmaku", recipes, hearts({ saku: 5 })), null);
+  assert.equal(recipeFindAt(s, "ch3_tokyo_enmaku", recipes, hearts({ ayatori: 5 })), null);
 }
 {
   // 太陽: ヒントはFESTA（第4章）だけ。返すのは第4章のFESTAか第5章の屋敷の中庭
@@ -147,11 +147,11 @@ const hearts = levels => id => levels[id] || 0;
 }
 {
   // 聞く前に偶然作っていた（周回でレシピ帳を持ち越した場合も同じ）: ヒントは聞ける。返すのは次の来店
-  const s = fresh(3, { met: { saku: true }, recipes: { weekend_citron: { day: 2 } } });
-  const pick = recipeFindAt(s, "ch3_tokyo_enmaku", recipes, hearts({ saku: 2 }));
+  const s = fresh(3, { met: { ayatori: true }, recipes: { weekend_citron: { day: 2 } } });
+  const pick = recipeFindAt(s, "ch3_tokyo_enmaku", recipes, hearts({ ayatori: 2 }));
   assert.equal(pick?.kind, "hint", "返すのはヒントを聞いてから");
   settleRecipeFind(s, pick);
-  assert.equal(recipeFindAt(s, "ch3_tokyo_enmaku", recipes, hearts({ saku: 2 }))?.kind, "return");
+  assert.equal(recipeFindAt(s, "ch3_tokyo_enmaku", recipes, hearts({ ayatori: 2 }))?.kind, "return");
 }
 // 壊れた保存・知らない値
 assert.equal(recipeFindAt(null, "ch3_tokyo_steve", recipes), null);

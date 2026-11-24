@@ -33,8 +33,7 @@ export async function prepareFlavorStock() {
     ]));
     if (autoSkill()) setTimeout(() => buttons[0].click(), 60);
   });
-  const price = DB.flavorById[selected]?.price || 0;
-  await openShop({ errand: selected, minStock: 12, expense: state.money < price, expenseFlag: "_prep_flavor_expensed" });
+  await openShop({ errand: selected, minStock: 12, expense: "shortfall", expenseFlag: "_prep_flavor_expensed" });
   state.flags._prep_flavor = selected;
   save();
 }

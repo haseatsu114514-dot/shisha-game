@@ -6,16 +6,16 @@ import { ATTACK_BAND } from "./attack-band.js";
 export const CH1_VOTE_VERSION = 2;
 export const CH1_SAKURAI_VERSION = 3;
 export const CH1_CONTESTANTS = ["naru", "adam", "minto", "hajime"];
-export const CH1_JUDGES = ["maezono", "dr_kemuri", "sui"];
+export const CH1_JUDGES = ["uezono", "dr_charcoal", "sensu"];
 export const CH1_RIVALS = Object.freeze({
   naru: Object.freeze([84, 78, 93, 88, 87]),
   adam: Object.freeze([90, 92, 84, 80, 79]),
   minto: Object.freeze([76, 74, 80, 85, 86]),
 });
 export const CH1_WEIGHTS = Object.freeze({
-  maezono: Object.freeze([15, 15, 30, 20, 20]),
-  dr_kemuri: Object.freeze([20, 30, 10, 20, 20]),
-  sui: Object.freeze([20, 20, 20, 20, 20]),
+  uezono: Object.freeze([15, 15, 30, 20, 20]),
+  dr_charcoal: Object.freeze([20, 30, 10, 20, 20]),
+  sensu: Object.freeze([20, 20, 20, 20, 20]),
 });
 const SPEND = [2, 3, 2, 3];
 const emptyVotes = () => Object.fromEntries(CH1_JUDGES.map(j => [j,
@@ -26,7 +26,7 @@ export function beginCh1Votes(attempt, { style = null } = {}) {
   if (attempt.voteAttempt) return attempt.voteAttempt;
   const sakurai = style === "sakurai";
   return attempt.voteAttempt = { rulesVersion: sakurai ? CH1_SAKURAI_VERSION : CH1_VOTE_VERSION,
-    ...(sakurai ? { style: "sakurai", views: [], picks: [], attacks: [] } : {}),
+    picks: [], ...(sakurai ? { style: "sakurai", views: [], attacks: [] } : {}),
     voted: 0, votes: emptyVotes(), baseVotes: initialBaseVotes(CH1_CONTESTANTS), finalVotes: null, result: null };
 }
 export const isSakuraiVotes = (p) => p?.style === "sakurai" && p?.rulesVersion === CH1_SAKURAI_VERSION;
@@ -47,9 +47,9 @@ function evaluated(parts, weights, limit) {
 }
 function checkBudget(p, round) {
   for (const judge of CH1_JUDGES) {
-    const expected = SPEND.slice(0, round).reduce((a, b) => a + b, 0) - (judge === "sui" && round > 3 ? 1 : 0);
+    const expected = SPEND.slice(0, round).reduce((a, b) => a + b, 0) - (judge === "sensu" && round > 3 ? 1 : 0);
     const spent = Object.values(p.votes[judge]).reduce((a, b) => a + b, 0);
-    if (spent !== expected || spent + SPEND[round] - (judge === "sui" && round === 3 ? 1 : 0) > 10)
+    if (spent !== expected || spent + SPEND[round] - (judge === "sensu" && round === 3 ? 1 : 0) > 10)
       throw new Error("第1章の持ち点が一致しません");
   }
 }
@@ -60,7 +60,7 @@ function checkBudget(p, round) {
  */
 export const CH1_LAST_POINT = "hajime";
 /** その回に審査員が入れる点（1位に点−1・2位に1）。千須だけ最後の回は1点を残し、最後の1点に回す。 */
-export const ch1RoundPoints = (judge, round) => SPEND[round] - (judge === "sui" && round === 3 ? 1 : 0);
+export const ch1RoundPoints = (judge, round) => SPEND[round] - (judge === "sensu" && round === 3 ? 1 : 0);
 export function castCh1Votes(attempt, round, cs) {
   const p = beginCh1Votes(attempt);
   if (p.result || p.voted !== round || round < 0 || round > 3) return false;
@@ -68,12 +68,14 @@ export function castCh1Votes(attempt, round, cs) {
   const mine = ch1Parts(cs, round), limit = [2, 3, 4, 5][round];
   checkBudget(p, round);
   p.finalVotes = round === 3 ? emptyVotes() : null;
+  const picks = {};
   for (const judge of CH1_JUDGES) {
     const weights = CH1_WEIGHTS[judge];
     const scores = Object.fromEntries(CH1_CONTESTANTS.map(id => [id,
       evaluated(id === "hajime" ? mine : CH1_RIVALS[id], weights, limit)]));
     const [first, second] = CH1_CONTESTANTS.slice().sort((a, b) => scores[b] - scores[a] || byId(a, b));
-    const amount = SPEND[round] - (judge === "sui" && round === 3 ? 1 : 0);
+    const amount = SPEND[round] - (judge === "sensu" && round === 3 ? 1 : 0);
+    picks[judge] = { first, second, points: { [first]: amount - 1, [second]: 1 } };
     p.votes[judge][first] += amount - 1;
     p.votes[judge][second]++;
     if (round === 3) {
@@ -81,13 +83,14 @@ export function castCh1Votes(attempt, round, cs) {
       p.finalVotes[judge][second]++;
     }
   }
+  (p.picks ||= [])[round] = picks;
   p.voted++;
   if (round === 3) {
     const last = CH1_LAST_POINT;
     p.lastPoint = last;
     p.beforeLast = structuredClone(p.votes);
-    p.votes.sui[last]++;
-    p.finalVotes.sui[last]++;
+    p.votes.sensu[last]++;
+    p.finalVotes.sensu[last]++;
     p.result = ch1Standings(p, cs.total);
   }
   return true;
@@ -102,6 +105,14 @@ export function ch1Standings(p, mineTotal) {
     .map((id, index) => ({ id, rank: index + 1, points: points(id) }));
   return { rank: rows.find(row => row.id === "hajime").rank, rows, votes: structuredClone(p.votes),
     baseVotes: structuredClone(p.baseVotes || {}), lastPoint: p.lastPoint };
+}
+
+/** 最後の1点だけを外した順位。出来栄え・最終回の票も本来の同点判定に従う。 */
+export function ch1BeforeLastStandings(p, mineTotal) {
+  const id = p?.lastPoint;
+  if (!id || !p.beforeLast || !(p.finalVotes?.sensu?.[id] > 0)) return null;
+  const finalVotes = { ...p.finalVotes, sensu: { ...p.finalVotes.sensu, [id]: p.finalVotes.sensu[id] - 1 } };
+  return ch1Standings({ ...p, votes: p.beforeLast, finalVotes }, mineTotal).rows;
 }
 
 // ---------------------------------------------------------------- 桜井式（試作・rulesVersion 3）
@@ -120,23 +131,23 @@ export const SAKURAI = Object.freeze({
   ]),
   /** 審査員の見る所（提供の回）。準備の回は今までの工程の重み（博士は炭を重く見る）、調整の回は全員がその調整の出来を見る */
   focus: Object.freeze({
-    maezono: Object.freeze({ label: "味", detail: "香りと味" }),
-    dr_kemuri: Object.freeze({ label: "火", detail: "熱の安定と焦げにくさ" }),
-    sui: Object.freeze({ label: "煙", detail: "煙の量と吸い心地" }),
+    uezono: Object.freeze({ label: "味", detail: "香りと味" }),
+    dr_charcoal: Object.freeze({ label: "火", detail: "熱の安定と焦げにくさ" }),
+    sensu: Object.freeze({ label: "煙", detail: "煙の量と吸い心地" }),
   }),
   /** 提供の回: 完成品の内訳（score.js の computeShisha）と、提供した一口（吸い出しの点）の重み。safety は 100−焦げやすさ */
   serve: Object.freeze({
-    maezono: Object.freeze({ aroma: .35, taste: .35, pull: .30 }),
-    dr_kemuri: Object.freeze({ heatStability: .35, safety: .35, pull: .30 }),
-    sui: Object.freeze({ draw: .35, smoke: .35, pull: .30 }),
+    uezono: Object.freeze({ aroma: .35, taste: .35, pull: .30 }),
+    dr_charcoal: Object.freeze({ heatStability: .35, safety: .35, pull: .30 }),
+    sensu: Object.freeze({ draw: .35, smoke: .35, pull: .30 }),
   }),
   /** ライバルの評価。準備の回は CH1_RIVALS の穴あけ・炭焼き。なる＝味、アダム＝火、みんと＝煙が強い。最後の調整は、なるが崩れず（100）、みんとが攻めてくる（101）。
    * 2026-11-20（#3916）: ふつうの腕前の勝率を約7割にするため、みんとの提供を各+1、なるの調整2回目を98→100にした */
   rivals: Object.freeze({
     serve: Object.freeze({
-      naru: Object.freeze({ maezono: 84, dr_kemuri: 79, sui: 80 }),
-      adam: Object.freeze({ maezono: 78, dr_kemuri: 85, sui: 78 }),
-      minto: Object.freeze({ maezono: 80, dr_kemuri: 77, sui: 85 }),
+      naru: Object.freeze({ uezono: 84, dr_charcoal: 79, sensu: 80 }),
+      adam: Object.freeze({ uezono: 78, dr_charcoal: 85, sensu: 78 }),
+      minto: Object.freeze({ uezono: 80, dr_charcoal: 77, sensu: 85 }),
     }),
     care1: Object.freeze({ naru: 98, adam: 93, minto: 96 }),
     care2: Object.freeze({ naru: 100, adam: 92, minto: 101 }),
@@ -144,7 +155,7 @@ export const SAKURAI = Object.freeze({
 });
 /** 途中経過に出す、その回の審査員の見る所（一語）。 */
 export function sakuraiFocusOf(judge, round) {
-  if (round === 0) return judge === "dr_kemuri" ? "炭を重く見る" : "穴と炭";
+  if (round === 0) return judge === "dr_charcoal" ? "炭を重く見る" : "穴と炭";
   if (round === 1) return SAKURAI.focus[judge]?.detail || "";
   return "調整の出来";
 }
@@ -212,8 +223,8 @@ function castSakurai(p, round, cs) {
     const last = CH1_LAST_POINT;
     p.lastPoint = last;
     p.beforeLast = structuredClone(p.votes);
-    p.votes.sui[last]++;
-    p.finalVotes.sui[last]++;
+    p.votes.sensu[last]++;
+    p.finalVotes.sensu[last]++;
     p.result = ch1Standings(p, cs.total);
   }
   return true;

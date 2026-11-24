@@ -86,7 +86,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "初回キャンペーンで、最初の3か月は追加料金なしで通い放題だ。"
+            "text": "初回キャンペーンで、最初の3ヶ月は追加料金なしで通い放題だ。"
           },
           {
             "speaker": "",
@@ -111,7 +111,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "※CHOI-ZAP会員登録済み。初回キャンペーンで3か月は追加料金なしで利用できます。"
+            "text": "※CHOI-ZAP会員登録済み。初回キャンペーンで3ヶ月は追加料金なしで利用できます。"
           }
         ],
         "decline": [
@@ -319,7 +319,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "受付の脇に、機材の見本台がある。ハガルの上に、炭を載せる金属の蓋がのっていた。"
+            "text": "受付の脇に、機材の見本台がある。ボウルの上に、炭を載せる金属の蓋がのっていた。"
           },
           {
             "speaker": "hajime",
@@ -337,7 +337,7 @@
             "text": "白衣のあちこちに緑と茶色の染み。チノパンに、足元だけサンダル。"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "気になる？ 触っていいよ。熱は入ってないから"
           },
@@ -352,7 +352,7 @@
             "text": "これ便利ですよね。店でも、ずっと助けられてます"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "どうだい、この装置。自信作なんだ"
           },
@@ -363,20 +363,20 @@
           },
           {
             "type": "set_flag",
-            "flag": "_met_dr_kemuri"
+            "flag": "_met_dr_charcoal"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "……失礼。機材の話になると、つい"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "火浦です。今回の大会でも審査員をします"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "使い心地は、現場の声が一番のデータだ。今度、詳しく聞かせて"
           },
@@ -392,7 +392,7 @@
           },
           {
             "type": "set_flag",
-            "flag": "_met_sui"
+            "flag": "_met_sensu"
           },
           {
             "speaker": "",
@@ -405,57 +405,57 @@
             "text": "受付の列に並びながら、聞こえてくる話に耳を傾けた。"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "今回の評価軸ですが、私は例によってデータ収集を兼ねます"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "同じ手順で、どこまで味を再現できるか。温度と配合を記録したい"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "火浦くんは相変わらずだな。私の審査は、数値じゃ測れない"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "作り手が何を背負い、誰のために煙を作っているか"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "それが煙に出ているか。それだけだ"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "物語、ですか。それは数値化が難しい"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "だから見る価値がある。良い煙は、吸った人の顔を変える"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "……なるほど。会長の評価に『顔色』の項目を加えると、データが豊かになりますね。記録します"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "生き方も、迷いもだ"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "本人が無自覚でも、煙に出る"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "煙は嘘をつかない"
           },
@@ -470,7 +470,7 @@
             "text": "SMOKE CROWN CUPに出たいんです。参加登録をお願いします"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "tonariの新人か。話はスミさんから聞いている"
           },
@@ -480,7 +480,7 @@
             "text": "逢縁はじめです。なるさんに教えてもらって来ました"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "見学と参加登録は無料だ。こちらに記入を"
           },
@@ -490,7 +490,7 @@
             "text": "受付票に名前を書き、参加者の登録を済ませた。"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "公式アプリを入れておくように。会場の案内はそこに届く"
           },
@@ -716,8 +716,8 @@
         },
         {
           "type": "note",
-          "note_id": "sui_style",
-          "label": "千須会長は別枠の10点を持ち、基準を超えた1人にだけ入れる"
+          "note_id": "sensu_style",
+          "label": "千須会長も序盤から配点し、最後の1点はもう一口吸いたい台に入れる"
         },
         {
           "type": "condition",
@@ -757,12 +757,12 @@
           {
             "speaker": "staff_choizap",
             "face": "",
-            "text": "審査席は正面。千須会長がいつも一番端。会長の10点は別枠で、基準に届かなければ誰にも入らないんですよ"
+            "text": "審査席は正面。千須会長がいつも一番端。会長も序盤から配点します。最後の1点は、もう一口吸いたい台に入れるんですよ"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（基準に届かなければ0点……。あの人を動かすには、何が必要なんだろう）"
+            "text": "（もう一口吸いたい台……。あの人を動かすには、何が必要なんだろう）"
           }
         ],
         "work_after": [
@@ -780,11 +780,6 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "（あの日の作業台も、トングの向きまで揃ってた）"
-          },
-          {
-            "speaker": "staff_choizap",
-            "face": "",
-            "text": "千須会長の10点は別枠なんです。基準を超えた1人にしか入らないんですよ"
           }
         ],
         "closing_before": [
@@ -878,7 +873,7 @@
       }
     },
     {
-      "dialogue_id": "cs_sui_glimpse",
+      "dialogue_id": "cs_sensu_glimpse",
       "lines": [
         {
           "speaker": "",
@@ -949,7 +944,7 @@
           "text": "チャコール博士こと火浦理一。審査員でもあり、研究者でもある変人。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "……温度分布の標準偏差が1.2℃。ふむ。ボウルの素材で有意差あり"
         },
@@ -966,7 +961,7 @@
           "next_false": "greet_before"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "ココナッツ炭は本来捨てる殻の炭化物だ。密度が高く灰が少ない。燃え残りまで計算どおりだ"
         },
@@ -991,7 +986,7 @@
           {
             "type": "condition",
             "condition_type": "met",
-            "char_id": "dr_kemuri",
+            "char_id": "dr_charcoal",
             "next_true": "known_greeting",
             "next_false": "new_greeting"
           },
@@ -1001,14 +996,14 @@
             "text": "は、はい。tonariの逢縁です"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "tonari。……スミさんのところか。あの人の炭は数値が美しい"
           }
         ],
         "greet_after": [
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "おや、逢縁くん。優勝の一台のデータ、なかなか興味深かったよ"
           },
@@ -1018,21 +1013,21 @@
             "text": "あ……ありがとうございます。覚えててくださったんですね"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "記録した数値は忘れないよ。tonariは、スミさんのところだったね。あの人の炭は数値が美しい"
           }
         ],
         "new_greeting": [
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "おや、きみ。見ない顔だね。今度の大会の出場者かい？"
           }
         ],
         "known_greeting": [
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "おや、逢縁くん。今日は何を吸いに来たんだい？"
           }
@@ -1051,10 +1046,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "博士の前には、同じ形の小さな一台が、もう一台並んでいた。ハガルの上の器具だけが、左右で違う。"
+          "text": "博士の前には、同じ形の小さな一台が、もう一台並んでいた。ボウルの上の器具だけが、左右で違う。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "同じ葉、同じ炭。違うのは熱の上げ方だけだ。右から一口ずつ、感じたままを言って"
         },
@@ -1069,12 +1064,12 @@
           "text": "スタッフが左のホースを吸って、咳き込んだ。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "……二口目で咳。喉に来るのは左だね。記録する"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "無理はしなくていい。水を飲んで。それから、左をもう一口だけ頼めるかな"
         },
@@ -1096,14 +1091,14 @@
           "text": "あの、咳……大丈夫なんですか"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "喉に残る熱は、誰かが一度は数えないといけない。数えておけば、次の誰かは咳をしない"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
-          "text": "そのための道具を作ってきた。ハガルの上のそれ、見覚えは？"
+          "text": "そのための道具を作ってきた。ボウルの上のそれ、見覚えは？"
         },
         {
           "speaker": "hajime",
@@ -1111,7 +1106,7 @@
           "text": "炭を載せる、金属の……初めて会った時の、HMDですね"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "そう。今はどこの店にもある型だ。でも元の型はね……何度でも言うよ、それ作ったの、俺だもん"
         },
@@ -1138,7 +1133,7 @@
       "branches": {
         "notice_before": [
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "おや、きみ。見ていたね。受付で見た顔だ、tonariの出場者くん"
           },
@@ -1150,7 +1145,7 @@
         ],
         "notice_after": [
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "おや、逢縁くん。見ていたね"
           },
@@ -2333,7 +2328,7 @@
         {
           "speaker": "master_cafe",
           "face": "",
-          "text": "すみません、蜂蜜のふたを開けてもらえますか"
+          "text": "すみません、蜂蜜の蓋を開けてもらえますか"
         },
         {
           "speaker": "",
@@ -2348,7 +2343,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "二人で格闘してから、マスターがふたを温めた。今度はあっさり開いた。"
+          "text": "二人で格闘してから、マスターが蓋を温めた。今度はあっさり開いた。"
         },
         {
           "speaker": "master_cafe",
@@ -2662,7 +2657,7 @@
       }
     },
     {
-      "dialogue_id": "cs_maezono_taste",
+      "dialogue_id": "cs_uezono_taste",
       "lines": [
         {
           "type": "condition",
@@ -2677,7 +2672,7 @@
           "text": "一口吸って、目を細める。それだけで、見ているこっちまでおいしそうに思えてくる。"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "うん、うまい。シーシャはおいしいねえ"
         },
@@ -2709,7 +2704,7 @@
           {
             "type": "condition",
             "condition_type": "flag",
-            "flag": "_met_maezono",
+            "flag": "_met_uezono",
             "next_true": "see_before_met",
             "next_false": "see_before_poster"
           }
@@ -2725,7 +2720,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "C.STATIONの窓際に、カフェで会った顔があった。雑誌編集の上園さんだ。"
+            "text": "C.STATIONの窓際に、カフェで会った顔があった。HOOKAH PRESSの上園さんだ。"
           }
         ],
         "see_after": [
@@ -2875,7 +2870,7 @@
       ]
     },
     {
-      "dialogue_id": "cafe_maezono_break",
+      "dialogue_id": "cafe_uezono_break",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_cafe_day.png"
       },
@@ -2883,17 +2878,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "隣の席で、ノートパソコンを開いた客がケーキを注文していた。"
+          "text": "隣の席で、ノートPCを開いた客がケーキを注文していた。"
         },
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_met_maezono",
+          "flag": "_met_uezono",
           "next_true": "known",
           "next_false": "intro"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "コラムの締め切りでねえ。ここだと、つい長居しちゃうんです"
         },
@@ -2903,7 +2898,7 @@
           "text": "ケーキが届くと、上園さんは一口食べて、ぴたりと止まった。"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "surprise",
           "text": "……写真。食べる前に撮るつもりだったんです"
         },
@@ -2913,7 +2908,7 @@
           "text": "おいしかった証拠は、撮れそうですね"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "それでいきましょう。……今度は二口目を食べる前に"
         },
@@ -2924,19 +2919,19 @@
         },
         {
           "type": "set_flag",
-          "flag": "_spot_seen_cafe_maezono_break"
+          "flag": "_spot_seen_cafe_uezono_break"
         }
       ],
       "branches": {
         "intro": [
           {
             "type": "set_flag",
-            "flag": "_met_maezono"
+            "flag": "_met_uezono"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "normal",
-            "text": "どうも、上園です。HOOKAH PRESSって雑誌で、編集をやってまして。各地の店を取材してるんですがね"
+            "text": "どうも、上園です。シーシャ情報サイト『HOOKAH PRESS』の編集長をやってまして。各地の店を取材してるんですがね"
           },
           {
             "speaker": "hajime",
@@ -3176,7 +3171,7 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "あら、ケムリクサさん。バニラの追加、次の便で入るよ"
+          "text": "あら、KEMURIKUSAさん。バニラの追加、次の便で入るよ"
         },
         {
           "speaker": "naru",
@@ -3277,7 +3272,7 @@
           {
             "speaker": "naru",
             "face": "surprise",
-            "text": "仕事の話だ、……仕事の"
+            "text": "仕事の話だ。……仕事の"
           }
         ],
         "lover": [
@@ -3299,7 +3294,7 @@
           {
             "speaker": "naru",
             "face": "normal",
-            "text": "仕事のできる大人だ。俺も、ちょっと憧れてた、……ちょっとな"
+            "text": "仕事のできる大人だ。俺も、ちょっと憧れてた。……ちょっとな"
           },
           {
             "speaker": "naru",
@@ -3318,7 +3313,7 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "こはくで会ったね。……ケムリクサの子、私の前だと固まるでしょ"
+          "text": "こはくで会ったね。……KEMURIKUSAの子、私の前だと固まるでしょ"
         },
         {
           "speaker": "hajime",
@@ -3365,7 +3360,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "境内のベンチに、アダムが座っていた。膝の上に、ふたを開けた弁当箱。"
+          "text": "境内のベンチに、アダムが座っていた。膝の上に、蓋を開けた弁当箱。"
         },
         {
           "speaker": "",

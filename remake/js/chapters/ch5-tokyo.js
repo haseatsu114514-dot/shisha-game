@@ -25,7 +25,7 @@ import { openShop } from "../daily/shop.js";
 import { TOKYO_VISIT_COST, quietTurn } from "../daily/spots.js";
 import { modal } from "../core/ui.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_SHIFT_STAMINA, mukaiShiftPay } from "./tokyo-mukai.js";
-import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
+import { loverMilestonesDue, prepareLoverMilestones, readLoverMilestone } from "./lover-entry.js";
 import { reflectAt } from "../daily/reflection.js";
 import { TOKYO_OUTINGS, outingDialogueId, outingCounts, OUTINGS_FLAG } from "./ch3-outing-progress.js";
 import { consultLessons } from "../core/growth.js";
@@ -69,9 +69,9 @@ export const TOKYO_SPOTS = Object.freeze([
   // 綾取の煙幕（延長営業・#3676）。第3章の東京の地図の位置（45.3, 49.7）は、第5章だけにある帰りの配送便の札・屋根裏と重なるので、
   // 鉄の煙と公園のあいだの空いた所に置く（PC・スマホ横の両方で、ほかのピンや札と重ならないことを確かめた）。
   // ♥5の締めくくりは第3章だけなので TOKYO_FINALES には入れない。会っている保存だけ地図に出る（charId）。
-  rivalSpot({ id: "ch5_tokyo_saku", charId: "saku", label: "煙幕", area: "綾取の店", x: 58, y: 62, theme: "rival", glyph: "煙", face: "saku",
+  rivalSpot({ id: "ch5_tokyo_saku", charId: "ayatori", label: "煙幕", area: "綾取の店", x: 58, y: 62, theme: "rival", glyph: "煙", face: "ayatori",
     preview: "bg_yohaku_shop", stamina: -16, stat: "insight",
-    talks: chapterFiveTalkIds("ch5_tokyo_saku"), desc: "好評につき延長中の間借り店。お茶と、ノートの続き。" }),
+    talks: ["ch5_tokyo_saku", "ch5_tokyo_ayatori_b", "ch5_tokyo_ayatori_c", "ch5_tokyo_saku_d", "ch5_tokyo_saku_e", "ch5_tokyo_saku_f", "ch5_tokyo_saku_g", "ch5_tokyo_saku_h"], desc: "好評につき延長中の間借り店。お茶と、ノートの続き。" }),
   spot({ id: "ch5_tokyo_park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園", preview: "bg_tokyo_park",
     stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   // 裏口のてつこは地図の行き先にせず、mukai のシフトの帰りに会う（VOL11）。
@@ -198,7 +198,7 @@ async function read(id, bg, owner, tod = timeOfDay()) {
 const TOKYO_TEACHERS = Object.freeze({ ch5_tokyo_volk: "volk" });
 
 /** 東京の行き先と「東京へ」の処理。対象外の行き先は null（日常ループの通常の処理へ）。 */
-export async function performTokyoSpot(spot, { staminaGuard } = {}) {
+export async function performTokyoSpot(spot, { staminaGuard, holdSaveUntilActionEnds } = {}) {
   if (spot.id !== TO_TOKYO_SPOT.id && spot.region !== TOKYO) return null;
   const owner = state;
   try { await loadTokyoScenes(); } catch {
@@ -209,7 +209,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   if (spot.id === TO_TOKYO_SPOT.id || spot.id === HOME_ID) {
     const blocked = tokyoVanBlock(state);
     if (blocked) { toast(blocked.why); return { used: false, exerted: false }; }
-    return spot.id === HOME_ID ? goHome(owner) : goToTokyo(owner);
+    return spot.id === HOME_ID ? goHome(owner, holdSaveUntilActionEnds) : goToTokyo(owner, holdSaveUntilActionEnds);
   }
   if (spot.reflect) { await reflectAt(spot.reflect); return { used: false, exerted: false }; }
   if (spot.id === "ch5_tokyo_shop") {
@@ -255,30 +255,59 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   }
   if (!spot.talks) return null;
   if (spot.shift) {
+    // 恋人のましろがいる時は、シフトに入るか、二人で過ごすかを選ぶ（BLC03）。恋人でなければ今までどおりシフトだけ。
+    // 締めくくりを友人として迎えた後は、シフトか「ましろちゃんと話す」（♥5後の場面・#3693）を選ぶ。
+    // restack 2026-11-24: 上記の main 側の流れに、G3 の追加（♥5後の場面も恋人の時間も無い時は、ましろの小会話を巡回する選択肢）を足した。
+    const loverReady = await prepareLoverMilestones(["mashiro"]);
+    if (state !== owner) return { used: false, exerted: false };
+    if (!loverReady && owner.lovers?.includes("mashiro")) toast("恋人の会話を読み込めませんでした。もう一度お試しください");
     const mashiroMilestoneDue = () => loverMilestonesDue(["mashiro"]).length > 0;
-    const loverTime = mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() });
-    const friendTalk = loverTime ? null : bondAfterNext(state, "mashiro");
-    const friendScene = friendTalk?.kind === "story" ? friendTalk : null;
-    if (loverTime || friendScene || state.met?.mashiro) {
+    const loverTime = loverReady && mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() });
+    const friendTalk = bondAfterNext(state, "mashiro");
+    if (friendTalk && !loverTime) {
       const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
-        ...(loverTime ? [{ label: "ましろちゃんと過ごす（恋人）", value: "lover", test: "tokyo-mukai-lover", primary: true }] : []),
-        ...(friendScene || state.met?.mashiro ? [{ label: "ましろちゃんと話す", value: "talk", test: "tokyo-mukai-friend", primary: !!friendScene }] : []),
+        { label: "ましろちゃんと話す", value: "friend", test: "tokyo-mukai-friend", primary: friendTalk.kind === "story" },
+        { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
+        { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
+      if (!pick || state !== owner) return { used: false, exerted: false };
+      if (pick === "friend") {
+        try { await loadBondAfterScenes(DB); } catch {
+          toast("会話を読み込めませんでした。行動は使っていません");
+          return { used: false, exerted: false };
+        }
+        if (state !== owner || staminaGuard && !(await staminaGuard(MASHIRO_TIME_STAMINA))) return { used: false, exerted: false };
+        if (!await read(friendTalk.scene, spot.preview, owner)) return { used: false, exerted: false };
+        markBondAfterRead(state, "mashiro", friendTalk);
+        addStamina(MASHIRO_TIME_STAMINA);
+        gainAffinity("mashiro", visitAffinity("talk"));
+        return { used: true, exerted: true };
+      }
+    }
+    if (loverTime) {
+      const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
+        { label: "ましろちゃんと過ごす（恋人）", value: "lover", test: "tokyo-mukai-lover", primary: true },
+        { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
+        { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
+      if (!pick || state !== owner) return { used: false, exerted: false };
+      if (pick === "lover") {
+        if (staminaGuard && !(await staminaGuard(MASHIRO_TIME_STAMINA))) return { used: false, exerted: false };
+        if (!await spendMashiroTime({ read: scene => read(scene, spot.preview, owner), milestoneDue: mashiroMilestoneDue,
+          readMilestone: () => readLoverMilestone("mashiro") }) || state !== owner) return { used: false, exerted: false };
+        await petitAfterDate("mashiro"); // プチ修羅場（恋人が2人以上・一度きり。daily/petit-shuraba.js）
+        if (state !== owner) return { used: false, exerted: false };
+        addStamina(MASHIRO_TIME_STAMINA);
+        return { used: true, exerted: true };
+      }
+    }
+    if (!friendTalk && !loverTime && state.met?.mashiro) {
+      // G3 の追加: ましろと顔見知りで、♥5後の場面も恋人の時間も無い時は、小会話（ch5_tokyo_mashiro*）を巡回して読める。
+      const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
+        { label: "ましろちゃんと話す", value: "talk", test: "tokyo-mukai-friend", primary: true },
         { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
         { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
       if (!pick || state !== owner) return { used: false, exerted: false };
       if (pick === "talk") {
-        if (friendScene) {
-          try { await loadBondAfterScenes(DB); } catch {
-            toast("会話を読み込めませんでした。行動は使っていません");
-            return { used: false, exerted: false };
-          }
-          if (state !== owner || staminaGuard && !(await staminaGuard(MASHIRO_TIME_STAMINA))) return { used: false, exerted: false };
-          if (!await read(friendScene.scene, spot.preview, owner)) return { used: false, exerted: false };
-          markBondAfterRead(state, "mashiro", friendScene);
-          addStamina(MASHIRO_TIME_STAMINA);
-          gainAffinity("mashiro", visitAffinity("talk"));
-          return { used: true, exerted: true };
-        }
+        // G4 の追加: 通いの続き（visit-chains）の段が来ていればそちらを先に読む。段の間は小会話の巡回を進めない。
         const chain = await chainVisitDue(MASHIRO_PLACE, owner);
         if (state !== owner) return { used: false, exerted: false };
         const count = owner.flags[TALKS_FLAG]?.[MASHIRO_PLACE] || 0;
@@ -290,15 +319,6 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
           recordChapterFiveTalk(owner, scene);
         }
         return { used: true, exerted: false };
-      }
-      if (pick === "lover") {
-        if (staminaGuard && !(await staminaGuard(MASHIRO_TIME_STAMINA))) return { used: false, exerted: false };
-        if (!await spendMashiroTime({ read: scene => read(scene, spot.preview, owner), milestoneDue: mashiroMilestoneDue,
-          readMilestone: () => readLoverMilestone("mashiro") }) || state !== owner) return { used: false, exerted: false };
-        await petitAfterDate("mashiro"); // プチ修羅場（恋人が2人以上・一度きり。daily/petit-shuraba.js）
-        if (state !== owner) return { used: false, exerted: false };
-        addStamina(MASHIRO_TIME_STAMINA);
-        return { used: true, exerted: true };
       }
     }
     if (staminaGuard && !(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
@@ -358,7 +378,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
 }
 
 /** 配送便で東京へ（昼に出て夜に着く。今日の昼と夜の2行動）。着いた夜は屋根裏で寝る。 */
-async function goToTokyo(owner) {
+async function goToTokyo(owner, holdSaveUntilActionEnds) {
   // 最初に選んだ日は、Dr.fookah の裏口で配送便に乗せてもらう話になる（読むだけでは行動を使わない）。
   if (!state.flags[VAN_FLAG]) {
     if (!await read("ch5_tokyo_van_first", "bg_shop", owner)) return { used: false, exerted: false };
@@ -366,8 +386,8 @@ async function goToTokyo(owner) {
     save();
   }
   if (!await read("ch5_tokyo_go", "bg_street", owner)) return { used: false, exerted: false };
+  holdSaveUntilActionEnds?.();
   state.flags._ch2_region = TOKYO;
-  save();
   // 配送便の車窓。道路の灯が流れて、夜の東京に着く（#2688 A4）
   await vanRide(() => showBg(state.flags[ATTIC_FLAG] ? "bg_tokyo_map_night" : "bg_mukai_shop", "night"), { to: "tokyo" });
   if (state !== owner) return { used: false, exerted: false };
@@ -379,10 +399,10 @@ async function goToTokyo(owner) {
 }
 
 /** 帰りの配送便（昼に出て夜に地元へ着く。今日の昼と夜の2行動）。 */
-async function goHome(owner) {
+async function goHome(owner, holdSaveUntilActionEnds) {
   if (!await read("ch5_tokyo_back", "bg_street", owner)) return { used: false, exerted: false };
+  holdSaveUntilActionEnds?.();
   state.flags._ch2_region = "home";
-  save();
   // 配送便の車窓で地元の夜へ（#2688 A4）
   await vanRide(() => showBg("bg_osu_map_night", "night"), { to: "town" });
   return { used: true, exerted: false, slotsUsed: TOKYO_VAN_SLOTS };

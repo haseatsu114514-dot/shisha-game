@@ -35,6 +35,7 @@ class Dom {
     const cls = /\.([\w-]+)/.exec(s); if (cls && !this.classList.contains(cls[1])) return false;
     const tag = /^[\w-]+/.exec(s); return !tag || this.tagName.toLowerCase() === tag[0];
   }
+  closest(s) { return this.matches(s) ? this : this.parentNode?.closest(s) || null; }
   querySelectorAll(s) { const out = []; const selectors = s.split(',').map(s => s.trim());
     const visit = n => { for (const child of n.children) { if (selectors.some(s => child.matches(s))) out.push(child); visit(child); } }; visit(this); return out; }
   querySelector(s) { return this.querySelectorAll(s)[0] || null; }
@@ -42,12 +43,18 @@ class Dom {
   change() { for (const fn of this.events.change || []) fn({ currentTarget: this }); }
   scrollTo() {}
 }
-const documentPort = { createElement: tag => new Dom(tag), createTextNode: text => new Dom('#text', text), addEventListener() {}, removeEventListener() {}, hidden: false };
+let decodeImage = () => Promise.resolve(), now = 0;
+const documentPort = { createElement(tag) {
+  const node = new Dom(tag);
+  if (tag === 'img') node.decode = () => decodeImage(node);
+  return node;
+}, createTextNode: text => new Dom('#text', text), addEventListener() {}, removeEventListener() {}, hidden: false };
 const timers = [];
 const delays = [], tickers = []; let reducedMotion = true;
 const context = vm.createContext({ Node: Dom, document: documentPort, URL, structuredClone, console,
   Image: class { decode() { return Promise.resolve(); } }, matchMedia: () => ({ matches: reducedMotion }),
-  AbortController, setTimeout: (fn, delay) => { timers.push(fn); delays.push(delay); return timers.length; }, clearTimeout() {}, setInterval: fn => { tickers.push(fn); return tickers.length; }, clearInterval() {} });
+  performance: { now: () => now }, AbortController,
+  setTimeout: (fn, delay) => { timers.push(fn); delays.push(delay); return timers.length; }, clearTimeout() {}, setInterval: fn => { tickers.push(fn); return tickers.length; }, clearInterval() {} });
 const modules = new Map();
 function sourceModule(url) {
   // Cache before reading: simultaneous imports of the same URL must get one module.
@@ -66,11 +73,14 @@ async function load(url) {
 const mod = await load(new URL('../js/trpg/view.js', import.meta.url)); await mod.evaluate();
 const feedback = await load(new URL('../js/trpg/feedback.js', import.meta.url));
 const { rollOdds } = feedback.namespace;
-const scenarios = await Promise.all(['ordinary', 'shark'].map(async theme => JSON.parse(await readFile(new URL('../../data/dialogue/trpg_' + theme + '.json', import.meta.url), 'utf8'))));
+const scenarios = await Promise.all(['ordinary', 'shark'].map(async theme => {
+  const { pictureBook, ...scenario } = JSON.parse(await readFile(new URL('../../data/dialogue/trpg_' + theme + '.json', import.meta.url), 'utf8'));
+  return scenario; // The table tests below enter directly. The prologue tests add their own pages.
+}));
 function mount(scenario, extra = {}) {
   const host = new Dom();
   const manifest = extra.manifest || { portraits: Object.fromEntries(scenario.cast.map(c => [c.id, { faces: ['normal'], h: .7, b: .1, aspect: 1 }])) };
-  const audio = { enabled: false, available: true, setTheme() {}, play() {}, silence() {}, setEnabled() {} };
+  const audio = { enabled: false, available: true, setTheme() {}, play() {}, silence() {}, setEnabled() {}, ...extra.audio };
   let completions = 0, result = null;
   const api = mod.namespace.mountTrpg(host, { ...extra, onComplete: r => { completions++; result = r; return extra.onComplete?.(r); }, scenario, characters: [], manifest, seed: 9, profileId: scenario.profiles[0].id, audio });
   const root = host.children[0];
@@ -620,7 +630,7 @@ test('all 24 NPC portraits render in .trpg-speaker-art without disturbing unpict
 test('speaker dock aligns expressions and role costumes consistently across scenes and aliased scenarios', async () => {
   const framesList = JSON.parse(await readFile(new URL('../img/ui/trpg/costumes/frames.json', import.meta.url), 'utf8'));
   const costumeFrames = Object.fromEntries(framesList.map(f => [`${f.scenario}/${f.character}/${f.role_id}`, f]));
-  const mail = JSON.parse(await readFile(new URL('../../data/dialogue/trpg_regular_mail.json', import.meta.url), 'utf8'));
+  const { pictureBook, ...mail } = JSON.parse(await readFile(new URL('../../data/dialogue/trpg_regular_mail.json', import.meta.url), 'utf8'));
   const mounted = mount(mail, { costumeFrames }), { api, root, q } = mounted;
   let enteredStory = false;
   const seen = new Set();
@@ -634,8 +644,8 @@ test('speaker dock aligns expressions and role costumes consistently across scen
     if (enteredStory) {
       assert.match(src, /costumes\/leaf-mail\/hajime_\w+\.webp$/);
       const regular = root.querySelector('[data-speaker="regulara"]');
-      assert(regular.querySelector('.trpg-missing-costume'));
-      assert.equal(regular.querySelector('img'), null);
+      assert.equal(regular.querySelector('.trpg-missing-costume'), null);
+      assert.match(regular.querySelector('img').getAttribute('src'), /costumes\/leaf-mail\/regulara_\w+\.webp$/);
     } else {
       assert.doesNotMatch(src, /costumes/);
     }
@@ -795,4 +805,132 @@ test('incarnation shows each seated PC once and finishes or skips without advanc
     delete Dom.prototype.animate; delete documentPort.body;
     reducedMotion = originalMotion; resetTimers();
   }
+});
+
+const pictureBookScenario = {
+  ...scenarios[0],
+  presentation: { ...scenarios[0].presentation, backdrop: "linear-gradient(#33474b, #152124)" },
+  pictureBook: { pages: [1, 2, 3, 4].map(i => ({
+    image: `../../img/ui/trpg/picturebook/test/page-${i}.webp`, alt: `絵 ${i}`, text: `文 ${i}。`,
+  })) },
+};
+const flush = () => new Promise(resolve => setImmediate(resolve));
+
+test('picture book waits for decode, preloads one page, and turns, returns and skips before the unchanged opening', async t => {
+  const fetched = [], marks = [], themes = [];
+  let finishFirst;
+  decodeImage = image => {
+    const page = /page-(\d)/.exec(image.src)?.[1];
+    fetched.push(page);
+    if (page === '1') return new Promise(resolve => { finishFirst = resolve; });
+    if (page === '2') return Promise.reject(new Error('failed image'));
+    return Promise.resolve();
+  };
+  const direct = mount(scenarios[0]);
+  const { api, root, q, drain } = mount(pictureBookScenario, { onBookmark: mark => marks.push(mark), audio: {
+    setTheme: theme => themes.push(theme), silence: () => themes.push('silenced'),
+  } });
+  t.after(() => { api.destroy(); direct.api.destroy(); decodeImage = () => Promise.resolve(); });
+  const before = JSON.stringify(api.snapshot());
+  const originalStart = q('trpg-start');
+  assert.deepEqual(fetched, [], 'cover does not request picture book illustrations');
+  originalStart.click();
+  originalStart.click();
+  const book = q('trpg-picturebook');
+  const number = q('trpg-picturebook-number');
+  const read = q('trpg-picturebook-page');
+  const skip = q('trpg-picturebook-skip');
+  const back = q('trpg-picturebook-back');
+  const next = q('trpg-picturebook-next');
+  const currentArt = () => book.querySelector('.trpg-picturebook-image');
+  const input = (type, attrs) => book.events[type][0]({ target: book, preventDefault() {}, stopPropagation() {}, ...attrs });
+  book.getBoundingClientRect = () => ({ left: 0, width: 1280 });
+  assert.equal(root.dataset.phase, 'picturebook');
+  assert.equal(book.dataset.motion, 'reduce');
+  assert.equal(book.dataset.ready, 'false');
+  assert.equal(read.textContent, '');
+  assert.equal(next.disabled, true);
+  assert.equal(skip.disabled, false);
+  assert.deepEqual(fetched, ['1']);
+  assert(originalStart.closest('.trpg-cover').inert);
+  finishFirst();
+  await flush();
+  assert.equal(book.dataset.ready, 'true');
+  assert.equal(number.textContent, '1/4');
+  assert.equal(currentArt().getAttribute('alt'), '絵 1');
+  assert.deepEqual(fetched, ['1', '2']);
+  assert(back.disabled);
+  input('click', { clientX: 600 });
+  input('keydown', { key: 'Enter' });
+  assert.equal(number.textContent, '1/4', 'inputs carried over from cover are ignored');
+
+  now += 300;
+  input('keydown', { key: 'Enter', repeat: true });
+  assert.equal(number.textContent, '1/4', 'holding Enter does not turn');
+  input('keydown', { key: 'Enter' });
+  await flush();
+  assert.equal(number.textContent, '2/4');
+  assert.equal(currentArt(), null);
+  assert.equal(read.textContent, '文 2。');
+  assert.equal(book.style.background, pictureBookScenario.presentation.backdrop);
+  assert.deepEqual(fetched, ['1', '2', '3']);
+
+  back.click();
+  await flush();
+  assert.equal(number.textContent, '1/4');
+  now += 300;
+  input('keydown', { key: ' ' });
+  await flush();
+  assert.equal(number.textContent, '2/4');
+  now += 300;
+  input('click', { clientX: 600 });
+  await flush();
+  assert.equal(number.textContent, '3/4');
+  assert.deepEqual(fetched, ['1', '2', '3', '4']);
+  now += 300;
+  input('click', { clientX: 20 });
+  await flush();
+  assert.equal(number.textContent, '2/4');
+  skip.click();
+  await flush();
+  assert.equal(number.textContent, '4/4');
+  assert.equal(next.textContent, '物語へ入る');
+  assert.equal(JSON.stringify(api.snapshot()), before);
+  assert.deepEqual(marks, []);
+  assert.deepEqual(themes, [pictureBookScenario.presentation.theme]);
+
+  next.click();
+  await flush();
+  direct.q('trpg-start').click();
+  assert.equal(root.querySelector('.trpg-picturebook'), null);
+  assert.equal(root.dataset.phase, 'listen');
+  assert.equal(direct.root.querySelector('.trpg-picturebook'), null);
+  assert.equal(root.querySelector('.trpg-speech').textContent, direct.root.querySelector('.trpg-speech').textContent);
+  assert.equal(JSON.stringify(api.snapshot()), JSON.stringify(direct.api.snapshot()));
+  drain();
+  assert.deepEqual(JSON.parse(JSON.stringify(marks[0].actions)), [['start']]);
+});
+
+test('a bookmark bypasses the picture book and disposing a fresh prologue cancels the pending page', async t => {
+  const fetched = [];
+  let finishFirst;
+  decodeImage = image => {
+    fetched.push(image.src);
+    return new Promise(resolve => { finishFirst = resolve; });
+  };
+  const restored = mount(pictureBookScenario, { resume: { actions: [['start']] } });
+  const fresh = mount(pictureBookScenario);
+  t.after(() => { restored.api.destroy(); fresh.api.destroy(); decodeImage = () => Promise.resolve(); });
+  assert.equal(restored.api.snapshot().phase, 'listen');
+  assert.equal(restored.root.querySelector('.trpg-picturebook'), null);
+  assert.deepEqual(fetched, []);
+
+  fresh.q('trpg-start').click();
+  assert.equal(fetched.length, 1);
+  fresh.api.destroy();
+  finishFirst();
+  await flush();
+  assert.equal(fresh.root.querySelector('.trpg-picturebook'), null);
+  assert.equal(fresh.api.snapshot().phase, 'cover');
+  assert.equal(fetched.length, 1);
 });

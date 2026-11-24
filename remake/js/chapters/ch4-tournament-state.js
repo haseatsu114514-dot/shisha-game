@@ -4,7 +4,7 @@ import { difficultyEvidence } from "../core/cycle-start.js";
 import { initialBaseVotes, baseVoteOf } from "./tournament-base-votes.js";
 
 export const CH4_CONTESTANTS = Object.freeze(["hajime", "naru", "master_hookah", "sheikh"]);
-export const CH4_JUDGES = Object.freeze(["sui", "da_silva", "emil"]);
+export const CH4_JUDGES = Object.freeze(["sensu", "da_silva", "emil"]);
 // 2026-11-03「3・4章を難しく調整」: なるの中盤、シェイクの終盤を強める暫定値（版2・版3）。
 // 配点は2/3/2/3を保持。最後40%の案は、相手の固定順位を生むため採用しない。
 // 途中の旧保存は旧基準を保持し、新しい一台から最新の版で競う。
@@ -13,7 +13,7 @@ export const CH4_JUDGES = Object.freeze(["sui", "da_silva", "emil"]);
 export const CH4_RULES_VERSION = 4;
 // 穴・熱・提供・調整1・調整2・最終総合。各成分は等重みから±10pt以内。
 export const CH4_JUDGE_WEIGHTS = Object.freeze({
-  sui: Object.freeze([15, 15, 15, 15, 15, 25]),
+  sensu: Object.freeze([15, 15, 15, 15, 15, 25]),
   da_silva: Object.freeze([15, 25, 15, 15, 15, 15]),
   emil: Object.freeze([15, 15, 15, 15, 25, 15]),
 });
@@ -161,13 +161,17 @@ export function chapterFourStandings(p) {
 
 function commitChapterFourVote(p, craft, quality, rules, round) {
   p.quality = quality;
+  const picks = {};
+  const firstPoints = rules.spend[round] - 1;
   for (const judge of CH4_JUDGES) {
     const hajimeScore = rulesVersion(p) >= 3 ? chapterFourJudgeQuality(craft, round, judge) : p.quality.hajime;
     const score = id => id === "hajime" ? hajimeScore : p.quality[id];
     const [first, second] = [...CH4_CONTESTANTS].sort((a, b) => score(b) - score(a) || byTie(a, b));
-    p.votes[judge][first] += rules.spend[round] - 1;
+    picks[judge] = { points: { [first]: firstPoints, [second]: 1 } };
+    p.votes[judge][first] += firstPoints;
     p.votes[judge][second] += 1;
   }
+  (p.roundVotes ||= [])[round] = picks;
   p.voted++;
 }
 
@@ -224,6 +228,6 @@ export function resetChapterFourCraft(value) {
   if (!p.result || p.result.win) return false;
   if (p.entry) restore(value, p.entry);
   Object.assign(p, { rulesVersion: CH4_RULES_VERSION, step: 0, craft: null, rollback: null, result: null,
-    voted: 0, votes: emptyVotes(), baseVotes: initialBaseVotes(CH4_CONTESTANTS), quality: null });
+    voted: 0, votes: emptyVotes(), baseVotes: initialBaseVotes(CH4_CONTESTANTS), roundVotes: [], quality: null });
   return true;
 }

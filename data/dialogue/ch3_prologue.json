@@ -7,22 +7,22 @@
       "lines": [
         { "speaker": "", "text": "はじめの知らない、ずっと前の話。東京の小さな公園。" },
         { "speaker": "", "text": "少年は、描いたばかりのレモンケーキを膝にのせて、お茶を一口飲んだ。" },
-        { "speaker": "", "text": "少年「このお茶、絵のケーキの味がする」" },
-        { "speaker": "", "text": "近くの子が笑った。「お茶なのに？　嘘つき」" },
+        { "speaker": "", "text": "少年は「このお茶、絵のケーキの味がする」と言った。" },
+        { "speaker": "", "text": "近くの子が「お茶なのに？　嘘つき」と笑った。" },
         { "type": "show_cg", "cg_id": "cg_ch3_childhood_offered_hand" },
         { "speaker": "", "text": "少年は絵を伏せた。少女は風に転がる落ち葉をぼんやり見ていたが、ふと隣にしゃがみ、手を差し出した。" },
-        { "speaker": "", "duck": true, "text": "少女「僕には、お茶。でも好き。いっしょに飲もう」" },
+        { "speaker": "", "duck": true, "text": "少女は「僕には、お茶。でも好き。いっしょに飲もう」と言った。" },
         { "speaker": "", "text": "少年がその手を取ると、少女は当たり前のように隣へ座った。" },
         { "type": "show_cg", "cg_id": "cg_saku_mashiro_childhood" },
         { "speaker": "", "text": "少年は絵を半分に折り、片方を少女へ渡した。" },
-        { "speaker": "", "text": "少年「……明日も、ここで飲む？」" },
-        { "speaker": "", "text": "少女「うん。友達だもん」" },
+        { "speaker": "", "text": "少年は「……明日も、ここで飲む？」と聞いた。" },
+        { "speaker": "", "text": "少女は「うん。友達だもん」と答えた。" },
         { "speaker": "", "text": "少年はうなずいた。少女の隣にまた座れると思うと、明日が待ち遠しくなった。" },
         { "type": "hide_cg" }
       ]
     },
     {
-      "dialogue_id": "ch3_saku_research",
+      "dialogue_id": "ch3_ayatori_research",
       "lines": [
         { "speaker": "", "text": "それから何年も後。青年は机のパソコンで、全国大会の出場者を調べていた。" },
         { "speaker": "", "text": "横には、湯気の薄くなったお茶と、書き込みだらけのノート。" },

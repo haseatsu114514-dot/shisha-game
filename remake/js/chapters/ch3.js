@@ -1,12 +1,12 @@
 // 第3章・東京到着から全国大会前夜までを、場面単位で保存する。
-import { DB, bgUrl, displayName } from "../core/data.js";
+import { DB, bgUrl, displayName, loadConfessionDialogue } from "../core/data.js";
 import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardSceneExp, consultLessons, readyLessons } from "../core/growth.js";
 import { state, save, loadFromSlot, requestResumeOnBoot, timeOfDay } from "../core/state.js";
-import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withScenePreparation, loadingNotice, withSceneLoading } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast, withScenePreparation, loadingNotice, withSceneLoading } from "../core/ui.js";
 import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -19,7 +19,7 @@ import { onDialogueEnter } from "../daily/romance.js";
 import { pendingFriendLime, readFriendLime } from "./friend-entry.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale, recordRomanceChoice, bondCondition } from "../daily/bonds.js";
 import { CH3_CONFESSION_IDS, confessionAnswer } from "./ch3-romance-entry.js";
-import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
+import { loverMilestonesDue, prepareLoverMilestones, readLoverMilestone } from "./lover-entry.js";
 import { MUKAI_DELIVERY_STEPS, runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime,
@@ -42,20 +42,22 @@ import { CH3_STORY_DIALOGUE_FILES, EVENING_WINDOW, availableOptionalScenes, comm
   selectChapterThreeEvening, eveningRecord } from "./ch3-story-wiring.js";
 
 const FILES = {
-  ch3_prologue: ["ch3_childhood_opening", "ch3_saku_research", "ch3_train_arrival"],
+  ch3_prologue: ["ch3_childhood_opening", "ch3_ayatori_research", "ch3_train_arrival"],
   ch3_main: ["ch3_opening", "ch3_registration", "ch3_individuality_doubt", "ch3_tokyo_shop_gap", "ch3_abyss_recovery",
     "ch3_naru_contact_before_tournament", "ch3_naru_work", "ch3_strategy", "ch3_tournament_eve"],
   ch3_double_apple: ["ch3_mukai_arrival", "ch3_double_apple_incident", "ch3_rest_before_recovery",
     "ch3_daily_cup_1", "ch3_work_without_taste", "ch3_taste_return"],
   ch3_mukai: ["ch3_mukai_intro"],
   ch3_deliveries: MUKAI_DELIVERY_STEPS.filter(step => step.id !== "ch3_mukai_intro").map(step => step.id),
-  ch3_rivals: ["ch3_saku_first", ...CH3_SERVICE_IDS, "ch3_saku_advice", "ch3_steve_low_heat"],
+  ch3_rivals: ["ch3_ayatori_first", ...CH3_SERVICE_IDS, "ch3_ayatori_advice", "ch3_steve_low_heat"],
   ch3_volk: ["ch3_volk_first"],
   // 出発前の準備3日と出発の朝（VOL02）。旧行程の保存も、章頭の回想の前に列車の4行（ch3_train_departure）を読む。
   ch3_departure: CH3_PREP_SCENES,
 };
 // 任意8場面・前夜デート・前夜の修羅場未遂（#1176 GAP 3-B）。既存ファイルの配列へ足し、新しいファイルはそのまま加える。
-for (const [file, ids] of Object.entries(CH3_STORY_DIALOGUE_FILES)) FILES[file] = [...(FILES[file] || []), ...ids];
+for (const [file, ids] of Object.entries(CH3_STORY_DIALOGUE_FILES)) {
+  if (file !== "confession") FILES[file] = [...(FILES[file] || []), ...ids];
+}
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -273,7 +275,7 @@ async function renderPrologue(owner) {
   }
   if (progress.prologueStep === 1) {
     // 色の抜けた公園の回想が煙のにじみでほどけて現在へ（#2688 A3・TMG60）
-    if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video", fromChildhood ? leavesToPresent : null)) return;
+    if (!await readPrologue(owner, "ch3_ayatori_research", "bg_ch3_saku_video", fromChildhood ? leavesToPresent : null)) return;
     progress.prologueStep = 2;
     save();
   }
@@ -314,7 +316,7 @@ async function renderPrep(owner) {
   }
   if (prep.step === 1) {
     // 色の抜けた公園の回想が煙のにじみでほどけて現在へ（#2688 A3・TMG60）
-    if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video", fromChildhood ? leavesToPresent : null)) return;
+    if (!await readPrologue(owner, "ch3_ayatori_research", "bg_ch3_saku_video", fromChildhood ? leavesToPresent : null)) return;
     prep.step = 2;
     save();
   }
@@ -363,7 +365,7 @@ async function renderPrep(owner) {
 }
 
 async function readScene(owner, scene) {
-  if (scene.id !== "ch3_saku_mukai_visit") return readDialogueScene(owner, scene);
+  if (scene.id !== "ch3_ayatori_mukai_visit") return readDialogueScene(owner, scene);
   const { adjustChapterThreeService } = await import("./ch3-service.js");
   if (!current(owner)) return false;
   return runChapterThreeService(owner.state, {
@@ -375,6 +377,16 @@ async function readScene(owner, scene) {
 
 async function readDialogueScene(owner, scene) {
   if (!current(owner)) return false;
+  if (scene.file === "confession") {
+    try { await withSceneLoading(loadConfessionDialogue(), "告白の場面を準備しています…"); } catch {
+      if (current(owner)) toast("会話を読み込めませんでした。もう一度お試しください");
+      return false;
+    }
+    if (!current(owner)) return false;
+    for (const id of CH3_STORY_DIALOGUE_FILES.confession) {
+      if (!DB.dialogues[id]?.lines?.length) throw new Error(`台本がありません: ${id}`);
+    }
+  }
   const original = DB.dialogues[scene.id];
   const source = original && chapterThreeWorkDialogue(state, original);
   if (!source) throw new Error(`台本がありません: ${scene.id}`);
@@ -478,6 +490,8 @@ async function renderStage(owner) {
   const background = bgUrl(scene.bg, timeOfDay());
   await withScenePreparation(enterScene(background));
   if (!current(owner)) return;
+  await prepareLoverMilestones(["mashiro"]);
+  if (!current(owner)) return;
   card(owner, "scene", `DAY ${scene.day}・${scene.label}`, `${scene.location}へ向かう。`, [
     button(owner, "続きを読む", "continue", async () => {
       if (scene.id === "ch3_mukai_intro") {
@@ -501,7 +515,7 @@ async function renderStage(owner) {
     ...bondActions(owner),
     ...friendActions(owner),
     ...await optionalActions(owner),
-  ], scene.id === "ch3_saku_advice" ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
+  ], scene.id === "ch3_ayatori_advice" ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
 }
 
 /** 東京の14日（版3）。日常ループの地図・本筋・寄り道は chapters/ch3-tokyo-daily.js。大会の朝に戻る。 */
@@ -586,8 +600,8 @@ function bondActions(owner) {
     // 綾取・スティーブ・ヴォルクの締めくくり（#2028）。条件は daily/bonds.js（LIME交換の寄り道と、答えを返す／タイマーを借りる外出・
     // 鉄の煙の四度目の後・♥5）。
     // 友情の着地だけ。版3の東京は日常ループの店（ch3-tokyo-daily.js）から読むので、ここは旧行程の保存のため。
-    ...finaleAtVisit("saku") ? [button(owner, "綾取に呼ばれる（煙幕）", "bond-saku-finale",
-      () => readBond(owner, "finale", "saku"))] : [],
+    ...finaleAtVisit("ayatori") ? [button(owner, "綾取に呼ばれる（煙幕）", "bond-ayatori-finale",
+      () => readBond(owner, "finale", "ayatori"))] : [],
     ...finaleAtVisit("steve") ? [button(owner, "スティーブに呼ばれる（Smoke & Glory）", "bond-steve-finale",
       () => readBond(owner, "finale", "steve"))] : [],
     ...finaleAtVisit("volk") ? [button(owner, "ヴォルクに呼ばれる（鉄の煙）", "bond-volk-finale",
@@ -597,7 +611,7 @@ function bondActions(owner) {
 
 async function readBond(owner, kind, id = "mashiro") {
   if (!current(owner)) return;
-  const background = bgUrl({ saku: "bg_yohaku_shop", steve: "bg_steve_shop", volk: "bg_volk_shop" }[id] || "bg_mukai_shop", timeOfDay());
+  const background = bgUrl({ ayatori: "bg_yohaku_shop", steve: "bg_steve_shop", volk: "bg_volk_shop" }[id] || "bg_mukai_shop", timeOfDay());
   showScreen("none", null);
   hud(owner);
   await withScenePreparation(setBg(background));
@@ -696,7 +710,8 @@ async function playEvening(owner, result, { plan = null, window = null, definiti
 async function readLoverMilestoneAt(owner, id) {
   // 場面カードの東京では現在地の印が地元のまま。地元が舞台の節目は帰郷してから（#2024）
   const home = playerRegion(state) === "home";
-  if (!current(owner) || !loverMilestonesDue([id], { home }).length) return;
+  if (!current(owner) || !await prepareLoverMilestones([id]) || !current(owner)
+    || !loverMilestonesDue([id], { home }).length) return;
   showScreen("none", null);
   hud(owner);
   const controller = owner.controller = new AbortController();

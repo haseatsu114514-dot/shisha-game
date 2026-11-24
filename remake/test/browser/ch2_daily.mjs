@@ -7,25 +7,39 @@ const evidence = (process.env.COMPARISON_DIR || fileURLToPath(new URL('../../../
 fs.mkdirSync(evidence, { recursive: true });
 const t = name => `[data-test="${name}"]`;
 const map = '[data-destination-selection]:not(.done)';
-async function setup(page, { money = 36000, unknown = false, reel = false, guest = null, stamina = 100, weatherSeed = 7 } = {}) {
+async function setup(page, { money = 36000, unknown = false, reel = false, guest = null, stamina = 100, weatherSeed = 7, morning = null } = {}) {
   page.setDefaultTimeout(30000);
-  const seeded = await page.evaluate(async ({ money, unknown, reel, guest, stamina, weatherSeed }) => {
+  const seeded = await page.evaluate(async ({ money, unknown, reel, guest, stamina, weatherSeed, morning }) => {
     const core = await import('./js/core/state.js');
     const value = core.newGame();
     // These map-flow cases start the morning after a recent shift; the optional shift invite has its own coverage.
     Object.assign(value, { chapter: 2, phase: 'daily', day: 15, slot: 2, money, stamina, weatherSeed, lastBaitoDay: 15 });
-    value.flags = { _rei_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true },
+    value.flags = { _kuraudo_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true },
       _ch2_city_visit_c_station: true, _lime_tut: 1, _lime_opened: true,
       _hiyori_meeting_done: true, _hiyori_message_delivered: true };
     value.stats = { technique: 31, sense: 31, guts: 31, charm: 31, insight: 31 };
     value.flavorStock = { mint: 21.5, double_apple: 6 }; value.keepsakes = ['qa_old_keepsake'];
     value.relationshipMemories = ['qa_old_memory']; value.loverSince = { minto: 10 }; value.lastDate = { minto: 13 };
     value.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true,
-      ageha: !unknown, kumicho: !unknown, rei: !unknown, volk: !unknown };
+      ageha: !unknown, kumicho: !unknown, kuraudo: !unknown, volk: !unknown };
     value.contacts = ['sumi', 'naru'];
     value.reel.installed = reel;
     if (reel) Object.assign(value.reel, { introDone: true, settingGuideDone: true });
-    for (const id of ['ageha', 'kumicho', 'rei']) value.flags[`_intro_${id}`] = !unknown;
+    for (const id of ['ageha', 'kumicho', 'kuraudo']) value.flags[`_intro_${id}`] = !unknown;
+    if (morning) {
+      Object.assign(value, { day: morning.day, slot: 0, lastBaitoDay: morning.day - 1 });
+      Object.assign(value.flags, {
+        [`_morning_${morning.day}`]: true, _ch2_commute_v1: true, _ch2_region: 'home',
+        _ch2_last_yuzugaya_day: morning.day - 1,
+        _ch2_talks: { ageha: 2, kumicho: 1, kuraudo: 1 }, _ch2_followup_done: { ageha: true },
+        _ch2_visited_ch2_c_station: true, _intro_sai: true, _ch2_prep_midcheck_done: true,
+        _ageha_aquarium_introduced: true, _kumicho_sento_introduced: true,
+        _ch2_visited_ch2_aquarium: true, _ch2_visited_ch2_sento: true,
+        _ch2_commute_regulars: true, _ch2_read_remake_ch2_ageha_badday: true, _ch2_night_7_done: true,
+        _ch2_read_ch2_naru_lunch: true, ...morning.flags,
+      });
+      if (morning.message) value.inbox.push(morning.message);
+    }
     if (guest) {
       const { trainPassengers } = await import('./js/motions/train-passengers.js');
       for (let weatherSeed = 0; weatherSeed < 10000; weatherSeed++) {
@@ -46,7 +60,7 @@ async function setup(page, { money = 36000, unknown = false, reel = false, guest
     const before = structuredClone(value);
     void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
     return before;
-  }, { money, unknown, reel, guest, stamina, weatherSeed });
+  }, { money, unknown, reel, guest, stamina, weatherSeed, morning });
   await page.locator(`${t('ch2-morning-home')}, ${t('ch2-main-error')}`).first().waitFor();
   return seeded;
 }
@@ -111,7 +125,7 @@ await suite('ch2-daily',async check=>{
       const s = core.newGame();
       Object.assign(s, { chapter: 2, phase: 'daily', day: 22, slot: 0, money: 30000 });
       s.trpg.club.founded = { chapter: 2, day: 15 };
-      Object.assign(s.flags, { _rei_trpg_introduced: true, _intro_sai: true,
+      Object.assign(s.flags, { _kuraudo_trpg_introduced: true, _intro_sai: true,
         _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true } });
       // #3135 以降、未設立の入店は設立会話が先に立つ。この検査は地図プレビューなので、既に設立済みにする。
       s.trpg.club.founded = { chapter: 2, day: 1 };
@@ -276,21 +290,21 @@ await suite('ch2-daily',async check=>{
   });
   await check('installed-reel-preserves-draw-on-reload',async page=>{
     await setup(page,{reel:true});await begin(page);await wide(page);await act(page,'ch2_rei');
-    let v=await value(page);assert(v.reel.count>0);assert.equal(v.reel.lastChapter,2);assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.rei,1);
+    let v=await value(page);assert(v.reel.count>0);assert.equal(v.reel.lastChapter,2);assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.kuraudo,1);
     const drawn=structuredClone(v); // リプレイで複数回転する場合も、確定した抽選と報酬をそのまま保存する。
     await reloadSave(page);v=await value(page);assert.equal(v.reel.count,drawn.reel.count,'Loading must not reroll the same visit');
     assert.equal(v.money,drawn.money);assert.deepEqual(v.stats,drawn.stats);
-    assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.rei,1);
+    assert.equal(v.slot,1);assert.equal(v.flags._ch2_talks.kuraudo,1);
   });
   await check('touch-three-owners-and-fixed-day3-night',async page=>{
     await setup(page,{unknown:true});await begin(page);await wide(page,true);
-    for(const id of ['ageha','kumicho','rei']) {
+    for(const id of ['ageha','kumicho','kuraudo']) {
       if ((await value(page)).flags._ch2_region === 'home') await wide(page, true);
-      await act(page,`ch2_${id}`,{touch:true});
+      await act(page,id === 'kuraudo' ? 'ch2_rei' : `ch2_${id}`,{touch:true}); // 店IDは ch2_rei（人物IDと分離）
     }
     await travelToCity(page,'home',{touch:true}); await act(page,'rest',{touch:true});
     let v=await value(page);assert.equal(v.day,18);assert.equal(v.slot,0);assert.equal(v.money,27000-stationFares(page));
-    assert(v.flags._ch2_naru_warm_done);for(const id of ['ageha','kumicho','rei'])assert.equal(v.flags._ch2_talks[id],1);
+    assert(v.flags._ch2_naru_warm_done);for(const id of ['ageha','kumicho','kuraudo'])assert.equal(v.flags._ch2_talks[id],1);
     const trace=await page.evaluate(()=>window.__dailyTrace);assert.equal(trace.filter(id=>id==='ch2_naru_warm').length,1);
     // 旧しくみは店主3人の訪問の分（6P）だけで、固定のなるの夜は伸ばさない。心得の盤は能力を書き換えず、訪問の経験値だけ
     if(await page.evaluate(async()=>(await import('./js/core/growth-mode.js')).growthEnabled())){
@@ -323,7 +337,7 @@ await suite('ch2-daily',async check=>{
   await check('room-image-failure-preserves-cost-and-action',async page=>{
     let bad=true;await page.route('**/bg_ch2_rei_entry.webp',r=>bad?r.fulfill({status:200,contentType:'image/webp',body:'bad image'}):r.continue());
     await setup(page);await begin(page);await wide(page);await go(page,'ch2_rei');
-    await page.locator(map).waitFor();let v=await value(page);assert.equal(v.money,36000-stationFares(page));assert.equal(v.slot,0);assert.equal(v.flags._ch2_talks?.rei,undefined);
+    await page.locator(map).waitFor();let v=await value(page);assert.equal(v.money,36000-stationFares(page));assert.equal(v.slot,0);assert.equal(v.flags._ch2_talks?.kuraudo,undefined);
     bad=false;await act(page,'ch2_rei');v=await value(page);assert.equal(v.money,33000-stationFares(page));assert.equal(v.slot,1);
   });
   for (const [id, flag, cost, recovery] of [
@@ -349,11 +363,13 @@ await suite('ch2-daily',async check=>{
     await setup(page, { money: 1950 });
     await page.evaluate(() => { __remake.state.flags._kumicho_sento_introduced = true; });
     await page.locator(t('ch2-morning-city')).waitFor();
+    assert.equal(await page.locator(t('ch2-morning-repeat')).count(), 0);
     assert.match(await page.locator('.modal-body').innerText(), /片道200円.*帰りの切符代も200円必要/);
     await capture(page, 'morning-city-choice.png');
     assert.equal((await value(page)).flags._ch2_region, 'home');
     await page.locator(t('ch2-morning-city')).click();
     await page.locator('.map[data-region="widehanga"]').waitFor();
+    assert((await page.evaluate(() => window.__dailyTrace)).includes('ch2_commute_morning_regulars'));
     let v = await value(page); assert.equal(v.money, 1750); assert.equal(v.slot, 0);
     await go(page, 'ch2_shop'); await page.locator(t('buy-strawberry')).click();
     await page.locator(t('shop-checkout')).click();
@@ -366,6 +382,63 @@ await suite('ch2-daily',async check=>{
     await reloadSave(page); assert.equal((await value(page)).money, 200);
     assert.equal((await value(page)).flags._ch2_region, 'widehanga');
   });
+  for (const [label, viewport] of [['pc', {}], ['touch', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(`morning-repeat-city-${label}`, async page => {
+      await setup(page, { morning: { day: 22 } });
+      const shortcut = page.locator(t('ch2-morning-repeat'));
+      assert.match(await shortcut.innerText(), /前回と同じ街.*柚ヶ谷.*片道200円/);
+      assert.match(await page.locator('.modal-body').innerText(), /帰りの切符代も200円必要/);
+      await assertFits(page, t('ch2-morning-repeat'));
+      assert.equal((await value(page)).money, 36000);
+      await capture(page, `morning-repeat-city-${label}.png`);
+      // Disable VN auto-advance on the synthetic ticket scene so an extra confirmation cannot pass unnoticed.
+      await page.evaluate(async () => {
+        const { hooks } = await import('./js/vn/engine.js');
+        hooks.onEnter = id => { if (id === '__ch2_morning_train') __remake.vnTest.turbo = false; };
+      });
+      if (label === 'touch') await shortcut.tap();
+      else await shortcut.click();
+      await page.locator('.map[data-region="widehanga"]').waitFor();
+      const after = await value(page);
+      assert.equal(after.money, 35800);
+      assert.equal(after.slot, 0);
+      assert.equal(after.flags._ch2_last_yuzugaya_day, 22);
+      assert(!(await page.evaluate(() => window.__dailyTrace)).includes('__ch2_morning_train'));
+      if (label === 'pc') {
+        await reloadSave(page);
+        assert.equal((await value(page)).money, 35800);
+      }
+    }, viewport);
+  }
+  for (const [label, morning, notice, scene] of [
+    ['fixed-night', { day: 23 }, /今夜の予定.*アフサール新作の試煙会/, '__ch2_morning_train'],
+    ['unread-store', { day: 22, flags: { _ch2_read_remake_ch2_ageha_badday: false } }, /まだ読んでいない用件.*MELTY PUFF/, '__ch2_morning_train'],
+    ['first-visit', { day: 22, flags: { _ch2_visited_ch2_c_station: false } }, /初めて訪ねる場所.*C\.STATION/, '__ch2_morning_train'],
+    ['unread-commute', { day: 22, flags: { _ch2_commute_regulars: false } }, /片道200円.*帰りの切符代も200円必要/, 'ch2_commute_morning_regulars'],
+    ['day-story', { day: 22, flags: { _ch2_read_ch2_naru_lunch: false } }, /片道200円.*帰りの切符代も200円必要/, 'ch2_naru_lunch'],
+    ['unread-lime', { day: 22, message: { id: 'qa_morning_lime', day: 22, chapter: 2, read: false,
+      msg: { id: 'qa_morning_lime', sender: 'sumi', type: 'chat', messages: ['確認を頼む'], important: true } } },
+    /LIMEに未読の用件/, '__ch2_morning_train'],
+  ]) {
+    await check(`morning-repeat-keeps-${label}`, async page => {
+      await setup(page, { morning });
+      assert.equal(await page.locator(t('ch2-morning-repeat')).count(), 0);
+      assert.match(await page.locator('.modal-body').innerText(), notice);
+      assert.equal((await value(page)).money, 36000);
+      if (label === 'day-story') assert.equal((await value(page)).slot, 1);
+      await page.locator(t('ch2-morning-city')).click();
+      await page.locator('.map[data-region="widehanga"]').waitFor();
+      assert((await page.evaluate(() => window.__dailyTrace)).includes(scene));
+      assert.equal((await value(page)).money, 35800);
+      if (label === 'fixed-night') {
+        // Dismissing the daytime actions through ordinary rest still reaches the fixed city scene.
+        await travelToCity(page, 'home');
+        await act(page, 'rest');
+        await go(page, 'rest');
+        await page.waitForFunction(() => window.__dailyTrace.includes('ch2_kemuri_thermometer'));
+      }
+    });
+  }
   await check('outbound-needs-both-fares-at-morning-choice-and-station', async page => {
     await setup(page, { money: 399 });
     assert.equal(await page.locator(t('ch2-morning-city')).count(), 0);

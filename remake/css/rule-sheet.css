@@ -17,3 +17,22 @@
 .rule-article h3 { margin: 0 0 5px; color: #473616; font-size: 16px; }
 .rule-article p { margin: 0; font-size: 15px; line-height: 1.4; }
 .rule-sheet-foot { margin: 10px 0 0; text-align: right; font-size: 13px; letter-spacing: .02em; }
+
+/* 第1章の配点は、横持ちでも本文を読める大きさにして紙だけをスクロールする。 */
+:root[data-density="phone"] .modal-box.rule-sheet-modal:has(.rule-sheet[data-chapter="1"]) {
+  display: flex;
+  flex-direction: column;
+  width: min(960px, calc(100% - 96px));
+  max-width: none;
+  max-height: calc(100% - 52px);
+}
+:root[data-density="phone"] .rule-sheet-modal:has(.rule-sheet[data-chapter="1"]) .modal-body {
+  display: block;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+:root[data-density="phone"] .rule-sheet[data-chapter="1"] { width: min(100%, 760px); margin-inline: auto; }
+:root[data-density="phone"] .rule-sheet[data-chapter="1"] .rule-article p {
+  font-size: max(25px, calc(14px / var(--k, 1)));
+}

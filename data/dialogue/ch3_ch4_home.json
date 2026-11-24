@@ -233,7 +233,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "おお、はじめ。今日はまた、遠くを見る顔をしておるのう"
+          "text": "おお、お主。今日はまた、遠くを見る顔をしておるのう"
         },
         {
           "speaker": "hajime",
@@ -513,7 +513,7 @@
         {
           "speaker": "samechan",
           "face": "excited",
-          "text": "はじめ！　東京から戻ったと思うたら、今度はドバイじゃのう"
+          "text": "お主！　東京から戻ったと思うたら、今度はドバイじゃのう"
         },
         {
           "speaker": "hajime",
@@ -730,7 +730,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "ハジメっちが東京から帰ってくるころが、ちょうどいいっしょ"
+          "text": "ハジメっちが東京から帰ってくる頃が、ちょうどいいっしょ"
         },
         {
           "speaker": "",
@@ -834,8 +834,8 @@
       ]
     },
     {
-      "dialogue_id": "ch3_prep_rei",
-      "comment": "#3097 PR-I（計画 3-3）。東京へ発つ前の準備3日、「貴方ノ為ノ此ノ煙。」の来店で一度だけ（daily/spots.js の CHAPTER_TALKS・chapters/ch2-preparation.js の visitPreparationSpot）。第2章で余りチケットを受け取った人（_ch2_rei_ticket）はライブの夜 ch3_prep_rei_live が送り出しを兼ねるので出さない。本名・笑顔の練習・「嘘」・同士の呼び方には触れない。引き出した一枚は第4章の送り出しの分岐でかける。",
+      "dialogue_id": "ch3_prep_kuraudo",
+      "comment": "#3097 PR-I（計画 3-3）。東京へ発つ前の準備3日、「貴方ノ為ノ此ノ煙。」の来店で一度だけ（daily/spots.js の CHAPTER_TALKS・chapters/ch2-preparation.js の visitPreparationSpot）。第2章で余りチケットを受け取った人（_ch2_kuraudo_ticket）はライブの夜 ch3_prep_kuraudo_live が送り出しを兼ねるので出さない。本名・笑顔の練習・「嘘」・同士の呼び方には触れない。引き出した一枚は第4章の送り出しの分岐でかける。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
@@ -846,7 +846,7 @@
           "text": "店に入ると、クラウドがカウンターで、CDのケースを一枚ずつ拭いていた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……東京、行くって聞いた"
         },
@@ -856,7 +856,7 @@
           "text": "はい。何日かしたら、発ちます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "移動、長いだろ。何、聴く"
         },
@@ -866,12 +866,12 @@
           "text": "何も、決めてなかったです"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "長い移動は、アルバムを一枚。頭から終わりまで、飛ばさないで"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "曲の順番には、作った人の考えがある。通して聴くと、それが分かる"
         },
@@ -881,7 +881,7 @@
           "text": "一枚通して聴いたこと、あんまりないかもしれません"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……なら、ちょうどいい。一枚、自分で選んで"
         },
@@ -891,7 +891,7 @@
           "text": "クラウドは拭き終えたケースを棚に戻し、別の一枚を少しだけ手前に引き出した。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……これは、帰ってきたらかける。先に、向こうで何を選んだか教えて"
         },

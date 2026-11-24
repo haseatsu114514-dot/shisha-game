@@ -1,18 +1,34 @@
 // 関係の表示は、実際の回答・読了・交際から組み立てる。表示だけで保存データを補わない。
-import { DB } from "../core/data.js";
+import { DB, loadConfessionDialogue } from "../core/data.js";
 import { state } from "../core/state.js";
 import { affinityLevel, affinityGateWaiting } from "../core/stats.js";
 import { BOND_QUESTIONS, BOND_FINALES, questionVisitDue, finaleDue, finaleHeart, settledFriend, finaleReachable } from "./bonds.js";
-import { romanceRouteOpen, confessionHeld } from "./romance.js";
+import { romanceRouteOpen, romanceRouteEligible, confessionHeld } from "./romance.js";
 import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 
 const meetingPlace = {
   sumi: "tonari", tsumugi: "tonari", naru: "KEMURIKUSA", adam: "EDEN",
   rio: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "SHISHARK", ageha: "MELTY PUFF",
-  kumicho: "神崎煙草店", rei: "貴方ノ為ノ此ノ煙。", mashiro: "mukai", saku: "煙幕", noor: "カフェ・オアシス", steve: "Smoke & Glory",
+  kumicho: "神崎煙草店", kuraudo: "貴方ノ為ノ此ノ煙。", mashiro: "mukai", ayatori: "煙幕", noor: "カフェ・オアシス", steve: "Smoke & Glory",
   volk: "鉄の煙", master_hookah: "龍龍水煙所", da_silva: "シェイクの屋敷の中庭", sheikh: "シェイクの屋敷",
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
+
+function confessionStatusOpen(id) {
+  // 取得前は締めくくりの最終質問があるルートを、実際の回答から案内する。
+  return romanceRouteOpen(id) || (!DB.confessionDialogueLoaded && !!BOND_FINALES[id]?.question && romanceRouteEligible(id));
+}
+
+export function prepareRelationshipStatus() {
+  if (DB.confessionDialogueLoaded) return null;
+  const candidates = Object.keys(state.finales || {}).filter(id => state.met[id] && romanceRouteEligible(id) && !romanceRouteOpen(id));
+  if (!candidates.length) return null;
+  const before = candidates.map(id => [id, confessionStatusOpen(id)]);
+  return loadConfessionDialogue().then(
+    () => before.some(([id, wasOpen]) => wasOpen !== confessionStatusOpen(id)),
+    () => false,
+  );
+}
 
 // 段階の仕組み（♥3で方向を選ぶ・♥5で特別なイベントと贈り物）は人間関係タブの全体ガイドに一度だけ置く。
 // ここでは次の一手だけを示し、各人の行では反復しない。
@@ -53,7 +69,7 @@ export function relationshipStatus(id) {
       ? "LIMEの雑談や一服の誘いで、交流は続く。"
       : "友人としての大きな節目を迎えた。");
   }
-  if (romanceRouteOpen(id)) {
+  if (confessionStatusOpen(id)) {
     if (id === "mashiro") return summary("romance", "告白を選べる", "寄り道から、休日にましろの部屋でお茶をする日へ。");
     if (id === "noor") return summary("romance", "告白を選べる", "次の砂丘（ツアー代なし）で、滑ったあとの夕日の時間へ。");
     // 出発前の準備・東京・ドバイでは帰り道の告白を始めない（romance.js の confessionHeld・IR33）

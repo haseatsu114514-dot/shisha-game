@@ -38,7 +38,7 @@ for (const m of memories) (byChar[m.char_id] ||= []).push(m);
 const expected = {
   samechan: { scenes: ['samechan_shop_closing_check', 'samechan_bond_finale'], name: 'サメちゃん' },
   hiyori: { scenes: ['hiyori_work_talk', 'hiyori_axe_reveal_close'], name: 'ひより' },
-  saku: { scenes: ['ch3_saku_advice'], name: '綾取' },
+  ayatori: { scenes: ['ch3_ayatori_advice'], name: '綾取' },
   steve: { scenes: ['ch3_steve_low_heat'], name: 'スティーブ' },
 };
 for (const [charId, spec] of Object.entries(expected)) {
@@ -78,13 +78,13 @@ const people = AFFINITY_CHARACTERS;
 const ch5Reflection = reflections(scenes.get(eveScenes[5]))[0];
 // 人物タブに出ても、第3・4章の前夜に浮かんだ大会の相手は第5章で繰り返さない（ch5_main.json の reflection の comment）。
 // スティーブ（#2028）は♥5の締めくくりがあるので人物タブに出るが、記憶は第3章の前夜に浮かぶ低温の話だけ。
-const eveRivals = ['saku', 'steve', 'volk', 'da_silva', 'sheikh', 'master_hookah'];
+const eveRivals = ['ayatori', 'steve', 'volk', 'da_silva', 'sheikh', 'master_hookah'];
 assert.deepEqual(ch5Reflection.chars, people.filter((id) => !eveRivals.includes(id)),
   'ch5 reflection must recall the People tab cast (status.js PEOPLE) except the chapter 3/4 eve rivals');
 assert(people.includes('sumi'), 'ch5 reflection falls back to Sumi');
 const routes = readJson('data/story_routes.json').chapters;
 const chapterCast = {
-  3: ['saku', 'steve', 'volk', 'mashiro', 'mukai_master'],
+  3: ['ayatori', 'steve', 'volk', 'mashiro', 'mukai_master'],
   4: ['da_silva', 'sheikh', 'master_hookah'],
 };
 for (const [chapter, cast] of Object.entries(chapterCast)) {
@@ -131,7 +131,7 @@ assert.deepEqual(texts({}), ['トングを持つ。誰かと過ごした時間�
 Object.assign(reflectionState, { chapter: 3 });
 for (const id of routes[3].before_eve) rememberAll(sceneMemories(id));
 const ch3Eve = texts(lineOf(3));
-assert.deepEqual(ch3Eve, ['saku_decide', 'steve_wait', 'volk_measure'].map((id) => echoOf[id]),
+assert.deepEqual(ch3Eve, ['ayatori_decide', 'steve_wait', 'volk_measure'].map((id) => echoOf[id]),
   'ch3 eve: only the three newest echoes (the narration leads in, Hajime\'s spoken doubt follows)');
 Object.assign(reflectionState, { chapter: 4 });
 for (const id of routes[4].before_eve) rememberAll(sceneMemories(id));

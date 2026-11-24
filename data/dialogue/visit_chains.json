@@ -4009,7 +4009,7 @@
           "text": "綾取がしおりを持って、窓辺に座った。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "僕のノートには、「ここから空が三角」と書いてある"
         },
@@ -4019,7 +4019,7 @@
           "text": "三角にしてるの、それ、屋根ですか？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "正解。でも今日は、角がない"
         },
@@ -4034,7 +4034,7 @@
           "text": "じゃあ今の空も、別に書き足しておきます？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "うん。僕の線の隣、君の線でいい？"
         }
@@ -4049,7 +4049,7 @@
           "text": "窓辺のノートには、違う形の空が並んでいた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "見て。四角い空を、一つ足しておいた"
         },
@@ -4059,7 +4059,7 @@
           "text": "四角？　ここからだと隅がよく見えません"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "立って見たんだ。座って見えた分も、横に残してある"
         },
@@ -4074,7 +4074,7 @@
           "text": "……あ。俺の席でも、四角でした"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "いいね。あとは、誰かがまた違う形を見つける番だ"
         }
@@ -4329,7 +4329,7 @@
           "text": "クラウドは、曲のない所で針を上げた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……聞いて。止めると、店の音がよく分かる"
         },
@@ -4339,7 +4339,7 @@
           "text": "あ、カップが鳴りました。奥で"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……うん。ボクは、今まで針の音だと思ってた"
         },
@@ -4354,7 +4354,7 @@
           "text": "同じ所でも、次は違う音がしますね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……うん。音が来る所に、印だけつけようかな"
         }
@@ -4369,7 +4369,7 @@
           "text": "針の隣に「ここで上げる」と書いた札があった。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……一度、席に座ったままやってみて"
         },
@@ -4379,7 +4379,7 @@
           "text": "上げた。……今、外で自転車が止まりました"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……ボクは、キミが椅子に座り直す音を聞いた"
         },
@@ -4394,7 +4394,7 @@
           "text": "曲は、ここから戻しますか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……うん。今度は、もう少し小さくかける"
         }

@@ -16,7 +16,7 @@ async function readStep(step) {
   const original = DB.dialogues[step.id];
   let script = step.id;
   if (!original) throw new Error(`台本がありません: ${step.id}`);
-  const eve = ["remake_ch2_eve_arrival", "remake_ch2_eve_rei", "ch2_pre_tournament_realisation"].includes(step.id);
+  const eve = ["remake_ch2_eve_arrival", "remake_ch2_eve_kuraudo", "ch2_pre_tournament_realisation"].includes(step.id);
   const place = step.bg ? bgUrl(step.bg) || step.bg : step.room ? ROOMS[step.room] : eve ? MAP.night : null;
   if (place) {
     const loaded = await imageReady(place, 15000);

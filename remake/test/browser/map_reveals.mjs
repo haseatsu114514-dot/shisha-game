@@ -120,7 +120,7 @@ try {
     assert.equal(await page.locator('[data-test="pin-trpg_bar"]').count(), 0, 'chapter 2 alone does not introduce the TRPG bar');
     assert.deepEqual(await page.locator('.newly-revealed').evaluateAll(p => p.map(n => n.dataset.spot).sort()), ['axe_bar', 'shishark']);
     await page.waitForFunction(() => !document.querySelector('.newly-revealed'));
-    await page.evaluate(async () => { R.core.state.flags._rei_trpg_introduced = true; await reopen(); });
+    await page.evaluate(async () => { R.core.state.flags._kuraudo_trpg_introduced = true; await reopen(); });
     await page.locator('[data-test="pin-trpg_bar"].newly-revealed').waitFor();
     assert.deepEqual(await page.locator('.newly-revealed').evaluateAll(p => p.map(n => n.dataset.spot).sort()), ['trpg_bar']);
     await page.evaluate(async () => { R.core.newGame(); await reopen(); });

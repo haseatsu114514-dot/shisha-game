@@ -215,8 +215,7 @@ const todaysDate = () => {
  * 東京・ドバイへ発つ前に、今日の恋人との約束を確かめる。行くなら約束を別の日に改める（地元のデートは遠くではできない）。
  * true＝そのまま出発してよい。
  */
-async function leaveDateBehind(spot) {
-  const invite = todaysDate();
+async function confirmTravelWithDate(spot, invite) {
   if (!invite) return true;
   const name = displayName(invite.sender, state, { context: "private" });
   const city = spot.id === TO_DUBAI_SPOT.id ? "ドバイ" : "東京";
@@ -225,14 +224,20 @@ async function leaveDateBehind(spot) {
       { label: "やめておく", value: false, test: "ch5-date-stay", primary: true },
       { label: `約束を改めて、${city}へ`, value: true, test: "ch5-date-leave" },
     ] });
-  if (!go || state.pendingInvite !== invite) return false;
-  rescheduleInvitation(invite, `${city}へ出かけることになり、約束を別の日に改めることにした`);
-  save();
-  return true;
+  return go && state.pendingInvite === invite;
 }
 
 async function performChapterFiveSpot(spot, io, options = {}) {
-  if ([TO_TOKYO_SPOT.id, TO_DUBAI_SPOT.id].includes(spot.id) && !await leaveDateBehind(spot)) return { used: false, exerted: false };
+  if ([TO_TOKYO_SPOT.id, TO_DUBAI_SPOT.id].includes(spot.id)) {
+    const invite = todaysDate(), owner = state;
+    if (!await confirmTravelWithDate(spot, invite) || state !== owner) return { used: false, exerted: false };
+    const dubai = spot.id === TO_DUBAI_SPOT.id;
+    const result = await (dubai ? performDubaiSpot : performTokyoSpot)(spot, options);
+    if (result?.used && invite && state === owner && state.pendingInvite === invite) {
+      rescheduleInvitation(invite, `${dubai ? "ドバイ" : "東京"}へ出かけることになり、約束を別の日に改めることにした`);
+    }
+    return result;
+  }
   const catering = await performCateringSpot(spot, options);
   if (catering) return catering;
   const tokyo = await performTokyoSpot(spot, options);

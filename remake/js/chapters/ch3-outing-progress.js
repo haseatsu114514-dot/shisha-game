@@ -25,15 +25,15 @@ export const TOKYO_OUTINGS = Object.freeze([
   { id: "mukai_help", place: "mukai", label: "mukaiを手伝う", repeat: true, stamina: -14, money: 8000, stat: "charm",
     reason: { lost: "味が戻るまでは、煙の量と客の顔で手伝える", back: "戻った舌で、客席の調整を任せてもらう" } },
   // 綾取の好感度は煙幕への外出で付く（#2028・AFB02）。♥1でLIME交換の任意場面が開く（ch3-story-wiring.js）。
-  { id: "enmaku_notes", place: "enmaku", after: "ch3_saku_first", before: "ch3_saku_advice", label: "煙幕に顔を出す",
-    stamina: -10, stat: "insight", affinityWith: "saku", reason: "綾取のノートに、何が書いてあるか聞きに行く" },
-  { id: "enmaku_answer", place: "enmaku", after: "ch3_saku_advice", label: "煙幕に顔を出す",
-    stamina: -10, stat: "sense", affinityWith: "saku", reason: "どうしたいか、綾取に答えを返しに行く" },
+  { id: "enmaku_notes", place: "enmaku", after: "ch3_ayatori_first", before: "ch3_ayatori_advice", label: "煙幕に顔を出す",
+    stamina: -10, stat: "insight", affinityWith: "ayatori", reason: "綾取のノートに、何が書いてあるか聞きに行く" },
+  { id: "enmaku_answer", place: "enmaku", after: "ch3_ayatori_advice", label: "煙幕に顔を出す",
+    stamina: -10, stat: "sense", affinityWith: "ayatori", reason: "どうしたいか、綾取に答えを返しに行く" },
   // 煙幕に通う（AFB02）。一度きりの話を読み終えてから、何度でも寄れる。
-  { id: "enmaku_visit", place: "enmaku", after: "ch3_saku_first", label: "煙幕で一服する", repeat: true, regular: true,
+  { id: "enmaku_visit", place: "enmaku", after: "ch3_ayatori_first", label: "煙幕で一服する", repeat: true, regular: true,
     talks: ["ch3_outing_enmaku_visit", "ch3_outing_enmaku_visit_b", "ch3_outing_enmaku_visit_c", "ch3_outing_enmaku_visit_d",
       "ch3_outing_enmaku_visit_e", "ch3_outing_enmaku_visit_f", "ch3_outing_enmaku_visit_g"], // #3097: e〜g
-    stamina: -10, stat: "insight", affinityWith: "saku", reason: "綾取の店で、少し一緒に過ごす" },
+    stamina: -10, stat: "insight", affinityWith: "ayatori", reason: "綾取の店で、少し一緒に過ごす" },
   // スティーブがmukaiへ客として来る（#1696）。タイマー越しに香りの山を逃す癖と、全国へ来た理由。店を訪ねる前まで
   // 何度でも来る（AFB02。2回目からは合図を試す回と、客の顔の回を交互）。
   { id: "mukai_steve", place: "mukai", before: "ch3_steve_low_heat", met: "steve", label: "mukaiで店番をする", repeat: true,
@@ -117,7 +117,7 @@ export const HOME_CALLS = Object.freeze([
   { scene: "ch3_home_call_rio_face", from: "rio" },
   { scene: "ch3_home_call_sumi_pocket", from: "sumi", night: true },
   { scene: "ch3_home_call_kumicho_bow", from: "kumicho" },
-  { scene: "ch3_home_call_rei_last_song", from: "rei", night: true },
+  { scene: "ch3_home_call_kuraudo_last_song", from: "kuraudo", night: true },
   // #3097 第3弾: みんと（東京編のチェキの枠）・スミさん（冷蔵庫のプリン）・サメちゃん（東京の水族館のシロワニ）
   { scene: "ch3_home_call_minto_frame", from: "minto" },
   { scene: "ch3_home_call_sumi_pudding", from: "sumi", night: true },
@@ -129,7 +129,7 @@ export const HOME_CALLS = Object.freeze([
   { scene: "ch3_home_call_adam_menu_back", from: "adam" },
   { scene: "ch3_home_call_rio_attachment", from: "rio" },
   { scene: "ch3_home_call_kumicho_glasses", from: "kumicho" },
-  { scene: "ch3_home_call_rei_wrong_case", from: "rei", night: true },
+  { scene: "ch3_home_call_kuraudo_wrong_case", from: "kuraudo", night: true },
 ].map(call => Object.freeze(call)));
 export const HOME_CALL_IDS = Object.freeze(HOME_CALLS.map(call => call.scene));
 /**

@@ -25,7 +25,11 @@ for (const id of MASHIRO_TIME_SCENES) {
   assert(scene.lines.every(line => ["", "mashiro", "hajime"].includes(line.speaker)), `${id}: 二人だけ`);
   const all = scene.lines.map(line => line.text).join("");
   assert(!/大会|優勝|決勝|予選|博士|ドバイ|帰る日|味が|味は/.test(all), `${id}: 章と時期を決める言葉を入れない`);
-  assert(scene.lines.some(line => line.speaker === "mashiro" && /僕/.test(line.text)) || /ましろちゃん/.test(all), `${id}: ましろの一人称・呼び方`);
+  const narration = scene.lines.filter(line => line.speaker === "").map(line => line.text).join("");
+  assert.doesNotMatch(narration, /ましろちゃん/, `${id}: 地の文では「ましろ」`);
+  assert(scene.lines.some(line => line.speaker === "mashiro" && /僕/.test(line.text)) ||
+    scene.lines.some(line => line.speaker === "hajime" && /ましろちゃん/.test(line.text)) ||
+    /ましろ/.test(narration), `${id}: ましろの一人称・呼び方`);
 }
 assert(MASHIRO_TIME_SCENES.every(id => CH3_STORY_DIALOGUE_FILES[MASHIRO_TIME_FILE].includes(id)), "第3章の読み込み一覧に入っている");
 {
@@ -39,6 +43,7 @@ assert.equal(classifyFlag(MASHIRO_TIME_FLAG), "person");
 
 // ---- 進行: 実物の state・stats で、交際の初日から Lv5 の節目まで ---------------------------------
 Object.assign(DB.dialogues, scenes, milestones);
+DB.loverEventsLoaded = true;
 function lover(extra = {}) {
   const value = newState();
   Object.assign(value, { chapter: 3, day: 40, slot: 1, lovers: ["mashiro"], contacts: ["mashiro"], loverEventsSeen: [] }, extra);

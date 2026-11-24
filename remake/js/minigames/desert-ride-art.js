@@ -2,6 +2,7 @@
 // 遠景の空と陸は Issue #3713 の坂の絵（asset_sources/desert-ride-slope-3686）に差し替え。寸法と基準点は desert-ride-2306/adoption.json と同じ値（remake/test/desert_ride.mjs が照合する）。
 // 読み込みは非同期で、届くまで・失敗した時は desert-ride.js が Canvas の図形で描く（遊びは止めない）。
 import { imgFileUrl } from "../core/img-file.js";
+import { prepareImage } from "../core/loading-prefetch.js";
 
 export const DESERT_ART = Object.freeze({
   // 遠景（#3713 の坂の絵）。空と陸を分け、沈む太陽を陸の後ろに描く。horizon は斜面の縁（lip）の行、duneTop は稜線のいちばん上
@@ -68,6 +69,33 @@ export const DESERT_CONTROL_ART = Object.freeze({
   jump: "ui/desert_ride_controls/jump.webp",
   land: "ui/desert_ride_controls/land.webp",
 });
+// desert-ride.css が滑走中の立て直しと結果カードに使う絵。
+const RECOVER_UI_ART = "ui/desert_ride_hud/recover-badge.webp";
+const RESULT_UI_ART = ["board", "ribbon_win", "ribbon_lose", "medal_s", "medal_a", "medal_b", "medal_c", "button_primary", "button_secondary"]
+  .map(name => `ui/desert_ride_result/${name}.webp`);
+const warmedUiImages = new Map();
+
+/** 滑り始めてから空き時間に1枚ずつ先読みし、CSS から使う画像を保持する。 */
+export async function warmDesertUi(practice, isCurrent) {
+  if (typeof Image === "undefined") return;
+  const files = practice ? [RECOVER_UI_ART] : [RECOVER_UI_ART, ...RESULT_UI_ART];
+  for (const file of files) {
+    if (!isCurrent()) return;
+    if (!warmedUiImages.has(file)) {
+      await new Promise(resolve => {
+        if (typeof requestIdleCallback === "function") requestIdleCallback(resolve, { timeout: 1000 });
+        else setTimeout(resolve, 100);
+      });
+      if (!isCurrent()) return;
+      if (!warmedUiImages.has(file)) {
+        const image = prepareImage(imgFileUrl(file)).catch(() => { warmedUiImages.delete(file); });
+        warmedUiImages.set(file, image);
+      }
+    }
+    await warmedUiImages.get(file);
+  }
+}
+
 // 会話の背景（Codex C を 1280×720 に）と、同じ構図の夕方（夕日の場面）
 export const DESERT_BG = "bg_dubai_dunes_day";
 export const DESERT_DUSK_BG = "bg_dubai_dunes_dusk";

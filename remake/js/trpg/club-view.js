@@ -38,7 +38,7 @@ export function mountTrpgRecruitment(host, { getState, personId, catalog, charac
   root = el("section.trpg-club-dialog", { role: "dialog", "aria-modal": "true", "aria-label": name + "を部活に誘う" });
   function render() {
     const unheard = !owner.flags?.[`_trpg_topic_${personId}`]
-      && !(personId === "rei" && owner.flags?._rei_trpg_introduced);
+      && !(personId === "kuraudo" && owner.flags?._kuraudo_trpg_introduced);
     const line = unheard ? club.branches["topic_" + personId][0].text
       : step < 0 ? (club.branches["invite_" + personId] || club.branches.invite)[0].text : lines[step].text;
     const content = el("div.trpg-club-dialog-card", [

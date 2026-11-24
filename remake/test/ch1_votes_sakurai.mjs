@@ -1,7 +1,8 @@
 // 第1章の桜井式の審査（試作・SKR04）: 1回ごとの勝負・審査員の見る所・攻めの帯・千須の最後の1点・方式の切替。
 import assert from "node:assert/strict";
-import { beginCh1Votes, castCh1Votes, isSakuraiVotes, sakuraiMine, sakuraiRival, SAKURAI,
+import { beginCh1Votes, castCh1Votes, ch1BeforeLastStandings, isSakuraiVotes, sakuraiMine, sakuraiRival, SAKURAI,
   CH1_JUDGES, CH1_CONTESTANTS, CH1_VOTE_VERSION, CH1_SAKURAI_VERSION } from "../js/craft/ch1-votes.js";
+import { tournamentResultReason } from "../js/craft/tournament-result-reason.js";
 import { ATTACK_BAND, attackGuide, attackRange, inAttackRange, attackScore } from "../js/craft/attack-band.js";
 import { voteStyleFrom, voteStyleForCraftVersion } from "../js/core/vote-style.js";
 import { craftVersionFrom, craftVersionForSession, normalizeCraftVersion, renewalCraft, PLAYER_DEFAULT_CRAFT_VERSION } from "../js/core/craft-version.js";
@@ -24,6 +25,26 @@ function match(cs, style = "sakurai") {
   return attempt.voteAttempt;
 }
 const hajimeVotes = (p) => p.result.rows.find(row => row.id === "hajime").points;
+
+// 同じ配点でも、最後の1点の前の首位が違えば実際の決め手は変わる。
+for (const [settings, total, beforeLeader, beforePoints, afterPoints, text] of [
+  [{ heat: 70, pull: 80, care: [97, 100], attack: [1, 2, 3] }, 90, "hajime", [10, 10], [11, 10],
+    "二度目の調整後の投票で、2位より5点多く取った。最終1点差。"],
+  [{ heat: 70, pull: 80, care: [97, 100], attack: [1, 2, 3] }, 80, "naru", [10, 10], [11, 10],
+    "千須の最後の1点ではじめが首位に立った。"],
+  [{ heat: 86, pull: 65, care: [80, 100], attack: [1, 2, 3] }, 90, "minto", [10, 9], [10, 10],
+    "千須の最後の1点で同点。判定ではじめが首位に立った。"],
+]) {
+  const p = JSON.parse(JSON.stringify(match({ ...craft(settings), total })));
+  const saved = structuredClone(p);
+  const beforeLast = ch1BeforeLastStandings(p, total);
+  assert.equal(beforeLast[0].id, beforeLeader);
+  assert.deepEqual(beforeLast.slice(0, 2).map(row => row.points), beforePoints);
+  assert.deepEqual(p.result.rows.slice(0, 2).map(row => row.points), afterPoints);
+  assert.equal(p.result.rank, 1);
+  assert.equal(tournamentResultReason(p.result.rows, { rounds: p.picks, beforeLast }), text);
+  assert.deepEqual(p, saved, "最後の1点の比較で、保存済みの配点や順位を書き換えない");
+}
 
 // 方式: 省略はいままでの審査（旧呼び出し・旧セーブはそのまま）。桜井式は版3で、始めた後は変えない。
 {
@@ -53,7 +74,7 @@ for (const score of [60, 70, 80, 86, 90, 100]) {
 {
   const weak = match(craft({ heat: 60 })), strong = match(craft({ heat: 100 }));
   for (const round of [1, 2, 3]) assert.deepEqual(weak.views[round], strong.views[round], `${round}回目は炭焼きの点に左右されない`);
-  assert(weak.views[0].dr_kemuri.hajime < strong.views[0].dr_kemuri.hajime);
+  assert(weak.views[0].dr_charcoal.hajime < strong.views[0].dr_charcoal.hajime);
 }
 
 // 柱2: 提供の回は審査員ごとに見る所が違う。詰め方の違い（味・吸い心地）で取れる審査員が変わる。
@@ -62,11 +83,11 @@ for (const score of [60, 70, 80, 86, 90, 100]) {
   const normal = views(BASE_STATS);
   const dense = views({ ...BASE_STATS, taste: BASE_STATS.taste + 14, draw: BASE_STATS.draw - 12, smoke: BASE_STATS.smoke - 5.4 });
   const fluffy = views({ ...BASE_STATS, taste: BASE_STATS.taste - 6, draw: BASE_STATS.draw + 12, smoke: BASE_STATS.smoke + 5.4, burnRisk: BASE_STATS.burnRisk + 5 });
-  assert(dense.maezono > normal.maezono && dense.sui < normal.sui, "デンスパックは味の上園に効き、煙の千須に響く");
-  assert(fluffy.sui > normal.sui && fluffy.maezono < normal.maezono && fluffy.dr_kemuri < normal.dr_kemuri, "ふんわりは煙の千須に効く");
+  assert(dense.uezono > normal.uezono && dense.sensu < normal.sensu, "デンスパックは味の上園に効き、煙の千須に響く");
+  assert(fluffy.sensu > normal.sensu && fluffy.uezono < normal.uezono && fluffy.dr_charcoal < normal.dr_charcoal, "ふんわりは煙の千須に効く");
   const rivalBest = (judge) => Math.max(...["naru", "adam", "minto"].map(id => sakuraiRival(id, judge, 1)));
-  assert(fluffy.sui > rivalBest("sui"), "ふんわりの一台は千須の1位を取れる");
-  assert(normal.sui < rivalBest("sui"), "ふつうの一台は千須の1位を取れない");
+  assert(fluffy.sensu > rivalBest("sensu"), "ふんわりの一台は千須の1位を取れる");
+  assert(normal.sensu < rivalBest("sensu"), "ふつうの一台は千須の1位を取れない");
   for (const judge of CH1_JUDGES) assert.equal(normal[judge], Math.round(Object.entries(SAKURAI.serve[judge])
     .reduce((n, [k, w]) => n + w * (k === "safety" ? 100 - BASE_STATS.burnRisk : k === "pull" ? 100 : BASE_STATS[k]), 0) * 100) / 100);
 }
@@ -81,7 +102,7 @@ for (const score of [60, 70, 80, 86, 90, 100]) {
   // 千須の最後の1点は、どちらでも、もう一口吸った台（はじめ）へ入る（#3916）。
   const center = match(craft());
   assert.equal(center.lastPoint, "hajime");
-  assert.equal(center.picks[3].maezono.first, "minto");
+  assert.equal(center.picks[3].uezono.first, "minto");
   const bold = match(craft({ attack: [3] }));
   assert.equal(bold.lastPoint, "hajime");
   assert.equal(bold.attacks[3], true);

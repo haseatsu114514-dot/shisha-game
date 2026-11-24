@@ -62,7 +62,18 @@ const overrides={spendableMoney,state, DB:{flavorById:{lemon:{}},dialogues:{},li
 };
 const context=vm.createContext({console,Math,Set,String,Number,Array,Promise});
 const modules=new Map();
-const calendar=new vm.SourceTextModule(source+'\nexport { dueDelivery, day1Errands, deliver, DELIVERIES };',{context});
+const calendar=new vm.SourceTextModule(source+'\nexport { dueDelivery, day1Errands, deliver, DELIVERIES };',{
+ context,
+ async importModuleDynamically(spec){
+  assert.equal(spec,'../scenes/day2-guide.js');
+  const guide=new vm.SyntheticModule(['openDay2Guide'],function(){
+   this.setExport('openDay2Guide',async()=>calls.push({type:'day2-guide',day:state.day,slot:state.slot}));
+  },{context});
+  await guide.link(()=>{throw new Error('Unexpected DAY2 guide dependency');});
+  await guide.evaluate();
+  return guide;
+ },
+});
 await calendar.link(async spec=>{
  if(modules.has(spec)) return modules.get(spec);
  const names=[...source.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)].filter(m=>m[2]===spec).flatMap(m=>m[1].split(',').map(n=>n.trim().split(/\s+as\s+/)[0]));
@@ -87,8 +98,10 @@ reset({slot:2});state.restDay={fullDay:true};assert.equal(c.dueDelivery(),null);
 reset({day:3,slot:2});assert.equal(c.dueDelivery(),null);state.flags._delivery_schedule_v2=true;assert.equal(c.dueDelivery().charId,'minto');
 reset({day:1,slot:1});assert.equal(c.dueDelivery(),null);
 // Actual runDaily ordering: shopping/scout, home/sleep, registration, minto, adam.
-reset({day:1,flags:{_errand_scout_done:false,_c_station_registered:false}});await c.runDaily({untilDay:3,nightEvents:{}});
-assert.deepEqual(calls.filter(x=>['shop','scout','register','visit'].includes(x.type)).map(x=>[x.type,x.id||'',x.day||1]),[['shop','',1],['scout','',1],['register','',2],['visit','adam',2]]);
+reset({day:1,flags:{_errand_scout_done:false,_c_station_registered:false,_ch1_rules_read:false}});await c.runDaily({untilDay:3,nightEvents:{}});
+assert.deepEqual(calls.filter(x=>['shop','scout','register','day2-guide','visit'].includes(x.type)).map(x=>[x.type,x.id||'',x.day||1]),[['shop','',1],['scout','',1],['register','',2],['day2-guide','',2],['visit','adam',2]]);
+assert.equal(calls.find(x=>x.type==='day2-guide').slot,0);
+assert.equal(state.flags._ch1_rules_read,true);
 assert.equal(calls.find(x=>x.id==='remake_delivery_minto_handoff').day,2);
 assert(!calls.some(x=>x.type==='map'&&x.day===1&&!['shop','naru'].includes(x.pin)));
 assert.equal(actionEnds,3);assert.equal(state.money,11000);assert.equal(state.flags._c_station_registered,true);

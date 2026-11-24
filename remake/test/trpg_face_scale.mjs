@@ -5,7 +5,7 @@ import { COSTUME_KEYS, resolvedCostumeKey } from "../js/trpg/costumes.js";
 import { FACE_FRAC, EYE_Y, NPC_FRAMES, PORTRAIT_FRAMES, EXTRA_PORTRAIT_FRAMES, circleFaceStyle, costumeIconStyle, faceIconStyle, npcBustStyle, npcFaceFrame, portraitFaceFrame } from "../js/trpg/face-crops.js";
 
 const frames = JSON.parse(await readFile(new URL("../img/ui/trpg/costumes/frames.json", import.meta.url), "utf8"));
-const CAST = ["hajime", "hiyori", "samechan", "tsumugi", "ageha", "adam", "rei", "sumi", "salaryman"];
+const CAST = ["hajime", "hiyori", "samechan", "tsumugi", "ageha", "adam", "kuraudo", "sumi", "salaryman"];
 
 function cropStats(frame) {
   const box = frame.box_exact || frame.box;
@@ -17,7 +17,7 @@ function cropStats(frame) {
 }
 
 test("costume frames cover every wired role with a consistent face scale", () => {
-  assert.equal(frames.length, 99);
+  assert.equal(frames.length, 125);
   const keys = new Set(frames.map(f => `${f.scenario}/${f.character}/${f.role_id}`));
   for (const key of COSTUME_KEYS) {
     assert.ok(keys.has(key), `missing crop for ${key}`);

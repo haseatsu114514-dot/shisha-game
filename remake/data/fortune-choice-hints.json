@@ -172,8 +172,8 @@
       "preferred": "wait",
       "reason": "「なんで」と急がせず、本人が言葉にするのを待つ"
     },
-    "remake_ch2_rei_chat:ch2_rei_first_chat": {
-      "target": "rei",
+    "remake_ch2_kuraudo_chat:ch2_kuraudo_first_chat": {
+      "target": "kuraudo",
       "kind": "conversation",
       "options": [
         "a",

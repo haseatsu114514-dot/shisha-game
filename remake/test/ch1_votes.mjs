@@ -37,8 +37,8 @@ for (const score of [60, 80, 90, 100]) assert.equal(match([score, score, score, 
 // 2回目の調整はなる（87）の方が上でも、最後の1点ははじめへ。アダムと並び、同点は制作総合点で決まる。
 const close = match([84, 87, 86, 86, 86]);
 assert.equal(close.lastPoint, "hajime");
-assert.equal(close.beforeLast.sui.hajime + 1, close.votes.sui.hajime);
-assert.equal(close.beforeLast.sui.naru, close.votes.sui.naru);
+assert.equal(close.beforeLast.sensu.hajime + 1, close.votes.sensu.hajime);
+assert.equal(close.beforeLast.sensu.naru, close.votes.sensu.naru);
 assert.deepEqual(close.result.rows.slice(0, 2).map(row => [row.id, row.points]), [["hajime", 13], ["adam", 13]]);
 for (const base of [60, 70, 80, 84, 85, 86, 90]) {
   const baseline = match([base, base, base, base, base]).result.votes;

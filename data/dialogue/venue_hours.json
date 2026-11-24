@@ -406,7 +406,7 @@
       ]
     },
     {
-      "dialogue_id": "venue_rei_day",
+      "dialogue_id": "venue_kuraudo_day",
       "lines": [
         {
           "speaker": "",
@@ -414,14 +414,14 @@
           "text": "昼の「貴方ノ為ノ此ノ煙。」では、カーテンを閉めた店内に、小さな音でギターが流れている。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……昼でも、ここは夜"
         }
       ]
     },
     {
-      "dialogue_id": "venue_rei_night",
+      "dialogue_id": "venue_kuraudo_night",
       "lines": [
         {
           "speaker": "",
@@ -429,7 +429,7 @@
           "text": "ろうそくが灯る夜の「貴方ノ為ノ此ノ煙。」で、常連がCDのジャケットを眺めている。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……いらっしゃい。空いてる席、どこでも"
         }

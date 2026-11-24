@@ -64,6 +64,7 @@
     menu.addEventListener("click", () => setMenu(menu.getAttribute("aria-expanded") !== "true"));
     nav.addEventListener("click", (event) => { if (event.target.closest("a")) setMenu(false); });
     addEventListener("keydown", (event) => { if (event.key === "Escape") setMenu(false); });
+    narrow.addEventListener("change", (event) => { if (!event.matches) setMenu(false); });
   }
 
   // ── ヒーロー: 横長のキービジュアル（サイトのために描いた絵）と、1キャラ1枚の絵（タイトル画面と同じ絵）を順に見せる ──
@@ -74,8 +75,8 @@
   let kvTimer = 0;
   let kvMoved = false; // 最初の表示では、絵を選ぶ列を動かさない
   const loadKv = (img) => {
-    if (!img || !img.dataset.src) return Promise.resolve();
-    const mobileSource = img.parentElement.querySelector("source[data-srcset]");
+    if (!img) return Promise.resolve();
+    const mobileSource = img.closest("picture")?.querySelector("source[data-srcset]");
     if (mobileSource) {
       mobileSource.srcset = mobileSource.dataset.srcset;
       delete mobileSource.dataset.srcset;
@@ -84,14 +85,17 @@
       img.srcset = img.dataset.srcset;
       delete img.dataset.srcset;
     }
-    img.src = img.dataset.src;
-    delete img.dataset.src;
+    if (img.dataset.src) {
+      img.src = img.dataset.src;
+      delete img.dataset.src;
+    }
     return img.decode ? img.decode().catch(() => {}) : Promise.resolve();
   };
   const showKv = async (index) => {
     const next = (index + kvs.length) % kvs.length;
-    await loadKv(kvs[next]);
     kvIndex = next;
+    await loadKv(kvs[next]);
+    if (kvIndex !== next) return;
     kvs.forEach((img, i) => img.classList.toggle("is-on", i === next));
     hero?.classList.toggle("is-wide", kvs[next].classList.contains("kv-wide")); // 横長の絵の間は、コピーを出さない（人物に掛かるので）
     tabs.forEach((tab, i) => tab.classList.toggle("is-on", i === next));

@@ -56,7 +56,7 @@ const CH4_ROUND_ENDS = { interlude1: "served", interlude2: "care1" };
 const ROUND_ENDS = { 2: CH2_ROUND_ENDS, 4: CH4_ROUND_ENDS };
 /** 第4章の客席の声の台本がある人（tournament_craft_stands_4_<id>）。大会の朝の一言（ch4_morning_cheer_<id>）と同じ顔ぶれ。 */
 export const CH4_STANDS_IDS = Object.freeze(["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori", "noor",
-  "adam", "kumicho", "rei", "saku", "steve", "volk"]);
+  "adam", "kumicho", "kuraudo", "ayatori", "steve", "volk"]);
 const CH4_STANDS_AT = { interlude1: 1, interlude2: 0 };
 /**
  * 合間の掛け合いの前に読む区切りの実況。無ければ null。

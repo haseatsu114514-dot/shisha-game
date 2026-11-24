@@ -15,7 +15,7 @@ const context = vm.createContext({ console, URL, AbortController, setTimeout, cl
   document: { body: node() }, window: { addEventListener() {} },
   localStorage: { getItem: k => memory.get(k) ?? null, setItem: (k,v) => memory.set(k,String(v)), removeItem: k => memory.delete(k) },
   rendered: line => { shown.push(line.text); return interrupt?.(line); } });
-const real = ['core/state.js', 'daily/shop.js', 'daily/spots.js', 'vn/engine.js', 'core/relationships.js', 'core/story-context.js'];
+const real = ['core/state.js', 'daily/shop.js', 'daily/spots.js', 'vn/engine.js', 'core/relationships.js', 'core/story-context.js', 'core/legacy-cast-save.js'];
 const modules = new Map(), required = new Map();
 const known = { DB: db, MAX_MONEY: 999999, TOURNAMENT_DAY: 14, MASTERY_THRESHOLDS: [0,6,18,36,60],
   VISIT_SEQ: { rio: ['ch1_rio_first','ch1_rio_second','ch1_rio_third'] }, AFFINITY_RANK_PTS: [0,9,18,27],

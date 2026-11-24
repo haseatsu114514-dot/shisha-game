@@ -9,7 +9,7 @@
 import { newGame, state, markMet, config } from "../core/state.js";
 import { bgUrl, loadTournamentCraftDialogue } from "../core/data.js";
 import { clearScreen, setBg, retireScreen } from "../core/ui.js";
-import { showStandings, resultCountdown, suiCutin, resultTable, ch1LiveStandings } from "./result.js";
+import { showStandings, resultCountdown, sensuCutin, resultTable, ch1LiveStandings } from "./result.js";
 import { beginCh1Votes, castCh1Votes } from "./ch1-votes.js";
 import { newSession } from "./session.js";
 import { playTournamentEvent } from "./tournament-story.js";
@@ -33,8 +33,8 @@ export async function playShow(name = "vote-2") {
   const lose = option === "lose" || kind === "lose";
   newGame();
   // 登場カットインは見せない（演出だけを見る入口なので、紹介済みとして始める）。
-  for (const id of ["naru", "adam", "minto", "sui", "maezono", "dr_kemuri", "pakki"]) markMet(id);
-  for (const id of ["naru", "adam", "minto", "sui", "maezono", "dr_kemuri", "pakki", "hajime"]) state.flags[`_intro_${id}`] = true;
+  for (const id of ["naru", "adam", "minto", "sensu", "uezono", "dr_charcoal", "pakki"]) markMet(id);
+  for (const id of ["naru", "adam", "minto", "sensu", "uezono", "dr_charcoal", "pakki", "hajime"]) state.flags[`_intro_${id}`] = true;
   Object.assign(state, { phase: "tournament", day: 14 });
   clearScreen();
   const stage = bgUrl("bg_tournament_stage");
@@ -58,7 +58,7 @@ export async function playShow(name = "vote-2") {
   castThrough(4);
   const rank = attempt.voteAttempt.result.rank, outcome = rank === 1 ? "win" : rank <= 3 ? "close" : "lose";
   if (kind === "count" || kind === "result") { await resultCountdown(cs, outcome, attempt); retireScreen(); }
-  if (kind === "final" || kind === "result") await suiCutin(rank, attempt);
+  if (kind === "final" || kind === "result") await sensuCutin(rank, attempt);
   if (kind === "count" || kind === "final") return rank;
   return resultTable(cs, rank, attempt);
 }

@@ -224,6 +224,7 @@ await suite("lover-milestones", async check => {
       // 同じLvの追加場面も、Lv5までの途中で読み・保存する（順序は実装から取得しない）。
       routes.ageha.splice(2, 0, "lover_ageha_lv2_b");
       const records = await page.evaluate(async routes => {
+        await M.data.loadLoverEvents(); // 再生前の同期判定を直接調べるケース
         const records = [];
         for (const id of Object.keys(routes)) {
           const s = M.fresh(id); s.schema = 5; s.loveLevel[id] = 5; s.lovePts[id] = 72;
@@ -257,6 +258,7 @@ await suite("lover-milestones", async check => {
     await check(`${mode}-additional-scene-known-scenes-and-boundaries`, async page => {
       await setup(page);
       const result = await page.evaluate(async () => {
+        await M.data.loadLoverEvents(); // 台本の欠損を読み込み後に作る
         let s = M.fresh("rio"); s.loveLevel.rio = 2;
         M.data.DB.dialogues.lover_rio_lv1_b = { dialogue_id: "lover_rio_lv1_b", metadata: { private_scene: true },
           lines: [{ speaker: "rio", text: "もう少し、話していこう" }] };

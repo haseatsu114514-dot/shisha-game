@@ -207,7 +207,7 @@ await suite("venue-arrivals", async check => {
     await setup(page, { chapter: 2, day: 18, slot: 0 });
     await page.evaluate(() => {
       const s = V.core.state;
-      s.met.sai = true; Object.assign(s.flags, { _rei_trpg_introduced: true, _intro_sai: true });
+      s.met.sai = true; Object.assign(s.flags, { _kuraudo_trpg_introduced: true, _intro_sai: true });
       s.trpg.club = { founded: { chapter: 2, day: 16 }, members: {} };
       V.busy = false;
       V.open = async () => { V.result = undefined; V.result = await (await import("./js/daily/trpg.js")).openTrpgBar({ nightBusy: () => V.busy }); };

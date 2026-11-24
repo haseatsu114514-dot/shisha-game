@@ -18,7 +18,7 @@ async function seed(page, auto = "good", overrides = {}, { atPull = false } = {}
       _ch3_intro: { startDay: 29, stage: CH3_INTRO_SCENES.length, titleSeen: true, routeVersion: 2 } };
     value.tournament.lastRank = 1; value.tournament.lastTotal = 88;
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-    for (const who of ["hajime", "pakki", "saku", "steve", "volk", "dr_kemuri", "sui"])
+    for (const who of ["hajime", "pakki", "ayatori", "steve", "volk", "dr_charcoal", "sensu"])
       value.met[who] = true;
     for (const who of Object.keys(value.met)) value.flags[`_intro_${who}`] = true;
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
@@ -199,9 +199,9 @@ await suite("ch3-tournament", async check => {
       assert.equal(state.flags._ch3_tournament.voted, round);
       assert.equal(state.flags._ch3_tournament.history.length, 0);
       assert.deepEqual(await page.locator("[data-contestant]").evaluateAll(nodes =>
-        nodes.map(node => node.dataset.contestant).sort()), ["hajime", "saku", "steve", "volk"]);
+        nodes.map(node => node.dataset.contestant).sort()), ["ayatori", "hajime", "steve", "volk"]);
       assert.deepEqual(await page.locator(".judge-chip").evaluateAll(nodes =>
-        nodes.map(node => node.dataset.judge).sort()), ["dr_kemuri", "emil", "sui"]);
+        nodes.map(node => node.dataset.judge).sort()), ["dr_charcoal", "emil", "sensu"]);
       assert.match(await page.locator(".ch2-contest-judges").textContent(), /エミル|Emil/);
       const explanation = await page.locator(t("vote-reason")).innerText();
       if (round === 1) assert.doesNotMatch(explanation, /鋭い苦みの余韻/, "No tasting effect before service");
@@ -341,9 +341,9 @@ await suite("ch3-tournament", async check => {
       const craft = { holes: { score: 92 }, heat: { score: 92 }, mix: { chocolate: 6, mint: 6 }, careHistory: [{ score: 94 }, { score: 95 }],
         total: 93, parts: { holes: 92, heat: 92, shisha: 90, care1: 94, care2: 95 }, tournamentStory: { seen: ["tasting", "preresult"] } };
       Object.assign(p, { stage: "tasting", step: 11, voted: 4, attempts: 1, craft });
-      p.votes = Object.fromEntries(model.JUDGES.map(judge => [judge, { hajime: 6, saku: 2, steve: 1, volk: 1 }]));
-      p.lastVotes = Object.fromEntries(model.JUDGES.map(judge => [judge, { first: "hajime", second: "saku", points: { hajime: 2, saku: 1 } }]));
-      p.quality = { hajime: 93, saku: 82, steve: 80, volk: 84 };
+      p.votes = Object.fromEntries(model.JUDGES.map(judge => [judge, { hajime: 6, ayatori: 2, steve: 1, volk: 1 }]));
+      p.lastVotes = Object.fromEntries(model.JUDGES.map(judge => [judge, { first: "hajime", second: "ayatori", points: { hajime: 2, ayatori: 1 } }]));
+      p.quality = { hajime: 93, ayatori: 82, steve: 80, volk: 84 };
       const rows = model.standings(p);
       p.result = { attempt: 1, total: 93, rank: rows.find(row => row.id === "hajime").rank, win: true, rows, votes: structuredClone(p.votes), careHistory: craft.careHistory };
       p.history = [structuredClone(p.result)];
@@ -375,8 +375,8 @@ await suite("ch3-tournament", async check => {
       const p = model.tournamentProgress(core.state);
       p.stage = "result"; p.step = 11; p.voted = 4; p.attempts = 1;
       p.votes = Object.fromEntries(model.JUDGES.map(judge => [judge,
-        { hajime: 0, saku: 3, steve: 2, volk: 5 }]));
-      p.quality = { hajime: 40, saku: 82, steve: 80, volk: 84 };
+        { hajime: 0, ayatori: 3, steve: 2, volk: 5 }]));
+      p.quality = { hajime: 40, ayatori: 82, steve: 80, volk: 84 };
       const rows = model.standings(p);
       p.result = { attempt: 1, total: 40, rank: rows.find(row => row.id === "hajime").rank,
         win: false, rows, votes: structuredClone(p.votes), careHistory: [{ score: 40 }, { score: 40 }] };

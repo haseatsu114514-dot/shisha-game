@@ -12,7 +12,7 @@ const freeze = value => {
   return value;
 };
 for (const chapter of [ch2, ch3]) {
-  const ids = [...chapter.CONTESTANTS].sort();
+  const ids = chapter === ch3 ? ["hajime", "ayatori", "steve", "volk"] : [...chapter.CONTESTANTS].sort();
   const [a, b, c, d] = ids;
   const [j1, j2, j3] = chapter.JUDGES;
   // 総票はqualityに優先し、同票だけquality、両方同じならIDで決まる。
@@ -47,8 +47,8 @@ for (const chapter of [ch2, ch3]) {
   rows.reverse();
   assert.deepEqual(chapter.standings(p), expected, "呼出しごとに独立した結果を返す");
 }
-assert.deepEqual(ch2.CONTESTANTS, ["hajime", "ageha", "kumicho", "rei"]);
-assert.deepEqual(ch3.CONTESTANTS, ["hajime", "saku", "steve", "volk"]);
+assert.deepEqual(ch2.CONTESTANTS, ["hajime", "ageha", "kumicho", "kuraudo"]);
+assert.deepEqual(ch3.CONTESTANTS, ["hajime", "ayatori", "steve", "volk"]);
 const many = Array.from({ length: 31 }, (_, index) => `contestant_${index}`);
 assert(tournamentStandings({ votes: {}, baseVotes: initialBaseVotes(many) }, many, []).every(row => row.points === 1),
   "出場者が審査員の30点を超えても基礎票で最低1票を保つ");

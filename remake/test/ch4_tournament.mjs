@@ -79,6 +79,9 @@ function drive(value, cs, { failAt = -1, failureKind = "burnt" } = {}) {
   assert.equal(p.voted, 4);
   assert.equal(p.result.careHistory.length, 2);
   for (const judge of CH4_JUDGES) assert.equal(CH4_CONTESTANTS.reduce((sum, id) => sum + p.votes[judge][id], 0), 10);
+  for (const judge of CH4_JUDGES) for (const id of CH4_CONTESTANTS) {
+    assert.equal(p.roundVotes.reduce((sum, round) => sum + (round[judge].points[id] || 0), 0), p.votes[judge][id]);
+  }
   assert(p.result.rows.every(row => row.points >= 1));
   assert.equal(p.result.rows.reduce((sum, row) => sum + row.points, 0), 34);
   assert.deepEqual(p.result.rows.map(row => [row.id, row.rank]),
@@ -389,7 +392,7 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
       if (step === 10) finalize(c);
       const p = finishChapterFourStep(value, c);
       if (p.voted !== rounds.length) {
-        const spent = Object.values(p.votes.sui).reduce((sum, n) => sum + n, 0);
+        const spent = Object.values(p.votes.sensu).reduce((sum, n) => sum + n, 0);
         rounds.push({ spent: spent - previous, rows: chapterFourStandings(p) });
         previous = spent;
       }

@@ -81,6 +81,7 @@ const BOWL_ART = {
     packRim: { fluffy: .20, normal: .21, firm: .22 } },
 };
 // 贈り物の専用ハガル（suyaki_<贈り主> → bowl_empty_<贈り主>.png）。[中身の幅, rim]
+// Keys below are inventory/art suffixes; actors are recorded separately in equipment.gift.from.
 const BOND_HAGALS = {
   sumi: [784, .23], naru: [799, .23], adam: [820, .19], rio: [813, .21], tsumugi: [801, .26], minto: [775, .23],
   samechan: [795, .21], ageha: [816, .22], mashiro: [817, .20], kumicho: [884, .20], rei: [769, .22], saku: [813, .20],

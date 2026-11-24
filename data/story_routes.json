@@ -108,11 +108,11 @@
         "ch3_work_without_taste",
         "ch3_naru_contact_before_tournament",
         "ch3_naru_work",
-        "ch3_saku_first",
-        "ch3_saku_mukai_visit",
+        "ch3_ayatori_first",
+        "ch3_ayatori_mukai_visit",
         "ch3_taste_return",
         "ch3_abyss_recovery",
-        "ch3_saku_advice",
+        "ch3_ayatori_advice",
         "ch3_steve_low_heat",
         "ch3_volk_first",
         "ch3_strategy",
@@ -131,16 +131,16 @@
         "ch3_mashiro_play_3",
         "ch3_mashiro_practice",
         "ch3_mashiro_black_tea",
-        "ch3_saku_bakery",
-        "ch3_saku_mashiro_tea_tin",
-        "ch3_saku_mashiro_soon_back",
+        "ch3_ayatori_bakery",
+        "ch3_ayatori_mashiro_tea_tin",
+        "ch3_ayatori_mashiro_soon_back",
         "ch3_mashiro_mukai_syrup_shelf",
         "ch3_mashiro_mukai_shelf_tags",
-        "ch3_saku_lime",
-        "ch3_saku_missed",
-        "ch3_saku_cleanup",
-        "ch3_saku_liar",
-        "ch3_saku_first_reply",
+        "ch3_ayatori_lime",
+        "ch3_ayatori_missed",
+        "ch3_ayatori_cleanup",
+        "ch3_ayatori_liar",
+        "ch3_ayatori_first_reply",
         "ch3_steve_lime",
         "ch3_steve_two_timers",
         "ch3_steve_empty_seat",
@@ -213,7 +213,7 @@
       ],
       "on_win": [
         "ch4_result",
-        "ch4_sui_old_rival",
+        "ch4_sensu_old_rival",
         "ch4_ending",
         "ch4_sumi_return",
         "ch4_two_tables"
@@ -310,7 +310,7 @@
         "ch5_doctor_after_match_tie"
       ],
       "after_match_tail": [
-        "ch5_sui_after_match"
+        "ch5_sensu_after_match"
       ]
     },
     "1": {
@@ -404,7 +404,7 @@
         "outing_tsumugi_1",
         "outing_rio_1",
         "outing_hiyori_1",
-        "ch1_rei_cameo",
+        "ch1_kuraudo_cameo",
         "outing_ageha_1",
         "ch1_tsumugi_fortune_rumor"
       ],
@@ -592,20 +592,20 @@
       ],
       "comment": "#3468 G案: 開店前のmukaiで、ムカイさんとヨルが昼の曲順から夜の曲へ脱線する（ムカイさん×針間ヨル）。mukaiの二日目の後。ヨルとの面識は場面カードの置き方（ch3-story-wiring.js の met）。大会後は ch3-aftermath-progress.js の寄り道から。"
     },
-    "ch3_saku_bakery": {
+    "ch3_ayatori_bakery": {
       "seen": [
-        "ch3_saku_first"
+        "ch3_ayatori_first"
       ],
       "comment": "RLS10。煙幕の初訪問の後、大会前に一度。はじめと綾取の、東京でのお客さん同士の友情。"
     },
-    "ch3_saku_mashiro_tea_tin": {
+    "ch3_ayatori_mashiro_tea_tin": {
       "seen": [
-        "ch3_saku_first"
+        "ch3_ayatori_first"
       ]
     },
-    "ch3_saku_mashiro_soon_back": {
+    "ch3_ayatori_mashiro_soon_back": {
       "seen": [
-        "ch3_saku_mukai_visit"
+        "ch3_ayatori_mukai_visit"
       ]
     },
     "ch3_mashiro_mukai_syrup_shelf": {
@@ -620,9 +620,9 @@
       ],
       "comment": "#3468 H案の後日の一言: 二人の本人用の札が同じ棚の別の場所に残っている。"
     },
-    "ch3_saku_lime": {
+    "ch3_ayatori_lime": {
       "seen": [
-        "ch3_saku_advice"
+        "ch3_ayatori_advice"
       ],
       "comment": "#2028: 綾取とLIMEを交換する。助言の後。♥1（煙幕への再訪で付く好感度）の条件は場面カードの置き方（ch3-story-wiring.js の heart）。"
     },
@@ -795,27 +795,27 @@
       ],
       "comment": "#3468 D案の後日の一言: 本場面を読んだ日より後のカフェ・オアシスの来店。"
     },
-    "ch3_saku_missed": {
+    "ch3_ayatori_missed": {
       "seen": [
-        "ch3_saku_lime"
+        "ch3_ayatori_lime"
       ],
       "comment": "好感度補充: LIME交換の後の煙幕再訪（♥2）。"
     },
-    "ch3_saku_cleanup": {
+    "ch3_ayatori_cleanup": {
       "seen": [
-        "ch3_saku_missed"
+        "ch3_ayatori_missed"
       ],
       "comment": "好感度補充: 外れた予想の次の閉店後（♥3）。"
     },
-    "ch3_saku_liar": {
+    "ch3_ayatori_liar": {
       "seen": [
-        "ch3_saku_cleanup"
+        "ch3_ayatori_cleanup"
       ],
       "comment": "好感度補充: 閉店後の次の来店（♥4）。"
     },
-    "ch3_saku_first_reply": {
+    "ch3_ayatori_first_reply": {
       "seen": [
-        "ch3_saku_liar"
+        "ch3_ayatori_liar"
       ],
       "comment": "好感度補充（A27）: 嘘つきの欄のあと、最初の返事（♥4）。"
     },

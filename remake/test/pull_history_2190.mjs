@@ -171,8 +171,10 @@ for (const [steamSeconds, extra] of [[480, false], [600, false], [480, true]]) {
     assert(!model.isIdealTemperature(restored.pull.temp, after), "Later real leaf damage narrows the historical serving band");
     assert.match(improvementOf(restored), /調整2回目.*吸う回数を減らし/);
     assert.doesNotMatch(improvementOf(restored), /熱を戻して|少し下げて/, "Historical success must not become thermal blame");
-    // Unknown old records retain the measured-temperature fallback and its priority.
+    // Legacy records still use the measured-temperature fallback when the band flag is absent.
     const legacy = JSON.parse(snapshot); delete legacy.pull.inZone;
+    assert.match(improvementOf(legacy), /調整2回目.*吸う回数を減らし/, "The lower scored adjustment wins over a legacy temperature inference");
+    legacy.careHistory[1].pulls = 1;
     assert.match(improvementOf(legacy), /提供.*熱を戻して/);
     for (const [failed, expected] of [["cold", /冷え切る前に炭を交換/], ["burnt", /熱が上がり切る前/]]) {
       const ended = JSON.parse(snapshot); ended.careHistory[1].failed = failed;
@@ -185,7 +187,7 @@ for (const [steamSeconds, extra] of [[480, false], [600, false], [480, true]]) {
   } else {
     assert.equal(restored.leaf.dmg, 0, "Safe rounds cannot create leaf wear, even after ten minutes of steaming");
     assert.deepEqual(after.ideal, before.ideal);
-    assert.match(improvementOf(restored), /今回の記録を見て、次に試すことを選ぼう/);
+    assert.match(improvementOf(restored), /同じ手順でもう一台作り、今回の仕上がりを再現/);
   }
   assert.equal(JSON.stringify(restored), snapshot, "Reviewing the saved history does not change results");
   console.log(JSON.stringify({ steamSeconds, extra, counts: rounds.map(result => result.pulls), damage: restored.leaf.dmg,

@@ -88,6 +88,42 @@ test('new-only costume keeps same-costume expressions and missing-face fallback'
  assert.equal(data.portraitInfo('tsumugi','baito_surprise','new').face,'baito_normal');
  assert.equal(data.portraitInfo('tsumugi','baito_smile','classic').face,'normal');
 });
+test('swim request preserves the regular face, URL, style, and framing until swim_normal is registered', () => {
+ const manifest = data.DB.manifest;
+ const fixture = structuredClone(manifest);
+ const faces = fixture.portraitVariants.new.tsumugi.faces;
+ const smile = data.portraitInfo('tsumugi','smile','new');
+ const classic = data.portraitInfo('tsumugi','smile','classic');
+ const other = data.portraitInfo('minto','smile','new');
+ const variantPath = 'sprites/character_variants/new/tsumugi/chr_tsumugi_';
+ try {
+  data.useManifest(fixture);
+  assert.deepEqual(data.portraitInfo('tsumugi','smile','new','swim'),smile);
+  faces.push('swim_smile');
+  assert.deepEqual(data.portraitInfo('tsumugi','smile','new','swim'),smile);
+  faces.pop();
+  faces.push('swim_normal');
+  fixture.webp = [`${variantPath}swim_normal.png`, `${variantPath}swim_smile.png`];
+  data.useManifest(fixture);
+  assert.deepEqual({...data.portraitInfo('tsumugi','smile','new','swim')},{
+   ...smile,face:'swim_normal',rel:`${variantPath}swim_normal.png`,src:`img/${variantPath}swim_normal.webp`,
+  });
+  faces.push('swim_smile');
+  assert.deepEqual({...data.portraitInfo('tsumugi','smile','new','swim')},{
+   ...smile,face:'swim_smile',rel:`${variantPath}swim_smile.png`,src:`img/${variantPath}swim_smile.webp`,
+  });
+  assert.deepEqual(data.portraitInfo('tsumugi','smile','new'),smile);
+  assert.deepEqual(data.portraitInfo('tsumugi','smile','classic','swim'),classic);
+  assert.deepEqual(data.portraitInfo('minto','smile','new','swim'),other);
+  fixture.portraits.tsumugi.faces.push('swim_normal','swim_smile');
+  assert.deepEqual({...data.portraitInfo('tsumugi','smile','classic','swim')},{
+   ...classic,face:'swim_smile',rel:'sprites/characters/tsumugi/chr_tsumugi_swim_smile.png',
+   src:'../assets/sprites/characters/tsumugi/chr_tsumugi_swim_smile.png',
+  });
+ } finally {
+  data.useManifest(manifest);
+ }
+});
 test('missing variant manifest is backward compatible', () => {delete data.DB.manifest.portraitVariants;state.config.portraitStyle='new';assert.equal(data.portraitInfo('tsumugi','normal').style,'classic');});
 test('mini-game portraits adopt future Noor and Rio manifest entries without file paths', () => {
  const manifest = {portraits:{noor:legacy,rio:legacy},portraitVariants:{new:{
@@ -124,10 +160,10 @@ test('face icons follow the selected portrait style', () => {
  state.config.portraitStyle='classic';
 });
 test('face frames are looked up per portrait style', () => {
- data.DB.manifest.faceFrames={classic:{sui:{box:[1,2,3]}},new:{sui:{box:[4,5,6],eye:[7,8],unit:9}}};
- assert.deepEqual(data.faceFrame('sui').box,[1,2,3]);
- assert.deepEqual(data.faceFrame('sui','new').box,[4,5,6]);
- assert.equal(data.faceFrame('sui','nanami'),null);
+ data.DB.manifest.faceFrames={classic:{sensu:{box:[1,2,3]}},new:{sensu:{box:[4,5,6],eye:[7,8],unit:9}}};
+ assert.deepEqual(data.faceFrame('sensu').box,[1,2,3]);
+ assert.deepEqual(data.faceFrame('sensu','new').box,[4,5,6]);
+ assert.equal(data.faceFrame('sensu','nanami'),null);
  assert.equal(data.faceFrame('missing','new'),null);
 });
 // Execute production openConfig with a tiny DOM adapter, without importing unrelated scenes.
@@ -163,6 +199,8 @@ for(const [query,expected] of [['','new'],['?portraitStyle=nanami','new'],['?por
 }
 // Run production VN settings refresh against two retained portrait nodes.
 const engineSource=await read('js/vn/engine.js');
+const scenePortraitStart=engineSource.indexOf('function scenePortraitInfo(');
+const scenePortraitEnd=engineSource.indexOf('function linePortraits(',scenePortraitStart);
 const start=engineSource.indexOf('async function openSettings()');
 const end=engineSource.indexOf('\nexport const isPlaying',start);
 const images=[{dataset:{speaker:'tsumugi',face:'smile'},src:'old-a'}, {dataset:{speaker:'minto',face:'serious'},src:'old-b'}];
@@ -171,9 +209,16 @@ const vnContext=vm.createContext({SE:{select(){}},clearTimeout(){},autoTimer:nul
  openVnConfig:async opts=>{opts.onChange('portraitStyle');},
  dom:{portraits:{querySelectorAll:()=>images}},portraitInfo:(speaker,face)=>{resolved++;return {src:`new-${speaker}-${face}`};},
  frame(){framed++;},nameFit:null,config:state.config,completeTyping(){},document:{activeElement:null},startTypingInterval(){},kickAuto(){kicked++;}});
-vm.runInContext(engineSource.slice(start,end)+';globalThis.openSettings=openSettings;',vnContext);
+vm.runInContext(engineSource.slice(scenePortraitStart,scenePortraitEnd)+engineSource.slice(start,end)+';globalThis.openSettings=openSettings;',vnContext);
 await vnContext.openSettings();
 test('VN refresh updates speaker and silent companion in place',()=>{assert.equal(resolved,2);assert.equal(framed,2);assert.equal(images[0].src,'new-tsumugi-smile');assert.equal(images[1].src,'new-minto-serious');assert.equal(kicked,1);assert.equal(vnContext.vnModalOpen,0);});
+test('VN refresh keeps the costume on the selected speaker and passes the original expression',()=>{
+ const calls=[];
+ vnContext.running.portraitCostume={speaker:'tsumugi',key:'swim'};
+ vnContext.portraitInfo=(...args)=>{calls.push(args);return null;};
+ vm.runInContext('refreshPortraits()',vnContext);
+ assert.deepEqual(calls,[['tsumugi','smile',undefined,'swim'],['minto','serious',undefined,undefined]]);
+});
 // CONTINUE picks its portrait style by coverage (#2524): the new version only when every face of the script has
 // new-version art AND a measured close-up frame (continuePortraitVariants); otherwise the measured classic art.
 const continueSource=await read('js/chapters/continue-view.js');
@@ -254,10 +299,10 @@ for(const choice of ['new','classic']) {
   displayName:id=>id,portraitInfo:(...args)=>{calls.push(args);return data.portraitInfo(...args);},faceIconUrl:()=>null,faceFrame:data.faceFrame,
   imageReady:async url=>loaded.push(url),growthSkill:()=>false,innerVoiceLine:()=>'',watchLine:()=>'',autoWrap:text=>text});
  vm.runInContext(executable(audienceSource)+';this.api={buildAudience,faceCrop};',ctx);
- for(const id of ['hajime','sumi','sui','maezono','dr_kemuri','emil','pakki','da_silva']) {
+ for(const id of ['hajime','sumi','sensu','uezono','dr_charcoal','emil','pakki','da_silva']) {
   ctx.api.buildAudience({mode:'tutorial',audienceIds:[id]});
   // #2680: 審査員の顔は設定中の画風の絵を、その画風の絵で測った枠で出す（新版が無い人は現行）。
-  const image=nodes.filter(n=>n.selector==='img').at(-1),p=data.portraitInfo(id,id==='sui'?'serious':'normal');
+  const image=nodes.filter(n=>n.selector==='img').at(-1),p=data.portraitInfo(id,id==='sensu'?'serious':'normal');
   assert.equal(image.src,p.src);
   if(choice==='classic') assert.equal(p.style,'classic');
   const crop=ctx.api.faceCrop(p);

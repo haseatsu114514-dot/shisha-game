@@ -8,7 +8,7 @@ const dt = id => `[data-test="${id}"]`;
 const clearPrefix = chapter => chapter === 2 ? "ch2-tournament" : "ch3-aftermath";
 const lastLine = { 2: "店の明かりを落とした。", 3: "客の返事を待った。" };
 
-async function openLastScene(page, chapter) {
+async function openLastScene(page, chapter, tap = (...point) => page.touchscreen.tap(...point)) {
   await page.evaluate(async chapter => {
     const core = await import("/remake/js/core/state.js");
     const state = core.newGame();
@@ -31,11 +31,14 @@ async function openLastScene(page, chapter) {
   if (chapter === 3) await page.locator(dt("ch3-aftermath-continue")).tap();
   const vn = page.locator("#vn.active .vn-box");
   await vn.waitFor();
+  const box = await vn.boundingBox();
+  assert(box);
+  const point = [Math.round(box.x + box.width / 2), Math.round(box.y + box.height / 2)];
   // The existing opening guard intentionally ignores taps for the first 320ms.
   await page.waitForTimeout(375);
   for (let n = 0; n < 80; n++) {
-    if ((await vn.innerText()).includes(lastLine[chapter])) return vn;
-    await vn.tap();
+    if ((await vn.innerText()).includes(lastLine[chapter])) return point;
+    await tap(...point);
   }
   assert.fail(`Chapter ${chapter} did not reach its last line`);
 }
@@ -43,15 +46,12 @@ async function openLastScene(page, chapter) {
 await suite("chapter-completion-input", async check => {
   for (const [chapter, method] of [[2, "touch"], [3, "touch"], [2, "keyboard"], [3, "mouse"], [3, "forced-guard-touch"]]) {
     await check(`chapter-${chapter}-native-touch-does-not-dismiss-clear-card-then-${method}-works`, async page => {
-      const vn = await openLastScene(page, chapter);
+      const point = await openLastScene(page, chapter);
       assert.equal(await page.evaluate(() => Boolean(window.__suienNoZoom)), false, "Check Chromium's native compatibility path, not the iOS guard");
       const panel = page.locator(dt(`${clearPrefix(chapter)}-complete`));
       const title = panel.locator(dt(`${clearPrefix(chapter)}-complete-title`));
-      const box = await vn.boundingBox();
-      assert(box);
-      const point = [Math.round(box.x + box.width / 2), Math.round(box.y + box.height / 2)];
-      // Include a true single tap after a pause, not just an accelerated tapping loop.
-      if (method !== "touch") await page.waitForTimeout(450);
+      // Isolate the single tap from the earlier dialogue input.
+      await page.waitForTimeout(450);
       if (method === "forced-guard-touch") await page.evaluate(async ([clientX, clientY]) => {
         // Chromium doesn't install it by default; this validates the existing module's
         // synthetic detail=1 route, not iPhone's real event ordering.
@@ -75,6 +75,40 @@ await suite("chapter-completion-input", async check => {
       else { await title.focus(); await page.keyboard.press("Enter"); }
       await page.locator(dt("title-load")).waitFor();
       assert(await page.locator(dt("title-load")).isEnabled(), "Title return still preserves the cleared autosave");
+    }, profile);
+  }
+  for (const chapter of [3, 2]) {
+    await check(`chapter-${chapter}-rapid-touch-stays-on-clear-card-and-next-works`, async page => {
+      // Drive Chromium's native touch path with a fixed input cadence even if the host stalls.
+      const cdp = await page.context().newCDPSession(page);
+      let timestamp = Date.now() / 1000;
+      const tap = async (x, y) => {
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }], timestamp });
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [], timestamp: timestamp + 0.02 });
+        timestamp += 0.1;
+      };
+      const point = await openLastScene(page, chapter, tap);
+      const prefix = clearPrefix(chapter);
+      const panel = page.locator(dt(`${prefix}-complete`));
+      const title = panel.locator(dt(`${prefix}-complete-title`));
+      await page.evaluate(id => {
+        window.qaCardTouches = 0;
+        document.addEventListener("pointerdown", e => {
+          if (e.isTrusted && e.pointerType === "touch" && e.target.closest("button")?.dataset.test === id)
+            window.qaCardTouches++;
+        }, true);
+      }, `${prefix}-complete-title`);
+      // Keep tapping through the transition, including chapter 2's closing CG fade.
+      for (let n = 0; n < 16; n++) {
+        await tap(...point);
+        if (await page.evaluate(() => window.qaCardTouches >= 2)) break;
+        await page.waitForTimeout(75);
+      }
+      assert(await title.isVisible(), "The burst must leave the clear card open");
+      assert(await page.evaluate(() => window.qaCardTouches >= 2), "Fresh touches must land on the title button");
+      await page.evaluate(async () => { (await import("/remake/js/vn/engine.js")).vnTest.turbo = true; });
+      await panel.locator(dt(`${prefix}-chapter-${chapter === 2 ? "three" : "four"}`)).tap();
+      await page.waitForFunction(next => window.__remake.state.chapter === next, chapter + 1);
     }, profile);
   }
 });

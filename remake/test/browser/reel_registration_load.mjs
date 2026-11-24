@@ -63,16 +63,12 @@ async function receiptToIntro(page, touch) {
   await tap(page, '[data-test="map-go"]', touch);
   for (let n = 0; n < 200; n++) {
     if (await page.locator('[data-test="reel-intro"]').isVisible()) return;
-    if (await page.locator('[data-test="rule-sheet"]').isVisible()) {
-      assert.match(await page.locator('[data-test="rule-sheet"]').innerText(), /レモン.*2g以上/);
-      await tap(page, '[data-test="rule-sheet-close"]', touch);
-    }
     await advanceDialogue(page, touch);
     await page.waitForTimeout(80);
   }
   assert.fail('Actual C.STATION receipt did not reach installation intro');
 }
-async function readIntro(page, touch) {
+async function readIntro(page, touch, keyboard = false) {
   const intro = page.getByRole('dialog', { name: 'MOKUMOKUパッキーの説明' });
   await intro.waitFor();
   const next = intro.locator('[data-test="reel-intro-next"]');
@@ -85,29 +81,18 @@ async function readIntro(page, touch) {
     await page.keyboard.press('Shift+Tab');
     assert(await next.evaluate(b => b === document.activeElement), 'Tab must not leave the explanation');
   }
-  // The actual C.STATION path checks all five lines and the card. A stale receipt input must not skip one.
-  const expected = [/ボクはパッキー/, /インストール完了/, /かってに1回転/, /ルールはシンプル/, /記録ノート/];
-  for (const [i, match] of expected.entries()) {
-    const current = await intro.locator('.ri-text').innerText();
-    assert.match(current, match);
-    assert.equal(await intro.getByRole('button', { name: '次へ' }).count(), 1);
-    if (touch) await next.tap();
-    else if (i === 0) {
-      // Ignore the second click of a single double click.
-      await next.dblclick();
-    } else if (i === 1) {
-      // The first keydown sends one page, the held-key repeat must not also send the next.
-      await page.keyboard.down('Enter');
-      await page.keyboard.down('Enter');
-      await page.keyboard.up('Enter');
-    } else if (i === 2) await next.press('Space');
-    else if (i === 3) await next.press('Enter');
-    else await next.click();
-  }
-  await intro.locator('[data-test="reel-guide-card"]').waitFor();
+  // A stale receipt input, a double click or a held key must leave the auto-spin line visible.
+  assert.match(await intro.locator('.ri-text').innerText(), /ボクはパッキー.*インストール完了/);
+  if (touch) await next.tap();
+  else if (keyboard) {
+    await page.keyboard.down('Enter');
+    await page.keyboard.down('Enter');
+    await page.keyboard.up('Enter');
+  } else await next.dblclick();
+  assert.match(await intro.locator('.ri-text').innerText(), /かってに1回転.*ボクの顔をタップ/);
   assert.equal(await page.evaluate(async () =>
     (await import('./js/core/state.js')).state.reel.count), countBefore,
-  'Drew before explanation/guide finished');
+  'Drew before the explanation finished');
   const close = intro.getByRole('button', { name: '説明を閉じる' });
   if (touch) await close.tap();
   else await close.press('Space');
@@ -174,27 +159,59 @@ async function snapshot(page) {
   });
 }
 
+async function startDay2(page, touch) {
+  await page.evaluate(async () => {
+    const core = await import('./js/core/state.js');
+    const s = core.newGame();
+    Object.assign(s, { phase: 'daily', day: 2, slot: 0, money: 10000, stamina: 80 });
+    Object.assign(s.flags, { _errand_shop_done: true, _errand_naru_visited: true,
+      _errand_scout_done: true, _spot_guide_naru: true, _delivery_schedule_v2: true,
+      _morning_2: true, _lime_tut: true, _lime_opened: true,
+      _tsumugi_contest_research: true });
+    s.affinity.tsumugi = 25;
+    s.story.naru = 1; s.met.naru = true;
+    for (const key of core.STAT_KEYS) { s.stats[key] = 10; s.statXp[key] = 0; }
+    s.reel.seed = 1; // Fixed result, no search for convenient outcomes.
+    core.save();
+  });
+  await loadTitle(page, touch);
+  await receiptToIntro(page, touch);
+}
+
 await suite('reel-registration-load', async check => {
+  for (const touch of [false, true]) await check(`${touch ? 'touch' : 'pc'}-day2-guide`, async page => {
+    errandGain = emptyGain();
+    await startDay2(page, touch);
+    await readIntro(page, touch, true);
+    const guide = page.locator('[data-test="day2-guide"]');
+    await guide.waitFor();
+    assert.deepEqual(await guide.locator('b').allTextContents(), ['大会', '公式アプリ', '昼と夜', '配達']);
+    const descriptions = await guide.locator('p').allTextContents();
+    for (const [i, pattern] of [/DAY14.*レモン.*2g以上/, /MOKUMOKUパッキー.*自動で1回転/, /昼と夜で1回ずつ/, /PEPPERMINT.*EDEN.*tonari/].entries()) {
+      assert.match(descriptions[i], pattern);
+    }
+    const beforeRules = await snapshot(page);
+    await tap(page, '[data-test="day2-guide-rules"]', touch);
+    assert.match(await page.locator('[data-test="rule-sheet"]').innerText(), /2・3・2・3点.*もう一口吸いたい一台/);
+    await tap(page, '[data-test="rule-sheet-close"]', touch);
+    await guide.waitFor();
+    assert.deepEqual(await snapshot(page), beforeRules);
+    await tap(page, '[data-test="day2-guide-close"]', touch);
+    await noonMapNext(page, touch);
+    await tap(page, '[data-test="hud-menu"]', touch);
+    await tap(page, '[data-test="menu-tab-system"]', touch);
+    await tap(page, '[data-test="menu-day2-guide"]', touch);
+    await guide.waitFor();
+    assert.deepEqual(await guide.locator('p').allTextContents(), descriptions);
+    await tap(page, '[data-test="day2-guide-close"]', touch);
+    assert(await page.locator('.map:not(.done)').isVisible());
+  }, touch ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
+
   for (const touch of [false, true]) for (const boundary of cases) {
     const label = `${touch ? 'touch' : 'pc'}-${boundary}`;
     await check(label, async page => {
       errandGain = emptyGain();
-      await page.evaluate(async () => {
-        const core = await import('./js/core/state.js');
-        const s = core.newGame();
-        Object.assign(s, { phase: 'daily', day: 2, slot: 0, money: 10000, stamina: 80 });
-        Object.assign(s.flags, { _errand_shop_done: true, _errand_naru_visited: true,
-          _errand_scout_done: true, _spot_guide_naru: true, _delivery_schedule_v2: true,
-          _morning_2: true, _lime_tut: true, _lime_opened: true,
-          _tsumugi_contest_research: true });
-        s.affinity.tsumugi = 25;
-        s.story.naru = 1; s.met.naru = true;
-        for (const key of core.STAT_KEYS) { s.stats[key] = 10; s.statXp[key] = 0; }
-        s.reel.seed = 1; // Fixed result, no search for convenient outcomes.
-        core.save();
-      });
-      await loadTitle(page, touch);
-      await receiptToIntro(page, touch);
+      await startDay2(page, touch);
       const receipt = await snapshot(page);
       assert.equal(receipt.registered, true);
       assert.equal(receipt.pendingFirst, true);

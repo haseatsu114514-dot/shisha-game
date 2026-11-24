@@ -8,7 +8,7 @@ import { CH4_PROLOGUE, CH4_PREP_SCENES, CH4_DAILY_TOURNAMENT_DAY, advanceToChapt
   departChapterFour, enterChapterFourEve, syncChapterFourDay } from "../js/chapters/ch4-progress.js";
 import { OVERSEAS_HEROINES, OVERSEAS_GUESTS, chooseOverseasCompanion } from "../js/core/overseas-companion.js";
 import { CH4_BEACH_SCENES, CH4_BEACH_SCENE_FILES, CH4_BEACH_PICKS, CH4_BEACH_RESIDENTS, CH4_BEACH_RIVALS, chapterFourBeachCast,
-  chapterFourBeachDue, chapterFourBeachPickCount, chapterFourBeachRecord, commitChapterFourBeach } from "../js/chapters/ch4-beach.js";
+  chapterFourBeachCostume, chapterFourBeachDue, chapterFourBeachPickCount, chapterFourBeachRecord, commitChapterFourBeach } from "../js/chapters/ch4-beach.js";
 import { classifyFlag } from "../js/core/carry.js";
 import { CH4_MORNING_SCENES, CH4_MORNING_FILES, CH4_MORNING_FLAG, CH4_MORNING_CHEERS_MAX, chapterFourMorningCheers,
   chapterFourMorningDue, chapterFourMorningScript, CH4_AFTER_SCENES, chapterFourResultScript } from "../js/chapters/ch4-morning.js";
@@ -63,6 +63,18 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
   assert.equal(classifyFlag("_ch4_beach"), "progression");
 }
 
+// ---- 衣装は選択した相手本人の個別会話だけ。ヌールは仕事服。
+{
+  for (const [id, scene] of Object.entries(CH4_BEACH_SCENES.people)) {
+    assert.deepEqual(chapterFourBeachCostume(id, scene), id === "noor" ? undefined : { speaker: id, key: "swim" });
+  }
+  for (const scene of [CH4_BEACH_SCENES.open, CH4_BEACH_SCENES.close, CH4_BEACH_SCENES.people.minto,
+    "ch4_tsumugi_dubai_friend", undefined]) {
+    assert.equal(chapterFourBeachCostume("tsumugi", scene), undefined);
+  }
+  assert.equal(chapterFourBeachCostume("unknown", CH4_BEACH_SCENES.people.tsumugi), undefined);
+}
+
 // ---- 顔ぶれ: 恋人ゼロ・同行なし → いつも来るつむぎ・ましろ（友人版）。到着を読むまでは砂浜にいない。
 // なる（第二代表）は第4章の最初から同じ宿にいるので、最初から砂浜にいる（男の枠・SPC24）。
 {
@@ -101,13 +113,13 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
 // ---- ♥5の男の友人（SPC24）も、到着を読んだら砂浜に来る（ネタとにぎやかしの枠）。到着を読むまでは来ない。
 {
   const value = eveSave({ finales: { adam: { day: 9, chapter: 1, route: "friend" }, steve: { day: 30, chapter: 3, route: "friend" },
-    rei: { day: 20, chapter: 2, route: "friend" } } });
-  assert.deepEqual(chapterFourArrivalsDue(value).map(entry => entry.id), ["tsumugi", "mashiro", "adam", "rei", "steve"]);
+    kuraudo: { day: 20, chapter: 2, route: "friend" } } });
+  assert.deepEqual(chapterFourArrivalsDue(value).map(entry => entry.id), ["tsumugi", "mashiro", "adam", "kuraudo", "steve"]);
   for (const { scene } of chapterFourArrivalsDue(value).slice(0, 3)) assert(completeChapterFourScene(value, scene));
   assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro", "naru", "adam"], "Rei and Steve have not arrived yet");
   assert.equal(chapterFourBeachDue(value), false, "The male friends arrive before the beach");
   arriveAll(value);
-  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro", "naru", "adam", "rei", "steve"]);
+  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro", "naru", "adam", "kuraudo", "steve"]);
   assert.equal(chapterFourBeachDue(value), true);
   assert.equal(commitChapterFourBeach(value, ["adam", "naru", "steve"]), true, "Three men is fine: a lively beach, not a harem");
   assert.deepEqual(chapterFourBeachRecord(value), { picks: ["adam", "naru", "steve"] });
@@ -118,7 +130,7 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
 {
   const rows = readData("dialogue/ch4_beach").dialogues;
   const names = /つむぎ|みんと|栞|凛想|あげは|ましろ|サメちゃん|ひより|ヌール|アダム|神崎|クラウド|綾取|スティーブ|ヴォルク/g; // 「なる」は普通の言葉に混ざるので見ない
-  const self = { naru: "なる", adam: "アダム", kumicho: "神崎", rei: "クラウド", saku: "綾取", steve: "スティーブ", volk: "ヴォルク" };
+  const self = { naru: "なる", adam: "アダム", kumicho: "神崎", kuraudo: "クラウド", ayatori: "綾取", steve: "スティーブ", volk: "ヴォルク" };
   for (const id of [...CH4_BEACH_RIVALS, ...OVERSEAS_GUESTS]) {
     const row = rows.find(item => item.dialogue_id === CH4_BEACH_SCENES.people[id]);
     assert(row.lines.every(line => ["", "hajime", id].includes(line.speaker)), `${id}: only the two of them`);
@@ -209,7 +221,7 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
     assert(dialogues[scene], `${scene}: exists`);
     assert.deepEqual([...speakersOf(dialogues[scene])].filter(who => who !== "hajime"), [id], `${scene}: only ${id} and Hajime speak`);
   }
-  for (const id of ["noor", "adam", "kumicho", "rei", "saku", "steve", "volk"]) assert(!CH4_AFTER_SCENES.lovers[id], `${id}: friend lines only`);
+  for (const id of ["noor", "adam", "kumicho", "kuraudo", "ayatori", "steve", "volk"]) assert(!CH4_AFTER_SCENES.lovers[id], `${id}: friend lines only`);
   const result = readData("dialogue/ch4_main").dialogues.find(row => row.dialogue_id === "ch4_result");
   const value = arriveAll(eveSave({ lovers: ["minto", "rio", "samechan"], companion: "rio", met: { noor: true },
     finales: { adam: { day: 9, chapter: 1, route: "friend" } } }));

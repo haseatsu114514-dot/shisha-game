@@ -47,9 +47,9 @@ const expectedIds = {
   minto: ['minto_16', 'minto_21', 'minto_26', 'minto_4', 'minto_30'],
   naru: ['naru_25', 'naru_5', 'naru_4', 'naru_1', 'naru_9'],
   noor: ['noor_15', 'noor_18', 'noor_11', 'noor_10', 'noor_7'],
-  rei: ['rei_14', 'rei_16', 'rei_21', 'rei_8', 'rei_15'],
+  kuraudo: ['kuraudo_14', 'kuraudo_16', 'kuraudo_21', 'kuraudo_8', 'kuraudo_15'],
   rio: ['rio_24', 'rio_11', 'rio_28', 'rio_25', 'rio_5'],
-  saku: ['saku_15', 'saku_16', 'saku_3', 'saku_11', 'saku_14'],
+  ayatori: ['ayatori_15', 'ayatori_16', 'ayatori_3', 'ayatori_11', 'ayatori_14'],
   samechan: ['samechan_21', 'samechan_23', 'samechan_20', 'samechan_26', 'samechan_27'],
   sheikh: ['sheikh_13', 'sheikh_11', 'sheikh_10', 'sheikh_15', 'sheikh_5'],
   steve: ['steve_14', 'steve_16', 'steve_11', 'steve_18', 'steve_12'],
@@ -57,15 +57,15 @@ const expectedIds = {
   tsumugi: ['tsumugi_22', 'tsumugi_9', 'tsumugi_25', 'tsumugi_27', 'tsumugi_26'],
   volk: ['volk_14', 'volk_11', 'volk_7', 'volk_16', 'volk_13'],
 };
-const castIds = ['kumicho', 'rei', 'saku', 'steve', 'volk', 'mashiro', 'da_silva', 'sheikh'];
+const castIds = ['kumicho', 'kuraudo', 'ayatori', 'steve', 'volk', 'mashiro', 'da_silva', 'sheikh'];
 const addedIds = Object.values(expectedIds).flat().filter(id => Number(id.match(/_(\d+)$/)[1]) >= 16);
 // 2026-11-07（#2805）: 占い師は相手に会ったことがないので、見た目・持ち物・私生活の具体・過去の出来事を
 // 言い当てる候補（伝聞・言い切りを含む）と秘密に近い候補を削除した。欠番として残し、再利用しない。
 const removed2805 = {
   sumi: [6, 7, 17, 18, 20], tsumugi: [15], naru: [2, 12, 18], adam: [2, 5, 14, 17, 19],
   minto: [2, 3, 5, 6, 10, 13, 17, 18, 19], rio: [14, 16, 17, 18, 19, 20], hiyori: [3, 16, 17, 19],
-  samechan: [1, 5, 16, 17], ageha: [1, 2, 5, 8, 9, 11], kumicho: [1, 4, 5, 6, 7, 8], rei: [1, 2, 3, 5, 6, 7, 9, 10],
-  saku: [1, 4, 5, 6, 7, 8, 9], steve: [2, 3, 5, 6, 7, 9], volk: [1, 2, 3, 4, 5, 8, 9, 10],
+  samechan: [1, 5, 16, 17], ageha: [1, 2, 5, 8, 9, 11], kumicho: [1, 4, 5, 6, 7, 8], kuraudo: [1, 2, 3, 5, 6, 7, 9, 10],
+  ayatori: [1, 4, 5, 6, 7, 8, 9], steve: [2, 3, 5, 6, 7, 9], volk: [1, 2, 3, 4, 5, 8, 9, 10],
   mashiro: [1, 3, 4, 5, 6, 7, 8, 10], da_silva: [5, 6, 7, 8, 9], sheikh: [1, 2, 6, 7, 9],
   master_hookah: [1, 2, 3, 4, 5, 7, 9], noor: [1, 3, 5, 6, 9],
 };
@@ -91,7 +91,7 @@ assert.deepEqual(new Set(Object.keys(trivia.characters)), new Set(AFFINITY_CHARA
 assert.deepEqual(KNOWN_AT_START, ['sumi', 'tsumugi']);
 const opening = newState();
 for (const id of KNOWN_AT_START) { assert.equal(opening.met[id], true); assert.equal(opening.affinity[id], FIRST_HEART_POINTS); }
-for (const id of ['sui', 'maezono', 'dr_kemuri', 'emil', 'mukai_master', 'uranaishi']) assert.equal(hasAffinity(id), false);
+for (const id of ['sensu', 'uezono', 'dr_charcoal', 'emil', 'mukai_master', 'uranaishi']) assert.equal(hasAffinity(id), false);
 assert.equal(hasAffinity('hiyori'), true);
 
 assert.equal(all.length, 95);
@@ -332,7 +332,7 @@ registerFortuneReadings(db);
 // 三日間の「赤く見える」は、選択肢の注記で光りうる相手にだけ約束する（恋愛の注記は表示が切られている間は数えない）。
 const sightLine = d => d.lines.some(l => /赤く見える/.test(l.text || ''));
 // 第2〜5章の場面の注記で、クラウド・サメちゃん・ましろも加わった（#2704）。
-const hinted = new Set(['ageha', 'mashiro', 'minto', 'naru', 'rei', 'rio', 'samechan', 'sumi', 'tsumugi']);
+const hinted = new Set(['ageha', 'mashiro', 'minto', 'naru', 'kuraudo', 'rio', 'samechan', 'sumi', 'tsumugi']);
 // 判定は注記があるかだけで、章や既読は見ない。凛想の注記は初対面の ch1_rio_first の中、スミさんは第1章DAY5の場面だけなので、
 // 第2章以降や初対面の後は、約束しても光らないことがある（既知の限界。#2704 のPR本文の「残り」に記載）。
 for (const char of Object.keys(trivia.characters)) assert.equal(fortuneSightHinted(char, hints), hinted.has(char), `${char} sight hint`);

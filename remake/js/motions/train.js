@@ -6,6 +6,7 @@ import { sleep, nextFrame } from "../core/util.js";
 import { MONO } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
 import { PRIVATE_PASSENGERS, trainPassengers } from "./train-passengers.js";
+import { characterArtStem } from "../core/portrait-resolver.js";
 
 /** 色: bg 車内の暗がり・win 窓・glow 窓の光・back/mid/front 奥から手前の人・hair 髪・ink 輪郭・rim 縁の光 */
 const MONO_TRAIN = { bg: MONO.deep, win: "#3a2a6e", glow: MONO.light, back: "#3e2d78", mid: MONO.main, front: MONO.mid, hair: "#1e1544", ink: "#0b0718", rim: MONO.white, rail: "#5a4597" };
@@ -108,7 +109,7 @@ function crowdRow(baked, scale, order, x0, available, overlap = 30) {
   return panels.filter(Boolean);
 }
 
-const passengerUrl = (id) => new URL(`../../img/sprites/characters/${id}/chr_${id}_${PRIVATE_PASSENGERS[id].face}.webp`, import.meta.url).href;
+const passengerUrl = (id) => { const art = characterArtStem(id); return new URL(`../../img/sprites/characters/${art}/chr_${art}_${PRIVATE_PASSENGERS[id].face}.webp`, import.meta.url).href; };
 
 /** 期間中だけ、普通の乗客の後ろに魔女帽子と角の仮装客が混ざる。紫の人影に統一する。 */
 function costumePassengers(P) {

@@ -80,7 +80,7 @@ export function playCh1Title({ signal } = {}) {
         ]));
       }
       shield.append(card);
-      SE.jingle(); // 従来と同じ正規SEを画像準備後に一度だけ。
+      SE.ch1Title();
       scheduleEnd(ready && !media.matches ? CH1_TITLE_TIMING.duration : CH1_TITLE_TIMING.hold);
     };
     host.append(shield);

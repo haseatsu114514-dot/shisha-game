@@ -45,7 +45,7 @@ async function seedNationalResult(page) {
       _ch3_intro: { startDay: 29, stage: CH3_INTRO_SCENES.length, titleSeen: true, routeVersion: 2 } };
     value.tournament.lastRank = 1; value.tournament.lastTotal = 88;
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-    for (const who of ["hajime", "pakki", "saku", "steve", "volk", "dr_kemuri", "sui"]) value.met[who] = true;
+    for (const who of ["hajime", "pakki", "ayatori", "steve", "volk", "dr_charcoal", "sensu"]) value.met[who] = true;
     for (const who of Object.keys(value.met)) value.flags[`_intro_${who}`] = true;
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
     core.saveConfig(); core.save();

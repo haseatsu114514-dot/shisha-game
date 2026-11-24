@@ -555,7 +555,7 @@ test("boost: the gauge fills from near misses, successful big landings and spins
   assert(Math.abs(fill.gauge - (BOOST.land + BOOST.perfect) * CHARGE) < 1e-9);
 });
 
-test("normal boost requires 30% and spends the stocked gauge proportionally, including during an active boost", () => {
+test("normal boost requires 25% and spends the stocked gauge proportionally, including during an active boost", () => {
   const game = createGame(generateCourse(DEFAULT_SEED));
   chargeBoost(game, 0.4);
   game.fallT = 0.5;
@@ -563,16 +563,16 @@ test("normal boost requires 30% and spends the stocked gauge proportionally, inc
   assert.equal(game.gauge, 0);
   assert(Math.abs(game.boostT - BOOST.duration * 0.4) < 1e-9);
   game.fallT = 0;
-  chargeBoost(game, 0.299);
+  chargeBoost(game, 0.249);
   const currentBoostTime = game.boostT;
   const eventCount = game.events.length;
-  assert.equal(boost(game), null, "just below 30% cannot extend an active boost");
-  assert.equal(game.gauge, 0.299);
+  assert.equal(boost(game), null, "just below 25% cannot extend an active boost");
+  assert.equal(game.gauge, 0.249);
   assert.equal(game.boostT, currentBoostTime);
   assert.equal(game.events.length, eventCount);
-  game.gauge = 0.3;
-  assert.equal(boost(game), "boost", "exactly 30% can boost");
-  assert(Math.abs(game.boostT - BOOST.duration * 0.7) < 1e-9);
+  game.gauge = 0.25;
+  assert.equal(boost(game), "boost", "exactly 25% can boost");
+  assert(Math.abs(game.boostT - BOOST.duration * (0.4 + 0.25)) < 1e-9);
   assert.equal(game.stats.boosts, 2);
   assert.equal(boost(game), null, "spent stock cannot be used again");
 });
@@ -940,15 +940,16 @@ test("boost during the hit window cancels the stumble; an empty gauge or a late 
   assert.equal(game.stats.recoveries, 0);
   // a spin fall cannot be recovered
   game = createGame(course);
-  game.gauge = 0.5;
+  hold(game, 0.48);
   jumpAtNextBump(game);
   step(game, {}, DT);
   while (game.air > 0.2) step(game, {}, DT);
   while (game.air > 0) step(game, { left: true }, DT);
   assert.equal(game.events.at(-1).reason, "spin");
   assert.equal(canRecover(game), false);
+  assert.equal(game.gauge, 0.24);
   assert.equal(boost(game), null, "the remaining gauge is below the normal minimum");
-  game.gauge = 0.3;
+  game.gauge = 0.25;
   assert.equal(boost(game), "boost");
   assert(game.fallT > 0);
 });

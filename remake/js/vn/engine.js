@@ -182,7 +182,7 @@ function buildDom() {
     if (!running || dom.log.classList.contains("show") || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
     if (performance.now() < running.openLockUntil) return;
     if (autoMode || skipMode) { setAuto(false); setSkip(false); }
-    advance();
+    advance(e);
   });
   window.addEventListener("keydown", (e) => {
     if (!running || !layers.vn.classList.contains("active")) return;
@@ -327,6 +327,7 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * @param idOrDlg dialogue_id か dialogue オブジェクト
  * @param opts.bg  背景の上書き（res:// パス可）
  * @param opts.signal 呼出し元が場面を破棄したとき、読了・末尾報酬なしで閉じる
+ * @param opts.portraitCostume この会話の立ち絵だけに使う衣装指定（{ speaker, key }）
  * @param opts.cancelOnSkip SKIPを中断として扱い、呼出し元で次回の再読を可能にする
  * @param opts.fromLine 主列の開始位置（含む）。既読キーは元の行位置を保つ
  * @param opts.toLine 主列の終了位置（含まない）。分岐は通常どおり再生する
@@ -374,7 +375,9 @@ export function play(idOrDlg, opts = {}) {
       queue: queuedLines(dlg.dialogue_id, dlg.lines).slice(opts.fromLine ?? 0, opts.toLine),
       branches: dlg.branches || {},
       resolve,
+      portraitCostume: opts.portraitCostume,
       cancelOnSkip: !!opts.cancelOnSkip,
+      onAdvanceInput: opts.onAdvanceInput,
       cast: Array.isArray(opts.cast) ? opts.cast : null, // motion "gaze" に出す人（その場にいる恋人）
       previewProtagonist: opts.previewProtagonist === true,
       waitingChoice: false,
@@ -475,11 +478,17 @@ function lineDisplayName(line, r) {
   return name && scene?.metadata?.contact_channel === "lime" ? `${name}（LIME）` : name;
 }
 
+/** 再生中の会話で衣装を指定された人物だけ切り替える。 */
+function scenePortraitInfo(speaker, face) {
+  const costume = running?.portraitCostume;
+  return portraitInfo(speaker, face, undefined, costume && costume.speaker === speaker ? costume.key : undefined);
+}
+
 /** 実際にこの行に出す立ち絵。無言の同席者と話者が別なら両方待つ。 */
 function linePortraits(line) {
   return [...new Set([
-    line.portrait !== false && canShowPortrait(line.speaker) ? portraitInfo(line.speaker, line.face)?.src : null,
-    line.portrait ? portraitInfo(line.portrait, line.portrait_face || "normal")?.src : null,
+    line.portrait !== false && canShowPortrait(line.speaker) ? scenePortraitInfo(line.speaker, line.face)?.src : null,
+    line.portrait ? scenePortraitInfo(line.portrait, line.portrait_face || "normal")?.src : null,
   ].filter(Boolean))];
 }
 
@@ -505,7 +514,7 @@ function collectArt(lines, urls) {
   for (const l of lines || []) {
     const character = l.portrait === false ? null : l.portrait || l.speaker;
     if (character && canShowPortrait(character, !!l.portrait)) {
-      const p = portraitInfo(character, l.portrait_face || l.face);
+      const p = scenePortraitInfo(character, l.portrait_face || l.face);
       if (p) urls.add(p.src);
     }
     if (l.type === "show_cg") urls.add(cgUrl(l.cg_id));
@@ -586,8 +595,11 @@ function finish(cancelled = false) {
   r.resolve({ id: r.id, visited: r.visited, ...(cancelled ? { cancelled: true } : {}) });
 }
 
-function advance() {
-  if (!running || !running.ready || running.waitingChoice) return;
+function advance(event) {
+  if (!running || running.waitingChoice) return;
+  // 章末のCGを閉じている間も、会話を送ろうとした入力として通知する。
+  running.onAdvanceInput?.(event);
+  if (!running.ready) return;
   if (running.typing) return completeTyping();
   if (running.pages && running.pageIdx < running.pages.length - 1) {
     running.pageIdx++;
@@ -1219,7 +1231,7 @@ function completeTyping() {
 function updatePortraits(speaker, face, explicit = false) {
   const r = running;
   let entrance = Promise.resolve();
-  const info = speaker && canShowPortrait(speaker, explicit) ? portraitInfo(speaker, face) : null;
+  const info = speaker && canShowPortrait(speaker, explicit) ? scenePortraitInfo(speaker, face) : null;
   if (info) {
     let img = dom.portraits.querySelector(`img[data-speaker="${speaker}"]`);
     if (!img) {
@@ -1254,7 +1266,7 @@ function updatePortraits(speaker, face, explicit = false) {
 
 /** 演出（motions/moments.js の shadowUnveil）へ渡す、会話と同じ大きさ・足元の立ち絵。絵が無ければ null（演出は何もしない） */
 function unveilFigure(charId, face = "normal") {
-  const info = charId ? portraitInfo(charId, face) : null;
+  const info = charId ? scenePortraitInfo(charId, face) : null;
   if (!info) return null;
   const img = el("img", { src: info.src, alt: "", draggable: "false" });
   frame(img, info);
@@ -1486,7 +1498,7 @@ async function openSettings() {
 function refreshPortraits() {
   if (!running) return;
   for (const image of dom.portraits.querySelectorAll("img")) {
-    const info = portraitInfo(image.dataset.speaker, image.dataset.face);
+    const info = scenePortraitInfo(image.dataset.speaker, image.dataset.face);
     if (!info) continue;
     image.src = info.src;
     frame(image, info);

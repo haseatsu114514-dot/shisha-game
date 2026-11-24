@@ -135,10 +135,10 @@ const MODES = {
   },
 };
 
-export function runPull(cs, { holdFailedResult = false } = {}) { return pullGame(cs, MODES.pull, holdFailedResult); }
-export async function runCare(cs, { round = 0, holdFailedResult = false } = {}) {
+export function runPull(cs, options) { return pullGame(cs, MODES.pull, options); }
+export async function runCare(cs, { round = 0, holdFailedResult = false, review = null } = {}) {
   cs.careRound = round;
-  const completed = await pullGame(cs, { ...MODES.care, title: round ? `調整 ${round}回目` : "熱管理" }, holdFailedResult);
+  const completed = await pullGame(cs, { ...MODES.care, title: round ? `調整 ${round}回目` : "熱管理" }, { holdFailedResult, review });
   if (completed === false) throw new Error("Care interrupted before finishing");
   if (round && cs.care) {
     cs.careHistory ??= [];
@@ -147,7 +147,7 @@ export async function runCare(cs, { round = 0, holdFailedResult = false } = {}) 
   }
 }
 
-async function pullGame(cs, mode, holdFailedResult) {
+async function pullGame(cs, mode, { holdFailedResult = false, review = null } = {}) {
   const owner=state;
   await waitBenchReady(cs, mode.store);
   if(state!==owner)return false;
@@ -777,7 +777,8 @@ async function pullGame(cs, mode, holdFailedResult) {
     if (failed === "burnt") cs.burnt = true;
     if (mode.store === "pull") { cs.pullDone = true; recordNaruFinish(cs, bands, { automatic: !!autoSkill() }); refreshBench(); }
     tickerSay(text.ticker);
-    await resultCard(panel, { title: text.title, lines: [text.line, waterComfortLine(cs.water), `${pulls}回吸った`], holdUntilExit: holdFailedResult });
+    const summary = [review?.()].filter(Boolean);
+    await resultCard(panel, { title: text.title, summary, lines: [text.line, waterComfortLine(cs.water), `${pulls}回吸った`], holdUntilExit: holdFailedResult });
     return true;
   }
 
@@ -814,7 +815,7 @@ async function pullGame(cs, mode, holdFailedResult) {
     await resultCard(panel, {
       title: context.title,
       // 攻めの帯の上積み（桜井式）は、畳まれた「詳しく見る」ではなくカードの表に出す（#095 ほめてやれ）。
-      summary: [context.summary, ...(renewal ? [`${servedWord}（${pulls}回吸った）${careFollows ? "。この温度から調整が始まる" : ""}`] : []), ...(attackLine ? [attackLine] : [])],
+      summary: [context.summary, ...(renewal ? [`${servedWord}（${pulls}回吸った）${careFollows ? "。この温度から調整が始まる" : ""}`] : []), attackLine, review?.()].filter(Boolean),
       lines: [
         ...(naruFinished ? ["焼き際を見極めた。仕上げの評価に小さな手応え"] : []),
         inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えられた" : optimal ? "最適温に合わせられた" : inZone ? "適温に整えられた" : T > ideal[1] ? "少し熱いままだった" : "まだぬるかった",
@@ -829,7 +830,7 @@ async function pullGame(cs, mode, holdFailedResult) {
   const [keptWord] = temperatureWord(T);
   await resultCard(panel, {
     title: `${mode.title} 結果`,
-    summary: [...(renewal ? [`${keptWord}で整え終えた（${coals ? `炭×${coals}` : "炭そのまま"}・${pulls}回吸った）`] : []), ...(attackLine ? [attackLine] : [])],
+    summary: [...(renewal ? [`${keptWord}で整え終えた（${coals ? `炭×${coals}` : "炭そのまま"}・${pulls}回吸った）`] : []), attackLine, review?.()].filter(Boolean),
     lines: [
       inZone ? `適温に整えて、${context.returned}`
         : T > ideal[1] ? cs.mode==="tournament" ? `熱いまま${context.recipient}に任せてしまった` : "まだ熱い。次は炭を減らすか、外寄りに置こう"

@@ -123,7 +123,7 @@ assert.deepEqual(plain(await offer()), { used: false, exerted: false }); assert.
 // 台本: 苺は当日に主催が出す（基礎の確認ではまだ使わない）。最後の通しは課題どおり。点の話へ逃げる「はじめ」を映す
 const text = id => [...all[id].lines, ...Object.values(all[id].branches || {}).flat()].map(l => l.text || "").join("\n");
 assert(/主催が出す/.test(text("ch2_prep_basics_intro")));
-assert(/苺は4g以上/.test(text("ch2_prep_rehearsal_intro")));
+assert(/苺は四グラム以上/.test(text("ch2_prep_rehearsal_intro")));
 // 中間: 苺はまだ使わない。DAY6 で自分で吸って確かめるのをやめたので、味はスミさんが見る
 assert(/主催が出す/.test(text("ch2_prep_midcheck_intro")));
 assert(/味は俺が見る/.test(text("ch2_prep_midcheck_intro")));

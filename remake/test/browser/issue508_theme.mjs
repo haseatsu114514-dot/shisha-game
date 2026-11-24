@@ -137,7 +137,7 @@ await suite("issue508-theme", async checkAll => {
       const ls = result.lines;
       if (opts.id === "ch1_naru_fourth") {
         assert.equal(ls.includes("なるは台に目を落とし、炭をひとつ、少し動かした。"), opts.naru >= 3);
-        assert(ls.includes("（──多分、気のせいだ）"));
+        assert(ls.includes("（──たぶん、気のせいだ）"));
       }
       if (opts.id === "ch1_tournament_arrival") {
         assert.equal(ls.includes("頭に浮かんだのは、スミさんの「1つずつ手を動かして覚えろ」だった。"), opts.practice);

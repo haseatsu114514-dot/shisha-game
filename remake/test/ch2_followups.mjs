@@ -3,13 +3,13 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 import { scheduleChapterTwoTrpgNight } from "../js/chapters/ch2-progress.js";
-import { reiStickerDue } from "../js/core/ryuji-visit.js";
+import { kuraudoStickerDue } from "../js/core/ryuji-visit.js";
 import { bondAfterNext, markBondAfterRead } from "../js/core/bond-after.js";
 
 const root = new URL("../../", import.meta.url);
 const preparation = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_preparation.json", root)));
 const stories = ["ch2_kumicho", "ch2_rei", "venue_hours"].flatMap(name => JSON.parse(fs.readFileSync(new URL(`data/dialogue/${name}.json`, root))).dialogues);
-const stickerScene = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_deliveries.json", root))).dialogues.filter(d => d.dialogue_id === "remake_ch2_rei_purikura_after");
+const stickerScene = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_deliveries.json", root))).dialogues.filter(d => d.dialogue_id === "remake_ch2_kuraudo_purikura_after");
 const all = Object.fromEntries([...preparation.dialogues, ...stories, ...stickerScene].map(d => [d.dialogue_id, d]));
 const stagesSource = fs.readFileSync(new URL("remake/js/core/affinity-stages.js", root), "utf8");
 const { CH2_VISIT_STORIES, ch2VisitDone } = await import(new URL("remake/js/core/affinity-stages.js", root));
@@ -21,8 +21,8 @@ const AGEHA_LATER_SCENES = [
   { id: "ch1_ageha_gummy_share", flag: "_ageha_gummy_share_done" },
   { id: "ch1_ageha_bear_seat", flag: "_ageha_bear_seat_done" },
 ];
-const isRepeat = (id, scene) => /^remake_ch2_(ageha|kumicho|rei)_repeat(_[bcdef])?$/.test(scene) && scene.includes(id);
-const ids = ["ageha", "kumicho", "rei"];
+const isRepeat = (id, scene) => /^remake_ch2_(ageha|kumicho|kuraudo)_repeat(_[bcdef])?$/.test(scene) && scene.includes(id);
+const ids = ["ageha", "kumicho", "kuraudo"];
 const DB = { dialogues: { ...all } };
 const states = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay"], function () {
   this.setExport("state", state);
@@ -54,6 +54,7 @@ const mocks = {
     return { id, visited: [id] };
   } },
   "../daily/calendar.js": { runDaily: async def => { options = def; } },
+  "../daily/night-events.js": { nightPlan: () => [] },
   "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000, isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn,
     CHAR_STAT: {}, VISIT_BG: {}, bgRef: x => x, setChapterVisitDue: () => {}, hasNewEvent: () => false, chapterTalkDue: id => sendOffs[id] || null },
   "../daily/hiyori.js": { setHiyoriExtraShops: () => {} },
@@ -62,13 +63,13 @@ const mocks = {
   "../daily/shop.js": { openShop: async () => null },
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },
   // MELTY PUFFでのクラウドの挨拶回の後日（#3468 A案）。判定は実物を使う
-  "../core/ryuji-visit.js": { reiStickerDue },
+  "../core/ryuji-visit.js": { kuraudoStickerDue },
   // #3693 ♥5後の会話。判定は本物を使い、台本の読み込みは何もしない（このテストの保存は締めくくり前）
   "../core/bond-after.js": { bondAfterNext, markBondAfterRead, loadBondAfterScenes: async () => {} },
   // あげはの♥3の質問（#1988）は affinity_stages.mjs で確認する。ここでは質問が無い通常訪問だけを見る
   // 締めくくりの記録・贈り物は bonds.mjs / affinity_stages.mjs が確認する。ここでは訪問の分岐と精算だけを見る（#2027）
   "../daily/bonds.js": { BOND_QUESTIONS: { ageha: { host: "remake_ch2_ageha_newcomer", dialogue: "ch2_ageha_bond_question" } },
-    BOND_FINALES: { ageha: { dialogue: "ch2_ageha_bond_finale" }, kumicho: { dialogue: "ch2_kumicho_bond_finale" }, rei: { dialogue: "ch2_rei_bond_finale" } },
+    BOND_FINALES: { ageha: { dialogue: "ch2_ageha_bond_finale" }, kumicho: { dialogue: "ch2_kumicho_bond_finale" }, kuraudo: { dialogue: "ch2_kuraudo_bond_finale" } },
     playQuestionVisit: async () => { played.push("ageha:question"); return true; }, questionVisitDue: id => questionDue.has(id), finaleAtVisit: id => finaleOpen.has(id),
     playFinale: async (id, opts) => {
       finaleCalls.push([id, opts]); played.push(`${id}:finale`);
@@ -84,7 +85,7 @@ const mocks = {
   "./ch2-craft-prep.js": { craftPrepDue: () => null, offerCraftPrep: async () => null },
   "./visit-chain-play.js": { chainVisitDue: async () => null, playChainStage: async () => false }, // 通いの続き（#3097）は visit_chains.mjs・ch2_story_visits.mjs
   // あげはの店に通う回は ch2_ageha_story.mjs で確認する。ここでは従来の chat/followup/repeat だけを見る
-  "./ch2-story-data.js": { agehaStoryScene: () => agehaStory, agehaLaterScene: () => agehaLater, AGEHA_BADDAY: { id: "remake_ch2_ageha_badday", fromDay: 7 }, AGEHA_LATER_SCENES, syncAgehaVibes: () => 0 },
+  "./ch2-story-data.js": { agehaStoryScene: () => agehaStory, agehaLaterScene: () => agehaLater, AGEHA_BADDAY: { id: "remake_ch2_ageha_badday", fromDay: 7 }, AGEHA_LATER_SCENES, chapterTwoDaySceneDue: () => null, syncAgehaVibes: () => 0 },
   // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
   "../core/growth.js": { consultLessons: async () => [] },
   // 第5章の柚ヶ谷の通い訪問（#2033）が小会話を読み込む。ここでは第2章の訪問だけを見る
@@ -199,18 +200,18 @@ for (const id of ids) {
 
 // #3468 A案: MELTY PUFFでの挨拶回の翌日以降、クラウドの店の小会話を一度だけシールの後日に置き換える。代金・好感度・能力は小会話と同じ。
 {
-  await setup(1); await visit("rei"); heartLevel = 0;
-  state.day = 20; state.flags._rei_melty_greeting = 20;
-  await visit("rei"); assert(isRepeat("rei", played.at(-1)), "not on the greeting day");
+  await setup(1); await visit("kuraudo"); heartLevel = 0;
+  state.day = 20; state.flags._kuraudo_melty_greeting = 20;
+  await visit("kuraudo"); assert(isRepeat("kuraudo", played.at(-1)), "not on the greeting day");
   state.day = 21; mode = "cancel"; const before = JSON.stringify(state);
-  assert.equal((await visit("rei")).used, false); assert.equal(JSON.stringify(state), before, "cancel leaves the after scene unread");
+  assert.equal((await visit("kuraudo")).used, false); assert.equal(JSON.stringify(state), before, "cancel leaves the after scene unread");
   mode = "ok"; const money = state.money; state.affinity = []; state.growth = [];
-  assert.equal((await visit("rei")).used, true); assert.equal(played.at(-1), "remake_ch2_rei_purikura_after");
-  assert.equal(state.flags._rei_purikura_after, true); assert.equal(state.money, money - 3000);
-  assert.deepEqual(state.affinity, [["rei", 8]]); assert.deepEqual(state.growth, [["charm", 4]]);
-  await visit("rei"); assert(isRepeat("rei", played.at(-1)), "after scene is read once");
-  await setup(1); await visit("rei"); heartLevel = 0; state.day = 21; state.flags._rei_melty_greeting = 20;
-  await visit("ageha"); assert.notEqual(played.at(-1), "remake_ch2_rei_purikura_after", "only at the rei shop");
+  assert.equal((await visit("kuraudo")).used, true); assert.equal(played.at(-1), "remake_ch2_kuraudo_purikura_after");
+  assert.equal(state.flags._kuraudo_purikura_after, true); assert.equal(state.money, money - 3000);
+  assert.deepEqual(state.affinity, [["kuraudo", 8]]); assert.deepEqual(state.growth, [["charm", 4]]);
+  await visit("kuraudo"); assert(isRepeat("kuraudo", played.at(-1)), "after scene is read once");
+  await setup(1); await visit("kuraudo"); heartLevel = 0; state.day = 21; state.flags._kuraudo_melty_greeting = 20;
+  await visit("ageha"); assert.notEqual(played.at(-1), "remake_ch2_kuraudo_purikura_after", "only at the kuraudo shop");
 }
 
 // ♥0の再訪はrepeatで正規報酬を得る。♥1になった時だけ既存followupへ。
@@ -313,7 +314,7 @@ await loader.link(async spec => spec.includes("chapter-data") ? new vm.SourceTex
 await loader.evaluate();
 const validatedIds = [
   ...ids.map(id => `remake_ch2_${id}_repeat_e`),
-  ...ids.map(id => `remake_ch2_${id}_followup`), ...["kumicho", "rei"].map(id => `remake_ch2_${id}_revisit`)];
+  ...ids.map(id => `remake_ch2_${id}_followup`), ...["kumicho", "kuraudo"].map(id => `remake_ch2_${id}_revisit`)];
 for (const id of validatedIds) {
   fixture = { dialogues: preparation.dialogues.filter(d => d.dialogue_id !== id) };
   await assert.rejects(loader.namespace.loadPreparationDialogues(), /台本が不足/);
@@ -355,18 +356,18 @@ for (const id of ["tsumugi_ash", "tsumugi_backs", "tsumugi_hands", "water_line",
   assert(loaderDB.dialogues[`ch2_shift_talk_${id}`]?.lines?.length, `#3097 PR-D: ch2_shift_talk_${id}`);
 for (const id of ["cafe_ch2_rain", "choizap_ch2_rain", "cs_ch2_rain", "ch2_rest_rain", "ch2_commute_morning_regulars", "ch2_commute_return_tonari",
   "ch2_commute_morning_doze", "ch2_commute_return_window"]) assert(loaderDB.dialogues[id]?.lines?.length, `#3097 PR-B: ${id}`);
-for (const id of ["outing_kumicho_1", "outing_rei_1"]) assert(loaderDB.dialogues[id]?.lines?.length, `${id}: LIMEの誘いで再生する外出の台本も公開する`);
+for (const id of ["outing_kumicho_1", "outing_kuraudo_1"]) assert(loaderDB.dialogues[id]?.lines?.length, `${id}: LIMEの誘いで再生する外出の台本も公開する`);
 for (const suffix of ["b", "c", "d", "g", "h", "i"]) assert(loaderDB.dialogues[`remake_ch2_ageha_repeat_${suffix}`], `ageha small talk ${suffix}`);
 for (const id of ["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze", "ch2_rio_taste", "ch2_rio_strawberry"]) assert(loaderDB.dialogues[id], id);
 for (const id of ["cafe_ch2_foam", "kannon_ch2_omikuji", "choizap_ch2_stairs", "cs_ch2_new_staff", "ch2_rio_city_scent", "ch2_minto_commute_frame", "ch2_adam_ticket_machine",
   ...["fare", "three_shops", "supper", "receipts", "student", "tsumugi_board", "one_hose"].map(id => `ch2_shift_talk_${id}`),
   "cafe_ch2_clock", "kannon_ch2_incense", "choizap_ch2_neck", "cs_ch2_candy",
   ...["lost_box", "first_timer", "cd_player", "same_seat", "burnt_finger"].map(id => `ch2_shift_talk_${id}`),
-  "cafe_ch2_maezono", "ch2_samechan_resting_shark", "ch2_shift_talk_salaryman"]) assert(loaderDB.dialogues[id], `#3097: ${id}`);
+  "cafe_ch2_uezono", "ch2_samechan_resting_shark", "ch2_shift_talk_salaryman"]) assert(loaderDB.dialogues[id], `#3097: ${id}`);
 for (const id of ["ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed", "ch2_prep_rehearsal_intro",
   ...["intro", "good", "rough", "failed"].map(result => `ch2_prep_midcheck_${result}`),
   ...["great", "good", "rough", "burnt", "drill"].map(result => `ch2_prep_rehearsal_${result}`)]) assert(loaderDB.dialogues[id], `craft prep ${id} is published`);
-for (const id of ["kumicho", "rei"]) {
+for (const id of ["kumicho", "kuraudo"]) {
   assert(loaderDB.dialogues[`ch2_${id}_bond_finale`], `${id} finale is published`);
   for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_${id}_repeat_${suffix}`]);
 }
@@ -375,13 +376,13 @@ assert(loaderDB.dialogues.ch2_ageha_bond_finale, "the ♥5 finale is published w
 for (const entry of Object.values(CH2_VISIT_STORIES).flat()) assert(loaderDB.dialogues[entry.scene], entry.scene);
 assert.equal(loaderDB.dialogues.ch2_kumicho_second.metadata.flavor_lesson, undefined);
 assert.deepEqual(loaderDB.dialogues.ch2_kumicho_fourth.metadata.flavor_lesson, { dragonfruit: 1 });
-assert.equal(loaderDB.dialogues.ch2_rei_first.metadata.flavor_lesson, undefined);
-assert.deepEqual(loaderDB.dialogues.ch2_rei_fourth.metadata.flavor_lesson, { cassis: 1 });
-assert(loaderDB.dialogues.remake_ch2_rei_trpg);
+assert.equal(loaderDB.dialogues.ch2_kuraudo_first.metadata.flavor_lesson, undefined);
+assert.deepEqual(loaderDB.dialogues.ch2_kuraudo_fourth.metadata.flavor_lesson, { cassis: 1 });
+assert(loaderDB.dialogues.remake_ch2_kuraudo_trpg);
 assert(loaderDB.dialogues.remake_ch2_ageha_aquarium);
 assert(loaderDB.dialogues.remake_ch2_kumicho_sento);
 // Use only the IDs published by the actual loader, not the full source JSON.
-for (const id of ["kumicho", "rei"]) {
+for (const id of ["kumicho", "kuraudo"]) {
   await setup(); DB.dialogues = { ...loaderDB.dialogues }; heartLevel = 5;
   state.money += 60000;
   for (const entry of CH2_VISIT_STORIES[id]) if (entry.after) state.flags[entry.after] = true;
@@ -406,7 +407,7 @@ console.log("PASS: actual preparation/loader, three owners, old saves, once-only
 {
   const list = CH2_VISIT_STORIES.kumicho, at = list.findIndex(entry => entry.after);
   assert.equal(list[at]?.scene, "ch2_kumicho_fourth"); assert.equal(list[at].after, "_ch2_taste_distant");
-  assert.equal(CH2_VISIT_STORIES.rei.some(entry => entry.after), false, "rei keeps heart-only stages");
+  assert.equal(CH2_VISIT_STORIES.kuraudo.some(entry => entry.after), false, "kuraudo keeps heart-only stages");
   const spot = module.namespace.PREPARATION_SPOTS.find(s => s.charId === "kumicho");
   for (const [chapterDay, expected] of [[4, "repeat"], [5, "repeat"], [6, list[at].scene]]) {
     await setup(); state.money += 60000; heartLevel = 5; played = [];
@@ -424,7 +425,7 @@ console.log("PASS: actual preparation/loader, three owners, old saves, once-only
 const allStoriesRead = id => { for (const entry of CH2_VISIT_STORIES[id]) {
   if (entry.done) (state.flags[entry.done] ||= {})[id] = true; else state.flags[`_ch2_read_${entry.scene}`] = true;
 } };
-for (const id of ["kumicho", "rei"]) {
+for (const id of ["kumicho", "kuraudo"]) {
   await setup(); allStoriesRead(id); heartLevel = 5; state.money += 60000;
   const repeats = [];
   for (let n = 0; n < 5; n++) {
@@ -464,7 +465,7 @@ assert.equal(module.namespace.PREPARATION_SPOTS.find(s => s.charId === "ageha").
 for (const [id, closedOn] of Object.entries(module.namespace.CH2_CLOSED_ON)) {
   assert.equal(Array.from({ length: 12 }, (_, i) => 16 + i).filter(day => day % 7 === closedOn).length, 1, id);
 }
-console.log("PASS: kumicho/rei small-talk rotation with greetings, ♥5 finale after the visit list, weekly closing day");
+console.log("PASS: kumicho/kuraudo small-talk rotation with greetings, ♥5 finale after the visit list, weekly closing day");
 
 // Entering preparation after the initial deliveries must not create TRPG appointments
 // or change any participant/relationship state. Keep the real legacy scheduler above
@@ -509,7 +510,7 @@ for (const id of ids) {
     assert.equal(state.stamina, before.stamina - 16);
     assert.equal(state.flags._ch2_talks[id], 5);
     assert.deepEqual(state.affinity, [[id, 8]]);
-    assert.deepEqual(state.growth, [[{ ageha: "sense", kumicho: "guts", rei: "charm" }[id], 4]]);
+    assert.deepEqual(state.growth, [[{ ageha: "sense", kumicho: "guts", kuraudo: "charm" }[id], 4]]);
     assert.deepEqual(state.lovers, before.lovers);
     assert.deepEqual(state.relationshipMemories, before.relationshipMemories);
     await visit(id);
@@ -522,7 +523,7 @@ console.log("PASS: three everyday talks are loaded, rotate, retain normal fees/r
 // RVE07: クラウドのライブの夜。第2章で余りチケットを受け取った人が、第3章の東京へ発つ前の準備期間にクラウドの店へ来たら、
 // いつもの会話・段階より先に一度だけ。終演後の場面なので夜だけ。チケットが無い・第2章・出発後は出さない。中断では既読にしない。
 {
-  const live = "ch3_prep_rei_live";
+  const live = "ch3_prep_kuraudo_live";
   const homeScript = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_rei.json", root), "utf8")).dialogues
     .find(d => d.dialogue_id === live);
   assert(homeScript?.lines?.length, "the live night script exists in ch2_rei.json");
@@ -531,30 +532,30 @@ console.log("PASS: three everyday talks are loaded, rotate, retain normal fees/r
   const prepSave = (extra = {}) => {
     state.chapter = 3; state.slot = 1; state.flags._ch3_prep = { startDay: 1, days: 3, departed: false }; Object.assign(state.flags, extra);
   };
-  await setup(2); DB.dialogues[live] = homeScript; prepSave({ _ch2_rei_ticket: true });
-  assert.equal(module.namespace.reiLiveDue(state), true);
+  await setup(2); DB.dialogues[live] = homeScript; prepSave({ _ch2_kuraudo_ticket: true });
+  assert.equal(module.namespace.kuraudoLiveDue(state), true);
   mode = "cancel"; const before = structuredClone(state);
-  assert.equal((await visit("rei")).used, false);
+  assert.equal((await visit("kuraudo")).used, false);
   assert.equal(played.at(-1), live);
   assert.deepEqual(state, before, "an interrupted live night leaves no fee, read mark or affinity");
   mode = "ok";
-  assert.equal((await visit("rei")).used, true);
+  assert.equal((await visit("kuraudo")).used, true);
   assert.equal(played.at(-1), live, "the live night comes before the ordinary talk");
   assert.equal(state.flags[`_talk_seen_${live}`], true);
-  assert.equal(module.namespace.reiLiveDue(state), false, "only once");
-  await visit("rei"); assert.notEqual(played.at(-1), live, "the next visit is an ordinary one");
+  assert.equal(module.namespace.kuraudoLiveDue(state), false, "only once");
+  await visit("kuraudo"); assert.notEqual(played.at(-1), live, "the next visit is an ordinary one");
   for (const [label, prepare] of [
     ["no ticket", () => prepSave()],
-    ["daytime (the scene is after the show)", () => { prepSave({ _ch2_rei_ticket: true }); state.slot = 0; }],
-    ["chapter 2", () => { state.flags._ch2_rei_ticket = true; }],
-    ["after departure", () => { prepSave({ _ch2_rei_ticket: true }); state.flags._ch3_prep.departed = true; }],
-    ["script not loaded", () => { prepSave({ _ch2_rei_ticket: true }); delete DB.dialogues[live]; }],
+    ["daytime (the scene is after the show)", () => { prepSave({ _ch2_kuraudo_ticket: true }); state.slot = 0; }],
+    ["chapter 2", () => { state.flags._ch2_kuraudo_ticket = true; }],
+    ["after departure", () => { prepSave({ _ch2_kuraudo_ticket: true }); state.flags._ch3_prep.departed = true; }],
+    ["script not loaded", () => { prepSave({ _ch2_kuraudo_ticket: true }); delete DB.dialogues[live]; }],
   ]) {
     await setup(2); DB.dialogues[live] = homeScript; prepare();
-    assert.equal(module.namespace.reiLiveDue(state), false, label);
+    assert.equal(module.namespace.kuraudoLiveDue(state), false, label);
   }
   // 神崎の店には出ない
-  await setup(2); DB.dialogues[live] = homeScript; prepSave({ _ch2_rei_ticket: true });
+  await setup(2); DB.dialogues[live] = homeScript; prepSave({ _ch2_kuraudo_ticket: true });
   await visit("kumicho"); assert.notEqual(played.at(-1), live);
 }
 console.log("PASS: Cloud's live night appears once during the chapter 3 departure prep for ticket holders");
@@ -578,7 +579,7 @@ console.log("PASS: Cloud's live night appears once during the chapter 3 departur
     assert.equal(state.flags[`_talk_seen_${scene}`], true);
     assert.equal(state.money, 20000 - 3000); assert.equal(state.stamina, 84);
     assert.deepEqual(state.affinity, [[id, 8]], "the same affinity as an ordinary talk visit");
-    assert.deepEqual(state.growth, [[{ ageha: "sense", kumicho: "guts", rei: "charm" }[id], 4]]);
+    assert.deepEqual(state.growth, [[{ ageha: "sense", kumicho: "guts", kuraudo: "charm" }[id], 4]]);
     assert.equal(state.flags._ch2_talks[id], 2);
     assert.deepEqual(finaleCalls, [], "the finale waits for a later visit");
     assert.equal(!!state.flags._ch2_followup_done?.[id], false, "the follow-up waits for a later visit");
@@ -595,14 +596,14 @@ console.log("PASS: Cloud's live night appears once during the chapter 3 departur
   }
   // クラウドのライブの夜が待っている夜は、ライブが先（送り出しは次の来店）
   {
-    const live = "ch3_prep_rei_live";
-    await setup(2); DB.dialogues.ch3_prep_rei = scriptOf("ch3_prep_rei"); sendOffs = { rei: "ch3_prep_rei" };
+    const live = "ch3_prep_kuraudo_live";
+    await setup(2); DB.dialogues.ch3_prep_kuraudo = scriptOf("ch3_prep_kuraudo"); sendOffs = { kuraudo: "ch3_prep_kuraudo" };
     DB.dialogues[live] = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_rei.json", root), "utf8")).dialogues.find(d => d.dialogue_id === live);
-    state.chapter = 3; state.slot = 1; state.flags._ch3_prep = { startDay: 1, days: 3, departed: false }; state.flags._ch2_rei_ticket = true;
+    state.chapter = 3; state.slot = 1; state.flags._ch3_prep = { startDay: 1, days: 3, departed: false }; state.flags._ch2_kuraudo_ticket = true;
     played = [];
-    assert.equal((await visit("rei")).used, true);
+    assert.equal((await visit("kuraudo")).used, true);
     assert.deepEqual(played, [live]);
-    assert.equal(state.flags._talk_seen_ch3_prep_rei, undefined);
+    assert.equal(state.flags._talk_seen_ch3_prep_kuraudo, undefined);
   }
   // あげはの途中の質問が待っている来店では、質問を受け取り、送り出しは次の来店へ（spots.js の章の間の会話と同じ順）
   await setup(1); state.flags._ch2_followup_done = { ageha: true };
