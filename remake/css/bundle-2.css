@@ -3261,7 +3261,11 @@ html:root[data-density="phone"] body:not(:root) .xfer-btns { gap: var(--phone-ga
 /* ---------------------------------------------------------------- LIME・会話の LOG・起動の案内（#3556） */
 /* 横持ちでは端末の枠が実寸 184×347px ほどになり、トーク一覧 8.7px・閉じる 7.6px・時刻の帯 6.5px まで縮んでいた。
    枠を舞台の高さいっぱいまで広げ、文字だけを規格へ。実物のアプリをまねた色・形（LK20）は変えない。 */
-html:root[data-density="phone"] body:not(:root) .phone { width: 520px; height: min(700px, calc(100% - 16px)); border-radius: 30px; }
+/* 幅は 520px だと縦横比 0.74（実機の約1.6倍太い）になり形が崩れたため、基本設計に近い
+   380px（0.543）へ戻す（2026-11-24 実機報告）。density の文字サイズは倍率と独立に決まるので読みやすさは変わらない。 */
+html:root[data-density="phone"] body:not(:root) .phone { width: 380px; height: min(700px, calc(100% - 16px)); border-radius: 30px; }
+/* ノッチは幅に対して相対的に小さく、ステータスバーと分離して浮いて見えるため density では出さない。 */
+html:root[data-density="phone"] body:not(:root) .phone-notch { display: none; }
 html:root[data-density="phone"] body:not(:root) .phone-status { font-size: var(--phone-sub); padding: 2px 20px 4px; }
 html:root[data-density="phone"] body:not(:root) :is(.lime-logo, .lime-unread, .lcr-side small, .lcr-tag) { font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) :is(.lime-name, .lime-title, .lcr-name) { font-size: var(--phone-text); }
@@ -3650,9 +3654,11 @@ html:root[data-density="phone"] body #stage .bench :is(.rc-details > summary, .b
 /* 1280×720 の舞台はそのまま。横持ち端末では、舞台内の固定寸法と
    phone-density の文字・タップ寸法が同時に収まるよう配置する。 */
 @media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
-  /* GUIDE と右下の案内札は別の段に置く。長い案内も互いを隠さない。 */
+  /* GUIDE と右下の案内札は別の段に置く。長い案内も互いを隠さない。
+     帯の占有は下から約76px（余白26px＋高さ約50px）。112px だと間に36px浮いて見えたため、
+     帯の上端＋8px の 84px に詰める（2026-11-24 実機報告）。 */
   html[data-density="phone"] body:not(:root) .map:has(.map-guide) .map-info {
-    bottom: 112px;
+    bottom: 84px;
   }
   /* 案内先の ! を HUD 札の右端から離す。ピン自体は動かさない。 */
   html[data-density="phone"] body:not(:root) .map .spot-pin.guide .evt-badge {
