@@ -419,18 +419,20 @@ export function voteCeremony(o) {
  * @param o.base        全員に付く基礎票
  * @param o.rows        入れた後の並び [{ id, rank }]（板の行の順と同じ）
  * @param o.quality     同点の時に並びを決める出来栄え { contestant: 値 }
+ * @param o.tie         同点で出来栄えも同じ時の並びを決める比較関数
  * @param o.buttons     進行の間は押せなくするボタン
  * @param o.late        票が出そろうまで隠す要素
  * @param o.sting       最初に出す見出しの帯 { eyebrow, title, sub }。無ければ出さない
  * @returns { moved: boolean, done: Promise<void> } moved＝進行を見せたか
  */
 export function contestCeremony(o) {
-  const { root, judges, contestants, votes, last = null, base = {}, rows, quality = {}, buttons = [], late = [], sting = null, me = "hajime" } = o;
+  const { root, judges, contestants, votes, last = null, base = {}, rows, quality = {},
+    tie = (a, b) => a.localeCompare(b), buttons = [], late = [], sting = null, me = "hajime" } = o;
   const before = o.before || (last ? Object.fromEntries(judges.map((judge) => [judge, Object.fromEntries(contestants.map((id) =>
     [id, (votes[judge]?.[id] || 0) - (last[judge]?.points?.[id] || 0)]))])) : null);
   if (!before || !root?.isConnected || !showMoves()) return { moved: false, done: Promise.resolve() };
   const total = (id) => (base[id] || 0) + judges.reduce((sum, judge) => sum + (before[judge]?.[id] || 0), 0);
-  const rankBefore = [...contestants].sort((a, b) => total(b) - total(a) || (quality[b] || 0) - (quality[a] || 0) || a.localeCompare(b))
+  const rankBefore = [...contestants].sort((a, b) => total(b) - total(a) || (quality[b] || 0) - (quality[a] || 0) || tie(a, b))
     .map((id, index) => ({ id, rank: index + 1 }));
   for (const node of late) node?.classList.add("ts-vote-late");
   const locked = buttons.filter((button) => button && !button.disabled);

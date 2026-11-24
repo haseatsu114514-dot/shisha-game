@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { newState, setState, saveToSlot, loadFromSlot } from '../js/core/state.js';
 import * as outings from '../js/chapters/ch3-outing-progress.js';
 import * as local from '../js/chapters/ch4-dubai-local.js';
+import { chapterFiveTalkIds } from '../js/chapters/ch5-talks.js';
 import { INN_TRIAL_FLAG } from '../js/chapters/ch4-inn-trial.js';
 import { REHEARSAL_FLAG } from '../js/chapters/ch4-rehearsal.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../js');
@@ -28,6 +29,7 @@ const readDialogues = async (file, ids) => {
   return result;
 };
 const values = {
+  chapterFiveTalkIds,
   ...outings, ...local, DB, TOKYO_VISIT_COST: 4000, MASHIRO_TIME_SCENES: [], MASHIRO_TIME_FILE: 'mashiro_time',
   CH5_CAMEL_MEET: { scene: 'ch5_dubai_camel_meet' }, CAMEL_SCENES: {}, DESERT_SPOT_IDS: {},
   DUBAI_LETTER_AGAIN: [], SHEIKH_BOND_IDS: [], TAIYO_BOND_IDS: [], CH4_PLACE_BG: {},

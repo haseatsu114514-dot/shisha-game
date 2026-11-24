@@ -1,5 +1,5 @@
 // 第2・3章の順位集計。投票・quality・保存状態は呼び出し元が持つ。
-// 総票 → quality → ID の順で順位を決め、入力の配列・票は変更しない。
+// 総票 → quality → 指定の同点順（既定はID順）で順位を決め、入力の配列・票は変更しない。
 import { baseVoteOf } from "./tournament-base-votes.js";
 export function tournamentStandings(p, contestants, judges, tie = (a, b) => a.localeCompare(b)) {
   const points = Object.fromEntries(contestants.map(id => [id,

@@ -9,7 +9,7 @@
 import { withMinigameStyles } from "./minigame-styles.js";
 import { installRotateGuard, rotateGuarded } from "../core/rotate-guard.js";
 import { el } from "../core/util.js";
-import { TIER_LABEL } from "../core/play-tiers.js";
+import { TIER_LABEL, TIER_RULE_LINE, PLAY_RULES } from "../core/play-tiers.js";
 import { SE, currentBgm, playBgm, preloadBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { withMinigameLoading } from "./minigame-loading.js";
@@ -949,8 +949,9 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     if (committed || !race?.finished) return committed;
     committed = { ...scoreRace(race), seed: race.seed };
     runs.push(committed);
+    // 段の開き方は全ミニゲーム共通（ひとつ下の段のクリア＝その大会で3位以内・#4195 M-35）
     if (committed.cup === "rookie" && camelCupQualified(committed)) unlocked.add("standard");
-    if (camelMastered(committed)) unlocked.add("expert");
+    if (committed.cup === "standard" && camelCupQualified(committed)) unlocked.add("expert");
     return committed;
   };
 
@@ -1043,6 +1044,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       el("p.camel-eyebrow", { text: "HABIBA RACING CLUB" }),
       el("h2", { text: "ハビーバと、次の大会へ" }),
       el("p", { text: "入門＝初級・標準＝中級・上級＝上級。上級大会で3位以内なら白火がひとつ（一度だけ）。" }),
+      el("p.camel-cup-rule", { text: `${TIER_RULE_LINE}。${PLAY_RULES.practice}`, dataset: { test: "camel-tier-rule" } }),
       el("div.camel-cups", CAMEL_CUPS.map((cup, index) => {
         const enabled = unlocked.has(cup.id);
         const mastered = cupRecords[cup.id]?.mastered || runs.some(run => cup.id === "standard" ? camelMastered(run) : cup.id === "expert" && camelExpert(run));
@@ -1056,7 +1058,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
             onerror: event => { event.currentTarget.remove(); } }),
           el("small", { text: tier ? `${TIER_LABEL[tier]} · CUP 0${index}` : "PRACTICE", dataset: { test: "camel-cup-tier", tier: tier || "" } }),
           el("strong", { text: cup.name }), el("span", { dataset: { test: "camel-cup-length" }, text: `${cup.length.toLocaleString("ja-JP")}m ・ 4頭${cupBest(cup.id) >= 0 ? ` ・ ベスト ${cupBest(cup.id)}点` : ""}` }),
-          el("span", { text: enabled ? cup.note : cup.id === "standard" ? "入門大会3位以内で解放" : "標準大会の中級認定で解放" }),
+          el("span", { text: enabled ? cup.note : `${cup.id === "standard" ? "入門" : "標準"}大会3位以内（${TIER_LABEL[cup.id === "standard" ? "easy" : "normal"]}クリア）で解放` }),
           el("b", { text: mastered ? cup.id === "expert" ? "砂漠の名調教師" : "中級認定済み" : topCleared ? "上級クリア済み" : enabled ? "出走する →" : "未解放" }),
         ]);
       })),

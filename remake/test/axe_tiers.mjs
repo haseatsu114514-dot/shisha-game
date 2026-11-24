@@ -9,7 +9,7 @@ const growth = await import("../js/core/growth.js");
 const T = await import("../js/core/play-tiers.js");
 const { DIVISIONS, MODES } = await import("../js/minigames/axe-model.js");
 const { rankOf } = await import("../js/minigames/axe-challenges.js");
-const { AXE_TIER_DIVISION, AXE_TIER_PASS, axeTierClear, axeTierLock } = await import("../js/daily/axe-bar-tiers.js");
+const { AXE_TIER_DIVISION, AXE_TIER_PASS, axeTierClear, axeTierLock, axeTierBests } = await import("../js/daily/axe-bar-tiers.js");
 
 // 確定した10投の結果（axe.js の runAxeThrow と同じ形の、判定に使う所だけ）
 const league = (division, total, extra = {}) => ({ completed: true, cancelled: false, mode: "league", opponent: null, division,
@@ -112,4 +112,21 @@ assert.deepEqual(imported(withRecords({ league: { plays: 1, best: entry("am", 61
 assert.deepEqual(imported(withRecords({ league: { plays: 1, best: entry("am", 30, 0) } })), [], "満点の分からない記録");
 assert.deepEqual(imported(withRecords("broken")), []);
 
+// #4195 M-35: 10投の自己ベストは段（部門）ごと。段ごとの記録を正とし、旧保存は部門の分かる best・last だけから読む
+assert.equal(axeTierLock("normal"), T.tierLockNote("normal"), "閉じた段の札は全ミニゲーム共通の文");
+assert.deepEqual(axeTierBests(undefined), {});
+assert.deepEqual(axeTierBests({ plays: 3, best: entry("rec", 50), last: entry("am", 30) }), { easy: entry("rec", 50), normal: entry("am", 30) });
+assert.deepEqual(axeTierBests({ plays: 4, best: entry("rec", 50), last: entry("am", 20), bests: { am: entry("am", 33), pro: entry("pro", 41) } }),
+  { easy: entry("rec", 50), normal: entry("am", 33), hard: entry("pro", 41) }, "段ごとの記録が前回より高ければそちら");
+assert.deepEqual(axeTierBests({ plays: 1, best: entry(null, 60), last: entry(null, 60) }), {}, "部門の無い古い記録は段に振り分けない");
+// 3投練習（段の外）は、斧投げの Aランクのご褒美に数えない。10投と、モード名の違う旧保存の記録は今までどおり数える
+{
+  const s = withRecords({ practice: { plays: 2, best: entry("rec", 22, 22) } });
+  const g = growth.newGrowth();
+  assert(!growth.claimPlayRewards(g, s).some(row => row.label === "斧投げで Aランク"), "3投練習の A では渡さない");
+  s.flags._axe_bar_records.league = { plays: 1, best: entry("am", A_LINE) };
+  assert(growth.claimPlayRewards(g, s).some(row => row.label === "斧投げで Aランク"), "10投の A で渡す");
+  const old = withRecords({ classic: { plays: 3, best: entry(null, 70, 100) } });
+  assert(growth.claimPlayRewards(growth.newGrowth(), old).some(row => row.label === "斧投げで Aランク"), "旧保存の10投の記録は数える");
+}
 console.log("axe_tiers: ok");

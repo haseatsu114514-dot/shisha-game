@@ -252,7 +252,7 @@ await suite('reel-registration-load', async check => {
         await page.evaluate(async () => {
           const core = await import('./js/core/state.js');
           const reel = await import('./js/daily/reel.js');
-          // A previously committed action result already paid. Keep explicit intro pending.
+          // Keep the committed action result queued while the first explanation is pending.
           reel.onAction({ spent: 10 });
           core.state.visitedDay.c_station = 1;
           core.save();
@@ -268,6 +268,8 @@ await suite('reel-registration-load', async check => {
       if (boundary === 'committed-during-spin') {
         assert.equal(beforeLoad.reel.count, expected.count);
         assert(!beforeLoad.flags._pakki_first_spin_pending);
+        assert(beforeLoad.reel.pending.every(r => r.applied === false));
+        assert.equal(payoutOf(beforeLoad, expected.board), payoutOf(receipt, expected.board));
       }
       if (boundary === 'existing-pending-results') assert(beforeLoad.reel.pending.length > 0);
 
@@ -283,7 +285,7 @@ await suite('reel-registration-load', async check => {
         await readIntro(page, touch);
       }
       if (boundary === 'explanation-interrupted') {
-        // A second real interruption: resumed intro finished and first payout committed,
+        // A second real interruption: the resumed intro finished and the first draw was committed,
         // but installReel is still awaiting presentation. Its explicit pending flag is gone.
         await page.locator('.reel-night .rw-strip.spinning').first().waitFor();
         const committed = await page.evaluate(async () => {
@@ -293,16 +295,17 @@ await suite('reel-registration-load', async check => {
         assert.equal(committed.visitedDay.c_station, undefined, 'First-spin commitment must leave the customer visit available');
         assert(!committed.flags._pakki_first_spin_pending);
         assert.equal(committed.reel.count, expected.count);
-        assert.equal(payoutOf(committed, expected.board) - payoutOf(receipt, expected.board), expected.exp);
+        assert(committed.reel.pending.every(r => r.applied === false));
+        assert.equal(payoutOf(committed, expected.board), payoutOf(receipt, expected.board));
         await loadTitle(page, touch);
         await noonMapNext(page, touch);
         const resumed = await snapshot(page);
         assert.equal(resumed.visitedDay, null);
         assert.equal(resumed.count, committed.reel.count, 'Second interruption redrew first spin');
         assert.equal(errandGain.money, 4000, 'The errand pays both delivery allowances once');
-        assert.deepEqual(minus(resumed.stats, errandGain.stats), committed.stats, 'Second interruption changed payout');
         assert.deepEqual(minus(resumed.xp, errandGain.xp), committed.statXp);
-        assert.equal(resumed.growthXp - errandGain.growthXp, committed.growth?.xp || 0, 'Second interruption changed EXP payout');
+        assert.equal(payoutOf(resumed, expected.board) - payoutOf(errandGain, expected.board) - payoutOf(committed, expected.board),
+          expected.exp, 'Second interruption changed payout');
         assert.deepEqual(resumed.note, committed.reel.note);
       }
       await noonMapNext(page, touch);
@@ -337,7 +340,6 @@ await suite('reel-registration-load', async check => {
         if (expected.board) assert.deepEqual(after.stats, receipt.stats, 'The board pays EXP, not stats');
         assert.equal(gain, expected.exp, 'Lost or duplicated first-spin payout');
         if (beforeLoad.reel.count > 0) {
-          assert.deepEqual(minus(after.stats, errandGain.stats), beforeLoad.stats, 'Repaid a committed result');
           assert.deepEqual(minus(after.xp, errandGain.xp), beforeLoad.statXp);
           assert.deepEqual(after.note, beforeLoad.reel.note);
         }

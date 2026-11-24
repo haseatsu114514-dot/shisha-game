@@ -12,9 +12,10 @@ export const DANGER_TEMP = 0.90;
 export const BURST_TEMP = 1;
 export const COLD_OUT = 0.06;
 
+const mixEntries = mix => Object.entries(mix ?? {}).filter(([, g]) => Number.isFinite(g) && g > 0);
+
 /** 正の有限なgを正規化。極端なgでも総量・積をオーバーフローさせない。 */
-function weightedMix(cs) {
-  const entries = Object.entries(cs?.mix ?? {}).filter(([, g]) => Number.isFinite(g) && g > 0);
+function weightedMix(entries) {
   const largest = entries.reduce((max, [, g]) => Math.max(max, g), 0);
   const weight = entries.reduce((sum, [, g]) => sum + g / largest, 0);
   return entries.map(([id, g]) => [id, g / largest / weight]);
@@ -26,9 +27,49 @@ function weightedMix(cs) {
 export const PROTO_HMD_ID = "dr_kemuri_proto_hmd";
 export const PROTO_HMD_DAMAGE_RESIST = 0.5;
 
+const bandCache = new WeakMap();
+let defaultBands;
+
+// 配合画面では同じオブジェクトの g を直接変更する。帯に使う葉の定義も含め、内容を照合する。
+function sameBandMix(mix, inputs, flavorById) {
+  let index = 0;
+  for (const id in mix) {
+    if (!Object.hasOwn(mix, id)) continue;
+    const grams = mix[id];
+    if (!Number.isFinite(grams) || grams <= 0) continue;
+    const previous = inputs[index++];
+    if (previous?.id !== id || previous.grams !== grams) return false;
+    const flavor = flavorById?.[id];
+    if (!Object.is(flavor?.heat_tolerance, previous.tolerance) || !Object.is(flavor?.maker, previous.maker)
+      || !Object.is(flavor?.thermal_expression?.quality, previous.quality)) return false;
+  }
+  return index === inputs.length;
+}
+
 /** 未知の葉・不正な耐熱性は倍率1。空配合は互換用の標準帯と未選択フラグを返す。 */
 export function temperatureBands(cs, flavorById = DB.flavorById) {
-  const entries = weightedMix(cs);
+  if (cs == null) return defaultBands ??= computeBands(cs, [], 0, flavorById);
+  const { mix, equip, mode, leaf } = cs;
+  const damage = leafDamageRatio(leaf);
+  const bowl = equip?.bowl, hms = equip?.hms, charcoal = equip?.charcoal;
+  const cached = bandCache.get(cs);
+  // 実温度は帯との比較に使う。帯の境界は傷み・配合・機材・モードで決まる。
+  if (cached && cached.damage === damage && cached.mode === mode && cached.bowl === bowl
+    && cached.hms === hms && cached.charcoal === charcoal && sameBandMix(mix, cached.inputs, flavorById)) return cached.bands;
+
+  const mixGrams = mixEntries(mix);
+  const bands = computeBands(cs, weightedMix(mixGrams), damage, flavorById);
+  if (Object(cs) === cs) {
+    const inputs = mixGrams.map(([id, grams]) => {
+      const flavor = flavorById?.[id];
+      return { id, grams, tolerance: flavor?.heat_tolerance, maker: flavor?.maker, quality: flavor?.thermal_expression?.quality };
+    });
+    bandCache.set(cs, { damage, mode, bowl, hms, charcoal, inputs, bands });
+  }
+  return bands;
+}
+
+function computeBands(cs, entries, damage, flavorById) {
   let t = entries.reduce((sum, [id, w]) => {
     const value = flavorById?.[id]?.heat_tolerance;
     const tolerance = Number.isFinite(value) && value > 0 ? value : 1;
@@ -46,7 +87,7 @@ export function temperatureBands(cs, flavorById = DB.flavorById) {
   // #1106: 葉が傷むほど適温帯を段階的に細くする。中心は動かさず、幅だけを縮める（温度計・ダイヤルで見て分かる）。
   // 試作HMD装備中は、熱が蓋全体に回る分だけこの縮みが半分になる（M-W9）。
   const damageResist = cs?.equip?.hms === PROTO_HMD_ID ? PROTO_HMD_DAMAGE_RESIST : 1;
-  const damageScale = 1 - LEAF_DAMAGE.bandNarrow * leafDamageRatio(cs?.leaf) * damageResist;
+  const damageScale = 1 - LEAF_DAMAGE.bandNarrow * damage * damageResist;
   // 帯の締め（PST01・2026-11-20 オーナー「判定甘すぎる…虹ゲージを全体的に小さく、緑も」）: 本番は緑・虹とも 0.7 倍。
   // レッスン（チュートリアル）は今までの幅のまま。採点（temperatureFitness）も同じ帯を使うので、温度合わせが全体に厳しくなる。
   const tightness = cs?.mode === "tutorial" ? 1 : BAND_TIGHTNESS;
@@ -173,7 +214,7 @@ export function makerOfFlavor(id, flavorById = DB.flavorById) {
 }
 
 export function makerMixProfile(cs, flavorById = DB.flavorById) {
-  const entries = weightedMix(cs);
+  const entries = weightedMix(mixEntries(cs?.mix));
   const baseBands = temperatureBands(cs, flavorById);
   const makerWeights = {};
   if (entries.length) {

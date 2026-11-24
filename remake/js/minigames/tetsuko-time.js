@@ -779,7 +779,13 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
     function placeToy() {
       if (tool !== "toy") { toy.hidden = true; return; }
       toy.hidden = false;
-      const tip = held ? { x: catCenter().x - 10, y: catCenter().y + 40 } : (toyTip ||= toyHome());
+      let tip;
+      if (held) {
+        const center = catCenter();
+        tip = { x: center.x - 10, y: center.y + 40 };
+      } else {
+        tip = toyTip ||= toyHome();
+      }
       const dx = tip.x - HAND_AT.x, dy = tip.y - HAND_AT.y;
       toy.style.setProperty("--tx", `${tip.x}px`);
       toy.style.setProperty("--ty", `${tip.y}px`);

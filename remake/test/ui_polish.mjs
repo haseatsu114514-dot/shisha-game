@@ -134,7 +134,7 @@ try {
   assert.equal(await page.evaluate(() => T.steam.refreshStock()), 2); // SB01: 根性64＝★4で1回増える
   assert.equal(await page.evaluate(() => T.steam.REFRESH_RECHARGE_SECONDS), 8);
   await page.evaluate(() => T.ui.bannersIdle());
-  const reward = await page.evaluate(() => {
+  await page.evaluate(() => {
     T.core.state.phase = "tournament"; T.reel.onAction({ spent: 10 });
     T.core.newGame(); T.core.state.phase = "daily";
     for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 20;
@@ -145,12 +145,14 @@ try {
         T.core.state.reel.seed = seed; break;
       }
     }
-    T.reel.onAction({ spent: 10 }); const r = T.core.state.reel.pending[0];
+    T.reel.onAction({ spent: 10 });
+    window.slotReward = T.core.state.reel.pending[0];
     window.presenting = T.reel.presentNow();
-    return { starTo: r.starTo, name: T.core.STAT_JA[r.target], stats: { ...T.core.state.stats } };
   });
-  assert.equal(reward.starTo, 3);
   await page.waitForSelector(".gain-card.stat.evolved .gc-main", { timeout: 15000 });
+  const reward = await page.evaluate(() => ({ starTo: slotReward.starTo,
+    name: T.core.STAT_JA[slotReward.target], stats: { ...T.core.state.stats } }));
+  assert.equal(reward.starTo, 3);
   assert.equal(await page.locator(".gc-main").textContent(), `${reward.name} 3段に上がった`);
   assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "SLOT BONUS");
   assert.equal(await page.locator(".gain-card.stat .gc-sub").count(), 0);

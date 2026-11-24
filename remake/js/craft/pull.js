@@ -313,8 +313,8 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
   });
   placeJusts();
   const moveNeedle = (at) => {
-    needle.setAttribute("transform", `rotate(${((at - 0.5) * 180).toFixed(2)} ${DIAL.cx} ${DIAL.cy})`);
-    needle.dataset.pos = (at * 100).toFixed(2);
+    setAttr(needle, "transform", `rotate(${((at - 0.5) * 180).toFixed(2)} ${DIAL.cx} ${DIAL.cy})`);
+    setData(needle, "pos", (at * 100).toFixed(2));
     const zone = zones.find(z => at >= z.from && at <= z.to) || zones[1];
     if (currentZone.dataset.zone !== zone.id) currentZone.dataset.zone = zone.id;
     const label = zone.id === "keep" ? at < .5 ? "キープ左・微減" : "キープ右・微増" : zone.label;

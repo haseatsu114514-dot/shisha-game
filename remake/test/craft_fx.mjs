@@ -33,7 +33,7 @@ class Node {
 }
 
 async function load({ dom = true, reduced = false, calm = false, auto = null, turbo = false } = {}) {
-  let now = 1000;
+  let now = 1000, smokeFrame;
   const g = {
     performance: { now: () => now }, setTimeout: () => 0,
     window: { __remake: { craftTest: { auto }, vnTest: { turbo } } },
@@ -41,7 +41,8 @@ async function load({ dom = true, reduced = false, calm = false, auto = null, tu
   if (dom) Object.assign(g, {
     matchMedia: () => ({ matches: reduced }),
     getComputedStyle: () => ({ position: "relative", objectPosition: "50% 75%" }),
-    requestAnimationFrame: () => 1, cancelAnimationFrame: () => {},
+    requestAnimationFrame: (frame) => { smokeFrame = frame; return 1; },
+    cancelAnimationFrame: () => { smokeFrame = undefined; },
     document: {
       body: { classList: { contains: c => calm && c === "reduce-shake" } },
       // 煙の層（core/smoke.js）が作る canvas。className をこの偽ノードの cls に写す
@@ -49,7 +50,10 @@ async function load({ dom = true, reduced = false, calm = false, auto = null, tu
         const n = new Node();
         Object.defineProperty(n, "className", { set(v) { n.cls = String(v).split(" ")[0]; }, get() { return n.cls; } });
         n.isConnected = true;
-        n.getContext = () => ({ createImageData: (w, h) => ({ data: new Uint8ClampedArray(w * h * 4) }), putImageData() {} });
+        n.getContext = () => ({
+          createImageData: (width, height) => ({ width, height, data: new Uint8ClampedArray(width * height * 4) }),
+          putImageData(image) { n.lastSmokeFrame = image; },
+        });
         return n;
       },
     },
@@ -81,7 +85,7 @@ async function load({ dom = true, reduced = false, calm = false, auto = null, tu
   bench.rect = [0, 0, 1280, 720]; stage.rect = [0, 80, 400, 600]; actor.rect = [0, 110, 330, 570];
   Object.assign(actor, { naturalWidth: 1280, naturalHeight: 853 }); actor.dataset.scene = "pull";
   stage.append(actor);
-  return { fx: mod.namespace, rig: record.namespace, bench, host, zoom, stage, actor, worker: () => bench.append(stage), tick: ms => { now += ms; } };
+  return { fx: mod.namespace, rig: record.namespace, bench, host, zoom, stage, actor, worker: () => bench.append(stage), tick: ms => { now += ms; smokeFrame?.(now); } };
 }
 
 const layer = host => host.children.find(c => c.cls === "fx-layer");
@@ -155,10 +159,20 @@ for (const opts of [{ auto: "good" }, { turbo: true }, { dom: false }]) {
   assert.equal(smokeIn(h.stage).length, 1, "one smoke canvas inside the worker window");
   assert.equal(smokeIn(h.bench).length, 0, "nothing is laid over the gauges or the result card");
   const canvas = smokeIn(h.stage)[0];
-  // canvas は窓の中に置くが、作業台と同じ枠（＝同じ細かさの升目）に合わせる
+  // canvas は窓の中に置き、表示位置は作業台の枠に合わせる。描画する升目だけを減らす。
   assert.deepEqual([canvas.style.left, canvas.style.top, canvas.style.width, canvas.style.height], ["0.000%", "-13.333%", "320.000%", "120.000%"]);
+  assert.deepEqual([canvas.width, canvas.height], [480, 270]);
+  for (let i = 0; i < 12; i++) h.tick(50);
+  const frame = canvas.lastSmokeFrame;
+  assert.deepEqual([frame.width, frame.height], [480, 270]);
+  assert.ok(frame.data.some((value) => value !== 0), "the smaller canvas receives the smoke pixels");
   assert.equal(canvas.dataset.quality, "good");
   assert.equal(canvas.dataset.ring, "");
+  const narrow = await load(); narrow.worker();
+  narrow.bench.rect = [0, 0, 960, 720];
+  narrow.fx.exhale(narrow.bench);
+  const narrowCanvas = smokeIn(narrow.stage)[0];
+  assert.deepEqual([narrowCanvas.width, narrowCanvas.height], [360, 270], "the grid fits the cover's aspect ratio");
   for (const quality of ["thin", "harsh"]) {
     const q = await load(); q.worker();
     q.fx.exhale(q.bench, { quality });

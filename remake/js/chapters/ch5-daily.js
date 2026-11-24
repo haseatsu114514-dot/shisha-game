@@ -28,11 +28,13 @@ import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNigh
   chapterFiveTokyoPin, tokyoSpotsNow, preloadTokyoScenes } from "./ch5-tokyo.js";
 import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground, chapterFiveDubaiPin,
   chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes, dubaiBondHasNew } from "./ch5-dubai.js";
-import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop, chapterFiveShowroom } from "./ch5-shops.js";
+import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop, chapterFiveShowroom,
+  chapterFiveTonariTalks, performChapterFiveTonariTalk } from "./ch5-shops.js";
 import { chapterFiveCateringSpot, performCateringSpot, deliverCateringMorning, settleCateringWork, cateringBusyContacts, finishCateringSeason } from "./ch5-catering.js";
 import { introduceCateringBusiness } from "./ch5-catering-origin.js";
 import { CATERING_SPOT_ID, isTsumugiCateringAway } from "./ch5-catering-model.js";
 import { noteShopStamp, shopStampsShortcut } from "./ch5-shop-stamps.js";
+import { chainStageAt } from "./visit-chains.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
   chapterFivePreparation, chapterFivePrepPending, recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
@@ -77,11 +79,16 @@ const HIDDEN_SPOTS = Object.freeze(["naru", "minto", "shishark", "c_station", "t
  */
 export function chapterFiveHomeSpots({ tonariDue = false } = {}) {
   // 指定の時間帯に読める章の会話だけ、既存の「！」で案内する。普通のtonariの新着表示はそのまま。
-  const local = allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id))
-    .map(spot => spot.id === "tonari" && tonariDue ? { ...spot, hasNew: () => true } : spot);
-  return [...local, ...chapterFiveShops(), chapterFiveCallOpen(state) ? CH5_CALL_SPOT : null, chapterFiveTokyoPin(), chapterFiveDubaiPin(),
+  const tonariNew = tonariDue || chapterFiveTonariTalks().some(talk => chainStageAt(state, talk.id));
+  const showroom = chapterFiveShowroom(state);
+  const local = [...allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id)), ...chapterFiveShops()]
+    .map(spot => withChainNotice(spot, spot.id === "tonari" && tonariNew
+      || spot.kind === "shop" && showroom && chainStageAt(state, showroom.id)));
+  return [...local, chapterFiveCallOpen(state) ? CH5_CALL_SPOT : null, chapterFiveTokyoPin(), chapterFiveDubaiPin(),
     chapterFiveCateringSpot()].filter(Boolean);
 }
+
+const withChainNotice = (spot, also = false) => also || chainStageAt(state, spot.id) ? { ...spot, hasNew: () => true } : spot;
 
 /** 次に tonari で読む場面（並びの順・時間帯が合うときだけ）。無ければ null＝いつもの tonari。 */
 export function dueTonariScene(value = state) {
@@ -102,6 +109,8 @@ export function chapterFiveDailyDefinition(io) {
       return Number.isInteger(match) ? match : Infinity;
     },
     nightEvents: {},
+    tonariTalks: chapterFiveTonariTalks,
+    performTonariTalk: performChapterFiveTonariTalk,
     // 出張シーシャの依頼（スミさんのLIME）と、期限の過ぎた依頼の片付け
     morningLime: () => deliverCateringMorning(),
     // 店めぐり帳: 行き先の行動を終えたら判子（帳面の店だけ）。帳面は右上の LIME の一番上の行から開く
@@ -193,7 +202,7 @@ const CH5_CITY_SHOP = Object.freeze({ ...CITY_SHOP, desc: "隣町の支店。仕
 
 /** 第5章の柚ヶ谷の行き先: 神崎・クラウド・あげはの店（会ったことがあれば）・支店・ボドゲカフェ（知っていれば）。 */
 export function chapterFiveCitySpots() {
-  return [...cityRegularSpots(), ...chapterFiveCityShops(), CH5_CITY_SHOP, trpgSpot()].filter(Boolean);
+  return [...cityRegularSpots(), ...chapterFiveCityShops(), CH5_CITY_SHOP, trpgSpot()].filter(Boolean).map(spot => withChainNotice(spot));
 }
 
 /** 今日の恋人のデートの約束（地元の店で会う）。無ければ null。 */

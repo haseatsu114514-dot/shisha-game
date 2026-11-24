@@ -14,7 +14,7 @@ import { autoSkill, craftRankThresholds } from "./common.js";
 import { renewalCraft } from "../core/craft-version.js";
 import { craftRankProgress } from "./rank-hud.js";
 import { mixColor } from "./art.js";
-import { SENSU_BAR, bonusOf } from "./score.js";
+import { SENSU_BAR } from "./score.js";
 import { castCh1Votes, isSakuraiVotes, SAKURAI, sakuraiFocusOf, ch1RoundPoints, ch1BeforeLastStandings } from "./ch1-votes.js";
 import { evaluationOf, judgeComment, judgeDeductionReason } from "./feedback.js";
 import { craftRecognition } from "./recognition.js";
@@ -33,12 +33,14 @@ const JUDGES = [
   { id: "sensu", label: "千須" },
 ];
 
-/** 総合スコア → 結末。1位は千須票（基準超え）だけが生む（ch1の正史） */
-export function outcomeOf(total) {
-  const premiumBar = Math.floor(SENSU_BAR) + 1;
-  if (total >= SENSU_BAR) return { rank: 1, kind: total >= premiumBar ? "premium" : "win" };
-  if (total >= SENSU_BAR - 12) return { rank: 3, kind: "close" };
-  return { rank: 4, kind: total < 38 ? "disaster" : "lose" };
+/** 第1章の結果演出。旧審査では総合点で順位も決まる。 */
+export function outcomeOf(total, voteRank) {
+  const rank = voteRank ?? (total >= SENSU_BAR ? 1 : total >= SENSU_BAR - 12 ? 3 : 4);
+  // 新審査の特別勝利は勝利点より上の最初の整数から（#4198 C-03）。
+  const premiumBar = voteRank == null ? 90 : Math.floor(SENSU_BAR) + 1;
+  if (rank === 1) return { rank, kind: total >= premiumBar ? "premium" : "win" };
+  if (rank === 4) return { rank, kind: total < 38 ? "disaster" : "lose" };
+  return { rank, kind: "close" };
 }
 
 /** 審査員の持ち点（各10点）の最終配分。はじめは上園・博士からも点が入り上位で競り、千須の10点は「最後の一票」として締める（#1282 逆転優勝の廃止、オーナー決定 2026-10-28） */
@@ -110,11 +112,7 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
   // 票が入る演出の出発点（この回の票を入れる前）。この回の票がすでに確定していれば、前後は同じになる。
   const beforeTable = attempt?.rulesVersion >= 2 ? structuredClone(attempt.voteAttempt?.votes || {}) : round > 1 ? interimPointTable(round - 1) : {};
   // 審査員の投入票と、新規試合だけにある基礎票を集計する。
-  if (attempt?.rulesVersion >= 2) {
-    // 提供の回だけ、その時点までに効いた制作ボーナスを審査点へ足す。
-    const serveBonus = round === 2 ? bonusOf(cs).bonus : 0;
-    castCh1Votes(attempt, round - 1, cs, { serveBonus });
-  }
+  if (attempt?.rulesVersion >= 2) castCh1Votes(attempt, round - 1, cs);
   const table = attempt?.rulesVersion >= 2 ? attempt.voteAttempt.votes : interimPointTable(round);
   const values = totals(table, JUDGES.length, attempt?.voteAttempt?.baseVotes);
   const valuesBefore = totals(beforeTable, JUDGES.length, attempt?.voteAttempt?.baseVotes);
@@ -256,7 +254,7 @@ function sakuraiBoard(p, index) {
     : index === 1 ? "次は1回目の調整。温度計の攻めの帯で整え終えると、審査が伸びる"
       : "次は2回目の調整。なるは崩れず、最後はみんとが攻めてくる";
   return {
-    sub: `この回の審査：${info.parts}${index === 1 ? "と制作ボーナス" : ""} · ${points === 2 ? "1位も2位も1票" : "1位に2票・2位に1票"} · 全員に基礎票1点`,
+    sub: `この回は${info.parts}だけで決まる · ${points === 2 ? "1位も2位も1票" : "1位に2票・2位に1票"} · 全員に基礎票1点`,
     feed: [`はじめの評価（この回）: ${mine}${p.attacks?.[index] ? `（攻めの帯 +${SAKURAI.attackBonus}）` : ""}`, next ? nextNote : ""].filter(Boolean),
     extra: (judge) => {
       const pick = picks[judge];
@@ -273,7 +271,7 @@ function sakuraiBoard(p, index) {
 /**
  * 10→0 のカウントと、順位に応じた終わり方。
  * kind: premium（残り2〜3でフライングプチュン）/ win（0でプチュン）/ close（プチュ…→パリン）/ lose（即パリン）/ disaster（ヒビ→バキン）
- * タップまたはスキップボタンでカウントを飛ばし、順位に応じた演出へ進む。
+ * カウント中の画面はクリックを吸わない（自動で進む）
  */
 /**
  * @param opts 第2〜4章から使う時の差し替え（TSH10）。contestants＝出場者の並び（左から）、event＝大会名、
@@ -299,8 +297,7 @@ export async function resultCountdown(cs, kind, attempt = null, opts = {}) {
     el("span", { text: id === "hajime" ? "はじめ" : nameOfId(id) }),
   ]));
   const pray = el("div.rc-pray", cards);
-  const skipButton = el("button.btn.small.rc-skip", { type: "button", text: "スキップ", dataset: { test: "result-count-skip" } });
-  const screen = el("div.count-screen.ts-count.is-counting", { dataset: { test: "result-count" } }, [header(`${opts.event || "SMOKE CROWN CUP"} / FINAL JUDGING`, "結果発表", sub), cuts, el("i.rc-pulse", { "aria-hidden": "true" }), ring, num, pray, el("i.rc-heart", { "aria-hidden": "true" }), el("div.rc-crt"), skipButton]);
+  const screen = el("div.count-screen.ts-count", { dataset: { test: "result-count" } }, [header(`${opts.event || "SMOKE CROWN CUP"} / FINAL JUDGING`, "結果発表", sub), cuts, el("i.rc-pulse", { "aria-hidden": "true" }), ring, num, pray, el("i.rc-heart", { "aria-hidden": "true" }), el("div.rc-crt")]);
   stageLights(screen, { beams: 4, dust: 18, tone: "cool" });
   showScreen("count", screen);
   // 光の巡り: 左から1・3・2・4番目の順（はじめは右端なので、最後に照らされる）。残り1〜0は全員を照らす。
@@ -311,53 +308,41 @@ export async function resultCountdown(cs, kind, attempt = null, opts = {}) {
     "アルミ穴あけ", cs.heat?.flash ? "全面が赤い炭" : "炭の赤熱", cs.heat?.just ? "ジャスト炭" : "炭の熱", "立ちのぼる煙",
     `${leafName}の香り`, "審査員の目元", "会場のざわめき", "スミさんの背中", "tonariのカウンター",
   ];
-  const stopRoll = SE.drumroll(fast ? 0.5 : 5.5);
-  let skipped = false, wake = null;
-  const skip = () => { skipped = true; wake?.(); };
-  const waitTick = () => new Promise(resolve => {
-    const timer = setTimeout(resolve, tick);
-    wake = () => { clearTimeout(timer); resolve(); };
-  });
-  screen.addEventListener("click", skip);
-  try {
-    for (let n = 10; n >= 0 && !skipped; n--) {
-      num.textContent = String(n);
-      ring.style.setProperty("--count", String(n / 10));
-      num.classList.remove("pop");
-      void num.offsetWidth;
-      num.classList.add("pop");
-      screen.dataset.count = String(n);
-      cards.forEach((card, k) => card.classList.toggle("spot", n <= 1 || spotOrder[(10 - n) % 4] === k));
-      SE.count();
-      if (n <= 4) SE.heartbeat();
-      if (n > 0 && n <= 9) {
-        // 出現位置は見出し帯（上部34px〜約125px＝約17%）を避ける。12%からだと見出しに重なる（#3558 項目6）
-        // 出す場所は、見出し（上部〜約20%）・出場者のカード（約31〜77%）・中央の輪を避けた2本の帯だけ（TSH09）。
-        // 上の帯＝見出しの右・カードの上、下の帯＝カードの下の床。交互に使う。
-        const above = n % 2 === 0;
-        const c = el("div.rc-cut", { text: cutWords[(10 - n) % cutWords.length], style: above
-          ? { left: `${rand(50, 72)}%`, top: `${rand(21, 23)}%`, "--r": `${rand(-4, 4)}deg` }
-          : { left: `${rand(6, 70)}%`, top: `${rand(81, 85)}%`, "--r": `${rand(-6, 6)}deg` } });
-        cuts.append(c);
-        setTimeout(() => c.remove(), 900);
-      }
-      if (kind === "premium" && n === 3) break;
-      if (kind === "close" && n === 1) {
-        screen.classList.add("almost");
-        SE.puchun();
-        await waitTick();
-        break;
-      }
-      await waitTick();
+  SE.drumroll(fast ? 0.5 : 5.5);
+  for (let n = 10; n >= 0; n--) {
+    num.textContent = String(n);
+    ring.style.setProperty("--count", String(n / 10));
+    num.classList.remove("pop");
+    void num.offsetWidth;
+    num.classList.add("pop");
+    screen.dataset.count = String(n);
+    cards.forEach((card, k) => card.classList.toggle("spot", n <= 1 || spotOrder[(10 - n) % 4] === k));
+    SE.count();
+    if (n <= 4) SE.heartbeat();
+    if (n > 0 && n <= 9) {
+      // 出現位置は見出し帯（上部34px〜約125px＝約17%）を避ける。12%からだと見出しに重なる（#3558 項目6）
+      // 出す場所は、見出し（上部〜約20%）・出場者のカード（約31〜77%）・中央の輪を避けた2本の帯だけ（TSH09）。
+      // 上の帯＝見出しの右・カードの上、下の帯＝カードの下の床。交互に使う。
+      const above = n % 2 === 0;
+      const c = el("div.rc-cut", { text: cutWords[(10 - n) % cutWords.length], style: above
+        ? { left: `${rand(50, 72)}%`, top: `${rand(21, 23)}%`, "--r": `${rand(-4, 4)}deg` }
+        : { left: `${rand(6, 70)}%`, top: `${rand(81, 85)}%`, "--r": `${rand(-6, 6)}deg` } });
+      cuts.append(c);
+      setTimeout(() => c.remove(), 900);
     }
-  } finally {
-    screen.removeEventListener("click", skip);
-    screen.classList.remove("is-counting");
-    skipButton.remove();
-    if (skipped) stopRoll?.();
+    if (kind === "premium" && n === 3) { await puchun(screen, true); return; }
+    if (n === 1 && kind === "close") {
+      screen.classList.add("almost");
+      SE.puchun();
+      await sleep(tick);
+      await parin(screen, false);
+      return;
+    }
+    await sleep(tick);
   }
-  if (kind === "premium" || kind === "win") await puchun(screen, kind === "premium");
-  else await parin(screen, kind === "disaster");
+  if (kind === "win") await puchun(screen, false);
+  else if (kind === "disaster") await parin(screen, true);
+  else await parin(screen, false);
 }
 
 async function puchun(screen, flying) {
@@ -537,7 +522,6 @@ export function resultTable(cs, rank, attempt = null) {
       // 学びに当たる項目（次に変える一つ・今回よかったこと）は審査員の講評より先に置き、枠が収まらなくても最初から見える（#3554）。
       goodPointOf(cs) ? el("small.rt-good-point", { text: goodPointOf(cs), dataset: { test: "result-good-point" } }) : null,
       el("small.rt-next-tip", { text: improvementOf(cs) }),
-      ...(cs.mixInfo?.ngReasons || []).map(text => el("small", { text })),
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
       el("small.rt-judge-comment", { text: `上園「${judgeComment(cs)}」` }),
       el("div.rt-deductions", JUDGES.map(judge => el("small.rt-judge-deduction", { text: `${judgeName(judge.id)}：${judgeDeductionReason(cs, judge.id).text}`, dataset: { judge: judge.id } }))),

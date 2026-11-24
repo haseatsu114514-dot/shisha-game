@@ -12,10 +12,10 @@ const freeze = value => {
   return value;
 };
 for (const chapter of [ch2, ch3]) {
-  const ids = chapter === ch3 ? ["hajime", "ayatori", "steve", "volk"] : [...chapter.CONTESTANTS].sort();
+  const ids = chapter.CONTESTANTS;
   const [a, b, c, d] = ids;
   const [j1, j2, j3] = chapter.JUDGES;
-  // 総票はqualityに優先し、同票だけquality、両方同じならIDで決まる。
+  // 総票はqualityに優先し、同票だけquality、両方同じなら出場順で決まる。
   const p = freeze({ votes: {
     [j1]: { [a]: 2, [b]: 1, [c]: 2, [d]: 1 },
     [j2]: { [a]: 1, [b]: 2, [c]: 0, [d]: 2 },
