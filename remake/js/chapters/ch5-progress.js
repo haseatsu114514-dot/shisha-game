@@ -21,6 +21,7 @@
 // 会場のSMOKE LABと客席は ch5_main.json。二杯目の前の振り返りは会話エンジンが既読の交流から選ぶ。
 // 打ち上げで修羅場を読んだ場合、スタッフロール後は話し直しだけが続く（PTY04）。
 import { selectPostEndingConflict } from "../core/story-routes.js";
+import { captureChapterStart, ChapterSaveError } from "../core/chapter-save.js";
 import { STORY_BGM } from "../core/story-audio.js";
 import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { CH5_PROLOGUE } from "./ch5-prologue.js";
@@ -184,8 +185,10 @@ export const CH5_MASHIRO_LOVER_ECHO = Object.freeze({
 });
 
 // 閉店後の試作（#1666）。「閉店後の練習」を読んだあと、何を試すか→スミさんが吸って返す→
-// 直すか、そのまま手に覚えさせるかを選ぶ。能力値・日・体力は動かさない（成長は自由行動のみ。
-// 日数・体力の消費は Q11 のオーナー判断待ち）。選んだ内容は二杯目の前と帰店後の会話に返る。
+// 直すか、そのまま手に覚えさせるかを選ぶ。選んだ内容は二杯目の前と帰店後の会話に返る。
+// Q11 仮判断（2026-11-24）: 試作を記録するときに体力だけを一度使う。再調整もこの試作に含める。
+export const CH5_PREP_TRIAL_STAMINA = 10;
+export const CH5_PREP_TRIAL_STAMINA_NOTE = `体力が足りないため、試作できない（体力${CH5_PREP_TRIAL_STAMINA}が必要）。`;
 const PREP_PRACTICE = "ch5_free_tonari_practice";
 export const CH5_PREP_TRIALS = Object.freeze([
   { id: "heat", label: "炭を一つ減らして、温度を抑える", point: "柔らかいが、最初の三口が薄い。", adjust: "蒸らしを足して、もう一台" },
@@ -354,6 +357,7 @@ export function advanceToChapterFive(value) {
   // 台本コメントが名指しする日程フラグ。進行との対応は chapterFiveProgress が検証する。
   value.flags._ch5_match_scheduled = false;
   value.flags._ch5_match_started = false;
+  captureChapterStart(value);
   return true;
 }
 
@@ -361,54 +365,58 @@ export function advanceToChapterFive(value) {
 export function chapterFiveProgress(value) {
   if (value?.chapter !== 5) throw new Error("第5章の保存ではありません");
   const progress = value.flags?._ch5;
+  const check = (condition, detail) => {
+    if (!condition) throw new ChapterSaveError(5, "第5章の保存地点を確認できません", detail);
+  };
   const integer = (number, min, max) => Number.isInteger(number) && number >= min && number <= max;
-  const valid = !!progress && integer(progress.startDay, 1, Infinity)
-    && PARTS.includes(progress.part)
-    && integer(progress.stage, 0, CH5_PROLOGUE.length)
-    && (progress.part === "prologue" ? progress.stage < CH5_PROLOGUE.length
-      : progress.stage === CH5_PROLOGUE.length)
-    && typeof progress.titleSeen === "boolean"
-    && !!progress.read && typeof progress.read === "object" && !Array.isArray(progress.read)
-    && (progress.scheduleDecision === null || SCHEDULE_BRANCHES.includes(progress.scheduleDecision))
-    && integer(progress.aftermath, 0, CH5_AFTERMATH.length)
+  check(!!progress, "_ch5");
+  check(integer(progress.startDay, 1, Infinity), "_ch5.startDay");
+  check(PARTS.includes(progress.part), "_ch5.part");
+  check(integer(progress.stage, 0, CH5_PROLOGUE.length)
+    && (progress.part === "prologue" ? progress.stage < CH5_PROLOGUE.length : progress.stage === CH5_PROLOGUE.length),
+    "_ch5.stage / part");
+  check(typeof progress.titleSeen === "boolean", "_ch5.titleSeen");
+  check(!!progress.read && typeof progress.read === "object" && !Array.isArray(progress.read), "_ch5.read");
+  check(progress.scheduleDecision === null || SCHEDULE_BRANCHES.includes(progress.scheduleDecision), "_ch5.scheduleDecision");
+  check(integer(progress.aftermath, 0, CH5_AFTERMATH.length)
     && (progress.part === "aftermath" ? progress.aftermath < CH5_AFTERMATH.length
       : !["finale", "cleared"].includes(progress.part)
-        || [LEGACY_AFTERMATH_LENGTH, CH5_AFTERMATH.length].includes(progress.aftermath))
-    && integer(progress.finale, 0, progress.finaleScenes?.length ?? FINALE_LENGTH)
+        || [LEGACY_AFTERMATH_LENGTH, CH5_AFTERMATH.length].includes(progress.aftermath)), "_ch5.aftermath / part");
+  check(integer(progress.finale, 0, progress.finaleScenes?.length ?? FINALE_LENGTH)
     && (progress.part !== "finale" || progress.finale < (progress.finaleScenes?.length ?? FINALE_LENGTH))
     && (progress.part !== "cleared" || progress.finale === progress.finaleScenes?.length)
     && (["prologue", "free", "scheduled", "match", "aftermath"].includes(progress.part)
-      || progress.finaleScenes !== null || progress.finale === 0)
-    && (progress.finaleScenes === null || isValidFinaleScenes(progress.finaleScenes))
+      || progress.finaleScenes !== null || progress.finale === 0), "_ch5.finale / part");
+  check((progress.finaleScenes === null || isValidFinaleScenes(progress.finaleScenes))
     && (progress.part !== "finale" || progress.finaleScenes === null || isValidFinaleScenes(progress.finaleScenes))
     && (progress.part !== "cleared" || isValidFinaleScenes(progress.finaleScenes))
-    && (progress.part !== "finale" || progress.finaleScenes !== null || progress.finale === 0)
-    && (progress.won === null || progress.won === true || progress.won === false)
-    // U5: 二本目の制作途中は保存しない。無い／null は未制作として読み、二本目の前から作り直す。
-    // 勝ち固定だった頃の旧保存にも secondCup が無い。
-    && (progress.secondCup == null || isValidSecondCup(progress.secondCup))
-    // 確定済みの挙手から得る勝敗と won の食い違いだけを拒否し、読込時に票や結果を更新しない。
-    && (progress.secondCup == null || progress.won === null
-      || progress.won === (secondCupOutcome(progress.secondCup) === "win"))
-    && (!["aftermath", "finale", "cleared"].includes(progress.part) || progress.won !== null)
-    && ((progress.part === "scheduled") === (value.flags._ch5_match_scheduled === true
+    && (progress.part !== "finale" || progress.finaleScenes !== null || progress.finale === 0), "_ch5.finaleScenes / part");
+  check(progress.won === null || progress.won === true || progress.won === false, "_ch5.won");
+  // U5: 二本目の制作途中は保存しない。無い／null は未制作として読み、二本目の前から作り直す。
+  // 勝ち固定だった頃の旧保存にも secondCup が無い。
+  check(progress.secondCup == null || isValidSecondCup(progress.secondCup), "_ch5.secondCup");
+  // 確定済みの挙手から得る勝敗と won の食い違いだけを拒否し、読込時に票や結果を更新しない。
+  check(progress.secondCup == null || progress.won === null
+    || progress.won === (secondCupOutcome(progress.secondCup) === "win"), "_ch5.secondCup / won");
+  check(!["aftermath", "finale", "cleared"].includes(progress.part) || progress.won !== null, "_ch5.won / part");
+  check(((progress.part === "scheduled") === (value.flags._ch5_match_scheduled === true
       && value.flags._ch5_match_started !== true)
       || ["match", "aftermath", "finale", "cleared"].includes(progress.part))
     && (progress.part !== "scheduled" || value.flags._ch5_match_scheduled === true)
     && (!["match", "aftermath", "finale", "cleared"].includes(progress.part)
       || (value.flags._ch5_match_scheduled === true && value.flags._ch5_match_started === true))
     && (!["prologue", "free"].includes(progress.part)
-      || (value.flags._ch5_match_scheduled !== true && value.flags._ch5_match_started !== true))
-    && (progress.part !== "prologue" || progress.scheduleDecision === null)
-    && ((progress.part === "cleared") === (value.flags._ch5_cleared === true))
-    // スタッフロールの後の並び（IR32）。旧保存・決める前には無い。決めるのはスタッフロールを流し終えた後だけ。
-    && (progress.postEnding === undefined || (progress.part === "cleared"
-      && value.flags[CH5_CREDITS_FLAG] === true && isValidPostEnding(progress.postEnding)))
-    // 試作の記録は任意（旧保存には無い）。あるときは「閉店後の練習」の読了後に限る。
-    && (progress.prep === undefined || (!!progress.prep && typeof progress.prep === "object"
-      && PREP_TRIAL_IDS.includes(progress.prep.trial)
-      && [null, true, false].includes(progress.prep.adjusted) && progress.read[PREP_PRACTICE] === true));
-  if (!valid) throw new Error("第5章の保存地点を確認できません");
+      || (value.flags._ch5_match_scheduled !== true && value.flags._ch5_match_started !== true)),
+    "_ch5.part / _ch5_match_scheduled / _ch5_match_started");
+  check(progress.part !== "prologue" || progress.scheduleDecision === null, "_ch5.scheduleDecision / part");
+  check((progress.part === "cleared") === (value.flags._ch5_cleared === true), "_ch5.part / _ch5_cleared");
+  // スタッフロールの後の並び（IR32）。旧保存・決める前には無い。決めるのはスタッフロールを流し終えた後だけ。
+  check(progress.postEnding === undefined || (progress.part === "cleared"
+    && value.flags[CH5_CREDITS_FLAG] === true && isValidPostEnding(progress.postEnding)), "_ch5.postEnding / part / credits");
+  // 試作の記録は任意（旧保存には無い）。あるときは「閉店後の練習」の読了後に限る。
+  check(progress.prep === undefined || (!!progress.prep && typeof progress.prep === "object"
+    && PREP_TRIAL_IDS.includes(progress.prep.trial)
+    && [null, true, false].includes(progress.prep.adjusted) && progress.read[PREP_PRACTICE] === true), "_ch5.prep / read");
   return progress;
 }
 
@@ -452,11 +460,15 @@ export function chapterFiveCallOpen(value) {
 /** 博士に連絡できるようになった時の知らせ（試作を終えた時に一度）。 */
 export const CH5_CALL_OPEN_NOTE = "準備の区切りがついた。勝負の日は、自宅の電話で博士と決められる";
 
-/** 試作の場面を読み終えたら、何を試したかを保存する。 */
+export const canAffordChapterFivePrepTrial = value => value.stamina >= CH5_PREP_TRIAL_STAMINA;
+
+/** 試作の場面を読み終えたら、体力の消費と試作の記録を確定する。 */
 export function recordChapterFivePrepTrial(value, trial) {
   const progress = chapterFiveProgress(value);
-  if (!chapterFivePrepPending(value) || progress.prep !== undefined || !PREP_TRIAL_IDS.includes(trial)) return false;
+  if (!chapterFivePrepPending(value) || progress.prep !== undefined || !PREP_TRIAL_IDS.includes(trial)
+    || !canAffordChapterFivePrepTrial(value)) return false;
   progress.prep = { trial, adjusted: null };
+  value.stamina -= CH5_PREP_TRIAL_STAMINA;
   return true;
 }
 
@@ -561,11 +573,11 @@ const SECOND_CUP_CATEGORIES = Object.freeze(["steady", "recovered", "offband", "
 
 /**
  * 二本目の出来（finalize の総合 0〜100）→ はじめへの挙手数。
- * 総合77前後で一本目の差を返し、合計で上回る（76前後は同数）。提供できなかった一台は最少。
+ * 総合85以上で一本目の差を返し、合計で上回る（83以上85未満は同数）。提供できなかった一台は最少。
  */
 export function chapterFiveSecondCupVotes(total, failed = false) {
   if (failed || !Number.isFinite(total)) return SECOND_CUP_VOTES.min;
-  const votes = Math.round((Math.max(0, Math.min(100, total)) - 50) / 2) + 8;
+  const votes = Math.round((Math.max(0, Math.min(100, total)) - 58) / 2) + 8;
   return Math.max(SECOND_CUP_VOTES.min, Math.min(SECOND_CUP_VOTES.max, votes));
 }
 

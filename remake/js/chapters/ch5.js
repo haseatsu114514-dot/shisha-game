@@ -3,6 +3,7 @@
 import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { chapterRecoveryActions } from "../core/chapter-recovery.js";
 import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
@@ -39,6 +40,7 @@ import { naruTastingCategory } from "../craft/naru-tasting.js";
 import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_SCENE_FILES, CH5_PREP_TRIALS,
   chapterFiveAftermathScene, chapterFiveSceneTail,
   chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho, chapterFiveLoverEcho,
+  canAffordChapterFivePrepTrial, CH5_PREP_TRIAL_STAMINA, CH5_PREP_TRIAL_STAMINA_NOTE,
   recordChapterFivePrepTrial, recordChapterFivePrepAdjustment, chapterFiveCallOpen, CH5_CALL_OPEN_NOTE,
   canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
   chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
@@ -355,13 +357,19 @@ async function renderPrep(owner) {
   if (!current(owner)) return;
   const prep = chapterFivePreparation(state);
   if (!prep) {
+    if (!canAffordChapterFivePrepTrial(state)) {
+      card(owner, "prep", "閉店後の試作", CH5_PREP_TRIAL_STAMINA_NOTE, [
+        button(owner, "日常に戻る", "prep-back", () => renderFree(owner), true),
+      ]);
+      return;
+    }
     card(owner, "prep", "閉店後の試作", "ダブルアップル12グラム。今夜は、何を試す？",
       CH5_PREP_TRIALS.map(trial => button(owner, trial.label, `prep-${trial.id}`, async () => {
         if (!await readScene(owner, chapterFivePrepScene("trial", trial.id))) return;
         if (!recordChapterFivePrepTrial(state, trial.id)) return;
         save();
         await renderStage(owner);
-      })), "できた一台は、スミさんが吸って返してくれる。");
+      })), `できた一台は、スミさんが吸って返してくれる。体力${CH5_PREP_TRIAL_STAMINA}。`);
     return;
   }
   const trial = CH5_PREP_TRIALS.find(entry => entry.id === prep.trial);
@@ -728,9 +736,10 @@ function reflectionActions(owner) {
   })] : [];
 }
 
-function renderError(owner) {
+function renderError(owner, error) {
   card(owner, "error", "第5章を再開できませんでした", "通信と保存地点を確認して、もう一度お試しください。読み終えた場面から再開できます。", [
     button(owner, "もう一度読み込む", "retry", () => state.chapter === 5 ? resumeChapterFive() : beginChapterFive(), true),
+    ...chapterRecoveryActions(error, owner, button, chapterFiveProgress),
   ]);
 }
 

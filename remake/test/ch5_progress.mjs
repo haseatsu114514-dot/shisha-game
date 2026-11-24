@@ -11,7 +11,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SC
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveEndingContext, beginChapterFiveFinale,
   completeChapterFiveScene, recordChapterFiveSecondCup, chapterFiveSecondCupVotes, chapterFiveVoteTally,
   CH5_AUDIENCE, CH5_FIRST_CUP_VOTES, CH5_PREP_TRIALS, chapterFivePrepScene, chapterFivePreparation,
-  chapterFivePrepPending, chapterFivePrepEcho, recordChapterFivePrepTrial,
+  chapterFivePrepPending, chapterFivePrepEcho, recordChapterFivePrepTrial, CH5_PREP_TRIAL_STAMINA,
   recordChapterFivePrepAdjustment, CH5_LIME_CONDITION, CH5_LIME_MILESTONES,
   chapterFiveLimeDue, CH5_CREDITS_FLAG, chapterFiveCreditsPending, recordChapterFiveCredits,
   chapterFiveTrueEndReached, CH5_POST_ENDING, CH5_CONFLICT_SCENES, CH5_TALK_SCENES, chapterFivePostEndingContext,
@@ -299,7 +299,7 @@ assert.equal(recordChapterFiveSecondCup(value, { total: 90, category: "steady" }
 rejects(value, v => recordChapterFiveSecondCup(v, { total: 10, category: "offband" }));
 assert.equal(chapterFiveMatchOutcome(value), "win");
 assert.deepEqual(chapterFiveVoteTally(value), { first: { hajime: 19, machine: 21 },
-  second: { hajime: 26, machine: 14 }, total: { hajime: 45, machine: 35 } });
+  second: { hajime: 24, machine: 16 }, total: { hajime: 43, machine: 37 } });
 roundTrip(value);
 assert.equal(value.flags._ch5.secondCup.review, undefined, "Old-style records without review lines stay valid");
 {
@@ -344,10 +344,10 @@ assert.equal(chapterFiveSecondCupVotes(100, true), chapterFiveSecondCupVotes(0))
 
 // 二本目の完成後は票・結果を保存から読む。同数は勝ちにならず、敗北と同じ後日談へ進む。
 for (const [total, category, expected, reason] of [
-  [90, "steady", "win", "二台目の挙手で12票差をつけ、合計10票差で逆転した。"],
-  [76, "recovered", "tie", "二台目で2票差を返し、合計で並んだ。"],
-  [73, "offband", "loss", "二台目は同票。一台目の2票差が残った。"],
-  [55, "offband", "loss", "二台目で18票差がつき、合計で20票届かなかった。"],
+  [90, "steady", "win", "二台目の挙手で8票差をつけ、合計6票差で逆転した。"],
+  [84, "recovered", "tie", "二台目で2票差を返し、合計で並んだ。"],
+  [81, "offband", "loss", "二台目は同票。一台目の2票差が残った。"],
+  [63, "offband", "loss", "二台目で18票差がつき、合計で20票届かなかった。"],
 ]) {
   const match = toBeforeSecond();
   assert.equal(recordChapterFiveSecondCup(match, { total, category }), true);
@@ -378,8 +378,11 @@ for (const [total, category, expected, reason] of [
     return chapterFiveMatchOutcome(match);
   };
   assert.equal(outcomeFor(95), "win");
-  assert.equal(outcomeFor(78, "recovered"), "win");
-  assert.equal(outcomeFor(76, "recovered"), "tie");
+  assert.equal(outcomeFor(85, "recovered"), "win");
+  assert.equal(outcomeFor(84.9, "recovered"), "tie");
+  assert.equal(outcomeFor(83, "recovered"), "tie");
+  assert.equal(outcomeFor(82.9, "recovered"), "loss");
+  assert.equal(outcomeFor(78, "recovered"), "loss");
   assert.equal(outcomeFor(60, "offband"), "loss");
   assert.equal(outcomeFor(95, "steady", true), "loss", "An unserved cup cannot win");
   for (const level of [1, 100]) {
@@ -389,10 +392,22 @@ for (const [total, category, expected, reason] of [
   }
 }
 
+// 旧の挙手式で総合78から確定した勝ちも、読込では得票をそのまま使う。
+{
+  const saved = toBeforeSecond();
+  saved.flags._ch5.secondCup = { total: 78, category: "recovered", votes: { hajime: 22, machine: 18 } };
+  assert.equal(chapterFiveMatchOutcome(saved), "win");
+  assert.equal(completeChapterFiveScene(saved, CH5_MATCH_SCENES.win), true);
+  assert.equal(completeChapterFiveScene(saved, CH5_MATCH_SCENES.afterglow), true);
+  const resumed = JSON.parse(JSON.stringify(saved));
+  assert.equal(chapterFiveMatchOutcome(resumed), "win");
+  assert.deepEqual(chapterFiveVoteTally(resumed).second, { hajime: 22, machine: 18 });
+}
+
 // 同数も負けと同じく、勝利フラグなしで後日談へ続く。
 {
   const tied = toBeforeSecond();
-  assert.equal(recordChapterFiveSecondCup(tied, { total: 76, category: "recovered" }), true);
+  assert.equal(recordChapterFiveSecondCup(tied, { total: 84, category: "recovered" }), true);
   assert.equal(chapterFiveMatchOutcome(tied), "tie");
   rejects(tied, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.win));
   assert.equal(completeChapterFiveScene(tied, CH5_MATCH_SCENES.loss), true);
@@ -417,11 +432,11 @@ for (const [total, category, expected, reason] of [
   };
   const cases = [
     [{ total: 90, category: "steady" }, "win", CH5_AFTER_MATCH_OPENINGS.win],
-    [{ total: 76, category: "recovered" }, "tie", CH5_AFTER_MATCH_OPENINGS.tie],
+    [{ total: 84, category: "recovered" }, "tie", CH5_AFTER_MATCH_OPENINGS.tie],
     // 合計は9000だが、二台目の9000の挙手は一台目（21）より少ない 20 → 「票が減りました」
-    [{ total: 74, category: "recovered" }, "loss", CH5_AFTER_MATCH_OPENINGS.lossClose],
+    [{ total: 82, category: "recovered" }, "loss", CH5_AFTER_MATCH_OPENINGS.lossClose],
     // 二台目も9000の挙手が減っていない負け → 「票が割れました」（減ったとは言わない）
-    [{ total: 72, category: "offband" }, "loss", CH5_AFTER_MATCH_OPENINGS.loss],
+    [{ total: 80, category: "offband" }, "loss", CH5_AFTER_MATCH_OPENINGS.loss],
     [{ total: 55, category: "offband" }, "loss", CH5_AFTER_MATCH_OPENINGS.loss],
     [{ total: 95, category: "steady", failed: true }, "loss", CH5_AFTER_MATCH_OPENINGS.loss],
   ];
@@ -1042,7 +1057,7 @@ for (const scenes of [
   ]) rejects(credits(toCleared(["minto", "rio"])), v => beginChapterFivePostEnding(v, bad));
 }
 
-// 閉店後の試作（#1666）: 練習を読んでから、試作→再調整の順に1回だけ記録する。能力・日・所持金・体力は動かない。
+// 閉店後の試作（#1666）: 練習を読んでから、試作→再調整の順に1回だけ記録する。体力だけを使う。
 for (const trial of CH5_PREP_TRIALS) for (const adjusted of [true, false]) {
   const prepared = toFree();
   assert.equal(chapterFivePrepPending(prepared), false, "Prep waits for the practice scene");
@@ -1050,10 +1065,14 @@ for (const trial of CH5_PREP_TRIALS) for (const adjusted of [true, false]) {
   assert.equal(completeChapterFiveScene(prepared, "ch5_free_tonari_practice"), true);
   assert.equal(chapterFivePrepPending(prepared), true);
   assert.equal(chapterFivePreparation(prepared), null);
+  prepared.stamina = CH5_PREP_TRIAL_STAMINA - 1;
+  rejects(prepared, v => recordChapterFivePrepTrial(v, trial.id));
+  prepared.stamina = CH5_PREP_TRIAL_STAMINA;
   const before = structuredClone(prepared);
   rejects(prepared, v => recordChapterFivePrepAdjustment(v, adjusted));
   rejects(prepared, v => recordChapterFivePrepTrial(v, "bogus"));
   assert.equal(recordChapterFivePrepTrial(prepared, trial.id), true);
+  assert.equal(prepared.stamina, 0, "The trial consumes its cost exactly once");
   rejects(prepared, v => recordChapterFivePrepTrial(v, trial.id));
   rejects(prepared, v => recordChapterFivePrepAdjustment(v, "yes"));
   assert.equal(chapterFivePrepPending(prepared), true, "Re-adjustment is still to choose");
@@ -1063,8 +1082,9 @@ for (const trial of CH5_PREP_TRIALS) for (const adjusted of [true, false]) {
   rejects(prepared, v => recordChapterFivePrepAdjustment(v, !adjusted));
   assert.equal(chapterFivePrepPending(prepared), false);
   assert.deepEqual(chapterFivePreparation(prepared), { trial: trial.id, adjusted });
+  before.stamina -= CH5_PREP_TRIAL_STAMINA;
   for (const key of ["day", "slot", "money", "stamina", "stats"])
-    assert.deepEqual(prepared[key], before[key], `${key} must not change by reading the prep`);
+    assert.deepEqual(prepared[key], before[key], `Only the initial trial consumes stamina (${key})`);
   roundTrip(prepared);
   // 結果は二杯目の前と帰店後の会話へ返る。勝ち・負けのどちらの後日談でも同じ返答を読む。
   const suffix = adjusted ? "adjusted" : "kept";

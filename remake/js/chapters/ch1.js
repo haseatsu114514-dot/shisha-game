@@ -13,6 +13,8 @@ import { sceneMoment } from "../core/scene-motions.js";
 import { defeatFade, retryStroke } from "../core/transitions.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { state, save, markMet, setFlag, flag, requestResumeOnBoot, config } from "../core/state.js";
+import { difficultyForRun } from "../core/ngplus-difficulty.js";
+import { difficultyEvidence } from "../core/cycle-start.js";
 import { voteStyleFrom } from "../core/vote-style.js";
 import { addMoney, maxStamina, addStamina, gainStat } from "../core/stats.js";
 import { awardTournamentExp, awardChapterClearExp } from "../core/growth.js";
@@ -699,6 +701,7 @@ async function tournamentDay() {
   if (newTournament) await enterTournamentDay();
   showHud(false);
   prepareTournamentAttempt(newTournament);
+  const carryP = difficultyForRun(state, difficultyEvidence(state));
   for (const id of ["naru", "adam", "minto", "sensu", "uezono", "dr_charcoal"]) markMet(id);
   const openingBgmReady = preloadBgm("bgm_tournament_edm");
   const craftBgmReady = preloadBgm("bgm_tournament_craft");
@@ -753,7 +756,7 @@ async function tournamentDay() {
   bc.clearComments();
   await playLive("ch1_tournament_match", venue());
   await playLive("ch1_tournament_r1_end", venue());
-  await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs, state.tournament);
+  await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs, state.tournament, carryP);
   save();
   await playTournamentEvent(cs, "interlude1", venue("ROUND 1 終了", { card: interval("ROUND 1 → ROUND 2") }));
 
@@ -777,7 +780,7 @@ async function tournamentDay() {
   await playTournamentEvent(cs, "serve", venue());
   await playLive("ch1_tournament_r2_end", venue());
   cs.stats = computeShisha(cs);
-  await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs, state.tournament);
+  await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs, state.tournament, carryP);
   save();
   await playTournamentEvent(cs, "interlude2", venue("ROUND 2 終了", { card: interval("ROUND 2 → ROUND 3") }));
 
@@ -793,7 +796,11 @@ async function tournamentDay() {
     bc.clearComments();
     cs.stats = null;
     await playLive(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", venue(`ROUND ${round + 2} ／ 調整 ${round}回目`));
-    if (round === 1) { cs.stats = computeShisha(cs); await showStandings(3, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality, cs.care.score), cs, state.tournament); save(); }
+    if (round === 1) {
+      cs.stats = computeShisha(cs);
+      await showStandings(3, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality, cs.care.score), cs, state.tournament, carryP);
+      save();
+    }
   }
 
   await playTournamentEvent(cs, "interlude3", venue("全工程 終了", { card: interval("全工程 終了", "FINAL JUDGING") }));
@@ -804,7 +811,7 @@ async function tournamentDay() {
   finalize(cs);
   await playTournamentEvent(cs, "tasting", venue());
   // 最終工程と試飲の表示後に4回目を確定。最後の1点・同点規則はVOTE01に委ねる。
-  if (state.tournament.rulesVersion >= 2) castCh1Votes(state.tournament, 3, cs);
+  if (state.tournament.rulesVersion >= 2) castCh1Votes(state.tournament, 3, cs, carryP);
   const rank = state.tournament.rulesVersion >= 2 ? state.tournament.voteAttempt.result.rank : outcomeOf(cs.total).rank;
   const out = state.tournament.rulesVersion >= 2 ? { rank, kind: rank === 1 ? "win" : rank === 2 || rank === 3 ? "close" : "lose" } : outcomeOf(cs.total);
   state.tournament.lastRank = out.rank;

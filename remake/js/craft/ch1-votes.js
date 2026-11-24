@@ -2,6 +2,7 @@
 // 方式は2つ（core/vote-style.js）: いままで（rulesVersion 2・各回はそこまでの全工程の平均）と、
 // 桜井式（rulesVersion 3・試作。各回はその回に仕上げた工程だけ・審査員ごとの見る所・攻めの帯の上積み）。
 import { initialBaseVotes, baseVoteOf } from "../chapters/tournament-base-votes.js";
+import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 import { ATTACK_BAND } from "./attack-band.js";
 export const CH1_VOTE_VERSION = 2;
 export const CH1_SAKURAI_VERSION = 3;
@@ -21,6 +22,14 @@ const SPEND = [2, 3, 2, 3];
 const emptyVotes = () => Object.fromEntries(CH1_JUDGES.map(j => [j,
   Object.fromEntries(CH1_CONTESTANTS.map(id => [id, 0]))]));
 const byId = (a, b) => CH1_CONTESTANTS.indexOf(a) - CH1_CONTESTANTS.indexOf(b);
+
+function liftCh1Rival(base, carryP) {
+  // 桜井式には99を超える評価もある。持ち込みでその評価を下げない。
+  const lifted = Math.max(base, liftRivalScore(base, carryP, 1));
+  observeRivalScore(base, carryP, 1, lifted);
+  return lifted;
+}
+
 /** style: "sakurai" で桜井式の試合を始める。それ以外（省略を含む）はいままでの審査。始めた後は方式を変えない。 */
 export function beginCh1Votes(attempt, { style = null } = {}) {
   if (attempt.voteAttempt) return attempt.voteAttempt;
@@ -61,18 +70,18 @@ function checkBudget(p, round) {
 export const CH1_LAST_POINT = "hajime";
 /** その回に審査員が入れる点（1位に点−1・2位に1）。千須だけ最後の回は1点を残し、最後の1点に回す。 */
 export const ch1RoundPoints = (judge, round) => SPEND[round] - (judge === "sensu" && round === 3 ? 1 : 0);
-export function castCh1Votes(attempt, round, cs) {
+export function castCh1Votes(attempt, round, cs, carryP = 0) {
   const p = beginCh1Votes(attempt);
   if (p.result || p.voted !== round || round < 0 || round > 3) return false;
-  if (isSakuraiVotes(p)) return castSakurai(p, round, cs);
+  if (isSakuraiVotes(p)) return castSakurai(p, round, cs, carryP);
   const mine = ch1Parts(cs, round), limit = [2, 3, 4, 5][round];
   checkBudget(p, round);
   p.finalVotes = round === 3 ? emptyVotes() : null;
   const picks = {};
   for (const judge of CH1_JUDGES) {
     const weights = CH1_WEIGHTS[judge];
-    const scores = Object.fromEntries(CH1_CONTESTANTS.map(id => [id,
-      evaluated(id === "hajime" ? mine : CH1_RIVALS[id], weights, limit)]));
+    const scores = Object.fromEntries(CH1_CONTESTANTS.map(id => [id, id === "hajime"
+      ? evaluated(mine, weights, limit) : liftCh1Rival(evaluated(CH1_RIVALS[id], weights, limit), carryP)]));
     const [first, second] = CH1_CONTESTANTS.slice().sort((a, b) => scores[b] - scores[a] || byId(a, b));
     const amount = SPEND[round] - (judge === "sensu" && round === 3 ? 1 : 0);
     picks[judge] = { first, second, points: { [first]: amount - 1, [second]: 1 } };
@@ -196,13 +205,14 @@ export function sakuraiRival(id, judge, round) {
   if (round === 1) return SAKURAI.rivals.serve[id][judge];
   return SAKURAI.rivals[round === 2 ? "care1" : "care2"][id];
 }
-function castSakurai(p, round, cs) {
+function castSakurai(p, round, cs, carryP) {
   const mine = sakuraiMine(cs, round);
   checkBudget(p, round);
   p.finalVotes = round === 3 ? emptyVotes() : null;
   const views = {}, picks = {};
   for (const judge of CH1_JUDGES) {
-    const scores = Object.fromEntries(CH1_CONTESTANTS.map(id => [id, id === "hajime" ? mine[judge] : sakuraiRival(id, judge, round)]));
+    const scores = Object.fromEntries(CH1_CONTESTANTS.map(id => [id, id === "hajime"
+      ? mine[judge] : liftCh1Rival(sakuraiRival(id, judge, round), carryP)]));
     const [first, second] = CH1_CONTESTANTS.slice().sort((a, b) => scores[b] - scores[a] || byId(a, b));
     const amount = ch1RoundPoints(judge, round);
     p.votes[judge][first] += amount - 1;
