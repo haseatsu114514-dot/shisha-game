@@ -1220,6 +1220,12 @@ function completeTyping() {
   const total = r.totalLength ?? (r.spokenLength + visibleLength(r.fullInnerHtml));
   r.shown = total;
   renderTyped(total);
+  // 保険（2026-11-24「会話の二行目だけ表示されることがある」調査）: Chromium では再現せず
+  // DOM は正しく組み上がるため、残る本命は iOS Safari の再描画漏れ。増分で組み上げた
+  // DOM を書き手ごと捨てて全文を一度で描き直し、完了時点の確定描画を強制する。
+  typedWriters.delete(dom.text);
+  typedWriters.delete(dom.inner);
+  renderTyped(total);
   dom.next.classList.add("show");
   // 相手の行の会話カットインは、台詞が出切ってから出す
   cutin?.reveal();
