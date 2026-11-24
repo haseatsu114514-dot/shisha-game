@@ -2,9 +2,11 @@
 /* 1280×720 の舞台はそのまま。横持ち端末では、舞台内の固定寸法と
    phone-density の文字・タップ寸法が同時に収まるよう配置する。 */
 @media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
-  /* GUIDE と右下の案内札は別の段に置く。長い案内も互いを隠さない。 */
+  /* GUIDE と右下の案内札は別の段に置く。長い案内も互いを隠さない。
+     帯の占有は下から約76px（余白26px＋高さ約50px）。112px だと間に36px浮いて見えたため、
+     帯の上端＋8px の 84px に詰める（2026-11-24 実機報告）。 */
   html[data-density="phone"] body:not(:root) .map:has(.map-guide) .map-info {
-    bottom: 112px;
+    bottom: 84px;
   }
   /* 案内先の ! を HUD 札の右端から離す。ピン自体は動かさない。 */
   html[data-density="phone"] body:not(:root) .map .spot-pin.guide .evt-badge {

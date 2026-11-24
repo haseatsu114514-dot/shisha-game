@@ -1,5 +1,5 @@
 // MOKUMOKUパッキー — 謎のマスコット「パッキー」のスロット（日常リール）。
-// 仕様の正典は docs/pakki_slot_spec.md。役・確率・天井・裏確変は旧版と同一。
+// 仕様の正典は docs/spec/pakki_slot_spec.md。役・確率・天井・裏確変は旧版と同一。
 // 旧成長の報酬は通常1Pの育成に合わせ、REG16/BIG24/フリーズ36P（2026-10-08 PF24）。
 // 新成長が有効なら、能力Pの代わりに当たり役の経験値（core/growth.js）を入れる。
 //
@@ -7,11 +7,12 @@
 // ・抽選は決定論RNG（シード＋総回転数）— ロードしても結果が変わらない＝リセマラ不可
 // ・旧成長では「直前の行動で伸びたステがさらに伸びる」。ハズレでも対象ステ+1（サイレント）
 // ・新成長ではハズレ・リプレイに経験値なし。天井（ゾーン/本天井・持ち越し）は両モード共通
-// ・結果と報酬は行動した瞬間に確定・適用し、演出は次にマップを開いたときに後追いで見せる
+// ・抽選結果は行動時に確定し、報酬は演出の停止・揃いで一度だけ適用する
 import { el, sleep } from "../core/util.js";
 import { layers, gainCard, toast } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, save, STAT_KEYS, STAT_JA } from "../core/state.js";
+import { chapterDay } from "../core/chapter-clock.js";
 import { gainStat, step } from "../core/stats.js";
 import { DB, faceIconUrl } from "../core/data.js";
 import { SE } from "../core/audio.js";
@@ -72,7 +73,18 @@ function ensureSetting(reel) {
 // 設定の有効期間: 7日たつか章が変わると自動で変わる。観音堂訪問では変えない（2026-10-31 オーナー指示）。
 // 知っている人だけがずっと有利にならないよう、良い設定も長くは続かない。
 const SETTING_DAYS = 7;
-const today = () => ({ chapter: state?.chapter || 1, day: state?.day || 1 });
+const today = () => ({ chapter: state?.chapter || 1, day: state?.day || 1, chapterDay: chapterDay(state) });
+
+function displayDay(record) {
+  if (record.chapterDay != null) return record.chapterDay;
+  if (!Number.isInteger(record.day)) return record.day;
+  // 旧ノートの準備期間は、出発済みでも当時の章内日を復元する。
+  const prepKey = `_ch${record.chapter}_prep`;
+  const flags = state?.flags;
+  const prep = flags?.[prepKey];
+  const prepDay = prep && record.day >= prep.startDay && record.day < prep.startDay + prep.days;
+  return chapterDay({ ...record, flags: prepDay ? { ...flags, [prepKey]: { ...prep, departed: false } } : flags });
+}
 function settingExpired(reel) {
   const since = reel.settingSince;
   if (!since) return false;
@@ -400,13 +412,13 @@ function pickTarget() {
   return target || "guts";
 }
 
-/** 自分で選び、実際に体力を消費した日常行動の終了後に呼ぶ。結果と報酬はこの瞬間に確定する（演出は同じ行動の終了時） */
+/** 自分で選び、実際に体力を消費した日常行動の終了後に抽選結果を確定する。 */
 export function onAction({ spent = 0 } = {}) {
   if (!(spent > 0) || !state?.reel?.installed || state.phase !== "daily") { statBuffer = {}; return; }
   commitSpinSeries();
 }
 
-// 行動後と初回体験で、同じ抽選・報酬・記録を一度だけ確定する。
+// 行動後と初回体験で、同じ手順で抽選してノートに記録する。
 function commitSpinSeries() {
   const reel = state.reel;
   const chapterFirst = reel.lastChapter !== state.chapter;
@@ -419,30 +431,37 @@ function commitSpinSeries() {
   reel.resetNext = false;
   sessionFirst = false;
   const target = pickTarget();
-  // 経験値のしくみ（心得の盤）が有効なら、報酬は能力Pではなく図柄が揃った分の経験値（#1281）。
-  // 役・確率・天井・記録は同じ。r.exp（役の旧ポイント）は記録として残し、能力には足さない
   const expMode = growthEnabled();
   for (const r of spinSeries(reel, { chapterFirst, reset })) {
-    if (expMode) {
-      r.xp = r.quiet ? 0 : awardSlotExp(r.overlap || r.role);
-      r.got = 0;
-      recordNote(reel, r);
-      reel.pending.push(r);
-      continue;
-    }
-    // 章の上限で調整した実増加を記録。通知は演出のときに出す（報酬はここで一度だけ）
-    selfGain = true;
-    const before = { ...state.stats };
-    const got = gainStat(target, r.exp, { silent: true });
-    selfGain = false;
-    // 上限に届いた項目は gainStat が別の項目へ振り替えるので、実際に伸びた方を記録する
-    const key = STAT_KEYS.find((k) => state.stats[k] > before[k]) || target;
-    r.target = key;
-    r.got = got;
-    if (step(key) > Math.max(1, Math.ceil(before[key] / 10))) r.starTo = step(key);
+    r.applied = false;
+    r.expMode = expMode;
+    if (!expMode) r.target = target;
     recordNote(reel, r);
     reel.pending.push(r);
   }
+}
+
+/** 未適用の抽選結果を精算し、実増加と適用済みフラグを一緒に保存する。 */
+export function applyReward(r) {
+  if (r?.applied !== false || r.n < 0 || !state?.reel?.pending?.includes(r)) return;
+  if (r.expMode) {
+    r.xp = r.quiet ? 0 : awardSlotExp(r.overlap || r.role, { committed: true });
+    r.got = 0;
+  } else {
+    const before = { ...state.stats };
+    selfGain = true;
+    try {
+      r.got = gainStat(r.target, r.exp, { silent: true, committedSlot: true });
+    } finally {
+      selfGain = false;
+    }
+    // 上限に届いた項目は gainStat が別の項目へ振り替えるので、実際に伸びた方を記録する
+    const key = STAT_KEYS.find((k) => state.stats[k] > before[k]) || r.target;
+    r.target = key;
+    if (step(key) > Math.max(1, Math.ceil(before[key] / 10))) r.starTo = step(key);
+  }
+  r.applied = true;
+  save();
 }
 
 const bonusKind = (r) => r.role === "freeze" ? "FREEZE" : r.role === "rare" ? "PREMIUM"
@@ -468,10 +487,10 @@ function recordNote(reel, r) {
   if (kind === "REG") stats.reg += 1;
   if (r.role === "bell") stats.bell += 1;
   if (kind) {
-    (note.history ||= []).unshift({ kind, games: r.games, ren: !!r.ren, chapter: state.chapter, day: state.day });
+    (note.history ||= []).unshift({ kind, games: r.games, ren: !!r.ren, ...today() });
     note.history.length = Math.min(note.history.length, HISTORY_MAX);
   }
-  if (r.role === "freeze") (note.freezeLog ||= []).push({ chapter: state.chapter, day: state.day, spin: r.n + 1 });
+  if (r.role === "freeze") (note.freezeLog ||= []).push({ ...today(), spin: r.n + 1 });
 }
 
 // 設定示唆（パッキーの一言）。実機のように「示唆の種類」ごとに台詞を分ける。
@@ -502,7 +521,7 @@ export function rememberHint(hint) {
   ensureSetting(reel);
   const note = reel.note || (reel.note = {});
   note.lastHint = hint;
-  (note.hints ||= []).unshift({ text: hint, chapter: state.chapter, day: state.day, period: reel.settingDraws });
+  (note.hints ||= []).unshift({ text: hint, ...today(), period: reel.settingDraws });
   note.hints.length = Math.min(note.hints.length, HINT_KEEP);
 }
 
@@ -653,18 +672,20 @@ export function mountReel(host, { delay = 500 } = {}) {
       if (!owner.reel.introDone && !await showIntro()) return;
       if (state !== owner) return;
       if (notice) await presentSettingChange();
-      // 取り出してから保存（演出の途中でリロードしても二重に適用しない。報酬は適用済み）
-      const items = queue.splice(0, queue.length);
-      save();
+      // 今回見せる分を控え、演出が終わった結果から保留を消化する。
+      const items = queue.slice();
       if (delay) await sleep(delay);
-      while (items.length) {
-        const r = items.shift();
+      for (const [i, r] of items.entries()) {
+        if (state !== owner || queue[0] !== r) return;
         // 積み残しが複数なら最後の1件だけフル演出。リプレイ連鎖は何が起きたか分かるようにフルで見せる
-        const fast = items.length > 0 && !(r.role === "replay" || r.afterReplay);
+        const fast = i < items.length - 1 && !(r.role === "replay" || r.afterReplay);
         await presentSpin(r, fast);
+        if (state !== owner || queue[0] !== r || r.applied === false) return;
+        queue.shift();
+        save();
       }
     } catch (e) {
-      console.warn("[reel]", e); // 演出が崩れても報酬は適用済み。次のマップで固まらないようにする
+      console.warn("[reel]", e); // 次の再生で保留中の結果を再開する。
     } finally {
       busy = false;
     }
@@ -712,6 +733,7 @@ async function presentSettingChange() {
 }
 
 async function presentSpin(r, fast) {
+  const owner = state;
   if (!alive()) { announce(r); return; }
   if (bonusWait) settleBonus(bonusWait, true);
   lampOff();
@@ -759,13 +781,15 @@ async function presentSpin(r, fast) {
   }
   // 同期点灯とリーチ目は、第三停止からの待ちを afterStop だけで管理する。
   if (pres !== "sync" && pres !== "reach") await sleep(fast ? 60 : 200);
+  if (state !== owner) return;
   if (alive()) widget.classList.remove("tension", "cued", ...CUE_ORDER.map((c) => `cued-${c}`));
   state.reel.shown = shownStops;
-  await afterStop(r, fast, pres);
+  if (!willPeka || (fast && r.role === "freeze")) applyReward(r);
+  await afterStop(r, fast, pres, owner);
   // 文字色予告（次ゲーム）: 止まったあとにパッキーが色付きの文字でつぶやく
-  if (r.nextCue && !fast && alive()) {
+  if (state === owner && r.nextCue && !fast && alive()) {
     if (r.role !== "miss") await sleep(900);
-    if (!alive()) return;
+    if (state !== owner || !alive()) return;
     bubble(pick(CUE_LINES[r.nextCue]), 2600, `cue cue-${r.nextCue}`);
     CUE_SE[r.nextCue]?.();
     await sleep(1200);
@@ -816,7 +840,7 @@ const RARE_MISS = [
 ];
 const bonusName = (r) => (r.role === "big" || r.overlap === "big" ? "ビッグボーナス" : r.role === "rare" ? "プレミア" : "レギュラーボーナス");
 
-async function afterStop(r, fast, pres = null) {
+async function afterStop(r, fast, pres, owner) {
   switch (r.role) {
     case "miss":
       if (alive()) widget.classList.toggle("warm", r.ceilingRemain > 0 && r.ceilingRemain <= 3);
@@ -854,21 +878,22 @@ async function afterStop(r, fast, pres = null) {
         return;
       }
       await sleep(fast ? 0 : 600);
-      return peka(r, fast, false, "チェリーで光った！？");
+      return peka(r, fast, false, "チェリーで光った！？", owner);
     case "bell":
       SE.reelWin();
-      if (!fast) { bubble("パインッ！", 800); setTimeout(() => bubble(benefitLine(r), 1500), 850); }
+      if (!fast) { bubble("ベル！", 800); setTimeout(() => bubble(benefitLine(r), 1500), 850); }
       announce(r);
       await sleep(fast ? 60 : 800);
       return;
     case "rare":
       if (!fast) { SE.pugo(); await sleep(650); }
-      return peka(r, fast, true, "ぷぷぷぷぷ！！");
+      return peka(r, fast, true, "ぷぷぷぷぷ！！", owner);
     case "reg":
     case "big":
       // 後告知: 同期点灯／リーチ目を見せる間／従来の一拍。
       await sleep(fast ? 0 : pres === "sync" ? 40 : pres === "reach" ? 600 : 420);
-      return peka(r, fast, false, r.ren ? pickFresh(REN_LINES, "ren") : pickFresh(WIN_LINES, "win"));
+      if (state !== owner) return;
+      return peka(r, fast, false, r.ren ? pickFresh(REN_LINES, "ren") : pickFresh(WIN_LINES, "win"), owner);
     default:
       announce(r);
   }
@@ -876,29 +901,34 @@ async function afterStop(r, fast, pres = null) {
 
 // 先告知: レバーを叩いた瞬間にランプが光る → 小筐体は回したまま、大きなリールでこの回転を赤7に止める
 async function presentPreAnnounce(r) {
+  const owner = state;
   lampOn(false);
   SE.puka();
   bubble("先ペカッ！ 7を狙って！", 0);
   await sleep(900);
-  await new Promise((resolve) => settleBonus({ ...r, done: resolve }, false, "pre"));
+  if (state !== owner) return;
+  await new Promise((done) => settleBonus({ result: r, done, owner }, false, "pre"));
 }
 
 // プカッ（完全告知）。光ったら少し見せてから自動で揃える（タップは早送り）
-function peka(r, fast, premium, line) {
-  return new Promise((resolve) => {
+function peka(r, fast, premium, line, owner) {
+  if (state !== owner) return;
+  return new Promise((done) => {
     lampOn(premium);
     SE.puka();
     bubble(line, 0);
-    bonusWait = { ...r, done: resolve };
-    if (fast) return settleBonus(bonusWait, true);
-    setTimeout(() => { if (bonusWait && bonusWait.n === r.n) settleBonus(bonusWait, false); }, 750);
+    const waiting = { result: r, done, owner };
+    bonusWait = waiting;
+    if (fast) return settleBonus(waiting, true);
+    setTimeout(() => { if (bonusWait === waiting) settleBonus(waiting, false); }, 750);
   });
 }
 
 /** ボーナスを揃える。mode: "post"=後告知（もう1回転して揃える）／"pre"=先告知（この回転で揃える） */
-function settleBonus(b, fast, mode = "post") {
-  const reel = state.reel, host = widget;
+function settleBonus({ result: b, done, owner }, fast, mode = "post") {
   bonusWait = null;
+  if (state !== owner) { done(); return; }
+  const reel = owner.reel, host = widget;
   lampOff();
   bubble("", 1);
   if (!fast && alive()) {
@@ -911,6 +941,8 @@ function settleBonus(b, fast, mode = "post") {
   const finish = async () => {
     // 演出の途中で何が落ちても done は必ず解決する（未解決だと mountReel の busy が固まる） #1359
     try {
+      if (state !== owner) return;
+      applyReward(b);
       announce(b);
       if (!fast) {
         const cls = isBig ? "hot" : null;
@@ -933,7 +965,7 @@ function settleBonus(b, fast, mode = "post") {
     } catch (e) {
       console.warn("[reel] bonus finish", e);
     } finally {
-      if (b.done) { const d = b.done; b.done = null; d(); }
+      done();
     }
   };
   const lineUp = bonusLine(isBig);
@@ -985,6 +1017,7 @@ function mirrorBonusReels(largeStrips) {
 }
 
 async function alignBonus(isBig, line, zone, mode = "post") {
+  const owner = state;
   // 後告知は「もう1回転」: 小筐体のレバーをもう一度叩いて回し直す
   if (mode === "post" && alive()) {
     widget.classList.add("lever-pull");
@@ -1067,8 +1100,10 @@ async function alignBonus(isBig, line, zone, mode = "post") {
     label.textContent = isBig ? "BIG BONUS" : "REGULAR BONUS";
     if (isBig) SE.fanfare(); else SE.jingle();
     if (zone) bubble("パッキータイム！", 2600);
-    if (alive()) setStops(line);
-    state.reel.shown = line;
+    if (state === owner) {
+      if (alive()) setStops(line);
+      owner.reel.shown = line;
+    }
     await sleep(1600);
     cut.classList.add("out");
     await sleep(250);
@@ -1082,6 +1117,7 @@ async function alignBonus(isBig, line, zone, mode = "post") {
 }
 // ロングフリーズ（プレミア: 回転が止まる → EN:CODE のグリッチ → 7揃い）
 async function presentFreeze(r) {
+  const owner = state;
   await sleep(700);
   strips().forEach((s) => s.classList.add("frozen"));
   SE.pugo();
@@ -1103,13 +1139,16 @@ async function presentFreeze(r) {
   }
   await sleep(2400);
   cut.remove();
+  if (state !== owner) return;
   lampOff();
   bubble("殿堂入り！ ノートに刻んだよ", 3000);
+  applyReward(r);
   announce(r);
 }
 
-// 報酬カード（報酬そのものは行動時に適用済み。ここは見せるだけ）
+// 報酬カード。停止を経ずに結果を表示する場合も、ここで報酬を精算する。
 function announce(r) {
+  applyReward(r);
   if (r.xp > 0 && !r.quiet) {
     gainCard({ kind: "exp", source: "slot", badge: "経", top: "SLOT BONUS", main: `EXP +${r.xp}` });
     return;
@@ -1220,11 +1259,11 @@ export function openNote() {
     const history = s.history.length
       ? el("ol.rn-history", s.history.map((h, i) => el(`li.k-${h.kind.toLowerCase()}`, [
         el("b", [h.kind, h.ren ? el("span.rn-ren", { text: `×${renCount(i)}`, title: `${renCount(i)}連` }) : null]),
-        el("span", { text: `${h.games}G` }), el("small", { text: `第${h.chapter}章 DAY${h.day}` }),
+        el("span", { text: `${h.games}G` }), el("small", { text: `第${h.chapter}章 DAY${displayDay(h)}` }),
       ])))
       : el("p.rn-empty", { text: "まだ当たりはないよ。光るのを待とう！" });
     const hall = s.freezeLog.length
-      ? el("ul.rn-hall", s.freezeLog.map((f) => el("li", { text: `FREEZE　第${f.chapter}章 DAY${f.day}・${f.spin}回転目` })))
+      ? el("ul.rn-hall", s.freezeLog.map((f) => el("li", { text: `FREEZE　第${f.chapter}章 DAY${displayDay(f)}・${f.spin}回転目` })))
       : el("p.rn-empty.rn-secret", { text: "？？？　まだ見ぬ伝説" });
     // 1ページ目は記録だけを1段で（縦スクロール）。設定の説明とヒントは遊び方の詳しい説明へ置く
     const panel = el("div.rn-panel", [
@@ -1251,12 +1290,12 @@ export function openNote() {
         el("p.rn-setting", { text: `今の設定は？？？。${s.settingChanges ? `これまでに${s.settingChanges}回変わったよ。` : ""}前回の抽選から7日たつか、章が変わると選び直されるよ` }),
         s.periodStats.current ? el("p.rn-setting", { text: periodLine("今の設定のあいだ", s.periodStats.current) }) : null,
         s.periodStats.past.length ? el("p.rn-setting", [el("small", { text: periodLine("前の設定のあいだ", s.periodStats.past[0]) })]) : null,
-        el("h4.rn-hint-head", { text: s.settingSince ? `今の設定のヒント（第${s.settingSince.chapter}章 DAY${s.settingSince.day}から）` : "今の設定のヒント" }),
+        el("h4.rn-hint-head", { text: s.settingSince ? `今の設定のヒント（第${s.settingSince.chapter}章 DAY${displayDay(s.settingSince)}から）` : "今の設定のヒント" }),
         s.currentHints.length
-          ? el("ul.rn-hints", s.currentHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` })))
+          ? el("ul.rn-hints", s.currentHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${displayDay(h)}「${h.text}」` })))
           : el("p.rn-empty", { text: "まだないよ。設定が変わったときや、ボーナスのあとに出ることがあるよ" }),
         s.pastHints.length ? el("h4.rn-hint-head.past", { text: "前の設定のヒント（今の設定とは関係ないよ）" }) : null,
-        s.pastHints.length ? el("ul.rn-hints.past", s.pastHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` }))) : null,
+        s.pastHints.length ? el("ul.rn-hints.past", s.pastHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${displayDay(h)}「${h.text}」` }))) : null,
         el("p.rn-empty", { text: "偶数・奇数や高い・低いのヒントは確定ではないよ" }),
       ]),
       el("span.ri-next", { text: "▼ タップで閉じる" }),
@@ -1317,7 +1356,7 @@ export function installReel() {
     delete owner.flags._pakki_first_spin_pending;
     // 既に行動の回転がある場合はそれを見せ、体験分を追加抽選しない。
     if (!reel.count && !reel.pending.length) commitSpinSeries();
-    save(); // 結果・報酬・体験済みを、演出に入る前に同じ保存へ。
+    save(); // 抽選結果と体験済みの印を、演出に入る前に同じ保存へ。
     await presentNow({ label: "はじめてのスロット" });
   })().finally(() => {
     if (installation === run) installation = null;

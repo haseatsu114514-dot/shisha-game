@@ -1,6 +1,8 @@
 // 台本の選択だけを行う。工程の評価・在庫・票は変更しない。
 import { DB } from "../core/data.js";
-import { temperatureBands, isIdealTemperature } from "./temperature-model.js";
+import { temperatureBands } from "./temperature-model.js";
+import { temperatureStateAtFinish } from "./temperature-records.js";
+import { withoutMakerPrefix } from "./served-eval.js";
 
 export const TOURNAMENT_STORY_STEPS = new Map([[0, "opening"], [3, "packed"], [7, "waiting"]]);
 // 大会の合間の掛け合い（#3060）: 開始前・審査員への提供開始・結果発表前。台本は章ごとの `${event}_${chapter}`。
@@ -9,13 +11,10 @@ export const TOURNAMENT_STORY_STEPS = new Map([[0, "opening"], [3, "packed"], [7
 export const TOURNAMENT_BANTER_EVENTS = Object.freeze(["prestart", "serve", "preresult"]);
 const PACKING = { fluffy: "ふんわり詰め", normal: "均等な詰め方", firm: "デンスパック" };
 // 共通工程のうち、上園が話す行だけ第3章の審査員エミルへ切り替える。
-// 散文に出す葉の名前。短縮名の先頭メーカー表記（AF/NS/ドバジ 等）は落とす（served-eval.js の aromaName と同じ扱い）。
-const MAKER_TOKENS = new Set(["AF", "NS", "ドバジ", "ナイトサイド", "アフサール"]);
 function leafName(id) {
-  const name = DB.flavorById[id]?.short_name || DB.flavorById[id]?.name || id;
-  const sp = name.indexOf(" ");
-  return sp > 0 && MAKER_TOKENS.has(name.slice(0, sp)) ? name.slice(sp + 1) : name;
+  return withoutMakerPrefix(DB.flavorById[id]?.short_name || DB.flavorById[id]?.name || id);
 }
+const tooHot = (result, bands) => result.over ?? (result.temp > bands.ideal[1]);
 const NATIONAL_JUDGE_SCENES = new Set(["mix_single", "mix_blend", "crowd_2", "aroma_good", "aroma_work", "aroma_unknown"]);
 // 第4章（世界大会）の審査員は千須・エミル・太陽。博士の行は太陽へ、上園の行は第3章と同じエミルの行へ切り替える。
 const WORLD_JUDGE_SCENES = new Set(["packed_intro", "pack_fluffy", "pack_normal", "pack_firm"]);
@@ -42,7 +41,7 @@ export function hajimeServedState(cs) {
   const pull = cs?.pull, aroma = cs?.tournamentStory?.servedAroma;
   if (!Number.isFinite(pull?.temp)) return "work";
   const bands = temperatureBands(cs);
-  if (!isIdealTemperature(pull.temp, bands)) return pull.temp > bands.ideal[1] ? "hot" : "cold";
+  if (temperatureStateAtFinish(pull, bands) !== true) return tooHot(pull, bands) ? "hot" : "cold";
   return Number.isFinite(aroma) && aroma >= 65 ? "good" : "work";
 }
 
@@ -108,14 +107,14 @@ export function tournamentStoryDialogue(cs, event, random = Math.random, context
   else if (event === "waiting") ids.push(`waiting_${chapter}`, `crowd_${Math.min(2, Math.max(0, Math.floor(random() * 3)))}`);
   else if (event === "tasting") {
     const bands = temperatureBands(cs), pull = cs.pull;
-    const ideal = result => Number.isFinite(result?.temp) && isIdealTemperature(result.temp, bands);
+    const ideal = result => temperatureStateAtFinish(result, bands) === true;
     const cares = cs.careHistory || [], last = cares.at(-1);
     const aroma = cs.tournamentStory?.servedAroma;
     ids.push("tasting_intro", !Number.isFinite(aroma) ? "aroma_unknown" : aroma >= 65 ? "aroma_good" : "aroma_work");
-    if (Number.isFinite(pull?.temp)) ids.push(ideal(pull) ? "serve_good" : pull.temp > bands.ideal[1] ? "serve_hot" : "serve_cold");
+    if (Number.isFinite(pull?.temp)) ids.push(ideal(pull) ? "serve_good" : tooHot(pull, bands) ? "serve_hot" : "serve_cold");
     ids.push(cares.length !== 2 || !Number.isFinite(last?.temp) ? "care_incomplete"
       : ideal(last) ? ideal(pull) && cares.every(ideal) ? "care_steady" : "care_recovered"
-        : last.temp > bands.ideal[1] ? "care_hot" : "care_cold", "tasting_end");
+        : tooHot(last, bands) ? "care_hot" : "care_cold", "tasting_end");
   } else throw new Error(`不明な大会演出: ${event}`);
   return {
     dialogue_id: `tournament_craft_${chapter}_${event}`,

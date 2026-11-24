@@ -5,8 +5,8 @@ import { el, sleep, clamp, rand } from "../core/util.js";
 import { craftStageEnabled } from "./stage-layout.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady } from "./session.js";
-import { gradeOf, autoSkill, skill, resultCard } from "./common.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, explainTutorialStep } from "./session.js";
+import { gradeOf, autoSkill, skill, resultCard, timingLabel } from "./common.js";
 import { buildHeatView, coalSpots } from "./heat_view.js";
 import { HEAT_GRADES, HEAT_TUNING, phaseOf, evaluateCoalTiming, formatTimingError, summarizeCoalTimings } from "./heat_logic.js";
 export { HEAT_GRADES } from "./heat_logic.js";
@@ -22,6 +22,7 @@ import { effectVisible, effectBadge, senseBand, effectTier } from "./effect-visu
 export async function runHeat(cs) {
   await waitBenchReady(cs, "heat");
   const panel = stepPanel("heat", "炭焼き", "黒い面が消えて全面が赤くなった炭を、タップして取り上げる");
+  if (cs.mode === "tutorial" && !await explainTutorialStep(cs, "heat")) return;
   // 炭を一つ取るたびに、その炭の分の点がスコアへ入る（TH42）。
   const { res, timings, picks, info, feedback } = await burnCoals(cs, panel, { count: coalCount(cs), onPick: (timing, i, count) => scoreStep(cs, `heat:${i}`, timing.score / count) });
   settleGrowthPhase(state, cs, "heat", res, res.just > 0);
@@ -41,7 +42,7 @@ export async function runHeat(cs) {
     grade: res.grade,
     summary: [
       `工程点：${res.score}点 ／ 取り頃：${res.just}/${timings.length}個`,
-      ...timings.map((timing, i) => `${coalSpots(coalCount(cs))[i][2]} ${timing.rating}：${formatTimingError(timing.errorSeconds)}（${timing.label}${timing.automatic ? "・自動" : ""}）`),
+      ...timings.map((timing, i) => `${coalSpots(coalCount(cs))[i][2]} ${timingLabel(timing.rating.toLowerCase(), timing.rating)}：${formatTimingError(timing.errorSeconds)}（${timing.label}${timing.automatic ? "・自動" : ""}）`),
     ],
     lines: [
       picks.map((g) => HEAT_GRADES[g].label).join("・"),
@@ -75,9 +76,7 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   const { info, feedback } = view;
   if (effectVisible("sense")) info.prepend(senseBand(plainBase, 90, justSec - baseJustSec));
   if (effectVisible("insight")) view.root.classList.add("insight-visible");
-  // 取り頃の間隔（CRN09）と窓の前の瞬き（構え）はリニューアルだけ。桜井版は炭ごとの抽選のまま、同じ秒に開くこともある（CRN16）
-  const renewal = renewalCraft(cs);
-  const ready = spaceReadyTimes(view.coals.map(() => rand(...HEAT_TUNING.readyRange) * (tutorial ? 1.25 : 1)), renewal ? HEAT_TUNING.readyGap : 0);
+  const ready = spaceReadyTimes(view.coals.map(() => rand(...HEAT_TUNING.readyRange) * (tutorial ? 1.25 : 1)), HEAT_TUNING.readyGap);
   const coals = view.coals.map((c, i) => ({ ...c,
     tj: ready[i],
     picked: null, timing: null, p: 0,
@@ -153,7 +152,7 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
       if (n.classList.contains?.("soon") !== soon) n.classList.toggle("soon", soon);
       if (effectVisible("insight") && n.classList.contains("soon") && !n.querySelector(".effect-badge")) n.append(effectBadge("insight", "察"));
       // CRN09: 窓が開く少し前に、枠を一度だけ瞬かせる（構え）。洞察の「soon」はこれより長く、はっきり出る
-      if (renewal && !c.cued && c.tj - t <= HEAT_TUNING.readyCue && c.tj - t > 0) { c.cued = true; n.classList.add("ready-cue"); }
+      if (!c.cued && c.tj - t <= HEAT_TUNING.readyCue && c.tj - t > 0) { c.cued = true; n.classList.add("ready-cue"); }
       if (ph === "just" && !n.classList.contains("pikan")) { n.classList.add("pikan"); n.classList.remove("ready-cue"); SE.tick(); }
       if (ph !== "just" && n.classList.contains?.("pikan") !== false) n.classList.remove("pikan");
       if (c.p > HEAT_TUNING.autoDrop) pick(c, t, true); // 放っておくと灰になって勝手に落ちる

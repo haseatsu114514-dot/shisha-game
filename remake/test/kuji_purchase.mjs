@@ -23,7 +23,7 @@ const kujiOnly = Object.fromEntries(JSON.parse(equipment).equipment.filter(e => 
 const html = `<!doctype html><meta charset="utf-8"><div id="screen"></div><div id="modal"></div><script>
 ${strip(util)}
 ${strip(travelBudget)}
-let moneyEvents = 0, saves = 0, flavorGrants = 0, renders = 0, reentry = null;
+let moneyEvents = 0, saves = 0, flavorGrants = 0, renders = 0, reentry = null, settlements = 0, notices = [];
 const MAX_MONEY = 999999999, TOURNAMENT_DAY = 14, KUJI_TICKET_MAX = 99;
 const emit = event => {
   if (event === 'money') { moneyEvents++; const callback=reentry; reentry=null; callback?.(); }
@@ -38,7 +38,14 @@ function save() { saves++; persistState(); }
 ${strip(stats.match(/export function addMoney\(n\) \{[\s\S]*?\n\}/)[0])}
 const DB = {kuji:${data}, equipById:${JSON.stringify(kujiOnly)}}, displayName = () => 'リン';
 const layers = {screen:document.querySelector('#screen'), modal:document.querySelector('#modal')};
-const toast = () => {}, SE = new Proxy({}, {get: () => () => {}}), prizeArt = () => null; // 音と景品の絵はこの検査の対象外
+const toast = text => notices.push(text), SE = new Proxy({}, {get: () => () => {}}), prizeArt = () => null; // 音と景品の絵はこの検査の対象外
+const HIDANE_NAME = {body: '紅火'};
+function settleGrowth() {
+  settlements++;
+  const box = state.kuji.g1000;
+  const claimed = box?.emptyDay === state.day ? [{grade:'g1000', parts:[{kind:'body', n:1}]}] : [];
+  return {claimed}; // 火種を決める処理は growth_levelup.mjs で実物を検査する
+}
 const growthSkill = () => false, SKILL_TUNING = {kujiLuck:.5}; // 心得の盤のスキル「くじ運」（K26）は灯していない扱い。効き目は growth_unique_skills.mjs が見る
 const luckyOrder = order => order;
 const vnTest = {turbo:true}, FLAVOR_BOX_GRAMS = 50, RIO_AWAY_DAY = 3;
@@ -76,14 +83,14 @@ function prepare(options = {}) {
   if (options.money != null) state.money = options.money;
   if (options.tickets != null) state.kujiTickets = options.tickets;
   if (options.owned) state.owned.push(...options.owned);
-  paint(); saves = moneyEvents = flavorGrants = renders = 0;
+  paint(); saves = moneyEvents = flavorGrants = renders = settlements = 0; notices = [];
   old = root.querySelector('[data-test="kuji-' + grade + '"]');
   oldTicket = root.querySelector('[data-test="kuji-' + grade + '-ticket"]');
   old.focus();
   return snapshot();
 }
 function snapshot() {
-  return JSON.parse(JSON.stringify({state, saves, moneyEvents, flavorGrants, renders,
+  return JSON.parse(JSON.stringify({state, saves, moneyEvents, flavorGrants, renders, settlements, notices,
     overlays:layers.modal.children.length}));
 }
 function loadSnapshot() {
@@ -214,9 +221,11 @@ try {
   assert.equal(last.state.money,beforeLast.state.money-500);
   assert.equal(last.state.kuji.g1000.drawn,last.state.kuji.g1000.order.length);
   assert.equal(last.state.kuji.g1000.emptyDay,last.state.day);
+  assert.equal(last.state.kuji.g1000.emptyCycle,last.state.cycle);
   assert.equal(last.state.owned.filter(id=>id==='nightside_premier_hagal').length,1);
-  assert.equal(last.flavorGrants,1); assert.equal(last.saves,1);
+  assert.equal(last.flavorGrants,1); assert.equal(last.saves,1); assert.equal(last.settlements,1);
   await run("K.finish()");
+  assert.match((await run("K.snapshot()")).notices.join(" "), /火種 紅火 ＋1/);
   const loaded = await run("K.load()");
   assert.deepEqual(loaded.state,last.state,"real SAVE/LOAD preserves charged ticket and both prizes");
   await run("K.forceOld()");
@@ -295,7 +304,9 @@ try {
   assert.equal(lastBatch.state.money, beforeLastBatch.state.money - 1500);
   assert.equal(lastBatch.state.owned.filter(id=>id==='nightside_premier_hagal').length, 1);
   assert.equal(lastBatch.saves, 3);
-  assert.equal((await run("K.batchResults()")).length, 4, "last-one appears beside three tickets");
+  const batchCards = await run("K.batchResults()");
+  assert.equal(batchCards.length, 4, "last-one appears beside three tickets");
+  assert.match(batchCards.at(-1), /火種 紅火 ＋1/);
   console.log("PASS 5/10 batch charge, immediate saves, last-one result and load");
   // KJ05: 限定台くじは第5章だけ。くじ券1枚で1回（お金は使わない）、連打・古いボタンでも1枚だけ。0枚では押せない。
   {

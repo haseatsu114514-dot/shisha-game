@@ -59,10 +59,11 @@ export function gainWord(total) {
  * ★帯による減衰は廃止。章の上限と振替、旧セーブの進捗の端数は維持する。
  * 戻り値=実際に伸びたポイント。
  * @param opts.silent 通知カードを出さない（スロットのように自前で見せるとき）
+ * @param opts.committedSlot 旧成長で確定したスロット報酬を精算する
  */
-export function gainStat(key, amount = 1, { silent = false, excludedKeys = [] } = {}) {
+export function gainStat(key, amount = 1, { silent = false, excludedKeys = [], committedSlot = false } = {}) {
   // 盤モードの成長は経験値と確定したマスだけ。旧セーブの基礎値は書き換えない。
-  if (expHooks?.enabled?.()) return 0;
+  if (!committedSlot && expHooks?.enabled?.()) return 0;
   if (!STAT_KEYS.includes(key) || !(amount > 0)) return 0;
   let cap = statCap(key);
   // 上限に届いた項目は、まだ伸びる項目へ振り替える（伸びている実感を保つ）
@@ -137,7 +138,7 @@ export function earnSceneCompletion(id, owner = state) {
  * 自分で選んだ行動だけを包む。通常は1能力につき1P、誘いは主な1能力に2P。
  * @param opts.exp 経験値の対象 {key, person, place}。関数なら行動の結果から決める（core/growth.js）
  */
-export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null, consumed = () => false, exp = null } = {}) {
+export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null, consumed = () => false, cancelled = () => false, exp = null } = {}) {
   const parent = earningAction;
   const metBefore = { ...state.met };
   for (const key of Object.keys(state.flags)) if (key.startsWith("_affinity_first_meeting_pending_") && state.flags[key]) delete metBefore[key.slice("_affinity_first_meeting_pending_".length)];
@@ -148,7 +149,10 @@ export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 
   try { value = await run(); }
   catch (error) { releaseChip(); throw error; }
   finally { earningAction = parent; }
-  try { return settleAction(action, parent, value, { budget, points, primary, consumed, exp }); }
+  try {
+    if (cancelled(value)) return { value, spent: 0 };
+    return settleAction(action, parent, value, { budget, points, primary, consumed, exp });
+  }
   finally { releaseChip(); }
 }
 

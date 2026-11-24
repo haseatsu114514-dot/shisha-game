@@ -2,6 +2,7 @@
 // Actual modules + controlled WebAudio; no real browser/listening claim.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {execFileSync} from 'node:child_process';
 import {createSet,makeDeck,playDeck,pauseMix,resumeMix,beatAt,phaseError,gains,updateSet,nudgeDeck,SYNC_BAND,SNAP_BAND,DRIFT_BEATS,SYNC_FLOOR,SLIP_FLOOR,quality,floorStep,scoreTransition,scoreFromErr,scoreFromRatio,rankFromScore,scoreSet,lowCutDb,LOW_CUT_DB,PHRASE,LEAD,GRACE,FOLLOW_BAND,toward,gradeOf,ENTRY_BANDS,PHONES_ALLOWANCE,dancerPose,guideAt,keyMatch,energyMatch,pickRating,chooseTrack,REQUESTS,PICK_FLOOR,GRADE_FLOOR,RANK_FLOOR,FOLLOW_FLOOR,FLOOR_WARM,FOLLOW_SWEET,MOODS,moodOf,followHint,QUICK_GRID,quickEntry,RANK_LINES} from '../previews/dj/model.mjs';
 import {FEEL,applyFeelOverrides} from '../previews/dj/feel.mjs';
 import {DJSfx} from '../previews/dj/sfx.mjs';
@@ -452,7 +453,8 @@ await check('audio: pause during a pending ▶ cancels it; dispose during a pend
  const b=new DJAudio(Deferred,{setIndex:0,loadTrack});const q=b.play(1);await b.dispose();finish();await assert.rejects(q,/closed/);assert.equal(b.context.sources.length,0);assert(!b.mix.running);
 });
 // quick CIはGit LFSの実体を取らないので、ポインタなら記載された実体サイズで確かめる。
-const audioSize=url=>{const head=fs.readFileSync(url).subarray(0,200).toString();const m=head.startsWith('version https://git-lfs.github.com/spec/v1')&&head.match(/^size (\d+)$/m);return m?Number(m[1]):fs.statSync(url).size;};
+const audioSize=url=>{try{const head=fs.readFileSync(url).subarray(0,200).toString();const m=head.startsWith('version https://git-lfs.github.com/spec/v1')&&head.match(/^size (\d+)$/m);return m?Number(m[1]):fs.statSync(url).size;}catch{ // quick CIのsparseで実ファイルが無い時は、コミット済みblobの大きさで確かめる
+const root=new URL('../../',import.meta.url);const rel=decodeURIComponent(url.pathname.slice(root.pathname.length));return Number(execFileSync('git',['cat-file','-s','HEAD:'+rel],{encoding:'utf8'}).trim());}};
 await check('track metadata, real audio files and the original waveform peaks (artwork is checked by the browser suite)',async()=>{
  const expected=[[120,.006,'USUAN1100272'],[120,0,'USUAN1700010'],[122,.006,'USUAN1900013'],[122,.006,'USUAN1100852'],[122,.486,'USUAN1900011']];
  assert.equal(Object.keys(TRACKS).length,5);Object.entries(TRACKS).forEach(([key,t],i)=>{assert.deepEqual([t.bpm,t.firstBeat,t.isrc],expected[i]);assert(audioSize(new URL('../../assets/audio/dj/'+t.file,import.meta.url))>1e6);const clip=audioSize(new URL('../previews/dj/clips/'+key+'.flac',import.meta.url));assert(clip>1000&&clip<1e6,key);assert(fs.readFileSync(new URL('../previews/dj/app.mjs',import.meta.url),'utf8').includes('art-${'),key);});

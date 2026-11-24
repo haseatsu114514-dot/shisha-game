@@ -90,7 +90,7 @@ const boardHasRoom = (g, board) => BOARD_IDS[board].some((id) => !g.nodes.includ
 export function newGrowth() {
   return {
     level: 1,
-    xp: 0,                 // 累計経験値（行動の確定時にその場で入る）
+    xp: 0,                 // 累計経験値（スロット分は演出の停止・揃いで入る）
     settledXp: 0,          // 最後に寝た時点の累計（ゲージの濃い金）
     hidane: Object.fromEntries(HIDANE_KEYS.map((k) => [k, 0])), // 未使用の火種（万能と系統限定）
     earned: 0,             // これまでに受け取った火種の総数
@@ -361,9 +361,11 @@ export function holdExpChip() {
  * 経験値の唯一の入口（4.1 の gainExp）。章倍率を掛けて累計に足す。
  * レベルはその場で上がり、火種は手持ちに入る（SBD108・SBD122。その場で短い演出を出す）。戻り値=入った量。
  */
-export function gainExp(base, { key = null, tag = null, silent = false, source = null, first = false } = {}) {
+export function gainExp(base, { key = null, tag = null, silent = false, source = null, first = false, committedSlot = false } = {}) {
   // 恋人イベントだけは通常プレイでも貯める。精算・火種・盤の公開条件は変えない。
-  if ((!growthEnabled() && source !== "lover") || !state || !(base > 0)) return 0;
+  // スロットは抽選時の成長モードで精算する。
+  const settle = committedSlot || growthEnabled();
+  if ((!settle && source !== "lover") || !state || !(base > 0)) return 0;
   const g = ensureGrowth();
   const room = totalExpFor(MAX_LEVEL) - g.xp;
   const firstBonus = first && growthSkill(state, "K04") ? 1 + SKILL_TUNING.first : 1;
@@ -373,8 +375,8 @@ export function gainExp(base, { key = null, tag = null, silent = false, source =
   g.today.xp += amount;
   if (key) g.today.learned[key] = (g.today.learned[key] || 0) + amount;
   if (!silent) addToChip(amount, tag, source); // silent: 呼び出し側が自分の通知で見せる（スロットの結果カード）
-  // 盤が有効な時だけ、その場でレベルと火種にする（恋人EXPの先行保存だけの時は貯めるだけ）
-  if (growthEnabled()) applyLevels(g);
+  // 恋人EXPの先行保存だけの時は、盤が有効になってから精算する。
+  if (settle) applyLevels(g);
   emit("hud");
   return amount;
 }
@@ -383,9 +385,9 @@ export function gainExp(base, { key = null, tag = null, silent = false, source =
 // ハズレ・リプレイは無し。1章30回転の平均は約510（SPEC 1.4 の「スロット分は章の約2割」）。チェリー重複は REG/BIG
 export const SLOT_EXP = { cherry: 10, bell: 15, reg: 90, big: 130, rare: 130, freeze: 200 };
 /** スロットの当たり1回ぶんの経験値を入れる。通知はスロットの演出で出す。戻り値=入った量 */
-export function awardSlotExp(role) {
+export function awardSlotExp(role, { committed = false } = {}) {
   const base = SLOT_EXP[role];
-  return base ? gainExp(base, { key: "pakki_slot", silent: true }) : 0;
+  return base ? gainExp(base, { key: "pakki_slot", silent: true, committedSlot: committed }) : 0;
 }
 
 /**
@@ -610,14 +612,19 @@ export function claimPlayRewards(g, s = state) {
     // 第5章の限定台くじ（KJ05）は引き切っても火種を付けない。運とお金で盤を伸ばさない（#2455）
     if (KUJI_LIMITED_GRADES.includes(grade)) continue;
     if (!box || !Array.isArray(box.order) || box.drawn < box.order.length || box.emptyDay == null) continue;
-    const key = `kuji:${grade}:${s.chapter}:${box.emptyDay}`;
-    // 同じ箱（同じ引き切りの日）は、章が変わっても一度だけ。くじは店ごとに1種類なので（KJ11）、
-    // 行かなくなった街の店の箱は空のまま残る。記録の形（章つきのキー）は今までのセーブと同じ
-    const sameBox = (k) => { const [kind, id, , day] = k.split(":"); return kind === "kuji" && id === grade && day === String(box.emptyDay); };
+    const cycle = box.emptyCycle ?? s.cycle ?? 1;
+    const key = `kuji:${grade}:${s.chapter}:${box.emptyDay}:${cycle}`;
+    // 空箱も周回をまたいで残る。引き切った周回と日を照合し、周回未記録の旧箱は従来の記録も参照する。
+    const sameBox = (k) => {
+      const [kind, id, , day, claimedCycle] = k.split(":");
+      return kind === "kuji" && id === grade && day === String(box.emptyDay)
+        && (claimedCycle === String(cycle) || box.emptyCycle == null && claimedCycle == null);
+    };
     if (g.rewards[key] || Object.keys(g.rewards).some(sameBox)) continue;
+    box.emptyCycle = cycle;
     g.rewards[key] = true;
     const low = BOARD_KEYS.reduce((best, k) => boardFill(g, k) < boardFill(g, best) ? k : best, BOARD_KEYS[0]);
-    out.push({ label: "くじのラストワン賞", parts: giveSet(g, { [low]: KUJI_LAST_ONE_GIFT }) });
+    out.push({ label: "くじのラストワン賞", grade, parts: giveSet(g, { [low]: KUJI_LAST_ONE_GIFT }) });
   }
   return out;
 }
@@ -647,7 +654,7 @@ export function milestoneSystem(g = ensureGrowth()) {
  * 経験値の分だけレベルを上げ、火種を手持ちに入れる。遊びのご褒美・くじの火種もここで拾う。
  * 2026-11-11 オーナー「一気にリザルトみたいに見せるのはいらない。都度経験値もらって達したらレベルアップがいい」（SBD122）:
  * 経験値が届いたその場で上がり、"level-up"（ご褒美は "hidane-gift"）を知らせる。画面は短い演出を出すだけで、操作は止めない。
- * 何度呼んでも、同じ経験値で二重に渡さない（level と milestones で判定）。戻り値={ from, to, parts, milestone }
+ * 何度呼んでも、同じ経験値で二重に渡さない（level と milestones で判定）。戻り値={ from, to, parts, milestone, claimed }
  */
 function applyLevels(g, s = state) {
   const from = g.level, to = levelForExp(g.xp);
@@ -675,13 +682,13 @@ function applyLevels(g, s = state) {
   // capped: 盤の全部のぶんを受け取り終えていて、火種が増えないレベルアップ（SBD105。理由を黙らせない）
   if (to > from) emit("level-up", { from, to, parts: parts.map((part) => ({ ...part })), milestone, capped: !parts.length && g.earned >= BOARD_TOTAL, boardFull: boardAllLit(g) });
   for (const gift of claimed) announceGift(gift);
-  return { from, to, parts, milestone };
+  return { from, to, parts, milestone, claimed };
 }
 
 /**
  * たまっている分をいま精算する（寝る前・章の区切り・前の保存を読んだ直後・遊びのご褒美の受け取り）。
  * ふだんは経験値が届いたその場で済んでいるので、何も起きない（from＝to）。
- * 戻り値={ from, to, parts, milestone, boardFull }（盤が無効なら null）
+ * 戻り値={ from, to, parts, milestone, claimed, boardFull }（盤が無効なら null）
  */
 export function settleGrowth() {
   if (!growthEnabled() || !state) return null;

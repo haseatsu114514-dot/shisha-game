@@ -8,7 +8,10 @@ const loop = calendarSource.match(/^export async function runDaily\b[\s\S]*?^\}/
 assert.ok(loop, "runDaily を検査できる");
 assert.match(loop, /await morning\(\);\s*save\(\);\s*\}\s*\/\/[^\n]*\n\s*announceChapterBoard\(\);/, "朝の後、その日の行動より前に知らせる");
 assert.match(calendarSource, /reminder:\s*mapOptions\.reminder\s*\|\|\s*respecMapNotice\(state\)/, "章の地図の一言が無い時だけ、組み直しの期限を地図の案内に添える");
-assert.match(calendarSource, /takeRespecCloseWarning\(state\)[\s\S]{0,600}confirmLimeReminder\(destination/, "行動の確認（onBeforeGo）で閉じることを知らせてから LIME の確認へ進む");
+assert.match(calendarSource, /async function confirmRespecClose\(\) \{\s*\/\/[^\n]*\n\s*const closing = takeRespecCloseWarning\(state\)/);
+assert.match(calendarSource, /spendsAction && !await confirmRespecClose\(\)[\s\S]{0,80}confirmLimeReminder\(destination/, "行動の確認（onBeforeGo）で閉じることを知らせてから LIME の確認へ進む");
+assert.match(calendarSource, /\["shop", "fortune", "rest"\]\.includes\(destination\.kind\)/);
+assert.match(calendarSource, /await staminaGuard\(-14\) && await confirmRespecClose\(\)[\s\S]{0,40}await visitRio\(\)/);
 
 globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};

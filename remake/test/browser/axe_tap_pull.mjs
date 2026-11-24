@@ -98,12 +98,12 @@ await suite('axe-tap-pull', async check => {
     // Resizing the stage below the track's 80px floor changes the scale, not its internal size.
     const trackSize = page => root(page).evaluate(node => {
       const height = node.getBoundingClientRect().height, scale = height / node.clientHeight;
-      const expected = Math.max(80, Math.min(180, height * .26)) / scale;
+      const expected = Math.max(80, Math.min(228, height * .32)) / scale;
       return { expected, actual: parseFloat(node.querySelector('.axe-pull-track').style.height) };
     });
     const initial = await trackSize(page);
     assert(Math.abs(initial.actual - initial.expected) < .01, 'initial release track matches the visible stage');
-    await page.setViewportSize({ width: 740, height: 290 });
+    await page.setViewportSize({ width: 740, height: 200 });
     await page.waitForFunction(() => {
       const node = document.querySelector('.axe-game'), height = node.getBoundingClientRect().height;
       return Math.abs(parseFloat(node.querySelector('.axe-pull-track').style.height) - 80 * node.clientHeight / height) < .01;
@@ -135,6 +135,52 @@ await suite('axe-tap-pull', async check => {
     await flickFromHandle(page, { power: .62, lean: .6 }); await phase(page, 'result');
     const drift = await driftX(page);
     assert(drift > 10, `a flick leaning right lands right of the aim: ${drift}`);
+  });
+
+  // 2026-11-22 オーナー要望「斧の絵は〇の中に／〇もスワイプに合わせて上に移動」:
+  // グリップの円と斧は1つのグループで一体に動き、矢印の根元も円の上昇に追随する。離す（取消）と元に戻る。
+  await check('grip-circle-holds-the-axe-and-rises-with-the-pull', async page => {
+    await start(page);
+    await aim(page);
+    // 初回のデモアニメ（円が勝手に上下する）が終わってから測る
+    await page.waitForFunction(() => document.querySelector('[data-test="axe-pull-handle"]')?.dataset.demonstrate === 'false', null, { timeout: 1600 }).catch(() => {});
+    const structure = await page.evaluate(() => {
+      const g = document.querySelector('.axe-swipe-grip');
+      return { circles: g?.querySelectorAll(':scope > circle').length ?? 0, images: g?.querySelectorAll(':scope > image').length ?? 0 };
+    });
+    assert.equal(structure.circles, 1, 'the grip circle is inside the swipe grip group');
+    assert.equal(structure.images, 1, 'the axe image is inside the same grip group');
+    const measure = () => page.evaluate(() => {
+      const g = document.querySelector('.axe-swipe-grip');
+      const c = g.querySelector('circle').getBoundingClientRect(), i = g.querySelector('image').getBoundingClientRect();
+      const d = document.querySelector('.axe-flick-arrow path').getAttribute('d');
+      return {
+        circleTop: c.top, circleCx: c.left + c.width / 2, circleCy: c.top + c.height / 2,
+        imageCx: i.left + i.width / 2, imageCy: i.top + i.height / 2,
+        unit: c.height / 58, base: Number(/^M72 ([\d.]+)/.exec(d)?.[1]),
+        tip: Number(/Q[\d.]+ [\d.]+ [\d.]+ ([\d.]+)/.exec(d)?.[1]),
+      };
+    });
+    const rest = await measure();
+    assert(Math.abs(rest.circleCx - rest.imageCx) < 3 && Math.abs(rest.circleCy - rest.imageCy) < 3, 'at rest the axe sits centred in the circle');
+    assert(Math.abs(rest.base - 218) < 1, `at rest the arrow starts at the grip: ${rest.base}`);
+    const box = await handle(page).boundingBox(), stage = await root(page).boundingBox();
+    const x = box.x + box.width / 2, y = box.y + box.height / 2, rise = stage.height * .12;
+    await page.mouse.move(x, y); await page.mouse.down();
+    await page.mouse.move(x, y - rise, { steps: 5 });
+    await page.waitForTimeout(200);
+    const held = await measure();
+    const risen = rest.circleTop - held.circleTop;
+    assert(risen > 40, `the circle rises with the pull: ${risen.toFixed(1)}px`);
+    assert(Math.abs(held.circleCx - held.imageCx) < 3 && Math.abs(held.circleCy - held.imageCy) < 3, 'while pulled, the axe stays centred in the risen circle');
+    assert(Math.abs(held.base - 218) < 1, `the arrow base stays at the initial position while the grip rises: ${held.base}`);
+    assert(held.tip < rest.tip - 4, `the arrow arc stretches as the pull grows: tip ${rest.tip} -> ${held.tip}`);
+    await page.keyboard.press('Escape'); await page.mouse.up();
+    await page.waitForTimeout(200);
+    const back = await measure();
+    assert(Math.abs(back.circleTop - rest.circleTop) < 2, 'on release the grip circle returns to its rest position');
+    assert(Math.abs(back.base - 218) < 1, 'on release the arrow base stays at the initial position');
+    assert(Math.abs(back.tip - rest.tip) < 1, 'on release the arrow tip returns to rest');
   });
 
   await check('cancel-and-resize-never-spend-throw', async page => {
@@ -191,55 +237,49 @@ await suite('axe-tap-pull', async check => {
   ]) await check(`${label}-aim-controls-clear-of-hand`, async page => {
     await start(page, touch);
     const activate = locator => touch ? locator.tap() : locator.click();
+    // 2026-11-21 オーナー指示: 腕と斧は描かない。手元レイヤーは全工程で出ず、操作部品は何にも隠れない。
+    const checkControls = async step => {
+      const controls = step === 'power' ? ['axe-focus', 'axe-reaim', 'axe-pull-handle'] : ['axe-focus', 'axe-reaim', 'axe-action'];
+      const layout = await root(page).evaluate((game, { controls }) => {
+        const blockers = controls.filter(name => {
+          const button = game.querySelector(`[data-test="${name}"]`);
+          if (!button) return true;
+          const box = button.getBoundingClientRect();
+          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+          return !button.contains(hit);
+        });
+        return {
+          blockers,
+          laneOpacity: game.querySelector('.axe-lane-aim')?.getAttribute('opacity'),
+          frontOpacity: game.querySelector('.axe-hand-front-img')?.getAttribute('opacity'),
+        };
+      }, { controls });
+      assert.deepEqual(layout.blockers, [], `${step}: each control must be reachable and clear`);
+      assert.equal(layout.laneOpacity, '0', `${step}: the lane hand layer must stay hidden`);
+      assert.equal(layout.frontOpacity, '0', `${step}: the front hand layer must stay hidden`);
+    };
     for (const step of ['horizontal', 'vertical', 'power']) {
       await activate(ready(page));
       await phase(page, step);
-      const controls = step === 'power' ? ['axe-focus', 'axe-reaim', 'axe-pull-handle'] : ['axe-focus', 'axe-reaim', 'axe-action'];
-      const layout = await root(page).evaluate((game, controls) => {
-        const hand = game.querySelector('.axe-hand-front');
-        // The full hand outline includes the sleeve underneath the foreground copy.
-        const silhouette = game.querySelector('.axe-lane-aim');
-        const artwork = game.querySelector(silhouette.getAttribute('href'));
-        const clip = artwork.querySelector('image').getAttribute('clip-path').slice(4, -1);
-        const outline = new Path2D(game.querySelector(`${clip} path`).getAttribute('d'));
-        const view = artwork.viewBox.baseVal;
-        const { a, b, c, d, e, f } = silhouette.getScreenCTM();
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        const blockers = controls.filter(name => {
-          const button = game.querySelector(`[data-test="${name}"]`);
-          const box = button.getBoundingClientRect();
-          const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
-          if (!button.contains(hit)) return true;
-          canvas.width = Math.ceil(box.width);
-          canvas.height = Math.ceil(box.height);
-          context.setTransform(a, b, c, d, e - box.left, f - box.top);
-          context.translate(artwork.x.baseVal.value, artwork.y.baseVal.value);
-          context.scale(artwork.width.baseVal.value / view.width, artwork.height.baseVal.value / view.height);
-          context.translate(-view.x, -view.y);
-          context.fill(outline);
-          const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
-          return data.some((value, index) => index % 4 === 3 && value >= 128);
-        });
-        const layer = node => Number(getComputedStyle(node).zIndex);
-        return {
-          blockers,
-          shown: hand.querySelector('use').getAttribute('opacity') === '1',
-          front: layer(hand) > Math.max(...['.axe-target', '.axe-panel', '.axe-timing'].map(selector => layer(game.querySelector(selector)))),
-        };
-      }, controls);
-      assert.deepEqual(layout.blockers, [], `${step}: each control must be reachable and clear of the hand silhouette`);
-      assert(layout.shown && layout.front, `${step}: the hand must stay visible in the foreground`);
+      await checkControls(step);
     }
-    const focus = page.locator('[data-test="axe-focus"]');
-    await activate(focus);
-    await page.locator('.axe-stability-meter[data-focused="true"]').waitFor();
-    for (const caption of ['集中中', '使用済み']) {
-      const disabled = focus.filter({ hasText: caption });
-      await disabled.waitFor();
-      assert(await disabled.isDisabled());
-      assert.equal(await disabled.evaluate(button => getComputedStyle(button).opacity), '1',
-        `The arm must not show through the ${caption} label`);
+    // 取っ手を掴んで引いている間も手は出ない（引きの状態は dataset で分かる）
+    const grip = await handle(page).boundingBox();
+    const point = { x: grip.x + grip.width / 2, y: grip.y + grip.height / 2 };
+    if (touch) {
+      const cdp = await page.context().newCDPSession(page);
+      try {
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point] });
+        await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.pulling === 'true');
+        await checkControls('power');
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
+      } finally { await cdp.detach(); }
+    } else {
+      await page.mouse.move(point.x, point.y);
+      await page.mouse.down();
+      await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.pulling === 'true');
+      await checkControls('power');
+      await page.mouse.up();
     }
     await activate(page.locator('[data-test="axe-reaim"]'));
     await phase(page, 'choice');
@@ -403,7 +443,7 @@ await suite('axe-tap-pull-aim-guide', async check => {
     await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]').dataset.onTarget === 'true', null, { polling: 'raf', timeout: 5000 });
     assert.equal(await root(page).getAttribute('data-aim-goal'), 'bull');
     assert.equal(await page.locator('.axe-x-needle').getAttribute('stroke'), '#8ff0a4', 'the needle turns green over the mark');
-    assert.match(await page.locator('[data-test="axe-aim-prompt"]').innerText(), /ねらい 1 \/ 2\s+左右の針を止める/);
+    assert.equal(await page.locator('[data-test="axe-aim-prompt"]').count(), 0, 'the aim prompt was removed to slim the UI');
     assert.equal(await page.locator('.axe-gauge-label').count(), 0, 'the steps label replaces the axis pictograms');
     await page.locator('[data-test="axe-reaim"]:not([disabled])').click(); await phase(page, 'choice');
     const picker = page.locator('[data-test="axe-call-picker"]');

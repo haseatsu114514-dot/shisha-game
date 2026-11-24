@@ -69,9 +69,11 @@ function loadSeBuffer(file) {
       const timer = setTimeout(() => controller.abort(), 5000);
       try {
         const url = SE_ROOT + file;
-        const response = await fetch(file.endsWith(".bgm") ? await bgmSource(url) : url, { signal: controller.signal });
+        const response = await fetch(url, { signal: controller.signal });
         if (!response.ok) throw new Error(`SE HTTP ${response.status}`);
-        const buffer = await ctx.decodeAudioData(await response.arrayBuffer());
+        const raw = await response.arrayBuffer();
+        const audio = file.endsWith(".bgm") ? await decryptPackedAudio(raw) : raw;
+        const buffer = await ctx.decodeAudioData(audio);
         seBuffers.set(file, buffer);
         return buffer;
       } catch {
@@ -174,7 +176,7 @@ const DESERT_SE = Object.freeze({
   zap1: "zap_1.wav", zap2: "zap_2.wav", zap3: "zap_3.wav",
 });
 const DESERT_ZAPS = Object.freeze(["zap1", "zap2", "zap3"]);
-const DESERT_CUES = Object.freeze(["spin", "overtake", "overtaken"]);
+const DESERT_CUES = Object.freeze(["spin", "overtake", "overtaken", "boostShort"]);
 /**
  * 放電の「ビリッ」の次までの秒数。ゲージが1割を超えると鳴り始め、溜まるほど間隔が詰まる（1割で約1.6秒、満タンで約0.35秒）。
  * 毎回少しずらす（rand は 0〜1）。1割に満たない間は鳴らさない（Infinity）。
@@ -224,8 +226,11 @@ export function createDesertRideSe() {
       tone({ freq, to: freq * 1.3, type: "triangle", dur: 0.07, vol });
     } else if (kind === "overtake") {
       tone({ freq: 660, type: "triangle", dur: 0.09, vol }); tone({ freq: 990, type: "triangle", dur: 0.16, vol: vol * 0.9, delay: 0.08 });
-    } else {
+    } else if (kind === "overtaken") {
       tone({ freq: 520, type: "sine", dur: 0.11, vol }); tone({ freq: 390, type: "sine", dur: 0.2, vol: vol * 0.9, delay: 0.1 });
+    } else if (kind === "boostShort") {
+      tone({ freq: 300, type: "triangle", dur: 0.055, vol });
+      tone({ freq: 220, type: "triangle", dur: 0.075, vol: vol * 0.8, delay: 0.055 });
     }
   }
   function loop(id, gain, rate = 1) {
@@ -366,8 +371,8 @@ function ensureCtx() {
   return ctx;
 }
 
-/** ユーザー操作で音を解禁し、OSによる中断から同じ曲・位置へ復帰する。 */
-export function unlockAudio() {
+/** ユーザー操作で音を解禁し、OSによる中断から同じ曲・位置へ復帰する。warm: false で本編SEの先読みを省く。 */
+export function unlockAudio(options) {
   audioUnlocked = true;
   const c = ensureCtx();
   const ready = () => {
@@ -394,7 +399,7 @@ export function unlockAudio() {
   };
   if (c && (c.state === "suspended" || c.state === "interrupted")) c.resume().then(ready, () => {});
   else ready();
-  warmSe();
+  if (options?.warm !== false) warmSe();
 }
 
 export function applyVolumes() {
@@ -1103,6 +1108,19 @@ function releasePacked(blobUrl) {
   if (blobUrl && packedInUse.delete(blobUrl)) evictPacked();
 }
 
+async function decryptPackedAudio(raw) {
+  const bytes = new Uint8Array(raw);
+  const header = bytes.subarray(0, PACKED_MAGIC.length);
+  if (bytes.length < PACKED_MAGIC.length + 12 + 16 || new TextDecoder().decode(header) !== PACKED_MAGIC) {
+    throw new Error("Invalid game BGM format");
+  }
+  packedCryptoKey ??= crypto.subtle.importKey("raw",
+    Uint8Array.from(PACKED_KEY.match(/../g), (hex) => parseInt(hex, 16)), "AES-GCM", false, ["decrypt"]);
+  return crypto.subtle.decrypt({ name: "AES-GCM",
+    iv: bytes.subarray(PACKED_MAGIC.length, PACKED_MAGIC.length + 12), additionalData: header },
+  await packedCryptoKey, bytes.subarray(PACKED_MAGIC.length + 12));
+}
+
 function bgmSource(url) {
   if (!url.endsWith(".bgm")) return Promise.resolve(url);
   if (!packedSources.has(url)) {
@@ -1115,16 +1133,7 @@ function bgmSource(url) {
         if (!response.ok) throw new Error(`BGM HTTP ${response.status}`);
         raw = await response.arrayBuffer();
       } finally { globalThis.clearTimeout?.(timer); }
-      const bytes = new Uint8Array(raw);
-      const header = bytes.subarray(0, PACKED_MAGIC.length);
-      if (bytes.length < PACKED_MAGIC.length + 12 + 16 || new TextDecoder().decode(header) !== PACKED_MAGIC) {
-        throw new Error("Invalid game BGM format");
-      }
-      packedCryptoKey ??= crypto.subtle.importKey("raw",
-        Uint8Array.from(PACKED_KEY.match(/../g), (hex) => parseInt(hex, 16)), "AES-GCM", false, ["decrypt"]);
-      const audio = await crypto.subtle.decrypt({ name: "AES-GCM",
-        iv: bytes.subarray(PACKED_MAGIC.length, PACKED_MAGIC.length + 12), additionalData: header },
-      await packedCryptoKey, bytes.subarray(PACKED_MAGIC.length + 12));
+      const audio = await decryptPackedAudio(raw);
       return URL.createObjectURL(new Blob([audio], { type: "audio/mpeg" }));
     })();
     packedSources.set(url, source);

@@ -358,6 +358,7 @@ await suite("craft-progress", async check => {
       await session.openBench(lessonCS, { steps: CRAFT_STEPS.filter(([id]) => !["setup", "care1", "care2"].includes(id)) }).ready;
       window.lessonRun = holes.runHoles(lessonCS);
     });
+    await page.locator('.bench-guide[open] [data-test="bench-guide-close"]').click();
     const start = page.locator('[data-test="hole-start"]');
     await start.waitFor();
     assert.equal(await page.locator(".bench").getAttribute("data-craft-version"), "sakurai");

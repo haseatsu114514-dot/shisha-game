@@ -531,6 +531,16 @@ async function staminaGuard(cost, { mandatory = false } = {}) {
   return go;
 }
 
+async function confirmRespecClose() {
+  // 組み直しが開いている間の最初の行動は、確定する前に閉じることを一度だけ知らせる（SPEC 5.2）
+  const closing = takeRespecCloseWarning(state);
+  if (!closing || await modal({ title: "心得の盤の組み直し", body: `${closing}。<br>このまま向かいますか？`,
+    options: [{ label: "このまま向かう", value: "go", primary: true, test: "respec-close-go" },
+      { label: "戻る", value: null, test: "respec-close-back" }] }) === "go") return true;
+  save();
+  return false;
+}
+
 async function takeAction() {
   syncNightQueue(chapterDef.nightEvents);
   expireInvitations({ fixedNight });
@@ -558,25 +568,8 @@ async function takeAction() {
     }
     if (!(await guardInvitation(inv))) return;
     await travelToInvitation(inv);
-    if (inv.event === "date_samechan") {
-      const result = await playSamechanDate({ invite: inv, cost: invitationCost(inv.event), advanceSlot: true });
-      if (state !== invOwner) return;
-      if (result.done) { completeInvitation(inv); await afterAction({ exerted: true, spent: result.spent }); }
-      return;
-    }
-    state.pendingInvite = null;
-    if (state.slot === 1) state.flags._private_night_day = state.day;
-    if (state.slot === 1) state.flags._private_night_char = inv.sender;
-    const { value: met, spent } = await paidAction(() => meetInvitation(inv), { ...invitationGrowth(inv.event), primary: CHAR_STAT[inv.sender], exp: invitationExp(inv) });
-    if (state !== invOwner) return;
-    if (!met) {
-      if (state.flags._private_night_day === state.day && state.flags._private_night_char === inv.sender) {
-        delete state.flags._private_night_day;
-        delete state.flags._private_night_char;
-      }
-      return;
-    }
-    state.slot++;
+    const { done, spent } = await runInvitation(inv, { advanceSlot: true });
+    if (!done || state !== invOwner) return;
     await afterAction({ exerted: true, spent });
     return;
   }
@@ -609,13 +602,9 @@ async function takeAction() {
     }, // 通知を先にタップした場合は、マップが開いたところで目的のトークへ
     onBeforeGo: async (destination) => {
       if (destination.boardOnly) return true; // 行動枠も約束も進めない
-      const spendsAction = !["shop", "fortune"].includes(destination.kind)
+      const spendsAction = !["shop", "fortune", "rest"].includes(destination.kind)
         && !(typeof pendingDelivery === "function" && pendingDelivery(destination.charId));
-      // 組み直しが開いている間の最初の行動は、確定する前に閉じることを一度だけ知らせる（SPEC 5.2）
-      const closing = spendsAction ? takeRespecCloseWarning(state) : "";
-      if (closing && await modal({ title: "心得の盤の組み直し", body: `${closing}。<br>このまま向かいますか？`,
-        options: [{ label: "このまま向かう", value: "go", primary: true, test: "respec-close-go" },
-          { label: "戻る", value: null, test: "respec-close-back" }] }) !== "go") { save(); return false; }
+      if (spendsAction && !await confirmRespecClose()) return false;
       return confirmLimeReminder(destination, { spendsAction });
     },
   });
@@ -760,7 +749,7 @@ async function performSpotAction(spot, saveGate) {
     const r = await openShop();
     if (r !== "rio") used = false;
     else if (!(await confirmLimeReminder(spot))) used = false;
-    else if (await staminaGuard(-14)) { used = await visitRio(); exerted = used; if (used) await consultLessons("rio"); }
+    else if (await staminaGuard(-14) && await confirmRespecClose()) { used = await visitRio(); exerted = used; if (used) await consultLessons("rio"); }
     else used = false;
   } else if (spot.kind === "spot") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
@@ -868,52 +857,87 @@ async function travelToInvitation(inv) {
   }
 }
 
+async function runInvitation(inv, { advanceSlot = false } = {}) {
+  if (inv.event === "date_samechan") {
+    if (!samechanDateReady()) {
+      cancelSamechanAppointment(inv);
+      return { done: false, spent: 0 };
+    }
+    const owner = state;
+    const result = await playSamechanDate({ invite: inv, cost: invitationCost(inv.event), advanceSlot });
+    if (result.done && state === owner) completeInvitation(inv);
+    return result;
+  }
+  const owner = state, slot = state.slot;
+  const releaseSave = holdActionSave(owner);
+  try {
+    const { value: done, spent } = await paidAction(() => meetInvitation(inv), {
+      ...invitationGrowth(inv.event), primary: CHAR_STAT[inv.sender], exp: invitationExp(inv), cancelled: met => !met,
+    });
+    if (done && state === owner) {
+      if (slot >= 1) {
+        state.flags._private_night_day = state.day;
+        state.flags._private_night_char = inv.sender;
+      }
+      if (advanceSlot) state.slot++;
+    }
+    return { done, spent };
+  } finally { releaseSave(); }
+}
+
 async function meetInvitation(inv) {
   if (postponeUnaffordableInvitation(inv)) return false;
   const owner = state;
   const destination = invitationVisitSpot(inv, invitationSourceMessage(inv));
-  let result;
   const cost = invitationCost(inv.event);
-  addMoney(-cost);
   if (inv.event === "__sumi_baito__") {
-    // スミさんのLIMEで急に呼ばれたシフト。そのまま tonari で働く（給料に上乗せ）
+    // シフト中は消耗後の体調を使う。中断したら出勤前の体力と出勤回数に戻す。
+    const { stamina, baitoCount, lastBaitoDay } = state;
+    let completed = false;
+    try { completed = await doBaito({ called: true, story: carriedShiftStory() }); }
+    finally {
+      if (!completed && state === owner) {
+        addStamina(stamina - state.stamina);
+        state.baitoCount = baitoCount;
+        state.lastBaitoDay = lastBaitoDay;
+      }
+    }
+    if (!completed || state !== owner) return false;
     state.visitedDay.tonari_baito = state.day;
     state.visitedDay.tonari = state.day;
-    await doBaito({ called: true, story: carriedShiftStory() });
   } else if (inv.event === "__mukai_baito__") {
     // ムカイさんのLIMEで呼ばれた東京の mukai のシフト（VOL10）。シフトの中身は章の側（chapters/tokyo-mukai.js）
-    if (!await chapterDef.mukaiShift?.({ called: true })) return false;
+    if (!await chapterDef.mukaiShift?.({ called: true }) || state !== owner) return false;
     if (inv.visitSpot) state.visitedDay[inv.visitSpot] = state.day;
   } else if (inv.event === "hiyori_tonari_return") {
-    await playHiyoriEvent("tonari_return");
+    if (!await playHiyoriEvent("tonari_return") || state !== owner) return false;
     state.visitedDay.tonari = state.day;
     addStamina(-10);
   } else if (inv.event === "__hiyori_shop__") {
     const spot = spotById(inv.visitSpot);
-    await playHiyoriHangout({ bg: bgRef(spot.bg || VISIT_BG[spot.charId]) });
+    if (!await playHiyoriHangout({ bg: bgRef(spot.bg || VISIT_BG[spot.charId]) }) || state !== owner) return false;
     await consultLessons("hiyori", { bg: bgRef(spot.bg || VISIT_BG[spot.charId]) });
+    if (state !== owner) return false;
     state.visitedDay[spot.id] = state.day;
     addStamina(-10);
   } else if (/^date_/.test(inv.event)) {
-    await playDate(inv.sender); // 恋人とのデート（絆・ステ・体力はデート側で）
-    if (state !== owner) return false;
+    if (!await playDate(inv.sender) || state !== owner) return false; // 絆・ステ・体力はデート側で
     // ひよりの feelings_spoken（#1434 決定B）。恋人・絆Lv2以降のデートの帰りに一度だけ。条件は route.events。
     if (inv.sender === "hiyori") await playHiyoriEvent("feelings_spoken");
   } else if (isFriendEvent(inv.event)) {
     // 友人からのシーシャのお誘い（HF09）。ステは場面側の apply
-    await playFriendHangout(inv.sender);
+    if (!await playFriendHangout(inv.sender) || state !== owner) return false;
     gainAffinity(inv.sender, 5);
     addStamina(-10);
   } else if (isFinaleEvent(inv.event)) {
     // 私的な約束で会う締めくくり（みんと）。専用ハガルの贈呈・ルートの記録は bonds.js
-    await playFinale(inv.sender);
-    if (state !== owner) return false;
+    if (!await playFinale(inv.sender) || state !== owner) return false;
     gainAffinity(inv.sender, 10);
     addStamina(-10);
   } else {
-    result = await play(storeInvitationSpot({ accept_event: inv.event })
+    const result = await play(storeInvitationSpot({ accept_event: inv.event })
       ? storeInvitationDialogue(DB.dialogues[inv.event], state.slot) : inv.event, { growthScene: true });
-    if (state !== owner || result?.cancelled) return false;
+    if (state !== owner || !result || result.cancelled) return false;
     if (inv.event === `outing_${inv.sender}_1`) state.flags[`_outing_done_${inv.sender}`] = true;
     if (inv.event === "ch1_minto_fifth") state.flags._minto_fifth_done = true;
     if (inv.event === "ch1_adam_outing_dagurikura") state.flags._adam_arcade_done = true;
@@ -921,7 +945,8 @@ async function meetInvitation(inv) {
     addStamina(-10);
     await afterStory(inv.event); // 私服の約束のあとの、途中の質問（みんと）
   }
-  if (state !== owner || result?.cancelled) return false;
+  if (state !== owner) return false;
+  addMoney(-cost);
   if (destination) {
     state.visitedDay[destination] = state.day;
     state.flags[`_invitation_visit_${destination}`] = `${state.chapter}:${state.day}`;
@@ -931,6 +956,7 @@ async function meetInvitation(inv) {
     earnStat(CHAR_STAT[inv.sender], 1);
   }
   completeInvitation(inv);
+  if (state.pendingInvite === inv) state.pendingInvite = null;
   return true;
 }
 
@@ -1006,30 +1032,20 @@ async function endDay({ returnedToTonari = false } = {}) {
     const unreadAppt = invitationReadBeforeMeeting(appointment);
     if (unreadAppt) {
       await readLime(unreadAppt);
-      if (state !== apptOwner) return;
+      if (state !== apptOwner || state.pendingInvite !== appointment) return;
     }
     await travelToInvitation(appointment);
-    if (appointment.event !== "date_samechan") state.pendingInvite = null;
-    delete state.flags._home_tonight;
     await beat(appointment.afterClose ? "——店の営業が終わってから、約束の場所へ。"
       : rested ? "休養のあと、LIMEで約束した場所へ——" : "仕事を終え、LIMEで約束した場所へ。");
-    if (appointment.event === "date_samechan") {
-      if (!samechanDateReady()) cancelSamechanAppointment(appointment);
-      else {
-        const result = await playSamechanDate({ invite: appointment, cost: invitationCost(appointment.event) });
-        if (result.done) {
-          completeInvitation(appointment);
-          await afterAction({ exerted: true, spent: result.spent });
-          metTonight = true; companion = appointment.sender;
-        }
-      }
-    } else {
-      const { value: met, spent } = await paidAction(() => meetInvitation(appointment), { ...invitationGrowth(appointment.event), primary: CHAR_STAT[appointment.sender], exp: invitationExp(appointment) });
-      if (met) {
-        await afterAction({ exerted: true, spent });
-        metTonight = true;
-        companion = appointment.sender;
-      }
+    if (state !== apptOwner || state.pendingInvite !== appointment) return;
+    const { done, spent } = await runInvitation(appointment);
+    if (state !== apptOwner || !done && state.pendingInvite === appointment) return;
+    if (done) {
+      delete state.flags._home_tonight;
+      await afterAction({ exerted: true, spent });
+      if (state !== apptOwner) return;
+      metTonight = true;
+      companion = appointment.sender;
     }
   }
   // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）

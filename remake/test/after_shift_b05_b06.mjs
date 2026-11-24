@@ -16,7 +16,7 @@ const read = (path) => fs.readFile(new URL(path, root), "utf8");
 const hiyoriData = JSON.parse(await read("data/dialogue/hiyori.json"));
 const baitoData = JSON.parse(await read("data/baito_events.json"));
 
-const state = {};
+let state = {};
 const db = {
   dialogues: Object.fromEntries((hiyoriData.dialogues || []).map((s) => [s.dialogue_id, s])),
   baito: baitoData.events || [],
@@ -26,6 +26,12 @@ const db = {
 
 const plays = [], visitCalls = [], screens = [];
 let storyReady = false, menuPick = "after-none";
+let hudListener, loadAt, cancelAt, orderPick;
+function loadSave() {
+  state = { flags: {}, visitedDay: {} };
+  stateModule.setExport("state", state);
+  hudListener();
+}
 
 function el(tag, props = {}, children = []) {
   if (Array.isArray(props)) { children = props; props = {}; }
@@ -93,7 +99,7 @@ await realModule("chapter-features.js", "remake/js/core/chapter-features.js");
 
 synthetic("util.js", { el, pick: (list) => list[0] });
 synthetic("data.js", { DB: db, bgUrl: (id) => id });
-synthetic("state.js", { state, config: { statEffectColors: true }, timeOfDay: () => "day" });
+const stateModule = synthetic("state.js", { state, config: { statEffectColors: true }, timeOfDay: () => "day" });
 synthetic("stats.js", {
   addMoney() {}, addStamina() {}, applyStats() {}, step: () => 1,
   currentCondition: () => ({}), affinityLevel,
@@ -101,18 +107,24 @@ synthetic("stats.js", {
 synthetic("ui.js", {
   showScreen: (name, node) => {
     screens.push({ name, node });
-    queueMicrotask(() => find(node, menuPick)?.onclick?.());
+    queueMicrotask(() => {
+      if (loadAt === "menu") loadSave();
+      else find(node, menuPick)?.onclick?.();
+    });
+    node.remove = () => { node.removed = true; };
     return node;
   },
-  setBg() {}, toast() {}, retire() {}, modal: async () => true,
+  setBg() {}, toast() {}, retire() {}, modal: async () => orderPick,
 });
 synthetic("audio.js", { SE: new Proxy({}, { get: () => () => {} }), playBgm() {}, currentBgm: () => null });
-synthetic("bus.js", { on: () => () => {} });
+synthetic("bus.js", { on: (_, fn) => { hudListener = fn; return () => { hudListener = null; }; } });
 synthetic("axe.js", { runAxeThrow: async () => {} });
 synthetic("engine.js", {
-  play: async (scene) => {
+  play: async (scene, { signal } = {}) => {
     const id = typeof scene === "string" ? scene : scene?.dialogue_id || scene?.id;
     plays.push(id);
+    if (id === loadAt) { assert(signal); loadSave(); assert(signal.aborted); }
+    if (id === cancelAt) return { cancelled: true };
     return { id, visited: [] };
   },
   dialogueSequence: async (fn) => fn(),
@@ -134,7 +146,14 @@ synthetic("tsumugi-schedule.js", { tsumugiAtTonari: () => false });
 synthetic("flavor-mastery.js", { staffFlavors: () => [], staffStock: () => 0 });
 synthetic("axe-bar-discovery.js", { hiyoriFirstMeetingReady: () => false });
 const practiceRuns = [];
-synthetic("practice.js", { runFullPractice: async (opts) => { practiceRuns.push(opts); return { masteryGained: true }; } });
+synthetic("practice.js", { runFullPractice: async (opts) => {
+  practiceRuns.push(opts);
+  if (loadAt === "practice") {
+    queueMicrotask(loadSave);
+    return new Promise(() => {});
+  }
+  return { masteryGained: true };
+} });
 
 // ♥5の締めくくりの後の会話（#3693）は実 bond-after.js。台本の読み込みだけ差し替える（読めない日を作れる）
 let bondAfterLoadFails = false;
@@ -164,6 +183,7 @@ function reset(overrides = {}) {
   }, structuredClone(overrides));
   plays.length = 0; visitCalls.length = 0; screens.length = 0;
   storyReady = false; menuPick = "after-none";
+  loadAt = null; cancelAt = null; orderPick = 0;
 }
 
 // --- B05: 固有会話がある日は visitChar、無い日は定型の一言 ---
@@ -179,6 +199,7 @@ assert.equal(plays.filter((id) => id === "remake_sumi_after_shift").length, 1, "
 const afterMenuTexts = texts(screens.at(-1).node);
 assert(!afterMenuTexts.includes("スミさんと話す"), "シフト上がりメニューにスミ会話の選択肢は無い");
 assert(afterMenuTexts.includes("まっすぐ上がる"), "特訓・授業以外の締めの選択肢は残る");
+assert(afterMenuTexts.some((text) => text.includes("1つだけ")));
 
 // --- #3693: スミさんの締めくくりを友人として迎えた後は、定型の一言の代わりに♥5後の場面を一度ずつ。読み終えたら短い汎用 ---
 {
@@ -222,8 +243,9 @@ assert.equal(practiceRuns[0].kind, "self");
 assert.equal(plays.filter((id) => id === "remake_staff_practice").length, 1);
 assert.equal(state.visitedDay.tonari_practice, 2, "同じ日の苺・まかないとの重複判定に使う記録");
 menuPick = "after-none";
+const screenCount = screens.length;
 await tonari.doBaito();
-assert(!texts(screens.at(-1).node).includes("まかないで練習"), "同じ日に二度目のまかない練習は出ない");
+assert.equal(screens.length, screenCount, "まっすぐ上がる以外に選択肢がなければメニューを出さない");
 assert.equal(practiceRuns.length, 1);
 practiceRuns.length = 0;
 
@@ -245,6 +267,40 @@ assert.equal(axe.axeThrowExposed(), true);
 plays.length = 0;
 await tonari.doBaito();
 assert(!plays.includes("remake_sumi_axe_hint"), "露出ヒントは一度だけ（次のバイト上がりでは流れない）");
+
+// pack14 B-04/B-05: LOAD で旧シフトを閉じ、同一セーブでの会話・注文中断も続行しない。
+for (const scene of ["ch1_ageha_encounter", "remake_sumi_after_shift", "remake_sumi_axe_hint", "menu", "remake_staff_practice"]) {
+  reset({ ...PREREQ_STATE, day: 4 });
+  db.dialogues.ch1_ageha_encounter = { lines: [] };
+  loadAt = scene;
+  menuPick = "after-makanai";
+  assert.equal(await tonari.doBaito(), false, scene);
+  assert.deepEqual(state.flags, {}, scene);
+  assert.deepEqual(state.visitedDay, {}, scene);
+  assert.equal(practiceRuns.length, 0, scene);
+  if (scene === "menu") assert(screens.at(-1).node.removed);
+}
+reset();
+loadAt = "practice";
+menuPick = "after-makanai";
+assert.equal(await tonari.doBaito(), false, "作業台が入力待ちでも LOAD でシフトは解ける");
+assert.equal(practiceRuns.at(-1).isCurrent(), false);
+assert.deepEqual(state.visitedDay, {});
+for (const [scene, flag, flags] of [
+  ["ch1_kuraudo_cameo", "_ev_kuraudo_cameo", {}],
+  ["ch1_reviewer_cameo", "_ev_reviewer_cameo", { _ev_kuraudo_cameo: true }],
+  ["ch1_uezono_cameo", "_ev_uezono_cameo", { _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true }],
+]) {
+  reset({ day: 6, baitoCount: 3, flags });
+  cancelAt = scene;
+  assert.equal(await tonari.doBaito(), false);
+  assert(plays.includes(scene));
+  assert.equal(state.flags[flag], undefined);
+}
+reset();
+orderPick = undefined;
+assert.equal(await tonari.doBaito(), false);
+assert(!plays.includes("remake_baito_end"));
 
 // --- B06: 露出判定はスロットに依存しない（昼のバイト上がりでも露出する） ---
 reset({ ...PREREQ_STATE, slot: 0 });

@@ -343,13 +343,24 @@ function press(id, event) {
 
 // ---------------------------------------------------------------- 追随
 
+// 段ごとの例外で後段が止まらないようにする（2026-11-24 ランク残留の調査）。
+// 以前は直列に呼んでいたため、先行段が作り終わり直後の状態で例外を投げると
+// syncRank() に到達せず、1秒ポーリングも同じ所で落ち続けて余白のランク写しだけが残った。
+const syncStageErrors = new Set();
+function runSyncStage(name, fn) {
+  try { fn(); }
+  catch (e) {
+    if (!syncStageErrors.has(name)) { syncStageErrors.add(name); console.warn(`[side-area] sync stage "${name}" failed`, e); }
+  }
+}
+
 function sync() {
   clearTimeout(syncTimer);
   syncTimer = 0;
   if (!dom) return;
-  updateStrip();
-  syncPads();
-  syncRank();
+  runSyncStage("strip", updateStrip);
+  runSyncStage("pads", syncPads);
+  runSyncStage("rank", syncRank);
   for (const [id, slot] of Object.entries(dom.slots)) if (slot.owner && !slot.owner.isConnected) releaseSideSlot(id);
 }
 function scheduleSync(delay = 80) {

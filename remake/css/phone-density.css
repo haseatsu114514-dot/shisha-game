@@ -216,7 +216,11 @@ html:root[data-density="phone"] body:not(:root) .xfer-btns { gap: var(--phone-ga
 /* ---------------------------------------------------------------- LIME・会話の LOG・起動の案内（#3556） */
 /* 横持ちでは端末の枠が実寸 184×347px ほどになり、トーク一覧 8.7px・閉じる 7.6px・時刻の帯 6.5px まで縮んでいた。
    枠を舞台の高さいっぱいまで広げ、文字だけを規格へ。実物のアプリをまねた色・形（LK20）は変えない。 */
-html:root[data-density="phone"] body:not(:root) .phone { width: 520px; height: min(700px, calc(100% - 16px)); border-radius: 30px; }
+/* 幅は 520px だと縦横比 0.74（実機の約1.6倍太い）になり形が崩れたため、基本設計に近い
+   380px（0.543）へ戻す（2026-11-24 実機報告）。density の文字サイズは倍率と独立に決まるので読みやすさは変わらない。 */
+html:root[data-density="phone"] body:not(:root) .phone { width: 380px; height: min(700px, calc(100% - 16px)); border-radius: 30px; }
+/* ノッチは幅に対して相対的に小さく、ステータスバーと分離して浮いて見えるため density では出さない。 */
+html:root[data-density="phone"] body:not(:root) .phone-notch { display: none; }
 html:root[data-density="phone"] body:not(:root) .phone-status { font-size: var(--phone-sub); padding: 2px 20px 4px; }
 html:root[data-density="phone"] body:not(:root) :is(.lime-logo, .lime-unread, .lcr-side small, .lcr-tag) { font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) :is(.lime-name, .lime-title, .lcr-name) { font-size: var(--phone-text); }
