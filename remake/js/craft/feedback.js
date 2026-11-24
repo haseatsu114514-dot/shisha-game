@@ -66,13 +66,18 @@ export function judgeComment(cs) {
 }
 
 // 結果画面に登場する5人。COMMENTS・WATCHと大会台詞の口調を使い、未記録の失敗原因は断定しない。
-const JUDGE_DEDUCTION_LINES = {
+// 工程（穴・炭・調整）の一言と、完成品の中身（香り・味の濃さ・持ち・熱の安定・焦げやすさ・煙・吸い心地）の一言。
+// 完成品の中身は、その審査員の見る所の2つだけを持つ。チャコール博士は味そのものを評さない（character_profiles）。
+export const JUDGE_DEDUCTION_LINES = {
   uezono: {
     holes: "穴：次は間隔を揃えてみようか",
     heat: "炭：取り出す頃合いを見てみようか",
     shisha: "完成品：配合と仕上がりを見直そうか",
     care1: "調整1：炭の交換を見直したいねえ",
     care2: "調整2：後半の熱も確かめたいねえ",
+    aroma: "香り：もう一段、立ってほしいねえ",
+    taste: "味の濃さ：もう少し厚みがほしいねえ",
+    clear: "味：言うことなし、おいしいねえ",
   },
   dr_charcoal: {
     holes: "穴：目印と間隔を確かめましょう",
@@ -80,6 +85,9 @@ const JUDGE_DEDUCTION_LINES = {
     shisha: "完成品：配合と熱のつながりを見ましょう",
     care1: "調整1：交換する炭の数を見直しましょう",
     care2: "調整2：葉の残りと熱を確かめましょう",
+    heatStability: "熱の安定：揺れをもう一段抑えましょう",
+    safety: "焦げやすさ：熱の当たり方を見直しましょう",
+    clear: "火：熱の扱いに減点はありません",
   },
   sensu: {
     holes: "穴：急がず、間隔を揃えなさい",
@@ -87,6 +95,9 @@ const JUDGE_DEDUCTION_LINES = {
     shisha: "完成品：配合の狙いを最後まで通しなさい",
     care1: "調整1：一手ずつ熱を確かめなさい",
     care2: "調整2：最後まで葉と熱を見なさい",
+    smoke: "煙：もっと煙に語らせなさい",
+    draw: "吸い心地：引っかかりを取りなさい",
+    clear: "煙：減点なし、そのまま進みなさい",
   },
   emil: {
     holes: "穴：通り道の間隔を確かめたい",
@@ -94,6 +105,9 @@ const JUDGE_DEDUCTION_LINES = {
     shisha: "完成品：配合から続く味を見せてくれ",
     care1: "調整1：炭を換えた後の変化を見よう",
     care2: "調整2：葉の残りと熱を最後まで見よう",
+    aroma: "香り：奥の味までつなげてくれ",
+    duration: "持ち：続く味をもっと見せてくれ",
+    clear: "味：最初から奥まで、減点はない",
   },
   da_silva: {
     holes: "穴：目印を見て、間隔を揃えようぜ",
@@ -101,22 +115,81 @@ const JUDGE_DEDUCTION_LINES = {
     shisha: "完成品：配合と仕上がり、もう一段だ",
     care1: "調整1：炭の交換、焦らず見直そうぜ",
     care2: "調整2：後半の葉と熱も見てやれ",
+    heatStability: "熱の安定：最後まで楽しく吸わせろ",
+    safety: "焦げやすさ：熱が暴れてる、台を見ろ",
+    clear: "火：減点なし、最高のフェスタだ",
   },
 };
 
-// 表示専用。全審査員が同じ工程品質を使い、好み・試喫順の補正は工程別ではない。
-// finalize と同じ重みで満点との差を比較。同点は穴・炭・完成品・調整1・調整2の順。
+/**
+ * 審査員の見る所（結果の一言の表示専用。採点・票は変えない）。
+ * steps: 工程の重み。上園・博士・千須は第1章の審査の重み（ch1-votes.js の CH1_WEIGHTS）、
+ *   エミル・太陽は第4章の重み（ch4-tournament-state.js の CH4_JUDGE_WEIGHTS から最終総合の分を除く）。
+ * cup: 完成品の中身のうち、その審査員が見る2つ。上園・博士・千須は桜井式の提供の回（SAKURAI.serve）から
+ *   提供の一口を除いたもの。エミルは続く味（香り・持ち）、太陽は第4章で博士に代わって火（熱の安定・焦げにくさ）。
+ * 完成品の重みは2つの中身へ半分ずつ分ける。safety は 100−焦げやすさ。
+ */
+export const JUDGE_VIEWS = Object.freeze({
+  uezono: Object.freeze({ axis: "味", steps: Object.freeze({ holes: 15, heat: 15, shisha: 30, care1: 20, care2: 20 }), cup: Object.freeze(["aroma", "taste"]) }),
+  dr_charcoal: Object.freeze({ axis: "火", steps: Object.freeze({ holes: 20, heat: 30, shisha: 10, care1: 20, care2: 20 }), cup: Object.freeze(["heatStability", "safety"]) }),
+  sensu: Object.freeze({ axis: "煙", steps: Object.freeze({ holes: 20, heat: 20, shisha: 20, care1: 20, care2: 20 }), cup: Object.freeze(["smoke", "draw"]) }),
+  emil: Object.freeze({ axis: "続く味", steps: Object.freeze({ holes: 15, heat: 15, shisha: 15, care1: 15, care2: 25 }), cup: Object.freeze(["aroma", "duration"]) }),
+  da_silva: Object.freeze({ axis: "火", steps: Object.freeze({ holes: 15, heat: 25, shisha: 15, care1: 15, care2: 15 }), cup: Object.freeze(["heatStability", "safety"]) }),
+});
+
+const NEUTRAL_ITEMS = [
+  ["holes", "穴あけに減点、目印と間隔を確かめよう"],
+  ["heat", "炭焼きに減点、取り出す頃合いを確かめよう"],
+  ["shisha", "完成品に減点、配合と仕上がりを見直そう"],
+  ["care1", "調整1に減点、炭の交換と熱の変化を見よう"],
+  ["care2", "調整2に減点、後半の葉と熱の変化を見よう"],
+];
+const NO_RECORD = "工程の記録がなく、減点項目は確認できない";
+
+/** 完成品の中身（0〜100、高いほど良い）。焦げやすさは焦げにくさへ読み替える。 */
+function cupFacet(stats, key) {
+  if (key === "safety") return Number.isFinite(stats?.burnRisk) ? 100 - stats.burnRisk : NaN;
+  return stats?.[key];
+}
+
+/**
+ * 審査員ごとの見る所で、いちばん点を落とした所を一つ挙げる（表示専用。採点・票・保存は変えない）。
+ * 工程は（100−点）×その審査員の重み、完成品は見る所の2つの中身ごとに（100−値）×完成品の重みの半分で比べる。
+ * 同じ大きさなら 穴・炭・完成品の中身（見る所の順）・調整1・調整2 の順。完成品の中身の記録が無い古い台は完成品の点で比べる。
+ * 審査員を指定しない時（未知の審査員を含む）は、今までどおり採点の重みで全員共通の一つを挙げる。
+ */
 export function judgeDeductionReason(cs, judgeId) {
+  const view = JUDGE_VIEWS[judgeId];
+  return view ? judgeViewReason(cs, judgeId, view) : neutralDeductionReason(cs);
+}
+
+function judgeViewReason(cs, judgeId, view) {
   const skipped = cs?.foilSkipped || cs?.holes?.skipped;
-  const items = [
-    ["holes", "穴あけに減点、目印と間隔を確かめよう"],
-    ["heat", "炭焼きに減点、取り出す頃合いを確かめよう"],
-    ["shisha", "完成品に減点、配合と仕上がりを見直そう"],
-    ["care1", "調整1に減点、炭の交換と熱の変化を見よう"],
-    ["care2", "調整2に減点、後半の葉と熱の変化を見よう"],
-  ];
+  const lines = JUDGE_DEDUCTION_LINES[judgeId];
+  const facets = view.cup.map(key => [key, cupFacet(cs?.stats, key)]);
+  const cupRecorded = facets.every(([, value]) => Number.isFinite(value));
+  const candidates = [];
+  for (const [item] of NEUTRAL_ITEMS) {
+    const weight = view.steps[item];
+    if (item === "holes" && skipped) continue;
+    if (item === "shisha" && cupRecorded) {
+      for (const [key, value] of facets) candidates.push([key, Math.max(0, 100 - value) * weight / facets.length]);
+      continue;
+    }
+    const score = cs?.parts?.[item];
+    if (Number.isFinite(score)) candidates.push([item, Math.max(0, 100 - score) * weight]);
+  }
+  if (!candidates.length) return { item: null, text: NO_RECORD };
+  let worst = null, maxLoss = 0;
+  for (const [item, loss] of candidates) if (loss > maxLoss) { maxLoss = loss; worst = item; }
+  return worst ? { item: worst, text: lines[worst] } : { item: null, text: lines.clear };
+}
+
+// 審査員を指定しない時の一つ。finalize と同じ重みで満点との差を比較。同点は穴・炭・完成品・調整1・調整2の順。
+function neutralDeductionReason(cs) {
+  const skipped = cs?.foilSkipped || cs?.holes?.skipped;
   let worst = null, maxLoss = 0, recorded = 0;
-  for (const [item, text] of items) {
+  for (const [item, text] of NEUTRAL_ITEMS) {
     if (item === "holes" && skipped) continue;
     const score = cs?.parts?.[item];
     if (!Number.isFinite(score)) continue;
@@ -126,8 +199,8 @@ export function judgeDeductionReason(cs, judgeId) {
     const loss = Math.max(0, 100 - score) * weight;
     if (loss > maxLoss) { maxLoss = loss; worst = { item, text }; }
   }
-  if (worst) return { ...worst, text: JUDGE_DEDUCTION_LINES[judgeId]?.[worst.item] || worst.text };
-  return { item: null, text: recorded ? "記録のある工程は減点なし、丁寧に仕上げたね" : "工程の記録がなく、減点項目は確認できない" };
+  if (worst) return worst;
+  return { item: null, text: recorded ? "記録のある工程は減点なし、丁寧に仕上げたね" : NO_RECORD };
 }
 
 // 判定前の「見ている」間に出す一言。地の文の説明ではなく、本人が話す体で短く。

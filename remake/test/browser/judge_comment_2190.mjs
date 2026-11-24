@@ -114,16 +114,17 @@ await suite("judge-comment-2190", async check => {
           await line.scrollIntoViewIfNeeded();
           if (viewport.width === 1280) {
             assert(await line.evaluate(async node => {
-              const { judgeDeductionReason } = await import("./js/craft/feedback.js");
+              const { JUDGE_DEDUCTION_LINES } = await import("./js/craft/feedback.js");
               const original = node.textContent;
               try {
-                return ["holes", "heat", "shisha", "care1", "care2"].every(item => {
-                  node.textContent = judgeDeductionReason({ parts: { [item]: 70 } }, node.dataset.judge).text;
+                // 工程・完成品の中身・ほめる一言の全部（C-30 #4195）。
+                return Object.values(JUDGE_DEDUCTION_LINES[node.dataset.judge]).every(text => {
+                  node.textContent = text;
                   return node.getBoundingClientRect().height <= parseFloat(getComputedStyle(node).lineHeight) + 1
                     && node.scrollWidth <= node.clientWidth + 1;
                 });
               } finally { node.textContent = original; }
-            }), "Every item reason fits on one line for this judge");
+            }), "Every reason line fits on one line for this judge");
           }
           await assertFits(page, ".judge-deduction[data-judge='" + await line.getAttribute("data-judge") + "']");
         }
