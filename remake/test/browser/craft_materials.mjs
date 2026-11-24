@@ -312,10 +312,18 @@ await suite("craft-materials", async check => {
       await page.locator('[data-test="pack-confirm"]').waitFor();
       await click(page, '[data-test="opt-fluffy"]', touch);
       await click(page, '[data-test="pack-confirm"]', touch);
-      await page.locator('[data-test="hole-start"]').waitFor();
+      // 練習の穴あけは、操作の前に説明を一度読む（pack16 C-系・explainTutorialStep）。読んでから穴あけが始まる。
+      const holesReady = async () => {
+        const close = page.locator('.bench-guide[open] [data-test="bench-guide-close"]');
+        const start = page.locator('[data-test="hole-start"]');
+        await close.or(start).first().waitFor();
+        if (await close.isVisible()) await click(page, '.bench-guide[open] [data-test="bench-guide-close"]', touch);
+        await start.waitFor();
+      };
+      await holesReady();
       assert.equal(await page.locator(".bench-demo-sheet").count(), 0, "穴あけのお手本は廃止（#3815）");
       await page.locator('[data-preview-step="holes"]').click();
-      await page.locator('[data-test="hole-start"]').waitFor();
+      await holesReady();
       assert.equal(await page.locator(".bench-demo-sheet").count(), 0);
       assert.equal(await page.locator(".foil-cursor").count(), 0);
       await page.locator('[data-preview-step="pack"]').click();

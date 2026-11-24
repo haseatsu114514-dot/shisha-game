@@ -112,10 +112,14 @@ const checkHelp = async (page, name) => {
   console.log(`[steam help] PASS: ${name} ${JSON.stringify(hit)}`);
   await guide.locator('summary').click();
   assert(await guide.locator('.bench-guide-tip').isVisible());
-  // アタックの説明は授業で習ってから出す（#4191）。新しいゲームのこの台では、雑念よけだけを読む。
+  // アタックの説明は授業で習ってから出す（pack16 C-系・steam.js の attackHelp）。習う前は避け方だけ。
+  const learned = await page.evaluate(async () => {
+    const [{ state }, { hasAttackTraining }] = await Promise.all([import('./js/core/state.js'), import('./js/craft/attack-training.js')]);
+    return hasAttackTraining(state.flags);
+  });
   const tip = await guide.locator('.bench-guide-tip').textContent();
   assert.match(tip, /雑念を避けよう/);
-  assert.doesNotMatch(tip, /アタック/);
+  if (learned) assert.match(tip, /アタック/); else assert.doesNotMatch(tip, /アタックはZ/);
   await guide.locator('summary').click();
   assert.equal(await guide.getAttribute('open'), null);
 };
