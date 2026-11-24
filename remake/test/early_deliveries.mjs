@@ -19,6 +19,7 @@ const spots={
 };
 const overrides={spendableMoney,state, DB:{flavorById:{lemon:{}},dialogues:{},lime:[]},
  save:()=>saves.push(structuredClone(state)),
+ holdActionSave:()=>noop,
  el:()=>({classList:{add:noop,remove:noop},remove:noop}), sleep:asyncNoop,
  layers:{fx:{append:noop},modal:{classList:{contains:()=>false}}},
  dayTurn:async fn=>fn(),fadeBlack:async fn=>fn?.(),
@@ -54,7 +55,7 @@ const overrides={spendableMoney,state, DB:{flavorById:{lemon:{}},dialogues:{},li
  // This delivery fixture has no night schedule; the synchronous guard returns no block.
  fixedNightVisitBlock:events=>{assert.deepEqual(Object.keys(events),[]);return null},
  runHomeShisha:async()=>false,maybeConfession:async()=>false,unreadCount:()=>0,
- completeInvitation:()=>{state.pendingInvite=null},
+ completeInvitation:noop,
  invitationCost:()=>0,invitationGrowth:()=>({}),isFriendEvent:()=>false,isFinaleEvent:()=>false,CHAR_STAT:{},storeInvitationSpot:()=>false,
  openingStatus:()=>({ok:true}),VISIT_BG:{},restAtHome:async()=>{},currentCondition:()=>({health:'green'}),
  // #3819: DAY2 has no fixed shift any more. A voluntary shift is recorded instead of running the tonari scenes.

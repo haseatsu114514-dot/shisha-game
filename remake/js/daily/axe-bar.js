@@ -98,10 +98,11 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       const played = Object.keys(records).length > 0;
       const menuLine = played ? "venue_maki_menu" : "venue_maki_menu_first";
       const welcome = arrivalGreeted("axe_bar", owner) && DB.dialogues[menuLine] ? menuLine : played ? "venue_maki_return" : "venue_maki_greet";
-      const status = owner.visitedDay.axe_bar === day ? "今日はもう投げ終えた。記録を見ていこう。"
+      const statusText = () => owner.visitedDay.axe_bar === day ? "今日はもう投げ終えた。記録を見ていこう。"
         : owner.money < AXE_BAR.playCost ? "プレイには3,000円必要。記録を見るだけなら無料。"
         : owner.stamina <= 0 ? "今日は体を休めよう。記録を見るだけなら無料。"
         : `参加 ${yen(AXE_BAR.playCost)}・体力を使う・1行動。途中でやめた場合は消費しません。`;
+      const status = el("p.sub-lead", { text: statusText() });
       const lesson = el("button.btn.ghost.axe-bar-lesson", { type: "button", text: "マキに教わる・無料1投", dataset: { test: "axe-bar-lesson" }, onclick: async () => {
         if (lessonOpen || gearOpen || picked || !current()) return;
         lessonOpen = true; host.hidden = true; host.inert = true;
@@ -163,6 +164,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
             gearId = bought.id; save(); toast(`「${bought.name}」を買った。${bought.effect}`, { kind: "good" });
             renderGear();
             for (const button of playButtons) button.disabled = !available();
+            status.textContent = statusText();
             gear.querySelector(`[data-test="axe-select-${bought.id}"]`)?.focus();
           } })];
           return el("div.axe-bar-gear-card", { title: item.description || "無料の店の斧でも満点を狙えます。" }, content);
@@ -182,7 +184,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       const divisions = el("div.axe-bar-divisions", { role: "group", "aria-label": "10投ゲームの難しさ（部門の閉じ方）" }, [el("span.axe-bar-division-label", { text: "10投の難しさ" }), ...tierButtons, divisionNote,
         el("span.axe-bar-tier-line", { text: `${tierLine(owner, "axe")} · クリア：${TIER_GAMES.axe.clear}`, dataset: { test: "axe-bar-tier-line" } })]);
       host.append(el("h2.sub-title", { text: AXE_BAR.label }),
-        venueHost("maki", DB.dialogues[welcome]?.lines?.[0]?.text || "", DB), el("p.sub-lead", { text: status }),
+        venueHost("maki", DB.dialogues[welcome]?.lines?.[0]?.text || "", DB), status,
         el("div.axe-bar-tools", [lesson, gearButton]),
         el("div.sub-choices", playButtons),
         divisions, el("p", { text: masteryLine(owner, "axe"), dataset: { test: "axe-mastery" } }),

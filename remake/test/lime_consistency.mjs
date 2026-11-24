@@ -74,7 +74,7 @@ const values = {
     displayName: (id) => id, limeAccountName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
   "lime-icons.js": { customLimeIconUrl: () => null },
   "ui.js": { layers, toast: (text) => nudges.push(text) }, "state.js": { state, save: noop, STAT_JA, hasAffinity, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
-  "stats.js": { setStoryAffinityCap() {}, affinityGateWaiting: () => false, gainStat: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
+  "stats.js": { setStoryAffinityCap() {}, affinityGateWaiting: () => false, gainStat: noop, earnStat: noop, paidAction: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
 
   "audio.js": { SE: { phone: noop, phoneReceive: noop, phoneSend: noop, select: noop, click: noop, cancel: noop } },
   "engine.js": { isPlaying: () => false, hooks: { interpolate: (t) => t.replace("{daysLeft}", String(14 - state.day)) }, play: async (...a) => { plays.push(a); await playHook(...a); return playResult(...a); } },
@@ -367,8 +367,8 @@ for (const rumor of rumors) {
   for (let index = 0; index < rumor.replies.length; index++) {
     const reply = rumor.replies[index]; assert(reply.text && reply.response); assert([0, 1, 2].includes(reply.affinity));
     reset(); state.contacts.push(rumor.sender); state.inbox.push(item(rumor)); session = phone.openLime({ sender: rumor.sender }); await settle();
-    assert.equal(gains.length, 0); assert.equal(statGains.length, 1); assert.equal(statGains[0].insight, 2);
-    await click(`reply-${index}`); await closeThread(session); assert.equal(gains.length, 1); assert.equal(gains[0].pts, reply.affinity); assert.equal(statGains.length, 1);
+    assert.equal(gains.length, 0); assert.equal(statGains.length, 0);
+    await click(`reply-${index}`); await closeThread(session); assert.equal(gains.length, 1); assert.equal(gains[0].pts, reply.affinity); assert.equal(statGains.length, 0);
     assert(state.inbox[0].log.some((entry) => entry.me && entry.text === reply.text)); assert(state.inbox[0].log.some((entry) => !entry.me && entry.text === reply.response));
   }
 }

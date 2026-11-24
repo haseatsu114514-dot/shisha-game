@@ -222,6 +222,7 @@ eq([split.current.map((h) => h.text), split.past.map((h) => h.text)], [["今の�
 // 章が変わって次にスロットが回る行動で選び直すと、その前の示唆は前の設定になる
 s.reel.settingSince = { chapter: 1, day: 3 };
 Object.assign(s, { chapter: 2, day: 15 });
+s.flags._ch2_day1 = { startDay: 15 };
 const before = s.reel.settingDraws;
 const weeklyResults = plain(s.reel.pending);
 reel.onAction({ spent: 10 });
@@ -234,6 +235,9 @@ eq(reel.splitHints({ note: { lastHint: "もっと旧" } }).past.map((h) => h.tex
 // ノートの表示用まとめも同じ分け方
 const summary = reel.noteSummary(s.reel);
 assert.equal(summary.currentHints.length, 0);
+eq(summary.settingSince, { chapter: 2, day: 15, chapterDay: 1 }, "設定の間隔は通算日、表示は章内日で記録する");
+reel.rememberHint("第2章の示唆");
+assert.equal(reel.splitHints(s.reel).current[0].chapterDay, 1);
 // 設定期間別の観測: 数値順で最新3件まで。現在の記録が無ければ過去から補わない。
 const observed = {
   settingDraws: 12,

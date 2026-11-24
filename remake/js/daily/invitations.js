@@ -1,4 +1,4 @@
-// LIMEで示した参加費を、実際に向かう直前に支払う。
+// LIMEで示した参加費を、約束の場面を読み終えてから支払う。
 export const STORE_INVITE_COST = 3000;
 const STORE_EVENTS = new Set(["interaction_naru_night_01", "interaction_minto_noon_01", "outing_ageha_1", "outing_tsumugi_1"]);
 export function invitationCost(event) {

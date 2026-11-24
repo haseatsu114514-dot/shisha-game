@@ -12,6 +12,7 @@ import { el, sleep } from "../core/util.js";
 import { layers, gainCard, toast } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, save, STAT_KEYS, STAT_JA } from "../core/state.js";
+import { chapterDay } from "../core/chapter-clock.js";
 import { gainStat, step } from "../core/stats.js";
 import { DB, faceIconUrl } from "../core/data.js";
 import { SE } from "../core/audio.js";
@@ -72,7 +73,18 @@ function ensureSetting(reel) {
 // 設定の有効期間: 7日たつか章が変わると自動で変わる。観音堂訪問では変えない（2026-10-31 オーナー指示）。
 // 知っている人だけがずっと有利にならないよう、良い設定も長くは続かない。
 const SETTING_DAYS = 7;
-const today = () => ({ chapter: state?.chapter || 1, day: state?.day || 1 });
+const today = () => ({ chapter: state?.chapter || 1, day: state?.day || 1, chapterDay: chapterDay(state) });
+
+function displayDay(record) {
+  if (record.chapterDay != null) return record.chapterDay;
+  if (!Number.isInteger(record.day)) return record.day;
+  // 旧ノートの準備期間は、出発済みでも当時の章内日を復元する。
+  const prepKey = `_ch${record.chapter}_prep`;
+  const flags = state?.flags;
+  const prep = flags?.[prepKey];
+  const prepDay = prep && record.day >= prep.startDay && record.day < prep.startDay + prep.days;
+  return chapterDay({ ...record, flags: prepDay ? { ...flags, [prepKey]: { ...prep, departed: false } } : flags });
+}
 function settingExpired(reel) {
   const since = reel.settingSince;
   if (!since) return false;
@@ -468,10 +480,10 @@ function recordNote(reel, r) {
   if (kind === "REG") stats.reg += 1;
   if (r.role === "bell") stats.bell += 1;
   if (kind) {
-    (note.history ||= []).unshift({ kind, games: r.games, ren: !!r.ren, chapter: state.chapter, day: state.day });
+    (note.history ||= []).unshift({ kind, games: r.games, ren: !!r.ren, ...today() });
     note.history.length = Math.min(note.history.length, HISTORY_MAX);
   }
-  if (r.role === "freeze") (note.freezeLog ||= []).push({ chapter: state.chapter, day: state.day, spin: r.n + 1 });
+  if (r.role === "freeze") (note.freezeLog ||= []).push({ ...today(), spin: r.n + 1 });
 }
 
 // 設定示唆（パッキーの一言）。実機のように「示唆の種類」ごとに台詞を分ける。
@@ -502,7 +514,7 @@ export function rememberHint(hint) {
   ensureSetting(reel);
   const note = reel.note || (reel.note = {});
   note.lastHint = hint;
-  (note.hints ||= []).unshift({ text: hint, chapter: state.chapter, day: state.day, period: reel.settingDraws });
+  (note.hints ||= []).unshift({ text: hint, ...today(), period: reel.settingDraws });
   note.hints.length = Math.min(note.hints.length, HINT_KEEP);
 }
 
@@ -857,7 +869,7 @@ async function afterStop(r, fast, pres = null) {
       return peka(r, fast, false, "チェリーで光った！？");
     case "bell":
       SE.reelWin();
-      if (!fast) { bubble("パインッ！", 800); setTimeout(() => bubble(benefitLine(r), 1500), 850); }
+      if (!fast) { bubble("ベル！", 800); setTimeout(() => bubble(benefitLine(r), 1500), 850); }
       announce(r);
       await sleep(fast ? 60 : 800);
       return;
@@ -1220,11 +1232,11 @@ export function openNote() {
     const history = s.history.length
       ? el("ol.rn-history", s.history.map((h, i) => el(`li.k-${h.kind.toLowerCase()}`, [
         el("b", [h.kind, h.ren ? el("span.rn-ren", { text: `×${renCount(i)}`, title: `${renCount(i)}連` }) : null]),
-        el("span", { text: `${h.games}G` }), el("small", { text: `第${h.chapter}章 DAY${h.day}` }),
+        el("span", { text: `${h.games}G` }), el("small", { text: `第${h.chapter}章 DAY${displayDay(h)}` }),
       ])))
       : el("p.rn-empty", { text: "まだ当たりはないよ。光るのを待とう！" });
     const hall = s.freezeLog.length
-      ? el("ul.rn-hall", s.freezeLog.map((f) => el("li", { text: `FREEZE　第${f.chapter}章 DAY${f.day}・${f.spin}回転目` })))
+      ? el("ul.rn-hall", s.freezeLog.map((f) => el("li", { text: `FREEZE　第${f.chapter}章 DAY${displayDay(f)}・${f.spin}回転目` })))
       : el("p.rn-empty.rn-secret", { text: "？？？　まだ見ぬ伝説" });
     // 1ページ目は記録だけを1段で（縦スクロール）。設定の説明とヒントは遊び方の詳しい説明へ置く
     const panel = el("div.rn-panel", [
@@ -1251,12 +1263,12 @@ export function openNote() {
         el("p.rn-setting", { text: `今の設定は？？？。${s.settingChanges ? `これまでに${s.settingChanges}回変わったよ。` : ""}前回の抽選から7日たつか、章が変わると選び直されるよ` }),
         s.periodStats.current ? el("p.rn-setting", { text: periodLine("今の設定のあいだ", s.periodStats.current) }) : null,
         s.periodStats.past.length ? el("p.rn-setting", [el("small", { text: periodLine("前の設定のあいだ", s.periodStats.past[0]) })]) : null,
-        el("h4.rn-hint-head", { text: s.settingSince ? `今の設定のヒント（第${s.settingSince.chapter}章 DAY${s.settingSince.day}から）` : "今の設定のヒント" }),
+        el("h4.rn-hint-head", { text: s.settingSince ? `今の設定のヒント（第${s.settingSince.chapter}章 DAY${displayDay(s.settingSince)}から）` : "今の設定のヒント" }),
         s.currentHints.length
-          ? el("ul.rn-hints", s.currentHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` })))
+          ? el("ul.rn-hints", s.currentHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${displayDay(h)}「${h.text}」` })))
           : el("p.rn-empty", { text: "まだないよ。設定が変わったときや、ボーナスのあとに出ることがあるよ" }),
         s.pastHints.length ? el("h4.rn-hint-head.past", { text: "前の設定のヒント（今の設定とは関係ないよ）" }) : null,
-        s.pastHints.length ? el("ul.rn-hints.past", s.pastHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` }))) : null,
+        s.pastHints.length ? el("ul.rn-hints.past", s.pastHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${displayDay(h)}「${h.text}」` }))) : null,
         el("p.rn-empty", { text: "偶数・奇数や高い・低いのヒントは確定ではないよ" }),
       ]),
       el("span.ri-next", { text: "▼ タップで閉じる" }),

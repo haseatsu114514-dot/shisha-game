@@ -206,6 +206,15 @@ assert.deepEqual(claim().map((x) => x.label), ["くじのラストワン賞"], "
 core.state.chapter += 1;
 assert.equal(claim().some((x) => x.label === "くじのラストワン賞"), false, "章が変わっても、同じ箱では二度もらえない");
 core.state.chapter -= 1;
+core.state.cycle = 2;
+assert.deepEqual(claim(), [], "持ち越した空箱は次の周回でも二重に受け取れない");
+core.state.kuji.g500 = { order: [0, 0], drawn: 2, emptyDay: 9, emptyCycle: 2 };
+assert.deepEqual(claim().map((x) => x.label), ["くじのラストワン賞"], "新しい周回で同じ日に引き切った箱も受け取れる");
+assert.deepEqual(claim(), [], "周回内では一度だけ受け取る");
+g.rewards["kuji:g500:2:12"] = true;
+core.state.kuji.g500 = { order: [0, 0], drawn: 2, emptyDay: 12 };
+assert.deepEqual(claim(), [], "周回未記録の旧空箱も二重に受け取れない");
+core.state.cycle = 1;
 core.state.flags._axe_bar_records = { classic: { plays: 9, best: { total: 85, maximum: 100 } } };
 assert.deepEqual(claim(), [], "斧投げのご褒美は Aランクの1回だけ");
 delete core.state.flags._axe_bar_records; core.state.trpg.cleared = {}; core.state.kuji = {};

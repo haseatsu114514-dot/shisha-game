@@ -292,26 +292,27 @@ export async function playDate(id) {
   const sc = (L().dates || {})[id];
   if (!sc) {
     console.error(`[romance] Missing date scene for ${id}`);
-    return;
+    return false;
   }
   const owner = state, day = state.day;
   await prepareLoveAffinity([id]);
-  if (state !== owner || state.day !== day || !isLover(id) || isPlaying()) return;
+  if (state !== owner || state.day !== day || !isLover(id) || isPlaying()) return false;
   const venue = dateVenue(id);
-  state.lastDate[id] = state.day;
   const restorePrivate = privateBondScope();
   try {
     const result = await play(dateScene(id, venue), { growthScene: true });
-    if (state !== owner) return;
-    if (result && !result.cancelled) advanceDateTopic(id); // 読了時に次の話題へ進める（#4030）
+    if (state !== owner || !result || result.cancelled) return false;
+    state.lastDate[id] = state.day;
+    advanceDateTopic(id); // 読了時に次の話題へ進める（#4030）
     gainAffinity(id, 10);
   } finally { restorePrivate(); }
   // プチ修羅場（恋人が2人以上・一度きり）: 着信・気づきかけ・帰り道の誤爆。デートの場所のまま読み、報酬は無い
   await petitAfterDate(id);
-  if (state !== owner) return;
+  if (state !== owner) return false;
   addStamina(-10);
   save();
   await playLoverMilestone(id);
+  return state === owner;
 }
 
 // ---------------------------------------------------------------- 恋人からの LIME
