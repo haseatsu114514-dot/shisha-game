@@ -8664,12 +8664,10 @@ body:not(:root) .map .spot-pin.pin-station { width: auto; min-width: 112px; }
 .bench-audience[data-voice="inner"] .audience-note { font-size: 16px; max-width: 232px; word-break: normal; }
 
 /* TH83〜90（2026-10-10）: 温度計の現在地の矢印・白線・危険帯、状態の文字色、右ウインドウの煙。 */
-.thermo-pointer::before { content: ""; position: absolute; inset: -7px; z-index: -1;
-  background:
-    radial-gradient(ellipse 19px 12px at 49% 50%, var(--pointer-glow), transparent),
-    radial-gradient(ellipse 13px 12px at 68% 35%, var(--pointer-glow), transparent),
-    radial-gradient(ellipse 13px 12px at 68% 65%, var(--pointer-glow), transparent);
-  opacity: .52; }
+/* 光は box-shadow で描く。はみ出す擬似要素（inset: -7px）は温度計の箱の外まで広がり、文字や札の収まり判定を壊す（craft-layout-703）。
+   影は配置の大きさに数えられない。静止した影なので、#4210 の軽量化（filter を使わない）はそのまま。 */
+.thermo-pointer::before { content: ""; position: absolute; inset: 22% 8% 22% 18%; z-index: -1; border-radius: 50%;
+  box-shadow: 0 0 9px 5px var(--pointer-glow); opacity: .52; }
 .thermo-pointer svg { display: block; width: 100%; height: 100%; fill: var(--pointer-fill, #fff); }
 .thermo { --pointer-fill: #fff; --pointer-glow: #ffffffaa; }
 .thermo.cool { --pointer-fill: #fff2c8; --pointer-glow: #ffe2a288; }
