@@ -3959,6 +3959,9 @@ body[data-scene-mood="dread"] #bg::after { content: ""; position: absolute; inse
   text-shadow: 0 1px 2px #000;
 }
 .vn-inner[hidden] { display: none; }
+/* スキップ加速中は本文が短い間隔で全文差し替えになる。iOS Safari が一行目の描画を
+   取りこぼさないよう、本文と心の声を独立した描画レイヤーにする（2026-11-24 保険）。 */
+.vn-text, .vn-inner { transform: translateZ(0); }
 .tx-imp { color: var(--gold-hi); font-weight: 700; text-shadow: 0 0 16px rgba(255, 210, 120, 0.6); }
 .tx-warn { color: #ff8f8f; font-weight: 700; }
 .tx-hint { color: #9fe3ff; }
