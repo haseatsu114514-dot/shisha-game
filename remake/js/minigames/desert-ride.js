@@ -517,7 +517,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       tierRow.querySelector(`[data-tier="${t}"]`)?.focus();
       if (changed) { try { onTier?.(t); } catch (error) { console.error(error); } }
     }
-    /** 記録の後に呼び出し側が返した段の様子（開いた段・クリア済み）を受け取る。閉じることはしない。 */
+    /** 記録の後に呼び出し側が返した段の様子（開いた段・クリア済み）と、新しい対戦相手を受け取る。 */
     function takeTierReply(reply) {
       if (!reply || typeof reply !== "object") return null;
       if (Array.isArray(reply.tiers)) {
@@ -526,6 +526,13 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         openTiers = next;
       }
       if (Array.isArray(reply.cleared)) for (const t of reply.cleared) if (TIERS.includes(t)) clearedTiers.add(t);
+      if (Array.isArray(reply.rivals)) {
+        const added = ["noor", "naru"].filter(who => reply.rivals.includes(who) && !rivals.includes(who));
+        if (added.length) {
+          rivals = [...rivals, ...added];
+          void loadDesertArt({ rivals: added }).whenReady().catch(() => {});
+        }
+      }
       return typeof reply.note === "string" && reply.note ? reply.note : null;
     }
     function pickRunCourse(tier) {
@@ -946,6 +953,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       } else if (tut.step === "trickLetGo") {
         if (events.some(e => e.kind === "trick")) { tut.step = "boostWait"; caption.textContent = TUTORIAL.trickDone; }
         else if (events.some(e => e.kind === "fall" && e.reason === "spin")) { tut.step = "boostWait"; caption.textContent = TUTORIAL.trickFall; }
+        else if (game.z > 470) tut.step = "boostWait";
       } else if (tut.step === "boostWait") {
         if (game.z > 475 && game.air <= 0) { tut.step = "boost"; chargeBoost(game, 1); say("boost"); }
       } else if (tut.step === "boost" || tut.step === "boostGo") {

@@ -49,7 +49,6 @@ export function declarationCue(prevCalled, nextCalled) {
   return { label: "KILL SHOT 宣言", target: nextCalled, place: killPlaces[nextCalled] };
 }
 
-const redCenters = CLUSTERS.map(c => ({ x: c.x, y: c.y, id: c.id }));
 function direction(landing, targets) {
   const nearest = targets.reduce((best, target) =>
     Math.hypot(target.x - landing.x, target.y - landing.y) < Math.hypot(best.x - landing.x, best.y - landing.y) ? target : best);
@@ -58,7 +57,7 @@ function direction(landing, targets) {
 }
 
 /** Copy follows the resolved outcome; it never changes scoring or the next throw. */
-export function shotFeedback(shot, { inputMode = "gauges" } = {}) {
+export function shotFeedback(shot, { inputMode = "gauges", closed } = {}) {
   // 弾いて投げる操作では % はゲージの語彙なので、動作の言葉で言う（指摘4）
   const advice = inputMode === "tap-pull" ? (shot.dropReason === "weak" ? "次は、ひと息で今より少し速く弾こう。" : "次は、もうひと呼吸ゆっくり弾こう。")
     : "次は緑の54〜70%で放そう。";
@@ -77,9 +76,11 @@ export function shotFeedback(shot, { inputMode = "gauges" } = {}) {
     tip: "この半分で使った5の円に触れて0点。開いている赤い中心へ回ろう。" };
   const hit = shot.outcome === "hit";
   const focus = shot.sway?.fatigue >= .7 && !shot.sway.focused ? "構えが長いときは「息を整える」も。" : "";
-  const closedNote = shot.zone?.kind === "ring" && shot.score >= 3 && shot.closedAdjust ? "閉じた赤に触れたのでリングの点。" : "";
+  const closedNote = !shot.closedAdjust ? "" : shot.zone?.kind === "five" ? "閉じた赤に触れたので5の円の点。" : "閉じた円に触れたのでリングの点。";
+  const openReds = CLUSTERS.filter(c => !closed?.cluster.has(c.id) && !closed?.bull.has(c.id));
+  const toward = openReds.length ? "次は着地点から" + direction(shot.landing, openReds) + "の赤い中心を狙おう。" : "";
   return { label: hit ? "ON TARGET" : "MISS", tone: hit ? "hit" : "miss",
-    tip: (!shot.stuck ? "板の外。" : closedNote) + "次は着地点から" + direction(shot.landing, redCenters) + "の赤い中心を狙おう。" + focus };
+    tip: (!shot.stuck ? "板の外。" : closedNote) + toward + focus };
 }
 
 /** Average is numeric, rounded to two decimals like a league stat sheet. Streak is the best run of 6+ points. */

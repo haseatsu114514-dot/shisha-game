@@ -187,7 +187,7 @@ export function scorePuff(p, h, q, fl = {}) {
   if (z === "offHi" && (sd.includes("cool_mint") || hasTool(p, "ice_hose"))) z = "band";
   if ((z === "offLo" || z === "offHi") && p.hmd === "lotus" && !p.usedLotus) { z = "band"; usedLotus = true; }
   if (z === "offLo" || z === "offHi") z = "off";
-  const ng = f.id === "vanilla" ? sd.includes("mint") : f.id === "mint" && sd.includes("vanilla");
+  const ng = p.bowl.vanilla >= 2 && p.bowl.mint >= 2;
   const mix = sd.length && !ng ? 1 : 0;
   const pair = mix && (sd.some((k) => FLAVOR[k].kind === f.pair) || sd.includes("spring_water")) ? 1 : 0;
   const rich = (p.bowlId === "clay" && kinds > 1) ? false : tot >= (sd.includes("black_tea") ? 8 : RULES.rich);
@@ -729,7 +729,7 @@ function resolveJudge(G) {
     let lost = null, lostN = 0;
     if (s.zone === "scorch") {
       p.scorchCount++;
-      const safe = p.person === "minto" && Object.keys(p.bowl).some((k) => FLAVOR[k].kind === "cool" && p.bowl[k] >= 2);
+      const safe = p.person === "minto" && Object.entries(p.bowl).reduce((sum, [id, n]) => sum + (FLAVOR[id].kind === "cool" ? n : 0), 0) >= 2;
       if (!safe && p.main) { lost = p.main; lostN = Math.min(G.R.scorchLoss, p.bowl[p.main]); p.bowl[p.main] -= lostN; fixMain(p); }
     }
     res[i] = { h, zone: s.zone, pts, parts, lost, lostN, rank: RANK[s.zone], duel: pf.duel, imp, bonus, worn: [] };
