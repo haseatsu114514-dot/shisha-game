@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { VISIT_CHAINS, VISIT_CHAINS_FLAG, VISIT_CHAINS_FILE, VISIT_CHAIN_DIALOGUE_IDS, chainRecord, chainFinished, nextChainStage,
-  chainStageAt, recordChainStage, chainCondition } from "../js/chapters/visit-chains.js";
+  chainStageAt, recordChainStage, chainCondition, recordChapterFiveTalk } from "../js/chapters/visit-chains.js";
 import { classifyFlag, flagVerdict } from "../js/core/carry.js";
 
 const readJson = rel => JSON.parse(readFileSync(new URL(rel, import.meta.url), "utf8"));
@@ -218,13 +218,27 @@ for (const [chainId, chain] of Object.entries(VISIT_CHAINS)) {
   const pickLists = chain.stages.map(stage => stage.picks.length ? stage.picks.map((_, i) => i) : [null]);
   const factList = chainId === "ch4_second_bowl" ? ["good", "rough", "failed", "none"] : [undefined];
   for (const fact of factList) for (const indexes of combos(pickLists)) {
-    const value = save({ ...structuredClone(opened[chainId]), day: 60 });
+    const value = save(chain.afterTalk ? { chapter: 5, day: 60, flags: { _ch5: { part: "free", read: {} } } }
+      : { ...structuredClone(opened[chainId]), day: 60 });
+    if (chain.afterTalk) {
+      assert.equal(nextChainStage(value, chainId), null, `${chainId}: G3 の会話を読む前`);
+      recordChapterFiveTalk(value, chain.afterTalk);
+      assert.deepEqual(value.flags._ch5.read, { [chain.afterTalk]: true });
+      const scheduled = structuredClone(value);
+      scheduled.flags._ch5.part = "scheduled";
+      assert.equal(nextChainStage(scheduled, chainId), null, `${chainId}: 日程決定後に初段は出ない`);
+    }
     const read = [];
     chain.stages.forEach((stage, i) => {
       const due = chainStageAt(value, stage.place);
       assert.equal(due?.stage.id, stage.id, `${chainId} ${indexes}: ${stage.id} が出ない`);
       read.push(readStage(value, chainId, stage, () => indexes[i] ?? 0, fact ? { inn_trial: fact } : {}));
       value.day += 1;
+      if (chain.chapter === 5 && i === 0) {
+        const scheduled = structuredClone(value);
+        scheduled.flags._ch5_match_scheduled = true;
+        assert.equal(nextChainStage(scheduled, chainId), null, `${chainId}: 日程決定後に次の段は出ない`);
+      }
     });
     assert(chainFinished(value, chainId));
     const record = chainRecord(value, chainId);

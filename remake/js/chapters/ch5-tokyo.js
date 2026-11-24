@@ -114,7 +114,8 @@ const vanPin = (entry, value) => {
 export const chapterFiveTokyoPin = (value = state) => vanPin(TO_TOKYO_SPOT, value);
 // 通いの続き（chapters/visit-chains.js）の段が読める店は「！」。無い時は付けず、いつもの判定（締めくくり等・daily/spots.js）に任せる。
 // 代金（rivalSpot の cost）は読み出しのたびに決まるので、写しも同じ getter を持たせる。
-const chainPin = (entry, value) => chainStageAt(value, entry.id)
+const chainPin = (entry, value) => (chainStageAt(value, entry.id)
+  || entry.shift && value.met?.mashiro && chainStageAt(value, MASHIRO_PLACE))
   ? Object.freeze(Object.defineProperties({}, { ...Object.getOwnPropertyDescriptors(entry), hasNew: { value: () => true, enumerable: true } }))
   : entry;
 /** 東京の地図に出す今の行き先（帰りの配送便は昼だけ）。 */
@@ -306,11 +307,17 @@ export async function performTokyoSpot(spot, { staminaGuard, holdSaveUntilAction
         { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
       if (!pick || state !== owner) return { used: false, exerted: false };
       if (pick === "talk") {
+        // G4 の追加: 通いの続き（visit-chains）の段が来ていればそちらを先に読む。段の間は小会話の巡回を進めない。
+        const chain = await chainVisitDue(MASHIRO_PLACE, owner);
+        if (state !== owner) return { used: false, exerted: false };
         const count = owner.flags[TALKS_FLAG]?.[MASHIRO_PLACE] || 0;
+        const readTalk = id => read(id, spot.preview, owner);
         const scene = MASHIRO_TALKS[count % MASHIRO_TALKS.length];
-        if (!await read(scene, spot.preview, owner)) return { used: false, exerted: false };
-        (owner.flags[TALKS_FLAG] ||= {})[MASHIRO_PLACE] = count + 1;
-        recordChapterFiveTalk(owner, scene);
+        if (!await (chain ? playChainStage(chain, readTalk) : readTalk(scene))) return { used: false, exerted: false };
+        if (!chain) {
+          (owner.flags[TALKS_FLAG] ||= {})[MASHIRO_PLACE] = count + 1;
+          recordChapterFiveTalk(owner, scene);
+        }
         return { used: true, exerted: false };
       }
     }

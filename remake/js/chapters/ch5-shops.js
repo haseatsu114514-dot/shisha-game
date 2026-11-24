@@ -23,6 +23,7 @@ import { consultLessons } from "../core/growth.js";
 import { CH5_FIRST_TALKS, chapterFiveFirstTalkDue, chapterFiveFirstTalkSeenFlag } from "./ch5-first-talks.js";
 import { chapterFiveTalkIds } from "./ch5-talks.js";
 import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
+import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
 import { recordChapterFiveTalk } from "./visit-chains.js";
 
 const TALKS_FLAG = "_ch5_shop_talks"; // 小会話の巡回の回数（店ごと）
@@ -161,6 +162,8 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
     try { await loadBondAfterScenes(DB); } catch { after = null; }
     if (state !== owner) return unused;
   }
+  const chain = !entry.firstTalk && !extra && !after ? await chainVisitDue(entry.id, owner) : null;
+  if (state !== owner) return unused;
   const scene = entry.firstTalk ? entry.firstTalk.scene : extra || after?.scene || entry.talks[(talks[entry.id] || 0) % entry.talks.length];
   if (entry.bgUrl) await setBg(entry.bgUrl);
   else {
@@ -168,18 +171,18 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
     await setBg(url, { tint });
   }
   if (state !== owner) return unused;
-  if (entry.regular && !entry.firstTalk && !extra && !after) {
+  if (entry.regular && !entry.firstTalk && !extra && !after && !chain) {
     if (entry.talkWith === "adam") playBgm("bgm_rival_shop");
     const welcome = `venue_${entry.talkWith}_${timeOfDay()}`;
     if (DB.dialogues[welcome]?.lines?.length && !await readShopScene(owner, welcome)) return unused;
   }
-  if (!await readShopScene(owner, scene)) return unused;
+  if (!await readShopScene(owner, scene, chain)) return unused;
   if (entry.cost) addMoney(-entry.cost);
   addStamina(entry.stamina || -16);
   if (entry.regular) recordRegularVisit(entry);
   if (extra) state.flags[extraSeenFlag(extra)] = true; // 通いの小会話の巡回は進めない（次はいつもの続きから）
   else if (after) markBondAfterRead(state, entry.talkWith, after); // 同じく、巡回は進めない
-  else if (!entry.firstTalk) recordShopTalk(owner, entry.id, scene, talks[entry.id] || 0);
+  else if (!entry.firstTalk && !chain) recordShopTalk(owner, entry.id, scene, talks[entry.id] || 0);
   if (entry.talkWith) { gainAffinity(entry.talkWith, entry.affinity || 5); markMet(entry.talkWith); }
   if (entry.stat) earnStat(entry.stat, 4);
   // 心得の盤の授業（SPEC 2.6・SBD61）: 通い店で会った人に、灯した授業があれば相談する（なる・みんと・サメちゃん・あげは。
@@ -188,9 +191,12 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
   return { used: true, exerted: true };
 }
 
-async function readShopScene(owner, scene) {
-  const result = await play(scene);
-  return state === owner && !!result && !result.cancelled;
+async function readShopScene(owner, scene, chain) {
+  const read = async id => {
+    const result = await play(id);
+    return state === owner && !!result && !result.cancelled;
+  };
+  return chain ? playChainStage(chain, read) : read(scene);
 }
 
 function recordShopTalk(owner, place, scene, count) {
@@ -217,15 +223,18 @@ export async function performChapterFiveTonariTalk(id) {
   const topics = chapterFiveTalkIds(id);
   const count = owner.flags[TALKS_FLAG]?.[id] || 0;
   const scene = topics[count % topics.length];
-  try { await loadScenes("ch5_shops", topics); } catch {
-    toast("会話を読み込めませんでした。地図からもう一度選べます");
-    return unused;
+  const chain = await chainVisitDue(id, owner);
+  if (!chain) {
+    try { await loadScenes("ch5_shops", topics); } catch {
+      toast("会話を読み込めませんでした。地図からもう一度選べます");
+      return unused;
+    }
   }
   if (state !== owner) return unused;
   const { url, tint } = sceneBg("bg_tonari_inside", timeOfDay());
   await setBg(url, { tint });
   if (state !== owner) return unused;
-  if (!await readShopScene(owner, scene)) return unused;
-  recordShopTalk(owner, id, scene, count);
+  if (!await readShopScene(owner, scene, chain)) return unused;
+  if (!chain) recordShopTalk(owner, id, scene, count);
   return { used: true, exerted: false };
 }
