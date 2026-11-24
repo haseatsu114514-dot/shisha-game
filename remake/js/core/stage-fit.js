@@ -54,14 +54,90 @@ export function initStageFit(stage, region = null) {
 // 背景の差し替えが確定した所で同じ絵へ替える。ぼかし＋減光なので、ステージ側の
 // クロスフェードと厳密に同期しなくても境目は見えない。setBg（core/ui.js）から呼ぶ。
 let backdropUrl = null;
+let backdropTimer = null;
+let backdropRevision = 0;
+let backdropRaster;
+
+function paintBackdrop(bd, raster, image = null) {
+  const { canvas, ctx, source, sourceCtx } = raster;
+  if (image) {
+    // リサイズや色調変更には、元画像の代わりに小さな写しを再利用する。
+    const shrink = Math.min(1, 640 / Math.max(image.naturalWidth, image.naturalHeight));
+    source.width = Math.max(1, Math.round(image.naturalWidth * shrink));
+    source.height = Math.max(1, Math.round(image.naturalHeight * shrink));
+    sourceCtx.drawImage(image, 0, 0, source.width, source.height);
+    canvas.dataset.source = image.src;
+  } else if (!canvas.dataset.source) return;
+
+  const width = Math.max(1, bd.clientWidth), height = Math.max(1, bd.clientHeight);
+  const filter = getComputedStyle(bd).getPropertyValue("--backdrop-filter").trim();
+  if (!image && canvas.width === width && canvas.height === height && raster.filter === filter) return;
+  canvas.width = width;
+  canvas.height = height;
+  // center / cover と同じ切り抜きを、小さな描画面の中でぼかしてから拡大する。
+  const scale = Math.max(width / source.width, height / source.height);
+  const sw = width / scale, sh = height / scale;
+  ctx.filter = filter;
+  ctx.drawImage(source, (source.width - sw) / 2, (source.height - sh) / 2, sw, sh, 0, 0, width, height);
+  raster.filter = filter;
+}
+
+function createBackdropRaster(bd) {
+  if (typeof ResizeObserver !== "function" || typeof Image !== "function") return null;
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx || !("filter" in ctx)) return null;
+  const source = document.createElement("canvas");
+  const sourceCtx = source.getContext("2d");
+  if (!sourceCtx) return null;
+  const raster = { canvas, ctx, source, sourceCtx, filter: "" };
+  new ResizeObserver(() => paintBackdrop(bd, raster)).observe(bd);
+  return raster;
+}
+
 export function syncBackdrop(url, tint, instant) {
   const bd = typeof document !== "undefined" && typeof document.getElementById === "function" ? document.getElementById("backdrop") : null;
   if (!bd) return;
-  bd.dataset.tint = tint || "";
+  const tone = tint || "";
+  if (bd.dataset.tint !== tone) {
+    bd.dataset.tint = tone;
+    if (backdropRaster) paintBackdrop(bd, backdropRaster);
+  }
   if (backdropUrl === (url || "")) return;
   backdropUrl = url || "";
-  const image = url ? `url("${url}")` : "none";
-  if (instant) { bd.style.backgroundImage = image; return; }
+  clearTimeout(backdropTimer);
+  const revision = ++backdropRevision;
+  if (backdropRaster === undefined && url) backdropRaster = createBackdropRaster(bd);
+  const raster = backdropRaster;
+  const commit = (image) => {
+    if (revision !== backdropRevision) return;
+    if (image) {
+      paintBackdrop(bd, raster, image);
+      bd.style.backgroundImage = "none";
+      if (!raster.canvas.isConnected) bd.append(raster.canvas);
+      bd.classList.add("backdrop-raster");
+    } else {
+      if (raster?.canvas.isConnected) {
+        delete raster.canvas.dataset.source;
+        raster.source.width = 0;
+        raster.canvas.width = 0;
+        raster.canvas.remove();
+        bd.classList.remove("backdrop-raster");
+      }
+      bd.style.backgroundImage = url ? `url("${url}")` : "none";
+    }
+    bd.style.opacity = "";
+  };
+  const showImage = () => {
+    backdropTimer = null;
+    if (!url || !raster) { commit(null); return; }
+    const image = new Image();
+    image.src = url;
+    if (image.complete && image.naturalWidth) { commit(image); return; }
+    image.onload = () => commit(image);
+    image.onerror = () => commit(null);
+  };
+  if (instant) { showImage(); return; }
   bd.style.opacity = "0";
-  setTimeout(() => { bd.style.backgroundImage = image; bd.style.opacity = ""; }, 260);
+  backdropTimer = setTimeout(showImage, 260);
 }
