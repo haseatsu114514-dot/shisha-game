@@ -148,7 +148,8 @@ export function storySeen(dialogueId) {
     const at = seq.indexOf(dialogueId);
     if (at >= 0) return storyCount(charId) > at;
   }
-  return false;
+  // 第5章の自由行動・決戦の場面は、ch5-progress.js の既読表で引く（終幕から、つむぎの場面を読んだかを見る。2026-11-24 添削 N9）
+  return state.flags?._ch5?.read?.[dialogueId] === true;
 }
 
 const NIGHT_STORIES = new Set([

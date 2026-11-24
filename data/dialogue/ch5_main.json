@@ -113,9 +113,22 @@
           "text": "炭の置き方はなるさん。待ち方はスティーブさん。記録で、全部たどれます"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "interview_honest",
+          "next_true": "interview_honest_echo",
+          "next_false": "interview_pride_check"
+        },
+        {
           "speaker": "dr_charcoal",
           "face": "serious",
           "text": "君の手も、借りものの集まりです。なら、9000と何が違いますか"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_ch3_names_blacked",
+          "next_true": "names_blacked_echo"
         },
         {
           "speaker": "hajime",
@@ -200,9 +213,57 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "……はい。当日、お願いします"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "sensu"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "千須が帰ったあと、奥でグラスを拭いていたつむぎが、手を止めた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……9000が勝ったら、私みたいな新人は、要らなくなりますか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……分からない。だから、確かめてくる"
         }
       ],
       "branches": {
+        "interview_honest_echo": [
+          {
+            "speaker": "dr_charcoal",
+            "face": "smile",
+            "text": "地元大会の取材でも、君は『全部もらった』と答えていましたね"
+          }
+        ],
+        "interview_pride_check": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "interview_pride",
+            "next_true": "interview_pride_echo"
+          }
+        ],
+        "interview_pride_echo": [
+          {
+            "speaker": "dr_charcoal",
+            "face": "normal",
+            "text": "地元大会で、君は『手応えがあった』と。その手応えも、記録にあります"
+          }
+        ],
+        "names_blacked_echo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一つ目の名前は、東京の夜、ノートで黒く塗った名前だった。"
+          }
+        ],
         "roam_record": [
           {
             "speaker": "hajime",
@@ -678,6 +739,18 @@
           "face": "smile",
           "text": "なら、先にどうぞ。いちばん香るのは、今なので",
           "cue": "second_cup_newcomer"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "なら、先にどうぞ。最初は、ゆっくり吸ってください",
+          "cue": "second_cup_newcomer_tsumugi"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……つむぎの、受け売りだ）",
+          "cue": "second_cup_newcomer_tsumugi"
         }
       ]
     },
@@ -714,6 +787,12 @@
           "text": "あっちも、うまかったよ。今日は、こっちをもう一回"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_title_customer_half",
+          "next_true": "title_customer"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "二台目は、俺への挙手が多かった。一台目の差を返し、合計でも僅かに上回った。"
@@ -735,7 +814,16 @@
           "text": "ありがとうございます。最初の一台、また吸わせてください"
         }
       ],
-      "comment": "成功時のみ。二本の合計で判定する。僅差一勝一敗を理由なく勝利にはしない。採点UIは出さない。"
+      "branches": {
+        "title_customer": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あの日は、ホースを冷ましたまま帰った人だ）"
+          }
+        ]
+      },
+      "comment": "成功時のみ。二本の合計で判定する。僅差一勝一敗を理由なく勝利にはしない。採点UIは出さない。title_customer は第2章で優勝の一台を半分残した客を覚えている保存だけ（STK06・2026-11-24 添削 N2）。"
     },
     {
       "dialogue_id": "ch5_second_cup_defeat",
@@ -1007,9 +1095,19 @@
           "text": "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "客席の端で、つむぎがスケッチブックを胸に抱え直した。"
+        },
+        {
           "speaker": "sensu",
           "face": "normal",
           "text": "……それを、店と呼ぶんだろうな"
+        },
+        {
+          "speaker": "sensu",
+          "face": "serious",
+          "text": "だが、うちの新人の夜には、まだ隣がいない。……そこは、私の宿題だ"
         },
         {
           "speaker": "",
@@ -1061,6 +1159,16 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "……会ってなくても、その人たちの手は、今日の9000の煙にいました"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "normal",
+          "text": "……逢縁くん。君の名前は、逢う縁と書くんですね"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "serious",
+          "text": "記録には、読み方しか入っていなかった"
         },
         {
           "speaker": "dr_charcoal",
