@@ -33,7 +33,14 @@ async function run(page, step) {
   await page.evaluate(step => { QA.run = step === 'mix' ? QA.steps.stepMix(QA.cs)
     : step === 'timer' ? QA.steps.stepSteamTime(QA.cs)
     : step === 'steam' ? QA.steam.runSteamDodge(QA.cs) : QA.pull.runPull(QA.cs); }, step);
-  await test(page, {mix:'mix-ok',timer:'timer-start',steam:'dodge-refresh',pull:'pull-stop'}[step]).waitFor();
+  const ready = test(page, {mix:'mix-ok',timer:'timer-start',steam:'dodge-refresh',pull:'pull-stop'}[step]);
+  // 練習の吸い出しは、操作の前に説明を一度読む（pack16・explainTutorialStep）。出たら閉じてから進む。
+  if (step === 'pull') {
+    const close = page.locator('.bench-guide[open] [data-test="bench-guide-close"]');
+    await close.or(ready).first().waitFor();
+    if (await close.isVisible()) await close.click();
+  }
+  await ready.waitFor();
 }
 async function overlap(page) {
   const result = await page.evaluate(() => {

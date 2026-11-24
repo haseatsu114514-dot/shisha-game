@@ -125,6 +125,14 @@ async function reloadSaved(page, options) {
   await observe(page, options);
 }
 
+// 店の一台（tutorial の作業台）は、調整の前に説明を一度読む（pack16・explainTutorialStep）。読んでから炭を選ぶ。
+async function careReady(page) {
+  const close = page.locator('.bench-guide[open] [data-test="bench-guide-close"]'), coals = page.locator(dt("care-coals"));
+  await close.or(coals).first().waitFor({ timeout: 120000 });
+  if (await close.isVisible()) await close.click();
+  await coals.waitFor({ timeout: 120000 });
+}
+
 const text = (log, id) => log.lines.filter(line => line.id === id).map(line => line.text).join("\n");
 
 await suite("ch4-staff-work", async check => {
@@ -171,7 +179,7 @@ await suite("ch4-staff-work", async check => {
     await setDay(page, 9);
     before = await resources(page);
     await startNight(page, "service");
-    await page.locator(dt("care-coals")).waitFor({ timeout: 120000 });
+    await careReady(page);
     state = await get(page);
     assert.deepEqual(state.flags._ch4.staffWork.service, { choice: spec.question, introRead: true });
     assert.equal(await page.locator(".bench").getAttribute("data-mode"), "tutorial");
@@ -184,7 +192,7 @@ await suite("ch4-staff-work", async check => {
       await reloadSaved(page, { role: spec.role, order: 0 });
       assert.deepEqual((await get(page)).flags._ch4.staffWork.service, { choice: "strength", introRead: true });
       await startNight(page, "service");
-      await page.locator(dt("care-coals")).waitFor({ timeout: 120000 });
+      await careReady(page);
       assert(!(await observed(page)).entries.includes("ch4_staff_order"), "LOAD resumes care without asking the order twice");
     }
     // 炭は実UIで選び、その後の吸いだけ既存の腕前フックで操作する。runCare/採点/結果は差し替えない。
