@@ -3,7 +3,7 @@ import { staffFlavors, staffStock, spendPracticeMix, masteryLabel, mixMasteryPro
 import { el, sleep, clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { toast, modal } from "../core/ui.js";
-import { state } from "../core/state.js";
+import { STARTER_EQUIPMENT, state } from "../core/state.js";
 import { step, earnStat, earnRecipeDiscovery } from "../core/stats.js";
 import { growthFeature, growthLesson, densePackAvailable, settleGrowthPhase, LESSON_TUNING } from "../core/growth-effects.js";
 import { growthEnabled } from "../core/growth-mode.js";
@@ -56,7 +56,7 @@ function chapterFourRegulation() {
 // DAY7の固定練習は仕入れた葉を試す。大会・前日リハーサルの課題は維持する。
 export const regulationFor = (cs) => cs.staffPractice || (cs.mode === "rehearsal" && cs.practiceKind === "midcheck") ? null : state.chapter === 1 && cs.mode === "tournament" && state.flags._legacy_mint_tournament
   ? { flavor: "mint", supply: "mint", min: 2, label: "再開中の旧大会：ミント2g以上" }
-  : state.chapter === 4 && cs.mode === "tournament" ? chapterFourRegulation()
+  : state.chapter === 4 && (cs.mode === "tournament" || cs.mode === "rehearsal") ? chapterFourRegulation()
   : (cs.mode === "tournament" || cs.mode === "rehearsal" ? REGULATION[state.chapter] : null);
 
 // スミさんの手本（チュートリアル中だけ、工程の頭に出す）
@@ -112,6 +112,11 @@ function choose(panel, options, { cols = 2, onPreview } = {}) {
 }
 
 const lessonHint = (cs, id, fallback) => id === "mix" && cs.orderHint ? cs.orderHint : (cs.mode === "tutorial" && LESSON[id]) || fallback;
+const chapterTwoTasteNote = {
+  headline: "苺の輪郭が、つかめない",
+  detail: "ミックスは見えている。でも、舌では確かめられない。手元と温度を頼りに組み立てよう。",
+};
+const tasteDisrupted = (cs) => cs.mode === "tournament" && cs.chapter === 2;
 
 // ---------------------------------------------------------------- 機材
 
@@ -123,6 +128,7 @@ export const isSuyakiBowl = (bowlId) => {
 export async function stepSetup(cs) {
   const trained = applyCoalTraining(cs, state.flags);
   await waitBenchReady(cs, "setup");
+  const keepEquipped = trained ? [] : ["charcoal"];
   const types = [["bowl", "ボウル（ハガル）"], ["hms", "HMD（ヒートマネジメント）"], ["charcoal", "炭（チャコール）"]];
   for (const [type, label] of types) {
     if (type === "charcoal" && !trained) continue;
@@ -132,43 +138,46 @@ export async function stepSetup(cs) {
       ? state.owned.some((id) => DB.equipById[id]?.type === "hms" && !(isSuyakiBowl(e.id) && id === "tanukish_lid"))
       : !(suyaki && e.id === "tanukish_lid");
     const selectable = owned.filter(compatible);
-    // 所持品だけでは制作できない旧セーブでも、未所持機材を補って確定しない。
-    if (!selectable.length) throw new Error(`${label}に対応する所持機材がありません`);
-    if (owned.length <= 1) {
+    if (!selectable.length) {
+      const starter = STARTER_EQUIPMENT.map(id => DB.equipById[id]).find(e => e?.type === type);
+      cs.equip[type] = starter.id;
+      keepEquipped.push(type);
+      toast(`${label}に対応する所持機材がないため、今回は基本セットの「${starter.name}」を使います`, { kind: "warn" });
+    } else if (owned.length <= 1) {
       cs.equip[type] = selectable[0].id;
-      continue;
+    } else {
+      const currentId = state.equip[type];
+      const categoryHint = { bowl: "ハガルは葉を詰める器。使う量と狙う味で選ぼう", hms: "HMDは炭を載せる道具。温度の合わせやすさを見比べよう", charcoal: "同じ3個でも熱の入り方が変わる。狙う温度で選ぼう" };
+      const panel = stepPanel("setup", `機材 ${label}`, lessonHint(cs, "setup", categoryHint[type]));
+      if (!await explainStepOnce(cs, "setup")) return;
+      const preview = el("div", [equipmentPreview(cs)]);
+      panel.append(preview);
+      panel.append(el("button.btn.small.equipment-compare", { type: "button", text: "性能を見比べる", dataset: { test: "setup-compare" },
+        onclick: () => {
+          const list = el("div.equipment-compare-list", owned.map(item => el("section", [el("b", { text: item.name }), equipmentGuide(item, currentId)])));
+          modal({ title: `${label}を見比べる`, className: "flavor-guide-dialog", body: list,
+            options: [{ label: "選択に戻る", primary: true, test: "setup-compare-close" }] });
+          // 一式の性能の表（スマホでは画面に出さない）も、この中で読める（PHN）。一覧の子は機材の数のまま、表は一覧の後ろに添える
+          list.after?.(el("div.equipment-compare-set", [equipmentPreview(cs)]));
+        },
+      }));
+      cs.equip[type] = await choose(panel, owned.map((e) => {
+        const disabled = !compatible(e);
+        const guide = equipmentUse(e);
+        const art = equipmentProductArt(e.id, 96);
+        return {
+          value: e.id, label: e.name, mark: art && el("i.opt-art", { "aria-hidden": "true" }, [art]),
+          desc: guide.use, note: guide.caution || "",
+          disabled, badge: disabled ? (type === "bowl" ? "対応するHMDを持っていません" : "素焼き非対応") : e.id === currentId ? "装備中" : null,
+          auto: !disabled && e.id === currentId,
+        };
+      }), { onPreview: id => preview.replaceChildren(equipmentPreview({ ...cs, equip: { ...cs.equip, [type]: id } }, { candidate: true })) });
     }
-    const currentId = state.equip[type];
-    const categoryHint = { bowl: "ハガルは葉を詰める器。使う量と狙う味で選ぼう", hms: "HMDは炭を載せる道具。温度の合わせやすさを見比べよう", charcoal: "同じ3個でも熱の入り方が変わる。狙う温度で選ぼう" };
-    const panel = stepPanel("setup", `機材 ${label}`, lessonHint(cs, "setup", categoryHint[type]));
-    if (!await explainStepOnce(cs, "setup")) return;
-    const preview = el("div", [equipmentPreview(cs)]);
-    panel.append(preview);
-    panel.append(el("button.btn.small.equipment-compare", { type: "button", text: "性能を見比べる", dataset: { test: "setup-compare" },
-      onclick: () => {
-        const list = el("div.equipment-compare-list", owned.map(item => el("section", [el("b", { text: item.name }), equipmentGuide(item, currentId)])));
-        modal({ title: `${label}を見比べる`, className: "flavor-guide-dialog", body: list,
-          options: [{ label: "選択に戻る", primary: true, test: "setup-compare-close" }] });
-        // 一式の性能の表（スマホでは画面に出さない）も、この中で読める（PHN）。一覧の子は機材の数のまま、表は一覧の後ろに添える
-        list.after?.(el("div.equipment-compare-set", [equipmentPreview(cs)]));
-      },
-    }));
-    cs.equip[type] = await choose(panel, owned.map((e) => {
-      const disabled = !compatible(e);
-      const guide = equipmentUse(e);
-      const art = equipmentProductArt(e.id, 96);
-      return {
-        value: e.id, label: e.name, mark: art && el("i.opt-art", { "aria-hidden": "true" }, [art]),
-        desc: guide.use, note: guide.caution || "",
-        disabled, badge: disabled ? (type === "bowl" ? "対応するHMDを持っていません" : "素焼き非対応") : e.id === currentId ? "装備中" : null,
-        auto: !disabled && e.id === currentId,
-      };
-    }), { onPreview: id => preview.replaceChildren(equipmentPreview({ ...cs, equip: { ...cs.equip, [type]: id } }, { candidate: true })) });
     // ロートスを選んだら、アルミを付けるか選べる（既定はアルミなし／#1107 B2）。
     if (type === "hms" && FOIL_FREE_HMS.includes(cs.equip.hms) && cs.mode !== "tutorial" && cs.mode !== "drill") await chooseFoilOption(cs);
   }
-  // 制作中の制限で旧セーブの装備・所有品を消さない。
-  state.equip = { ...cs.equip, ...(!trained ? { charcoal: state.equip.charcoal } : {}) };
+  // 互換機材がなかった枠の代替は、この制作の中だけで使う。
+  state.equip = { ...cs.equip, ...Object.fromEntries(keepEquipped.map(type => [type, state.equip[type]])) };
   refreshBench();
 }
 
@@ -238,6 +247,7 @@ export function evaluateMix(cs) {
     const [a, b] = ng.flavors;
     const aGrams = flavorFamilyGrams(mix, a), bGrams = flavorFamilyGrams(mix, b);
     if (aGrams <= 0 || bGrams <= 0) continue;
+    if (ng.only_listed_flavors && ids.some(id => !ng.flavors.includes(familyKeyOf(id)))) continue;
     const hit =
       (ng.condition === "both_over_5g" && aGrams > 5 && bGrams > 5) ||
       (ng.condition === "both_over_4g" && aGrams > 4 && bGrams > 4) ||
@@ -323,7 +333,8 @@ export function mixFlavorIds(cs) {
   const consumes = cs.mode === "tournament";
   const supplyId = reg?.supply || null;
   let ids = ownedFlavorIds(); // 店の品＋限定サンプル＋もらった葉（贈られたハガルに添えられたカルダモン等）
-  if (!consumes) ids = [...new Set(["lemon", "mint", "double_apple", state.flags._prep_flavor].filter(Boolean))].filter(id => DB.flavorById[id]);
+  if (!consumes) ids = [...new Set(["lemon", "mint", "double_apple", state.flags._prep_flavor,
+    ...(cs.mode === "rehearsal" ? ids : [])])].filter(id => DB.flavorById[id]);
   if (supplyId && !ids.includes(supplyId)) ids.unshift(supplyId);
   if (cs.staffPractice) ids = [...new Set([...staffFlavors(state), ...ownedFlavorIds()])].filter(id => DB.flavorById[id]);
   if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
@@ -340,7 +351,7 @@ export async function stepMix(cs) {
   const reg = regulationFor(cs);
   const cap = capacity(cs);
   const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + (reg.free ? "。" : "が今日の課題。") : ""}${reg?.exact != null ? `合計${reg.exact}gちょうどで決める` : "合計12g以上で決める"}`));
-  if (!await explainStepOnce(cs, "mix")) return;
+  if (!await explainStepOnce(cs, "mix", "mix", { hasRegulation: !!reg })) return;
   const consumes = cs.mode === "tournament";
   const supplyId = reg?.supply || null;
   const supplied = (id) => !!reg && id === supplyId;
@@ -400,13 +411,10 @@ export async function stepMix(cs) {
     lcd.style.setProperty("--mix-fill", String(clamp(total / cap, 0, 1))); // スマホの量のゲージ（css/craft-phone.css）。表示だけ
     vessel.replaceChildren(mixBowlPreview(cs, total));
     vessel.dataset.filled = String(total > 0);
-    const aroma = cs.mode === "tournament" && cs.chapter === 2
-      ? { headline: "苺の輪郭が、つかめない", detail: "ミックスは見えている。でも、舌では確かめられない。手元と温度を頼りに組み立てよう。", tags: ["味覚の不調"] }
-      : mixTaste(cs.mix);
-    const tasteDisrupted = cs.mode === "tournament" && cs.chapter === 2;
-    if (tasteDisrupted) {
-      taste.replaceChildren(el("b", { text: aroma.headline }), el("p", { text: aroma.detail }));
+    if (tasteDisrupted(cs)) {
+      taste.replaceChildren(el("b", { text: chapterTwoTasteNote.headline }), el("p", { text: chapterTwoTasteNote.detail }));
     } else {
+      const aroma = mixTaste(cs.mix);
       const masteryState = cs.masteryAtStart ? { flavorMastery: cs.masteryAtStart } : state;
       const mastery = mixMasteryProfile(masteryState, cs.mix, DB.flavorById);
       const precision = mastery.progress;
@@ -455,7 +463,7 @@ export async function stepMix(cs) {
       const cur = cs.mix[id] || 0;
       const next = clamp(cur + d, 0, cap);
       if (d > 0 && totalOf() + d > cap) { SE.error(); return; }
-      if (d > 0 && cur + d > limit(id)) { SE.error(); toast(`${f?.short_name || f?.name || id}の${consumes ? "持ち込み" : "手持ち"}は残り${flavorStock(id)}gまで`, { kind: "warn" }); return; }
+      if (d > 0 && cur + d > limit(id)) { SE.error(); toast(`${f?.short_name || f?.name || id}の${consumes ? "持ち込み" : "手持ち"}は残り${limit(id)}gまで`, { kind: "warn" }); return; }
       cs.mix[id] = next;
       // シロップを含む葉を取る操作はほぼ無音。数字を減らすUIだけ短いクリック。
       if (d < 0) SE.click();
@@ -487,9 +495,11 @@ export async function stepMix(cs) {
 
   // 洞察の段: 相性のいい組み合わせのヒント（レシピ帳・聞いた話から）。喫茶こはくで思いついた配合は洞察に関係なく出す
   const insightful = canSeeMixHint(step("insight")) || growthFeature(state, "pairing");
+  const availableFamilies = new Set(ids.map(familyKeyOf));
+  const canMake = (r) => r.flavors.every(f => availableFamilies.has(f));
   const hint = cs.mode !== "tutorial"
-    ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && !state.recipes?.[r.id] && cafeNoted(state, r))
-      || (insightful ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && (state.flags[`_note_${r.hint_note}`] || r.id === "sumi_basic")) : null)
+    ? DB.recipes.find((r) => canMake(r) && !state.recipes?.[r.id] && cafeNoted(state, r))
+      || (insightful ? DB.recipes.find((r) => canMake(r) && (state.flags[`_note_${r.hint_note}`] || r.id === "sumi_basic")) : null)
     : null;
   const recall = cs.mode !== "tutorial" ? growthRecallOptions(state, DB.recipes, DB.flavorById, ids) : [];
   const previous = cs.preparation?.previous;
@@ -539,8 +549,31 @@ export async function stepMix(cs) {
   redraw();
   // 共有の葉ゲージを左の窓へ移し、配合中だけ見えるようにする（蒸らし以降は既存どおり元の位置へ戻る）。
   if (lifePreview) { dockBenchLeaf(cs, lifeHost); setBenchLeafVisible(cs, true); }
-  await new Promise((resolve) => {
-    okBtn.addEventListener("click", () => { SE.select(); resolve(); });
+  const confirmedMix = await new Promise((resolve) => {
+    okBtn.addEventListener("click", async function confirm() {
+      const mix = Object.fromEntries(Object.entries(cs.mix).filter(([, g]) => g > 0));
+      if (state === owner && cs.staffPractice) {
+        cs.practiceSpent = spendPracticeMix(state, mix);
+        if (!cs.practiceSpent) {
+          const availableGrams = id => Math.floor(limit(id));
+          if (ids.reduce((grams, id) => grams + availableGrams(id), 0) < 12) {
+            okBtn.disabled = true;
+            await modal({ title: "練習用の葉が足りません", body: "一台分の葉がなくなったため、練習を中止します。",
+              options: [{ label: "練習を終える", primary: true }] });
+            okBtn.removeEventListener("click", confirm);
+            resolve(null);
+            return;
+          }
+          toast("練習用の葉が足りません。残りの葉に合わせて配合を選び直してください", { kind: "warn" });
+          cs.mix = fitMixToStock(mix, ids, availableGrams, cap);
+          redraw();
+          return;
+        }
+      }
+      okBtn.removeEventListener("click", confirm);
+      SE.select();
+      resolve(mix);
+    });
     if (autoSkill()) {
       // 上手=スミさんの基本形（ダブルアップル＋ミント）／下手=規定ぎりぎりの雑な配合
       if (autoSkill() === "good" || cs.mode === "tutorial") {
@@ -563,9 +596,9 @@ export async function stepMix(cs) {
     }
   });
   if (state !== owner) throw new DOMException("Mix owner changed", "AbortError");
-  cs.mix = Object.fromEntries(Object.entries(cs.mix).filter(([, g]) => g > 0));
+  if (!confirmedMix) return false;
+  cs.mix = confirmedMix;
   if (consumes) for (const [id, g] of Object.entries(cs.mix)) if (!supplied(id)) addFlavorStock(id, -g);
-  if (cs.staffPractice) { cs.practiceSpent = spendPracticeMix(state, cs.mix); if (!cs.practiceSpent) throw new Error("練習用の葉が不足しています"); }
   cs.mixInfo = evaluateMix(cs);
   settleGrowthPhase(state, cs, "mix", cs.mixInfo, cs.mixInfo.golden === "hit");
   if (cs.mode !== "tutorial") rememberGrowthMix(state, cs.mix);
@@ -665,7 +698,7 @@ export async function stepPack(cs) {
     temperaturePreview.dataset.pack = selected.value;
   }
   panel.append(el("div.packing", [
-    el("p.pack-aroma", { dataset: { test: "mix-confirmed-taste" }, text: mixTaste(cs.mix).detail }),
+    el("p.pack-aroma", { dataset: { test: "mix-confirmed-taste" }, text: tasteDisrupted(cs) ? chapterTwoTasteNote.detail : mixTaste(cs.mix).detail }),
     vessel, caption,
     el("div.pack-choices", { role: "group", "aria-label": "詰め方を見比べる" }, choices),
     el("div.pack-footer", [el("small", { text: "葉の量はそのまま。詰め方を見比べよう" }), confirm]),

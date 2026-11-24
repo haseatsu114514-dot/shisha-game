@@ -18,7 +18,7 @@ import { el, sleep, clamp, rand } from "../core/util.js";
 import { setText, setAttr, setData, setFlag } from "../core/dom-write.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE, startBubbling } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, dockBenchLeaf, strainBench, scoreStep, waitBenchReady, craftTest } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, dockBenchLeaf, strainBench, scoreStep, waitBenchReady, explainTutorialStep, craftTest } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
 import { HEAT_GRADES } from "./heat.js";
 import { replacementCoals } from "./heat_logic.js";
@@ -36,7 +36,7 @@ import { coalCount } from "./coals.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { actualExpressionCard } from "./flavor-guide.js";
 import { createCraftClock } from "./clock.js";
-import { effectVisible, effectBadge, effectLine, senseExtra, effectTier } from "./effect-visual.js";
+import { effectVisible, effectBadge, effectLine, effectTier } from "./effect-visual.js";
 import { waterComfort } from "./water.js";
 import { craftStageEnabled } from "./stage-layout.js";
 import { waterComfortLine } from "./pull-water.js";
@@ -214,11 +214,12 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
   };
   // テスト用（craftTest.aim = "attack"）: 上手な自動操作が中心ではなく攻めの帯のまん中を狙う。
   const autoGoal = () => { const r = attacking && craftTest.aim === "attack" ? attackRange(bands) : null; return r ? (r.low + r.high) / 2 : center; };
-  const attackNote = attacking ? `桃色の「攻めの帯」で${mode.drift ? "整え終える" : "提供する"}と、この回の審査が伸びる（帯の上を越えると味が崩れる）。` : "";
-  const panel = stepPanel(mode.store, mode.title, attackNote ? `${attackNote}${mode.hint}` : tutorial
+  const attackNote = attacking ? `桃色の「攻めの帯」で${mode.drift ? "整え終える" : "提供する"}と、${attackVotes ? "この回の審査が伸びる" : "温度の評価が満点になる"}（帯の上を越えると味が崩れる）。` : "";
+  const panel = stepPanel(mode.store, mode.title, tutorial
     ? mode.drift ? "温度を戻すのは炭。交換する数と置き方で決まる。そのあとの吸いは味の確かめで、温度は少ししか動かない。1〜2口で整え終えよう"
     : "中央のキープは左寄りで微減、右寄りで微増。右の上げ吸いは温度を上げ、左の下げ吸いは温度を下げる。雨の日は上げ吸いを増やそう。吸い終わってから次の針を止める"
-    : mode.hint);
+    : attackNote + mode.hint);
+  if (tutorial && !await explainTutorialStep(cs, mode.store)) return false;
   // スマホは「技」の札だけを出す。文はここで読む（PHN18・css/craft-phone.css。PC は今までどおり画面に出る）
   if (effectVisible("technique")) panel.closest?.(".bench")?.querySelector?.(".bench-guide-tip > p")?.after?.(el("div.bench-guide-extra.bench-guide-phone", [
     el("ul", [el("li", [el("b", { text: "技" }), el("span", { text: "技術でゲージがゆっくり" })])]),
@@ -293,14 +294,22 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
   const needle = dial.querySelector(".pg-needle");
   const justs$ = [...dial.querySelectorAll(".pg-just")];
   const senseExtras = [...dial.querySelectorAll(".pg-sense-extra")];
+  const justBounds = (zone, scale = widen) => {
+    const midpoint = (zone.just[0] + zone.just[1]) / 2;
+    const half = (zone.just[1] - zone.just[0]) * scale / 2;
+    return [Math.max(zone.from, midpoint - half), Math.min(zone.to, midpoint + half)];
+  };
   const placeJusts = () => zones.forEach((z, i) => {
-    const span = (z.just[1] - z.just[0]) * widen;
-    const base = effectVisible("sense") ? span / (1 + 0.45 * effectTier("sense")) : span;
-    const extra = senseExtra(base);
-    justs$[i].setAttribute("d", dialSector(z.just[0], z.just[0] + base));
-    senseExtras[i].setAttribute("d", extra > 0 ? dialSector(z.just[0] + base, z.just[0] + span) : "");
+    const [from, to] = justBounds(z);
+    const [baseFrom, baseTo] = effectVisible("sense") ? justBounds(z, widen / (1 + 0.45 * effectTier("sense"))) : [from, to];
+    const extra = (baseFrom - from) + (to - baseTo);
+    justs$[i].setAttribute("d", dialSector(baseFrom, baseTo));
+    senseExtras[i].setAttribute("d", [
+      from < baseFrom ? dialSector(from, baseFrom) : "",
+      baseTo < to ? dialSector(baseTo, to) : "",
+    ].join(" "));
     senseExtras[i].dataset.span = extra.toFixed(4);
-    justs$[i].dataset.span = span.toFixed(4); // 芯（成功帯）の実際の幅（ダイヤル一周＝1）
+    justs$[i].dataset.span = (to - from).toFixed(4); // 芯（成功帯）の実際の幅（ダイヤル一周＝1）
   });
   placeJusts();
   const moveNeedle = (at) => {
@@ -323,8 +332,8 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
   const pullLabel = el("span.btn-label", pullIdle());
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" }, disabled: true }, [inhale, pullLabel]);
   const deepBtn = mode.store === "pull" && !tutorial && growthLesson(state,"M-S4") ? el("button.btn", { text:"ズボー", title:"一気に深く吸って熱を大きく上げる", "aria-label":"ズボー（一気に深く）", disabled:true, dataset:{test:"pull-deep"} }) : null;
-  const blindBtn = mode.store==="pull"&&!tutorial&&growthLesson(state,"M-B3")?el("button.btn.ghost.small",{
-    text:"味の名前を伏せる",title:"白紙の味カード。配合と提供の出来がよいほど審査で有利になる",dataset:{test:"pull-blind"},"aria-pressed":String(!!cs.blindService),
+  const blindBtn = mode.store==="pull"&&cs.mode==="tournament"&&growthLesson(state,"M-B3")?el("button.btn.ghost.small",{
+    text:"味の名前を伏せる",title:"白紙の味カード。審査員の受け止めの振れ幅が大きくなる",dataset:{test:"pull-blind"},"aria-pressed":String(!!cs.blindService),
     onclick:()=>{if(state!==owner||drawing||finished)return;cs.blindService=!cs.blindService;blindBtn.setAttribute("aria-pressed",String(cs.blindService));},
   }):null;
   const serveStatus = el("span.pull-serve-status", { role: "status", dataset: { test: "pull-serve-status" } });
@@ -333,7 +342,7 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
     serveIcon, el("span.btn-label", { text: serveBtnLabel }), serveStatus,
   ]);
   // 吸った回数の点。無傷で吸える回数を超える点は橙の枠で、吸いすぎの範囲だと分かるようにする。
-  const pips = Array.from({ length: MAX_PULLS }, (_, i) => el(`i.pull-pip${i >= mode.safe ? ".over" : ""}`, { "aria-hidden": "true" }));
+  const pips = Array.from({ length: MAX_PULLS }, (_, i) => el(`i.pull-pip${i >= safeLimit ? ".over" : ""}`, { "aria-hidden": "true" }));
   const pullCount = el("b.pull-count-num");
   const counter = el("span.pull-count", { role: "img", dataset: { test: "pull-count" } }, [el("span.pull-pips", pips), pullCount]);
   const lifeLeaves = el("span.pull-life-leaves");
@@ -366,10 +375,12 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
   const focusNote = renewal && mode.store === "pull" ? steamFocusNote(cs) : null;
   // 針が動く間は毎フレーム呼ばれる。状態の一語・札は、中身が変わった時だけ作り直す（#3500 F-1）。
   let readoutKey = "", tagsKey = "";
+  let deepHovered = false, deepFocused = false;
   const render = () => {
     thermometer.update(T);
     setBenchTemperature(cs, T);
-    const predicted = clamp(T + pullHeat(actionAt(pos).delta),0,1);
+    const delta = deepHovered || deepFocused ? LESSON_TUNING.deepHeat : actionAt(pos).delta;
+    const predicted = clamp(T + pullHeat(delta),0,1);
     thermometer.preview(running && !drawing && !finished ? predicted : null);
     const showDestination = running && !drawing && !finished && !choosing;
     const [destWord, destTone] = temperatureWord(predicted);
@@ -463,13 +474,13 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
 
   const actionAt = (at) => {
     const z = zones.find((zz) => at >= zz.from && at <= zz.to) || zones[1];
-    const jw = (z.just[1] - z.just[0]) * widen;
-    const isJust = at >= z.just[0] && at <= z.just[0] + jw;
+    const [from, to] = justBounds(z);
+    const isJust = at >= from && at <= to;
     // キープ中央は維持。半円の色に合わせ、左寄りは微減、右寄りは微増。
     const raw = z.id === "keep" ? (at - .5) * PULL_TUNING.keepSlope : (isJust ? z.justDelta : z.delta) + PULL_TUNING.sideBias;
     // 熱管理の吸いは確かめの一口。上げ吸いで冷えた一台を戻すことはできない（E06 案A）。
     const delta = mode.drift ? raw * CARE_PULL_SCALE : raw;
-    return { z, isJust, delta, critical: isJust && growthCritical(state, at - (z.just[0] + jw / 2), jw, { tutorial }) };
+    return { z, isJust, delta, critical: isJust && growthCritical(state, at - (from + to) / 2, to - from, { tutorial }) };
   };
   // 吸いすぎでフレーバーが傷む。文字は出さず、ダメージの音と揺れ、葉の傷みで伝える（TH27・TH28）。
   const damageLeaf = () => {
@@ -624,16 +635,38 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
     // 置き方は先に選んでおき、個数のボタンで決める。既定は標準なので、個数を押すだけでも進める。
     let place = "std";
     const swapHeat = (n, id = place) => COAL_HEAT[n] * coalPlace(id).heat;
+    // 焼いた記録がない台は標準の焼き炭。火の番はチュートリアル以外で焼け具合を1段よくする。
+    const fireKeeper = !!cs.heat?.picks?.length && !tutorial && growthSkill(state, "K11");
+    const replacements = options.map(n => replacementCoals(cs.heat?.picks, n, { fireKeeper }));
+    const addedHeat = (n) => {
+      const { batch } = replacements[n];
+      return heatDelta(cs, swapHeat(n) * (batch ? coalHeatFactor(batch) : 1));
+    };
+    let lastPreviewCount = 1, hoveredCount = null, focusedCount = null;
+    const previewSwap = (n) => {
+      if (n) {
+        lastPreviewCount = n;
+        thermometer.preview(clamp(T + addedHeat(n), 0, 1), `点線：${n}個交換するとここ`);
+      } else {
+        thermometer.preview(null);
+      }
+    };
     const placeButtons = COAL_PLACES.map((p) => el("button.btn.small.care-place", {
       dataset: { test: `care-place-${p.id}` }, "aria-pressed": String(p.id === place),
       title: { outer: "ボウルの外周寄りに置く。熱は穏やかに入る", std: "いつもの位置に置く", inner: "ボウルの中心寄りに置く。熱が強く入る" }[p.id],
-      onclick: () => { place = p.id; placeButtons.forEach((b, i) => b.setAttribute("aria-pressed", String(COAL_PLACES[i].id === place))); },
+      onclick: () => {
+        place = p.id;
+        placeButtons.forEach((b, i) => b.setAttribute("aria-pressed", String(COAL_PLACES[i].id === place)));
+        previewSwap(lastPreviewCount);
+      },
     }, [el("span.btn-label", { text: p.label }), el("small.btn-desc", { text: p.desc })]));
     const buttons = el("div.care-coal-btns", options.map((n) => el("button.btn.care-coal", {
       dataset: { test: `care-coal-${n}` }, onclick: () => pick(n),
       title: n ? `消耗した炭を${n}個、焼いた炭に交換する。温度が${["", "少し", "そこそこ", "しっかり", "強く"][n]}戻る` : "消耗した炭のまま。温度は落ちていく",
-      onpointerenter: () => thermometer.preview(n ? clamp(T + heatDelta(cs, swapHeat(n)), 0, 1) : null, "点線：交換するとここ"),
-      onpointerleave: () => thermometer.preview(null),
+      onpointerenter: () => { hoveredCount = n; previewSwap(n); },
+      onpointerleave: () => { hoveredCount = null; previewSwap(focusedCount); },
+      onfocus: () => { focusedCount = n; previewSwap(n); },
+      onblur: () => { focusedCount = null; previewSwap(hoveredCount); },
     }, [
       el("span.btn-label", { text: n ? `${n}個` : "交換しない" }), el("small.btn-desc", { text: n ? "▲".repeat(n) : "↓" }),
     ])));
@@ -654,8 +687,8 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
     }
     coals = await picked;
     if(state!==owner||!play.isConnected){abandoned=true;choice.remove();choosing=false;return;}
-    thermometer.preview(null);
     choice.querySelectorAll("button").forEach((b) => { b.disabled = true; });
+    thermometer.preview(null);
     SE.select();
     coolRate = baseCool * COAL_COOL[coals] / (1 + (growthPerks(state)?.coal || 0) / 100);
     if (!coals) {
@@ -668,10 +701,7 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
       return;
     }
     // 交換する炭は、最初の炭焼きのときに一緒に焼いておいたもの。炭焼きは挟まず、トングで持ってきて入れ替える（#2213）。
-    // 焼け具合は最初の炭焼きと同じ。焼いた記録が無い台（スミさんが用意した一台など）は標準の焼き炭として係数を掛けない。
-    // K11「火の番」は、持ってくる炭の焼け具合を1段よくする（チュートリアルでは効かない。オーナー判断 2026-11-04）。
-    const fireKeeper = !!cs.heat?.picks?.length && cs.mode !== "tutorial" && growthSkill(state, "K11");
-    const { batch, picks } = replacementCoals(cs.heat?.picks, coals, { fireKeeper });
+    const { batch, picks } = replacements[coals];
     choice.replaceChildren(el("p.care-coals-lead", { dataset: { test: "care-tong", fireKeeper: fireKeeper ? "1" : "" },
       text: `焼いておいた炭を${coals}個、トングで持ってくる${fireKeeper ? "。火の番の目で、焼けのいいのを選んだ" : ""}` }));
     const placed = coalPlace(place);
@@ -682,7 +712,7 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
     cs.careCoals = { count: coals, picks, place: placed.id };
     choice.replaceChildren(el("p.care-coals-lead", { text: `消耗した炭と入れ替えて、${{ outer: "外寄りに置いた。熱がじんわり戻ってくる", std: "いつもの位置に置いた。温度が戻ってくる", inner: "内寄りに寄せた。熱がぐっと戻ってくる" }[placed.id]}` }));
     SE.coalPlace();
-    const from = coreTemp, add = heatDelta(cs, swapHeat(coals, placed.id) * (batch ? coalHeatFactor(batch) : 1)), started = gameClock.now(), dur = autoSkill() ? 200 : 1400;
+    const from = coreTemp, add = addedHeat(coals), started = gameClock.now(), dur = autoSkill() ? 200 : 1400;
     for (;;) {
       if(state!==owner||!play.isConnected){abandoned=true;break;}
       const k = Math.min(1, (gameClock.now() - started) / dur);
@@ -698,13 +728,17 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
   };
 
   deepBtn?.addEventListener("click", () => doPull(.83,true));
+  deepBtn?.addEventListener("pointerenter", () => { deepHovered = true; render(); });
+  deepBtn?.addEventListener("pointerleave", () => { deepHovered = false; render(); });
+  deepBtn?.addEventListener("focus", () => { deepFocused = true; render(); });
+  deepBtn?.addEventListener("blur", () => { deepFocused = false; render(); });
   pullBtn.addEventListener("pointerdown", (e) => { e.preventDefault(); doPull(); });
   // キーボード・支援技術が送るclickにも対応。吸引中の連打・長押しは同じ一口にする。
   pullBtn.addEventListener("click", (e) => { if (e.detail === 0) doPull(); });
   let serve;
   const served = new Promise((r) => { serve = r; });
   const finish = () => { if (state===owner && !serveBtn.disabled && !gameClock.paused) {
-    if(mode.store==="pull"&&cs.blindService&&growthLesson(state,"M-B3")&&!Number.isFinite(cs.blindVariance))cs.blindVariance=rand(-LESSON_TUNING.blindSwing,LESSON_TUNING.blindSwing);
+    if(blindBtn&&cs.blindService&&!Number.isFinite(cs.blindVariance))cs.blindVariance=rand(-LESSON_TUNING.blindSwing,LESSON_TUNING.blindSwing);
     finished = true; serve();
   } };
   serveBtn.addEventListener("click", finish);
@@ -732,8 +766,11 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
       // テスト用（craftTest.aim = "attack"）: 攻めの帯で終えるまで、残りの口数で帯に入る吸い方を先読みして吸う。
       const attackAim = auto === "good" && attacking && craftTest.aim === "attack";
       const [downZone, keepZone, upZone] = zones;
-      const justCenter = zone => zone.just[0] + (zone.just[1] - zone.just[0]) * widen / 2;
-      const beforeJust = zone => (zone.from + zone.just[0]) / 2;
+      const justCenter = (zone) => {
+        const [from, to] = justBounds(zone);
+        return (from + to) / 2;
+      };
+      const beforeJust = zone => (zone.from + justBounds(zone)[0]) / 2;
       const times = attackAim ? MAX_PULLS : auto === "good" ? (mode.drift ? 2 : 3) : auto === "burn" ? 5 : mode.drift ? 1 : 5;
       for (let i = 0; i < times && running; i++) {
         let at;
@@ -794,7 +831,7 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
   const attack = !!attackBand && inAttackRange(T, attackBand);
   const baseScore = attack ? Math.max(result.score, attackScore(pulls, safeLimit)) : result.score;
   let score = Math.min(100,baseScore + (criticals ? Math.min(SKILL_TUNING.criticalCap, criticals * SKILL_TUNING.critical) : 0));
-  const tasteCard = mode.store==="pull"&&cs.blindService&&growthLesson(state,"M-B3")?"白紙の味カードで提供した。味の名前は伏せ、尋ねられたら答える":actualExpressionCard(cs, T);
+  const tasteCard = blindBtn&&cs.blindService?"白紙の味カードで提供した。味の名前は伏せ、尋ねられたら答える":actualExpressionCard(cs, T);
   cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, criticals, smokeRings, coals, inZone, optimal, over: T > ideal[1], under: T < ideal[0], ...(attackBand ? { attack } : {}) };
   const attackLine = attack
     ? `攻めの帯で${mode.store === "pull" ? "出した" : "整え終えた"}！ 審査員が身を乗り出した（この回の審査 +${ATTACK_BAND.bonus}）` : null;

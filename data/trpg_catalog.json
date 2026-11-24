@@ -14,7 +14,115 @@
         "sai",
         "regulara",
         "regularb"
-      ]
+      ],
+      "shelf": {
+        "version": 2,
+        "title": "閉店後の港町",
+        "author": "汐見しお",
+        "collection": "常連卓 01",
+        "duration": "約10分",
+        "presentation": {
+          "theme": "harbor",
+          "number": "R1",
+          "genre": "日常ミステリー",
+          "image": "../../img/backgrounds/trpg_ordinary_room.webp",
+          "sceneAlt": "雨の港を望む茶房。メニュー、窓辺、荷札、カウンター、カップとノート。",
+          "location": "港町ノーラ / 波止場の灯",
+          "tagline": "閉店まぎわの港町。旅人の「普通の一台」を探す。"
+        },
+        "cast": [
+          {
+            "id": "sai",
+            "part": "GM",
+            "color": "#dab978"
+          },
+          {
+            "id": "hajime",
+            "part": "PLAYER",
+            "color": "#89bbc4"
+          },
+          {
+            "id": "regulara",
+            "part": "PLAYER",
+            "color": "#c8a375"
+          },
+          {
+            "id": "regularb",
+            "part": "PLAYER",
+            "color": "#b8a3cc"
+          }
+        ],
+        "campaign": {
+          "seats": [
+            {
+              "actor": "sai",
+              "candidates": [
+                "sai"
+              ],
+              "required": true
+            },
+            {
+              "actor": "hajime",
+              "candidates": [
+                "hajime"
+              ],
+              "required": true
+            },
+            {
+              "actor": "regulara",
+              "candidates": [
+                "regulara"
+              ],
+              "required": true
+            },
+            {
+              "actor": "regularb",
+              "candidates": [
+                "regularb"
+              ],
+              "required": true
+            }
+          ]
+        },
+        "endings": {
+          "rain": {
+            "title": "雨音のある一台"
+          },
+          "home": {
+            "title": "帰り道の一台"
+          },
+          "company": {
+            "title": "話の始まる一台"
+          },
+          "discovery": {
+            "title": "一緒に見つけた一台"
+          }
+        },
+        "pictureBook": {
+          "pages": [
+            {
+              "image": "../../img/ui/trpg/picturebook/regular-harbor/01.webp",
+              "alt": "雨の港町。波止場の灯りが水面に映っている",
+              "text": "港町ノーラ。雨ににじむ港の灯り。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/regular-harbor/02.webp",
+              "alt": "雨の窓辺で、小さな卓を囲む茶房の客",
+              "text": "茶房「波止場の灯」には、雨を避けた人たちがまだ残っている。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/regular-harbor/03.webp",
+              "alt": "カウンターで布を使ってカップを拭く店番の手元",
+              "text": "閉店まで、もう少し。店番はカウンターで、洗い終えたカップを拭いている。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/regular-harbor/04.webp",
+              "alt": "濡れた外套のオルが、閉店の札のある戸口に立っている",
+              "text": "閉店の札を裏返しかけたとき、濡れた外套の旅人オルが戸口に立った。"
+            }
+          ]
+        }
+      }
     },
     {
       "id": "regular-mail",
@@ -25,7 +133,115 @@
         "sai",
         "regulara",
         "regularb"
-      ]
+      ],
+      "shelf": {
+        "version": 2,
+        "title": "月夜の常連郵便",
+        "author": "灯森こはる",
+        "collection": "常連卓 02",
+        "duration": "約10分",
+        "presentation": {
+          "theme": "leaf",
+          "number": "R2",
+          "genre": "絵本ファンタジー",
+          "image": "../../img/backgrounds/trpg_leaf-mail_room.webp",
+          "sceneAlt": "大きな月の下の坂の町。郵便鞄、時計塔、屋根の上、川の橋、パン屋の窓、掲示板。",
+          "location": "時計坂の町 / 月夜の大通り",
+          "tagline": "月のよく見える家へ。時計坂の夜番と郵便猫が、一通の手紙を預かった。"
+        },
+        "cast": [
+          {
+            "id": "sai",
+            "part": "GM",
+            "color": "#b8a3cc"
+          },
+          {
+            "id": "hajime",
+            "part": "PLAYER",
+            "color": "#89bbc4"
+          },
+          {
+            "id": "regulara",
+            "part": "PLAYER",
+            "color": "#dab978"
+          },
+          {
+            "id": "regularb",
+            "part": "PLAYER",
+            "color": "#c9463a"
+          }
+        ],
+        "campaign": {
+          "seats": [
+            {
+              "actor": "sai",
+              "candidates": [
+                "sai"
+              ],
+              "required": true
+            },
+            {
+              "actor": "hajime",
+              "candidates": [
+                "hajime"
+              ],
+              "required": true
+            },
+            {
+              "actor": "regulara",
+              "candidates": [
+                "regulara"
+              ],
+              "required": true
+            },
+            {
+              "actor": "regularb",
+              "candidates": [
+                "regularb"
+              ],
+              "required": true
+            }
+          ]
+        },
+        "endings": {
+          "lamp": {
+            "title": "灯りに届いた手紙"
+          },
+          "far-window": {
+            "title": "遠くの窓に届いた手紙"
+          },
+          "painter": {
+            "title": "描いた人に届いた手紙"
+          },
+          "together": {
+            "title": "宛先探しは明日も"
+          }
+        },
+        "pictureBook": {
+          "pages": [
+            {
+              "image": "../../img/ui/trpg/picturebook/regular-mail/01.webp",
+              "alt": "大きな月の下に、時計塔と石畳の坂が見える",
+              "text": "時計坂の町。大きな月が、坂の石畳を白く照らしている。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/regular-mail/02.webp",
+              "alt": "詰所の戸口で、夜番が火のともったランタンを手にしている",
+              "text": "夜番は詰所の前で、ランタンの火を確かめている。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/regular-mail/03.webp",
+              "alt": "葉っぱの耳と煙のような尻尾の猫が、封筒をくわえて歩いてくる",
+              "text": "石畳に、猫の足音がひとつ。葉っぱの耳の猫が、手紙をくわえてやってきた。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/regular-mail/04.webp",
+              "alt": "郵便猫ミトンが、ランタンのそばで夜番の足元に座っている",
+              "text": "郵便猫ミトンはランタンをひょいとよけ、夜番の足元に座った。"
+            }
+          ]
+        }
+      }
     },
     {
       "id": "ordinary-cup",
@@ -34,7 +250,117 @@
       "stockRequires": [
         "hiyori"
       ],
-      "member": "hiyori"
+      "member": "hiyori",
+      "shelf": {
+        "version": 6,
+        "title": "世界一普通の一台",
+        "author": "汐見しお",
+        "collection": "船灯文庫・小さな卓の冒険 01",
+        "duration": "約10分",
+        "presentation": {
+          "theme": "harbor",
+          "number": "01",
+          "genre": "日常ミステリー",
+          "image": "../../img/backgrounds/trpg_ordinary_room.webp",
+          "sceneAlt": "雨の港を望む茶房。メニュー、窓辺、荷札、カウンター、カップとノート。",
+          "location": "港町ノーラ / 波止場の灯",
+          "tagline": "その人にとっての「普通」を、探す。"
+        },
+        "cast": [
+          {
+            "id": "hiyori",
+            "part": "GM",
+            "color": "#dab978"
+          },
+          {
+            "id": "hajime",
+            "part": "PLAYER",
+            "color": "#89bbc4"
+          },
+          {
+            "id": "adam",
+            "part": "PLAYER",
+            "color": "#c8a375"
+          },
+          {
+            "id": "tsumugi",
+            "part": "PLAYER",
+            "color": "#b8a3cc"
+          }
+        ],
+        "campaign": {
+          "seats": [
+            {
+              "actor": "hiyori",
+              "candidates": [
+                "hiyori"
+              ],
+              "required": true
+            },
+            {
+              "actor": "hajime",
+              "candidates": [
+                "hajime"
+              ],
+              "required": true
+            },
+            {
+              "actor": "adam",
+              "candidates": [
+                "adam",
+                "regulara"
+              ],
+              "required": false
+            },
+            {
+              "actor": "tsumugi",
+              "candidates": [
+                "tsumugi",
+                "regularb"
+              ],
+              "required": false
+            }
+          ]
+        },
+        "endings": {
+          "rain": {
+            "title": "雨音のある一台"
+          },
+          "home": {
+            "title": "帰り道の一台"
+          },
+          "company": {
+            "title": "話の始まる一台"
+          },
+          "discovery": {
+            "title": "一緒に見つけた一台"
+          }
+        },
+        "pictureBook": {
+          "pages": [
+            {
+              "image": "../../img/ui/trpg/picturebook/ordinary-cup/teahouse-room.webp",
+              "alt": "雨の港を望む茶房のカウンターに、カップとノートが置かれている",
+              "text": "閉店まで、もう少し。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/ordinary-cup/nora-harbor.webp",
+              "alt": "雨の港町ノーラの遠景。波止場の灯りが水面に映っている",
+              "text": "港町ノーラ。雨ににじむ港の灯り。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/ordinary-cup/harbor-teahouse.webp",
+              "alt": "閉店前の茶房。店番がカウンターでカップを拭いている",
+              "text": "茶房「波止場の灯」には、雨宿りの客がまだ残っている。店番は最後のカップを拭いている。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/ordinary-cup/oru-arrival.webp",
+              "alt": "濡れた外套の旅人オルが、灯りの漏れる戸口に立っている",
+              "text": "閉店の札に手をかけたとき、濡れた外套の旅人オルが戸口に立った。"
+            }
+          ]
+        }
+      }
     },
     {
       "id": "shark-last-order",
@@ -43,7 +369,118 @@
       "stockRequires": [
         "samechan"
       ],
-      "member": "samechan"
+      "member": "samechan",
+      "shelf": {
+        "version": 6,
+        "title": "サメは閉店を待たない",
+        "author": "青瀬マコ",
+        "collection": "唐波キネマ・一晩の冒険 02",
+        "duration": "約10分",
+        "presentation": {
+          "theme": "shark",
+          "number": "02",
+          "genre": "サメ映画 / 脱出劇",
+          "image": "../../img/backgrounds/trpg_shark_room.webp",
+          "sceneAlt": "海上ラウンジ。無線、保管箱、送風機、救難灯、救命具と海図。窓の外の海にサメの背びれ。",
+          "location": "ベルカ沖 / 海上ラウンジ「夜凪」",
+          "tagline": "岸まで三百メートル。迎えの艇はまだ来ない。"
+        },
+        "cast": [
+          {
+            "id": "samechan",
+            "part": "GM",
+            "color": "#73b8df"
+          },
+          {
+            "id": "hajime",
+            "part": "PLAYER",
+            "color": "#89bbc4"
+          },
+          {
+            "id": "hiyori",
+            "part": "PLAYER",
+            "color": "#c8a375"
+          },
+          {
+            "id": "tsumugi",
+            "part": "PLAYER",
+            "color": "#b8a3cc"
+          }
+        ],
+        "campaign": {
+          "seats": [
+            {
+              "actor": "samechan",
+              "candidates": [
+                "samechan"
+              ],
+              "required": true
+            },
+            {
+              "actor": "hajime",
+              "candidates": [
+                "hajime"
+              ],
+              "required": true
+            },
+            {
+              "actor": "hiyori",
+              "candidates": [
+                "hiyori",
+                "adam",
+                "regulara"
+              ],
+              "required": false
+            },
+            {
+              "actor": "tsumugi",
+              "candidates": [
+                "tsumugi",
+                "regularb"
+              ],
+              "required": false
+            }
+          ]
+        },
+        "endings": {
+          "last-order": {
+            "title": "海へ贈るラストオーダー"
+          },
+          "quiet-escape": {
+            "title": "世界一静かなエンドロール"
+          },
+          "premiere": {
+            "title": "海上プレミア上映"
+          },
+          "sequel": {
+            "title": "そして、翌朝の予告編"
+          }
+        },
+        "pictureBook": {
+          "pages": [
+            {
+              "image": "../../img/ui/trpg/picturebook/shark-last-order/01.webp",
+              "alt": "沖から見たベルカの岸辺。遠くに小さな灯りが並ぶ",
+              "text": "ベルカ沖。岸までは、三百メートル。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/shark-last-order/02.webp",
+              "alt": "海に浮かぶラウンジ「夜凪」と、そこに延びる桟橋",
+              "text": "海に浮かぶラウンジ「夜凪」。桟橋が軋む。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/shark-last-order/03.webp",
+              "alt": "帳簿を開いたカウンターのそばで、店番が床を拭いている",
+              "text": "閉店の曲が鳴り、店番は濡れた床を拭いている。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/shark-last-order/04.webp",
+              "alt": "電飾の下がった窓の向こうを、サメの背びれが横切る",
+              "text": "曲が二番に入ったところで、窓の向こうを背びれが横切った。"
+            }
+          ]
+        }
+      }
     },
     {
       "id": "leaf-mail",
@@ -52,7 +489,117 @@
       "stockRequires": [
         "tsumugi"
       ],
-      "member": "tsumugi"
+      "member": "tsumugi",
+      "shelf": {
+        "version": 2,
+        "title": "葉っぱ耳の郵便猫",
+        "author": "灯森こはる",
+        "collection": "船灯文庫・小さな卓の冒険 03",
+        "duration": "約10分",
+        "presentation": {
+          "theme": "leaf",
+          "number": "03",
+          "genre": "絵本ファンタジー",
+          "image": "../../img/backgrounds/trpg_leaf-mail_room.webp",
+          "sceneAlt": "大きな月の下の坂の町。郵便鞄、時計塔、屋根の上、川の橋、パン屋の窓、掲示板。",
+          "location": "時計坂の町 / 月夜の大通り",
+          "tagline": "宛名のにじんだ手紙を、月の下で届ける。"
+        },
+        "cast": [
+          {
+            "id": "tsumugi",
+            "part": "GM",
+            "color": "#b8a3cc"
+          },
+          {
+            "id": "hajime",
+            "part": "PLAYER",
+            "color": "#89bbc4"
+          },
+          {
+            "id": "hiyori",
+            "part": "PLAYER",
+            "color": "#dab978"
+          },
+          {
+            "id": "adam",
+            "part": "PLAYER",
+            "color": "#c9463a"
+          }
+        ],
+        "campaign": {
+          "seats": [
+            {
+              "actor": "tsumugi",
+              "candidates": [
+                "tsumugi"
+              ],
+              "required": true
+            },
+            {
+              "actor": "hajime",
+              "candidates": [
+                "hajime"
+              ],
+              "required": true
+            },
+            {
+              "actor": "hiyori",
+              "candidates": [
+                "hiyori",
+                "regulara"
+              ],
+              "required": false
+            },
+            {
+              "actor": "adam",
+              "candidates": [
+                "adam",
+                "regularb"
+              ],
+              "required": false
+            }
+          ]
+        },
+        "endings": {
+          "lamp": {
+            "title": "灯りに届いた手紙"
+          },
+          "far-window": {
+            "title": "遠くの窓に届いた手紙"
+          },
+          "painter": {
+            "title": "描いた人に届いた手紙"
+          },
+          "together": {
+            "title": "みんなで宛先を探しに行く手紙"
+          }
+        },
+        "pictureBook": {
+          "pages": [
+            {
+              "image": "../../img/ui/trpg/picturebook/leaf-mail/01.webp",
+              "alt": "大きな月の下、石畳の坂に街灯がともっている",
+              "text": "時計坂の町。大きな月が、坂の石畳を白く照らしている。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/leaf-mail/02.webp",
+              "alt": "詰所の戸口で、夜番が手にしたランタンを見ている",
+              "text": "詰所の前で、夜番がランタンの火を確かめている。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/leaf-mail/03.webp",
+              "alt": "葉っぱの形の耳をした猫が、封筒をくわえて歩いている",
+              "text": "石畳に、猫の足音がひとつ。葉っぱの耳の猫が、手紙をくわえてやってきた。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/leaf-mail/04.webp",
+              "alt": "郵便猫ミトンが、夜番の足もとに封筒を下ろしている",
+              "text": "ミトンは夜番の前に、宛名のにじんだ封筒をそっと下ろした。"
+            }
+          ]
+        }
+      }
     },
     {
       "id": "apple-thief",
@@ -61,7 +608,117 @@
       "stockRequires": [
         "adam"
       ],
-      "member": "adam"
+      "member": "adam",
+      "shelf": {
+        "version": 2,
+        "title": "怪盗と原点の林檎",
+        "author": "茜原トキ",
+        "collection": "船灯文庫・小さな卓の冒険 04",
+        "duration": "約10分",
+        "presentation": {
+          "theme": "heist",
+          "number": "04",
+          "genre": "館の怪盗もの / 謎解き",
+          "image": "../../img/backgrounds/trpg_apple-thief_room.webp",
+          "sceneAlt": "湖畔の館の夜会。書斎の配合帳、温室の林檎の木、大広間の肖像画、厨房の香りの棚、玄関の予告状、主人の椅子。",
+          "location": "ミルト湖畔 / 白林檎館",
+          "tagline": "夜会に届いた予告状。怪盗は、何を持ち帰るつもりだ？"
+        },
+        "cast": [
+          {
+            "id": "adam",
+            "part": "GM",
+            "color": "#c9463a"
+          },
+          {
+            "id": "hajime",
+            "part": "PLAYER",
+            "color": "#c98f6a"
+          },
+          {
+            "id": "hiyori",
+            "part": "PLAYER",
+            "color": "#e3a1ae"
+          },
+          {
+            "id": "tsumugi",
+            "part": "PLAYER",
+            "color": "#b8a3cc"
+          }
+        ],
+        "campaign": {
+          "seats": [
+            {
+              "actor": "adam",
+              "candidates": [
+                "adam"
+              ],
+              "required": true
+            },
+            {
+              "actor": "hajime",
+              "candidates": [
+                "hajime"
+              ],
+              "required": true
+            },
+            {
+              "actor": "hiyori",
+              "candidates": [
+                "hiyori",
+                "regulara"
+              ],
+              "required": false
+            },
+            {
+              "actor": "tsumugi",
+              "candidates": [
+                "tsumugi",
+                "regularb"
+              ],
+              "required": false
+            }
+          ]
+        },
+        "endings": {
+          "notebook-home": {
+            "title": "弟子に戻った配合帳"
+          },
+          "one-more": {
+            "title": "もう一度の一台"
+          },
+          "apple-letter": {
+            "title": "林檎の香りと手紙"
+          },
+          "encore": {
+            "title": "怪盗は、次の予告状を残して"
+          }
+        },
+        "pictureBook": {
+          "pages": [
+            {
+              "image": "../../img/ui/trpg/picturebook/apple-thief/01.webp",
+              "alt": "火のともった燭台のそばに、林檎が一つある",
+              "text": "燭台の灯り。林檎の香り。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/apple-thief/02.webp",
+              "alt": "ミルト湖のほとりに立つ白林檎館と、窓の灯り",
+              "text": "ミルト湖のほとり、白林檎館。今宵は館の夜会だ。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/apple-thief/03.webp",
+              "alt": "玄関の戸口で、給仕が客の外套を受け取っている",
+              "text": "玄関では、給仕が客の外套を受け取っている。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/apple-thief/04.webp",
+              "alt": "館の扉の下から、一枚のカードがのぞいている",
+              "text": "そのとき、扉の隙間から一枚のカードが滑り込んだ。"
+            }
+          ]
+        }
+      }
     },
     {
       "id": "moonflower-encore",
@@ -70,7 +727,117 @@
       "stockRequires": [
         "kuraudo"
       ],
-      "member": "kuraudo"
+      "member": "kuraudo",
+      "shelf": {
+        "version": 2,
+        "title": "月光花の古城と、終わらないアンコール",
+        "author": "千夜カナデ",
+        "collection": "船灯文庫・小さな卓の冒険 11",
+        "duration": "約10分",
+        "presentation": {
+          "theme": "castle",
+          "number": "11",
+          "genre": "ゴシック幻想 / 音楽",
+          "image": "../../img/backgrounds/trpg_moonflower-encore_room.webp",
+          "sceneAlt": "月夜の古城の大広間。大広間の舞台、客席の名札、楽屋の譜面台、庭の月光花、回廊の肖像画、家令の鍵束。客席には青白い幽霊たち。",
+          "location": "月の丘 / 月光花城",
+          "tagline": "アンコールは鳴りやまない。夜明けまでに、最後の一曲を。"
+        },
+        "cast": [
+          {
+            "id": "kuraudo",
+            "part": "GM",
+            "color": "#9b1b3f"
+          },
+          {
+            "id": "hajime",
+            "part": "PLAYER",
+            "color": "#c98f6a"
+          },
+          {
+            "id": "ageha",
+            "part": "PLAYER",
+            "color": "#ff8fc8"
+          },
+          {
+            "id": "adam",
+            "part": "PLAYER",
+            "color": "#c9463a"
+          }
+        ],
+        "campaign": {
+          "seats": [
+            {
+              "actor": "kuraudo",
+              "candidates": [
+                "kuraudo"
+              ],
+              "required": true
+            },
+            {
+              "actor": "hajime",
+              "candidates": [
+                "hajime"
+              ],
+              "required": true
+            },
+            {
+              "actor": "ageha",
+              "candidates": [
+                "ageha",
+                "regulara"
+              ],
+              "required": false
+            },
+            {
+              "actor": "adam",
+              "candidates": [
+                "adam",
+                "regularb"
+              ],
+              "required": false
+            }
+          ]
+        },
+        "endings": {
+          "promise-song": {
+            "title": "約束の一曲"
+          },
+          "name-encore": {
+            "title": "名前を呼ぶアンコール"
+          },
+          "moonflower-garden": {
+            "title": "月光花の咲く庭"
+          },
+          "together": {
+            "title": "みんなで歌って、幕"
+          }
+        },
+        "pictureBook": {
+          "pages": [
+            {
+              "image": "../../img/ui/trpg/picturebook/moonflower-encore/01.webp",
+              "alt": "月の下、丘の上に建つ月光花城の窓に灯りがともる",
+              "text": "月の丘を登りきると、月光花城の窓からギターと拍手が聞こえてくる。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/moonflower-encore/02.webp",
+              "alt": "燭台のそばで、マント姿の伯爵がギターを弾き、隣で楽団員がドラムを叩く",
+              "text": "大広間の舞台では、吸血鬼のバンド「ノクターン」が演奏している。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/moonflower-encore/03.webp",
+              "alt": "青白い鬼火の向こうで、客席の幽霊たちが拍手をしている",
+              "text": "曲が終わるたび、青白い鬼火の向こうの客席からアンコールが上がる。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/moonflower-encore/04.webp",
+              "alt": "家令が片手を上げ、振り向いた三人に声をかける",
+              "text": "九度目の拍手が響くなか、家令が三人を呼び止めた。"
+            }
+          ]
+        }
+      }
     },
     {
       "id": "purikura-hero",
@@ -82,7 +849,116 @@
       "member": "ageha",
       "zeroMemberCast": [
         "sai"
-      ]
+      ],
+      "shelf": {
+        "version": 2,
+        "title": "盛れない勇者と、プリ帳の魔王",
+        "author": "春風もも",
+        "collection": "船灯文庫・小さな卓の冒険 12",
+        "duration": "約10分",
+        "presentation": {
+          "theme": "sparkle",
+          "number": "12",
+          "genre": "コメディ・ファンタジー",
+          "image": "../../img/backgrounds/trpg_purikura-hero_room.webp",
+          "sceneAlt": "きらめき王国。色あせた広場の噴水、写真屋のショーケース、サメの泳ぐ堀と城門、撮影城の鏡の間、落ちていたプリ、魔王の玉座。",
+          "location": "きらめき王国 / 王国の広場と撮影城",
+          "tagline": "盛りを盗む魔王に、勇者たちが会いに行く。"
+        },
+        "cast": [
+          {
+            "id": "sai",
+            "part": "GM",
+            "color": "#73b8df"
+          },
+          {
+            "id": "hajime",
+            "part": "PLAYER",
+            "color": "#89bbc4"
+          },
+          {
+            "id": "ageha",
+            "part": "PLAYER",
+            "color": "#ff8fc8"
+          },
+          {
+            "id": "kuraudo",
+            "part": "PLAYER",
+            "color": "#b0102a"
+          }
+        ],
+        "campaign": {
+          "seats": [
+            {
+              "actor": "sai",
+              "candidates": [
+                "sai"
+              ],
+              "required": true
+            },
+            {
+              "actor": "hajime",
+              "candidates": [
+                "hajime"
+              ],
+              "required": true
+            },
+            {
+              "actor": "ageha",
+              "candidates": [
+                "ageha"
+              ],
+              "required": true
+            },
+            {
+              "actor": "kuraudo",
+              "candidates": [
+                "kuraudo",
+                "regularb"
+              ],
+              "required": false
+            }
+          ]
+        },
+        "endings": {
+          "one-shot": {
+            "title": "魔王と一枚"
+          },
+          "own-sparkle": {
+            "title": "盛れた魔王"
+          },
+          "album-home": {
+            "title": "戻ってきたプリ帳"
+          },
+          "party": {
+            "title": "みんなで撮影会"
+          }
+        },
+        "pictureBook": {
+          "pages": [
+            {
+              "image": "../../img/ui/trpg/picturebook/purikura-hero/01.webp",
+              "alt": "きらめく顔と服が写った写真と、箱型のカメラ",
+              "text": "きらめき王国では、写真を撮ると顔も服もきらきらに写った。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/purikura-hero/02.webp",
+              "alt": "広場の噴水と、貼り紙のある掲示板",
+              "text": "王国の広場には噴水があり、勇者募集の貼り紙が出ていた。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/purikura-hero/03.webp",
+              "alt": "撮影城の遠景。塔の窓のそばにシャッター音を表す短い線がある",
+              "text": "魔王プリズマに撮られると、写真も本物も色あせる。撮影城から、今日もシャッターの音。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/purikura-hero/04.webp",
+              "alt": "首からカメラを下げて歩く、白ひげの写真屋のおじいさん",
+              "text": "そこへ、首からカメラを下げた写真屋のおじいさんがやって来た。"
+            }
+          ]
+        }
+      }
     },
     {
       "id": "mist-kingdom",
@@ -100,7 +976,117 @@
       "finale": true,
       "zeroMemberCast": [
         "sai"
-      ]
+      ],
+      "shelf": {
+        "version": 3,
+        "title": "朝霧の王国と、最後の一台",
+        "author": "宵原ねむ",
+        "collection": "船灯文庫・小さな卓の冒険 06",
+        "duration": "約10分",
+        "presentation": {
+          "theme": "mist",
+          "number": "06",
+          "genre": "剣と魔法 / 霧の選手権",
+          "image": "../../img/backgrounds/trpg_mist-kingdom_room.webp",
+          "sceneAlt": "霧に包まれた王宮の広間。玉座、王妃の肖像、霧の窓、審査員席、香り棚と、薄れかけた回廊。",
+          "location": "朝霧の王国 / 霧の王宮",
+          "tagline": "最後の一冊。今夜は、サイも物語の中へ。"
+        },
+        "cast": [
+          {
+            "id": "sai",
+            "part": "GM",
+            "color": "#c9b8de"
+          },
+          {
+            "id": "hajime",
+            "part": "PLAYER",
+            "color": "#89bbc4"
+          },
+          {
+            "id": "adam",
+            "part": "PLAYER",
+            "color": "#c9463a"
+          },
+          {
+            "id": "samechan",
+            "part": "PLAYER",
+            "color": "#73b8df"
+          }
+        ],
+        "campaign": {
+          "seats": [
+            {
+              "actor": "sai",
+              "candidates": [
+                "sai"
+              ],
+              "required": true
+            },
+            {
+              "actor": "hajime",
+              "candidates": [
+                "hajime"
+              ],
+              "required": true
+            },
+            {
+              "actor": "adam",
+              "candidates": [
+                "adam",
+                "regulara"
+              ],
+              "required": false
+            },
+            {
+              "actor": "samechan",
+              "candidates": [
+                "samechan",
+                "regularb"
+              ],
+              "required": false
+            }
+          ]
+        },
+        "endings": {
+          "garden-scent": {
+            "title": "生まれた庭の香り"
+          },
+          "until-dawn": {
+            "title": "霧が晴れるまで"
+          },
+          "named-blend": {
+            "title": "ミナの一台"
+          },
+          "together": {
+            "title": "霧のあとに残る香り"
+          }
+        },
+        "pictureBook": {
+          "pages": [
+            {
+              "image": "../../img/ui/trpg/picturebook/mist-kingdom/01.webp",
+              "alt": "白い朝霧の中にのぞく、旗を掲げた塔の先",
+              "text": "夜明け前。霧の中に、旗を掲げた塔の先が見えてくる。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/mist-kingdom/02.webp",
+              "alt": "朝霧に浮かぶ石橋と、その先にかすむ王宮の入口",
+              "text": "朝霧が出ると、霧の王宮へ渡る橋が現れる。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/mist-kingdom/03.webp",
+              "alt": "霧色の髪の王女ミナと、隣でほほえむ霧の王",
+              "text": "今年最後の朝、霧の王女ミナは気に入った一台を選びたい。霧の王は、ほほえんでいる。"
+            },
+            {
+              "image": "../../img/ui/trpg/picturebook/mist-kingdom/04.webp",
+              "alt": "胸に番号札をつけ、王宮で列に並ぶ出場者たち",
+              "text": "『煙の選手権』を前に、番号札をつけた出場者が列に並ぶ。"
+            }
+          ]
+        }
+      }
     }
   ],
   "unlockChapter": 2,

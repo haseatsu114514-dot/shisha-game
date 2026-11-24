@@ -238,6 +238,7 @@ for (const [chapter, required] of [[1, 'lemon'], [2, 'afsahr_strawberry'], [3, '
  assert.equal(evaluateMix({...tournament,staffPractice:true,mix:{[trial]:12}}).regOk,false,
   '大会モードはstaffPractice指定でも使用可否を検査');
  assert.equal(evaluateMix({...tournament,mix:{[required]:12,[trial]:0}}).regOk,true,'0gは配合に含めない');
+ assert(mixFlavorIds({...tournament,mode:'rehearsal'}).includes(trial), '購入・所持済みの葉は準備葉に設定しなくてもリハーサルで選べる');
  s.flags._prep_flavor=trial;
  for (const options of [{}, {staffPractice:true}, {orderFlavorIds:[trial,required]}]) {
   const rehearsal={...tournament,mode:'rehearsal',...options,mix:{[required]:4,[trial]:8}};
@@ -247,6 +248,8 @@ for (const [chapter, required] of [[1, 'lemon'], [2, 'afsahr_strawberry'], [3, '
  assert(preparationFlavors().includes(trial),'preparationに試作葉が残る');
  assert.deepEqual(recipeMix({flavors:[DB.flavorById[trial].family||trial]}),{[trial]:12},'自宅でも試作葉を選べる');
 }
+s=core.newGame();s.chapter=4;s.flags._ch4_strategy='peach';s.flavorStock={};
+assert(mixFlavorIds({mode:'rehearsal'}).includes('peach'), '第4章リハーサルも申請した方針葉を支給する');
 const release = 'nightside_earlgrey_release';
 assert.equal(DB.flavorById[release].chapter_min, 3);
 assert.equal(isTournamentFlavorLegal(release, 2), false);

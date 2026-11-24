@@ -1,12 +1,13 @@
 // 実際の工程だけを短く認める。票・総合点・勝ち方には触れない。
 import { DB } from "../core/data.js";
-import { temperatureBands, isIdealTemperature } from "./temperature-model.js";
+import { temperatureBands } from "./temperature-model.js";
+import { temperatureStateAtFinish } from "./temperature-records.js";
 
 export function recognitionId(cs, { careRounds = 2 } = {}) {
   if (!cs) return null;
   const bands = temperatureBands(cs);
   const recorded = result => result && Number.isFinite(result.temp) && Number.isFinite(result.score);
-  const good = result => recorded(result) && !result.failed && isIdealTemperature(result.temp, bands);
+  const good = result => recorded(result) && temperatureStateAtFinish(result, bands) === true;
   const care = (cs.careHistory || []).slice(0, careRounds);
   if (care.length === careRounds && careRounds > 0 && good(care.at(-1))) {
     if (careRounds === 2 && good(cs.pull) && care.every(good)) return "steady";

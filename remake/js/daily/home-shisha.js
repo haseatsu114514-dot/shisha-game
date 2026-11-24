@@ -278,7 +278,7 @@ async function chooseRecipe(current) {
     return null;
   }
   const stock = Object.entries(mix).map(([id, g]) => ({ id, g, before: flavorStock(id) }));
-  const before = state.stamina, after = staminaAfter(HOME_STAMINA), maximum = maxStamina();
+  const before = state.stamina, after = staminaAfter(HOME_STAMINA), maximum = maxStamina({ forCondition: true });
   const condition = (n) => conditionForRatio(n / maximum).label;
   const body = el("div", { dataset: { test: "home-recipe-confirm" } }, [
     el("p", { text: `自分の葉を合計${HOME_GRAMS}g使う。` }),
@@ -296,7 +296,7 @@ async function chooseRecipe(current) {
   if (!confirmed || !current()) return null;
   // 確認した銘柄・残量・体調のままで決定する。表示中の変更後に別の葉へ差し替えない。
   if (stock.some(({ id, before }) => flavorStock(id) !== before) || state.stamina !== before
-      || maxStamina() !== maximum || staminaAfter(HOME_STAMINA) !== after) {
+      || maxStamina({ forCondition: true }) !== maximum || staminaAfter(HOME_STAMINA) !== after) {
     toast("葉の残量か体調が変わった。もう一度選ぼう");
     return null;
   }

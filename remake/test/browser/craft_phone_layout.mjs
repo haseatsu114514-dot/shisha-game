@@ -6,7 +6,7 @@ import { suite } from './support.mjs';
 import { audit } from './craft_phone_audit.mjs';
 
 // iPhone 横（844×390）・Safari のバーで低くなった時（844×340）・小さい端末（740×320）。
-// 育成済み: 能力が育つと出る効果の印（技・感・察）と、心得で増える部品（単体で勝負・香りの記憶・ズボー・味の名前を伏せる）がある状態。
+// 育成済み: 能力が育つと出る効果の印（技・感・察）と、心得で増える部品（単体で勝負・香りの記憶・ズボー）がある状態。
 // はじめの状態だけで確かめると、遊び込んだセーブでだけ崩れる（穴あけの右の列・吸い出しの下の列が崩れていた）。
 const CASES = [[844, 390, false], [844, 390, true], [844, 340, true], [740, 320, true]];
 const t = id => `[data-test="${id}"]`;
@@ -193,10 +193,11 @@ await suite('craft-phone-layout', async check => {
     await clean('吸い出し');
     const row = await page.evaluate(() => ['.pull-summary', '[data-test="pull-serve"]', '[data-test="pull-stop"]'].map(s => { const r = document.querySelector(s).getBoundingClientRect(); return [r.left, r.right]; }));
     assert(row[0][1] <= row[1][0] + 1 && row[1][1] <= row[2][0] + 1, `吸い出しの下の列が横に重ならない: ${JSON.stringify(row)}`);
-    if (grown) { // 心得で増えるボタンは上の段（ズボーは「吸う」の上、伏せるは「提供する」の上）。状態の札はつぶれない
-      const tier = await page.evaluate(() => Object.fromEntries(['.pull-summary', '[data-test="pull-serve"]', '[data-test="pull-stop"]', '[data-test="pull-deep"]', '[data-test="pull-blind"]', '.pull-dial']
+    if (grown) { // ズボーは「吸う」の上。状態の札はつぶれない。
+      assert.equal(await page.locator(t('pull-blind')).count(), 0, 'リハーサルでは味の名前を伏せるボタンを出さない');
+      const tier = await page.evaluate(() => Object.fromEntries(['.pull-summary', '[data-test="pull-stop"]', '[data-test="pull-deep"]', '.pull-dial']
         .map(s => { const r = document.querySelector(s).getBoundingClientRect(); return [s, { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width }]; })));
-      assert(tier['[data-test="pull-deep"]'].bottom <= tier['[data-test="pull-stop"]'].top + 1 && tier['[data-test="pull-blind"]'].bottom <= tier['[data-test="pull-serve"]'].top + 1, `追加のボタンは上の段: ${JSON.stringify(tier)}`);
+      assert(tier['[data-test="pull-deep"]'].bottom <= tier['[data-test="pull-stop"]'].top + 1, `ズボーは上の段: ${JSON.stringify(tier)}`);
       assert(tier['.pull-summary'].width >= tier['[data-test="pull-stop"]'].width, `状態の札がつぶれない: ${JSON.stringify(tier)}`);
       assert(tier['.pull-dial'].bottom <= tier['[data-test="pull-deep"]'].top + 1, `ダイヤルが追加のボタンに被らない: ${JSON.stringify(tier)}`);
     }

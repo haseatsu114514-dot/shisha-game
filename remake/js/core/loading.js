@@ -369,15 +369,12 @@ export async function withLoading(prepare, {
             bootNode?.classList.remove("is-preparing");
           });
   };
-  let comicReady = activity ? null : prepareComic();
+  let comicReady;
   let smallNotice;
   const smallTimer = activity ? setTimeout(() => {
     smallNotice = el("div.vn-loading", { role: "status", text: label });
     host.append(smallNotice);
   }, 500) : null;
-  // A quick task never flashes a loading screen. Styles are loaded only on use.
-  const styleReady = loadStyle();
-  styleReady.catch(error => controller.abort(error));
   // Portrait phones/tablets scale #stage down so far that comic text is unreadable. There, show the
   // overlay at true viewport scale (outside the scaled stage) and stack the panels large instead.
   // A phone held sideways (a short landscape screen) leaves the stage too: the 16:9 stage is letterboxed
@@ -394,9 +391,17 @@ export async function withLoading(prepare, {
   const onOrient = () => { if (overlay.isConnected) { placeOverlay(); overlay.focus(); } };
   for (const mq of viewportMqs) mq.addEventListener?.("change", onOrient);
   const show = async () => {
-    try { await styleReady; } catch { return; }
     if (settled || controller.signal.aborted) return;
-    comicReady ??= prepareComic();
+    // A fast preparation leaves both the stylesheet and the comic art untouched.
+    try {
+      const styleReady = loadStyle();
+      comicReady = prepareComic();
+      await styleReady;
+    } catch (error) {
+      controller.abort(error);
+      return;
+    }
+    if (settled || controller.signal.aborted) return;
     smallNotice?.remove();
     placeOverlay(); overlay.focus();
   };

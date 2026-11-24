@@ -97,6 +97,14 @@ assert.deepEqual(played, ["ch2_strawberry_trial_intro", "ch2_strawberry_trial_no
 assert.equal(state.flags._ch2_strawberry_trial, undefined);
 
 played = [];
+practice = null;
+const interrupted = await runStrawberryTrial({ bg: "tonari" });
+assert.equal(interrupted.result, null);
+assert.equal(interrupted.masteryGained, false);
+assert.deepEqual(played, ["ch2_strawberry_trial_intro"]);
+assert.equal(state.flags._ch2_strawberry_trial, undefined);
+
+played = [];
 practice = { mix: { afsahr_strawberry: 8, double_apple: 4 }, pull: { over: true } };
 assert.equal((await runStrawberryTrial({ bg: "tonari" })).result, "hot");
 assert.deepEqual(played, ["ch2_strawberry_trial_intro", "ch2_strawberry_trial_hot"]);
@@ -137,7 +145,7 @@ const tonariPorts = {
   ...calendarPorts, el, DB: { dialogues: {}, baito: [], flavorById: {} }, config: {},
   SE: { select() {}, cancel() {} }, CHARM_BONUS: [0], step: () => 1,
   currentCondition: () => ({ bonusRate: 1, shiftBonus: 0, health: "green" }),
-  play: async () => ({}), dialogueSequence: run => run(), readyLessons: () => [],
+  play: async () => ({}), dialogueSequence: run => run(), readyLessons: () => [], modal: async () => 0,
   on: () => () => {}, // シフト中のセーブの入れ替わりを見張る購読（解除の関数を返す。#2166）
   staffFlavors: () => [], staffStock: () => 0,
   showScreen: (_, node) => {

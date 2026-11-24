@@ -62,12 +62,13 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "勇者はじめよ。二つ目は「会いたかった」じゃ"
+          "text": "勇者はじめよ。二つ目は「会いたかった」である",
+          "voice": "korochan"
         },
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "コロちゃん！　読み上げる順番というものが……"
+          "text": "コロちゃん！ 読み上げる順番というものが……"
         },
         {
           "speaker": "",
@@ -119,7 +120,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "おつかれさまです。飛行機、眠れましたか"
+          "text": "お疲れさまです。飛行機、眠れましたか"
         },
         {
           "speaker": "hiyori",
@@ -213,7 +214,7 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "側近は、お主が来ぬ間に、店の席を三度も拭き直しておった",
+          "text": "側近は、勇者はじめが来ぬ間に、店の席を三度も拭き直していた",
           "voice": "korochan"
         },
         {

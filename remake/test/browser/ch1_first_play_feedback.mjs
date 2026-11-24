@@ -44,6 +44,7 @@ await suite("ch1-first-play-feedback", async check => {
       session.openBench(cs, { steps: CRAFT_STEPS });
       void runHoles(cs);
     });
+    await page.locator('.bench-guide[open] [data-test="bench-guide-close"]').click();
     await id(page, "hole-start").waitFor();
     assert.equal(await page.locator(".bench-demo-sheet").count(), 0, "穴あけのお手本は廃止（#3815）");
     await id(page, "hole-start").click();

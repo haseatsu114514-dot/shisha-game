@@ -10,7 +10,7 @@ const LONG = 120000;
 
 /** カウントダウンの文字と、版で分かれる部品が一度でも出たかを記録する（自動操作の速い工程でも取りこぼさない） */
 function watchCraft() {
-  window.__seen = { countdown: [], destination: false, arc: false, focus: false, readyCue: false, callout: false, attack: false, grades: [], attackResults: [] };
+  window.__seen = { countdown: [], destination: false, arc: false, focus: false, callout: false, attack: false, grades: [], attackResults: [] };
   const look = () => {
     const seen = window.__seen, cd = document.querySelector(".countdown");
     if (cd && seen.countdown[seen.countdown.length - 1] !== cd.textContent) seen.countdown.push(cd.textContent);
@@ -18,7 +18,6 @@ function watchCraft() {
     seen.destination ||= !!document.querySelector('[data-test="pull-destination"]');
     seen.arc ||= !!document.querySelector(".pg-draw-arc");
     seen.focus ||= !!document.querySelector('[data-test="pull-focus"]');
-    seen.readyCue ||= !!document.querySelector(".coal.ready-cue");
     seen.callout ||= !!document.querySelector(".foil-target-plane > .stamp");
     seen.attack ||= !!document.querySelector('[data-test="attack-band"]');
     const grade = document.querySelector(".craft-rank")?.dataset.grade;
@@ -160,10 +159,10 @@ await suite("craft-version", async (check) => {
     assert.equal(await page.locator(".bench").getAttribute("data-craft-version"), craft);
     await page.waitForTimeout(500); // 以前はこの間に、穴あけのお手本のシートが自動で開いた
     assert.equal(await page.locator(".bench-demo-sheet").count(), 0, "穴あけのお手本を自動で開かない");
-    await page.locator(".bench-guide > summary").click();
-    await page.locator(t("bench-guide-close")).waitFor();
+    const guideClose = page.locator(`.bench-guide[open] ${t("bench-guide-close")}`);
+    await guideClose.waitFor();
     assert.equal(await page.locator(".bench-guide .bench-demo-link").count(), 0, "「?」に穴あけのお手本の入口を残さない");
-    await page.locator(t("bench-guide-close")).click();
+    await guideClose.click();
     await page.locator(t("hole-start")).click();
     await page.locator(t("hole-punch")).waitFor();
     assert.equal(await page.locator(`${t("hole-punch")} ${t("hole-press-meter")}`).count(), craft === "sakurai" ? 1 : 0,
@@ -174,7 +173,7 @@ await suite("craft-version", async (check) => {
       return { sakurai: !!demoFor("holes", "sakurai"), renewal: !!demoFor("holes", "renewal"), pull: demoFor("pull", "renewal")?.src };
     });
     assert.deepEqual(demos, { sakurai: false, renewal: false, pull: "./media/demo-pull.mp4" }, "吸い出しのお手本は残す");
-  }, { pageEntry: preview(`step=holes&mode=tutorial&craft=${craft}`), pageReadySelector: t("hole-start") });
+  }, { pageEntry: preview(`step=holes&mode=tutorial&craft=${craft}`), pageReadySelector: `.bench-guide[open] ${t("bench-guide-close")}` });
 
   await check("sakurai-steam-and-pull-before-renewal", async (page) => {
     await autoGood(page);

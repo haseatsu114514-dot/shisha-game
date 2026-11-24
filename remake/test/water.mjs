@@ -56,7 +56,7 @@ const context = vm.createContext({ console, document, window, Node: Element, Eve
 });
 const modules = new Map();
 const order = [];
-const session = new vm.SyntheticModule(["stepPanel", "benchRoot", "craftTest", "newSession", "openBench", "waitBenchReady", "setBenchWater"], function() {
+const session = new vm.SyntheticModule(["stepPanel", "benchRoot", "craftTest", "newSession", "openBench", "waitBenchReady", "setBenchWater", "explainTutorialStep"], function() {
   this.setExport("stepPanel", () => { order.push("water"); const panel = new Element(); document.body.append(panel); return panel; });
   this.setExport("benchRoot", () => document.body);
   this.setExport("craftTest", { auto: null });
@@ -64,6 +64,7 @@ const session = new vm.SyntheticModule(["stepPanel", "benchRoot", "craftTest", "
   this.setExport("openBench", () => {});
   this.setExport("waitBenchReady", async () => {});
   this.setExport("setBenchWater", () => {});
+  this.setExport("explainTutorialStep", async () => true);
 }, { context });
 const stubs = new Map();
 function stub(relative, exports) {

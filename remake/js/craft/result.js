@@ -549,7 +549,7 @@ export function resultTable(cs, rank, attempt = null) {
     const screen = el("div.result-table", { dataset: { test: "tournament-result", rank, ...(actionsInFooter ? { craftVersion: "sakurai" } : {}) } }, [
       el("i.rt-rays", { "aria-hidden": "true" }),
       el("div.rt-hero", [
-        el("span.rt-emblem", { "aria-hidden": "true", dataset: { rank } }, [el("b", { text: rank === 1 ? "1" : String(rank) }), el("small", { text: rank === 1 ? "ST" : "TH" })]),
+        el("span.rt-emblem", { "aria-hidden": "true", dataset: { rank } }, [el("b", { text: String(rank) }), el("small", { text: ["ST", "ND", "RD", "TH"][rank - 1] || "TH" })]),
         header("SMOKE CROWN CUP ／ FINAL RESULT", rank === 1 ? "CHAMPION" : `${rank}位`, reason
           ? el("div.tournament-result-reason", { text: reason, dataset: { test: "tournament-result-reason" } })
           : rank === 1 ? "逢縁 はじめ · 次の舞台へ" : "この一台の記録を、次の挑戦へ。"),

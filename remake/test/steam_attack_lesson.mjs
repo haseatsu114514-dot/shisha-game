@@ -91,8 +91,9 @@ await suite('attack-lesson', async check => {
       });
       assert(lockGeometry.dx < 1 && lockGeometry.dy < 1, 'lock stays at icon centre');
       assert(lockGeometry.size >= 50 && lockGeometry.opacity <= .25, 'large lock and inactive artwork');
-      assert.equal(await button.getAttribute('title'),'アタック：使用不可');
-      assert.equal(await button.getAttribute('aria-label'),'アタック。使用不可');
+      const lockReason = '未習得：スミさんの蒸らしアタックの授業で解放';
+      assert.equal(await button.getAttribute('title'), lockReason);
+      assert.equal(await button.getAttribute('aria-label'), `アタック。${lockReason}`);
       await page.keyboard.press('z');
       await button.dispatchEvent('pointerdown'); await button.dispatchEvent('click',{detail:0});
       if(mobile) { const r=await button.boundingBox(); await page.touchscreen.tap(r.x+r.width/2,r.y+r.height/2); }

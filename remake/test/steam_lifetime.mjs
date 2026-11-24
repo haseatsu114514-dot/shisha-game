@@ -18,10 +18,10 @@ async function harness({ manual = false, paused = true, craft = {}, lessons = []
   const nodes = new Map();
   class Node extends EventTarget {
     constructor() {
-      super(); this.style = { setProperty() {} }; this.dataset = {}; this.inert = false;
+      super(); this.style = { setProperty() {} }; this.dataset = {}; this.attrs = {}; this.inert = false;
       this.classList = { add() {}, remove() {}, toggle() {} };
     }
-    append() {} setAttribute() {} remove() {} closest() { return null; }
+    append() {} setAttribute(key, value) { this.attrs[key] = value; } remove() {}
     querySelector() { return new Node(); }
     getBoundingClientRect() { return { left: 0, top: 0, width: 784, height: 414 }; }
   }
@@ -49,7 +49,7 @@ async function harness({ manual = false, paused = true, craft = {}, lessons = []
     '../core/audio.js': { SE: new Proxy({}, { get: () => noop }) },
     '../core/stats.js': { tier01: () => 0, step: () => 1 },
     '../core/stat-step-tables.js': { REFRESH_RADII: [90], REFRESH_LABELS: ['小さな範囲'], refreshRestoresMental: () => false },
-    './session.js': { benchRoot: () => activeRoot, stepPanel: () => panel, waitBenchReady: () => ready.promise,
+    './session.js': { benchRoot: () => activeRoot, stepPanel: (_step, _title, hint) => { metrics.hint = hint; return panel; }, waitBenchReady: () => ready.promise,
       explainTutorialStep: () => help.promise, refreshBench: noop, reactAudience: noop, setPlayerMental: (_cs, level) => metrics.mental.push(level),
       setBenchTemperature: noop, scoreStep: () => metrics.score++ },
     './attack-training.js': { hasAttackTraining: () => false, ATTACK_LOCK_REASON: 'locked' },
@@ -105,6 +105,18 @@ function assertCancelled(h) {
   assert.equal(h.metrics.unkey, 1); assert.equal(h.metrics.abort, 1);
   assert.equal(h.panel.inert, false);
 }
+
+test('unlearned attack announces the lesson on its disabled button', async () => {
+  const h = await harness();
+  h.ready.resolve(); await flush();
+  const attack = [...h.nodes.values()].find(node => node.dataset.test === 'dodge-slash');
+  assert.equal(attack.disabled, true);
+  assert.equal(attack.attrs.title, 'locked');
+  assert.equal(attack.attrs['aria-label'], 'アタック。locked');
+  assert.doesNotMatch(h.metrics.hint, /アタック|コンボ/);
+  h.help.resolve(false);
+  await h.run;
+});
 
 for (const invalidation of ['state', 'bench', 'step']) test(`countdown rejects stale ${invalidation} before starting or scoring`, async () => {
   const h = await harness(); await h.startCountdown();

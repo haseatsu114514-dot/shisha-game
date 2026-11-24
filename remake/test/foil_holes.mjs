@@ -38,7 +38,7 @@ const values = {
   "art.js": { artImg: () => el("div.art") },
   "steps.js": { stepVent: async () => { throw new Error("Foil drill must not enter the vent step"); } },
   "audio.js": { SE: Object.fromEntries(["foilPunch", "perfect", "good", "miss", "just", "whoosh"].map((name) => [name, () => seCalls.push(name)])) },
-  "session.js": { benchRoot: () => null, waitBenchReady: async () => {}, stepPanel: () => { panel ||= new Element("div.panel"); panel.replaceChildren(); return panel; }, refreshBench: () => {}, tickerSay: () => {}, reactAudience: () => {}, scoreStep: () => {},
+  "session.js": { benchRoot: () => null, waitBenchReady: async () => {}, explainTutorialStep: async () => true, stepPanel: () => { panel ||= new Element("div.panel"); panel.replaceChildren(); return panel; }, refreshBench: () => {}, tickerSay: () => {}, reactAudience: () => {}, scoreStep: () => {},
     setBenchHoleAction: (cs, event) => visualHoles.push({ cs, ...event }) },
   "common.js": { gradeOf: (score) => score >= 90 ? "S" : score >= 80 ? "A" : score >= 65 ? "B" : score >= 50 ? "C" : "D", autoSkill: () => automated,
     skill: { slow: () => 1, window: () => 1 }, resultCard: async (_, data) => results.push(data), keys: (map) => { keymap = map; return () => { keymap = null; }; }, popStamp: (_, text, kind) => stamps.push({ text, kind }) },
@@ -99,9 +99,9 @@ assert.equal(conditions.heatDelta(few, .1), conditions.heatDelta(outerOnly, .1))
 assert(conditions.heatDelta({ ...outerOnly, environment: { rainy: true } }, .1) < conditions.heatDelta(outerOnly, .1));
 assert.equal(conditions.heatDelta({ ...outerOnly, environment: { rainy: true } }, -.1), conditions.heatDelta(outerOnly, -.1));
 
-async function start(auto = null, templateId = "outer24", mode = "drill", preparation = undefined, choose = true) {
+async function start(auto = null, templateId = "outer24", mode = "drill", preparation = undefined, choose = true, extra = {}) {
   now = 1000; automated = auto; panel = null; keymap = null; frames.clear(); stamps.length = 0; delayed.length = 0; results.length = 0; visualHoles.length = 0;
-  const cs = { mode, holes: null, holeTemplateId: templateId, preparation };
+  const cs = { mode, holes: null, holeTemplateId: templateId, preparation, ...extra };
   const running = holes.runHoles(cs); await settle();
   if (!auto && choose) {
     assert(find("hole-preview")); assert.equal(frames.size, 0); assert.equal(keymap, null);
@@ -201,6 +201,7 @@ fire("hole-start"); await settle();
 await pierce(50); await advance(); await active.running;
 assert.equal(seCalls.filter(id => id === "foilPunch").length, 1);
 const editedFoil = active.cs.preparation.foil;
+assert(Math.abs(editedFoil.elapsed - (savedFoil.elapsed * 23 / 24 + (now - 1000) / 1000)) < 1e-10);
 assert.equal(active.cs.holes.total, 24);
 assert.equal(active.cs.holes.tally.shallow, 1);
 assert.equal(active.cs.holes.tally.rough, 23);
@@ -247,7 +248,14 @@ await advance(); await active.running;
 assert.equal(results.at(-1).button, "確認して次の工程へ");
 assert(active.cs.holes.minimumComplete); assert.equal(active.cs.holes.total, 24); assert.equal(active.cs.holes.timeRatio, 0);
 assert.equal(active.cs.holes.score, sparse.score - 5);
-// 両テンプレートの既存good/badフックを通し、実際に開けた穴を採点する。
+
+active = await start(null, "outer24", "tournament", undefined, true, { retryAssist: true, retryAssistLevel: 2 });
+await frame(35000);
+assert.doesNotMatch(find("hole-plan").textContent, /時間評価は終了/);
+await frame(1000 + Math.ceil(1000 * holes.HOLES_TUNING.timeLimit * 3.2) + 1);
+assert.match(find("hole-plan").textContent, /時間評価は終了/);
+await punchCircle(24); await advance(); await active.running;
+// 両テンプレートの既存good/badフックを通し、少穴の品質計算も引き続き同じ尺度に保つ。
 for (const template of templates.HOLE_TEMPLATES) {
   const scores = [];
   for (const level of ["good", "bad"]) {

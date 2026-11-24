@@ -93,9 +93,9 @@ check("Naru and Rio, the order (#3468 E): names unchanged, Rio never reads it as
   assert(whole.includes("ケムリクサさん") && whole.includes("円頓寺さん"));
   assert(!/好き|告白|惚れ|憧れ|照れ|赤く|亮太|鳴切|凛想さんって|くゆり|マニキュア|爪/.test(whole));
   assert(all.filter((l) => l.speaker === "naru").every((l) => !/凛想/.test(l.text)), "Naru keeps calling her by her family name");
-  // 凛想が覚えていたのは仕事の記録（焼き菓子の台・焦げ）。なるは伝票をそろえかけて止め、自分の条件を先に言う
+  // 凛想が覚えていたのは仕事の記録（焼き菓子の台・焦げ）。なるは伝票を揃えかけて止め、自分の条件を先に言う
   const remember = rows.findIndex((l) => l.speaker === "rio" && l.text.includes("焦げた砂糖"));
-  const stop = rows.findIndex((l) => l.text.includes("そろえかけて"));
+  const stop = rows.findIndex((l) => l.text.includes("揃えかけて"));
   const terms = rows.findIndex((l) => l.speaker === "naru" && l.text.includes("条件を先に"));
   const tea = rows.findIndex((l) => l.text.includes("湯のみを二つ"));
   assert(remember >= 0 && stop > remember && terms > stop && tea > terms, "remembered → stops tidying → states his terms → tea");

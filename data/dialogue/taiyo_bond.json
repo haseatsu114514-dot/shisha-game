@@ -23,7 +23,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "だいじょぶ、だいじょぶ！　そのまま、そのまま！"
+          "text": "だいじょぶ、だいじょぶ！ そのまま、そのまま！"
         },
         {
           "speaker": "",
@@ -38,7 +38,7 @@
         {
           "speaker": "da_silva",
           "face": "surprise",
-          "text": "おっ？　お前、客だろ"
+          "text": "おっ？ お前、客だろ"
         },
         {
           "speaker": "hajime",
@@ -129,7 +129,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "お、ハジメ！　ちょうどいい。名前、書け"
+          "text": "お、ハジメ！ ちょうどいい。名前、書け"
         },
         {
           "speaker": "hajime",
@@ -154,7 +154,7 @@
         {
           "speaker": "da_silva",
           "face": "smile",
-          "text": "俺の？　……書くか。日本の字、時間かかるぞ"
+          "text": "俺の？ ……書くか。日本の字、時間かかるぞ"
         },
         {
           "speaker": "",
@@ -179,7 +179,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "一番好きなの、太陽！　一番、明るいからな"
+          "text": "一番好きなの、太陽！ 一番、明るいからな"
         },
         {
           "speaker": "hajime",
@@ -238,7 +238,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "最初は、俺の椅子！　次、お前のな"
+          "text": "最初は、俺の椅子！ 次、お前のな"
         },
         {
           "speaker": "hajime",
@@ -359,7 +359,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "言われて、口元がゆるんでいたのに気づいた。太陽の踵が、また拍を打ちはじめる。"
+          "text": "言われて、口元がゆるんでいたのに気づいた。太陽の踵が、また拍を打ち始める。"
         },
         {
           "speaker": "da_silva",
@@ -384,7 +384,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "そう！　休むのも、フェスタのうちだ"
+          "text": "そう！ 休むのも、フェスタのうちだ"
         },
         {
           "speaker": "",
@@ -429,7 +429,7 @@
           {
             "speaker": "da_silva",
             "face": "excited",
-            "text": "おう！　大会で会おうぜ"
+            "text": "おう！ 大会で会おうぜ"
           }
         ],
         "after_tournament": [
@@ -473,7 +473,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "言った、だろ？　大会で会おうって！"
+          "text": "言った、だろ？ 大会で会おうって！"
         },
         {
           "speaker": "hajime",
@@ -563,7 +563,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "見せる人は、見る人だ！　ショーマン、なめんなよ"
+          "text": "見せる人は、見る人だ！ ショーマン、なめんなよ"
         },
         {
           "speaker": "",
@@ -578,7 +578,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "おう！　で、座ったら手加減なし、な"
+          "text": "おう！ で、座ったら手加減なし、な"
         },
         {
           "type": "condition",
@@ -640,7 +640,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "来たな、ハジメ！　今日は、屋敷のみんなが客だ"
+          "text": "来たな、ハジメ！ 今日は、屋敷のみんなが客だ"
         },
         {
           "speaker": "da_silva",
@@ -705,7 +705,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "短く何か聞かれた。卓に置いたスマホに、訳が出る。「始まりの合図かね」"
+          "text": "短く何か聞かれた。卓に置いたスマホに、訳が出る。「始まりの合図かね」。"
         },
         {
           "speaker": "hajime",
@@ -735,7 +735,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "いいぞ、ハジメ！　でかい一発、入ったな！"
+          "text": "いいぞ、ハジメ！ でかい一発、入ったな！"
         },
         {
           "speaker": "hajime",
@@ -781,7 +781,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "見てろよ！　輪、三つ。一つ目に、二つ目、通す！"
+          "text": "見てろよ！ 輪、三つ。一つ目に、二つ目、通す！"
         },
         {
           "speaker": "",
@@ -801,7 +801,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "しくじった！　今の、なし！"
+          "text": "しくじった！ 今の、なし！"
         },
         {
           "speaker": "",
@@ -906,7 +906,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "手、低い！　でも、上げた！"
+          "text": "手、低い！ でも、上げた！"
         },
         {
           "speaker": "",
@@ -931,7 +931,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "おう！　で、俺は、お前の常連。水、見たからな"
+          "text": "おう！ で、俺は、お前の常連。水、見たからな"
         }
       ]
     },
@@ -955,7 +955,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "来たな、ハジメ！　座る前に……見てろよ！"
+          "text": "来たな、ハジメ！ 座る前に……見てろよ！"
         },
         {
           "speaker": "",
@@ -981,7 +981,7 @@
           "speaker": "da_silva",
           "face": "excited",
           "beat": 500,
-          "text": "お前のだ！　持ってけ！"
+          "text": "お前のだ！ 持ってけ！"
         },
         {
           "speaker": "hajime",
@@ -1056,7 +1056,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "ある！　毎日笑えるやつ、いねえからな"
+          "text": "ある！ 毎日笑えるやつ、いねえからな"
         },
         {
           "speaker": "",
@@ -1086,7 +1086,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "使え！　葉も付ける。棚に飾ったら、ただの土だ"
+          "text": "使え！ 葉も付ける。棚に飾ったら、ただの土だ"
         },
         {
           "speaker": "da_silva",
@@ -1121,7 +1121,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "最高の歓迎だ！　なら、椅子と水も、忘れんなよ"
+          "text": "最高の歓迎だ！ なら、椅子と水も、忘れんなよ"
         },
         {
           "speaker": "hajime",

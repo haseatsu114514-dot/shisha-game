@@ -32,6 +32,7 @@ await module.link(path => {
   }, { context });
 });
 await module.evaluate();
+const serveShiftOrder = () => module.namespace.serveShiftOrder(state, new AbortController().signal);
 const text = node => node ? [node.text || "", ...(node.children || []).map(text)].join(" ") : "";
 
 // メニューは非同期の選択待ち。表示だけを検査しても状態・行動は変えない。
@@ -49,7 +50,7 @@ assert.equal(state.slot, 1);
 for (let day = 70; day < 90; day++) {
   state.day = day;
   state.flags = {};
-  await module.namespace.serveShiftOrder();
+  await serveShiftOrder();
   assert.doesNotMatch(order.title + order.body, /つむぎ/);
   assert.match(played.at(-1), /ch5_world_viewer/);
 }
@@ -58,7 +59,7 @@ const seen = new Set();
 for (let day = 70; day < 110; day++) {
   state.day = day;
   state.flags = {};
-  await module.namespace.serveShiftOrder();
+  await serveShiftOrder();
   seen.add(played.at(-1));
 }
 assert([...seen].some(id => /ch5_tsumugi/.test(id)));
@@ -70,7 +71,7 @@ state.flags = {};
 module.namespace.tonariMenu();
 assert.match(text(screen), /シフトに入る（バイト）/);
 assert.match(text(screen), /常連席にはつむぎがいる/);
-await module.namespace.serveShiftOrder();
+await serveShiftOrder();
 assert.doesNotMatch(played.at(-1), /ch5_/);
 console.log("ch5 tonari manager: menu, absent/present orders, chapter-one regression passed");
 

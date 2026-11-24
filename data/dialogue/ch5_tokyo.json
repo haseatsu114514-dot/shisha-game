@@ -20,7 +20,7 @@
         { "speaker": "", "face": "", "text": "Dr.fookahの配送の車に乗せてもらい、東京へ向かった。助手席は、葉の箱の匂いがする。" },
         { "speaker": "", "face": "", "text": "昼の問屋街を出て、最初の店で箱を降ろす。台車を押して戻ると、車の影が少し長くなっていた。" },
         { "speaker": "", "face": "", "text": "二軒目、三軒目と寄るたびに、荷台は軽くなっていく。" },
-        { "speaker": "", "face": "", "text": "窓の外の空が、橙から群青へ変わっていく。道路の灯が、ひとつずつ点いた。" },
+        { "speaker": "", "face": "", "text": "窓の外の空が、橙から群青へ変わっていく。道路の灯りが、ひとつずつ点いた。" },
         { "speaker": "hajime", "face": "normal", "text": "（着いたら、まずmukaiに顔を出そう）" },
         { "speaker": "", "face": "", "text": "車は夜の東京へ入っていった。" }
       ]
@@ -32,7 +32,7 @@
         { "speaker": "", "face": "", "text": "空になった箱を積んで、車は高速を西へ走る。荷台で、箱が小さく鳴った。" },
         { "speaker": "hajime", "face": "normal", "text": "（行きは重かった荷が、帰りは空か。座席だけが、やけに広い）" },
         { "speaker": "", "face": "", "text": "途中の店に寄るたび、積み残しの箱を手伝って降ろした。そのたびに、窓の外が少しずつ暗くなる。" },
-        { "speaker": "", "face": "", "text": "見慣れた街の明かりが見えた頃には、もう夜だった。" },
+        { "speaker": "", "face": "", "text": "見慣れた街の灯りが見えた頃には、もう夜だった。" },
         { "speaker": "hajime", "face": "smile", "text": "（戻ってきたな）" }
       ]
     },
@@ -93,7 +93,7 @@
       "dialogue_id": "ch5_tokyo_steve",
       "lines": [
         { "speaker": "", "face": "", "text": "Smoke & Glory。カウンターの端で、スティーブがタイマーのつまみを回していた。" },
-        { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ！　世界から帰ってきた顔だ" },
+        { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ！ 世界から帰ってきた顔だ" },
         { "speaker": "hajime", "face": "smile", "text": "そんな顔、してますか" },
         { "speaker": "steve", "face": "normal", "text": "してる。少し日に焼けて、少し落ち着いた" },
         { "speaker": "hajime", "face": "normal", "text": "相変わらず、そのタイマーで待つんですね。俺は向こうで、待つのが少し下手になりました" },
@@ -132,7 +132,7 @@
       "comment": "#2705 スティーブの好感度の締めくくり（第5章の東京版・友情のみ）。第3章の ch3_steve_bond_finale と同じ節目で、第3章で♥5に届かず見逃した人が Smoke & Glory で受け直す（daily/bonds.js の BOND_FINALES.steve.tokyoDialogue）。第3章で見た人は finales.steve で二度は出ない。第3章の外出・LIMEの記憶を前提にしない（見ていない人も読める）。第5章では第3章のLIME交換の寄り道を前提にしないので、まだ交換していない人は「顔の知らせ」を頼まれたその場で交換する（contact の分岐 lime_exchange。第3章の ch3_steve_lime と同じ set_flag で、交換後は友人のLIME remake/data/friends.json が届く）。交換済みの人は分岐を通らない。世界を回って帰ったはじめに、練習に使ってきた素焼きを預ける。看板のマウンテンミスト（葉と秒数）は預けない（2026-11-13 オーナー訂正）。報酬（専用ハガル）は playFinale が渡す。昼にも夜にも読めるので時間帯を言わない。",
       "metadata": { "bond_finale": "steve" },
       "lines": [
-        { "speaker": "", "text": "Smoke & Glory。スティーブは棚の一番上から、小さな紙袋を下ろした。" },
+        { "speaker": "", "text": "Smoke & Glory。スティーブは棚のいちばん上から、小さな紙袋を下ろした。" },
         { "speaker": "steve", "face": "normal", "text": "ずっと練習に使ってきた、俺のハガルだ" },
         { "speaker": "", "text": "袋の中は、縁の欠けた素焼きのハガルだった。内側の土が、うっすら黄色く染まっている。" },
         { "speaker": "", "text": "鼻を近づけると、レモンのあとから、ライムが追ってきた。" },
@@ -155,7 +155,7 @@
         { "speaker": "hajime", "face": "normal", "text": "最初は、マウンテンミストを詰めればいいですか" },
         { "speaker": "steve", "face": "serious", "text": "ノー、ノー。葉はつけない。あれは、俺の看板だ" },
         { "speaker": "steve", "face": "smile", "text": "吸いたくなったら、店に来い。こいつに何を詰めるかは、ハジメが決めろ" },
-        { "speaker": "", "face": "", "text": "紙袋は、ハガル一つ分の重さだった。" },
+        { "speaker": "", "face": "", "text": "紙袋は、ハガル一つぶんの重さだった。" },
         { "speaker": "", "face": "", "text": "空いた棚に、スティーブはレシピカードを一枚立てた。余白まで、客の言葉で埋まっている。" },
         { "speaker": "steve", "face": "smile", "text": "新しいのが焼けるまで、こいつが見張り役だ" },
         { "type": "apply", "stats": { "technique": 2 } }
@@ -202,7 +202,7 @@
         { "speaker": "volk", "face": "smile", "text": "ここだけは、数字を持たない。……飲め。冷める" },
         { "speaker": "hajime", "face": "normal", "text": "甘さは、どのくらいが正解ですか" },
         { "speaker": "volk", "face": "normal", "text": "正解はない。祖母は、俺の顔を見て足した。それだけのことだ" },
-        { "speaker": "volk", "face": "normal", "text": "だから今日は、お前の顔を見て出した、……足りないなら言え" },
+        { "speaker": "volk", "face": "normal", "text": "だから今日は、お前の顔を見て出した……足りないなら言え" },
         { "speaker": "hajime", "face": "smile", "text": "（測らない一杯が、この店でいちばん正確なのかもしれない）" }
       ]
     },
@@ -219,8 +219,8 @@
         { "speaker": "ayatori", "face": "normal", "text": "それより、これ。君の分の空欄" },
         { "speaker": "", "face": "", "text": "綾取がノートを開く。優勝の日の欄の隣に、新しい字が一行だけ増えていた。" },
         { "speaker": "ayatori", "face": "smile", "text": "「予想、外れ。本人は、もっと先まで行った」。……世界の後に書くって、約束したからね" },
-        { "speaker": "hajime", "face": "normal", "text": "（予想が外れたことを、うれしそうに書く人だ）" },
-        { "speaker": "ayatori", "face": "smile", "text": "一台どうぞ。今日は、材料を先に見る？　伏せる？" }
+        { "speaker": "hajime", "face": "normal", "text": "（予想が外れたことを、嬉しそうに書く人だ）" },
+        { "speaker": "ayatori", "face": "smile", "text": "一台どうぞ。今日は、材料を先に見る？ 伏せる？" }
       ]
     },
     {
@@ -231,7 +231,7 @@
         { "speaker": "ayatori", "face": "normal", "text": "延長したら、常連が増えちゃってさ。席が足りない" },
         { "speaker": "hajime", "face": "surprise", "text": "布で、席を増やしたんですか" },
         { "speaker": "ayatori", "face": "smug", "text": "増えたように見えるだけ。奥が読めない店は、狭くても広く見える" },
-        { "speaker": "hajime", "face": "normal", "text": "……それ、組織の技術ですか" },
+        { "speaker": "hajime", "face": "normal", "text": "……それ、装飾の技術ですか" },
         { "speaker": "ayatori", "face": "normal", "text": "間借りの知恵。借りた店は、壁に釘を打てないから" },
         { "speaker": "", "face": "", "text": "綾取は布の端を直して、客の答えをノートに書き足した。" },
         { "speaker": "ayatori", "face": "smile", "text": "東京の客の続き、まだ聞けてる。……閉めなくて、よかった" }
@@ -262,7 +262,7 @@
         { "speaker": "volk", "face": "serious", "text": "数字では、お前の一台までは分からない" },
         { "speaker": "volk", "face": "normal", "text": "……ドバイの店は、どうだった" },
         { "speaker": "hajime", "face": "normal", "text": "どこも冷房が強くて、空気が乾いてました。炭が、tonariより早く白くなって" },
-        { "speaker": "volk", "face": "normal", "text": "乾いた部屋か、……書いておく" },
+        { "speaker": "volk", "face": "normal", "text": "乾いた部屋か……書いておく" },
         { "speaker": "", "text": "ヴォルクは手帳に一行足してから、木箱のふたを開けた。" },
         { "speaker": "", "text": "中には、素焼きのハガルが一つ。胴に、短い線が何十本も刻んである。" },
         { "speaker": "hajime", "face": "surprise", "text": "こんなに、線が……何本あるんですか" },
@@ -275,9 +275,9 @@
         { "speaker": "volk", "face": "normal", "beat": 600, "text": "持っていけ。次の一本は、お前の客で刻め" },
         { "speaker": "hajime", "face": "surprise", "text": "そんな大事な記録を、俺が？" },
         { "speaker": "volk", "face": "normal", "text": "俺の手元では、線はもう増えない。お前の手でなら、増える" },
-        { "speaker": "", "text": "ヴォルクはナイトサイドの黒い袋を一つ、木箱の隣に置いた。ブラストミントだ。" },
+        { "speaker": "", "text": "ヴォルクはNIGHTSIDEの黒い袋を一つ、木箱の隣に置いた。ブラストミントだ。" },
         { "speaker": "volk", "face": "serious", "text": "強い冷たさは、火の乱れを隠す。客がいつ休んだかを、温度の隣に書け" },
-        { "speaker": "hajime", "face": "smile", "text": "はい。俺は先にお客さんに頷いて、それから書きます" },
+        { "speaker": "hajime", "face": "smile", "text": "はい。俺は先にお客さんにうなずいて、それから書きます" },
         { "speaker": "volk", "face": "normal", "text": "……順番は違っても、両方を書くなら構わない" },
         { "type": "condition", "condition_type": "contact", "char_id": "volk", "next_false": "lime_exchange" },
         { "speaker": "", "text": "紅茶のカップが二つ、カウンターに並んだ。小皿のジャムは、測らずにすくってある。" },
@@ -370,7 +370,7 @@
     {
       "dialogue_id": "ch5_tokyo_attic_rest_c",
       "lines": [
-        {"speaker": "", "face": "", "text": "屋根裏の隅に、段ボールが積んである。一番上の箱に「冬物」と書いてあった。"},
+        {"speaker": "", "face": "", "text": "屋根裏の隅に、段ボールが積んである。いちばん上の箱に「冬物」と書いてあった。"},
         {"speaker": "hajime", "face": "normal", "text": "（ムカイさんの荷物だよな。……冬のムカイさんって、どんな格好なんだろう）"},
         {"speaker": "", "face": "", "text": "想像しようとしたけれど、いつもの深い帽子しか浮かばなかった。"},
         {"speaker": "", "face": "", "text": "布団に横になる。階下の物音が、床板ごしに小さく聞こえていた。"}

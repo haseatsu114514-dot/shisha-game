@@ -51,8 +51,12 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
   checkCurrent();
   await stepWater(cs);
   checkCurrent();
-  await stepMix(cs);
+  const confirmed = await stepMix(cs);
   checkCurrent();
+  if (confirmed === false) {
+    retireScreen();
+    return null;
+  }
   onStep?.("mix", cs);
   await stepPack(cs);
   checkCurrent();

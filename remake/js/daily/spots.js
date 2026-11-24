@@ -18,7 +18,7 @@ import { installReel } from "./reel.js";
 import { toast } from "../core/ui.js";
 import { cafeIdeaDue, pickCafeIdea, ideaDialogue, markCafeIdea } from "./cafe-ideas.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
-import { meetHiyoriAtTonari, hiyoriShopEncounterDue } from "./hiyori.js";
+import { meetHiyoriAtTonari, hiyoriShopEncounterDue, hiyoriAtTonari } from "./hiyori.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
 import { AXE_BAR } from "./axe-bar-data.js";
@@ -463,7 +463,8 @@ export function hasNewEvent(spot) {
   // 章の側の行き先（第3章の東京など）は、自分で新しい話があるかを返せる。
   if (typeof spot.hasNew === "function") return !!spot.hasNew();
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
-    || state.visitedDay.tonari_customer !== state.day && tsumugiAtTonari(state) && hasNewStory("tsumugi");
+    || state.visitedDay.tonari_customer !== state.day && tsumugiAtTonari(state) && hasNewStory("tsumugi")
+    || hiyoriAtTonari();
   if (spot.kind === "shop") return !rioUnavailable(state) && hasNewStory("rio");
   if (spot.charId === "samechan") {
     const scene = samechanVisitDialogue();
@@ -740,13 +741,11 @@ export async function deliverToRival(spot) {
   }
 }
 
-export async function visitRival(spot, { scout = false } = {}) {
+export async function visitRival(spot) {
   if (!spot || isClosed(spot)) return false;
   const owner = state;
   if (rivalDeliveryPending(spot.charId, owner)) return deliverToRival(spot);
   refreshPlaceCue(spot.id);
-  const charge = () => { addMoney(-(spot.cost || 0)); addStamina(spot.stamina || -16); };
-  if (!scout) charge();
   playBgm("bgm_rival_shop");
   // 相席予定の日には「一人占め」の昼挨拶を出さない。台詞正本・実遭遇の処理は維持する。
   const welcome = spot.charId === "minto" && state.slot === 0 && hiyoriShopEncounterDue(spot)
@@ -754,7 +753,8 @@ export async function visitRival(spot, { scout = false } = {}) {
   const completed = await visitChar(spot.charId, { welcome });
   // 配達やチュートリアルの面識ではなく、自主来店の会話を終えてから地図に出す。
   if (completed && state === owner) {
-    if (scout) charge(); // 偵察は読了しなければ料金も体力消費も確定しない。
+    addMoney(-(spot.cost || 0));
+    addStamina(spot.stamina || -16);
     state.flags[`_spot_guide_${spot.charId}`] = true;
   }
   return completed;
@@ -765,10 +765,7 @@ export async function visitSpot(spot) {
   if (spot.id === "rojiura_cinema") return visitCinema();
   if (!openingStatus(spot, state).ok) return false;
   refreshPlaceCue(spot.id);
-  if (spot.cost) addMoney(-spot.cost);
-  addStamina(spot.stamina || 0);
-  state.spotVisits = state.spotVisits || {};
-  const n = (state.spotVisits[spot.id] = (state.spotVisits[spot.id] || 0) + 1);
+  const n = (state.spotVisits?.[spot.id] || 0) + 1;
   const owner = state;
   // 初回は場所の紹介（CHOI-ZAP は入会まで）。再訪と夜は、静かな回を束ごとに順番に読む（quietTurn）。
   let id = spot.first, turn = null;
@@ -782,14 +779,17 @@ export async function visitSpot(spot) {
   else if (encounter) id = encounter;
   // お忍び客の回収: tonari で覆面レビュアーを接客していたら、2回目以降の来店で記事の噂を聞く
   if (spot.id === "c_station" && n > 1 && state.flags._ev_reviewer_cameo && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff) {
-    state.flags._ev_reviewer_payoff = true;
     id = "ch1_reviewer_payoff";
   }
   // 第2章の雨の日は、引いた回をその章の雨の台本に差し替えて一度だけ読む（#3097 PR-B）。夜の束の施設は昼だけ。
   // 巡回は引いた回を読んだものとして進め、経験値も引いた回の鍵で数える（差し替えた台本の ID では増やさない）。
   const rain = turn && id === turn.id && !nightBundle(spot) ? chapterRainScene(spot.id, state, DB.dialogues, isRainy()) : null;
-  await play(rain || id, { bg: bgRef(spot.bg), growthScene: true, ...(rain ? { growthKey: id } : {}) }); // bgUrl が昼夜差分（_day/_night）を選ぶ
-  if (state !== owner) return;
+  const result = await play(rain || id, { bg: bgRef(spot.bg), growthScene: true, ...(rain ? { growthKey: id } : {}) }); // bgUrl が昼夜差分（_day/_night）を選ぶ
+  if (state !== owner || !result || result.cancelled) return false;
+  if (spot.cost) addMoney(-spot.cost);
+  addStamina(spot.stamina || 0);
+  (state.spotVisits ||= {})[spot.id] = n;
+  if (id === "ch1_reviewer_payoff") state.flags._ev_reviewer_payoff = true;
   // 読んだ束だけ次へ送る。寄り道会話・記事の噂の来店では送らない。
   if (turn && id === turn.id) state.flags[turn.key] = turn.count + 1;
   recordSpotEncounter(spot.id, id, n, state);

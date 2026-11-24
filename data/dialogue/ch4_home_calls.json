@@ -266,7 +266,8 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "側近よ、勇者は修行中だ。サメ見物は後でよい"
+          "text": "側近よ、勇者はじめは修行中だ。サメ見物は後でよい",
+          "voice": "korochan"
         },
         {
           "speaker": "samechan",
@@ -358,7 +359,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スマホが鳴った。表示は「†黒羅雨℃†」。今度は、出てすぐに声がした。"
+          "text": "スマホが鳴った。表示は「†黒羅雨℃†」。出るとすぐに、声がした。"
         },
         {
           "speaker": "kuraudo",
@@ -571,7 +572,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……はい。あの、ひとつだけ、聞きたくて"
+          "text": "……はい。あの、一つだけ、聞きたくて"
         },
         {
           "speaker": "tsumugi",
@@ -723,7 +724,7 @@
         {
           "speaker": "ayatori",
           "face": "normal",
-          "text": "よかった。……ひとつ、店のことで聞きたくて"
+          "text": "よかった。……一つ、店のことで聞きたくて"
         },
         {
           "speaker": "ayatori",
@@ -748,7 +749,7 @@
         {
           "speaker": "ayatori",
           "face": "smile",
-          "text": "……いつもの、かぁ。いいなぁ。煙幕には、まだそれが無いんだ"
+          "text": "……いつもの、かぁ。いいなぁ。煙幕には、まだそれがないんだ"
         },
         {
           "speaker": "ayatori",
@@ -804,7 +805,7 @@
         {
           "speaker": "steve",
           "face": "serious",
-          "text": "ノー。画面だと、つい他のものを見る。ボタンを押す感触が、要るんだ"
+          "text": "ノー、ノー。画面だと、つい他のものを見る。手で回す感触が、要るんだ"
         },
         {
           "speaker": "steve",
@@ -824,7 +825,7 @@
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "客がホースを持ってる時に、びっくりさせたくないからな"
+          "text": "客がホースを持ってるときに、びっくりさせたくないからな"
         },
         {
           "speaker": "",

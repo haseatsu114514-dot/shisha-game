@@ -131,6 +131,9 @@ try {
     assert(result.notes.includes(ng.text), `${ng.id}: the reason remains available to the confirmation UI`);
   }
   DB.ngMixes = ngMixes;
+  const fruitOnly = ngMixes.find(ng => ng.id === "ng_triple_fruit_no_base");
+  assert.deepEqual(mixOf({ blueberry: 6, pineapple: 6, double_apple: 0 }).ngReasons, [fruitOnly.text]);
+  assert.deepEqual(mixOf({ blueberry: 6, pineapple: 5, double_apple: 9 }).ngReasons, []);
   assert.deepEqual(mixOf({ mint: 6, vanilla: 6 }).ngReasons, mixOf({ dobaj_mint: 6, vanilla: 6 }).ngReasons);
   assert.deepEqual(mixOf({ mint: 2, dobaj_mint: 2, absal_mint: 2, vanilla: 6 }).ngReasons, [ngMixes[0].text]);
   const multiple = mixOf({ dobaj_mint: 6, vanilla: 6, coconut: 6 });

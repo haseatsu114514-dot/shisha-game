@@ -48,7 +48,7 @@ const values = {
     displayName: (id) => id, limeAccountName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
   "lime-icons.js": { customLimeIconUrl: () => null },
   "ui.js": { layers, toast: noop }, "state.js": { state, save: noop, STAT_JA, hasAffinity, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
-  "stats.js": { setStoryAffinityCap() {}, affinityGateWaiting: () => false, gainStat: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }),
+  "stats.js": { setStoryAffinityCap() {}, affinityGateWaiting: () => false, gainStat: noop, earnStat: noop, paidAction: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }),
     affinityLevel: (id) => (state.lovers || []).includes(id) ? 5 : state.levels?.[id] ?? 0, applyStats: noop, bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
   "audio.js": { SE: { phone: noop, phoneReceive: noop, phoneSend: noop, select: noop, click: noop, cancel: noop } },
   "engine.js": { isPlaying: () => false, hooks: {}, play: async () => ({ visited: [] }) },
@@ -159,7 +159,7 @@ function deliver(msgs) {
 {
   reset({ lovers: ["tsumugi"], loverSince: { tsumugi: 0 }, loveLevel: { tsumugi: 1 } });
   const src = await fs.readFile(new URL("js/daily/phone.js", root), "utf8");
-  assert.match(src, /bond\.private = lover;\s*try \{\s*gainAffinity\(m\.sender, lover \? 3 : 2, \{ remote: true \}\);/);
+  assert.match(src, /bond\.private = lover;\s*try \{\s*gainAffinity\(m\.sender, lover \? 3 : 2, \{ source: "lime", remote: true \}\);/);
   console.log("[LM01] PASS read-only lover notes deepen the bond on read");
 }
 

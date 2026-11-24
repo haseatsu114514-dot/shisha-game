@@ -32,6 +32,7 @@
       "id": "ng_triple_fruit_no_base",
       "flavors": ["blueberry", "pineapple"],
       "condition": "combined_over_10g",
+      "only_listed_flavors": true,
       "penalty": -2.5,
       "text": "フルーツだけで構成したが、ベースの厚みが足りない。果実感は華やかだが底が浅い。",
       "combined_ratio": 0.8333333333333334

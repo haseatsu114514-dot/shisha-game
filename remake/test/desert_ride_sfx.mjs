@@ -3,7 +3,7 @@
 // node --experimental-vm-modules remake/test/desert_ride_sfx.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import { createHash } from "node:crypto";
+import { createHash, webcrypto } from "node:crypto";
 import vm from "node:vm";
 
 const ROOT = new URL("../../", import.meta.url);
@@ -27,6 +27,7 @@ async function boot() {
     addEventListener() {}
   }
   const context = vm.createContext({ document: { hidden: false, addEventListener() {} }, window: { AudioContext }, console, Math, Promise, Date, AbortController,
+    crypto: webcrypto, TextDecoder,
     setTimeout: () => 0, clearTimeout() {}, setInterval: () => 0, clearInterval() {},
     fetch: async url => {
       requests.push(url);
@@ -66,9 +67,11 @@ const now = L({ speed: .8, carve: .5, grounded: true });
 assert(Math.abs(now.slide.gain - old.slide) < 1e-9 && Math.abs(now.wind.gain - old.wind) < 1e-9 && Math.abs(now.carve.gain - old.carve) < 1e-9);
 
 // 3) 読み込み: 新しい4つは .wav をそのまま、ほかは今までどおり .bgm。発進は短いシュッ（boost_whoosh）から boost_rush へ
-audio.unlockAudio(); // 最初の操作で音を解禁する（本編と同じ）
+audio.unlockAudio({ warm: false });
 const se = audio.createDesertRideSe();
 await se.ready();
+assert(se.isReady(), "packed SE decode directly even without Blob URL support");
+assert(requests.every(url => url.startsWith("../assets/audio/se/desert_ride/")), "the ride does not warm story recordings");
 for (const name of ["boost_rush", "boost_loop", "zap_1", "zap_2", "zap_3", "thunder_full"]) assert(requests.includes(`../assets/audio/se/desert_ride/${name}.wav`), `${name}.wav is loaded`);
 assert(!requests.some(url => /zap_(sparse|dense)/.test(url)), "the flickering loops are gone");
 assert(requests.includes("../assets/audio/se/desert_ride/slide_sand.bgm"), "packed sounds still load as .bgm");
@@ -136,6 +139,9 @@ assert.equal(se.loopLevels().zaps, 6, "every zap is counted");
   assert(freqs.length === 2 && freqs[1] > freqs[0], `passing the rival rises (${freqs.join(" → ")})`);
   freqs.length = 0; ride.cue("overtaken");
   assert(freqs.length === 2 && freqs[1] < freqs[0], `being passed falls (${freqs.join(" → ")})`);
+  const passed = [...freqs];
+  freqs.length = 0; ride.cue("boostShort");
+  assert(freqs.length === 2 && freqs[1] < freqs[0] && freqs[0] < passed[1], `a rejected boost has its own pair of low notes (${freqs.join(" → ")})`);
 }
 
 // 4) ファイル: モノラル 44.1kHz 16bit、長さ、ピーク（-16〜-8 dBFS）、ループのつなぎ目、台帳（SHA-256）

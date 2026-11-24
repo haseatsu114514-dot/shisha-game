@@ -261,7 +261,7 @@ for (const [name, fields, options, expected] of [
 test('MAX does not change rumor rewards, friend invitations or EXP at the level cap', async () => {
   const rumor = await fixture({ affinity: 66 }); setCasual(rumor).msg.type = 'rumor';
   await finishRead(rumor);
-  assert.equal(rumor.original.insights, 2); assert.equal(rumor.original.xp, 0);
+  assert.equal(rumor.original.insights, 0); assert.equal(rumor.original.xp, 0);
   const invite = await fixture({ affinity: 66, invitation: true }); invite.item.msg.friend = true;
   const run = invite.run(); invite.picks[0].resolve({ text: '行く！', go: true });
   await invite.finish(); await run;

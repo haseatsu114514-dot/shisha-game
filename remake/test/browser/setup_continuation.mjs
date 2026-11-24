@@ -113,7 +113,7 @@ await suite("setup-continuation", async check => {
     const alternative = await page.evaluate(() => alternative);
     const equipment = page.locator(`[data-test="opt-${alternative}"]`);
     if (touch) await equipment.tap(); else await equipment.click();
-    await waitForSetupContinuation(page);
+    await waitForSetupContinuation(page, { touch });
     await assertFits(page, '[data-test="water-confirm"]');
     await confirmWaterSetup(page, { touch });
     await page.locator('[data-test="mix-ok"]').waitFor();

@@ -70,11 +70,22 @@
    "time": "",
    "weather": "",
    "size": [
-    1280,
-    720
+    1920,
+    1080
    ],
-   "luma": 45,
-   "blob": "d9d979c28527b496e07e16e2f9c7f4ff985f0c96"
+   "luma": 56,
+   "blob": "ceb65724acd66dc2b710ef0dad9bfda90499759f"
+  },
+  "bg_axe_lane_aim_ready.png": {
+   "place": "axe_lane_aim_ready",
+   "time": "",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 51,
+   "blob": "2426958bbc4b1fe4caeb4374255ed3588cf81e5c"
   },
   "bg_axe_lounge_night.png": {
    "place": "axe_lounge",
