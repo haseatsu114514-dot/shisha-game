@@ -83,7 +83,7 @@ const atCounter = source("remake/js/daily/shop.js").match(/playBgm\((stockChapte
 assert(afterTrpg && atCounter, "trpg.js / shop.js town track expressions");
 for (const chapter of [1, 2, 3, 4, 5]) {
   assert.equal(pick(afterTrpg, { state: { chapter } }), cityBgm(chapter), `after the board-game cafe in chapter ${chapter}`);
-  assert.equal(pick(atCounter, { stockChapter: chapter }), cityBgm(chapter), `shop counter of chapter ${chapter}`);
+  assert.equal(pick(atCounter, { stockChapter: chapter }), chapter === 4 ? "bgm_dubai" : cityBgm(chapter), `shop counter of chapter ${chapter}`);
 }
 // 家に帰る・家で休む時は、店の曲（tonari・ライバル店）を持ち帰らず、街の曲へ戻す（オーナー「店の音楽が家に帰っても流れてる」）。
 const homeExpr = file => [...source(file).matchAll(/playBgm\((state\.chapter === 2 \? [^;]+)\);/g)].map(m => m[1]);

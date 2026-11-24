@@ -6,6 +6,7 @@
 import { el, sleep } from "../core/util.js";
 import { layers, toast } from "../core/ui.js";
 import { SE } from "../core/audio.js";
+import { HIDANE_NAME } from "../core/growth-board-data.js";
 import { vnTest } from "../vn/engine.js";
 import { prizeArt } from "./kuji-prize-art.js";
 
@@ -17,6 +18,7 @@ const stillOnly = () => !!window.matchMedia?.("(prefers-reduced-motion: reduce)"
 const isTop = (rank) => rank === "S" || rank === "LAST";
 const rankWord = (prize) => (prize.rank === "LAST" ? "ラストワン賞" : `${prize.rank}賞`);
 const prizeName = (prize) => (prize.rank === "LAST" ? prize.name.replace(/^ラストワン賞・/, "") : prize.name);
+const hidaneText = (prize) => prize.hidane?.map(({ kind, n }) => `火種 ${HIDANE_NAME[kind]} ＋${n}`).join("・") || "";
 const ORDER = ["LAST", "S", "A", "B", "C"];
 const bestRank = (results) => ORDER.find((r) => results.some((p) => p.rank === r)) || "C";
 
@@ -37,6 +39,7 @@ function prizeCard(prize, short = false) {
       el("div.kuji-rank", { text: rankWord(prize) }),
       el("div.kuji-name", nameParts(prizeName(prize))),
       ...(short ? [] : [el("div.kuji-desc", { text: prize.desc || "" })]),
+      prize.hidane ? el("div.kuji-hidane", { text: hidaneText(prize) }) : null,
       // 小さい札の重複は「同」バッジと買い取り額（限定の台はくじ券）だけにして、文字を詰めない（#2835）
       ...(!dupe ? [] : short ? [el("div.kuji-dupe", { title: `持っている → ${prize.dupShort}`, "aria-label": `持っている → ${prize.dupShort}` }, [
         el("span.kuji-dupe-badge", { text: "同" }),
@@ -139,7 +142,8 @@ export function reveal(prize, extras = [], machine = {}) {
       open = true;
       if (skip) for (const ex of extras) {
         await sleep(500);
-        toast(isDupe(ex) ? `${ex.name} は${ex.dupText}` : `${ex.name} を手に入れた！`, { kind: "good" });
+        const text = isDupe(ex) ? `${ex.name} は${ex.dupText}` : `${ex.name} を手に入れた！`;
+        toast(ex.hidane ? `${text} ${hidaneText(ex)}` : text, { kind: "good" });
       }
     };
     ov.onclick = () => {

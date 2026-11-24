@@ -24,7 +24,9 @@ export function boardPoint(p) {
  *  的に触れた所が狙い。そこから上（前）へ素早く弾いて離すと投げる。
  *  - 強さ: 離す直前 window ms の上向きの速さ（画面の高さ／秒）。base で回転がちょうど（POWER.ideal）、速さが2倍・半分になるごとに perDouble だけ強く・弱く。
  *    速さは見た目の量なので対数で取る（適正の帯 0.54〜0.70 ＝ base の 0.71〜1.41 倍の速さ）。
- *  - 左右のぶれ: 弾いた向きの傾き（tan）× lean を、狙いの横へ足す（10°で約0.8インチ）。
+ *  - 左右の流れ: 弾いた向きの傾き（tan = tilt、±1 で 45°）が横方向の投げになる（2026-11-22 オーナー要望）。
+ *    少し斜めなら少し、大きく斜めなら大きく横へ流れ、着地点が横へずれる（板の外＝外れもありうる）。
+ *    tilt から着地点までの換算（drift）は axe.js 側（AXE_FEEL.flick.drift）。lean は従来の小さいぶれ量（tilt × lean）で互換用に残す。
  *  - 投げにならない: 上へ shortRise（画面の高さの割合）に届かない・傾きが wildLean（約54°）を超える・下へ動いた。
  *    ただし何も言わずに取り消すと「弾いたのに何も起きない」になるので（2026-11-13 手応えレビュー指摘3・桜井 #104）、
  *    取り消しには理由（miss）を返す。触れて離しただけ（tapRise 未満）と、上へ弾いて元へ戻した時は理由なし（狙いを決めただけ）。
@@ -32,7 +34,7 @@ export function boardPoint(p) {
  *  - 斜め（maxLean〜wildLean）は横のぶれを最大に張り付けて投げは成立させる（下手な投げになるが無反応にはならない）。
  *  時刻は event.timeStamp（入力が起きた時刻）。検査は CDP の timestamp で同じ値を再現できる。 */
 export const FLICK = Object.freeze({ window: 90, minRise: .06, shortRise: .04, tapRise: .015, shortRaw: .34,
-  base: 2.4, perDouble: .16, lean: .25, maxLean: 1, wildLean: 1.4 });
+  base: 2.4, perDouble: .16, lean: .25, maxLean: 1, wildLean: 1.4, driftCurve: 1.6 });
 /** 弾きの読み取り: 投げになるなら { throw: { raw, speed, rise, lean, short, wild } }、ならないなら { miss: 理由 | null }。
  *  理由: "shallow"（浅い）・"lean"（斜めすぎ）・"down"（下へ動いた）。null は触れただけ・戻しただけ・読めない入力。 */
 export function flickRead(samples, height) {
@@ -59,10 +61,30 @@ export function flickRead(samples, height) {
   const speed = dy / height / (dt / 1000), short = rise < FLICK.minRise, wild = Math.abs(lean) > FLICK.maxLean;
   let raw = clamp(POWER.ideal + FLICK.perDouble * Math.log2(speed / FLICK.base), 0, 1);
   if (short) raw = Math.min(raw, FLICK.shortRaw);
-  return { throw: { raw, speed, rise, lean: clamp(lean, -FLICK.maxLean, FLICK.maxLean) * FLICK.lean, short, wild } };
+  return { throw: { raw, speed, rise, tilt: clamp(lean, -FLICK.maxLean, FLICK.maxLean), lean: clamp(lean, -FLICK.maxLean, FLICK.maxLean) * FLICK.lean, short, wild } };
 }
 export function flickPower(samples, height) {
   return flickRead(samples, height).throw || null;
+}
+/** tilt から横流れへの効き（符号付き、±1 のまま返す）。減衰カーブ（2026-11-22 オーナー要望のアシスト）:
+ *  小さい斜めでは流れを弱く（指数 driftCurve）、大きく斜めにした時だけしっかり流れる。
+ *  着地点の横ずれは drift = flickDriftScale(tilt) × AXE_FEEL.flick.drift × 帯の内外（axe.js が離した時と予測で同式を使う）。 */
+export function flickDriftScale(tilt) {
+  if (!Number.isFinite(tilt)) return 0;
+  const t = clamp(tilt, -1, 1);
+  return Math.sign(t) * Math.abs(t) ** FLICK.driftCurve;
+}
+/** 引いている最中の傾き（表示用）: 離す直前 window の向き。まだ上へ動いていない間は、始点からの横ずれで先行して見せる。
+ *  投げの成否は flickRead が決める。こちらは矢印の曲がりなど「今の向き」の表示専用で、判定には使わない。 */
+export function flickTilt(samples, height) {
+  if (!Array.isArray(samples) || samples.length < 2 || !Number.isFinite(height) || height <= 0) return 0;
+  if (!samples.every(s => s && [s.t, s.x, s.y].every(Number.isFinite))) return 0;
+  const last = samples[samples.length - 1];
+  let from = 0;
+  for (let i = samples.length - 1; i >= 0; i--) if (last.t - samples[i].t >= FLICK.window) { from = i; break; }
+  const a = samples[from], dx = last.x - a.x, dy = a.y - last.y;
+  if (dy > 0) return clamp(dx / dy, -1, 1);
+  return clamp((last.x - samples[0].x) / Math.max(24, height * .06), -1, 1) * .6;
 }
 /** 指定の強さ（raw）になる速さ（画面の高さ／秒）。検査と説明で使う */
 export const flickSpeedFor = raw => FLICK.base * 2 ** ((raw - POWER.ideal) / FLICK.perDouble);
@@ -135,7 +157,7 @@ export class AxePullSession {
   impact() {
     if (this.phase !== 'flight' || !this.pending) return false;
     const shot = this.pending;
-    if (this.match) { this.match = takeTurn(this.match, this.actor, { ...shot.aim, power: shot.power, called: shot.called, baseAim: shot.baseAim, sway: shot.sway }); this.shots = this.match.player; }
+    if (this.match) { this.match = takeTurn(this.match, this.actor, { ...shot.aim, power: shot.power, called: shot.called, baseAim: shot.baseAim, sway: shot.sway, drift: shot.drift }); this.shots = this.match.player; }
     else this.shots.push(shot);
     this.last = shot; this.pending = null; this.phase = 'result'; return true;
   }

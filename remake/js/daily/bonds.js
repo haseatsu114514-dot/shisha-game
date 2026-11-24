@@ -288,7 +288,7 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
  * みんとは私的な場面で会うので、私服の約束で本名を聞いた後
  */
 /** 第3章の東京へ発つ前の準備期間か（core/chapter-clock.js の departurePrep と同じ判定）。 */
-const beforeTokyoDeparture = () => state.chapter === 3 && !!state.flags?._ch3_prep && !state.flags._ch3_prep.departed;
+export const beforeTokyoDeparture = () => state.chapter === 3 && !!state.flags?._ch3_prep && !state.flags._ch3_prep.departed;
 /**
  * 第3章の東京の店で、その店主に会える間か（#2028）。東京に着いてから、大会後の後日談でその人の窓が閉じるまで
  * （ch3-aftermath-progress.js の CH3_AFTERMATH_FINALES と同じ窓）。綾取・スティーブはなるへの報告まで（煙幕の片づけの朝からは
@@ -512,11 +512,12 @@ export const isFriendEvent = (event) => /^friend_/.test(event || "");
 export async function playFriendHangout(id) {
   const f = friendData(id);
   if (!f) return false;
+  const owner = state;
   state.friendHangouts ||= {};
   const n = state.friendHangouts[id] || 0;
   const v = f.hangouts[n % f.hangouts.length];
   const name = f.call || callName(id, state, { context: "private" });
-  await play({
+  const result = await play({
     dialogue_id: `remake_friend_${id}`,
     metadata: { bg: `res://assets/backgrounds/${f.bg}`, private_scene: true },
     lines: [
@@ -528,6 +529,7 @@ export async function playFriendHangout(id) {
       { type: "apply", stats: { [f.stat]: 2 } },
     ],
   }, { growthScene: true });
+  if (state !== owner || !result || result.cancelled) return false;
   state.friendHangouts[id] = n + 1;
   save();
   return true;

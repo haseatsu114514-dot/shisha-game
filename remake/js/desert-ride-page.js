@@ -5,6 +5,7 @@
 import { BOOST, RULES_VERSION, desertBestKey, desertDisplayBests } from "./minigames/desert-ride-model.js";
 import { TIERS, TIER_LABEL } from "./core/play-tiers.js";
 import { el } from "./core/util.js";
+import { unlockAudio } from "./core/audio.js";
 import { initStageFit } from "./core/stage-fit.js";
 import { initSideArea } from "./core/side-area.js";
 import { calmFlash } from "./core/transition-kit.js";
@@ -24,6 +25,7 @@ function menu(message = "狙いは、S。") {
   const reduceBox = el("input", { type: "checkbox", dataset: { test: "desert-page-reduce" }, onchange: e => { reduce = e.target.checked; } });
   reduceBox.checked = reduce;
   const start = tutorial => async () => {
+    unlockAudio({ warm: false });
     app.hidden = true;
     // ヌールに一度勝つと、なる（好敵手）とも勝負できる
     const rivals = best?.beatNoor ? ["noor", "naru"] : ["noor"];

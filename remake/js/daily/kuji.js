@@ -7,6 +7,7 @@ import { DB, displayName } from "../core/data.js";
 import { layers, modal } from "../core/ui.js";
 import { state, save } from "../core/state.js";
 import { addMoney } from "../core/stats.js";
+import { settleGrowth } from "../core/growth.js";
 import { SE } from "../core/audio.js";
 import { addFlavorStock, FLAVOR_BOX_GRAMS } from "./shop.js";
 import { RIO_AWAY_DAY, KUJI_TICKET_MAX } from "../core/rules.js";
@@ -173,9 +174,10 @@ export function kujiRows(rerender, shop = "home", budget = () => spendableMoney(
   const firstSeen = !state.flags._kuji_seen;
   state.flags._kuji_seen = true;
   // 初回にリオが居る時のひと言は台詞なのでそのまま出し、棚の案内は「?」を押して開く。
-  if (firstSeen && staffed) rows.push(el("p.kuji-note", { text: `${displayName("rio", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」` }));
+  if (firstSeen && staffed && shop === "home") rows.push(el("p.kuji-note", { text: `${displayName("rio", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」` }));
   // 棚の前のひとこと（初めて・外れ続き・S賞やラストワン賞の直後。上の kujiClerkLine・SPC26）。凛想は地元の本店に居る時だけ
-  const clerk = kujiClerkLine(state.kuji[list[0].id], { first: firstSeen, rio: staffed && shop === "home", rioName: displayName("rio", state) });
+  const stock = list.map((g) => ({ g, box: boxOf(g) }));
+  const clerk = kujiClerkLine(stock[0].box, { first: firstSeen, rio: staffed && shop === "home", rioName: displayName("rio", state) });
   if (clerk) rows.push(el("p.kuji-note", { text: clerk.text, dataset: { test: "kuji-clerk", kind: clerk.kind } }));
   // 「?」は専用の行を作らず、最初のくじの見出しの横に小さく置く（行を押した時の詳細は開かない）。
   let help = el("button.kuji-help", {
@@ -183,8 +185,7 @@ export function kujiRows(rerender, shop = "home", budget = () => spendableMoney(
     onclick: (event) => { event.stopPropagation(); SE.select(); modal({ title: "くじの案内", className: "shop-dialog", body: guide, options: [{ label: "閉じる", value: null, primary: true, test: "kuji-help-close" }] }); },
   });
   const refill = DB.kuji.meta?.refillDays || 3;
-  for (const g of list) {
-    const box = boxOf(g);
+  for (const { g, box } of stock) {
     const size = box.order.length;
     const left = size - box.drawn;
     const empty = left <= 0;
@@ -282,9 +283,16 @@ function takeTicket(g, box, pay = "money") {
   const prize = box.prizes[box.order[box.drawn]];
   box.drawn += 1;
   const last = box.drawn >= box.order.length;
-  if (last) box.emptyDay = state.day;
+  if (last) {
+    box.emptyDay = state.day;
+    box.emptyCycle = state.cycle ?? 1;
+  }
   const shown = withDupe(prize, grant(prize));
   const extras = (last && box.lastOne ? [box.lastOne] : []).map((ex) => withDupe(ex, grant(ex)));
+  if (last) {
+    const gift = settleGrowth()?.claimed.find(({ grade }) => grade === g.id);
+    if (gift && extras.length) extras[0] = { ...extras[0], hidane: gift.parts };
+  }
   save(); // 引いた直後に保存（結果を見てからのロードでは変わらない）
   return { prize: shown, extras };
 }

@@ -1,7 +1,7 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）: 単体ページ（PCの鍵盤・スマホのタッチ・動き軽減）と、
 // 第4章の本編接続（デスクで3日話す→砂丘へ→練習→本番→記録→夕日→同じ日は二度行けない→SAVE/LOAD→中断）。
 import assert from "node:assert/strict";
-import { suite } from "./support.mjs";
+import { baseURL, suite } from "./support.mjs";
 
 const t = name => `[data-test="${name}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
@@ -43,6 +43,43 @@ const assertSpeedo = async page => {
 };
 
 await suite("desert-ride", async check => {
+  await check("standalone-se-warmup-and-boost-rejection", async page => {
+    const requests = [];
+    page.on("request", request => {
+      const path = new URL(request.url()).pathname;
+      if (path.includes("/assets/audio/se/")) requests.push(path);
+    });
+    await Promise.all([
+      page.waitForRequest("**/assets/audio/se/desert_ride/slide_sand.bgm"),
+      page.locator(t("desert-page-start")).click(),
+    ]);
+    await page.locator(t("desert-practice")).click();
+    await phase(page, "practice");
+    assert(requests.every(path => path.includes("/assets/audio/se/desert_ride/")), "entering the ride only warms its own recordings");
+    const pressBoost = gauge => page.evaluate(gauge => {
+      const ride = window.__desertRide;
+      ride.game.gauge = gauge;
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", cancelable: true }));
+      const meter = document.querySelector('[data-test="desert-gauge"]');
+      return { frames: meter.getAnimations()[0]?.effect.getKeyframes(), cues: ride.soundLevels().cues, boosts: ride.game.stats.boosts };
+    }, gauge);
+    const normal = await pressBoost(0.249);
+    assert(normal.frames?.some(frame => frame.translate === "-4px"), "rejection shakes the gauge");
+    assert.equal(normal.boosts, 0);
+    assert.deepEqual(normal.cues, ["boostShort"]);
+
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    const reduced = await pressBoost(0.249);
+    assert(reduced.frames?.some(frame => frame.outline) && reduced.frames.every(frame => !frame.translate), "reduced motion only highlights the gauge");
+    assert.deepEqual(reduced.cues, ["boostShort", "boostShort"]);
+    const accepted = await pressBoost(0.25);
+    assert.equal(accepted.boosts, 1);
+    assert.deepEqual(accepted.cues, reduced.cues);
+  }, {
+    pageEntry: new URL("desert-ride.html?course=ridge", baseURL).href,
+    pageReadySelector: t("desert-page-start"),
+  });
+
   await check("practice-captions-fit-between-hud-and-idle-finish-is-neutral", async page => {
     await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     await page.locator(t("desert-page-tutorial")).click();
@@ -448,7 +485,13 @@ await suite("desert-ride", async check => {
       await page.waitForTimeout(hold);
       await page.mouse.up();
     };
-    await press(right, 700);
+    await page.mouse.move(right.x + right.width / 2, right.y + right.height / 2);
+    await page.mouse.down();
+    try {
+      await page.waitForFunction(() => window.__desertRide.game.x > 0.2);
+    } finally {
+      await page.mouse.up();
+    }
     let g = await game(page);
     assert(g.x > 0.2, `held right moves right (${g.x})`);
     const inputs = await page.evaluate(() => { const b = document.querySelector('[data-test="desert-right"]'); return b.classList.contains("on"); });
@@ -464,10 +507,15 @@ await suite("desert-ride", async check => {
     });
     const meter = page.locator(t("desert-gauge"));
     assert.equal(await meter.locator(".dr-gauge-min").evaluate(node => node.style.left), "25%");
+    await meter.evaluate(node => {
+      document.querySelector('[data-test="desert-boost"]').addEventListener("pointerdown", () => {
+        node.dataset.animatedOnBoost = String(node.getAnimations().length > 0);
+      }, { once: true });
+    });
     await press(boostButton, 60);
     assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 0, "just below 25% does not boost");
     assert.equal(await page.evaluate(() => window.__desertRide.game.gauge), 0.249, "a rejected attempt keeps the charge");
-    assert(await meter.evaluate(node => node.getAnimations().length > 0), "the gauge reacts briefly");
+    assert.equal(await meter.getAttribute("data-animated-on-boost"), "true", "the gauge reacts briefly");
     await page.evaluate(() => {
       const { game } = window.__desertRide;
       game.gauge = 0.25;

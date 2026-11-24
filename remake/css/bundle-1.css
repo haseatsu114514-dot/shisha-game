@@ -5190,6 +5190,8 @@ html:root[data-density="phone"] #screen[data-screen="tonari"] .sub-menu :is(.big
   background: #f4f6f8;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
+/* 中身が無い間は 62px の白帯だけが残って見えるため畳む（2026-11-24 実機報告）。ボタン等が入れば自動で戻る。 */
+.lime-actions:empty { display: none; }
 .lime-hint { font-size: 13px; line-height: 1.5; color: #56606e; padding: 0 4px; }
 .lime-reply {
   appearance: none;

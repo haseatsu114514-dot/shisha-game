@@ -38,7 +38,7 @@ const values = {
   "recipe-finds.js": { recipeFindAfterVisit: async () => false }, // 第3章以降のレシピの連鎖（#2020 G）。この検査では話さない
   "petit-shuraba.js": { petitAfterVisit: async () => false, petitAfterDate: async () => false }, // プチ修羅場（恋人が2人以上の時の寄り道）。この検査では起きない
   "lover-strain.js": { strainMorning: () => 0, maybeStrainTalk: async () => false, maybeStrainReunion: async () => false, strainAfterVisit() {}, strainOf: () => 0, STRAIN_SIGN2: 7 }, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
-  "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
+  "hiyori.js": { hiyoriShopEncounterDue: () => false, hiyoriAtTonari: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
   "state.js": { state, hasAffinity, holdActionSave: () => noop, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
     visitedDay: { ...state.visitedDay }, stamina: state.stamina, rest: state.restDay ? { ...state.restDay } : null,
@@ -54,7 +54,7 @@ const values = {
   "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => modules.get("chapter-clock.js").namespace.chapterDaysLeft(state), setPhoneBadge: noop, presentSleepRecovery: async () => {} },
   "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop, isChoosingDestination: () => false },
   "weather.js": { isRainy: () => false, weatherOf: () => "sun", tomorrowForecast: () => null, RAIN_SPOT_TEXTS: {} },
-  "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); } },
+  "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); return true; } },
   // 家シーシャ（#638）: 寝る前の一服はこのテストの対象外（home_shisha.mjs で確かめる）
   "home-shisha.js": { runHomeShisha: async () => false },
   "home-rig.js": { showSumiRigAtHome: async () => false },

@@ -6,7 +6,7 @@ import { el, sleep, clamp, rand } from "../core/util.js";
 import { createCraftClock } from "./clock.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction, benchRoot } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction, benchRoot, explainTutorialStep } from "./session.js";
 import { effectBadge, effectLine, effectVisible, senseBand, effectTier } from "./effect-visual.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
@@ -183,6 +183,7 @@ export async function runHoles(cs) {
   let finishWarmup;
   // 穴あけのお手本動画は廃止（#3815）。押し加減は「穴を開ける」の中の目盛りと「?」の説明で伝える。
   const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始すると、光る目印の近くを針が動く", { brief: "穴の配置を選んでから、穴あけを始める" });
+  if (tutorial && !await explainTutorialStep(cs, "holes")) return;
   const { template, recalled, redo } = await chooseTemplate(panel, cs);
   if (!isCurrent()) return;
   // リニューアル（CRN02・05・08）: リングが埋まると自動で次へ・判定は穴のそば・刺した点の閃光・結果でアルミを残す。
@@ -195,7 +196,8 @@ export async function runHoles(cs) {
   const perfWin = HOLES_TUNING.perfectDeg * skill.window(cs, "holes") * (tutorial ? HOLES_TUNING.lessonPerfect : 1);
   const basePerfWin = perfWin / (1 + 0.45 * effectTier("sense"));
   const goodWin = HOLES_TUNING.goodDeg * craftCondition(cs).window * (tutorial ? HOLES_TUNING.lessonGood : 1) * assistEffect(cs).holesGood;
-  const limit = tutorial ? HOLES_TUNING.lessonTimeLimit : HOLES_TUNING.timeLimit + (growthSkill(gameState, "K01") ? SKILL_TUNING.holesSeconds : 0);
+  const limit = (tutorial ? HOLES_TUNING.lessonTimeLimit : HOLES_TUNING.timeLimit + (growthSkill(gameState, "K01") ? SKILL_TUNING.holesSeconds : 0))
+    * assistEffect(cs).slow;
   // 操作の詳しい説明・凡例・採点は「?」へ。基本画面には置かない（ミニゲームUI共通の方針）。
   root?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", { dataset: { test: "hole-guide" } }, [
     el("ul", [
@@ -283,7 +285,9 @@ export async function runHoles(cs) {
   const gameClock = createCraftClock(panel);
   let t0 = null;
   let elapsed = 0;
-  const previousElapsed = recalled?.elapsed ?? 0;
+  const previousElapsed = recalled
+    ? recalled.elapsed * (1 - redo.size / rings.reduce((total, ring) => total + ring.targets, 0))
+    : 0;
   let finished = false;
   let raf = 0;
   // 針: sweepStart から弧を動く。press は押している間。
@@ -380,7 +384,7 @@ export async function runHoles(cs) {
     if (doneBtn) putProp(doneBtn, "disabled", finished || !ready);
     if (warmup) return;
     // 初めの一行は操作の案内（新しい配置では常設しない・CSL15）。完成などの知らせは出す。
-    putData(plan, "tone", ready || ringComplete() || elapsed >= limit ? "notice" : "hint");
+    putData(plan, "tone", ready || ringComplete() || previousElapsed + elapsed >= limit ? "notice" : "hint");
     putText(plan, ready ? renewal ? "選んだ配置が完成。結果へ" : "選んだ配置が完成。結果を確認しよう"
       : ringComplete() ? renewal ? "リング完成。次のリングへ" : "リング完成。「次のリングへ」で残りの目印を開けよう"
       : previousElapsed + elapsed >= limit ? "時間評価は終了。穴あけは続けられます"

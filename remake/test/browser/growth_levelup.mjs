@@ -513,7 +513,7 @@ await suite("growth-levelup", async (runCheck) => {
     });
     await page.locator(t("pull-smoke-ring")).first().waitFor();
     const rings=await page.evaluate(async()=>{await ringRun;const score=await import("./js/craft/score.js");return {count:ringCs.pull.smokeRings,criticals:ringCs.pull.criticals,justs:ringCs.pull.justs,bonus:score.bonusOf(ringCs).bonus};});
-    assert.equal(rings.count,3);assert.equal(rings.criticals,0); // 広がったジャスト帯の中心は0.5より右。通常ジャストと会心を混同しない。
+    assert.equal(rings.count,3);assert.equal(rings.criticals,3); // 幅が広がってもキープの芯は0.5を中心にする。
     assert.equal(rings.justs,3);assert.equal(rings.bonus,1);
   });
 

@@ -53,8 +53,11 @@ export function flightPose(shot, milliseconds) {
   // Overhead release from the thrower's own hand: the blade starts where the first-person hand holds it at the top of the swing
   // (2026-11-13 手応えレビュー指摘2「斧が手から出ていない」). Gravity bends the world path.
   const P = AXE_FEEL.path, start = { x: P.startX, y: P.startY, z: P.startZ };
+  // 横の流れ（drift = 着地点 − 放した狙い）は、放した直後は小さく板に近づくほど効く:
+  // 真っ直ぐ投げ出した斧が途中で横へ曲がって見えるよう、横成分だけ t² で効かせる（直線補間との差 = drift × (t² − t)）。
+  const driftWorld = (shot.landing.x - shot.aim.x) * TARGET.radius * ((CAMERA.focal + CAMERA.boardDepth) / CAMERA.focal);
   const pose = t === 1 ? { ...end } : {
-    x: start.x + (end.x - start.x) * t,
+    x: start.x + (end.x - start.x) * t + driftWorld * (t * t - t),
     y: start.y + (end.y - start.y) * t - P.arc * t * (1 - t),
     z: start.z + (end.z - start.z) * t, pitch: -shot.rotation * t, opacity: 1,
   };

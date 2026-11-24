@@ -4,7 +4,8 @@ import { DB } from "../js/core/data.js";
 import { temperatureBands } from "../js/craft/temperature-model.js";
 import { naruTastingCategory, naruTastingLine } from "../js/craft/naru-tasting.js";
 import { recognitionId } from "../js/craft/recognition.js";
-import { tournamentStoryDialogue } from "../js/craft/tournament-story-data.js";
+import { hajimeServedState, tournamentStoryDialogue } from "../js/craft/tournament-story-data.js";
+import { goodPointOf } from "../js/craft/advice.js";
 
 // 審査待ちのなるの一言が、提供＋2回調整の実績区分と一致すること。直前の試飲演出とも食い違わないこと。
 DB.flavorById = { lemon: { short_name: "AF レモン", heat_tolerance: 1 }, mint: { short_name: "AF ミント", heat_tolerance: 1 } };
@@ -43,6 +44,18 @@ assert.match(tastingText(recovered), /最後の調整で戻した/);
 assert.match(tastingText(offbandHot), /最後の調整は熱が強い/);
 assert.match(tastingText(offbandCold), /最後の調整は熱が足りない/);
 assert.match(tastingText(legacy), /提供後の変化/);
+
+// 仕上げを確定した時点の帯を記録していれば、最後の帯で過去の温度を採点し直さない。
+const beforeWear = { ...hot, inZone: true, over: false };
+const recorded = { ...steady, pull: beforeWear, careHistory: [beforeWear, beforeWear] };
+assert.equal(naruTastingCategory(recorded), "steady");
+assert.equal(recognitionId(recorded), "steady");
+assert.match(goodPointOf(recorded), /提供と2回の調整/);
+assert.equal(hajimeServedState(recorded), "good");
+assert.match(tastingText(recorded), /最後まで届けた/);
+const confirmedCold = { ...hot, inZone: false, over: false, under: true };
+assert.equal(hajimeServedState({ ...recorded, pull: confirmedCold }), "cold");
+assert.match(tastingText({ ...recorded, careHistory: [beforeWear, confirmedCold] }), /最後の調整は熱が足りない/);
 
 // 区分ごとに別の台詞が出る。中立文は品質を捏造しない。
 const lines = [steady, recovered, offbandHot, legacy].map(naruTastingLine);

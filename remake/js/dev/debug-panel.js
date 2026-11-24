@@ -22,6 +22,7 @@ import { refreshPortraits } from "../vn/engine.js";
 import { installTimeWarp, setSpeed, getSpeed, SPEEDS, realTime } from "./time-warp.js";
 import { createBackgroundPreview } from "./background-preview.js";
 import { mountMiniGameDebug } from "./minigame-launcher.js";
+import { installCraftNeon, setCraftNeon, craftNeonOn } from "./craft-neon.js";
 
 const SPEED_KEY = "suien_debug_speed";
 const CRAFT_KEY = "suien_debug_craft";
@@ -152,6 +153,7 @@ export function mountDebugPanel() {
   if (mounted) return;
   mounted = true;
   installTimeWarp();
+  installCraftNeon();
   setSpeed(Number(store.get(SPEED_KEY)) || 1);
   craftTest.auto = CRAFT_MODES.some(mode => mode.value && mode.value === store.get(CRAFT_KEY)) ? store.get(CRAFT_KEY) : null;
 
@@ -168,6 +170,9 @@ export function mountDebugPanel() {
   const craftRow = el("div", { className: "dbg-row" }, CRAFT_MODES.map(mode => el("button", { type: "button", textContent: mode.label,
     dataset: { value: mode.value, test: `debug-craft-${mode.value || "manual"}` },
     onclick: () => { craftTest.auto = mode.value || null; store.set(CRAFT_KEY, mode.value); pressed(craftRow, mode.value); } })));
+  const neonRow = el("div", { className: "dbg-row" }, [["0", "標準", "standard"], ["1", "ネオン版", "neon"]].map(([value, label, key]) => el("button", { type: "button", textContent: label,
+    dataset: { value, test: `debug-craft-neon-${key}` },
+    onclick: () => { setCraftNeon(value === "1"); pressed(neonRow, craftNeonOn() ? "1" : "0"); } })));
   const versionRow = el("div", { className: "dbg-row" }, CRAFT_VERSIONS.map(({ id, label }) => el("button", {
     type: "button", textContent: label, dataset: { value: id, test: `debug-craft-version-${id}` },
     onclick: () => {
@@ -262,10 +267,12 @@ export function mountDebugPanel() {
   ]);
   pressed(speedRow, getSpeed());
   pressed(craftRow, craftTest.auto || "");
+  pressed(neonRow, craftNeonOn() ? "1" : "0");
   panel.append(
     el("h4", { textContent: "速さ（音は変わらない）" }), speedRow,
     el("h4", { textContent: "第1章大会の版（次の試合から）" }), versionRow,
     el("h4", { textContent: "シーシャ作りの操作" }), craftRow,
+    el("h4", { textContent: "シーシャ作り見た目" }), neonRow,
     el("h4", { textContent: "会話の立ち絵" }), portraitRow,
     el("div", { className: "dbg-note", textContent: "通常の設定と共通。未導入の人物・衣装は現行、未導入の表情は同じ画風の通常絵。進行・セーブは変えない。" }),
     el("h4", { textContent: "背景プレビュー" }), backgroundPreview.row,

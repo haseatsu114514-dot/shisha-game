@@ -119,10 +119,11 @@ assert.equal(heatLogic.formatTimingError(0), "0.00秒（ほぼ一致）");
 
 // 最後の描画は適温前でも、実際の入力がジャストなら誤差・採点ともジャスト。
 now = 1000; frames.clear();
-const timingCs = { mode: "tournament", condition: conditionForRatio(1), equip: {} };
+const timingCs = { mode: "tournament", craftVersion: "sakurai", condition: conditionForRatio(1), equip: {} };
 const timingRun = heatModule.namespace.runHeat(timingCs); await settle();
 await frame(6700); // 経過5.7秒。炭のジャスト開始は5.8秒。
 assert.equal(find("coal-0").dataset.phase, "pre");
+assert(find("coal-0").classList.contains("ready-cue"));
 const justWidth = .5 * conditionForRatio(1).window, ideal = 5.8 + justWidth / 2;
 const delays = [-.08, .35, -.35];
 for (let i = 0; i < 3; i++) {
@@ -134,11 +135,13 @@ for (let i = 0; i < 3; i++) {
 await settle();
 assert.deepEqual(Array.from(timingCs.heat.picks), ["just", "hot", "pre"]);
 assert.equal(timingCs.heat.timings[0].rating, "PERFECT");
+assert.match(find("coal-timing-0").children[0].text, /EXCELLENT/);
 assert(Math.abs(timingCs.heat.timings[0].errorSeconds + .08) < 1e-12);
 assert.equal(timingCs.heat.score, Math.round((100 + 80 + 78) / 3));
 assert.equal(timingCs.heat.timingAccuracy, timingCs.heat.score);
 assert(Math.abs(timingCs.heat.meanAbsoluteError - .26) < 1e-12);
 assert.equal(find("step-summary").children[0].text, "工程点：86点 ／ 取り頃：1/3個");
+assert.match(find("step-summary").children[1].text, /EXCELLENT/);
 const frozen = JSON.stringify(timingCs.heat.timings);
 for (const fn of find("coal-0").listeners.pointerdown) fn({ preventDefault() {} });
 await frame(now + 2000); assert.equal(JSON.stringify(timingCs.heat.timings), frozen);

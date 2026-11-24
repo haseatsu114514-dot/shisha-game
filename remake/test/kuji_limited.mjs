@@ -145,6 +145,7 @@ function setup({ owned = [], money = 0, tickets = 0 } = {}) {
     addMoney(n) { ctx.state.money += n; },
     addFlavorStock(id, grams) { ctx.state.flavorStock[id] = (ctx.state.flavorStock[id] || 0) + grams; },
     spendableMoney: st => st.money,
+    settleGrowth() { return { claimed: [] }; }, // 限定の台くじを引き切っても火種は出ない
     save() { ctx.saves += 1; },
   };
   vm.runInNewContext(`${ticketSource}${grantSource}${dupeSource}${takeSource}this.grant = grant; this.withDupe = withDupe; this.takeTicket = takeTicket;`, ctx);

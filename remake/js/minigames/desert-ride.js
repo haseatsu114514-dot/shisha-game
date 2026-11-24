@@ -378,9 +378,11 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       if (isPaused() || isInterrupted() || !game || game.finished || !mode || countdown > 0) return;
       const kind = boost(game);
       if (kind) { onBoostEvent(kind); return; }
+      rideSe.cue("boostShort");
       hudNodes.gaugeFeedback?.cancel();
       const highlight = { outline: "2px solid #fff2c4", outlineOffset: "2px" };
-      hudNodes.gaugeFeedback = hudNodes.gaugeBox.animate(reducedMotion
+      const calm = reducedMotion || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      hudNodes.gaugeFeedback = hudNodes.gaugeBox.animate(calm
         ? [highlight, { outlineColor: "transparent" }]
         : [{ ...highlight, translate: "-4px" }, { ...highlight, translate: "4px" }, { outlineColor: "transparent", translate: "0" }],
       { duration: 260, easing: "ease-out" });
@@ -430,7 +432,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         image.src = imgFileUrl(file);
       }
       const pointers = new Set();
-      const down = event => { if (isPaused() || isInterrupted()) return; event.preventDefault(); unlockAudio(); pointers.add(event.pointerId); button.setPointerCapture?.(event.pointerId); button.classList.add("on"); on(); };
+      const down = event => { if (isInterrupted()) return; event.preventDefault(); unlockAudio({ warm: false }); pointers.add(event.pointerId); button.setPointerCapture?.(event.pointerId); button.classList.add("on"); on(); };
       const up = event => { pointers.delete(event.pointerId); if (!pointers.size) { button.classList.remove("on"); off(); } };
       releaseButtons.push(() => { pointers.clear(); button.classList.remove("on"); });
       button.addEventListener("pointerdown", down);
@@ -461,7 +463,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     );
     root.append(el("span.dr-recover-hint", { text: "立て直せる！" }));
     // 画面の上の方をタップしてもジャンプ（ボタンの外に指が出ても続けられる）
-    canvas.addEventListener("pointerdown", event => { if (mode) { event.preventDefault(); unlockAudio(); act(); } });
+    canvas.addEventListener("pointerdown", event => { if (mode) { event.preventDefault(); unlockAudio({ warm: false }); act(); } });
     quit.addEventListener("click", () => {
       if (!mode || pauseDialog?.open) return;
       if (goal) { goal.t = FEEL.goalAfter; return; } // ゴール後は結果へ（記録済み）
@@ -603,6 +605,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       if (preparing) return;
       preparing = true;
       try {
+        unlockAudio({ warm: false });
         const tintWho = kind === "practice" ? null : rivals.includes(who) ? who : "noor";
         // 練習か対戦相手が決まったら、最初に鳴らす曲だけを絵・効果音の準備中に先読みする。
         const readyBgm = preloadBgm(RIDE_BGM[tintWho ?? "practice"]);
@@ -619,7 +622,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     function startRun(kind, who = raceWith, readyBgm) {
       const thisRun = ++runId;
       resetInput();
-      unlockAudio();
+      unlockAudio({ warm: false });
       rideSe.stop();
       raceWith = rivals.includes(who) ? who : "noor";
       rideBgm = RIDE_BGM[kind === "practice" ? "practice" : raceWith];

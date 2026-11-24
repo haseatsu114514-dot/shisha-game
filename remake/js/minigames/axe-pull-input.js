@@ -4,7 +4,7 @@
 // - 右の取っ手（handle）からも弾ける（狙いを動かさずに投げたい時）。
 // - 強さは離す直前の上向きの速さ、左右のぶれは弾いた向きの傾き（axe-pull-model.js の flickPower）。時刻は event.timeStamp。
 // - キーボード: 矢印で狙い、Space を押している長さで強さ、離すと投げる（今までどおり）。
-import { flickPower, flickRead } from './axe-pull-model.js';
+import { flickPower, flickRead, flickTilt } from './axe-pull-model.js';
 
 export const KEYBOARD_HOLD_MS = 1000;
 
@@ -15,7 +15,7 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
   const lifetime = new AbortController(), options = { signal: lifetime.signal };
   const listen = (node, type, fn, extra = {}) => node.addEventListener(type, fn, { ...options, ...extra });
   const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
-  let aim = { x: 0, y: 0 }, flick = null, power = 0, dead = false;
+  let aim = { x: 0, y: 0 }, flick = null, power = 0, tilt = 0, dead = false;
   const pointers = new Set();
   const focused = () => { if (!dead && !doc.hidden && (canAim() || canPull())) board.focus({ preventScroll: true }); };
   function releaseCapture(previous) {
@@ -26,7 +26,7 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
    *  reason は弾き損ねの理由（"shallow"・"lean"・"down"・"hold"）。理由なし（null）は黙って取り消す（2026-11-13 指摘3） */
   function cancel(reason = null) {
     const previous = flick;
-    flick = null; power = 0;
+    flick = null; power = 0; tilt = 0;
     if (!previous) return false;
     releaseCapture(previous);
     onPower(0); onCancel(reason);
@@ -45,7 +45,7 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
   function begin(id, sample, fromBoard = false) {
     if (flick || !available()) return false;
     flick = { id, fromBoard, samples: sample ? [sample] : [], elapsed: 0, geometry: geometry() };
-    power = 0; onPower(0); return true;
+    power = 0; tilt = 0; onPower(0); return true;
   }
   const sampleOf = e => ({ t: e.timeStamp, x: e.clientX, y: e.clientY });
   function track(e) {
@@ -53,9 +53,9 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
     // 勢いよく弾くと指・マウスは画面の上へ抜けることがあるので、画面の外でも追う（捕まえた pointer の離す所まで）
     if (!available() || !unchangedGeometry() || !Number.isFinite(e.clientX) || !Number.isFinite(e.clientY)) { cancel(); return false; }
     flick.samples.push(sampleOf(e));
-    // 弾いている間の目安: 今の速さでの強さを見せる（投げるのは離した時の速さ）
+    // 弾いている間の目安: 今の速さでの強さを見せる（投げるのは離した時の速さ）。傾きは矢印の曲がり表示用に別に持つ
     const now = flickPower(flick.samples, height());
-    power = now ? now.raw : 0; onPower(power); return true;
+    power = now ? now.raw : 0; tilt = flickTilt(flick.samples, height()); onPower(power); return true;
   }
   function finish(e) {
     if (!flick || flick.id !== e.pointerId) return;
@@ -63,17 +63,17 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
     if (!track(e)) return;
     const read = flickRead(flick.samples, height());
     if (!read.throw) { cancel(read.miss); return; }
-    throwNow(read.throw.raw, read.throw.lean);
+    throwNow(read.throw.raw, read.throw.lean, read.throw.tilt);
   }
-  function throwNow(raw, lean = 0) {
+  function throwNow(raw, lean = 0, tiltValue = 0) {
     if (!flick) return;
     if (!available() || !unchangedGeometry()) { cancel(); return; }
-    const previous = flick; flick = null; power = raw;
+    const previous = flick; flick = null; power = raw; tilt = tiltValue;
     releaseCapture(previous);
     onPower(raw);
     // Re-check after callbacks/capture changes before committing a throw.
     if (!available()) { power = 0; onPower(0); onCancel(); return; }
-    onRelease(lean); focused();
+    onRelease(lean, tiltValue); focused();
   }
   function aimAt(next) {
     if (dead || flick || !canAim()) return false;
@@ -161,8 +161,10 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
     get swipeProgress() {
       if (!flick || flick.id === 'keyboard') return flick ? power : 0;
       const rise = flick.samples[0].y - flick.samples.at(-1).y;
-      return clamp(rise / Math.max(1, flick.geometry[5] * .22), 0, 1);
+      return clamp(rise / Math.max(1, flick.geometry[5] * .30), 0, 1);
     },
     get rawPower() { return power; },
+    // 引いている間の傾き（横/縦の速さ比、±1 で 45°）。表示専用。離した瞬間の値は onRelease の第2引数で渡る
+    get tilt() { return flick ? tilt : 0; },
   };
 }
