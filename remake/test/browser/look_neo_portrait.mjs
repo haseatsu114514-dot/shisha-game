@@ -419,7 +419,7 @@ await suite("look_neo_portrait", async (check) => {
     await page.waitForFunction(() => window.__remake.state.flavorStock?.lemon === 50);
     await page.waitForFunction(() => document.querySelector('.retro-sheet [data-errand-target="true"]')?.dataset.test === "sheet-shop-leave");
     assert.deepEqual(await target(), ["sheet-shop-leave"]);
-    assert.deepEqual(await page.evaluate(() => ({ money: window.__remake.state.money, paid: window.__remake.state.flags._errand_lemon_expensed })), { money: 30000, paid: true });
+    assert.deepEqual(await page.evaluate(() => ({ money: window.__remake.state.money, paid: window.__remake.state.flags._errand_lemon_expensed })), { money: 27000, paid: true });
     await page.locator(t("sheet-shop-leave")).tap();
     await page.waitForFunction(() => window.errandLeft);
     assert.deepEqual(await guardLog(page), [], "no rotate hint during the first errand");

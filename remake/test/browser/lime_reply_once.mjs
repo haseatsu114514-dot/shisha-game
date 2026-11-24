@@ -11,7 +11,7 @@ const out = path.resolve(process.env.ARTIFACT_DIR || '.codex/artifacts/remake-br
 fs.mkdirSync(out, { recursive: true });
 const measurements = [];
 const control = (page, test) => page.locator(`[data-test="${test}"]`);
-const expectedGain = .2125;
+const expectedGain = .6375; // 返信の伸び 0.85 × LIME の倍率 0.75（#4197 で 0.25 から変更）
 const expectedNote = '♡ ほんの少し仲良くなった';
 const snap = page => page.evaluate(() => {
   const s = QA.core.state, item = s.inbox.find(i => i.id === 'lime_minto_day5');
@@ -48,7 +48,7 @@ async function setup(page) {
 }
 
 function assertOnce(value) {
-  assert.equal(value.affinity, 10); assert(Math.abs(value.carry - (.5 + expectedGain)) < 1e-9);
+  assert.equal(value.affinity, 11); assert(Math.abs(value.carry - (.5 + expectedGain - 1)) < 1e-9);
   assert(value.item.read && value.item.done); assert.equal(value.item.replyState, 'replied');
   assert.deepEqual(value.item.log, [{ me: true, text: replyText }, { me: false, text: responseText }]);
   assert.equal(value.limeRead.filter(x => x === id).length, 1);

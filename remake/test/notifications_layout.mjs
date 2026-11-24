@@ -25,7 +25,7 @@ try {
       const s = QA.core.state;
       // #814: LIMEを交換した2本目まで読んでいる（読まずに♥1を超えない）。
       s.phase = "daily"; s.met.naru = true; s.story.naru = 2; s.affinity.naru = 17;
-      // LIME返信は0.25倍のため、端数繰り越しを足して1回の返信で+1に届くようにする（期待値18は変えない）。
+      // LIME返信は0.75倍（#4197で0.25から変更）。2×0.85×0.75=1.275に端数繰り越し0.9を足して+2になる。
       s.affinityCarry = { ...(s.affinityCarry || {}), naru: 0.9 };
       // 正式な返信処理を通すためのテスト専用の雑談。
       s.inbox = [{ id: "qa_layout", day: s.day, read: true, done: false, log: [],
@@ -38,7 +38,7 @@ try {
     await feedback.waitFor();
     assert.equal(await feedback.count(), 1, "実返信の微小上昇はLIME内に一度だけ表示する");
     assert.equal(await page.locator('.gain-card.affinity').count(), 0, "LIME返信は大きな獲得カードと重複しない");
-    assert.equal(await page.evaluate(() => QA.core.state.affinity.naru), 18);
+    assert.equal(await page.evaluate(() => QA.core.state.affinity.naru), 19);
     const feedbackFits = await feedback.evaluate(node => {
       const r = node.getBoundingClientRect();
       return r.width > 0 && r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight
@@ -49,8 +49,8 @@ try {
     await page.evaluate(() => QA.stats.gainAffinity("naru", 1));
     await page.waitForSelector(".gain-card.affinity.show");
     await page.waitForTimeout(500);
-    assert.equal(await page.locator(".gc-sub").textContent(), "好感度が少し上がった");
-    assert.equal(await page.evaluate(() => QA.core.state.affinity.naru), 19);
+    assert.equal(await page.locator(".gc-sub").textContent(), "仲が深まった（♥2）");
+    assert.equal(await page.evaluate(() => QA.core.state.affinity.naru), 20);
     const layer = await page.evaluate(() => {
       const banners = document.getElementById("banners"), modal = document.getElementById("modal"), wipe = document.getElementById("wipe");
       const r = banners.querySelector(".gain-card").getBoundingClientRect();

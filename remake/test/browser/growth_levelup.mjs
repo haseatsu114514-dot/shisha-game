@@ -409,7 +409,7 @@ await suite("growth-levelup", async (runCheck) => {
     const node=page.locator(t("board-node-K20"));await node.waitFor();assert.match(await node.getAttribute("class"),/gb-node stat/);
     await node.click();assert.match(await page.locator(t("board-perk")).innerText(),/好感度.*＋5%/,"火種2のマスは恩恵も2マス分（SBD112）");
     assert.doesNotMatch(await page.locator(t("board-preview")).innerText(),/差し入れ|手土産/);
-    assert.match(await page.locator(t("board-tab-body")).getAttribute("aria-label"),/\/27/);
+    assert.match(await page.locator(t("board-tab-body")).getAttribute("aria-label"),/\/26/);
     await page.locator(t("board-close")).click();
     assert.equal(await page.evaluate(async()=>{await k20Board;const core=await import("./js/core/state.js");core.save();core.load();return JSON.stringify({nodes:core.state.growth.nodes,paid:core.state.growth.paid,hidane:core.state.growth.hidane,day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,stats:core.state.stats})===oldK20;}),true);
   },{viewport:{width:591,height:1280}});
@@ -1596,14 +1596,14 @@ await suite("growth-levelup", async (runCheck) => {
       void (await import("./js/core/growth.js")).openGrowthBoard();
     });
     await page.locator(t("board-tab-body")).waitFor();
-    assert.match(await page.locator(t("board-tab-body")).innerText(), /才能盤\s*2\/27/);
+    assert.match(await page.locator(t("board-tab-body")).innerText(), /才能盤\s*2\/26/);
     assert.equal(await page.locator(t("board-bars")).count(), 1, "恩恵の横棒");
     assert.doesNotMatch(await page.locator(t("growth-board")).innerText(), /\d段/, "盤に段の文字は無い");
     await page.locator(t("board-decide")).click();
     await page.waitForSelector(t("growth-board"), { state: "detached" });
     await page.evaluate(async () => { void (await import("./js/daily/status.js")).openStatus(); });
     await page.locator(t("board-radar")).waitFor();
-    assert.match(await page.locator(t("st-board-body")).innerText(), /2\/27/);
+    assert.match(await page.locator(t("st-board-body")).innerText(), /2\/26/);
     assert.doesNotMatch(await page.locator(".st-me").innerText(), /\d段/, "ステータスに段の文字は無い");
   }, { viewport: { width: 1331, height: 760 } });
   // 授業は会って相談した時だけ習う（SBD61）: 盤には LIME で聞く入口が無く、次に会った時と出る
