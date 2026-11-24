@@ -21,7 +21,7 @@ async function harness({ manual = false, paused = true, craft = {}, lessons = []
       super(); this.style = { setProperty() {} }; this.dataset = {}; this.attrs = {}; this.inert = false;
       this.classList = { add() {}, remove() {}, toggle() {} };
     }
-    append() {} setAttribute(key, value) { this.attrs[key] = value; } remove() {}
+    append() {} setAttribute(key, value) { this.attrs[key] = value; } remove() {} closest() { return null; }
     querySelector() { return new Node(); }
     getBoundingClientRect() { return { left: 0, top: 0, width: 784, height: 414 }; }
   }
