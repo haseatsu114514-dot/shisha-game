@@ -2,6 +2,8 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { adjustmentLines, resultLines, defeatLines } from "../js/chapters/ch3-verdict.js";
+import { DB } from "../js/core/data.js";
+import { temperatureBands } from "../js/craft/temperature-model.js";
 
 const data = JSON.parse(readFileSync(new URL("../../data/dialogue/ch3_main.json", import.meta.url), "utf8"));
 const find = id => (data.dialogues || data).find(d => d.dialogue_id === id).lines;
@@ -70,6 +72,33 @@ for (const key of ["aroma", "light", "sweet"]) {
   assert.equal(lines.length, res.length + 1);
 }
 assert.equal(resultLines(res, { careHistory: [care(0), care(0)] }, undefined).length, res.length);
+
+// 「甘い余韻」は提供した一台の甘い印象で言い分ける（#3909。点・票は変えない）。提供の記録が無い旧セーブは今までの一行
+{
+  const flavors = JSON.parse(readFileSync(new URL("../../data/flavors.json", import.meta.url), "utf8")).flavors;
+  DB.flavorById = Object.fromEntries(flavors.map(flavor => [flavor.id, flavor]));
+  const served = (mix, at = .5) => {
+    const cs = { mix, pullDone: true, careHistory: [care(0), care(0)] };
+    const { ideal } = temperatureBands(cs);
+    const width = ideal[1] - ideal[0];
+    cs.pull = { temp: at === "cold" ? ideal[0] - width : ideal[0] + width * at };
+    return cs;
+  };
+  const sweetLine = craft => resultLines(res, craft, "sweet").find(line => line.speaker === "hajime" && line.text.includes("甘い余韻"))?.text;
+  assert.match(sweetLine({ careHistory: [care(0), care(0)] }), /最後の一口まで、そこを見て動けた/);
+  assert.match(sweetLine(served({ chocolate: 12 })), /最後の一口まで、そこを見て動けた/);
+  assert.match(sweetLine(served({ chocolate: 6, mint: 6 })), /甘さはあと一歩/);
+  // チョコは課題の4gだけ、ミントが主役で高めに出す（甘い印象3.4）
+  assert.match(sweetLine(served({ chocolate: 4, mint: 8 }, 1)), /狙ったところまで届かなかった/);
+  assert.match(sweetLine(served({ chocolate: 12 }, "cold")), /熱が合わず/);
+  // 甘さの判定は「甘い余韻」の方針だけ。ほかの方針の一行は配合で変えない
+  for (const key of ["aroma", "light"]) {
+    assert.equal(text(resultLines(res, served({ chocolate: 4, mint: 8 }), key)), text(resultLines(res, { careHistory: [care(0), care(0)] }, key)));
+  }
+  for (const craft of [served({ chocolate: 12 }), served({ chocolate: 4, mint: 8 }, 1), served({ chocolate: 12 }, "cold")]) {
+    assert.equal(resultLines(res, craft, "sweet").length, res.length + 1);
+  }
+}
 
 // 敗退: 一度も替えずに負けたら「待てた」ではなく「替えてもよかった」と振り返る
 const def = find("ch3_national_defeat");

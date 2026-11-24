@@ -4,11 +4,19 @@ import { flavorFamilyGrams } from "../craft/score.js";
 import { servedEvaluationLines, servedStateLine } from "../craft/served-eval.js";
 import { evaluationOf, feedbackLine } from "../craft/feedback.js";
 import { careStartTemp } from "../craft/pull.js";
+import { preferenceFit, SWEET_AIM } from "../craft/flavor-preference.js";
 
+// taste: 方針が味の狙いを持つ時だけ、提供した一台の仕上がりで一言を添える（#3909。点・票は変えない）。
 const PLANS = Object.freeze({
   sakura: { flavor: "sakura", label: "桜", aim: "香りを先に届ける" },
-  peach: { flavor: "peach", label: "桃", aim: "甘さでやわらかく迎える" },
+  peach: { flavor: "peach", label: "桃", aim: "甘さでやわらかく迎える", taste: SWEET_AIM },
   tea: { flavor: "black_tea", label: "茶", aim: "余韻を長く残す" },
+});
+const SWEET_TASTE_LINES = Object.freeze({
+  match: "仕上がりの甘さは、狙いどおりに届いていた。",
+  near: "仕上がりの甘さは、狙いにあと一歩だった。",
+  off: "仕上がりの甘さは、狙いより控えめだった。",
+  outside: "熱が合わず、狙った甘さは確かめきれなかった。",
 });
 const line = (text, speaker = "") => ({ speaker, face: speaker ? "normal" : "", text });
 
@@ -43,10 +51,19 @@ export function chapterFourPlanReview(value, cs) {
       : `出発前は${plan.label}を考えていたが、本番では使わず、別の配合で出した。`;
 }
 
+/** 方針の味の狙いに、提供した一台が届いたか（桃だけ）。方針の葉を使わなかった・提供の記録が無い時は空。 */
+export function chapterFourPlanTaste(value, cs) {
+  const plan = PLANS[value.flags?._ch4_strategy];
+  if (!plan?.taste || flavorFamilyGrams(cs.mix, plan.flavor, DB.flavorById) <= 0) return "";
+  return SWEET_TASTE_LINES[preferenceFit(cs, plan.taste)?.fit] || "";
+}
+
 export function chapterFourReviewLines(value, cs) {
   const lines = cs.pullDone && !cs.pull?.failed ? servedEvaluationLines(cs) : [];
   const plan = chapterFourPlanReview(value, cs);
   if (plan) lines.push(line(plan));
+  const taste = chapterFourPlanTaste(value, cs);
+  if (taste) lines.push(line(taste));
   for (const [index, care] of (cs.careHistory || []).entries()) {
     const evaluation = evaluationOf(care.score);
     lines.push(line(`調整${index + 1}回目：${evaluation.mark}　炭交換${care.coals || 0}個`));
