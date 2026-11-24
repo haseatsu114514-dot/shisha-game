@@ -264,7 +264,7 @@ await suite("ui-themes-preview", async check => {
     const started=new Promise(resolve=>{requested=resolve;});
     // 会話用の明朝は会話開始前に先読みされる（vn-fonts.js）。読み込みを止めた状態で開き直し、
     // 先読みが届く前にテーマを切り替えても仮の書体で本文を出さないことを確かめる。
-    await page.route('**/ZenOldMincho-Blue-Regular.woff2',async route=>{requested();await gate;await route.continue();});
+    await page.route('**/ZenOldMincho-Blue-Regular.woff2*',async route=>{requested();await gate;await route.continue();});
     try {
       await page.reload({waitUntil:"load"});
       await page.locator('#preview-theme:enabled').waitFor();
