@@ -94,7 +94,7 @@ for (const r of recipes) {
 assert.equal(DB.equipById.lotos_hagal.name, "ロートスHMD");
 assert.equal(DB.equipById.winkwink_hagal.name, "ビッグタヌキッシュリッド");
 assert.equal(DB.equipById.harry_the_moon.name, "ハリーザムーン");
-assert.equal(DB.characters.maezono.name, "上園 文太郎");
+assert.equal(DB.characters.uezono.name, "上園 文太郎");
 // #1947 R9 / #1984: guard only the withdrawn descriptions on retired pipes.
 const withdrawnPipeDescriptions = {
   pipe_middle: "少し値が張るが、気密性が高く味と煙が安定する。大会では専門評価に少し補正が入る。",
@@ -290,14 +290,14 @@ assert.equal(isSuyakiBowl("silicone_bowl"), false);
 
 // 5. 審査員の最終得点式（1本化・同品質 Q=80 で好みだけを変えた計算例）
 assert.equal(BASE_PREF_SCALE, 20);
-assert.equal(judgeMaxPrefDelta("sui"), 2.0);
-assert.equal(judgeMaxPrefDelta("dr_kemuri"), 3.0);
-assert.equal(judgeMaxPrefDelta("maezono"), 4.4);
+assert.equal(judgeMaxPrefDelta("sensu"), 2.0);
+assert.equal(judgeMaxPrefDelta("dr_charcoal"), 3.0);
+assert.equal(judgeMaxPrefDelta("uezono"), 4.4);
 
 const expectedAtQ80 = {
-  sui: [78.0, 79.0, 80.0, 81.0, 82.0],
-  dr_kemuri: [77.0, 78.5, 80.0, 81.5, 83.0],
-  maezono: [75.6, 77.8, 80.0, 82.2, 84.4],
+  sensu: [78.0, 79.0, 80.0, 81.0, 82.0],
+  dr_charcoal: [77.0, 78.5, 80.0, 81.5, 83.0],
+  uezono: [75.6, 77.8, 80.0, 82.2, 84.4],
 };
 const prefs = [-1.0, -0.5, 0.0, 0.5, 1.0];
 for (const [judgeId, expected] of Object.entries(expectedAtQ80)) {

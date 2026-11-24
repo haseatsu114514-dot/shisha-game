@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { mkdir } from "node:fs/promises";
 const { chromium } = createRequire(import.meta.url)("playwright");
-const ids = ["saku", "steve", "volk", "mashiro", "maki", "sai", "uranaishi"];
+const ids = ["ayatori", "steve", "volk", "mashiro", "maki", "sai", "uranaishi"];
 const shots = process.env.ARTIFACT_DIR || "work/recent-intros";
 await mkdir(shots, { recursive: true });
 const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_EXECUTABLE_PATH || "/usr/bin/chromium" });
@@ -48,7 +48,7 @@ try {
       };
     }, id);
     // NAMES-1106「カットインの名前表示ルール」: 本名タイプはフルネーム、占い師は「占いオババ」
-    assert.equal(result.name, { saku: "綾取陣", steve: "スティーブ・A・アッシュ", volk: "ヴォルク・イヴァノフ", mashiro: "黒葉ましろ",
+    assert.equal(result.name, { ayatori: "綾取陣", steve: "スティーブ・A・アッシュ", volk: "ヴォルク・イヴァノフ", mashiro: "黒葉ましろ",
       maki: "斧崎マキ", sai: "六角サイ", uranaishi: "占いオババ" }[id]);
     assert.equal(result.title, result.expectedTitle);
     assert.equal(result.quote, result.expectedQuote);
@@ -85,7 +85,7 @@ try {
     await page.evaluate(id => {
       const s = T.core.newGame();
       Object.assign(s, { chapter: 2, day: 16, slot: id === "maki" ? 1 : 0, phase: "daily", money: 15000, stamina: 80 });
-      Object.assign(s.flags, { _axe_bar_rumor_done: true, _axe_bar_sighting_done: true, _rei_trpg_introduced: true });
+      Object.assign(s.flags, { _axe_bar_rumor_done: true, _axe_bar_sighting_done: true, _kuraudo_trpg_introduced: true });
       // 入店後の紹介検査。部活設立の会話は #3135 / trpg_main の範囲なので、既に設立済みとして棚と店主を出す。
       if (id === "sai") s.trpg.club.founded = { chapter: 2, day: 16 };
       T.before = [s.money, s.stamina, s.slot, s.day];

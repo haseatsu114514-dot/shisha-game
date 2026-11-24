@@ -13,14 +13,33 @@ import { isTrpgRegular } from "../remake/js/trpg/regulars.js";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = rel => JSON.parse(fs.readFileSync(path.join(root, rel), "utf8"));
 const catalog = read("data/trpg_catalog.json");
+// 本棚には表示・配役に必要な情報だけを載せる。台本の詳細は一冊選んでから読む。
+function shelfEntry({ version, title, author, collection, duration, presentation, cast, campaign, endings, pictureBook }) {
+  const { theme, number, genre, image, sceneAlt, location, tagline, backdrop } = presentation;
+  return { version, title, author, collection, duration,
+    presentation: { theme, number, genre, image, sceneAlt, location, tagline, backdrop },
+    cast: cast.map(({ id, part, color }) => ({ id, part, color })), campaign: { seats: campaign.seats },
+    endings: Object.fromEntries(Object.entries(endings).map(([id, { title }]) => [id, { title }])),
+    // 絵本の有無とページ文だけは棚でも要る（「絵本をみる」の表示と読み返し用。画像は開いた時に読む）
+    ...(pictureBook ? { pictureBook: { pages: pictureBook.pages.map(({ image, alt, text }) => ({ image, alt, text })) } } : {}) };
+}
+if (process.argv[2] === "--update-shelf") {
+  for (const book of catalog.scenarios) book.shelf = shelfEntry(read("data/" + book.file));
+  fs.writeFileSync(path.join(root, "data/trpg_catalog.json"), JSON.stringify(catalog, null, 2) + "\n");
+  process.exit(0);
+}
 const characters = read("data/characters.json");
 for (const file of catalog.characterProfiles || []) { const o = read("data/" + file); if (o.profile?.id) characters.push(o.profile); }
 const people = new Set(characters.map(c => c.id));
 const manifest = read("remake/data/manifest.json");
 const MEMBERS = new Set(catalog.participants.map(p => p.id));
 // An image is in the game when it is on disk or tracked by git: CI's quick checkout holds text files only (images stay in the index).
-const tracked = new Set((() => { try { return execFileSync("git", ["ls-files", "remake/img"], { cwd: root, encoding: "utf8", maxBuffer: 64 << 20 }).split("\n"); } catch { return []; } })());
-const shipped = url => { const rel = path.relative(root, path.join(root, "remake/js/trpg", url)); return fs.existsSync(path.join(root, rel)) || tracked.has(rel.split(path.sep).join("/")); };
+const tracked = new Set((() => { try { return execFileSync("git", ["ls-files", "remake/img"], { cwd: root, encoding: "utf8", maxBuffer: 64 << 20 }).split("\n").filter(Boolean); } catch { return []; } })());
+const shipped = url => {
+  const file = path.join(root, "remake/js/trpg", url);
+  const rel = path.relative(root, file).split(path.sep).join("/");
+  return tracked.has(rel) || (fs.existsSync(file) && fs.statSync(file, { throwIfNoEntry: false })?.isFile());
+};
 const width = t => Array.from(t).reduce((n, c) => n + (c.codePointAt(0) <= 255 ? 0.5 : 1), 0);
 
 function validate(rel) {
@@ -156,6 +175,24 @@ function validate(rel) {
     need(shipped(pr.choiceArt.src), "選択肢の絵 " + pr.choiceArt.src + " が存在しない");
     for (const [field, row] of Object.entries(pr.choiceArt.rows || {})) need(Number.isInteger(row) && row < pr.choiceArt.rowCount, "choiceArt.rows." + field);
   }
+  if (Object.hasOwn(s, "pictureBook")) {
+    const pages = s.pictureBook?.pages;
+    if (need(Array.isArray(pages) && pages.length >= 3 && pages.length <= 6, "pictureBook.pages は3〜6ページ")) {
+      for (const [i, page] of pages.entries()) {
+        const where = `pictureBook.pages[${i}]`;
+        if (!need(page && typeof page === "object" && !Array.isArray(page), where + " はページのオブジェクト")) continue;
+        if (page.image !== undefined && need(typeof page.image === "string" && page.image.trim(), where + ".image は画像パス")) {
+          need(shipped(page.image), where + ".image の画像 " + page.image + " が存在しない");
+        }
+        const text = typeof page.text === "string" ? page.text.trim() : "";
+        if (need(text, where + ".text が空か文字列ではない")) {
+          need(Array.from(text).length <= 60, where + ".text は60字以内");
+          const sentences = text.match(/[。！？!?]+/gu) || [];
+          need(text.endsWith("。") && sentences.length <= 2, where + ".text は「。」で終わる2文以内");
+        }
+      }
+    }
+  }
   for (const phase of phasesOf(s)) need(pr.phases?.[phase]?.kicker && pr.phases[phase].title, "presentation.phases." + phase);
   // #3050: every seat shows whoever plays it, so no sheet or companion build carries its own role picture.
   const sheetsWithArt = [...Object.values(s.companionBuilds || {}).flatMap(seat => Object.values(seat).flat()),
@@ -234,6 +271,7 @@ function validate(rel) {
   if (total > 170) warn("標準ルートの台詞が " + total + " 行。長すぎるかも");
   const entry = catalog.scenarios.find(e => e.file === rel.replace(/^data\//, ""));
   if (entry) {
+    need(JSON.stringify(entry.shelf) === JSON.stringify(shelfEntry(s)), "本棚の索引を更新してください: node tools/validate_trpg_scenario.mjs --update-shelf");
     need(entry.id === s.id, "catalog の id と scenario.id が違う");
     need(Number.isInteger(entry.price) && entry.price >= 300 && entry.price <= 1500, "catalog.price は300〜1500円");
     need(s.zeroMemberCast ? gm === "sai" && (entry.zeroMemberCast?.includes(gm) || entry.member === "ageha")

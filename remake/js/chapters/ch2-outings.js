@@ -3,8 +3,8 @@ import { knowsTrpgBar } from "../core/trpg-discovery.js";
 
 // 出会っただけでは解放しない。紹介会話を最後まで読んだ場所だけを地図へ出す。
 export const CITY_OUTINGS = [
-  { id: "trpg_bar", label: "ボドゲカフェ", kind: "trpg", introducedBy: "rei", flag: "_rei_trpg_introduced",
-    previewUrl: CITY_BACKGROUNDS.trpg, introduction: "remake_ch2_rei_trpg", x: 48, y: 25, glyph: "卓",
+  { id: "trpg_bar", label: "ボドゲカフェ", kind: "trpg", introducedBy: "kuraudo", flag: "_kuraudo_trpg_introduced",
+    previewUrl: CITY_BACKGROUNDS.trpg, introduction: "remake_ch2_kuraudo_trpg", x: 48, y: 25, glyph: "卓",
     dayOneDesc: "クラウドが教えてくれた、夜はTRPGバーになる店。昼は店長に遊び方を聞ける。" },
   { id: "ch2_aquarium", label: "都市型水族館", kind: "outing", introducedBy: "ageha", flag: "_ageha_aquarium_introduced",
     previewUrl: CITY_BACKGROUNDS.aquarium, introduction: "remake_ch2_ageha_aquarium", look: "remake_ch2_aquarium_look", first: "remake_ch2_aquarium_visit", repeat: ["remake_ch2_aquarium_repeat", "remake_ch2_aquarium_repeat_b", "remake_ch2_aquarium_repeat_c", "remake_ch2_aquarium_repeat_d", "remake_ch2_aquarium_repeat_e", "remake_ch2_aquarium_repeat_f", "remake_ch2_aquarium_repeat_g", "remake_ch2_aquarium_repeat_h"], x: 28, y: 47, glyph: "魚", cost: 1800, stamina: 0,

@@ -14,7 +14,7 @@ const noop = () => {};
 const mocks = {
   "core/util.js": { clamp: (v,a,b) => Math.max(a,Math.min(b,v)), el: noop, sleep: noop },
   "core/ui.js": { layers: {}, gainCard: noop, toast: noop },
-  "core/data.js": { DB: {}, faceIconUrl: noop },
+  "core/data.js": { DB: {}, faceIconUrl: noop, loadLoverEvents: noop },
   "core/audio.js": { SE: {} },
 };
 const modules = new Map();

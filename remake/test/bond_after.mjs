@@ -57,9 +57,9 @@ const friendOf = (id, extra = {}) => save({ finales: { [id]: { day: 20, chapter:
 
 // 対象: 締めくくり前・恋人・恋愛ルートは出さない。友人ルート（または _friend_<id>）だけ
 assert.equal(bondAfterNext(save(), "kumicho"), null, "締めくくりの前は出さない");
-assert.equal(bondAfterEligible(save({ finales: { rei: { route: "romance" } } }), "rei"), false, "恋愛ルートは出さない");
-assert.equal(bondAfterEligible(save({ finales: { rei: { route: "friend" } }, lovers: ["rei"] }), "rei"), false, "恋人には出さない");
-assert.equal(bondAfterEligible(save({ finales: { rei: { route: "romance" } }, flags: { _friend_rei: true } }), "rei"), true, "後から友人に落ち着いた人は出す");
+assert.equal(bondAfterEligible(save({ finales: { kuraudo: { route: "romance" } } }), "kuraudo"), false, "恋愛ルートは出さない");
+assert.equal(bondAfterEligible(save({ finales: { kuraudo: { route: "friend" } }, lovers: ["kuraudo"] }), "kuraudo"), false, "恋人には出さない");
+assert.equal(bondAfterEligible(save({ finales: { kuraudo: { route: "romance" } }, flags: { _friend_kuraudo: true } }), "kuraudo"), true, "後から友人に落ち着いた人は出す");
 assert.equal(bondAfterNext(friendOf("pakki"), "pakki"), null, "締めくくりの無い人は対象外（いつもの来店のまま）");
 // 締めくくりのある人は全員、♥5後の5本を持つ（#3693）。daily/bonds.js は画面の部品を読むので、BOND_FINALES の見出しを文字で読む
 {
@@ -72,25 +72,25 @@ assert.equal(bondAfterNext(friendOf("pakki"), "pakki"), null, "締めくくり�
 
 // 順番: 5本を一度ずつ順に。読んだ記録は場面のIDで持つ
 {
-  const value = friendOf("rei");
+  const value = friendOf("kuraudo");
   const order = [];
   for (let i = 0; i < 5; i++) {
-    const next = bondAfterNext(value, "rei");
+    const next = bondAfterNext(value, "kuraudo");
     assert.equal(next.kind, "story");
     order.push(next.scene);
-    assert.deepEqual(bondAfterNext(value, "rei"), next, "読み終えるまで同じ場面（中断しても進まない）");
-    markBondAfterRead(value, "rei", next);
+    assert.deepEqual(bondAfterNext(value, "kuraudo"), next, "読み終えるまで同じ場面（中断しても進まない）");
+    markBondAfterRead(value, "kuraudo", next);
   }
-  assert.deepEqual(order, BOND_AFTER.rei.scenes.map(scene => scene.id));
+  assert.deepEqual(order, BOND_AFTER.kuraudo.scenes.map(scene => scene.id));
   // その後は短い汎用を巡回
   const shorts = [];
-  for (let i = 0; i < 6; i++) { const next = bondAfterNext(value, "rei"); assert.equal(next.kind, "short"); shorts.push(next.scene); markBondAfterRead(value, "rei", next); }
-  assert.deepEqual(shorts, [...BOND_AFTER.rei.shorts, ...BOND_AFTER.rei.shorts].slice(0, 6));
-  assert.deepEqual(value.flags._bond_after.rei, order, "5本の記録は増えない");
+  for (let i = 0; i < 6; i++) { const next = bondAfterNext(value, "kuraudo"); assert.equal(next.kind, "short"); shorts.push(next.scene); markBondAfterRead(value, "kuraudo", next); }
+  assert.deepEqual(shorts, [...BOND_AFTER.kuraudo.shorts, ...BOND_AFTER.kuraudo.shorts].slice(0, 6));
+  assert.deepEqual(value.flags._bond_after.kuraudo, order, "5本の記録は増えない");
 }
 
 // 前提の持ち物: 一本目が締めくくりの素焼きの回収になっている人は、素焼きを持っている時だけ
-for (const id of ["kumicho", "naru", "adam", "tsumugi", "sumi", "minto", "rio", "samechan", "ageha", "mashiro", "saku", "steve", "volk", "master_hookah", "noor", "da_silva", "sheikh"]) assert.equal(BOND_AFTER[id].scenes[0].requires, `suyaki_${id}`, `${id}: 一本目は素焼きが前提`);
+for (const id of ["kumicho", "naru", "adam", "tsumugi", "sumi", "minto", "rio", "samechan", "ageha", "mashiro", "ayatori", "steve", "volk", "master_hookah", "noor", "da_silva", "sheikh"]) assert.equal(BOND_AFTER[id].scenes[0].requires, id === "ayatori" ? "suyaki_saku" : `suyaki_${id}`, `${id}: 一本目は素焼きが前提`);
 // ひよりの素焼きの一台は友人の一服（friends.json）が描くので、一本目に前提を置かない
 assert.equal(BOND_AFTER.hiyori.scenes.some(scene => scene.requires), false);
 // サメちゃんの来店（daily/samechan.js）は背景を渡さないので、台本の metadata に店の背景を持つ。ひよりは私的な場面
@@ -111,6 +111,6 @@ for (const id of [...BOND_AFTER.minto.scenes.map(scene => scene.id), ...BOND_AFT
   assert.equal(bondAfterNext(withGift, "kumicho").scene, "bond_after_kumicho_1");
 }
 // 壊れた記録は空として読む
-assert.equal(bondAfterNext(friendOf("rei", { flags: { _bond_after: { rei: "x", rei_short: "y" } } }), "rei").scene, "bond_after_rei_1");
+assert.equal(bondAfterNext(friendOf("kuraudo", { flags: { _bond_after: { kuraudo: "x", kuraudo_short: "y" } } }), "kuraudo").scene, "bond_after_kuraudo_1");
 
 console.log(`bond_after: PASS ${Object.keys(BOND_AFTER).length} people, ${BOND_AFTER_SCENE_IDS.length} scenes (order, friend-only, requires, shorts)`);

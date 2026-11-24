@@ -70,7 +70,8 @@ const values = {
   "chapter-features.js": { chapterFeatureEnabled },
   "hiyori-route.js": { hiyoriEventStatus: () => "disabled", hiyoriRoute: () => db.hiyori?.route || {}, hiyoriFinaleReady: () => false },
   "util.js": { el, clamp, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${Number(n).toLocaleString("ja-JP")}` },
-  "data.js": { DB: db, displayName: (id) => id, limeAccountName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
+  "data.js": { DB: db, loadLoverEvents: async () => db, loadConfessionDialogue: async () => db,
+    displayName: (id) => id, limeAccountName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
   "lime-icons.js": { customLimeIconUrl: () => null },
   "ui.js": { layers, toast: (text) => nudges.push(text) }, "state.js": { state, save: noop, STAT_JA, hasAffinity, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
   "stats.js": { setStoryAffinityCap() {}, affinityGateWaiting: () => false, gainStat: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
@@ -99,7 +100,8 @@ async function load(name) {
 }
 const statsModule = await load("production-stats.js"); await statsModule.evaluate();
 const actualStats = statsModule.namespace;
-Object.assign(values["stats.js"], { bond: actualStats.bond, privateBondScope: actualStats.privateBondScope, releaseLoveAffinity: actualStats.releaseLoveAffinity });
+Object.assign(values["stats.js"], { bond: actualStats.bond, prepareLoveAffinity: actualStats.prepareLoveAffinity,
+  privateBondScope: actualStats.privateBondScope, releaseLoveAffinity: actualStats.releaseLoveAffinity });
 const phoneModule = await load("phone.js"); await phoneModule.evaluate();
 const phone = phoneModule.namespace, romance = (await load("romance.js")).namespace;
 const clone = (v) => JSON.parse(JSON.stringify(v));
@@ -499,10 +501,10 @@ assert(!hiyoriOuting()); assert(phone.morningMessages().some((m) => m.id === "li
 // ♥3の判定は affinity_level の汎用判定（この試験では affinityLevel が常に5）。
 assert.equal(invitationById.lime_outing_kumicho_1.accept_event, "outing_kumicho_1"); assert.equal(invitationById.lime_outing_kumicho_1.time_slot, "noon");
 assert.equal(invitationById.lime_outing_kumicho_1.closed_on, 0); assert.equal(invitationById.lime_outing_kumicho_1.private_schedule, "holiday_or_temporary");
-assert.equal(invitationById.lime_outing_rei_1.accept_event, "outing_rei_1"); assert.equal(invitationById.lime_outing_rei_1.time_slot, "night"); assert(invitationById.lime_outing_rei_1.after_close);
+assert.equal(invitationById.lime_outing_kuraudo_1.accept_event, "outing_kuraudo_1"); assert.equal(invitationById.lime_outing_kuraudo_1.time_slot, "night"); assert(invitationById.lime_outing_kuraudo_1.after_close);
 const rivalOuting = (id) => phone.morningMessages().some((m) => m.id === `lime_outing_${id}_1`);
-const rivalOutingReady = { kumicho: { _kumicho_sento_introduced: true }, rei: { _ch2_read_ch2_rei_second: true } };
-for (const id of ["kumicho", "rei"]) {
+const rivalOutingReady = { kumicho: { _kumicho_sento_introduced: true }, kuraudo: { _ch2_read_ch2_kuraudo_second: true } };
+for (const id of ["kumicho", "kuraudo"]) {
   const base = { chapter: 2, day: 5, contacts: [id], affinity: { [id]: 33 } };
   reset({ ...base, flags: { ...rivalOutingReady[id] } }); assert(rivalOuting(id), `${id}: 第2章の♥3で誘う`);
   reset({ ...base }); assert(!rivalOuting(id), `${id}: 場面が前提にする話を読む前は誘わない`);
@@ -513,7 +515,7 @@ for (const id of ["kumicho", "rei"]) {
 }
 // 綾取・スティーブ・ヴォルクの♥3の外出（#3097 PR-H）。東京の日常ループ（版3）の昼の空きにだけ、この周回で LIME を交換した後
 // （交換の場面の既読）・♥5の締めくくりの前に届く。地元で会う誘いと違い、東京にいる間に届く（region: "tokyo"）。日を改めて届け直さない。
-for (const id of ["saku", "steve", "volk"]) {
+for (const id of ["ayatori", "steve", "volk"]) {
   const invite = invitationById[`lime_outing_${id}_1`];
   assert.equal(invite.accept_event, `outing_${id}_1`); assert.equal(invite.time_slot, "noon");
   assert.equal(invite.chapter, 3); assert.equal(invite.region, "tokyo"); assert(!invite.important, `${id}: 日を改めて届け直さない`);
@@ -846,36 +848,64 @@ console.log("[1210] PASS ageha after-visit precedes day3; day3 arrives the next 
 }
 console.log("[3081] PASS ageha bear-seat LIME");
 
-// #782: 追加候補も本番の連絡先/未読/1話題/一度きり/最大3通の制御を通す。
+// #782 / #4035 D2: 移行前と同じ朝に、友人雑談の先頭2件と同じ本文・返信・好感度で届く。
+const earlyNotes = allMessages.filter(m => m.id.startsWith("lime_tsumugi_note_day"));
 db.friends = JSON.parse(await fs.readFile(new URL("data/friends.json", root), "utf8"));
-for (const day of [5, 10]) {
-  reset({ day, lastBaitoDay: day, contacts: ["tsumugi"] }); db.lime = [];
-  const original = JSON.stringify(db.friends);
-  assert.equal(phone.deliverMorning(), 1);
-  assert.equal(state.inbox[0].id, `lime_tsumugi_note_day${day}`);
+const originalFriends = JSON.stringify(db.friends);
+function noteMorning(day, overrides = {}, competing = []) {
+  reset({ day, contacts: ["tsumugi"], ...overrides });
+  db.lime = [...competing, ...earlyNotes];
+}
+for (const [day, due] of [[4, null], [5, 5], [6, 5], [7, null], [9, null], [10, 10], [11, null]]) {
+  noteMorning(day);
+  const original = JSON.stringify(db.lime);
+  assert.equal(phone.deliverMorning(), due ? 1 : 0, `DAY${day}`);
+  if (!due) continue;
+  const { id, msg, replyState } = state.inbox[0];
+  const chat = db.friends.friends.tsumugi.chats[due === 5 ? 0 : 1];
+  assert.equal(id, `lime_tsumugi_note_day${due}`);
+  assert.equal(msg.sender, "tsumugi");
+  assert.equal(msg.chapter, 1);
+  assert.equal(msg.trigger_day, due);
+  assert.equal(msg.trigger_condition, "lime_exchanged");
+  assert.equal(msg.type, "chat");
+  assert.deepEqual(clone(msg.messages), chat.m);
+  assert.deepEqual(clone(msg.replies), chat.r);
+  assert.equal(replyState, "waiting");
   assert.equal(phone.deliverMorning(), 0);
   state.inbox[0].read = true; state.inbox[0].done = true;
   assert.equal(phone.deliverMorning(), 0);
   state.day++;
   assert.equal(phone.deliverMorning(), 0);
-  assert.equal(JSON.stringify(db.friends), original);
+  assert.equal(JSON.stringify(db.lime), original);
   assert.equal(gains.length, 0, "配信だけで好感度を変更した");
 }
-reset({ day: 5, contacts: [] }); db.lime = []; assert.equal(phone.deliverMorning(), 0);
-reset({ day: 5, contacts: ["tsumugi"], inbox: [{ id: "older", day: 1, chapter: 1, read: false, msg: { sender: "tsumugi", type: "chat" } }] });
-db.lime = []; assert.equal(phone.deliverMorning(), 0);
-reset({ day: 5, contacts: ["tsumugi"], inbox: [{ id: "recent", day: 4, chapter: 1, read: true, done: true, msg: { sender: "tsumugi", type: "chat" } }] });
-db.lime = []; assert.equal(phone.deliverMorning(), 0);
-reset({ day: 5, contacts: ["tsumugi"] });
-db.lime = [{ id: "priority_tsumugi", sender: "tsumugi", priority: 1, type: "chat", trigger_condition: "lime_exchanged", trigger_day: 5, messages: ["既存の優先連絡"] }];
+for (const day of [5, 6, 10]) {
+  noteMorning(day, { contacts: [] }); assert.equal(phone.deliverMorning(), 0);
+  noteMorning(day, { chapter: 2 }); assert.equal(phone.deliverMorning(), 0);
+  noteMorning(day); assert.equal(phone.deliverMorning({ tournamentDay: true }), 0);
+  const due = day === 6 ? 5 : day;
+  noteMorning(day, { limeRead: [`lime_tsumugi_note_day${due}`] }); assert.equal(phone.deliverMorning(), 0);
+  for (const [ago, chapter, sender, read, expected] of [
+    [0, 1, "tsumugi", true, 0], [1, 1, "tsumugi", true, 0], [2, 1, "tsumugi", true, 1],
+    [2, 1, "tsumugi", false, 0], [1, 2, "tsumugi", true, 1], [1, 1, "naru", true, 1],
+  ]) {
+    const inbox = [item({ id: "older", sender, type: "chat" }, { day: day - ago, chapter, read, done: read })];
+    noteMorning(day, { inbox });
+    assert.equal(phone.deliverMorning(), expected, `DAY${day}, ${ago}日前, 第${chapter}章, ${sender}, 既読=${read}`);
+  }
+}
+noteMorning(5, {}, [{ id: "priority_tsumugi", sender: "tsumugi", priority: 1, type: "chat",
+  trigger_condition: "lime_exchanged", trigger_day: 5, messages: ["既存の優先連絡"] }]);
 assert.equal(phone.deliverMorning(), 1); assert.equal(state.inbox[0].id, "priority_tsumugi");
-reset({ chapter: 2, day: 5, contacts: ["tsumugi"] }); db.lime = []; assert.equal(phone.deliverMorning(), 0);
-reset({ day: 5, contacts: ["tsumugi"] }); db.lime = []; assert.equal(phone.deliverMorning({ tournamentDay: true }), 0);
-reset({ day: 5, contacts: ["naru", "adam", "minto", "tsumugi"] });
-db.lime = ["naru", "adam", "minto"].map(sender => ({ id: `cap_${sender}`, sender, priority: 1,
-  type: "chat", trigger_condition: "lime_exchanged", trigger_day: 5, messages: ["既存の優先連絡"] }));
+noteMorning(5, { contacts: ["naru", "adam", "minto", "tsumugi"] },
+  ["naru", "adam", "minto"].map(sender => ({ id: `cap_${sender}`, sender, priority: 1,
+    type: "chat", trigger_condition: "lime_exchanged", trigger_day: 5, messages: ["既存の優先連絡"] })));
 assert.equal(phone.deliverMorning(), 3);
 assert(!state.inbox.some(item => item.msg.sender === "tsumugi"));
+assert.equal(JSON.stringify(db.friends), originalFriends);
+console.log("[4035 D2] PASS つむぎの朝の配信日・受信間隔・本文と返信・一度きり・優先順");
+
 // 章をまたぐ同じ日付と、chapter がない旧セーブの表示。
 reset({ chapter: 2, day: 3 });
 const historyMessage = { id: "history", sender: "minto", type: "chat", messages: ["履歴"] };

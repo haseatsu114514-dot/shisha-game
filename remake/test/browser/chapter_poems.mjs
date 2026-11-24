@@ -72,8 +72,8 @@ await suite("chapter-poems", async check => {
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
         _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
         _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
-      for (const who of ["ageha", "kumicho", "rei", "hajime", "sumi"]) value.flags[`_intro_${who}`] = true;
-      Object.assign(value.met, { ageha: true, kumicho: true, rei: true });
+      for (const who of ["ageha", "kumicho", "kuraudo", "hajime", "sumi"]) value.flags[`_intro_${who}`] = true;
+      Object.assign(value.met, { ageha: true, kumicho: true, kuraudo: true });
       if (!progress.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
       core.saveConfig();
@@ -89,7 +89,7 @@ await suite("chapter-poems", async check => {
     const seq = entries.map(entry => entry.token).filter((token, i, all) => token !== all[i - 1]);
     const at = token => seq.indexOf(token);
     assert.equal(seq.filter(token => token === "poem:poem_ch3").length, 1, "第3章の詩は一度だけ");
-    assert.ok(at("vn:ch3_saku_research") < at("poem:poem_ch3"), "章頭の調べものの後に詩");
+    assert.ok(at("vn:ch3_ayatori_research") < at("poem:poem_ch3"), "章頭の調べものの後に詩");
     assert.ok(at("poem:poem_ch3") < at("title:第三章"), "詩は章タイトルの前");
     assert.ok(at("title:第三章") < at("vn:ch3_prep_opening"), "章タイトルの後に準備の場面");
     assert.equal(entries.find(entry => entry.token === "poem:poem_ch3").seen, false, "詩を読んでいる間は titleSeen が立たない");

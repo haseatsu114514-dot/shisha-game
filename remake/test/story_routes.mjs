@@ -265,12 +265,12 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   // RLS10: パン屋の紙袋（はじめと綾取の友情）は煙幕の初訪問の後、大会前に一度。ましろ・大会の策・嘘つきの話に触れない。
   const value = tokyo();
   readUntil(value, 'ch3_naru_work');
-  assert(!offered(value).includes('ch3_saku_bakery'), 'not before the first Enmaku visit');
-  readUntil(value, 'ch3_saku_mukai_visit');
-  assert(offered(value).includes('ch3_saku_bakery'));
-  wiring.commitOptionalRead(value, 'ch3_saku_bakery');
-  assert(!offered(value).includes('ch3_saku_bakery'), 'read once only');
-  const bakery = sceneData.get('ch3_saku_bakery').lines.map(line => line.text || '').join('\n');
+  assert(!offered(value).includes('ch3_ayatori_bakery'), 'not before the first Enmaku visit');
+  readUntil(value, 'ch3_ayatori_mukai_visit');
+  assert(offered(value).includes('ch3_ayatori_bakery'));
+  wiring.commitOptionalRead(value, 'ch3_ayatori_bakery');
+  assert(!offered(value).includes('ch3_ayatori_bakery'), 'read once only');
+  const bakery = sceneData.get('ch3_ayatori_bakery').lines.map(line => line.text || '').join('\n');
   assert.doesNotMatch(bakery, /ましろ|大会|最初の一口|嘘つき|味覚|舌/, 'friendship only');
 }
 {
@@ -474,13 +474,13 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
 {
   // 綾取とましろの任意場面: 煙幕の初訪問の後にましろ側、mukaiの客として来た後に綾取側。
   const value = tokyo();
-  readUntil(value, 'ch3_saku_first');
-  assert(!offered(value).some(id => id.startsWith('ch3_saku_mashiro_')), 'no childhood scenes before meeting saku');
-  readUntil(value, 'ch3_saku_mukai_visit');
-  assert(offered(value).includes('ch3_saku_mashiro_tea_tin'));
-  assert(!offered(value).includes('ch3_saku_mashiro_soon_back'), 'saku talks after visiting mukai');
+  readUntil(value, 'ch3_ayatori_first');
+  assert(!offered(value).some(id => id.startsWith('ch3_ayatori_mashiro_')), 'no childhood scenes before meeting ayatori');
+  readUntil(value, 'ch3_ayatori_mukai_visit');
+  assert(offered(value).includes('ch3_ayatori_mashiro_tea_tin'));
+  assert(!offered(value).includes('ch3_ayatori_mashiro_soon_back'), 'ayatori talks after visiting mukai');
   readUntil(value, 'ch3_taste_return');
-  assert(offered(value).includes('ch3_saku_mashiro_soon_back'));
+  assert(offered(value).includes('ch3_ayatori_mashiro_soon_back'));
 }
 {
   // #3468 H案: ましろ×ムカイさん。mukaiの二日目の後に棚整理、その後に札が残る後日の一言を一度ずつ。
@@ -645,8 +645,8 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['rio']);
   assert.equal(ch4.chapterFourEveningPartner(routes, value), 'rio');
   // ♥5の男の友人（SPC21）も、到着を読んでいても前夜の人数に入らない。
-  value.flags._overseas_companion.guests = ['adam', 'kumicho', 'rei', 'saku', 'steve', 'volk'];
-  for (const scene of ['ch4_adam_dubai', 'ch4_kumicho_dubai', 'ch4_rei_dubai', 'ch4_saku_dubai', 'ch4_steve_dubai', 'ch4_volk_dubai']) value.flags._ch4.read[scene] = true;
+  value.flags._overseas_companion.guests = ['adam', 'kumicho', 'kuraudo', 'ayatori', 'steve', 'volk'];
+  for (const scene of ['ch4_adam_dubai', 'ch4_kumicho_dubai', 'ch4_kuraudo_dubai', 'ch4_ayatori_dubai', 'ch4_steve_dubai', 'ch4_volk_dubai']) value.flags._ch4.read[scene] = true;
   assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['rio']);
   assert.equal(ch4.chapterFourEveningPartner(routes, value), 'rio');
   // 同じ場所の恋人が二人以上: 第4章ではスティーブの茶化しを出さず、重なった予定を保留する。誘いの選択は出さない。

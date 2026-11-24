@@ -185,10 +185,10 @@ assert.deepEqual(recipe?.flavors, ["mango", "peach", "mint"]);
 const allLines = [...tasting.lines, ...Object.values(tasting.branches).flat()];
 const text = allLines.map((l) => l.text || "").join("\n");
 const mainSpeakers = new Set(tasting.lines.map((l) => l.speaker));
-for (const id of ["hajime", "naru", "adam", "minto", "ageha", "kumicho", "rei"]) assert(mainSpeakers.has(id), `試煙会で ${id} が話す`);
+for (const id of ["hajime", "naru", "adam", "minto", "ageha", "kumicho", "kuraudo"]) assert(mainSpeakers.has(id), `試煙会で ${id} が話す`);
 assert.match(text, /C\.STATION柚ヶ谷店/); assert.match(text, /アフサール/); assert.match(text, /ストロベリー/);
 assert.doesNotMatch(text, /試飲会|店長同士|MELTY PUFFの客席|夜のMELTY PUFF/);
-for (const id of ["ageha", "kumicho", "rei"]) {
+for (const id of ["ageha", "kumicho", "kuraudo"]) {
   const cond = tasting.lines.find((l) => l.type === "condition" && l.condition_type === "met" && l.char_id === id);
   assert(tasting.branches[cond.next_true] && tasting.branches[cond.next_false], `${id}: 面識あり／なし`);
   assert(tasting.branches[cond.next_false].some((l) => l.type === "set_flag" && l.flag === `_met_${id}`), `${id}: 名乗ったら面識を記録`);

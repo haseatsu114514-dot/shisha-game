@@ -1,4 +1,4 @@
-import { loadTrpgLibrary, mountTrpg } from "./index.js";
+import { loadTrpgShelf, loadTrpgResources, mountTrpg } from "./index.js";
 import { mountTrpgLibrary } from "./library.js";
 import { createTrpgAudio } from "./audio.js";
 import { el } from "../core/util.js";
@@ -44,15 +44,28 @@ export function mountTrpgCollection(host, {
     controller = mountTrpgLibrary(host, { ...resources, audio, onChoose: open,
       onClose: closable ? destroy : null, closeLabel });
   }
-  function open(id) {
+  async function open(id) {
     if (disposed) return;
-    const scenario = resources.scenarios.find(s => s.id === id);
-    if (!scenario) { library(); return; }
+    if (!resources.scenarios.some(s => s.id === id)) { library(); return; }
     enter();
     const ticket = ++generation;
-    controller?.destroy(); phase = "session"; onScenarioChange(id);
-    const mounted = mountTrpg(host, { scenario, characters: resources.characters, manifest: resources.manifest, tableTalk: resources.tableTalk, audio,
-      tutorialLines: resources.tutorialLines, tutorial, costumeFrames: resources.costumeFrames,
+    request?.abort(); request = new AbortController();
+    controller?.destroy(); controller = null; phase = "loading";
+    const back = el("button.trpg-button", { type: "button", text: "本棚へ戻る", onclick: () => { request.abort(); library(); } });
+    host.replaceChildren(el("div.trpg-loading", [el("p", { text: "選んだ物語を読み込んでいます…" }), back]));
+    let table;
+    try { table = await loadTrpgResources({ scenarioId: id, shared: resources, signal: request.signal, preloadAssets: false }); }
+    catch {
+      if (disposed || ticket !== generation) return;
+      phase = "load-error";
+      host.replaceChildren(el("div.trpg-loading", [el("p", { role: "status", text: "物語を読み込めませんでした。" }),
+        el("button.trpg-button", { type: "button", text: "再読み込み", onclick: () => open(id) }), back]));
+      return;
+    }
+    if (disposed || ticket !== generation) return;
+    const { scenario } = table;
+    phase = "session"; onScenarioChange(id);
+    const mounted = mountTrpg(host, { ...table, audio, tutorial,
       seed: seed ?? Date.now(), profileId: scenario.profiles.some(p => p.id === profileId) ? profileId : null,
       closeLabel: "本棚へ戻る" });
     controller = mounted;
@@ -72,10 +85,10 @@ export function mountTrpgCollection(host, {
       el("small", { text: "背景と、今夜の仲間を迎えています……" }), ...actions(),
     ]));
     try {
-      resources = await loadTrpgLibrary({ signal: request.signal });
+      resources = await loadTrpgShelf({ signal: request.signal });
       await fontsReady(request.signal);
       if (disposed || ticket !== generation) return;
-      if (initialScenarioId) open(initialScenarioId); else library();
+      if (initialScenarioId) await open(initialScenarioId); else library();
     } catch (error) {
       if (disposed || ticket !== generation) return;
       phase = "load-error";

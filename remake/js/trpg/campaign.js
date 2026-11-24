@@ -23,7 +23,7 @@ export function recruitmentStatus(state, person, catalog, { allowUnheard = false
   if (state.trpg.club.members?.[person.id]) return { ok: false, reason: "入部済み" };
   if (!state.met?.[person.id]) return { ok: false, reason: "まだ知り合っていない" };
   if (!allowUnheard && !state.flags?.[`_trpg_topic_${person.id}`]
-    && !(person.id === "rei" && state.flags?._rei_trpg_introduced)) return { ok: false, reason: "会って部活の話を聞こう" };
+    && !(person.id === "kuraudo" && state.flags?._kuraudo_trpg_introduced)) return { ok: false, reason: "会って部活の話を聞こう" };
   return { ok: true, reason: "会った時に、部活へ誘える" };
 }
 

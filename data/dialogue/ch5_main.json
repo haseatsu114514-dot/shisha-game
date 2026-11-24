@@ -7,7 +7,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "世界大会からしばらく経ったtonari。博士から、封書が届いた。表書きは『挑戦状』。"
+          "text": "世界大会からしばらくたったtonari。博士から、封書が届いた。表書きは『挑戦状』。"
         },
         {
           "speaker": "",
@@ -15,19 +15,19 @@
           "text": "その翌日、博士本人が来て、小さなケースをカウンターに置いた。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "手紙だけでは、失礼かと思いまして"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "今日は挑戦者として来ました。君の大会記録は、すべて学習済みです"
         },
         {
           "type": "condition",
           "condition_type": "flag_count",
-          "flag": "_roam_seen_dr_kemuri",
+          "flag": "_roam_seen_dr_charcoal",
           "threshold": 1,
           "next_true": "roam_record"
         },
@@ -37,17 +37,17 @@
           "text": "……勝った日の俺、ですね"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "ええ。失敗した調整も、そこから立て直した動きも"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "土台は、世界中の名手の記録と、熱の計算です。その上に、君を重ねました"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "SHISHA-9000。誰でも失敗を怖がらずに作れる、そのための装置です"
         },
@@ -57,7 +57,7 @@
           "text": "それは、助かる人が多いと思います"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "duck": true,
           "text": "ええ。そして、君の作り方を終わらせる装置でもあります"
@@ -73,22 +73,22 @@
           "text": "……終わらせる？"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "今日の、目の前の一人のための一台。君は、ずっとそう作ってきた"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
-          "text": "でもそれは、作り手が今日を読めた日だけの話です。才能、運、気分、体調、……舌も"
+          "text": "でもそれは、作り手が今日を読めた日だけの話です。才能、運、気分、体調……舌も"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "同じ店に来ても、作り手の調子ひとつで煙が変わる。私は、それを不平等だと思う"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "9000なら、君の一番いい日を、毎日出せます。誰の前にでも"
         },
@@ -98,7 +98,7 @@
           "text": "……客の今日も、毎日違います"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "違いも測れます。気温も、湿度も、吸う速さも"
         },
@@ -108,12 +108,12 @@
           "text": "（……言い返せない。でも、うなずけない）"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "炭の置き方はなるさん。待ち方はスティーブさん。記録で、全部たどれます"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "君の手も、借りものの集まりです。なら、9000と何が違いますか"
         },
@@ -123,22 +123,22 @@
           "text": "（……違わない、のかもしれない）"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "ですから、比べましょう。同じ葉で二本勝負です"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "双方、ダブルアップルだけを12グラム。機材の条件も揃えます"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "同じ客に二台とも吸ってもらう。もう一度吸いたい方へ、各回一票"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "二本の合計で決めましょう。同数なら引き分けです"
         },
@@ -153,7 +153,7 @@
           "text": "店の休みを見て、連絡します"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "ええ。準備ができたら。私も、調整を続けます"
         },
@@ -164,7 +164,7 @@
         },
         {
           "type": "hide_portrait",
-          "char_id": "dr_kemuri"
+          "char_id": "dr_charcoal"
         },
         {
           "speaker": "",
@@ -172,17 +172,17 @@
           "text": "博士が帰ったあと、入れ違いに千須が来た。博士のいた席に、黙って座る。"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "挑戦状の話は、聞いている"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "うちの新人は、三ヶ月で一人の夜に立つ。隣に、師匠はいない"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "serious",
           "text": "その夜の客にも、外れのない一台を。私は、博士の側に立つ"
         },
@@ -192,7 +192,7 @@
           "text": "返事を探して、カウンター席を見た。スミさんは黙って、千須の前に水を置いた。"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "当日は、客席にいる。吸ってから、また話そう"
         },
@@ -210,7 +210,7 @@
             "text": "……大会だけじゃないですよね。街の店で、隅の席にいたのも"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "ええ。あの席で見せてもらった一服も、少しだけ"
           },
@@ -231,12 +231,12 @@
           "text": "博士に、まだ予定が決まっていないと連絡した。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "急ぎません。店を空けられる日にしましょう"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "9000も、待てます。待つことも、君の記録から覚えましたから"
         },
@@ -254,7 +254,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "約束の日を決める前に、博士と記録を見直した。"
+          "text": "約束の日を決める前に、tonariで博士と記録を見直した。"
         },
         {
           "speaker": "",
@@ -262,9 +262,9 @@
           "text": "画面には、全国大会の俺が映っている。炭を置く手が、拡大された。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
-          "text": "9000は、この手を休まずに出せます。眠れなかった日も、舌が遠い日も"
+          "text": "寝不足の日も、味が遠い日も、9000なら同じ手順で作れます"
         },
         {
           "speaker": "hajime",
@@ -272,7 +272,7 @@
           "text": "この大会より前に、一台も作れない日があったんです"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "棄権の記録はありませんが"
         },
@@ -282,7 +282,7 @@
           "text": "休みです。ましろちゃんと、お茶を飲んでました"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "……それは大会の記録には入らない"
         },
@@ -292,7 +292,7 @@
           "text": "はい。でも、また作れたのは、その日があったからで"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "それは君の話です。作れない日の店に来た客の話ではない"
         },
@@ -302,7 +302,7 @@
           "text": "味が遠い日も、吸う人が熱いって言ってくれたら、直せました"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "言われてからでは、一口遅い。9000は、言われる前に直します"
         },
@@ -313,7 +313,7 @@
         },
         {
           "speaker": "",
-          "text": "博士が止めた画面を、俺も伏せた。店の入口で、鈴が鳴った。",
+          "text": "店の入口で、鈴が鳴った。",
           "id": "ch5_counter_work"
         },
         {
@@ -321,7 +321,7 @@
           "text": "仕事帰りらしい客が一人、いつもの客席に腰を下ろす。博士は通路の椅子を引いた。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "続きは、あとにしましょう"
         },
@@ -361,26 +361,26 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "博士も、どうぞ。お茶もいれますね"
+          "text": "博士も、どうぞ。お茶も淹れますね"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
-          "text": "私は、ただ待っていただけですが"
+          "text": "ああ、私のことはお気遣いなく"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。今は、お客さんなので"
+          "text": "博士もお客さんですから"
         },
         {
           "speaker": "",
           "text": "博士はパソコンを少し奥へ寄せた。空いたところへ、湯のみを置く。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
-          "text": "失敗しなくて済む装置を、作っています。作れない日の職人ごと、救える装置を"
+          "text": "一台出すのが怖い日に、頼れる道具にしたいんです"
         },
         {
           "speaker": "hajime",
@@ -388,7 +388,7 @@
           "text": "それがあると、助かる日もあると思います"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "ええ。作れない日に来た客にも、一台を出せる"
         },
@@ -412,14 +412,14 @@
         },
         {"type": "show_cg", "cg_id": "cg_ch5_doctor_yunomi"},
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "……さて。勝負の日の話を、しましょうか"
         },
         {"type": "hide_cg"},
         {
           "speaker": "",
-          "text": "どちらが正しいかは決めないまま、椅子を戻した。日を決めるかどうかは、まだこれからだった。"
+          "text": "博士の向かいに座り直した。日を決めるかどうかは、まだこれからだった。"
         }
       ],
       "branches": {
@@ -498,7 +498,7 @@
           "text": "9000の白い指が動く。大会で覚えた待ち方まで、よく似ている。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "君が勝った日と、同じ順番です"
         },
@@ -537,7 +537,7 @@
           "text": "咳を一回、確認。熱を下げます"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "気温、湿度、吸う速さも見ています。言われる前に、直せる"
         },
@@ -552,7 +552,7 @@
           "text": "同じ葉、同じ器具。それでも挙がる手は、席ごとに割れていた。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "今のが、君の一番いい日です。9000は、それを明日も出せる"
         },
@@ -577,7 +577,7 @@
           "text": "二台目の準備。トングを持つ指に力が入っている。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "二台目も、9000は同じ精度で出します。君は？"
         },
@@ -604,7 +604,7 @@
             "samechan",
             "ageha",
             "kumicho",
-            "rei",
+            "kuraudo",
             "mashiro",
             "noor"
           ],
@@ -719,13 +719,13 @@
           "text": "二台目は、俺への挙手が多かった。一台目の差を返し、合計でも僅かに上回った。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "beat": 800,
-          "text": "……二本の合計は、君です。おめでとうございます"
+          "text": "……君の勝ちです。おめでとうございます"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "ただ、誰にでも同じ一台を。その考えは、まだ捨てません"
         },
@@ -747,12 +747,12 @@
           "text": "二本の挙手を合わせても、今日は勝ち切れなかった。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "記録は残しておきます。……今日は、ここまでですね"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "君の二台目も、9000に覚えさせます"
         },
@@ -783,7 +783,7 @@
           "text": "片づけの途中。博士が、二台目の記録の空白を見つめていた。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "今日は時間がある。……そこは、尋ねないと分からなかった"
         },
@@ -798,12 +798,12 @@
           "text": "記録にない項目です。次回から、先に尋ねます"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "……装置のほうが、私より素直ですね。私も、聞けるようにします"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "同じ条件で作っても、票は席ごとに割れました。誤差だと思っていた"
         },
@@ -818,12 +818,12 @@
           "text": "同じ一台の、違うところを吸ってるだけで"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "……正解の味を、一つだけ探していたのかもしれません"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "それでも、9000は止めません。失敗を怖がらずに作れる道具は、要る"
         },
@@ -833,7 +833,7 @@
           "text": "要ると思います。俺も、あの一台から習いたいです"
         }
       ],
-      "comment": "勝負のあと・前半（勝ったとき）。STK04で試合後を二つに分けた。負けは ch5_doctor_after_match_loss / ch5_doctor_after_match_loss_close、同数は ch5_doctor_after_match_tie を読む（ch5-progress.js chapterFiveAftermathScene）。どの前半も末尾に ch5_sui_after_match を続け、次の場面は ch5_doctor_cocreation。"
+      "comment": "勝負のあと・前半（勝ったとき）。STK04で試合後を二つに分けた。負けは ch5_doctor_after_match_loss / ch5_doctor_after_match_loss_close、同数は ch5_doctor_after_match_tie を読む（ch5-progress.js chapterFiveAftermathScene）。どの前半も末尾に ch5_sensu_after_match を続け、次の場面は ch5_doctor_cocreation。"
     },
     {
       "dialogue_id": "ch5_doctor_after_match_loss",
@@ -844,19 +844,19 @@
           "text": "片づけの途中。博士は、二台分の挙手の記録から目を離さなかった。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "合計は、9000です。……なのに、二台目も票が割れました"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "同じ精度で出しました。割れる理由が、記録にありません"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あの人、今日は時間があるって言ってました"
+          "text": "二台目の前に話したお客さん、今日は時間があるって言ってました"
         },
         {
           "speaker": "shisha_9000",
@@ -864,12 +864,12 @@
           "text": "記録にない項目です。次回から、先に尋ねます"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "……項目は、足します。ですが、考えは変えません"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "誰にでも同じ一台を。失敗を怖がらずに作れる道具は、要る"
         },
@@ -895,19 +895,19 @@
           "text": "片づけの途中。博士は、二台分の挙手の記録から目を離さなかった。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "合計は、9000です。……なのに、二台目の票が減りました"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "同じ精度で出しました。減る理由が、記録にありません"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あの人、今日は時間があるって言ってました"
+          "text": "二台目の前に話したお客さん、今日は時間があるって言ってました"
         },
         {
           "speaker": "shisha_9000",
@@ -915,12 +915,12 @@
           "text": "記録にない項目です。次回から、先に尋ねます"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "……項目は、足します。ですが、考えは変えません"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "誰にでも同じ一台を。失敗を怖がらずに作れる道具は、要る"
         },
@@ -946,19 +946,19 @@
           "text": "片づけの途中。博士は、二台分の挙手の記録から目を離さなかった。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "合計は、同数です。……二台目だけ、9000の票が減りました"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "同じ精度で出しました。減る理由が、記録にありません"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あの人、今日は時間があるって言ってました"
+          "text": "二台目の前に話したお客さん、今日は時間があるって言ってました"
         },
         {
           "speaker": "shisha_9000",
@@ -966,12 +966,12 @@
           "text": "記録にない項目です。次回から、先に尋ねます"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "……項目は、足します。ですが、考えは変えません"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "誰にでも同じ一台を。失敗を怖がらずに作れる道具は、要る"
         },
@@ -989,7 +989,7 @@
       "comment": "勝負のあと・前半（同数のとき。STK03）。同数は二台目で9000の挙手が必ず減っている（21→19）。ch5_doctor_after_match_loss と違うのは、博士の最初の2行だけ。"
     },
     {
-      "dialogue_id": "ch5_sui_after_match",
+      "dialogue_id": "ch5_sensu_after_match",
       "lines": [
         {
           "speaker": "",
@@ -997,7 +997,7 @@
           "text": "客席から下りてきた千須が、俺の台の前で足を止めた。"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "一つだけ聞く。君が作れない夜に来た客は、どうする"
         },
@@ -1007,7 +1007,7 @@
           "text": "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "……それを、店と呼ぶんだろうな"
         },
@@ -1033,12 +1033,12 @@
           "text": "博士はケースを開けた。配線に、小さな検品札が付いている。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "9000の手は、職人に何度も直してもらった。葉の記録も、店の人たちに"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "鉄の煙の、ヴォルクさんの計器の記録も借りました。数字の隣に、客の一言まで書いてあった"
         },
@@ -1048,12 +1048,12 @@
           "text": "俺は、検品札に指で触れた。端が、何度もめくられて柔らかくなっている。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "記録を符号に変えることを、エンコードと言います"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "符号の中身は、どれも人の仕事でした。……私は、その人たちに会ったこともない"
         },
@@ -1063,22 +1063,22 @@
           "text": "……会ってなくても、その人たちの手は、今日の9000の煙にいました"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "……私も昔は、店のカウンターで、お客さんに一台ずつ出していました"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "何を吸っても砂のように感じる時期があった。今も、戻ったとは言えない"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "私は三つの大会で、君に点を入れました。味は、分からないまま"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "熱と、煙と、吸った人の顔。それで、採点はできてしまった"
         },
@@ -1089,12 +1089,12 @@
           "next_true": "thermo"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "だから、舌が利かなくても作れる一台が欲しかった。私のような作り手のためにも"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "君も、県大会の頃から……どうやって、また作れたんですか"
         },
@@ -1109,7 +1109,7 @@
           "text": "博士。今日は一緒に、一台作りませんか"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "surprise",
           "text": "データを見ながらでも？"
         },
@@ -1166,7 +1166,7 @@
           "text": "最後に、博士がホースを受け取った。長く吸って、ゆっくり吐く。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "……味は、まだ遠いです。でも、手は覚えていました"
         }
@@ -1174,13 +1174,13 @@
       "branches": {
         "thermo": [
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "県大会の前に貸した温度計。あれが、9000のいちばん古い部品です"
           }
         ]
       },
-      "comment": "勝負のあと・後半（勝敗共通。STK04）。検品札 → エンコード → 博士の過去 → 一緒に作る一台。前半（ch5_doctor_after_match ほか）と ch5_sui_after_match を読み終えてから、別の場面として読む。温度計の一言（branches.thermo）は、第2章で博士から温度計を借りた保存（_stk_kemuri_thermo_borrowed）だけ。読了後、心得の盤で灯していれば博士に相談できる（ch5.js LESSON_AFTER_SCENE）。"
+      "comment": "勝負のあと・後半（勝敗共通。STK04）。検品札 → エンコード → 博士の過去 → 一緒に作る一台。前半（ch5_doctor_after_match ほか）と ch5_sensu_after_match を読み終えてから、別の場面として読む。温度計の一言（branches.thermo）は、第2章で博士から温度計を借りた保存（_stk_kemuri_thermo_borrowed）だけ。読了後、心得の盤で灯していれば博士に相談できる（ch5.js LESSON_AFTER_SCENE）。"
     },
     {
       "dialogue_id": "ch5_return_to_tonari",
@@ -1336,7 +1336,7 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "手が足りなきゃ俺が立つ。つむぎが出張に行く日もな"
+          "text": "手が足りなきゃ俺が立つ"
         },
         {
           "speaker": "sumi",
@@ -1504,12 +1504,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "『用事のついで、って言ったけど、ほんとは逆。顔を見るのが用事で、用事のほうがついで』"
+          "text": "『用事のついで、って言ったけど、ほんとは逆。顔を見るのが用事で、用事のほうがついで』。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "『お茶を淹れたら、僕のこと、ちょっとだけ思い出してねぇ』"
+          "text": "『お茶を淹れたら、僕のこと、ちょっとだけ思い出してねぇ』。"
         },
         {
           "speaker": "hajime",
@@ -1841,12 +1841,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんは何も言わずに、また灰皿を拭きはじめた。"
+          "text": "スミさんは何も言わずに、また灰皿を拭き始めた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "帰りぎわ、王煙楼は入口で振り返り、二人に向かって頭を下げた。"
+          "text": "帰り際、王煙楼は入口で振り返り、二人に向かって頭を下げた。"
         },
         {
           "speaker": "master_hookah",
@@ -1982,12 +1982,12 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "明日か。店は休みだな"
+          "text": "明日にするなら、店は休みだな"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。お客さんには、もう貼り紙で知らせてあります"
+          "text": "決まったら、お客さんには貼り紙で知らせます"
         },
         {
           "speaker": "sumi",
@@ -2047,7 +2047,7 @@
       "branches": {
         "decide": [
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "はい。お電話ありがとうございます"
           },
@@ -2057,7 +2057,7 @@
             "text": "tonariのはじめです。勝負の日、決めました。明日、店を休業日にして、お願いできますか"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "ええ、明日で構いません"
           },
@@ -2072,12 +2072,12 @@
             "text": "もう一度吸いたい方に一票ずつ。二本の合計で、同じ数なら引き分け"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "そのとおりです。足すことも、引くこともありません"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "当日まで、私も調整を続けます"
           },
@@ -2087,7 +2087,7 @@
             "text": "はい"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "その日の9000で、お相手します"
           },
@@ -2109,7 +2109,7 @@
           {
             "speaker": "sumi",
             "face": "smile",
-            "text": "なら今日は早く寝ろ。片付けくらいは、手伝ってやる"
+            "text": "なら今日は早く寝ろ。片づけくらいは、手伝ってやる"
           }
         ],
         "defer": [
@@ -2241,12 +2241,12 @@
           "text": "……呼吸が、記録より浅い。本日のあなたは、記録と一致しません"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "緊張でしょう。誤差の範囲です"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "ようこそ、SMOKE LABへ。挑戦を受けてくれて、感謝します"
         },
@@ -2256,7 +2256,7 @@
           "text": "おはようございます。今日は、よろしくお願いします"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "始める前に、揃えましょう"
         },
@@ -2281,7 +2281,7 @@
           "text": "俺の量りが12グラムで止まり、隣の量りも12グラムで止まった。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "ボウルは、こちらとこちら。炭も同じ箱から"
         },
@@ -2291,7 +2291,7 @@
           "text": "ホースの長さも、合わせてもらっていいですか"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "ええ、もちろん"
         },
@@ -2301,7 +2301,7 @@
           "text": "HMDも、同じ型ですか"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "ええ。そいつの開発者、俺だもん。……失礼、私の設計です"
         },
@@ -2328,16 +2328,16 @@
         {
           "speaker": "",
           "face": "",
-          "text": "客席に、人が座りはじめた。tonariで見る顔も、知らない顔もある。",
+          "text": "客席に、人が座り始めた。tonariで見る顔も、知らない顔もある。",
           "comment": "Q14: 客は常連と博士が募った一般客（2026-11-02 DXM02）。人数は台詞に出さない"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "客の多くは、私が募りました。君の店に来たことのない人たちです"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "目の前の一人のため、と言うなら。初めて会う人にも、届くはずですね"
         },
@@ -2357,7 +2357,7 @@
           "text": "（なぞられるのは、記録の中の俺だ。……今ここで手が震えたら、そっちに負ける）"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "serious",
           "text": "では、一台目を"
         },
@@ -2547,7 +2547,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "缶の蓋を閉める。秤の上に、葉のかけらが少し残っていた。"
+          "text": "缶の蓋を閉める。量りの上に、葉のかけらが少し残っていた。"
         }
       ]
     },
@@ -2569,7 +2569,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "閉店後に試した、炭一つ分の差。直しきれなかった立ち上がりは、目の前の人が待ってくれた。"
+          "text": "閉店後に試した、炭一つぶんの差。直しきれなかった立ち上がりは、目の前の人が待ってくれた。"
         }
       ]
     },
@@ -2791,7 +2791,7 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "穴も炭も、待ち方もそろってる。あとは、目の前の客を見ろ"
+          "text": "穴も炭も、待ち方も揃ってる。あとは、目の前の客を見ろ"
         },
         {
           "speaker": "hajime",
@@ -2832,7 +2832,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "数より、そろえ方だ。本番は、一つずつ合わせろ"
+          "text": "数より、揃え方だ。本番は、一つずつ合わせろ"
         }
       ]
     },
@@ -3178,12 +3178,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。つむぎちゃんのが吸いたい"
+          "text": "うん。つむぎのが吸いたい"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（つむぎちゃんが入ってから、休みの日ができた。こうして、客の席にも座れる）"
+          "text": "（つむぎが入ってから、休みの日ができた。こうして、客の席にも座れる）"
         },
         {
           "speaker": "",
@@ -3394,7 +3394,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "おつかれさま。今日、何組回したか知ってる？"
+          "text": "お疲れさま。今日、何組回したか知ってる？"
         },
         {
           "speaker": "tsumugi",
@@ -3695,7 +3695,7 @@
         {
           "speaker": "tsumugi",
           "face": "baito_serious",
-          "text": "店先の黒板、……私が描いても、いいですか"
+          "text": "店先の黒板……私が描いても、いいですか"
         },
         {
           "speaker": "",
@@ -3769,7 +3769,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "黒板の隅に、小さな字が足してあった。『はじめての方も、どうぞ』"
+          "text": "黒板の隅に、小さな字が足してあった。『はじめての方も、どうぞ』。"
         },
         {
           "speaker": "hajime",

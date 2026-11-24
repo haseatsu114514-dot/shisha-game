@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { newState } from '../js/core/state.js';
 import { tournamentProgress, startAttempt, beginStep, finishStep, recoverStep,
   castVotes, standings, recordResult, JUDGES, CH2_PRIZE } from '../js/chapters/ch2-tournament-state.js';
+import { tournamentResultReason } from '../js/craft/tournament-result-reason.js';
 const copy = value => JSON.parse(JSON.stringify(value));
 const s = newState();
 s.chapter = 2; s.day = 28; s.stamina = 79; s.flavorStock = { double_apple: 40, mint: 8 };
@@ -70,6 +71,28 @@ for(const [quality,expected] of [[98,1],[20,4]]) {
   assert.equal(v.money, moneyBefore + (expected === 1 ? CH2_PRIZE : 0), 'prize is paid once');
 }
 console.log('PASS: chapter2 irrevocable 3×10 votes, good/bad ranks, JSON checkpoint rollback, committed consumption, retry, two cares and chapter1/relationships');
+
+for (const [scores, rank, points, text] of [
+  [[87, 87, 87, 88], 1, [16, 7], "二度目の調整後の投票で、2位より3点多く取った。最終9点差。"],
+  [[95, 95, 95, 95], 1, [19, 5], "提供後の投票で、2位より5点多く取った。最終14点差。"],
+  [[60, 60, 60, 60], 4, [1, 15], "提供後の投票で、首位に4点及ばなかった。最終14点差。"],
+]) {
+  const value = newState(); value.chapter = 2;
+  const attempt = startAttempt(value, { careHistory: [{ score: scores[2] }, { score: scores[3] }] });
+  scores.forEach((score, round) => assert(castVotes(attempt, round, score)));
+  const result = recordResult(value, scores[3]);
+  const saved = tournamentProgress(copy(value));
+  assert.equal(result.rank, rank);
+  assert.equal(saved.result.rows.find(row => row.id === 'hajime').points, points[0]);
+  assert.equal(saved.result.rows[rank === 1 ? 1 : 0].points, points[1]);
+  assert.equal(tournamentResultReason(saved.result.rows, { rounds: saved.roundVotes, quality: saved.quality }), text);
+  if (rank === 1) {
+    saved.roundVotes[0] = null;
+    assert.equal(tournamentResultReason(saved.result.rows, { rounds: saved.roundVotes }), `持ち点で2位に${points[0] - points[1]}点差をつけた。`);
+  }
+  assert.deepEqual(startAttempt(value, craft).roundVotes, [], '再挑戦の票は新しい台から記録する');
+}
+console.log('PASS: chapter2 result reasons use recorded round increments, final margin and legacy fallback');
 // 登録済みの大会ロジック入口から、独立した全国大会stateの回帰も走らせる。
 await import('./ch3_tournament_state.mjs');
 await import('./ngplus_difficulty.mjs');

@@ -78,26 +78,27 @@ let weatherKey = "";
 const bgReady = new Map(); // url -> { promise, image, keep }（一度読んだ絵は即座に出す）
 // Retain only a bounded decoded working set. CSS/DOM own visible images separately.
 const IMAGE_CACHE_ENTRIES = 128, KEPT_IMAGE_BYTES = 48 * 1024 * 1024;
-// pin（制作画面の素材。craft/readiness.js）は、この上限にも件数の上限にも数えず、手放さない。
-// 制作画面を開き直すたびに素材を取り直すと準備の幕が出てしまうため（test/browser/craft_readiness.mjs）。
-// 数は工程ごとの素材（高々百枚ほど）に限られる。ほかの絵は今までどおり上限の中で保つ。
-function trimImages() {
+// 作業台の再表示には現在・次の工程を残す。通常の画面を開いても追い出さず、
+// 工程や章が増えたときには作業台の中で古い順に解放する。
+const CRAFT_IMAGE_BYTES = 128 * 1024 * 1024;
+function trimImages(pin) {
+  const budget = pin ? CRAFT_IMAGE_BYTES : KEPT_IMAGE_BYTES;
   let bytes = 0, count = 0;
   for (const entry of bgReady.values()) {
-    if (entry.pin) continue;
+    if (entry.pin !== pin) continue;
     bytes += entry.bytes || 0;
     count++;
   }
   for (const [url, entry] of bgReady) {
-    if (!entry.done || entry.pin) continue; // never evict shared in-flight requests
-    if (entry.image && bytes > KEPT_IMAGE_BYTES) {
-      bytes -= entry.bytes || 0;
-      entry.image = null; entry.bytes = 0;
-    }
+    if (bytes <= budget && count <= IMAGE_CACHE_ENTRIES) break;
+    if (!entry.done || entry.pin !== pin) continue;
     if (count > IMAGE_CACHE_ENTRIES) {
       bytes -= entry.bytes || 0;
       count--;
       bgReady.delete(url);
+    } else if (entry.image && bytes > budget) {
+      bytes -= entry.bytes || 0;
+      entry.image = null; entry.bytes = 0;
     }
   }
 }
@@ -119,7 +120,7 @@ export function imageReady(url, ms = 1500, { keep = false, pin = false } = {}) {
         entry.done = true;
         if (!entry.keep) entry.image = null;
         else entry.bytes = (i.naturalWidth || 0) * (i.naturalHeight || 0) * 4;
-        trimImages();
+        trimImages(entry.pin);
         resolve(true);
       });
       i.onerror = () => { bgReady.delete(url); entry.image = null; resolve(false); };
@@ -127,7 +128,10 @@ export function imageReady(url, ms = 1500, { keep = false, pin = false } = {}) {
     });
   } else {
     if (keep) entry.keep = true;
-    if (pin) entry.pin = true;
+    if (pin && !entry.pin) {
+      entry.pin = true;
+      if (entry.done) trimImages(true);
+    }
   }
   const p = entry.promise;
   if (ms === null) return p; // explicit retry: observe this transfer until it settles
@@ -415,7 +419,12 @@ export async function smokeWipe(mid, { color = "light" } = {}) {
   const veil = el("div.wipe-smoke");
   const haze = el("div.wipe-haze", { style: { backgroundImage: `url("${smokeArt().haze}")` } });
   w.append(veil, haze);
-  const rise = (ms) => haze.animate([{ top: "125%", opacity: 0 }, { top: "23%", opacity: 0.6, offset: 0.5 }, { top: "-75%", opacity: 0 }], { duration: ms, easing: "cubic-bezier(.45,0,.55,1)" });
+  // smokeCurtain と同じ軌道。煙の高さは親の半分なので、親の102%の移動は煙自身の204%。
+  const rise = (ms) => haze.animate([
+    { transform: "translateY(0%)", opacity: 0 },
+    { transform: "translateY(-204%)", opacity: 0.6, offset: 0.5 },
+    { transform: "translateY(-400%)", opacity: 0 },
+  ], { duration: ms, easing: "cubic-bezier(.45,0,.55,1)" });
   SE.whoosh();
   try {
     // 1. 床から煙が昇って覆う（上下を返して、逆向きのにじみを下から上へ）
@@ -713,39 +722,72 @@ function paintedBox(node) {
 const KEEP_WORDS = ["上書き"];
 const keepWords = (html) => KEEP_WORDS.reduce((s, word) => s.replaceAll(word, [...word].join("\u2060")), html);
 
-export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "" }) {
+/** 小窓の先頭と末尾で Tab を折り返す。途中の入力欄はブラウザの標準順序で移動する。 */
+function trapModalTab(event, box) {
+  const nodes = [...box.querySelectorAll("button, a[href], input, select, textarea, [tabindex], [contenteditable=true]")]
+    .filter(node => node.tabIndex >= 0 && !node.matches(":disabled") && !node.closest("[inert]")
+      && node.getClientRects().length && getComputedStyle(node).visibility === "visible");
+  const first = nodes[0], last = nodes.at(-1);
+  const active = document.activeElement;
+  if (!nodes.includes(active) || active === (event.shiftKey ? first : last)) {
+    event.preventDefault();
+    (event.shiftKey ? last : first)?.focus();
+  }
+}
+
+export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "", signal }) {
+  if (signal?.aborted) return Promise.resolve(null);
   return new Promise((resolve) => {
     const previousFocus = document.activeElement;
-    const box = el(`div.modal-box${className ? "." + className : ""}`, [
+    let settled = false;
+    const backdrop = el("div.modal-backdrop");
+    const box = el(`div.modal-box${className ? "." + className : ""}`, {
+      role: "dialog", "aria-modal": "true", ...(title ? { "aria-label": title } : {}),
+    }, [
       title ? el("h3", { text: title }) : null,
       typeof body === "string" ? el("div.modal-body", { html: keepWords(body) }) : el("div.modal-body", [body]),
       el("div.modal-actions", options.map((o) =>
         el(`button.btn${o.primary ? ".primary" : ""}`, {
           text: o.label,
           dataset: { test: o.test || "" },
-          onclick: () => { SE.select(); close(); resolve(o.value); },
+          onclick: () => { if (!settled && !signal?.aborted) { SE.select(); close(o.value); } },
         })
       )),
     ]);
-    const close = () => {
+    const close = (value) => {
+      settled = true;
+      signal?.removeEventListener("abort", abort);
       window.removeEventListener("keydown", onKeyDown);
-      layers.modal.classList.remove("show");
-      layers.modal.replaceChildren();
-      if (previousFocus?.isConnected) previousFocus.focus();
+      if (signal?.aborted) {
+        box.remove();
+        backdrop.remove();
+        if (!layers.modal.firstElementChild) layers.modal.classList.remove("show");
+      } else if (box.isConnected) {
+        layers.modal.classList.remove("show");
+        layers.modal.replaceChildren();
+        if (previousFocus?.isConnected) previousFocus.focus();
+      }
+      resolve(value);
     };
+    const abort = () => close(null);
     const buttons = [...box.querySelectorAll(".modal-actions button")];
     const primary = buttons.find((button) => button.classList.contains("primary")) || buttons[0];
     const dismiss = [...buttons].reverse().find((button) => !button.classList.contains("primary")) || primary;
     const onKeyDown = (e) => {
-      if (!layers.modal.classList.contains("show") || e.repeat) return;
+      if (!box.isConnected || !layers.modal.classList.contains("show")) return;
+      // 設定からセーブの引っ越しを開いた場合は、一番上の小窓の中を巡る。
+      const top = layers.modal.lastElementChild;
+      if (e.key === "Tab") { trapModalTab(e, top); return; }
+      if (top !== box || e.repeat) return;
       if (e.key === "Escape") { e.preventDefault(); dismiss?.click(); }
       if (e.key === "Enter" && !e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]")) {
         e.preventDefault(); primary?.click();
       }
     };
-    layers.modal.replaceChildren(el("div.modal-backdrop"), box);
+    layers.modal.replaceChildren(backdrop, box);
     layers.modal.classList.add("show");
     window.addEventListener("keydown", onKeyDown);
+    signal?.addEventListener("abort", abort, { once: true });
     primary?.focus();
   });
 }

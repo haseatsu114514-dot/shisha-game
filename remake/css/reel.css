@@ -423,8 +423,6 @@
 .rn-guide-list { margin: 6px 0 10px; padding: 0; list-style: none; display: grid; gap: 10px; }
 .rn-guide-list li { display: grid; grid-template-columns: 130px 1fr; gap: 12px; font-size: 16px; line-height: 1.6; color: #f2ecdf; }
 .rn-guide-list b { color: var(--gold); letter-spacing: 0.06em; }
-.ri-panel.sys { border-color: rgba(191, 230, 255, 0.6); }
-.ri-panel.sys .ri-app { color: #bfe6ff; }
 .rn-hint-head { margin: 8px 0 2px; font-size: max(17px, 11.5px / var(--k, 1)); font-weight: 700; color: #bfe6ff; letter-spacing: .02em; }
 .rn-hint-head.past, .rn-hints.past { color: #8f86a0; }
 .rn-hints { margin: 4px 0 0; padding: 0; list-style: none; font-size: max(18px, 11.5px / var(--k, 1)); line-height: 1.6; color: #bfe6ff; }
@@ -477,14 +475,13 @@
 .cue-chip.cue-blue { color: #5cb2ff; }
 .cue-chip.cue-green { color: #4fe07a; }
 .cue-chip.cue-red { color: #ff4040; }
-/* ノートの中の遊び方カードは1段にして、スマホ横持ちでも実寸 11.5px を下回らない（#2840）。初回説明のカードは変えない */
+/* ノートの中の遊び方カードは1段にして、スマホ横持ちでも実寸 11.5px を下回らない（#2840）。 */
 .reel-note .ri-app { font-size: max(24px, 12px / var(--k, 1)); }
 .reel-note .ri-next { margin-top: 8px; font-size: max(20px, 11.5px / var(--k, 1)); }
 .reel-note .rn-card { grid-template-columns: 1fr; }
 .reel-note .rn-tile-head { font-size: max(18px, 12px / var(--k, 1)); }
 .reel-note .rn-tile-body { font-size: max(17px, 11.5px / var(--k, 1)); }
 .reel-note .cue-chip { width: max(26px, 14px / var(--k, 1)); height: max(26px, 14px / var(--k, 1)); font-size: max(14px, 11.5px / var(--k, 1)); }
-.ri-panel.sys .ri-text { min-height: 0; }
 
 /* ワイドステージ（#2861）と見やすさ（#2729）:
    - 説明・ノートの暗幕はステージの左右の余白まで覆う（端に出した MENU・LIME を開いている間に押させない）。

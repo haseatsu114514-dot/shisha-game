@@ -20,7 +20,7 @@ const dialogues = Object.fromEntries(["ch1_tournament", "ch1_interval", "ch1_nar
   .flatMap(name => JSON.parse(fs.readFileSync(path.join(root, "data/dialogue", `${name}.json`), "utf8")).dialogues)
   .map(dialogue => [dialogue.dialogue_id, dialogue]));
 const manifest = JSON.parse(fs.readFileSync(path.join(root, "remake/data/manifest.json"), "utf8"));
-const real = new Set(["chapters/ch1.js", "core/state.js","core/portrait-style.js", "core/data.js", "core/rules.js", "core/flavor-mastery.js"]);
+const real = new Set(["chapters/ch1.js", "core/state.js", "core/legacy-cast-save.js","core/portrait-style.js", "core/data.js", "core/rules.js", "core/flavor-mastery.js"]);
 const SLOT = "suien_remake_slot1";
 const OTHER_SLOT = "suien_remake_slot2";
 const startingMoney = 45813;
@@ -103,7 +103,7 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
     gainStat: (stat, amount) => {
       awards.push({ stat, amount }); current().stats[stat] += amount; observe("ability", { stat, amount });
     },
-    suiCutin: async rank => { cutins.push(rank); observe("cutin", { rank }); await pause("cutin"); },
+    sensuCutin: async rank => { cutins.push(rank); observe("cutin", { rank }); await pause("cutin"); },
     sceneMoment: async () => {}, // 章の要所の一度きりの演出（#2688 A6）。見た目だけなので進行には関わらない
     openPhone: async (messages, options) => {
       assert.equal(titlePresent, false, "LOAD's title screen must be removed before phone content appears");

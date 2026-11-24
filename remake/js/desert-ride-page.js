@@ -43,6 +43,7 @@ function menu(message = "狙いは、S。") {
       const legacyBest = prev?.legacyBest || (prev && !sameRules ? { score: prev.score, rank: prev.rank } : null);
       const top = !sameRules || result.score > prev.score ? { score: result.score, rank: result.rank } : { score: prev.score, rank: prev.rank };
       try { localStorage.setItem(KEY, JSON.stringify({ ...top, rulesVersion: RULES_VERSION, ...(legacyBest ? { legacyBest } : {}), beatNoor })); } catch { /* 保存できない環境 */ }
+      return beatNoor ? { rivals: ["noor", "naru"] } : null;
     } });
     app.hidden = false;
     const last = results.at(-1);

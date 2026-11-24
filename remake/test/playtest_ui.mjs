@@ -187,7 +187,7 @@ try {
 
   await page.evaluate(() => {
     T.core.newGame(); Object.assign(T.core.state, { phase: "daily", day: 4, stamina: 70 });
-    Object.assign(T.core.state.flags, { _intro_sumi: true, _intro_customer: true, _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true });
+    Object.assign(T.core.state.flags, { _intro_sumi: true, _intro_customer: true, _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true, _ev_uezono_cameo: true });
     T.DB.baito = [{ id: "skip_probe", category: "beginner", text: "注文が入った", choices: [
       { text: "好みを聞く", result: "話しながら一台を仕上げた", stats: { technique: 1 } },
       { text: "お任せで作る", result: "落ち着いて一台を仕上げた", stats: { technique: 1 } },

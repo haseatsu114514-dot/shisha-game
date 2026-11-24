@@ -89,7 +89,7 @@ export const SPOTS = [
     nightPool: ["venue_choizap_night", "venue_choizap_night_c", "venue_choizap_night_b", "venue_choizap_night_d"],
     desc: "昼夜使える無人ジム。入会はアプリから。" },
   { id: "c_station", kind: "spot", label: "C.STATION", area: "大会運営", x: 54, y: 66, theme: "stadium", glyph: "C", cost: 2500, requiresMet: "naru", stat: "insight", stamina: -16,
-    first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_sui_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
+    first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_sensu_glimpse", "cs_kemuri_solo", "cs_uezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
     desc: "大会を運営するチェーン店。噂も集まる。" },
   { id: "rest", kind: "rest", label: "家", area: "自宅", x: 89, y: 44, theme: "rest", glyph: "休", stamina: 55,
     desc: "体を休める。体力が大きく戻る。" },
@@ -179,6 +179,7 @@ function storyOpenByHeart(id) {
 /** 店に通って親しくなってから、店内で正体がつながる一度だけの会話。 */
 export const mintoIdentityRevealDue = () => !state.flags._minto_identity_revealed
   && storyCount("minto") >= 2 && affinityLevel("minto") >= 3;
+const mintoRevealAtVisit = charId => charId === "minto" && mintoIdentityRevealDue() && !!DB.dialogues.ch1_minto_identity_reveal;
 /** 夜の2階で試作品を確かめる一度きりの回（#1696）。固有会話3本目の後、新しい話が無い来店で読む。 */
 const RIO_PROTOTYPE = "ch1_rio_prototype_night";
 const RIO_PROTOTYPE_SEEN = `_spot_seen_${RIO_PROTOTYPE}`;
@@ -351,10 +352,10 @@ export const CHAPTER_TALKS = Object.freeze({
     { chapter: 3, scene: "ch3_prep_kumicho", prep: true },
     { chapter: 4, scene: "ch4_prep_kumicho", prep: true },
   ]),
-  rei: Object.freeze([
-    // 第2章で余りチケットを受け取った人は、ライブの夜（ch3_prep_rei_live）が東京への送り出しを兼ねるので出さない
-    { chapter: 3, scene: "ch3_prep_rei", prep: true, flag: "!_ch2_rei_ticket" },
-    { chapter: 4, scene: "ch4_prep_rei", prep: true },
+  kuraudo: Object.freeze([
+    // 第2章で余りチケットを受け取った人は、ライブの夜（ch3_prep_kuraudo_live）が東京への送り出しを兼ねるので出さない
+    { chapter: 3, scene: "ch3_prep_kuraudo", prep: true, flag: "!_ch2_kuraudo_ticket" },
+    { chapter: 4, scene: "ch4_prep_kuraudo", prep: true },
   ]),
   naru: Object.freeze([
     // #3097 PR-C: 看板の電球の付け替え。DAY3の祝いの後、DAY11の対峙より前だけ（対峙の後は店を長く休む）
@@ -386,6 +387,21 @@ export function chapterTalkDue(charId, s = state) {
  */
 let chapterVisitDue = () => false;
 export function setChapterVisitDue(fn) { chapterVisitDue = typeof fn === "function" ? fn : () => false; }
+
+/** 第2章の地元の店で、今の来店で章内の短い会話へ進めるか。 */
+export function hasChapterTwoVisitContinuation(spot) {
+  if (state.chapter !== 2 || (spot.region || "home") !== "home") return false;
+  const tonari = spot.kind === "tonari";
+  const showroom = spot.id === "shop";
+  if (!tonari && !showroom && spot.kind !== "rival") return false;
+  const charId = tonari ? "tsumugi" : showroom ? "rio" : spot.charId;
+  if (!chapterTalkDue(charId) || chapterVisitDue(charId) || afterChapterVisitDue(charId)
+    || mintoRevealAtVisit(charId) || questionVisitDue(charId)) return false;
+  if (tonari) return state.visitedDay.tonari_customer !== state.day && tsumugiAtTonari(state);
+  if (showroom) return !rioUnavailable(state);
+  return true;
+}
+
 /** 次に会うと新しいイベントがあるか（固有会話・途中の質問・好感度MAXの締めくくり）。 */
 export function hasNewStory(charId) {
   if (chapterVisitDue(charId) || chapterTalkDue(charId)) return true;
@@ -571,7 +587,7 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     }
     const afterChapter = afterChapterVisitDue(charId);
     // 正体がつながる回・途中の質問を読む来店では、章の間だけの会話は次の来店へ残す（下の分岐の順と同じ）。
-    const mintoReveal = charId === "minto" && mintoIdentityRevealDue() && !!DB.dialogues.ch1_minto_identity_reveal;
+    const mintoReveal = mintoRevealAtVisit(charId);
     const chapterTalk = afterChapter || mintoReveal || questionVisitDue(charId) ? null : chapterTalkDue(charId);
     // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。章明けの再訪・章の間だけの会話・♥5後の場面は自前の来店描写があるので挨拶を挟まない。
     if (welcome && state === owner && idx > 0 && !afterChapter && !chapterTalk && bondAfter?.kind !== "story" && DB.dialogues[welcome]) {

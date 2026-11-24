@@ -1,4 +1,5 @@
 // タイトル画面。用語集は会話画面・ゲーム中のメニューから開く。
+import { parseCastSave } from "../core/legacy-cast-save.js";
 import { el } from "../core/util.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { DB, bgUrl } from "../core/data.js";
@@ -227,6 +228,19 @@ function setCursor(nodes, node, { focus = false } = {}) {
 function bindTitleKeys() {
   if (keysBound || typeof document.addEventListener !== "function") return;
   keysBound = true;
+  window.addEventListener("storage", (event) => {
+    if (!titleLive() || (event.key !== null && !SAVE_SLOTS.some(slot => slot.key === event.key))) return;
+    const rows = liveItems();
+    const load = rows.find(row => row.dataset.test === "title-load");
+    if (!load) return;
+    load.disabled = !anySlotSaved();
+    const text = load.disabled ? "" : latestSaveNote();
+    const note = load.querySelector(".ti-note");
+    if (!text) note?.remove();
+    else if (note) note.textContent = text;
+    else load.append(el("span.ti-note", { text }));
+    if (load.disabled && load.classList.contains("is-current")) setCursor(rows, rows[0]);
+  });
   document.addEventListener("keydown", (e) => {
     if (!titleLive() || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
     // 確認・設定などの小窓や会話を開いている間は、そちらの操作（タイトルの上に重なる画面へ行くはずのキーを奪わない）
@@ -266,7 +280,7 @@ function latestSaveNote() {
 
 function galleryLabel() {
   try {
-    const value = JSON.parse(localStorage.getItem("suien_remake_gallery") || "[]");
+    const value = parseCastSave(localStorage.getItem("suien_remake_gallery") || "[]");
     const seenIds = new Set(Array.isArray(value) ? value.filter(id => typeof id === "string") : []);
     const stats = galleryStats(galleryEntries(DB.manifest, DB.gallery, readGalleryProgress(), seenIds));
     return stats.unlocked > 0 ? `GALLERY ${stats.rate}%` : "GALLERY";
@@ -282,7 +296,7 @@ export function showTitle(preparedArt = null) {
   layers.hud.classList.remove("show");
   setBg(bgUrl("bg_title"), { instant: true });
   playBgm("title");
-  const saved = peekSave();
+  const hasSaves = anySlotSaved();
   const cyclePkg = startPackageFromMeta(cycleMetaSeen);
   const menu = el("nav.title-menu");
   const rows = []; // メニューの行（作った順）
@@ -306,12 +320,18 @@ export function showTitle(preparedArt = null) {
     item("NEW GAME", "はじめから", async () => {
       // wipeSave() はオートセーブ（AUTOキー）だけを消し、newGame() も手動枠に触れない。
       // 何が消えるかを L121 の周回開始と同じ文面で明示する（#2444 item6）。
+      const saved = peekSave();
       if (saved && !(await modal({
         title: "はじめから",
         body: `現在のオートセーブ（${saved.cycle ?? 1}周目・第${saved.chapter ?? 1}章）は上書きされます。手動セーブ枠は残ります。よろしいですか？`,
         options: [{ label: "はじめから遊ぶ", value: true, primary: true, test: "confirm-new" }, { label: "やめる", value: false, test: "cancel-new" }],
       }))) { refresh(); return; }
       if (!current()) return;
+      if (saved && JSON.stringify(peekSave()) !== JSON.stringify(saved)) {
+        toast("別のタブでオートセーブが更新されました。内容を確認してから、もう一度選んでください。", { kind: "warn" });
+        refresh();
+        return;
+      }
       leaving = true;
       wipeSave();
       newGame();
@@ -333,7 +353,7 @@ export function showTitle(preparedArt = null) {
       clearLog();
       leaving = true;
       smokeWipe(() => { stopBgm(0); resumeGame(); }, { color: "dark" });
-    }, "title-load", !anySlotSaved(), anySlotSaved() ? latestSaveNote() : ""),
+    }, "title-load", !hasSaves, hasSaves ? latestSaveNote() : ""),
     item(galleryLabel(), "ギャラリー", () => openGallery().then(refresh), "title-gallery"),
     item("CONFIG", "設定", () => openConfig().then(refresh), "title-config"),
   );

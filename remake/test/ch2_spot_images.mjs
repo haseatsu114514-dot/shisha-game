@@ -20,7 +20,7 @@ function assertRealImage(label, relPath) {
 
 // A02: 神崎の室内は採用済み内装 bg_ch2_kumicho_entry.webp を使う（街の店舗画像に逸れない）。
 assert.equal(ROOMS.kumicho, "../assets/backgrounds/bg_ch2_kumicho_entry.webp", "ROOMS.kumicho が採用内装を指していない");
-for (const id of ["ageha", "kumicho", "rei"]) assertRealImage(`ROOMS.${id}`, ROOMS[id]);
+for (const id of ["ageha", "kumicho", "kuraudo"]) assertRealImage(`ROOMS.${id}`, ROOMS[id]);
 
 // 街の地図・駅。
 assertRealImage("MAP.day", MAP.day);

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {createRequire} from 'node:module';
 import {layoutSnapshot,settledPreview} from './trpg_layout.mjs';
+import { startTrpgStory } from "./trpg_start.mjs";
 const {chromium}=createRequire(import.meta.url)('playwright');
 const out=path.resolve(process.env.ARTIFACT_DIR||'docs/qa/trpg-roll-ui-issue596/ci-resize-fix');fs.mkdirSync(out,{recursive:true});
 const b=await chromium.launch();const records=[];
@@ -14,7 +15,7 @@ try{for(const scenario of ['ordinary-cup','shark-last-order']){
    const target=this;return add.call(this,type,function(event){const run=()=>cb.call(target,event);if(__resizeGate.hold)__resizeGate.pending.push(run);else run();},options);
   }return add.call(this,type,cb,options);};});
  const p=await c.newPage();await p.goto((process.env.BASE_URL||'http://127.0.0.1:8123/remake/')+`trpg-preview.html?scenario=${scenario}&seed=9`);
- await p.locator('[data-test=trpg-start]').click();for(let i=0;i<60&&await p.locator('[data-test=trpg-next]').isVisible();i++)await p.locator('[data-test=trpg-next]').click();
+ await startTrpgStory(p);for(let i=0;i<60&&await p.locator('[data-test=trpg-next]').isVisible();i++)await p.locator('[data-test=trpg-next]').click();
  // Declare the first approach (the player's own character) and read the GM's call before the roll stage.
  await p.locator('[data-test^="trpg-approach-"]').first().click();for(let i=0;i<60&&await p.locator('[data-test=trpg-next]').isVisible();i++)await p.locator('[data-test=trpg-next]').click();
  await p.locator('[data-test=trpg-roll]').waitFor();

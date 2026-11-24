@@ -1,7 +1,7 @@
 // 必須の店仕事で実際に選び、終えたことだけを東京の行程内に保存する。
 // 好感度・味覚の回復・大会の点数とは結びつけない。旧保存の空欄は推測しない。
 import { chapterThreeScenes } from "./ch3-scenes.js";
-export const CH3_SERVICE_IDS = Object.freeze(["ch3_saku_mukai_visit", "ch3_saku_mukai_served"]);
+export const CH3_SERVICE_IDS = Object.freeze(["ch3_ayatori_mukai_visit", "ch3_ayatori_mukai_served"]);
 const own = (value, key) => Object.hasOwn(value || {}, key);
 const object = value => value && typeof value === "object" && !Array.isArray(value);
 export const chapterThreeWork = value => object(value?.flags?._ch3_intro?.work) ? value.flags._ch3_intro.work : null;
@@ -14,7 +14,7 @@ const work = value => {
 const choices = Object.freeze({
   ch3_rest_before_recovery: { id: "ch3_rest_choice", key: "rest", values: ["tea", "sit"] },
   ch3_work_without_taste: { id: "ch3_work_role", key: "shift", values: ["heat", "taste"] },
-  ch3_saku_mukai_visit: { id: "ch3_service_order", key: "order", values: ["gentle", "pace"] },
+  ch3_ayatori_mukai_visit: { id: "ch3_service_order", key: "order", values: ["gentle", "pace"] },
 });
 
 /** 読了した場面の回答だけを採用する。再読・中断時の未確定回答は呼出し側に留める。 */
@@ -92,7 +92,7 @@ export function chapterThreeWorkDialogue(value, source) {
     before = branch(`rest_${record.rest}_echo`);
   if (source.dialogue_id === "ch3_naru_contact_before_tournament" && own(record, "shift"))
     before = branch("work_phone_echo");
-  if (source.dialogue_id === "ch3_saku_mukai_served" && service?.careDone) {
+  if (source.dialogue_id === "ch3_ayatori_mukai_served" && service?.careDone) {
     before = branch(service.result);
     if (service.result !== "failed") serviceNote = branch(service.adjustment?.coals > 0 ? "coal_changed" : "coal_kept");
   }
@@ -101,7 +101,7 @@ export function chapterThreeWorkDialogue(value, source) {
       notes.push(...branch(`service_${service.order}_echo`));
       notes.push(...branch(`service_${service.result}_echo`));
     }
-    for (const id of ["saku", "steve"]) {
+    for (const id of ["ayatori", "steve"]) {
       const trial = value.flags?.[`_ch3_trial_${id}`];
       if (trial?.practiceDone && ["good", "rough", "failed"].includes(trial.result))
         notes.push(...branch(`trial_${id}_${trial.result}`));

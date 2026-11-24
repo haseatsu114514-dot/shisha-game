@@ -86,6 +86,14 @@ def tracked_normals(style: str = CLASSIC) -> dict[str, str]:
     return found
 
 
+from functools import lru_cache
+
+
+@lru_cache(maxsize=1)
+def actor_ids_by_art():
+    return {c.get("art_stem", c["id"]): c["id"] for c in json.loads(CHARACTERS.read_text(encoding="utf-8"))}
+
+
 def default_sprite(cid: str, style: str = CLASSIC) -> str:
     return f"{sprite_dir(style)}/{cid}/chr_{cid}_normal.png"
 
@@ -127,7 +135,7 @@ def measure(entry: dict, cid: str, manifest: dict, chars: dict, style: str = CLA
     if not all(k in entry for k in ("eyes", "chin", "crown", "cheeks")):
         return None
     k = game_factor(entry, cid, manifest, chars, style)
-    p = manifest_portraits(manifest, style).get(entry.get("folder", cid))
+    p = manifest_portraits(manifest, style).get(actor_ids_by_art().get(entry.get("folder", cid), entry.get("folder", cid)))
     if k is None or p is None:
         return None
     (lx, ly), (rx, ry) = entry["eyes"]
@@ -179,7 +187,7 @@ def status(entry: dict, m: dict | None, spec: dict) -> tuple[str, str]:
 def context():
     data = load()
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
-    chars = {c["id"]: c for c in json.loads(CHARACTERS.read_text(encoding="utf-8"))}
+    chars = {c.get("art_stem", c["id"]): c for c in json.loads(CHARACTERS.read_text(encoding="utf-8"))}
     same = ROOT / "data" / "dialogue" / "samechan.json"   # サメちゃんの設定は台本側にある（make_reference_sheet.py と同じ）
     if same.exists():
         prof = json.loads(same.read_text(encoding="utf-8")).get("profile")
@@ -349,9 +357,10 @@ def cmd_faces(ids: list[str]) -> int:
     for cid, p in sorted(manifest["portraits"].items()):
         if ids and cid not in ids:
             continue
+        stem = next((art for art, actor in actor_ids_by_art().items() if actor == cid), cid)
         box = {}
         for face in p["faces"]:
-            path = SPRITES / cid / f"chr_{cid}_{face}.png"
+            path = SPRITES / stem / f"chr_{stem}_{face}.png"
             if not path.exists() or path.read_bytes()[:7] == b"version":
                 continue
             l, t, r, b = Image.open(path).getchannel("A").point(lambda v: 255 if v >= 16 else 0).getbbox()

@@ -7,30 +7,34 @@ const root = new URL("../../", import.meta.url);
 const read = path => fs.readFileSync(new URL(path, root), "utf8");
 const tonari = read("remake/js/daily/tonari.js");
 const orderStart = tonari.indexOf("const SHIFT_ORDERS = [");
-const functionStart = tonari.indexOf("async function serveShiftOrder()");
+const functionStart = tonari.indexOf("async function serveShiftOrder(");
 const functionEnd = tonari.indexOf("\n}\n", functionStart) + 2;
 assert(orderStart >= 0 && functionStart > orderStart && functionEnd > functionStart);
 const source = `${tonari.slice(orderStart, functionStart)}\n${tonari.slice(functionStart, functionEnd)}\nserveShiftOrder`;
 const orders = ["citrus", "fruit_mint_free", "sweet_round", "double_apple"];
 const dialogues = Object.fromEntries(JSON.parse(read("data/dialogue/remake_ch1.json")).dialogues.map(d => [d.dialogue_id, d]));
 
-async function run(seed, choice, { cancelled = false, switchAt = null, flags = {}, chapter = 1 } = {}) {
-  const owner = { chapter, day: 2, slot: 0, weatherSeed: seed, flags };
+async function run(seed, choice, { cancelled = false, switchAt = null, flags = {}, chapter = 1, slot = 0 } = {}) {
+  const owner = { chapter, day: 2, slot, weatherSeed: seed, flags };
+  const { signal } = new AbortController();
   const calls = [];
-  const context = { state: owner, tsumugiAtTonari, TONARI_BG: "tonari", DB: { dialogues },
+  const context = { state: owner, timeOfDay: () => slot ? "night" : "day", tsumugiAtTonari, TONARI_BG: "tonari", DB: { dialogues },
     modal: async options => {
+      assert.equal(options.signal, signal);
       calls.push({ type: "modal", options });
       if (switchAt === "modal") context.state = { ...owner, flags: {} };
       return choice;
     },
-    play: async dlg => {
+    play: async (dlg, opts) => {
+      assert.equal(opts.signal, signal);
       calls.push({ type: "play", id: typeof dlg === "string" ? dlg : dlg.dialogue_id, lines: typeof dlg === "string" ? dialogues[dlg].lines : dlg.lines });
       if (switchAt === "play") context.state = { ...owner, flags: {} };
       return { cancelled };
     } };
-  const serve = vm.runInNewContext(source, context);
-  await serve();
-  return { owner, calls, serve };
+  const runOrder = vm.runInNewContext(source, context);
+  const serve = () => runOrder(owner, signal);
+  const result = await serve();
+  return { owner, calls, serve, result };
 }
 
 const seen = new Set();
@@ -44,19 +48,21 @@ for (let seed = 0; seed < 64; seed++) {
     seen.add(id);
     assert.equal(owner.flags[`_shift_mix_${id}`], choice);
     assert.equal(owner.flags["_shift_order_1:2"], true);
-    await serve();
+    assert.equal(await serve(), true);
     assert.equal(calls.length, 2, "same-day revisit must not replay or overwrite");
     assert.equal(owner.flags[`_shift_mix_${id}`], choice);
   }
 }
 assert.deepEqual([...seen].sort(), [...orders].sort());
 for (const choice of [null, -1, 2, 1.5]) {
-  const { owner, calls } = await run(0, choice);
+  const { owner, calls, result } = await run(0, choice);
+  assert.equal(result, false);
   assert.equal(calls.some(c => c.type === "play"), false);
   assert.deepEqual(owner.flags, {});
 }
 for (const opts of [{ cancelled: true }, { switchAt: "modal" }, { switchAt: "play" }]) {
-  const { owner } = await run(0, 0, opts);
+  const { owner, result } = await run(0, 0, opts);
+  assert.equal(result, false);
   assert.deepEqual(owner.flags, {});
 }
 {
@@ -121,7 +127,7 @@ const after = tournament.dialogues.find(d => d.dialogue_id === "ch1_tournament_a
 assert(after);
 // 会話演出の印（[pause] 等。#2828）は表示に出ないので、外して比べる
 const lines = after.lines.map(line => (line.text || "").replace(/\[\/?[a-z]+\]/g, ""));
-assert(lines.includes("……今日の煙、すごかったです。きれいでした、……でも"));
+assert(lines.includes("……今日の煙、すごかったです。きれいでした。……でも"));
 assert(lines.includes("……最後の方の、はじめさんの顔。少しだけ、浮かれて見えました"));
 assert(lines.includes("ドアベルが鳴って、彼女は夜に消えた。浮かれてた？ 優勝した日の、俺の顔が？"));
 assert(!lines.some(text => text.includes("濁ってた") || text.includes("優勝した日の煙が")));
@@ -146,7 +152,7 @@ console.log("shift mix record, dialogue, and tournament feedback: OK");
   };
   const seenByChapter = Object.fromEntries(Object.keys(byChapter).map(chapter => [chapter, new Set()]));
   for (const chapter of Object.keys(byChapter).map(Number)) for (let seed = 0; seed < 64; seed++) for (const choice of [0, 1]) {
-    const { owner, calls } = await run(seed, choice, { chapter });
+    const { owner, calls } = await run(seed, choice, { chapter, slot: chapter === 2 ? 1 : 0 });
     const mixKey = Object.keys(owner.flags).find(k => k.startsWith("_shift_mix_"));
     assert(mixKey, `chapter ${chapter} seed ${seed}: mix missing`);
     const id = mixKey.slice("_shift_mix_".length);
@@ -158,13 +164,19 @@ console.log("shift mix record, dialogue, and tournament feedback: OK");
     assert(dialogues[calls.find(c => c.type === "play").id], `chapter ${chapter}: reaction dialogue exists`);
   }
   for (const [chapter, ids] of Object.entries(byChapter)) assert.deepEqual([...seenByChapter[chapter]].sort(), [...ids].sort(), `chapter ${chapter}`);
+  const daytime = new Set();
+  for (let seed = 0; seed < 64; seed++) {
+    const { owner } = await run(seed, 0, { chapter: 2, slot: 0 });
+    daytime.add(Object.keys(owner.flags).find(k => k.startsWith("_shift_mix_")).slice("_shift_mix_".length));
+  }
+  assert.deepEqual([...daytime].sort(), ["ch2_strawberry_light", "ch2_tropical_compare"]);
   for (const id of [2, 3, 4, 5].flatMap(chapter => byChapter[chapter])) for (const kind of ["same", "diff"]) {
     const recall = dialogues[`shift_recall_${id}_${kind}`];
     assert(recall && recall.lines.length === 1 && recall.lines[0].speaker === "hajime" && /^（.+）$/.test(recall.lines[0].text), `${id}_${kind}`);
   }
   for (const id of ch2Orders) {
     const prev = 0;
-    const { calls } = await run(0, 1, { chapter: 2, flags: { [`_shift_mix_${id}`]: prev } });
+    const { calls } = await run(0, 1, { chapter: 2, slot: 1, flags: { [`_shift_mix_${id}`]: prev } });
     const shown = calls.find(c => c.type === "play");
     if (!shown.id.includes(id)) continue;
     assert.deepEqual(shown.lines[0], dialogues[`shift_recall_${id}_diff`].lines[0]);

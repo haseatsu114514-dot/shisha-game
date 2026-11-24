@@ -6,7 +6,7 @@
   "author": "春風もも",
   "collection": "船灯文庫・小さな卓の冒険 12",
   "duration": "約10分",
-  "premise": "撮影城の魔王プリズマが、撮った者の『盛り』を盗むようになった。きらめき王国は、すっかり盛れない国に。自称『盛れない勇者』と仲間たちは、魔王の本当の願いを探しに城へ向かう。",
+  "premise": "魔王プリズマに撮られると、写真どころか顔や服まで色あせる。王国の「盛り」を取り戻すため、勇者たちは魔王の城へ向かう。",
   "fiction": {
     "kingdom": "きらめき王国",
     "place": "王国の広場と撮影城",
@@ -18,7 +18,7 @@
     {
       "id": "sai",
       "part": "GM",
-      "role": "案内と、写真屋のおじいさん",
+      "role": "語り手、写真屋のおじいさん、魔王プリズマなど",
       "color": "#73b8df",
       "costumeRole": "shopkeep"
     },
@@ -64,9 +64,9 @@
       }
     },
     {
-      "id": "rei",
+      "id": "kuraudo",
       "part": "PLAYER",
-      "role": "{pc:rei}／黒衣の吟遊詩人",
+      "role": "{pc:kuraudo}／黒衣の吟遊詩人",
       "color": "#b0102a",
       "ability": "黒薔薇のフィナーレ",
       "abilityText": "魔王の前でポーズを決めるとき、判定に一度だけ＋7",
@@ -85,7 +85,7 @@
       },
       "alternatives": {
         "regularb": {
-          "role": "{pc:rei}／黒衣の吟遊詩人",
+          "role": "{pc:kuraudo}／黒衣の吟遊詩人",
           "color": "#8faeaa"
         }
       }
@@ -96,7 +96,7 @@
   "checks": {
     "listen": {
       "title": "おじいさんの話を聞く",
-      "hint": "宣言した勇者の能力で判定。結果にかかわらず、写真屋への質問へ進みます。",
+      "hint": "判定に成功すると、おじいさんに聞ける質問が一つ増えます。",
       "success": "trpg_purikura_hero_listen_success",
       "mixed": "trpg_purikura_hero_listen_mixed",
       "trouble": "trpg_purikura_hero_listen_trouble",
@@ -121,18 +121,18 @@
         },
         {
           "id": "listen_watch",
-          "actor": "rei",
-          "sheet": "rei",
+          "actor": "kuraudo",
+          "sheet": "kuraudo",
           "stat": "eye",
           "label": "広場の様子を、黙って見て回る",
-          "detail": "{pc:rei}が外套の陰から、広場と空をじっと見渡す",
+          "detail": "{pc:kuraudo}が広場を見渡し、おじいさんの話と目の前の様子を照らし合わせる",
           "declare": "trpg_purikura_hero_declare_listen_watch"
         }
       ]
     },
     "prepare": {
       "title": "撮影の支度をする",
-      "hint": "宣言した勇者の能力で判定。選んだデコ道具と照明で、撮影の間を整えます。",
+      "hint": "選んだデコ道具と照明で、撮影の支度をします。",
       "success": "trpg_purikura_hero_prepare_success",
       "mixed": "trpg_purikura_hero_prepare_mixed",
       "trouble": "trpg_purikura_hero_prepare_trouble",
@@ -143,8 +143,8 @@
           "actor": "hajime",
           "sheet": "hajime",
           "stat": "hand",
-          "label": "説明書どおりに、照明を組む",
-          "detail": "{pc}が説明書を見ながら、照明を撮影の間に運びこむ",
+          "label": "見本を見ながら、撮影の支度をする",
+          "detail": "{pc}が見本の写真を手がかりに、明かりに合わせて立ち位置を決める",
           "declare": "trpg_purikura_hero_declare_prepare_light"
         },
         {
@@ -152,28 +152,28 @@
           "actor": "ageha",
           "sheet": "ageha",
           "stat": "hand",
-          "label": "神業のデコで、撮影の間を飾る",
-          "detail": "{pc:ageha}がデコ道具を広げ、撮影の間をきらきらに飾りつける",
+          "label": "神デコの手で、写真の縁を飾る",
+          "detail": "{pc:ageha}が選んだデコ道具で、写真をどう飾るか下書きする",
           "declare": "trpg_purikura_hero_declare_prepare_deco"
         },
         {
           "id": "prepare_angle",
-          "actor": "rei",
-          "sheet": "rei",
+          "actor": "kuraudo",
+          "sheet": "kuraudo",
           "stat": "eye",
           "label": "いちばん映える光を探す",
-          "detail": "{pc:rei}が鏡の角度を変えながら、光の向きを確かめる",
+          "detail": "{pc:kuraudo}が鏡の角度を変えながら、光の向きを確かめる",
           "declare": "trpg_purikura_hero_declare_prepare_angle"
         }
       ]
     },
     "serve": {
       "title": "魔王の前で、決めポーズ",
-      "hint": "宣言した勇者の能力で判定。どの出目でも結末へ進みます。",
+      "hint": "選んだポーズで魔王と写真を撮ります。",
       "success": "trpg_purikura_hero_serve_success",
       "mixed": "trpg_purikura_hero_serve_mixed",
       "trouble": "trpg_purikura_hero_serve_trouble",
-      "helper": "rei",
+      "helper": "kuraudo",
       "approaches": [
         {
           "id": "serve_call",
@@ -195,18 +195,18 @@
         },
         {
           "id": "serve_rose",
-          "actor": "rei",
-          "sheet": "rei",
+          "actor": "kuraudo",
+          "sheet": "kuraudo",
           "stat": "nerve",
-          "label": "外套を翻し、全力の決めポーズ",
-          "detail": "{pc:rei}が薔薇を掲げ、誰より大きく決めポーズを取る",
+          "label": "魔王の隣で、全力の決めポーズ",
+          "detail": "{pc:kuraudo}が思い切って魔王の隣に立ち、選んだポーズを取る",
           "declare": "trpg_purikura_hero_declare_serve_rose"
         }
       ]
     },
     "twist": {
       "title": "無表情ゴーレムを切り抜ける",
-      "hint": "宣言した勇者の能力で判定。どの出目でも物語は続きます。",
+      "hint": "選んだ作戦で、城門に立つゴーレムを切り抜けます。",
       "success": "trpg_purikura_hero_twist_success",
       "mixed": "trpg_purikura_hero_twist_mixed",
       "trouble": "trpg_purikura_hero_twist_trouble",
@@ -231,11 +231,11 @@
         },
         {
           "id": "twist_petal",
-          "actor": "rei",
-          "sheet": "rei",
+          "actor": "kuraudo",
+          "sheet": "kuraudo",
           "stat": "hand",
           "label": "薔薇の花びらで、目をくらます",
-          "detail": "{pc:rei}が外套を翻し、薔薇の花びらを門の前に舞わせる",
+          "detail": "{pc:kuraudo}が外套を翻し、薔薇の花びらを門の前に舞わせる",
           "declare": "trpg_purikura_hero_declare_twist_petal"
         }
       ]
@@ -287,13 +287,13 @@
   ],
   "consult": {
     "ageha": "trpg_purikura_hero_consult_ageha",
-    "rei": "trpg_purikura_hero_consult_rei"
+    "kuraudo": "trpg_purikura_hero_consult_kuraudo"
   },
   "hypotheses": [
     {
       "id": "friend",
       "label": "一緒に写る友達が、欲しかったのかも",
-      "description": "人を撮るのは、会いに行く口実。本当は、誰かと並んで写りたい。",
+      "description": "魔王は写真をきっかけに、隣に並んでくれる相手を探している。",
       "discussion": "trpg_purikura_hero_discuss_friend"
     },
     {
@@ -305,7 +305,7 @@
     {
       "id": "album",
       "label": "なくしたプリ帳を、探しているのかも",
-      "description": "昔なくした思い出のプリ帳を、人を撮りながら探している。",
+      "description": "魔王は昔の写真を探している。なくしたプリ帳に、その写真があるのかも。",
       "discussion": "trpg_purikura_hero_discuss_album"
     }
   ],
@@ -388,7 +388,7 @@
       {
         "id": "sneak",
         "label": "こっそり隠れて進む",
-        "description": "堀のサメの背に隠れて、門をくぐる。",
+        "description": "堀のサメの背に隠れて、城門の脇へ回る。",
         "response": "trpg_purikura_hero_choice_tactic_sneak"
       }
     ]
@@ -397,7 +397,7 @@
     {
       "id": "friend",
       "ending": "one-shot",
-      "arrival": "魔王は毎日だれかを撮りに来る。撮り終えると、いつも寂しそうに帰っていくのじゃ",
+      "arrival": "あの魔王は毎日来るんじゃ。誰かを撮って、声もかけずに、しょんぼり帰っていく",
       "likes": {
         "deco": [
           "sticker"
@@ -454,12 +454,12 @@
         },
         "camera": {
           "title": "隣を空けるカメラ",
-          "text": "撮ると盛りを吸う魔法のカメラ。魔王は撮るたび隣を空けて、しばらく待つ。",
+          "text": "魔法のカメラが盛りを吸う。魔王は撮ったあと、自分の隣を空けて誰かを待つ。",
           "lines": "trpg_purikura_hero_ask_friend_camera"
         },
         "shop": {
           "title": "二人用のプリ",
-          "text": "魔王は一度、二人用のプリを撮りに来た。連れがいないと気づき、黙って帰った。",
+          "text": "魔王は二人用の見本を眺めていた。空いていると声をかけられ、黙って帰った。",
           "lines": "trpg_purikura_hero_ask_friend_shop"
         }
       }
@@ -467,7 +467,7 @@
     {
       "id": "pose",
       "ending": "own-sparkle",
-      "arrival": "魔王は人を撮るばかりで、自分は決して写らん。撮られそうになると、逃げるのじゃ",
+      "arrival": "魔王は人を撮りたがるくせに、他人にカメラを向けられると、さっと顔を隠すのじゃ",
       "likes": {
         "deco": [
           "pen"
@@ -487,7 +487,7 @@
         },
         "showcase": {
           "title": "影だけの証明写真",
-          "text": "魔王の証明写真の失敗作。灯りが足りず、角の影しか写っていない。",
+          "text": "『撮り直し』の札がついた魔王の証明写真。角の影で顔の上半分が真っ暗だ。",
           "lines": "trpg_purikura_hero_pose_showcase"
         },
         "sign": {
@@ -514,12 +514,12 @@
       "answers": {
         "when": {
           "title": "悲鳴の日",
-          "text": "魔王が初めて自分を撮った日、城から悲鳴が聞こえた。その日から盛りが消え始めた。",
+          "text": "ひと月前、魔王が城で新しいカメラを自分に向けた直後、城から悲鳴が聞こえた。",
           "lines": "trpg_purikura_hero_ask_pose_when"
         },
         "prisma": {
           "title": "背中しか写らない",
-          "text": "立派な角の魔王。なのに写真には、いつも背中しか写らない。",
+          "text": "立派な角の魔王。祭りの写真に写りこんでも、必ず背を向ける。",
           "lines": "trpg_purikura_hero_ask_pose_prisma"
         },
         "camera": {
@@ -552,17 +552,17 @@
       "evidence": {
         "plaza": {
           "title": "『違う』の書きこみ",
-          "text": "魔王の写真の端に『違う』『これも違う』の書きこみ。誰かの顔を探している。",
+          "text": "魔王が貼り出した写真に、赤いバツと『この顔ではない』の書きこみ。",
           "lines": "trpg_purikura_hero_album_plaza"
         },
         "showcase": {
           "title": "日に焼けた札",
-          "text": "棚の隅に、サメのスタンプの古いプリ帳。『落とし物・持ち主求む』の札が日に焼けている。",
+          "text": "棚の隅にサメのスタンプの古いプリ帳。『落とし物』の札は日に焼けている。",
           "lines": "trpg_purikura_hero_album_showcase"
         },
         "sign": {
           "title": "探し物の貼り紙",
-          "text": "城門に『探し物、あります。古いプリ帳』の貼り紙。",
+          "text": "城門に、古いプリ帳を探す貼り紙。見つけた人に、城にある盛りを全部やるという。",
           "lines": "trpg_purikura_hero_album_sign"
         },
         "mirror": {
@@ -593,8 +593,8 @@
           "lines": "trpg_purikura_hero_ask_album_prisma"
         },
         "camera": {
-          "title": "白紙を埋める盛り",
-          "text": "カメラで吸った盛りで、魔王は白紙の帳面を埋めようとしている。",
+          "title": "昔と同じ写真",
+          "text": "魔王は盛りを吸うカメラと空のプリ帳を持って、昔と同じ写真を撮るつもりだった。",
           "lines": "trpg_purikura_hero_ask_album_camera"
         },
         "shop": {
@@ -608,22 +608,22 @@
   "endings": {
     "one-shot": {
       "title": "魔王と一枚",
-      "line": "魔王が欲しかったのは、盛りではなく隣で笑う誰か。並んで撮った一枚から、王国じゅうに盛りが戻った。",
+      "line": "プリズマも隣に入ってハートの形が完成した。シャッターが鳴ると、王国じゅうの顔や服に色が戻った。",
       "dialogue": "trpg_purikura_hero_ending_one-shot"
     },
     "own-sparkle": {
       "title": "盛れた魔王",
-      "line": "借り物の盛りを返した魔王は、照れた自分の笑顔がいちばん盛れると知った。",
+      "line": "写真に写った自分の顔を気に入った魔王は、窓辺で盛りの小瓶を開けた。",
       "dialogue": "trpg_purikura_hero_ending_own-sparkle"
     },
     "album-home": {
       "title": "戻ってきたプリ帳",
-      "line": "写真屋の棚で待っていたプリ帳が、持ち主の元へ。魔王は盛りを返し、白紙の次のページに今日を貼った。",
+      "line": "なくしたプリ帳が戻り、魔王は盛りを返した。空いたページには、みんなで撮った今日の一枚。",
       "dialogue": "trpg_purikura_hero_ending_album-home"
     },
     "party": {
       "title": "みんなで撮影会",
-      "line": "思い描いた形ではなかったけれど、撮影会は大盛り上がり。盛りは一枚ごとに、王国へ戻っていった。",
+      "line": "めいめいのポーズで撮るたびに盛りが戻り、広場には写真を撮りたい人の列ができた。",
       "dialogue": "trpg_purikura_hero_ending_party"
     }
   },
@@ -639,7 +639,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "冒険の前に、役を決めましょう。どんな勇者にしますか？"
+          "text": "冒険の前に、誰を演じるか決めましょう"
         }
       ]
     },
@@ -659,7 +659,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "勇者がそろいましたね。では、きらめき王国へ"
+          "text": "では、その三人が集まるところから始めましょう"
         }
       ]
     },
@@ -686,7 +686,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "勇者の目的が決まりましたね。では、その役で"
+          "text": "魔王にひとこと言ってやりたい勇者ですね"
         },
         {
           "speaker": "hajime",
@@ -719,25 +719,25 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "グミの騎士団ですね。大切な仲間として迎えましょう"
+          "text": "騎士団まで設定があるんですか。では、今日は姫騎士の出番ですね"
         }
       ]
     },
     {
-      "dialogue_id": "trpg_purikura_hero_make_rei_rei_nocturne",
+      "dialogue_id": "trpg_purikura_hero_make_kuraudo_kuraudo_nocturne",
       "metadata": {
         "preview_only": true,
         "making": true
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……俺の役は、ノクターン。黒衣の吟遊詩人"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "serious",
           "text": "薔薇を一輪、持ってる。歌は……夜にしか歌わない"
@@ -749,7 +749,7 @@
           "text": "外套の裏地は、何色にしますか？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
           "text": "……赤。そこは、こだわった"
@@ -757,20 +757,20 @@
       ]
     },
     {
-      "dialogue_id": "trpg_purikura_hero_make_rei_rei_shion",
+      "dialogue_id": "trpg_purikura_hero_make_kuraudo_kuraudo_shion",
       "metadata": {
         "preview_only": true,
         "making": true
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……シオン。人見知りの魔法使い"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "魔法は強い。でも、人と目が合うと、詠唱が止まる"
@@ -779,10 +779,10 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "人と目が合うと詠唱が止まるのですね。では、その役で"
+          "text": "では、魔法をかけるときは目を合わせないようにしましょうか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "serious",
           "text": "……役の話だ"
@@ -799,15 +799,15 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "あげはさんの物語です。私が案内役のGMを務めます"
+          "text": "あげはさんが持ってきてくれた本です。今日は私がGMをやります"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "皆さんは勇者たち。写真の『盛り』を取り戻しましょう",
+          "text": "みなさんは、王国の盛りを取り戻すために集まった一行です",
           "castIntro": true,
-          "smallTableText": "空いた役は私が兼ねます。皆さんは『盛り』を取り戻す勇者です"
+          "smallTableText": "空いた役は私が兼ねます。王国の盛りを取り戻す三人の話です"
         },
         {
           "speaker": "hajime",
@@ -819,16 +819,16 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "ハジメっち、プリ撮るなら剣よりプリ帳でしょ！"
+          "text": "ハジメっち、カメラの前で剣抜いてどーすんの。プリ帳でしょ！"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……魔王の話と聞いた。プリは聞いてない",
+          "text": "……魔王が出るって聞いた。プリも出るのか",
           "variants": {
             "regularb": {
-              "text": "魔王の話とは聞きましたけど、プリも出るんですね",
+              "text": "撮ったプリを貼るんですよね。持っていきましょう",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -838,46 +838,46 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "きらめき王国。写真を撮れば、誰の顔もきらきらに写った"
+          "text": "きらめき王国では、写真を撮ると顔も服もきらきらに写りました"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "……魔王プリズマは、撮った相手からその『盛り』を盗んだ"
+          "text": "ところが魔王プリズマに撮られると、写真も本物も色あせてしまいます"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc}は勇者募集の貼り紙を見て、王国の広場へやって来た"
+          "text": "{pc}は勇者募集の貼り紙を見て、王国の広場に来ました"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc:ageha}は噴水の前で手鏡を見つめ、深いため息をついておる"
+          "text": "{pc:ageha}は噴水の縁に腰かけて、手鏡をのぞきこんでいます"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "『はあ、今日も盛れない』……うわ、声まで元気なくなる"
+          "text": "『はあ、今日も盛れない』……今の、うちの声まで地味じゃなかった？"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc:rei}は広場の隅で、黒い外套をなびかせておる。誰とも目を合わせずに"
+          "text": "{pc:kuraudo}も貼り紙を見に来たようです。人だかりの外に立っています"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……役でも、目は合わせない",
+          "text": "……人が減ったら、貼り紙を読みに行く",
           "variants": {
             "regularb": {
-              "text": "……役でも、目は合わせない",
+              "text": "人が減るまで、ここで待ってます",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -893,13 +893,13 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "会う前に、この町で魔王のことを聞いてみましょう"
+          "text": "魔王に会う前に、広場で話を聞いてみましょう"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "そこへ、首からカメラを下げたおじいさんが、とぼとぼ歩いてきた"
+          "text": "そこへ、首からカメラを下げたおじいさんがやってきました"
         }
       ]
     },
@@ -913,31 +913,37 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "王国一の写真屋のおじいさんだ。自慢のひげも、すっかり色あせておる"
+          "text": "広場の写真屋さんです。今日は、自慢の白ひげまですっかりくすんでいます"
         },
         {
           "speaker": "sai",
           "role": "写真屋のおじいさん／物語",
           "face": "normal",
-          "text": "勇者さまがた、聞いてくだされ。この国から、盛りが消えてしもうたのじゃ"
+          "text": "いらっしゃい。……と、いつもなら言うところじゃ。今日は店の見本すらこの通り"
         },
         {
           "speaker": "hajime",
-          "role": "PL／卓の会話",
+          "role": "{pc}／物語",
           "face": "surprise",
-          "text": "おじいさん、その見本に『どなたでも一枚』ってありますね"
+          "text": "おじいさん、その見本に『どなたでも一枚』って書いてあるけど"
         },
         {
           "speaker": "sai",
-          "role": "GM／卓の会話",
+          "role": "写真屋のおじいさん／物語",
           "face": "normal",
-          "text": "町で一番人気の撮影場所、城門の見本ですね"
+          "text": "昔の城門じゃよ。城は誰でも見学できたし、毎日いろんな人が撮りに来たんじゃ"
+        },
+        {
+          "speaker": "sai",
+          "role": "写真屋のおじいさん／物語",
+          "face": "normal",
+          "text": "今は魔王が外に撮りに出とる間だけ、城へ入れるんじゃ"
         },
         {
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "smile",
-          "text": "その話、{pc:ageha}が聞いた！ おじいちゃん、詳しく聞かせて"
+          "text": "ねえおじいちゃん、いつからこんなになっちゃったの？"
         }
       ]
     },
@@ -951,13 +957,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "おじいさんの顔が、ほんの少しだけ明るくなった"
+          "text": "おじいさんは見本を置いて、腰を落ち着けました"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "今ちょっと笑った！ おじいさん、盛れてるじゃん"
+          "text": "あ、おじいちゃん、座った。今なら聞けそうじゃん"
         }
       ]
     },
@@ -971,16 +977,16 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "そのとき空からカシャリ。通りすがりの人が、また一人色あせた"
+          "text": "頭の上でカシャリ。通りすがりの人の上着が、赤から灰色に変わりました"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "……今のが、魔王のシャッターか",
+          "text": "……赤が消えた",
           "variants": {
             "regularb": {
-              "text": "……今のが、魔王のシャッターか",
+              "text": "見ました？ 今ので、上着の色が抜けましたよ",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -990,7 +996,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "話は聞けた。急ごう"
+          "text": "あれが魔王のカメラか。近くにいるんだな"
         }
       ]
     },
@@ -1004,7 +1010,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "話しこむうち、空からカシャリ。{pc}たちもまとめて撮られてしもうた"
+          "text": "頭の上でカシャリ。{pc}たちの服まで、まとめて色が抜けました"
         },
         {
           "speaker": "hajime",
@@ -1016,7 +1022,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "少し地味になりましたね。冒険は続けられますよ"
+          "text": "おじいさんが袖をつつきます。『見本より、薄い色になったのう』"
         }
       ]
     },
@@ -1067,13 +1073,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:rei}は、広場を黙って見て回る。空の様子も",
+          "text": "……{pc:kuraudo}は、話を聞きながら空と広場を見る",
           "variants": {
             "regularb": {
-              "text": "……{pc:rei}は、広場を黙って見て回る。空の様子も",
+              "text": "{pc:kuraudo}は話を聞きつつ、広場に変わった所がないか探します",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1134,13 +1140,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "……{pc:rei}が外套を翻す。舞え、薔薇……門番の目を、奪え",
+          "text": "……{pc:kuraudo}が外套を翻す。薔薇の花びらで、門番の目をそらす",
           "variants": {
             "regularb": {
-              "text": "……{pc:rei}が外套を翻す。舞え、薔薇……門番の目を、奪え",
+              "text": "{pc:kuraudo}が花びらを散らして、門番の気を引きます",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1164,7 +1170,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc}は説明書を見ながら、照明を組み立てます"
+          "text": "{pc}は見本の写真を見ながら、どこに立つか決めます"
         },
         {
           "speaker": "sai",
@@ -1184,7 +1190,7 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:ageha}の神デコ、いくよ。撮影の間ごと盛っちゃう"
+          "text": "{pc:ageha}の神デコ、いくよ。写真が出てきたらすぐデコれるようにね"
         },
         {
           "speaker": "sai",
@@ -1201,13 +1207,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:rei}は鏡の角度を変えて、いちばん映える光を探す",
+          "text": "……{pc:kuraudo}は、顔にうまく光が入る角度を探す",
           "variants": {
             "regularb": {
-              "text": "……{pc:rei}は鏡の角度を変えて、いちばん映える光を探す",
+              "text": "{pc:kuraudo}は鏡で光を返しながら、顔が見える角度を探します",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1268,13 +1274,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "……{pc:rei}は薔薇を掲げる。今宵、最高の一枚を……！",
+          "text": "……{pc:kuraudo}は魔王の隣に立つ。ポーズは全力で",
           "variants": {
             "regularb": {
-              "text": "……{pc:rei}は薔薇を掲げる。今宵、最高の一枚を……！",
+              "text": "{pc:kuraudo}は思い切って隣でポーズを取ります",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1298,13 +1304,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ゴーレムは目を細めた。自分の顔を巻き上げ、門を開けた"
+          "text": "ゴーレムは首を傾げ、証明写真の幕を巻き上げました"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "今の顔、めっちゃ盛れてた！ そっちを看板にしなよ"
+          "text": "あ、笑った！ 門番くん、次はその顔で撮ろ！"
         }
       ]
     },
@@ -1318,16 +1324,16 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "門は開いた。だが写真が堀に落ち、全員が水をかぶった"
+          "text": "証明写真の幕がずり落ちて堀にドボン。ずぶぬれの三人の前に、門が現れました"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "……外套が、重い",
+          "text": "……外套が重い。絞れるかな",
           "variants": {
             "regularb": {
-              "text": "……外套が、重い",
+              "text": "全員びしょぬれですね。中で乾かせるといいんですけど",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1337,7 +1343,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "通れたけど、証明写真ってあんなに水しぶき上がるんだな"
+          "text": "証明写真であんなに水しぶきが上がるとは思わなかったな"
         }
       ]
     },
@@ -1351,7 +1357,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ゴーレムが{pc}をつまみ、写真の裏の通用口にそっと下ろした"
+          "text": "ゴーレムは三人を順につまみ上げ、幕の脇の通用口へそっと下ろしました"
         },
         {
           "speaker": "hajime",
@@ -1363,7 +1369,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "『誰も通さない』とは、正面の門の話だったようです"
+          "text": "ゴーレムは言います。『正面、入場終了。コッチ、撮影ノ人』"
         }
       ]
     },
@@ -1377,13 +1383,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "撮影の間が、ひさしぶりにきらきらと輝いた"
+          "text": "明かりと立ち位置がぴたりと決まり、飾りの下書きもできました"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "完璧。うちらの撮影ブース、王国一じゃん"
+          "text": "お、そこで止まって！ 今のハジメっち、めっちゃ盛れる角度！"
         }
       ]
     },
@@ -1397,13 +1403,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "飾りつけの途中で、シールが一枚{pc}のおでこに貼りついた"
+          "text": "床に置いた目印が風で飛びました。{pc}は靴を片方脱いで、代わりに置きます"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "取れない……。でも、支度はできた"
+          "text": "よし、場所は決まった。忘れずに靴を履かないと"
         }
       ]
     },
@@ -1417,13 +1423,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "照明が倒れかけた。そこへ堀のサメが窓から跳ねて、支えてくれた"
+          "text": "立ち位置が決まらず窓へ寄りすぎたところに、堀からサメが跳ねました"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "支度が整いましたね。では、魔王のもとへ"
+          "text": "窓から少し下がれば濡れませんよ。そこで撮りましょう"
         }
       ]
     },
@@ -1437,16 +1443,16 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "シャッターの光が弾け、撮影の間いっぱいにきらきらが舞った"
+          "text": "タイマーが鳴り出すと、かちこちだった魔王が、つい口元をゆるめました"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……いい画だ",
+          "text": "……今の、いい顔だった",
           "variants": {
             "regularb": {
-              "text": "……いい画だ",
+              "text": "今の顔、いいですね。そのままカメラ見てください",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1464,13 +1470,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "シャッターの瞬間、魔王がくしゃみをした。それでも、みんな笑っておる"
+          "text": "ピピッ。シャッターまであと一秒で、魔王がくしゃみをしました"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "ブレてても、楽しそうな一枚だ"
+          "text": "カメラ止めます！ はい、もう一回"
         }
       ]
     },
@@ -1484,19 +1490,19 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "シャッターの瞬間、{pc}がマントの裾を踏んで転んだ"
+          "text": "ピッ、ピッ、ピッ。魔王がカメラを気にして前のめりになり、{pc}にぶつかりました"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "慌てて支えたら、全員そろって変なポーズで写ってしもうた"
+          "text": "{pc}が手をついた拍子に、タイマーが止まりました"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "やば、逆に盛れてる。これ一生残そ"
+          "text": "ちょ、今の顔やば！ はい魔王、仕切り直しね"
         }
       ]
     },
@@ -1510,55 +1516,55 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "撮られるのは読モで慣れてるから分かる。写真って、気持ちが出るの"
+          "text": "プリってさ、誰と撮るかで、ポーズも顔も全然違うじゃん"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "落とし物のプリと、写真屋のショーケース。見比べたら何か分かりそ"
+          "text": "落ちてたプリと写真屋の見本、比べてみたら何か分かりそ"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "写真の目線で見るんですね。あげはさん、さすがです"
+          "text": "顔だけ見るんじゃなくて、誰と写ってるかも見るんですね"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "でしょ。勇者で、プリ帳職人だから"
+          "text": "そ。あと背景！ どこで撮ったかも、けっこー分かるよ"
         }
       ]
     },
     {
-      "dialogue_id": "trpg_purikura_hero_consult_rei",
+      "dialogue_id": "trpg_purikura_hero_consult_kuraudo",
       "metadata": {
         "preview_only": true
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……魔王の部屋。人が見ていない所に、本音が出る",
+          "text": "……魔王は留守なんだよな",
           "variants": {
             "regularb": {
-              "text": "……魔王の部屋。人が見ていない所に、本音が出る",
+              "text": "魔王が留守なら、今のうちに部屋を見ておきませんか",
               "face": "normal",
               "role": "PL／卓の会話"
             }
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "鏡の間と、玉座。一人の時間の跡が、残ってるはずだ",
+          "text": "鏡の間か、玉座。撮影の話なら、鏡のほうが気になる",
           "variants": {
             "regularb": {
-              "text": "鏡の間と、玉座。一人の時間の跡が、残ってるはずだ",
+              "text": "鏡の間か玉座です。写真のことなら、まず鏡の間を見たいです",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1568,13 +1574,13 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "一人のときの跡、ですか。クラウドさん、目のつけどころが違いますね"
+          "text": "誰もいない時にどんなことしてるか、見てみるんですね"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "気になるところは、何度でも相談できますよ"
+          "text": "気になった部屋から調べてみましょう"
         }
       ]
     },
@@ -1588,16 +1594,16 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "sad",
-          "text": "友達欲しくて撮ってたとか、不器用すぎ。……でも、ちょっと分かる"
+          "text": "誘えなくて、とりあえず撮ってたのかな。……誘い方、教えたいかも"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……声をかけるのは、難しい。俺も、分かる",
+          "text": "……魔王のほうからは、声をかけにくそうだ",
           "variants": {
             "regularb": {
-              "text": "……声をかけるのは、難しい。私も、分かる",
+              "text": "じゃあ、こちらから隣に並ぼうって言ってみますか",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1607,7 +1613,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "なるほど。では、その見立てで進めましょう"
+          "text": "では、一緒に写りたいのか、ご本人に聞いてみましょう"
         }
       ]
     },
@@ -1621,16 +1627,16 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "自信ないから盛りを借りる、か。でも借り物じゃ、本人が映えないって"
+          "text": "盛りを集めてるのって、自分の顔に使いたいからかもね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……見た目を作るのは、悪くない。自分で作るなら",
+          "text": "……光の当て方だけで、案外変わるけどな",
           "variants": {
             "regularb": {
-              "text": "……見た目を作るのは、悪くない。自分で作るなら",
+              "text": "自分の顔が暗く写るなら、光の当たり方を変えてみたいですね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1640,7 +1646,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "魔王も見た目に悩んでいるのですね。では、その見立てで"
+          "text": "では、カメラの前に出やすいように、撮り方を考えてみましょう"
         }
       ]
     },
@@ -1654,16 +1660,16 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "sad",
-          "text": "プリ帳なくすの、マジで泣くやつ。うちなら三日寝込む"
+          "text": "プリ帳なくすの、マジで泣く。うちなら、最後に撮ったプリから辿るかも"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……思い出は、取り戻せる。まだ、どこかにあるなら",
+          "text": "……どんな写真を探してるか、本人に聞けるといいな",
           "variants": {
             "regularb": {
-              "text": "……思い出は、取り戻せる。まだ、どこかにあるなら",
+              "text": "探してる写真を本人に聞けたら、落とし物と照らし合わせられますね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1673,7 +1679,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "探しているものがあるのですね。では、その見立てで"
+          "text": "では、探し物のことも聞くつもりで、魔王に会いに行きましょう"
         }
       ]
     },
@@ -1687,25 +1693,25 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "調べ終えて城を出た夕暮れ。黒い翼の魔王が、空から城へ帰ってきた"
+          "text": "日が傾いてきました。黒い翼の魔王が、撮影城の屋根に降り立ちます"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "城門の脇で、無表情ゴーレムが起き上がった"
+          "text": "城門の脇で、昼寝していたゴーレムが起き上がりました"
         },
         {
           "speaker": "sai",
           "role": "無表情ゴーレム／物語",
           "face": "normal",
-          "text": "……ゴ。撮影ノ時間。誰モ、通サナイ"
+          "text": "……ゴ、見学終了。撮影ノ時間、誰モ通サナイ"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ガラガラと頭上から幕が下りる。門番の証明写真が、門をふさいだ"
+          "text": "頭上からガラガラと幕が下ります。門番の証明写真が、門いっぱいに広がりました"
         },
         {
           "speaker": "ageha",
@@ -1731,28 +1737,28 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "城の中へ。撮影の間の扉の向こうから、シャッターの音がする"
+          "text": "城の中へ。撮影の間では、カメラを抱えた魔王が奥で背を向けています"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "写真を飾る道具と、顔を照らす光を一つずつ選びましょう"
+          "text": "魔王を誘う前に、写真を飾る道具と顔を照らす光を決めましょう"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "うちの勇者、武器よりデコ道具でかばんがパンパン"
+          "text": "うちのかばん、武器よりデコ道具のほうが多いし。出番きたね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……照明で、写りは変わる。大事だ",
+          "text": "……照明で、顔が変わる。角の影も出るぞ",
           "variants": {
             "regularb": {
-              "text": "……照明で、写りは変わる。大事だ",
+              "text": "角の影で顔が隠れないように、先に光を見ておきましょう",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1770,7 +1776,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "城の奥、撮影の間。黒いマントの魔王が、カメラを手に振り返った"
+          "text": "足音に気づいた魔王が、カメラを手に振り返りました"
         },
         {
           "speaker": "sai",
@@ -1788,26 +1794,32 @@
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "serious",
-          "text": "プリズマ！ {pc:ageha}が、あんたに会いに来た！"
+          "text": "ちょい待ち！ {pc:ageha}から撮影のお願い。そっちも入ってくんない？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "……ここが、見せ場だ",
+          "text": "……カメラは台に置こう。全員入れる",
           "variants": {
             "regularb": {
-              "text": "……ここが、見せ場だ",
+              "text": "カメラ、あの台に置けそうですよ。タイマーで撮りましょう",
               "face": "normal",
               "role": "PL／卓の会話"
             }
           }
         },
         {
+          "speaker": "sai",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "魔王は首をかしげつつ、カメラを台に載せてタイマーのボタンを指さしました"
+        },
+        {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "魔王を前にして、決めるのはポーズか。どう撮ろう？"
+          "text": "どんなポーズにしよう。やってみせれば、魔王も真似してくれるかな"
         }
       ]
     },
@@ -1847,7 +1859,7 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "ペンなら、落書きで気持ちまで盛れるじゃん"
+          "text": "これなら空いてるとこに、日付も名前も書けるじゃん"
         }
       ]
     },
@@ -1884,13 +1896,13 @@
           "text": "撮影の間に、まあるいリングライトがともった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……目に光が入る。写りの基本だ",
+          "text": "……これなら、目に丸い光が入る",
           "variants": {
             "regularb": {
-              "text": "……目に光が入る。写りの基本だ",
+              "text": "カメラのすぐそばに置けば、顔全体が明るくなりますね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1911,13 +1923,13 @@
           "text": "窓を開けると、やわらかな月明かりが差しこんだ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……月明かり。影がやさしくなる。好きな光だ",
+          "text": "……月明かりなら、影も画になる",
           "variants": {
             "regularb": {
-              "text": "……月明かり。影がやさしくなる。好きな光だ",
+              "text": "月の光、あの窓のそばなら顔に当たりますね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1938,13 +1950,13 @@
           "text": "城の空に、ぱっと大輪の花火が上がった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……花火。一瞬で消えるから、きれいだ",
+          "text": "……シャッター、次の花火に合わせよう",
           "variants": {
             "regularb": {
-              "text": "……花火。一瞬で消えるから、きれいだ",
+              "text": "次の花火が上がるときに撮りたいですね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -1962,7 +1974,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc}たちは、手で半分ずつのハートを作った"
+          "text": "{pc}たちは、半分のハートを手で作ってみせました"
         },
         {
           "speaker": "ageha",
@@ -1982,13 +1994,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc}たちは、そろってピースサインを掲げた"
+          "text": "{pc}たちは、カメラに向かってピースしてみせました"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "基本のピースだ。これなら誰でも、かっこよく写れる"
+          "text": "魔王もこっち見てる。指はこう、二本です"
         }
       ]
     },
@@ -2002,19 +2014,19 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc}たちは、両手を頭の上に立てて、ヒレを作った"
+          "text": "{pc}たちは、頭の上で両手を合わせてヒレを作ってみせました"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "サメのポーズですね。魔王は、どんな顔をするでしょう"
+          "text": "サメのポーズですね。魔王が堀の方をちらっと見ました"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "サメのポーズまであるんだ。写真って自由だな"
+          "text": "そうそう、堀で泳いでるやつ。あれの真似"
         }
       ]
     },
@@ -2028,7 +2040,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc}たちは、門をふさぐ真顔に向かって、渾身の変顔を並べた"
+          "text": "{pc}たちは、門番の証明写真の前に並んで変顔をしました"
         },
         {
           "speaker": "sai",
@@ -2048,7 +2060,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc}たちは幕の前を離れ、ゴーレム本人の横に並んだ"
+          "text": "{pc}たちはゴーレム本人の横に並び、カメラの前を空けました"
         },
         {
           "speaker": "sai",
@@ -2068,7 +2080,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc}たちは堀へ。サメの背に隠れて、写真の端へ回り込んだ"
+          "text": "堀のサメが通り過ぎる間に、{pc}たちは城門の脇まで回りこみました"
         }
       ]
     },
@@ -2082,46 +2094,46 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc}たちが隣に並ぶと、プリズマはカメラを持ったまま固まった"
+          "text": "一歩入ってきたプリズマは、誰と目を合わせたらいいか分からず固まりました"
         },
         {
           "speaker": "sai",
           "role": "魔王プリズマ／物語",
           "face": "normal",
-          "text": "わ、我の隣に……並んでくれるのか？"
+          "text": "わ、我が立つのは……この隣か？"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "魔王の半分のハートに、{pc:ageha}がもう半分を重ねる"
+          "text": "{pc:ageha}の手に、魔王がそっと手を重ねてハートを作りました"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "シャッターが鳴る。カメラから盛りがあふれ、王国じゅうへ帰っていった"
+          "text": "シャッターが鳴ると、王国じゅうで、人々の顔や服に色が戻りました"
         },
         {
           "speaker": "sai",
           "role": "魔王プリズマ／物語",
           "face": "normal",
-          "text": "フ、フハハ……。いつもカメラの後ろにいたからな"
+          "text": "いつも誰かが来るかと思って、隣を空けておったのだ"
         },
         {
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "smile",
-          "text": "交換用に一枚ちょうだい。うちのプリ帳に貼るから"
+          "text": "今度は待ってないで誘ってよ。あ、このプリ一枚もらっていい？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……俺も、一枚。その……欲しい",
+          "text": "……俺も一枚、もらっていいか",
           "variants": {
             "regularb": {
-              "text": "……私も、一枚。その……欲しい",
+              "text": "城門にも飾ってほしいですね、この一枚",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -2131,7 +2143,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "魔王、シャッターが切れたあとも笑ってたね"
+          "text": "撮り終わっても、まだ笑ってたね"
         }
       ]
     },
@@ -2145,46 +2157,46 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc}たちに囲まれ、プリズマはおそるおそる顔を上げた"
+          "text": "プリズマが、指を二本立てたまま顔を上げます"
         },
         {
           "speaker": "sai",
           "role": "魔王プリズマ／物語",
           "face": "normal",
-          "text": "わ、我の顔など……盛りなしでは、とても見せられぬ"
+          "text": "うまく笑えておるか？ 盛りなしで撮るのは久しぶりでな……"
         },
         {
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "serious",
-          "text": "盛りは借りるもんじゃないよ。自分で作るもんなの"
+          "text": "指はそのまま。あ、ちょいアゴ引いて。カメラ見るよー"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ぎこちないピース。シャッターが鳴り、照れた魔王の笑顔が写った"
+          "text": "シャッターが鳴ります。指はぎこちないけれど、顔はちゃんと写りました"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "小瓶のふたがぽんぽん開き、盛りが王国じゅうへ帰っていく"
+          "text": "プリズマは写真を見ると、盛りを詰めていた小瓶を窓辺で開けました"
         },
         {
           "speaker": "sai",
           "role": "魔王プリズマ／物語",
           "face": "normal",
-          "text": "フハハ！ 我、盛れている……！ 撮り直しは要らぬ！"
+          "text": "フハハ！ 目も角も、我のままで写っておる！ この一枚を城門に飾るぞ！"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……自分で作った顔が、いちばん似合う",
+          "text": "……右下、角の影がいい",
           "variants": {
             "regularb": {
-              "text": "……自分で作った顔が、いちばん似合う",
+              "text": "顔が隠れてないと、角もかっこよく写るんですね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -2194,7 +2206,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "落書きは端っこに書こう。魔王の顔、隠すのもったいない"
+          "text": "飾るなら、顔のまわりは何も足さずに残したいな"
         }
       ]
     },
@@ -2208,52 +2220,52 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "そこへ、写真屋のおじいさんが古いプリ帳を抱えて駆けこんできた"
+          "text": "そこへ、写真屋のおじいさんが、古いプリ帳を抱えて駆けこんできました"
         },
         {
           "speaker": "sai",
           "role": "写真屋のおじいさん／物語",
           "face": "normal",
-          "text": "これじゃろう、店の落とし物の棚にあった。あの角の子が、魔王さまじゃったとは"
+          "text": "魔王さま、城門の貼り紙を見て来たぞ。サメのスタンプの、これじゃろ？"
         },
         {
           "speaker": "sai",
           "role": "魔王プリズマ／物語",
           "face": "normal",
-          "text": "そ、それは……我のなかよし帳！"
+          "text": "我のなかよし帳！ そのページ、折り目まで昔のままだ"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ページの中では、小さな角の子と仲間たちが、サメのポーズで笑っておった"
+          "text": "開いたページには、小さな角の子が仲間たちとサメのポーズで写っていました"
         },
         {
           "speaker": "sai",
           "role": "魔王プリズマ／物語",
           "face": "normal",
-          "text": "笑った顔は、ずっとここにあったのだな。盛りは皆に返そう"
+          "text": "……この写真を作り直したくて、盛りを集めたのだ。もう、皆に返そう"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "みんなでサメのポーズを決めると、白紙の次のページに今日の一枚が貼られた"
+          "text": "もう一度サメのヒレを作って撮り、プリ帳の空いたページに一枚貼りました"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "続きのページ、今日のうちらで埋まったじゃん"
+          "text": "ね、昔のポーズのまんま。大人になってもサメはサメじゃん"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……次のページが白いの、ちょっと楽しみだな",
+          "text": "……まだページが余ってる。また撮れるな",
           "variants": {
             "regularb": {
-              "text": "次のページに貼る写真も、いつか撮れるといいですね",
+              "text": "まだ貼れるページがありますね。次は誰を誘いましょうか",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -2271,37 +2283,37 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "ポーズはばらばら。だが撮影の間は、笑い声でいっぱいになった"
+          "text": "三人と魔王は並び直しました。ポーズが違うままシャッターが鳴ります"
         },
         {
           "speaker": "sai",
           "role": "魔王プリズマ／物語",
           "face": "normal",
-          "text": "な、なんだこの楽しさは……！ もう一枚だ！"
+          "text": "な、なんだこの楽しさは……！ 次は我がポーズを決めてもよいか？"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "一枚撮るたび、盛りがひとつずつ王国へ帰っていく"
+          "text": "一枚撮るたびに、王国の人々の顔や服に少しずつ色が戻っていきました"
         },
         {
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "smile",
-          "text": "次、変顔いこ！ 魔王も、門番くんも！"
+          "text": "いいよ！ 次、変顔ね。門番くんもおいで！"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "その夜は、町じゅうの写真屋に明かりがともったそうな"
+          "text": "その夜、広場には写りが戻ったか試しに来た人の列ができました"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "魔王の気持ちは謎のままだけど、変顔は誰より本気だったな"
+          "text": "魔王、変顔には迷いがなかったな。あんなに思い切りやるとは"
         }
       ]
     },
@@ -2315,13 +2327,13 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "寄り道なしの冒険でしたね。勇者たちの一枚が残りました"
+          "text": "では、城で撮った一枚を残して、今日の冒険はおしまいです"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "魔王の城、本当に冒険してきた気がする"
+          "text": "剣を抜くつもりだったのに、最後はみんなで写真撮ってたな"
         }
       ]
     },
@@ -2335,16 +2347,16 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "いろいろな出来事がありましたね。それも一枚に残りました"
+          "text": "あれこれありましたけど、一枚ちゃんと撮れましたね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……失敗した一枚も、あとで見ると好きになる",
+          "text": "……撮ってるときより、あとで見たときのほうが笑いそうだ",
           "variants": {
             "regularb": {
-              "text": "……失敗した一枚も、あとで見ると好きになる",
+              "text": "あとで見返したら、また笑いそうですね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -2360,36 +2372,36 @@
       "lines": [
         {
           "speaker": "sai",
-          "role": "GM／卓の会話",
+          "role": "GM／場面",
           "face": "normal",
-          "text": "城では、勇者たちが魔王と果物を分け合ったそうですよ"
+          "text": "次の日も、そのまた次の日も、ゴーレムは城門で写真を撮られました"
         },
         {
           "speaker": "sai",
-          "role": "GM／卓の会話",
+          "role": "GM／場面",
           "face": "normal",
-          "text": "翌朝、城門の見本が替わりました。門番の隣に、堀のサメです"
+          "text": "看板に残ったのは、堀から顔を出したサメと一緒の一枚です"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "サメまで盛れてる！ 門番くん、いい角度知ってるじゃん"
+          "text": "えっ、二人ともいい角度じゃん。昨日の証明写真、もう使わないでしょ"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "門番くん、証明写真のときより顔がやわらかいですね"
+          "text": "サメが出てくるまで、門番もじっと待ってたのかな"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "smile",
           "text": "……俺も、もう一枚くらいなら撮ってもいい",
           "variants": {
             "regularb": {
-              "text": "この顔なら、次も一緒に写ってくれそうですね",
+              "text": "並べる相手がいると、門番も撮りやすかったんでしょうね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -2399,19 +2411,19 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "てかTRPGやば。{pc:ageha}、途中からガチでうちだったもん"
+          "text": "てかTRPGやば。途中から、うちホントに勇者のつもりだった"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "次もうち、勇者やりたい。GMさん、続きってある？"
+          "text": "次もこの役で遊びたい。GMさん、またやろ！"
         },
         {
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "続きを遊ぶ日も楽しみですね。では、本を閉じましょう"
+          "text": "ええ。今日の役は、シートごと取っておきましょう"
         }
       ]
     },
@@ -2425,25 +2437,25 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "王国の広場。いつもはきらきらの噴水も、今日は水道水みたいな色だ"
+          "text": "広場の噴水は、陽が当たっても灰色です。いつもなら水まできらめくのに"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "広場の掲示板に、魔王の撮った写真が貼り出されておる"
+          "text": "掲示板に、プリズマが撮った写真が並んでいます"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "どの写真も、写る人の隣が一人分だけ空いておる"
+          "text": "どの写真も、写っている人の隣が、一人分ずつ空いています"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "噴水まで盛れてないとか、この国ガチでピンチじゃん"
+          "text": "どの写真も同じ隙間。そこに誰か入ってほしかったのかな"
         }
       ]
     },
@@ -2457,25 +2469,25 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "写真屋のショーケース。色あせる前の写真が、ずらりと並んでおる"
+          "text": "写真屋のショーケースには、色あせる前に撮った写真が残っています"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "撮影祭りの夜の集合写真。花火の下で、みんなが肩を組んでおる"
+          "text": "花火の下で、祭りに来た人たちが肩を組んでいます"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "後ろの屋根の上に、角の先だけがぽつんと写りこんでおる"
+          "text": "後ろの屋根から、角の先だけがのぞいています"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "昔の写真、みんな本当にきらきらしてるな"
+          "text": "屋根から見てたの、あの角なら魔王っぽいな"
         }
       ]
     },
@@ -2507,7 +2519,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "堀にサメ……。隠し味って言ってたのに"
+          "text": "『一名さま』だけ何度も。人数が気になったのかな"
         }
       ]
     },
@@ -2521,13 +2533,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "撮影城の鏡の間。壁一面の鏡に、{pc}たちが何人も映っておる"
+          "text": "鏡の間です。壁一面の鏡に、{pc}たちがずらりと並んで映っています"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "鏡の一枚に、指でなぞった字が残っておる"
+          "text": "鏡の曇ったところに、指でなぞった字が残っています"
         },
         {
           "speaker": "sai",
@@ -2536,13 +2548,13 @@
           "text": "『一緒に撮ろう』『い、一緒に……』。何度も練習した跡だ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……いい部屋だ。撮影に、使いたい",
+          "text": "……鏡に向かって、誘う練習か",
           "variants": {
             "regularb": {
-              "text": "……いい部屋だ。撮影に、使いたい",
+              "text": "ここで何度も、誘い方を練習してたんですね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -2560,25 +2572,25 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "広場の石畳に、プリが一枚落ちておる。踏まれぬよう、そっと拾う"
+          "text": "広場の石畳に、踏まれて端の折れたプリが一枚落ちています"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "魔王が一人で写ったプリだ。手でハートを作っておる"
+          "text": "写っているのは魔王だけ。指で、小さなハートを作ろうとしています"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "だがハートは半分だけ。もう半分を作る相手が、おらんのだ"
+          "text": "作ったのは半分だけです。フレームの反対側には誰もいません"
         },
         {
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "serious",
-          "text": "プリ落とすとか、うちなら泣く。持ち主、勇者が絶対見つけるから"
+          "text": "この半分、うちならすぐ作るけどな。隣、まるっと空いてるし"
         }
       ]
     },
@@ -2592,7 +2604,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "魔王の玉座の間。主は撮影に出かけて、留守だ"
+          "text": "魔王は撮影に出かけたようです。大きな玉座だけが、部屋の奥に見えます"
         },
         {
           "speaker": "sai",
@@ -2604,7 +2616,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "表紙には『プリ交換：0枚』。数字が、なんとも寂しいのう"
+          "text": "表紙には『プリ交換：0枚』。交換した数を、自分で書いているようです"
         }
       ]
     },
@@ -2670,16 +2682,16 @@
           "speaker": "sai",
           "role": "写真屋のおじいさん／物語",
           "face": "normal",
-          "text": "魔王は撮るたび隣を空けて、しばらく待つのじゃ。誰も来んがの"
+          "text": "撮ったあと、隣に並べるよう端へ寄ってな。しばらくそこで待つのじゃ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……誰かを、待ってる",
+          "text": "……並び方まで決めてるのか",
           "variants": {
             "regularb": {
-              "text": "……誰かを、待ってる",
+              "text": "声をかけずに待ってると、気づかれないかもしれませんね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -2697,7 +2709,7 @@
           "speaker": "sai",
           "role": "写真屋のおじいさん／物語",
           "face": "normal",
-          "text": "一度、二人用のプリを撮りに来た。じゃが連れがおらんと気づいて、黙って帰った"
+          "text": "二人用の見本ばかり見とったことがあってな。空いておるぞと言ったら帰ってしもうた"
         },
         {
           "speaker": "hajime",
@@ -2717,25 +2729,25 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "王国の広場。いつもはきらきらの噴水も、今日は水道水みたいな色だ"
+          "text": "広場の噴水は、陽が当たっても灰色です。いつもなら水まできらめくのに"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "広場の掲示板に、魔王の撮った写真が貼り出されておる"
+          "text": "掲示板に、プリズマが撮った写真が並んでいます"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "どれも構図は見事だ。なのに撮った魔王は、一枚も写っておらん"
+          "text": "どれも丁寧に撮ってありますが、掲示板には魔王自身の写真がありません"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "噴水まで盛れてないとか、この国ガチでピンチじゃん"
+          "text": "撮り方めっちゃ上手じゃん。魔王が写ってるのも見たかったな"
         }
       ]
     },
@@ -2749,25 +2761,25 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "写真屋のショーケース。色あせる前の写真が、ずらりと並んでおる"
+          "text": "写真屋のショーケースには、色あせる前に撮った写真が残っています"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "隅に一枚、角の生えた誰かの証明写真がある。失敗作の札つきだ"
+          "text": "端の一枚に『撮り直し』の札。角のある誰かの証明写真です"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "灯りが足りず、角の影しか写っておらん。顔は真っ暗だ"
+          "text": "大きな角の影が落ちて、顔の上半分が真っ暗です"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "昔の写真、みんな本当にきらきらしてるな"
+          "text": "角が大きいと、自分の顔にも影が落ちるのか"
         }
       ]
     },
@@ -2799,7 +2811,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "堀にサメ……。隠し味って言ってたのに"
+          "text": "目を描き直しすぎて、モデルが誰か見ただけじゃ分からないな"
         }
       ]
     },
@@ -2813,13 +2825,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "撮影城の鏡の間。壁一面の鏡に、{pc}たちが何人も映っておる"
+          "text": "鏡の間です。壁一面の鏡に、{pc}たちがずらりと並んで映っています"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "鏡の前に、ポーズの練習帳が落ちておる"
+          "text": "鏡の床に、ポーズの練習帳が落ちています"
         },
         {
           "speaker": "sai",
@@ -2828,13 +2840,13 @@
           "text": "『ピース、指の角度が分からん』『笑顔、失敗』と書いてある"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……いい部屋だ。撮影に、使いたい",
+          "text": "……ピースから練習してたのか",
           "variants": {
             "regularb": {
-              "text": "……いい部屋だ。撮影に、使いたい",
+              "text": "ポーズなら、ピースから一緒にやってみますか",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -2852,7 +2864,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "広場の石畳に、プリが一枚落ちておる。踏まれぬよう、そっと拾う"
+          "text": "広場の石畳に、踏まれて端の折れたプリが一枚落ちています"
         },
         {
           "speaker": "sai",
@@ -2864,13 +2876,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "落書きの欄は真っ白。誰にも書いてもらえなかったようだ"
+          "text": "目も口も手で隠れています。落書きの欄だけは真っ白です"
         },
         {
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "serious",
-          "text": "プリ落とすとか、うちなら泣く。持ち主、勇者が絶対見つけるから"
+          "text": "顔、全部隠しちゃうの？ 手の向きちょっと変えるだけで盛れるのに"
         }
       ]
     },
@@ -2884,13 +2896,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "魔王の玉座の間。主は撮影に出かけて、留守だ"
+          "text": "魔王は撮影に出かけたようです。大きな玉座だけが、部屋の奥に見えます"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "玉座の横に、小瓶がずらりと並んでおる"
+          "text": "玉座の横に小瓶が並んでいて、中で何かがきらきらしています"
         },
         {
           "speaker": "sai",
@@ -2910,13 +2922,13 @@
           "speaker": "sai",
           "role": "写真屋のおじいさん／物語",
           "face": "normal",
-          "text": "ひと月前じゃ。魔王が初めて、自分の写真を撮った日からと聞く"
+          "text": "ひと月前じゃ。魔王が城で新しいカメラを試した日と聞いとる"
         },
         {
           "speaker": "sai",
           "role": "写真屋のおじいさん／物語",
           "face": "normal",
-          "text": "その日、城から『うわああ』と悲鳴が聞こえたそうな"
+          "text": "自分に向けてシャッターを切ったあと、城から悲鳴が聞こえたそうな"
         },
         {
           "speaker": "hajime",
@@ -2936,13 +2948,13 @@
           "speaker": "sai",
           "role": "写真屋のおじいさん／物語",
           "face": "normal",
-          "text": "背が高く、立派な角の魔王じゃ。じゃが写真には、いつも背中しか写らん"
+          "text": "立派な角の持ち主じゃよ。じゃが祭りの写真に写りこんでも、必ず背を向けるんじゃ"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "背中だけ？ それ、写りに自信ないやつじゃん"
+          "text": "角は見せるのに、顔は隠すんだ？"
         }
       ]
     },
@@ -2965,13 +2977,13 @@
           "text": "撮影の前に、それを自分の顔に塗るのだとか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……盛りを、借りてるのか",
+          "text": "……だから瓶に詰めるのか",
           "variants": {
             "regularb": {
-              "text": "……盛りを、借りてるのか",
+              "text": "自分の写りを変えるために、集めてるんですね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -3009,25 +3021,25 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "王国の広場。いつもはきらきらの噴水も、今日は水道水みたいな色だ"
+          "text": "広場の噴水は、陽が当たっても灰色です。いつもなら水まできらめくのに"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "広場の掲示板に、魔王の撮った写真が貼り出されておる"
+          "text": "掲示板に、プリズマが撮った写真が並んでいます"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "写真の端に、小さな書きこみ。『違う』『違う』『これも違う』"
+          "text": "写真の端に赤いバツが一つずつ。『この顔ではない』と書いてあります"
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "噴水まで盛れてないとか、この国ガチでピンチじゃん"
+          "text": "何と見比べてたんだろ。わざわざ全部にバツつけてるし"
         }
       ]
     },
@@ -3041,7 +3053,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "写真屋のショーケース。色あせる前の写真が、ずらりと並んでおる"
+          "text": "写真屋のショーケースには、色あせる前に撮った写真が残っています"
         },
         {
           "speaker": "sai",
@@ -3053,13 +3065,13 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "『落とし物・持ち主求む』の札が、すっかり日に焼けておる"
+          "text": "貼ってある『落とし物』の札は、日に焼けて文字が薄れています"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "昔の写真、みんな本当にきらきらしてるな"
+          "text": "表紙のサメ、だいぶ色が落ちてますね。ずっと棚にあったのかな"
         }
       ]
     },
@@ -3079,7 +3091,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "門の看板に、大きな貼り紙。『探し物、あります』"
+          "text": "門の看板に、大きな字で『探しています』と書いた貼り紙があります"
         },
         {
           "speaker": "sai",
@@ -3091,7 +3103,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "堀にサメ……。隠し味って言ってたのに"
+          "text": "せっかく集めた盛りを全部？ よっぽど大事なプリ帳なんだな"
         }
       ]
     },
@@ -3105,7 +3117,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "撮影城の鏡の間。壁一面の鏡に、{pc}たちが何人も映っておる"
+          "text": "鏡の間です。壁一面の鏡に、{pc}たちがずらりと並んで映っています"
         },
         {
           "speaker": "sai",
@@ -3120,13 +3132,13 @@
           "text": "中は白紙。最後のページにだけ『月の夜に、またみんなで』とある"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……いい部屋だ。撮影に、使いたい",
+          "text": "……もう一冊あるのか。これは二冊目だ",
           "variants": {
             "regularb": {
-              "text": "……いい部屋だ。撮影に、使いたい",
+              "text": "二冊目ってことは、一冊目がどこかにありますね",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -3144,25 +3156,25 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "広場の石畳に、プリが一枚落ちておる。踏まれぬよう、そっと拾う"
+          "text": "広場の石畳に、踏まれて端の折れたプリが一枚落ちています"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "古いプリの切れ端だ。小さな角の子と仲間たちが写っておる"
+          "text": "プリには、小さな角の子と仲間たちが写っています"
         },
         {
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "みんな両手を頭に立てて、サメのポーズで笑っておる"
+          "text": "みんな頭の上で両手を合わせて、サメのヒレの形にしています"
         },
         {
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "serious",
-          "text": "プリ落とすとか、うちなら泣く。持ち主、勇者が絶対見つけるから"
+          "text": "この角、まだちっちゃい頃じゃん。これ、だいぶ前の写真かも"
         }
       ]
     },
@@ -3176,7 +3188,7 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "魔王の玉座の間。主は撮影に出かけて、留守だ"
+          "text": "魔王は撮影に出かけたようです。大きな玉座だけが、部屋の奥に見えます"
         },
         {
           "speaker": "sai",
@@ -3248,16 +3260,16 @@
           "speaker": "sai",
           "role": "写真屋のおじいさん／物語",
           "face": "normal",
-          "text": "盛りを吸う、魔法のカメラじゃ。吸った盛りで、白紙の帳面を埋めておる"
+          "text": "盛りを吸う魔法のカメラじゃ。空のプリ帳を持って、昔と同じ写真を撮るんだと言っとった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……白紙の帳面。アルバムか",
+          "text": "……写りまで、昔に戻したいのか",
           "variants": {
             "regularb": {
-              "text": "……白紙の帳面。アルバムか",
+              "text": "昔と同じ写真なら、その見本はどこかにあるんでしょうか",
               "face": "normal",
               "role": "PL／卓の会話"
             }
@@ -3287,12 +3299,12 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "小さな角の子……。もしかして"
+          "text": "その頃の写真、今も残ってるといいな"
         }
       ]
     },
     {
-      "dialogue_id": "trpg_purikura_hero_make_rei_rei_nocturne_regularb",
+      "dialogue_id": "trpg_purikura_hero_make_kuraudo_kuraudo_nocturne_regularb",
       "metadata": {
         "making": true
       },
@@ -3312,7 +3324,7 @@
       ]
     },
     {
-      "dialogue_id": "trpg_purikura_hero_make_rei_rei_shion_regularb",
+      "dialogue_id": "trpg_purikura_hero_make_kuraudo_kuraudo_shion_regularb",
       "metadata": {
         "making": true
       },
@@ -3418,7 +3430,7 @@
       "interview": {
         "kicker": "02 / 写真屋に聞く",
         "title": "写真屋のおじいさんに、何を聞く？",
-        "description": "聞ける質問は二つ。答えは、魔王の事情しだいで変わる。",
+        "description": "魔王が何をしていたのか、写真屋のおじいさんに聞いてみよう。",
         "button": "話を聞き終えて、王国を調べる"
       },
       "explore": {
@@ -3436,13 +3448,13 @@
       "prepare": {
         "kicker": "05 / 撮影の支度",
         "title": "デコ道具と、照明",
-        "description": "撮影の間の扉の前で、魔王に会う支度を。",
+        "description": "撮影の間で使うデコ道具と明かりを準備しよう。",
         "button": "撮影の支度をする"
       },
       "serve": {
         "kicker": "06 / 魔王と一枚",
         "title": "最高の決めポーズ",
-        "description": "撮影の間で、魔王がカメラを構えている。ここがクライマックス。",
+        "description": "魔王にも写真に入ってもらう。ポーズを取って誘おう。",
         "button": "決めポーズで写る"
       },
       "ending": {
@@ -3451,7 +3463,7 @@
         "description": "撮影城の魔王は、どんな顔で写っただろう。"
       }
     },
-    "help": "写真屋のおじいさんに二つ質問し、王国と撮影城を調べて三つ以上の手がかりから見立てを立てます。途中で城門の無表情ゴーレムが立ちはだかり、切り抜け方を選びます。最後にデコ道具・照明・決めポーズを選びます。探索・相談・メモの再読に回数制限はありません。",
+    "help": "写真屋で聞き込みをし、三つ以上の手がかりから魔王の事情を考えます。城門のゴーレムを切り抜けたら、写真の飾りと照明、ポーズを選びます。調べた場所や聞いた話は、あとで見返せます。",
     "exitText": "この卓はここで終わります。もう一度遊ぶと、魔王の事情が変わるかもしれません。",
     "endingKicker": "撮影城の結末",
     "stats": {
@@ -3469,14 +3481,38 @@
     "twistIdle": "門番を通り抜けるには、どんな手が使えそうですか？",
     "planTitle": "魔王と撮る、最高の一枚の作戦"
   },
+  "pictureBook": {
+    "pages": [
+      {
+        "image": "../../img/ui/trpg/picturebook/purikura-hero/01.webp",
+        "alt": "きらめく顔と服が写った写真と、箱型のカメラ",
+        "text": "きらめき王国では、写真を撮ると顔も服もきらきらに写った。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/purikura-hero/02.webp",
+        "alt": "広場の噴水と、貼り紙のある掲示板",
+        "text": "王国の広場には噴水があり、勇者募集の貼り紙が出ていた。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/purikura-hero/03.webp",
+        "alt": "撮影城の遠景。塔の窓のそばにシャッター音を表す短い線がある",
+        "text": "魔王プリズマに撮られると、写真も本物も色あせる。撮影城から、今日もシャッターの音。"
+      },
+      {
+        "image": "../../img/ui/trpg/picturebook/purikura-hero/04.webp",
+        "alt": "首からカメラを下げて歩く、白ひげの写真屋のおじいさん",
+        "text": "そこへ、首からカメラを下げた写真屋のおじいさんがやって来た。"
+      }
+    ]
+  },
   "debrief": {
     "smooth": "trpg_purikura_hero_debrief_smooth",
     "with-detour": "trpg_purikura_hero_debrief_with_detour"
   },
   "campaign": {
     "aftermath": {
-      "true": "勇者のもとに魔王から写真が届いた。裏には「今度も隣を空けておく」とある。",
-      "bad": "焼き増しを渡そうとすると、魔王はもういない。何を伝えたかったのか、聞きそびれた。"
+      "true": "城門の看板に、みんなで撮った写真が増えた。魔王の字で「どなたでも、我と一枚」。",
+      "bad": "焼き増しを届けに戻ると、魔王は留守だった。あのカメラで何をしたかったのか、聞けずじまいだった。"
     },
     "seats": [
       {
@@ -3501,9 +3537,9 @@
         "required": true
       },
       {
-        "actor": "rei",
+        "actor": "kuraudo",
         "candidates": [
-          "rei",
+          "kuraudo",
           "regularb"
         ],
         "required": false
@@ -3597,8 +3633,8 @@
         }
       ]
     },
-    "rei": {
-      "rei": [
+    "kuraudo": {
+      "kuraudo": [
         {
           "id": "nocturne",
           "name": "ノクターン",
@@ -3611,7 +3647,7 @@
             "talk": 2,
             "nerve": 4
           },
-          "making": "trpg_purikura_hero_make_rei_rei_nocturne"
+          "making": "trpg_purikura_hero_make_kuraudo_kuraudo_nocturne"
         },
         {
           "id": "shion",
@@ -3625,7 +3661,7 @@
             "talk": 1,
             "nerve": 3
           },
-          "making": "trpg_purikura_hero_make_rei_rei_shion"
+          "making": "trpg_purikura_hero_make_kuraudo_kuraudo_shion"
         }
       ],
       "regularb": [
@@ -3641,7 +3677,7 @@
             "talk": 2,
             "nerve": 4
           },
-          "making": "trpg_purikura_hero_make_rei_rei_nocturne_regularb"
+          "making": "trpg_purikura_hero_make_kuraudo_kuraudo_nocturne_regularb"
         },
         {
           "id": "shion",
@@ -3655,7 +3691,7 @@
             "talk": 1,
             "nerve": 3
           },
-          "making": "trpg_purikura_hero_make_rei_rei_shion_regularb"
+          "making": "trpg_purikura_hero_make_kuraudo_kuraudo_shion_regularb"
         }
       ]
     }

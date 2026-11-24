@@ -1,4 +1,4 @@
-// タイトル直後の先読みで、店ロゴをアイドル時へ遅らせる分離を検証する。
+// タイトルの先読み、地図の店ロゴと共通 UI 素材の読み込みを検証する。
 // node --experimental-vm-modules remake/test/warmup_defer.mjs
 // 既定の warmUiArt() は従来どおり店ロゴまで即時に読み、deferStores のときだけ
 // アイドルコールバックまで店ロゴを始めない。途中で通常呼び出しが来たら即時に切り替わる。
@@ -214,8 +214,11 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
   const warmUpSource = main.slice(main.indexOf("async function warmUp()"), main.indexOf("// テスト・デバッグ用フック"));
   for (const chapter of [1, 4]) {
     const calls = [];
+    const frame = 'img/ui/vn-faithful/smoke-purple.webp';
     const ctx = {
       state: { chapter },
+      document: { documentElement: { dataset: { uiTheme: 'smoke-purple' } } },
+      uiThemeFrame: theme => theme === 'smoke-purple' ? frame : 'wrong-frame',
       loadVnFonts: async () => calls.push('fonts'),
       loadDeferredDialogues: async () => calls.push('dialogue'),
       warmUiArt: async () => calls.push('ui'),
@@ -223,6 +226,8 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
       warmInBackground: (jobs, options) => warmInBackground(jobs, { ...options, yieldTask: async () => {} }),
     };
     await vm.runInNewContext(`${warmUpSource}\nwarmUp()`, ctx);
+    assert(calls.includes(frame), 'title prepares the selected dialogue frame');
+    assert(!calls.includes('ui'), 'map art and store logos wait for the map');
     assert.equal(calls.filter(u => u.startsWith('bg_')).length, chapter === 1 ? 3 : 0);
     calls.length = 0;
     ctx.warmInBackground = (jobs, options) => warmInBackground(jobs, {
@@ -239,7 +244,7 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
   assert(entry.indexOf("const assetsReady") < entry.indexOf("next();"), "first line starts after the font gate");
 }
 
-console.log("[warmup defer] PASS: store logos defer to idle only on the title path; bounded warm-up and obsolete/late-chapter work dropped");
+console.log("[warmup defer] PASS: title prepares the dialogue frame, map entrances prepare logos, and obsolete warm-up is dropped");
 
 
 // UI speculation has two in-flight images; a foreground scene can load immediately.
@@ -273,7 +278,7 @@ console.log("[warmup defer] PASS: store logos defer to idle only on the title pa
   await ui.imageReady('a', 100, { keep: true });
   assert.equal(requested.length, 5, 'oldest decoded reference was released');
 }
-// 作業台の素材（pin）は上限の外。1工程で上限を超えるので、上限に入れると同じ作業台の中で追い出し合う（craft_readiness）。
+// 通常の画像と作業台では別々の上限を使い、最近使った工程は再表示に残す。
 {
   const { ui, requested } = await loadUi({ imageSize: 2048 });
   await ui.imageReady('bench', 100, { keep: true, pin: true });
@@ -282,6 +287,10 @@ console.log("[warmup defer] PASS: store logos defer to idle only on the title pa
   assert.equal(requested.length, 5, 'pinned bench art survives the decoded budget');
   await ui.imageReady('a', 100, { keep: true });
   assert.equal(requested.length, 6, 'other kept art stays bounded and does not count the pinned bench');
+  for (let i = 1; i <= 8; i++) await ui.imageReady(`bench-${i}`, 100, { keep: true, pin: true });
+  assert.equal(ui.imageReady.isReady('bench'), false, 'oldest craft art is released beyond 128 MiB');
+  assert.equal(ui.imageReady.isReady('bench-8'), true, 'current craft art stays ready');
+  assert.equal(ui.imageReady.isReady('a'), true, 'craft art does not displace other cached art');
 }
 {
   const { ui, requested } = await loadUi();

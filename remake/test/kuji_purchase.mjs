@@ -9,13 +9,14 @@ import path from "node:path";
 
 const read = file => readFile(new URL(file, import.meta.url), "utf8");
 const strip = source => source.replace(/^import .*;\s*$/gm, "").replace(/\bexport /g, "");
-const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment, kujiReveal, flavorMastery, growthStarter] = await Promise.all([
+const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment, kujiReveal, flavorMastery, growthStarter, legacyCastSave] = await Promise.all([
   read("../js/daily/kuji.js"), read("../js/core/state.js"), read("../js/core/util.js"),
   read("../js/core/stats.js"), read("../../data/kuji.json"), read("../js/core/travel-budget.js"),
   read("../js/core/gallery-progress.js"), read("../js/daily/kuji-tickets.js"), read("../../data/equipment.json"),
   read("../js/daily/kuji-reveal.js"), // 結果の札（賞・景品名・重複の表示）。ガラガラと粒子は高速送りでは読み込まない
-  // state.js が読む部品（2026-11-12 #3458 から）。無いと読み込みの移行が例外で失敗し、SAVE/LOAD の検査が成り立たない
+  // state.js と gallery-progress.js の依存も埋め込み、本番の SAVE/LOAD を通す。
   read("../js/core/flavor-mastery.js"), read("../js/core/growth-starter.js"),
+  read("../js/core/legacy-cast-save.js"),
 ]);
 // くじ限定の台（KJ05）だけ実データを渡す（重複でくじ券に替わるかの判定に使う）
 const kujiOnly = Object.fromEntries(JSON.parse(equipment).equipment.filter(e => e.kuji_only).map(e => [e.id, e]));
@@ -31,6 +32,7 @@ const setPortraitStyleSource = () => {}; // state.js registers a config reader a
 ${strip(galleryProgress)}
 ${strip(flavorMastery)}
 ${strip(growthStarter)}
+${strip(legacyCastSave)}
 ${strip(core).replace('function save()', 'function persistState()')}
 function save() { saves++; persistState(); }
 ${strip(stats.match(/export function addMoney\(n\) \{[\s\S]*?\n\}/)[0])}
@@ -84,6 +86,11 @@ function snapshot() {
   return JSON.parse(JSON.stringify({state, saves, moneyEvents, flavorGrants, renders,
     overlays:layers.modal.children.length}));
 }
+function loadSnapshot() {
+  const previous = state;
+  if (!load() || state === previous) throw new Error('LOAD did not replace state');
+  return snapshot();
+}
 const force = button => button.dispatchEvent(new MouseEvent('click', {bubbles:true}));
 async function finish() {
   // Existing turbo result card waits 300ms; leave all reveal code/timing untouched.
@@ -103,8 +110,11 @@ window.K = {prepare, snapshot, finish, forceOld:()=>force(old),
   changeDay:()=>{state.day++;}, changeBox:()=>{state.kuji.g1000=structuredClone(state.kuji.g1000);},
   changeOrder:()=>{state.kuji.g1000.order=state.kuji.g1000.order.slice();},
   changeDrawn:()=>{state.kuji.g1000.drawn++;},
-  saveLoad:()=>{persistState(); load(); return snapshot();},
-  load:()=>{load(); return snapshot();},
+  saveLoad:()=>{
+    if (!persistState()) throw new Error('SAVE failed');
+    return loadSnapshot();
+  },
+  load:loadSnapshot,
   abandon:()=>{layers.modal.replaceChildren(); layers.modal.classList.remove('show');},
   refill:()=>{state.day+=3;paint();return snapshot();},
   ticket:()=>root.querySelector('[data-test="kuji-g20000-ticket"]'),

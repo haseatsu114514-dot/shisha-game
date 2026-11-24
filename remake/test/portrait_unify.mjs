@@ -12,18 +12,19 @@ const SHOTS = process.env.SHOTS;
 const characters = {
   tsumugi: ["normal", "smile", "serious", "surprise", "sad", "evil", "bow"],
   samechan: ["normal", "smile", "serious", "surprise", "excited", "ventriloquism"],
-  maezono: ["normal", "smile", "serious", "surprise", "excited"],
+  uezono: ["normal", "smile", "serious", "surprise", "excited"],
   sumi: ["normal", "smile", "serious", "surprise", "thinking"],
   mashiro: ["normal", "smile", "serious", "surprise", "sad", "sleep"],
-  sui: ["normal", "smile", "serious", "surprise", "thinking"],
+  sensu: ["normal", "smile", "serious", "surprise", "thinking"],
 };
 const manifest = JSON.parse(fs.readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));
 const newFaces = character => manifest.portraitVariants?.new?.[character]?.faces || [];
 const facesFor = (style, character) =>
   style === "classic" ? characters[character] : characters[character].filter(face => newFaces(character).includes(face));
 // 画風ごとの置き場所まで照合する（同じファイル名の別の画風を取り違えない）
+const artStem = character => ({ uezono: "maezono", sensu: "sui" })[character] || character;
 const expectedSrc = (style, character, face) =>
-  `/${style === "new" ? "character_variants/new" : "characters"}/${character}/chr_${character}_${face}.webp`;
+  `/${style === "new" ? "character_variants/new" : "characters"}/${artStem(character)}/chr_${artStem(character)}_${face}.webp`;
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 const browser = await chromium.launch({
   headless: true,

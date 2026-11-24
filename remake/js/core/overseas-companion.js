@@ -15,7 +15,7 @@ const ALWAYS_SUPPORT = Object.freeze({ mashiro: value => value?.flags?._ch3_clea
 // （福岡の店にはバイトがいる）、スティーブは個人店を閉めて、ヴォルクはスポンサー（ナイトサイド）の関係者として。
 // スミさんはtonariの留守番で来ない。なるは選手として本編で来るので含めない。
 // 到着の後は砂浜（ch4-beach.js）の男の枠に入る（SPC24）。前夜の過ごし方・修羅場には出さない。
-export const OVERSEAS_GUESTS = Object.freeze(["adam", "kumicho", "rei", "saku", "steve", "volk"]);
+export const OVERSEAS_GUESTS = Object.freeze(["adam", "kumicho", "kuraudo", "ayatori", "steve", "volk"]);
 const KEY = "_overseas_companion";
 
 /** 保存された選択。無い・壊れている場合は未選択（decided:false、同行なし）。 */

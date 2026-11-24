@@ -243,6 +243,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   s.trpg = { ...(s.trpg ?? {}), stock: ["x"], club: { founded: { chapter: 2, day: 3 }, members: { rio: { chapter: 2, day: 4 } } } };
   s.trpg.cleared = { x: { ending: "rain", plays: 4, firstEndingPlays: { bad: 1, normal: 3, true: 4 } } };
   s.flags = { _gym_member: true, _motion_seen_intro: true, _flavor_grape: true, _ch1_cleared: true,
+    _craft_last_preparation: { '[1,true,"self"]': { mix: { mint: 12 } } },
     _brand_new_unclassified: true, _kuji_seen: false };
   s.affinity = { minto: 9 };
   s.lovers = ["minto"];

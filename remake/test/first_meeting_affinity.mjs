@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const root = process.env.HEART1_ROOT || fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.HIYORI_SOURCE_ROOT || root;
 const supportRoot = process.env.HIYORI_SUPPORT_ROOT || root;
-const realPaths = ['core/bond-after.js','core/chapter-data.js','core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
+const realPaths = ['core/bond-after.js','core/chapter-data.js','core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js', 'core/legacy-cast-save.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
 const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rio','ch1_bonds','samechan','hiyori','lover_events','cinema','remake_ch1','ch1_spots'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -65,10 +65,10 @@ const done={id:'controlled-complete',visited:[]};
 const FIRST_VISIT=9,TWO_VISITS=22,REPEAT_VISIT=6;
 const first=(f,id)=>{const s=f.fresh();delete s.met[id];s.story[id]=0;s.affinity[id]=0;s.flags._cafe_introduced=true;return s;};
 await check('known legacy identity repair never creates or keeps first-meeting pending',async f=>{
- const s=first(f,'dr_kemuri');s.affinityCarry.dr_kemuri=.25;s.flags._affinity_first_meeting_pending_dr_kemuri=true;
- f.core.markMet('dr_kemuri',{known:true});assert.equal(s.met.dr_kemuri,true);
- assert.equal(s.flags._affinity_first_meeting_pending_dr_kemuri,undefined);assert.equal(s.affinity.dr_kemuri,0);assert.equal(s.affinityCarry.dr_kemuri,.25);
- const loaded=f.roundTrip();assert.equal(loaded.flags._affinity_first_meeting_pending_dr_kemuri,undefined);assert.equal(loaded.affinity.dr_kemuri,0);assert.equal(loaded.affinityCarry.dr_kemuri,.25);
+ const s=first(f,'dr_charcoal');s.affinityCarry.dr_charcoal=.25;s.flags._affinity_first_meeting_pending_dr_charcoal=true;
+ f.core.markMet('dr_charcoal',{known:true});assert.equal(s.met.dr_charcoal,true);
+ assert.equal(s.flags._affinity_first_meeting_pending_dr_charcoal,undefined);assert.equal(s.affinity.dr_charcoal,0);assert.equal(s.affinityCarry.dr_charcoal,.25);
+ const loaded=f.roundTrip();assert.equal(loaded.flags._affinity_first_meeting_pending_dr_charcoal,undefined);assert.equal(loaded.affinity.dr_charcoal,0);assert.equal(loaded.affinityCarry.dr_charcoal,.25);
 });
 for(const id of ['naru','adam','minto','rio','tsumugi','sumi'])await check(`${id} first complete guarantees displayed heart1 without reading next scene`,async f=>{
  const s=first(f,id);assert.equal(f.stats.affinityLevel(id),0);

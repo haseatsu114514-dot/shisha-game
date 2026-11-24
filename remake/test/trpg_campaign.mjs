@@ -144,9 +144,9 @@ test("each candidate needs their own club talk, regardless of affinity", () => {
     assert(rules.recruitmentStatus(s, person, catalog).ok);
     assert(rules.joinTrpgClub(s, catalog, person.id));
   }
-  const rei = state(); rules.foundTrpgClub(rei, catalog);
-  rei.met.rei = true; rei.flags._rei_trpg_introduced = true;
-  assert(rules.joinTrpgClub(rei, catalog, "rei"), "クラウドの既存TRPG会話を数える");
+  const kuraudo = state(); rules.foundTrpgClub(kuraudo, catalog);
+  kuraudo.met.kuraudo = true; kuraudo.flags._kuraudo_trpg_introduced = true;
+  assert(rules.joinTrpgClub(kuraudo, catalog, "kuraudo"), "クラウドの既存TRPG会話を数える");
 });
 
 test("chapter two club meets after ordinary shifts; DAY8 compatibility override preserves existing saves", () => {
@@ -275,7 +275,7 @@ test("noon, story nights, pending appointments and non-daily phases cannot start
   s.phase = "tournament"; assert(!rules.castTrpgTable(s, catalog, ordinary).ok);
 });
 test("クラウド and Ageha join from their own chapter-two shop visits and never take an unwritten seat", async () => {
-  for (const id of ["rei", "ageha"]) {
+  for (const id of ["kuraudo", "ageha"]) {
     const s = state(); rules.foundTrpgClub(s, catalog);
     const person = catalog.participants.find(p => p.id === id);
     assert(person?.interested, id + " is a club candidate");
@@ -290,16 +290,16 @@ test("クラウド and Ageha join from their own chapter-two shop visits and nev
   // Members wait for a scenario that wrote their voice: the existing books keep their authored seats.
   const s = own(friends(state()), ordinary.id);
   const cast = rules.castTrpgTable(s, catalog, ordinary);
-  assert(cast.ok); assert(!cast.participants.includes("rei")); assert(!cast.participants.includes("ageha"));
+  assert(cast.ok); assert(!cast.participants.includes("kuraudo")); assert(!cast.participants.includes("ageha"));
   // A book written in their voices seats them: クラウド as GM, Ageha as a player, and every line keeps a present speaker.
   const encore = await json("../../data/dialogue/trpg_moonflower_encore.json");
   const night = own(friends(state()), encore.id);
   const seated = rules.castTrpgTable(night, catalog, encore);
-  assert(seated.ok); assert.equal(seated.gm, "rei"); assert(seated.participants.includes("ageha"));
+  assert(seated.ok); assert.equal(seated.gm, "kuraudo"); assert(seated.participants.includes("ageha"));
   const table = rules.materializeTrpgCast(encore, seated.assignments);
   assert(table.dialogues.flatMap(b => b.lines).every(l => seated.participants.includes(l.speaker)));
   // Without クラウド in the club, his books are never stocked.
-  const noRei = state(); friends(noRei, catalog.participants.map(p => p.id).filter(id => id !== "rei")); rules.syncTrpgStock(noRei, catalog);
+  const noRei = state(); friends(noRei, catalog.participants.map(p => p.id).filter(id => id !== "kuraudo")); rules.syncTrpgStock(noRei, catalog);
   assert(!noRei.trpg.stock.includes(encore.id));
   // The neighbouring town's shop visit offers the same face-to-face recruitment as the home town.
   const source = await readFile(new URL("../js/chapters/ch2-preparation.js", import.meta.url), "utf8");

@@ -11,12 +11,12 @@
    サブセットは従来と同じ字種（ゲーム内使用文字＋安全集合）に絞ってある。
    Noto Sans JP に無い ≒（U+2252）だけは Zen Kaku Gothic New の補完フェイスで受ける
    （範囲の正本は remake/fonts/supplement-ranges.txt、生成は remake/tools/build_font.py） */
-@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Medium.woff2") format("woff2"); font-weight: 100 599; font-display: block; }
-@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Bold.woff2") format("woff2"); font-weight: 600 900; font-display: block; }
-@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Supp-Medium.woff2") format("woff2"); font-weight: 100 599; font-display: block; unicode-range: U+2252; }
-@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Supp-Bold.woff2") format("woff2"); font-weight: 600 900; font-display: block; unicode-range: U+2252; }
+@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Medium.woff2?v=20261122") format("woff2"); font-weight: 100 599; font-display: block; }
+@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Bold.woff2?v=20261122") format("woff2"); font-weight: 600 900; font-display: block; }
+@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Supp-Medium.woff2?v=20261122") format("woff2"); font-weight: 100 599; font-display: block; unicode-range: U+2252; }
+@font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Supp-Bold.woff2?v=20261122") format("woff2"); font-weight: 600 900; font-display: block; unicode-range: U+2252; }
 /* HUDの日付・時間帯などのドット書体（DotGothic16・SIL OFL）。廃止した予告のCSSから移した。 */
-@font-face { font-family: "Suien Dot"; src: url("../../assets/fonts/DotGothic16-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Suien Dot"; src: url("../../assets/fonts/DotGothic16-Regular.woff2?v=20261122") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
 
 :root {
   /* 日常パート: 閉店後のtonariの色（夜の藍・琥珀の灯り） */

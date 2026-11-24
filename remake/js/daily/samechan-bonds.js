@@ -2,7 +2,7 @@
 // 台詞: lover_events.json / 本名・泳ぎの原稿: samechan.json。
 import { DB } from "../core/data.js";
 import { state, save } from "../core/state.js";
-import { gainAffinity, releaseLoveAffinity, privateBondScope, bond } from "../core/stats.js";
+import { gainAffinity, releaseLoveAffinity, prepareLoveAffinity, privateBondScope } from "../core/stats.js";
 import { recordRouteEvent } from "../core/gallery-progress.js";
 import { play, isPlaying } from "../vn/engine.js";
 
@@ -23,10 +23,13 @@ export function samechanMilestoneDue() {
 
 /** 告白成立の読了後/専用デートの読了後。1回の対面につき1場面だけ。 */
 export async function playSamechanMilestone({ signal = null } = {}) {
-  if (playing || isPlaying()) return false;
-  const id = samechanMilestoneDue();
+  if (playing || isPlaying() || signal?.aborted || !state?.lovers?.includes("samechan") || state.chapter < 2) return false;
+  const owner = state;
+  if (DB.loverEventsLoaded === false && !await prepareLoveAffinity(["samechan"], { signal })) return false;
+  if (state !== owner || signal?.aborted || playing || isPlaying()) return false;
+  const id = samechanMilestoneDue() || (releaseLoveAffinity("samechan") && samechanMilestoneDue());
   if (!id) return false;
-  const owner = state, restorePrivate = privateBondScope();
+  const restorePrivate = privateBondScope();
   playing = true;
   try {
     if (signal?.aborted) return false;

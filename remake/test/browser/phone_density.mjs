@@ -298,13 +298,11 @@ async function checkSlotDensity(page) {
 
   const next = '[data-test="reel-intro-next"]';
   await checkLayout(".reel-intro .ri-panel", { targets: [next], required: [".ri-text"] });
-  for (let i = 0; i < 5; i++) {
-    assert.equal(await page.locator(next).textContent(), "次へ");
-    await page.locator(next).tap();
-  }
-  await checkLayout(".ri-panel.sys", { targets: [next], required: [".rn-tile-head", ".rn-tile-body", ".cue-chip"], fits: ".rn-tile" });
-  // 844×390ではカードの末尾と閉じるボタンまで一度に見える。
-  assert.ok(await page.locator(".ri-panel.sys").evaluate(node => node.scrollHeight <= node.clientHeight + 1));
+  assert.equal(await page.locator(next).textContent(), "次へ");
+  await page.locator(next).tap();
+  await checkLayout(".reel-intro .ri-panel", { targets: [next], required: [".ri-text"] });
+  assert.match(await page.locator(".reel-intro .ri-text").textContent(), /かってに1回転/);
+  assert.equal(await page.locator(next).textContent(), "説明を閉じる");
   await page.locator(next).tap();
   await checkLayout(".reel-night.show .rn-label");
   await page.locator(".reel-night").waitFor({ state: "detached" });
@@ -333,7 +331,7 @@ async function checkSlotDensity(page) {
   const close = '[data-test="reel-note-close"]';
   const notePages = [
     [".rn-table", ".rn-history small", ".rn-hall"],
-    [".rn-card .cue-chip"],
+    [".rn-tile-head", ".rn-tile-body", ".rn-card .cue-chip"],
     [".rn-setting small", ".rn-hint-head"],
   ];
   for (const [index, required] of notePages.entries()) {

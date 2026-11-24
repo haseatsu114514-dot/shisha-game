@@ -67,6 +67,34 @@ async function check(name, options, run, setup = null) {
 }
 const sizes = { pc: { viewport: { width: 1280, height: 720 } }, phone: { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } };
 try {
+  for (const [file, loader] of [["confession", "loadConfessionDialogue"], ["lover_events", "loadLoverEvents"]]) {
+    const deferred = /\/data\/dialogue\/(?:confession|lover_events)\.json(?:\?|$)/;
+    const requests = [];
+    let unavailable = true;
+    await check(`lazy-${file}-503`, sizes.pc, async p => {
+      assert.deepEqual(requests, [], "the title must not request either romance script");
+      await button(p, "title-new").click();
+      await p.locator(".vn-text").filter({ hasText: /\S/ }).waitFor({ timeout: 35000 });
+      assert.deepEqual(requests, [], "the first dialogue must not request either romance script");
+
+      const load = () => p.evaluate(async name => {
+        const loadDialogue = (await import("./js/core/data.js"))[name];
+        const first = loadDialogue();
+        const shared = loadDialogue() === first;
+        try { await first; return { shared, loaded: true }; }
+        catch (error) { return { shared, loaded: false, outage: error.message.includes("HTTP 503") }; }
+      }, loader);
+      assert.deepEqual(await load(), { shared: true, loaded: false, outage: true });
+      unavailable = false;
+      assert.deepEqual(await load(), { shared: true, loaded: true });
+      assert.deepEqual(await load(), { shared: true, loaded: true });
+      assert.deepEqual(requests.map(url => new URL(url).pathname.split("/").pop()), [`${file}.json`, `${file}.json`]);
+    }, async p => {
+      p.on("request", request => { if (deferred.test(request.url())) requests.push(request.url()); });
+      await p.route(`**/data/dialogue/${file}.json`, route =>
+        unavailable ? route.fulfill({ status: 503, body: "Unavailable" }) : route.continue());
+    });
+  }
   for (const [device, options] of Object.entries(sizes)) {
     await check(`${device}-menus-and-reload`, options, async p => {
       await landscapeOnly(p); await noDisplaySwitch(p);

@@ -12,7 +12,7 @@ import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 import { state, save, timeOfDay } from "../core/state.js";
 import { growthEnabled, hidaneTotal, readyLessons } from "../core/growth.js";
 import { SE } from "../core/audio.js";
-import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel } from "./spots.js";
+import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel, hasChapterTwoVisitContinuation } from "./spots.js";
 import { updateHud } from "./hud.js";
 import { mountReel } from "./reel.js";
 import { isRainy, tomorrowForecast } from "./weather.js";
@@ -330,10 +330,11 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
       const known = knowsOwner(s);
       const portrait = av.ok ? spotPortrait(s) : null;
       const label = av.why === "locked" ? "？？？" : known ? spotDetailLabel(s) : s.unknownLabel || s.label;
+      const visitHint = av.ok && known && (hasChapterTwoVisitContinuation(s) ? "会話の続き" : s.visitHint);
       info.classList.add("spot-selected");
       info.setAttribute("role", "button");
       info.setAttribute("tabindex", "0");
-      info.setAttribute("aria-label", `${label}${av.ok ? "へ行く" : `・${av.why}`}`);
+      info.setAttribute("aria-label", `${label}${av.ok ? "へ行く" : `・${av.why}`}${visitHint ? `・${visitHint}` : ""}`);
       if (av.ok) info.dataset.test = "map-go";
       else delete info.dataset.test;
       info.onclick = () => go(s);
@@ -388,8 +389,9 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
       // 体力は数字で見せない（ゲージでなんとなく把握するゲーム性・MAP04）。料金はピンから外し、ここで見せる（MAP05）。
       // 授業を相談できる店は、その授業の名前を札で添える（SBD141）。入れない日も出す（明日以降に来ればよいと分かる）
       const lessonTag = lessons.length ? ["mi-lesson", `授業の相談「${lessons.map((l) => l.name).join("」「")}」`, "map-lesson"] : null;
+      const visitTag = visitHint ? ["mi-visit-hint", visitHint, "map-visit-hint"] : null;
       const tags = !av.ok ? [av.why && av.why !== "locked" ? ["mi-why", av.why, "map-why"] : null, lessonTag].filter(Boolean)
-        : [s.cost && !freeGuide(s) ? ["mi-cost", `料金 ${yen(s.cost)}`, "map-cost"] : null, lessonTag].filter(Boolean);
+        : [s.cost && !freeGuide(s) ? ["mi-cost", `料金 ${yen(s.cost)}`, "map-cost"] : null, visitTag, lessonTag].filter(Boolean);
       const tagRow = tags.length ? el("div.mi-tags", tags.map(([cls, text, test]) => el(`span.mi-tag.${cls}`, { text, dataset: { test } }))) : null;
       info.replaceChildren(...[
         el("div.mi-banner", { text: label }),

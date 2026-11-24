@@ -11,7 +11,7 @@ async function prepare(page, { id, chapter = 1, day = 5, met = true } = {}) {
     const value = core.newGame();
     Object.assign(value, { chapter, phase: "daily", day, slot: 0, money: 20000, stamina: 90 });
     for (const who of ["naru", "adam", "minto", "rio", "samechan"]) value.met[who] = true;
-    if (met) for (const who of ["maezono", "dr_kemuri", "sui"]) value.met[who] = true;
+    if (met) for (const who of ["uezono", "dr_charcoal", "sensu"]) value.met[who] = true;
     value.flags._met_tsumugi = true;
     value.flags._cafe_introduced = true;
     let plan = null;
@@ -30,7 +30,7 @@ async function prepare(page, { id, chapter = 1, day = 5, met = true } = {}) {
 
 await suite("roamers", async check => {
   await check("plan-is-stable-shown-on-map-and-read-only", async page => {
-    const plan = await prepare(page, { id: "maezono", met: false });
+    const plan = await prepare(page, { id: "uezono", met: false });
     assert(plan, "上園さんが居合わせる種が見つからない");
     const result = await page.evaluate(() => {
       const spot = R.spots.spotById(R.roamers.roamerPlan().spotId);
@@ -44,14 +44,14 @@ await suite("roamers", async check => {
     assert.deepEqual(result.again, plan);
     assert.deepEqual(result.afterLoad, plan);
     assert(result.unchanged, "地図の表示で保存を変えない");
-    const guest = result.people.find(person => person.id === "maezono");
+    const guest = result.people.find(person => person.id === "uezono");
     assert(guest, "地図の店に顔を出す");
     assert.equal(guest.known, false);
     assert.equal(guest.name, "見知らぬ客");
   });
 
   await check("first-then-repeat-once-a-day-without-resources", async page => {
-    await prepare(page, { id: "dr_kemuri", met: false });
+    await prepare(page, { id: "dr_charcoal", met: false });
     const result = await page.evaluate(async () => {
       const resources = () => JSON.stringify([R.core.state.money, R.core.state.stamina, R.core.state.slot, R.core.state.stats, R.core.state.affinity]);
       const plan = R.roamers.roamerPlan(), spot = R.spots.spotById(plan.spotId), before = resources();
@@ -67,23 +67,23 @@ await suite("roamers", async check => {
       }
       // 次の日、もう一度
       Object.assign(R.core.state, { day: 6, slot: 0 });
-      for (let seed = 1; seed < 20000; seed++) { R.core.state.seed = seed; if (R.roamers.roamerPlan()?.id === "dr_kemuri") break; }
+      for (let seed = 1; seed < 20000; seed++) { R.core.state.seed = seed; if (R.roamers.roamerPlan()?.id === "dr_charcoal") break; }
       const next = R.roamers.roamerPlan();
       R.trace = [];
       const repeat = await R.roamers.meetRoamer(R.spots.spotById(next.spotId), next);
       return { first, again, firstScenes, sameDay: sameDay.length, unchanged: before === resources(),
-        seen: saved.flags._roam_seen_dr_kemuri, day: saved.flags._roam_day?.dr_kemuri, repeat,
-        repeatScenes: [...new Set(R.trace.map(x => x.scene))], count: R.core.state.flags._roam_seen_dr_kemuri };
+        seen: saved.flags._roam_seen_dr_charcoal, day: saved.flags._roam_day?.dr_charcoal, repeat,
+        repeatScenes: [...new Set(R.trace.map(x => x.scene))], count: R.core.state.flags._roam_seen_dr_charcoal };
     });
     assert.equal(result.first, true);
-    assert.deepEqual(result.firstScenes, ["roam_dr_kemuri_first"]);
+    assert.deepEqual(result.firstScenes, ["roam_dr_charcoal_first"]);
     assert.equal(result.again, false, "同じ日にもう一度は読まない");
     assert.equal(result.sameDay, 0, "よその店で誰かと話した日は、もう誰も居合わせない");
     assert(result.unchanged, "代金・体力・時間・能力・好感度は変えない（審査員）");
     assert.equal(result.seen, 1);
     assert.equal(result.day, "1:5");
     assert.equal(result.repeat, true);
-    assert.deepEqual(result.repeatScenes, ["roam_dr_kemuri_a"]);
+    assert.deepEqual(result.repeatScenes, ["roam_dr_charcoal_a"]);
     assert.equal(result.count, 2);
   });
 
@@ -126,14 +126,14 @@ await suite("roamers", async check => {
         const spot = R.spots.spotById(plan.spotId) || { id: plan.spotId };
         if (plan.spotId === "tonari" || plan.spotId === hiyori.hiyoriShopLocation()) bad.push(["busy", plan]);
         if (plan.id === "adam" && plan.spotId === "adam") bad.push(["own", plan]);
-        if (plan.id === "sui" && plan.spotId === "c_station") bad.push(["chain", plan]);
+        if (plan.id === "sensu" && plan.spotId === "c_station") bad.push(["chain", plan]);
         if (R.spots.isClosed(spot)) bad.push(["closed", plan]);
       }
       return { counts, bad, rate: out / slots };
     });
     assert.deepEqual(result.bad, []);
     assert(result.rate > 0.15 && result.rate < 0.35, `居合わせる割合（4回に1回ほど） ${result.rate}`);
-    for (const id of ["maezono", "dr_kemuri", "sui", "adam", "rio", "tsumugi"]) assert(result.counts[id] > 0, `${id} が一度も出ない`);
+    for (const id of ["uezono", "dr_charcoal", "sensu", "adam", "rio", "tsumugi"]) assert(result.counts[id] > 0, `${id} が一度も出ない`);
   });
 
   await check("owner-not-double-listed-while-roaming-away-2444", async page => {
@@ -160,7 +160,7 @@ await suite("roamers", async check => {
   });
 
   await check("no-one-else-on-a-day-with-another-shop-guest", async page => {
-    await prepare(page, { id: "maezono" });
+    await prepare(page, { id: "uezono" });
     const result = await page.evaluate(() => {
       const value = R.core.state, stamp = `${value.chapter}:${value.day}`;
       const count = () => { let n = 0; for (let slot = 0; slot <= 1; slot++) for (let seed = 1; seed < 400; seed++) {
@@ -179,11 +179,11 @@ await suite("roamers", async check => {
   });
 
   await check("judges-speak-by-name-only-after-meeting", async page => {
-    await prepare(page, { id: "sui", met: true });
+    await prepare(page, { id: "sensu", met: true });
     const known = await page.evaluate(async () => {
       const plan = R.roamers.roamerPlan();
       await R.roamers.meetRoamer(R.spots.spotById(plan.spotId), plan);
-      return R.trace.filter(x => x.speaker === "sui").length;
+      return R.trace.filter(x => x.speaker === "sensu").length;
     });
     assert(known > 0, "会った後は会長本人が話す");
   });
@@ -211,7 +211,7 @@ await suite("roamers", async check => {
       roamers.addRoamerSpots(() => tokyo.CH3_TOKYO_SPOTS);
       const value = core.newGame();
       Object.assign(value, { chapter: 3, phase: "daily", day: 3 });
-      for (const who of ["saku", "steve", "volk", "mashiro", "mukai_master"]) value.met[who] = true;
+      for (const who of ["ayatori", "steve", "volk", "mashiro", "mukai_master"]) value.met[who] = true;
       const places = Object.fromEntries(tokyo.CH3_TOKYO_SPOTS.map(entry => [entry.id, entry.place]));
       const counts = {}, bad = [];
       for (let day = 3; day < 16; day++) for (let slot = 0; slot <= 1; slot++) for (let seed = 1; seed < 40; seed++) {
@@ -299,7 +299,7 @@ await suite("roamers", async check => {
         trace.length = 0;
         const value = core.newGame();
         Object.assign(value, { chapter: 5, phase: "daily" });
-        if (seen) value.flags._roam_seen_dr_kemuri = 2;
+        if (seen) value.flags._roam_seen_dr_charcoal = 2;
         await engine.play("ch5_opening");
         return trace.some(text => /街の店で/.test(text || ""));
       };

@@ -28,7 +28,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "あげはが、スマホを構えたまま、ドアの前で足を止めていた。"
+          "text": "あげはが、デコケータイを構えたまま、ドアの前で足を止めていた。"
         },
         {
           "type": "condition",
@@ -122,7 +122,7 @@
         {
           "speaker": "pakki",
           "face": "excited",
-          "text": "HAZE: OPEN CLOUD！　4人一斉、一発勝負でお送りします！"
+          "text": "HAZE: OPEN CLOUD！ 四人一斉、一発勝負でお送りします！"
         },
         {
           "type": "condition",
@@ -134,7 +134,7 @@
         {
           "speaker": "pakki",
           "face": "excited",
-          "text": "神崎竜二選手！　その肩書きも、ご自身からどうぞ"
+          "text": "神崎竜二選手！ その肩書きも、ご自身からどうぞ"
         },
         {
           "speaker": "kumicho",
@@ -154,9 +154,9 @@
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "rei",
-          "next_true": "rei_known",
-          "next_false": "rei_first"
+          "char_id": "kuraudo",
+          "next_true": "kuraudo_known",
+          "next_false": "kuraudo_first"
         },
         {
           "speaker": "pakki",
@@ -166,7 +166,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "4台の向こうで、上園、チャコール博士、千須が席についた。"
+          "text": "四台の向こうで、上園、チャコール博士、千須が席についた。"
         },
         {
           "speaker": "",
@@ -205,16 +205,16 @@
             "text": "（あの色付き眼鏡の人も、出場者か。名前を聞くのは初めてだ）"
           }
         ],
-        "rei_known": [
+        "kuraudo_known": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "smile",
             "text": "また会ったな。今日の煙、聴かせてもらう"
           }
         ],
-        "rei_first": [
+        "kuraudo_first": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "smile",
             "text": "「貴方ノ為ノ此ノ煙。」のクラウド。今日の煙、楽しみにしてる"
           }
@@ -242,12 +242,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "4台の前に、それぞれが立った。配信カメラの赤いランプが、一つずつ灯っていく。"
+          "text": "四台の前に、それぞれが立った。配信カメラの赤いランプが、一つずつ灯っていく。"
         },
         {
           "speaker": "pakki",
           "face": "excited",
-          "text": "規則の前に、選手の皆さんへひと言ずつッ！ まずは神崎選手から！"
+          "text": "規則の前に、選手の皆さんへ一言ずつッ！ まずは神崎選手から！"
         },
         {
           "speaker": "kumicho",
@@ -280,12 +280,12 @@
           "text": "客席がどっと沸いた。あげはは赤い顔のまま、台の縁を指で軽く叩いた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……いい音だ。今日は、隣の台の音も聴いてる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "でも一番は、終わったあとの三秒。今日の煙も、そこまで聴いて"
         },
@@ -446,22 +446,22 @@
           "text": "第弐条ッ！ 一台を作って提供し、二度の調整まで同じ一台で勝負です！ ぷぷぷっ！"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "serious",
           "text": "調整のたびに、全員の一台を吸わせてもらいます。楽しみだねえ"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "ブンさん、今日も楽しそうですね"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
-          "text": "私たちは、一人10点ずつ持っている。気になった煙へ、途中でも投入するよ"
+          "text": "私たちは、一人十点ずつ持っています。気になった煙へ、途中でも投入しますよ"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "serious",
           "text": "一度入れた点は戻さない。最後に合計して、県代表を決める"
         },
@@ -498,12 +498,12 @@
         {
           "speaker": "pakki",
           "face": "excited",
-          "text": "審査員3人の10点、すべて投入されました！ ……それでは、結果を出します！"
+          "text": "審査員三人の十点、すべて投入されました！ ……それでは、結果を出します！"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "会場の音楽が、ふっと絞られた。四台のボウルから、細い煙だけがまだ上がっている。"
+          "text": "会場の音楽が、ふっと絞られた。四台のハガルから、細い煙だけがまだ上がっている。"
         },
         {
           "speaker": "",
@@ -563,7 +563,7 @@
           "text": "……映画の話だ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……おめでとう。最後の調整、音が揃ったみたいだった"
         },
@@ -580,10 +580,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "壇上を降りかけたところで、審査員席を離れた千須が、俺の前で足を止めた。"
+          "text": "壇上を降りかけたところで、審査員席を離れた会長が、俺の前で足を止めた。"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "serious",
           "duck": true,
           "text": "見事な正解だ。だが、その煙は誰の顔を見て作った？"
@@ -591,7 +591,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "答えるより先に、千須はもう背を向けていた。"
+          "text": "答えるより先に、会長はもう背を向けていた。"
         },
         {
           "type": "hide_portrait",
@@ -599,11 +599,11 @@
         },
         {
           "type": "hide_portrait",
-          "char_id": "rei"
+          "char_id": "kuraudo"
         },
         {
           "type": "hide_portrait",
-          "char_id": "sui"
+          "char_id": "sensu"
         },
         {
           "speaker": "",
@@ -866,7 +866,7 @@
         {
           "speaker": "ageha",
           "face": "sad",
-          "text": "（でも、……こんなの、ズルいよ）"
+          "text": "（でも……こんなの、ずるいよ）"
         },
         {
           "speaker": "",

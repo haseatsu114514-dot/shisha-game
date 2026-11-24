@@ -25,7 +25,7 @@ html:root .trpg-root .trpg-overlay:has(> .trpg-roll-show) > .trpg-modal { opacit
 /* ======== 背景の層 ======== */
 /* 幕: 卓のフェルトを真上から照らす。斜めに払うように入る。 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-veil {
-  position: absolute; inset: 0; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  position: absolute; inset: 0;
   background:
     radial-gradient(ellipse 55% 60% at 50% 44%, #2c8f86b3 0%, #0d4a4ccc 38%, #03121af5 100%),
     repeating-linear-gradient(115deg, #ffffff06 0 2px, transparent 2px 9px),
@@ -143,16 +143,14 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-die:is([data-state="tumbling"], [d
   filter: drop-shadow(0 0 2px #fff8) drop-shadow(0 22px 14px #00000055) blur(.4px);
 }
 html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-i="1"]:is([data-state="tumbling"], [data-state="hover"]) .trpg-rs-body { animation-direction: reverse; }
-/* 立体のダイス（TRF36・dice3d.js）: Canvas に正二十面体を描く。描けた時だけ data-render="3d" で絵と重ねた数字を隠す。
+/* 立体のダイス（TRF36・dice3d.js）: Canvas に正二十面体を描く。描けた時だけ data-render="3d" で重ねた数字を隠す。
    数字の要素は残す（中身は判定の値。テストと、描けない時の表示に使う）。 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-d3 { position: absolute; inset: 0; width: 100%; height: 100%; display: none; filter: drop-shadow(0 10px 8px #00000080); }
 html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-render="3d"] .trpg-rs-d3 { display: block; }
-html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-render="3d"] .trpg-rs-body { display: none; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-render="3d"] .trpg-rs-num { visibility: hidden; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-render="3d"][data-state="hover"] .trpg-rs-d3 { filter: drop-shadow(0 0 10px #fff6d7) drop-shadow(0 0 30px color-mix(in srgb, var(--rs) 80%, #fff)) drop-shadow(0 26px 16px #00000055); }
 html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-render="3d"][data-glow="critical"] .trpg-rs-d3 { filter: drop-shadow(0 0 16px #fff2b0) drop-shadow(0 0 46px #ffb84a); }
 html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-render="3d"][data-glow="fumble"] .trpg-rs-d3 { filter: drop-shadow(0 0 20px #5f77a8); }
-html:root .trpg-root .trpg-roll-show .trpg-rs-clock { display: none; }
 /* 結果の卓のダイスも、止まっている時は同じ立体の絵（view.js の die()）。数字の要素は隠して残す。 */
 html:root .trpg-root .trpg-die.trpg-d20[data-render="3d"] .trpg-die-body { background: none; }
 html:root .trpg-root .trpg-die.trpg-d20[data-render="3d"] .trpg-d20-value { visibility: hidden; }
@@ -416,7 +414,7 @@ html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid:has(input:checked
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-trump { color: #9ff0dc; font-weight: 700; }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice { position: relative; border-color: #5fe0c4aa; box-shadow: 0 0 0 1px #5fe0c455, 0 0 16px #5fe0c444, 0 3px 0 #a98f6255; }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice::before {
-  content: "SKILL"; position: absolute; left: 12px; top: -9px; padding: 0 8px; border-radius: 4px; font-size: 12px; font-weight: 900; letter-spacing: .02em; line-height: 16px;
+  content: "SKILL"; position: absolute; z-index: 1; left: 12px; top: -9px; padding: 0 8px; border-radius: 4px; font-size: 12px; font-weight: 900; letter-spacing: .02em; line-height: 16px;
   color: #031a16; background: #5fe0c4; box-shadow: 0 0 0 1px #031a16; pointer-events: none;
 }
 /* スマホ横持ち（ステージが縮む）では、札の字が実寸で読める大きさに。並びと札の大きさは変えない。 */
@@ -425,10 +423,16 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice::before {
   top: calc(-8px / var(--k, 1)); padding: 0 calc(6px / var(--k, 1)); font-size: calc(12px / var(--k, 1)); line-height: calc(16px / var(--k, 1));
 }
-/* 届かなかった時は、振り直しの札が呼んでいる（脈打つ光）。 */
-html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-grade]:not([data-grade="success"]) .trpg-reroll-choice:not(:disabled) { animation: trpg-rs-reroll-call 1s ease-in-out infinite alternate; }
+/* 振り直しを待つ間は、固定の影の濃さだけを変える。ぼかしを毎フレーム描き直さない。 */
+@media (prefers-reduced-motion: no-preference) {
+  html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-grade]:not([data-grade="success"]) .trpg-reroll-choice:not(:disabled)::after {
+    content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none;
+    box-shadow: 0 0 0 2px #9ff0dc, 0 0 30px #5fe0c4;
+    animation: trpg-rs-reroll-call 1s ease-in-out infinite alternate;
+  }
+}
 @keyframes trpg-rs-skill-ready { to { box-shadow: 0 0 0 2px #ffe08a, 0 0 30px #ffcf4a99, 0 3px 0 #a98f6266; } }
-@keyframes trpg-rs-reroll-call { to { box-shadow: 0 0 0 2px #9ff0dc, 0 0 30px #5fe0c4, 0 3px 0 #a98f6255; } }
+@keyframes trpg-rs-reroll-call { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
   html:root .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-aid, .trpg-reroll-choice) { animation: none !important; }
 }

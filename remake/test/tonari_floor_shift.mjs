@@ -119,10 +119,10 @@ for (const mode of ["done", "load", "abandon"]) await floorBoundary(mode);
 // 画面を読み込めない時は、いつもの「今日の注文」へ戻す（進み具合は増やさない）。
 {
   const account = { day: 4, chapter: 1, weatherSeed: 18, flags: {}, money: 30000 };
-  let modals = 0;
+  let modals = 0, choice = 0;
   const context = vm.createContext({ state: account, DB: { dialogues: {} }, tsumugiAtTonari: () => false, TONARI_BG: "tonari",
     play: async () => ({}), isRainy: () => false, timeOfDay: () => "noon", bgUrl: () => "bg", setBg: async () => {},
-    toast: () => {}, modal: async () => { modals++; return 0; } });
+    toast: () => {}, modal: async () => { modals++; return choice; } });
   const module = new vm.SourceTextModule(text.slice(start) + "\nexport { serveFloorOrder };", {
     context, importModuleDynamically: async () => { throw Error("offline"); },
   });
@@ -134,5 +134,9 @@ for (const mode of ["done", "load", "abandon"]) await floorBoundary(mode);
   assert.equal(modals, 1);
   assert.equal(account.flags["_shift_order_1:4"], true);
   assert.equal(account.flags._tonari_floor, undefined);
+  account.day++;
+  choice = undefined;
+  assert.equal(await module.namespace.serveFloorOrder(account, new AbortController().signal), null);
+  assert.equal(account.flags["_shift_order_1:5"], undefined);
 }
 console.log("tonari floor: AUTO/manual save, owner replacement, fans carry-over, progress and fallback OK");

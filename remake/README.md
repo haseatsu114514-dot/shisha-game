@@ -43,7 +43,7 @@
 mukaiの看板猫てつこ（#1993）は、到着の場面で裏口に登場し、以後の空き時間に地図のmukaiから「裏口のてつこに会う」を選べます。撫でるか餌をあげるかを選び、正常読了後だけ体力12が戻ります（能力・お金・好感度は増えません。毎回選べる一行動）。飼い主はムカイさんですが懐くのはましろだけで、ムカイさんには普通の距離感です。確認は `node remake/test/ch3_outings.mjs` と `node remake/test/browser/ch3_outings.mjs`。
 mukaiで行動を使った帰りの裏口では、ふれあいの画面「てつこといっしょ」（#2454）も選べます。てつこが「してほしいこと」を頭の上の吹き出しで見せ、なでる（場所で反応が変わる）・猫じゃらし（飛びつく・空振りする）・ブラシ・おやつ・置いた小物で応えると、ごきげんのハートがたまり、いっぱいになると「とっておき」のしぐさが見られます。触らずに眺めているだけでも、隣で見守ったことになります。しぐさ図鑑12件と写真があり、点数や失敗はありません。関係の段階は既存の来訪記録から導き、有効なふれあいで「少し構っていく」と同じ体力12と来訪1回が戻ります。[仕様](../docs/spec/tetsuko_time.md)（今の遊びの形は §10）。確認は `node remake/test/tetsuko_time.mjs`・`node remake/test/browser/tetsuko_feel.mjs`・`node remake/test/browser/ch3_tokyo_daily.mjs`。
 
-動物園と池は景観ランドマークです。ジム以外の東京の任意スポット・専用の大会前夜デート台本は未接続（第4章以降の本編は `chapters/ch4.js`・`ch5.js` で接続済み）。[東京地図の制作・検証](../asset_sources/ch3-tokyo-map/README.md)。確認は `node remake/test/browser/ch3_map_activities.mjs`。
+動物園と池は景観ランドマークです。東京の任意訪問は街の地図から選べます。恋人との大会前夜デートには、上記の訪問日程またはましろとの関係が必要です。[東京地図の制作・検証](../asset_sources/ch3-tokyo-map/README.md)。確認は `node remake/test/browser/ch3_map_activities.mjs`。
 
 第2章の最初の試遊は `http://127.0.0.1:8123/remake/chapter2-preview.html`。
 同じ県内の隣町・柚ヶ谷（ゆずがや）で、到着の会話、新しい昼夜マップ、4地点の入口での出会い、3地点の準備中の店内見学、帰路を遊べる。
@@ -151,7 +151,7 @@ remake/
 ```
 
 立ち絵・背景・作業台の素材（`assets/ui/making/`）を追加・差し替えたら `python3 remake/tools/build_manifest.py` を1回実行する
-（Pillow・numpy・scipy が必要）。人物だけの追加は `--portraits-only kumicho rei volk` で他の採用済み画像を維持して更新できる。立ち絵の余白と足元位置、作業台素材の中身の範囲（bbox）を測って
+（Pillow・numpy・scipy が必要）。人物だけの追加は `--portraits-only kumicho kuraudo volk` で他の採用済み画像を維持して更新できる。立ち絵の余白と足元位置、作業台素材の中身の範囲（bbox）を測って
 `remake/data/manifest.json` に書き出す。コールドオープンの一台と制作画面の静止モックアップの素材は
 この実測値から位置を計算して組む。制作画面には独立した一台のパネルを表示しない。それ以外の変更にビルドは要らない。
 文字だけの仮置きCG（無地に説明文の画像）は一覧に載せない＝場面では飛ばし、ギャラリーにも出さない。本物の絵に差し替えて再実行すれば出る。
@@ -419,7 +419,6 @@ node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信
 
 ## まだ無いもの（次の作業候補）
 
-- 第3章の任意スポット・恋人との大会前夜デートは実装済み（`remake/js/chapters/ch3-story-wiring.js`、#1176）。第4章・第5章も接続済みで、細部の調整は `docs/stat-design/` と `docs/owner_requests.md` の最新節を見る
 - コード中の未決番号（Q1〜Q20）の判断待ち一覧は `docs/spec/open_questions_ch4_ch5.md`
 - 恋人になってからの章をまたぐ要素（ch4 ドバイに来る／来ない）は第2章以降と一緒に。エンディングの修羅場は接続済み（恋人が2人以上なら、第5章のスタッフロールの後に修羅場→一人ずつの話し直し→タイトル。`chapters/ch5.js`・IR32。検証は `remake/test/browser/staff_roll.mjs`）
 - BGMの細かい出し分け（現状は場面ごとの基本曲のみ）

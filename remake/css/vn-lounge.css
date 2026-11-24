@@ -1,7 +1,7 @@
 /* 会話枠の共通組版。テーマは装飾を変え、本文・操作の安全領域を共有する。 */
 @font-face {
   font-family: "Suien Name";
-  src: url("../fonts/ZenOldMincho-Name-Bold.woff2") format("woff2");
+  src: url("../fonts/ZenOldMincho-Name-Bold.woff2?v=20261122") format("woff2");
   font-style: normal;
   font-weight: 700;
   font-display: swap;

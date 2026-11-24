@@ -151,8 +151,8 @@ async function loadDubaiScenes() {
 
 /**
  * ヌールに会ったことのある保存を再開・LOAD した時は、最初の行動の前にカフェ・オアシスと砂丘の台詞（ch4_desert.json）を読んでおく。
- * MENU の人間関係の「次にカフェ・オアシスで会うと」（daily/bonds.js の finaleDue）と「告白を選べる」（daily/romance.js の romanceRouteOpen）は
- * 締めくくり・告白の台詞が読み込まれているかを見るので、カフェか砂丘へ行くまで出なかった（地元にいても同じなので、ドバイにいる時に限らない）。
+ * MENU の人間関係の「次にカフェ・オアシスで会うと」（daily/bonds.js の finaleDue）に使う。
+ * 告白の台本は人間関係タブか、砂丘で約束の続きを読む直前に取得する。
  * 読めなくても地図は開く（カフェ・砂丘を選んだ時に読み直し、失敗ならそこで知らせる）。東京の preloadTokyoScenes と同じ（ch5-daily.js）。
  */
 export async function preloadNoorScenes(value = state) {
@@ -174,7 +174,7 @@ const unused = { used: false, exerted: false };
 const LOAD_FAILED = "会話を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます";
 
 /** ドバイの行き先と「ドバイへ」の処理。対象外の行き先は null（日常ループの通常の処理へ）。 */
-export async function performDubaiSpot(spot, { staminaGuard } = {}) {
+export async function performDubaiSpot(spot, { staminaGuard, holdSaveUntilActionEnds } = {}) {
   if (spot.id !== TO_DUBAI_SPOT.id && spot.region !== DUBAI) return null;
   const owner = state;
   try { await loadDubaiScenes(); } catch {
@@ -182,8 +182,8 @@ export async function performDubaiSpot(spot, { staminaGuard } = {}) {
     return unused;
   }
   if (state !== owner) return unused;
-  if (spot.id === TO_DUBAI_SPOT.id) return goToDubai(owner);
-  if (spot.id === "ch5_dubai_home") return goHome(owner);
+  if (spot.id === TO_DUBAI_SPOT.id) return goToDubai(owner, holdSaveUntilActionEnds);
+  if (spot.id === "ch5_dubai_home") return goHome(owner, holdSaveUntilActionEnds);
   if (spot.id === CAMEL_DAILY_SPOT_ID) return visitCamelTrack(owner);
   if (spot.id === DESERT_SPOT_IDS.dunes) return visitDunes(spot, owner);
   if (spot.id === DESERT_SPOT_IDS.desk) return visitNoorCafe(spot, owner);
@@ -311,7 +311,7 @@ async function readDubaiFinale(spot, who, staminaGuard, owner) {
   return { used: true, exerted: false };
 }
 
-async function goToDubai(owner) {
+async function goToDubai(owner, holdSaveUntilActionEnds) {
   const status = dubaiTripStatus(state);
   if (!status.ok) {
     toast(`シェイクの次の手紙は、まだ届いていない（あと${status.daysLeft}日）`);
@@ -337,9 +337,9 @@ async function goToDubai(owner) {
   });
   if (go !== "go" || state !== owner) return unused;
   if (!await read("ch5_dubai_go", "bg_dubai_airport_day", owner)) return unused;
+  holdSaveUntilActionEnds?.();
   useDubaiTicket(state);
   state.flags._ch2_region = DUBAI;
-  save();
   // 機窓で日本の夜からドバイの朝焼けへ（#2688 A4）。着いた先は屋敷（初めて）か空港
   await planeRide(() => showBg(state.flags[GUEST_FLAG] ? "bg_dubai_airport_day" : RESIDENCE_BG, state.flags[GUEST_FLAG] ? "day" : timeOfDay()), { to: "dubai" });
   if (state !== owner) return unused;
@@ -353,16 +353,16 @@ async function goToDubai(owner) {
   return { used: true, exerted: false };
 }
 
-async function goHome(owner) {
+async function goHome(owner, holdSaveUntilActionEnds) {
   // 恋人のヌールが空港で見送る（#4010。出迎えの後に一度だけ）。読み終えた時だけ印を付ける
   const farewell = noorLoverSceneDue(state, "farewell");
   if (farewell && await read(farewell, "bg_dubai_airport_day", owner)) { state.flags[noorLoverReadFlag("farewell")] = true; save(); }
   if (state !== owner) return unused;
   if (!await read("ch5_dubai_back", "bg_dubai_airport_day", owner)) return unused;
   // 帰りの便は往復の切符に入っている（ここでは払わない）。次の切符入りの手紙は、この日から数えて届く。
+  holdSaveUntilActionEnds?.();
   recordDubaiReturn(state);
   state.flags._ch2_region = "home";
-  save();
   // 機窓で夕方から日本の夜の街の灯へ（#2688 A4）
   await planeRide(() => showBg(`bg_osu_map_${timeOfDay()}`, timeOfDay()), { to: "home" });
   return { used: true, exerted: false };
@@ -445,7 +445,8 @@ async function visitDunes(spot, owner) {
   let desert, romance;
   try {
     [desert, romance] = await Promise.all([import("./ch4-desert.js"), import("../daily/romance.js")]);
-    await desert.loadDesertDialogues(); // 告白を待たれているか（romanceRouteOpen）は、告白の台本を読み込んだ後に分かる
+    await desert.loadDesertDialogues();
+    if (state === owner && !owner.flags[DUNES_AGAIN.flag] && noorConfessionWaiting(owner)) await desert.loadNoorConfession();
   } catch {
     toast(LOAD_FAILED);
     return unused;

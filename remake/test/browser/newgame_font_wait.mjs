@@ -6,7 +6,8 @@ const baseURL = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
 
 const browser = await chromium.launch({ headless: true });
 try {
-  const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+  // Regulate the browser's font request directly so the service worker cannot bypass the route.
+  const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, serviceWorkers: "block" });
   const errors = [], failedRequests = [], httpErrors = [];
   page.on("pageerror", error => errors.push(error.message));
   page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
@@ -19,7 +20,7 @@ try {
   let releaseFont;
   const heldFont = new Promise(resolve => { releaseFont = resolve; });
   let fontRequests = 0;
-  await page.route("**/ZenOldMincho-Blue-Regular.woff2", async route => {
+  await page.route(url => url.pathname.endsWith("/ZenOldMincho-Blue-Regular.woff2"), async route => {
     fontRequests++;
     await heldFont;
     await route.continue();

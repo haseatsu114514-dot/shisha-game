@@ -249,7 +249,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "えっ、見てないのに、わかるの？"
+          "text": "えっ、見てないのに、分かるの？"
         },
         {
           "speaker": "tsumugi",
@@ -991,7 +991,7 @@
         {
           "speaker": "tsumugi",
           "face": "evil",
-          "text": "……見てます、……いつも通り"
+          "text": "……見てます。……いつも通り"
         },
         {
           "speaker": "",
@@ -1034,7 +1034,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（……後ろ姿でも、わかる。これ、俺だ）"
+            "text": "（……後ろ姿でも、分かる。これ、俺だ）"
           }
         ],
         "heart_word": [
@@ -1146,7 +1146,7 @@
           {
             "speaker": "tsumugi",
             "face": "normal",
-            "text": "これも、私の絵です、……前の猫も"
+            "text": "これも、私の絵です。……前の猫も"
           }
         ],
         "gift_before": [
@@ -2497,7 +2497,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "トップの炭は白い灰をかぶって、ひと回り小さくなっていた。"
+          "text": "ボウルの炭は白い灰をかぶって、ひと回り小さくなっていた。"
         },
         {
           "speaker": "tsumugi",

@@ -31,7 +31,7 @@
         {"speaker": "customer", "face": "normal", "text": "アニキ、いやすか……って、見ねえ顔だな。新入りかい"},
         {"speaker": "hajime", "face": "normal", "text": "いえ、留守番です。神崎さんの……兄弟分、です"},
         {"speaker": "", "face": "", "text": "客の背筋が、音がしそうなほど伸びた。"},
-        {"speaker": "customer", "face": "surprise", "text": "きょ、兄弟分……！　し、失礼しやした"},
+        {"speaker": "customer", "face": "surprise", "text": "きょ、兄弟分……！ し、失礼しやした"},
         {"speaker": "", "face": "", "text": "客は深々と頭を下げ、出された番茶を正座で飲み干して帰っていった。"},
         {"speaker": "", "face": "", "text": "戻ってきた神崎さんに話すと、湯呑みを持つ手が一度止まった。"},
         {"speaker": "kumicho", "face": "serious", "text": "……客の前で、兄弟分なんて言うんじゃねえ"},
@@ -121,121 +121,121 @@
       ]
     },
     {
-      "dialogue_id": "bond_after_rei_1",
+      "dialogue_id": "bond_after_kuraudo_1",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。その日の一曲目をはじめに選ばせる（詳しくないまま聞く友人・character_profiles）。",
       "lines": [
         {"speaker": "", "face": "", "text": "開店前の店。クラウドが、棚のCDの前で腕を組んでいた。"},
-        {"speaker": "rei", "face": "normal", "text": "……今日の一曲目、キミが選んで"},
+        {"speaker": "kuraudo", "face": "normal", "text": "……今日の一曲目、キミが選んで"},
         {"speaker": "hajime", "face": "surprise", "text": "俺がですか。曲、ほとんど知りませんよ"},
-        {"speaker": "rei", "face": "normal", "text": "知らなくていい。……ジャケットで選んで"},
+        {"speaker": "kuraudo", "face": "normal", "text": "知らなくていい。……ジャケットで選んで"},
         {"speaker": "", "face": "", "text": "棚を眺めて、黒地に銀の羽根が描かれた一枚を抜いた。"},
-        {"speaker": "rei", "face": "smile", "text": "……ジャケ買い。正しい聴き方"},
+        {"speaker": "kuraudo", "face": "smile", "text": "……ジャケ買い。正しい聴き方"},
         {"speaker": "", "face": "", "text": "一曲目が流れ出す。最初の客が入ってきて、扉の前で少しだけ立ち止まった。"},
         {"speaker": "customer", "face": "normal", "text": "この曲、知らないけど……いいですね"},
-        {"speaker": "rei", "face": "normal", "text": "……選んだのは、こいつ"},
+        {"speaker": "kuraudo", "face": "normal", "text": "……選んだのは、こいつ"},
         {"speaker": "hajime", "face": "smile", "text": "（客の感想を、自分のことみたいに嬉しそうに受け取る人だ）"}
       ]
     },
     {
-      "dialogue_id": "bond_after_rei_2",
-      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。本名ネタ（#3667）。実家は農家（田中農園・2026-11-16 オーナー決定）で、毎月の野菜が営業中に宅配便で届き、配達員が本名を呼ぶ。本名（健太）は ch2_rei_third で打ち明け済み、二つ名は同じ回で客から聞いている（締めくくりはその後）。",
+      "dialogue_id": "bond_after_kuraudo_2",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。本名ネタ（#3667）。実家は農家（田中農園・2026-11-16 オーナー決定）で、毎月の野菜が営業中に宅配便で届き、配達員が本名を呼ぶ。本名（健太）は ch2_kuraudo_third で打ち明け済み、二つ名は同じ回で客から聞いている（締めくくりはその後）。",
       "lines": [
         {"speaker": "", "face": "", "text": "営業中の店。ろうそくの灯りの下で、常連が二人、静かに煙を吐いていた。"},
         {"speaker": "", "face": "", "text": "入口の扉が勢いよく開く。宅配便の制服の人が、段ボール箱を抱えていた。"},
         {"speaker": "", "face": "", "text": "「田中健太さーん！　お届け物でーす！」"},
         {"speaker": "", "face": "", "text": "常連の二人が、ゆっくりとカウンターの方を見た。"},
-        {"speaker": "rei", "face": "surprise", "text": "……"},
+        {"speaker": "kuraudo", "face": "surprise", "text": "……"},
         {"speaker": "hajime", "face": "normal", "text": "（……返事をしないと、帰らない気がする）"},
-        {"speaker": "rei", "face": "serious", "text": "……はい。俺です"},
+        {"speaker": "kuraudo", "face": "serious", "text": "……はい。俺です"},
         {"speaker": "", "face": "", "text": "判を押して受け取る。箱の横には、大きく「田中農園」の文字。"},
         {"speaker": "customer", "face": "surprise", "text": "店長、田中さんだったんですか"},
-        {"speaker": "rei", "face": "normal", "text": "……店では、クラウド"},
+        {"speaker": "kuraudo", "face": "normal", "text": "……店では、クラウド"},
         {"speaker": "", "face": "", "text": "箱の中は、新聞紙に包まれたキャベツと玉ねぎ。それに、手紙が一枚。"},
-        {"speaker": "rei", "face": "normal", "text": "……実家、農家。毎月、来る"},
+        {"speaker": "kuraudo", "face": "normal", "text": "……実家、農家。毎月、来る"},
         {"speaker": "hajime", "face": "smile", "text": "爆煙の堕天使に、キャベツ"},
-        {"speaker": "rei", "face": "serious", "text": "……その名前で、キャベツの話をしないで"},
+        {"speaker": "kuraudo", "face": "serious", "text": "……その名前で、キャベツの話をしないで"},
         {"speaker": "", "face": "", "text": "手紙の一行目に「健太へ　ちゃんと食べてる？」と見えた。クラウドは素早く畳んだ。"},
-        {"speaker": "rei", "face": "normal", "text": "……半分、持って帰って。一人だと、食べきれない"},
+        {"speaker": "kuraudo", "face": "normal", "text": "……半分、持って帰って。一人だと、食べきれない"},
         {"speaker": "hajime", "face": "normal", "text": "ありがとうございます。……ちゃんと食べてくださいね"},
-        {"speaker": "rei", "face": "smile", "text": "……キミまで、母さんみたいなこと言う"}
+        {"speaker": "kuraudo", "face": "smile", "text": "……キミまで、母さんみたいなこと言う"}
       ]
     },
     {
-      "dialogue_id": "bond_after_rei_3",
-      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。CDをジャケットが見える向きで飾る理由（character_profiles の店舗）。客の好みのメモ帳（remake_ch2_rei_repeat_c）を受ける。",
+      "dialogue_id": "bond_after_kuraudo_3",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。CDをジャケットが見える向きで飾る理由（character_profiles の店舗）。客の好みのメモ帳（remake_ch2_kuraudo_repeat_c）を受ける。",
       "lines": [
         {"speaker": "", "face": "", "text": "閉店後。クラウドが棚からCDを全部下ろして、一枚ずつ拭いていた。"},
-        {"speaker": "rei", "face": "normal", "text": "……手伝ってくれるなら、ケースの角だけ拭いて"},
+        {"speaker": "kuraudo", "face": "normal", "text": "……手伝ってくれるなら、ケースの角だけ拭いて"},
         {"speaker": "hajime", "face": "normal", "text": "全部、ジャケットが見える向きに戻すんですよね"},
-        {"speaker": "rei", "face": "normal", "text": "……うん。背表紙だと、選ぶ前に通り過ぎられる"},
-        {"speaker": "rei", "face": "normal", "text": "好きな盤は、目が合う所に置きたい。客と、盤の目が"},
+        {"speaker": "kuraudo", "face": "normal", "text": "……うん。背表紙だと、選ぶ前に通り過ぎられる"},
+        {"speaker": "kuraudo", "face": "normal", "text": "好きな盤は、目が合う所に置きたい。客と、盤の目が"},
         {"speaker": "hajime", "face": "smile", "text": "店全体が、クラウドさんのプレイリストみたいですね"},
-        {"speaker": "rei", "face": "surprise", "text": "……それ、いい言い方。メモしていい？"},
+        {"speaker": "kuraudo", "face": "surprise", "text": "……それ、いい言い方。メモしていい？"},
         {"speaker": "", "face": "", "text": "クラウドは客の好みのメモ帳を開いて、端に小さく書き足した。"}
       ]
     },
     {
-      "dialogue_id": "bond_after_rei_4",
-      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。笑う練習（ch2_rei_third「笑うのはまだ下手だが」）。",
+      "dialogue_id": "bond_after_kuraudo_4",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。笑う練習（ch2_kuraudo_third「笑うのはまだ下手だが」）。",
       "lines": [
         {"speaker": "", "face": "", "text": "扉を開けると、クラウドが鏡の前で口の端を指で持ち上げていた。"},
-        {"speaker": "rei", "face": "surprise", "text": "……見た？"},
+        {"speaker": "kuraudo", "face": "surprise", "text": "……見た？"},
         {"speaker": "hajime", "face": "normal", "text": "……見ました"},
-        {"speaker": "rei", "face": "sad", "text": "……常連に、笑うと怖いって言われた"},
-        {"speaker": "rei", "face": "normal", "text": "練習してる。キミが判定して"},
+        {"speaker": "kuraudo", "face": "sad", "text": "……常連に、笑うと怖いって言われた"},
+        {"speaker": "kuraudo", "face": "normal", "text": "練習してる。キミが判定して"},
         {"speaker": "", "face": "", "text": "クラウドが鏡からこちらへ向き直る。口の端だけが、ぎこちなく上がった。"},
         {"speaker": "hajime", "face": "normal", "text": "……五十点です"},
-        {"speaker": "rei", "face": "sad", "text": "低い"},
+        {"speaker": "kuraudo", "face": "sad", "text": "低い"},
         {"speaker": "hajime", "face": "smile", "text": "曲の話をしてる時の顔なら、百点なんですけどね"},
-        {"speaker": "rei", "face": "normal", "text": "……自分では、見えない"},
+        {"speaker": "kuraudo", "face": "normal", "text": "……自分では、見えない"},
         {"speaker": "hajime", "face": "normal", "text": "じゃあ、話しましょう。今日の一曲目、何でした？"},
         {"speaker": "", "face": "", "text": "話し始めて三秒で、クラウドの口の端が勝手に上がった。本人は、気づいていない。"}
       ]
     },
     {
-      "dialogue_id": "bond_after_rei_5",
+      "dialogue_id": "bond_after_kuraudo_5",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。常連のバンドのデモ。曲が終わったあとの三秒の空白（character_profiles）を、はじめが自分の耳で好きと言う。",
       "lines": [
         {"speaker": "", "face": "", "text": "カウンターに、手書きのラベルのCDが置いてあった。"},
-        {"speaker": "rei", "face": "normal", "text": "……常連のバンドの、デモ。感想、頼まれた"},
+        {"speaker": "kuraudo", "face": "normal", "text": "……常連のバンドの、デモ。感想、頼まれた"},
         {"speaker": "hajime", "face": "surprise", "text": "俺も聴いていいんですか"},
-        {"speaker": "rei", "face": "normal", "text": "……キミの感想、先に聞きたかった。詳しくない耳が、一番正直だから"},
+        {"speaker": "kuraudo", "face": "normal", "text": "……キミの感想、先に聞きたかった。詳しくない耳が、一番正直だから"},
         {"speaker": "", "face": "", "text": "再生ボタンが押される。荒いギターの後ろで、ドラムが少しだけ走っていた。"},
         {"speaker": "hajime", "face": "normal", "text": "……最後の曲の、終わったあとの静かなところが好きです"},
-        {"speaker": "rei", "face": "smile", "text": "……三秒の空白"},
+        {"speaker": "kuraudo", "face": "smile", "text": "……三秒の空白"},
         {"speaker": "hajime", "face": "surprise", "text": "そういう名前があるんですか"},
-        {"speaker": "rei", "face": "normal", "text": "……俺が勝手に呼んでる。曲が終わってから、本当に終わるまでの三秒"},
-        {"speaker": "rei", "face": "smile", "text": "同じ所を、好きって言った。……やっぱり、キミは友達だ"}
+        {"speaker": "kuraudo", "face": "normal", "text": "……俺が勝手に呼んでる。曲が終わってから、本当に終わるまでの三秒"},
+        {"speaker": "kuraudo", "face": "smile", "text": "同じ所を、好きって言った。……やっぱり、キミは友達だ"}
       ]
     },
     {
-      "dialogue_id": "bond_after_rei_short_a",
+      "dialogue_id": "bond_after_kuraudo_short_a",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用（いつもの昼夜のあいさつの後に読む）。",
       "lines": [
-        {"speaker": "rei", "face": "normal", "text": "……来た。席、いつもの所"},
+        {"speaker": "kuraudo", "face": "normal", "text": "……来た。席、いつもの所"},
         {"speaker": "hajime", "face": "smile", "text": "ありがとうございます"}
       ]
     },
     {
-      "dialogue_id": "bond_after_rei_short_b",
+      "dialogue_id": "bond_after_kuraudo_short_b",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用。",
       "lines": [
-        {"speaker": "rei", "face": "normal", "text": "……今日の一曲目、まだ決めてない。キミが来たから、今決める"}
+        {"speaker": "kuraudo", "face": "normal", "text": "……今日の一曲目、まだ決めてない。キミが来たから、今決める"}
       ]
     },
     {
-      "dialogue_id": "bond_after_rei_short_c",
+      "dialogue_id": "bond_after_kuraudo_short_c",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用。",
       "lines": [
         {"speaker": "", "face": "", "text": "クラウドは黙って、俺用の吸い口を棚から出した。"},
-        {"speaker": "rei", "face": "smile", "text": "……ゆっくりしていって"}
+        {"speaker": "kuraudo", "face": "smile", "text": "……ゆっくりしていって"}
       ]
     },
     {
-      "dialogue_id": "bond_after_rei_short_d",
+      "dialogue_id": "bond_after_kuraudo_short_d",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用。",
       "lines": [
-        {"speaker": "rei", "face": "normal", "text": "……新しい盤、届いた。あとで、サビだけ聴かせる"},
+        {"speaker": "kuraudo", "face": "normal", "text": "……新しい盤、届いた。あとで、サビだけ聴かせる"},
         {"speaker": "hajime", "face": "smile", "text": "サビなら、覚えられるかもしれません"}
       ]
     },
@@ -434,7 +434,7 @@
       "lines": [
         {"speaker": "", "face": "", "text": "カウンターに、同じ形のボウルが三つ並んでいた。"},
         {"speaker": "adam", "face": "intense", "text": "利きダブルアップルだ。三つのうち、一つだけメーカーが違う"},
-        {"speaker": "hajime", "face": "normal", "text": "……全部、同じ匂いに見えます"},
+        {"speaker": "hajime", "face": "normal", "text": "……全部、同じに見えます"},
         {"speaker": "adam", "face": "normal", "text": "見るな。吸え"},
         {"speaker": "", "face": "", "text": "三つ目の吐き終わりに、ほんの少しだけ、蜂蜜みたいな丸さがあった。"},
         {"speaker": "hajime", "face": "normal", "text": "三つ目だと思います。最後が少し丸いです"},
@@ -540,7 +540,7 @@
       "lines": [
         {"speaker": "", "face": "", "text": "つむぎのタブレットに、葉の耳と煙の尾の猫が、また一匹増えていた。"},
         {"speaker": "tsumugi", "face": "normal", "text": "……この子、まだ名前がないんです。はじめさんが、付けてくれませんか"},
-        {"speaker": "hajime", "face": "normal", "text": "俺が？　……じゃあ、「けむり」"},
+        {"speaker": "hajime", "face": "normal", "text": "俺が？ ……じゃあ、「けむり」"},
         {"speaker": "tsumugi", "face": "surprise", "text": "……そのまま、ですね"},
         {"speaker": "hajime", "face": "smile", "text": "そのままが、いちばん呼びやすいかなって"},
         {"speaker": "", "face": "", "text": "つむぎは少し考えてから、絵の隅に小さく「けむり」と書き足した。"},
@@ -753,7 +753,7 @@
         {"speaker": "minto", "face": "normal", "text": "はじめくん、正直に言ってね。歯みがき粉って言ったら、泣くけど"},
         {"speaker": "", "face": "", "text": "一口すくう。ミントは強いのに、最後にチョコレートが追いかけてきた。"},
         {"speaker": "hajime", "face": "smile", "text": "おいしい。ミント、ちょうどいいと思う"},
-        {"speaker": "minto", "face": "normal", "text": "……昔のお店のより、ちょっとだけミント強め、……わざとなの"},
+        {"speaker": "minto", "face": "normal", "text": "……昔のお店のより、ちょっとだけミント強め。……わざとなの"},
         {"speaker": "minto", "face": "smile", "text": "今のみんとのお店の味だからね♪ メニューに載せるのは、あと一回直してから"}
       ]
     },
@@ -763,7 +763,7 @@
       "lines": [
         {"speaker": "", "face": "", "text": "入口で、初めての客が身分証を出していた。みんとは笑顔のまま、年をしっかり確かめていた。"},
         {"speaker": "minto", "face": "smile", "text": "はーい、確認しました♡ ようこそ、ぺぱーみんとへ♪"},
-        {"speaker": "hajime", "face": "normal", "text": "（ちゃんと見るんだな、……当たり前か）"},
+        {"speaker": "hajime", "face": "normal", "text": "（ちゃんと見るんだな。……当たり前か）"},
         {"speaker": "minto", "face": "wink", "text": "なに見てるの、はじめくん。みんとの身分証は、見せられないよ？"},
         {"speaker": "hajime", "face": "smile", "text": "知ってる。内緒にするって言ったし"},
         {"speaker": "minto", "face": "normal", "text": "……うん。あの時、きみが黙って返してくれたの、ちょっと助かったんだよ"},
@@ -866,7 +866,7 @@
         {"speaker": "", "face": "", "text": "作業台に、封筒が一通。宛名は『二階の魔女さんへ』。"},
         {"speaker": "rio", "face": "normal", "text": "1階のレジに置いてあったんだって。……開けるの、ちょっと怖い"},
         {"speaker": "hajime", "face": "normal", "text": "苦情ですかね"},
-        {"speaker": "rio", "face": "serious", "text": "その可能性もある、……君、先に読んで"},
+        {"speaker": "rio", "face": "serious", "text": "その可能性もある。……君、先に読んで"},
         {"speaker": "", "face": "", "text": "中には、丁寧な字で一行。『前に勧めてもらったブルーベリー、うちの店の定番になりました』。"},
         {"speaker": "hajime", "face": "smile", "text": "苦情じゃなかったです"},
         {"speaker": "rio", "face": "surprise", "text": "……私、勧めたっけ"},
@@ -891,7 +891,7 @@
       "dialogue_id": "bond_after_rio_short_a",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。Dr.fookah の2階（夜のショールーム）。凛想ははじめを「モルモットくん」、はじめは「凛想さん」と敬語。5本の後の短い汎用（いつもの昼夜のあいさつの後に読む）。",
       "lines": [
-        {"speaker": "rio", "face": "normal", "text": "ん、モルモットくん。今日はサンプルなし、……座ってく？"}
+        {"speaker": "rio", "face": "normal", "text": "ん、モルモットくん。今日はサンプルなし。……座ってく？"}
       ]
     },
     {
@@ -913,7 +913,7 @@
       "dialogue_id": "bond_after_rio_short_d",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。Dr.fookah の2階（夜のショールーム）。凛想ははじめを「モルモットくん」、はじめは「凛想さん」と敬語。5本の後の短い汎用。",
       "lines": [
-        {"speaker": "rio", "face": "smile", "text": "1階で、また『魔女』って呼ばれた、……慣れてきたかも"}
+        {"speaker": "rio", "face": "smile", "text": "1階で、また『魔女』って呼ばれた。……慣れてきたかも"}
       ]
     },
     {
@@ -990,7 +990,7 @@
         {"speaker": "samechan", "face": "surprise", "text": "コロちゃん！？"},
         {"speaker": "", "face": "", "text": "針を三回通して、背びれをまっすぐ留め直した。"},
         {"speaker": "samechan", "face": "ventriloquism", "text": "見事である。褒美に、奥の席を生涯許す", "voice": "korochan"},
-        {"speaker": "samechan", "face": "smile", "text": "……生涯は、言いすぎじゃ、……まあ、よいがの"}
+        {"speaker": "samechan", "face": "smile", "text": "……生涯は、言いすぎじゃ。……まあ、よいがの"}
       ]
     },
     {
@@ -1119,7 +1119,7 @@
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。ひよりは他店の相席（daily/hiyori.js の visitHiyoriAtShop）と、約束した店（playHiyoriHangout）で読むので、どの店でも・偶然でも約束でも通る書き出しにする。店主の名前を出さない。inner は本人の本心（プレイヤーにだけ見える）。斧の正体を知った後（締めくくりの前提）。5本の後の短い汎用。",
       "metadata": {"private_scene": true},
       "lines": [
-        {"speaker": "hiyori", "face": "normal", "text": "桃か紅茶か、まだ決めてないの、……一緒に選んで"}
+        {"speaker": "hiyori", "face": "normal", "text": "桃か紅茶か、まだ決めてないの。……一緒に選んで"}
       ]
     },
     {
@@ -1182,7 +1182,7 @@
       "lines": [
         {"speaker": "", "face": "", "text": "カウンターの奥に、段ボールがひとつ。「沖縄」と大きく書いてあった。"},
         {"speaker": "ageha", "face": "smile", "text": "実家から！ ちんすこうと、黒糖。ハジメっち、ひとつどーぞ"},
-        {"speaker": "ageha", "face": "surprise", "text": "ねえ、これさ、煙にしたら、甘いのあとに焦げたのが来ると思わない？"},
+        {"speaker": "ageha", "face": "surprise", "text": "ねえ、これさ、煙にしたら、甘さのあとに焦げたのが来ると思わない？"},
         {"speaker": "hajime", "face": "normal", "text": "それなら、甘い葉を下に、黒糖っぽいのを上に詰めると、順番が出せるかもしれません"},
         {"speaker": "ageha", "face": "smile", "text": "それ！ うちの『来ると思わない？』が、もう手順になってる"},
         {"speaker": "ageha", "face": "normal", "text": "ハジメっちって、すぐ手順にするよね。……うちは、手が先に動く派"},
@@ -1269,7 +1269,7 @@
         {"speaker": "", "face": "", "text": "客は一度言葉を止めて、それから少し笑って、「軽いので」と言った。"},
         {"speaker": "hajime", "face": "normal", "text": "（ゆっくり聞かれると、急いでたのを忘れるんだ）"},
         {"speaker": "mashiro", "face": "smile", "text": "はじめくん、今、僕のこと遅いって思ったでしょ"},
-        {"speaker": "hajime", "face": "surprise", "text": "思ってないよ、……ちょっとしか"},
+        {"speaker": "hajime", "face": "surprise", "text": "思ってないよ。……ちょっとしか"},
         {"speaker": "mashiro", "face": "smile", "text": "ふふ。遅いのも、ちゃんと仕事なんだよぉ"}
       ]
     },
@@ -1283,7 +1283,7 @@
         {"speaker": "mashiro", "face": "normal", "text": "軽いと、物足りないって言うの。難しいねぇ"},
         {"speaker": "hajime", "face": "normal", "text": "重さはそのままで、甘いのを少しだけ足すのは？"},
         {"speaker": "mashiro", "face": "surprise", "text": "……あ。それ、いいかも"},
-        {"speaker": "", "face": "", "text": "ましろはメモに一行足して、その横に、はじめの名前を小さく書き添えた。"},
+        {"speaker": "", "face": "", "text": "ましろはメモに一行足して、その横に、俺の名前を小さく書き添えた。"},
         {"speaker": "mashiro", "face": "smile", "text": "共同制作、だねぇ"}
       ]
     },
@@ -1305,7 +1305,7 @@
       "dialogue_id": "bond_after_mashiro_short_a",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第3章・第5章の東京の mukai で、友人の「ましろちゃんと話す」から読む（締めくくりは味覚が戻った後）。はじめは「ましろちゃん」とタメ口、ましろは「はじめくん」「僕」で、ゆっくり話す。5本の後の短い汎用。",
       "lines": [
-        {"speaker": "mashiro", "face": "normal", "text": "あ、はじめくん、……お茶、いれよっか"}
+        {"speaker": "mashiro", "face": "normal", "text": "あ、はじめくん。……お茶、いれよっか"}
       ]
     },
     {
@@ -1331,96 +1331,96 @@
       ]
     },
     {
-      "dialogue_id": "bond_after_saku_1",
+      "dialogue_id": "bond_after_ayatori_1",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。東京の煙幕（第3章の通い・第5章の延長営業）。延長の有無・間借りの終わりに触れない。はじめは「綾取さん」と敬語、綾取は「君」「僕」。軽い嘘と早い種明かし。「嘘つきのまま人を幸せにできる」という動機は♥4の一度だけなので言わせない。ましろとの昔の話には触れない。一本目は締めくくりの「君が詰めたら、別の順番を覚えるかもしれない。それを、いつか吸わせて」の回収。素焼き（suyaki_saku）を持っている時だけ。名前を伏せて吸う煙幕の遊び。",
       "lines": [
         {"speaker": "", "face": "", "text": "煙幕のカウンターに、預かった素焼きを置いた。綾取の目が、少しだけ丸くなった。"},
-        {"speaker": "saku", "face": "smile", "text": "持ってきたんだ。……詰めるところ、見ててもいい？"},
+        {"speaker": "ayatori", "face": "smile", "text": "持ってきたんだ。……詰めるところ、見ててもいい？"},
         {"speaker": "hajime", "face": "normal", "text": "見ないで当ててください。名前を伏せたまま、ってやつです"},
-        {"speaker": "saku", "face": "surprise", "text": "うわ、僕の店の遊びで来た"},
+        {"speaker": "ayatori", "face": "surprise", "text": "うわ、僕の店の遊びで来た"},
         {"speaker": "", "face": "", "text": "柑橘と茶の匂いが残る素焼きに、葉を詰める。茶を先に、柑橘を最後に。いつもと逆の順番だ。"},
-        {"speaker": "saku", "face": "serious", "text": "……先に茶。柑橘が、最後に追いかけてくる"},
-        {"speaker": "saku", "face": "normal", "text": "柑橘から来ると思ってた。外れ"},
-        {"speaker": "saku", "face": "smile", "text": "このハガル、新しい順番を覚えたね。……ノートに書いとく。君の欄に"}
+        {"speaker": "ayatori", "face": "serious", "text": "……先に茶。柑橘が、最後に追いかけてくる"},
+        {"speaker": "ayatori", "face": "normal", "text": "柑橘から来ると思ってた。外れ"},
+        {"speaker": "ayatori", "face": "smile", "text": "このハガル、新しい順番を覚えたね。……ノートに書いとく。君の欄に"}
       ]
     },
     {
-      "dialogue_id": "bond_after_saku_2",
+      "dialogue_id": "bond_after_ayatori_2",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。東京の煙幕（第3章の通い・第5章の延長営業）。延長の有無・間借りの終わりに触れない。はじめは「綾取さん」と敬語、綾取は「君」「僕」。軽い嘘と早い種明かし。「嘘つきのまま人を幸せにできる」という動機は♥4の一度だけなので言わせない。ましろとの昔の話には触れない。「東京の煙を裏から動かす店主」の噂を自分で流す（character_profiles）。",
       "lines": [
-        {"speaker": "saku", "face": "smug", "text": "聞いた？ 煙幕の店主、実は三つの名前を持ってるらしいよ"},
+        {"speaker": "ayatori", "face": "smug", "text": "聞いた？ 煙幕の店主、実は三つの名前を持ってるらしいよ"},
         {"speaker": "hajime", "face": "normal", "text": "自分で流してる噂ですよね"},
-        {"speaker": "saku", "face": "surprise", "text": "早いなぁ。種明かしする前に見破られた"},
-        {"speaker": "saku", "face": "normal", "text": "噂があると、お客さんがちょっと楽しそうに入ってくるんだ"},
+        {"speaker": "ayatori", "face": "surprise", "text": "早いなぁ。種明かしする前に見破られた"},
+        {"speaker": "ayatori", "face": "normal", "text": "噂があると、お客さんがちょっと楽しそうに入ってくるんだ"},
         {"speaker": "hajime", "face": "smile", "text": "三つ目の名前、何にするんですか"},
-        {"speaker": "saku", "face": "smug", "text": "それはまだ秘密。……思いついてないとも言う"}
+        {"speaker": "ayatori", "face": "smug", "text": "それはまだ秘密。……思いついてないとも言う"}
       ]
     },
     {
-      "dialogue_id": "bond_after_saku_3",
+      "dialogue_id": "bond_after_ayatori_3",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。東京の煙幕（第3章の通い・第5章の延長営業）。延長の有無・間借りの終わりに触れない。はじめは「綾取さん」と敬語、綾取は「君」「僕」。軽い嘘と早い種明かし。「嘘つきのまま人を幸せにできる」という動機は♥4の一度だけなので言わせない。ましろとの昔の話には触れない。吸わない日も席と飲み物を出す店（character_profiles）。軽い嘘と早い種明かし。",
       "lines": [
         {"speaker": "", "face": "", "text": "煙幕の席に着くと、注文の前に、湯気の立つお茶が出てきた。"},
-        {"speaker": "saku", "face": "normal", "text": "今日は吸わない日でしょ、……当たり？"},
+        {"speaker": "ayatori", "face": "normal", "text": "今日は吸わない日でしょ。……当たり？"},
         {"speaker": "hajime", "face": "surprise", "text": "……当たりです。どうして"},
-        {"speaker": "saku", "face": "smug", "text": "君、入口で一回、深呼吸したから。吸う日の人は、息を取っておくんだよ"},
-        {"speaker": "saku", "face": "smile", "text": "……っていうのは、今作った理由。ほんとは、勘"},
+        {"speaker": "ayatori", "face": "smug", "text": "君、入口で一回、深呼吸したから。吸う日の人は、息を取っておくんだよ"},
+        {"speaker": "ayatori", "face": "smile", "text": "……っていうのは、今作った理由。ほんとは、勘"},
         {"speaker": "hajime", "face": "smile", "text": "種明かし、早いですね"},
-        {"speaker": "saku", "face": "normal", "text": "嘘は、早めに返すことにしてるんだ。お茶は、ちゃんと本物だよ"}
+        {"speaker": "ayatori", "face": "normal", "text": "嘘は、早めに返すことにしてるんだ。お茶は、ちゃんと本物だよ"}
       ]
     },
     {
-      "dialogue_id": "bond_after_saku_4",
+      "dialogue_id": "bond_after_ayatori_4",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。東京の煙幕（第3章の通い・第5章の延長営業）。延長の有無・間借りの終わりに触れない。はじめは「綾取さん」と敬語、綾取は「君」「僕」。軽い嘘と早い種明かし。「嘘つきのまま人を幸せにできる」という動機は♥4の一度だけなので言わせない。ましろとの昔の話には触れない。材料にない菓子を客が思い出すことがある一台。予想と違う感想もノートに残す（character_profiles）。",
       "lines": [
         {"speaker": "", "face": "", "text": "隣の席の客が、首をかしげながら綾取を呼んだ。"},
         {"speaker": "customer", "face": "", "text": "これ、何も入れてないよね？ ……なんか、プリンの味がする"},
-        {"speaker": "saku", "face": "surprise", "text": "……プリン？"},
+        {"speaker": "ayatori", "face": "surprise", "text": "……プリン？"},
         {"speaker": "", "face": "", "text": "綾取はノートを開いて、ものすごい速さで何か書き始めた。"},
-        {"speaker": "saku", "face": "smile", "text": "初めて言われた。カラメルかな、紅茶の焦げたとこかな"},
+        {"speaker": "ayatori", "face": "smile", "text": "初めて言われた。カラメルかな、紅茶の焦げたとこかな"},
         {"speaker": "hajime", "face": "normal", "text": "（嬉しそうだ。外れた予想を書く時と、同じ顔をしてる）"},
-        {"speaker": "saku", "face": "normal", "text": "ねえ、今の聞いた？ 僕の一台、知らないお菓子になったよ"}
+        {"speaker": "ayatori", "face": "normal", "text": "ねえ、今の聞いた？ 僕の一台、知らないお菓子になったよ"}
       ]
     },
     {
-      "dialogue_id": "bond_after_saku_5",
+      "dialogue_id": "bond_after_ayatori_5",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。東京の煙幕（第3章の通い・第5章の延長営業）。延長の有無・間借りの終わりに触れない。はじめは「綾取さん」と敬語、綾取は「君」「僕」。軽い嘘と早い種明かし。「嘘つきのまま人を幸せにできる」という動機は♥4の一度だけなので言わせない。ましろとの昔の話には触れない。仕事着のずれたステッチ（character_profiles の見た目）。",
       "lines": [
         {"speaker": "hajime", "face": "normal", "text": "綾取さん、その仕事着、ステッチがずれてますね"},
-        {"speaker": "saku", "face": "smug", "text": "気づいた？ これ、わざとなんだ。読めない男の演出"},
-        {"speaker": "saku", "face": "nervous", "text": "……っていうのは嘘で、取れたボタンを自分で付け直したら、ずれた"},
+        {"speaker": "ayatori", "face": "smug", "text": "気づいた？ これ、わざとなんだ。読めない男の演出"},
+        {"speaker": "ayatori", "face": "nervous", "text": "……っていうのは嘘で、取れたボタンを自分で付け直したら、ずれた"},
         {"speaker": "hajime", "face": "smile", "text": "器用そうなのに"},
-        {"speaker": "saku", "face": "normal", "text": "熱の順番は数ミリで合わせられるのに、針はだめなんだよね"},
-        {"speaker": "saku", "face": "smile", "text": "でも、ずれたままでいいや。お客さんが、ここから話しかけてくれるから"}
+        {"speaker": "ayatori", "face": "normal", "text": "熱の順番は数ミリで合わせられるのに、針はだめなんだよね"},
+        {"speaker": "ayatori", "face": "smile", "text": "でも、ずれたままでいいや。お客さんが、ここから話しかけてくれるから"}
       ]
     },
     {
-      "dialogue_id": "bond_after_saku_short_a",
+      "dialogue_id": "bond_after_ayatori_short_a",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。東京の煙幕（第3章の通い・第5章の延長営業）。延長の有無・間借りの終わりに触れない。はじめは「綾取さん」と敬語、綾取は「君」「僕」。軽い嘘と早い種明かし。「嘘つきのまま人を幸せにできる」という動機は♥4の一度だけなので言わせない。ましろとの昔の話には触れない。5本の後の短い汎用。",
       "lines": [
-        {"speaker": "saku", "face": "smile", "text": "いらっしゃい。今日は見る？ 伏せる？"}
+        {"speaker": "ayatori", "face": "smile", "text": "いらっしゃい。今日は見る？ 伏せる？"}
       ]
     },
     {
-      "dialogue_id": "bond_after_saku_short_b",
+      "dialogue_id": "bond_after_ayatori_short_b",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。東京の煙幕（第3章の通い・第5章の延長営業）。延長の有無・間借りの終わりに触れない。はじめは「綾取さん」と敬語、綾取は「君」「僕」。軽い嘘と早い種明かし。「嘘つきのまま人を幸せにできる」という動機は♥4の一度だけなので言わせない。ましろとの昔の話には触れない。5本の後の短い汎用。",
       "lines": [
-        {"speaker": "saku", "face": "smug", "text": "君が来るの、予想してた。……っていうのは、半分だけ本当"}
+        {"speaker": "ayatori", "face": "smug", "text": "君が来るの、予想してた。……っていうのは、半分だけ本当"}
       ]
     },
     {
-      "dialogue_id": "bond_after_saku_short_c",
+      "dialogue_id": "bond_after_ayatori_short_c",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。東京の煙幕（第3章の通い・第5章の延長営業）。延長の有無・間借りの終わりに触れない。はじめは「綾取さん」と敬語、綾取は「君」「僕」。軽い嘘と早い種明かし。「嘘つきのまま人を幸せにできる」という動機は♥4の一度だけなので言わせない。ましろとの昔の話には触れない。5本の後の短い汎用。",
       "lines": [
         {"speaker": "", "face": "", "text": "綾取はノートから顔を上げて、いつもの席を指さした。"},
-        {"speaker": "saku", "face": "normal", "text": "空いてるよ。君の欄の席"}
+        {"speaker": "ayatori", "face": "normal", "text": "空いてるよ。君の欄の席"}
       ]
     },
     {
-      "dialogue_id": "bond_after_saku_short_d",
+      "dialogue_id": "bond_after_ayatori_short_d",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。東京の煙幕（第3章の通い・第5章の延長営業）。延長の有無・間借りの終わりに触れない。はじめは「綾取さん」と敬語、綾取は「君」「僕」。軽い嘘と早い種明かし。「嘘つきのまま人を幸せにできる」という動機は♥4の一度だけなので言わせない。ましろとの昔の話には触れない。5本の後の短い汎用。",
       "lines": [
-        {"speaker": "saku", "face": "normal", "text": "お茶、先に出しとくね。吸うかどうかは、そのあとで"}
+        {"speaker": "ayatori", "face": "normal", "text": "お茶、先に出しとくね。吸うかどうかは、そのあとで"}
       ]
     },
     {
@@ -1504,7 +1504,7 @@
       "dialogue_id": "bond_after_steve_short_b",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。東京の Smoke & Glory（第3章の通い・第5章の東京の店）。はじめは「スティーブさん」と敬語、スティーブは「ハジメ」。タイマーは一つ（予備ははじめに貸したもの）。看板のマウンテンミスト（葉と秒数）は渡さない。体格や食べ物の好みを笑いの種にしない（character_profiles）。5本の後の短い汎用。",
       "lines": [
-        {"speaker": "steve", "face": "normal", "text": "今日はタイマーと仲良しだ、……たぶんな"}
+        {"speaker": "steve", "face": "normal", "text": "今日はタイマーと仲良しだ。……たぶんな"}
       ]
     },
     {
@@ -1519,7 +1519,7 @@
       "dialogue_id": "bond_after_steve_short_d",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。東京の Smoke & Glory（第3章の通い・第5章の東京の店）。はじめは「スティーブさん」と敬語、スティーブは「ハジメ」。タイマーは一つ（予備ははじめに貸したもの）。看板のマウンテンミスト（葉と秒数）は渡さない。体格や食べ物の好みを笑いの種にしない（character_profiles）。5本の後の短い汎用。",
       "lines": [
-        {"speaker": "steve", "face": "smile", "text": "顔の一行、届いてるぞ、……グッドだ"}
+        {"speaker": "steve", "face": "smile", "text": "顔の一行、届いてるぞ。……グッドだ"}
       ]
     },
     {
@@ -1557,7 +1557,7 @@
         {"speaker": "volk", "face": "surprise", "text": "……ジャムか"},
         {"speaker": "volk", "face": "normal", "text": "祖母のジャムとは、色が違うな"},
         {"speaker": "hajime", "face": "normal", "text": "すみません、好みじゃなかったですか"},
-        {"speaker": "volk", "face": "normal", "text": "違うものは、違うものとして舐める、……測らずにな"},
+        {"speaker": "volk", "face": "normal", "text": "違うものは、違うものとして舐める。……測らずにな"},
         {"speaker": "", "face": "", "text": "ヴォルクは紅茶を二杯注いで、スプーンに山盛りのジャムをすくった。"},
         {"speaker": "volk", "face": "smile", "text": "……多い。だが、今日はこれでいい"}
       ]
@@ -1814,13 +1814,13 @@
       "dialogue_id": "bond_after_da_silva_1",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷の中庭（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「太陽さん」と敬語。太陽の日本語は元からつたない（助詞の抜け・言い直し・短く区切る程度。character_profiles）。「カカッテコイ」は太陽が連発しない。一本目は締めくくりの「お前の店にも、帰りそびれるやつ、来る。そいつに詰めてやれ」と、椅子と水の順番の回収。素焼き（suyaki_da_silva）を持っている時だけ。",
       "lines": [
-        {"speaker": "", "face": "", "text": "中庭の日よけの下で、太陽さんにもらった素焼きを出した。"},
+        {"speaker": "", "face": "", "text": "中庭の日よけの下で、太陽にもらった素焼きを出した。"},
         {"speaker": "da_silva", "face": "surprise", "text": "それ、持ってきたか！"},
         {"speaker": "hajime", "face": "normal", "text": "今日は、俺が詰めます。太陽さんが、帰りそびれた人の役で"},
         {"speaker": "da_silva", "face": "excited", "text": "ハハ！ 俺が客か。いいぞ、座る！"},
-        {"speaker": "", "face": "", "text": "パッションフルーツを詰めて、炭を置く。その前に、水のグラスを太陽さんの前に置いた。"},
+        {"speaker": "", "face": "", "text": "パッションフルーツを詰めて、炭を置く。その前に、水のグラスを太陽の前に置いた。"},
         {"speaker": "da_silva", "face": "smile", "text": "……水、先。俺の順番だ"},
-        {"speaker": "", "face": "", "text": "太陽さんは一口吸って、しばらく噴水の音を聞いていた。"},
+        {"speaker": "", "face": "", "text": "太陽は一口吸って、しばらく噴水の音を聞いていた。"},
         {"speaker": "da_silva", "face": "normal", "text": "静か。……でも、祭りのあとの味。いい一台"}
       ]
     },
@@ -1840,7 +1840,7 @@
       "dialogue_id": "bond_after_da_silva_3",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷の中庭（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「太陽さん」と敬語。太陽の日本語は元からつたない（助詞の抜け・言い直し・短く区切る程度。character_profiles）。「カカッテコイ」は太陽が連発しない。店を閉めて床を拭く（締めくくり）。床拭きは店主の最後の仕事。",
       "lines": [
-        {"speaker": "", "face": "", "text": "使用人たちが帰ったあと、太陽さんは自分で、中庭の床を拭いていた。"},
+        {"speaker": "", "face": "", "text": "使用人たちが帰ったあと、太陽は自分で、中庭の床を拭いていた。"},
         {"speaker": "hajime", "face": "normal", "text": "手伝います"},
         {"speaker": "da_silva", "face": "normal", "text": "いい。これ、俺の。……店主の、最後の仕事"},
         {"speaker": "da_silva", "face": "smile", "text": "祭り、楽しい。でも、汚れたまま次の朝が来ると……楽しくない"},
@@ -1853,7 +1853,7 @@
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷の中庭（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「太陽さん」と敬語。太陽の日本語は元からつたない（助詞の抜け・言い直し・短く区切る程度。character_profiles）。「カカッテコイ」は太陽が連発しない。締めくくりの「静かなのも、静かなまま、フェスタだ」の続き。静かな一台に挑む。",
       "lines": [
         {"speaker": "da_silva", "face": "serious", "text": "ハジメ。今日、静かな一台、やってみる。お前みたいな"},
-        {"speaker": "", "face": "", "text": "太陽さんは黙って炭を置き、黙って葉を整えた。……十秒ほどで、鼻歌が漏れはじめた。"},
+        {"speaker": "", "face": "", "text": "太陽は黙って葉を整え、黙って炭を置いた。……十秒ほどで、鼻歌が漏れはじめた。"},
         {"speaker": "hajime", "face": "smile", "text": "太陽さん、歌ってます"},
         {"speaker": "da_silva", "face": "surprise", "text": "……歌ってたか？"},
         {"speaker": "da_silva", "face": "excited", "text": "無理だ！ 静か、むずかしい。……でも、煙は静か。そこは、できた"},
@@ -1867,7 +1867,7 @@
         {"speaker": "da_silva", "face": "normal", "text": "ハジメ。椅子、回す練習、したか"},
         {"speaker": "hajime", "face": "surprise", "text": "あの、入口でやるやつですか"},
         {"speaker": "da_silva", "face": "excited", "text": "そう！ やってみろ。俺、客"},
-        {"speaker": "", "face": "", "text": "空いた椅子を両手で持って、くるりと太陽さんの方へ回した。水のグラスを置く。"},
+        {"speaker": "", "face": "", "text": "空いた椅子を両手で持って、くるりと太陽の方へ回した。水のグラスを置く。"},
         {"speaker": "hajime", "face": "normal", "text": "……カカッテコイ"},
         {"speaker": "da_silva", "face": "surprise", "text": "……"},
         {"speaker": "da_silva", "face": "excited", "text": "声、小さい！ でも、椅子はいい。七十点！"}
@@ -1891,7 +1891,7 @@
       "dialogue_id": "bond_after_da_silva_short_c",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷の中庭（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「太陽さん」と敬語。太陽の日本語は元からつたない（助詞の抜け・言い直し・短く区切る程度。character_profiles）。「カカッテコイ」は太陽が連発しない。5本の後の短い汎用。",
       "lines": [
-        {"speaker": "", "face": "", "text": "太陽さんは噴水の縁に腰かけて、こちらに大きく手を振った。"}
+        {"speaker": "", "face": "", "text": "太陽は噴水の縁に腰かけて、こちらに大きく手を振った。"}
       ]
     },
     {
@@ -1948,7 +1948,7 @@
         {"speaker": "sheikh", "face": "smile", "text": "覚えていたか"},
         {"speaker": "hajime", "face": "normal", "text": "日本だと、こういう時は『ごちそうさま』って言います"},
         {"speaker": "sheikh", "face": "normal", "text": "ゴチソウサマ"},
-        {"speaker": "", "face": "", "text": "シェイクさんは自分の杯を左右に振りながら、もう一度、小さく口の中で繰り返した。"},
+        {"speaker": "", "face": "", "text": "シェイクは自分の杯を左右に振りながら、もう一度、小さく口の中で繰り返した。"},
         {"speaker": "sheikh", "face": "smile", "text": "杯と言葉、両方で伝えるのが、いちばん確かだ"}
       ]
     },
@@ -1956,11 +1956,11 @@
       "dialogue_id": "bond_after_sheikh_5",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「シェイクさん」と敬語、シェイクは「私」「君」「ハジメ」で短く、急がず話す。決勝・金の台には触れない。袖のしわを自分で伸ばす人（ch5_sheikh_bond_1）。旅の間は自分で茶を淹れる。",
       "lines": [
-        {"speaker": "", "face": "", "text": "屋敷の厨房で、シェイクさんが自分で湯を沸かしていた。"},
+        {"speaker": "", "face": "", "text": "屋敷の厨房で、シェイクが自分で湯を沸かしていた。"},
         {"speaker": "", "face": "", "text": "入口では、使用人たちがおろおろしている。"},
         {"speaker": "hajime", "face": "surprise", "text": "シェイクさんが、お茶を？"},
         {"speaker": "sheikh", "face": "normal", "text": "旅の間は、自分で淹れる。屋敷に戻ると、やらせてもらえない"},
-        {"speaker": "", "face": "", "text": "湯が沸くと、シェイクさんは手際よく茶葉を落とした。"},
+        {"speaker": "", "face": "", "text": "湯が沸くと、シェイクは手際よく茶葉を落とした。"},
         {"speaker": "", "face": "", "text": "使用人たちは、黙って見守るしかなかった。"},
         {"speaker": "sheikh", "face": "smile", "text": "君の分も淹れた。屋敷で私の茶を飲むのは、君が初めてだ"},
         {"speaker": "hajime", "face": "smile", "text": "光栄です。……使用人の皆さんの視線が、ちょっと痛いですけど"}
@@ -1984,7 +1984,7 @@
       "dialogue_id": "bond_after_sheikh_short_c",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「シェイクさん」と敬語、シェイクは「私」「君」「ハジメ」で短く、急がず話す。決勝・金の台には触れない。5本の後の短い汎用。",
       "lines": [
-        {"speaker": "", "face": "", "text": "シェイクさんは窓辺で本を閉じ、向かいの席を手で示した。"}
+        {"speaker": "", "face": "", "text": "シェイクは窓辺で本を閉じ、向かいの席を手で示した。"}
       ]
     },
     {

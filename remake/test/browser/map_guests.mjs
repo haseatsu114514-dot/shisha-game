@@ -9,8 +9,8 @@ async function prepareCityGuest(page, id) {
     const map = await import("./js/daily/map.js");
     const value = core.newGame();
     Object.assign(value, { chapter: 2, phase: "daily", day: 17, slot: 0, money: 15000, stamina: 90 });
-    value.met = Object.fromEntries(["ageha", "kumicho", "rei", "sumi", "adam", "minto"].map(id => [id, true]));
-    for (const id of ["ageha", "kumicho", "rei"]) value.flags[`_intro_${id}`] = true;
+    value.met = Object.fromEntries(["ageha", "kumicho", "kuraudo", "sumi", "adam", "minto"].map(id => [id, true]));
+    for (const id of ["ageha", "kumicho", "kuraudo"]) value.flags[`_intro_${id}`] = true;
     for (let seed = 0; seed < 10000; seed++) {
       value.weatherSeed = seed;
       if (guests.cityGuestVisit()?.id === id) break;
@@ -36,7 +36,7 @@ const facesAnchored = page => page.locator('.pin-people').evaluateAll(rows => ro
 }));
 
 await suite("map-guests", async check => {
-  for (const id of ["ageha", "kumicho", "rei"]) {
+  for (const id of ["ageha", "kumicho", "kuraudo"]) {
     await check(`city-${id}-schedule-first-repeat`, async page => {
       const chosen = await prepareCityGuest(page, id);
       assert.equal(chosen.id, id);
@@ -76,7 +76,7 @@ await suite("map-guests", async check => {
     assert.equal(await page.evaluate(()=>C.guests.visitCityGuestAtShop(C.spot)),true);
   });
   await check('city-load-cancels-unread',async page=>{
-    await prepareCityGuest(page,'rei');
+    await prepareCityGuest(page,'kuraudo');
     await page.evaluate(()=>{
       C.engine.vnTest.turbo=false; C.result=null;
       C.pending=C.guests.visitCityGuestAtShop(C.spot).then(value=>C.result=value);

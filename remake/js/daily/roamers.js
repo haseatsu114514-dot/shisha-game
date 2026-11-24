@@ -18,7 +18,7 @@ import { on } from "../core/bus.js";
 import { allSpots, isUnlocked, isClosed } from "./spots.js";
 import { hiyoriShopLocation } from "./hiyori.js";
 import { cityGuestVisit } from "./city-guests.js";
-import { ryujiAtMeltyPuff, reiGreetingDue } from "../core/ryuji-visit.js";
+import { ryujiAtMeltyPuff, kuraudoGreetingDue } from "../core/ryuji-visit.js";
 import { recordChapterFiveTalk } from "../chapters/visit-chains.js";
 
 /** 人ごとの、読み終えた回数（数）。台本の flag_count 条件で読める（第5章の博士の「記録」など）。 */
@@ -43,10 +43,10 @@ const tokyoShop = spot => spot.region === "tokyo" && ["mukai", "enmaku", "steve"
  * 審査員は会う前でも出る（名前は伏せる。台詞は met で分岐）。友人・ライバルは会ったことがある時だけ。
  */
 export const ROAMERS = Object.freeze([
-  { id: "maezono", chapters: [1, 2], at: spot => shishaShop(spot) || spot.id === "cafe", ready: () => true },
-  { id: "dr_kemuri", chapters: [1, 2], at: shishaShop, ready: () => true },
+  { id: "uezono", chapters: [1, 2], at: spot => shishaShop(spot) || spot.id === "cafe", ready: () => true },
+  { id: "dr_charcoal", chapters: [1, 2], at: shishaShop, ready: () => true },
   // 自分のチェーン（C.STATION）ではなく、地元の小さな店をお忍びで見る
-  { id: "sui", chapters: [1, 2], at: spot => shishaShop(spot) && spot.id !== "c_station", ready: () => true },
+  { id: "sensu", chapters: [1, 2], at: spot => shishaShop(spot) && spot.id !== "c_station", ready: () => true },
   { id: "adam", chapters: [1, 2], at: spot => shishaShop(spot) && !ownShop("adam")(spot), ready: metStory("adam"), bond: true },
   { id: "rio", chapters: [1, 2], at: shishaShop, ready: metStory("rio"), bond: true },
   { id: "tsumugi", chapters: [1, 2], at: spot => shishaShop(spot) || spot.id === "cafe", ready: metStory("tsumugi"), bond: true },
@@ -95,7 +95,7 @@ function busySpots(value) {
   try { const hiyori = hiyoriShopLocation(); if (hiyori) busy.add(hiyori); } catch {}
   try { const city = cityGuestVisit(); if (city?.spotId) busy.add(city.spotId); } catch {}
   if (ryujiAtMeltyPuff(value)) busy.add("ch2_ageha"); // 組長が MELTY PUFF に来ている時間帯
-  if (reiGreetingDue(value)) busy.add("ch2_ageha"); // クラウドが MELTY PUFF へ挨拶に来る回（#3468）
+  if (kuraudoGreetingDue(value)) busy.add("ch2_ageha"); // クラウドが MELTY PUFF へ挨拶に来る回（#3468）
   return busy;
 }
 

@@ -34,7 +34,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ロビーには、来てくれた人たちが待っていてくれた。"
+          "text": "ロビーには、応援に来た人たちが待っていてくれた。"
         }
       ]
     },
@@ -181,27 +181,27 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "あんちゃん。筋だけは、通してきなせえ"
+          "text": "あんちゃん。スジだけは、通してきなせえ"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_morning_cheer_rei",
+      "dialogue_id": "ch4_morning_cheer_kuraudo",
       "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……キミの一曲目、楽しみにしてる"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_morning_cheer_saku",
+      "dialogue_id": "ch4_morning_cheer_ayatori",
       "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
       "lines": [
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "予想しとく。君は最初に客席を見る……外れたら、ノートに書くね"
         }
@@ -257,7 +257,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "差し出されたタブレットの中で、線だけの俺の手が、トングを止めていた。"
+          "text": "タブレットには、トングを止めた俺の手と顔が、線だけで描かれていた。"
         },
         {
           "speaker": "hajime",
@@ -293,7 +293,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎは白いままのページを胸に抱えて、俺の袖の端を小さくつまんだ。"
+          "text": "つむぎは白いままのタブレットを胸に抱えて、俺の袖の端を小さくつまんだ。"
         }
       ]
     },
@@ -309,7 +309,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "最後の方、お客さんがホースを置くまで、ずっと待ってたでしょ"
+          "text": "最後のほう、お客さんがホースを置くまで、ずっと待ってたでしょ"
         },
         {
           "speaker": "hajime",
@@ -688,16 +688,16 @@
       ]
     },
     {
-      "dialogue_id": "ch4_after_cheer_rei",
+      "dialogue_id": "ch4_after_cheer_kuraudo",
       "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……おめでとう。キミの一曲目、ちゃんと聴けた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "最後の一口のところ、曲が終わる前の無音みたいだった"
         },
@@ -707,23 +707,23 @@
           "text": "無音、ですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "うん。いちばん好きなところ。次のライブまで、覚えておく"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_after_cheer_saku",
+      "dialogue_id": "ch4_after_cheer_ayatori",
       "comment": "来てくれた人の一言（友人のとき）。世界大会の結果発表のあと（#3097 第3弾・VOL23）。ch4_result の後ろに ch4-morning.js がつなぐ。朝に一言をくれた同じ人（その場にいる人だけ・恋人を先に・最大4人）が客席から降りてくる。好感度・能力・お金は付けない。",
       "lines": [
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "おめでとう。予想、外れたよ。君、最後まで客席を見なかった"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "ノートに書いとく。「外れて嬉しい」の欄が、また増えちゃった"
         },
@@ -733,7 +733,7 @@
           "text": "綾取さんのノート、そんな欄があるんですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "君のせいで、できたんだよ"
         }
@@ -756,7 +756,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "スティーブのタイマーのおかげです"
+          "text": "スティーブさんのタイマーのおかげです"
         },
         {
           "speaker": "steve",
@@ -777,7 +777,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "正しい間だ、……おめでとう"
+          "text": "正しい間だ。……おめでとう"
         },
         {
           "speaker": "hajime",
@@ -798,7 +798,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "後ろの方では、ほかのみんなも手を振ってくれていた。"
+          "text": "後ろのほうでは、ほかのみんなも手を振ってくれていた。"
         }
       ]
     },

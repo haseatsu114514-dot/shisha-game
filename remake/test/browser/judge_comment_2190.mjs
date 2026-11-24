@@ -47,7 +47,7 @@ await suite("judge-comment-2190", async check => {
         await page.locator('[data-test="result-next"]').waitFor();
         const deductions = page.locator(".rt-judge-deduction");
         assert.equal(await deductions.count(), 3);
-        assert.deepEqual(await deductions.evaluateAll(nodes => nodes.map(node => node.dataset.judge)), ["maezono", "dr_kemuri", "sui"]);
+        assert.deepEqual(await deductions.evaluateAll(nodes => nodes.map(node => node.dataset.judge)), ["uezono", "dr_charcoal", "sensu"]);
         for (const line of await deductions.all()) {
           const judge = await line.getAttribute("data-judge");
           const expectedReason = await page.evaluate(async judge => (await import("./js/craft/feedback.js")).judgeDeductionReason(J.cs, judge).text, judge);
@@ -73,7 +73,7 @@ await suite("judge-comment-2190", async check => {
         assert.equal(await quality.locator(".craft-evaluation").textContent(), "○");
         await assertFits(page, ".rt-judge-comment");
         if (kind === "three-ideal-next") {
-          assert.match(await page.locator(".rt-next-tip").innerText(), /今回の記録を見て、次に試すことを選ぼう/);
+          assert.match(await page.locator(".rt-next-tip").innerText(), /蒸らしでは雑念が近づく前に、心を空いている方へ動か/);
           await page.locator(".rt-next-tip").scrollIntoViewIfNeeded();
           await assertFits(page, ".rt-next-tip");
         }
@@ -89,7 +89,7 @@ await suite("judge-comment-2190", async check => {
       }
       // Chapters two and three share this judge panel; chapter four renders its actual final standings view.
       for (const chapter of [2, 3, 4]) {
-        const expectedIds = chapter === 2 ? ["maezono", "dr_kemuri", "sui"] : chapter === 3 ? ["emil", "dr_kemuri", "sui"] : ["sui", "da_silva", "emil"];
+        const expectedIds = chapter === 2 ? ["uezono", "dr_charcoal", "sensu"] : chapter === 3 ? ["emil", "dr_charcoal", "sensu"] : ["sensu", "da_silva", "emil"];
         await page.evaluate(async ({ chapter, expectedIds }) => {
           const { modal } = await import("./js/core/ui.js");
           const { judgePanel } = await import("./js/craft/tournament-graphics.js");

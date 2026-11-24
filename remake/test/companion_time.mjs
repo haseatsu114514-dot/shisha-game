@@ -51,6 +51,28 @@ function dubai(lovers = ["minto"], pick = "minto", extra = {}) {
   return value;
 }
 {
+  const value = dubai(), start = value.lovePts.minto;
+  const read = async () => true;
+  let requests = 0;
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async url => {
+    assert.equal(url, "../data/dialogue/lover_events.json");
+    return ++requests === 1 ? new Response(null, { status: 503 })
+      : Response.json(json("../../data/dialogue/lover_events.json"));
+  };
+  try {
+    assert.equal(await spendCompanionTime({ read }), true, "通信失敗中も同行者との場面は確定する");
+    assert.equal(value.lovePts.minto, start, "上限不明の間は絆の段を上げない");
+    assert.equal(value.flags._minto_love_waiting_pts, COMPANION_TIME_BOND / 2);
+    assert.equal(await spendCompanionTime({ read }), false, "同じ場面の加算は一度だけ");
+    value.day++;
+    assert.equal(await spendCompanionTime({ read }), true, "次に使う時に再取得する");
+    assert.equal(requests, 2);
+    assert.equal(value.lovePts.minto, start + COMPANION_TIME_BOND, "保留と今回の絆を一度ずつ解放する");
+    assert.equal(value.flags._minto_love_waiting_pts, 0);
+  } finally { globalThis.fetch = originalFetch; }
+}
+{
   const value = dubai(), log = [];
   const read = async scene => { log.push(scene); return true; };
   assert.equal(companionLover(value), "minto");

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {suite,assertFits} from './support.mjs';
 async function setup(page){await page.evaluate(async()=>{
  window.W={core:await import('./js/core/state.js'),data:await import('./js/core/data.js'),vn:await import('./js/vn/engine.js'),daily:await import('./js/daily/hiyori.js'),route:await import('./js/core/hiyori-route.js'),bonds:await import('./js/daily/bonds.js'),romance:await import('./js/daily/romance.js')};
+ await W.data.loadDeferredDialogues();
  (await import('./js/chapters/ch1.js')).setupHooks();
  // 未登録機材を前提とする既存の拒否ケース。正式機材の接続はhiyori_hagal.mjsで別に検証する。
  W.data.DB.hiyori.route.finale.gift=null;
@@ -152,7 +153,7 @@ await suite('hiyori-work-relationship',async run=>{
   assert(!r.missing&&!r.done&&r.same);
  });
  await check('confession-cannot-bypass-unread-and-existing-relationships',async page=>{
-  await setup(page);const r=await page.evaluate(async()=>{await W.vn.play('confession_hiyori_accept');const early=[...W.core.state.lovers];const results=[];
+  await setup(page);const r=await page.evaluate(async()=>{await W.data.loadConfessionDialogue();await W.vn.play('confession_hiyori_accept');const early=[...W.core.state.lovers];const results=[];
    for(const type of ['friend','lover']){const s=W.fresh();s.finales.hiyori={route:type==='friend'?'friend':'lover',day:4,chapter:1};s.flags._friend_hiyori=type==='friend';s.lovers=type==='lover'?['hiyori','rio']:['rio'];s.lovePts.hiyori=12;s.loveLevel.hiyori=2;const before=JSON.stringify({finales:s.finales,lovers:s.lovers,lovePts:s.lovePts,loveLevel:s.loveLevel,friend:s.flags._friend_hiyori});await W.daily.playHiyoriEvent('work_talk');await W.vn.play('confession_hiyori_accept');results.push(before===JSON.stringify({finales:s.finales,lovers:s.lovers,lovePts:s.lovePts,loveLevel:s.loveLevel,friend:s.flags._friend_hiyori}));}return {early,results};});
   assert.deepEqual(r.early,[]);assert(r.results.every(Boolean));
  });

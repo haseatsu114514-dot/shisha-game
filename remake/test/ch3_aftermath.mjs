@@ -28,8 +28,8 @@ assert(!tsumugiResult.metadata?.add_affinity && !tsumugiResult.lines.some(line =
 // #1052 §3/§4: preferences and recovery must agree with the shared runtime data.
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 const characters = Object.fromEntries(readData("characters").map(row => [row.id, row]));
-assert.equal(characters.saku.favorite_flavor, "アフサール アールグレイ");
-assert.match(characters.saku.specialty_flavor, /アールグレイ/);
+assert.equal(characters.ayatori.favorite_flavor, "アフサール アールグレイ");
+assert.match(characters.ayatori.specialty_flavor, /アールグレイ/);
 assert.equal(characters.mashiro.favorite_flavor, "ブラックティー");
 assert.match(characters.mashiro.specialty_flavor, /ブラックティー/);
 assert.match(characters.mashiro.description, /ダークリーフやシガーリーフ/);
@@ -43,7 +43,7 @@ const scenes = Object.fromEntries([
   ...readData("dialogue/ch3_mashiro").dialogues, ...readData("dialogue/ch3_rivals").dialogues,
 ].map(row => [row.dialogue_id, row]));
 const text = id => scenes[id].lines.map(line => line.text || "").join("\n");
-assert.match(text("ch3_saku_first"), /柑橘とアールグレイ/);
+assert.match(text("ch3_ayatori_first"), /柑橘とアールグレイ/);
 assert.match(text("ch3_work_without_taste"), /ブラックティーが得意/);
 assert.match(text("ch3_mashiro_play_1"), /自分用のダーク/);
 assert.match(text("ch3_double_apple_incident"), /分からない」と言ったら、終わる気がした/);
@@ -62,7 +62,7 @@ function winningSave() {
     stamina: 41, flavorStock: { mint: 8.5, double_apple: 4 } });
   value.flags = {
     _ch3_intro: { startDay: 29, stage: 18, titleSeen: true },
-    _ch3_tournament: { stage: "complete", result: { rank: 1, win: true, votes: { sui: { hajime: 10 } } } },
+    _ch3_tournament: { stage: "complete", result: { rank: 1, win: true, votes: { sensu: { hajime: 10 } } } },
     _ch3_tournament_won: true,
   };
   value.lovers = ["minto"];
@@ -125,14 +125,14 @@ const MASHIRO_EXTRAS = ["ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_m
   "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea", "ch3_mashiro_toolbox", "ch3_mashiro_doze", "ch3_mashiro_heavy_room"];
 const detourIds = ["ch3_mukai_after_tournament", "ch3_cigarman_trace", "ch3_emil_workshop", ...VOLK_VISITS, "ch3_volk_after_ch3",
   "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_revisit", "ch3_rival_volk_steve_greeting", "ch3_rival_volk_steve_seat",
-  "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply",
-  "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_saku_steve_notes",
+  "ch3_ayatori_missed", "ch3_ayatori_cleanup", "ch3_ayatori_liar", "ch3_ayatori_first_reply",
+  "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_ayatori_steve_notes",
   "ch3_mashiro_mukai_syrup_shelf", "ch3_mashiro_mukai_shelf_tags",
   ...MASHIRO_EXTRAS];
 // #3468 G案（ムカイさん×ヨルの曲順）は mukai の寄り道の末尾
 detourIds.push("ch3_mukai_yoru_playlist");
 // #3097 PR-H: 綾取・スティーブ・ヴォルクの♥3の友人の外出（東京の LIME の誘いで行かなかった分）
-const RIVAL_OUTINGS = ["outing_saku_1", "outing_steve_1", "outing_volk_1"];
+const RIVAL_OUTINGS = ["outing_ayatori_1", "outing_steve_1", "outing_volk_1"];
 detourIds.push(...RIVAL_OUTINGS);
 const openFirst = ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second", "ch3_volk_after_ch3",
   "ch3_mashiro_mukai_syrup_shelf"];
@@ -238,30 +238,30 @@ assert(!mukaiAfter.lines.some(line => /屋根裏|鍵/.test(line.text || "")), "t
 // 東京の約束で済ませた保存（_outing_done_<id>）と♥5の締めくくりの後は出さない。読むと同じ印が立ち、後日の LIME が届く。
 {
   const ready = winningSave();
-  ready.met = { saku: true, steve: true, volk: true };
-  Object.assign(ready.flags, { _ch3_read_ch3_saku_lime: true, _ch3_read_ch3_steve_lime: true, _ch3_read_ch3_volk_lime: true });
-  ready.affinity = { saku: 33, steve: 33, volk: 32 };
+  ready.met = { ayatori: true, steve: true, volk: true };
+  Object.assign(ready.flags, { _ch3_read_ch3_ayatori_lime: true, _ch3_read_ch3_steve_lime: true, _ch3_read_ch3_volk_lime: true });
+  ready.affinity = { ayatori: 33, steve: 33, volk: 32 };
   beginChapterThreeAftermath(ready);
   assert(!availableAftermathDetours(ready).some(scene => RIVAL_OUTINGS.includes(scene.id)), "victory night waits");
   completeChapterThreeAftermathScene(ready, "ch3_abyss_hotel");
   const outings = () => availableAftermathDetours(ready).map(scene => scene.id).filter(id => RIVAL_OUTINGS.includes(id));
-  assert.deepEqual(outings(), ["outing_saku_1", "outing_steve_1"], "♥3 (33pt) opens it; ♥2 (32pt) does not");
+  assert.deepEqual(outings(), ["outing_ayatori_1", "outing_steve_1"], "♥3 (33pt) opens it; ♥2 (32pt) does not");
   ready.affinity.volk = 33;
   assert.deepEqual(outings(), RIVAL_OUTINGS);
   const before = structuredClone(ready);
-  delete before.flags._ch3_read_ch3_saku_lime;
-  assert(!availableAftermathDetours(before).some(scene => scene.id === "outing_saku_1"), "the LIME exchange is required");
+  delete before.flags._ch3_read_ch3_ayatori_lime;
+  assert(!availableAftermathDetours(before).some(scene => scene.id === "outing_ayatori_1"), "the LIME exchange is required");
   ready.flags._outing_done_steve = true; // 東京の日常ループの約束で済ませた
   ready.finales = { ...ready.finales, volk: { route: "friend" } };
-  assert.deepEqual(outings(), ["outing_saku_1"], "done in Tokyo or after the ♥5 finale: not offered");
+  assert.deepEqual(outings(), ["outing_ayatori_1"], "done in Tokyo or after the ♥5 finale: not offered");
   const progress = structuredClone(ready.flags._ch3_aftermath), date = [ready.day, ready.slot];
-  assert.equal(completeAftermathDetour(ready, "outing_saku_1"), true);
-  assert.equal(ready.flags._outing_done_saku, true, "the after-outing LIME is unlocked by the same flag");
-  assert.equal(ready.flags._ch3_read_outing_saku_1, true);
+  assert.equal(completeAftermathDetour(ready, "outing_ayatori_1"), true);
+  assert.equal(ready.flags._outing_done_ayatori, true, "the after-outing LIME is unlocked by the same flag");
+  assert.equal(ready.flags._ch3_read_outing_ayatori_1, true);
   assert.deepEqual([ready.flags._ch3_aftermath, [ready.day, ready.slot]], [progress, date], "the outing detour does not advance time");
-  assert.equal(completeAftermathDetour(ready, "outing_saku_1"), false, "read once");
+  assert.equal(completeAftermathDetour(ready, "outing_ayatori_1"), false, "read once");
   assert.deepEqual(outings(), []);
-  for (const id of ["_outing_done_saku", "_outing_done_steve", "_outing_done_volk"]) assert.equal(classifyFlag(id), "person", id);
+  for (const id of ["_outing_done_ayatori", "_outing_done_steve", "_outing_done_volk"]) assert.equal(classifyFlag(id), "person", id);
   const scripts = Object.fromEntries(["ch3_rivals", "ch3_volk"].flatMap(file => readData(`dialogue/${file}`).dialogues).map(row => [row.dialogue_id, row]));
   for (const id of RIVAL_OUTINGS) {
     const text = JSON.stringify(scripts[id].lines);
@@ -296,47 +296,47 @@ console.log("PASS: Chapter 3 aftermath reopens Volk's unread visits in order, ea
 // #3468 C案: スティーブ×綾取の差し入れ。二人に面識があり、綾取の帰り支度が始まった頃（優勝の翌日〜なるへの報告）だけ。
 // 煙幕の片づけの朝（帰郷の日）からは出さない。好感度は動かさず、ピザは入口の小道具でタイマーのオチを繰り返さない。
 {
-  const notes = CH3_AFTERMATH_DETOURS.find(scene => scene.id === "ch3_saku_steve_notes");
-  assert.deepEqual([notes.file, notes.location, notes.met, notes.to], ["ch3_rivals", "煙幕", ["saku", "steve"], "ch3_naru_reconcile"]);
-  const script = readData("dialogue/ch3_rivals").dialogues.find(row => row.dialogue_id === "ch3_saku_steve_notes");
+  const notes = CH3_AFTERMATH_DETOURS.find(scene => scene.id === "ch3_ayatori_steve_notes");
+  assert.deepEqual([notes.file, notes.location, notes.met, notes.to], ["ch3_rivals", "煙幕", ["ayatori", "steve"], "ch3_naru_reconcile"]);
+  const script = readData("dialogue/ch3_rivals").dialogues.find(row => row.dialogue_id === "ch3_ayatori_steve_notes");
   assert(!script.lines.some(line => line.type === "apply" || line.affinity), "no affinity change");
   assert(!JSON.stringify(script.lines).includes("タイマー"), "the timer joke of ch3_steve_two_timers is not repeated");
-  assert(script.lines.some(line => line.speaker === "saku") && script.lines.some(line => line.speaker === "steve"));
-  const open = value => availableAftermathDetours(value).some(scene => scene.id === "ch3_saku_steve_notes");
+  assert(script.lines.some(line => line.speaker === "ayatori") && script.lines.some(line => line.speaker === "steve"));
+  const open = value => availableAftermathDetours(value).some(scene => scene.id === "ch3_ayatori_steve_notes");
   const save = winningSave();
-  save.met = { saku: true, steve: true };
+  save.met = { ayatori: true, steve: true };
   beginChapterThreeAftermath(save);
   assert(!open(save), "not on the victory night");
   completeChapterThreeAftermathScene(save, "ch3_abyss_hotel");
   assert(open(save), "the day after the win");
   const onlySaku = structuredClone(save);
-  onlySaku.met = { saku: true };
+  onlySaku.met = { ayatori: true };
   assert(!open(onlySaku), "only when hajime has met both");
   completeChapterThreeAftermathScene(save, "ch3_mashiro_recovery");
   assert(open(save), "still open until the report to Naru is read");
   const unread = structuredClone(save);
   completeChapterThreeAftermathScene(unread, "ch3_naru_reconcile");
   assert(!open(unread), "closed on the cleanup morning (the day Ayatori goes home)");
-  assert.equal(completeAftermathDetour(unread, "ch3_saku_steve_notes"), false);
-  assert.equal(completeAftermathDetour(save, "ch3_saku_steve_notes"), true);
+  assert.equal(completeAftermathDetour(unread, "ch3_ayatori_steve_notes"), false);
+  assert.equal(completeAftermathDetour(save, "ch3_ayatori_steve_notes"), true);
   assert(!open(save), "read once");
   // 後日の一言は第4章のLIME（綾取の連絡先がある時だけ届く）。差し入れの既読を字面で待つ。
-  const note = readData("lime_messages").messages.find(message => message.id === "lime_ch4_saku_steve_note");
+  const note = readData("lime_messages").messages.find(message => message.id === "lime_ch4_ayatori_steve_note");
   assert.deepEqual([note.sender, note.chapter, note.trigger_condition, note.trigger_flag],
-    ["saku", 4, "flag", "_ch3_read_ch3_saku_steve_notes"]);
+    ["ayatori", 4, "flag", "_ch3_read_ch3_ayatori_steve_notes"]);
   assert(note.replies.every(reply => !reply.affinity), "the follow-up does not move affinity");
 }
 console.log("PASS: Steve and Ayatori's notes visit opens only before Ayatori packs up, with a chapter-4 LIME follow-up");
 // IR22: 綾取の締めくくり（♥5）は、大会前の来店で読めなかった時だけ大会後の寄り道から。煙幕の片づけの前まで。
 {
   assert.deepEqual(CH3_AFTERMATH_FINALES.map(entry => [entry.who, entry.dialogue]),
-    [["saku", "ch3_saku_bond_finale"], ["steve", "ch3_steve_bond_finale"], ["volk", "ch3_volk_bond_finale"]]);
-  const finale = scenes.ch3_saku_bond_finale;
+    [["ayatori", "ch3_ayatori_bond_finale"], ["steve", "ch3_steve_bond_finale"], ["volk", "ch3_volk_bond_finale"]]);
+  const finale = scenes.ch3_ayatori_bond_finale;
   const branch = finale.lines.find(line => line.type === "condition");
   assert.deepEqual([branch.condition_type, branch.tournament_chapter, branch.next_true, branch.next_false],
     ["tournament_finished", 3, "after_tournament", "before_tournament"], "the finale reads after the tournament too");
   assert(!JSON.stringify(finale.branches.after_tournament).match(/勝負の話は|明日|本番/), "no pre-tournament wording after the tournament");
-  const window = winningSave(), due = new Set(["saku"]);
+  const window = winningSave(), due = new Set(["ayatori"]);
   const open = (value, ready = who => due.has(who)) => {
     const before = structuredClone(value);
     const found = availableAftermathFinales(value, ready).map(entry => entry.who);
@@ -346,10 +346,10 @@ console.log("PASS: Steve and Ayatori's notes visit opens only before Ayatori pac
   beginChapterThreeAftermath(window);
   assert.deepEqual(open(window), [], "the victory night has no finale");
   completeChapterThreeAftermathScene(window, "ch3_abyss_hotel");
-  assert.deepEqual(open(window), ["saku"], "the day after the win");
+  assert.deepEqual(open(window), ["ayatori"], "the day after the win");
   assert.deepEqual(open(window, () => false), [], "only when daily/bonds.js says it is due (♥5, the LIME detour and the answer)");
   completeChapterThreeAftermathScene(window, "ch3_mashiro_recovery");
-  assert.deepEqual(open(window), ["saku"]);
+  assert.deepEqual(open(window), ["ayatori"]);
   completeChapterThreeAftermathScene(window, "ch3_naru_reconcile");
   assert.deepEqual(open(window), [], "the cleanup morning: Ayatori is packing the shop");
   const loser = winningSave(); loser.flags._ch3_tournament.result.rank = 4;
@@ -458,7 +458,7 @@ console.log("PASS: Mukai and Yoru's opening playlist opens once at mukai after t
   assert.deepEqual(AFTERMATH_HEART_PTS, AFFINITY_RANK_PTS, "the aftermath copy of the ♥ table follows core/stats.js");
   const bonds = readFileSync(new URL("../js/daily/bonds.js", import.meta.url), "utf8");
   const copied = name => Number(bonds.match(new RegExp(`${name} = (\\d+);`))?.[1]);
-  for (const [name, who] of [["SAKU_LAST_AFTERMATH_STAGE", "saku"], ["STEVE_LAST_AFTERMATH_STAGE", "steve"], ["VOLK_LAST_AFTERMATH_STAGE", "volk"]])
+  for (const [name, who] of [["AYATORI_LAST_AFTERMATH_STAGE", "ayatori"], ["STEVE_LAST_AFTERMATH_STAGE", "steve"], ["VOLK_LAST_AFTERMATH_STAGE", "volk"]])
     assert.equal(copied(name), ids.indexOf(CH3_AFTERMATH_FINALES.find(item => item.who === who).to), `bonds.js ${name} matches the aftermath window`);
   assert.equal(copied("NARU_RECONCILE_STAGE"), ids.indexOf("ch3_naru_reconcile"), "bonds.js NARU_RECONCILE_STAGE (the party night)");
   const volkScripts = Object.fromEntries(readData("dialogue/ch3_volk").dialogues.map(row => [row.dialogue_id, row]));
@@ -558,7 +558,7 @@ console.log("PASS: Chapter 3 aftermath offers Volk's LIME (after the fourth visi
 console.log("PASS: Volk and Steve's greeting and Smoke & Glory follow-up open once each, in order, for hajime who has met both");
 // 大会後の東京で、灯した授業を相談できる（SPEC 2.6・SBD61）。窓は場面idで決まり、保存は変更しない。
 {
-  assert.deepEqual(CH3_AFTERMATH_LESSONS.map(entry => entry.who), ["saku", "steve", "volk", "mashiro"]);
+  assert.deepEqual(CH3_AFTERMATH_LESSONS.map(entry => entry.who), ["ayatori", "steve", "volk", "mashiro"]);
   for (const entry of CH3_AFTERMATH_LESSONS) for (const id of [entry.from, entry.to])
     assert(ids.includes(id), `${entry.who}: window scene ${id} exists`);
   const everyone = () => [{ id: "lit" }];
@@ -573,27 +573,27 @@ console.log("PASS: Volk and Steve's greeting and Smoke & Glory follow-up open on
   beginChapterThreeAftermath(lessonSave);
   assert.deepEqual(who(lessonSave), [], "the victory night has no lessons");
   completeChapterThreeAftermathScene(lessonSave, "ch3_abyss_hotel");
-  assert.deepEqual(who(lessonSave), ["saku", "steve", "volk"], "day after the win (noon): mashiro is not yet at the after-hours counter");
-  const [saku] = availableAftermathLessons(lessonSave, everyone);
-  assert.deepEqual(saku.lessons, [{ id: "lit" }]);
-  assert.equal(saku.place, "煙幕");
+  assert.deepEqual(who(lessonSave), ["ayatori", "steve", "volk"], "day after the win (noon): mashiro is not yet at the after-hours counter");
+  const [ayatori] = availableAftermathLessons(lessonSave, everyone);
+  assert.deepEqual(ayatori.lessons, [{ id: "lit" }]);
+  assert.equal(ayatori.place, "煙幕");
   completeChapterThreeAftermathScene(lessonSave, "ch3_mashiro_recovery");
-  assert.deepEqual(who(lessonSave), ["saku", "steve", "volk", "mashiro"], "the night of the day after: all four");
+  assert.deepEqual(who(lessonSave), ["ayatori", "steve", "volk", "mashiro"], "the night of the day after: all four");
   const partyNight = structuredClone(lessonSave);
   partyNight.flags._ch3_naru_party_ready = true;
-  assert.deepEqual(who(partyNight), ["saku", "volk", "mashiro"], "Steve's lesson is the party itself: hidden once the party night opens");
+  assert.deepEqual(who(partyNight), ["ayatori", "volk", "mashiro"], "Steve's lesson is the party itself: hidden once the party night opens");
   assert.deepEqual(who(lessonSave, name => name === "volk" ? [{ id: "M-W5" }] : []), ["volk"], "only people with a ready lesson");
   assert.deepEqual(who(lessonSave, () => []), [], "nothing lit, nothing listed");
   assert.deepEqual(who(lessonSave, () => undefined), [], "a missing growth list is treated as empty");
   completeChapterThreeAftermathScene(lessonSave, "ch3_naru_reconcile");
   assert.deepEqual(who(lessonSave), ["volk"], "the cleanup morning: Ayatori is packing the shop, only Volk is left");
   // 寄り道を全部読んでも、授業だけで寄り道の入口が開く（ch3-aftermath.js は寄り道と授業の合計で入口を出す）
-  lessonSave.met = { ...lessonSave.met, emil: true, volk: true, steve: true, yoru: true, saku: true };
+  lessonSave.met = { ...lessonSave.met, emil: true, volk: true, steve: true, yoru: true, ayatori: true };
   lessonSave.flags._ch3_read_ch3_cigarman_rumor = true;
-  lessonSave.flags._ch3_read_ch3_saku_lime = true;
+  lessonSave.flags._ch3_read_ch3_ayatori_lime = true;
   lessonSave.flags._ch3_read_ch3_steve_lime = true; // スティーブとの♥3の外出の条件（#3097 PR-H。交換の場面は大会前のmukaiだけ）
   lessonSave.affinity.volk = AFFINITY_RANK_PTS[4]; // 五度目は♥4、LIME交換は♥2から
-  lessonSave.affinity.saku = AFFINITY_RANK_PTS[4];
+  lessonSave.affinity.ayatori = AFFINITY_RANK_PTS[4];
   lessonSave.affinity.steve = AFFINITY_RANK_PTS[4];
   for (const id of ["ch3_mashiro_play_3", "ch3_mashiro_practice", "ch3_mashiro_black_tea"]) lessonSave.flags[`_ch3_read_${id}`] = true;
   // 窓の短い寄り道（to）は片づけの朝には閉じている（#3468 C案）
@@ -706,13 +706,13 @@ console.log("PASS: Chapter 3 victory aftermath saves seven scenes once, crosses 
   const s = winningSave(); beginChapterThreeAftermath(s);
   completeChapterThreeAftermathScene(s, ids[0]); completeChapterThreeAftermathScene(s, ids[1]);
   s.growth = { nodes: ["M-S5"], learned: ["M-S5"] };
-  s.met = { mashiro: true, saku: true, volk: true, minto: true };
+  s.met = { mashiro: true, ayatori: true, volk: true, minto: true };
   assert.equal(party.chapterThreePartyWindow(s), false, "Naru must be read first");
   s.flags._ch3_naru_party_ready = true;
-  assert.deepEqual(party.chapterThreePartyGuests(s), ["mashiro", "saku", "volk"], "home guests cannot teleport");
+  assert.deepEqual(party.chapterThreePartyGuests(s), ["mashiro", "ayatori", "volk"], "home guests cannot teleport");
   const withHost = structuredClone(s); withHost.met.mukai_master = true;
-  assert.deepEqual(party.chapterThreePartyGuests(withHost), ["mashiro", "saku", "volk", "mukai_master"]);
-  const invalid = [[], ["mashiro"], ["mashiro", "mashiro"], ["mashiro", "minto"], ["mashiro", "saku", "volk", "minto"]];
+  assert.deepEqual(party.chapterThreePartyGuests(withHost), ["mashiro", "ayatori", "volk", "mukai_master"]);
+  const invalid = [[], ["mashiro"], ["mashiro", "mashiro"], ["mashiro", "minto"], ["mashiro", "ayatori", "volk", "minto"]];
   for (const guests of invalid) {
     const before = structuredClone(s);
     assert.equal(party.completeChapterThreeParty(s, guests, () => assert.fail("invalid award")), false);
@@ -722,20 +722,20 @@ console.log("PASS: Chapter 3 victory aftermath saves seven scenes once, crosses 
   assert.deepEqual(party.chapterThreePartyGuests(s), []);
   delete s.pendingInvite;
   s.growth.partyLast = ["mashiro"];
-  assert.deepEqual(party.chapterThreePartyGuests(s), ["saku", "volk"]);
+  assert.deepEqual(party.chapterThreePartyGuests(s), ["ayatori", "volk"]);
   const before = structuredClone(s), awards = [];
-  assert.equal(party.completeChapterThreeParty(s, ["saku", "volk"], (...a) => awards.push(a)), true);
-  assert.deepEqual(awards, [["saku", 10], ["volk", 10]]);
+  assert.equal(party.completeChapterThreeParty(s, ["ayatori", "volk"], (...a) => awards.push(a)), true);
+  assert.deepEqual(awards, [["ayatori", 10], ["volk", 10]]);
   for (const key of ["day", "slot", "stamina", "money", "stats", "flavorStock", "tokyoVisits", "tournament"])
     assert.deepEqual(s[key], before[key], key);
   const restored = JSON.parse(JSON.stringify(s));
   const { buildCarryPackage, flagVerdict } = await import("../js/core/carry.js");
   const carry = buildCarryPackage(restored);
-  assert.deepEqual(carry.growth.partyLast, ["saku", "volk"], "consecutive invitations stay blocked across NG+");
+  assert.deepEqual(carry.growth.partyLast, ["ayatori", "volk"], "consecutive invitations stay blocked across NG+");
   assert.equal(flagVerdict("_ch3_pizza_party"), "reset");
   assert.equal(flagVerdict("_ch3_naru_party_ready"), "reset");
   assert(!carry.flags._ch3_pizza_party && !carry.flags._ch3_naru_party_ready);
-  assert.equal(party.completeChapterThreeParty(restored, ["mashiro", "saku"], () => assert.fail("duplicate award")), false);
+  assert.equal(party.completeChapterThreeParty(restored, ["mashiro", "ayatori"], () => assert.fail("duplicate award")), false);
   assert.equal(completeChapterThreeAftermathScene(restored, ids[2]), true);
   assert.deepEqual([restored.day, restored.slot], [44, 0]);
   assert.equal(party.chapterThreePartyWindow(restored), false);

@@ -41,7 +41,7 @@ export function configEffectLabel(group, value) {
 
 export const WEIGHTS = { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 };
 /** 千須が持ち点を動かす基準（これ未満なら千須票は入らず、普通に負ける） */
-export const SUI_BAR = 90.8; // MEASURE.md: 第1章・mid 初回突破率 74.2%（742/1000）。
+export const SENSU_BAR = 90.8; // MEASURE.md: 第1章・mid 初回突破率 74.2%（742/1000）。
 
 /** 同系統フレーバー（AF/ドバジ/アフサールのミント・ダブルアップル等）の合計グラム数 */
 export function flavorFamilyGrams(mix, family, flavorById = DB.flavorById) {

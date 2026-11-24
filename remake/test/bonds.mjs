@@ -96,6 +96,7 @@ try {
     fortune.second = state.affinity.rio;
     // 恋人の絆: 私的な場面でだけ、従来の半分
     state = fresh({ lovers: ["tsumugi"], loveLevel: { tsumugi: 1 }, lovePts: { tsumugi: 9 } });
+    await stats.prepareLoveAffinity(["tsumugi"]);
     stats.gainAffinity("tsumugi", 10);
     const shop = state.lovePts.tsumugi;
     stats.bond.private = true;
@@ -179,6 +180,7 @@ try {
     await vn.play("ch1_minto_phantom_smell");
     const shopNames = [...new Set(names().filter((l) => DB.dialogues.ch1_minto_phantom_smell.lines.some((x) => x.speaker === "minto" && x.text === l.text)).map((l) => l.name))];
     // 告白（分岐先の受け入れも私的な場面のまま）
+    await data.loadConfessionDialogue();
     vn.backlog().length = 0;
     window.T.pick("付き合ってください");
     await vn.play("confession_minto");
@@ -350,7 +352,7 @@ try {
   assert.equal(friend.noonBadge, false); assert.equal(friend.noon, false); assert.equal(friend.nightBadge, true);
   assert(friend.finaleText.includes("描き終わった絵、いちばん最初に見てほしくて"));
   assert(friend.finaleText.includes("この子の続きも、ここで描きます"), "friendship landing missing");
-  assert(!friend.finaleText.includes("今度は2人で"), "romance question shown after a friendly answer");
+  assert(!friend.finaleText.includes("今度は二人で"), "romance question shown after a friendly answer");
   assert.equal(friend.record.route, "friend"); assert(friend.owned); assert.equal(friend.lavender, 50);
   assert.equal(friend.confessed, false); assert.equal(friend.due, null);
   assert.equal(friend.again, 1); assert.equal(friend.lavenderAfter, 50); assert.equal(friend.after, false);
@@ -365,7 +367,7 @@ try {
     const q1 = bonds.romanceValue("tsumugi");
     state.story.tsumugi = 6; state.affinity.tsumugi = 90;
     await window.T.submitTsumugi();
-    pick("今度は2人で");
+    pick("今度は二人で");
     vn.backlog().length = 0;
     await spots.visitChar("tsumugi");
     const text = vn.backlog().map((l) => l.text).join("|");
@@ -376,7 +378,7 @@ try {
     const confessed = await romance.maybeConfession(async () => {});
     return { q1, text, route, due, confessed, lovers: state.lovers.slice(), romance: bonds.romanceValue("tsumugi"), owned: state.owned.includes("suyaki_tsumugi") };
   });
-  assert.equal(love.q1, 1); assert(love.text.includes("2人で、ですか")); assert.equal(love.route, "romance"); assert.equal(love.due, "tsumugi");
+  assert.equal(love.q1, 1); assert(love.text.includes("二人で、ですか")); assert.equal(love.route, "romance"); assert.equal(love.due, "tsumugi");
   assert.equal(love.confessed, true); assert.deepEqual(love.lovers, ["tsumugi"]); assert.equal(love.romance, 2); assert(love.owned);
   log("HF04/05 tsumugi romance: two romantic answers -> romance route -> confession at night -> lovers, gift too");
 
@@ -407,7 +409,7 @@ try {
     const questionVisit = { answer: state.romanceChoices.bond_q1_tsumugi?.value,
       finale: !!state.finales.tsumugi, due: state.flags._confession_due ?? null };
     await window.T.submitTsumugi();
-    pick("今度は2人で");
+    pick("今度は二人で");
     await spots.visitChar("tsumugi");
     const oldRoute = { route: state.finales.tsumugi.route, due: state.flags._confession_due ?? null, missed: !state.romanceChoices.bond_q1_tsumugi };
     return { lateFriend, dueAfterLoad, unanswered, questionVisit, oldRoute };

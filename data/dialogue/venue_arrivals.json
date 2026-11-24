@@ -314,10 +314,10 @@
       "dialogue_id": "trpg_cafe_first_visit_after",
       "lines": [
         { "speaker": "hajime", "face": "normal", "text": "逢縁はじめです。TRPGって、名前しか知らなくて" },
-        { "speaker": "sai", "face": "smile", "text": "大丈夫ですよ。みなさん、最初は名前だけ知って来られます" },
-        { "speaker": "sai", "face": "normal", "text": "昼はボードゲームと、短い試遊。夜は、物語を囲む卓です" },
+        { "speaker": "sai", "face": "smile", "text": "初めてなら、サイコロの振り方からお教えしますよ" },
+        { "speaker": "sai", "face": "normal", "text": "昼は本を選んだり、短いゲームを試したり。TRPGの卓を囲むのは夜です" },
         { "speaker": "", "face": "", "text": "サイさんが棚から、薄い本を一冊抜いて見せてくれた。" },
-        { "speaker": "sai", "face": "normal", "text": "本を一冊選んで、仲間と役を演じます。サイコロが、話の行き先を少し変えます" }
+        { "speaker": "sai", "face": "normal", "text": "この本が冒険の台本です。仲間と役を演じて、結果が分からないときにサイコロを振ります" }
       ]
     },
     {
@@ -412,7 +412,7 @@
         { "speaker": "", "face": "", "text": "店を閉めた人たちが、一人、また一人と通りを歩いてくる時間だ。" },
         { "speaker": "sai", "face": "normal", "text": "こんばんは、部長。皆さんの店も、そろそろ片づく頃ですね" },
         { "speaker": "hajime", "face": "normal", "text": "はい。今夜は、誰が来られるか分かりませんけど" },
-        { "speaker": "sai", "face": "smile", "text": "来られる方で囲むのが、この部活です。欠けた席は、次の夜の楽しみに" },
+        { "speaker": "sai", "face": "smile", "text": "来られる方で遊びましょう。空いた席なら、うちの常連さんにも声をかけてみます" },
         { "speaker": "hajime", "face": "smile", "text": "そう言ってもらえると、誘う側も気が楽です" },
         { "speaker": "sai", "face": "normal", "text": "では、今夜の顔ぶれを見てみましょう" }
       ]

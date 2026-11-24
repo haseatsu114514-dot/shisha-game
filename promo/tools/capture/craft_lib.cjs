@@ -8,7 +8,7 @@ async function initCraft(page, { mode = 'tournament', mix = null, extra = '' } =
     Object.assign(s, { phase: mode === 'tournament' ? 'tournament' : 'daily', day: mode === 'tournament' ? 14 : 8, slot: 0 });
     s.flavorStock = { double_apple: 50, mint: 50, blueberry: 50, lemon: 50 };
     s.flavors = ['double_apple', 'mint', 'blueberry', 'lemon'];
-    for (const id of ['sumi', 'naru', 'adam', 'minto', 'sui', 'maezono', 'dr_kemuri', 'tsumugi']) s.met[id] = true;
+    for (const id of ['sumi', 'naru', 'adam', 'minto', 'sensu', 'uezono', 'dr_charcoal', 'tsumugi']) s.met[id] = true;
     window.T = { core,
       data: await import('./js/core/data.js'),
       ui: await import('./js/core/ui.js'),

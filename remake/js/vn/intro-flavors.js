@@ -5,15 +5,15 @@
 // 2026-10-31 オーナー指示: カットインではメーカー名（アフサール等）を付けず、味の名前だけを出す。
 const flavors = {
   sumi: "カルダモン", naru: "バニラ", adam: "ダブルアップル", minto: "ミント",
-  rei: "カシス", tsumugi: "ラベンダー",
+  kuraudo: "カシス", tsumugi: "ラベンダー",
   rio: "ブルーベリー", ageha: "ホワイトグミベア／レッドグミベア",
-  kumicho: "ドラゴンフルーツ", dr_kemuri: "コーラ", pakki: "ガムシナモン",
+  kumicho: "ドラゴンフルーツ", dr_charcoal: "コーラ", pakki: "ガムシナモン",
   emil: "ピスタチオ", da_silva: "パッションフルーツ", // 2026-11-11 オーナー決定でアサイーから差し替え（RVE05）
   mashiro: "ブラックティー",
   samechan: "スプリングウォーター",
   // 2026-10-31 オーナー指示: 正本で決まっている好みを全員分そろえる
-  saku: "アールグレイ", steve: "マウンテンミスト", volk: "ブラストミント",
-  sui: "シガー", maezono: "レモン",
+  ayatori: "アールグレイ", steve: "マウンテンミスト", volk: "ブラストミント",
+  sensu: "シガー", uezono: "レモン",
   master_hookah: "ライチ", sheikh: "グレープ", shisha_9000: "ランダム",
 };
 

@@ -392,6 +392,20 @@ html:root[data-density="phone"] body:not(:root) .ts-splash:not(.win) .ts-splash-
 html:root[data-density="phone"] body:not(:root) #stage #modal > .modal-box.ts-contest-modal :is(.ch2-contest-note, .judge-legend, .judge-name, .judge-left) { font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) #stage #modal > .modal-box.ts-contest-modal .ch4-standings { grid-template-columns: minmax(0, 1fr) 360px; }
 
+/* 第2・3章の投票と結果。順位表を先に置き、長い解説や注記は続行ボタンの上でスクロールして読む。 */
+html:root[data-density="phone"] body:is([data-screen="ch2-tournament"], [data-screen="ch3-tournament"]) .ch2-contest:has(> .ch2-contest-board) {
+  grid-template-columns: minmax(0, 1fr) 340px;
+}
+html:root[data-density="phone"] body:is([data-screen="ch2-tournament"], [data-screen="ch3-tournament"]) .ch2-contest:has(> .ch2-contest-board) > .ch2-contest-header { grid-row: 1; }
+html:root[data-density="phone"] body:is([data-screen="ch2-tournament"], [data-screen="ch3-tournament"]) .ch2-contest:has(> .ch2-contest-board) > .ch2-contest-description { grid-row: 2; }
+html:root[data-density="phone"] body:is([data-screen="ch2-tournament"], [data-screen="ch3-tournament"]) .ch2-contest > :is(.ch2-contest-board, .ch2-contest-judges) {
+  grid-row: 3;
+  align-self: start;
+}
+html:root[data-density="phone"] body:is([data-screen="ch2-tournament"], [data-screen="ch3-tournament"]) .ch2-contest:has(> .ch2-contest-board) :is(
+  .judge-left, .ch2-contest-note, .ch2-contest-reason-tag, .ch2-contest-reason > p
+) { font-size: var(--tournament-phone-sub); }
+
 @media (prefers-reduced-motion: reduce) {
   .ts-beam, .ts-dust, .ts-halo, .ts-plus, .ts-rankup, .ts-confetti i, .ts-burst b { animation: none !important; }
   .ts-dust, .ts-confetti, .ts-burst, .ts-plus, .ts-rankup, .ts-token { display: none; }

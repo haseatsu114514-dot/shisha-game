@@ -45,7 +45,7 @@ import { CH4_LOVERS_FILES, CH4_LOVERS_FLAG, CH4_LOVERS_PETIT, CH4_LOVERS_SCENE, 
 import { markPetit } from "../core/petit-shuraba.js";
 import { strainSuspect } from "../core/lover-strain.js";
 import { CH4_BEACH_SCENES, CH4_BEACH_SCENE_FILES, CH4_BEACH_BG, chapterFourBeachCast, chapterFourBeachDue,
-  chapterFourBeachPickCount, commitChapterFourBeach } from "./ch4-beach.js";
+  chapterFourBeachCostume, chapterFourBeachPickCount, commitChapterFourBeach } from "./ch4-beach.js";
 import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
   chapterFourEveningRecord } from "./ch4-story-wiring.js";
 import { CH4_CAMEL_SCENE_FILES, camelSceneBg, visitCamelRace } from "./ch4-camel-race.js";
@@ -133,7 +133,7 @@ async function openChapter(advance) {
   });
 }
 
-async function readScene(owner, id) {
+async function readScene(owner, id, portraitCostume) {
   if (!current(owner)) return false;
   const source = DB.dialogues[id];
   if (!source) throw new Error(`台本がありません: ${id}`);
@@ -167,7 +167,7 @@ async function readScene(owner, id) {
   } : null;
   if (choiceHook) hooks.onChoice = choiceHook;
   try {
-    const result = await play(dialogue, { signal: controller.signal });
+    const result = await play(dialogue, { signal: controller.signal, portraitCostume });
     const finished = current(owner) && !controller.signal.aborted && !!result && !result.cancelled;
     if (finished && strategyChoice) recordChapterFourStrategy(state, strategyChoice);
     return finished;
@@ -307,7 +307,10 @@ async function loverActions(owner, { home = false } = {}) {
     await friend.readFriendLime({ exclude });
     if (current(owner)) await renderStage(owner);
   }));
-  const [id] = home ? lover.loverMilestonesDue((state.lovers || []).filter(who => !TOKYO_RESIDENT_IDS.includes(who)), { home }) : [];
+  const nearby = home ? (state.lovers || []).filter(who => !TOKYO_RESIDENT_IDS.includes(who)) : [];
+  const ready = await lover.prepareLoverMilestones(nearby);
+  if (!current(owner)) return [];
+  const [id] = ready ? lover.loverMilestonesDue(nearby, { home }) : [];
   if (id) actions.push(button(owner, `${displayName(id, state, { context: "private" })}と過ごす`, "lover-milestone", async () => {
     showScreen("none", null);
     hud();
@@ -498,7 +501,8 @@ async function renderBeachHub(owner) {
   card(owner, "beach", `DAY ${chapterFourEveDay(state)}・前夜祭の日`,
     `宿の裏の砂浜。あと${need - run.picks.length}か所、遊べる。`,
     cast.filter(id => !run.picks.includes(id)).map(id => button(owner, `${name(id)}と遊ぶ`, `beach-${id}`, async () => {
-      if (!await readScene(owner, CH4_BEACH_SCENES.people[id])) return;
+      const scene = CH4_BEACH_SCENES.people[id];
+      if (!await readScene(owner, scene, chapterFourBeachCostume(id, scene))) return;
       run.picks.push(id);
       if (run.picks.length < need) { await renderBeachHub(owner); return; }
       if (!await readScene(owner, CH4_BEACH_SCENES.close)) return;
