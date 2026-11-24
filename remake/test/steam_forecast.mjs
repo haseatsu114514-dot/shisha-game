@@ -112,7 +112,10 @@ const checkHelp = async (page, name) => {
   console.log(`[steam help] PASS: ${name} ${JSON.stringify(hit)}`);
   await guide.locator('summary').click();
   assert(await guide.locator('.bench-guide-tip').isVisible());
-  assert.match(await guide.locator('.bench-guide-tip').textContent(), /アタック/);
+  // アタックの説明は授業で習ってから出す（#4191）。新しいゲームのこの台では、雑念よけだけを読む。
+  const tip = await guide.locator('.bench-guide-tip').textContent();
+  assert.match(tip, /雑念を避けよう/);
+  assert.doesNotMatch(tip, /アタック/);
   await guide.locator('summary').click();
   assert.equal(await guide.getAttribute('open'), null);
 };
