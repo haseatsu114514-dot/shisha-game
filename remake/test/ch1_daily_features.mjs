@@ -21,7 +21,7 @@ const ports = {
   dialogueSequence: fn => fn(),
   showScreen: (_id, node) => { queueMicrotask(() => find(node, 'after-none').onclick()); return node; },
   setBg: async (...args) => trace.push(['bg', ...args]), retire: noop,
-  SE: { select: noop }, playBgm: noop, modal: async () => null, toast: (...args) => trace.push(['toast', ...args]),
+  SE: { select: noop }, playBgm: noop, modal: async () => 0, toast: (...args) => trace.push(['toast', ...args]),
   addStamina: n => { state.stamina += n; trace.push(['stamina', n]); },
   addMoney: n => { state.money += n; trace.push(['money', n]); },
   applyStats: stats => trace.push(['stats', stats]), step: () => 1,
@@ -105,7 +105,7 @@ for (const chapter of chapters) for (const day of [1, 2, 3, 4, 5, 6, 13, 14])
     const flags = Object.fromEntries(cameoFlags.filter((_, i) => mask & (1 << i)).map(k => [k, true]));
     reset({ chapter, day, baitoCount: count - 1, flags });
     if (agehaScript) DB.dialogues.ch1_ageha_encounter = {};
-    const expected = chapter !== 1 ? -1 : count === 2 && !(mask & 1) ? 0
+    const expected = chapter !== 1 ? -1 : count >= 2 && !(mask & 1) ? 0
       : count >= 3 && day >= 4 && !(mask & 2) ? 1 : count >= 4 && day >= 6 && !(mask & 4) ? 2 : -1;
     await tonari.doBaito();
     const ids = plays();

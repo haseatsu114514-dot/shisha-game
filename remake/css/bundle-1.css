@@ -4964,12 +4964,21 @@ body[data-screen="bench"]:has(.bench[data-mode="tournament"][data-chapter="1"]) 
   top: 50%;
   transform: translate(-50%, -50%);
   width: 820px;
+  max-height: calc(100% - 48px);
+  overflow-y: auto;
+  touch-action: pan-y;
   padding: 34px 40px;
   background: rgba(10, 7, 18, 0.9);
   border: 1px solid var(--panel-edge);
   border-radius: 12px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
   animation: pop-in-c 0.35s var(--ease-out);
+}
+/* 左上の HUD カードの下から、ステージ下端の余白までに収める。 */
+#screen[data-screen="tonari"] > .sub-menu {
+  --sub-menu-top: 132px;
+  top: calc((100% + var(--sub-menu-top) - 24px) / 2);
+  max-height: calc(100% - var(--sub-menu-top) - 24px);
 }
 @keyframes pop-in-c { from { opacity: 0; transform: translate(-50%, -46%); } }
 .sub-title { margin: 0; font-family: var(--font); font-size: 34px; letter-spacing: 0.12em; color: var(--gold-hi); }
@@ -4996,8 +5005,16 @@ p.gear-offer.owned b { color: var(--gold); }
 .big-choice small { font-size: 14px; color: var(--text-dim); line-height: 1.5; }
 .big-choice:hover { border-color: var(--gold); transform: translateX(6px); }
 .big-choice:disabled { opacity: .5; cursor: not-allowed; }
-.big-choice:disabled:hover { border-color: inherit; transform: none; }
+.big-choice:disabled:hover { border-color: rgba(232, 194, 122, 0.35); transform: none; }
+html:root[data-ui-theme="paper"]:not([data-look="neo"]) .big-choice:disabled:hover { border-color: var(--lavender-line); }
 .sub-back { margin-top: 18px; }
+html:root[data-density="phone"] #screen[data-screen="tonari"] > .sub-menu { --sub-menu-top: 156px; }
+html:root[data-density="phone"] #screen[data-screen="tonari"] .sub-menu :is(.sub-lead, .big-choice small, .sub-back) {
+  font-size: max(16px, calc(11px / var(--k, 1)));
+}
+html:root[data-density="phone"] #screen[data-screen="tonari"] .sub-menu :is(.big-choice, .sub-back) {
+  min-height: max(44px, calc(38px / var(--k, 1)));
+}
 
 /* ---------------------------------------------------------------- ショップ */
 .shop { position: absolute; left: 50%; top: 84px; transform: translateX(-50%); width: 980px; height: 610px; display: flex; flex-direction: column; padding: 22px 28px; }
