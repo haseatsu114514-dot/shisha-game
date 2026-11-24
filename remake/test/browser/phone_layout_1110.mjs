@@ -30,7 +30,11 @@ await suite("phone-layout-1110", async check => {
         } });
       });
       await page.locator(".map-guide").waitFor();
-      await page.waitForFunction(() => getComputedStyle(document.getElementById("backdrop")).backgroundImage !== "none");
+      await page.waitForFunction(() => {
+        const bd = document.getElementById("backdrop");
+        return getComputedStyle(bd).backgroundImage !== "none"
+          || (bd.classList.contains("backdrop-raster") && bd.querySelector("canvas")?.width > 0);
+      });
       if (process.env.ARTIFACT_DIR) await page.screenshot({ path: `${process.env.ARTIFACT_DIR}/phone-layout-1110-${device}-map.png` });
       const geometry = await page.evaluate(() => {
         const get = s => document.querySelector(s).getBoundingClientRect().toJSON();

@@ -82,6 +82,22 @@ function paintBackdrop(bd, raster, image = null) {
   raster.filter = filter;
 }
 
+// 描画は次のフレームへ回す。ui.setBg が新しい背景の層を置いてから .show を付けるまでの間に
+// レイアウトやスタイルを読む（clientWidth や getComputedStyle）と、その強制再計算が
+// 即時切り替えのはずの層のクロスフェードを始めてしまう（#3203 で検出）。
+// 読み取りを含む paintBackdrop は、フレーム境界の向こう側か ResizeObserver の中だけで呼ぶ。
+function queueBackdropPaint(bd, raster, image = null) {
+  const revision = backdropRevision;
+  requestAnimationFrame(() => {
+    if (revision !== backdropRevision) return;
+    paintBackdrop(bd, raster, image);
+    if (image) {
+      if (!raster.canvas.isConnected) bd.append(raster.canvas);
+      bd.classList.add("backdrop-raster");
+    }
+  });
+}
+
 function createBackdropRaster(bd) {
   if (typeof ResizeObserver !== "function" || typeof Image !== "function") return null;
   const canvas = document.createElement("canvas");
@@ -101,7 +117,7 @@ export function syncBackdrop(url, tint, instant) {
   const tone = tint || "";
   if (bd.dataset.tint !== tone) {
     bd.dataset.tint = tone;
-    if (backdropRaster) paintBackdrop(bd, backdropRaster);
+    if (backdropRaster) queueBackdropPaint(bd, backdropRaster);
   }
   if (backdropUrl === (url || "")) return;
   backdropUrl = url || "";
@@ -112,10 +128,8 @@ export function syncBackdrop(url, tint, instant) {
   const commit = (image) => {
     if (revision !== backdropRevision) return;
     if (image) {
-      paintBackdrop(bd, raster, image);
       bd.style.backgroundImage = "none";
-      if (!raster.canvas.isConnected) bd.append(raster.canvas);
-      bd.classList.add("backdrop-raster");
+      queueBackdropPaint(bd, raster, image);
     } else {
       if (raster?.canvas.isConnected) {
         delete raster.canvas.dataset.source;

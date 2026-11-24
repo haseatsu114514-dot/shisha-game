@@ -99,6 +99,7 @@ button { font: inherit; color: inherit; }
    その場面の背景をぼかして埋める（ブラウザアドベンチャー式）。絵は core/ui.js の setBg が
    背景の差し替えと一緒に差し替える。ぼかしの縁が透けないよう少しだけ拡大しておく。 */
 #backdrop {
+  /* この値（と下の色調ごとの値）は core/stage-fit.js の paintBackdrop が getComputedStyle で読んで使う。正本はここのみ */
   --backdrop-filter: blur(6px) brightness(0.72) saturate(1.15);
   position: fixed; /* #viewport のスクロール領域に含めない（変換で広がった分が scrollTop をずらすため） */
   inset: 37.5%; /* 縦横を 1/4 で描き、従来と同じ 115% の範囲まで拡大する */
