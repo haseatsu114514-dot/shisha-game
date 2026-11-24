@@ -20,7 +20,7 @@ const dialogues = Object.fromEntries(["ch1_tournament", "ch1_interval", "ch1_nar
   .flatMap(name => JSON.parse(fs.readFileSync(path.join(root, "data/dialogue", `${name}.json`), "utf8")).dialogues)
   .map(dialogue => [dialogue.dialogue_id, dialogue]));
 const manifest = JSON.parse(fs.readFileSync(path.join(root, "remake/data/manifest.json"), "utf8"));
-const real = new Set(["chapters/ch1.js", "core/state.js", "core/legacy-cast-save.js","core/portrait-style.js", "core/data.js", "core/rules.js", "core/flavor-mastery.js"]);
+const real = new Set(["chapters/ch1.js", "core/state.js", "core/legacy-cast-save.js","core/portrait-style.js", "core/data.js", "core/rules.js", "core/flavor-mastery.js", "core/chapter-actions.js"]);
 const SLOT = "suien_remake_slot1";
 const OTHER_SLOT = "suien_remake_slot2";
 const startingMoney = 45813;
@@ -33,7 +33,7 @@ const sceneUrl = name => `../assets/backgrounds/${name}.png`;
 async function harness({ step = 0, paid = true, revealed = true, snapshot = null, hold = null, phase = "tournament" } = {}) {
   const modules = new Map(), synthetic = new Map(), memory = new Map();
   const events = [], writes = [], money = [], awards = [], cutins = [];
-  let core, data, background = "title-background", titlePresent = true;
+  let core, data, screen, background = "title-background", titlePresent = true;
   let holdReached, releaseHold, heldOnce = false;
   const held = new Promise(resolve => { holdReached = resolve; });
   const released = new Promise(resolve => { releaseHold = resolve; });
@@ -56,6 +56,7 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
     removeItem: key => memory.delete(key),
   };
   const context = vm.createContext({ console, URL, DOMException, setTimeout, clearTimeout,
+    location: { reload: () => observe("title-reload") },
     localStorage: memoryStorage, sessionStorage: { getItem: () => null, setItem() {}, removeItem() {} } });
   const observe = (kind, details = {}) => {
     assert.equal(current().day, 14, `${kind}: narrative background changes must not advance the saved day`);
@@ -93,7 +94,8 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
     awardChapterClearExp: () => observe("chapter-clear-exp"),
     play, setBg: setBackground,
     clearScreen: () => { titlePresent = false; observe("clear-screen"); },
-    showScreen: name => { titlePresent = false; observe("screen", { name }); },
+    showScreen: (name, root) => { screen = root; titlePresent = false; observe("screen", { name }); },
+    saveFlow: async () => core.saveToSlot(OTHER_SLOT),
     showHud: value => { assert.equal(value, false); observe("hud-hidden"); },
     playBgm() {},
     bannersIdle: async () => { observe("banners-idle"); await pause("banners-idle"); },
@@ -111,7 +113,8 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
       await pause("phone");
       return [];
     },
-    el: () => ({ isConnected: true, addEventListener() {}, focus() {} }),
+    el: (selector, attrs = {}, children = []) => ({ selector, isConnected: true, addEventListener() {}, focus() {},
+      ...(Array.isArray(attrs) ? { children: attrs } : { ...attrs, children }) }),
     radar: () => ({}),
     chapterGrowthChart: () => ({}), // 章末の伸びのグラフ（心得の盤なら三角。#2166）
   };
@@ -179,7 +182,7 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
   events.length = writes.length = 0;
   const run = () => chapter.namespace.resumeGame();
   return { core, current, run, before, events, writes, money, awards, cutins,
-    memory, titlePresent: () => titlePresent, held, release: () => releaseHold(),
+    memory, screen: () => screen, titlePresent: () => titlePresent, held, release: () => releaseHold(),
     loadOther: () => { const loaded = core.loadFromSlot(OTHER_SLOT); assert(loaded); return loaded; } };
 }
 
@@ -330,6 +333,23 @@ for (const scenario of raceCases) {
 for (const failure of raceFailures) console.error(`FAIL ownership ${failure.name}: ${failure.error}`);
 assert.equal(raceFailures.length, 0, `${raceFailures.length}/${raceCases.length} LOAD ownership races failed`);
 
+{
+  const h = await harness({ phase: "cleared" });
+  await h.run();
+  const actions = h.screen().children.find(node => node.selector === "div.end-actions").children;
+  assert.deepEqual(Array.from(actions, node => [node.dataset.test, node.text, node.selector]), [
+    ["end-chapter2", "第2章へ進む", "button.btn.primary"],
+    ["end-save", "ここまでをセーブ", "button.btn"],
+    ["end-title", "タイトルへ", "button.btn"],
+  ]);
+  await actions[1].onclick();
+  assert.equal(JSON.parse(h.memory.get(OTHER_SLOT)).phase, "cleared", "The manual save records the completed first chapter");
+  const writesBefore = h.writes.length;
+  actions[2].onclick();
+  assert.equal(h.events.at(-1).kind, "title-reload");
+  assert.equal(h.writes.length, writesBefore, "The title action retains its original reload-only behavior");
+}
 console.log(`PASS: ${cases} victory SAVE/LOAD cases, all 11 context/reward checkpoints, cleared replay and exact sentence pagination`);
+console.log("PASS: Chapter 1 completion actions have the expected order and save the cleared phase on demand");
 console.log(`PASS: ${raceCases.length} held background/phone/dialogue/reveal/terminal LOAD races; no stale callbacks, state writes or rewards`);
 console.log("Scope: native real ch1/state/data/rules/flavor-mastery; controlled VN/phone/DOM/ability ports, memory storage only. Browser/AX rendering and normal full playthrough are not exercised.");
