@@ -18,8 +18,14 @@ import { setActive as setMenuFigure } from "./neo/menu-figure.js";
 // （横長だけで遊ぶ端末には、外枠のコードを読み込ませない）。横長に戻すと外枠は自分で引っ込む。
 const PORTRAIT = "(orientation: portrait)";
 let portraitQuery = null, portraitShell = null, portraitLoad = 0;
-function startPortrait() {
-  if (portraitShell || !portraitQuery?.matches) return;
+function syncPortrait() {
+  if (!portraitQuery?.matches) {
+    portraitLoad++;
+    portraitShell?.stop();
+    portraitShell = null;
+    return;
+  }
+  if (portraitShell) return;
   const mine = ++portraitLoad;
   import("./retro.js").then((retro) => {
     if (mine !== portraitLoad || !active || portraitShell) return;
@@ -30,15 +36,13 @@ function setPortrait(on) {
   if (on) {
     if (typeof window.matchMedia !== "function") return;
     portraitQuery = window.matchMedia(PORTRAIT);
-    portraitQuery.addEventListener?.("change", startPortrait);
-    startPortrait();
+    portraitQuery.addEventListener?.("change", syncPortrait);
+    syncPortrait();
     return;
   }
-  portraitQuery?.removeEventListener?.("change", startPortrait);
+  portraitQuery?.removeEventListener?.("change", syncPortrait);
   portraitQuery = null;
-  portraitLoad++;
-  portraitShell?.stop();
-  portraitShell = null;
+  syncPortrait();
 }
 
 const LIGHT = "neo-light";

@@ -132,15 +132,23 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const soloOptions = { division, throws: rules.throws };
   // Session goals sit on top of the rules: they never change a score or the opponent's plan.
   const challengeIds = tutorial ? [] : pickChallenges(versus ? "league" : mode, baseSeed);
-  const result = (completed, shots) => ({ completed, cancelled: !completed, throws: structuredClone(shots), total: totalOf(shots),
-    grade: completed ? gradeOf(totalOf(shots), rules.max) : null, ruleset: RULESET, mode, opponent, division, throwCount: rules.throws, maximum: rules.max,
-    challenges: evaluateChallenges(challengeIds, shots, completed), rank: completed ? rankOf(totalOf(shots), rules.max) : null,
-    title: completed && !tutorial ? titleOf(shots, rules.max) : null, stats: sessionStats(shots),
-    inputVersion: tapPull ? "gauge-flick-v1" : "gauges-v1", equipment: { id: gearId, version: AXE_EQUIPMENT_VERSION, steady, powerErrorScale: equipment.powerErrorScale },
-    ...(tutorial ? { tutorial: true, lessonContext } : {}),
-    ...(versus ? { match: { ...matchResult(match), winner: completed ? matchResult(match).winner : null,
-      player: structuredClone(match.player), opponent: structuredClone(match.opponent), suddenDeathThrows: structuredClone(match.suddenDeath), difficulty, division, seed: match.seed },
-      series: { bestOf, games: structuredClone(series.games), wins: { ...series.wins }, winner: completed ? seriesWinner() : null } } : {}) });
+  const previousShots = [], previousGoals = new Set(), clearedGoals = new Set();
+  const challengeState = (shots, finished) => evaluateChallenges(challengeIds, shots, finished)
+    .map(goal => previousGoals.has(goal.id) ? { ...goal, state: "done", value: goal.goal } : goal);
+  const result = (completed, shots) => {
+    const allShots = previousShots.concat(shots), total = totalOf(allShots), games = gameIndex + 1;
+    const maximum = rules.max * games;
+    return { completed, cancelled: !completed, throws: structuredClone(allShots), total,
+      grade: completed ? gradeOf(total, maximum) : null, ruleset: RULESET, mode, opponent, division, throwCount: rules.throws * games, maximum,
+      challenges: challengeState(shots, completed || bestOf > 1 && gameRecorded), rank: completed ? rankOf(total, maximum) : null,
+      title: completed && !tutorial ? titleOf(allShots, maximum) : null, stats: sessionStats(allShots),
+      inputVersion: tapPull ? "gauge-flick-v1" : "gauges-v1", equipment: { id: gearId, version: AXE_EQUIPMENT_VERSION, steady, powerErrorScale: equipment.powerErrorScale },
+      ...(tutorial ? { tutorial: true, lessonContext } : {}),
+      ...(versus ? { match: { ...matchResult(match), winner: completed ? matchResult(match).winner : null,
+        player: structuredClone(match.player), opponent: structuredClone(match.opponent), suddenDeathThrows: structuredClone(match.suddenDeath), difficulty, division, seed: match.seed },
+        series: { bestOf, games: structuredClone(series.games), wins: { ...series.wins }, winner: completed ? seriesWinner() : null } } : {}) };
+  };
+  let gameRecorded = false;
   if (signal?.aborted) return Promise.resolve(result(false, []));
   let finish;
   const promise = new Promise(resolve => { finish = resolve; }); active.set(host, promise);
@@ -150,11 +158,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const callerContent = callerScreen ? [...callerScreen.childNodes] : [];
   let phase = "loading", elapsed = 0, stamp = null, frame = 0, lastHudRender = -Infinity, aim = { x: 0, y: 0 }, power = POWER.ideal;
   let shots = match?.player || [], pending = null, called = null, lastAction = -Infinity;
-  let actor = "player", matchLines = null, gameRecorded = false;
+  let actor = "player", matchLines = null;
   let portraitKey = null;
   let portraitManifest = null;
   const faceArt = (id, face) => portraitAsset(portraitManifest, id, face, portraitStyle());
-  let declareTimer = 0, declareNode = null, declareMarker = null, clearedGoals = new Set();
+  let declareTimer = 0, declareNode = null, declareMarker = null;
   let held = 0, focusUntil = -1, focusUsed = false, helpPanel = null, coachPanel = null, coachLines = null, quiver = null;
   const taught = new Set();
   let pauseDialog = null;
@@ -416,16 +424,18 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const xNeedle = svg("path", { class: "axe-x-needle", d: `M0 ${PLANK.top - 6}V${PLANK.bottom + 6}`, stroke: "#91cfe6", "stroke-width": 2.5 });
   const yNeedle = svg("path", { class: "axe-y-needle", d: `M${PLANK.left - 6} 0H${PLANK.right + 6}`, stroke: "#e5bd70", "stroke-width": 2.5 });
   // 狙い目の印（2026-11-13 オーナー「的の真ん中かキルショットのやつとか、狙いの定め方が分かりずらい」）:
-  // 横を止める間は板の上下の縁に、縦を止める間は左右の縁に、金の三角で「ここで止める」位置（宣言した青、なければ真ん中の赤）を出す。
+  // 横を止める間は板の上下の縁に、縦を止める間は左右の縁に、金の三角で「ここで止める」位置（宣言した青、なければ開いている赤）を出す。
   // 針が印に重なると針が緑に太くなる（刃が赤／青に触れる幅。縦は4インチの刃の分だけ広い）。
   const guideTri = (x, y, rotate) => svg("path", { d: "M0 0L-11 -18H11Z", transform: `translate(${x} ${y}) rotate(${rotate})`, fill: "#ffd36b", stroke: "#2a1a10", "stroke-width": 2.5, "stroke-linejoin": "round" });
   const guideX = svg("g", { class: "axe-aim-guide", "data-guide": "horizontal", opacity: 0, "aria-hidden": "true", "pointer-events": "none" }, [guideTri(0, PLANK.top + 26, 0), guideTri(0, PLANK.bottom - 4, 180)]);
   const guideY = svg("g", { class: "axe-aim-guide", "data-guide": "vertical", opacity: 0, "aria-hidden": "true", "pointer-events": "none" }, [guideTri(PLANK.left + 2, 0, -90), guideTri(PLANK.right - 2, 0, 90)]);
-  /** 今止めたい所（宣言した青か真ん中の赤）と、刃がそこへ触れる幅 */
+  /** 今止めたい所（宣言した青か開いている赤）と、刃がそこへ触れる幅 */
   function aimTarget() {
     const k = KILLS.find(t => t.id === called);
-    return k ? { x: k.x, y: k.y, tolX: k.outer, tolY: k.outer + BLADE.halfLength, kind: "kill" }
-      : { x: 0, y: 0, tolX: RINGS[0].radius, tolY: RINGS[0].radius + BLADE.halfLength, kind: "bull" };
+    if (k) return { x: k.x, y: k.y, tolX: k.outer, tolY: k.outer + BLADE.halfLength, kind: "kill" };
+    const closed = closuresOf(shots, shots.length, rules.throws, division);
+    const target = CLUSTERS.find(c => !closed.cluster.has(c.id) && !closed.bull.has(c.id));
+    return target && { x: target.x, y: target.y, tolX: RINGS[0].radius, tolY: RINGS[0].radius + BLADE.halfLength, kind: "bull" };
   }
   const sdBadge = svg("text", { class: "axe-sd-badge", x: CX, y: VIEW.y + 26, "text-anchor": "middle", fill: "#9cecff", "font-size": 22, "font-weight": 900, opacity: 0 }, ["SUDDEN DEATH"]);
   const gaugeLabel = (x, y, text, fill, anchor, step) => svg("text", { class: "axe-gauge-label", "data-gauge": step, x, y, "text-anchor": anchor, fill, "font-size": 22, "font-weight": 900,
@@ -547,9 +557,16 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   } });
   function resetThrow() { pullInput?.cancel(); rawPower = 0; pullInput?.setAim({ x: 0, y: 0 }); aim = { x: 0, y: 0 }; power = POWER.ideal; held = 0; focusUntil = -1; focusUsed = false; impacts.replaceChildren(); quiver = null; }
   function newGame(index) {
+    if (index > 0) {
+      previousShots.push(...shots);
+      for (const goal of challengeState(shots, true)) if (goal.state === "done") previousGoals.add(goal.id);
+    } else {
+      previousShots.length = 0;
+      previousGoals.clear();
+    }
     gameIndex = index; gameRecorded = false;
     if (versus) match = createMatch(difficulty, gameSeed(index), division);
-    actor = "player"; shots = match?.player || []; called = null; resetThrow(); taught.clear(); clearedGoals = new Set();
+    actor = "player"; shots = match?.player || []; called = null; resetThrow(); taught.clear(); clearedGoals.clear();
   }
   const retry = el("button.axe-button.axe-retry", { text: "もう一度", dataset: { test: "axe-retry" }, onclick: () => {
     if (!isPaused() && performance.now() - lastAction >= T.guard && phase === "summary") {
@@ -774,6 +791,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     return actor === "player" && (phase === "choice" || tapPull && phase === "power" && !pullInput?.pulling)
       && !isPaused() && !suddenDeath() && performance.now() - lastAction >= T.guard;
   }
+  function callStatus(history) {
+    const status = killState(history, rules.throws);
+    if (status.remaining && !KILLS.some(target => canCall(target.id, history, rules.throws))) status.remaining = 0;
+    return status;
+  }
   // Only the resolved throw consumes a call. Skip closed/ineligible blues, then return to normal.
   function cycleCall() {
     if (!canChooseCall()) return;
@@ -853,7 +875,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       showDeclareCue({ label: "LAST THROW", kind: "last", test: "axe-last-cue", duration: C.last,
         place: !versus ? rankLine(8) || "最後の一投" : gap > 0 ? gap + "点リード · 逃げ切れ" : gap < 0 ? -gap + "点差 · 逆転を狙え" : "同点 · この一投で決まる" });
     } else if (next === "result" && actor === "player" && challengeIds.length) {
-      const fresh = evaluateChallenges(challengeIds, shots).filter(c => c.state === "done" && !clearedGoals.has(c.id));
+      const fresh = evaluateChallenges(challengeIds, shots).filter(c => c.state === "done" && !clearedGoals.has(c.id) && !previousGoals.has(c.id));
       fresh.forEach(c => clearedGoals.add(c.id));
       if (fresh.length) showDeclareCue({ label: tapPull ? "目標達成" : "CHALLENGE CLEAR", kind: "goal", test: "axe-goal-cue", duration: C.goal, place: fresh.map(c => tapPull ? c.short : c.label).join(" / ") });
     }
@@ -1034,12 +1056,15 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     fixedAim.setAttribute("transform", `translate(${CX + aim.x * R} ${CY + aim.y * R})`);
     xNeedle.setAttribute("transform", `translate(${CX + aim.x * R} 0)`);
     yNeedle.setAttribute("transform", `translate(0 ${CY + aim.y * R})`);
-    const goal = aimTarget(), guiding = actor === "player" && (phase === "horizontal" || phase === "vertical");
-    guideX.setAttribute("transform", `translate(${CX + goal.x * R} 0)`); guideY.setAttribute("transform", `translate(0 ${CY + goal.y * R})`);
-    guideX.setAttribute("opacity", guiding && phase === "horizontal" ? 1 : 0); guideY.setAttribute("opacity", guiding && phase === "vertical" ? 1 : 0);
-    const onGoal = guiding && (phase === "horizontal" ? Math.abs(aim.x - goal.x) <= goal.tolX : Math.abs(aim.y - goal.y) <= goal.tolY);
+    const goal = actor === "player" && (phase === "horizontal" || phase === "vertical") ? aimTarget() : null;
+    if (goal) {
+      guideX.setAttribute("transform", `translate(${CX + goal.x * R} 0)`); guideY.setAttribute("transform", `translate(0 ${CY + goal.y * R})`);
+    }
+    guideX.setAttribute("opacity", goal && phase === "horizontal" ? 1 : 0); guideY.setAttribute("opacity", goal && phase === "vertical" ? 1 : 0);
+    const onGoal = !!goal && (phase === "horizontal" ? Math.abs(aim.x - goal.x) <= goal.tolX : Math.abs(aim.y - goal.y) <= goal.tolY);
+    if (goal) root.dataset.aimGoal = goal.kind;
     if (root.dataset.onTarget !== String(onGoal)) {
-      root.dataset.onTarget = String(onGoal); root.dataset.aimGoal = goal.kind;
+      root.dataset.onTarget = String(onGoal);
       for (const [needle, base] of [[xNeedle, "#91cfe6"], [yNeedle, "#e5bd70"]]) { needle.setAttribute("stroke", onGoal ? "#8ff0a4" : base); needle.setAttribute("stroke-width", onGoal ? 5 : 2.5); }
     }
     if (phase === "power") {
@@ -1148,7 +1173,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     heat.hidden = heatValue < 2;
     if (!heat.hidden && heat.textContent !== "連続 ×" + heatValue) heat.textContent = "連続 ×" + heatValue;
     if (challengeIds.length) {
-      const finished = phase === "summary", goalState = evaluateChallenges(challengeIds, shots, finished);
+      const finished = phase === "summary", goalState = challengeState(shots, finished);
       const goalRecord = goalState.map(c => c.state + c.value).join(",");
       goals.hidden = moving || ["flight", "opponent-ready", "loading", "failed"].includes(phase);
       if (goals.dataset.record !== goalRecord) {
@@ -1171,7 +1196,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       scoreboard.replaceChildren(...rows.map(id => {
         const list = versus ? match[id] : shots, mine = id === actor;
         const current = showingScore ? list.length - 1 : list.length;
-        const ks = killState(list, rules.throws);
+        const ks = callStatus(list);
         const tiles = Array.from({ length: rules.throws }, (_, i) => el("span.axe-tile", {
           dataset: { outcome: list[i]?.outcome || "", filled: String(Boolean(list[i])), current: String(mine && !sd && i === current), half: String(halfOf(i, rules.throws)) },
           "aria-label": (i + 1) + "投目 " + (list[i] ? list[i].score + "点" : "未投擲"), title: list[i] ? (i + 1) + "投目 " + list[i].score + "点" + (list[i].called ? "（" + killPlaces[list[i].called] + "の青）" : "") : (i + 1) + "投目",
@@ -1201,7 +1226,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         ])), ...(bestOf > 1 ? [el("div.axe-series-line", [el("strong", { text: "マッチ" }), el("p", { text: series.games.map(g => "G" + g.game + " " + g.playerTotal + "-" + g.opponentTotal).join(" · ") })])] : []));
       }
     }
-    const ks = killState(currentShots, rules.throws);
+    const ks = callStatus(currentShots);
     // #2834: 残り回数の文は青いバッジと読み上げに任せ、画面には宣言中・サドンデスの時だけ出す。
     status.dataset.kind = sd ? "sudden-death" : called ? "called" : "remaining";
     status.textContent = sd ? "サドンデス：" + killPlaces[called] + "の青 · 刃が触れれば勝ち" : called ? (tapPull ? "キルショット宣言\n" : "宣言中：") + killPlaces[called] + "の青 · 青以外0点"
@@ -1213,7 +1238,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       button.setAttribute("aria-pressed", String((called || "normal") === id));
       if (id !== "normal") {
         const target = KILLS.find(t => t.id === id), closed = ks.closed.includes(target.row);
-        button.title = closed ? "この高さは成功済み・閉鎖中" : ks.remaining === 0 ? "宣言を使い切りました" : ks.mustRow && ks.mustRow !== target.row ? "追加の宣言は反対の高さの青だけ" : "宣言した青に命中で7／8点。外すと0点";
+        button.title = closed ? "この高さは成功済み・閉鎖中" : ks.mustRow && ks.mustRow !== target.row ? "追加の宣言は反対の高さの青だけ" : ks.remaining === 0 ? "宣言を使い切りました" : "宣言した青に命中で7／8点。外すと0点";
         button.dataset.closed = String(closed);
         const label = killPlaces[id] + (closed ? " 閉鎖" : "の青");
         if (button.textContent !== label) button.textContent = label;
@@ -1287,7 +1312,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (calls) calls.hidden = phase !== "choice" || sd;
     if (callToggle) {
       callControls.hidden = !["choice", "power"].includes(phase) || sd || Boolean(pullInput?.pulling);
-      callToggle.disabled = !callAvailable || !called && !KILLS.some(target => canCall(target.id, shots, rules.throws));
+      callToggle.disabled = !callAvailable || !called && ks.remaining === 0;
       cancelCall.hidden = !called;
       cancelCall.disabled = !callAvailable;
       const count = "×" + Math.max(0, ks.remaining);
@@ -1362,17 +1387,18 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
           + (totals.suddenDeath ? " · SUDDEN DEATH " + totals.suddenDeath.rounds : "") + (series && seriesWinner() && bestOf > 1 ? " · MATCH " + ({ player: "WON", opponent: "LOST", draw: "DRAW" })[seriesWinner()] : "")
           : ({ great: "GREAT THROWING", good: "NICE SESSION", again: "KEEP THROWING" })[gradeOf(totalOf(shots), rules.max)];
         resultNumber.textContent = String(countedTotal()); resultUnit.textContent = "/ " + rules.max;
-        const goalsDone = evaluateChallenges(challengeIds, shots, true).filter(c => c.state === "done").length;
+        const goalsDone = challengeState(shots, true).filter(c => c.state === "done").length;
         resultTip.textContent = "平均 " + stats.average.toFixed(2) + "点/投 · ブル " + stats.bulls + " · キル " + stats.killshots + "/" + stats.calls + " · 落下 " + stats.drops
           + (challengeIds.length ? " · チャレンジ " + goalsDone + "/" + challengeIds.length : "");
         rankBadge.dataset.rank = tutorial ? "" : rankOf(totalOf(shots), rules.max);
         rankBadge.dataset.stamped = String(countedTotal() === totalOf(shots));
         rankLetter.textContent = rankBadge.dataset.rank; rankTitle.textContent = tutorial ? "" : "「" + titleOf(shots, rules.max) + "」";
       } else if (last) {
-        const feedbackText = shotFeedback(last, { inputMode });
+        const feedbackText = shotFeedback(last, { inputMode, closed });
         resultLabel.textContent = sd ? (last.score ? "SUDDEN DEATH HIT" : "SUDDEN DEATH MISS") : feedbackText.label;
         resultNumber.textContent = "+" + last.score; resultUnit.textContent = "PTS";
-        resultTip.textContent = actor === "player" ? feedbackText.tip : rivalName + "の一投 · 回転 " + Math.round(last.power * 100) + "%" + (last.zone?.cluster ? " · " + clusterPlaces[last.zone.cluster] + "の赤" : "");
+        const target = last.zone?.kind === "bull" ? clusterPlaces[last.zone.cluster] + "の赤" : last.zone?.kind === "five" ? zoneLabel(last) : "";
+        resultTip.textContent = actor === "player" ? feedbackText.tip : rivalName + "の一投 · 回転 " + Math.round(last.power * 100) + "%" + (target ? " · " + target : "");
       }
     }
     drawImpact(displayedShot);

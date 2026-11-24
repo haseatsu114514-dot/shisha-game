@@ -1,5 +1,6 @@
 import { openMinigamePause } from "./minigame-pause.js";
 import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-mastery.js";
+import { withMinigameStyles } from "./minigame-styles.js";
 import { emit } from "../core/bus.js";
 // 「てつこといっしょ / TETSUKO TIME」（#2454）の画面と本編との確定点。猫の状態・反応・自律行動は tetsuko-model.js。
 //
@@ -167,7 +168,7 @@ export function petZoneAt(rx, ry, { curled = false, flip = false } = {}) {
   if (ry < 0.64) return "chin";
   return x < 0.28 ? "tail" : "back";
 }
-const STEP_MS = 1000, STEP_REDUCED_MS = 700, FAREWELL_MS = 1400, FAREWELL_REDUCED_MS = 800, AFTER_ACTION_MS = 1600;
+const STEP_MS = 1000, STEP_REDUCED_MS = 700, FAREWELL_MS = 6500, FAREWELL_REDUCED_MS = 5000, AFTER_ACTION_MS = 1600;
 const STROKE_PX = 80, STROKE_GAP_MS = 420, BRUSH_PX = 100, BRUSH_GAP_MS = 520;
 const TOY_SWING_PX = 170, TOY_SWING_GAP_MS = 480, TOY_STILL_MS = 750, TOY_CATCH_PX = 300, TOY_HELD_MS = 1700;
 const POUNCE_MS = 380, POUNCE_HIT_PX = 150, POUNCE_LEAD = 0.5, HEADING_FRESH_MS = 140;
@@ -209,7 +210,11 @@ const BIT = Object.freeze({ heart: "♥", spark: "✦", note: "♪", zzz: "z" })
  * @param {AbortSignal} [ctx.signal] 中断シグナル（pagehide などで閉じる）
  * @returns {Promise<object>} sessionResult。中断・LOAD では { meaningful:false }
  */
-export async function openTetsukoTime({ value = null, visitKey = null, bg = null, isCurrent = () => true, signal = null } = {}) {
+export function openTetsukoTime(options = {}) {
+  return withMinigameStyles("tetsuko", options.signal, () => startTetsukoTime(options));
+}
+
+async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCurrent = () => true, signal = null } = {}) {
   const idle = { meaningful: false, visitKey };
   if (signal?.aborted || !isCurrent() || !value) return idle;
   const [{ el }, ui, audio, data, kit] = await Promise.all([
@@ -238,6 +243,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
 
   return await new Promise(resolve => {
     let done = false, leaving = false, mounted = false, panel = null, pauseDialog = null;
+    let farewellTimer = 0, farewellUntil = 0;
     let timer = 0, stepTimer = 0, fxTimer = 0, purrTimer = 0, walkTimer = 0, stillTimer = 0, heldTimer = 0, flashTimer = 0, quietUntil = 0;
     let capTimer = 0, peakTimer = 0, peakGlowTimer = 0, pounceTimer = 0, ghostTimer = 0, joyTimer = 0, wishTimer = 0, peerTimer = 0, artTimer = 0;
     let tool = "hand", stroke = null, lastPetAt = 0, lastBrushAt = 0, lastSwingAt = 0, toyTravel = 0, held = false, pouncing = false;
@@ -442,6 +448,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       }
       // 読み込み中は何も変えない（今の見た目のまま）
     }
+    const canShoot = () => !done && !panel && !!session.moment && (!leaving || session.moment === "see_off");
     function renderButtons() {
       for (const item of DOCK) {
         const button = dockButtons[item.kind];
@@ -451,10 +458,10 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         button.title = !ok && item.locked ? item.locked : "";
       }
       // 写真: しぐさが見えている間だけ撮影できる（まだ撮っていないしぐさは光る）。
-      const canShoot = !!session.moment && !leaving && !panel;
-      shot.disabled = !canShoot;
-      shot.classList.toggle("ready", canShoot && !session.album.some(entry => entry.moment === session.moment));
-      shot.title = canShoot ? `今のしぐさ（${momentById(session.moment)?.name}）を写真に残す（P）` : "しぐさが見えると撮影できます";
+      const shootable = canShoot();
+      shot.disabled = !shootable;
+      shot.classList.toggle("ready", shootable && !session.album.some(entry => entry.moment === session.moment));
+      shot.title = shootable ? `今のしぐさ（${momentById(session.moment)?.name}）を写真に残す（P）` : "しぐさが見えると撮影できます";
       decorButton.classList.toggle("new", session.newProps.length > 0);
       for (const button of [decorButton, bookButton, helpButton]) button.disabled = leaving;
       host.dataset.tool = tool;
@@ -1014,7 +1021,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
 
     // -- 写真（今見えているしぐさだけ。シャッターの光と、手帳へ飛ぶ小さな写真）
     function snap() {
-      if (done || leaving || panel || !session.moment) return;
+      if (!canShoot()) return;
       noteInput();
       const id = session.moment;
       if (!takePhoto(session)) return;
@@ -1026,6 +1033,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       flashTimer = setTimeout(() => { host.dataset.flash = ""; }, 700);
       toast("photo", id);
       flyToBook(id);
+      if (leaving) finishFarewellAfter(TOAST_MS);
       photoUntil = 0; renderButtons();
     }
 
@@ -1243,6 +1251,13 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         onQuit: () => { closePanelQuietly(); leave(); },
       });
     }
+    function finishFarewellAfter(ms) {
+      const until = Date.now() + ms;
+      if (until <= farewellUntil) return;
+      farewellUntil = until;
+      clearTimeout(farewellTimer);
+      farewellTimer = setTimeout(finish, ms);
+    }
     function leave() {
       if (done || leaving) return;
       SE.select?.();
@@ -1255,13 +1270,13 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       setTool("hand");
       show(bye);
       backButton.disabled = true;
-      setTimeout(finish, reduced ? FAREWELL_REDUCED_MS : FAREWELL_MS);
+      finishFarewellAfter(reduced ? FAREWELL_REDUCED_MS : FAREWELL_MS);
     }
     function finish(aborted = false) {
       if (done) return;
       done = true;
       for (const t of [timer, stepTimer, fxTimer, purrTimer, walkTimer, stillTimer, heldTimer, flashTimer, capTimer, peakTimer, peakGlowTimer, pounceTimer,
-        ghostTimer, joyTimer, wishTimer, peerTimer, artTimer]) clearTimeout(t);
+        ghostTimer, joyTimer, wishTimer, peerTimer, artTimer, farewellTimer]) clearTimeout(t);
       clearInterval(stepFrames);
       cancelAnimationFrame(toyFrame); cancelAnimationFrame(heldFrame);
       motion?.cancel();

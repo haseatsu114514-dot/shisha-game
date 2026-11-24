@@ -178,7 +178,6 @@ export function pressVoice(state) {
   if (state.finished) return null;
   const { player, t } = state;
   state.presses = state.presses.filter(at => t - at <= CUE.spamWindow);
-  state.presses.push(t);
   player.lastVoice = t;
   const cue = state.cues.find(c => c.state === "pending" && Math.abs(t - c.at) <= CUE.good);
   let result;
@@ -203,12 +202,13 @@ export function pressVoice(state) {
     player.stamina = clamp(player.stamina - CUE.missStamina, 0, 100);
     state.stats.miss += 1;
     result = { type: "miss", dt: cue ? t - cue.at : null };
-  }
-  if (state.presses.length >= CUE.spamCount) {
-    // 連打: 3回目以降は毎回さらに消耗する。
-    player.stamina = clamp(player.stamina - CUE.spamStamina, 0, 100);
-    state.stats.spam += 1;
-    result.spam = true;
+    state.presses.push(t);
+    if (state.presses.length >= CUE.spamCount) {
+      // 連打: 無駄な声の3回目以降は毎回さらに消耗する。
+      player.stamina = clamp(player.stamina - CUE.spamStamina, 0, 100);
+      state.stats.spam += 1;
+      result.spam = true;
+    }
   }
   state.events.push({ t, ...result, kind: "voice" });
   return result;
@@ -393,8 +393,8 @@ export function stepRace(state, dt) {
     rival.speed += (target - rival.speed) * Math.min(1, dt / 0.9);
     rival.distance += rival.speed * dt;
     if (rival.distance >= state.length) {
+      rival.finishedAt = state.t - (rival.distance - state.length) / rival.speed;
       rival.distance = state.length;
-      rival.finishedAt = state.t - (rival.distance - state.length) / Math.max(rival.speed, 1);
       state.events.push({ t: state.t, kind: "finish", who: rival.id });
     }
   }
@@ -405,11 +405,11 @@ export function stepRace(state, dt) {
     state.events.push({ t: state.t, kind: "spurt" });
   }
   if (player.distance >= state.length || state.t >= RACE.maxTime) {
+    player.finishedAt = player.distance >= state.length ? state.t - (player.distance - state.length) / player.speed : state.t;
     player.distance = Math.min(player.distance, state.length);
-    player.finishedAt = state.t;
     state.finished = true;
-    state.finishedAt = state.t;
-    state.rank = 1 + state.rivals.filter(rival => rival.finishedAt !== null && rival.finishedAt <= state.t).length;
+    state.finishedAt = player.finishedAt;
+    state.rank = 1 + state.rivals.filter(rival => rival.finishedAt !== null && rival.finishedAt <= player.finishedAt).length;
     state.events.push({ t: state.t, kind: "finish", who: "player", rank: state.rank });
   }
   return state;
@@ -442,7 +442,10 @@ export function finishMargins(state) {
 export function standings(state) {
   const all = [state.player, ...state.rivals];
   return all.slice().sort((a, b) => {
-    if (a.finishedAt !== null && b.finishedAt !== null) return a.finishedAt - b.finishedAt;
+    if (a.finishedAt !== null && b.finishedAt !== null) {
+      // 同着の場合は確定順位と同じくライバルを先に並べる。
+      return a.finishedAt - b.finishedAt || Number(a === state.player) - Number(b === state.player);
+    }
     if (a.finishedAt !== null) return -1;
     if (b.finishedAt !== null) return 1;
     return b.distance - a.distance;

@@ -183,7 +183,7 @@ export function personFitsBowl(p, id) {
   switch (id) {
     case "adam": return flavorCount(p) === 1;
     case "mashiro": return sidesOf(p).length >= 2;
-    case "minto": return Object.keys(p.bowl).some(k => FLAVOR[k].kind === "cool" && p.bowl[k] >= 2);
+    case "minto": return Object.entries(p.bowl).reduce((sum, [fid, n]) => sum + (FLAVOR[fid].kind === "cool" ? n : 0), 0) >= 2;
     case "naru": return FLAVOR[p.main].kind === "sweet";
     case "tsumugi": return FLAVOR[p.main].kind === "floral";
     default: return true;
@@ -202,7 +202,7 @@ export function scorePuff(p, h, q, fl = {}) {
   if (z === "offHi" && (sd.includes("cool_mint") || hasTool(p, "ice_hose"))) z = "band";
   if ((z === "offLo" || z === "offHi") && p.hmd === "lotus" && !p.usedLotus) { z = "band"; usedLotus = true; }
   if (z === "offLo" || z === "offHi") z = "off";
-  const ng = f.id === "vanilla" ? sd.includes("mint") : f.id === "mint" && sd.includes("vanilla");
+  const ng = p.bowl.vanilla >= 2 && p.bowl.mint >= 2;
   const mix = sd.length && !ng ? 1 : 0;
   const pair = mix && (sd.some((k) => FLAVOR[k].kind === f.pair) || sd.includes("spring_water")) ? 1 : 0;
   const rich = (p.bowlId === "clay" && kinds > 1) ? false : tot >= (sd.includes("black_tea") ? 8 : RULES.rich);

@@ -6,7 +6,7 @@ import { chapterDay } from "../core/chapter-clock.js";
 import { venueHost } from "../core/venue-host.js";
 import { gearOffer, ownsGear } from "../core/hobby-gear.js";
 import { newDayTrial, rollDayTrial, stopDayTrial } from "./day-trial.js";
-import { loadTrpgLibrary, runTrpg } from "./index.js";
+import { loadTrpgShelf, loadTrpgResources, runTrpg } from "./index.js";
 import { createTrpgAudio } from "./audio.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { hasPictureBook, playPictureBook } from "./picture-book.js";
@@ -311,8 +311,21 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     const ticket = { ...cast, chapter: state.chapter, day: state.day, slot: state.slot, seed, growth };
     lastGain = null;
     try {
+      let sessionResources = resources;
+      if (!scenario.dialogues) {
+        root = el("div.trpg-loading", [
+          el("p", { role: "status", text: "選んだ物語を読み込んでいます…" }),
+          el("button.trpg-button", { type: "button", text: closeLabel, onclick: close, dataset: { test: "trpg-campaign-close" } }),
+        ]);
+        host.replaceChildren(root);
+        sessionResources = await loadTrpgResources({
+          scenarioId: scenario.id, shared: resources, signal: abort.signal, preloadAssets: false,
+        });
+        if (disposed || getState() !== state) { close(); return; }
+        scenario = sessionResources.scenario;
+      }
       const table = materializeTrpgCast(scenario, cast.assignments);
-      await runTrpg(host, { resources: { ...resources, scenario: table }, signal: abort.signal, seed,
+      await runTrpg(host, { resources: { ...sessionResources, scenario: table }, signal: abort.signal, seed,
         allowReplay: false, closeLabel: "カフェへ戻る", warmStart: ownsGear(state, "gear_dice"),
         pc: mark?.pc || null, resume: mark ? { actions: mark.actions } : null, growth,
         // しおりは場面の区切りごとに保存する。夜の行動もお金も使わない。
@@ -367,7 +380,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     if (disposed) return;
     host.replaceChildren(el("div.trpg-loading", [el("p", { text: "物語と仲間の予定を読み込んでいます…" }),
       button(closeLabel, "trpg-campaign-close", close)]));
-    try { resources = suppliedResources || await loadTrpgLibrary({ signal: abort.signal, preloadAssets: false }); render(); }
+    try { resources = suppliedResources || await loadTrpgShelf({ signal: abort.signal }); render(); }
     catch {
       if (disposed) return;
       host.replaceChildren(el("div.trpg-loading", [el("p", { role: "status", text: "物語の一覧を読み込めませんでした。もう一度お試しください。" }),

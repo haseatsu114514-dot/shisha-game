@@ -191,7 +191,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         else toast(`${name}「${firstLine(saved.won ? DESERT_RACE_WIN_LINE : `venue_noor_result_${result.rank}`)}」${best}`, { kind: "good" });
         if (saved.firstClear) toast("初めての完走。砂丘の写真を、ヌールが撮ってくれた", { kind: "good" });
         // 段のクリア: 開いた段とクリア済みの段をゲームへ返し、結果のカードに一言（上級は白火の知らせが growth.js から別に出る）
-        return { ...tierState(), note: tierUnlockNote("desert", saved.tierAdded) };
+        return { ...tierState(), note: tierUnlockNote("desert", saved.tierAdded),
+          rivals: naru && (!confessionDay || before.naruMet) ? desertRivals(owner) : rivals };
       },
     });
     if (!current()) return changed;

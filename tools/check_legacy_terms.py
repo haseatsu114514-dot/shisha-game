@@ -214,6 +214,9 @@ def scan_character_identity(errors: list):
 def should_skip(path: Path) -> bool:
     if path.resolve() in SKIP_FILES:
         return True
+    if path.is_relative_to(REPO / "remake" / "js" / "bundle"):
+        # 公開時の生成物。正本の各モジュールを検査する。
+        return True
     parts = set(path.parts)
     return bool(parts & SKIP_PATTERNS)
 
