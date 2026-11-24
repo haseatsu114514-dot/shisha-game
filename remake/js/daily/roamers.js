@@ -7,7 +7,7 @@
 // - 読み終えた時だけ回数・好感度・その日の印を残す（中断・LOADでは残さない）
 // - 出るのは時間帯の4回に1回ほど。よその店で誰かと話した日は（ひより・隣町からの客も含め）、その日はもう出ない
 // - ひより・隣町からの客・つむぎ（tonari）・組長（MELTY PUFF）がいる店、今日もう行った店、閉まっている店には出ない
-// 台詞は data/dialogue/roaming_guests.json（roam_<id>_first → _a → _b → _c → _a …）。
+// 台詞は data/dialogue/roaming_guests.json。初回の後は _a から巡回する。
 import { state, save } from "../core/state.js";
 import { DB } from "../core/data.js";
 import { seeded } from "../core/util.js";
@@ -19,6 +19,8 @@ import { allSpots, isUnlocked, isClosed } from "./spots.js";
 import { hiyoriShopLocation } from "./hiyori.js";
 import { cityGuestVisit } from "./city-guests.js";
 import { ryujiAtMeltyPuff, kuraudoGreetingDue } from "../core/ryuji-visit.js";
+import { chainVisitDue, playChainStage } from "../chapters/visit-chain-play.js";
+import { recordChapterFiveTalk } from "../chapters/visit-chains.js";
 
 /** 人ごとの、読み終えた回数（数）。台本の flag_count 条件で読める（第5章の博士の「記録」など）。 */
 export const roamSeenFlag = id => `_roam_seen_${id}`;
@@ -130,12 +132,14 @@ export function roamerAt(spot, value = state) {
 
 export const roamerCount = (id, value = state) => Number(value?.flags?.[roamSeenFlag(id)] || 0);
 const REPEATS = ["a", "b", "c"];
-/** 次に読む会話（初回 → a → b → c → a …）。 */
+const repeatKeys = id => id === "hiyori" ? [...REPEATS, "d", "e", "f", "g", "h"] : REPEATS;
+/** 次に読む会話。初回を読んだ後は、人物ごとの小会話を順に読む。 */
 export function roamerScene(id, value = state) {
   const n = roamerCount(id, value);
-  return n === 0 ? `roam_${id}_first` : `roam_${id}_${REPEATS[(n - 1) % REPEATS.length]}`;
+  const keys = repeatKeys(id);
+  return n === 0 ? `roam_${id}_first` : `roam_${id}_${keys[(n - 1) % keys.length]}`;
 }
-export const ROAMER_SCENES = Object.freeze(ROAMERS.flatMap(entry => [`roam_${entry.id}_first`, ...REPEATS.map(key => `roam_${entry.id}_${key}`)]));
+export const ROAMER_SCENES = Object.freeze(ROAMERS.flatMap(({ id }) => [`roam_${id}_first`, ...repeatKeys(id).map(key => `roam_${id}_${key}`)]));
 
 let loading = null, active = false;
 async function loadScenes() {
@@ -154,17 +158,26 @@ export async function meetRoamer(spot, scheduled, { bg } = {}) {
   const entry = BY_ID[scheduled.id];
   const owner = state;
   if (!entry || !owner?.flags || metToday(owner, entry.id)) return false;
-  try { await loadScenes(); } catch { return false; } // 居合わせる会話は寄り道。読めなければ出さない（来店は済んでいる）
-  if (state !== owner) return false;
-  const scene = roamerScene(entry.id, owner);
   // 途中でLOAD・タイトルへ戻ったら、会話を止めて何も残さない
   const controller = new AbortController();
   const unsubscribe = on("hud", () => { if (state !== owner) controller.abort(); });
   active = true;
   try {
-    const result = await play(scene, { ...(bg ? { bg } : {}), signal: controller.signal });
-    if (state !== owner || controller.signal.aborted || !result || result.cancelled) return false;
-    owner.flags[roamSeenFlag(entry.id)] = roamerCount(entry.id, owner) + 1;
+    const chain = entry.id === "hiyori" ? await chainVisitDue("ch5_roam_hiyori", owner) : null;
+    if (!chain) {
+      try { await loadScenes(); } catch { return false; } // 来店は済んでいるので、読めない会話は出さない
+    }
+    if (state !== owner || controller.signal.aborted || isPlaying()) return false;
+    const scene = roamerScene(entry.id, owner);
+    const read = async id => {
+      const result = await play(id, { ...(bg ? { bg } : {}), signal: controller.signal });
+      return state === owner && !controller.signal.aborted && !!result && !result.cancelled;
+    };
+    if (!await (chain ? playChainStage(chain, read) : read(scene))) return false;
+    if (!chain) {
+      owner.flags[roamSeenFlag(entry.id)] = roamerCount(entry.id, owner) + 1;
+      recordChapterFiveTalk(owner, scene);
+    }
     owner.flags[ROAM_DAY_FLAG] = { ...(owner.flags[ROAM_DAY_FLAG] || {}), [entry.id]: dayStamp(owner) };
     if (entry.bond) gainAffinity(entry.id, visitAffinity("talk", owner));
     save();

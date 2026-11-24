@@ -53,7 +53,7 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
   const test = typeof window !== "undefined" ? window.__remake?.camelTest : null;
   const { value: outcome } = await paidAction(async () => {
     const result = await runCamelRace({ host, signal, tutorial: camel.plays === 0, best: camel.best, allowRetry: true,
-      cups: availableCamelCups(value), cupRecords: camel.cups, pilot: test?.pilot ?? null, timeScale: test?.timeScale ?? 1, ...(options || {}) });
+      cups: availableCamelCups(value), cupRecords: { ...camel.cups, ...(camel.practiceBest ? { practice: { best: camel.practiceBest } } : {}) }, pilot: test?.pilot ?? null, timeScale: test?.timeScale ?? 1, ...(options || {}) });
     if (!result.completed || !result.best || !isCurrent() || state !== value) return { completed: false };
     // 総合最高点だけでなく、全完走を順に確定。大会ごとの認定を取り落とさない。
     let recorded = null;

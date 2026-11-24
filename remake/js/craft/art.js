@@ -211,9 +211,8 @@ export function buildRig() {
         ? [[-0.27, 0.05], [0.27, 0.05], [0, -0.14], [0, 0.22]]
         : [[-0.24, 0.1], [0.24, 0.1], [0, -0.12]];
       coals.replaceChildren(...slots.slice(0, n).sort((a, b) => a[1] - b[1]).map(([dx, dy]) => {
-        const c = artImg(coalName(cs.equip?.charcoal, cs.heat?.just ? "just" : "red"), cw * (1 - dy * 0.4), "rig-coal");
-        Object.assign(c.style, { left: `calc(50% + ${dx * rimW * 0.8}px)`, bottom: `${-dy * rimW * 0.5 * 0.8}px` });
-        return c;
+        const coal = artImg(coalName(cs.equip?.charcoal, cs.heat?.just ? "just" : "red"), cw * (1 - dy * 0.4));
+        return el("div.rig-coal", { style: { left: `calc(50% + ${dx * rimW * 0.8}px)`, bottom: `${-dy * rimW * 0.5 * 0.8}px` } }, [coal]);
       }));
       Object.assign(coals.style, { bottom: `${rimMid + 2}px` });
       smoke.style.bottom = `${rimMid + 10}px`;

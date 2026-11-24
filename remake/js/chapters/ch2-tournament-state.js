@@ -31,6 +31,7 @@ export const JUDGE_PROFILES = Object.freeze({
 const copy = value => JSON.parse(JSON.stringify(value));
 const bounded = value => Math.max(0, Math.min(100, Number(value) || 0));
 const boundedPref = value => Math.max(-1, Math.min(1, Number(value) || 0));
+export const byChapterTwoTie = (a, b) => CONTESTANTS.indexOf(a) - CONTESTANTS.indexOf(b);
 
 /** 審査員 j の最大好み振れ幅（派生値: BASE_PREF_SCALE * prefWeight） */
 export function judgeMaxPrefDelta(judgeId, profiles = JUDGE_PROFILES) {
@@ -115,9 +116,8 @@ export function castVotes(p, round, performance, prefByJudge = null, carryP = 0)
       : quality.hajime;
     const scoreOf = (c) => (c === "hajime" ? hajimeScore : quality[c]) + (bias[c] || 0);
     const order = CONTESTANTS.slice().sort((a, b) =>
-      scoreOf(b) - scoreOf(a) || a.localeCompare(b));
-    const amount = SPEND[round], row = p.votes?.[judge];
-    if (!row) throw new ChapterSaveError(2, "審査員の持ち点が不足しています", "_ch2_tournament.votes." + judge);
+      scoreOf(b) - scoreOf(a) || byChapterTwoTie(a, b));
+    const amount = SPEND[round], row = p.votes[judge];
     const available = 10 - Object.values(row).reduce((sum, n) => sum + n, 0);
     if (available < amount) throw new ChapterSaveError(2, "審査員の持ち点が不足しています", "_ch2_tournament.votes." + judge);
     // 表示専用（#909）。この回に誰へ何点入れたか。得点・順位の計算には使わない。
@@ -136,7 +136,7 @@ export function castVotes(p, round, performance, prefByJudge = null, carryP = 0)
   return true;
 }
 export function standings(p) {
-  return tournamentStandings(p, CONTESTANTS, JUDGES);
+  return tournamentStandings(p, CONTESTANTS, JUDGES, byChapterTwoTie);
 }
 export function recordResult(value, total) {
   const p = tournamentProgress(value);

@@ -2,7 +2,7 @@
 // 状態遷移は ch5-progress.js。ここは表示と再生だけを持つ。
 import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
-import { createChapterActions } from "../core/chapter-actions.js";
+import { completionActions, createChapterActions } from "../core/chapter-actions.js";
 import { chapterRecoveryActions } from "../core/chapter-recovery.js";
 import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
@@ -710,16 +710,9 @@ function renderComplete(owner) {
   // 見終えた保存を開いたとき・盤を使って戻ったときも通知する（接続前に見終えた保存の解放と、パッケージの最新化）。
   const nextCycle = noteTrueEnd();
   const pending = chapterFiveCreditsPending(state);
-  const actions = pending ? [
-    button(owner, "スタッフロールへ", "complete-credits", () => renderStaffRoll(owner), true),
-    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
-    ...reflectionActions(owner), // 時間を使わない盤の入口はスタッフロールの前後どちらでも出す
-  ] : [
-    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
-    button(owner, "スタッフロールを見る", "complete-credits", () => renderStaffRoll(owner)),
-    button(owner, "タイトルへ", "complete-title", () => backToTitle()),
-    ...reflectionActions(owner),
-  ];
+  const next = button(owner, pending ? "スタッフロールへ" : "スタッフロールを見る", "complete-credits", () => renderStaffRoll(owner), true);
+  const actions = completionActions(owner, button, next, { onSave: saveFlow, onTitle: pending ? undefined : backToTitle });
+  actions.push(...reflectionActions(owner)); // 時間を使わない盤の入口はスタッフロールの前後どちらでも出す
   card(owner, "complete", "第五章・完", "SHISHA-9000 の勝負は終わった。店の明かりが、いつもの夜に戻っていく。", actions,
     `ここまでが、この物語の終わりです。${nextCycle ? `タイトルの NEXT CYCLE から、${nextCycle}周目をはじめられます。` : ""}`, "",
     // 他の章と同じ比較。淡い面が第5章のはじめ、明るい面がいま。

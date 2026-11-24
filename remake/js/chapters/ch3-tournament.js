@@ -3,7 +3,7 @@ import { defeatFade } from "../core/transitions.js";
 import { sceneMoment } from "../core/scene-motions.js";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
-import { createChapterActions } from "../core/chapter-actions.js";
+import { completionActions, createChapterActions } from "../core/chapter-actions.js";
 import { chapterRecoveryActions } from "../core/chapter-recovery.js";
 import { ChapterSaveError } from "../core/chapter-save.js";
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
@@ -441,14 +441,12 @@ function renderComplete(owner) {
   if (p.result?.rank !== 1 || !state.flags._ch3_tournament_won)
     throw new Error("全国大会の勝利記録を確認できません");
   playBgm("bgm_aftermath");
-  card(owner, "complete", "全国大会・優勝／日本第一代表", "四人の一試合で、はじめが日本の第一代表になった。東京で伝えることが、まだ残っている。", [
-    button(owner, "第三章の続きへ", "aftermath", async () => {
-      const mod = await withLoadingNotice(import("./ch3-aftermath.js"), loadingNotice("第三章の続きを準備しています…"));
-      await mod.runChapterThreeAftermath();
-    }, true),
-    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
-    button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-  ], [
+  const next = button(owner, "第三章の続きへ", "aftermath", async () => {
+    const mod = await withLoadingNotice(import("./ch3-aftermath.js"), loadingNotice("第三章の続きを準備しています…"));
+    await mod.runChapterThreeAftermath();
+  }, true);
+  const actions = completionActions(owner, button, next, { onSave: saveFlow, onTitle: () => { save(); location.reload(); } });
+  card(owner, "complete", "全国大会・優勝／日本第一代表", "四人の一試合で、はじめが日本の第一代表になった。東京で伝えることが、まだ残っている。", actions, [
     // 賞金は recordResult で優勝確定時に一度だけ加算済み。ここでは受け取ったことだけを見せる（#1658 ⑦）。
     p?.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: Number.isFinite(p.prizeReceived)
       ? p.prizeReceived > 0 ? `優勝賞金 ${yen(p.prizeReceived)} を受け取った。` : "優勝賞金は所持金の上限に達したため加算されなかった。"

@@ -1,34 +1,76 @@
 import { createSet, resumeMix, playDeck, pauseMix, beatAt, gains, lowCutDb, mod, updateSet, chooseTrack, nudgeDeck } from './model.mjs';
-import { TRACKS, SETS, buildTrackData, previewBeat } from './tracks.mjs';
+import { TRACKS, SETS, buildBufferTrackData, previewBeat } from './tracks.mjs';
 import { FEEL } from './feel.mjs';
+
+const CLIP_BARS = 2, CLIP_SECONDS = 3.5;
+
+async function decodeTrack(context, key, url, signal, priority) {
+  const response = await fetch(url, { signal, priority });
+  if (!response.ok) throw new Error(`音源読み込み失敗: ${TRACKS[key].title}`);
+  return context.decodeAudioData(await response.arrayBuffer());
+}
+
+async function loadDeck(context, key, signal) {
+  const cfg = TRACKS[key];
+  const buffer = await decodeTrack(context, key, new URL('../../../assets/audio/dj/' + cfg.file, import.meta.url), signal, 'high');
+  return { ...await buildBufferTrackData(buffer, cfg, signal), buffer, trimDb: cfg.trimDb };
+}
+
+function loadClip(context, key, signal, priority) {
+  return decodeTrack(context, key, new URL(`./clips/${key}.flac`, import.meta.url), signal, priority);
+}
+
+function loadOnce(cache, key, load) {
+  if (!cache.has(key)) {
+    const pending = load();
+    cache.set(key, pending);
+    // A later click can retry a failed request.
+    pending.catch(() => { if (cache.get(key) === pending) cache.delete(key); });
+  }
+  return cache.get(key);
+}
+
+function disconnectVoice(voice) {
+  voice.source.onended = null;
+  voice.source.disconnect();
+  voice.source.buffer = null;
+  voice.filter?.disconnect();
+  voice.gain.disconnect();
+}
+
 export class DJAudio {
   constructor(Context = globalThis.AudioContext, options = {}) {
     this.set = SETS[options.setIndex ?? 0];
-    this.loadTrack = options.loadTrack || (async (context, key) => {
-      const cfg = TRACKS[key], response = await fetch(new URL('../../../assets/audio/dj/' + cfg.file, import.meta.url));
-      if (!response.ok) throw new Error(`音源読み込み失敗: ${cfg.title}`);
-      const buffer = await context.decodeAudioData(await response.arrayBuffer());
-      return { ...buildTrackData(buffer.getChannelData(0), buffer.sampleRate, cfg), buffer, trimDb: cfg.trimDb };
-    });
+    this.loadTrack = options.loadTrack || loadDeck;
+    this.loadPreview = options.loadPreview || (options.loadTrack ? null : loadClip);
     this.Context = Context; this.mix = createSet(this.set, options.rng || Math.random, { allowance: options.allowance || 0, ...(options.entry || {}) }); this.context = null; this.voices = [null, null];
-    this.cache = new Map(); this.tracks = [null, null]; // decoded track data per deck
+    this.cache = new Map(); this.clips = new Map(); this.tracks = [null, null];
+    this.loading = new AbortController();
     this.retiring = new Set(); this.volume = .18; this.muted = false; this.busy = false; this.disposed = false; this.revision = 0;
     this.previewing = null; this.previewGen = 0; // 試聴 (DJK06): the card being listened to, and a counter so a slow load never plays after another card was picked
   }
   get now() { return this.context?.currentTime || 0; }
-  /** Decoded data for a track key, fetched once. Needs the audio context. */
-  track(key) {
-    if (!this.cache.has(key)) {
-      const loading = this.loadTrack(this.context, key).then(t => { if (!t.buffer) { const b = this.context.createBuffer(1, t.samples.length, t.sampleRate); b.copyToChannel(t.samples, 0); t.buffer = b; } return t; });
-      this.cache.set(key, loading);
-      // A failed load is not kept: the next ▶ (or the next pick) fetches it again (#2456 review 3).
-      loading.catch(() => { if (this.cache.get(key) === loading) this.cache.delete(key); });
+  async decodeDeck(key) {
+    const context = this.context, t = await this.loadTrack(context, key, this.loading.signal);
+    if (!t.buffer) {
+      const buffer = context.createBuffer(1, t.samples.length, t.sampleRate);
+      buffer.copyToChannel(t.samples, 0);
+      t.buffer = buffer;
     }
-    return this.cache.get(key);
+    return t;
+  }
+  /** Only tracks assigned to decks retain their full PCM buffers. */
+  track(key) {
+    return loadOnce(this.cache, key, () => this.decodeDeck(key));
+  }
+  previewClip(key, priority = 'auto') {
+    return loadOnce(this.clips, key, () => this.loadPreview(this.context, key, this.loading.signal, priority));
   }
   async ensure(id) {
     const key = this.mix.decks[id].track; if (!key) { this.tracks[id] = null; return null; }
-    const t = await this.track(key); if (this.mix.decks[id].track === key) this.tracks[id] = t; return t;
+    const context = this.context, t = await this.track(key);
+    if (!this.disposed && this.context === context && this.mix.decks[id].track === key) this.tracks[id] = t;
+    return t;
   }
   loaded(id) { const key = this.mix.decks[id].track; return !!key && !!this.tracks[id] && this.tracks[id].nativeBpm === TRACKS[key].bpm && this.tracks[id].firstBeat === TRACKS[key].firstBeat; }
   async start(deckId = null) {
@@ -68,7 +110,8 @@ export class DJAudio {
       this.setMix(this.mix.mix); this.setVolume(this.volume);
       return true;
     } catch (error) {
-      if (onAir) throw error; // the next track did not load: the set keeps playing and ▶ tries again (#2456 review 3)
+      if (this.disposed && error.name === 'AbortError') return false;
+      if (this.disposed || onAir) throw error; // a failure loading the next track leaves the playing one on air (#2456 review 3)
       this.initialResume = null;
       if (this.context) pauseMix(this.mix, this.now);
       this.clearVoices();
@@ -92,7 +135,7 @@ export class DJAudio {
     else source.connect(gain);
     gain.connect(this.output);
     const voice = { source, gain, filter, stopped: false };
-    source.onended = () => { source.disconnect(); filter?.disconnect(); gain.disconnect(); this.retiring.delete(voice); };
+    source.onended = () => { disconnectVoice(voice); this.retiring.delete(voice); };
     gain.gain.setValueAtTime(0, now);
     gain.gain.linearRampToValueAtTime(gains(this.mix.mix)[id] * 10 ** ((track.trimDb || 0) / 20), now + .008);
     const first = track.firstBeat || 0;
@@ -114,11 +157,11 @@ export class DJAudio {
   }
   killVoice(id) {
     const voice = this.voices[id];
-    if (voice) { this.stopVoice(voice); voice.source.disconnect(); voice.filter?.disconnect(); voice.gain.disconnect(); this.voices[id] = null; }
+    if (voice) { this.stopVoice(voice); disconnectVoice(voice); this.voices[id] = null; }
   }
   clearVoices() {
     for (const voice of [...this.voices, ...this.retiring]) if (voice) {
-      this.stopVoice(voice); voice.source.disconnect(); voice.filter?.disconnect(); voice.gain.disconnect();
+      this.stopVoice(voice); disconnectVoice(voice);
     }
     this.voices = [null, null]; this.retiring.clear();
   }
@@ -149,28 +192,55 @@ export class DJAudio {
    *  bars play at the playing tempo on their own path (not the meters), and the music the player hears dips meanwhile. The floor, the
    *  beats, the decks and the scores are untouched. A newer call (another card) or stopPreview() cancels it. Resolves true if it plays. */
   async preview(key) {
-    const gen = ++this.previewGen; this.stopPreview();
+    this.stopPreview();
+    const gen = this.previewGen;
     if (!key || !TRACKS[key] || !this.context || this.disposed || this.context.state !== 'running' || !this.mix.running) return false;
-    let t; try { t = await this.track(key); } catch { return false; }
+    const P = FEEL.preview, len = Math.max(.5, P.seconds), cfg = TRACKS[key];
+    let buffer, offset = 0;
+    if (this.loadPreview && P.bars === CLIP_BARS && len + .05 <= CLIP_SECONDS) {
+      try { buffer = await this.previewClip(key); } catch { /* The original track is a fallback for an unavailable clip. */ }
+    }
+    if (!buffer && gen === this.previewGen) {
+      const pending = this.track(key);
+      try {
+        // Sound tuning overrides can request a different passage or a longer extract.
+        const t = await pending;
+        buffer = t.buffer;
+        offset = (t.firstBeat || 0) + previewBeat(t, P.bars) * 60 / t.nativeBpm;
+      } catch { return false; }
+      finally {
+        if (!this.mix.decks.some(deck => deck.track === key) && this.cache.get(key) === pending) this.cache.delete(key);
+      }
+    }
     if (gen !== this.previewGen || this.disposed || !this.context || this.context.state !== 'running' || !this.mix.running) return false;
-    const c = this.context, now = this.now, P = FEEL.preview, len = Math.max(.5, P.seconds), master = this.mix.decks[this.mix.master];
+    const c = this.context, now = this.now, master = this.mix.decks[this.mix.master];
     const source = c.createBufferSource(), gain = c.createGain();
-    source.buffer = t.buffer; source.playbackRate.value = (master?.bpm || t.nativeBpm) / t.nativeBpm;
+    source.buffer = buffer; source.playbackRate.value = (master?.bpm || cfg.bpm) / cfg.bpm;
     source.connect(gain); gain.connect(c.destination);
-    const level = this.muted ? 0 : this.volume * P.level * 10 ** ((t.trimDb || 0) / 20);
+    const level = this.muted ? 0 : this.volume * P.level * 10 ** ((cfg.trimDb || 0) / 20);
     gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(level, now + .06);
     gain.gain.setValueAtTime(level, now + len - .25); gain.gain.linearRampToValueAtTime(0, now + len);
-    source.start(now, (t.firstBeat || 0) + previewBeat(t, P.bars) * 60 / t.nativeBpm, len + .05);
+    source.start(now, offset, len + .05);
     const voice = { key, source, gain, until: now + len, stopped: false };
-    source.onended = () => { source.disconnect(); gain.disconnect(); if (this.previewing === voice) { this.previewing = null; this.setVolume(this.volume); } };
+    source.onended = () => {
+      disconnectVoice(voice);
+      this.retiring.delete(voice);
+      if (this.previewing === voice) { this.previewing = null; this.setVolume(this.volume); }
+    };
     this.previewing = voice; this.setVolume(this.volume);
     return true;
   }
   /** Stop the preview at once (a pick, a pause, another card) and bring the music back up. */
   stopPreview() {
+    ++this.previewGen;
     const v = this.previewing; if (!v) return;
     this.previewing = null;
-    if (!v.stopped) { v.stopped = true; const now = this.now; try { v.gain.gain.cancelScheduledValues(now); v.gain.gain.setValueAtTime(v.gain.gain.value, now); v.gain.gain.linearRampToValueAtTime(0, now + .03); v.source.stop(now + .04); } catch { /* already ended */ } }
+    const now = this.now;
+    v.gain.gain.cancelScheduledValues(now);
+    v.gain.gain.setValueAtTime(v.gain.gain.value, now);
+    v.gain.gain.linearRampToValueAtTime(0, now + .03);
+    this.retiring.add(v);
+    this.stopVoice(v, now + .04);
     this.setVolume(this.volume);
   }
   applyRate(id) { const t = this.tracks[id]; if (t) this.voices[id]?.source.playbackRate.setValueAtTime(this.mix.decks[id].bpm / t.nativeBpm, this.now); }
@@ -178,7 +248,7 @@ export class DJAudio {
   /** 選曲: load the picked candidate on the empty deck (see model chooseTrack). */
   choose(index) {
     const picked = chooseTrack(this.mix, index, this.now);
-    if (picked) { ++this.previewGen; this.stopPreview(); }
+    if (picked) { this.stopPreview(); this.clips.clear(); }
     if (picked && this.context) { this.tracks[picked.id] = null; this.ensure(picked.id).catch(() => {}); }
     return picked;
   }
@@ -187,9 +257,20 @@ export class DJAudio {
     if (this.previewing && this.now >= this.previewing.until) this.stopPreview(); // the few seconds are over
     const view = updateSet(this.mix, this.now);
     if (view.retuned != null) this.applyRate(view.retuned); // a slip starts or settles: the incoming track runs a little fast or slow (DJG)
-    if (view.stopped != null) this.killVoice(view.stopped);
-    // 選曲: fetch both candidates while the player decides, so the pick is ready by the next cue.
-    if (view.select && this.context) for (const key of view.select.options) this.track(key).catch(() => {});
+    if (view.stopped != null) {
+      const id = view.stopped;
+      this.killVoice(id);
+      this.cache.delete(view.transition.from);
+      // Keep the outgoing waveform until the deck display changes.
+      if (this.tracks[id]) {
+        const { buffer, samples, ...waveform } = this.tracks[id];
+        this.tracks[id] = waveform;
+      }
+    }
+    // 選曲: warm only the short excerpts at low priority. The choice loads the full recording for its deck.
+    if (view.select && this.context && this.loadPreview) {
+      for (const key of view.select.options) this.previewClip(key, 'low').catch(() => {});
+    }
     if (view.stopped != null || view.finished) this.setVolume(this.volume);
     return view;
   }
@@ -202,8 +283,10 @@ export class DJAudio {
   }
   async dispose() {
     if (this.disposed) return;
-    this.disposed = true; ++this.revision; ++this.previewGen; this.stopPreview();
+    this.disposed = true; ++this.revision; this.stopPreview();
+    this.loading.abort();
     pauseMix(this.mix, this.now); this.clearVoices();
+    this.cache.clear(); this.clips.clear(); this.tracks = [null, null];
     this.output?.disconnect(); this.analyser?.disconnect();
     await this.context?.close();
   }

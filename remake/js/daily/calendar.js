@@ -686,10 +686,15 @@ async function performSpotAction(spot, saveGate) {
   let slotsUsed = 1;
   let exp = null;
   if (spot.kind === "tonari") {
-    const selected = await tonariMenu();
+    const selected = await tonariMenu({ talks: chapterDef?.tonariTalks?.() });
     const floor = selected === "baito_floor";
     const sub = floor ? "baito" : selected; // 同じ勤務。固定夜・訪問日・体力・成長の経路を分けない。
     if (state !== actionOwner || !sub) return { used: false, exerted };
+    if (chapterDef?.performTonariTalk) {
+      const talk = await chapterDef.performTonariTalk(sub);
+      if (talk) return talk;
+      if (state !== actionOwner) return { used: false, exerted };
+    }
     exp = TONARI_EXP[sub] || null;
     if (sub === "ichidai") {
       const { visitIchidaiTable } = await import("./ichidai-table.js");
