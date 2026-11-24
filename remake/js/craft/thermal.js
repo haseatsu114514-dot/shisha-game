@@ -90,9 +90,14 @@ const CEILING = Array.from({ length: 14 }, () => ({ x: rnd(), y: rnd(), phase: r
 const DEBRIS = Array.from({ length: 42 }, () => ({ angle: rnd() * 6.283, speed: .35 + rnd() * .9, size: 3 + rnd() * 9, spin: rnd() * 6.283 }));
 const TWINKLES = Array.from({ length: 40 }, () => ({ x: rnd(), y: rnd(), phase: rnd() * 6.283, size: 3 + rnd() * 6, drift: rnd() }));
 
-function sprite(size, paint) {
+function surface(width, height) {
   const c = document.createElement("canvas");
-  c.width = c.height = size;
+  c.width = width;
+  c.height = height;
+  return c;
+}
+function sprite(size, paint) {
+  const c = surface(size, size);
   const g = c.getContext("2d");
   if (g) paint(g, size);
   return c;
@@ -111,15 +116,22 @@ function sprites() {
   });
 }
 
-const BACKDROP_W = 960, BACKDROP_H = 540, BACKDROP_SCALE = 0.5;
-let hazeCount = 0;
+const BACKDROP_W = 960, BACKDROP_H = 540, BACKDROP_SCALE = 0.5, BACKDROP_FRAME_MS = 80;
+const GRID_STEP = 90, GRID_ANGLE = -.2;
+const GRID_COS = Math.cos(GRID_ANGLE), GRID_SIN = Math.abs(Math.sin(GRID_ANGLE));
+const GRID_HALF_W = (BACKDROP_W * GRID_COS + BACKDROP_H * GRID_SIN) / 2;
+const GRID_HALF_H = (BACKDROP_H * GRID_COS + BACKDROP_W * GRID_SIN) / 2;
 export function buildThermalAtmosphere(host, worker, cs) {
   let bands = temperatureBands(cs);
   const canvas = el("canvas.thermal-backdrop", { width: BACKDROP_W * BACKDROP_SCALE, height: BACKDROP_H * BACKDROP_SCALE, "aria-hidden": "true", dataset: { test: "thermal-background" } });
-  const ctx = canvas.getContext("2d");
-  const warp = document.createElement("canvas");
-  warp.width = canvas.width; warp.height = canvas.height;
+  const output = canvas.getContext("2d");
+  const warp = surface(canvas.width, canvas.height);
   const warpCtx = warp.getContext("2d");
+  const backdrop = surface(canvas.width, canvas.height);
+  const backdropCtx = backdrop.getContext("2d");
+  const tile = surface(GRID_STEP, GRID_STEP);
+  const tileCtx = tile.getContext("2d");
+  let ctx = output;
   const label = el("span.thermal-label", { hidden: true, dataset: { test: "thermal-label" } });
   // 台の上には煙だけ。炎は背景のイメージに任せ、ボウルは燃やさない。
   const picture = el("div.thermal-picture", { "aria-hidden": "true", html: `<svg viewBox="0 0 160 200">
@@ -128,18 +140,8 @@ export function buildThermalAtmosphere(host, worker, cs) {
       <path d="M92 181C143 149 53 111 109 72S103 25 118 5"/>
       <path d="M55 170C2 135 60 108 34 82"/>
     </g></svg>` });
-  // 適温あたりから作業風景がゆらぐ陽炎。強さは温度帯で変え、停止中・動きを減らす設定では止める。
-  const hazeId = `thermal-haze-${++hazeCount}`;
-  const haze = el("div.thermal-haze-defs", { "aria-hidden": "true", html: `<svg width="0" height="0"><filter id="${hazeId}" x="-4%" y="-4%" width="108%" height="108%">
-    <feTurbulence type="fractalNoise" baseFrequency="0.011 0.042" numOctaves="1" seed="7" result="noise">
-      <animate attributeName="baseFrequency" dur="3.6s" values="0.011 0.042;0.013 0.058;0.011 0.042" repeatCount="indefinite"/>
-    </feTurbulence>
-    <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>
-  </filter></svg>` });
-  const hazeSvg = haze.querySelector("svg"), displace = haze.querySelector("feDisplacementMap");
   const glow = el("div.thermal-glow", { "aria-hidden": "true" });
   const boom = el("div.thermal-boom", { "aria-hidden": "true" });
-  const stage = worker.root.querySelector(".bench-worker-stage");
   const equipment = worker.root.querySelector(".worker-equipment");
   const bowlBottom = parseFloat(equipment?.querySelector(".worker-bowl")?.style.bottom);
   if (Number.isFinite(bowlBottom)) {
@@ -147,15 +149,13 @@ export function buildThermalAtmosphere(host, worker, cs) {
     boom.style.bottom = `calc(7% + ${bowlBottom + 40}px)`;
   }
   host.prepend(canvas);
-  host.append(haze);
-  // SMIL は 60fps で自走させず、描画間引きに合わせて loop() から時刻を進める。
-  hazeSvg?.pauseAnimations?.();
   equipment?.prepend(picture);
   equipment?.before(glow);
   equipment?.after(boom);
   worker.footer.append(label);
   let active = false, paused = false, temp = 0, phase = "", raf = 0, last = 0, time = 0, burstAt = -1, ruined = null;
-  let hazePx = 0, lastDrawnTemp = -1;
+  let lastDrawnTemp = -1;
+  let baseTop, baseBottom, baseRuined, squareInk, squareWarmth, squarePattern;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   /** 根元から先端へ揺れながら細くなる炎の舌。calm=1で揺れの小さい穏やかな炎。 */
@@ -229,19 +229,50 @@ export function buildThermalAtmosphere(host, worker, cs) {
     }
     ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
   }
-  /** 参照動画の大小の四角が斜めへ流れる。序盤は色のない白、ぬるいうちに暖かく色づき、適温で虹色に巡る。 */
-  function squares(env, ink, t, w, h) {
-    const travelRaw = t * (12 + temp * 25), k = Math.floor(travelRaw / 90), travel = travelRaw - k * 90;
-    ctx.save(); ctx.translate(w / 2, h / 2); ctx.rotate(-.2); ctx.lineWidth = 4;
-    for (let iy = -5; iy < 5; iy++) for (let ix = -7; ix < 8; ix++) {
-      const x = ix * 90 + travel, y = iy * 90 + travel, hue = (ix - k) * 26 + (iy - k) * 44 + t * (20 + env.rainbow * 40);
-      let color = ink, a = .13, b = .32;
-      if (env.rainbow > .02) { color = `hsl(${hue}, 95%, ${66 + (1 - env.rainbow) * 18}%)`; a = .13 + .42 * env.rainbow; b = .32 + .48 * env.rainbow; }
-      else if (env.warmth > .02) { color = `hsl(${28 + ((ix + iy) & 3) * 4}, ${40 + env.warmth * 45}%, ${86 - env.warmth * 8}%)`; a = .13 + .3 * env.warmth; b = .32 + .25 * env.warmth; }
-      ctx.globalAlpha = a; ctx.strokeStyle = color; ctx.strokeRect(x, y, 56, 56);
-      ctx.globalAlpha = b; ctx.fillStyle = color; ctx.fillRect(x + 66, y + 60, 13, 13);
+  function square(g, x, y, color, outline, dot) {
+    g.globalAlpha = outline; g.strokeStyle = color; g.strokeRect(x, y, 56, 56);
+    g.globalAlpha = dot; g.fillStyle = color; g.fillRect(x + 66, y + 60, 13, 13);
+  }
+  function squareColor(ink, warmth, ix, iy) {
+    return warmth ? `hsl(${28 + ((ix + iy) & 3) * 4}, ${40 + warmth * 45}%, ${86 - warmth * 8}%)` : ink;
+  }
+  function staticSquares(ink, warmth) {
+    if (!tileCtx || (ink === squareInk && warmth === squareWarmth)) return squarePattern;
+    const side = warmth ? 4 : 1;
+    tile.width = tile.height = side * GRID_STEP;
+    tileCtx.lineWidth = 4;
+    for (let iy = 0; iy < side; iy++) for (let ix = 0; ix < side; ix++) {
+      // タイルに線の半幅を含め、流すときに同じ2pxを引いて継ぎ目をつなぐ。
+      square(tileCtx, ix * GRID_STEP + 2, iy * GRID_STEP + 2, squareColor(ink, warmth, ix, iy), .13 + .3 * warmth, .32 + .25 * warmth);
     }
-    ctx.restore(); ctx.globalAlpha = 1;
+    squareInk = ink; squareWarmth = warmth;
+    squarePattern = tileCtx.createPattern(tile, "repeat");
+    return squarePattern;
+  }
+  /** 大小の四角は同じ速さで斜めへ流れる。虹色の帯だけ時間でも色が変わる。 */
+  function squares(env, ink, t, w, h) {
+    const distance = t * (12 + temp * 25), wraps = Math.floor(distance / GRID_STEP), travel = distance % GRID_STEP;
+    const rainbow = env.rainbow, colorful = rainbow > .02;
+    const warmth = env.warmth > .02 ? Math.round(env.warmth * 100) / 100 : 0;
+    ctx.save(); ctx.translate(w / 2, h / 2); ctx.rotate(GRID_ANGLE);
+    const pattern = colorful ? null : staticSquares(ink, warmth);
+    if (pattern) {
+      ctx.translate(travel - 2, travel - 2);
+      ctx.fillStyle = pattern; ctx.fillRect(-w, -w, 2 * w, 2 * w);
+    } else {
+      ctx.lineWidth = 4;
+      // 回転後の描画範囲に、線と小さい四角の分だけ余白を取る。
+      const firstX = Math.ceil((-GRID_HALF_W - travel - 79) / GRID_STEP), lastX = Math.floor((GRID_HALF_W - travel + 2) / GRID_STEP);
+      const firstY = Math.ceil((-GRID_HALF_H - travel - 73) / GRID_STEP), lastY = Math.floor((GRID_HALF_H - travel + 2) / GRID_STEP);
+      const outline = colorful ? .13 + .42 * rainbow : .13 + .3 * warmth;
+      const dot = colorful ? .32 + .48 * rainbow : .32 + .25 * warmth;
+      for (let iy = firstY; iy <= lastY; iy++) for (let ix = firstX; ix <= lastX; ix++) {
+        const hue = (ix - wraps) * 26 + (iy - wraps) * 44 + t * (20 + rainbow * 40);
+        const color = colorful ? `hsl(${hue}, 95%, ${66 + (1 - rainbow) * 18}%)` : squareColor(ink, warmth, ix, iy);
+        square(ctx, ix * GRID_STEP + travel, iy * GRID_STEP + travel, color, outline, dot);
+      }
+    }
+    ctx.restore();
   }
   /** 虹の帯（オーロラ）と瞬き。冷たいうちは同じ瞬きが白い冷気のきらめきになる。 */
   function aurora(env, t, w, h, optimal) {
@@ -276,9 +307,6 @@ export function buildThermalAtmosphere(host, worker, cs) {
   function explosion(t, w, h) {
     const p = reduced.matches ? 1 : clamp((t - burstAt) / 1.3, 0, 1);
     const cx = w * .3, cy = h * .34;
-    ctx.save(); ctx.translate(w / 2, h / 2); ctx.rotate(-.2); ctx.globalAlpha = .7;
-    for (let iy = -5; iy < 5; iy++) for (let ix = -7; ix < 8; ix++) ctx.drawImage(charred, ix * 90 - 4, iy * 90 - 4);
-    ctx.restore(); ctx.globalAlpha = 1;
     smoke(darkPuff, t, w, h, .45);
     ceilingSmoke(t, w, h, .6);
     ctx.globalCompositeOperation = "screen"; ctx.fillStyle = "#c33a0c";
@@ -305,10 +333,6 @@ export function buildThermalAtmosphere(host, worker, cs) {
   }
   /** 冷え切った（霜が降りたような青灰色で、きらめきだけがゆっくり瞬く）／フレーバーが抜けた（くすんだ茶灰色に灰が落ちる）。 */
   function spoiled(kind, t, w, h) {
-    ctx.save(); ctx.translate(w / 2, h / 2); ctx.rotate(-.2); ctx.lineWidth = 3;
-    ctx.strokeStyle = kind === "cold" ? "#cfe6ff" : "#8a7a60"; ctx.globalAlpha = .12;
-    for (let iy = -5; iy < 5; iy++) for (let ix = -7; ix < 8; ix++) ctx.strokeRect(ix * 90, iy * 90, 56, 56);
-    ctx.restore(); ctx.globalAlpha = 1;
     if (kind === "cold") { aurora({ rainbow: 0, frost: 1 }, t, w, h, false); return; }
     ctx.fillStyle = "#b8ab96";
     for (const s of SPARKS) {
@@ -318,32 +342,58 @@ export function buildThermalAtmosphere(host, worker, cs) {
     }
     ctx.globalAlpha = 1;
   }
+  function paintBase(g, colors, w, h) {
+    g.setTransform(BACKDROP_SCALE, 0, 0, BACKDROP_SCALE, 0, 0);
+    const gradient = g.createLinearGradient(0, 0, w * .4, h);
+    colors.forEach((color, i) => gradient.addColorStop(i, color));
+    g.fillStyle = gradient; g.fillRect(0, 0, w, h);
+    if (!ruined) return;
+    g.save(); g.translate(w / 2, h / 2); g.rotate(GRID_ANGLE);
+    if (ruined === "burnt") {
+      g.globalAlpha = .7;
+      for (let iy = -5; iy < 5; iy++) for (let ix = -7; ix < 8; ix++) g.drawImage(charred, ix * GRID_STEP - 4, iy * GRID_STEP - 4);
+    } else {
+      g.lineWidth = 3; g.strokeStyle = ruined === "cold" ? "#cfe6ff" : "#8a7a60"; g.globalAlpha = .12;
+      for (let iy = -5; iy < 5; iy++) for (let ix = -7; ix < 8; ix++) g.strokeRect(ix * GRID_STEP, iy * GRID_STEP, 56, 56);
+    }
+    g.restore();
+  }
+  function paintBackground(colors, w, h) {
+    if (!backdropCtx) { paintBase(ctx, colors, w, h); return; }
+    // 補間済みの色は整数のRGB値。同じ色の間は背景の画素を再利用する。
+    if (colors[0] !== baseTop || colors[1] !== baseBottom || ruined !== baseRuined) {
+      paintBase(backdropCtx, colors, w, h);
+      [baseTop, baseBottom] = colors; baseRuined = ruined;
+    }
+    ctx.drawImage(backdrop, 0, 0, w, h);
+  }
   /** 背景の陽炎: 横の帯ごとに少しずらし、熱い空気越しに見ているようにゆらす。 */
   function shimmer(amount, t, cw, ch) {
-    if (!warpCtx || amount <= 0) return;
-    warpCtx.globalCompositeOperation = "copy";
-    warpCtx.drawImage(canvas, 0, 0);
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    output.setTransform(1, 0, 0, 1, 0, 0);
     const scaleAmount = amount * BACKDROP_SCALE;
-    const strip = Math.max(1, Math.round(6 * BACKDROP_SCALE));
+    // 横にずらして画素が足りなくなる左右だけを元の絵で埋める。
+    const edge = Math.ceil(scaleAmount * 1.6) + 1, right = cw - edge;
+    output.drawImage(warp, 0, 0, edge, ch, 0, 0, edge, ch);
+    output.drawImage(warp, right, 0, edge, ch, right, 0, edge, ch);
+    const strip = Math.round(12 * BACKDROP_SCALE);
     for (let y = 0; y < ch; y += strip) {
-      const ly = y / BACKDROP_SCALE;
+      const height = Math.min(strip, ch - y), ly = (y + height / 2) / BACKDROP_SCALE;
       const dx = Math.sin(ly * .045 + t * 3.4) * scaleAmount + Math.sin(ly * .013 - t * 1.7) * scaleAmount * .6;
-      ctx.drawImage(warp, 0, y, cw, strip, dx, y, cw, strip);
+      output.drawImage(warp, 0, y, cw, height, dx, y, cw, height);
     }
   }
   function draw() {
-    if (!ctx) return;
+    if (!output) return;
     sprites();
     lastDrawnTemp = temp;
     const burnt = ruined === "burnt", w = BACKDROP_W, h = BACKDROP_H, cw = canvas.width, ch = canvas.height, t = reduced.matches ? 0 : time;
     const env = ruined ? { bg: RUINED_BG[ruined] } : envAt(temp, bands), band = ruined ? RUINED[ruined] : thermalBand(temp, bands);
+    const haze = warpCtx && !reduced.matches ? band.haze * .7 : 0;
+    ctx = haze ? warpCtx : output;
     ctx.setTransform(BACKDROP_SCALE, 0, 0, BACKDROP_SCALE, 0, 0);
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
-    const gradient = ctx.createLinearGradient(0, 0, w * .4, h);
-    env.bg.forEach((color, i) => gradient.addColorStop(i, color));
-    ctx.fillStyle = gradient; ctx.fillRect(0, 0, w, h);
+    paintBackground(env.bg, w, h);
     if (burnt) { explosion(t, w, h); return; }
     if (ruined) { spoiled(ruined, t, w, h); return; }
     squares(env, band.ink, t, w, h);
@@ -354,16 +404,14 @@ export function buildThermalAtmosphere(host, worker, cs) {
     if (env.fire > .01) fire(env, t, w, h);
     if (env.dark > .01) ceilingSmoke(t, w, h, env.dark);
     if (env.sparks >= 1) sparks(env.flame[2], t, w, h, env.sparks, .9 + env.reach * .5);
-    if (!reduced.matches) shimmer(band.haze * .7, t, cw, ch);
+    if (haze) shimmer(haze, t, cw, ch);
   }
-  const stepMs = () => (phase === "cold" || phase === "warming" || phase === "ready") && !ruined ? 80 : 48;
   function loop(now) {
     raf = 0;
     if (!active || paused || document.hidden || reduced.matches || !host.isConnected || host.classList.contains("done")) return;
-    if (now - last >= stepMs()) {
+    if (now - last >= BACKDROP_FRAME_MS) {
       time += Math.min(.1, (now - last) / 1000); last = now;
       draw();
-      if (hazePx > 0) hazeSvg?.setCurrentTime?.(time);
     }
     raf = requestAnimationFrame(loop);
   }
@@ -373,15 +421,6 @@ export function buildThermalAtmosphere(host, worker, cs) {
       raf = requestAnimationFrame(loop);
     }
   }
-  function setHaze(px) {
-    const on = active && px > 0 && !reduced.matches;
-    hazePx = on ? px : 0;
-    displace?.setAttribute("scale", String(hazePx));
-    if (stage) stage.style.filter = on ? `url(#${hazeId})` : "";
-    host.dataset.thermalHaze = String(hazePx);
-    hazeSvg?.pauseAnimations?.();
-    if (on) hazeSvg?.setCurrentTime?.(time);
-  }
   function paint(band) {
     phase = band.id; host.dataset.thermalBand = band.id;
     host.style.setProperty("--thermal-ink", band.ink);
@@ -390,7 +429,7 @@ export function buildThermalAtmosphere(host, worker, cs) {
     host.style.setProperty("--thermal-smoke", band.smoke[0]);
     host.style.setProperty("--thermal-smoke-alpha", band.smoke[1]);
     label.textContent = `熱のイメージ · ${band.label}`;
-    setHaze(band.haze);
+    setData(host, "thermalHaze", warpCtx && !reduced.matches ? String(band.haze) : "0");
     draw();
   }
   const onVisibility = () => {
@@ -413,8 +452,7 @@ export function buildThermalAtmosphere(host, worker, cs) {
       paused = false; burstAt = -1; ruined = null; host.classList.remove("thermal-burnt", "thermal-ruined");
       host.classList.toggle("thermal-active", active);
       host.dataset.thermalPaused = "false"; label.hidden = !active;
-      hazeSvg?.pauseAnimations?.();
-      if (!active) { cancelAnimationFrame(raf); raf = 0; delete host.dataset.thermalBand; setHaze(0); }
+      if (!active) { cancelAnimationFrame(raf); raf = 0; delete host.dataset.thermalBand; setData(host, "thermalHaze", "0"); }
       else { phase = ""; this.update(temp); start(); }
     },
     update(value) {
@@ -430,7 +468,6 @@ export function buildThermalAtmosphere(host, worker, cs) {
     },
     pause(value) {
       paused = value; host.dataset.thermalPaused = String(value); last = performance.now();
-      hazeSvg?.pauseAnimations?.();
       if (value) { cancelAnimationFrame(raf); raf = 0; }
       else start();
     },

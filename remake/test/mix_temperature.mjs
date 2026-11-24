@@ -169,6 +169,32 @@ console.log(`[mix temperature] PASS: ${widthCases} Dobaj width samples, infinite
 
 const catalog = { a: { maker: "af", heat_tolerance: 1 }, b: { maker: "nightside", heat_tolerance: 1 },
   c: { maker: "af", heat_tolerance: 1.2 } };
+const mutableCatalog = { a: { ...catalog.a }, b: { ...catalog.b } };
+const mutableSession = { mix: { a: 12 }, equip: { ...equipment[0] }, leaf: { dmg: 0 }, mode: "drill" };
+const beforeMemo = JSON.stringify(mutableSession);
+let memo = temperatureBands(mutableSession, mutableCatalog);
+assert.equal(temperatureBands(mutableSession, mutableCatalog), memo);
+assert.equal(JSON.stringify(mutableSession), beforeMemo);
+for (const change of [
+  () => { mutableSession.mix.b = 3; },
+  () => { mutableSession.mix.a = 9; },
+  () => { delete mutableSession.mix.b; },
+  () => { mutableSession.leaf.dmg = 2; },
+  () => { mutableSession.equip.hms = "dr_kemuri_proto_hmd"; },
+  () => { mutableSession.mode = "tutorial"; },
+  () => { mutableCatalog.a.heat_tolerance = 1.2; },
+  () => { mutableCatalog.a.maker = "dobaj"; },
+  () => { mutableCatalog.a.thermal_expression = { quality: "range" }; },
+]) {
+  change();
+  const updated = temperatureBands(mutableSession, mutableCatalog);
+  assert.notEqual(updated, memo);
+  assert.deepEqual(updated, temperatureBands({ ...mutableSession }, mutableCatalog));
+  assert.equal(temperatureBands(mutableSession, mutableCatalog), updated);
+  memo = updated;
+}
+console.log("[mix temperature] PASS: shared bands and invalidation for in-place session and catalog changes");
+
 const reference = temperatureBands({ mix: { a: 12 } }, catalog);
 for (const cs of [{ mix: { b: 12 } }, { mix: { a: 12 }, equip: equipment[1] }, { mix: { a: 12 }, equip: equipment[2] }]) {
   const changed = temperatureBands(cs, catalog);
