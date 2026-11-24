@@ -164,7 +164,7 @@ const OPENING_TALKS = new Set([
   "ch5_tokyo_volk_h",
   "ch5_adam_repeat_h",
   "ch5_kumicho_repeat_h",
-  "ch5_rei_repeat_h",
+  "ch5_kuraudo_repeat_h",
   "ch5_tonari_sumi_h",
   "ch5_tonari_tsumugi_h",
   "roam_hiyori_h",
