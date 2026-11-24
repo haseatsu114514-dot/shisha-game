@@ -1,5 +1,7 @@
 import { temperatureBands, isIdealTemperature, makerMixProfile } from "./temperature-model.js";
-import { allRecordedTemperaturesIdeal, recordedTemperatureState } from "./temperature-records.js";
+import { recordedTemperatureState } from "./temperature-records.js";
+import { evaluationOf } from "./feedback.js";
+import { coalCount } from "./coals.js";
 
 // 完了した有限の工程だけを比較する。未実施の0点や未知のキーを助言に使わない。
 export const ADVICE_PARTS = ["holes", "heat", "shisha", "care1", "care2"];
@@ -22,33 +24,86 @@ export function heatPracticeOf(picks = []) {
   return "次の練習：炭の全面が赤くなる頃合いを確かめよう。";
 }
 
+function holesPractice(holes) {
+  if (holes?.holeSizes?.shallow > 0) return "次の練習：浅い穴を減らすため、針を押してから少し待って離そう。";
+  if (holes && holes.sizeStab < Math.min(holes.evenness, holes.precision)) return "次の練習：穴の大きさをそろえるため、押した針を早めに離そう。";
+  return "次の練習：穴あけは、針が目印に重なったところで押そう。";
+}
+
+function steamPractice(steam) {
+  if (steam.hits >= 3) return "次の練習：同じ配合で蒸らし、雑念に囲まれる前にリフレッシュを使ってみよう。";
+  return "次の練習：蒸らしでは雑念が近づく前に、心を空いている方へ動かそう。";
+}
+
+function temperaturePractice(cs, label, result, hot, cold) {
+  if (!hot && !cold) return `次に変える一つ：${label}は温度計が適温帯に入ったところで仕上げよう。`;
+  if (label === "提供") return `次に変える一つ：提供は${hot ? "下げ吸いを一口して、少し下げて" : "上げ吸いを一口して、少し熱を戻して"}から仕上げよう。`;
+  const count = result.coals;
+  const place = result.coalsDetail?.place;
+  if (hot && count === 0) return `次に変える一つ：${label}は温度計が適温帯まで下がるのを待ってから、一口吸おう。`;
+  if (hot) return place === "outer" || count === 1
+    ? `次に変える一つ：${label}は少し下げて仕上げられるよう、交換する炭を一つ減らそう。`
+    : `次に変える一つ：${label}は少し下げて仕上げられるよう、交換する炭を外寄りに置こう。`;
+  if (count === coalCount(cs) && place === "inner") return `次に変える一つ：${label}は温度が落ちる前に、味を確かめる一口を始めよう。`;
+  return count === coalCount(cs)
+    ? `次に変える一つ：${label}は少し熱を戻して仕上げられるよう、交換する炭を内寄りに置こう。`
+    : `次に変える一つ：${label}は少し熱を戻して仕上げられるよう、交換する炭を一つ増やそう。`;
+}
+
 export function improvementOf(cs) {
   const bands = temperatureBands(cs);
-  const rounds = [["提供", cs.pull, 3], ["調整1回目", cs.careHistory?.[0], 2], ["調整2回目", cs.careHistory?.[1], 2]];
-  // 熱の失敗・実測温度のずれを先に直す。未知の失敗種別から原因を推測しない。
-  const failed = rounds.find(([, result]) => ["cold", "burnt", "leaf"].includes(result?.failed));
-  if (failed && failed[1].failed !== "leaf") return failed[1].failed === "cold"
-    ? `次に変える一つ：${failed[0]}は冷え切る前に炭を交換しよう。`
-    : `次に変える一つ：${failed[0]}は熱が上がり切る前に下げ吸いを試そう。`;
-  // 葉切れは別の終端原因。消耗で狭まった適温帯のずれを、熱の失敗と取り違えない。
-  const exhausted = failed?.[1].failed === "leaf";
-  // 後段の葉の消耗で狭まった帯を、記録済みの成功へさかのぼって当てない。
-  const missed = [...rounds].reverse().find(([, result]) => recordedTemperatureState(result) !== true
-    && Number.isFinite(result?.temp) && !isIdealTemperature(result.temp, bands));
-  if (missed && !exhausted) return `次に変える一つ：${missed[0]}は${missed[1].temp > bands.ideal[1] ? "少し下げて" : "少し熱を戻して"}から仕上げよう。`;
   const safeBonus = makerMixProfile(cs).safePullsBonus || 0;
-  const excessive = rounds.find(([, result, safe]) => result && result.pulls > safe + safeBonus);
-  if (excessive) return `次に変える一つ：${excessive[0]}は吸う回数を減らし、後半の葉を残そう。`;
-  if (exhausted) return `次に変える一つ：${failed[0]}で葉が尽きた。一台を通して吸う回数を見直そう。`;
-  const temperaturePractice = allRecordedTemperaturesIdeal(cs)
-    ? "次の練習：今回の記録を見て、次に試すことを選ぼう。" : null;
-  return {
-    holes: "次の練習：目印に合わせて、穴を均等に開けよう。",
-    heat: heatPracticeOf(cs.heat?.picks),
-    shisha: temperaturePractice || "次の練習：配合と、提供時の温度を確かめよう。",
-    care1: temperaturePractice || "次の練習：1回目の調整で、交換する炭の数を見直そう。",
-    care2: temperaturePractice || "次の練習：2回目まで葉を残し、適温で仕上げよう。",
-  }[weakestPart(cs.parts)] || "";
+  const rounds = [["提供", cs.pull, 3], ["調整1回目", cs.careHistory?.[0], 2], ["調整2回目", cs.careHistory?.[1], 2]];
+  const excessLine = label => `次に変える一つ：${label}は吸う回数を減らし、後半の葉を残そう。`;
+  const excessive = (result, safe) => Number.isFinite(result?.pulls) && !result.skipped && result.pulls > safe + safeBonus;
+  // 完成できなかったときは終端の原因を直す。葉切れは前の工程での吸いすぎも見る。
+  const failed = rounds.find(([, result]) => !result?.skipped && ["cold", "burnt", "leaf"].includes(result?.failed));
+  if (failed) {
+    const [label, result] = failed;
+    if (result.failed === "cold") return `次に変える一つ：${label}は冷え切る前に炭を交換しよう。`;
+    if (result.failed === "burnt") return `次に変える一つ：${label}は熱が上がり切る前に下げ吸いを試そう。`;
+    const overpull = rounds.find(([, result, safe]) => excessive(result, safe));
+    return overpull ? excessLine(overpull[0]) : `次に変える一つ：${label}で葉が尽きたので、次は適温に入った工程から吸い足さずに仕上げよう。`;
+  }
+
+  let weakest = null;
+  const consider = (score, line) => {
+    if (!weakest || score < weakest.score) weakest = { score, line };
+  };
+  // 合成点ではなく各工程の値を比べる。旧記録は穴と炭の正の部分点まで使う。
+  let recorded = false;
+  for (const [key, practice] of [["holes", holesPractice], ["heat", heat => heatPracticeOf(heat?.picks)], ["steam", steamPractice]]) {
+    const result = cs[key];
+    if (result?.skipped || result?.failed || result?.zeroSteam || (key === "holes" && cs.foilSkipped)) continue;
+    const savedScore = cs.parts?.[key];
+    const score = result?.score ?? (key !== "steam" && savedScore > 0 ? savedScore : undefined);
+    if (!Number.isFinite(score)) continue;
+    recorded = true;
+    if (evaluationOf(score).kind !== "just") consider(score, practice(result));
+  }
+  // 同点は工程順。終了時の成否を、後から狭まった適温帯で覆さない。
+  for (const [label, result, safe] of rounds) {
+    if (!result || result.skipped) continue;
+    const { temp, score } = result;
+    const known = recordedTemperatureState(result);
+    const measured = Number.isFinite(temp);
+    const ideal = known ?? (measured && isIdealTemperature(temp, bands));
+    if (result.attack !== true && measured && !ideal) {
+      const hot = known === null ? temp > bands.ideal[1] : result.over ?? temp > bands.ideal[1];
+      const cold = known === null ? temp < bands.ideal[0] : result.under ?? temp < bands.ideal[0];
+      consider(Number.isFinite(score) ? score : 65, temperaturePractice(cs, label, result, hot, cold));
+    } else if (excessive(result, safe)) {
+      consider(Number.isFinite(score) ? score : 65, excessLine(label));
+    } else if (ideal || result.attack === true) {
+      if (result.failed || !Number.isFinite(score)) continue;
+      recorded = true;
+      if (label === "提供" && !result.attack && result.optimal === false && result.pulls > 0 && result.justs === 0 && evaluationOf(score).kind !== "just") {
+        consider(score, "次の練習：吸い出しで温度を保ちたい一口は、中央のキープの芯で針を止めよう。");
+      }
+    }
+  }
+  const canRepeat = recorded && !rounds.some(([, result]) => result?.failed);
+  return weakest?.line || (canRepeat ? "次の練習：同じ手順でもう一台作り、今回の仕上がりを再現しよう。" : "");
 }
 
 /** 結果カード共通の2行（今回よかったこと／次に変える一つ）。空の行は出さない（#1909）。 */

@@ -42,12 +42,12 @@
       "dialogue_id": "ch5_dubai_go",
       "lines": [
         { "speaker": "", "face": "", "text": "空港行きのバスに乗り、ドバイ行きの便に乗った。" },
-        { "speaker": "", "face": "", "text": "今回は、大会の控え室でも表彰台の前でもない。封筒の切符を握った、一人の客だ。" },
+        { "speaker": "", "face": "", "text": "今回は、大会の控室でも表彰台の前でもない。封筒の切符を握った、一人の客だ。" },
         { "speaker": "", "face": "", "text": "座席に深く座ると、エンジンの低い音が床から伝わってきた。" },
-        { "speaker": "", "face": "", "text": "窓の外で、日本の灯が遠ざかっていく。荷物は少ない。" },
+        { "speaker": "", "face": "", "text": "窓の外で、日本の灯りが遠ざかっていく。荷物は少ない。" },
         { "speaker": "", "face": "", "text": "持っていくのは、中庭でもう一度吸うための時間だけだ。" },
         { "speaker": "", "face": "", "text": "機内は静かだった。" },
-        { "speaker": "", "face": "", "text": "窓の下に、砂の色をした街の明かりが近づいてくる。" }
+        { "speaker": "", "face": "", "text": "窓の下に、砂の色をした街の灯りが近づいてくる。" }
       ]
     },
     {
@@ -69,7 +69,7 @@
         { "speaker": "sheikh", "face": "smile", "text": "よく来た。王者も、ここでは客だ" },
         { "speaker": "hajime", "face": "smile", "text": "お招き、ありがとうございます" },
         { "speaker": "sheikh", "face": "normal", "text": "客間は二階の奥だ。帰りたい日に、空港まで車を出そう" },
-        { "speaker": "sheikh", "face": "normal", "text": "それと、tonariの葉は届いた。葡萄の隣に置いてある" },
+        { "speaker": "sheikh", "face": "normal", "text": "それと、tonariの葉は届いた。ぶどうの隣に置いてある" },
         { "speaker": "hajime", "face": "normal", "text": "もう吸ってみましたか？" },
         { "speaker": "sheikh", "face": "smile", "text": "まだだ。君が来た日に開けようと思っていた" },
         { "speaker": "", "face": "", "text": "案内された客間には、冷えた水の瓶と、白い布をかけた寝台が用意されていた。" }
@@ -173,12 +173,12 @@
     },
     {
       "dialogue_id": "ch5_dubai_alley_c",
-      "comment": "路地裏のカフェの小会話の3本目（#3097 ボリューム均し）。店員に顔を覚えられて、来る前から炭が熾してある。店員は shop_clerk の単発話者。代金・報酬はコード側（一台3,000円）。",
+      "comment": "路地裏のカフェの小会話の3本目（#3097 ボリューム均し）。店員に顔を覚えられて、来る前から炭が起こしてある。店員は shop_clerk の単発話者。代金・報酬はコード側（一台3,000円）。",
       "lines": [
         { "speaker": "", "face": "", "text": "路地裏のカフェの戸をくぐると、店員がこちらを見て、軽くうなずいた。" },
         { "speaker": "shop_clerk", "face": "", "text": "いつもの、ですね" },
         { "speaker": "hajime", "face": "smile", "text": "……はい。いつもので" },
-        { "speaker": "", "face": "", "text": "炭は、もう熾してあった。路地を歩いてくるのが、窓から見えていたらしい。" },
+        { "speaker": "", "face": "", "text": "炭は、もう起こしてあった。路地を歩いてくるのが、窓から見えていたらしい。" },
         { "speaker": "", "face": "", "text": "一口目から、熱がちょうどいい。待たされた感じが、どこにもなかった。" },
         { "speaker": "hajime", "face": "normal", "text": "（座る前から、もう一台が始まってる。……店の時間は、扉の外から流れてるんだ）" }
       ]
@@ -198,7 +198,7 @@
       "dialogue_id": "ch5_dubai_taiyo",
       "lines": [
         { "speaker": "", "face": "", "text": "屋敷の中庭に、手拍子が響いていた。噴水の前で、太陽が使用人たちに踊りを教えている。" },
-        { "speaker": "da_silva", "face": "excited", "text": "来たな、世界一！　見てたぞ、審査席からな" },
+        { "speaker": "da_silva", "face": "excited", "text": "来たな、世界一！ 見てたぞ、審査席からな" },
         { "speaker": "hajime", "face": "surprise", "text": "太陽さん。どうして、ここに？" },
         { "speaker": "da_silva", "face": "smile", "text": "休暇。シェイクの家、氷が切れねえからな" },
         { "speaker": "", "face": "", "text": "使用人の青年が照れて腰を揺らし、拍がずれるたびに笑いが起きた。" },
@@ -210,7 +210,7 @@
       "dialogue_id": "ch5_dubai_taiyo_b",
       "lines": [
         { "speaker": "", "face": "", "text": "中庭の木陰。太陽が、パッションフルーツの一台を詰めていた。" },
-        { "speaker": "da_silva", "face": "smile", "text": "大会のときの、お前の一台。手拍子ひとつ無しで……見入った、ってやつだ" },
+        { "speaker": "da_silva", "face": "smile", "text": "大会のときの、お前の一台。手拍子ひとつなしで……見入った、ってやつだ" },
         { "speaker": "hajime", "face": "normal", "text": "静かすぎましたか" },
         { "speaker": "da_silva", "face": "normal", "text": "いいや。客、誰も席を立たなかった。俺、審査席から見てた" },
         { "speaker": "hajime", "face": "smile", "text": "ありがとうございます。あの一台、少し怖かったんです" },
@@ -235,7 +235,7 @@
       "comment": "第5章でドバイへ来て、最初にラクダレース場へ行った日だけ、練習レースの前の会話（ch4_camel_replay）の代わりに読む。第4章で一度でも走った人だけ（第4章で走っていない人は第5章の店先 ch5_dubai_camel_meet で会うので読まない。chapters/ch5-dubai.js）。大会・シェイクの正体には触れない。",
       "lines": [
         { "speaker": "", "face": "", "text": "朝のレース場。ハリールの白い車の横で、見覚えのある顔が両手を大きく振った。" },
-        { "speaker": "faris", "face": "normal", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
+        { "speaker": "faris", "face": "normal", "text": "ハジメ！ 日本に帰ったんじゃなかったの？" },
         { "speaker": "hajime", "face": "smile", "text": "また来ました。……ハビーバに、会いたくなって" },
         { "speaker": "faris", "face": "normal", "text": "ハビーバ、きっと喜ぶよ。叔父さんも、顔には出さないけど絶対嬉しいんだから" },
         { "speaker": "", "face": "", "text": "柵の向こうで、ラクダの長い首が、こちらへゆっくり向いた。" },
@@ -290,13 +290,13 @@
       "branches": {
         "first": [
           { "speaker": "", "face": "", "text": "Dr.fookah ドバイ店の前。扉が開いて、冷気と一緒に声が飛んできた。" },
-          { "speaker": "faris", "face": "normal", "text": "いらっしゃいませー！　……お、日本の人？" },
+          { "speaker": "faris", "face": "normal", "text": "いらっしゃいませー！ ……お、日本の人？" },
           { "speaker": "hajime", "face": "surprise", "text": "え、日本語？" },
           { "speaker": "faris", "face": "normal", "text": "店長が日本人だから、挨拶だけ百回練習した。あとはアニメ" },
           { "speaker": "faris", "face": "normal", "text": "ファーリス。ここで葉を量ってる。あなたは？" },
           { "type": "set_flag", "flag": "_met_faris" },
           { "speaker": "hajime", "face": "normal", "text": "逢縁はじめです。日本で、シーシャの店で働いてて" },
-          { "speaker": "faris", "face": "normal", "text": "同じ仕事だ！　遊びに来たの？" },
+          { "speaker": "faris", "face": "normal", "text": "同じ仕事だ！ 遊びに来たの？" },
           { "speaker": "hajime", "face": "smile", "text": "はい。知り合いに招かれて、少しだけ" },
           { "speaker": "faris", "face": "normal", "text": "じゃ、普通の観光じゃもったいない。俺の叔父さん、ラクダレースの調教師なんだ" },
           { "speaker": "hajime", "face": "surprise", "text": "ラクダレース？" },
@@ -304,7 +304,7 @@
         ],
         "again": [
           { "speaker": "", "face": "", "text": "Dr.fookah ドバイ店の前。葉の缶を抱えた店員が、こちらを見て足を止めた。" },
-          { "speaker": "faris", "face": "normal", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
+          { "speaker": "faris", "face": "normal", "text": "ハジメ！ 日本に帰ったんじゃなかったの？" },
           { "speaker": "hajime", "face": "smile", "text": "帰りました。また、遊びに来たんです" },
           { "speaker": "faris", "face": "normal", "text": "おかえり。前は、ゆっくり遊ぶ前に帰っちゃったよね" },
           { "speaker": "hajime", "face": "normal", "text": "そうでした。あの時は、慌ただしくて" },
@@ -369,11 +369,11 @@
       "lines": [
         { "speaker": "", "face": "", "text": "到着ロビーの出口に、手書きの紙を掲げた人が立っていた。" },
         { "speaker": "", "face": "", "text": "紙には大きく「ハジメ」。その下に、小さな星が一つ。" },
-        { "speaker": "noor", "face": "smile", "text": "ハジメ！　こっち！　……ガイドの札、自分の恋人に使うの初めて" },
+        { "speaker": "noor", "face": "smile", "text": "ハジメ！ こっち！ ……ガイドの札、自分の恋人に使うの初めて" },
         { "speaker": "hajime", "face": "surprise", "text": "ヌールさん。迎えに来てくれたんですか" },
         { "speaker": "noor", "face": "normal", "text": "当たり前でしょ。屋敷の迎えより先に着くの、大変だったんだから" },
-        { "speaker": "", "face": "", "text": "ヌールさんは紙を畳んで、上着のポケットにしまった。" },
-        { "speaker": "", "face": "", "text": "畳んだ紙の角が、ポケットから少しはみ出している。" },
+        { "speaker": "", "face": "", "text": "ヌールさんは紙をたたんで、上着のポケットにしまった。" },
+        { "speaker": "", "face": "", "text": "たたんだ紙の角が、ポケットから少しはみ出している。" },
         { "speaker": "noor", "face": "normal", "text": "ねえ、これ見て" },
         { "speaker": "", "face": "", "text": "スマホの画面を見せられた。前は二つ並んでいた時計が、一つになっている。" },
         { "speaker": "noor", "face": "smile", "text": "ハジメがこっちにいる間は、日本の時計、消しとく。時差、ゼロ" },
@@ -394,7 +394,7 @@
         { "speaker": "noor", "face": "normal", "text": "……日本だと、今、何時？" },
         { "speaker": "hajime", "face": "normal", "text": "夜中の、二時くらいです" },
         { "speaker": "noor", "face": "smile", "text": "じゃあ、いつもならハジメは寝てて、私はお盆を持って走ってる時間" },
-        { "speaker": "noor", "face": "normal", "text": "今日は、どっちも起きてて、どっちも隣にいる、……変な感じ" },
+        { "speaker": "noor", "face": "normal", "text": "今日は、どっちも起きてて、どっちも隣にいる……変な感じ" },
         { "speaker": "hajime", "face": "smile", "text": "電話だと、声しか届かないですもんね" },
         { "speaker": "noor", "face": "normal", "text": "声だけでも、けっこう届いてたよ。……でも、これは届かなかった" },
         { "speaker": "", "face": "", "text": "ヌールさんは、俺の手の甲を指で一回、軽く叩いた。" },
@@ -409,16 +409,16 @@
       "metadata": { "private_scene": true },
       "lines": [
         { "speaker": "", "face": "", "text": "出発ロビーの手前で、ヌールさんが足を止めた。" },
-        { "speaker": "noor", "face": "normal", "text": "見送りって、ガイドの仕事に無いの、……だから、今日は下手でいい" },
+        { "speaker": "noor", "face": "normal", "text": "見送りって、ガイドの仕事にないの。……だから、今日は下手でいい" },
         { "speaker": "", "face": "", "text": "ヌールさんはスマホを出して、時計を一つ足した。日本の時計が、また並ぶ。" },
-        { "speaker": "noor", "face": "normal", "text": "戻しとくね、……五時間、また始まり" },
+        { "speaker": "noor", "face": "normal", "text": "戻しとくね。……五時間、また始まり" },
         { "speaker": "hajime", "face": "normal", "text": "次は、もっと早く来ます" },
         { "speaker": "noor", "face": "smile", "text": "うん。じゃあ、これ" },
         { "speaker": "", "face": "", "text": "渡されたのは、空港で掲げていた手書きの札だった。「ハジメ」と、小さな星が一つ。" },
         { "speaker": "noor", "face": "normal", "text": "持ってって。次に来る時、また掲げるから" },
         { "speaker": "noor", "face": "smile", "text": "……ちゃんと返してね" },
         { "speaker": "hajime", "face": "smile", "text": "預かります。なくさないように、手帳に挟んでおきます" },
-        { "speaker": "noor", "face": "smile", "text": "よし、……いってらっしゃい、ハジメ" },
+        { "speaker": "noor", "face": "smile", "text": "よし。……いってらっしゃい、ハジメ" },
         { "speaker": "", "face": "", "text": "保安検査の列から振り返ると、ヌールさんはまだ、同じ場所で手を振っていた。" }
       ]
     },
@@ -438,7 +438,7 @@
         { "speaker": "noor", "face": "normal", "text": "父がね、札を見て笑ってた。「二つ目の星は、店の壁に貼るのか」って" },
         { "speaker": "hajime", "face": "smile", "text": "貼るんですか" },
         { "speaker": "noor", "face": "smile", "text": "貼らない。これは、ハジメが持って帰る札だから" },
-        { "speaker": "noor", "face": "normal", "text": "日本の時計、また消すね、……時差、ゼロ" }
+        { "speaker": "noor", "face": "normal", "text": "日本の時計、また消すね……時差、ゼロ" }
       ]
     },
     {
@@ -572,7 +572,7 @@
         },
         {
           "speaker": "",
-          "text": "小指を離したあと、ヌールさんはリストの一番上に、小さな星を一つ付けた。",
+          "text": "小指を離したあと、ヌールさんはリストのいちばん上に、小さな星を一つ付けた。",
           "face": ""
         },
         {

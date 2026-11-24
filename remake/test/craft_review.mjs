@@ -7,6 +7,7 @@ const bands = temperatureBands();
 const served = { temp: bands.ideal[0] + .01, pulls: 2, score: 100 };
 const warm = { temp: bands.ideal[1] - .01, pulls: 1, score: 100 };
 const steady = { pull: served, careHistory: [warm, served] };
+const repeat = "次の練習：同じ手順でもう一台作り、今回の仕上がりを再現しよう。";
 assert.match(goodPointOf(steady), /提供と2回の調整/);
 const coldFinish = { ...steady, careHistory: [warm, { temp: .1, pulls: 1, score: 10 }] };
 assert.match(goodPointOf(coldFinish), /提供できた/);
@@ -29,9 +30,9 @@ for (const [label, key, safe] of roundCases) {
     }
   }
   assert.match(improvementOf(withRound(key, { ...served, pulls: safe + 1 })), new RegExp(`${label}.*吸う回数を減らし`), `${label}: ideal temperature still allows excessive-pull advice`);
-  assert.equal(improvementOf(withRound(key, { ...served, pulls: safe })), "", `${label}: safe-pull threshold is inclusive`);
+  assert.equal(improvementOf(withRound(key, { ...served, pulls: safe })), repeat, `${label}: safe-pull threshold is inclusive`);
   const dobaj = { ...steady, mix: { dobaj_test: 12 } };
-  assert.equal(improvementOf(withRound(key, { ...served, pulls: safe + 1 }, dobaj)), "", `${label}: maker safe-pull bonus is preserved`);
+  assert.equal(improvementOf(withRound(key, { ...served, pulls: safe + 1 }, dobaj)), repeat, `${label}: maker safe-pull bonus is preserved`);
   assert.match(improvementOf(withRound(key, { ...served, pulls: safe + 2 }, dobaj)), /吸う回数を減らし/);
 }
 
@@ -44,7 +45,7 @@ for (const [label, key, safe] of roundCases) {
   // 現runnerの葉切れは過多吸引時。少回数記録は保存済み・不完全な履歴への防御ケース。
   for (const pulls of [0, 1, safe]) {
     const line = improvementOf(withRound(key, { ...leafResult, pulls }, depleted));
-    assert.match(line, new RegExp(`${label}.*葉が尽きた.*一台を通して吸う回数を見直そう`), `${label}: leaf exhaustion with no local overpull must use the cumulative leaf cause`);
+    assert.match(line, new RegExp(`${label}.*葉が尽きた.*適温に入った工程から吸い足さず`), `${label}: leaf exhaustion with no local overpull must use the cumulative leaf cause`);
   }
   for (const temp of [undefined, bands.ideal[0] - .01, bands.ideal[1] + .01]) {
     assert.match(improvementOf(withRound(key, { ...leafResult, temp, pulls: 1 }, depleted)), /葉が尽きた/, `${label}: recorded leaf failure must not become a temperature diagnosis`);
@@ -62,7 +63,9 @@ for (const temp of [undefined, null, NaN, Infinity, -Infinity, "0.1"]) {
   assert.match(improvementOf({ pull: { temp, pulls: 4 } }), /提供.*吸う回数を減らし/, `No temperature cause without a finite measurement: ${temp}`);
 }
 const multipleMisses = { pull: { temp: .1, pulls: 4 }, careHistory: [{ temp: .8, pulls: 3 }, { temp: .1, pulls: 3 }] };
-assert.match(improvementOf(multipleMisses), /調整2回目.*熱を戻して/, "Latest missed temperature retains priority");
+assert.match(improvementOf(multipleMisses), /提供.*熱を戻して/, "With no scores to compare, tied misses use stage order");
+assert.match(improvementOf({ pull: { temp: .8, pulls: 2, score: 45 }, careHistory: [{ temp: .15, pulls: 1, score: 15 }, { temp: .8, pulls: 1, score: 55 }] }),
+  /調整1回目.*交換する炭を一つ増やそう/, "Weakest measured temperature round wins");
 assert.match(improvementOf({ ...multipleMisses, pull: { ...multipleMisses.pull, failed: "burnt" } }), /提供.*熱が上がり切る前/, "Recorded thermal failure precedes a later missed temperature");
 assert.match(improvementOf({ pull: { failed: "cold", pulls: 4 }, careHistory: [{ failed: "burnt", pulls: 3 }] }), /提供.*冷え切る前/, "First recorded thermal failure retains priority");
 assert.match(improvementOf({ pull: { ...served, pulls: 4 }, careHistory: [{ ...served, pulls: 3 }, { ...served, pulls: 3 }] }), /提供.*吸う回数を減らし/, "First excessive round retains priority");
@@ -74,6 +77,33 @@ assert.equal(improvementOf({ parts: { invented: -99 } }), "");
 assert.match(improvementOf({ careHistory: [{ failed: "cold", temp: .04, pulls: 1 }] }), /冷え切る前に炭を交換/);
 assert.doesNotMatch(improvementOf(steady), /最適温/, "Do not steer a valid low/high expression back to the center");
 console.log("PASS review uses recorded actions, preserves a success and suggests one change");
+
+const clean = {
+  holes: { score: 96 }, heat: { score: 97, picks: ["just", "just", "just"] }, steam: { score: 100, hits: 0 },
+  pull: { ...served, temp: bands.center, inZone: true, optimal: true, justs: 2 },
+  careHistory: [{ ...warm, inZone: true }, { ...served, inZone: true }],
+  parts: { shisha: 68 },
+};
+const weakSteam = { score: 0, hits: 8 };
+const offCenter = { ...clean.pull, temp: served.temp, score: 74, optimal: false, justs: 0 };
+assert.equal(improvementOf(clean), repeat, "Composite quality cannot invent a weakness in an otherwise clean cup");
+assert.match(improvementOf({ ...clean, steam: weakSteam, pull: offCenter }), /蒸らし、雑念に囲まれる前にリフレッシュ/);
+assert.match(improvementOf({ ...clean, steam: { score: 86, hits: 1 } }), /蒸らしでは雑念が近づく前に、心を空いている方へ動か/);
+assert.match(improvementOf({ ...clean, pull: offCenter, steam: { score: 86, hits: 1 } }), /キープの芯で針を止め/);
+assert.equal(improvementOf({ ...clean, pull: { ...offCenter, justs: 1 } }), repeat, "A valid chosen temperature does not need correction");
+assert.equal(improvementOf({ ...clean, pull: { ...offCenter, attack: true } }), repeat, "An intentional attack-band finish does not need needle advice");
+assert.match(improvementOf({ ...clean, pull: { ...offCenter, inZone: false, under: true, temp: .2, score: 15 }, steam: { score: 58, hits: 3 } }),
+  /提供.*上げ吸いを一口/, "The lower temperature score can beat a weak steam score");
+assert.match(improvementOf({ ...clean, pull: { ...offCenter, inZone: false, over: true, temp: .8, score: 10 } }), /提供.*下げ吸いを一口/);
+assert.match(improvementOf({ ...clean, holes: { score: 20, holeSizes: { shallow: 6 } } }), /押してから少し待って離そう/);
+assert.match(improvementOf({ ...clean, holes: { score: 65, evenness: .9, precision: .8, sizeStab: .2 } }), /押した針を早めに離そう/);
+assert.match(improvementOf({ ...clean, holes: { score: 80, evenness: .65, precision: .85, sizeStab: .9 } }), /針が目印に重なったところで押そう/);
+assert.match(improvementOf({ ...clean, heat: { score: 50, picks: ["early", "just"] } }), /黒い面が消えるまで待って/);
+assert.equal(improvementOf({ ...clean, holes: { score: 0, skipped: true }, steam: { score: 0, hits: 0, zeroSteam: true },
+  careHistory: [], parts: { holes: 0, heat: 0, shisha: 68, care1: 0, care2: 0 } }), repeat);
+assert.equal(improvementOf({ parts: { holes: 0, heat: 0, shisha: 55, care1: 0, care2: 0 } }), "");
+assert.match(improvementOf({ ...clean, holes: { score: 50 }, heat: { score: 50, picks: ["early"] } }), /穴あけ/);
+console.log("PASS weakest completed stage selects one operational tip for steam, needle, temperature, holes or coals");
 
 // #1909: 中程度でも実際の完了記録から控えめに一つ認める。
 const moderate = { holes: { score: 72 }, heat: { score: 81 }, steam: { score: 76 }, pull: { score: 70, temp: .2 }, careHistory: [{ score: 74, temp: .2 }, { score: 75, temp: .2 }] };

@@ -25,7 +25,7 @@ export const DB = {
   flavorById: {},
   equipment: [],
   equipById: {},
-  baito: [],          // バイトの接客イベント（ch1 で使うカテゴリのみ）
+  baito: [],          // 全章で使う接客イベント（章ごとの条件は各イベントに持つ）
   dialogues: {},      // dialogue_id -> dialogue
   confessionDialogueLoaded: false,
   loverEventsLoaded: false, // 節目なしと、台本の取得前を区別する

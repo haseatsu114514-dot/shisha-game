@@ -23,7 +23,7 @@ async function setup(page, { day = 3, manual = false, fresh = true, auto = "good
     P.ch1.setupHooks(); P.ui.clearScreen();
     P.vn.vnTest.turbo = !manual; P.vn.vnTest.choose = () => 2;
     P.craft.craftTest.auto = auto;
-    P.entries = []; P.steps = []; P.benches = 0; P.earlyChoices = [];
+    P.entries = []; P.steps = []; P.benches = 0; P.earlyChoices = []; P.practiceTips = [];
     const choose = P.vn.hooks.onChoice;
     P.vn.hooks.onChoice = (id, ...args) => {
       if (["remake_preparation_review", "remake_preparation_retry"].includes(id)) P.earlyChoices.push(args[1]);
@@ -32,11 +32,17 @@ async function setup(page, { day = 3, manual = false, fresh = true, auto = "good
     const enter = P.vn.hooks.onEnter;
     P.vn.hooks.onEnter = (id, dlg) => { P.entries.push(id); enter?.(id, dlg); };
     const seen = new WeakSet();
+    const seenTips = new WeakSet();
     new MutationObserver(() => {
       for (const b of document.querySelectorAll(".bench:not(.done)")) {
         if (!seen.has(b)) { P.benches++; seen.add(b); }
         const step = b.querySelector(".bench-panel")?.dataset.step;
         if (step && P.steps.at(-1) !== step) P.steps.push(step);
+      }
+      for (const tip of document.querySelectorAll(".bench .result-card.show .rc-summary p")) {
+        if (seenTips.has(tip) || !/^次(?:の練習|に変える一つ)：/.test(tip.textContent)) continue;
+        seenTips.add(tip);
+        P.practiceTips.push({ title: tip.closest(".result-card").querySelector(".rc-title").textContent, text: tip.textContent });
       }
     }).observe(document.getElementById("screen"), { subtree: true, attributes: true, childList: true });
     P.run = () => {
@@ -63,7 +69,7 @@ async function until(page, predicate, touch = false) {
   }
 }
 const finish = (page, touch) => until(page, () => P.done, touch);
-const snapshot = page => page.evaluate(() => ({ state: JSON.parse(JSON.stringify(P.core.state)), entries: P.entries, steps: P.steps, benches: P.benches, earlyChoices: P.earlyChoices }));
+const snapshot = page => page.evaluate(() => ({ state: JSON.parse(JSON.stringify(P.core.state)), entries: P.entries, steps: P.steps, benches: P.benches, earlyChoices: P.earlyChoices, practiceTips: P.practiceTips }));
 function resourcesUnchanged(s, rigOwned = false) {
   // 固定練習は店の葉を使う。D02以降、卓上台を受け取っても私物の葉は増減しない。
   assert.deepEqual(s.flavorStock, { double_apple: 50, blueberry: 50, mint: 50, lemon: 50 });
@@ -85,6 +91,9 @@ function assertMidFull(r) {
   assert.deepEqual(record.mix, { blueberry: 9, mint: 3 }, "通常制作で仕入れた葉を配合する");
   assert.deepEqual(r.steps.filter(step => step !== "holes"), ["setup", "mix", "pack", "place", "heat", "steam", "pull", "care"]);
   assert.equal(r.benches, 1);
+  assert.equal(r.practiceTips.length, 1);
+  assert.match(r.practiceTips[0].title, /調整 2回目 結果/);
+  assert.match(r.practiceTips[0].text, /。$/);
   assert(r.state.flags._ch1_mid.practiceDone && r.state.flags._ch1_mid.feedbackRead && r.state.flags._ev_midcheck);
 }
 
@@ -103,6 +112,8 @@ await suite("ch1-practice", async run => {
     assert.equal(r.benches, 1); assert.deepEqual(r.earlyChoices, []); assert(r.state.flags._ev_first_practice);
     assert.equal(r.entries.some(id => /remake_preparation_(review|retry)$/.test(id)), reviewIntro);
     { const record = r.state.flags._craft_practice_runs.at(-1); assert(record.success && record.served); assert.equal(record.adjustments, 0); }
+    assert.equal(r.practiceTips.length, 1);
+    assert.match(r.practiceTips[0].text, /。$/);
     if (label === "current-same-day-failed") assert(!r.state.flags._craft_practice_runs[0].success);
     resourcesUnchanged(r.state);
   });
@@ -244,11 +255,11 @@ await suite("ch1-practice", async run => {
     await page.route("**/js/craft/practice.js", async route => {
       const response = await route.fetch();
       const source = await response.text();
-      const call = "  await runPull(cs);";
-      assert.equal(source.split(call).length, 2, "吸い出し直前の入力を一箇所だけ固定する");
+      const call = /^  await runPull\(cs(?=[,)])/gm;
+      assert.equal([...source.matchAll(call)].length, 1, "吸い出し直前の入力を一箇所だけ固定する");
       await route.fulfill({
         response,
-        body: source.replace(call, "  cs.steam.temp = 0.88;\n" + call),
+        body: source.replace(call, "  cs.steam.temp = 0.88;\n$&"),
       });
     });
     await page.reload();

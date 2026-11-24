@@ -735,9 +735,12 @@ function trapModalTab(event, box) {
   }
 }
 
-export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "" }) {
+export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "", signal }) {
+  if (signal?.aborted) return Promise.resolve(null);
   return new Promise((resolve) => {
     const previousFocus = document.activeElement;
+    let settled = false;
+    const backdrop = el("div.modal-backdrop");
     const box = el(`div.modal-box${className ? "." + className : ""}`, {
       role: "dialog", "aria-modal": "true", ...(title ? { "aria-label": title } : {}),
     }, [
@@ -747,16 +750,26 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
         el(`button.btn${o.primary ? ".primary" : ""}`, {
           text: o.label,
           dataset: { test: o.test || "" },
-          onclick: () => { SE.select(); close(); resolve(o.value); },
+          onclick: () => { if (!settled && !signal?.aborted) { SE.select(); close(o.value); } },
         })
       )),
     ]);
-    const close = () => {
+    const close = (value) => {
+      settled = true;
+      signal?.removeEventListener("abort", abort);
       window.removeEventListener("keydown", onKeyDown);
-      layers.modal.classList.remove("show");
-      layers.modal.replaceChildren();
-      if (previousFocus?.isConnected) previousFocus.focus();
+      if (signal?.aborted) {
+        box.remove();
+        backdrop.remove();
+        if (!layers.modal.firstElementChild) layers.modal.classList.remove("show");
+      } else if (box.isConnected) {
+        layers.modal.classList.remove("show");
+        layers.modal.replaceChildren();
+        if (previousFocus?.isConnected) previousFocus.focus();
+      }
+      resolve(value);
     };
+    const abort = () => close(null);
     const buttons = [...box.querySelectorAll(".modal-actions button")];
     const primary = buttons.find((button) => button.classList.contains("primary")) || buttons[0];
     const dismiss = [...buttons].reverse().find((button) => !button.classList.contains("primary")) || primary;
@@ -771,9 +784,10 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
         e.preventDefault(); primary?.click();
       }
     };
-    layers.modal.replaceChildren(el("div.modal-backdrop"), box);
+    layers.modal.replaceChildren(backdrop, box);
     layers.modal.classList.add("show");
     window.addEventListener("keydown", onKeyDown);
+    signal?.addEventListener("abort", abort, { once: true });
     primary?.focus();
   });
 }

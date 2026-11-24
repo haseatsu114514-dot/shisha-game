@@ -594,7 +594,7 @@ try {
     });
   // ダイス劇場（TRF29）: 振ってから評価が出るまでは画面いっぱい。出目・合計・評価は判定の値そのまま。タップで結果の卓へ飛ばせる。
   for (const [label, options] of [["roll-show-pc", {}], ["roll-show-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
-    const choiceSheets = new Set(), verdictLogos = new Set();
+    const choiceSheets = new Set(), verdictLogos = new Set(), diceSprites = new Set();
     await run(label, { seed: "3" }, options, async page => {
       const show = page.locator(".trpg-roll-show");
       const seen = () => show.evaluate(node => {
@@ -643,9 +643,11 @@ try {
       assert.equal(await page.locator('[data-test="trpg-roll-total"] strong').textContent(), "合計 " + (rerolled.dice[0] + rerolled.dice[1] + rerolled.bonus));
       await hit(page, '[data-test="trpg-settle"]'); await nextLines(page);
       assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.length, 1);
+      assert.deepEqual([...diceSprites], [], "Canvas rolls and rerolls never request the fallback dice sprites");
     }, page => page.on("request", request => {
       const path = new URL(request.url()).pathname;
       if (path.includes("/trpg/choices-")) choiceSheets.add(path);
+      if (path.includes("/trpg/d20-")) diceSprites.add(path);
       if (path.includes("/trpg/roll-logos/") && !path.endsWith("/skill.webp")) verdictLogos.add(path.split("/").pop());
     }));
   }
@@ -695,10 +697,12 @@ try {
     await page.locator(".trpg-library-books").evaluate(list => { list.scrollTop = 0; });
     await page.screenshot({ path: path.join(artifacts, "library-pc.png") });
     await hit(page, '[data-test="trpg-select-ordinary-cup"]');
+    await page.locator('[data-test="trpg-start"]').waitFor();
     assert.equal((await page.evaluate(() => __trpg.snapshot())).scenarioId, "ordinary-cup");
     await hit(page, '[data-test="trpg-exit"]');
     await page.locator('[data-test="trpg-select-shark-last-order"]').waitFor();
     await hit(page, '[data-test="trpg-select-shark-last-order"]');
+    await page.locator('[data-test="trpg-start"]').waitFor();
     assert.equal((await page.evaluate(() => __trpg.snapshot())).scenarioId, "shark-last-order");
     assert((await page.locator(".trpg-cover-person").first().textContent()).includes("サメちゃん"));
     await page.screenshot({ path: path.join(artifacts, "shark-cover.png") });
@@ -706,30 +710,37 @@ try {
   await run("library-picture-book-reread", {}, {}, async page => {
     const overlay = page.locator('[data-test="trpg-picturebook"]');
     const number = page.locator('[data-test="trpg-picturebook-number"]');
-    const opener = '[data-test="trpg-picturebook-ordinary-cup"]';
+    const books = [
+      "regular-harbor", "regular-mail", "ordinary-cup", "shark-last-order", "leaf-mail",
+      "apple-thief", "moonflower-encore", "purikura-hero", "mist-kingdom",
+    ];
     const shelfUrl = page.url();
     assert.deepEqual(await page.locator(".trpg-library .trpg-picturebook-open").evaluateAll(buttons =>
-      buttons.map(button => button.dataset.test)), ["trpg-picturebook-ordinary-cup"]);
+      buttons.map(button => button.dataset.test)), books.map(id => "trpg-picturebook-" + id));
     assert.deepEqual(await page.evaluate(() => performance.getEntriesByType("resource")
       .filter(entry => new URL(entry.name).pathname.includes("/picturebook/")).map(entry => entry.name)), []);
-    await hit(page, opener);
-    await overlay.locator('[data-test="trpg-picturebook-next"]:enabled').waitFor();
-    assert.equal(await number.textContent(), "1/4");
-    assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "picturebook");
-    await hit(page, '[data-test="trpg-picturebook-next"]');
-    await page.locator('[data-test="trpg-picturebook"][data-page="2"]').waitFor();
-    assert.equal(await number.textContent(), "2/4");
-    await hit(page, '[data-test="trpg-picturebook-back"]');
-    await page.locator('[data-test="trpg-picturebook"][data-page="1"]').waitFor();
-    await hit(page, '[data-test="trpg-picturebook-skip"]');
-    await page.locator('[data-test="trpg-picturebook"][data-page="4"]').waitFor();
-    const last = page.locator('[data-test="trpg-picturebook-next"]');
-    assert.equal(await last.textContent(), "本棚に戻る");
-    await last.click();
-    await overlay.waitFor({ state: "detached" });
-    assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), "trpg-picturebook-ordinary-cup");
-    assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "library");
-    assert.equal(page.url(), shelfUrl);
+    for (const id of books) {
+      const opener = "trpg-picturebook-" + id;
+      await hit(page, `[data-test="${opener}"]`);
+      await overlay.locator('[data-test="trpg-picturebook-next"]:enabled').waitFor();
+      assert.equal(await number.textContent(), "1/4", id);
+      assert(await overlay.locator(`.trpg-picturebook-image[src*="/picturebook/${id}/"]`).isVisible(), id);
+      assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "picturebook", id);
+      await hit(page, '[data-test="trpg-picturebook-next"]');
+      await page.locator('[data-test="trpg-picturebook"][data-page="2"]').waitFor();
+      assert.equal(await number.textContent(), "2/4", id);
+      await hit(page, '[data-test="trpg-picturebook-back"]');
+      await page.locator('[data-test="trpg-picturebook"][data-page="1"]').waitFor();
+      await hit(page, '[data-test="trpg-picturebook-skip"]');
+      await page.locator('[data-test="trpg-picturebook"][data-page="4"]').waitFor();
+      const last = overlay.locator('[data-test="trpg-picturebook-next"]');
+      assert.equal(await last.textContent(), "本棚に戻る", id);
+      await last.click();
+      await overlay.waitFor({ state: "detached" });
+      assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), opener, id);
+      assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "library", id);
+      assert.equal(page.url(), shelfUrl, id);
+    }
   });
   const movies = [
     { label: "shark-scent-pc", profile: "scent", choices: { tool: "citrus", route: "pier", finale: "lure" }, ending: "海へ贈るラストオーダー", seed: 9, options: {} },

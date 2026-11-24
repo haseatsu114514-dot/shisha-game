@@ -1521,15 +1521,25 @@ const GOAL_MAP_PARTS = [["#hud .hud-card", ALL], ["#hud .dc-main", [""]], ["#hud
 
 /** 1F ショップを開く（店の入口を経ずに売り場へ）。所持の葉と装備中の機材がある状態。 */
 async function openShopCounter(page, opts = { direct: true }) {
-  await page.evaluate(async (opts) => {
+  const wasTurbo = await page.evaluate(async (opts) => {
     const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js"), hud = await import("./js/daily/hud.js");
+    const { vnTest } = await import("./js/vn/engine.js");
+    const { openShop } = await import("./js/daily/shop.js");
     const s = core.newGame();
     Object.assign(s, { phase: "daily", chapter: 1, day: 5, slot: 0, money: 12800, stamina: 100 });
     s.flavorStock = { mint: 15, double_apple: 50, vanilla: 20 }; s.flavors = Object.keys(s.flavorStock);
     ui.clearScreen(); hud.initHud({}); hud.showHud();
-    window.lookNeoShop = (await import("./js/daily/shop.js")).openShop(opts);
+    // 入口・売り場の表示を測るため、先に流れる店頭の応対は速送りで読み終える。
+    const wasTurbo = vnTest.turbo;
+    vnTest.turbo = true;
+    window.lookNeoShop = openShop(opts);
+    return wasTurbo;
   }, opts);
-  await page.locator(opts.direct ? ".shop .shop-tabs" : '[data-test="shop-enter"]').waitFor();
+  try {
+    await page.locator(opts.direct ? ".shop .shop-tabs" : '[data-test="shop-enter"]').waitFor();
+  } finally {
+    await page.evaluate(async (wasTurbo) => { (await import("./js/vn/engine.js")).vnTest.turbo = wasTurbo; }, wasTurbo);
+  }
   await page.mouse.move(2, 2);
   await page.waitForTimeout(400);
 }
