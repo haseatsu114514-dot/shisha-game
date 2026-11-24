@@ -122,7 +122,7 @@
         {
           "speaker": "master_cafe",
           "face": "",
-          "text": "新しい豆が入ったんです。よかったら、ひと口どうですか"
+          "text": "新しい豆が入ったんです。よかったら、一口どうですか"
         },
         {
           "speaker": "hajime",
@@ -777,7 +777,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（置いた後の炭を見る、……次は、そこまで）"
+          "text": "（置いた後の炭を見る。……次は、そこまで）"
         }
       ]
     },
@@ -847,7 +847,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（本番と同じ順番で。苺は4g以上）"
+          "text": "（本番と同じ順番で。苺は四グラム以上）"
         },
         {
           "speaker": "hajime",
@@ -1002,7 +1002,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんは焦げたボウルを下げ、言葉は何も足さずに窓を少し開けた。"
+          "text": "スミさんは焦げたハガルを下げ、言葉は何も足さずに窓を少し開けた。"
         },
         {
           "speaker": "hajime",
@@ -1197,7 +1197,7 @@
         {
           "speaker": "customer",
           "face": "",
-          "text": "マスター、お会計！　電車が"
+          "text": "マスター、お会計！ 電車が"
         },
         {
           "speaker": "master_cafe",
@@ -1232,7 +1232,7 @@
         {
           "speaker": "master_cafe",
           "face": "",
-          "text": "ええ。ですから、ご安心を、……ただし"
+          "text": "ええ。ですから、ご安心を。……ただし"
         },
         {
           "speaker": "",
@@ -1324,7 +1324,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "いいですよ、……中吉です"
+          "text": "いいですよ。……中吉です"
         },
         {
           "speaker": "old_man",
@@ -1663,7 +1663,7 @@
         {
           "speaker": "staff_choizap",
           "face": "",
-          "text": "お疲れさまです、……数字、見ます？"
+          "text": "お疲れさまです。……数字、見ます？"
         },
         {
           "speaker": "hajime",
@@ -1690,7 +1690,7 @@
         {
           "speaker": "staff_choizap",
           "face": "",
-          "text": "うわ、いい音、……電車通いの人の首ですね、それ"
+          "text": "うわ、いい音。……電車通いの人の首ですね、それ"
         },
         {
           "speaker": "hajime",
@@ -1755,7 +1755,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "俺は、仕事です、……たぶん、仕事です"
+          "text": "俺は、仕事です。……たぶん、仕事です"
         },
         {
           "speaker": "old_man",
@@ -1857,17 +1857,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "マスターはそう言って、いつものラテを置いた。カップの縁が、小さく鳴った。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（足すんじゃなくて、一つ引く。それで、ほかの音が聞こえてくる）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（煙にも、そういう日があるのかもしれない）"
+          "text": "マスターがいつものラテを置いた。受け皿がかちりと鳴った。"
         },
         {
           "speaker": "",
@@ -1919,17 +1909,17 @@
         {
           "speaker": "staff_choizap",
           "face": "",
-          "text": "晴れの日は、外を走る人も多いので。雨の日に来るのは、雨でも来る人です"
+          "text": "晴れの日は、来る人も時間もばらばらで"
         },
         {
           "speaker": "staff_choizap",
           "face": "",
-          "text": "だから雨の日に三本そろわないと、ちょっと心配になるんです"
+          "text": "でも、雨の日にあの傘がそろわないと、ちょっと心配なんです"
         },
         {
           "speaker": "staff_choizap",
           "face": "",
-          "text": "晴れの日に来なくても、何とも思わないのに。変ですよね"
+          "text": "晴れてたら気にしないんですけどね"
         },
         {
           "speaker": "hajime",
@@ -1993,17 +1983,12 @@
         {
           "speaker": "shop_clerk",
           "face": "",
-          "text": "なので、雨の日は写真のお客さんが多くて。私たちは、その間に回ります"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "回る、ですか"
+          "text": "写真を撮ってる間に、炭を見て回るんです"
         },
         {
           "speaker": "shop_clerk",
           "face": "",
-          "text": "撮ってる間も、炭は進むので。気づいたら葉が焦げてた、ってなりがちで"
+          "text": "撮り終わる頃には、葉が焦げてることもあるので"
         },
         {
           "speaker": "",
@@ -2018,32 +2003,17 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（声も、かけないんだ）"
+          "text": "声、かけないんですね"
         },
         {
           "speaker": "shop_clerk",
           "face": "",
-          "text": "声をかけると、いい一枚を逃しちゃうので"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "見えてるものに夢中な間も、火は進むんですね"
-        },
-        {
-          "speaker": "shop_clerk",
-          "face": "",
-          "text": "はい。煙がきれいな日ほど、炭から目を離せないんです"
+          "text": "呼ぶと、こっち向いちゃいますから"
         },
         {
           "speaker": "",
           "face": "",
           "text": "窓の前の煙が、ようやく薄くなった。その向こうで、雨はまだ降っている。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（きれいに見える日ほど、手元を見る。……tonariでも、同じだ）"
         },
         {
           "type": "set_flag",
@@ -2619,7 +2589,7 @@
         {
           "speaker": "shop_clerk",
           "face": "",
-          "text": "作っておきますか？　柚ヶ谷店でも、同じカードが使えるんです"
+          "text": "作っておきますか？ 柚ヶ谷店でも、同じカードが使えるんです"
         },
         {
           "speaker": "hajime",
@@ -2698,7 +2668,7 @@
       ]
     },
     {
-      "dialogue_id": "cafe_ch2_maezono",
+      "dialogue_id": "cafe_ch2_uezono",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_cafe_day.png"
       },
@@ -2714,7 +2684,7 @@
           "text": "撮り終えたところで、こちらに気づいて手を上げる。テーブルには、開いたままのノート。"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "おや、逢縁くん。こんにちは"
         },
@@ -2724,19 +2694,19 @@
           "text": "上園さん、こんにちは。お仕事ですか"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "normal",
           "text": "ええ。今日は、おいしいもののほうの記事でねえ"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "ここのプリン、ずっと書きたかったんです。逢縁くんも、どうです"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
-          "text": "ひと口目の感想を、聞かせてほしいなあ"
+          "text": "一口目の感想を、聞かせてほしいなあ"
         },
         {
           "speaker": "",
@@ -2749,7 +2719,7 @@
           "text": "マスターが運んできたのは、固めのプリンだった。ほろ苦そうなカラメルが、縁まで流れている。"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "normal",
           "text": "マスター、この固さの秘密、記事に書いてもいいですか"
         },
@@ -2759,7 +2729,7 @@
           "text": "蒸す時間と、冷やす時間です。……何分かは、お教えできません"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "いいねえ。秘密があるほうが、おいしそうに書けるんです"
         },
@@ -2771,22 +2741,22 @@
           "next_false": "taste_near"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "うんうん、ちゃんと見てるねえ。私のノートより、ずっと細かい"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "normal",
           "text": "私はねえ、いつも先に言っちゃうんです"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "excited",
           "text": "おいしいねえ、って"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "理由は、あとから探しに行く。言葉は、おいしいの後ろからついてくるんです"
         },
@@ -2796,7 +2766,7 @@
           "text": "先に、ですか"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "先に。……おかげで、締め切りはいつもぎりぎりなんだけどねえ"
         },
@@ -2811,17 +2781,17 @@
           "text": "その下は、まだ真っ白だ。"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "excited",
           "text": "いやあ。プリンも、おいしいねえ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "上園さんは最後のひと口を惜しむように食べて、伝票を手に立ち上がった。"
+          "text": "上園さんは最後の一口を惜しむように食べて、伝票を手に立ち上がった。"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "smile",
           "text": "記事が出たら、読んでくださいね。一行目だけは、もう決まってますから"
         },
@@ -2834,7 +2804,7 @@
         },
         {
           "type": "set_flag",
-          "flag": "_spot_seen_cafe_ch2_maezono"
+          "flag": "_spot_seen_cafe_ch2_uezono"
         }
       ],
       "branches": {
@@ -2842,7 +2812,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "ひと口。冷たさと、なめらかさは分かる。甘さだけが、どこか遠かった。"
+            "text": "一口。冷たさと、なめらかさは分かる。甘さだけが、どこか遠かった。"
           },
           {
             "speaker": "hajime",
@@ -2852,7 +2822,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "カラメルは、たぶん苦めで。それから、……"
+            "text": "カラメルは、たぶん苦めで。それから……"
           },
           {
             "speaker": "",
@@ -2864,7 +2834,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "ひと口。甘さのあとから、カラメルの苦みが追いかけてくる。"
+            "text": "一口。甘さのあとから、カラメルの苦みが追いかけてくる。"
           },
           {
             "speaker": "hajime",
@@ -2920,7 +2890,7 @@
         {
           "speaker": "samechan",
           "face": "excited",
-          "text": "おお、はじめ。よいところに来た。見よ、ネムリブカじゃ"
+          "text": "おお、お主。よいところに来た。見よ、ネムリブカじゃ"
         },
         {
           "speaker": "hajime",
@@ -2970,7 +2940,7 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "勇者よ。その帳面は、余が預かろう",
+          "text": "勇者はじめよ。その帳面は、余が預かろう",
           "voice": "korochan"
         },
         {
@@ -3065,7 +3035,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "昨日の夜、窓ぎわの席の人。ミントは強めで、ドリンクはホットのレモンティー"
+          "text": "昨日の夜、窓際の席の人。ミントは強めで、ドリンクはホットのレモンティー"
         },
         {
           "speaker": "minto",
@@ -3170,6 +3140,31 @@
           "speaker": "minto",
           "face": "wink",
           "text": "ミントの強さの表だよっ。今日から、メニューに挟むの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レジ横のチェキも、メニューの縁も、ハートだらけだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（こんなにかわいい店だと、逆にどんなフレーバーがあるんだろう）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "パンとか頼む人いるんですか？"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "パン専用の台が壊れちゃったし、注文もレアだから、今は取り扱いやめちゃった"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "パンがなければ、ミントを吸えばいいじゃない♡"
         },
         {
           "speaker": "",
@@ -3424,7 +3419,7 @@
         {
           "speaker": "samechan",
           "face": "excited",
-          "text": "おお、はじめ。よいところに来た。ちょっと、そこに座ってみい"
+          "text": "おお、お主。よいところに来た。ちょっと、そこに座ってみい"
         },
         {
           "speaker": "hajime",
@@ -3469,7 +3464,7 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "勇者よ。本日より、お主をコバンザメに任ずる",
+          "text": "勇者はじめよ。本日より、そなたをコバンザメに任ずる",
           "voice": "korochan"
         },
         {
@@ -3491,7 +3486,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "サメちゃんはパペットの口を左手で押さえて、咳ばらいをひとつした。"
+          "text": "サメちゃんはパペットの口を左手で押さえて、咳払いをひとつした。"
         },
         {
           "speaker": "samechan",
@@ -4647,7 +4642,8 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "側近は、二度目に見た時も毛布をかぶっていた"
+          "text": "側近は、二度目に見た時も毛布をかぶっていた",
+          "voice": "korochan"
         },
         {
           "speaker": "samechan",
@@ -5032,7 +5028,8 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "側近は、これを三晩かけて書いた。そして三晩、消すか迷っている"
+          "text": "側近は、これを三晩かけて書いた。そして三晩、消すか迷っている",
+          "voice": "korochan"
         },
         {
           "speaker": "samechan",
@@ -5422,7 +5419,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "なるはボウルの縁を指で叩きながら、葉を盛る順番を、口の中で数えていた。"
+          "text": "なるはハガルの縁を指で叩きながら、葉を盛る順番を、口の中で数えていた。"
         },
         {
           "speaker": "naru",

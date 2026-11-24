@@ -22,6 +22,7 @@
 // 打ち上げで修羅場を読んだ場合、スタッフロール後は話し直しだけが続く（PTY04）。
 import { selectPostEndingConflict } from "../core/story-routes.js";
 import { STORY_BGM } from "../core/story-audio.js";
+import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { CH5_PROLOGUE } from "./ch5-prologue.js";
 import { SUMI_TRIAL_IDS, sumiTrialRecall } from "./ch5-sumi-trial.js";
 
@@ -58,24 +59,24 @@ export const CH5_SCENE_BG = Object.freeze({
   ...Object.fromEntries(SUMI_TRIAL_IDS.map(id => [id, id.includes("_recall_") ? "bg_tournament_stage" : "bg_tonari_inside_night"])),
   ch5_schedule_contact: "bg_tonari_inside_night",    // 仮置き bg（閉店後の場面）
   ch5_timeout: "bg_tonari_inside_night",             // 仮置き bg
-  ch5_match_day_arrival: "bg_tonari_inside_day",      // 休業日の朝の店から始まる場面なので tonari・昼（会場 SMOKE LAB の背景と切り替えは #2222 待ち）
-  ch5_copy_first_cup: "bg_smoke_lab",
-  ch5_relationship_before_second_cup: "bg_smoke_lab",
-  ch5_second_cup_result: "bg_smoke_lab",
-  ch5_second_cup_result_afterglow: "bg_smoke_lab",
-  ch5_second_cup_defeat: "bg_smoke_lab",
+  ch5_match_day_arrival: "bg_tonari_inside_day",      // 台本の会場到着まで休業日の tonari・昼
+  ch5_copy_first_cup: TOURNAMENT_VENUE_BG[5],
+  ch5_relationship_before_second_cup: TOURNAMENT_VENUE_BG[5],
+  ch5_second_cup_result: TOURNAMENT_VENUE_BG[5],
+  ch5_second_cup_result_afterglow: TOURNAMENT_VENUE_BG[5],
+  ch5_second_cup_defeat: TOURNAMENT_VENUE_BG[5],
   ch5_prep_recall_heat_adjusted: "bg_tournament_stage", // 二杯目の前の末尾に続く（表示は親場面の bg）
   ch5_prep_recall_heat_kept: "bg_tournament_stage",
   ch5_prep_recall_pack_adjusted: "bg_tournament_stage",
   ch5_prep_recall_pack_kept: "bg_tournament_stage",
   ch5_prep_recall_aroma_adjusted: "bg_tournament_stage",
   ch5_prep_recall_aroma_kept: "bg_tournament_stage",
-  ch5_doctor_after_match: "bg_smoke_lab",
-  ch5_doctor_after_match_loss: "bg_smoke_lab",        // 勝負のあと・前半（負け。挙手に合わせて2通り）
-  ch5_doctor_after_match_loss_close: "bg_smoke_lab",
-  ch5_doctor_after_match_tie: "bg_smoke_lab",         // 勝負のあと・前半（同数）
-  ch5_sui_after_match: "bg_smoke_lab",                // 前半の末尾に続く千須への返事（表示は親場面の bg）
-  ch5_doctor_cocreation: "bg_smoke_lab",              // 勝負のあと・後半（検品札→一緒に作る一台。勝敗共通）
+  ch5_doctor_after_match: TOURNAMENT_VENUE_BG[5],
+  ch5_doctor_after_match_loss: TOURNAMENT_VENUE_BG[5],        // 勝負のあと・前半（負け。挙手に合わせて2通り）
+  ch5_doctor_after_match_loss_close: TOURNAMENT_VENUE_BG[5],
+  ch5_doctor_after_match_tie: TOURNAMENT_VENUE_BG[5],         // 勝負のあと・前半（同数）
+  ch5_sensu_after_match: TOURNAMENT_VENUE_BG[5],                // 前半の末尾に続く千須への返事（表示は親場面の bg）
+  ch5_doctor_cocreation: TOURNAMENT_VENUE_BG[5],              // 勝負のあと・後半（検品札→一緒に作る一台。勝敗共通）
   ch5_return_to_tonari: "bg_tonari_inside_night",    // 仮置き bg
   ch5_prep_answer_heat_adjusted: "bg_tonari_inside_night", // 帰店後の末尾に続く（表示は親場面の bg）
   ch5_prep_answer_heat_kept: "bg_tonari_inside_night",
@@ -230,7 +231,7 @@ export const CH5_AFTER_MATCH_OPENINGS = Object.freeze({
   tie: "ch5_doctor_after_match_tie",
 });
 // 前半の末尾に、勝敗共通で続ける千須への返事（STK05。読了の確定は親場面と一緒）。
-export const CH5_AFTER_MATCH_TAIL = "ch5_sui_after_match";
+export const CH5_AFTER_MATCH_TAIL = "ch5_sensu_after_match";
 
 // フィナーレで再生しうる ending の全場面。ending_relationship_pending は
 // スタッフロール後段（Q20）側なので含めない。

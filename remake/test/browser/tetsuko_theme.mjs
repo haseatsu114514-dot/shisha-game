@@ -26,7 +26,7 @@ async function seed(page) {
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
       _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
       _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
-    for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "sui"]) value.flags[`_intro_${who}`] = true;
+    for (const who of ["hajime", "sumi", "pakki", "uezono", "dr_charcoal", "sensu"]) value.flags[`_intro_${who}`] = true;
     if (!progress.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");
     value.day += 3;
     if (!progress.departChapterThree(value)) throw new Error("Departure failed");

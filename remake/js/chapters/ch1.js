@@ -52,7 +52,7 @@ import { warmCraftAssets } from "../craft/readiness.js";
 import { playTsumugiStory, playTsumugiSketch } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
-import { outcomeOf, showStandings, resultCountdown, suiCutin, resultTable, ch1LiveStandings } from "../craft/result.js";
+import { outcomeOf, showStandings, resultCountdown, sensuCutin, resultTable, ch1LiveStandings } from "../craft/result.js";
 import { beginCh1Votes, castCh1Votes, isSakuraiVotes } from "../craft/ch1-votes.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
@@ -273,6 +273,7 @@ async function tutorial(progress = null) {
   if (!progress || !flag("_tutorial_done")) {
     await play("remake_tutorial_intro", { bg: TONARI });
     const cs = newSession("tutorial");
+    if (progress) cs.onboarding = true;
     if (progress?.firstOrderDone) configureFirstBrew(cs);
     openBench(cs, { steps: TUTORIAL_STEPS });
     await stepMix(cs);
@@ -549,7 +550,7 @@ async function naruMatch(progress) {
   if (!progress.stockDone) { await prepareFlavorStock(); requireCurrent(); progress.stockDone = true; save(); }
   if (!progress.practiceDone) {
     beginEvePractice(progress);
-    const cs = await runFullPractice({ kind: "midcheck", note: "なるとの一台勝負（スミさん審査）",
+    const cs = await runFullPractice({ kind: "midcheck", orderId: "naru_match", note: "なるとの一台勝負（スミさん審査）",
       onStep: (step) => { if (NARU_MATCH_ASIDES[step]) toast(NARU_MATCH_ASIDES[step], { ms: 3200 }); },
       isCurrent: () => { requireCurrent(); return true; } });
     requireCurrent();
@@ -698,7 +699,7 @@ async function tournamentDay() {
   if (newTournament) await enterTournamentDay();
   showHud(false);
   prepareTournamentAttempt(newTournament);
-  for (const id of ["naru", "adam", "minto", "sui", "maezono", "dr_kemuri"]) markMet(id);
+  for (const id of ["naru", "adam", "minto", "sensu", "uezono", "dr_charcoal"]) markMet(id);
   const openingBgmReady = preloadBgm("bgm_tournament_edm");
   const craftBgmReady = preloadBgm("bgm_tournament_craft");
   void warmGameOver();
@@ -825,7 +826,7 @@ async function tournamentDay() {
     await resultCountdown(cs, out.kind, state.tournament);
     retireScreen(); // カウント画面は次の場面で片付く
     playBgm("bgm_aftermath");
-    await suiCutin(1, state.tournament);
+    await sensuCutin(1, state.tournament);
     await playLive("ch1_tournament_reveal", venue("結果発表"));
     await resultTable(cs, 1, state.tournament);
     state.tournament.victory.revealed = true;
@@ -836,7 +837,7 @@ async function tournamentDay() {
     await playTournamentEvent(cs, "preresult", venue("まもなく結果発表"));
     await resultCountdown(cs, out.kind, state.tournament);
     retireScreen();
-    await suiCutin(out.rank, state.tournament);
+    await sensuCutin(out.rank, state.tournament);
     await resultTable(cs, out.rank, state.tournament);
     await playLive("ch1_tournament_defeat", venue("結果発表"));
     await play("remake_defeat_follow", { bg: TONARI_N });
@@ -938,7 +939,7 @@ async function resumeVictory() {
   playBgm("bgm_aftermath");
   const v = owner.tournament.victory;
   if (!v.revealed) {
-    await suiCutin(1, state.tournament);
+    await sensuCutin(1, state.tournament);
     if (state !== owner) return;
     await play("ch1_tournament_reveal", { bg: STAGE });
     if (state !== owner) return;

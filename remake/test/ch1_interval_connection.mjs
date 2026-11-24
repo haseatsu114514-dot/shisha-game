@@ -39,7 +39,7 @@ function stringify(value) {
   return JSON.stringify(value);
 }
 assert.equal(createHash('sha256').update(stringify(sortKeys(sumi))).digest('hex'),
-  '7c1532aa811e94b10787ac79b5108c0a271d0634746fe27c71fae79234fc9af9');
+  'bc2856afbc6a3635678e3c9b9d5d863c99f006f385ae5a702031d619050ddea3');
 
 const data = read('remake/js/core/data.js');
 const files = data.match(/const DIALOGUE_FILES = \[([\s\S]*?)\];/);
@@ -109,7 +109,7 @@ assert(spoken.at(-1).text.includes('優勝の一台'));
 assert(titleCustomer.every(line => !['apply', 'choice'].includes(line.type) && !/上がった/.test(line.text || '')), 'the forced scene carries no reward');
 const adamLime = scenes.find(scene => scene.dialogue_id === 'interval_day2_adam_lime');
 assert(!adamLime.lines.some(line => line.text?.includes('大きなことが動いている')), 'one hook stays with the ??? message');
-console.log('PASS: interval IDs, unchanged Sumi hash, legacy entries, loader, victory order, rewards and trophy continuity');
+console.log('PASS: interval IDs, Sumi dialogue hash, legacy entries, loader, victory order, rewards and trophy continuity');
 const remaining = [];
 function scan(directory) {
   for (const entry of fs.readdirSync(new URL(directory, root), { withFileTypes: true })) {

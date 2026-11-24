@@ -88,8 +88,9 @@ await suite("lover-hidden-growth", async check => {
     await check(`${mode}-growth-notifications-and-max`, async page => {
       await setup(page);
       for (const [points, level] of [[9, 1], [19, 1], [66, 5]]) {
-        const before = await page.evaluate(({ points, level }) => {
+        const before = await page.evaluate(async ({ points, level }) => {
           const s = H.fresh(); s.lovers = ["rio"]; s.lovePts.rio = points; s.loveLevel.rio = level;
+          await H.stats.prepareLoveAffinity(["rio"]);
           s.loveCarry.rio = .5; s.loverSince.rio = 3;
           // 成長通知の対象レベルより前の恋人会話は実際に読了済み。
           s.loverEventsSeen = Array.from({ length: points === 19 ? 1 : points === 66 ? 4 : 0 }, (_, i) => i + 1)

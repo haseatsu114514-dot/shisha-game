@@ -10,6 +10,8 @@ const evidence = path.resolve(root, process.env.ARTIFACT_DIR || ".codex/artifact
 fs.mkdirSync(evidence, { recursive: true });
 const map = '[data-destination-selection]:not(.done)';
 const t = name => `[data-test="${name}"]`;
+// ピンと visitedDay は店ID（shopId）キー。クラウドの店IDは ch2_rei のまま（人物ID kuraudo とは分離）。
+const spotId = id => id === "kuraudo" ? "ch2_rei" : `ch2_${id}`;
 const data = JSON.parse(fs.readFileSync(path.join(root, "data/dialogue/ch2_preparation.json")));
 const followups = Object.fromEntries(data.dialogues.filter(d => d.dialogue_id.endsWith("_followup")).map(d => [d.dialogue_id, d]));
 const current = page => page.evaluate(() => structuredClone(window.__remake.state));
@@ -23,7 +25,7 @@ async function setup(page, id, stop = null) {
       _ch2_preparation_started: true, _ch2_region: "widehanga", _morning_16: true,
       _ch2_talks: { [id]: 9 }, _lime_tut: 1, _lime_opened: true,
       _hiyori_meeting_done: true, _hiyori_message_delivered: true };
-    for (const who of ["ageha", "kumicho", "rei"]) { v.met[who] = true; v.flags[`_intro_${who}`] = true; }
+    for (const who of ["ageha", "kumicho", "kuraudo"]) { v.met[who] = true; v.flags[`_intro_${who}`] = true; }
     v.affinity[id] = 9; // preceding chat read; followup is the heart1 scene
     v.visits[id] = 97; v.contacts = ["sumi", "ageha"]; v.flags._lime_contact_ageha = true;
     v.lovers = ["minto"]; v.loverSince = { minto: 10 }; v.relationshipMemories = ["qa_old_memory"];
@@ -44,7 +46,7 @@ async function setup(page, id, stop = null) {
   await page.locator(map).waitFor();
 }
 async function go(page, id, touch) {
-  if (touch) await page.locator(t(`pin-ch2_${id}`)).tap(); else await page.locator(t(`pin-ch2_${id}`)).click();
+  if (touch) await page.locator(t(`pin-${spotId(id)}`)).tap(); else await page.locator(t(`pin-${spotId(id)}`)).click();
   if (touch) await page.locator(t("map-go")).tap(); else await page.locator(t("map-go")).click();
 }
 async function reload(page) {
@@ -60,15 +62,15 @@ function unchangedRecords(before, after) {
   }
 }
 await suite("ch2-followups", async check => {
-  for (const id of ["ageha", "kumicho", "rei"]) {
+  for (const id of ["ageha", "kumicho", "kuraudo"]) {
     await check(`${id}-legacy-save-completion-and-reload`, async page => {
       await setup(page, id); const before = await current(page);
-      await go(page, id, id === "rei");
+      await go(page, id, id === "kuraudo");
       await page.waitForFunction(() => window.__remake.state.slot === 1); await page.locator(map).waitFor();
       const after = await current(page);
       assert.equal(after.money, before.money - 3000); assert.equal(after.flags._ch2_talks[id], 10);
       assert.equal(after.visits[id], 98); assert.equal(after.flags._ch2_followup_done[id], true);
-      assert.equal(after.visitedDay[`ch2_${id}`], 16); assert(after.stamina < before.stamina);
+      assert.equal(after.visitedDay[spotId(id)], 16); assert(after.stamina < before.stamina);
       // 旧しくみ（?growth=0）は通常の成長候補1つ（1P）、心得の盤（通常プレイの既定・SBD97）は経験値で、能力は書き換えない
       const board = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled());
       if (board) { assert.deepEqual(after.stats, before.stats); assert((after.growth?.xp || 0) > (before.growth?.xp || 0), "The visit earns EXP"); }
@@ -76,11 +78,11 @@ await suite("ch2-followups", async check => {
       unchangedRecords(before,after);
       const trace = await page.evaluate(() => window.__followupTrace);
       assert.deepEqual(trace.filter(l => l.scene === `remake_ch2_${id}_followup`).map(({ speaker, face, text }) => ({ speaker, face, text })), followups[`remake_ch2_${id}_followup`].lines);
-      await page.locator(t(`pin-ch2_${id}`)).click(); assert.equal(await page.locator(t("map-go")).count(),0);
+      await page.locator(t(`pin-${spotId(id)}`)).click(); assert.equal(await page.locator(t("map-go")).count(),0);
       await reload(page); const saved = await current(page);
       for (const key of ["money","stats","slot","visitedDay","visits","flags","reel"]) assert.deepEqual(saved[key], after[key], key);
-    }, id === "rei" ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
-    for (const stop of [{ ageha: 6, kumicho: 5, rei: 7 }[id], followups[`remake_ch2_${id}_followup`].lines.length]) {
+    }, id === "kuraudo" ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
+    for (const stop of [{ ageha: 6, kumicho: 5, kuraudo: 7 }[id], followups[`remake_ch2_${id}_followup`].lines.length]) {
       await check(`${id}-interrupt-at-line-${stop}`, async page => {
         await setup(page,id,stop); const before = await current(page);
         await go(page,id); await page.waitForFunction(() => window.__followupStopped);

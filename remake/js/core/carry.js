@@ -153,7 +153,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_city_visit_ageha", "person"],
   ["_ch2_city_visit_c_station", "progression"],
   ["_ch2_city_visit_kumicho", "person"],
-  ["_ch2_city_visit_rei", "person"],
+  ["_ch2_city_visit_kuraudo", "person"],
   ["_ch2_cleared", "progression"],
   ["_ch2_coal_role_coals", "progression"],
   ["_ch2_coal_role_plate", "progression"],
@@ -171,6 +171,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_followup_done", "progression"],
   ["_ch2_halloween_active", "progression"],
   ["_ch2_kumicho_public_reveal", "person"],
+  ["_ch2_last_yuzugaya_day", "progression"],
   ["_ch2_morning_departed", "progression"],
   ["_ch2_stay_local_since", "progression"],
   ["_ch2_naru_hurt", "person"],
@@ -191,11 +192,11 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_naru_warm", "person"],
   ["_ch2_read_ch2_naru_window", "person"], // 前夜の振り返りで、休みの店の前に送ったLIMEの返事を待つか（#2720）
   ["_ch2_read_ch2_pre_tournament_realisation", "progression"],
-  ["_ch2_read_ch2_rei_fifth", "person"],
-  ["_ch2_read_ch2_rei_fourth", "person"],
-  ["_ch2_read_ch2_rei_second", "person"], // 最初の「同士」の回。♥3の外出の誘い lime_outing_rei_1 の条件（daily/phone.js）
-  ["_ch2_read_ch2_rei_sixth", "person"],
-  ["_ch2_read_ch2_rei_third", "person"], // クラウドの本名の回。LIME lime_rei_bond_a の条件
+  ["_ch2_read_ch2_kuraudo_fifth", "person"],
+  ["_ch2_read_ch2_kuraudo_fourth", "person"],
+  ["_ch2_read_ch2_kuraudo_second", "person"], // 最初の「同士」の回。♥3の外出の誘い lime_outing_kuraudo_1 の条件（daily/phone.js）
+  ["_ch2_read_ch2_kuraudo_sixth", "person"],
+  ["_ch2_read_ch2_kuraudo_third", "person"], // クラウドの本名の回。LIME lime_kuraudo_bond_a の条件
   ["_ch2_read_ch2_slump_taste", "progression"],
   ["_ch2_read_ch2_sofa_burn", "progression"],
   ["_ch2_read_ch2_strawberry_sample", "progression"],
@@ -203,7 +204,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_tsumugi_color", "person"],
   ["_ch2_read_remake_ch2_ageha_tasting", "progression"],
   ["_ch2_region", "progression"],
-  ["_ch2_rei_ticket", "progression"],
+  ["_ch2_kuraudo_ticket", "progression"],
   ["_ch2_rest_taken", "progression"],
   ["_ch2_revisit_done", "progression"],
   ["_ch2_rules_read", "progression"],
@@ -222,7 +223,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_vibes_understood", "progression"],
   ["_ch3_aftermath", "progression"],
   ["_ch3_cleared", "progression"],
-  ["_ch3_delivery_saku", "person"],
+  ["_ch3_delivery_ayatori", "person"],
   ["_ch3_delivery_offer", "progression"],
   ["_ch3_delivery_return", "progression"],
   ["_ch3_delivery_steve", "person"],
@@ -268,13 +269,13 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_read_ch3_mashiro_play_2", "progression"],
   ["_ch3_read_ch3_mukai_latte_cat", "progression"],
   ["_ch3_read_ch3_mukai_no_hat", "progression"],
-  ["_ch3_read_ch3_saku_bakery", "progression"],
-  ["_ch3_read_ch3_saku_missed", "progression"],
+  ["_ch3_read_ch3_ayatori_bakery", "progression"],
+  ["_ch3_read_ch3_ayatori_missed", "progression"],
   ["_ch3_read_ch3_steve_two_timers", "progression"],
   ["_ch3_read_ch3_tsumugi_slump", "progression"],
   ["_ch3_read_ch3_mashiro_glass_cloth", "progression"], // 布巾の場面（#3081）。LIMEの trigger_flag に字面で出る
-  ["_ch3_read_ch3_saku_lime", "progression"],
-  ["_ch3_read_ch3_saku_steve_notes", "progression"], // スティーブ×綾取（#3468 C案）。第4章のLIMEの trigger_flag に字面で出る
+  ["_ch3_read_ch3_ayatori_lime", "progression"],
+  ["_ch3_read_ch3_ayatori_steve_notes", "progression"], // スティーブ×綾取（#3468 C案）。第4章のLIMEの trigger_flag に字面で出る
   ["_ch3_read_ch3_steve_lime", "progression"],
   ["_ch3_read_ch3_volk_lime", "progression"],
   ["_ch3_read_ch3_minto_small_lies", "progression"],
@@ -285,7 +286,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_strategy", "progression"],
   ["_ch3_tournament", "progression"],
   ["_ch3_tournament_won", "achievement"],
-  ["_ch3_trial_saku", "progression"],
+  ["_ch3_trial_ayatori", "progression"],
   ["_ch3_trial_steve", "progression"],
   ["_ch3_tokyo_call_night", "progression"],
   ["_ch3_room_rests", "progression"], // 東京の奥の部屋で休んだ回数（ch3-tokyo-daily.js の小品の巡回）。周回では持ち越さない
@@ -295,6 +296,8 @@ export const FLAG_EXACT_RULES = [
   ["_camel_name_done", "progression"], // ハビーバの名前の由来（ミニゲームのドラマ・SPC26）
   ["_camel_master_done", "progression"], // 上級を勝ち切った日の房飾り（SPC26）
   ["_camel_stable_turn", "progression"], // ラクダレース場の待ち時間の場面を読んだ本数（#3097 計画 4-6・ch4-camel-progress.js）。周回では持ち越さない
+  ["_club_yoru_first_done", "person"], // クラブSEAMで針間ヨルと初対面の会話を読み終えた
+  ["_club_yoru_a_talk", "progression"], // DJで初めてA以上を出した後のヨルとの会話を読み終えた
   ["_club_yoru_request", "progression"], // クラブSEAMの常連のリクエスト（SPC26）
   ["_club_yoru_last_set", "progression"], // 閉店前にヨルと交代で回す夜（SPC26）
   ["_ch4_morning_done", "progression"], // 大会当日の朝を読み終えた（ch4-morning.js・SPC28）。周回では持ち越さない
@@ -306,6 +309,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
   ["_ch4_home_calls", "progression"], // ドバイの昼に宿で休んだ時に読んだ地元からの電話（ch4-dubai-local.js の HOME_DAY_CALLS・#3097 第2弾）
+  ["_ch4_inn_trial", "progression"], // ドバイの宿での試作結果・講評の読了・実施日（ch4-dubai-daily.js）
   ["_visit_chains", "progression"], // 通いの続きの小さな出来事（第3〜5章・段の既読と選んだ答え。chapters/visit-chains.js）。周回では持ち越さない
   ["_ch4_dubai_nights", "progression"], // ドバイの夜がにぎわう店に夜に行った回数（店ごと・ch4-dubai-local.js）。周回では持ち越さない
   ["_ch4_longlong", "progression"], // 龍龍水煙所のドバイの店の段階の既読・通いの回数（ch4-longlong.js）
@@ -313,6 +317,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_evening", "progression"],
   ["_ch4_prep", "progression"],
   ["_ch4_preview_seen", "progression"],
+  ["_ch4_rehearsal", "progression"], // 大会前日リハーサルの結果と講評の読了（ch4-dubai-daily.js）
   ["_ch4_sheikh_revealed", "progression"],
   ["_overseas_companion", "progression"],
   ["_ch4_strategy", "progression"],
@@ -321,9 +326,14 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_match_scheduled", "progression"],
   ["_ch5_match_started", "progression"],
   ["_ch5_region_started", "progression"],
+  ["_ch5_staff_roll_done", "progression"],
   ["_ch5_sumi_trial", "progression"], // 第5章の決戦前の実制作練習（閉店後にスミさんが吸う一台・#2020 F。chapters/ch5-sumi-trial.js）。周回では作り直す
   ["_ch5_tokyo_attic", "progression"],
+  ["_ch5_tokyo_van", "progression"], // 初回の東京行き配送便に乗せてもらう会話を読み終えた（ch5-tokyo.js）
   ["_ch5_dubai_letter", "progression"],
+  ["_ch5_dubai_letters", "progression"], // 読んだドバイ招待状の通数（ch5-travel.js）
+  ["_ch5_dubai_ticket", "progression"], // 招待状に同封された往復切符の所持（ch5-travel.js）
+  ["_ch5_dubai_back_day", "progression"], // ドバイから帰国した通算日（ch5-travel.js）
   ["_ch5_dubai_guest", "progression"],
   ["_ch5_dubai_talks", "progression"],
   ["_ch5_dubai_flights", "progression"],
@@ -344,6 +354,9 @@ export const FLAG_EXACT_RULES = [
   ["_cheat_go", "progression"],
   ["_cinema_visit", "progression"],
   ["_city_guest_day", "progression"],
+  ["_coal_cube_learned", "unlock"], // キューブ炭の授業（M-W1）
+  ["_coal_four_unlocked", "unlock"], // 炭の4点置き（M-W2）
+  ["_coal_mix_unlocked", "unlock"], // フラット炭とキューブ炭の混ぜ置き（M-W2）
   ["_cold_pending", "pending"],
   ["_confession_due", "pending"],
   ["_confession_go", "person"],
@@ -352,6 +365,7 @@ export const FLAG_EXACT_RULES = [
   ["_strain_end", "person"],
   ["_strain_reunion_go", "person"], // やり直しを申し込むかの答え（core/lover-strain.js の STRAIN_REUNION_FLAG）。再生の前後で消す
   ["_confession_wait", "pending"],
+  ["_craft_last_preparation", "progression"], // 同じ練習・注文の配合と穴配置。周回内の制作記録
   ["_craft_practice_runs", "progression"],
   ["_day1_shift_ended", "progression"],
   ["_delivery_adam", "person"],
@@ -365,20 +379,28 @@ export const FLAG_EXACT_RULES = [
   ["_delivery_schedule_v2", "progression"],
   ["_elapsed_calendar", "progression"],
   ["_errand_lemon_expensed", "progression"],
+  ["_errand_mint_expensed", "progression"], // 買い出しで店の経費を使ったかを記録する旧既定キー（daily/shop.js）
+  ["_errand_naru_visited", "progression"],
   ["_errand_scout_done", "progression"],
+  ["_errand_scout_told", "progression"],
   ["_errand_shop_done", "progression"],
+  ["_errand_shop_told", "progression"],
+  ["_lemon_gift_read", "progression"], // 第1章初日のレモン贈答の場面を読み終えた（daily/calendar.js）
   ["_ev_ageha_cameo", "person"],
   ["_ev_baito_regular_02", "progression"],
   ["_ev_day5", "progression"],
   ["_ev_first_practice", "progression"],
   ["_ev_last_night", "progression"],
-  ["_ev_maezono_cameo", "person"],
+  ["_ev_meet_rivals", "progression"],
+  ["_ev_midcheck", "progression"],
+  ["_ev_uezono_cameo", "person"],
   ["_ev_rehearsal", "progression"],
-  ["_ev_rei_cameo", "person"],
+  ["_ev_kuraudo_cameo", "person"],
   ["_ev_reviewer_cameo", "progression"],
   ["_ev_reviewer_payoff", "progression"],
   ["_ev_rio_monitor", "person"],
   ["_ev_salaryman", "progression"],
+  ["_ev_salaryman_change", "progression"],
   ["_ev_tsumugi_sketch", "person"],
   ["_eve_slept", "progression"], // #2088 前夜の早寝（その夜の告白を後回し）
   ["_fit_since", "progression"],
@@ -459,39 +481,42 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_hiyori", "person"],
   ["_lime_contact_mukai_master", "person"],
   ["_lime_contact_kumicho", "person"],
-  ["_lime_contact_saku", "person"],
+  ["_lime_contact_ayatori", "person"],
   ["_lime_contact_mashiro", "person"],
   ["_lime_contact_master_hookah", "person"], // 王煙楼。龍龍水煙所の段階会話で交換する（第4章ドバイ）
   ["_lime_contact_da_silva", "person"], // 太陽。FESTAの段階会話で交換する（第4章ドバイ）
   ["_lime_contact_minto", "person"],
   ["_lime_contact_naru", "person"],
   ["_lime_contact_noor", "person"],
-  ["_lime_contact_rei", "person"],
+  ["_lime_contact_kuraudo", "person"],
   ["_lime_contact_rio", "person"],
   ["_lime_contact_samechan", "person"],
   ["_lime_contact_steve", "person"],
   ["_lime_contact_tsumugi", "person"],
   ["_lime_contact_volk", "person"],
+  ["_hint_invite", "ui"], // LIMEの誘いの初回案内（daily/phone.js）
+  ["_hint_mukai_baito", "ui"], // LIMEのmukaiのシフトの初回案内（daily/phone.js）
+  ["_hint_sumi_baito", "ui"], // LIMEのスミさんのシフトの初回案内（daily/phone.js）
   ["_lime_opened", "ui"],
   ["_lime_tut", "ui"],
   ["_lotos_vent_hint", "ui"],
   ["_met_adam", "person"],
   ["_met_ageha", "person"],
   ["_met_da_silva", "person"],
-  ["_met_dr_kemuri", "person"],
+  ["_met_dr_charcoal", "person"],
   ["_met_emil", "person"],
   ["_met_hiyori", "person"],
   ["_met_kumicho", "person"],
-  ["_met_saku", "person"],
-  ["_met_maezono", "person"],
+  ["_met_ayatori", "person"],
+  ["_met_uezono", "person"],
   ["_met_mashiro", "person"],
   ["_met_master_hookah", "person"],
   ["_met_minto", "person"],
   ["_met_mukai_master", "person"],
-  ["_met_sui", "person"],
+  ["_met_sensu", "person"],
   ["_met_noor", "person"],
   ["_met_naru", "person"],
-  ["_met_rei", "person"],
+  ["_met_kuraudo", "person"],
   ["_met_rio", "person"],
   ["_met_samechan", "person"],
   ["_met_khalil", "person"],
@@ -528,9 +553,9 @@ export const FLAG_EXACT_RULES = [
   ["_outing_done_kumicho", "person"],
   ["_outing_done_minto", "person"],
   ["_outing_done_naru", "person"],
-  ["_outing_done_rei", "person"],
+  ["_outing_done_kuraudo", "person"],
   ["_outing_done_rio", "person"],
-  ["_outing_done_saku", "person"], // 綾取・スティーブ・ヴォルクの♥3の外出（#3097 PR-H）。東京の約束か大会後の寄り道で立つ
+  ["_outing_done_ayatori", "person"], // 綾取・スティーブ・ヴォルクの♥3の外出（#3097 PR-H）。東京の約束か大会後の寄り道で立つ
   ["_outing_done_samechan", "person"],
   ["_outing_done_steve", "person"],
   ["_outing_done_tsumugi", "person"],
@@ -542,14 +567,14 @@ export const FLAG_EXACT_RULES = [
   ["_prep_lemon_expensed", "progression"],
   ["_private_night_char", "progression"],
   ["_private_night_day", "progression"],
-  ["_rei_melty_greeting", "person"],
-  ["_rei_purikura_after", "person"],
-  ["_rei_trpg_introduced", "person"],
+  ["_kuraudo_melty_greeting", "person"],
+  ["_kuraudo_purikura_after", "person"],
+  ["_kuraudo_trpg_introduced", "person"],
   ["_rest_after_tournament", "progression"],
   ["_rio_sample", "person"],
   ["_rio_sample_received", "person"],
   ["_roam_day", "progression"],
-  ["_roam_seen_dr_kemuri", "person"], // 第5章の ch5_opening が読む（よその店で博士に居合わせた回数）
+  ["_roam_seen_dr_charcoal", "person"], // 第5章の ch5_opening が読む（よその店で博士に居合わせた回数）
   ["_ryuji_melty_greeting", "person"],
   ["_ryuji_melty_visit", "person"],
   ["_salaryman_service_order", "progression"],
@@ -589,9 +614,9 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_cafe_ch2_clock", "progression"], // #3097 第2弾（daily/spot-encounters.js の第2章の回）
   ["_spot_seen_cafe_ch2_commute", "progression"],
   ["_spot_seen_cafe_ch2_foam", "progression"], // #3097 第1弾（daily/spot-encounters.js の第2章の回）
-  ["_spot_seen_cafe_ch2_maezono", "person"], // #3097 PR-I 喫茶こはくの上園さん（第2章）
+  ["_spot_seen_cafe_ch2_uezono", "person"], // #3097 PR-I 喫茶こはくの上園さん（第2章）
   ["_spot_seen_cafe_ch2_taste", "progression"],
-  ["_spot_seen_cafe_maezono_break", "person"],
+  ["_spot_seen_cafe_uezono_break", "person"],
   ["_spot_seen_cafe_master_quiz", "progression"],
   ["_spot_seen_cafe_naru_break", "person"],
   ["_spot_seen_cafe_naru_rio", "person"],
@@ -626,6 +651,7 @@ export const FLAG_EXACT_RULES = [
   ["_stk_title_customer_half", "progression"],
   ["_stk_title_customer_met", "progression"],
   ["_story_shuraba_unresolved", "pending"],
+  ["_sumi_attack_learned", "unlock"], // 蒸らし中に雑念を斬るアタックの授業（M-S1）
   ["_sumi_double_apple_received", "person"],
   ["_sumi_rig_home_seen", "progression"],
   ["_sumi_rig_received_day", "progression"],
@@ -637,14 +663,14 @@ export const FLAG_EXACT_RULES = [
   // 第3章の出発前の送り出しを読んだか（#3097 PR-I）。第4章の出発前のその人の会話が、報告の分岐に使う（data/dialogue/ch4_prep_home.json）
   ["_talk_seen_ch3_prep_hiyori", "person"],
   ["_talk_seen_ch3_prep_kumicho", "person"],
-  ["_talk_seen_ch3_prep_rei", "person"],
+  ["_talk_seen_ch3_prep_kuraudo", "person"],
   // 第3章の出発前に凛想から「向こうの顔」を頼まれたか。第4章の出発前の凛想の会話が、その報告の分岐に使う
-  ["_talk_seen_ch3_prep_rei_live", "person"], // クラウドのライブの夜（第3章の準備期間・RVE07）
+  ["_talk_seen_ch3_prep_kuraudo_live", "person"], // クラウドのライブの夜（第3章の準備期間・RVE07）
   ["_talk_seen_ch3_prep_rio", "person"],
   ["_talk_seen_ch3_prep_tsumugi", "person"], // #3097 PR-I（上の3つと同じ）
   // 第5章の来店後に届くLIMEの既読条件（#3097）。
   ["_talk_seen_ch5_adam_shop", "person"],
-  ["_talk_seen_ch5_rei_shop", "person"],
+  ["_talk_seen_ch5_kuraudo_shop", "person"],
   ["_talk_seen_ch5_rio_naru_order", "person"],
   ["_tsumugi_contest_art_seen", "person"],
   ["_tsumugi_contest_draft_hands", "person"],

@@ -9,17 +9,19 @@ import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js"
 export const CH3_PRIZE = 200000;
 
 // HAZE: NATIONAL TOKYO。県大会とは別の一試合・一台・四人同時の保存状態。
-export const CONTESTANTS = Object.freeze(["hajime", "saku", "steve", "volk"]);
-export const JUDGES = Object.freeze(["emil", "dr_kemuri", "sui"]);
+export const CONTESTANTS = Object.freeze(["hajime", "ayatori", "steve", "volk"]);
+// Preserve the established tie order independently of how the actor IDs are spelled.
+const tieOrder = (a, b) => CONTESTANTS.indexOf(a) - CONTESTANTS.indexOf(b);
+export const JUDGES = Object.freeze(["emil", "dr_charcoal", "sensu"]);
 export const SPEND = Object.freeze([2, 3, 2, 3]);
 // 試合途中の旧保存は旧基準で最後まで進め、新しい挑戦だけ最新の版を使う。
 // 版2（2026-11-03「3・4章を難しく調整」）は ふつうの腕前で約36%と厳しすぎたため、
 // 版3（2026-11-20 #3916・WIN11「大会自体、7.6.5.3割」）で3人とも−1.5にして約5割にした
 // （`node remake/tools/balance/measure.mjs --chapter 3 --n 300 --seed 1`）。
 export const TOURNAMENT_RULES_VERSION = 3;
-export const LEGACY_RIVAL_QUALITY = Object.freeze({ saku: 82, steve: 80, volk: 84 });
-export const V2_RIVAL_QUALITY = Object.freeze({ saku: 86, steve: 85, volk: 88 });
-export const RIVAL_QUALITY = Object.freeze({ saku: 84.5, steve: 83.5, volk: 86.5 });
+export const LEGACY_RIVAL_QUALITY = Object.freeze({ ayatori: 82, steve: 80, volk: 84 });
+export const V2_RIVAL_QUALITY = Object.freeze({ ayatori: 86, steve: 85, volk: 88 });
+export const RIVAL_QUALITY = Object.freeze({ ayatori: 84.5, steve: 83.5, volk: 86.5 });
 
 const rulesVersion = p => p.rulesVersion === undefined ? 1 : p.rulesVersion;
 function rivalQuality(p) {
@@ -31,8 +33,8 @@ function rivalQuality(p) {
 // 柑橘への好みと、直後の一口との比較は別。千須は台本どおり水を飲む。
 export const JUDGE_PROFILES = Object.freeze({
   emil: Object.freeze({ prefWeight: 0.20, citrus: -1, contrast: -2, waterChance: 0.25 }),
-  dr_kemuri: Object.freeze({ prefWeight: 0.15, citrus: 2, contrast: 2, waterChance: 0.50 }),
-  sui: Object.freeze({ prefWeight: 0.10, citrus: 0, contrast: -1, waterChance: 1 }),
+  dr_charcoal: Object.freeze({ prefWeight: 0.15, citrus: 2, contrast: 2, waterChance: 0.50 }),
+  sensu: Object.freeze({ prefWeight: 0.10, citrus: 0, contrast: -1, waterChance: 1 }),
 });
 
 const copy = value => JSON.parse(JSON.stringify(value));
@@ -60,8 +62,8 @@ export function buildTastingPlan(seed) {
       const j = Math.floor(random() * (i + 1));
       [order[i], order[j]] = [order[j], order[i]];
     }
-    if (order[0] !== "saku" && random() < 0.4) {
-      const index = order.indexOf("saku");
+    if (order[0] !== "ayatori" && random() < 0.4) {
+      const index = order.indexOf("ayatori");
       [order[0], order[index]] = [order[index], order[0]];
     }
     const waterAfterSaku = random() < JUDGE_PROFILES[judge].waterChance;
@@ -104,7 +106,7 @@ export function startAttempt(value, craft) {
     ^ Math.imul(p.attempts, 0x85ebca6b)) >>> 0;
   Object.assign(p, {
     rulesVersion: TOURNAMENT_RULES_VERSION, stage: "craft", step: 0, craft: copy(craft), rollback: null,
-    votes: initialVotes(), baseVotes: initialBaseVotes(CONTESTANTS), voted: 0, lastVotes: null, result: null, failure: null, defeatRead: false,
+    votes: initialVotes(), baseVotes: initialBaseVotes(CONTESTANTS), voted: 0, lastVotes: null, roundVotes: [], result: null, failure: null, defeatRead: false,
     tastingSeed: seed, tastingPlan: buildTastingPlan(seed),
   });
   value.phase = "tournament";
@@ -138,7 +140,7 @@ export function tastingEffect(plan, judge) {
     || new Set(order).size !== CONTESTANTS.length || order.some(id => !CONTESTANTS.includes(id))) {
     throw new Error("試喫順を確認できません");
   }
-  const next = order[order.indexOf("saku") + 1] || null;
+  const next = order[order.indexOf("ayatori") + 1] || null;
   const affected = next && plan.waterAfterSaku !== true ? next : null;
   return { order: [...order], waterAfterSaku: plan.waterAfterSaku === true,
     affected, delta: affected ? profile.contrast : 0 };
@@ -168,11 +170,11 @@ export function castVotes(p, round, performance, prefByJudge = null, carryP = 0)
     const tactic = round === 0 ? null : tastingEffect(plan[judge], judge);
     const scoreOf = id => {
       const pref = id === "hajime" ? boundedPref(prefByJudge?.[judge]) : 0;
-      const citrus = id === "saku" ? profile.citrus : 0;
+      const citrus = id === "ayatori" ? profile.citrus : 0;
       const contrast = id === tactic?.affected ? tactic.delta : 0;
       return bounded(quality[id] + 20 * profile.prefWeight * pref + citrus + contrast);
     };
-    const order = [...CONTESTANTS].sort((a, b) => scoreOf(b) - scoreOf(a) || a.localeCompare(b));
+    const order = [...CONTESTANTS].sort((a, b) => scoreOf(b) - scoreOf(a) || tieOrder(a, b));
     const [first, second] = order;
     additions[judge] = { first, second, points: { [first]: SPEND[round] - 1, [second]: 1 }, tactic };
   }
@@ -181,13 +183,14 @@ export function castVotes(p, round, performance, prefByJudge = null, carryP = 0)
     for (const [id, amount] of Object.entries(points)) p.votes[judge][id] += amount;
   }
   p.lastVotes = additions;
+  (p.roundVotes ||= [])[round] = additions;
   p.voted++;
   p.quality = quality;
   return true;
 }
 
 export function standings(p) {
-  return tournamentStandings(p, CONTESTANTS, JUDGES);
+  return tournamentStandings(p, CONTESTANTS, JUDGES, tieOrder);
 }
 
 /** 実際の制作・二度の調整と全投票が揃うまで結果を確定しない。 */

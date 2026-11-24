@@ -469,7 +469,7 @@
       "not_for_sale": true,
       "unsellable": true,
       "gift": {
-        "from": "rei",
+        "from": "kuraudo",
         "reason": "友達のしるし",
         "flavor": "rose",
         "leaf_grams": 50,
@@ -493,7 +493,7 @@
       "not_for_sale": true,
       "unsellable": true,
       "gift": {
-        "from": "saku",
+        "from": "ayatori",
         "reason": "返事の欄の続きを、別の台で",
         "flavor": "absal_earlgrey",
         "leaf_grams": 50,

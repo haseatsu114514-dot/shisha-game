@@ -12,7 +12,7 @@
     {
       "speaker": "sai",
       "face": "normal",
-      "text": "仕事のない夜、皆さんの営業が終わるまで待って集まるだけです。本はこちらで仕入れますね"
+      "text": "来られる人で、夜に一卓。遊ぶ本はうちの棚に並べておきますね"
     }
   ],
   "branches": {
@@ -24,7 +24,7 @@
       {
         "speaker": "sai",
         "face": "normal",
-        "text": "ええ。では、皆さんの営業が終わるまで待って、集まるのを手伝ってくださるんですね"
+        "text": "ええ。お仕事が片づいた夜なら、こちらの準備も手伝ってくださるんですね"
       }
     ],
     "proposal_people": [
@@ -35,7 +35,7 @@
       {
         "speaker": "sai",
         "face": "normal",
-        "text": "ええ。では、知り合いに声をかけるところから手伝ってくださるんですね"
+        "text": "ああ、まずはお一人。そこから手伝ってくださるんですね"
       }
     ],
     "invite": [
@@ -59,7 +59,7 @@
         "text": "なぜか部長にされてて……TRPGの部活、一緒にどうですか？"
       }
     ],
-    "invite_rei": [
+    "invite_kuraudo": [
       {
         "speaker": "hajime",
         "face": "normal",
@@ -96,7 +96,7 @@
       {
         "speaker": "sai",
         "face": "normal",
-        "text": "部員集めもお任せします。実際に会えた時、誘ってみてください。皆さん、きっと来てくれますよ"
+        "text": "部員集めもお任せします。お店や街でお会いしたときに、声をかけてみてください"
       }
     ],
     "hiyori": [
@@ -116,7 +116,7 @@
       },
       {
         "speaker": "samechan",
-        "text": "仕事のない夜に呼ぶのじゃぞ。サメ役……ではなく、GMもやってみたいのう！"
+        "text": "シフトが休みの日に呼ぶのじゃぞ。サメの出る話なら、わしにGMをやらせてくれ！"
       }
     ],
     "tsumugi": [
@@ -139,28 +139,28 @@
         "text": "入ろう。店が休みの夜なら、物語の仕掛けを考えに行ける"
       }
     ],
-    "rei": [
+    "kuraudo": [
       {
-        "speaker": "rei",
+        "speaker": "kuraudo",
         "face": "surprise",
         "text": "……部長。キミが？"
       },
       {
-        "speaker": "rei",
+        "speaker": "kuraudo",
         "face": "smile",
-        "text": "……入る。店が休みの夜なら行ける。回してみたい本も、ある"
+        "text": "……入る。店が片づいてからでよければ。回したい本がある"
       }
     ],
     "ageha": [
       {
         "speaker": "ageha",
         "face": "surprise",
-        "text": "てぃーあーる……？　わかんないけど、ハジメっちが部長なのウケる"
+        "text": "ハジメっちが部長？　え、誰に押し切られたの。ウケる"
       },
       {
         "speaker": "ageha",
         "face": "smile",
-        "text": "入る入る！　店閉めたら行くね。うち、ノリで来るから"
+        "text": "入る入る！　店の片づけ終わったら行く。うち、何の役やろっかな"
       }
     ],
     "host_day": [
@@ -174,7 +174,7 @@
       {
         "speaker": "sai",
         "face": "normal",
-        "text": "皆さんの営業が終わるまで、お待ちしていました。今夜の席は、こちらです"
+        "text": "こんばんは、部長。今夜はどの本にしましょうか"
       }
     ],
     "host_day_seated": [
@@ -195,7 +195,7 @@
       {
         "speaker": "sai",
         "face": "normal",
-        "text": "一度振ったら、続けるか止めるか。ルールは、それだけです"
+        "text": "出た目を足して、7に近づけてください。7を超えたらそこでおしまいです"
       }
     ],
     "host_push": [
@@ -209,42 +209,42 @@
       {
         "speaker": "sai",
         "face": "normal",
-        "text": "ああ、越えましたね。お茶はこぼれていないので、大丈夫です"
+        "text": "おっと、7を超えました。今回はここまでです"
       }
     ],
     "host_seven": [
       {
         "speaker": "sai",
         "face": "normal",
-        "text": "ぴったりです。よく、その一投を選びましたね"
+        "text": "ちょうど7。きれいに揃いましたね"
       }
     ],
     "host_stop": [
       {
         "speaker": "sai",
         "face": "normal",
-        "text": "そこで止めるんですね。はい、その数で記録しましょう"
+        "text": "はい、そこでおしまい。今の合計が今回の点数です"
       }
     ],
     "host_after_table": [
       {
         "speaker": "sai",
         "face": "normal",
-        "text": "お帰りなさい。同じ本でも、そんな結末になるんですね"
+        "text": "お疲れさまでした。どの場面が印象に残りました？"
       }
     ],
     "host_after_table_good": [
       {
         "speaker": "sai",
         "face": "normal",
-        "text": "なるほど、その一手が。皆さんで選んだ甲斐がありましたね"
+        "text": "あの場面がお気に入りですか。誰が最初に言い出したんです？"
       }
     ],
     "host_after_table_hard": [
       {
         "speaker": "sai",
         "face": "normal",
-        "text": "ええ、そこで迷いますよね。続けてくださって、よかった"
+        "text": "そこで手が止まりましたか。皆さん、何ておっしゃってました？"
       }
     ],
     "topic_hiyori": [
@@ -265,19 +265,19 @@
       {
         "speaker": "tsumugi",
         "face": "normal",
-        "text": "……絵を描きながら、みんなで物語を作るの。TRPGっていうよ"
+        "text": "……TRPGの役を考えると、ついその子の絵まで描いちゃうんです"
       }
     ],
     "topic_adam": [
       {
         "speaker": "adam",
         "face": "normal",
-        "text": "人の役を借りて、仲間と物語を作る。TRPGという遊びだ"
+        "text": "TRPGって知ってるか？　台本にないことを言っても、次の幕が開くんだ"
       }
     ],
-    "topic_rei": [
+    "topic_kuraudo": [
       {
-        "speaker": "rei",
+        "speaker": "kuraudo",
         "face": "normal",
         "text": "……休みの日はTRPGをやってる。サイコロで話が変わるんだ"
       }
@@ -286,7 +286,7 @@
       {
         "speaker": "ageha",
         "face": "normal",
-        "text": "最近、みんなで役を演じるTRPGが気になってるんだよね"
+        "text": "TRPGって役になりきって遊ぶんでしょ？　それ、ちょっとやってみたいじゃん"
       }
     ]
   }

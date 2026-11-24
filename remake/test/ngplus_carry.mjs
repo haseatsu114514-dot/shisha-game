@@ -241,7 +241,9 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   s.equip = { bowl: "suyaki_minto", hms: "lotos_hagal" };
   s.keepsakes = ["ryuji_purikura", "minto_first_cheki"];
   s.trpg = { ...(s.trpg ?? {}), stock: ["x"], club: { founded: { chapter: 2, day: 3 }, members: { rio: { chapter: 2, day: 4 } } } };
+  s.trpg.cleared = { x: { ending: "rain", plays: 4, firstEndingPlays: { bad: 1, normal: 3, true: 4 } } };
   s.flags = { _gym_member: true, _motion_seen_intro: true, _flavor_grape: true, _ch1_cleared: true,
+    _craft_last_preparation: { '[1,true,"self"]': { mix: { mint: 12 } } },
     _brand_new_unclassified: true, _kuji_seen: false };
   s.affinity = { minto: 9 };
   s.lovers = ["minto"];
@@ -277,6 +279,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   assert.deepEqual(pkg.keepsakes, []);
   assert.ok(!("club" in pkg.trpg));
   assert.deepEqual(pkg.trpg.stock, ["x"]);
+  assert.deepEqual(pkg.trpg.cleared, s.trpg.cleared);
   assert.deepEqual(Object.keys(pkg.flags).sort(), ["_flavor_grape", "_gym_member", "_motion_seen_intro"]);
 
   // 深いコピー

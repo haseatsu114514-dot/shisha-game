@@ -1,5 +1,5 @@
 /* PR226で採用したイラスト背景・極太ゴシック・組版。未制作の人物は従来の紹介を使う。 */
-@font-face { font-family:"Intro Gothic"; src:url("../fonts/NotoSansJP-Intro.woff2") format("woff2"); font-weight:100 900; font-display:block; }
+@font-face { font-family:"Intro Gothic"; src:url("../fonts/NotoSansJP-Intro.woff2?v=20261122") format("woff2"); font-weight:100 900; font-display:block; }
 .cutin.art-intro { background:#101820; font-family:"Intro Gothic",var(--font); }
 .art-intro .ci-art-background { position:absolute; inset:0; width:1280px; height:720px; object-fit:cover; pointer-events:none; }
 .art-intro .ci-art-veil { position:absolute; inset:0; background:linear-gradient(90deg,var(--portrait-bg) 0%,var(--portrait-bg) 32%,color-mix(in srgb,var(--portrait-bg) 91%,transparent) 41%,color-mix(in srgb,var(--portrait-bg) 10%,transparent) 62%,transparent 68%),linear-gradient(0deg,#0d1420bf 0%,#0d142080 23%,transparent 43%); }

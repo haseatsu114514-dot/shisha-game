@@ -2,12 +2,12 @@
   "comment": "よその店にふらっと居合わせる人（2026-11-02 オーナー「ひよりみたいに別スポットに現れるキャラを他にも」「女性ももう少し。店を持っていない人」）。daily/roamers.js が、時間帯の4回に1回ほど、一人をどこかの店に置く。来店の一服の後に roam_<id>_first → _a → _b → _c → _a … の順で読む。どの店でも成り立つよう店名を出さない（上園・つむぎは喫茶こはくにもいるので、ホース・炭を前提にしない）。審査員は大会で名前を知るまで met で分岐し、名前を出さない（上園・博士・千須は第1章、エミルは第3章の全国大会）。第3章の東京ではヴォルク・ましろちゃん・エミルが東京の店にいる。好感度（アダム・凛想・つむぎ）と回数はコードが付ける。 てつこ（mukai の看板猫）は、裏口で一度構った後、東京の公園やよその店の帰り道で見かける。",
   "dialogues": [
     {
-      "dialogue_id": "roam_maezono_first",
+      "dialogue_id": "roam_uezono_first",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "maezono",
+          "char_id": "uezono",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -20,7 +20,7 @@
             "text": "一服を終えて顔を上げると、近くの席に見覚えのある丸い顔があった。上園さんだ。"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "おや、逢縁くん。奇遇だねえ"
           },
@@ -30,12 +30,12 @@
             "text": "上園さん、お疲れさまです。今日も取材ですか？"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "normal",
             "text": "半分はねえ。もう半分は、ただのおいしいもの好き"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "ここは、香りが急がないんだ。ひと口目から、ちゃんと待っててくれる"
           },
@@ -45,7 +45,7 @@
             "text": "待っててくれる、ですか"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "うん。急がない店にいると、座ってる人の顔までおいしそうになる"
           },
@@ -55,7 +55,7 @@
             "text": "上園さんはノートに何か書きつけて、満足そうに目を細めた。"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "excited",
             "text": "いやあ。シーシャはおいしいねえ"
           },
@@ -77,12 +77,12 @@
             "text": "丸い顔に、人のよさそうな笑み。手元のノートには、細かい字が並んでいる。"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "……うん。おいしいねえ"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "おや、目が合いましたねえ。いい顔で一服してたから、つい見ちゃった"
           },
@@ -92,12 +92,12 @@
             "text": "え、顔に出てましたか"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "出てた出てた。おいしい時の顔は、隠せないものです"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "normal",
             "text": "ここは、香りが急がないんだ。ひと口目から、ちゃんと待っててくれる"
           },
@@ -107,7 +107,7 @@
             "text": "男はノートに何か書き足すと、満足そうにつぶやいた。"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "excited",
             "text": "いやあ。シーシャはおいしいねえ"
           },
@@ -120,12 +120,12 @@
       }
     },
     {
-      "dialogue_id": "roam_maezono_a",
+      "dialogue_id": "roam_uezono_a",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "maezono",
+          "char_id": "uezono",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -143,7 +143,7 @@
             "text": "撮っては画面を見て、角度を変えてまた撮る。"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "normal",
             "text": "逢縁くん、ちょうどいいところに。これ、おいしそうに見える？"
           },
@@ -153,12 +153,12 @@
             "text": "えっと……正直、実物のほうがおいしそうです"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "だよねえ。ひと口で目が細くなる感じが、写らないんだ"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "normal",
             "text": "おいしさを一番伝えるのは、結局、味わってる人の顔なんです"
           },
@@ -168,7 +168,7 @@
             "text": "じゃあ、記事に載せるなら、上園さんの顔ですね"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "surprise",
             "text": "……それは、考えたことなかったなあ"
           },
@@ -190,7 +190,7 @@
             "text": "撮っては画面を見て、角度を変えてまた撮る。前にも見かけた、丸い顔の人だ。"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "normal",
             "text": "すみません。これ、おいしそうに見えます？"
           },
@@ -200,12 +200,12 @@
             "text": "えっと……正直、実物のほうがおいしそうです"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "ですよねえ。ひと口で目が細くなる感じが、写らないんだ"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "normal",
             "text": "おいしさを一番伝えるのは、結局、味わってる人の顔なんです"
           },
@@ -215,7 +215,7 @@
             "text": "じゃあ、撮るなら、ご自分の顔ですね"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "surprise",
             "text": "……それは、考えたことなかったなあ"
           },
@@ -228,12 +228,12 @@
       }
     },
     {
-      "dialogue_id": "roam_maezono_b",
+      "dialogue_id": "roam_uezono_b",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "maezono",
+          "char_id": "uezono",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -246,7 +246,7 @@
             "text": "一服を終えると、近くの席で、上園さんがノートとにらめっこしていた。"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "serious",
             "text": "楽しい……いや、うれしい？ うーん、楽しい煙、楽しい煙……"
           },
@@ -256,7 +256,7 @@
             "text": "上園さん、締め切りですか？"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "normal",
             "text": "そうなんです。ねえ逢縁くん、楽しそうな煙って、どんな煙だと思う？"
           },
@@ -266,12 +266,12 @@
             "text": "えっと……見た人が、つい顔を上げるような煙、ですかね"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "excited",
             "text": "それだ！ ふわっと上がって、みんなが一口ほしくなるやつ"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "見てて楽しい一台は、吸う前からもうおいしいんです"
           },
@@ -281,7 +281,7 @@
             "text": "上園さんは、どんな味が好きなんですか？"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "いちばんは、レモンかなあ。……シーシャはおいしいねえ"
           },
@@ -298,7 +298,7 @@
             "text": "一服を終えると、近くの席から、ぶつぶつと声が聞こえた。前にも見かけた丸い顔の人だ。"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "serious",
             "text": "楽しい……いや、うれしい？ うーん、楽しい煙、楽しい煙……"
           },
@@ -308,7 +308,7 @@
             "text": "ノートの上で、ペンが止まったまま動かない。"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "normal",
             "text": "あ、すみません。楽しそうな煙って、どんな煙だと思います？"
           },
@@ -318,12 +318,12 @@
             "text": "え、えっと……見た人が、つい顔を上げるような煙、ですかね"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "excited",
             "text": "それだ！ ふわっと上がって、みんなが一口ほしくなるやつ"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "見てて楽しい一台は、吸う前からもうおいしいんです"
           },
@@ -341,12 +341,12 @@
       }
     },
     {
-      "dialogue_id": "roam_maezono_c",
+      "dialogue_id": "roam_uezono_c",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "maezono",
+          "char_id": "uezono",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -359,7 +359,7 @@
             "text": "一服を終えると、近くの席から、深いため息が聞こえた。上園さんだ。"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "serious",
             "text": "……また、ラーメンのほうが伸びてる"
           },
@@ -369,7 +369,7 @@
             "text": "上園さん、どうしたんですか？"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "ああ、逢縁くん。昨日のラーメンの写真が、シーシャの写真より人気でねえ"
           },
@@ -384,17 +384,17 @@
             "text": "すごく、おいしそうですね"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "surprise",
             "text": "でしょう！ ……いや、喜んでる場合じゃないんだ"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "normal",
             "text": "料理の人だと思われてるみたいでねえ。HOOKAH PRESSの編集長なのになあ"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "いちばん言いたいのは、シーシャはおいしいねえ、なんです"
           },
@@ -416,7 +416,7 @@
             "text": "前にも見かけた丸い顔の人が、スマホの画面を見つめている。"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "serious",
             "text": "……また、ラーメンのほうが伸びてる"
           },
@@ -426,7 +426,7 @@
             "text": "あの、大丈夫ですか？"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "ああ、すみません。昨日のラーメンの写真が、シーシャの写真より人気でして"
           },
@@ -441,12 +441,12 @@
             "text": "すごく、おいしそうですね"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "surprise",
             "text": "でしょう！ ……いや、喜んでる場合じゃないんだ"
           },
           {
-            "speaker": "maezono",
+            "speaker": "uezono",
             "face": "smile",
             "text": "でもね、いちばん言いたいのは、シーシャはおいしいねえ、なんです"
           },
@@ -459,12 +459,12 @@
       }
     },
     {
-      "dialogue_id": "roam_dr_kemuri_first",
+      "dialogue_id": "roam_dr_charcoal_first",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "dr_kemuri",
+          "char_id": "dr_charcoal",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -487,12 +487,12 @@
             "text": "博士も、一服ですか？"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "やあ、逢縁くん。今日は、この店の空気を測りにね"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "同じ葉でも、部屋が変われば煙は変わる。だから、まず空気を記録する"
           },
@@ -502,7 +502,7 @@
             "text": "その箱、全部センサーなんですか？"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "自作だよ。どこにも売っていない"
           },
@@ -517,7 +517,7 @@
             "text": "（今の時刻……俺がホースを置いた時間？）"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "どうぞ、ごゆっくり。逢縁くんは、いい間隔で吸うね"
           }
@@ -539,12 +539,12 @@
             "text": "（あの箱、何だろう。……店の機材じゃないよな）"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "ああ、これかい？ 部屋の空気を見ているだけだよ"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "同じ葉でも、部屋が変われば煙は変わる。だから、まず空気を記録する"
           },
@@ -554,7 +554,7 @@
             "text": "店ごとに、ですか"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "そう、店ごとに。……それから、吸う人ごとにね"
           },
@@ -569,7 +569,7 @@
             "text": "（今の時刻……俺がホースを置いた時間？）"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "どうぞ、ごゆっくり。きみは、いい間隔で吸うね"
           }
@@ -577,12 +577,12 @@
       }
     },
     {
-      "dialogue_id": "roam_dr_kemuri_a",
+      "dialogue_id": "roam_dr_charcoal_a",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "dr_kemuri",
+          "char_id": "dr_charcoal",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -595,7 +595,7 @@
             "text": "一服を終えると、隅の席の博士が、こちらへ小さく手を上げた。"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "やあ、逢縁くん。今日の一台、何と何を合わせたのか聞いてもいいかな"
           },
@@ -605,12 +605,12 @@
             "text": "えっと……甘いのと、少しだけ爽やかなのを"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "ふむ。甘いのと、少しだけ爽やかなの。記録する"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "ついでに。昨夜は、何時間眠れた？"
           },
@@ -620,12 +620,12 @@
             "text": "そ、それも関係あるんですか？"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "あるかもしれないし、ないかもしれない。だから測る"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "眠れた時間で、吸う間隔が変わる人がいる。それだけ、知りたくてね"
           },
@@ -635,7 +635,7 @@
             "text": "……あんまり、覚えてなくて"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "だいたいでいいよ。五時間かな、六時間かな"
           },
@@ -652,7 +652,7 @@
             "text": "一服を終えると、隅の席の白衣の客が、こちらへ小さく手を上げた。前にも見た人だ。"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "やあ。今日の一台、何と何を合わせたのか、聞いてもいいかな"
           },
@@ -662,12 +662,12 @@
             "text": "えっと……甘いのと、少しだけ爽やかなのを"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "ふむ。甘いのと、少しだけ爽やかなの。記録する"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "ついでに。昨夜は、何時間眠れた？"
           },
@@ -677,12 +677,12 @@
             "text": "そ、それも関係あるんですか？"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "あるかもしれないし、ないかもしれない。だから測る"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "眠れた時間で、吸う間隔が変わる人がいる。それだけ、知りたくてね"
           },
@@ -692,7 +692,7 @@
             "text": "……あんまり、覚えてなくて"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "だいたいでいいよ。五時間かな、六時間かな"
           },
@@ -705,12 +705,12 @@
       }
     },
     {
-      "dialogue_id": "roam_dr_kemuri_b",
+      "dialogue_id": "roam_dr_charcoal_b",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "dr_kemuri",
+          "char_id": "dr_charcoal",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -723,7 +723,7 @@
             "text": "一服を終えて、ハガルの上の炭を眺めていると、横から静かな声がした。"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "逢縁くんは、炭を見る人だね。吸う前と吸った後に、必ず一度"
           },
@@ -738,7 +738,7 @@
             "text": "博士。いつから見てたんですか"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "自分ならどう置くか、考えていたでしょう。三つの間隔、かな"
           },
@@ -748,12 +748,12 @@
             "text": "……はい。もう少し空けるかなって"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "考えている時間も、立派なデータだ。記録しておくよ"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "それに、その上のHMD。いい型でしょ？ それ作ったの、俺だもん"
           },
@@ -770,7 +770,7 @@
             "text": "一服を終えて、ハガルの上の炭を眺めていると、横から静かな声がした。"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "炭を見る人だね。吸う前と吸った後に、必ず一度"
           },
@@ -785,7 +785,7 @@
             "text": "す、すみません。仕事柄、つい……"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "謝らなくていい。自分ならどう置くか、考えていたんでしょう"
           },
@@ -795,12 +795,12 @@
             "text": "……はい。三つの間を、もう少し空けるかなって"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "考えている時間も、立派なデータだよ。記録しておく"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "その上の器具も、いい型だよね。元の型はね……いや、なんでもない"
           },
@@ -813,12 +813,12 @@
       }
     },
     {
-      "dialogue_id": "roam_dr_kemuri_c",
+      "dialogue_id": "roam_dr_charcoal_c",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "dr_kemuri",
+          "char_id": "dr_charcoal",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -831,7 +831,7 @@
             "text": "一服を終えると、隅の席で、博士がノートPCを閉じたところだった。"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "やあ、逢縁くん。今日も、いい記録が取れたよ"
           },
@@ -841,12 +841,12 @@
             "text": "店の空気、ですか？"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "空気と、それから逢縁くんの吸う間隔。いつも一緒に入ってしまってね"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "消してほしいなら、消すよ。逢縁くんが決めていい"
           },
@@ -856,7 +856,7 @@
             "text": "いえ……困るものでもないので"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "ありがとう。気が変わったら、いつでも言って。その日のうちに消す"
           },
@@ -866,7 +866,7 @@
             "text": "（消すかどうかは、俺が決めていい。……測るかどうかは、聞かれなかった）"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "大事に取っておくよ。いつか、誰かの役に立つように"
           },
@@ -883,7 +883,7 @@
             "text": "一服を終えると、隅の席の白衣の客が、ノートPCを閉じたところだった。"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "やあ。今日も、いい記録が取れた"
           },
@@ -893,12 +893,12 @@
             "text": "今日も、って……前から、俺のことも？"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "normal",
             "text": "失礼。店の空気を測っていると、きみの吸う間隔も一緒に入ってしまってね"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "消してほしいなら、消すよ。きみが決めていい"
           },
@@ -908,7 +908,7 @@
             "text": "いえ……困るものでもないので"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "ありがとう。気が変わったら、いつでも言って。その日のうちに消す"
           },
@@ -918,7 +918,7 @@
             "text": "（消すかどうかは、俺が決めていい。……測るかどうかは、聞かれなかった）"
           },
           {
-            "speaker": "dr_kemuri",
+            "speaker": "dr_charcoal",
             "face": "smile",
             "text": "大事に取っておくよ。いつか、誰かの役に立つように"
           },
@@ -931,12 +931,12 @@
       }
     },
     {
-      "dialogue_id": "roam_sui_first",
+      "dialogue_id": "roam_sensu_first",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "sui",
+          "char_id": "sensu",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -954,7 +954,7 @@
             "text": "会長？ どうして、ここに……"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "声が大きい。今日は、ただの客だ"
           },
@@ -969,12 +969,12 @@
             "text": "常連らしい客が入ってくると、店の人は何も聞かずに、いつもの席を空けた。"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "……ほう"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "serious",
             "text": "何も聞かずに、席を空けた。あれはマニュアルには書けない"
           },
@@ -1011,7 +1011,7 @@
             "text": "常連らしい客が入ってくると、店の人は何も聞かずに、いつもの席を空けた。"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "……ほう"
           },
@@ -1021,12 +1021,12 @@
             "text": "あの、何か……？"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "いや。いい店だと思っただけだ"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "serious",
             "text": "何も聞かずに、席を空けた。あれはマニュアルには書けない"
           },
@@ -1039,12 +1039,12 @@
       }
     },
     {
-      "dialogue_id": "roam_sui_a",
+      "dialogue_id": "roam_sensu_a",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "sui",
+          "char_id": "sensu",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -1057,7 +1057,7 @@
             "text": "一服を終えると、カウンターの端に、会長の姿があった。"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "逢縁くん。この店は、誰のための店だと思う"
           },
@@ -1067,7 +1067,7 @@
             "text": "えっと……ここに来る人のため、ですかね"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "答えになっていないな"
           },
@@ -1082,7 +1082,7 @@
             "text": "だから、目の前の一人のための店、だと思います"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "smile",
             "text": "……悪くはない"
           },
@@ -1104,7 +1104,7 @@
             "text": "一服を終えると、カウンターの端に、またあの紺のスーツの男がいた。"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "君。この店は、誰のための店だと思う"
           },
@@ -1114,7 +1114,7 @@
             "text": "えっと……ここに来る人のため、ですかね"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "答えになっていないな"
           },
@@ -1129,7 +1129,7 @@
             "text": "だから、目の前の一人のための店、だと思います"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "smile",
             "text": "……悪くはない"
           },
@@ -1147,12 +1147,12 @@
       }
     },
     {
-      "dialogue_id": "roam_sui_b",
+      "dialogue_id": "roam_sensu_b",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "sui",
+          "char_id": "sensu",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -1170,7 +1170,7 @@
             "text": "店の人は、注文を急ぐ客より先に、黙って待っていた一人に声をかけた。"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "……見たか、逢縁くん"
           },
@@ -1180,17 +1180,17 @@
             "text": "今の、声をかける順番ですか"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "混んだ時に、誰から声をかけるか。そこに店が出る"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "thinking",
             "text": "空いている時は、どの店も同じ顔をする"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "……それと。私がここにいたことは、スミさんには言わなくていい"
           },
@@ -1200,7 +1200,7 @@
             "text": "え、どうしてですか？"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "smile",
             "text": "話が長くなる"
           },
@@ -1222,7 +1222,7 @@
             "text": "店の人は、注文を急ぐ客より先に、黙って待っていた一人に声をかけた。"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "……見たか"
           },
@@ -1232,12 +1232,12 @@
             "text": "え？ 今の、声をかける順番ですか"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "混んだ時に、誰から声をかけるか。そこに店が出る"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "thinking",
             "text": "空いている時は、どの店も同じ顔をする"
           },
@@ -1255,12 +1255,12 @@
       }
     },
     {
-      "dialogue_id": "roam_sui_c",
+      "dialogue_id": "roam_sensu_c",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "sui",
+          "char_id": "sensu",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -1278,7 +1278,7 @@
             "text": "ゆっくり一口吸って、しばらく煙の行方を見ている。"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "thinking",
             "text": "……昔、こういう店に世話になった"
           },
@@ -1288,12 +1288,12 @@
             "text": "会長が、ですか"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "小さくて、帰ってきた客の顔を覚えている店だ"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "私の店は、入り口でいい。帰ってくる場所は、こういう店にある"
           },
@@ -1303,7 +1303,7 @@
             "text": "tonariも、そういう店だと思います"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "smile",
             "text": "……知っている"
           },
@@ -1325,7 +1325,7 @@
             "text": "ゆっくり一口吸って、しばらく煙の行方を見ている。"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "thinking",
             "text": "……昔、こういう店に世話になった"
           },
@@ -1335,7 +1335,7 @@
             "text": "こういう店、ですか"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "小さくて、帰ってきた客の顔を覚えている店だ"
           },
@@ -1345,7 +1345,7 @@
             "text": "……分かる気がします"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "分かるなら、忘れないことだ"
           },

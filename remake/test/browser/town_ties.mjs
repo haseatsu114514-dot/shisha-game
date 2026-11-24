@@ -56,7 +56,7 @@ await suite("town-ties", async check => {
       return { cafe, unchanged, seen, naru, naruAgain, rio, rioAgain, flags: [s.flags._spot_follow_naru_rio, s.flags._spot_follow_rio_naru] };
     });
     assert.deepEqual(r.cafe.trace, ["cafe_naru_rio"]); assert(r.unchanged && r.seen, "施設の遭遇は好感度を動かさない");
-    assert(r.cafe.lines.some(t => t.includes("ケムリクサさん")) && r.cafe.lines.some(t => t.includes("円頓寺さん")));
+    assert(r.cafe.lines.some(t => t.includes("KEMURIKUSAさん")) && r.cafe.lines.some(t => t.includes("円頓寺さん")));
     assert(r.cafe.names.includes("なる") && r.cafe.names.includes("凛想"), JSON.stringify(r.cafe.names));
     assert.equal(r.naru.trace[0], "cafe_naru_rio_followup"); assert(r.naru.lines.some(t => t.includes("誰にも言うなよ")), "恋人でなければ内緒の話");
     assert(!r.naruAgain.includes("cafe_naru_rio_followup"));

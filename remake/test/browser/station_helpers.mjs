@@ -36,6 +36,7 @@ export async function travelToCity(page, destination, { touch } = {}) {
     }), after, 'The autosave contains the paid fare and destination together');
   }
   const flags = { ...before.flags, _ch2_region: destination };
+  if (before.chapter === 2 && fare && destination === 'widehanga') flags._ch2_last_yuzugaya_day = before.day;
   if (before.chapter === 2 && before.slot === 0 && fare && destination === 'widehanga'
     && before.flags._ch2_stay_local_since < before.day && before.flags._ch2_commute_day !== before.day
     && after.flags._ch2_commute_day === before.day) {
@@ -46,7 +47,7 @@ export async function travelToCity(page, destination, { touch } = {}) {
     playMs: after.playMs,
     savedAt: fare ? after.savedAt : before.savedAt,
     flags },
-  'A confirmed trip changes only the city and one fare, preserving actions and progress');
+  'A confirmed trip records its fare, destination and travel history while preserving actions and story progress');
   fares.set(page, stationFares(page) + fare);
 }
 

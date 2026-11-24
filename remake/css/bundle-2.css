@@ -1094,7 +1094,7 @@
 /* 会話枠の共通組版。テーマは装飾を変え、本文・操作の安全領域を共有する。 */
 @font-face {
   font-family: "Suien Name";
-  src: url("../fonts/ZenOldMincho-Name-Bold.woff2") format("woff2");
+  src: url("../fonts/ZenOldMincho-Name-Bold.woff2?v=20261122") format("woff2");
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -1381,7 +1381,7 @@ html[data-ui-theme]:not([data-ui-theme="classic"]) .spot-pin .sub-label { border
 /* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* 本文の上辺へ名前札と操作札を載せる。読む面の高さを見出しで使わない。 */
 @font-face {
-  font-family:"Suien Blue Mincho"; src:url("../fonts/ZenOldMincho-Blue-Regular.woff2") format("woff2");
+  font-family:"Suien Blue Mincho"; src:url("../fonts/ZenOldMincho-Blue-Regular.woff2?v=20261122") format("woff2");
   font-style:normal; font-weight:400; font-display:block;
 }
 html:root[data-ui-theme] {
@@ -2259,7 +2259,7 @@ html .bench[data-mode] .audience-rating { color: var(--lavender); }
 html .bench[data-mode] .audience-note { color: var(--paper-ink); }
 html .bench[data-mode] .bench-audience[data-tone="bright"] .audience-rating { color: var(--amber-ink); }
 html .bench[data-mode] .bench-audience[data-tone="bright"] .audience-note { color: var(--amber-ink); }
-html .bench[data-mode] .bench-audience[data-speaker="sui"][data-tone="bright"] .audience-note { color: var(--cool-ink); }
+html .bench[data-mode] .bench-audience[data-speaker="sensu"][data-tone="bright"] .audience-note { color: var(--cool-ink); }
 html .bench[data-mode] .bench-audience[data-tone="warm"] .audience-note { color: var(--good-ink); }
 html .bench[data-mode] .bench-audience[data-tone="warm"] .audience-rating { color: var(--good-ink); }
 html .bench[data-mode] .bench-audience[data-tone="quiet"] .audience-note, html .bench[data-mode] .bench-audience[data-tone="quiet"] .audience-rating { color: var(--paper-muted); }
@@ -3055,6 +3055,7 @@ html:root body[data-screen="bench"] #toasts .toast.good { color: var(--good-ink,
 html:root[data-density="phone"] #stage {
   --phone-text: max(22px, calc(11.5px / var(--k, 1)));   /* 本文・選択肢・ボタンの文字 */
   --phone-sub: max(18px, calc(11.5px / var(--k, 1)));    /* 補助文（出すなら）。出さないときは display: none */
+  --tournament-phone-sub: max(24px, var(--phone-sub));   /* 大会の補助文（#4035 B6） */
   --phone-tap: max(72px, calc(39px / var(--k, 1)));      /* タップ部品の高さ */
   --phone-gap: 12px;                                      /* 隣り合うタップ部品の間隔 */
   --phone-ctl: max(24px, calc(13px / var(--k, 1)));     /* 会話の操作ボタンの文字（オーナー指示 2026-11-08「少し大きく」） */
@@ -3204,7 +3205,7 @@ html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-controls .vn-
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-text { font-size: 32px; line-height: 46px; min-height: 92px; }
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-box.has-inner .vn-text { line-height: 44px; min-height: 44px; }
 /* 紙の横持ち会話で、操作を左右に出せるときは上の帯を本文に使う。
-   176px の枠の中央に50pxの行を置く。短いページは文字送りの前に行数が確定するので、途中で本文がずれない。
+   176px の枠の中央に50px×2行分の本文領域を置き、ページの行数にかかわらず1行目をそろえる。
    本心つき・枠内に操作が残るときは、従来どおり別の行や操作の領域を確保する。 */
 /* 約1024px の本文の右で送り印を出し、右端の煙との間も空ける。 */
 html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box {
@@ -3215,9 +3216,6 @@ html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:
 }
 html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box:not(.has-inner) .vn-text {
   font-size: 36px; line-height: 50px; min-height: 100px;
-}
-html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box:not(.has-inner) .vn-text[data-page-lines="1"] {
-  padding-top: 25px;
 }
 /* 名札の短い名前を読みやすくする。長い名前は実際の字幅に合わせる name-fit.js に従う。 */
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-box .vn-name {
@@ -3324,14 +3322,6 @@ html:root[data-density="phone"] body:not(:root) :is(.reel-intro, .reel-widget) .
 html:root[data-density="phone"] .reel-intro .cue-chip {
   min-width: 1.25em;
   min-height: 1.25em;
-}
-html:root[data-density="phone"] .reel-intro .ri-panel.sys {
-  width: min(1160px, calc(100% - 32px));
-  max-height: calc(100% - 32px);
-  overflow-y: auto;
-}
-html:root[data-density="phone"] .reel-intro .ri-panel.sys .rn-card {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 html:root[data-density="phone"] body:not(:root) .reel-widget .rw-bubble.cue {
   font-size: max(var(--slot-phone-text), calc(12px / var(--k, 1)));
@@ -3999,6 +3989,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options { 
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > .btn { grid-row: 1; grid-column: auto; height: auto; min-height: 0; min-width: 0; padding: 0 8px; border-width: 8px; border-image-width: 8px; line-height: 1.1; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > .btn:nth-child(2):nth-last-child(2) { grid-column: 1 / -1; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > [data-test="pull-serve"] { grid-row: 2; grid-column: 1; }
+/* 追加の操作がある画面では、短い下段に提供ボタンの2行を収める。 */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > [data-test="pull-serve"]:has(.pull-serve-status:not([hidden])) { border-block-width: 2px; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > .btn.primary { grid-row: 2; grid-column: 2; }
 
 /* ---------- 舞台の天板: 枠を焼き込んだ旧い板の代わりに、枠なしの天板を舞台いっぱいに敷く ---------- */
@@ -4086,8 +4078,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list { grid-column: 2
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head { display: none !important; }
 /* 心得の「単体で勝負」と「香りの記憶」だけは一覧の頭に残す（見出しの文と助言は隠したまま）。
    以前は見出しごと隠れて、覚えた心得が押せなかった（growth_levelup の single-leaf-style-lesson）。 */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall) { display: flex !important; flex: none; flex-wrap: wrap; align-items: center; gap: 8px; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head > :not([data-test="mix-single-style"]):not(.mix-recall) { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall, > .mix-reuse) { display: flex !important; flex: none; flex-wrap: wrap; align-items: center; gap: 8px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head > :not([data-test="mix-single-style"], .mix-recall, .mix-reuse) { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row { display: flex !important; min-height: 0 !important; height: 116px !important; flex: none; padding: 4px 12px 4px 6px !important; gap: 12px !important; align-items: center !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row > * { grid-area: auto !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-name { padding-left: 0 !important; }
@@ -4777,7 +4769,7 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 }
 /* 一覧の頭は1行。記憶を開いた時は候補に場所を渡し、候補だけ横へ送る。 */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head { display: none !important; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall) {
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall, > .mix-reuse) {
   flex: none !important; display: flex !important; flex-wrap: nowrap !important; align-items: stretch !important; gap: 10px !important; height: var(--ph-tap) !important; margin: 0 !important; padding: 0 !important;
   min-width: 0; overflow: hidden !important;
 }
@@ -4794,11 +4786,13 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall:not([open]) > .chips { display: none !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > [data-test="mix-single-style"],
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-reuse,
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall > summary,
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall .chips > .btn {
   flex: none !important; box-sizing: border-box; height: var(--ph-tap) !important; min-height: 0 !important; margin: 0 !important; padding: 0 24px !important;
   display: inline-flex !important; align-items: center; justify-content: center; gap: 8px; font-size: var(--ph-sub) !important; font-weight: 700; line-height: 1.1 !important; white-space: nowrap !important;
 }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head:has(> .mix-reuse) { height: auto !important; flex-wrap: wrap !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-list-head > .mix-recall > summary {
   list-style: none; cursor: pointer; color: var(--ph-ink); background: #2a1c40 padding-box; border-style: solid; border-color: transparent;
   border-image: url("../img/ui/craft-glass/key.webp") 88 88 128 88 fill / 21px 21px 31px 21px / 4.3px 4.2px 4.8px 4.2px stretch;
@@ -5060,6 +5054,8 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
   -webkit-mask-image: linear-gradient(#000 calc(100% - 26px), #0000); mask-image: linear-gradient(#000 calc(100% - 26px), #0000);
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hole-chooser .ht-title { flex: none; font-size: var(--ph-sub) !important; line-height: 1.2 !important; color: var(--ph-gold); letter-spacing: .08em; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hole-chooser .hole-reuse { min-height: var(--ph-tap); font-size: var(--ph-sub) !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hole-chooser .hole-reuse-hint { font-size: var(--ph-sub); }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hole-chooser .ht-option {
   flex: none !important; display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; gap: 12px !important; width: 100% !important; min-width: 0 !important;
   min-height: var(--ph-tap) !important; margin: 0 !important; padding: 0 14px !important; font-size: var(--ph-text) !important;
@@ -5375,7 +5371,8 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns:not(.with-options) > [data-test="pull-serve"] { grid-column: 2 !important; width: auto !important; min-width: 172px !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns > [data-test="pull-serve"] .btn-label { font-size: var(--ph-text) !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns > [data-test="pull-serve"]:has(.pull-serve-status:not([hidden])) {
-  flex-direction: column !important; gap: 4px !important;
+  /* 44pxの操作枠内に「提供する」と残りの口数を収める。枠絵の太さは border-image-width が決める。 */
+  flex-direction: column !important; gap: 4px !important; border-width: 8px !important;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-serve-status { font-size: var(--ph-sub); }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .pull-btns > [data-test="pull-serve"]:has(.pull-serve-status:not([hidden])):disabled {
@@ -5560,6 +5557,7 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
    絵・印・光るボタンで伝わっている説明の文は、画面に置かない（読みたい時は「?」）。結果の数や、課題の条件は残す。 */
 /* 穴あけ: 押し加減は「穴を開ける」の中の目盛り（小さい穴→大きい穴）で、次にすることは光るボタンで分かる */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > :is(.hr-depth-hint, .hr-plan) { visibility: hidden !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hr-side > .hr-plan[data-tone="warmup"] { visibility: visible !important; }
 /* 穴の配置: 配置の違いは図で選ぶ。違いの説明は「穴数と熱の回り方」を開いて読む */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .hole-chooser .ht-description { display: none !important; }
 /* 吸い出し: 「▼下げ吸い／▲上げ吸い」の矢印と色で分かるので、「温度を下げる／上げる」の補足は出さない */

@@ -14,7 +14,7 @@ const matchScene = id => `${dt("ch5-match")}[data-scene="${id}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
 const arm = page => page.evaluate(async () => {
   const vn = await import("./js/vn/engine.js");
-  // 選択肢は常に先頭（schedule_contact では「日を決めて連絡する」= decide）。
+  // 選択肢は常に先頭（schedule_contact では「明日を勝負の日にする」= decide）。
   vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
 });
 const committed = (page, id) => page.waitForFunction(sceneId => window.__remake.state.flags._ch5.read[sceneId] === true, id);
@@ -276,7 +276,7 @@ await suite("ch5-full-flow", async check => {
 
     // 9. 後日談（勝負のあと・前半→後半→tonariへ戻る）→フィナーレ（開始→賄い→日常。鉄仮面さんの名乗りは日常に続けて読む）。
     await page.locator(dt("ch5-continue")).click();
-    // 前半の末尾に千須への返事（ch5_sui_after_match）を続けて読み、後半は別の場面として読む。
+    // 前半の末尾に千須への返事（ch5_sensu_after_match）を続けて読み、後半は別の場面として読む。
     await page.locator(scene("ch5_doctor_cocreation")).waitFor();
     state = await get(page);
     assert.equal(state.flags._ch5.read.ch5_doctor_after_match, true);
@@ -341,8 +341,8 @@ await suite("ch5-full-flow", async check => {
           read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
           finaleScenes: null, won: null, secondCup: null },
         _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true,
-        ch2_kumicho_after_ch2_done: true, _talk_seen_ch5_rei_shop: true };
-      Object.assign(value.met, { kumicho: true, rei: true, ageha: true });
+        ch2_kumicho_after_ch2_done: true, _talk_seen_ch5_kuraudo_shop: true };
+      Object.assign(value.met, { kumicho: true, kuraudo: true, ageha: true });
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
       // 辻占のオババ（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第5章の出現は済んだことにする（第3・4章の検査と同じ）。
@@ -376,7 +376,7 @@ await suite("ch5-full-flow", async check => {
     state = await get(page);
     assert.equal(state.flags._ch2_region, "home", "The night ends at home");
     assert.equal(state.money, before.money - 3000 * 2 - 200, "Two visits and the train home");
-    assert.equal(state.flags._ch2_talks?.rei, (before.flags._ch2_talks?.rei || 0) + 1);
+    assert.equal(state.flags._ch2_talks?.kuraudo, (before.flags._ch2_talks?.kuraudo || 0) + 1);
     assert.equal(stationFares(page), 200, "One fare out, paid by the station UI");
   });
 
@@ -423,6 +423,13 @@ await suite("ch5-full-flow", async check => {
     assert(await page.locator(dt("map-go")).isVisible());
     // 昼: 配送便で東京へ → 最初は Dr.fookah の店員に乗せてもらう話 → 夜に着いてムカイさんに屋根裏を借りる → 屋根裏で寝る。
     await page.locator(dt("map-go")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch2_region === "tokyo", null, { polling: 10 });
+    // 移動演出中に閉じた場合、行動を使っていない保存は元の地図に戻る。
+    const transitSave = await page.evaluate(async () => (await import("./js/core/state.js")).peekSave());
+    assert.notEqual(transitSave.flags._ch2_region, "tokyo");
+    await loadSlot(page, 0);
+    await mapReady(page, { day: 51, slot: 0 });
+    await go(page, "ch5_to_tokyo");
     const tokyoMap = (day, slot) => page.waitForFunction(([day, slot]) => {
       const s = window.__remake?.state;
       return s && s.day === day && s.slot === slot && document.querySelector('.map:not(.done):not([data-revealing="true"])[data-region="tokyo"] [data-test=pin-ch5_tokyo_mukai]')
@@ -630,6 +637,12 @@ await suite("ch5-full-flow", async check => {
       s.pendingInvite = { event: "date_tsumugi", sender: "tsumugi", slot: 1, day: 52, originId: "_date_inv_tsumugi_test_d52", afterClose: true };
     });
     const beforeFlight = await get(page);
+    // 最初の確認で日程変更を承諾しても、搭乗を取り消せば、今日の約束のまま。
+    await go(page, "ch5_to_dubai");
+    await page.locator(dt("ch5-date-leave")).click();
+    await page.locator(dt("ch5-dubai-cancel")).click({ timeout: 60000 });
+    await mapReady(page, { day: 52, slot: 0 });
+    assert.deepEqual(unchangedAppointment(await get(page)), unchangedAppointment(beforeFlight));
     await go(page, "ch5_to_dubai");
     await page.locator(dt("ch5-date-leave")).click();
     await page.locator(dt("ch5-dubai-go")).click({ timeout: 60000 });
@@ -1301,7 +1314,8 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.money, before.money - 3000);
     assert.equal(state.flags._confession_due, undefined, "Noor's confession is her own sunset scene, never the night walk");
     const after = await page.evaluate(async () => {
-      const { relationshipStatus } = await import("./js/daily/relationship-status.js");
+      const { prepareRelationshipStatus, relationshipStatus } = await import("./js/daily/relationship-status.js");
+      await prepareRelationshipStatus();
       const spots = (await import("./js/chapters/ch5-dubai.js")).chapterFiveDubaiLeisureSpots();
       return { status: relationshipStatus("noor").label, ids: spots.map(spot => spot.id), dunes: spots.find(spot => spot.id === "ch4_dubai_dunes")?.desc || "" };
     });
@@ -1406,9 +1420,9 @@ await suite("ch5-full-flow", async check => {
     assert(said.includes("記録にない項目です。次回から、先に尋ねます"));
     assert(!said.some(text => /正解の味/.test(text)), "The winning doctor does not concede");
     assert.deepEqual(first.slice(-4).map(([, speaker, text]) => [speaker, text]).slice(0, 3), [
-      ["sui", "一つだけ聞く。君が作れない夜に来た客は、どうする"],
+      ["sensu", "一つだけ聞く。君が作れない夜に来た客は、どうする"],
       ["hajime", "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が"],
-      ["sui", "……それを、店と呼ぶんだろうな"],
+      ["sensu", "……それを、店と呼ぶんだろうな"],
     ]);
     await page.locator(dt("ch5-continue")).click();
     await page.locator(scene("ch5_return_to_tonari")).waitFor();
@@ -1479,7 +1493,7 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5_cleared, true);
     const lines = await readLines();
     const order = ["三ヶ月目に決めた名前は、もう書けなかった。あれは、俺ひとりの城の名前だった。",
-      "スミさん。tonariって、どうしてこの名前なんですか", "客の隣に座れる店にしたかった、……それだけだ",
+      "スミさん。tonariって、どうしてこの名前なんですか", "客の隣に座れる店にしたかった……それだけだ",
       "別の日。閉店後、栞さんの部屋で遅い夕飯を作った。", "返事を聞きながら、もう一つボウルを出す。",
       "閉店の少し前。奥まった席に、いつもの鉄仮面さんが座った。",
       "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"].map(text => lines.indexOf(text));

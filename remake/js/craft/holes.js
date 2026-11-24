@@ -34,6 +34,24 @@ export const HOLES_TUNING = { timeLimit: 32, lessonTimeLimit: 48, perfectDeg: 4.
 const RING_ADVANCE_MS = 600;
 const DEG = Math.PI / 180;
 const foilSurface = () => artImg("foil_interactive_top.png", 430, "foil-surface", { h: 430 });
+const depthOf = (size) => Object.keys(HOLE_SIZES).find(depth => HOLE_SIZES[depth] === size);
+const holePosition = (a, r) => ({
+  left: `${50 + Math.cos(a) * r * 50}%`, top: `${50 + Math.sin(a) * r * 50}%`,
+});
+
+function previousFoil(cs, templates) {
+  const foil = cs.preparation?.previous?.foil;
+  const template = templates.find(t => t.id === foil?.templateId);
+  if (!template || !Number.isFinite(foil.elapsed) || foil.elapsed < 0 || !Array.isArray(foil.rings)) return null;
+  const rings = ringsForTemplate(template);
+  if (foil.rings.length !== rings.length || !rings.every((ring, i) => {
+    const saved = foil.rings[i];
+    return Number.isFinite(saved?.phase) && Array.isArray(saved.holes) && saved.holes.length === ring.targets
+      && saved.holes.every((hole, k) => hole?.k === k && Number.isFinite(hole.a) && Number.isFinite(hole.d) && hole.d >= 0
+        && depthOf(hole.size) && ["perfect", "good", "rough", "close"].includes(hole.kind));
+  })) return null;
+  return { foil, template };
+}
 
 async function chooseTemplate(panel, cs) {
   // Saved sessions keep their captured choices and selected legacy layout.
@@ -41,6 +59,10 @@ async function chooseTemplate(panel, cs) {
   const templates = HOLE_TEMPLATES.filter(template => available.includes(template.id) || template.id === cs.holeTemplateId);
   let selected = templates.find((template) => template.id === cs.holeTemplateId)
     || templates.find((template) => template.id === DEFAULT_HOLE_TEMPLATE) || templates[0];
+  const previous = previousFoil(cs, templates.filter(template => available.includes(template.id)));
+  let recalled = !!previous && !!cs.preparation.reuseFoil;
+  if (recalled) selected = previous.template;
+  const redo = new Set();
   const preview = el("div.foil.ht-preview", { role: "img", dataset: { test: "hole-preview" } });
   const counts = el("div.ht-counts", { dataset: { test: "hole-template-counts" } });
   const note = el("small.ht-note");
@@ -51,10 +73,20 @@ async function chooseTemplate(panel, cs) {
       illustrated ? holePatternMark(ringsForTemplate(template)) : null,
       el("span.btn-label", { text: template.label }),
     ]);
-    button.addEventListener("click", () => { selected = template; SE.good(); draw(); });
+    button.addEventListener("click", () => {
+      selected = template; recalled = false; redo.clear(); SE.good(); draw();
+    });
     return button;
   });
-  const start = el("button.btn.primary", { dataset: { test: "hole-start" } }, [el("span.btn-label", { text: illustrated ? "穴あけを始める" : "この配置で穴あけを始める" })]);
+  const startLabel = el("span.btn-label");
+  const start = el("button.btn.primary", { dataset: { test: "hole-start" } }, [startLabel]);
+  const reuse = previous ? el("button.btn.ghost.small.hole-reuse", {
+    type: "button", text: "前回の穴を呼び出す", dataset: { test: "hole-reuse" },
+  }) : null;
+  reuse?.addEventListener("click", () => {
+    selected = previous.template; recalled = true; redo.clear(); SE.good(); draw();
+  });
+  const editHint = previous ? el("small.hole-reuse-hint", { text: "開け直す穴を選べます。" }) : null;
   const help = el("details.ht-help", [
     el("summary", { text: "穴数と熱の回り方" }),
     illustrated ? counts : null,
@@ -66,25 +98,53 @@ async function chooseTemplate(panel, cs) {
   panel.append(el(illustrated ? "div.holes.hole-chooser" : "div.holes", [
     el("div.hr-stage", [preview]),
     el("div.ht-side", illustrated ? [
-      el("div.hole-chooser-scroll", [title, ...choices, description, help]), start,
-    ] : [title, ...choices, counts, description, help, note, start]),
+      el("div.hole-chooser-scroll", [title, reuse, editHint, ...choices, description, help]), start,
+    ] : [title, reuse, editHint, ...choices, counts, description, help, note, start]),
   ]));
+  function updateStart() {
+    startLabel.textContent = recalled ? (redo.size ? "選んだ穴を開け直す" : "この配置で進む")
+      : illustrated ? "穴あけを始める" : "この配置で穴あけを始める";
+  }
   function draw() {
     const plane = el("div.foil-target-plane");
     preview.replaceChildren(foilSurface(), plane);
+    preview.setAttribute("role", recalled ? "group" : "img");
     preview.setAttribute("aria-label", `${selected.label}：${templateCountsLabel(selected)}`);
     RINGS.forEach((ring) => plane.append(el("div.foil-ring", {
       style: { width: `${ring.r * 100}%`, height: `${ring.r * 100}%`, opacity: selected.counts[ring.id] ? "1" : ".2" },
     })));
-    for (const ring of ringsForTemplate(selected)) {
+    ringsForTemplate(selected).forEach((ring, i) => {
       for (let k = 0; k < ring.targets; k++) {
-        const a = -Math.PI / 2 + k * 2 * Math.PI / ring.targets;
-        plane.append(el("i.foil-marker.planned", { style: {
-          left: `${50 + Math.cos(a) * ring.r * 50}%`, top: `${50 + Math.sin(a) * ring.r * 50}%`,
-        }, dataset: { ring: ring.id } }));
+        if (!recalled) {
+          const a = -Math.PI / 2 + k * 2 * Math.PI / ring.targets;
+          plane.append(el("i.foil-marker.planned", { style: holePosition(a, ring.r), dataset: { ring: ring.id } }));
+          continue;
+        }
+        const savedRing = previous.foil.rings[i];
+        const hole = savedRing.holes[k], key = `${i}:${k}`;
+        const target = savedRing.phase + k * 2 * Math.PI / ring.targets;
+        const width = 10; // 盤に対するボタンの幅（%）
+        const button = el("button.foil-reuse-dot", {
+          type: "button", style: { ...holePosition(target, ring.r), width: `${width}%`, height: `${width}%` },
+          "aria-pressed": "false",
+          "aria-label": `${ring.label}の穴 ${k + 1}を開け直す`, dataset: { test: `hole-reuse-${ring.id}-${k}` },
+        }, [el(`i.foil-hole.${depthOf(hole.size)}`, { style: {
+          left: `${50 + (Math.cos(hole.a) - Math.cos(target)) * ring.r * 5000 / width}%`,
+          top: `${50 + (Math.sin(hole.a) - Math.sin(target)) * ring.r * 5000 / width}%`,
+        } })]);
+        button.addEventListener("click", () => {
+          if (redo.has(key)) redo.delete(key);
+          else redo.add(key);
+          button.setAttribute("aria-pressed", String(redo.has(key)));
+          updateStart();
+        });
+        plane.append(button);
       }
-    }
-    choices.forEach((button, i) => button.setAttribute("aria-pressed", String(templates[i] === selected)));
+    });
+    choices.forEach((button, i) => button.setAttribute("aria-pressed", String(!recalled && templates[i] === selected)));
+    reuse?.setAttribute("aria-pressed", String(recalled));
+    if (editHint) editHint.hidden = !recalled;
+    updateStart();
     counts.textContent = templateCountsLabel(selected);
     note.textContent = `計${Object.values(selected.counts).reduce((sum, count) => sum + count, 0)}穴。熱の広がりは配置でも変わる`;
     description.textContent = selected.description;
@@ -96,7 +156,7 @@ async function chooseTemplate(panel, cs) {
   });
   SE.good();
   cs.holeTemplateId = selected.id;
-  return selected;
+  return { template: selected, recalled: recalled ? previous.foil : null, redo };
 }
 
 // 毎フレーム動く部分は、値が変わった時だけ書く。同じ値でも DOM へ書くと、ページ全体の見た目の再計算が毎フレーム走って重くなる（CRN・穴あけの重さ）
@@ -116,9 +176,15 @@ export async function runHoles(cs) {
   }
   await waitBenchReady(cs, "holes");
   const tutorial = cs.mode === "tutorial";
+  let warmup = tutorial && cs.onboarding && !autoSkill();
+  const owner = gameState;
+  const root = benchRoot(cs);
+  const isCurrent = () => gameState === owner && benchRoot(cs) === root;
+  let finishWarmup;
   // 穴あけのお手本動画は廃止（#3815）。押し加減は「穴を開ける」の中の目盛りと「?」の説明で伝える。
   const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始すると、光る目印の近くを針が動く", { brief: "穴の配置を選んでから、穴あけを始める" });
-  const template = await chooseTemplate(panel, cs);
+  const { template, recalled, redo } = await chooseTemplate(panel, cs);
+  if (!isCurrent()) return;
   // リニューアル（CRN02・05・08）: リングが埋まると自動で次へ・判定は穴のそば・刺した点の閃光・結果でアルミを残す。
   // 桜井版（CRN16）: リニューアル前のとおり「次のリングへ」「穴あけを終えて結果へ」のボタン・判定は右の札・小さな火の粉だけ。
   const renewal = renewalCraft(cs);
@@ -131,7 +197,7 @@ export async function runHoles(cs) {
   const goodWin = HOLES_TUNING.goodDeg * craftCondition(cs).window * (tutorial ? HOLES_TUNING.lessonGood : 1) * assistEffect(cs).holesGood;
   const limit = tutorial ? HOLES_TUNING.lessonTimeLimit : HOLES_TUNING.timeLimit + (growthSkill(gameState, "K01") ? SKILL_TUNING.holesSeconds : 0);
   // 操作の詳しい説明・凡例・採点は「?」へ。基本画面には置かない（ミニゲームUI共通の方針）。
-  benchRoot(cs)?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", { dataset: { test: "hole-guide" } }, [
+  root?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", { dataset: { test: "hole-guide" } }, [
     el("ul", [
       ["狙う", "光る目印の近くを針が行き来する。重なったところで押す"],
       ["押し加減", "少し押し込んでから離す。短すぎると浅い穴になり、大きく減点される。長く押すほど穴が大きくなる"],
@@ -181,28 +247,43 @@ export async function runHoles(cs) {
   const nextBtn = renewal ? null : el("button.btn.small", { text: "次のリングへ", dataset: { test: "hole-next" } });
   // 文は「穴あけを終えて結果へ」のまま。前半を分けておく（スマホの狭い列では「結果へ」だけを出す・css/craft-phone.css）
   const doneBtn = renewal ? null : el("button.btn.small.ghost", { dataset: { test: "hole-done" } }, [el("span.hole-done-lead", { text: "穴あけを終えて" }), "結果へ"]);
+  const begin = warmup ? el("button.btn.small", { text: "穴あけを始める", dataset: { test: "hole-warmup-start" } }) : null;
+  const row = el("div.hr-row", [begin || nextBtn, begin ? null : doneBtn]);
   const side = el("div.hr-side", [el("small.ht-current", { text: template.label }), ringLabel,
       effectVisible("technique") ? effectBadge("technique", "技") : null,
       senseBand(basePerfWin, 12), effectLine("technique", "技", "技術で針がゆっくり"),
       el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), feedback, plan,
       el("p.hr-depth-hint", { dataset: { test: "hole-depth-hint" }, text: "押す長さで深さが変わる。短すぎると浅く、長いほど大きい穴に。" }),
-      punchBtn, renewal ? null : el("div.hr-row", [nextBtn, doneBtn])]);
+      punchBtn, begin || !renewal ? row : null]);
   panel.append(el("div.holes", [el("div.hr-stage", [disc]), side]));
 
   // ---- 状態
-  const state = rings.map((rg) => ({
-    ...rg,
-    phase: rand(0, Math.PI * 2),
-    taken: new Array(rg.targets).fill(false),
-    holes: [], // {a, d, size}
-    extra: 0,
-    aim: 0, // いま狙っている目印
-  }));
-  let ri = 0;
+  const tally = { perfect: 0, good: 0, miss: 0, rough: 0, tooClose: 0, blank: 0, tooMany: 0, shallow: 0 };
+  const countHole = (ring, { size, kind }) => {
+    if (size === HOLE_SIZES.shallow) tally.shallow++;
+    else if (kind === "perfect" || kind === "good") tally[kind]++;
+    else {
+      ring.extra++;
+      tally[kind === "close" ? "tooClose" : "rough"]++;
+      if (ring.id === "inner") tally.tooMany++;
+    }
+  };
+  const state = rings.map((rg, i) => {
+    const saved = recalled?.rings[i];
+    const holes = saved ? saved.holes.filter(({ k }) => !redo.has(`${i}:${k}`)) : [];
+    const taken = Array.from({ length: rg.targets }, (_, k) => !!saved && !redo.has(`${i}:${k}`));
+    const ring = {
+      ...rg, holes, taken, phase: saved?.phase ?? rand(0, Math.PI * 2), extra: 0,
+      aim: Math.max(0, taken.indexOf(false)), // いま狙っている目印
+    };
+    holes.forEach(hole => countHole(ring, hole));
+    return ring;
+  });
+  let ri = Math.max(0, state.findIndex(ring => ring.taken.includes(false)));
   const gameClock = createCraftClock(panel);
   let t0 = null;
   let elapsed = 0;
-  const tally = { perfect: 0, good: 0, miss: 0, rough: 0, tooClose: 0, blank: 0, tooMany: 0, shallow: 0 };
+  const previousElapsed = recalled?.elapsed ?? 0;
   let finished = false;
   let raf = 0;
   // 針: sweepStart から弧を動く。press は押している間。
@@ -230,6 +311,7 @@ export async function runHoles(cs) {
   const angDiff = circularAngleDistance;
   const complete = () => templateComplete(state);
   const ringComplete = () => state[ri].taken.every(Boolean);
+  const nextRing = () => state.findIndex((ring, i) => i > ri && ring.taken.includes(false));
 
   let currentMarkers = [];
   let highlighted = null;
@@ -294,13 +376,14 @@ export async function runHoles(cs) {
   const hud = () => {
     const ready = complete();
     putProp(punchBtn, "disabled", finished || ringComplete());
-    if (nextBtn) putProp(nextBtn, "disabled", finished || !ringComplete() || ri === state.length - 1);
+    if (nextBtn) putProp(nextBtn, "disabled", finished || !ringComplete() || nextRing() < 0);
     if (doneBtn) putProp(doneBtn, "disabled", finished || !ready);
+    if (warmup) return;
     // 初めの一行は操作の案内（新しい配置では常設しない・CSL15）。完成などの知らせは出す。
     putData(plan, "tone", ready || ringComplete() || elapsed >= limit ? "notice" : "hint");
     putText(plan, ready ? renewal ? "選んだ配置が完成。結果へ" : "選んだ配置が完成。結果を確認しよう"
       : ringComplete() ? renewal ? "リング完成。次のリングへ" : "リング完成。「次のリングへ」で残りの目印を開けよう"
-      : elapsed >= limit ? "時間評価は終了。穴あけは続けられます"
+      : previousElapsed + elapsed >= limit ? "時間評価は終了。穴あけは続けられます"
       : "光る目印に針が重なったら、押し込んで刺す");
   };
 
@@ -314,8 +397,9 @@ export async function runHoles(cs) {
   const advanceRing = () => {
     if (finished || !ringComplete()) return;
     closeRing(state[ri]);
-    if (ri < state.length - 1) {
-      ri++; press = null; sweepStart = clockNow(); state[ri].aim = nextAim(state[ri], 0);
+    const next = nextRing();
+    if (next >= 0) {
+      ri = next; press = null; sweepStart = clockNow(); state[ri].aim = nextAim(state[ri], 0);
       drawMarkers(); hud(); drawNeedle(sweepStart); SE.whoosh();
     }
     else finish();
@@ -343,6 +427,16 @@ export async function runHoles(cs) {
     SE.foilPunch();
     const dRef = referenceDegrees(offset, h);
     const near = ring.holes.some((hole) => referenceDegrees(angDiff(hole.a, a), h) < goodWin * 0.8);
+    if (warmup) {
+      holesLayer.replaceChildren();
+      addHoleDot(a, ring.r, dRef <= goodWin ? "good" : "rough", depth);
+      const size = { shallow: "浅い穴", small: "小さい穴", wide: "少し大きい穴", large: "大きい穴" }[depth];
+      const aim = dRef <= goodWin ? "目印のそばに開いた" : "目印からズレた";
+      putText(plan, `${aim}。深さは「${size}」。押す長さを変えて試せる。`);
+      sweepStart = t;
+      drawNeedle(t);
+      return;
+    }
     const size = HOLE_SIZES[depth];
     const sizeNote = depth === "small" ? "" : depth === "wide" ? "・少し大きい" : depth === "large" ? "・大きい" : "・浅い";
     let kind;
@@ -352,19 +446,15 @@ export async function runHoles(cs) {
     else kind = "rough";
     // ズレた一刺しもミス（無効）にはしない。その目印の穴として成立させ、ズレの大きさで減点する（#3023）。
     ring.taken[k] = true;
-    ring.holes.push({ a, d: dRef, size });
+    const hole = { a, d: dRef, size, kind, k };
+    ring.holes.push(hole);
+    countHole(ring, hole);
     if (depth === "shallow") {
-      tally.shallow++;
       judged("浅い穴。大きく減点", "rough", a, ring.r);
     } else if (kind === "perfect" || kind === "good") {
-      tally[kind]++;
       judged(`${kind === "perfect" ? "EXCELLENT" : "GOOD"}${sizeNote}`, kind, a, ring.r);
-    } else {
-      ring.extra++;
-      if (kind === "close") { tally.tooClose++; judged(`近すぎたけど開いた${sizeNote}`, "rough", a, ring.r); }
-      else { tally.rough++; judged(`ズレたけど開いた${sizeNote}`, "rough", a, ring.r); }
-      if (ring.id === "inner") tally.tooMany++;
-    }
+    } else if (kind === "close") judged(`近すぎたけど開いた${sizeNote}`, "rough", a, ring.r);
+    else judged(`ズレたけど開いた${sizeNote}`, "rough", a, ring.r);
     ring.aim = nextAim(ring, k + 1);
     // 成立したら（ズレた場合も）次の目印の、すぐ手前から針が動き出す。
     sweepStart = t;
@@ -420,14 +510,15 @@ export async function runHoles(cs) {
 
   const drawTime = () => {
     // 時間の帯は 0.5% 刻みで書く（毎フレームの細かな書き換えを減らす。見た目は変わらない）
-    putStyle(timeBar.querySelector("b"), "width", `${Math.round(clamp(100 - (elapsed / limit) * 100, 0, 100) * 2) / 2}%`);
+    putStyle(timeBar.querySelector("b"), "width", `${Math.round(clamp(100 - ((previousElapsed + elapsed) / limit) * 100, 0, 100) * 2) / 2}%`);
   };
   const loop = () => {
     raf = 0;
     if (finished || complete()) return;
+    if (warmup && !isCurrent()) { finishWarmup(false); return; }
     elapsed = clockNow();
     if (gameClock.paused) {
-      if (!gameClock.onPauseChange) raf = requestAnimationFrame(loop);
+      if (warmup || !gameClock.onPauseChange) raf = requestAnimationFrame(loop);
       return;
     }
     // 押しすぎは離さなくても刺し抜ける。押しっぱなしで止まらない。
@@ -436,7 +527,7 @@ export async function runHoles(cs) {
     // 一刺しのあとも針を止めない。描画だけ停止すると処理落ちや判定の飛びに見える。
     drawNeedle(elapsed);
     highlightNext();
-    drawTime();
+    if (!warmup) drawTime();
     hud();
     raf = requestAnimationFrame(loop);
   };
@@ -449,6 +540,11 @@ export async function runHoles(cs) {
   const finish = () => {
     if (finished || !complete()) return;
     finished = true;
+    cleanup();
+    state.forEach(closeRing);
+    done();
+  };
+  const cleanup = () => {
     cancelAnimationFrame(raf);
     raf = 0;
     gameClock.dispose();
@@ -456,8 +552,6 @@ export async function runHoles(cs) {
     globalThis.window?.removeEventListener("pointerup", pointerEnd);
     globalThis.window?.removeEventListener("pointercancel", pointerEnd);
     globalThis.window?.removeEventListener("keyup", keyEnd);
-    state.forEach(closeRing);
-    done();
   };
 
   // ---- 入力（押し始め／離す）
@@ -482,19 +576,63 @@ export async function runHoles(cs) {
   drawMarkers();
   hud();
   drawNeedle(0);
-  await countdown();
-  t0 = gameClock.now();
-  if (!gameClock.onPauseChange || !gameClock.paused) raf = requestAnimationFrame(loop);
-
-  const auto = autoSkill();
-  if (auto) simulate(auto);
+  if (recalled) {
+    for (const ring of state) for (const hole of ring.holes) {
+      const depth = depthOf(hole.size);
+      addHoleDot(hole.a, ring.r, depth === "shallow" ? "rough" : hole.kind, depth);
+    }
+    drawTime();
+  }
+  if (warmup) {
+    putText(ringLabel, "練習・採点なし");
+    timeBar.parentElement.style.visibility = "hidden";
+    putData(plan, "tone", "warmup");
+    plan.setAttribute("aria-live", "polite");
+    putText(plan, "針と目印が重なったら押す。少し待って離す。Spaceでも操作できます。");
+    t0 = gameClock.now();
+    const start = await new Promise(resolve => {
+      finishWarmup = resolve;
+      begin.addEventListener("click", () => resolve(true), { once: true });
+      raf = requestAnimationFrame(loop);
+    });
+    cancelAnimationFrame(raf);
+    raf = 0;
+    if (!start || !isCurrent()) { cleanup(); return; }
+    warmup = false;
+    t0 = null;
+    press = null;
+    sweepStart = elapsed = 0;
+    holesLayer.replaceChildren();
+    timeBar.parentElement.style.removeProperty("visibility");
+    if (renewal) row.remove();
+    else row.replaceChildren(nextBtn, doneBtn);
+    drawMarkers();
+    drawNeedle(0);
+    hud();
+  }
+  if (complete()) finish();
+  else {
+    await countdown();
+    if (!isCurrent()) { cleanup(); return; }
+    t0 = gameClock.now();
+    if (!gameClock.onPauseChange || !gameClock.paused) raf = requestAnimationFrame(loop);
+    const auto = autoSkill();
+    if (auto) simulate(auto);
+  }
   await finishedP;
+  if (!isCurrent()) return;
 
   // ---- 採点（実穴の均等度50/タイミング精度30/実穴径の穴サイズ安定15/残り時間5、浅い穴は追加減点）
-  const res = evaluate(state, tally, Math.max(0, limit - elapsed) / limit, goodWin);
+  if (redo.size) for (const ring of state) ring.holes.sort((a, b) => a.k - b.k);
+  const totalElapsed = previousElapsed + elapsed;
+  const res = evaluate(state, tally, Math.max(0, limit - totalElapsed) / limit, goodWin);
   res.templateId = template.id;
   res.templateLabel = template.label;
   res.plannedCounts = { ...template.counts };
+  if (cs.preparation) cs.preparation.foil = {
+    templateId: template.id, elapsed: totalElapsed,
+    rings: state.map(ring => ({ phase: ring.phase, holes: ring.holes })),
+  };
   settleGrowthPhase(gameState, cs, "holes", res, res.score >= 90);
   cs.holes = res;
   scoreStep(cs, "holes", res.score, "穴あけ");

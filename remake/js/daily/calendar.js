@@ -2,7 +2,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
 import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather, dropRetired, gainCard } from "../core/ui.js";
-import { state, save } from "../core/state.js";
+import { state, save, holdActionSave } from "../core/state.js";
 import { openMenu as openFullMenu } from "./menu.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina, currentCondition } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
@@ -385,10 +385,14 @@ async function registerTournament() {
   // 偵察を見送った旧保存などでは、未解放/休業の受付へ案内して進行を止めない。
   if (!venue || !isUnlocked(venue) || isClosed(venue) || state.flags._c_station_registered) return;
   await chooseSpot({ guide: { pin: "c_station", text: "C.STATIONで大会に登録する。", free: "参加登録（代金なし）" } });
+  const owner = state;
   await visitSpot({ ...venue, cost: 0, stamina: 0 });
-  if (state.flags._c_station_registered && !state.flags._ch1_rules_read) {
-    await (await import("../scenes/rule-sheet.js")).openRuleSheet();
-    state.flags._ch1_rules_read = true;
+  if (state !== owner) return;
+  if (owner.flags._c_station_registered && !owner.flags._ch1_rules_read) {
+    if (owner.day === 2) await (await import("../scenes/day2-guide.js")).openDay2Guide();
+    else await (await import("../scenes/rule-sheet.js")).openRuleSheet();
+    if (state !== owner) return;
+    owner.flags._ch1_rules_read = true;
   }
   save(); // 無料の登録で行動枠・追加の抽選を使わない。
 }
@@ -556,6 +560,7 @@ async function takeAction() {
     await travelToInvitation(inv);
     if (inv.event === "date_samechan") {
       const result = await playSamechanDate({ invite: inv, cost: invitationCost(inv.event), advanceSlot: true });
+      if (state !== invOwner) return;
       if (result.done) { completeInvitation(inv); await afterAction({ exerted: true, spent: result.spent }); }
       return;
     }
@@ -563,6 +568,7 @@ async function takeAction() {
     if (state.slot === 1) state.flags._private_night_day = state.day;
     if (state.slot === 1) state.flags._private_night_char = inv.sender;
     const { value: met, spent } = await paidAction(() => meetInvitation(inv), { ...invitationGrowth(inv.event), primary: CHAR_STAT[inv.sender], exp: invitationExp(inv) });
+    if (state !== invOwner) return;
     if (!met) {
       if (state.flags._private_night_day === state.day && state.flags._private_night_char === inv.sender) {
         delete state.flags._private_night_day;
@@ -585,10 +591,15 @@ async function takeAction() {
   const visitBlock = spot => fixedNightVisitBlock(chapterDef.nightEvents, spot);
   const ev = nightPlan(chapterDef.nightEvents)[0];
   syncSamechanKnowledge();
-  const mapOptions = chapterDef.mapOptions?.() || {};
+  const mapOptions = { ...chapterDef.mapOptions?.() };
+  if (mapOptions.eventPinLabel && ev?.label && !ev.done?.()) {
+    const tonight = `${mapOptions.eventPinLabel}：${ev.label}`;
+    const reminder = mapOptions.reminder || respecMapNotice(state);
+    mapOptions.reminder = [tonight, reminder].filter(Boolean).join(" ／ ");
+  }
   const spotId = await chooseSpot({
     ...mapOptions,
-    reminder: mapOptions.reminder || respecMapNotice(state), // 組み直しが開いている間の一言（SPEC 5.2。上の帯はピンと重なるので右下の案内に添える）
+    reminder: mapOptions.reminder || respecMapNotice(state),
     visitBlock,
     eventPin: ev && !ev.done?.() ? ev.pin : null,
     onShown: () => {
@@ -664,7 +675,10 @@ async function performSpotAction(spot, saveGate) {
     return { used: completed, exerted: completed };
   }
   if (chapterDef.performSpot) {
-    const result = await chapterDef.performSpot(spot, { staminaGuard });
+    const result = await chapterDef.performSpot(spot, { staminaGuard,
+      // 移動先・同行の会話・使った行動を、同じ時点のセーブにする。
+      holdSaveUntilActionEnds: () => { saveGate.release ??= holdActionSave(actionOwner); },
+    });
     if (result) {
       // 第3章以降の店の人が、配合を教える／名前を付けた一台を受け取る（#2020 G・daily/recipe-finds.js）
       if (result.used && state === actionOwner) await recipeFindAfterVisit(spot, { bg: roamerBg() });
@@ -710,8 +724,6 @@ async function performSpotAction(spot, saveGate) {
     if (!(await staminaGuard(sub === "baito" ? -24 : -16))) return { used: false, exerted };
     if (state !== actionOwner) return { used: false, exerted: false };
     if (floor && saveGate) {
-      const { holdActionSave } = await import("../core/state.js");
-      if (state !== actionOwner) return { used: false, exerted: false };
       saveGate.release = holdActionSave(actionOwner);
     }
     exerted = true;
@@ -884,6 +896,7 @@ async function meetInvitation(inv) {
     addStamina(-10);
   } else if (/^date_/.test(inv.event)) {
     await playDate(inv.sender); // 恋人とのデート（絆・ステ・体力はデート側で）
+    if (state !== owner) return false;
     // ひよりの feelings_spoken（#1434 決定B）。恋人・絆Lv2以降のデートの帰りに一度だけ。条件は route.events。
     if (inv.sender === "hiyori") await playHiyoriEvent("feelings_spoken");
   } else if (isFriendEvent(inv.event)) {
@@ -894,6 +907,7 @@ async function meetInvitation(inv) {
   } else if (isFinaleEvent(inv.event)) {
     // 私的な約束で会う締めくくり（みんと）。専用ハガルの贈呈・ルートの記録は bonds.js
     await playFinale(inv.sender);
+    if (state !== owner) return false;
     gainAffinity(inv.sender, 10);
     addStamina(-10);
   } else {
@@ -1020,12 +1034,14 @@ async function endDay({ returnedToTonari = false } = {}) {
   }
   // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）
   // 告白は第1〜3章の物語。第5章（confessions: false）では夜に告白の場面を始めない。
+  const strainOwner = state;
   const confessed = chapterDef.confessions === false ? false
     : await maybeConfession(beat, { busyNight: metTonight || rested || state.flags._eve_slept === state.day, companion });
+  if (state !== strainOwner) return;
   if (confessed) { delete state.flags._home_tonight; await bannersIdle(); }
   // 別れ話（すれ違いが溜まりきった恋人が帰り道で待っている。daily/lover-strain.js）。告白・約束・休養・夜の予定・大会前夜の夜と、
   // 夜を家で過ごした日（帰り道が無い）には重ねない
-  const strainOwner = state;
+  if (state !== strainOwner) return;
   const strainBusy = confessed || metTonight || rested || nightCount > 0
     || !!state.flags._home_tonight || state.flags._eve_slept === state.day || tournamentEve() || finalEve();
   const talked = await maybeStrainTalk(beat, { busyNight: strainBusy });

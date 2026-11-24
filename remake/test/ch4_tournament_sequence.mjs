@@ -230,7 +230,7 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   oldMatch.step = 8; oldMatch.craft.tournamentStory = { seen: ["prestart", "opening", "packed", "waiting", "serve"] };
   assert(!told((await run({ resume: servedOld })).trace).includes("interlude_pull"));
   // 客席の声: 大会の朝に一言をくれた人（恋人が先）の二人目までを渡す（読むのは提供後・調整1回目の後の実況だけ）。
-  const cheered = await run({ cheers: ["ageha", "adam", "rei"] });
+  const cheered = await run({ cheers: ["ageha", "adam", "kuraudo"] });
   const supporterAt = (r, event) => r.supporters.find(([told]) => told === event)?.[1];
   assert.deepEqual(supporterAt(cheered, "interlude1"), ["ageha", "adam"]);
   assert.deepEqual(supporterAt(cheered, "interlude2"), ["ageha", "adam"]);

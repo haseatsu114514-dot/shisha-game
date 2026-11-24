@@ -159,6 +159,7 @@ await suite("desert-ride", async check => {
 
   await check("standalone-page-keyboard-run-result-best-and-quit", async page => {
     await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
+    assert.match(await page.locator(".dr-page-keys").innerText(), /目印（25%）に届いたら/);
     await page.locator(t("desert-page-start")).click();
     await page.locator(t("desert-menu")).waitFor();
     assert.match(await page.locator(t("desert-menu")).innerText(), /DESERT RIDE/);
@@ -167,7 +168,7 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(t("desert-help-panel")).isVisible(), false, "the how-to is hidden until ? is pressed");
     await page.locator(t("desert-help")).click();
     assert.match(await page.locator(t("desert-help-panel")).innerText(), /Space で大ジャンプ/);
-    assert.match(await page.locator(t("desert-help-panel")).innerText(), /目印（30%）まで溜まったら/);
+    assert.match(await page.locator(t("desert-help-panel")).innerText(), /目印（25%）まで溜まったら/);
     await page.keyboard.press("Escape");
     assert.equal(await page.locator(t("desert-help-panel")).isVisible(), false, "Escape closes the how-to");
     assert.equal(await page.locator(t("desert-start")).isVisible(), true);
@@ -444,23 +445,23 @@ await suite("desert-ride", async check => {
     // BOOST ボタン: 目印のすぐ下ではゲージが反応し、目印ちょうどで発動する。
     await page.evaluate(() => {
       const { game } = window.__desertRide;
-      game.gauge = 0.299;
+      game.gauge = 0.249;
       game.chargedAt = game.t;
     });
     const meter = page.locator(t("desert-gauge"));
-    assert.equal(await meter.locator(".dr-gauge-min").evaluate(node => node.style.left), "30%");
+    assert.equal(await meter.locator(".dr-gauge-min").evaluate(node => node.style.left), "25%");
     await press(boostButton, 60);
-    assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 0, "just below 30% does not boost");
-    assert.equal(await page.evaluate(() => window.__desertRide.game.gauge), 0.299, "a rejected attempt keeps the charge");
+    assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 0, "just below 25% does not boost");
+    assert.equal(await page.evaluate(() => window.__desertRide.game.gauge), 0.249, "a rejected attempt keeps the charge");
     assert(await meter.evaluate(node => node.getAnimations().length > 0), "the gauge reacts briefly");
     await page.evaluate(() => {
       const { game } = window.__desertRide;
-      game.gauge = 0.3;
+      game.gauge = 0.25;
       game.chargedAt = game.t;
     });
     await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.gauge === "full");
     await press(boostButton, 60);
-    assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 1, "exactly 30% boosts");
+    assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 1, "exactly 25% boosts");
     assert.equal(await page.evaluate(() => window.__desertRide.game.gauge), 0, "the BOOST button consumes the stocked gauge");
     assert(await page.evaluate(() => window.__desertRide.game.boostT > 0), "the partial gauge gives boost time");
     await page.waitForTimeout(200);
@@ -839,7 +840,7 @@ await suite("desert-ride", async check => {
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
         _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri", "noor"]) value.flags[`_intro_${who}`] = true;
+      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sensu", "dr_charcoal", "noor"]) value.flags[`_intro_${who}`] = true;
       Object.assign(value.met, { naru: true, noor: true });
       if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
       value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
@@ -982,7 +983,7 @@ await suite("desert-ride", async check => {
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
         _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "nagumo", "dr_kemuri", "noor"]) value.flags[`_intro_${who}`] = true;
+      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "nagumo", "dr_charcoal", "noor"]) value.flags[`_intro_${who}`] = true;
       Object.assign(value.met, { naru: true, noor: true });
       if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
       value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
@@ -1076,7 +1077,7 @@ await suite("desert-ride", async check => {
       value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
         _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri", "noor"]) value.flags[`_intro_${who}`] = true;
+      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sensu", "dr_charcoal", "noor"]) value.flags[`_intro_${who}`] = true;
       Object.assign(value.met, { naru: true, noor: true, da_silva: true });
       if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
       value.flags._overseas_companion = { decided: true, companion: null, supports: [] };

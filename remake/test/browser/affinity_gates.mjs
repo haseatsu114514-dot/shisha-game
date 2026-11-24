@@ -240,6 +240,7 @@ await suite("affinity-gates", async check => {
         G.stats.ensureAffinityLevel("minto", 5);
         const guaranteed = { points: s.affinity.minto, guarantee, second: s.flags._minto_affinity_waiting_pts || 0 };
         s.lovers = ["tsumugi", "rio"]; s.lovePts = { tsumugi: 9, rio: 20 }; s.loveLevel = { tsumugi: 1, rio: 2 };
+        await G.stats.prepareLoveAffinity(["tsumugi"]);
         G.stats.gainAffinity("tsumugi", 10); const publicBond = s.lovePts.tsumugi;
         G.stats.bond.private = true; G.stats.gainAffinity("tsumugi", 10); G.stats.bond.private = false;
         s.affinity.minto = 66; s.flags._minto_name_known = true;

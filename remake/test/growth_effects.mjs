@@ -255,9 +255,9 @@ assert.equal(JSON.stringify(core.state),choiceBefore);
 // 顔が広いは既存の未読遭遇の間隔だけを縮め、初回紹介や面識の条件を飛ばさない。
 const {spotEncounterDue}=await import("../js/daily/spot-encounters.js");
 core.state.met.naru=true;core.state.flags._spot_seen_cafe_naru_break=true;core.state.flags._spot_last_cafe=2;
-const encounters={cafe_naru_break:{},cafe_maezono_break:{}};
+const encounters={cafe_naru_break:{},cafe_uezono_break:{}};
 assert.equal(spotEncounterDue("cafe",3,core.state,encounters),null);
-core.state.growth.nodes=["K19"];assert.equal(spotEncounterDue("cafe",3,core.state,encounters,{wide:effects.growthSkill(core.state,"K19")}),"cafe_maezono_break");
+core.state.growth.nodes=["K19"];assert.equal(spotEncounterDue("cafe",3,core.state,encounters,{wide:effects.growthSkill(core.state,"K19")}),"cafe_uezono_break");
 assert.equal(spotEncounterDue("cafe",1,core.state,encounters),null);
 // 目利きの価格は同日再表示とLOADで同一。表示と会計が同じ関数を使う。
 const {shopFlavorPrice,SHOP_FLAVORS}=await import("../js/daily/shop.js");
@@ -266,6 +266,11 @@ const prices=()=>SHOP_FLAVORS.map(id=>shopFlavorPrice(DB.flavorById[id],SHOP_FLA
 const firstPrices=prices();assert.equal(firstPrices.filter((price,i)=>price<DB.flavorById[SHOP_FLAVORS[i]].price).length,2);
 assert.deepEqual(prices(),firstPrices);assert.equal(JSON.stringify(core.state),shopBefore);
 core.save();core.load();assert.deepEqual(prices(),firstPrices);
+const {WIDEHANGA_FLAVORS} = await import("../js/daily/shop-catalogs.js");
+const day19 = { ...core.state, chapter: 2, day: 19, weatherSeed: 123 };
+const availableDeals = WIDEHANGA_FLAVORS.filter(id => shopFlavorPrice(DB.flavorById[id], WIDEHANGA_FLAVORS, day19) < DB.flavorById[id].price);
+assert.equal(availableDeals.length, 2);
+assert(availableDeals.every(id => (DB.flavorById[id].chapter_min || 1) <= 2), "未発売のライム・ビスケットで柚ヶ谷の特価枠を消費しない");
 growth.setGrowthPreview(false);assert.deepEqual(prices(),SHOP_FLAVORS.map(id=>DB.flavorById[id].price));
 // 単体の美学は、授業を習い選んだ一種の一台だけ。旧来の単体を弱くしない。
 growth.setGrowthPreview(true);core.newGame();growth.ensureGrowth().nodes=["M-S2"];
@@ -345,13 +350,13 @@ console.log("[growth effects] PASS: additive legacy growth, 160+67=227, no resou
 // 集団交流は一行動。各人の初回・交流の幅だけを重複なく数える（SPEC X1/X2/X3/X11）。
 growth.setGrowthPreview(true);core.newGame();
 const group = growth.ensureGrowth();
-assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["saku","volk","saku"]}),150);
+assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["ayatori","volk","ayatori"]}),150);
 assert.equal(group.fresh.counts["group-test"],1);
-assert.deepEqual(group.firsts.people,["saku","volk"]);assert.deepEqual(group.chapterLog[1].people,["saku","volk"]);
-assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","saku"]}),30);
+assert.deepEqual(group.firsts.people,["ayatori","volk"]);assert.deepEqual(group.chapterLog[1].people,["ayatori","volk"]);
+assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","ayatori"]}),30);
 assert.equal(group.fresh.counts["group-test"],2);
 assert.deepEqual(group.firsts.places,["party"]);
-assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","saku"]}),24);
+assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","ayatori"]}),24);
 growth.setGrowthPreview(false);
 console.log("[growth effects] PASS: group action XP occurs once; first-person and breadth ledgers count unique real guests");
 growth.setGrowthPreview(true);core.newGame();

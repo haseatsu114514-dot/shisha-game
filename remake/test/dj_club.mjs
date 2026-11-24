@@ -69,7 +69,7 @@ check("the old chapter 3 free-time cards offer the club only in chapter 3 night 
   assert.deepEqual(dj.djNightChoices({ chapter: 3 }, { id: "d5-0", slot: 0 }), []);
   assert.deepEqual(dj.djNightChoices({ chapter: 3 }, null), []);
   for (const chapter of [1, 2, 4, 5]) assert.deepEqual(dj.djNightChoices({ chapter }, { slot: 1 }), []);
-  const value = { chapter: 3, slot: 1, flags: { _ch3_intro: { stage: 1 } } }, scenes = [{ id: "ch3_opening" }, { id: "ch3_saku_first" }];
+  const value = { chapter: 3, slot: 1, flags: { _ch3_intro: { stage: 1 } } }, scenes = [{ id: "ch3_opening" }, { id: "ch3_ayatori_first" }];
   const plain = chapterThreeMapModel(value, scenes, { freeTime: true, actions: [] });
   assert.ok(!plain.pins.some(pin => /^club/.test(pin.id))); assert.ok(plain.landmarks.some(item => item.id === "livehouse"), "the drawn live house stays a landmark"); assert.doesNotMatch(plain.note, /DJ/);
   const model = chapterThreeMapModel(value, scenes, { freeTime: true, actions: dj.djNightChoices(value, { slot: 1 }) });
@@ -174,6 +174,8 @@ check("talks after a set (SPC26): first A, then a regular's request on the 3rd s
   for (const set of [1, 2, 3]) dj.recordDjResult(both, msg(set, "A", 80));
   assert.equal(talk(both, [msg(3, "A", 80)]), "ch3_club_a_talk");
   both.flags[dj.CLUB_A_TALK_FLAG] = true;
+  assert.equal(talk(both, [msg(3, "A", 80)]), "ch3_club_request", "the request comes before the closing set");
+  both.flags[dj.CLUB_REQUEST_FLAG] = true;
   assert.equal(talk(both, [msg(3, "A", 80)]), "ch3_club_last_set");
   assert.equal(dj.djTalkAfterSet(null), null);
 });

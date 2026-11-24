@@ -80,8 +80,9 @@
 .dr-touch.on, .dr-touch:active { background: rgba(255,214,150,.78); color: #3a2520; transform: scale(.97); }
 .dr-touch.dr-jump.on, .dr-touch.dr-jump:active { background: rgba(255,170,90,.92); }
 @media (hover: hover) and (pointer: fine) { .dr-touch { opacity: .55; } .dr-touch:hover { opacity: .9; } .desert-ride:not([data-gauge="full"]) .dr-touch.dr-boost { opacity: .3; } }
-/* やめる: ✕ の丸ボタン（64px）。HUD 右の箱の下に置き、下辺のタッチボタンとは離す */
-.dr-quit { position: absolute; right: 22px; top: 204px; width: 64px; height: 64px; padding: 0; display: grid; place-items: center; border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,248,236,.82); color: #4a2f28; font: 900 30px/1 var(--font); cursor: pointer; }
+/* やめる: ✕ の丸ボタン（#4131 共通標準: 箱 --q-hit・丸 --q-dot を ::before で描く）。HUD 右の箱の下に置き、下辺のタッチボタンとは離す */
+.dr-quit { position: absolute; right: 22px; top: 204px; width: var(--q-hit); height: var(--q-hit); padding: 0; display: grid; place-items: center; isolation: isolate; border: 0; border-radius: 50%; background: transparent; color: #4a2f28; font: 900 var(--q-font)/1 var(--font); cursor: pointer; }
+.dr-quit::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box; width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,248,236,.82); pointer-events: none; }
 .dr-quit[hidden] { display: none; }
 
 /* ---- カード（メニュー・リザルト） ---- */
@@ -92,8 +93,10 @@
 .dr-title { margin: 4px 0 10px; font-size: 52px; line-height: 1; letter-spacing: .08em; font-weight: 900; color: #3a2520; }
 .dr-lead { margin: 0 0 14px; font-size: 18px; color: #4a3a34; }
 /* 遊び方: 右上の「？」を押した時だけ、カードの上に重ねて見せる（常時は出さない） */
-.dr-help-btn { position: absolute; right: 18px; top: 18px; width: 64px; height: 64px; padding: 0; display: grid; place-items: center; border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,255,255,.7); color: #b2652f; font: 900 34px/1 var(--font); cursor: pointer; }
-.dr-help-btn:is(:hover, :focus-visible) { background: #fff; outline: 3px solid rgba(212,82,31,.5); outline-offset: 2px; }
+.dr-help-btn { position: absolute; right: 18px; top: 18px; width: var(--q-hit); height: var(--q-hit); padding: 0; display: grid; place-items: center; isolation: isolate; border: 0; border-radius: 50%; background: transparent; color: #b2652f; font: 900 var(--q-font)/1 var(--font); cursor: pointer; }
+.dr-help-btn::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box; width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,255,255,.7); pointer-events: none; }
+.dr-help-btn:is(:hover, :focus-visible) { outline: 3px solid rgba(212,82,31,.5); outline-offset: 2px; }
+.dr-help-btn:is(:hover, :focus-visible)::before { background: #fff; }
 .dr-help { display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .dr-menu[data-help="open"] > :not(.dr-help) { display: none; }
 .dr-help[hidden] { display: none; }
@@ -139,7 +142,7 @@
   .dr-combo { min-height: 28px; }
   .dr-gauge { height: 24px; }
   .dr-time { font-size: 26px; }
-  .dr-quit { top: 252px; width: 84px; height: 84px; font-size: 38px; }
+  .dr-quit { top: 252px; width: var(--q-hit); height: var(--q-hit); font-size: var(--q-font); }
   .dr-help-btn { width: 84px; height: 84px; font-size: 44px; }
   .dr-button { min-height: 84px; }
   .dr-caption { top: 92px; font-size: 28px; }
@@ -174,9 +177,9 @@ html:root[data-density="phone"] #stage[data-wide] .dr-touch.dr-boost { width: 14
 html:root[data-density="phone"] #stage[data-wide] .dr-button { min-height: var(--phone-tap); font-size: 28px; }
 
 /* ---- 「？」の統一と、常に出す文をもう一段減らす（#2729・2026-11-08 オーナー指摘「文字が多い・？が大きい」）:
-   「？」は見た目を舞台上 31〜35px の細い線の丸（::before）にし、押せる範囲はボタンの箱そのもの（透明）で実寸 40px 以上。カードの右上のまま。
+   「？」は見た目を細い線の丸（::before）にし、大きさは #4131 の共通標準（丸43px・押せる箱58px、--q-* 式、2026-11-22 もう一回り拡大）。カードの右上のまま。
    スマホでは、メニューの前置きの一文（相手は滑走中の「VS ヌール」で分かる）と、結果・練習のおわりの英字の見出しを出さない。 ---- */
-.desert-ride { --q-hit: max(44px, calc(40px / var(--k, 1))); --q-font: max(20px, calc(11.5px / var(--k, 1))); --q-dot: calc(var(--q-font) + 11px); }
+.desert-ride { --q-hit: max(58px, calc(54px / var(--k, 1))); --q-font: max(27px, calc(15px / var(--k, 1))); --q-dot: calc(var(--q-font) + 16px); }
 .desert-ride .dr-help-btn.dr-help-btn { right: 8px; top: 8px; isolation: isolate; width: var(--q-hit); height: var(--q-hit);
   border: 0; background: transparent; color: #b2652f; font-size: var(--q-font); }
 .desert-ride .dr-help-btn.dr-help-btn::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box;

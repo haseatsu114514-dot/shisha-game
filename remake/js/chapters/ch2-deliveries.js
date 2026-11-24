@@ -1,5 +1,5 @@
 // 初日の配達だけを管理する。通常訪問の料金・成長・交流回数には触れない。
-export const DELIVERY_STOPS = ["ageha", "kumicho", "rei"];
+export const DELIVERY_STOPS = ["ageha", "kumicho", "kuraudo"];
 
 export function acceptChapterTwoDeliveries(value) {
   if (value.chapter !== 2 || value.flags._ch2_deliveries) return false;

@@ -31,7 +31,7 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "新作のHMD。炭の持ちが20％違うらしい"
+          "text": "新作のHMD。炭の持ちが20%違うらしい"
         },
         {
           "speaker": "naru",
@@ -417,7 +417,7 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "お、来た来た。悪いな、夜に、……ほら、特等席"
+          "text": "お、来た来た。悪いな、夜に。……ほら、特等席"
         },
         {
           "speaker": "",
@@ -1114,7 +1114,7 @@
       }
     },
     {
-      "dialogue_id": "ch1_rei_cameo",
+      "dialogue_id": "ch1_kuraudo_cameo",
       "comment": "第2章のクラウドのカメオ来店。名前と正体は伏せ、話者名なしの「」で通す。煙を曲にたとえる感想と、帰り際の丁寧な挨拶で印象を残す",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png"

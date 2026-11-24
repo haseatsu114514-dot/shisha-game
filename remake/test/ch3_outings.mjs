@@ -235,7 +235,7 @@ function nextWindow(value) {
   assert(TOKYO_OUTINGS.filter(item => item.affinityWith).every(item => !item.repeat || item.talks?.length >= 2), "Repeated affinity outings rotate talks");
   // 綾取（#2028・AFB02）: 好感度は煙幕への外出の確定時（一度きりの話は段階会話の +16）。台本には報酬行を置かない。
   for (const id of ["enmaku_notes", "enmaku_answer"]) {
-    assert.deepEqual(outingAffinity(newState(), TOKYO_OUTINGS.find(item => item.id === id)), { saku: 16 });
+    assert.deepEqual(outingAffinity(newState(), TOKYO_OUTINGS.find(item => item.id === id)), { ayatori: 16 });
     assert(!JSON.stringify(byId[`ch3_outing_${id}`]).includes("affinity"));
   }
   // てつこの世話は撫でる／餌の2択。どちらの枝も次の行へ戻り、報酬行を持たない。
@@ -268,33 +268,33 @@ function nextWindow(value) {
   const scene = id => [...read("ch3_rivals"), ...read("ch3_main")].find(dialogue => dialogue.dialogue_id === id);
   const offered = value => availableOptionalScenes(routes, value).map(item => item.id);
   const early = at("d8-night");
-  early.value.affinity.saku = AFFINITY_RANK_PTS[5];
-  assert(!offered(early.value).includes("ch3_saku_lime"), "Ayatori's LIME before his advice");
+  early.value.affinity.ayatori = AFFINITY_RANK_PTS[5];
+  assert(!offered(early.value).includes("ch3_ayatori_lime"), "Ayatori's LIME before his advice");
   const { value } = at("d12-noon");
-  assert(!offered(value).includes("ch3_saku_lime"), "Ayatori's LIME without affinity");
-  value.affinity.saku = AFFINITY_RANK_PTS[1] - 1;
-  assert(!offered(value).includes("ch3_saku_lime"), "Ayatori's LIME below ♥1");
-  value.affinity.saku = AFFINITY_RANK_PTS[1];
-  assert(offered(value).includes("ch3_saku_lime"));
-  commitOptionalRead(value, "ch3_saku_lime");
-  assert(!offered(value).includes("ch3_saku_lime"), "Ayatori's LIME read twice");
-  const lime = scene("ch3_saku_lime").lines;
-  assert(lime.some(line => line.type === "set_flag" && line.flag === "_lime_contact_saku"));
-  assert.deepEqual(lime.filter(line => line.type === "apply").map(line => line.affinity), [{ saku: 2 }]);
-  assert.equal(classifyFlag("_lime_contact_saku"), "person");
-  for (const id of ["ch3_saku_first", "ch3_saku_mukai_visit", "ch3_saku_advice", "ch3_enmaku_cleanup"]) {
+  assert(!offered(value).includes("ch3_ayatori_lime"), "Ayatori's LIME without affinity");
+  value.affinity.ayatori = AFFINITY_RANK_PTS[1] - 1;
+  assert(!offered(value).includes("ch3_ayatori_lime"), "Ayatori's LIME below ♥1");
+  value.affinity.ayatori = AFFINITY_RANK_PTS[1];
+  assert(offered(value).includes("ch3_ayatori_lime"));
+  commitOptionalRead(value, "ch3_ayatori_lime");
+  assert(!offered(value).includes("ch3_ayatori_lime"), "Ayatori's LIME read twice");
+  const lime = scene("ch3_ayatori_lime").lines;
+  assert(lime.some(line => line.type === "set_flag" && line.flag === "_lime_contact_ayatori"));
+  assert.deepEqual(lime.filter(line => line.type === "apply").map(line => line.affinity), [{ ayatori: 2 }]);
+  assert.equal(classifyFlag("_lime_contact_ayatori"), "person");
+  for (const id of ["ch3_ayatori_first", "ch3_ayatori_mukai_visit", "ch3_ayatori_advice", "ch3_enmaku_cleanup"]) {
     const dialogue = scene(id);
     const lines = [...dialogue.lines, ...Object.values(dialogue.branches || {}).flat()];
-    assert(!dialogue.metadata?.add_affinity && !lines.some(line => line.affinity?.saku), `${id}: mandatory scenes give no affinity`);
+    assert(!dialogue.metadata?.add_affinity && !lines.some(line => line.affinity?.ayatori), `${id}: mandatory scenes give no affinity`);
   }
   const cleanup = scene("ch3_enmaku_cleanup");
-  const gate = cleanup.lines.find(line => line.type === "condition" && line.flag === "_lime_contact_saku");
-  assert(gate && !gate.next_false && cleanup.branches[gate.next_true].some(line => line.speaker === "saku"));
+  const gate = cleanup.lines.find(line => line.type === "condition" && line.flag === "_lime_contact_ayatori");
+  assert(gate && !gate.next_false && cleanup.branches[gate.next_true].some(line => line.speaker === "ayatori"));
   // CI の quick は立ち絵を取得しないため、画像がある環境だけ表情を照合する（表情の登録は lint_dialogue でも検査）。
-  const spriteDir = new URL("../img/sprites/characters/saku/", import.meta.url);
+  const spriteDir = new URL("../img/sprites/characters/ayatori/", import.meta.url);
   if (fs.existsSync(spriteDir)) {
-    const faces = new Set(fs.readdirSync(spriteDir).map(name => name.replace(/^chr_saku_|\.webp$/g, "")));
-    for (const line of [...lime, ...cleanup.branches[gate.next_true]]) if (line.speaker === "saku") assert(faces.has(line.face), line.face);
+    const faces = new Set(fs.readdirSync(spriteDir).map(name => name.replace(/^chr_ayatori_|\.webp$/g, "")));
+    for (const line of [...lime, ...cleanup.branches[gate.next_true]]) if (line.speaker === "ayatori") assert(faces.has(line.face), line.face);
   }
 }
 
@@ -661,7 +661,7 @@ console.log("PASS: park day/night rotation, old saves, SAVE/LOAD and duplicate c
   assert.equal(homeCallId(value), null, "Sumi's night call waits for the night; nobody else is in the contacts");
   assert.equal(homeCallId(value, { night: true }), "ch3_home_call_sumi_pocket");
   assert.equal(homeCallId(value, { night: true, busy: true }), null, "A night with a story scene or a far call has no home call");
-  value.contacts.push("adam", "samechan", "rio", "kumicho", "rei");
+  value.contacts.push("adam", "samechan", "rio", "kumicho", "kuraudo");
   assert.equal(homeCallId(value), "ch3_home_call_adam_exit");
   assert.equal(homeCallId(value, { night: true }), "ch3_home_call_adam_exit");
   assert.equal(homeCallId(value, { away: id => id === "adam" }), "ch3_home_call_rio_face", "Someone visiting Tokyo does not call from home");

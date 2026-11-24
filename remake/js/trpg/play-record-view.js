@@ -1,10 +1,11 @@
 import { chapterDay } from "../core/chapter-clock.js";
 import { el } from "../core/util.js";
 import { displayName } from "./presentation.js";
+import { TRPG_END_LABELS, firstTrpgEndingPlays } from "./campaign.js";
 import { savedTrpgRecords, trpgReplayScenes } from "./play-record.js";
 import { openShelfPanel } from "./shelf-help.js";
 
-export function openTrpgBookshelf(root, state, scenarios, characters) {
+export function openTrpgBookshelf(root, state, scenarios, characters, { campaignEndings = false } = {}) {
   const date = entry => {
     // Older chapter-local dates are kept as written in #3892.
     const flags = entry.day >= (state?.flags?._ch2_day1?.startDay ?? Infinity) ? state.flags : {};
@@ -17,15 +18,20 @@ export function openTrpgBookshelf(root, state, scenarios, characters) {
     const scenario = scenarios.find(story => story.id === id);
     const title = records.at(-1)?.title || scenario?.title || id;
     const plays = Number.isSafeInteger(memory.plays) && memory.plays > 0 ? memory.plays : 1;
-    return [{ id, title, memory, records, plays, scenario }];
+    return [{ id, title, memory, records, plays, scenario, firsts: firstTrpgEndingPlays(memory) }];
   });
   const control = (text, test, onclick) => el("button.trpg-button", { type: "button", text, dataset: { test }, onclick });
   const runLabel = record => "第" + record.play + "回 · CH." + record.chapter + " DAY " + record.day + " · " + record.ending;
   const content = [
     el("p", { text: "「保存する」を選んだ回の選択、確定した出目、結末・後日談を再生できます。" }),
-    ...(entries.length ? entries.map(({ id, title, memory, records, plays, scenario }) =>
+    ...(entries.length ? entries.map(({ id, title, memory, records, plays, scenario, firsts }) =>
       el("section.trpg-shelf-help-item", { dataset: { test: "trpg-shelf-story-" + id } }, [
         el("h3", { text: title }),
+        ...(campaignEndings && scenario ? [el("ul", { dataset: { test: "trpg-shelf-endings-" + id } },
+          Object.entries(TRPG_END_LABELS).map(([tier, label]) => {
+            const play = firsts[tier];
+            return el("li", { text: label + " · " + (play ? "第" + play + "回で到達" : "未記録") });
+          }))] : []),
         ...records.slice().reverse().map(record => {
           const replay = control(runLabel(record) + " · 再生", "trpg-shelf-run-" + id + "-" + record.play,
             () => start(record, replay));

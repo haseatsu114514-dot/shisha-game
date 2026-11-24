@@ -95,7 +95,7 @@ await suite("lover-strain", async check => {
     assert(at(result.read, "友達に、戻ろうか") > at(result.read, "構ってもらえないの"), "Then she asks");
     assert(at(result.read, "▶|これからは、ちゃんと向き合う") > at(result.read, "友達に、戻ろうか"));
     assert(at(result.read, "もう一回、信じちゃうよ") > 0);
-    assert(!result.read.some(text => text.includes("この話、二回目")), "The first talk has no 'again' line");
+    assert(!result.read.some(text => text.includes("この話、前にもしたね")), "The first talk has no 'again' line");
     assert.deepEqual(result.after.lovers, ["minto", "rio"], "Still lovers");
     assert.equal(result.after.strain.minto.v, 1);
     assert.equal(result.after.strain.minto.talks, 1);
@@ -105,7 +105,7 @@ await suite("lover-strain", async check => {
     assert.deepEqual(result.toasts, []);
     assert.equal(result.sameNight, false, "Not twice in a row");
     assert.equal(result.again, true, "Neglect her again and she asks again");
-    assert(at(result.againRead, "この話、二回目だね") > 0 && at(result.againRead, "ずっと既読がつかないの") > 0, "The second time has its own line and the new reason");
+    assert(at(result.againRead, "この話、前にもしたね") > 0 && at(result.againRead, "ずっと既読がつかないの") > 0, "The second time has its own line and the new reason");
     assert.equal(result.final.strain.minto.talks, 2);
     assert.deepEqual(result.final.lovers, ["minto", "rio"]);
   });

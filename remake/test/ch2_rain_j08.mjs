@@ -79,7 +79,7 @@ for (const bg of ["img/backgrounds/bg_station_walk_night.webp", "img/backgrounds
 for (const bg of [
   ROOMS.ageha,
   ROOMS.kumicho,
-  ROOMS.rei,
+  ROOMS.kuraudo,
   CH2_SCENE_BACKGROUNDS.agehaClosed,
   CITY_BACKGROUNDS.trpg,
   "img/backgrounds/bg_ageha_shop.webp",

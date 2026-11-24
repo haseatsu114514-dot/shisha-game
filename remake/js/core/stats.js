@@ -2,7 +2,7 @@
 import { MAX_MONEY } from "./rules.js";
 import { GUTS_STAMINA_BONUS } from "./stat-step-tables.js";
 import { state, STAT_KEYS, STAT_JA, hasAffinity } from "./state.js";
-import { DB } from "./data.js";
+import { DB, loadLoverEvents } from "./data.js";
 import { pendingLoveStage, questionComplete } from "./affinity-stages.js";
 import { emit } from "./bus.js";
 import { clamp } from "./util.js";
@@ -263,8 +263,20 @@ export function releaseAffinity(id) {
 /** 私的な絆も最初の未読段階を越えない。旧高値・loveLevelは減らさない。 */
 function lovePointCap(id) {
   const level = pendingLoveStage(state, id, DB);
+  if (level === undefined) return state.lovePts[id] || 0;
   return Math.max(state.lovePts[id] || 0, level && level < 5 ? AFFINITY_RANK_PTS[level + 1] - 1 : Infinity);
 }
+
+/** 絆の加算や節目の候補を調べる前に読む。失敗時は加算を既存の保留欄に積める。 */
+export async function prepareLoveAffinity(ids, { signal } = {}) {
+  if (signal?.aborted || !ids.some(id => state?.lovers?.includes(id))) return false;
+  const owner = state;
+  if (DB.loverEventsLoaded === false) {
+    try { await loadLoverEvents(); } catch { return false; }
+  }
+  return state === owner && !signal?.aborted;
+}
+
 export function releaseLoveAffinity(id) {
   if (!(state.lovers || []).includes(id)) return 0;
   const key = `_${id}_love_waiting_pts`, prevPts = state.lovePts[id] || 0;

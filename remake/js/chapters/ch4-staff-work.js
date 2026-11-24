@@ -1,4 +1,5 @@
 // 会場の仕事を既存の日常の固定夜と、世界大会のcheckpointへつなぐ薄い表示アダプタ。
+import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { state, save } from "../core/state.js";
 import { DB, bgUrl, CHAPTER_DIALOGUE_FILES } from "../core/data.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -25,7 +26,8 @@ async function readStaffScene(id, { isCurrent = () => true } = {}) {
   await loadChapterFourStaffDialogues();
   if (!live()) return false;
   const source = chapterFourStaffDialogue(owner, DB.dialogues[id]);
-  const bg = bgUrl(id === CH4_STAFF_IDS.notice ? "bg_dubai_inn_night" : CH4_STAFF_BG);
+  const room = id === CH4_STAFF_IDS.echo ? TOURNAMENT_VENUE_BG[4] : CH4_STAFF_BG;
+  const bg = bgUrl(id === CH4_STAFF_IDS.notice ? "bg_dubai_inn_night" : room);
   showScreen("none", null);
   await setBg(bg);
   if (!live()) return false;

@@ -8,7 +8,7 @@ import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
 import { canReflect } from "../daily/reflection.js";
-import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
+import { loverMilestonesDue, prepareLoverMilestones, readLoverMilestone } from "./lover-entry.js";
 import { state, save } from "../core/state.js";
 import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withSceneLoading, toast } from "../core/ui.js";
 import { sceneMoment } from "../core/scene-motions.js";
@@ -34,6 +34,7 @@ import { CRAFT_STEPS } from "../craft/practice.js";
 import { servedEvaluationLines } from "../craft/served-eval.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { craftReviewBlock } from "../craft/tournament-graphics.js";
+import { exhibitionResultReason } from "../craft/tournament-result-reason.js";
 import { naruTastingCategory } from "../craft/naru-tasting.js";
 import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_SCENE_FILES, CH5_PREP_TRIALS,
   chapterFiveAftermathScene, chapterFiveSceneTail,
@@ -178,7 +179,13 @@ async function readScene(owner, id, { keepHud = false } = {}) {
   // 試作の返り（#1666）は同じ場面の末尾に続けて読み、読了の確定も親場面と一緒にする。
   // 恋人のましろの訪問（#2024 A2）も同じく末尾に続け、親場面と一緒に確定する。
   // 勝負のあと・前半（勝敗で台本が分かれる）の末尾には、勝敗共通の千須への返事を続ける（STK05）。
-  const loverEcho = chapterFiveLoverEcho(state, id, { milestoneDue: loverMilestonesDue(["mashiro"]).length > 0 });
+  let loverEcho = chapterFiveLoverEcho(state, id);
+  if (loverEcho.length) {
+    const ready = await prepareLoverMilestones(["mashiro"]);
+    if (!current(owner)) return false;
+    if (!ready) { toast("会話を読み込めませんでした。もう一度お試しください"); return false; }
+    loverEcho = chapterFiveLoverEcho(state, id, { milestoneDue: loverMilestonesDue(["mashiro"]).length > 0 });
+  }
   const echo = [...chapterFiveSceneTail(id), ...chapterFivePrepEcho(state, id), ...loverEcho].map(echoId => {
     if (!DB.dialogues[echoId]) throw new Error(`台本がありません: ${echoId}`);
     return DB.dialogues[echoId].lines;
@@ -224,7 +231,7 @@ async function readScene(owner, id, { keepHud = false } = {}) {
  * 読了と既読の保存は romance.js が持つ。中断すれば未読のまま残る。
  */
 async function readLoverMilestoneAt(owner, id) {
-  if (!current(owner) || !loverMilestonesDue([id]).length) return false;
+  if (!current(owner)) return false;
   const controller = owner.controller = new AbortController();
   try { return await readLoverMilestone(id, { signal: controller.signal }); }
   finally { if (owner.controller === controller) owner.controller = null; }
@@ -303,7 +310,7 @@ async function renderStage(owner) {
 }
 
 /** 読んだ後にその場にいる人へ、心得の盤で灯した授業を相談できる場面（SBD91。灯していなければ何も起きない） */
-const LESSON_AFTER_SCENE = Object.freeze({ ch5_doctor_cocreation: "dr_kemuri" });
+const LESSON_AFTER_SCENE = Object.freeze({ ch5_doctor_cocreation: "dr_charcoal" });
 
 async function renderScene(owner, scene, dayLabel) {
   await enterScene(bgUrl(CH5_SCENE_BG[scene.id]));
@@ -326,7 +333,7 @@ const SCAN_SCENES = Object.freeze({ ch5_opening: { from: "???", to: "挑戦状" 
 /** これまでに会った人の登場カットインの色（スタッフロール前の煙・#2688 A8）。主な人から最大8色 */
 function metColors() {
   const art = DB.manifest?.introArt || {};
-  const order = ["sumi", "naru", "tsumugi", "minto", "adam", "ageha", "mashiro", "saku", "hiyori", "samechan", "noor", "sheikh", "dr_kemuri"];
+  const order = ["sumi", "naru", "tsumugi", "minto", "adam", "ageha", "mashiro", "ayatori", "hiyori", "samechan", "noor", "sheikh", "dr_charcoal"];
   return order.filter(id => state.met?.[id] && art[id]?.color).map(id => art[id].color).slice(0, 8);
 }
 
@@ -457,8 +464,11 @@ async function renderMatch(owner) {
       }
       await renderStage(owner);
     }, true),
-  ], tally ? voteNote(tally) : "", first,
-  [craftReviewBlock(chapterFiveProgress(state).secondCup?.review, test("craft-review"))]);
+  ], "", first, [
+    tally ? el("div.tournament-result-reason", { text: exhibitionResultReason(tally), dataset: { test: "tournament-result-reason" } }) : null,
+    tally ? el("details.tournament-result-details", [el("summary", { text: "挙手の内訳" }), el("p.ch2-contest-note", { text: voteNote(tally) })]) : null,
+    craftReviewBlock(chapterFiveProgress(state).secondCup?.review, test("craft-review")),
+  ]);
 }
 
 // 挙手の数だけを並べる。審査員の採点表や恋愛の加点は出さない（第5章は観客投票）。

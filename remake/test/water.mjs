@@ -283,7 +283,16 @@ await check("real practice orchestration puts confirmed water between SETUP and 
   stub("js/craft/holes.js", { runHoles: async () => {} });
   stub("js/craft/heat.js", { runHeat: async () => {} });
   stub("js/craft/steam.js", { runSteamDodge: async () => {} });
-  stub("js/craft/pull.js", { runPull: async cs => { cs.pullDone = true; }, runCare: async cs => cs.careHistory.push({ score: 80 }) });
+  const tips = [];
+  stub("js/craft/pull.js", {
+    runPull: async (cs, { review }) => { cs.pullDone = true; tips.push(review()); },
+    runCare: async (cs, { round, review }) => {
+      cs.care = { score: 80 + round };
+      tips.push(review());
+      cs.careHistory.push(cs.care);
+    },
+  });
+  stub("js/craft/advice.js", { improvementOf: cs => cs.careHistory.map(care => care.score).join(",") });
   stub("js/core/mastery-notice.js", { notifyMastery: () => {} });
   stub("js/craft/score.js", { finalize: () => { throw Error("legacy water practice must not record growth memo"); } });
   stub("js/craft/conditions.js", { temperatureAfterSteam: () => 0 });
@@ -294,6 +303,8 @@ await check("real practice orchestration puts confirmed water between SETUP and 
   // 「自動で成功」の確定量（目安の真ん中）が、MIXの前に入り練習記録にも残る（#3938）。
   assert.deepEqual(order, ["setup", "water", "mix"]); assert.equal(cs.water, model.WATER.neutral);
   assert.equal(history.practiceRecords().at(-1).water, model.WATER.neutral);
+  assert.deepEqual(tips, ["", "", "81,82"], "Only the final result card reviews the cup, including its current adjustment");
+  assert.deepEqual(cs.careHistory.map(care => care.score).join(","), "81,82", "Review does not modify recorded adjustments");
   session.namespace.craftTest.auto = null;
 });
 console.log(`${checks} water checks passed; browser rendering/real pointer capture not covered by DOM adapter.`);

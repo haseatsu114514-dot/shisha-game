@@ -41,7 +41,7 @@ for (const [device, options] of [['pc',{viewport:{width:1280,height:720}}],['tou
    assert.equal(await pin.getAttribute('aria-pressed'),'true');
    await page.screenshot({path:path.join(shots,`${device}-${fail?'failed-selected':'selected'}.png`)});
    if(fail) {
-    for (const [id, name] of [['ageha','MELTY PUFF'],['kumicho','神崎煙草店'],['rei','貴方ノ為ノ此ノ煙。'],['c_station','C.STATION'],['ch2_shop','Dr.fookah 柚ヶ谷店'],['ch2_c_station','C.STATION 柚ヶ谷店']]) {
+    for (const [id, name] of [['ageha','MELTY PUFF'],['kumicho','神崎煙草店'],['kuraudo','貴方ノ為ノ此ノ煙。'],['c_station','C.STATION'],['ch2_shop','Dr.fookah 柚ヶ谷店'],['ch2_c_station','C.STATION 柚ヶ谷店']]) {
      const missing=page.locator(`[data-test="ch2-main-pin-${id}"] .store-logo.missing`);
      await missing.waitFor(); assert.equal(await missing.innerText(),name);
     }
@@ -63,7 +63,7 @@ for (const [device, options] of [['pc',{viewport:{width:1280,height:720}}],['tou
     assert(await page.locator('[data-test="ch2-main-pin-ageha"] img').evaluate(i=>i.complete && i.naturalWidth===768));
     await page.screenshot({path:path.join(shots,`${device}-cached.png`)});
     await page.evaluate(async()=>{
-     Object.assign(__remake.state.flags,{_ageha_aquarium_introduced:true,_kumicho_sento_introduced:true,_rei_trpg_introduced:true});
+     Object.assign(__remake.state.flags,{_ageha_aquarium_introduced:true,_kumicho_sento_introduced:true,_kuraudo_trpg_introduced:true});
      __remake.vnTest.turbo=true; void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
     });
     for (const id of ['ch2_aquarium','ch2_sento','trpg_bar']) {

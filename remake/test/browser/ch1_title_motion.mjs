@@ -13,8 +13,13 @@ async function setup(page) {
     const vn = await import('./js/vn/engine.js');
     core.newGame(); core.save();
     window.T = { core, ui, motion, vn, jingles: 0, done: false, result: null, error: null };
-    const jingle = audio.SE.jingle;
-    audio.SE.jingle = (...args) => { T.jingles++; return jingle(...args); };
+    T.titleSeFiles = audio.recordedSeFiles().ch1Title;
+    const jingle = audio.SE.ch1Title;
+    audio.SE.ch1Title = () => {
+      T.jingles++;
+      T.artAtJingle = ui.layers.fx.querySelector('.ch1-title-motion .ch1-title-picture')?.parentElement.dataset.art;
+      return jingle();
+    };
     T.start = options => {
       T.done = false; T.result = null; T.started = performance.now(); T.shownAt = null;
       T.titleObserver?.disconnect();
@@ -96,10 +101,12 @@ await suite('ch1-title-motion', async check => {
       assert.equal(await page.locator('.ch1-title-motion img').getAttribute('src'), early, '途中で絵や構図を切り替えない');
       await page.screenshot({ path: path.join(out, `${label}-full-title.png`) });
       await done(page);
-      const result = await page.evaluate(() => ({ duration: T.finished - T.started, ended: T.finished, shownAt: T.shownAt, result: T.result, jingles: T.jingles }));
+      const result = await page.evaluate(() => ({ duration: T.finished - T.started, ended: T.finished,
+        shownAt: T.shownAt, result: T.result, jingles: T.jingles, artAtJingle: T.artAtJingle, titleSeFiles: T.titleSeFiles }));
       assert(result.duration >= 4780 && result.duration < 5400, JSON.stringify(result));
       assert(result.shownAt && result.ended - result.shownAt >= 4780, '最初から完全な画像を既存の4.8秒間表示する');
       assert.deepEqual(result.result, { cancelled: false, art: 'ready' }); assert.equal(result.jingles, 1);
+      assert.deepEqual([result.artAtJingle, result.titleSeFiles], ['ready', ['trpg/jingle_success.wav']]);
       assert.deepEqual(await storageSnapshot(page), before);
       await send(page, label === 'touch');
       assert.equal(await page.evaluate(() => T.underClicks), 3, '終了後も入力ガードが残った');

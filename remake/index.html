@@ -9,8 +9,8 @@
 <!-- 最初の画面（タイトル）に必要なものだけ先読みする。本文フォント（font-display: block のため
      届くまで文字が出ない）と、タイトルの背景・ロゴ。公開時は stamp_deploy が起動 JS を
      js-<版>/bundle/main.js に差し替えて先読みする（#3552）。手元と検査は正本のモジュールを読む。 -->
-<link rel="preload" as="font" type="font/woff2" href="fonts/NotoSansJP-Medium.woff2" crossorigin>
-<link rel="preload" as="font" type="font/woff2" href="fonts/NotoSansJP-Bold.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/NotoSansJP-Medium.woff2?v=20261122" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/NotoSansJP-Bold.woff2?v=20261122" crossorigin>
 <!-- 起動画面の背景とロゴ（css/loading.css の --loading-backdrop-art / --loading-logo。タイトル背景より先に取り始める） -->
 <link rel="preload" as="image" href="img/ui/loading/loading_bg.webp" fetchpriority="high">
 <link rel="preload" as="image" href="img/ui/ui_title_logo_rich.webp">
@@ -88,6 +88,19 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="水煙前線">
 <!-- 文字は同梱フォントのみ（remake/fonts/）。外部フォントは読まない＝端末で見た目が変わらない -->
+  <link rel="stylesheet" href="css/bundle-base.css">
+  <!-- 各ゲームの初回に、この位置で CSS を有効にする。後続の共通スタイルとの優先順も保つ。 -->
+  <template id="styles-camel-race"><link href="css/camel-race.css" rel="stylesheet"></template>
+  <template id="styles-ichidai">
+    <link href="css/ichidai.css" rel="stylesheet">
+    <link href="css/ichidai-skin-signs.css" rel="stylesheet">
+    <link href="css/ichidai-lines.css" rel="stylesheet">
+  </template>
+  <template id="styles-desert-ride"><link href="css/desert-ride.css" rel="stylesheet"></template>
+  <template id="styles-tetsuko">
+    <link href="css/tetsuko-time.css" rel="stylesheet">
+    <link href="css/tetsuko-theme.css" rel="stylesheet">
+  </template>
   <link rel="stylesheet" href="css/bundle-1.css">
   <link rel="stylesheet" href="css/motions/bundle.css">
   <link rel="stylesheet" href="css/vn/bundle.css">
@@ -290,6 +303,7 @@ if ("serviceWorker" in navigator) {
   };
 
   // 遊んでいる途中で新しい版が出たら、勝手に読み直さず上に知らせるだけ（タブへ戻ったとき）
+  let resumeAfterUpdate;
   let lastCheck = Date.now();
   const recheck = async (force = false) => {
     if (BUILD === "dev" || document.hidden || document.getElementById("update-note")) return;
@@ -303,8 +317,13 @@ if ("serviceWorker" in navigator) {
     go.type = "button";
     go.className = "update-go";
     go.dataset.test = "update-go";
-    go.textContent = "新しい版が出ています ── タップで更新（オートセーブから再開）";
-    go.addEventListener("click", () => openBuild(info.build));
+    go.textContent = resumeAfterUpdate?.()
+      ? "新しい版が出ています ── タップで更新（オートセーブから再開）"
+      : "新しい版が出ています ── タップで更新";
+    go.addEventListener("click", () => {
+      resumeAfterUpdate?.({ request: true });
+      openBuild(info.build);
+    });
     const close = document.createElement("button");
     close.type = "button";
     close.className = "update-close";
@@ -324,8 +343,9 @@ if ("serviceWorker" in navigator) {
       openBuild(info.build);
       return;
     }
-    const { boot } = await import("./js/main.js");
-    await boot();
+    const game = await import("./js/main.js");
+    await game.boot();
+    resumeAfterUpdate = game.resumeAfterUpdate;
   })().then(stopWatching, fail);
 })();
 </script>

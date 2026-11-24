@@ -126,20 +126,26 @@ export function scoreBlade(x, y, { closed = closuresOf([]), division = "rec", ha
     const sy = Math.max(y - halfLength, Math.min(y + halfLength, py));
     return Math.hypot(x - px, sy - py);
   };
-  let best = { score: 0, kind: null, cluster: null }, closedTouch = false;
+  let best = { score: 0, kind: null, cluster: null }, closedTouch = false, closedScore = 0;
   const consider = (score, kind, cluster) => { if (score > best.score) best = { score, kind, cluster }; };
   for (const c of CLUSTERS) {
     const d = touch(c.x, c.y);
     const bull = d <= RINGS[0].radius + 1e-9, five = d < RINGS[1].radius - LINE - 1e-9;
     if (!bull && !five) continue;
     if (division === "pro" && closed.cluster.has(c.id)) { closedTouch = true; continue; }
-    if (bull && !(division === "am" && closed.bull.has(c.id))) consider(6, "bull", c.id);
-    else if (!(division === "am" && closed.five.has(c.id))) consider(5, "five", c.id);
-    else consider(c.ring, "ring", null);
+    if (bull && !(division === "am" && closed.bull.has(c.id))) {
+      consider(6, "bull", c.id);
+    } else {
+      const fiveClosed = division === "am" && closed.five.has(c.id);
+      if (bull || fiveClosed) closedScore = Math.max(closedScore, bull ? 6 : 5);
+      if (fiveClosed) consider(c.ring, "ring", null);
+      else consider(5, "five", c.id);
+    }
   }
   const centre = touch(0, 0);
   for (const ring of RINGS.slice(2)) if (centre < ring.radius - LINE - 1e-9) { consider(ring.score, "ring", null); break; }
-  if (closedTouch) return { score: 0, kind: "closed", cluster: null };
+  if (closedTouch) return { score: 0, kind: "closed", cluster: null, closedAdjust: true };
+  if (closedScore > best.score) best.closedAdjust = true;
   return best;
 }
 export const scoreAt = (x, y, options) => scoreBlade(x, y, options).score;
@@ -183,7 +189,7 @@ export function resolveThrow({ x, y, power, called = null, drift = 0 }, history 
   const validPower = power >= POWER.stickMin && power <= POWER.stickMax;
   const stuck = validPower && onBoard;
   const rotation = 360 + (power - POWER.ideal) * 150;
-  let score = 0, outcome = called ? "killshot-miss" : "miss", zone = { kind: null, cluster: null }, distance = null;
+  let score = 0, outcome = called ? "killshot-miss" : "miss", zone = { kind: null, cluster: null }, distance = null, closedAdjust;
   if (stuck) {
     if (called) {
       const target = KILLS.find(k => k.id === called);
@@ -194,11 +200,12 @@ export function resolveThrow({ x, y, power, called = null, drift = 0 }, history 
     } else {
       zone = scoreBlade(landing.x, landing.y, { closed: closuresOf(history, index, throws, division), division });
       score = zone.score;
+      closedAdjust = zone.closedAdjust;
       outcome = zone.kind === "bull" ? "bull" : score ? "hit" : "miss";
       zone = { kind: zone.kind, cluster: zone.cluster };
     }
   } else outcome = onBoard ? "drop" : called ? "killshot-miss" : "miss";
-  return { aim: { x, y }, power, called, drift, landing, rotation, stuck, score, outcome, zone, half, distance,
+  return { aim: { x, y }, power, called, drift, landing, rotation, stuck, score, outcome, zone, half, distance, ...(closedAdjust ? { closedAdjust } : {}),
     dropReason: !onBoard ? "off-board" : stuck ? null : power < POWER.stickMin ? "weak" : "rotation" };
 }
 export const totalOf = throws => throws.reduce((sum, shot) => sum + shot.score, 0);

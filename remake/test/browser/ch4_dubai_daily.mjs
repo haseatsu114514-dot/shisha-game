@@ -59,7 +59,7 @@ async function seed(page, adjust = null) {
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
       _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sensu", "dr_charcoal"]) value.flags[`_intro_${who}`] = true;
     Object.assign(value.met, { naru: true });
     if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
     value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
@@ -276,10 +276,12 @@ await suite("ch4-dubai-daily", async check => {
     const cafe = page.locator(dt("pin-ch4_dubai_cafe"));
     assert.equal(await festa.locator(".pin-status").innerText(), "今夜の予定");
     assert.match(await festa.getAttribute("aria-label"), /今夜の予定/);
+    assert.match(await page.locator(dt("map-reminder")).innerText(), /今夜の予定：FESTA/);
     assert.equal(await cafe.locator(".evt-badge.story").innerText(), "!");
     await go(page, "ch4_dubai_festa");
     await dubaiMap(page, { day: 54, slot: 1 });
     assert.doesNotMatch(await festa.getAttribute("aria-label"), /今夜の予定/);
+    assert.doesNotMatch(await page.locator(".map-info").innerText(), /今夜の予定：FESTA/);
     assert.equal(await cafe.locator(".evt-badge.story").innerText(), "!");
     const meetingCount = async () => (await backlog(page)).filter(line => line.startsWith("FESTAのブースに入ると")).length;
     assert.equal(await meetingCount(), 1);

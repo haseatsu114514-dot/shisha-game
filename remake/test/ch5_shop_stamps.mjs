@@ -41,7 +41,7 @@ const mandatoryMet = (() => {
   const ids = text => [...text.matchAll(/"([a-z_]+)"/g)].map(m => m[1]);
   return new Set([...ids(ch1[1]), "ageha", ...ids(ch2Loop[1]), ...ids(ch3[1])]);
 })();
-for (const id of ["naru", "adam", "minto", "ageha", "kumicho", "rei", "steve", "volk"]) assert(mandatoryMet.has(id), `${id} には本編で必ず会う`);
+for (const id of ["naru", "adam", "minto", "ageha", "kumicho", "kuraudo", "steve", "volk"]) assert(mandatoryMet.has(id), `${id} には本編で必ず会う`);
 
 // C.STATION の地図の解放（daily/spots.js の isUnlocked）は、第1章の初日にスミさんに頼まれて KEMURIKUSA へ偵察に行った印。
 // 偵察は初日の案内つきの用事（daily/calendar.js）で、そのあと C.STATION で大会の参加登録をする。

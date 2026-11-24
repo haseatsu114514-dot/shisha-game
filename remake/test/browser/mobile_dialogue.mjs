@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
 
-async function assertBody(page, rowCount, balanced) {
+async function assertBody(page, rowCount, mobile) {
   const layout = await page.locator(".vn-text").evaluate(el => {
     const range = document.createRange();
     range.selectNodeContents(el);
@@ -23,10 +23,11 @@ async function assertBody(page, rowCount, balanced) {
   });
   assert.equal(layout.rows, rowCount, "body type must preserve the intended line breaks");
   assert(layout.clear && layout.top > 0 && layout.bottom > 0, "body text must fit away from the name, advance and controls");
-  if (balanced) {
-    assert.equal(layout.size, 36);
+  if (mobile) assert.equal(layout.size, 36);
+  if (mobile && rowCount === 2) {
     assert(Math.abs(layout.top - layout.bottom) <= layout.tolerance, `center body text vertically: ${JSON.stringify(layout)}`);
   }
+  return layout.top;
 }
 
 await suite("mobile-dialogue", async check => {
@@ -81,7 +82,7 @@ await suite("mobile-dialogue", async check => {
         assert.equal(frame.size, 22, "desktop name typography is unchanged");
       }
       await assertFits(page, ".vn-box");
-      await assertBody(page, 2, mobile);
+      const firstRowTop = await assertBody(page, 2, mobile);
       const advance = () => page.waitForFunction(async () => (await import("./js/vn/engine.js")).tapAdvance());
       await advance();
       await page.waitForFunction(() => document.querySelector(".vn-text").textContent.includes("PEPPERMINT"));
@@ -96,13 +97,13 @@ await suite("mobile-dialogue", async check => {
         const glyphs = range.getBoundingClientRect(), tag = el.getBoundingClientRect();
         return glyphs.left >= tag.left && glyphs.right <= tag.right && glyphs.top >= tag.top && glyphs.bottom <= tag.bottom;
       }), "a long speaker name stays in its nameplate");
-      await assertBody(page, 1, mobile);
+      assert.equal(await assertBody(page, 1, mobile), firstRowTop, "a one-line speech starts at the same height as a two-line speech");
       await advance();
       await page.locator(".vn-box.narration").waitFor();
       assert.equal(await name.evaluate(el => getComputedStyle(el).display), "none");
       await page.locator(".vn-next.show").waitFor();
       await assertFits(page, ".vn-box");
-      await assertBody(page, 1, mobile);
+      assert.equal(await assertBody(page, 1, mobile), firstRowTop, "a one-line narration starts at the same height as a two-line speech");
       await advance();
       await page.locator(".vn-inner:not([hidden])").waitFor();
       await page.locator(".vn-next.show").waitFor();

@@ -124,8 +124,8 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
       let idle = false;
       if (venue === "trpg_night") {
         try {
-          const [{ loadTrpgLibrary }, { syncTrpgStock, tablePlayableTonight }] = await Promise.all([import("../trpg/index.js"), import("../trpg/campaign.js")]);
-          library = await loadTrpgLibrary({ signal: abort.signal, preloadAssets: false });
+          const [{ loadTrpgShelf }, { syncTrpgStock, tablePlayableTonight }] = await Promise.all([import("../trpg/index.js"), import("../trpg/campaign.js")]);
+          library = await loadTrpgShelf({ signal: abort.signal });
           if (!alive()) return { completed: false };
           // 入荷は本棚の画面と同じ確定（部員が増えた後の最初の来店）。先に済ませて、今夜の本があるかを正しく見る
           if (syncTrpgStock(owner, library.catalog)) save();
@@ -136,7 +136,7 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
       await arrivals.playArrival(venue, { read, save: owner, ctx: { idle } });
     }
     if (abort.signal.aborted || !currentVisit() || !host.isConnected) return { completed: false };
-    controller = mountTrpgCampaign(host, { getState: () => state, save, nightBusy, signal: abort.signal, resources: library,
+    controller = mountTrpgCampaign(host, { getState: () => state, save, nightBusy, signal: abort.signal, resources: library, campaignEndings: true,
       greeted: arrivals.arrivalGreeted(venue, owner) });
     return await controller.finished;
   } finally {

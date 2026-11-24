@@ -42,7 +42,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "メニューを見もせず閉じて、言う。「おまかせで、お願いします」"
+          "text": "メニューを見もせず閉じて、言う。「おまかせで、お願いします」。"
         },
         {
           "speaker": "ageha",
@@ -147,7 +147,7 @@
           {
             "speaker": "ageha",
             "face": "smile",
-            "text": "知ってる知ってる！ じゃあ、きみがハジメっち。よろしく、対戦相手さん"
+            "text": "知ってる知ってる！ じゃあ、ハジメっちね。よろしく、対戦相手さん"
           }
         ],
         "hit": [
@@ -251,7 +251,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "もう一人が顔をのぞき込む。「でもさ、この子は今日、別のがいいんだって」"
+          "text": "もう一人が顔をのぞき込む。「でもさ、この子は今日、別のがいいんだって」。"
         },
         {
           "speaker": "ageha",
@@ -433,7 +433,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "説明しながら、あげはがそっと耳打ちした。「この人、今日は軽めで、香りやさしいやつ」"
+          "text": "説明しながら、あげはがそっと耳打ちした。「この人、今日は軽めで、香りやさしいやつ」。"
         },
         {
           "speaker": "hajime",
@@ -461,7 +461,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "男の人は細く煙を吐くと、自分で驚いたように笑った。「……あ、おいしい」"
+          "text": "男の人は細く煙を吐くと、自分で驚いたように笑った。「……あ、おいしい」。"
         },
         {
           "speaker": "hajime",
@@ -834,7 +834,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "あげははボウルに、白い葉を多めに、赤をほんの少しだけ詰めた。"
+          "text": "あげははハガルに、白い葉を多めに、赤をほんの少しだけ詰めた。"
         },
         {
           "speaker": "ageha",
@@ -998,7 +998,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "白い素焼きのボウルだった。縁に、小さなクマのシールが一枚だけ、貼ってある。"
+          "text": "白い素焼きのハガルだった。縁に、小さなクマのシールが一枚だけ、貼ってある。"
         },
         {
           "speaker": "ageha",
@@ -1122,7 +1122,7 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "大事に使う。あげはがこれで作ってきた分も"
+            "text": "大事に使います。あげはさんがこれで作ってきた分も"
           },
           {
             "speaker": "ageha",
@@ -1463,9 +1463,9 @@
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "rei",
-          "next_true": "rei_known",
-          "next_false": "rei_first"
+          "char_id": "kuraudo",
+          "next_true": "kuraudo_known",
+          "next_false": "kuraudo_first"
         },
         {
           "speaker": "minto",
@@ -1473,7 +1473,7 @@
           "text": "ねえ、その髪のセット、何分かかるの？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……三十分。今日は、短いほう"
         },
@@ -1513,7 +1513,7 @@
           "text": "甘い香りは、分かる。なのに舌の上で、味が形を結ばない。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……水。一口目、強かったろ"
         },
@@ -1573,7 +1573,7 @@
           "text": "クラウドは目を閉じて、テーブルを指で軽く叩いている。拍を数えるみたいに。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "甘さが消えたあと、一拍だけ残る。……曲と曲の、間みたいに"
         },
@@ -1615,7 +1615,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "神崎さんは立ち上がったが、トングには触れなかった。店員の横に立ち、ボウルを指す。"
+          "text": "神崎さんは立ち上がったが、トングには触れなかった。店員の横に立ち、ハガルを指す。"
         },
         {
           "speaker": "kumicho",
@@ -1791,7 +1791,7 @@
           "text": "違う煙を出す奴らが、同じ卓を囲む。……こいつは、悪くねえ夜だぜ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……また、こういうの、やりたいな"
         },
@@ -1833,7 +1833,7 @@
           {
             "speaker": "ageha",
             "face": "smile",
-            "text": "じゃ、きみがハジメっちか。地元の仲間？ 紹介して"
+            "text": "じゃ、ハジメっちね。地元の仲間？ 紹介して"
           }
         ],
         "kumicho_known": [
@@ -1879,30 +1879,30 @@
             "text": "tonariの逢縁はじめです。よろしくお願いします"
           }
         ],
-        "rei_known": [
+        "kuraudo_known": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……来てたんだ。そこ、空いてるよ"
           }
         ],
-        "rei_first": [
+        "kuraudo_first": [
           {
             "speaker": "",
             "face": "",
             "text": "黒とワインレッドで髪を作り込んだ人が、壁際から小さく会釈した。"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……「貴方ノ為ノ此ノ煙。」の、クラウド。県大会は、俺も出る"
           },
           {
             "type": "set_flag",
-            "flag": "_met_rei"
+            "flag": "_met_kuraudo"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "smile",
             "text": "……よろしく。そこ、空いてるよ"
           }
@@ -1929,7 +1929,7 @@
             "text": "お客さんの顔を思い浮かべるかな♡ 誰に出したいか、って"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……後味だけ、探す。最後に、何が残るか"
           }
@@ -1991,7 +1991,7 @@
           {
             "speaker": "ageha",
             "face": "surprise",
-            "text": "あれ？ きみ、商店街で荷物ばらまいてた子じゃん"
+            "text": "あれ？ 商店街で荷物ばらまいてた子じゃん"
           },
           {
             "speaker": "hajime",
@@ -2322,7 +2322,7 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "そ。ピンセットで一粒ずつ、……肩バキバキ"
+          "text": "そ。ピンセットで一粒ずつ……肩バキバキ"
         },
         {
           "speaker": "",
@@ -2363,7 +2363,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「ピーチ×ミント：あまあま→スーッ→また吸いたくなるやつ」"
+          "text": "「ピーチ×ミント：あまあま→スーッ→また吸いたくなるやつ」。"
         },
         {
           "speaker": "hajime",

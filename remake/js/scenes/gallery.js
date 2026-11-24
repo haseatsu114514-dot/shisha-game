@@ -1,4 +1,5 @@
 // タイトルのコレクション。見たCG・受取写真と、章クリアで開く採用済み漫画。
+import { parseCastSave } from "../core/legacy-cast-save.js";
 import { el } from "../core/util.js";
 import { DB, cgUrl, cgThumbUrl, realName } from "../core/data.js";
 import { layers, loadingNotice } from "../core/ui.js";
@@ -13,7 +14,7 @@ const KEY = "suien_remake_gallery";
 const photoName = id => id === "samechan" ? "サメちゃん" : id === "minto" ? "みんと" : realName(id);
 function seen() {
   try {
-    const value = JSON.parse(localStorage.getItem(KEY) || "[]");
+    const value = parseCastSave(localStorage.getItem(KEY) || "[]");
     return new Set(Array.isArray(value) ? value.filter(id => typeof id === "string") : []);
   } catch { return new Set(); }
 }

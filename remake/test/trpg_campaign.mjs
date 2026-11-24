@@ -144,9 +144,9 @@ test("each candidate needs their own club talk, regardless of affinity", () => {
     assert(rules.recruitmentStatus(s, person, catalog).ok);
     assert(rules.joinTrpgClub(s, catalog, person.id));
   }
-  const rei = state(); rules.foundTrpgClub(rei, catalog);
-  rei.met.rei = true; rei.flags._rei_trpg_introduced = true;
-  assert(rules.joinTrpgClub(rei, catalog, "rei"), "クラウドの既存TRPG会話を数える");
+  const kuraudo = state(); rules.foundTrpgClub(kuraudo, catalog);
+  kuraudo.met.kuraudo = true; kuraudo.flags._kuraudo_trpg_introduced = true;
+  assert(rules.joinTrpgClub(kuraudo, catalog, "kuraudo"), "クラウドの既存TRPG会話を数える");
 });
 
 test("chapter two club meets after ordinary shifts; DAY8 compatibility override preserves existing saves", () => {
@@ -275,7 +275,7 @@ test("noon, story nights, pending appointments and non-daily phases cannot start
   s.phase = "tournament"; assert(!rules.castTrpgTable(s, catalog, ordinary).ok);
 });
 test("クラウド and Ageha join from their own chapter-two shop visits and never take an unwritten seat", async () => {
-  for (const id of ["rei", "ageha"]) {
+  for (const id of ["kuraudo", "ageha"]) {
     const s = state(); rules.foundTrpgClub(s, catalog);
     const person = catalog.participants.find(p => p.id === id);
     assert(person?.interested, id + " is a club candidate");
@@ -290,16 +290,16 @@ test("クラウド and Ageha join from their own chapter-two shop visits and nev
   // Members wait for a scenario that wrote their voice: the existing books keep their authored seats.
   const s = own(friends(state()), ordinary.id);
   const cast = rules.castTrpgTable(s, catalog, ordinary);
-  assert(cast.ok); assert(!cast.participants.includes("rei")); assert(!cast.participants.includes("ageha"));
+  assert(cast.ok); assert(!cast.participants.includes("kuraudo")); assert(!cast.participants.includes("ageha"));
   // A book written in their voices seats them: クラウド as GM, Ageha as a player, and every line keeps a present speaker.
   const encore = await json("../../data/dialogue/trpg_moonflower_encore.json");
   const night = own(friends(state()), encore.id);
   const seated = rules.castTrpgTable(night, catalog, encore);
-  assert(seated.ok); assert.equal(seated.gm, "rei"); assert(seated.participants.includes("ageha"));
+  assert(seated.ok); assert.equal(seated.gm, "kuraudo"); assert(seated.participants.includes("ageha"));
   const table = rules.materializeTrpgCast(encore, seated.assignments);
   assert(table.dialogues.flatMap(b => b.lines).every(l => seated.participants.includes(l.speaker)));
   // Without クラウド in the club, his books are never stocked.
-  const noRei = state(); friends(noRei, catalog.participants.map(p => p.id).filter(id => id !== "rei")); rules.syncTrpgStock(noRei, catalog);
+  const noRei = state(); friends(noRei, catalog.participants.map(p => p.id).filter(id => id !== "kuraudo")); rules.syncTrpgStock(noRei, catalog);
   assert(!noRei.trpg.stock.includes(encore.id));
   // The neighbouring town's shop visit offers the same face-to-face recruitment as the home town.
   const source = await readFile(new URL("../js/chapters/ch2-preparation.js", import.meta.url), "utf8");
@@ -382,6 +382,42 @@ test("replaying a finished book uses the night, keeps the better memory and coun
   assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, { ...result, ending: other, rating: { stars: 2 }, heat: { value: 6, night: "沸いた夜" } }));
   assert.equal(s.trpg.cleared[ordinary.id].ending, other); assert.equal(s.trpg.cleared[ordinary.id].heat, 6);
   assert.equal(s.trpg.cleared[ordinary.id].day, 5); assert.equal(s.trpg.cleared[ordinary.id].plays, 3);
+});
+
+test("the same party can reach every campaign end: even bad clears the book, each tier keeps its first play", () => {
+  assert.deepEqual(rules.firstTrpgEndingPlays({ plays: 3, firstEndingPlays: { true: 4, normal: "2", bad: 1, unknown: 1 } }), { bad: 1 });
+  const s = own(friends(state()), ordinary.id);
+  const cast = rules.castTrpgTable(s, catalog, ordinary);
+  const table = rules.materializeTrpgCast(ordinary, cast.assignments);
+  const finale = catalog.scenarios.find(book => book.finale);
+  for (const id of finale.clearRequires.filter(id => id !== ordinary.id)) s.trpg.cleared[id] = { ending: "old" };
+  assert.equal(rules.trpgBookProgress(s, finale).ok, false);
+  for (const [profileId, seed, stars, tier, first] of [
+    ["company", 1, 0, "bad", 1], ["company", 5, 1, "normal", 2], ["quiet", 1, 2, "normal", 2],
+    ["quiet", 5, 3, "true", 4], ["company", 1, 0, "bad", 1],
+  ]) {
+    const ticket = { ...cast, chapter: s.chapter, day: s.day, slot: s.slot };
+    assert(rules.tablePlayableTonight(s, catalog, [ordinary]));
+    assert.deepEqual(rules.castTrpgTable(s, catalog, ordinary).assignments, ticket.assignments);
+    const result = finish(table, { seed, profileId });
+    assert.equal(result.rating.stars, stars);
+    const outcome = rules.trpgCampaignEnding(ordinary, result);
+    assert.equal(outcome.tier, tier);
+    assert.equal(outcome.line, tier === "normal" ? ordinary.endings[result.ending].line : ordinary.campaign.aftermath[tier]);
+    assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, result, { outcome }));
+    assert.equal(s.trpg.cleared[ordinary.id].firstEndingPlays[tier], first);
+    assert.equal(s.slot, 2);
+    assert(rules.trpgBookProgress(s, finale).ok);
+    assert(!rules.completeTrpgTable(s, catalog, ordinary, ticket, result, { outcome }));
+    s.day++; s.slot = 1;
+  }
+  const memory = s.trpg.cleared[ordinary.id];
+  assert.equal(memory.stars, 3);
+  assert.deepEqual(memory.firstEndingPlays, { bad: 1, normal: 2, true: 4 });
+  assert.equal(memory.plays, 5);
+  assert.equal(memory.records, undefined);
+  s.trpg.shifts = [{ id: cast.gm, chapter: s.chapter, day: s.day, slot: s.slot, busy: true }];
+  assert(!rules.tablePlayableTonight(s, catalog, [ordinary]), "a cleared book still requires its GM");
 });
 
 test("the club's rank is counted from the shelf: finished books, endings seen and stars; it grows the player's character (TRF13)", () => {

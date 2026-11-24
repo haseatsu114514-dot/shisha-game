@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.HIYORI_SOURCE_ROOT || root;
 const supportRoot = process.env.HIYORI_SUPPORT_ROOT || root;
-const realPaths = ['core/bond-after.js','core/chapter-data.js','core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
+const realPaths = ['core/bond-after.js','core/chapter-data.js','core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js', 'core/legacy-cast-save.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
 const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rio','ch1_bonds','samechan','hiyori','lover_events','cinema','remake_ch1','ch1_spots'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -146,9 +146,9 @@ await check('samechan and C.STATION repeat classification preserves pending intr
   const id=cs.pool[0];assert(f.db.dialogues[id]?.lines?.length,'Use the actual C.STATION repeat script');
   assert.equal(f.spots.shortNormalVisit(cs),true);
   // #1696: 博士と面識があれば2回目の来店は一度きりの回になるので、短い日常として扱わない。
-  s.met.dr_kemuri=true;assert.equal(f.spots.shortNormalVisit(cs),false,'doctor encounter due is not a quiet visit');
+  s.met.dr_charcoal=true;assert.equal(f.spots.shortNormalVisit(cs),false,'doctor encounter due is not a quiet visit');
   s.flags._spot_seen_cs_kemuri_sample=true;assert.equal(f.spots.shortNormalVisit(cs),true);
-  delete s.met.dr_kemuri;delete s.flags._spot_seen_cs_kemuri_sample;
+  delete s.met.dr_charcoal;delete s.flags._spot_seen_cs_kemuri_sample;
   s.flags._pakki_first_spin_pending=true;assert.equal(f.spots.shortNormalVisit(cs),false);
 });
 await check('invitation tonari closure unmets slot and daily cap preserve original eligibility',async f=>{

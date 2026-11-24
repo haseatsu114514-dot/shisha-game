@@ -175,6 +175,60 @@ await suite("first-brew", async check => {
     await page.keyboard.up("ArrowRight");
   });
 
+  for (const touch of [false, true]) await check(`onboarding-warmup-${touch ? "touch" : "pc"}`, async page => {
+    await init(page);
+    await page.evaluate(async () => {
+      await T.open();
+      cs.onboarding = true;
+      window.running = T.holes.runHoles(cs);
+    });
+    await page.locator('[data-test="hole-start"]').click();
+    const holeStart = page.locator('[data-test="hole-warmup-start"]');
+    await holeStart.waitFor();
+    const holes = page.locator(".foil-holes .foil-hole");
+    if (touch) await page.locator('[data-test="hole-punch"]').tap();
+    else {
+      await page.keyboard.down("Space");
+      await page.waitForTimeout(220);
+      await page.keyboard.up("Space");
+    }
+    await holes.first().waitFor();
+    assert.equal(await page.locator(".countdown").count(), 0);
+    assert.equal(await page.evaluate(() => cs.holes == null), true);
+    await shot(page, `onboarding-holes-${touch ? "touch" : "pc"}`);
+    await holeStart.click();
+    await page.locator(".countdown").waitFor();
+    assert.equal(await holes.count(), 0, "Warm-up holes must be cleared before scoring starts");
+    await page.locator(".countdown").waitFor({ state: "detached" });
+    await page.evaluate(async () => {
+      await T.open();
+      cs.onboarding = true;
+      cs.mix = { lemon: 9, mint: 3 };
+      cs.steamSeconds = 300;
+      window.running = T.steam.runSteamDodge(cs);
+    });
+    await page.locator('.bench-guide[open] [data-test="bench-guide-close"]').click();
+    const steamStart = page.locator('[data-test="steam-warmup-start"]');
+    await steamStart.waitFor();
+    const heart = page.locator(".dodge-heart");
+    const center = await heart.getAttribute("style");
+    if (touch) {
+      const box = await page.locator('[data-test="dodge"]').boundingBox();
+      await page.touchscreen.tap(box.x + box.width * .75, box.y + box.height * .7);
+    } else {
+      await page.keyboard.down("ArrowRight");
+      await page.waitForTimeout(200);
+      await page.keyboard.up("ArrowRight");
+    }
+    assert.notEqual(await heart.getAttribute("style"), center);
+    assert.equal(await page.locator(".dodge-word, .dodge-object, .countdown").count(), 0);
+    await shot(page, `onboarding-steam-${touch ? "touch" : "pc"}`);
+    await steamStart.click();
+    await page.locator(".countdown").waitFor();
+    assert.equal(await heart.getAttribute("style"), center, "Warm-up movement must not change the starting position");
+    assert.equal(await page.evaluate(() => cs.steam == null), true);
+  }, touch ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
+
   await check("care-help-and-draw", async page => {
     await init(page);
     await page.evaluate(async () => {
@@ -298,7 +352,7 @@ await suite("first-brew", async check => {
       T.assist.recordTournamentLoss(s.tournament);
       const { TSUMUGI_STORY } = await import("./js/chapters/tsumugi-story.js");
       for (const step of TSUMUGI_STORY) s.flags[step.flag] = true;
-      for (const id of ["sumi", "pakki", "sui", "maezono", "dr_kemuri", "naru", "adam", "minto"]) {
+      for (const id of ["sumi", "pakki", "sensu", "uezono", "dr_charcoal", "naru", "adam", "minto"]) {
         (await import("./js/vn/intro.js")).markIntroSeen(id);
       }
       await T.chapter.devGameOver("burnt", 0, 0);

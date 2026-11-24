@@ -25,7 +25,7 @@ import { openShop } from "../daily/shop.js";
 import { TOKYO_VISIT_COST, quietTurn } from "../daily/spots.js";
 import { modal } from "../core/ui.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_SHIFT_STAMINA, mukaiShiftPay } from "./tokyo-mukai.js";
-import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
+import { loverMilestonesDue, prepareLoverMilestones, readLoverMilestone } from "./lover-entry.js";
 import { reflectAt } from "../daily/reflection.js";
 import { TOKYO_OUTINGS, outingDialogueId, outingCounts, OUTINGS_FLAG } from "./ch3-outing-progress.js";
 import { consultLessons } from "../core/growth.js";
@@ -67,9 +67,9 @@ export const TOKYO_SPOTS = Object.freeze([
   // 綾取の煙幕（延長営業・#3676）。第3章の東京の地図の位置（45.3, 49.7）は、第5章だけにある帰りの配送便の札・屋根裏と重なるので、
   // 鉄の煙と公園のあいだの空いた所に置く（PC・スマホ横の両方で、ほかのピンや札と重ならないことを確かめた）。
   // ♥5の締めくくりは第3章だけなので TOKYO_FINALES には入れない。会っている保存だけ地図に出る（charId）。
-  rivalSpot({ id: "ch5_tokyo_saku", charId: "saku", label: "煙幕", area: "綾取の店", x: 58, y: 62, theme: "rival", glyph: "煙", face: "saku",
+  rivalSpot({ id: "ch5_tokyo_saku", charId: "ayatori", label: "煙幕", area: "綾取の店", x: 58, y: 62, theme: "rival", glyph: "煙", face: "ayatori",
     preview: "bg_yohaku_shop", stamina: -16, stat: "insight",
-    talks: ["ch5_tokyo_saku", "ch5_tokyo_saku_b", "ch5_tokyo_saku_c"], desc: "好評につき延長中の間借り店。お茶と、ノートの続き。" }),
+    talks: ["ch5_tokyo_saku", "ch5_tokyo_ayatori_b", "ch5_tokyo_ayatori_c"], desc: "好評につき延長中の間借り店。お茶と、ノートの続き。" }),
   spot({ id: "ch5_tokyo_park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園", preview: "bg_tokyo_park",
     stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   // 裏口のてつこは地図の行き先にせず、mukai のシフトの帰りに会う（VOL11）。
@@ -195,7 +195,7 @@ async function read(id, bg, owner, tod = timeOfDay()) {
 const TOKYO_TEACHERS = Object.freeze({ ch5_tokyo_volk: "volk" });
 
 /** 東京の行き先と「東京へ」の処理。対象外の行き先は null（日常ループの通常の処理へ）。 */
-export async function performTokyoSpot(spot, { staminaGuard } = {}) {
+export async function performTokyoSpot(spot, { staminaGuard, holdSaveUntilActionEnds } = {}) {
   if (spot.id !== TO_TOKYO_SPOT.id && spot.region !== TOKYO) return null;
   const owner = state;
   try { await loadTokyoScenes(); } catch {
@@ -206,7 +206,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   if (spot.id === TO_TOKYO_SPOT.id || spot.id === HOME_ID) {
     const blocked = tokyoVanBlock(state);
     if (blocked) { toast(blocked.why); return { used: false, exerted: false }; }
-    return spot.id === HOME_ID ? goHome(owner) : goToTokyo(owner);
+    return spot.id === HOME_ID ? goHome(owner, holdSaveUntilActionEnds) : goToTokyo(owner, holdSaveUntilActionEnds);
   }
   if (spot.reflect) { await reflectAt(spot.reflect); return { used: false, exerted: false }; }
   if (spot.id === "ch5_tokyo_shop") {
@@ -254,9 +254,13 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   if (spot.shift) {
     // 恋人のましろがいる時は、シフトに入るか、二人で過ごすかを選ぶ（BLC03）。恋人でなければ今までどおりシフトだけ。
     // 締めくくりを友人として迎えた後は、シフトか「ましろちゃんと話す」（♥5後の場面・#3693）を選ぶ。
+    const loverReady = await prepareLoverMilestones(["mashiro"]);
+    if (state !== owner) return { used: false, exerted: false };
+    if (!loverReady && owner.lovers?.includes("mashiro")) toast("恋人の会話を読み込めませんでした。もう一度お試しください");
     const mashiroMilestoneDue = () => loverMilestonesDue(["mashiro"]).length > 0;
+    const loverTime = loverReady && mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() });
     const friendTalk = bondAfterNext(state, "mashiro");
-    if (friendTalk && !mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() })) {
+    if (friendTalk && !loverTime) {
       const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
         { label: "ましろちゃんと話す", value: "friend", test: "tokyo-mukai-friend", primary: friendTalk.kind === "story" },
         { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
@@ -275,7 +279,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
         return { used: true, exerted: true };
       }
     }
-    if (mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() })) {
+    if (loverTime) {
       const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
         { label: "ましろちゃんと過ごす（恋人）", value: "lover", test: "tokyo-mukai-lover", primary: true },
         { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
@@ -345,7 +349,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
 }
 
 /** 配送便で東京へ（昼に出て夜に着く。今日の昼と夜の2行動）。着いた夜は屋根裏で寝る。 */
-async function goToTokyo(owner) {
+async function goToTokyo(owner, holdSaveUntilActionEnds) {
   // 最初に選んだ日は、Dr.fookah の裏口で配送便に乗せてもらう話になる（読むだけでは行動を使わない）。
   if (!state.flags[VAN_FLAG]) {
     if (!await read("ch5_tokyo_van_first", "bg_shop", owner)) return { used: false, exerted: false };
@@ -353,8 +357,8 @@ async function goToTokyo(owner) {
     save();
   }
   if (!await read("ch5_tokyo_go", "bg_street", owner)) return { used: false, exerted: false };
+  holdSaveUntilActionEnds?.();
   state.flags._ch2_region = TOKYO;
-  save();
   // 配送便の車窓。道路の灯が流れて、夜の東京に着く（#2688 A4）
   await vanRide(() => showBg(state.flags[ATTIC_FLAG] ? "bg_tokyo_map_night" : "bg_mukai_shop", "night"), { to: "tokyo" });
   if (state !== owner) return { used: false, exerted: false };
@@ -366,10 +370,10 @@ async function goToTokyo(owner) {
 }
 
 /** 帰りの配送便（昼に出て夜に地元へ着く。今日の昼と夜の2行動）。 */
-async function goHome(owner) {
+async function goHome(owner, holdSaveUntilActionEnds) {
   if (!await read("ch5_tokyo_back", "bg_street", owner)) return { used: false, exerted: false };
+  holdSaveUntilActionEnds?.();
   state.flags._ch2_region = "home";
-  save();
   // 配送便の車窓で地元の夜へ（#2688 A4）
   await vanRide(() => showBg("bg_osu_map_night", "night"), { to: "town" });
   return { used: true, exerted: false, slotsUsed: TOKYO_VAN_SLOTS };

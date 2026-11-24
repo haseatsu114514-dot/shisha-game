@@ -60,8 +60,8 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
 /* 帰る＝裏口の戸の色 */
 .tetsuko-time .tt-tool[data-test="tetsuko-time-back"] { background: var(--tk-door); color: var(--tk-cream); }
 .tetsuko-time .tt-tool[data-test="tetsuko-time-back"] .tt-tool-label { color: var(--tk-cream); }
-.tetsuko-time .tt-help-btn { width: 52px; padding: 0; border-radius: 50%; height: 52px; align-self: center; }
-.tt-help-q { font-size: 28px; font-weight: 900; line-height: 1; color: var(--tk-ink); }
+.tetsuko-time .tt-help-btn { width: var(--q-hit); padding: 0; border-radius: 50%; height: var(--q-hit); align-self: center; }
+.tt-help-q { font-size: var(--q-font); font-weight: 900; line-height: 1; color: var(--tk-ink); }
 .tetsuko-time .tt-tool.new::after, .tetsuko-time .tt-new { border: 2px solid var(--tk-ink); background: var(--tk-pink); color: var(--tk-ink); }
 .tetsuko-time :is(.tt-tool, .tt-act, .tt-item, .tt-card, .tt-slot-hit):focus-visible { outline: 3px solid var(--tk-door); outline-offset: 3px; }
 
@@ -264,9 +264,9 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
 }
 /* スマホ規格（#2851・#2729）: 題の札の英字（TETSUKO TIME・実寸 7.6px）は飾りなので出さない（読み上げ・題の文字には残る）。 */
 html:root[data-density="phone"] .tetsuko-time .tt-logo-roman { display: none; }
-/* 「？」の統一（#2729・2026-11-08 オーナー指摘「？が大きい」）: 見た目は舞台上 31〜35px の細い線の丸（::before）、中の「？」は実寸 11.5px 以上。
-   押せる範囲はボタンの箱そのもの（透明）で実寸 40px 以上。置き場は右上の道具の列の「帰る」の隣へ（並びだけ。DOM の順は変えない）。 */
-.tetsuko-time { --q-hit: max(44px, calc(40px / var(--k, 1))); --q-font: max(20px, calc(11.5px / var(--k, 1))); --q-dot: calc(var(--q-font) + 11px); }
+/* 「？」の統一（#2729・2026-11-08 オーナー指摘「？が大きい」）: 見た目は細い線の丸（::before）。
+   大きさは #4131 の共通標準（丸43px・押せる箱58px、--q-* 式、2026-11-22 もう一回り拡大）。置き場は右上の道具の列の「帰る」の隣へ（並びだけ。DOM の順は変えない）。 */
+.tetsuko-time { --q-hit: max(58px, calc(54px / var(--k, 1))); --q-font: max(27px, calc(15px / var(--k, 1))); --q-dot: calc(var(--q-font) + 16px); }
 .tetsuko-time .tt-tools > .tt-help-btn.tt-help-btn { order: 1; position: relative; isolation: isolate; align-self: center;
   width: var(--q-hit); min-width: var(--q-hit); height: var(--q-hit); padding: 0; border: 0; border-radius: 50%; background: transparent; box-shadow: none; }
 .tetsuko-time .tt-tools > [data-test="tetsuko-time-back"] { order: 2; }

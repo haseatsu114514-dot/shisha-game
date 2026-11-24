@@ -96,6 +96,7 @@ try {
     fortune.second = state.affinity.rio;
     // 恋人の絆: 私的な場面でだけ、従来の半分
     state = fresh({ lovers: ["tsumugi"], loveLevel: { tsumugi: 1 }, lovePts: { tsumugi: 9 } });
+    await stats.prepareLoveAffinity(["tsumugi"]);
     stats.gainAffinity("tsumugi", 10);
     const shop = state.lovePts.tsumugi;
     stats.bond.private = true;
@@ -179,6 +180,7 @@ try {
     await vn.play("ch1_minto_phantom_smell");
     const shopNames = [...new Set(names().filter((l) => DB.dialogues.ch1_minto_phantom_smell.lines.some((x) => x.speaker === "minto" && x.text === l.text)).map((l) => l.name))];
     // 告白（分岐先の受け入れも私的な場面のまま）
+    await data.loadConfessionDialogue();
     vn.backlog().length = 0;
     window.T.pick("付き合ってください");
     await vn.play("confession_minto");
@@ -350,7 +352,7 @@ try {
   assert.equal(friend.noonBadge, false); assert.equal(friend.noon, false); assert.equal(friend.nightBadge, true);
   assert(friend.finaleText.includes("描き終わった絵、いちばん最初に見てほしくて"));
   assert(friend.finaleText.includes("この子の続きも、ここで描きます"), "friendship landing missing");
-  assert(!friend.finaleText.includes("今度は2人で"), "romance question shown after a friendly answer");
+  assert(!friend.finaleText.includes("今度は二人で"), "romance question shown after a friendly answer");
   assert.equal(friend.record.route, "friend"); assert(friend.owned); assert.equal(friend.lavender, 50);
   assert.equal(friend.confessed, false); assert.equal(friend.due, null);
   assert.equal(friend.again, 1); assert.equal(friend.lavenderAfter, 50); assert.equal(friend.after, false);
@@ -365,7 +367,7 @@ try {
     const q1 = bonds.romanceValue("tsumugi");
     state.story.tsumugi = 6; state.affinity.tsumugi = 90;
     await window.T.submitTsumugi();
-    pick("今度は2人で");
+    pick("今度は二人で");
     vn.backlog().length = 0;
     await spots.visitChar("tsumugi");
     const text = vn.backlog().map((l) => l.text).join("|");
@@ -376,7 +378,7 @@ try {
     const confessed = await romance.maybeConfession(async () => {});
     return { q1, text, route, due, confessed, lovers: state.lovers.slice(), romance: bonds.romanceValue("tsumugi"), owned: state.owned.includes("suyaki_tsumugi") };
   });
-  assert.equal(love.q1, 1); assert(love.text.includes("2人で、ですか")); assert.equal(love.route, "romance"); assert.equal(love.due, "tsumugi");
+  assert.equal(love.q1, 1); assert(love.text.includes("二人で、ですか")); assert.equal(love.route, "romance"); assert.equal(love.due, "tsumugi");
   assert.equal(love.confessed, true); assert.deepEqual(love.lovers, ["tsumugi"]); assert.equal(love.romance, 2); assert(love.owned);
   log("HF04/05 tsumugi romance: two romantic answers -> romance route -> confession at night -> lovers, gift too");
 
@@ -407,7 +409,7 @@ try {
     const questionVisit = { answer: state.romanceChoices.bond_q1_tsumugi?.value,
       finale: !!state.finales.tsumugi, due: state.flags._confession_due ?? null };
     await window.T.submitTsumugi();
-    pick("今度は2人で");
+    pick("今度は二人で");
     await spots.visitChar("tsumugi");
     const oldRoute = { route: state.finales.tsumugi.route, due: state.flags._confession_due ?? null, missed: !state.romanceChoices.bond_q1_tsumugi };
     return { lateFriend, dueAfterLoad, unanswered, questionVisit, oldRoute };
@@ -804,7 +806,7 @@ try {
   else assert(friendsLime.charmUp);
   log("HF09 friends: shared cadence (1 friend LIME per 2 days, oldest contact first, 4+ days per person), invites 6+ days apart after a chat, never with a story/lover invitation (Sumi's shift call may overlap), holiday/after-close, none for lovers/pending romance/tournament");
 
-  // #2025: ひよりの友人の一服も2本を交互に読む。章や大会の前後に依存しない日常の話題。
+  // #2025: ひよりの友人の一服を4本順番に読む。章や大会の前後に依存しない日常の話題。
   const hiyoriHangouts = await page.evaluate(async () => {
     const { fresh, core, bonds, vn, DB = window.__remake.DB } = window.T;
     const variants = DB.friends.friends.hiyori.hangouts;
@@ -813,7 +815,7 @@ try {
       fresh({ chapter, tournament: { phase: tournamentPhase },
         finales: { hiyori: { day: 1, chapter: 1, route: "friend" } } });
       const rows = [];
-      for (let visit = 0; visit < 3; visit++) {
+      for (let visit = 0; visit < 5; visit++) {
         vn.backlog().length = 0;
         await bonds.playFriendHangout("hiyori");
         rows.push(vn.backlog().map(line => line.text).join("|"));
@@ -826,17 +828,17 @@ try {
     }
     return { variants, results };
   });
-  assert.equal(hiyoriHangouts.variants.length, 2, "ひよりの友人の一服は2本");
+  assert.equal(hiyoriHangouts.variants.length, 4, "ひよりの友人の一服は4本");
   for (const { rows, count } of hiyoriHangouts.results) {
-    assert.equal(count, 3);
+    assert.equal(count, 5);
     for (let visit = 0; visit < rows.length; visit++) {
-      const expected = hiyoriHangouts.variants[visit % 2];
+      const expected = hiyoriHangouts.variants[visit % hiyoriHangouts.variants.length];
       for (const line of [expected.arrive, expected.mid, expected.close]) assert(rows[visit].includes(line.text), rows[visit]);
     }
-    assert.notEqual(rows[0], rows[1], "2回目は別の一服を読む");
-    assert.equal(rows[0], rows[2], "3回目は最初の一服へ戻る");
+    assert.equal(new Set(rows.slice(0, 4)).size, 4, "4回目まで別の一服を読む");
+    assert.equal(rows[0], rows[4], "5回目は最初の一服へ戻る");
   }
-  log("#2025 hiyori friend hangouts: 2 variants alternate across save/load in chapters 1/2, before/after tournament");
+  log("#2025 hiyori friend hangouts: 4 variants rotate across save/load in chapters 1/2, before/after tournament");
 
   // Same-visit Rio question: the live shop entrypoint grants the sample and charges stamina once.
   for (const options of [

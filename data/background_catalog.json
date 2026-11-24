@@ -967,6 +967,18 @@
    "luma": 139,
    "blob": "3553f3b18ca24d0723246bec28ffacdc7d834231"
   },
+  "bg_smoke_lab_duel_day.png": {
+   "place": "smoke_lab_duel",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 147,
+   "blob": "906e56dcc3dfc0c5491c9ae324900e512b576dc2",
+   "accepted": "2026-11-20 オーナー採用（#3620）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
   "bg_station_walk_night.png": {
    "place": "station_walk",
    "time": "night",
@@ -1261,6 +1273,18 @@
    "blob": "bec234a79e0edfb97463629287a4a3dba440159d",
    "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
   },
+  "bg_tournament_dubai_dusk.png": {
+   "place": "tournament_dubai",
+   "time": "dusk",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 102,
+   "blob": "6d4c2fd00e6408de6c19462ff26091581db25ee0",
+   "accepted": "2026-11-20 オーナー採用（#3620）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
   "bg_tournament_stage.png": {
    "place": "tournament_stage",
    "time": "",
@@ -1272,6 +1296,30 @@
    "luma": 61,
    "blob": "9115bd165d68ad0eb3a8966bbef6ef42c9ded0ed",
    "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う。台は描かれておらず、ゲームが scene-art.js の SCENE_PROPS で重ねる（2026-11-13）"
+  },
+  "bg_tournament_tokyo_day.png": {
+   "place": "tournament_tokyo",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 172,
+   "blob": "ed71ca2fd75d60345996f2d391d27a373f99248b",
+   "accepted": "2026-11-20 オーナー採用（#3620）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
+  "bg_tournament_yuzugaya_dusk.png": {
+   "place": "tournament_yuzugaya",
+   "time": "dusk",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 59,
+   "blob": "8b45e9adf9bce07459dfcfedc9358c3148ade74d",
+   "accepted": "2026-11-20 オーナー採用（#3620）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
   },
   "bg_volk_shop.png": {
    "place": "volk_shop",

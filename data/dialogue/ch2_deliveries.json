@@ -219,7 +219,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_ch2_delivery_rei",
+      "dialogue_id": "remake_ch2_delivery_kuraudo",
       "lines": [
         {
           "speaker": "",
@@ -237,7 +237,7 @@
           "text": "あの……田中さん、ですか？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……そう"
         },
@@ -247,7 +247,7 @@
           "text": "（「貴方ノ為ノ此ノ煙。」の†黒羅雨℃†さんが、田中さん……）"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "スミさんは、昔からそっちで呼ぶ"
         },
@@ -257,7 +257,7 @@
           "text": "スミさんからの荷物です。カシスのフレーバーだそうです"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……ありがとう。待ってた"
         },
@@ -267,12 +267,12 @@
           "text": "クラウドは包みを受け取ると、宛名をそっと指でなぞった。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……店の名前で書いてくれって、何度も頼んでる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "わざわざ、ありがとう。スミさんに、確かに受け取ったと伝えてくれ"
         },
@@ -284,7 +284,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_ch2_rei_trpg",
+      "dialogue_id": "remake_ch2_kuraudo_trpg",
       "lines": [
         {
           "speaker": "",
@@ -297,7 +297,7 @@
           "text": "それ、変わったサイコロですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……TRPG用。休みの日に、遊んでる"
         },
@@ -307,12 +307,12 @@
           "text": "クラウドさんが？ 音楽以外にも、趣味があるんですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……音楽も好きだ。でも、こっちは別の世界に入り浸れる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "誰かの役になって、みんなで話を作る。気づくと何時間も経ってる"
         },
@@ -322,17 +322,17 @@
           "text": "ゲームの世界を、みんなで歩く感じですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……そう。思い通りにならないところも、面白い"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "駅の北側に、六角サイさんのボドゲカフェがある。夜はTRPGバーになる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "初めてでも、遊び方を教えてくれる。気になったら、寄ってみるといい"
         },
@@ -749,7 +749,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（片付けや手入れも、見られて恥ずかしくない手つきなら、店の景色になるのか）"
+          "text": "（片づけや手入れも、見られて恥ずかしくない手つきなら、店の景色になるのか）"
         },
         {
           "speaker": "",
@@ -974,7 +974,7 @@
         {
           "speaker": "",
           "face": "normal",
-          "text": "「風は腰で送るんです。腕は、向きを決めるだけ」"
+          "text": "「風は腰で送るんです。腕は、向きを決めるだけ」。"
         },
         {
           "speaker": "hajime",
@@ -1039,7 +1039,7 @@
         {
           "speaker": "",
           "face": "normal",
-          "text": "「牛乳かい、コーヒー牛乳かい。迷ったら、コーヒーのほうが人気だよ」"
+          "text": "「牛乳かい、コーヒー牛乳かい。迷ったら、コーヒーのほうが人気だよ」。"
         },
         {
           "speaker": "hajime",
@@ -1079,7 +1079,7 @@
         {
           "speaker": "",
           "face": "normal",
-          "text": "「兄ちゃん、だいぶ慣れたな。仕事は何してんだい」"
+          "text": "「兄ちゃん、だいぶ慣れたな。仕事は何してんだい」。"
         },
         {
           "speaker": "hajime",
@@ -1361,7 +1361,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "写真かい。……誘ってもらって断る筋もねえな"
+          "text": "写真かい。……誘ってもらって断るスジもねえな"
         },
         {
           "speaker": "ageha",
@@ -1420,7 +1420,7 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "落書きは「盛れても筋は通す☆」っと。これ、店に飾っていい？"
+          "text": "落書きは「盛れてもスジは通す☆」っと。これ、店に飾っていい？"
         },
         {
           "speaker": "kumicho",
@@ -1438,7 +1438,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_ch2_rei_melty_greeting",
+      "dialogue_id": "remake_ch2_kuraudo_melty_greeting",
       "lines": [
         {
           "speaker": "",
@@ -1446,7 +1446,7 @@
           "text": "入口のベルが鳴った。ピンクと豹柄の店内に、黒いロングコートの裾が入ってくる。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "こんにちは。「貴方ノ為ノ此ノ煙。」の、クラウドです"
         },
@@ -1456,9 +1456,9 @@
           "text": "え、クラウドくん？ どしたの、こっちの店まで"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
-          "text": "同じ柚ヶ谷の店なのに、挨拶がまだだったから。これ、うちのショップカード"
+          "text": "同じ柚ヶ谷の店なのに、挨拶がまだだった。これ、うちのショップカード"
         },
         {
           "speaker": "ageha",
@@ -1471,7 +1471,7 @@
           "text": "クラウドは俺に気づくと、小さく会釈した。俺も会釈を返して、ソファに座り直す。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "長居はしない。お客さん、来てるし"
         },
@@ -1491,7 +1491,7 @@
           "text": "クラウドはプリクラ機の看板を見上げた。白い光と、ハートの吹き出しと、目の大きな見本写真。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……撮る。こういうの、ちゃんと入ったことない"
         },
@@ -1531,9 +1531,9 @@
           "text": "白くするやつ、切った。クラウドくんの黒、ちゃんと黒で写したいじゃん。髪の赤も、ワインのまま"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "surprise",
-          "text": "いいの？ いつもの設定なんでしょ"
+          "text": "……いいのか。いつもの設定なんだろ"
         },
         {
           "speaker": "ageha",
@@ -1541,7 +1541,7 @@
           "text": "盛るって、白くすることじゃないし。その人の好きな色が残ってる方が、絶対盛れてる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……ありがとう。じゃあ、あげはさんのピンクも、そのままで"
         },
@@ -1561,7 +1561,7 @@
           "text": "撮り終えた二人は、機械の横の落書きの画面へ移った。ソファからでも、画面の端が少し見える。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "この縁、使っていい？ 小さい薔薇の"
         },
@@ -1576,7 +1576,7 @@
           "text": "あ、薔薇の上には乗せないようにする"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "うん。その星、もう半歩だけ右"
         },
@@ -1586,7 +1586,7 @@
           "text": "半歩？ ……ここ？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "そこ。薔薇の葉と、角がそろう"
         },
@@ -1601,7 +1601,7 @@
           "text": "……いや、二ミリ下"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "二ミリ"
         },
@@ -1626,7 +1626,7 @@
           "text": "やば、あと十秒！ 文字、文字！"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……黒も盛れた、で"
         },
@@ -1651,12 +1651,12 @@
           "text": "はい、半分こ。クラウドくんの好きなとこに貼ってね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "うん。貼る場所、考えておく"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "今度は、ちゃんと一台吸いに来る"
         },
@@ -1673,7 +1673,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_ch2_rei_purikura_after",
+      "dialogue_id": "remake_ch2_kuraudo_purikura_after",
       "lines": [
         {
           "speaker": "",
@@ -1696,7 +1696,7 @@
           "text": "そこに貼ったんですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "うん。ここなら日に焼けない。盤を出した時だけ、見える"
         },
@@ -1706,7 +1706,7 @@
           "text": "いい場所ですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "貼る時、二ミリずれた。……あげはさんには、言わないで"
         },
@@ -1733,12 +1733,12 @@
         {
           "speaker": "",
           "face": "normal",
-          "text": "県大会ホールと同じビルに、C.STATION 柚ヶ谷店の入口があった。"
+          "text": "県大会ホールと同じビルに、C.STATION柚ヶ谷店の入口があった。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "博士の言ってた柚ヶ谷店は、ここか。地元の旗艦店と同じ青緑の看板だ"
+          "text": "（博士の言ってた柚ヶ谷店は、ここか。地元の旗艦店と同じ青緑の看板だ）"
         },
         {
           "speaker": "",
@@ -1748,7 +1748,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ホールとは入口が違うんだ。配達が終わったら、今度は客として来てみよう"
+          "text": "（ホールとは入口が違うんだ。配達が終わったら、今度は客として来てみよう）"
         }
       ]
     },
@@ -1758,12 +1758,12 @@
         {
           "speaker": "",
           "face": "normal",
-          "text": "C.STATION 柚ヶ谷店。青緑のボックス席に通されると、通路の先に曲線のカウンターが見えた。"
+          "text": "C.STATION柚ヶ谷店。青緑のボックス席に通されると、通路の先に曲線のカウンターが見えた。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "同じチェーンでも、席の並びはけっこう違うんだな"
+          "text": "（同じチェーンでも、席の並びはけっこう違うんだな）"
         },
         {
           "speaker": "",
@@ -1773,7 +1773,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "初めてでも入りやすいのは、こっちも同じか。……ちゃんと、街に合わせてる"
+          "text": "（初めてでも入りやすいのは、こっちも同じか。……ちゃんと、街に合わせてる）"
         },
         {
           "speaker": "",
@@ -1788,12 +1788,12 @@
         {
           "speaker": "",
           "face": "normal",
-          "text": "C.STATION 柚ヶ谷店の、前とは違うボックス席に腰を下ろした。"
+          "text": "C.STATION柚ヶ谷店の、前とは違うボックス席に腰を下ろした。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "同じ一台でも、座る場所で店の見え方が変わるな"
+          "text": "（同じ一台でも、座る場所で店の見え方が変わるな）"
         },
         {
           "speaker": "",
@@ -1803,7 +1803,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "札の字が手書きだ。同じチェーンでも、店ごとに一言は足してるのか"
+          "text": "（札の字が手書きだ。同じチェーンでも、店ごとに一言は足してるのか）"
         },
         {
           "speaker": "",
@@ -1813,7 +1813,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "手軽なのに、雑じゃない。……俺も、そこは見習おう"
+          "text": "（手軽なのに、雑じゃない。……俺も、そこは見習おう）"
         }
       ]
     },
@@ -1833,7 +1833,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "混んでても、声をかけ合って炭替えの順番を回してる。だから待たせにくいんだ"
+          "text": "（混んでても、声をかけ合って炭替えの順番を回してる。だから待たせにくいんだ）"
         },
         {
           "speaker": "",
@@ -1843,7 +1843,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "誰がやっても同じ手順にしてるのか。……だから、初めての客も安心できる"
+          "text": "（誰がやっても同じ手順にしてるのか。……だから、初めての客も安心できる）"
         },
         {
           "speaker": "",
@@ -1863,7 +1863,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "チェーンでも、顔で覚えてるんだな。そこは、地元の店と同じだ"
+          "text": "（チェーンでも、顔で覚えてるんだな。そこは、地元の店と同じだ）"
         },
         {
           "speaker": "",
@@ -1873,7 +1873,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "窓際が定位置なのか。そこまで覚えてるのは、たしかに強い"
+          "text": "（窓際が定位置なのか。そこまで覚えてるのは、たしかに強い）"
         },
         {
           "speaker": "",
@@ -1883,7 +1883,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "戻ったら、うちの常連さんの好みも、もう一度ちゃんと思い出しておこう"
+          "text": "（戻ったら、うちの常連さんの好みも、もう一度ちゃんと思い出しておこう）"
         }
       ]
     },

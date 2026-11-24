@@ -67,7 +67,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "みんとちゃんにお任せ。次のひと口、当ててみて"
+          "text": "みんとちゃんにお任せ。次の一口、当ててみて"
         },
         {
           "speaker": "",
@@ -317,7 +317,7 @@
       ]
     },
     {
-      "dialogue_id": "ch2_city_guest_rei_first",
+      "dialogue_id": "ch2_city_guest_kuraudo_first",
       "lines": [
         {
           "speaker": "",
@@ -330,7 +330,7 @@
           "text": "クラウドさん？ こっちで会うと、ちょっと新鮮ですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……邪魔してる。電車、一本早いのに乗れた"
         },
@@ -340,9 +340,14 @@
           "text": "好きな席で休んでいきな。今日は何にする？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "お任せで。自分で選ばない日も、たまにはいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドは台を待ちながら、スマホで何曲か聴き比べていた。"
         },
         {
           "speaker": "",
@@ -350,7 +355,7 @@
           "text": "台が届くと、クラウドは吸うたびに、泡の音に合わせて指で小さく拍を取った。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……ここ、泡の音までよく聞こえる。いい店だな"
         },
@@ -360,14 +365,14 @@
           "text": "俺も、隣に座っていいですか？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……ああ。ひとりだと、ちょっと間が持たなかった"
         }
       ]
     },
     {
-      "dialogue_id": "ch2_city_guest_rei_repeat",
+      "dialogue_id": "ch2_city_guest_kuraudo_repeat",
       "lines": [
         {
           "speaker": "",
@@ -375,7 +380,7 @@
           "text": "クラウドがヘッドホンを首に下ろし、軽く手を上げた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……また会ったな。ここ、落ち着く"
         },
@@ -385,7 +390,7 @@
           "text": "さっき、何を聴いてたんですか？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……古い曲。聴く？"
         },
@@ -395,7 +400,7 @@
           "text": "片耳だけ借りたヘッドホンから、ゆっくりしたギターが流れてくる。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……この曲、泡の音と同じくらいのテンポなんだ"
         },
@@ -405,14 +410,14 @@
           "text": "炭、替えとくか。そのテンポのままでな"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……助かる。スミさんの炭替え、音がしないから好きだ"
         }
       ]
     },
     {
-      "dialogue_id": "ch2_city_guest_rei_repeat_b",
+      "dialogue_id": "ch2_city_guest_kuraudo_repeat_b",
       "lines": [
         {
           "speaker": "",
@@ -435,7 +440,7 @@
           "text": "クラウドさん、むせる前に動いてましたよね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……吸う音が、少し高かった。急いでる時の音"
         },
@@ -460,7 +465,7 @@
           "text": "うちで働くか？ 耳のいいのは助かる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……自分の店が、ある"
         },
@@ -472,7 +477,7 @@
       ]
     },
     {
-      "dialogue_id": "ch2_city_guest_rei_repeat_c",
+      "dialogue_id": "ch2_city_guest_kuraudo_repeat_c",
       "lines": [
         {
           "speaker": "",
@@ -480,7 +485,7 @@
           "text": "炭を替えながら、スミさんが小さく鼻歌を歌っていた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "surprise",
           "text": "……その曲。サビの前で、一回だけ止まるやつ"
         },
@@ -495,17 +500,17 @@
           "text": "（スミさんの鼻歌、初めて聞いたかもしれない）"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "歌ってた。音程、合ってた"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "昔、よくラジオで流れてたんだ、……忘れてくれ"
+          "text": "昔、よくラジオで流れてたんだ。……忘れてくれ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……無理。炭を置く間が、サビ前の溜めと同じだった"
         },
@@ -515,7 +520,7 @@
           "text": "炭替えに、リズムがあるんですか？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "ある。スミさんの炭替えは、音はしないのに拍がある"
         },
@@ -525,7 +530,7 @@
           "text": "……次から、鼻歌は店の外でやる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……それは、もったいない"
         }

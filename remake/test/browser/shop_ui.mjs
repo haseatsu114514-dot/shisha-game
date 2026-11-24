@@ -35,6 +35,88 @@ const snapshot = page => page.evaluate(() => ({ money: S.core.state.money, stock
 await suite("shop-ui", async check => {
   const selected = process.env.TEST_CASES?.split(",");
   const run = (name, body, options = {}) => !selected || selected.includes(name) ? check(name, body, { reducedMotion: "reduce", ...options }) : Promise.resolve();
+  for (const [width, height] of [[1280, 720], [844, 390], [740, 320]]) {
+    const touch = width < 1280;
+    await run(`catalog-scroll-${width}x${height}`, async page => {
+      await setup(page);
+      await open(page);
+      const list = page.locator('.shop-body');
+      const rows = list.locator('.shop-row.product');
+      const checkout = page.locator('[data-test="shop-checkout"]');
+      const footer = await checkout.boundingBox();
+
+      for (const tab of ['flavor', 'equip']) {
+        if (tab === 'equip') await page.locator('[data-tab="equip"]').click();
+        const layout = await list.evaluate(list => {
+          const view = list.getBoundingClientRect();
+          const cards = [...list.querySelectorAll('.shop-row.product')];
+          const fits = (inner, outer) => inner.left >= outer.left - 1 && inner.right <= outer.right + 1
+            && inner.top >= outer.top - 1 && inner.bottom <= outer.bottom + 1;
+          const clipped = cards.flatMap(card => {
+            const bounds = card.getBoundingClientRect();
+            const parts = card.querySelectorAll('.shop-main b, .shop-feature-tags, .shop-stock, .shop-price, .shop-owned, .shop-quantity');
+            return [...parts].filter(part => {
+              if (!part.textContent.trim()) return false;
+              const text = document.createRange();
+              text.selectNodeContents(part);
+              const box = part.getBoundingClientRect();
+              const content = text.getBoundingClientRect();
+              return !fits(box, bounds) || !fits(content, bounds)
+                || content.left < box.left - 1 || content.right > box.right + 1;
+            }).map(part => part.textContent);
+          });
+          return {
+            visible: cards.filter(card => fits(card.getBoundingClientRect(), view)).length,
+            vertical: list.scrollHeight > list.clientHeight,
+            horizontal: list.scrollWidth > list.clientWidth + 1,
+            clipped,
+          };
+        });
+        assert(layout.visible >= 2 && layout.visible <= 3, `${tab}: ${layout.visible} complete cards at first`);
+        assert(layout.vertical && !layout.horizontal, `${tab}: only vertical scrolling is needed`);
+        assert.deepEqual(layout.clipped, [], `${tab}: all names, tags, stock, prices and quantities fit`);
+        if (tab === 'flavor') {
+          const view = await list.boundingBox();
+          const x = view.x + view.width / 3;
+          const y = view.y + view.height * .8;
+          if (touch) {
+            const input = await page.context().newCDPSession(page);
+            await input.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+            for (let step = 1; step <= 5; step++) {
+              await input.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y - view.height * .12 * step }] });
+            }
+            await input.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+            await input.detach();
+          } else {
+            await page.mouse.move(x, y);
+            await page.mouse.wheel(0, view.height);
+          }
+          await page.waitForFunction(() => document.querySelector('.shop-body').scrollTop > 0);
+        }
+        await list.focus();
+        await page.keyboard.press('End');
+        await page.waitForFunction(() => {
+          const list = document.querySelector('.shop-body');
+          return list.scrollHeight - list.clientHeight - list.scrollTop <= 1;
+        });
+        await assertFits(page, '.shop-row.product:last-child');
+        assert.deepEqual(await checkout.boundingBox(), footer, 'Checkout stays fixed on screen');
+      }
+
+      await page.locator('[data-tab="flavor"]').click();
+      const last = rows.last();
+      const add = last.locator('.shop-step.plus');
+      const id = (await add.getAttribute('data-test')).slice('buy-'.length);
+      await last.scrollIntoViewIfNeeded();
+      const before = await snapshot(page);
+      if (touch) await add.tap(); else await add.click();
+      assert.equal((await snapshot(page)).money, before.money);
+      if (touch) await checkout.tap(); else await checkout.click();
+      const after = await snapshot(page);
+      assert(after.money < before.money);
+      assert.equal(after.stock[id], (before.stock[id] || 0) + 50);
+    }, { viewport: { width, height }, isMobile: touch, hasTouch: touch });
+  }
   await run('af-vanilla-stock-and-craft-art', async page => {
     await setup(page);
     await page.evaluate(() => { S.core.save(); S.core.newGame(); S.core.load(); });

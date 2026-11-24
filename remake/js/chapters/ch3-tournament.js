@@ -7,6 +7,7 @@ import { createChapterActions } from "../core/chapter-actions.js";
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { difficultyEvidence } from "../core/cycle-start.js";
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, loadTournamentCraftDialogue } from "../core/data.js";
+import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { el, yen } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, enterScene, modal, loadingNotice } from "../core/ui.js";
@@ -33,7 +34,8 @@ import { computeShisha, finalize } from "../craft/score.js";
 import { evaluationOf, feedbackLine } from "../craft/feedback.js";
 import { CRAFT_STEPS } from "../craft/practice.js";
 import * as broadcast from "../craft/broadcast.js";
-import { voteStack, judgePanel, judgeLegend, craftReviewBlock } from "../craft/tournament-graphics.js";
+import { voteStack, judgePanel, judgeLegend, craftReviewBlock, voteReasonBlock } from "../craft/tournament-graphics.js";
+import { tournamentResultReason } from "../craft/tournament-result-reason.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { contestCeremony, liveOf, intervalCard, resultSplash, countdownKind, showConfetti } from "../craft/tournament-show.js";
@@ -135,7 +137,7 @@ function card(owner, name, title, description, actions = [], extra = []) {
       el("div", [el("p", { text: "第三章・DAY14 ／ HAZE: NATIONAL TOKYO" }), el("h1", { text: title })]),
       menuButton(owner),
     ]),
-    el("p.ch2-contest-description", { text: description }),
+    typeof description === "string" ? el("p.ch2-contest-description", { text: description }) : description,
     ...extra,
     el("div.ch2-contest-actions", actions),
   ]));
@@ -162,7 +164,7 @@ async function read(owner, name) {
   if (!live(owner)) return false;
   showScreen("none", null);
   // 大会場面内で初めて名乗る人物の表示名を解禁する。未読で中断したら戻す。
-  const reveals = name === "tournament_day" ? ["saku", "steve", "volk", ...JUDGES] : [];
+  const reveals = name === "tournament_day" ? ["ayatori", "steve", "volk", ...JUDGES] : [];
   const newlyMet = reveals.filter(who => !state.met[who]);
   const newMetFlags = reveals.filter(who => !state.flags[`_met_${who}`]);
   for (const who of reveals.filter(who => who !== "emil")) markMet(who);
@@ -222,7 +224,7 @@ export async function runChapterThreeTournament() {
     Object.assign(DB.dialogues, Object.fromEntries(REQUIRED.map(key => [key, dialogues[key]])));
     recoverStep(state);
     save();
-    await enterScene(bgUrl("bg_tournament_stage", "day"));
+    await enterScene(bgUrl(TOURNAMENT_VENUE_BG[3], "day"));
     if (live(owner)) await drive(owner);
   });
 }
@@ -312,7 +314,7 @@ function voteReason(p, cs, final = false) {
   if (parts.length) {
     const weakest = parts.reduce((low, part) => part.score < low.score ? part : low);
     const step = weakest.label === "アルミ穴あけ" ? "holes" : weakest.label === "炭の温度" ? "heat" : weakest.label.includes("調整") ? "care" : "pull";
-    const judge = step === "pull" ? "emil" : "dr_kemuri";
+    const judge = step === "pull" ? "emil" : "dr_charcoal";
     lines.push(`${weakest.label}：${evaluationOf(weakest.score).mark}　${displayName(judge, state)}「${feedbackLine(judge, step, evaluationOf(weakest.score))}」`);
   }
   const affected = JUDGES.filter(judge => last[judge]?.tactic?.affected);
@@ -339,7 +341,8 @@ function renderVotes(owner, final = false, { splash = false } = {}) {
   };
   const p = progress(), rows = final ? p.result.rows : standings(p);
   const craft = owner.cs || (p.craft ? clone(p.craft) : null);
-  const reason = voteReason(p, craft, final);
+  const reason = voteReasonBlock(voteReason(p, craft, final), id("vote-reason"), final);
+  const verdict = final ? tournamentResultReason(rows, { rounds: p.roundVotes, quality: p.quality }) : null;
   // 最終結果だけに、実際の記録から2行を添える（第1章の結果表と同じ判定）。
   const review = final ? craftReviewBlock(craftReviewLines(craft), id("craft-review")) : null;
   const row = value => el(`li.ch2-contest-rival${value.id === "hajime" ? ".me" : ""}`, {
@@ -352,7 +355,8 @@ function renderVotes(owner, final = false, { splash = false } = {}) {
   const judgeFace = judge => { const face = contestantAvatar(judge); face.classList.add("judge-face"); return face; };
   const judges = judgePanel(p.votes, JUDGES, { cls: ".ch2-contest-judges", face: judgeFace, craft: final ? craft : null });
   const screen = card(owner, final ? "result" : "votes", final ? "全国大会の結果" : "いま、動いた持ち点。",
-    final ? `はじめは${p.result.rank}位。審査員三人、それぞれの10点が出揃いました。`
+    verdict ? el("div.ch2-contest-description.tournament-result-reason", { text: verdict, dataset: { test: "tournament-result-reason" } })
+      : final ? `はじめは${p.result.rank}位。審査員三人、それぞれの10点が出揃いました。`
       : ["制作が終わり、次は吸い出しと提供。", "提供を終えた一台。次は客席での調整。",
         "一度目の調整を終え、同じ一台をもう一度確かめます。"][p.voted - 1], [
       button(owner, final ? "結果を受け止める" : "続きを作る", "continue", async () => {
@@ -361,13 +365,11 @@ function renderVotes(owner, final = false, { splash = false } = {}) {
         await drive(owner);
       }, true),
     ], [
-      reason ? el("div.ch2-contest-reason", { dataset: { test: id("vote-reason") } }, [
-        el("b.ch2-contest-reason-tag", { text: "解説" }), ...reason.map(text => el("p", { text })),
-      ]) : null,
-      review,
+      final ? null : reason,
       p.baseVotes ? el("p.ch2-contest-note", { text: "全出場者に基礎票1点" }) : null,
       el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]),
       judges,
+      final ? reason : null, review,
       el("p.ch2-contest-note", { text: "一度入れた点は戻らない。同点なら一台の出来栄えで順位を決める。" }),
     ]);
   // 票が入る瞬間（TSH05）: 審査員ごとに票が飛び、点が数え上がり、並びが入れ替わる。同じ回を見せるのは一度だけ（再表示は出そろった板から）。

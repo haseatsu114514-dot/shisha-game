@@ -18,6 +18,13 @@ async function open(path, rejectFirstBgm = false) {
   await page.addInitScript(rejectFirst => {
     window.__bgmPlayed = [];
     window.__bgmRejected = false;
+    const rideBgmRequests = [];
+    const nativeFetch = window.fetch;
+    window.fetch = function (url, ...args) {
+      const key = /\/(bgm_ethnic(?:05|08|12))\.bgm$/.exec(String(url))?.[1];
+      if (key) rideBgmRequests.push(key);
+      return nativeFetch.call(this, url, ...args);
+    };
     const nativePlay = HTMLMediaElement.prototype.play;
     HTMLMediaElement.prototype.play = function (...args) {
       if (!this.src.startsWith("blob:")) return nativePlay.apply(this, args);
@@ -25,8 +32,9 @@ async function open(path, rejectFirstBgm = false) {
         window.__bgmRejected = true;
         return Promise.reject(new DOMException("Simulated late media start", "NotAllowedError"));
       }
+      const requestedRideBgm = [...rideBgmRequests];
       return nativePlay.apply(this, args).then(value => {
-        window.__bgmPlayed.push({ src: this.src, at: performance.now() });
+        window.__bgmPlayed.push({ src: this.src, at: performance.now(), requestedRideBgm });
         return value;
       });
     };
@@ -42,6 +50,8 @@ try {
       await page.locator('[data-test="desert-page-tutorial"]').click();
       await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "practice");
       await page.waitForFunction(() => window.__bgmPlayed.length > 0);
+      assert.deepEqual(await page.evaluate(() => window.__bgmPlayed[0].requestedRideBgm),
+        ["bgm_ethnic12"], "only the practice track should be requested before its first play call");
       // A held direction at the end of practice must not carry into the new run.
       await page.evaluate(() => { window.__desertRide.setInput(true, false); window.__desertRide.setSpeedUp(8); });
       await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "practiced", null, { timeout: 30000 });

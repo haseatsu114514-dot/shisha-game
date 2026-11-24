@@ -56,7 +56,7 @@ try {
         const s = F.core.newGame();
         Object.assign(s, { chapter: scenario === 'chapter2' ? 2 : 1, phase: 'daily', day: 3,
           slot: ['night', 'legacy'].includes(scenario) ? 1 : 0, seed: 131, weatherSeed: 4, money: 90000, stamina: 90 });
-        if (scenario === 'chapter2') s.flags._rei_trpg_introduced = true;
+        if (scenario === 'chapter2') s.flags._kuraudo_trpg_introduced = true;
         if (scenario !== 'locked') {
           for (const id of ['sumi', 'tsumugi', 'naru', 'adam', 'minto', 'rio', 'uranaishi']) s.met[id] = true;
           s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
@@ -231,7 +231,7 @@ try {
     if (!baseline) {
       const saved = await page.evaluate(async () => {
         F.map.interruptMap(null); await window.mapFlow;
-        F.core.state.chapter = 2; F.core.state.flags._rei_trpg_introduced = true;
+        F.core.state.chapter = 2; F.core.state.flags._kuraudo_trpg_introduced = true;
         const before = JSON.stringify(F.core.state);
         window.mapFlow = F.map.chooseSpot({ eventPin: 'trpg_bar' });
         return before;

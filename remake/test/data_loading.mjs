@@ -34,7 +34,7 @@ function realJSON(url) {
 }
 const fixtureFetch = async (url) => ({ ok: true, status: 200, json: async () => realJSON(url) });
 
-// 起動時は43ファイル（casual_lime.json・巻頭ポエムの chapter_poems.json を含む）を読み、同時接続が4本を超えない。
+// 起動時は41ファイル（casual_lime.json・巻頭ポエムの chapter_poems.json を含む）を読み、同時接続が8本を超えない。
 const requests = [];
 let active = 0, maximum = 0;
 const all = await loader(async (url, options) => {
@@ -76,14 +76,15 @@ assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/b
 assert.equal(all.faceIconUrl("oneesan", null, { style: "classic" }), "img/ui/face_icons/face_minto_private.webp");
 assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/new/face_minto_private.webp");
 assert.equal(all.portraitInfo("oneesan", "normal").face, "ura_normal");
-assert.equal(requests.length, 43);
-assert.equal(new Set(requests).size, 43);
-for (const file of ["hiyori", "cinema", "tournament_craft"]) {
+assert.equal(requests.length, 41);
+assert.equal(new Set(requests).size, 41);
+for (const file of ["hiyori", "cinema", "tournament_craft", "confession", "lover_events"]) {
   assert(!requests.includes(`../data/dialogue/${file}.json`));
 }
 assert.equal(maximum, 8);
 assert.equal(active, 0);
-assert.equal(progress.length, 43);
+assert.equal(progress.length, 41);
+assert.equal(all.DB.loverEventsLoaded, false);
 assert.equal(all.DB.dialogues.samechan_cinema_introduction, undefined);
 assert.equal(all.DB.dialogues.cinema_first_screening, undefined);
 assert.equal(progress.at(-1), 1);
@@ -106,14 +107,16 @@ assert.deepEqual(limeIds.slice(samechanOpening, storyLimeStart), [
 // ヌールの帰国後の時差の2通（第5章の地元・恋人だけ）もここ
 assert.deepEqual(limeIds.slice(storyLimeStart, numberedLimeStart), [
   "lime_ch3_sumi_tokyo_settle", "lime_ch4_sumi_settle", "lime_ch4_tsumugi_counter", "lime_ch4_mashiro_mukai",
-  "lime_ch4_ageha_melty", "lime_ch4_saku_stream", "lime_ch4_saku_steve_note", "lime_ch4_sumi_eve", "lime_ch5_saku_title", "lime_ch5_kumicho_title",
-  "lime_ch5_rei_title", ...Array.from({ length: 9 }, (_, i) => `lime_wang_0${i + 1}`), "lime_wang_tonari_visit", ...Array.from({ length: 6 }, (_, i) => `lime_taiyo_0${i + 1}`),
+  "lime_ch4_ageha_melty", "lime_ch4_ayatori_stream", "lime_ch4_ayatori_steve_note", "lime_ch4_sumi_eve", "lime_ch5_ayatori_title", "lime_ch5_kumicho_title",
+  "lime_ch5_kuraudo_title", ...Array.from({ length: 9 }, (_, i) => `lime_wang_0${i + 1}`), "lime_wang_tonari_visit", ...Array.from({ length: 6 }, (_, i) => `lime_taiyo_0${i + 1}`),
   "lime_noor_after_sunset", "lime_noor_missed_call", "lime_noor_noon_call", "lime_mashiro_glass_cloth",
 ]);
 // L01〜L43 の増量分は番号順でひとまとまり。
 assert.deepEqual(limeIds.slice(numberedLimeStart, numberedLimeStart + 43), Array.from({ length: 43 }, (_, i) => `L${String(i + 1).padStart(2, "0")}`));
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
-assert.equal(all.DB.lime.length, 237); // 139 + 王煙楼8・アダム2・クラウド2（好感度キャラのLIMEをそろえる）+ 太陽6（RVE03）+ 王煙楼の大会後1（RVE07）+ スティーブ×綾取の後日1（#3468 C案）+ ヌールの帰国後の時差2 + ひよりの夢の話1（SPC11）+ 神崎・クラウドの♥3の外出の誘いと後日4（#3097） + サメちゃん・スミさん（鉄仮面さん）の第2章の後日2（#3097 PR-I） + 行き帰りの電車の小品の後日2（スミさん・つむぎ・#3097 PR-B） + 王煙楼の第5章の tonari への誘い1（#4010） + 綾取・スティーブ・ヴォルクの♥3の外出の誘いと後日6（#3097 PR-H） + 第2〜5章の雑談60（#3097）
+assert(limeIds.includes("lime_tsumugi_note_day5"));
+assert(limeIds.includes("lime_tsumugi_note_day10"));
+assert.equal(all.DB.lime.length, 239); // 139 + 王煙楼8・アダム2・クラウド2（好感度キャラのLIMEをそろえる）+ 太陽6（RVE03）+ 王煙楼の大会後1（RVE07）+ スティーブ×綾取の後日1（#3468 C案）+ ヌールの帰国後の時差2 + ひよりの夢の話1（SPC11）+ 神崎・クラウドの♥3の外出の誘いと後日4（#3097） + サメちゃん・スミさん（鉄仮面さん）の第2章の後日2（#3097 PR-I） + 行き帰りの電車の小品の後日2（スミさん・つむぎ・#3097 PR-B） + 王煙楼の第5章の tonari への誘い1（#4010） + 綾取・スティーブ・ヴォルクの♥3の外出の誘いと後日6（#3097 PR-H） + 第2〜5章の雑談60（#3097）
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
@@ -124,10 +127,10 @@ for (const id of ["baito_tsumugi_01", "baito_minto_romance", "baito_ageha_romanc
 assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loaded from real data");
 assert.equal(all.DB.characters.hiyori.name, "泡沫ひより");
 assert.equal(all.DB.characters.hiyori.reading, "うたかた ひより");
-assert.equal(all.DB.characters.saku.name, "綾取 陣（あやとり じん）");
-assert.equal(all.DB.characters.rei.reading, "くらうど");
-assert.equal(all.realName("saku"), "綾取陣");
-assert.equal(all.realName("rei"), "†黒羅雨℃†");
+assert.equal(all.DB.characters.ayatori.name, "綾取 陣（あやとり じん）");
+assert.equal(all.DB.characters.kuraudo.reading, "くらうど");
+assert.equal(all.realName("ayatori"), "綾取陣");
+assert.equal(all.realName("kuraudo"), "†黒羅雨℃†");
 assert.equal(all.realName("hiyori"), "ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);
 assert.equal(all.DB.hiyori.route, undefined);
@@ -179,13 +182,13 @@ assert.deepEqual(flavorMakerProblems([
 const deferred = all.loadDeferredDialogues();
 assert.equal(all.loadDeferredDialogues(), deferred);
 await deferred;
-assert.equal(requests.length, 44);
+assert.equal(requests.length, 42);
 assert.equal(requests.at(-1), "../data/dialogue/hiyori.json");
 assert.equal(all.DB.hiyori.route.enabled, true);
 assert(all.DB.dialogues.hiyori_meeting);
 assert(all.DB.dialogues.hiyori_preview_gap.lines[0].inner);
 assert.equal(all.loadDeferredDialogues(), deferred);
-assert.equal(requests.length, 44);
+assert.equal(requests.length, 42);
 assert.equal(all.DB.dialogues.cinema_first_screening, undefined);
 assert.equal(all.DB.dialogues.tournament_craft_packed_intro, undefined);
 
@@ -195,7 +198,7 @@ assert.equal(all.loadCinemaDialogue(), cinema);
 const tournament = all.loadTournamentCraftDialogue();
 assert.equal(all.loadTournamentCraftDialogue(), tournament);
 await Promise.all([cinema, tournament]);
-assert.equal(requests.length, 46);
+assert.equal(requests.length, 44);
 assert(requests.includes("../data/dialogue/cinema.json"));
 assert(requests.includes("../data/dialogue/tournament_craft.json"));
 assert(all.DB.dialogues.samechan_cinema_introduction);
@@ -204,11 +207,13 @@ assert.equal(all.DB.dialogues.tournament_craft_packed_intro.lines[0].speaker, "p
 assert(all.DB.dialogues.tournament_craft_care_recovered.lines[0].text);
 assert.equal(all.loadCinemaDialogue(), cinema);
 assert.equal(all.loadTournamentCraftDialogue(), tournament);
-assert.equal(requests.length, 46);
+assert.equal(requests.length, 44);
 
 for (const [file, method, dialogue] of [
   ["cinema", "loadCinemaDialogue", "cinema_first_screening"],
   ["tournament_craft", "loadTournamentCraftDialogue", "tournament_craft_packed_intro"],
+  ["confession", "loadConfessionDialogue", "confession_mashiro"],
+  ["lover_events", "loadLoverEvents", "lover_mashiro_lv1"],
 ]) {
   let attempts = 0;
   const retry = await loader(async (url) => {
@@ -216,11 +221,15 @@ for (const [file, method, dialogue] of [
     if (++attempts === 1) return { ok: false, status: 503 };
     return fixtureFetch(url);
   });
-  await assert.rejects(retry[method](), new RegExp(`${file}\\.json: HTTP 503`));
+  const attempt = retry[method]();
+  assert.equal(retry[method](), attempt);
+  await assert.rejects(attempt, new RegExp(`${file}\\.json: HTTP 503`));
   assert.equal(retry.DB.dialogues[dialogue], undefined);
+  assert.equal(retry.DB.loverEventsLoaded, false);
   await retry[method]();
   assert.equal(attempts, 2);
   assert(retry.DB.dialogues[dialogue]);
+  assert.equal(retry.DB.loverEventsLoaded, file === "lover_events");
 }
 
 // 後段読みの失敗はキャッシュせず、次の呼び出しで再試行できる。
@@ -340,7 +349,7 @@ for (const phase of ["headers", "body"]) {
   assert.equal(started.length, startedAtFailure);
 }
 
-console.log("[remake data] 43 boot JSON files, deferred hiyori/cinema/tournament_craft and retry, max 4 requests, gallery catalog, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+console.log("[remake data] 41 boot JSON files, deferred dialogues and retry, max 8 requests, gallery catalog, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
 
 assert.equal(all.DB.limeTemplates.sumi_baito.accept_reply.stamp, "st_sumi_ack");
 assert.equal(all.DB.limeTemplates.sumi_baito.reasons.length, 3);

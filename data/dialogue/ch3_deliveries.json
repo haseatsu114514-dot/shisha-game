@@ -57,7 +57,7 @@
       ]
     },
     {
-      "dialogue_id": "ch3_delivery_saku",
+      "dialogue_id": "ch3_delivery_ayatori",
       "lines": [
         {
           "speaker": "",
@@ -82,7 +82,7 @@
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "saku",
+          "char_id": "ayatori",
           "next_true": "known",
           "next_false": "new"
         },
@@ -97,12 +97,12 @@
           "text": "包みの角、潰れていないといいんですが。揺らさないように持ってきました"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "大丈夫。底から支えて運んでくれたのが分かる。助かったよ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "今度は用事なしでおいで。客としてなら、ゆっくり話せるから"
         },
@@ -125,7 +125,7 @@
       "branches": {
         "new": [
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "normal",
             "text": "綾取陣。大会の間、ここを借りてる。届けてくれてありがとう"
           },
@@ -137,7 +137,7 @@
         ],
         "known": [
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "normal",
             "text": "ああ、はじめくん。今日はmukaiのお仕事なんだね。ありがとう"
           }
@@ -160,7 +160,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "カウンターの端には、小さなタイマーが三つ、きっちり等間隔に並んでいた。"
+          "text": "カウンターの端には、小さなタイマーが一つ置いてあった。"
         },
         {
           "speaker": "hajime",
@@ -197,7 +197,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "話の途中で、タイマーの一つが鳴った。スティーブはぴたりと口を閉じて、そちらへ振り返った。"
+          "text": "話の途中で、そのタイマーが鳴った。スティーブはぴたりと口を閉じて、そちらへ振り返った。"
         },
         {
           "speaker": "hajime",
@@ -371,7 +371,7 @@
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "ふふ。それ、ちゃんと顔を見てきた人の答えだねぇ"
+          "text": "ふふ。さっきの「空気が違った」って話、ちゃんと顔を見てきた人の答えだねぇ"
         },
         {
           "speaker": "mashiro",

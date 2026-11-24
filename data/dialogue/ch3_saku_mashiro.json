@@ -2,7 +2,7 @@
   "comment": "第3章の任意場面。綾取とましろの幼少期と、綾取が福岡へ発った日の嘘。二人が直接話す場面はDAY11の煙幕以降の本編に任せ、ここではそれぞれがはじめにだけ話す。後日談の ch3_enmaku_cleanup で二枚の絵と嘘を回収する。",
   "dialogues": [
     {
-      "dialogue_id": "ch3_saku_mashiro_tea_tin",
+      "dialogue_id": "ch3_ayatori_mashiro_tea_tin",
       "comment": "ましろ側。煙幕の初訪問（レモンケーキの客）を聞いた後。読む日付を問わない内容にする。",
       "lines": [
         {
@@ -83,7 +83,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "少年「ましろは絶対、りんごジュース。賭けてもいい」"
+          "text": "少年は「ましろは絶対、りんごジュース。賭けてもいい」と言った。"
         },
         {
           "speaker": "",
@@ -93,12 +93,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "少年「……また外れた」"
+          "text": "少年は「……また外れた」と言った。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "少女「だって、今日は寒いもん」"
+          "text": "少女は「だって、今日は寒いもん」と答えた。"
         },
         {
           "speaker": "",
@@ -169,7 +169,7 @@
       ]
     },
     {
-      "dialogue_id": "ch3_saku_mashiro_soon_back",
+      "dialogue_id": "ch3_ayatori_mashiro_soon_back",
       "comment": "綾取側。mukaiの客として来た後。福岡へ発った日の「すぐ戻る」と、連絡しなかった理由。大会の対策は明かさない。",
       "lines": [
         {
@@ -178,9 +178,9 @@
           "text": "閉店間際の煙幕。綾取は客席のカードを一枚ずつ揃えていた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
-          "text": "いらっしゃい。今夜の組織の議題は、カードの角をそろえること"
+          "text": "いらっしゃい。今夜の組織の議題は、カードの角を揃えること"
         },
         {
           "speaker": "hajime",
@@ -188,7 +188,7 @@
           "text": "手伝います"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "助かる。じゃあ、君を角の監査役に任命するね"
         },
@@ -203,12 +203,12 @@
           "text": "これ……"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "あ、見つかった。ノートの表紙の裏に挟んでたのに"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "子どもの頃の絵。半分しかないのは、もう半分をあげたから"
         },
@@ -218,7 +218,7 @@
           "text": "ましろちゃんに？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "……君、ほんと何でも知ってるね。煙幕の情報部に欲しいな"
         },
@@ -228,7 +228,7 @@
           "text": "入りません"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "福岡へ行ったのは、十八の春。知り合いの店に、住み込みで入ったんだ"
         },
@@ -238,12 +238,12 @@
           "text": "一人で、ですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "うん。熱ばっかり出す子のままじゃ、あいつの隣に立てない気がして"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "……今の、聞かなかったことにして"
         },
@@ -253,17 +253,17 @@
           "text": "聞きました"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "正直だなぁ。じゃあ、ついでにもう一つ。[pause]僕は出発の日、嘘をついた"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "ましろに「すぐ戻る」って言った。戻る日なんて、決めてなかったのに"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "種を明かさないまま、もう五年。僕の嘘で、いちばん長いやつ"
         },
@@ -273,12 +273,12 @@
           "text": "どうして、連絡しなかったんですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "sad",
           "text": "店の一台を「客の思い込み」って言われた夜があってさ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "胸を張れる一台ができたら電話しよう。そう決めたら、永遠に決まらなくて"
         },
@@ -288,12 +288,12 @@
           "text": "今度の大会は……"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "胸を張る場所。それと、僕の夢。思い込みじゃないって、世界に言わせたい"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "ましろに見せたいのと、僕が勝ちたいのは別。混ぜたら、どっちも嘘になる"
         },
@@ -303,7 +303,7 @@
           "text": "綾取は絵をノートの表紙の裏へ戻し、角の折れを指で一度だけ伸ばした。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "内緒ね。ましろには、自分で言うよ、……いつか"
         },
@@ -313,7 +313,7 @@
           "text": "その「いつか」、「すぐ戻る」と同じじゃないですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "……痛いとこ突くなぁ。じゃあ、大会が終わったら。これでどう？"
         },
@@ -323,7 +323,7 @@
           "text": "覚えておきます"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "監査役、なかなか厳しい"
         }

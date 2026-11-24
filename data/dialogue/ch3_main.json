@@ -1,5 +1,5 @@
 {
-  "comment": "第3章の正史台本。必須本編の進行順はdata/story_routes.json、実行はremake/js/chapters。ch3_double_apple/ch3_mukai/ch3_rivals.jsonの台本は必須本編の場面（綾取の煙幕訪問ch3_saku_first・ch3_saku_adviceを含む）と任意場面が同居し、任意場面の一覧はstory_routes.jsonのoptionalとremake/js/chapters/ch3-story-wiring.js。大会前に読める任意場面はremake/js/chapters/ch3.jsが接続済み。",
+  "comment": "第3章の正史台本。必須本編の進行順はdata/story_routes.json、実行はremake/js/chapters。ch3_double_apple/ch3_mukai/ch3_rivals.jsonの台本は必須本編の場面（綾取の煙幕訪問ch3_ayatori_first・ch3_ayatori_adviceを含む）と任意場面が同居し、任意場面の一覧はstory_routes.jsonのoptionalとremake/js/chapters/ch3-story-wiring.js。大会前に読める任意場面はremake/js/chapters/ch3.jsが接続済み。",
   "dialogues": [
     {
       "dialogue_id": "ch3_opening",
@@ -27,7 +27,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "その下に、一行だけ。「パン屋を右」"
+          "text": "その下に、一行だけ「パン屋を右」とあった。"
         },
         {
           "speaker": "hajime",
@@ -97,7 +97,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「出場が決まった方にも、当日の手順をここで確認していただきます」"
+          "text": "「出場が決まった方にも、当日の手順をここで確認していただきます」と案内された。"
         },
         {
           "speaker": "hajime",
@@ -112,7 +112,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「ドバジ チョコレートを4g以上」。課題の葉は支給で、量に上限はない。他の葉は各自の持ち込みだ。"
+          "text": "「ドバジ チョコレートを四グラム以上」。課題の葉は支給で、量に上限はない。他の葉は各自の持ち込みだ。"
         },
         {
           "speaker": "hajime",
@@ -682,7 +682,7 @@
           "text": "路地の先、「煙幕」の看板が消える。綾取が借りた店の鍵をかけていた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "夜回り？　東京の煙を裏から動かす会議なら、もう閉会したよ"
         },
@@ -692,7 +692,7 @@
           "text": "綾取さんも、今まで準備を？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "うん。何度も配合を見直してた。失敗しても、福岡へ戻ればいいだけだし"
         },
@@ -707,7 +707,7 @@
           "text": "「だけ」って顔じゃないよ、陣"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……ばれた？　店では平気な顔、得意だったんだけどな"
         },
@@ -727,7 +727,7 @@
           "text": "言わなかったのは、僕。そっちは、ごめんね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "僕は、会っても何を話せばいいか分からなかった。軽口なら出るのにね"
         },
@@ -751,7 +751,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "本当はグレープだったの。お客さんの『甘い』に、はじめくんがすぐ頷いてたから"
+          "text": "本当はグレープだったの。お客さんの「甘い」に、はじめくんがすぐ頷いてたから"
         },
         {
           "speaker": "mashiro",
@@ -766,10 +766,10 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "『懐かしい味』って言った自分の声、今も耳に残ってます"
+          "text": "「懐かしい味」って言った自分の声、今も耳に残ってます"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "僕の店の大げさな噂は、笑って種を明かせる。二人のは、相手の前で引けなくなる嘘だね"
         },
@@ -784,7 +784,7 @@
           "text": "俺も。だから明日は、分からないことを隠すために作りたくない"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "それ、僕にまで話していいの？　明日は勝負の相手だよ"
         },
@@ -794,7 +794,7 @@
           "text": "はい。見栄のために炭を動かしたくない。吸う人に合わせて作ります"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "……そっか。僕は聞いたことを忘れない。勝ちたいから、遠慮もしないよ"
         },
@@ -830,7 +830,7 @@
           "text": "明日は客席から見てる。二人とも、自分を追い込みすぎないで"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "じゃあ明日、全部見てて。弱気な顔も、勝つための一台も"
         },
@@ -840,7 +840,7 @@
           "text": "俺のも見ててください。終わったら、また三人で話しましょう"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "うん。勝っても負けても、店の片づけは手伝ってね"
         },
@@ -872,7 +872,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "『分からないって、言う』"
+            "text": "「分からないって、言う」とだけ書いてある。"
           }
         ]
       }
@@ -891,7 +891,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "客席はもう半分ほど埋まっていた。前の方の列で、ましろちゃんが小さく手を振っている。"
+          "text": "客席はもう半分ほど埋まっていた。前の方の列で、ましろが小さく手を振っている。"
         },
         {
           "speaker": "",
@@ -916,17 +916,17 @@
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "シーシャ勝負・第壱条ッ！ 課題はチョコレート！ 前夜に決めた一台で勝負だッ！"
+          "text": "シーシャ勝負・第壱条ッ！　課題はチョコレート！　前夜に決めた一台で勝負だッ！"
         },
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "第弐条ッ！ 提供してから二度の調整まで、同じ一台を仕上げてください！ ぷぷぷっ！"
+          "text": "第弐条ッ！　提供してから二度の調整まで、同じ一台を仕上げてください！　ぷぷぷっ！"
         },
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "第参条ッ！ 各台には客席から試喫の方が一人ずつ！ 吸い心地の声も審査の材料だッ！"
+          "text": "第参条ッ！　各台には客席から試喫の方が一人ずつ！　吸い心地の声も審査の材料だッ！"
         },
         {
           "speaker": "pakki",
@@ -945,15 +945,15 @@
         {
           "speaker": "emil",
           "face": "normal",
-          "text": "各審査員の持ち点は10。入れた点は戻せない。……道具も、人も、同じだ"
+          "text": "各審査員の持ち点は十。入れた点は戻せない。……道具も、人も、同じだ"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "優勝者が日本の第一代表として、GRAND SMOKEへ進む"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "nervous",
           "text": "お、おはよう。今朝、配合を変えた？　……ごめん、答えなくていい。緊張して変なこと聞いた"
         },
@@ -968,7 +968,7 @@
           "text": "綾取はノートを胸に抱えた。笑おうとしても口元が固い。審査席を見て、息を飲む。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "nervous",
           "text": "あれ、また読めなかった。……大丈夫。いつも通り作れば、きっと"
         },
@@ -978,12 +978,12 @@
           "text": "「大会が終わっても友達で」って話。俺、本気です"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "nervous",
           "text": "うん。君が覚えていてくれて、よかった"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "nervous",
           "text": "……僕も忘れてないよ"
         },
@@ -1068,7 +1068,7 @@
           "text": "綾取が触れたのは自分の葉と炭だけ。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "nervous",
           "text": "ちょっと濃かった、かな。……でも、一口目はこれで出すって決めたんだ"
         },
@@ -1157,12 +1157,12 @@
           "text": "まだ半分も入れない。道具は、最後まで使ってから評価する"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "私も、全部はまだ入れません。……どの台も、話の途中ですから"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "……続けてください"
         },
@@ -1192,24 +1192,24 @@
           "text": "ノートを鋭く閉じた音が響き、怯えた笑顔が、目を見開いた愉快そうな顔へ跳ねた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "wild",
           "text": "あはっ、動いた！　僕の一口を基準にしちゃった？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "wild",
           "text": "煙幕で言ったよね、最後の甘さは長いって。今なら直せるよ？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "wild",
           "text": "昨日、分からないって言ってたよね。その一口、どう？"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "客席のましろが、立ち上がりかけた。昔の陣を知っているぶん、あの笑い方が怖いのかもしれない。"
+          "text": "客席のましろが、立ち上がりかけた。昔の綾取を知っているぶん、あの笑い方が怖いのかもしれない。"
         },
         {
           "speaker": "mashiro",
@@ -1217,7 +1217,7 @@
           "text": "陣……勝ちたいのは分かる。でも、そこまで自分を追い込まなくても"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "wild",
           "text": "聞こえてるよ、ましろ。大丈夫。僕はルールの中で、本気で勝ちに来ただけ"
         },
@@ -1236,7 +1236,7 @@
           "text": "……今日も、薄く感じます。だから、聞きます"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……言うんだ、それ。ここで"
         },
@@ -1272,7 +1272,7 @@
           "text": "このくらいなら、もう少し吸ってたい"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smug",
           "text": "やるじゃん。僕が仕掛けたのに、僕の方が待たされた"
         },
@@ -1330,7 +1330,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "講評のとき、会長は俺の台を、もう一口吸っていた。"
+          "text": "講評の時、会長は俺の台を、もう一口吸っていた。"
         },
         {
           "speaker": "hajime",
@@ -1343,17 +1343,17 @@
           "text": "拍手の中、審査席を立った千須が、俺の前で一度だけ足を止めた。"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "duck": true,
           "text": "……今日は、顔が見えた"
         },
         {
           "type": "hide_portrait",
-          "char_id": "sui"
+          "char_id": "sensu"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "逢縁くん。今日は、数字より先に、人に聞いたね"
         },
@@ -1363,12 +1363,12 @@
           "text": "綾取はノートを胸元へ戻した。笑顔は店にいた時のものだが、閉じたノートを握る指に力が入っている。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "君の炭は動かなかった。助言は、本当だよ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "言う時を選んだのは僕。ごめん"
         },
@@ -1378,22 +1378,22 @@
           "text": "待てました。綾取さんの一口じゃなくて、目の前の人の一口を"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……ましろ、客席で立ち上がりかけてたね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "sad",
           "text": "あーあ、負けた。予想が外れて嬉しいはずなのに、ちゃんと悔しい"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "もう一口、吸わせて。君の答え、ノートの空欄にまだ書けない"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "次は僕の一台で勝つよ。そこだけは、冗談にしない"
         },
@@ -1408,7 +1408,7 @@
           "text": "客席から降りてきたましろが、温かいお茶を綾取に差し出した。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……あの顔まで見られたくなかったな。嫌になった？"
         },
@@ -1423,7 +1423,7 @@
           "text": "でも後ろのお茶の香りは、ちゃんと陣が作った味だった"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "負けた僕にも、そう言うの？"
         },
@@ -1438,12 +1438,12 @@
           "text": "綾取がカップを受け取る。湯気の向こうで、眉が少しだけほどけた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……公園で言ったことまで覚えてたんだ。僕だけが引きずってると思ってた"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "覚えててくれても、また話せるとは思わなかった。僕の方が連絡しなかったのに"
         },
@@ -1453,7 +1453,7 @@
           "text": "僕も、何て言えばいいか分からなかった。離れちゃったのは、二人ともだよ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……そっか。二人とも、黙ってただけか"
         },
@@ -1463,7 +1463,7 @@
           "text": "陣の話、もっと聞きたい。まずはお茶、冷める前にね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……大会が終わっても、電話していい？　福岡の話、聞いてほしい"
         },
@@ -1503,7 +1503,7 @@
         },
         {
           "type": "hide_portrait",
-          "char_id": "saku"
+          "char_id": "ayatori"
         },
         {
           "type": "hide_portrait",
@@ -1570,12 +1570,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "送ったあと、湯を沸かした。返信を待ちながら、ちゃんと夕食を食べた。"
+          "text": "送ったあと、湯を沸かした。弁当を皿に移して、温め直す。部屋に、湯気が立った。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "弁当を皿に移して、温め直す。部屋に、湯気が立った。"
+          "text": "返信を待ちながら、ちゃんと夕食を食べた。"
         },
         {
           "speaker": "",
@@ -1601,7 +1601,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "まず、ご飯。昨日、ちゃんと食べたんだよ"
+          "text": "まず、ごはん。昨日、ちゃんと食べたんだよ"
         },
         {
           "speaker": "mashiro",
@@ -1642,7 +1642,7 @@
               "next": "tea_ask"
             },
             {
-              "text": "黙って、お茶をいれる",
+              "text": "黙って、お茶を淹れる",
               "next": "tea_quiet"
             }
           ]
@@ -1864,7 +1864,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ところが、仕切りの布は吊られたまま。黒板には『好評につき延長』の文字。"
+          "text": "ところが、仕切りの布は吊られたまま。黒板には「好評につき延長」の文字。"
         },
         {
           "speaker": "hajime",
@@ -1872,12 +1872,12 @@
           "text": "……延長、ですか？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "おはよう。東京を裏で動かした組織、もうしばらく活動を続けます"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "店を貸してくれた人がね、ゆうべ電話をくれた。客が減らないから、もう少し続けてみないかって"
         },
@@ -1887,7 +1887,7 @@
           "text": "大会のあとなのに、お客さん、来てるんですね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "大会を見て来た人じゃないよ。前から来てた人が、また来るって。予想、外れた"
         },
@@ -1897,7 +1897,7 @@
           "text": "外れて、よかったですね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "うん。福岡の店は、バイトの子が見てくれる。電話したら「どうぞ」だって"
         },
@@ -1907,7 +1907,7 @@
           "text": "じゃあ、今日は何を手伝えば"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "鏡、磨くの手伝って。僕の店、これがないと本当に普通の店だから"
         },
@@ -1927,9 +1927,9 @@
           "text": "おはよう。お茶、持ってきたよぉ。……あれ？　片づけてない"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
-          "text": "……ましろ。手伝いは、はじめだけのはずだったけど"
+          "text": "……ましろ。手伝いは、はじめくんだけのはずだったけど"
         },
         {
           "speaker": "mashiro",
@@ -1937,7 +1937,7 @@
           "text": "昔も、最後は一人で片づけてたでしょ。今日は三人、……のつもりだったんだけどなぁ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "しばらく、こっちにいる。延長だって"
         },
@@ -1957,12 +1957,12 @@
           "text": "ましろが茶缶のふたを開ける。黄色いクレヨンの、半分のケーキ。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "……持ってたの？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "僕も。ノートの表紙の裏"
         },
@@ -1978,7 +1978,7 @@
           "text": "ふふ。ちゃんとケーキだ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "絵は、ケーキに見えるんだ"
         },
@@ -1988,7 +1988,7 @@
           "text": "絵はね。煙は、今でもお茶"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "知ってる。大会の日にも言われた"
         },
@@ -2003,7 +2003,7 @@
           "text": "半分ずつ、また持ってよう。半分だったから、なくさなかったんだと思う"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……うん。合わせるのは、会った時でいい"
         },
@@ -2014,7 +2014,7 @@
           "text": "ましろがお茶をいれる。今日の湯気には、勝負の匂いがしなかった。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "ましろ。僕、福岡へ行く日に「すぐ戻る」って言ったよね"
         },
@@ -2024,7 +2024,7 @@
           "text": "言ったねぇ。五年かかった"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "あれ、嘘だった。戻る日なんて決めてなかった、……ごめん"
         },
@@ -2034,7 +2034,7 @@
           "text": "知ってたよ。陣、嘘をつく時、先に笑うから"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "え、そうなの？　じゃあ大会の時も……"
         },
@@ -2049,12 +2049,12 @@
           "text": "（綾取さんを一番読んでたのは、ましろちゃんだったのか）"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "今度は、すぐ戻るって言わない。次に会う日を言う"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "日曜の夜、……どう？"
         },
@@ -2064,7 +2064,7 @@
           "text": "日曜は、mukaiが混むよぉ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "外れた"
         },
@@ -2074,17 +2074,17 @@
           "text": "月曜の夜。お茶を持って、ここへ来るね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "月曜。ノートに書いた。……今度は、外したくないな"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "綾取はそれ以上言わなかった。言いかけた続きを、お茶と一緒に飲みこんだように見えた。"
+          "text": "綾取はそれ以上言わなかった。言いかけた続きを、お茶と一緒に飲み込んだように見えた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "それと、君の分の空欄。まだ書けてない"
         },
@@ -2094,12 +2094,12 @@
           "text": "優勝の時の、ですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "うん。世界の大会が終わったら書く。それまで空けておく"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "次は僕の一台で勝つからね。その時の答えも、同じページに"
         },
@@ -2111,7 +2111,7 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_lime_contact_saku",
+          "flag": "_lime_contact_ayatori",
           "next_true": "lime"
         },
         {
@@ -2128,7 +2128,7 @@
       "branches": {
         "lime": [
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "smile",
             "text": "外したら、LIMEで報告して。煙幕のカウンターで、ノートに書くから"
           },
@@ -2138,7 +2138,7 @@
             "text": "綾取さんも、外れた予想を送ってください"
           },
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "normal",
             "text": "うん。……返事の欄、やっと埋まりそう"
           }
@@ -2350,7 +2350,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "大会の前、つむぎちゃんが『頑張って』って言ってくれたね。結果も知らせてくれるって"
+            "text": "大会の前、つむぎちゃんが「頑張って」って言ってくれたね。結果も知らせてくれるって"
           },
           {
             "speaker": "tsumugi",
@@ -2664,19 +2664,19 @@
             "text": "あの時は傷めて、作り直しを頼んだ。次は熱を決めた理由も残したい"
           }
         ],
-        "trial_saku_good": [
+        "trial_ayatori_good": [
           {
             "speaker": "",
             "text": "炭の順番を試したページには、うまく仕上がった手順が残っていた。"
           }
         ],
-        "trial_saku_rough": [
+        "trial_ayatori_rough": [
           {
             "speaker": "",
             "text": "炭の順番を試したページには、仕上がりが粗かったところも書いてある。"
           }
         ],
-        "trial_saku_failed": [
+        "trial_ayatori_failed": [
           {
             "speaker": "",
             "text": "炭の順番を試して傷めた一台も、ノートから消さなかった。"

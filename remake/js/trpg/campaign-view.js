@@ -6,13 +6,15 @@ import { chapterDay } from "../core/chapter-clock.js";
 import { venueHost } from "../core/venue-host.js";
 import { gearOffer, ownsGear } from "../core/hobby-gear.js";
 import { newDayTrial, rollDayTrial, stopDayTrial } from "./day-trial.js";
-import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
+import { loadTrpgShelf, loadTrpgResources, runTrpg } from "./index.js";
+import { createTrpgAudio } from "./audio.js";
 import { playTrpgEntrance } from "./entrance.js";
+import { hasPictureBook, playPictureBook } from "./picture-book.js";
 import { shelfHelpButton } from "./shelf-help.js";
 import { openTrpgBookshelf } from "./play-record-view.js";
 import { saveTrpgReplay } from "./play-record.js";
 import { displayName, portraitUrl, sceneArt } from "./presentation.js";
-import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable, keepTrpgBookmark, trpgBookmarkFor, clubRecord, clubGain, trpgBookProgress } from "./campaign.js";
+import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable, keepTrpgBookmark, trpgBookmarkFor, clubRecord, clubGain, trpgBookProgress, trpgCampaignEnding } from "./campaign.js";
 
 // 店の決まりは画面に常に出さず、右上の「？」で読む（#2719・ミニゲーム共通のUI方針）。
 const SHOP_HELP = [
@@ -26,7 +28,9 @@ const SHOP_HELP = [
 
 /** Owns a shop/table screen. Only the supplied state and save callback may change. */
 export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy = () => false,
-  readOnly = false, closeLabel = "街へ戻る", signal, resources: suppliedResources = null, visitMember = null, greeted = false } = {}) {
+  readOnly = false, campaignEndings = false, closeLabel = "街へ戻る", signal, resources: suppliedResources = null, visitMember = null, greeted = false } = {}) {
+  const help = campaignEndings || readOnly ? [...SHOP_HELP, ["三つのエンド",
+    "見立てを当てる、相手の望みに合う提案をする、判定に2回成功する。この三つで星が一つずつ付きます。星3つならトゥルー、1〜2つならノーマル、0ならバッド。どれでもクリアです。本棚に各エンドを初めて見た回が残ります。"]] : SHOP_HELP;
   const abort = new AbortController();
   const owner = getState();
   const visitStamp = owner && `${owner.chapter}:${owner.day}:${owner.slot}`;
@@ -67,7 +71,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       el("small", { text: name(line.speaker) }), line.speaker === "hajime" && line.text.startsWith("（") ? line.text : "「" + line.text + "」",
     ]) : el("p.trpg-club-line.trpg-club-narration", { text: line.text });
     root = el("section.trpg-root.trpg-campaign", { tabindex: "-1", dataset: { phase: "campaign" } });
-    const bookshelf = button("本棚", "trpg-bookshelf-open", () => openTrpgBookshelf(root, state, scenarios, characters));
+    const bookshelf = button("本棚", "trpg-bookshelf-open", () => openTrpgBookshelf(root, state, scenarios, characters, { campaignEndings: campaignEndings || readOnly }));
     bookshelf.setAttribute("aria-label", "本棚（過去プレイを再生）");
     bookshelf.replaceChildren(el("span", { style: { display: "grid" } }, [
       el("span", { text: "本棚" }), el("small", { text: "過去プレイを再生" }),
@@ -76,7 +80,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       el("div", [!readOnly ? storeLogo("trpg_bar", { width: 130, height: 72 }) : null, el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "ボドゲカフェ / TABLETOP CAFE" }),
         el("h1", { text: readOnly ? "遊んだ記録" : completed ? "今夜の卓を終えました" : daytime ? "昼の試遊と本選び" : "今夜、誰と物語を囲む？" })]),
       el("div.trpg-campaign-meta", [el("span", { text: state ? `CH.${state.chapter} · DAY ${chapterDay(state)} · ${yen(state.money)}` : "まだ記録がありません" }),
-        shelfHelpButton(() => root, { title: "ボドゲカフェの遊び方", sections: SHOP_HELP, test: "trpg-campaign-help" }),
+        shelfHelpButton(() => root, { title: "ボドゲカフェの遊び方", sections: help, test: "trpg-campaign-help" }),
         bookshelf,
         button(closeLabel, "trpg-campaign-close", close)]),
     ]));
@@ -157,7 +161,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     root.append(party);
     if (state?.trpg?.club?.founded) root.append(clubBanner(clubRecord(state, catalog)));
     if (!readOnly && !daytime && !completed && !scenarios.some(scenario =>
-      state?.trpg?.owned?.includes(scenario.id) && !state?.trpg?.cleared?.[scenario.id]
+      state?.trpg?.owned?.includes(scenario.id)
       && castTrpgTable(state, catalog, scenario, options).ok)) {
       root.append(el("p.trpg-campaign-notice", { dataset: { test: "trpg-preparation-notice" },
         text: "今は遊べる本と仲間が揃っていません。下の入荷条件と仲間の予定を確認し、交流・勧誘から準備しよう。" }));
@@ -184,6 +188,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       const owned = state?.trpg?.owned?.includes(book.id);
       const stocked = state?.trpg?.stock?.includes(book.id);
       const locked = !memory && !owned && !stocked;
+      const progress = trpgBookProgress(state, book);
       const cast = state ? castTrpgTable(state, catalog, scenario, options) : { ok: false };
       const card = el("article.trpg-campaign-book", { title: locked ? null : scenario.presentation.tagline,
         dataset: { theme: scenario.presentation.theme, test: "trpg-book-" + book.id, locked: String(locked), state: memory ? "cleared" : locked ? "locked" : owned ? "owned" : "stock" } });
@@ -193,10 +198,10 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       const copy = el("div.trpg-campaign-book-copy", [
         el("small.trpg-campaign-book-by", { text: locked ? "？？？ / 作 · ？？？" : scenario.collection + " / 作 · " + scenario.author }),
         el("h2", { text: locked ? "？？？？？" : scenario.title }), el("p.trpg-campaign-book-tagline", { text: locked ? book.finale
-          ? trpgBookProgress(state, book).reason : "部員との出会いで解放" : scenario.presentation.tagline }),
+          ? progress.reason : "部員との出会いで解放" : scenario.presentation.tagline }),
       ]);
-      if (book.finale && !locked && !trpgBookProgress(state, book).ok) copy.append(el("p", {
-        dataset: { test: "trpg-finale-progress" }, text: trpgBookProgress(state, book).reason,
+      if (book.finale && !locked && !progress.ok) copy.append(el("p", {
+        dataset: { test: "trpg-finale-progress" }, text: progress.reason,
       }));
       if (memory) {
         // 旧章内日の記録はそのまま。通算日で残した第2章の記録だけ章内日へ表示する。
@@ -216,16 +221,21 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         // もう一度遊ぶ（TMX14）: 夜の行動を1つ使う。記録は良い方（星、同じなら盛り上がり）を残す。
         if (owned) copy.append(...playButtons(book, scenario, cast, "もう一度遊ぶ"));
       } else if (locked) {
-        copy.append(el("p.trpg-campaign-book-locked", { text: book.finale ? trpgBookProgress(state, book).reason : "🔒 まだ選べません" }));
+        copy.append(el("p.trpg-campaign-book-locked", { text: book.finale ? progress.reason : "🔒 まだ選べません" }));
       } else if (!owned) {
         copy.append(button("本を買う · " + yen(book.price), "trpg-buy-" + book.id, () => {
-            if (buyTrpgBook(getState(), catalog, book.id)) { save(); warmOwnedScenarios(); render("シナリオ本を購入しました。"); }
+            if (buyTrpgBook(getState(), catalog, book.id)) { save(); render("シナリオ本を購入しました。"); }
             else render("購入できませんでした。所持金と入荷状況を確認してください。");
           }, readOnly || spendableMoney(state) < book.price));
       } else {
         copy.append(el("p.trpg-campaign-book-cast", { title: cast.ok ? "今夜の卓：" + cast.participants.map(name).join("・") : cast.reason, dataset: { ok: String(!!cast.ok) },
         }, cast.ok ? [el("span", { text: "今夜の卓：" }), cast.participants.map(name).join("・")] : [cast.reason]),
           el("small.trpg-campaign-book-time", { text: scenario.duration }), ...playButtons(book, scenario, cast, "この仲間で遊ぶ"));
+      }
+      if (owned && state.chapter >= catalog.unlockChapter && progress.ok && hasPictureBook(scenario)) {
+        const read = button("絵本をみる", "trpg-picturebook-" + book.id, () => readPictureBook(scenario));
+        read.classList.add("trpg-picturebook-open");
+        copy.append(read);
       }
       card.append(copy); books.append(card);
     }
@@ -274,6 +284,20 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       : [note, button(label, "trpg-play-" + book.id, () => play(scenario), off)];
   }
 
+  async function readPictureBook(scenario) {
+    busy = true;
+    const audio = createTrpgAudio(scenario.presentation.theme);
+    abort.signal.addEventListener("abort", audio.destroy, { once: true });
+    try {
+      audio.setTheme(scenario.presentation.theme);
+      await playPictureBook(root, { scenario, signal: abort.signal, readOnly: true });
+    } finally {
+      abort.signal.removeEventListener("abort", audio.destroy);
+      audio.destroy();
+      busy = false;
+    }
+  }
+
   async function play(scenario, { resume = false } = {}) {
     const state = getState();
     const cast = castTrpgTable(state, resources.catalog, scenario, { nightBusy: nightBusy() });
@@ -287,8 +311,21 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     const ticket = { ...cast, chapter: state.chapter, day: state.day, slot: state.slot, seed, growth };
     lastGain = null;
     try {
+      let sessionResources = resources;
+      if (!scenario.dialogues) {
+        root = el("div.trpg-loading", [
+          el("p", { role: "status", text: "選んだ物語を読み込んでいます…" }),
+          el("button.trpg-button", { type: "button", text: closeLabel, onclick: close, dataset: { test: "trpg-campaign-close" } }),
+        ]);
+        host.replaceChildren(root);
+        sessionResources = await loadTrpgResources({
+          scenarioId: scenario.id, shared: resources, signal: abort.signal, preloadAssets: false,
+        });
+        if (disposed || getState() !== state) { close(); return; }
+        scenario = sessionResources.scenario;
+      }
       const table = materializeTrpgCast(scenario, cast.assignments);
-      await runTrpg(host, { resources: { ...resources, scenario: table }, signal: abort.signal, seed,
+      await runTrpg(host, { resources: { ...sessionResources, scenario: table }, signal: abort.signal, seed,
         allowReplay: false, closeLabel: "カフェへ戻る", warmStart: ownsGear(state, "gear_dice"),
         pc: mark?.pc || null, resume: mark ? { actions: mark.actions } : null, growth,
         // しおりは場面の区切りごとに保存する。夜の行動もお金も使わない。
@@ -298,10 +335,11 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         // The shopkeeper explains the table until the first story is finished; the cover button replays it any time.
         tutorial: !state.flags?._trpg_tutorial_seen,
         onComplete: result => {
+          const outcome = campaignEndings ? trpgCampaignEnding(scenario, result) : null;
           const before = clubRecord(state, resources.catalog);
           let makeReplay = null;
           if (!disposed && getState() === state && completeTrpgTable(state, resources.catalog, scenario, ticket, result, {
-            nightBusy: nightBusy(), recordTable: table, characters: resources.characters, onReplayOffer: build => { makeReplay = build; },
+            nightBusy: nightBusy(), outcome, recordTable: table, characters: resources.characters, onReplayOffer: build => { makeReplay = build; },
           })) {
             state.flags ||= {}; state.flags._trpg_tutorial_seen = true;
             completed = true;
@@ -310,7 +348,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
             archiveStatus = progressSaved ? "" : "ゲームの進行を保存できませんでした。";
             lastGain = clubGain(before, clubRecord(state, resources.catalog));
             let decided = false;
-            return { club: lastGain, chooseReplay: makeReplay && (keep => {
+            return { club: lastGain, outcome, chooseReplay: makeReplay && (keep => {
               if (decided || disposed || getState() !== state) return "";
               decided = true;
               if (!keep) {
@@ -330,7 +368,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       if (disposed) return;
       busy = false;
       if (completed) render(); else render(getState()?.trpg?.bookmark?.id === scenario.id
-        ? "卓を片付けました。しおりを挟んだので、次は続きから遊べます。" : "卓を片付けました。本は未クリアのまま、また遊べます。");
+        ? "卓を片付けました。しおりを挟んだので、次は続きから遊べます。" : "卓を片付けました。また最初から遊べます。");
     } catch (error) {
       busy = false;
       if (!disposed) render("卓を開けませんでした。本と今夜の行動は残っています。");
@@ -338,23 +376,11 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     }
   }
 
-  const warmed = new Set();
-  // 所持している本の素材は、本棚の表示を待たせずに裏で先読みする（卓の開始は同期のまま）。
-  function warmOwnedScenarios() {
-    const state = getState();
-    if (readOnly || !resources || !state?.trpg?.owned) return;
-    for (const scenario of resources.scenarios) {
-      if (!state.trpg.owned.includes(scenario.id) || warmed.has(scenario.id)) continue;
-      warmed.add(scenario.id);
-      preloadTrpgAssets(resources, scenario, { signal: abort.signal }).catch(() => {});
-    }
-  }
-
   async function load() {
     if (disposed) return;
     host.replaceChildren(el("div.trpg-loading", [el("p", { text: "物語と仲間の予定を読み込んでいます…" }),
       button(closeLabel, "trpg-campaign-close", close)]));
-    try { resources = suppliedResources || await loadTrpgLibrary({ signal: abort.signal, preloadAssets: false }); render(); warmOwnedScenarios(); }
+    try { resources = suppliedResources || await loadTrpgShelf({ signal: abort.signal }); render(); }
     catch {
       if (disposed) return;
       host.replaceChildren(el("div.trpg-loading", [el("p", { role: "status", text: "物語の一覧を読み込めませんでした。もう一度お試しください。" }),

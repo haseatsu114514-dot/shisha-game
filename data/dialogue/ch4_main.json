@@ -220,7 +220,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "ああいう顔の奴を、知ってる。……今は、飯も食えてるか"
+          "text": "ああいう顔のやつを、知ってる。……今は、飯も食えてるか"
         },
         {
           "speaker": "hajime",
@@ -275,7 +275,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "手拍子に合わせて吸い込み、太陽は煙の輪をひとつ、頭上へ吐いた。輪がほどけるたび、歓声が上がる。"
+          "text": "手拍子に合わせて吸い込み、太陽は煙の輪を一つ、頭上へ吐いた。輪がほどけるたび、歓声が上がる。"
         },
         {
           "type": "set_flag",
@@ -320,7 +320,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "来たな、日本の二人！　まず座れ！　暑かった、だろ？　水、飲め！"
+          "text": "来たな、日本の二人！ まず座れ！ 暑かった、だろ？ 水、飲め！"
         },
         {"type": "hide_cg"},
         {
@@ -336,7 +336,7 @@
         {
           "speaker": "da_silva",
           "face": "smile",
-          "text": "甘酸っぱいだろ？　冷たいドリンクと、いっしょ。最高だ"
+          "text": "甘酸っぱいだろ？ 冷たいドリンクと、いっしょ。最高だ"
         },
         {
           "speaker": "naru",
@@ -419,7 +419,7 @@
         {
           "speaker": "naru",
           "face": "serious",
-          "text": "……あいつも出るのか。椅子の回し方ひとつで、客を見てるのが分かった"
+          "text": "……あいつも出るのか。椅子の回し方一つで、客を見てるのが分かった"
         },
         {
           "speaker": "hajime",
@@ -489,7 +489,7 @@
         },
         {"type": "hide_cg"}
       ],
-      "comment": "old_manの正体はシェイク。表示名と正装の立ち絵は大会当日の公開まで伏せる。"
+      "comment": "traveler（旅装の男）の正体はシェイク。表示名と正装の立ち絵は大会当日の公開まで伏せる。"
     },
     {
       "dialogue_id": "ch4_stranger_second",
@@ -933,12 +933,12 @@
         {
           "speaker": "pakki",
           "face": "smile",
-          "text": "世界の皆さま、お待たせしましたーッ！　GRAND SMOKE、決勝ですッ！"
+          "text": "世界の皆さま、お待たせしましたーッ！ GRAND SMOKE、決勝ですッ！"
         },
         {
           "speaker": "pakki",
           "face": "smile",
-          "text": "日本第一代表、逢縁はじめ！　第二代表、鳴切亮太！"
+          "text": "日本第一代表、逢縁はじめ！ 第二代表、鳴切亮太！"
         },
         {
           "speaker": "pakki",
@@ -1036,7 +1036,7 @@
         {
           "speaker": "da_silva",
           "face": "excited",
-          "text": "言った、だろ？　大会で会おうって！"
+          "text": "言った、だろ？ 大会で会おうって！"
         },
         {
           "speaker": "da_silva",
@@ -1051,7 +1051,7 @@
         {
           "speaker": "pakki",
           "face": "smile",
-          "text": "四人同時の一発勝負！　最後の調整まで、瞬きしないでくださいねッ！　ぷぷぷっ！"
+          "text": "四人同時の一発勝負！ 最後の調整まで、瞬きしないでくださいねッ！ ぷぷぷっ！"
         }
       ]
     },
@@ -1246,7 +1246,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "客席の後ろで、誰かが呟いた。「……なんだよ、この煙……」"
+          "text": "「……なんだよ、この煙……」と、客席の後ろで誰かが呟いた。"
         },
         {
           "speaker": "da_silva",
@@ -1256,10 +1256,10 @@
         {
           "speaker": "da_silva",
           "face": "normal",
-          "text": "手拍子、ひとつも無い。なのに最後まで見てる客……FESTAで、見たことねえぞ"
+          "text": "手拍子、一つもない。なのに最後まで見てる客……FESTAで、見たことねえぞ"
         }
       ],
-      "comment": "成功時。全て同じ一台・同時進行の一試合。なるの敗北受容は最終集計後だけ。なるの成長は、はじめの説明ではなく本人の手元（客を待ってから最後の炭を外周へ）と残る香りで見せる（#2534）。手が炭へ伸びて止まる一拍（STK10）は、ch4-verdict.js が実プレイで差し替える範囲（「はじめは普通のブロンドをほぐす」から「ふと視線を感じた」の手前まで）の外に置く。"
+      "comment": "成功時。全て同じ一台・同時進行の一試合。なるの敗北受容は最終集計後だけ。なるの成長は、はじめの説明ではなく本人の手元（客を待ってから最後の炭を外周へ）と残る香りで見せる（#2534）。手が炭へ伸びて止まる一拍（STK10）は、ch4-verdict.js が実プレイで差し替える範囲（「俺は普通のブロンドをほぐす」から「ふと視線を感じた」の手前まで）の外に置く。"
     },
     {
       "dialogue_id": "ch4_result",
@@ -1273,7 +1273,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "会場がざわめく。『黙った』『本物の一台の時だけ、って噂の……』"
+          "text": "会場がざわめく。「黙った」「本物の一台の時だけ、って噂の……」と声が上がった。"
         },
         {
           "speaker": "pakki",
@@ -1293,7 +1293,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "会場がざわめく。『黙った』『虹色……噂、本当だったんだ』"
+          "text": "「虹色……噂、本当だったんだ」と、会場がざわめいた。"
         },
         {
           "speaker": "pakki",
@@ -1401,7 +1401,7 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "おう、はじめ。最後まで、客を見て作ったな。よくやった"
+          "text": "おう、はじめ。見てたぞ。……よくやった"
         },
         {
           "speaker": "hajime",
@@ -1565,7 +1565,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "一件ずつ開いて、短い返事を打った。全部返すころには、空が白んでいた。"
+          "text": "一件ずつ開いて、短い返事を打った。全部返す頃には、空が白んでいた。"
         },
         {
           "type": "bg",
@@ -1594,7 +1594,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "通訳アプリが読み上げる。「あなたは、クナイの人」"
+          "text": "通訳アプリが「あなたは、クナイの人」と読み上げる。"
         },
         {
           "speaker": "hajime",
@@ -1609,7 +1609,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "アプリが続ける。「おめでとう。でも、これは預けて」"
+          "text": "アプリが「おめでとう。でも、これは預けて」と続ける。"
         },
         {
           "speaker": "hajime",
@@ -1742,7 +1742,7 @@
         {
           "speaker": "sumi",
           "face": "thinking",
-          "text": "お前、常連の『良かったよ』ひとつで、えへへって笑ってた"
+          "text": "常連に『良かったよ』って言われた晩、お前、明日も作りたくなるって言ってたな"
         },
         {
           "speaker": "sumi",
@@ -1842,7 +1842,7 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "むせても、また笑う、……うるさかった"
+          "text": "むせても、また笑う。……うるさかった"
         },
         {
           "speaker": "hajime",
@@ -2136,7 +2136,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "帰って来い。話は、飯食いながら聞く"
+          "text": "帰ってこい。話は、飯食いながら聞く"
         },
         {
           "speaker": "",
@@ -2277,7 +2277,7 @@
       }
     },
     {
-      "dialogue_id": "ch4_sui_old_rival",
+      "dialogue_id": "ch4_sensu_old_rival",
       "lines": [
         {
           "speaker": "",
@@ -2290,7 +2290,7 @@
           "text": "帰ったら、勝った方が作る。忘れんなよ"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "smile",
           "text": "……懐かしい約束だ"
         },
@@ -2300,7 +2300,7 @@
           "text": "会長も、してたんですか"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "smile",
           "text": "ああ。あいつに何度も作らせた。悔しくて、感想だけは長くなった"
         },
@@ -2310,12 +2310,12 @@
           "text": "スミさんに？"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "thinking",
           "text": "ある晩、店を増やす話をした。あいつは、次の大会の点を数えていた"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "serious",
           "text": "勝ち負けの話はしてない。……そう言ったら、黙り込んだ"
         },
@@ -2330,17 +2330,17 @@
           "text": "そのあと、話せたんですか"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "thinking",
           "text": "会えば今の店の話はする。だが、あの晩の話はしていない"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "thinking",
           "text": "次は向こうから言うだろうと、互いに待ちすぎた"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "あの晩から、あいつの煙は吸っていない。地元の大会まではな"
         },
@@ -2350,12 +2350,12 @@
           "text": "地元の、……俺の台ですか？"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "thinking",
           "text": "吐いたあと、少し遅れて、もう一度香った。あいつの煙はそうだった"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "点を数え始める前の、あいつの煙だ。負けて作らせるたびに、二口吸った"
         },
@@ -2365,14 +2365,14 @@
           "text": "だから、二口だったんですか。凝った配合でもなかったのに"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "smile",
           "text": "配合じゃない。手だ。毎日あの店で作っていれば、手が覚える"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
-          "text": "最後の1点は、もう一口吸いたい台へ入れる。あの日は、君の台だった"
+          "text": "最後の一点は、もう一口吸いたい台へ入れる。あの日は、君の台だった"
         },
         {
           "type": "condition",
@@ -2387,17 +2387,17 @@
           "text": "……店を増やすのって、負けたからですか"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "smile",
           "text": "勝ちたかったよ。それとは別に、帰れる店を増やしたかった"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "thinking",
           "text": "昔、終電を逃した晩に、古い小さな店へ入った。あの席に、助けられた"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "ああいう席を、どこの駅前にも置きたかった。うちの店は、その入り口だ"
         },
@@ -2407,17 +2407,17 @@
           "text": "……入り口、ですか"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "smile",
-          "text": "そこから先へ行く奴が、たまに出る。今日みたいにな"
+          "text": "そこから先へ行くやつが、たまに出る。今日みたいにな"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "normal",
           "text": "あいつの店も、うちの店も続いている。まだ話すことはある"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "smile",
           "text": "鳴切くん。今日は、届け先が見えた"
         },
@@ -2431,12 +2431,12 @@
       "branches": {
         "lemon_single": [
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "smile",
             "text": "おまけに、レモンだけだ。昔それをやったバカが、もう一人いた"
           },
           {
-            "speaker": "sui",
+            "speaker": "sensu",
             "face": "normal",
             "text": "俺の目の前でな。その晩も、二口吸わされた"
           },
@@ -2469,7 +2469,7 @@
           "text": "スミさんは、使い込まれたトングで炭を返していた。"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "smile",
           "text": "まだそのトングか"
         },
@@ -2499,7 +2499,7 @@
           "text": "吐いた煙の向こうで、千須の目が、カウンターの端の写真に止まった。"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "serious",
           "beat": 600,
           "text": "勝った方が作る約束、まだ有効か"
@@ -2510,7 +2510,7 @@
           "text": "……ずいぶん、溜まってるだろうな"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "serious",
           "text": "俺の店の話も、今日は最後まで聞け"
         },
@@ -2545,7 +2545,7 @@
         },
         {
           "type": "hide_portrait",
-          "char_id": "sui"
+          "char_id": "sensu"
         },
         {
           "type": "bg",
@@ -2824,7 +2824,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "奥に、古びた台がひとつ置かれていた。"
+          "text": "奥に、古びた台が一つ置かれていた。"
         },
         {
           "speaker": "",
@@ -2864,7 +2864,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（甘いだけじゃない。熱を抑えると、ぶどうの皮まで戻ってくる）"
+          "text": "（甘いだけじゃない。熱を抑えると、葡萄の皮まで戻ってくる）"
         },
         {
           "speaker": "shop_clerk",
@@ -2960,7 +2960,7 @@
         {
           "speaker": "spice_merchant",
           "face": "",
-          "text": "また来たね。今日は買う？　それとも、嗅ぐだけ？"
+          "text": "また来たね。今日は買う？ それとも、嗅ぐだけ？"
         },
         {
           "speaker": "hajime",
@@ -2980,7 +2980,7 @@
         {
           "speaker": "spice_merchant",
           "face": "",
-          "text": "開けた最初が、いちばん強い。開けっぱなしだと、昼のうちに飛んでいく"
+          "text": "開けた最初が、一番強い。開けっぱなしだと、昼のうちに飛んでいく"
         },
         {
           "speaker": "hajime",
@@ -3010,7 +3010,7 @@
         {
           "speaker": "spice_merchant",
           "face": "",
-          "text": "なら、同じだ。客の来る時間に、いちばんいい匂いにしておく"
+          "text": "なら、同じだ。客の来る時間に、一番いい匂いにしておく"
         },
         {
           "speaker": "",
@@ -3091,7 +3091,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（時間の終わりに合わせて、仕上げる、……言ったとおりだ）"
+          "text": "（時間の終わりに合わせて、仕上げる。……言ったとおりだ）"
         }
       ],
       "comment": "接続済み（ch4-progress.js CH4_FREE_SCENE_IDS／ch4-dubai-daily.js）。初回の ch4_dubai_cafe 読了後、中心地のカフェの通いの小会話として順に読む。cafe_staff は路地裏の店員とは別人で、立ち絵なし（face は空文字）。場面末尾に帰宿の choice はなく、訪問後は日常ループで昼・夜の1行動を進める（VOL14）。出典: 第4章新規ドラフト NEW-TEXT.md §4。"
@@ -3158,7 +3158,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……こっちに来てから、いちばんちゃんとした予定かもしれない）"
+          "text": "（……こっちに来てから、一番ちゃんとした予定かもしれない）"
         }
       ],
       "comment": "接続済み（IR18）。前夜祭の日、ch4_samechan_dubai_girlfriend（別便の到着）を読んだ後、前夜祭が始まる前に任意で一度読める（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue、ch4.js の renderEve）。同行者には到着場面が無いので出ない。出典: 第4章新規ドラフト NEW-TEXT.md §5。話者IDは ch4_visitors.json の samechan に合わせた。到着は前夜祭の日なので「明日」は大会の日。結果には触れていない。"

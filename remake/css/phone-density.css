@@ -11,6 +11,7 @@
 html:root[data-density="phone"] #stage {
   --phone-text: max(22px, calc(11.5px / var(--k, 1)));   /* 本文・選択肢・ボタンの文字 */
   --phone-sub: max(18px, calc(11.5px / var(--k, 1)));    /* 補助文（出すなら）。出さないときは display: none */
+  --tournament-phone-sub: max(24px, var(--phone-sub));   /* 大会の補助文（#4035 B6） */
   --phone-tap: max(72px, calc(39px / var(--k, 1)));      /* タップ部品の高さ */
   --phone-gap: 12px;                                      /* 隣り合うタップ部品の間隔 */
   --phone-ctl: max(24px, calc(13px / var(--k, 1)));     /* 会話の操作ボタンの文字（オーナー指示 2026-11-08「少し大きく」） */
@@ -160,7 +161,7 @@ html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-controls .vn-
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-text { font-size: 32px; line-height: 46px; min-height: 92px; }
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-box.has-inner .vn-text { line-height: 44px; min-height: 44px; }
 /* 紙の横持ち会話で、操作を左右に出せるときは上の帯を本文に使う。
-   176px の枠の中央に50pxの行を置く。短いページは文字送りの前に行数が確定するので、途中で本文がずれない。
+   176px の枠の中央に50px×2行分の本文領域を置き、ページの行数にかかわらず1行目をそろえる。
    本心つき・枠内に操作が残るときは、従来どおり別の行や操作の領域を確保する。 */
 /* 約1024px の本文の右で送り印を出し、右端の煙との間も空ける。 */
 html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box {
@@ -171,9 +172,6 @@ html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:
 }
 html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box:not(.has-inner) .vn-text {
   font-size: 36px; line-height: 50px; min-height: 100px;
-}
-html:root[data-density="phone"][data-ui-theme="paper"][data-side-pad="on"] body:not(:root) .vn-box:not(.has-inner) .vn-text[data-page-lines="1"] {
-  padding-top: 25px;
 }
 /* 名札の短い名前を読みやすくする。長い名前は実際の字幅に合わせる name-fit.js に従う。 */
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-box .vn-name {
@@ -280,14 +278,6 @@ html:root[data-density="phone"] body:not(:root) :is(.reel-intro, .reel-widget) .
 html:root[data-density="phone"] .reel-intro .cue-chip {
   min-width: 1.25em;
   min-height: 1.25em;
-}
-html:root[data-density="phone"] .reel-intro .ri-panel.sys {
-  width: min(1160px, calc(100% - 32px));
-  max-height: calc(100% - 32px);
-  overflow-y: auto;
-}
-html:root[data-density="phone"] .reel-intro .ri-panel.sys .rn-card {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 html:root[data-density="phone"] body:not(:root) .reel-widget .rw-bubble.cue {
   font-size: max(var(--slot-phone-text), calc(12px / var(--k, 1)));

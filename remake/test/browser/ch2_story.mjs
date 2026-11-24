@@ -143,9 +143,9 @@ await suite('ch2-story', async check => {
     assert.equal(s.day, 28); assert.equal(s.slot, 0); assert.equal(s.chapter, 2);
     assert.equal(s.money, before.money); assert.deepEqual(s.stats, before.stats); assert.equal(s.reel.count, before.reel.count);
     for (const key of ['lovers','loverSince','lastDate','keepsakes','relationshipMemories']) assert.deepEqual(s[key], before[key], key);
-    assert.deepEqual(s.affinity, { ...before.affinity, ageha: 9, kumicho: 9, rei: 9 }, 'Only the three completed first meetings earn exactly heart1');
-    assert.deepEqual(s.affinityCarry, { ...before.affinityCarry, ageha: 0, kumicho: 0, rei: 0 }, 'No first-meeting reward leaks fractional carry');
-    for (const id of ['ageha', 'kumicho', 'rei']) {
+    assert.deepEqual(s.affinity, { ...before.affinity, ageha: 9, kumicho: 9, kuraudo: 9 }, 'Only the three completed first meetings earn exactly heart1');
+    assert.deepEqual(s.affinityCarry, { ...before.affinityCarry, ageha: 0, kumicho: 0, kuraudo: 0 }, 'No first-meeting reward leaks fractional carry');
+    for (const id of ['ageha', 'kumicho', 'kuraudo']) {
       assert(!before.met[id]); assert.equal(s.met[id], true);
       assert.equal(s.flags[`_affinity_first_meeting_pending_${id}`], undefined);
     }
@@ -157,13 +157,13 @@ await suite('ch2-story', async check => {
     // SPC28: DAY6の朝の耳鼻科・DAY8の朝のまかない・DAY9の試煙会の後の吸い方講座
     const expected = ['ch2_sofa_burn','ch2_abyss_baito','ch2_kumicho_greeting','ch2_slump_taste','ch2_ent_clinic','ch2_lingering_smell',
       'ch2_naru_lunch','remake_ch2_ageha_tasting','ch2_ageha_lesson','ch2_sumi_silence','ch2_naru_confrontation','ch2_adam_distance','ch2_minto_warning','ch2_naru_window','ch2_tsumugi_color',
-      'remake_ch2_eve_arrival','remake_ch2_eve_rei','ch2_pre_tournament_realisation'];
+      'remake_ch2_eve_arrival','remake_ch2_eve_kuraudo','ch2_pre_tournament_realisation'];
     assert.deepEqual(trace.filter(id => expected.includes(id)), expected);
     const texts = await page.evaluate(() => window.__storyTexts.join('\n'));
     assert(!/ヴォルク|組長の|鉄の煙/.test(texts));
     // #929: DAY9はC.STATION柚ヶ谷店のアフサール新作試煙会。未対面の神崎・クラウドはそこで名乗り、面識が残る
     assert.match(texts, /アフサール新作 先行試煙会/); assert(!/店長同士の試飲会/.test(texts));
-    assert(s.met.kumicho && s.met.rei); assert(s.flags._ch2_afsahr_tasting);
+    assert(s.met.kumicho && s.met.kuraudo); assert(s.flags._ch2_afsahr_tasting);
     assert(s.flags._ch2_scout_seen && !s.met.volk); // #929: 名乗らない偵察の男を見た記録だけ残す
     assert(!trace.includes('ch2_empty_victory')); assert(!trace.includes('ch2_rivals_first_sight'));
     await assertFits(page, '.ch2-contest .btn');
@@ -187,24 +187,25 @@ await suite('ch2-story', async check => {
     await page.locator(t('rest-full')).tap(); await atMap(page, 5, 0);
     const s = await state(page); assert(s.flags._ch2_night_4_done); assert.equal(s.money, 36000); assert(Object.values(s.stats).every(n => n === 31));
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
-  await check('eve-checkpoint-and-venue-background-failure-retry', async page => {
-    let bad = true;
-    let failures = 0, retries = 0;
+  await check('eve-continues-without-venue-background', async page => {
+    let failures = 0;
     await page.route('**/bg_ch2_venue_bench_night.webp', r => {
-      if (!bad) { retries++; return r.continue(); }
       failures++;
       return r.fulfill({ status: 200, contentType: 'image/webp', body: 'invalid' });
     });
-    await seed(page, { day: 13, slot: 2 }); await page.locator(t('ch2-main-error')).waitFor();
+    await seed(page, { day: 13, slot: 2 });
+    await page.locator(end).waitFor();
     assert(failures > 0, 'The eve background failure must be injected');
-    let s = await state(page); assert.equal(s.day, 27); assert(s.flags._ch2_read_ch2_tsumugi_color);
-    assert(!s.flags._ch2_eve_done); assert(!s.met.ageha);
-    bad = false; await page.locator(t('ch2-main-retry')).click(); await page.locator(end).waitFor();
-    assert(retries > 0, 'Retry must request the recovered venue background');
-    s = await state(page); assert.equal(s.day, 28); assert(s.flags._ch2_eve_done); assert(s.met.ageha);
+    const s = await state(page);
+    assert.equal(s.day, 28);
+    assert(s.flags._ch2_read_ch2_tsumugi_color && s.flags._ch2_eve_done && s.met.ageha);
     const trace = await page.evaluate(() => window.__storyTrace);
     assert.equal(trace.filter(id => id === 'ch2_tsumugi_color').length, 1);
-    assert.equal(s.money, 36000); assert(Object.values(s.stats).every(n => n === 31));
+    assert.equal(s.money, 36000);
+    assert(Object.values(s.stats).every(n => n === 31));
+    await reload(page);
+    await page.locator(end).waitFor();
+    assert.deepEqual((await state(page)).flags, s.flags);
   });
   await check('missing-late-dialogue-retries-without-changing-save', async page => {
     let bad = true;
@@ -275,7 +276,7 @@ await suite('ch2-story', async check => {
     await page.locator(end).waitFor();
     const eve = await state(page);
     assert.equal(eve.day, 28); assert.equal(eve.slot, 0); assert.equal(eve.chapter, 2);
-    assert(eve.flags._ch2_eve_done && eve.flags._ch2_taste_distant && eve.met.ageha && eve.met.kumicho && eve.met.rei);
+    assert(eve.flags._ch2_eve_done && eve.flags._ch2_taste_distant && eve.met.ageha && eve.met.kumicho && eve.met.kuraudo);
     for (const key of ['money', 'stats', 'statXp', 'lovers', 'loverSince']) assert.deepEqual(eve[key], start[key], key);
     assert.deepEqual(eve.flavorStock, withStrawberrySample(start.flavorStock), 'flavorStock');
     for (const [who, value] of Object.entries(start.affinity)) assert(eve.affinity[who] >= value, `affinity ${who}`);

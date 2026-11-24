@@ -10,7 +10,7 @@ import { craftContext } from "../js/craft/context.js";
 
 const index = CH3_INTRO_SCENES.findIndex(scene => scene.id === CH3_SERVICE_IDS[0]);
 const seed = () => ({ chapter: 3, day: 40, slot: 1, phase: "daily", money: 0, stamina: 1,
-  stats: { technique: 10 }, affinity: { mashiro: 0, saku: 0 }, inventory: {},
+  stats: { technique: 10 }, affinity: { mashiro: 0, ayatori: 0 }, inventory: {},
   flags: { _ch3_intro: { routeVersion: 3, startDay: 32, stage: index, titleSeen: true } } });
 const preserved = value => { const copy = structuredClone(value); delete copy.flags._ch3_intro.work; return copy; };
 const care = (score = 85, extra = {}) => ({ careHistory: [{ score, coals: 2, over: false, under: false }],
@@ -21,14 +21,18 @@ for (const file of ["ch3_double_apple", "ch3_main", "ch3_rivals"])
     all[d.dialogue_id] = d;
 const text = dialogue => dialogue.lines.map(line => line.text || "").join("\n");
 
-// 既定の制作風景はそのまま、店仕事の場所だけを指定できる。
+// 制作場所の明示指定を優先し、大会はその制作を保存した章の会場を使う。
 {
-  const source = fs.readFileSync(new URL("../js/craft/worker.js", import.meta.url), "utf8");
-  const helper = name => vm.runInNewContext(source.match(new RegExp(`^export const ${name} = (.+);$`, "m"))[1]);
-  const bg = helper("benchBgRef"), tag = helper("benchPlaceTag");
-  assert.equal(bg({ venueBg: "bg_mukai_shop" }), "bg_mukai_shop");
+  globalThis.document = {}; // audio.js のブラウザイベント登録用。
+  const { benchBgRef: bg, benchPlaceTag: tag } = await import("../js/craft/worker.js");
+  delete globalThis.document;
+  assert.equal(bg({ mode: "tournament", chapter: 3, venueBg: "bg_mukai_shop" }), "bg_mukai_shop");
   assert.equal(tag({ venueLabel: "MUKAI" }), "MUKAI");
   assert.equal(bg({ mode: "tournament" }), "bg_tournament_stage");
+  assert.equal(bg({ mode: "tournament", chapter: 2 }), "bg_tournament_yuzugaya_dusk");
+  assert.equal(bg({ mode: "tournament", chapter: 3 }), "bg_tournament_tokyo_day");
+  assert.equal(bg({ mode: "tournament", chapter: 4 }), "bg_tournament_dubai_dusk");
+  assert.equal(bg({ mode: "tournament", chapter: 5 }), "bg_smoke_lab_duel_day");
   assert.equal(bg({ venue: "home" }), "bg_home");
   assert.equal(bg({ mode: "tutorial" }), "bg_tonari_inside");
   assert.equal(tag({ mode: "tutorial" }), "TONARI");
@@ -127,7 +131,7 @@ for (const change of [value => value.flags._ch3_intro.stage++, value => value.fl
 }
 
 // 自分で試した任意制作だけをノートへ載せ、良い・粗い・失敗を混ぜない。
-for (const id of ["saku", "steve"]) for (const result of ["good", "rough", "failed"]) {
+for (const id of ["ayatori", "steve"]) for (const result of ["good", "rough", "failed"]) {
   const value = seed(); value.flags[`_ch3_trial_${id}`] = { practiceDone: true, result };
   const dialogue = chapterThreeWorkDialogue(value, all.ch3_strategy);
   const expected = all.ch3_strategy.branches[`trial_${id}_${result}`][0].text;
@@ -172,13 +176,13 @@ for (const rest of ["tea", "sit"]) {
   const recovery = text({ lines: all.ch3_mashiro_recovery.lines });
   assert.match(recovery, /今日は俺が洗うよ/); assert.match(recovery, /交代で/);
   // 綾取の来店: 動画の話は綾取が先に出す。一台の後は、返事 → はじめの一言 → 手帳 → ノートの順。
-  const visit = all.ch3_saku_mukai_visit.lines.map(line => line.text || "");
+  const visit = all.ch3_ayatori_mukai_visit.lines.map(line => line.text || "");
   assert(visit.findIndex(t => /県大会の動画/.test(t)) < visit.findIndex(t => /動画、見たんですか/.test(t)));
   for (const [result, coals] of [["good", 1], ["good", 0], ["rough", 1], ["failed", 0]]) {
     const value = seed();
     value.flags._ch3_intro.work = { service: { introRead: true, careDone: true, order: "gentle", result, adjustment: { coals } } };
-    const lines = chapterThreeWorkDialogue(value, all.ch3_saku_mukai_served).lines.map(line => line.text || "");
-    const reply = lines.findIndex(t => t === all.ch3_saku_mukai_served.branches[result].at(-1).text);
+    const lines = chapterThreeWorkDialogue(value, all.ch3_ayatori_mukai_served).lines.map(line => line.text || "");
+    const reply = lines.findIndex(t => t === all.ch3_ayatori_mukai_served.branches[result].at(-1).text);
     const ask = lines.findIndex(t => /書かせてください/.test(t)), note = lines.findIndex(t => /^ノートに、/.test(t));
     assert(reply >= 0 && reply < ask, `${result}: 一台への返事が先`);
     assert.doesNotMatch(lines.join(""), /どうでしょう。今度は/, "返事の後で同じことを訊かない");

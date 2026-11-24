@@ -24,7 +24,7 @@
     "intro_cutin": {
       "title": "tonariの見習い",
       "display_name": "逢縁《あいえん》 はじめ",
-      "line": "いつか自分の店を持ちたい",
+      "line": "いつか、自分の店があったら",
       "face": "normal",
       "color": "#eee0bd",
       "motion": "soft"
@@ -223,7 +223,8 @@
     }
   },
   {
-    "id": "saku",
+    "id": "ayatori",
+    "art_stem": "saku",
     "birthday": "02-01",
     "name": "綾取 陣（あやとり じん）",
     "role": "rival_ch3",
@@ -327,7 +328,8 @@
     }
   },
   {
-    "id": "rei",
+    "id": "kuraudo",
+    "art_stem": "rei",
     "lime_name": "†黒羅雨℃†",
     "birthday": "05-20",
     "name": "†黒羅雨℃†（くらうど） / 田中 健太（たなか けんた）",
@@ -637,7 +639,8 @@
     }
   },
   {
-    "id": "dr_kemuri",
+    "id": "dr_charcoal",
+    "art_stem": "dr_kemuri",
     "spriteAnchor": "body",
     "birthday": "05-08",
     "name": "チャコール博士 / 火浦 理一（ひうら りいち）",
@@ -707,7 +710,8 @@
     }
   },
   {
-    "id": "sui",
+    "id": "sensu",
+    "art_stem": "sui",
     "birthday": "12-16",
     "name": "千須 豪（せんす ごう）",
     "role": "judge",
@@ -960,7 +964,8 @@
     }
   },
   {
-    "id": "maezono",
+    "id": "uezono",
+    "art_stem": "maezono",
     "birthday": "03-04",
     "name": "上園 文太郎",
     "role": "judge",

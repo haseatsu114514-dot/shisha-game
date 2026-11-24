@@ -206,7 +206,7 @@ async function checkScene(name, viewport, label, variant = null, stallPenFrames 
 async function checkTrains() {
   const cases = [
     ["normal", { width: 1280, height: 720 }, { cameo: null, tone: "night" }],
-    ...["samechan", "hiyori", "minto", "adam", "tsumugi", "ageha", "kumicho", "rei"].map(cameo => [cameo, { width: 1280, height: 720 }, { cameo }]),
+    ...["samechan", "hiyori", "minto", "adam", "tsumugi", "ageha", "kumicho", "kuraudo"].map(cameo => [cameo, { width: 1280, height: 720 }, { cameo }]),
     ["halloween", { width: 844, height: 390 }, { halloween: true, cameo: "samechan" }],
     ["portrait", { width: 390, height: 844 }, { halloween: true, cameo: "hiyori" }],
     ["slow-arrival", { width: 1280, height: 720 }, { cameo: null, delay: 1300 }],
@@ -269,7 +269,7 @@ async function checkTrains() {
       if (name === "normal") {
         const policy = await page.evaluate(async () => {
           const { trainPassengers } = await import("./js/motions/train-passengers.js");
-          const value = { chapter: 2, day: 17, slot: 0, weatherSeed: 1, flags: {}, met: Object.fromEntries(["samechan", "hiyori", "minto", "adam", "tsumugi", "ageha", "kumicho", "rei", "naru"].map(id => [id, true])) };
+          const value = { chapter: 2, day: 17, slot: 0, weatherSeed: 1, flags: {}, met: Object.fromEntries(["samechan", "hiyori", "minto", "adam", "tsumugi", "ageha", "kumicho", "kuraudo", "naru"].map(id => [id, true])) };
           const before = JSON.stringify(value), seen = new Set(), inbound = new Set();
           for (let weatherSeed = 0; weatherSeed < 500; weatherSeed++) {
             seen.add(trainPassengers({ ...value, weatherSeed }, { from: "home", to: "widehanga" }).cameo);
@@ -286,7 +286,7 @@ async function checkTrains() {
             ordinary: selected.halloween, chapter3: trainPassengers({ ...value, chapter: 3, flags: { _ch2_halloween_active: true } }).halloween,
             unchanged: before === JSON.stringify(value) };
         });
-        assert.deepEqual(policy, { seen: ["adam", "hiyori", "minto", "samechan", "tsumugi"], inbound: ["ageha", "kumicho", "rei"], invalidRoute: null, invalidCity: null, unknownInbound: null, occasional: true, stable: true,
+        assert.deepEqual(policy, { seen: ["adam", "hiyori", "minto", "samechan", "tsumugi"], inbound: ["ageha", "kumicho", "kuraudo"], invalidRoute: null, invalidCity: null, unknownInbound: null, occasional: true, stable: true,
           chapter1: null, unknown: null, seasonal: true, ordinary: false, chapter3: false, unchanged: true });
       }
       console.log(`PASS train ${name}: ${Math.round(result.elapsed)}ms, slide/cover/cleanup/save`);

@@ -11,6 +11,7 @@
 // 現在地は flags._ch2_region = "tokyo"（HUD の街の札）。台詞の正本は data/dialogue/ch3_*.json と ch3_tokyo_daily.json。
 import { state, save, timeOfDay } from "../core/state.js";
 import { DB, bgUrl, displayName } from "../core/data.js";
+import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { layers, setBg, toast, modal } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
@@ -33,7 +34,7 @@ import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
 import { runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
   eveningRecord, EVENING_WINDOW } from "./ch3-story-wiring.js";
-import { loverMilestonesDue, readLoverMilestone, pendingLoverLime } from "./lover-entry.js";
+import { loverMilestonesDue, prepareLoverMilestones, readLoverMilestone, pendingLoverLime } from "./lover-entry.js";
 import { mashiroTimeOpen, spendMashiroTime } from "./mashiro-time.js";
 import { petitAfterDate } from "../daily/petit-shuraba.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
@@ -96,7 +97,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch3_tokyo_mukai", place: "mukai", label: "mukai", area: "高架下の商店街", x: 29.6, y: 62.7, theme: "baito", glyph: "店",
     face: "mukai_master", preview: "bg_mukai_shop", desc: "働かせてもらっている店。手伝い、ましろちゃんとの時間、作業台。帰りに裏口のてつこにも会える。" }),
   spot({ id: "ch3_tokyo_enmaku", place: "enmaku", label: "煙幕", area: "綾取の店", x: 45.3, y: 49.7, theme: "rival", glyph: "煙",
-    face: "saku", preview: "bg_yohaku_shop", fee: TOKYO_VISIT_COST, desc: "綾取の店。お茶と、ノートの続き。", met: "saku" }),
+    face: "ayatori", preview: "bg_yohaku_shop", fee: TOKYO_VISIT_COST, desc: "綾取の店。お茶と、ノートの続き。", met: "ayatori" }),
   spot({ id: "ch3_tokyo_steve", place: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙",
     face: "steve", preview: "bg_steve_shop", fee: TOKYO_VISIT_COST, desc: "タイマーの並ぶ店。", met: "steve" }),
   spot({ id: "ch3_tokyo_volk", place: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙",
@@ -257,6 +258,7 @@ export async function runChapterThreeTokyo(io) {
     ...Object.entries(RIVAL_OUTING_FILES).map(([file, ids]) => readDialogues(file, ids).then(found => Object.assign(DB.dialogues, found))),
     loadMukaiShift(),
     refreshOptional(),
+    prepareLoverMilestones(["mashiro"]), // 交際済みの保存で地図のmukaiに節目の新着を出す
   ]);
   if (state !== owner) return;
   socialDefinitions = definitions;
@@ -270,7 +272,7 @@ const OUTING_IDS = OUTING_DIALOGUE_IDS; // 通いの小会話（AFB02）も含�
 export const TOKYO_DAILY_IDS = Object.freeze([...ROOM_REST_IDS, "ch3_tokyo_fortune"]);
 // 綾取・スティーブ・ヴォルクの♥3の友人の外出（#3097 PR-H）。LIME の誘い lime_outing_<id>_1 の accept_event で、
 // daily/calendar.js の約束の処理が再生して _outing_done_<id> を立てる。大会後の寄り道（ch3-aftermath-progress.js）と同じ台本。
-export const RIVAL_OUTING_FILES = Object.freeze({ ch3_rivals: ["outing_saku_1", "outing_steve_1"], ch3_volk: ["outing_volk_1"] });
+export const RIVAL_OUTING_FILES = Object.freeze({ ch3_rivals: ["outing_ayatori_1", "outing_steve_1"], ch3_volk: ["outing_volk_1"] });
 
 // ---- 昼の行動を使う場面・約束 ----------------------------------------------------------
 function tokyoSlotEvent(io) {
@@ -316,7 +318,7 @@ async function meetTokyoVisitor({ plan, window, definitions }) {
   }, { consumed: ok => ok === true, exp: personExp(id) });
   if (!done || state !== owner) return false;
   save();
-  if (kind === "date" && loverMilestonesDue([id]).length) await readLoverMilestone(id);
+  if (kind === "date") await readLoverMilestone(id);
   return state === owner;
 }
 
@@ -346,7 +348,7 @@ async function readStory(io, scene) {
         save();
       }
       if (!state.flags._ch3_registration_read) {
-        if (!await io.readScene({ id: "ch3_registration", bg: "bg_tournament_stage" })) return false;
+        if (!await io.readScene({ id: "ch3_registration", bg: TOURNAMENT_VENUE_BG[3] })) return false;
         state.flags._ch3_registration_read = true;
         save();
       }
@@ -413,7 +415,10 @@ async function settleEvening(io) {
   }
   state.flags._ch3_evening = eveningRecord(result);
   save();
-  if (result.kind === "date") for (const id of result.participants) if (loverMilestonesDue([id]).length) await readLoverMilestone(id);
+  if (result.kind === "date") for (const id of result.participants) {
+    if (state !== owner) break;
+    await readLoverMilestone(id);
+  }
 }
 
 /** 今、奥の部屋で休むと届く地元からの電話（ch3-outing-progress.js の HOME_CALLS）。夜は本筋の場面・遠くからの電話の夜を避ける。 */
@@ -445,12 +450,13 @@ const unused = { used: false, exerted: false };
 const personExp = id => id ? Object.freeze({ key: id, person: id }) : null;
 const MUKAI_SHIFT_EXP = Object.freeze({ key: "tokyo:mukai_help", place: "tokyo:mukai_help" });
 const GYM_EXP = Object.freeze({ key: "tokyo:gym", place: "tokyo:gym" });
-const OPTIONAL_HOST = Object.freeze({ mukai: "mashiro", enmaku: "saku", steve: "steve", volk: "volk" });
+const OPTIONAL_HOST = Object.freeze({ mukai: "mashiro", enmaku: "ayatori", steve: "steve", volk: "volk" });
 
 async function performTokyoSpot(entry, io, { staminaGuard }) {
   if (entry.region !== TOKYO) return null;
   const owner = state;
   await refreshOptional();
+  if (state !== owner) return unused;
   if (entry.place === "shop") { await openShop({ branch: "tokyo" }); return unused; }
   if (entry.place === "shrine") { await keepDailyHud(() => reflectAt("tokyo_shrine")); return unused; }
   if (entry.place === "club") {
@@ -477,7 +483,7 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
  * 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があればその人に相談して話を聞く。
  * 日常ループ（版3）でも旧行程と同じ相手に相談できるようにする（2026-11-02）。訪問を終えた時だけ。
  */
-const TOKYO_TEACHERS = Object.freeze({ enmaku: "saku", steve: "steve", volk: "volk" });
+const TOKYO_TEACHERS = Object.freeze({ enmaku: "ayatori", steve: "steve", volk: "volk" });
 async function withLesson(result, who, owner) {
   if (who && result?.used && state === owner) await keepDailyHud(() => consultLessons(who));
   return result;
@@ -534,12 +540,13 @@ async function readOptionalHere(io, scene, staminaGuard, owner, stamina = -10) {
   addStamina(stamina);
   earnSceneCompletion(scene.id, owner);
   await refreshOptional();
+  if (scene.file === "confession" && state === owner) await prepareLoverMilestones(["mashiro"]);
   return { used: true, exerted: true, exp: personExp(scene.host || OPTIONAL_HOST[optionalPlace(scene)]) };
 }
 
 /** 店で迎える♥5の締めくくり（daily/bonds.js の条件）。煙幕は綾取（IR22）、Smoke & Glory はスティーブ、鉄の煙はヴォルク（#2028）。 */
 const RIVAL_FINALES = Object.freeze({
-  enmaku: Object.freeze({ who: "saku", label: "綾取に呼ばれる" }),
+  enmaku: Object.freeze({ who: "ayatori", label: "綾取に呼ばれる" }),
   steve: Object.freeze({ who: "steve", label: "スティーブに呼ばれる" }),
   volk: Object.freeze({ who: "volk", label: "ヴォルクに呼ばれる" }),
 });
@@ -591,7 +598,10 @@ async function readRivalFinale(who, place, staminaGuard, owner) {
 async function visitMukai(io, staminaGuard, owner) {
   // 恋人のましろとは、節目が無い日も一日に一度いっしょに過ごせる（BLC03・chapters/mashiro-time.js）。
   // 締めくくりを友人として迎えた後は、♥5後の場面を「ましろちゃんと話す」で読む（#3693。5本の後は短い汎用）。
-  const bond = mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() }) ? "lover" : questionVisitDue("mashiro") ? "question"
+  const loverReady = await prepareLoverMilestones(["mashiro"]);
+  if (state !== owner) return unused;
+  if (!loverReady && owner.lovers?.includes("mashiro")) toast("恋人の会話を読み込めませんでした。もう一度お試しください");
+  const bond = loverReady && mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() }) ? "lover" : questionVisitDue("mashiro") ? "question"
     : finaleAtVisit("mashiro") ? "finale" : bondAfterNext(state, "mashiro") ? "after" : null;
   const scenes = optionalAt("mukai");
   const outings = outingsAt("mukai");

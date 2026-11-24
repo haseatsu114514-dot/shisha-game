@@ -58,7 +58,7 @@ await suite("tonari-opening", async check => {
       assert.equal(await standing.count(), 0, "The earlier first-person scene stays portrait-free");
       await page.waitForTimeout(350);
       await page.locator(".vn-text").click();
-      await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent.includes("いただきました"));
+      await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent.includes("また来てくれるといいな"));
       await page.locator(".vn-next.show").waitFor();
       assert.equal(await standing.getAttribute("data-face"), "smile");
       assert(await standing.evaluate(image => image.complete && image.naturalWidth > 0));
@@ -91,7 +91,7 @@ await suite("tonari-opening", async check => {
       await page.locator('.cutin[data-char="hajime"]').waitFor();
       assert.equal(await standing.count(), 1, "The standing portrait supplies the cut-in transition");
       await page.waitForFunction(() => !document.querySelector('.cutin[data-char="hajime"]')
-        && document.querySelector(".vn-text")?.textContent.includes("店の名前は"));
+        && document.querySelector(".vn-text")?.textContent.includes("カウンターの高さ"));
       assert.equal(await standing.count(), 0, "After the cut-in, return immediately to first-person view");
       // Replaying a saved/seen introduction must still clear the portrait when the intro is skipped.
       await page.evaluate(() => { O531.controller.abort(); });

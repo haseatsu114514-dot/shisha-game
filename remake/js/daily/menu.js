@@ -21,7 +21,7 @@ import { saveFlow, loadWithRecovery, returnToTitle } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { isRainy } from "./weather.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
-import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
+import { relationshipStatus, recentMemoryEcho, prepareRelationshipStatus } from "./relationship-status.js";
 import { triedLater, comboName } from "./cafe-ideas.js";
 import { tierFx, STATUS_PEOPLE, giftNote, recipeDetails } from "./status.js";
 import { fullscreenButton } from "../scenes/save-transfer.js";
@@ -90,6 +90,7 @@ async function runAction(action, { canSave, current, leave, saveRule }) {
   if (action === "board") await openGrowthBoard();
   if (action === "config") await (await import("../scenes/title.js")).openConfig();
   if (action === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
+  if (action === "day2-guide") await (await import("../scenes/day2-guide.js")).openDay2Guide();
   if (action === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
   // タイトルへ戻る時も、手動セーブと同じ時だけ保存する。途中の状態は残さず、行動前のオートセーブへ戻す（#638）。
   if (action === "title") await returnToTitle({ canSave, current, leave });
@@ -107,6 +108,7 @@ function menuOrigin() {
 
 function showMenu(initial, { saveOk, saveRule }) {
   return new Promise((resolve) => {
+    const owner = state;
     const previousFocus = document.activeElement;
     const tabs = new Map();
     let active = initial;
@@ -137,6 +139,12 @@ function showMenu(initial, { saveOk, saveRule }) {
       }
       panel.setAttribute("aria-labelledby", `dm-tab-${id}`);
       panel.replaceChildren(...render(id).filter(Boolean));
+      const pending = id === "people" && prepareRelationshipStatus();
+      if (pending) {
+        void pending.then(changed => {
+          if (changed && state === owner && root.isConnected && active === id) panel.replaceChildren(...render(id).filter(Boolean));
+        });
+      }
       panel.scrollTop = 0;
       if (focus) tabs.get(id)?.focus({ preventScroll: true });
     };
@@ -482,6 +490,7 @@ const SYSTEM = [
   { id: "glossary", label: "用語集" },
   { id: "rules", label: "大会の規則" },
   { id: "title", label: "タイトルへ戻る" },
+  { id: "day2-guide", label: "DAY2の案内", visible: () => state.chapter === 1 && state.phase === "daily" && state.day >= 2 },
 ];
 
 /** 全画面ボタンはタイトルの部品（.btn.xfer-btn）なので、MENUのほかの操作と同じ札の見た目にそろえる（#3555）。 */
@@ -495,7 +504,7 @@ function systemFullscreenButton() {
 function systemTab(choose, saveOk, saveRule) {
   return [
     ...tabHeading("システム", ["行動のたびに自動でセーブされている。", saveRule, "タイトルへ戻ると、行動前のオートセーブから再開する。"], "system"),
-    el("div.dm-system", SYSTEM.map((s) => el(`button.dm-btn.dm-sys${s.primary ? ".primary" : ""}`, {
+    el("div.dm-system", SYSTEM.filter((s) => !s.visible || s.visible()).map((s) => el(`button.dm-btn.dm-sys${s.primary ? ".primary" : ""}`, {
       type: "button", text: s.label, dataset: { test: `menu-${s.id}` },
       disabled: s.id === "save" && !saveOk,
       onclick: () => choose(s.id),

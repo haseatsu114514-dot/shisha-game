@@ -1,6 +1,7 @@
 import { faceIconStyle } from "./face-crops.js";
 import { el } from "../core/util.js";
 import { displayName, portraitUrl, sceneArt } from "./presentation.js";
+import { hasPictureBook, playPictureBook } from "./picture-book.js";
 import { shelfHelpButton } from "./shelf-help.js";
 
 // 操作と遊び方は画面に常に出さず、右上の「？」で読む（#2719・ミニゲーム共通のUI方針）。
@@ -9,6 +10,7 @@ const LIBRARY_HELP = [
   ["操作", "クリック・タップで選びます。会話は Enter／Space でも進みます。"],
   ["卓の中", "卓を囲んでいる間は、右上の「？」でいつでも遊び方を確認できます。"],
 ];
+const SHELF_THEME = "harbor";
 
 // 文字にしなくてよい所は記号に（#2862・スマホ表示の見直し）。読み上げは隠し文字で補う。
 const ICON_PATHS = {
@@ -26,7 +28,19 @@ function icon(name) {
 
 export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio, onChoose, onClose = null, closeLabel = "閉じる" }) {
   const root = el("section.trpg-root.trpg-library", { tabindex: "-1", dataset: { phase: "library", many: String(scenarios.length > 2) } });
-  let disposed = false;
+  const abort = new AbortController();
+  let disposed = false, reading = false;
+  async function readPictureBook(scenario) {
+    if (disposed || reading) return;
+    reading = true;
+    try {
+      audio.setTheme(scenario.presentation.theme);
+      await playPictureBook(root, { scenario, signal: abort.signal, readOnly: true });
+    } finally {
+      reading = false;
+      if (!disposed) audio.setTheme(SHELF_THEME);
+    }
+  }
   const sound = el("button.trpg-button.small.trpg-icon-button", { type: "button", dataset: { test: "trpg-audio" },
     onclick: async () => { sound.disabled = true; await audio.setEnabled(!audio.enabled); if (!disposed) syncSound(); } });
   function syncSound() {
@@ -46,6 +60,13 @@ export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio,
   const books = el("div.trpg-library-books");
   for (const s of scenarios) {
     const p = s.presentation, gm = s.cast.find(c => c.part === "GM");
+    const choose = el("button.trpg-button.primary", { type: "button", dataset: { test: "trpg-select-" + s.id },
+      onclick: () => { if (!disposed && !reading) { audio.play("open"); onChoose(s.id); } },
+    }, [el("span", { text: "この物語を開く" }), el("span", { text: "→", "aria-hidden": "true" })]);
+    const actions = hasPictureBook(s) ? el("div.trpg-library-actions", [choose,
+      el("button.trpg-button.trpg-picturebook-open", { type: "button", text: "絵本をみる",
+        dataset: { test: "trpg-picturebook-" + s.id }, onclick: () => readPictureBook(s) }),
+    ]) : choose;
     const cast = el("div.trpg-library-cast", s.cast.map(c => el("div", [
       el("span.trpg-library-face", { style: { "--person-color": c.color } },
         el("img", { src: portraitUrl(manifest, c.id), alt: "", style: faceIconStyle(c.id, undefined, manifest) })),
@@ -63,14 +84,12 @@ export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio,
           el("span.trpg-library-endings", { title: "4つの結末" }, [icon("endings"), el("span", { text: "4" }), el("span.sr-only", { text: "つの結末" })]),
           el("span", { text: "GM " + displayName(characters, gm.id) })]),
         cast,
-        el("button.trpg-button.primary", { type: "button", dataset: { test: "trpg-select-" + s.id },
-          onclick: () => { if (!disposed) { audio.play("open"); onChoose(s.id); } },
-        }, [el("span", { text: "この物語を開く" }), el("span", { text: "→", "aria-hidden": "true" })]),
+        actions,
       ]),
     ]));
   }
   root.append(books);
   host.replaceChildren(root); root.focus({ preventScroll: true });
-  audio.setTheme("harbor");
-  return { destroy() { disposed = true; root.remove(); }, snapshot: () => ({ phase: "library" }) };
+  audio.setTheme(SHELF_THEME);
+  return { destroy() { disposed = true; abort.abort(); root.remove(); }, snapshot: () => ({ phase: reading ? "picturebook" : "library" }) };
 }

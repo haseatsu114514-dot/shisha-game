@@ -354,16 +354,34 @@ await suite("craft-materials", async check => {
   for (const [device, touch, options] of [["pc", false, {}], ["touch", true,
     { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     await check(`demo-decode-error-${device}`, async page => {
-      // A successful HTTP response with undecodable media exercises the real media error event.
-      await page.route("**/media/demo-pull.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
+      // Hold the invalid response until keyboard focus is on the native video controls.
+      const { promise: waitForError, resolve: releaseError } = Promise.withResolvers();
+      await page.route("**/media/demo-pull.mp4", async route => {
+        await waitForError;
+        await route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" });
+      });
       await setupPullDemo(page);
       // 自動では開かない。「?」の中の「お手本を見る」から開く。
       assert.equal(await page.locator(".bench-demo-sheet").count(), 0);
       await click(page, ".bench-guide > summary", touch);
       await click(page, ".bench-guide .bench-demo-link", touch);
       const sheet = page.locator(".bench-demo-sheet");
-      await sheet.waitFor();
+      const video = sheet.locator("video");
+      try {
+        await video.waitFor({ state: "visible" });
+        await page.keyboard.press("Tab");
+        assert.equal(await video.evaluate(node => node === document.activeElement), true);
+      } finally {
+        releaseError();
+      }
       await page.waitForFunction(() => document.querySelector(".bench-demo-stage")?.hidden);
+      const summary = sheet.locator(".bench-demo-instructions summary");
+      assert.equal(await summary.evaluate(node => node === document.activeElement), true,
+        "the text instructions receive focus when the video fails");
+      await page.keyboard.press("Tab");
+      assert.equal(await sheet.evaluate(node => node.contains(document.activeElement)), true,
+        "Tab stays in the demo after focus moves away from the failed video");
+      await sheet.locator(".bench-demo-skip").focus();
       await demoKeyboardLoop(page);
       assert.match(await page.locator(".bench-demo-status").innerText(), /動画を再生できません/);
       assert.equal(await page.locator(".bench-demo-instructions").evaluate(n => n.open), true);
