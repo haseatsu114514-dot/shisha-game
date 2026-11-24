@@ -297,6 +297,8 @@ await suite("tetsuko-theme", async check => {
       for (const tap of sizes.taps) assert(tap.w >= 38 && tap.h >= 38, `${tap.name} is at least 38px on the phone (${tap.w.toFixed(1)}×${tap.h.toFixed(1)})`);
     }
     await get("time-back").click();
+    // 「帰る」は M-15 で確認ダイアログ経由になった（他のケースと同じ手順）。
+    await get("quit-confirm").click();
     await page.waitForFunction(() => !document.querySelector('[data-test="tetsuko-time-screen"]'), null, { timeout: 30000 });
     const record = await page.evaluate(() => window.__remake.state.flags._tetsuko_time);
     assert(record.found.includes("first_paw") && record.found.includes("box_peek"));
