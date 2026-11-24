@@ -238,6 +238,39 @@
           "speaker": "",
           "face": "",
           "text": "窓に映った顔は、県大会の写真より、ずっと固かった。"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_mukai_shop.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "mukaiの奥の部屋で、ノートを開いた。手順の横に、教わった人の名前がある。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "『炭の置き方、なるさん』『縁に寄せて待つ、神崎さん』『炭を一つ戻す、スミさん』。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（借りたやり方で勝っても、俺の一台って言えるのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "名前を一つずつ、ペンで塗りつぶした。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_stk_ch3_names_blacked"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新しいページの一行目に『俺の一台』と書いた。その下は、朝まで白いままだった。"
         }
       ]
     },
@@ -365,6 +398,12 @@
           "text": "うん。消さないで、線を一本だけ。昨日の分が、無くならないように"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_ch3_names_blacked",
+          "next_true": "names_recall"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "ノートに炭を足した時刻と、ましろの感想を並べた。自分の感じ方だけで決めるのが怖かった。"
@@ -418,8 +457,35 @@
           "speaker": "",
           "face": "",
           "text": "ノートの今日の欄に、「薄い・焦げてない・待つ」と三つ書いた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_ch3_names_blacked",
+          "next_true": "names_rewrite"
         }
-      ]
+      ],
+      "branches": {
+        "names_recall": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "自分のノートを思い出した。東京に来た晩、名前を黒く塗ったページ。"
+          }
+        ],
+        "names_rewrite": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "前のページを開いた。黒く塗った名前の横に、一つずつ書き直す。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさん。神崎さん。なるさん。一番下に、ましろちゃん。"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_naru_contact_before_tournament",
@@ -2151,7 +2217,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "帰郷した夜。閉店の少し前、カウンターに浮かない顔の客が座った。"
+          "text": "帰郷した夜。閉店の少し前、カウンターに酸っぱい顔の客が座った。"
         },
         {
           "type": "condition",

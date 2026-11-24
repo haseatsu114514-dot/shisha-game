@@ -645,6 +645,7 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_kannon_ch2_omikuji", "progression"], // #3097 第1弾
   ["_spot_seen_kannon_oldman", "progression"],
   ["_spot_seen_samechan_shop_minto_gift", "person"],
+  ["_stk_ch3_names_blacked", "progression"], // 第3章2日目の夜、ノートの教わった人の名前を塗りつぶした（2026-11-24 添削 N1。第3章で書き戻し、第5章の開幕で返る）
   ["_stk_kemuri_thermo_borrowed", "progression"],
   ["_stk_kemuri_thermo_declined", "progression"],
   ["_stk_title_customer_back", "progression"],

@@ -67,7 +67,11 @@ const ADJUST_CUE = "second_cup_adjust";
 // この cue の行（初めて会う客に尋ね、先に吸ってもらう。STK02）も制作後に回し、調整の行に続けて台本のまま読む。
 // 提供できなかった一台（failed）では読まない。
 const NEWCOMER_CUE = "second_cup_newcomer";
-const HELD_CUES = [ADJUST_CUE, NEWCOMER_CUE];
+// つむぎの接客（ch5_tsumugi_serving）を読んだ保存では、初めて会う客への最後の一言を、この cue の行（つむぎの受け売り）に替える
+// （2026-11-24 添削 N7）。読んでいなければ NEWCOMER_CUE の行のまま。
+const NEWCOMER_TSUMUGI_CUE = "second_cup_newcomer_tsumugi";
+const NEWCOMER_TSUMUGI_SOURCE = "ch5_tsumugi_serving";
+const HELD_CUES = [ADJUST_CUE, NEWCOMER_CUE, NEWCOMER_TSUMUGI_CUE];
 // 調整の区分（naruTastingCategory と同じ土台）→ 制作直後の地の文。steady / unknown は台本の本文のまま。
 const ADJUST_LINES = {
   recovered: "一度、熱が揺れた。炭を一つ離して、戻す。客がもう一度ホースを持つまで、待った。",
@@ -530,8 +534,12 @@ async function craftSecondCup(owner) {
   const held = DB.dialogues[CH5_MATCH_SCENES.beforeSecond]?.lines || [];
   const text = ADJUST_LINES[category] || held.find(line => line.cue === ADJUST_CUE)?.text;
   // 調整の行に続けて、初めて会う客に尋ねる行を台本のまま読む。提供できなかった一台では読まない（先に吸ってもらえない）。
+  const newcomer = held.filter(line => line.cue === NEWCOMER_CUE);
+  const borrowed = held.filter(line => line.cue === NEWCOMER_TSUMUGI_CUE);
+  const greeting = borrowed.length && chapterFiveRead(state, NEWCOMER_TSUMUGI_SOURCE)
+    ? [...newcomer.slice(0, -1), ...borrowed] : newcomer;
   const after = [...(text ? [{ speaker: "", face: "", text }] : []),
-    ...(failed ? [] : held.filter(line => line.cue === NEWCOMER_CUE))];
+    ...(failed ? [] : greeting)];
   if (after.length && !await playLines(owner, "ch5_second_cup_adjust", after)) return;
   await renderStage(owner);
 }
