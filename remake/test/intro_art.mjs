@@ -20,6 +20,7 @@ try {
     const intro = await import("./js/vn/intro.js"), vn = await import("./js/vn/engine.js");
     const map = await import("./js/daily/map.js"), worker = await import("./js/craft/worker.js");
     core.newGame();
+    core.config.skipSeenOnly = false;
     // 会話を直接起動する試験なので、背後のタイトルを片付ける。
     // 単独カットインのEnterが「はじめから」を動かすと、表情検査が冒頭会話で上書きされる。
     document.querySelector("#screen").replaceChildren();
@@ -37,35 +38,42 @@ try {
     return Object.fromEntries(["hajime", "adam", "naru", "dr_charcoal", "samechan"].map((id) => [id, DB.manifest.portraits[id].faces]));
   });
 
-  // DAY4の実台本を高速送りしても初登場は消えず、名前も職業もまだ開示しない。
-  await page.evaluate(() => { T.talk = T.vn.play("ch1_ageha_encounter"); });
+  // DAY4 の実台本を SKIP 中も、正体を伏せた初登場を短く出す。
+  await page.evaluate(() => {
+    const watch = new MutationObserver(() => {
+      const host = document.querySelector('.cutin.in[data-char="ageha"][data-variant="unknown"]');
+      if (!host) return;
+      watch.disconnect();
+      T.unknown = {
+        name: host.querySelector(".ci-name").textContent,
+        title: host.querySelector(".ci-title").textContent,
+        line: host.querySelector(".ci-line").textContent,
+        face: host.querySelector(".ci-portrait").src,
+        text: host.textContent,
+        met: !!T.core.state.met.ageha,
+        initialSeen: !!T.core.state.flags._intro_ageha_unknown,
+        namedSeen: !!T.core.state.flags._intro_ageha,
+        backgroundLoaded: host.querySelector(".ci-art-background").naturalWidth > 0,
+        skipping: document.body.classList.contains("vn-skip"),
+        pointerEvents: getComputedStyle(host).pointerEvents,
+      };
+    });
+    watch.observe(document.querySelector("#fx"), { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+    T.talk = T.vn.play("ch1_ageha_encounter");
+  });
   await page.waitForSelector("#vn.active");
   await page.keyboard.down("Control");
-  await page.waitForSelector('.cutin.in[data-char="ageha"][data-variant="unknown"]');
-  await page.waitForTimeout(1300);
-  const unknown = await page.evaluate(() => {
-    const host = document.querySelector(".cutin");
-    return {
-      name: host.querySelector(".ci-name").textContent,
-      title: host.querySelector(".ci-title").textContent,
-      line: host.querySelector(".ci-line").textContent,
-      face: host.querySelector(".ci-portrait").src,
-      text: host.textContent,
-      met: !!T.core.state.met.ageha,
-      initialSeen: !!T.core.state.flags._intro_ageha_unknown,
-      namedSeen: !!T.core.state.flags._intro_ageha,
-      backgroundLoaded: host.querySelector(".ci-art-background").naturalWidth > 0,
-    };
-  });
+  await page.waitForFunction(() => T.unknown);
+  const unknown = await page.evaluate(() => T.unknown);
   assert.equal(unknown.name, "？？？");
   assert.equal(unknown.title, "通りすがりのギャル");
   assert.equal(unknown.line.replace(/\s/g, ""), "「大丈夫？ケガしてない？」");
   assert(unknown.face.split("?")[0].endsWith("chr_ageha_smile.webp"));
   assert(!unknown.text.includes("バイブス"));
   assert(!unknown.met && unknown.initialSeen && !unknown.namedSeen && unknown.backgroundLoaded);
+  assert.equal(unknown.skipping, true);
+  assert.equal(unknown.pointerEvents, "none");
   if (shots) await page.screenshot({ path: `${shots}/ageha_unknown_in_story.png` });
-  await page.keyboard.press("Enter");
-  assert.equal(await page.locator(".cutin:not(.out)").count(), 1);
   await page.evaluate(() => T.talk);
   await page.keyboard.up("Control");
   assert.deepEqual(await page.evaluate(() => T.seen), ["ageha:unknown"]);
@@ -83,6 +91,7 @@ try {
   await page.evaluate(() => {
     T.core.markMet("ageha");
     if (!T.intro.needsIntro("ageha")) throw new Error("未知版の既読で名乗り版まで消えた");
+    T.core.newGame().met.ageha = true;
     T.done = T.intro.playIntro("ageha");
   });
   await page.waitForSelector('.cutin.in[data-char="ageha"][data-variant=""]');
@@ -98,7 +107,7 @@ try {
   // 小さな横画面・動きを減らす設定でも、文字は切れず、時間を短縮しない。
   await page.setViewportSize({ width: 844, height: 390 });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.evaluate(() => { T.done = T.intro.playIntro("ageha", { variant: "unknown" }); });
+  await page.evaluate(() => { T.core.newGame(); T.done = T.intro.playIntro("ageha", { variant: "unknown" }); });
   await page.waitForSelector(".cutin.in");
   const boxes = await page.evaluate(() => {
     const stage = document.querySelector("#stage").getBoundingClientRect();

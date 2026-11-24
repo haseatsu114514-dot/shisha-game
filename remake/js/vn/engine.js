@@ -15,7 +15,8 @@ import { fortuneChoiceIndex } from "../core/fortune-effects.js";
 import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
 import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
 import { loadVnFonts } from "../core/vn-fonts.js";
-import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
+import { state, markMet, STAT_EN, timeOfDay, config, currentAutoSaveSource } from "../core/state.js";
+import { on } from "../core/bus.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel, earnSceneCompletion } from "../core/stats.js";
 import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
@@ -67,6 +68,8 @@ function warnVn(kind, detail) {
 }
 
 const log = [];
+const LOG_LIMIT = 300;
+const RELOAD_LOG_KEY = "suien_remake_reload_log";
 let dom = null;
 let nameFit = null;
 let cutin = null; // 会話カットイン（はじめの顔の帯。#2990・2026-11-20 再設計 CCR）
@@ -692,7 +695,8 @@ function next() {
       if (id !== "hajime") { queueIntro({ id, variant, override: line.intro || {} }); continue; }
       if (vnTest.turbo) { markIntroSeen(id, variant); continue; }
       r.ready = false;
-      playIntro(id, { variant, override: line.intro || {}, waitAssets: introAssetWait(r) }).then(() => { if (running === r) { r.ready = true; next(); } });
+      playIntro(id, { variant, override: line.intro || {}, waitAssets: introAssetWait(r), isSkipping: () => skipMode })
+        .then(() => { if (running === r) { r.ready = true; next(); } });
       return;
     }
     if (type === "hide_portrait") {
@@ -923,7 +927,9 @@ function introThenShow(line, show = showLine) {
   }
   r.ready = false;
   (async () => {
-    for (const { id, variant, override } of due) await playIntro(id, { variant, override, onAppear: () => speakerBgm(id), waitAssets: introAssetWait(r) });
+    for (const { id, variant, override } of due) {
+      await playIntro(id, { variant, override, onAppear: () => speakerBgm(id), waitAssets: introAssetWait(r), isSkipping: () => skipMode });
+    }
     if (running !== r) return;
     r.ready = true;
     if (line) show(line); else finish();
@@ -1005,7 +1011,7 @@ async function showLine(line) {
   let inner = playerInner(line);
   if (inner && hooks.interpolate) inner = hooks.interpolate(inner);
   log.push({ name, text: stripTags(text), ...(inner ? { inner: stripTags(inner) } : {}) });
-  if (log.length > 300) log.shift();
+  if (log.length > LOG_LIMIT) log.shift();
   // 入場待ちの間は前の名札と本文をそろえて残す。以降はawaitを挟まず一緒に切り替える。
   if (speaker) {
     dom.name.textContent = name;
@@ -1508,8 +1514,39 @@ function refreshPortraits() {
 export const isPlaying = () => !!running;
 export { refreshPortraits };
 export const backlog = () => log;
-/** タイトルからの「はじめから」「LOAD」で前の周の会話LOGを消す（#1912）。 */
 export function clearLog() { log.length = 0; }
+
+/** ページをまたぐ再開でも、同じセーブにだけ会話LOGを引き継ぐ（#1912）。 */
+export function enableLogReload() {
+  let loadedSource = null;
+  window.addEventListener("pagehide", () => {
+    const autoSource = currentAutoSaveSource();
+    if ((!autoSource && !loadedSource) || !log.length) return;
+    try {
+      sessionStorage.setItem(RELOAD_LOG_KEY, JSON.stringify({
+        autoSource, loadedSource: loadedSource === autoSource ? null : loadedSource, lines: log.slice(-LOG_LIMIT),
+      }));
+    }
+    catch { /* 一時保存に失敗しても再開を妨げない。 */ }
+  });
+  on("state-replaced", ({ sourceRaw, previousAutoRaw, autoResume }) => {
+    const sameSave = sourceRaw && (sourceRaw === previousAutoRaw || sourceRaw === loadedSource);
+    let previous;
+    try {
+      const raw = sessionStorage.getItem(RELOAD_LOG_KEY);
+      sessionStorage.removeItem(RELOAD_LOG_KEY);
+      previous = JSON.parse(raw);
+    } catch { /* 一時データが読めない場合は、新しいLOGを使う。 */ }
+    if (!sameSave || !autoResume) loadedSource = sourceRaw;
+    if (sameSave) return;
+    clearLog();
+    if (!sourceRaw || !previous || !Array.isArray(previous.lines)) return;
+    if (sourceRaw !== previous.autoSource && sourceRaw !== previous.loadedSource) return;
+    // ゲーム内LOADは手動枠をAUTOに書き継ぎ、ページ再読込からAUTOで起動する。
+    if (autoResume && sourceRaw === previous.autoSource) loadedSource = previous.loadedSource ?? sourceRaw;
+    log.push(...previous.lines.slice(-LOG_LIMIT));
+  });
+}
 
 
 

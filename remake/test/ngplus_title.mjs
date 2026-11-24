@@ -114,11 +114,10 @@ function makeFixture(opts = {}) {
     },
     "../core/state.js": {
       peekSave: () => opts.save ?? null,
-      peekLatestSave: () => opts.save ?? null,
+      peekLatestSaveEntry: () => null,
       newGame: () => { calls.newGame++; },
       wipeSave: () => { calls.wipeSave++; },
       config: {}, saveConfig() {},
-      anySlotSaved: () => false,
       loadFromSlot: () => false,
       readSlot: () => opts.autoSave ?? null,
       SAVE_SLOTS: [
@@ -244,7 +243,7 @@ const META = (over = {}) => ({
   // 並び順: NEW GAME の次
   const menu = findByClass(fx.screens.at(-1).root, "title-menu");
   assert.deepEqual(menu.children.map((b) => b.dataset.test),
-    ["title-new", "title-next-cycle", "title-load", "title-gallery", "title-config"]);
+    ["title-new", "title-next-cycle", "title-continue", "title-load", "title-gallery", "title-config"]);
 }
 {
   // 解放済み・パッケージなし: ボタンは出るが開始できない

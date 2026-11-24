@@ -302,6 +302,12 @@ for (const chapter of [4, 5]) {
     assert.deepEqual(events, expected); assert.equal(owner.menuBusy, false);
     assert.equal(owner.active, !['load', 'title'].includes(selected));
   }
+  for (const key of ['slot2', 'slot3']) {
+    owner = reset(); choice = 'load'; loadKey = key;
+    await api.openMenu(owner);
+    assert.deepEqual(events, [['loadFlow', true], ['loadFromSlot', key], 'abort', 'resume', 'reload']);
+    assert.equal(owner.active, false);
+  }
   for (const key of [null, '', 'slot1']) {
     owner = reset(); choice = 'load'; loadKey = key; loaded = false;
     await api.openMenu(owner);

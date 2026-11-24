@@ -14,8 +14,8 @@ function check(name, fn) {
   catch (e) { failures++; console.log("FAIL", name, e.message); }
 }
 
-async function loadModule(source, portSource, overrides) {
-  const context = vm.createContext({ console, setTimeout, clearTimeout, setInterval, clearInterval, performance });
+async function loadModule(source, portSource, overrides, globals = {}) {
+  const context = vm.createContext({ console, setTimeout, clearTimeout, setInterval, clearInterval, performance, ...globals });
   const modules = new Map();
   const mod = new vm.SourceTextModule(source + portSource, { context });
   await mod.link(async (specifier) => {
@@ -49,6 +49,61 @@ export const robustPort = { handleCondition, jumpTo, lineDisplayName, getVnWarni
   setRunning: (r) => { running = r; }, getRunning: () => running };
 `, { gainAffinity: (...args) => affinityCalls.push(args), state: vnState, DB: vnDb, config: {}, displayName: nameData.displayName, STAT_EN: {}, affinityLevel: () => 0, tournamentFinished: () => false, basicsExperienced: () => false });
 const port = vn.robustPort;
+
+{
+  const session = new Map();
+  let auto = "current AUTO";
+  const freshPage = async () => {
+    let hide, replace;
+    const engine = await loadModule(engineSource, "", {
+      on: (event, callback) => { assert.equal(event, "state-replaced"); replace = callback; },
+      currentAutoSaveSource: () => auto,
+    }, {
+      window: { addEventListener(event, callback) { assert.equal(event, "pagehide"); hide = callback; } },
+      sessionStorage: {
+        setItem: (key, value) => session.set(key, value),
+        getItem: key => session.get(key) ?? null,
+        removeItem: key => session.delete(key),
+      },
+    });
+    engine.enableLogReload();
+    return { lines: engine.backlog(), hide, replace };
+  };
+  check("LOG: 同じ保存データだけをページ再読込後に復元し、別データと新規開始では消す", () => {
+    assert.equal(typeof vn.enableLogReload, "function");
+  });
+  if (typeof vn.enableLogReload === "function") {
+    const current = await freshPage();
+    const reopened = await freshPage();
+    check("LOG: AUTOと手動の保存原文、上書きされた枠、消費済みの一時記録", () => {
+      const line = { name: "", text: "本編の行" };
+      current.replace({ sourceRaw: "original manual" });
+      current.lines.push(line);
+      current.replace({ sourceRaw: "original manual", previousAutoRaw: auto });
+      assert.equal(current.lines[0], line);
+      current.hide();
+      reopened.replace({ sourceRaw: auto, autoResume: true });
+      assert.equal(reopened.lines[0]?.text, line.text);
+      reopened.replace({ sourceRaw: "original manual", previousAutoRaw: auto });
+      assert.equal(reopened.lines[0]?.text, line.text);
+      assert.equal(session.size, 0);
+      reopened.replace({ sourceRaw: "overwritten manual", previousAutoRaw: auto });
+      assert.equal(reopened.lines.length, 0);
+      current.hide();
+      reopened.replace({ sourceRaw: "different AUTO" });
+      assert.equal(reopened.lines.length, 0);
+      current.hide();
+      reopened.replace({ sourceRaw: null });
+      reopened.replace({ sourceRaw: auto });
+      assert.equal(reopened.lines.length, 0);
+      current.replace({ sourceRaw: null });
+      auto = null;
+      current.lines.push({ text: "未保存" });
+      current.hide();
+      assert.equal(session.size, 0);
+    });
+  }
+}
 
 function fakeRunning(known = []) {
   return {

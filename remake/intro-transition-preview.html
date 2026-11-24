@@ -72,7 +72,7 @@ async function run(list) {
       config.seVolume = sound.checked ? 0.8 : 0; config.bgmVolume = 0;
       status.textContent = `${variantSel.selectedOptions[0].textContent} ／ ${realName(id)}`;
       await new Promise((r) => setTimeout(r, 500));
-      state.met[id] = true; delete state.flags[`_intro_${id}`];
+      newGame().met[id] = true;
       await playIntro(id);
       await new Promise((r) => setTimeout(r, 700));
     }
