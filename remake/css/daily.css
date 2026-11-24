@@ -675,6 +675,14 @@ p.gear-offer.owned { color: var(--text-dim); font-size: 14px; }
 p.gear-offer.owned b { color: var(--gold); }
 .sub-choices { display: flex; flex-direction: column; gap: 12px; }
 .sub-choices.grid { display: grid; grid-template-columns: 1fr 1fr; }
+/* 自主練の選択（#4198で熱管理が加わり5工程に）。幅と3列＋詰めた余白で、戻るボタンまで画面内に収める。 */
+.sub-menu.drill-menu { width: 940px; padding: 22px 36px; }
+.drill-menu .sub-lead { margin-bottom: 14px; }
+.drill-menu .sub-choices.grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.drill-menu .big-choice { padding: 11px 18px; }
+.drill-menu .big-choice small { line-height: 1.4; }
+.drill-menu .sub-back { margin-top: 10px; }
+html:root[data-density="phone"] #screen[data-screen="tonari"] > .sub-menu.drill-menu { --sub-menu-top: 140px; }
 .big-choice {
   display: flex;
   flex-direction: column;

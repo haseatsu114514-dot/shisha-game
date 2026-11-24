@@ -711,7 +711,7 @@
 .rc-card { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 14px; color: #bbb; }
 .rc-card.me { color: var(--neon-amber); }
 .rc-shisha { width: 24px; height: 40px; border-radius: 12px 12px 4px 4px; box-shadow: 0 0 14px currentColor; }
-.rc-crt { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 2px, transparent 2px 4px); }
+.rc-crt { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 2px, transparent 2px 4px); }
 .count-screen.almost { animation: almost 0.5s ease-in-out; }
 @keyframes almost { 50% { transform: scaleY(0.2); filter: brightness(2); } }
 .count-screen.puchun { animation: puchun 0.6s var(--ease-snap) forwards; }

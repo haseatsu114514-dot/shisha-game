@@ -214,7 +214,7 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
   };
   // テスト用（craftTest.aim = "attack"）: 上手な自動操作が中心ではなく攻めの帯のまん中を狙う。
   const autoGoal = () => { const r = attacking && craftTest.aim === "attack" ? attackRange(bands) : null; return r ? (r.low + r.high) / 2 : center; };
-  const attackNote = attacking ? `桃色の「攻めの帯」で${mode.drift ? "整え終える" : "提供する"}と、${attackVotes ? "この回の審査が伸びる" : "温度の評価が満点になる"}（帯の上を越えると味が崩れる）。` : "";
+  const attackNote = attacking ? `桃色の「攻めの帯」で${mode.drift ? "整え終える" : "提供する"}と、この回の審査が伸びる（帯の上を越えると味が崩れる）。` : "";
   const panel = stepPanel(mode.store, mode.title, tutorial
     ? mode.drift ? "温度を戻すのは炭。交換する数と置き方で決まる。そのあとの吸いは味の確かめで、温度は少ししか動かない。1〜2口で整え終えよう"
     : "中央のキープは左寄りで微減、右寄りで微増。右の上げ吸いは温度を上げ、左の下げ吸いは温度を下げる。雨の日は上げ吸いを増やそう。吸い終わってから次の針を止める"

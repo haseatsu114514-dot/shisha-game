@@ -271,7 +271,7 @@ function sakuraiBoard(p, index) {
 /**
  * 10→0 のカウントと、順位に応じた終わり方。
  * kind: premium（残り2〜3でフライングプチュン）/ win（0でプチュン）/ close（プチュ…→パリン）/ lose（即パリン）/ disaster（ヒビ→バキン）
- * カウント中の画面はクリックを吸わない（自動で進む）
+ * カウント中はタップ／Enterで残りのカウントを飛ばして終わり方へ進める（#4198 C-34）。
  */
 /**
  * @param opts 第2〜4章から使う時の差し替え（TSH10）。contestants＝出場者の並び（左から）、event＝大会名、
@@ -297,9 +297,18 @@ export async function resultCountdown(cs, kind, attempt = null, opts = {}) {
     el("span", { text: id === "hajime" ? "はじめ" : nameOfId(id) }),
   ]));
   const pray = el("div.rc-pray", cards);
-  const screen = el("div.count-screen.ts-count", { dataset: { test: "result-count" } }, [header(`${opts.event || "SMOKE CROWN CUP"} / FINAL JUDGING`, "結果発表", sub), cuts, el("i.rc-pulse", { "aria-hidden": "true" }), ring, num, pray, el("i.rc-heart", { "aria-hidden": "true" }), el("div.rc-crt")]);
+  const screen = el("div.count-screen.ts-count.is-counting", { dataset: { test: "result-count" } }, [header(`${opts.event || "SMOKE CROWN CUP"} / FINAL JUDGING`, "結果発表", sub), cuts, el("i.rc-pulse", { "aria-hidden": "true" }), ring, num, pray, el("i.rc-heart", { "aria-hidden": "true" }), el("div.rc-crt"), el("span.rc-skip", { text: "タップで進める", "aria-hidden": "true" })]);
   stageLights(screen, { beams: 4, dust: 18, tone: "cool" });
   showScreen("count", screen);
+  // タップ／Enterで残りのカウントを飛ばす（C-34）。終わり方の演出そのものは飛ばさない。
+  let skipped = false;
+  const skipWaiters = [];
+  const doSkip = () => { if (skipped) return; skipped = true; for (const wake of skipWaiters.splice(0)) wake(); };
+  const onKey = (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.stopPropagation(); doSkip(); } };
+  screen.addEventListener("pointerdown", doSkip);
+  window.addEventListener("keydown", onKey, true);
+  const tickSleep = () => skipped ? Promise.resolve() : new Promise((resolve) => { const timer = setTimeout(resolve, tick); skipWaiters.push(() => { clearTimeout(timer); resolve(); }); });
+  const endSkip = () => { window.removeEventListener("keydown", onKey, true); screen.classList.remove("is-counting"); };
   // 光の巡り: 左から1・3・2・4番目の順（はじめは右端なので、最後に照らされる）。残り1〜0は全員を照らす。
   const spotOrder = [0, 2, 1, 3];
   const mainLeaf = Object.entries(cs.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0).sort((a, b) => b[1] - a[1])[0]?.[0];
@@ -330,17 +339,23 @@ export async function resultCountdown(cs, kind, attempt = null, opts = {}) {
       cuts.append(c);
       setTimeout(() => c.remove(), 900);
     }
-    if (kind === "premium" && n === 3) { await puchun(screen, true); return; }
+    if (kind === "premium" && n === 3) { endSkip(); await puchun(screen, true); return; }
     if (n === 1 && kind === "close") {
+      endSkip();
       screen.classList.add("almost");
       SE.puchun();
       await sleep(tick);
       await parin(screen, false);
       return;
     }
-    await sleep(tick);
+    await tickSleep();
+    if (skipped) break;
   }
-  if (kind === "win") await puchun(screen, false);
+  endSkip();
+  // ここへ来る premium／close は、タップで飛ばされた時だけ（自然な到達はループ内で return 済み）。
+  if (kind === "premium") await puchun(screen, true);
+  else if (kind === "close") { screen.classList.add("almost"); SE.puchun(); await parin(screen, false); }
+  else if (kind === "win") await puchun(screen, false);
   else if (kind === "disaster") await parin(screen, true);
   else await parin(screen, false);
 }

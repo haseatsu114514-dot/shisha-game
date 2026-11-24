@@ -98,7 +98,7 @@ await suite("craft-materials", async check => {
         assert.equal(result.stock, result.beforeStock, "The supplied match leaf does not consume private stock");
       }
     }, { ...options, reducedMotion: "reduce" });
-    // #1906-2: 評価は毎回更新するが、NG理由は確定後に1件だけ表示する。
+    // #1906-2→#4198 C-32: 評価は毎回更新し、NG理由は確定後に発動した全件を表示する。
     const ngSetup = async (page, ids, golden = false) => {
       await page.evaluate(async ({ ids, golden }) => {
         const core = await import("./js/core/state.js"), session = await import("./js/craft/session.js");
@@ -141,7 +141,8 @@ await suite("craft-materials", async check => {
         assert.equal(await page.evaluate(() => NG.run), "done");
         const info = await page.evaluate(() => NG.cs.mixInfo);
         assert.equal(info.ngReasons.length, expected, "All matching NG penalties remain in the evaluation");
-        assert.deepEqual(await ngNotices(page), [info.ngReasons[0]], "Show only the first existing reason, not recipe/balance notes");
+        // #4198 C-32: NG理由は発動した全件をトーストで知らせる（旧仕様は1件だけ）。
+        assert.deepEqual(await ngNotices(page), info.ngReasons, "Show every existing reason, not recipe/balance notes");
         assert.equal(await page.locator("#toasts .toast").filter({ hasText: info.ngReasons[0] }).count(), 1);
         if (golden) {
           assert.equal(info.golden, "hit");
@@ -300,8 +301,9 @@ await suite("craft-materials", async check => {
       // 桜井版は穴あけ操作を片付けてから結果を見せる。24穴の記録は下で確認する。
       await page.locator(".result-card.show").waitFor();
       assert.equal(await page.locator('[data-test="foil"]').count(), 0);
-      const result = await page.evaluate(() => ({ template: F.cs.holes.templateId, outer: F.cs.holes.outer, middle: F.cs.holes.middle, inner: F.cs.holes.inner }));
-      assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 12, inner: 0 });
+      // #4198: 穴の配置は外周・中周の2リングに統一され、内周は廃止された。
+      const result = await page.evaluate(() => ({ template: F.cs.holes.templateId, outer: F.cs.holes.outer, middle: F.cs.holes.middle }));
+      assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 12 });
       await click(page, '[data-test="step-next"]', touch);
       await page.evaluate(()=>F.running);
     }, options);

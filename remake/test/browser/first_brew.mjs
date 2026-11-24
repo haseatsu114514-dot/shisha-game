@@ -218,8 +218,12 @@ await suite("first-brew", async check => {
     const heart = page.locator(".dodge-heart");
     const center = await heart.getAttribute("style");
     if (touch) {
+      // #4198: 移動は「押した場所へ心が寄っていく」方式になった。タップ一瞬では動かないので、押し続けて動かす。
       const box = await page.locator('[data-test="dodge"]').boundingBox();
-      await page.touchscreen.tap(box.x + box.width * .75, box.y + box.height * .7);
+      const cdp = await page.context().newCDPSession(page);
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: box.x + box.width * .75, y: box.y + box.height * .7, id: 9 }] });
+      await page.waitForTimeout(350);
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
     } else {
       await page.keyboard.down("ArrowRight");
       await page.waitForTimeout(200);

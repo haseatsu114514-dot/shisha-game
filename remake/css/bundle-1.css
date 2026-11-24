@@ -4992,6 +4992,14 @@ p.gear-offer.owned { color: var(--text-dim); font-size: 14px; }
 p.gear-offer.owned b { color: var(--gold); }
 .sub-choices { display: flex; flex-direction: column; gap: 12px; }
 .sub-choices.grid { display: grid; grid-template-columns: 1fr 1fr; }
+/* 自主練の選択（#4198で熱管理が加わり5工程に）。幅と3列＋詰めた余白で、戻るボタンまで画面内に収める。 */
+.sub-menu.drill-menu { width: 940px; padding: 22px 36px; }
+.drill-menu .sub-lead { margin-bottom: 14px; }
+.drill-menu .sub-choices.grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.drill-menu .big-choice { padding: 11px 18px; }
+.drill-menu .big-choice small { line-height: 1.4; }
+.drill-menu .sub-back { margin-top: 10px; }
+html:root[data-density="phone"] #screen[data-screen="tonari"] > .sub-menu.drill-menu { --sub-menu-top: 140px; }
 .big-choice {
   display: flex;
   flex-direction: column;
@@ -8068,7 +8076,7 @@ body:not(:root) .map .spot-pin.pin-station { width: auto; min-width: 112px; }
 .rc-card { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 14px; color: #bbb; }
 .rc-card.me { color: var(--neon-amber); }
 .rc-shisha { width: 24px; height: 40px; border-radius: 12px 12px 4px 4px; box-shadow: 0 0 14px currentColor; }
-.rc-crt { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 2px, transparent 2px 4px); }
+.rc-crt { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 2px, transparent 2px 4px); }
 .count-screen.almost { animation: almost 0.5s ease-in-out; }
 @keyframes almost { 50% { transform: scaleY(0.2); filter: brightness(2); } }
 .count-screen.puchun { animation: puchun 0.6s var(--ease-snap) forwards; }
@@ -10809,6 +10817,7 @@ html:root[data-density="phone"] body:not(:root) .bench .bench-top > .btn { align
 /* ---- 結果発表のカウント（共通の背景は下） */
 .count-screen, .sui-cut, .result-table { background: radial-gradient(ellipse 70% 55% at 50% 0%, #6a3f8a55, transparent 70%), linear-gradient(115deg, #100b1df7, #171124e8), url('../img/ui/continue/backdrop_stage.webp') center / cover; }
 .count-screen.is-counting { pointer-events: auto; cursor: pointer; }
+.count-screen.ts-count.is-counting .tournament-heading { z-index: 6; }
 .count-screen .rc-skip { position: absolute; z-index: 5; right: 4%; top: 5%; }
 .count-screen .tournament-heading { position: absolute; left: 52px; top: 34px; width: calc(100% - 104px); }
 .count-screen .tournament-heading h1 { font-size: 40px; font-style: italic; }

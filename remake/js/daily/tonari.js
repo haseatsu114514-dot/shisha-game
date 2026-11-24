@@ -516,7 +516,7 @@ export function chooseDrill({ title = "自主練", lead = "苦手な工程を反
       if (value === null) SE.cancel(); else SE.select();
       retire(root); resolve(value);
     };
-    const root = showScreen("tonari", el("div.sub-menu", [
+    const root = showScreen("tonari", el("div.sub-menu.drill-menu", [
       el("h2.sub-title", { text: title }),
       el("p.sub-lead", { text: lead }),
       el("div.sub-choices.grid", Object.entries(DRILLS).map(([id, d]) =>

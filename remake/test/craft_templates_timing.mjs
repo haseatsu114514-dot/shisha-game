@@ -73,7 +73,7 @@ try {
     assert.equal(await page.locator('[data-test="hole-template-counts"]').textContent(), "外周12・中周12");
     await capture(page, `templates-mixed-${name}`);
     await page.locator(".ht-help summary").click();
-    assert.match(await page.locator(".ht-help").textContent(), /安定.*ズレる/);
+    assert.match(await page.locator(".ht-help").textContent(), /安定し.*動かしやすい/);
     await insidePanel(page, [".ht-preview", ".ht-side"]);
     await page.locator(".ht-help summary").click();
     await page.evaluate(() => { __remake.craftTest.auto = "good"; });
@@ -81,9 +81,10 @@ try {
     // 自動操作は結果カードも自動で閉じる。全体の完了を待ってから手動の炭焼きへ戻す。
     await page.evaluate(() => window.holesRun);
     await page.evaluate(() => { __remake.craftTest.auto = null; });
+    // #4198: 穴の配置は外周・中周の2リングに統一され、内周は廃止された。
     const result = await page.evaluate(() => ({ template: cs.holes.templateId, outer: cs.holes.outer,
-      middle: cs.holes.middle, inner: cs.holes.inner, score: cs.holes.score }));
-    assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 12, inner: 0, score: 100 });
+      middle: cs.holes.middle, score: cs.holes.score }));
+    assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 12, score: 100 });
 
     // 取り出す入力だけ仮想時計で固定。炭の判定・演出・DOMは実装そのものを使う。
     await page.evaluate(() => {
