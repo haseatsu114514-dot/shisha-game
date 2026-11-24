@@ -339,7 +339,11 @@ assert.equal(cmpSuyaki.rows[0].tone, "technical");
 
 const cmpCube = compareEquipment("cube_charcoal", "flat_charcoal");
 assert.match(cmpCube.rows[0].value, /-10%.*繊細な温度合わせが必要/);
+assert.match(cmpCube.rows[1].value, /×0\.90 → ×1\.13/);
 assert.match(cmpCube.rows[2].value, /煙量 \+6 ／ 焦げリスク \+10\.5/);
+for (const charcoal of ["flat_charcoal", "dense_flat_charcoal"]) {
+  assert.match(compareEquipment(charcoal, charcoal).rows[1].value, /火力×0\.90/);
+}
 
 const mintGuide = flavorThermalGuide(DB.flavorById.mint);
 assert.equal(mintGuide.makerLabel, "アルファーヘブン");

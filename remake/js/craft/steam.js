@@ -1,7 +1,7 @@
 // 蒸らし ── 雑念を躱す（CLAUDE.md: 蒸らしミニゲームは雑念弾幕。「覚悟＋締め」には戻さない）
 // 選んだ蒸らし時間のあいだ、飛んでくる雑念（言葉と物体）を心(♥)で避け続ける。被弾が少ないほど良い。
 import { state } from "../core/state.js";
-import { hasAttackTraining } from "./attack-training.js";
+import { ATTACK_LOCK_REASON, hasAttackTraining } from "./attack-training.js";
 import { el, sleep, clamp, rand, pick } from "../core/util.js";
 import { setText, setAttr, setData, setFlag } from "../core/dom-write.js";
 import { createCraftClock } from "./clock.js";
@@ -92,7 +92,11 @@ export async function runSteamDodge(cs) {
     await resultCard(panel,{title:"0分蒸らし",lines:["待たずに立ち上げる。吸い出しで低温から熱を運ぼう"]});
     return;
   }
-  const panel = stepPanel("steam", "蒸らし", "雑念を避けよう。被弾するたび蒸らしの評価が下がり、アタックのコンボも途切れる。蒸らし後の温度は被弾では変わらない。アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。空振り・リフレッシュでは維持し、次の蒸らしでは0から始まる。", { brief: "" });
+  const dodgeHelp = "雑念を避けよう。被弾するたび蒸らしの評価が下がる。蒸らし後の温度は被弾では変わらない。";
+  const attackHelp = hasAttackTraining(state.flags)
+    ? "アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。空振り・リフレッシュでは維持し、被弾で途切れる。次の蒸らしでは0から始まる。"
+    : "";
+  const panel = stepPanel("steam", "蒸らし", dodgeHelp + attackHelp, { brief: "" });
   const isCurrent = () => state === owner && benchRoot(cs) === root && panel.dataset.step === "steam";
   const W = 784, H = 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius), stage, table: table.id } });
@@ -225,8 +229,7 @@ export async function runSteamDodge(cs) {
     const recharge = String(1 - remaining / duration);
     if (shownRecharge.get(button) !== recharge) { shownRecharge.set(button, recharge); button.style.setProperty("--recharge", recharge); }
     setText(caption, running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "");
-    // 使えない（未習得の）ボタンは、ここで一度に「使用不可」と書く（いったん使用可能と書いてから戻すと毎フレーム2回書き換わる）
-    setAttr(button, "aria-label", locked ? "アタック。使用不可" : `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
+    setAttr(button, "aria-label", locked ? `アタック。${ATTACK_LOCK_REASON}` : `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
     setFlag(button, "disabled", locked || !running || remaining > 0);
   };
   const refreshLabel = () => {
@@ -242,7 +245,7 @@ export async function runSteamDodge(cs) {
       `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。コンボ${wordsCut}。射程${profile.reach}px、リチャージ${profile.recharge}秒`, !learned);
     setData(slashBtn, "locked", !learned);
     setFlag(slashLock, "hidden", learned);
-    setAttr(slashBtn, "title", learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : "アタック：使用不可");
+    setAttr(slashBtn, "title", learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : ATTACK_LOCK_REASON);
     setData(slashBtn, "cutWords", wordsCut);
     setData(slashBtn, "totalWordsCut", totalWordsCut);
     setData(slashBtn, "maxCombo", maxCombo);

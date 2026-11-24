@@ -23,6 +23,7 @@ async function init(page) {
   });
 }
 const guide = page => page.locator(".bench-guide summary");
+const closeIntro = page => page.locator('.bench-guide[open] [data-test="bench-guide-close"]').click();
 const shot = async (page, name) => { if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/${name}.png` }); };
 
 // 長い支給葉リストはスクロールして操作する。全ボタンの到達性を個別に検査する。
@@ -93,6 +94,7 @@ await suite("first-brew", async check => {
   for (const touch of [false, true]) await check(`heat-help-${touch ? "touch" : "pc"}`, async page => {
     await init(page);
     await page.evaluate(async () => { await T.open(); window.running = T.heat.runHeat(cs); });
+    await closeIntro(page);
     await page.locator('[data-test="coal-0"]').waitFor();
     await page.waitForTimeout(3500); // 実際の開始カウントを終えてから説明を読む。
     await guide(page).click(); await page.waitForTimeout(100);
@@ -111,6 +113,7 @@ await suite("first-brew", async check => {
     if (!touch) {
       await page.locator('[data-test="step-next"]').click();
       await page.evaluate(async () => { await running; await T.open(); window.running = T.heat.runHeat(cs); });
+      await closeIntro(page);
       await page.locator('[data-test="coal-0"]').waitFor();
       await page.waitForTimeout(3300);
       for (let i = 0; i < 3; i++) await page.locator(`[data-test="coal-${i}"]`).dispatchEvent("pointerdown");
@@ -123,6 +126,7 @@ await suite("first-brew", async check => {
   await check("holes-and-steam-help", async page => {
     await init(page);
     await page.evaluate(async () => { await T.open(); window.running = T.holes.runHoles(cs); });
+    await closeIntro(page);
     await page.locator('[data-test="hole-start"]').waitFor();
     assert.equal(await page.locator('.bench-demo-sheet').count(), 0, "穴あけのお手本は廃止（#3815）");
     await page.locator('[data-test="hole-start"]').click();
@@ -182,6 +186,7 @@ await suite("first-brew", async check => {
       cs.onboarding = true;
       window.running = T.holes.runHoles(cs);
     });
+    await closeIntro(page);
     await page.locator('[data-test="hole-start"]').click();
     const holeStart = page.locator('[data-test="hole-warmup-start"]');
     await holeStart.waitFor();
@@ -235,6 +240,7 @@ await suite("first-brew", async check => {
       await T.open(); cs.mix = { mint: 12 }; cs.pull = { temp: .54 }; cs.careRound = 1;
       window.running = T.pull.runCare(cs, { round: 1 });
     });
+    await closeIntro(page);
     await page.locator('[data-test="care-coal-0"]').click();
     // Wait for the actual countdown completion; CI frame scheduling can take
     // longer than its nominal duration. Opening help earlier pauses startup.

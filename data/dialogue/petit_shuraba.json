@@ -5,7 +5,7 @@
       "dialogue_id": "petit_notice_rio",
       "comment": "気づきかけ・凛想（香り）。デートの別れぎわ。最後の反応「違う店の香りがしたから、気にはなってた」「でも、香りだけじゃ決めない」の前振り。",
       "lines": [
-        { "speaker": "", "face": "", "text": "別れぎわ、凛想さんが俺の上着の襟に、少しだけ顔を寄せた。" },
+        { "speaker": "", "face": "", "text": "別れ際、凛想さんが俺の上着の襟に、少しだけ顔を寄せた。" },
         { "speaker": "rio", "face": "normal", "text": "……よその店の香りがする。うちの棚には無い葉だね", "beat": 400 },
         { "speaker": "hajime", "face": "surprise", "text": "（……昼に寄った店の煙だ。襟に、残ってた）" },
         { "speaker": "hajime", "face": "sad", "text": "（凛想さんは、何の匂いも付けない。これは、俺が持ち込んだ匂いだ）" },
@@ -41,7 +41,7 @@
       "dialogue_id": "petit_notice_tsumugi",
       "comment": "気づきかけ・つむぎ（色）。共感覚はその時の彼女の感じ方で、嘘発見器ではない。濁りを体の疲れとして気遣う（brand/story_and_structure.md）。濁りの理由に気づいているのは、はじめだけ。",
       "lines": [
-        { "speaker": "", "face": "", "text": "帰りぎわ、つむぎがペンを止めて、俺の顔を見上げた。" },
+        { "speaker": "", "face": "", "text": "帰り際、つむぎがペンを止めて、俺の顔を見上げた。" },
         { "speaker": "tsumugi", "face": "normal", "text": "……はじめさん。今日は少し、色が混ざってます", "beat": 400 },
         { "speaker": "hajime", "face": "surprise", "text": "色？" },
         { "speaker": "tsumugi", "face": "sad", "text": "いつもは、あたたかい色なのに。今日は、縁が濁ってて" },
@@ -57,7 +57,7 @@
           ]
         },
         { "speaker": "", "face": "", "text": "つむぎは、濁った色のことを、それ以上は口にしなかった。" },
-        { "speaker": "hajime", "face": "sad", "text": "（訊かれたのは、体のことだ。答えなかったのは、別のことだ）" }
+        { "speaker": "hajime", "face": "sad", "text": "（聞かれたのは、体のことだ。答えなかったのは、別のことだ）" }
       ],
       "branches": {
         "sleep": [
@@ -78,7 +78,7 @@
       "dialogue_id": "petit_notice_ageha",
       "comment": "気づきかけ・あげは（プリクラ）。最後の反応「さっきから、なんか変だと思ってた。でも、当てっこはもういい」の前振り。プリクラを撮ったことがあるかどうかには触れない（これから撮る話）。",
       "lines": [
-        { "speaker": "", "face": "", "text": "別れぎわ、あげはが自分のスマホの裏を、こっちに向けた。" },
+        { "speaker": "", "face": "", "text": "別れ際、あげはが自分のスマホの裏を、こっちに向けた。" },
         { "speaker": "ageha", "face": "smile", "text": "ね、今度プリ撮ろ。で、ハジメっちのスマホの裏に貼んの" },
         { "speaker": "hajime", "face": "surprise", "text": "（スマホの、裏。……人前で、毎日出すものだ）", "beat": 400 },
         {
@@ -113,7 +113,7 @@
       "dialogue_id": "petit_notice_samechan",
       "comment": "気づきかけ・サメちゃん（コロちゃんが口をすべらせる）。コロちゃんは一人称「余」、はじめは「勇者はじめ」、サメちゃんは「側近」。本人の「じゃ」「おる」を使わず、落ち着いて本心をばらす（data/characters.json）。",
       "lines": [
-        { "speaker": "", "face": "", "text": "帰りぎわ、サメちゃんの右手で、コロちゃんが俺のほうを向いた。" },
+        { "speaker": "", "face": "", "text": "帰り際、サメちゃんの右手で、コロちゃんが俺のほうを向いた。" },
         { "speaker": "samechan", "face": "ventriloquism", "text": "勇者はじめ。近ごろ、よその城の煙の匂いがする", "voice": "korochan", "beat": 400 },
         { "speaker": "samechan", "face": "surprise", "text": "こ、コロちゃん！ 何を言うのじゃ！" },
         { "speaker": "samechan", "face": "ventriloquism", "text": "側近は、三日前から気にしている。余は、代わりに言っただけだ", "voice": "korochan" },
@@ -150,7 +150,7 @@
       "dialogue_id": "petit_notice_hiyori",
       "comment": "気づきかけ・ひより（総務の目）。最後の反応「……大丈夫って、先に言いそうになっちゃった」の前振り（ここでは先に言ってしまう）。inner は、はじめには聞こえない本心。",
       "lines": [
-        { "speaker": "", "face": "", "text": "別れぎわ、ポケットのスマホが震えた。画面を見て、すぐに伏せた。" },
+        { "speaker": "", "face": "", "text": "別れ際、ポケットのスマホが震えた。画面を見て、すぐに伏せた。" },
         { "speaker": "hiyori", "face": "normal", "text": "……今の、伏せ方", "inner": "総務三年目の目は、その伏せ方を知っている", "beat": 400 },
         { "speaker": "hiyori", "face": "sad", "text": "ううん、大丈夫。私、通知ひとつより軽い女だから", "inner": "大丈夫って、先に言っちゃった。誰から。誰からなの" },
         {
@@ -184,7 +184,7 @@
       "dialogue_id": "petit_notice_mashiro",
       "comment": "気づきかけ・ましろ（数えてた）。最後の反応「作れない日も座ってていいよ。それは、変わらない」「でも、僕の隣に座る約束は、別」の前振り。",
       "lines": [
-        { "speaker": "", "face": "", "text": "帰りぎわ、ましろがカップを両手で持ったまま、こっちを見た。" },
+        { "speaker": "", "face": "", "text": "帰り際、ましろちゃんがカップを両手で持ったまま、こっちを見た。" },
         { "speaker": "mashiro", "face": "normal", "text": "はじめくん、今日ねぇ、スマホ、三回見たよ", "beat": 400 },
         { "speaker": "hajime", "face": "surprise", "text": "……数えてたの？" },
         { "speaker": "mashiro", "face": "yawn", "text": "ん、暇だったから。……ふぁ。お茶が冷めるまでに、三回" },
@@ -199,7 +199,7 @@
           ]
         },
         { "speaker": "mashiro", "face": "normal", "text": "見てても、いいよ。僕は、お茶を淹れてるから" },
-        { "speaker": "", "face": "", "text": "ましろは、四回目を数えなかった。数えないでいてくれた、のだと思う。" }
+        { "speaker": "", "face": "", "text": "ましろちゃんは、四回目を数えなかった。数えないでいてくれた、のだと思う。" }
       ],
       "branches": {
         "shop": [
@@ -220,7 +220,7 @@
       "dialogue_id": "petit_notice_minto",
       "comment": "気づきかけ・みんと（偵察）。デートの帰りは私服の栞（声が小さい・短文・一人称「私」。表情は ura_*）。最後の反応「お店で笑うのも、ここで怒るのも、どっちも私だよ」の前振り。",
       "lines": [
-        { "speaker": "", "face": "", "text": "帰りぎわ、栞さんがバッグの紐を握ったまま、立ち止まった。" },
+        { "speaker": "", "face": "", "text": "帰り際、栞さんがバッグの紐を握ったまま、立ち止まった。" },
         { "speaker": "minto", "face": "ura_normal", "text": "……あのね。この前、偵察に出たの。よその店の、看板を見に" },
         { "speaker": "minto", "face": "ura_normal", "text": "そしたら、はじめくんに似た人がいて、……誰かと、歩いてた", "beat": 400 },
         { "speaker": "hajime", "face": "surprise", "text": "（……見られてた）" },
@@ -501,7 +501,7 @@
       "dialogue_id": "petit_sumi_reservation",
       "comment": "スミさんの予約表。tonari で一服かシフトを終えた帰りぎわに読む。tonari に恋人2人の予約が同じ日に入る。スミさんは席を離すだけで、何も聞かない（最後の締め shuraba_sumi_cover の「……気をつけろよ」は、ここでは言わせない）。",
       "lines": [
-        { "speaker": "", "face": "", "text": "帰りぎわ、スミさんが予約表を指でたたいた。" },
+        { "speaker": "", "face": "", "text": "帰り際、スミさんが予約表を指でたたいた。" },
         { "speaker": "sumi", "face": "normal", "text": "今週の予約だ。見ておけ" },
         { "speaker": "", "face": "", "text": "同じ日の同じ時間に、名前が二つ並んでいた。" },
         { "speaker": "", "face": "", "text": "どちらにも、「はじめの連れ」と書き添えてあった。", "beat": 400 },
@@ -574,7 +574,7 @@
       "dialogue_id": "petit_naru_warning",
       "comment": "なるに釘を刺される。なるの店で一服した帰りぎわに読む。なるは誰にも言わない（「言うのは、俺じゃないだろ」）。能力の報酬は無い。",
       "lines": [
-        { "speaker": "", "face": "", "text": "帰りぎわ、なるが炭を返しながら、こっちを見ないで言った。" },
+        { "speaker": "", "face": "", "text": "帰り際、なるが炭を返しながら、こっちを見ないで言った。" },
         { "speaker": "naru", "face": "normal", "text": "お前さ。この前、駅前で女の子と歩いてただろ" },
         { "speaker": "naru", "face": "normal", "text": "で、おとといは、別の子と歩いてた", "beat": 400 },
         { "speaker": "hajime", "face": "surprise", "text": "（……両方、見られてた）" },

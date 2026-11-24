@@ -14,7 +14,7 @@ import { state } from "../core/state.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
-import { gainAffinity, affinityLevel, AFFINITY_RANK_PTS, applyStats, bond, prepareLoveAffinity } from "../core/stats.js";
+import { gainAffinity, affinityLevel, AFFINITY_RANK_PTS, bond, prepareLoveAffinity } from "../core/stats.js";
 import { gainExp, growthEnabled } from "../core/growth.js";
 import { SE } from "../core/audio.js";
 import { hooks } from "../vn/engine.js";
@@ -1083,11 +1083,10 @@ function settleMaxAffinityChat(item, ui, replied = false) {
   return true;
 }
 
-/** 読み終えたときの報酬（返信の無いメッセージ）。噂は洞察、ふつうの連絡は少しだけ好感度 */
+/** 読み終えたときの報酬（返信の無い連絡で好感度が少し上がる） */
 function readReward(item, ui) {
   const m = item.msg;
-  if (m.type === "rumor") applyStats({ insight: 2 });
-  else if (m.type !== "invitation" && !(m.replies && m.replies.length) && m.sender !== "???" && m.sender !== "sumi") {
+  if (m.type !== "rumor" && m.type !== "invitation" && !(m.replies && m.replies.length) && m.sender !== "???" && m.sender !== "sumi") {
     if (settleMaxAffinityChat(item, ui)) return;
     const lover = isLover(m.sender);
     // 返事を読むだけにした報告は、指定された好感度に返信と同じ倍率を掛ける。
@@ -1098,7 +1097,7 @@ function readReward(item, ui) {
     // 恋人の読むだけの連絡（朝のひとこと）は、私的なやりとりとして絆に積もる（LM01: 返事1点ぶん）
     bond.private = lover;
     try {
-      gainAffinity(m.sender, lover ? 3 : 2, { remote: true });
+      gainAffinity(m.sender, lover ? 3 : 2, { source: "lime", remote: true });
     } finally {
       bond.private = false;
     }

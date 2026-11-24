@@ -484,9 +484,9 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
           dataset: { test: "station-confirm" }, disabled: shortOnFare, onclick: depart(false) });
         const walkHome = trip.walkable() ? el("button.mi-go", { type: "button", text: "歩いて帰る（かなり疲れる）",
           dataset: { test: "station-walk" }, onclick: depart(true) }) : null;
-        const fareNote = state.chapter === 2 && trip.required > trip.fare
+        const fareNote = trip.required > trip.fare
           ? ` ／ 帰りも${yen(trip.required - trip.fare)}必要${shortOnFare ? "（往復分が不足）" : ""}`
-          : shortOnFare ? " ／ 帰りの切符代も残す必要があります" : "";
+          : "";
         info.replaceChildren(...[el("div.mi-banner", { text: walkHome ? "帰り道" : "乗車の確認" }),
           el("p.mi-desc", { text: `${region.label} → ${item.label} ／ 片道 ${yen(trip.fare)}` }),
           el("p", { text: `所持金 ${yen(state.money)}${fareNote}` }),
@@ -551,7 +551,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
       // facilityIcon: false の行き先は、同じ id でも今の段階では絵を出さない（ラクダレースの「Dr.fookah の店先」）。
       const facility = !(s.id === "trpg_bar" && hasStoreLogo(s.id)) && !locked && !(!known && s.unknownLabel) && s.facilityIcon !== false ? createMapFacilityIcon(s.id) : null;
       const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 82, height: 46 }) : null;
-      const hidane = s.id === "kannon" && growthEnabled() ? hidaneTotal() : 0;
+      const hidane = s.boardOnly && growthEnabled() ? hidaneTotal() : 0;
       // 灯した授業を相談できる店（SBD141）: 看板の左に「相談」の吹き出し。右上の「!」・火種の数、上の顔とは別の場所に置く
       const lessons = locked ? [] : spotLessons(s);
       const lessonMark = lessons.length ? el("i.lesson-badge", { text: "相談", dataset: { test: `map-lesson-${s.id}` } }) : null;

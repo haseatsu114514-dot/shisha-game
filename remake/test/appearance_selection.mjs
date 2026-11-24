@@ -182,7 +182,14 @@ await check("catalog failure preserves state; manual and auto setup never reques
   const requests = f.requests.length;
   for (const auto of [false, true]) for (const mode of ["practice", "tournament", "rehearsal", "tutorial"]) {
     f.auto(auto);
-    await f.steps.stepSetup({ mode, equip: { ...f.core.state.equip } });
+    const cs = { mode, equip: { ...f.core.state.equip } };
+    const pending = f.steps.stepSetup(cs);
+    if (!auto && mode !== "tutorial") {
+      await flush();
+      f.control("opt-false").click();
+    }
+    await pending;
+    if (mode !== "tutorial") assert.equal(cs.foilOptIn, false);
     assert.equal(f.requests.length, requests);
     assert.deepEqual(copy(f.core.state), before);
     assert.equal(f.notices.length, 0);
@@ -207,7 +214,7 @@ await check("#1927 sold Lotos: incompatible bowls stay disabled and pending setu
   }
 });
 
-await check("#1927 owned Lotos remains selectable; empty HMD inventory cannot generate equipment", async () => {
+await check("Owned Lotos remains selectable; a missing compatible set borrows starter equipment for the session", async () => {
   const f = await fixture(); f.core.newGame();
   f.core.state.owned.push("suyaki_hagal");
   const cs = { mode: "tutorial", equip: { ...f.core.state.equip } };
@@ -216,7 +223,14 @@ await check("#1927 owned Lotos remains selectable; empty HMD inventory cannot ge
   assert.equal(cs.equip.bowl, "suyaki_hagal"); assert.equal(cs.equip.hms, "lotos_hagal");
   f.core.state.owned = f.core.state.owned.filter(id => id !== "lotos_hagal");
   const before = copy(f.core.state);
-  await assert.rejects(f.steps.stepSetup({ mode: "practice", equip: { ...before.equip } }), /対応する所持機材/);
+  const fallback = { mode: "practice", equip: { ...before.equip } };
+  pending = f.steps.stepSetup(fallback); await flush();
+  f.control("opt-true").click();
+  await pending;
+  assert.equal(fallback.equip.bowl, "silicone_bowl");
+  assert.equal(fallback.equip.hms, "lotos_hagal");
+  assert.equal(fallback.foilOptIn, true);
+  assert(f.notices.some(text => /基本セット/.test(text)));
   assert.deepEqual(copy(f.core.state), before);
 });
 

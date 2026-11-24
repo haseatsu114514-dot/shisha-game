@@ -2,7 +2,7 @@
 import { DB, loadConfessionDialogue } from "../core/data.js";
 import { state } from "../core/state.js";
 import { affinityLevel, affinityGateWaiting } from "../core/stats.js";
-import { BOND_QUESTIONS, BOND_FINALES, questionVisitDue, finaleDue, finaleHeart, settledFriend, finaleReachable } from "./bonds.js";
+import { BOND_QUESTIONS, BOND_FINALES, questionVisitDue, finaleDue, finaleHeart, settledFriend, finaleReachable, beforeTokyoDeparture } from "./bonds.js";
 import { romanceRouteOpen, romanceRouteEligible, confessionHeld } from "./romance.js";
 import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 
@@ -86,14 +86,13 @@ export function relationshipStatus(id) {
   const romance = !friend && answers.some(a => a.value > 0);
   if (friend || romance) {
     // あげは（#1988・#2023）: 恋愛ルートで♥5なら、締めくくりの有無にかかわらず帰郷後の再会の翌日に本人から言葉がある。
-    const agehaWords = id === "ageha" && romance && lv >= 5 && (state.chapter >= 3 || !!state.finales?.[id]);
+    const agehaWords = id === "ageha" && romance && lv >= 5 && (state.chapter >= 3 && !beforeTokyoDeparture() || !!state.finales?.[id]);
     const hint = agehaWords ? (state.chapter >= 3 ? "帰郷してMELTY PUFFを訪ねた翌日に、本人の言葉を聞ける。"
         : "県大会のあとも、店に通う約束は続く。本人の言葉は、そのあとで。")
       : state.finales?.[id] ? "相手との大切な交流を見届けた。"
       : id === "hiyori" && !BOND_FINALES[id]?.gift ? "ひよりとの交流を続けよう。関係の続きは、これからの物語で。"
       : id === "hiyori" && !hiyoriFinaleReady() ? "まだ聞いていないひよりの話を進めよう。斧投げや仕事の話を見届けてから、次の節目へ。"
-      // 締めくくりはMELTY PUFFに通える第2章だけ。
-      : id === "ageha" ? (lv >= 5 && state.chapter === 2 ? finaleHint(id) : "")
+      : id === "ageha" ? (lv >= 5 && (state.chapter === 2 || beforeTokyoDeparture()) ? finaleHint(id) : "")
       : lv >= 5 ? finaleHint(id)
       : ""; // ♥5までの道のりと贈り物の説明は全体ガイドにまとめ、各人の行では直近の思い出を前に出す
     return summary(romance ? "romance" : "friend", romance ? "恋愛ルート" : "友人ルート", hint);

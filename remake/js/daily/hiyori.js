@@ -255,10 +255,10 @@ export async function playHiyoriHangout(options = {}) {
   active = true;
   try {
     const result = await play(id, options);
-    if (state !== owner) return false;
+    if (state !== owner || !result || result.cancelled) return false;
     if (after) {
-      // 途中でやめた♥5後の場面は既読にしない（次の約束で読み直す）。いつもの相席の巡回は進めない
-      if (result && !result.cancelled) markBondAfterRead(state, "hiyori", after);
+      // ♥5後の場面を読んだ時は、いつもの相席の巡回を進めない。
+      markBondAfterRead(state, "hiyori", after);
     } else state.flags._hiyori_repeat_count = n + 1;
     state.flags._hiyori_encounter_day = stamp;
     gainAffinity("hiyori", 10);

@@ -1,11 +1,11 @@
 // Samechanのデートは、VN読了後に料金・行動・選択した成長を一緒に確定する。
 import { DB } from "../core/data.js";
 import { state, save, STAT_KEYS } from "../core/state.js";
-import { addMoney, addStamina, gainStat, gainAffinity, prepareLoveAffinity, privateBondScope } from "../core/stats.js";
+import { addMoney, addStamina, earnStat, gainAffinity, paidAction, prepareLoveAffinity, privateBondScope } from "../core/stats.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { dateVenue, dateScene, relationshipDayTotal, relationshipDayOf, dateTopic, advanceDateTopic } from "./date-scene.js";
 import { playSamechanMilestone } from "./samechan-bonds.js";
-import { growthEnabled, awardActionExp } from "../core/growth.js";
+import { invitationGrowth } from "./invitations.js";
 import { petitAfterDate } from "./petit-shuraba.js";
 
 let playing = false;
@@ -38,7 +38,7 @@ export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = 
     if (invite) { state.pendingInvite = null; save(); }
     return { done: true, spent: 0 }; // 同じ読了を料金や報酬へ再換算しない。
   }
-  if (state.money < cost || state.stamina <= 0) return no;
+  if (state.money < cost) return no;
   const venue = dateVenue("samechan", old?.stamp === stamp ? old.venue : null);
   const choiceFlags = { a: `_samechan_date_${stamp}_a`, b: `_samechan_date_${stamp}_b` };
   const choice = state.flags[choiceFlags.a] ? "a" : state.flags[choiceFlags.b] ? "b" : null;
@@ -52,20 +52,18 @@ export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = 
     if (invite) state.pendingInvite = invite; // 中断保存は予約あり・未払い。calendarは同じ場面へ戻れる。
     state.flags._samechan_date = { stamp, venue: venue.id, complete: false };
     save();
-    await play(dateScene("samechan", venue, { choice, choiceFlags, growth: false }), { growthScene: true });
-    if (state !== owner) return no;
-    const selected = state.flags[choiceFlags.a] ? "optA" : state.flags[choiceFlags.b] ? "optB" : null;
-    if (!selected) return no; // 未回答を選んだことにはしない。
-    addMoney(-cost);
-    const before = state.stamina; addStamina(-10); const spent = before - state.stamina;
-    // 旧しくみ（?growth=0）は選んだ答えの能力に2P。心得の盤（通常プレイの既定・SBD97）はほかのデートと同じ自由行動の経験値
-    // （SPEC 4.1。鍵はサメちゃん、新鮮さ・はじめての相手も同じ）。デートは自由行動の精算を通らないので、ここで入れる
-    if (spent > 0) {
-      // 恋人のデートは、絆の深い相手からの誘い（LM11。ほかの恋人のデートは calendar.js の invitationExp が同じ印を付ける）
-      if (growthEnabled()) awardActionExp({ key: "samechan", person: "samechan", bond: true });
-      else gainStat(dateTopic("samechan")[selected].stat, 2);
-    }
-    gainAffinity("samechan", 10);
+    const { value: done, spent } = await paidAction(async () => {
+      const result = await play(dateScene("samechan", venue, { choice, choiceFlags, growth: false }), { growthScene: true });
+      if (state !== owner || !result || result.cancelled) return false;
+      const selected = state.flags[choiceFlags.a] ? "optA" : state.flags[choiceFlags.b] ? "optB" : null;
+      if (!selected) return false;
+      addMoney(-cost);
+      addStamina(-10);
+      earnStat(dateTopic("samechan")[selected].stat, 2);
+      gainAffinity("samechan", 10);
+      return true;
+    }, { ...invitationGrowth("date_samechan"), exp: { key: "samechan", person: "samechan", bond: true } });
+    if (!done || state !== owner) return no;
     advanceDateTopic("samechan"); // 次のデートは次の話題（#4030）。読み終えた時だけ
     state.lastDate.samechan = state.day;
     state.flags._samechan_last_date_chapter = state.chapter;

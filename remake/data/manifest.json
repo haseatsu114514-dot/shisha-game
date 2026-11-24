@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-21 09:08 UTC",
+ "generated": "2026-11-21 10:43 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -624,7 +624,8 @@
   "trpg_smoke-robot_room.png",
   "trpg_stage-ghost_room.png",
   "bg_axe_lane.png",
-  "bg_axe_lane_aim.png"
+  "bg_axe_lane_aim.png",
+  "bg_axe_lane_aim_ready.png"
  ],
  "cgs": [
   "cg_ageha_confession.png",
@@ -3811,6 +3812,7 @@
   "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
   "backgrounds/bg_axe_lane.png",
   "backgrounds/bg_axe_lane_aim.png",
+  "backgrounds/bg_axe_lane_aim_ready.png",
   "ui/scene_props/shisha_home_stand_stainless.png",
   "cgs/cg_ch2_ageha_lesson.png",
   "cgs/cg_ch2_sofa_wet_cloth.png",
@@ -5252,7 +5254,7 @@
    "hiyori": {
     "box": [
      331,
-     168,
+     197,
      194
     ],
     "eye": [
@@ -5728,9 +5730,9 @@
    },
    "hiyori": {
     "box": [
-     414,
-     134,
-     198
+     419,
+     170,
+     188
     ],
     "eye": [
      513,
@@ -6360,68 +6362,68 @@
    "hiyori": {
     "axe_laugh": {
      "cx": 0.57254,
-     "top": 0.11167,
-     "size": 0.165
+     "top": 0.14167,
+     "size": 0.15667
     },
     "axe_normal": {
      "cx": 0.57254,
-     "top": 0.1125,
-     "size": 0.16333
+     "top": 0.14167,
+     "size": 0.15667
     },
     "axe_shout": {
      "cx": 0.57254,
-     "top": 0.11167,
-     "size": 0.165
+     "top": 0.14167,
+     "size": 0.15667
     },
     "axe_throw": {
-     "cx": 0.57199,
-     "top": 0.10917,
-     "size": 0.16917
+     "cx": 0.57254,
+     "top": 0.14167,
+     "size": 0.15667
     },
     "love_blush": {
      "cx": 0.57254,
-     "top": 0.1125,
-     "size": 0.16333
+     "top": 0.14167,
+     "size": 0.15667
     },
     "normal": {
      "cx": 0.57254,
-     "top": 0.11167,
-     "size": 0.165
+     "top": 0.14167,
+     "size": 0.15667
     },
     "office_mukii": {
      "cx": 0.57254,
-     "top": 0.1125,
-     "size": 0.16333
+     "top": 0.14167,
+     "size": 0.15667
     },
     "sad": {
      "cx": 0.57254,
-     "top": 0.11167,
-     "size": 0.165
+     "top": 0.14167,
+     "size": 0.15667
     },
     "serious": {
      "cx": 0.57254,
-     "top": 0.11167,
-     "size": 0.165
+     "top": 0.14167,
+     "size": 0.15667
     },
     "smile": {
      "cx": 0.57254,
-     "top": 0.1125,
-     "size": 0.16333
+     "top": 0.14167,
+     "size": 0.15667
     },
     "student_smile": {
      "cx": 0.57254,
-     "top": 0.11167,
-     "size": 0.165
+     "top": 0.14167,
+     "size": 0.15667
     },
     "surprise": {
      "cx": 0.57254,
-     "top": 0.11167,
-     "size": 0.165
+     "top": 0.14167,
+     "size": 0.15667
     },
     "tears": {
      "cx": 0.57254,
-     "top": 0.1125,
-     "size": 0.16333
+     "top": 0.14167,
+     "size": 0.15667
     }
    }
   }

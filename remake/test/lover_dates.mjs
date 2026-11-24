@@ -171,7 +171,7 @@ console.log("OK: Mashiro keeps her tea preferences and speaks about her own tast
   }
   const mashiroTopics = JSON.stringify(data.dates.mashiro.topics);
   assert.doesNotMatch(mashiroTopics, /わたし|私|はじめさん/, "Mashiro's topics keep her voice");
-  assert.match(readFileSync(new URL("../js/daily/romance.js", import.meta.url), "utf8"), /if \(result && !result\.cancelled\) advanceDateTopic\(id\)/);
+  assert.match(readFileSync(new URL("../js/daily/romance.js", import.meta.url), "utf8"), /if \(state !== owner \|\| !result \|\| result\.cancelled\) return false;\s*state\.lastDate\[id\] = state\.day;\s*advanceDateTopic\(id\)/);
   assert.match(readFileSync(new URL("../js/daily/samechan-date.js", import.meta.url), "utf8"), /advanceDateTopic\("samechan"\)/);
   console.log("OK: date topics rotate through six conversations per lover (#4030)");
 }

@@ -7,8 +7,7 @@ import { layers, modal, toast, heartRow, statBadge, ghostOut } from "../core/ui.
 import { SE } from "../core/audio.js";
 import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
 import { state, requestResumeOnBoot, STAT_KEYS, STAT_JA } from "../core/state.js";
-import { step, RANK_LABELS, affinityLevel, currentCondition, staminaRatio } from "../core/stats.js";
-import { conditionForRatio } from "../core/condition.js";
+import { step, RANK_LABELS, affinityLevel, currentCondition } from "../core/stats.js";
 import { nextStepProgress } from "../core/stat-progress.js";
 import { chapterDay, chapterFinalDay, chapterDaysLeft, chapterGoalLabel } from "../core/chapter-clock.js";
 import { cycleBadgeText } from "../core/cycle-display.js";
@@ -258,7 +257,6 @@ function summary() {
   const left = chapterDaysLeft(state);
   const night = state.slot >= 1;
   const slot = state.phase === "tournament" ? "大会当日" : state.slot >= 2 ? "帰宅" : `${night ? "夜" : "昼"}${isRainy() ? "・雨" : ""}`;
-  const condition = conditionForRatio(staminaRatio());
   const now = currentCondition();
   const item = (label, value, cls = "", extra = null) => el(`span.dm-sum${cls}`, [el("small", { text: label }), value, extra]);
   const tip = el("p.dm-health-tip", { id: "dm-health-tip", hidden: true, dataset: { test: "menu-condition" } }, [
@@ -276,7 +274,7 @@ function summary() {
     item("DAY", el("b", [String(chapterDay(state)), finalDay === null ? null : el("small", { text: `/${finalDay}` })])),
     el("span.dm-sum.dm-slot", { text: slot }),
     item(chapterGoalLabel(state), el("b.dm-amber", { text: left === null ? "未定" : `あと${left}日` })),
-    item("体力", el("b", { text: now.label }), `.dm-health.h-${condition.health}`, help),
+    item("体力", el("b", { text: now.label }), `.dm-health.h-${now.health}`, help),
     item("所持金", el("b", { text: yen(state.money) })),
     tip,
   ]);
@@ -295,7 +293,7 @@ function statusTab(choose) {
   };
   return [
     ...tabHeading("ステータス", growthEnabled()
-      ? ["経験値は寝る前に精算する。ゲージの濃い紫が精算済み、薄い紫が今日の分。", "レベルが上がると火種が届く。灯すと才能・感覚・理論の盤が広がる。", "項目をタップすると、何に効くかが分かる。"]
+      ? ["経験値がたまると、その場でレベルアップする。", "レベルが上がると火種が届く。灯すと才能・感覚・理論の盤が広がる。", "項目をタップすると、何に効くかが分かる。"]
       : ["↑はこの章のはじめから伸びた能力。", "項目をタップすると、何に効くかが分かる。"], "status"),
     ...(growthEnabled() ? growthCards(choose, select) : [statRows(select)]),
     note,

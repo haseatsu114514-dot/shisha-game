@@ -97,6 +97,7 @@ const SKILL_ART = {
   K01: "sk_prep", K18: "sk_prep", K17: "sk_prep",
   K02: "sk_notebook", K24: "sk_notebook", K23: "sk_notebook",
   K06: "sk_steam_calm", K22: "sk_steam_calm",
+  K25: "sk_k04", K26: "sk_k16", K27: "sk_prep",
 };
 const ART_FILES = ["board_glass", "screen_backdrop", "hub_body", "hub_sense", "hub_wisdom", "frame_skill", "frame_lesson", "frame_gate", "frame_peak", "frame_seal",
   "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame", "wall_seal", "silhouette_unknown",
@@ -115,7 +116,7 @@ export function loadBoardArt() {
   }))).then((ok) => ok.every(Boolean)).catch(() => false);
   return artReady;
 }
-export const PLACE_JA = { menu: "メニュー", kannon: "観音堂", tokyo_shrine: "池の弁天堂", dubai_mosque: "モスクの回廊", inn_window: "宿の窓辺" };
+export const PLACE_JA = { kannon: "観音堂", tokyo_shrine: "池の弁天堂", dubai_mosque: "モスクの回廊", dubai_waterside: "モスクの見える水辺", inn_window: "宿の窓辺" };
 
 let current = null;
 

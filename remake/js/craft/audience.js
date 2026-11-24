@@ -196,7 +196,7 @@ export function buildAudience(cs) {
     },
     react(kind, { judge = null, force = false, score = null, text = "", title = "", final = false } = {}) {
       const id = ids.includes(judge) ? judge : ids.includes(active) ? active : primary;
-      const positive = ["just", "perfect", "great", "good"].includes(kind), negative = ["bad", "miss", "close"].includes(kind);
+      const positive = ["just", "perfect", "great", "good"].includes(kind), negative = ["bad", "miss", "close", "rough"].includes(kind);
       if (!positive && !negative && kind !== "watch") return;
       const mood = id === "sensu" ? positive ? "think" : "watch" : positive ? "nod" : negative ? "concern" : "watch";
       if (!force && id === active && (mood === current || performance.now() - changedAt < 350)) return;

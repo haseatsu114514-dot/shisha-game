@@ -1,15 +1,16 @@
 // 審査待ちのなるの一言を、実際の調整実績に合わせて選ぶ。
-//   提供（cs.pull）と2回の調整（cs.careHistory）を共有の温度帯で見て、
+//   提供（cs.pull）と2回の調整（cs.careHistory）を確定時の温度成否で見て、
 //   安定／途中で乱れて立て直し／終盤も帯の外／記録不足の4通りに分ける。
 // tournamentStoryDialogue(cs, "tasting") の care 判定（care_steady / care_recovered /
 //   care_hot・care_cold / care_incomplete）と同じ土台を使うので、直前の試飲演出と食い違わない。
 // 採点・票・在庫・勝敗には触れない。なるの言葉は感覚の感想だけで、技術のうんちくは足さない。
-import { temperatureBands, isIdealTemperature } from "./temperature-model.js";
+import { temperatureBands } from "./temperature-model.js";
+import { temperatureStateAtFinish } from "./temperature-records.js";
 
 // 2回の調整を終えた実履歴から区分を返す。記録不足・旧セーブは品質を捏造せず "unknown"。
 export function naruTastingCategory(cs, { careRounds = 2 } = {}) {
   const bands = temperatureBands(cs);
-  const ideal = result => Number.isFinite(result?.temp) && isIdealTemperature(result.temp, bands);
+  const ideal = result => temperatureStateAtFinish(result, bands) === true;
   const cares = (cs?.careHistory || []).slice(0, careRounds);
   const last = cares.at(-1);
   if (cares.length !== careRounds || careRounds <= 0 || !Number.isFinite(last?.temp)) return "unknown";

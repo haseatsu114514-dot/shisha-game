@@ -9,6 +9,8 @@ DB.flavorById = {
   mint: { short_name: 'AF ミント', family: 'mint', heat_tolerance: 1 },
   cool_mint: { short_name: 'AF クールミント', family: 'mint', heat_tolerance: 1 },
   vanilla: { short_name: 'AF バニラ', heat_tolerance: 1 },
+  gummy: { short_name: 'フワリ ホワイトグミベア' },
+  mist: { short_name: 'フォースフェクタ マウンテンミスト' },
 };
 
 // --- 味の特徴：代表3配合が互いに違う言い方になり、どれも一律に個性を否定しない ---
@@ -56,6 +58,7 @@ assert.equal(JSON.stringify(input), snapshot, '評価の生成でセッション
 assert.equal(servedMixWords({ mix: { lemon: 12 } }), 'レモン');
 assert.equal(servedMixWords({ mix: { lemon: 4, mint: 3, cool_mint: 2 } }), 'ミントとレモン');
 assert.equal(servedMixWords({ mix: { vanilla: 2, lemon: 6, mint: 3 } }), 'レモンとミントとバニラ');
+assert.equal(servedMixWords({ mix: { gummy: 7, mist: 5 } }), 'ホワイトグミベアとマウンテンミスト');
 DB.flavorById.peach = { short_name: 'AF ピーチ', heat_tolerance: 1 };
 assert.equal(servedMixWords({ mix: { lemon: 5, mint: 3, vanilla: 2, peach: 1 } }), 'レモンとミントとバニラと、ほかに1つ');
 assert.equal(servedMixWords({ mix: {} }), null);

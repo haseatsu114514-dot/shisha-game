@@ -9,7 +9,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../js/', import.meta.url));
-const realPaths = ['core/state.js', 'core/legacy-cast-save.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','core/chapter-clock.js','daily/date-scene.js','daily/romance.js','daily/samechan-bonds.js','daily/samechan-date.js','chapters/lover-entry.js'];
+const realPaths = ['core/state.js', 'core/legacy-cast-save.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/stat-step-tables.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','core/chapter-clock.js','daily/date-scene.js','daily/romance.js','daily/samechan-bonds.js','daily/samechan-date.js','chapters/lover-entry.js'];
 const read = rel => JSON.parse(fs.readFileSync(new URL(rel, import.meta.url)));
 const loverEvents = read('../../data/dialogue/lover_events.json');
 const lover = read('../data/lover.json');
@@ -19,13 +19,13 @@ async function fixture() {
   const context = vm.createContext({ console, AbortController, setTimeout: () => 0, clearTimeout() {},
     localStorage: { getItem: k => memory.get(k) ?? null, setItem: (k,v) => memory.set(k,v), removeItem: k => memory.delete(k) } });
   let core;
+  let playResult = () => ({ visited: [] });
   const known = {
     MAX_MONEY: 999999, TOURNAMENT_DAY: 14, DB: db, callName: String, emit() {},
     clamp: (v,a,b) => Math.max(a,Math.min(b,v)), hiyoriFirstMeetingReady: () => true,
-    play: async scene => { plays.push(typeof scene === 'string' ? scene : scene.dialogue_id); return { visited: [] }; },
+    play: async scene => { plays.push(typeof scene === 'string' ? scene : scene.dialogue_id); return playResult(scene); },
     isPlaying: () => false,
-    // サメちゃんのデート（samechan-date.js）が読む心得の盤。誘いの検査なので旧しくみ（盤は無効）の代役にする
-    growthEnabled: () => false, awardActionExp: () => 0,
+    invitationGrowth: () => ({ budget: 1, points: 2 }),
     petitAfterDate: async () => false, // プチ修羅場（デートの後の寄り道）は remake/test/petit_shuraba.mjs
     strainOf: () => 0, STRAIN_SIGN2: 7, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
     // phone.js の openPhone（runItem）と同じく、読んだ通は既読と受信箱の履歴に残る。
@@ -80,7 +80,8 @@ async function fixture() {
     return s;
   };
   return { core, db, stats: ns('core/stats.js'), romance: ns('daily/romance.js'), entry: ns('chapters/lover-entry.js'),
-    samechanDate: ns('daily/samechan-date.js'), plays, phones, chapterThree, chapterAt };
+    samechanDate: ns('daily/samechan-date.js'), plays, phones, chapterThree, chapterAt,
+    setPlayResult: run => { playResult = run; } };
 }
 // vm の別 realm で作られた配列は prototype が違い deepStrictEqual が通らないため、JSON 化して中身だけ比べる。
 const same = (actual, expected, message) => assert.deepEqual(JSON.parse(JSON.stringify(actual)), expected, message);
@@ -261,6 +262,32 @@ await check('samechan date gap counts elapsed days on _elapsed_calendar saves; l
   assert.equal(f.samechanDate.samechanDateGap(), 3);
   delete legacy.flags._samechan_last_date_chapter; legacy.day = 5; // 章の記録が無い旧日は前の章とみなす
   assert.equal(f.samechanDate.samechanDateGap(), 5);
+});
+
+await check('an approved Samechan date at zero stamina settles only after reading and credits the bond rank', async f => {
+  const s = f.chapterAt(2, ['samechan'], { day: 20 });
+  s.stamina = 0;
+  s.lovePts.samechan = 18;
+  s.loverEventsSeen = ['lover_samechan_lv1'];
+  const invite = { event: 'date_samechan', sender: 'samechan', day: s.day, slot: s.slot };
+  s.pendingInvite = invite;
+  const before = s.money, ranks = [];
+  f.stats.setExpHooks({ enabled: () => true, affinity: (...args) => ranks.push(args) });
+  let cancelled = true;
+  f.setPlayResult(scene => {
+    if (scene?.dialogue_id !== 'remake_date_samechan') return { visited: [] };
+    s.flags[scene.branches.a.find(line => line.type === 'set_flag').flag] = true;
+    return { visited: [], cancelled };
+  });
+  const go = () => f.samechanDate.playSamechanDate({ invite, cost: 3000, advanceSlot: true });
+  same(await go(), { done: false, spent: 0 });
+  assert.equal(s.pendingInvite, invite); assert.equal(s.money, before); assert.equal(s.slot, 0);
+  assert.deepEqual(ranks, []);
+  cancelled = false;
+  same(await go(), { done: true, spent: 0 });
+  assert.equal(s.pendingInvite, null); assert.equal(s.money, before - 3000);
+  assert.equal(s.stamina, 0); assert.equal(s.slot, 1); assert.equal(s.lastDate.samechan, s.day);
+  assert.deepEqual(ranks, [['samechan', 1]]);
 });
 
 await check('a bond finale first reached in chapter 5 opens no confession (owner default B)', async f => {

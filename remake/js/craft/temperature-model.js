@@ -1,6 +1,7 @@
 // 全工程で共有するゲーム内の実効温度帯。位置と許容幅を独立に計算する。
 import { DB } from "../core/data.js";
 import { leafDamageRatio, LEAF_DAMAGE } from "./flavor-life.js";
+import { coalWarmth } from "./coals.js";
 
 // 基準帯は互換用の読み取り専用定数。一台の配合で上書きしない。
 /** 本番の緑（適温）・虹（最適）の帯の幅の倍率。IDEAL・OPTIMAL は写し先の基準（中心.54±.12／±.05）のまま。 */
@@ -216,6 +217,7 @@ export const EQUIP_CATEGORY_GUIDE = Object.freeze({
   charcoal: "炭（チャコール）：熱源の形状。フラット（平型）とキューブ（角型）は大きさの違いで、熱の持ちと燃焼時間が変わる。",
 });
 
+const flatThreePower = coalWarmth({ equip: { charcoal: "flat_charcoal" } }).power;
 export const EQUIP_THERMAL_SPECS = Object.freeze({
   silicone_bowl: Object.freeze({
     id: "silicone_bowl", type: "bowl", capacity: 12, widthFactor: 1.00,
@@ -274,13 +276,13 @@ export const EQUIP_THERMAL_SPECS = Object.freeze({
     summary: "チャコール博士の試作の銀の蓋。熱を蓋全体に回して均一に落とし、適温帯が+6%広がる。葉が傷んでも適温帯が狭まりにくい。",
   }),
   flat_charcoal: Object.freeze({
-    id: "flat_charcoal", type: "charcoal", widthFactor: 1.04, power: 1.00, response: 1.00, burnRisk: 0, smokeBonus: 0,
-    warmup: "穏やか・安定（火力×1.00）", responseLabel: "標準（1口ずつ微調整しやすい）",
+    id: "flat_charcoal", type: "charcoal", widthFactor: 1.04, power: flatThreePower, response: 1.00, burnRisk: 0, smokeBonus: 0,
+    warmup: `穏やか・安定（火力×${flatThreePower.toFixed(2)}）`, responseLabel: "標準（1口ずつ微調整しやすい）",
     summary: "平型のココナッツ炭。適温帯が広く（×1.04）、追加の焦げリスクが0。香りを守り、低温〜標準帯の葉を丁寧に仕上げるのに向く。",
   }),
   dense_flat_charcoal: Object.freeze({
-    id: "dense_flat_charcoal", type: "charcoal", widthFactor: 1.06, power: 1.00, response: 1.00, burnRisk: 0, smokeBonus: 0,
-    warmup: "穏やか・安定（火力×1.00）", responseLabel: "標準（1口ずつ微調整しやすい）",
+    id: "dense_flat_charcoal", type: "charcoal", widthFactor: 1.06, power: flatThreePower, response: 1.00, burnRisk: 0, smokeBonus: 0,
+    warmup: `穏やか・安定（火力×${flatThreePower.toFixed(2)}）`, responseLabel: "標準（1口ずつ微調整しやすい）",
     summary: "ココナッツ殻を固く詰めた上位のフラット炭。火力はフラットと同じで、適温帯が少し広い（×1.06）。焦げリスクは増えない。",
   }),
   cube_charcoal: Object.freeze({

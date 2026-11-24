@@ -174,6 +174,8 @@ check("talks after a set (SPC26): first A, then a regular's request on the 3rd s
   for (const set of [1, 2, 3]) dj.recordDjResult(both, msg(set, "A", 80));
   assert.equal(talk(both, [msg(3, "A", 80)]), "ch3_club_a_talk");
   both.flags[dj.CLUB_A_TALK_FLAG] = true;
+  assert.equal(talk(both, [msg(3, "A", 80)]), "ch3_club_request", "the request comes before the closing set");
+  both.flags[dj.CLUB_REQUEST_FLAG] = true;
   assert.equal(talk(both, [msg(3, "A", 80)]), "ch3_club_last_set");
   assert.equal(dj.djTalkAfterSet(null), null);
 });
