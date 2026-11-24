@@ -181,8 +181,8 @@ export function workerMouth(bench) {
   return { x: (px - b.left) / b.width, y: (py - b.top) / b.height, stage };
 }
 
-/** はじめの口元の煙の層（作業風景の窓の中に1枚。窓で切り抜かれ、升目は作業台と同じ細かさ） */
-const workerSmoke = (bench, mouth) => smokeLayer(mouth.stage, { zIndex: 3, className: "fx-exhale", cover: bench });
+/** はじめの口元の煙の層（作業風景の窓の中に1枚。升目は作業台の縦横比で最大 480×270） */
+const workerSmoke = (bench, mouth) => smokeLayer(mouth.stage, { zIndex: 3, className: "fx-exhale", cover: bench, gridScale: .75 });
 
 /**
  * 吸い出しを終えたはじめが、煙を吐く（CFX03・吸い出しの山場）。作業風景のはじめの口元から、顔の向きへ細く出て昇る。

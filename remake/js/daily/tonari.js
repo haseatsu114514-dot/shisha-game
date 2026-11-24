@@ -66,7 +66,7 @@ async function fillFloorForecast(card) {
   } catch { /* 予報なしの札のまま */ }
 }
 
-export function tonariMenu() {
+export function tonariMenu({ talks = [] } = {}) {
   return new Promise((resolve) => {
     setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
     playBgm("tonari");
@@ -106,6 +106,7 @@ export function tonariMenu() {
         strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
         opt(manager ? "店長として店に立つ" : "シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}${manager ? "今日の営業を引き受ける。仕事終わりにはスミさんと話せる" : "接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる"}。${shiftPayNote(state)}＋各種ボーナス`, "baito", "tonari-baito"),
         floorCard,
+        ...talks.map(({ id, label }) => opt(label, "1行動。体力は使わない", id, id)),
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,

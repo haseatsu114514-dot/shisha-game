@@ -4,7 +4,7 @@ import { state } from "../core/state.js";
 import { DB } from "../core/data.js";
 import { hooks } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
-import { VISIT_CHAINS_FILE, VISIT_CHAIN_DIALOGUE_IDS, chainStageAt, chainCondition, recordChainStage } from "./visit-chains.js";
+import { VISIT_CHAINS_FILE, VISIT_CHAIN_DIALOGUE_IDS, chainStageAt, nextChainStage, chainCondition, recordChainStage } from "./visit-chains.js";
 
 let loading = null;
 /** 台詞を一度だけ読み込む。失敗したら次の呼び出しで読み直す（呼び出し側は失敗をいつもの会話で受ける）。 */
@@ -32,7 +32,7 @@ export async function chainVisitDue(place, value = state) {
 export async function playChainStage(due, read, { facts = {} } = {}) {
   const owner = state;
   const { id: chainId, stage } = due || {};
-  if (!chainId || !stage) return false;
+  if (!chainId || !stage || nextChainStage(owner, chainId)?.id !== stage.id) return false;
   const pending = {};
   const previousChoice = hooks.onChoice, previousCondition = hooks.evalCondition;
   const choiceHook = (...args) => {
@@ -52,5 +52,6 @@ export async function playChainStage(due, read, { facts = {} } = {}) {
     if (hooks.onChoice === choiceHook) hooks.onChoice = previousChoice;
     if (hooks.evalCondition === conditionHook) hooks.evalCondition = previousCondition;
   }
-  return !!done && state === owner && recordChainStage(owner, chainId, stage.id, pending[stage.id] ?? null);
+  return !!done && state === owner && nextChainStage(owner, chainId)?.id === stage.id &&
+    recordChainStage(owner, chainId, stage.id, pending[stage.id] ?? null);
 }

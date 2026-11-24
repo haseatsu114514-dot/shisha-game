@@ -9,7 +9,7 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FILES, loadTournamentCraftDialogue } from "../core/data.js";
 import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { el, yen } from "../core/util.js";
-import { createChapterActions } from "../core/chapter-actions.js";
+import { completionActions, createChapterActions } from "../core/chapter-actions.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, enterScene, modal, imageReady, withChapterLoading } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -45,7 +45,7 @@ import { strawberryTournamentMemory } from "./ch2-story-data.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { chapterTwoCheers, chapterTwoCongratulations, recordSentLime } from "./ch2-lime.js";
 import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
-import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
+import { JUDGES, CONTESTANTS, byChapterTwoTie, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch2-tournament-state.js";
 
 const REQUIRED = ["lobby", "entrance", "stations", "rules", "verdict", "farewell", "tasteless", "ageha_heart"].map(id => `ch2_tournament_${id}`);
@@ -272,6 +272,7 @@ function renderVotes(owner, final = false, { splash = false } = {}) {
   const shown = `${p.attempts ?? 0}:${p.voted}:${final ? "result" : "votes"}`;
   const show = owner.votesShown === shown ? { moved: false } : contestCeremony({
     root: screen, judges: JUDGES, contestants: CONTESTANTS, votes: p.votes, last: p.lastVotes, base: p.baseVotes || {}, rows, quality: p.quality || {},
+    tie: byChapterTwoTie,
     buttons: [...screen.querySelectorAll(".ch2-contest-actions button")],
     late: [...screen.querySelectorAll(`.ch2-contest-reason${final ? ", .ch2-contest-description" : ""}`)],
     sting: { eyebrow: "HAZE: OPEN CLOUD", title: final ? "FINAL VOTE" : "JUDGES' VOTE", sub: final ? "最後の票が入ります" : "審査員の票が入ります" },
@@ -325,11 +326,8 @@ function renderComplete(owner) {
     const mod = await withChapterLoading(() => import("./ch3.js"), "第3章の東京へ向かっています…");
     await mod.beginChapterThree();
   }, true);
-  card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", [
-    next,
-    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
-    button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-  ], [
+  const actions = completionActions(owner, button, next, { onSave: saveFlow, onTitle: () => { save(); location.reload(); } });
+  card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", actions, [
     // 賞金は recordResult で優勝確定時に一度だけ加算済み。ここでは受け取ったことだけを見せる。
     state.flags._ch2_tournament?.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: Number.isFinite(state.flags._ch2_tournament.prizeReceived)
       ? state.flags._ch2_tournament.prizeReceived > 0 ? `優勝賞金 ${yen(state.flags._ch2_tournament.prizeReceived)} を受け取った。` : "優勝賞金は所持金の上限に達したため加算されなかった。"

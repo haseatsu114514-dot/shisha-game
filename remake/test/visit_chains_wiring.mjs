@@ -6,7 +6,11 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import * as chains from "../js/chapters/visit-chains.js";
+import { chapterFiveTalkIds } from "../js/chapters/ch5-talks.js";
+import { CH5_NOOR_CAFE_CHATS, CH5_NOOR_DESK_CHATS, CH5_NOOR_DESK_ID, DESERT_GUIDE,
+  desertDaytime, desertCafeVisit, completeDesertCafeVisit, completeDesertReunion } from "../js/chapters/ch4-desert-progress.js";
 import * as longlongRules from "../js/chapters/ch4-longlong.js";
+import { CH5_FIRST_TALKS } from "../js/chapters/ch5-first-talks.js";
 
 const text = rel => readFileSync(new URL(rel, import.meta.url), "utf8");
 const plainOf = value => JSON.parse(JSON.stringify(value)); // vm の中で作られた値を、この試験の側の素の値へ写す
@@ -15,7 +19,7 @@ const realScenes = Object.fromEntries(JSON.parse(text("../../data/dialogue/visit
 /** remake/js/<rel> を vm で読み、import の名前を overrides（無ければ何もしない関数）につなぐ。 */
 async function load(rel, overrides) {
   const source = text(`../js/${rel}`);
-  const context = vm.createContext({ console, structuredClone });
+  const context = vm.createContext({ console, structuredClone, AbortController });
   const module = new vm.SourceTextModule(source, { context, identifier: rel });
   const bindings = new Map();
   for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)) {
@@ -125,7 +129,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   const money = { spent: 0 };
   const affinity = {};
   const stats = {};
-  const tokyo = await load("chapters/ch5-tokyo.js", {
+  const tokyo = await load("chapters/ch5-tokyo.js", { chapterFiveTalkIds,
     get state() { return state; }, save() {}, timeOfDay: () => "day", markMet() {}, DB, sceneBg: () => ({ url: "", tint: null }),
     setBg: async () => {}, toast() {}, vanRide: async () => {}, play, readDialogues,
     addMoney: n => { state.money += n; money.spent -= n; }, addStamina: n => { state.stamina += n; },
@@ -136,7 +140,8 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     consultLessons: async () => {}, finaleAtVisit: () => false,
     // ましろと過ごす時間（BLC03・mashiro-time.js）。台本の一覧は配列で読むので、空で差し込む
     MASHIRO_TIME_SCENES: [], MASHIRO_TIME_FILE: "mashiro_time", mashiroTimeOpen: () => false, loverMilestonesDue: () => [],
-    chainStageAt: chains.chainStageAt, chainVisitDue, playChainStage,
+    chainStageAt: chains.chainStageAt, chainVisitDue, playChainStage, recordChapterFiveTalk: chains.recordChapterFiveTalk,
+    modal: async () => "talk",
   });
   const { performTokyoSpot, tokyoSpotsNow, TOKYO_SPOTS } = tokyo.ns;
   setState({ chapter: 5, day: 80, slot: 0, money: 100000, stamina: 100, flags: { _ch2_region: "tokyo" }, met: { steve: true } });
@@ -163,7 +168,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert(shown.some(t => t.includes("ぽつぽつ")), "選んだ答えの分岐を読んだ");
   assert.equal(steve().hasNew, undefined, "同じ日は次の段を出さない");
   await visit();
-  assert.equal(played.at(-1), "ch5_tokyo_steve", "同じ日にもう一度来たら、いつもの小会話");
+  assert.equal(played.at(-1), "ch5_tokyo_steve_d", "同じ日にもう一度来たら、いつもの小会話");
   state.day += 1;
   chooser = line => line.id === "guest_timer" ? 1 : 0;
   cancelNext = true;
@@ -181,14 +186,89 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert(chains.chainFinished(state, "ch5_steve_guest"));
   state.day += 1;
   await visit();
-  assert.equal(played.at(-1), "ch5_tokyo_steve_b", "終わった後は小会話の巡回の続き");
+  assert.equal(played.at(-1), "ch5_tokyo_steve_e", "終わった後は小会話の巡回の続き");
   assert(TOKYO_SPOTS.every(entry => !Object.hasOwn(entry, "hasNew")), "元の行き先は変えない");
+
+  setState({ chapter: 5, day: 90, slot: 0, money: 50000, stamina: 100, met: { mashiro: true },
+    flags: { _ch2_region: "tokyo", _ch5: { part: "free", read: {} }, _ch5_tokyo_talks: { ch5_tokyo_mashiro: 7 } } });
+  const mukai = () => tokyoSpotsNow().find(entry => entry.id === "ch5_tokyo_mukai");
+  assert((await performTokyoSpot(mukai())).used);
+  assert.equal(played.at(-1), "ch5_tokyo_mashiro_h");
+  assert.equal(mukai().hasNew?.(), true);
+  assert((await performTokyoSpot(mukai())).used);
+  assert.equal(played.at(-1), "ch5_chain_mashiro_handle_1");
+  state.day++;
+  assert((await performTokyoSpot(mukai())).used);
+  assert.equal(played.at(-1), "ch5_chain_mashiro_handle_2");
+  assert.deepEqual([state.money, state.stamina], [50000, 100]);
+}
+
+// ---- 第5章の地元: 通い店と tonari の任意の会話 --------------------------------------------------------------
+{
+  const shops = await load("chapters/ch5-shops.js", {
+    get state() { return state; }, chapterFiveTalkIds, CH5_FIRST_TALKS,
+    SPOTS: [{ id: "naru", cost: 3000, stamina: -16 }], VISIT_BG: { naru: "bg_naru_shop" },
+    CHAR_STAT: { naru: "insight" }, PREPARATION_SPOTS: [],
+    DB, readDialogues, play, timeOfDay: () => "day", sceneBg: () => ({ url: "" }),
+    setBg: async () => {}, spendableMoney: value => value.money,
+    addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
+    chainVisitDue, playChainStage, recordChapterFiveTalk: chains.recordChapterFiveTalk,
+  });
+  const { chapterFiveShopById, performChapterFiveShop, performChapterFiveTonariTalk } = shops.ns;
+  for (const [place, base, chainId, visit] of [
+    ["naru", "ch5_naru_shop", "ch5_naru_towel", () => performChapterFiveShop(chapterFiveShopById("naru"))],
+    ["ch5_tonari_sumi", "ch5_tonari_sumi", "ch5_sumi_seat", () => performChapterFiveTonariTalk("ch5_tonari_sumi")],
+  ]) {
+    setState({ chapter: 5, day: 60, money: 200000, stamina: 200, flags: { _ch5: { part: "free", read: {} } } });
+    assert.equal(await chainVisitDue(place), null);
+    for (const topic of chapterFiveTalkIds(base)) {
+      assert((await visit()).used);
+      assert.equal(played.at(-1), topic);
+    }
+    const [first, second] = chains.VISIT_CHAINS[chainId].stages;
+    assert.equal((await chainVisitDue(place))?.stage.id, first.id);
+    cancelNext = true;
+    assert.equal((await visit()).used, false);
+    assert.deepEqual(state.flags._ch5_shop_talks[place], 8);
+    assert.equal(chains.chainRecord(state, chainId).done, 0);
+    assert((await visit()).used);
+    assert.equal(played.at(-1), first.id);
+    assert.equal(await chainVisitDue(place), null, "同じ日は次の段を出さない");
+    state.day += 1;
+    assert((await visit()).used);
+    assert.equal(played.at(-1), second.id);
+    assert.deepEqual(state.flags._ch5_shop_talks[place], 8, "続きの段で巡回を進めない");
+    assert((await visit()).used);
+    assert.equal(played.at(-1), base, "8本の先頭へ戻る");
+  }
+}
+
+// ---- 第5章の居合わせ: 店を替えても、ひよりの続きは同じ記録で進む --------------------------------------------
+{
+  const roamer = await load("daily/roamers.js", {
+    get state() { return state; }, DB, readDialogues, play, isPlaying: () => false, on: () => () => {},
+    chainVisitDue, playChainStage, recordChapterFiveTalk: chains.recordChapterFiveTalk,
+  });
+  setState({ chapter: 5, day: 60, flags: { _ch5: { part: "free", read: {} }, _roam_seen_hiyori: 8 } });
+  const visit = id => roamer.ns.meetRoamer({ id }, { id: "hiyori", spotId: id });
+  assert(await visit("naru"));
+  assert.equal(played.at(-1), "roam_hiyori_h");
+  assert.equal(await visit("minto"), false, "同じ日の別の店では読まない");
+  state.day++;
+  assert(await visit("minto"));
+  assert.equal(played.at(-1), "ch5_chain_hiyori_bag_1");
+  state.day++;
+  assert(await visit("shishark"));
+  assert.equal(played.at(-1), "ch5_chain_hiyori_bag_2");
+  assert.equal(roamer.ns.roamerCount("hiyori", state), 9, "段では巡回を進めない");
+  assert.equal(roamer.ns.roamerScene("hiyori", state), "roam_hiyori_a");
 }
 
 // ---- 第5章のドバイ: 路地裏のカフェ（閉店後の段は夜だけ・代金なし） ---------------------------------------------
 {
   const gained = [];
-  const dubai = await load("chapters/ch5-dubai.js", {
+  const dubai = await load("chapters/ch5-dubai.js", { chapterFiveTalkIds, CH5_NOOR_CAFE_CHATS, CH5_NOOR_DESK_CHATS,
+    CH5_NOOR_DESK_ID, DESERT_GUIDE, desertDaytime, desertCafeVisit, completeDesertCafeVisit, completeDesertReunion,
     get state() { return state; }, save() {}, timeOfDay: () => (state.slot ? "night" : "day"), markMet() {}, DB,
     sceneBg: () => ({ url: "", tint: null }), setBg: async () => {}, toast() {}, modal: async () => null, layers: { hud: {} },
     play, readDialogues, addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; }, earnStat() {}, gainAffinity: (id, n) => { gained.push([id, n]); },
@@ -201,6 +281,22 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     chainStageAt: chains.chainStageAt, chainVisitDue, playChainStage,
   });
   const { performDubaiSpot, DUBAI_SPOTS } = dubai.ns;
+  setState({ chapter: 5, day: 90, slot: 0, money: 50000, stamina: 100, finales: { noor: { route: "friend" } },
+    flags: { _ch2_region: "dubai", _ch5: { part: "free", read: {} },
+      _ch4_desert: { v: 2, talks: 6, chats: 7, lastTalkDay: 10, outings: 1, lastOutingDay: 9 } } });
+  const desk = { id: CH5_NOOR_DESK_ID, region: "dubai" };
+  assert((await performDubaiSpot(desk)).used);
+  assert.equal(played.at(-1), "ch5_noor_cafe_chat_h");
+  assert.equal((await performDubaiSpot(desk)).used, false, "一日にひと話");
+  for (const phase of [1, 2]) {
+    state.day++;
+    assert((await performDubaiSpot(desk)).used);
+    assert.equal(played.at(-1), `ch5_chain_noor_photo_${phase}`);
+  }
+  assert.equal(state.flags._ch4_desert.chats, 8);
+  assert.equal(state.money, 50000);
+  assert.deepEqual(gained, []);
+
   setState({ chapter: 5, day: 90, slot: 0, money: 50000, stamina: 100, flags: { _ch2_region: "dubai" }, met: {} });
   const alley = DUBAI_SPOTS.find(entry => entry.id === "ch5_dubai_alley");
   const visit = () => performDubaiSpot(alley, { staminaGuard: async () => true });
@@ -252,7 +348,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert.equal(state.flags._ch5_dubai_talks.ch5_dubai_taiyo, 3, "小会話の巡回は進めない");
   assert.equal(dubaiBondHasNew(taiyo), false, "同じ日は次の段を出さない");
   await meet();
-  assert.equal(played.at(-1), "ch5_dubai_taiyo", "同じ日にもう一度来たら、いつもの小会話");
+  assert.equal(played.at(-1), "ch5_dubai_taiyo_d", "同じ日にもう一度来たら、いつもの小会話");
   state.day += 1;
   shown = [];
   await meet();
@@ -260,7 +356,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert(shown.some(t => t.includes("これを読んでから、帰る")) && shown.some(t => t === "「またあした」。"), "1段目の答えが返る");
   assert(!chains.chainFinished(state, "ch5_taiyo_flag"), "3段目（太陽の旗）が残っている");
   await meet();
-  assert.match(played.at(-1), /^ch5_dubai_taiyo(_[bc])?$/, "同じ日は小会話（巡回の続き）");
+  assert.match(played.at(-1), /^ch5_dubai_taiyo(_[b-h])?$/, "同じ日は小会話（巡回の続き）");
   state.day += 1;
   shown = [];
   await meet();
@@ -283,7 +379,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert.equal(played.at(-1), "ch5_chain_pair_1");
   assert.deepEqual(gained, [["sheikh", 5]], "いつもの小会話と同じ好感度");
   await call();
-  assert.equal(played.at(-1), "ch5_dubai_sheikh", "同じ日にもう一度来たら、いつもの小会話");
+  assert.equal(played.at(-1), "ch5_dubai_sheikh_d", "同じ日にもう一度来たら、いつもの小会話");
   state.day += 1;
   shown = [];
   await call();

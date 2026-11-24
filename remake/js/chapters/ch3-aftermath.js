@@ -3,6 +3,7 @@ import { guardCompletionCardInput, trackCompletionTaps } from "./completion-card
 import { DB, bgUrl, displayName, loadConfessionDialogue } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { completionActions } from "../core/chapter-actions.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { layers, showScreen, setBg, enterScene, modal, toast, withChapterLoading, withSceneLoading } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -347,11 +348,8 @@ async function renderStage(owner) {
       const mod = await withChapterLoading(() => import("./ch4.js"), "第4章のドバイへ向かっています…");
       await mod.beginChapterFour();
     }, true);
-    card(owner, "complete", "第三章・完", "全国大会を終え、帰る場所にも新しい約束ができた。", [
-      next,
-      button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
-      button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-    ], "第四章・ドバイ編へ進めます。", "", [
+    const actions = completionActions(owner, button, next, { onSave: saveFlow, onTitle: () => { save(); location.reload(); } });
+    card(owner, "complete", "第三章・完", "全国大会を終え、帰る場所にも新しい約束ができた。", actions, "第四章・ドバイ編へ進めます。", "", [
       // 第1・2章のクリア画面と同じ成長レーダー（#1658 ⑫）。淡い面が章のはじめ、明るい面がいま。
       el("div.ch2-contest-growth", { dataset: { test: test("growth") } }, [
         chapterGrowthChart(state, 220),

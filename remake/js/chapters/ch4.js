@@ -3,7 +3,7 @@
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
-import { createChapterActions } from "../core/chapter-actions.js";
+import { completionActions, createChapterActions } from "../core/chapter-actions.js";
 import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
@@ -721,11 +721,8 @@ function renderComplete(owner) {
     const mod = await withChapterLoading(() => import("./ch5.js"), "第5章へ向かっています…");
     await mod.beginChapterFive();
   }, true);
-  card(owner, "complete", "第四章・完", chapterFourRecap(state), [
-    next,
-    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
-    button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-  ], "第五章・機械仕掛けの神へ進めます。", "",
+  const actions = completionActions(owner, button, next, { onSave: saveFlow, onTitle: () => { save(); location.reload(); } });
+  card(owner, "complete", "第四章・完", chapterFourRecap(state), actions, "第五章・機械仕掛けの神へ進めます。", "",
   // 第1章と同じ比較。固定の祝福では能力を足さず、実際に伸びた分だけを重ねる。
   el("div.end-radar", { dataset: { test: test("growth") } }, [
     chapterGrowthChart(state, 300),

@@ -1,5 +1,5 @@
 // 人が吐く煙（docs/owner_requests.md の KMR）。もこもこした房を重ね、細かい升目と白に近い4色で描く。
-// ・升目は 640×360（1280×720 のステージでドット1つが 2px）。網点は使わず、全体を少し透かす。
+// ・升目はふだん 640×360（1280×720 のステージでドット1つが 2px）。作業風景の煙は小さい升目の層を使う。網点は使わず、全体を少し透かす。
 // ・大小の丸をまとめた「房」をいくつも重ねて雲の形を作る。丸ごとには塗り分けず、重ねた丸を「高さの地図」にして、
 //   房の境目と光の向きで 影・中間・明るい面・いちばん明るい縁 の4色に塗る（房の境目が、淡い色の違いとして中に出る）。
 // ・消えるときは、縮みながら全体が薄くなり、ちぎれる。コマ打ち（毎秒12コマ）で手描きの間にする。
@@ -200,10 +200,11 @@ export function createSmokeField({ random = Math.random } = {}) {
     paint(px, W = GRID_W, H = GRID_H) {
       if (bufW !== W || bufH !== H) { z = new Float32Array(W * H); al = new Float32Array(W * H); pl = new Uint8Array(W * H); bufW = W; bufH = H; }
       z.fill(0); al.fill(0);
-      const unit = H / 360; // 高さの単位（升目の細かさが変わっても、同じ見え方にする）
+      // 形と光は基準の升目で計算する。描画先の細かさや縦横比が変わっても、煙の座標と大きさは同じ。
+      const xScale = W / GRID_W, yScale = H / GRID_H, xStep = 1 / xScale, yStep = 1 / yScale;
       // 1) 丸を「てっぺんがほぼ平らな丘」として重ね、升目ごとにいちばん高い丘を残す
       for (const p of parts) {
-        const R = size(p) * H;
+        const R = size(p) * GRID_H;
         if (R < 1) continue;
         const k = p.age / p.life, c = Math.cos(p.rot), s = Math.sin(p.rot);
         // 消えぎわは薄くする。ゆっくりふくらむ煙（漂う煙）は、生まれぎわも薄くから
@@ -212,14 +213,15 @@ export function createSmokeField({ random = Math.random } = {}) {
           const g = p.born ? 1 : Math.min(1, Math.max(0, (k - wait) / .16));
           const r = R * rr * (1 - (1 - g) ** 2);
           if (r < .7) continue;
-          const cx = p.x * W + (ox * c - oy * s) * R, cy = p.y * H + (ox * s + oy * c) * R;
-          const x0 = Math.max(0, Math.floor(cx - r)), x1 = Math.min(W - 1, Math.ceil(cx + r));
-          const y0 = Math.max(0, Math.floor(cy - r)), y1 = Math.min(H - 1, Math.ceil(cy + r));
-          const inv = 1 / (r * r), top = 2.5 * unit + .3 * r;
+          const cx = p.x * W + (ox * c - oy * s) * R * xScale, cy = p.y * H + (ox * s + oy * c) * R * yScale;
+          const rx = r * xScale, ry = r * yScale;
+          const x0 = Math.max(0, Math.floor(cx - rx)), x1 = Math.min(W - 1, Math.ceil(cx + rx));
+          const y0 = Math.max(0, Math.floor(cy - ry)), y1 = Math.min(H - 1, Math.ceil(cy + ry));
+          const inv = 1 / (r * r), top = 2.5 + .3 * r;
           for (let y = y0; y <= y1; y++) {
-            const dy = y + .5 - cy, dy2 = dy * dy;
+            const dy = (y + .5 - cy) * yStep, dy2 = dy * dy;
             for (let x = x0, i = y * W + x0; x <= x1; x++, i++) {
-              const dx = x + .5 - cx, t2 = (dx * dx + dy2) * inv;
+              const dx = (x + .5 - cx) * xStep, t2 = (dx * dx + dy2) * inv;
               if (t2 >= 1) continue;
               const h = top * (1 - t2 * t2 * t2) + .01;
               if (h > z[i]) { z[i] = h; pl[i] = p.pal; }
@@ -231,14 +233,15 @@ export function createSmokeField({ random = Math.random } = {}) {
         }
       }
       // 2) 丘の傾きから、光の当たり方で4色に塗り分ける。雲の外周は塗り分けない（外へ落ちる傾きを数えない）
-      const [lx, ly, lz] = LIGHT, s2 = 3 * unit, flat = s2 * lz;
+      const [lx, ly, lz] = LIGHT, s2 = 3, flat = s2 * lz;
       let painted = 0;
       for (let y = 0, i = 0; y < H; y++) {
         for (let x = 0; x < W; x++, i++) {
           const zc = z[i];
           if (zc <= 0) { px[i] = 0; continue; }
           const zl = x > 0 ? z[i - 1] : 0, zr = x < W - 1 ? z[i + 1] : 0, zu = y > 0 ? z[i - W] : 0, zd = y < H - 1 ? z[i + W] : 0;
-          const gx = (zr > 0 ? zr : zc) - (zl > 0 ? zl : zc), gy = (zd > 0 ? zd : zc) - (zu > 0 ? zu : zc);
+          const gx = ((zr > 0 ? zr : zc) - (zl > 0 ? zl : zc)) * xScale;
+          const gy = ((zd > 0 ? zd : zc) - (zu > 0 ? zu : zc)) * yScale;
           const lam = (-gx * lx - gy * ly + flat) / Math.sqrt(gx * gx + gy * gy + s2 * s2);
           const tone = lam >= .8 ? 3 : lam >= .44 ? 2 : lam >= .16 ? 1 : 0;
           const step = Math.round(Math.min(1, al[i]) * ALPHA_STEPS);
@@ -331,20 +334,24 @@ export function smokeAllowed() {
 const layers = new WeakMap();
 
 /**
- * host いっぱいに煙の層（640×360 の canvas を拡大）を載せて返す。同じ host には1枚だけ作る。
- * cover を渡すと、canvas を cover の枠に合わせて host の中に置く（位置の 0〜1 は cover に対する割合になる）。
+ * host いっぱいに煙の層（既定で 640×360 の canvas を拡大）を載せて返す。同じ host には1枚だけ作る。
+ * cover を渡すと、canvas の枠と升目の縦横比を cover に合わせる（位置の 0〜1 は cover に対する割合）。
+ * gridScale は升目の幅と高さの倍率。
  * 煙が全部消えたら自分で止まり、canvas を外す。host は position が static 以外であること（ステージの層や画面の箱）。
  */
-export function smokeLayer(host, { zIndex = 30, className = "", cover = null } = {}) {
+export function smokeLayer(host, { zIndex = 30, className = "", cover = null, gridScale = 1 } = {}) {
   const had = layers.get(host);
   if (had?.canvas.isConnected) return had;
+  const h = cover ? host.getBoundingClientRect() : null, c = cover?.getBoundingClientRect();
+  const aspect = c?.width && c.height ? c.width / c.height : ASPECT;
+  const width = Math.max(1, Math.round(Math.min(GRID_W, GRID_H * aspect) * gridScale));
+  const height = Math.max(1, Math.round(Math.min(GRID_H, GRID_W / aspect) * gridScale));
   const canvas = document.createElement("canvas");
-  canvas.width = GRID_W; canvas.height = GRID_H;
+  canvas.width = width; canvas.height = height;
   canvas.className = `smoke-layer${className ? " " + className : ""}`;
   canvas.setAttribute("aria-hidden", "true");
   Object.assign(canvas.style, { position: "absolute", inset: "0", width: "100%", height: "100%", pointerEvents: "none", imageRendering: "pixelated", zIndex: String(zIndex) });
   // cover: canvas を host ではなく cover の枠に合わせる（host が cover の中の小さな窓のとき。煙は窓で切り抜かれ、升目は cover と同じ細かさ）
-  const h = cover ? host.getBoundingClientRect() : null, c = cover?.getBoundingClientRect();
   if (h?.width && h.height && c?.width && c.height) {
     const pct = (v) => `${(v * 100).toFixed(3)}%`;
     Object.assign(canvas.style, { inset: "auto", left: pct((c.left - h.left) / h.width), top: pct((c.top - h.top) / h.height), width: pct(c.width / h.width), height: pct(c.height / h.height) });
@@ -352,7 +359,7 @@ export function smokeLayer(host, { zIndex = 30, className = "", cover = null } =
   host.append(canvas);
   const ctx = canvas.getContext("2d");
   const field = createSmokeField();
-  const image = ctx ? ctx.createImageData(GRID_W, GRID_H) : null, px = image ? new Uint32Array(image.data.buffer) : null;
+  const image = ctx ? ctx.createImageData(width, height) : null, px = image ? new Uint32Array(image.data.buffer) : null;
   const waits = [];
   let raf = 0, last = 0, acc = 0, sinceDraw = FRAME, dead = false;
 
@@ -375,7 +382,7 @@ export function smokeLayer(host, { zIndex = 30, className = "", cover = null } =
     let n = 0;
     while (acc >= STEP && n < 4) { field.step(STEP); acc -= STEP; n++; }
     if (acc > STEP * 4) acc = 0;
-    if (sinceDraw >= FRAME) { sinceDraw = 0; field.paint(px); ctx.putImageData(image, 0, 0); }
+    if (sinceDraw >= FRAME) { sinceDraw = 0; field.paint(px, width, height); ctx.putImageData(image, 0, 0); }
     settle();
     if (field.busy) raf = requestAnimationFrame(tick);
     else destroy();

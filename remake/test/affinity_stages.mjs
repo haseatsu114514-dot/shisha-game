@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
+import { chapterFiveTalkIds } from '../js/chapters/ch5-talks.js';
 const root = fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.AFFINITY_SOURCE_ROOT || root;
 const realPaths = ['core/bond-after.js','core/chapter-data.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js', 'core/legacy-cast-save.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/stat-step-tables.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/phone.js','daily/lime-pacing.js','daily/invitations.js','core/chapter-clock.js','core/chapter-features.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js','chapters/ch4-desert-progress.js','minigames/desert-ride-model.js'];
@@ -19,6 +20,7 @@ async function fixture() {
   const db = { dialogues: Object.fromEntries(data.flatMap(d => d.dialogues || []).map(d => [d.dialogue_id,d])), hiyori: data[8], equipById: {}, flavorById: {}, characters: {}, lime: limeData.messages, limeTemplates: clone(limeData.templates) };
   const context = vm.createContext({ console, AbortController, setTimeout: fn => { timers.set(++serial,fn); return serial; }, clearTimeout: id => timers.delete(id), localStorage: { getItem: k => memory.get(k) ?? null, setItem: (k,v) => memory.set(k,v), removeItem: k => memory.delete(k) } });
   const known = {
+    chapterFiveTalkIds,
     MAX_MONEY: 999999, TOURNAMENT_DAY: 14, DB: db, callName: String, relationshipDayTotal: () => 8,
     loadConfessionDialogue: () => loadConfession(),
     emit: (type,payload) => events.push({type,payload}),

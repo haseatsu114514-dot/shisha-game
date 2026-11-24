@@ -10,27 +10,33 @@
 import { state, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
 import { setBg, toast } from "../core/ui.js";
+import { playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
-import { SPOTS, CHAR_STAT, VISIT_BG, isClosed } from "../daily/spots.js";
+import { SPOTS, CHAR_STAT, VISIT_BG, hasNewStory, isClosed } from "../daily/spots.js";
+import { spotFollowupDue } from "../daily/spot-encounters.js";
+import { tsumugiAtTonari } from "../daily/tsumugi-schedule.js";
 import { PREPARATION_SPOTS } from "./ch2-preparation.js";
 import { consultLessons } from "../core/growth.js";
 import { CH5_FIRST_TALKS, chapterFiveFirstTalkDue, chapterFiveFirstTalkSeenFlag } from "./ch5-first-talks.js";
+import { chapterFiveTalkIds } from "./ch5-talks.js";
 import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
+import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
+import { recordChapterFiveTalk } from "./visit-chains.js";
 
 const TALKS_FLAG = "_ch5_shop_talks"; // 小会話の巡回の回数（店ごと）
 
 // 地図のピン・定休日・代金・体力は元の店のまま。charId だけ外し、話し相手は talkWith に持つ。
 const shop = (base, fields) => base ? Object.freeze({ ...base, charId: undefined, ch5Shop: true, ...fields }) : null;
 const homeBase = id => SPOTS.find(spot => spot.id === id);
-const talksOf = id => [`ch5_${id}`, `ch5_${id}_b`, `ch5_${id}_c`];
+const talksOf = id => chapterFiveTalkIds(`ch5_${id}`);
 
 export const CH5_SHOPS = Object.freeze([
   shop(homeBase("naru"), { talkWith: "naru", stat: CHAR_STAT.naru, bg: VISIT_BG.naru, affinity: 5,
     talks: talksOf("naru_shop"), desc: "なるの店。再開してから、前からの客が戻ってきた。" }),
-  shop(homeBase("c_station"), { bg: "bg_c_station", talks: talksOf("c_station"),
+  shop(homeBase("c_station"), { bg: "bg_c_station", talks: ["ch5_c_station", "ch5_c_station_b", "ch5_c_station_c"],
     desc: "大会を運営するチェーン店。世界大会の後は、少し落ち着かない。" }),
   shop(homeBase("minto"), { talkWith: "minto", stat: CHAR_STAT.minto, bg: VISIT_BG.minto, affinity: 5,
     needsMet: true, talks: talksOf("minto_shop"), desc: "みんとのコンセプトカフェ。今日も、ミントの香りがする。" }),
@@ -80,13 +86,17 @@ export function chapterFiveShopExtraDue(entry, value = state) {
 export const chapterFiveShopById = id => allShops().find(entry => entry.id === id) || null;
 
 /**
- * 第5章の最初の来店で一度だけ読む会話がある常連の店（ch5-first-talks.js）。通い店と同じ精算で、いつもの会話の代わりに読む。
- * 無ければ null（いつもの来店へ。EDEN は日常ループの来店、柚ヶ谷の神崎・クラウドは ch2-preparation.js の visitCityRegular）。
+ * 最初の会話の後は、第5章の小会話に進む。EDEN で交流の段階や訪問の続きが読める時は従来の来店へ渡す。
  */
-function firstTalkShop(spot) {
-  const id = spot?.charId, talk = id ? chapterFiveFirstTalkDue(id, state) : null;
+const REGULAR_TALKS = Object.fromEntries(Object.keys(CH5_FIRST_TALKS).map(id => [id, talksOf(`${id}_repeat`)]));
+function regularShop(spot) {
+  const id = spot?.charId;
+  const talk = Object.hasOwn(CH5_FIRST_TALKS, id) ? CH5_FIRST_TALKS[id] : null;
   if (!talk || (spot.region || "home") !== talk.region) return null;
-  return Object.freeze({ ...spot, talkWith: id, stat: talk.stat, affinity: 5, talks: [talk.scene], firstTalk: talk,
+  const firstTalk = chapterFiveFirstTalkDue(id, state);
+  if (!firstTalk && (!state.flags[chapterFiveFirstTalkSeenFlag(talk)] || !state.met?.[id] ||
+    (id === "adam" && (hasNewStory(id) || spotFollowupDue(id, state, DB.dialogues))))) return null;
+  return Object.freeze({ ...spot, talkWith: id, stat: talk.stat, affinity: 5, talks: REGULAR_TALKS[id], firstTalk, regular: talk,
     ...(spot.previewUrl ? { bgUrl: spot.previewUrl } : { bg: VISIT_BG[id] }) });
 }
 
@@ -104,17 +114,18 @@ function loadScenes(file, scenes) {
 async function loadShopScenes(entry) {
   const firstTalks = Object.values(CH5_FIRST_TALKS);
   await loadScenes("ch5_shops", [...allShops().flatMap(shop => [...shop.talks, ...(shop.extras || []).map(extra => extra.scene)]),
+    ...Object.values(REGULAR_TALKS).flat(),
     ...firstTalks.filter(talk => talk.file === "ch5_shops").map(talk => talk.scene)]);
   const talk = entry.firstTalk;
   if (talk && talk.file !== "ch5_shops") await loadScenes(talk.file, [talk.scene]);
 }
 
-/** 一度だけの会話を読み終えた来店の記録。既読と、元の店のいつもの来店と同じ回数・印。 */
-function recordFirstTalk(entry) {
+/** 元の店と同じ来店回数・印。 */
+function recordRegularVisit(entry) {
   const id = entry.talkWith;
-  state.flags[chapterFiveFirstTalkSeenFlag(entry.firstTalk)] = true;
+  if (entry.firstTalk) state.flags[chapterFiveFirstTalkSeenFlag(entry.firstTalk)] = true;
   state.visits[id] = (state.visits[id] || 0) + 1;
-  if (entry.firstTalk.region === "widehanga") {
+  if (entry.regular.region === "widehanga") {
     // 柚ヶ谷の通い訪問の回数（ch2-preparation.js の小会話の巡回）にも数える
     const regular = state.flags._ch2_talks ||= {};
     regular[id] = (regular[id] || 0) + 1;
@@ -126,7 +137,7 @@ const unused = { used: false, exerted: false };
 /** 通い店の来店。対象外は null（日常ループの通常の処理へ）。中断・LOADでは代金・体力・回数を残さない。 */
 export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
   if (state?.chapter !== 5) return null;
-  const entry = spot?.ch5Shop ? chapterFiveShopById(spot.id) : firstTalkShop(spot);
+  const entry = spot?.ch5Shop ? chapterFiveShopById(spot.id) : regularShop(spot);
   if (!entry) return null;
   const owner = state;
   try { await loadShopScenes(entry); } catch {
@@ -134,13 +145,14 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
     return unused;
   }
   if (state !== owner) return unused;
-  if (entry.firstTalk && isClosed(spot)) return unused;
+  if (entry.regular && isClosed(spot)) return unused;
   if ((entry.cost || 0) > spendableMoney(state)) {
     toast("お金が足りない", { se: "error" });
     return unused;
   }
   if (staminaGuard && !(await staminaGuard(entry.stamina))) return unused;
-  const talks = state.flags[TALKS_FLAG] ||= {};
+  if (state !== owner) return unused;
+  const talks = state.flags[TALKS_FLAG] || {};
   const extra = entry.firstTalk ? null : chapterFiveShopExtraDue(entry, state);
   // ♥5の締めくくりの後（#3693）: 通いの小会話の代わりに、その人の♥5後の場面（5本）を一度ずつ（core/bond-after.js）。
   // 5本を読み終えた後は、短い汎用ではなく第5章の通いの小会話を巡回する（第5章の店の様子を残すため）。台本を読めなければ小会話のまま。
@@ -150,6 +162,8 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
     try { await loadBondAfterScenes(DB); } catch { after = null; }
     if (state !== owner) return unused;
   }
+  const chain = !entry.firstTalk && !extra && !after ? await chainVisitDue(entry.id, owner) : null;
+  if (state !== owner) return unused;
   const scene = entry.firstTalk ? entry.firstTalk.scene : extra || after?.scene || entry.talks[(talks[entry.id] || 0) % entry.talks.length];
   if (entry.bgUrl) await setBg(entry.bgUrl);
   else {
@@ -157,18 +171,70 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
     await setBg(url, { tint });
   }
   if (state !== owner) return unused;
-  const result = await play(scene);
-  if (state !== owner || !result || result.cancelled) return unused;
+  if (entry.regular && !entry.firstTalk && !extra && !after && !chain) {
+    if (entry.talkWith === "adam") playBgm("bgm_rival_shop");
+    const welcome = `venue_${entry.talkWith}_${timeOfDay()}`;
+    if (DB.dialogues[welcome]?.lines?.length && !await readShopScene(owner, welcome)) return unused;
+  }
+  if (!await readShopScene(owner, scene, chain)) return unused;
   if (entry.cost) addMoney(-entry.cost);
   addStamina(entry.stamina || -16);
-  if (entry.firstTalk) recordFirstTalk(entry);
-  else if (extra) state.flags[extraSeenFlag(extra)] = true; // 通いの小会話の巡回は進めない（次はいつもの続きから）
+  if (entry.regular) recordRegularVisit(entry);
+  if (extra) state.flags[extraSeenFlag(extra)] = true; // 通いの小会話の巡回は進めない（次はいつもの続きから）
   else if (after) markBondAfterRead(state, entry.talkWith, after); // 同じく、巡回は進めない
-  else talks[entry.id] = (talks[entry.id] || 0) + 1;
+  else if (!entry.firstTalk && !chain) recordShopTalk(owner, entry.id, scene, talks[entry.id] || 0);
   if (entry.talkWith) { gainAffinity(entry.talkWith, entry.affinity || 5); markMet(entry.talkWith); }
   if (entry.stat) earnStat(entry.stat, 4);
   // 心得の盤の授業（SPEC 2.6・SBD61）: 通い店で会った人に、灯した授業があれば相談する（なる・みんと・サメちゃん・あげは。
   // 一度だけの会話を読んだアダム・クラウド・神崎も、いつもの来店と同じく相談する）
   if (entry.talkWith && state === owner) await consultLessons(entry.talkWith, { bg: entry.bgUrl || sceneBg(entry.bg, timeOfDay()).url });
   return { used: true, exerted: true };
+}
+
+async function readShopScene(owner, scene, chain) {
+  const read = async id => {
+    const result = await play(id);
+    return state === owner && !!result && !result.cancelled;
+  };
+  return chain ? playChainStage(chain, read) : read(scene);
+}
+
+function recordShopTalk(owner, place, scene, count) {
+  (owner.flags[TALKS_FLAG] ||= {})[place] = count + 1;
+  recordChapterFiveTalk(owner, scene);
+}
+
+const TONARI_TALKS = [
+  { id: "ch5_tonari_sumi", label: "スミさんと話す", available: () => true },
+  { id: "ch5_tonari_tsumugi", label: "つむぎと話す", available: tsumugiAtTonari },
+  { id: "ch5_tonari_master_hookah", label: "王煙楼に電話する", available: value => value.inbox?.some(item =>
+    (item.originId || item.msg?.origin_id || item.id) === "lime_wang_tonari_visit" && item.completed) },
+];
+
+export function chapterFiveTonariTalks(value = state) {
+  return value?.chapter === 5 ? TONARI_TALKS.filter(entry => entry.available(value)) : [];
+}
+
+export async function performChapterFiveTonariTalk(id) {
+  const owner = state;
+  const entry = TONARI_TALKS.find(talk => talk.id === id);
+  if (!entry) return null;
+  if (owner?.chapter !== 5 || !entry.available(owner)) return unused;
+  const topics = chapterFiveTalkIds(id);
+  const count = owner.flags[TALKS_FLAG]?.[id] || 0;
+  const scene = topics[count % topics.length];
+  const chain = await chainVisitDue(id, owner);
+  if (!chain) {
+    try { await loadScenes("ch5_shops", topics); } catch {
+      toast("会話を読み込めませんでした。地図からもう一度選べます");
+      return unused;
+    }
+  }
+  if (state !== owner) return unused;
+  const { url, tint } = sceneBg("bg_tonari_inside", timeOfDay());
+  await setBg(url, { tint });
+  if (state !== owner) return unused;
+  if (!await readShopScene(owner, scene, chain)) return unused;
+  if (!chain) recordShopTalk(owner, id, scene, count);
+  return { used: true, exerted: false };
 }

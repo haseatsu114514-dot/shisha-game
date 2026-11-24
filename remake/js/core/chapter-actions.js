@@ -1,5 +1,12 @@
 import { el } from "./util.js";
 
+/** 章固有のボタンで、完了時の操作を進む・保存・タイトルの順に並べる。 */
+export function completionActions(owner, button, next, { onSave, onTitle, prefix = "complete" }) {
+  const actions = [next, button(owner, "ここまでをセーブ", `${prefix}-save`, onSave)];
+  if (onTitle) actions.push(button(owner, "タイトルへ", `${prefix}-title`, onTitle));
+  return actions;
+}
+
 /** 章ごとのsession判定・表示名を保ったまま、ボタンの実行だけを共通化する。 */
 export function createChapterActions({ current, test, logName, renderError,
   buttonOwner = owner => owner, buttonDisabled, setBusy = (owner, value) => { owner.busy = value; },

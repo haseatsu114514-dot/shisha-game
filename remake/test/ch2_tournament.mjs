@@ -73,7 +73,7 @@ for(const [quality,expected] of [[98,1],[20,4]]) {
 console.log('PASS: chapter2 irrevocable 3×10 votes, good/bad ranks, JSON checkpoint rollback, committed consumption, retry, two cares and chapter1/relationships');
 
 for (const [scores, rank, points, text] of [
-  [[87, 87, 87, 88], 1, [16, 7], "二度目の調整後の投票で、2位より3点多く取った。最終9点差。"],
+  [[87, 87, 87, 89], 1, [18, 6], "二度目の調整後の投票で、2位より5点多く取った。最終12点差。"],
   [[95, 95, 95, 95], 1, [19, 5], "提供後の投票で、2位より5点多く取った。最終14点差。"],
   [[60, 60, 60, 60], 4, [1, 15], "提供後の投票で、首位に4点及ばなかった。最終14点差。"],
 ]) {

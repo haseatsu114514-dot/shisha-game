@@ -59,10 +59,11 @@ export function gainWord(total) {
  * ★帯による減衰は廃止。章の上限と振替、旧セーブの進捗の端数は維持する。
  * 戻り値=実際に伸びたポイント。
  * @param opts.silent 通知カードを出さない（スロットのように自前で見せるとき）
+ * @param opts.committedSlot 旧成長で確定したスロット報酬を精算する
  */
-export function gainStat(key, amount = 1, { silent = false, excludedKeys = [] } = {}) {
+export function gainStat(key, amount = 1, { silent = false, excludedKeys = [], committedSlot = false } = {}) {
   // 盤モードの成長は経験値と確定したマスだけ。旧セーブの基礎値は書き換えない。
-  if (expHooks?.enabled?.()) return 0;
+  if (!committedSlot && expHooks?.enabled?.()) return 0;
   if (!STAT_KEYS.includes(key) || !(amount > 0)) return 0;
   let cap = statCap(key);
   // 上限に届いた項目は、まだ伸びる項目へ振り替える（伸びている実感を保つ）

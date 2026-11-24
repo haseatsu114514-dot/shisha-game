@@ -6,7 +6,7 @@ import test from "node:test";
 import { DESERT_FLAG, DESERT_TALKS, DESERT_TALK_HEARTS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, DESERT_CAFE_CHATS, DESERT_CAFE_PRICE, DESERT_RIDE_PRICE, DESERT_SCENES, DESERT_DIALOGUE_IDS,
   desertRivals, markNaruMet, desertProgress, desertInvited, desertTalkScene, completeDesertTalk, desertCafeVisit, completeDesertCafeVisit, noorHeart,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertRankAtLeast, desertDestinations,
-  DESERT_SPOT_IDS, desertDailySpots, desertDailySpotById, NOOR_FINALE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, noorStoriesDone, noorFinaleWaiting,
+  DESERT_SPOT_IDS, CH5_NOOR_DESK_ID, CH5_NOOR_CAFE_CHATS, CH5_NOOR_DESK_CHATS, desertDailySpots, desertDailySpotById, NOOR_FINALE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, noorStoriesDone, noorFinaleWaiting,
   noorConfessionWaiting, desertChapterFiveSpots, completeDesertReunion, NOOR_VISIT_CONFESSION_FLAG,
   NOOR_STORY_EXTRAS, NOOR_STORY_DIALOGUE_IDS, NOOR_CONFESSION_DIALOGUE_IDS, noorStoryFlag, noorStoryDue, completeNoorStory,
   NOOR_FARIS_SCENES, NOOR_FARIS_FLAGS, noorFarisDue, completeNoorFaris, NOOR_LOVER_SCENES, noorLoverReadFlag, noorLoverSceneDue } from "../js/chapters/ch4-desert-progress.js";
@@ -638,25 +638,41 @@ test("chapter 5 Dubai: Café Oasis until Noor's finale, the dunes once invited; 
   value.slot = 0; value.money = 5000;
   assert.equal(dunesOn(61).unavailableTag, "お金が足りない");
   value.money = 50000;
-  // 締めくくりの後（ルートを問わず）はカフェを出さず、砂丘だけ
+  // 締めくくりの後は、砂丘と昼のツアーデスクで選べる。
   for (const route of ["friend", "romance", "lover"]) {
     value.finales = { noor: { route, chapter: 4, day: 12 } };
-    assert.deepEqual(desertChapterFiveSpots(value, 61).map(entry => entry.id), [DESERT_SPOT_IDS.dunes], route);
+    const ids = () => desertChapterFiveSpots(value, 61).map(entry => entry.id);
+    assert.deepEqual(ids(), [CH5_NOOR_DESK_ID, DESERT_SPOT_IDS.dunes], route);
+    value.slot = 1;
+    assert.deepEqual(ids(), [DESERT_SPOT_IDS.dunes], route);
+    value.slot = 0;
   }
   // 第4章で締めくくりを迎えたまま砂丘へ一度も出かけていない人にも、第5章で砂丘が出る（#2708 では出なかった・意図した変更）
   const held = fresh();
   Object.assign(held, { chapter: 5, slot: 0, finales: { noor: { route: "romance", chapter: 4, day: 12 } } });
   held.flags[DESERT_FLAG] = { v: 2, talks: 6, chats: 0, lastTalkDay: 12, outings: 0, lastOutingDay: null };
-  let rest;
-  [dunes, ...rest] = desertChapterFiveSpots(held, 60);
-  assert.deepEqual([dunes.id, rest], [DESERT_SPOT_IDS.dunes, []]);
+  [, dunes] = desertChapterFiveSpots(held, 60);
+  assert.equal(dunes.id, DESERT_SPOT_IDS.dunes);
   assert.match(dunes.desc, /ヌールとの約束.*ツアー代はいらない/, "the promised trip");
   const { first, price, invited } = desertOutingStatus(held, 60);
   assert.deepEqual({ first, price, invited }, { first: true, price: 0, invited: true });
   held.finales.noor.route = "friend";
-  [dunes, ...rest] = desertChapterFiveSpots(held, 60);
-  assert.deepEqual([dunes.id, rest], [DESERT_SPOT_IDS.dunes, []]);
+  [, dunes] = desertChapterFiveSpots(held, 60);
+  assert.equal(dunes.id, DESERT_SPOT_IDS.dunes);
   assert.match(dunes.desc, /初回は無料/, "the friend route gets the free first trip");
+  for (const pool of [[...CH5_NOOR_DESK_CHATS, ...CH5_NOOR_CAFE_CHATS],
+    [...DESERT_CAFE_CHATS, ...CH5_NOOR_CAFE_CHATS]]) {
+    held.flags[DESERT_FLAG].chats = 0;
+    held.flags[DESERT_FLAG].lastTalkDay = 59;
+    for (let turn = 0; turn <= 8; turn++) {
+      const day = 60 + turn;
+      const visit = desertCafeVisit(held, day);
+      assert.deepEqual(visit, { id: pool[turn % 8], kind: "talk" }, `Noor talk ${turn}`);
+      assert(completeDesertCafeVisit(held, visit, day));
+      assert.equal(desertCafeVisit(held, day), null, "no second conversation on the same day");
+    }
+    delete held.finales.noor;
+  }
   // 第4章に通っていた人の、第5章で最初の来店（再会だけ）: 今日の来店として数える。段階・雑談の数は進めない
   const regular = fresh();
   Object.assign(regular, { chapter: 5, slot: 0 });

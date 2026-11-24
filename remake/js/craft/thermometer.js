@@ -104,9 +104,9 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
         delete finishMark.dataset.low; delete finishMark.dataset.high; root.removeAttribute("aria-description");
       }
     }
-    if (bands?.center === next.center && bands?.totalWidthScale === next.totalWidthScale
+    if (bands === next || (bands?.center === next.center && bands?.totalWidthScale === next.totalWidthScale
       && bands?.expressionWeight === next.expressionWeight && bands?.selected === next.selected
-      && bands?.damageScale === next.damageScale) return bands;
+      && bands?.damageScale === next.damageScale)) return bands;
     bands = next;
     const attack = attackMark ? attackRange(bands) : null;
     if (attackMark) {
@@ -129,7 +129,7 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     return bands;
   };
   updateBands();
-  let last = 0, shown = null;
+  let last = 0, shown = null, previewPosition;
   return { root, updateBands, update(temp) {
     updateBands();
     last = temp;
@@ -170,8 +170,12 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     setFlag(projected, "hidden", hidden); setFlag(projectedLabel, "hidden", hidden);
     if (temp == null) return;
     if (projectedLabel.textContent !== label) projectedLabel.textContent = label;
-    projected.style.bottom = pct(temp);
-    setData(projectedLabel, "temperature", temp.toFixed(4));
+    // 点線の位置は 0.5% 刻み。行き先の判定には呼び出し側で元の温度を使う。
+    const position = Math.round(temp * 200);
+    if (previewPosition === position) return;
+    previewPosition = position;
+    projected.style.bottom = `${position / 2}%`;
+    setData(projectedLabel, "temperature", (position / 200).toFixed(4));
   } };
 }
 

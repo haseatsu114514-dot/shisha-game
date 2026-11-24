@@ -1,7 +1,7 @@
 import { el } from "../core/util.js";
 import { state, save } from "../core/state.js";
 import { DB, bgUrl } from "../core/data.js";
-import { modal, setBg, showScreen } from "../core/ui.js";
+import { modal, setBg, showScreen, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { STATION_FARE, prepareStationTrip } from "../daily/station-travel.js";
@@ -109,14 +109,21 @@ export async function chooseMorningCity(morningNotices = () => []) {
 export async function returnCityHome() {
   if (!travelsBetweenCities(state)) return true;
   const owner = state;
+  let walked = false;
   if (state.flags._ch2_region === "widehanga") {
     const trip = prepareStationTrip(state, regions, "home");
-    if (!trip?.commit(state, { persist: save })) throw new Error("帰宅の切符代200円が不足しています");
-    const ticket = { speaker: "", face: "", text: `${CH2_CITY_NAME}の駅で、${HOME_CITY_NAME}へ戻る片道切符を200円で買った。` };
-    const result = await ride("return", ticket, { dialogue_id: "__ch2_return_train", lines: [ticket, { speaker: "hajime", face: "normal", text: "今日もいろいろあったな。家に帰ろう" }] });
-    if (state !== owner || !result || result.cancelled) return false;
+    if (!trip) return false;
+    walked = trip.walkable();
+    if (!trip.commit(state, { persist: save, walk: walked })) return false;
+    if (!walked) {
+      const ticket = { speaker: "", face: "", text: `${CH2_CITY_NAME}の駅で、${HOME_CITY_NAME}へ戻る片道切符を200円で買った。` };
+      const result = await ride("return", ticket, { dialogue_id: "__ch2_return_train", lines: [ticket, { speaker: "hajime", face: "normal", text: "今日もいろいろあったな。家に帰ろう" }] });
+      if (state !== owner || !result || result.cancelled) return false;
+    }
   }
   await setBg(bgUrl("bg_home", "night"));
-  return state === owner;
+  if (state !== owner) return false;
+  if (walked) toast(`歩いて${HOME_CITY_NAME}へ帰った。かなり疲れた`);
+  return true;
 }
 

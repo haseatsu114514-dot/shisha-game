@@ -97,7 +97,7 @@ export function newState() {
       seed: (Math.random() * 0x100000000) >>> 0,
       count: 0, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 0, freezeCount: 0,
       recent: [],              // 直近30回転の当たり記録（1=ペカ）。最近の不調の補いに使う（#1281）。旧セーブは空から数える
-      pending: [],             // 演出待ちの結果（報酬は確定・適用済み）
+      pending: [],             // 演出待ちの結果（報酬は停止・揃いで一度だけ適用）
       installed: false,        // C.STATIONの初回来場・参加登録で導入
       introDone: false,
       lastChapter: 0,
@@ -424,6 +424,10 @@ function migrate(s) {
   s.reel = { ...fresh.reel, ...s.reel };
   // reel の中身に null が残ると、<10 の導入判定や後段の演出で落ちる。形だけ先にそろえる。
   if (!Array.isArray(s.reel.pending)) s.reel.pending = [];
+  // applied が無い旧セーブは、抽選時に報酬を受け取り済み。
+  for (const r of s.reel.pending) {
+    if (r && typeof r === "object" && !Object.hasOwn(r, "applied")) r.applied = true;
+  }
   if (!s.reel.note || typeof s.reel.note !== "object" || Array.isArray(s.reel.note)) s.reel.note = {};
   s.keepsakes = [...new Set((Array.isArray(s.keepsakes) ? s.keepsakes : []).filter((id) => typeof id === "string"))];
   if (oldSchema < 10) {

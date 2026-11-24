@@ -130,11 +130,15 @@ try {
   assert(hr > hb + 40 && hr > hg + 30, `hot stage is not turning warm: ${colors.hot}`);
   assert(ir > ig + 40 && ir > ib + 60, `inferno is not red-hot: ${colors.inferno}`);
   for (const name of ['hot', 'fire', 'inferno']) { const [r, g, b] = colors[name]; assert(!(b > r + 30 && b > g), `${name} uses blue or purple fire: ${[r, g, b]}`); }
-  // 緑・虹はゆらさず、過熱だけに陽炎を出す。
+  // 緑・虹はゆらさず、過熱の陽炎は背景だけに出す。
   assert.equal(hazes.cold[0], '0'); assert.equal(hazes.cold[1], '');
   assert.deepEqual(hazes.ready, ['0', '']); assert.deepEqual(hazes.optimal, ['0', '']);
   assert(rainbow.ready <= 2, 'Green ideal band already shows a rainbow');
-  assert(Number(hazes.hot[0]) > 0, 'Overheat haze disappeared');
+  for (const name of ['hot', 'fire', 'inferno']) {
+    assert(Number(hazes[name][0]) > 0, `${name} backdrop haze disappeared`);
+    assert.equal(hazes[name][1], '', `${name} still filters the worker stage`);
+  }
+  assert.equal(await page.locator('.bench feDisplacementMap').count(), 0, 'thermal SVG displacement filter still exists');
   // 同じ温度帯の中でも、温度に沿って絵が少しずつ移る（だんだん火事になる）。
   const within = [];
   for (const t of [.78, .83, .88]) { await page.evaluate(v => T.session.setBenchTemperature(cs, v), t); await page.waitForTimeout(120); within.push(await pixels()); }
