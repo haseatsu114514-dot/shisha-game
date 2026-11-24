@@ -155,6 +155,8 @@ await suite("conversation-ui", async check => {
     await page.evaluate(async money => { (await import("./js/core/state.js")).state.money = money; }, originalMoney);
   });
   await check("choice-modal-log-keyboard", async page => {
+    // 未読の場面もSKIPで進める検査。SKIP既定が既読のみ（#4214 U-08）になったため、検査では「全部」に設定する。
+    await page.evaluate(async () => { (await import("./js/core/state.js")).config.skipSeenOnly = false; });
     const saved = await storageSnapshot(page);
     await page.locator('[data-test="vn-log"]').focus();
     await page.keyboard.press("Enter");
@@ -261,6 +263,7 @@ await suite("conversation-ui", async check => {
     }, touch ? { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true } : {});
   }
   await check("keyboard-controls", async page => {
+    await page.evaluate(async () => { (await import("./js/core/state.js")).config.skipSeenOnly = false; });
     await page.locator(".vn-next.show").waitFor();
     const saved = await storageSnapshot(page);
     const text = await page.locator(".vn-text").textContent();
@@ -316,6 +319,7 @@ await suite("conversation-ui", async check => {
   });
   for (const [label, viewport] of [["desktop", { width: 1280, height: 768 }], ["landscape", { width: 844, height: 438 }]]) {
     await check(label, async page => {
+      await page.evaluate(async () => { (await import("./js/core/state.js")).config.skipSeenOnly = false; });
       await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent === "……また見つかっちゃった");
       await page.locator(".vn-next.show").waitFor();
       const saved = await storageSnapshot(page);

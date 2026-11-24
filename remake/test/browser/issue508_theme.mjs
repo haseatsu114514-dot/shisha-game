@@ -10,6 +10,8 @@ async function prepare(page) {
       data: await import("./js/core/data.js"), ch1: await import("./js/chapters/ch1.js"),
       night: await import("./js/daily/night-events.js") };
     T.ch1.setupHooks();
+    // このスイートは未読の場面もSKIPで進める前提。SKIP既定が既読のみ（#4214 U-08）になったため、検査では「全部」に設定する。
+    T.core.config.skipSeenOnly = false;
     (await import("./js/core/ui.js")).clearScreen();
     // The production chapter-two loader registers its lazily loaded scenes.
     await (await import("./js/chapters/ch2-city-data.js")).loadPreparationDialogues();
@@ -251,6 +253,8 @@ await suite("issue508-theme", async checkAll => {
     await page.reload(); await page.locator(process.env.READY_SELECTOR || '[data-test="title-new"]').waitFor(); await prepare(page);
     const result = await page.evaluate(async () => {
       T.core.loadFromSlot("suien_remake_slot1"); T.vn.vnTest.turbo = true;
+      // 再読込をまたいだLOG保持（#4214 U-11）で読み込み時に前回のLOGが戻るため、ここからの再生分だけを数える。
+      T.vn.backlog().length = 0;
       T.night.syncNightQueue(T.ch1.NIGHT_EVENTS);
       await T.night.runNightPlan(T.ch1.NIGHT_EVENTS);
       const lines = T.lines();

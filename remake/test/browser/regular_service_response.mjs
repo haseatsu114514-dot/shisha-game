@@ -33,6 +33,8 @@ async function prepare(page) {
       delete s.savedAt; delete s.playMs; return s;
     };
     T.events = { 2: T.ch1.NIGHT_EVENTS[2], 10: T.ch1.NIGHT_EVENTS[10] };
+    // このスイートは未読の場面もSKIPで進める前提。SKIP既定が既読のみ（#4214 U-08）になったため、検査では「全部」に設定する。
+    T.core.config.skipSeenOnly = false;
   });
 }
 function response(lines, answer, seen = true) {

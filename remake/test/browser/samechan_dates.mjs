@@ -235,9 +235,13 @@ await suite("samechan-dates", async check => {
       await page.reload({ waitUntil: "load" }); await page.locator('[data-test="title-new"]').waitFor();
       await page.locator("#boot").waitFor({ state: "detached" }); await setup(page, true);
       const r = await page.evaluate(async inv => {
+        const base = K.vn.backlog().length;
         const before = K.snap(); await K.dates.playSamechanDate({ invite: inv, cost: 3000 });
-        const repeated = K.snap(); await K.bonds.playSamechanMilestone(); K.core.load();
-        return { before, repeated, after: K.snap(), log: K.vn.backlog().map(x => x.text).join(" ") };
+        const repeated = K.snap(); await K.bonds.playSamechanMilestone();
+        // 読込で復元される再読込前のLOG（#4214 U-11）と混ざらないよう、再生分の台詞は読込前に取る。
+        const played = K.vn.backlog().slice(base).map(x => x.text).join(" ");
+        K.core.load();
+        return { before, repeated, after: K.snap(), log: played };
       }, inv);
       assert.equal(r.repeated.money, r.before.money); assert.equal(r.repeated.lovePts.samechan, 52);
       assert.deepEqual(r.repeated.stats, r.before.stats); assert.equal(r.repeated.slot, 2);

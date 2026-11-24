@@ -23,6 +23,8 @@ async function prepare(page) {
       story: await import("./js/chapters/tsumugi-story.js"), saves: await import("./js/scenes/saves.js"),
       stats: await import("./js/core/stats.js"), bonds: await import("./js/daily/bonds.js") };
     T.chapter.setupHooks();
+    // このスイートは未読の場面もSKIPで進める前提。SKIP既定が既読のみ（#4214 U-08）になったため、検査では「全部」に設定する。
+    T.core.config.skipSeenOnly = false;
     (await import("./js/core/ui.js")).clearScreen();
     T.fresh = ({ route = "unanswered", known = false } = {}) => {
       const s = T.core.newGame(); Object.assign(s, { day: 11, slot: 2, phase: "daily", seed: 452, weatherSeed: 452 });
