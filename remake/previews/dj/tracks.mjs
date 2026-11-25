@@ -10,12 +10,13 @@ export const TRACKS = {
 // transition the player picks each next track from two candidates (選曲, DJS17). Every track arrives at the playing track's tempo
 // (no tempo faders, 2026-11-13 DJG).
 // drift: the incoming track slips out of time during the 8 bars and the player turns its platter to bring it back.
-//   windows = one slip per entry, starting on a beat of the mix picked from [from, to]; size = how far it slips (beats, either way).
-//   null = it never slips (SET 1: ▶, the crossfader and the pick only).
+//   windows = at most one slip per window, starting on a beat of the mix picked from [from, to]; size = how far it slips (beats, either way);
+//   chance = how often a window actually slips (2026-11-25 オーナー「拍のズレを基本発生させない」「皿はズレた時の微調整だけ」・DJR03:
+//   it used to slip on every mix). null = it never slips (SET 1: ▶, the crossfader and the pick only).
 export const SETS = [
  {name:'SET 1',label:'入門・ズレなし',tracks:['danceMonster','digitalLemonade'],count:3,drift:null},
- {name:'SET 2',label:'本命・途中で1回ズレる',tracks:['ravingEnergy','cutAndDry'],count:4,drift:{windows:[[6,20]],size:[.12,.2]}},
- {name:'SET 3',label:'上級・2回ズレる',tracks:['risingTide','danceMonster'],count:4,drift:{windows:[[4,11],[17,25]],size:[.16,.3]}}
+ {name:'SET 2',label:'本命・たまにズレる',tracks:['ravingEnergy','cutAndDry'],count:4,drift:{windows:[[6,20]],size:[.1,.16],chance:.25}},
+ {name:'SET 3',label:'上級・ときどきズレる',tracks:['risingTide','danceMonster'],count:4,drift:{windows:[[4,11],[17,25]],size:[.12,.22],chance:.25}}
 ];
 export const STAGES = SETS; // old name kept for the host (?stage=)
 function emptyTrackData(length, sampleRate, cfg) {

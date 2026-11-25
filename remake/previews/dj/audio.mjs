@@ -1,4 +1,4 @@
-import { createSet, resumeMix, playDeck, pauseMix, beatAt, gains, lowCutDb, mod, updateSet, chooseTrack, nudgeDeck } from './model.mjs';
+import { createSet, resumeMix, playDeck, pauseMix, beatAt, gains, lowCutDb, mod, updateSet, chooseTrack, nudgeDeck, cancelReserve } from './model.mjs';
 import { TRACKS, SETS, buildBufferTrackData, previewBeat } from './tracks.mjs';
 import { FEEL } from './feel.mjs';
 
@@ -276,6 +276,8 @@ export class DJAudio {
   }
   /** The platter: move the incoming track along or back while it is out of time (model nudgeDeck). The voice is re-seeked to the new position. */
   nudge(id, beats) { const moved = nudgeDeck(this.mix, id, beats, this.now); if (moved && this.context) this.spawn(id); return moved; }
+  /** 予約の取り消し（DJR01）: the held track's source was scheduled for the entry line; stop it before it sounds. */
+  cancelReserve(id) { if (!this.context || this.busy || !cancelReserve(this.mix, id, this.now)) return false; this.killVoice(id); return true; }
   level() {
     if (!this.analyser || !this.mix.running) return 0;
     this.analyser.getFloatTimeDomainData(this.meterData);

@@ -28,6 +28,7 @@ export const DRIFT_BEATS = 3;  // a slip builds up over 3 beats (the track runs 
 export const SYNC_FLOOR = .03; // bringing the track back in time warms the room by a step
 export const SLIP_FLOOR = -.008; // every beat the two tracks are out of time cools it (as much as a beat with the fader off the line)
 export const FOLLOW_BAND = .14; // the fader counts as on the guide line within ±0.14 of it
+export const TOUCH_MOVE = .001; // the fader has been touched in this mix once it moved at all from where the mix began (DJR02; one slider step is .005)
 export const LOW_CUT_DB = -26;
 export const mod = (v, n) => ((v % n) + n) % n;
 export const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
@@ -82,7 +83,11 @@ const incomingDeck = (m, key) => makeDeck(key, m.decks[m.master].bpm);
 /** The slips of one transition (set.drift): where in the 8 bars each starts and how far it goes (beats; + = the incoming track runs ahead). */
 function planDrifts(m) {
   const plan = m.set.drift; if (!plan) return [];
-  return plan.windows.map(([from, to]) => ({ at: from + Math.floor(m.rng() * (to - from + 1)), size: (m.rng() < .5 ? -1 : 1) * (plan.size[0] + m.rng() * (plan.size[1] - plan.size[0])), started: false, ended: false }));
+  // 基本はズレない（DJR03）: each window slips only `chance` of the time (no chance = every time, the old behaviour)
+  return plan.windows.flatMap(([from, to]) => {
+    if (Number.isFinite(plan.chance) && !(m.rng() < plan.chance)) return [];
+    return [{ at: from + Math.floor(m.rng() * (to - from + 1)), size: (m.rng() < .5 ? -1 : 1) * (plan.size[0] + m.rng() * (plan.size[1] - plan.size[0])), started: false, ended: false }];
+  });
 }
 /** allowance: extra beats added to every ▶ timing band (the main game's monitor headphones, VOL07: PHONES_ALLOWANCE). 0 = the club's house setup. */
 export function createSet(set, rng = Math.random, { allowance = 0, grid = PHRASE, lead = LEAD } = {}) {
@@ -137,7 +142,8 @@ export function playDeck(m, id, now) {
     // so the two tracks' phrases line up either way (QUANTIZE + the phrase assist of #2456 §4).
     d.beat = 0; d.at = from.at + (c.start - from.beat) * 60 / from.bpm;
     c.pressed = { errorMs, grade, beat: c.start, at: now, reserved }; m.lastPlay = { id, errorMs, grade, at: d.at, reserved };
-    m.phase = 'mix'; m.fader = { reached: null, checks: 0, hits: 0, combo: 0, best: 0, lastBeat: 0, last: null, inTime: 0, off: false, fixes: 0, drifts: planDrifts(m) };
+    m.phase = 'mix'; m.fader = { reached: null, checks: 0, hits: 0, combo: 0, best: 0, lastBeat: 0, last: null, inTime: 0, off: false, fixes: 0, drifts: planDrifts(m),
+      mix0: m.mix, touched: false };
     m.floor = clamp(m.floor + GRADE_FLOOR[grade], 0, 1);
   } else {
     anchor(d, now);
@@ -146,6 +152,18 @@ export function playDeck(m, id, now) {
   d.playing = true; m.running = true; m.resumeDecks = m.resumeDecks.filter(n => n !== id);
   const other = m.decks[1 - id];
   if (!m.cue && !m.select && other.track && !other.playing) nextCue(m, id, now);
+  return true;
+}
+/** 予約の取り消し（DJR01・2026-11-25 オーナー「早く押してしまった時、もう一度▶で待機に戻す」）: a ▶ held for the entry line (予約) is
+ *  taken back by pressing the same ▶ again before the line. The cue opens again as if it had never been pressed (the heat step is undone);
+ *  the count goes on and the ▶ can be pressed again. Returns true when a reservation was cancelled. */
+export function cancelReserve(m, id, now) {
+  const c = m.cue, d = m.decks[id];
+  if (m.phase !== 'mix' || !c || c.to !== id || !c.pressed?.reserved || !d.playing) return false;
+  if (beatAt(m.decks[c.from], now) >= c.start) return false; // the line has come: the track is already in
+  m.floor = clamp(m.floor - GRADE_FLOOR[c.pressed.grade], 0, 1);
+  d.playing = false; d.beat = 0; d.at = now;
+  c.pressed = null; m.phase = 'cue'; m.fader = null; m.lastPlay = null;
   return true;
 }
 /** 選曲: load the picked candidate on the empty deck and open the next cue. Returns { id, key, rating } or null. */
@@ -195,9 +213,15 @@ export const toward = m => m.cue?.to === 0 ? 1 - m.mix : m.mix;
 function followCheck(m, beatInMix, inTime = true) {
   const f = m.fader, upto = Math.min(PHRASE, Math.floor(beatInMix));
   let result = null;
+  // フェーダーに触るまでは「ぴったり」を出さない（DJR02・2026-11-25 オーナー「触っていないのに『ぴったり』と出る」）: the guide starts slowly
+  // from the playing side, so a fader left alone sat on it for the first beats and scored hits and a combo. Until the player moves it in this
+  // mix, a beat where it happens to sit on the line is not a hit and shows, warms and cools nothing (it still counts, so the score asks for the
+  // whole 8 bars). Once the line has moved away from a fader left alone, the beat is an ordinary miss (shown, cools the room) as before.
+  if (!f.touched && Math.abs(m.mix - f.mix0) > TOUCH_MOVE) f.touched = true;
   while (f.lastBeat < upto) {
     f.lastBeat++;
     const hit = Math.abs(toward(m) - guideAt(f.lastBeat / PHRASE)) <= FOLLOW_BAND;
+    if (!f.touched && hit) { f.checks++; if (inTime) f.inTime++; else m.floor = clamp(m.floor + SLIP_FLOOR, 0, 1); continue; }
     f.checks++; if (inTime) f.inTime++; else m.floor = clamp(m.floor + SLIP_FLOOR, 0, 1);
     if (hit) { f.hits++; f.combo++; f.best = Math.max(f.best, f.combo); m.floor = clamp(m.floor + FOLLOW_FLOOR.hit, 0, 1); }
     else { f.combo = 0; m.floor = clamp(m.floor + FOLLOW_FLOOR.miss, 0, 1); }

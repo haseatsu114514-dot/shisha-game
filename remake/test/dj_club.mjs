@@ -201,7 +201,7 @@ check("SBD39: an A (or S) best gives one sense ember at bedtime, once; B does no
 });
 check("three tiers (#3779): SET 1/2/3 are easy/normal/hard, B or better clears, the top tier gives one white fire once", () => {
   assert.deepEqual(dj.DJ_SETS.map(set => set.tier), ["easy", "normal", "hard"]);
-  assert.deepEqual(dj.DJ_SETS.map(dj.djSetNote), ["ズレなし", "途中で1回ズレる", "2回ズレる"], "the tier name replaces 入門／本命／上級");
+  assert.deepEqual(dj.DJ_SETS.map(dj.djSetNote), ["ズレなし", "たまにズレる", "ときどきズレる"], "the tier name replaces 入門／本命／上級");
   const s = { chapter: 3, flags: {}, trpg: { cleared: {} }, kuji: {} };
   assert.deepEqual(dj.recordDjResult(s, msg(1, "C", 40)).tiers, [], "C does not clear");
   assert.deepEqual(dj.recordDjResult(s, msg(1, "B", 60)).tiers, ["easy"]);

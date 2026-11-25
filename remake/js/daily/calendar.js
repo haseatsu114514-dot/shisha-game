@@ -320,7 +320,7 @@ const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 
 /**
  * 1日目だけ、自由行動の前にスミさんのおつかいを2つ実地でやる（旧版 N18/N19）。
- * ① Dr.fookah でレモンを仕入れ、大会用に贈られる（買い物は時間を使わない）→ ② KEMURIKUSA を客として偵察（行動1回＋交通費）。
+ * ① Dr.fookah でレモンを仕入れ、大会用に贈られる（買い物は時間を使わない・代金は経費）→ ② KEMURIKUSA を客として偵察（行動1回。一服の代金は店持ち・#4234）。
  * 偵察を終えたら退勤済みのまま帰宅。参加登録と配達2件は翌日へ。
  */
 async function day1Errands() {
@@ -355,7 +355,8 @@ async function day1Errands() {
     save();
   }
   const naru = spotById("naru");
-  if (!naru || (!f._errand_naru_visited && (isClosed(naru) || spendableMoney(state) < (naru.cost || 0)))) { f._errand_scout_done = true; return; }
+  // 偵察の一服は店の経費（#4234）。所持金が足りなくても行ける
+  if (!naru || (!f._errand_naru_visited && isClosed(naru))) { f._errand_scout_done = true; return; }
   if (!f._errand_scout_told) {
     const request = await play("remake_day1_errand_scout", { bg: TONARI_BG });
     if (state !== owner || request?.cancelled) return;
@@ -363,11 +364,11 @@ async function day1Errands() {
     save();
   }
   if (!f._errand_naru_visited) {
-    while (await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。" }, onShown }) !== "naru") {
+    while (await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。", free: "偵察（一服の代金は店持ち）" }, onShown }) !== "naru") {
       if (state !== owner) return;
     }
     if (state !== owner) return;
-    const completed = await visitRival(naru, { scout: true });
+    const completed = await visitRival(naru, { expense: true });
     if (state !== owner) return;
     if (!completed) { f._errand_scout_done = true; return; }
     state.visitedDay.naru = state.day;

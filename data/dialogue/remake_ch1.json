@@ -1609,6 +1609,11 @@
         },
         {
           "speaker": "sumi",
+          "face": "normal",
+          "text": "一服の代金は、店で持つ。これも仕事のうちだからな"
+        },
+        {
+          "speaker": "sumi",
           "face": "smile",
           "text": "それが一番よく分かる。今日はそのまま帰って休め"
         },
@@ -1711,7 +1716,29 @@
           {
             "speaker": "sumi",
             "face": "normal",
+            "text": "それから、大会の参加登録はまだだろ。C.STATIONの受付で済ませてこい"
+          },
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_errand_naru_visited",
+            "next_true": "dl_route_naru",
+            "next_false": "dl_route_plain"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "登録は無料だ。受付で名前を書くだけで済む"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
             "text": "登録が済んだら、その足でPEPPERMINT、それからEDENだ"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "届け賃は一軒2,000円。届けた分は、その場で手当につけとく"
           },
           {
             "speaker": "sumi",
@@ -1733,12 +1760,31 @@
           {
             "speaker": "sumi",
             "face": "normal",
+            "text": "届け賃は一軒2,000円。届けた分は、その場で手当につけとく"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
             "text": "二軒とも届けたら、一度顔を出せ"
           },
           {
             "speaker": "hajime",
             "face": "smile",
             "text": "PEPPERMINT、それからEDENですね。行ってきます"
+          }
+        ],
+        "dl_route_naru": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。なるさんにも、受付へ先に寄っとけって言われました"
+          }
+        ],
+        "dl_route_plain": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。受付は、C.STATIONなんですね"
           }
         ]
       }
