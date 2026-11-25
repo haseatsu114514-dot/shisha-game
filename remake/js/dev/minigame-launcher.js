@@ -16,10 +16,16 @@ const GAMES = [
     if (signal.aborted) return;
     return runCamelRace({ host, signal, cups: CAMEL_CUPS.map(cup => cup.id) });
   } },
+  // 砂丘はヌールにもなる（好敵手）にも挑める（本編ではヌールに勝つと来る。2026-11-25 オーナー「デバッグからなると対戦できるようにしたい」）
   { id: "desert", label: "DESERT RIDE（砂丘）", start: async (host, signal) => {
     const { runDesertRide } = await import("../minigames/desert-ride.js");
     if (signal.aborted) return;
-    return runDesertRide({ host, signal });
+    return runDesertRide({ host, signal, rivals: ["noor", "naru"] });
+  } },
+  { id: "desert-naru", label: "DESERT RIDE（なると勝負）", start: async (host, signal) => {
+    const { runDesertRide } = await import("../minigames/desert-ride.js");
+    if (signal.aborted) return;
+    return runDesertRide({ host, signal, rivals: ["noor", "naru"], startRival: "naru" });
   } },
   ...DJ_SETS.map(set => ({ id: `dj-${set.id}`, label: `DJ ${set.name}`, start: async (host, signal) => {
     const { runDjSet } = await import("../minigames/dj.js");

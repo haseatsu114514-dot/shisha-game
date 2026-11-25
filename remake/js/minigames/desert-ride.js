@@ -280,6 +280,7 @@ const HOWTO = {
  * 砂丘を滑る。host（本編は #stage）の上に全画面で重ね、「砂丘を下りる」か signal の中断で閉じる。
  * 完走するたびに onResult(result) を呼ぶ（何度でも）。戻り値 { results, practiced }。
  * @param opts.tutorial 最初に練習（ガイドの説明）から始める
+ * @param opts.startRival メニューを通さず、この相手との本番からすぐ始める（rivals にある時だけ。デバッグの「なると勝負」用・2026-11-25）
  * @param opts.best 表示する自己ベスト { score, rank }（保存は呼び出し側）
  * @param opts.reducedMotion 揺れ・閃光・速度線を止める
  * @param opts.guide 練習と結果のひとことを言う人の名前（既定はヌール。練習の説明はヌールの顔と吹き出しで出す）
@@ -296,7 +297,7 @@ export function runDesertRide(options = {}) {
   return withMinigameStyles("desert-ride", options.signal, () => startDesertRide(options));
 }
 
-function startDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, best = null, legacyBest = null, seed, courseId, rivals = ["noor"],
+function startDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, startRival = null, best = null, legacyBest = null, seed, courseId, rivals = ["noor"],
   tiers = TIERS, tier = "normal", cleared = [], tierNotes = null, easyBest = null, onTier = null,
   reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = "ヌール", speedUp = 1 } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
@@ -3218,6 +3219,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     };
     showMenu();
     if (tutorial) prepareAndStart("practice");
+    else if (startRival && rivals.includes(startRival)) prepareAndStart("run", startRival);
   });
   active.set(host, promise);
   promise.finally(() => active.delete(host));
