@@ -18,7 +18,7 @@ const stillOnly = () => !!window.matchMedia?.("(prefers-reduced-motion: reduce)"
 const isTop = (rank) => rank === "S" || rank === "LAST";
 const rankWord = (prize) => (prize.rank === "LAST" ? "ラストワン賞" : `${prize.rank}賞`);
 const prizeName = (prize) => (prize.rank === "LAST" ? prize.name.replace(/^ラストワン賞・/, "") : prize.name);
-const hidaneText = (prize) => prize.hidane?.map(({ kind, n }) => `火種 ${HIDANE_NAME[kind]} ＋${n}`).join("・") || "";
+const hidaneText = (prize) => prize.hidane?.map(({ kind, n }) => `火種 ${HIDANE_NAME[kind]} +${n}`).join("・") || "";
 const ORDER = ["LAST", "S", "A", "B", "C"];
 const bestRank = (results) => ORDER.find((r) => results.some((p) => p.rank === r)) || "C";
 
@@ -142,7 +142,7 @@ export function reveal(prize, extras = [], machine = {}) {
       open = true;
       if (skip) for (const ex of extras) {
         await sleep(500);
-        const text = isDupe(ex) ? `${ex.name} は${ex.dupText}` : `${ex.name} を手に入れた！`;
+        const text = isDupe(ex) ? `「${ex.name}」は${ex.dupText}` : `「${ex.name}」を手に入れた！`;
         toast(ex.hidane ? `${text} ${hidaneText(ex)}` : text, { kind: "good" });
       }
     };

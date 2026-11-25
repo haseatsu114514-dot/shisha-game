@@ -470,7 +470,7 @@ function startIchidai({ host = document.getElementById("stage"), signal = null, 
       const intro = tier === "basic" ? el("button.ichi-pick.ichi-intro", { type: "button", dataset: { test: "ichi-intro-start" },
         onclick: () => { sfx("select"); cfg = { kit: INTRO.kit, tournament: INTRO.tournament.id, level: INTRO.level, players: 2, intro: true }; startGame(); } }, [
         el("small", { text: "はじめての人へ" }), el("b", { text: INTRO.tournament.name }),
-        el("span.ichi-kit-blurb", { text: "一台は詰めてあります。炭を焼いて、熱を★に合わせるだけ。6ラウンドの短い一局で、一票と決め手はありません。" }),
+        el("span.ichi-kit-blurb", { text: "一台は詰めてある。炭を焼いて、熱を★に合わせるだけ。6ラウンドの短い一局で、一票と決め手はない。" }),
         el("i.ichi-intro-go", { text: "これで始める ▶" })]) : null;
       const kits = (tier === "basic" ? BASIC_KITS : KITS).map((k) => el(`button.ichi-pick.ichi-kit${pick.kit === k.id ? ".is-on" : ""}`, { type: "button", dataset: { test: `ichi-kit-${k.id}` }, "aria-pressed": String(pick.kit === k.id),
         onclick: () => { pick.kit = k.id; sfx("select"); draw(); } }, [
@@ -775,7 +775,7 @@ function startIchidai({ host = document.getElementById("stage"), signal = null, 
         sfx("card"); render({ land: fl ? (human(ev.p) ? 0.62 : multi() ? 1.0 : 1.7) / speed : 0 }); await playFlight(ev, from);
       }
       // 相手を1人ねらうカード（実況の煽り・すきま風）: ねらわれた相手がひるむ
-      else if (ev.t === "target") { if (ev.to !== ME) { seatMotion("flinch", ev.to); emote("bang", ev.to); } else if (multi() && !quick()) flash(`${G.P[ev.p].name}が あなたをねらった`, "is-foe"); }
+      else if (ev.t === "target") { if (ev.to !== ME) { seatMotion("flinch", ev.to); emote("bang", ev.to); } else if (multi() && !quick()) flash(`${G.P[ev.p].name}があなたをねらった`, "is-foe"); }
       else if (ev.t === "charge" || ev.t === "puton" || ev.t === "place") { if (ev.p !== ME) seatMotion("reach", ev.p); sfx("click"); render({ land: fl ? (human(ev.p) ? 0.3 : 0.36) / speed : 0 }); coalFlight(ev, from); }
       else if (ev.t === "pack") { sfx("card"); render(); leafFlight(ev, from); }
       else if (ev.t === "flip" || ev.t === "ash") { const at = coalSpot(ev); render(); burnFx(ev, at); if (at && !calm()) await wait(ev.p === ME ? 260 : multi() ? 50 : 120); }
@@ -1585,7 +1585,7 @@ function startIchidai({ host = document.getElementById("stage"), signal = null, 
       if (!ready.length && coalInHand && stoveRoom) tip("coal", "炭カードを炭焼き場へ（フラットは次のターン、キューブは2ターン後に焼ける）");
     } else if (want < dir) {
       tip("coal", canAsh(G, me).ok ? `火力を熱${want < 0 ? "より下" : "と同じ"}にする：炭を1つ選んで外す（1ターンに1つ）` : "炭を外せるのは1ターンに1つ。炭が弱るのを待つ");
-    } else if (coalInHand && stoveRoom) tip("coal", "いまのうちに炭カードを炭焼き場へ。次のターンにのせられる");
+    } else if (coalInHand && stoveRoom) tip("coal", "いまのうちに炭カードを炭焼き場へ。焼けたらのせられる");
     else if (!me.stove.length && !coalInHand) tip("coal", "焼いている炭が無い。次は種火（チャージ）でつなぐ");
     // 次のターン
     if (w.type === "main" && me.hmd === "one_coal" && me.zone.length === 1) tip("next", "炭が1つだけなので、次のターンも弱らない（C1）");

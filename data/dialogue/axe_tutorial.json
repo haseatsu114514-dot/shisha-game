@@ -14,7 +14,7 @@
           "id": "welcome",
           "speaker": "maki",
           "face": "normal",
-          "text": "よく来たね！　まずは無料で1投、あたしとやってみよう"
+          "text": "よく来たね！ まずは無料で1投、あたしとやってみよう"
         },
         {
           "id": "welcome_2",
@@ -40,7 +40,7 @@
           "id": "welcome_tap",
           "speaker": "maki",
           "face": "normal",
-          "text": "よく来たね！　まずは無料で1投、あたしとやってみよう"
+          "text": "よく来たね！ まずは無料で1投、あたしとやってみよう"
         },
         {
           "id": "welcome_tap_2",
@@ -66,7 +66,7 @@
           "id": "first_welcome",
           "speaker": "maki",
           "face": "normal",
-          "text": "お、斧は初めてだね？　本番の前に、あたしが1投だけ教えるよ"
+          "text": "お、斧は初めてだね？ 本番の前に、あたしが1投だけ教えるよ"
         },
         {
           "id": "first_welcome_2",
@@ -92,7 +92,7 @@
           "id": "first_welcome_tap",
           "speaker": "maki",
           "face": "normal",
-          "text": "お、斧は初めてだね？　本番の前に、あたしが1投だけ教えるよ"
+          "text": "お、斧は初めてだね？ 本番の前に、あたしが1投だけ教えるよ"
         },
         {
           "id": "first_welcome_tap_2",
@@ -188,7 +188,7 @@
           "id": "target_4",
           "speaker": "maki",
           "face": "normal",
-          "text": "宣言は1ゲーム2回。落としたら1回増えるよ"
+          "text": "宣言は1ゲーム2回。斧が刺さらず落ちたら1回増えるよ"
         },
         {
           "id": "target_5",
@@ -246,7 +246,7 @@
           "id": "vertical_3",
           "speaker": "maki",
           "face": "normal",
-          "text": "狙っている所が光るだろ？　赤い中心まで、あとひと息！"
+          "text": "狙っている所が光るだろ？ 赤い中心まで、あとひと息！"
         }
       ]
     },
@@ -260,7 +260,7 @@
           "id": "power",
           "speaker": "maki",
           "face": "normal",
-          "text": "最後は回転！　緑の54〜70%で放しな"
+          "text": "最後は回転！ 緑の54〜70%で放しな"
         },
         {
           "id": "power_2",
@@ -272,7 +272,7 @@
           "id": "power_3",
           "speaker": "maki",
           "face": "normal",
-          "text": "白い刃先が着地点だよ。息を整えるかFで、1投に1回だけ揺れを抑えられる"
+          "text": "白い刃先が着地点だよ。「息を整える」かFキーで、1投に1回だけ揺れを抑えられる"
         },
         {
           "id": "power_4",
@@ -332,7 +332,7 @@
           "id": "finish",
           "speaker": "maki",
           "face": "normal",
-          "text": "お疲れ！　横、縦、回転の順でよく投げたね。迷ったら、いつでも無料で復習できるよ"
+          "text": "お疲れ！ 横、縦、回転の順でよく投げたね。迷ったら、いつでも無料で復習できるよ"
         },
         {
           "id": "finish_2",
@@ -358,7 +358,7 @@
           "id": "finish_tap",
           "speaker": "maki",
           "face": "normal",
-          "text": "お疲れ！　横、縦、そして弾いて、よく投げたね。迷ったら、いつでも無料で復習できるよ"
+          "text": "お疲れ！ 横、縦、そして弾いて、よく投げたね。迷ったら、いつでも無料で復習できるよ"
         },
         {
           "id": "finish_tap_2",
@@ -384,7 +384,7 @@
           "id": "first_finish",
           "speaker": "maki",
           "face": "normal",
-          "text": "いい筋だ！　ここからが本番、点はちゃんと記録するよ"
+          "text": "いい筋だ！ ここからが本番、点はちゃんと記録するよ"
         },
         {
           "id": "first_finish_2",
@@ -410,7 +410,7 @@
           "id": "event_finish",
           "speaker": "maki",
           "face": "normal",
-          "text": "いい筋だ！　あとは連れと楽しんでおいで"
+          "text": "いい筋だ！ あとは連れと楽しんでおいで"
         },
         {
           "id": "event_finish_2",

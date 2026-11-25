@@ -78,7 +78,7 @@ export const CARDS = Object.freeze([
   { id: "loosen", name: "葉をほぐす", type: "tech", need: 3, when: "turn", tx: "このセッションの終わりまで、一口ごとの葉が減らない。" },
   { id: "breath", name: "ひと息", type: "tech", need: 0, extra: 1, when: "turn", tx: "カードを1枚引く。このターン、カードをもう1枚使える。" },
   { id: "reset", name: "仕切り直し", type: "tech", need: 5, pay: { fire: 2 }, extra: 1, when: "turn", tx: "熱を2落として使う。カードを3枚引く。このターン、カードをもう1枚使える。" },
-  { id: "windguard", name: "風防", type: "tool", need: 2, when: "any", tx: "風防カウンターを2個のせて出す。炭が弱るとき、火を1下げるかわりにカウンターを1個取ってよい。0個になったら灰へ。相手のカードで自分の炭は弱まらない。" },
+  { id: "windguard", name: "風防", type: "tool", need: 2, when: "any", tx: "風防カウンターを2個のせて出す。炭が弱るとき、火を1下げるかわりにカウンターを1個取ってよい。0個になったら灰へ。相手のカードで自分の炭は弱らない。" },
   { id: "chacosta", name: "チャコスタ", type: "tool", need: 3, when: "any", tx: "自分のターンのはじめ、炭焼き場に炭が3つ以上あれば、カードを1枚引く。" },
   { id: "timer", name: "キッチンタイマー", type: "tool", need: 1, when: "any", tx: "自分のターンのはじめに炭が焼けたら、カードを1枚引く（1ターンに1枚まで）。" },
   { id: "ice_hose", name: "アイスホース", type: "tool", need: 4, when: "any", tx: "上側のズレを適温として扱う。" },

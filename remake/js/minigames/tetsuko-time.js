@@ -449,7 +449,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       const shootable = canShoot();
       shot.disabled = !shootable;
       shot.classList.toggle("ready", shootable && !session.album.some(entry => entry.moment === session.moment));
-      shot.title = shootable ? `今のしぐさ（${momentById(session.moment)?.name}）を写真に残す（P）` : "しぐさが見えると撮影できます";
+      shot.title = shootable ? `今のしぐさ（${momentById(session.moment)?.name}）を写真に残す（P）` : "しぐさが見えると撮影できる";
       decorButton.classList.toggle("new", session.newProps.length > 0);
       for (const button of [decorButton, bookButton, helpButton]) button.disabled = leaving;
       host.dataset.tool = tool;

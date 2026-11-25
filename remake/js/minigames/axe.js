@@ -753,7 +753,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const last = shots.at(-1);
     const key = lessonContext && coachLines[lessonContext + "_" + id] ? lessonContext + "_" + id : id;
     const line = coachLines[tapPull && TAP_LESSON_VARIANTS.includes(key) ? key + "_tap" : key];
-    if (tapPull) { titles.power = "上へ弾いて投げる"; titles.target = "今の一投と、刃が触れた所"; }
+    if (tapPull) { titles.power = "③ 上へ弾いて投げる"; titles.target = "今の一投と、刃が触れた所"; }
     const scoreLine = last ? `今回は${last.score}点。${shotFeedback(last, { inputMode }).tip}` : "";
     const text = tapPull && id === "target" && last ? scoreLine + "\n" + line
       : line + (id === "result" && last ? " " + scoreLine : "");
@@ -1185,7 +1185,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         && recent === shown && shown?.outcome === "killshot" && shown.score > 0);
       const values = [
         [scoreLatest, recent ? "+" + recent.score : "—"],
-        [scoreLatestLabel, recent && versus ? (rivalLatest ? rivalName : "あなた") + "の投" : "直近"],
+        [scoreLatestLabel, recent && versus ? (rivalLatest ? rivalName : "あなた") + "の一投" : "直近"],
         [scoreOpponent, versus ? String(totalOf(match.opponent)) : ""],
         [scoreRound, sd ? "延長" : roundNumber + " / " + rules.throws + " 投"],
       ];
@@ -1255,7 +1255,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const ks = callStatus(currentShots);
     // #2834: 残り回数の文は青いバッジと読み上げに任せ、画面には宣言中・サドンデスの時だけ出す。
     status.dataset.kind = sd ? "sudden-death" : called ? "called" : "remaining";
-    status.textContent = sd ? "サドンデス：" + killPlaces[called] + "の青 · 刃が触れれば勝ち" : called ? (tapPull ? "キルショット宣言\n" : "宣言中：") + killPlaces[called] + "の青 · 青以外0点"
+    status.textContent = sd ? "サドンデス：" + killPlaces[called] + "の青 · 点が上回った方の勝ち" : called ? (tapPull ? "キルショット宣言\n" : "宣言中：") + killPlaces[called] + "の青 · 青以外0点"
       : "キルショット 残り" + ks.remaining + "回" + (ks.bonus ? "（落下で+" + ks.bonus + "）" : "") + (ks.mustRow ? " · " + (ks.mustRow === "upper" ? "上" : "下") + "の青だけ" : "");
     const callAvailable = canChooseCall() && !sd;
     for (const button of calls?.children || []) {
@@ -1386,11 +1386,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (tapPull) keyhint.textContent = phase === "power" ? "的に触れて上へ弾く / Space長押し / Fで集中" : "的をタップ / Space・Enterで針を止める · Fで集中";
     board.setAttribute("aria-disabled", String(!moving && !(phase === "choice" && actor === "player" && !sd) || actor !== "player" || isPaused()));
     board.setAttribute("aria-label", moving ? ({ horizontal: "横", vertical: "縦", power: "回転" })[phase] + "ゲージ。タップまたはSpaceで止める" : "斧投げの的。赤6点・5の円・リング4〜1点・宣言した青7／8点。青をタップで宣言");
-    if (tapPull) board.setAttribute("aria-label", phase === "power" ? "上にスワイプして投げる" : moving ? ({ horizontal: "横", vertical: "縦" })[phase] + "の針。金の印に重なったらタップで止める" : "的をタップで構える");
+    if (tapPull) board.setAttribute("aria-label", phase === "power" ? "上へ弾いて投げる" : moving ? ({ horizontal: "横", vertical: "縦" })[phase] + "の針。金の印に重なったらタップで止める" : "的をタップで構える");
     reaim.disabled = retry.disabled = isPaused() || performance.now() - lastAction < T.guard;
     action.disabled = isPaused() || ["loading", "flight", "opponent-ready"].includes(phase) || cycles[phase] && elapsed < T.guard || performance.now() - lastAction < T.guard;
     const nextAction = { loading: "読み込み中…", failed: "もう一度読み込む", choice: "構える", horizontal: "横を止める", vertical: "縦を止める", power: strength === "適正" ? "いま放す！" : "緑の帯で放す",
-      "opponent-ready": rivalName + "が構えています…", flight: "飛んでいく…", result: versus ? turnOf(match) === "opponent" ? rivalName + "の番へ" : turnOf(match) === null ? "結果を見る" : "あなたの番へ" : shots.length === rules.throws ? "結果を見る" : "次の投へ",
+      "opponent-ready": rivalName + "が構えています…", flight: "飛んでいく…", result: versus ? turnOf(match) === "opponent" ? rivalName + "の番へ" : turnOf(match) === null ? "結果を見る" : "あなたの番へ" : shots.length === rules.throws ? "結果を見る" : "次の一投へ",
       summary: series && !seriesWinner() ? "第" + (gameIndex + 2) + "ゲームへ" : "終了" }[phase] || "";
     const label = tapPull && phase === "power" ? "上へ弾いて投げる" : nextAction;
     if (actionLabel.textContent !== label) actionLabel.textContent = label;
@@ -1429,12 +1429,12 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     }
     drawImpact(displayedShot);
     const nextNote = document.hidden ? "一時停止中" : phase === "loading" ? "準備しています…" : phase === "failed" ? "画像を読み込めませんでした。もう一度お試しください。"
-      : phase === "choice" ? sd ? "サドンデス。" + killPlaces[called] + "の青へ、1本。" : switching() ? "後半5投。的を交代。赤と5の閉鎖は開き直す。" : !tutorial && rules.throws > 1 && shots.length === rules.throws - 1 ? lastNote() : "狙いを決めて、構える。" : phase === "horizontal" ? "① 横の位置を止めよう" : phase === "vertical" ? "② 縦の位置を止めよう"
+      : phase === "choice" ? sd ? "サドンデス。" + killPlaces[called] + "の青へ、1本。" : switching() ? "後半5投。的を交代。閉じた赤と5は再び開く。" : !tutorial && rules.throws > 1 && shots.length === rules.throws - 1 ? lastNote() : "狙いを決めて、構える。" : phase === "horizontal" ? "① 横の位置を止めよう" : phase === "vertical" ? "② 縦の位置を止めよう"
       : phase === "opponent-ready" ? sd ? rivalName + "のサドンデス" : called ? rivalName + "がキルショットを宣言" : rivalName + "の投擲を見よう" : phase === "power" ? "③ 白い刃先＋緑の回転で放す" : phase === "flight" ? "それっ！"
       : phase === "result" ? !last ? "" : last.outcome === "drop" ? (last.dropReason === "weak" ? "柄から当たって落下 · 0点" : "回りすぎて落下 · 0点") : last.outcome === "killshot" ? "キルショット！ " + last.score + "点"
       : last.outcome === "killshot-miss" ? (last.stuck ? "宣言した青い的から外れた · 0点" : "板の外 · 0点") : last.score ? (last.outcome === "bull" ? "ど真ん中！ " : "命中！ ") + last.score + "点" : last.zone?.kind === "closed" ? "閉じた円に触れた · 0点" : "的の外 · 0点"
       : "合計 " + totalOf(shots) + " / " + rules.max + "点";
-    const inputNote = tapPull && ["choice", "power"].includes(phase) ? phase === "choice" ? "的をタップして構える" : "上にスワイプして投げる" : nextNote;
+    const inputNote = tapPull && ["choice", "power"].includes(phase) ? phase === "choice" ? "的をタップして構える" : "上へ弾いて投げる" : nextNote;
     const finalNote = versus && phase === "summary" ? ({ player: "あなたの勝ち", opponent: rivalName + "の勝ち", draw: "引き分け" })[matchResult(match).winner] + (matchResult(match).suddenDeath ? " · サドンデス" + matchResult(match).suddenDeath.rounds + "本" : "") + (bestOf > 1 ? " · マッチ " + series.wins.player + "-" + series.wins.opponent : "") : inputNote;
     if (note.textContent !== finalNote) note.textContent = finalNote;
     const spoken = missNote || finalNote;

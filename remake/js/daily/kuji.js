@@ -92,7 +92,7 @@ const withDupe = (prize, cash) => cash == null ? prize : typeof cash === "object
 const noted = (prize) => prize.dupCash == null && prize.dupTicket == null ? prize : { ...prize,
   dupText: prize.dupTicket == null ? `持っているので、中古買い取りの${yen(prize.dupCash)}を受け取った`
     : prize.dupTicket > 0 ? "持っているので、くじ券を1枚受け取った" : `持っている（くじ券は${KUJI_TICKET_MAX}枚まで）`,
-  dupShort: prize.dupTicket == null ? yen(prize.dupCash) : `券+${prize.dupTicket}` };
+  dupShort: prize.dupTicket == null ? yen(prize.dupCash) : prize.dupTicket > 0 ? `券+${prize.dupTicket}` : "券上限" };
 
 const RANK_NAME = { S: "S賞", A: "A賞", B: "B賞", C: "C賞", LAST: "ラストワン賞" };
 /** 景品の一覧（棚の案内・GCH13）。その箱の景品を賞の順に並べ、絵とのこり枚数を出す。くじは店ごとに1種類なので、行の下の空いた所に置く。
@@ -106,11 +106,11 @@ function lineup(g, box) {
     el("span.kuji-lineup-main", [el("b.kuji-lineup-rank", { text: RANK_NAME[rank] || `${rank}賞` }), el("span.kuji-lineup-name", { text: name })]),
     el("span.kuji-lineup-left", { text: count }),
   ]);
-  const items = box.prizes.map((p, i) => item(p.rank, prizeArt(p, 56), p.name, left[i] > 0 ? `のこり ${left[i]} / ${p.count}` : ""));
+  const items = box.prizes.map((p, i) => item(p.rank, prizeArt(p, 56), p.name, left[i] > 0 ? `残り ${left[i]} / ${p.count}` : ""));
   if (box.lastOne) items.push(item("LAST", el("span.kuji-lineup-secret", { text: "？" }),
-    "最後の1枚に付く・中身は秘密", box.drawn < box.order.length ? "のこり 1 / 1" : ""));
+    "最後の1枚に付く・中身は秘密", box.drawn < box.order.length ? "残り 1 / 1" : ""));
   return el("section.kuji-lineup", { dataset: { test: `kuji-lineup-${g.id}` }, "aria-label": "この箱の景品" }, [
-    el("h4.kuji-lineup-head", [el("span", { text: "この箱の景品" }), el("small", { text: "当たった分だけ、のこりが減る" })]),
+    el("h4.kuji-lineup-head", [el("span", { text: "この箱の景品" }), el("small", { text: "当たった分だけ、残りが減る" })]),
     el("ul.kuji-lineup-list", items),
   ]);
 }
@@ -246,7 +246,7 @@ export function kujiRows(rerender, shop = "home", budget = () => spendableMoney(
         help ? el("span.kuji-title", [el("b", { text: label }), help]) : el("b", { text: label }),
         el("small", { text: empty
           ? `売り切れ（あと${Math.max(0, refill - (state.day - box.emptyDay))}日で新しい箱）`
-          : `のこり ${left} / ${size} 枚 ・ S賞: ${top}${old ? `（旧箱・次回は${g.boxSize}枚${price !== g.price ? `で1回${yen(g.price)}` : ""}）` : ""}` }),
+          : `残り ${left} / ${size} 枚 ・ S賞: ${top}${old ? `（旧箱・次回は${g.boxSize}枚${price !== g.price ? `で1回${yen(g.price)}` : ""}）` : ""}` }),
         secret,
       ]),
       el("div.kuji-actions", actions),

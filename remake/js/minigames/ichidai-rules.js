@@ -631,7 +631,7 @@ const EFFECTS = {
     if (!o) return;
     if (G.P.length > 2) say(G, `${o.name}をねらう。`, p.index);
     emit(G, { t: "target", p: p.index, to: o.index, id: "draft" });
-    if (hasTool(o, "windguard") || o.bowl.lavender >= 2) { say(G, "相手の炭は守られている。", o.index); return; }
+    if (hasTool(o, "windguard") || o.bowl.lavender >= 2) { say(G, `${o.name}の炭は守られている。`, o.index); return; }
     if (!o.zone.length) return;
     G.stack.push(w); G.wait = { type: "weaken", player: o.index, by: p.index };
   },

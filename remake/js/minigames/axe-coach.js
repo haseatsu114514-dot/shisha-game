@@ -42,7 +42,7 @@ export function coachDialog({ text, title, step = 1, total = 7, kind = "welcome"
         src: portrait.src, alt: "斧崎マキ", style: { "--portrait-ax": `${portrait.ax * 100}%`,
           "--head-ratio": (1 - portrait.h - portrait.b) / portrait.aspect },
       })]),
-        el("div.axe-coach-identity", [el("small", { text: "斧投げBar店員" }), el("strong", { text: "斧崎マキ" })]),
+        el("div.axe-coach-identity", [el("small", { text: "斧投げBar店主" }), el("strong", { text: "斧崎マキ" })]),
         el("span.axe-coach-progress", { text: step + " / " + total, "aria-label": "レッスン " + step + " / " + total })]),
       el("div.axe-coach-scroll", { tabindex: "0" }, [el("h2.axe-coach-title", { text: title }),
         el("p.axe-coach-line", { id: lineId, text, dataset: { test: "axe-coach-line" } }), kind === "target" && scoringGuide()]),

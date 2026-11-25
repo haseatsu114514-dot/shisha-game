@@ -100,7 +100,7 @@ function menu(result = null) {
   let messageText = "狙いを定めて、気持ちいい一投を。";
   if (result?.completed) {
     const series = result.series?.bestOf > 1 ? result.series : null;
-    messageText = (result.match ? "前回の記録 " : "前回の記録  ") + result.total + " / " + result.maximum + "点 · 平均 " + result.stats.average.toFixed(2);
+    messageText = "前回の記録 " + result.total + " / " + result.maximum + "点 · 平均 " + result.stats.average.toFixed(2);
     if (result.match) {
       const winner = series?.winner ?? result.match.winner;
       const outcome = ({ player: "あなたの勝ち", opponent: (result.opponent === "adam" ? "アダム" : "ひより") + "の勝ち", draw: "引き分け" })[winner];
