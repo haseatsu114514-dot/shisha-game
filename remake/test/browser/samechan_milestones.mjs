@@ -8,6 +8,7 @@ async function setup(page, restore = false) {
     window.K = {
       core: await import("./js/core/state.js"), stats: await import("./js/core/stats.js"),
       story: await import("./js/daily/samechan-bonds.js"), vn: await import("./js/vn/engine.js"),
+      intro: await import("./js/vn/intro.js"),
       ch1: await import("./js/chapters/ch1.js"), data: await import("./js/core/data.js"),
       romance: await import("./js/daily/romance.js"),
     };
@@ -136,6 +137,9 @@ await suite("samechan-milestones", async check => {
         const s = K.core.state; s.loveLevel.samechan = 4; s.lovePts.samechan = 50;
         s.loverEventsSeen = [1, 2, 3].map(n => `lover_samechan_lv${n}`);
         s.flags._samechan_swimming_known = true; K.core.save(); K.vn.vnTest.turbo = false;
+        // U-04で初登場カットインは通常再生ではクリックで縮められなくなったため、
+        // タップ回数の上限（80回）にカットインが食い込む。名前判明の保存検証が目的なので既見扱いにする。
+        K.intro.markIntroSeen("samechan");
         K.running = K.story.playSamechanMilestone();
       });
       const press = () => opts.hasTouch ? page.locator(".vn-box").tap() : page.locator(".vn-box").click();

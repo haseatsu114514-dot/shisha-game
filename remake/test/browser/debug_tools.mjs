@@ -11,7 +11,7 @@ const openPanel = async page => {
 await suite("debug-tools", async check => {
   await check("minigames-start-directly-without-writing-normal-save", async page => {
     const games = [
-      ["axe", "axe-game"], ["camel", "camel-game"], ["desert", "desert-ride"],
+      ["axe", "axe-game"], ["camel", "camel-game"], ["desert", "desert-ride"], ["desert-naru", "desert-ride"],
       ["dj-1", "dj-frame"], ["dj-2", "dj-frame"], ["dj-3", "dj-frame"],
       ["tetsuko", "tetsuko-cat"], ["trpg", "trpg-play-ordinary-cup"], ["ichidai", "ichi-game"], ["floor", "tonari-floor-intro"],
     ];
@@ -24,6 +24,12 @@ await suite("debug-tools", async check => {
       assert.equal(await close.isVisible(), false, `${id}: no return button is overlaid on the game`);
       assert.equal(await close.evaluate(node => node.parentElement.dataset.test), "debug-panel");
       assert.match(await page.locator(t("debug-toggle")).innerText(), /終了/, "the visible toggle tells how to exit");
+      // 砂丘: メニューからなるとも勝負できる。「なると勝負」はメニューを通さず、なるとの本番から始まる（2026-11-25）
+      if (id === "desert") await page.locator(t("desert-start-naru")).waitFor({ timeout: 30000 });
+      if (id === "desert-naru") {
+        await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "run" && window.__desertRide?.raceWith === "naru", null, { timeout: 60000 });
+        assert.equal(await page.locator(t("desert-ride")).getAttribute("data-rival"), "naru");
+      }
       if (id === "trpg") {
         assert.ok(await page.locator(t(screen)).isEnabled(), "night debug has an actual playable story");
         await page.locator(t(screen)).click();

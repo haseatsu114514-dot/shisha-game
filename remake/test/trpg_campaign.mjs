@@ -661,6 +661,8 @@ test("the shelf records only opted-in completed routes once and never replaces o
   const companionLines = ["aside", "after"].map(part => ordinary.dialogues.find(block =>
     block.dialogue_id === "trpg_ordinary_" + part + "_adam_adam_nico").lines[0].text);
   assert.deepEqual([firstRecord.lines[0][1], firstRecord.lines.at(-1)[1]], companionLines);
+  assert(firstRecord.lines.some(([speaker]) => speaker === "旅人オル · GMPC hiyori"));
+  assert(firstRecord.lines.some(([speaker]) => speaker === "hiyori · GM／場面"));
   assert(firstRecord.lines.every(([, line]) => !/\{pc[:}]/.test(line)), "the snapshot resolves names in the saved script");
 
   play("ミドリ", 5, false);

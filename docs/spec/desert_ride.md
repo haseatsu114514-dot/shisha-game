@@ -264,3 +264,7 @@ Game sprite, back view of a 22-year-old Japanese man riding a bright orange sand
 - **練習**: カーブを 80m → 200m（820〜1,020m）にし、砂流れを 1,100m・練習を 1,250m へ。カーブではヌールが3段で話す: 「カーブでは外に流されるよ。矢印の向き（←）へ押して、切り込んで」→（切り込めたら）「そう、それ！ 板の下が光って、砂に金の線が刻まれてるでしょ」→（1回刻んだら）「切り込んでる間は、ブーストが貯まるの。内側に寄りすぎたら、少し離してまた押して」→（2回刻むか熱が高まったら）「カーブの間、切り込むほど砂しぶきが高く上がっていくよ」。続けて話す時は、前の一言を読む間（1.6〜2 秒）を空ける。切り込めないままカーブを抜けたら「カーブでは曲がる向きへ押し続けてみて。本番のカーブはチャンスだよ」。
 - 検証: `remake/test/desert_ride.mjs`（刻みの点の速さが同じ・本番の4本でボットが4回以上刻む・練習のカーブを人の切り込み方で2回以上刻める）、`remake/test/desert_ride_sfx.mjs`（刻みの音が続けるほど高い）、`remake/test/browser/desert_ride.mjs` の `curve-tip-carving-boost-tempo-and-the-hidden-boss-banner`（切り込むと熱が上がり、刻みの音が鳴る）。このケースは、ゲージへ飛ぶ光の粒を5秒待つ所で、遅い環境では本PRと関係なく時々止まる（main でも3回に1回）。
 
+## デバッグからなると勝負（2026-11-25・DSR94）
+
+オーナー「デバックからなると対戦できるようにしたい」。`?debug=1` のデバッグパネルのミニゲーム（`remake/js/dev/minigame-launcher.js`）で、「DESERT RIDE（砂丘）」はヌールにもなるにも挑めるメニューで開く（`rivals: ["noor", "naru"]`。本編ではヌールに勝つとなるが来る）。「DESERT RIDE（なると勝負）」はメニューを通さず、なるとの本番からすぐ始まる（`runDesertRide` の `startRival: "naru"`）。どちらも本編の保存は読み書きしない。検証は `remake/test/browser/debug_tools.mjs` の `minigames-start-directly-without-writing-normal-save`。
+

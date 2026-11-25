@@ -116,7 +116,10 @@ try { await suite('ch1-loading',async check=>{
     },options);
 
     await check(`${device}-initial-portrait-and-skip`,async page=>{
-      await prepare(page);const before=await storageSnapshot(page);
+      await prepare(page);
+      // このケースは読み込み待ちの間にSKIPを仕掛けておく前提。SKIP既定が既読のみ（#4214 U-08）になったため、検査では「全部」に設定する。
+      await page.evaluate(async()=>{(await import("./js/core/state.js")).config.skipSeenOnly=false;});
+      const before=await storageSnapshot(page);
       let release;const held=new Promise(r=>{release=r;});
       await page.route('**/chr_minto_ura_normal.webp',async route=>{await held;await route.continue();});
       try {

@@ -11,7 +11,8 @@ async function setup(page) {
     s.met.tsumugi = s.met.sumi = true;
     Object.assign(s.flags, { _intro_tsumugi: true, _intro_sumi: true, _tsumugi_contest_research: true,
       _tsumugi_contest_progress: true, _lime_contact_tsumugi: true });
-    core.config.textSpeed = 4; vn.vnTest.turbo = false;
+    // このスイートは未読の場面もSKIPで進める前提。SKIP既定が既読のみ（#4214 U-08）になったため、検査では「全部」に設定する。
+    core.config.textSpeed = 4; core.config.skipSeenOnly = false; vn.vnTest.turbo = false;
     ui.clearScreen(); chapter.setupHooks();
     window.T = { core, vn, chapter, story, done: false, cgs: [], motionStarts: [] };
     const onCg = vn.hooks.onCg;

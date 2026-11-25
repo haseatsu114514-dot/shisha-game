@@ -104,6 +104,7 @@ await suite('portrait-framing',async check=>{
           const observer=new MutationObserver(()=>{if(vn.classList.contains('intro-morph-dialog-hidden'))window.framingMorphSeen=true;});
           observer.observe(vn,{attributes:true,attributeFilter:['class']});
           const {playIntro}=await import('./js/vn/intro.js');
+          core.state.cycleId=`portrait-framing-${art}`;
           window.framingIntro=playIntro('sumi').finally(()=>observer.disconnect());
         },art);
         await page.locator('.cutin.in').waitFor();

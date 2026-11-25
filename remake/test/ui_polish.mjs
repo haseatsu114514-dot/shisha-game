@@ -24,15 +24,16 @@ try {
   for (const size of [{ width: 1331, height: 760 }, { width: 844, height: 390 }, { width: 591, height: 1280 }]) {
     await page.setViewportSize(size);
     await page.waitForTimeout(1800);
-    assert.equal(await page.locator(".title-item").count(), 4);
+    assert.equal(await page.locator(".title-item").count(), 5);
     assert.equal(await page.locator('[data-test="title-glossary"], .title-save').count(), 0);
+    assert(await page.locator('[data-test="title-continue"]').isEnabled());
     assert(await page.locator('[data-test="title-load"]').isEnabled());
     const layout = await page.evaluate(() => {
       const logo = document.querySelector(".title-logo"), menu = document.querySelector(".title-menu");
       const a = logo.getBoundingClientRect(), b = menu.getBoundingClientRect(), s = document.querySelector("#stage").getBoundingClientRect();
       return { logoTop: getComputedStyle(logo).top, loaded: logo.complete && logo.naturalWidth > 0, gap: b.top - a.bottom, bottom: s.bottom - b.bottom };
     });
-    assert.equal(layout.logoTop, "76px");
+    assert.equal(layout.logoTop, "20px");
     assert(layout.loaded && layout.gap > 0 && layout.bottom > 0, JSON.stringify(layout));
     if (size.width === 1331) {
       const smoke = page.locator(".title-logo-smoke i").first();

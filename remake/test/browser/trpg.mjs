@@ -430,8 +430,8 @@ try {
       seen[line.kind] ||= line;
       await next.click();
     }
-    // GMが演じる人物は本人の立ち絵（GMの顔は添えない）。名札に「ゲームマスター ひより」。
-    assert.equal(seen.npc.who, "旅人オル"); assert.equal(seen.npc.aside, "ゲームマスター ひより");
+    // ひよりのオルの衣装がない卓ではオルの立ち絵を使い、演じている人を「GMPC ひより」と出す。
+    assert.equal(seen.npc.who, "旅人オル"); assert.equal(seen.npc.aside, "GMPC ひより");
     assert.match(seen.npc.art, /img\/ui\/trpg\/npc\/oru\.webp/); assert.doesNotMatch(seen.npc.art, /trpg-npc-gm|hiyori/, "No face of the GM beside the character they voice");
     assert.equal(seen.pc.who, pc.name, "A player in role is named by the character"); assert.equal(seen.pc.aside, "はじめ");
     assert.match(seen.pc.art, /costumes\/ordinary-cup\/hajime_/, "and wears the role costume");
@@ -483,6 +483,18 @@ try {
   for (const [label, options] of [["gm-faces-and-names-pc", {}],
     ["gm-faces-and-names-touch", { viewport: { width: 844, height: 340 }, isMobile: true, hasTouch: true }]]) {
     await run(label, { seed: "9" }, options, async page => {
+      await page.evaluate(() => document.fonts.ready);
+      const cover = await page.evaluate(() => {
+        const portraits = [...document.querySelectorAll(".trpg-cover-person-art")];
+        const name = portraits[0].nextElementSibling, original = name.textContent;
+        const top = () => portraits.map(n => n.getBoundingClientRect().top);
+        const before = top();
+        name.textContent = "†黒羅雨℃†";
+        const withCloud = top();
+        name.textContent = original;
+        return { before, withCloud };
+      });
+      assert.deepEqual(cover.withCloud, cover.before, "The long cover name keeps every portrait in place");
       await startTrpgStory(page);
       const report = await page.evaluate(async () => {
         const { displayName } = await import('./js/trpg/presentation.js');
@@ -491,6 +503,9 @@ try {
         const ids = [...new Set(scenarios.flatMap(s => s.cast.map(c => c.id)))];
         const names = ids.map(id => displayName(characters, id));
         const labels = [...document.querySelectorAll('.trpg-seat-name')], original = labels.map(n => n.textContent), failures = [];
+        const portraits = [...document.querySelectorAll(".trpg-seat-face")];
+        const top = () => portraits.map(n => n.getBoundingClientRect().top);
+        const before = top();
         for (const name of names) {
           labels.forEach(n => { n.textContent = name; });
           for (const n of labels) {
@@ -498,14 +513,17 @@ try {
             if (n.scrollWidth > n.clientWidth + 1 || n.scrollHeight > n.clientHeight + 1 || text.right > seat.right + 1 || text.bottom > seat.bottom + 1) failures.push(name);
           }
         }
+        labels[0].textContent = "†黒羅雨℃†".repeat(10);
+        const withOverflow = top();
         labels.forEach((n, i) => { n.textContent = original[i]; });
         const face = document.querySelector('[data-test="trpg-seat-gm"] img');
         await face.decode();
         const badge = document.querySelector('[data-test="trpg-seat-gm"] .trpg-gm-badge');
-        return { failures, names, src: face.src, badge: badge.textContent, dockFace: document.querySelectorAll('.trpg-speaker-art .trpg-gm-avatar img').length };
+        return { failures, names, before, withOverflow, src: face.src, badge: badge.textContent, dockFace: document.querySelectorAll('.trpg-speaker-art .trpg-gm-avatar img').length };
       });
       await page.locator(".trpg-entrance").waitFor({ state: "detached" });
       assert.deepEqual(report.failures, [], "All cast names are fully readable");
+      assert.deepEqual(report.withOverflow, report.before, "An overflowing seat name cannot move the face row");
       assert(report.names.length >= 10, "Names sampled from every catalog scenario");
       assert.match(report.src, /hiyori/); assert.equal(report.badge, "GM"); assert.equal(report.dockFace, 1);
     });

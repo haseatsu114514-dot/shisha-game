@@ -140,4 +140,51 @@ let accepted = false;
 assert(core.loadFromSlot(invalidKey, { validate(candidate) { accepted = candidate.schema === core.SCHEMA; } }));
 assert(accepted, "valid migrated candidate may be accepted");
 
-console.log("PASS: 手動LOADの保存失敗・状態復元、正常LOAD、オートLOAD、saveの成否");
+// 設定が未保存なら既読のみを使い、保存済みの「全部」は保持する。
+assert.equal(core.loadConfig().skipSeenOnly, true);
+files.set(core.CONFIG_KEY, '{"textSpeed":4}');
+assert.equal(core.loadConfig().skipSeenOnly, true);
+files.set(core.CONFIG_KEY, '{"skipSeenOnly":false}');
+assert.equal(core.loadConfig().skipSeenOnly, false);
+
+// 既存の枠1を残し、増えた枠にも個別に書き込める。
+assert.equal(core.SAVE_SLOTS.length, 4);
+assert.equal(core.SAVE_SLOTS[0].key, core.SAVE_KEY);
+assert.equal(manualKey, "suien_remake_slot1");
+const retiredKeys = ["suien_remake_slot2", "suien_remake_slot3"];
+for (const key of retiredKeys) files.set(key, originalManual);
+const newSlots = core.SAVE_SLOTS.slice(2);
+for (const [index, { key }] of newSlots.entries()) {
+  core.state.money = 1000 + index;
+  assert(core.saveToSlot(key));
+}
+assert.equal(files.get(manualKey), originalManual);
+for (const key of retiredKeys) assert.equal(files.get(key), originalManual);
+for (const [index, { key }] of newSlots.entries()) {
+  assert.equal(core.loadFromSlot(key)?.money, 1000 + index);
+}
+assert.equal(core.loadFromSlot(manualKey)?.day, 10);
+
+// 表示したスナップショットの内容で同一性を判定し、表示後の上書きには追従しない。
+const [newSlot2, newSlot3] = newSlots.map(({ key }) => key);
+files.set(newSlot3, JSON.stringify({ ...core.state, savedAt: Number.MAX_SAFE_INTEGER }));
+const entry = core.peekLatestSaveEntry();
+assert.equal(entry.key, newSlot3);
+assert.equal(core.peekLatestSave().savedAt, entry.data.savedAt);
+const replaced = [];
+bus.on("state-replaced", ({ sourceRaw, previousAutoRaw, autoResume }) => replaced.push({ sourceRaw, previousAutoRaw, autoResume }));
+const initialAuto = core.currentAutoSaveSource();
+assert(core.loadFromSlot(entry.key, { expectedRaw: entry.raw }));
+assert.deepEqual(replaced.at(-1), { sourceRaw: entry.raw, previousAutoRaw: initialAuto, autoResume: false });
+const rewrittenAuto = core.currentAutoSaveSource();
+assert(core.loadFromSlot(entry.key));
+assert.deepEqual(replaced.at(-1), { sourceRaw: entry.raw, previousAutoRaw: rewrittenAuto, autoResume: false });
+assert(core.loadFromSlot(newSlot2));
+assert.notEqual(replaced.at(-1).sourceRaw, entry.raw);
+const beforeRejected = core.state;
+files.set(newSlot3, JSON.stringify({ ...entry.data, day: entry.data.day + 1 }));
+assert.equal(core.loadFromSlot(entry.key, { expectedRaw: entry.raw }), null);
+assert.equal(core.state, beforeRejected);
+assert.equal(replaced.length, 3);
+
+console.log("PASS: LOADの保存失敗・状態復元・原文照合、最新枠、AUTO・手動3枠の互換性、SKIP既定値と保存済み設定");

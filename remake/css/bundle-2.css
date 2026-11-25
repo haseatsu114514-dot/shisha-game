@@ -1428,7 +1428,7 @@ html:root[data-ui-theme] body:not(:root) .vn-box {
   bottom:var(--vn-dialogue-bottom); padding:var(--vn-body-top) var(--vn-body-side) 16px;
 }
 html:root[data-ui-theme] body:not(:root) .vn-text {
-  font-size:28px; font-weight:700; line-height:44px; min-height:88px; letter-spacing:.035em;
+  font-size:28px; font-weight:500; line-height:44px; min-height:88px; letter-spacing:.035em;
 }
 html:root:is([data-ui-theme="cut-paper"],[data-ui-theme="amber"],[data-ui-theme="classic"]) body:not(:root) .vn-text {
   font-family:"Suien Blue Mincho",serif; font-weight:400; letter-spacing:.04em;
@@ -3446,11 +3446,9 @@ body #stage[data-wide] .cfg-seg-btn { font-size: max(24px, var(--wide-min)); min
 body #stage[data-wide] .cfg-modal .ui-theme-select { font-size: max(24px, calc(17px / var(--k, 1))); min-height: max(60px, var(--wide-tap)); }
 body #stage[data-wide] .cfg-modal .modal-actions .btn { min-height: max(76px, var(--wide-tap)); font-size: max(26px, calc(13px / var(--k, 1))); }
 
-/* セーブ／ロード: 固定1280×720内で2枚を広く使う。縮小後も文字を読める寸法にする。 */
-body #stage[data-wide] .saveload-modal { max-height: 660px; }
+/* セーブ／ロード: 4枠を表示し、縮小後も文字を読める寸法にする。 */
 body #stage[data-wide] .saveload-modal h3 { font-size: max(32px, var(--wide-min)); }
 body #stage[data-wide] .saveload-modal .ss-note { font-size: max(24px, var(--wide-min)); }
-body #stage[data-wide] .saveload-modal .save-slot { min-height: 390px; }
 body #stage[data-wide] .saveload-modal .ss-label { font-size: max(30px, var(--wide-min)); }
 body #stage[data-wide] .saveload-modal .ss-label small { font-size: max(24px, var(--wide-min)); }
 body #stage[data-wide] .saveload-modal .ss-info b { font-size: max(28px, var(--wide-min)); }

@@ -36,7 +36,7 @@ const overrides={spendableMoney,state, DB:{flavorById:{lemon:{}},dialogues:{},li
  chooseSpot:async opts=>{if(calls.length>100)throw Error('Calendar fixture did not make progress');calls.push({type:'map',pin:opts.guide?.pin,free:opts.guide?.free,day:state.day,slot:state.slot});return opts.guide?.pin||mapQueue.shift()||'rest'},
  spotById:id=>spots[id]||{id,kind:'rest',stamina:0},ownsFlavor:()=>false,
  openShop:async()=>calls.push({type:'shop'}),
- visitRival:async spot=>{state.money-=spot.cost;state.stamina+=spot.stamina;state.story[spot.charId]=(state.story[spot.charId]||0)+1;calls.push(spot.id==='naru'&&state.day===1?{type:'scout',day:state.day}:{type:'rival',id:spot.charId,day:state.day,slot:state.slot,deliveryFlag:!!state.flags[`_delivery_${spot.charId}`]});return true},
+ visitRival:async (spot,opts={})=>{if(!opts.expense)state.money-=spot.cost;state.stamina+=spot.stamina;state.story[spot.charId]=(state.story[spot.charId]||0)+1;calls.push(spot.id==='naru'&&state.day===1?{type:'scout',day:state.day,expense:!!opts.expense}:{type:'rival',id:spot.charId,day:state.day,slot:state.slot,deliveryFlag:!!state.flags[`_delivery_${spot.charId}`]});return true},
  // Calendar owns ordering; the actual handoff implementation is tested with spots.js below.
  deliverToRival:async ({charId:id})=>{
   const done=`_delivery_${id}_done`;
@@ -107,7 +107,9 @@ assert.equal(calls.find(x=>x.type==='day2-guide').slot,0);
 assert.equal(state.flags._ch1_rules_read,true);
 assert.equal(calls.find(x=>x.id==='remake_delivery_minto_handoff').day,2);
 assert(!calls.some(x=>x.type==='map'&&x.day===1&&!['shop','naru'].includes(x.pin)));
-assert.equal(actionEnds,3);assert.equal(state.money,11000);assert.equal(state.flags._c_station_registered,true);
+// #4234: スミさんのおつかい・配達の間はお金が減らない。偵察の一服は店持ちで、配達の手当（2,000円×2）だけが入る
+assert.equal(calls.find(x=>x.type==='scout').expense,true,'the scouting visit is the shop\'s expense');assert.equal(calls.find(x=>x.type==='map'&&x.pin==='naru'&&x.day===1).free,'偵察（一服の代金は店持ち）');
+assert.equal(actionEnds,3);assert.equal(state.money,14000);assert.equal(state.flags._c_station_registered,true);
 assert.equal(state.visitedDay.c_station,undefined,'Free registration must leave the same-day customer visit available');
 // Old DAY1-night checkpoints do not replay scouting or the existing registration.
 reset({day:1,slot:1});await c.runDaily({untilDay:3,nightEvents:{}});assert(!calls.some(x=>['scout','register','shop'].includes(x.type)));assert.equal(state.money,14000);assert.equal(actionEnds,2);

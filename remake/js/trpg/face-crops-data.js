@@ -4,6 +4,30 @@
 export const FACE_FRAC = 0.46;
 export const EYE_Y = 0.42;
 
+// Source-pixel horizontal bounds for hair and other wide parts of standing
+// portraits. The bounds cover every expression used in the TRPG dialogue.
+export const STANDING_PORTRAIT_BOUNDS = {
+  classic: { ageha: [284, 684], hiyori: [329, 637] },
+  new: { ageha: [279, 703], hiyori: [409, 727] },
+};
+
+// Wide hair, headwear and small accessories in role portraits. Long props can
+// extend beyond the bust crop. Keys match the existing costume frame records.
+export const COSTUME_PORTRAIT_BOUNDS = {
+  "doll-requiem/ageha/kirara": [295, 706],
+  "doll-requiem/ageha/marie": [312, 693],
+  "doll-requiem/hiyori/cecilia": [416, 715],
+  "moonflower-encore/ageha/kirara": [233, 712],
+  "moonflower-encore/ageha/moka": [295, 713],
+  "purikura-hero/ageha/lovely": [315, 726],
+  "purikura-hero/ageha/beatrice": [329, 691],
+  "purikura-hero/kuraudo/shion": [278, 646],
+  "purikura-hero/regularb/shion": [293, 631],
+  "shark-island/hiyori/nerine": [421, 697],
+  "stage-ghost/samechan/hiremaru": [277, 668],
+  "stage-ghost/samechan/minamo": [246, 620],
+};
+
 /** Per-style standing-portrait crops used by TRPG seat / companion / cover circles. */
 export const PORTRAIT_FRAMES = {
   "classic": {

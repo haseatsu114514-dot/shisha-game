@@ -31,11 +31,15 @@ async function preload(url, signal) {
 /** Scenario and canonical presentation data only; no main-game loading or saves. */
 export async function loadTrpgClubResources({ signal } = {}) {
   const base = new URL("../../../data/", import.meta.url);
-  const catalog = await json(new URL("trpg_catalog.json", base), signal);
-  const [characters, manifest, overlays, club] = await Promise.all([
+  const [characters, manifest, { catalog, overlays, club }] = await Promise.all([
     json(new URL("characters.json", base), signal), json(new URL("../../data/manifest.json", import.meta.url), signal),
-    Promise.all((catalog.characterProfiles || []).map(file => json(new URL(file, base), signal))),
-    json(new URL(catalog.club.file, base), signal),
+    json(new URL("trpg_catalog.json", base), signal).then(async catalog => {
+      const [overlays, club] = await Promise.all([
+        Promise.all((catalog.characterProfiles || []).map(file => json(new URL(file, base), signal))),
+        json(new URL(catalog.club.file, base), signal),
+      ]);
+      return { catalog, overlays, club };
+    }),
   ]);
   const people = new Map(characters.map(c => [c.id, c]));
   overlays.forEach(o => { if (o.profile?.id) people.set(o.profile.id, o.profile); });

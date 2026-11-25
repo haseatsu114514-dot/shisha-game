@@ -1,5 +1,5 @@
 import { chapterDay } from "../core/chapter-clock.js";
-import { displayName } from "./presentation.js";
+import { displayName, GMPC_TITLE, isTrpgReading, trpgLineKind, trpgRoleName } from "./presentation.js";
 import { PLAYER_SEAT, sheetsOf } from "./session.js";
 
 // Keep existing records when the shelf is full. These limits count JSON code units,
@@ -46,6 +46,8 @@ export function buildTrpgPlayRecord(table, result, memory, state, play, characte
     .map(frame => {
       const speaker = frame.speaker === "samechan" && frame.voice === "korochan" ? "コロちゃん" : name(frame.speaker);
       const role = text(frame.role).replace(/^(?:GM|PL|コロちゃん)／卓の会話$/, "");
+      const who = trpgLineKind(frame, memory.gm) === "npc" ? trpgRoleName(role) : "";
+      if (who && !isTrpgReading(who)) return [who + " · " + GMPC_TITLE + " " + name(frame.speaker), text(frame.text)];
       return [[speaker, role].filter(Boolean).join(" · "), text(frame.text)];
     });
   const choices = [], stages = [];

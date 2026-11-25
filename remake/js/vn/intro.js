@@ -25,6 +25,8 @@ import { createTransition, measureStanding } from "./intro-transition.js";
 
 export const introSeenKey = (id, variant = "") => `_intro_${id}${variant ? `_${variant}` : ""}`;
 const introOf = (id, variant = "") => DB.characters[id]?.[variant ? `intro_cutin_${variant}` : "intro_cutin"] || null;
+// この起動中に表示した人物。ロードで state が差し替わっても、同じ周回なら履歴を使う。
+const shownByCycle = new Map();
 
 /** このキャラのカットインを今出すべきか（データがあり・未見で・名前が「？？？」でない） */
 export function needsIntro(id) {
@@ -103,11 +105,14 @@ export function prefetchIntro(id, { variant = "", override = {} } = {}) {
 }
 
 /**
- * 初登場は最後まで見せる。クリック・Enter・SKIPでも表示時間を短くしない。
+ * 通常再生でその周回の初登場なら、演出を最後まで見せる。
  * @param opts.onAppear 画像が出た時の場面処理（本人の登場に合わせるBGMなど）
  * @param opts.waitAssets 絵・書体の待ち（Promise）を受け取り、待つ間の表示を添えて返す（会話エンジンの読み込みの表示。#2444 観察4）
+ * @param opts.isSkipping 絵・書体が揃った時点での会話のSKIP状態
  */
-export async function playIntro(id, { onAppear = null, override = {}, variant = "", waitAssets = (ready) => ready } = {}) {
+export async function playIntro(id, {
+  onAppear = null, override = {}, variant = "", waitAssets = (ready) => ready, isSkipping = () => false,
+} = {}) {
   const intro = { ...introOf(id, variant), ...override };
   if (!introOf(id, variant)) return;
   if (variant !== "unknown") markMet(id);
@@ -116,29 +121,37 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
   const { source: nameSource, main, subSource } = names;
   const standingInfo = portraitInfo(id, intro.face || "normal");
   const { p, art, graphic, background } = introSources(id, intro);
+  const cycleId = state.cycleId;
+  const shown = shownByCycle.get(cycleId) ?? new Set();
+  shownByCycle.set(cycleId, shown);
+  const appear = () => {
+    shown.add(id);
+    onAppear?.();
+  };
   if (art && p) {
     await waitAssets(introAssetsReady(intro, { p, background }, names));
+    const brief = isSkipping() || shown.has(id);
     const host = illustratedIntro(id, variant, intro, nameSource, p, art, background);
     host.dataset.art = graphic ? "graphic" : "classic"; // ひより専用の明るい配色は旧絵柄（白い背景）だけ
     const motion = motionOf(intro);
     // 立ち絵からの「変身」のつなぎ（グラフィック絵柄のときだけ。既定 none は今まで通り）
-    const standingRect = graphic ? measureStanding(id, layers.fx) : null;
-    const transition = createTransition(graphic ? (override.transition ?? config.introTransition ?? "none") : "none", {
+    const standingRect = !brief && graphic ? measureStanding(id, layers.fx) : null;
+    const transition = createTransition(!brief && graphic ? (override.transition ?? config.introTransition ?? "none") : "none", {
       id, fx: layers.fx, host, frame: graphic?.frame, config,
       standing: standingRect && standingInfo ? { rect: standingRect, p: standingInfo } : null,
       colors: { color: art.color, secondary: art.secondary, shadow: art.shadow },
-      mount: () => mountIntro(host, layers.fx),
+      mount: () => mountIntro(host, layers.fx, { brief }),
     });
     const animations = [];
     let unmount = null;
     try {
       unmount = await transition.enter();
       const twoLines = layoutIntro(host, id, variant, intro);
-      animations.push(...animateIntro(host, id, motion, { sound: (cue) => introSound(motion, cue), skip: transition.skip }));
+      if (!brief) animations.push(...animateIntro(host, id, motion, { sound: (cue) => introSound(motion, cue), skip: transition.skip }));
       host.classList.remove("ci-staged");
-      onAppear?.();
-      introSound(motion, "appear");
-      await holdIntro(host, { motion, twoLines, exit: transition.exit ? () => transition.exit() : null });
+      appear();
+      if (!brief) introSound(motion, "appear");
+      await holdIntro(host, { brief, motion, twoLines, exit: transition.exit ? () => transition.exit() : null });
     } finally {
       animations.forEach((animation) => animation.cancel());
       transition.cancel();
@@ -170,11 +183,12 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     ].filter(Boolean)),
     intro.line ? el("div.ci-line", { text: `「${plainLine(intro.line)}」`, style: `font-size: ${fitSize(`「${plainLine(intro.line)}」`, 575, 30)}px` }) : null,
   ].filter(Boolean));
-  const unmount = mountIntro(host, layers.fx);
+  const brief = isSkipping() || shown.has(id);
+  const unmount = mountIntro(host, layers.fx, { brief });
   try {
-    onAppear?.();
-    SE.select();
-    await holdIntro(host, { motion: motionOf(intro), legacy: true });
+    appear();
+    if (!brief) SE.select();
+    await holdIntro(host, { brief, motion: motionOf(intro), legacy: true });
   } finally {
     unmount();
   }
@@ -191,7 +205,8 @@ function introSound(motion, cue) {
 /** 一言が2行の時は400ms長く見せる */
 export const introHoldMs = (motion, twoLines = false) => (MOTIONS[motion] || MOTIONS.sharp).hold + (twoLines ? 400 : 0);
 
-async function holdIntro(host, { motion = "sharp", twoLines = false, legacy = false, exit = null } = {}) {
+async function holdIntro(host, { brief = false, motion = "sharp", twoLines = false, legacy = false, exit = null } = {}) {
+  if (brief) return sleep(600);
   await sleep(30);
   host.classList.add("in");
   const onTap = (e) => { e.preventDefault(); e.stopPropagation(); };

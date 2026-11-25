@@ -635,7 +635,10 @@ await suite('ch2-tournament',async check=>{
     assert.match(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage),/bg_ch2_ageha_closed_night/,'complete card must keep the closed MELTY PUFF background');
     await reload(page);await page.locator(t('complete')).waitFor();s=await get(page);
     assert.equal(s.flags._ch2_tournament.history.length,1);assert.equal(s.inbox.filter(i=>i.id.startsWith('ch2_tournament_sumi_')).length,2);
-    assert(!/ずるいよ/.test(await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'))),'complete reload must not replay the ending');
+    // #4214 U-11: LOGは同一セーブの再読込で保持されるため、再読込後のLOGに結末の台詞が残るのは正しい。
+    // 繰り返し再生されていないことは、出現回数が再読込前から増えていないことで確かめる。
+    const reloadedText=await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'));
+    assert.equal((reloadedText.match(/ずるいよ/g)||[]).length,(afterText.match(/ずるいよ/g)||[]).length,'complete reload must not replay the ending');
     await assertFits(page,'.ch2-contest .btn');
     await capture(page,'pc-complete');
   });
