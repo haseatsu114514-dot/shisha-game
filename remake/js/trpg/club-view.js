@@ -46,7 +46,7 @@ export function mountTrpgRecruitment(host, { getState, personId, catalog, charac
       el("h2", { text: unheard ? name + "の部活の話" : step < 0 ? name + "を部活に誘う？" : name }),
       el("div.trpg-club-conversation", [
         el("div.trpg-club-portrait", el("img", { src: portraitUrl(manifest, personId), alt: name,
-          style: portraitBoxStyle(manifest, personId, { faceFrac: 0.25, eyeFrac: 0.39, fallbackWidth: 300, fallbackHeadY: 4 }) })),
+          style: portraitBoxStyle(manifest, personId, { faceFrac: 0.25, eyeFrac: 0.39, fallbackWidth: 300, fallbackHeadY: 4, fitStandingPortrait: true }) })),
         el("div", [el("small", { text: unheard ? name : step < 0 ? "はじめ" : name }),
           el("p", { text: line, dataset: { test: "trpg-recruit-line" } })]),
       ]),

@@ -159,6 +159,34 @@ test("round icons resolve the displayed style and expression before positioning 
   assert.deepEqual(faceIconStyle("hiyori", "classic", manifest, "missing"), faceIconStyle("hiyori", "classic"));
 });
 
+test("large TRPG portraits keep wide hair and tall costume headwear inside their frames", async () => {
+  const { portraitBoxStyle } = await import("../js/trpg/presentation.js");
+  const { bustFrameStyle, bustTypicalWidths } = await import("../js/trpg/face-crops.js");
+  const manifest = JSON.parse(await readFile(new URL("../data/manifest.json", import.meta.url), "utf8"));
+  const project = (style, x, y, ratio = 1) => {
+    const [tx, ty] = style.transform.match(/-?[\d.]+/g).map(Number);
+    const zoom = parseFloat(style.width) / 100 / 896;
+    return [0.5 + (x + tx * 896 / 100) * zoom, parseFloat(style.top) / 100 + (y + ty * 1200 / 100) * zoom * ratio];
+  };
+  const face = "surprise";
+  const ageha = portraitBoxStyle(manifest, "ageha", { face, fitStandingPortrait: true });
+  assert.ok(project(ageha, 292, 201)[0] >= 0.02);
+  assert.ok(project(ageha, 703, 201)[0] <= 0.98 + 1e-9);
+  assert.deepEqual(portraitBoxStyle(manifest, "tsumugi", { face, fitStandingPortrait: true }),
+    portraitBoxStyle(manifest, "tsumugi", { face }));
+
+  const keyed = Object.fromEntries(frames.map(f => [`${f.scenario}/${f.character}/${f.role_id}`, f]));
+  const typical = bustTypicalWidths(keyed);
+  const costumeKey = "moonflower-encore/ageha/kirara";
+  const kirara = bustFrameStyle(keyed[costumeKey].face, "ageha", typical.ageha, { costumeKey, faceFrac: 0.24 });
+  assert.ok(project(kirara, 233, 204)[0] >= 0.02 - 1e-9);
+  assert.ok(project(kirara, 712, 204)[0] <= 0.98 + 1e-9);
+  for (const [key, { face: costumeFace, character }] of Object.entries(keyed)) {
+    const cutIn = bustFrameStyle(costumeFace, character, typical[character], { costumeKey: key, boxAspect: 1 });
+    assert.ok(project(cutIn, costumeFace.cx, costumeFace.figtop)[1] >= -1e-9, key + " crown is visible");
+  }
+});
+
 test("Hiyori's lower face and cheek span stay registered across six costumes and expressions", () => {
   function project(style, [x, y]) {
     const [tx, ty] = style.transform.match(/-?[\d.]+/g).map(Number);
