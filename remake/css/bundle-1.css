@@ -4275,7 +4275,7 @@ body:not(:root) .vn-choices:has(> .vn-choice:nth-child(6)) > .vn-choice {
 /* つなぎの間、名前・帯・一言は animateIntro が始まるまで隠す */
 .cutin.ci-staged :is(.ci-ribbon,.ci-accent-line,.ci-quote-area) { opacity:0; }
 /* morph の形の変化（intro-shape-morph.js）。低解像度で描いて拡大する。光の縁で拡大のぼけを馴染ませる */
-.ci-tr-morph { position:absolute; image-rendering:auto; will-change:opacity; filter:drop-shadow(0 0 10px var(--tr-color)); }
+.ci-tr-morph { position:absolute; image-rendering:auto; will-change:opacity; }
 
 /* ===== css/tonari-opening.css ===== */
 /* 1280×720の舞台内だけで切り替える。本文枠・文字・操作ボタンには触れない。 */
