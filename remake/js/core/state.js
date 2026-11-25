@@ -9,6 +9,7 @@ import { MASTERY_THRESHOLDS, RENAMED_MASTERY_KEYS, learnFlavorStory } from "./fl
 import { emit } from "./bus.js";
 import { recordGalleryProgress } from "./gallery-progress.js";
 import { LEGACY_STARTER_HIDANE, STARTER_FLAG } from "./growth-starter.js";
+import { captureChapterStart, captureUnrecordedChapterStart, isChapterStart } from "./chapter-save.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
@@ -666,7 +667,9 @@ export function load() {
   // 移行で想定外の例外が出ても、タイトルやブートを巻き込まず読み込み失敗にする。
   let migrated = null;
   try { migrated = migrate(s); } catch { migrated = null; }
-  return migrated ? setState(migrated, raw) : null;
+  if (!migrated) return null;
+  captureUnrecordedChapterStart(migrated);
+  return setState(migrated, raw);
 }
 
 // ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に1枠）
@@ -728,11 +731,25 @@ export function loadFromSlot(key, { validate } = {}) {
   if (!migrated) return null;
   // 外部JSONなどの候補は、移行後の形を検証してから保存・公開する。
   try { if (validate && validate(migrated) === false) return null; } catch { return null; }
+  captureUnrecordedChapterStart(migrated);
   // 保存の成否が決まるまで候補を公開しない。hud購読者は旧画面を破棄しうる。
   const { raw, saved } = writeSave(migrated, { manualLoad: key !== SAVE_KEY, expectedRaw: sourceRaw });
   // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。
   if (!saved && key !== SAVE_KEY) return null;
   return setState(migrated, saved ? raw : sourceRaw);
+}
+
+/** 章頭へ戻す操作も、同じAUTOを基にしている間だけ確定する。 */
+export function restartChapterFromSave(owner, checkpoint) {
+  if (state !== owner || !isChapterStart(checkpoint, owner)) return false;
+  let restored;
+  try { restored = migrate(structuredClone(checkpoint)); } catch { return false; }
+  if (!isChapterStart(restored, owner)) return false;
+  captureChapterStart(restored);
+  const { raw, saved } = writeSave(restored);
+  if (!saved) return false;
+  setState(restored, raw);
+  return true;
 }
 
 /** ゲーム中にロードしたとき: いったん読み直して、タイトルを飛ばしてそのまま再開する */

@@ -22,7 +22,7 @@ export function createChapterActions({ current, test, logName, renderError,
     setBusy(owner, true);
     try { await action(); }
     catch (error) {
-      if (current(owner)) { console.error(logName, error); renderError(owner); }
+      if (current(owner)) { console.error(logName, error); renderError(owner, error); }
     } finally { if (!clearBusyIfCurrent || current(owner)) setBusy(owner, false); }
   }
 

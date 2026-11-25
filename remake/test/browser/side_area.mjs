@@ -88,7 +88,7 @@ await suite("side-area", async check => {
       strip: document.querySelector(".side-strip").hidden,
       liveButtons: document.querySelectorAll('.side-btn[data-live="true"]').length,
       smoke: getComputedStyle(document.querySelector(".side-smoke")).animationName,
-      backdrop: getComputedStyle(document.getElementById("backdrop")).filter,
+      backdrop: (() => { const bd = document.getElementById("backdrop"); return { filter: getComputedStyle(bd).filter, raster: bd.classList.contains("backdrop-raster"), canvasW: bd.querySelector("canvas")?.width || 0 }; })(),
     }));
     // ステージは固定のまま（#3035）。余白の層は左右の余白ちょうどに重なる
     assert(Math.abs(state.stage.height - 393) < 1 && Math.abs(state.stage.width - 393 * 16 / 9) < 1, JSON.stringify(state.stage));
@@ -100,7 +100,8 @@ await suite("side-area", async check => {
     assert.equal(state.strip, true);
     assert.equal(state.liveButtons, 0);
     assert.equal(state.smoke, "side-drift");
-    assert.match(state.backdrop, /blur\(/);
+    // ぼかしは CSS の filter か、ぼかして描いた canvas の写し（backdrop-raster）のどちらかで入る
+    assert(/blur\(/.test(state.backdrop.filter) || (state.backdrop.raster && state.backdrop.canvasW > 0), `余白にぼかしが無い: ${JSON.stringify(state.backdrop)}`);
   }, PHONE);
 
   await check("conversation-pads", async page => {

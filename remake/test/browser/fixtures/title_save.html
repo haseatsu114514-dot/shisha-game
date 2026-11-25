@@ -5,6 +5,7 @@
 <title>タイトルへ戻る前の保存テスト</title>
 <button id="menu">MENU</button>
 <div id="modal"></div>
+<div id="toasts"></div>
 <script type="module">
 import * as core from "./js/core/state.js";
 import { installSaveFailedNotice } from "./js/core/save-failed-notice.js";
@@ -13,6 +14,7 @@ import { openMenu } from "./js/daily/menu.js";
 import { createChapterMenu } from "./js/core/chapter-menu.js";
 
 layers.modal = document.querySelector("#modal");
+layers.toasts = document.querySelector("#toasts");
 core.config.mute = true;
 installSaveFailedNotice();
 const menu = document.querySelector("#menu");

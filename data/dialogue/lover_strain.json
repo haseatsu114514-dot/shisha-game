@@ -837,7 +837,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "お、お主。……少しだけ、よいかの"
+          "text": "…お主。……少しだけ、よいかの"
         },
         {
           "speaker": "hajime",
@@ -965,7 +965,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "……ま、まことか"
+            "text": "………まことか"
           },
           {
             "speaker": "samechan",
@@ -1464,7 +1464,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "……な、なんと"
+          "text": "………なんと"
         },
         {
           "speaker": "hajime",
@@ -1480,7 +1480,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "こ、こら！ 言うでない！"
+          "text": "…こら！ 言うでない！"
         },
         {
           "speaker": "samechan",

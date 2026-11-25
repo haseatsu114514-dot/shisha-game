@@ -155,11 +155,11 @@ const abortedCraft={mode:"tournament",chapter:5,total:100,pullDone:true,careHist
 r5.use(beforeFiveCup(),{craft:abortedCraft,swap:true});await r5.module.craftSecondCup(r5.owner);
 assert(r5.replacement);assert.equal(JSON.stringify(core.state),r5.replacement);assert.equal(r5.saves.length,0);
 
-for(const [total,failed,expectedBase] of [[100,false,200],[20,false,120],[76,false,120],[100,true,120]]){
+for(const [total,failed,expectedBase] of [[100,false,200],[20,false,120],[84,false,120],[100,true,120]]){
   const craft={mode:"tournament",chapter:5,total,failed,pullDone:!failed,careHistory:[],
     heat:{score:100},steam:{score:90},holes:{score:80},stats:{craftQuality:70}};
   r5.use(beforeFiveCup(),{craft});await r5.module.craftSecondCup(r5.owner);
-  if(total===76)assert.equal(p5.chapterFiveMatchOutcome(core.state),"tie","existing tied votes must stay tied");
+  if(total===84)assert.equal(p5.chapterFiveMatchOutcome(core.state),"tie","existing tied votes must stay tied");
   assert.equal(core.state.growth.tournamentXp[5].entered,true);
   assert.equal(core.state.growth.tournamentXp[5].rankBase,expectedBase);
   assert.equal(core.state.growth.xp,(100+expectedBase)*2);

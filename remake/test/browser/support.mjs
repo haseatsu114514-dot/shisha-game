@@ -102,6 +102,18 @@ export async function storageSnapshot(page) {
   });
 }
 
+// チュートリアルの工程（穴あけ・炭・吸い出し・熱管理など）は、操作の前に説明を読んで閉じる（#4191 explainTutorialStep）。
+// 説明が出る場合だけ閉じ、操作の目印が出るまで待つ。説明が出ない工程・2回目以降はそのまま進む。
+export async function passTutorialLesson(page, target, { touch = false, timeout = 30000 } = {}) {
+  const goal = typeof target === "string" ? page.locator(target) : target;
+  const close = page.locator('.bench-guide[open] [data-test="bench-guide-close"]');
+  await goal.or(close).first().waitFor({ timeout });
+  if (await close.isVisible()) {
+    if (touch) await close.tap(); else await close.click();
+  }
+  await goal.first().waitFor({ timeout });
+}
+
 export async function assertFits(page, selector) {
   const results = await page.locator(selector).evaluateAll(nodes => {
     const stage = document.getElementById("stage").getBoundingClientRect();

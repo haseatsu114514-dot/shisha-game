@@ -115,9 +115,9 @@
       "lines": [
         { "speaker": "", "face": "", "text": "帰り際、サメちゃんの右手で、コロちゃんが俺のほうを向いた。" },
         { "speaker": "samechan", "face": "ventriloquism", "text": "勇者はじめ。近ごろ、よその城の煙の匂いがする", "voice": "korochan", "beat": 400 },
-        { "speaker": "samechan", "face": "surprise", "text": "こ、コロちゃん！ 何を言うのじゃ！" },
+        { "speaker": "samechan", "face": "surprise", "text": "…コロちゃん！ 何を言うのじゃ！" },
         { "speaker": "samechan", "face": "ventriloquism", "text": "側近は、三日前から気にしている。余は、代わりに言っただけだ", "voice": "korochan" },
-        { "speaker": "samechan", "face": "surprise", "text": "い、言わぬ約束じゃろう！ ……すまぬ、今のは、わしではないのじゃ" },
+        { "speaker": "samechan", "face": "surprise", "text": "…言わぬ約束じゃろう！ ……すまぬ、今のは、わしではないのじゃ" },
         {
           "type": "choice",
           "id": "petit_notice_samechan_answer",
@@ -133,7 +133,7 @@
       "branches": {
         "study": [
           { "speaker": "hajime", "face": "normal", "text": "……よその店の、勉強です" },
-          { "speaker": "samechan", "face": "normal", "text": "う、うむ。勉強は大事じゃ。……わしも、分かっておる" }
+          { "speaker": "samechan", "face": "normal", "text": "…うむ。勉強は大事じゃ。……わしも、分かっておる" }
         ],
         "dodge": [
           { "speaker": "hajime", "face": "normal", "text": "コロちゃん、鼻がいいんですね" },
@@ -455,7 +455,7 @@
     {
       "dialogue_id": "petit_cross_guest_samechan",
       "lines": [
-        { "speaker": "samechan", "face": "surprise", "text": "む、お主！ わ、わしは休みの日の勉強じゃ。よその海も見ねばな" }
+        { "speaker": "samechan", "face": "surprise", "text": "む、お主！ …わしは休みの日の勉強じゃ。よその海も見ねばな" }
       ]
     },
     {

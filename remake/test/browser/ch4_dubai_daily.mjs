@@ -747,7 +747,7 @@ await suite("ch4-dubai-daily", async check => {
     const log = await backlog(page);
     for (const text of ["（栞さん、ひよりさん……みんな、来てくれた）", "（二人とも、この宿の、この廊下のどこかにいる）", "夕方の六時の欄に、約束が二つ並んでいる。",
       "はじめくん、六時にロビーでお茶しよ。前夜祭の前に、ちょっとだけ", "六時にロビーで、前夜祭の案内を説明するね。全部読んでおいたから",
-      "す、砂浜！ みんなで砂浜に行こうって、ちょうど言いに来たところで！"])
+      "…砂浜！ みんなで砂浜に行こうって、ちょうど言いに来たところで！"])
       assert(log.includes(text), `the lovers scene: ${text}`);
     // 前夜祭の前の地図へ。読み直しはしない（LOADしても出ない）
     await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor({ timeout: 60000 });

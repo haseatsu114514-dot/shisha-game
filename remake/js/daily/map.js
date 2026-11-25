@@ -74,6 +74,7 @@ const CLOSED_TAGS = new Set(["本日定休日", "本日臨時休業"]);
 const firstFreeDay = () => state.chapter === 1 && state.day <= 2;
 
 let interrupt = null;
+let warmImage = null;
 let lessonMap = null;
 export const activeMapLessons = () => lessonMap?.active() ? lessonMap : null;
 
@@ -297,25 +298,36 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
     };
     const startWarm = () => {
       const gen = ++warmGeneration;
-      // 見えている行先だけを2通信ずつ準備。今すぐ行ける場所の写真を最優先に、閉まっている場所と立ち絵は後ろに回す（LD05・#3823）。
-      const visible = mapSpots().filter((s) => spotVisible(s) && (s.kind !== "fortune" || fortuneToday()) && availability(s).why !== "locked");
-      const available = [], unavailable = [];
-      for (const s of visible) (availability(s).ok ? available : unavailable).push(s);
-      const ordered = [...available, ...unavailable];
-      const queue = [...new Set([
-        ...ordered.flatMap((s) => sceneArtUrls(spotPreview(s)?.url)),
-        ...ordered.map(spotPortrait).filter(Boolean),
-      ])];
-      let at = 0;
+      const warmRegion = region;
+      const active = () => gen === warmGeneration && region === warmRegion && state === owner
+        && root.isConnected && !root.classList.contains("done");
       const warm = async () => {
-        while (gen === warmGeneration && root.isConnected && !root.classList.contains("done") && at < queue.length) {
-          if (foregroundLoads > 0) { await waitForegroundIdle(); continue; }
-          const url = queue[at++];
+        if (!active()) return;
+        // 行ける場所の写真から1枚ずつ準備し、閉店中の場所と立ち絵は後に回す（LD05・#3823）。
+        const visible = mapSpots().filter((s) => spotVisible(s) && (s.kind !== "fortune" || fortuneToday()) && availability(s).why !== "locked");
+        const available = [], unavailable = [];
+        for (const s of visible) (availability(s).ok ? available : unavailable).push(s);
+        const ordered = [...available, ...unavailable];
+        const queue = [...new Set([
+          ...ordered.flatMap((s) => sceneArtUrls(spotPreview(s)?.url)),
+          ...ordered.map(spotPortrait).filter(Boolean),
+        ])];
+        for (const url of queue) {
+          // 地域の切り替えやマップの開き直しでも、読み込み中の1枚を待つ。
+          while (active() && (foregroundLoads > 0 || warmImage)) {
+            await (foregroundLoads > 0 ? waitForegroundIdle() : warmImage);
+          }
+          if (!active()) break;
           if (imageReady.isReady?.(url)) continue;
-          await imageReady(url, 8000);
+          // タイムアウト後も通信は続くため、実際に読み込みが終わるまで次の画像は開始しない。
+          warmImage = imageReady(url, null);
+          await warmImage;
+          warmImage = null;
         }
       };
-      void Promise.all([warm(), warm()]);
+      // 初回の表示・操作と同時に裏の読み込みを始めない。
+      if (typeof requestIdleCallback === "function") requestIdleCallback(warm);
+      else setTimeout(warm, 750);
     };
 
     // 残りの行動回数は HUD の札（☀残り2）へ移した。ここには明日の天気だけを添える（#2853）。

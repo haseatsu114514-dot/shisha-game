@@ -51,7 +51,7 @@ export async function boot() {
   initStageFit($("#stage")); // 画面の当て方は共通部品（core/stage-fit.js・#3076）
   installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
   initLayers();
-  installSaveFailedNotice(); // 端末に保存できない時は一度だけ知らせる（#3726 B-7）
+  installSaveFailedNotice(); // 端末で保存できるようになるまで未保存の印を出す。
   // DS風表示（上下2画面）は廃止して横画面一本にした（オーナー決定 2026-11-04／11-10）。
   // 以前に「DS風」を選んだ端末に残る表示設定は読まずに消すだけ（セーブ・設定には触れない）。
   try { localStorage.removeItem(LEGACY_TITLE_LAYOUT_KEY); } catch { /* 保存できない環境は何もしない */ }

@@ -22,6 +22,8 @@ function measure() {
     viewport: { left: vr.left, right: vr.right, top: vr.top, bottom: vr.bottom, width: vr.width, height: vr.height },
     backdrop: { left: br.left, right: br.right, top: br.top, bottom: br.bottom },
     backdropBg: cs.backgroundImage, backdropFilter: cs.filter,
+    backdropRaster: bd.classList.contains("backdrop-raster"),
+    backdropCanvas: (() => { const c = bd.querySelector("canvas"); return c ? { w: c.width, source: c.dataset.source || "" } : null; })(),
     vw: innerWidth, vh: innerHeight,
   };
 }
@@ -30,8 +32,13 @@ async function openTrial(page, spec) {
   await page.goto(new URL(spec.file, page.url()).href);
   if (spec.ready) await page.locator(spec.ready).waitFor({ timeout: 30000 });
   else await page.waitForFunction(() => document.getElementById("craft-preview-loading")?.hidden === true, null, { timeout: 30000 });
-  // craft は場面背景（setBg）が backdrop へ届くまで少し待つ
-  await page.waitForFunction(() => getComputedStyle(document.getElementById("backdrop")).backgroundImage !== "none", null, { timeout: 15000 }).catch(() => {});
+  // craft は場面背景（setBg）が backdrop へ届くまで少し待つ。届け方は CSS の背景か、
+  // 小さな写しをぼかして描く canvas（backdrop-raster）のどちらか
+  await page.waitForFunction(() => {
+    const bd = document.getElementById("backdrop");
+    return getComputedStyle(bd).backgroundImage !== "none"
+      || (bd.classList.contains("backdrop-raster") && bd.querySelector("canvas")?.width > 0);
+  }, null, { timeout: 15000 }).catch(() => {});
   await page.evaluate(() => document.fonts.ready);
 }
 
@@ -44,8 +51,14 @@ function assertFit(m, spec) {
   const cy = (m.stage.top + m.stage.bottom) / 2, vy = (m.viewport.top + m.viewport.bottom) / 2;
   assert(Math.abs(cx - vx) < 2.5, `ステージが左右中央でない (${spec.file})`);
   assert(Math.abs(cy - vy) < 2.5, `ステージが上下中央でない (${spec.file})`);
-  assert.match(m.backdropFilter, /blur\(/, `backdrop にぼかしが無い (${spec.file})`);
-  assert.match(m.backdropBg, spec.bg, `backdrop の絵が場面と違う (${spec.file}): ${m.backdropBg}`);
+  if (m.backdropRaster) {
+    // canvas の写しは描く時点でぼかしが入っている（core/stage-fit.js）。絵の出どころが場面と合うかを見る
+    assert(m.backdropCanvas?.w > 0 && m.backdropCanvas.source, `backdrop の絵が描かれていない (${spec.file})`);
+    if (spec.bg.source !== "url\\(") assert.match(m.backdropCanvas.source, spec.bg, `backdrop の絵が場面と違う (${spec.file}): ${m.backdropCanvas.source}`);
+  } else {
+    assert.match(m.backdropFilter, /blur\(/, `backdrop にぼかしが無い (${spec.file})`);
+    assert.match(m.backdropBg, spec.bg, `backdrop の絵が場面と違う (${spec.file}): ${m.backdropBg}`);
+  }
   assert(m.backdrop.left <= m.vw - m.vw + 1 && m.backdrop.right >= m.vw - 1 && m.backdrop.top <= 1 && m.backdrop.bottom >= m.vh - 1,
     `backdrop が画面全体を覆っていない (${spec.file}): ${JSON.stringify(m.backdrop)}`);
 }

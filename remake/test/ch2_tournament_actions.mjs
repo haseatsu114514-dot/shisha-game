@@ -18,7 +18,7 @@ import assert from 'node:assert/strict';
   }
   const names=spec==='../craft/broadcast.js'?['block','judge','judgeOf','burst','clearComments']:
    [...chapterSource.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)].filter(m=>m[2]===spec).flatMap(m=>m[1].split(',').map(s=>s.trim()));
-  const values={state:chapterState,el:node,layers:{hud:{replaceChildren(){},classList:{toggle(){}}}},showScreen:(name,root)=>screens.push({name,root})};
+  const values={state:chapterState,el:node,chapterRecoveryActions:()=>[],layers:{hud:{replaceChildren(){},classList:{toggle(){}}}},showScreen:(name,root)=>screens.push({name,root})};
   const stub=new vm.SyntheticModule(names,function(){for(const n of names)this.setExport(n,values[n]??(()=>{}));},{context});
   if(spec==='../core/state.js')stateModule=stub;return stub;
  });await runner.evaluate();const api=runner.namespace;

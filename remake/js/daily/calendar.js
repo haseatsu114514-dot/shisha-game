@@ -799,8 +799,12 @@ async function performSpotAction(spot, saveGate) {
         state.flags._home_tonight = true;
         syncNightQueue(chapterDef.nightEvents);
         toast(`${restSlots}枠を休養へ${booked ? "。夜の約束には参加" : ""}。体力が回復した。通常の夜の予定は後日へ`, { ms: 4000 });
-      } else await restAtHome(spot);
-    } else await restAtHome(spot);
+        // 1行動の休養（半日・体調が普通の日）も、休む前に今日のお誘いの返事の締め切りを確認する。
+        // 地図の onBeforeGo は休養を行動に数えないので、ここで確定する（全日休養は上で slotsUsed つき）
+      } else if (!(await confirmLimeReminder(spot))) return { used: false, exerted };
+      else await restAtHome(spot);
+    } else if (!(await confirmLimeReminder(spot))) return { used: false, exerted };
+    else await restAtHome(spot);
   } else if (spot.kind === "fortune") {
     await doFortune(); // 時間は使わない（占ってもらったら、この出現はおしまい）
     save();

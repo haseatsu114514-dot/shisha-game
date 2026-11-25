@@ -1036,7 +1036,12 @@ function phoneShell({ time, title }) {
         onclick: () => { SE.select(); actions.replaceChildren(); ui.cancel = null; resolve(o); },
       }));
     actions.replaceChildren(...[hint ? el("div.lime-hint", { text: hint }) : null, ...buttons].filter(Boolean));
-    buttons.forEach((b, i) => { if (!options[i].wrap) fitOneLine(b, 14); }); // 通常返信は1行（GUI22）
+    // 通常返信は1行（GUI22）。最小の字でも入らない幅（狭いスマホ・書体の差）では、切らずに2行にする。
+    buttons.forEach((b, i) => {
+      if (options[i].wrap) return;
+      fitOneLine(b, 14);
+      if (b.scrollWidth > b.clientWidth + 1) b.classList.add("multiline");
+    });
     // 返信欄が広がった後の表示範囲で、末尾の本文・添付まで読める位置へ。
     ui.scroll();
   });

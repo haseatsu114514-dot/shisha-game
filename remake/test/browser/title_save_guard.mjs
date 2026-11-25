@@ -28,6 +28,30 @@ async function assertLeft(page, day, attempts) {
 }
 
 await suite("title-save-guard", async check => {
+  await check("save-failure-indicator-until-recovery", async page => {
+    const indicator = page.locator(".save-failed-notice");
+    const prompt = indicator.locator("p");
+    const toast = page.locator(".toast.warn");
+    await page.clock.install();
+    assert.equal(await indicator.count(), 0);
+    assert.deepEqual(await page.evaluate(() => [qa.core.save(), qa.core.save()]), [false, false]);
+    assert.equal(await indicator.count(), 1);
+    assert.equal(await toast.count(), 1);
+    await page.clock.runFor(7500);
+    assert.equal(await toast.count(), 0);
+    await indicator.locator("summary").waitFor();
+    assert.equal(await indicator.locator("summary").innerText(), "未保存");
+    assert.equal(await prompt.isVisible(), false);
+    await indicator.locator("summary").focus();
+    await page.keyboard.press("Enter");
+    assert.equal(await prompt.innerText(), "この端末に保存できていません。空き容量やブラウザの設定を確かめてください");
+    assert.equal(await prompt.isVisible(), true);
+    assert.equal(await page.evaluate(() => { qa.fail = false; return qa.core.save(); }), true);
+    assert.equal(await indicator.count(), 0);
+    assert.equal(await page.evaluate(() => { qa.fail = true; return qa.core.save(); }), false);
+    assert.equal(await indicator.count(), 1);
+    assert.equal(await toast.count(), 1);
+  });
   await check("stale-tab-auto", async page => {
     await page.evaluate(() => {
       qa.fail = false;

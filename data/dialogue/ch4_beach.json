@@ -150,7 +150,7 @@
         {
           "speaker": "minto",
           "face": "surprise",
-          "text": "あ、あれは衣装！ 営業だからいいの！"
+          "text": "…あれは衣装！ 営業だからいいの！"
         },
         {
           "speaker": "minto",
@@ -201,7 +201,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "せ、背中ですか"
+          "text": "…背中ですか"
         },
         {
           "speaker": "rio",
@@ -226,7 +226,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "す、すみません"
+          "text": "…すみません"
         },
         {
           "speaker": "rio",
@@ -455,7 +455,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "う、うるさい！ ……じゃから、浮き輪は持ってきたのじゃ"
+            "text": "…うるさい！ ……じゃから、浮き輪は持ってきたのじゃ"
           },
           {
             "speaker": "",

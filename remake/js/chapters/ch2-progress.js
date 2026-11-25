@@ -1,4 +1,6 @@
 // 永続状態の境界。第1章をクリアした状態だけを、一度だけ次章へ進める。
+import { captureChapterStart } from "../core/chapter-save.js";
+
 export function advanceToChapterTwo(value) {
   if (!value || value.chapter !== 1 || value.phase !== "cleared") return false;
   value.flags._ch1_cleared = true;
@@ -12,6 +14,7 @@ export function advanceToChapterTwo(value) {
   value.flags._ch1_regulars = Object.fromEntries(["adam", "minto"]
     .filter(id => (value.story?.[id] || 0) > 0).map(id => [id, true]));
   value.flags._ch2_day1 = { startDay: value.day, stage: "departure", titleSeen: false };
+  captureChapterStart(value);
   return true;
 }
 
