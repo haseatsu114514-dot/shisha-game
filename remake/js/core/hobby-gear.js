@@ -34,7 +34,7 @@ export const HOBBY_GEAR = Object.freeze({
     description: "六角サイの店で選んだ、20面ダイス2個と折りたたみのダイストレイ。自分のダイスを並べると、卓が少しあたたまった状態で始まる。出る目は変わらない。",
   }),
   gear_headphones: Object.freeze({
-    id: "gear_headphones", name: "モニターヘッドホン", short: "ヘッドホン", price: 22000, venue: "club", chapterMin: 3,
+    id: "gear_headphones", name: "モニターヘッドホン", short: "ヘッドホン", price: 20000, venue: "club", chapterMin: 3,
     effect: "▶の判定が前後¼拍広い（PERFECT の幅が1.5倍）",
     description: "ヨルが勧めるDJ用の密閉型ヘッドホン。次の曲を耳で先に聴けるので、▶を押す瞬間を合わせやすい。",
   }),

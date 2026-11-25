@@ -200,6 +200,7 @@ assert.equal(reel.changeSetting, undefined);
     note: { hints: [{ text: "旧示唆", period: 4 }], settingChanges: 4 } });
   old.flags._spot_seen_kannon_adam_pakki = true;
   const snapshot = plain(old.reel);
+  snapshot.pending[0].applied = true; // 旧形式の報酬は抽選時に受取済み
   core.save(); core.load();
   eq(core.state.reel, snapshot, "既存の設定と確定結果を変更・再抽選しない");
   assert.equal(core.state.flags._spot_seen_kannon_adam_pakki, true);

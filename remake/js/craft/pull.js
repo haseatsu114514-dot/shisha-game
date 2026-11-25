@@ -104,8 +104,8 @@ export const PULL_TUNING = { period: 1.1, lessonPeriod: 1.95, keepSlope: .18, si
 export const MAX_PULLS = 5;
 
 const FAIL_TEXT = {
-  burnt: { title: "シーシャが焦げてしまった", line: "熱が上がりきって葉が焦げた", ticker: "パッキー「ば、爆発ーッ！？ シーシャが焦げてしまったーッ！」" },
-  cold: { title: "シーシャが冷え切ってしまった", line: "炭の熱が尽きて、煙が立たなくなった", ticker: "パッキー「あ、あれ〜？ 煙が……止まってしまったーッ！」" },
+  burnt: { title: "シーシャが焦げてしまった", line: "熱が上がりきって葉が焦げた", ticker: "パッキー「…爆発ーッ！？ シーシャが焦げてしまったーッ！」" },
+  cold: { title: "シーシャが冷え切ってしまった", line: "炭の熱が尽きて、煙が立たなくなった", ticker: "パッキー「…あれ〜？ 煙が……止まってしまったーッ！」" },
   leaf: { title: "フレーバーがダメになってしまった", line: "吸いすぎて、葉の香りが抜け切った", ticker: "パッキー「吸いすぎだーッ！ フレーバーが限界を迎えたーッ！」" },
 };
 
@@ -306,8 +306,8 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
   });
   placeJusts();
   const moveNeedle = (at) => {
-    needle.setAttribute("transform", `rotate(${((at - 0.5) * 180).toFixed(2)} ${DIAL.cx} ${DIAL.cy})`);
-    needle.dataset.pos = (at * 100).toFixed(2);
+    setAttr(needle, "transform", `rotate(${((at - 0.5) * 180).toFixed(2)} ${DIAL.cx} ${DIAL.cy})`);
+    setData(needle, "pos", (at * 100).toFixed(2));
     const zone = zones.find(z => at >= z.from && at <= z.to) || zones[1];
     if (currentZone.dataset.zone !== zone.id) currentZone.dataset.zone = zone.id;
     const label = zone.id === "keep" ? at < .5 ? "キープ左・微減" : "キープ右・微増" : zone.label;

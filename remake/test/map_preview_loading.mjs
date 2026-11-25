@@ -94,10 +94,12 @@ const state = {
 };
 const DB = { dialogues: {}, manifest: { sceneProps: [] } };
 let shown = null;
+const idleCallbacks = [];
 
 const context = vm.createContext({
   console, setTimeout, clearTimeout, queueMicrotask, Image: FakeImage,
   requestAnimationFrame: (cb) => { cb(); return 1; },
+  requestIdleCallback: (cb) => idleCallbacks.push(cb),
   cancelAnimationFrame: noop,
   document: {
     hidden: false,
@@ -230,11 +232,13 @@ await flush(8);
 shown = ui.layers.screen.children[0];
 assert(shown && shown.classes.has("map"), "map screen is open");
 
-// 1. Warm starts with available spot previews (naru + adam), NOT closed axe_bar or locked cafe or portraits.
+// 1. Warm waits for idle, then starts just one available spot preview.
+assert.deepEqual(imageRequests, [], "warm makes no requests before idle");
+assert.equal(idleCallbacks.length, 1);
+void idleCallbacks.shift()();
 assert.deepEqual(imageRequests, [
   "img/backgrounds/kemurikusa.webp",
-  "img/backgrounds/bg_eden_shop.webp",
-], "warm prioritizes available visible spot previews over unavailable axe_bar");
+], "warm starts just the first available spot preview");
 
 // 2. Clicking shishark while its preview is not ready pauses warm, loads bg_shishark first, defers portrait until preview resolves.
 const shisharkPin = shown.querySelectorAll(".spot-pin").find((n) => n.dataset.spot === "shishark");
@@ -244,19 +248,22 @@ assert(previewEl.classList.contains("loading"), "unready preview shows loading s
 assert.equal(imageRequests.includes("img/backgrounds/bg_shishark.webp"), true, "clicked preview starts immediately");
 assert.equal(imageRequests.includes("img/sprites/chr_samechan_normal.webp"), false, "portrait waits for preview to finish");
 
-// Complete the two in-flight warm requests (kemurikusa + bg_eden_shop): warm must pause and NOT start bg_axe_lounge_night while shishark is loading.
+// Complete the in-flight warm request. Warm must pause before the next preview.
 resolveImage("img/backgrounds/kemurikusa.webp");
-resolveImage("img/backgrounds/bg_eden_shop.webp");
 await flush(6);
-assert.equal(imageRequests.includes("img/backgrounds/bg_axe_lounge_night.webp"), false, "warm pauses while foreground preview is loading");
+assert.equal(imageRequests.includes("img/backgrounds/bg_eden_shop.webp"), false, "warm pauses while foreground preview is loading");
 
-// Complete bg_shishark: preview renders, portrait starts, and warm resumes with bg_axe_lounge_night!
+// Complete bg_shishark: preview renders, portrait starts, and warm resumes with the next available preview.
 resolveImage("img/backgrounds/bg_shishark.webp");
 await flush(6);
 assert.equal(previewEl.classList.contains("loading"), false, "loading class removed once preview ready");
 assert.equal(previewEl.dataset.sceneBg, "bg_shishark.png");
 assert.equal(imageRequests.includes("img/sprites/chr_samechan_normal.webp"), true, "portrait starts right after preview finishes");
-assert.equal(imageRequests.includes("img/backgrounds/bg_axe_lounge_night.webp"), true, "warm resumes with next queued preview after foreground completes");
+assert.equal(imageRequests.includes("img/backgrounds/bg_eden_shop.webp"), true, "warm resumes with next queued preview after foreground completes");
+assert.equal(imageRequests.includes("img/backgrounds/bg_axe_lounge_night.webp"), false, "warm waits for the remaining available preview");
+resolveImage("img/backgrounds/bg_eden_shop.webp");
+await flush(6);
+assert.equal(imageRequests.includes("img/backgrounds/bg_axe_lounge_night.webp"), true, "unavailable previews warm after available previews");
 
 // 3. Clicking naru whose preview (kemurikusa) is already ready renders synchronously without .loading flash!
 const naruPin = shown.querySelectorAll(".spot-pin").find((n) => n.dataset.spot === "naru");
@@ -270,19 +277,46 @@ assert.equal(imageRequests.includes("img/sprites/chr_naru_normal.webp"), true, "
 resolveImage("img/backgrounds/bg_axe_lounge_night.webp");
 await flush(6);
 assert.equal(imageRequests.includes("img/backgrounds/bg_cafe_day.webp"), false, "locked spot preview is never preloaded");
+assert.equal(imageRequests.includes("img/sprites/chr_adam_normal.webp"), false, "warm waits for the first portrait already in flight");
+resolveImage("img/sprites/chr_naru_normal.webp");
+await flush(6);
 assert.equal(imageRequests.includes("img/sprites/chr_adam_normal.webp"), true, "available spot portraits warm after previews");
 
 // 5. Interrupting map cleanly resolves chooseSpot without hanging on pending images.
 map.interruptMap("__done__");
 assert.equal(await flow, "__done__");
+
+// 6. Without requestIdleCallback, use a timer. Reopening waits for the previous warm transfer.
+const originalTimer = context.setTimeout;
+let runFallback;
+delete context.requestIdleCallback;
+context.setTimeout = (cb, ms, ...args) => {
+  if (ms !== 750) return originalTimer(cb, ms, ...args);
+  runFallback = cb;
+};
+const reopenedPreview = "img/backgrounds/qa-reopened.webp";
+const reopened = map.chooseSpot({
+  regions: [{ id: "home", background: "img/backgrounds/bg_osu_map_day.webp",
+    spots: () => [{ ...naruSpot, previewUrl: reopenedPreview }] }],
+});
+await flush(8);
+assert.equal(typeof runFallback, "function", "warm schedules a fallback timer");
+assert(!imageRequests.includes(reopenedPreview), "warm waits for its fallback timer");
+void runFallback();
+await flush();
+assert(!imageRequests.includes(reopenedPreview), "warm waits for the previous map's transfer");
+resolveImage("img/sprites/chr_adam_normal.webp");
+await flush();
+assert(imageRequests.includes(reopenedPreview), "warm resumes on the reopened map");
+map.interruptMap("__reopened__");
+assert.equal(await reopened, "__reopened__");
 for (const list of pendingImages.values()) {
   while (list.length) list.shift().onload?.();
 }
 await flush(4);
-console.log("PASS map_preview_loading: warm order, foreground pause, portrait deferral, synchronous cache hit, and clean interrupt");
+console.log("PASS map_preview_loading: idle scheduling, timer fallback, serial warm order, foreground pause, portrait deferral, cache hit, and clean interrupt/reopen");
 // A cold map misses its initial deadline at DBG ×8. Pins belong to the map, never to the last shop.
 // Keep a pending request under our control; don't depend on sleeps or a real network failure.
-const originalTimer = context.setTimeout;
 context.setTimeout = (cb, ms, ...args) => originalTimer(cb, (ms === 1800 || ms === 15000) ? 15 : ms, ...args);
 const shopUrl = "img/backgrounds/bg_tonari_inside_day.webp";
 autoResolve = true;

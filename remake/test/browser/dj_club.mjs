@@ -92,7 +92,7 @@ await suite("dj-club", async check => {
     assert.match(await page.locator(t("dj-club-menu")).innerText(), /クラブSEAM/);
     assert.match(await page.locator(t("venue-host-yoru")).innerText(), /最初はSET 1から/);
     assert(!(await page.locator(t("dj-set-1")).isDisabled())); assert(await page.locator(t("dj-set-2")).isDisabled()); assert(await page.locator(t("dj-set-3")).isDisabled());
-    assert.match(await page.locator(t("dj-set-2")).innerText(), /SET 1を回しきると開く/);
+    assert.match(await page.locator(t("dj-set-2")).innerText(), /初級クリア（SET 1を B 以上）で開く/);
     // 三段階（#3779）: SET 1・2・3＝初級・中級・上級。記録の一行に上級クリアの白火
     assert.deepEqual(await page.locator('[data-test^="dj-set-"]').evaluateAll(nodes => nodes.map(node => node.querySelector("b").textContent)),
       ["初級｜SET 1　ズレなし", "中級｜SET 2　途中で1回ズレる", "上級｜SET 3　2回ズレる"]);

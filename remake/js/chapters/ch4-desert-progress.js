@@ -9,6 +9,8 @@ import { recordTierClear, tierLine } from "../core/play-tiers.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
 import { camelRaceRecord, CAMEL_STAGES } from "./ch4-camel-progress.js";
+import { chapterFiveTalkIds } from "./ch5-talks.js";
+import { recordChapterFiveTalk } from "./visit-chains.js";
 
 export const DESERT_FLAG = "_ch4_desert";
 export const DESERT_GUIDE = "noor";
@@ -51,6 +53,10 @@ export const NOOR_OTHER_LOVER_FLAG = "_noor_confession_other_lover";
 export const NOOR_VISIT_CONFESSION_FLAG = "_noor_confession_visit";
 /** 段階の会話が無い日の、店での雑談（順に巡回）。 */
 export const DESERT_CAFE_CHATS = Object.freeze(["ch4_noor_cafe_chat_a", "ch4_noor_cafe_chat_b", "ch4_noor_cafe_chat_c"]);
+export const CH5_NOOR_CAFE_CHATS = Object.freeze(chapterFiveTalkIds("ch5_noor_cafe_chat").slice(DESERT_CAFE_CHATS.length));
+const CH5_CAFE_CHATS = Object.freeze([...DESERT_CAFE_CHATS, ...CH5_NOOR_CAFE_CHATS]);
+export const CH5_NOOR_DESK_CHATS = Object.freeze(chapterFiveTalkIds("ch5_noor_desk_chat").slice(0, DESERT_CAFE_CHATS.length));
+const CH5_DESK_CHATS = Object.freeze([...CH5_NOOR_DESK_CHATS, ...CH5_NOOR_CAFE_CHATS]);
 // #3081。段階会話に続くカフェ・オアシスの物語。♥や大会の日付で先取りせず、読了だけを一度ずつ保存する。
 // 同じ来店で2〜3本ずつ読む。第5章で遅れて店に通う場合も同じ順で読める。
 export const NOOR_STORY_EXTRAS = Object.freeze([
@@ -195,11 +201,15 @@ export function completeDesertTalk(value, id, day, heart = Infinity, { legacy = 
 export function desertCafeVisit(value, day, { legacy = false } = {}) {
   const progress = desertProgress(value);
   if (progress.lastTalkDay !== null && progress.lastTalkDay >= day) return null;
-  const story = desertTalkScene(value, day, legacy ? Infinity : noorHeart(value), { legacy });
-  if (story) return { id: story, kind: "story" };
-  if (!legacy && noorFinaleWaiting(value)) return { id: NOOR_FINALE, kind: "finale" };
+  const atDesk = value?.chapter === 5 && !!value.finales?.[DESERT_GUIDE];
+  if (!atDesk) {
+    const story = desertTalkScene(value, day, legacy ? Infinity : noorHeart(value), { legacy });
+    if (story) return { id: story, kind: "story" };
+    if (!legacy && noorFinaleWaiting(value)) return { id: NOOR_FINALE, kind: "finale" };
+  }
   if (progress.talks === 0) return null; // 名乗りの前に雑談はしない（名乗りは♥0で読める）
-  return { id: DESERT_CAFE_CHATS[progress.chats % DESERT_CAFE_CHATS.length], kind: "talk" };
+  const chats = atDesk ? CH5_DESK_CHATS : value?.chapter === 5 ? CH5_CAFE_CHATS : DESERT_CAFE_CHATS;
+  return { id: chats[progress.chats % chats.length], kind: "talk" };
 }
 
 /** カフェの会話の読了を確定する（段階なら進み、雑談なら数える）。 */
@@ -217,6 +227,7 @@ export function completeDesertCafeVisit(value, visit, day, { legacy = false } = 
   if (visit.kind === "story") return completeDesertTalk(value, visit.id, day, legacy ? Infinity : noorHeart(value), { legacy });
   const progress = desertProgress(value);
   write(value, { ...progress, chats: progress.chats + 1, lastTalkDay: day });
+  recordChapterFiveTalk(value, visit.id);
   return true;
 }
 
@@ -397,17 +408,25 @@ export const desertDailySpotById = (value, day, id) => desertDailySpots(value, d
 // ---- 第5章のドバイ（chapters/ch5-dubai.js） -------------------------------------------------------------------------
 // 2026-11-07 オーナー決定「第4章のラクダレース／砂丘を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる」「ノールの告白は第5章でも可能にする」:
 // 第5章でも、締めくくりを迎えるまではカフェ・オアシスに通える（会っていなければ第5章の出会いから。段階の会話・♥3の問い・♥5の締めくくりは
-// 第4章と同じ順。好感度は第5章の通いの値）。誘われていれば砂丘へも行ける。締めくくりの後（恋人・友人・告白待ち）は今までどおり砂丘だけ。
+// 第4章と同じ順。好感度は第5章の通いの値）。締めくくりの後は、一台を頼まず昼の表のデスクで話せる。
 // はじめは宿ではなくシェイクの屋敷に泊まるので「宿の隣」と書かず、第5章の地図（中庭の太陽 34,32・ラクダの店先 48,36）と重ならない所に置く。
 // day は通算の日（第4章は章内の日 ≤14 で記録したので、第5章の通算の日は必ずそれより大きく、1日1回の判定は崩れない）。
 const CH5_CAFE = Object.freeze({ x: 60, y: 28, area: "旧市街の通り" });
+export const CH5_NOOR_DESK_ID = "ch5_dubai_noor_desk";
 const CH5_CAFE_FIRST = Object.freeze({ label: "砂漠ツアーのカフェ",
   desc: `表に砂漠ツアーのデスクがあるシーシャカフェ。一台${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円（約70ディルハム）。` });
 /** 第5章でドバイへ来た日のヌールの行き先（締めくくりまではカフェ・オアシス、誘われていれば砂丘も）。 */
 export function desertChapterFiveSpots(value, day) {
   const spots = desertDailySpots(value, day);
   const dunes = spots.filter(entry => entry.id === DESERT_SPOT_IDS.dunes);
-  if (value?.finales?.[DESERT_GUIDE]) return dunes;
+  if (value?.finales?.[DESERT_GUIDE]) {
+    if (!desertDaytime(value) || !desertProgress(value).talks) return dunes;
+    const available = !!desertCafeVisit(value, day);
+    const desk = dailySpot({ ...CH5_CAFE, id: CH5_NOOR_DESK_ID, label: "ヌールと話す", theme: "store", glyph: "話",
+      preview: "bg_dubai_cafe_salim_day", desc: "カフェ・オアシスの表のツアーデスクでヌールと話す。1行動。",
+      unavailable: available ? "" : "今日はもう寄った。また明日", unavailableTag: available ? "" : "また明日" });
+    return [desk, ...dunes];
+  }
   const cafe = spots.find(entry => entry.id === DESERT_SPOT_IDS.desk);
   return [Object.freeze({ ...cafe, ...CH5_CAFE, ...(desertProgress(value).talks === 0 ? CH5_CAFE_FIRST : {}) }), ...dunes];
 }

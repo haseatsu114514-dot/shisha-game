@@ -9,6 +9,7 @@ import { MASTERY_THRESHOLDS, RENAMED_MASTERY_KEYS, learnFlavorStory } from "./fl
 import { emit } from "./bus.js";
 import { recordGalleryProgress } from "./gallery-progress.js";
 import { LEGACY_STARTER_HIDANE, STARTER_FLAG } from "./growth-starter.js";
+import { captureChapterStart, captureUnrecordedChapterStart, isChapterStart } from "./chapter-save.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
@@ -53,7 +54,7 @@ export function newState() {
     phase: "opening",          // opening | daily | tournament | aftermath | cleared
     day: 1,
     slot: 0,                   // 0=昼 1=夜 2=その日の行動は終了
-    money: 30000,
+    money: 27000,
     stamina: 100,
     stats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
     statXp: {},
@@ -97,7 +98,7 @@ export function newState() {
       seed: (Math.random() * 0x100000000) >>> 0,
       count: 0, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 0, freezeCount: 0,
       recent: [],              // 直近30回転の当たり記録（1=ペカ）。最近の不調の補いに使う（#1281）。旧セーブは空から数える
-      pending: [],             // 演出待ちの結果（報酬は確定・適用済み）
+      pending: [],             // 演出待ちの結果（報酬は停止・揃いで一度だけ適用）
       installed: false,        // C.STATIONの初回来場・参加登録で導入
       introDone: false,
       lastChapter: 0,
@@ -424,6 +425,10 @@ function migrate(s) {
   s.reel = { ...fresh.reel, ...s.reel };
   // reel の中身に null が残ると、<10 の導入判定や後段の演出で落ちる。形だけ先にそろえる。
   if (!Array.isArray(s.reel.pending)) s.reel.pending = [];
+  // applied が無い旧セーブは、抽選時に報酬を受け取り済み。
+  for (const r of s.reel.pending) {
+    if (r && typeof r === "object" && !Object.hasOwn(r, "applied")) r.applied = true;
+  }
   if (!s.reel.note || typeof s.reel.note !== "object" || Array.isArray(s.reel.note)) s.reel.note = {};
   s.keepsakes = [...new Set((Array.isArray(s.keepsakes) ? s.keepsakes : []).filter((id) => typeof id === "string"))];
   if (oldSchema < 10) {
@@ -662,7 +667,9 @@ export function load() {
   // 移行で想定外の例外が出ても、タイトルやブートを巻き込まず読み込み失敗にする。
   let migrated = null;
   try { migrated = migrate(s); } catch { migrated = null; }
-  return migrated ? setState(migrated, raw) : null;
+  if (!migrated) return null;
+  captureUnrecordedChapterStart(migrated);
+  return setState(migrated, raw);
 }
 
 // ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に1枠）
@@ -724,11 +731,25 @@ export function loadFromSlot(key, { validate } = {}) {
   if (!migrated) return null;
   // 外部JSONなどの候補は、移行後の形を検証してから保存・公開する。
   try { if (validate && validate(migrated) === false) return null; } catch { return null; }
+  captureUnrecordedChapterStart(migrated);
   // 保存の成否が決まるまで候補を公開しない。hud購読者は旧画面を破棄しうる。
   const { raw, saved } = writeSave(migrated, { manualLoad: key !== SAVE_KEY, expectedRaw: sourceRaw });
   // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。
   if (!saved && key !== SAVE_KEY) return null;
   return setState(migrated, saved ? raw : sourceRaw);
+}
+
+/** 章頭へ戻す操作も、同じAUTOを基にしている間だけ確定する。 */
+export function restartChapterFromSave(owner, checkpoint) {
+  if (state !== owner || !isChapterStart(checkpoint, owner)) return false;
+  let restored;
+  try { restored = migrate(structuredClone(checkpoint)); } catch { return false; }
+  if (!isChapterStart(restored, owner)) return false;
+  captureChapterStart(restored);
+  const { raw, saved } = writeSave(restored);
+  if (!saved) return false;
+  setState(restored, raw);
+  return true;
 }
 
 /** ゲーム中にロードしたとき: いったん読み直して、タイトルを飛ばしてそのまま再開する */
@@ -767,6 +788,7 @@ export const config = {
   // 一度見た演出（連絡先交換・シフト終了）を2回目以降だけ短くする。初回は必ずフルで見せる。
   // 既定オフ＝現状どおり。くじ・チェキ・MG(#1081 H05)は短縮しない。既読判定は state.flags を使う。
   shortSeen: false,
+  fastDaily: false, // スロットと朝の演出を省略し、読了済みの定型帰宅を飛ばす
   statEffectColors: true, // 作り画面の能力補正を色と漢字で示す
   introArtStyle: "graphic", // 登場カットインの絵柄。"classic" で旧（立ち絵）に戻す（2026-10-31）
   introTransition: "morph", // 立ち絵からカットインへの変身のつなぎ: morph（2026-11-02 オーナー採用）/ none。card / slash は比較用に残す

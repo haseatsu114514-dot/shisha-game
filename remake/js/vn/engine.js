@@ -138,12 +138,13 @@ function insertBranch(r, key) {
   r.queue.unshift(...queuedLines(r.currentId, r.branches[key], key));
 }
 
-/** 一続きの会話（バイト開始→接客→終了）の間だけSKIPを維持。選択肢は自分で選び、行動の終わりに解除する。 */
+/** 一続きの会話（バイト開始→接客→終了）。SKIPは場面・一続きの会話をまたいで保持し、
+ * プレイヤーが止めるまで解除しない（#3558 項目7・オーナー決定 2026-11-25）。選択肢は自分で選ぶ。 */
 export async function dialogueSequence(run) {
   if (!sequenceDepth) sequenceMetBefore = { owner: state, met: affinityMetBefore() };
   sequenceDepth++;
   try { return await run(); }
-  finally { if (--sequenceDepth === 0) { sequenceMetBefore = null; setSkip(false); } }
+  finally { if (--sequenceDepth === 0) { sequenceMetBefore = null; } }
 }
 
 export const vnTest = { turbo: false, choose: null }; // テスト用: 瞬時表示＋自動送り・選択肢の方針
@@ -589,7 +590,7 @@ function finish(cancelled = false) {
   hideShishaDiagram(); // 会話終了（SKIP/キャンセル含む）で図解を片付ける（#1128）
   dom.effect.dataset.effect = "";
   layers.vn.classList.remove("sepia", "flashback");
-  if (!sequenceDepth) setSkip(false);
+  // SKIPは会話が終わっても解除しない（場面をまたいで保持する。#3558 項目7・オーナー決定 2026-11-25）
   releaseDuck(r);
   if (r.bgmSwitched) playBgm(r.bgmBefore);
   r.resolve({ id: r.id, visited: r.visited, ...(cancelled ? { cancelled: true } : {}) });
@@ -1126,7 +1127,7 @@ function renderPage() {
   if (speed >= 4 || skipMode) {
     r.typing = false;
     r.shown = total;
-    renderTyped(total);
+    finalizeRender(total);
     dom.next.classList.add("show");
     kickAuto();
     return;
@@ -1212,6 +1213,17 @@ function renderTyped(shown) {
   typedInto(dom.inner)(r.fullInnerHtml, innerShown);
 }
 
+// 保険（2026-11-24「会話の二行目だけ表示されることがある」調査）: Chromium では通常送り・
+// スキップ加速とも DOM は常に正しく組み上がるため、残る本命は iOS Safari の再描画漏れ。
+// 増分で組み上げた DOM を書き手ごと捨てて全文を一度で描き直し、確定描画を強制する。
+// 台詞の出切り（completeTyping）と、スキップ・速度4の即時表示（renderPage）の両方から使う。
+function finalizeRender(total) {
+  renderTyped(total);
+  typedWriters.delete(dom.text);
+  typedWriters.delete(dom.inner);
+  renderTyped(total);
+}
+
 function completeTyping() {
   const r = running;
   if (!r) return;
@@ -1219,7 +1231,7 @@ function completeTyping() {
   r.typing = false;
   const total = r.totalLength ?? (r.spokenLength + visibleLength(r.fullInnerHtml));
   r.shown = total;
-  renderTyped(total);
+  finalizeRender(total);
   dom.next.classList.add("show");
   // 相手の行の会話カットインは、台詞が出切ってから出す
   cutin?.reveal();

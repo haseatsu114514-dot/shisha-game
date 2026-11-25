@@ -1,11 +1,23 @@
 // 全国大会の調整〜決着の台本を、実際の調整履歴（炭を替えたか・客の様子）と前日の方針に合わせて差し替える。
 // 台本の正本（ch3_main.json）は変えず、読む直前に行の文だけ置き換える。履歴が無い旧セーブは正本のまま読む。
+import { preferenceFit, SWEET_AIM } from "../craft/flavor-preference.js";
 
 const STRATEGY_LINES = {
   aroma: "（前の夜に決めた、最初の香りをはっきり届けること。揺れても、そこは自分で確かめ直せた）",
   light: "（前の夜に決めた、ゆっくり吸える軽さ。客が長く吸ってくれたのが、その答えだと思いたい）",
   sweet: "（前の夜に決めた、甘い余韻を残すこと。最後の一口まで、そこを見て動けた）",
 };
+// 「甘い余韻」は、提供した一台の甘い印象で言い分ける（#3909。点・票は変えない）。提供の記録が無い旧セーブは上の一行のまま。
+const SWEET_RESULT_LINES = {
+  near: "（前の夜に決めた、甘い余韻を残すこと。甘さはあと一歩。でも、最後まで見て動けた）",
+  off: "（前の夜に決めた、甘い余韻を残すこと。甘さは、狙ったところまで届かなかった）",
+  outside: "（前の夜に決めた、甘い余韻を残すこと。熱が合わず、甘さを確かめきれなかった）",
+};
+
+function strategyLine(key, craft) {
+  if (key !== "sweet") return STRATEGY_LINES[key];
+  return SWEET_RESULT_LINES[preferenceFit(craft, SWEET_AIM)?.fit] || STRATEGY_LINES.sweet;
+}
 
 // 調整1回分の記録から「炭を替えたか」と温度の落ち着き先を読む。
 function careOf(record) {
@@ -66,7 +78,7 @@ export function resultLines(lines, craft, strategyKey) {
     table.set("君の炭は動かなかった。助言は、本当だよ", [{ text: "君は炭を替えた。僕の煙に釣られたんじゃなく、自分の目で決めて。助言は、本当だよ" }]);
     table.set("待てました。綾取さんの一口じゃなくて、目の前の人の一口を", [{ text: "客の様子を見て、必要な分だけ替えました。動かすのも待つのも、俺が選べた" }]);
   }
-  const strategy = STRATEGY_LINES[strategyKey];
+  const strategy = strategyLine(strategyKey, craft);
   const out = history.length ? replaceLines(lines, table) : lines;
   if (!strategy) return out;
   const at = out.findIndex(line => line.speaker === "hajime" && /目の前の人の一口を|俺が選べた/.test(line.text));

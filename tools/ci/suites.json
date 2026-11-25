@@ -1063,6 +1063,7 @@
       "kind": "quick",
       "run": [
         "python3 tools/lint_dialogue.py",
+        "python3 tools/check_hesitation_fragments.py",
         "python3 tools/check_story_canon.py",
         "python3 tools/check_dialogue_links.py",
         "python3 tools/test_story_canon.py",
@@ -4642,6 +4643,7 @@
       "run": [
         "node remake/test/flavor_mastery.mjs",
         "node remake/test/flavor_expression.mjs",
+        "node remake/test/flavor_preference.mjs",
         "node remake/test/flavor_data_contract.mjs",
         "node remake/test/mastery_balance.mjs",
         "node remake/test/craft_review.mjs",

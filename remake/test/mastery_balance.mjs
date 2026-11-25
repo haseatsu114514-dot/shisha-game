@@ -125,6 +125,14 @@ assert.equal(novice.cs.parts.care1, 76);
 assert.equal(novice.cs.parts.care2, 75);
 assert.equal(outcomeOf(SENSU_BAR - .1).rank, 3);
 assert.equal(outcomeOf(SENSU_BAR).rank, 1);
+assert.deepEqual(outcomeOf(90.8), { rank: 1, kind: "premium" }, "legacy wins keep their presentation");
+assert.deepEqual(outcomeOf(37.9), { rank: 4, kind: "disaster" });
+assert.deepEqual(outcomeOf(38), { rank: 4, kind: "lose" });
+for (const [total, rank, kind] of [
+  [90.8, 1, "win"], [90.9, 1, "win"], [91, 1, "premium"],
+  [95, 2, "close"], [37.9, 3, "close"], [95, 4, "lose"],
+  [37.9, 4, "disaster"], [38, 4, "lose"],
+]) assert.deepEqual(outcomeOf(total, rank), { rank, kind }, `vote rank ${rank} at ${total}`);
 assert.deepEqual(pointTable(1).sensu, { hajime: 10 }, "the story's voting method stays separate from flavor preferences");
 
 // The displayed mastery bonus, aroma and forecast all use the same selected mix's weighting.

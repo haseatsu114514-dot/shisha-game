@@ -2356,7 +2356,7 @@
           "speaker": "adam",
           "role": "{pc:adam}／物語",
           "face": "normal",
-          "text": "……い、いらっしゃいませ。あ、すみません、お席はこちらです……"
+          "text": "………いらっしゃいませ。あ、すみません、お席はこちらです……"
         },
         {
           "speaker": "hiyori",
@@ -2479,7 +2479,7 @@
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "猫！？ ……い、いいよ。GMが許します"
+          "text": "猫！？ ………いいよ。GMが許します"
         },
         {
           "speaker": "hajime",

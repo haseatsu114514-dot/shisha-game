@@ -2,12 +2,13 @@
 // Actual modules + controlled WebAudio; no real browser/listening claim.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {execFileSync} from 'node:child_process';
 import {createSet,makeDeck,playDeck,pauseMix,resumeMix,beatAt,phaseError,gains,updateSet,nudgeDeck,SYNC_BAND,SNAP_BAND,DRIFT_BEATS,SYNC_FLOOR,SLIP_FLOOR,quality,floorStep,scoreTransition,scoreFromErr,scoreFromRatio,rankFromScore,scoreSet,lowCutDb,LOW_CUT_DB,PHRASE,LEAD,GRACE,FOLLOW_BAND,toward,gradeOf,ENTRY_BANDS,PHONES_ALLOWANCE,dancerPose,guideAt,keyMatch,energyMatch,pickRating,chooseTrack,REQUESTS,PICK_FLOOR,GRADE_FLOOR,RANK_FLOOR,FOLLOW_FLOOR,FLOOR_WARM,FOLLOW_SWEET,MOODS,moodOf,followHint,QUICK_GRID,quickEntry,RANK_LINES} from '../previews/dj/model.mjs';
 import {FEEL,applyFeelOverrides} from '../previews/dj/feel.mjs';
 import {DJSfx} from '../previews/dj/sfx.mjs';
 import {renderTrack,peakAt} from '../previews/dj/synth.mjs';
 import {DJAudio} from '../previews/dj/audio.mjs';
-import {TRACKS,SETS,buildTrackData,peakAt as fullPeakAt,previewBeat} from '../previews/dj/tracks.mjs';
+import {TRACKS,SETS,buildTrackData,buildBufferTrackData,peakAt as fullPeakAt,previewBeat} from '../previews/dj/tracks.mjs';
 let groups=0;async function check(name,fn){await fn();groups++;console.log('PASS '+name);}
 const near=(a,b,e=1e-7)=>assert(Math.abs(a-b)<e,`${a} != ${b}`);
 const S1=SETS[0],S2=SETS[1],S3=SETS[2];
@@ -381,8 +382,27 @@ await check('試聴 (DJK06・#2456 §3): a card plays its loudest bars for a few
  const b=new DJAudio(Context,{setIndex:0,loadTrack:slow});await b.play(0);const first=b.preview('ravingEnergy');assert(await b.preview('cutAndDry'));release();
  assert.equal(await first,false,'a card tapped earlier never plays after a newer one');assert.equal(b.previewing.key,'cutAndDry');await b.dispose();assert.equal(b.previewing,null);
 });
-await check('audio: a slip changes the incoming deck\'s rate and back; the platter re-seeks it onto the beat; the outgoing deck stops; both 選曲 candidates are prefetched and the pick loads once',async()=>{
- loads.length=0;const a=new DJAudio(Context,{setIndex:1,loadTrack,rng:()=>0});await a.play(0);const c=a.context,A=a.mix.decks[0];
+await check('audio: a missing excerpt or a custom preview passage can use the original without caching its PCM',async()=>{
+ const clipLoads=[], a=new DJAudio(Context,{loadTrack,loadPreview:async(_ctx,key)=>{clipLoads.push(key);throw Error('clip unavailable');}});
+ await a.play(0);
+ const key='risingTide', t=await loadTrack(a.context,key), current={...FEEL.preview};
+ try {
+  assert(await a.preview(key));assert.deepEqual(clipLoads,[key]);
+  near(a.previewing.source.started.offset,t.firstBeat+previewBeat(t,current.bars)*60/t.nativeBpm);
+  assert.equal(a.cache.has(key),false);
+  FEEL.preview.bars=3;
+  FEEL.preview.seconds=5;
+  const custom={...t,previewBeat:undefined};
+  assert(await a.preview(key));assert.deepEqual(clipLoads,[key],'a tuning override uses the configured passage');
+  near(a.previewing.source.started.offset,t.firstBeat+previewBeat(custom,3)*60/t.nativeBpm);
+  assert.equal(a.cache.has(key),false);
+ } finally {Object.assign(FEEL.preview,current);await a.dispose();}
+ assert.equal(a.cache.size,0);assert.deepEqual(a.tracks,[null,null]);assert.equal(a.retiring.size,0);
+});
+await check('audio: slip and platter keep their timing; selection prefetches just the excerpts, releases the outgoing buffer, and decodes only the pick',async()=>{
+ loads.length=0;const clipLoads=[],clip={duration:3.5};
+ const loadPreview=async(_context,key,_signal,priority)=>{clipLoads.push([key,priority]);return clip;};
+ const a=new DJAudio(Context,{setIndex:1,loadTrack,loadPreview,rng:()=>0});await a.play(0);const c=a.context,A=a.mix.decks[0];
  c.currentTime=sec(A,32);a.update();await a.play(1);c.currentTime=sec(A,34);a.update();assert.deepEqual(loads,['ravingEnergy','cutAndDry']);
  const first=a.voices[1],rate=first.source.playbackRate;near(rate.value,1);assert.equal(a.nudge(1,.1),null,'in time: the platter moves nothing');assert.equal(a.voices[1],first);
  c.currentTime=sec(A,38.01);a.update();near(rate.value,1-.12/DRIFT_BEATS,1e-9);assert.equal(a.voices[1],first,'the rate changes on the playing voice');
@@ -391,8 +411,13 @@ await check('audio: a slip changes the incoming deck\'s rate and back; the platt
  r=a.nudge(1,.3);assert.equal(r.fixed,true);assert.notEqual(a.voices[1],second);near(phaseError(A,a.mix.decks[1],c.currentTime),0,1e-9);assert.equal(a.nudge(0,.1),null);
  a.setMix(1);for(let i=42;i<=64;i++){c.currentTime=sec(A,i);a.update();}
  assert.equal(a.mix.transitions.length,1);assert.deepEqual([a.mix.transitions[0].drifts,a.mix.transitions[0].fixes],[1,1]);assert.equal(a.voices[0],null);assert.equal(live(c).length,1);assert.equal(a.mix.decks[0].track,null);assert.equal(a.mix.phase,'select');
- const options=a.mix.select.options;assert.deepEqual(loads.slice(2).sort(),[...options].sort(),'both candidates prefetched while the player decides');assert(options.includes('risingTide'));
+ const options=a.mix.select.options;assert.deepEqual(clipLoads,options.map(key=>[key,'low']));assert(options.includes('risingTide'));
+ assert.deepEqual(loads,['ravingEnergy','cutAndDry'],'no candidate recording has been loaded');
+ assert.equal(a.cache.has('ravingEnergy'),false);assert.equal(c.sources[0].buffer,null);assert.equal(a.tracks[0].buffer,undefined);assert(a.tracks[0].peaks.length>0,'the outgoing waveform is kept');
+ assert(await a.preview('risingTide'));assert.equal(a.previewing.source.buffer,clip);near(a.previewing.source.started.offset,0);
+ assert.deepEqual(loads,['ravingEnergy','cutAndDry'],'listening uses the prefetched excerpt');
  const picked=a.choose(options.indexOf('risingTide'));assert.deepEqual([picked.id,picked.key],[0,'risingTide']);assert.equal(a.choose(0),null);
+ assert.equal(a.clips.size,0);assert.equal(a.previewing,null);
  await a.ensure(0);assert.equal(a.tracks[0].nativeBpm,122);assert.equal(a.tracks[0].firstBeat,.486);assert.equal(a.mix.decks[0].bpm,122,'the pick arrives at the playing tempo');assert.equal(loads.filter(k=>k==='risingTide').length,1,'fetched once');
  const B=a.mix.decks[1];c.currentTime=B.at+sec(B,a.mix.cue.start-B.beat);a.update();assert(await a.play(0));near(a.voices[0].source.started.offset,.486);near(a.voices[0].gain.gain.value,gains(1)[0]*10**(5/20),1e-9);await a.dispose();
 });
@@ -400,6 +425,22 @@ await check('audio: fader keeps equal power, automatic low cut, master volume on
  const a=new DJAudio(Context,{setIndex:0,loadTrack});await a.play(0);const c=a.context;c.currentTime=sec(a.mix.decks[0],32);a.update();await a.play(1);
  a.setMix(.5);near(a.voices[0].gain.gain.value,Math.SQRT1_2);near(a.voices[1].gain.gain.value,Math.SQRT1_2);assert.equal(a.voices[0].filter,null);
  a.setMix(1);near(a.voices[0].gain.gain.value,0);near(a.voices[1].gain.gain.value,1);near(a.output.gain.value,.18);await a.pause();near(a.output.gain.value,0);assert(!a.mix.running);await a.dispose();
+});
+await check('audio: the last record keeps playing on the result screen, and resumes from its beat after a pause',async()=>{
+ const a=new DJAudio(Context,{setIndex:0,loadTrack,rng:()=>0});await a.play(0);
+ const c=a.context, A=a.mix.decks[0];
+ c.currentTime=sec(A,32);a.update();await a.play(1);
+ a.setMix(1);c.currentTime=sec(A,64);a.update();
+ const {id,key}=a.choose(0);const B=a.mix.decks[1];
+ const entry=B.at+sec(B,a.mix.cue.start-B.beat);
+ c.currentTime=entry;a.update();assert(await a.play(id));
+ a.setMix(0);c.currentTime=entry+sec(B,32);assert(a.update().finished);
+ assert.equal(a.mix.phase,'done');assert.equal(a.voices[1],null);assert.deepEqual([...a.cache.keys()],[key]);
+ const last=a.tracks[id], beat=beatAt(a.mix.decks[id],c.currentTime);
+ assert.equal(a.voices[id].source.buffer,last.buffer);await a.pause();
+ c.currentTime+=20;assert(await a.start());
+ near(beatAt(a.mix.decks[id],c.currentTime),beat);assert.equal(a.voices[id].source.buffer,last.buffer);
+ await a.dispose();assert.equal(a.cache.size,0);
 });
 await check('audio: failed ▶ can be retried; interruption pauses without resuming or changing the tempo',async()=>{
  class Failed extends Context{constructor(){super();this.fail=true;}}
@@ -412,11 +453,16 @@ await check('audio: pause during a pending ▶ cancels it; dispose during a pend
  const b=new DJAudio(Deferred,{setIndex:0,loadTrack});const q=b.play(1);await b.dispose();finish();await assert.rejects(q,/closed/);assert.equal(b.context.sources.length,0);assert(!b.mix.running);
 });
 // quick CIはGit LFSの実体を取らないので、ポインタなら記載された実体サイズで確かめる。
-const audioSize=url=>{const head=fs.readFileSync(url).subarray(0,200).toString();const m=head.startsWith('version https://git-lfs.github.com/spec/v1')&&head.match(/^size (\d+)$/m);return m?Number(m[1]):fs.statSync(url).size;};
-await check('track metadata and real audio files (quick CI has no images: artwork is checked by the browser suite)',()=>{
+const audioSize=url=>{try{const head=fs.readFileSync(url).subarray(0,200).toString();const m=head.startsWith('version https://git-lfs.github.com/spec/v1')&&head.match(/^size (\d+)$/m);return m?Number(m[1]):fs.statSync(url).size;}catch{ // quick CIのsparseで実ファイルが無い時は、コミット済みblobの大きさで確かめる
+const root=new URL('../../',import.meta.url);const rel=decodeURIComponent(url.pathname.slice(root.pathname.length));return Number(execFileSync('git',['cat-file','-s','HEAD:'+rel],{encoding:'utf8'}).trim());}};
+await check('track metadata, real audio files and the original waveform peaks (artwork is checked by the browser suite)',async()=>{
  const expected=[[120,.006,'USUAN1100272'],[120,0,'USUAN1700010'],[122,.006,'USUAN1900013'],[122,.006,'USUAN1100852'],[122,.486,'USUAN1900011']];
- assert.equal(Object.keys(TRACKS).length,5);Object.entries(TRACKS).forEach(([key,t],i)=>{assert.deepEqual([t.bpm,t.firstBeat,t.isrc],expected[i]);assert(audioSize(new URL('../../assets/audio/dj/'+t.file,import.meta.url))>1e6);assert(fs.readFileSync(new URL('../previews/dj/app.mjs',import.meta.url),'utf8').includes('art-${'),key);});
+ assert.equal(Object.keys(TRACKS).length,5);Object.entries(TRACKS).forEach(([key,t],i)=>{assert.deepEqual([t.bpm,t.firstBeat,t.isrc],expected[i]);assert(audioSize(new URL('../../assets/audio/dj/'+t.file,import.meta.url))>1e6);const clip=audioSize(new URL('../previews/dj/clips/'+key+'.flac',import.meta.url));assert(clip>1000&&clip<1e6,key);assert(fs.readFileSync(new URL('../previews/dj/app.mjs',import.meta.url),'utf8').includes('art-${'),key);});
  const pcm=Float32Array.from({length:10000},(_,i)=>Math.sin(i));const a=buildTrackData(pcm,1000,TRACKS.danceMonster);assert.equal(a.peaks.length,8192);assert.equal(a.beats,16);assert.equal(fullPeakAt(a,-1),a.peaks[0]);assert.equal(fullPeakAt(a,100),a.peaks.at(-1));
+ const channel=Float32Array.from({length:70003},(_,i)=>Math.sin(i/3));const reference=new Float32Array(8192);
+ for(let i=0;i<channel.length;i++){const bucket=Math.floor(i*reference.length/channel.length);reference[bucket]=Math.max(reference[bucket],Math.abs(channel[i]));}
+ const chunked=await buildBufferTrackData({length:channel.length,sampleRate:8000,copyFromChannel(dst,_,offset){dst.set(channel.subarray(offset,offset+dst.length));}},TRACKS.risingTide,new AbortController().signal);
+ assert.deepEqual(chunked.peaks,reference,'bins match the original calculation across PCM chunk boundaries');
 });
 await check('entry: ▶×2, one crossfader, two platters and the beat meter (no tempo faders, no SYNC), credits; no storage or network in the modules',()=>{
  const dir=new URL('../previews/dj/',import.meta.url);

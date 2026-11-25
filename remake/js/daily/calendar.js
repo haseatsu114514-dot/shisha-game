@@ -2,7 +2,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
 import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg, refreshWeather, dropRetired, gainCard } from "../core/ui.js";
-import { state, save, holdActionSave } from "../core/state.js";
+import { state, save, holdActionSave, config } from "../core/state.js";
 import { openMenu as openFullMenu } from "./menu.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina, currentCondition } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
@@ -209,7 +209,7 @@ async function morning() {
   playBgm(state.chapter === 2 ? "bgm_yuzugaya" : state.chapter === 4 ? "bgm_dubai" : state.chapter === 5 ? "tonari" : "kansetsu_shomei_to_black_coffee");
   // 就寝から続けて来た朝は、夜明けの幕でDAYを見せ終えている（見せた印はここで使い切る）
   if (dawnShownDay === state.day) dawnShownDay = null;
-  else await dayCard(dayTitle(), countdownText(), { weather: weatherOf(), forecast: tomorrowForecast() });
+  else if (!config?.fastDaily) await dayCard(dayTitle(), countdownText(), { weather: weatherOf(), forecast: tomorrowForecast() });
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
   // 恋人のデートの誘いを出さない章（第3章の東京・第4章のドバイ）は、恋人の朝のLIMEだけ届く（lover-entry.js と同じ扱い）。
   // 一緒にいる恋人（ドバイの同行者）からは届かない。
@@ -521,8 +521,9 @@ async function deliver({ charId, scene, text }, { guide = true, errand = false }
 async function staminaGuard(cost, { mandatory = false } = {}) {
   if (!(cost < 0) || !coldRisk(staminaAfter(cost) / maxStamina({ forCondition: true }))) return true;
   const go = await modal({
-    title: "行動後の体力に注意",
+    title: tournamentEve() ? "大会前夜の体力に注意" : "行動後の体力に注意",
     body: "この行動の後は、体力が赤い範囲になる。行動後の残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。"
+      + (tournamentEve() ? "<br>今夜発病すると睡眠で体力が戻らず、翌朝は休養の時間を取れないまま本番に入る。" : "")
       + (mandatory ? "<br>今日のシフトは外せない。" : "<br>無事に済むこともあるけど、今は「家に帰る」で休める。")
       + (fitActive(state) ? "<br>（チョコザップで体を整えたので、今は風邪をひきにくい）" : ""),
     options: mandatory ? [{ label: "わかった", value: true, test: "stamina-go" }]
@@ -590,9 +591,20 @@ async function takeAction() {
     const reminder = mapOptions.reminder || respecMapNotice(state);
     mapOptions.reminder = [tonight, reminder].filter(Boolean).join(" ／ ");
   }
+  const confirmDestination = async destination => {
+    const spendsAction = !["shop", "fortune"].includes(destination.kind)
+      && !(typeof pendingDelivery === "function" && pendingDelivery(destination.charId));
+    // 組み直しが開いている間の最初の行動は、確定する前に閉じることを一度だけ知らせる（SPEC 5.2）
+    const closing = spendsAction ? takeRespecCloseWarning(state) : "";
+    if (closing && await modal({ title: "心得の盤の組み直し", body: `${closing}。<br>このまま向かいますか？`,
+      options: [{ label: "このまま向かう", value: "go", primary: true, test: "respec-close-go" },
+        { label: "戻る", value: null, test: "respec-close-back" }] }) !== "go") { save(); return false; }
+    return confirmLimeReminder(destination, { spendsAction });
+  };
   const spotId = await chooseSpot({
     ...mapOptions,
-    reminder: mapOptions.reminder || respecMapNotice(state),
+    reminder: [mapOptions.reminder || respecMapNotice(state),
+      tournamentEve() ? "大会前夜。今夜発病すると、明朝は休養できず不調で本番に入る。" : ""].filter(Boolean).join(" ／ "),
     visitBlock,
     eventPin: ev && !ev.done?.() ? ev.pin : null,
     onShown: () => {
@@ -611,13 +623,17 @@ async function takeAction() {
   if (spotId === "__lime__") return; // LIME で誘いに乗った → 次の takeAction で約束へ
   // 廃止前の rest:practice も通常の帰宅として扱う（#783）。
   const [baseId] = String(spotId).split(":");
-  const spot = chapterDef.spotById?.(baseId) || spotById(baseId);
+  let spot = chapterDef.spotById?.(baseId) || spotById(baseId);
   if (!spot) throw new Error(`行き先が見つかりません: ${spotId}`);
   const blocked = visitBlock(spot);
   if (blocked) { toast(blocked.why); return; }
   if (spot.boardOnly) {
-    await reflectAtSpot(spot.id);
-    return;
+    const owner = state;
+    const visited = state.visitedDay[spot.id] === state.day;
+    const choice = await reflectAtSpot(spot.id, { courtyard: { why: visited ? "今日はもう境内で過ごした" : "" } });
+    if (choice !== "courtyard" || state !== owner) return;
+    spot = { ...spot, boardOnly: false };
+    if (!await confirmDestination(spot) || state !== owner) return;
   }
   if (spot.kind === "rival" && typeof pendingDelivery === "function" && pendingDelivery(spot.charId)) {
     if (!openingStatus(spot, state).ok || isClosed(spot)) return;
@@ -686,10 +702,15 @@ async function performSpotAction(spot, saveGate) {
   let slotsUsed = 1;
   let exp = null;
   if (spot.kind === "tonari") {
-    const selected = await tonariMenu();
+    const selected = await tonariMenu({ talks: chapterDef?.tonariTalks?.() });
     const floor = selected === "baito_floor";
     const sub = floor ? "baito" : selected; // 同じ勤務。固定夜・訪問日・体力・成長の経路を分けない。
     if (state !== actionOwner || !sub) return { used: false, exerted };
+    if (chapterDef?.performTonariTalk) {
+      const talk = await chapterDef.performTonariTalk(sub);
+      if (talk) return talk;
+      if (state !== actionOwner) return { used: false, exerted };
+    }
     exp = TONARI_EXP[sub] || null;
     if (sub === "ichidai") {
       const { visitIchidaiTable } = await import("./ichidai-table.js");
@@ -778,8 +799,12 @@ async function performSpotAction(spot, saveGate) {
         state.flags._home_tonight = true;
         syncNightQueue(chapterDef.nightEvents);
         toast(`${restSlots}枠を休養へ${booked ? "。夜の約束には参加" : ""}。体力が回復した。通常の夜の予定は後日へ`, { ms: 4000 });
-      } else await restAtHome(spot);
-    } else await restAtHome(spot);
+        // 1行動の休養（半日・体調が普通の日）も、休む前に今日のお誘いの返事の締め切りを確認する。
+        // 地図の onBeforeGo は休養を行動に数えないので、ここで確定する（全日休養は上で slotsUsed つき）
+      } else if (!(await confirmLimeReminder(spot))) return { used: false, exerted };
+      else await restAtHome(spot);
+    } else if (!(await confirmLimeReminder(spot))) return { used: false, exerted };
+    else await restAtHome(spot);
   } else if (spot.kind === "fortune") {
     await doFortune(); // 時間は使わない（占ってもらったら、この出現はおしまい）
     save();
@@ -1075,7 +1100,14 @@ async function endDay({ returnedToTonari = false } = {}) {
     await maybeSamechanEncounter({ hasNightEvent: nightCount > 0 || !!chapterDef.nightEvents[state.day]
       || state.flags._night_event_day === `${state.chapter}:${state.day}`,
       hasAppointment: !!appointment && (appointment.day ?? state.day) === state.day, hadConfession: confessed, athome });
-    await play(`remake_homecoming_${state.day % 3}`);
+    const owner = state, index = state.day % 3;
+    const key = `_homecoming_seen_${index}`;
+    if (!config?.fastDaily || !owner.flags[key]) {
+      const id = `remake_homecoming_${index}`;
+      const result = await play(id);
+      if (state !== owner) return;
+      if (result?.id === id && !result.cancelled && result.visited?.includes(id)) owner.flags[key] = true;
+    }
   }
   await bannersIdle();
   const homeOwner = state;
@@ -1114,7 +1146,10 @@ async function advanceDay() {
     // 朝は寝た場所で目を覚ます（ふだんは家。前の夜の場面の絵を持ち越さない）
     setBg(bgUrl(chapterDef?.wakeBackground?.() || "bg_home", "day"), { instant: true });
   };
-  if (!eveOfFinal) {
+  if (!eveOfFinal && config?.fastDaily) {
+    wake();
+    dawnShownDay = state.day;
+  } else if (!eveOfFinal) {
     // 夜の紫が降りて、DAYと残り日数がめくれ、地平線が昇って朝になる（大会当日は当日の演出に任せる）
     await dayTurn(async () => {
       wake();
@@ -1122,7 +1157,7 @@ async function advanceDay() {
     });
     dawnShownDay = state.day;
   } else await fadeBlack(wake, 500);
-  await presentSleepRecovery({ before: sleepBefore, after: state.stamina });
+  if (!config?.fastDaily) await presentSleepRecovery({ before: sleepBefore, after: state.stamina });
   if (!exhausted) return;
   // 遠出の出発の朝は、熱っぽさを持ち越さずに発つ（大会の朝の場面は使わない）。
   if (state.day >= finalDayAbs() && chapterDef?.departure) {

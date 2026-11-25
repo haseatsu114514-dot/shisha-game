@@ -3594,6 +3594,1291 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch5_chain_naru_towel_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるの店の端に、おしぼりが一つだけ残っていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "あれ、端を折ったやつだ。誰も開けねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "使い終わりに見えるのかも。袋がくしゃってしてるし"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ああ。見つけられる印と、開けてない印が要るな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは新しい袋の端を、指でなぞった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "お前、目つぶって開けてみてくれ。袋はまだ折らない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ここ、端に切れ目がある。そこだけ出せばどうかな"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "よし。皿から少しだけはみ出して置いてみる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_naru_towel_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "席へ着くと、皿の端から袋の切れ目が出ていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "どうだ。すぐ手、行ったか？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。……でも袋ごと皿がついてきた"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "そこまで一緒についてくるか。皿は軽いんだよな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは皿を押さえかけて、手を引いた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "分かった。皿ごと客の手前に出して、先に指を置けるようにする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺が座るまで待ってくれたら、その方が開けやすい"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "ん、座ったところからもう一回やろう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_minto_paper_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは包み紙に、ミントの葉が来る面を探していた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "葉っぱをきれいに残そうとするとね、テープが剥がしにくいの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "指をかける場所がないですね"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "角を少しだけ折って、持つところを作ろうかな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは紙の隅をひとつ折った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……こうすると、葉っぱが裏に隠れますね"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "あっ、今度は見えないお楽しみだ♪　そのまま開けてみて"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_minto_paper_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "台の上に、葉の模様が半分ずつ見える包みがあった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "見て。ちょっと引くと、葉っぱが揃うんです♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "最初から揃ってるより、触りたくなりますね"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "そうなの。開けた時に、やっと葉っぱになるの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは紙の端へ、小さな丸いシールを貼った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、ここを持てばいいって分かります"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "うん。知らない人でも、葉っぱが見つかるようにね♪"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_rio_tag_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想は同じ見本に、「軽い」と「重い」の札を添えた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "当たり前だけど、両方見ると客は止まるね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どっちから読めばいいか分かりません"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "一枚、持ってもらった後に出す？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なら先に、手に取っていいって書いておきたいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想は白紙を取り、商品の前に置いた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "いいね。札、私が書くから客の役やってよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_rio_tag_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "見本の前に、小さな手の絵が描いてあった。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "文字を読む前に、手が伸びるか見てた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺、こっちの札は見ないで先に握りました"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "よかった。重いって知る前に、重さが分かる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この札、持った後で読むとなんか笑えます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "握った手を開くと、見本が手の中で少し回った。"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "そういう顔も、覚えとくね。札の仕事はそこまで"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_samechan_tail_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホースの尾を、側近が卓に置いた。尾はすぐ床へ垂れた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お主、尾が長いと、戻した時に落ちてしまうのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "座った位置からも、置ける目印があるといいですね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "なら、小さなサメを描いてみるかの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……それだと、サメがホースを食べてるみたいです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ。食べてもらえばよい。口の向きから試そうぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_samechan_tail_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "卓に、口を大きく開けたサメの絵があった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お主の方を向かせたぞ。置いてみるのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、横に置いても、まだ口の中です"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "わしが描いた口は、側近が見て大きすぎると言ったがの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんは吸い口を置き、しばらく絵を見ていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "口は大きい方が、置くとき楽ですよ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ。小さく開けとくのは、コロちゃんに任せるのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_ageha_straw_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レジ脇に、曲がったストローの束があった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "これね、うちが曲げた分。ちょっと見た目が違うの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "曲げて置いたら、使いたい人が選べそうですね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "でしょ？　でも好みって、飲んでから分かるじゃん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ一つ、飲む方に先に出してみます？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは束から、一番よく曲がった一本を引いた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "いいよ。ハジメっち、飲みにくかったらすぐ言ってね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_ageha_straw_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはが、冷たいグラスを少し離れた所へ置いた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "さて。ハジメっち、ここからでも届くでしょうか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、ストローがこっち向いてる。手は届かないけど"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "そ。手を使いたくない時だけ、曲げた方を出すことにした"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "向きを変えたら、遠くからでも分かりますね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺はグラスを持たずに、一口だけ飲んだ。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "うちのピンク、遠くても見えたでしょ。色も正解！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_saku_window_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取がしおりを持って、窓辺に座った。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "僕のノートには、「ここから空が三角」と書いてある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "三角にしてるの、それ、屋根ですか？"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "正解。でも今日は、角がない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓の下に止まった車が、屋根の端を隠していた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ今の空も、別に書き足しておきます？"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "うん。僕の線の隣、君の線でいい？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_saku_window_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓辺のノートには、違う形の空が並んでいた。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "見て。四角い空を、一つ足しておいた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "四角？　ここからだと隅がよく見えません"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "立って見たんだ。座って見えた分も、横に残してある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺はちょっとだけ腰を浮かせて、窓を見た。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……あ。俺の席でも、四角でした"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "いいね。あとは、誰かがまた違う形を見つける番だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_volk_menu_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは、線の下に書いた茶の名を指で隠した。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "名が分からない客に、どう説明するか考えていた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "茶の葉を見せます？　俺なら、まず香りかな"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "見せるだけだと俺の説明が先になる。葉を開けてみるか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクが缶を開けると、蓋にまで香りが移っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "缶を持たなくても、蓋だけで分かりそうです"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "ああ。茶は見せず、蓋だけ置いてみる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_volk_menu_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "メニューのそばに、裏返しの蓋が置かれていた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "客に、何の匂いがするか聞いた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お茶って分かりました？"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "「干した草」。それを飲みたいと言った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……メニューにも、そう書きますか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは鉛筆を置いて、蓋の向きを直した。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "書かずにおく。次の客が、別のものを思い出せるように"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_adam_lid_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エデンで、アダムが箱の蓋を音もなく閉めた。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "同志よ、湿気で紙が柔らかくなった。聞こえん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "音を戻すなら、新しい紙がありますけど"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "紙ばかり替えても同じだ。今日は箱の方を調べる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは、蓋の端を押す手を止めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今ちょっと沈みましたよ。指には分かるんじゃ？"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……ああ。音が早いか、手が早いか。試してみよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_adam_lid_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箱の蓋に、アダムの指が静かに降りた。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "閉まった。……音を待たず手を離せた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "こないだの紙、挟んだままなんですね"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "お前には音で分かる方がいいだろう。店には両方要る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箱を開け直すと、紙が小さく鳴った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺も、今は指で分かった気がします"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "ほう。なら、次は林檎の袋で試してみるか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_kumicho_stone_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "戸口の石が、いつもより通りへ出ていた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん、その石な、今度は俺が動かしたんでさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何か作業が終わったんですか？"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "戸、直してくだすった人に、声をかけられなくてね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "石の上に、神崎は白い札を立てた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何て書くんです？"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "「おかげさまで」。誰でも読めるよう、字を大きくしやす"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_kumicho_stone_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白い札が戸口になく、石は店の内側にあった。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん、札の裏、見てくんな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……「戸の音、好きでした」。返事だ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "閉めてくれた人は、最後の音を聞いてたんですな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "直したから、もうその音はしないんですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎は急須に湯を注ぎ、蓋をそっと押さえた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "へい。次に会ったら、湯の音も聞いてもらいやす"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_rei_silence_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドは、曲のない所で針を上げた。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……聞いて。止めると、店の音がよく分かる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、カップが鳴りました。奥で"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……うん。ボクは、今まで針の音だと思ってた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドは針を戻さず、外の気配を聞いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "同じ所でも、次は違う音がしますね"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "……うん。音が来る所に、印だけつけようかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_rei_silence_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "針の隣に「ここで上げる」と書いた札があった。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……一度、席に座ったままやってみて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "上げた。……今、外で自転車が止まりました"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……ボクは、キミが椅子に座り直す音を聞いた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらくして、扉の向こうに新しい足音がした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "曲は、ここから戻しますか"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "……うん。今度は、もう少し小さくかける"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_sumi_seat_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは、客席に一枚の札を出した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ、座ってそれを読んでみろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "手に取ると読めます。置いたままだと暗いです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "暗い席が好きな客もいる。灯りは動かしたくねえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は札を立て、横から読むふりをしてみた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "角度を変えるだけでも、少し読めそうです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "おう。じゃあ、木っ端で立てる台を作ってみる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_sumi_seat_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "木片の溝に、札が立ててあった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "腕を机についたまま、取ってみろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……片手で抜けます。机の上も広い"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客はな、札を置きたい角度まで動かしてた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "台ごと動かせるのがよかったんですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは木片だけ持ち上げて、裏を拭いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "おう。あとで戻すのは店の仕事だ。客には言うな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_tsumugi_plate_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが、底の丸い皿を布の上に置いた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……真ん中は拭けるんですけど、角が残ります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "裏返すと手が離れるから、俺も苦手で"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……ここに布を敷くと、置いたまま拭けるかも"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "滑らないね。角、全部触れたよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは濡れた皿を持ち上げ、布を見た。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……あ、布が濡れると滑るみたいです。もう一工夫ですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_tsumugi_plate_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターには、布が二枚敷いてあった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "こっちは拭く布。こっちは滑らないよう敷く布です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "敷く方が乾いたままなら、皿が動かないね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。濡れた方は、干す時に持つところも分けました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが布をつまむと、濡れた所だけ重く垂れた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……端は、まだ乾いてる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "はい。最後まで手が濡れないの、ちょっとうれしいです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_hiyori_bag_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりは片手でホースを持ち、片手で鞄を支えていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "この前の置き方、試したんだけどね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は立たないですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "うん。今日は中に書類があって、底が曲がるの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりが手を離すと、鞄がゆっくり傾いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "倒れる側を、自分の靴のところにしたらどうです？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "あ、静かに倒れかかってきた。これなら足音もしないね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_hiyori_bag_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりは席に着くと、先に鞄を足元へ置いた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "今日は自分から倒して置いてみたよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、持った手でそのまま横にできるんだ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "うん。椅子を引く方の手も、すぐ空くし"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりは肘を机に載せ、両手を広げた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なんか、前よりのびのび座ってますね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "へへ。やっと仕事の鞄と、少し離れて座れた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_mashiro_handle_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは小さな缶を、空のカップの横に置いた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん、この辺に置くとどっちも取りやすい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "カップの取っ手と缶が、同じ側に寄ってますね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "あ、僕も両手伸ばして、どっちかしか取れなかった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは缶を反対に回し、両手を机に置いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ今度は、カップを真ん中から取ってみます"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。僕は缶を取るよぉ。ぶつかったら笑おうね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_mashiro_handle_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カップを二つ、ましろが向かい合わせに置いた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "今日は、缶にも座る場所を決めたんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "缶が真ん中なら、両方から取れますね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。使わない方の手で、少しずつ回せるの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろが缶を回すと、蓋の絵が俺の方を向いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺、さっきまで逆さまから読んでました"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "あぁ。缶を渡すときって、向きも渡すんだねぇ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_noor_photo_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールは写真を持って、デスクの前に立った。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "足跡の写真ね、近くに置くとよく見えるんだけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "説明するとき、地図も開くんですよね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "そう。地図の上だと、指さすところが隠れるの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "地図の端から、足跡の先だけがのぞいていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "写真、半分だけ折って立てられませんか"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "折るのはもったいないな。……代わりに台を探してみる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_noor_photo_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "デスクの後ろに、低い写真立てが置いてあった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメ、机に手を置いてみて。地図、開ける？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "開きます。写真の足跡も、その先に見えますね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "よかった。聞きに来た人が、ここから砂丘まで指で歩いたよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールは地図に人差し指を置いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、足跡のところまで行けるかな"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "うん。歩く方がいい？　それなら、短い方から教えるよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_wang_dish_1",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話の画面で、空の皿が少しだけ動いた。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "置いた人は、皿ごと取れると思ったらしい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ちょうど手に収まる大きさですもんね"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "うん。手を置く前に、持つ道具に見えたんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼は皿を裏返して、縁に指を当てた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "浅い方を上にすると、皿より台に見えるかも"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "そうかな。今日は、ひっくり返しておいてみよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_chain_wang_dish_2",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面の向こうで、皿の底に丸い跡が付いていた。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "誰かがそこにカップを置いた。少し濡れていてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どう置くか、教えなくても伝わったんですね"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "うん。手を置く人もいたよ。ここで少し待っていた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼は皿を拭いて、また元の場所へ置いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、店の入口でもう少し場所を空けてみます"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "うん。君の店なら、何が置かれるか見てみたいな"
+        }
+      ]
     }
   ]
 }

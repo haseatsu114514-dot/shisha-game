@@ -163,9 +163,12 @@ await suite("ch5-full-flow", async check => {
     const beforePrep = await get(page);
     await go(page, "tonari");
     await committed(page, "ch5_free_tonari_practice");
-    // 閉店後の試作（#1666）: 試す→スミさんの返答→直す。能力・所持金は動かない。
+    // 閉店後の試作（#1666）: 試す→スミさんの返答→直す。試作時は体力だけを使う。
     await page.locator(dt("ch5-prep-heat")).click();
     await page.waitForFunction(() => window.__remake.state.flags._ch5.prep?.trial === "heat");
+    const afterTrial = await get(page);
+    assert.equal(afterTrial.stamina, beforePrep.stamina - 10);
+    for (const key of ["day", "slot", "money", "stats"]) assert.deepEqual(afterTrial[key], beforePrep[key], key);
     await page.locator(dt("ch5-prep-adjust")).click();
     await page.waitForFunction(() => window.__remake.state.flags._ch5.prep?.adjusted === true);
     await mapReady(page, { day: 53, slot: 0 });
@@ -325,6 +328,47 @@ await suite("ch5-full-flow", async check => {
     assert.deepEqual(cycle.trueEnds.map(end => end.cycleId), [trueEnd.cycleId]);
   }, { reducedMotion: "reduce" });
 
+  await check("chapter-five-prep-blocks-low-stamina-and-allows-rest", async page => {
+    await seed(page);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const { advanceToChapterFive, CH5_PROLOGUE, completeChapterFiveScene } = await import("./js/chapters/ch5-progress.js");
+      const value = core.state;
+      advanceToChapterFive(value);
+      for (const { id } of CH5_PROLOGUE) completeChapterFiveScene(value, id);
+      completeChapterFiveScene(value, "ch5_free_tonari_practice");
+      value.flags._ch5.titleSeen = true;
+      value.flags._intro_ch5_catering_business = true;
+      value.stamina = 9;
+      core.save();
+    });
+    await loadSlot(page, 0);
+    await page.locator(dt("ch5-prep-back")).waitFor({ timeout: 60000 });
+    assert.match(await page.locator(dt("ch5-prep")).innerText(), /体力が足りないため、試作できない/);
+    assert.equal(await page.locator(dt("ch5-prep-heat")).count(), 0);
+    await page.locator(dt("ch5-prep-back")).click();
+    await mapReady(page, { day: 51, slot: 0 });
+    await go(page, "tonari");
+    await page.getByText(/体力が足りないため、試作できない/).waitFor();
+    const blocked = await get(page);
+    assert.equal(blocked.flags._ch5.prep, undefined);
+    assert.equal(blocked.stamina, 9);
+
+    await mapReady(page, { day: 51, slot: 0 });
+    await go(page, "rest");
+    await page.locator(dt("rest-half")).click();
+    await mapReady(page, { day: 51, slot: 1 });
+    const beforeTrial = await get(page);
+    await go(page, "tonari");
+    await page.locator(dt("ch5-prep-heat")).click();
+    await page.locator(dt("ch5-prep-keep")).click();
+    await mapReady(page, { day: 51, slot: 1 });
+    const afterTrial = await get(page);
+    assert.deepEqual(afterTrial.flags._ch5.prep, { trial: "heat", adjusted: false });
+    assert.equal(afterTrial.stamina, beforeTrial.stamina - 10);
+    for (const key of ["day", "slot", "money", "stats"]) assert.deepEqual(afterTrial[key], beforeTrial[key], key);
+  }, { reducedMotion: "reduce" });
+
   // 二本目の出来が足りなければ、挙手の合計で負け（同数含む）→ 敗北の場面 → 後日談へ続く（#1665）。
   // #2033: 第5章も柚ヶ谷へ電車で行ける。神崎の店は通い訪問の小会話だけ。夜は電車で地元へ帰る。
   // 第5章の最初の来店で一度だけ読む会話（神崎・クラウド。chapters/ch5-first-talks.js）は読み終えた保存にする（ch5_home_talks が確かめる）。
@@ -453,7 +497,7 @@ await suite("ch5-full-flow", async check => {
     await go(page, "ch5_tokyo_steve");
     await tokyoMap(52, 1);
     state = await get(page);
-    assert.equal(state.money, 60000 - 4000, "A Tokyo shisha shop is 4,000 yen (TKP01)");
+    assert.equal(state.money, 60000 - 3500, "A Tokyo shisha shop is 3,500 yen");
     assert.equal(state.flags._ch5_tokyo_talks?.ch5_tokyo_steve, 1);
     // 夜は路地の地下のクラブも出る。店主の針間ヨルに会うまでは名前を伏せた「地下の店」。
     const club = page.locator(dt("pin-ch5_tokyo_club"));
@@ -473,7 +517,7 @@ await suite("ch5-full-flow", async check => {
     state = await get(page);
     assert.equal(state.flags._ch2_region, "home");
     assert.equal(state.visitedDay?.ch5_tokyo_home, 53, "The van home used the whole day 53");
-    assert.equal(state.money, 60000 - 4000, "The van home is free too");
+    assert.equal(state.money, 60000 - 3500, "The van home is free too");
     assert.equal(state.flags._ch5.part, "free", "The Tokyo stay does not move the Chapter 5 story");
   });
 
@@ -1372,7 +1416,7 @@ await suite("ch5-full-flow", async check => {
     await page.locator(dt("ch5-second-cup")).waitFor({ timeout: 60000 });
     // 「下手に作る」自動操作（craftTest.auto = "bad"）は吸う位置を乱数で選び、温度を見ない。蒸らしの揺らぎ（session.js の
     // steamVariation）も乱数なので、冷たい側に振れると適温に入って二台目が勝つことがあった（CI で 22対18・合計41対39）。
-    // 乱数を高い側に固定して、蒸らしは熱く・吸いは強くし、仕上がった弱い一台にする（総合67前後・17票）。
+    // 乱数を高い側に固定して、蒸らしは熱く・吸いは強くし、仕上がった弱い一台にする（総合67前後）。
     await page.evaluate(async () => {
       (await import("./js/craft/session.js")).craftTest.auto = "bad";
       window.__realRandom = Math.random; Math.random = () => .9;
@@ -1420,10 +1464,13 @@ await suite("ch5-full-flow", async check => {
       : "合計は、9000です。……なのに、二台目も票が割れました");
     assert(said.includes("記録にない項目です。次回から、先に尋ねます"));
     assert(!said.some(text => /正解の味/.test(text)), "The winning doctor does not concede");
-    assert.deepEqual(first.slice(-4).map(([, speaker, text]) => [speaker, text]).slice(0, 3), [
+    // 答えを客席のつむぎが聞き、千須は宿題を一つ残す（2026-11-24 添削 N3・N8。勝敗共通）
+    assert.deepEqual(first.slice(-6).map(([, speaker, text]) => [speaker, text]).slice(0, 5), [
       ["sensu", "一つだけ聞く。君が作れない夜に来た客は、どうする"],
       ["hajime", "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が"],
+      ["", "客席の端で、つむぎがスケッチブックを胸に抱え直した。"],
       ["sensu", "……それを、店と呼ぶんだろうな"],
+      ["sensu", "だが、うちの新人の夜には、まだ隣がいない。……そこは、私の宿題だ"],
     ]);
     await page.locator(dt("ch5-continue")).click();
     await page.locator(scene("ch5_return_to_tonari")).waitFor();
@@ -1472,7 +1519,8 @@ await suite("ch5-full-flow", async check => {
     await page.locator(scene("ch5_doctor_cocreation")).waitFor();
     const first = await readLines();
     assert(first.includes("……正解の味を、一つだけ探していたのかもしれません"), "The winner's first half keeps the doctor's own words");
-    assert.equal(first.at(-3), "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が");
+    assert.equal(first.at(-5), "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が");
+    assert.equal(first.at(-4), "客席の端で、つむぎがスケッチブックを胸に抱え直した。");
     await page.locator(dt("ch5-continue")).click();
     await page.locator(scene("ch5_return_to_tonari")).waitFor();
     const second = await readLines();

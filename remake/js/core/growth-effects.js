@@ -1,7 +1,7 @@
 // 通常のマス・色の台座の実効値。仮置きは含めず、確定した有効なIDを一度だけ数える。
 import { growthEnabled } from "./growth-mode.js";
-import { NODE_BY_ID } from "./growth-board-layout.js";
-import { SQUARE_PERKS, PERK_TIERS, GATE_TIER, NOTABLES, SKILLS, LESSONS, FEATURES } from "./growth-board-data.js";
+import { NODE_BY_ID, isCoreStat } from "./growth-board-layout.js";
+import { STAT_SQUARES, SQUARE_PERKS, PERK_TIERS, GATE_TIER, NOTABLES, SKILLS, LESSONS, FEATURES } from "./growth-board-data.js";
 import { STAMINA_CONDITIONS } from "./condition.js";
 
 /** 調整用の初期値。通常マスの百分率とは別に重ねる（SPEC 2.5）。 */
@@ -91,6 +91,17 @@ export function boardPerks(nodes = []) {
 
 /** 旧能力の保存値は保持し、確定済みの盤の恩恵を各使用箇所で加算する。 */
 export const growthPerks = s => growthEnabled() ? boardPerks(s?.growth?.nodes) : null;
+
+/** 才能盤の能力マスの進み具合。台座・追加マス・仮置きは数えない。 */
+export function bodyStaminaBonuses(s) {
+  if (!growthEnabled() || !Array.isArray(s?.growth?.nodes)) return null;
+  const filled = new Set(s.growth.nodes.filter(id => {
+    const node = NODE_BY_ID[id];
+    return isCoreStat(node) && node.board === "body";
+  }));
+  const progress = filled.size / STAT_SQUARES.body;
+  return { base: Math.floor(15 * progress), discount: .15 * progress };
+}
 
 /** 会心は実際のジャスト帯の中央2割。自動落下・教材・無効な時刻は対象にしない。 */
 export function growthCritical(s, error, width, { tutorial = false, automatic = false } = {}) {

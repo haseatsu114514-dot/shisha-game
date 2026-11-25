@@ -29,9 +29,9 @@ import { openingStatus, rioUnavailable } from "./spot-hours.js";
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue, chapterRainScene } from "./spot-encounters.js";
 
 export const VISIT_COST = 3000;
-// 東京のシーシャ屋は少し相場が上がって一台4,000円（2026-11-02 オーナー「東京編はシーシャ屋の値段4000円にしたい　少し相場上がって」）。
+// 東京のシーシャ屋は地元より少し相場が高い。
 // 第3章の東京（煙幕・Smoke & Glory・鉄の煙）と第5章の東京（Smoke & Glory・鉄の煙）で使う。本筋の場面は払わない。
-export const TOKYO_VISIT_COST = 4000;
+export const TOKYO_VISIT_COST = 3500;
 
 // キャラ別の「通うと伸びる」主要ステ（ch1の6人で5種を一通りカバー）
 export const CHAR_STAT = { sumi: "technique", tsumugi: "sense", naru: "insight", adam: "guts", minto: "charm", rio: "sense" };
@@ -78,11 +78,11 @@ export const SPOTS = [
     pool: ["cafe_herb_tea", "cafe_baked", "cafe_counter_watch", "cafe_terrace", "cafe_record", "cafe_crowd", "cafe_cold_brew", "cafe_naru_break", "cafe_master_quiz"],
     openSlots: [0], desc: "なる行きつけの喫茶。昼だけ開く。" },
   { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 18, y: 57, theme: "park", glyph: "観", requiresMet: "adam", stat: "guts", stamina: -4,
-    get boardOnly() { return growthEnabled(); }, // 開発用の旧成長モードだけは従来の通常訪問
+    get boardOnly() { return growthEnabled(); }, // 盤モードでは入ってから盤か通常訪問かを選ぶ
     first: "ch1_kannon_visit", bg: "bg_kannon_day",
     pool: ["kannon_cat", "kannon_pigeons", "kannon_sweep", "kannon_incense", "kannon_steps", "kannon_banners", "kannon_adam", "kannon_oldman"],
     nightPool: ["venue_kannon_night", "venue_kannon_night_c", "venue_kannon_night_b", "venue_kannon_night_d"],
-    desc: "心得の盤を開く場所。時間も体力も使わない。" },
+    desc: "心得の盤を開くか、境内で過ごせる。" },
   { id: "choizap", kind: "spot", label: "CHOI-ZAP", area: "ジム", x: 20, y: 24, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
     first: "ch1_choizap_first", bg: "bg_choizap",
     pool: ["choizap_lesson", "choizap_scenery", "choizap_mirror", "choizap_dumbbell", "choizap_stretch", "choizap_posture", "choizap_oldman", "choizap_minto"],
@@ -148,7 +148,8 @@ export function storySeen(dialogueId) {
     const at = seq.indexOf(dialogueId);
     if (at >= 0) return storyCount(charId) > at;
   }
-  return false;
+  // 第5章の自由行動・決戦の場面は、ch5-progress.js の既読表で引く（終幕から、つむぎの場面を読んだかを見る。2026-11-24 添削 N9）
+  return state.flags?._ch5?.read?.[dialogueId] === true;
 }
 
 const NIGHT_STORIES = new Set([
@@ -459,7 +460,12 @@ export function shortNormalVisit(spot) {
 /** 店主の固有イベントと、初めて訪れる施設のイベントを同じ印で案内する。 */
 export function hasNewEvent(spot) {
   if (isClosed(spot)) return false;
-  if (spot.boardOnly) return !state.flags._kannon_growth_intro_done;
+  if (spot.boardOnly) {
+    if (!state.flags._kannon_growth_intro_done) return true;
+    if (visitedToday(spot.id)) return false;
+    const next = (state.spotVisits?.[spot.id] || 0) + 1;
+    return next === 1 || !!spotEncounterDue(spot.id, next, state, DB.dialogues, { wide: state.growth?.nodes?.includes("K19") });
+  }
   // 章の側の行き先（第3章の東京など）は、自分で新しい話があるかを返せる。
   if (typeof spot.hasNew === "function") return !!spot.hasNew();
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
@@ -769,7 +775,7 @@ export async function visitSpot(spot) {
   const owner = state;
   // 初回は場所の紹介（CHOI-ZAP は入会まで）。再訪と夜は、静かな回を束ごとに順番に読む（quietTurn）。
   let id = spot.first, turn = null;
-  const revisit = spot.id === "choizap" ? !!state.flags._gym_member : n > 1 || nightBundle(spot);
+  const revisit = spot.id === "choizap" ? !!state.flags._gym_member : n > 1 || spot.id !== "kannon" && nightBundle(spot);
   if (revisit) turn = quietVisit(spot);
   const encounter = spotEncounterDue(spot.id, n, state, DB.dialogues, { wide: state.growth?.nodes?.includes("K19") && growthEnabled() });
   if (encounter) turn = null;

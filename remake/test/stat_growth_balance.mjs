@@ -117,6 +117,8 @@ for (const mode of ["training", "mixed"]) {
   for (let seed = 1; seed <= runs; seed++) {
     rng = reel.core.mulberry32(seed + 50000);
     const s = fresh(1); s.reel.seed = seed;
+    // 成長の分布だけを測るループでは、演出ごとの保存を抑える。保存境界は slot_exp.mjs で検証する。
+    const releaseSave = core.holdActionSave(s);
     let paid = 0, finish = null;
     for (let chapter = 1; chapter <= 5; chapter++) {
       s.chapter = chapter;
@@ -130,12 +132,15 @@ for (const mode of ["training", "mixed"]) {
           if (mode === "training" || paid % 2) stats.earnStat(keys[1], 2);
           s.stamina = 100; stats.addStamina(-10);
         });
-        reel.onAction({ spent }); s.reel.pending = []; paid++;
+        reel.onAction({ spent });
+        s.reel.pending.forEach(reel.applyReward);
+        s.reel.pending = []; paid++;
         if (!finish && core.STAT_KEYS.every(k => s.stats[k] === 100)) finish = { chapter, step: step + 1, paid };
         if (chapter < 5) assert(core.STAT_KEYS.every(k => s.stats[k] < 100), "Reached full MAX before chapter 5");
       }
       endMeans[chapter-1].push(Object.values(s.stats).reduce((a,b) => a+b,0)/5);
     }
+    releaseSave();
     ends.push(finish ? 1 : 0);
     if (finish) { day5.push(Math.ceil(finish.step / 2)); paid5.push(finish.paid - 80); }
   }
@@ -152,4 +157,4 @@ for (const mode of ["training", "mixed"]) {
   reports.push(report); console.log("[growth balance]", JSON.stringify(report));
 }
 if (process.env.REPORT) fs.writeFileSync(process.env.REPORT, JSON.stringify(reports,null,2) + "\n");
-console.log("[growth balance] PASS: real paid-action and slot commits; chapter 4 stays below MAX, deliberate growth completes during chapter 5");
+console.log("[growth balance] PASS: real paid-action and slot rewards; chapter 4 stays below MAX, deliberate growth completes during chapter 5");

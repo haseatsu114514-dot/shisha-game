@@ -24,6 +24,7 @@ async function module(path) {
   await m.evaluate(); return m;
 }
 const state = (await module('js/core/state.js')).namespace;
+const loading = (await module('js/core/loading.js')).namespace;
 const data = (await module('js/core/data.js')).namespace;
 const style = (await module('js/core/portrait-style.js')).namespace;
 const resolver = (await module('js/core/portrait-resolver.js')).namespace;
@@ -177,6 +178,7 @@ const configCtx = vm.createContext({config:state.config,document:{body:{dataset:
  saveConfig(){saves++;},applyVolumes(){},createUiThemeSelect(){return {};},
  LOOKS:[{id:'classic',label:'現行'},{id:'neo',label:'新版'},{id:'retro',label:'DS風'}],DISABLED_LOOKS:['neo'],normalizeLook(v){return v||'classic';},setLook(){},
  CRAFT_VERSIONS:craftVersion.CRAFT_VERSIONS,normalizeCraftVersion:craftVersion.normalizeCraftVersion,
+ comicLoadingRequired:loading.comicLoadingRequired,setLoadingComicsMode:loading.setLoadingComicsMode,
  fullscreenButton(){return null;},saveTransferRow(){return {};},
  modal(args){modalArgs=args;return Promise.resolve(true);}});
 vm.runInContext(titleSource.slice(titleSource.indexOf('export async function openConfig')).replace('export async function','async function')+';globalThis.openConfig=openConfig;',configCtx);
@@ -187,6 +189,28 @@ test('settings expose independent classic/new control',()=>{assert.ok(control);a
 test('changing settings persists and notifies current VN',()=>{const pick=value=>control.children.find(b=>b.value===value).onclick();pick('new');assert.equal(saves,1);assert.deepEqual(changed,['portraitStyle','new']);assert.deepEqual(Array.from(control.children,b=>b['aria-checked']),['false','true']);});
 configCtx.document.body.dataset.screen='preview';control.children.find(b=>b.value==='classic').onclick();
 test('isolated preview does not write user settings',()=>assert.equal(saves,1));
+await configCtx.openConfig();
+test('isolated preview omits the loading comic preference',()=>assert.equal(find(modalArgs.body,'cfg-loading-comics'),undefined));
+configCtx.document.body.dataset.screen='vn';
+await configCtx.openConfig();
+const comicControl=find(modalArgs.body,'cfg-loading-comics');
+test('loading comic control starts at the player default and persists both choices for the gate',()=>{
+ assert.equal(comicControl['aria-label'],'ロード画面の漫画');
+ assert.deepEqual(Array.from(comicControl.children,button=>[button.value,button.text,button['aria-checked']]),
+  [['always','いつも','true'],['wait','待つ時だけ','false']]);
+ for(const [mode,required] of [['wait',false],['always',true]]) {
+  comicControl.children.find(button=>button.value===mode).onclick();
+  assert.equal(storage.get('suien_loading_comics'),mode);
+  assert.equal(loading.comicLoadingRequired(),required);
+  assert.equal(comicControl.children.find(button=>button['aria-checked']==='true').value,mode);
+ }
+ assert.equal(saves,1);
+});
+storage.set('suien_loading_comics','wait');
+await configCtx.openConfig();
+test('reopened settings reflect the saved loading comic preference',()=>{
+ assert.equal(find(modalArgs.body,'cfg-loading-comics').children[1]['aria-checked'],'true');
+});
 const previewSource=await read('js/vn/conversation-preview.js');
 const previewStart=previewSource.indexOf('const portraitStyleSelect=');
 const previewEnd=previewSource.indexOf('const faceSelect=',previewStart);

@@ -5,7 +5,7 @@
 // 線を段で変えるのは、部門の差が閉じ方だけで、Bでは「ふつう」の腕がどの部門もほぼ100%になるため（2026-11-20 計測。docs/spec/axe_throw.md）。
 import { rankOf } from "../minigames/axe-challenges.js";
 import { MODES } from "../minigames/axe-model.js";
-import { TIERS, TIER_LABEL } from "../core/play-tiers.js";
+import { TIERS, tierLockNote } from "../core/play-tiers.js";
 
 /** 段 → 部門。 */
 export const AXE_TIER_DIVISION = Object.freeze({ easy: "rec", normal: "am", hard: "pro" });
@@ -23,8 +23,21 @@ export function axeTierClear(result) {
   return tier && AXE_TIER_PASS[tier].includes(rankOf(result.total, result.maximum)) ? tier : null;
 }
 
-/** 閉じた段の札に出す開き方（ひとつ下の段のクリアで開く。core/play-tiers.js の tierOpen と同じ決まり）。初級は空。 */
-export function axeTierLock(tier) {
-  const below = TIERS[TIERS.indexOf(tier) - 1];
-  return below ? `${TIER_LABEL[below]}クリアで開く` : "";
+/** 閉じた段の札に出す開き方（全ミニゲーム共通の core/play-tiers.js の tierLockNote）。初級は空。 */
+export const axeTierLock = tierLockNote;
+
+/**
+ * 10投ゲームの段ごとの自己ベスト（#4195 M-35「自己ベストは段ごと」）。records.league.bests[部門] を正とし、
+ * 段ごとの記録が無い旧保存は、部門の分かる自己ベスト・前回の記録だけから読む（部門の無い古い記録は段に振り分けない）。読むだけ。
+ */
+export function axeTierBests(league) {
+  const out = {};
+  const keep = (entry) => {
+    const tier = TIERS.find((t) => AXE_TIER_DIVISION[t] === entry?.division);
+    if (!tier || !Number.isFinite(entry?.total)) return;
+    if (!out[tier] || entry.total > out[tier].total) out[tier] = entry;
+  };
+  for (const entry of Object.values(league?.bests && typeof league.bests === "object" ? league.bests : {})) keep(entry);
+  keep(league?.best); keep(league?.last);
+  return out;
 }

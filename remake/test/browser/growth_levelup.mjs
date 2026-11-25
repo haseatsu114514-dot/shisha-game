@@ -407,9 +407,9 @@ await suite("growth-levelup", async (runCheck) => {
       window.k20Board=(await import("./js/daily/growth-board-screen.js")).openBoard({place:"kannon"});
     });
     const node=page.locator(t("board-node-K20"));await node.waitFor();assert.match(await node.getAttribute("class"),/gb-node stat/);
-    await node.click();assert.match(await page.locator(t("board-perk")).innerText(),/好感度.*＋4%/,"火種2のマスは恩恵も2マス分（SBD112）");
+    await node.click();assert.match(await page.locator(t("board-perk")).innerText(),/好感度.*＋5%/,"火種2のマスは恩恵も2マス分（SBD112）");
     assert.doesNotMatch(await page.locator(t("board-preview")).innerText(),/差し入れ|手土産/);
-    assert.match(await page.locator(t("board-tab-body")).getAttribute("aria-label"),/\/27/);
+    assert.match(await page.locator(t("board-tab-body")).getAttribute("aria-label"),/\/26/);
     await page.locator(t("board-close")).click();
     assert.equal(await page.evaluate(async()=>{await k20Board;const core=await import("./js/core/state.js");core.save();core.load();return JSON.stringify({nodes:core.state.growth.nodes,paid:core.state.growth.paid,hidane:core.state.growth.hidane,day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,stats:core.state.stats})===oldK20;}),true);
   },{viewport:{width:591,height:1280}});
@@ -687,6 +687,8 @@ await suite("growth-levelup", async (runCheck) => {
     for(const [enabled,mode,picks,fire] of [[true,"tournament",["just","hot"],"1"],[false,"tournament",["pre","over"],""],[true,"tutorial",["pre","over"],""]]) {
       const label=`${enabled}/${mode}`;
       await page.evaluate(args=>startSkillCare(args),{enabled,mode});
+      // チュートリアルでは熱管理の前に、説明を読んで閉じてから炭を選ぶ（pack16・explainTutorialStep）
+      if(mode==="tutorial")await page.locator('.bench-guide[open] [data-test="bench-guide-close"]').click();
       // トングの一文は短い間だけ出るので、出た瞬間を記録して確かめる。
       await page.evaluate(()=>{window.tongSeen=null;window.tongWatch?.disconnect();window.tongWatch=new MutationObserver(()=>{
         const n=document.querySelector('[data-test="care-tong"]');if(n&&!window.tongSeen)window.tongSeen={text:n.textContent,fire:n.dataset.fireKeeper};
@@ -891,7 +893,7 @@ await suite("growth-levelup", async (runCheck) => {
       assert.equal(saved.reel, await page.evaluate(() => window.entryReel));
       assert.equal(await page.evaluate(async () => (await import("./js/core/stats.js")).maxStamina()), maximum);
       await tap(t("hud-menu"));
-      assert.equal(await page.locator(t("menu-board")).innerText(), "心得の盤を見る");
+      assert.equal(await page.locator(t("menu-board")).innerText(), "心得の盤を開く");
       await tap(t("menu-close"));
       await page.locator(".dmenu").waitFor({ state: "detached" });
       assert.equal(await page.evaluate(() => window.entryMenu), 2);
@@ -980,7 +982,7 @@ await suite("growth-levelup", async (runCheck) => {
     await check(`${label}-board-from-levelup`, async (page) => {
       const tap = (sel) => !options.hasTouch ? page.locator(sel).click() : page.locator(sel).tap();
       await setupDaily(page);
-      // レベルが上がったその場で火種は手持ちに入る（SBD108・SBD122）。メニューの盤は見るだけ
+      // レベルが上がったその場で火種は手持ちに入る（SBD108・SBD122）。閲覧用の入口から開く
       await page.evaluate(async () => {
         const g = await import("./js/core/growth.js");
         g.gainExp(g.totalExpFor(3));
@@ -989,7 +991,7 @@ await suite("growth-levelup", async (runCheck) => {
       const board = page.locator(t("growth-board"));
       await board.waitFor();
       assert.equal(await page.locator(BLOCKING).count(), 0);
-      // メニューからは見るだけ（灯すのは参拝の場所。SPEC 2.8）
+      // 閲覧用の入口では目標のみ設定できる
       assert.equal(await board.getAttribute("data-mode"), "view");
       assert.match(await page.locator(t("board-place")).innerText(), /見るだけ/);
       assert.match(await page.locator(t("board-wallet")).innerText(), /白火\s*4/, "Lv.1→3 で白火4");
@@ -1596,14 +1598,14 @@ await suite("growth-levelup", async (runCheck) => {
       void (await import("./js/core/growth.js")).openGrowthBoard();
     });
     await page.locator(t("board-tab-body")).waitFor();
-    assert.match(await page.locator(t("board-tab-body")).innerText(), /才能盤\s*2\/27/);
+    assert.match(await page.locator(t("board-tab-body")).innerText(), /才能盤\s*2\/26/);
     assert.equal(await page.locator(t("board-bars")).count(), 1, "恩恵の横棒");
     assert.doesNotMatch(await page.locator(t("growth-board")).innerText(), /\d段/, "盤に段の文字は無い");
     await page.locator(t("board-decide")).click();
     await page.waitForSelector(t("growth-board"), { state: "detached" });
     await page.evaluate(async () => { void (await import("./js/daily/status.js")).openStatus(); });
     await page.locator(t("board-radar")).waitFor();
-    assert.match(await page.locator(t("st-board-body")).innerText(), /2\/27/);
+    assert.match(await page.locator(t("st-board-body")).innerText(), /2\/26/);
     assert.doesNotMatch(await page.locator(".st-me").innerText(), /\d段/, "ステータスに段の文字は無い");
   }, { viewport: { width: 1331, height: 760 } });
   // 授業は会って相談した時だけ習う（SBD61）: 盤には LIME で聞く入口が無く、次に会った時と出る

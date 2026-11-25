@@ -35,14 +35,15 @@ const fires = s => ({ ...s.growth.hidane });
 
 // 以前の保存で♥5のまま受け取っていない人（恋人を含む）。CHAR_TYPE に無い人と、盤が無効な時は対象外。
 {
-  const s = fresh(); s.affinity.adam = MAX; s.lovers = ['samechan']; s.affinity.sumi = MAX;
+  const s = fresh(); s.affinity.adam = MAX; s.lovers = ['samechan'];
+  for (const id of ['sumi', 'tsumugi', 'noor']) s.affinity[id] = MAX;
   const ids = Object.keys(CHAR_TYPE).filter(id => stats.affinityLevel(id) >= 5);
   assert(ids.includes('adam') && ids.includes('samechan'), `fixture: ${ids}`);
-  assert(!('sumi' in CHAR_TYPE));
+  for (const id of ['sumi', 'tsumugi', 'noor']) assert(ids.includes(id), id);
   growth.setGrowthPreview(false); assert.equal(growth.settleGrowth(), null); assert.equal(s.growth.earned, 0);
   growth.setGrowthPreview(true); growth.settleGrowth();
   for (const id of ids) assert.equal(s.growth.gifted[id], true, id);
-  assert(!s.growth.gifted.sumi);
+  assert(s.growth.gifted.sumi && s.growth.gifted.tsumugi && s.growth.gifted.noor);
   fresh(); growth.settleGrowth();
   assert.deepEqual(core.state.growth.gifted, {}, '別のセーブ（新規）には引き継がない');
 }

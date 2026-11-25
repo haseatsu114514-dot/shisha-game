@@ -3,6 +3,8 @@ import { DB, bgUrl, displayName, loadConfessionDialogue } from "../core/data.js"
 import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { chapterRecoveryActions } from "../core/chapter-recovery.js";
+import { ChapterSaveError } from "../core/chapter-save.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardSceneExp, consultLessons, readyLessons } from "../core/growth.js";
 import { state, save, loadFromSlot, requestResumeOnBoot, timeOfDay } from "../core/state.js";
@@ -191,14 +193,21 @@ export async function resumeChapterThree() {
     await (await import("./ch3-aftermath.js")).runChapterThreeAftermath();
     return true;
   }
-  if (state.flags?._ch3_tournament && chapterThreeProgress(state).stage === chapterThreeScenes(state).length) {
+  let tournament = false;
+  try {
+    tournament = state.flags?._ch3_tournament && chapterThreeProgress(state).stage === chapterThreeScenes(state).length;
+  } catch (error) {
+    if (!(error instanceof ChapterSaveError)) throw error;
+    return openChapter(false, error);
+  }
+  if (tournament) {
     await (await import("./ch3-tournament.js")).runChapterThreeTournament();
     return true;
   }
   return openChapter(false);
 }
 
-async function openChapter(advance) {
+async function openChapter(advance, resumeError) {
   if (session) { session.active = false; session.controller?.abort(); session.rollbackMeeting?.(); }
   const owner = session = { state, growthDay: state.day, active: true, busy: false, menuBusy: false, controller: null, rollbackMeeting: null };
   document.body.classList.remove("ch2-city", "ch2-main", "ch2-tournament");
@@ -210,6 +219,7 @@ async function openChapter(advance) {
   ]));
   window.addEventListener("pagehide", () => { owner.active = false; owner.controller?.abort(); owner.rollbackMeeting?.(); }, { once: true });
   await perform(owner, async () => {
+    if (resumeError) throw resumeError;
     // 台本不足のまま第2章のクリアセーブを進めない。
     // 文字だけの画面の待ち。プレイヤーの既定では、長いと漫画のロード画面にする（core/ui.js の withSceneLoading）。
     await withSceneLoading(loadIntroDialogues(), "東京の場面を準備しています…");
@@ -858,9 +868,10 @@ async function trainInTokyo(owner, windowId) {
   finally { if (owner.controller === controller) owner.controller = null; }
 }
 
-function renderError(owner) {
+function renderError(owner, error) {
   hud(owner);
   card(owner, "error", "東京編を再開できませんでした", "通信と保存地点を確認して、もう一度お試しください。読み終えた場面から再開できます。", [
     button(owner, "もう一度読み込む", "reload", () => state.chapter === 3 ? resumeChapterThree() : beginChapterThree(), true),
+    ...chapterRecoveryActions(error, owner, button, chapterThreeProgress),
   ]);
 }

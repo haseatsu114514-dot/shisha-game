@@ -11,7 +11,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SC
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveEndingContext, beginChapterFiveFinale,
   completeChapterFiveScene, recordChapterFiveSecondCup, chapterFiveSecondCupVotes, chapterFiveVoteTally,
   CH5_AUDIENCE, CH5_FIRST_CUP_VOTES, CH5_PREP_TRIALS, chapterFivePrepScene, chapterFivePreparation,
-  chapterFivePrepPending, chapterFivePrepEcho, recordChapterFivePrepTrial,
+  chapterFivePrepPending, chapterFivePrepEcho, recordChapterFivePrepTrial, CH5_PREP_TRIAL_STAMINA,
   recordChapterFivePrepAdjustment, CH5_LIME_CONDITION, CH5_LIME_MILESTONES,
   chapterFiveLimeDue, CH5_CREDITS_FLAG, chapterFiveCreditsPending, recordChapterFiveCredits,
   chapterFiveTrueEndReached, CH5_POST_ENDING, CH5_CONFLICT_SCENES, CH5_TALK_SCENES, chapterFivePostEndingContext,
@@ -299,7 +299,7 @@ assert.equal(recordChapterFiveSecondCup(value, { total: 90, category: "steady" }
 rejects(value, v => recordChapterFiveSecondCup(v, { total: 10, category: "offband" }));
 assert.equal(chapterFiveMatchOutcome(value), "win");
 assert.deepEqual(chapterFiveVoteTally(value), { first: { hajime: 19, machine: 21 },
-  second: { hajime: 26, machine: 14 }, total: { hajime: 45, machine: 35 } });
+  second: { hajime: 24, machine: 16 }, total: { hajime: 43, machine: 37 } });
 roundTrip(value);
 assert.equal(value.flags._ch5.secondCup.review, undefined, "Old-style records without review lines stay valid");
 {
@@ -344,10 +344,10 @@ assert.equal(chapterFiveSecondCupVotes(100, true), chapterFiveSecondCupVotes(0))
 
 // 二本目の完成後は票・結果を保存から読む。同数は勝ちにならず、敗北と同じ後日談へ進む。
 for (const [total, category, expected, reason] of [
-  [90, "steady", "win", "二台目の挙手で12票差をつけ、合計10票差で逆転した。"],
-  [76, "recovered", "tie", "二台目で2票差を返し、合計で並んだ。"],
-  [73, "offband", "loss", "二台目は同票。一台目の2票差が残った。"],
-  [55, "offband", "loss", "二台目で18票差がつき、合計で20票届かなかった。"],
+  [90, "steady", "win", "二台目の挙手で8票差をつけ、合計6票差で逆転した。"],
+  [84, "recovered", "tie", "二台目で2票差を返し、合計で並んだ。"],
+  [81, "offband", "loss", "二台目は同票。一台目の2票差が残った。"],
+  [63, "offband", "loss", "二台目で18票差がつき、合計で20票届かなかった。"],
 ]) {
   const match = toBeforeSecond();
   assert.equal(recordChapterFiveSecondCup(match, { total, category }), true);
@@ -378,8 +378,11 @@ for (const [total, category, expected, reason] of [
     return chapterFiveMatchOutcome(match);
   };
   assert.equal(outcomeFor(95), "win");
-  assert.equal(outcomeFor(78, "recovered"), "win");
-  assert.equal(outcomeFor(76, "recovered"), "tie");
+  assert.equal(outcomeFor(85, "recovered"), "win");
+  assert.equal(outcomeFor(84.9, "recovered"), "tie");
+  assert.equal(outcomeFor(83, "recovered"), "tie");
+  assert.equal(outcomeFor(82.9, "recovered"), "loss");
+  assert.equal(outcomeFor(78, "recovered"), "loss");
   assert.equal(outcomeFor(60, "offband"), "loss");
   assert.equal(outcomeFor(95, "steady", true), "loss", "An unserved cup cannot win");
   for (const level of [1, 100]) {
@@ -389,10 +392,22 @@ for (const [total, category, expected, reason] of [
   }
 }
 
+// 旧の挙手式で総合78から確定した勝ちも、読込では得票をそのまま使う。
+{
+  const saved = toBeforeSecond();
+  saved.flags._ch5.secondCup = { total: 78, category: "recovered", votes: { hajime: 22, machine: 18 } };
+  assert.equal(chapterFiveMatchOutcome(saved), "win");
+  assert.equal(completeChapterFiveScene(saved, CH5_MATCH_SCENES.win), true);
+  assert.equal(completeChapterFiveScene(saved, CH5_MATCH_SCENES.afterglow), true);
+  const resumed = JSON.parse(JSON.stringify(saved));
+  assert.equal(chapterFiveMatchOutcome(resumed), "win");
+  assert.deepEqual(chapterFiveVoteTally(resumed).second, { hajime: 22, machine: 18 });
+}
+
 // 同数も負けと同じく、勝利フラグなしで後日談へ続く。
 {
   const tied = toBeforeSecond();
-  assert.equal(recordChapterFiveSecondCup(tied, { total: 76, category: "recovered" }), true);
+  assert.equal(recordChapterFiveSecondCup(tied, { total: 84, category: "recovered" }), true);
   assert.equal(chapterFiveMatchOutcome(tied), "tie");
   rejects(tied, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.win));
   assert.equal(completeChapterFiveScene(tied, CH5_MATCH_SCENES.loss), true);
@@ -417,11 +432,11 @@ for (const [total, category, expected, reason] of [
   };
   const cases = [
     [{ total: 90, category: "steady" }, "win", CH5_AFTER_MATCH_OPENINGS.win],
-    [{ total: 76, category: "recovered" }, "tie", CH5_AFTER_MATCH_OPENINGS.tie],
+    [{ total: 84, category: "recovered" }, "tie", CH5_AFTER_MATCH_OPENINGS.tie],
     // 合計は9000だが、二台目の9000の挙手は一台目（21）より少ない 20 → 「票が減りました」
-    [{ total: 74, category: "recovered" }, "loss", CH5_AFTER_MATCH_OPENINGS.lossClose],
+    [{ total: 82, category: "recovered" }, "loss", CH5_AFTER_MATCH_OPENINGS.lossClose],
     // 二台目も9000の挙手が減っていない負け → 「票が割れました」（減ったとは言わない）
-    [{ total: 72, category: "offband" }, "loss", CH5_AFTER_MATCH_OPENINGS.loss],
+    [{ total: 80, category: "offband" }, "loss", CH5_AFTER_MATCH_OPENINGS.loss],
     [{ total: 55, category: "offband" }, "loss", CH5_AFTER_MATCH_OPENINGS.loss],
     [{ total: 95, category: "steady", failed: true }, "loss", CH5_AFTER_MATCH_OPENINGS.loss],
   ];
@@ -513,14 +528,22 @@ for (const [total, category, expected, reason] of [
 {
   const scene = files.ch5_main.find(row => row.dialogue_id === CH5_MATCH_SCENES.beforeSecond);
   const held = scene.lines.filter(line => line.cue);
-  assert.deepEqual(held.map(line => line.cue), ["second_cup_adjust", ...Array(4).fill("second_cup_newcomer")]);
-  assert.deepEqual(scene.lines.slice(-5), held, "The held lines close the scene, in play order");
-  assert.deepEqual(held.slice(1).map(line => [line.speaker, line.text]), [
+  assert.deepEqual(held.map(line => line.cue),
+    ["second_cup_adjust", ...Array(4).fill("second_cup_newcomer"), ...Array(2).fill("second_cup_newcomer_tsumugi")]);
+  assert.deepEqual(scene.lines.slice(-7), held, "The held lines close the scene, in play order");
+  assert.deepEqual(held.slice(1, 5).map(line => [line.speaker, line.text]), [
     ["", "隣の席は、初めて見る顔だった。ホースを持つ手が、まだ硬い。"],
     ["hajime", "初めてですよね。今日は、どのくらいゆっくりできますか"],
     ["customer", "……三十分くらい。このあと、人と会うので"],
     ["hajime", "なら、先にどうぞ。いちばん香るのは、今なので"],
   ]);
+  // つむぎの接客を読んだ保存では、最後の一言をつむぎの受け売りに替える（2026-11-24 添削 N7。ch5.js が既読で選ぶ）
+  assert.deepEqual(held.slice(5).map(line => [line.speaker, line.text]), [
+    ["hajime", "なら、先にどうぞ。最初は、ゆっくり吸ってください"],
+    ["hajime", "（……つむぎの、受け売りだ）"],
+  ]);
+  assert(files.ch5_main.find(row => row.dialogue_id === "ch5_tsumugi_serving").lines
+    .some(line => line.text?.includes("最初は、ゆっくり吸ってください")), "The borrowed words are Tsumugi's own");
   const body = scene.lines.filter(line => !line.cue);
   const voice = body.findIndex(line => line.text === "9000がなぞるのは、大会の日の俺だ。店の声は、記録にない。");
   assert(voice > 0 && body[voice].speaker === "", "The line is narration, not Hajime's inner voice");
@@ -528,13 +551,15 @@ for (const [total, category, expected, reason] of [
   assert.equal(body[voice - 1].type, "hide_cg");
   // ch5.js は cue の行を場面本体から外し、制作のあとに読む。
   const runner = readFileSync(new URL("../js/chapters/ch5.js", import.meta.url), "utf8");
-  for (const cue of ["second_cup_adjust", "second_cup_newcomer"]) assert(runner.includes(`"${cue}"`), cue);
+  for (const cue of ["second_cup_adjust", "second_cup_newcomer", "second_cup_newcomer_tsumugi"]) assert(runner.includes(`"${cue}"`), cue);
+  assert(runner.includes('"ch5_tsumugi_serving"'), "The variant is chosen by whether Tsumugi's serving scene was read");
 }
 
 // 開幕と決戦当日（STK01・STK05）: 博士が「借りものの集まり」と問い、千須が博士の側に立つ。当日は客席にいる。
 {
   const lines = id => files.ch5_main.find(row => row.dialogue_id === id).lines;
-  const opening = lines("ch5_opening").map(line => [line.speaker || "", line.text || line.type]);
+  // 条件の行（保存に応じて一行だけ返す。2026-11-24 添削 N1・N6）は数えずに並びを見る
+  const opening = lines("ch5_opening").filter(line => line.type !== "condition").map(line => [line.speaker || "", line.text || line.type]);
   const at = text => opening.findIndex(([, body]) => body === text);
   const s1 = ["（……言い返せない。でも、うなずけない）",
     "炭の置き方はなるさん。待ち方はスティーブさん。記録で、全部たどれます",
@@ -542,6 +567,16 @@ for (const [total, category, expected, reason] of [
     "（……違わない、のかもしれない）",
     "ですから、比べましょう。同じ葉で二本勝負です"].map(at);
   assert(s1.every((index, i) => index >= 0 && (i === 0 || index === s1[i - 1] + 1)), `S1 order: ${s1}`);
+  // 博士の問いの前後に、第1章の取材の答え（N6）と、東京の夜に塗りつぶした名前（N1）を一行ずつ返す。読んだ保存だけ
+  {
+    const raw = lines("ch5_opening"), branches = files.ch5_main.find(row => row.dialogue_id === "ch5_opening").branches;
+    const ask = raw.findIndex(line => line.text === "君の手も、借りものの集まりです。なら、9000と何が違いますか");
+    assert.deepEqual([raw[ask - 1].flag, raw[ask - 1].next_true, raw[ask - 1].next_false],
+      ["interview_honest", "interview_honest_echo", "interview_pride_check"]);
+    assert.deepEqual([raw[ask + 1].flag, raw[ask + 1].next_true], ["_stk_ch3_names_blacked", "names_blacked_echo"]);
+    assert.equal(branches.interview_pride_check[0].flag, "interview_pride");
+    for (const key of ["interview_honest_echo", "interview_pride_echo", "names_blacked_echo"]) assert.equal(branches[key].length, 1, key);
+  }
   const sensu = ["うちの新人は、三ヶ月で一人の夜に立つ。隣に、師匠はいない",
     "その夜の客にも、外れのない一台を。私は、博士の側に立つ"].map(at);
   assert(sensu[0] > at("博士はケースをしまい、今日の注文をした。まずは客として、一台吸っていくという。") && sensu[1] === sensu[0] + 1);
@@ -756,7 +791,17 @@ for (const scenes of [
   assert.deepEqual(endingLines("ending_salaryman_name").filter(([speaker]) => speaker).map(([, text]) => text), [
     "ダブルアップルにミント少し、ですね", "……今日の、[pause]良かったよ", "……笑いました？",
     "……表です。表克己。いつも、ありがとうございます", "ありがとうございます……また明日"]);
-  assert.deepEqual(endingLines("ending_salaryman_name").at(-1), ["", "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"]);
+  // 最後の地の文はトロフィー。つむぎの開店前の練習（ノートの猫）を読んだ保存だけ、その後に『表さん』を書き足す一行（2026-11-24 添削 N9）
+  {
+    const name = files.ending.find(row => row.dialogue_id === "ending_salaryman_name");
+    assert.deepEqual(endingLines("ending_salaryman_name").filter(([, text]) => text).at(-1), ["", "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"]);
+    const tail = name.lines.at(-1);
+    assert.deepEqual([tail.type, tail.condition_type, tail.dialogue, tail.next_true],
+      ["condition", "story_seen", "ch5_tsumugi_little_notes", "omote_note"]);
+    assert.match(name.branches.omote_note[0].text, /『表さん』/);
+    assert(files.ch5_main.find(row => row.dialogue_id === "ch5_tsumugi_little_notes").lines
+      .some(line => line.text?.includes("ネクタイを締めていた")), "The necktie cat is in Tsumugi's notebook scene");
+  }
   // 終幕を何度も閉じない（C9・STK27）: 日常の場面の次が名乗りなら、ch5.js はカードを挟まず続けて読む。並びと保存の形は変えない。
   assert.match(readFileSync(new URL("../js/chapters/ch5.js", import.meta.url), "utf8"),
     /FINALE_CONTINUES = Object\.freeze\(\{ ending_daily_smoke: "ending_salaryman_name" \}\)/);
@@ -1042,7 +1087,7 @@ for (const scenes of [
   ]) rejects(credits(toCleared(["minto", "rio"])), v => beginChapterFivePostEnding(v, bad));
 }
 
-// 閉店後の試作（#1666）: 練習を読んでから、試作→再調整の順に1回だけ記録する。能力・日・所持金・体力は動かない。
+// 閉店後の試作（#1666）: 練習を読んでから、試作→再調整の順に1回だけ記録する。体力だけを使う。
 for (const trial of CH5_PREP_TRIALS) for (const adjusted of [true, false]) {
   const prepared = toFree();
   assert.equal(chapterFivePrepPending(prepared), false, "Prep waits for the practice scene");
@@ -1050,10 +1095,14 @@ for (const trial of CH5_PREP_TRIALS) for (const adjusted of [true, false]) {
   assert.equal(completeChapterFiveScene(prepared, "ch5_free_tonari_practice"), true);
   assert.equal(chapterFivePrepPending(prepared), true);
   assert.equal(chapterFivePreparation(prepared), null);
+  prepared.stamina = CH5_PREP_TRIAL_STAMINA - 1;
+  rejects(prepared, v => recordChapterFivePrepTrial(v, trial.id));
+  prepared.stamina = CH5_PREP_TRIAL_STAMINA;
   const before = structuredClone(prepared);
   rejects(prepared, v => recordChapterFivePrepAdjustment(v, adjusted));
   rejects(prepared, v => recordChapterFivePrepTrial(v, "bogus"));
   assert.equal(recordChapterFivePrepTrial(prepared, trial.id), true);
+  assert.equal(prepared.stamina, 0, "The trial consumes its cost exactly once");
   rejects(prepared, v => recordChapterFivePrepTrial(v, trial.id));
   rejects(prepared, v => recordChapterFivePrepAdjustment(v, "yes"));
   assert.equal(chapterFivePrepPending(prepared), true, "Re-adjustment is still to choose");
@@ -1063,8 +1112,9 @@ for (const trial of CH5_PREP_TRIALS) for (const adjusted of [true, false]) {
   rejects(prepared, v => recordChapterFivePrepAdjustment(v, !adjusted));
   assert.equal(chapterFivePrepPending(prepared), false);
   assert.deepEqual(chapterFivePreparation(prepared), { trial: trial.id, adjusted });
+  before.stamina -= CH5_PREP_TRIAL_STAMINA;
   for (const key of ["day", "slot", "money", "stamina", "stats"])
-    assert.deepEqual(prepared[key], before[key], `${key} must not change by reading the prep`);
+    assert.deepEqual(prepared[key], before[key], `Only the initial trial consumes stamina (${key})`);
   roundTrip(prepared);
   // 結果は二杯目の前と帰店後の会話へ返る。勝ち・負けのどちらの後日談でも同じ返答を読む。
   const suffix = adjusted ? "adjusted" : "kept";

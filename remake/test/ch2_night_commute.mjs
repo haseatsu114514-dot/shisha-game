@@ -13,9 +13,10 @@ let state, log, mode, saves, lastDialogue, morningChoice;
 const commuteDB = { dialogues: {} };
 const reset = () => { state = { chapter: 2, day: 18, slot: 2, money: 1000, flags: { _ch2_region: 'widehanga', _ch2_preparation_started: true } }; log = []; mode = 'ok'; saves = 0; statePort.setExport('state', state); };
 const statePort = new vm.SyntheticModule(['state','save'], function() { this.setExport('state', state); this.setExport('save', () => saves++); }, {context});
-const ui = new vm.SyntheticModule(['setBg','modal','showScreen'], function() {
+const ui = new vm.SyntheticModule(['setBg','modal','showScreen','toast'], function() {
   this.setExport('setBg', async () => { log.push('background'); });
   this.setExport('showScreen', () => {});
+  this.setExport('toast', text => { log.push('toast:' + text); });
   this.setExport('modal', async options => {
     assert(morningChoice, 'Unexpected morning choice');
     return morningChoice(options);
@@ -61,10 +62,26 @@ reset(); await run('tonari'); assert(log.indexOf('__ch2_return_train')<log.index
 await commute.namespace.returnCityHome(); assert.equal(state.money,800); assert.equal(log.filter(x=>x==='__ch2_return_train').length,1);
 reset(); await run('ch2_c_station'); assert.equal(state.money,1000); assert(!log.includes('__ch2_return_train')); await commute.namespace.returnCityHome(); assert.equal(state.money,800);
 for(const failure of ['cancel','throw','replace']) { reset(); mode=failure; await assert.rejects(run('naru')); assert(!log.includes('event:naru')); assert(!state.flags._night_event_day); assert.equal(state.money,800); }
-reset(); state.money=100; await assert.rejects(run('tonari')); assert.equal(state.money,100); assert(!log.includes('event:tonari'));
+reset(); Object.assign(state, { money: 199, stamina: 80 });
+await run('tonari');
+const walkNotice = log.findIndex(entry => entry.startsWith('toast:歩いて'));
+assert(walkNotice >= 0 && walkNotice < log.indexOf('event:tonari'));
+assert(!log.includes('__ch2_return_train'));
+assert.deepEqual([state.money, state.stamina, state.slot, state.flags._ch2_region], [199, 40, 2, 'home']);
+assert.equal(await commute.namespace.returnCityHome(), true);
+assert.equal(state.stamina, 40);
+assert.equal(log.filter(entry => entry.startsWith('toast:歩いて')).length, 1);
+for (const chapter of [3, 4, 5]) {
+  reset(); Object.assign(state, { chapter, money: 0, stamina: 0 });
+  if (chapter < 5) state.flags[`_ch${chapter}_prep`] = { startDay: state.day, departed: false };
+  assert.equal(await commute.namespace.returnCityHome(), true);
+  assert.deepEqual([state.money, state.stamina, state.slot, state.flags._ch2_region], [0, 0, 2, 'home']);
+  assert.equal(saves, 1);
+  assert(!log.includes('__ch2_return_train'));
+}
 const intro=JSON.parse(read('data/dialogue/remake_ch2.json')).dialogues.find(d=>d.dialogue_id==='remake_ch2_departure').lines.map(l=>l.text||'').join('\n');
 assert.match(intro,/約束を果たした、その翌朝/); assert.doesNotMatch(intro,/優勝の翌朝|昨日の採点表|電車に乗った/);
-console.log(JSON.stringify({groups:6,scope:'actual commute/station/night-plan modules + actual calendar callback; controlled VN/UI, no browser or real LOAD',passed:['home event after return','one fare after repeated return','city event stays in city until homecoming','cancel/throw/owner replacement stops event','insufficient fare stops without charge','departure chronology']},null,2));
+console.log(JSON.stringify({groups:6,scope:'actual commute/station/night-plan modules + actual calendar callback; controlled VN/UI, no browser or real LOAD',passed:['home event after return','one fare after repeated return','city event stays in city until homecoming','cancel/throw/owner replacement stops event','insufficient fare walks home once, including at zero stamina in chapters 3–5','departure chronology']},null,2));
 
 // Run the actual calendar entry, night, sleep and morning functions together.
 // Chapter 2's delivery checkpoint and chapter 1's ordinary evening must use the same order.
@@ -78,7 +95,7 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
   const fixture = { chapter, day: 15, slot: 2, stamina: 60, money: 1000, flags: { _morning_15: true }, visitedDay: {} };
   const stop = new Error('morning destination reached');
   const env = {
-    state: fixture,
+    state: fixture, config: {},
     chapterDay: s => s.day - 14, TOURNAMENT_DAY: 14, SLEEP_RECOVERY: 14, DELIVERY_LAST_DAY: 4,
     save: () => { snapshots.push(structuredClone(fixture)); trace.push('save:' + fixture.day); },
     showReelNow: async () => {}, syncSamechanKnowledge() {}, syncNightQueue() {}, expireInvitations() {},
@@ -276,9 +293,13 @@ for (const late of [false, 'close', 'rest']) for (const failure of ['cancel', 't
   assert.equal(log.filter(x => x === '__ch2_return_train').length, 1);
   assert.deepEqual(rewardTrace, ['paidAction', 'stat:charm:1', 'complete:hiyori', 'reward', 'afterAction']);
 }
-resetInvite(); state.money = 100;
-await invitationContext.travelToInvitation(state.pendingInvite).then(() => assert.fail('insufficient fare'), error => assert.match(error.message, /切符代/));
-assert.equal(state.money, 100); assert.equal(state.slot, 1); assert.deepEqual(rewardTrace, []);
+resetInvite(); Object.assign(state, { money: 100, stamina: 20 });
+const walkingAppointment = state.pendingInvite;
+await invitationContext.travelToInvitation(walkingAppointment);
+assert.deepEqual([state.money, state.stamina, state.slot, state.flags._ch2_region], [100, 0, 1, 'home']);
+assert.equal(state.pendingInvite, walkingAppointment);
+assert.deepEqual(rewardTrace, []);
+assert.equal(saves, 1);
 resetInvite(); const unknown = { event: 'private_unknown', sender: 'hiyori', slot: 1 };
 state.pendingInvite = unknown;
 await invitationContext.travelToInvitation(unknown);

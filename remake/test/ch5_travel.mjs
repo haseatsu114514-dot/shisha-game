@@ -20,9 +20,9 @@ assert.equal(tokyoVanBlock(save({ pendingInvite: { day: 52, slot: 1, sender: "su
 assert.equal(tokyoVanBlock(save({ pendingInvite: { day: 51, slot: 0, sender: "sumi" } })), null);
 // 東京でも帰りの分を取り置かない（使える金額＝所持金）。柚ヶ谷の帰りの200円はそのまま。
 {
-  const tokyo = save({ money: 4000, flags: { _ch2_region: "tokyo", _ch2_preparation_started: true } });
+  const tokyo = save({ money: 3500, flags: { _ch2_region: "tokyo", _ch2_preparation_started: true } });
   assert.equal(returnFareReserve(tokyo), 0, "No return fare is reserved in Tokyo");
-  assert.equal(spendableMoney(tokyo), 4000, "A 4,000-yen Tokyo shop is affordable with exactly 4,000 yen");
+  assert.equal(spendableMoney(tokyo), 3500, "A 3,500-yen Tokyo shop is affordable with exactly 3,500 yen");
 }
 assert.equal(returnFareReserve(save({ flags: { _ch2_region: "widehanga", _ch2_preparation_started: true } })), 200);
 assert.equal(returnFareReserve(save({ flags: { _ch2_region: "dubai" } })), 0);

@@ -44,8 +44,8 @@ try{
   // 占ってもらうと、その出現はおしまい（地図から消える）
   const goneAfter=await page.evaluate(()=>Q.spots.spotById('fortune')===undefined&&!Q.fortune.fortuneToday());assert(goneAfter,'the fortune teller stays after a reading');
   const bonus=await page.evaluate(()=>{const before=Q.core.state.affinity.naru;Q.stats.gainAffinity('naru',2);return {increase:Q.core.state.affinity.naru-before,carry:Q.core.state.affinityCarry.naru,consumed:!Q.core.state.fortune,sight:Q.effects.activeFortuneSight(Q.core.state)};});
-  // ×2（2026-11-02 台帳 URA。旧 ×1.5 は +2・端数.55）: round(2×2)×.85 = 3.4 → +3・端数.4
-  assert.equal(bonus.increase,3);assert(Math.abs(bonus.carry-.4)<1e-9);assert(bonus.consumed&&bonus.sight);
+  // ×1.5（#4197 で ×2 から戻した）: round(2×1.5)×.85 = 2.55 → +2・端数.55
+  assert.equal(bonus.increase,2);assert(Math.abs(bonus.carry-.55)<1e-9);assert(bonus.consumed&&bonus.sight);
   const persisted=await page.evaluate(()=>{Q.core.save();Q.core.newGame();Q.core.load();return Q.effects.activeFortuneSight(Q.core.state);});assert.equal(persisted.char,'naru');assert.equal(persisted.until,5);
   async function choices(day,target,id){return page.evaluate(async({day,target,id})=>{
    Q.core.state.day=day;if(target==='rio')Q.effects.grantFortuneReading(Q.core.state,'rio',Q.data.DB.fortuneTrivia);

@@ -1,6 +1,7 @@
 // GRAND SMOKE: 一試合・一台。工程確定前の消費と確定済みの実績を分けて保存する。
 import { difficultyForRun, liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 import { difficultyEvidence } from "../core/cycle-start.js";
+import { ChapterSaveError } from "../core/chapter-save.js";
 import { initialBaseVotes, baseVoteOf } from "./tournament-base-votes.js";
 
 export const CH4_CONTESTANTS = Object.freeze(["hajime", "naru", "master_hookah", "sheikh"]);
@@ -45,7 +46,8 @@ export const CH4_VOTE_AFTER_STEPS = Object.freeze([8, 9, 10, 11]);
 const rulesVersion = p => p.rulesVersion === undefined ? 1 : p.rulesVersion;
 function rulesFor(p) {
   const version = rulesVersion(p);
-  if (version !== 1 && version !== 2 && version !== 3 && version !== CH4_RULES_VERSION) throw new Error("世界大会の採点規則を確認できません");
+  if (version !== 1 && version !== 2 && version !== 3 && version !== CH4_RULES_VERSION)
+    throw new ChapterSaveError(4, "世界大会の採点規則を確認できません", "_ch4.match.rulesVersion");
   return version === 1 ? { curve: CH4_LEGACY_RIVAL_CURVE, spend: CH4_LEGACY_SPEND }
     : { curve: version === CH4_RULES_VERSION ? CH4_RIVAL_CURVE : CH4_V3_RIVAL_CURVE, spend: CH4_SPEND };
 }
@@ -60,13 +62,15 @@ const emptyVotes = () => Object.fromEntries(CH4_JUDGES.map(judge => [judge,
 
 export function chapterFourMatch(value) {
   const progress = value?.flags?._ch4;
-  if (value?.chapter !== 4 || !progress) throw new Error("第4章の保存ではありません");
+  if (value?.chapter !== 4) throw new Error("第4章の保存ではありません");
+  if (!progress) throw new ChapterSaveError(4, "第4章の保存ではありません", "_ch4");
   const p = progress.match ||= { version: 1, rulesVersion: CH4_RULES_VERSION, step: 0, craft: null, rollback: null, entry: null,
     votes: emptyVotes(), voted: 0, result: null, history: [] };
-  if (p.version !== 1 || !Number.isInteger(p.step) || p.step < 0 || p.step > CH4_CRAFT_STEP_COUNT
-    || !Number.isInteger(p.voted) || p.voted < 0 || p.voted > CH4_SPEND.length || !Array.isArray(p.history)) {
-    throw new Error("世界大会の制作保存を確認できません");
-  }
+  const invalid = field => { throw new ChapterSaveError(4, "世界大会の制作保存を確認できません", "_ch4.match." + field); };
+  if (p.version !== 1) invalid("version");
+  if (!Number.isInteger(p.step) || p.step < 0 || p.step > CH4_CRAFT_STEP_COUNT) invalid("step");
+  if (!Number.isInteger(p.voted) || p.voted < 0 || p.voted > CH4_SPEND.length) invalid("voted");
+  if (!Array.isArray(p.history)) invalid("history");
   rulesFor(p);
   return p;
 }
@@ -119,7 +123,8 @@ export function recoverChapterFourStep(value) {
 
 export function beginChapterFourStep(value) {
   const p = chapterFourMatch(value);
-  if (!p.craft || p.result || p.step >= CH4_CRAFT_STEP_COUNT) throw new Error("世界大会の工程を開始できません");
+  if (!p.craft || p.result || p.step >= CH4_CRAFT_STEP_COUNT)
+    throw new ChapterSaveError(4, "世界大会の工程を開始できません", "_ch4.match.craft / result / step");
   p.rollback ||= resources(value);
   return clone(p.craft);
 }
@@ -132,8 +137,10 @@ function qualityAt(craft, round) {
   if (round >= 1) parts.push(craft.servedQuality);
   if (round >= 2) parts.push(craft.careHistory?.[0]?.score);
   if (round >= 3) parts.push(craft.careHistory?.[1]?.score);
-  if (parts.some(score => !Number.isFinite(score) || score < 0 || score > 100)) throw new Error("世界大会の工程成績が不足しています");
-  if (round === 3 && (!Number.isFinite(craft.total) || craft.total < 0 || craft.total > 100)) throw new Error("世界大会の総合成績を確認できません");
+  if (parts.some(score => !Number.isFinite(score) || score < 0 || score > 100))
+    throw new ChapterSaveError(4, "世界大会の工程成績が不足しています", "_ch4.match.craft / quality");
+  if (round === 3 && (!Number.isFinite(craft.total) || craft.total < 0 || craft.total > 100))
+    throw new ChapterSaveError(4, "世界大会の総合成績を確認できません", "_ch4.match.craft.total");
   // 最終投票は共通finalizeの5工程各20%と熟練度等の既存加点を使う。
   return round === 3 ? craft.total : parts.reduce((a, b) => a + b, 0) / parts.length;
 }
@@ -145,7 +152,7 @@ export function chapterFourJudgeQuality(craft, round, judge) {
   const available = keys.map((key, i) => i).filter(i =>
     (i !== 0 || !craft.holes?.skipped) && (i < 2 || i <= round + 1 || (i === 5 && round === 3)));
   if (available.some(i => !Number.isFinite(values[i]) || values[i] < 0 || values[i] > 100))
-    throw new Error("世界大会の工程成績が不足しています");
+    throw new ChapterSaveError(4, "世界大会の工程成績が不足しています", "_ch4.match.craft / judge quality");
   const weights = CH4_JUDGE_WEIGHTS[judge];
   const sum = available.reduce((n, i) => n + weights[i], 0);
   return available.reduce((n, i) => n + values[i] * weights[i], 0) / sum;
@@ -186,20 +193,21 @@ function commitChapterFourResult(p, craft) {
 
 export function finishChapterFourStep(value, craft) {
   const p = chapterFourMatch(value);
-  if (!p.rollback || p.result || p.step >= CH4_CRAFT_STEP_COUNT) throw new Error("世界大会の工程を確定できません");
+  if (!p.rollback || p.result || p.step >= CH4_CRAFT_STEP_COUNT)
+    throw new ChapterSaveError(4, "世界大会の工程を確定できません", "_ch4.match.rollback / result / step");
   const rules = rulesFor(p), nextStep = p.step + 1;
   const round = CH4_VOTE_AFTER_STEPS.indexOf(nextStep);
   // 検査を先に済ませ、不正な成績・持ち点で工程や一部の票だけを確定しない。
   let quality = null;
   if (!craft.failed && round >= 0) {
-    if (p.voted !== round) throw new Error("世界大会の投票順が一致しません");
+    if (p.voted !== round) throw new ChapterSaveError(4, "世界大会の投票順が一致しません", "_ch4.match.voted / step");
     const hajime = qualityAt(craft, round);
     for (const judge of CH4_JUDGES) {
       const row = p.votes?.[judge];
       if (!row || CH4_CONTESTANTS.some(id => !Number.isInteger(row[id]) || row[id] < 0)
         || CH4_CONTESTANTS.reduce((sum, id) => sum + row[id], 0)
           !== rules.spend.slice(0, round).reduce((sum, n) => sum + n, 0)) {
-        throw new Error("世界大会の持ち点が不足しています");
+        throw new ChapterSaveError(4, "世界大会の持ち点が不足しています", "_ch4.match.votes." + judge);
       }
     }
     const carry = difficultyForRun(value, difficultyEvidence(value));
@@ -213,7 +221,7 @@ export function finishChapterFourStep(value, craft) {
   }
   if (!craft.failed && nextStep === CH4_CRAFT_STEP_COUNT
     && (!craft.pullDone || craft.careHistory?.length !== 2 || !Number.isFinite(craft.total))) {
-    throw new Error("提供と二度の調整が未完了です");
+    throw new ChapterSaveError(4, "提供と二度の調整が未完了です", "_ch4.match.craft.pullDone / careHistory / total");
   }
   p.craft = clone(craft);
   p.rollback = null;

@@ -671,6 +671,10 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fla
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-feature { overflow: hidden; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-feature b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row .fr-mastery { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode="tournament"] .flavor-row :is(.fr-stock, .fr-mastery) {
+  font-size: var(--tournament-phone-sub) !important;
+  white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere;
+}
 
 /* 最初の注文の支給葉は、名前と分量操作を横に並べて3種とも初期表示に収める。 */
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix:has(.mix-list-supplied) {

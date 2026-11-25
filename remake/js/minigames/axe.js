@@ -104,9 +104,10 @@ const SERIES = [1, 3];
 const FLICK_MISS = { shallow: ["弾きが浅い", "↑ もう少し上まで弾く"], lean: ["斜めすぎ", "↑ まっすぐ上へ弾く"],
   down: ["上へ弾いて投げる", "↑ 下ではなく上へ"], hold: ["Space を長めに", "押している長さが回転"] };
 // Where the owner's lesson happens: the first paid throw at the bar, or before hiyori's three throws.
-// Each context swaps only the greeting and the send-off; the five teaching steps are shared.
+// Each context swaps only the greeting and the send-off.
 export const LESSON_CONTEXTS = ["first", "event"];
 const LESSON_STEPS = ["welcome", "target", "horizontal", "vertical", "power", "result", "finish"];
+const TAP_LESSON_VARIANTS = ["welcome", "first_welcome", "event_welcome", "power", "finish"];
 // Keep the companion's face and reaction selection; use a brief line in the first-person lane.
 function shortHiyori(text, phase, shot, called, context, actor) {
   if (phase === "result" && shot && actor === "player") {
@@ -746,26 +747,18 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   function teach(id) {
     if (!tutorial || !coachLines || coachPanel || phase === "closed") return;
     pullInput?.cancel();
-    // 弾いて投げるレッスンは4枚（指摘13・桜井 #171・#017「とにかくゲームさせてみて」）: 先に投げさせ、刺さった所の点を見てから得点の決まりを言う。
+    // 弾いて投げるレッスンは6枚。先に投げさせ、刺さった所の点を見てから得点の決まりを言う。
     // 旧ゲージ式は今までどおり7枚。
     // 2026-11-13: 弾いて投げる操作も狙いは横・縦のゲージに戻したので、横・縦の説明を挟む（投げ方だけ上へ弾く）
     const ids = tapPull ? ["welcome", "horizontal", "vertical", "power", "target", "finish"] : LESSON_STEPS;
     const titles = { welcome: lessonContext === "first" ? "はじめての一投、マキと。" : lessonContext === "event" ? "投げる前に、マキから。" : "マキと、まずは一投。", target: "的と得点、刃が触れた所", horizontal: "① 横の位置を止める", vertical: "② 縦の位置を止める", power: "③ 緑の回転で放す", result: "今の一投を振り返ろう", finish: "レッスン完了" };
     const last = shots.at(-1);
     const key = lessonContext && coachLines[lessonContext + "_" + id] ? lessonContext + "_" + id : id;
-    // 取っ手・Space・集中の説明は「？」の遊び方に任せ、2文だけにする。弾き方は的の上の小さな手が動いて見せる
-    const tapLesson = {
-      power: "狙いが決まったら、的か右下から上へ、ひと息で弾く。速すぎても遅すぎても落ちるよ",
-    };
+    const line = coachLines[tapPull && TAP_LESSON_VARIANTS.includes(key) ? key + "_tap" : key];
     if (tapPull) { titles.power = "上へ弾いて投げる"; titles.target = "今の一投と、刃が触れた所"; }
-    // Keep the canonical first/event greeting, free-lesson terms and scoring explanation.
-    // Only the old input instructions change; the relationship context must not disappear.
-    const canonicalLine = tapPull ? coachLines[key]
-      .replace("横、縦、回転の順で止める。", "横と縦を止めて狙い、上へ弾いて投げるよ。")
-      .replace("横、縦、回転の順でよく投げたね。", "横、縦、そして弾いて、よく投げたね。") : coachLines[key];
     const scoreLine = last ? `今回は${last.score}点。${shotFeedback(last, { inputMode }).tip}` : "";
-    const text = tapPull && id === "target" && last ? scoreLine + "\n" + canonicalLine
-      : (tapPull && tapLesson[id] || canonicalLine) + (id === "result" && last ? " " + scoreLine : "");
+    const text = tapPull && id === "target" && last ? scoreLine + "\n" + line
+      : line + (id === "result" && last ? " " + scoreLine : "");
     const close = () => {
       coachPanel.remove(); coachPanel = null; heading.inert = body.inert = scoreboard.inert = false;
       stamp = null; render(); root.focus();
@@ -799,7 +792,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
               .then(data => {
                 coachLines = Object.fromEntries(data.dialogues.map(dialogue => [dialogue.lines[0].id, dialogue.lines.map(line => line.text).join("\n")]));
                 if (!LESSON_STEPS.every(id => typeof coachLines[id] === "string")
-                  || lessonContext && !["welcome", "finish"].every(id => typeof coachLines[lessonContext + "_" + id] === "string"))
+                  || lessonContext && !["welcome", "finish"].every(id => typeof coachLines[lessonContext + "_" + id] === "string")
+                  || tapPull && !TAP_LESSON_VARIANTS.every(id => typeof coachLines[id + "_tap"] === "string"))
                   throw new Error("Axe lesson incomplete");
               }));
         }

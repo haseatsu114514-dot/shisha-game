@@ -10,12 +10,12 @@ import {
 
 export * from "./growth-board-data.js";
 
-import { HUB, LAYOUTS, NODES, NODE_BY_ID, BOARD_TOTAL_COST, boardNodes } from "./growth-board-layout.js";
+import { HUB, LAYOUTS, NODES, NODE_BY_ID, BOARD_TOTAL_COST, boardNodes, isCoreStat } from "./growth-board-layout.js";
 import { perkMultiplier, boardPerks } from "./growth-effects.js";
 export { HUB, LAYOUTS, NODES, NODE_BY_ID, BOARD_TOTAL_COST, boardNodes };
 
 const fmtNum = (v) => String(Math.round(v * 10) / 10);
-/** 普通のマスの恩恵（SBD59・SBD62）。能力のマスでなければ null。極みは基礎。強さは帯の倍率（近く×1・中ほど×2・関門の先×3） */
+/** 普通のマスの恩恵（SBD59・SBD62）。能力のマスでなければ null。極みは基礎。強さは帯の倍率（近く×2・中ほど×2.5・台座の先×3） */
 export function perkOf(node) {
   if (node?.kind !== "stat" && !(node?.kind === "gate" && node.perk)) return null;
   const def = SQUARE_PERKS[node.board];
@@ -38,18 +38,9 @@ export function ringsOpen(s = state) {
   return Math.min(5, Math.max(1, Number(s?.chapter) || 1, Number(s?.growth?.ringsOpen) || 1));
 }
 
-/** 灯した能力のマスの数（能力が伸びる授業は bonus 分を足す。2.6） */
-export const statTotal = board => boardNodes(board).filter(n=>n.kind==="stat").length;
-export function statCount(board, unlocked) {
-  let n = 0;
-  for (const id of unlocked) {
-    const node = NODE_BY_ID[id];
-    if (node?.board !== board) continue;
-    if (node.kind === "stat") n++;
-    else if (node.kind === "lesson" && node.reward === "stat") n += node.bonus || 0;
-  }
-  return Math.min(statTotal(board), n);
-}
+/** 灯した能力のマスの数。追加マスの K20 は恩恵には加える。 */
+export const statTotal = board => STAT_SQUARES[board];
+export const statCount = (board, unlocked) => boardNodes(board).filter(n => isCoreStat(n) && unlocked.has(n.id)).length;
 /** 盤の伸び（SBD63「段の概念は無くす。盤の伸びをステータスグラフに」）: 灯した能力のマスの割合 0〜1 */
 export const statRatio = (board, unlocked) => statCount(board, unlocked) / statTotal(board);
 
@@ -85,7 +76,7 @@ export function overlapNote(node, g, unlocked) {
 }
 
 /** その盤の能力のマス（極みを除く）が全部灯っているか。極みはその時だけ灯せる（SBD63） */
-export const statsFilled = (board, unlocked) => boardNodes(board).every((n) => n.kind !== "stat" || n.peak || unlocked.has(n.id));
+export const statsFilled = (board, unlocked) => boardNodes(board).every((n) => !isCoreStat(n) || n.peak || unlocked.has(n.id));
 
 /** 線でつながった隣が灯っている（か、紋の隣） */
 function lessonReconnected(id, unlocked) {

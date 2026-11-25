@@ -130,7 +130,7 @@ await suite("spot-encounters", async check => {
     assert.deepEqual(r.rain, { trace: ["kannon_rain"], seen: false, last: undefined });
     assert.deepEqual(r.adam, ["kannon_adam"]); assert.deepEqual(r.resident, ["kannon_oldman"]);
     assert(!/adam|oldman/.test(r.quiet[0]) && !/adam|oldman/.test(r.after[0]));
-    assert(r.unchanged); assert.equal(r.money, 30000); assert.equal(r.visits, 25);
+    assert(r.unchanged); assert.equal(r.money, 27000); assert.equal(r.visits, 25);
   });
 
   await run("gym-waits-for-actual-identity-and-preserves-private-name", async page => {
@@ -180,8 +180,8 @@ await suite("spot-encounters", async check => {
       E.clear(); await E.facility("choizap");
       return { declined, registered, next: E.trace, unchanged: before === E.relationship() };
     });
-    assert.deepEqual(r.declined, { trace: ["ch1_choizap_first"], money: 30000, member: false, seen: false });
-    assert.deepEqual(r.registered, { trace: ["ch1_choizap_first"], money: 26000, member: true, seen: false });
+    assert.deepEqual(r.declined, { trace: ["ch1_choizap_first"], money: 27000, member: false, seen: false });
+    assert.deepEqual(r.registered, { trace: ["ch1_choizap_first"], money: 23000, member: true, seen: false });
     assert.deepEqual(r.next, ["choizap_minto"]); assert(r.unchanged);
   });
 
@@ -372,6 +372,20 @@ await suite("spot-encounters", async check => {
       assert.equal(result.error, undefined);
       assert.deepEqual(result.trace, [], "盤専用の入口から、以前の施設会話には入らない");
       assert.deepEqual(result.after, result.before);
+      // 同じ地図の入口から、通常訪問を選ぶと境内の既存会話に入る。
+      await page.evaluate(() => {
+        delete E.core.state.visitedDay.kannon;
+        E.vn.vnTest.choose = () => 0;
+      });
+      await press(`${map} [data-spot="kannon"]`);
+      await press('[data-test="map-go"]');
+      await press('[data-test="kannon-visit"]');
+      await page.waitForFunction(() => E.core.state.slot === 1);
+      const courtyard = await page.evaluate(() => ({ ...E.kannonState(), trace: E.trace }));
+      assert(courtyard.trace.includes("kannon_adam"));
+      assert.equal(courtyard.visits, 2);
+      assert(courtyard.seen);
+
     }, options);
   }
 

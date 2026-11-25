@@ -16,6 +16,7 @@ import { addStamina } from "../core/stats.js";
 import { rescheduleInvitation } from "../daily/phone.js";
 import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { runDaily } from "../daily/calendar.js";
+import { updateHud } from "../daily/hud.js";
 import { allSpots, fortuneSpot } from "../daily/spots.js";
 import { openShop } from "../daily/shop.js";
 import { canReflect } from "../daily/reflection.js";
@@ -28,14 +29,17 @@ import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNigh
   chapterFiveTokyoPin, tokyoSpotsNow, preloadTokyoScenes } from "./ch5-tokyo.js";
 import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground, chapterFiveDubaiPin,
   chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes, dubaiBondHasNew } from "./ch5-dubai.js";
-import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop, chapterFiveShowroom } from "./ch5-shops.js";
+import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop, chapterFiveShowroom,
+  chapterFiveTonariTalks, performChapterFiveTonariTalk } from "./ch5-shops.js";
 import { chapterFiveCateringSpot, performCateringSpot, deliverCateringMorning, settleCateringWork, cateringBusyContacts, finishCateringSeason } from "./ch5-catering.js";
 import { introduceCateringBusiness } from "./ch5-catering-origin.js";
 import { CATERING_SPOT_ID, isTsumugiCateringAway } from "./ch5-catering-model.js";
 import { noteShopStamp, shopStampsShortcut } from "./ch5-shop-stamps.js";
+import { chainStageAt } from "./visit-chains.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
   chapterFivePreparation, chapterFivePrepPending, recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
+  canAffordChapterFivePrepTrial, CH5_PREP_TRIAL_STAMINA, CH5_PREP_TRIAL_STAMINA_NOTE,
   chapterFivePrepScene, CH5_PREP_TRIALS, chapterFiveCallOpen, CH5_CALL_OPEN_NOTE,
 } from "./ch5-progress.js";
 import { SUMI_TRIAL_FLAG, SUMI_TRIAL_INTRO, SUMI_TRIAL_STAMINA, sumiTrialOffered, sumiTrialFeedbackPending,
@@ -77,11 +81,16 @@ const HIDDEN_SPOTS = Object.freeze(["naru", "minto", "shishark", "c_station", "t
  */
 export function chapterFiveHomeSpots({ tonariDue = false } = {}) {
   // 指定の時間帯に読める章の会話だけ、既存の「！」で案内する。普通のtonariの新着表示はそのまま。
-  const local = allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id))
-    .map(spot => spot.id === "tonari" && tonariDue ? { ...spot, hasNew: () => true } : spot);
-  return [...local, ...chapterFiveShops(), chapterFiveCallOpen(state) ? CH5_CALL_SPOT : null, chapterFiveTokyoPin(), chapterFiveDubaiPin(),
+  const tonariNew = tonariDue || chapterFiveTonariTalks().some(talk => chainStageAt(state, talk.id));
+  const showroom = chapterFiveShowroom(state);
+  const local = [...allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id)), ...chapterFiveShops()]
+    .map(spot => withChainNotice(spot, spot.id === "tonari" && tonariNew
+      || spot.kind === "shop" && showroom && chainStageAt(state, showroom.id)));
+  return [...local, chapterFiveCallOpen(state) ? CH5_CALL_SPOT : null, chapterFiveTokyoPin(), chapterFiveDubaiPin(),
     chapterFiveCateringSpot()].filter(Boolean);
 }
+
+const withChainNotice = (spot, also = false) => also || chainStageAt(state, spot.id) ? { ...spot, hasNew: () => true } : spot;
 
 /** 次に tonari で読む場面（並びの順・時間帯が合うときだけ）。無ければ null＝いつもの tonari。 */
 export function dueTonariScene(value = state) {
@@ -102,6 +111,8 @@ export function chapterFiveDailyDefinition(io) {
       return Number.isInteger(match) ? match : Infinity;
     },
     nightEvents: {},
+    tonariTalks: chapterFiveTonariTalks,
+    performTonariTalk: performChapterFiveTonariTalk,
     // 出張シーシャの依頼（スミさんのLIME）と、期限の過ぎた依頼の片付け
     morningLime: () => deliverCateringMorning(),
     // 店めぐり帳: 行き先の行動を終えたら判子（帳面の店だけ）。帳面は右上の LIME の一番上の行から開く
@@ -193,7 +204,7 @@ const CH5_CITY_SHOP = Object.freeze({ ...CITY_SHOP, desc: "隣町の支店。仕
 
 /** 第5章の柚ヶ谷の行き先: 神崎・クラウド・あげはの店（会ったことがあれば）・支店・ボドゲカフェ（知っていれば）。 */
 export function chapterFiveCitySpots() {
-  return [...cityRegularSpots(), ...chapterFiveCityShops(), CH5_CITY_SHOP, trpgSpot()].filter(Boolean);
+  return [...cityRegularSpots(), ...chapterFiveCityShops(), CH5_CITY_SHOP, trpgSpot()].filter(Boolean).map(spot => withChainNotice(spot));
 }
 
 /** 今日の恋人のデートの約束（地元の店で会う）。無ければ null。 */
@@ -250,7 +261,11 @@ async function performChapterFiveSpot(spot, io, options = {}) {
     const owner = state;
     if (!await introduceCateringBusiness() || state !== owner) return { used: false, exerted: false };
     // 閉店後の試作が途中なら、まずその続き（LOAD 後など）。
-    if (chapterFivePrepPending(state)) return { used: await runPrep(io), exerted: false };
+    if (chapterFivePrepPending(state)) {
+      await runPrep(io);
+      // 試作だけを続ける訪問は行動枠を使わない。
+      return { used: false, exerted: false };
+    }
     // 試作の会話を終えた夜は、閉店後の作業台で本物の一台を作れる（任意・一度だけ。#2020 F）。断れば、いつもの tonari へ。
     const trial = await offerSumiTrial(io, options);
     if (trial) return trial;
@@ -352,19 +367,25 @@ async function offerSumiTrial(io, options = {}) {
   return { used: true, exerted: crafted };
 }
 
-/** 閉店後の試作（#1666）: 何を試す → スミさんが吸って返す → 直すか、このまま覚えるか。true＝最後まで済んだ。 */
+/** 閉店後の試作（#1666）: 何を試す → スミさんが吸って返す → 直すか、このまま覚えるか。 */
 async function runPrep(io) {
-  if (!chapterFivePreparation(state)) {
+  const owner = state;
+  if (!chapterFivePreparation(owner)) {
+    if (!canAffordChapterFivePrepTrial(owner)) {
+      toast(CH5_PREP_TRIAL_STAMINA_NOTE);
+      return;
+    }
     const trialId = await modal({
-      title: "閉店後の試作", body: "ダブルアップル12グラム。今夜は、何を試す？<br>できた一台は、スミさんが吸って返してくれる。",
+      title: "閉店後の試作", body: `ダブルアップル12グラム。今夜は、何を試す？<br>できた一台は、スミさんが吸って返してくれる。体力${CH5_PREP_TRIAL_STAMINA}。`,
       options: CH5_PREP_TRIALS.map(trial => ({ label: trial.label, value: trial.id, test: `ch5-prep-${trial.id}` })),
     });
-    if (!trialId || !await io.readScene(chapterFivePrepScene("trial", trialId))) return false;
-    if (!recordChapterFivePrepTrial(state, trialId)) return false;
+    if (state !== owner || !trialId || !await io.readScene(chapterFivePrepScene("trial", trialId)) || state !== owner) return;
+    if (!recordChapterFivePrepTrial(owner, trialId)) return;
     save();
+    updateHud();
   }
-  const prep = chapterFivePreparation(state);
-  if (!prep || prep.adjusted !== null) return true;
+  const prep = chapterFivePreparation(owner);
+  if (!prep || prep.adjusted !== null) return;
   const trial = CH5_PREP_TRIALS.find(entry => entry.id === prep.trial);
   const adjusted = await modal({
     title: "もう一台か、このままか", body: `試したこと: ${trial.label}<br>スミさんの返答: ${trial.point}`,
@@ -373,11 +394,10 @@ async function runPrep(io) {
       { label: "このまま、手に覚えさせる", value: "keep", test: "ch5-prep-keep" },
     ],
   });
-  if (!adjusted) return false;
+  if (!adjusted || state !== owner) return;
   const sceneId = adjusted === "adjust" ? chapterFivePrepScene("adjust", trial.id) : chapterFivePrepScene("keep");
-  if (!await io.readScene(sceneId)) return false;
-  if (!recordChapterFivePrepAdjustment(state, adjusted === "adjust")) return false;
+  if (!await io.readScene(sceneId) || state !== owner) return;
+  if (!recordChapterFivePrepAdjustment(owner, adjusted === "adjust")) return;
   save();
-  if (chapterFiveCallOpen(state)) toast(CH5_CALL_OPEN_NOTE);
-  return true;
+  if (chapterFiveCallOpen(owner)) toast(CH5_CALL_OPEN_NOTE);
 }

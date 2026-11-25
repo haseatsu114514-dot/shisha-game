@@ -97,12 +97,20 @@ export function camelRaceRecord(value) {
     })),
     best: best && Number.isFinite(best.total) ? { total: Math.round(best.total), rank: integer(best.rank, 4), grade: typeof best.grade === "string" ? best.grade : "C",
       time: Number.isFinite(best.time) ? best.time : null, chapter: integer(best.chapter), day: integer(best.day) } : null,
+    // 練習レースの自己ベスト（#4195 M-35: 練習は段の外で、練習の記録に別に残す）。best は大会・練習を問わない最高のまま
+    ...(record(raw?.practiceBest) && Number.isFinite(raw.practiceBest.total) ? { practiceBest: { ...raw.practiceBest } } : {}),
   };
 }
+/**
+ * 出走できる大会。全ミニゲーム共通の段の決まり（core/play-tiers.js・#4195 M-35）: 練習と入門（初級）は最初から、
+ * 標準（中級）は入門の3位以内、上級は標準の3位以内（中級のクリア）で開く。前は上級が標準の中級認定で開いていた。
+ * 中級認定（称号・白火）は別の目標のまま。一度走った大会は閉じない。
+ */
 export function availableCamelCups(value) {
   const { cups } = camelRaceRecord(value);
   return CAMEL_CUPS.filter(cup => cup.id === "practice" || cup.id === "rookie"
-    || cup.id === "standard" && cups.rookie.qualified || cup.id === "expert" && cups.standard.mastered).map(cup => cup.id);
+    || cup.id === "standard" && (cups.rookie.qualified || !!cups.standard.best)
+    || cup.id === "expert" && (cups.standard.qualified || cups.standard.mastered || !!cups.expert.best)).map(cup => cup.id);
 }
 function ensureRecord(value) {
   const current = camelRaceRecord(value);
@@ -213,6 +221,7 @@ export function recordCamelRaceResult(value, run, runs = 1) {
   const firstClear = camel.plays === 0;
   const entry = { total: Math.round(run.total), rank: integer(run.rank, 4), grade: typeof run.grade === "string" ? run.grade : "C",
     time: Number.isFinite(run.time) ? Math.round(run.time * 100) / 100 : null, chapter: integer(value.chapter), day: integer(value.day) };
+  if (cup === "practice" && (!camel.practiceBest || entry.total > camel.practiceBest.total)) camel.practiceBest = { ...entry };
   if (cup !== "practice") {
     const saved = camel.cups[cup];
     if (!saved.best || entry.total > saved.best.total) saved.best = { ...entry };

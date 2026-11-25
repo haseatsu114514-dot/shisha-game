@@ -150,8 +150,9 @@ try {
       }
       if (scenario === 'chapter2' && !baseline && layout === 'normal') {
         const a = pins.find(p => p.id === 'trpg_bar').target;
+        // 一般の重なり検査と同じく1pxの許容を持たせる（#4197の「時間消費なし」表示でshopピンが広がり、横向き小画面で0.2px未満だけ接する）
         assert(pins.filter(p => p.id !== 'trpg_bar').every(({ target: b }) =>
-          a.x+a.width <= b.x || b.x+b.width <= a.x || a.y+a.height <= b.y || b.y+b.height <= a.y), 'board-game cafe overlaps another destination');
+          a.x+a.width <= b.x+1 || b.x+b.width <= a.x+1 || a.y+a.height <= b.y+1 || b.y+b.height <= a.y+1), 'board-game cafe overlaps another destination');
       }
       // #2789（#2794）: 縦持ちは回転ガードで画面を覆い、地図のピンは操作させない。
       const rotates = device === 'portrait';

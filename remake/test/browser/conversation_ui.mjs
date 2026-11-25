@@ -368,6 +368,9 @@ await suite("conversation-ui", async check => {
       await page.locator('[data-test="vn-skip"]').click();
       await page.locator('[data-test="choice-0"]').click();
       await page.waitForFunction(() => document.querySelector("#preview-status").textContent.includes("会話終了"));
+      // SKIPは場面をまたいで保持される（#3558 項目7・オーナー決定 2026-11-25）ため、次の場面の前に明示的に止める。
+      await page.locator('[data-test="vn-skip"]').dispatchEvent("click");
+      assert.deepEqual(await modes(), { auto: "false", skip: "false", fast: false });
       await page.selectOption("#preview-scene", "names");
       await page.waitForFunction(() => document.querySelector(".vn-name.show")?.textContent === "アダム");
       await page.locator(".vn-next.show").waitFor();

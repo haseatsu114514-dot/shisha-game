@@ -87,7 +87,7 @@ export const LOVER_CONTINUE_SCRIPTS = {
     { at: 0, face: "surprise", text: "……お主、大丈夫か？" },
     { at: 1.8, face: "serious", text: "……むう、今のは悔しいのう" },
     { at: 4.2, face: "ventriloquism", text: "『王命である！ もう一台見せよ！』" },
-    { at: 7, face: "ventriloquism", text: "コ、コロちゃん！ 命令はなしじゃ！" },
+    { at: 7, face: "ventriloquism", text: "…コロちゃん！ 命令はなしじゃ！" },
     { at: 10.3, face: "normal", text: "……わしも、次を見たいだけじゃ" },
     { at: 13.6, face: "smile", text: "……隣の席は、空けておくからの" },
     { at: 16.5, face: "smile", text: "……お主は、どうしたい？" },

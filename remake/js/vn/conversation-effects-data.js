@@ -102,13 +102,13 @@ export const EFFECTS = [
   {
     no: 8, name: "震え文字", tag: "追加", weight: "軽",
     summary: "指定した区間の文字が1pxで小刻みに揺れる。",
-    watch: "「さ、さむい……」と「こ、こわくない」の部分だけが細かく震える。動きを減らすを入れると止まる。",
+    watch: "「…さむい……」と「…こわくない」の部分だけが細かく震える。動きを減らすを入れると止まる。",
     spec: "本文の [shiver]…[/shiver] を span 化し、0.08秒周期で ±1px。reduce-shake／prefers-reduced-motion では静止。",
     bgm: false,
     lines: [
-      { speaker: "hiyori", face: "sad", text: "[shiver]さ、さむい……[/shiver]\n路地の風、冷たいね。" },
+      { speaker: "hiyori", face: "sad", text: "[shiver]…さむい……[/shiver]\n路地の風、冷たいね。" },
       { speaker: "hajime", face: "normal", text: "上着を貸そうか。" },
-      { speaker: "minto", face: "sad", text: "[shiver]こ、こわくない……[/shiver]\nこわくないもん……。" },
+      { speaker: "minto", face: "sad", text: "[shiver]…こわくない……[/shiver]\nこわくないもん……。" },
     ],
   },
   {

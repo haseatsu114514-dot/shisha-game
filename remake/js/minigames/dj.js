@@ -1,5 +1,5 @@
 import { recordPlayMastery, syncPlayMastery } from "../core/play-mastery.js";
-import { recordTierClear } from "../core/play-tiers.js";
+import { recordTierClear, tierOpen } from "../core/play-tiers.js";
 // DJ ミニゲームを本編から開く部品（2026-11-01 DJS10・クラブSEAM DJS12）。遊びの本体は remake/previews/dj/ をそのまま同じ画面に重ねて使う。
 // ミニゲームは時間を使わない（#2113）: 行動・日付・お金・体力は変えない。記録は state.dj に残し、
 // 心得の盤の「遊びのご褒美」（SBD39・growth.js の claimPlayRewards）が state.dj.bestRank を読んで、寝る前に感覚の火種を1つ渡す。
@@ -40,9 +40,17 @@ export function djRecords(s) {
 }
 
 /** SET 1 はいつでも。SET 2・3 は前のセットを1回回しきると開く。 */
+/**
+ * セットの開き方。全ミニゲーム共通の段の決まり（core/play-tiers.js・#4195 M-35）: SET 1（初級）は最初から、
+ * SET 2・3 はひとつ下のセットをクリア（B 以上で回しきる）すると開く。段の記録が無い旧保存は、下のセットの自己ベストが B 以上なら開く。
+ * 前の決まり（下のセットの完走だけ）で一度遊んだセットは閉じない。
+ */
 export function djSetOpen(s, id) {
   if (id === 1) return DJ_SETS.length > 0;
-  return DJ_SETS.some(item => item.id === id) && djRecords(s).sets[id - 1]?.plays > 0;
+  const set = DJ_SETS.find(item => item.id === id);
+  if (!set) return false;
+  const sets = djRecords(s).sets;
+  return tierOpen(s, "dj", set.tier) || sets[id].plays > 0 || rankIndex(sets[id - 1]?.best?.rank) >= rankIndex("B");
 }
 
 /**
