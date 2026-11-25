@@ -194,7 +194,8 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(await page.locator(dt("tetsuko-time-screen")).count(), 0, "The screen is gone after returning");
   });
 
-  // 懐いた後（来訪4回以上）は会話を挟まずに画面へ。何もせず「帰る」と、何も確定しない（回復・来訪・記録なし）。
+  // 懐いた後（来訪4回以上）は会話を挟まずに画面へ。何もせず「帰る」と、回復・来訪は確定しない。
+  // 入室時の発見（waiting）だけは図鑑に残る（pack17判断分: 発見・撮影は、確定しなくても保存する）。
   await check("tetsuko-time-leaving-without-touching-commits-nothing", async page => {
     await seed(page, { _ch3_outings: { tetsuko: 4 } });
     await loadSlot(page, 0);
@@ -218,7 +219,11 @@ await suite("ch3-tokyo-daily", async check => {
     await tokyoMap(page, { day: 34, slot: 1 });
     const after = await get(page);
     assert.equal(after.flags._ch3_outings.tetsuko, 4, "No visit is counted");
-    assert.equal(after.flags._tetsuko_time, undefined, "Nothing is written");
+    const record = after.flags._tetsuko_time;
+    assert.deepEqual(record?.found, ["waiting"], "Only the entry discovery is kept");
+    assert.equal(record?.sessions ?? 0, 0, "No session is counted");
+    assert.equal(record?.affection ?? 0, 0, "No affection is banked");
+    assert.deepEqual(record?.album ?? [], [], "No photo is kept");
     assert.equal(mid.flags._ch3_outings.tetsuko, 4);
   });
 

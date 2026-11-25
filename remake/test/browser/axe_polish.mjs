@@ -81,6 +81,9 @@ async function fits(page) {
 }
 async function cancel(page, before) {
   await root(page).focus(); await page.keyboard.press("Escape");
+  // M-15 で Esc は一時停止の確認ダイアログを開くようになった。出ていたら「やめる」を押して抜ける。
+  const confirm = page.locator('[data-test="axe-quit-confirm"]');
+  if (await confirm.count()) await confirm.click();
   const result = await page.evaluate(() => window.axePolishPromise);
   assert(result.cancelled && !result.completed);
   assert.deepEqual(await storageSnapshot(page), before);

@@ -1018,7 +1018,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   }
   function askQuit() {
     if (phase === "closed" || pauseDialog?.open) return;
-    if (phase === "summary" && (!series || seriesWinner())) { cleanup(true); return; }
+    // 集計画面の×は結果を確定しない（確定は集計画面の「終了」だけ）。M-15 以前の取消しの約束を保つ。
+    if (phase === "summary") { cleanup(false); return; }
     if (["loading", "failed"].includes(phase) || phase === "choice" && shots.length === 0 && gameIndex === 0 && !coachPanel) {
       cleanup(false);
       return;
