@@ -2007,22 +2007,6 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
           ctx.fillStyle = `rgba(255,250,228,${0.85 * a * Math.sin(rise * Math.PI)})`;
           ctx.beginPath(); ctx.arc(p.x, p.y - rise * p.scale * 1.1 * (H / 2), size, 0, Math.PI * 2); ctx.fill();
         }
-        // 入口の両脇に金色の小旗（コースの縁の赤い旗と違う色）。帯は遠くで細くつぶれるので、背の高い目印で先に見つけられる
-        if (flow.z >= z0 - 0.01 && flow.z <= z1) {
-          const flutter = reducedMotion ? 0 : Math.sin(phase * 0.9 + flow.z) * 0.18;
-          for (const side of [-1, 1]) {
-            const p = placeAt(flow.z, flow.x + side * (flow.half * 0.55 + 0.08));
-            const a = Math.min(1, (240 - (p?.dz ?? 999)) / 90);
-            if (!p || a <= 0.01) continue;
-            const poleH = p.scale * 1.5 * (H / 2), top = p.y - poleH, flag = poleH * 0.34, out = side * flag * (1.25 + flutter);
-            ctx.globalAlpha = a;
-            ctx.strokeStyle = "rgba(90,62,40,0.9)"; ctx.lineWidth = Math.max(1.2, p.scale * 9);
-            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, top); ctx.stroke();
-            ctx.fillStyle = "#ffd75a"; ctx.strokeStyle = "rgba(120,72,20,0.85)"; ctx.lineWidth = Math.max(0.8, p.scale * 4);
-            ctx.beginPath(); ctx.moveTo(p.x, top); ctx.quadraticCurveTo(p.x + out * 0.5, top + flag * (0.3 + flutter), p.x + out, top + flag * 0.5); ctx.lineTo(p.x, top + flag); ctx.closePath(); ctx.fill(); ctx.stroke();
-            ctx.globalAlpha = 1;
-          }
-        }
         // 波紋: 進む向きへ反った山形が流れていく（影と光の二重線で、砂の盛り上がりに見せる）
         const ripple = 8, bow = 2.6;
         for (let zz = flow.z + (phase % ripple) - ripple; zz < flow.z + flow.length; zz += ripple) {
