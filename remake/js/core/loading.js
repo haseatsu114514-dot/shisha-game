@@ -23,7 +23,7 @@ const WARM_DELAY_MS = 1500;
  * 決まった場面（章の始め・セーブからの再開・起動）で、待ちがなくても漫画のロード画面を出すか
  * （2026-11-12 オーナー「漫画はマストで出して欲しい」「決まった場面は毎回出す」）。出したロード画面には必ず漫画を載せる。
  * 自動操作のブラウザ（navigator.webdriver。既存のブラウザ検査）は従来どおり、待ちが長いときだけ出す（core/look.js・side-area.js と同じ扱い）。
- * 検査は localStorage の suien_loading_comics に "always"（毎回）／"wait"（待ちのときだけ）を入れて切り替える。
+ * 設定「ロード画面の漫画」は localStorage の suien_loading_comics に保存する。
  */
 export function comicLoadingRequired() {
   try {
@@ -33,6 +33,15 @@ export function comicLoadingRequired() {
   } catch { /* 保存を読めない環境はプレイヤーの既定で動く */ }
   return !(typeof navigator !== "undefined" && navigator.webdriver === true);
 }
+
+export function setLoadingComicsMode(mode) {
+  if (mode !== "always" && mode !== "wait") return false;
+  try {
+    localStorage.setItem(LOADING_COMICS_MODE_KEY, mode);
+    return true;
+  } catch { return false; }
+}
+
 let stylesheet, chromeAssets, chromeSettled = false;
 function loadStyle() {
   if (!stylesheet) stylesheet = new Promise((resolve, reject) => {

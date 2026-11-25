@@ -238,5 +238,26 @@ await check("automated-boot-stays-plain", async page => {
   });
   assert.deepEqual(old, { small: true, gone: true, value: 5, gate: false });
 });
+await check("config-controls-the-next-boot", async page => {
+  const group = page.getByRole("radiogroup", { name: "ロード画面の漫画" });
+  const always = group.getByRole("radio", { name: "いつも" });
+  const wait = group.getByRole("radio", { name: "待つ時だけ" });
+  const config = page.locator('[data-test="title-config"]');
+  await config.click();
+  assert.equal(await wait.getAttribute("aria-checked"), "true");
+  await always.click();
+  assert.equal(await page.evaluate(() => localStorage.getItem("suien_loading_comics")), "always");
+  await page.reload();
+  await page.locator(".loading-gate.is-ready .loading-panels img").first().waitFor();
+  assert.equal(await config.count(), 0);
+  await page.keyboard.press("Enter");
+  await config.click();
+  assert.equal(await always.getAttribute("aria-checked"), "true");
+  await wait.click();
+  assert.equal(await page.evaluate(() => localStorage.getItem("suien_loading_comics")), "wait");
+  await page.reload();
+  await config.click();
+  assert.equal(await wait.getAttribute("aria-checked"), "true");
+});
 await browser.close();
 assert.equal(failed, 0, `loading-game: ${failed} failed case(s)`);

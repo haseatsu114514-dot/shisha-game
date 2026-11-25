@@ -417,6 +417,33 @@ body.vn-open .weather-sheet.outdoor {
 
 /* ---------------------------------------------------------------- トースト・バナー */
 #toasts { display: flex; flex-direction: column; align-items: center; padding-top: 138px; gap: 8px; }
+.save-failed-notice {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 80%;
+  color: #ffd6d6;
+  font-size: max(18px, 13px / var(--k, 1));
+}
+.save-failed-notice > :is(summary, p) {
+  margin: 0 auto;
+  border: 1px solid var(--danger);
+  background: #19111f;
+  pointer-events: auto;
+}
+.save-failed-notice > summary {
+  width: fit-content;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.save-failed-notice > p {
+  margin-top: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
 .toast {
   position: relative;
   padding: 10px 22px;

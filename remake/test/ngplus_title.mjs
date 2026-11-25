@@ -132,6 +132,7 @@ function makeFixture(opts = {}) {
     "../core/look.js": { LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }, { id: "retro", label: "DS風" }], DISABLED_LOOKS: ["neo"], normalizeLook: (value) => value || "classic", setLook() {} },
     "../core/craft-version.js": { CRAFT_VERSIONS: craftVersion.CRAFT_VERSIONS, normalizeCraftVersion: craftVersion.normalizeCraftVersion },
     "../core/side-area.js": { refreshSideArea() {} },
+    "../core/loading.js": { comicLoadingRequired: () => true, setLoadingComicsMode() {} },
     "./save-transfer.js": { fullscreenButton: () => null, saveTransferRow: () => el("div") },
     "../chapters/ch1.js": { startNewGame: () => { calls.startNewGame++; }, resumeGame() {} },
     "../vn/engine.js": { clearLog() {} },
@@ -277,6 +278,11 @@ const META = (over = {}) => ({
   const itemsInput = findByTest(fx.modalCalls[0].args.body, "cycle-group-items");
   assert.ok(itemsInput, "4グループのトグルがある");
   for (const key of ["stats", "money", "knowledge"]) assert.ok(findByTest(fx.modalCalls[0].args.body, `cycle-group-${key}`));
+  const statsInput = findByTest(fx.modalCalls[0].args.body, "cycle-group-stats");
+  const statsRow = fx.modalCalls[0].args.body.children.find(row => row.children.includes(statsInput));
+  const [statsLabel, statsNote] = statsRow.children[0].children;
+  assert.equal(statsLabel, "能力・経験値・授業");
+  assert.match(statsNote.children[1], /引き継ぐと大会の相手も強くなります（第3・4章）/);
   itemsInput.checked = false;
   itemsInput.onchange({ target: itemsInput });
   fx.modalCalls[0].resolve(true);

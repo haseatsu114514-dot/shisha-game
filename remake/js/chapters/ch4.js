@@ -63,7 +63,11 @@ function menuButton(owner) {
     onclick: () => openMenu(owner) });
 }
 
-const openMenu = createChapterMenu({ current, test, title: "第四章 MENU" });
+const openMenu = createChapterMenu({ current, test, title: "第四章 MENU", rulesAvailable: owner => {
+  const progress = owner.state.flags?._ch4;
+  // 審査員と出場者は大会の冒頭で明かす。
+  return progress?.part === "tournament" && progress.read?.[CH4_TOURNAMENT_SCENES.start] === true;
+} });
 
 function hud() {
   layers.hud.replaceChildren();
