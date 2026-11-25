@@ -370,12 +370,14 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     // ---- 入力 -------------------------------------------------------------------------
     const skipGoal = () => { if (goal && goal.t >= FEEL.goalSkipAfter) goal.t = Math.max(goal.t, FEEL.goalAfter); };
     const act = () => {
-      if (isPaused() || isInterrupted()) return;
+      // 入力を止めるのは確認ダイアログ表示中と中断時だけ。paused（時計停止）中は
+      // 検証用APIの手動駆動（pause + press + advance）を受け付ける従来の契約を保つ。
+      if (pauseDialog?.open || isInterrupted()) return;
       if (goal) { skipGoal(); return; } // ゴールの余韻は押して飛ばせる
       if (game && !game.finished && mode && countdown <= 0) { const kind = press(game); if (kind) onPress(kind); }
     };
     const doBoost = () => {
-      if (isPaused() || isInterrupted() || !game || game.finished || !mode || countdown > 0) return;
+      if (pauseDialog?.open || isInterrupted() || !game || game.finished || !mode || countdown > 0) return;
       const kind = boost(game);
       if (kind) { onBoostEvent(kind); return; }
       rideSe.cue("boostShort");
