@@ -24,6 +24,12 @@ await suite("heat-advice", async check => {
         performance.now = () => A.now; Math.random = () => .5;
         A.run = A.heat.runHeat(cs);
       }, mode);
+      // 練習の炭焼きは、操作の前に説明を一度読む（pack16・explainTutorialStep）。出たら閉じてから進む。
+      if (mode === "tutorial") {
+        const close = page.locator('.bench-guide[open] [data-test="bench-guide-close"]');
+        await close.or(page.locator('.heat[aria-busy="false"]')).first().waitFor();
+        if (await close.isVisible()) await close.click();
+      }
       await page.waitForSelector('.heat[aria-busy="false"]');
       await page.evaluate(() => { Math.random = A.random; });
       const saved = await storageSnapshot(page);

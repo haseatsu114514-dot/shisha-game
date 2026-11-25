@@ -1,6 +1,6 @@
 // 第5章の最初の来店で一度だけ読む会話（N3・chapters/ch5-first-talks.js）を、実際の地図の来店で確かめる。
 // 柚ヶ谷: 神崎煙草店の最初の来店は第2章の後日談（世界大会の後の版）→ 貴方ノ為ノ此ノ煙。 の最初の来店はクラウドの会話 → 次の日の神崎の店は
-// いつもの来店（昼のあいさつ＋通い訪問の小会話）。地元: EDEN の最初の来店は任意場面「二つのダブルアップル」、次の日のEDENがアダムの会話。
+// 第5章の小会話（昼のあいさつ＋巡回）。地元: EDEN の最初の来店は任意場面「二つのダブルアップル」、次の日のEDENがアダムの会話。
 // 代金・好感度（第5章の通い +5）・回数は元の店の来店と同じ。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
@@ -152,7 +152,7 @@ await suite("ch5-home-talks", async check => {
     assert.equal(state.affinity.kuraudo, before.affinity.kuraudo + 5);
     assert.equal(state.flags._ch2_talks?.kuraudo, (before.flags._ch2_talks?.kuraudo || 0) + 1);
     assert.equal(state.flags._ch2_region, "home", "the night ends at home");
-    // 3. 次の日の神崎煙草店は、いつもの来店（昼のあいさつ＋通い訪問の小会話）。後日談は読み直さない。
+    // 3. 次の日の神崎煙草店は、昼のあいさつと第5章の小会話。後日談は読み直さない。
     await travelToCity(page, "widehanga");
     before = await get(page);
     await visit(page, "ch2_kumicho");
@@ -160,6 +160,7 @@ await suite("ch5-home-talks", async check => {
     state = await get(page);
     text = await logText(page);
     assert.match(text, /昼の神崎煙草店/, "back to the usual day greeting");
+    assert.match(text, /そこのと座り比べてくんな/, "the first of the new recurring talks");
     assert.doesNotMatch(text, /持ち点の表|世界から、よく戻りなすった/, "the aftermath is read once");
     assert.equal(state.money, before.money - 3000);
     assert.equal(state.flags._ch2_talks?.kumicho, (before.flags._ch2_talks?.kumicho || 0) + 1);

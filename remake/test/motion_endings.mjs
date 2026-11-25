@@ -419,7 +419,7 @@ async function checkDateType() {
     let release = () => {};
     if (late) {
       const gate = new Promise((resolve) => { release = resolve; });
-      await page.route("**/ZenOldMincho-Name-Bold.woff2", async (route) => { await gate; await route.continue().catch(() => {}); });
+      await page.route("**/ZenOldMincho-Name-Bold.woff2*", async (route) => { await gate; await route.continue().catch(() => {}); });
     }
     try {
       await page.goto(base); await page.waitForSelector('[data-test="title-new"]');

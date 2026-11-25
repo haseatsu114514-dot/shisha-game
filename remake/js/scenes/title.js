@@ -18,6 +18,7 @@ import { createUiThemeSelect } from "../core/ui-theme.js";
 import { LOOKS, DISABLED_LOOKS, normalizeLook, setLook } from "../core/look.js";
 import { CRAFT_VERSIONS, normalizeCraftVersion } from "../core/craft-version.js";
 import { refreshSideArea } from "../core/side-area.js";
+import { comicLoadingRequired, setLoadingComicsMode } from "../core/loading.js";
 import { fullscreenButton, saveTransferRow } from "./save-transfer.js";
 
 let titleRevision = 0;
@@ -105,7 +106,7 @@ export function startPackageFromMeta(meta) {
 }
 
 const CYCLE_GROUPS = [
-  ["stats", "能力・経験値・授業"],
+  ["stats", "能力・経験値・授業", "引き継ぐと大会の相手も強くなります（第3・4章）。"],
   ["money", "所持金"],
   ["items", "所持品"],
   ["knowledge", "知識・記録"],
@@ -132,14 +133,15 @@ export async function openNextCycleOptions(meta) {
     }
     const nextCycle = pkg.fromCycle + 1;
     const groups = Object.fromEntries(CYCLE_GROUPS.map(([key]) => [key, true]));
-    const rows = CYCLE_GROUPS.map(([key, label]) => {
+    const rows = CYCLE_GROUPS.map(([key, label, note]) => {
       const input = el("input", {
         type: "checkbox",
         dataset: { test: `cycle-group-${key}` },
         onchange: (e) => { groups[key] = e.target.checked; },
       });
       input.checked = true;
-      return el("label.cfg-row", [el("span", { text: label }), input]);
+      const caption = note ? el("span", [label, el("small", [el("br"), note])]) : el("span", { text: label });
+      return el("label.cfg-row", [caption, input]);
     });
     const choice = await modal({
       title: `${nextCycle}周目をはじめる`,
@@ -437,8 +439,8 @@ export async function openConfig(opts = {}) {
     const buttons = choices.map(([value, text]) => el("button.cfg-seg-btn", {
       type: "button", role: "radio", value, text, "aria-checked": String(value === current),
       onclick: () => {
+        if (pick(value) === false) return;
         for (const b of buttons) b.setAttribute("aria-checked", String(b.value === value));
-        pick(value);
       },
     }));
     return el("div.cfg-row", [el("span", { text: label }), el("div.cfg-seg", { role: "radiogroup", "aria-label": label, dataset: { test } }, buttons)]);
@@ -450,6 +452,9 @@ export async function openConfig(opts = {}) {
     String(config.autoSpeed), (v) => setConfig("autoSpeed", Number(v)));
   const skipMode = segRow("SKIPの範囲", "cfg-skip-mode", [["seen", "既読"], ["all", "全部"]],
     config.skipSeenOnly ? "seen" : "all", (v) => setConfig("skipSeenOnly", v === "seen"));
+  const loadingComics = document.body?.dataset?.screen === "preview" ? null :
+    segRow("ロード画面の漫画", "cfg-loading-comics", [["always", "いつも"], ["wait", "待つ時だけ"]],
+      comicLoadingRequired() ? "always" : "wait", setLoadingComicsMode);
   // 見た目の様式（LK01）。既定は旧版（LK23）。新版は選べない（コードは残してある）。DS風はすべての章でいつでも切り替えられる（LK21）。
   const look = segRow("見た目", "cfg-look", LOOKS.filter(({ id }) => !DISABLED_LOOKS.includes(id)).map(({ id, label }) => [id, label]),
     normalizeLook(config.look), (v) => { setConfig("look", v); setLook(v); });
@@ -512,6 +517,7 @@ export async function openConfig(opts = {}) {
       speed,
       autoSpeed,
       skipMode,
+      loadingComics,
       portraits,
       introArt,
       introTransition,

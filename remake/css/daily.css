@@ -1398,6 +1398,10 @@ html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 140px; }
 /* 第2〜5章の「第N章・完」のカード（.ch2-contest）は、ボタンの列の上、カードの右下の空き。
    右端はカードの中身の右端（MENU の右端）にそろえ、下端はどの画面幅でもボタンの列より上に置く。 */
 #screen:has(> .ch2-contest.chapter-clear) ~ #fx .lvup { right: 93px; bottom: 150px; }
+/* スマホでは第1章のクリア画面のボタンが大きく3つ並ぶ（進む・セーブ・タイトル。#4211）。
+   列はレーダーの左端にそろえて左へ寄せ、右下の札の幅を少し詰めて、ボタンと札を重ねない。 */
+html:root[data-density="phone"] .end-screen.clear.chapter-clear:not(.ch2-contest) .end-actions { align-self: flex-start; margin-left: 224px; gap: 10px; }
+html:root[data-density="phone"] #screen:has(> .chapter-clear:not(.ch2-contest)) ~ #fx .lvup { max-width: 350px; }
 #screen:has(> .chapter-clear) ~ #fx .lvup-plate {
   height: auto; min-height: var(--plate-h); grid-template-columns: auto minmax(0, 1fr);
   padding: 8px 34px; column-gap: 12px;

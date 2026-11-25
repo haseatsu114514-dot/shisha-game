@@ -19,6 +19,8 @@ const spots={
 };
 const overrides={spendableMoney,state, DB:{flavorById:{lemon:{}},dialogues:{},lime:[]},
  save:()=>saves.push(structuredClone(state)),
+ // 休養の前にも今日のお誘いの締め切りを確かめる（calendar.js）。この検査では返事待ちのお誘いは無い
+ actionInviteNeedingReply:()=>null,
  holdActionSave:()=>noop,
  el:()=>({classList:{add:noop,remove:noop},remove:noop}), sleep:asyncNoop,
  layers:{fx:{append:noop},modal:{classList:{contains:()=>false}}},

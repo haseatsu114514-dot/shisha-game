@@ -42,7 +42,7 @@ await suite("issue439", async (check) => {
       await setup(page);
       await page.evaluate(async () => { I.install = (await import("./js/daily/reel.js")).installReel(); });
       await page.locator('[data-test="reel-intro"]').waitFor();
-      assert.match(await page.locator(".ri-text").innerText(), /C.STATION.*マスコット/);
+      assert.match(await page.locator(".ri-text").innerText(), /パッキー.*C.STATION公式アプリ/); // 名乗りの文は 33d54d21（#3947 項8）で更新
       const layout = await page.evaluate(() => {
         const s = document.querySelector("#stage").getBoundingClientRect(), b = document.querySelector(".ri-panel").getBoundingClientRect();
         return { centered: Math.abs((b.top + b.bottom) / 2 - (s.top + s.bottom) / 2) < 2,

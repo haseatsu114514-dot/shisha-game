@@ -20,6 +20,7 @@ for (const [chapter, prefix, log, retry] of [
     ...(Array.isArray(attrs) ? { children: attrs } : { ...attrs, children }) });
   const bindings = {
     state, el: node, MUKAI_DELIVERY_STEPS: [], CH3_STORY_DIALOGUE_FILES: {}, CH3_SERVICE_IDS, CH4_SCENE_FILES: {},
+    chapterRecoveryActions: () => [],
     layers: { hud: { replaceChildren() {}, classList: { remove() {}, toggle() {} } } },
     showScreen: (name, root) => screens.push({ name, root }),
   };

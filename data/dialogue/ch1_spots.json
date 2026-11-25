@@ -993,7 +993,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "は、はい。tonariの逢縁です"
+            "text": "…はい。tonariの逢縁です"
           },
           {
             "speaker": "dr_charcoal",
@@ -1140,7 +1140,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "は、はい。逢縁です"
+            "text": "…はい。逢縁です"
           }
         ],
         "notice_after": [
@@ -1152,7 +1152,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "ど、どうも……"
+            "text": "…どうも……"
           }
         ]
       }
@@ -3176,7 +3176,7 @@
         {
           "speaker": "naru",
           "face": "serious",
-          "text": "は、はい。……ありがとうございます、円頓寺さん"
+          "text": "…はい。……ありがとうございます、円頓寺さん"
         },
         {
           "speaker": "",

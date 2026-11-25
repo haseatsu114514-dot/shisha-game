@@ -19,6 +19,8 @@ async function setup(page) {
     const opening = await import("./js/scenes/tonari-opening.js");
     core.newGame();
     core.config.textSpeed = 4;
+    // このスイートは未読の場面もSKIPで進める前提。SKIP既定が既読のみ（#4214 U-08）になったため、検査では「全部」に設定する。
+    core.config.skipSeenOnly = false;
     core.state.flags._intro_hajime = core.state.flags._intro_sumi = true;
     ui.clearScreen();
     window.O531 = { core, vn, data, opening, cues: [], lines: [], done: false };

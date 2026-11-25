@@ -1,5 +1,6 @@
 import { finishTournamentStep } from "./tournament-finish-step.js";
 import { tournamentResources, restoreTournamentResources, recoverTournamentResources } from "./tournament-resource-snapshot.js";
+import { ChapterSaveError } from "../core/chapter-save.js";
 import { tournamentStandings } from "./tournament-standings.js";
 import { initialBaseVotes } from "./tournament-base-votes.js";
 import { payTournamentPrize } from "./tournament-prize.js";
@@ -26,7 +27,8 @@ export const RIVAL_QUALITY = Object.freeze({ ayatori: 84.5, steve: 83.5, volk: 8
 const rulesVersion = p => p.rulesVersion === undefined ? 1 : p.rulesVersion;
 function rivalQuality(p) {
   const version = rulesVersion(p);
-  if (version !== 1 && version !== 2 && version !== TOURNAMENT_RULES_VERSION) throw new Error("全国大会の採点規則を確認できません");
+  if (version !== 1 && version !== 2 && version !== TOURNAMENT_RULES_VERSION)
+    throw new ChapterSaveError(3, "全国大会の採点規則を確認できません", "_ch3_tournament.rulesVersion");
   return version === 1 ? LEGACY_RIVAL_QUALITY : version === 2 ? V2_RIVAL_QUALITY : RIVAL_QUALITY;
 }
 
@@ -79,9 +81,11 @@ export function tournamentProgress(value) {
     votes: {}, voted: 0, result: null, history: [], entry: null, prizePaid: false,
     tastingSeed: null, tastingPlan: null,
   };
-  if (p.version !== 1 || !Number.isInteger(p.step) || p.step < 0 || p.step > 11
-    || !Number.isInteger(p.voted) || p.voted < 0 || p.voted > SPEND.length
-    || !Array.isArray(p.history)) throw new Error("全国大会の保存地点を確認できません");
+  const invalid = field => { throw new ChapterSaveError(3, "全国大会の保存地点を確認できません", "_ch3_tournament." + field); };
+  if (p.version !== 1) invalid("version");
+  if (!Number.isInteger(p.step) || p.step < 0 || p.step > 11) invalid("step");
+  if (!Number.isInteger(p.voted) || p.voted < 0 || p.voted > SPEND.length) invalid("voted");
+  if (!Array.isArray(p.history)) invalid("history");
   rivalQuality(p);
   return p;
 }
@@ -98,7 +102,8 @@ export function restoreResources(value, snapshot) {
 export function startAttempt(value, craft) {
   const p = tournamentProgress(value);
   if (p.stage === "craft") return p; // 二度押しで一台を作り直さない
-  if (!["entry", "ready", "defeat"].includes(p.stage)) throw new Error("現在の保存地点から再挑戦できません");
+  if (!["entry", "ready", "defeat"].includes(p.stage))
+    throw new ChapterSaveError(3, "現在の保存地点から再挑戦できません", "_ch3_tournament.stage");
   if (!p.entry) p.entry = resources(value);
   restoreResources(value, p.entry);
   p.attempts++;
@@ -121,14 +126,16 @@ export function recoverStep(value) {
 
 export function beginStep(value) {
   const p = tournamentProgress(value);
-  if (p.stage !== "craft" || p.step >= 11) throw new Error("制作工程の保存地点を確認できません");
+  if (p.stage !== "craft" || p.step >= 11)
+    throw new ChapterSaveError(3, "制作工程の保存地点を確認できません", "_ch3_tournament.stage / step");
   p.rollback ||= resources(value);
   return copy(p.craft);
 }
 
 export function finishStep(value, craft) {
   const p = tournamentProgress(value);
-  if (p.stage !== "craft" || p.step >= 11) throw new Error("制作工程の保存地点を確認できません");
+  if (p.stage !== "craft" || p.step >= 11)
+    throw new ChapterSaveError(3, "制作工程の保存地点を確認できません", "_ch3_tournament.stage / step");
   return finishTournamentStep(p, craft);
 }
 
@@ -138,7 +145,7 @@ export function tastingEffect(plan, judge) {
   const profile = JUDGE_PROFILES[judge];
   if (!profile || !Array.isArray(order) || order.length !== CONTESTANTS.length
     || new Set(order).size !== CONTESTANTS.length || order.some(id => !CONTESTANTS.includes(id))) {
-    throw new Error("試喫順を確認できません");
+    throw new ChapterSaveError(3, "試喫順を確認できません", "_ch3_tournament.tastingPlan / order");
   }
   const next = order[order.indexOf("ayatori") + 1] || null;
   const affected = next && plan.waterAfterSaku !== true ? next : null;
@@ -150,9 +157,10 @@ export function tastingEffect(plan, judge) {
 export function castVotes(p, round, performance, prefByJudge = null, carryP = 0) {
   if (!p || p.result || round !== p.voted || round < 0 || round >= SPEND.length) return false;
   const rivals = rivalQuality(p);
-  if (!Number.isFinite(performance) || performance < 0 || performance > 100) throw new Error("全国大会の工程成績を確認できません");
+  if (!Number.isFinite(performance) || performance < 0 || performance > 100)
+    throw new ChapterSaveError(3, "全国大会の工程成績を確認できません", "_ch3_tournament.craft / performance");
   const plan = p.tastingPlan?.[round];
-  if (!plan) throw new Error("試喫順を確認できません");
+  if (!plan) throw new ChapterSaveError(3, "試喫順を確認できません", "_ch3_tournament.tastingPlan");
   const quality = Object.fromEntries(Object.entries(rivals).map(([id, rival]) => {
     const lifted = liftRivalScore(rival, carryP, 3);
     observeRivalScore(rival, carryP, 3, lifted);
@@ -164,7 +172,7 @@ export function castVotes(p, round, performance, prefByJudge = null, carryP = 0)
     const profile = JUDGE_PROFILES[judge], row = p.votes?.[judge];
     if (!row || CONTESTANTS.some(id => !Number.isInteger(row[id]) || row[id] < 0)
       || CONTESTANTS.reduce((sum, id) => sum + row[id], 0) !== SPEND.slice(0, round).reduce((sum, n) => sum + n, 0)) {
-      throw new Error("審査員の持ち点が不足しています");
+      throw new ChapterSaveError(3, "審査員の持ち点が不足しています", "_ch3_tournament.votes." + judge);
     }
     // 最初の票は吸い出し・提供前の手元評価。残り香は一口目以降だけ効く。
     const tactic = round === 0 ? null : tastingEffect(plan[judge], judge);
@@ -198,8 +206,10 @@ export function recordResult(value, total) {
   const p = tournamentProgress(value);
   if (p.result) return p.result;
   if (p.voted !== SPEND.length || p.step !== 11 || p.craft?.careHistory?.length !== 2
-    || p.craft.failed) throw new Error("提供と2回の調整が未完了です");
-  if (!Number.isFinite(total) || total < 0 || total > 100) throw new Error("全国大会の総合成績を確認できません");
+    || p.craft.failed)
+    throw new ChapterSaveError(3, "提供と2回の調整が未完了です", "_ch3_tournament.voted / step / craft");
+  if (!Number.isFinite(total) || total < 0 || total > 100)
+    throw new ChapterSaveError(3, "全国大会の総合成績を確認できません", "_ch3_tournament.craft.total");
   const rows = standings(p), rank = rows.find(row => row.id === "hajime").rank;
   p.result = { attempt: p.attempts, rulesVersion: rulesVersion(p), total, rank, win: rank === 1,
     rows, votes: copy(p.votes), baseVotes: copy(p.baseVotes || {}), careHistory: copy(p.craft.careHistory),

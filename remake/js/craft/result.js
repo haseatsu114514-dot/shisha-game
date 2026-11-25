@@ -33,11 +33,14 @@ const JUDGES = [
   { id: "sensu", label: "千須" },
 ];
 
-/** 総合スコア → 結末。1位は千須票（基準超え）だけが生む（ch1の正史） */
-export function outcomeOf(total) {
-  if (total >= SENSU_BAR) return { rank: 1, kind: total >= 90 ? "premium" : "win" };
-  if (total >= SENSU_BAR - 12) return { rank: 3, kind: "close" };
-  return { rank: 4, kind: total < 38 ? "disaster" : "lose" };
+/** 第1章の結果演出。旧審査では総合点で順位も決まる。 */
+export function outcomeOf(total, voteRank) {
+  const rank = voteRank ?? (total >= SENSU_BAR ? 1 : total >= SENSU_BAR - 12 ? 3 : 4);
+  // 新審査の特別勝利は勝利点より上の最初の整数から（#4198 C-03）。
+  const premiumBar = voteRank == null ? 90 : Math.floor(SENSU_BAR) + 1;
+  if (rank === 1) return { rank, kind: total >= premiumBar ? "premium" : "win" };
+  if (rank === 4) return { rank, kind: total < 38 ? "disaster" : "lose" };
+  return { rank, kind: "close" };
 }
 
 /** 審査員の持ち点（各10点）の最終配分。はじめは上園・博士からも点が入り上位で競り、千須の10点は「最後の一票」として締める（#1282 逆転優勝の廃止、オーナー決定 2026-10-28） */
@@ -104,12 +107,12 @@ const judgeLegend = () => legendOf(JUDGE_IDS);
  * @param round 1 | 2 | 3
  * @param mine  ここまでのはじめの出来（0〜100）
  */
-export async function showStandings(round, mine, cs = null, attempt = null) {
+export async function showStandings(round, mine, cs = null, attempt = null, carryP = 0) {
   const owner = state;
   // 票が入る演出の出発点（この回の票を入れる前）。この回の票がすでに確定していれば、前後は同じになる。
   const beforeTable = attempt?.rulesVersion >= 2 ? structuredClone(attempt.voteAttempt?.votes || {}) : round > 1 ? interimPointTable(round - 1) : {};
   // 審査員の投入票と、新規試合だけにある基礎票を集計する。
-  if (attempt?.rulesVersion >= 2) castCh1Votes(attempt, round - 1, cs);
+  if (attempt?.rulesVersion >= 2) castCh1Votes(attempt, round - 1, cs, carryP);
   const table = attempt?.rulesVersion >= 2 ? attempt.voteAttempt.votes : interimPointTable(round);
   const values = totals(table, JUDGES.length, attempt?.voteAttempt?.baseVotes);
   const valuesBefore = totals(beforeTable, JUDGES.length, attempt?.voteAttempt?.baseVotes);

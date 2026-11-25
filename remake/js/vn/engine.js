@@ -1132,7 +1132,7 @@ function renderPage() {
   if (speed >= 4 || skipMode) {
     r.typing = false;
     r.shown = total;
-    renderTyped(total);
+    finalizeRender(total);
     dom.next.classList.add("show");
     kickAuto();
     return;
@@ -1218,6 +1218,17 @@ function renderTyped(shown) {
   typedInto(dom.inner)(r.fullInnerHtml, innerShown);
 }
 
+// 保険（2026-11-24「会話の二行目だけ表示されることがある」調査）: Chromium では通常送り・
+// スキップ加速とも DOM は常に正しく組み上がるため、残る本命は iOS Safari の再描画漏れ。
+// 増分で組み上げた DOM を書き手ごと捨てて全文を一度で描き直し、確定描画を強制する。
+// 台詞の出切り（completeTyping）と、スキップ・速度4の即時表示（renderPage）の両方から使う。
+function finalizeRender(total) {
+  renderTyped(total);
+  typedWriters.delete(dom.text);
+  typedWriters.delete(dom.inner);
+  renderTyped(total);
+}
+
 function completeTyping() {
   const r = running;
   if (!r) return;
@@ -1225,7 +1236,7 @@ function completeTyping() {
   r.typing = false;
   const total = r.totalLength ?? (r.spokenLength + visibleLength(r.fullInnerHtml));
   r.shown = total;
-  renderTyped(total);
+  finalizeRender(total);
   dom.next.classList.add("show");
   // 相手の行の会話カットインは、台詞が出切ってから出す
   cutin?.reveal();

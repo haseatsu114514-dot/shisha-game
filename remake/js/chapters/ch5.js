@@ -2,7 +2,8 @@
 // 状態遷移は ch5-progress.js。ここは表示と再生だけを持つ。
 import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
-import { createChapterActions } from "../core/chapter-actions.js";
+import { completionActions, createChapterActions } from "../core/chapter-actions.js";
+import { chapterRecoveryActions } from "../core/chapter-recovery.js";
 import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
@@ -39,6 +40,7 @@ import { naruTastingCategory } from "../craft/naru-tasting.js";
 import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_SCENE_FILES, CH5_PREP_TRIALS,
   chapterFiveAftermathScene, chapterFiveSceneTail,
   chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho, chapterFiveLoverEcho,
+  canAffordChapterFivePrepTrial, CH5_PREP_TRIAL_STAMINA, CH5_PREP_TRIAL_STAMINA_NOTE,
   recordChapterFivePrepTrial, recordChapterFivePrepAdjustment, chapterFiveCallOpen, CH5_CALL_OPEN_NOTE,
   canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
   chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
@@ -67,7 +69,11 @@ const ADJUST_CUE = "second_cup_adjust";
 // この cue の行（初めて会う客に尋ね、先に吸ってもらう。STK02）も制作後に回し、調整の行に続けて台本のまま読む。
 // 提供できなかった一台（failed）では読まない。
 const NEWCOMER_CUE = "second_cup_newcomer";
-const HELD_CUES = [ADJUST_CUE, NEWCOMER_CUE];
+// つむぎの接客（ch5_tsumugi_serving）を読んだ保存では、初めて会う客への最後の一言を、この cue の行（つむぎの受け売り）に替える
+// （2026-11-24 添削 N7）。読んでいなければ NEWCOMER_CUE の行のまま。
+const NEWCOMER_TSUMUGI_CUE = "second_cup_newcomer_tsumugi";
+const NEWCOMER_TSUMUGI_SOURCE = "ch5_tsumugi_serving";
+const HELD_CUES = [ADJUST_CUE, NEWCOMER_CUE, NEWCOMER_TSUMUGI_CUE];
 // 調整の区分（naruTastingCategory と同じ土台）→ 制作直後の地の文。steady / unknown は台本の本文のまま。
 const ADJUST_LINES = {
   recovered: "一度、熱が揺れた。炭を一つ離して、戻す。客がもう一度ホースを持つまで、待った。",
@@ -355,13 +361,19 @@ async function renderPrep(owner) {
   if (!current(owner)) return;
   const prep = chapterFivePreparation(state);
   if (!prep) {
+    if (!canAffordChapterFivePrepTrial(state)) {
+      card(owner, "prep", "閉店後の試作", CH5_PREP_TRIAL_STAMINA_NOTE, [
+        button(owner, "日常に戻る", "prep-back", () => renderFree(owner), true),
+      ]);
+      return;
+    }
     card(owner, "prep", "閉店後の試作", "ダブルアップル12グラム。今夜は、何を試す？",
       CH5_PREP_TRIALS.map(trial => button(owner, trial.label, `prep-${trial.id}`, async () => {
         if (!await readScene(owner, chapterFivePrepScene("trial", trial.id))) return;
         if (!recordChapterFivePrepTrial(state, trial.id)) return;
         save();
         await renderStage(owner);
-      })), "できた一台は、スミさんが吸って返してくれる。");
+      })), `できた一台は、スミさんが吸って返してくれる。体力${CH5_PREP_TRIAL_STAMINA}。`);
     return;
   }
   const trial = CH5_PREP_TRIALS.find(entry => entry.id === prep.trial);
@@ -530,8 +542,12 @@ async function craftSecondCup(owner) {
   const held = DB.dialogues[CH5_MATCH_SCENES.beforeSecond]?.lines || [];
   const text = ADJUST_LINES[category] || held.find(line => line.cue === ADJUST_CUE)?.text;
   // 調整の行に続けて、初めて会う客に尋ねる行を台本のまま読む。提供できなかった一台では読まない（先に吸ってもらえない）。
+  const newcomer = held.filter(line => line.cue === NEWCOMER_CUE);
+  const borrowed = held.filter(line => line.cue === NEWCOMER_TSUMUGI_CUE);
+  const greeting = borrowed.length && chapterFiveRead(state, NEWCOMER_TSUMUGI_SOURCE)
+    ? [...newcomer.slice(0, -1), ...borrowed] : newcomer;
   const after = [...(text ? [{ speaker: "", face: "", text }] : []),
-    ...(failed ? [] : held.filter(line => line.cue === NEWCOMER_CUE))];
+    ...(failed ? [] : greeting)];
   if (after.length && !await playLines(owner, "ch5_second_cup_adjust", after)) return;
   await renderStage(owner);
 }
@@ -702,16 +718,9 @@ function renderComplete(owner) {
   // 見終えた保存を開いたとき・盤を使って戻ったときも通知する（接続前に見終えた保存の解放と、パッケージの最新化）。
   const nextCycle = noteTrueEnd();
   const pending = chapterFiveCreditsPending(state);
-  const actions = pending ? [
-    button(owner, "スタッフロールへ", "complete-credits", () => renderStaffRoll(owner), true),
-    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
-    ...reflectionActions(owner), // 時間を使わない盤の入口はスタッフロールの前後どちらでも出す
-  ] : [
-    button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
-    button(owner, "スタッフロールを見る", "complete-credits", () => renderStaffRoll(owner)),
-    button(owner, "タイトルへ", "complete-title", () => backToTitle()),
-    ...reflectionActions(owner),
-  ];
+  const next = button(owner, pending ? "スタッフロールへ" : "スタッフロールを見る", "complete-credits", () => renderStaffRoll(owner), true);
+  const actions = completionActions(owner, button, next, { onSave: saveFlow, onTitle: pending ? undefined : backToTitle });
+  actions.push(...reflectionActions(owner)); // 時間を使わない盤の入口はスタッフロールの前後どちらでも出す
   card(owner, "complete", "第五章・完", "SHISHA-9000 の勝負は終わった。店の明かりが、いつもの夜に戻っていく。", actions,
     `ここまでが、この物語の終わりです。${nextCycle ? `タイトルの NEXT CYCLE から、${nextCycle}周目をはじめられます。` : ""}`, "",
     // 他の章と同じ比較。淡い面が第5章のはじめ、明るい面がいま。
@@ -728,9 +737,10 @@ function reflectionActions(owner) {
   })] : [];
 }
 
-function renderError(owner) {
+function renderError(owner, error) {
   card(owner, "error", "第5章を再開できませんでした", "通信と保存地点を確認して、もう一度お試しください。読み終えた場面から再開できます。", [
     button(owner, "もう一度読み込む", "retry", () => state.chapter === 5 ? resumeChapterFive() : beginChapterFive(), true),
+    ...chapterRecoveryActions(error, owner, button, chapterFiveProgress),
   ]);
 }
 

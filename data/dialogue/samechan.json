@@ -171,7 +171,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "……い、今のはコロちゃんが驚いただけじゃ。王たるわしは、むろん平気じゃぞ。……改めて聞く"
+          "text": "………今のはコロちゃんが驚いただけじゃ。王たるわしは、むろん平気じゃぞ。……改めて聞く"
         },
         {
           "speaker": "samechan",
@@ -244,7 +244,7 @@
           {
             "speaker": "samechan",
             "face": "normal",
-            "text": "コ、コロちゃん。わしはまだ、そこまでは話しておらんぞ"
+            "text": "…コロちゃん。わしはまだ、そこまでは話しておらんぞ"
           }
         ],
         "shark_scary": [
@@ -262,7 +262,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "コ、コロちゃん。王が、そう人聞きの悪いことを言うでない"
+            "text": "…コロちゃん。王が、そう人聞きの悪いことを言うでない"
           }
         ]
       }
@@ -652,7 +652,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "……ひ、一人では、どうしても店主の目になってしまうのじゃ"
+          "text": "………一人では、どうしても店主の目になってしまうのじゃ"
         },
         {
           "speaker": "hajime",
@@ -699,7 +699,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "ほ、ほんとにそう思うか。……なら、この向きに決めるのじゃ"
+            "text": "…ほんとにそう思うか。……なら、この向きに決めるのじゃ"
           }
         ],
         "softer": [
@@ -764,7 +764,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "こ、これが終わったら、ちゃんと休むのじゃ！"
+          "text": "…これが終わったら、ちゃんと休むのじゃ！"
         },
         {
           "speaker": "hajime",
@@ -825,7 +825,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "わ、わしの、か……？"
+          "text": "…わしの、か……？"
         },
         {
           "speaker": "",
@@ -931,7 +931,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "わ、わしにか？ 一服しに、ではなくて？"
+            "text": "…わしにか？ 一服しに、ではなくて？"
           },
           {
             "speaker": "hajime",
@@ -947,7 +947,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "き、聞こえておるわ！ じゃから、もう少し待つのじゃ"
+            "text": "…聞こえておるわ！ じゃから、もう少し待つのじゃ"
           },
           {
             "speaker": "",
@@ -1028,7 +1028,7 @@
         {
           "speaker": "samechan",
           "face": "serious",
-          "text": "あ、甘噛みじゃ。……たぶんな。離れてしまわぬよう、ひれのあたりを、こう、そっとくわえるのじゃ"
+          "text": "…甘噛みじゃ。……たぶんな。離れてしまわぬよう、ひれのあたりを、こう、そっとくわえるのじゃ"
         },
         {
           "speaker": "",
@@ -1044,7 +1044,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "コ、コロちゃん！ 三十分ではない、二十分じゃ！"
+          "text": "…コロちゃん！ 三十分ではない、二十分じゃ！"
         },
         {
           "speaker": "samechan",
@@ -1081,7 +1081,7 @@
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "……す、少し長うなったな。じゃが、どうしてもお主に話したかったのじゃ"
+          "text": "………少し長うなったな。じゃが、どうしてもお主に話したかったのじゃ"
         }
       ],
       "branches": {
@@ -1099,7 +1099,7 @@
           {
             "speaker": "samechan",
             "face": "serious",
-            "text": "……と、ところで、お主。今日のわしは、少しばかり忙しいのじゃ"
+            "text": "………ところで、お主。今日のわしは、少しばかり忙しいのじゃ"
           },
           {
             "speaker": "",
@@ -1114,7 +1114,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "ま、待つのじゃああ！ だ、誰も帰れとは言うておらん！"
+            "text": "…待つのじゃああ！ …誰も帰れとは言うておらん！"
           },
           {
             "speaker": "samechan",
@@ -1125,17 +1125,17 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "よ、読んでおらん！ ……す、少ししか読んでおらんわ"
+            "text": "…読んでおらん！ ………少ししか読んでおらんわ"
           },
           {
             "speaker": "samechan",
             "face": "serious",
-            "text": "……つ、次は、褒めるのじゃ。本にそう書いて……いや、違う。わしが、そうしたいのじゃ"
+            "text": "………次は、褒めるのじゃ。本にそう書いて……いや、違う。わしが、そうしたいのじゃ"
           },
           {
             "speaker": "samechan",
             "face": "normal",
-            "text": "お、お主の頭は……じ、実に左右対称で見事じゃな！"
+            "text": "…お主の頭は………実に左右対称で見事じゃな！"
           },
           {
             "speaker": "hajime",
@@ -1145,7 +1145,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "ち、違うのじゃ、今のはサメの話で……頭の形のよいサメは、水槽でもいちばん目を引くという……！"
+            "text": "…違うのじゃ、今のはサメの話で……頭の形のよいサメは、水槽でもいちばん目を引くという……！"
           },
           {
             "speaker": "hajime",
@@ -1155,7 +1155,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "……っ。そ、その返しは、本のどこにも載っておらんかった"
+            "text": "……っ。…その返しは、本のどこにも載っておらんかった"
           }
         ],
         "friend": [
@@ -1205,7 +1205,7 @@
           {
             "speaker": "samechan",
             "face": "excited",
-            "text": "せ、正解じゃ！ お主、ちゃんと聞いておってくれたのじゃな！"
+            "text": "…正解じゃ！ お主、ちゃんと聞いておってくれたのじゃな！"
           },
           {
             "speaker": "samechan",
@@ -1252,7 +1252,7 @@
         {
           "speaker": "samechan",
           "face": "serious",
-          "text": "……コ、コロちゃんが、どうしても作れと言うての。昨日の閉店後、夜中までずっと切っておったのじゃ"
+          "text": "………コロちゃんが、どうしても作れと言うての。昨日の閉店後、夜中までずっと切っておったのじゃ"
         },
         {
           "speaker": "samechan",
@@ -1263,7 +1263,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "こ、こら、いきなり始めるでない！"
+          "text": "…こら、いきなり始めるでない！"
         },
         {
           "speaker": "samechan",
@@ -1280,7 +1280,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "……わ、わしからも言うておく。お主が来る日は、店の中が、いつもより少しだけ明るい気がするのじゃ"
+          "text": "………わしからも言うておく。お主が来る日は、店の中が、いつもより少しだけ明るい気がするのじゃ"
         },
         {
           "type": "condition",
@@ -1316,7 +1316,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "こ、こら、国家機密じゃ！ いくら王でも、勝手にばらしてよいものではないぞ！"
+            "text": "…こら、国家機密じゃ！ いくら王でも、勝手にばらしてよいものではないぞ！"
           },
           {
             "speaker": "samechan",
@@ -1347,7 +1347,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "……っ。そ、そういうところじゃぞ、お主は"
+            "text": "……っ。…そういうところじゃぞ、お主は"
           }
         ],
         "friend": [
@@ -1520,7 +1520,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "コ、コロちゃん。あのサメは、ただ糸で吊られておっただけじゃ"
+          "text": "…コロちゃん。あのサメは、ただ糸で吊られておっただけじゃ"
         },
         {
           "speaker": "hajime",
@@ -1588,7 +1588,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "こ、これ！ 同い年に向かって、失礼じゃろう"
+          "text": "…これ！ 同い年に向かって、失礼じゃろう"
         },
         {
           "speaker": "hajime",
@@ -1680,7 +1680,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "き、きしんでます！ すごく！"
+          "text": "…きしんでます！ すごく！"
         },
         {
           "speaker": "samechan",
@@ -1791,7 +1791,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "つ、つかまんでよい！ まだ座ったばかりじゃぞ"
+          "text": "…つかまんでよい！ まだ座ったばかりじゃぞ"
         },
         {
           "speaker": "hajime",
@@ -1801,7 +1801,7 @@
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "……う、うむ。それなら、よい"
+          "text": "………うむ。それなら、よい"
         },
         {
           "speaker": "",
@@ -1891,7 +1891,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "……っ。そ、それは、席の話じゃろう"
+            "text": "……っ。…それは、席の話じゃろう"
           },
           {
             "speaker": "hajime",
@@ -1924,7 +1924,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "……そ、そういうものか。なら、立ち回りすぎるのも考えものじゃな"
+            "text": "………そういうものか。なら、立ち回りすぎるのも考えものじゃな"
           },
           {
             "speaker": "samechan",
@@ -1998,7 +1998,7 @@
         {
           "speaker": "samechan",
           "face": "serious",
-          "text": "き、気にするな。ポスターの傾きを、確かめておっただけじゃ"
+          "text": "…気にするな。ポスターの傾きを、確かめておっただけじゃ"
         },
         {
           "speaker": "samechan",
@@ -2014,7 +2014,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "コ、コロちゃん！ 毎回ではない、三回に一回じゃ！"
+          "text": "…コロちゃん！ 毎回ではない、三回に一回じゃ！"
         },
         {
           "speaker": "hajime",
@@ -2024,7 +2024,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "……お、お主も、か"
+          "text": "………お主も、か"
         },
         {
           "speaker": "hajime",
@@ -2075,7 +2075,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "お、お主、分かったうえで聞いておったのか"
+          "text": "…お主、分かったうえで聞いておったのか"
         },
         {
           "speaker": "samechan",
@@ -2145,7 +2145,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "な、なっ……！ お主の顔を見ながら、サメの話をしろと言うのか"
+            "text": "…なっ……！ お主の顔を見ながら、サメの話をしろと言うのか"
           },
           {
             "speaker": "samechan",
@@ -2254,7 +2254,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "む、むろん、コロちゃんの玉座も、同じくらい大事じゃぞ！"
+          "text": "…むろん、コロちゃんの玉座も、同じくらい大事じゃぞ！"
         },
         {
           "type": "condition",
@@ -2328,7 +2328,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "ふ、二人だけ……か"
+            "text": "…二人だけ……か"
           },
           {
             "speaker": "samechan",
@@ -2354,7 +2354,7 @@
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "う、うむ。そ、それは頼むのじゃ"
+            "text": "…うむ。…それは頼むのじゃ"
           },
           {
             "speaker": "",
@@ -2414,7 +2414,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "……う、うむ。入らぬ者が、いちばん長く生き残る"
+          "text": "………うむ。入らぬ者が、いちばん長く生き残る"
         },
         {
           "speaker": "hajime",
@@ -2476,7 +2476,7 @@
         {
           "speaker": "samechan",
           "face": "serious",
-          "text": "し、知ってどうするのじゃ。サメちゃんで十分じゃろう"
+          "text": "…知ってどうするのじゃ。サメちゃんで十分じゃろう"
         },
         {
           "speaker": "hajime",
@@ -2505,7 +2505,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "……い、いきなり呼ぶでない。こちらにも、心の準備というものがあるじゃろ"
+          "text": "………いきなり呼ぶでない。こちらにも、心の準備というものがあるじゃろ"
         },
         {
           "speaker": "",
@@ -2521,7 +2521,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "コ、コロちゃん！ 王が、余計なことを言うでない"
+          "text": "…コロちゃん！ 王が、余計なことを言うでない"
         },
         {
           "speaker": "hajime",
@@ -2531,7 +2531,7 @@
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "……う、うむ。お主がそう呼ぶなら、それでよい"
+          "text": "………うむ。お主がそう呼ぶなら、それでよい"
         },
         {
           "speaker": "hajime",
@@ -2682,7 +2682,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "……ど、どうじゃった。五本は、さすがに長かったかの"
+          "text": "………どうじゃった。五本は、さすがに長かったかの"
         },
         {
           "speaker": "hajime",
@@ -2692,12 +2692,12 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "そ、そうか。……あれはな、ずっと誰かに話したくて、胸に溜めておった話なのじゃ"
+          "text": "…そうか。……あれはな、ずっと誰かに話したくて、胸に溜めておった話なのじゃ"
         },
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "……ま、まあ。お主と並んで観るのは、思うたよりずっと楽しかったのじゃ"
+          "text": "………まあ。お主と並んで観るのは、思うたよりずっと楽しかったのじゃ"
         },
         {
           "speaker": "samechan",
@@ -2708,7 +2708,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "コ、コロちゃん！ それは言わん約束じゃったろう！"
+          "text": "…コロちゃん！ それは言わん約束じゃったろう！"
         },
         {
           "speaker": "",
@@ -2753,7 +2753,7 @@
           {
             "speaker": "samechan",
             "face": "serious",
-            "text": "（小声で）……へ、平気じゃ。画面の外の演出を、確かめておるだけでな"
+            "text": "（小声で）………平気じゃ。画面の外の演出を、確かめておるだけでな"
           },
           {
             "speaker": "samechan",

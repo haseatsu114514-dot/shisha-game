@@ -1301,7 +1301,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "わ、私じゃないわ！ ……たぶん"
+          "text": "…私じゃないわ！ ……たぶん"
         },
         {
           "speaker": "tsumugi",
@@ -1367,7 +1367,7 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "ひゃっ……い、今のは風じゃ。わしは驚いておらん"
+          "text": "ひゃっ………今のは風じゃ。わしは驚いておらん"
         },
         {
           "speaker": "tsumugi",
@@ -1471,7 +1471,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "入ってないの！？ ……い、いいの。帰りに寄るわ"
+          "text": "入ってないの！？ ………いいの。帰りに寄るわ"
         }
       ]
     },
@@ -1498,7 +1498,7 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "な、何かとは何じゃ！ ……こ、怖くはないぞ"
+          "text": "…何かとは何じゃ！ ………怖くはないぞ"
         },
         {
           "speaker": "tsumugi",
@@ -1732,7 +1732,7 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "う、動くお面じゃと！？ い、いや、驚いてはおらんぞ"
+          "text": "…動くお面じゃと！？ …いや、驚いてはおらんぞ"
         }
       ]
     },
@@ -2821,7 +2821,7 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "……な、泣いておらんぞ。焼きいかの煙が、目に入っただけじゃ"
+          "text": "………泣いておらんぞ。焼きいかの煙が、目に入っただけじゃ"
         }
       ]
     },

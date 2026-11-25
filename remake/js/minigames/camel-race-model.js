@@ -20,11 +20,12 @@ export const RACE = Object.freeze({
 // 練習は従来の1000mを維持。大会は同じ操作で短距離から順に挑戦する。
 // rivalBoost はライバルの速さの上乗せ（m/s）。風よけと競り合いで自分が速くなったぶん、練習・標準・上級を少し上げた（2026-11-11）。
 // tier: ミニゲームの三段階（#3779・core/play-tiers.js）。入門＝初級・標準＝中級・上級＝上級。練習は段の外。
-// 段の「クリア」は、その大会で3位以内（camelCupQualified）。解放は今までどおり（入門3位以内で標準、標準の中級認定で上級）。
+// 段の「クリア」は、その大会で3位以内（camelCupQualified）。解放は全ミニゲーム共通（ひとつ下の段のクリア・#4195 M-35）:
+// 入門3位以内で標準、標準3位以内で上級（前は標準の中級認定で上級）。中級認定は称号・白火の別の目標。
 export const CAMEL_CUPS = Object.freeze([
   { id: "practice", name: "練習レース", length: 1000, rivalBoost: 0.2, note: "操作を練習。初回完走のご褒美はそのまま" },
   { id: "rookie", tier: "easy", name: "入門大会", length: 700, rivalBoost: -0.9, note: "3位以内で標準大会へ" },
-  { id: "standard", tier: "normal", name: "標準大会", length: 1000, rivalBoost: 0.2, note: "入賞・声20点・スタミナ20点・連打1回以内で中級認定" },
+  { id: "standard", tier: "normal", name: "標準大会", length: 1000, rivalBoost: 0.2, note: "3位以内で上級大会へ。声・スタミナ20点・連打1回以内で中級認定" },
   { id: "expert", tier: "hard", name: "上級大会", length: 1300, rivalBoost: 0.55, note: "3位以内で上級クリア（白火1）。1位・S・連打なしで称号" },
 ].map(cup => Object.freeze(cup)));
 export const camelCup = id => CAMEL_CUPS.find(cup => cup.id === id) || CAMEL_CUPS[0];

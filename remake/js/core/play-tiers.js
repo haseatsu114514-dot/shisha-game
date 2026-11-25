@@ -2,8 +2,10 @@
 // 「火種の報酬をつけたい」）。DOM・保存・音に触れない。正本は docs/master_spec.md の「ミニゲームの三段階」。
 //
 // - 段は 初級(easy)・中級(normal)・上級(hard)。初級は最初から、中級は初級クリア、上級は中級クリアで開く。
-//   すでにコース・セットのあるゲーム（ラクダの大会・DJ のセット）は、そのゲームの解放条件をそのまま使う（ここの tierOpen は使わない）。
+//   全ゲーム同じ（2026-11-24 #4195 M-35。ラクダの大会・DJ のセットも、ひとつ下の段のクリアで開く。前はラクダの上級が
+//   標準の中級認定、DJ が前のセットの完走で開いていた）。一度遊んだ段は、旧保存でも閉じない（各ゲームの開き方の関数が見る）。
 // - 「クリア」の線はゲームごとに1つ（TIER_GAMES の clear）。上の段をクリアしたら下の段もクリア済みに数える。
+// - 自己ベストは段ごとに分けて持ち、段の札にその段の自己ベストを出す。練習は段の外（PLAY_RULES.practice）。
 // - 上級を初めてクリアしたら白火1つ（growth-board-data.js の PLAY_REWARDS `<game>-hard`。一度だけ・周回でも二度は渡さない）。
 // - 記録は growth.playTiers[game] = { cleared: [段], last: 最後に選んだ段 }。growth ごと保存・周回（NG+）へ持ち越す。
 //   新しい state.flags は作らない。結果を確定させるアダプター（各ゲームの記録関数）だけが recordTierClear を呼ぶ。
@@ -23,6 +25,26 @@ export const TIER_GAMES = Object.freeze({
   desert: Object.freeze({ title: "サンドボード", clear: "その段でヌールより先にゴール" }),
   dj: Object.freeze({ title: "DJ", clear: "そのセットをBランク以上で回しきる" }),
 });
+
+/**
+ * 全ミニゲームで同じ意味にする言葉（#4195 M-35）。各ゲームの段の札・遊び方に同じ文で出す。
+ * - tier: 段の開き方。best: 自己ベストの持ち方。
+ * - practice: 練習の意味。段の外で、最初から選べる。段のクリア・上級の白火・ランクのご褒美（Aランクの色火）・達人認定・
+ *   段の自己ベストには数えない。初めて遊んだことのご褒美（ラクダの完走など）は練習でも数える。練習の点は練習の記録に別に残す。
+ */
+export const PLAY_RULES = Object.freeze({
+  tier: "初級は最初から。中級・上級は、ひとつ下の段をクリアすると開く",
+  best: "自己ベストは段ごと",
+  practice: "練習は段の外。クリア・ランクのご褒美・認定には数えない",
+});
+/** 段と自己ベストの決まりを一行で（段の札の下に出す）。 */
+export const TIER_RULE_LINE = `${PLAY_RULES.tier}。${PLAY_RULES.best}`;
+
+/** 閉じた段の札に出す開き方（ひとつ下の段のクリアで開く）。初級は空。 */
+export function tierLockNote(tier) {
+  const below = TIERS[TIERS.indexOf(tier) - 1];
+  return below ? `${TIER_LABEL[below]}クリアで開く` : "";
+}
 
 const object = (x) => (x && typeof x === "object" && !Array.isArray(x) ? x : {});
 const isTier = (t) => TIERS.includes(t);

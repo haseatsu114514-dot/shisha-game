@@ -3616,13 +3616,16 @@ html:root[data-density="phone"] body #stage .bench .result-card :is(.rc-title, .
 html:root[data-density="phone"] body #stage .bench .result-card .rc-lines { font-size: var(--wide-text); line-height: 1.6; }
 
 /* 大会: 中間投票 */
-html:root[data-density="phone"] body #stage :is(.standings, .count-screen, .sui-cut, .result-table) :is(
+html:root[data-density="phone"] body #stage :is(.count-screen, .sui-cut) :is(
   .tournament-live, .tournament-eyebrow, .judge-legend span
 ) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage :is(.standings, .result-table) :is(
+  .tournament-live, .tournament-eyebrow, .judge-legend span
+) { font-size: var(--tournament-phone-sub); }
 html:root[data-density="phone"] body #stage :is(.standings, .count-screen, .sui-cut, .result-table) .tournament-heading p { font-size: var(--wide-text); }
-html:root[data-density="phone"] body #stage .standings :is(.sd-rank, .sd-points small, .judge-name, .judge-left) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage .standings :is(.sd-rank, .sd-points small, .judge-name, .judge-left) { font-size: var(--tournament-phone-sub); }
 html:root[data-density="phone"] body #stage .standings .sd-name { font-size: var(--wide-text); }
-html:root[data-density="phone"] body #stage .standings :is(.sd-status > span, .sd-feed-tag) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage .standings :is(.sd-status > span, .sd-feed-tag) { font-size: var(--tournament-phone-sub); }
 html:root[data-density="phone"] body #stage .standings .sd-feed-lines > div { font-size: var(--wide-text); }
 /* 大会: カウントダウン・千須のカットイン */
 html:root[data-density="phone"] body #stage .count-screen :is(.rc-cut, .rc-card span) { font-size: var(--wide-small); }
@@ -3632,7 +3635,7 @@ html:root[data-density="phone"] body #stage .sui-cut .nc-name { font-size: var(-
 html:root[data-density="phone"] body #stage .result-table :is(
   .rt-emblem small, .rt-ranking-head h2, .rt-rank, .rt-votes, .rt-detail h4, .rt-part span, .rt-part small,
   .rt-judge-comment, .rt-judge-deduction
-) { font-size: var(--wide-small); }
+) { font-size: var(--tournament-phone-sub); }
 html:root[data-density="phone"] body #stage .result-table .rt-name { font-size: var(--wide-text); }
 /* 大会: 入場 */
 html:root[data-density="phone"] body #stage .entrance :is(.ent-tag, .ent-ring) { font-size: var(--wide-small); }
@@ -4459,6 +4462,10 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fla
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-feature { overflow: hidden; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-feature b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row .fr-mastery { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode="tournament"] .flavor-row :is(.fr-stock, .fr-mastery) {
+  font-size: var(--tournament-phone-sub) !important;
+  white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere;
+}
 
 /* 最初の注文の支給葉は、名前と分量操作を横に並べて3種とも初期表示に収める。 */
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix:has(.mix-list-supplied) {
@@ -4864,6 +4871,19 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
   min-height: 1.2em;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-ratio .fr-ratio-label { display: none; }
+
+/* 大会の葉は特徴のボタン、在庫、熟練度をそれぞれ別の段に置く。 */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"][data-mode="tournament"] .flavor-row .fr-feature {
+  grid-area: 1 / 1 / 2 / 3 !important; align-items: center !important; gap: 8px;
+  padding: 4px 0 4px 72px !important;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"][data-mode="tournament"] .flavor-row .fr-feature::after {
+  position: static; font-size: var(--tournament-phone-sub) !important;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"][data-mode="tournament"] .flavor-row .fr-name > :is(.fr-stock, .fr-mastery) {
+  font-size: var(--tournament-phone-sub) !important;
+  white-space: normal !important; overflow: visible; text-overflow: clip; overflow-wrap: anywhere;
+}
 
 /* 下の列 */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-footer {
@@ -9627,7 +9647,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
    amber only as a small accent. Placeholder art (logo / bar colours / backdrop) is swappable
    through the CSS variables declared on .loading-gate below.
    Sizes use --loading-unit (1px on the 1280x720 stage, scaled to the gate), so the whole stack
-   fits any landscape host; the card width is also capped by height (see .loading-card). */
+   fits any landscape host; viewport layouts also cap the card width by height. */
 /* Marker read by core/loading.js: the game's own page (index.html) carries this sheet in css/bundle-2.css
    for its static boot screen, so the script does not load it a second time. The boot screen (index.html #boot)
    is built from the same parts under .boot-gate, so every rule below applies to it too (2026-11-17 LPOS03:
@@ -9695,7 +9715,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 }
 
 /* Logo: the same pearl logo as the title screen. The image lives on ::after so a soft mist (::before) can
-   sit behind it (9u above = the 9u under the prompt, so the stack is centred); a small gap keeps the EN:CODE line clear of the card top (budget: 102 + 8 + 6 = 116u). Purely decorative (title text lives in the art); contain keeps it undistorted. */
+   sit behind it. A small gap keeps the EN:CODE line clear of the card top; contain keeps the art undistorted. */
 .loading-logo { position: relative; z-index: 1; flex: none; width: calc(360 * var(--loading-unit)); height: calc(102 * var(--loading-unit)); margin: calc(9 * var(--loading-unit)) 0 calc(4 * var(--loading-unit)); }
 .loading-logo::after { content: ""; position: absolute; inset: 0; background: var(--loading-logo) center / contain no-repeat; filter: drop-shadow(0 calc(4 * var(--loading-unit)) calc(10 * var(--loading-unit)) #000000d9) drop-shadow(0 0 calc(20 * var(--loading-unit)) #b45cf059); }
 .loading-logo::before { content: ""; position: absolute; inset: -34% -14% -6%; pointer-events: none;
@@ -9706,12 +9726,8 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
   filter: blur(calc(16 * var(--loading-unit))); animation: loading-logo-mist 14s ease-in-out infinite alternate; }
 :is(.loading-gate, .boot-gate):not(.has-logo) .loading-logo { display: none; }
 
-/* Card: 88.6% of the reference width, capped by the gate height so the full stack always fits:
-   fixed parts (logo 112 + card chrome 102 + gauge 26 + status 40 + proceed 42 = 322u) leave
-   (100cqh - 322u) for the panel height; panel width = ratio × that; two panels + side padding 36u
-   + gutter 22u + border 2px. Paper with a printed grain, a hairline inner frame and a deep shadow.
-   2026-11-14: chrome margins trimmed (logo 8/6→6/4, card padding 16/14→13/11, title/caption gaps,
-   gauge margin 16→12) so height-bound screens give the panels ~19u more room. */
+/* Paper with a printed grain, a hairline inner frame and a deep shadow. Each layout reserves
+   room for the surrounding elements and derives the panel height from the 3:2 frame. */
 .loading-card {
   position: relative; isolation: isolate; box-sizing: border-box; flex: none;
   width: min(calc(1134 * var(--loading-unit)), calc(2 * (var(--loading-panel-ratio)) * (100cqh - 322 * var(--loading-unit)) + 60 * var(--loading-unit)));
@@ -9829,6 +9845,20 @@ body.reduce-shake :is(.loading-gate, .boot-gate).is-ready .loading-bar::after { 
 @keyframes loading-ready-status { 0% { color: #f3e8d2; text-shadow: 0 0 .5em #ff5fa866, 0 1px 0 #00000080; } 22% { color: #fff6e2; text-shadow: 0 0 .3em #fff3d9, 0 0 1.1em #f0a84ae6, 0 1px 0 #00000080; } }
 /* 不透明度は 0 から始めない（準備完了と同時に「進む」が見えていることを確かめる検査がある）。 */
 @keyframes loading-ready-proceed { 0% { opacity: .4; box-shadow: 0 0 0 0 #f0c27a00, 0 0 0 #f0b45c00; } 35% { opacity: 1; box-shadow: 0 0 0 .3em #f0c27a59, 0 0 1.4em #f0b45cb3; } }
+
+/* Fixed 1280×720 stage: leave 20 reference pixels on each side of the sheet. Keep the enlarged
+   artwork at 3:2 and trim vertical spacing to fit the logo and the reserved proceed row. */
+@media (orientation: landscape) and (height > 500px) {
+  .loading-logo { width: calc(382 * var(--loading-unit)); height: calc(108 * var(--loading-unit)); margin-bottom: calc(6 * var(--loading-unit)); }
+  .loading-card { width: calc(1240 * var(--loading-unit)); padding-block: calc(11 * var(--loading-unit)) calc(10 * var(--loading-unit)); }
+  :is(.loading-comic-title, .loading-blank-title) { font-size: calc(30 * var(--loading-unit)); margin-bottom: calc(7 * var(--loading-unit)); }
+  :is(.loading-comic-caption, .loading-blank-caption) { font-size: calc(16 * var(--loading-unit)); }
+  .loading-gauge { margin-top: calc(10 * var(--loading-unit)); }
+  .loading-gauge::before, .loading-gauge::after { width: calc(69 * var(--loading-unit)); height: calc(11 * var(--loading-unit)); }
+  .loading-bar { width: calc(760 * var(--loading-unit)); height: calc(15 * var(--loading-unit)); }
+  .loading-status { font-size: calc(21.5 * var(--loading-unit)); margin-top: calc(7 * var(--loading-unit)); }
+  .loading-proceed { font-size: calc(15 * var(--loading-unit)); padding-inline: calc(17 * var(--loading-unit)); }
+}
 
 /* Portrait: break out of the scaled #stage and cover the real viewport, so panels and bubble text can
    be sized against the visible area and stay readable. Kept below #rotate-hint (z-index 999) so touch

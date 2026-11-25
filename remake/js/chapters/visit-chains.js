@@ -15,7 +15,7 @@
 // 決まる事実は呼び出し側が facts で渡し、台本は条件 chain_fact で読む（chapters/visit-chain-play.js）。
 // 交流の記憶は後の段の台本の remember 行（data/relationship_memories.json）で残し、大会前夜の振り返りに出る。
 // ここは DOM を持たない判定と記録だけ。再生・代金・体力・能力は各章（ch2-preparation.js・ch3-tokyo-daily.js・ch4-dubai-daily.js・
-// ch5-tokyo.js・ch5-dubai.js）。台詞は data/dialogue/visit_chains.json。周回では持ち越さない（core/carry.js の progression）。
+// ch5-shops.js・ch5-tokyo.js・ch5-dubai.js・daily/roamers.js）。台詞は data/dialogue/visit_chains.json。周回では持ち越さない。
 
 export const VISIT_CHAINS_FLAG = "_visit_chains";
 export const VISIT_CHAINS_FILE = "visit_chains";
@@ -30,6 +30,13 @@ const talksRead = (value, flag, key) => count(plain(value?.flags?.[flag]) ? valu
  * choice=記録する選択肢の行の id、picks=記録する分岐名。night=夜だけ。free=代金を取らない（客の一台ではない段）。
  */
 const stage = fields => Object.freeze({ ...fields, picks: Object.freeze([...(fields.picks || [])]) });
+
+const chapterFiveChain = (id, place, afterTalk) => Object.freeze({
+  chapter: 5,
+  afterTalk,
+  opens: value => value.flags?._ch5?.read?.[afterTalk] === true,
+  stages: Object.freeze([1, 2].map(number => stage({ id: `ch5_chain_${id}_${number}`, place }))),
+});
 
 /**
  * chapter=その章の日常でだけ読む。opens=最初の段が開く条件（その行き先の巡回を一通り読んだ・顔なじみになった）。
@@ -152,7 +159,31 @@ export const VISIT_CHAINS = Object.freeze({
       stage({ id: "ch5_chain_pair_2", place: "ch5_dubai_sheikh" }),
     ]),
   }),
+  // 追加の小会話を実際に読んでから開く。旧セーブの巡回回数だけでは開かない。
+  ch5_naru_towel: chapterFiveChain("naru_towel", "naru", "ch5_naru_shop_h"),
+  ch5_minto_paper: chapterFiveChain("minto_paper", "minto", "ch5_minto_shop_h"),
+  ch5_rio_tag: chapterFiveChain("rio_tag", "ch5_rio_showroom", "ch5_rio_shop_h"),
+  ch5_samechan_tail: chapterFiveChain("samechan_tail", "shishark", "ch5_samechan_shop_h"),
+  ch5_ageha_straw: chapterFiveChain("ageha_straw", "ch2_ageha", "ch5_ageha_shop_h"),
+  ch5_saku_window: chapterFiveChain("saku_window", "ch5_tokyo_saku", "ch5_tokyo_saku_h"),
+  ch5_volk_menu: chapterFiveChain("volk_menu", "ch5_tokyo_volk", "ch5_tokyo_volk_h"),
+  ch5_adam_lid: chapterFiveChain("adam_lid", "adam", "ch5_adam_repeat_h"),
+  ch5_kumicho_stone: chapterFiveChain("kumicho_stone", "ch2_kumicho", "ch5_kumicho_repeat_h"),
+  ch5_rei_silence: chapterFiveChain("rei_silence", "ch2_rei", "ch5_kuraudo_repeat_h"),
+  ch5_sumi_seat: chapterFiveChain("sumi_seat", "ch5_tonari_sumi", "ch5_tonari_sumi_h"),
+  ch5_tsumugi_plate: chapterFiveChain("tsumugi_plate", "ch5_tonari_tsumugi", "ch5_tonari_tsumugi_h"),
+  ch5_hiyori_bag: chapterFiveChain("hiyori_bag", "ch5_roam_hiyori", "roam_hiyori_h"),
+  ch5_mashiro_handle: chapterFiveChain("mashiro_handle", "ch5_tokyo_mashiro", "ch5_tokyo_mashiro_h"),
+  ch5_noor_photo: chapterFiveChain("noor_photo", "ch5_dubai_noor_desk", "ch5_noor_cafe_chat_h"),
+  ch5_wang_dish: chapterFiveChain("wang_dish", "ch5_tonari_master_hookah", "ch5_tonari_master_hookah_h"),
 });
+
+const OPENING_TALKS = new Set(Object.values(VISIT_CHAINS).map(chain => chain.afterTalk).filter(Boolean));
+/** 読了を確定した入口だけが、既存の第5章の既読欄に記録する。 */
+export function recordChapterFiveTalk(value, id) {
+  const read = value?.flags?._ch5?.read;
+  if (value?.chapter === 5 && plain(read) && OPENING_TALKS.has(id)) read[id] = true;
+}
 
 /** 全部の段の台本 id（data/dialogue/visit_chains.json）。 */
 export const VISIT_CHAIN_DIALOGUE_IDS = Object.freeze(Object.values(VISIT_CHAINS).flatMap(chain => chain.stages.map(entry => entry.id)));
@@ -181,6 +212,8 @@ export const chainFinished = (value, chainId) => !!VISIT_CHAINS[chainId] && chai
 export function nextChainStage(value, chainId) {
   const chain = VISIT_CHAINS[chainId];
   if (!chain || value?.chapter !== chain.chapter) return null;
+  const progress = value.flags?._ch5;
+  if (chain.chapter === 5 && (value.flags?._ch5_match_scheduled || (progress && progress.part !== "free"))) return null;
   const record = chainRecord(value, chainId);
   const next = chain.stages[record.done];
   if (!next) return null;

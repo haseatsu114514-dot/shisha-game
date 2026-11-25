@@ -2,6 +2,7 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 // 第1章「煙がつなぐ街（スモーク・アンド・タイズ）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
+import { completionActions } from "../core/chapter-actions.js";
 import { playEntrance, CH1_EVE_NOTES } from "./tournament-entrance.js";
 import { playTournamentArrival } from "./ch1-arrival.js";
 import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
@@ -13,6 +14,8 @@ import { sceneMoment } from "../core/scene-motions.js";
 import { defeatFade, retryStroke } from "../core/transitions.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { state, save, markMet, setFlag, flag, requestResumeOnBoot, config } from "../core/state.js";
+import { difficultyForRun } from "../core/ngplus-difficulty.js";
+import { difficultyEvidence } from "../core/cycle-start.js";
 import { voteStyleFrom } from "../core/vote-style.js";
 import { addMoney, maxStamina, addStamina, gainStat } from "../core/stats.js";
 import { awardTournamentExp, awardChapterClearExp } from "../core/growth.js";
@@ -30,6 +33,7 @@ import { onDialogueEnter } from "../daily/romance.js";
 import { recordRomanceChoice, bondCondition } from "../daily/bonds.js";
 import { storySeen } from "../daily/spots.js";
 import { recordCg } from "../scenes/gallery.js";
+import { saveFlow } from "../scenes/saves.js";
 import { newSession, openBench, tickerSay, waitBenchReady, runDrill } from "../craft/session.js";
 import * as bc from "../craft/broadcast.js";
 import { playTournamentEvent, playLive } from "../craft/tournament-story.js";
@@ -699,6 +703,7 @@ async function tournamentDay() {
   if (newTournament) await enterTournamentDay();
   showHud(false);
   prepareTournamentAttempt(newTournament);
+  const carryP = difficultyForRun(state, difficultyEvidence(state));
   for (const id of ["naru", "adam", "minto", "sensu", "uezono", "dr_charcoal"]) markMet(id);
   const openingBgmReady = preloadBgm("bgm_tournament_edm");
   const craftBgmReady = preloadBgm("bgm_tournament_craft");
@@ -753,7 +758,7 @@ async function tournamentDay() {
   bc.clearComments();
   await playLive("ch1_tournament_match", venue());
   await playLive("ch1_tournament_r1_end", venue());
-  await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs, state.tournament);
+  await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs, state.tournament, carryP);
   save();
   await playTournamentEvent(cs, "interlude1", venue("ROUND 1 終了", { card: interval("ROUND 1 → ROUND 2") }));
 
@@ -777,7 +782,7 @@ async function tournamentDay() {
   await playTournamentEvent(cs, "serve", venue());
   await playLive("ch1_tournament_r2_end", venue());
   cs.stats = computeShisha(cs);
-  await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs, state.tournament);
+  await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs, state.tournament, carryP);
   save();
   await playTournamentEvent(cs, "interlude2", venue("ROUND 2 終了", { card: interval("ROUND 2 → ROUND 3") }));
 
@@ -793,7 +798,11 @@ async function tournamentDay() {
     bc.clearComments();
     cs.stats = null;
     await playLive(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", venue(`ROUND ${round + 2} ／ 調整 ${round}回目`));
-    if (round === 1) { cs.stats = computeShisha(cs); await showStandings(3, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality, cs.care.score), cs, state.tournament); save(); }
+    if (round === 1) {
+      cs.stats = computeShisha(cs);
+      await showStandings(3, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality, cs.care.score), cs, state.tournament, carryP);
+      save();
+    }
   }
 
   await playTournamentEvent(cs, "interlude3", venue("全工程 終了", { card: interval("全工程 終了", "FINAL JUDGING") }));
@@ -804,9 +813,9 @@ async function tournamentDay() {
   finalize(cs);
   await playTournamentEvent(cs, "tasting", venue());
   // 最終工程と試飲の表示後に4回目を確定。最後の1点・同点規則はVOTE01に委ねる。
-  if (state.tournament.rulesVersion >= 2) castCh1Votes(state.tournament, 3, cs);
-  const rank = state.tournament.rulesVersion >= 2 ? state.tournament.voteAttempt.result.rank : outcomeOf(cs.total).rank;
-  const out = state.tournament.rulesVersion >= 2 ? { rank, kind: rank === 1 ? "win" : rank === 2 || rank === 3 ? "close" : "lose" } : outcomeOf(cs.total);
+  const usesVotes = state.tournament.rulesVersion >= 2;
+  if (usesVotes) castCh1Votes(state.tournament, 3, cs, carryP);
+  const out = outcomeOf(cs.total, usesVotes ? state.tournament.voteAttempt.result.rank : undefined);
   state.tournament.lastRank = out.rank;
   state.tournament.lastTotal = cs.total;
   awardTournamentExp(out.rank, cs);
@@ -974,16 +983,28 @@ export async function showClear() {
   showHud(false);
   await setBg(bgUrl("bg_tonari_inside", "night"), { tint: "dim" });
   if (state !== owner) return;
-  let playing = false;
+  let busy = false;
+  const canAct = () => !busy && root.isConnected && state === owner;
   const next = el("button.btn.primary", { text: "第2章へ進む", dataset: { test: "end-chapter2" }, onclick: async () => {
-    if (playing || !root.isConnected || state !== owner) return;
-    playing = true; next.disabled = true;
+    if (!canAct()) return;
+    busy = true; next.disabled = true;
     try {
       const chapter = await withChapterLoading(() => import("./ch2.js"), "第2章の街へ向かっています…");
       if (root.isConnected && state === owner) await chapter.beginChapterTwo();
     } catch { toast("第2章を読み込めなかった。通信を確認して、もう一度試してください"); }
-    finally { playing = false; next.disabled = false; }
+    finally { busy = false; next.disabled = false; }
   } });
+  const button = (_, text, name, onclick) => el("button.btn", { type: "button", text, dataset: { test: name }, onclick });
+  const actions = completionActions(owner, button, next, {
+    prefix: "end",
+    onSave: async () => {
+      if (!canAct()) return;
+      busy = true;
+      try { await saveFlow(); }
+      finally { busy = false; }
+    },
+    onTitle: () => location.reload(),
+  });
   const root = el("div.end-screen.clear.chapter-clear", [
     el("div.end-title", { text: "第1章 クリア" }),
     el("div.end-sub", { text: "SMOKE CROWN CUP 優勝 ── 勝ちは、始まりだった。" }),
@@ -995,7 +1016,7 @@ export async function showClear() {
       ]),
     ]),
     el("p.clear-last-line", { text: "あなたの煙は、誰に届いている？" }),
-    el("div.end-actions", [next, el("button.btn", { text: "タイトルへ", dataset: { test: "end-title" }, onclick: () => location.reload() })]),
+    el("div.end-actions", actions),
   ]);
   showScreen("end", root);
 }

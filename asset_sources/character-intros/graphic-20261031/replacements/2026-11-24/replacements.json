@@ -1,0 +1,47 @@
+[
+  {
+    "id": "salaryman",
+    "kind": "portrait",
+    "source": "salaryman.png",
+    "applied": true,
+    "background_color": [
+      255,
+      0,
+      255
+    ],
+    "top": 8,
+    "left": 18,
+    "right": 18,
+    "warnings": []
+  },
+  {
+    "id": "sui",
+    "kind": "portrait",
+    "source": "sui.png",
+    "applied": true,
+    "background_color": [
+      255,
+      0,
+      255
+    ],
+    "top": 18,
+    "left": 113,
+    "right": 102,
+    "warnings": []
+  },
+  {
+    "id": "dr_kemuri",
+    "kind": "portrait",
+    "source": "dr_kemuri.png",
+    "applied": true,
+    "background_color": [
+      255,
+      0,
+      255
+    ],
+    "top": 0,
+    "left": 13,
+    "right": 13,
+    "warnings": []
+  }
+]

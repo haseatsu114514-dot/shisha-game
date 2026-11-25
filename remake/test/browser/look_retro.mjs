@@ -316,8 +316,10 @@ await suite("look_retro", async (check) => {
     // 「行く」＝選択中のピンをもう一度押した結果（移動して利用料を払う）
     await watchShell(page);
     await page.locator(t("retro-go")).tap();
-    await page.waitForFunction(() => !document.querySelector("#screen .map:not(.done)") && window.__remake.state.money === 39000, null, { timeout: 15000 });
+    await page.waitForFunction(() => !document.querySelector("#screen .map:not(.done)"), null, { timeout: 15000 });
     await page.waitForFunction(() => document.body.classList.contains("in-vn"), null, { timeout: 20000 });
+    // 利用料は読み終えてから払う（#4192 読了後精算）。会話の間は手元のまま。
+    assert.equal(await page.evaluate(() => window.__remake.state.money), 42000);
     await page.locator(shellFor("vn")).waitFor();
     // 場面転換（移動の幕・店のロゴ）の間も外枠のまま（覆い）で、終われば会話が続く
     const log = await shellLog(page);
