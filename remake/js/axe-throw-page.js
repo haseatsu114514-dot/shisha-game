@@ -50,9 +50,9 @@ function menu(result = null) {
     el("span.axe-menu-mode-description", { text: description }),
     el("span.axe-menu-mode-action", [el("span", { text: action }), el("span", { text: "↗", "aria-hidden": "true" })]),
   ]);
-  const start = modeCard("practice", "axe-start", "03 THROWS", "はじめてにおすすめ", "3投で練習", "まずは、斧が刺さる感覚を。", "練習をはじめる");
+  const start = modeCard("practice", "axe-start", "03 THROWS", "はじめてにおすすめ", "3投で練習", "まずは、斧が刺さる感覚を。", "練習を始める");
   const league = modeCard("league", "axe-league", "10 THROWS", "WATL式の1ゲーム", "10投ゲーム", "5投ごとに的を交代。", "記録に挑む");
-  const versus = modeCard("versus", "axe-versus", "10 × 2 THROWS", rival === "adam" ? "SECRET BOSS" : "同点はサドンデス", rivalName + "と対戦", rival === "adam" ? "一投ずつ競う、最強の相手。" : "一投ずつ競う、ふたりの勝負。", "対戦をはじめる");
+  const versus = modeCard("versus", "axe-versus", "10 × 2 THROWS", rival === "adam" ? "SECRET BOSS" : "同点はサドンデス", rivalName + "と対戦", rival === "adam" ? "一投ずつ競う、最強の相手。" : "一投ずつ競う、ふたりの勝負。", "対戦を始める");
   const buttons = [start, league, versus];
   const levels = el("div.axe-pickers.axe-menu-options", { role: "group", "aria-label": "対戦の難易度" }, Object.entries(DIFFICULTIES).filter(([id]) => id !== "secret").map(([id, level]) => el("button.axe-button", {
     type: "button", text: level.name, "aria-pressed": String(id === difficulty), dataset: { difficulty: id }, onclick: () => {
@@ -71,7 +71,7 @@ function menu(result = null) {
       type: "button", text: label, dataset: { value: String(n), bestOf: String(n) }, onclick: () => { bestOf = n; pressed(lengthGroup, n); } })));
     pressed(divisionGroup, division); pressed(lengthGroup, bestOf);
     const close = () => { sheet.remove(); intro.inert = false; };
-    const go = el("button.axe-button.axe-primary", { type: "button", text: "はじめる", dataset: { test: "axe-setup-start" }, onclick: () => { close(); startGame(mode, button, true); } });
+    const go = el("button.axe-button.axe-primary", { type: "button", text: "始める", dataset: { test: "axe-setup-start" }, onclick: () => { close(); startGame(mode, button, true); } });
     const back = el("button.axe-button", { type: "button", text: "戻る", dataset: { test: "axe-setup-back" }, onclick: () => { close(); button.focus(); } });
     const sheet = el("section.axe-setup", { role: "dialog", "aria-modal": "true", "aria-labelledby": "axe-setup-title", dataset: { test: "axe-setup", mode } }, [
       el("div.axe-setup-card", [

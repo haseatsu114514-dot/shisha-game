@@ -246,7 +246,7 @@ export function kujiRows(rerender, shop = "home", budget = () => spendableMoney(
         help ? el("span.kuji-title", [el("b", { text: label }), help]) : el("b", { text: label }),
         el("small", { text: empty
           ? `売り切れ（あと${Math.max(0, refill - (state.day - box.emptyDay))}日で新しい箱）`
-          : `残り ${left} / ${size} 枚 ・ S賞: ${top}${old ? `（旧箱・次回は${g.boxSize}枚${price !== g.price ? `で1回${yen(g.price)}` : ""}）` : ""}` }),
+          : `残り ${left}/${size}枚・S賞：${top}${old ? `（旧箱・次回は${g.boxSize}枚${price !== g.price ? `で1回${yen(g.price)}` : ""}）` : ""}` }),
         secret,
       ]),
       el("div.kuji-actions", actions),
