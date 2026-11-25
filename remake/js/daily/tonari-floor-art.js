@@ -1,4 +1,4 @@
-// tonari フロア営業の記号・満足の顔・客の影絵。客の顔は tonari-floor-stage.js の FLOOR_ART に登録する。
+// tonari フロア営業の記号・満足の印・客の影絵。客の顔は tonari-floor-stage.js の FLOOR_ART に登録する。
 import { el } from "../core/util.js";
 import { buildVersioned } from "../core/asset-version.js";
 import { FLOOR_ART, artUrl, personIds } from "./tonari-floor-stage.js";
@@ -40,32 +40,29 @@ const GLYPHS = {
   wishDeep: '<path d="M19.600 14.900A8.200 8.200 0 1 1 9.100 4.400a6.600 6.600 0 0 0 10.500 10.500z" fill="currentColor"/>',
   // シャッフル（並んでいるミックスを入れ替える）
   shuffle: '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/>',
-  // 判定の印（◎ ○ △ ×）。接客ビューの大きな印と、卓の手応えに使う
-  // 満足の顔（5段）。◎ ○ △ の形の中に顔を描く（2026-11-20 オーナー「◎○△の中に顔を描いたりとか」）。
-  // 大満足＝◎／満足＝○／普通＝△／不満＝△に下がり口（色で分ける。逆三角にはしない）／激怒＝形に入れない、ただの怒りの印
-  moodMax: '<circle cx="12" cy="12" r="10.200"/><circle cx="12" cy="12" r="7.600"/><path d="M8.600 11q1-1.500 2 0M13.400 11q1-1.500 2 0"/><path d="M9.300 13.300q2.700 3.200 5.400 0z"/>',
-  moodGood: '<circle cx="12" cy="12" r="9.600"/><path d="M9 10.400v.100M15 10.400v.100"/><path d="M8.600 13.600q3.400 3.200 6.800 0"/>',
-  moodOk: '<path d="M12 3.200 21.600 20.200H2.400z"/><path d="M9.800 13.400v.100M14.200 13.400v.100"/><path d="M9.800 16.800h4.400"/>',
-  moodLow: '<path d="M12 3.200 21.600 20.200H2.400z"/><path d="M9.800 12.600l1.200.600M14.200 12.600l-1.200.600"/><path d="M9.800 17.600q2.200-1.900 4.400 0"/>',
-  moodMad: '<path d="M9.400 2.600c.400 3.900-2.200 6.500-6.800 6.800M14.600 2.600c-.400 3.900 2.200 6.500 6.800 6.800M9.400 21.400c.400-3.900-2.200-6.500-6.800-6.800M14.600 21.400c-.400-3.900 2.200-6.500 6.800-6.800"/>',
   // 怒りの印（待たせている客・帰ってしまった時）。満足の段とは関係なく出す
   anger: '<path d="M9.400 2.600c.400 3.900-2.200 6.500-6.800 6.800M14.600 2.600c-.400 3.900 2.200 6.500 6.800 6.800M9.400 21.400c.400-3.900-2.200-6.500-6.800-6.800M14.600 21.400c-.400-3.900 2.200-6.500 6.800-6.800"/>',
-  markBest: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.8"/>',
-  markGood: '<circle cx="12" cy="12" r="8.5"/>',
-  markMiss: '<path d="M12 4 21 19.5H3z"/>',
-  markBad: '<path d="M5.5 5.5l13 13M18.500 5.500l-13 13"/>',
 };
 
-// icons.webp は8列×3行。満足の顔と、アトラスにない記号は元のSVGを使う。
+// 判定（◎ ○ △ ×）と満足の印は、同じ画像を現在の色で表示する。
+const MARK_IMAGE = {
+  markBest: "best", markGood: "good", markMiss: "miss", markBad: "bad",
+  moodMax: "best", moodGood: "good", moodOk: "miss", moodLow: "miss", moodMad: "bad",
+};
+
+// icons.webp は8列×3行。画像のない記号は元のSVGを使う。
 const ICON_TILE = {
   order: 0, cook: 1, add: 2, ease: 3, thin: 4, harsh: 5, glass: 6, drink: 6, ask: 7,
   talk: 8, bill: 9, clean: 10, alert: 11, clock: 12, coin: 13, pause: 14, shuffle: 15,
-  lamp: 16, wishFruit: 17, wishSweet: 18, wishFresh: 19, wishDeep: 20, star: 21, door: 22, anger: 23, moodMad: 23,
+  lamp: 16, wishFruit: 17, wishSweet: 18, wishFresh: 19, wishDeep: 20, star: 21, door: 22, anger: 23,
 };
 
 export function glyph(name, className = "") {
+  const spec = `span.tf-icon${className ? "." + className : ""}`;
+  const mark = MARK_IMAGE[name];
+  if (mark) return el(spec, { "aria-hidden": true, dataset: { mark } });
   const tile = ICON_TILE[name];
-  return el(`span.tf-icon${className ? "." + className : ""}`, {
+  return el(spec, {
     "aria-hidden": true,
     ...(tile === undefined ? {} : {
       dataset: { atlas: "true" },

@@ -547,28 +547,34 @@ await suite("tonari-floor", async (check) => {
       assert.deepEqual(await page.locator(t("making")).evaluate((n, queued) => { const box = n.getBoundingClientRect(), more = n.querySelector(".tf-making-more"), r = more.getBoundingClientRect();
         return [more.textContent, r.left >= box.left && r.right <= box.right + 0.5 && r.top >= box.top && r.bottom <= box.bottom + 0.5, [...n.querySelectorAll(".tf-making-pips > i")].map((i) => i.dataset.on), n.getAttribute("aria-label").endsWith(`順番待ち ${queued}台`)]; }, queued),
         [`＋${queued}`, true, ["true", "true"], true]);
-      // 出来上がると、自動で卓へ運ばれる。初回のドリンクとチャージは伝票に入る。満足の顔は ◎○△ の形の中の顔
+      // 出来上がると、自動で卓へ運ばれる。初回のドリンクとチャージは伝票に入る。満足の段は ◎○△× の印で表示する
       await until("s.tables[0].phase === 'enjoy'", [1]);
       const served = await api((a) => { const x = a.state().tables[0]; return { mood: C.model.floorStage(x.mood).id, rating: x.rating }; });
       assert.equal(served.rating, pick.rating);
-      // くつろいでいる卓の札は、卓番号と満足の顔だけ（文字を出さない）
+      // くつろいでいる卓の札は、卓番号と満足の印だけ（文字を出さない）
       assert.equal(await tagText(1), "1");
       assert.deepEqual([await spot(1).getAttribute("data-tone"), await spot(1).getAttribute("data-head")], ["fine", "false"]);
       assert.equal(await spot(1).getAttribute("data-smoke"), "true");
       assert.equal(await spot(1).getAttribute("data-gauge"), "coal");
       assert.equal(await spot(1).getAttribute("data-mood"), served.mood);
-      assert.equal(await spot(1).locator(".tf-tag-face svg circle").count(), { max: 2, good: 1 }[served.mood] ?? 0, "大満足＝◎（二重丸）・満足＝○・普通＝△");
-      // 卓の札は大きめ（顔の窓・満足の顔が、実画素で読める大きさ）
+      const moodMark = spot(1).locator(".tf-tag-face .tf-icon");
+      assert.equal(await moodMark.getAttribute("data-mark"),
+        { max: "best", good: "good", ok: "miss", low: "miss", mad: "bad" }[served.mood], "満足の段に対応する印");
+      // 卓の札は大きめ（顔の窓・満足の印が、実画素で読める大きさ）
       const tagSize = await spot(1).evaluate((n) => { const cell = n.querySelector(".tf-tag-cell").getBoundingClientRect(), face = n.querySelector(".tf-tag-face .tf-icon").getBoundingClientRect(), k = document.getElementById("stage").getBoundingClientRect().width / 1280;
         return { cell: cell.width / k, face: face.width / k }; });
       assert(tagSize.cell >= 80 && tagSize.face >= 50, JSON.stringify(tagSize));
-      // 不満の顔は△（逆三角にしない）。激怒は、形に入れない怒りの印で、札の右上にも怒りの印が出る
+      // 普通と不満は同じ△を色で分ける。激怒は×で、札の右上に怒りの印も出る
+      await api((a) => { a.state().tables[0].mood = 50; a.tick(1); });
+      assert.match(await moodMark.evaluate((n) => getComputedStyle(n).maskImage), /floor\/mark-miss\.webp/);
+      assert.equal(await moodMark.evaluate((n) => getComputedStyle(n).backgroundColor), "rgb(232, 220, 196)");
       await api((a) => { a.state().tables[0].mood = 30; a.tick(1); });
-      const lowFace = await spot(1).locator(".tf-tag-face svg path").first().getAttribute("d");
-      assert.match(lowFace, /^M12 3\.2/, "三角の頂点が上");
+      assert.match(await moodMark.evaluate((n) => getComputedStyle(n).maskImage), /floor\/mark-miss\.webp/);
+      assert.equal(await moodMark.evaluate((n) => getComputedStyle(n).backgroundColor), "rgb(127, 178, 230)");
       assert.equal(await spot(1).locator(".tf-tag-anger").isVisible(), false);
       await api((a) => { a.state().tables[0].mood = 10; a.tick(1); });
       assert.deepEqual([await spot(1).getAttribute("data-mood"), await spot(1).locator(".tf-tag-anger").isVisible()], ["mad", true]);
+      assert.match(await moodMark.evaluate((n) => getComputedStyle(n).maskImage), /floor\/mark-bad\.webp/);
       await api((a) => { a.state().tables[0].mood = 90; a.tick(1); });
       assert.equal(await spot(1).locator(".tf-tag-pie").evaluate((n) => getComputedStyle(n).opacity), "1");
       assert.equal(await api((a) => C.model.floorBill(a.state(), 1).total), 3300, "チャージ700円＋基本2,000円＋初回ドリンク600円");
@@ -604,9 +610,9 @@ await suite("tonari-floor", async (check) => {
       await page.locator(t("sheet")).waitFor();
       assert.equal(await page.locator(t("sheet")).getAttribute("data-kind"), "care");
       assert.equal(await page.locator("#tf-sheet-title span").innerText(), "炭の調整");
-      // 卓の様子: 客の言葉（吹き出し）と、いまの状態（出している一台・満足の顔・満足と滞在と炭の棒・ご利用の金額）
+      // 卓の様子: 客の言葉（吹き出し）と、いまの状態（出している一台・満足の印・満足と滞在と炭の棒・ご利用の金額）
       assert.match(await page.locator(".tf-visit .tf-sheet-quote").innerText(), /^「.+」$/);
-      assert.deepEqual(await page.locator(".tf-visit-info").evaluate((n) => [!!n.querySelector(".tf-visit-mix .tf-attr"), !!n.querySelector(".tf-visit-face svg"), [...n.querySelectorAll(".tf-visit-bars small")].map((x) => x.textContent), /円$/.test(n.querySelector(".tf-visit-bill strong").textContent)]),
+      assert.deepEqual(await page.locator(".tf-visit-info").evaluate((n) => [!!n.querySelector(".tf-visit-mix .tf-attr"), !!n.querySelector(".tf-visit-face .tf-icon[data-mark]"), [...n.querySelectorAll(".tf-visit-bars small")].map((x) => x.textContent), /円$/.test(n.querySelector(".tf-visit-bill strong").textContent)]),
         [true, true, ["満足", "滞在", "炭"], true]);
       // 出している一台は、名前と、使ったフレーバー（）
       assert.equal(await page.locator(".tf-visit-mix .tf-mix-text").evaluate((n) => `${n.querySelector("b").textContent}${n.querySelector(".tf-recipe")?.textContent ?? ""}`),
@@ -626,7 +632,10 @@ await suite("tonari-floor", async (check) => {
       assert.equal(await page.locator(".tf-verdict b").innerText(), "いいケア！");
       assert.equal(await page.locator(".tf-verdict").evaluate((n) => n.parentElement.className), "tf-visit-view", "判定の印は、卓の様子の上に出る（選択肢に被らない）");
       assert.equal(await page.locator(t(`option-${verb}`)).getAttribute("data-picked"), "true");
-      if (platform === "pc") await page.screenshot({ path: `${shots}/tonari-floor-pc-verdict.png` }).catch(() => {});
+      const verdictMark = page.locator(".tf-verdict .tf-icon");
+      assert.match(await verdictMark.evaluate((n) => getComputedStyle(n).maskImage), /floor\/mark-best\.webp/);
+      assert.equal(await verdictMark.evaluate((n) => getComputedStyle(n).backgroundColor), "rgb(255, 217, 138)");
+      await page.screenshot({ path: `${shots}/tonari-floor-${platform}-verdict.png`, animations: "disabled" });
       await page.locator(t(`option-${verb}`)).click();
       await page.evaluate(() => { C.view.floorTest.verdictMs = null; });
       assert.equal(await api((a) => a.mode()), "live");
