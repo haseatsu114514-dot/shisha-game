@@ -1,6 +1,7 @@
 import { portraitStyle } from "../core/portrait-style.js";
 import { portraitAsset, resolvePortrait } from "../core/portrait-resolver.js";
 import { portraitFaceFrame, portraitFaceShift, standingFrameStyle } from "./face-crops.js";
+import { STANDING_PORTRAIT_BOUNDS } from "./face-crops-data.js";
 
 export function displayName(characters, id) {
   if (id === "regulara") return "常連A";
@@ -16,6 +17,30 @@ export function displayName(characters, id) {
 
 export function portraitUrl(manifest, id, face = "normal") {
   return portraitAsset(manifest, id, face, portraitStyle())?.src || "";
+}
+
+export const GMPC_TITLE = "GMPC";
+
+/** Separate out-of-character talk, narration, and speaking in role (TRF10). */
+export function trpgLineKind(frame, gmId) {
+  const role = String(frame?.role ?? "");
+  if (!role || /卓の会話$|はじめての人へ/.test(role)) return "table";
+  if (/場面/.test(role)) return "narration";
+  return frame.speaker === gmId ? "npc" : "pc";
+}
+
+export function trpgRoleName(role) {
+  return String(role ?? "").replace(/／物語$/, "").trim();
+}
+
+export function isTrpgReading(roleName) {
+  return /状$|手紙|貼り紙|張り紙|看板|書き置き/.test(roleName);
+}
+
+/** A GM may voice several roles. Their costume belongs to its authored speaker only. */
+export function gmCostumeRole(frame, gmActor) {
+  if (!gmActor?.costumeRole || trpgLineKind(frame, gmActor.id) !== "npc") return null;
+  return trpgRoleName(frame.role) === gmActor.costumeSpeaker ? gmActor.costumeRole : null;
 }
 
 /** Story NPC speaker labels mapped to their portrait file key under `remake/img/ui/trpg/npc/`. */
@@ -52,7 +77,7 @@ export const TRPG_NPC_IDS = Object.freeze(new Set(Object.values(TRPG_NPC_BY_NAME
 export function npcIdFor(frame, label = "") {
   const voice = String(frame?.voice || "").trim();
   if (TRPG_NPC_IDS.has(voice)) return voice;
-  const clean = String(label || frame?.role || "").replace(/／物語$/, "").trim();
+  const clean = trpgRoleName(label || frame?.role);
   return TRPG_NPC_BY_NAME[clean] || null;
 }
 
@@ -79,7 +104,9 @@ export function portraitAx(manifest, id) {
 }
 
 /** Frame a standing portrait by measured eye line, cheek scale, and per-expression offset. */
-export function portraitBoxStyle(manifest, id, { face = "normal", faceFrac = 0.245, eyeFrac = 0.35, fallbackWidth = 410, fallbackHeadY = 16 } = {}) {
+export function portraitBoxStyle(manifest, id, {
+  face = "normal", faceFrac = 0.245, eyeFrac = 0.35, fallbackWidth = 410, fallbackHeadY = 16, fitStandingPortrait = false,
+} = {}) {
   const resolved = resolvePortrait(manifest, id, face, portraitStyle());
   const style = resolved?.style || portraitStyle();
   const actualFace = resolved?.face || face || "normal";
@@ -92,7 +119,7 @@ export function portraitBoxStyle(manifest, id, { face = "normal", faceFrac = 0.2
       w: frame.face.w,
       srcW: frame.src?.[0] || 896,
       srcH: frame.src?.[1] || 1200,
-    }, { faceFrac, eyeFrac });
+    }, { faceFrac, eyeFrac, horizontalBounds: fitStandingPortrait ? STANDING_PORTRAIT_BOUNDS[style]?.[id] : null });
   }
   return {
     position: "absolute", left: "50%", width: fallbackWidth + "px", maxWidth: "none",

@@ -1,6 +1,7 @@
 import { el } from "../core/util.js";
 import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc, grownStats, phasesOf, checkKindsOf, rewardKindOf, nearMissOf } from "./session.js";
-import { displayName, npcIdFor, npcPortraitUrl, portraitBoxStyle, portraitUrl, portraitAx, portraitHeadTop, sceneUrl } from "./presentation.js";
+import { displayName, gmCostumeRole, GMPC_TITLE, isTrpgReading, npcIdFor, npcPortraitUrl, portraitBoxStyle, portraitUrl,
+  portraitAx, portraitHeadTop, sceneUrl, trpgLineKind, trpgRoleName } from "./presentation.js";
 import { incarnationPortrait } from "./incarnation-portrait.js";
 import { costumeUrl, resolvedCostumeKey } from "./costumes.js";
 import { BUST, bustCheekWidth, bustFrameStyle, bustTypicalWidths, costumeIconStyle, faceIconStyle, npcBustStyle, portraitFaceFrame, standingFrameStyle } from "./face-crops.js";
@@ -107,16 +108,18 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   // Bust framing shared by every costume card (face-crops.js の BUST): cheek width as a share of the box width, eye line as a share of its height.
   // 頬の幅は、そのキャラの中央値へ寄せて使う（絵ごとの測定のぶれで、顔の大きさが札ごとに変わらないように）。
   const bustTypical = bustTypicalWidths(costumeFrames);
-  function pcFigure(seat, playerId, { role = sheets[seat]?.archetype || sheets[seat]?.option || null, shape = "bust" } = {}) {
+  function pcFigure(seat, playerId, { role = sheets[seat]?.archetype || sheets[seat]?.option || null, shape = "bust", cutIn = false } = {}) {
     const url = costumeUrl(scenario.id, playerId, role);
     if (!url) return playerId !== gm && pcOf(playerId) ? missingCostume() : realFace(playerId);
     if (shape !== "bust") return el("span.trpg-costume", { dataset: { shape }, style: { backgroundImage: `url("${url}")` } });
     // Every bust shows the same face size at the same eye line (オーナー 2026-11-11「みんな同じぐらいのバストアップに」):
     // the measured cheek width and eye line of each costume picture (img/ui/trpg/costumes/frames.json) set the zoom and the offset.
-    const face = costumeFrames?.[resolvedCostumeKey(scenario.id, playerId, role)]?.face;
+    const key = resolvedCostumeKey(scenario.id, playerId, role);
+    const face = costumeFrames?.[key]?.face;
     if (face?.w > 0) {
       return el("span.trpg-costume", { dataset: { shape, framed: "face" } }, el("i", {
-        style: { backgroundImage: `url("${url}")`, ...bustFrameStyle(face, playerId, bustTypical[playerId]) } }));
+        style: { backgroundImage: `url("${url}")`, ...bustFrameStyle(face, playerId, bustTypical[playerId],
+          cutIn ? { costumeKey: key, boxAspect: 1 } : undefined) } }));
     }
     // Without measurements: align using standing-portrait eye/cheek frame when available, else head top.
     const fallbackFace = portraitFaceFrame(playerId, undefined, manifest)?.face;
@@ -159,6 +162,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   ]), skip, next]);
   const log = [];
   let frames = [], cursor = 0, afterTalk = null, afterFocus = null, busy = false, disposed = false, choiceField = null;
+  const warmPortraits = new Map();
   let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false, searchTimer = null;
   let activeRollShow = null;
   let pictureBook = null;
@@ -272,13 +276,13 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     return portraitUrl(manifest, id, face);
   }
   function standingSpeakerStyle(id, face = "normal") {
-    return portraitBoxStyle(manifest, id, { face, faceFrac: 0.245, eyeFrac: 0.35, fallbackWidth: 410, fallbackHeadY: 16 });
+    return portraitBoxStyle(manifest, id, { face, fitStandingPortrait: true });
   }
-  function pcSpeakerStyle(id, face = "normal") {
-    const rId = roleIdOf(id);
-    const cFace = costumeFrames?.[resolvedCostumeKey(scenario.id, id, rId)]?.face;
-    if (cFace?.w > 0) return bustFrameStyle(cFace, id, bustTypical[id], { faceFrac: 0.24, eyeFrac: 0.4, forImg: true });
-    return portraitBoxStyle(manifest, id, { face, faceFrac: 0.24, eyeFrac: 0.4, fallbackWidth: 520, fallbackHeadY: 16 });
+  function pcSpeakerStyle(id, face = "normal", roleId = roleIdOf(id)) {
+    const key = resolvedCostumeKey(scenario.id, id, roleId);
+    const cFace = costumeFrames?.[key]?.face;
+    if (cFace?.w > 0) return bustFrameStyle(cFace, id, bustTypical[id], { faceFrac: 0.24, forImg: true, costumeKey: key });
+    return portraitBoxStyle(manifest, id, { face, faceFrac: 0.24, eyeFrac: 0.4, fallbackWidth: 520, fitStandingPortrait: true });
   }
   // The seat's chosen origin wears the role costume when we have one. The crop
   // matches the character's standing-portrait metrics (same head height / centre).
@@ -406,6 +410,42 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("span.trpg-scene-fallback-title", { text: presentation.location || "" }));
   }
   function sequence(...ids) { return ids.flatMap(id => typeof id === "string" ? scripts[id] || [] : id).filter(Boolean); }
+  function showSpeakerImage(src, alt, style) {
+    const current = art.firstChild;
+    if (src && current?.tagName === "IMG" && current.getAttribute("src") === src) {
+      // 台詞が替わっても絵が同じなら、表示中の画像を使い続ける。
+      current.setAttribute("alt", alt);
+      current.removeAttribute?.("style");
+      Object.assign(current.style, style);
+    } else {
+      art.replaceChildren(el("img", { src, alt, style }));
+    }
+  }
+  function warmPortrait(url) {
+    if (!url || typeof Image !== "function" || warmPortraits.has(url) || art.firstChild?.getAttribute("src") === url) return;
+    const image = new Image();
+    warmPortraits.set(url, image);
+    if (warmPortraits.size > 8) warmPortraits.delete(warmPortraits.keys().next().value);
+    const forget = () => { if (warmPortraits.get(url) === image) warmPortraits.delete(url); };
+    image.onerror = forget;
+    image.decoding = "async";
+    image.fetchPriority = "low";
+    image.src = url;
+    image.decode?.().catch(forget);
+  }
+  function warmDialogue(lines, start, inRole = incarnated) {
+    // 先の分岐は読まず、読んでいる台詞の次の2行だけを裏で用意する。
+    for (const frame of lines.slice(start, start + 2)) {
+      const kind = trpgLineKind(frame, gm);
+      inRole ||= kind !== "table" && root.dataset.phase !== "cover";
+      if (kind === "narration") continue;
+      if (kind === "npc") {
+        warmPortrait(npcSpeakerArt(frame, trpgRoleName(roleLabel(frame))).src);
+      } else if (inRole && frame.speaker !== gm && pcOf(frame.speaker)) {
+        warmPortrait(costumeUrl(scenario.id, frame.speaker, roleIdOf(frame.speaker)));
+      } else warmPortrait(portrait(frame.speaker, frame.face));
+    }
+  }
   function talk(lines, callback, focusTest = null) {
     sceneFx?.cancel();
     syncHeat();
@@ -415,19 +455,6 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     renderBody();
     showFrame();
     next.focus({ preventScroll: true });
-  }
-  /**
-   * 台詞の層（TRF10）。卓の会話（素の本人どうし）か、物語の中か。物語の中は3つに分かれる:
-   * narration＝GMが場面を語る／npc＝GMが物語の人物を演じる／pc＝PLが自分の役として話す。
-   * 台本の role の書き方（「GM／場面」「旅人オル」「{pc}／物語」「PL／卓の会話」）から決める。
-   */
-  function lineKind(frame) {
-    const raw = String(frame?.role ?? "");
-    if (!raw || /卓の会話$|はじめての人へ/.test(raw)) return "table";
-    if (/場面/.test(raw)) return "narration";
-    // 役の名前の付いた台詞でも、話しているのがGMなら（空席の役をGMが演じている）物語の人物と同じ見せ方にする。
-    if (frame.speaker === gm) return "npc";
-    return "pc";
   }
   const roleLabel = frame => pcText(frame.role).replace(/^(?:GM|PL|コロちゃん)／卓の会話$/, "");
   /** 舞台の層を切り替える: 物語の中では卓の縁（座席）を隠して人物を大きく、卓の会話では部屋の絵を少し沈める。 */
@@ -444,16 +471,28 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("b.trpg-gm-badge", { text: "GM", "aria-label": GM_TITLE }),
     ]);
   }
-  /** GMが自分の声で話す行（卓の会話・語り）。店長のチュートリアルは店長本人として話すので含めない。 */
+  /** GMの担当行。店長のチュートリアルは店長本人として話すので含めない。 */
   const gmVoice = frame => frame.speaker === gm && !/はじめての人へ/.test(String(frame.role ?? ""));
   const NPC_FIGURE = '<svg viewBox="0 0 120 150" aria-hidden="true" focusable="false"><path d="M60 12c-17 0-29 13-29 31 0 10 4 18 9 24-17 6-30 20-33 41l-2 42h110l-2-42c-3-21-16-35-33-41 5-6 9-14 9-24 0-18-12-31-29-31Z"/></svg>';
   // 人物ではないもの（予告状・招待状・手紙・貼り紙）を読む時は、紙の札。
   const NPC_PAPER = '<svg viewBox="0 0 120 150" aria-hidden="true" focusable="false"><path d="M22 18h60l22 22v92H22Z"/><path d="M82 18v22h22M38 62h48M38 80h48M38 98h34" fill="none"/></svg>';
-  const isPaper = label => /状$|手紙|貼り紙|張り紙|看板|書き置き/.test(label);
+  function recordLine(frame, kind) {
+    // 卓の会話の肩書きは出さず、GMが演じる人物は役名を残す（#2839）。
+    const role = roleLabel(frame), who = kind === "npc" ? trpgRoleName(role) : "";
+    log.push({ speaker: frame.speaker, puppet: isPuppet(frame), gm: gmVoice(frame),
+      gmpc: who && !isTrpgReading(who) ? who : "", role, text: pcText(frame.text) });
+  }
+  function npcSpeakerArt(frame, who) {
+    const costumeRole = gmCostumeRole(frame, cast[gm]);
+    const costume = costumeUrl(scenario.id, gm, costumeRole);
+    if (costume) return { src: costume, style: pcSpeakerStyle(gm, frame.face, costumeRole) };
+    const npcId = npcIdFor(frame, who), style = npcId ? npcBustStyle(npcId) : null;
+    return { src: style ? npcPortraitUrl(npcId) : "", style };
+  }
   function showFrame() {
     const frame = frames[cursor];
     if (!frame) { finishTalk(); return; }
-    const person = cast[frame.speaker], kind = lineKind(frame);
+    const person = cast[frame.speaker], kind = trpgLineKind(frame, gm);
     // はじめて物語の中へ入る瞬間に、みんなが役の姿になる（TRF08）。送りの1押しめは、この演出を閉じるだけ。
     if (kind !== "table" && !incarnated && session.snapshot().phase !== "cover") {
       incarnated = true; syncChrome(); incarnate();
@@ -462,17 +501,16 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const asGm = gmVoice(frame) && (kind === "table" || kind === "narration");
     delete art.dataset.portrait;
     if (kind === "npc") {
-      // GMが演じる物語の人物: 立ち絵があれば部屋に立ち、立ち絵の無い人物・読み物は人影・紙の札と名前。演じているGMを名札に添える。
-      const who = roleLabel(frame).replace(/／物語$/, "");
-      const npcId = npcIdFor(frame, who), style = npcId ? npcBustStyle(npcId) : null, src = style ? npcPortraitUrl(npcId) : "";
+      const who = trpgRoleName(roleLabel(frame)), paper = isTrpgReading(who);
+      const { src, style } = npcSpeakerArt(frame, who);
       if (src) {
         art.dataset.portrait = "npc";
-        art.replaceChildren(el("img", { src, alt: who, style }));
+        showSpeakerImage(src, who, style);
       } else {
-        art.replaceChildren(el("span.trpg-npc-figure", { html: isPaper(who) ? NPC_PAPER : NPC_FIGURE, dataset: { shape: isPaper(who) ? "paper" : "person" } }));
+        art.replaceChildren(el("span.trpg-npc-figure", { html: paper ? NPC_PAPER : NPC_FIGURE, dataset: { shape: paper ? "paper" : "person" } }));
       }
       speaker.textContent = who;
-      role.textContent = GM_TITLE + " " + name(gm);
+      role.textContent = (paper ? GM_TITLE : GMPC_TITLE) + " " + name(gm);
     } else if (asGm) {
       // GM自身の声は顔とGMバッジ。場面の語りは人物を出さず中央に寄せる。
       art.replaceChildren(...(kind === "narration" ? [] : [gmFace(frame.face)]));
@@ -486,9 +524,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       const id = frame.speaker;
       if (incarnated && pcOf(id) && id !== gm) {
         const url = costumeUrl(scenario.id, id, roleIdOf(id));
-        art.replaceChildren(url ? el("img", { src: url, alt: name(id), style: pcSpeakerStyle(id, frame.face) }) : missingCostume());
+        if (url) showSpeakerImage(url, name(id), pcSpeakerStyle(id, frame.face));
+        else art.replaceChildren(missingCostume());
       } else {
-        art.replaceChildren(el("img", { src: portrait(id, frame.face), alt: name(id), style: standingSpeakerStyle(id, frame.face) }));
+        showSpeakerImage(portrait(id, frame.face), name(id), standingSpeakerStyle(id, frame.face));
       }
       if (kind === "pc") {
         speaker.textContent = pcOf(id)?.name || name(id);
@@ -507,8 +546,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     showPanel(frame.panel || null);
     next.textContent = cursor + 1 < frames.length ? "次へ" : "続ける";
     syncSpeaker(frame.speaker);
-    // 台詞の肩書きは場面の種類（「場面」「物語」）だけ。「GM／卓の会話」「PL／卓の会話」「コロちゃん／卓の会話」は出さない（#2839）。
-    log.push({ speaker: frame.speaker, puppet: isPuppet(frame), gm: frame.speaker === gm && gmVoice(frame), role: roleLabel(frame), text: pcText(frame.text) });
+    warmDialogue(frames, cursor + 1);
+    recordLine(frame, kind);
   }
   /** 転生の演出（TRF08）: 卓の顔ぶれの札が裏返り、本人から役の姿へ。操作は塞がず、送りの1押しで閉じられる。 */
   function incarnate() {
@@ -568,9 +607,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     staging?.cancel();
     for (cursor++; cursor < frames.length; cursor++) {
       const frame = frames[cursor];
+      const kind = trpgLineKind(frame, gm);
       // 飛ばした会話の中で物語に入っていたら、転生の演出は出さずに済ませる（後の場面で遅れて出さない）。
-      if (lineKind(frame) !== "table" && session.snapshot().phase !== "cover") incarnated = true;
-      log.push({ speaker: frame.speaker, puppet: isPuppet(frame), gm: frame.speaker === gm && gmVoice(frame), role: roleLabel(frame), text: pcText(frame.text) });
+      if (kind !== "table" && session.snapshot().phase !== "cover") incarnated = true;
+      recordLine(frame, kind);
     }
     finishTalk();
   }
@@ -622,19 +662,25 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   async function start() {
     if (busy || overlay || pictureBook || session.snapshot().phase !== "cover") return;
+    // Session zero: everyone at the table says who they will play before the story begins.
+    const zero = scenario.sessionZero ? [scenario.sessionZero.open, ...Object.values(session.companions).map(o => o.making), scenario.sessionZero.close] : [];
+    const opening = sequence(...zero, scenario.intro, scenario.listen, [{ speaker: gm, role: presentation.arrivalRole, text: session.profile.arrival }]);
     if (!resumed && hasPictureBook(scenario)) {
       pictureBook = new AbortController();
       root.dataset.phase = "picturebook";
-      const read = await playPictureBook(root, { scenario, signal: pictureBook.signal });
+      const reading = playPictureBook(root, { scenario, signal: pictureBook.signal });
+      warmDialogue(opening, 0);
+      // 転生では選択済みの役だけを使う。絵本を読む時間に衣装を用意する。
+      for (const c of scenario.cast) {
+        if (c.id !== gm) warmPortrait(costumeUrl(scenario.id, c.id, roleIdOf(c.id)));
+      }
+      const read = await reading;
       pictureBook = null;
       if (disposed || !read) return;
     }
     session.start(); syncChrome();
     audio.play("open");
-    // Session zero: everyone at the table says who they will play before the story begins.
-    const zero = scenario.sessionZero ? [scenario.sessionZero.open, ...Object.values(session.companions).map(o => o.making), scenario.sessionZero.close] : [];
-    talk(sequence(...zero, scenario.intro, scenario.listen, [{ speaker: gm, role: presentation.arrivalRole, text: session.profile.arrival }]),
-      () => { renderBody(); openDeclaration("listen"); });
+    talk(opening, () => { renderBody(); openDeclaration("listen"); });
   }
   function room(interactive = false) {
     const node = el("div.trpg-room", { class: interactive ? "interactive" : "" }, [
@@ -824,11 +870,15 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
           tutorialLines?.length ? button("はじめての人へ", "trpg-tutorial", playTutorial) : null].filter(Boolean)),
         scenario.builder ? pcCard() : null,
       ].filter(Boolean)),
-      el("div.trpg-cover-party", scenario.cast.map(c => el("div.trpg-cover-person", [
-        el("span.trpg-cover-person-art", c.part === "GM" ? gmFace() : realFace(c.id)),
-        el("strong", { text: name(c.id) }),
-        el("small", { dataset: { part: c.part === "GM" ? "gm" : "pl" }, text: c.part === "GM" ? GM_TITLE : pcOf(c.id) ? pcOf(c.id).name : pcText(c.role).split("／")[0] }),
-      ]))),
+      el("div.trpg-cover-party", scenario.cast.map(c => {
+        const isGm = c.part === "GM", who = name(c.id);
+        const roleName = isGm ? GM_TITLE : pcOf(c.id)?.name ?? pcText(c.role).split("／")[0];
+        return el("div.trpg-cover-person", [
+          el("span.trpg-cover-person-art", isGm ? gmFace() : realFace(c.id)),
+          el("strong", { text: who, title: who }),
+          el("small", { dataset: { part: isGm ? "gm" : "pl" }, text: roleName, title: roleName }),
+        ]);
+      })),
     ]));
   }
   function optionButton(field, option) {
@@ -1399,7 +1449,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       const acted = settled.approach ? approachesOf(scenario, settled.kind).find(a => a.id === settled.approach) : null;
       if (acted) {
         const seat = acted.sheet || acted.actor;
-        stageFx(playResultCut(root, { figure: pcFigure(seat, acted.actor), who: sheets[seat]?.name || name(acted.actor), how: statLabel(acted.stat),
+        stageFx(playResultCut(root, { figure: pcFigure(seat, acted.actor, { cutIn: true }), who: sheets[seat]?.name || name(acted.actor), how: statLabel(acted.stat),
           label: settled.special === "critical" ? "クリティカル！" : settled.special === "fumble" ? "ファンブル……" : LABELS[settled.grade] + (settled.grade === "success" ? "！" : ""),
           grade: settled.grade, special: settled.special || "" }));
       }
@@ -1667,7 +1717,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function openLog() {
     const rows = log.length ? log.map(line => el("p.trpg-log-line", [
-      el("strong", { text: (line.puppet ? "コロちゃん" + (line.gm ? "（" + GM_TITLE + "）" : "") : line.gm ? GM_TITLE + "（" + name(line.speaker) + "）" : name(line.speaker)) + " · " + line.role }), line.text,
+      el("strong", { text: line.gmpc ? line.gmpc + " · " + GMPC_TITLE + " " + name(line.speaker)
+        : (line.puppet ? "コロちゃん" + (line.gm ? "（" + GM_TITLE + "）" : "") : line.gm ? GM_TITLE + "（" + name(line.speaker) + "）" : name(line.speaker)) + " · " + line.role }), line.text,
     ])) : [el("p", { text: "卓を始めると、ここに会話が残ります。" })];
     let pop;
     pop = modal("卓のログ", rows, [button("卓に戻る", "trpg-log-close", () => pop.close(), { class: "primary" })]);
@@ -1737,6 +1788,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     disposed = true;
     entrance.cancel();
     pictureBook?.abort();
+    for (const image of warmPortraits.values()) image.removeAttribute?.("src");
+    warmPortraits.clear();
     activeRollShow?.cancel();
     activeRollShow = null;
     for (const effect of effects) effect.cancel();

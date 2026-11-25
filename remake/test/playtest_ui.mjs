@@ -203,13 +203,17 @@ try {
   await page.locator('[data-test="shift-order-0"]').click({ timeout: 10000 });
   await page.locator('[data-test="after-none"]').click({ timeout: 30000 });
   await page.waitForFunction(() => T.shiftDone, { timeout: 5000 });
-  assert.equal(await page.locator('[data-test="vn-skip"].on').count(), 0, "SKIP carried into the next action");
-  console.log("[playtest UI] PASS: actual baito carries SKIP through its scenes, pauses for choices and clears at shift end");
+  // SKIPは場面をまたいで保持する（#3558 項目7・オーナー決定 2026-11-25）。シフト終了でも解除されない。
+  assert.equal(await page.locator('[data-test="vn-skip"].on').count(), 1, "SKIP was cleared at shift end");
+  console.log("[playtest UI] PASS: actual baito carries SKIP through its scenes, pauses for choices and keeps SKIP after the shift");
 
   await page.evaluate(() => {
     T.core.newGame(); T.core.state.phase = "daily";
     T.core.state.met.sumi = true;
     T.introDone = false;
+    // SKIPは場面をまたいで保持される（#3558 項目7・2026-11-25）ため、前のバイトのSKIPが残っていたら開始前に明示的に止める（この後のクリックで確定的にONにする）。
+    const skipBtn = document.querySelector('[data-test="vn-skip"]');
+    if (skipBtn?.getAttribute("aria-pressed") === "true") skipBtn.click();
     T.intro = T.vn.play({ dialogue_id: "skip_intro_probe", lines: [
       { speaker: "", text: "紹介を待つ" }, { speaker: "sumi", text: "ようこそ" },
     ] }).then(() => { T.introDone = true; });

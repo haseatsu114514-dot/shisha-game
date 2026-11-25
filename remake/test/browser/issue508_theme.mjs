@@ -209,6 +209,9 @@ await suite("issue508-theme", async checkAll => {
         T.core.state.flags._salaryman_service_water]), [!touch, touch]);
       assert.equal(await page.locator('img[data-speaker="salaryman"]').count(), 0);
       await page.evaluate(() => { T.fresh(); window.finished = false;
+        // SKIPは場面をまたいで保持される（#3558 項目7・2026-11-25）ため、手動で送る場面は開始前に明示的に止める。
+        const skipBtn = document.querySelector('[data-test="vn-skip"]');
+        if (skipBtn?.getAttribute("aria-pressed") === "true") skipBtn.click();
         T.vn.play("ch1_salaryman_change").then(() => { window.finished = true; }); });
       await advanceTo(page, "夜のtonari。いつもの時間に、いつもの鉄仮面さんが来た。……でも、今日は少し違う。", touch);
       const normal = await snapshotPortrait(page, "normal");
@@ -228,6 +231,9 @@ await suite("issue508-theme", async checkAll => {
         ["ch2_sumi_silence", "はじめくん、県大会に出るんでしょう。すごいことですよ", "normal"],
       ]) {
         await page.evaluate(id => { T.fresh(); T.core.state.chapter = 2; window.finished = false;
+          // SKIPは場面をまたいで保持される（#3558 項目7・2026-11-25）ため、手動で送る場面は開始前に明示的に止める。
+          const skipBtn = document.querySelector('[data-test="vn-skip"]');
+          if (skipBtn?.getAttribute("aria-pressed") === "true") skipBtn.click();
           T.vn.play(id).then(() => { window.finished = true; }); }, id);
         await advanceTo(page, text, touch); await snapshotPortrait(page, face);
         await assertFits(page, ".vn-box");

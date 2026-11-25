@@ -870,8 +870,11 @@ export const rankAtLeast = (rank, need) => RANK_ORDER.indexOf(rank) >= RANK_ORDE
 export function summary(game) {
   const time = Math.round((game.finishTime ?? game.t) * 10) / 10;
   const score = game.course.practice ? 0 : Math.max(0, Math.round(game.score)); // 練習は採点しない
+  // オーナー指示（2026-11-25）: S はライバルに勝った時だけ。負けたら、スコアが S の境目を越えていても A まで
+  const scored = game.finished ? rankOf(score) : null;
+  const rank = scored === "S" && game.race && !game.race.won ? "A" : scored;
   return {
-    rulesVersion: RULES_VERSION, finished: game.finished, score, rank: game.finished ? rankOf(score) : null, time,
+    rulesVersion: RULES_VERSION, finished: game.finished, score, rank, time,
     maxCombo: game.maxCombo, falls: game.falls, bigJumps: game.stats.bigJumps, perfect: game.stats.perfect,
     good: game.stats.good, nearMiss: game.stats.nearMiss, seed: game.course.seed,
     tricks: game.stats.tricks, bestTrick: game.stats.bestTrick, boosts: game.stats.boosts, smashed: game.stats.smashed,

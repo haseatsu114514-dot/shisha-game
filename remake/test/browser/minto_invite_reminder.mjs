@@ -177,6 +177,8 @@ await suite("venue-invite-reminder", async (check) => {
     assert.equal(await page.evaluate(() => QA.core.state.inbox[0].read), true);
     await page.locator('[data-test="reply-2"]').click();
     await page.locator('[data-test="phone-close"]').click();
+    // 休養のお誘い確認は地図を出た後に出る（dc82b361）。LIMEを見て戻ると、地図は選び直しから始まる。
+    await page.locator('[data-test="pin-rest"]').click();
     await page.locator('[data-test="map-go"]').click();
     assert.equal(await page.locator('[data-test="venue-invite-check"]').count(), 0);
   }, options);

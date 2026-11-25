@@ -46,6 +46,10 @@ export function preloadSkillLogo() {
 }
 const live = host => typeof document?.createElement === "function" && typeof host?.animate === "function" && host.isConnected !== false;
 const calm = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+// スマホ（横持ち・data-density="phone"）では、紙吹雪と火花の数を半分にし、評価時のぼかしを省く。
+// iPhone では演出の山場（クリティカル等）で描画が限界を超えてページごと落ちることがあるための軽量化で、
+// 見せ場の流れと PC の見た目は変えない。影と全面フィルター側の軽量化は trpg-roll-show.css の phone 上書き。
+const phoneLite = () => typeof document !== "undefined" && document.documentElement?.dataset?.density === "phone";
 const rand = (lo, hi) => lo + Math.random() * (hi - lo);
 const pick = list => list[Math.floor(Math.random() * list.length)];
 
@@ -69,6 +73,8 @@ export function playRollShow(host, show) {
   const { dice, thrown = null, grade = "mixed", special = "", goal = 30, mixed = 19, bonus = 0, total = 0 } = show;
   const tone = special === "critical" || special === "fumble" ? special : grade;
   const still = !!document.body?.classList.contains("reduce-shake");
+  const lite = phoneLite();
+  const count = n => lite ? Math.ceil(n / 2) : n;
   const sound = kind => { try { show.sound?.(kind); } catch { /* 音が出なくても演出は続ける */ } };
   const animations = [], timers = [];
   let frameId = null;
@@ -117,7 +123,8 @@ export function playRollShow(host, show) {
   const verdictLogo = el("img.trpg-rs-logo", { src: logoUrl(tone), alt: "", decoding: "async" });
   const verdict = el("div.trpg-rs-verdict", [verdictMega, verdictLogo, el("div.trpg-rs-verdict-line", [el("strong", [verdictWord]), verdictSub].filter(Boolean))]);
   const camera = el("div.trpg-rs-camera", [head, goalNode, plus[0], ...dieNodes, plus[1], chip, needNode, sum, meter, verdict]);
-  const skill = show.skill || null, lead = skill ? 980 : 0;
+  // スキルのカットイン（誰の・技の名前・効き目の3行）は読める長さ出す（2026-11-25 オーナー「振り直しスキルがすぐ消える」で980→1900ms。タップで飛ばせる）
+  const skill = show.skill || null, lead = skill ? 1900 : 0;
   const skillNode = skill ? el("div.trpg-rs-skill", { dataset: { kind: skill.kind } }, [
     el("i.trpg-rs-skill-band"),
     el("div.trpg-rs-skill-inner", [
@@ -272,7 +279,7 @@ export function playRollShow(host, show) {
     animate(die.querySelector(".trpg-rs-spin"), [{ scale: "1.22 .78" }, { scale: ".92 1.1", offset: .45 }, { scale: "1 1" }], { duration: 260, easing: EASE.soft, fill: "none" });
     animate(die.querySelector(".trpg-rs-ring"), [{ opacity: 1, scale: ".3" }, { opacity: 0, scale: hot ? "3.6" : big ? "2.8" : "2.1" }],
       { duration: hot ? 760 : 480, easing: EASE.out });
-    sparks(die, hot ? 22 : big ? 14 : 9, hot ? ["#ffe08a", "#fff", "#ffb84a"] : cold ? ["#8ea2c4", "#c9d6ee"] : ["#fff3c9", "#ffd76a"], hot ? [160, 320] : [110, 220]);
+    sparks(die, count(hot ? 22 : big ? 14 : 9), hot ? ["#ffe08a", "#fff", "#ffb84a"] : cold ? ["#8ea2c4", "#c9d6ee"] : ["#fff3c9", "#ffd76a"], hot ? [160, 320] : [110, 220]);
     if (hot) {
       animate(die.querySelector(".trpg-rs-halo"), [{ opacity: 0, scale: ".2" }, { opacity: 1, scale: "1.15", offset: .4 }, { opacity: .85, scale: "1" }], { duration: 520, easing: EASE.out });
       blink(["#fff", "#2a1600", "#fff4c2", "#ffe08a"], 380, .78);
@@ -495,7 +502,7 @@ export function playRollShow(host, show) {
     meter.dataset.cleared = "true";
     animate(flag, [{ translate: "-50% 0", rotate: "0deg", opacity: 1 }, { translate: "40px -90px", rotate: "38deg", opacity: 1, offset: .6 }, { translate: "70px -60px", rotate: "60deg", opacity: 0 }],
       { duration: 520, easing: EASE.out });
-    sparks(meter, 12, ["#ffe08a", "#fff", "#ffb84a"], [60, 140]);
+    sparks(meter, count(12), ["#ffe08a", "#fff", "#ffb84a"], [60, 140]);
     meter.querySelectorAll(".trpg-rs-spark").forEach(spark => { spark.style.left = at(goal) * 100 + "%"; spark.style.top = "50%"; });
     shake(6, 240, 1);
     sound("clear");
@@ -517,8 +524,10 @@ export function playRollShow(host, show) {
     // 中央寄せ（CSS の translate: -50% -50%）を保ったまま、右から入って少しずつ流れる。
     animate(verdictMega, [{ opacity: 0, translate: "-30% -50%" }, { opacity: 1, translate: "-50% -50%", offset: .25 }, { opacity: 1, translate: "-53% -50%" }], { duration: 2200, easing: EASE.out });
     // サイコロは少し退いて、言葉を主役に（合計とゲージは届いたかを見せるので、そのまま）。
+    // スマホではぼかしを省き、暗くするだけにする（ぼかしの再描画が一番重い）。
     for (const part of [...dieNodes, ...plus, chip, needNode]) {
-      animate(part, [{ filter: "brightness(1) blur(0px)" }, { filter: "brightness(.5) blur(2px)" }], { duration: 260, easing: "ease-out" });
+      animate(part, lite ? [{ filter: "brightness(1)" }, { filter: "brightness(.5)" }]
+        : [{ filter: "brightness(1) blur(0px)" }, { filter: "brightness(.5) blur(2px)" }], { duration: 260, easing: "ease-out" });
     }
     dieNodes.forEach(die => animate(die, [{ scale: "1" }, { scale: ".9" }], { duration: 320, easing: EASE.out }));
     animate(tint, [{ opacity: 0 }, { opacity: 1 }], { duration: 240, easing: "ease-out" });
@@ -605,13 +614,13 @@ export function playRollShow(host, show) {
     const colors = CONFETTI[tone], pieces = [];
     const add = (count, make) => { for (let n = 0; n < count; n++) pieces.push(make(n, count)); };
     if (tone === "success" || tone === "critical") {
-      add(tone === "critical" ? 64 : 52, () => { const a = rand(0, Math.PI * 2), r = rand(220, 700); return { x: 50, y: 48, dx: Math.cos(a) * r, dy: Math.sin(a) * r * .6 - 140, fall: rand(160, 360) }; });
-      if (tone === "critical") for (const side of [-1, 1]) add(42, () => ({ x: side < 0 ? 3 : 97, y: 104, dx: -side * rand(120, 700), dy: -rand(380, 760), fall: rand(300, 560), late: rand(250, 700) }));
+      add(count(tone === "critical" ? 64 : 52), () => { const a = rand(0, Math.PI * 2), r = rand(220, 700); return { x: 50, y: 48, dx: Math.cos(a) * r, dy: Math.sin(a) * r * .6 - 140, fall: rand(160, 360) }; });
+      if (tone === "critical") for (const side of [-1, 1]) add(count(42), () => ({ x: side < 0 ? 3 : 97, y: 104, dx: -side * rand(120, 700), dy: -rand(380, 760), fall: rand(300, 560), late: rand(250, 700) }));
     } else if (tone === "mixed") {
-      add(18, () => { const a = rand(Math.PI, Math.PI * 2), r = rand(140, 340); return { x: 50, y: 50, dx: Math.cos(a) * r, dy: Math.sin(a) * r * .7, fall: rand(60, 160) }; });
+      add(count(18), () => { const a = rand(Math.PI, Math.PI * 2), r = rand(140, 340); return { x: 50, y: 50, dx: Math.cos(a) * r, dy: Math.sin(a) * r * .7, fall: rand(60, 160) }; });
     } else {
       // 落ちてくる冷たい雨。
-      add(tone === "fumble" ? 46 : 26, () => ({ x: rand(2, 98), y: -6, dx: rand(-30, 10), dy: rand(420, 760), fall: 0, late: rand(0, 900), rain: true }));
+      add(count(tone === "fumble" ? 46 : 26), () => ({ x: rand(2, 98), y: -6, dx: rand(-30, 10), dy: rand(420, 760), fall: 0, late: rand(0, 900), rain: true }));
     }
     for (const piece of pieces) {
       const size = rand(9, 18), spin = rand(-900, 900);
@@ -627,7 +636,8 @@ export function playRollShow(host, show) {
       ], { duration: piece.rain ? rand(600, 900) : rand(1000, 1700), delay: piece.late || rand(0, 90) });
     }
   }
-  const hold = special === "critical" ? 2300 : grade === "success" ? 1800 : special === "fumble" ? 2100 : 1500;
+  // 「振り直せる！」の札が出る時は、読めるよう1秒長く残す（同上）
+  const hold = (special === "critical" ? 2300 : grade === "success" ? 1800 : special === "fumble" ? 2100 : 1500) + (hintNode ? 1000 : 0);
   const endAt = verdictAt + hold;
   after(endAt - 240, () => animate(node, [{ opacity: 1 }, { opacity: 0 }], { duration: 240, easing: "ease-in" }));
   after(endAt, () => handle.skip());
