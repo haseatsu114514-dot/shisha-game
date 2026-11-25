@@ -1642,8 +1642,8 @@ html:root .trpg-root.trpg-cinematic .trpg-seat-head { display: block; flex: 1; m
 html:root .trpg-root.trpg-cinematic .trpg-seat-head .trpg-seat-name,
 html:root .trpg-root.trpg-cinematic .trpg-table-person[data-part="gm"] .trpg-seat-name {
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; max-height: 68px; overflow: hidden;
-  max-width: 100%; font-size: max(24px, var(--tt-min)); font-weight: 700;
-  white-space: normal; word-break: break-all; text-wrap: balance;
+  max-width: 100%; font-size: max(22px, calc(10 * var(--tt-u))); font-weight: 700;
+  white-space: normal; overflow-wrap: anywhere; text-wrap: balance;
   color: #fff4d6; text-shadow: 0 1px 2px #000, 0 0 6px #000a;
 }
 html:root .trpg-root.trpg-cinematic .trpg-table-person.active .trpg-seat-name { color: #fffbea; }
