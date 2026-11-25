@@ -142,6 +142,11 @@ assert.equal(se.loopLevels().zaps, 6, "every zap is counted");
   const passed = [...freqs];
   freqs.length = 0; ride.cue("boostShort");
   assert(freqs.length === 2 && freqs[1] < freqs[0] && freqs[0] < passed[1], `a rejected boost has its own pair of low notes (${freqs.join(" → ")})`);
+  // カービングの刻み（2026-11-25）: 続けて切り込むほど高い2音。6回目で頭打ち
+  const carveFirst = n => { freqs.length = 0; ride.cue("carve", { n }); assert.equal(freqs.length, 2); assert(freqs[1] > freqs[0], "the carve tick rises"); return freqs[0]; };
+  const ticks = [1, 2, 3, 6, 9].map(carveFirst);
+  for (let i = 1; i < 4; i++) assert(ticks[i] > ticks[i - 1], `a longer carve ticks higher (${ticks.join(", ")})`);
+  assert.equal(ticks[4], ticks[3], "and stops rising after six");
 }
 
 // 4) ファイル: モノラル 44.1kHz 16bit、長さ、ピーク（-16〜-8 dBFS）、ループのつなぎ目、台帳（SHA-256）

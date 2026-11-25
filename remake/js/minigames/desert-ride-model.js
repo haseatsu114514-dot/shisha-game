@@ -7,7 +7,8 @@
 import { TIERS } from "../core/play-tiers.js";
 
 // 2026-11-13 オーナー「もっとコースを複雑にしたり少し長くしたい」で 1,700 → 2,000m（1本 約50秒 → 約55〜58秒）。
-export const COURSE = Object.freeze({ length: 2000, practiceLength: 800, laneHalf: 1 });
+// 練習は 2026-11-25 に、壁の後へカーブ（切り込み）と砂流れの段を足して 800 → 1,100m、同日カーブを長くして（切り込みを3段で説明）1,250m。
+export const COURSE = Object.freeze({ length: 2000, practiceLength: 1250, laneHalf: 1 });
 // コースの山と平地（2026-11-13 オーナー「手応えレビューの内容を実装して、より面白く」。docs/spec/desert_ride.md「山と平地」）:
 // firstBump: 最初の要素は岩の無い起伏（走り出して約5秒で最初の「跳ぶ」）。start: 乱数の配置が始まる距離。
 // gapFrom→gapTo: 要素の間隔（進むほど詰まる）。
@@ -40,7 +41,18 @@ export const FALL = Object.freeze({ recover: 1.1, points: -150 });
 export const STEER = Object.freeze({ accel: 4.6, damping: 4.0, curveDrift: 1 });
 // カービング: カーブ（|c| >= minCurve）の地上で、曲がる向きへ切り込んでいる間だけブーストのゲージが貯まり、tickSec ごとに少し得点。
 // 端の深い砂・空中・転倒中は貯まらない。押し込みの強さ（スティックの倒し量）に比例する。
-export const CARVE = Object.freeze({ minCurve: 0.4, gaugePerSec: 0.1, tickSec: 0.8, points: 30 });
+// 2026-11-25 オーナー「カービングに演出を入れたい」: 刻みを 0.8秒・30点 → 0.4秒・15点に細かくした（得点の速さは同じ）。切り込みは内へ寄りすぎないよう
+// 押したり離したりするので、1つのカーブで切り込んでいるのは合わせて1秒前後。0.8秒刻みでは1回も刻まずに終わることが多く、刻みごとの音・輪・「+15」が出なかった
+export const CARVE = Object.freeze({ minCurve: 0.4, gaugePerSec: 0.1, tickSec: 0.4, points: 15 });
+// 砂流れ（2026-11-25 オーナー「サンドボードで通ると加速するゾーンをたまに入れたい。砂流れみたいな見た目にしつつ」）:
+// 斜面を砂が川のように流れ落ちている細い帯（course.flows）。地上で帯の上にいる間は、通常の最高速（SPEED.max）を超えて cap まで accel で加速する
+// （ブーストより遅く、ゲージも使わない）。出ると、ブーストの後と同じ overDecay で通常の最高速へ戻る。空中・転倒中・端の深い砂では効かない。
+// 置き方（placeFlows）: 1本 length m・幅 ±half レーン。コースを count 等分した区間に1本ずつ（「たまに」）、岩の無い帯が取れる所だけに置く:
+// 帯の手前 before m・先 after m の間にある岩は、帯の縁から板の半分＋rockMargin より外。起伏は帯の手前 bumpBefore m から帯の終わりまでに無い（大ジャンプの着地の後に入る）。
+// 帯の中心は |x| <= maxX。from m より先、ゴールの endRoom m 手前まで。岩の段（#3779）が変わっても同じ所（上級の足す岩は帯を避ける）。
+// 帯で速くなった分では岩を砕かない（flowLift。砕けるのはブーストとその勢いだけ）。
+export const FLOW = Object.freeze({ length: 70, half: 0.18, cap: 41, accel: 12, count: 3, from: 200, endRoom: 150, before: 15, after: 30, rockMargin: 0.04,
+  bumpBefore: 60, maxX: 0.5, scanStep: 10, xStep: 0.05 });
 export const SCORE = Object.freeze({ finish: 1200, timePar: 85, // 時間ボーナスの基準（秒）。コースを長くした分だけ延ばした（1,700m の時は 72）
   timeBonusPerSec: 30, perfect: 250, good: 120, comboStep: 0.15, comboMax: 3,
   smash: 100, raceWin: 600, raceWinNaru: 1500 });
@@ -59,7 +71,10 @@ export const RIVALS = Object.freeze({
 // 満タンまで待たず小刻みに使うので、ブーストの回数が増えて目に入る。
 // ヌールの charge は当初 1.15 だったが、2026-11-14 オーナー判断で 1 に戻した（素のゴールタイムは全コース 59.1〜59.4 秒で、
 // 着地を決めてブーストを使う滑り（A評価の目安）に 1.3〜2.3 秒差、着地の甘い滑り（B評価の目安）とは互角になる）。boostAt 0.3 は据え置き。
-  noor: Object.freeze({ skill: "rival", startX: -0.42, only360: false, startSpeed: SPEED.start, charge: 1, boostAt: 0.3 }),
+// 2026-11-25 オーナー「砂の流れがなくても結構簡単にクリアできちゃったから、もう少し成績と敵の強さ上げたい」（DSR89）:
+// ヌール（中級）を一段強くした。着地が少し遅い滑り（skill "rival"）→ 着地を決める滑り（"perfect"）、溜まり 1 → 1.03。
+// 着地を決める滑り（回らない）で勝てるのは約半分（それまでは必ず勝てた）、回れば勝てる。なるは前のまま（理想の滑りに 0.3〜0.8 秒差で負ける所が、もう上限）。
+  noor: Object.freeze({ skill: "perfect", startX: -0.42, only360: false, startSpeed: SPEED.start, charge: 1.03, boostAt: 0.3 }),
   naru: Object.freeze({ skill: "expert", startX: 0.42, only360: false, startSpeed: SPEED.start - 2.6, easeOff: false, charge: 1, boostAt: 0.3 }),
 });
 // 空中トリック: 大ジャンプ中に ← か → を押している間だけ回る（rate 回転/秒）。離すと次の半回転まで finishRate で回り切る。
@@ -89,16 +104,21 @@ export const RUBBER = Object.freeze({ gap: 12, span: 40, catchUp: 1.25, easeOff:
 // 中級は前と同じ（同じ滑りで 10%・着地を決めると 100%）。上級は着地を決める滑り（A評価の目安）で 33%、回って決める滑り（S）なら 100%。
 // 上級のヌールのゴールは 57〜58 秒で、なる（53〜56 秒）よりは遅い。初級のヌールは 62 秒前後。
 // 上級の charge は 1 にすると、ブーストで岩へ突っ込んで転ぶコースが出た（0.95 と出だし +0.2 で同じくらいの速さにした）。
+// 2026-11-25（DSR89）に三段とも一段強くした（上の目安は 2026-11-20 の値）: 初級は着地の甘い滑りで 75%・着地を決めれば 100%。
+// 中級は着地の甘い滑りで 0%・回らず着地を決める滑りで 45%・回れば 100%。上級は回らないと 0%・360 だけで 58%・720 まで回れば 100%。
+// 上級のヌールは 360 を回るので、なるとの差は 0.1〜2 秒に縮んだ（コースDがいちばん近い。溜まりを 0.97 より上げると、なるより速くなるコースが出る）。
 export const TIER_TUNING = Object.freeze({
   easy: Object.freeze({
     rocks: Object.freeze({ thin: 2 }),
-    noor: Object.freeze({ startSpeed: SPEED.start - 2, charge: 0.55, boostAt: 0.45 }),
+    // 2026-11-25（DSR89）: 出だし −2・溜まり 0.55・使い始め 0.45 → 着地の遅い滑りのまま、出だし −0.5・溜まり 0.85・使い始め 0.4（前の中級に近い）
+    noor: Object.freeze({ skill: "rival", startSpeed: SPEED.start - 0.5, charge: 0.85, boostAt: 0.4 }),
     rubber: Object.freeze({ easeOff: 0.6, lag: 4, keep: 1 }),
   }),
   normal: Object.freeze({ rocks: Object.freeze({}), noor: Object.freeze({}), rubber: Object.freeze({}) }),
   hard: Object.freeze({
     rocks: Object.freeze({ fill: Object.freeze({ before: 32, afterBump: 84, after: 32 }) }),
-    noor: Object.freeze({ skill: "perfect", charge: 0.95, startSpeed: SPEED.start + 0.2 }),
+    // 2026-11-25（DSR89）: 着地を決める滑り → 360 を回って着地も決める滑り（only360）。溜まり 0.97・出だし −0.3（なるより少し遅い所）
+    noor: Object.freeze({ skill: "expert", only360: true, charge: 0.97, startSpeed: SPEED.start - 0.3 }),
     rubber: Object.freeze({ easeOff: 0.88, lag: 2, keep: 0.25 }),
   }),
 });
@@ -142,7 +162,10 @@ export const COURSE_PACKS = Object.freeze([
 // 2026-11-17 オーナー「ランクの判定を全体的にもう一回り難しくしたい」（転倒1回・ヌールに負けて 14,199点が S だった）で、境目を約2割上げた
 // （S 14,000 → 17,000・A 7,000 → 8,000・B 4,000 → 5,000）。A は、回らない理想の滑りが4コースすべてで A に残る所まで（コースDが 8,441。8,500 にすると B に落ち、本編の検査「回らないが着地を決める＝A」が崩れた）。点の付け方は同じなので RULES_VERSION は変えない（保存済みの最高評価はそのまま残る）。
 // コースAのボット: 回る理想 約30,900＝S、360だけ 約17,500＝S、回らない理想 約9,000＝A、着地が「良い」止まり 約6,900＝B、跳ばない 約3,600＝C
-export const RANKS = Object.freeze([["S", 17000], ["A", 8000], ["B", 5000], ["C", 0]]);
+// 2026-11-25 オーナー「もう少し成績…上げたい」（DSR89）で、もう一段上げた: S 17,000 → 22,000・A 8,000 → 10,000・B 5,000 → 6,000。
+// 本番の4本×滑る位置10通りのボット（中級のヌールと競走）で: 720 まで回る滑り＝いつも S、360 だけ＝S が約4割・残りは A、
+// 回らず着地を決める＝B（約2割は A）、着地が遅い＝B と C が約2:1、跳ばない＝C。点の付け方は同じなので RULES_VERSION は変えない
+export const RANKS = Object.freeze([["S", 22000], ["A", 10000], ["B", 6000], ["C", 0]]);
 export const RANK_ORDER = Object.freeze(["C", "B", "A", "S"]);
 
 /** 決定的な乱数（mulberry32）。同じ seed なら同じコース。 */
@@ -229,21 +252,72 @@ export function generateCourse(seed = 1, { length = COURSE.length } = {}) {
   }
   curves.push({ z: length - 60, c: 0 }, { z: length + 400, c: 0 });
   features.sort((a, b) => a.z - b.z);
-  return decorateCourse({ seed, length, features, curves, practice: false, id: packId(seed), name: packName(seed) });
+  return decorateCourse({ seed, length, features, curves, flows: placeFlows(features, length), practice: false, id: packId(seed), name: packName(seed) });
+}
+
+/** 砂流れの帯 flow の上か（横位置 x、距離 z）。帯の縁は板の中心で見る。 */
+export const onFlow = (flow, z, x) => z >= flow.z && z < flow.z + flow.length && Math.abs(x - flow.x) <= flow.half;
+/** 地点 (z, x) の砂流れ（無ければ null）。 */
+export function flowAt(course, z, x) {
+  for (const flow of course.flows || []) if (onFlow(flow, z, x)) return flow;
+  return null;
+}
+/** 帯の中心 x・始まり z に置いた時、岩と起伏から離れているか（FLOW の置き方の条件）。 */
+function flowClear(features, z, x) {
+  const F = FLOW, end = z + F.length;
+  for (const f of features) {
+    if (f.kind === "bump") { if (f.z > z - F.bumpBefore && f.z < end) return false; continue; }
+    if (f.z < z - F.before || f.z > end + F.after) continue;
+    if (Math.abs(f.x - x) <= f.w + F.half + PLAYER.half + F.rockMargin) return false;
+  }
+  return true;
+}
+/**
+ * 砂流れの帯を置く（決定的・乱数なし。features は変えない）。コースを FLOW.count 等分し、各区間で置ける所のうち
+ * 通れる幅がいちばん広い所（同じなら手前）に1本。置ける所が無い区間は置かない。帯の中心は、その所で岩の無い横の範囲の真ん中。
+ */
+export function placeFlows(features, length) {
+  const F = FLOW, flows = [];
+  const span = (length - F.endRoom - F.length - F.from) / F.count;
+  for (let i = 0; i < F.count; i++) {
+    const from = F.from + span * i, to = from + span;
+    let best = null;
+    for (let z = Math.ceil(from / F.scanStep) * F.scanStep; z < to; z += F.scanStep) {
+      if (flows.length && z < flows[flows.length - 1].z + F.length + F.after) continue;
+      // 置ける x の範囲（xStep 刻み）のうち、いちばん広い連なり
+      let run = null, widest = null;
+      for (let k = Math.round(-F.maxX / F.xStep); k <= Math.round(F.maxX / F.xStep); k++) {
+        const x = Math.round(k * F.xStep * 100) / 100;
+        if (flowClear(features, z, x)) { run = run ? { from: run.from, to: x } : { from: x, to: x }; if (!widest || run.to - run.from > widest.to - widest.from) widest = run; }
+        else run = null;
+      }
+      if (widest && (!best || widest.to - widest.from > best.width + 1e-9)) best = { z, x: Math.round((widest.from + widest.to) / 2 * 100) / 100, width: widest.to - widest.from };
+    }
+    if (best) flows.push(Object.freeze({ kind: "flow", z: best.z, x: best.x, half: F.half, length: F.length }));
+  }
+  return Object.freeze(flows);
 }
 
 /**
- * 練習コース: まっすぐ → 岩1つ → 起伏（跳ぶ・着地）→ 岩 → 起伏（空中で回る）→ 岩2つ（ブーストで砕く）→ 岩の壁（わざと当たって立て直す）。
- * 説明の順番が固定なので乱数は使わない。最後の壁（PRACTICE_WALL）は4つ並びで、コースの中（端の深い砂の内側）ではよけられない（立て直しを一度やってみる所）。
+ * 練習コース: まっすぐ → 岩1つ → 起伏（跳ぶ・着地）→ 岩 → 起伏（空中で回る）→ 岩2つ（ブーストで砕く）→ 岩の壁（わざと当たって立て直す）
+ * → 左カーブ（切り込む）→ 砂流れ（乗ってみる）。2026-11-25 にカーブと砂流れを足した（本番で「切り込め」の文字を出さなくなったので、練習で教える）。
+ * 説明の順番が固定なので乱数は使わない。壁（PRACTICE_WALL）は4つ並びで、コースの中（端の深い砂の内側）ではよけられない（立て直しを一度やってみる所）。
+ * カーブ（PRACTICE_CURVE）は岩の無い左曲がり。砂流れ（PRACTICE_FLOW）はその先の真ん中。どちらも、ヌールの説明を読んでから入れる距離を空ける。
  */
 export const PRACTICE_WALL = 720;
+// カーブは約6秒（ヌールの説明3つを読める長さ。押したり離したりで切り込むと「+15」が2〜4回）。
+// 2026-11-25 オーナー「カービングに演出を入れたい。チュートリアルでも触れて欲しい」で 80m → 200m
+export const PRACTICE_CURVE = Object.freeze({ from: 820, to: 1020, c: -0.85 });
+export const PRACTICE_FLOW = 1100;
 const PRACTICE_WALL_X = Object.freeze([-0.66, -0.22, 0.22, 0.66]);
 export function practiceCourse() {
   const length = COURSE.practiceLength;
   const features = [rock(150, 0.35), bump(240), rock(330, -0.3), bump(410), rock(540, 0), rock(590, 0.05),
     ...PRACTICE_WALL_X.map(x => rock(PRACTICE_WALL, x))];
-  const curves = [{ z: 0, c: 0 }, { z: length + 400, c: 0 }];
-  return decorateCourse({ seed: 0, length, features, curves, practice: true, id: "practice", name: "練習" });
+  const C = PRACTICE_CURVE;
+  const curves = [{ z: 0, c: 0 }, { z: C.from - 20, c: 0 }, { z: C.from + 10, c: C.c }, { z: C.to - 10, c: C.c }, { z: C.to + 20, c: 0 }, { z: length + 400, c: 0 }];
+  const flows = Object.freeze([Object.freeze({ kind: "flow", z: PRACTICE_FLOW, x: 0, half: FLOW.half, length: FLOW.length })]);
+  return decorateCourse({ seed: 0, length, features, curves, flows, practice: true, id: "practice", name: "練習" });
 }
 
 /** z でのカーブ（-1〜1）。要所の間は滑らかにつなぐ。 */
@@ -329,7 +403,7 @@ export function upcomingCurve(course, z, lookAhead = 110) {
  * 初級は岩の列を間引くだけ（減らすので、抜けられる幅・岩どうしの間隔は中級以上）。
  * 上級は岩の無い長い区間の真ん中に岩を1つ足す（前後の岩・起伏の着地から十分に離す。位置は seed で決まる）。
  */
-function tierFeatures(features, tier, seed, length) {
+function tierFeatures(features, tier, seed, length, flows = []) {
   const { thin = 1, fill = null } = TIER_TUNING[tierOf(tier)].rocks;
   let list = features;
   if (thin > 1) {
@@ -343,7 +417,13 @@ function tierFeatures(features, tier, seed, length) {
     let free = LAYOUT.start;
     for (const spot of spots) {
       const latest = spot.z - fill.after;
-      if (latest >= free) added.push(rock(Math.round((free + latest) / 2), (random() < 0.5 ? -1 : 1) * (0.25 + random() * 0.55)));
+      if (latest >= free) {
+        // 足す岩は砂流れの帯を避ける（帯に掛かるなら左右を入れ替え、それでも掛かるなら足さない）
+        const at = Math.round((free + latest) / 2), x = (random() < 0.5 ? -1 : 1) * (0.25 + random() * 0.55);
+        const clear = cx => flows.every(flow => flowClear([rock(at, cx)], flow.z, flow.x));
+        const place = clear(x) ? x : clear(-x) ? -x : null;
+        if (place !== null) added.push(rock(at, place));
+      }
       free = Math.max(free, spot.z + (spot.kind === "bump" ? fill.afterBump : fill.before));
     }
     list = [...list, ...added].sort((a, b) => a.z - b.z);
@@ -359,7 +439,7 @@ export function buildCourse({ id, seed, tier } = {}) {
   const pack = (id && packById(id)) || (seed != null && packBySeed(seed)) || null;
   const level = tierOf(tier);
   const course = generateCourse(pack ? pack.seed : seed ?? DEFAULT_SEED);
-  const tiered = level === "normal" ? null : { features: tierFeatures(course.features, level, course.seed, course.length), tier: level };
+  const tiered = level === "normal" ? null : { features: tierFeatures(course.features, level, course.seed, course.length, course.flows), tier: level };
   if (!pack) return tiered ? decorateCourse({ ...course, ...tiered }) : course;
   return decorateCourse({ ...course, ...tiered, id: pack.id, name: pack.name, curves: pack.curves ? closeCurves(pack.curves, course.length) : course.curves });
 }
@@ -379,11 +459,11 @@ export function createGame(course, { rival = null, charge = 1, tier = null } = {
     course, rival, tier: TIERS.includes(tier) ? tier : null, chargeRate: charge, t: 0, z: 0, x: 0, vx: 0, speed: SPEED.start, rivalClock: 0, rivalRate: 1, rivalFinishT: null,
     air: 0, airTotal: 0, airPeak: 0, airKind: null, landingPress: null, lastJumpT: -9,
     rot: 0, spinDir: 0, spinHold: false, spinArmed: null, lastTrick: null,
-    gauge: 0, chargedAt: -9, boostT: 0, carving: false, carveT: 0,
+    gauge: 0, chargedAt: -9, boostT: 0, carving: false, carveT: 0, inFlow: null, flowLift: false,
     fallT: 0, fallAt: -9, fallReason: null, preFallSpeed: SPEED.start, preFallCombo: 0, preFallGauge: 0,
     falls: 0, combo: 0, maxCombo: 0, score: 0,
     stats: { bigJumps: 0, hops: 0, perfect: 0, good: 0, plain: 0, nearMiss: 0, edgeTime: 0, bounces: 0, airTime: 0,
-      tricks: 0, bestTrick: 0, spinFalls: 0, boosts: 0, boostsLost: 0, smashed: 0, recoveries: 0, carves: 0, carveTime: 0 },
+      tricks: 0, bestTrick: 0, spinFalls: 0, boosts: 0, boostsLost: 0, smashed: 0, recoveries: 0, carves: 0, carveTime: 0, flows: 0, flowTime: 0 },
     passed: new Set(), smashedRocks: new Set(), lastBump: null, finished: false, finishTime: null, race: null, events: [], landedAt: null,
   };
 }
@@ -592,8 +672,9 @@ function fall(game, feature, reason = "rock") {
 
 /** 今の速度の上限（ブースト中は高い）。 */
 const speedCap = game => game.boostT > 0 ? SPEED.boost : SPEED.max;
-/** 岩を砕けるか: ブースト中と、終わった直後のまだ最高速を大きく超えている間（終わった瞬間に目の前の岩で転ばないように）。 */
-export const smashing = game => game.boostT > 0 || game.speed > SPEED.max + 3;
+/** 岩を砕けるか: ブースト中と、終わった直後のまだ最高速を大きく超えている間（終わった瞬間に目の前の岩で転ばないように）。
+ * 砂流れで速くなった分（flowLift）では砕かない。 */
+export const smashing = game => game.boostT > 0 || (game.speed > SPEED.max + 3 && !game.flowLift);
 
 /** 1フレーム進める。dt は秒（50ms で頭打ち）。入力は { left, right }。 */
 export function step(game, input, dt) {
@@ -601,15 +682,26 @@ export function step(game, input, dt) {
   dt = Math.min(0.05, Math.max(0, dt));
   game.t += dt;
   const falling = game.fallT > 0;
+  // 砂流れ: 地上（ホップの低い所も含めない）で、コースの中の帯の上
+  const flow = !falling && game.air <= 0 && Math.abs(game.x) <= EDGE ? flowAt(game.course, game.z, game.x) : null;
+  if (flow && flow !== game.inFlow) { game.stats.flows += 1; game.events.push({ kind: "flow", t: game.t, x: flow.x, z: flow.z }); }
+  else if (!flow && game.inFlow) game.events.push({ kind: "flowEnd", t: game.t });
+  game.inFlow = flow;
+  if (flow) game.stats.flowTime += dt;
   if (falling) {
     game.fallT = Math.max(0, game.fallT - dt);
   } else if (game.boostT > 0) {
+    game.flowLift = false; // ブーストの勢いは砕ける
     game.speed = Math.min(SPEED.boost, game.speed + SPEED.boostAccel * dt);
-  } else if (game.speed > SPEED.max) {
-    game.speed = Math.max(SPEED.max, game.speed - SPEED.overDecay * dt); // ブーストの後は少しずつ戻る
   } else {
-    game.speed = Math.min(SPEED.max, game.speed + SPEED.accel * dt);
+    const top = flow ? FLOW.cap : SPEED.max;
+    if (game.speed > top) game.speed = Math.max(top, game.speed - SPEED.overDecay * dt); // ブースト・砂流れの後は少しずつ戻る
+    else if (flow) {
+      game.speed = Math.min(top, game.speed + FLOW.accel * dt);
+      if (game.speed > SPEED.max) game.flowLift = true;
+    } else game.speed = Math.min(top, game.speed + SPEED.accel * dt);
   }
+  if (game.flowLift && game.speed <= SPEED.max + 3) game.flowLift = false;
   if (game.boostT > 0) {
     game.boostT = Math.max(0, game.boostT - dt);
     if (game.boostT === 0) game.events.push({ kind: "boostEnd", t: game.t });
@@ -823,10 +915,17 @@ export function readResult(value) {
 
 // 自動操作がブーストを使い始めるゲージの量。2026-11-13 にゲージが「使わないと減る」ようになったので、満タンまで待たずに使う（減る前に使い切る）
 const BOT_BOOST_AT = 0.35;
+// ライバルはゴール前にこの量から使い切る。
+// M-19（ライバルも 25% から）は #4229 の難易度調整（この値を前提に校正済み）と競合するため、
+// restack では main の 0.15 を維持し、M-19 の適用は判断待ちとして PR に残す。
+const RIVAL_FINISH_BOOST_AT = 0.15;
 // 自動操作の継ぎ足し・ゴール前の既定の最低量。評価照合とライバルの滑りは従来の30%を基準にする。
 const BOT_MIN_GAUGE = 0.3;
 const BOT_PLANS = Object.freeze([[0, 0], ...[-1, 1].flatMap(dir => [0.2, 0.45, 0.8, 1.4].map(hold => [dir, hold]))]);
 const BOT_LOOK = Object.freeze({ horizon: 2.2, dt: 1 / 20, every: 3, commit: 0.35 });
+// 砂流れに乗る見返り（帯の上にいる1秒あたり。自分の位置へ戻る重み 1.2/レーン より強いので、届く帯には乗りに行く）。
+// 2026-11-25: ヌール・なる・検査のボットとも本番の4本の帯をすべて通る値。2.25 以上では、帯へ寄る分だけ上級のヌールとなるの差が縮んだ（検査の境目 1 秒を割る）
+const BOT_FLOW_PULL = 1.75;
 /**
  * 自動操作の舵。2.2秒先まで横の動き（慣性・カーブで外へ流される力）を試算し、岩に当たらず端にも出ない押し方を選ぶ。
  * 「何もしない／左右どちらかを 0.2〜1.4 秒押して離す」の中から、いちばん安全で自分の位置（lane）へ戻れるものを選び直す（every 歩ごと）。
@@ -848,11 +947,13 @@ function botSteer(game, skill, memo) {
   }
   const inAir = z => spans.some(([from, to]) => z >= from && z < to);
   // 各歩の地面の状態は、どの押し方でも同じ（前へ進む速さは変わらない）
-  const drift = new Float64Array(steps), side = new Int8Array(steps), grip = new Uint8Array(steps), hits = [];
+  const drift = new Float64Array(steps), side = new Int8Array(steps), grip = new Uint8Array(steps), hits = [], flowOn = [];
+  const flows = (course.flows || []).filter(flow => flow.z + flow.length > game.z && flow.z < reach);
   for (let k = 0; k < steps; k++) {
     const z = game.z + speed * dt * k, curve = curveAt(course, z);
     drift[k] = curve * STEER.curveDrift * (speed / SPEED.max) * dt; side[k] = Math.sign(curve); grip[k] = inAir(z) ? 0 : 1;
     hits.push(rocks.filter(rock => rock.z > z && rock.z <= z + speed * dt && !inAir(rock.z)));
+    flowOn.push(grip[k] ? flows.find(flow => z >= flow.z && z < flow.z + flow.length) ?? null : null);
   }
   const damp = Math.max(0, 1 - STEER.damping * dt);
   let best = null;
@@ -868,6 +969,7 @@ function botSteer(game, skill, memo) {
         cost += gap < 0.05 ? 1000 * (1 + horizon - k * dt) : Math.max(0, 0.5 - gap) * 3; // 当たるのは論外。空いていれば余裕を取る
       }
       if (Math.abs(x) > EDGE - 0.06) cost += 40 * dt; // 端の深い砂
+      if (flowOn[k] && Math.abs(x - flowOn[k].x) <= flowOn[k].half - 0.03) cost -= BOT_FLOW_PULL * dt; // 砂流れに乗る
     }
     cost += Math.abs(x - lane) * 1.2;
     if (!best || cost < best.cost - 1e-9) best = { dir, cost };
@@ -943,10 +1045,10 @@ export function rivalRun(course, { who = "noor", maxTime = 200, tier } = {}) {
   const tuned = who === "noor" || !RIVALS[who] ? TIER_TUNING[tierOf(tier)] : null;
   const { skill, startX, only360, startSpeed, easeOff = true, charge = 1, boostAt = 1 } = { ...(RIVALS[who] || RIVALS.noor), ...tuned?.noor };
   const rubber = tuned && Object.keys(tuned.rubber).length ? Object.freeze({ ...RUBBER, ...tuned.rubber }) : RUBBER;
-  const game = createGame(course, { charge }), memo = { lane: startX, only360, boostAt, finishBoostAt: BOOST.minGauge }, samples = [];
+  const game = createGame(course, { charge }), memo = { lane: startX, only360, boostAt, finishBoostAt: RIVAL_FINISH_BOOST_AT }, samples = [];
   game.x = startX; game.speed = startSpeed;
   const snap = () => samples.push({ t: game.t, z: game.z, x: game.x, vx: game.vx, air: game.air, airTotal: game.airTotal, airPeak: game.airPeak, airKind: game.airKind,
-    landingPress: game.landingPress, fallT: game.fallT, landedAt: game.landedAt, rot: game.rot, boostT: game.boostT });
+    landingPress: game.landingPress, fallT: game.fallT, landedAt: game.landedAt, rot: game.rot, boostT: game.boostT, flow: game.inFlow ? 1 : 0 });
   snap();
   let next = RIVAL_SAMPLE;
   while (!game.finished && game.t < maxTime) {

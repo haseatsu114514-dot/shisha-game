@@ -124,7 +124,7 @@ await suite("desert-ride-feel", async check => {
     await autoplayToResult(page, "good");
     assert.equal(await page.locator(t("desert-result")).getAttribute("data-rank"), "B");
     const total = Number((await page.locator(t("desert-total")).locator("strong").innerText()).replace(/[^\d]/g, ""));
-    assert.equal(await page.locator(t("desert-next-rank")).innerText(), `次の評価 A まで あと ${(8000 - total).toLocaleString("ja-JP")}点`); // A の境目（2026-11-17 に 7,000 → 8,000。2026-11-13 に 2,000m へ延ばして 6,000 → 7,000）
+    assert.equal(await page.locator(t("desert-next-rank")).innerText(), `次の評価 A まで あと ${(10000 - total).toLocaleString("ja-JP")}点`); // A の境目（2026-11-25 に 8,000 → 10,000。2026-11-17 に 7,000 → 8,000。2026-11-13 に 2,000m へ延ばして 6,000 → 7,000）
     assert.match(await page.locator(t("desert-tip")).innerText(), /空中で ← か → を押し続けると回転/);
     assert.equal(await ride(page, () => window.__desertRide.results.length), 2);
     // 結果のカードは舞台の中に収まる（行が増えても、上が切れない）

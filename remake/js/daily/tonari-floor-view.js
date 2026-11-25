@@ -451,7 +451,10 @@ export function runTonariFloor({
             else log(`${e.tableId}卓　${guest.name}「${e.line}」`);
             break;
           case "left": SE.miss(); hit(e.tableId, "off"); flashNow("bad"); pop(e.tableId, "帰った…", "off", "anger"); log(`${e.tableId}卓の${guest.name}が、待ちきれずに帰ってしまいました`, "bad"); break;
-          case "order": SE.click(); log(`${e.tableId}卓　${mixName(e.mix)}を仕込みはじめた`); break;
+          case "order":
+            SE.click(); log(`${e.tableId}卓　${e.refill ? "おかわりに" : ""}${mixName(e.mix)}を仕込みはじめた`);
+            if (e.refill) { SE.money(); showBanner("トップ替え、いただきました！", `おかわり ＋${yen(PRICE.top)}`); }
+            break;
           case "shuffle": SE.whoosh(); log(`ミックスを入れ替える（${seconds(e.ticks)}秒かかる）`); break;
           case "shuffleDone": SE.select(); log("新しいミックスが並んだ", "good"); break;
           case "serve": {
@@ -478,12 +481,14 @@ export function runTonariFloor({
             log(`${e.tableId}卓　追加ドリンク注文！`, "good");
             break;
           case "extend":
-            SE.perfect(); SE.money();
+            // おかわりも注文と同じく、吸いたい気分を聞いて、並んだミックスから選ぶ
+            SE.perfect();
             hit(e.tableId, "best");
             pop(e.tableId, "おかわり！", "best", "best");
-            log(`${e.tableId}卓　おかわり！「${e.line}」`, "good");
-            showBanner("トップ替え、いただきました！", `おかわり ＋${yen(PRICE.top)}`);
+            say(e.tableId, e.line, "good");
+            log(`${e.tableId}卓　おかわりの注文！「${e.line}」`, "good");
             break;
+          case "refillMissed": SE.miss(); pop(e.tableId, "おかわり逃した", "off"); log(`${e.tableId}卓　おかわりを聞きそびれて、お会計に`, "bad"); break;
           case "billReady": SE.tick(); log(`${e.tableId}卓がお会計です`); break;
           case "bill":
             SE.money();
@@ -509,7 +514,7 @@ export function runTonariFloor({
     function wantFor(table) {
       const feverOn = table.fever && state.feverLeft > 0;
       switch (table.phase) {
-        case "order": return ["order", "注文", "act", true];
+        case "order": return ["order", table.refill ? "おかわり" : "注文", "act", true];
         case "prep": return ["cook", table.make.active ? "仕込み中" : "順番待ち", "wait", false];
         case "enjoy":
           if (feverOn) return ["lamp", "フィーバー", "fever", false];
