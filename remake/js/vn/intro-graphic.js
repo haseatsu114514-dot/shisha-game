@@ -40,7 +40,7 @@ const FRAME_OVERRIDES = {
   rio: {width: 808, left: -136, top: -4, right: 96.1},
   sai: {width: 819, left: -142, top: 4, right: 95.4},
   saku: {width: 699, left: -93, top: -4, fade: 14},
-  salaryman: {width: 1195, left: -140, top: -2, right: 65.3},
+  salaryman: {width: 1078, left: -121, top: 3, right: 70.6},
   samechan: {width: 765, left: -126, top: -51, fade: 14},
   sheikh: {width: 1738, left: -547, top: -191, right: 68.3},
   shisha_9000: {width: 869, left: -180, top: -43, right: 94.4},
