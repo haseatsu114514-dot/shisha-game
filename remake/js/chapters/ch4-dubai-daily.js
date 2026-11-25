@@ -108,14 +108,14 @@ export const CH4_DUBAI_SPOTS = Object.freeze([
   spot({ id: "ch4_dubai_souq", place: "souq", label: "スーク", area: "旧市街の市場", x: 22, y: 58, theme: "shop", glyph: "市",
     preview: CH4_PLACE_BG.souq, stamina: -10, stat: "insight", desc: "スパイスの匂いが立つ市場。歩くたびに、違うものが目に入る。屋台で軽いものも買える。" }),
   spot({ id: "ch4_dubai_festa", place: "festa", label: "FESTA", area: "大会会場の出張ブース", x: 56, y: 28, theme: "rival", glyph: "煙",
-    face: "da_silva", preview: CH4_PLACE_BG.festa, cost: 6000, stamina: -12, stat: "charm", desc: "手拍子と炭の匂いのする、太陽の店。一台6,000円（約140ディルハム）。夜がにぎわう。" }),
+    face: "da_silva", teacher: "da_silva", preview: CH4_PLACE_BG.festa, cost: 6000, stamina: -12, stat: "charm", desc: "手拍子と炭の匂いのする、太陽の店。一台6,000円（約140ディルハム）。夜がにぎわう。" }),
   spot({ id: "ch4_dubai_cafe", place: "center_cafe", label: "中心地のカフェ", area: "街の中心", x: 70, y: 52, theme: "store", glyph: "茶",
     preview: CH4_PLACE_BG.center_cafe, cost: 3000, stamina: -10, stat: "sense", desc: "立派なカフェ。現地のメニューから一台頼んで、給仕と客の作法も見る。一台3,000円（約70ディルハム）。夜がにぎわう。" }),
   spot({ id: "ch4_dubai_alley", place: "alley_cafe", label: "路地裏のカフェ", area: "路地の奥", x: 30, y: 78, theme: "store", glyph: "茶",
     preview: CH4_PLACE_BG.alley_cafe, cost: 3000, stamina: -10, stat: "technique", desc: "古い台が並ぶ小さなカフェ。現地のメニューから一台頼んで吸う。一台3,000円（約70ディルハム）。夜は常連が集まる。" }),
   // 龍龍水煙所（王煙楼の店）は最初から出す。王煙楼に会うまでは店主の顔は「？」（daily/spot-people.js）。背景は仮置き。
   spot({ id: "ch4_dubai_longlong", place: "longlong", label: "龍龍水煙所", area: "世界大会のあいだの店", x: 58, y: 50, theme: "rival", glyph: "龍",
-    face: LONGLONG_CHAR, preview: LONGLONG_BG, cost: 6000, stamina: -12, stat: "insight",
+    face: LONGLONG_CHAR, freshnessKey: LONGLONG_CHAR, preview: LONGLONG_BG, cost: 6000, stamina: -12, stat: "insight",
     desc: "中国の水煙の老舗が、世界大会に合わせて出した店。一台6,000円（約140ディルハム）。夜がにぎわう。" }),
   spot({ id: "ch4_dubai_naru", place: "naru", label: "なると会う", area: "宿のロビー", x: 20, y: 36, theme: "rival", glyph: "友",
     face: "naru", preview: CH4_PLACE_BG.inn, stamina: -8, stat: "guts", desc: "同じ街にいる日本の第二代表。少し話す。" }),
@@ -124,9 +124,9 @@ export const CH4_DUBAI_SPOTS = Object.freeze([
   spot({ id: "ch4_dubai_creek", place: "creek", label: "クリーク沿い", area: "水辺の遊歩道", x: 58, y: 86, theme: "park", glyph: "水",
     preview: "bg_dubai_street_night", stamina: 20, desc: "水辺を歩いて、少し体を休める。" }),
   spot({ id: "ch4_dubai_shop", place: "shop", label: "Dr.fookah ドバイ店", area: "街の中心", x: 35, y: 57, theme: "shop", glyph: "卸",
-    preview: CH4_PLACE_BG.shop, desc: "日本で出た葉が全部そろう（時間は使わない）。" }),
+    preview: CH4_PLACE_BG.shop, noTime: true, desc: "日本で出た葉が全部そろう（時間は使わない）。" }),
   spot({ id: "ch4_dubai_mosque", place: "mosque", label: "風の回廊モスク", area: "見学の回廊", x: 58, y: 70, theme: "rest", glyph: "回",
-    preview: "bg_dubai_map", desc: "案内付きで見学し、中庭の回廊で振り返る（時間は使わない）。" }),
+    preview: "bg_dubai_map", noTime: true, desc: "案内付きで見学し、中庭の回廊で振り返る（時間は使わない）。" }),
   spot({ id: "ch4_dubai_inn", place: "inn", label: "宿", area: "旧市街の宿", x: 8, y: 46, theme: "rest", glyph: "休",
     preview: CH4_PLACE_BG.inn, stamina: 55, desc: "部屋で休む。体力が大きく戻る。" }),
 ].map(entry => Object.freeze({ ...entry, hasNew: () => spotHasNew(entry) })));
@@ -522,8 +522,7 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   if (longlong) gainAffinity(LONGLONG_CHAR, visitAffinity(longlong.kind === "story" ? "story" : "talk"));
   // 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があれば相談して話を聞く（FESTA＝太陽）。
   // 路地裏のカフェの日常の会話で話すのは店員で、シェイクの授業は大会で名を明かすまで伏せる。シェイクへの相談は第5章の屋敷（ch5-dubai.js）。
-  const teacher = { festa: "da_silva" }[entry.place];
-  if (teacher && state === owner) await keepDailyHud(() => consultLessons(teacher));
+  if (entry.teacher && state === owner) await keepDailyHud(() => consultLessons(entry.teacher));
   return { used: true, exerted: innTrial || (entry.stamina || 0) < 0 };
 }
 

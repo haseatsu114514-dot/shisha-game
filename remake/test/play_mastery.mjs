@@ -78,24 +78,23 @@ assert(masteryRecord(next,'dj').done);assert(masteryRecord(next,'trpg').done);
 const capped=core.newState();core.setState(capped);const cg=growth.ensureGrowth();cg.earned=growth.BOARD_TOTAL;cg.hidane.any=growth.BOARD_TOTAL;
 const gifts=[];const off=on('hidane-gift',x=>gifts.push(x));recordPlayMastery(capped,'axe',axe(.8),'cap');off();
 assert(masteryRecord(capped,'axe').done);assert(cg.rewards['axe-master']);assert.equal(cg.earned,growth.BOARD_TOTAL);assert.equal(gifts.length,0);
-// Daily paid actions: failed/free actions cannot get the chapter-five floor.
+// Daily paid actions: failed/free actions cannot get the chapter-five practice bonus.
 core.setState(core.newState());Object.assign(core.state,{chapter:5,phase:'daily',day:80,slot:0});core.state.flags._ch5={};
 const daily=growth.ensureGrowth();daily.firsts={people:['sumi'],places:['tonari']};daily.fresh={chapter:5,counts:{work:10}};
 const xp=daily.xp;await stats.paidAction(async()=>false,{exp:{key:'work'}});assert.equal(daily.xp,xp);
-await stats.paidAction(async()=>true,{consumed:()=>true,exp:{key:'work'}});assert.equal(daily.xp-xp,180);
-assert.equal(growth.awardActionExp({key:'work'}),24,'second notification in same slot gets no extra floor');
-core.state.slot=1;assert.equal(growth.awardActionExp({key:'work'}),180);
+await stats.paidAction(async()=>true,{consumed:()=>true,exp:{key:'work'}});assert.equal(daily.xp-xp,30);
+assert.equal(growth.awardActionExp({key:'work'}),24,'second notification in same slot gets no practice bonus');
+core.state.slot=1;assert.equal(growth.awardActionExp({key:'work'}),30);
 core.state.flags._ch5.matchDay=81;core.state.day++;assert.equal(growth.awardActionExp({key:'work'}),24,'scheduled match ends the supplement');
 core.state.flags._ch5.matchDay=null;core.state.day++;core.state.slot=1;
 const beforeNight=daily.xp;
 await stats.paidAction(async()=>{core.state.slot=2;return true;},{consumed:()=>true,exp:{key:'work'}});
-assert.equal(daily.xp-beforeNight,180,'a self-consuming night action uses its starting slot');
+assert.equal(daily.xp-beforeNight,30,'a self-consuming night action uses its starting slot');
 assert.deepEqual(daily.practiceDay.slots,[1]);
-// Benchmark exhausted first rewards, no mini-games/romance/lottery. Use the production functions.
-for(const initial of [140,155]){
- const v=core.newState();core.setState(v);Object.assign(v,{chapter:5,phase:'daily',day:80,slot:0});v.flags._ch5={};
- const b=growth.ensureGrowth();Object.assign(b,{xp:growth.totalExpFor(57),level:57,settledXp:growth.totalExpFor(57),earned:initial,milestones:[10,20,30,40,50],hidane:{any:initial,body:0,sense:0,wisdom:0},fresh:{chapter:5,counts:{work:10}}});
- let actions=0;while(b.earned<growth.BOARD_TOTAL&&actions<200){v.day=80+Math.floor(actions/2);v.slot=actions%2;growth.awardActionExp({key:'work'});actions++;}
- assert.equal(b.earned,growth.BOARD_TOTAL);assert(actions<=90);console.log(JSON.stringify({initial,actions,days:Math.ceil(actions/2),level:b.level,extraXP:b.xp-growth.totalExpFor(57),total:b.earned}));
-}
+// A fresh choice in chapter five advances the board faster than repeating a familiar action, even with the daily bonus.
+core.state.day++;
+core.state.slot=0;
+assert.equal(growth.nextFreshness('work').rate,.4);
+assert.equal(growth.nextFreshness('other').rate,1);
+assert.equal(growth.awardActionExp({key:'other'}),75);
 console.log('play mastery PASS: thresholds, cumulative failures, old saves, cap, SAVE/LOAD, NG+, paid daily growth');

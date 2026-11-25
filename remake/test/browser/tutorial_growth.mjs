@@ -33,7 +33,7 @@ await suite("tutorial-growth", async check => {
     await page.waitForFunction(() => window.scoutReceipt);
     const receipt = await page.evaluate(() => window.scoutReceipt);
     assert.equal(receipt.growth.today.learned.ch1_scout, 10);
-    assert.deepEqual([receipt.money, receipt.stamina, receipt.visitedDay.naru], [27000, 84, 1]);
+    assert.deepEqual([receipt.money, receipt.stamina, receipt.visitedDay.naru], [24000, 84, 1]);
     assert(await page.locator("[data-test='hud-exp'] .hx-settled").evaluate(el => parseFloat(el.style.width) > 0));
     await page.reload();
     await button(page, "title-new").waitFor();
@@ -51,7 +51,7 @@ await suite("tutorial-growth", async check => {
       const s = __remake.state;
       return [s.money, s.growth.xp, s.growth.today.learned.ch1_scout ?? 0];
     });
-    assert.deepEqual(after, [27000, receipt.growth.xp, 0]);
+    assert.deepEqual(after, [24000, receipt.growth.xp, 0]);
   }, phone);
 
   // #3819: 登録のついで（slot 0）も帰り道（slot 2）も、案内は PEPPERMINT → EDEN の順
@@ -83,7 +83,7 @@ await suite("tutorial-growth", async check => {
       await page.waitForFunction(charId => window.deliveries[charId], id);
       const receipt = await page.evaluate(charId => window.deliveries[charId], id);
       assert.equal(receipt.growth.today.learned[`ch1_delivery_${id}`], 10);
-      assert.deepEqual([receipt.money, receipt.stamina, receipt.slot], [32000 + index * 2000, 100, slot]);
+      assert.deepEqual([receipt.money, receipt.stamina, receipt.slot], [29000 + index * 2000, 100, slot]);
       if (id === "minto") assert.equal(receipt.story.minto || 0, 0, "The handoff must not use the normal smoking visit");
     }
     // Loading the delivery receipt and revisiting the settlement function must not pay again.
@@ -99,7 +99,7 @@ await suite("tutorial-growth", async check => {
       for (const id of ["minto", "adam"]) retries.push(await spots.deliverToRival(spots.spotById(id)));
       return { retries, money: s.money, xp: s.growth.xp };
     }, settled);
-    assert.deepEqual(result, { retries: [false, false], money: 34000, xp: settled.growth.xp });
+    assert.deepEqual(result, { retries: [false, false], money: 31000, xp: settled.growth.xp });
   }, slot === 0 ? phone : {});
 
   await check("reload-during-handoff", async page => {
@@ -127,7 +127,7 @@ await suite("tutorial-growth", async check => {
     });
     const { spent, ...checkpoints } = result;
     assert(spent >= 3000, "A regular visit still costs money");
-    assert.deepEqual(checkpoints, { before: [30000, 0, false], retry: true, paid: 10, moneyAfterDelivery: 32000, regular: true, xp: 10, stamina: 84 });
+    assert.deepEqual(checkpoints, { before: [27000, 0, false], retry: true, paid: 10, moneyAfterDelivery: 29000, regular: true, xp: 10, stamina: 84 });
   });
 
   await check("invalid-and-board-off-delivery", async page => {
@@ -156,8 +156,8 @@ await suite("tutorial-growth", async check => {
       return { unrequested, closed, missing, invalidSnapshot, simultaneous,
         saved: [saved.flags._delivery_minto_done, saved.money, saved.growth?.xp ?? 0, saved.slot, saved.stamina] };
     });
-    assert.deepEqual(result, { unrequested: false, closed: false, missing: false, invalidSnapshot: [false, 30000, 0],
-      simultaneous: [true, false], saved: [true, 32000, 0, 0, 100] });
+    assert.deepEqual(result, { unrequested: false, closed: false, missing: false, invalidSnapshot: [false, 27000, 0],
+      simultaneous: [true, false], saved: [true, 29000, 0, 0, 100] });
   });
 
   await check("hud-capacity-save-and-legacy-mode", async page => {

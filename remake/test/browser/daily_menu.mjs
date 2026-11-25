@@ -190,13 +190,13 @@ await suite("daily-menu", async (check) => {
     await settle(page);
     assert.match(await page.locator(t("menu-level")).innerText(), /Lv\.\s*3[\s\S]*EXP 110/);
     assert.match(await page.locator(t("menu-hidane")).innerText(), /2\s*火種/);
-    assert.match(await page.locator(t("menu-board-body")).innerText(), /才能[\s\S]*2 \/ 27/);
+    assert.match(await page.locator(t("menu-board-body")).innerText(), /才能[\s\S]*2 \/ 26/);
     assert.equal(await page.locator(".dmenu svg, .dmenu .radar").count(), 0, "no triangle graph (DUI03)");
     await assertLayout(page, "pc-growth");
     await page.screenshot({ path: path.join(out, "daily-menu-pc-growth-status.png") });
     const before = await progress(page);
     await page.locator(t("menu-board")).click();
-    await page.locator(`${t("growth-board")}[data-mode="view"][data-art]`).waitFor();
+    await page.locator(`${t("growth-board")}[data-mode="light"][data-art]`).waitFor();
     await page.locator(t("board-close")).click();
     await page.locator(t("growth-board")).waitFor({ state: "detached" });
     assert.equal(await page.locator(".dmenu").count(), 0);
@@ -275,4 +275,5 @@ await suite("daily-menu", async (check) => {
       await page.locator(".dmenu").waitFor({ state: "detached" });
     }, { viewport: portrait, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
   }
-});
+// 盤は自分で開いて操作する検査がある（メニューから灯せる盤は growth_ack の自動「決定」の対象にしない）
+}, { acknowledgeGrowth: false });

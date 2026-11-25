@@ -69,6 +69,20 @@ for (const key of board.BOARD_KEYS) {
 assert.deepEqual(effects.boardPerks(["B1","B1","unknown"]),effects.boardPerks(["B1"]));
 assert.deepEqual(effects.boardPerks({}),effects.boardPerks([]));
 assert.deepEqual(effects.boardPerks([{},null,0,["B1"],{toString:"B1"},"__proto__"]),effects.boardPerks([]));
+const bodyNodes = board.boardNodes("body").filter(n => n.kind === "stat").map(n => n.id);
+core.state.growth.nodes = bodyNodes;
+assert.equal(stats.maxStamina({ forCondition: true }), 115);
+core.state.stamina = 70;
+assert.equal(stats.staminaAfter(-24), 50);
+stats.addStamina(-24);
+assert.equal(core.state.stamina, 50, "警告と実消費で同じ軽減を使う");
+core.save(); core.load();
+assert.equal(stats.maxStamina({ forCondition: true }), 115);
+assert.equal(stats.staminaAfter(-24), 30);
+growth.setGrowthPreview(false);
+assert.equal(stats.maxStamina({ forCondition: true }), 100);
+assert.equal(stats.staminaAfter(-24), 26);
+growth.setGrowthPreview(true);
 const nodeFor = perk => board.NODES.find(n=>n.kind==="stat"&&!n.peak&&n.perk===perk);
 // 旧強化が最大でも、新しいマスの恩恵が止まらない。
 Object.assign(core.state.stats,{technique:100,sense:100,guts:100,charm:100});
@@ -79,10 +93,10 @@ core.state.growth.nodes=["B4"]; core.state.fortune={char:"adam"};
 const totalAffinity = () => (core.state.affinity.adam||0)+(core.state.affinityCarry.adam||0);
 // LIMEは会っていないので占いを使わない（台帳 URA07）。倍にならず、効果も残る
 stats.gainAffinity("adam",1,{source:"lime",onGain(){}});
-const limeOnly=(1+.02)*.85*.25; // B4（近くの人柄）は＋2%（近くの帯×2。SBD111）
+const limeOnly=(1+.02)*.85*.75; // B4（近くの人柄）は＋2%（近くの帯×2。SBD111）
 assert(Math.abs(totalAffinity()-limeOnly)<1e-10,"LIMEで占いが発動した");
 assert.deepEqual(core.state.fortune,{char:"adam"});
-// 占いの倍率は本体の値を読む（2026-11-02 に ×1.5 → ×2）。会ったとき、旧報酬は丸めた2、盤の人柄2%に占いを一度だけ掛ける
+// 占いの倍率は本体の値を読む（×1.5）。会ったとき、旧報酬は丸めた2、盤の人柄2%に占いを一度だけ掛ける
 const F=stats.FORTUNE_AFFINITY_MULT, legacyFortune=Math.round(1*1.2*F);
 stats.gainAffinity("adam",1);
 assert(Math.abs(totalAffinity()-limeOnly-(legacyFortune+.02*F)*.85)<1e-10,"旧報酬と盤の端数へ占いを一度だけ適用");
@@ -319,19 +333,19 @@ insured=JSON.parse(JSON.stringify(insured));assert.equal(effects.useGrowthInsura
 assert.equal(insured.growthInsuranceKind,"leaf");assert.equal(effects.useGrowthInsurance(core.state,{mode:"rehearsal"},"leaf"),false);
 assert.equal(effects.useGrowthInsurance(core.state,{mode:"tournament"},"invalid"),false);
 growth.setGrowthPreview(false);assert.equal(effects.useGrowthInsurance(core.state,{mode:"tournament"},"leaf"),false);
-// 廃止した差し入れのK20は同じ開放ID・支払のまま人柄のマスになる。火種2のマスなので恩恵も2マス分の+4%（SBD112）。
+// 廃止した差し入れのK20は同じ開放ID・支払のまま人柄のマスになる。火種2のマスなので恩恵も2マス分の+5%（SBD112）。
 growth.setGrowthPreview(true);core.newGame();const replacement=growth.ensureGrowth();
 Object.assign(replacement,{nodes:["K20"],paid:{K20:{any:1,body:1}},hidane:{any:3,body:4,sense:0,wisdom:0}});
 const replacementBefore=JSON.stringify(replacement),rawBefore=JSON.stringify(core.state.stats);
 core.save();core.load();assert.equal(JSON.stringify(growth.ensureGrowth()),replacementBefore);
-assert.deepEqual(board.NODE_BY_ID.K20.links,["B9"]);assert.equal(effects.boardPerks(["K20","K20"]).charm,4);
+assert.deepEqual(board.NODE_BY_ID.K20.links,["B9"]);assert.equal(effects.boardPerks(["K20","K20"]).charm,5);
 assert.equal(effects.growthSkill(core.state,"K20"),false);assert.equal(JSON.stringify(core.state.stats),rawBefore);
 core.state.growth.nodes=[];stats.gainAffinity("naru",5,{onGain(){}});
 const withoutK20=(core.state.affinity.naru||0)+(core.state.affinityCarry.naru||0);
 core.state.affinity.naru=0;core.state.affinityCarry.naru=0;core.state.growth.nodes=["K20"];
 stats.gainAffinity("naru",5,{onGain(){}});
 const withK20=(core.state.affinity.naru||0)+(core.state.affinityCarry.naru||0);
-assert(Math.abs(withK20-withoutK20-.17)<1e-10,"5ポイントの通常交流へ4%を端数込みで加え、既存の0.85ペースを一度掛ける");
+assert(Math.abs(withK20-withoutK20-.2125)<1e-10,"5ポイントの通常交流へ5%を端数込みで加え、既存の0.85ペースを一度掛ける");
 // 花の授業は異なる二系統と、実際に終えた調整で層を重ねる。
 growth.setGrowthPreview(true);core.newGame();Object.assign(growth.ensureGrowth(),{nodes:["M-B2","M-B3"],learned:["M-B2","M-B3"]});
 const flowerCs={mode:"tournament",chapter:2,mix:{rose:6,lavender:6},careHistory:[]};
@@ -461,8 +475,8 @@ growth.setGrowthPreview(false);
  growth.setGrowthPreview(true); core.newGame(); growth.ensureGrowth();
  const { FEATURES, NOTABLES } = await import("../js/core/growth-board-data.js");
  // 近くの帯の要のマス（B3・S5・W9）は 単位×2×1.5（近くの帯は×2。SBD111）
- const expected = { B3:{charm:3}, B19:{charm:3,stage:.3}, B21:{sleep:9},
-  S5:{dodge:3}, S21:{breath:18}, S25:{breath:27}, W9:{leaf:3}, W14:{tongue:3}, W24:{coal:4.5} };
+ const expected = { B3:{charm:3}, B19:{charm:3.75,stage:.3}, B21:{sleep:9},
+  S5:{dodge:3}, S21:{breath:22.5}, S25:{breath:27}, W9:{leaf:3}, W14:{tongue:3.75}, W24:{coal:4.5} };
  assert.equal(board.NODES.filter(n=>n.notable).length,9);
  for(const [id, perks] of Object.entries(expected)) {
   assert.deepEqual(Object.fromEntries(Object.entries(effects.boardPerks([id])).filter(([,v])=>v!==0)),perks,id);
@@ -483,16 +497,16 @@ growth.setGrowthPreview(false);
   stats:{craftQuality:80},careHistory:[{score:80},{score:80}]});
  const { finalize: score }=await import("../js/craft/score.js");
  core.state.growth.nodes=route;
- assert.equal(bonusOf(cup()).bonus,.6,"B18 keeps its existing score before stage feature");
+ assert.equal(bonusOf(cup()).bonus,.75,"B18 keeps its existing score before stage feature");
  const before=score(cup()).total;
  core.state.growth.nodes=[...route,"B19"];
- assert(Math.abs(bonusOf(cup()).bonus-.9)<1e-9);
+ assert(Math.abs(bonusOf(cup()).bonus-1.05)<1e-9);
  const after=Math.round((before+.3)*10)/10;
  assert.equal(score(cup()).total,after,"B19 alone increases actual final score by 0.3");
- assert(Math.abs(effects.boardPerks(board.NODES.map(n=>n.id)).stage-5.1)<1e-9);
+ assert(Math.abs(effects.boardPerks(board.NODES.map(n=>n.id)).stage-5.55)<1e-9);
  const capped=cup(); capped.holes.score=capped.heat.score=capped.stats.craftQuality=100; capped.careHistory.forEach(c=>c.score=100);
  assert.equal(score(capped).total,100,"B19 does not exceed the score cap");
- assert.equal(effects.boardPerks(["B19"]).charm,3,"keep existing charm instead of replacing it");
+ assert.equal(effects.boardPerks(["B19"]).charm,3.75,"keep existing charm instead of replacing it");
  const once=score(cup()); for(let i=0;i<3;i++)assert.equal(score(once).total,after);
  core.save(); core.load(); assert.equal(score(cup()).total,after,"SAVE/LOAD does not multiply stage bonus");
  core.state.growth.nodes=["B19"];

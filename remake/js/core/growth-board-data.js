@@ -23,7 +23,7 @@ export const HIDANE_NAME = { any: "白火", body: "紅火", sense: "蒼火", wis
  * - 要のマス（notable。各盤3つ: 近く・中ほど・関門の先）: 能力のマス・火種1のまま、名前つきの強化版（NOTABLES）。目的地になる。
  * - 授業は会う章の順に紋から遠い（SBD65）: 第1章＜第2章＜第3章＜第4章。
  * - 帯は3つ: 近く（第1章で開く・関門なし）、中ほど（第2章から・関門なし）、関門の先。
- *   普通のマスの恩恵は 近く×2・中ほど×2・関門の先×3（近くは 2026-11-11 に ×1 → ×2。SBD111）。
+ *   普通のマスの恩恵は 近く×2・中ほど×2.5・台座の先×3（近くは 2026-11-11 に ×1 → ×2。SBD111）。
  * - 関門は4つ。**授業は関門のすぐ隣**（2人目は1マス先）。第2章の関門は紋のそば、あとの章の関門は中ほどの道の先。
  *   関門の先は 授業 → ×3のマス2つ → 強いスキル（火種6か8）。
  * - 紋のそばの授業は第1章で会う人だけ。授業はその人に会うまで盤に出さない。関門は色の火でどこからでも越えられる。
@@ -94,20 +94,20 @@ export const OVERLAPS = [
  */
 export const NOTABLES = {
   friendly: { board: "body", name: "人懐こい", text: "交流した時の好感度が少し上がりやすい（初対面の固定分は除く）", bonus: 1.5 },
-  spotlight: { board: "body", name: "舞台映え", text: "提供の時、審査員の目が集まる", bonus: 1.5 },
+  spotlight: { board: "body", name: "舞台映え", text: "人柄の恩恵（好感度の伸び）が同じ帯の通常マスの1.5倍になる。", bonus: 1.5 },
   ironsleep: { board: "body", name: "不眠の体", text: "眠った時の体力の回復が増える", bonus: 1.5 },
   fire_eye: { board: "sense", name: "火の目", text: "蒸らしで雑念に当たりにくくなる", bonus: 1.5 },
   smoke_breath: { board: "sense", name: "煙の呼吸", text: "リフレッシュの範囲が一回り広い", bonus: 1.5 },
   hairbreadth: { board: "sense", name: "紙一重", text: "リフレッシュで広い範囲の雑念を消せる", bonus: 1.5 },
   leaf_eye: { board: "wisdom", name: "葉の目利き", text: "吸いすぎた時の葉の傷みが小さくなる", bonus: 1.5 },
-  golden_tongue: { board: "wisdom", name: "黄金の舌", text: "黄金比に近いほど舌が教える", bonus: 1.5 },
+  golden_tongue: { board: "wisdom", name: "黄金の舌", text: "舌の恩恵（フレーバー熟練度の伸び）が同じ帯の通常マスの1.5倍になる。", bonus: 1.5 },
   long_coal: { board: "wisdom", name: "長持ちの炭", text: "炭の熱が長く持つ", bonus: 1.5 },
 };
 /**
  * 帯の倍率。近くの帯は 2026-11-11 に ×1 → ×2（オーナーが推奨を採用。SBD111）: 第1章で灯せる9マスの1つ1つ（人柄＋1%・眠り＋2% など）が
  * 遊んでいて分からず、第1章の火種を使い切っても大会の優勝率が ±0〜＋1.6ポイントだった。×2 で最大＋3.2ポイント（上限の＋8以内）。
  */
-export const PERK_TIERS = [null, { mult: 2, name: "近く" }, { mult: 2, name: "中ほど" }, { mult: 3, name: "台座の先" }];
+export const PERK_TIERS = [null, { mult: 2, name: "近く" }, { mult: 2.5, name: "中ほど" }, { mult: 3, name: "台座の先" }];
 /**
  * 色の台座（もとの関門。2026-10-31 オーナー「章のロックに加えて、色の火種しか使えない所も作って欲しい。色火種をはめると進めて、その能力もゲットできる」SBD89）。
  * 色の火（紅火・蒼火・翠火）を1つはめると先へ進めて、その台座の能力が手に入る。台座1つ＝台座の先のマスの約1.3倍。
@@ -194,7 +194,7 @@ export const SKILLS = [
 // 2026-10-30 オーナー: 授業はその人のタイプ（属性）の盤に入る。灯すと「相談できる」になり、次にその人に会った時に
 // はじめが相談して話を聞く場面（scene）を見て習得する。章（ring）はその人に会える章。
 
-/** reward: skill（新しい操作）／special（その人らしい強い効き目）／stat（能力が伸びる。bonus はマスの数） */
+/** reward: skill（新しい操作）／special（その人らしい強い効き目） */
 // 2026-11-01 オーナー指示: 差し入れスキルは廃止。保存済みのID・位置・支払を保って通常マスへ。
 // worth は恩恵の倍率。火種2のマスなので恩恵も2マス分（2026-11-11 SBD112。火種1の通常マスと同じ＋2%で、半分の効率だった）
 export const STAT_UPGRADES = [
@@ -277,11 +277,12 @@ export const LESSONS = [
     hint: "盤の道が届いたら、博士が自慢の機材を見せてくれそう",
     text: "HMDに「博士の試作HMD」を選べる。熱が均一に回り、熱管理のジャスト帯が広がって、炭を替えても熱がぶれにくい", scene: "lesson_dr_charcoal_hmd", grants: ["dr_kemuri_proto_hmd"] },
 ];
-export const REWARD_JA = { skill: "スキル", special: "特殊な技", stat: "能力が伸びる" };
+export const REWARD_JA = { skill: "スキル", special: "特殊な技" };
 
 /** キャラのタイプ（2.7）: ♥5でくれる色つきの火種の色だけを決める */
 export const CHAR_TYPE = {
   minto: "body", adam: "sense", naru: "wisdom",
+  tsumugi: "sense", sumi: "wisdom", noor: "wisdom",
   rio: "sense", hiyori: "body", samechan: "wisdom", mashiro: "body", sheikh: "wisdom", da_silva: "body",
   master_hookah: "sense", // 龍龍水煙所のドバイの店で♥5（DBS05）。授業 M-S7 と同じ感覚盤
   kuraudo: "body", ageha: "sense", kumicho: "wisdom",
@@ -306,7 +307,7 @@ export const PLAY_REWARDS = [
   { id: "axe-master", game: "axe", master: true, label: "斧投げの達人", gift: { any: 1 } },
   { id: "dj-master", game: "dj", master: true, label: "フロアのつなぎ手", gift: { any: 1 } },
   { id: "desert-master", game: "desert", master: true, label: "砂丘の乗り手", gift: { any: 1 } },
-  { id: "trpg-master", game: "trpg", master: true, label: "物語の読み手", gift: { any: 1 } },
+  { id: "trpg-master", game: "trpg", master: true, label: "物語の読み手", gift: { wisdom: 1 } },
   { id: "tetsuko-master", game: "tetsuko", master: true, label: "てつこの友だち", gift: { any: 1 } },
   // ミニゲームの三段階（#3779・core/play-tiers.js）: 上級を初めてクリアしたら白火1つ。各ゲーム一度だけ
   { id: "axe-hard", game: "axe", tier: "hard", label: "斧投げ 上級クリア", gift: { any: 1 } },
@@ -318,7 +319,7 @@ export const PLAY_REWARDS = [
   // TRPG は三段階にしない。サイが立ちはだかる最後の本（data/trpg_catalog.json の finale）を初めてクリアしたら白火1つ（#3779）
   { id: "trpg-finale", game: "trpg", scenario: "mist-kingdom", label: "TRPG 最後の本をクリア", gift: { any: 1 } },
 ];
-/** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに色つきの火種1つ（いちばん伸びの少ない盤の色）。
+/** くじのラストワン賞（中身はシークレット）。全周回で最初に通常の箱を引き切ったときだけ色つきの火種1つ。
  * 第5章の限定台くじ（core/rules.js の KUJI_LIMITED_GRADES・KJ05）は付けない（#2455） */
 export const KUJI_LAST_ONE_GIFT = 1;
 

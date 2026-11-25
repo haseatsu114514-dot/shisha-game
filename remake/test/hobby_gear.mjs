@@ -21,7 +21,7 @@ const { buildCarryPackage } = await import("../js/core/carry.js");
 // 1. 品目: どの店で・何章から・いくら・何が変わるか。
 const { HOBBY_GEAR } = gear;
 assert.deepEqual(Object.keys(HOBBY_GEAR).sort(), ["gear_dice", "gear_hatchet", "gear_hatchet_balanced", "gear_hatchet_precision", "gear_headphones"]);
-const expect = { gear_hatchet: ["axe_bar", 1, 5000], gear_hatchet_balanced: ["axe_bar", 1, 9000], gear_hatchet_precision: ["axe_bar", 1, 15000], gear_dice: ["trpg_bar", 2, 3800], gear_headphones: ["club", 3, 22000] };
+const expect = { gear_hatchet: ["axe_bar", 1, 5000], gear_hatchet_balanced: ["axe_bar", 1, 9000], gear_hatchet_precision: ["axe_bar", 1, 15000], gear_dice: ["trpg_bar", 2, 3800], gear_headphones: ["club", 3, 20000] };
 for (const [id, [venue, chapter, price]] of Object.entries(expect)) {
   const g = HOBBY_GEAR[id];
   assert.deepEqual([g.venue, g.chapterMin, g.price], [venue, chapter, price], id);

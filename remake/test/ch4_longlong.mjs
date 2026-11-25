@@ -60,7 +60,7 @@ assert.deepEqual(longlongRecord(value), { read: {}, talks: 0 }, "壊れた記録
 assert.equal(classifyFlag(LONGLONG_FLAG), "progression");
 assert.equal(flagVerdict(LONGLONG_FLAG), "reset", "周回では持ち越さない");
 
-// ---- 好感度のつり合い: ほかの章のライバルの店と同じ値で、5回通うと♥5（段階 +16、通い +8）-----------------
+// ---- 好感度のつり合い: ほかの章のライバルの店と同じ値で、5回で段階会話を読み、その次の小会話で♥5（段階 +15、小会話 +8）-----------------
 {
   const s = newState();
   Object.assign(s, { chapter: 4, day: 50 });
@@ -75,11 +75,13 @@ assert.equal(flagVerdict(LONGLONG_FLAG), "reset", "周回では持ち越さな�
     gainAffinity(LONGLONG_CHAR, visitAffinity("story"));
     levels.push(affinityLevel(LONGLONG_CHAR));
   }
-  assert.deepEqual(levels, [1, 2, 3, 4, 5], "5回の来店で♥5（ほかの章のライバルと同じ）");
+  assert.deepEqual(levels, [1, 2, 3, 4, 4], "5回で段階会話を読み切る");
+  gainAffinity(LONGLONG_CHAR, visitAffinity("talk"));
+  assert.equal(affinityLevel(LONGLONG_CHAR), 5, "次の小会話で♥5");
   assert(longlongStoriesDone(s));
   assert.equal(pendingAffinityStage(s, LONGLONG_CHAR), null, "段階の会話はすべて済んだ");
   assert.deepEqual(nextLonglongVisit(s, 5), { id: "ch4_longlong_visit_b", kind: "talk" }, "後は通いの小会話");
-  assert.equal(visitAffinity("story"), 16); assert.equal(visitAffinity("talk"), 8);
+  assert.equal(visitAffinity("story"), 15); assert.equal(visitAffinity("talk"), 8);
   const fresh = newState();
   assert.equal(pendingAffinityStage(fresh, LONGLONG_CHAR).scene, "ch4_longlong_first");
 }

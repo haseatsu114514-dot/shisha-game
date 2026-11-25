@@ -37,7 +37,7 @@ export function takeChapterBoardNotice(s) {
 export function chapterBoardCards(notice) {
   if (!notice) return [];
   const cards = [];
-  const where = "灯すのは、静かな場所で振り返った時";
+  const where = "火種を灯す場所　地図のメニュー・内省先";
   if (notice.opened) cards.push(notice.skills.length
     ? { kind: "info", badge: "盤", top: "NEW SKILL", main: `盤に新しいスキルが${notice.skills.length}つ`, sub: notice.skills.map(k => k.name).join("・"), fx: where }
     : { kind: "info", badge: "盤", top: "BOARD", main: "心得の盤の結界が解けた", sub: "新しい道の先まで灯せる", fx: where });

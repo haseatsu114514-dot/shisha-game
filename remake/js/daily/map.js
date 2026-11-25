@@ -10,7 +10,7 @@ import { trainRide } from "../core/scene-motions.js";
 import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 import { state, save, timeOfDay } from "../core/state.js";
-import { growthEnabled, hidaneTotal, readyLessons } from "../core/growth.js";
+import { growthEnabled, hidaneTotal, readyLessons, nextFreshness } from "../core/growth.js";
 import { SE } from "../core/audio.js";
 import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel, hasChapterTwoVisitContinuation } from "./spots.js";
 import { updateHud } from "./hud.js";
@@ -21,6 +21,8 @@ import { portraitInfo } from "../core/data.js";
 import { fortuneToday } from "./fortune.js";
 import { spotVisible, spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
 import { spotPeople } from "./spot-people.js";
+import { rioUnavailable } from "./spot-hours.js";
+import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 import { newlyRevealedSpots, startSpotReveal, spotRevealNotice } from "./map-reveals.js";
 import { createMapFacilityIcon, hasFacilityIcon, FACILITY_SHEET } from "./facility-icons.js";
@@ -73,6 +75,23 @@ const firstFreeDay = () => state.chapter === 1 && state.day <= 2;
 
 let interrupt = null;
 let warmImage = null;
+let lessonMap = null;
+export const activeMapLessons = () => lessonMap?.active() ? lessonMap : null;
+
+function timeTag(s) {
+  if (s.boardOnly) return "盤は時間消費なし";
+  if (s.id === "shop" && s.kind === "shop") return "1階は時間消費なし";
+  return s.noTime || s.reflect || s.kind === "fortune" || s.kind === "shop" ? "時間消費なし" : "";
+}
+function freshnessTag(s) {
+  if (!growthEnabled()) return null;
+  const key = s.freshnessKey || (s.kind === "rival" || s.kind === "samechan" ? s.charId || "samechan"
+    : s.kind === "spot" || s.kind === "axe" ? s.id : null);
+  if (!key) return null;
+  const { count, rate } = nextFreshness(key);
+  const stage = !count ? "はじめて" : rate === 1 ? "通常" : "なじみ";
+  return ["mi-freshness", `${stage}・行動EXP ${Math.round(rate * 100)}%`, "map-freshness"];
+}
 /** ピン地図・街歩きに共通する、未決定の行き先選択状態。 */
 /**
  * その行き先で心得の盤の授業を相談できる相手（SBD141）。相談が始まる処理（calendar.js・ch2-preparation.js・ch5-shops.js・ch5-dubai.js）と同じ人を返す:
@@ -248,6 +267,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
     let revealing = false;
     let stopReveal = () => {};
     const revealNotice = el("div.map-notice.map-unlock-notice", { role: "status" });
+    const mapNotice = el("div.map-notice", { role: "status" });
     let mapShown = false, promptsShown = false;
     const showPrompts = () => {
       if (!mapShown || promptsShown || revealing || state !== owner || root.classList.contains("done")) return;
@@ -402,8 +422,16 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
       // 授業を相談できる店は、その授業の名前を札で添える（SBD141）。入れない日も出す（明日以降に来ればよいと分かる）
       const lessonTag = lessons.length ? ["mi-lesson", `授業の相談「${lessons.map((l) => l.name).join("」「")}」`, "map-lesson"] : null;
       const visitTag = visitHint ? ["mi-visit-hint", visitHint, "map-visit-hint"] : null;
-      const tags = !av.ok ? [av.why && av.why !== "locked" ? ["mi-why", av.why, "map-why"] : null, lessonTag].filter(Boolean)
-        : [s.cost && !freeGuide(s) ? ["mi-cost", `料金 ${yen(s.cost)}`, "map-cost"] : null, visitTag, lessonTag].filter(Boolean);
+      const timing = timeTag(s);
+      const useCost = s.playCost ? ["mi-cost", `プレイ ${yen(s.playCost)}・記録閲覧無料`, "map-cost"]
+        : s.cost && !freeGuide(s) ? ["mi-cost", `料金 ${yen(s.cost)}`, "map-cost"] : null;
+      const tags = av.why === "locked" ? [] : [
+        av.ok ? visitTag : ["mi-why", av.why, "map-why"],
+        av.ok || s.playCost ? useCost : null,
+        timing ? ["mi-time", timing, "map-time-use"] : null,
+        av.ok && !freeGuide(s) ? freshnessTag(s) : null,
+        lessonTag,
+      ].filter(Boolean);
       const tagRow = tags.length ? el("div.mi-tags", tags.map(([cls, text, test]) => el(`span.mi-tag.${cls}`, { text, dataset: { test } }))) : null;
       info.replaceChildren(...[
         el("div.mi-banner", { text: label }),
@@ -521,6 +549,9 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
       pins.replaceChildren();
       const freshPins = [];
       const spots = mapSpots().filter(s => spotVisible(s) && (s.kind !== "fortune" || fortuneToday()));
+      const fortune = guide ? null : spots.find(s => s.kind === "fortune");
+      mapNotice.textContent = [notice, fortune ? `辻占のオババが${fortune.area}に来ている。` : ""].filter(Boolean).join(" ／ ");
+      mapNotice.dataset.test = fortune ? "map-fortune-notice" : "";
       const reveals = newlyRevealedSpots(state, region?.id || "osu", spots.map(s => ({
         id: s.id, revealed: isUnlocked(s) && !(!knowsOwner(s) && s.unknownLabel),
       })));
@@ -537,7 +568,8 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
       const lessons = locked ? [] : spotLessons(s);
       const lessonMark = lessons.length ? el("i.lesson-badge", { text: "相談", dataset: { test: `map-lesson-${s.id}` } }) : null;
       const eventLabel = !locked && eventPin === s.id ? eventPinLabel : "";
-      const status = [eventLabel, av.tag].filter(Boolean).join("・");
+      const timing = locked ? "" : timeTag(s);
+      const status = [eventLabel, av.tag || timing].filter(Boolean).join("・");
       const badge = locked || eventLabel ? null
         : hidane > 0 ? el("i.evt-badge.hidane-badge", { text: String(Math.min(99, hidane)), "aria-label": `火種 ${hidane}・内省で灯せる`, dataset: { test: "kannon-hidane" } })
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
@@ -549,7 +581,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
       const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && s.facilityIcon !== false && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}${closed ? ".closed" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
-        "aria-label": `${pinSpeech(s, locked, caption)}${s.cost && !freeGuide(s) ? `・利用料 ${yen(s.cost)}` : ""}${status ? `（${status}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}${lessons.length ? `・授業「${lessons.map((l) => l.name).join("」「")}」を相談できる` : ""}`,
+        "aria-label": `${pinSpeech(s, locked, caption)}${s.playCost ? `・プレイ ${yen(s.playCost)}・記録閲覧無料` : s.cost && !freeGuide(s) ? `・利用料 ${yen(s.cost)}` : ""}${status ? `（${status}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}${lessons.length ? `・授業「${lessons.map((l) => l.name).join("」「")}」を相談できる` : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
         el("div.pin-visual", [
@@ -584,10 +616,10 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
         pins.append(el("button.spot-pin.pin-station", {
           type: "button", style: { left: `${station.x}%`, top: `${station.y}%` },
           dataset: { test: "station-open", spot: "station" },
-          "aria-label": `駅から電車で街を移動する・どこへでも一律 片道${yen(STATION_FARE)}`,
+          "aria-label": `駅から電車で街を移動する・どこへでも一律 片道${yen(STATION_FARE)}・時間消費なし`,
           onclick: openStation,
         }, [el("div.pin-visual", [el("div.shield", [el("div.ico", [el("span.pin-symbol", { html: TRAIN_ICON_SVG })])])]),
-          el("div.sub-label", { text: `駅・一律${yen(STATION_FARE)}` })]));
+          el("div.sub-label", { text: `駅・一律${yen(STATION_FARE)}` }), el("small.pin-status", { text: "時間消費なし" })]));
       }
       if (typeof requestAnimationFrame === "function") requestAnimationFrame(() => fitMapCrop(pins));
       if (freshPins.length) {
@@ -634,7 +666,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
     const root = el("div.map", { dataset: { night: String(night), rain: String(rainy), destinationSelection: "true" } }, [
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
       pins,
-      notice ? el("div.map-notice", { text: notice }) : null,
+      mapNotice,
       revealNotice, mapStatus,
       guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [
         el("b", { text: "次にやること" }), el("span", { text: guide.text }),
@@ -643,6 +675,44 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
       info,
     ]);
     if (region) root.dataset.region = region.id;
+    const findPin = id => [...pins.children].find(pin => pin.dataset.spot === id);
+    lessonMap = {
+      active: () => state === owner && root.isConnected && !root.classList.contains("done"),
+      visit(who) {
+        const candidates = mapSpots().filter(s => (spotTeachers(s).includes(who) || who === "hiyori" && ["rival", "shop", "samechan"].includes(s.kind)
+          && spotPeople(s, { visitBlock }).some(p => p.id === who)) && spotVisible(s))
+          .map(s => {
+            const av = availability(s);
+            let why = av.ok ? "" : av.why;
+            if (!why && s.kind === "tonari") {
+              if (who === "sumi" && state.visitedDay.tonari_baito === state.day) why = "今日のシフトはもう終わった";
+              if (who === "tsumugi") why = !tsumugiAtTonari(state) ? "つむぎは今は店にいない" : state.visitedDay.tonari_customer === state.day ? "今日はもう客席を利用した" : "";
+            }
+            if (!why && s.id === "shop" && who === "rio") why = rioUnavailable(state);
+            const route = s.kind === "tonari" ? who === "sumi" ? "（シフト後）" : who === "tsumugi" ? "（客席）" : "" : "";
+            return { name: s.label + route, why, focus: () => {
+              const pin = findPin(s.id);
+              const target = mapSpots().find(spot => spot.id === s.id);
+              if (pin && target) { select(target, pin); pin.focus(); }
+            } };
+          });
+        return candidates.find(candidate => !candidate.why) || candidates[0] || null;
+      },
+      refresh() {
+        if (!this.active() || revealing) return;
+        const id = selected?.id;
+        const focused = id && document.activeElement === findPin(id);
+        renderPins();
+        if (!id) return;
+        const spot = mapSpots().find(s => s.id === id);
+        const pin = findPin(id);
+        if (!spot || !pin) { selected = null; idleInfo(); return; }
+        selected = spot;
+        pin.classList.add("sel");
+        renderInfo(spot);
+        if (focused) pin.focus();
+      },
+    };
     renderPins();
     showScreen("map", root);
     recoverBackdrop(initialUrl, initialBackdrop);

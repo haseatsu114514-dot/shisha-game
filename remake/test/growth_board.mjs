@@ -169,9 +169,9 @@ for (const k of board.BOARD_KEYS) {
   // 紋の場所は盤ごとに違う（SBD65）
   assert.equal(new Set(Object.values(board.HUB_AT)).size, 3, "紋の場所は3枚とも違う");
 }
-// 恩恵は帯の倍率（近く×2・中ほど×2・関門の先×3。近くは 2026-11-11 に ×1 → ×2。SBD111）
+// 恩恵は帯の倍率（近く×2・中ほど×2.5・関門の先×3。近くは 2026-11-11 に ×1 → ×2。SBD111）
 {
-  assert.deepEqual(board.PERK_TIERS.slice(1).map((t) => t.mult), [2, 2, 3], "近く×2・中ほど×2・台座の先×3");
+  assert.deepEqual(board.PERK_TIERS.slice(1).map((t) => t.mult), [2, 2.5, 3], "近く×2・中ほど×2.5・台座の先×3");
   // 帯の倍率: 同じ恩恵（要のマスでない）が 近く・中ほど・関門の先 にあれば、1マスの単位にその帯の倍率が掛かる
   const plain = board.boardNodes("body").filter((n) => n.kind === "stat" && !n.peak && !n.notable && !n.worth);
   const sample = plain.find((n) => [1, 2, 3].every((b) => plain.some((m) => m.perk === n.perk && m.band === b)));
@@ -206,8 +206,12 @@ assert.deepEqual([N["M-W2"].ring, N["M-W6"].ring], [2, 2], "スミさんの四�
 // 各スキル・授業は、データの章（届けたい章）までに開く
 for (const item of [...board.SKILLS, ...board.STAT_UPGRADES, ...board.LESSONS]) assert(N[item.id].ring <= (item.ring ?? 1), `${item.id} の章`);
 assert.equal(board.SKILLS.length, 26, "K20は通常マスへ変更（2026-11-01 オーナー指示）。v15（SBD154）でユニークなスキル3つを足して26");
+const bodyCore = new Set(board.boardNodes("body").filter(n => n.kind === "stat" && !n.peak && n.id !== "K20").map(n => n.id));
+assert.equal(board.statCount("body", new Set([...bodyCore, "K20"])), 25);
+assert.equal(board.statsFilled("body", bodyCore), true, "K20は極みの条件に含めない");
+assert.deepEqual(board.BOARD_KEYS.map(board.statTotal), [26, 26, 26]);
 assert.equal(N.K20.kind,"stat");assert.equal(N.K20.perk,"charm");assert.equal(N.K20.cost,2);
-assert.equal(board.perkOf(N.K20).text,"好感度が上がりやすく（＋4%）","火種2のマスは恩恵も2マス分（SBD112）");
+assert.equal(board.perkOf(N.K20).text,"好感度が上がりやすく（＋5%）","火種2のマスは恩恵も2マス分（SBD112）");
 for (const k of board.BOARD_KEYS) {
   const sk = [...board.SKILLS,...board.STAT_UPGRADES].filter((x) => x.board === k);
   assert.equal(sk.reduce((n, x) => n + x.cost, 0), 38, `${k}: スキルの火種は各38（v15 でユニークなスキルの火種2を足した）`);

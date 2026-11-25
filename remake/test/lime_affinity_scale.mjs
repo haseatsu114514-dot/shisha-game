@@ -14,7 +14,7 @@ test('盤なしでは従来の整数丸め・LIME倍率・端数と、会った�
   const statApi = await import('../js/core/stats.js');
   const growthApi = await import('../js/core/growth.js');
   growthApi.setGrowthPreview(false);
-  assert.equal(statApi.LIME_AFFINITY_SCALE,.25); assert.equal(statApi.AFFINITY_PACE,.85);
+  assert.equal(statApi.LIME_AFFINITY_SCALE,.75); assert.equal(statApi.AFFINITY_PACE,.85);
   for (const raw of [0,10,11,50,99,100]) for (const source of ['lime','ordinary']) for (const fortune of [false,true]) {
     const s = stateApi.newGame(); s.stats.charm=raw;
     if (fortune) s.fortune={char:'adam'};
@@ -23,7 +23,7 @@ test('盤なしでは従来の整数丸め・LIME倍率・端数と、会った�
     for (let i=0;i<24;i++) {
       // 占いは会ったとき（LIME以外）だけ ×FORTUNE_AFFINITY_MULT。LIMEでは倍にせず消費もしない（台帳 URA07）
       const points=1+i%3, multiplier=(1+.2*tier)*(fortune&&i===0&&source!=='lime'?statApi.FORTUNE_AFFINITY_MULT:1);
-      expected+=Math.round(points*multiplier)*.85*(source==='lime'?.25:1);
+      expected+=Math.round(points*multiplier)*.85*(source==='lime'?.75:1);
       statApi.gainAffinity('adam',points,source==='lime'?{source:'lime',onGain(){}}:{});
       const actual=(s.affinity.adam||0)+(s.affinityCarry.adam||0);
       assert(Math.abs(actual-expected)<1e-9,`${raw}/${source}/${fortune}/${i}: ${actual} vs ${expected}`);

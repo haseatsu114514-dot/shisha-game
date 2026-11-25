@@ -95,22 +95,22 @@ const spot = fields => Object.freeze({ region: TOKYO, kind: "ch3_tokyo", ...fiel
 const visitBg = { mukai: "bg_mukai_shop", enmaku: "bg_yohaku_shop", steve: "bg_steve_shop", volk: "bg_volk_shop", park: "bg_tokyo_park" };
 export const CH3_TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch3_tokyo_mukai", place: "mukai", label: "mukai", area: "高架下の商店街", x: 29.6, y: 62.7, theme: "baito", glyph: "店",
-    face: "mukai_master", preview: "bg_mukai_shop", desc: "働かせてもらっている店。手伝い、ましろちゃんとの時間、作業台。帰りに裏口のてつこにも会える。" }),
+    face: "mukai_master", teacher: "mashiro", preview: "bg_mukai_shop", desc: "働かせてもらっている店。手伝い、ましろちゃんとの時間、作業台。帰りに裏口のてつこにも会える。" }),
   spot({ id: "ch3_tokyo_enmaku", place: "enmaku", label: "煙幕", area: "綾取の店", x: 45.3, y: 49.7, theme: "rival", glyph: "煙",
-    face: "ayatori", preview: "bg_yohaku_shop", fee: TOKYO_VISIT_COST, desc: "綾取の店。お茶と、ノートの続き。", met: "ayatori" }),
+    face: "ayatori", teacher: "ayatori", freshnessKey: "ayatori", preview: "bg_yohaku_shop", fee: TOKYO_VISIT_COST, desc: "綾取の店。お茶と、ノートの続き。", met: "ayatori" }),
   spot({ id: "ch3_tokyo_steve", place: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙",
-    face: "steve", preview: "bg_steve_shop", fee: TOKYO_VISIT_COST, desc: "タイマーの並ぶ店。", met: "steve" }),
+    face: "steve", teacher: "steve", freshnessKey: "steve", preview: "bg_steve_shop", fee: TOKYO_VISIT_COST, desc: "タイマーの並ぶ店。", met: "steve" }),
   spot({ id: "ch3_tokyo_volk", place: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙",
-    face: "volk", preview: "bg_volk_shop", fee: TOKYO_VISIT_COST, desc: "熱と部屋を測る店。", met: "volk" }),
+    face: "volk", teacher: "volk", freshnessKey: "volk", preview: "bg_volk_shop", fee: TOKYO_VISIT_COST, desc: "熱と部屋を測る店。", met: "volk" }),
   spot({ id: "ch3_tokyo_park", place: "park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園",
     preview: "bg_tokyo_park", stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   spot({ id: "ch3_tokyo_shop", place: "shop", label: "Dr.fookah 東京店", area: "駅前の店", x: 15, y: 51, theme: "shop", glyph: "卸",
-    preview: "bg_fookah_tokyo", desc: "東京の店。葉を買える（時間は使わない）。" }),
+    preview: "bg_fookah_tokyo", noTime: true, desc: "東京の店。葉を買える（時間は使わない）。" }),
   spot({ id: "ch3_tokyo_gym", place: "gym", label: "CHOI-ZAP", area: "高架下のジム", x: 34.9, y: 75.9, theme: "gym", glyph: "体",
     preview: "bg_choizap", stamina: -8, stat: "charm", gym: true, desc: "全国の店で使える会員証で、体を動かす。" }),
   // 心得の盤の内省。公園の池に浮かぶお堂（IR26・SBD98）。id は仮置きの「路地裏の神社」の時のまま（互換）
   spot({ id: "ch3_tokyo_shrine", place: "shrine", label: "池の弁天堂", area: "公園の池", x: 91, y: 73, theme: "rest", glyph: "弁",
-    preview: "bg_tokyo_benten", desc: "池に浮かぶ小さなお堂。学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
+    preview: "bg_tokyo_benten", noTime: true, desc: "池に浮かぶ小さなお堂。学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
   // 店名は入口で知る（DJS12）。店主の針間ヨルに会うまでは「地下の店」と出す（daily/map.js の charId・unknownLabel）。
   spot({ id: "ch3_tokyo_club", place: "club", label: "クラブSEAM", area: "路地の地下", x: 86, y: 50, theme: "stadium", glyph: "♪",
     charId: "yoru", unknownLabel: "地下の店", unknownDesc: "地下から低い音がする。のぞいてみる（時間は使わない）。",
@@ -136,8 +136,7 @@ const outingsAt = place => chapterThreeOutingCandidates(state).filter(outing => 
 const mashiroMilestoneDue = () => loverMilestonesDue(["mashiro"]).length > 0;
 const mukaiBondDue = () => mashiroMilestoneDue() || questionVisitDue("mashiro") || finaleAtVisit("mashiro");
 /** その場所の人の♥5後の場面（物語の5本）がまだ残っているか（#3693。短い汎用は新着にしない）。 */
-const bondAfterStoryAt = place => bondAfterNext(state, place === "mukai" ? "mashiro"
-  : TOKYO_TEACHERS[place] || null)?.kind === "story";
+const bondAfterStoryAt = place => bondAfterNext(state, CH3_TOKYO_SPOTS.find(entry => entry.place === place)?.teacher)?.kind === "story";
 
 const ROAMER_TOKYO_SPOTS = () => state.chapter === 3 ? chapterThreeTokyoSpots() : [];
 
@@ -475,15 +474,14 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
   }
   if (entry.place === "park") return goOuting(outingById("park_walk"), staminaGuard, owner);
   if (entry.place === "gym") return goGym(entry, staminaGuard, owner);
-  if (entry.place === "mukai") return withLesson(await visitMukai(io, staminaGuard, owner), "mashiro", owner);
-  return withLesson(await visitRivalShop(entry, io, staminaGuard, owner), TOKYO_TEACHERS[entry.place], owner);
+  if (entry.place === "mukai") return withLesson(await visitMukai(io, staminaGuard, owner), entry.teacher, owner);
+  return withLesson(await visitRivalShop(entry, io, staminaGuard, owner), entry.teacher, owner);
 }
 
 /**
  * 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があればその人に相談して話を聞く。
  * 日常ループ（版3）でも旧行程と同じ相手に相談できるようにする（2026-11-02）。訪問を終えた時だけ。
  */
-const TOKYO_TEACHERS = Object.freeze({ enmaku: "ayatori", steve: "steve", volk: "volk" });
 async function withLesson(result, who, owner) {
   if (who && result?.used && state === owner) await keepDailyHud(() => consultLessons(who));
   return result;
@@ -554,7 +552,7 @@ const rivalFinaleAt = place => RIVAL_FINALES[place] && finaleAtVisit(RIVAL_FINAL
 
 /**
  * 煙幕・Smoke & Glory・鉄の煙: 寄り道があればそれ、無ければその店の外出（#1655）。
- * 東京のシーシャ屋は一台4,000円（TOKYO_VISIT_COST）。読み終えた時だけ払う。本筋の場面（日程の枠で読む）は払わない。
+ * 東京のシーシャ屋の料金は TOKYO_VISIT_COST。読み終えた時だけ払う。本筋の場面（日程の枠で読む）は払わない。
  * 締めくくり（♥5）が来ていれば、その店主の「〜に呼ばれる」を先頭に出す（客の一台ではないので払わない）。
  */
 async function visitRivalShop(entry, io, staminaGuard, owner) {

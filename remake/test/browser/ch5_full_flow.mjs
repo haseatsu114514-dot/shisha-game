@@ -497,7 +497,7 @@ await suite("ch5-full-flow", async check => {
     await go(page, "ch5_tokyo_steve");
     await tokyoMap(52, 1);
     state = await get(page);
-    assert.equal(state.money, 60000 - 4000, "A Tokyo shisha shop is 4,000 yen (TKP01)");
+    assert.equal(state.money, 60000 - 3500, "A Tokyo shisha shop is 3,500 yen");
     assert.equal(state.flags._ch5_tokyo_talks?.ch5_tokyo_steve, 1);
     // 夜は路地の地下のクラブも出る。店主の針間ヨルに会うまでは名前を伏せた「地下の店」。
     const club = page.locator(dt("pin-ch5_tokyo_club"));
@@ -517,7 +517,7 @@ await suite("ch5-full-flow", async check => {
     state = await get(page);
     assert.equal(state.flags._ch2_region, "home");
     assert.equal(state.visitedDay?.ch5_tokyo_home, 53, "The van home used the whole day 53");
-    assert.equal(state.money, 60000 - 4000, "The van home is free too");
+    assert.equal(state.money, 60000 - 3500, "The van home is free too");
     assert.equal(state.flags._ch5.part, "free", "The Tokyo stay does not move the Chapter 5 story");
   });
 

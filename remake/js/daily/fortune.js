@@ -2,7 +2,7 @@
 // 章ごとに1〜2回、予定と重ならない昼か夜に、街のどこかへふらっと現れる（判定は fortune-schedule.js）。
 // 第1章だけ、つむぎの噂を聞いた後。第3・5章は東京にも現れる（理由は語らない）。ドバイには出ない。
 // 深いローブの老婆のタロット占い。相性占い3,000円・時間は使わない・現れた1回につき1度。
-// 指名した相手と「次に会ったとき」だけ好感度の伸びが2倍（一度きり。stats.js の gainAffinity で消費）
+// 指名した相手と「次に会ったとき」だけ好感度の伸びが1.5倍（一度きり。stats.js の gainAffinity で消費）
 import { DB, displayName } from "../core/data.js";
 import { state, markMet, save } from "../core/state.js";
 import { addMoney } from "../core/stats.js";

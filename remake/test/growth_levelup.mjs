@@ -197,11 +197,11 @@ const night = claim();
 assert.deepEqual(night.map((x) => x.label), ["斧投げで Aランク", "TRPGで★3の卓", "くじのラストワン賞"]);
 assert.deepEqual(night[0].parts, [{ kind: "body", n: 1 }], "斧投げAで才1（小さめ。SBD39）");
 assert.deepEqual(night[1].parts, [{ kind: "wisdom", n: 1 }], "TRPG★3で理1");
-assert.deepEqual(night[2].parts, [{ kind: "body", n: 1 }], "ラストワン賞は1つ。段が同じなら才能盤の色");
-assert.equal(g.hidane.sense - held.sense + g.hidane.body - held.body + g.hidane.wisdom - held.wisdom, 3, "ラストワン賞は1つだけ（いちばん段の低い盤の色）");
+assert.deepEqual(night[2].parts, [{ kind: "sense", n: 1 }], "ラストワン賞は1つ。配布の少ない色に回す");
+assert.equal(g.hidane.sense - held.sense + g.hidane.body - held.body + g.hidane.wisdom - held.wisdom, 3, "ラストワン賞は1つだけ（配布の少ない色）");
 assert.deepEqual(claim(), [], "同じ水準・同じ箱では二度もらえない");
 core.state.kuji.g500.emptyDay = 9;
-assert.deepEqual(claim().map((x) => x.label), ["くじのラストワン賞"], "次の箱を引き切ればまたもらえる");
+assert.deepEqual(claim(), [], "補充された箱を引き切ってもラストワン賞の火種は一度だけ");
 // 行かなくなった街の店の箱は空のまま残る（くじは店ごとに1種類・KJ11）。章が変わっても同じ箱では二度もらえない
 core.state.chapter += 1;
 assert.equal(claim().some((x) => x.label === "くじのラストワン賞"), false, "章が変わっても、同じ箱では二度もらえない");
@@ -209,8 +209,8 @@ core.state.chapter -= 1;
 core.state.cycle = 2;
 assert.deepEqual(claim(), [], "持ち越した空箱は次の周回でも二重に受け取れない");
 core.state.kuji.g500 = { order: [0, 0], drawn: 2, emptyDay: 9, emptyCycle: 2 };
-assert.deepEqual(claim().map((x) => x.label), ["くじのラストワン賞"], "新しい周回で同じ日に引き切った箱も受け取れる");
-assert.deepEqual(claim(), [], "周回内では一度だけ受け取る");
+assert.deepEqual(claim(), [], "新しい周回で引き切っても、ラストワン賞は成長台帳につき一度だけ（D-19。PR #4192 の周回ごとの付与より判断分を優先）");
+assert.deepEqual(claim(), [], "受け取り済みの台帳では二度目は出ない");
 g.rewards["kuji:g500:2:12"] = true;
 core.state.kuji.g500 = { order: [0, 0], drawn: 2, emptyDay: 12 };
 assert.deepEqual(claim(), [], "周回未記録の旧空箱も二重に受け取れない");
@@ -218,6 +218,25 @@ core.state.cycle = 1;
 core.state.flags._axe_bar_records = { classic: { plays: 9, best: { total: 85, maximum: 100 } } };
 assert.deepEqual(claim(), [], "斧投げのご褒美は Aランクの1回だけ");
 delete core.state.flags._axe_bar_records; core.state.trpg.cleared = {}; core.state.kuji = {};
+
+// 旧セーブの配布量に支払い済みも含める。色を支払っても枠は復活せず、あふれた贈り物は白火になる。
+{
+  const owner = core.state;
+  const v = core.newGame();
+  const stock = growth.ensureGrowth();
+  delete stock.colorIssued;
+  stock.hidane.body = 4;
+  stock.paid.B1 = { body: 1 };
+  growth.ensureGrowth();
+  assert.equal(stock.colorIssued.body, growth.COLOR_LIMIT);
+  stock.hidane.body -= 1;
+  v.affinity.minto = 66;
+  assert.deepEqual(growth.giftAtMaxHeart("minto"), [{ kind: "any", n: 2 }]);
+  assert.equal(stock.colorIssued.body, growth.COLOR_LIMIT);
+  const carry = await import("../js/core/carry.js");
+  assert.equal(carry.buildCarryPackage(v).growth.colorIssued.body, growth.COLOR_LIMIT);
+  core.setState(owner);
+}
 
 // ゲージ（6.1a）
 const gauge = growth.gaugeAt(12, growth.totalExpFor(12) + 130, growth.totalExpFor(12) + 200);
@@ -234,7 +253,7 @@ assert.equal(growth.gaugeAt(80, 0, 0).max, false);
 // 保存・読込・壊れた値
 core.save(); core.load();
 assert.equal(core.state.growth.level, 10);
-assert.equal(core.state.growth.hidane.sense, 1, "節目の色の火1つ");
+assert.equal(core.state.growth.hidane.sense, 2, "節目とラストワン賞の蒼火を保持");
 assert.equal(core.state.growth.gifted.minto, true);
 core.state.growth = { level: 99, xp: -5, hidane: "x", milestones: [3, 10], firsts: null };
 const fixed = growth.ensureGrowth();

@@ -301,8 +301,8 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(result.noContact, false, "Only after exchanging LIME with Mukai");
   });
 
-  // TKP01: 東京のシーシャ屋は一台4,000円。寄り道・通いを読み終えた時だけ払い、足りなければ入れない（行動も使わない）。
-  await check("tokyo-shisha-shops-cost-four-thousand-yen", async page => {
+  // TKP01: 東京のシーシャ屋は一台3,500円。寄り道・通いを読み終えた時だけ払い、足りなければ入れない（行動も使わない）。
+  await check("tokyo-shisha-shops-cost-3500-yen", async page => {
     await seed(page);
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js");
@@ -312,29 +312,29 @@ await suite("ch3-tokyo-daily", async check => {
       value.day = intro.startDay + 12; value.slot = 0; value.phase = "daily";
       Object.assign(value.met, { ayatori: true, steve: true, volk: true, mashiro: true, mukai_master: true });
       value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
-      value.money = 3999;
+      value.money = 3499;
       core.save();
     });
     await loadSlot(page, 0);
     await tokyoMap(page, { day: 44, slot: 1 });
     await page.locator(dt("pin-ch3_tokyo_enmaku")).click();
     await page.locator('.map-info[aria-label*="お金が足りない"]').waitFor();
-    assert.equal(await page.locator(dt("map-go")).count(), 0, "Without 4,000 yen Ayatori's shop can't be entered");
+    assert.equal(await page.locator(dt("map-go")).count(), 0, "Without 3,500 yen Ayatori's shop can't be entered");
     let state = await get(page);
     assert.equal(state.slot, 1);
-    assert.equal(state.money, 3999);
+    assert.equal(state.money, 3499);
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.state.money = 10000; });
     await page.locator(dt("pin-ch3_tokyo_mukai")).click();
     await page.locator(dt("pin-ch3_tokyo_enmaku")).click();
     // 料金はピンではなく、右下のプレビューの札で見る（MAP05）。
-    await page.locator(dt("map-cost"), { hasText: "4,000" }).waitFor();
+    await page.locator(dt("map-cost"), { hasText: "3,500" }).waitFor();
     await page.locator(dt("map-go")).click();
     const pick = page.locator(dt("tokyo-enmaku-0"));
     await pick.or(page.locator(".vn")).first().waitFor();
     if (await pick.count()) await pick.click();
-    await page.waitForFunction(() => window.__remake?.state?.money === 6000, null, { timeout: 60000 });
+    await page.waitForFunction(() => window.__remake?.state?.money === 6500, null, { timeout: 60000 });
     state = await get(page);
-    assert.equal(state.money, 6000, "One visit to Ayatori's shop in Tokyo is 4,000 yen");
+    assert.equal(state.money, 6500, "One visit to Ayatori's shop in Tokyo is 3,500 yen");
   });
 
   // IR22: 綾取の締めくくり（♥5・LIME交換の寄り道と「答えを返しに行く」の後）を、日常ループの煙幕の来店から読める。
@@ -397,7 +397,7 @@ await suite("ch3-tokyo-daily", async check => {
     await finale.waitFor();
     assert.equal((await finale.innerText()).trim(), "スティーブに呼ばれる", "the finale comes first at Smoke & Glory");
     await page.locator(dt("tokyo-visit-cancel")).click();
-    // 締めくくりは代金がかからないので、4,000円に足りない日でも利用料なしで入って呼ばれる（客の一台の外出は出さない）。
+    // 締めくくりは代金がかからないので、3,500円に足りない日でも利用料なしで入って呼ばれる（客の一台の外出は出さない）。
     await tokyoMap(page, { day: 44, slot: 1 });
     await page.evaluate(() => { window.__remake.state.money = 1000; });
     await page.locator(dt("pin-ch3_tokyo_mukai")).click();
@@ -418,7 +418,7 @@ await suite("ch3-tokyo-daily", async check => {
   });
 
   // #2028: ヴォルクの締めくくり（♥5・鉄の煙の再訪三つとLIME交換の後）も、日常ループの鉄の煙の来店から読める。
-  // 寄り道を読み終えた後も、締めくくりが来ていれば地図に鉄の煙が出る。代金は払わず（4,000円に足りなくても入れる）、行動を一つ使う。
+  // 寄り道を読み終えた後も、締めくくりが来ていれば地図に鉄の煙が出る。代金は払わず（3,500円に足りなくても入れる）、行動を一つ使う。
   await check("volk-heart5-finale-is-reached-from-iron-smoke-on-the-daily-loop", async page => {
     await seed(page);
     const before = await page.evaluate(async () => {

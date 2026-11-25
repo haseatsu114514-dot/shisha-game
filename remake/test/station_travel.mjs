@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
 import vm from "node:vm";
+import { AXE_BAR } from "../js/daily/axe-bar-data.js";
 const rootPath = path.resolve(new URL("../js/", import.meta.url).pathname);
 class Element {
   constructor(spec = "div", attrs = {}, children = []) {
@@ -35,7 +36,7 @@ class Element {
 const screen = new Element(), storage = new Map();
 const noop = () => {}, yes = () => true;
 let backgrounds = 0, transitionRelease = null;
-let rides = 0, lastRide = null;
+let rides = 0, lastRide = null, fortuneVisible = false;
 const toasts = [];
 const document = { hidden: false, body: new Element("body"), querySelector: s => screen.querySelector(s), getElementById: () => null };
 const context = vm.createContext({ console, document, setTimeout, clearTimeout, localStorage: {
@@ -43,7 +44,7 @@ const context = vm.createContext({ console, document, setTimeout, clearTimeout, 
   removeItem: () => { throw Error("existing saves must not be deleted"); },
 } });
 const mocks = {
-  "core/growth.js": { growthEnabled: () => false, hidaneTotal: () => 0, readyLessons: () => [] },
+  "core/growth.js": { growthEnabled: () => false, hidaneTotal: () => 0, readyLessons: () => [], nextFreshness: () => ({ count: 0, rate: 1 }) },
   "core/scene-motions.js": { trainRide: async (mid, opts) => { rides++; lastRide = opts; await mid(); } },
   "core/util.js": { el: (...a) => new Element(...a), yen: n => `${n}円` },
   "core/data.js": { bgUrl: x => x, sceneBg: () => ({}), faceIconUrl: noop, displayName: noop, portraitInfo: noop },
@@ -57,9 +58,9 @@ const mocks = {
   "daily/spots.js": { allSpots: () => [], SPOT_PREVIEW: {}, isUnlocked: yes, hasNewEvent: noop, spotDetailLabel: s => s.label,
     hasChapterTwoVisitContinuation: () => false },
   "daily/hud.js": { updateHud: noop }, "daily/home-rig.js": { homeRig: noop }, "daily/reel.js": { mountReel: noop },
-  "daily/weather.js": { isRainy: noop, tomorrowForecast: () => null }, "daily/fortune.js": { fortuneToday: noop },
+  "daily/weather.js": { isRainy: noop, tomorrowForecast: () => null }, "daily/fortune.js": { fortuneToday: () => fortuneVisible },
   "daily/spot-access.js": { spotVisible: yes, spotAvailability: () => ({ ok: true }), freeGuide: noop },
-  "daily/spot-hours.js": { spotTimeNote: noop },
+  "daily/spot-hours.js": { spotTimeNote: noop, rioUnavailable: noop },
   "daily/spot-people.js": { spotPeople: () => [] }, "core/store-logos.js": { hasStoreLogo: noop, storeLogo: noop },
   "daily/map-reveals.js": { newlyRevealedSpots: () => [], startSpotReveal: noop, spotRevealNotice: noop },
   "daily/facility-icons.js": { createMapFacilityIcon: noop, hasFacilityIcon: noop, FACILITY_SHEET: "fixture" },
@@ -91,6 +92,28 @@ const open = async () => {
   assert.ok(button("station-open")); return { pending };
 };
 const choose = () => { button("station-open").click(); button("station-destination-widehanga").click(); };
+await test("map previews identify the axe fee, free time and the active fortune location", async () => {
+  fresh();
+  fortuneVisible = true;
+  regions[0].spots = [
+    AXE_BAR,
+    { id: "fortune", kind: "fortune", label: "路上占い", area: "古町の路地", theme: "park", x: 20, y: 40 },
+    { id: "shop", kind: "shop", label: "Dr.fookah", theme: "shop", x: 60, y: 40 },
+  ];
+  const { pending } = await open();
+  assert.match(button("map-fortune-notice").textContent, /古町の路地/);
+  button("pin-axe_bar").click();
+  assert.match(button("map-cost").textContent, /3000円.*記録閲覧無料/);
+  button("pin-shop").click();
+  assert.equal(button("map-time-use").textContent, "1階は時間消費なし");
+  button("pin-fortune").click();
+  assert.equal(button("map-time-use").textContent, "時間消費なし");
+  map.interruptMap("__lime__");
+  await pending;
+  screen.replaceChildren();
+  regions[0].spots = [];
+  fortuneVisible = false;
+});
 await test("chapter1, first-day and unreleased cities blocked", () => {
   const s = fresh(); s.chapter = 1; assert.equal(travel.stationDestinations(s, regions).length, 0);
   s.chapter = 2; delete s.flags._ch2_preparation_started; assert.equal(travel.prepareStationTrip(s, regions, "widehanga"), null);

@@ -42,7 +42,7 @@ await suite("growth-chapter-notice", async check => {
     const reminder = map.locator('[data-test="map-reminder"]');
     await reminder.waitFor();
     assert.equal(await reminder.textContent(), "心得の盤の組み直しは、最初の行動まで");
-    assert.equal(await map.locator(".map-notice:not(.map-unlock-notice)").count(), 0, "上の帯は使わない");
+    assert.equal(await map.locator(".map-notice:not(.map-unlock-notice):not([data-test=\"map-fortune-notice\"]):not(:empty)").count(), 0, "上の帯は使わない");
     // 案内の枠からはみ出さない
     const fits = await reminder.evaluate(n => { const a = n.getBoundingClientRect(), b = n.closest(".map-info").getBoundingClientRect(); return a.left >= b.left - 1 && a.right <= b.right + 1 && a.bottom <= b.bottom + 1; });
     assert(fits, "組み直しの一言が右下の案内に収まる");
