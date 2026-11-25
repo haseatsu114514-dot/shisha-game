@@ -527,7 +527,7 @@ await suite("desert-ride", async check => {
     assert(captions.some(text => /空中で「左へ」か「右へ」を押し続けて/.test(text)), `the lesson teaches the spin (${captions.join(" / ")})`);
     assert(captions.some(text => /ゲージが目印まで溜まったね。「BOOST」で一気に加速/.test(text)), `the lesson explains stocked boost (${captions.join(" / ")})`);
     // 2026-11-25: 壁の後にカーブ（切り込み）と砂流れの段。ヌールが話す
-    assert(captions.some(text => /「左へ」で曲がる向きへ切り込んで/.test(text)), `the lesson teaches carving (${captions.join(" / ")})`);
+    assert(captions.some(text => /矢印の向きに「左へ」を押して、切り込んで/.test(text)), `the lesson teaches carving (${captions.join(" / ")})`);
     assert(captions.some(text => /砂が流れてる所があるでしょ/.test(text)) && captions.some(text => /砂が運んでくれるの/.test(text)), `the lesson rides a sand flow (${captions.join(" / ")})`);
     assert.match(await page.locator(t("desert-practiced")).innerText(), /練習おわり/);
     await page.locator(t("desert-start")).tap();
@@ -710,6 +710,10 @@ await suite("desert-ride", async check => {
     await page.waitForFunction(() => document.querySelector('[data-test="desert-gauge"]').dataset.gain === "on", null, { timeout: 5000 });
     await page.waitForFunction(() => { const g = window.__desertRide.game; if (Math.abs(g.x) > 0.6) { g.x = 0; g.vx = 0; } return g.stats.carves >= 1; });
     const carved = await ride(page, () => { const g = window.__desertRide.game; window.__desertRide.setInput(false, false); return { gauge: g.gauge, event: g.events.some(e => e.kind === "carve" && e.points > 0), falls: g.falls }; });
+    // カービングの演出（2026-11-25）: 切り込むほど熱が上がり、刻みごとに上がっていく音と金の輪
+    const carveFx = await ride(page, () => ({ heat: window.__desertRide.fx.carveHeat, chain: window.__desertRide.fx.carveChain, cues: window.__desertRide.soundLevels().cues }));
+    assert(carveFx.heat > 0.2, `carving heats up the effects (${carveFx.heat})`);
+    assert(carveFx.chain >= 1 && carveFx.cues.includes("carve"), `each carve tick chimes (${carveFx.cues.join(",")})`);
     assert(carved.event && carved.gauge > 0.05, `carving charges the gauge (${carved.gauge})`);
     // 一度切り込めたら、もう矢印は出ない
     await ride(page, () => { const g = window.__desertRide.game; g.x = 0; g.vx = 0; });

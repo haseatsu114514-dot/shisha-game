@@ -1493,4 +1493,18 @@ test("practice ends with a left bend to carve and a sand flow to ride, after the
     const game = play(course, skill);
     assert(game.stats.carves >= 1 && game.stats.flows === 1, `${skill}: the lesson's bend and flow can be done (${game.stats.carves} carves, ${game.stats.flows} flows)`);
   }
+  // 人の切り込み方（内へ寄りすぎたら離す）でも、カーブの間に2回以上刻める（ヌールの「ブーストが貯まる」「砂しぶきが高く」まで話せる）
+  for (const speed of [SPEED.max, SPEED.boost]) {
+    const game = createGame(course);
+    game.z = PRACTICE_CURVE.from - 30; game.x = 0.3; game.speed = speed;
+    while (game.z < PRACTICE_CURVE.to) step(game, { left: game.z > PRACTICE_CURVE.from - 20 && game.x > -0.55 }, DT);
+    assert(game.stats.carves >= 2 && game.stats.edgeTime === 0, `pressing and easing off carves at least twice in the bend (${game.stats.carves} at ${speed})`);
+  }
+});
+
+test("carving ticks are short so a bend that is carved by pressing and easing off still ticks (2026-11-25)", () => {
+  assert.equal(CARVE.points / CARVE.tickSec, 37.5, "the points per carved second are unchanged (30 per 0.8 s before)");
+  assert(CARVE.tickSec <= 0.4, "a tick every 0.4 s of carving");
+  // 本番の4本で、着地を決める滑りのボットもカーブで何度も刻む
+  for (const pack of COURSE_PACKS) assert(play(buildCourse({ id: pack.id }), "perfect").stats.carves >= 4, `${pack.id}: carving ticks show up in a run`);
 });

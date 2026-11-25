@@ -7,8 +7,8 @@
 import { TIERS } from "../core/play-tiers.js";
 
 // 2026-11-13 オーナー「もっとコースを複雑にしたり少し長くしたい」で 1,700 → 2,000m（1本 約50秒 → 約55〜58秒）。
-// 練習は 2026-11-25 に、壁の後へカーブ（切り込み）と砂流れの段を足して 800 → 1,100m。
-export const COURSE = Object.freeze({ length: 2000, practiceLength: 1100, laneHalf: 1 });
+// 練習は 2026-11-25 に、壁の後へカーブ（切り込み）と砂流れの段を足して 800 → 1,100m、同日カーブを長くして（切り込みを3段で説明）1,250m。
+export const COURSE = Object.freeze({ length: 2000, practiceLength: 1250, laneHalf: 1 });
 // コースの山と平地（2026-11-13 オーナー「手応えレビューの内容を実装して、より面白く」。docs/spec/desert_ride.md「山と平地」）:
 // firstBump: 最初の要素は岩の無い起伏（走り出して約5秒で最初の「跳ぶ」）。start: 乱数の配置が始まる距離。
 // gapFrom→gapTo: 要素の間隔（進むほど詰まる）。
@@ -41,7 +41,9 @@ export const FALL = Object.freeze({ recover: 1.1, points: -150 });
 export const STEER = Object.freeze({ accel: 4.6, damping: 4.0, curveDrift: 1 });
 // カービング: カーブ（|c| >= minCurve）の地上で、曲がる向きへ切り込んでいる間だけブーストのゲージが貯まり、tickSec ごとに少し得点。
 // 端の深い砂・空中・転倒中は貯まらない。押し込みの強さ（スティックの倒し量）に比例する。
-export const CARVE = Object.freeze({ minCurve: 0.4, gaugePerSec: 0.1, tickSec: 0.8, points: 30 });
+// 2026-11-25 オーナー「カービングに演出を入れたい」: 刻みを 0.8秒・30点 → 0.4秒・15点に細かくした（得点の速さは同じ）。切り込みは内へ寄りすぎないよう
+// 押したり離したりするので、1つのカーブで切り込んでいるのは合わせて1秒前後。0.8秒刻みでは1回も刻まずに終わることが多く、刻みごとの音・輪・「+15」が出なかった
+export const CARVE = Object.freeze({ minCurve: 0.4, gaugePerSec: 0.1, tickSec: 0.4, points: 15 });
 // 砂流れ（2026-11-25 オーナー「サンドボードで通ると加速するゾーンをたまに入れたい。砂流れみたいな見た目にしつつ」）:
 // 斜面を砂が川のように流れ落ちている細い帯（course.flows）。地上で帯の上にいる間は、通常の最高速（SPEED.max）を超えて cap まで accel で加速する
 // （ブーストより遅く、ゲージも使わない）。出ると、ブーストの後と同じ overDecay で通常の最高速へ戻る。空中・転倒中・端の深い砂では効かない。
@@ -303,8 +305,10 @@ export function placeFlows(features, length) {
  * カーブ（PRACTICE_CURVE）は岩の無い左曲がり。砂流れ（PRACTICE_FLOW）はその先の真ん中。どちらも、ヌールの説明を読んでから入れる距離を空ける。
  */
 export const PRACTICE_WALL = 720;
-export const PRACTICE_CURVE = Object.freeze({ from: 820, to: 900, c: -0.85 });
-export const PRACTICE_FLOW = 970;
+// カーブは約6秒（ヌールの説明3つを読める長さ。押したり離したりで切り込むと「+15」が2〜4回）。
+// 2026-11-25 オーナー「カービングに演出を入れたい。チュートリアルでも触れて欲しい」で 80m → 200m
+export const PRACTICE_CURVE = Object.freeze({ from: 820, to: 1020, c: -0.85 });
+export const PRACTICE_FLOW = 1100;
 const PRACTICE_WALL_X = Object.freeze([-0.66, -0.22, 0.22, 0.66]);
 export function practiceCourse() {
   const length = COURSE.practiceLength;
