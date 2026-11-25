@@ -101,11 +101,12 @@ async function useTutorial(page, press, label) {
   return eligible.replace(/^board-node-/, "");
 }
 
-async function openVisit(page, press) {
+async function openVisit(page, press, courtyard = true) {
   await press(t("pin-kannon"));
   await press(t("map-go"));
   await page.locator(t("kannon-reflect")).waitFor();
-  assert.deepEqual(await page.locator("#modal.show .modal-actions button").allTextContents(), ["盤を開く", "戻る"]);
+  assert.deepEqual(await page.locator("#modal.show .modal-actions button").allTextContents(),
+    courtyard ? ["盤を開く", "境内で過ごす（1行動）", "戻る"] : ["盤を開く", "戻る"]);
 }
 
 await suite("kannondo-day3", async (check) => {
@@ -172,7 +173,7 @@ await suite("kannondo-day3", async (check) => {
     const old = await snapshot(page, true);
     await load(page, press);
     await page.locator(map).waitFor();
-    await openVisit(page, press);
+    await openVisit(page, press, false);
     await displayedTemple(page, nightScene);
     await screenshot(page, "old-save-pc-night-arrival.png");
     await press(t("kannon-reflect"));

@@ -135,7 +135,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     addMoney: n => { state.money += n; money.spent -= n; }, addStamina: n => { state.stamina += n; },
     earnStat: (key, n) => { stats[key] = (stats[key] || 0) + n; }, gainAffinity: (id, n) => { affinity[id] = (affinity[id] || 0) + n; },
     visitAffinity: kind => kind === "talk" ? 5 : 10, earnSceneCompletion() {}, spendableMoney: value => value.money,
-    tokyoVanBlock: () => null, TOKYO_VAN_SLOTS: 2, TOKYO_VISIT_COST: 4000, MUKAI_SHIFT_STAMINA: -14, mukaiShiftPay: () => 12000, loadMukaiShift: async () => {},
+    tokyoVanBlock: () => null, TOKYO_VAN_SLOTS: 2, TOKYO_VISIT_COST: 3500, MUKAI_SHIFT_STAMINA: -14, mukaiShiftPay: () => 12000, loadMukaiShift: async () => {},
     TOKYO_OUTINGS: [{ id: "tetsuko", stages: [], loop: [] }], OUTINGS_FLAG: "_ch3_outings", outingCounts: () => ({}),
     consultLessons: async () => {}, finaleAtVisit: () => false,
     // ましろと過ごす時間（BLC03・mashiro-time.js）。台本の一覧は配列で読むので、空で差し込む
@@ -155,14 +155,14 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     assert.equal(played.at(-1), id);
   }
   assert.equal(steve().hasNew?.(), true, "一通り読んだら「！」");
-  assert.equal(steve().cost, 4000, "写しでも代金は同じ");
+  assert.equal(steve().cost, 3500, "写しでも代金は同じ");
   const spent = money.spent, stamina = state.stamina, love = affinity.steve;
   chooser = () => 2; // 先に、最近のことを聞かせてください
   shown = [];
   assert.deepEqual(plainOf(await visit()), { used: true, exerted: true });
   assert.equal(played.at(-1), "ch5_chain_guest_1");
   assert.equal(state.flags._ch5_tokyo_talks.ch5_tokyo_steve, 3, "巡回は進めない");
-  assert.equal(money.spent - spent, 4000, "代金はいつもの来店と同じ");
+  assert.equal(money.spent - spent, 3500, "代金はいつもの来店と同じ");
   assert.equal(stamina - state.stamina, 16, "体力もいつもの来店と同じ");
   assert.equal(affinity.steve - love, 5, "好感度は通いの小会話と同じ");
   assert(shown.some(t => t.includes("ぽつぽつ")), "選んだ答えの分岐を読んだ");
@@ -499,7 +499,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     layers: { hud: { firstElementChild: null } }, setBg: async () => {}, toast() {}, play, readDialogues, showHud() {},
     modal: async config => { options.splice(0, options.length, ...config.options); return mukaiPick(config.options); },
     addMoney() {}, addStamina: n => { state.stamina += n; }, earnStat() {}, gainAffinity() {}, earnSceneCompletion() {},
-    TOKYO_VISIT_COST: 4000, spendableMoney: value => value.money, canReflect: () => false, consultLessons: async () => {},
+    TOKYO_VISIT_COST: 3500, spendableMoney: value => value.money, canReflect: () => false, consultLessons: async () => {},
     loadStoryRoutes: async () => ({}), availableOptionalScenes: () => [], chapterThreeOutingCandidates: () => [],
     availableChapterThreeTrials: () => [], loverMilestonesDue: () => [], questionVisitDue: () => false, finaleAtVisit: () => false,
     OUTING_DIALOGUE_IDS: [], ROOM_REST_IDS: [], OUTINGS_FLAG: "_ch3_outings", outingCounts: value => value.flags._ch3_outings || {}, mukaiShiftPay: () => 10000,

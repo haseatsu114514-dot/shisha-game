@@ -206,7 +206,7 @@ function updateGrowth() {
   left.hidden = !left.textContent;
   dom.exp.dataset.milestone = g.nextMilestone && !g.max ? "true" : "false";
   renderTarget(view);
-  const leftText = g.max ? `Lv.${g.level} MAX` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は節目。色の火ももらえる）" : ""}`;
+  const leftText = g.max ? `Lv.${g.level} MAX` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は節目。火種のご褒美がある）" : ""}`;
   dom.exp.title = leftText;
   dom.exp.setAttribute("aria-label", dom.exp.title);
 }
@@ -287,7 +287,7 @@ export function updateHud() {
   // ゲージは実残量。発病日の制作コンディションは従来どおり別に保持する。
   const health = conditionForRatio(staminaRatio({ forCondition: true })).health;
   dom.stamina.dataset.health = health;
-  dom.stamina.title = `体力：${condition.label}。${condition.hint}`;
+  dom.stamina.title = `体力：${condition.label}。${condition.hint}。バーの長さは最大体力に対する残量、色は基礎体力に対する残量で決まる。`;
   dom.stamina.querySelector(".hud-bar").setAttribute("aria-label", dom.stamina.title);
   dom.stamina.querySelector("b").style.width = `${Math.round(r * 100)}%`;
   scheduleRecovery();

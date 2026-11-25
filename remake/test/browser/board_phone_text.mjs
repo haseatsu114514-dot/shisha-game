@@ -30,7 +30,7 @@ async function openBoard(page, { view = true } = {}) {
   if (!view) return;
   await page.locator(t("hud-menu")).click();
   await page.locator(t("menu-board")).click();
-  await page.locator(`${t("growth-board")}[data-mode="view"]`).waitFor({ timeout: 20000 });
+  await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor({ timeout: 20000 });
   await page.locator(`${t("growth-board")}[data-art]`).waitFor({ timeout: 15000 }).catch(() => {});
 }
 

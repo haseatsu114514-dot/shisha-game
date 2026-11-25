@@ -83,6 +83,19 @@ for (const where of ["modal","intro"]) {
   assert.equal(core.state.flags._kannon_growth_intro_done,undefined);
   assert.deepEqual(opened,[],"LOAD後の古い継続処理は盤を開かない");
 }
+s=setup(); choice="courtyard";
+assert.equal(await growth.reflectAtSpot("kannon", { courtyard: { why: "" } }), "courtyard");
+assert.deepEqual(menus, [["kannon-reflect", "kannon-visit", "kannon-back"]]);
+assert.deepEqual([scenes, opened], [[], []], "通常訪問を選ぶと盤は開かない");
+s=setup(); choice=false;
+assert.equal(await growth.reflectAtSpot("kannon", { courtyard: { why: "今日は訪問済み" } }), false);
+assert.deepEqual(menus, [["kannon-reflect", "kannon-back"]]);
+s=setup();
+await growth.openGrowthBoard({ fromMenu: true });
+assert.deepEqual(opened, [null], "導入前のメニューは閲覧");
+s.flags._kannon_growth_intro_done=true;
+await growth.openGrowthBoard({ fromMenu: true });
+assert.deepEqual(opened, [null, "menu"], "導入後は地図のメニューで点灯");
 s=setup(); choice=false;
 assert.equal(await growth.reflectAtSpot("kannon"),false);
 assert.deepEqual(scenes,[]); assert.deepEqual(opened,[]);

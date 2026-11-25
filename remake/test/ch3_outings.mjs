@@ -64,7 +64,7 @@ const ids = (value, window) => chapterThreeOutings(value, window.id).map(item =>
   const first = chapterThreeOutings(early.value, early.window.id).find(item => item.id === "mukai_steve");
   assert.equal(outingDialogueId(early.value, first, early.window), "ch3_outing_mukai_steve");
   assert.equal(first.reasonText, "配達先のスティーブが、今日は客として来るらしい");
-  assert.deepEqual(outingAffinity(early.value, first), { steve: 16 }, "The first visit gains like a stage talk");
+  assert.deepEqual(outingAffinity(early.value, first), { steve: 15 }, "The first visit gains like a stage talk");
   const outing = claimChapterThreeOuting(early.value, early.window.id, "mukai_steve");
   assert.equal(outing.money, 3000);
   const next = nextWindow(early.value);
@@ -111,7 +111,7 @@ const ids = (value, window) => chapterThreeOutings(value, window.id).map(item =>
   const talkAfter = n => outingDialogueId({ ...before.value, flags: { ...before.value.flags, [OUTINGS_FLAG]: { volk_visit: n } } }, volk, before.window);
   assert.deepEqual([0, 1, 2, 3, 4, 5, 6, 7].map(talkAfter), ["ch3_outing_volk_visit",
     ...["b", "c", "d", "e", "f", "b", "c"].map(suffix => `ch3_outing_volk_visit_${suffix}`)]);
-  assert.deepEqual(outingAffinity(before.value, volk), { volk: 16 }, "The first visit gains like a stage talk");
+  assert.deepEqual(outingAffinity(before.value, volk), { volk: 15 }, "The first visit gains like a stage talk");
   const regulars = { ...before.value, flags: { ...before.value.flags, [OUTINGS_FLAG]: { volk_visit: 1 } } };
   assert.deepEqual(outingAffinity(regulars, volk), { volk: 8 }, "Later visits gain like a small talk");
   const after = { ...before.value, flags: { ...before.value.flags, _ch3_intro: { ...before.value.flags._ch3_intro,
@@ -233,9 +233,9 @@ function nextWindow(value) {
   assert.equal(TOKYO_OUTINGS.find(item => item.id === "steve_timer").affinityWith, "steve");
   // 好感度の付く外出は、一度きりの話か、通うたびに台本が変わる行き先（AFB02）。
   assert(TOKYO_OUTINGS.filter(item => item.affinityWith).every(item => !item.repeat || item.talks?.length >= 2), "Repeated affinity outings rotate talks");
-  // 綾取（#2028・AFB02）: 好感度は煙幕への外出の確定時（一度きりの話は段階会話の +16）。台本には報酬行を置かない。
+  // 綾取（#2028・AFB02）: 好感度は煙幕への外出の確定時（一度きりの話は段階会話の +15）。台本には報酬行を置かない。
   for (const id of ["enmaku_notes", "enmaku_answer"]) {
-    assert.deepEqual(outingAffinity(newState(), TOKYO_OUTINGS.find(item => item.id === id)), { ayatori: 16 });
+    assert.deepEqual(outingAffinity(newState(), TOKYO_OUTINGS.find(item => item.id === id)), { ayatori: 15 });
     assert(!JSON.stringify(byId[`ch3_outing_${id}`]).includes("affinity"));
   }
   // てつこの世話は撫でる／餌の2択。どちらの枝も次の行へ戻り、報酬行を持たない。

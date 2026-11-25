@@ -310,7 +310,7 @@ await suite("tokyo-visits", async check => {
     assert.deepEqual(first.limeRead, [...value.limeRead, id]);
     assert(first.inbox.at(-1).id === id && first.inbox.at(-1).read && first.inbox.at(-1).done);
     const points = state => (state.affinity.ageha || 0) + (state.affinityCarry?.ageha || 0);
-    assert.equal(points(first), points(value) + 0.85 * 0.25, "one LIME affinity gain, including its carry");
+    assert.equal(points(first), points(value) + 0.85 * 0.75, "one LIME affinity gain, including its carry");
     await page.locator(t("lime-travel-chat")).click();
     await close(page);
     const again = await get(page);

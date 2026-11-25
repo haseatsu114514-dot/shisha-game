@@ -104,7 +104,7 @@ assert.deepEqual(disabled.stats, initial.stats);
 assert.deepEqual(disabled.statXp, initial.statXp);
 assert.deepEqual(disabled.cycleStartStats, initial.stats);
 assert.deepEqual(disabled.statsAtChapterStart, initial.stats);
-assert.equal(disabled.money, 30000);
+assert.equal(disabled.money, 27000);
 assert.deepEqual(disabled.carryOptions.groups, { ...allGroups, stats: false, money: false });
 assert.deepEqual(difficultyEvidence(disabled), { cycle: 2, carryStats: false });
 const allOff = startNextCycle(pkg, { fromCycle: 1, groups: { stats: false, money: false, items: false, knowledge: false } });
@@ -169,7 +169,7 @@ for (const fresh of [newState(), newGame()]) {
   assert.equal(fresh.carryOptions, null);
   assert.deepEqual(fresh.stats, initial.stats);
   assert.deepEqual(fresh.cycleStartStats, initial.stats);
-  assert.equal(fresh.money, 30000);
+  assert.equal(fresh.money, 27000);
 }
 assert.ok(readGalleryProgress().clearedChapters.includes(5));
 console.log("ngplus cycle start: PASS (carry/reset, groups, equipment, save/gallery, difficulty hooks, cycle source, first run)");
@@ -235,6 +235,17 @@ console.log("lover EXP: PASS (normal awards, preview switch, save/load, NG+ carr
 
 // 盤の成長は旧能力へ加算したまま周回し、章報酬の台帳だけを毎周作り直す。
 // 工程入力・♥5への到達を省いた保存fixture。通しプレイ／操作バランスの証明とは分ける。
+{
+  const owner = core.newGame();
+  owner.lovers = ["noor"];
+  assert.equal(awardLoverSceneExp("lover_noor_lv1", owner), 20);
+  assert.equal(awardLoverSceneExp("lover_noor_lv1", owner), 0);
+  owner.flags._ch5_noor_lover_welcome = true;
+  assert.equal(awardLoverSceneExp("ch5_noor_lover_welcome", owner), 0, "旧セーブの読了済み場面を再加算しない");
+  assert.equal(awardLoverSceneExp("ch5_noor_lover_night", owner), 20);
+  assert.equal(awardLoverSceneExp("ch5_noor_lover_night", owner), 0);
+  assert.equal(buildCarryPackage(owner).flags._lover_exp_ch5_noor_lover_night, undefined);
+}
 const effects = await import("../js/core/growth-effects.js");
 newGame();
 growth.setGrowthPreview(true);
@@ -259,7 +270,7 @@ for (let cycle = 1; cycle <= 3; cycle++) {
   assert.deepEqual(core.state.stats, rawStats, "周回のたびに盤の恩恵を旧能力へ書き込まない");
   assert.deepEqual(boardSnapshot(), retainedBoard);
   assert.equal(maxStamina(), 188, "旧最大160＋B1の8（近くの帯×2。SBD111）＋習得済みひよりの20");
-  assert.equal(effects.growthPerks(core.state).charm, 4, "旧K20の開放・支払を人柄へ引き継ぐ（火種2のマスは＋4%。SBD112）");
+  assert.equal(effects.growthPerks(core.state).charm, 5, "旧K20の開放・支払を人柄へ引き継ぐ（火種2のマスは＋5%。SBD112）");
   assert.equal(effects.densePackAvailable(core.state), true);
   assert.equal(effects.growthLesson(core.state, "M-W1"), true, "交流をやり直しても習得済み授業は有効");
   for (let chapter = 1; chapter <= 5; chapter++) {

@@ -412,7 +412,8 @@ await suite("save-load", async check => {
     });
     const summary = slot => page.locator(`[data-test="slot-${slot}"] .ss-growth .ss-stat`)
       .evaluateAll(nodes => nodes.map(node => node.textContent));
-    const expected = ["Lv.2", "火種2", "才能1/27", "感覚1/26", "理論1/26"];
+    // 才能の総数は main 側（#4197: 盤の数え直しで27→26）、slot-2 は U-01 の手動枠として存在し空であること。
+    const expected = ["Lv.2", "火種2", "才能1/26", "感覚1/26", "理論1/26"];
     const newSlotEmpty = () => page.locator('[data-test="slot-2"].blank').count();
     const assertGrowthFits = async () => assert.deepEqual(await page.locator(".ss-growth .ss-stat")
       .evaluateAll(nodes => nodes.filter(node => node.scrollWidth > node.clientWidth + 1).map(node => node.textContent)), []);

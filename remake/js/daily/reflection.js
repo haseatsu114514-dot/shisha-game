@@ -1,4 +1,4 @@
-// 内省（SPEC 第2版 2.8）: 参拝の場所で静かに振り返ると、学んだことが火になる。盤で火種を灯せるのはこの時だけ。
+// 内省（SPEC 第2版 2.8）: 参拝の場所で静かに振り返ると、学んだことが火になる。導入後は日常のメニューからも盤に灯せる。
 // 時間を使わない（行動の回数も体力も減らない）。大会前夜に火種が残っていれば、強制の場面で盤を開く。
 import { state, save, timeOfDay } from "../core/state.js";
 import { play } from "../vn/engine.js";
@@ -22,8 +22,8 @@ export const canReflect = (s = state) => !!s && growthEnabled() && hasUsableHida
 /** その場所で振り返れるか。観音堂だけは、最初の火種をまだ渡していなければ火種が0でも開ける（はじめての案内・growth-board-tutorial.js） */
 export const canReflectAt = (place, s = state) => canReflect(s) || (place === "kannon" && !!s && growthEnabled() && starterPending(s));
 
-/** 観音堂は残り火種に関係なく盤だけ。地図からは開く／戻る、DAY3の本筋ではそのまま盤を開く。 */
-export async function visitKannondo({ direct = false, onExit = null } = {}) {
+/** 地図からは盤と境内での通常訪問を選べる。DAY3の本筋ではそのまま盤を開く。 */
+export async function visitKannondo({ direct = false, onExit = null, courtyard = null } = {}) {
   const owner = state;
   if (!owner || !growthEnabled()) return false;
   const { chapter, day, slot, phase } = owner;
@@ -43,11 +43,13 @@ export async function visitKannondo({ direct = false, onExit = null } = {}) {
   if (!direct) {
     const { modal } = await import("../core/ui.js");
     if (!current()) return false;
-    const go = await modal({ title: label, className: "kannondo-dialog", body: "火種を心得の盤に灯せる。時間も体力も使わない。", options: [
+    const go = await modal({ title: label, className: "kannondo-dialog", body: `盤を開くと、時間も体力も使わずに火種を灯せる。${courtyard?.why ? `<br>境内：${courtyard.why}。` : ""}`, options: [
       { label: "盤を開く", value: true, primary: true, test: "kannon-reflect" },
+      ...(courtyard && !courtyard.why ? [{ label: "境内で過ごす（1行動）", value: "courtyard", test: "kannon-visit" }] : []),
       { label: "戻る", value: false, test: "kannon-back" },
     ] });
     if (!go || !current()) return false;
+    if (go === "courtyard") return go;
   }
   if (!owner.flags._kannon_growth_intro_done) {
     const id = "kannon_growth_intro";
