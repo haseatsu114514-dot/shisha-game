@@ -288,27 +288,52 @@ html:root[data-density="phone"] body:not(:root) .result-table { grid-template-ro
 .result-table .rt-save { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .result-table .rt-save .btn { min-height: 44px; max-width: 100%; }
 
-/* ================================================================ スマホ規格の大会画面（#2851・#2729 B班）
-   ワイドで左右まで広げる・文字の下限を上げるのは wide-craft.css（#2983）。ここは欄の並びと押す所だけを足す。 */
-/* 最終結果: 「あなたの一台」の欄の下の補足（効いたもの・良かった点・次の練習）を規格の文字に。
-   下段の行の高さ（「……結果を受け止める」が --phone-tap になる分）は phone-density.css（#2976）で決める。 */
-html:root[data-density="phone"] body:not(:root) .result-table .rt-detail-scroll > small { font-size: var(--phone-sub); }
-/* 中間投票: 審査員の欄と名前の列を広げる（文字を大きくしても持ち点の行・名前が詰まらないように） */
-html:root[data-density="phone"] body:not(:root) .standings .sd-main { grid-template-columns: 1fr 380px; }
-html:root[data-density="phone"] body:not(:root) .standings .sd-row { grid-template-columns: 40px 48px 150px 1fr 72px; }
-html:root[data-density="phone"] body:not(:root) .standings .sd-recognition { font-size: var(--phone-sub); }
-/* 速報ラベル、工程の内訳、第5章の挙手（選手名と合計は同じ注記に入る）。 */
-html:root[data-density="phone"] body:not(:root) #stage :is(
-  .standings .sd-feed-tag,
-  .result-table .rt-part:not(.total) :is(span, small),
-  :is([data-test="ch5-match"], [data-test="ch5-second-cup"]) > .ch2-contest-note
+/* 中間投票は順位と速報の高さを確保し、長い審査の説明は審査員欄の中で読めるようにする。 */
+html:root[data-density="phone"] body:not(:root) .standings.tournament-board {
+  display: grid; grid-template-rows: auto minmax(0, 1fr); width: min(1200px, calc(100% - 24px));
+  max-height: calc(100% - 24px); padding-block: 16px 14px;
+}
+html:root[data-density="phone"] body:not(:root) .standings .tournament-heading { padding-bottom: 8px; }
+html:root[data-density="phone"] body:not(:root) .standings .tournament-heading p { padding-right: 204px; line-height: 1.35; }
+html:root[data-density="phone"] body:not(:root) .standings .sd-main {
+  grid-template-columns: minmax(0, 1fr) 428px; min-height: 0; margin-top: 8px;
+}
+html:root[data-density="phone"] body:not(:root) .standings .sd-row {
+  grid-template-columns: 40px 48px 150px minmax(0, 1fr) 84px;
+}
+html:root[data-density="phone"] body:not(:root) .standings .sd-main > .judge-panel {
+  min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+}
+html:root[data-density="phone"] body:not(:root) .standings .judge-chip { flex: none; row-gap: 3px; padding-block: 7px; line-height: 1.4; }
+html:root[data-density="phone"] body:not(:root) .standings .judge-chip:has(.judge-focus) {
+  grid-template-columns: 46px minmax(0, 1fr) auto; column-gap: 8px; row-gap: 2px; padding-block: 3px;
+}
+html:root[data-density="phone"] body:not(:root) .standings .judge-chip:has(.judge-focus) > .judge-face { grid-row: 1 / 3; }
+html:root[data-density="phone"] body:not(:root) .standings .judge-chip:has(.judge-focus) > .judge-left { grid-area: 1 / 3; }
+html:root[data-density="phone"] body:not(:root) .standings .judge-chip:has(.judge-focus) > .judge-pips {
+  grid-area: 3 / 1; grid-template-columns: repeat(5, 1fr); gap: 2px; align-self: center;
+}
+html:root[data-density="phone"] body:not(:root) .standings .sd-status { margin-top: 8px; padding-block: 4px; }
+html:root[data-density="phone"] body:not(:root) .standings .sd-recognition { margin-top: 6px; padding-block: 4px; line-height: 1.35; }
+html:root[data-density="phone"] body:not(:root) .standings .sd-feed { margin-top: 8px; overflow: visible; line-height: 1.3; }
+html:root[data-density="phone"] body:not(:root) .standings .sd-feed-tag { border-radius: 6px 0 0 6px; white-space: nowrap; }
+html:root[data-density="phone"] body:not(:root) .standings .sd-feed-lines { min-width: 0; }
+html:root[data-density="phone"] body:not(:root) .standings :is(.sd-recognition, .judge-deduction, .judge-focus, .judge-pick),
+html:root[data-density="phone"] body:not(:root) .standings .judge-chip.held::after,
+html:root[data-density="phone"] body:not(:root) .result-table :is(.rt-deductions > small, .rt-detail-scroll > small),
+html:root[data-density="phone"] body:not(:root) #stage :is([data-test="ch5-match"], [data-test="ch5-second-cup"]) :is(
+  .ch2-contest-note, .ch2-contest-description, .ch2-contest-header p
 ) { font-size: var(--tournament-phone-sub); }
-/* 中間投票・結果表で後から出る審査理由や減点も、実寸11px以上で読めるようにする。 */
-html:root[data-density="phone"] body:not(:root) :is(.standings.tournament-board, .result-table) :is(
-  .judge-deduction, .judge-focus, .judge-pick,
-  .rt-deductions > small, .rt-detail-scroll > small
-) { font-size: max(22px, calc(11.5px / var(--k, 1))); }
-html:root[data-density="phone"] body:not(:root) .standings .judge-chip.held::after { font-size: max(22px, calc(11.5px / var(--k, 1))); }
+
+/* 票の内訳は名前の下へ置く。行の余白を詰めて4人目と続行ボタンの高さを確保する。 */
+html:root[data-density="phone"] body:not(:root) .result-table .rt-ranking-head { flex-wrap: wrap; gap: 4px 12px; margin-bottom: 8px; }
+html:root[data-density="phone"] body:not(:root) .result-table .rt-row { row-gap: 2px; padding-block: 2px; }
+html:root[data-density="phone"] body:not(:root) .result-table .rt-name { display: block; line-height: 1.4; }
+html:root[data-density="phone"] body:not(:root) .result-table .rt-bar { height: 8px; }
+html:root[data-density="phone"] body:not(:root) .result-table .rt-votes {
+  display: block; white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere;
+}
+html:root[data-density="phone"] body:not(:root) .result-table .rt-pt { font-size: max(26px, var(--wide-text)); }
 /* 入場の紹介カード: 少し広げて、スミさんのひと言を文節で2行までにそろえる */
 html:root[data-density="phone"] body:not(:root) .ent-card { width: 960px; }
 html:root[data-density="phone"] body:not(:root) .ent-note { line-height: 1.45; word-break: auto-phrase; text-wrap: balance; }

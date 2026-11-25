@@ -4,6 +4,7 @@ import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 import { completionActions, createChapterActions } from "../core/chapter-actions.js";
+import { chapterRecoveryActions } from "../core/chapter-recovery.js";
 import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
@@ -32,7 +33,7 @@ import { chapterFourMapModel } from "./ch4-map-model.js";
 import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
 import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates, overseasCompanion } from "../core/overseas-companion.js";
-import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
+import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview, chapterFourPlanTaste } from "./ch4-verdict.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
 import { retryAssistOffer } from "./retry-assist.js";
@@ -63,7 +64,11 @@ function menuButton(owner) {
     onclick: () => openMenu(owner) });
 }
 
-const openMenu = createChapterMenu({ current, test, title: "第四章 MENU" });
+const openMenu = createChapterMenu({ current, test, title: "第四章 MENU", rulesAvailable: owner => {
+  const progress = owner.state.flags?._ch4;
+  // 審査員と出場者は大会の冒頭で明かす。
+  return progress?.part === "tournament" && progress.read?.[CH4_TOURNAMENT_SCENES.start] === true;
+} });
 
 function hud() {
   layers.hud.replaceChildren();
@@ -706,6 +711,8 @@ function chapterFourRecap(value) {
   const craft = chapterFourProgress(value).match?.craft;
   const strategy = craft ? chapterFourPlanReview(value, craft) : RECAP_STRATEGY[value.flags._ch4_strategy];
   if (strategy) lines.push(strategy);
+  const taste = craft ? chapterFourPlanTaste(value, craft) : "";
+  if (taste) lines.push(taste);
   const visited = [];
   if (read.ch4_dubai_souq) visited.push("スーク");
   if (read.ch4_festa) visited.push("FESTA");
@@ -730,9 +737,10 @@ function renderComplete(owner) {
   ]));
 }
 
-function renderError(owner) {
+function renderError(owner, error) {
   card(owner, "error", "第4章を再開できませんでした", "通信と保存地点を確認して、もう一度お試しください。読み終えた場面から再開できます。", [
     button(owner, "もう一度読み込む", "retry", () => state.chapter === 4 ? resumeChapterFour() : beginChapterFour(), true),
+    ...chapterRecoveryActions(error, owner, button, chapterFourProgress),
   ]);
 }
 

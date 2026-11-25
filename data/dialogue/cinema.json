@@ -17,7 +17,7 @@
         { "speaker": "hajime", "face": "surprise", "text": "必ず一本、ですか。館の人もサメ映画が好きなんですね" },
         { "speaker": "samechan", "face": "smile", "text": "手作りのサメが飛ぶようなB級映画まで、ちゃんと上映してくれるのじゃ" },
         { "speaker": "samechan", "face": "ventriloquism", "voice": "korochan", "text": "側近は、帰るたびに感想が長いのである" },
-        { "speaker": "samechan", "face": "surprise", "text": "そ、それだけ語りたくなるということじゃ！" },
+        { "speaker": "samechan", "face": "surprise", "text": "…それだけ語りたくなるということじゃ！" },
         { "speaker": "hajime", "face": "smile", "text": "場所、教えてください。時間のある日に観てみます" },
         { "speaker": "samechan", "face": "smile", "text": "商店街の裏の、電球で囲まれた看板が目印じゃ。観たら、お主の感想も聞かせてくれ" }
       ]

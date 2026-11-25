@@ -927,6 +927,21 @@
         {
           "speaker": "dr_charcoal",
           "face": "normal",
+          "text": "千須さんの店の新人が、夜に9000と練習しに来ます。私より、よく尋ねる子たちです"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "normal",
+          "text": "9000が尋ねるようになったら、ここへ来る理由は、何が残りますか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "答える前に、博士の前へ水を置いた。"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "normal",
           "text": "私も、白衣はラボに置いてきました。来週から、知り合いの店のカウンターに立ちます"
         },
         {
@@ -1033,8 +1048,23 @@
           "speaker": "",
           "face": "",
           "text": "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch5_tsumugi_little_notes",
+          "next_true": "omote_note"
         }
-      ]
+      ],
+      "branches": {
+        "omote_note": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎのノートを開く。ネクタイを締めた猫の横に、小さく『表さん』と書き足した。"
+          }
+        ]
+      }
     }
   ]
 }

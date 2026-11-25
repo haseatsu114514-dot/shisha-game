@@ -7,12 +7,20 @@
 // 縁に明るい線を引くので、拡大のぼけは光の縁として見える。
 
 const INF = 1e20;
+const TANH_STEPS = 32;
+const TANH_LIMIT = 10 * TANH_STEPS;
+const TANH = Float32Array.from({ length: TANH_LIMIT * 2 + 1 }, (_, i) => Math.tanh((i - TANH_LIMIT) / TANH_STEPS));
 
 /** 1次元の二乗距離変換（Felzenszwalb & Huttenlocher） */
 function edt1d(f, n, d, v, z) {
+  // 目印がない画素は下側包絡線の候補に入らない。
+  let first = 0;
+  while (first < n && f[first] >= INF) first++;
+  if (first === n) { d.fill(INF, 0, n); return; }
   let k = 0;
-  v[0] = 0; z[0] = -INF; z[1] = INF;
-  for (let q = 1; q < n; q++) {
+  v[0] = first; z[0] = -INF; z[1] = INF;
+  for (let q = first + 1; q < n; q++) {
+    if (f[q] >= INF) continue;
     let s = ((f[q] + q * q) - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
     while (s <= z[k]) { k--; s = ((f[q] + q * q) - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]); }
     k++; v[k] = q; z[k] = s; z[k + 1] = INF;
@@ -51,13 +59,20 @@ function signedDistance(alpha, w, h) {
   }
   edt2d(inside, w, h); edt2d(outside, w, h);
   const sd = new Float32Array(w * h);
-  for (let i = 0; i < w * h; i++) sd[i] = Math.sqrt(inside[i]) - Math.sqrt(outside[i]) - (alpha[i] > 127 ? 0.5 : -0.5);
+  for (let i = 0; i < w * h; i++) {
+    sd[i] = alpha[i] > 127 ? Math.sqrt(inside[i]) - 0.5 : 0.5 - Math.sqrt(outside[i]);
+  }
   return sd;
 }
 
-/** 距離場を factor 倍の大きさへ双一次補間で広げる（距離場は拡大しても縁がなめらかなまま） */
-function upsample(sd, w, h, W, H, factor) {
+/**
+ * 距離場を描画解像度に双一次補間し、reach × tanh(d / reach) でなめらかに頭打ちにする。
+ * 遠くにある細い部分も変形の途中で現れ、深い内側どうしが一斉に入れ替わるのを防ぐ。
+ */
+function softField(sd, w, h, W, H, factor, reach) {
   const out = new Float32Array(W * H);
+  // tanh は表から線形補間する。reach=18 での補間誤差は描画面の 0.002px 未満。
+  const distanceToSample = factor * TANH_STEPS / reach;
   // 列ごとの参照位置と重みは全行で同じなので、先に一度だけ計算する
   const xs = new Int32Array(W), txs = new Float32Array(W);
   for (let x = 0; x < W; x++) {
@@ -70,21 +85,17 @@ function upsample(sd, w, h, W, H, factor) {
       const i = row + xs[x], tx = txs[x];
       const a = sd[i], b = sd[i + 1], c = sd[i + w], d = sd[i + w + 1];
       const top = a + (b - a) * tx;
-      out[o] = (top + (c + (d - c) * tx - top) * ty) * factor;
+      const sample = (top + (c + (d - c) * tx - top) * ty) * distanceToSample + TANH_LIMIT;
+      if (sample <= 0) out[o] = -reach;
+      else if (sample >= TANH_LIMIT * 2) out[o] = reach;
+      else {
+        const at = sample | 0;
+        const a = TANH[at];
+        out[o] = reach * (a + (TANH[at + 1] - a) * (sample - at));
+      }
     }
   }
   return out;
-}
-
-/**
- * 距離をなめらかに頭打ちにする（reach × tanh(d / reach)）。そのままだと、遠くにある細い部分
- * （新しいポーズの腕など）は変形の最後の一瞬にしか現れず、消える部分は最初に消えてしまう。
- * 硬く頭打ちにすると、深い内側どうしが同じ瞬間に一斉に入れ替わって、塊が急に現れる。
- * なめらかに縮めると、距離の順番は保ったまま、出る部分と消える部分が近い速さで溶けるように入れ替わる。
- */
-function softField(sd, reach) {
-  for (let i = 0; i < sd.length; i++) sd[i] = reach * Math.tanh(sd[i] / reach);
-  return sd;
 }
 
 /** 絵の下端より下も、下端の行と同じ形が続いているものとして埋める（下端の水平な切れ目が変形に出ないように） */
@@ -112,9 +123,12 @@ const hex = (c) => {
  * @returns { canvas, draw(t, glow) } t=0 で立ち絵の影、t=1 でカットインの人物の影
  */
 export function prepareShapeMorph(from, to, colors, { scale = 0.75, field = 1.5, reach = 18, soften = 1, region = { x: -360, y: -100, w: 1680, h: 1220 } } = {}) {
-  // 描く解像度（scale）の 1/field で距離場を作り、描く解像度へ補間で広げる
+  // 描画解像度は保ち、距離変換の解像度だけを抑える。小さい画面では従来の解像度を使う。
   const W = Math.round(region.w * scale), H = Math.round(region.h * scale);
-  const fs = scale / field, w = Math.round(region.w * fs), h = Math.round(region.h * fs);
+  const fieldScale = scale / field;
+  const fs = Math.min(fieldScale, .3), w = Math.round(region.w * fs), h = Math.round(region.h * fs);
+  const filterScale = fs / fieldScale;
+  const bottomMargin = Math.max(1, Math.round(3 * filterScale));
   const work = document.createElement("canvas");
   work.width = w; work.height = h;
   const g = work.getContext("2d", { willReadFrequently: true });
@@ -124,7 +138,7 @@ export function prepareShapeMorph(from, to, colors, { scale = 0.75, field = 1.5,
     g.globalCompositeOperation = "source-over";
     g.clearRect(0, 0, w, h);
     // 指先や髪の先のような細かい部分は、変形の途中でちらつく小さな粒になるので、少しだけ丸める
-    g.filter = soften ? `blur(${soften}px)` : "none";
+    g.filter = soften ? `blur(${soften * filterScale}px)` : "none";
     paint();
     g.filter = "none";
     const px = g.getImageData(0, 0, w, h).data, a = new Uint8Array(w * h);
@@ -133,13 +147,14 @@ export function prepareShapeMorph(from, to, colors, { scale = 0.75, field = 1.5,
   };
   const [ax, ay] = toCanvas(from.left, from.top);
   const alphaA = extendDown(alphaOf(() => g.drawImage(from.img, ax, ay, from.width * fs, from.height * fs)),
-    w, h, Math.floor(ay + from.height * fs) - 3);
+    w, h, Math.floor(ay + from.height * fs) - bottomMargin);
   // カットインの人物の影は、下の薄めや名前側の消し込みを入れない（入れると水平・垂直の切れ目が動いて見える）。
   // 絵の下端より下は体が続いているものとして伸ばす
   const [bx, by] = toCanvas(to.left, to.top), bs = to.width * fs;
-  const alphaB = extendDown(alphaOf(() => g.drawImage(to.img, bx, by, bs, bs)), w, h, Math.floor(by + bs) - 3);
-  const dA = softField(upsample(signedDistance(alphaA, w, h), w, h, W, H, field), reach);
-  const dB = softField(upsample(signedDistance(alphaB, w, h), w, h, W, H, field), reach);
+  const alphaB = extendDown(alphaOf(() => g.drawImage(to.img, bx, by, bs, bs)), w, h, Math.floor(by + bs) - bottomMargin);
+  const factor = scale / fs;
+  const dA = softField(signedDistance(alphaA, w, h), w, h, W, H, factor, reach);
+  const dB = softField(signedDistance(alphaB, w, h), w, h, W, H, factor, reach);
   // 毎フレーム全画素を回さないよう、どちらかの影がある範囲だけを描く
   let x0 = W, y0 = H, x1 = 0, y1 = 0;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {

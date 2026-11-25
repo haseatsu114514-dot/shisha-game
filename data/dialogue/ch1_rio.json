@@ -26,7 +26,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "モ、モルモット……？"
+          "text": "…モルモット……？"
         },
         {
           "speaker": "",
@@ -246,7 +246,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "は、はい。tonariでバイトしてる、逢縁です"
+            "text": "…はい。tonariでバイトしてる、逢縁です"
           },
           {
             "speaker": "rio",
@@ -1370,7 +1370,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "む、むせてません"
+          "text": "…むせてません"
         },
         {
           "speaker": "rio",
@@ -2110,7 +2110,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "ち、近いです"
+          "text": "…近いです"
         },
         {
           "speaker": "rio",
@@ -2211,7 +2211,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "す、すみません"
+          "text": "…すみません"
         },
         {
           "speaker": "rio",

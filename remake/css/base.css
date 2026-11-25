@@ -99,16 +99,21 @@ button { font: inherit; color: inherit; }
    その場面の背景をぼかして埋める（ブラウザアドベンチャー式）。絵は core/ui.js の setBg が
    背景の差し替えと一緒に差し替える。ぼかしの縁が透けないよう少しだけ拡大しておく。 */
 #backdrop {
+  /* この値（と下の色調ごとの値）は core/stage-fit.js の paintBackdrop が getComputedStyle で読んで使う。正本はここのみ */
+  --backdrop-filter: blur(6px) brightness(0.72) saturate(1.15);
   position: fixed; /* #viewport のスクロール領域に含めない（変換で広がった分が scrollTop をずらすため） */
-  inset: 0;
+  inset: 37.5%; /* 縦横を 1/4 で描き、従来と同じ 115% の範囲まで拡大する */
   background: #000 center / cover no-repeat;
-  filter: blur(24px) brightness(0.72) saturate(1.15);
-  transform: scale(1.15);
+  filter: var(--backdrop-filter);
+  transform: scale(4.6);
+  will-change: transform;
   transition: opacity 0.25s ease;
   pointer-events: none;
 }
-#backdrop[data-tint="night"] { filter: blur(24px) brightness(0.5) saturate(0.85); }
-#backdrop[data-tint="dim"] { filter: blur(28px) brightness(0.4); }
+#backdrop[data-tint="night"] { --backdrop-filter: blur(6px) brightness(0.5) saturate(0.85); }
+#backdrop[data-tint="dim"] { --backdrop-filter: blur(7px) brightness(0.4); }
+#backdrop.backdrop-raster { filter: none; will-change: auto; }
+#backdrop > canvas { display: block; width: 100%; height: 100%; }
 /* 画面の真ん中に置いてから縮める（grid/flex の中央寄せは、画面より大きい要素だと
    右下にはみ出す＝スマホで右下に埋まる不具合の原因だった）。倍率は main.js の fitStage() */
 #stage {
@@ -409,6 +414,33 @@ body.vn-open .weather-sheet.outdoor {
 
 /* ---------------------------------------------------------------- トースト・バナー */
 #toasts { display: flex; flex-direction: column; align-items: center; padding-top: 138px; gap: 8px; }
+.save-failed-notice {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 80%;
+  color: #ffd6d6;
+  font-size: max(18px, 13px / var(--k, 1));
+}
+.save-failed-notice > :is(summary, p) {
+  margin: 0 auto;
+  border: 1px solid var(--danger);
+  background: #19111f;
+  pointer-events: auto;
+}
+.save-failed-notice > summary {
+  width: fit-content;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.save-failed-notice > p {
+  margin-top: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
 .toast {
   position: relative;
   padding: 10px 22px;

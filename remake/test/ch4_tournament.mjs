@@ -12,7 +12,8 @@ import { liftRivalScore, setRivalScoreObserver } from "../js/core/ngplus-difficu
 globalThis.document = { addEventListener() {} };
 const { finalize, computeShisha } = await import("../js/craft/score.js");
 const { regulationFor } = await import("../js/craft/steps.js");
-const { chapterFourReviewLines, chapterFourCraftAdvice, chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourCustomerLines } = await import("../js/chapters/ch4-verdict.js");
+const { chapterFourReviewLines, chapterFourCraftAdvice, chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourCustomerLines, chapterFourPlanTaste } = await import("../js/chapters/ch4-verdict.js");
+const { temperatureBands } = await import("../js/craft/temperature-model.js");
 delete globalThis.document;
 const read = file => JSON.parse(fs.readFileSync(new URL(`../../data/${file}.json`, import.meta.url)));
 DB.flavorById = Object.fromEntries(read("flavors").flavors.map(row => [row.id, row]));
@@ -198,6 +199,34 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   assert.match(text(cs), /1g、配合の8%/);
   assert.match(text({ ...cs, mix: { mint: 12 } }), /本番では使わず/);
   assert.match(chapterFourCraftAdvice(value, 1).join("\n"), /出発前の方針/);
+}
+// 「桃：甘さでやわらかく迎える」だけ、提供した一台の甘い印象で一言添える（#3909。点・票は変えない）。
+{
+  const served = (mix, at = .5) => {
+    const cs = { ...craft(), mix };
+    const { ideal } = temperatureBands(cs);
+    const width = ideal[1] - ideal[0];
+    cs.pull = { ...cs.pull, temp: at === "cold" ? ideal[0] - width : ideal[0] + width * at };
+    return cs;
+  };
+  const review = (plan, cs) => {
+    const value = entry(); value.flags._ch4_strategy = plan;
+    return { lines: chapterFourReviewLines(value, cs).map(row => row.text).join("\n"), taste: chapterFourPlanTaste(value, cs) };
+  };
+  assert.match(review("peach", served({ peach: 8, black_tea: 4 })).lines, /甘さは、狙いどおりに届いていた/);
+  assert.match(review("peach", served({ peach: 4, mint: 8 })).lines, /狙いにあと一歩/);
+  assert.match(review("peach", served({ peach: 2, black_tea: 10 })).lines, /狙いより控えめ/);
+  assert.match(review("peach", served({ peach: 8, black_tea: 4 }, "cold")).lines, /熱が合わず/);
+  // 桃を使わなかった・提供の記録が無い・桃以外の方針では添えない
+  assert.equal(review("peach", served({ mint: 12 })).taste, "");
+  assert.equal(review("peach", { ...served({ peach: 8, black_tea: 4 }), pullDone: false }).taste, "");
+  for (const plan of ["sakura", "tea"]) assert.equal(review(plan, served({ peach: 8, black_tea: 4 })).taste, "");
+  // 講評の一行は1つの吹き出しに収まる長さ（全角48字以内）
+  for (const text of ["狙いどおりに届いていた", "狙いにあと一歩", "狙いより控えめ", "熱が合わず"]) {
+    const found = [served({ peach: 8, black_tea: 4 }), served({ peach: 4, mint: 8 }), served({ peach: 2, black_tea: 10 }), served({ peach: 8, black_tea: 4 }, "cold")]
+      .map(cs => review("peach", cs).taste).find(taste => taste.includes(text));
+    assert(found && [...found].length <= 48, text);
+  }
 }
 // Local learning is a cue for actual heat/serving decisions, with no automatic success or invented bonus.
 {

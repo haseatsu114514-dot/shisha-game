@@ -1,7 +1,9 @@
 import { finishTournamentStep } from "./tournament-finish-step.js";
 import { tournamentResources, restoreTournamentResources, recoverTournamentResources } from "./tournament-resource-snapshot.js";
+import { ChapterSaveError } from "../core/chapter-save.js";
 import { tournamentStandings } from "./tournament-standings.js";
 import { initialBaseVotes } from "./tournament-base-votes.js";
+import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 // 第2章の保存境界と持ち点。第1章のstate.tournament/固定逆転票には触れない。
 import { payTournamentPrize } from "./tournament-prize.js";
 
@@ -58,8 +60,10 @@ export function tournamentProgress(value) {
     version: 1, stage: "entry", attempts: 0, step: 0, craft: null, rollback: null,
     votes: {}, voted: 0, result: null, history: [], entry: null, prizePaid: false,
   };
-  if (p.version !== 1 || !Number.isInteger(p.step) || p.step < 0 || p.step > 11
-    || !Array.isArray(p.history)) throw new Error("県大会の保存地点を確認できません");
+  const invalid = field => { throw new ChapterSaveError(2, "県大会の保存地点を確認できません", "_ch2_tournament." + field); };
+  if (p.version !== 1) invalid("version");
+  if (!Number.isInteger(p.step) || p.step < 0 || p.step > 11) invalid("step");
+  if (!Array.isArray(p.history)) invalid("history");
   return p;
 }
 
@@ -95,9 +99,14 @@ export function finishStep(value, craft) {
 }
 
 /** 1回投入した点は保存後も戻らない。各審査員の累計を常に10以内にする。 */
-export function castVotes(p, round, performance, prefByJudge = null) {
+export function castVotes(p, round, performance, prefByJudge = null, carryP = 0) {
   if (round !== p.voted || round < 0 || round >= SPEND.length) return false;
-  const quality = { ...RIVAL_QUALITY, hajime: bounded(performance) };
+  const quality = Object.fromEntries(Object.entries(RIVAL_QUALITY).map(([id, base]) => {
+    const lifted = liftRivalScore(base, carryP, 2);
+    observeRivalScore(base, carryP, 2, lifted);
+    return [id, lifted];
+  }));
+  quality.hajime = bounded(performance);
   const lastVotes = {};
   for (const judge of JUDGES) {
     const bias = judge === "uezono" ? { ageha: 4, kuraudo: 1 }
@@ -110,7 +119,7 @@ export function castVotes(p, round, performance, prefByJudge = null) {
       scoreOf(b) - scoreOf(a) || byChapterTwoTie(a, b));
     const amount = SPEND[round], row = p.votes[judge];
     const available = 10 - Object.values(row).reduce((sum, n) => sum + n, 0);
-    if (available < amount) throw new Error("審査員の持ち点が不足しています");
+    if (available < amount) throw new ChapterSaveError(2, "審査員の持ち点が不足しています", "_ch2_tournament.votes." + judge);
     // 表示専用（#909）。この回に誰へ何点入れたか。得点・順位の計算には使わない。
     lastVotes[judge] = { first: order[0], second: order[1], points: { [order[0]]: amount - 1, [order[1]]: 1 } };
   }
@@ -132,7 +141,8 @@ export function standings(p) {
 export function recordResult(value, total) {
   const p = tournamentProgress(value);
   if (p.result) return p.result;
-  if (p.voted !== 4 || p.craft?.careHistory?.length !== 2) throw new Error("提供と2回の調整が未完了です");
+  if (p.voted !== 4 || p.craft?.careHistory?.length !== 2)
+    throw new ChapterSaveError(2, "提供と2回の調整が未完了です", "_ch2_tournament.voted / craft.careHistory");
   const rows = standings(p);
   p.result = { attempt: p.attempts, total, rank: rows.find(row => row.id === "hajime").rank,
     rows, votes: copy(p.votes), baseVotes: copy(p.baseVotes || {}), careHistory: copy(p.craft.careHistory) };

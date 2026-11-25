@@ -690,6 +690,8 @@ await suite("growth-levelup", async (runCheck) => {
     for(const [enabled,mode,picks,fire] of [[true,"tournament",["just","hot"],"1"],[false,"tournament",["pre","over"],""],[true,"tutorial",["pre","over"],""]]) {
       const label=`${enabled}/${mode}`;
       await page.evaluate(args=>startSkillCare(args),{enabled,mode});
+      // チュートリアルでは熱管理の前に、説明を読んで閉じてから炭を選ぶ（pack16・explainTutorialStep）
+      if(mode==="tutorial")await page.locator('.bench-guide[open] [data-test="bench-guide-close"]').click();
       // トングの一文は短い間だけ出るので、出た瞬間を記録して確かめる。
       await page.evaluate(()=>{window.tongSeen=null;window.tongWatch?.disconnect();window.tongWatch=new MutationObserver(()=>{
         const n=document.querySelector('[data-test="care-tong"]');if(n&&!window.tongSeen)window.tongSeen={text:n.textContent,fire:n.dataset.fireKeeper};

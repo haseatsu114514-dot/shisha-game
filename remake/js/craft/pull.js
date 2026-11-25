@@ -104,8 +104,8 @@ export const PULL_TUNING = { period: 1.1, lessonPeriod: 1.95, keepSlope: .18, si
 export const MAX_PULLS = 5;
 
 const FAIL_TEXT = {
-  burnt: { title: "シーシャが焦げてしまった", line: "熱が上がりきって葉が焦げた", ticker: "パッキー「ば、爆発ーッ！？ シーシャが焦げてしまったーッ！」" },
-  cold: { title: "シーシャが冷え切ってしまった", line: "炭の熱が尽きて、煙が立たなくなった", ticker: "パッキー「あ、あれ〜？ 煙が……止まってしまったーッ！」" },
+  burnt: { title: "シーシャが焦げてしまった", line: "熱が上がりきって葉が焦げた", ticker: "パッキー「…爆発ーッ！？ シーシャが焦げてしまったーッ！」" },
+  cold: { title: "シーシャが冷え切ってしまった", line: "炭の熱が尽きて、煙が立たなくなった", ticker: "パッキー「…あれ〜？ 煙が……止まってしまったーッ！」" },
   leaf: { title: "フレーバーがダメになってしまった", line: "吸いすぎて、葉の香りが抜け切った", ticker: "パッキー「吸いすぎだーッ！ フレーバーが限界を迎えたーッ！」" },
 };
 

@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { carryIndex, difficultyForRun, liftRivalScore, KB, setRivalScoreObserver } from "../js/core/ngplus-difficulty.js";
+import { difficultyEvidence } from "../js/core/cycle-start.js";
+import { beginCh1Votes, castCh1Votes, CH1_JUDGES, CH1_RIVALS } from "../js/craft/ch1-votes.js";
+import * as ch2Tournament from "../js/chapters/ch2-tournament-state.js";
 import * as tournament from "../js/chapters/ch3-tournament-state.js";
 
 const stats = n => Object.fromEntries(["technique", "sense", "guts", "charm", "insight"].map(key => [key, n]));
@@ -87,3 +90,82 @@ const value = { chapter: 3, flags: {} };
 assert(tournament.castVotes(tournament.startAttempt(value, {}), 0, 80)); checks++;
 setRivalScoreObserver();
 console.log(`PASS: ${checks} U4 assertions; 220 legacy + 220 current voting rounds (P=0), 880 lifted rounds, observer isolation`);
+
+// F-03: the real run evidence, including a later cycle with stat carry switched off.
+const runCarry = value => difficultyForRun(value, difficultyEvidence(value));
+const initial = runCarry({ cycle: 1, cycleStartStats: stats(10), stats: stats(100) });
+const disabled = runCarry({ cycle: 2, cycleStartStats: stats(100), carryOptions: { groups: { stats: false } } });
+const enabled = runCarry({ cycle: 2, cycleStartStats: stats(100), carryOptions: { groups: { stats: true } } });
+equal([initial, disabled, enabled], [0, 0, 1]);
+
+function ch1Match(style, craft, carry) {
+  const attempt = {};
+  beginCh1Votes(attempt, { style });
+  for (let round = 0; round < 4; round++) assert(castCh1Votes(attempt, round, craft, { carryP: carry }));
+  return attempt.voteAttempt;
+}
+const ch1Digest = createHash("sha256");
+const ch1Samples = [];
+for (const style of ["classic", "sakurai"]) {
+  for (let score = 60; score <= 100; score++) {
+    const craft = {
+      holes: score % 2 ? { skipped: true } : { score: score - 2 }, heat: { score },
+      stats: { craftQuality: score + 1, aroma: score, taste: score - 1, burnRisk: 100 - score,
+        heatStability: score - 2, draw: score, smoke: score - 3 },
+      pull: { score, attack: score % 3 === 0 }, careHistory: [{ score }, { score, attack: score % 3 === 1 }], total: score,
+    };
+    const match = ch1Match(style, craft, initial);
+    equal(ch1Match(style, craft, disabled), match);
+    ch1Digest.update(JSON.stringify(match));
+    ch1Samples.push({ style, craft, match });
+  }
+}
+// Full vote records with no carry in effect (the F-03 lift stays inactive), including the
+// Sakurai judge evaluations and final standings. The digest also pins the C-20 changes
+// (hajime-first tie-break and the Sakurai rival caps), which apply at every carry level.
+equal(ch1Digest.digest("hex"), "32540013f6dd99e46cdda7ff0f3c05d5810485e8832e0aee4a05e93cf797c3de");
+
+const harderStyles = new Set();
+const ch1Events = [];
+setRivalScoreObserver(event => ch1Events.push(event));
+for (const { style, craft, match } of ch1Samples) {
+  const carried = ch1Match(style, craft, enabled);
+  const points = p => p.result.rows.find(row => row.id === "hajime").points;
+  if (points(carried) < points(match)) harderStyles.add(style);
+  if (style === "sakurai") {
+    for (const [round, views] of match.views.entries()) for (const judge of CH1_JUDGES) {
+      const newView = carried.views[round][judge];
+      const oldView = views[judge];
+      equal(newView.hajime, oldView.hajime);
+      for (const id of Object.keys(CH1_RIVALS)) {
+        const base = oldView[id];
+        equal(newView[id], Math.max(base, liftRivalScore(base, enabled, 1)));
+      }
+    }
+  }
+}
+setRivalScoreObserver(null);
+equal([...harderStyles], ["classic", "sakurai"]);
+equal(ch1Events.length, ch1Samples.length * 4 * 3 * 3);
+assert(ch1Events.some(({ rival, lifted }) => rival > 99 && rival === lifted),
+  "Sakurai's existing above-ceiling scores never decrease");
+
+function ch2Match(carry) {
+  const progress = ch2Tournament.startAttempt({ chapter: 2, flags: {} }, {});
+  for (let round = 0; round < 4; round++) {
+    assert(ch2Tournament.castVotes(progress, round, 91, null, carry));
+  }
+  return progress;
+}
+const ch2Initial = ch2Match(initial);
+equal(ch2Match(disabled), ch2Initial);
+equal(ch2Initial.quality, { ...ch2Tournament.RIVAL_QUALITY, hajime: 91 });
+const ch2Carried = ch2Match(enabled);
+equal(ch2Carried.quality, {
+  ...Object.fromEntries(Object.entries(ch2Tournament.RIVAL_QUALITY)
+    .map(([id, base]) => [id, liftRivalScore(base, enabled, 2)])),
+  hajime: 91,
+});
+equal(ch2Tournament.standings(ch2Initial)[0].id, "hajime");
+assert.notEqual(ch2Tournament.standings(ch2Carried)[0].id, "hajime");
+console.log("PASS: F-03 Chapter 1 first-cycle parity across 82 matches, both vote styles and Chapter 2 react to carry");
