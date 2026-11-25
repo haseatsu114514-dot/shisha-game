@@ -380,6 +380,19 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-ratio .fr-ratio-label { display: none; }
 
+/* 大会の葉は特徴のボタン、在庫、熟練度をそれぞれ別の段に置く。 */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"][data-mode="tournament"] .flavor-row .fr-feature {
+  grid-area: 1 / 1 / 2 / 3 !important; align-items: center !important; gap: 8px;
+  padding: 4px 0 4px 72px !important;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"][data-mode="tournament"] .flavor-row .fr-feature::after {
+  position: static; font-size: var(--tournament-phone-sub) !important;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"][data-mode="tournament"] .flavor-row .fr-name > :is(.fr-stock, .fr-mastery) {
+  font-size: var(--tournament-phone-sub) !important;
+  white-space: normal !important; overflow: visible; text-overflow: clip; overflow-wrap: anywhere;
+}
+
 /* 下の列 */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-footer {
   grid-column: 1 / -1 !important; grid-row: 2 !important; display: grid !important; grid-template-columns: minmax(0, 1fr) 330px !important; grid-template-rows: auto var(--ph-tap) !important;

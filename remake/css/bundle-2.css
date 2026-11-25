@@ -3618,13 +3618,16 @@ html:root[data-density="phone"] body #stage .bench .result-card :is(.rc-title, .
 html:root[data-density="phone"] body #stage .bench .result-card .rc-lines { font-size: var(--wide-text); line-height: 1.6; }
 
 /* 大会: 中間投票 */
-html:root[data-density="phone"] body #stage :is(.standings, .count-screen, .sui-cut, .result-table) :is(
+html:root[data-density="phone"] body #stage :is(.count-screen, .sui-cut) :is(
   .tournament-live, .tournament-eyebrow, .judge-legend span
 ) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage :is(.standings, .result-table) :is(
+  .tournament-live, .tournament-eyebrow, .judge-legend span
+) { font-size: var(--tournament-phone-sub); }
 html:root[data-density="phone"] body #stage :is(.standings, .count-screen, .sui-cut, .result-table) .tournament-heading p { font-size: var(--wide-text); }
-html:root[data-density="phone"] body #stage .standings :is(.sd-rank, .sd-points small, .judge-name, .judge-left) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage .standings :is(.sd-rank, .sd-points small, .judge-name, .judge-left) { font-size: var(--tournament-phone-sub); }
 html:root[data-density="phone"] body #stage .standings .sd-name { font-size: var(--wide-text); }
-html:root[data-density="phone"] body #stage .standings :is(.sd-status > span, .sd-feed-tag) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage .standings :is(.sd-status > span, .sd-feed-tag) { font-size: var(--tournament-phone-sub); }
 html:root[data-density="phone"] body #stage .standings .sd-feed-lines > div { font-size: var(--wide-text); }
 /* 大会: カウントダウン・千須のカットイン */
 html:root[data-density="phone"] body #stage .count-screen :is(.rc-cut, .rc-card span) { font-size: var(--wide-small); }
@@ -3634,7 +3637,7 @@ html:root[data-density="phone"] body #stage .sui-cut .nc-name { font-size: var(-
 html:root[data-density="phone"] body #stage .result-table :is(
   .rt-emblem small, .rt-ranking-head h2, .rt-rank, .rt-votes, .rt-detail h4, .rt-part span, .rt-part small,
   .rt-judge-comment, .rt-judge-deduction
-) { font-size: var(--wide-small); }
+) { font-size: var(--tournament-phone-sub); }
 html:root[data-density="phone"] body #stage .result-table .rt-name { font-size: var(--wide-text); }
 /* 大会: 入場 */
 html:root[data-density="phone"] body #stage .entrance :is(.ent-tag, .ent-ring) { font-size: var(--wide-small); }
@@ -4461,6 +4464,10 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fla
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-feature { overflow: hidden; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-feature b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row .fr-mastery { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode="tournament"] .flavor-row :is(.fr-stock, .fr-mastery) {
+  font-size: var(--tournament-phone-sub) !important;
+  white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere;
+}
 
 /* 最初の注文の支給葉は、名前と分量操作を横に並べて3種とも初期表示に収める。 */
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix:has(.mix-list-supplied) {
@@ -4866,6 +4873,19 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
   min-height: 1.2em;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .flavor-row .fr-ratio .fr-ratio-label { display: none; }
+
+/* 大会の葉は特徴のボタン、在庫、熟練度をそれぞれ別の段に置く。 */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"][data-mode="tournament"] .flavor-row .fr-feature {
+  grid-area: 1 / 1 / 2 / 3 !important; align-items: center !important; gap: 8px;
+  padding: 4px 0 4px 72px !important;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"][data-mode="tournament"] .flavor-row .fr-feature::after {
+  position: static; font-size: var(--tournament-phone-sub) !important;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"][data-mode="tournament"] .flavor-row .fr-name > :is(.fr-stock, .fr-mastery) {
+  font-size: var(--tournament-phone-sub) !important;
+  white-space: normal !important; overflow: visible; text-overflow: clip; overflow-wrap: anywhere;
+}
 
 /* 下の列 */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .mix-footer {
