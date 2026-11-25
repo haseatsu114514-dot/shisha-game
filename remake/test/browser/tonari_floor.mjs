@@ -132,6 +132,7 @@ await suite("tonari-floor", async (check) => {
     assert.deepEqual(await page.locator(`${t("intro-wishes")} .tf-wish`).evaluateAll((list) => list.map((n) => [n.dataset.wish, n.textContent.trim(), !!n.querySelector("svg")])),
       [["fruit", "フルーティ", true], ["sweet", "スイート", true], ["fresh", "刺激系", true], ["deep", "リラックス", true]], "気分（＝属性）の色と印の見本");
     assert.equal(await page.locator(".tf-how li").count(), 4, "はじめての営業は、進め方を出す");
+    assert.match(await page.locator(".tf-how").innerText(), /フィーバーはもう一度押すと終了。残りは次に使える/);
     assert.equal(await page.locator(t("option-tutorial")).count(), 1, "遊び方は、開店前の札からいつでも見られる");
     // 営業中は保存しない（途中の体力だけが残らない）
     assert.equal(await page.evaluate(() => C.core.save()), false);
@@ -264,8 +265,19 @@ await suite("tonari-floor", async (check) => {
       await press(t("table-1"));
       assert.equal(await coach(), "fever");
       assert.equal(await page.locator(t("bonus")).getAttribute("data-coach"), "true");
+      const gauge = () => page.evaluate(() => C.view.floorTest.api.state().fever);
+      const charged = await gauge();
+      await press(t("bonus"));
+      assert.equal(await coach(), "feverWait");
+      await afterBand(page);
+      await tick(4);
+      assert.equal(await coach(), "feverStop");
+      assert.equal(await text(), C_TUTORIAL.feverStop);
+      const remaining = await gauge();
+      assert(remaining > 0 && remaining < charged, "練習でも使った時間の分だけ減る");
       await press(t("bonus"));
       assert.equal(await coach(), "done");
+      assert.equal(await gauge(), remaining, "終了すると残りが残る");
       // スミさんの言葉は、右の列・卓の札と重ならない（UI の上に UI を重ねない）
       const overlap = await page.evaluate(() => {
         const r = (n) => n.getBoundingClientRect();
@@ -302,12 +314,13 @@ await suite("tonari-floor", async (check) => {
       const lastLog = () => page.locator(`${t("log")} p`).last().innerText();
       const hand = (wish) => api((a, wish) => C.model.floorHand(a.state(), wish), wish);
       const wishLabel = (id) => page.evaluate((id) => C.floorData.WISHES.find((w) => w.id === id).label, id);
-      await page.locator(t("option-start")).click();
-      assert.equal(await api((a) => a.mode()), "live");
       // 営業開始の帯が出ている間は、卓の札・番号札・手応えの言葉を出さない（帯の文字と重ねない）。右の列は、帯より手前にある
-      assert.deepEqual(await page.evaluate(() => { const root = document.querySelector(".tonari-floor"), z = (sel) => Number(getComputedStyle(root.querySelector(sel)).zIndex);
+      assert.deepEqual(await page.locator(t("option-start")).evaluate((button) => {
+        button.click();
+        const root = document.querySelector(".tonari-floor"), z = (sel) => Number(getComputedStyle(root.querySelector(sel)).zIndex);
         return [root.dataset.band, getComputedStyle(root.querySelector(".tf-spots")).opacity, root.querySelector(".tf-cutin").dataset.on, z(".tf-presets") > z(".tf-cutin"), z(".tf-layer") > z(".tf-presets")]; }),
         ["true", "0", "true", true, true]);
+      assert.equal(await api((a) => a.mode()), "live");
       await afterBand(page);
       assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector(".tf-spots")).opacity), "1");
       // 空席の卓は、札を出さない（番号札だけ）。出す先が無い間は、右の列に卓の番号を出さない
@@ -322,16 +335,19 @@ await suite("tonari-floor", async (check) => {
       // 仕込み中は、器の印と枠の丸だけ。言葉は読み上げ（aria-label）に出す
       assert.deepEqual(await page.locator(t("making")).evaluate((n) => [n.textContent, !!n.querySelector("svg"), n.querySelectorAll(".tf-making-pips > i").length, n.getAttribute("aria-label")]), ["", true, 2, "仕込み中: なし"]);
       // 来店: 客は自分で座り、気分を吹き出しで言う（フレーバーの名指しはしない）
-      await tick(4);
+      // 客のひとことは札の箱のすぐ上に出る。表示中の位置と文字を、来店を進めた同じ処理内で読む
+      const sayAt = await api((a) => {
+        a.tick(4);
+        const n = document.querySelector('.tf-spot[data-id="1"]'), pop = n.querySelector('.tf-pop[data-kind="say"]');
+        const box = n.querySelector(".tf-tag-box").getBoundingClientRect();
+        return { text: pop.innerText, above: pop.getBoundingClientRect().bottom <= box.top + 1,
+          head: getComputedStyle(n.querySelector(".tf-tag-want")).visibility, inTag: !!pop.closest(".tf-bubble") };
+      });
       const g1 = await api((a) => a.state().guests[a.state().tables[0].guestId]);
       const label1 = await wishLabel(g1.order.wish);
       assert.equal(await api((a) => a.state().tables[0].phase), "order");
       assert.equal(await lastLog(), `1卓　${g1.name}「${g1.order.quote}」`);
-      assert.equal(await spot(1).locator('.tf-pop[data-kind="say"]').innerText(), g1.order.quote);
-      // 客のひとことは、卓の札の見出しの所（箱のすぐ上）に出る。出ている間は見出しを隠すので、札の上に札が重ならない
-      const sayAt = await spot(1).evaluate((n) => { const pop = n.querySelector(".tf-pop").getBoundingClientRect(), box = n.querySelector(".tf-tag-box").getBoundingClientRect();
-        return { above: pop.bottom <= box.top + 1, head: getComputedStyle(n.querySelector(".tf-tag-want")).visibility, inTag: !!n.querySelector(".tf-bubble .tf-pop") }; });
-      assert.deepEqual(sayAt, { above: true, head: "hidden", inTag: true });
+      assert.deepEqual(sayAt, { text: g1.order.quote, above: true, head: "hidden", inTag: true });
       // 客が着いた卓は、床の番号札を畳む（番号は札の隅に出ている）。空席の卓の番号札は残る
       assert.deepEqual(await page.evaluate(() => [...document.querySelectorAll(".tf-spot")].map((n) => [n.dataset.phase === "empty", n.querySelector(".tf-plate").getClientRects().length > 0]).every(([empty, shown]) => empty === shown)), true);
       assert.equal(await spot(1).locator(".tf-plate").isVisible(), false);
@@ -648,7 +664,7 @@ await suite("tonari-floor", async (check) => {
       // 見送りの言葉は、出来事の行に出る（同じ時に「いまの調子」の知らせが続くことがあるので、2行のどちらかに出ていればよい）
       assert.match(await page.locator(t("log")).innerText(), /(^|\n)1卓「.+」(\n|$)/);
       assert.equal(await tagText(1), "1 片付け中");
-      // フィーバー: 1段溜まるまで押せない。使うと、くつろいでいる卓が最高の居心地になる
+      // フィーバー: 発動に必要な量まで溜まると使え、くつろいでいる卓が最高の居心地になる
       await until("s.tables.filter((x) => x.phase === 'enjoy').length >= 2", []);
       await api((a) => { a.state().fever = 40; a.tick(1); });
       assert.equal(await page.locator(t("bonus")).isDisabled(), true);
@@ -656,27 +672,39 @@ await suite("tonari-floor", async (check) => {
       await api((a) => { a.state().fever = 130; a.tick(1); });
       assert.equal(await page.locator(t("bonus")).isDisabled(), false);
       assert.equal(await page.locator(t("screen")).getAttribute("data-fever"), "ready");
-      assert.match(await page.locator(t("bonus")).innerText(), /^フィーバー\s*Lv1$/);
+      assert.equal(await page.locator(`${t("bonus")} b`).innerText(), "フィーバー");
       const bgmBefore = await page.evaluate(() => C.audio.requestedBgm());
-      await page.locator(t("bonus")).click({ force: true });
+      // フィーバーの帯の間は卓の札を隠す。帯の文字は右の列まで届かない
+      assert.deepEqual(await page.locator(t("bonus")).evaluate((button) => {
+        button.click();
+        const root = document.querySelector(".tonari-floor"), side = root.querySelector(".tf-presets").getBoundingClientRect();
+        return [root.dataset.band, getComputedStyle(root.querySelector(".tf-spots")).opacity,
+          [...root.querySelectorAll(".tf-cutin > b, .tf-cutin > small")].every((n) => n.getBoundingClientRect().right <= side.left)];
+      }), ["true", "0", true]);
       assert.equal(await page.locator(t("screen")).getAttribute("data-fever"), "on");
-      assert.match(await page.locator(".tf-cutin").innerText(), /FEVER TIME!\s*Lv1/);
-      // フィーバーの帯が出ている間も、卓の札は出さない。帯の文字は、右の列まで届かない
-      assert.deepEqual(await page.evaluate(() => { const root = document.querySelector(".tonari-floor"), side = root.querySelector(".tf-presets").getBoundingClientRect();
-        return [root.dataset.band, getComputedStyle(root.querySelector(".tf-spots")).opacity, [...root.querySelectorAll(".tf-cutin > b, .tf-cutin > small")].every((n) => n.getBoundingClientRect().right <= side.left)]; }), ["true", "0", true]);
+      assert.match(await page.locator(".tf-cutin").innerText(), /FEVER TIME!\s*2卓が最高の居心地/);
+      const portrait = page.locator(".tf-cutin-portrait");
+      assert.match(await portrait.getAttribute("src"), /\/img\/ui\/character_intros\/graphic\/hajime\.webp(?:\?|$)/);
+      assert(await portrait.evaluate(async (img) => {
+        await Promise.all([...img.parentElement.querySelectorAll("img")].map((art) => art.decode()));
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        return img.naturalWidth;
+      }) > 0);
+      await page.screenshot({ path: `${shots}/tonari-floor-${platform}-fever-cutin.png` }).catch(() => {});
       await afterBand(page);
-      const fever = await api((a) => { const s = a.state(); return { level: s.feverLevel, tables: s.tables.filter((x) => x.fever).map((x) => [x.id, x.mood]), fevers: s.fevers }; });
-      assert.deepEqual([fever.level, fever.fevers, fever.tables.length], [1, 1, 2], "Lv1 は2卓まで");
-      assert(fever.tables.every(([, m]) => m === 100));
-      assert.equal(await spot(fever.tables[0][0]).getAttribute("data-tone"), "fever");
-      assert.equal(await page.locator(t("bonus")).isDisabled(), true, "フィーバー中は重ねて使えない");
-      // フィーバー中の名前と段は、ボタンからはみ出さない。曲は、プリクラ用に作った平成ユーロビートへ替わる
-      assert.match(await page.locator(t("bonus")).innerText(), /^フィーバー中\s*Lv1$/);
+      const affected = await api((a) => a.state().tables.filter((x) => x.fever).map((x) => [x.id, x.mood]));
+      assert.equal(affected.length, 2, "発動は2卓まで");
+      assert(affected.every(([, m]) => m === 100));
+      assert.equal(await spot(affected[0][0]).getAttribute("data-tone"), "fever");
+      assert.equal(await page.locator(t("bonus")).isDisabled(), false, "同じボタンで途中終了できる");
+      // 終了のラベルはボタンに収まり、曲はプリクラ用に作った平成ユーロビートへ替わる
+      assert.equal(await page.locator(`${t("bonus")} b`).innerText(), "終了する");
       assert.equal(await page.locator(t("bonus")).evaluate((n) => { const box = n.getBoundingClientRect(), range = document.createRange(); range.selectNodeContents(n.querySelector("b"));
-        const text = range.getBoundingClientRect(), lv = n.querySelector(".tf-bonus-lv").getBoundingClientRect(); return text.left >= box.left && text.right <= box.right && lv.right <= box.right && lv.bottom <= box.bottom; }), true);
+        const text = range.getBoundingClientRect(); return text.left >= box.left && text.right <= box.right && text.bottom <= box.bottom; }), true);
       assert.equal(await page.evaluate(() => C.audio.requestedBgm()), "bgm_purikura");
       assert.notEqual(bgmBefore, "bgm_purikura");
       if (platform === "pc") await page.screenshot({ path: `${shots}/tonari-floor-pc-fever.png` }).catch(() => {});
+      await tick(1);
       // 休止→ゆっくり→つづける→早じまい→精算
       await page.locator(t("pause")).click();
       await page.locator(t("pause-panel")).waitFor();
@@ -776,7 +804,7 @@ await suite("tonari-floor", async (check) => {
             else if (tap === "bill" && i % 2 === 0) a.act({ type: "bill", tableId: table.id });
           }
           if (i % 37 === 20) a.act({ type: "shuffle" });
-          if (s.fever >= 100 && !s.feverLevel && i % 9 === 0) document.querySelector('[data-test="tonari-floor-bonus"]').click();
+          if (!s.feverLeft && C.model.floorFeverReady(s) && i % 9 === 0) document.querySelector('[data-test="tonari-floor-bonus"]').click();
           if (i % 11 === 5) document.querySelector(`[data-test="tonari-floor-table-${1 + (i % 5)}"]`)?.click(); // 押しても進まない卓の言葉も混ぜる
           a.tick(1);
           look();
@@ -877,14 +905,30 @@ await suite("tonari-floor", async (check) => {
     assert.notEqual(down.rank, before);
     assert.equal(down.bump, "down");
     assert.match(down.log, /いまの調子：(上々|まずまず|ばたばた)/);
-    // フィーバー: 入る時に画面が光り、明けると、その間に増えた売上を知らせる
-    await page.evaluate(() => { const a = C.view.floorTest.api; a.state().tables.forEach((x) => { if (x.phase === "enjoy") x.mood = 80; }); a.state().fever = 130; a.tick(1); });
+    // 途中で止めた分は残り、次の発動に回せる。終了時は光と売上を知らせ、店の曲に戻る
+    await page.evaluate(() => { const a = C.view.floorTest.api; a.state().tables.forEach((x) => { if (x.phase === "enjoy") x.mood = 80; }); a.state().fever = 100; a.tick(1); });
+    const bgm = await page.evaluate(() => C.audio.requestedBgm());
+    const gauge = () => page.evaluate(() => C.view.floorTest.api.state().fever);
+    assert.equal(await gauge(), 100);
     await page.locator(t("bonus")).click({ force: true });
     assert.equal(await page.locator(".tf-flash").getAttribute("data-on"), "fever");
-    await page.evaluate(() => { const a = C.view.floorTest.api; for (let i = 0; i < 80 && a.state().feverLeft > 0; i++) a.tick(1); });
+    assert.equal(await gauge(), 100, "突入演出では減らない");
+    await afterBand(page);
+    await page.evaluate(() => C.view.floorTest.api.tick(10));
+    assert.equal(await gauge(), 66);
+    await page.locator(t("bonus")).click();
+    assert.equal(await gauge(), 66, "開始に必要な量を下回っても、終了ボタンで未使用分が残る");
+    assert.equal(await page.locator(t("screen")).getAttribute("data-fever"), "ready");
+    assert.equal(await page.locator(`${t("bonus")} b`).innerText(), "再開する");
     assert.match(await page.locator(t("log")).innerText(), /フィーバーが明けました（＋[\d,]+円）/);
     assert.equal(await page.locator(".tf-flash").getAttribute("data-on"), "soft");
+    assert.equal(await page.evaluate(() => C.audio.requestedBgm()), bgm);
+    await page.locator(t("bonus")).click();
     await afterBand(page);
+    await page.evaluate(() => C.view.floorTest.api.tick(C.model.floorFeverLength - 10));
+    assert.equal(await gauge(), 0);
+    assert.equal(await page.locator(t("screen")).getAttribute("data-fever"), "");
+    assert.equal(await page.locator(t("bonus")).isDisabled(), true);
     // ラストオーダー: 新しい客が来なくなる時に、まん中の札で知らせる。残り10秒は、時計が脈を打つ
     await page.evaluate(() => { const a = C.view.floorTest.api, s = a.state(); s.t = s.length - C.model.floorLastCall - 1; a.tick(1); a.tick(1); });
     assert.match(await page.locator(".tf-banner").innerText(), /ラストオーダー\s*新しい来店は、ここまで/);
@@ -1042,6 +1086,22 @@ await suite("tonari-floor", async (check) => {
     await page.evaluate(() => C.view.floorTest.api.tick(8));
     assert.match(await skin(), /\/pad-shuffle\.webp/);
     assert.equal(await shuffle.locator(".tf-shuffle-emblem").isVisible(), true);
+    // フィーバーは余白のボタンでも途中終了でき、ラベルは枠に収まる
+    assert(await page.evaluate(() => C.until("s.tables.some((x) => x.phase === 'enjoy')")));
+    await page.evaluate(() => { const a = C.view.floorTest.api; a.state().fever = 100; a.tick(1); });
+    const bonus = page.locator(t("bonus"));
+    await bonus.tap();
+    await afterBand(page);
+    assert.equal(await bonus.locator("b").innerText(), "終了する");
+    assert(await bonus.evaluate((n) => {
+      const button = n.getBoundingClientRect(), text = document.createRange();
+      text.selectNodeContents(n.querySelector("b"));
+      const label = text.getBoundingClientRect();
+      return label.left >= button.left + 3 && label.right <= button.right - 3;
+    }), "横持ちタッチの終了ラベルは、左右に余白がある");
+    await page.evaluate(() => C.view.floorTest.api.tick(1));
+    await bonus.tap();
+    assert.equal(await bonus.locator("b").innerText(), "再開する");
     // 接客の画面の間は、余白のボタンも隠れる
     const id = await page.evaluate(() => { const a = C.view.floorTest.api; for (let i = 0; i < 60 && !a.state().tables.some((x) => x.phase === "order"); i++) a.tick(1);
       return a.state().tables.find((x) => x.phase === "order")?.id; });
@@ -1089,6 +1149,22 @@ await suite("tonari-floor", async (check) => {
     await api((a) => { a.state().hand[0] = "applemint"; a.act({ type: "order", tableId: 3, mix: "applemint" }); });
     await page.evaluate(() => C.until("s.tables[2].phase === 'enjoy'", [3]));
     assert.deepEqual(await api((a) => { const x = a.state().tables[2]; return [x.grade, x.line]; }), ["best", "……よい。林檎が、まっすぐ立っている"]);
+    // 炭が尽きても、慣れている来店客からは炭の頼みが来ない。水の頼みと個別台詞は出る
+    await api((a) => {
+      const s = a.state(), table = s.tables[2];
+      table.coalAt = table.nextCall = s.t;
+      a.tick(1);
+    });
+    assert.equal(await api((a) => a.state().tables[2].call), null);
+    assert.equal(await spot.getAttribute("data-tap"), "tend");
+    assert(await page.evaluate(() => C.until("s.tables[2].call?.type === 'thirsty'", [3])));
+    await page.locator(t("table-3")).click();
+    assert.equal(await page.locator(".tf-sheet-quote").innerText(), "「……水を。舌を、まっさらにしたい」");
+    await page.evaluate(() => { C.view.floorTest.verdictMs = 5000; });
+    await page.locator(t("option-water")).click();
+    assert.equal(await page.locator(".tf-sheet-quote").innerText(), "「……感謝する」");
+    await page.locator(t("option-water")).click();
+    await page.waitForFunction(() => C.view.floorTest.api.mode() === "live");
     await api((a) => a.act({ type: "finish" }));
     await page.locator(t("result")).waitFor();
     assert.equal(await page.locator(t("visitor")).innerText(), "今日は、アダムが遊びに来た");
@@ -1175,6 +1251,8 @@ await suite("tonari-floor", async (check) => {
     await page.waitForFunction(() => C.view.floorTest.api.mode() === "live", null, { timeout: 5000 });
     await page.waitForFunction((t) => C.view.floorTest.api.state().t > t, cut.t, { timeout: 5000 });
     assert.equal(await page.locator(t("screen")).getAttribute("data-fever"), "on");
+    await page.keyboard.press("f");
+    assert.equal(await page.locator(t("screen")).getAttribute("data-fever"), "ready", "F を再度押すと終了し、残りはすぐ使える");
     await page.evaluate(() => { Object.defineProperty(document, "hidden", { configurable: true, get: () => true }); document.dispatchEvent(new Event("visibilitychange")); });
     assert.equal((await state()).mode, "pause", "別タブへ移ると休止する");
     await page.evaluate(() => { delete document.hidden; });

@@ -15,8 +15,8 @@ import { buildVersioned } from "../core/asset-version.js";
 import { sideSlot, releaseSideSlot } from "../core/side-area.js";
 import {
   createFloorNight, floorTick, floorAct, floorTap, floorHint, floorResult, floorUrgency, floorWaitLeft,
-  floorStayLeft, floorCoalLeft, floorTendDue, floorMaking, floorHand, floorShuffleLeft, floorTimeLeft, floorStage, floorBill, floorFeverLevel,
-  mixName, mixNameParts, mixFlavorParts, mixFullName, floorOutlook, floorLastCall, floorPlan, floorFeverLength, floorSlots, floorShuffleTime, FLOOR_TICK_MS, FLOOR_TABLE_COUNT,
+  floorStayLeft, floorCoalLeft, floorTendDue, floorMaking, floorHand, floorShuffleLeft, floorTimeLeft, floorStage, floorBill, floorFeverReady,
+  mixName, mixNameParts, mixFlavorParts, mixFullName, floorOutlook, floorLastCall, floorPlan, floorFeverMax, floorFeverCost, floorFeverLength, floorSlots, floorShuffleTime, FLOOR_TICK_MS, FLOOR_TABLE_COUNT,
   floorCallLine, floorDusk, createFloorTutorial, floorTutorialCue,
 } from "./tonari-floor-model.js";
 import { RANKS,
@@ -291,13 +291,13 @@ export function runTonariFloor({
       logLines,
       el("span.tf-advice", {}, [hajimeFace ? el("img", { src: hajimeFace, alt: "はじめ", draggable: false }) : null, hintText]),
     ]);
-    const feverLevels = el("span.tf-fever-levels", { "aria-hidden": true }, [1, 2, 3].map((n) => el("i", { dataset: { n } }, [el("i")])));
+    const feverFill = el("i.tf-fever-fill");
     // フィーバーのボタンとゲージは、右の列のボタンの段（シャッフルの下）に置く（2026-11-20 オーナー「フィーバーボタンやゲージとか一部のボタンを
     // サイドバーに移動したり、スペースを活用して欲しい」・TFL41／「右のサイドバーにボタンとして設置したい」・TFL52）。一行の名前と、その下の細いゲージ
-    const feverLabel = el("b", { text: "フィーバー" }), feverLv = el("i.tf-bonus-lv");
+    const feverLabel = el("b", { text: "フィーバー" });
     const bonusButton = el("button.tf-bonus", { type: "button", dataset: test("bonus"), onclick: () => useFever() }, [
-      el("span.tf-bonus-head", {}, [el("span.tf-bonus-lamp", {}, [glyph("lamp")]), feverLabel, feverLv]),
-      el("span.tf-bonus-gauge", {}, [feverLevels]),
+      el("span.tf-bonus-head", {}, [el("span.tf-bonus-lamp", {}, [glyph("lamp")]), feverLabel]),
+      el("span.tf-bonus-gauge", { "aria-hidden": true, style: { "--tf-fever-start": `${floorFeverCost / floorFeverMax * 100}%` } }, [feverFill]),
     ]);
     actions.append(bonusButton);
     const bottom = el("footer.tf-bottom", {}, [ticker]);
@@ -317,16 +317,22 @@ export function runTonariFloor({
     const banner = el("div.tf-banner", { "aria-hidden": true });
     const cutinBand = el("div.tf-cutin", { "aria-hidden": true });
     // 帯の表示は短いので、開店前に画像の読み込みを始める。
-    const cutinImages = new Map();
-    for (const [name, path] of Object.entries(cutins || {})) {
+    function cutinImage(path, className) {
       const url = artUrl(path);
-      if (!url) continue;
+      if (!url) return null;
       const src = /^(data:|blob:)/.test(url) ? url : buildVersioned(url);
-      const image = el("img.tf-cutin-art", { src, alt: "", decoding: "async", draggable: false });
-      image.addEventListener("load", () => {
-        if (image.parentNode === cutinBand) cutinBand.dataset.art = "true";
+      const image = el(`img.${className}`, { src, alt: "", decoding: "async", draggable: false });
+      void image.decode().catch(() => {}); // 短い帯が出る前に、画像を表示できる状態にしておく
+      return image;
+    }
+    const cutinImages = new Map();
+    for (const [name, art] of Object.entries(cutins || {})) {
+      const background = cutinImage(typeof art === "string" ? art : art?.background, "tf-cutin-art");
+      const portrait = cutinImage(art?.portrait, "tf-cutin-portrait");
+      background?.addEventListener("load", () => {
+        if (background.parentNode === cutinBand) cutinBand.dataset.art = "true";
       }, { once: true });
-      cutinImages.set(name, image);
+      cutinImages.set(name, { background, portrait });
     }
     const flash = el("div.tf-flash", { "aria-hidden": true });
     const announce = el("p.tf-sr", { "aria-live": "polite", "aria-atomic": "true" });
@@ -475,9 +481,9 @@ export function runTonariFloor({
     }
     // 画面を横切る帯。art＝絵の登録名（open / fever / close）。絵が届いていれば、帯の中に敷く
     function cutin(title, sub, kind = "", art = "") {
-      const image = cutinImages.get(art);
-      cutinBand.replaceChildren(image || "", el("b", { text: title }), sub ? el("small", { text: sub }) : "");
-      cutinBand.dataset.art = String(!!image?.naturalWidth);
+      const { background, portrait } = cutinImages.get(art) || {};
+      cutinBand.replaceChildren(background || "", portrait || "", el("b", { text: title }), sub ? el("small", { text: sub }) : "");
+      cutinBand.dataset.art = String(!!background?.naturalWidth);
       cutinBand.dataset.kind = kind;
       cutinBand.dataset.on = "false";
       void cutinBand.offsetWidth; // 同じ帯を続けて出す時に、動きを最初からやり直す
@@ -547,7 +553,7 @@ export function runTonariFloor({
             pop(e.tableId, e.fans > 0 ? `ファン ＋${e.fans}` : yen(e.total), e.fans > 0 ? "best" : "coin", e.fans > 0 ? "" : "bill");
             if (e.line) say(e.tableId, e.line, e.fans > 1 ? "good" : "");
             break;
-          case "feverReady": SE.jingle(); log(`フィーバー Lv${e.level} が使えます`, "good"); break;
+          case "feverReady": SE.jingle(); log("フィーバーが使えます", "good"); break;
           case "feverStart": SE.just(); SE.whoosh(); flashNow("fever"); break;
           case "feverEnd": endFever(); break;
           default: break;
@@ -742,21 +748,17 @@ export function runTonariFloor({
         lastCalled = true;
         if (leftTicks > floorLastCall - 4) { SE.count(); showBanner("ラストオーダー", "新しい来店は、ここまで"); log("ラストオーダーです", ""); }
       }
-      // フィーバー: 3段のゲージ。溜まった段までを一度に使う
+      // 使った分だけ減るゲージ。発動中は同じボタンで切り上げられる。
       const feverOn = state.feverLeft > 0;
-      const level = floorFeverLevel(state);
-      host.dataset.fever = feverOn ? "on" : level ? "ready" : "";
+      const feverReady = floorFeverReady(state);
+      host.dataset.fever = feverOn ? "on" : feverReady ? "ready" : "";
       bonusButton.dataset.fever = host.dataset.fever; // 画面外の右に置いた時の見た目用（host の外なので、ボタン自身に持たせる）
-      bonusButton.disabled = feverOn || !level || !state.tables.some((x) => x.phase === "enjoy");
-      bonusButton.dataset.level = String(feverOn ? state.feverLevel : level);
-      feverLevels.querySelectorAll(":scope > i").forEach((seg, i) => {
-        const fill = feverOn ? (i < state.feverLevel ? state.feverLeft / floorFeverLength : 0) : Math.max(0, Math.min(1, state.fever / 100 - i));
-        seg.firstElementChild.style.width = `${Math.round(fill * 100)}%`;
-      });
-      feverLabel.textContent = feverOn ? "フィーバー中" : "フィーバー";
-      const lv = feverOn ? state.feverLevel : level;
-      feverLv.textContent = lv ? `Lv${lv}` : ""; // 使える段（使っている段）は、灯りの右上の小さな札で出す
-      bonusButton.setAttribute("aria-label", feverOn ? "フィーバー中" : level ? `フィーバー Lv${level} を使う` : `フィーバーのゲージ ${Math.round(state.fever)}`);
+      bonusButton.disabled = !feverOn && (!feverReady || !state.tables.some((x) => x.phase === "enjoy"));
+      const filled = state.fever / floorFeverMax * 100;
+      feverFill.style.width = `${filled}%`;
+      feverLabel.textContent = feverOn ? "終了する" : state.feverResume ? "再開する" : "フィーバー";
+      const action = feverOn ? "フィーバーを終了" : state.feverResume ? "フィーバーを再開" : feverReady ? "フィーバーを使う" : "フィーバー";
+      bonusButton.setAttribute("aria-label", `${action}、ゲージ残り${Math.round(filled)}％`);
       // 日が暮れたら、店内の絵を夜へ（昼から夜まで通しの店番）。出来事の行で一度だけ知らせる
       if (duskArt && !duskShown && floorDusk(state)) {
         duskShown = true;
@@ -821,18 +823,27 @@ export function runTonariFloor({
 
     function useFever() {
       if (mode !== "live") return;
+      if (state.feverLeft > 0) {
+        if (!perform({ type: "feverStop" })) SE.error();
+        return;
+      }
       if (!perform({ type: "fever" })) { SE.error(); return; }
       if (state.done) return;
       // 突入の演出: 時間を止めて、帯と曲を切り替える
-      const level = state.feverLevel;
       feverSalesAt = state.sales;
       feverBgm = requestedBgm() || SHIFT_BGM;
       playBgm(FEVER_BGM);
-      cutin("FEVER TIME!", `Lv${level}　${state.tables.filter((x) => x.fever).length}卓が最高の居心地`, "fever", "fever");
-      log(`フィーバー Lv${level}！`, "good");
+      cutin("FEVER TIME!", `${state.tables.filter((x) => x.fever).length}卓が最高の居心地`, "fever", "fever");
+      log("フィーバー！", "good");
       if (floorTest.manual) return;
+      const focused = document.activeElement;
       setMode("cutin");
-      cutinTimer = setTimeout(() => { if (active && mode === "cutin") { setMode("live"); lastAt = performance.now(); } }, CUTIN_MS);
+      cutinTimer = setTimeout(() => {
+        if (!active || mode !== "cutin") return;
+        setMode("live");
+        lastAt = performance.now();
+        focused?.focus({ preventScroll: true });
+      }, CUTIN_MS);
     }
     function endFever() {
       if (!feverBgm) return;
@@ -1001,6 +1012,8 @@ export function runTonariFloor({
       { id: "tend", cue: ["coal", 2], expect: { type: "tend", tableId: 2 }, focus: ["table", 2] },
       { id: "bill", cue: ["bill", 1], expect: { type: "bill", tableId: 1 }, focus: ["table", 1] },
       { id: "fever", cue: ["fever"], expect: { type: "fever" }, focus: ["fever"] },
+      { id: "feverWait", wait: (s) => s.feverLeft <= floorFeverLength - 4 },
+      { id: "feverStop", expect: { type: "feverStop" }, focus: ["fever"] },
       { id: "done", talk: true },
     ];
     /** 今の段で、この操作をしてよいか（チュートリアルでなければ、いつでもよい）。 */
@@ -1100,7 +1113,7 @@ export function runTonariFloor({
         ["order", "客の気分と同じ印のミックスを出す"],
         ["shuffle", `合うのが無ければシャッフル（${shuffleCost}かかる）`],
         ["add", "炭が減ったら、頼まれる前に調整へ"],
-        ["lamp", "ゲージが溜まったらフィーバー"],
+        ["lamp", "フィーバーはもう一度押すと終了。残りは次に使える"],
       ];
       return el("section.tf-intro", { role: "dialog", "aria-modal": "true", "aria-labelledby": "tf-intro-title", dataset: test("intro") }, [
         el("div.tf-intro-card", {}, [
@@ -1289,7 +1302,7 @@ export function runTonariFloor({
         return;
       }
       if (mode === "live") {
-        if (event.key === "f" || event.key === "F") { event.preventDefault(); useFever(); return; }
+        if (event.key === "f" || event.key === "F") { event.preventDefault(); if (!event.repeat) useFever(); return; }
         if (event.target instanceof HTMLButtonElement && event.target.classList.contains("tf-seat")) {
           // 動かす起点は、いまフォーカスのある卓（マウスを乗せて選んだ卓とは別のことがある）
           const next = spotInDirection(SPOTS, Number(event.target.closest(".tf-spot")?.dataset.id) || selected, event.key);
