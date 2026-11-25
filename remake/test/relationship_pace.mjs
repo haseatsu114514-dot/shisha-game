@@ -17,6 +17,8 @@ const context = await browser.newContext({ viewport: touch ? { width: 844, heigh
   isMobile: touch, hasTouch: touch, reducedMotion: "reduce" });
 const page = await context.newPage(); page.setDefaultTimeout(20000);
 await installLoadingComicReader(page);
+// 店番（フロア営業・TFL62）は回さない（シフトを通り過ぎるだけ。support.mjs の floorGame と同じ）
+await page.addInitScript(() => { try { localStorage.setItem("suien_floor", "instant"); } catch {} });
 const errors = []; page.on("pageerror", e => errors.push(e.message));
 const actions = [], snapshots = []; let currentThread = null, lastKey = "", lastProgress = Date.now();
 async function press(selector) {
@@ -123,7 +125,8 @@ try {
       const available = (target !== "rio" || !snap.rioClosed) && !!await page.locator(`[data-test="pin-${pin}"]:not(.off)`).count();
       let action = !visited && available && !snap.targetNight && (mode !== "usual" || snap.day % 2 === 0) ? target : "rest";
       if (snap.stamina < 30) action = "rest";
-      if (action === "rest" && snap.stamina >= 38 && !snap.baito && snap.money < 7000) action = "baito";
+      // シフト（店番）は昼から入る（TFL62。夜は札が押せない）
+      if (action === "rest" && snap.stamina >= 38 && !snap.baito && snap.money < 7000 && snap.slot === 0) action = "baito";
       if (action === "rest" && mode === "boost" && snap.stamina >= 38 && snap.money >= 5000
         && await page.locator('[data-test="pin-choizap"]:not(.off)').count()) action = "choizap";
       actions.push({ day: snap.day, slot: snap.slot, action, points: snap.points });

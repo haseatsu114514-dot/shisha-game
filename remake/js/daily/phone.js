@@ -451,7 +451,7 @@ function mukaiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
 
 /**
  * スミさんからの「急で悪い、昼のシフト入れるか？」。序盤の固定2回（DAY3/8）＋4日以上バイトに出ていない朝。
- * 乗るとそのまま昼のシフトへ（行動1回・給料に上乗せ）。各章の大会当日は来ない
+ * 乗るとそのまま昼から夜までの店番へ（行動2回・給料に上乗せ。TFL62）。各章の大会当日は来ない
  */
 function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
   if (tournamentDay || !chapterFeatureEnabled(state.chapter, "hiyoriDaily") || (chapterFeatureEnabled(state.chapter, "sumiStoryShifts") && state.day >= TOURNAMENT_DAY)) return null;

@@ -47,6 +47,8 @@ try {
     const context = await browser.newContext(options);
     const page = await context.newPage();
     await installLoadingComicReader(page);
+    // 店番（フロア営業・TFL62）は回さない（シフトを通り過ぎるだけ。support.mjs の floorGame と同じ）
+    await page.addInitScript(() => { try { localStorage.setItem("suien_floor", "instant"); } catch {} });
     const errors = [], failedResources = [], cache = { cold: 0, warm: 0 };
     const revalidated = { cold: 0, warm: 0 };
     const cdp = await context.newCDPSession(page);

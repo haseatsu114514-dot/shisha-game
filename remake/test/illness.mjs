@@ -54,7 +54,9 @@ const values = {
   "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => modules.get("chapter-clock.js").namespace.chapterDaysLeft(state), setPhoneBadge: noop, presentSleepRecovery: async () => {} },
   "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop, isChoosingDestination: () => false },
   "weather.js": { isRainy: () => false, weatherOf: () => "sun", tomorrowForecast: () => null, RAIN_SPOT_TEXTS: {} },
-  "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); return true; } },
+  // 発病と体力の警告の検査なので、シフトは1コマ・体力24・いつでも入れる固定の代役にする（店番の2コマ・昼だけは tonari_floor_shift.mjs などで見る）
+  "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); return true; },
+    SHIFT_SLOTS: 1, SHIFT_STAMINA: 24, shiftOpen: () => true },
   // 家シーシャ（#638）: 寝る前の一服はこのテストの対象外（home_shisha.mjs で確かめる）
   "home-shisha.js": { runHomeShisha: async () => false },
   "home-rig.js": { showSumiRigAtHome: async () => false },

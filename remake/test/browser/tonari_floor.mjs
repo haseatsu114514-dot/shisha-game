@@ -4,6 +4,7 @@
 // 炭の調整（頼まれる前に）と会計は卓を押すだけ。卓の札は、押すと進む用件の時だけ見出しを出し、手応えの言葉は見出しの所に出す（UI の上に UI を重ねない）。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
+import { TUTORIAL as C_TUTORIAL } from "../../js/daily/tonari-floor-data.js";
 
 const touch = { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true };
 const t = (key) => `[data-test="tonari-floor-${key}"]`;
@@ -26,7 +27,8 @@ async function setup(page, { day = 4, slot = 1, manual = true } = {}) {
       const s = C.core.newGame();
       Object.assign(s, { phase: "daily", day: d, slot: sl, money: 30000, stamina: 100, weatherSeed: 4, baitoCount: 1 });
       Object.assign(s.flags, { _lime_tut: 1, _delivery_minto_done: true, _delivery_adam_done: true,
-        _errand_scout_done: true, _hiyori_meeting_done: true, _hiyori_message_delivered: true, _ev_ageha_cameo: true, _ev_salaryman: true });
+        _errand_scout_done: true, _hiyori_meeting_done: true, _hiyori_message_delivered: true, _ev_ageha_cameo: true, _ev_salaryman: true,
+        _tonari_floor_tutorial: true }); // チュートリアル（TFL64）は済んだ扱い。はじめての店番の流れ・チュートリアルの検査は消して確かめる
       s.flags[`_morning_${d}`] = s.flags[`_morning_${d + 1}`] = true;
       s.met.naru = s.met.adam = s.met.minto = true;
       s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
@@ -47,8 +49,9 @@ async function setup(page, { day = 4, slot = 1, manual = true } = {}) {
         const a = api();
         if (!a) { if (i > 50 && C.driven) return; continue; }
         C.driven = true;
+        if (a.coach?.()) { C.skippedTutorial = true; click('[data-test="tonari-floor-coach-skip"]'); continue; } // チュートリアルは飛ばす（中身は pc-tutorial）
         if (a.mode() === "intro") { click('[data-test="tonari-floor-option-start"]'); continue; }
-        if (a.mode() === "result") { C.result = C.model.floorResult(a.state()); click('[data-test="tonari-floor-option-continue"]'); return; }
+        if (a.mode() === "result") { C.result = C.model.floorResult(a.state()); C.dusk = a.host.dataset.dusk; click('[data-test="tonari-floor-option-continue"]'); return; }
         if (a.mode() !== "live") continue;
         const action = C.bot.floorBotAction(a.state(), { pick });
         if (action) a.act(action);
@@ -81,7 +84,6 @@ async function setup(page, { day = 4, slot = 1, manual = true } = {}) {
     };
     C.after = setInterval(() => {
       document.querySelector('[data-test="after-none"]')?.click();
-      document.querySelector('[data-test="shift-order-0"]')?.click();
     }, 20);
   }, { day, slot, manual });
 }
@@ -92,68 +94,76 @@ await suite("tonari-floor", async (check) => {
     ? check(label, body, { reducedMotion: "reduce", ...options }) : Promise.resolve());
   const MARK = { best: "◎", good: "○", none: "×" };
 
-  // 勤務札から入り、営業を終えて日当と売上ボーナスを受け取る。いつものシフトと同じ行動枠・体力。
+  // 勤務札から入り、店番（昼から夜まで・2コマ。TFL62）を終えて日当と売上ボーナスを受け取る。いつものシフト（旧バイト）は無い（TFL63）。
+  // はじめての店番は、スミさんの前振りのあとチュートリアル（TFL64。ここでは飛ばす。中身は pc-tutorial）。
   await run("pc-shift-flow", async (page) => {
-    await setup(page);
-    // 同じ状態でいつものシフトに入った時の日当（体調などの上乗せ込み）。フロアとの差が売上ボーナスになる
-    const classic = await page.evaluate(async () => {
-      const s = C.fresh();
-      await C.stats.paidAction(() => C.tonari.doBaito());
+    await setup(page, { slot: 0 });
+    // 同じ状態で、店番を開店してすぐ閉めた時の日当（体調などの上乗せ込み・売上ボーナスなし）。本番との差が売上ボーナスになる
+    const plain = await page.evaluate(async () => {
+      const s = C.fresh(4, 0);
+      C.view.floorTest.instant = true;
+      try { await C.stats.paidAction(() => C.tonari.doBaito()); } finally { C.view.floorTest.instant = false; }
       return { pay: s.money - 30000, stamina: s.stamina };
     });
-    await page.evaluate(() => { const s = C.fresh(); s.baitoCount = 0; C.core.save(); C.core.load(); C.ch1.resumeGame().catch((e) => { window.calendarError = e.stack; }); });
+    // 夜からは入れない（札は押せず、理由が出る）
+    await page.evaluate(() => { const s = C.fresh(4, 1); s.baitoCount = 0; delete s.flags._tonari_floor_tutorial; C.core.save(); C.core.load(); C.ch1.resumeGame().catch((e) => { window.calendarError = e.stack; }); });
     await page.locator('.map:not(.done) [data-spot="tonari"]').click();
     await page.locator('[data-test="map-go"]').click();
-    await page.locator('[data-test="tonari-baito"]').waitFor();
-    assert.equal(await page.locator('[data-test="tonari-baito-floor"]').count(), 0, "最初のシフトの前は、フロアを任されない");
+    const night = page.locator('[data-test="tonari-baito"]');
+    assert.equal(await night.isDisabled(), true);
+    assert.match(await night.innerText(), /シフトは昼から入る。夜からは入れない/);
+    assert.equal(await page.locator('[data-test="tonari-baito-floor"]').count(), 0, "旧バイトとの二つの札は無い");
     await page.locator('[data-test="sub-back"]').click();
-    // 本編の「常連さんの話」を次のシフトで読む間（第1章 DAY2 以降・未読。#3819）も、いつものシフトだけ
-    await page.evaluate(() => { C.core.state.baitoCount = 1; C.core.state.flags._ev_salaryman = false; });
+    // 昼: 札は一つ。昼から夜まで、2コマ
+    await page.evaluate(() => { const s = C.fresh(4, 0); s.baitoCount = 0; delete s.flags._tonari_floor_tutorial; C.core.save(); C.core.load(); C.ch1.resumeGame().catch((e) => { window.calendarError = e.stack; }); });
     await page.locator('.map:not(.done) [data-spot="tonari"]').click();
     await page.locator('[data-test="map-go"]').click();
-    await page.locator('[data-test="tonari-baito"]').waitFor();
-    assert.equal(await page.locator('[data-test="tonari-baito-floor"]').count(), 0, "常連さんの話を読むシフトの前は、フロアを任されない");
-    await page.locator('[data-test="sub-back"]').click();
-    await page.evaluate(() => { C.core.state.flags._ev_salaryman = true; });
-    await page.locator('.map:not(.done) [data-spot="tonari"]').click();
-    await page.locator('[data-test="map-go"]').click();
-    const card = page.locator('[data-test="tonari-baito-floor"]');
-    assert.match(await card.innerText(), /フロアを任される/);
-    assert.match(await card.innerText(), /新しい仕事.*一人で回す/);
+    const card = page.locator('[data-test="tonari-baito"]');
+    assert.match(await card.innerText(), /シフトに入る（バイト）/);
+    assert.match(await card.innerText(), /【はじめての店番】昼から夜まで、五つの卓を一人で回す（2コマ）.*基本16,000円/);
     const before = await page.evaluate(() => ({ money: C.core.state.money, stamina: C.core.state.stamina, slot: C.core.state.slot }));
+    await page.evaluate(() => { C.trace = []; }); // 上の、売上ボーナスなしの日当を測った勤務の分を消す
     await card.click();
+    await page.locator(t("coach")).waitFor();
+    assert.deepEqual(await page.evaluate(() => C.trace.filter((id) => /floor/.test(id))), ["tonari_floor_first"], "スミさんの前振りのあと、チュートリアル");
+    await page.locator(t("coach-skip")).click();
     await page.locator(t("intro")).waitFor();
     assert.match(await page.locator(t("intro")).innerText(), /はじめてのワンオペ/);
     assert.deepEqual(await page.locator(`${t("intro-wishes")} .tf-wish`).evaluateAll((list) => list.map((n) => [n.dataset.wish, n.textContent.trim(), !!n.querySelector("svg")])),
       [["fruit", "フルーティ", true], ["sweet", "スイート", true], ["fresh", "刺激系", true], ["deep", "リラックス", true]], "気分（＝属性）の色と印の見本");
     assert.equal(await page.locator(".tf-how li").count(), 4, "はじめての営業は、進め方を出す");
-    assert.deepEqual(await page.evaluate(() => C.trace.filter((id) => /floor/.test(id))), ["tonari_floor_first"]);
+    assert.equal(await page.locator(t("option-tutorial")).count(), 1, "遊び方は、開店前の札からいつでも見られる");
     // 営業中は保存しない（途中の体力だけが残らない）
     assert.equal(await page.evaluate(() => C.core.save()), false);
+    assert.equal(await page.evaluate(() => C.view.floorTest.api.state().dusk > 0), true, "昼から夜まで通しの店番");
     await page.evaluate(() => C.drive({ pace: 2 }));
     await page.waitForFunction(() => C.core.state.slot === 2 || C.core.state.day === 5, null, { timeout: 60000 });
     const after = await page.evaluate(() => ({ money: C.core.state.money, stamina: C.core.state.stamina, floor: C.core.state.flags._tonari_floor,
-      visited: C.core.state.visitedDay.tonari_baito, result: C.result, toasts: C.toasts, error: window.calendarError,
+      visited: C.core.state.visitedDay.tonari_baito, result: C.result, toasts: C.toasts, error: window.calendarError, dusk: C.dusk,
+      tutorial: C.core.state.flags._tonari_floor_tutorial, through: C.core.state.flags._shift_through_night,
       order: Object.keys(C.core.state.flags).filter((k) => k.startsWith("_shift_order_")), baitoCount: C.core.state.baitoCount }));
     assert.equal(after.error, undefined);
     assert.equal(after.result.rank, "S");
     assert.equal(after.result.bonus, 1500);
     assert.equal(after.result.left, 0, "手際よく回せば、誰も待ちきれずに帰らない");
     assert(after.result.counts.tend >= 1, "炭の調整に回っている");
+    assert.equal(after.dusk, "true", "営業の半ばで日が暮れた");
     assert.deepEqual(after.floor, { nights: 1, best: "S", fans: after.result.fans, top: after.result.sales }, "回した回数・最高の評価・ファン・売上の最高が残る");
     assert(after.floor.fans > 0);
     assert.equal(after.visited, 4);
-    assert.equal(after.baitoCount, 2);
-    assert.deepEqual(after.order, [], "ワンオペの営業は「今日の注文」を済んだことにしない");
-    assert(classic.pay >= 8000);
-    assert.equal(after.money - before.money, classic.pay + 1500, "いつものシフトの日当＋売上ボーナス");
-    assert.equal(after.stamina, classic.stamina, "体力の消費はいつものシフトと同じ");
-    assert(after.toasts.some((text) => /フロアの売上ボーナス（大入り）\+1,500円/.test(text)), after.toasts.join(" / "));
+    assert.equal(after.baitoCount, 1);
+    assert.equal(after.tutorial, true, "飛ばしたチュートリアルも、済んだことにする");
+    assert.equal(after.through, 4, "昼から夜まで（2コマ）使った");
+    assert.deepEqual(after.order, [], "「今日の注文」は無い");
+    assert(plain.pay >= 16000, "2コマ分の基本給");
+    assert.equal(after.money - before.money, plain.pay + 1500, "日当＋売上ボーナス");
+    assert.equal(after.stamina, plain.stamina, "体力の消費は同じ");
+    assert(after.toasts.some((text) => /店番の売上ボーナス（大入り）\+1,500円/.test(text)), after.toasts.join(" / "));
     const saved = await page.evaluate(() => { const raw = JSON.parse(localStorage.getItem(C.core.SAVE_KEY)); return { money: raw.money, floor: raw.flags._tonari_floor }; });
     assert.deepEqual(saved, { money: after.money, floor: after.floor });
   });
 
-  // 二回目以降: 勤務札に予報と最高評価が出る。昼のシフトは昼の呼び名と時計。前の形の保存（定番つき）もそのまま読める。
+  // 二回目以降: 勤務札に予報と最高評価が出る。店番は昼の呼び名と時計で始まる。前の形の保存（定番つき）もそのまま読める。
   await run("pc-forecast", async (page) => {
     await setup(page, { slot: 0 });
     await page.evaluate(() => {
@@ -163,9 +173,9 @@ await suite("tonari-floor", async (check) => {
     });
     await page.locator('.map:not(.done) [data-spot="tonari"]').click();
     await page.locator('[data-test="map-go"]').click();
-    await page.waitForFunction(() => /今日の予報：/.test(document.querySelector('[data-test="tonari-baito-floor"]')?.innerText || ""));
-    assert.match(await page.locator('[data-test="tonari-baito-floor"]').innerText(), /これまでの最高：上々/);
-    await page.locator('[data-test="tonari-baito-floor"]').click();
+    await page.waitForFunction(() => /今日の予報：/.test(document.querySelector('[data-test="tonari-baito"]')?.innerText || ""));
+    assert.match(await page.locator('[data-test="tonari-baito"]').innerText(), /これまでの最高：上々/);
+    await page.locator('[data-test="tonari-baito"]').click();
     await page.locator(t("intro")).waitFor();
     assert.deepEqual(await page.evaluate(() => C.trace.filter((id) => /floor/.test(id))), ["tonari_floor_start"]);
     assert.match(await page.locator(t("intro")).innerText(), /店のファン 7人/);
@@ -174,6 +184,7 @@ await suite("tonari-floor", async (check) => {
     const live = await page.evaluate(() => { const s = C.view.floorTest.api.state(); return { daytime: s.daytime, clock: C.model.floorClock(s), level: s.level }; });
     assert.deepEqual(live, { daytime: true, clock: "12:00", level: 2 });
     assert.equal(await page.locator(t("screen")).getAttribute("data-night"), "false");
+    assert.equal(await page.locator(".tf-room-night").count(), 1, "日が暮れたら灯す夜の店内");
     assert.equal(await page.locator(".tf-preset").count(), 5, "右の列に、ミックスが5つ並ぶ");
     await page.evaluate(() => C.drive({ pace: 3 }));
     await page.waitForFunction(() => C.core.state.slot >= 1 && !document.querySelector('[data-test="tonari-floor-screen"]:not(.done)'), null, { timeout: 60000 });
@@ -183,6 +194,93 @@ await suite("tonari-floor", async (check) => {
     assert.equal(done.result.served + done.result.left, done.result.came);
     assert(done.result.served >= 1);
   });
+
+  // チュートリアル（TFL64）: スミさんが一段ずつ「やること」を出し、それ以外は受けない。待つ段だけ時間が流れる。最後まで実画面で操作する。
+  for (const [platform, options] of [["pc", {}], ["touch", touch]]) {
+    await run(`${platform}-tutorial`, async (page) => {
+      await setup(page);
+      await page.evaluate(() => {
+        C.fresh();
+        window.done = C.view.runTonariFloor({ tutorial: true, chapter: 1, art: C.data.bgUrl("res://assets/backgrounds/bg_tonari_inside.png", "day") })
+          .then((r) => { window.result = r; });
+      });
+      const coach = () => page.evaluate(() => C.view.floorTest.api.coach());
+      const text = () => page.locator(t("coach-text")).innerText();
+      const tick = (n) => page.evaluate((n) => C.view.floorTest.api.tick(n), n);
+      const press = (sel) => (platform === "touch" ? page.locator(sel).tap() : page.locator(sel).click());
+      await page.locator(t("coach")).waitFor();
+      assert.equal(await coach(), "hello");
+      assert.equal(await text(), C_TUTORIAL.hello);
+      assert.equal(await page.locator(t("intro")).count(), 0, "開店前の札は出さない");
+      assert.equal(await page.locator(".tf-bottom").evaluate((n) => getComputedStyle(n).visibility), "hidden", "下の帯は隠れて、スミさんの言葉が出る");
+      // 読む段で、ほかを押しても進まない
+      await page.evaluate(() => C.view.floorTest.api.act({ type: "shuffle" }));
+      assert.equal(await page.evaluate(() => C.view.floorTest.api.state().shuffles), 0);
+      await press(t("coach-next"));
+      assert.equal(await coach(), "arrive");
+      await tick(4); // 待つ段だけ、時間が流れる
+      assert.equal(await coach(), "wish");
+      assert.equal(await page.locator('.tf-spot[data-id="1"]').getAttribute("data-coach"), "true", "指している卓が光る");
+      await page.screenshot({ path: `${shots}/tonari-floor-${platform}-tutorial-wish.png` }).catch(() => {});
+      await press(t("coach-next"));
+      assert.equal(await coach(), "open");
+      const frozen = await page.evaluate(() => C.view.floorTest.api.state().t);
+      await tick(10);
+      assert.equal(await page.evaluate(() => C.view.floorTest.api.state().t), frozen, "やる段は時間が止まる");
+      // 違う卓を押すと、スミさんが「光ってる所だ」
+      await press(t("table-3"));
+      assert.equal(await text(), C_TUTORIAL.nudge);
+      await press(t("table-1"));
+      await page.locator(t("sheet")).waitFor();
+      assert.equal(await coach(), "pick");
+      assert.equal(await page.locator(`${t("sheet-coach")} span`).innerText(), C_TUTORIAL.pick);
+      const options = await page.locator(".tf-mix-option").evaluateAll((list) => list.map((n) => [n.dataset.rating, n.disabled]));
+      assert.deepEqual(options.filter(([, off]) => !off).map(([r]) => r), ["best"], "◎の一台だけ押せる");
+      await page.screenshot({ path: `${shots}/tonari-floor-${platform}-tutorial-pick.png` }).catch(() => {});
+      await press('.tf-mix-option[data-rating="best"]');
+      assert.equal(await coach(), "prep");
+      await tick(30);
+      assert.equal(await coach(), "shuffle");
+      assert.equal(await page.locator(t("shuffle-side")).getAttribute("data-coach"), "true");
+      await press(t("shuffle-side"));
+      assert.equal(await coach(), "shuffling");
+      await tick(8);
+      assert.equal(await coach(), "quick");
+      // 右の一覧の◎の札が光り、押すとそのまま出せる
+      assert.equal(await page.locator('.tf-preset[data-coach="true"]').count(), 1);
+      await press('.tf-preset[data-coach="true"]');
+      assert.equal(await coach(), "prep2");
+      await tick(30);
+      assert.equal(await coach(), "care");
+      await press(t("table-1"));
+      await page.locator(t("sheet")).waitFor();
+      assert.equal(await coach(), "careAnswer");
+      assert.deepEqual(await page.locator(".tf-option[data-verb]").evaluateAll((list) => list.filter((n) => !n.disabled).map((n) => n.dataset.verb)), ["teach"]);
+      await press('.tf-option[data-verb="teach"]');
+      await page.waitForFunction(() => C.view.floorTest.api.mode() === "live");
+      assert.equal(await coach(), "tend");
+      await press(t("table-2"));
+      assert.equal(await coach(), "bill");
+      await press(t("table-1"));
+      assert.equal(await coach(), "fever");
+      assert.equal(await page.locator(t("bonus")).getAttribute("data-coach"), "true");
+      await press(t("bonus"));
+      assert.equal(await coach(), "done");
+      // スミさんの言葉は、右の列・卓の札と重ならない（UI の上に UI を重ねない）
+      const overlap = await page.evaluate(() => {
+        const r = (n) => n.getBoundingClientRect();
+        const box = r(document.querySelector('[data-test="tonari-floor-coach"]'));
+        const hit = (o) => o.width && o.height && !(o.right <= box.left || o.left >= box.right || o.bottom <= box.top || o.top >= box.bottom);
+        return [...document.querySelectorAll(".tf-presets, .tf-spot .tf-tag-box")].filter((n) => hit(r(n))).map((n) => n.className);
+      });
+      assert.deepEqual(overlap, []);
+      await page.screenshot({ path: `${shots}/tonari-floor-${platform}-tutorial-done.png` }).catch(() => {});
+      await press(t("coach-next"));
+      await page.waitForFunction(() => window.result !== undefined);
+      assert.deepEqual(await page.evaluate(() => window.result), { tutorial: true, skipped: false });
+      assert.equal(await page.locator(t("screen")).count(), 0);
+    }, options);
+  }
 
   // 実画面の操作: 来店（気分の吹き出し）→ミックスを選ぶ（列・シャッフル・右の一覧のひと押し）→仕込み→提供→炭の調整→頼み→会計→フィーバー、休止・速さ・早じまい・精算。
   for (const [platform, options] of [["pc", {}], ["touch", touch]]) {
@@ -971,21 +1069,26 @@ await suite("tonari-floor", async (check) => {
     await page.locator(t("option-start")).click();
     await page.evaluate(() => C.until("s.tables[2].phase === 'order'", [3]));
     const guest = await api((a) => a.state().guests[a.state().tables[2].guestId]);
-    assert.deepEqual([guest.charId, guest.name, guest.order.wish], ["adam", "アダム", "fruit"]);
+    // その人だけの注文（TFL66）: 気分ではなく、好きなフレーバー（ダブルアップル）を名指しする
+    assert.deepEqual([guest.charId, guest.name, guest.order.wish, guest.order.pref.label], ["adam", "アダム", "fresh", "ダブルアップル"]);
     const spot = page.locator('.tf-spot[data-id="3"]');
     assert.equal(await spot.getAttribute("data-rare"), "true");
     assert.match(await spot.locator(".tf-tag-who img").getAttribute("src"), /face_adam/);
-    assert.equal(await spot.locator(".tf-bubble").evaluate((tag) => { tag.querySelectorAll(".tf-pop").forEach((n) => n.remove()); return tag.innerText.replace(/\s+/g, " ").trim(); }), "注文 フルーティ 3 9");
+    assert.equal(await spot.locator(".tf-bubble").evaluate((tag) => { tag.querySelectorAll(".tf-pop").forEach((n) => n.remove()); return tag.innerText.replace(/\s+/g, " ").trim(); }), "注文 ダブルアップル 3 9");
     assert.match(await page.locator(t("log")).innerText(), /アダムが遊びに来た！ 3卓へ/);
     await page.locator(t("table-3")).click();
     await page.locator(t("sheet")).waitFor();
-    assert.equal(await page.locator(".tf-sheet-quote").innerText(), "「……はじめよ。今日は、果実の煙を頼む」");
+    assert.equal(await page.locator(".tf-sheet-quote").innerText(), "「……はじめよ。ダブルアップルを。宇宙の原点を、一台」");
+    // ◎はダブルアップルの入った一台だけ。刺激系のメインでも、林檎が無ければ○
+    const marks = await page.locator(".tf-mix-option").evaluateAll((list) => list.map((n) => [n.dataset.mix, n.dataset.rating]));
+    const flavorsOf = await page.evaluate((ids) => Object.fromEntries(ids.map((id) => [id, C.floorData.MIXES[id].flavors])), marks.map(([id]) => id));
+    for (const [id, rating] of marks) assert.equal(rating === "best", flavorsOf[id].includes("double_apple"), id);
     assert.match(await page.locator(".tf-visit-who img").getAttribute("src"), /face_adam/);
     await page.keyboard.press("Escape");
     // ぴったりの一台を出すと、その人の言葉で返ってくる
-    await api((a) => { a.state().hand[0] = "peachmango"; a.act({ type: "order", tableId: 3, mix: "peachmango" }); });
+    await api((a) => { a.state().hand[0] = "applemint"; a.act({ type: "order", tableId: 3, mix: "applemint" }); });
     await page.evaluate(() => C.until("s.tables[2].phase === 'enjoy'", [3]));
-    assert.deepEqual(await api((a) => { const x = a.state().tables[2]; return [x.grade, x.line]; }), ["best", "……よい。果実が、まっすぐ立っている"]);
+    assert.deepEqual(await api((a) => { const x = a.state().tables[2]; return [x.grade, x.line]; }), ["best", "……よい。林檎が、まっすぐ立っている"]);
     await api((a) => a.act({ type: "finish" }));
     await page.locator(t("result")).waitFor();
     assert.equal(await page.locator(t("visitor")).innerText(), "今日は、アダムが遊びに来た");
@@ -1058,7 +1161,7 @@ await suite("tonari-floor", async (check) => {
     await page.evaluate(() => {
       const s = C.fresh();
       window.before = s;
-      window.shift = C.stats.paidAction(() => C.tonari.doBaito({ floor: true })).then((r) => { window.shiftResult = r; }, (e) => { window.shiftError = e.stack; });
+      window.shift = C.stats.paidAction(() => C.tonari.doBaito()).then((r) => { window.shiftResult = r; }, (e) => { window.shiftError = e.stack; });
     });
     await page.locator(t("intro")).waitFor();
     await page.locator(t("option-start")).click();
@@ -1072,4 +1175,4 @@ await suite("tonari-floor", async (check) => {
     assert.deepEqual(r.order, []);
     assert.equal(r.api, false);
   });
-});
+}, { floorGame: true });

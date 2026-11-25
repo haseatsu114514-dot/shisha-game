@@ -85,6 +85,16 @@ export const mixFlavorNames = (id) => (MIXES[id]?.flavors || []).map((f) => FLAV
 export const mixFlavorParts = (id) => (MIXES[id]?.flavors || []).map((f) => [...FLAVORS[f].fullParts]);
 /** 名前のあとに、使ったフレーバーを（）で添えた書き方。例: カフェモカ（コーヒー・チョコレート）。1種の物は名前だけ（ダブルアップル単）。 */
 export const mixFullName = (id) => (mixIsSingle(id) ? mixName(id) : `${mixName(id)}（${mixFlavorNames(id).join("・")}）`);
+/**
+ * その注文との合い方（best ◎ / good ○ / none ×）。ふつうの客は気分だけ（メインの属性＝◎・サブの属性＝○）。
+ * 本編の人物の注文（pref つき・TFL66）は、好きなフレーバー（pref.has）の入った一台が◎、気分がメインの一台が○、ほかは×。
+ */
+export function rateMix(id, order) {
+  const mix = MIXES[id];
+  if (!mix || !order) return null;
+  if (order.pref) return mix.flavors.some((f) => order.pref.has.includes(f)) ? "best" : mix.main === order.wish ? "good" : "none";
+  return mixRatings(id)[order.wish];
+}
 /** ミックスと、4つの気分との合い方。メインの属性＝◎（best）、サブの属性＝○（good）、ほか＝×（none）。 */
 export function mixRatings(id) {
   const mix = MIXES[id];
@@ -104,9 +114,8 @@ const mixTime = (id) => T.make[MIXES[id].flavors.length];
  * grade＝手応え（best / good / off）。
  */
 export function evaluateMix(id, order, rank = "plain") {
-  const ratings = mixRatings(id);
-  if (!ratings || !order) return null;
-  const rating = ratings[order.wish];
+  const rating = rateMix(id, order);
+  if (!rating) return null;
   // 3種のミックスは、仕込みが長い（約9秒。2種は7秒、1種は5秒）ぶん、合った時（◎・○）の満足が少し高い（TFL47）
   const rich = MIXES[id].flavors.length >= 3 && rating !== "none" ? RICH_MOOD : 0;
   return { mood: RATE_MOOD[rating] + rich - (rank === "keen" ? KEEN_CUT[rating] : 0), rating, grade: RATE_GRADE[rating] };
@@ -141,15 +150,21 @@ function shuffled(list, random) {
   return out;
 }
 
+/** 本編の人物の注文（その人の好きなフレーバーを名指しする。TFL66）。保存できる形（関数を持たない）。 */
+const personalOrder = (o) => ({ wish: o.wish, quote: o.quote, pref: { label: o.label, has: [...o.has] } });
+
 /**
  * 一晩の営業を作る。
  * @param opts.seed 同じ種なら同じ客・同じ注文・同じミックスの並び
  * @param opts.level これまでフロアを回した回数（夜の種類・ケアの見せ方）
  * @param opts.visitor たまに遊びに来る本編の人物（VISITORS の id。来る条件は呼び出し側が決める）
+ * @param opts.dusk 昼から夜まで通しの店番（2026-11-25 オーナー「昼から始めて2コマ使う」・TFL62）。営業の半ばで日が暮れ、
+ *   そこから来る客は夜の呼び名になる（画面は店内の絵を夜へ替える）。daytime と一緒に使う
  */
-export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = false, daytime = false, night = null, visitor = null } = {}) {
+export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = false, daytime = false, night = null, visitor = null, dusk = false } = {}) {
   const def = night ? NIGHTS[night] || NIGHTS.usual : pickNight(level, seed, { rainy, daytime });
   const random = rng((Number(seed) >>> 0) ^ 0x51ed27);
+  const duskAt = dusk && daytime ? Math.round(def.length / 2) : null; // 日が暮れる刻み
   // 客は一人ずつ（一卓に一人。TFL51）。二人連れは同じ刻みに来る二人の客になり、空いている卓へ一人ずつ座る。
   // art＝その人の絵のID（一人で来る客は種類ID、二人連れは「種類ID-a」「種類ID-b」）、pair＝連れの客のID
   const guests = {};
@@ -160,7 +175,7 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = fal
     ids.forEach((id, j) => {
       guests[id] = {
         id, kind: kindId, art: kind.party > 1 ? `${kindId}-${"ab"[j]}` : kindId, pair: kind.party > 1 ? ids[1 - j] : null,
-        name: byTime(kind.name, daytime), party: 1, stay: kind.stay, rank: kind.rank, trait: kind.trait,
+        name: byTime(kind.name, daytime && !(duskAt !== null && def.arrive[i] >= duskAt)), party: 1, stay: kind.stay, rank: kind.rank, trait: kind.trait,
         drinksMax: kind.drinks, look: [kind.look[j] || kind.look[0]], arrive: def.arrive[i], order: makeOrder(random),
       };
     });
@@ -170,17 +185,17 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = fal
   if (who && guests.g3) {
     if (guests.g3.pair) guests[guests.g3.pair].pair = null;
     guests.g3 = { ...guests.g3, kind: `visitor-${who.id}`, art: null, pair: null, charId: who.id, name: who.name, party: 1, stay: who.stay, rank: who.rank, trait: null,
-      drinksMax: who.drinks, look: ["bob"], order: { wish: who.wish, quote: who.quote } };
+      drinksMax: who.drinks, look: ["bob"], order: personalOrder(who.order) };
   }
   const deck = shuffled(mixIdsFor(chapter), random); // その章の店で出せるミックス
   return {
-    seed: Number(seed) >>> 0, level, chapter, night: def.id, title: byTime(def.title, daytime), daytime: !!daytime,
+    seed: Number(seed) >>> 0, level, chapter, night: def.id, title: byTime(def.title, daytime), daytime: !!daytime, dusk: duskAt,
     visitor: who && guests.g3?.charId ? who.id : null,
     hint: level >= 3 ? "sight" : "said",
     t: 0, length: def.length, done: false, closing: null, rolls: 0,
     guests, upcoming: Object.keys(guests), came: 0,
     tables: Array.from({ length: FLOOR_TABLE_COUNT }, (_, i) => emptyTable(i + 1)),
-    hand: deck.slice(0, HAND_SIZE), deck: deck.slice(HAND_SIZE), shuffleAt: 0, shuffles: 0,
+    hand: deck.slice(0, HAND_SIZE), deck: deck.slice(HAND_SIZE), shuffleAt: 0, shuffles: 0, stock: null,
     fever: 0, feverLeft: 0, feverLevel: 0, fevers: 0, streak: 0, bestStreak: 0,
     sales: 0, fans: 0, results: [], mixes: {},
     counts: { best: 0, good: 0, off: 0, care: 0, careMiss: 0, late: 0, left: 0, drink: 0, extend: 0, tend: 0, tendLate: 0 },
@@ -198,7 +213,22 @@ const tableOf = (s, id) => s.tables[id - 1] || null;
 const guestAt = (s, table) => (table?.guestId ? s.guests[table.guestId] : null);
 const note = (s, event) => { s.log.push(event); };
 const lineFor = (s, list, salt) => (Array.isArray(list) ? list[(s.seed + salt) % list.length] : list);
-const orderWait = (s) => (s.level <= 0 ? T.orderFirst : T.order);
+/** 本編の人物の言葉（TFL65）。ふつうの客は undefined（呼び出し側の共通の言葉を使う）。 */
+const ownLine = (guest, key) => VISITORS[guest?.charId]?.lines[key];
+/**
+ * 本編の人物の注文に合う一台が並んでいなければ、山のいちばん上に一つ取り置く（次に一覧へ入る一台・シャッフルした時の最初の一台）。
+ * 名指しの注文でも、シャッフル一回で応えられる（3秒は待たせる）。ふつうの客には何もしない。
+ */
+function reserveFor(s, order) {
+  if (!order?.pref || s.hand.some((id) => rateMix(id, order) === "best")) return;
+  const pool = [...s.deck, ...mixIdsFor(s.chapter).filter((id) => !s.hand.includes(id) && !s.deck.includes(id))];
+  const pick = pool.find((id) => rateMix(id, order) === "best");
+  if (!pick) return;
+  s.deck = [pick, ...s.deck.filter((id) => id !== pick)];
+  s.stock = pick;
+}
+const stockDrawn = (s) => { if (s.stock && s.hand.includes(s.stock)) s.stock = null; };
+const orderWait = (s) => (s.level <= 0 ? T.orderFirst : T.order); // チュートリアルでは、待ち時間そのものが進まない（tickOnce）
 const billTotal = (bill) => (bill ? bill.charge + bill.shisha + bill.drink + bill.top : 0);
 
 function gain(s, amount) {
@@ -313,6 +343,7 @@ function tickOnce(s) {
     Object.assign(table, emptyTable(table.id), { phase: "order", guestId: id, since: s.t, mood: MOOD.start, line: s.guests[id].order.quote });
     s.came += 1;
     note(s, { type: "arrive", guestId: id, tableId: table.id, rare: !!s.guests[id].charId, wish: s.guests[id].order.wish, line: s.guests[id].order.quote });
+    reserveFor(s, s.guests[id].order);
   }
   // 仕込み・立ち上げ: 先に受けた注文から、同時に slots 台まで進む
   const making = s.tables.filter((x) => x.phase === "prep").sort((a, b) => a.since - b.since || a.id - b.id);
@@ -325,10 +356,11 @@ function tickOnce(s) {
   let calling = s.tables.filter((x) => x.call).length;
   for (const table of s.tables) {
     const guest = guestAt(s, table);
+    if (s.tutorial && ["order", "bill"].includes(table.phase)) { if (table.since < s.t) table.since += 1; continue; } // チュートリアル: 待たせても減らない
     if (table.phase === "order") {
       if (table.refill && s.t - table.since >= orderWait(s)) {
         // おかわりを聞いてもらえなかった客は、あきらめて会計にする（怒って帰りはしないが、居心地は下がる）
-        Object.assign(table, { phase: "bill", refill: false, since: s.t, mood: clamp(table.mood + MOOD.careLate), line: "……やっぱり、お会計で" });
+        Object.assign(table, { phase: "bill", refill: false, since: s.t, mood: clamp(table.mood + MOOD.careLate), line: ownLine(guest, "skip") || "……やっぱり、お会計で" });
         note(s, { type: "refillMissed", tableId: table.id });
         note(s, { type: "billReady", tableId: table.id });
         continue;
@@ -338,7 +370,7 @@ function tickOnce(s) {
         table.bill = { charge: 0, shisha: 0, drink: 0, top: 0 };
         s.counts.left += 1;
         s.streak = 0; // 帰らせてしまうと、流れも切れる
-        note(s, { type: "left", tableId: table.id, guestId: guest.id, line: SEND_LINES.mad });
+        note(s, { type: "left", tableId: table.id, guestId: guest.id, line: ownLine(guest, "mad") || SEND_LINES.mad });
         settle(s, table, { left: true });
       }
       continue;
@@ -358,6 +390,12 @@ function tickOnce(s) {
       table.stayEnd += 1; table.coalAt += 1; table.drinkAt += 1; table.nextCall += 1;
       for (const want of table.wants) want.at += 1;
       if (s.feverLeft % T.feverDrink === 0 && table.extra < guest.drinksMax + 2) addDrink(s, table, "fever");
+      continue;
+    }
+    if (s.tutorial) {
+      // チュートリアル: 炭・滞在・頼みは、スミさんの段取り（floorTutorialCue）でだけ動く
+      table.coalAt += 1; table.stayEnd += 1; table.drinkAt += 1; table.nextCall += 1;
+      if (table.call) { table.call.since += 1; table.call.until += 1; }
       continue;
     }
     table.mood = clamp(table.mood - MOOD.decay * table.wear);
@@ -394,13 +432,15 @@ function tickOnce(s) {
       // 居心地の良い客は、自分からおかわり（トップ替え）を頼むことがある。一卓に一度まで
       // おかわりも、客が吸いたい気分を言い、並んだミックスから選んで出す（2026-11-25 オーナー指示）。閉店で聞きそびれた分は、それまでの会計で帰る
       if (!table.extended && s.length - s.t >= T.top + 10 && roll(s) < EXTEND_CHANCE[floorStage(table.mood).id]) {
-        guest.order = makeOrder(() => roll(s));
+        const who = VISITORS[guest.charId];
+        guest.order = who ? personalOrder(who.refill) : makeOrder(() => roll(s)); // 本編の人物は、その人のおかわり（TFL66）
         Object.assign(table, { phase: "order", refill: true, extended: true, since: s.t, call: null, wants: [] });
         s.counts.extend += 1;
-        table.line = `${lineFor(s, SEND_LINES.extend, table.id)}${guest.order.quote}`;
+        table.line = who ? guest.order.quote : `${lineFor(s, SEND_LINES.extend, table.id)}${guest.order.quote}`;
+        reserveFor(s, guest.order);
         note(s, { type: "extend", tableId: table.id, line: table.line, wish: guest.order.wish });
       } else {
-        Object.assign(table, { phase: "bill", since: s.t, line: "お会計、お願いします" });
+        Object.assign(table, { phase: "bill", since: s.t, line: ownLine(guest, "check") || "お会計、お願いします" });
         note(s, { type: "billReady", tableId: table.id });
       }
     }
@@ -466,6 +506,7 @@ export function floorAct(state, action) {
       // 出したミックスは一覧から抜けて、次の一つが入る（山が尽きたら、出ていない物から組み直す）
       if (!s.deck.length) s.deck = shuffled(mixIdsFor(s.chapter).filter((id) => !s.hand.includes(id)), () => roll(s));
       s.hand[slot] = s.deck.shift();
+      stockDrawn(s);
       if (refill) earn(s, table, "top", PRICE.top); // おかわりはトップ替えの料金だけ（チャージと初回のドリンクは済んでいる）
       else {
         // チャージと、初回のドリンク（ひとり1杯。必ず注文する）
@@ -479,12 +520,16 @@ export function floorAct(state, action) {
       // 並んでいるミックスを全部入れ替える。入れ替えには時間がかかり（T.shuffle）、その間はミックスを出せない（ほかの卓は見られる）。
       // 合う一台が出るまで何度でも回せるが、そのぶん客を待たせる
       if (s.t < s.shuffleAt) return state;
-      const rest = shuffled([...s.deck, ...s.hand], () => roll(s));
+      // チュートリアルは山の順のまま（並ぶ物を決めてある）
+      const rest = s.tutorial ? [...s.deck, ...s.hand] : shuffled([...s.deck, ...s.hand], () => roll(s));
       // 同じ並びに戻らないよう、いま出ている物は後ろへ回す
       const fresh = rest.filter((id) => !s.hand.includes(id));
-      const next = [...fresh, ...rest.filter((id) => s.hand.includes(id))];
+      let next = [...fresh, ...rest.filter((id) => s.hand.includes(id))];
+      // 本編の人物の注文に取り置いた一台は、入れ替えた一覧に必ず入る
+      if (s.stock && !s.hand.includes(s.stock)) next = [s.stock, ...next.filter((id) => id !== s.stock)];
       s.hand = next.slice(0, HAND_SIZE);
       s.deck = next.slice(HAND_SIZE);
+      stockDrawn(s);
       s.shuffleAt = s.t + T.shuffle;
       s.shuffles += 1;
       note(s, { type: "shuffle", ticks: T.shuffle });
@@ -510,12 +555,12 @@ export function floorAct(state, action) {
       if (coal) resetCoal(s, table, ok ? 1 : 0.6);
       if (ok) {
         table.mood = clamp(table.mood + MOOD.care);
-        table.line = call.good;
+        table.line = ownLine(guest, "calls")?.[type]?.good || call.good;
         s.counts.care += 1;
         gain(s, FEVER.care);
       } else {
         table.mood = clamp(table.mood + MOOD.careMiss);
-        table.line = CALL_MISS;
+        table.line = ownLine(guest, "miss") || CALL_MISS;
         s.counts.careMiss += 1;
       }
       note(s, { type: "care", tableId: table.id, call: type, ok, line: table.line });
@@ -526,7 +571,7 @@ export function floorAct(state, action) {
     case "bill": {
       if (!can("bill")) return state;
       const low = table.mood < 40;
-      const line = low ? SEND_LINES.byeLow : VISITORS[guest.charId]?.lines.bye || lineFor(s, SEND_LINES.bye, table.id);
+      const line = low ? ownLine(guest, "byeLow") || SEND_LINES.byeLow : ownLine(guest, "bye") || lineFor(s, SEND_LINES.bye, table.id);
       const paid = settle(s, table);
       if (paid.mood >= 65) gain(s, FEVER.send);
       note(s, { type: "bill", tableId: table.id, ...paid, line });
@@ -607,9 +652,10 @@ export function floorPlan(s) {
   const def = NIGHTS[s.night] || NIGHTS.usual;
   return { id: def.id, title: byTime(def.title, s.daytime), forecast: byTime(def.forecast, s.daytime) };
 }
-/** 並んでいるミックス（一覧）。wish を渡すと、その気分との合い方 rating も付く。 */
-export function floorHand(s, wish = null) {
-  return s.hand.map((id) => { const ratings = mixRatings(id); return { id, name: mixName(id), full: mixFullName(id), single: mixIsSingle(id), flavors: [...MIXES[id].flavors], recipe: mixFlavorNames(id), main: MIXES[id].main, sub: MIXES[id].sub, ratings, rating: wish ? ratings[wish] : null }; });
+/** 並んでいるミックス（一覧）。注文（客の order。気分の id だけでもよい）を渡すと、その注文との合い方 rating も付く。 */
+export function floorHand(s, order = null) {
+  const o = typeof order === "string" ? { wish: order } : order;
+  return s.hand.map((id) => { const ratings = mixRatings(id); return { id, name: mixName(id), full: mixFullName(id), single: mixIsSingle(id), flavors: [...MIXES[id].flavors], recipe: mixFlavorNames(id), main: MIXES[id].main, sub: MIXES[id].sub, ratings, rating: o ? rateMix(id, o) : null }; });
 }
 /** 入れ替えが済むまでの刻み（0 なら並んでいる。0 より大きい間は、ミックスを出せず、シャッフルも重ねられない）。 */
 export const floorShuffleLeft = (s) => Math.max(0, s.shuffleAt - s.t);
@@ -695,6 +741,58 @@ export function floorResult(s) {
     stages: Object.fromEntries(MOODS.map((m) => [m.id, groups.filter((row) => row.stage === m.id).length])),
     counts: { ...s.counts }, fevers: s.fevers, shuffles: s.shuffles, streak: s.bestStreak, closing: s.closing, mixes,
   };
+}
+
+/** 頼みの言葉（卓の札の短い言葉・言葉で伝わる夜の一言・様子を読む夜の一文）。本編の人物は、その人の口調で頼む（TFL65）。頼みが無い卓は null。 */
+export function floorCallLine(s, tableId) {
+  const table = tableOf(s, tableId);
+  if (!table?.call) return null;
+  const call = CALLS[table.call.type];
+  const own = ownLine(guestAt(s, table), "calls")?.[table.call.type];
+  return { label: call.label, said: own?.said || call.said, sight: call.sight };
+}
+
+/** 日が暮れたか（昼から夜まで通しの店番の後半。TFL62）。 */
+export const floorDusk = (s) => s.dusk !== null && s.dusk !== undefined && s.t >= s.dusk;
+
+// ---- チュートリアル（TFL64）: はじめての店番の前に、スミさんが一通りやらせる。客・並ぶミックス・山の順は決めてある ----
+// 1卓のフルーティの客には◎が一つ（○も一つ）。2卓のリラックスの客には合う一台が無く、シャッフルすると◎と○が並ぶ。
+const TUTORIAL_HAND = Object.freeze(["peachmango", "chocovanilla", "lemonmint", "caramelnuts", "colamint"]);
+const TUTORIAL_DECK = Object.freeze(["grapemint", "watermelonmint", "rosejasmine", "peachlychee", "chocobanana", "honeylemon"]);
+/** チュートリアルの営業（時間切れ・帰ってしまう客・勝手に出る頼みが無い）。 */
+export function createFloorTutorial({ chapter = 1, daytime = true } = {}) {
+  const s = createFloorNight({ seed: 1, level: 0, chapter, daytime, night: "first" });
+  const guest = (id, kindId, wish, say, arrive) => {
+    const kind = GUESTS[kindId];
+    return { id, kind: kindId, art: kindId, pair: null, name: byTime(kind.name, daytime), party: 1, stay: kind.stay, rank: "plain", trait: kind.trait,
+      drinksMax: kind.drinks, look: [kind.look[0]], arrive, order: { wish, quote: WISHES.find((w) => w.id === wish).say[say] } };
+  };
+  const rest = mixIdsFor(chapter).filter((id) => !TUTORIAL_HAND.includes(id) && !TUTORIAL_DECK.includes(id));
+  return Object.assign(s, {
+    tutorial: true, title: "段取りのおさらい", length: 9999, visitor: null,
+    guests: { g1: guest("g1", "first", "fruit", 0, 2), g2: guest("g2", "reader", "deep", 1, 6) }, upcoming: ["g1", "g2"],
+    hand: [...TUTORIAL_HAND], deck: [...TUTORIAL_DECK, ...rest],
+  });
+}
+/**
+ * チュートリアルの段取り（スミさんが、その段で起きることを起こす）。cough＝むせる（頼み）／coal＝炭が減る（調整どき）／
+ * bill＝会計を頼まれる／fever＝フィーバーの灯りが溜まる。チュートリアルでなければ何もしない。
+ */
+export function floorTutorialCue(state, cue, tableId = null) {
+  if (!state.tutorial || state.done) return state;
+  const s = structuredClone(state);
+  s.log = [];
+  const table = tableId ? tableOf(s, tableId) : null;
+  if (cue === "cough" && table?.phase === "enjoy" && !table.call) openCall(s, table, "cough");
+  else if (cue === "coal" && table?.phase === "enjoy") table.coalAt = s.t + Math.floor(table.coalSpan * 0.3);
+  else if (cue === "bill" && table?.phase === "enjoy") {
+    Object.assign(table, { phase: "bill", since: s.t, call: null, line: "お会計、お願いします" });
+    note(s, { type: "billReady", tableId: table.id });
+  } else if (cue === "fever" && s.fever < FEVER.level) {
+    s.fever = FEVER.level;
+    note(s, { type: "feverReady", level: 1 });
+  }
+  return s;
 }
 
 export const floorOrderWait = orderWait;

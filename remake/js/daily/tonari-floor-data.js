@@ -162,16 +162,58 @@ export const GUESTS = Object.freeze(Object.fromEntries([
   guest("friends", "友だち連れの方", 2, "long", "plain", "talker", 3, ["bun", "pony"]),
 ].map((g) => [g.id, g])));
 // たまに遊びに来る、本編の人物（2026-11-20 オーナー「好感度1以上の人物がたまにレアで遊びに来たりとかも入れたい」）。
-// 来る条件（顔見知り・好感度1以上・章）は tonari.js が決める。ここは気分と台詞だけ。台詞は大会の前後どちらでも通る言葉にする（交流の時系列ルール）。
-// 好感度は動かさない。chapters＝来てよい章、wish＝気分。
-const visitor = (id, name, chapters, stay, rank, drinks, wish, quote, lines) => Object.freeze({ id, name, chapters: Object.freeze(chapters), stay, rank, drinks, wish, quote, lines: Object.freeze(lines) });
+// 来る条件（顔見知り・好感度1以上・章）は tonari.js が決める。ここは注文と台詞だけ。台詞は大会の前後どちらでも通る言葉にする（交流の時系列ルール）。
+// 好感度は動かさない。chapters＝来てよい章。
+// 個性（2026-11-25 オーナー「ライバルとか来たりするけど口調が他のモブと同じだったり注文も同じなのでちゃんと個性を持たせて」・TFL65・66）:
+//   order＝その人だけの注文。気分（wish）に加えて、好きなフレーバー（has）を名指しする。has の入った一台が◎、気分がメインの一台が○、ほかは×
+//   （モブの客は気分を言うだけで、名指ししない）。label＝卓の札の気分の所に出す言葉。refill＝おかわりの注文（言い出す一言ごと）。
+//   lines＝来店から帰るまでの、その人の口調の言葉: best／good／off（提供した時）・calls（頼みの言葉 said と、応えた時 good）・miss（頼みを外した時）・
+//   check（会計を頼む時）・skip（おかわりを聞きそびれた時）・bye／byeLow（見送り）・mad（待たせて帰る時）。台詞なので句点で終えない
+const visitor = (id, name, chapters, stay, rank, drinks, order, refill, lines) => Object.freeze({
+  id, name, chapters: Object.freeze(chapters), stay, rank, drinks,
+  order: Object.freeze({ ...order, has: Object.freeze(order.has) }), refill: Object.freeze({ ...refill, has: Object.freeze(refill.has) }),
+  lines: Object.freeze({ ...lines, calls: Object.freeze(lines.calls) }),
+});
 export const VISITORS = Object.freeze(Object.fromEntries([
-  visitor("tsumugi", "つむぎ", [1, 2], "long", "plain", 1, "deep", "……はじめさん。落ち着くのを、お願いします", {
-    best: "……やわらかい色、です。好きです、これ", good: "……落ち着きます。ありがとうございます", off: "……少し、にぎやかな色、ですね", bye: "……ごちそうさまでした。また、描きに来ます" }),
-  visitor("naru", "なる", [1], "normal", "keen", 1, "sweet", "よう、はじめ。甘いやつ、頼むわ", {
-    best: "……うまいな。焼き菓子みたいだ", good: "いいじゃん。ちゃんと甘い", off: "ん、甘いのを頼んだんだけどな", bye: "ごちそうさん。また来るわ" }),
-  visitor("adam", "アダム", [1, 2], "normal", "keen", 1, "fruit", "……はじめよ。今日は、果実の煙を頼む", {
-    best: "……よい。果実が、まっすぐ立っている", good: "……悪くない", off: "……これは、果実ではない", bye: "……また来る" }),
+  // つむぎ: ラベンダーを好む（characters.json）。煙に色が見える（言葉に色が出るが、人の判定はしない）。ていねいで、間に「……」
+  visitor("tsumugi", "つむぎ", [1, 2], "long", "plain", 1,
+    { wish: "deep", label: "ラベンダー", has: ["lavender"], quote: "……はじめさん。ラベンダーの、ありますか" },
+    { wish: "deep", label: "お花", has: ["lavender", "rose", "jasmine", "chamomile", "sakura"], quote: "……もう少し、描いていきます。次は、お花のを" }, {
+      best: "……やわらかい紫。好きな色です、これ", good: "……落ち着く色、です。ありがとうございます", off: "……少し、にぎやかな色、ですね",
+      calls: {
+        thin: { said: "……煙の色が、薄くなってきました", good: "……色が、戻りました" },
+        harsh: { said: "……縁が、ちりちりした色に。熱い、かもです", good: "……やわらかく、なりました" },
+        thirsty: { said: "……すみません。お水、もらえますか", good: "……ありがとうございます。助かります" },
+      },
+      miss: "……あ、えっと。そうじゃ、なくて", check: "……お会計、お願いします", skip: "……やっぱり、今日はここまでにします",
+      bye: "……ごちそうさまでした。また、描きに来ます", byeLow: "……ごちそうさま、でした", mad: "……すみません。今日は、帰ります",
+    }),
+  // なる: バニラと甘いお菓子系が軸（characters.json）。気さくで面倒見がいい。待たされても怒らない
+  visitor("naru", "なる", [1], "normal", "keen", 1,
+    { wish: "sweet", label: "バニラ", has: ["vanilla"], quote: "よう、はじめ。バニラの効いた甘いやつ、頼むわ" },
+    { wish: "sweet", label: "チョコ・キャラメル", has: ["chocolate", "caramel"], quote: "もう一台いけるな。次はチョコかキャラメルで" }, {
+      best: "……うまいな。焼き菓子みたいだ", good: "甘いのはいいな。バニラは、次の楽しみにしとく", off: "ん、甘いのを頼んだんだけどな",
+      calls: {
+        thin: { said: "おい、煙が痩せてきた。炭、見てくれるか", good: "よし、戻った。早いな" },
+        harsh: { said: "ちょっと焦げてる。熱、下げてくれ", good: "うん、甘さが戻った" },
+        thirsty: { said: "悪い、水もらえるか", good: "サンキュ。気が利くな" },
+      },
+      miss: "いや、そうじゃなくてな", check: "はじめ、会計頼む", skip: "……まあいいや。会計で",
+      bye: "ごちそうさん。また来るわ", byeLow: "……ごちそうさん", mad: "忙しそうだな。また来るわ",
+    }),
+  // アダム: ダブルアップル特化（characters.json）。芝居がかった言い回しで、林檎を宇宙の原点のように語る
+  visitor("adam", "アダム", [1, 2], "normal", "keen", 1,
+    { wish: "fresh", label: "ダブルアップル", has: ["double_apple"], quote: "……はじめよ。ダブルアップルを。宇宙の原点を、一台" },
+    { wish: "fresh", label: "ダブルアップル", has: ["double_apple"], quote: "……幕間だ。もう一台、林檎を。メーカーは任せる" }, {
+      best: "……よい。林檎が、まっすぐ立っている", good: "……悪くない。だが、林檎がいない", off: "……これは、林檎ではない",
+      calls: {
+        thin: { said: "……煙が細い。林檎が、息をしていない", good: "……よい。呼吸が戻った" },
+        harsh: { said: "……熱すぎる。アニスが焦げている", good: "……うむ。香りが還ってきた" },
+        thirsty: { said: "……水を。舌を、まっさらにしたい", good: "……感謝する" },
+      },
+      miss: "……違う。そうではない", check: "……会計を。幕を下ろそう", skip: "……ならば、ここで幕だ",
+      bye: "……また来る。林檎を、絶やすな", byeLow: "……また来る", mad: "……出直そう。林檎は、待つことも知っている",
+    }),
 ].map((v) => [v.id, v])));
 
 export const RANK_LABEL = Object.freeze({ plain: "一般", keen: "こだわり" });
@@ -256,3 +298,29 @@ export const RANKS = Object.freeze([
   Object.freeze({ id: "B", stamp: "まずまず", min: 56, bonus: 500, line: "回せてはいた。次は、待たせている卓から先に見ろ" }),
   Object.freeze({ id: "C", stamp: "ばたばた", min: 0, bonus: 0, line: "ばたついたな。まあ、一人で回せば最初はこうだ" }),
 ]);
+
+/**
+ * チュートリアル（2026-11-25 オーナー「またチュートリアルを作りたい」・TFL64）。はじめての店番の前に、スミさんが横について一通りやらせる。
+ * 一つずつ「やること」を出し、それ以外の操作は受けない（やることが済むと次へ）。時間は、待つ段（仕込み・入れ替え）だけ流れる。
+ * 客と並ぶミックスは決めてある（tonari-floor-model.js の createFloorTutorial）。text＝スミさんの言葉（台詞なので句点で終えない）、
+ * panel＝接客の画面の中で読む言葉（その段は画面の中に出す）。並びと段の中身は tonari-floor-view.js の TUTORIAL_FLOW。
+ */
+export const TUTORIAL = Object.freeze({
+  hello: "一通りやってみるぞ。客は来たら、空いてる卓に勝手に座る",
+  arrive: "……来たな。卓の上を見てろ",
+  wish: "札の色と印が、客の吸いたい気分だ。りんごの印は、フルーティ",
+  open: "1卓を押して、注文を聞いてこい",
+  pick: "札の左の大きい印が、客の気分と同じなら◎だ。◎の一台を出せ",
+  prep: "仕込みは勝手に進む。仕上がれば、卓へ運ばれる",
+  shuffle: "2卓はリラックスの気分だが、合う一台が並んでない。シャッフルで入れ替えろ",
+  shuffling: "入れ替えの間は出せない。待たせた分だけ、客の満足は下がるぞ",
+  quick: "右の一覧の札を押せば、そのまま出せる。◎の札を押せ",
+  prep2: "出した一台は一覧から抜けて、次のが入る",
+  care: "1卓の様子が変わった。押して、頼みを聞いてこい",
+  careAnswer: "むせてるな。吸い方を案内してやれ",
+  tend: "2卓の炭が減ってきた。言われる前に整えに行け。押すだけでいい",
+  bill: "1卓がお会計だ。会計も、押すだけでいい",
+  fever: "いい接客をすると、フィーバーの灯りが溜まる。溜まったら、押してみろ",
+  done: "フィーバーの間は、卓が最高の居心地になる。……一通りは以上だ。あとは本番で、手際を見せろ",
+  nudge: "そこじゃない。光ってる所だ",
+});

@@ -1709,6 +1709,7 @@ await suite("growth-levelup", async (runCheck) => {
       const path = board.pathTo("M-W1", new Set()).path;
       if (!board.commitPending(path).some(n => n.id === "M-W1")) throw new Error("legal lesson path");
       shiftCore.state.flags._ev_ageha_cameo = true;
+      shiftCore.state.slot = 0; // シフト（店番）は昼から入る（TFL62）
       const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true;
       window.shiftLines = []; vn.hooks.onLine = id => shiftLines.push(id);
       window.shiftRun = (async () => {
@@ -1718,8 +1719,7 @@ await suite("growth-levelup", async (runCheck) => {
       })();
     });
     await page.locator(t("tonari-baito")).click();
-    await page.locator(t("shift-order-0")).click();
-    await page.locator(t("after-lesson-M-W1")).waitFor();
+    await page.locator(t("after-lesson-M-W1")).waitFor(); // 店番はこの検査では回さない（support.mjs）。「今日の注文」は無い（TFL63）
     const before = await page.evaluate(() => ({ day: shiftCore.state.day, slot: shiftCore.state.slot,
       stamina: shiftCore.state.stamina, money: shiftCore.state.money, paid: JSON.stringify(shiftCore.state.growth.paid),
       fire: JSON.stringify(shiftCore.state.growth.hidane) }));

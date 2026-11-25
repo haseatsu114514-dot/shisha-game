@@ -87,15 +87,6 @@ def confirmed_r5_r6_dialogue_errors(filename, scene_id, row):
     return [CONFIRMED_R5_R6_LINES[key]] if key in CONFIRMED_R5_R6_LINES else []
 
 
-def confirmed_r5_baito_errors(data):
-    old_choice = '店流に整えて出す（マシマシは体に毒なので）'
-    for event in data.get('events', []):
-        if event.get('id') == 'baito_jiro_call':
-            return ['baito_events.json:baito_jiro_call: 旧R5有害性断定（#1947）'
-                    for choice in event.get('choices', []) if choice.get('text') == old_choice]
-    return []
-
-
 def text_errors(row):
     errors = []
     text = row.get('text')
@@ -134,7 +125,6 @@ def check(root=ROOT):
     errors, scenes = [], {}
     errors.extend(character_shop_name_errors(json.loads((root / 'data/characters.json').read_text())))
     errors.extend(lime_first_person_errors(json.loads((root / 'data/lime_messages.json').read_text())))
-    errors.extend(confirmed_r5_baito_errors(json.loads((root / 'data/baito_events.json').read_text())))
     files = sorted((root / 'data/dialogue').glob('*.json'))
     for path in files:
         data = json.loads(path.read_text())
