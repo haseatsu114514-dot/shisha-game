@@ -211,6 +211,9 @@ try {
     T.core.newGame(); T.core.state.phase = "daily";
     T.core.state.met.sumi = true;
     T.introDone = false;
+    // SKIPは場面をまたいで保持される（#3558 項目7・2026-11-25）ため、前のバイトのSKIPが残っていたら開始前に明示的に止める（この後のクリックで確定的にONにする）。
+    const skipBtn = document.querySelector('[data-test="vn-skip"]');
+    if (skipBtn?.getAttribute("aria-pressed") === "true") skipBtn.click();
     T.intro = T.vn.play({ dialogue_id: "skip_intro_probe", lines: [
       { speaker: "", text: "紹介を待つ" }, { speaker: "sumi", text: "ようこそ" },
     ] }).then(() => { T.introDone = true; });
