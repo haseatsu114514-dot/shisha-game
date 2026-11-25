@@ -456,6 +456,18 @@ test("the single course rates S / A / B / C by skill: big spins = S, 360s = A, c
   assert.equal(comboMultiplier(0), 1); assert.equal(comboMultiplier(100), SCORE.comboMax);
 });
 
+test("rank S needs a race win: losing caps the rank at A even with an S-level score", () => {
+  const course = generateCourse(DEFAULT_SEED);
+  const game = play(course, "expert", { race: true });
+  assert.equal(game.race.won, true);
+  assert.equal(summary(game).rank, "S", "winning with an S-level score is S");
+  game.race = { ...game.race, won: false };
+  assert.equal(summary(game).rank, "A", "the same run, counted as a loss, is capped at A");
+  const solo = summary(play(course, "expert"));
+  assert.equal(solo.race, null);
+  assert.equal(solo.rank, "S", "without a rival the score alone decides");
+});
+
 test("every generated course up to seed 30 can be finished by the ideal rider without a fall (no unfair layouts)", () => {
   for (let seed = 1; seed <= 30; seed++) {
     for (const skill of ["expert", "perfect"]) {
