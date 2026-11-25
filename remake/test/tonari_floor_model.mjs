@@ -289,7 +289,7 @@ test("シャッフル: 並んでいるミックスを全部入れ替える。入
   assert.deepEqual(shuffled.log, [{ type: "shuffle", ticks: floorShuffleTime }]);
   // 入れ替えには約4秒かかる。その間は、ミックスを出せず、シャッフルも重ねられない（客は待っている）
   assert.equal(floorShuffleLeft(shuffled), floorShuffleTime);
-  assert.equal(floorShuffleTime, 8);
+  assert.equal(floorShuffleTime, 6); // 約3秒（2026-11-25 オーナー指示で1秒短く）
   assert.equal(floorAct(shuffled, { type: "order", tableId: 1, mix: shuffled.hand[0] }), shuffled, "入れ替えの最中は出せない");
   assert.equal(floorAct(shuffled, { type: "shuffle" }), shuffled, "重ねては出来ない");
   assert.equal(floorHint(shuffled).kind, "shuffle", "その間は、ほかの卓を見る");
@@ -377,8 +377,16 @@ test("頼み: 5つの手から正しい物で応える。外す・放ってお�
 test("追加ドリンクとおかわり: 居心地の良い客が自分から頼む（こちらからは誘わない）", () => {
   const happy = (seed) => {
     let s = serveFirst(createFloorNight({ seed, level: 1, night: "usual" }));
-    for (let i = 0; i < 400 && at(s, 1).phase === "enjoy"; i++) {
-      at(s, 1).mood = 95; at(s, 1).call = null; at(s, 1).wants = [];
+    for (let i = 0; i < 400 && ["enjoy", "order", "prep"].includes(at(s, 1).phase); i++) {
+      if (at(s, 1).phase === "order") {
+        // おかわりも、客の気分を聞いて並んだミックスから選ぶ（2026-11-25 オーナー指示）
+        assert.ok(at(s, 1).refill && s.counts.extend === 1, "おかわりは注文として出る");
+        assert.equal(at(s, 1).bill.top, 0, "トップ替えの料金は、選んで出した時に入る");
+        s = act(s, { type: "order", tableId: 1, mix: s.hand[0] });
+        assert.equal(at(s, 1).bill.top, PRICE.top);
+        continue;
+      }
+      if (at(s, 1).phase === "enjoy") { at(s, 1).mood = 95; at(s, 1).call = null; at(s, 1).wants = []; }
       if (floorTap(s, 1) === "tend") s = act(s, { type: "tend", tableId: 1 });
       s = floorTick(s);
     }
@@ -395,6 +403,27 @@ test("追加ドリンクとおかわり: 居心地の良い客が自分から頼
   for (let i = 0; i < 400 && at(sad, 1).phase === "enjoy"; i++) { at(sad, 1).mood = 25; at(sad, 1).call = null; at(sad, 1).wants = []; at(sad, 1).coalAt = sad.t + 50; sad = floorTick(sad); }
   const row = sad.tables[0].bill;
   assert.deepEqual([row.top, row.drink], [0, PRICE.drink]);
+});
+
+test("おかわり: 客の気分を聞いて選ぶ。聞きそびれたら会計にする（怒って帰らない）", () => {
+  // 居心地の良い客の滞在を終わらせ、おかわりが入るまで回す（おかわりが入る種を探す）
+  let s = null;
+  for (let seed = 1; seed <= 40 && !s; seed++) {
+    let x = serveFirst(createFloorNight({ seed, level: 1, night: "usual" }));
+    for (let i = 0; i < 400 && at(x, 1).phase === "enjoy"; i++) {
+      at(x, 1).mood = 95; at(x, 1).call = null; at(x, 1).wants = []; at(x, 1).coalAt = x.t + 50;
+      x = floorTick(x);
+    }
+    if (at(x, 1).phase === "order") s = x;
+  }
+  assert.ok(s, "おかわりの注文が入る種がある");
+  const guest = s.guests[at(s, 1).guestId];
+  assert.ok(at(s, 1).refill && guest.order.wish && at(s, 1).line.includes(guest.order.quote), "おかわりの一言に、吸いたい気分が入る");
+  const before = { top: at(s, 1).bill.top };
+  const missed = floorTick(s, 60);
+  assert.equal(at(missed, 1).phase === "bill" || at(missed, 1).phase === "cool", true, "聞きそびれたおかわりは、会計に回る");
+  assert.ok(!missed.results.some((r) => r.tableId === 1 && r.guestId === guest.id && r.left), "怒って帰りはしない");
+  assert.equal(before.top, 0);
 });
 
 test("会計: ひと押しで受ける。ファンは満足の段で決まる。売上は明細と一致する", () => {
