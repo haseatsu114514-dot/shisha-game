@@ -1,7 +1,7 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の規則: コースの決定性と公平さ、ジャンプ・着地・転倒、採点と評価の境目。
 import assert from "node:assert/strict";
 import test from "node:test";
-import { RIVAL_COAST, CHARGE, COURSE, LAYOUT, NEAR, GATE, SLALOM, PRACTICE_WALL, PLAYER, nearReward, recoverWindow, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
+import { RIVAL_COAST, CHARGE, COURSE, LAYOUT, NEAR, GATE, SLALOM, PRACTICE_WALL, PRACTICE_CURVE, PRACTICE_FLOW, FLOW, flowAt, PLAYER, nearReward, recoverWindow, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
   summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS, jumpPeak, jumpHeight,
   TIER_TUNING, tierOf, resultTier } from "../js/minigames/desert-ride-model.js";
 
@@ -1380,4 +1380,94 @@ test("three tiers: the result keeps its tier; results without one (old saves, Na
   assert.equal(readResult({ ...old, tier: "secret" }).tier, undefined, "an unknown tier is dropped");
   assert.equal(resultTier(null), "normal");
   assert.equal(createGame(course, { tier: "nope" }).tier, null);
+});
+
+// 2026-11-25 オーナー「サンドボードで通ると加速するゾーンをたまに入れたい。砂流れみたいな見た目にしつつ」
+test("sand flows: a few per course, clear of rocks and bumps, the same strips on every tier (2026-11-25)", () => {
+  const courses = [...COURSE_PACKS.flatMap(pack => ["easy", "normal", "hard"].map(tier => buildCourse({ id: pack.id, tier }))), ...Array.from({ length: 30 }, (_, i) => generateCourse(i + 1))];
+  for (const course of courses) {
+    const flows = course.flows, rocks = rocksOf(course), bumps = course.features.filter(f => f.kind === "bump");
+    assert(flows.length >= 1 && flows.length <= FLOW.count, `${course.id} ${course.tier ?? ""}: now and then, not everywhere (${flows.length})`);
+    for (let i = 0; i < flows.length; i++) {
+      const flow = flows[i];
+      assert.equal(flow.length, FLOW.length); assert.equal(flow.half, FLOW.half);
+      assert(Math.abs(flow.x) <= FLOW.maxX && flow.z >= FLOW.from && flow.z + flow.length <= course.length - FLOW.endRoom, `${course.id}: the strip sits inside the course (${flow.z}, ${flow.x})`);
+      if (i) assert(flow.z >= flows[i - 1].z + FLOW.length + FLOW.after, `${course.id}: strips do not overlap`);
+      // 帯の上と出口の先は岩にぶつからない（帯の縁にいても、板の半分＋余白より外）。起伏は手前から終わりまで無い（地上で乗れる）
+      for (const rock of rocks) {
+        if (rock.z < flow.z - FLOW.before || rock.z > flow.z + flow.length + FLOW.after) continue;
+        assert(Math.abs(rock.x - flow.x) > rock.w + flow.half + PLAYER.half, `${course.id} ${course.tier ?? ""}: rock ${rock.z.toFixed(0)} in the strip at ${flow.z}`);
+      }
+      for (const bump of bumps) assert(bump.z <= flow.z - FLOW.bumpBefore || bump.z >= flow.z + flow.length, `${course.id}: bump ${bump.z.toFixed(0)} in the strip at ${flow.z}`);
+    }
+  }
+  // 段が違っても帯は同じ（上級の足す岩が帯を避ける）。同じコースなら毎回同じ
+  for (const pack of COURSE_PACKS) {
+    const base = buildCourse({ id: pack.id });
+    for (const tier of ["easy", "hard"]) assert.deepEqual(buildCourse({ id: pack.id, tier }).flows, base.flows, `${pack.id} ${tier}: the same strips`);
+    assert.deepEqual(buildCourse({ id: pack.id }).flows, base.flows, "deterministic");
+  }
+  assert.deepEqual(generateCourse(DEFAULT_SEED).flows, buildCourse({ id: "ridge" }).flows, "the pack keeps its seed's strips");
+});
+
+test("riding a sand flow lifts the top speed without the gauge, only on the ground, and never smashes rocks (2026-11-25)", () => {
+  const course = buildCourse({ id: "ridge" }), flow = course.flows[0];
+  const ride = (setup = () => {}) => {
+    const game = createGame(course);
+    game.z = flow.z + 1; game.x = flow.x; game.speed = SPEED.max; game.chargedAt = Infinity;
+    setup(game);
+    return game;
+  };
+  const onIt = ride();
+  for (let i = 0; i < 60; i++) { onIt.x = flow.x; onIt.vx = 0; step(onIt, {}, DT); }
+  assert(onIt.speed > SPEED.max + 3 && onIt.speed <= FLOW.cap + 1e-9, `on the strip the board runs past the normal top speed (${onIt.speed.toFixed(1)})`);
+  assert(FLOW.cap < SPEED.boost, "but slower than a boost");
+  assert.equal(onIt.gauge, 0, "it costs no gauge"); assert.equal(onIt.boostT, 0);
+  assert.equal(onIt.stats.flows, 1); assert.equal(onIt.events.filter(e => e.kind === "flow").length, 1, "riding on is announced once");
+  assert.equal(flowAt(course, onIt.z, onIt.x), flow);
+  assert.equal(smashing(onIt), false, "the flow's speed does not smash rocks");
+  // 帯から出ると、ブーストの後と同じように通常の最高速へ戻る（戻るまで岩は砕けない）
+  onIt.x = flow.x + flow.half + 0.2;
+  step(onIt, {}, DT);
+  assert(onIt.events.some(e => e.kind === "flowEnd"));
+  assert.equal(smashing(onIt), false);
+  for (let i = 0; i < 60; i++) step(onIt, {}, DT);
+  assert(onIt.speed <= SPEED.max + 1e-9, `back to the normal top speed (${onIt.speed.toFixed(1)})`);
+  // 空中・転倒中は効かない
+  const flying = ride(game => { game.air = game.airTotal = 1.5; game.airKind = "big"; game.airPeak = 2; });
+  for (let i = 0; i < 30; i++) { flying.x = flow.x; step(flying, {}, DT); }
+  assert(flying.speed <= SPEED.max + 1e-9, "a big jump over the strip does not ride it");
+  const fallen = ride(game => { game.fallT = 1; game.speed = 20; });
+  for (let i = 0; i < 30; i++) { fallen.x = flow.x; step(fallen, {}, DT); }
+  assert.equal(fallen.speed, 20, "a fallen rider is not carried");
+  // ブーストは帯の上でもブースト（速さも砕く力も）
+  const boosted = ride(game => { game.boostT = 2; });
+  for (let i = 0; i < 30; i++) { boosted.x = flow.x; step(boosted, {}, DT); }
+  assert(boosted.speed > FLOW.cap && smashing(boosted), "a boost on the strip is still a boost");
+});
+
+test("everyone rides the sand flows: Noor, Naru and the autopilot reach every strip on the four courses (2026-11-25)", () => {
+  for (const pack of COURSE_PACKS) {
+    const course = buildCourse({ id: pack.id });
+    for (const who of ["noor", "naru"]) {
+      const run = rivalRun(course, { who });
+      const ridden = course.flows.filter(flow => run.samples.some(s => s.flow && s.z >= flow.z && s.z < flow.z + flow.length));
+      assert.equal(ridden.length, course.flows.length, `${pack.id}: ${who} rides every strip`);
+    }
+    for (const skill of ["expert", "perfect", "good"]) assert.equal(play(course, skill).stats.flows, course.flows.length, `${pack.id}: ${skill} rides every strip`);
+  }
+});
+
+test("practice ends with a left bend to carve and a sand flow to ride, after the wall (2026-11-25)", () => {
+  const course = practiceCourse();
+  assert(PRACTICE_CURVE.from > PRACTICE_WALL + 60 && PRACTICE_FLOW > PRACTICE_CURVE.to + 40 && PRACTICE_FLOW + FLOW.length < COURSE.practiceLength - 30, "wall → bend → flow, with room to read Noor's lines");
+  assert.equal(curveAt(course, (PRACTICE_CURVE.from + PRACTICE_CURVE.to) / 2), PRACTICE_CURVE.c);
+  assert(Math.abs(PRACTICE_CURVE.c) >= CARVE.minCurve, "the bend is strong enough to carve");
+  assert.equal(curveAt(course, PRACTICE_WALL), 0, "the wall stays on the straight");
+  assert.equal(course.features.filter(f => f.z > PRACTICE_WALL).length, 0, "no rocks after the wall");
+  assert.deepEqual(course.flows.map(f => ({ z: f.z, x: f.x })), [{ z: PRACTICE_FLOW, x: 0 }]);
+  for (const skill of ["perfect", "expert"]) {
+    const game = play(course, skill);
+    assert(game.stats.carves >= 1 && game.stats.flows === 1, `${skill}: the lesson's bend and flow can be done (${game.stats.carves} carves, ${game.stats.flows} flows)`);
+  }
 });
