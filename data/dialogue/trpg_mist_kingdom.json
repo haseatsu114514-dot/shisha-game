@@ -50,7 +50,8 @@
       "part": "GM",
       "role": "案内と、霧の王",
       "color": "#c9b8de",
-      "costumeRole": "herald"
+      "costumeRole": "herald",
+      "costumeSpeaker": "霧の王"
     },
     {
       "id": "hajime",

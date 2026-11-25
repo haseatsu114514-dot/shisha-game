@@ -20,7 +20,8 @@
       "part": "GM",
       "role": "語り手、写真屋のおじいさん、魔王プリズマなど",
       "color": "#73b8df",
-      "costumeRole": "shopkeep"
+      "costumeRole": "shopkeep",
+      "costumeSpeaker": "写真屋のおじいさん"
     },
     {
       "id": "hajime",

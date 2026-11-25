@@ -18,7 +18,8 @@
       "part": "GM",
       "role": "旅人オル、漁師の親方など",
       "color": "#dab978",
-      "costumeRole": "oru"
+      "costumeRole": "oru",
+      "costumeSpeaker": "旅人オル"
     },
     {
       "id": "hajime",
