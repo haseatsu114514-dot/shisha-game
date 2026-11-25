@@ -117,7 +117,8 @@ export function playRollShow(host, show) {
   const verdictLogo = el("img.trpg-rs-logo", { src: logoUrl(tone), alt: "", decoding: "async" });
   const verdict = el("div.trpg-rs-verdict", [verdictMega, verdictLogo, el("div.trpg-rs-verdict-line", [el("strong", [verdictWord]), verdictSub].filter(Boolean))]);
   const camera = el("div.trpg-rs-camera", [head, goalNode, plus[0], ...dieNodes, plus[1], chip, needNode, sum, meter, verdict]);
-  const skill = show.skill || null, lead = skill ? 980 : 0;
+  // スキルのカットイン（誰の・技の名前・効き目の3行）は読める長さ出す（2026-11-25 オーナー「振り直しスキルがすぐ消える」で980→1900ms。タップで飛ばせる）
+  const skill = show.skill || null, lead = skill ? 1900 : 0;
   const skillNode = skill ? el("div.trpg-rs-skill", { dataset: { kind: skill.kind } }, [
     el("i.trpg-rs-skill-band"),
     el("div.trpg-rs-skill-inner", [
@@ -627,7 +628,8 @@ export function playRollShow(host, show) {
       ], { duration: piece.rain ? rand(600, 900) : rand(1000, 1700), delay: piece.late || rand(0, 90) });
     }
   }
-  const hold = special === "critical" ? 2300 : grade === "success" ? 1800 : special === "fumble" ? 2100 : 1500;
+  // 「振り直せる！」の札が出る時は、読めるよう1秒長く残す（同上）
+  const hold = (special === "critical" ? 2300 : grade === "success" ? 1800 : special === "fumble" ? 2100 : 1500) + (hintNode ? 1000 : 0);
   const endAt = verdictAt + hold;
   after(endAt - 240, () => animate(node, [{ opacity: 1 }, { opacity: 0 }], { duration: 240, easing: "ease-in" }));
   after(endAt, () => handle.skip());
