@@ -8,11 +8,12 @@
 import { withMinigameStyles } from "./minigame-styles.js";
 import { el } from "../core/util.js";
 import { SE, unlockAudio, createDesertRideSe, desertZapGap, currentBgm, playBgm, preloadBgm, resetBgmTempo } from "../core/audio.js";
-import { BOOST, EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
-  rivalRun, rivalAt, RULES_VERSION, DISPLAY, toKmh, toMeters, JUMP, SCORE, RANKS, PLAYER, NEAR, PRACTICE_WALL } from "./desert-ride-model.js";
+import { BOOST, CARVE, EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
+  rivalRun, rivalAt, RULES_VERSION, DISPLAY, toKmh, toMeters, JUMP, SCORE, RANKS, PLAYER, NEAR, PRACTICE_WALL, PRACTICE_CURVE, PRACTICE_FLOW, FLOW } from "./desert-ride-model.js";
 import { TIERS, TIER_LABEL } from "../core/play-tiers.js";
 import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose, spinFrames, warmDesertUi } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
+import { faceIconUrl } from "../core/data.js";
 import { installRotateGuard, rotateGuarded } from "../core/rotate-guard.js";
 import { warmInBackground } from "../core/loading-prefetch.js";
 import { withMinigameLoading } from "./minigame-loading.js";
@@ -23,6 +24,8 @@ const UPDATE_STEP = 0.05; // 演出と進行判定は従来の1フレーム上�
 const MAX_FRAME_ELAPSED = 1; // 非表示・回転は別途停止。極端に長い停止からの復帰だけ追いつく量を制限する
 // オーラの色（内側・外側・火の粉）。2026-11-13 オーナー「ヌールとなるとはじめでオーラの色は変えたい」で、ひと目で分かる3色にした
 // （それまではヌールが夕日の金で、はじめの炎と見分けにくかった）: はじめ＝炎の橙、ヌール＝板と同じ青緑、なる＝紫
+// カービングの金の残像の色（内側・外側）
+const CARVE_GOLD = Object.freeze({ mid: [255, 214, 96], rim: [255, 150, 40] });
 const AURAS = Object.freeze({
   player: Object.freeze({ core: [255, 250, 190], mid: [255, 176, 48], rim: [255, 92, 20] }),
   noor: Object.freeze({ core: [226, 255, 248], mid: [64, 222, 196], rim: [14, 140, 150] }),
@@ -82,10 +85,23 @@ const FEEL = {
   orbEach: 0.012,
   // 回転（2026-11-13）: 体のひねり（rad）、残像の枚数と1枚ごとの遅れ（回転）、横向きの瞬間の最小の横幅
   spinTilt: 0.14, spinGhosts: 3, spinGhostStep: 0.045, spinMinWidth: 0.3,
+  // 砂流れ（2026-11-25）: 帯の砂が流れて見える速さ（地面に対して m/秒。動き軽減では flowCalm 倍）、乗った瞬間の視界の広がり、乗っている間の砂しぶきの量
+  flowRun: 16, flowCalm: 0.3, flowKick: 0.55, flowSpray: 30,
+  // カービング（2026-11-25 オーナー「カービングに演出を入れたい」）: カーブの間、切り込むほど高まる熱（0〜1）。
+  // 切り込みは内へ寄りすぎないよう押したり離したりするので（押している割合は2〜3割）、同じカーブの中で離している間はゆっくり冷め（carveHold/秒）、
+  // カーブを抜けると速く冷める（carveFade/秒）。carveBuild は切り込んでいる間に満ちる秒。刻みの数（音の高さ）は、カーブを抜けて carveChainGap 秒で数え直す。
+  // carveWall: 外側の砂の壁の量の倍率（熱が満ちた時）、carveSparks: きらめく砂粒の数（1秒あたり）、rollCarve: カメラが内へ倒れる量（rad）
+  carveBuild: 0.6, carveHold: 0.25, carveFade: 2.5, carveChainGap: 0.5, carveWall: 1.8, carveSparks: 26, rollCarve: 0.035,
+  // 同日「カービングの演出もっとかっこよくして」: 金の残像の枚数（熱がこれを超えたら出す）、刻みごとの斬り込みの光の秒、外へ飛ぶ砂の筋の数（1秒あたり）、
+  // 画面の外側の縁から流れる金の風の線の数、熱が満ちた瞬間（MAX）の視界の広がり
+  carveGhosts: 3, carveGhostFrom: 0.35, carveStreaks: 60, carveEdgeLines: 8, carveMaxKick: 0.5,
+  // 同日「輪なのがなんか違う」: 輪・楕円（足元の金の輪・板のまわりの三日月・板の下の弧）をやめ、板の外の縁がきらっと光る十字の光（carveGlint 秒）と、
+  // 刻んだ線を板から後ろへ走る光（carveRun 秒）、外へ扇に散る砂の筋（carveBurst 本）にした
+  carveGlint: 0.22, carveRun: 0.35, carveBurst: 16,
 };
 /** 効果音の音量は、勝敗・得点への影響が大きい出来事ほど大きく（滑走・風のループはこれより小さい）。 */
 const SE_GAIN = Object.freeze({ fall: 0.7, goal: 0.7, leadChange: 0.6, perfect: 0.6, smash: 0.55, recover: 0.55, countdown: 0.55, boost: 0.5, thunder: 0.5,
-  bigJump: 0.45, good: 0.45, near: 0.4, land: 0.36, spinHalf: 0.3, hop: 0.28, rivalBoost: 0.24, bounce: 0.22 });
+  bigJump: 0.45, good: 0.45, near: 0.4, flow: 0.38, land: 0.36, carveTick: 0.32, spinHalf: 0.3, hop: 0.28, rivalBoost: 0.24, bounce: 0.22 });
 const SPEED_FULL = SPEED.boost;  // 演出の「最速」（ブースト）
 const RIVAL_NAMES = Object.freeze({ noor: "ヌール", naru: "なる" });
 // 画像が読み込めない場合の競走相手の図形色。ヌール: 青緑の板・オリーブのシャツ・ベージュのスカーフ・束ねた黒髪・頭のサングラス。
@@ -178,43 +194,61 @@ function sandTexture() {
 
 const RANK_WORDS = { S: "最高の一本", A: "見事な滑り", B: "いい滑り", C: "完走" };
 const BOOST_MIN_PERCENT = BOOST.minGauge * 100;
+// 練習の説明は、砂丘のガイドのヌールが話す（2026-11-25 オーナー「チュートリアルもあってもいいかも。ヌールが説明してくれる感じの」）。
+// 顔のアイコンと名前の吹き出しで出す。ヌールは普通の日本語で、はじめを「ハジメ」と呼ぶ（語録は混ぜない）。台詞の末尾に「。」を付けない。
+// 本番では説明の文字を出さない（同「体勢崩した時とかブーストで立て直すとか文字が出るのは無くしたい。チュートリアルとかで文字で説明はいいけど」）。
 const TUTORIAL = {
-  move: "← → で左右に動こう",
-  rock: "岩に当たると転ぶ。先を見て、早めによけよう",
-  bump: "起伏の手前で Space ── 大きく跳べる",
-  brace: "着地の直前、輪がボタンに重なったら Space ── 着地が決まる",
-  retryBump: "惜しい。次の起伏で、もう一度跳んでみよう",
-  trick: "次は、跳んだら空中で ← か → を押し続けて回ろう",
-  trickLetGo: "離すと回り切る。着地より前に離そう",
-  trickDone: "回った！ 回るほど点が大きい",
-  trickFall: "回りかけで着地すると転ぶ。もう少し早く離そう",
-  boost: "ゲージが目印まで溜まったら ↓（BOOST）で超加速 ── 岩も砕ける",
-  boostGo: "そのまま、岩へ突っ込め！",
-  recover: "最後に、立て直し。岩の壁にわざと当たって、すぐ ↓（BOOST）",
-  recoverNow: "当たった！ すぐ ↓（BOOST）で立て直せ",
-  recoverDone: "立て直した！ 転倒は帳消しで、そのまま加速",
-  recoverLate: "惜しい。当たった直後に押すと、立て直せる",
-  recoverSmash: "砕いた！ ブーストが無い時に当たったら、直後に ↓（BOOST）で立て直せる",
-  recoverDodge: "うまくよけた。当たってしまった時は、直後に ↓（BOOST）で立て直せる",
-  finish: "いい感じ。あとは、滑るだけ",
+  move: "ハジメ、まずは ← → で左右に動いてみて",
+  rock: "岩に当たると転ぶよ。先を見て、早めによけてね",
+  fallRock: "大丈夫、転んでも砂は痛くないよ。次は早めによけてね",
+  bump: "砂の山が来たら、手前で Space！ 大きく跳べるよ",
+  brace: "着地の直前、輪がボタンに重なったら Space。ぴたっと決まるから",
+  retryBump: "惜しい！ 次の山で、もう一回跳んでみよう",
+  landPerfect: "完璧な着地！ その調子",
+  landGood: "いい着地。もうちょっと遅く押すと完璧",
+  landPlain: "着地の直前に押すと、体勢が整うよ",
+  trick: "次は回転！ 跳んだら空中で ← か → を押し続けて",
+  trickLetGo: "離すと回り切るよ。着地より前に離してね",
+  trickDone: "回った！ たくさん回るほど点が大きいよ",
+  trickFall: "回りかけで着地すると転んじゃう。もう少し早く離して",
+  boost: "ゲージが目印まで溜まったね。↓（BOOST）で一気に加速、岩も砕けるよ",
+  boostGo: "そのまま、岩に突っ込んで！",
+  recover: "次は立て直し。岩の壁にわざと当たって、すぐ ↓（BOOST）！",
+  recoverNow: "今！ すぐ ↓（BOOST）で立て直して",
+  recoverDone: "立て直した！ 転んだのは無しになって、そのまま加速",
+  recoverLate: "惜しい。当たった直後に押せば、立て直せるよ",
+  recoverSmash: "砕いちゃった！ ブーストが無い時に当たったら、直後に ↓（BOOST）で立て直せるよ",
+  recoverDodge: "よけたね。当たっちゃった時は、直後に ↓（BOOST）で立て直せるよ",
+  curve: "カーブでは外に流されるよ。矢印の向き（←）へ押して、切り込んで",
+  carveOn: "そう、それ！ 板の下が光って、砂に金の線が刻まれてるでしょ",
+  carveGauge: "切り込んでる間は、ブーストが貯まるの。内側に寄りすぎたら、少し離してまた押して",
+  carveLong: "カーブの間、切り込むほど砂しぶきが高く上がっていくよ",
+  carveLate: "惜しい！ 曲がる向きへ押し続けると、流されないで切り込めるよ",
+  carveMiss: "カーブでは曲がる向きへ押し続けてみて。本番のカーブはチャンスだよ",
+  flow: "あ、見て！ 砂が流れてる所があるでしょ。あそこに乗ってみて",
+  flowGo: "速いでしょ？ 砂が運んでくれるの。本番にもときどき流れてるよ",
+  flowMiss: "乗り逃しちゃった。本番でも、流れる砂を見つけたら乗ってみて",
+  finish: "いい感じ！ あとは、ゴールまで滑るだけ",
 };
 // タッチ端末ではキーの名前（Space／← →／↓）を出さず、画面のボタンの名前で言う（#2838）。
 const TUTORIAL_TOUCH = {
-  move: "「左へ」「右へ」で動こう",
-  bump: "起伏の手前で「ジャンプ」── 大きく跳べる",
-  brace: "空中ではジャンプが「LAND」に変わる。輪が重なったら押そう",
-  trick: "次は、跳んだら空中で「左へ」か「右へ」を押し続けて回ろう",
-  boost: "ゲージが目印まで溜まったら「BOOST」で超加速 ── 岩も砕ける",
-  recover: "最後に、立て直し。岩の壁にわざと当たって、すぐ「BOOST」",
-  recoverNow: "当たった！ すぐ「BOOST」で立て直せ",
-  recoverSmash: "砕いた！ ブーストが無い時に当たったら、直後に「BOOST」で立て直せる",
-  recoverDodge: "うまくよけた。当たってしまった時は、直後に「BOOST」で立て直せる",
+  move: "ハジメ、まずは「左へ」「右へ」で動いてみて",
+  bump: "砂の山が来たら、手前で「ジャンプ」！ 大きく跳べるよ",
+  brace: "空中ではジャンプが「LAND」に変わるの。輪が重なったら押して",
+  trick: "次は回転！ 跳んだら空中で「左へ」か「右へ」を押し続けて",
+  boost: "ゲージが目印まで溜まったね。「BOOST」で一気に加速、岩も砕けるよ",
+  recover: "次は立て直し。岩の壁にわざと当たって、すぐ「BOOST」！",
+  recoverNow: "今！ すぐ「BOOST」で立て直して",
+  recoverSmash: "砕いちゃった！ ブーストが無い時に当たったら、直後に「BOOST」で立て直せるよ",
+  recoverDodge: "よけたね。当たっちゃった時は、直後に「BOOST」で立て直せるよ",
+  curve: "カーブでは外に流されるよ。矢印の向きに「左へ」を押して、切り込んで",
 };
+/** 練習でヌールが話す全部の台詞（検査で、吹き出しに収まるかを確かめる）。 */
+export const TUTORIAL_LINES = Object.freeze([...Object.values(TUTORIAL), ...Object.values(TUTORIAL_TOUCH)]);
 // カーブの合図（2026-11-13 オーナー「カービングとかすると何が起こるのかの説明が長い。文字で説明するよりエフェクトで」）:
-// 文字の案内（「カーブ！ 曲がる向きへ切り込むと、ブーストが貯まる」）をやめ、切り込んでいない間だけ人物の横に切り込む向きの矢印（≫）と
-// 短い一言を出す。切り込むと、板の下に光る弧・「+30」・ゲージへ飛ぶ光の粒で、何が起きたかを見せる。
+// 切り込んでいない間だけ人物の横に切り込む向きの矢印（≫）を出す。2026-11-25 に矢印の横の一言「切り込め」もやめた（本番は文字を出さない。
+// 切り込みの説明は練習のヌールが話す）。切り込むと、板の下に光る弧・「+30」・ゲージへ飛ぶ光の粒で、何が起きたかを見せる。
 // 一度切り込めたら、その日は出さない。切り込まないままでも、合わせて CURVE_CUE_SECONDS 秒まで
-const CURVE_CUE_WORD = "切り込め";
 const CURVE_CUE_SECONDS = 10;
 const touchUi = () => typeof matchMedia === "function" && matchMedia("(hover: none) and (pointer: coarse)").matches;
 const tutorialText = key => (touchUi() && TUTORIAL_TOUCH[key]) || TUTORIAL[key];
@@ -228,6 +262,7 @@ const HOWTO = {
     `ゲージが目印（${BOOST_MIN_PERCENT}%）まで溜まったら ↓（BOOST）。超加速して岩も砕く（砕くたびに少し短くなり、深い砂で切れる）`,
     "岩に当たった直後は、ゲージが少しでもあればブーストで立て直せる",
     "カーブでは外へ流される。曲がる向きへ切り込むと踏ん張れて、ブーストも貯まる",
+    "砂が流れている明るい帯に乗ると、ゲージを使わずに速くなる（ブーストより遅く、岩は砕けない）",
   ],
   touch: [
     "「左へ」「右へ」で左右。砂の上なので、少し遅れてついてくる",
@@ -237,6 +272,7 @@ const HOWTO = {
     `ゲージが目印（${BOOST_MIN_PERCENT}%）まで溜まったら「BOOST」。超加速して岩も砕く（砕くたびに少し短くなり、深い砂で切れる）`,
     "岩に当たった直後は、ゲージが少しでもあれば「BOOST」で立て直せる",
     "カーブでは外へ流される。曲がる向きへ切り込むと踏ん張れて、ブーストも貯まる",
+    "砂が流れている明るい帯に乗ると、ゲージを使わずに速くなる（ブーストより遅く、岩は砕けない）",
   ],
 };
 
@@ -246,7 +282,7 @@ const HOWTO = {
  * @param opts.tutorial 最初に練習（ガイドの説明）から始める
  * @param opts.best 表示する自己ベスト { score, rank }（保存は呼び出し側）
  * @param opts.reducedMotion 揺れ・閃光・速度線を止める
- * @param opts.guide 練習と結果のひとことを言う人の名前（無ければ地の文）
+ * @param opts.guide 練習と結果のひとことを言う人の名前（既定はヌール。練習の説明はヌールの顔と吹き出しで出す）
  * @param opts.rivals 本番で競える相手（"noor"、ヌールに勝った後は "naru" も）
  * 三段階（#3779・core/play-tiers.js）: ヌールとの勝負（「滑る」）の段。なるとの勝負と練習は段の外。ゲームは保存を読まず、段の解放は呼び出し側が渡す。
  * @param opts.tiers 選べる段（既定は3段とも。本編は openTiers）。閉じた段は札に「〜クリアで開く」と出して押せない
@@ -262,7 +298,7 @@ export function runDesertRide(options = {}) {
 
 function startDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, best = null, legacyBest = null, seed, courseId, rivals = ["noor"],
   tiers = TIERS, tier = "normal", cleared = [], tierNotes = null, easyBest = null, onTier = null,
-  reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = null, speedUp = 1 } = {}) {
+  reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = "ヌール", speedUp = 1 } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   if (signal?.aborted) return Promise.resolve({ results: [], practiced: false });
@@ -295,6 +331,13 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     const fxCtx = fxCanvas.getContext("2d");
     const hud = el("div.dr-hud");
     const caption = el("p.dr-caption", { role: "status", dataset: { test: "desert-caption" } });
+    // 練習の説明: ヌールの顔・名前・吹き出し（2026-11-25）。顔のアイコンは設定の画風に合わせ、目録の読み込み前は現行の絵。読めなければ名前だけ
+    const guideFace = el("img.dr-guide-face", { src: faceIconUrl("noor") || imgFileUrl("ui/face_icons/face_noor.webp"), alt: "", onerror: event => { event.currentTarget.hidden = true; } });
+    const guideBox = el("div.dr-guide", { hidden: true, dataset: { test: "desert-guide" } }, [guideFace, el("div.dr-guide-body", [el("b.dr-guide-name", { text: guide || "ヌール" }), caption])]);
+    /** 練習の説明を出す（空なら吹き出しごと隠す）。 */
+    const tell = (text = "") => { caption.textContent = text; guideBox.hidden = !text; if (tut && game) tut.toldAt = game.t; };
+    /** 今の説明を出してから seconds 秒たったか（続けて話す時、前の一言を読む間を空ける）。 */
+    const toldFor = seconds => !tut || game.t - (tut.toldAt ?? -9) >= seconds;
     const pop = el("div.dr-pop", { "aria-hidden": "true" });
     // 判定は左上のスコア欄に固定し、走路と人物を覆わない。開始合図だけ中央。
     const cutin = el("div.dr-cutin", { "aria-hidden": "true", dataset: { test: "desert-cutin" } });
@@ -304,7 +347,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     const panel = el("div.dr-panel");
     const controls = el("div.dr-controls", { hidden: true });
     const quit = el("button.dr-quit", { type: "button", text: "✕", title: "やめる", "aria-label": "やめる", dataset: { test: "desert-quit" }, hidden: true });
-    root.append(canvas, hud, fxCanvas, startPop, versus, caption, controls, panel);
+    root.append(canvas, hud, fxCanvas, startPop, versus, guideBox, controls, panel);
     host.append(root);
     root.focus({ preventScroll: true });
 
@@ -341,6 +384,9 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       if (kind === "fall") flashDarkT = FEEL.flashFallDark[0];
     };
     let curveCueLeft = CURVE_CUE_SECONDS, curveCueOn = false, carved = false, lead = 0; // カーブの合図の残り時間と、相手との前後
+    // カービングの演出（2026-11-25）: 熱（切り込み続けるほど 0→1）、続けて刻んだ数、切り込みをやめてからの秒
+    // show: 切り込んでいる間 1 へ、離すと 0 へなめらかに（押したり離したりで砂の幕がぱっと消えないように）
+    let carveFx = { heat: 0, chain: 0, off: 9, maxed: false, glints: [], runs: [], show: 0 };
     const view = { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0 }; // 速さで広がる視界。back を depth に比例させ、人物の大きさは変えない
     const streaks = Array.from({ length: 80 }, (_, i) => ({ angle: (i / 80) * Math.PI * 2 + Math.random() * 0.1, phase: Math.random(), len: 0.6 + Math.random() * 0.8, w: 1 + Math.random() * 2 }));
     let tut = null, preloadRunId = -1;
@@ -465,7 +511,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       rideSe.stop();
       resetBgmTempo();
       mode = null; game = null; tut = null; bot = null; goal = null; pendingResult = null; hitStopT = 0; orbs = []; clearOrbCanvas();
-      controls.hidden = true; quit.hidden = true; caption.textContent = ""; delete caption.dataset.kind; hud.replaceChildren();
+      controls.hidden = true; quit.hidden = true; tell(); delete caption.dataset.kind; hud.replaceChildren();
       startPop.classList.remove("show"); versus.classList.remove("show");
       setPhase("menu");
       const start = el("button.btn.primary.dr-button", { type: "button", text: results.length ? "もう一度滑る" : "滑る", dataset: { test: "desert-start" }, onclick: () => prepareAndStart("run", "noor") });
@@ -553,7 +599,8 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     function onBoostEvent(kind) {
       if (kind === "recover") {
         if (game) auraStartT = game.t;
-        rideSe.play("boost", SE_GAIN.recover); showPop("リカバリー", "recover"); burst(28, 1.8); floater("リカバリー", "recover");
+        // 2026-11-25: 立て直しは文字を出さない（オーナー「体勢崩した時とかブーストで立て直すとか文字が出るのは無くしたい」）。音・砂・輪・揺れ・閃光で見せる
+        rideSe.play("boost", SE_GAIN.recover); burst(28, 1.8);
         rings.push({ age: 0, life: 0.7, power: 1.35, burst: true });
         setShake("recover"); setFlash("recover");
         hitStopT = 0; flashDarkT = 0; stop(FEEL.stopRecover); // 転倒の止めの残りは捨てて、立て直しの短い止めに替える（押したらすぐ走り出す）
@@ -614,9 +661,9 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       rival = kind === "practice" ? null : rivalRun(course, { who: raceWith, tier: runTier });
       game = createGame(course, { rival, tier: runTier });
       curveSigns = curveSignsFor(course);
-      world = { sky: 0, yaw: 0, sunPulse: 0, slope: null, trail: [] };
+      world = { sky: 0, yaw: 0, sunPulse: 0, slope: null, trail: [], flowPhase: 0 };
       resetBgmTempo();
-      lead = 0; curveCueOn = false;
+      lead = 0; curveCueOn = false; carveFx = { heat: 0, chain: 0, off: 9, maxed: false, glints: [], runs: [], show: 0 };
       particles = []; rings = []; floaters = []; clearTimeout(cutinTimer); cutin.classList.remove("show"); cutin.replaceChildren(); popT = 0; slowT = 0; halfShown = 0; bot = null; botMemo = {}; botLag = 0; zapClock = 0.35; zapBurstT = 0; zapBurstShown = false;
       hitStopT = 0; shake = { t: 0, life: 1, ax: 0, ay: 0 }; flash = { t: 0, life: 1, peak: 0 }; flashDarkT = 0; lastLand = null; auraStartT = -1; pendingChips = []; orbs = []; orbBank = 0; lastGauge = 0; gaugePulseT = 0; rivalFx = { dust: [], rings: [], last: null, boostStartT: -9 }; clearOrbCanvas(); smashFlash.clear(); goal = null; pendingResult = null;
       Object.assign(view, { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0, boost: 0 });
@@ -636,7 +683,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       controls.hidden = false; quit.hidden = false;
       setPhase(kind);
       delete caption.dataset.kind;
-      caption.textContent = kind === "practice" ? tutorialText("move") : "";
+      tell(kind === "practice" ? tutorialText("move") : "");
       buildHud();
       updateHud(); // 開始直後から相手名・速度・BOOSTを表示する。最初の描画フレームを待たない。
       cancelAnimationFrame(frame);
@@ -949,9 +996,11 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     }
 
     // ---- 練習の説明 ------------------------------------------------------------------
-    function say(key) { if (tut.said.has(key + tut.step)) return; tut.said.add(key + tut.step); caption.textContent = tutorialText(key); }
+    function say(key) { if (tut.said.has(key + tut.step)) return; tut.said.add(key + tut.step); tell(tutorialText(key)); }
     function updateTutorial(events) {
       if (!tut) return;
+      // 岩をよける段で転んだら、ヌールが声をかける（本番は転倒の文字を出さない）
+      if (["move", "rock", "rock2"].includes(tut.step) && events.some(e => e.kind === "fall" && e.reason === "rock")) tell(tutorialText("fallRock"));
       if (tut.step === "move") {
         if (Math.abs(game.x) > 0.25) tut.moved = true;
         if (tut.moved && game.z > 60) { tut.step = "rock"; say("rock"); }
@@ -963,45 +1012,64 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         else if (events.some(e => e.kind === "land" && e.grade === "bounce")) { tut.bumpTries += 1; tut.step = "bumpAgain"; say("retryBump"); }
       } else if (tut.step === "bumpAgain") {
         if (game.air > 0 && game.airKind === "big") { tut.step = "brace"; say("brace"); }
-        else if (game.z > 330) { tut.step = "rock2"; caption.textContent = TUTORIAL.rock; }
+        else if (game.z > 330) { tut.step = "rock2"; tell(tutorialText("rock")); }
       } else if (tut.step === "brace") {
         const landed = events.find(e => e.kind === "land" && e.grade !== "bounce");
-        if (landed) { tut.step = game.z < 300 ? "rock2" : "finish"; caption.textContent = landed.grade === "perfect" ? "完璧な着地。その調子" : landed.grade === "good" ? "いい着地。もう少し遅く押すと完璧" : "着地の直前に押すと、姿勢が整う"; }
+        if (landed) { tut.step = game.z < 300 ? "rock2" : "finish"; tell(tutorialText(landed.grade === "perfect" ? "landPerfect" : landed.grade === "good" ? "landGood" : "landPlain")); }
       } else if (tut.step === "rock2") {
         if (game.z > 345) { tut.step = "trick"; say("trick"); }
       } else if (tut.step === "trick") {
         if (game.spinDir !== 0 && game.spinHold) { tut.step = "trickLetGo"; say("trickLetGo"); }
-        if (events.some(e => e.kind === "trick")) { tut.step = "boostWait"; caption.textContent = TUTORIAL.trickDone; }
-        else if (events.some(e => e.kind === "fall" && e.reason === "spin")) { tut.step = "boostWait"; caption.textContent = TUTORIAL.trickFall; }
+        if (events.some(e => e.kind === "trick")) { tut.step = "boostWait"; tell(tutorialText("trickDone")); }
+        else if (events.some(e => e.kind === "fall" && e.reason === "spin")) { tut.step = "boostWait"; tell(tutorialText("trickFall")); }
         else if (game.z > 470) tut.step = "boostWait";
       } else if (tut.step === "trickLetGo") {
-        if (events.some(e => e.kind === "trick")) { tut.step = "boostWait"; caption.textContent = TUTORIAL.trickDone; }
-        else if (events.some(e => e.kind === "fall" && e.reason === "spin")) { tut.step = "boostWait"; caption.textContent = TUTORIAL.trickFall; }
+        if (events.some(e => e.kind === "trick")) { tut.step = "boostWait"; tell(tutorialText("trickDone")); }
+        else if (events.some(e => e.kind === "fall" && e.reason === "spin")) { tut.step = "boostWait"; tell(tutorialText("trickFall")); }
         else if (game.z > 470) tut.step = "boostWait";
       } else if (tut.step === "boostWait") {
         if (game.z > 475 && game.air <= 0) { tut.step = "boost"; chargeBoost(game, 1); say("boost"); }
       } else if (tut.step === "boost" || tut.step === "boostGo") {
         if (tut.step === "boost" && game.boostT > 0) { tut.step = "boostGo"; say("boostGo"); }
-        // 最後の段: 岩の壁にわざと当たって、立て直しを一度やってみる（練習は猶予が長い）
+        // 岩の壁にわざと当たって、立て直しを一度やってみる（練習は猶予が長い）
         if (game.z > PRACTICE_WALL - 110) { tut.step = "recover"; say("recover"); }
       } else if (tut.step === "recover") {
         // 立て直しに使うゲージは、壁の直前で渡す（早く渡すと、当たる前のブーストで使い切って壁を砕いてしまう）
         if (!tut.wallGauge && game.z > PRACTICE_WALL - 14) { tut.wallGauge = true; chargeBoost(game, Math.max(0, 0.6 - game.gauge)); }
-        if (events.some(e => e.kind === "recover")) { tut.step = "done"; caption.textContent = tutorialText("recoverDone"); }
-        else if (events.some(e => e.kind === "fall" && e.reason === "rock")) { tut.step = "recoverNow"; caption.textContent = tutorialText("recoverNow"); }
-        else if (events.some(e => e.kind === "smash")) { tut.step = "done"; caption.textContent = tutorialText("recoverSmash"); }
-        else if (game.z > PRACTICE_WALL + 6) { tut.step = "done"; caption.textContent = tutorialText("recoverDodge"); }
+        if (events.some(e => e.kind === "recover")) { tut.step = "done"; tell(tutorialText("recoverDone")); }
+        else if (events.some(e => e.kind === "fall" && e.reason === "rock")) { tut.step = "recoverNow"; tell(tutorialText("recoverNow")); }
+        else if (events.some(e => e.kind === "smash")) { tut.step = "done"; tell(tutorialText("recoverSmash")); }
+        else if (game.z > PRACTICE_WALL + 6) { tut.step = "done"; tell(tutorialText("recoverDodge")); }
       } else if (tut.step === "recoverNow") {
-        if (game.stats.recoveries > 0) { tut.step = "done"; caption.textContent = tutorialText("recoverDone"); }
-        else if (!canRecover(game)) { tut.step = "done"; caption.textContent = tutorialText("recoverLate"); }
+        if (game.stats.recoveries > 0) { tut.step = "done"; tell(tutorialText("recoverDone")); }
+        else if (!canRecover(game)) { tut.step = "done"; tell(tutorialText("recoverLate")); }
+      } else if (tut.step === "done") {
+        // 2026-11-25: カーブ（切り込み）と砂流れ。本番では文字で教えないので、ここでヌールが話す
+        if (game.z > PRACTICE_CURVE.from - 30) { tut.step = "curve"; say("curve"); }
+      } else if (tut.step === "curve") {
+        // 切り込み（カービング）は3段で話す: 切り込めた（光る弧と金の線）→ 1回刻んだ（ブーストが貯まる・押したり離したり）→ 熱が高まった（砂しぶきが高く）
+        if (game.carving) { tut.step = "carveOn"; tell(tutorialText("carveOn")); }
+        else if (game.z > PRACTICE_CURVE.to) { tut.step = "flowWait"; tell(tutorialText("carveMiss")); }
+      } else if (tut.step === "carveOn") {
+        // 前の一言を読む間（1.6秒）を空けてから次へ
+        if (game.stats.carves >= 1 && toldFor(1.6)) { tut.step = "carveGauge"; tell(tutorialText("carveGauge")); }
+        else if (game.z > PRACTICE_CURVE.to) { tut.step = "flowWait"; tell(tutorialText(game.stats.carves ? "carveGauge" : "carveLate")); }
+      } else if (tut.step === "carveGauge") {
+        if ((game.stats.carves >= 2 || carveFx.heat >= 0.6) && toldFor(2)) { tut.step = "flowWait"; tell(tutorialText("carveLong")); }
+        else if (game.z > PRACTICE_CURVE.to) tut.step = "flowWait";
+      } else if (tut.step === "flowWait") {
+        if (game.z > PRACTICE_FLOW - 40) { tut.step = "flow"; say("flow"); }
+      } else if (tut.step === "flow") {
+        if (events.some(e => e.kind === "flow")) { tut.step = "flowDone"; tell(tutorialText("flowGo")); }
+        else if (game.z > PRACTICE_FLOW + FLOW.length) { tut.step = "flowDone"; tell(tutorialText("flowMiss")); }
       }
-      if (game.z > game.course.length - 30) caption.textContent = TUTORIAL.finish;
+      if (game.z > game.course.length - 30 && tut.step !== "end") { tut.step = "end"; tell(tutorialText("finish")); }
     }
 
-    /** カーブの合図（矢印）を出すか。本番のカーブ（|c|≥0.4）の地上で、まだ一度も切り込めていない間だけ。合わせて CURVE_CUE_SECONDS 秒まで。 */
+    /** カーブの合図（矢印）を出すか。本番と練習のカーブ（|c|≥0.4）の地上で、まだ一度も切り込めていない間だけ。合わせて CURVE_CUE_SECONDS 秒まで。 */
     function updateCurveTip(dt) {
       curveCueOn = false;
-      if (mode !== "run" || !game || game.finished) return;
+      if (!(mode === "run" || mode === "practice") || !game || game.finished) return;
       if (game.stats.carves > 0 || game.carving) carved = true;
       if (carved || curveCueLeft <= 0 || game.air > 0 || game.fallT > 0 || countdown > 0) return;
       if (Math.abs(curveAt(game.course, game.z)) < 0.4) return;
@@ -1102,7 +1170,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       const boosting = !goal && game.boostT > 0;
       rideSe.motion({
         speed: (game.speed / SPEED.max) * (boosting ? 1.35 : 1),
-        carve: goal ? 0 : Math.max(Math.abs(game.vx), game.carving ? 0.9 : 0),
+        carve: goal ? 0 : Math.max(Math.abs(game.vx), game.carving ? 0.9 : 0, game.inFlow ? 1 : 0), // 砂流れの上は、砂のこすれる音が続く
         grounded: game.air <= 0 && game.fallT <= 0,
         // ブースト中の風切り（終わりの0.5秒で消える）
         boost: boosting && !game.finished ? Math.min(1, game.boostT / 0.5) : 0,
@@ -1119,7 +1187,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       if (done || !mode || runId !== thisRun) return;
       pendingResult = completed;
       goal = { t: 0 };
-      caption.textContent = ""; delete caption.dataset.kind;
+      tell(); delete caption.dataset.kind;
       controls.hidden = true; quit.hidden = true;
       resetBgmTempo();
       showPop("GOAL!", "go");
@@ -1184,7 +1252,8 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
           SE.reelWin(); // 角度は HUD の一か所だけ。人物の横に重複表示しない。
           if (event.half >= 2) { SE.just(); if (!reducedMotion) slowT = FEEL.slowTrick; } // カットインの間はゆっくり
         } else if (event.kind === "fall") {
-          rideSe.play("fall", SE_GAIN.fall); showPop(event.reason === "spin" ? "回り切れず…" : "転倒…", "fall"); burst(34, 1.6);
+          // 転倒も文字を出さない（2026-11-25・同上）。音・砂・暗い閃光・揺れ・止めで見せる（練習ではヌールが話す）
+          rideSe.play("fall", SE_GAIN.fall); burst(34, 1.6);
           setShake("fall"); setFlash("fall"); stop(FEEL.stopFall);
         } else if (event.kind === "near") {
           // 近いほど高い音・大きい点。当たる寸前は「ギリギリ！」
@@ -1201,7 +1270,19 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
             for (const rock of game.smashedRocks) if (rock.z > game.z - 4) smashFlash.add(rock);
           }
         }
-        else if (event.kind === "carve") floater(`+${event.points}`, "carve"); // 文字より点数（光の粒がゲージへ飛ぶのは spawnOrbs）
+        else if (event.kind === "carve") {
+          floater(`+${event.points}`, "carve"); // 文字より点数（光の粒がゲージへ飛ぶのは spawnOrbs）
+          // 刻みごと（2026-11-25）: 続けて切り込むほど高くなる音。板の外の縁がきらっと光り、刻んだ線を光が後ろへ走り、砂の筋が外へ扇に散る（輪は出さない）
+          carveFx.chain += 1;
+          rideSe.cue("carve", { n: carveFx.chain, gain: SE_GAIN.carveTick });
+          carveCut(event.dir || Math.sign(curveAt(game.course, game.z)) || 1, false);
+        }
+        else if (event.kind === "flow") {
+          // 砂流れに乗った: 文字は出さず、砂の音・足元の砂しぶき・視界の広がりで知らせる
+          rideSe.play("carve", SE_GAIN.flow, 1.2); burst(14, 0.9);
+          rings.push({ age: 0, life: 0.45, power: 0.9, grade: "flow" });
+          if (!reducedMotion) view.kick = Math.max(view.kick, FEEL.flowKick);
+        }
         else if (event.kind === "gaugeFull") { rideSe.play("thunder", SE_GAIN.thunder); zapBurstT = 0.35; zapClock = 0.6; floater(touchUi() ? "BOOST OK" : "BOOST OK ↓", "gauge"); } // 満タンは雷の一発だけ
         else if (event.kind === "boost") onBoostEvent("boost");
         else if (event.kind === "recover") onBoostEvent("recover");
@@ -1220,12 +1301,12 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     function onFinished() {
       rideSe.stop();
       resetBgmTempo();
-      caption.textContent = ""; delete caption.dataset.kind;
+      tell(); delete caption.dataset.kind;
       controls.hidden = true; quit.hidden = true;
       if (mode === "practice") {
         practiced = true;
         mode = null;
-        caption.textContent = "";
+        tell();
         setPhase("practiced");
         panel.replaceChildren(el("div.dr-card.dr-menu", { dataset: { test: "desert-practiced" } }, [
           el("p.dr-kicker", { text: "PRACTICE DONE" }),
@@ -1418,14 +1499,52 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         const carving = game.carving ? Math.sign(curveAt(game.course, game.z)) : 0;
         const carve = Math.max(Math.abs(game.vx), carving ? 0.95 : 0);
         if (carve > 0.25) {
-          const side = carving ? -carving : game.vx > 0 ? -1 : 1, spray = (reducedMotion ? 8 : 34) * Math.min(1.6, carve) * k;
-          for (let i = 0; i < spray * dt * 4; i++) particles.push({ x: side * (20 + Math.random() * 30), y: -6, vx: side * (120 + Math.random() * 260) * Math.min(1.5, carve), vy: -(90 + Math.random() * 200), r: 3 + Math.random() * 8, life: 0.45 + Math.random() * 0.35, age: 0 });
+          // カービング中は、切り込み続けるほど（熱）外側の砂しぶきが壁のように高く・多くなる（2026-11-25）
+          const heat = carving ? carveFx.heat : 0, wall = 1 + (FEEL.carveWall - 1) * heat;
+          const side = carving ? -carving : game.vx > 0 ? -1 : 1, spray = (reducedMotion ? 8 : 34) * Math.min(1.6, carve) * k * wall;
+          for (let i = 0; i < spray * dt * 4; i++) particles.push({ x: side * (20 + Math.random() * 30), y: -6, vx: side * (120 + Math.random() * 260) * Math.min(1.5, carve), vy: -(90 + Math.random() * 200) * (1 + 0.5 * heat), r: 3 + Math.random() * (8 + 6 * heat), life: 0.45 + Math.random() * (0.35 + 0.2 * heat), age: 0 });
+          // 外へ鋭く飛ぶ砂の筋（動きのぶれで線に見える）。熱が高いほど多く速い
+          if (heat > 0.1 && !reducedMotion) {
+            for (let i = 0; i < FEEL.carveStreaks * heat * dt * 4; i++) particles.push({ streak: true, x: side * (16 + Math.random() * 24), y: -4 - Math.random() * 10, vx: side * (360 + Math.random() * 520) * (0.7 + 0.5 * heat), vy: -(120 + Math.random() * 360) * (0.6 + 0.6 * heat), r: 1.2 + Math.random() * 2.2, life: 0.22 + Math.random() * 0.2, age: 0 });
+          }
+          // 夕日を受けてきらめく砂粒（金の点）
+          if (heat > 0.15 && !reducedMotion) {
+            for (let i = 0; i < FEEL.carveSparks * heat * dt * 4; i++) particles.push({ spark: true, x: side * (18 + Math.random() * 40), y: -8, vx: side * (160 + Math.random() * 300), vy: -(140 + Math.random() * 260), r: 1.5 + Math.random() * 2.2, life: 0.35 + Math.random() * 0.3, age: 0 });
+          }
+        }
+        // 砂流れの上: 板の両側から、流れる砂が低く後ろへ跳ねる
+        if (game.inFlow) {
+          const spray = (reducedMotion ? 6 : FEEL.flowSpray) * k;
+          for (let i = 0; i < spray * dt * 4; i++) {
+            const side = Math.random() < 0.5 ? -1 : 1;
+            particles.push({ x: side * (18 + Math.random() * 26), y: -2, vx: side * (60 + Math.random() * 140), vy: -(30 + Math.random() * 90), r: 3 + Math.random() * 6, life: 0.35 + Math.random() * 0.3, age: 0 });
+          }
         }
       }
+      // カービングの熱: 切り込んでいる間 carveBuild 秒で満ちる。同じカーブの中ではゆっくり、カーブを抜ける・転ぶと速く冷める。
+      // カーブを抜けて carveChainGap 秒たつと、刻みの数を数え直す
+      const carvingNow = running && game.carving && game.air <= 0 && game.fallT <= 0;
+      const inBend = running && game.fallT <= 0 && Math.abs(curveAt(game.course, game.z)) >= CARVE.minCurve;
+      carveFx.heat = carvingNow ? Math.min(1, carveFx.heat + dt / FEEL.carveBuild) : Math.max(0, carveFx.heat - dt * (inBend ? FEEL.carveHold : FEEL.carveFade));
+      carveFx.off = inBend ? 0 : carveFx.off + dt;
+      carveFx.show += ((carvingNow ? 1 : 0) - carveFx.show) * Math.min(1, dt * (carvingNow ? 10 : 3));
+      if (carveFx.off > FEEL.carveChainGap) { carveFx.chain = 0; carveFx.maxed = false; }
+      // 熱が満ちた瞬間（そのカーブで一度）: 金の砂が大きく散り、大きな十字の光と高い音、視界が一瞬広がる
+      if (carvingNow && carveFx.heat >= 1 && !carveFx.maxed) {
+        carveFx.maxed = true;
+        rideSe.cue("carve", { n: 6, gain: SE_GAIN.carveTick * 1.4 });
+        carveCut(Math.sign(curveAt(game.course, game.z)) || 1, true);
+        if (!reducedMotion) {
+          view.kick = Math.max(view.kick, FEEL.carveMaxKick);
+          const side = -(Math.sign(curveAt(game.course, game.z)) || 1);
+          for (let i = 0; i < 34; i++) particles.push({ spark: true, x: side * (10 + Math.random() * 40), y: -10, vx: side * (120 + Math.random() * 420) + (Math.random() - 0.5) * 200, vy: -(200 + Math.random() * 380), r: 1.8 + Math.random() * 2.6, life: 0.5 + Math.random() * 0.4, age: 0 });
+        }
+      }
+      for (const list of [carveFx.glints, carveFx.runs]) { for (const fx of list) fx.age += dt; discardExpired(list); }
       for (const p of particles) {
         p.age += dt; p.x += p.vx * dt; p.y += p.vy * dt;
         if (p.confetti) { p.vy += 520 * dt; p.vx *= Math.max(0, 1 - 1.6 * dt); p.vy = Math.min(p.vy, 260); continue; } // 紙は、すぐ失速してひらひら落ちる
-        p.vy += (p.chip ? 900 : 90) * dt; if (!p.chip) p.r += 18 * dt;
+        p.vy += (p.chip ? 900 : p.spark ? 520 : p.streak ? 700 : 90) * dt; if (!p.chip && !p.spark && !p.streak) p.r += 18 * dt;
       }
       discardExpired(particles);
       if (particles.length > 360) particles.splice(0, particles.length - 360);
@@ -1468,7 +1587,9 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       const targetDepth = reducedMotion ? CAM.depth : CAM.depth * (1 - FEEL.fovSpeed * fast - FEEL.fovKick * Math.min(1, view.kick) - FEEL.fovBoost * feel);
       view.depth += (targetDepth - view.depth) * Math.min(1, dt * 4);
       view.back = CAM.back * view.depth / CAM.depth;
-      const targetRoll = reducedMotion || countdown > 0 ? 0 : Math.max(-FEEL.rollMax, Math.min(FEEL.rollMax, -game.vx * FEEL.rollSteer - curve * FEEL.rollCurve));
+      // 切り込んでいる間は、熱に合わせてもう少し内へ倒れる（カービングの演出）
+      const rollLimit = FEEL.rollMax + FEEL.rollCarve * carveFx.heat;
+      const targetRoll = reducedMotion || countdown > 0 ? 0 : Math.max(-rollLimit, Math.min(rollLimit, -game.vx * FEEL.rollSteer - curve * FEEL.rollCurve - Math.sign(curve) * FEEL.rollCarve * carveFx.heat));
       view.roll += (targetRoll - view.roll) * Math.min(1, dt * 5);
       ctx.save();
       if (view.roll) { ctx.translate(W / 2, H * 0.62); ctx.rotate(view.roll); ctx.scale(1.06, 1.06); ctx.translate(-W / 2, -H * 0.62); }
@@ -1480,6 +1601,8 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       const painted = drawBackdrop(dusk, progress);
       if (!painted) { drawSky(dusk, progress); drawDunes(dusk); }
       drawGround(dusk, painted);
+      world.flowPhase += dt * FEEL.flowRun * (reducedMotion ? FEEL.flowCalm : 1);
+      drawFlows(dusk);
       drawBoardTrail(dusk);
       drawFeaturesAndPlayer(dusk);
       drawParticles();
@@ -1493,6 +1616,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       drawFloaters();
       ctx.restore();
       drawSpeedLines();
+      drawCarveEdgeLines();
       drawOrbs();
       drawVignette(fast);
       // 閃光。転倒は最初の2コマほど暗く落としてから白へ（明るい砂の上では、白だけ重ねても目立たない）
@@ -1503,9 +1627,11 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     /**
      * 岩に当たった直後、BOOST で立て直せることをキャンバス上に出す（DOM の重ねが環境によって描画されない場合がある）。
      * 目は転んだ人物にあるので、その頭の上に大きく出す（2026-11-13。それまでは右下の小さな札だけで、気づかれにくかった）。押すボタンも緑に光る（CSS）。
+     * 2026-11-25 オーナー「体勢崩した時とかブーストで立て直すとか文字が出るのは無くしたい。チュートリアルとかで文字で説明はいいけど」で、
+     * 文字は練習の間だけにした。本番は BOOST のボタンが緑に光るだけ（data-recover="ready"）。
      */
     function drawRecoverHint() {
-      if (!game || !canRecover(game)) return;
+      if (mode !== "practice" || !game || !canRecover(game)) return;
       const text = touchUi() ? "BOOST で立て直せ！" : "↓ BOOST で立て直せ！";
       const p = placeAt(game.z, game.x), unit = p ? p.scale * (H / 2) : 0;
       const pulse = reducedMotion ? 1 : 1 + 0.06 * Math.sin(performance.now() / 45);
@@ -1795,12 +1921,130 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     }
     let ground = { camZ: 0, camX: 0 };
     /**
+     * 砂流れ（2026-11-25 オーナー「通ると加速するゾーンをたまに入れたい。砂流れみたいな見た目にしつつ」）: 斜面を川のように流れ落ちる明るい砂の帯。
+     * 浅い溝（縁の影と明るい土手）の中を、前へ反った波紋（進む向きを指す山形）と細い筋が坂の下へ流れていく。文字は出さない。
+     * 帯の入口は細く絞って溶かし、出口は少し広げて消す。遠くほど薄い。見た目だけで、規則は読まない（乗ったかどうかは game.inFlow）。
+     */
+    function drawFlows(dusk) {
+      const flows = game.course.flows;
+      if (!flows?.length) return;
+      const camZ = ground.camZ, phase = world.flowPhase;
+      const body = mixColor([255, 230, 172], [255, 204, 150], dusk).slice(4, -1), core = mixColor([255, 246, 220], [255, 226, 190], dusk).slice(4, -1);
+      const dark = mixColor([150, 92, 44], [150, 78, 50], dusk).slice(4, -1);
+      for (const flow of flows) {
+        const z0 = Math.max(flow.z, camZ + 0.6), z1 = Math.min(flow.z + flow.length, camZ + DRAW_DIST);
+        if (z1 <= z0) continue;
+        // 帯の幅の倍率: 入口 6m で 0.55 → 1、出口 8m で 1 → 1.18
+        const widen = z => { const a = (z - flow.z) / 6, b = (flow.z + flow.length - z) / 8; return a < 1 ? 0.55 + 0.45 * Math.max(0, a) : b < 1 ? 1.18 - 0.18 * Math.max(0, b) : 1; };
+        // 濃さ: 入口と出口で溶かし、遠くほど薄く（240m から先は消える）
+        const alphaAt = z => { const dz = z - camZ, ends = Math.min(1, (z - flow.z) / 5, (flow.z + flow.length - z) / 9); return Math.max(0, Math.min(1, ends) * Math.min(1, (240 - dz) / 90)); };
+        const step = 2, rows = [];
+        for (let z = z0; z <= z1 + 1e-6; z += step) {
+          const zz = Math.min(z, z1), half = flow.half * widen(zz);
+          const l = placeAt(zz, flow.x - half), r = placeAt(zz, flow.x + half);
+          if (l && r) rows.push({ z: zz, l, r, a: alphaAt(zz) });
+          if (zz >= z1) break;
+        }
+        if (rows.length < 2) continue;
+        // 遠くからも見える淡い照り（帯より広く）→ 浅い溝の影 → 流れる砂の地 → 中ほどの明るい筋
+        for (const [k, color, alpha] of [[1.9, core, 0.16], [1.3, dark, 0.22], [1, body, 0.8], [0.5, core, 0.5]]) {
+          for (let i = 1; i < rows.length; i++) {
+            const n = rows[i - 1], f = rows[i], a = alpha * (n.a + f.a) / 2;
+            if (a <= 0.01) continue;
+            const nc = (n.l.x + n.r.x) / 2, fc = (f.l.x + f.r.x) / 2, nw = (n.r.x - n.l.x) / 2 * k, fw = (f.r.x - f.l.x) / 2 * k;
+            ctx.fillStyle = `rgba(${color},${a})`;
+            quad(nc - nw, n.l.y, fc - fw, f.l.y, fc + fw, f.r.y, nc + nw, n.r.y);
+          }
+        }
+        // 土手: 両縁の暗い線と、その内側の明るい縁
+        ctx.lineCap = "round";
+        for (let i = 1; i < rows.length; i++) {
+          const n = rows[i - 1], f = rows[i], a = (n.a + f.a) / 2;
+          if (a <= 0.01) continue;
+          const width = Math.max(1, Math.min(9, n.l.w * 0.016));
+          for (const side of [-1, 1]) {
+            const nx = side < 0 ? n.l.x : n.r.x, fx = side < 0 ? f.l.x : f.r.x;
+            ctx.strokeStyle = `rgba(${dark},${0.4 * a})`; ctx.lineWidth = width;
+            ctx.beginPath(); ctx.moveTo(nx, n.l.y); ctx.lineTo(fx, f.l.y); ctx.stroke();
+            ctx.strokeStyle = `rgba(255,248,226,${0.5 * a})`; ctx.lineWidth = Math.max(0.8, width * 0.5);
+            ctx.beginPath(); ctx.moveTo(nx - side * width, n.l.y); ctx.lineTo(fx - side * width, f.l.y); ctx.stroke();
+          }
+        }
+        // 流れの筋: 帯の中の5本の線に沿って、短い光の筋が坂の下へ流れる
+        for (const [lane, offset] of [[-0.62, 0.1], [-0.3, 0.55], [0, 0.3], [0.32, 0.8], [0.64, 0.45]]) {
+          const gap = 11, len = 4.5;
+          for (let zz = flow.z + ((phase * 1.25 + offset * gap) % gap) - gap; zz < flow.z + flow.length; zz += gap) {
+            const a0 = Math.max(zz, z0), a1 = Math.min(zz + len, z1);
+            if (a1 - a0 < 0.4) continue;
+            const pa = placeAt(a0, flow.x + lane * flow.half * widen(a0)), pb = placeAt(a1, flow.x + lane * flow.half * widen(a1));
+            const a = alphaAt((a0 + a1) / 2);
+            if (!pa || !pb || a <= 0.01) continue;
+            ctx.strokeStyle = `rgba(255,252,240,${0.6 * a})`; ctx.lineWidth = Math.max(0.8, Math.min(6, pa.w * 0.012));
+            ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
+          }
+        }
+        // 舞い上がる砂: 帯の上に低い砂けむり（重ねた薄い幕）と、きらめく砂粒。遠くでは帯が細くつぶれるので、背の高さで手前から見つけられる
+        for (let i = 1; i < rows.length; i++) {
+          const n = rows[i - 1], f = rows[i], a = (n.a + f.a) / 2;
+          if (a <= 0.01) continue;
+          const nc = (n.l.x + n.r.x) / 2, fc = (f.l.x + f.r.x) / 2, nw = (n.r.x - n.l.x) / 2 * 1.15, fw = (f.r.x - f.l.x) / 2 * 1.15;
+          for (const [height, alpha] of [[0.3, 0.3], [0.7, 0.18], [1.2, 0.1]]) {
+            const nh = n.l.scale * height * (H / 2), fh = f.l.scale * height * (H / 2);
+            ctx.fillStyle = `rgba(${core},${alpha * a})`;
+            quad(nc - nw, n.l.y, fc - fw, f.l.y - fh, fc + fw, f.l.y - fh, nc + nw, n.r.y - nh);
+          }
+        }
+        for (let i = 0; i < 40; i++) {
+          // 砂粒ごとに決まった横位置・高さの癖（乱数は使わない）。坂の下へ流れながら、ふわっと上がって消える
+          const h1 = Math.abs(Math.sin(i * 12.9898 + flow.z) * 43758.5453) % 1, h2 = Math.abs(Math.sin(i * 78.233 + flow.x * 10) * 12345.678) % 1;
+          const u = (h1 + phase * (0.9 + h2 * 0.6) / flow.length) % 1, zz = flow.z + u * flow.length;
+          if (zz < z0 || zz > z1) continue;
+          const p = placeAt(zz, flow.x + (h2 * 2 - 1) * flow.half * widen(zz));
+          const a = alphaAt(zz);
+          if (!p || a <= 0.01) continue;
+          const rise = ((h2 * 3 + u * 4) % 1), size = Math.max(1.8, Math.min(4, p.scale * (H / 2) * 0.045)); // 手前で大きな玉に見えないよう上限
+          ctx.fillStyle = `rgba(255,250,228,${0.85 * a * Math.sin(rise * Math.PI)})`;
+          ctx.beginPath(); ctx.arc(p.x, p.y - rise * p.scale * 1.1 * (H / 2), size, 0, Math.PI * 2); ctx.fill();
+        }
+        // 入口の両脇に金色の小旗（コースの縁の赤い旗と違う色）。帯は遠くで細くつぶれるので、背の高い目印で先に見つけられる
+        if (flow.z >= z0 - 0.01 && flow.z <= z1) {
+          const flutter = reducedMotion ? 0 : Math.sin(phase * 0.9 + flow.z) * 0.18;
+          for (const side of [-1, 1]) {
+            const p = placeAt(flow.z, flow.x + side * (flow.half * 0.55 + 0.08));
+            const a = Math.min(1, (240 - (p?.dz ?? 999)) / 90);
+            if (!p || a <= 0.01) continue;
+            const poleH = p.scale * 1.5 * (H / 2), top = p.y - poleH, flag = poleH * 0.34, out = side * flag * (1.25 + flutter);
+            ctx.globalAlpha = a;
+            ctx.strokeStyle = "rgba(90,62,40,0.9)"; ctx.lineWidth = Math.max(1.2, p.scale * 9);
+            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, top); ctx.stroke();
+            ctx.fillStyle = "#ffd75a"; ctx.strokeStyle = "rgba(120,72,20,0.85)"; ctx.lineWidth = Math.max(0.8, p.scale * 4);
+            ctx.beginPath(); ctx.moveTo(p.x, top); ctx.quadraticCurveTo(p.x + out * 0.5, top + flag * (0.3 + flutter), p.x + out, top + flag * 0.5); ctx.lineTo(p.x, top + flag); ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.globalAlpha = 1;
+          }
+        }
+        // 波紋: 進む向きへ反った山形が流れていく（影と光の二重線で、砂の盛り上がりに見せる）
+        const ripple = 8, bow = 2.6;
+        for (let zz = flow.z + (phase % ripple) - ripple; zz < flow.z + flow.length; zz += ripple) {
+          if (zz < z0 || zz + bow > z1) continue;
+          const half = flow.half * widen(zz) * 0.86;
+          const pl = placeAt(zz, flow.x - half), pr = placeAt(zz, flow.x + half), pc = placeAt(zz + bow, flow.x);
+          const a = alphaAt(zz);
+          if (!pl || !pr || !pc || a <= 0.01) continue;
+          const cx = 2 * pc.x - (pl.x + pr.x) / 2, cy = 2 * pc.y - (pl.y + pr.y) / 2, width = Math.max(1, Math.min(12, pc.w * 0.022));
+          ctx.strokeStyle = `rgba(${dark},${0.34 * a})`; ctx.lineWidth = width;
+          ctx.beginPath(); ctx.moveTo(pl.x, pl.y + width * 0.6); ctx.quadraticCurveTo(cx, cy + width * 0.6, pr.x, pr.y + width * 0.6); ctx.stroke();
+          ctx.strokeStyle = `rgba(255,250,232,${0.62 * a})`; ctx.lineWidth = Math.max(0.8, width * 0.6);
+          ctx.beginPath(); ctx.moveTo(pl.x, pl.y); ctx.quadraticCurveTo(cx, cy, pr.x, pr.y); ctx.stroke();
+        }
+      }
+    }
+    /**
      * 板が砂に刻んだ跡（#3686）。坂を滑り下りてきた線が、人物から手前（坂の上）へ伸びる。空中の間は途切れる。
      * 覚えるのは画面に入る手前の数 m だけ。見た目だけで、規則は読まない。
      */
     function drawBoardTrail(dusk) {
       const trail = world.trail, grounded = game.air <= 0 && game.fallT <= 0, last = trail[trail.length - 1];
-      if (!last || game.z - last.z > 0.35 || grounded !== last.on) trail.push({ z: game.z, x: game.x, on: grounded });
+      if (!last || game.z - last.z > 0.35 || grounded !== last.on) trail.push({ z: game.z, x: game.x, on: grounded, heat: grounded && game.carving ? carveFx.heat : 0 });
       while (trail.length && trail[0].z < ground.camZ - 2) trail.shift();
       const dark = mixColor([150, 98, 52], [140, 78, 52], dusk).slice(4, -1), light = mixColor([255, 240, 208], [255, 214, 170], dusk).slice(4, -1);
       ctx.lineCap = "round";
@@ -1818,6 +2062,21 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         ctx.strokeStyle = `rgba(${light},${0.34 * k})`; ctx.lineWidth = Math.max(1, width * 0.16);
         for (const side of [-1, 1]) {
           ctx.beginPath(); ctx.moveTo(pa.x + side * Math.min(46, pa.w * 0.11) * 0.56, pa.y); ctx.lineTo(pb.x + side * width * 0.56, pb.y); ctx.stroke();
+        }
+        // カービングで刻んだ所は、金色に光る線（2026-11-25）。切り込み続けるほど太く明るい。
+        // 刻みごとに、光が板から後ろ（手前）へ線をなぞって走る（carveFx.runs。「輪なのがなんか違う」で輪の代わりに）
+        const heat = Math.min(a.heat || 0, b.heat || 0);
+        let run = 0;
+        for (const r of carveFx.runs) {
+          const at = (r.age / r.life) * (view.back + 1), d = game.z - b.z; // 板からの距離（m）を光が進む
+          run = Math.max(run, Math.exp(-(((d - at) / 0.9) ** 2)) * (1 - r.age / r.life) * (r.big ? 1.3 : 1));
+        }
+        if (heat > 0.02 || run > 0.02) {
+          const glow = Math.min(1.3, heat + run);
+          ctx.strokeStyle = `rgba(255,186,64,${0.32 * glow * k})`; ctx.lineWidth = width * (1.1 + 0.6 * glow);
+          ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
+          ctx.strokeStyle = `rgba(255,248,214,${Math.min(1, 0.85 * glow) * k})`; ctx.lineWidth = Math.max(1.5, width * (0.18 + 0.14 * glow));
+          ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
         }
       }
     }
@@ -2112,6 +2371,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         const image = art.get(pose);
         if (image) for (const color of [AURAS.player.mid, AURAS.player.rim]) tintedArt(image, color);
         // 相手の残像（相手のオーラの色）
+        if (image) for (const color of [CARVE_GOLD.mid, CARVE_GOLD.rim]) tintedArt(image, color); // カービングの金の残像
         const rivalImage = who ? art.get(`${who}${pose.replace(/^rider/, "Rider")}`) : null;
         if (rivalImage) for (const color of [AURAS[who].mid, AURAS[who].rim]) tintedArt(rivalImage, color);
       }
@@ -2232,16 +2492,11 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       const groundY = p.y, cx = p.x;
       // 影（空中では小さく薄く）
       softShadow(cx, groundY, unit * 0.62 * (1 - height * 0.2), unit * 0.16, 0.42 - height * 0.12);
-      // カービング中: 板が砂を噛んでいる所に光る弧（外側半分）。切り込んでいる間、ゲージへ光の粒が飛ぶ
-      if (game.carving && game.air <= 0) {
-        const side = Math.sign(curveAt(game.course, game.z)), pulse = reducedMotion ? 1 : 0.75 + 0.25 * Math.sin(game.t * 22);
-        ctx.save(); ctx.lineCap = "round";
-        for (const [w, color] of [[0.13, `rgba(110,52,10,${0.45 * pulse})`], [0.07, `rgba(255,196,60,${0.95 * pulse})`], [0.025, `rgba(255,252,220,${pulse})`]]) {
-          ctx.strokeStyle = color; ctx.lineWidth = Math.max(2, unit * w);
-          ctx.beginPath(); ctx.ellipse(cx, groundY - unit * 0.02, unit * 0.78, unit * 0.2, 0, side > 0 ? Math.PI * 0.45 : Math.PI * 0.05, side > 0 ? Math.PI * 0.95 : Math.PI * 0.55); ctx.stroke();
-        }
-        ctx.restore();
-      }
+      // カービング（2026-11-25）: 砂の壁は、押したり離したりの間もなめらかに（carveFx.show）。熱に合わせて大きく。
+      // 板の下の弧（輪の形）は「輪なのがなんか違う」でやめた。切り込みは、金に光る切り込み線（drawBoardTrail）と、板の外の縁のきらめき（drawCarveGlints）で見せる
+      const bendSide = Math.sign(curveAt(game.course, game.z)), wallK = carveFx.show * carveFx.heat;
+      if (game.air <= 0 && game.fallT <= 0 && bendSide && wallK > 0.05) drawCarveWall(cx, groundY, unit, bendSide, wallK);
+      drawCarveGlints(cx, groundY, unit);
       if (curveCueOn) drawCurveCue(cx, groundY - unit * 1.1, unit, Math.sign(curveAt(game.course, game.z)));
       const baseY = groundY - riderLift(height, unit, groundY) + bob;
       // カーブへ切り込んでいる間（カービング）は、横へ動いていなくても体が内側へ倒れる
@@ -2312,6 +2567,16 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
           ctx.restore();
         };
         let spinXOverride = null;
+        // カービングの金の残像（2026-11-25「もっとかっこよく」）: 熱が高まると、カーブの外・後ろへずれた金色の写しが尾を引く。動き軽減では出さない
+        const ghostDir = Math.sign(curveAt(game.course, game.z));
+        if (ghostDir && carveFx.heat > FEEL.carveGhostFrom && carveFx.off === 0 && !reducedMotion && game.air <= 0 && game.fallT <= 0) {
+          const h = (carveFx.heat - FEEL.carveGhostFrom) / (1 - FEEL.carveGhostFrom);
+          ctx.save(); ctx.globalCompositeOperation = "lighter"; // 金の写しは光として重ねる
+          for (let k = FEEL.carveGhosts; k >= 1; k--) {
+            sprite(h * (0.38 - 0.1 * k), unit * 0.08 * k, 1 + 0.02 * k, tintedArt(poseArt, k === 1 ? CARVE_GOLD.mid : CARVE_GOLD.rim), -ghostDir * unit * 0.32 * k);
+          }
+          ctx.restore();
+        }
         // 炎色の残像（手前・外側へずれて大きく薄く）。動き軽減では出さない
         boostAfterimages(poseArt, cx, baseY, unit, boostFeel, AURAS.player, (image, alpha, dx, dy, grow) => sprite(alpha, dy, grow, image, dx));
         // 回転の残像: 少し前の向きの絵を薄く重ねる（回転のぶれ）
@@ -2389,11 +2654,25 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         ctx.fillStyle = "#a07a58"; ctx.fillRect(-s.r, -s.r * 0.7, s.r, s.r * 0.6);
         ctx.restore();
       }
+      // カービングの砂の筋（速さの向きに伸びる線）
+      ctx.lineCap = "round";
+      for (const s of particles) {
+        if (!s.streak) continue;
+        const k = 1 - s.age / s.life, x = p.x + s.x, y = p.y + s.y;
+        ctx.strokeStyle = `rgba(255,236,190,${0.75 * k})`; ctx.lineWidth = s.r;
+        ctx.beginPath(); ctx.moveTo(x - s.vx * 0.045, y - s.vy * 0.045); ctx.lineTo(x, y); ctx.stroke();
+      }
+      // カービングのきらめく砂粒（金の点）
+      for (const s of particles) {
+        if (!s.spark) continue;
+        ctx.fillStyle = `rgba(255,${200 + Math.round(48 * (1 - s.age / s.life))},120,${Math.min(1, 1.6 * (1 - s.age / s.life))})`;
+        ctx.beginPath(); ctx.arc(p.x + s.x, p.y + s.y, s.r, 0, Math.PI * 2); ctx.fill();
+      }
       const puff = art.get("puff");
       if (puff) {
         const aspect = puff.naturalHeight / puff.naturalWidth;
         for (const s of particles) {
-          if (s.chip || s.confetti) continue;
+          if (s.chip || s.confetti || s.spark || s.streak) continue;
           const w = s.r * 2.8, h = w * aspect;
           ctx.globalAlpha = Math.min(1, 0.75 * (1 - s.age / s.life));
           ctx.drawImage(puff, p.x + s.x - w / 2, p.y + s.y - h / 2, w, h);
@@ -2402,7 +2681,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         return;
       }
       for (const s of particles) {
-        if (s.chip || s.confetti) continue;
+        if (s.chip || s.confetti || s.spark || s.streak) continue;
         const a = 0.55 * (1 - s.age / s.life);
         ctx.fillStyle = `rgba(242,220,178,${a})`;
         ctx.beginPath(); ctx.arc(p.x + s.x, p.y + s.y, s.r, 0, Math.PI * 2); ctx.fill();
@@ -2475,7 +2754,8 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       const unit = p.scale * (H / 2);
       for (const r of rings) {
         // 着地の出来は足元の輪の色でも分かる: 完璧＝金の二重、良い＝白、ふつう＝薄い砂色（細い）。ブースト・立て直しの輪は白
-        const k = r.age / r.life, tone = r.grade === "perfect" ? "255,206,72" : r.grade === "plain" ? "236,214,170" : "255,248,230";
+        // 砂流れに乗った輪は、流れる砂と同じ明るい砂色
+        const k = r.age / r.life, tone = r.grade === "perfect" ? "255,206,72" : r.grade === "plain" ? "236,214,170" : r.grade === "flow" ? "255,232,170" : "255,248,230";
         const weight = r.grade === "plain" ? 0.6 : 1;
         ctx.strokeStyle = `rgba(${tone},${(r.grade === "perfect" ? 0.95 : 0.8) * weight * (1 - k)})`;
         ctx.lineWidth = Math.max(2, unit * 0.12 * (1 - k)) * r.power * weight;
@@ -2551,6 +2831,96 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       ctx.restore();
     }
     /** カーブの合図: 人物の横に、切り込む向き（カーブの内側）の矢印3つと短い一言。矢印は内側へ流れる。 */
+    /**
+     * カービングの砂の壁（2026-11-25 オーナー「カービングに演出を入れたい」）: 板の外側の縁から、カーブの外へ向けて弧を描いて噴き上がる砂の幕。
+     * 切り込み続けるほど（heat）高く長く濃くなり、幕の中を砂の筋が外へ流れる。動き軽減では筋を止める。人物の後ろに描く。
+     */
+    function drawCarveWall(cx, groundY, unit, side, heat) {
+      const out = -side, t = reducedMotion ? 0 : game.t;
+      const x0 = cx + out * unit * 0.3, len = unit * (0.9 + 1.4 * heat), rise = unit * (0.5 + 1.3 * heat);
+      const tipX = x0 + out * len, tipY = groundY - rise, endX = x0 + out * len * 1.25, endY = groundY - rise * 0.15;
+      ctx.save();
+      const sheet = ctx.createLinearGradient(x0, groundY, tipX, tipY);
+      // 日に照らされた砂は地面より明るい（地面と同じ色だと溶けて見えない）。下の縁に薄い影を付けて厚みを出す
+      sheet.addColorStop(0, `rgba(255,236,196,${0.72 * heat})`); sheet.addColorStop(0.5, `rgba(255,244,214,${0.48 * heat})`); sheet.addColorStop(1, "rgba(255,248,226,0)");
+      const outline = () => {
+        ctx.beginPath();
+        ctx.moveTo(x0, groundY);
+        ctx.quadraticCurveTo(x0 + out * len * 0.35, groundY - rise * 0.95, tipX, tipY);
+        ctx.quadraticCurveTo(x0 + out * len * 1.15, tipY + rise * 0.25, endX, endY);
+        ctx.quadraticCurveTo(x0 + out * len * 0.6, groundY - rise * 0.12, x0, groundY);
+      };
+      // 幕は大きさを少しずつ変えて3枚重ね、縁をぼかす（1枚だと縁が硬く図形に見える）
+      for (const [grow, alpha] of [[1.12, 0.35], [1, 0.6], [0.86, 0.8]]) {
+        ctx.save(); ctx.translate(x0, groundY); ctx.scale(grow, grow); ctx.translate(-x0, -groundY);
+        ctx.globalAlpha = alpha; ctx.fillStyle = sheet; outline(); ctx.fill();
+        ctx.restore();
+      }
+      ctx.strokeStyle = `rgba(150,96,48,${0.22 * heat})`; ctx.lineWidth = Math.max(1.5, unit * 0.04);
+      ctx.beginPath(); ctx.moveTo(x0, groundY); ctx.quadraticCurveTo(x0 + out * len * 0.6, groundY - rise * 0.12, endX, endY); ctx.stroke();
+      // 幕の中を外へ流れる砂の筋（3本・夕日で金に光る縁）
+      ctx.lineCap = "round";
+      for (let i = 0; i < 3; i++) {
+        const u = (t * 2.4 + i / 3) % 1, a = Math.sin(u * Math.PI) * heat;
+        const bx = x0 + out * len * (0.15 + 0.8 * u), by = groundY - rise * (0.2 + 0.7 * Math.sin(u * Math.PI * 0.9));
+        ctx.strokeStyle = `rgba(255,236,170,${0.7 * a})`; ctx.lineWidth = Math.max(1.5, unit * 0.035);
+        ctx.beginPath(); ctx.moveTo(bx - out * unit * 0.22, by + rise * 0.1); ctx.lineTo(bx + out * unit * 0.12, by - rise * 0.06); ctx.stroke();
+      }
+      ctx.strokeStyle = `rgba(255,224,140,${0.55 * heat})`; ctx.lineWidth = Math.max(1.2, unit * 0.025);
+      ctx.beginPath(); ctx.moveTo(x0 + out * len * 0.25, groundY - rise * 0.62); ctx.quadraticCurveTo(x0 + out * len * 0.55, groundY - rise * 1.02, tipX, tipY); ctx.stroke();
+      ctx.restore();
+    }
+    /** 刻みの演出を起こす: 板の外の縁のきらめき・刻んだ線を走る光・外へ扇に散る砂の筋（big は熱が満ちた瞬間）。 */
+    function carveCut(dir, big) {
+      carveFx.glints.push({ age: 0, life: FEEL.carveGlint * (big ? 1.6 : 1), dir, big });
+      carveFx.runs.push({ age: 0, life: FEEL.carveRun * (big ? 1.4 : 1), big });
+      const out = -dir, n = reducedMotion ? 0 : Math.round(FEEL.carveBurst * (big ? 2 : 1)); // 動き軽減では砂の筋を飛ばさない
+      for (let i = 0; i < n; i++) {
+        // 扇: 外へ低く鋭く。上へは少しだけ（砂を切って横へ飛ばす）
+        const a = (Math.random() * 0.7 + 0.1) * Math.PI / 2, v = 420 + Math.random() * 520;
+        particles.push({ streak: true, x: out * (18 + Math.random() * 16), y: -4, vx: out * Math.cos(a) * v, vy: -Math.sin(a) * v, r: 1.4 + Math.random() * 2.4, life: 0.2 + Math.random() * 0.18, age: 0 });
+      }
+    }
+    /**
+     * 刻みのきらめき（2026-11-25「輪なのがなんか違う」で、輪・楕円の光から替えた）: 板の外の縁（砂を噛む所）が一瞬、
+     * 横に長い十字の光でキラッと光る。加算で光らせる。熱が満ちた瞬間は大きく長い。動き軽減でも出す（短い一瞬の光）。
+     */
+    function drawCarveGlints(cx, groundY, unit) {
+      if (!carveFx.glints.length) return;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.lineCap = "round";
+      for (const glint of carveFx.glints) {
+        const k = glint.age / glint.life, size = glint.big ? 1.7 : 1;
+        const fade = k < 0.25 ? k / 0.25 : 1 - (k - 0.25) / 0.75;
+        const x = cx - glint.dir * unit * 0.34, y = groundY - unit * 0.06;
+        const long = unit * (0.42 + 0.25 * k) * size, short = unit * 0.22 * size;
+        const glow = ctx.createRadialGradient(x, y, 0, x, y, unit * 0.32 * size);
+        glow.addColorStop(0, `rgba(255,240,190,${0.9 * fade})`); glow.addColorStop(1, "rgba(255,170,60,0)");
+        ctx.fillStyle = glow; ctx.fillRect(x - unit * 0.4 * size, y - unit * 0.4 * size, unit * 0.8 * size, unit * 0.8 * size);
+        // 細く尖った光の筋（横に長く、縦に短く）。外の色は金、芯は白
+        for (const [w, color] of [[unit * 0.05 * size, `rgba(255,176,60,${0.7 * fade})`], [unit * 0.018 * size, `rgba(255,252,236,${fade})`]]) {
+          ctx.strokeStyle = color; ctx.lineWidth = Math.max(1, w * fade);
+          ctx.beginPath(); ctx.moveTo(x - long, y); ctx.lineTo(x + long, y); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x, y - short); ctx.lineTo(x, y + short * 0.6); ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+    /** カーブの外側の画面の縁から、金の風の線が流れ込む（切り込みの熱が高い間）。中央の走路は空けたまま。動き軽減では出さない。 */
+    function drawCarveEdgeLines() {
+      const heat = carveFx.heat;
+      if (reducedMotion || !game || heat < 0.3 || !game.carving) return;
+      const out = -(Math.sign(curveAt(game.course, game.z)) || 1), n = Math.round(FEEL.carveEdgeLines * heat);
+      ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.lineCap = "round";
+      for (let i = 0; i < n; i++) {
+        const u = (game.t * (2.2 + 0.4 * (i % 3)) + i * 0.37) % 1, y = 150 + (H - 260) * ((i * 0.618) % 1);
+        const x0 = out > 0 ? W - u * W * 0.2 : u * W * 0.2, len = (80 + 160 * heat) * (1 - u);
+        ctx.strokeStyle = `rgba(255,206,110,${0.32 * heat * Math.sin(u * Math.PI)})`; ctx.lineWidth = 2 + 3 * heat;
+        ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0 + out * len, y + 10); ctx.stroke();
+      }
+      ctx.restore();
+    }
     function drawCurveCue(cx, cy, unit, dir) {
       if (!dir) return;
       const t = reducedMotion ? 0 : performance.now() / 1000, size = Math.max(14, Math.min(34, unit * 0.22));
@@ -2563,10 +2933,6 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         ctx.strokeStyle = `rgba(255,226,120,${0.95 * a})`; ctx.lineWidth = size * 0.22;
         ctx.beginPath(); ctx.moveTo(x - dir * size * 0.45, cy - size * 0.6); ctx.lineTo(x + dir * size * 0.25, cy); ctx.lineTo(x - dir * size * 0.45, cy + size * 0.6); ctx.stroke();
       }
-      ctx.font = `900 ${Math.round(size * 0.85)}px ${fontFamily()}`; ctx.textAlign = "center"; ctx.textBaseline = "bottom";
-      const lx = cx + dir * unit * 1.15, ly = cy - size * 0.9;
-      ctx.lineWidth = 5; ctx.strokeStyle = "rgba(70,34,20,0.75)"; ctx.strokeText(CURVE_CUE_WORD, lx, ly);
-      ctx.fillStyle = "#ffe27a"; ctx.fillText(CURVE_CUE_WORD, lx, ly);
       ctx.restore();
     }
     /** HUD の上の面に、ゲージへ飛ぶ光の粒を描く。行き先は、ゲージの今の端。
@@ -2848,7 +3214,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       endHitStop() { hitStopT = 0; },
       get fx() { return { hitStop: hitStopT, slow: slowT, shake: { ...shake }, flash: { ...flash }, flashDark: flashDarkT, goal: goal ? goal.t : null, countdownTotal, pose, lastLand, rings: rings.map(r => r.grade || "burst"),
         confetti: particles.filter(p => p.confetti).length, aura: game ? auraStrength(game.boostT, view.boost || 0) : 0,
-        orbs: orbs.length, curveCue: curveCueOn, rivalDust: rivalFx.dust.length, rivalRings: rivalFx.rings.length, rivalSurge: rivalSurge(), smashFlash: smashFlash.size, squash: game ? squashOf(game, lastLand) : [1, 1], shownHeight: game ? shownHeight(game) : 0 }; },
+        orbs: orbs.length, curveCue: curveCueOn, carveHeat: carveFx.heat, carveChain: carveFx.chain, carveShow: carveFx.show, carveGlints: carveFx.glints.length, carveRuns: carveFx.runs.length, sparks: particles.filter(p => p.spark).length, rivalDust: rivalFx.dust.length, rivalRings: rivalFx.rings.length, rivalSurge: rivalSurge(), smashFlash: smashFlash.size, squash: game ? squashOf(game, lastLand) : [1, 1], shownHeight: game ? shownHeight(game) : 0 }; },
     };
     showMenu();
     if (tutorial) prepareAndStart("practice");
