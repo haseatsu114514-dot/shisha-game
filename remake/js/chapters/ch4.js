@@ -4,6 +4,7 @@ import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 import { completionActions, createChapterActions } from "../core/chapter-actions.js";
+import { chapterRecoveryActions } from "../core/chapter-recovery.js";
 import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
@@ -736,9 +737,10 @@ function renderComplete(owner) {
   ]));
 }
 
-function renderError(owner) {
+function renderError(owner, error) {
   card(owner, "error", "第4章を再開できませんでした", "通信と保存地点を確認して、もう一度お試しください。読み終えた場面から再開できます。", [
     button(owner, "もう一度読み込む", "retry", () => state.chapter === 4 ? resumeChapterFour() : beginChapterFour(), true),
+    ...chapterRecoveryActions(error, owner, button, chapterFourProgress),
   ]);
 }
 

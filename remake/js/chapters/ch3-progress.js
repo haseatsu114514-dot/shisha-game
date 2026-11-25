@@ -4,6 +4,7 @@ import { CH3_INTRO_SCENES, chapterThreeScenes } from "./ch3-scenes.js";
 export { CH3_INTRO_SCENES, chapterThreeScenes } from "./ch3-scenes.js";
 import { recordChapterThreeStoryLime } from "./ch3-story-lime.js";
 import { DEPARTURE_PREP_DAYS } from "../core/chapter-clock.js";
+import { captureChapterStart, ChapterSaveError } from "../core/chapter-save.js";
 
 /**
  * 東京の14日も共通の日常ループで遊ぶ行程（routeVersion 3・VOL03）。場面の並びは版2と同じで、
@@ -55,6 +56,7 @@ export function advanceToChapterThree(value) {
   value.flags._ch3_prep = { startDay: value.day, days: DEPARTURE_PREP_DAYS, step: 0, departed: false };
   value.flags._ch2_region = "home";
   value.flags._ch3_intro = { startDay: value.day + DEPARTURE_PREP_DAYS, stage: 0, titleSeen: false, routeVersion: 3 };
+  captureChapterStart(value);
   return true;
 }
 
@@ -85,12 +87,13 @@ export function departChapterThree(value) {
 export function chapterThreeProgress(value) {
   if (value?.chapter !== 3) throw new Error("第3章の保存ではありません");
   const progress = value.flags._ch3_intro ||= { startDay: value.day, stage: 0, titleSeen: false };
-  if (!Number.isInteger(progress.startDay) || progress.startDay < 1
-    || !Number.isInteger(progress.stage) || progress.stage < 0 || progress.stage > chapterThreeScenes(value).length
-    || typeof progress.titleSeen !== "boolean"
-    || (progress.routeVersion !== undefined && progress.routeVersion !== 2 && progress.routeVersion !== 3)
-    || (progress.prologueStep !== undefined && (!Number.isInteger(progress.prologueStep)
-      || progress.prologueStep < 0 || progress.prologueStep > 4))) throw new Error("東京編の保存地点を確認できません");
+  const invalid = field => { throw new ChapterSaveError(3, "東京編の保存地点を確認できません", "_ch3_intro." + field); };
+  if (!Number.isInteger(progress.startDay) || progress.startDay < 1) invalid("startDay");
+  if (!Number.isInteger(progress.stage) || progress.stage < 0 || progress.stage > chapterThreeScenes(value).length) invalid("stage");
+  if (typeof progress.titleSeen !== "boolean") invalid("titleSeen");
+  if (progress.routeVersion !== undefined && progress.routeVersion !== 2 && progress.routeVersion !== 3) invalid("routeVersion");
+  if (progress.prologueStep !== undefined && (!Number.isInteger(progress.prologueStep)
+    || progress.prologueStep < 0 || progress.prologueStep > 4)) invalid("prologueStep");
   return progress;
 }
 

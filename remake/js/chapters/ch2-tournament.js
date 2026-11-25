@@ -10,7 +10,11 @@ import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FIL
 import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { el, yen } from "../core/util.js";
 import { completionActions, createChapterActions } from "../core/chapter-actions.js";
+import { chapterRecoveryActions } from "../core/chapter-recovery.js";
+import { ChapterSaveError } from "../core/chapter-save.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { difficultyForRun } from "../core/ngplus-difficulty.js";
+import { difficultyEvidence } from "../core/cycle-start.js";
 import { layers, showScreen, setBg, enterScene, modal, imageReady, withChapterLoading } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { maxStamina } from "../core/stats.js";
@@ -340,10 +344,11 @@ function renderComplete(owner) {
     el("p.ch2-contest-note", { text: "出会い、約束、恋人と過ごした日々は、記録に残っています。" }),
   ]);
 }
-function renderError(owner) {
+function renderError(owner, error) {
   broadcast.clearComments();
   card(owner, "error", "県大会を再開できませんでした", "通信と保存地点を確認して、もう一度お試しください。確定した工程から再開できます。", [
     button(owner, "もう一度読み込む", "reload", () => runChapterTwoTournament(), true),
+    ...chapterRecoveryActions(error, owner, button),
   ]);
 }
 async function drive(owner) {
@@ -407,7 +412,8 @@ async function drive(owner) {
       if (!advanceTournamentCraft({ state, progress: p, craft: cs, finishStep, milestones: VOTE_BOUNDARIES, onMilestone: round => {
         const quality = partialQuality(cs, round);
         // finalizeの完成品と2回のcareを同じcsに残し、追加投票だけを確定する。
-        p.craft = clone(cs); castVotes(p, round, quality);
+        p.craft = clone(cs);
+        castVotes(p, round, quality, null, difficultyForRun(state, difficultyEvidence(state)));
         p.stage = p.step === STEPS.length ? "tasting" : "votes";
         if (p.stage === "tasting") { const result = recordResult(state, cs.total); awardTournamentExp(result.rank, cs); }
       } })) continue;
@@ -474,7 +480,7 @@ async function drive(owner) {
       }
       renderComplete(owner); return;
     }
-    else throw new Error(`不明な県大会の保存地点: ${p.stage}`);
+    else throw new ChapterSaveError(2, `不明な県大会の保存地点: ${p.stage}`, "_ch2_tournament.stage");
   }
 }
 

@@ -107,12 +107,12 @@ const judgeLegend = () => legendOf(JUDGE_IDS);
  * @param round 1 | 2 | 3
  * @param mine  ここまでのはじめの出来（0〜100）
  */
-export async function showStandings(round, mine, cs = null, attempt = null) {
+export async function showStandings(round, mine, cs = null, attempt = null, carryP = 0) {
   const owner = state;
   // 票が入る演出の出発点（この回の票を入れる前）。この回の票がすでに確定していれば、前後は同じになる。
   const beforeTable = attempt?.rulesVersion >= 2 ? structuredClone(attempt.voteAttempt?.votes || {}) : round > 1 ? interimPointTable(round - 1) : {};
   // 審査員の投入票と、新規試合だけにある基礎票を集計する。
-  if (attempt?.rulesVersion >= 2) castCh1Votes(attempt, round - 1, cs);
+  if (attempt?.rulesVersion >= 2) castCh1Votes(attempt, round - 1, cs, carryP);
   const table = attempt?.rulesVersion >= 2 ? attempt.voteAttempt.votes : interimPointTable(round);
   const values = totals(table, JUDGES.length, attempt?.voteAttempt?.baseVotes);
   const valuesBefore = totals(beforeTable, JUDGES.length, attempt?.voteAttempt?.baseVotes);

@@ -16,6 +16,7 @@ import { addStamina } from "../core/stats.js";
 import { rescheduleInvitation } from "../daily/phone.js";
 import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { runDaily } from "../daily/calendar.js";
+import { updateHud } from "../daily/hud.js";
 import { allSpots, fortuneSpot } from "../daily/spots.js";
 import { openShop } from "../daily/shop.js";
 import { canReflect } from "../daily/reflection.js";
@@ -38,6 +39,7 @@ import { chainStageAt } from "./visit-chains.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
   chapterFivePreparation, chapterFivePrepPending, recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
+  canAffordChapterFivePrepTrial, CH5_PREP_TRIAL_STAMINA, CH5_PREP_TRIAL_STAMINA_NOTE,
   chapterFivePrepScene, CH5_PREP_TRIALS, chapterFiveCallOpen, CH5_CALL_OPEN_NOTE,
 } from "./ch5-progress.js";
 import { SUMI_TRIAL_FLAG, SUMI_TRIAL_INTRO, SUMI_TRIAL_STAMINA, sumiTrialOffered, sumiTrialFeedbackPending,
@@ -259,7 +261,11 @@ async function performChapterFiveSpot(spot, io, options = {}) {
     const owner = state;
     if (!await introduceCateringBusiness() || state !== owner) return { used: false, exerted: false };
     // 閉店後の試作が途中なら、まずその続き（LOAD 後など）。
-    if (chapterFivePrepPending(state)) return { used: await runPrep(io), exerted: false };
+    if (chapterFivePrepPending(state)) {
+      await runPrep(io);
+      // 試作だけを続ける訪問は行動枠を使わない。
+      return { used: false, exerted: false };
+    }
     // 試作の会話を終えた夜は、閉店後の作業台で本物の一台を作れる（任意・一度だけ。#2020 F）。断れば、いつもの tonari へ。
     const trial = await offerSumiTrial(io, options);
     if (trial) return trial;
@@ -361,19 +367,25 @@ async function offerSumiTrial(io, options = {}) {
   return { used: true, exerted: crafted };
 }
 
-/** 閉店後の試作（#1666）: 何を試す → スミさんが吸って返す → 直すか、このまま覚えるか。true＝最後まで済んだ。 */
+/** 閉店後の試作（#1666）: 何を試す → スミさんが吸って返す → 直すか、このまま覚えるか。 */
 async function runPrep(io) {
-  if (!chapterFivePreparation(state)) {
+  const owner = state;
+  if (!chapterFivePreparation(owner)) {
+    if (!canAffordChapterFivePrepTrial(owner)) {
+      toast(CH5_PREP_TRIAL_STAMINA_NOTE);
+      return;
+    }
     const trialId = await modal({
-      title: "閉店後の試作", body: "ダブルアップル12グラム。今夜は、何を試す？<br>できた一台は、スミさんが吸って返してくれる。",
+      title: "閉店後の試作", body: `ダブルアップル12グラム。今夜は、何を試す？<br>できた一台は、スミさんが吸って返してくれる。体力${CH5_PREP_TRIAL_STAMINA}。`,
       options: CH5_PREP_TRIALS.map(trial => ({ label: trial.label, value: trial.id, test: `ch5-prep-${trial.id}` })),
     });
-    if (!trialId || !await io.readScene(chapterFivePrepScene("trial", trialId))) return false;
-    if (!recordChapterFivePrepTrial(state, trialId)) return false;
+    if (state !== owner || !trialId || !await io.readScene(chapterFivePrepScene("trial", trialId)) || state !== owner) return;
+    if (!recordChapterFivePrepTrial(owner, trialId)) return;
     save();
+    updateHud();
   }
-  const prep = chapterFivePreparation(state);
-  if (!prep || prep.adjusted !== null) return true;
+  const prep = chapterFivePreparation(owner);
+  if (!prep || prep.adjusted !== null) return;
   const trial = CH5_PREP_TRIALS.find(entry => entry.id === prep.trial);
   const adjusted = await modal({
     title: "もう一台か、このままか", body: `試したこと: ${trial.label}<br>スミさんの返答: ${trial.point}`,
@@ -382,11 +394,10 @@ async function runPrep(io) {
       { label: "このまま、手に覚えさせる", value: "keep", test: "ch5-prep-keep" },
     ],
   });
-  if (!adjusted) return false;
+  if (!adjusted || state !== owner) return;
   const sceneId = adjusted === "adjust" ? chapterFivePrepScene("adjust", trial.id) : chapterFivePrepScene("keep");
-  if (!await io.readScene(sceneId)) return false;
-  if (!recordChapterFivePrepAdjustment(state, adjusted === "adjust")) return false;
+  if (!await io.readScene(sceneId) || state !== owner) return;
+  if (!recordChapterFivePrepAdjustment(owner, adjusted === "adjust")) return;
   save();
-  if (chapterFiveCallOpen(state)) toast(CH5_CALL_OPEN_NOTE);
-  return true;
+  if (chapterFiveCallOpen(owner)) toast(CH5_CALL_OPEN_NOTE);
 }

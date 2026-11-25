@@ -11,6 +11,7 @@
 
 import { MAX_MONEY } from "../core/rules.js";
 import { DEPARTURE_PREP_DAYS } from "../core/chapter-clock.js";
+import { captureChapterStart } from "../core/chapter-save.js";
 import { resetChapterFourCraft } from "./ch4-tournament-state.js";
 import { OVERSEAS_HEROINES, overseasCompanion, overseasGuests } from "../core/overseas-companion.js";
 import { STORY_BGM } from "../core/story-audio.js";
@@ -286,6 +287,7 @@ export function advanceToChapterFour(value) {
     read: {}, firstDay: null, resolution: 0, attempts: 0, routeVersion: 2 };
   // シェイクの正体は ch4_tournament_start で明かされる（DRAFT §3）。それまで表示側は固有名を出さない。
   value.flags._ch4_sheikh_revealed = false;
+  captureChapterStart(value);
   return true;
 }
 

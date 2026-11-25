@@ -4,6 +4,8 @@ import { sceneMoment } from "../core/scene-motions.js";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
 import { completionActions, createChapterActions } from "../core/chapter-actions.js";
+import { chapterRecoveryActions } from "../core/chapter-recovery.js";
+import { ChapterSaveError } from "../core/chapter-save.js";
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { difficultyEvidence } from "../core/cycle-start.js";
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, loadTournamentCraftDialogue } from "../core/data.js";
@@ -452,10 +454,11 @@ function renderComplete(owner) {
   ]);
 }
 
-function renderError(owner) {
+function renderError(owner, error) {
   broadcast.clearComments();
   card(owner, "error", "全国大会を再開できませんでした", "通信と保存地点を確認して、もう一度お試しください。確定した工程から再開できます。", [
     button(owner, "もう一度読み込む", "reload", () => runChapterThreeTournament(), true),
+    ...chapterRecoveryActions(error, owner, button, chapterThreeProgress),
   ]);
 }
 
@@ -575,7 +578,7 @@ async function drive(owner) {
       state.phase = "aftermath";
       checkpoint("complete");
     } else if (p.stage === "complete") { renderComplete(owner); return; }
-    else throw new Error(`不明な全国大会の保存地点: ${p.stage}`);
+    else throw new ChapterSaveError(3, `不明な全国大会の保存地点: ${p.stage}`, "_ch3_tournament.stage");
   }
 }
 

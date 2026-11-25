@@ -145,6 +145,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch1_preview_seen", "progression"],
   ["_ch1_regulars", "person"],
   ["_ch1_rules_read", "progression"],
+  ["_chapter_start_checkpoint", "progression"],
   ["_ch2_afsahr_tasting", "progression"],
   ["_ch2_ageha_contact", "person"],
   ["_ch2_ageha_secret", "person"],

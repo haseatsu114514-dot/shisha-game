@@ -163,9 +163,12 @@ await suite("ch5-full-flow", async check => {
     const beforePrep = await get(page);
     await go(page, "tonari");
     await committed(page, "ch5_free_tonari_practice");
-    // 閉店後の試作（#1666）: 試す→スミさんの返答→直す。能力・所持金は動かない。
+    // 閉店後の試作（#1666）: 試す→スミさんの返答→直す。試作時は体力だけを使う。
     await page.locator(dt("ch5-prep-heat")).click();
     await page.waitForFunction(() => window.__remake.state.flags._ch5.prep?.trial === "heat");
+    const afterTrial = await get(page);
+    assert.equal(afterTrial.stamina, beforePrep.stamina - 10);
+    for (const key of ["day", "slot", "money", "stats"]) assert.deepEqual(afterTrial[key], beforePrep[key], key);
     await page.locator(dt("ch5-prep-adjust")).click();
     await page.waitForFunction(() => window.__remake.state.flags._ch5.prep?.adjusted === true);
     await mapReady(page, { day: 53, slot: 0 });
@@ -323,6 +326,47 @@ await suite("ch5-full-flow", async check => {
     const cycle = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_cycle") || "null"));
     assert.equal(cycle.unlocked, true);
     assert.deepEqual(cycle.trueEnds.map(end => end.cycleId), [trueEnd.cycleId]);
+  }, { reducedMotion: "reduce" });
+
+  await check("chapter-five-prep-blocks-low-stamina-and-allows-rest", async page => {
+    await seed(page);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const { advanceToChapterFive, CH5_PROLOGUE, completeChapterFiveScene } = await import("./js/chapters/ch5-progress.js");
+      const value = core.state;
+      advanceToChapterFive(value);
+      for (const { id } of CH5_PROLOGUE) completeChapterFiveScene(value, id);
+      completeChapterFiveScene(value, "ch5_free_tonari_practice");
+      value.flags._ch5.titleSeen = true;
+      value.flags._intro_ch5_catering_business = true;
+      value.stamina = 9;
+      core.save();
+    });
+    await loadSlot(page, 0);
+    await page.locator(dt("ch5-prep-back")).waitFor({ timeout: 60000 });
+    assert.match(await page.locator(dt("ch5-prep")).innerText(), /体力が足りないため、試作できない/);
+    assert.equal(await page.locator(dt("ch5-prep-heat")).count(), 0);
+    await page.locator(dt("ch5-prep-back")).click();
+    await mapReady(page, { day: 51, slot: 0 });
+    await go(page, "tonari");
+    await page.getByText(/体力が足りないため、試作できない/).waitFor();
+    const blocked = await get(page);
+    assert.equal(blocked.flags._ch5.prep, undefined);
+    assert.equal(blocked.stamina, 9);
+
+    await mapReady(page, { day: 51, slot: 0 });
+    await go(page, "rest");
+    await page.locator(dt("rest-half")).click();
+    await mapReady(page, { day: 51, slot: 1 });
+    const beforeTrial = await get(page);
+    await go(page, "tonari");
+    await page.locator(dt("ch5-prep-heat")).click();
+    await page.locator(dt("ch5-prep-keep")).click();
+    await mapReady(page, { day: 51, slot: 1 });
+    const afterTrial = await get(page);
+    assert.deepEqual(afterTrial.flags._ch5.prep, { trial: "heat", adjusted: false });
+    assert.equal(afterTrial.stamina, beforeTrial.stamina - 10);
+    for (const key of ["day", "slot", "money", "stats"]) assert.deepEqual(afterTrial[key], beforeTrial[key], key);
   }, { reducedMotion: "reduce" });
 
   // 二本目の出来が足りなければ、挙手の合計で負け（同数含む）→ 敗北の場面 → 後日談へ続く（#1665）。
@@ -1371,7 +1415,7 @@ await suite("ch5-full-flow", async check => {
     await page.locator(dt("ch5-second-cup")).waitFor({ timeout: 60000 });
     // 「下手に作る」自動操作（craftTest.auto = "bad"）は吸う位置を乱数で選び、温度を見ない。蒸らしの揺らぎ（session.js の
     // steamVariation）も乱数なので、冷たい側に振れると適温に入って二台目が勝つことがあった（CI で 22対18・合計41対39）。
-    // 乱数を高い側に固定して、蒸らしは熱く・吸いは強くし、仕上がった弱い一台にする（総合67前後・17票）。
+    // 乱数を高い側に固定して、蒸らしは熱く・吸いは強くし、仕上がった弱い一台にする（総合67前後）。
     await page.evaluate(async () => {
       (await import("./js/craft/session.js")).craftTest.auto = "bad";
       window.__realRandom = Math.random; Math.random = () => .9;
