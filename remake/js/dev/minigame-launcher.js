@@ -16,10 +16,16 @@ const GAMES = [
     if (signal.aborted) return;
     return runCamelRace({ host, signal, cups: CAMEL_CUPS.map(cup => cup.id) });
   } },
+  // 砂丘はヌールにもなる（好敵手）にも挑める（本編ではヌールに勝つと来る。2026-11-25 オーナー「デバッグからなると対戦できるようにしたい」）
   { id: "desert", label: "DESERT RIDE（砂丘）", start: async (host, signal) => {
     const { runDesertRide } = await import("../minigames/desert-ride.js");
     if (signal.aborted) return;
-    return runDesertRide({ host, signal });
+    return runDesertRide({ host, signal, rivals: ["noor", "naru"] });
+  } },
+  { id: "desert-naru", label: "DESERT RIDE（なると勝負）", start: async (host, signal) => {
+    const { runDesertRide } = await import("../minigames/desert-ride.js");
+    if (signal.aborted) return;
+    return runDesertRide({ host, signal, rivals: ["noor", "naru"], startRival: "naru" });
   } },
   // DJ だけ iframe で開く。iPhone の Safari では、拡大縮小（transform）された #stage の中にある iframe が
   // 真っ黒に描かれてしまうことがあるため、デバッグでは stage の外（body 直下・画面いっぱい）に出して開く。
