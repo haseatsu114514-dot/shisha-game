@@ -17,11 +17,11 @@ await suite('shopping-tutorial',async check=>{
   await mint.click(); // 仕入れ前の注意と、直後の③は別の段なので待たずに出す。
   assert.match(await page.locator('#toasts').innerText(), /先に頼まれた.*レモン.*購入/);
   await lemon.click();await page.locator('[data-test="shop-checkout"]').click();
-  assert.deepEqual(await page.evaluate(()=>({money:ST.core.state.money,stock:ST.core.state.flavorStock.lemon,paid:ST.core.state.flags._errand_lemon_expensed})),{money:30000,stock:50,paid:true});
+  assert.deepEqual(await page.evaluate(()=>({money:ST.core.state.money,stock:ST.core.state.flavorStock.lemon,paid:ST.core.state.flags._errand_lemon_expensed})),{money:27000,stock:50,paid:true});
   await mint.click();
   assert.match(await page.locator('#toasts').innerText(), /店を出る.*スミさんのところへ戻ろう/);
   assert.equal(await page.locator('[data-test="quantity-mint"]').innerText(), "0");
-  assert.equal(await page.evaluate(()=>ST.core.state.money), 30000);
+  assert.equal(await page.evaluate(()=>ST.core.state.money), 27000);
   await page.locator('[data-test="shop-leave"]').click();await page.waitForFunction(()=>left);
   assert.doesNotMatch(await page.locator('#toasts').innerText(),/仕入れ、ご苦労/);
   const result=await page.evaluate(async()=>{
@@ -30,7 +30,7 @@ await suite('shopping-tutorial',async check=>{
    ST.core.save();ST.core.load();await vn.play('remake_lemon_gift');
    return {first,xp:ST.core.state.flavorMastery.lemon,stock:ST.core.state.flavorStock.lemon,money:ST.core.state.money};
   });
-  assert.deepEqual(result,{first:12,xp:12,stock:50,money:30000});
+  assert.deepEqual(result,{first:12,xp:12,stock:50,money:27000});
  },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true}:{});
  for(const touch of [false,true]) await check(`daily-return-${touch?'touch':'pc'}`,async page=>{
   await page.evaluate(async()=>{
@@ -45,7 +45,7 @@ await suite('shopping-tutorial',async check=>{
   await page.locator('[data-test="shop-checkout"]').click();
   await page.locator('[data-test="shop-leave"]').click();
   await page.waitForFunction(()=>__remake.state.flags._lemon_gift_read);
-  assert.deepEqual(await page.evaluate(()=>{const s=__remake.state;return {done:s.flags._errand_shop_done,read:s.flags._lemon_gift_read,xp:s.flavorMastery.lemon,stock:s.flavorStock.lemon,money:s.money};}),{done:true,read:true,xp:12,stock:50,money:30000});
+  assert.deepEqual(await page.evaluate(()=>{const s=__remake.state;return {done:s.flags._errand_shop_done,read:s.flags._lemon_gift_read,xp:s.flavorMastery.lemon,stock:s.flavorStock.lemon,money:s.money};}),{done:true,read:true,xp:12,stock:50,money:27000});
   assert.doesNotMatch(await page.locator('#toasts').innerText(),/仕入れ、ご苦労/);
  },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true}:{});
 

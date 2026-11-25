@@ -31,7 +31,7 @@ const values = {
   "growth-respec.js": { syncRespecOpportunity() {}, closeRespecOpportunity() {} },
   "growth-chapter-notice.js": { takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "", takeRespecCloseWarning: () => "" }, // 章はじめの盤の知らせ（#1801 C10）。この検査では盤が無効
   "growth-mode.js": { growthEnabled: () => false, GROWTH_BOARD: false, PREVIEW_KEY: "suien_growth_preview" },
-  "growth-effects.js": { useGrowthInsurance: () => false, growthCritical: () => false, settleGrowthPhase: (_s,_cs,_key,result) => result?.score, growthPerks: () => null, growthSkill: () => false, growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {} },
+  "growth-effects.js": { useGrowthInsurance: () => false, growthCritical: () => false, settleGrowthPhase: (_s,_cs,_key,result) => result?.score, growthPerks: () => null, bodyStaminaBonuses: () => null, growthSkill: () => false, growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {} },
   "flavor-mastery.js": { masteryHooks: { multiplier: () => 1 } },
   "city-guests.js": { cityGuestAtShop: () => null, visitCityGuestAtShop: async () => false },
   "roamers.js": { roamerAt: () => null, meetRoamer: async () => false }, // よその店に居合わせる人。この検査では居合わせない
@@ -40,7 +40,7 @@ const values = {
   "lover-strain.js": { strainMorning: () => 0, maybeStrainTalk: async () => false, maybeStrainReunion: async () => false, strainAfterVisit() {}, strainOf: () => 0, STRAIN_SIGN2: 7 }, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
   "hiyori.js": { hiyoriShopEncounterDue: () => false, hiyoriAtTonari: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
-  "state.js": { state, hasAffinity, holdActionSave: () => noop, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
+  "state.js": { state, config: {}, hasAffinity, holdActionSave: () => noop, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
     visitedDay: { ...state.visitedDay }, stamina: state.stamina, rest: state.restDay ? { ...state.restDay } : null,
     queue: JSON.parse(JSON.stringify(state.deferredNightEvents || [])), appointment: state.pendingInvite ? { ...state.pendingInvite } : null }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },
@@ -50,7 +50,7 @@ const values = {
   "transitions.js": { refreshPlaceCue: noop },
   "data.js": { sceneBg: () => ({}), DB: db, loadCinemaDialogue: async () => db, loadLoverEvents: async () => db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
   "audio.js": { SE: { select: noop, cancel: noop }, playBgm: noop },
-  "engine.js": { isPlaying: () => false, play: async (id) => played.push(id) }, "glossary.js": { glossaryPanel: () => "" },
+  "engine.js": { isPlaying: () => false, play: async (id) => { played.push(id); return { id, visited: [id] }; } }, "glossary.js": { glossaryPanel: () => "" },
   "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => modules.get("chapter-clock.js").namespace.chapterDaysLeft(state), setPhoneBadge: noop, presentSleepRecovery: async () => {} },
   "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop, isChoosingDestination: () => false },
   "weather.js": { isRainy: () => false, weatherOf: () => "sun", tomorrowForecast: () => null, RAIN_SPOT_TEXTS: {} },
@@ -89,13 +89,14 @@ const calendarModule = await load("calendar.js");
 await calendarModule.link((s) => load(s.split("/").at(-1)));
 await calendarModule.evaluate();
 const stats = modules.get("stats.js").namespace;
-async function run({ stamina = 0, guts = 10, day = 13, slot = 1, roll = .99, sick = false, paths = ["tonari"], answers = [], events = {}, flags = {}, appointment = null, queue = [], chapter = 1, untilDay = 14 } = {}) {
+async function run({ fast = false, stamina = 0, guts = 10, day = 13, slot = 1, roll = .99, sick = false, paths = ["tonari"], answers = [], events = {}, flags = {}, appointment = null, queue = [], chapter = 1, untilDay = 14 } = {}) {
   Object.keys(state).forEach((key) => delete state[key]);
   Object.assign(state, { chapter, phase: "daily", day, slot, stamina, money: 10000, pendingInvite: appointment, deferredNightEvents: JSON.parse(JSON.stringify(queue)),
     stats: { technique: 10, sense: 10, guts, charm: 10, insight: 10 }, statXp: {}, story: {}, visitedDay: {}, met: {}, contacts: [], inbox: [], limeRead: [],
     flags: { [`_morning_${day}`]: true, _sick_once: sick, _overwork: 9, ...flags } });
   played.length = 0; saves.length = 0; guards.length = 0; guardBodies.length = 0; dawns.length = 0; homecomingChecks.length = 0; shifts = 0;
   rng = roll; route = paths.slice(); decisions = answers.slice();
+  values["state.js"].config.fastDaily = fast;
   await calendarModule.namespace.runDaily({ nightEvents: events, untilDay });
   return { played: [...played], saves: [...saves], guards: [...guards], stamina: state.stamina, day: state.day, shifts };
 }
@@ -218,6 +219,7 @@ console.log("[full-day rest] PASS: remaining slots/recovery, half/cancel/healthy
 await run({ stamina: 40, answers: [false], paths: ["tonari", "rest"] });
 assert.match(guardBodies[0], /この行動の後は/);
 assert.match(guardBodies[0], /行動後の残り/);
+assert.match(guardBodies[0], /翌朝は休養の時間を取れないまま本番に入る/);
 for (const scenario of [
   { day: 1, chapter: 1, untilDay: 3, flags: { _errand_scout_done: true, _c_station_registered: true, _delivery_adam_done: true, _delivery_minto_done: true }, expectedDay: 2 },
   { day: 6, chapter: 1, untilDay: 14, flags: {}, expectedDay: 7 },
@@ -234,4 +236,10 @@ for (const scenario of [
   assert.equal(state.day, scenario.untilDay);
 }
 
+result = await run({ fast: true, stamina: 60, day: 12, slot: 2, paths: ["rest"], flags: { _homecoming_seen_0: true } });
+assert.equal(dawns.length, 0, "高速設定では通常日の夜明け演出を通らない");
+assert(!result.played.includes("remake_homecoming_0"), "読了済みの定型帰宅だけを飛ばす");
+result = await run({ fast: true, stamina: 60, day: 13, slot: 2 });
+assert(result.played.includes("remake_homecoming_1"), "未読の定型帰宅は再生する");
+assert.equal(state.flags._homecoming_seen_1, true);
 await import("./dawn_numbers.mjs");

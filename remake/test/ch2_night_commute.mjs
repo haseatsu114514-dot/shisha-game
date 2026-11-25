@@ -95,7 +95,7 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
   const fixture = { chapter, day: 15, slot: 2, stamina: 60, money: 1000, flags: { _morning_15: true }, visitedDay: {} };
   const stop = new Error('morning destination reached');
   const env = {
-    state: fixture,
+    state: fixture, config: {},
     chapterDay: s => s.day - 14, TOURNAMENT_DAY: 14, SLEEP_RECOVERY: 14, DELIVERY_LAST_DAY: 4,
     save: () => { snapshots.push(structuredClone(fixture)); trace.push('save:' + fixture.day); },
     showReelNow: async () => {}, syncSamechanKnowledge() {}, syncNightQueue() {}, expireInvitations() {},

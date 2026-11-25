@@ -101,7 +101,7 @@ await suite("recipe-finds", async check => {
     const start = await page.evaluate(() => window.__findStart);
     const log = await backlog(page);
     assert.match(log, /マウンテンミストが切れた日の、俺の逃げ道だ/, "Steve tells the mix after the visit");
-    assert.equal(start.money, before.money - 4000, "the shop fee is settled before the talk");
+    assert.equal(start.money, before.money - 3500, "the shop fee is settled before the talk");
     assert.ok(start.steve > before.affinity.steve, "the visit's affinity is settled before the talk");
     assert.deepEqual([after.money, after.affinity.steve, after.stamina], [start.money, start.steve, start.stamina],
       "the talk itself adds no money, affinity or stamina");

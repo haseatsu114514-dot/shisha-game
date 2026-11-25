@@ -115,7 +115,7 @@ try {
     return { money, forced, cases, rioRefusal, carrySaved, invitationSpent: invitation.spent, invitationXp, zeroXp, zeroSpins, smallXp, mixed,
       restoredMoney: core.state.money };
   });
-  assert.equal(report.money, 30000); assert.equal(report.restoredMoney, 12345);
+  assert.equal(report.money, 27000); assert.equal(report.restoredMoney, 12345);
   assert.deepEqual(report.forced, { xp: 0, sameReel: true });
   assert.deepEqual(report.rioRefusal, { spent: 0, unchanged: true, spins: 0 });
   for (const entry of report.cases) {

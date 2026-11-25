@@ -85,7 +85,7 @@ await suite("issue439", async (check) => {
       const board = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled());
       if (board) {
         await page.locator('[data-test="kannon-reflect"]').waitFor();
-        assert.deepEqual(await page.locator("#modal.show .modal-actions button").allTextContents(), ["盤を開く", "戻る"]);
+        assert.deepEqual(await page.locator("#modal.show .modal-actions button").allTextContents(), ["盤を開く", "境内で過ごす（1行動）", "戻る"]);
         await press('[data-test="kannon-reflect"]');
         await page.locator('[data-test="growth-board"][data-mode="light"]').waitFor();
         await press('[data-test="board-close"]');

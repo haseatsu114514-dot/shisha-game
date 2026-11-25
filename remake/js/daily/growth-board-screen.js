@@ -2,7 +2,7 @@ import { characterArtStem } from "../core/portrait-resolver.js";
 // 心得の盤の画面（SPEC 第2版 6.2、ADDENDUM-BOARD-LAYOUT）。盤の最終デザインは #2129（ネオンのラウンジ・SBD79〜90。2026-11-02 オーナー確定）。
 // 盤の面・札・台座・結界・顔は #2129 を正とし、作り直さない。外枠（見出し・タブ・凡例）の紙の色は DUI17。画像が読めない時だけ図形で描く。
 // 盤は能力ごとに3枚（上の札で入れ替え）。道は SVG、マスは HTML のボタン（キーボード・タッチで押せる）。
-// 参拝の場所で内省した時（place あり）だけ灯せる。メニュー・寝る前から開いた時は見るだけで、目標は決められる（2.8）。
+// 参拝の場所か導入後の日常メニューから開くと灯せる。
 import { el, sleep } from "../core/util.js";
 import { layers, modal, gainCard } from "../core/ui.js";
 import { SE, createGrowthBoardAudio } from "../core/audio.js";
@@ -121,7 +121,7 @@ export const PLACE_JA = { kannon: "観音堂", tokyo_shrine: "池の弁天堂", 
 let current = null;
 
 /** 盤を開き、閉じるまで待つ。onExit は確定内容と同じ保存境界で呼ぶ。戻り値=確定したマス。 */
-export function openBoard({ place = null, onExit = null } = {}) {
+export function openBoard({ place = null, onExit = null, lessonVisit = null } = {}) {
   if (current) return current.done;
   // 閉じたら焦点を返す所（MENU のボタンなど。#1801 U4）
   const opener = document.activeElement;
@@ -297,7 +297,8 @@ export function openBoard({ place = null, onExit = null } = {}) {
       (() => {
         const full = rebuilding ? "組み直し中（確定まで保存内容は変わらない）"
           : canRespec(original, owner) ? "組み直しは最初の自由行動または日付変更まで"
-          : canLight ? `${PLACE_JA[place] || "静かな場所"}で内省している（時間は進まない）` : "見るだけ。灯すのは観音堂などで内省した時";
+          : place === "menu" ? "メニューから火種を灯せる。時間は進まない。"
+          : canLight ? `${PLACE_JA[place] || "静かな場所"}で内省している（時間は進まない）` : "見るだけ。観音堂などで内省すると灯せる。";
         const short = rebuilding ? "組み直し中" : canRespec(original, owner) ? "組み直せる" : canLight ? "灯せる" : "見るだけ";
         return el("p.gb-place", { dataset: { test: "board-place" }, title: full }, [
           el("span.gb-place-chip", { "aria-hidden": "true", text: short }), el("span.gb-sr", { text: full })]);
@@ -673,12 +674,26 @@ export function openBoard({ place = null, onExit = null } = {}) {
       // 今までの「錠：♥4/5」「火種いらず。道が届けば灯せる」の文は、この図の中に入れた
       lines.push(lessonFlow(node, st, v));
     }
+    const canGuide = lessonVisit && node.kind === "lesson" && lessonKnown(node, g) && !lessonLearned(node.id);
+    const visit = canGuide ? lessonVisit(node.who) : null;
+    if (canGuide) {
+      const afterEvent = { master_hookah: "世界大会の結果発表のあと、会場で相談できる。", dr_charcoal: "勝負のあと、博士と一台を作る場面で相談できる。" }[node.who];
+      const text = visit ? visit.why ? `${visit.name}。${visit.why}。` : `相談先は${visit.name}。`
+        : afterEvent || "今いる地域の地図に、相談できる場所が出ていない。";
+      lines.push(el("p.gb-p-next", { text, dataset: { test: "board-lesson-visit" } }));
+    }
     if (g.target === node.id && st !== "unlocked") lines.push(el("p.gb-p-target", { dataset: { test: "board-target-line" }, text: targetText(node.id, v) }));
     // 支払い・今の状態の一行は、ボタンと同じ下端の枠に入れる（#3987。スマホ横では枠ごとパネル下端に残し、説明だけを送る。
     // 844×390 で「白火1で払う」が固定のボタンの後ろに隠れていた）。PC は枠が display: contents で、今までと同じ並び
     const stateLine = el(`p.gb-p-state.s-${st}`, { text: stateText(node, st, v) });
     const actions = [];
     if (canLight && st === "available") actions.push(el("button.btn.primary.gb-light", { text: node.kind === "gate" ? `はめる（${payText(paymentFor(node, v.hidane, v.ctx))}）` : node.cost ? `灯す（火種${node.cost}）` : "教わる", dataset: { test: "board-light" }, onclick: () => light(node.id) }));
+    if (visit && !visit.why && (st === "unlocked" || st === "pending")) {
+      actions.push(el("button.btn.gb-aim", { text: "地図で場所を確認", dataset: { test: "board-lesson-map" }, onclick: async () => {
+        await close();
+        if (finishing && state === owner && owner.growth.nodes.includes(node.id)) visit.focus();
+      } }));
+    }
     if (st === "pending") actions.push(el("button.btn.gb-undo", { text: "やめる", dataset: { test: "board-undo" }, onclick: () => unlight(node.id) }));
     if (!g.nodes.includes(node.id) && st !== "pending") {
       actions.push(el("button.btn.gb-aim", { text: g.target === node.id ? "目標をやめる" : "目標にする", dataset: { test: "board-target" }, onclick: () => toggleTarget(node.id) }));
@@ -740,6 +755,19 @@ export function openBoard({ place = null, onExit = null } = {}) {
         ])),
       ]) : null,
     ];
+    if (owner.chapter === 5) {
+      const nodes = boardNodes(board);
+      const peak = nodes.find(node => node.peak);
+      const remaining = nodes.filter(node => node.cost && !v.unlocked.has(node.id)).length;
+      const peakLit = v.unlocked.has(peak.id);
+      const left = statTotal(board) - count - 1;
+      const text = peakLit ? remaining ? `極みを灯した。火種で灯すマスは残り${remaining}つ。` : "火種で灯すマスをすべて灯した。"
+        : left > 0 ? `あと${left}つ能力のマスを灯すと、極みが開く。` : "極みを火種1つで灯せる。";
+      out.push(el("p.gb-p-next", { text, dataset: { test: "board-final-goal" } }));
+      if (!peakLit) out.push(el("button.btn.gb-aim", { text: "極みのマスを確認", onclick: () => {
+        select(peak.id, true); scrollToNode(peak.id);
+      } }));
+    }
     if (g.target) {
       out.push(el("p.gb-p-target", { dataset: { test: "board-target-line" }, text: targetText(g.target, v) }));
     }

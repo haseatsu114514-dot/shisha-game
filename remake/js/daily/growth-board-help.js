@@ -6,7 +6,7 @@ import { el } from "../core/util.js";
 import { modal } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { BOARD_JA, BOARD_WHERE, HIDANE_NAME, PERK_TIERS, GATE_TIER, SQUARE_PERKS } from "../core/growth-board-data.js";
-import { HIDANE_PER_LEVEL, KEY_GIFT, COLORED_GIFT, WIN_HIDANE, BOARD_TOTAL } from "../core/growth.js";
+import { HIDANE_PER_LEVEL, KEY_GIFT, COLORED_GIFT, WIN_HIDANE, BOARD_TOTAL, COLOR_LIMIT } from "../core/growth.js";
 
 const ART = "img/ui/growth_board/";
 const pic = (file, cls = "") => {
@@ -37,7 +37,7 @@ export const HELP_PAGES = Object.freeze([
     el("li", [step(1), el("div", [el("b", { text: "経験値をためる" }), el("span", { text: "人と会う・出かける・作る・大会" })])]),
     el("li", [step(2), el("div", [el("b", { text: "たまると、その場でレベルアップ" }), el("span.gh-inline", [n("any", HIDANE_PER_LEVEL), el("span", { text: "火種が手持ちに入る" })])])]),
     el("li", [step(3), el("div", [el("b", { text: "観音堂などで振り返る" }), el("span", { text: "手持ちの火種を盤に灯す（時間は進まない）" })])]),
-    el("li", [step(4), el("div", [el("b", { text: "灯したマスの分だけ、力が伸びる" }), el("span", { text: "メニューの盤は見るだけ（目標は付けられる）" })])]),
+    el("li", [step(4), el("div", [el("b", { text: "灯したマスの分だけ、力が伸びる" }), el("span", { text: "観音堂で内省した後は、地図のメニューからも灯せる。" })])]),
   ]) },
   { id: "fire", title: "火種", build: () => el("div", [
     el("ul.gh-list", [
@@ -45,12 +45,13 @@ export const HELP_PAGES = Object.freeze([
       row([fire("body"), fire("sense"), fire("wisdom")], `色の火（${HIDANE_NAME.body}・${HIDANE_NAME.sense}・${HIDANE_NAME.wisdom}）`, "ひし形の「色の台座」にはめる鍵。どの色でもはまる"),
     ]),
     el("p.gh-note", { text: "払う時は白火が先。色の火は、まだはめていない台座の数ぶんを取っておき、余った分をその色の盤のマスに使う。" }),
+    el("p.gh-note", { text: `色の火は各色${COLOR_LIMIT}個まで。以降の報酬は白火になる。くじの火種は通常箱のラストワン賞で一度だけ。` }),
     el("h4.gh-sub", { text: "もらえる時" }),
     el("ul.gh-gains", [
       gain("レベルが1つ上がる", [n("any", HIDANE_PER_LEVEL)]),
       gain("節目（Lv.10ごと）", [n("body", KEY_GIFT.color), n("any", KEY_GIFT.any)]),
       gain("♥5になった人から", [n("sense", KEY_GIFT.color), n("any", KEY_GIFT.any)]),
-      gain("大会に出る", [n("wisdom", COLORED_GIFT)]),
+      gain("大会で一台を仕上げる", [n("wisdom", COLORED_GIFT)]),
       gain("大会で優勝", [n("any", WIN_HIDANE)]),
       gain("遊びのご褒美・くじ", [n("body", 1)]),
     ]),
@@ -99,8 +100,9 @@ export const HELP_PAGES = Object.freeze([
     row(el("span.gh-key", { text: "＋" }), "拡大・移動", "− 全体 ＋ と、ドラッグ・スクロール"),
   ]) },
   { id: "rules", title: "決まり", build: () => el("ul.gh-list.gh-plain", [
-    row(el("span.gh-key", { text: "帯" }), "遠いマスほど大きい", `近く・中ほど ×${PERK_TIERS[2].mult}、台座の先 ×${PERK_TIERS[3].mult}、色の台座 ×${GATE_TIER.mult}`),
+    row(el("span.gh-key", { text: "帯" }), "遠いマスほど大きい", `近く ×${PERK_TIERS[1].mult}、中ほど ×${PERK_TIERS[2].mult}、台座の先 ×${PERK_TIERS[3].mult}、色の台座 ×${GATE_TIER.mult}`),
     ...Object.keys(BOARD_JA).map((k) => row(el(`span.gh-key.b-${k}`, { text: BOARD_JA[k].slice(0, 1) }), `${BOARD_JA[k]}盤`, BOARD_WHERE[k])),
+    row(el("span.gh-key", { text: "才" }), "行動の疲れ", "才能盤の能力マスを灯すほど行動で疲れにくくなり、体調の基準となる基礎体力も増える。"),
     row(el("span.gh-key", { text: "直" }), "組み直し", "章・周回のはじめ、最初の行動まで（メニューからも）。授業は忘れない"),
     row(el("span.gh-key", { text: "数" }), `火種は全部で${BOARD_TOTAL}`, "盤の全部のぶん。受け取り終えた後は白火が台座にもはまる"),
   ]) },
