@@ -41,7 +41,7 @@ try {
     });
     const page = await context.newPage(), errors = [], vnResponses = new Map();
     // 選ぶ工程の初回説明（#3028）はこの検査の対象外（support.mjs を使わない単独ハーネスのため、ここでも既定オフに合わせる）
-    await page.addInitScript(() => { try { localStorage.setItem("suien_step_intro", "off"); } catch {} });
+    await page.addInitScript(() => { try { localStorage.setItem("suien_step_intro", "off"); localStorage.setItem("suien_floor", "instant"); } catch {} });
     page.on("response", response => {
       const pathname = new URL(response.url()).pathname;
       if (vnAssets.includes(pathname)) vnResponses.set(pathname, response.status());
@@ -70,7 +70,7 @@ try {
     await page.locator('[data-test="after-none"]').waitFor();
     assert.equal(await page.locator('[data-test="after-cube-coals"]').count(), 0);
     await page.locator('[data-test="after-none"]').click(); await page.evaluate(() => Q.shift);
-    await page.evaluate(() => { Q.core.state.affinity.sumi = 20; Q.shift = Q.tonari.doBaito(); });
+    await page.evaluate(() => { Q.core.state.slot = 0; Q.core.state.affinity.sumi = 20; Q.shift = Q.tonari.doBaito(); });
     await page.locator('[data-test="after-cube-coals"]').waitFor();
     await page.evaluate(() => { Q.vn.vnTest.turbo = false; });
     await page.locator('[data-test="after-cube-coals"]').click();

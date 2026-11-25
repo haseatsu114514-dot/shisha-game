@@ -161,7 +161,7 @@ const personalOrder = (o) => ({ wish: o.wish, quote: o.quote, pref: { label: o.l
  * @param opts.dusk 昼から夜まで通しの店番（2026-11-25 オーナー「昼から始めて2コマ使う」・TFL62）。営業の半ばで日が暮れ、
  *   そこから来る客は夜の呼び名になる（画面は店内の絵を夜へ替える）。daytime と一緒に使う
  */
-export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = false, daytime = false, night = null, visitor = null, dusk = false } = {}) {
+export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = false, daytime = false, night = null, visitor = null, visitorName = null, dusk = false } = {}) {
   const def = night ? NIGHTS[night] || NIGHTS.usual : pickNight(level, seed, { rainy, daytime });
   const random = rng((Number(seed) >>> 0) ^ 0x51ed27);
   const duskAt = dusk && daytime ? Math.round(def.length / 2) : null; // 日が暮れる刻み
@@ -182,9 +182,9 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = fal
   });
   // たまに遊びに来る本編の人物。三人目の客と入れ替わる（二人連れの一人なら、連れは一人で来る）
   const who = VISITORS[visitor];
-  if (who && guests.g3) {
+  if (who?.chapters.includes(chapter) && guests.g3) {
     if (guests.g3.pair) guests[guests.g3.pair].pair = null;
-    guests.g3 = { ...guests.g3, kind: `visitor-${who.id}`, art: null, pair: null, charId: who.id, name: who.name, party: 1, stay: who.stay, rank: who.rank, trait: null,
+    guests.g3 = { ...guests.g3, kind: `visitor-${who.id}`, art: null, pair: null, charId: who.id, name: visitorName || who.name, party: 1, stay: who.stay, rank: who.rank, trait: null,
       drinksMax: who.drinks, look: ["bob"], order: personalOrder(who.order) };
   }
   const deck = shuffled(mixIdsFor(chapter), random); // その章の店で出せるミックス

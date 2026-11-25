@@ -157,8 +157,8 @@ await suite("hiyori-axe-story",async check=>{
     await setup(page);
     // B06 exposes the axe outing only after the mandatory Sumi talk at shift end.
     await page.evaluate(async()=>{
+      S.core.state.slot=0;
       const timer=setInterval(()=>{
-        document.querySelector('[data-test="shift-order-0"]')?.click();
         document.querySelector('[data-test="after-none"]')?.click();
       },20);
       try { await S.tonari.doBaito(); } finally { clearInterval(timer); }

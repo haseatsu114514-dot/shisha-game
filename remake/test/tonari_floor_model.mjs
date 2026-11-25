@@ -545,18 +545,19 @@ test("レアな来店: 本編の人物は三組目として来て、その人の
       assert.ok(order.label && order.has.length >= 1 && order.has.every((id) => FLAVORS[id]), `${who.id}: ${order.label}`);
       for (const chapter of who.chapters) assert.ok(mixIdsFor(chapter).some((id) => rateMix(id, { ...order, pref: { label: order.label, has: order.has } }) === "best"), `${who.id} 第${chapter}章`);
     }
-    let s = createFloorNight({ seed: 5, level: 2, visitor: who.id });
+    const chapter = who.chapters[0];
+    let s = createFloorNight({ seed: 5, level: 2, chapter, visitor: who.id });
     assert.equal(s.visitor, who.id);
     const guest = s.guests.g3;
     assert.deepEqual([guest.charId, guest.name, guest.party, guest.order.wish, guest.order.quote, guest.order.pref.label],
       [who.id, who.name, 1, who.order.wish, who.order.quote, who.order.label]);
     assert.deepEqual(Object.keys(s.guests), Object.keys(base.guests), "組数と来店の刻みは変わらない");
-    assert.deepEqual(s.hand, base.hand, "ミックスの並びも変わらない");
+    assert.deepEqual(s.hand, createFloorNight({ seed: 5, level: 2, chapter }).hand, "ミックスの並びも変わらない");
     s = until(s, (x) => x.tables.some((t) => t.guestId === "g3"), 200);
     const table = s.tables.find((t) => t.guestId === "g3");
     // 名指しの注文: 好きなフレーバーの入った一台だけが◎。気分が同じでも、入っていなければ○
-    const liked = mixIdsFor(1).find((id) => MIXES[id].flavors.some((f) => who.order.has.includes(f)));
-    const sameMood = mixIdsFor(1).find((id) => MIXES[id].main === who.order.wish && !MIXES[id].flavors.some((f) => who.order.has.includes(f)));
+    const liked = mixIdsFor(chapter).find((id) => MIXES[id].flavors.some((f) => who.order.has.includes(f)));
+    const sameMood = mixIdsFor(chapter).find((id) => MIXES[id].main === who.order.wish && !MIXES[id].flavors.some((f) => who.order.has.includes(f)));
     assert.deepEqual([rateMix(liked, guest.order), rateMix(sameMood, guest.order)], ["best", "good"]);
     assert.equal(rateMix(sameMood, { wish: who.order.wish }), "best", "モブの物差しなら◎の一台も、名指しの注文では○");
     // 並んでいなければ、山のいちばん上に取り置かれていて、シャッフル一回で並ぶ
@@ -586,16 +587,17 @@ test("レアな来店: 本編の人物は三組目として来て、その人の
     assert.equal(paid.log.find((e) => e.type === "bill").line, who.lines.bye);
     assert.equal(paid.results.at(-1).charId, who.id);
   }
-  assert.equal(quotes.size, Object.values(VISITORS).length * 17, "三人の言葉は、互いにも重ならない");
+  assert.equal(quotes.size, Object.values(VISITORS).length * 17, "来店客の言葉は、互いにも重ならない");
   assert.equal(createFloorNight({ seed: 5, level: 2, visitor: "nobody" }).visitor, null);
 });
 
 test("レアな来店のおかわり: その人のおかわりの注文（名指し）をする。待たせても、その人の言葉で帰る", () => {
   for (const who of Object.values(VISITORS)) {
-    let s = createFloorNight({ seed: 5, level: 2, visitor: who.id });
+    const chapter = who.chapters[0];
+    let s = createFloorNight({ seed: 5, level: 2, chapter, visitor: who.id });
     s = until(s, (x) => x.tables.some((t) => t.guestId === "g3"), 200);
     const id = s.tables.find((t) => t.guestId === "g3").id;
-    const liked = mixIdsFor(1).find((m) => MIXES[m].flavors.some((f) => who.order.has.includes(f)));
+    const liked = mixIdsFor(chapter).find((m) => MIXES[m].flavors.some((f) => who.order.has.includes(f)));
     s.hand[0] = liked;
     s = act(s, { type: "order", tableId: id, mix: liked });
     s = until(s, (x) => at(x, id).phase === "enjoy", 60);
@@ -616,7 +618,8 @@ test("レアな来店のおかわり: その人のおかわりの注文（名指
   }
   // 注文を待たせて帰る時も、その人の言葉（怒鳴らない）
   for (const who of Object.values(VISITORS)) {
-    let s = createFloorNight({ seed: 5, level: 2, visitor: who.id });
+    const chapter = who.chapters[0];
+    let s = createFloorNight({ seed: 5, level: 2, chapter, visitor: who.id });
     s = until(s, (x) => x.log.some((e) => e.type === "left" && e.guestId === "g3") || x.done, 400);
     if (s.done) continue;
     assert.equal(s.log.find((e) => e.type === "left" && e.guestId === "g3").line, who.lines.mad);

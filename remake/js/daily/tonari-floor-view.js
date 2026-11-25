@@ -9,7 +9,8 @@
 import { el, yen } from "../core/util.js";
 import { showScreen, clearScreen, retire, toast } from "../core/ui.js";
 import { SE, playBgm, preloadBgm, requestedBgm } from "../core/audio.js";
-import { faceIconUrl } from "../core/data.js";
+import { state as gameState } from "../core/state.js";
+import { displayName, faceIconUrl } from "../core/data.js";
 import { buildVersioned } from "../core/asset-version.js";
 import { sideSlot, releaseSideSlot } from "../core/side-area.js";
 import {
@@ -135,9 +136,12 @@ export function runTonariFloor({
   isCurrent = () => true, signal = null,
 } = {}) {
   if (signal?.aborted || !isCurrent()) return Promise.resolve(null);
+  const speaker = visitor === "minto" ? "oneesan" : visitor;
+  const visitorName = gameState && (speaker === "oneesan" || speaker === "samechan") ? displayName(speaker, gameState) : null;
+  const openNight = () => createFloorNight({ seed, level, chapter, rainy, daytime: !night, visitor, visitorName, night: kind, dusk });
   if (!mount && instantFloor()) {
     if (tutorial) return Promise.resolve({ tutorial: true, skipped: true });
-    const opened = createFloorNight({ seed, level, chapter, rainy, daytime: !night, visitor, night: kind, dusk });
+    const opened = openNight();
     return Promise.resolve(floorResult(floorAct(opened, { type: "finish" })));
   }
   stylesheet();
@@ -149,11 +153,11 @@ export function runTonariFloor({
   const frontArt = layout.art ? artUrl(night ? layout.art.frontNight : layout.art.frontDay) : null;
   const shishaArt = artUrl(props?.shisha);
   const daytime = !night;
-  let state = tutorial ? createFloorTutorial({ chapter, daytime }) : createFloorNight({ seed, level, chapter, rainy, daytime, visitor, night: kind, dusk });
+  let state = tutorial ? createFloorTutorial({ chapter, daytime }) : openNight();
   const plan = floorPlan(state);
   // 客の絵は、どこでも「丸の中の顔」（全身は描かない）。本編の人物は顔アイコン
   const artOf = (guest, { happy = false } = {}) => {
-    const face = guest.charId ? faceIconUrl(guest.charId) : null;
+    const face = guest.charId ? faceIconUrl(speaker) : null;
     if (!face) return guestArt(guest, { happy, art: guests });
     const img = el("img", { src: face, alt: "", decoding: "async", draggable: false });
     const node = el("span.tf-guest-art", { "aria-hidden": true, dataset: { party: 1 } }, [el("span.tf-person", { dataset: { i: 0, face: "true" } }, [img])]);
@@ -494,7 +498,10 @@ export function runTonariFloor({
             if (e.rare) { SE.jingle(); log(`${guest.name}が遊びに来た！ ${e.tableId}卓へ`, "good"); }
             else log(`${e.tableId}卓　${guest.name}「${e.line}」`);
             break;
-          case "left": SE.miss(); hit(e.tableId, "off"); flashNow("bad"); pop(e.tableId, "帰った…", "off", "anger"); log(`${e.tableId}卓の${guest.name}が、待ちきれずに帰ってしまいました`, "bad"); break;
+          case "left":
+            SE.miss(); hit(e.tableId, "off"); flashNow("bad"); pop(e.tableId, "帰った…", "off", "anger");
+            log(guest.charId ? `${e.tableId}卓　${guest.name}「${e.line}」` : `${e.tableId}卓の${guest.name}が、待ちきれずに帰ってしまいました`, "bad");
+            break;
           case "order":
             SE.click(); log(`${e.tableId}卓　${e.refill ? "おかわりに" : ""}${mixName(e.mix)}を仕込みはじめた`);
             if (e.refill) { SE.money(); showBanner("トップ替え、いただきました！", `おかわり ＋${yen(PRICE.top)}`); }
@@ -1229,7 +1236,7 @@ export function runTonariFloor({
               ]),
               // これまでの売上の最高を超えた夜だけ、合計の下に出す
               record ? el("p.tf-slip-record", { dataset: test("record") }, [el("b", { text: "自己ベスト！" }), el("span", { text: `これまで ${yen(topSales)}` })]) : null,
-              result.visitor ? el("p.tf-slip-visitor", { dataset: test("visitor"), text: `今日は、${VISITORS[result.visitor].name}が遊びに来た` }) : null,
+              result.visitor ? el("p.tf-slip-visitor", { dataset: test("visitor"), text: `今日は、${state.guests.g3.name}が遊びに来た` }) : null,
             ]),
             el("div.tf-slip-side", {}, [
               el("div.tf-stamp", { dataset: { ...test("rank"), rank: result.rank } }, [el("i", { "aria-hidden": true }), el("b", { text: result.stamp })]),

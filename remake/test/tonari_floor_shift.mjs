@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import { VISITORS } from "../js/daily/tonari-floor-data.js";
 import * as game from "../js/core/state.js";
 
 // 本物のセーブAPI: 長い勤務の途中で既存の会話がsaveしても、体力等の一部だけを保存しない。
@@ -41,7 +42,7 @@ assert.deepEqual([game.loadFromSlot(slot).money, game.state.slot, game.state.vis
 // 店のファンの合計は flags._tonari_floor に残り、次の営業へ渡る。
 // たまに遊びに来る本編の人物は、顔見知り・好感度1以上・その章に来られる人だけ。はじめての営業には来ない。好感度は動かさない。
 // 開店前の札で「遊び方（チュートリアル）」を選ぶと、チュートリアルを開いてから同じ一日を始め直す（TFL64）。
-const VISITORS = { tsumugi: { id: "tsumugi", chapters: [1, 2] }, naru: { id: "naru", chapters: [1] }, adam: { id: "adam", chapters: [1, 2] } };
+
 const text = await fs.readFile(new URL("../js/daily/tonari.js", import.meta.url), "utf8");
 const start = text.indexOf("// 店番の一日。");
 assert(start >= 0);
@@ -124,9 +125,12 @@ async function floorBoundary(mode) {
   assert.ok(rate >= 4 && rate <= 24, `たまに来る（60日で${rate}回）`);
   // 第2章ではなるは来ない（店を休んで修行に出ている）。面識と好感度がそろえば、アダムは来る
   Object.assign(account, { chapter: 2, met: { tsumugi: true, naru: true, adam: true }, affinity: { tsumugi: 9, naru: 20, adam: 30 } });
+  const newcomers = ["ageha", "kumicho", "kuraudo", "samechan"];
+  for (const id of ["minto", ...newcomers]) { account.met[id] = true; account.affinity[id] = 9; }
+  for (const id of newcomers) assert(!VISITORS[id].chapters.includes(1));
   const later = new Set();
-  for (let day = 1; day <= 80; day++) { account.day = day; await module.namespace.serveFloor(account, signal); later.add(calls.at(-1).visitor); }
-  assert.deepEqual([...later].sort(), ["adam", "tsumugi", null].sort());
+  for (let day = 1; day <= 365; day++) { account.day = day; await module.namespace.serveFloor(account, signal); later.add(calls.at(-1).visitor); }
+  assert.deepEqual([...later].sort(), ["adam", "tsumugi", "minto", ...newcomers, null].sort());
 }
 for (const mode of ["done", "load", "abandon", "again"]) await floorBoundary(mode);
 // 画面を読み込めない時は、売上ボーナスなしで勤務だけ済ませる（進み具合は増やさない。旧バイトへは戻さない）。チュートリアルも、無しで進める。
