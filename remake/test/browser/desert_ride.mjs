@@ -1005,7 +1005,8 @@ await suite("desert-ride", async check => {
     await phase(page, "practiced");
     assert.equal(await page.evaluate(() => window.__desertRide.tier), "normal", "the highest open tier by default");
     await page.locator(t("desert-start")).click();
-    await autoplayToResult(page, "perfect");
+    // 2026-11-25（DSR89）: 中級のヌールは着地を決める滑りになった（回らないと勝ち負けが半々）。回って勝つ
+    await autoplayToResult(page, "expert");
     assert.equal(await page.locator(t("desert-result-tier")).innerText(), "中級");
     await page.evaluate(() => {
       window.__bgs = [];
@@ -1017,8 +1018,8 @@ await suite("desert-ride", async check => {
     await dubaiMap(1);
     value = await get(page);
     assert.equal(value.day, before.day); assert.equal(value.slot, 1);
-    assert.equal(value.desert.bestRank, "A", "clean landings without spins are an A"); assert.equal(value.desert.rewarded, true);
-    assert.equal(value.desert.wins, 1, "clean landings and the boost beat Noor");
+    assert.equal(value.desert.bestRank, "S", "spinning clean landings are an S"); assert.equal(value.desert.rewarded, true);
+    assert.equal(value.desert.wins, 1, "spins, clean landings and the boost beat Noor");
     assert.equal(value.stamina, before.stamina, "the trip uses no stamina");
     assert.deepEqual(value.stats, before.stats, "no direct stat gain");
     assert.match(await page.locator(t("pin-ch4_dubai_dunes")).getAttribute("class"), /\boff\b/, "no second trip tonight (the pin stays, disabled)");
@@ -1036,7 +1037,8 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(t("desert-best")).count(), 0, "the old score is not the target for the new rules");
     await page.locator(t("desert-start")).click();
     await autoplayToResult(page, "perfect");
-    assert.equal(await page.locator(t("desert-result")).getAttribute("data-rank"), "A");
+    // 2026-11-25（DSR89）に境目を上げたので、回らず着地を決める滑りはこのコースで B
+    assert.equal(await page.locator(t("desert-result")).getAttribute("data-rank"), "B");
     assert.match(await page.locator(t("desert-best")).innerText(), /自己ベスト更新/);
     await page.locator(t("desert-leave")).click();
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_desert_ride_preview")));
@@ -1045,7 +1047,7 @@ await suite("desert-ride", async check => {
     assert.equal(saved.beatNoor, true);
     await page.reload();
     assert.match(await page.locator(t("desert-page-legacy-best")).innerText(), /99,999/);
-    assert.match(await page.locator(t("desert-page-best")).innerText(), /自己ベスト.*A/);
+    assert.match(await page.locator(t("desert-page-best")).innerText(), /自己ベスト.*B/);
   });
 
   await check("legacy-main-records-survive-real-auto-and-slot-save-load", async page => {

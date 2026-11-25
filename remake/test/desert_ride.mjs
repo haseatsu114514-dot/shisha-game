@@ -314,14 +314,14 @@ test("rivals boost often and the race stays close, without changing who can win 
   }
   assert(RIVALS.noor.boostAt < 0.5 && RIVALS.naru.boostAt < 0.5, "rivals do not wait for a full gauge");
   // 接戦: 理想の滑りとなるは、差 15m 以内で滑る時間が半分以上。
-  // ヌールは 2026-11-14 に弱めた（出だし同速・溜まり 1 倍）ので、着地を決める滑りとは中盤まで競って終盤に離れる（約44%）。勝敗は変わらない
+  // ヌールは 2026-11-25（DSR89）に着地を決める滑りへ強くしたので、同じ腕前の滑りとは最後まで競る（勝敗は五分。ここでは問わない）。回れば勝てる
   const course = buildCourse({ id: "ridge" });
-  for (const [who, skill, minClose] of [["noor", "perfect", 0.4], ["naru", "expert", 0.5]]) {
+  for (const [who, skill, minClose, wins] of [["noor", "perfect", 0.6, null], ["noor", "expert", 0.2, true], ["naru", "expert", 0.5, true]]) {
     const rival = rivalRun(course, { who }), game = createGame(course, { rival }), memo = {};
     let close = 0, all = 0;
     while (!game.finished && game.t < 200) { botStep(game, skill, memo, DT); all++; if (Math.abs(game.z - rivalAt(rival, game.rivalClock).z) < 15) close++; }
     assert(close / all > minClose, `${who} vs ${skill}: close for ${Math.round(100 * close / all)}% of the run`);
-    assert.equal(game.race.won, true, `${skill} still beats ${who}`);
+    if (wins !== null) assert.equal(game.race.won, wins, `${skill} beats ${who}`);
   }
 });
 
@@ -364,7 +364,8 @@ test("Naru is a real final rival: only the ideal spinning run beats him, by a sm
   for (const pack of COURSE_PACKS) {
     const course = buildCourse({ id: pack.id }), naru = rivalRun(course, { who: "naru" }), noor = rivalRun(course);
     assert.equal(naru.easeOff, false); assert.equal(noor.easeOff, true);
-    assert(naru.finishTime < noor.finishTime - 1.5, `${pack.id}: Naru is well ahead of Noor (${naru.finishTime.toFixed(1)} vs ${noor.finishTime.toFixed(1)})`);
+    // 2026-11-25 にヌールを強くしたので、なるとの差は 1.1〜4.0 秒（それまでは 1.5 秒以上）
+    assert(naru.finishTime < noor.finishTime - 1, `${pack.id}: Naru is well ahead of Noor (${naru.finishTime.toFixed(1)} vs ${noor.finishTime.toFixed(1)})`);
     const expert = play(course, "expert"), perfect = play(course, "perfect");
     const margin = naru.finishTime - expert.finishTime;
     assert(margin > 0 && margin < 1.6, `${pack.id}: the ideal spinning run wins, but only just (${margin.toFixed(2)}s)`);
@@ -418,10 +419,12 @@ test("the course has a flat and a mountain: a chain of rock-free bumps mid-run, 
   assert(LAYOUT.chainGap > flight + SPEED.max * 0.5, `chain gap ${LAYOUT.chainGap} leaves half a second after a ${flight.toFixed(0)}m flight`);
 });
 
-test("the single course rates S / A / B / C by skill: spins = S, clean landings without spins = A, late landings = B, no jumps = C, clumsy = C", () => {
+// 2026-11-25（DSR89）で境目を一段上げた: 720 まで回る＝S、360 だけ＝A、回らず着地を決める・着地が遅い＝B、跳ばない・不器用＝C（このコースで）
+test("the single course rates S / A / B / C by skill: big spins = S, 360s = A, clean or late landings = B, no jumps = C, clumsy = C", () => {
   const course = generateCourse(DEFAULT_SEED);
   const run = skill => summary(play(course, skill, { race: true }));
   const expert = run("expert"), perfect = run("perfect"), good = run("good"), none = run("none"), lazy = run("lazy");
+  const only360 = (() => { const game = createGame(course, { rival: rivalRun(course) }), memo = { only360: true }; while (!game.finished && game.t < 200) botStep(game, "expert", memo, DT); return summary(game); })();
   for (const result of [expert, perfect, good, none, lazy]) {
     assert.equal(result.finished, true);
     assert(result.time >= 50 && result.time <= 85, `a run takes about a minute (${result.time}s; 2026-11-13 に 2,000m へ延ばした)`);
@@ -431,14 +434,17 @@ test("the single course rates S / A / B / C by skill: spins = S, clean landings 
   assert(expert.tricks >= 5 && expert.bestTrick >= 720 && expert.boosts >= 2, "the expert spins and boosts");
   assert.equal(perfect.tricks, 0, "the perfect rider never spins");
   assert.equal(expert.rank, "S");
-  assert.equal(perfect.rank, "A", "S needs spins");
+  assert.equal(only360.rank, "A", "a 360-only run is A here (S needs bigger spins)");
+  assert.equal(perfect.rank, "B", "A needs spins");
   assert.equal(good.rank, "B");
   assert.equal(none.rank, "C");
   assert.equal(lazy.rank, "C");
-  assert(expert.score > perfect.score && perfect.score > good.score && good.score > none.score && none.score > lazy.score);
-  // ヌールとの競走: 着地を決めてブーストを使えば勝てる。ヌールと同じ滑り（着地が遅い）では互角（2026-11-14 にヌールを弱めて同速・同溜まりにした: このコースでは 0.1 秒差。コースにより勝敗が割れる）。跳ばないと負ける
-  assert.equal(expert.race.won, true); assert.equal(perfect.race.won, true);
-  assert(Math.abs(good.race.gap) <= 0.5, `the same riding as Noor is a dead heat (${good.race.gap}s)`); assert.equal(none.race.won, false);
+  assert(expert.score > only360.score && only360.score > perfect.score && perfect.score > good.score && good.score > none.score && none.score > lazy.score);
+  // ヌールとの競走（2026-11-25 にヌールを着地を決める滑りへ強くした）: 回れば勝てる。ヌールと同じ滑り（着地を決める・回らない）では互角
+  // （このコースでは 0.1 秒差。コースと滑る位置で勝敗が割れる）。着地が遅い・跳ばないと負ける
+  assert.equal(expert.race.won, true); assert.equal(only360.race.won, true);
+  assert(Math.abs(perfect.race.gap) <= 0.5, `the same riding as Noor is a dead heat (${perfect.race.gap}s)`);
+  assert.equal(good.race.won, false); assert.equal(none.race.won, false);
   // 同じ seed・同じ操作なら同じ結果
   assert.deepEqual(run("expert"), expert);
   // 2026-11-13 にコースを組み替えた（最初の起伏・連続起伏・終盤の山）ので、不器用な人は本番の4本で見る: どれも完走して C、どこかで転ぶ
@@ -750,11 +756,15 @@ test("landing recovery is capped, awarded once and absent on a failed spin or bo
   }
 });
 
-test("360-only clean runs keep S without making a no-spin run S", () => {
-  const course = generateCourse(DEFAULT_SEED), game = createGame(course, { rival: rivalRun(course) }), memo = { only360: true };
-  while (!game.finished && game.t < 200) botStep(game, "expert", memo, DT);
-  assert.equal(summary(game).bestTrick, 360); assert.equal(summary(game).rank, "S");
-  assert.equal(summary(play(course, "perfect", { race: true })).rank, "A");
+// 2026-11-25（DSR89）: 境目を上げたので、360 だけの滑りは「A 以上」（コースによって S）。回らない滑りは S に届かない
+test("360-only clean runs are at least A on every course, and a no-spin run never reaches S", () => {
+  for (const pack of COURSE_PACKS) {
+    const course = buildCourse({ id: pack.id }), game = createGame(course, { rival: rivalRun(course) }), memo = { only360: true };
+    while (!game.finished && game.t < 200) botStep(game, "expert", memo, DT);
+    assert.equal(summary(game).bestTrick, 360); assert(["S", "A"].includes(summary(game).rank), `${pack.id}: 360s are A or S (${summary(game).score})`);
+    const flat = summary(play(course, "perfect", { race: true }));
+    assert(flat.score < RANKS[0][1], `${pack.id}: no spins, no S (${flat.score})`);
+  }
 });
 
 
@@ -1327,7 +1337,8 @@ test("three tiers: the ideal riders never fall and Noor never falls on the easy 
   }
 });
 
-test("three tiers: easy is won by a late-landing rider, hard is a coin toss for clean landings, and Naru stays the strongest (#3779)", () => {
+// 2026-11-25（DSR89）にヌールを三段とも一段強くした（初級＝前の中級に近い・中級＝着地を決める・上級＝360 を回る）
+test("three tiers: easy is mostly won by a late-landing rider, normal is a coin toss for clean landings, hard for 360s, and Naru stays the strongest (#3779)", () => {
   // 勝率は本番の4本で、同じ腕前でも滑る位置（レーン）を10通りにずらして数える（ボットは乱数を使わないので、位置のずれで揺らぎを作る）
   const lanes = Array.from({ length: 10 }, (_, i) => -0.45 + i * 0.1);
   const rate = (tier, skill) => {
@@ -1337,23 +1348,35 @@ test("three tiers: easy is won by a late-landing rider, hard is a coin toss for 
     });
     return list.filter(Boolean).length / list.length;
   };
-  // 初級: 着地が甘い滑り（B評価の目安）で8割以上。中級の同じ滑りは今の値（ヌールと同じ滑りなので、ほぼ負ける）
+  // 初級: 着地が甘い滑りで6〜9割（2026-11-25 まではいつも勝てた）。回らず着地を決めれば勝てる
   const easyGood = rate("easy", "good"), normalGood = rate("normal", "good");
-  assert(easyGood >= 0.8, `easy: a late-landing rider wins ${Math.round(easyGood * 100)}%`);
-  assert(normalGood <= 0.5, `normal: the same rider as Noor wins at most half (${Math.round(normalGood * 100)}%)`);
-  // 上級: 着地を決める滑り（A評価の目安）で2〜4割。回って決める滑りなら勝てる
-  const hardPerfect = rate("hard", "perfect");
-  assert(hardPerfect >= 0.2 && hardPerfect <= 0.4, `hard: clean landings win ${Math.round(hardPerfect * 100)}%`);
+  assert(easyGood >= 0.6 && easyGood <= 0.9, `easy: a late-landing rider wins ${Math.round(easyGood * 100)}%`);
+  assert.equal(rate("easy", "perfect"), 1, "easy: clean landings win");
+  // 中級: 着地が甘い滑りはほぼ負ける。回らず着地を決める滑り（ヌールと同じ）で3〜6割。回れば勝てる
+  assert(normalGood <= 0.1, `normal: a late-landing rider hardly wins (${Math.round(normalGood * 100)}%)`);
+  const normalPerfect = rate("normal", "perfect");
+  assert(normalPerfect >= 0.3 && normalPerfect <= 0.6, `normal: clean landings win ${Math.round(normalPerfect * 100)}%`);
+  assert.equal(rate("normal", "expert"), 1, "normal: the ideal spinning run wins");
+  // 上級: 回らない滑りでは勝てない。360 だけの滑りで4〜7割。720 まで回る理想の滑りなら勝てる
+  assert.equal(rate("hard", "perfect"), 0, "hard: clean landings without spins do not win");
+  const hard360 = (() => {
+    const list = COURSE_PACKS.flatMap(pack => {
+      const course = buildCourse({ id: pack.id, tier: "hard" }), rival = rivalRun(course, { tier: "hard" });
+      return lanes.map(lane => { const game = createGame(course, { rival, tier: "hard" }), memo = { lane, only360: true }; game.x = lane; while (!game.finished && game.t < 200) botStep(game, "expert", memo, DT); return game.race.won; });
+    });
+    return list.filter(Boolean).length / list.length;
+  })();
+  assert(hard360 >= 0.4 && hard360 <= 0.7, `hard: 360-only runs win ${Math.round(hard360 * 100)}%`);
   assert.equal(rate("hard", "expert"), 1, "hard: the ideal spinning run wins");
-  assert.equal(rate("normal", "perfect"), 1, "normal: clean landings beat Noor as before");
   for (const pack of COURSE_PACKS) {
     const [easy, normal, hard] = ["easy", "normal", "hard"].map(tier => rivalRun(buildCourse({ id: pack.id, tier }), { tier }));
     assert(easy.finishTime > normal.finishTime + 1.5, `${pack.id}: easy Noor is slower (${easy.finishTime.toFixed(1)} vs ${normal.finishTime.toFixed(1)})`);
-    assert(hard.finishTime < normal.finishTime - 1, `${pack.id}: hard Noor is faster (${hard.finishTime.toFixed(1)} vs ${normal.finishTime.toFixed(1)})`);
-    // なる（好敵手）は段の外で、上級のヌールより速い（同じ上級のコースでも、なるの中級のコースでも）
+    assert(hard.finishTime < normal.finishTime - 0.5, `${pack.id}: hard Noor is faster (${hard.finishTime.toFixed(1)} vs ${normal.finishTime.toFixed(1)})`);
+    // なる（好敵手）は段の外で、上級のヌールより速い（同じ上級のコースでも、なるの中級のコースでも）。
+    // 2026-11-25 に上級のヌールが 360 を回るようになったので、差は 0.1〜2 秒（コースDがいちばん近い。それまでは 1 秒以上）
     const hardCourse = buildCourse({ id: pack.id, tier: "hard" });
-    assert(rivalRun(hardCourse, { who: "naru" }).finishTime < hard.finishTime - 1, `${pack.id}: Naru beats hard Noor on the hard course`);
-    assert(rivalRun(buildCourse({ id: pack.id }), { who: "naru" }).finishTime < hard.finishTime - 1, `${pack.id}: Naru's own run is faster than hard Noor`);
+    assert(rivalRun(hardCourse, { who: "naru" }).finishTime < hard.finishTime - 0.1, `${pack.id}: Naru beats hard Noor on the hard course`);
+    assert(rivalRun(buildCourse({ id: pack.id }), { who: "naru" }).finishTime < hard.finishTime - 0.1, `${pack.id}: Naru's own run is faster than hard Noor`);
     assert.deepEqual(rivalRun(hardCourse, { who: "naru", tier: "easy" }).samples, rivalRun(hardCourse, { who: "naru" }).samples, "Naru ignores the tier");
   }
   // 手加減: 初級は大きく離されると長く待ち、上級はあまり待たない。なると中級はいつもの RUBBER

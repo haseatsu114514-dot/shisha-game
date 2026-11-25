@@ -69,7 +69,10 @@ export const RIVALS = Object.freeze({
 // 満タンまで待たず小刻みに使うので、ブーストの回数が増えて目に入る。
 // ヌールの charge は当初 1.15 だったが、2026-11-14 オーナー判断で 1 に戻した（素のゴールタイムは全コース 59.1〜59.4 秒で、
 // 着地を決めてブーストを使う滑り（A評価の目安）に 1.3〜2.3 秒差、着地の甘い滑り（B評価の目安）とは互角になる）。boostAt 0.3 は据え置き。
-  noor: Object.freeze({ skill: "rival", startX: -0.42, only360: false, startSpeed: SPEED.start, charge: 1, boostAt: 0.3 }),
+// 2026-11-25 オーナー「砂の流れがなくても結構簡単にクリアできちゃったから、もう少し成績と敵の強さ上げたい」（DSR89）:
+// ヌール（中級）を一段強くした。着地が少し遅い滑り（skill "rival"）→ 着地を決める滑り（"perfect"）、溜まり 1 → 1.03。
+// 着地を決める滑り（回らない）で勝てるのは約半分（それまでは必ず勝てた）、回れば勝てる。なるは前のまま（理想の滑りに 0.3〜0.8 秒差で負ける所が、もう上限）。
+  noor: Object.freeze({ skill: "perfect", startX: -0.42, only360: false, startSpeed: SPEED.start, charge: 1.03, boostAt: 0.3 }),
   naru: Object.freeze({ skill: "expert", startX: 0.42, only360: false, startSpeed: SPEED.start - 2.6, easeOff: false, charge: 1, boostAt: 0.3 }),
 });
 // 空中トリック: 大ジャンプ中に ← か → を押している間だけ回る（rate 回転/秒）。離すと次の半回転まで finishRate で回り切る。
@@ -99,16 +102,21 @@ export const RUBBER = Object.freeze({ gap: 12, span: 40, catchUp: 1.25, easeOff:
 // 中級は前と同じ（同じ滑りで 10%・着地を決めると 100%）。上級は着地を決める滑り（A評価の目安）で 33%、回って決める滑り（S）なら 100%。
 // 上級のヌールのゴールは 57〜58 秒で、なる（53〜56 秒）よりは遅い。初級のヌールは 62 秒前後。
 // 上級の charge は 1 にすると、ブーストで岩へ突っ込んで転ぶコースが出た（0.95 と出だし +0.2 で同じくらいの速さにした）。
+// 2026-11-25（DSR89）に三段とも一段強くした（上の目安は 2026-11-20 の値）: 初級は着地の甘い滑りで 75%・着地を決めれば 100%。
+// 中級は着地の甘い滑りで 0%・回らず着地を決める滑りで 45%・回れば 100%。上級は回らないと 0%・360 だけで 58%・720 まで回れば 100%。
+// 上級のヌールは 360 を回るので、なるとの差は 0.1〜2 秒に縮んだ（コースDがいちばん近い。溜まりを 0.97 より上げると、なるより速くなるコースが出る）。
 export const TIER_TUNING = Object.freeze({
   easy: Object.freeze({
     rocks: Object.freeze({ thin: 2 }),
-    noor: Object.freeze({ startSpeed: SPEED.start - 2, charge: 0.55, boostAt: 0.45 }),
+    // 2026-11-25（DSR89）: 出だし −2・溜まり 0.55・使い始め 0.45 → 着地の遅い滑りのまま、出だし −0.5・溜まり 0.85・使い始め 0.4（前の中級に近い）
+    noor: Object.freeze({ skill: "rival", startSpeed: SPEED.start - 0.5, charge: 0.85, boostAt: 0.4 }),
     rubber: Object.freeze({ easeOff: 0.6, lag: 4, keep: 1 }),
   }),
   normal: Object.freeze({ rocks: Object.freeze({}), noor: Object.freeze({}), rubber: Object.freeze({}) }),
   hard: Object.freeze({
     rocks: Object.freeze({ fill: Object.freeze({ before: 32, afterBump: 84, after: 32 }) }),
-    noor: Object.freeze({ skill: "perfect", charge: 0.95, startSpeed: SPEED.start + 0.2 }),
+    // 2026-11-25（DSR89）: 着地を決める滑り → 360 を回って着地も決める滑り（only360）。溜まり 0.97・出だし −0.3（なるより少し遅い所）
+    noor: Object.freeze({ skill: "expert", only360: true, charge: 0.97, startSpeed: SPEED.start - 0.3 }),
     rubber: Object.freeze({ easeOff: 0.88, lag: 2, keep: 0.25 }),
   }),
 });
@@ -152,7 +160,10 @@ export const COURSE_PACKS = Object.freeze([
 // 2026-11-17 オーナー「ランクの判定を全体的にもう一回り難しくしたい」（転倒1回・ヌールに負けて 14,199点が S だった）で、境目を約2割上げた
 // （S 14,000 → 17,000・A 7,000 → 8,000・B 4,000 → 5,000）。A は、回らない理想の滑りが4コースすべてで A に残る所まで（コースDが 8,441。8,500 にすると B に落ち、本編の検査「回らないが着地を決める＝A」が崩れた）。点の付け方は同じなので RULES_VERSION は変えない（保存済みの最高評価はそのまま残る）。
 // コースAのボット: 回る理想 約30,900＝S、360だけ 約17,500＝S、回らない理想 約9,000＝A、着地が「良い」止まり 約6,900＝B、跳ばない 約3,600＝C
-export const RANKS = Object.freeze([["S", 17000], ["A", 8000], ["B", 5000], ["C", 0]]);
+// 2026-11-25 オーナー「もう少し成績…上げたい」（DSR89）で、もう一段上げた: S 17,000 → 22,000・A 8,000 → 10,000・B 5,000 → 6,000。
+// 本番の4本×滑る位置10通りのボット（中級のヌールと競走）で: 720 まで回る滑り＝いつも S、360 だけ＝S が約4割・残りは A、
+// 回らず着地を決める＝B（約2割は A）、着地が遅い＝B と C が約2:1、跳ばない＝C。点の付け方は同じなので RULES_VERSION は変えない
+export const RANKS = Object.freeze([["S", 22000], ["A", 10000], ["B", 6000], ["C", 0]]);
 export const RANK_ORDER = Object.freeze(["C", "B", "A", "S"]);
 
 /** 決定的な乱数（mulberry32）。同じ seed なら同じコース。 */
