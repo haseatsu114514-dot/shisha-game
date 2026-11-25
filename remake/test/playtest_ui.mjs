@@ -203,8 +203,9 @@ try {
   await page.locator('[data-test="shift-order-0"]').click({ timeout: 10000 });
   await page.locator('[data-test="after-none"]').click({ timeout: 30000 });
   await page.waitForFunction(() => T.shiftDone, { timeout: 5000 });
-  assert.equal(await page.locator('[data-test="vn-skip"].on').count(), 0, "SKIP carried into the next action");
-  console.log("[playtest UI] PASS: actual baito carries SKIP through its scenes, pauses for choices and clears at shift end");
+  // SKIPは場面をまたいで保持する（#3558 項目7・オーナー決定 2026-11-25）。シフト終了でも解除されない。
+  assert.equal(await page.locator('[data-test="vn-skip"].on').count(), 1, "SKIP was cleared at shift end");
+  console.log("[playtest UI] PASS: actual baito carries SKIP through its scenes, pauses for choices and keeps SKIP after the shift");
 
   await page.evaluate(() => {
     T.core.newGame(); T.core.state.phase = "daily";
