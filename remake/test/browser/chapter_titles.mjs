@@ -274,7 +274,8 @@ await suite('chapter-titles', async check => {
           await advanceManually(page, () => window.sequencePhase === 'done', label === 'touch');
         } else await page.waitForFunction(() => window.sequencePhase === 'done');
         assert.equal(await page.evaluate(() => window.sequenceError), null);
-        assert.equal(await page.evaluate(() => document.body.classList.contains('vn-skip')), false);
+        // SKIPは場面をまたいで保持する（#3558 項目7・オーナー決定 2026-11-25）。skip モードだけ終了後も有効なまま。
+        assert.equal(await page.evaluate(() => document.body.classList.contains('vn-skip')), mode === 'skip');
         assert.equal(await page.evaluate(() => window.underClicks), 0);
         await assertFade(page, `${label}-${mode}`);
         assert.deepEqual(await storageSnapshot(page), mode === 'skip' ? before : withReadDialogue(before, ['qa-before', 'qa-after']));
