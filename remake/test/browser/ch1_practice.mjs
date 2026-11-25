@@ -1,7 +1,7 @@
 // #451 B/C: real fixed nights, experience boundaries, partial care and saved progress.
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { suite, assertFits } from "./support.mjs";
+import { suite, assertFits, passTutorialLesson } from "./support.mjs";
 const shots = process.env.SHOTS || ".codex/artifacts/remake-browser/practice-controls";
 fs.mkdirSync(shots, { recursive: true });
 
@@ -221,7 +221,7 @@ await suite("ch1-practice", async run => {
       });
       for (const round of [1, 2]) {
         await page.evaluate(round => { P.craft.craftTest.auto = null; P.running = P.pull.runCare(P.cs, { round }); }, round);
-        await page.locator('[data-test="care-coals"]').waitFor();
+        await passTutorialLesson(page, '[data-test="care-coals"]', { touch });
         await assertFits(page, ".care-coal, .care-coals-lead");
         // 案内を個別に確認し、文が出ない場合も失敗させる。
         await assertFits(page, ".care-coals-ask");

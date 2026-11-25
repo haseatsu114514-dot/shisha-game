@@ -144,7 +144,11 @@ await suite('action-context', async check => {
         assert(reRouted >= 0 && reRouted < r.beats.findIndex(t => /スミさんの話を聞きに/.test(t)), JSON.stringify(r.beats));
       } else assert.equal(reRouted, -1, JSON.stringify(r.beats));
       if (action === 'rest') assert.equal(r.money, 30000);
-      if (action === 'visit') assert.equal(r.lines.find(l => l.id === 'ch1_c_station_visit').money, 27500);
+      // 訪問料は読み終えてから払う（#4192 読了後精算）。読んでいる間は手元のまま、翌朝には引かれている。
+      if (action === 'visit') {
+        assert.equal(r.lines.find(l => l.id === 'ch1_c_station_visit').money, 30000);
+        assert.equal(r.money, 27500);
+      }
       if (action === 'baito') assert(r.money >= (day === 4 ? 43000 : 38000));
     }, options);
   }
