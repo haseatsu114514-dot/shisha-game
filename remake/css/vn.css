@@ -194,10 +194,12 @@ body[data-scene-mood="dread"] #bg::after { content: ""; position: absolute; inse
   transition: opacity 0.15s, transform 0.2s var(--ease-out);
 }
 .vn-name.show { opacity: 1; transform: none; }
+/* 本文の太さは 500（2026-11-26 オーナー実機指摘「メインテロップ太すぎ」で 700 から引き下げ。
+   逆に選択肢は継承の 400 で細く見えたため .vn-choice 側で 700 を明示した）。 */
 .vn-text {
   font-family: var(--font);
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.48;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -213,7 +215,7 @@ body[data-scene-mood="dread"] #bg::after { content: ""; position: absolute; inse
 .vn-inner {
   margin-top: 8px;
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.45;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -313,6 +315,7 @@ body:not(:root) .vn-choices:has(> .vn-choice:nth-child(6)) > .vn-choice {
   width: 720px;
   padding: 16px 30px;
   font-size: 24px;
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-align: center;
   /* 選択肢は1行（GUI22）。文言は全角26字まで。はみ出すときは engine.js の fitOneLine が字を縮める */
