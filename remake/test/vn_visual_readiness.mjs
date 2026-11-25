@@ -5,6 +5,8 @@ import { suite } from "./browser/support.mjs";
 async function prepare(page) {
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"); core.newGame(); core.config.textSpeed = 4;
+    // このスイートは未読の場面もSKIPで進める前提。SKIP既定が既読のみ（#4214 U-08）になったため、検査では「全部」に設定する。
+    core.config.skipSeenOnly = false;
     const ui = await import("./js/core/ui.js");
     const data = await import("./js/core/data.js");
     const engine = await import("./js/vn/engine.js");

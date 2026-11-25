@@ -1,6 +1,6 @@
 // Keep the authored 1280×720 composition together inside variable FX layers.
 // A preceding sibling covers gutters; keep .cutin directly under the FX layer.
-export function mountIntro(host, parent) {
+export function mountIntro(host, parent, { brief = false } = {}) {
   const surface = document.createElement("div");
   surface.className = "intro-fit-surface";
   const swallow = event => { event.preventDefault(); event.stopPropagation(); };
@@ -17,6 +17,11 @@ export function mountIntro(host, parent) {
   };
   try {
     host.classList.add("intro-fitted");
+    if (brief) {
+      // 最初の描画から全体を見せ、背後の画面に入力を通す。
+      host.classList.add("in");
+      targets.forEach(target => { target.style.pointerEvents = "none"; });
+    }
     parent.append(surface, host);
     const background = getComputedStyle(host).backgroundColor;
     const fit = () => {
@@ -27,7 +32,7 @@ export function mountIntro(host, parent) {
       surface.style.backgroundColor = Math.abs(width - 1280 * scale) < .01 && Math.abs(height - 720 * scale) < .01
         ? "transparent" : background === "rgba(0, 0, 0, 0)" ? "#101820" : background;
     };
-    targets.forEach(target => events.forEach(type => target.addEventListener(type, swallow, { capture: true, passive: false })));
+    if (!brief) targets.forEach(target => events.forEach(type => target.addEventListener(type, swallow, { capture: true, passive: false })));
     fit();
     observer = new ResizeObserver(fit);
     observer.observe(surface);

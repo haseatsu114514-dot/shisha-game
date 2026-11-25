@@ -1,4 +1,4 @@
-// セーブ／ロードの枠選び（オートセーブ＋手動1枠）。タイトルの「ロード」と、日常の MENU から開く。
+// セーブ／ロードの枠選び。タイトルの「ロード」と、章内・日常の MENU から開く。
 import { el, yen } from "../core/util.js";
 import { layers, modal, toast } from "../core/ui.js";
 import { SCHEMA, SAVE_SLOTS, readSlot, autoSaveResult, saveToSlotResult, loadFromSlot, state } from "../core/state.js";
@@ -117,7 +117,7 @@ function pickSlot(mode) {
       layers.modal.replaceChildren();
       resolve(v);
     };
-    const rows = SAVE_SLOTS.map((s, i) => {
+    const slots = SAVE_SLOTS.map((s, i) => {
       const data = readSlot(s.key);
       const future = isFutureSave(data);
       const off = mode === "save" ? s.auto : !data;
@@ -140,8 +140,8 @@ function pickSlot(mode) {
     });
     const box = el("div.modal-box.saveload-modal", [
       el("h3", { text: mode === "save" ? "セーブ" : "ロード" }),
-      el("p.ss-note", { text: mode === "save" ? "書き込む枠を選ぶ（オートは行動のたびに自動で更新）" : "読み込むデータを選ぶ" }),
-      el("div.ss-list", rows),
+      el("p.ss-note", { text: mode === "save" ? "手動セーブ枠を選ぶ（AUTO は行動のたびに更新）" : "読み込むデータを選ぶ" }),
+      el("div.ss-list", slots),
       el("div.modal-actions", [el("button.btn", { text: "やめる", dataset: { test: "slot-cancel" }, onclick: () => { SE.cancel(); close(null); } })]),
     ]);
     layers.modal.replaceChildren(el("div.modal-backdrop"), box);
@@ -220,12 +220,13 @@ export async function loadFlow({ inGame = false } = {}) {
   return key;
 }
 
-/** 取消は静かに閉じ、読込失敗時だけ別の枠へ戻れるようにする。 */
-export async function loadWithRecovery({ inGame = false } = {}) {
+/** タイトルの「つづきから」は表示中の枠を直接読み、失敗した時だけ枠選びを案内する。 */
+export async function loadWithRecovery({ inGame = false, initialSlot = null } = {}) {
   for (;;) {
-    const key = await loadFlow({ inGame });
+    const key = initialSlot?.key ?? await loadFlow({ inGame });
     if (!key) return false;
-    if (loadFromSlot(key)) return true;
+    if (loadFromSlot(key, { expectedRaw: initialSlot?.raw })) return true;
+    initialSlot = null;
     const retry = await modal({
       title: "ロードできませんでした",
       body: "この枠を読み込めませんでした。別のセーブ枠を試してください。",

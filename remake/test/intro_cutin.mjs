@@ -111,7 +111,7 @@ try {
   const artFor = async (id, style) => {
     const src = await page.evaluate(([id, style]) => {
       T.core.config.introArtStyle = style;
-      T.core.state.flags[`_intro_${id}`] = false;
+      T.core.newGame().met[id] = true;
       T.done = T.intro.playIntro(id);
     }, [id, style]).then(() => page.waitForSelector(`.cutin.in[data-char="${id}"] img.ci-portrait`))
       .then(() => page.evaluate(() => ({ portrait: document.querySelector(".cutin img.ci-portrait").getAttribute("src"),
@@ -160,7 +160,7 @@ try {
   assert(Object.entries(subs).every(([id, sub]) => id === "kuraudo" || !sub), "sub_name を持つのは今のところ†黒羅雨℃†だけ");
   // 画面でも: 本名は芸名より小さく、その2行目に出て、ふりがなは付かない
   const reiLayout = await page.evaluate(async () => {
-    T.core.state.met.kuraudo = true;
+    T.core.newGame().met.kuraudo = true;
     const p = T.intro.playIntro("kuraudo");
     await new Promise((r) => setTimeout(r, 900));
     const name = document.querySelector('.cutin[data-char="kuraudo"] .ci-name');
@@ -197,7 +197,7 @@ try {
   assert.deepEqual(staged, { before: ["みんと", "お姉さん"], after: ["木成頼栞", "木成頼栞"] });
   // 画面では漢字の上に小さいふりがな（本文は名前だけ・読みは data-ruby）
   const ruby = await page.evaluate(async () => {
-    T.core.state.flags._intro_kumicho = false;
+    T.core.newGame().met.kumicho = true;
     const p = T.intro.playIntro("kumicho");
     await new Promise((r) => setTimeout(r, 900));
     const name = document.querySelector(".cutin .ci-name"), ribbon = document.querySelector(".cutin .ci-ribbon")?.getBoundingClientRect();
@@ -214,7 +214,7 @@ try {
   const hidden = await page.evaluate(async () => {
     const out = {};
     for (const id of ["minto", "kuraudo"]) {
-      T.core.state.met[id] = true;
+      T.core.newGame().met[id] = true;
       const p = T.intro.playIntro(id);
       await new Promise((r) => setTimeout(r, 400));
       out[id] = document.querySelector(".cutin").textContent;

@@ -12,6 +12,8 @@ const portraits = ".vn-portraits img";
 const savedWithoutConfig = async page => {
   const snapshot = await storageSnapshot(page);
   delete snapshot.local.suien_remake_config;
+  // 再読込をまたぐLOG保持（#4214 U-11）の一時データはセーブ本体ではないので、保存バイトの比較から外す。
+  delete snapshot.session.suien_remake_reload_log;
   return snapshot;
 };
 const snapshot = page => page.evaluate(async () => {

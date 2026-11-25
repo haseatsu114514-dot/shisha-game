@@ -77,7 +77,8 @@ await suite('early-contacts-705',async check=>{
       await page.evaluate(async()=>{
         const core=await import('./js/core/state.js'),vn=await import('./js/vn/engine.js'),spots=await import('./js/daily/spots.js');
         core.newGame();Object.assign(core.state,{phase:'daily',day:1,slot:0});
-        Object.assign(core.config,{textSpeed:0,bgmVolume:0,seVolume:0});vn.vnTest.turbo=false;
+        // このケースはSKIPで未読の場面も送る前提。SKIP既定が既読のみ（#4214 U-08）になったため、検査では「全部」に設定する。
+        Object.assign(core.config,{textSpeed:0,bgmVolume:0,seVolume:0,skipSeenOnly:false});vn.vnTest.turbo=false;
         window.E={core,spots,lime:0,done:false};
         new MutationObserver(()=>{if(document.querySelector('.mo-lime'))E.lime=1;}).observe(document.body,{childList:true,subtree:true});
         spots.visitChar('naru').then(()=>{E.done=true;});

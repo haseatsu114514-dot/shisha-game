@@ -186,6 +186,8 @@ try {
   }
 
   await page.evaluate(() => {
+    // このプローブは未読の場面を SKIP で進める前提。U-08 で既定が「既読のみ」になったため、ここだけ従来の前提に戻す（#4214）。
+    T.core.config.skipSeenOnly = false;
     T.core.newGame(); Object.assign(T.core.state, { phase: "daily", day: 4, stamina: 70 });
     Object.assign(T.core.state.flags, { _intro_sumi: true, _intro_customer: true, _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true, _ev_uezono_cameo: true });
     T.DB.baito = [{ id: "skip_probe", category: "beginner", text: "注文が入った", choices: [
@@ -219,14 +221,20 @@ try {
     ] }).then(() => { T.introDone = true; });
   });
   await page.waitForSelector("#vn.active .vn-text");
-  await page.locator('[data-test="vn-skip"]').click();
+  // U-04 で「SKIP 中の初登場カットイン」は短縮＋入力透過が仕様になった。短縮されない保証が残るのは通常再生（#4214）。
+  // 通常再生では1行目で止まるので、ページ内から台詞欄へ pointerup を送って送る（エンジンは host の pointerup で受ける。
+  // 実クリックは .vn-cg 層に遮られるため、この場面送りに限ってページ内発火を使う）。
+  for (let i = 0; i < 10 && !await page.locator('.cutin[data-char="sumi"]').isVisible().catch(() => false); i++) {
+    await page.evaluate(() => document.querySelector(".vn-box")?.dispatchEvent(new PointerEvent("pointerup", { bubbles: true })));
+    await page.waitForTimeout(400);
+  }
   await page.waitForSelector('.cutin[data-char="sumi"]');
   await page.locator(".cutin").click(); await page.keyboard.press("Enter");
   await page.waitForTimeout(1000);
-  assert.equal(await page.locator('.cutin[data-char="sumi"]:not(.out)').count(), 1, "Active SKIP shortened the intro");
+  assert.equal(await page.locator('.cutin[data-char="sumi"]:not(.out)').count(), 1, "Click or Enter shortened the introduction");
   assert.equal(await page.evaluate(() => T.introDone), false);
   await page.waitForFunction(() => T.introDone, { timeout: 5000 });
-  console.log("[playtest UI] PASS: already-active SKIP, click and Enter cannot shorten the introduction");
+  console.log("[playtest UI] PASS: in normal play, click and Enter cannot shorten the introduction");
 
   const shark = await page.evaluate(async () => {
     T.core.newGame(); T.core.state.phase = "daily";

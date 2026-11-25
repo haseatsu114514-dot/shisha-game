@@ -60,11 +60,13 @@ try {
     await page.evaluate(() => T.done);
     assert.equal(await page.evaluate(id => T.intro.needsIntro(id), id), false);
   }
+  await page.evaluate(() => { T.core.save(); T.core.load(); });
+  assert(await page.evaluate(ids => ids.every(id => T.core.state.flags[T.intro.introSeenKey(id)] && !T.intro.needsIntro(id)), ids));
   // 小画面と動きを減らす設定。最も長い呼び名も画面内に収める。
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const viewport of [{ width: 844, height: 390 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
-    await page.evaluate(() => { T.done = T.intro.playIntro("uranaishi"); });
+    await page.evaluate(() => { T.core.newGame().met.uranaishi = true; T.done = T.intro.playIntro("uranaishi"); });
     await page.locator(".cutin.in").waitFor();
     assert(await page.evaluate(() => {
       const host = document.querySelector(".cutin");
@@ -77,8 +79,6 @@ try {
     await page.screenshot({ path: `${shots}/mobile-${viewport.width}.png` });
     await page.evaluate(() => T.done);
   }
-  await page.evaluate(() => { T.core.save(); T.core.load(); });
-  assert(await page.evaluate(ids => ids.every(id => T.core.state.flags[T.intro.introSeenKey(id)] && !T.intro.needsIntro(id)), ids));
   // 会話VNを通らない案内役も、本当の入店経路で一度だけ表示。無料入店の収支は維持する。
   await page.setViewportSize({ width: 1280, height: 720 });
   for (const id of ["maki", "sai"]) {
