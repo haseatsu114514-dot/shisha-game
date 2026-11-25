@@ -39,7 +39,7 @@ await suite('flavor-mastery',async check=>{
   });
   await page.locator('[data-test="buy-lemon"]').click();await page.locator('[data-test="shop-checkout"]').click();
   const bought=await page.evaluate(()=>({money:__remake.state.money,lemon:__remake.state.flavorStock.lemon,mint:__remake.state.flavorStock.mint||0}));
-  assert.deepEqual(bought,{money:30000,lemon:50,mint:0});
+  assert.deepEqual(bought,{money:27000,lemon:50,mint:0}); // 経費扱いで所持金は初期値のまま（D-20: 初期所持金27,000円・#4197）
   await page.locator('[data-test="shop-leave"]').click();await page.waitForFunction(()=>errandDone);
  });
  await check('lime-shift-order-survives-close',async page=>{
@@ -57,7 +57,7 @@ await suite('flavor-mastery',async check=>{
   await page.locator('[data-test="after-none"]').click();await page.waitForFunction(()=>shiftDone);
   const result=await page.evaluate(()=>({xp:__remake.state.flavorMastery,stock:__remake.state.flavorStock,money:__remake.state.money}));
   assert.deepEqual(result.xp,{},'customer orders never grant flavor experience');
-  assert.deepEqual(result.stock,{lemon:50});assert(result.money>=43000);
+  assert.deepEqual(result.stock,{lemon:50});assert(result.money>=40000); // 初期27,000円＋バイト収入（D-20・#4197）
  });
  await check('lemon-tournament-is-supplied-not-consumed' ,async page=>{
   // 課題のレモンは大会が無制限に支給する。本番で何g使っても私物在庫は減らない（#1052）。
@@ -96,7 +96,7 @@ await suite('flavor-mastery',async check=>{
   await image.evaluate(im=>im.decode());assert.match(await image.getAttribute('src'),/spring-water.webp/);
   await row.screenshot({path:`.codex/artifacts/remake-browser/spring-water-product-${touch?'touch':'pc'}.png`});
   await page.locator('[data-test="buy-spring_water"]').click();await page.locator('[data-test="shop-checkout"]').click();
-  assert.deepEqual(await page.evaluate(()=>({stock:SW.core.state.flavorStock.spring_water,money:SW.core.state.money})),{stock:50,money:28250});
+  assert.deepEqual(await page.evaluate(()=>({stock:SW.core.state.flavorStock.spring_water,money:SW.core.state.money})),{stock:50,money:25250}); // 27,000−1,750（D-20・#4197）
   await page.locator('[data-test="shop-leave"]').click();
   const result=await page.evaluate(async()=>{
    const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;
