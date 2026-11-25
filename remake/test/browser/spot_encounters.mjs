@@ -289,6 +289,9 @@ await suite("spot-encounters", async check => {
       await setup(page);
       await page.evaluate(() => {
         E.core.state.spotVisits = { cafe: 1 }; E.vn.vnTest.turbo = false;
+        // U-08で既読のみSKIPが既定になり未読の場面では選択肢まで進まないため、
+        // SKIPで選択肢まで送るこの検証では全行SKIPへ明示的に切り替える。
+        E.core.config.skipSeenOnly = false;
         E.pending = E.facility("cafe");
       });
       await page.locator("#vn.active").waitFor();
