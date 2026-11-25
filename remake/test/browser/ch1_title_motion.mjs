@@ -144,7 +144,8 @@ await suite('ch1-title-motion', async check => {
       await page.waitForFunction(() => T.phase === 'done');
       assert.equal(await page.evaluate(() => T.error), null);
       assert.equal(await page.evaluate(() => T.jingles), 1);
-      assert.equal(await page.evaluate(() => document.body.classList.contains('vn-skip')), false);
+      // SKIPは場面をまたいで保持する（#3558 項目7・オーナー決定 2026-11-25）。skip モードだけ終了後も有効なまま。
+      assert.equal(await page.evaluate(() => document.body.classList.contains('vn-skip')), mode === 'skip');
     });
   }
   await check('reduced-motion-static-and-readable', async page => {

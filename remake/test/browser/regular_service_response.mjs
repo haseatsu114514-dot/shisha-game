@@ -49,6 +49,9 @@ async function input(locator, touch) { if (touch) await locator.tap(); else awai
 async function start(page, scene, realNight = false) {
   await page.evaluate(({ scene, realNight, BG }) => {
     T.vn.vnTest.turbo = false; T.core.config.textSpeed = 4; T.vn.backlog().length = 0; window.finished = false;
+    // SKIPは場面をまたいで保持される（#3558 項目7・2026-11-25）ため、手動で送る場面は開始前に明示的に止める。
+    const skipBtn = document.querySelector('[data-test="vn-skip"]');
+    if (skipBtn?.getAttribute("aria-pressed") === "true") skipBtn.click();
     const task = realNight ? T.ch1.NIGHT_EVENTS[2].run() : T.vn.play(scene, { bg: BG });
     task.then(() => { window.finished = true; });
   }, { scene, realNight, BG });

@@ -45,7 +45,8 @@ await suite("vn-visual-readiness", async (check) => {
       assert.equal(await page.locator('.portrait[data-speaker="sumi"]').evaluate(img => img.complete && img.naturalWidth > 0 && img.src.endsWith("chr_sumi_smile.webp")), true);
       await page.locator('[data-test="choice-0"]').click();
       await page.evaluate(() => window.scene);
-      assert.equal(await page.locator("body.vn-skip").count(), 0, "SKIP remained active after the scene");
+      // SKIPは場面をまたいで保持する（#3558 項目7・オーナー決定 2026-11-25）。場面が終わっても有効なまま。
+      assert.equal(await page.locator("body.vn-skip").count(), 1, "SKIP was cleared after the scene");
     }, { viewport });
   }
 
