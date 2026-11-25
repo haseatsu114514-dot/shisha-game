@@ -6,6 +6,8 @@
   position: absolute; inset: 0; z-index: 70; display: grid; place-items: center; container-type: size;
   color: var(--cr-sand); font-size: 15px; pointer-events: auto; outline: none; background: #0d0906;
 }
+/* 絵と UI 素材の読み込みが揃うまでは本体を見せない（読み込み中に未整形の仮表示が一瞬出るのを防ぐ）。 */
+.camel-game[data-phase="loading"] { visibility: hidden; pointer-events: none; }
 
 /* ワイドステージ（#2861）: 外枠はステージの両端まで広げ、16:9 のコースの左右の余りは空と砂の色でつなぐ（黒い帯にしない）。
    色はコースの端の夕空・砂丘・砂から拾った近い色。コースと HUD の大きさ・位置は変えない。 */
@@ -19,7 +21,7 @@
 /* ---- 重ねる HUD（文字は cqw で縮む） ---- */
 .camel-hud { position: absolute; inset: 0; pointer-events: none; font-size: clamp(12px, 1.25cqw, 16px); }
 .camel-hud[hidden] { display: none; }
-.camel-clock { position: absolute; left: 1.6cqw; top: 1.6cqw; display: grid; gap: .1em; padding: .45em .9em .5em; border-radius: .9em; background: var(--cr-glass); border: 1px solid rgba(255,255,255,.08); }
+.camel-clock { position: absolute; left: 1.6cqw; top: 1.6cqw; display: grid; gap: .1em; padding: .45em .9em .5em; border-radius: .9em; background: var(--cr-glass); border: 1px solid rgba(255,255,255,.08); contain: layout style; }
 .camel-title { margin: 0; font-size: .85em; font-weight: 900; letter-spacing: .18em; line-height: 1.2; color: var(--cr-gold); }
 .camel-clock-time { font-size: 1.7em; font-weight: 900; letter-spacing: .04em; font-variant-numeric: tabular-nums; line-height: 1.1; color: #fff; }
 .camel-clock-sub { font-size: .8em; font-weight: 800; color: var(--cr-dim); }
@@ -33,18 +35,18 @@
 .camel-speed[data-state="surge"] .camel-speed-value { color: #ffe27a; text-shadow: 0 0 .4em rgba(255,215,122,.7); }
 .camel-speed[data-state="whip"] .camel-speed-value { color: #ff9a7a; text-shadow: 0 0 .5em rgba(255,110,70,.75); }
 .camel-speed[data-state="whip"] .camel-speed-bar i { background: linear-gradient(90deg, #ffb347, #ff5a3a); }
-.camel-progress { position: absolute; left: 20cqw; right: 20cqw; top: 2.2cqw; height: 2.4em; border-radius: 99px; background: var(--cr-glass); border: 1px solid rgba(255,255,255,.08); }
-.camel-progress-track { position: absolute; left: 1.2em; right: 1.8em; top: 50%; height: .36em; transform: translateY(-50%); border-radius: 99px; background: rgba(255,243,220,.18); }
+.camel-progress { position: absolute; left: 20cqw; right: 20cqw; top: 2.2cqw; height: 2.4em; border-radius: 99px; background: var(--cr-glass); border: 1px solid rgba(255,255,255,.08); contain: layout style; }
+.camel-progress-track { position: absolute; left: 1.2em; right: 1.8em; top: 50%; height: .36em; transform: translateY(-50%); border-radius: 99px; background: rgba(255,243,220,.18); container-type: inline-size; }
 .camel-progress-spurt { position: absolute; top: -.25em; bottom: -.25em; left: calc(var(--x) * 100%); right: 0; border-radius: 99px; background: linear-gradient(90deg, rgba(255,179,71,.15), rgba(255,179,71,.55)); }
 .camel-progress-spurt span { position: absolute; left: .2em; bottom: 100%; margin-bottom: .1em; font-size: .7em; font-weight: 900; letter-spacing: .12em; color: var(--cr-amber); line-height: 1; }
 .camel-progress-tick { position: absolute; left: calc(var(--x) * 100%); top: -.3em; width: 1px; height: 1em; background: rgba(255,243,220,.35); }
 .camel-progress-flag { position: absolute; right: -1.3em; top: 50%; width: 1em; height: .8em; transform: translateY(-50%); border-radius: 2px;
   background: conic-gradient(#1a110a 25%, #fff 0 50%, #1a110a 0 75%, #fff 0) 0 0 / .4em .4em; box-shadow: 0 0 0 1px rgba(255,255,255,.6); }
-.camel-dot { position: absolute; left: calc(var(--x, 0) * 100%); top: 50%; width: .8em; height: .8em; transform: translate(-50%, -50%); border-radius: 50%; background: var(--camel-color); box-shadow: 0 0 0 2px rgba(18,11,6,.9); }
+.camel-dot { position: absolute; left: 0; top: 50%; width: .8em; height: .8em; transform: translate3d(calc(var(--x, 0) * 100cqi - 50%), -50%, 0); border-radius: 50%; background: var(--camel-color); box-shadow: 0 0 0 2px rgba(18,11,6,.9); }
 .camel-dot[data-who="player"] { z-index: 1; width: 1.25em; height: 1.25em; background: radial-gradient(circle at 35% 35%, #fff6d6, var(--cr-gold) 55%, var(--cr-gold-deep)); box-shadow: 0 0 0 2px #fff, 0 0 10px rgba(255,215,122,.8); }
 
 /* 順位: 右上に縦に4枚。入れ替わると上下へ滑る */
-.camel-standings { --row-h: 2.6em; --row-gap: .35em; position: absolute; right: 1.6cqw; top: calc(1.6cqw + 46px); width: 13.5em; height: calc(var(--row-h) * 4 + var(--row-gap) * 3); margin: 0; padding: 0; list-style: none; }
+.camel-standings { --row-h: 2.6em; --row-gap: .35em; position: absolute; right: 1.6cqw; top: calc(1.6cqw + 46px); width: 13.5em; height: calc(var(--row-h) * 4 + var(--row-gap) * 3); margin: 0; padding: 0; list-style: none; contain: layout style; }
 .camel-standings li { position: absolute; left: 0; right: 0; top: calc(var(--pos, 0) * (var(--row-h) + var(--row-gap))); height: var(--row-h);
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: .55em; align-items: center; padding: 0 .7em 0 .45em; box-sizing: border-box;
   border-radius: .7em; background: linear-gradient(180deg, rgba(40,26,14,.9), rgba(18,11,6,.9)); border: 1px solid rgba(255,255,255,.08);
@@ -66,9 +68,9 @@
 .camel-close:hover, .camel-close:focus-visible { border-color: var(--cr-gold); background: rgba(40,26,14,.9); }
 
 /* ---- 操作ボタン（調教師のリモコン）。左下と右下の角に重ね、真ん中の道と SUV は見せる ---- */
-.camel-controls { position: absolute; left: 1.6cqw; right: 1.6cqw; bottom: 1.6cqw; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; gap: 2cqw; pointer-events: none; }
+.camel-controls { position: absolute; left: 1.6cqw; right: 1.6cqw; bottom: 1.6cqw; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; gap: 2cqw; pointer-events: none; contain: layout style; }
 .camel-controls[hidden] { display: none; }
-.camel-control { --tone: var(--cr-gold); --rh: max(52px, 9.5cqh); position: relative; overflow: hidden; pointer-events: auto; width: 31cqw; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1cqw;
+.camel-control { --tone: var(--cr-gold); --rh: max(52px, 9.5cqh); position: relative; overflow: hidden; pointer-events: auto; width: var(--cr-control-width, 31cqw); display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1cqw;
   min-height: var(--rh); padding: .6cqw 1.3cqw .6cqw .9cqw; border: 1px solid rgba(255,255,255,.16); border-radius: 1.4cqw; color: var(--cr-sand); font: inherit; text-align: left; cursor: pointer;
   background: linear-gradient(180deg, rgba(48,32,18,.9), rgba(20,13,7,.92)); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.35), 0 6px 16px rgba(0,0,0,.4);
   touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; transition: transform .08s, box-shadow .15s, border-color .15s; }
@@ -120,7 +122,7 @@
 
 /* ---- 判定・バナー・カウントダウン ---- */
 /* 声の判定: 自分のラクダの頭の上の輪のすぐ上に、太い縁取りで大きく（2026-11-02 オーナー「演出がしょぼい」） */
-.camel-feedback { position: absolute; left: 30.8%; top: 53.5%; display: grid; justify-items: center; gap: .1em; transform: translate(-50%, -50%) scale(.7); opacity: 0; font-weight: 900; pointer-events: none; white-space: nowrap; }
+.camel-feedback { position: absolute; left: 30.8%; top: 53.5%; display: grid; justify-items: center; gap: .1em; transform: translate(-50%, -50%) scale(.7); opacity: 0; font-weight: 900; pointer-events: none; white-space: nowrap; contain: layout style; }
 .camel-feedback b { font-size: clamp(24px, 4.6cqw, 52px); letter-spacing: .06em; line-height: 1; paint-order: stroke fill; -webkit-text-stroke: .16em rgba(26,12,4,.9); text-shadow: 0 .08em 0 rgba(0,0,0,.35); }
 .camel-feedback small { font-size: clamp(13px, 1.7cqw, 20px); letter-spacing: .1em; color: #fff6e5; paint-order: stroke fill; -webkit-text-stroke: .22em rgba(26,12,4,.85); }
 .camel-feedback.show { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: camel-pop .75s cubic-bezier(.2,1.4,.4,1) both; }
@@ -132,7 +134,7 @@
 @keyframes camel-pop { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.4); } 22% { opacity: 1; transform: translate(-50%, -50%) scale(1.18); } 40% { transform: translate(-50%, -50%) scale(1); } 75% { opacity: 1; transform: translate(-50%, -62%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -80%) scale(.96); } }
 
 /* 助手席のファーリスの声（上の中央、進み具合の下） */
-.camel-call { position: absolute; left: 50%; top: calc(2.2cqw + 3.4em); z-index: 1; display: flex; align-items: center; gap: .6em; max-width: 52%; padding: .35em 1.1em .35em .35em; border-radius: 99px; background: rgba(18,11,6,.82); border: 1px solid var(--cr-line); box-shadow: 0 .4em 1.2em rgba(0,0,0,.35); font-size: clamp(12px, 1.3cqw, 17px); opacity: 0; transform: translate(-50%, -.6em); transition: opacity .25s, transform .25s; pointer-events: none; }
+.camel-call { position: absolute; left: 50%; top: calc(2.2cqw + 3.4em); z-index: 1; display: flex; align-items: center; gap: .6em; max-width: 52%; padding: .35em 1.1em .35em .35em; border-radius: 99px; background: rgba(18,11,6,.82); border: 1px solid var(--cr-line); box-shadow: 0 .4em 1.2em rgba(0,0,0,.35); font-size: clamp(12px, 1.3cqw, 17px); opacity: 0; transform: translate(-50%, -.6em); transition: opacity .25s, transform .25s; pointer-events: none; contain: layout style; }
 .camel-call.show { opacity: 1; transform: translate(-50%, 0); }
 .camel-call-icon { width: 2.4em; height: 2.4em; flex: none; border-radius: 50%; background: #3a2a1a; border: 2px solid var(--cr-gold); object-fit: cover; }
 .camel-call-body { display: grid; line-height: 1.35; }
@@ -276,13 +278,13 @@
   .camel-call { max-width: 44%; font-size: max(clamp(12px, 1.3cqw, 17px), var(--cr-min)); }
   .camel-feedback small { font-size: max(clamp(13px, 1.7cqw, 20px), var(--cr-min)); }
   .camel-banner[data-kind="tired"] { font-size: max(clamp(16px, 2.4cqw, 24px), var(--cr-min)); }
-  /* 操作ボタン2つ: 高さ 96px（本編のステージ上）・幅は画面の 1/3。アイコン（🔊・⚡）を大きく、ゲージの字は 24px */
-  .camel-control { width: 33.3cqw; --rh: max(13.3cqh, var(--cr-tap)); min-height: var(--rh); gap: 1.4cqw; }
-  .camel-control-stack { width: 33.3cqw; }
-  .camel-control-icon { width: max(8.9cqh, calc(30px / var(--k, 1))); height: max(8.9cqh, calc(30px / var(--k, 1))); }
-  .camel-control-text { font-size: max(min(24px, 3.3cqh), var(--cr-min)); }
-  .camel-rhythm-bars { height: 1.2em; gap: .3em; } .camel-rhythm-bars i { width: .6em; }
-  .camel-stamina-bar { height: .7em; }
+  /* 操作ボタン2つ: スマホで押しやすいよう縦横に拡大（高さ 17.5cqh／実寸 58px 以上・幅 35.5cqw）。アイコン・ゲージも合わせる */
+  .camel-controls { --cr-control-width: 35.5cqw; left: 1.2cqw; right: 1.2cqw; bottom: 1.1cqw; }
+  .camel-control { --rh: max(17.5cqh, calc(58px / var(--k, 1))); gap: 1.4cqw; }
+  .camel-control-icon { width: max(11.5cqh, calc(38px / var(--k, 1))); height: max(11.5cqh, calc(38px / var(--k, 1))); }
+  .camel-control-text { font-size: max(min(28px, 3.9cqh), var(--cr-min)); }
+  .camel-rhythm-bars { height: 1.35em; gap: .32em; } .camel-rhythm-bars i { width: .68em; }
+  .camel-stamina-bar { height: .85em; }
   /* 遊び方・結果のカード: 字 18px（実寸 11px 以上）、6 枠は 2 列、ボタン 72px */
   .camel-card { width: min(760px, 100%); }
   .camel-card h2 { font-size: max(22px, calc(13px / var(--k, 1))); }
@@ -511,7 +513,7 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 
 /* 息の予告はムチのボタンのすぐ上に積む（2026-11-11。中央下は SUV とはじめを見せる）。色に加えて常に言葉でも示す。
    見た目は操作ボタンと同じ黒いゴムの筐体で、状態は左の帯の色（緑＝ふつう・琥珀＝少ない・朱＝減速／停止）。 */
-.camel-control-stack { display: flex; flex-direction: column; align-items: stretch; gap: .5cqw; width: 31cqw; pointer-events: none; }
+.camel-control-stack { display: flex; flex-direction: column; align-items: stretch; gap: .5cqw; width: var(--cr-control-width, 31cqw); pointer-events: none; }
 .camel-control-stack .camel-control { width: 100%; box-sizing: border-box; }
 .camel-pacing { display: grid; gap: .1em; padding: .35em .8em .35em 1em; border-radius: .5em; border: 1px solid rgba(255,255,255,.14); border-left: .32em solid #7fd9a6;
   background: linear-gradient(180deg, rgba(48,32,18,.92), rgba(20,13,7,.94)); color: #eafff3; text-align: left; font-size: max(clamp(11px, 1.08cqw, 14px), var(--cr-min, 11px)); font-weight: 800; line-height: 1.3; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,.35); }
@@ -681,3 +683,7 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 /* 結果の「次の目標」に足した行: ほめる言葉（金）・最下位が続いた時の一行 */
 .camel-next-praise b { margin-right: 14px; }
 .camel-next-ease { opacity: .9; }
+
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .camel-game.cr-gauge-frame .camel-stamina-bar { height: 1.1em; }
+}

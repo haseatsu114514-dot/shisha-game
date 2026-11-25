@@ -84,27 +84,30 @@ console.log('image preparation: PASS (abort, timeout, queued load, decoded reten
 }
 console.log('background preparation: PASS (yield, serial, stale, hidden, save-data, failure)');
 
-// The actual race loader used by the race entrance (visit/page), tutorial and START must share
-// optional art as well as the core art. Previously each call decoded it again.
+// The actual race loader used by the race entrance (visit/page) must share UI art as well as
+// the core and optional track art. Previously each call decoded the optional track art again.
 {
   const { readFile } = await import('node:fs/promises');
   const { runInNewContext } = await import('node:vm');
   const source = await readFile(new URL('../js/minigames/camel-race.js', import.meta.url), 'utf8');
-  const body = source.slice(source.indexOf('export function loadCamelArt()'), source.indexOf('/** 4頭それぞれの4コマに'));
+  const body = source.slice(source.indexOf('const UI_ART_CLASSES'), source.indexOf('/** 4頭それぞれの4コマに'));
   const files = { camel: ['camel'], jockey: 'jockey', suv: 'suv', wheel: 'wheel', track: 'track',
     balloon: 'balloon', dust: ['dust'], words: { start: 'start' }, pole: 'pole', sand: 'sand',
     posts: { start: 'post' }, rivalSuvs: ['rival'], marker: 'marker', road: 'road' };
-  let requests = 0;
-  class Image { set src(value) { requests++; } decode() { return Promise.resolve(); } }
-  const loader = runInNewContext(`let artTask = null; ${body.replace('export ', '')}; loadCamelArt`, {
+  const requests = [];
+  class Image { set src(value) { requests.push(value); } decode() { return Promise.resolve(); } }
+  const loader = runInNewContext(`${body.replace('export ', '')}; loadCamelArt`, {
     Image, ART_FILES: files, imgFileUrl: s => s, groundTiles: () => ({}), camelSkins: () => ({}),
+    prepareRivalSuvs: () => [], TUTORIAL: [{ art: 'howto-camel' }], CAMEL_CUPS: [{ id: 'practice' }],
   });
-  const first = loader(), count = requests;
-  assert(count > 10, 'fixture includes optional artwork');
+  const first = loader(), count = requests.length;
+  for (const file of ['dust', 'ui/camel_race/ui/remote-whip-pressed.webp', 'ui/camel_race/ui/howto-camel.webp', 'ui/camel_race/world/cup-practice.webp']) {
+    assert(requests.includes(file), `entrance preloads ${file}`);
+  }
   assert.equal(loader(), first, 'same promise while preparing');
   const value = await first;
   assert(value.camel, 'core art prepared');
   assert.equal(await loader(), value, 'same decoded art after completion');
-  assert.equal(requests, count, 'no repeated optional image requests/decodes');
+  assert.equal(requests.length, count, 'no repeated image requests/decodes');
 }
-console.log('camel preparation: PASS (optional/core art share one preparation)');
+console.log('camel preparation: PASS (UI and optional/core art share one preparation)');

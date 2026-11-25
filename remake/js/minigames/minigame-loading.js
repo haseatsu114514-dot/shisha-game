@@ -13,6 +13,6 @@ export function minigameLoadingOptions(save = state) {
   return { context: "craft", chapter: 1, isMet: null };
 }
 
-export function withMinigameLoading(prepare, { host, label }) {
-  return withLoading(prepare, { host, label, activity: !!state, ...minigameLoadingOptions() });
+export function withMinigameLoading(prepare, { host, label, signal } = {}) {
+  return withLoading(prepare, { host, label, signal, activity: !!state, ...minigameLoadingOptions() });
 }

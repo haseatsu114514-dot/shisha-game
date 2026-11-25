@@ -44,7 +44,7 @@ export function camelNextGoal(run, { mastered = false, best = null, struggling =
   if (topic === "rank" || Math.max(voice, stamina) > 0) {
     if (topic === "voice") {
       tip = stats.spam > 0 ? `連打をやめる（今回 ${stats.spam}回）`
-        : stats.miss > 0 && stats.miss * 2 >= (35 - parts.timing) / 2 ? `輪の無い時は声をかけない（今回 ${stats.miss}回・1回 −2点）`
+        : stats.miss > 0 && stats.miss * 2 >= (35 - parts.timing) / 2 ? `輪のない時は声をかけない（今回 ${stats.miss}回・1回 −2点）`
         : stats.lost > 0 ? `輪を見送らない（今回 ${stats.lost}回）`
         : `GOOD を PERFECT に（今回 GOOD ${stats.good}回）`;
     } else if (topic === "stamina") {

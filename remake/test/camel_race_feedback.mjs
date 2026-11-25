@@ -43,6 +43,7 @@ for (let seed = 1; seed <= 20; seed++) {
   assert.match(goodGoal.tip, /^伸びる所：GOOD を PERFECT に/, 'GOOD だけの走は声の助言');
   assert.match(camelNextGoal(run('none', 'rookie')).tip, /輪を見送らない/);
   assert.match(camelNextGoal(run('spam')).tip, /連打をやめる/);
+  assert.match(camelNextGoal({ ...good, parts: { ...good.parts, timing: 20 }, stats: { ...good.stats, spam: 0, miss: 5, lost: 0 } }).tip, /輪のない時は声をかけない/);
   assert.match(camelNextGoal(run('cruise')).tip, /LAST SPURT でムチを3秒以上/, 'ムチを使わない走はスパートの助言');
   assert.match(camelNextGoal(run('hold', 'expert')).tip, /息が切れたらムチを離す|LAST SPURT/, '押しっぱなしは順位ではなくムチの助言');
   // 評価の境目（S85・A70・B50）は採点と同じ。
