@@ -200,7 +200,9 @@ await suite("kuji-gacha", async check => {
     assert.deepEqual(await page.locator(".kuji-short .kuji-rank").allTextContents(), ["B賞", "S賞", "A賞", "C賞", "C賞", "B賞", "C賞", "C賞", "C賞", "C賞"]);
     assert.match(await page.locator(".kuji-short.rank-A .kuji-dupe").innerText(), /同\s*7,000円/);
     assert.equal(await page.locator(".kuji-short .kj-art").locator("img, .kj-gift").count() >= 10, true);
-    // 10枚がスクロールなしで一度に見える
+    // 10枚がスクロールなしで一度に見える。札の開く動き（はね返りで一瞬大きくなる）が終わってから測る（CI の重い時に動きの途中を測らない）
+    await page.locator(".kuji-multi-panel").evaluate(panel => Promise.all(panel.getAnimations({ subtree: true })
+      .filter(a => a.effect?.getComputedTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))));
     const fits = await page.locator(".kuji-multi-panel").evaluate(panel => panel.scrollHeight <= panel.clientHeight + 1 && panel.scrollWidth <= panel.clientWidth + 1);
     assert(fits, "10枚の結果がパネルに収まる");
     await page.locator(".kuji-multi-panel .kj-done").click();

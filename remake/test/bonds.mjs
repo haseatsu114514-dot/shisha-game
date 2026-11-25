@@ -86,7 +86,7 @@ try {
         out.push({ charm, pts, times, got: state.affinity.naru, legacy: Math.round(pts * mult) * times, carry: state.affinityCarry.naru });
       }
     }
-    // 占い（一度だけ ×2。台帳 URA03）
+    // 占い（一度だけ ×1.5。#4197・台帳 URA03）
     let state = fresh();
     state.story.rio = spots.VISIT_SEQ.rio.length;
     state.fortune = { char: "rio" };
@@ -124,7 +124,7 @@ try {
     assert(Math.abs(r.got + r.carry - r.legacy * 0.85) < 1e-6, `not 85%: ${JSON.stringify(r)}`);
   }
   assert.deepEqual(pace.out.filter((r) => r.pts === 1).map((r) => r.got), [85, 85, 85, 85, 85]);
-  assert.equal(pace.fortune.got, 17); assert.equal(pace.fortune.left, undefined); assert.equal(pace.fortune.second, 17 + 8); // 20×0.85=17、次は8.5の0.5を持ち越す
+  assert.equal(pace.fortune.got, 12); assert.equal(pace.fortune.left, undefined); assert.equal(pace.fortune.second, 12 + 9); // 占いは×1.5（#4197）: 15×0.85=12.75 → 12（0.75を持ち越す）、次は8.5＋0.75=9.25 → 9
   assert.equal(pace.lover.shop, 9, "lover affinity must not grow outside private scenes");
   assert.equal(pace.lover.after, 9 + 5 + 1); assert.equal(pace.lover.carry, 0);
   assert.deepEqual(pace.waiting, { level: 5, answer: null, due: null });

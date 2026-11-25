@@ -76,7 +76,9 @@ async function gatedImage(page, broken = false) {
   });
   await page.reload(); await page.locator('[data-test="title-new"]').waitFor();
   await page.locator('#boot').waitFor({ state: 'detached' });
-  await seen; return release;
+  // 章題の絵は起動時には先読みされず、再生を始めた時に読む。ここで要求を待つと永久に止まるため、
+  // 経路だけ止めておき、再生開始後の要求をこの門で止める（release で通す）。
+  void seen; return release;
 }
 
 await suite('ch1-title-motion', async check => {
