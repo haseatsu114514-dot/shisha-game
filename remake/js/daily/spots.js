@@ -747,7 +747,8 @@ export async function deliverToRival(spot) {
   }
 }
 
-export async function visitRival(spot) {
+/** expense: スミさんのおつかいの来店（第1章1日目の偵察）。一服の代金は店持ちで、所持金は減らさない（#4234 オーナー決定「配達中はお金が減らない」）。 */
+export async function visitRival(spot, { expense = false } = {}) {
   if (!spot || isClosed(spot)) return false;
   const owner = state;
   if (rivalDeliveryPending(spot.charId, owner)) return deliverToRival(spot);
@@ -759,7 +760,7 @@ export async function visitRival(spot) {
   const completed = await visitChar(spot.charId, { welcome });
   // 配達やチュートリアルの面識ではなく、自主来店の会話を終えてから地図に出す。
   if (completed && state === owner) {
-    addMoney(-(spot.cost || 0));
+    if (!expense) addMoney(-(spot.cost || 0));
     addStamina(spot.stamina || -16);
     state.flags[`_spot_guide_${spot.charId}`] = true;
   }
