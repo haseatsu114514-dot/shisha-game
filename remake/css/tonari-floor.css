@@ -640,7 +640,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-fever-fill { border-radius: 3px; display: block; height: 100%; width: 0; background: linear-gradient(90deg, #b87034, #e4a958); transition: width 0.5s linear; }
 .tf-bonus[data-fever="ready"] .tf-fever-fill { background: linear-gradient(90deg, #ff9d4a, #ffe59e); box-shadow: 0 0 8px #ffd98a88; }
 .tf-actions .tf-bonus[data-fever="ready"] { background-image: url("../img/ui/tonari-floor/bar-fever-ready.webp"); }
-.tf-actions .tf-bonus[data-fever="ready"]:not(:disabled) { filter: drop-shadow(0 0 3px #ffd98a) drop-shadow(0 0 10px #ffb45acc); animation: tf-ready 1.1s ease-in-out infinite; }
+.tf-actions .tf-bonus[data-fever="ready"]:not(:disabled) { filter: drop-shadow(0 0 3px #ffd98a) drop-shadow(0 0 10px #ffb45acc); }
 .tf-actions .tf-bonus[data-fever="ready"]:disabled { filter: saturate(0.78) brightness(0.9); animation: none; }
 .tonari-floor[data-fever="ready"] .tf-bonus-head b, .tonari-floor[data-fever="on"] .tf-bonus-head b { color: #fff1c4; }
 .tf-actions .tf-bonus[data-fever="ready"]:disabled .tf-bonus-head b { color: #d8c29e; }
@@ -649,8 +649,6 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-actions .tf-bonus[data-fever="on"] .tf-bonus-head b { font-size: 18px; }
 .tonari-floor[data-fever="on"] .tf-bonus-lamp { background-color: #8a6ad0; }
 .tf-bonus[data-fever="on"] .tf-fever-fill { background: linear-gradient(90deg, #b592ff, #f5ebff); box-shadow: 0 0 8px #d9c2ff99; }
-@keyframes tf-ready { 50% { scale: 1.04; } }
-
 /* ---- 接客の画面（卓へ行って対応する場面）と、帯の演出の間の店内 ---- */
 /* 寄った卓の札が上の帯に掛かるので、売上も引っ込める（選んでいる間は時間が止まっている） */
 /* 接客の画面（卓へ行って対応する間）は、店内の帯・一覧・卓の札・手応え・帯の演出を出さない（UI の上に UI を重ねない） */
