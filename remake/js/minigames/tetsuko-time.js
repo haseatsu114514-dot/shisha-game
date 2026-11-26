@@ -32,6 +32,13 @@ import { ART_READY, PROP_SURFACE_LIFT, hasPose, poseUrl, artAttrs, hasUi, tkIcon
 import { tetsukoTheme } from "./tetsuko-theme.js";
 import { HELP_TITLE, helpCard } from "./tetsuko-help.js";
 
+/** 訪問中の進行を読むだけの予告。終了・好感度の判定はモデルに任せる。 */
+export function tetsukoVisitNotice(session) {
+  if (session.ended) return "今日のふれあいはおしまい";
+  if (session.turns >= session.maxTurns - 2 || session.care >= session.goal * 2 / 3) return "そろそろおしまい";
+  return "";
+}
+
 export const TETSUKO_TIME = Object.freeze({
   id: "tetsuko_time",
   title: "てつこといっしょ",
@@ -307,7 +314,8 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
     const hearts = Array.from({ length: JOY_HEARTS }, () => el("i.tt-heart", { html: HEART_SVG + HEART_SVG }));
     const joyBar = el("div.tt-joy", { role: "img", dataset: { test: "tetsuko-joy" } }, hearts);
     const mood = el("span.tt-mood", { role: "img", title: moodText, "aria-label": moodText, dataset: { test: "tetsuko-mood", mood: session.mood } });
-    const status = el("div.tt-status", [joyBar, mood]);
+    const visitNotice = el("span.tt-visit-notice", { role: "status", hidden: true, dataset: { test: "tetsuko-visit-notice" } });
+    const status = el("div.tt-status", [joyBar, mood, visitNotice]);
     // -- 左下の札は上から、発見・撮影のお知らせ、てつこの反応、人物のセリフ。
     const text = el("p.tt-text.tt-caption-paper", { dataset: { test: "tetsuko-caption" } });
     const line = el("p.tt-line.tt-caption-paper", { hidden: true }, [el("b.tt-line-name"), el("span.tt-line-text")]);
@@ -461,6 +469,9 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
     }
     const canShoot = () => !done && !panel && !!session.moment && (!leaving || session.moment === "see_off");
     function renderButtons() {
+      const notice = tetsukoVisitNotice(session);
+      visitNotice.hidden = !notice;
+      if (visitNotice.textContent !== notice) visitNotice.textContent = notice;
       for (const item of DOCK) {
         const button = dockButtons[item.kind];
         const ok = canAct(session, item.kind);

@@ -465,6 +465,9 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-actions { display: grid; }
 /* 親指ボタンの出る端末では、二つのボタンは画面外の右へ移る（下の「画面外の右」）。列はミックスの一覧だけになる */
 .tonari-floor[data-gutter="true"] .tf-presets { grid-template-rows: minmax(0, 1fr); }
+.tf-presets:has(.tf-shuffle-notice:not([hidden])) { grid-template-rows: auto minmax(0, 1fr) auto; }
+.tonari-floor[data-gutter="true"] .tf-presets:has(.tf-shuffle-notice:not([hidden])) { grid-template-rows: auto minmax(0, 1fr); }
+.tf-shuffle-notice { margin: 0; padding: 6px 8px; border-radius: 8px; background: #fff1c4; color: #39251b; font-size: var(--tf-text); font-weight: 700; line-height: 1.35; }
 .tonari-floor[data-gutter="true"] .tf-actions { display: none; }
 .tf-preset-list { display: grid; grid-auto-rows: minmax(0, 1fr); gap: 5px; min-height: 0; }
 .tf-preset {

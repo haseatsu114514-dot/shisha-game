@@ -129,6 +129,48 @@ await suite("camel-judge-feedback", async check => {
     assert.equal(combo.childCount, 2);
   });
 
+  await check("good-timing-stays-with-combo", async page => {
+    await page.goto(new URL("camel-race.html?pilot=good", baseURL).href);
+    await startRace(page);
+    const first = await recorded(page, "GOOD");
+    assert.match(first.sub, /^少し[早遅]め$/);
+    const second = await recorded(page, "GOOD", 2);
+    assert.match(second.sub, /^少し[早遅]め\n2 COMBO$/);
+    assert.equal(await page.locator(".camel-feedback").count(), 1);
+  });
+
+  for (const reduced of [false, true]) await check(`result-input-guard-${reduced ? "reduced" : "normal"}`, async page => {
+    await page.goto(new URL("camel-race.html?pilot=perfect&speed=8", baseURL).href);
+    await page.locator(quick).click();
+    await page.evaluate(() => {
+      const game = document.querySelector('[data-test="camel-game"]');
+      window.__resultGuard = null;
+      const send = (type, key, repeat = false) => {
+        const event = new KeyboardEvent(type, { key: key === "Space" ? " " : key, code: key, repeat, bubbles: true, cancelable: true });
+        document.activeElement.dispatchEvent(event);
+        return event.defaultPrevented;
+      };
+      new MutationObserver((records, observer) => {
+        if (game.dataset.phase !== "result") return;
+        observer.disconnect();
+        const result = window.__resultGuard = { early: [send("keydown", "Space"), send("keyup", "Space"), send("keydown", "Enter")] };
+        setTimeout(() => {
+          result.held = [send("keydown", "Enter", true), send("keydown", "Enter"), send("keyup", "Enter")];
+          result.phase = game.dataset.phase;
+          result.done = true;
+        }, 900);
+      }).observe(game, { attributes: true, attributeFilter: ["data-phase"] });
+    });
+    await page.waitForFunction(() => window.__resultGuard?.done, null, { timeout: 60000 });
+    const guard = await page.evaluate(() => window.__resultGuard);
+    assert.deepEqual(guard.early, [true, true, true], "結果直後のSpace/Enterを消費する");
+    assert.deepEqual(guard.held, [true, true, true], "長押しはガード後も離すまで消費する");
+    assert.equal(guard.phase, "result");
+    await page.keyboard.press("Space");
+    await page.waitForFunction(() => window.__camelRace.fx.phase === "countdown" || window.__camelRace.fx.phase === "race");
+    assert.equal(await page.locator('[data-test="camel-result"]').count(), 0, "ガード後の新しいSpaceは再走できる");
+  }, { reducedMotion: reduced ? "reduce" : "no-preference" });
+
   await check("missed-cue", async page => {
     await page.goto(new URL("camel-race.html?pilot=none", baseURL).href);
     await startRace(page);
