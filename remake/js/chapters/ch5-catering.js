@@ -246,7 +246,8 @@ export async function performCateringSpot(spot, { staminaGuard } = {}) {
   if (state !== owner || !fit) return unused;
   const scene = DB.dialogues[cateringSceneId(repeat ? "repeat" : entry.id, fit)];
   const close = DB.dialogues[cateringCloseId(fit, cateringServedTotal(state))];
-  const result = await play({ ...scene, lines: [...scene.lines, ...(repeat ? [] : close.lines)] });
+  const wait = { speaker: "", face: "", text: "炭を起こして載せ、葉に熱が回るのを待った。" };
+  const result = await play({ ...scene, lines: [wait, ...scene.lines, ...(repeat ? [] : close.lines)] });
   if (state !== owner || !result || result.cancelled) return unused;
   const settled = settleCatering(state, index, n => grantKujiTickets(n, "delivery"), payCatering);
   if (!settled) return unused;

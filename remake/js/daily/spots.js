@@ -497,9 +497,9 @@ export function naruRiftActive(save = state) {
 
 /**
  * 届いたLIMEで知らせた臨時休暇は、その章・その日だけ店にも反映する。なるは対峙後、行き先を告げず修行へ出るため継続して休業にする。
- * 修行から戻った後の一度だけの来店（AFTER_CHAPTER_VISITS の naru）が残っている間だけは開ける。
+ * 修行から戻った後の一度だけの来店（AFTER_CHAPTER_VISITS の naru）と、再開済みの第5章では開ける。
  */
-export const naruShopClosed = (s = state) => naruRiftActive(s) && !afterChapterVisitDue("naru", s);
+export const naruShopClosed = (s = state) => s?.chapter !== 5 && naruRiftActive(s) && !afterChapterVisitDue("naru", s);
 export function isTemporaryClosed(spot) {
   return !!spot.charId && (
     state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter || 1}:${state.day}`

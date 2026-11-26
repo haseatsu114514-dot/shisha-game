@@ -161,9 +161,27 @@ choices = ['go', entry.options.findIndex(o => o.fit === 'best')];
 assert.equal((await C.performCateringSpot({ id: M.CATERING_SPOT_ID })).used, true);
 assert.equal(scenes[0], 'ch5_catering_repeat_intro');
 assert.equal(scenes[1].dialogue_id, 'ch5_catering_repeat_best');
-assert.equal(scenes[1].lines.length, DB.dialogues.ch5_catering_repeat_best.lines.length, '長い固有会話と店への帰還を繰り返さない');
+assert.deepEqual(Array.from(scenes[1].lines.slice(1)), DB.dialogues.ch5_catering_repeat_best.lines, '待ち描写に続けて短い汎用会話を読む');
 assert.equal(current.money, 1000 + entry.payout);
 assert.equal(M.cateringState(current).last.repeat, true);
+for (const repeat of [false, true]) for (const fit of ['best', 'ok', 'off']) {
+  reset();
+  if (repeat) completeRound();
+  ({ entry } = reserve('housewarming'));
+  current.day++;
+  choices = ['go', entry.options.findIndex(o => o.fit === fit)];
+  assert((await C.performCateringSpot({ id: M.CATERING_SPOT_ID })).used);
+  const key = repeat ? 'repeat' : entry.id;
+  const resultId = M.cateringSceneId(key, fit);
+  assert.equal(scenes.length, 2);
+  assert.equal(scenes[0], M.cateringSceneId(key, 'intro'));
+  assert.equal(scenes[1].dialogue_id, resultId);
+  const [wait, ...rest] = scenes[1].lines;
+  assert.equal(wait.speaker, '');
+  assert.equal(wait.text, '炭を起こして載せ、葉に熱が回るのを待った。');
+  assert.deepEqual(rest, [...DB.dialogues[resultId].lines, ...(repeat ? [] : DB.dialogues[M.cateringCloseId(fit, 0)].lines)]);
+  assert(!rest.some(line => line.text === wait.text), '同じ再生で待ち描写を繰り返さない');
+}
 reset(); completeRound(); ({ entry } = reserve('housewarming', true)); current.day++; current.slot = 1;
 C.settleCateringWork();
 const report = messages.find(m => /catering-done/.test(m.id));
