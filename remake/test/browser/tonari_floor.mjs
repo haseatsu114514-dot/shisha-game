@@ -91,6 +91,25 @@ async function setup(page, { day = 4, slot = 1, manual = true } = {}) {
   }, { day, slot, manual });
 }
 
+async function startVisitorOrder(page, name) {
+  await page.locator(t("option-start")).click();
+  const { ordered, lines } = await page.locator(t("log")).evaluate((log) => {
+    // 同じ刻みの出来事でも直近2行から流れるので、時計を進める間に追加された行を拾う。
+    const observer = new MutationObserver(() => {});
+    observer.observe(log, { childList: true });
+    try {
+      const ordered = C.until("s.tables[2].phase === 'order'", [3]);
+      const lines = observer.takeRecords().flatMap((record) => [...record.addedNodes].map((node) => node.textContent));
+      return { ordered, lines };
+    } finally {
+      observer.disconnect();
+    }
+  });
+  const announcement = `${name}が遊びに来た！ 3卓へ`;
+  assert(lines.includes(announcement), `「${announcement}」が表示される。実際のログ ${JSON.stringify(lines)}`);
+  assert(ordered, "3卓が注文待ちになる");
+}
+
 await suite("tonari-floor", async (check) => {
   const selected = process.env.TEST_CASES?.split(",");
   const run = (label, body, options = {}) => (!selected || selected.includes(label)
@@ -1155,8 +1174,7 @@ await suite("tonari-floor", async (check) => {
         art: C.data.bgUrl("res://assets/backgrounds/bg_tonari_inside.png", "night") }).then((r) => { window.result = r; });
     });
     const api = (fn, arg) => page.evaluate(({ fn, arg }) => new Function("a", "arg", `return (${fn})(a, arg)`)(C.view.floorTest.api, arg), { fn: fn.toString(), arg });
-    await page.locator(t("option-start")).click();
-    await page.evaluate(() => C.until("s.tables[2].phase === 'order'", [3]));
+    await startVisitorOrder(page, "アダム");
     const guest = await api((a) => a.state().guests[a.state().tables[2].guestId]);
     // その人だけの注文（TFL66）: 気分ではなく、好きなフレーバー（ダブルアップル）を名指しする
     assert.deepEqual([guest.charId, guest.name, guest.order.wish, guest.order.pref.label], ["adam", "アダム", "fresh", "ダブルアップル"]);
@@ -1164,9 +1182,9 @@ await suite("tonari-floor", async (check) => {
     assert.equal(await spot.getAttribute("data-rare"), "true");
     assert.match(await spot.locator(".tf-tag-who img").getAttribute("src"), /face_adam/);
     assert.equal(await spot.locator(".tf-bubble").evaluate((tag) => { tag.querySelectorAll(".tf-pop").forEach((n) => n.remove()); return tag.innerText.replace(/\s+/g, " ").trim(); }), "注文 ダブルアップル 3 9");
-    assert.match(await page.locator(t("log")).innerText(), /アダムが遊びに来た！ 3卓へ/);
     await page.locator(t("table-3")).click();
     await page.locator(t("sheet")).waitFor();
+    assert.equal(await page.locator(".tf-visit-info > b").innerText(), "アダム");
     assert.equal(await page.locator(".tf-sheet-quote").innerText(), "「……はじめよ。ダブルアップルを。宇宙の原点を、一台」");
     // ◎はダブルアップルの入った一台だけ。刺激系のメインでも、林檎が無ければ○
     const marks = await page.locator(".tf-mix-option").evaluateAll((list) => list.map((n) => [n.dataset.mix, n.dataset.rating]));
@@ -1214,11 +1232,10 @@ await suite("tonari-floor", async (check) => {
         Object.assign(s.flags, { _minto_identity_revealed: identity, _minto_name_known: nameKnown });
         window.visit = C.view.runTonariFloor({ seed: 3, level: 1, visitor: "minto" });
       }, { identity, nameKnown });
-      await page.locator(t("option-start")).click();
-      await page.evaluate(() => C.until("s.tables[2].phase === 'order'", [3]));
+      await startVisitorOrder(page, expected);
       const spot = page.locator('.tf-spot[data-id="3"]');
       assert.match(await spot.locator(".tf-tag-who img").getAttribute("src"), /face_minto_private/);
-      assert((await page.locator(t("log")).innerText()).includes(expected + "が遊びに来た"));
+      assert.equal(await spot.locator(".tf-tag-req").innerText(), "ミント");
       await page.locator(t("table-3")).click();
       assert.equal(await page.locator(".tf-visit-info > b").innerText(), expected);
       assert.match(await page.locator(".tf-visit-who img").getAttribute("src"), /face_minto_private/);

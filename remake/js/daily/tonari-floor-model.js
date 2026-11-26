@@ -29,7 +29,7 @@ const T = Object.freeze({
   billGrace: 16, cool: 6, // 会計を待ってくれる長さ・会計のあと次の客が入れるまで
   lastCall: 40, // 閉店までこの刻みを切ったら、新しい客は来ない
   fever: 30, feverDrink: 10, feverFirstDrink: 3,
-  shuffle: 4, // 基本2秒。その間もフロアの時計は進む
+  shuffle: 4, // 基本2秒（Issue #4255）。その間もフロアの時計は進む
 });
 /** 炭の残りがこの割合を切ったら、調整どき（自分から行ける）。 */
 const TEND_FROM = 0.35;
