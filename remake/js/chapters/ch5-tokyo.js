@@ -24,7 +24,7 @@ import { tokyoVanBlock, TOKYO_VAN_SLOTS } from "./ch5-travel.js";
 import { openShop } from "../daily/shop.js";
 import { TOKYO_VISIT_COST, quietTurn } from "../daily/spots.js";
 import { modal } from "../core/ui.js";
-import { runMukaiShift, loadMukaiShift, MUKAI_SHIFT_STAMINA, mukaiShiftPay } from "./tokyo-mukai.js";
+import { runMukaiShift, loadMukaiShift, MUKAI_SHIFT_STAMINA, mukaiShiftPayText } from "./tokyo-mukai.js";
 import { loverMilestonesDue, prepareLoverMilestones, readLoverMilestone } from "./lover-entry.js";
 import { reflectAt } from "../daily/reflection.js";
 import { TOKYO_OUTINGS, outingDialogueId, outingCounts, OUTINGS_FLAG } from "./ch3-outing-progress.js";
@@ -59,7 +59,7 @@ const rivalSpot = fields => Object.freeze(Object.defineProperty({ region: TOKYO,
 export const TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch5_tokyo_mukai", label: "mukai", area: "高架下の商店街", x: 29.6, y: 62.7, theme: "baito", glyph: "店", face: "mukai_master",
     preview: "bg_mukai_shop", stamina: MUKAI_SHIFT_STAMINA, shift: true, talks: ["ch5_tokyo_mukai_help", "ch5_tokyo_mukai_help_b", "ch5_tokyo_mukai_help_c"],
-    desc: "ムカイさんの店のシフト。日当は大会実績で変わる。帰りに裏口のてつこにも会える。" }),
+    desc: "ムカイさんの店のシフト（店番）。帰りに裏口のてつこにも会える。" }),
   rivalSpot({ id: "ch5_tokyo_steve", charId: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙", face: "steve",
     preview: "bg_steve_shop", stamina: -16, stat: "technique",
     talks: chapterFiveTalkIds("ch5_tokyo_steve"), desc: "タイマーの並ぶ店。二口目までの一台。" }),
@@ -120,7 +120,7 @@ const chainPin = (entry, value) => (chainStageAt(value, entry.id)
   : entry;
 /** 東京の地図に出す今の行き先（帰りの配送便は昼だけ）。 */
 export const tokyoSpotsNow = (value = state) => TOKYO_SPOTS.map(entry => entry.id === HOME_ID ? vanPin(entry, value)
-  : entry.id === "ch5_tokyo_mukai" ? Object.freeze({ ...chainPin(entry, value), desc: `ムカイさんの店のシフト（日当${mukaiShiftPay(value).toLocaleString("ja-JP")}円）。帰りに裏口のてつこにも会える。` })
+  : entry.id === "ch5_tokyo_mukai" ? Object.freeze({ ...chainPin(entry, value), desc: `ムカイさんの店のシフト（店番・${mukaiShiftPayText(value)}）。帰りに裏口のてつこにも会える。` })
   : chainPin(entry, value));
 
 export const inTokyo = (value = state) => value?.flags?._ch2_region === TOKYO;
@@ -267,7 +267,7 @@ export async function performTokyoSpot(spot, { staminaGuard, holdSaveUntilAction
     if (friendTalk && !loverTime) {
       const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
         { label: "ましろちゃんと話す", value: "friend", test: "tokyo-mukai-friend", primary: friendTalk.kind === "story" },
-        { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
+        { label: `シフトに入る（店番・${mukaiShiftPayText(state)}）`, value: "shift", test: "tokyo-mukai-shift" },
         { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
       if (!pick || state !== owner) return { used: false, exerted: false };
       if (pick === "friend") {
@@ -286,7 +286,7 @@ export async function performTokyoSpot(spot, { staminaGuard, holdSaveUntilAction
     if (loverTime) {
       const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
         { label: "ましろちゃんと過ごす（恋人）", value: "lover", test: "tokyo-mukai-lover", primary: true },
-        { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
+        { label: `シフトに入る（店番・${mukaiShiftPayText(state)}）`, value: "shift", test: "tokyo-mukai-shift" },
         { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
       if (!pick || state !== owner) return { used: false, exerted: false };
       if (pick === "lover") {
@@ -303,7 +303,7 @@ export async function performTokyoSpot(spot, { staminaGuard, holdSaveUntilAction
       // G3 の追加: ましろと顔見知りで、♥5後の場面も恋人の時間も無い時は、小会話（ch5_tokyo_mashiro*）を巡回して読める。
       const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
         { label: "ましろちゃんと話す", value: "talk", test: "tokyo-mukai-friend", primary: true },
-        { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
+        { label: `シフトに入る（店番・${mukaiShiftPayText(state)}）`, value: "shift", test: "tokyo-mukai-shift" },
         { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
       if (!pick || state !== owner) return { used: false, exerted: false };
       if (pick === "talk") {
@@ -322,7 +322,7 @@ export async function performTokyoSpot(spot, { staminaGuard, holdSaveUntilAction
       }
     }
     if (staminaGuard && !(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
-    if (!await chapterFiveMukaiShift(owner)) return { used: false, exerted: false };
+    if (!await chapterFiveMukaiShift(owner, { holdSaveUntilActionEnds })) return { used: false, exerted: false };
     await offerTetsuko(owner);
     return { used: true, exerted: true };
   }
@@ -412,10 +412,11 @@ async function goHome(owner, holdSaveUntilActionEnds) {
  * mukai のシフト（VOL09。chapters/tokyo-mukai.js と第3章の東京で共通）。導入はムカイさんとの小会話を巡回して読む。
  * ムカイさんの LIME で呼ばれた日は called（日当に上乗せ）。
  */
-export async function chapterFiveMukaiShift(owner = state, { called = false } = {}) {
+export async function chapterFiveMukaiShift(owner = state, { called = false, holdSaveUntilActionEnds = null } = {}) {
   const entry = TOKYO_SPOTS.find(item => item.shift);
   const talks = state.flags[TALKS_FLAG] ||= {};
   const scene = entry.talks[(talks[entry.id] || 0) % entry.talks.length];
+  holdSaveUntilActionEnds?.();
   const done = await runMukaiShift({ called, intro: () => read(scene, entry.preview, owner) });
   if (!done || state !== owner) return false;
   talks[entry.id] = (talks[entry.id] || 0) + 1;

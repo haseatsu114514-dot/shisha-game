@@ -91,8 +91,9 @@ export const FLOOR_ART = Object.freeze({
 /** 相対パスの絵を、このファイルから見た URL にする（data: や http(s): はそのまま）。 */
 export const artUrl = (src) => (!src ? null : /^(data:|blob:|https?:|\/)/.test(src) ? src : new URL(src, import.meta.url).href);
 
-/** いま使う舞台。検査や配置図では stage を直接渡す。 */
-export const currentStage = (stage = null) => stage || STAGES[FLOOR_ART.stage] || STAGES.classic;
+/** いま使う舞台。文字列の舞台ID（STAGES のキー）でも舞台オブジェクトでも渡せる。 */
+export const currentStage = (stage = null) =>
+  (typeof stage === "string" ? STAGES[stage] : stage) || STAGES[FLOOR_ART.stage] || STAGES.classic;
 
 /** 卓の中心（キーボードで卓を移る時の位置）。 */
 export const spotCenter = (spot) => spot.seat || [spot.box[0] + spot.box[2] / 2, spot.box[1] + spot.box[3] / 2];

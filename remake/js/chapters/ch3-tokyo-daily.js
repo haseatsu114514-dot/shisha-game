@@ -38,7 +38,7 @@ import { loverMilestonesDue, prepareLoverMilestones, readLoverMilestone, pending
 import { mashiroTimeOpen, spendMashiroTime } from "./mashiro-time.js";
 import { petitAfterDate } from "../daily/petit-shuraba.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
-import { runMukaiShift, loadMukaiShift, mukaiShiftPay, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
+import { runMukaiShift, loadMukaiShift, mukaiShiftPayText, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
 import { addRoamerSpots } from "../daily/roamers.js";
 import { openTetsukoTime, settleTetsukoTime, tetsukoVisitKey, tetsukoPlayedToday } from "../minigames/tetsuko-time.js";
 import { chainStageAt } from "./visit-chains.js";
@@ -451,7 +451,7 @@ const MUKAI_SHIFT_EXP = Object.freeze({ key: "tokyo:mukai_help", place: "tokyo:m
 const GYM_EXP = Object.freeze({ key: "tokyo:gym", place: "tokyo:gym" });
 const OPTIONAL_HOST = Object.freeze({ mukai: "mashiro", enmaku: "ayatori", steve: "steve", volk: "volk" });
 
-async function performTokyoSpot(entry, io, { staminaGuard }) {
+async function performTokyoSpot(entry, io, { staminaGuard, holdSaveUntilActionEnds } = {}) {
   if (entry.region !== TOKYO) return null;
   const owner = state;
   await refreshOptional();
@@ -474,7 +474,7 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
   }
   if (entry.place === "park") return goOuting(outingById("park_walk"), staminaGuard, owner);
   if (entry.place === "gym") return goGym(entry, staminaGuard, owner);
-  if (entry.place === "mukai") return withLesson(await visitMukai(io, staminaGuard, owner), entry.teacher, owner);
+  if (entry.place === "mukai") return withLesson(await visitMukai(io, staminaGuard, owner, holdSaveUntilActionEnds), entry.teacher, owner);
   return withLesson(await visitRivalShop(entry, io, staminaGuard, owner), entry.teacher, owner);
 }
 
@@ -593,7 +593,7 @@ async function readRivalFinale(who, place, staminaGuard, owner) {
  * mukai: 店を手伝う（日当）・ましろちゃんとの時間（寄り道・♥3の質問・締めくくり・恋人の節目）・店番・作業台。
  * 行動を使った帰りに、裏口のてつこの様子を見ていける（行動は使わない・体力が少し戻る。VOL11）。
  */
-async function visitMukai(io, staminaGuard, owner) {
+async function visitMukai(io, staminaGuard, owner, holdSaveUntilActionEnds = null) {
   // 恋人のましろとは、節目が無い日も一日に一度いっしょに過ごせる（BLC03・chapters/mashiro-time.js）。
   // 締めくくりを友人として迎えた後は、♥5後の場面を「ましろちゃんと話す」で読む（#3693。5本の後は短い汎用）。
   const loverReady = await prepareLoverMilestones(["mashiro"]);
@@ -607,7 +607,7 @@ async function visitMukai(io, staminaGuard, owner) {
   const options = [
     ...(bond ? [{ label: bond === "lover" ? "ましろちゃんと過ごす（恋人）" : ["question", "after"].includes(bond) ? "ましろちゃんと話す" : "ましろちゃんに呼ばれる", value: `bond:${bond}` }] : []),
     ...scenes.map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
-    ...outings.map(outing => ({ label: outing.id === "mukai_help" ? `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）` : outing.label, value: `outing:${outing.id}` })),
+    ...outings.map(outing => ({ label: outing.id === "mukai_help" ? `シフトに入る（店番・${mukaiShiftPayText(state)}）` : outing.label, value: `outing:${outing.id}` })),
     ...trials.map(trial => ({ label: `作業台で${trial.label}（時間は進まない）`, value: `trial:${trial.id}` })),
     ...chainOptions("mukai"),
   ];
@@ -624,25 +624,23 @@ async function visitMukai(io, staminaGuard, owner) {
   if (kind === "bond") result = await readMashiroBond(id, staminaGuard, owner);
   else if (kind === "scene") result = await readOptionalHere(io, optional.find(scene => scene.id === id), staminaGuard, owner);
   else if (kind === "chain") result = await readChainHere("mukai", staminaGuard, owner);
-  else if (id === "mukai_help") result = await (await staminaGuard(MUKAI_SHIFT_STAMINA) ? mukaiShift(owner) : false)
+  else if (id === "mukai_help") result = await (await staminaGuard(MUKAI_SHIFT_STAMINA) ? mukaiShift(owner, { holdSaveUntilActionEnds }) : false)
     ? { used: true, exerted: true, exp: MUKAI_SHIFT_EXP } : unused;
   else result = await goOuting(outingById(id), staminaGuard, owner);
   if (result.used && state === owner) await offerTetsuko(owner);
   return result;
 }
 
-/** mukai のシフト（VOL09）。導入は手伝いの場面（味が戻る前後で読み分け）。回数は手伝いの記録に数える。 */
-async function mukaiShift(owner, { called = false } = {}) {
+/** mukai のシフト（VOL09・Issue #4254）。導入は手伝いの場面（味が戻る前後で読み分け）→ フロア営業（店番）。回数は手伝いの記録に数える。 */
+async function mukaiShift(owner, { called = false, holdSaveUntilActionEnds = null } = {}) {
   const help = outingById("mukai_help");
   if (!help || state !== owner) return false;
   const sceneId = outingDialogueId(state, help);
-  const intro = async () => {
-    const ok = await readPlain(sceneId, "bg_mukai_shop", owner);
-    if (ok) earnSceneCompletion(sceneId, owner); // 手伝いの導入（味が戻る前・後）の初完読は X5。注文を選ばずにやめたら確定しない
-    return ok;
-  };
+  holdSaveUntilActionEnds?.();
+  const intro = () => readPlain(sceneId, "bg_mukai_shop", owner);
   const done = await runMukaiShift({ called, intro });
   if (!done || state !== owner) return false;
+  earnSceneCompletion(sceneId, owner); // 手伝いの導入（味が戻る前・後）の初完読は X5。店番を完走した時だけ確定
   recordChapterThreeOuting(state, "mukai_help"); // 手伝いの回数（味が戻った後の回数も）
   return true;
 }
