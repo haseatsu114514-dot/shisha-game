@@ -108,7 +108,7 @@ await suite("desert-ride-feel", async check => {
     assert.equal(await page.locator(".dr-time").innerText(), goal.finish.toFixed(1), "the clock shows the finish time while the rider glides on");
     // ゴールした後の差は、距離ではなく結果と同じ秒差で出す（2026-11-13 オーナー「ライバルとの時差も距離に対してリアリティがない」）
     const gapLabel = await page.locator(t("desert-race-gap")).innerText(), result = await ride(page, () => window.__desertRide.game.race);
-    assert.equal(gapLabel, result.won ? `ヌールに ${result.gap.toFixed(1)}秒差` : `ヌールの勝ち ＋${result.gap.toFixed(1)}秒`, "the HUD shows the same gap as the result");
+    assert.equal(gapLabel, result.won ? `ヌールに ${result.gap.toFixed(1)}秒差` : `ヌールの勝ち +${result.gap.toFixed(1)}秒`, "the HUD shows the same gap as the result");
     await page.keyboard.press("Space"); // 余韻は飛ばせる
     await phase(page, "result");
     assert.equal(await ride(page, () => window.__desertRide.results.length), 1, "skipping does not record twice");
