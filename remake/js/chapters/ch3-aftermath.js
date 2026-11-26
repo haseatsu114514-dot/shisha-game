@@ -2,12 +2,12 @@ import { guardCompletionCardInput, trackCompletionTaps } from "./completion-card
 // 全国大会の勝利後。結果発表は大会ランナーが読了・保存し、ここでは再生しない。
 import { DB, bgUrl, displayName, loadConfessionDialogue } from "../core/data.js";
 import { el } from "../core/util.js";
-import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { state, save, requestResumeOnBoot } from "../core/state.js";
 import { completionActions } from "../core/chapter-actions.js";
+import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterDay } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, enterScene, modal, toast, withChapterLoading, withSceneLoading } from "../core/ui.js";
-import { saveFlow, loadFlow } from "../scenes/saves.js";
-import { glossaryPanel } from "../vn/glossary.js";
+import { layers, showScreen, setBg, enterScene, toast, withChapterLoading, withSceneLoading } from "../core/ui.js";
+import { saveFlow } from "../scenes/saves.js";
 import { playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -45,39 +45,9 @@ async function perform(owner, action) {
   } finally { owner.busy = false; }
 }
 
-async function openMenu(owner) {
-  if (!live(owner) || owner.menuBusy) return;
-  owner.menuBusy = true;
-  try {
-    const choice = await modal({ title: "第三章 MENU", body: "読み終えた場面から再開できます。", options: [
-      { label: "セーブ", value: "save", test: test("save") },
-      { label: "ロード", value: "load", test: test("load") },
-      { label: "設定", value: "config", test: test("config") },
-      { label: "用語集", value: "glossary", test: test("glossary") },
-      { label: "タイトルへ戻る", value: "title", test: test("title") },
-      { label: "閉じる", value: null, primary: true },
-    ] });
-    if (!live(owner)) return;
-    if (choice === "save") await saveFlow();
-    if (choice === "config") await (await import("../scenes/title.js")).openConfig();
-    if (choice === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
-    if (choice === "load") {
-      const key = await loadFlow({ inGame: true });
-      if (key && loadFromSlot(key)) {
-        owner.active = false;
-        owner.controller?.abort();
-        requestResumeOnBoot();
-        location.reload();
-      }
-    }
-    if (choice === "title") {
-      save();
-      owner.active = false;
-      owner.controller?.abort();
-      location.reload();
-    }
-  } finally { owner.menuBusy = false; }
-}
+const openMenu = createChapterMenu({
+  current: live, test, title: "第三章 MENU", glossaryAvailable: () => true,
+});
 
 function menuButton(owner) {
   return el("button.btn", { type: "button", text: "MENU", dataset: { test: test("menu") },

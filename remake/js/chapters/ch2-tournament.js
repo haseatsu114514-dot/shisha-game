@@ -10,13 +10,14 @@ import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FIL
 import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { el, yen } from "../core/util.js";
 import { completionActions, createChapterActions } from "../core/chapter-actions.js";
+import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterRecoveryActions } from "../core/chapter-recovery.js";
 import { ChapterSaveError } from "../core/chapter-save.js";
-import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { state, save, markMet } from "../core/state.js";
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { difficultyEvidence } from "../core/cycle-start.js";
-import { layers, showScreen, setBg, enterScene, modal, imageReady, withChapterLoading } from "../core/ui.js";
-import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { layers, showScreen, setBg, enterScene, imageReady, withChapterLoading } from "../core/ui.js";
+import { saveFlow } from "../scenes/saves.js";
 import { maxStamina } from "../core/stats.js";
 import { awardTournamentExp, awardChapterClearExp } from "../core/growth.js";
 import { recordTournamentLoss, retryAssistOffer, applyRetryAssistChoice } from "./retry-assist.js";
@@ -71,27 +72,11 @@ const { button, perform } = createChapterActions({ current: live, test: id, logN
 function menuButton(owner) {
   return el("button.btn.ch2-tournament-menu", { type: "button", text: "MENU", dataset: { test: id("menu") }, onclick: () => openMenu(owner) });
 }
-async function openMenu(owner) {
-  if (!live(owner) || owner.menuBusy) return;
-  owner.menuBusy = true;
-  try {
-    const choice = await modal({ title: "県大会 MENU", body: "途中の工程は、その工程の始めから再開できます。", options: [
-      { label: "セーブ", value: "save", test: id("save") },
-      { label: "ロード", value: "load", test: id("load") },
-      { label: "大会の規則", value: "rules", test: id("rules") },
-      { label: "タイトルへ戻る", value: "title", test: id("title") },
-      { label: "閉じる", value: null, primary: true },
-    ] });
-    if (!live(owner)) return;
-    if (choice === "save") await saveFlow();
-    if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
-    if (choice === "load") {
-      const key = await loadFlow({ inGame: true });
-      if (key && loadFromSlot(key)) { owner.active = false; owner.continueRoot?.cleanupContinue(); owner.controller?.abort(); requestResumeOnBoot(); location.reload(); }
-    }
-    if (choice === "title") { save(); owner.active = false; owner.continueRoot?.cleanupContinue(); owner.controller?.abort(); location.reload(); }
-  } finally { owner.menuBusy = false; }
-}
+const openMenu = createChapterMenu({
+  current: live, test: id, title: "県大会 MENU", body: "途中の工程は、その工程の始めから再開できます。",
+  showConfig: false, rulesAvailable: () => true, rulesLabel: "大会の規則",
+  onLeave: owner => owner.continueRoot?.cleanupContinue(),
+});
 function hud(owner, visible = false) {
   layers.hud.replaceChildren(...(visible ? [el("div.ch2-tournament-vn-menu", [menuButton(owner)])] : []));
   layers.hud.classList.toggle("show", visible);
