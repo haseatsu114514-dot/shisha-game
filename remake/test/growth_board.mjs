@@ -182,7 +182,8 @@ for (const k of board.BOARD_KEYS) {
   // 色の台座（SBD89）: 色の火をはめると先へ進めて、台座の能力も手に入る。各盤の4つの台座に、その盤の4つの能力を1つずつ。台座1つ＝台座の先のマス×4/3
   for (const k of board.BOARD_KEYS) {
     const gates = board.boardNodes(k).filter((n) => n.kind === "gate");
-    assert.deepEqual(gates.map((g) => g.perk).sort(), Object.keys(board.SQUARE_PERKS[k].perks).sort(), `${k}: 台座の能力は盤の4つの能力を1つずつ`);
+    assert.deepEqual(gates.map((g) => g.perk).sort(), { body: ["charm", "sleep", "stage", "stamina"],
+      sense: ["breath", "dodge", "heat", "pull"], wisdom: ["coal", "gauge", "leaf", "tongue"] }[k], `${k}: 台座の能力は盤の4つの能力を1つずつ`);
     for (const g of gates) {
       const p = board.perkOf(g), u = Number(/[\d.]+/.exec(board.SQUARE_PERKS[k].perks[g.perk].text)[0]);
       assert.equal(p.tierName, "色の台座");
@@ -198,6 +199,20 @@ for (const k of board.BOARD_KEYS) {
   assert.equal(board.perkOf(notable).notable.name, "不眠の体");
   assert.equal(board.perkOf(notable).text, "寝た時の体力の回復 ＋9%（端数は次の睡眠へ）", "要のマスは帯の倍率×1.5（SBD73）。眠りの単位は2%（2026-11-02 補正）");
   for (const n of board.NODES.filter((x) => x.kind === "stat" && !x.peak)) assert(board.SQUARE_PERKS[n.board].perks[n.perk], `${n.id}: 恩恵が決まっている`);
+}
+// 店番の能力は近くと台座の先に分け、同じ帯の能力2マス分を1マスに集約する。
+for (const [key, boardKey, ids, amounts] of [
+  ["floorRare", "body", ["B8", "B22"], [2, 3]],
+  ["floorTop", "sense", ["S9", "S16"], [4, 6]],
+  ["floorMatch", "wisdom", ["W7", "W16"], [8, 12]],
+]) {
+  const total = (ids) => board.perkTotals(boardKey, new Set(ids)).find((p) => p.key === key).sum;
+  assert.deepEqual(ids.map((id) => total([id])), amounts);
+  assert.equal(total(ids), amounts[0] + amounts[1]);
+  assert.deepEqual(ids.map((id) => N[id].band), [1, 3]);
+}
+for (const [id, value] of Object.entries({ B2: 8, B17: 1.8, S3: 12, S14: 18, W1: 4, W13: 6 })) {
+  assert.equal(Number(/[\\d.]+/.exec(board.perkOf(N[id]).text)[0]), value);
 }
 assert.deepEqual(board.HIDANE_NAME, { any: "白火", body: "紅火", sense: "蒼火", wisdom: "翠火" }, "火種の名前（SBD62）");
 
