@@ -10,7 +10,7 @@ import { newState } from "../js/core/state.js";
 import { TOKYO_OUTINGS, OUTINGS_FLAG } from "../js/chapters/ch3-outing-progress.js";
 import { classifyFlag } from "../js/core/carry.js";
 import { TETSUKO_TIME, TETSUKO_STAMINA, TETSUKO_CAMERA, TETSUKO_TOY_VIEW, TETSUKO_LEAP, WATCH_IDLE_MS, tetsukoCameraFor, tetsukoToyCamera, petZoneAt,
-  settleTetsukoTime, tetsukoVisitKey, tetsukoPlayedToday, openTetsukoTime } from "../js/minigames/tetsuko-time.js";
+  settleTetsukoTime, tetsukoVisitKey, tetsukoPlayedToday, openTetsukoTime, tetsukoVisitNotice } from "../js/minigames/tetsuko-time.js";
 import {
   TETSUKO_TIME_FLAG, MOODS, MOMENTS, PROPS, SLOTS, ALBUM_LIMIT, PET_REST_STREAK, PLAY_PAW, PLAY_AUTO_CATCH, AUTO_DELAY,
   JOY, JOY_MAX, JOY_HEARTS, VISIT_JOY, VISIT_GOAL, VISIT_TURNS, CARE, CARE_CAP, PET_ZONES, SWEET_ZONES, WISH_PATIENCE,
@@ -23,6 +23,22 @@ import { on } from "../js/core/bus.js";
 import { measure } from "../tools/balance/tetsuko_hearts.mjs";
 
 const CAT = TOKYO_OUTINGS.find(item => item.id === "tetsuko");
+// 予告は訪問の残りや手応えを読むだけ。+0/+1の終わり方や保存対象には触れない。
+for (let day = 36; day < 44; day += 1) {
+  const session = createSession(save({ day }));
+  assert.equal(tetsukoVisitNotice(session), "");
+  session.turns = session.maxTurns - 2;
+  const before = JSON.stringify(session);
+  assert.equal(tetsukoVisitNotice(session), "そろそろおしまい");
+  assert.equal(JSON.stringify(session), before);
+  session.turns = 1;
+  session.care = Math.ceil(session.goal * 2 / 3);
+  assert.equal(tetsukoVisitNotice(session), "そろそろおしまい");
+  for (const reason of ["none", "up", "full"]) {
+    session.ended = true; session.endReason = reason;
+    assert.equal(tetsukoVisitNotice(session), "今日のふれあいはおしまい");
+  }
+}
 /** 第3章・東京の一日。来訪回数と面識を決めたセーブ。 */
 function save({ count = 0, day = 40, slot = 1, mashiro = true, record } = {}) {
   const value = newState();

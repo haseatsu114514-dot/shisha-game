@@ -181,6 +181,7 @@ export function runTonariFloor({
   };
   let mode = "intro"; // intro → live ⇄ panel / pause / cutin → closing → result
   let panel = null, selected = 1, speed = 1, active = true, leaving = false, outerMenu = false;
+  let shuffleReturn = null; // 表示だけの復帰先。同じ卓の次の客へ案内を持ち越さない。
   let carry = 0, lastAt = 0, timer = null, bannerTimer = null, verdictTimer = null, cutinTimer = null, bandTimer = null, lastHint = "", salesMark = 0;
   let feverBgm = null; // フィーバー中だけ、前に流れていた曲の名前を持つ（明けたらその曲へ戻す）
   // 手応えの演出（TFL46）: 売上の数字の回り方・フィーバーで増えた売上・いまの調子・残り10秒の刻み・ラストオーダーの知らせ
@@ -301,8 +302,9 @@ export function runTonariFloor({
     ]);
     // 右の列は、画面の上の端から下の端まで。上にミックスの一覧、下にシャッフル。
     const actions = el("div.tf-actions", {}, [shuffleButton]);
+    const shuffleNotice = el("p.tf-shuffle-notice", { hidden: true, role: "status", dataset: test("shuffle-notice") });
     const side = el("aside.tf-presets", { "aria-label": "ミックスの一覧とシャッフル", dataset: { ...test("presets"), busy: "false" } }, [
-      el("div.tf-preset-box", {}, [handList, busyCover]), actions,
+      shuffleNotice, el("div.tf-preset-box", {}, [handList, busyCover]), actions,
     ]);
     // 出来事の行とはじめの心の声は下の帯の中央（押すと、心の声が指す卓へ）。
     const logLines = el("div.tf-log", { "aria-hidden": true, dataset: test("log") });
@@ -721,6 +723,13 @@ export function runTonariFloor({
       for (const spot of refs.spots) spot.root.dataset.target = String(String(target?.id || "") === spot.root.dataset.id);
       // 入れ替えの最中は、一覧を隠して進みを出す（ミックスは出せない）
       const wait = floorShuffleLeft(state);
+      const returnTable = shuffleReturn && state.tables.find(table => table.id === shuffleReturn.tableId);
+      if (!returnTable || returnTable.guestId !== shuffleReturn.guestId || returnTable.phase !== "order") shuffleReturn = null;
+      shuffleNotice.hidden = !shuffleReturn;
+      const notice = shuffleReturn ? (wait > 0
+        ? `注文タイマー再開・入れ替え後は${shuffleReturn.tableId}卓へ`
+        : `注文タイマー進行中・${shuffleReturn.tableId}卓へ戻ろう`) : "";
+      if (shuffleNotice.textContent !== notice) shuffleNotice.textContent = notice;
       side.dataset.busy = String(wait > 0);
       for (const row of handList.children) row.disabled = wait > 0;
       const progress = `${Math.round((1 - wait / venueShuffle) * 100)}%`;
@@ -852,9 +861,12 @@ export function runTonariFloor({
       if (!perform({ type: "order", tableId: target.id, mix: mixId })) SE.error();
     }
     function doShuffle() {
+      const target = floorOrderTarget(state, selected);
       if (!perform({ type: "shuffle", tableId: selected })) { SE.error(); return; }
+      shuffleReturn = target ? { tableId: target.id, guestId: target.guestId } : null;
       // 入れ替えには時間がかかるので、列は閉じて店へ戻る（その間に、ほかの卓を見られる）
       if (mode === "panel" && panel?.kind === "order") closePanel({ cancel: false });
+      syncHand();
     }
 
     function useFever() {

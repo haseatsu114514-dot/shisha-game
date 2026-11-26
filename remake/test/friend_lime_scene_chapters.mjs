@@ -89,6 +89,9 @@ for (const chapter of [1, 2, 3, 4, 5, 6, "1", "3", undefined, null, 0, false, Na
   assert.equal(first.length, 1, "友人が居なくても知り合いの雑談が1通届く");
   assert.ok(first[0].casual && first[0].type === "chat" && !first[0].replies?.length, "読むだけ");
   assert.equal(entry.pendingFriendLime({ exclude: ["adam", "kumicho"] }).length, 0, "同行者・会えている相手は送ってこない");
+  t.inbox.push({ id: first[0].id, day: t.day, msg: first[0], read: false, done: false });
+  assert(!entry.pendingFriendLime().some(message => message.id === first[0].id), "配信済みの未読は再配信しない");
+  t.inbox.pop();
   const sender = first[0].sender;
   const seen = [];
   for (let i = 0; i < 6; i++) {

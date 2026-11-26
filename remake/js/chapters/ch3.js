@@ -3,16 +3,16 @@ import { DB, bgUrl, displayName, loadConfessionDialogue } from "../core/data.js"
 import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterRecoveryActions } from "../core/chapter-recovery.js";
 import { ChapterSaveError } from "../core/chapter-save.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardSceneExp, consultLessons, readyLessons } from "../core/growth.js";
-import { state, save, loadFromSlot, requestResumeOnBoot, timeOfDay } from "../core/state.js";
-import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast, withScenePreparation, loadingNotice, withSceneLoading } from "../core/ui.js";
+import { state, save, timeOfDay } from "../core/state.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, toast, withScenePreparation, loadingNotice, withSceneLoading } from "../core/ui.js";
 import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
-import { saveFlow, loadFlow } from "../scenes/saves.js";
-import { glossaryPanel } from "../vn/glossary.js";
+import { saveFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
 import { playChapterPoem } from "../scenes/chapter-poem.js";
 import { stopBgm, playBgm } from "../core/audio.js";
@@ -73,41 +73,10 @@ function menuButton(owner) {
     onclick: () => openMenu(owner) });
 }
 
-async function openMenu(owner) {
-  if (!current(owner) || owner.menuBusy) return;
-  owner.menuBusy = true;
-  try {
-    const choice = await modal({ title: "東京編 MENU", body: "読み終えた場面から再開できます。", options: [
-      { label: "セーブ", value: "save", test: test("save") },
-      { label: "ロード", value: "load", test: test("load") },
-      { label: "設定", value: "config", test: test("config") },
-      { label: "用語集", value: "glossary", test: test("glossary") },
-      { label: "大会の規則", value: "rules", test: test("rules") },
-      { label: "タイトルへ戻る", value: "title", test: test("title") },
-      { label: "閉じる", value: null, primary: true },
-    ] });
-    if (!current(owner)) return;
-    if (choice === "save") await saveFlow();
-    if (choice === "config") await (await import("../scenes/title.js")).openConfig();
-    if (choice === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
-    if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
-    if (choice === "load") {
-      const key = await loadFlow({ inGame: true });
-      if (key && loadFromSlot(key)) {
-        owner.active = false;
-        owner.controller?.abort();
-        requestResumeOnBoot();
-        location.reload();
-      }
-    }
-    if (choice === "title") {
-      save();
-      owner.active = false;
-      owner.controller?.abort();
-      location.reload();
-    }
-  } finally { owner.menuBusy = false; }
-}
+const openMenu = createChapterMenu({
+  current, test, title: "東京編 MENU", glossaryAvailable: () => true,
+  rulesAvailable: () => true, rulesLabel: "大会の規則",
+});
 
 function hud(owner, visible = false) {
   layers.hud.replaceChildren(...(visible ? [el("div.ch2-tournament-vn-menu", [menuButton(owner)])] : []));
