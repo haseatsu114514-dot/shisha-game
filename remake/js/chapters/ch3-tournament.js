@@ -23,6 +23,7 @@ import { chosenAssistLevel } from "../craft/retry-assist-level.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 import { applyAssistRecovery } from "./tournament-resources.js";
+import { createChapterCard } from "../core/chapter-card.js";
 import { play } from "../vn/engine.js";
 import { playBgm, SE } from "../core/audio.js";
 import { newSession, openBench, waitBenchReady, benchRoot } from "../craft/session.js";
@@ -132,18 +133,9 @@ function hud(owner, visible = false) {
   layers.hud.classList.toggle("show", visible);
 }
 
-function card(owner, name, title, description, actions = [], extra = []) {
-  hud(owner);
-  return showScreen("ch3-tournament", el("main.ch2-contest", { dataset: { test: id(name) } }, [
-    el("header.ch2-contest-header", [
-      el("div", [el("p", { text: "第三章・DAY14 ／ HAZE: NATIONAL TOKYO" }), el("h1", { text: title })]),
-      menuButton(owner),
-    ]),
-    typeof description === "string" ? el("p.ch2-contest-description", { text: description }) : description,
-    ...extra,
-    el("div.ch2-contest-actions", actions),
-  ]));
-}
+const card = createChapterCard({ hud, screen: "ch3-tournament", test: id,
+  heading: "第三章・DAY14 ／ HAZE: NATIONAL TOKYO", menuButton,
+  chapterClear: false, includeScene: false, returnScreen: true });
 
 // 台本は元の正本を変えず、プレイヤーの調整や実際の順位に反する固定文だけ実戦中に置き換える。
 function matchDialogue(name) {
@@ -247,7 +239,7 @@ async function morningCheers(owner) {
 function renderEntry(owner) {
   card(owner, "entry", "全国大会の朝。", "はじめ・綾取・スティーブ・ヴォルク。四人が同時に一台を仕上げる。", [
     button(owner, "会場へ向かう", "start", async () => { checkpoint("opening"); await drive(owner); }, true),
-  ], [el("p.ch2-contest-note", { text: "審査員は千須・チャコール博士・エミル。各10点を四回に分けて投じる。" })]);
+  ], "審査員は千須・チャコール博士・エミル。各10点を四回に分けて投じる。");
 }
 
 function renderReady(owner) {
@@ -366,7 +358,7 @@ function renderVotes(owner, final = false, { splash = false } = {}) {
         checkpoint(final ? p.result.rank === 1 ? "victory" : "defeat" : "craft");
         await drive(owner);
       }, true),
-    ], [
+    ], "", "", [
       final ? null : reason,
       p.baseVotes ? el("p.ch2-contest-note", { text: "全出場者に基礎票1点" }) : null,
       el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]),
@@ -446,7 +438,7 @@ function renderComplete(owner) {
     await mod.runChapterThreeAftermath();
   }, true);
   const actions = completionActions(owner, button, next, { onSave: saveFlow, onTitle: () => { save(); location.reload(); } });
-  card(owner, "complete", "全国大会・優勝／日本第一代表", "四人の一試合で、はじめが日本の第一代表になった。東京で伝えることが、まだ残っている。", actions, [
+  card(owner, "complete", "全国大会・優勝／日本第一代表", "四人の一試合で、はじめが日本の第一代表になった。東京で伝えることが、まだ残っている。", actions, "", "", [
     // 賞金は recordResult で優勝確定時に一度だけ加算済み。ここでは受け取ったことだけを見せる（#1658 ⑦）。
     p?.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: Number.isFinite(p.prizeReceived)
       ? p.prizeReceived > 0 ? `優勝賞金 ${yen(p.prizeReceived)} を受け取った。` : "優勝賞金は所持金の上限に達したため加算されなかった。"

@@ -3,7 +3,7 @@ import { guardCompletionCardInput, trackCompletionTaps } from "./completion-card
 import { DB, bgUrl, displayName, loadConfessionDialogue } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { completionActions } from "../core/chapter-actions.js";
+import { completionActions, createChapterActions } from "../core/chapter-actions.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { layers, showScreen, setBg, enterScene, modal, toast, withChapterLoading, withSceneLoading } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -24,26 +24,15 @@ import { finaleDue, playFinale } from "../daily/bonds.js";
 import { CH3_AFTERMATH_SCENES, CH3_AFTERMATH_DETOURS, CH3_AFTERMATH_FINALES, canRunChapterThreeAftermath, beginChapterThreeAftermath,
   chapterThreeAftermathProgress, completeChapterThreeAftermathScene, availableAftermathDetours,
   completeAftermathDetour, availableAftermathLessons, availableAftermathFinales } from "./ch3-aftermath-progress.js";
+import { createChapterCard } from "../core/chapter-card.js";
 
 const IDS = CH3_AFTERMATH_SCENES.map(scene => scene.id);
 const test = name => `ch3-aftermath-${name}`;
 let session = null;
 const live = owner => session === owner && owner.active && owner.state === state;
 
-function button(owner, label, name, action, primary = false) {
-  return el(`button.btn${primary ? ".primary" : ""}`, { type: "button", text: label,
-    dataset: { test: test(name) }, onclick: () => perform(owner, action) });
-}
-
-async function perform(owner, action) {
-  if (!live(owner) || owner.busy) return false;
-  owner.busy = true;
-  try { await action(); return live(owner); }
-  catch (error) {
-    if (live(owner)) { console.error("[ch3 aftermath]", error); renderError(owner); }
-    return false;
-  } finally { owner.busy = false; }
-}
+const { button, perform } = createChapterActions({ current: live, test, logName: "[ch3 aftermath]", renderError,
+  returnCurrent: true });
 
 async function openMenu(owner) {
   if (!live(owner) || owner.menuBusy) return;
@@ -84,31 +73,25 @@ function menuButton(owner) {
     onclick: () => openMenu(owner) });
 }
 
-function card(owner, name, title, description, actions = [], note = "", sceneId = "", extra = []) {
+function hud() {
   layers.hud.replaceChildren();
   layers.hud.classList.remove("show");
-  // 完了カードは章のクリア画面（レベルアップの札を本文の外へ寄せる・#3938）。
-  const panel = el(`main.ch2-contest${name === "complete" ? ".chapter-clear" : ""}`, { dataset: { test: test(name), scene: sceneId } }, [
-    el("header.ch2-contest-header", [
-      el("div", [el("p", { text: "第三章 ／ 嘘つきたちの夜" }), el("h1", { text: title })]),
-      menuButton(owner),
-    ]),
-    el("p.ch2-contest-description", { text: description }),
-    note ? el("p.ch2-contest-note", { text: note }) : null,
-    ...extra,
-    el("div.ch2-contest-actions", [...actions, ...(name !== "error" ? [
-      button(owner, "LIME・地元との連絡", "lime", async () => {
-        const social = await import("./ch3-social.js");
-        if (!live(owner)) return;
-        const controller = owner.controller = new AbortController();
-        try { await social.openTokyoLime({ signal: controller.signal }); }
-        finally { if (owner.controller === controller) owner.controller = null; }
-        if (live(owner)) await renderStage(owner);
-      }),
-    ] : [])]),
-  ]);
-  showScreen("ch3-aftermath", name === "complete" ? guardCompletionCardInput(panel, owner.completionTaps) : panel);
 }
+
+function footerActions(owner, name) {
+  if (name === "error") return [];
+  return [button(owner, "LIME・地元との連絡", "lime", async () => {
+    const social = await import("./ch3-social.js");
+    if (!live(owner)) return;
+    const controller = owner.controller = new AbortController();
+    try { await social.openTokyoLime({ signal: controller.signal }); }
+    finally { if (owner.controller === controller) owner.controller = null; }
+    if (live(owner)) await renderStage(owner);
+  })];
+}
+
+const card = createChapterCard({ hud, screen: "ch3-aftermath", test, heading: "第三章 ／ 嘘つきたちの夜", menuButton,
+  guardCompletionCardInput, footerActions });
 
 /** 勝利確定済み保存から再開できる。敗北・審査途中では状態を一切変更しない。 */
 export async function runChapterThreeAftermath() {
@@ -117,8 +100,7 @@ export async function runChapterThreeAftermath() {
   const owner = session = { state, growthDay: state.day, active: true, busy: false, menuBusy: false, controller: null };
   document.body.classList.remove("ch2-city", "ch2-main", "ch2-tournament", "ch3-tournament");
   document.body.classList.add("ch3-intro", "ch3-aftermath");
-  layers.hud.replaceChildren();
-  layers.hud.classList.remove("show");
+  hud();
   showScreen("ch3-aftermath-loading", el("main.ch2-contest", [
     el("h1", { text: "第三章・大会のあと" }),
     el("p", { role: "status", text: "帰り道の場面を準備しています…" }),
