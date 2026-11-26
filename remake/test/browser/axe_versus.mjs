@@ -125,13 +125,15 @@ async function start(page, difficulty = "normal", options = {}) {
     sessionStorage.setItem("keep", "unchanged");
   });
   assert.equal(await page.locator('[data-difficulty="normal"]').getAttribute("aria-pressed"), "true");
+  assert.equal(await page.locator('[data-rival="adam"]').count(), 0, "解放前は一覧に出さない");
   await page.locator(`[data-difficulty="${difficulty}"]`).click();
   await fit(page);
   const button = page.locator('[data-test="axe-versus"]');
   if (options.keyboard) { await button.focus(); await page.keyboard.press("Enter"); }
   else if (options.touch) await button.tap(); else await button.click();
-  // The setup sheet: keep the shown division and one game, then start.
+  // The setup sheet: keep one game and use the shown division unless the case specifies one.
   await page.locator('[data-test="axe-setup"]').waitFor();
+  if (options.division) await page.locator(`[data-division="${options.division}"]`).click();
   if (options.keyboard) await page.keyboard.press("Enter");
   else if (options.touch) await page.locator('[data-test="axe-setup-start"]').tap(); else await page.locator('[data-test="axe-setup-start"]').click();
   // A second same-host call observes the existing Promise; no state or outcomes are injected.
@@ -192,9 +194,9 @@ await suite("axe-versus", async check => {
       return !KILLS.some(k => canCall(k.id, history, 10));
     }, result.match.opponent.slice(0, 9)), "the opponent skips its last call only when no blue is legal");
     const expectedStorage = structuredClone(before);
-    // Winning a hard match intentionally unlocks Adam on the standalone page.
+    // A win against Hiyori on any difficulty unlocks Adam on the standalone page.
     // Keep every other save and session key byte-for-byte unchanged.
-    if (difficulty === "hard" && result.match.winner === "player") expectedStorage.local.shisha_axe_adam_unlocked = "1";
+    if (result.match.winner === "player") expectedStorage.local.shisha_axe_adam_unlocked = "1";
     assert.deepEqual(await storageSnapshot(page), expectedStorage);
   }, context);
 
@@ -317,33 +319,57 @@ await suite("axe-versus", async check => {
     assert(invalid.result.cancelled && invalid.result.match.player.length === 0); assert(invalid.rejected.every(Boolean));
   });
   await check("adam-secret-boss-full-match", async page => {
-    await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
-    assert.equal(await page.locator('[data-rival="adam"]').count(), 0, "解放前は一覧に出さない");
-    await page.evaluate(async () => {
-      const { recordAdamUnlock } = await import("./js/minigames/axe-secret-boss.js");
-      recordAdamUnlock({ completed: true, opponent: "hiyori", match: { difficulty: "hard", winner: "player" }, series: { winner: "player" } });
+    const setup = { division: "rec", focus: true, precise: true };
+    // Seed 3 gives Hiyori 35 points on normal/Rec. Play the actual throws and let the game decide the winner.
+    await page.addInitScript(() => {
+      const randomValues = crypto.getRandomValues.bind(crypto);
+      crypto.getRandomValues = array => array instanceof Uint32Array && array.length === 1 ? array.fill(3) : randomValues(array);
     });
+    await start(page, "normal", setup);
+    const before = await storageSnapshot(page);
+    for (let i = 0; i < 10; i++) {
+      await shoot(page, setup);
+      await press(page); await phase(page, "opponent-ready"); await phase(page, "result");
+      await press(page);
+    }
+    await phase(page, "summary");
+    assert.match(await page.locator('[data-test="axe-note"]').textContent(), /あなたの勝ち/);
+    const expected = structuredClone(before);
+    expected.local.shisha_axe_adam_unlocked = "1";
+    assert.deepEqual(await storageSnapshot(page), expected, "勝利した時点で解放を保存する");
+    await press(page);
+    const unlockNotice = page.locator('.axe-menu-message[data-unlocked="adam"]');
+    assert.match(await unlockNotice.textContent(), /新たな対戦相手・アダムが現れた/);
+    await capture(page, "adam-unlocked");
     await page.reload();
+    assert.equal(await unlockNotice.count(), 0, "解放通知は初回だけ表示する");
     await page.locator('[data-rival="adam"]').click();
     assert.match(await page.locator('[data-test="axe-versus"]').textContent(), /アダムと対戦/);
     await page.locator('[data-test="axe-versus"]').click();
-    assert.match(await page.locator('[data-test="axe-setup"]').textContent(), /手加減はしない/);
+    assert.match(await page.locator('[data-test="axe-setup"]').textContent(), /手加減はせぬ/);
+    await capture(page, "adam-intro");
     await page.locator('[data-test="axe-setup-start"]').click();
     await phase(page, "choice");
     assert.match(await page.locator('.axe-header').textContent(), /アダムと10投対戦/);
     assert.match(await page.locator('[data-test="axe-portrait"]').getAttribute('src'), /adam/);
+    await fit(page);
+    await capture(page, "adam-first-turn");
     for (let i = 1; i <= 10; i++) {
       await shoot(page);
       await press(page); await phase(page, "opponent-ready"); await phase(page, "result");
       await press(page);
       await page.waitForFunction(() => ["choice", "summary"].includes(document.querySelector('[data-test="axe-game"]')?.dataset.phase));
     }
+    if (await root(page).getAttribute("data-phase") !== "summary") await finishSuddenDeath(page);
     await phase(page, "summary");
     assert.match(await page.locator('[data-test="axe-note"]').textContent(), /勝ち|引き分け/);
     await press(page);
     await page.locator('[data-test="axe-versus"]').waitFor();
     assert.doesNotMatch(await page.locator('.axe-menu-message').textContent(), /undefined/);
-    assert.equal(await page.evaluate(() => localStorage.getItem("shisha_axe_adam_unlocked")), "1");
+    assert.equal(await page.locator('[data-rival="adam"]').getAttribute("aria-pressed"), "true");
+    assert.deepEqual(await storageSnapshot(page), expected);
+    await page.locator('[data-test="axe-versus"]').click();
+    assert.match(await page.locator('[data-test="axe-setup"]').textContent(), /アダムと対戦/);
   });
 await check("touch-portrait-rotate-hint", async page => {
     // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）

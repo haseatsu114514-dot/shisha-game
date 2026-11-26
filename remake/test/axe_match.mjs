@@ -171,19 +171,25 @@ test("fixed seeds 0..9999 give ordered difficulty distributions, legal calls and
   assert(stats.secret.p90 < 64, "十分に高い得点なら大半の試合で勝てる");
   console.log("Opponent distributions (10000 games each): " + JSON.stringify(stats));
 });
-test("裏ボス解放はひよりの最高難度の勝利だけで記録し、本編セーブを変更しない", () => {
-  const values = new Map([["suien_remake_save", "story-unchanged"]]);
+test("ひより戦の勝利で難易度を問わず裏ボスを解放し、結果を保存する", () => {
+  const storySave = ["suien_remake_save", "story-unchanged"];
+  const values = new Map([storySave]);
   const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
-  const result = { completed: true, opponent: "hiyori", match: { difficulty: "hard", winner: "player" }, series: { winner: "player" } };
-  assert.equal(adamUnlocked(storage), false);
-  for (const wrong of [{ ...result, completed: false }, { ...result, opponent: "adam" },
-    { ...result, match: { ...result.match, difficulty: "normal" } }, { ...result, series: { winner: "opponent" } }]) {
+  const result = { completed: true, opponent: "hiyori", match: { difficulty: "normal", winner: "player" }, series: { winner: "player" } };
+  for (const wrong of [{ ...result, completed: false }, { ...result, cancelled: true }, { ...result, opponent: "adam" },
+    { ...result, match: undefined }, ...[null, "draw", "opponent"].map(winner => ({ ...result, series: { winner } }))]) {
     assert.equal(recordAdamUnlock(wrong, storage), false);
     assert.equal(adamUnlocked(storage), false);
   }
-  assert.equal(recordAdamUnlock(result, storage), true);
-  assert.equal(adamUnlocked(storage), true);
-  assert.equal(values.get("suien_remake_save"), "story-unchanged");
+  assert.deepEqual([...values], [storySave]);
+  for (const difficulty of ["easy", "normal", "hard"]) {
+    values.delete("shisha_axe_adam_unlocked");
+    const win = { ...result, match: { difficulty, winner: "player" }, series: difficulty === "normal" ? result.series : undefined };
+    assert.equal(recordAdamUnlock(win, storage), true);
+    assert.equal(adamUnlocked(storage), true);
+    assert.equal(recordAdamUnlock({ ...win, completed: false }, storage), false);
+    assert.deepEqual([...values], [storySave, ["shisha_axe_adam_unlocked", "1"]]);
+  }
 });
 test("アダムの対戦台詞は全フェイズを覆い、専用立ち絵の表情を使う", () => {
   const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/axe_versus.json", import.meta.url)));

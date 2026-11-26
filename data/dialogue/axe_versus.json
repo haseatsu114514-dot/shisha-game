@@ -138,162 +138,162 @@
         {
           "id": "before",
           "speaker": "adam",
-          "text": "俺の番だ。的の中心を見てろ"
+          "text": "ふっ。俺の番だ。的の中心……すなわち真理を見ていろ"
         },
         {
           "id": "call",
           "speaker": "adam",
-          "text": "キルショットを宣言する。青を狙う"
+          "text": "キルショットを宣言する。あの青を射抜くのが、俺の美学だ"
         },
         {
           "id": "hit",
           "speaker": "adam",
-          "text": "刺さった。だが、まだ中心じゃない"
+          "text": "刺さったな。だが、俺の狙う中心にはまだ遠い"
         },
         {
           "id": "bull",
           "speaker": "adam",
-          "text": "中心だ。狙った通りに刺さった"
+          "text": "これぞ真理。狙ったとおり、刃は真ん中に帰る"
         },
         {
           "id": "killshot",
           "speaker": "adam",
-          "text": "青に入った。次も同じだ"
+          "text": "ふっ。青を穿つのは必然だ。次の一投も同じことよ"
         },
         {
           "id": "killshot-miss",
           "speaker": "adam",
-          "text": "青を外した。次は修正する"
+          "text": "青を外した……だと？　次の一投で狙いを正そう"
         },
         {
           "id": "miss",
           "speaker": "adam",
-          "text": "外したか。軸がずれたな"
+          "text": "的を外したか。……軸の乱れは、己への戒めだな"
         },
         {
           "id": "drop",
           "speaker": "adam",
-          "text": "落ちた。回転を合わせ直す"
+          "text": "落ちたか……刃の回転を、もう一度俺のものにする"
         },
         {
           "id": "ahead",
           "speaker": "adam",
-          "text": "俺が前だ。最後まで緩めない"
+          "text": "ふっ。俺が前だな。王座は最後まで譲らぬ"
         },
         {
           "id": "behind",
           "speaker": "adam",
-          "text": "点差は見えてる。一本ずつ戻す"
+          "text": "リードを許したか。一投ずつ、舞台を俺に引き戻そう"
         },
         {
           "id": "level",
           "speaker": "adam",
-          "text": "同点だ。次の一本で変わる"
+          "text": "同点か。次の一投が、俺とお前の運命を分かつ"
         },
         {
           "id": "player",
           "speaker": "adam",
-          "text": "お前の勝ちだ。いい投げ方だった。またやろう"
+          "text": "敗れたか……お前の勝ちだ。見事な投げだった。また挑もう"
         },
         {
           "id": "opponent",
           "speaker": "adam",
-          "text": "俺の勝ちだ。次はもっと詰めてこい"
+          "text": "俺の勝ちだ。次はその差を埋めて、俺の前に立て"
         },
         {
           "id": "draw",
           "speaker": "adam",
-          "text": "同点か。決着がつくまで投げよう"
+          "text": "同点か。並び立つとはな。決着まで、この幕は降ろさぬ"
         },
         {
           "id": "last",
           "speaker": "adam",
-          "text": "最後の一本だ。ここで決める"
+          "text": "最後の一投だ。……幕引きは、俺が飾ろう"
         },
         {
           "id": "player-last",
           "speaker": "adam",
-          "text": "最後の一本だな。狙いを見せてみろ"
+          "text": "お前の最後の一投か。……渾身の一撃を見せてみろ"
         },
         {
           "id": "big-ahead",
           "speaker": "adam",
-          "text": "まだ差はある。油断はしない"
+          "text": "ふっ。差は歴然だが、俺は最後の一投まで手を抜かぬ"
         },
         {
           "id": "big-behind",
           "speaker": "adam",
-          "text": "差が開いたな。ここから追う"
+          "text": "大きく離されたか。だが、劇的な逆転こそ俺にふさわしい"
         },
         {
           "id": "switch",
           "speaker": "adam",
-          "text": "後半だ。木目が変わっても狙いは同じ"
+          "text": "後半だ。木目が替わろうと、俺の狙う中心は揺るがぬ"
         },
         {
           "id": "sudden",
           "speaker": "adam",
-          "text": "同点か。青で決めよう"
+          "text": "同点か。……ならば、あの青い点で決着をつけよう"
         },
         {
           "id": "sudden-call",
           "speaker": "adam",
-          "text": "サドンデスの青だ。集中する"
+          "text": "サドンデスの青……一撃に、すべてを懸けよう"
         },
         {
           "id": "sudden-hit",
           "speaker": "adam",
-          "text": "入った。今度はお前の番だ"
+          "text": "青を射抜いたぞ。……さあ、お前の答えを見せろ"
         },
         {
           "id": "sudden-miss",
           "speaker": "adam",
-          "text": "外した。まだ終わってない"
+          "text": "外したか……だが、幕はまだ降りておらぬ"
         },
         {
           "id": "sudden-player-hit",
           "speaker": "adam",
-          "text": "青に入れたか。やるな"
+          "text": "ほう……この場面で青を捉えるとは。認めざるを得ぬ"
         },
         {
           "id": "sudden-player-miss",
           "speaker": "adam",
-          "text": "惜しいな。次は俺が投げる"
+          "text": "惜しかったな。次は俺が投げる。幕引きといこう"
         },
         {
           "id": "player-call",
           "speaker": "adam",
-          "text": "青を狙うのか。いい判断だ"
+          "text": "ほう。青を宣言するか。良い判断だ"
         },
         {
           "id": "player-hit",
           "speaker": "adam",
-          "text": "刺さったな。次も見せてみろ"
+          "text": "うむ。確かに刺さった。次の一投も見せてみろ"
         },
         {
           "id": "player-bull",
           "speaker": "adam",
-          "text": "中心だ。お前もやるな"
+          "text": "ほう……ど真ん中か。お前もなかなかやるな"
         },
         {
           "id": "player-killshot",
           "speaker": "adam",
-          "text": "青に当てたか。見事だ"
+          "text": "青を穿ったか……見事だ。拍手を贈ろう"
         },
         {
           "id": "player-killshot-miss",
           "speaker": "adam",
-          "text": "青を外したな。次で取り返せ"
+          "text": "青を外したか。案ずるな。次で取り返してみせろ"
         },
         {
           "id": "player-miss",
           "speaker": "adam",
-          "text": "外れたか。まだ次がある"
+          "text": "的の外か。案ずるな。舞台はまだ続く"
         },
         {
           "id": "player-drop",
           "speaker": "adam",
-          "text": "落ちたな。回転を整えろ"
+          "text": "落ちたか。刃は正直だ。回転を整えて挑め"
         }
       ]
     }

@@ -23,9 +23,9 @@ void preloadBgm("bgm_axe");
 window.addEventListener("pointerdown", unlockAudio);
 window.addEventListener("keydown", unlockAudio);
 let opponent = "hiyori", rival = "hiyori", difficulty = "normal", division = "am", bestOf = 1;
-function menu(result = null) {
-  if (result) recordAdamUnlock(result);
-  if (!adamUnlocked()) rival = "hiyori";
+function menu(result = null, newlyUnlocked = false) {
+  const unlocked = adamUnlocked();
+  if (!unlocked) rival = "hiyori";
   const rivalName = rival === "adam" ? "アダム" : "ひより";
   let lessonOpen = false;
   const busy = () => lessonOpen || buttons.some(b => b.disabled);
@@ -35,10 +35,14 @@ function menu(result = null) {
     if (mode !== "practice" && !confirmed) { openSetup(mode, button); return; }
     buttons.forEach(b => { b.disabled = true; }); lesson.disabled = true;
     playBgm("bgm_axe");
+    let newlyUnlocked = false;
     try { const result = await runAxeThrow({ host, inputMode, autoAdvance, mode, opponent: mode === "versus" ? rival : opponent,
       difficulty: mode === "versus" && rival === "adam" ? "secret" : difficulty,
-      division: mode === "practice" ? "rec" : division, bestOf: mode === "versus" ? bestOf : 1, reducedMotion: calmFlash() });
-      stopBgm(); menu(result);
+      division: mode === "practice" ? "rec" : division, bestOf: mode === "versus" ? bestOf : 1, reducedMotion: calmFlash(),
+      onMatchComplete: result => {
+        if (!adamUnlocked() && recordAdamUnlock(result)) newlyUnlocked = true;
+      } });
+      stopBgm(); menu(result, newlyUnlocked);
     }
     catch (error) { stopBgm(); console.error(error); buttons.forEach(b => { b.disabled = false; }); lesson.disabled = false; message.textContent = "開き直して、もう一度お試しください。"; button.focus(); }
   };
@@ -76,7 +80,7 @@ function menu(result = null) {
     const sheet = el("section.axe-setup", { role: "dialog", "aria-modal": "true", "aria-labelledby": "axe-setup-title", dataset: { test: "axe-setup", mode } }, [
       el("div.axe-setup-card", [
         el("h2#axe-setup-title", { text: mode === "versus" ? rivalName + "と対戦" : "10投ゲーム" }),
-        mode === "versus" && rival === "adam" ? el("p.axe-setup-note", { text: "アダム「ここまで来たなら、手加減はしない。一本ずつ、見せてみろ」" }) : null,
+        mode === "versus" && rival === "adam" ? el("p.axe-setup-note", { text: "アダム「ここまで来たか。手加減はせぬ。一投ずつ、己の真理を見せてみろ」" }) : null,
         el("fieldset.axe-setup-group", [el("legend", { text: "部門（当てた赤と5の閉じ方）" }), divisionGroup, note]),
         mode === "versus" ? el("fieldset.axe-setup-group", [el("legend", { text: "本数" }), lengthGroup]) : null,
         el("div.axe-setup-actions", [go, back]),
@@ -115,8 +119,9 @@ function menu(result = null) {
       }
     }
   }
-  const message = el("p.axe-menu-message", { "aria-live": "polite", text: messageText });
-  const rivals = el("div.axe-pickers.axe-menu-options", { role: "group", "aria-label": "対戦相手" }, ["hiyori", ...(adamUnlocked() ? ["adam"] : [])].map(id => el("button.axe-button", {
+  if (newlyUnlocked) messageText = "新たな対戦相手・アダムが現れた。 / " + messageText;
+  const message = el("p.axe-menu-message", { "aria-live": "polite", text: messageText, ...(newlyUnlocked ? { dataset: { unlocked: "adam" } } : {}) });
+  const rivals = el("div.axe-pickers.axe-menu-options", { role: "group", "aria-label": "対戦相手" }, ["hiyori", ...(unlocked ? ["adam"] : [])].map(id => el("button.axe-button", {
     type: "button", text: id === "adam" ? "アダム · 裏ボス" : "ひより", "aria-pressed": String(id === rival), dataset: { rival: id }, onclick: () => {
       if (busy() || intro.inert) return; rival = id; menu();
     },

@@ -125,7 +125,8 @@ function shortHiyori(text, phase, shot, called, context, actor) {
 
 export function runAxeThrow({ host = document.getElementById("stage") || document.getElementById("axe-app"),
   signal, mode = "practice", tutorial = false, opponent = tutorial ? null : "hiyori", allowRetry = true, difficulty = "normal", seed,
-  division = "rec", bestOf = 1, lessonContext = null, steady, gearId = "house", inputMode = "tap-pull", autoAdvance = true, reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
+  division = "rec", bestOf = 1, lessonContext = null, steady, gearId = "house", inputMode = "tap-pull", autoAdvance = true, reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches,
+  onMatchComplete } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   const versus = mode === "versus", tapPull = inputMode === "tap-pull";
@@ -933,7 +934,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     phase = next; elapsed = 0; stamp = null;
     if (next === "choice" || next === "opponent-ready" || next === "summary") callLight.replaceChildren();
     if (next === "choice" && actor === "player" && suddenDeath()) called = suddenDeathTarget(match.suddenDeath.length);
-    if (next === "summary") { recordGame(); summaryJingle(); }
+    if (next === "summary") {
+      recordGame();
+      if (onMatchComplete && series && seriesWinner()) onMatchComplete(result(true, shots));
+      summaryJingle();
+    }
     if (next === "power" && tapPull) {
       pullHandle.dataset.demonstrate = String(!swipeShown);
       swipeShown = true;
