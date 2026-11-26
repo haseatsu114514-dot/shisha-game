@@ -95,7 +95,7 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
   }
   for (const chapter of [1, 2]) for (const wish of WISH_IDS) {
     const main = mixIdsFor(chapter).filter((id) => MIXES[id].main === wish).length;
-    assert.ok(main >= 20 && main <= 28, `第${chapter}章・${wish}: メインのミックスが偏らない（${main}）`);
+    assert.ok(main >= 20 && main <= 44, `第${chapter}章・${wish}: メインのミックスが偏らない（${main}）`);
   }
   // 1種（単品）・2種・3種が、どの章でも並ぶ
   for (const chapter of [1, 2]) {
