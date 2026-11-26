@@ -122,7 +122,7 @@ function spotInDirection(spots, id, key) {
  * @param opts.fans これまでの店のファンの合計（表示だけに使う）
  */
 export function runTonariFloor({
-  seed = 0, level = 0, chapter = 1, fans = 0, visitor = null, rainy = false, night = false, art = null,
+  seed = 0, level = 0, chapter = 1, fans = 0, visitor = null, floorPerks = null, rainy = false, night = false, art = null,
   // night＝夜のシフト（絵と時計・呼び名を夜にする）。stage＝店内の絵と位置。guests・props＝絵の登録（検査と配置図で差し替える）
   stage = null, guests = FLOOR_ART.guests, props = FLOOR_ART.props, cutins = FLOOR_ART.cutins,
   // mount＝画面を載せる先（デバッグの試遊。省くと本編の画面として出す）。kind＝営業の種類を名指しする（省くと回数と天気で決まる）
@@ -141,7 +141,7 @@ export function runTonariFloor({
   if (signal?.aborted || !isCurrent()) return Promise.resolve(null);
   const speaker = visitor === "minto" ? "oneesan" : visitor;
   const visitorName = gameState && (speaker === "oneesan" || speaker === "samechan") ? displayName(speaker, gameState) : null;
-  const openNight = () => createFloorNight({ seed, level, chapter, rainy, daytime: !night, visitor, visitorName, night: kind, dusk });
+  const openNight = () => createFloorNight({ seed, level, chapter, rainy, daytime: !night, visitor, visitorName, night: kind, dusk, floorPerks });
   if (!mount && instantFloor()) {
     if (tutorial) return Promise.resolve({ tutorial: true, skipped: true });
     const opened = openNight();
