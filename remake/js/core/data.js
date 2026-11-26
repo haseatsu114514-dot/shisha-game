@@ -91,9 +91,16 @@ export function loadDeferredDialogues() {
   if (!deferredDialoguesPromise) {
     deferredDialoguesPromise = Promise.all(DEFERRED_DIALOGUE_FILES.map((file) =>
       getJSON(`${ROOT}data/dialogue/${file}.json`).then((data) => [file, data])
-    )).then((files) => {
+    )).then(async (files) => {
       for (const [file, data] of files) {
-        if (file === "hiyori") DB.hiyori = data;
+        if (file === "hiyori") {
+          if (data.route) {
+            // 正本は bonds.js。台本取得後に従来の route 形式を組み立て、差し替えても正本には書き戻さない。
+            const { hiyoriBondDefinitions } = await import("../daily/bonds.js");
+            Object.assign(data.route, hiyoriBondDefinitions());
+          }
+          DB.hiyori = data;
+        }
         for (const d of data.dialogues || []) DB.dialogues[d.dialogue_id] = d;
       }
       return DB;

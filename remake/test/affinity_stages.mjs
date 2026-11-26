@@ -17,7 +17,7 @@ async function fixture() {
   const memory = new Map(), events = [], plays = [], timers = new Map();
   let serial = 0, playImpl = async scene => ({ id: typeof scene === 'string' ? scene : scene.dialogue_id, visited: [] });
   let loadConfession = async () => { throw Error('Unexpected confession load'); };
-  const db = { dialogues: Object.fromEntries(data.flatMap(d => d.dialogues || []).map(d => [d.dialogue_id,d])), hiyori: data[8], equipById: {}, flavorById: {}, characters: {}, lime: limeData.messages, limeTemplates: clone(limeData.templates) };
+  const db = { dialogues: Object.fromEntries(data.flatMap(d => d.dialogues || []).map(d => [d.dialogue_id,d])), equipById: {}, flavorById: {}, characters: {}, lime: limeData.messages, limeTemplates: clone(limeData.templates) };
   const context = vm.createContext({ console, AbortController, setTimeout: fn => { timers.set(++serial,fn); return serial; }, clearTimeout: id => timers.delete(id), localStorage: { getItem: k => memory.get(k) ?? null, setItem: (k,v) => memory.set(k,v), removeItem: k => memory.delete(k) } });
   const known = {
     chapterFiveTalkIds,
@@ -52,6 +52,9 @@ async function fixture() {
   await entry.link((s,ref) => { const p=path.posix.normalize(path.posix.join(path.posix.dirname(ref.identifier),s)); assert(modules.has(p),p); return modules.get(p); });
   await entry.evaluate();
   const ns = p => modules.get(p).namespace;
+  // 起動中は DB.hiyori が無い。本番の遅延ローダと同じく評価後にルートを接続する。
+  db.hiyori = clone(data[8]);
+  Object.assign(db.hiyori.route, ns('daily/bonds.js').hiyoriBondDefinitions());
   const core=ns('core/state.js'), stats=ns('core/stats.js');
   const fresh=() => { const s=core.newGame(); Object.assign(s,{phase:'daily',day:8,slot:1}); return s; };
   fresh();
@@ -339,6 +342,46 @@ await check('samechan shop cancellation keeps receipt unpaid/unread, retry compl
   f.setPlay(async()=>done);assert.equal(await f.samechan.visitSamechan(spot),true);assert.equal(s.money,money-3000);
   assert.equal(await f.samechan.visitSamechan(spot),true);assert.equal(s.money,money-3000);assert.equal(s.story.samechan,1);
 });
+await check('#2035 hiyori bond definitions match the released scenes and save keys', async f => {
+  const { BOND_FINALES, BOND_QUESTIONS } = f.bonds;
+  assert.deepEqual({ ...BOND_FINALES.hiyori }, {
+    dialogue: 'hiyori_bond_finale', gift: 'suyaki_hiyori', question: 'bond_q2_hiyori',
+    flag: '_hiyori_bond_finale_done', night: true,
+  });
+  const { dialogue, choice, host, when } = BOND_QUESTIONS.hiyori;
+  assert.deepEqual({ dialogue, choice, host, when }, {
+    dialogue: 'hiyori_bond_question', choice: 'bond_q1_hiyori', host: 'hiyori_work_talk', when: 'after',
+  });
+  const route = f.hiyoriRoute.hiyoriRoute();
+  assert.deepEqual({ ...route.finale }, { ...BOND_FINALES.hiyori });
+  assert.deepEqual({ ...route.question }, { dialogue, choice, host, flag: '_hiyori_bond_question_done' });
+  assert.equal(BOND_QUESTIONS.hiyori.flag, route.question.flag);
+  for (const def of [BOND_FINALES.hiyori, BOND_QUESTIONS.hiyori]) {
+    assert(Object.values(Object.getOwnPropertyDescriptors(def)).every(field => 'value' in field));
+  }
+});
+
+await check('#2035 hiyori deferred route keeps questions and finales closed', async f => {
+  const loaded = f.db.hiyori;
+  const s = f.core.state;
+  s.met.hiyori = true;
+  s.flags._hiyori_work_talk_done = s.flags._hiyori_real_self_known = true;
+  assert.equal(f.bonds.hiyoriQuestionReady(), true);
+  for (const hiyori of [undefined, {}, { route: { ...loaded.route, enabled: false } }]) {
+    f.db.hiyori = hiyori;
+    const before = JSON.stringify(f.core.state);
+    assert.equal(f.bonds.hiyoriQuestionReady(), false);
+    assert.equal(f.hiyoriRoute.hiyoriFinaleReady(), false);
+    assert.equal(f.bonds.finaleDue('hiyori'), false);
+    assert.equal(await f.bonds.playQuestionVisit('hiyori'), false);
+    assert.equal(await f.bonds.playFinale('hiyori'), false);
+    assert.equal(await f.bonds.afterStory('hiyori_work_talk'), !hiyori?.route);
+    assert.equal(f.bonds.isFinaleEvent('hiyori_bond_finale'), !!hiyori?.route);
+    assert.equal(JSON.stringify(f.core.state), before);
+    assert.equal(f.plays.length, 0);
+  }
+});
+
 await check('hiyori numeric growth is independent while connected route/question prerequisites remain', async f => {
   const s=f.core.state;const route=f.db.hiyori.route;
   for(const e of route.events) if(e.id!=='axe_reveal'&&e.id!=='work_talk')s.flags[e.flag]=true;

@@ -16,7 +16,19 @@ async function loader(fetch, timers = {}) {
   const context = vm.createContext({
     console, AbortController, setTimeout, clearTimeout, ...timers, fetch,
   });
-  const mod = new vm.SourceTextModule(source, { context, identifier: dataFile });
+  const mod = new vm.SourceTextModule(source, {
+    context, identifier: dataFile,
+    // ローダ単体では画面を起動せず、ひより取得後に参照する登録表だけを渡す。
+    async importModuleDynamically(specifier) {
+      assert.equal(specifier, "../daily/bonds.js");
+      const catalog = new vm.SyntheticModule(["hiyoriBondDefinitions"], function () {
+        this.setExport("hiyoriBondDefinitions", () => ({ finale: { gift: "fixture_gift" }, question: { flag: "fixture_flag" } }));
+      }, { context });
+      await catalog.link(() => {});
+      await catalog.evaluate();
+      return catalog;
+    },
+  });
   const modules = new Map([[dataFile, mod]]);
   await mod.link((specifier, parent) => {
     assert(specifier.startsWith("./"), "loader dependencies must stay in core");
@@ -183,6 +195,8 @@ await deferred;
 assert.equal(requests.length, 41);
 assert.equal(requests.at(-1), "../data/dialogue/hiyori.json");
 assert.equal(all.DB.hiyori.route.enabled, true);
+assert.equal(all.DB.hiyori.route.finale.gift, "fixture_gift");
+assert.equal(all.DB.hiyori.route.question.flag, "fixture_flag");
 assert(all.DB.dialogues.hiyori_meeting);
 assert(all.DB.dialogues.hiyori_preview_gap.lines[0].inner);
 assert.equal(all.loadDeferredDialogues(), deferred);

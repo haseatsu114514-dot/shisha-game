@@ -16,6 +16,7 @@ async function setup(page, answer = 0) {
       shop: await import('./js/daily/shop.js'), status: await import('./js/daily/status.js'),
       motions: await import('./js/motions/gift.js'), ui: await import('./js/core/ui.js'),
     };
+    await H.data.loadDeferredDialogues();
     (await import('./js/chapters/ch1.js')).setupHooks();
     const s = H.core.newGame();
     Object.assign(s, { phase: 'daily', day: 11, slot: 1, money: 90000, stamina: 80 });

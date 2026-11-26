@@ -15,6 +15,7 @@ async function setup(page) {
       phone: await import("./js/daily/phone.js"), calendar: await import("./js/daily/calendar.js"),
       ch1: await import("./js/chapters/ch1.js"), ui: await import("./js/core/ui.js"),
     };
+    await H.data.loadDeferredDialogues();
     H.ch1.setupHooks();
     H.fresh = () => {
       const s = H.core.newGame();
@@ -124,9 +125,8 @@ await suite("hiyori-encounters", async (check) => {
         H.fresh(); await H.visit(H.daily.hiyoriShopLocation()); H.core.state.day++;
         H.contact = which === "work" ? H.tonari.doBaito() : H.tonari.tonariCustomer();
       }, path);
-      // 接客・配達台詞とシフト演出の完了を待つ。メニュー表示前の全シフトを10秒に制限しない。
+      // support.mjs の即時精算後、シフト上がりから帰る。
       if (path === "work") {
-        await page.locator('[data-test="shift-order-0"]').click({ timeout: 30000 });
         await page.locator('[data-test="after-none"]').click({ timeout: 30000 });
       }
       await page.evaluate(() => H.contact);

@@ -3,6 +3,8 @@
 // 本番のモジュールと会話エンジンで確かめる。
 // リポジトリのルートで http.server 8123 を起動してから: node remake/test/bonds.mjs（BASE_URL で変更可）
 import assert from "node:assert/strict";
+import { installLoadingComicReader } from "./browser/loading_reader.mjs";
+import { installShopGreetingReader } from "./browser/shop_greeting_reader.mjs";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { chromium } = (() => {
@@ -15,14 +17,19 @@ const browser = await chromium.launch({
   headless: true,
   ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
 });
+async function openGame(page) {
+  await installLoadingComicReader(page);
+  await page.addInitScript(() => { try { localStorage.setItem("suien_step_intro", "off"); } catch {} });
+  await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/", { waitUntil: "load" });
+  await page.evaluate(() => import("./js/main.js").then(() => {}));
+  await page.waitForSelector('[data-test="title-new"]', { timeout: 20000 });
+}
 try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
-  // 選ぶ工程の初回説明（#3028）はこの検査の対象外（support.mjs を使わない単独ハーネスのため、ここでも既定オフに合わせる）
-  await page.addInitScript(() => { try { localStorage.setItem("suien_step_intro", "off"); } catch {} });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/", { waitUntil: "load" });
-  await page.waitForSelector('[data-test="title-new"]', { timeout: 20000 });
+  await openGame(page);
+  await installShopGreetingReader(page);
   await page.evaluate(async () => {
     const T = {
       core: await import("./js/core/state.js"),
@@ -854,9 +861,7 @@ try {
     const rioPage = await browser.newPage(options);
     rioPage.on("pageerror", e => errors.push(e.message));
     try {
-      await rioPage.addInitScript(() => localStorage.setItem("suien_step_intro", "off"));
-      await rioPage.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/", { waitUntil: "load" });
-      await rioPage.waitForSelector('[data-test="title-new"]', { timeout: 20000 });
+      await openGame(rioPage);
       const result = await rioPage.evaluate(async value => {
         const core = await import("./js/core/state.js"), stats = await import("./js/core/stats.js");
         const vn = await import("./js/vn/engine.js"), shop = await import("./js/daily/shop.js");
