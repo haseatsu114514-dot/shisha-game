@@ -51,13 +51,13 @@ await suite('flavor-mastery',async check=>{
    void openLime({beforeClose:()=>{void doBaito({called:true}).then(()=>shiftDone=true);}});
   });
   await page.locator('[data-test="phone-close"]').click();
-  await page.locator('[data-test="shift-order-0"]').waitFor();
-  await page.waitForTimeout(400); // スマホの閉じる処理が新しい注文を消さないこと
-  await page.locator('[data-test="shift-order-0"]').click();
+  // シフトは店番（TFL62。この検査では回さない）。「今日の注文」は無い（TFL63）ので、閉じた後に出るシフト上がりの画面で確かめる
+  await page.locator('[data-test="after-none"]').waitFor();
+  await page.waitForTimeout(400); // スマホの閉じる処理が、シフトの次の画面を消さないこと
   await page.locator('[data-test="after-none"]').click();await page.waitForFunction(()=>shiftDone);
   const result=await page.evaluate(()=>({xp:__remake.state.flavorMastery,stock:__remake.state.flavorStock,money:__remake.state.money}));
   assert.deepEqual(result.xp,{},'customer orders never grant flavor experience');
-  assert.deepEqual(result.stock,{lemon:50});assert(result.money>=43000);
+  assert.deepEqual(result.stock,{lemon:50});assert(result.money>=51000); // 2コマ分の基本給16,000＋急なシフト5,000
  });
  await check('lemon-tournament-is-supplied-not-consumed' ,async page=>{
   // 課題のレモンは大会が無制限に支給する。本番で何g使っても私物在庫は減らない（#1052）。

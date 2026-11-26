@@ -59,7 +59,6 @@
 - `docs/master_spec.md` — 大会仕様・ゲーム仕様
 - `data/flavors.json` — フレーバーデータ
 - `data/equipment.json` — 機材データ
-- `data/baito_events.json` — バイトイベント
 
 ━━━━━━━━━━━━━━━━━━━━
 ## A. 矛盾チェック（以下の観点で全データを走査）

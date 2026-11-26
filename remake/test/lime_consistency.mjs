@@ -1091,7 +1091,7 @@ function legacySumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}
     accept_event: "__sumi_baito__",
     accept_text: "入ります！",
     accept_reply: { sender: "sumi", stamp: "st_sumi_ack" },
-    hint: "乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく",
+    hint: "乗るとそのまま昼から夜までの店番へ（行動を2回使う）。いつもの給料に上乗せがつく",
     messages: [
       "急で悪い。今日、昼のシフト入れるか？",
       reasons[state.day % reasons.length],

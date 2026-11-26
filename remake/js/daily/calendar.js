@@ -21,7 +21,7 @@ import { isRainy, weatherOf, tomorrowForecast } from "./weather.js";
 import { spotById, deliverToRival, visitRival, visitSpot, restAtHome, isClosed, isUnlocked, storyCount, CHAR_STAT, bgRef, VISIT_BG, facilityGrowth } from "./spots.js";
 import { doFortune } from "./fortune.js";
 import { syncFortune } from "./fortune-schedule.js";
-import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
+import { tonariMenu, tonariCustomer, doBaito, SHIFT_SLOTS, SHIFT_STAMINA, shiftOpen } from "./tonari.js";
 import { openShop, visitRio, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
 import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation, invitationReadBeforeMeeting } from "./phone.js";
@@ -418,6 +418,8 @@ const DELIVERY_LAST_DAY = 2;
  * シフトの接客として流す（自分で入ったシフトも、スミさんのLIMEで呼ばれたシフトも）。DAY7までにシフトへ入らなかった時は、
  * 夜イベントの定義（ch1.js の freeNights）どおり DAY8 以降の夜に読む。 */
 const carriedShiftStory = () => state.chapter === 1 && state.day >= 2 && !state.flags._ev_salaryman ? regularCustomerStory : null;
+/** 店番（昼から夜まで・2コマ）を済ませた日の印。夜の約束は、仕事を終えてから向かう（endDay）。 */
+const shiftThroughNight = () => { state.flags._shift_through_night = state.day; };
 async function regularCustomerStory() {
   const scene = DB.dialogues.ch1_salaryman_regular;
   if (state.flags._ev_salaryman || !scene) return null;
@@ -703,9 +705,7 @@ async function performSpotAction(spot, saveGate) {
   let slotsUsed = 1;
   let exp = null;
   if (spot.kind === "tonari") {
-    const selected = await tonariMenu({ talks: chapterDef?.tonariTalks?.() });
-    const floor = selected === "baito_floor";
-    const sub = floor ? "baito" : selected; // 同じ勤務。固定夜・訪問日・体力・成長の経路を分けない。
+    const sub = await tonariMenu({ talks: chapterDef?.tonariTalks?.() });
     if (state !== actionOwner || !sub) return { used: false, exerted };
     if (chapterDef?.performTonariTalk) {
       const talk = await chapterDef.performTonariTalk(sub);
@@ -732,9 +732,13 @@ async function performSpotAction(spot, saveGate) {
       toast(makanai ? "今日はもうまかないで練習した" : sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
       return { used: false, exerted };
     }
-    if (!(await staminaGuard(sub === "baito" ? -24 : -16))) return { used: false, exerted };
+    // シフト（店番）は昼から夜まで、2コマ使う（TFL62）。夜からは入れない。今夜のお誘いの返事しそびれも先に確かめる
+    if (sub === "baito" && !shiftOpen()) { toast("シフトは昼から入る。夜からは入れない"); return { used: false, exerted }; }
+    if (sub === "baito" && !(await confirmLimeReminder(spot, { slotsUsed: SHIFT_SLOTS }))) return { used: false, exerted };
+    if (!(await staminaGuard(sub === "baito" ? -SHIFT_STAMINA : -16))) return { used: false, exerted };
     if (state !== actionOwner) return { used: false, exerted: false };
-    if (floor && saveGate) {
+    // 店番の途中は保存しない（途中の体力・訪問記録だけが残らないよう、行動の精算まで保存を止める）
+    if (sub === "baito" && saveGate) {
       saveGate.release = holdActionSave(actionOwner);
     }
     exerted = true;
@@ -746,8 +750,10 @@ async function performSpotAction(spot, saveGate) {
       const { masteryGained } = await runStrawberryTrial({ bg: TONARI_BG, isCurrent: () => state === actionOwner });
       if (masteryGained) toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
     } else if (sub === "baito") {
-      // 本編の「常連さんの話」を読むシフト（carriedShiftStory）は、いつものシフトとして進む（フロア営業の札は、その間は出ない。tonari.js）
-      if (await doBaito({ floor, story: carriedShiftStory() }) === false || state !== actionOwner) return { used: false, exerted: false };
+      // 本編の「常連さんの話」は、その日の店番の開店前に読む（carriedShiftStory）
+      if (await doBaito({ story: carriedShiftStory() }) === false || state !== actionOwner) return { used: false, exerted: false };
+      slotsUsed = SHIFT_SLOTS;
+      shiftThroughNight();
     }
     else if (await tonariCustomer() === false) return { used: false, exerted: false };
   } else if (spot.kind === "samechan") {
@@ -860,7 +866,7 @@ function postponeUnaffordableInvitation(inv) {
 }
 
 async function guardInvitation(inv) {
-  if (await staminaGuard(inv.event === "__sumi_baito__" ? -24 : inv.event === "__mukai_baito__" ? -14 : -10)) return true;
+  if (await staminaGuard(inv.event === "__sumi_baito__" ? -SHIFT_STAMINA : inv.event === "__mukai_baito__" ? -14 : -10)) return true;
   rescheduleInvitation(inv, "体調を考え、約束を別の日に改めることにした");
   save();
   return false;
@@ -905,7 +911,8 @@ async function runInvitation(inv, { advanceSlot = false } = {}) {
         state.flags._private_night_day = state.day;
         state.flags._private_night_char = inv.sender;
       }
-      if (advanceSlot) state.slot++;
+      // スミさんに呼ばれたシフトも、昼から夜までの店番（2コマ）
+      if (advanceSlot) state.slot = inv.event === "__sumi_baito__" ? Math.min(2, slot + SHIFT_SLOTS) : state.slot + 1;
     }
     return { done, spent };
   } finally { releaseSave(); }
@@ -931,6 +938,7 @@ async function meetInvitation(inv) {
     if (!completed || state !== owner) return false;
     state.visitedDay.tonari_baito = state.day;
     state.visitedDay.tonari = state.day;
+    shiftThroughNight();
   } else if (inv.event === "__mukai_baito__") {
     // ムカイさんのLIMEで呼ばれた東京の mukai のシフト（VOL10）。シフトの中身は章の側（chapters/tokyo-mukai.js）
     if (!await chapterDef.mukaiShift?.({ called: true }) || state !== owner) return false;
@@ -1051,7 +1059,8 @@ async function endDay({ returnedToTonari = false } = {}) {
   let companion = metTonight ? state.flags._private_night_char : null;
   if (appointment && (appointment.day ?? state.day) === state.day
     && (appointment.afterClose && appointment.queuedAfterClose || rested && appointment.slot === 1
-      || state.day === 1 && state.flags._day1_shift_ended && appointment.slot === 1)
+      || state.day === 1 && state.flags._day1_shift_ended && appointment.slot === 1
+      || state.flags._shift_through_night === state.day && appointment.slot === 1)
     && !postponeUnaffordableInvitation(appointment) && await guardInvitation(appointment)) {
     // C04: 営業後・休養後の約束も、未読のLIMEを前提に場面を始めない。先に該当トークを読ませる。
     const apptOwner = state;
