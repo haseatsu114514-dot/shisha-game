@@ -99,8 +99,8 @@ synthetic("util.js", { el, pick: (list) => list[0] });
 synthetic("data.js", { DB: db, bgUrl: (id) => id });
 const stateModule = synthetic("state.js", { state, config: { statEffectColors: true }, timeOfDay: () => "day" });
 synthetic("stats.js", {
-  addMoney() {}, addStamina() {}, applyStats() {}, step: () => 1,
-  currentCondition: () => ({}), affinityLevel,
+  addMoney: (amount) => { state.money += amount; }, addStamina() {}, applyStats() {}, step: () => 1,
+  currentCondition: () => ({ bonusRate: 1.15, shiftBonus: 1000, health: "green" }), affinityLevel,
 });
 synthetic("ui.js", {
   showScreen: (name, node) => {
@@ -186,7 +186,7 @@ function reset(overrides = {}) {
   }, structuredClone(overrides));
   plays.length = 0; visitCalls.length = 0; screens.length = 0;
   storyReady = false; menuPick = "after-none";
-  loadAt = null; cancelAt = null; floorOutcome = { rank: "B", stamp: "まずまず", bonus: 500, fans: 1, sales: 12000 };
+  loadAt = null; cancelAt = null; floorOutcome = { rank: "B", stamp: "まずまず", fans: 1, sales: 12000 };
 }
 
 // --- B05: 固有会話がある日は visitChar、無い日は定型の一言 ---
@@ -305,10 +305,12 @@ floorOutcome = null; // 店番の途中で止まった
 assert.equal(await tonari.doBaito(), false);
 assert(!plays.includes("remake_baito_end"));
 assert.equal(state.slot, 0, "止まったシフトは、出勤前の時間帯（昼）のまま");
+assert.equal(state.money, 5000, "中断では支給しない");
 // 店番は昼から夜まで（TFL62）: 済んだら、上がりの場面からは夜。はじめての店番は、スミさんの前振りとチュートリアルの後
 reset({ slot: 0 });
 assert.equal(await tonari.doBaito(), true);
 assert.equal(state.slot, 1, "上がりは夜の店");
+assert.equal(state.money, 15200, "基本給8,000円＋歩合1,200円＋好調1,000円を入金する");
 assert.equal(state.flags._tonari_floor_tutorial, true);
 assert.deepEqual(state.flags._tonari_floor, { nights: 1, best: "B", fans: 1, top: 12000 });
 assert(plays.indexOf("tonari_floor_first") > plays.indexOf("remake_baito_start") && plays.indexOf("remake_baito_end") > plays.indexOf("tonari_floor_first"));

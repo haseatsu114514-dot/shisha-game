@@ -98,10 +98,11 @@ for (const chapter of chapters) for (const day of [1, 2, 13, 14])
 reset(); await rig.giveEarlyHomeRig(); // Missing gift dialogue still grants/saves, as before.
 assert.deepEqual(plays(), []); assert(state.owned.includes(rig.SUMI_RIG)); assert.equal(saves.length, 1);
 // Actual complete shifts: count is incremented before eligibility; first eligible cameo wins.
-// The shift is the floor (店番・TFL62): noon to night, two slots' base pay (16,000) and 40 stamina. The floor screen is not loaded here
-// (dynamic import is unavailable in this VM), so the shift ends without a sales bonus. The old customer events are gone (TFL63).
+// The shift is the floor (店番・TFL62): noon to night, chapter-based pay and 40 stamina for two slots.
+// Dynamic import is unavailable in this VM, so the shift ends without commission. The old customer events are gone (TFL63).
 const cameoFlags = ['_ev_kuraudo_cameo', '_ev_reviewer_cameo', '_ev_uezono_cameo'];
 const cameoScenes = ['ch1_kuraudo_cameo', 'ch1_reviewer_cameo', 'ch1_uezono_cameo'];
+const baseByChapter = { 1: 8000, 2: 10000, 3: 12000, 4: 14000, 5: 16000 };
 for (const chapter of chapters) for (const day of [1, 2, 3, 4, 5, 6, 13, 14])
   for (const count of [1, 2, 3, 4, 5]) for (const mask of [0, 1, 3, 7]) for (const agehaScript of [false, true]) {
     const flags = Object.fromEntries(cameoFlags.filter((_, i) => mask & (1 << i)).map(k => [k, true]));
@@ -117,7 +118,7 @@ for (const chapter of chapters) for (const day of [1, 2, 3, 4, 5, 6, 13, 14])
     for (let i = 0; i < 3; i++) assert.equal(!!state.flags[cameoFlags[i]], !!(mask & (1 << i)) || i === expected);
     assert.equal(!!state.flags._ev_ageha_cameo, chapter === 1 && day >= 4 && agehaScript);
     assert.equal(state.baitoCount, count); assert.equal(state.lastBaitoDay, day);
-    assert.equal(state.money, 36000); assert.equal(state.stamina, 60); assert.equal(saves.length, 0);
+    assert.equal(state.money, 20000 + (baseByChapter[chapter] ?? 8000)); assert.equal(state.stamina, 60); assert.equal(saves.length, 0);
     assert.deepEqual(structuredClone(trace.find(t => t[0] === 'stats')), ['stats', { technique: 2, charm: 2 }]);
     assert.equal(state.baitoRecent.length, 0, 'the old customer history is no longer written');
     cases++;
@@ -129,7 +130,7 @@ for (const chapter of chapters) {
   await tonari.doBaito({ called: true });
   assert(!plays().some(id => [...cameoScenes, 'ch1_ageha_encounter'].includes(id)));
   assert(!plays().some(id => /^baito_|remake_baito_(routine|rain)/.test(id)));
-  assert.equal(state.money, 41000); assert.equal(saves.length, 0);
+  assert.equal(state.money, 25000 + (baseByChapter[chapter] ?? 8000)); assert.equal(saves.length, 0);
   assert.deepEqual(state.usedBaito, []);
   cases++;
 }
@@ -138,22 +139,19 @@ for (let i = 0; i < 3; i++) {
   reset({ day: 6, baitoCount: i + 1, flags: Object.fromEntries(cameoFlags.slice(0, i).map(k => [k, true])) });
   await tonari.doBaito(); assert(plays().includes(cameoScenes[i])); assert(state.flags[cameoFlags[i]]);
 }
-// Tournament achievement pay is wired into the actual shift, not only the pure model.
-for (const [flags, base] of [
-  [{}, 16000], [{ _ch1_cleared: true }, 17000], [{ _ch2_cleared: true }, 18000],
-  [{ _ch3_tournament_won: true }, 19000], [{ _ch4_cleared: true }, 20000],
-]) for (const called of [false, true]) {
-  reset({ chapter: 5, flags });
+// The actual shift pays the chapter's base wage regardless of the tournament flags in the save.
+for (const [ch, base] of Object.entries(baseByChapter)) for (const flags of [{}, { _ch4_cleared: true }]) for (const called of [false, true]) {
+  reset({ chapter: Number(ch), flags });
   assert.equal(await tonari.doBaito({ called }), true);
   assert.equal(state.money, 20000 + base + (called ? 5000 : 0));
   assert.equal(state.stamina, 60);
   assert.equal(state.baitoCount, 1);
   assert.equal(trace.filter(([kind]) => kind === 'money').length, 1, 'raise is part of one payment');
-  assert(trace.some(([kind, text]) => kind === 'toast' && text.includes(`基本${base.toLocaleString('ja-JP')}円`)), 'receipt matches actual base');
+  assert(trace.some(([kind, text]) => kind === 'toast' && text.includes(`基本給${base.toLocaleString('ja-JP')}円＋歩合0円`)), 'receipt matches base and commission');
 }
 reset({ chapter: 5, flags: { _ch4_cleared: true } });
 const parallel = await Promise.all([tonari.doBaito(), tonari.doBaito()]);
 assert.equal(parallel.filter(Boolean).length, 1);
-assert.equal(state.money, 40000, 'simultaneous duplicate does not double pay the raised shift');
-console.log(`PASS ch1 daily features: ${cases} boundary cases and achievement payment/receipt/duplicate cases; actual registry/home-rig/tonari, controlled ports`);
+assert.equal(state.money, 36000, 'simultaneous duplicate does not double pay the shift');
+console.log(`PASS ch1 daily features: ${cases} boundary cases and chapter payment/receipt/duplicate cases; actual registry/home-rig/tonari, controlled ports`);
 

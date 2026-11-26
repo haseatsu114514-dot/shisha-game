@@ -1,5 +1,5 @@
 // 本番tonariシフトをVMで実行。店番（昼から夜まで・TFL62）の日当と体調・カメオの一度限り・上がりの会話・昼の閉店矛盾を検証。
-// 旧バイトの接客（data/baito_events.json の抽選）は TFL63 で廃止した。店番の画面はこの VM では読まない（売上ボーナスなしで勤務だけ済む）。
+// 旧バイトの接客（data/baito_events.json の抽選）は TFL63 で廃止した。店番の画面はこの VM では読まない（歩合なしで勤務だけ済む）。
 // node --experimental-vm-modules remake/test/daily_consistency.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
@@ -65,21 +65,21 @@ for (const scene of ["ch1_kuraudo_cameo", "ch1_reviewer_cameo", "ch1_uezono_came
 reset({ chapter: 2, baitoCount: 1, flags: {} }); await tonari.doBaito(); assert(!plays.includes("ch1_kuraudo_cameo"));
 // 旧バイトの接客（抽選の客・今日の注文）は出ない（TFL63）
 assert(!plays.some((scene) => /^baito_|remake_baito_(routine|rain)/.test(typeof scene === "string" ? scene : scene.dialogue_id || "")));
-// 2コマ分の基本給（16,000円）。昼シフト後のUIと台本にレジ締めや閉店を持ち込まない。
-reset(); await tonari.doBaito({ called: true }); assert.equal(money[0], 22000, "16,000＋急なシフト5,000＋好調1,000（体力74から昼の分を引いて54）"); assert(!JSON.stringify(menus).includes("閉店"));
+// 第1章の2コマ分の基本給（8,000円）。昼シフト後のUIと台本にレジ締めや閉店を持ち込まない。
+reset(); await tonari.doBaito({ called: true }); assert.equal(money[0], 14000, "8,000＋急なシフト5,000＋好調1,000（体力74から昼の分を引いて54）"); assert(!JSON.stringify(menus).includes("閉店"));
 // 体力は昼の分（20）を引いた時の色で、仕上げの調子（指名の倍率・好調の上乗せ）を決める。夜の分（20）は店番の後に引く。基本給・急なシフトは維持。
-for (const [stamina, expectedPay] of [[75, 22575], [70, 21500], [45, 21250], [24, 21250]]) {
+for (const [stamina, expectedPay] of [[75, 14575], [70, 13500], [45, 13250], [24, 13250]]) {
   reset({ stamina }); charmStep = 3; rainy = true;
   await tonari.doBaito({ called: true });
   assert.equal(money[0], expectedPay, `Shift condition at stamina=${stamina}`);
   assert.equal(state.stamina, Math.max(0, Math.max(0, stamina - 20) - 20), "昼の分と夜の分で、合わせて40");
 }
-reset({ stamina: 24 }); await tonari.doBaito(); assert.equal(money[0], 16000, "Exhaustion cut the guaranteed base wage");
+reset({ stamina: 24 }); await tonari.doBaito(); assert.equal(money[0], 8000, "Exhaustion cut the guaranteed base wage");
 const fatigueWarning = () => toasts.some(({ text, kind }) => kind === "warn" && text.includes("ボーナスは半額"));
 assert.equal(fatigueWarning(), false);
 reset({ stamina: 24 }); calling = quick = true; await tonari.doBaito();
-assert.equal(money[0], 18100); // 16,000＋呼び込み500（不調で半額）＋仕事が早い1,600
-assert(toasts.some(({ text }) => text.includes("仕事が早い") && text.endsWith("+1,600円")));
+assert.equal(money[0], 9300); // 8,000＋呼び込み500（不調で半額）＋仕事が早い800
+assert(toasts.some(({ text }) => text.includes("仕事が早い") && text.endsWith("+800円")));
 assert(fatigueWarning(), "指名がなくても呼び込みボーナスの半減を知らせる");
 // #1081 B05: シフト上がりのスミ会話は必須で、メニューに選択肢は無い。
 // 統合spots.jsの夜限定gateをそのまま使う。店番は昼から夜まで（TFL62）なので、上がりは夜: 夜限定の固有会話（ch1_sumi_training）が流れ、既読（story）が進む。

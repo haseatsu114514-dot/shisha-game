@@ -115,7 +115,7 @@ await suite("ch3-tokyo-daily", async check => {
       world.flags._ch4_cleared = true;
       return [mukaiShiftPay(world), shiftBasePay(world), mukaiShiftPay(world, true)];
     });
-    assert.deepEqual(parity, [12000, 12000, 17000], "world champion wages and called bonus match tonari");
+    assert.deepEqual(parity, [12000, 12000, 17000], "mukai uses tournament achievement wages and the called bonus");
     await go(page, "ch3_tokyo_mukai");
     const help = page.locator(`#modal.show button`, { hasText: "シフトに入る" });
     await help.waitFor();

@@ -1,7 +1,7 @@
 // tonari フロア営業の台本（単価・気分・フレーバー・ミックス・客・ケア・夜の種類・評価）。ルールは tonari-floor-model.js、画面は tonari-floor-view.js。
 // 遊びの形（2026-11-20 オーナー）: 一人で店を回す。客は「フルーツ系が吸いたい」のように気分を言うだけで、
 // 提供は、並んでいるミックスの一覧から選ぶ（原作の、キャストを卓に着ける所にあたる。一覧はシャッフルできる）。
-// お金はすべて店のもの。はじめの所持金には入らない（日当と売上ボーナスは tonari.js が渡す）。
+// 売上は店のお金。はじめには tonari.js が日当（基本給・売上歩合・手当）を渡す。
 // 原価・仕入れ・利益は扱わない（「ただ満足させて売上をいかに上げるかのゲームにする」。東京編・ドバイ編のバイトでも同じ遊びを使う）。
 
 // 単価（2026-11-20 オーナー指定）: 基本（シーシャ一台）2,000円・チャージ700円（ひとり）・
@@ -358,12 +358,12 @@ export const MOODS = Object.freeze([
   Object.freeze({ id: "mad", label: "激怒", min: 0, color: "#ef6a5a", face: "moodMad" }),
 ]);
 
-/** 営業の評価。min＝全組の満足の平均。bonus＝店からの売上ボーナス（チップではない）。 */
+/** 営業の評価。min＝全組の満足の平均。 */
 export const RANKS = Object.freeze([
-  Object.freeze({ id: "S", stamp: "大入り", min: 88, bonus: 1500, line: "文句なしだ。一人で、店じゅうをいい顔にして帰した" }),
-  Object.freeze({ id: "A", stamp: "上々", min: 74, bonus: 1000, line: "いい営業だった。卓の様子が、よく見えていたぞ" }),
-  Object.freeze({ id: "B", stamp: "まずまず", min: 56, bonus: 500, line: "回せてはいた。次は、待たせている卓から先に見ろ" }),
-  Object.freeze({ id: "C", stamp: "ばたばた", min: 0, bonus: 0, line: "ばたついたな。まあ、一人で回せば最初はこうだ" }),
+  Object.freeze({ id: "S", stamp: "大入り", min: 88, line: "文句なしだ。一人で、店じゅうをいい顔にして帰した" }),
+  Object.freeze({ id: "A", stamp: "上々", min: 74, line: "いい営業だった。卓の様子が、よく見えていたぞ" }),
+  Object.freeze({ id: "B", stamp: "まずまず", min: 56, line: "回せてはいた。次は、待たせている卓から先に見ろ" }),
+  Object.freeze({ id: "C", stamp: "ばたばた", min: 0, line: "ばたついたな。まあ、一人で回せば最初はこうだ" }),
 ]);
 
 /**

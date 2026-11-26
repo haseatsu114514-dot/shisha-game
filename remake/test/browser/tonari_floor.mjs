@@ -22,7 +22,6 @@ async function setup(page, { day = 4, slot = 1, manual = true } = {}) {
       floorData: await import("./js/daily/tonari-floor-data.js"), bot: await import("./test/tonari_floor_bot.mjs"), audio: await import("./js/core/audio.js") };
     C.ch1.setupHooks(); C.vn.vnTest.turbo = true;
     C.view.floorTest.manual = manual;
-    C.data.DB.baito = []; // 接客の抽選報酬を除き、日当と売上ボーナスだけを比べる
     C.fresh = (d = day, sl = slot) => {
       const s = C.core.newGame();
       Object.assign(s, { phase: "daily", day: d, slot: sl, money: 30000, stamina: 100, weatherSeed: 4, baitoCount: 1 });
@@ -41,7 +40,7 @@ async function setup(page, { day = 4, slot = 1, manual = true } = {}) {
       for (const r of records) for (const n of r.addedNodes) if (n.classList?.contains("toast")) C.toasts.push(n.textContent);
     }).observe(document.body, { childList: true, subtree: true });
     // 営業をボットで最後まで回す（導入→営業→締め）。pace＝一つの操作にかかる刻み
-    C.drive = async ({ pace = 2, pick = "best" } = {}) => {
+    C.drive = async ({ pace = 2, pick = "best", leaveResult = false } = {}) => {
       const api = () => C.view.floorTest.api;
       const click = (sel) => document.querySelector(sel)?.click();
       for (let i = 0; i < 4000; i++) {
@@ -51,7 +50,11 @@ async function setup(page, { day = 4, slot = 1, manual = true } = {}) {
         C.driven = true;
         if (a.coach?.()) { C.skippedTutorial = true; click('[data-test="tonari-floor-coach-skip"]'); continue; } // チュートリアルは飛ばす（中身は pc-tutorial）
         if (a.mode() === "intro") { click('[data-test="tonari-floor-option-start"]'); continue; }
-        if (a.mode() === "result") { C.result = C.model.floorResult(a.state()); C.dusk = a.host.dataset.dusk; click('[data-test="tonari-floor-option-continue"]'); return; }
+        if (a.mode() === "result") {
+          C.result = C.model.floorResult(a.state()); C.dusk = a.host.dataset.dusk;
+          if (!leaveResult) click('[data-test="tonari-floor-option-continue"]');
+          return;
+        }
         if (a.mode() !== "live") continue;
         const action = C.bot.floorBotAction(a.state(), { pick });
         if (action) a.act(action);
@@ -94,11 +97,11 @@ await suite("tonari-floor", async (check) => {
     ? check(label, body, { reducedMotion: "reduce", ...options }) : Promise.resolve());
   const MARK = { best: "◎", good: "○", none: "×" };
 
-  // 勤務札から入り、店番（昼から夜まで・2コマ。TFL62）を終えて日当と売上ボーナスを受け取る。いつものシフト（旧バイト）は無い（TFL63）。
+  // 勤務札から入り、店番（昼から夜まで・2コマ。TFL62）を終えて基本給と歩合を受け取る。
   // はじめての店番は、スミさんの前振りのあとチュートリアル（TFL64。ここでは飛ばす。中身は pc-tutorial）。
   await run("pc-shift-flow", async (page) => {
     await setup(page, { slot: 0 });
-    // 同じ状態で、店番を開店してすぐ閉めた時の日当（体調などの上乗せ込み・売上ボーナスなし）。本番との差が売上ボーナスになる
+    // 同じ状態で、開店直後に閉めた時の日当を測る。基本給と手当だけが入り、本番との差が歩合になる。
     const plain = await page.evaluate(async () => {
       const s = C.fresh(4, 0);
       C.view.floorTest.instant = true;
@@ -120,9 +123,9 @@ await suite("tonari-floor", async (check) => {
     await page.locator('[data-test="map-go"]').click();
     const card = page.locator('[data-test="tonari-baito"]');
     assert.match(await card.innerText(), /シフトに入る（バイト）/);
-    assert.match(await card.innerText(), /【はじめての店番】昼から夜まで、五つの卓を一人で回す（2コマ）.*基本16,000円/);
+    assert.match(await card.innerText(), /【はじめての店番】昼から夜まで、五つの卓を一人で回す（2コマ）.*基本給8,000円＋売上の10%/);
     const before = await page.evaluate(() => ({ money: C.core.state.money, stamina: C.core.state.stamina, slot: C.core.state.slot }));
-    await page.evaluate(() => { C.trace = []; }); // 上の、売上ボーナスなしの日当を測った勤務の分を消す
+    await page.evaluate(() => { C.trace = []; C.toasts = []; }); // 早じまいを測った勤務の記録を消す
     await card.click();
     await page.locator(t("coach")).waitFor();
     assert.deepEqual(await page.evaluate(() => C.trace.filter((id) => /floor/.test(id))), ["tonari_floor_first"], "スミさんの前振りのあと、チュートリアル");
@@ -136,7 +139,10 @@ await suite("tonari-floor", async (check) => {
     // 営業中は保存しない（途中の体力だけが残らない）
     assert.equal(await page.evaluate(() => C.core.save()), false);
     assert.equal(await page.evaluate(() => C.view.floorTest.api.state().dusk > 0), true, "昼から夜まで通しの店番");
-    await page.evaluate(() => C.drive({ pace: 2 }));
+    await page.evaluate(() => C.drive({ pace: 2, leaveResult: true }));
+    const payLines = await page.locator(`${t("pay")} > *`).allTextContents();
+    await page.screenshot({ path: `${shots}/tonari-floor-pc-shift-result.png` });
+    await page.locator(t("option-continue")).click();
     await page.waitForFunction(() => C.core.state.slot === 2 || C.core.state.day === 5, null, { timeout: 60000 });
     const after = await page.evaluate(() => ({ money: C.core.state.money, stamina: C.core.state.stamina, floor: C.core.state.flags._tonari_floor,
       visited: C.core.state.visitedDay.tonari_baito, result: C.result, toasts: C.toasts, error: window.calendarError, dusk: C.dusk,
@@ -144,7 +150,6 @@ await suite("tonari-floor", async (check) => {
       order: Object.keys(C.core.state.flags).filter((k) => k.startsWith("_shift_order_")), baitoCount: C.core.state.baitoCount }));
     assert.equal(after.error, undefined);
     assert.equal(after.result.rank, "S");
-    assert.equal(after.result.bonus, 1500);
     assert.equal(after.result.left, 0, "手際よく回せば、誰も待ちきれずに帰らない");
     assert(after.result.counts.tend >= 1, "炭の調整に回っている");
     assert.equal(after.dusk, "true", "営業の半ばで日が暮れた");
@@ -155,10 +160,16 @@ await suite("tonari-floor", async (check) => {
     assert.equal(after.tutorial, true, "飛ばしたチュートリアルも、済んだことにする");
     assert.equal(after.through, 4, "昼から夜まで（2コマ）使った");
     assert.deepEqual(after.order, [], "「今日の注文」は無い");
-    assert(plain.pay >= 16000, "2コマ分の基本給");
-    assert.equal(after.money - before.money, plain.pay + 1500, "日当＋売上ボーナス");
+    const commission = Math.floor(after.result.sales / 10), allowances = plain.pay - 8000;
+    const paid = after.money - before.money;
+    const yen = (n) => `${n.toLocaleString("ja-JP")}円`;
+    assert(allowances >= 0, "2コマ分の基本給");
+    assert(commission > 0);
+    assert.equal(paid, plain.pay + commission, "基本給＋歩合＋手当");
+    assert.deepEqual(payLines, ["基本給 8,000円", `＋ 歩合（売上の10%）${yen(commission)}`,
+      ...(allowances ? [`＋ 手当 ${yen(allowances)}`] : []), `＝ 支給額 ${yen(paid)}`]);
     assert.equal(after.stamina, plain.stamina, "体力の消費は同じ");
-    assert(after.toasts.some((text) => /店番の売上ボーナス（大入り）\+1,500円/.test(text)), after.toasts.join(" / "));
+    assert(after.toasts.some((text) => text.includes(`シフトの日当 +${yen(paid)}（基本給8,000円＋歩合${yen(commission)}`)), after.toasts.join(" / "));
     const saved = await page.evaluate(() => { const raw = JSON.parse(localStorage.getItem(C.core.SAVE_KEY)); return { money: raw.money, floor: raw.flags._tonari_floor }; });
     assert.deepEqual(saved, { money: after.money, floor: after.floor });
   });
@@ -696,6 +707,7 @@ await suite("tonari-floor", async (check) => {
       await page.locator(t("pause")).click();
       await page.locator(t("option-close")).click();
       await page.locator(t("close-panel")).waitFor();
+      assert.match(await page.locator(t("close-panel")).innerText(), /基本給はそのまま受け取れます。歩合は閉店までの売上で決まります。/);
       await page.locator(t("option-confirm-close")).click();
       await page.locator(t("result")).waitFor();
       assert.match(await page.locator(t("rank")).innerText(), /大入り|上々|まずまず|ばたばた/);
@@ -713,6 +725,10 @@ await suite("tonari-floor", async (check) => {
       });
       assert.deepEqual(slip.names, ["お迎えしたお客さん", "チャージ", "シーシャ", "ドリンク", "トップ替え（おかわり）"]);
       assert.equal(slip.sum, slip.total);
+      const yen = (amount) => `${amount.toLocaleString("ja-JP")}円`;
+      const commission = Math.floor(slip.total / 10);
+      assert.deepEqual(await page.locator(`${t("pay")} > *`).allTextContents(),
+        ["基本給 8,000円", `＋ 歩合（売上の10%）${yen(commission)}`, `＝ 支給額 ${yen(8000 + commission)}`]);
       assert.doesNotMatch(slip.text, /原価|利益|サービス費|延長|定番/);
       assert.match(slip.text, /いい調整 \d+回・いいケア \d+回・追加ドリンク \d+杯・おかわり \d+人・フィーバー 1回/);
       assert.match(slip.fans, /^店のファン [＋−]\d+人（合計 \d+人）$/);

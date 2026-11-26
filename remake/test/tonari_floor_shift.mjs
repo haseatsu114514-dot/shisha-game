@@ -31,11 +31,11 @@ assert(game.save(), "a replacement state is not locked by the old floor");
 outer();
 const release = game.holdActionSave(restored);
 restored.visitedDay.tonari_baito = restored.day;
-restored.stamina -= 40; restored.money += 16000; restored.slot += 2; // 店番は昼から夜まで（2コマ・TFL62）
+restored.stamina -= 40; restored.money += 9680; restored.slot += 2; // 基本給8,000円＋売上16,800円の歩合
 release();
 assert(game.saveToSlot(slot));
 assert.deepEqual([game.loadFromSlot(slot).money, game.state.slot, game.state.visitedDay.tonari_baito],
-  [JSON.parse(before).money + 16000, 2, 4]);
+  [JSON.parse(before).money + 9680, 2, 4]);
 
 // 店番（フロア営業）と本編の境界（画面はここでは代役）。店番は昼から夜まで（TFL62）で、いつものシフト・今日の注文は無い（TFL63）。
 // 店の売上を財布・私物へ混ぜない。中断・LOAD では進み具合を残さない。
@@ -62,8 +62,8 @@ async function floorBoundary(mode) {
       if (mode === "abandon") return null;
       if (mode === "again" && calls.length === 1) return { again: "tutorial" };
       return calls.filter((c) => !c.tutorial).length === (mode === "again" ? 2 : 1)
-        ? { sales: 16800, rank: "A", stamp: "上々", bonus: 1000, fans: 6 }
-        : { sales: 9000, rank: "B", stamp: "まずまず", bonus: 500, fans: -9 };
+        ? { sales: 16800, rank: "A", stamp: "上々", fans: 6 }
+        : { sales: 9000, rank: "B", stamp: "まずまず", fans: -9 };
     });
   }, { context });
   await view.link(() => { throw Error("unexpected import"); });
@@ -72,18 +72,20 @@ async function floorBoundary(mode) {
   await module.link(() => { throw Error("unexpected import"); });
   await module.evaluate();
   const signal = new AbortController().signal;
-  const result = await module.namespace.serveFloor(account, signal);
+  const result = await module.namespace.serveFloor(account, signal, () => 1200);
   if (mode === "again") {
     // 遊び方を選んだ: チュートリアル → 同じ一日（同じ種）をもう一度
     assert.deepEqual(calls.map((c) => !!c.tutorial), [false, true, false]);
     assert.equal(calls[2].seed, calls[0].seed);
+    assert.equal(calls[2].getAllowances(), 1200);
     assert.equal(account.flags._tonari_floor_tutorial, true);
-    assert.equal(result.bonus, 1000);
+    assert.equal(result.sales, 16800);
     return;
   }
   assert.equal(calls.length, 1);
   assert.equal(calls[0].level, 0, "はじめての営業は level 0");
   assert.equal(calls[0].chapter, 1);
+  assert.equal(calls[0].getAllowances(), 1200);
   // 昼から夜まで（2コマ・TFL62）: 昼の店内で始まり、半ばで夜の絵に替わる
   assert.deepEqual([calls[0].night, calls[0].dusk, calls[0].art, calls[0].artNight], [false, true, "bg-day", "bg-night"]);
   assert.equal(calls[0].offerTutorial, true, "開店前の札から、いつでも遊び方を見られる");
@@ -92,7 +94,7 @@ async function floorBoundary(mode) {
   assert.equal("anchor" in calls[0], false, "今日の注文の客は、ワンオペの営業には混ぜない");
   assert.equal(calls[0].visitor, null, "はじめての営業には、本編の人物は来ない");
   if (mode === "done") {
-    assert.equal(result.bonus, 1000);
+    assert.equal(result.sales, 16800);
     // 別realmの値なので文字列で比べる
     assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":1,"best":"A","fans":6,"top":16800}');
     assert.equal(calls[0].topSales, 0, "はじめての営業には、売上の記録が無い");
@@ -101,7 +103,7 @@ async function floorBoundary(mode) {
     assert.equal(calls.length, 2);
     assert.equal(calls[1].level, 1);
     assert.equal(calls[1].fans, 6);
-    assert.equal(second.bonus, 500);
+    assert.equal(second.sales, 9000);
     assert.equal(calls[1].topSales, 16800, "次の営業へ、売上の最高を渡す");
     // 売上の最高は、超えた時だけ書き換える（2回目の 9,000円では変わらない）
     assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":2,"best":"A","fans":0,"top":16800}');
@@ -133,7 +135,7 @@ async function floorBoundary(mode) {
   assert.deepEqual([...later].sort(), ["adam", "tsumugi", "minto", ...newcomers, null].sort());
 }
 for (const mode of ["done", "load", "abandon", "again"]) await floorBoundary(mode);
-// 画面を読み込めない時は、売上ボーナスなしで勤務だけ済ませる（進み具合は増やさない。旧バイトへは戻さない）。チュートリアルも、無しで進める。
+// 画面を読み込めない時は、歩合なしで勤務だけ済ませる（進み具合は増やさない。旧バイトへは戻さない）。チュートリアルも、無しで進める。
 {
   const account = { day: 4, chapter: 1, slot: 0, weatherSeed: 18, flags: {}, money: 30000 };
   const toasts = [];
@@ -144,7 +146,7 @@ for (const mode of ["done", "load", "abandon", "again"]) await floorBoundary(mod
   await module.evaluate();
   const result = await module.namespace.serveFloor(account, new AbortController().signal);
   assert.equal(result.fallback, true);
-  assert.equal(result.bonus, 0);
+  assert.equal(result.sales, 0);
   assert.equal(toasts.length, 1);
   assert.equal(account.flags._tonari_floor, undefined);
   assert.equal(await module.namespace.floorTutorial(account, new AbortController().signal), true);
