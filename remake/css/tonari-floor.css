@@ -35,6 +35,14 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   content: ""; position: absolute; inset: 0; background: currentColor;
   mask: url("../img/ui/tonari-floor/icons.webp") var(--tf-icon-position) / 800% 300% no-repeat;
 }
+.tf-icon[data-mark] {
+  background: currentColor;
+  mask: var(--tf-mark-image) center / contain no-repeat;
+}
+.tf-icon[data-mark="best"] { --tf-mark-image: url("../img/ui/floor/mark-best.webp"); }
+.tf-icon[data-mark="good"] { --tf-mark-image: url("../img/ui/floor/mark-good.webp"); }
+.tf-icon[data-mark="miss"] { --tf-mark-image: url("../img/ui/floor/mark-miss.webp"); }
+.tf-icon[data-mark="bad"] { --tf-mark-image: url("../img/ui/floor/mark-bad.webp"); }
 /* 気分（＝ミックスの属性）の札: 色と印（フルーティ＝橙・りんご／スイート＝桃・あめ／リフレッシュ＝水色・雪／リラックス＝藤・月） */
 .tf-wish { position: relative; display: inline-flex; align-items: center; gap: 4px; font-weight: 700; white-space: nowrap; color: #1b1220; }
 .tf-wish .tf-icon { width: 22px; height: 22px; }
@@ -212,8 +220,6 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-tag-anger .tf-icon svg { stroke-width: 3.2; }
 .tf-spot:is([data-urgent="high"], [data-mood="mad"]) .tf-tag-anger { display: grid; animation: tf-anger 0.5s ease-in-out infinite alternate; }
 @keyframes tf-anger { to { scale: 1.18; rotate: 8deg; } }
-/* 激怒の顔は、形に入れない怒りの印 */
-.tf-spot[data-mood="mad"] .tf-tag-face .tf-icon svg { stroke-width: 3; }
 .tf-tag-gauge { display: none; height: 9px; border-radius: 5px; background: #10201acc; overflow: hidden; }
 .tf-tag-gauge i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #9fd8e0, #f0fbff); transition: width 0.5s linear; }
 .tf-spot:is([data-gauge="make"], [data-gauge="coal"]) .tf-tag-gauge { display: block; }
@@ -641,7 +647,6 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-visit-mix .tf-recipe { font-size: var(--tf-tiny); padding-left: 0.5em; }
 .tf-visit-face { display: inline-flex; color: var(--tf-mood-color, var(--tf-mid)); }
 .tf-visit-face .tf-icon { width: 40px; height: 40px; }
-.tf-visit-face .tf-icon svg { stroke-width: 2.2; }
 .tf-visit-bars { flex: 1 1 180px; display: grid; gap: 3px; min-width: 0; }
 .tf-visit-bars span { display: flex; align-items: center; gap: 8px; }
 .tf-visit-bars small { flex: 0 0 2.4em; font-size: var(--tf-small); color: var(--tf-dim); line-height: 1.05; }
@@ -658,11 +663,6 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   background: #140c0888; color: #ffd98a; filter: drop-shadow(0 0 16px currentColor) drop-shadow(0 4px 6px #000c);
 }
 .tf-verdict .tf-icon { width: 170px; height: 170px; }
-.tf-verdict .tf-icon svg { opacity: 0; }
-.tf-verdict .tf-icon { background: url("../img/ui/tonari-floor/verdict-best.webp") center / contain no-repeat; }
-.tf-sheet[data-verdict="good"] .tf-verdict .tf-icon { background-image: url("../img/ui/tonari-floor/verdict-good.webp"); }
-.tf-sheet[data-verdict="miss"] .tf-verdict .tf-icon { background-image: url("../img/ui/tonari-floor/verdict-miss.webp"); }
-.tf-sheet[data-verdict="bad"] .tf-verdict .tf-icon { background-image: url("../img/ui/tonari-floor/verdict-bad.webp"); }
 .tf-verdict b { font-size: 34px; line-height: 1.1; color: #fff7e6; text-shadow: 0 2px 6px #000; }
 .tf-sheet[data-verdict] .tf-verdict { display: grid; animation: tf-verdict 0.45s var(--ease-snap, ease); }
 .tf-sheet[data-verdict="good"] .tf-verdict { color: #9be8b4; }
