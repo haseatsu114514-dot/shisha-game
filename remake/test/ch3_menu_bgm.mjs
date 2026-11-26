@@ -79,6 +79,32 @@ async function harness(chapter, value) {
       await dep.link(async () => synthetic(new URL("../core/util.js", url), [...(required.get(new URL("../core/util.js", url).href) || []), "el"]));
       return dep;
     }
+    if (specifier === "../core/chapter-menu.js") {
+      // 章共通MENUは実物を使う（スタブだと openMenu が未定義になり入口を検証できない）。
+      const dep = new vm.SourceTextModule(readFileSync(depUrl, "utf8"), { context,
+        importModuleDynamically: async specifier => {
+          const dyn = await synthetic(new URL(specifier, depUrl), ["openConfig", "openRuleSheet"]);
+          if (dyn.status === "unlinked") await dyn.link(() => {});
+          if (dyn.status === "linked") await dyn.evaluate();
+          return dyn;
+        } });
+      const menuDeps = new Map([
+        ["state.js", ["loadFromSlot", "requestResumeOnBoot"]],
+        ["ui.js", ["modal"]],
+        ["saves.js", ["saveFlow", "loadFlow", "returnToTitle"]],
+        ["glossary.js", ["glossaryPanel"]],
+      ]);
+      await dep.link(async inner => {
+        const innerUrl = new URL(inner, depUrl);
+        const names = menuDeps.get(innerUrl.pathname.split("/").at(-1)) || [];
+        // 章本体と共有する synthetic キャッシュ（URLキー）とは別枠で作る:
+        // 先に章側の名前だけで ui.js 等が作られると modal が欠けてリンクできない。
+        return new vm.SyntheticModule(names, function () {
+          for (const name of names) this.setExport(name, bindings[name] ?? (() => {}));
+        }, { context, identifier: `${innerUrl.href}#chapter-menu` });
+      });
+      return dep;
+    }
     if (specifier === "./ch3-aftermath-progress.js") {
       const dep = new vm.SourceTextModule(readFileSync(depUrl, "utf8"), { context });
       await dep.link(async () => synthetic(new URL("../js/core/tokyo-visits.js", import.meta.url), ["syncTokyoVisits"]));
