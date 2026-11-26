@@ -1,6 +1,7 @@
 import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-mastery.js";
 // 自由来店のソロ斧投げ。正式なひよりイベントの読了・関係には触れない。
 import { state, save } from "../core/state.js";
+import { spendableMoney } from "../core/travel-budget.js";
 import { on } from "../core/bus.js";
 import { el, yen } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
@@ -54,7 +55,8 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
   const bgmBefore = currentBgm() || "kansetsu_shomei_to_black_coffee"; playBgm("bgm_axe"); // #788 入店中は斧投げ曲
   const observer = new MutationObserver(() => { if (!host.isConnected) cancel(); });
   observer.observe(layers.screen, { childList: true });
-  const available = () => current() && owner.visitedDay.axe_bar !== day && owner.money >= AXE_BAR.playCost && owner.stamina > 0;
+  const canPay = () => spendableMoney(owner) >= AXE_BAR.playCost;
+  const available = () => current() && owner.visitedDay.axe_bar !== day && canPay() && owner.stamina > 0;
   try {
     await setBg(bgUrl(AXE_BAR.preview), { fast: true });
     if (!current()) return false;
@@ -99,7 +101,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       const menuLine = played ? "venue_maki_menu" : "venue_maki_menu_first";
       const welcome = arrivalGreeted("axe_bar", owner) && DB.dialogues[menuLine] ? menuLine : played ? "venue_maki_return" : "venue_maki_greet";
       const statusText = () => owner.visitedDay.axe_bar === day ? "今日はもう投げ終えた。記録を見ていこう。"
-        : owner.money < AXE_BAR.playCost ? "プレイには3,000円必要。記録を見るだけなら無料。"
+        : !canPay() ? `プレイには${yen(AXE_BAR.playCost)}必要。記録を見るだけなら無料。`
         : owner.stamina <= 0 ? "今日は体を休めよう。記録を見るだけなら無料。"
         : `参加 ${yen(AXE_BAR.playCost)}・体力を使う・1行動。途中でやめた場合は消費しない。`;
       const status = el("p.sub-lead", { text: statusText() });

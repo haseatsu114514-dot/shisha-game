@@ -45,7 +45,7 @@ export async function maybeRecruitTrpgMember(personId) {
 }
 
 /**
- * The table saves its completion and night action atomically; calendar must not advance twice.
+ * 入店・買い物は枠を使わず、卓の完了時は卓側で夜枠も一緒に保存する。どちらも日常側の追加消費は 0 枠。
  * 本棚の画面の前に、店長サイとのやり取りを読む（VAR02。daily/venue-arrivals.js）: 初めての来店は名乗るまで → 登場カットイン →
  * 店の案内（部活がまだ無ければ、そのままサイの提案へ）。二度目からは来店のたびに一本（昼と夜で別の束。同じ時間帯に入り直した時は読まない）。
  */

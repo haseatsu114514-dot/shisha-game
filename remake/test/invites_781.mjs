@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
+import { buyTrpgBook } from '../js/trpg/campaign.js';
 import * as invitations from '../js/daily/invitations.js';
 import { spendableMoney } from '../js/core/travel-budget.js';
 const state={}, trace=[], notes=[], DB={lime:[],dialogues:{}};
@@ -105,6 +106,40 @@ for(const firstHint of [false,true]) {
  assert.equal(competitor.result,'conflict_declined');assert.equal(expired.done,false);assert.equal(completed.result,undefined);
  assert.equal(chosen.result,'accepted');assert.equal(state.pendingInvite.sender,'naru');
  const after=JSON.stringify(state);await historyPhone.runItem(chosen,replyUi,[]);assert.equal(JSON.stringify(state),after,'reopen does not repeat replies');
+}
+// ボドゲカフェの入店・本の購入は日常枠を使わない。実際の会場一致の誘いだけがある日に地図から向かう。
+{
+  const cafe = { id: 'trpg_bar', kind: 'trpg' };
+  const catalog = JSON.parse(await fs.readFile(new URL('../../data/trpg_catalog.json', import.meta.url)));
+  const book = catalog.scenarios.find(entry => entry.id === 'regular-harbor');
+  let buy;
+  const cafeCalendar = await load('calendar.js', '\nexport { takeAction }; export const configure = () => { chapterDef = { nightEvents: {} }; };', {
+    nightPlan: () => [], spotById: () => cafe,
+    chooseSpot: async ({ onBeforeGo }) => { assert(await onBeforeGo(cafe)); return cafe.id; },
+    actionInviteNeedingReply: phone.actionInviteNeedingReply,
+    takeRespecCloseWarning: () => assert.fail('入店で組み直し終了の予告を消費した'),
+    modal: async dialog => { notes.push(dialog); return 'go'; },
+    paidAction: async run => ({ value: await run(), spent: 0 }),
+    openTrpgBar: async () => {
+      if (buy) assert(buyTrpgBook(state, catalog, book.id));
+      return { completed: false };
+    },
+  });
+  cafeCalendar.configure();
+  for (const slot of [0, 1]) for (buy of [false, true]) {
+    reset();
+    state.chapter = 2;
+    state.slot = slot;
+    state.trpg = { owned: [], stock: [book.id] };
+    state.inbox = [makeInvite('hiyori', { reminder_spot: cafe.id })];
+    await cafeCalendar.takeAction();
+    assert.deepEqual(notes.map(note => note.title), ['LIMEのお誘い']);
+    assert.match(notes[0].body, /ひよりからLIME/);
+    assert.deepEqual([state.day, state.slot], [4, slot]);
+    assert.deepEqual(state.trpg.owned, buy ? [book.id] : []);
+    assert.equal(state.money, 10000 - (buy ? book.price : 0));
+    assert.equal(state.visitedDay[cafe.id], undefined);
+  }
 }
 reset();const multi=makeInvite('multi'), a=makeInvite('a'), b=makeInvite('b'), unavailable=makeInvite('unavailable');
 state.inbox=[multi,a,b,unavailable];unavailable.msg.closed_on=6;let multiHint;

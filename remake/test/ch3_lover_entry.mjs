@@ -9,7 +9,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../js/', import.meta.url));
-const realPaths = ['core/chapter-save.js', 'core/state.js', 'core/legacy-cast-save.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/stat-step-tables.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','core/chapter-clock.js','daily/date-scene.js','daily/romance.js','daily/samechan-bonds.js','daily/samechan-date.js','chapters/lover-entry.js'];
+const realPaths = ['core/travel-budget.js', 'core/chapter-save.js', 'core/state.js', 'core/legacy-cast-save.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/stat-step-tables.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','core/chapter-clock.js','daily/date-scene.js','daily/romance.js','daily/samechan-bonds.js','daily/samechan-date.js','chapters/lover-entry.js'];
 const read = rel => JSON.parse(fs.readFileSync(new URL(rel, import.meta.url)));
 const loverEvents = read('../../data/dialogue/lover_events.json');
 const lover = read('../data/lover.json');
@@ -288,6 +288,35 @@ await check('an approved Samechan date at zero stamina settles only after readin
   assert.equal(s.pendingInvite, null); assert.equal(s.money, before - 3000);
   assert.equal(s.stamina, 0); assert.equal(s.slot, 1); assert.equal(s.lastDate.samechan, s.day);
   assert.deepEqual(ranks, [['samechan', 1]]);
+});
+
+await check('Samechan uses the current region on arrival and settles a completed reservation only once', async f => {
+  for (const region of ['widehanga', 'home', 'tokyo', 'dubai']) {
+    const s = f.chapterAt(5, ['samechan']);
+    const invite = { event: 'date_samechan', sender: 'samechan', day: s.day, slot: s.slot };
+    s.pendingInvite = invite;
+    Object.assign(s.flags, { _ch2_region: region, _ch2_preparation_started: true });
+    const reserve = region === 'widehanga' ? 200 : 0;
+    const cost = 3000;
+    const go = () => f.samechanDate.playSamechanDate({ invite, cost, advanceSlot: true });
+    s.money = cost + reserve - 1;
+    same(await go(), { done: false, spent: 0 });
+    assert.equal(s.flags._samechan_date, undefined);
+    assert.equal(s.pendingInvite, invite);
+    assert.equal(s.slot, 0);
+    assert.equal(s.money, cost + reserve - 1);
+    s.money++;
+    f.setPlayResult(scene => {
+      if (scene?.dialogue_id === 'remake_date_samechan') s.flags[scene.branches.a.find(line => line.type === 'set_flag').flag] = true;
+      return { visited: [] };
+    });
+    assert((await go()).done);
+    assert.equal(s.money, reserve);
+    assert.equal(s.slot, 1);
+    same(await go(), { done: true, spent: 0 });
+    assert.equal(s.money, reserve);
+    assert.equal(s.slot, 1);
+  }
 });
 
 await check('a bond finale first reached in chapter 5 opens no confession (owner default B)', async f => {

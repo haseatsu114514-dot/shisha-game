@@ -1,5 +1,6 @@
 // 正式な前後の会話と実プレイをつなぐ。得点・練習だけでは読了にしない。
 import { state } from "../core/state.js";
+import { spendableMoney } from "../core/travel-budget.js";
 import { on } from "../core/bus.js";
 import { hiyoriRoute, hiyoriEventStatus, hiyoriEventPrereqsMet } from "../core/hiyori-route.js";
 import { play } from "../vn/engine.js";
@@ -13,7 +14,7 @@ export function hiyoriAxeAffordable() {
   // 当日のLIMEの約束を別の遊びで上書きしない。翌日の予約は保持する。
   const booked = state?.pendingInvite && (state.pendingInvite.day ?? state.day) === state.day
     && state.pendingInvite.slot === state.slot;
-  return !!event && !!state && state.money >= event.cost && state.stamina > 0 && !booked;
+  return !!event && !!state && spendableMoney(state) >= event.cost && state.stamina > 0 && !booked;
 }
 
 export const hiyoriAxeReady = () => hiyoriEventStatus("axe_reveal") === "ready";

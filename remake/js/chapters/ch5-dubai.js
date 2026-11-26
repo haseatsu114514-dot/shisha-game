@@ -226,7 +226,7 @@ export async function performDubaiSpot(spot, { staminaGuard, holdSaveUntilAction
   if (state !== owner) return unused;
   if (chain) return readDubaiChain(spot, chain, staminaGuard, owner);
   // シェイクの屋敷・スーク・路地裏のカフェ: 小会話を巡回して読む。
-  if ((spot.cost || 0) > state.money) {
+  if ((spot.cost || 0) > spendableMoney(owner)) {
     toast("お金が足りない", { se: "error" });
     return unused;
   }
@@ -262,7 +262,7 @@ export async function performDubaiSpot(spot, { staminaGuard, holdSaveUntilAction
  */
 async function readDubaiChain(spot, due, staminaGuard, owner) {
   const fee = due.stage.free ? 0 : spot.cost || 0;
-  if (fee > state.money) {
+  if (fee > spendableMoney(owner)) {
     toast("お金が足りない", { se: "error" });
     return unused;
   }

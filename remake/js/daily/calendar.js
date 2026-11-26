@@ -619,7 +619,8 @@ async function takeAction() {
       if (destination.boardOnly) return true; // 行動枠も約束も進めない
       const spendsAction = !["shop", "fortune", "rest"].includes(destination.kind)
         && !(typeof pendingDelivery === "function" && pendingDelivery(destination.charId));
-      if (spendsAction && !await confirmRespecClose()) return false;
+      // カフェの入店・買い物は枠を使わない。LIME の確認はこれまでどおり行う。
+      if (destination.kind !== "trpg" && spendsAction && !await confirmRespecClose()) return false;
       return confirmLimeReminder(destination, { spendsAction });
     },
   });
@@ -662,6 +663,7 @@ async function takeAction() {
     state.flags._fit_since = { chapter: state.chapter, day: state.day };
     toast(`体が整った。${FIT_DAYS}日間は風邪をひきにくい`, { kind: "good" });
   }
+  // slotsUsed は日常側が追加で進める枠数。行き先で精算済みなら 0。
   state.slot = Math.min(2, state.slot + slotsUsed);
   await afterAction({ exerted, spent });
 }
