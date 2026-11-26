@@ -14,8 +14,8 @@ export const HELP = Object.freeze([
     Object.freeze({ icon: "treat", name: "おやつ", text: "1日に1回あげられる。" }),
   ]) }),
   Object.freeze({ title: "画面のしるし", rows: Object.freeze([
-    // ハートは来訪をまたいで溜まる（§11・#3779）。1回ではハート1つまで。
-    Object.freeze({ icon: "heart", name: "ごきげん", text: "色々お世話すると、来るたびに少しずつたまる。" }),
+    // 好感度（なかよし度）は1日1回、来訪をまたいで溜まる（満タンまでおよそ10回）。
+    Object.freeze({ icon: "heart", name: "ごきげん", text: "1日1回。ごきげんになると、なかよし度が上がる。" }),
     Object.freeze({ icon: "wish", name: "吹き出し", text: "てつこが、今してほしいこと。" }),
     Object.freeze({ icon: "tap", name: "置いた物", text: "タップすると、てつこを誘える。" }),
     Object.freeze({ icon: "watch", name: "見守る", text: "何もしないでいると、隣で見守ったことになる。" }),
@@ -24,11 +24,11 @@ export const HELP = Object.freeze([
     Object.freeze({ icon: "photo", name: "撮影", text: "しぐさが見えたら、撮影ボタンかPキーで撮る。" }),
     Object.freeze({ icon: "decor", name: "もようがえ", text: "物を選んで、光った場所をタップ。置いた物はタップで片付く。" }),
     Object.freeze({ icon: "book", name: "てつこ手帳", text: "しぐさと写真が残る。探すしぐさも選べる。" }),
-    Object.freeze({ icon: "back", name: "帰る", text: "いつでも帰れる。" }),
+    Object.freeze({ icon: "back", name: "帰る", text: "遊びを切り上げて裏口を出る。" }),
   ]) }),
 ]);
 
-export const HELP_NOTE = "ごきげんにして、しぐさを手帳に残そう。失敗はない。";
+export const HELP_NOTE = "1日1回、てつこと遊んでしぐさを手帳に残そう。";
 
 /**
  * 「？」の中身を作る（DOM は呼び出し側の el で作る）。

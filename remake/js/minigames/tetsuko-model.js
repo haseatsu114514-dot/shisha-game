@@ -3,8 +3,9 @@
 //
 // ゆるさの約束（本文 §1・§4）: 点数・成績・失敗・時間制限は持たない。どの操作にも反応があり、
 // 関係が下がる経路はない。世話をしない日の悪化もない。てつこは最後まで気まぐれな同じ猫で、絵は既存の5表情だけを使う。
-// ごきげんのハート（§11・#3779）は来訪をまたいで溜まる（_tetsuko_time.affection）。1回の来訪で溜まる量には上限があり、
-// 何回か通って、いろいろなお世話（おやつ・じゃらし・ブラシ・ボールや箱）をして5つにする。減ることは無い。
+// 好感度（なかよし度・ごきげんのハート）は1日1回の来訪をまたいで溜まる（_tetsuko_time.affection）。
+// 1回の訪問では、やりとり上限（VISIT_TURNS）の中で機嫌手応え（care）が VISIT_GOAL に届いた時点で好感度+1（+VISIT_JOY＝ハート半個分）が入り、
+// 「今日はこれぐらいにしておこう。」と切り上げて終わる（+1 に届かずに終わる日もあり得る）。満タン（♥5＝100）までおよそ10回。減ることは無い。
 //
 // 関係の段階は新しい数値を作らず、既存の来訪記録（_ch3_outings.tetsuko）から導く（§3）。
 // 乱数は通算日と来訪回数を種にして再現できる（Node のテストで固定）。
@@ -13,32 +14,46 @@ import { OUTINGS_FLAG, outingCounts } from "../chapters/ch3-outing-progress.js";
 export const TETSUKO_TIME_FLAG = "_tetsuko_time";
 export const RECORD_VERSION = 1;
 export const ALBUM_LIMIT = 12;
-export const PET_REST_STREAK = 6;   // なでるを6回続けると「今は、もういいらしい」。ほかの操作か、てつこが自分で動くと戻る
+export const PET_REST_STREAK = 4;   // なでるを4回続けると「今は、もういいらしい」。ほかの操作か、てつこが自分で動くと戻る
 export const PLAY_PAW = 3;          // 猫じゃらしを3回振ると前足が出る（①）。その次のひと振りで飛びつく（様子見の段階は前足だけ）
 export const PLAY_AUTO_CATCH = 5;   // 猫じゃらしを5回振ったら、てつこが必ず捕まえる（逃がし続ける勝負にしない）
 export const DISCOVERY_BIAS = 0.7;  // 条件を満たした未発見のしぐさを優先する割合
 // 自律行動の間隔。1回おきに落ち着く間を挟むので、見た目の変化はおよそ2倍の間隔（画面はその間に小さな身じろぎを入れる）。
 export const AUTO_DELAY = Object.freeze({ min: 1700, max: 2400, reduced: 4000 });
 export const MAIN_ACTIONS = Object.freeze(["pet", "play", "catch", "miss", "brush", "treat", "watch"]);
-// ごきげん（§11・#3779 オーナー 2026-11-20「何回もかまって5まで行ったら」「一回では5までいかない」）: ハート5つ＝JOY_MAX。
-// 来訪をまたいで溜まり（_tetsuko_time.affection に保存）、減らない。1回の来訪で溜まるのは VISIT_JOY まで（ハート1つ分）なので、
-// どんな遊び方でも1回では5つにならない（いちばん早くて5回）。お世話の種類ごとにも、1回の来訪で溜まる上限（CARE_CAP）がある:
-// なでるだけでは少ししか溜まらず、おやつ・じゃらし・ブラシ・置いた物で誘う・おねだりに応える、と色々すると早い。
+// 好感度（なかよし度・ごきげん）: ハート5つ＝JOY_MAX（100）。1日1回、来訪をまたいで溜まり（_tetsuko_time.affection に保存）、減らない。
+// 1回の成功訪問で入る量は VISIT_JOY（10＝ハート半個分＝満タンの1/10）なので、満タンまでおよそ10回の訪問が要る。
+// 1回の訪問にはやりとり上限（VISIT_TURNS）があり、その範囲で機嫌手応え（care）が VISIT_GOAL に届いた時点で好感度+1が確定して切り上げる。
+// 届かなかった日も好感度+0のまま自然に切り上げて終わる（毎回必ず上がるわけではない）。
 export const JOY_MAX = 100;
 export const JOY_HEARTS = 5;
-export const VISIT_JOY = 20;
-// 操作ごとの量（反応の名前）。auto（てつこが自分で動いた）は溜まらない（画面を開けておくだけでは溜まらない）。
+export const VISIT_JOY = 10;
+export const VISIT_GOAL = 9;
+export const VISIT_TURNS = Object.freeze({ calm: 5, sleepy: 4, playful: 5, clingy: 5 });
+// 操作ごとの機嫌手応え（反応の名前）。auto（てつこが自分で動いた）は溜まらない（画面を開けておくだけでは溜まらない）。
 export const JOY = Object.freeze({
-  pet: 1, sweet: 2, shy: 1, look: 1, stalk: 1, paw: 1, catch: 2, miss: 1, brush: 2, bliss: 3, treat: 6, watch: 1,
-  auto: 0, found: 1, wish: 2, invite: 2,
+  pet: 2, sweet: 3, shy: 1, look: 0, stalk: 1, paw: 1, catch: 3, miss: 1, brush: 2, bliss: 3, treat: 3, watch: 2,
+  auto: 0, found: 1, wish: 3, invite: 2,
 });
-// どのお世話に数えるか（JOY の名前 → お世話の種類）と、その種類が1回の来訪で溜められる上限。足すと VISIT_JOY より多いので、
-// 何種類かを組み合わせると、その回の上限に届く。
+// どのお世話に数えるか（JOY の名前 → お世話の種類）と、その種類が1回の来訪で溜められる上限。
+// 一種類だけでは VISIT_GOAL に届かず、色々組み合わせたりおねだり・気分に合わせると届く。
 export const CARE = Object.freeze({
   pet: "pet", sweet: "pet", shy: "pet", look: "play", stalk: "play", paw: "play", catch: "play", miss: "play", brush: "brush", bliss: "brush",
   treat: "treat", watch: "watch", auto: "watch", found: "found", wish: "wish", invite: "props",
 });
-export const CARE_CAP = Object.freeze({ pet: 5, play: 6, brush: 5, treat: 6, props: 4, watch: 3, found: 3, wish: 4 });
+export const CARE_CAP = Object.freeze({ pet: 6, play: 5, brush: 5, treat: 3, props: 4, watch: 4, found: 2, wish: 5 });
+// 気分に合うお世話（+1 上乗せ）。猫の気まぐれに合わせて遊ぶと+1に届きやすい。
+const MOOD_FIT = Object.freeze({
+  calm: Object.freeze([]),
+  sleepy: Object.freeze(["watch", "bliss", "brush"]),
+  playful: Object.freeze(["catch", "paw", "invite"]),
+  clingy: Object.freeze(["sweet", "pet", "bliss"]),
+});
+/** その日の気まぐれ（通算日で決まる）。約2割の日は少し気が乗りにくく、+1 に届かない日も自然に起きる。 */
+export function visitGoalOf(day, mood) {
+  const fickle = rng(Math.imul((Number(day) || 1) + 4127, 0x9E3779B1))() < 0.22;
+  return VISIT_GOAL + (fickle ? 2 : 0) + (mood === "sleepy" ? 1 : 0);
+}
 // なでる場所（広い範囲で分ける。しっぽだけは触らせてくれない）。今日のお気に入りは日によって変わる。
 export const PET_ZONES = Object.freeze(["head", "chin", "back", "tail"]);
 export const SWEET_ZONES = Object.freeze(["head", "chin", "back"]);
@@ -161,13 +176,19 @@ export function readTetsukoRecord(value) {
   return {
     v: RECORD_VERSION, props, found, album: album.slice(0, ALBUM_LIMIT),
     treatDay: Number.isFinite(record.treatDay) ? record.treatDay : null,
+    playedDay: Number.isFinite(record.playedDay) ? record.playedDay : null,
     sessions: Math.max(0, Math.floor(Number(record.sessions) || 0)),
     // とっておきを見た通算の回数（手帳に出すだけ。報酬・解放の条件にしない）。旧い記録は「ごきげんがいっぱいになった回数」で、同じ数え方
     peaks: Math.max(0, Math.floor(Number(record.peaks) || 0)),
-    // 来訪をまたいで溜まったごきげん（0〜JOY_MAX。JOY_MAX＝ハート5つ）。無い旧い記録は 0 から
+    // 来訪をまたいで溜まった好感度（0〜JOY_MAX。JOY_MAX＝ハート5つ）。無い旧い記録は 0 から
     affection: Math.min(JOY_MAX, Math.max(0, Math.floor(Number(record.affection) || 0))),
     lastKey: typeof record.lastKey === "string" ? record.lastKey : null,
   };
+}
+/** 今日はもうてつこと遊んだか（1日1回制限。日付の進み方は日常システムの通算日 state.day に合わせる）。 */
+export function tetsukoPlayedToday(value) {
+  const day = Number(value?.day);
+  return Number.isFinite(day) && readTetsukoRecord(value).playedDay === day;
 }
 function cleanProps(props) {
   const clean = Object.fromEntries(SLOTS.map(slot => [slot, PROP[props?.[slot]]?.slots.includes(slot) ? props[slot] : null]));
@@ -196,9 +217,10 @@ export function createSession(value, { visitKey = null } = {}) {
   const props = { ...record.props };
   for (const slot of SLOTS) if (props[slot] && !propUnlocked(PROP[props[slot]], stage, metMashiro)) props[slot] = null;
   const before = new Set(unlockedProps(count ? relationStage(count) : -1, metMashiro).map(prop => prop.id));
+  const moodId = moodOf(day).id;
   return {
     day, count, stage, metMashiro, metMukai, visitKey, night,
-    mood: moodOf(day).id,
+    mood: moodId,
     random: rng(day * 31 + count),
     timing: rng(day * 31 + count + 7),
     props,
@@ -216,9 +238,11 @@ export function createSession(value, { visitKey = null } = {}) {
     petStreak: 0, petZone: null, petZoneStreak: 0, swings: 0, watches: 0, brushes: 0, misses: 0,
     mashiroPassed: false, said: [],
     curiousProp: null,
-    // ごきげん（joy＝来訪をまたいで溜まった値。この回の分は care、お世話の種類ごとは careBy）・とっておき・今日のお気に入りの場所・おねだり。
-    // 保存するのは確定点（settleTetsukoTime）が、この回の care を affection に足す時だけ。
+    // 好感度（joy＝保存済みの累計値。+1 達成時だけ VISIT_JOY 加算）。
+    // この回の手応えは care（目標 VISIT_GOAL）、やりとり回数は turns（上限 maxTurns）。
+    // 達成または上限到達で ended=true となり、その日は切り上げて終わる。
     joy: record.affection, care: 0, careBy: {}, fullBefore: record.affection >= JOY_MAX,
+    goal: visitGoalOf(day, moodId), turns: 0, maxTurns: VISIT_TURNS[moodId] ?? 5, affectionGain: 0, ended: false, endReason: null, wrapReady: false, wrapped: false,
     peaks: 0, peakReady: false, peakFull: false, pastPeaks: record.peaks,
     sweet: sweetZoneOf(day), sweetFound: false,
     wish: null, wishAge: 0, nextWishTick: 1, lastWish: null, sessions: record.sessions,
@@ -269,31 +293,60 @@ function discover(session, id) {
 
 /** たまっているハートの数（0〜JOY_HEARTS）。 */
 export const joyHearts = session => Math.floor((session.joy / JOY_MAX) * JOY_HEARTS + 1e-9);
-/** この回のお世話が、もう上限まで届いたか（今日は満足。ハートはまた来た時に）。 */
-export const visitSatisfied = session => session.care >= VISIT_JOY;
+/** この回のごきげんが好感度+1ライン（session.goal）に届いたか。 */
+export const visitSatisfied = session => session.care >= (session.goal || VISIT_GOAL);
 /**
- * ごきげんを足す（減らない）。parts は [JOY の名前, 量] の並び。お世話の種類ごとの上限（CARE_CAP）と、この回の上限（VISIT_JOY）を超えた分は
- * 溜まらない（反応はいつもどおり）。ハートが5つになった後は増えないが、この回のお世話（care）は数える。
- * とっておき（peakReady）は1回の来訪で一度だけ: ハートが初めて5つそろった時か、この回のお世話が上限に届いた時。
+ * 今回のごきげん手応えを足し、好感度+1到達またはやりとり上限による終了を判定する。
+ * parts は [JOY の名前, 量] の並び。好感度（session.joy）自体は +1 達成の瞬間にだけ VISIT_JOY 分まとめて増える（未達の日に減って見せない）。
  */
-function gainJoy(session, parts) {
+function gainJoy(session, parts, { spendTurn = false, deferEnd = false } = {}) {
   const before = session.joy;
+  const goal = session.goal || VISIT_GOAL;
   let care = 0;
+  const fits = MOOD_FIT[session.mood] || [];
   for (const [key, raw] of parts) {
     const kind = CARE[key];
-    const amount = Math.max(0, Math.round(Number(raw) || 0));
+    let amount = Math.max(0, Math.round(Number(raw) || 0));
     if (!kind || !amount) continue;
-    const add = Math.max(0, Math.min(amount, CARE_CAP[kind] - (session.careBy[kind] || 0), VISIT_JOY - session.care));
+    if (fits.includes(key)) amount += 1;
+    const add = Math.max(0, Math.min(amount, CARE_CAP[kind] - (session.careBy[kind] || 0), goal - session.care));
     if (!add) continue;
     session.careBy[kind] = (session.careBy[kind] || 0) + add;
     session.care += add;
     care += add;
   }
-  session.joy = Math.min(JOY_MAX, session.joy + care);
-  const full = !session.fullBefore && session.joy >= JOY_MAX;
-  const peak = !session.peakReady && session.peaks === 0 && (full || visitSatisfied(session));
-  if (peak) { session.peakReady = true; session.peakFull = full; }
-  return { gain: session.joy - before, care, value: session.joy, hearts: joyHearts(session), peak };
+  if (spendTurn) session.turns += 1;
+  let peak = false;
+  let wrap = false;
+  if (!session.ended && !deferEnd && visitSatisfied(session)) {
+    session.ended = true;
+    session.joy = Math.min(JOY_MAX, session.joy + VISIT_JOY);
+    session.affectionGain = session.joy - before;
+    const full = !session.fullBefore && session.joy >= JOY_MAX;
+    session.endReason = session.fullBefore ? "full" : "up";
+    if (!session.peakReady && session.peaks === 0) {
+      session.peakReady = true;
+      session.peakFull = full;
+      peak = true;
+    }
+  } else if (!session.ended && !deferEnd && session.turns >= session.maxTurns) {
+    session.ended = true;
+    session.endReason = "none";
+    session.affectionGain = 0;
+    session.wrapReady = true;
+    wrap = true;
+  }
+  return {
+    gain: session.joy - before,
+    affectionUp: session.ended && session.endReason === "up",
+    care,
+    value: session.joy,
+    hearts: joyHearts(session),
+    peak,
+    wrap,
+    ended: session.ended,
+    endReason: session.endReason,
+  };
 }
 // おねだりに応えたか（じゃらしは振る・捕まえる・空振りのどれでも。物のおねだりは、置いた物をてつこが使った時）。
 function grantWish(session, kind, usedProp) {
@@ -333,7 +386,12 @@ function react(session, kind, { text, face = "normal", pose = "sit", spot = sess
     session.petZone = null;
     session.petZoneStreak = 0;
   }
-  const gained = gainJoy(session, [[joy, baseJoy], ...(found ? [["found", JOY.found]] : []), ...(granted ? [["wish", JOY.wish]] : [])]);
+  // 主操作のうち、1回のやりとり完了（なでる・捕獲/空振り・ブラシ・おやつ・見守る）で手数を1進める。
+  // じゃらしの振り途中（play）は手数も終了判定も保留し、飛びつき・捕獲まで途切れさせない。
+  const spendTurn = kind === "pet" || kind === "catch" || kind === "miss" || kind === "brush" || kind === "treat" || kind === "watch";
+  const deferEnd = kind === "play";
+  const parts = kind === "leave" ? [] : [[joy, baseJoy], ...(found ? [["found", JOY.found]] : []), ...(granted ? [["wish", JOY.wish]] : [])];
+  const gained = gainJoy(session, parts, { spendTurn, deferEnd: deferEnd || kind === "leave" });
   return { kind, text, face, pose, spot, fx, moment, found, art, pop, zone, sweet, pounce, granted, joy: gained,
     line: said ? { speaker: said.speaker, text: said.text } : null };
 }
@@ -351,6 +409,7 @@ export const canTreat = session => session.treatDay !== session.day;
 export const toyOut = session => session.swings > 0;
 /** その操作が今できるか（できない時はボタンを押せなくするだけ。叱らない）。 */
 export function canAct(session, kind) {
+  if (session.ended) return false;
   if (kind === "brush") return canBrush(session);
   if (kind === "treat") return canTreat(session);
   if (kind === "catch" || kind === "miss") return toyOut(session);
@@ -467,7 +526,7 @@ const ACTIONS = {
     }
     if (session.watches === 1)
       return react(session, "watch", { text: "隣に座ると、てつこが前足をそろえて座り直した。", spot: session.cat.inside ? "bench" : session.cat.spot, moment: "paws_together", joy: "watch" });
-    return autonomous(session, { force: true });
+    return autonomous(session, { force: true, watching: true });
   },
 };
 
@@ -578,11 +637,13 @@ export function seekMoment(session, id) {
 /**
  * 自律行動を一つ（画面のタイマーから呼ぶ）。1回おきに「座って落ち着く」待機（quiet: 見た目を変えない）を挟む。
  * 直前と同じ行動は引かない。条件を満たした未発見のしぐさを DISCOVERY_BIAS の割合で優先する。
- * @param {{ force?: boolean, idle?: boolean, holding?: boolean }} [opts] force: 待機を挟まずに必ず行動を引く（見守る・物で誘うから呼ぶ）／
+ * @param {{ force?: boolean, idle?: boolean, holding?: boolean, watching?: boolean }} [opts] force: 待機を挟まずに必ず行動を引く（見守る・物で誘うから呼ぶ）／
  *   idle: しばらく触らずに眺めている（＝隣で見守っている。時々、見守った時の反応になる）／
- *   holding: 見つけたばかりのしぐさを写真に撮れるよう、姿を保っている（おねだりだけは出す）
+ *   holding: 見つけたばかりのしぐさを写真に撮れるよう、姿を保っている（おねだりだけは出す）／
+ *   watching: 見守る操作の一手として数える
  */
-export function autonomous(session, { force = false, idle = false, holding = false } = {}) {
+export function autonomous(session, { force = false, idle = false, holding = false, watching = false } = {}) {
+  if (session.ended) return { kind: "auto", id: "settle", quiet: true };
   session.autoTicks += 1;
   if (!force && !session.curiousProp && session.autoTicks % 2 === 0) return { kind: "auto", id: "settle", quiet: true };
   // 寝ている・トンネルの中・膝の上では、おねだりをしない。
@@ -627,7 +688,7 @@ export function autonomous(session, { force = false, idle = false, holding = fal
   // てつこが自分で動いたら、なで過ぎの「もういい」は解ける。
   session.petStreak = 0;
   const shape = item.react(session);
-  const reaction = react(session, "auto", { spot: shape.spot || restingSpot(session), ...shape, moment: item.moment || null, joy: "auto", usedProp: invited ? usedProp : null });
+  const reaction = react(session, watching ? "watch" : "auto", { spot: shape.spot || restingSpot(session), ...shape, moment: item.moment || null, joy: "auto", usedProp: invited ? usedProp : null });
   // 自分の目でしぐさを見届けたら、見守ったのと同じ（何もせず帰っただけ、にはしない）。
   if (reaction.found) session.meaningful = true;
   // 寝てしまったら、出していたおねだりは引っこめる（寝顔の上に吹き出しを残さない）。
@@ -655,7 +716,7 @@ function weighted(items, session) {
  * @returns {object|null} 反応。置いていない物は null
  */
 export function invite(session, id) {
-  if (!has(session, id)) return null;
+  if (session.ended || !has(session, id)) return null;
   session.meaningful = true;
   session.petStreak = 0;
   session.swings = 0;
@@ -663,14 +724,15 @@ export function invite(session, id) {
   session.last = "invite";
   session.curiousProp = id;
   const reaction = autonomous(session, { force: true });
-  const more = gainJoy(session, [["invite", JOY.invite]]);
-  return { ...reaction, invited: id, joy: { ...more, gain: reaction.joy.gain + more.gain, care: reaction.joy.care + more.care, peak: reaction.joy.peak || more.peak } };
+  const more = gainJoy(session, [["invite", JOY.invite]], { spendTurn: true });
+  return { ...reaction, invited: id, joy: { ...more, gain: reaction.joy.gain + more.gain, care: reaction.joy.care + more.care,
+    peak: reaction.joy.peak || more.peak, wrap: reaction.joy.wrap || more.wrap, ended: session.ended, endReason: session.endReason } };
 }
 
 /**
- * 「とっておき」（段階ごと）。ハートが初めて5つそろった時（full: true）か、この回のお世話が上限に届いた時（今日は満足）に、
- * 1回の来訪で一度だけ。ハートは減らない（来訪をまたいで溜まったまま）。
- * @returns {object|null} 反応（peak: true・full）。まだなら null
+ * 「とっておき」（段階ごと）。好感度+1到達（または満タン後の満足）で1回の来訪に一度だけ出し、「今日はこれぐらいにしておこう。」と切り上げる。
+ * ハートは減らない（来訪をまたいで溜まったまま）。
+ * @returns {object|null} 反応（peak: true・full・up）。まだなら null
  */
 export function peakReaction(session) {
   if (!session.peakReady) return null;
@@ -679,19 +741,42 @@ export function peakReaction(session) {
   session.meaningful = true;
   let shape;
   if (session.stage >= 3) {
-    shape = session.cat.pose === "lap" || session.peaks % 2 === 0
-      ? { text: "てつこが、何度も頭をこすりつけてくる。", face: "smile", spot: "front", moment: "first_rub", art: "rub", pop: "すりすり" }
-      : { text: "てつこが膝に乗ってきた。そのまま丸くなる。", face: "sleep", pose: "lap", spot: "lap", moment: "lap_nap", pop: "ごろごろ",
-        line: { id: "lap", speaker: "mukai_master", text: "……起こすなよ" } };
-  } else if (session.stage === 2) shape = { text: "てつこが、手のひらに頭をぶつけてきた。", face: "smile", spot: "front", pop: "ごつん" };
-  else if (session.stage === 1) shape = { text: "てつこが、指先の匂いを確かめに来た。", spot: "front", pop: "くんくん" };
-  else shape = { text: "てつこが、ゆっくりまばたきを返した。", face: "smile", pop: "……" };
+    if (session.found.includes("first_rub") && session.found.includes("lap_nap") && !session.found.includes("see_off")) {
+      shape = { text: "戸の前までついてきてくれた。今日はこれぐらいにしておこう。", face: "smile", spot: "front", moment: "see_off", art: "rub", pop: "にゃ" };
+    } else {
+      shape = session.cat.pose === "lap" || session.peaks % 2 === 0
+        ? { text: "てつこが、何度も頭をこすりつけてくる。今日はこれぐらいにしておこう。", face: "smile", spot: "front", moment: "first_rub", art: "rub", pop: "すりすり" }
+        : { text: "てつこが膝に乗ってきた。今日はこれぐらいにしておこう。", face: "sleep", pose: "lap", spot: "lap", moment: "lap_nap", pop: "ごろごろ",
+          line: { id: "lap", speaker: "mukai_master", text: "……起こすなよ" } };
+    }
+  } else if (session.stage === 2) shape = { text: "てつこが、手のひらに頭をぶつけてきた。今日はこれぐらいにしておこう。", face: "smile", spot: "front", pop: "ごつん" };
+  else if (session.stage === 1) shape = { text: "てつこが、指先の匂いを確かめに来た。今日はこれぐらいにしておこう。", spot: "front", pop: "くんくん" };
+  else shape = { text: "てつこが、ゆっくりまばたきを返した。今日はこれぐらいにしておこう。", face: "smile", pop: "……" };
   session.lapTicks = 0;
-  // 満足したので、出していたおねだりは引っこめる（しばらくは次を出さない）。
+  // 満足したので、出していたおねだりは引っこめる。
   session.wish = null;
   session.nextWishTick = session.autoTicks + WISH_REST * 2;
   const reaction = react(session, "peak", { fx: "peak", ...shape });
-  return { ...reaction, peak: true, peaks: session.peaks, full: session.peakFull };
+  return { ...reaction, peak: true, peaks: session.peaks, full: session.peakFull, up: session.endReason === "up" };
+}
+
+/**
+ * +1 に届かずにやりとり上限へ達した日の切り上げ反応。不自然にならないよう気分に合わせて穏やかに終わる。
+ * @returns {object|null} 反応（wrap: true）。まだなら null
+ */
+export function wrapUpReaction(session) {
+  if (!session.wrapReady || session.wrapped) return null;
+  session.wrapReady = false;
+  session.wrapped = true;
+  session.wish = null;
+  const shapes = {
+    sleepy: { text: "てつこはもう眠そうだ。今日はこれぐらいにしておこう。", face: "sleep", pose: "curl", spot: "bench", fx: "zzz" },
+    calm: { text: "てつこはのんびり丸くなった。今日はこれぐらいにしておこう。", face: "sleep", pose: "curl", spot: "bench" },
+    playful: { text: "てつこはひとしきり動いて落ち着いた。今日はこれぐらいにしておこう。", face: "normal", pose: "sit", spot: "bench" },
+    clingy: { text: "てつこはベンチへ戻って落ち着いた。今日はこれぐらいにしておこう。", face: "normal", pose: "sit", spot: "bench" },
+  };
+  const reaction = react(session, "wrap", shapes[session.mood] || shapes.calm);
+  return { ...reaction, wrap: true };
 }
 
 /** 次の自律行動までの待ち時間（ミリ秒）。動きを減らす設定では長めの一定間隔。 */
@@ -728,8 +813,10 @@ export function sessionResult(session) {
     album: session.album.map(entry => ({ ...entry, props: { ...entry.props } })),
     treatDay: session.treatDay,
     peaks: session.peaks,
-    // この回に溜まったごきげん（0〜VISIT_JOY）。確定点が affection に足す（ハート5つで止まる）。
-    care: session.care,
+    // この回に確定した好感度の増分（+1到達で VISIT_JOY、未達なら 0）。確定点が affection に足す（ハート5つで止まる）。
+    care: session.affectionGain,
+    affectionUp: session.affectionGain > 0,
+    endReason: session.endReason,
   };
 }
 
