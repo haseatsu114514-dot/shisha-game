@@ -182,6 +182,7 @@ await suite("ch3-tokyo-daily", async check => {
     assert(record.found.includes("first_paw"), "The moment is kept in the book without a photo");
     assert.equal(record.peaks, 0, "No happy peak yet on such a short visit");
     assert.equal(record.sessions, 1);
+    assert.equal(record.playedDay, 33, "Today is recorded for the once-a-day limit");
     assert.equal(record.lastKey, `3:33:1:0`, "The visit key comes from the mukai visit");
     assert.deepEqual(settled.affinity, mid.affinity, "No affinity from the cat");
     assert.deepEqual(settled.stats, mid.stats, "No stats from the cat");
@@ -194,8 +195,8 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(await page.locator(dt("tetsuko-time-screen")).count(), 0, "The screen is gone after returning");
   });
 
-  // 懐いた後（来訪4回以上）は会話を挟まずに画面へ。何もせず「帰る」と、何も確定しない（回復・来訪・記録なし）。
-  await check("tetsuko-time-leaving-without-touching-commits-nothing", async page => {
+  // 懐いた後（来訪4回以上）は会話を挟まずに画面へ。何もせず帰ると、その日分だけ記録する。
+  await check("tetsuko-time-leaving-without-touching-uses-only-todays-play", async page => {
     await seed(page, { _ch3_outings: { tetsuko: 4 } });
     await loadSlot(page, 0);
     await page.locator(dt("rule-sheet")).waitFor({ timeout: 60000 });
@@ -217,7 +218,9 @@ await suite("ch3-tokyo-daily", async check => {
     await tokyoMap(page, { day: 34, slot: 1 });
     const after = await get(page);
     assert.equal(after.flags._ch3_outings.tetsuko, 4, "No visit is counted");
-    assert.equal(after.flags._tetsuko_time, undefined, "Nothing is written");
+    assert.equal(after.flags._tetsuko_time.playedDay, 33, "Opening the screen uses the day's visit");
+    assert.equal(after.flags._tetsuko_time.sessions, 0);
+    assert.equal(after.flags._tetsuko_time.affection, 0);
     assert.equal(mid.flags._ch3_outings.tetsuko, 4);
   });
 
@@ -268,6 +271,35 @@ await suite("ch3-tokyo-daily", async check => {
     assert(after.flags._tetsuko_time.found.includes("first_paw"), "Dragging the toy found the first paw");
     await tokyoMap(page, { day: 34, slot: 1 });
     assert.equal((await get(page)).flags._ch3_outings.tetsuko, 6, "Counted once");
+  });
+
+  // 1日1回制限（2026-11-26）: 同じ日に二度目の裏口へ来た時は「今日はもう遊んだ」が分かり、2回目は始められない。翌日はまた遊べる。
+  await check("tetsuko-time-is-limited-to-once-a-day-with-done-notice", async page => {
+    await seed(page, { _ch3_outings: { tetsuko: 5 }, _tetsuko_time: { sessions: 2, affection: 20, playedDay: 33 } });
+    await loadSlot(page, 0);
+    await page.locator(dt("rule-sheet")).waitFor({ timeout: 60000 });
+    await page.locator(dt("rule-sheet-close")).click();
+    await tokyoMap(page, { day: 33, slot: 1 });
+    await go(page, "ch3_tokyo_mukai");
+    const help = page.locator(`#modal.show button`, { hasText: "シフトに入る" });
+    await help.waitFor();
+    await help.click();
+    await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
+    await page.locator(dt("mukai-order-0")).click();
+    const doneBtn = page.locator(dt("tokyo-tetsuko-done"));
+    await doneBtn.waitFor({ timeout: 60000 });
+    assert.equal(await doneBtn.isDisabled(), true, "Cannot start a second session on the same day");
+    assert.match(await doneBtn.innerText(), /今日はもう遊んだ/);
+    assert.match(await page.locator("#modal.show").innerText(), /今日はもう遊んだ/);
+    assert.equal(await page.locator(dt("tokyo-tetsuko-game")).count(), 0);
+    assert.equal(await page.locator(dt("tokyo-tetsuko-yes")).count(), 0);
+    await page.locator(dt("tokyo-tetsuko-no")).click();
+    await tokyoMap(page, { day: 34, slot: 1 });
+    const after = await get(page);
+    assert.equal(after.flags._ch3_outings.tetsuko, 5, "No extra visit counted");
+    assert.equal(after.flags._tetsuko_time.affection, 20);
+    const nextDayPlayed = await page.evaluate(async () => (await import("./js/minigames/tetsuko-time.js")).tetsukoPlayedToday(window.__remake.state));
+    assert.equal(nextDayPlayed, false, "Can play again on the next day");
   });
 
   // VOL10: 東京にいる間、LIMEを交換したムカイさんから、最後のシフトから3日あいた日にシフトの誘いが届く。

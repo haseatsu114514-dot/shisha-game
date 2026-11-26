@@ -145,7 +145,7 @@
 /* おやつの小皿（満杯 → 食べ終わりは空。同じ切り出し枠なので位置が跳ねない） */
 .tetsuko-time[data-art-props~="plate"] .tt-plate { width: 140px; height: 88px; margin-left: -70px; top: 492px; border-radius: 0; box-shadow: none; background: url("../img/ui/tetsuko/prop_plate_full.webp") center / contain no-repeat; }
 .tetsuko-time[data-art-props~="plate"][data-fx="treat-done"] .tt-plate { background: url("../img/ui/tetsuko/prop_plate_empty.webp") center / contain no-repeat; }
-.tetsuko-time[data-art-props~="lap"] .tt-lap { border-radius: 0; box-shadow: none; background: url("../img/ui/tetsuko/prop_lap.webp") center bottom / contain no-repeat; height: 210px; top: 380px; }
+.tetsuko-time[data-art-props~="lap"] .tt-lap { border-radius: 0; box-shadow: none; background: url("../img/ui/tetsuko/prop_lap.webp") center bottom / contain no-repeat; width: 780px; margin-left: -390px; height: 280px; top: 440px; }
 .tetsuko-time[data-art-props~="lap"] .tt-lap::after { display: none; }
 /* ブラシ: 持ち替えた時のカーソルと、かけている間に背中をなでるブラシ */
 .tetsuko-time[data-tool="brush"][data-art-props~="brush"] .tt-cat { cursor: url("../img/ui/tetsuko/prop_brush_cursor.png") 10 6, pointer; }
@@ -158,11 +158,11 @@
   border: 0; background: none; cursor: pointer; pointer-events: auto; touch-action: none; transform: translate(-50%, -100%) scale(var(--s)); transform-origin: 50% 100%;
   transition: left .9s ease-in-out, top .9s ease-in-out, transform .9s ease-in-out; -webkit-tap-highlight-color: transparent; }
 .tt-cat:focus-visible { outline: 3px solid #ffe2a6; outline-offset: 4px; border-radius: 24px; }
-.tt-cat[data-at="bench"] { --x: 292px; --y: 436px; --s: .88; }
+.tt-cat[data-at="bench"] { --x: 348px; --y: 438px; --s: .88; }
 .tt-cat[data-at="floor"] { --x: 548px; --y: 550px; --s: 1; }
 .tt-cat[data-at="bed"] { --x: 1012px; --y: 550px; --s: 1; }
 .tt-cat[data-at="front"] { --x: 668px; --y: 552px; --s: 1.06; }
-.tt-cat[data-at="lap"] { --x: 640px; --y: 530px; --s: .98; }
+.tt-cat[data-at="lap"] { --x: 640px; --y: 590px; --s: .98; }
 .tt-cat[data-at="slot-bench"] { --x: 400px; --y: 436px; --s: .88; }
 .tt-cat[data-at="slot-floor"] { --x: 700px; --y: 550px; --s: 1; }
 .tt-cat[data-at="slot-bed"] { --x: 1012px; --y: 550px; --s: 1; }
@@ -189,7 +189,7 @@
 .tetsuko-time[data-purr="1"] .tt-purr i:nth-child(3) { animation-delay: .5s; }
 @keyframes tt-purr { 0% { opacity: .9; transform: translate(40px, -10px) scale(.6); } 100% { opacity: 0; transform: translate(90px, -40px) scale(1.4); } }
 .tt-cat-shadow { position: absolute; left: 14%; right: 14%; bottom: -8px; height: 26px; border-radius: 50%; background: radial-gradient(rgba(0, 0, 0, .38), rgba(0, 0, 0, 0) 70%); }
-.tt-cat-frame { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 100%; transition: translate .5s ease, transform .35s ease, scale .2s ease, opacity .3s ease; }
+.tt-cat-frame { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 100%; transition: translate .5s ease, transform .35s ease, scale .2s ease; }
 /* 5表情は同じ切り出し枠（元絵 896×1200 の x278〜636・y786〜1158）。どの表情も同じ位置に重ねる */
 .tt-cat-img { position: absolute; left: -77.65%; top: -205.6%; width: 250.28%; height: auto; max-width: none; opacity: 0; transition: opacity .18s ease, translate .5s ease; pointer-events: none; }
 .tt-cat[data-face="normal"] .tt-cat-img[data-face="normal"], .tt-cat[data-face="smile"] .tt-cat-img[data-face="smile"],
@@ -204,10 +204,8 @@
 .tt-cat-img { translate: 0 var(--sink, 0px); }
 .tt-cat[data-pose="box"] { --sink: 12px; }
 .tt-cat[data-pose="peek"] { --sink: 64px; }
-.tt-cat[data-pose="tunnel"] .tt-cat-frame, .tt-cat[data-pose="tunnel"] .tt-cat-shadow { opacity: 0; }
-.tt-cat[data-pose="odd"] .tt-cat-frame { transform-origin: 50% 50%; transform: translateY(45%) rotate(180deg); }
-.tt-cat[data-inside="bed"] .tt-cat-frame { translate: 0 -4%; }
-.tt-cat[data-inside="cushion"] .tt-cat-frame { translate: 0 -10%; }
+.tt-cat[data-pose="tunnel"] .tt-cat-frame, .tt-cat[data-pose="tunnel"] .tt-cat-shadow,
+.tt-cat[data-pose="tunnel"]:not([data-walk]) .tt-cat-pose { opacity: 0; }
 .tt-cat[data-inside="cushion"] .tt-cat-shadow, .tt-cat[data-inside="bed"] .tt-cat-shadow, .tt-cat[data-pose="box"] .tt-cat-shadow, .tt-cat[data-pose="peek"] .tt-cat-shadow { display: none; }
 .tetsuko-time[data-fx="tail"] .tt-cat-frame { animation: tt-wiggle .5s ease-in-out 2; }
 @keyframes tt-wiggle { 30% { transform: rotate(2deg); } 70% { transform: rotate(-2deg); } }
@@ -550,19 +548,20 @@
 /* ==== 猫のしぐさ・膝・しっぽの絵（#3214・TKT26・2026-11-11）==== */
 /* しぐさの絵（どれも右向き）も、向きを変える時（data-flip）は左右に返す */
 .tt-cat[data-flip="true"] .tt-cat-pose { scale: -1 1; }
-/* 歩く間は、向き（data-flip）ではなく歩く向きで返す（歩きの絵も右向き） */
-.tt-cat[data-walk="right"] .tt-cat-pose { scale: none; }
-.tt-cat[data-walk="left"] .tt-cat-pose { scale: -1 1; }
+/* 歩く間は、向き（data-flip）ではなく歩く向きで返す（歩きの絵も右向き。読み込み前の立ち絵も同じ向きにそろえる） */
+.tt-cat[data-walk="right"] .tt-cat-pose, .tt-cat[data-walk="right"] .tt-cat-frame { scale: none; }
+.tt-cat[data-walk="left"] .tt-cat-pose, .tt-cat[data-walk="left"] .tt-cat-frame { scale: -1 1; }
 /* トンネルから出るしっぽ（奥の口＝右から、上へ巻く）。CSS のしまの四角の代わり */
 .tetsuko-time[data-art-props~="tunnel_tail"] .tt-prop[data-prop="tunnel"] > .tt-prop-tail { left: 112px; right: auto; bottom: 78px; width: 120px; height: 114px; border-radius: 0;
   background: url("../img/ui/tetsuko/prop_tunnel_tail.webp") left bottom / contain no-repeat; transform-origin: 6% 94%; }
 .tetsuko-time[data-art-props~="tunnel_tail"] .tt-slot.holding .tt-prop[data-prop="tunnel"] > .tt-prop-tail { animation: tt-tail-art 1.8s ease-in-out infinite; }
 @keyframes tt-tail-art { 0%, 100% { rotate: 0deg; } 50% { rotate: -9deg; } }
-/* 裏口の絵（#2689）: 舞台と一緒に寄せる層に、舞台いっぱいに置く。絵のベンチの座面は y≈420 なので、ベンチの上の居場所と置き場所を合わせる */
+/* 裏口の絵（#2689）: 舞台と一緒に寄せる層に、舞台いっぱいに置く。絵のベンチの座面（左下がりのパース）に合わせて接地させる */
 .tt-backdrop { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; object-fit: cover; pointer-events: none; user-select: none; }
-.tetsuko-time[data-art-bg="true"] .tt-cat[data-at="bench"], .tetsuko-time[data-art-bg="true"] .tt-cat[data-at="slot-bench"] { --y: 424px; }
-.tetsuko-time[data-art-bg="true"] .tt-slot[data-slot="bench"] { top: 424px; }
-.tetsuko-time[data-art-bg="true"] .tt-slot-hit[data-slot="bench"] { top: 430px; }
+.tetsuko-time[data-art-bg="true"] .tt-cat[data-at="bench"] { --y: 438px; }
+.tetsuko-time[data-art-bg="true"] .tt-cat[data-at="slot-bench"] { --y: 436px; }
+.tetsuko-time[data-art-bg="true"] .tt-slot[data-slot="bench"] { top: 436px; }
+.tetsuko-time[data-art-bg="true"] .tt-slot-hit[data-slot="bench"] { top: 442px; }
 /* 撮った写真: 裏口の絵を背にする（背景の絵は JS が style で入れる。ベンチと地面のあたりを写す）。少しだけ色を締めて「写真」らしく */
 .tt-thumb[data-photo="1"] { background-color: #6b5a4c; background-size: cover; background-position: 30% 78%; }
 .tt-thumb[data-photo="1"] img { filter: saturate(1.08) contrast(1.04); }

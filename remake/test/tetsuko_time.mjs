@@ -10,13 +10,13 @@ import { newState } from "../js/core/state.js";
 import { TOKYO_OUTINGS, OUTINGS_FLAG } from "../js/chapters/ch3-outing-progress.js";
 import { classifyFlag } from "../js/core/carry.js";
 import { TETSUKO_TIME, TETSUKO_STAMINA, TETSUKO_CAMERA, TETSUKO_TOY_VIEW, TETSUKO_LEAP, WATCH_IDLE_MS, tetsukoCameraFor, tetsukoToyCamera, petZoneAt,
-  settleTetsukoTime, tetsukoVisitKey, openTetsukoTime } from "../js/minigames/tetsuko-time.js";
+  settleTetsukoTime, tetsukoVisitKey, tetsukoPlayedToday, openTetsukoTime } from "../js/minigames/tetsuko-time.js";
 import {
   TETSUKO_TIME_FLAG, MOODS, MOMENTS, PROPS, SLOTS, ALBUM_LIMIT, PET_REST_STREAK, PLAY_PAW, PLAY_AUTO_CATCH, AUTO_DELAY,
-  JOY, JOY_MAX, JOY_HEARTS, VISIT_JOY, CARE, CARE_CAP, PET_ZONES, SWEET_ZONES, WISH_PATIENCE,
+  JOY, JOY_MAX, JOY_HEARTS, VISIT_JOY, VISIT_GOAL, VISIT_TURNS, CARE, CARE_CAP, PET_ZONES, SWEET_ZONES, WISH_PATIENCE,
   moodOf, moodLabel, relationStage, sessionStage, readTetsukoRecord, createSession, openingReaction, act, canAct,
   autonomous, autoDelay, placeProp, canPlaceProp, takePhoto, farewell, sessionResult, unlockedProps, discoveryGuide,
-  invite, peakReaction, seekMoment, sweetZoneOf, joyHearts,
+  invite, peakReaction, wrapUpReaction, seekMoment, sweetZoneOf, joyHearts, visitGoalOf,
 } from "../js/minigames/tetsuko-model.js";
 import { HELP } from "../js/minigames/tetsuko-help.js";
 import { on } from "../js/core/bus.js";
@@ -105,6 +105,8 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   const value = save({ count: 1 });
   const before = structuredClone(value);
   const session = createSession(value);
+  session.maxTurns = 30; // 休止と復帰の挙動だけを単独で確かめる
+  session.goal = 999;
   const texts = [];
   for (let i = 0; i < PET_REST_STREAK; i += 1) texts.push(keep(act(session, "pet")).text);
   assert.match(texts[PET_REST_STREAK - 1], /もういいらしい/, "続けすぎると「今は、もういいらしい」");
@@ -133,18 +135,22 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   assert(!SWEET_ZONES.includes("tail") && PET_ZONES.includes("tail"));
   for (const count of [0, 1, 2]) {
     const session = createSession(save({ count, day: 12 }));
+    session.maxTurns = 20;
+    session.goal = 999;
     const plain = SWEET_ZONES.find(zone => zone !== session.sweet);
     const dull = keep(act(session, "pet", { zone: plain }));
     const liked = keep(act(session, "pet", { zone: session.sweet }));
     assert.equal(dull.sweet, false);
     assert.equal(liked.sweet, true, `回数${count}: お気に入りの場所に気づく`);
-    assert(liked.joy.gain > 0 && dull.joy.gain > 0, "どこをなでても、ごきげんは少し上がる");
+    assert(liked.joy.care > 0 && dull.joy.care > 0, "どこをなでても、今回のごきげん手応えは少し上がる");
     assert.notEqual(liked.text, keep(act(session, "pet", { zone: session.sweet })).text, "2回目からは別の文");
-    const joy = session.joy, streak = session.petStreak;
+    const joy = session.joy, care = session.care, streak = session.petStreak;
     const tail = keep(act(session, "pet", { zone: "tail" }));
     assert.match(tail.text, /しっぽ/);
     assert.equal(tail.joy.gain, 0);
-    assert.equal(session.joy, joy, "しっぽを触っても、ごきげんは減らない");
+    assert.equal(tail.joy.care, 0);
+    assert.equal(session.joy, joy, "しっぽを触っても、好感度は減らない");
+    assert.equal(session.care, care, "しっぽを触っても、手応えは増えない");
     assert.equal(session.petStreak, streak, "しっぽは、続けた回数に数えない");
     assert.equal(keep(act(session, "pet", { zone: "nowhere" })).zone, "head", "知らない場所は頭として扱う");
   }
@@ -184,14 +190,14 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   const run = Array.from({ length: PLAY_AUTO_CATCH - 1 }, () => keep(act(auto, "play")));
   assert.deepEqual(run.map(item => !!item.pounce), [false, false, false, true], "前足の次のひと振りで飛びつく");
   assert.equal(keep(act(auto, "play")).found, "hug_toy", "5回目は必ず捕まえて抱える");
-  // 空振り: 飛びついた先にじゃらしが無かった。てつこの負けではなく遊びの一コマで、ごきげんは上がる。
+  // 空振り: 飛びついた先にじゃらしが無かった。てつこの負けではなく遊びの一コマで、ごきげん手応えは上がる。
   const dodge = createSession(save({ count: 2 }));
   for (let i = 0; i < PLAY_PAW + 1; i += 1) keep(act(dodge, "play"));
-  const joy = dodge.joy;
+  const care = dodge.care;
   const first = keep(act(dodge, "miss"));
   assert.equal(first.kind, "miss");
   assert.match(first.text, /空振り/);
-  assert(dodge.joy > joy, "空振りでも、ごきげんは上がる");
+  assert(dodge.care > care, "空振りでも、ごきげん手応えは上がる");
   assert.equal(keep(act(dodge, "play")).pounce, true, "空振りの後は、もう一度飛びつく");
   assert.notEqual(keep(act(dodge, "miss")).text, first.text, "2回目の空振りは別の文");
   assert.equal(keep(act(dodge, "play")).kind, "catch", "空振りが2回続いたら、次は必ず捕まえる");
@@ -340,7 +346,7 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   eager.wish = { kind: "play", prop: null, moment: null };
   const granted = keep(act(eager, "play"));
   assert.equal(granted.granted, true);
-  assert.equal(granted.joy.gain, JOY.look + JOY.wish);
+  assert.equal(granted.joy.care, JOY.look + JOY.wish);
   assert.equal(eager.wish, null);
   assert.equal(keep(act(eager, "play")).granted, false, "同じおねだりは一度だけ");
   const other = createSession(save({ count: 2, day: 9 }));
@@ -392,44 +398,44 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   for (let i = 1; i < naps.length; i += 1) assert.notEqual(naps[i].id, naps[i - 1].id);
 }
 
-// ごきげん（§11・#3779）: ハート5つ（JOY_MAX）は来訪をまたいで溜まり（_tetsuko_time.affection）、減らない。1回の来訪で溜まるのは
-// VISIT_JOY まで（いちばん良い遊び方でも1回では5つにならない）。お世話の種類ごとにも1回の上限があり、なでるだけより、
-// おやつ・じゃらし・ブラシ・置いた物で誘う、と色々するほうが早い。とっておき（段階ごと）は、その回のお世話が上限に届いた時か、
-// ハートが初めて5つそろった時に、1回の来訪で一度だけ。能力・お金・好感度には触らない。
-// 何でもする人の1回（おやつ→ブラシ→じゃらし→なでる→物で誘う→見守る、おねだりにも応える）。どの反応でも、ごきげんは減らない。
+// 好感度（なかよし度）・1日1回・+1で切り上げ・未達日あり・満タンまで約10回:
+// ハート5つ（JOY_MAX=100）は来訪をまたいで溜まり（_tetsuko_time.affection）、減らない。
+// 1回の成功訪問で入る量は VISIT_JOY（10＝ハート半個分）で、目標（session.goal）に届いた時点で即座に ended=true となり
+// 「今日はこれぐらいにしておこう。」と切り上げる（+1の後にだらだら続けられない）。
+// やりとり上限（maxTurns）までに届かなければ +0 のまま自然に切り上げて終わる（+1 に届かない日もあり得る）。
+// 同じ日の2回目は tetsukoPlayedToday でブロックし、settleTetsukoTime も二重確定させない。
 function bestVisit(session) {
   let last = session.joy;
   const seen = reaction => {
     if (!reaction) return;
     keep(reaction);
-    assert(session.joy >= last, "ごきげんは減らない");
+    assert(session.joy >= last, "好感度は減らない");
     if (!reaction.quiet && reaction.joy) assert.equal(reaction.joy.value, session.joy);
     last = session.joy;
   };
-  const run = (kind, opts) => seen(canAct(session, kind) ? act(session, kind, opts) : null);
+  const run = (kind, opts) => { if (!session.ended && canAct(session, kind)) seen(act(session, kind, opts)); };
   seen(openingReaction(session));
   run("treat");
-  run("brush"); run("brush"); run("brush");
-  for (let i = 0; i < 5; i += 1) run("play");
-  for (const zone of [...SWEET_ZONES, ...SWEET_ZONES]) run("pet", { zone });
-  placeProp(session, "floor", "ball");
-  for (let i = 0; i < 3; i += 1) seen(invite(session, "ball"));
-  run("watch"); run("watch");
-  for (let i = 0; i < 30; i += 1) {
+  run("brush");
+  for (let i = 0; i < 5 && !session.ended; i += 1) run("play");
+  if (!session.ended) run("pet", { zone: session.sweet });
+  if (!session.ended) { placeProp(session, "floor", "ball"); seen(invite(session, "ball")); }
+  for (let i = 0; i < 12 && !session.ended; i += 1) {
     const wish = session.wish;
     if (wish && wish.kind !== "decor" && canAct(session, wish.kind)) run(wish.kind, { zone: session.sweet });
-    seen(autonomous(session, { idle: i % 4 === 0 }));
+    seen(autonomous(session, { idle: i % 3 === 0 }));
   }
 }
 {
   assert.equal(JOY_MAX % JOY_HEARTS, 0);
-  assert(VISIT_JOY < JOY_MAX && VISIT_JOY >= JOY_MAX / JOY_HEARTS && VISIT_JOY <= JOY_MAX / JOY_HEARTS * 1.5, "1回の来訪で溜まるのは、ハート1〜1.5個ぶんまで");
-  assert(Object.values(CARE_CAP).every(cap => cap < VISIT_JOY), "どのお世話も、一種類だけでは1回の上限に届かない");
-  assert(Object.values(CARE_CAP).reduce((sum, cap) => sum + cap, 0) > VISIT_JOY, "何種類かを組み合わせれば、1回の上限に届く");
-  assert(CARE_CAP.pet <= VISIT_JOY / 4, "なでるだけでは、少ししか溜まらない");
+  assert.equal(JOY_MAX / VISIT_JOY, 10, "1回の成功で満タンの1/10（およそ10回で満タン）");
+  assert(Object.values(CARE_CAP).every(cap => cap < VISIT_GOAL), "どのお世話も、一種類だけでは+1目標に届かない");
+  assert(Object.values(CARE_CAP).reduce((sum, cap) => sum + cap, 0) > VISIT_GOAL + 4, "何種類かを組み合わせれば+1に届く");
   for (const key of Object.keys(JOY)) assert(CARE[key] && (CARE_CAP[CARE[key]] || key === "auto"), `${key} は、どのお世話かが決まっている`);
   assert.equal(JOY.auto, 0, "画面を開けておくだけ（てつこが自分で動くだけ）では溜まらない");
-  assert(JOY.treat > JOY.pet && JOY.brush > JOY.pet && JOY.catch > JOY.pet, "おやつ・ブラシ・じゃらしは、なでるより多く溜まる");
+  assert(JOY.treat > JOY.pet && JOY.bliss > JOY.pet && JOY.catch > JOY.pet, "おやつ・ブラシ・じゃらしは、ふつうになでるより多く溜まる");
+  assert(VISIT_TURNS.sleepy < VISIT_TURNS.calm, "眠そうな日は早めに切り上げやすい");
+  assert(Array.from({ length: 30 }, (_, i) => visitGoalOf(i + 1, "calm")).some(g => g > VISIT_GOAL), "気まぐれで届きにくい日がある");
 
   for (const count of [0, 1, 2, 5]) {
     const value = save({ count, day: 14 });
@@ -438,45 +444,65 @@ function bestVisit(session) {
     assert.equal(session.joy, 0, "旧い記録（affection が無い）は 0 から");
     assert.equal(peakReaction(session), null, "たまる前は、とっておきは出ない");
     bestVisit(session);
-    assert.equal(session.care, VISIT_JOY, `回数${count}: 色々お世話すれば、その回の上限まで溜まる`);
-    assert.equal(session.joy, VISIT_JOY, `回数${count}: いちばん良い遊び方でも、1回ではハート${VISIT_JOY / (JOY_MAX / JOY_HEARTS)}つまで`);
+    assert.equal(session.ended, true, `回数${count}: +1 到達で切り上がる`);
+    assert.equal(session.endReason, "up");
+    assert.equal(session.affectionGain, VISIT_JOY);
+    assert.equal(session.joy, VISIT_JOY, `回数${count}: +1 で ${VISIT_JOY}（ハート半個分）増える`);
     assert(Object.entries(session.careBy).every(([kind, got]) => got <= CARE_CAP[kind]), "お世話の種類ごとの上限を超えない");
-    assert(session.peakReady, "その回のお世話が上限に届いたら、とっておき");
-    assert.equal(keep(act(session, "pet")).joy.gain, 0, "上限の後は、その回はもう溜まらない（反応はある）");
+    assert(session.peakReady, "+1 到達で、とっておき");
+    assert.equal(canAct(session, "pet"), false, "+1 の後にだらだら続けられない");
+    assert.equal(act(session, "pet"), null, "切り上げ後は主操作を受け付けない");
     const peak = keep(peakReaction(session));
     assert.equal(peak.peak, true);
     assert.equal(peak.full, false);
+    assert.equal(peak.up, true);
     assert.equal(peak.peaks, 1);
-    assert(peak.text.length > 0 && peak.pop);
+    assert.match(peak.text, /今日はこれぐらいにしておこう。$/);
     assert.equal(session.joy, VISIT_JOY, "とっておきの後も、ハートは減らない");
     assert.equal(peakReaction(session), null);
-    for (let i = 0; i < 20; i += 1) keep(autonomous(session, { idle: true }));
-    assert.equal(session.peakReady, false, "とっておきは1回の来訪で一度だけ");
-    if (session.stage >= 3) assert(["lap_nap", "first_rub"].includes(peak.moment), "気を許した段階のとっておきは、写真に撮れるしぐさ");
+    assert.equal(autonomous(session).quiet, true, "切り上げ後は自律行動もしない");
+    if (session.stage >= 3) assert(["lap_nap", "first_rub", "see_off"].includes(peak.moment), "気を許した段階のとっておきは、写真に撮れるしぐさ");
     assert.deepEqual(value, before, "モデルはセーブを書かない");
-    // 確定すると、この回の分が affection に、とっておきの回数が peaks に足される。
+    // 確定すると、この回の分が affection に、playedDay に今日の日付が記録される。
     assert.deepEqual([sessionResult(session).care, sessionResult(session).peaks], [VISIT_JOY, 1]);
     assert(settleTetsukoTime(value, sessionResult(session)).committed);
     assert.deepEqual([value.flags[TETSUKO_TIME_FLAG].affection, value.flags[TETSUKO_TIME_FLAG].peaks], [VISIT_JOY, 1]);
+    assert.equal(value.flags[TETSUKO_TIME_FLAG].playedDay, 14, "遊んだ日が保存される");
+    assert.equal(tetsukoPlayedToday(value), true, "同じ日は2回目を始められない");
+    assert.deepEqual(settleTetsukoTime(value, { meaningful: true, visitKey: tetsukoVisitKey(value), care: VISIT_JOY }), { committed: false },
+      "同じ日の2回目は確定点でも弾く");
     value.day += 1;
+    assert.equal(tetsukoPlayedToday(value), false, "翌日はまた遊べる");
     const again = createSession(value, { visitKey: tetsukoVisitKey(value) });
     assert.equal(again.joy, VISIT_JOY, "ハートは次の来訪へ持ち越す");
     assert.equal(again.care, 0, "その回の分は、来るたびに空から");
     assert.equal(again.pastPeaks, 1);
-    keep(act(again, "pet", { zone: "tail" }));
+    // +1 に届かずに終わる日（しっぽを触り続けて上限到達）: 好感度は増えず、自然な切り上げ文で終わる。
+    for (let i = 0; i < again.maxTurns; i += 1) keep(act(again, "pet", { zone: "tail" }));
+    assert.equal(again.ended, true, "やりとり上限で切り上がる");
+    assert.equal(again.endReason, "none");
+    assert.equal(again.affectionGain, 0);
+    const wrap = keep(wrapUpReaction(again));
+    assert(wrap && wrap.wrap === true && /今日はこれぐらいにしておこう。$/.test(wrap.text), "上がらなかった日も自然な切り上げ文");
+    assert.equal(wrapUpReaction(again), null, "切り上げ反応は一度だけ");
+    assert.equal(canAct(again, "treat"), false, "未達で切り上げた後も続けられない");
     assert(settleTetsukoTime(value, sessionResult(again)).committed);
-    assert.deepEqual([value.flags[TETSUKO_TIME_FLAG].affection, value.flags[TETSUKO_TIME_FLAG].peaks], [VISIT_JOY, 1], "しっぽだけの日は増えない（減りもしない）");
+    assert.deepEqual([value.flags[TETSUKO_TIME_FLAG].affection, value.flags[TETSUKO_TIME_FLAG].peaks], [VISIT_JOY, 1], "届かなかった日は増えない（減りもしない）");
+    assert.equal(value.flags[TETSUKO_TIME_FLAG].playedDay, 15, "届かなかった日も、その日の訪問済みとして記録される");
   }
-  // なでるだけの人は、色々お世話する人より、ずっと少ない（それでも少しずつ溜まる）。
+  // なでるだけだと +1 に届かず終わる。
   const petter = createSession(save({ count: 5, day: 14 }), { visitKey: "p" });
-  for (let i = 0; i < 40; i += 1) { keep(act(petter, "pet", { zone: SWEET_ZONES[i % 3] })); if (i % 5 === 4) keep(autonomous(petter)); }
-  assert(petter.care > 0 && petter.care <= VISIT_JOY / 2, `なでるだけでは、その回の半分にも届かない（${petter.care}）`);
+  for (let i = 0; i < 10 && !petter.ended; i += 1) keep(act(petter, "pet", { zone: SWEET_ZONES[i % 3] }));
+  assert.equal(petter.ended, true);
+  assert.equal(petter.endReason, "none", "なでるだけでは+1に届かず切り上がる");
+  assert.equal(petter.affectionGain, 0);
   // 段階ごとに別のとっておき。
   const peaks = [0, 1, 2, 5].map(count => { const session = createSession(save({ count, day: 14 })); session.peakReady = true; return peakReaction(session).text; });
   assert.equal(new Set(peaks).size, 4);
   // 壊れた記録は 0 として読む。affection は 0〜JOY_MAX の整数。「少し構っていく」（結果に peaks・care が無い）は回数もハートも変えない。
   assert.equal(readTetsukoRecord(save({ record: { peaks: "many" } })).peaks, 0);
   assert.equal(readTetsukoRecord(save({ record: { peaks: -2 } })).peaks, 0);
+  assert.equal(readTetsukoRecord(save({ record: { playedDay: "bad" } })).playedDay, null);
   for (const [raw, read] of [[undefined, 0], ["x", 0], [-5, 0], [37.9, 37], [500, JOY_MAX], [JOY_MAX, JOY_MAX]])
     assert.equal(readTetsukoRecord(save({ record: { affection: raw } })).affection, read, `affection ${raw} → ${read}`);
   const short = save({ count: 5, record: { peaks: 3, affection: 40 } });
@@ -490,39 +516,40 @@ function bestVisit(session) {
   }
 }
 
-// ハートが5つそろうまで（§11）: いちばん良い遊び方で JOY_MAX / VISIT_JOY 回。初めて5つそろった確定で "tetsuko-hearts" を一度だけ知らせ、
+// ハートが5つそろうまで: いちばん良い遊び方で JOY_MAX / VISIT_JOY（10）回。初めて5つそろった確定で "tetsuko-hearts" を一度だけ知らせ、
 // その来訪の画面では、とっておき（full）が出る。5つの後は5つのまま（来訪ごとの、とっておきは続く）。SAVE/LOAD しても同じ。
 {
   const events = [];
   const off = on("tetsuko-hearts", event => events.push(event));
   const value = save({ count: 0, day: 20 });
   const fullVisits = [];
-  for (let visit = 1; visit <= 8; visit += 1) {
+  for (let visit = 1; visit <= 12; visit += 1) {
     const session = createSession(value, { visitKey: tetsukoVisitKey(value) });
     bestVisit(session);
     const peak = keep(peakReaction(session));
     if (peak?.full) fullVisits.push(visit);
     const was = readTetsukoRecord(value).affection;
-    assert(session.joy - was <= VISIT_JOY, "1回の来訪では、ハート1つ分より多くは溜まらない");
+    assert(session.joy - was <= VISIT_JOY, "1回の来訪では、+1分（VISIT_JOY）より多くは溜まらない");
     assert(settleTetsukoTime(value, sessionResult(session)).committed);
     if (visit < JOY_MAX / VISIT_JOY) assert(readTetsukoRecord(value).affection < JOY_MAX, `${visit}回目では、まだ5つにならない`);
     value.day += 1;
   }
   assert.equal(readTetsukoRecord(value).affection, JOY_MAX);
-  assert.deepEqual(fullVisits, [JOY_MAX / VISIT_JOY], "ハートがそろった来訪で、そろった時のとっておき");
+  assert.deepEqual(fullVisits, [JOY_MAX / VISIT_JOY], "10回目の成功訪問で、そろった時のとっておき");
   assert.equal(events.length, 1, "5つそろった知らせは一度だけ");
   assert.equal(events[0].state, value);
   assert.deepEqual([events[0].affection, events[0].full], [JOY_MAX, true]);
-  assert.equal(readTetsukoRecord(value).peaks, 8, "とっておきは来訪ごとに一度（そろった後も）");
-  // SAVE/LOAD（オートセーブの読み書き）: 溜まったハートは残り、読み込み後の確定で、もう一度は知らせない。
+  assert.equal(readTetsukoRecord(value).peaks, 12, "とっておきは来訪ごとに一度（そろった後も）");
+  // SAVE/LOAD（オートセーブの読み書き）: 溜まったハートと playedDay は残り、読み込み後の確定で、もう一度は知らせない。
   const storage = new Map();
   globalThis.localStorage = { getItem: k => storage.get(k) ?? null, setItem: (k, v) => storage.set(k, String(v)), removeItem: k => storage.delete(k) };
   const core = await import("../js/core/state.js");
-  const half = save({ count: 3, day: 22, record: { sessions: 3, affection: 60, peaks: 2 } });
+  const half = save({ count: 3, day: 22, record: { sessions: 3, affection: 60, peaks: 2, playedDay: 22 } });
   core.setState(half);
   assert(core.save(), "保存できる");
   const loaded = core.load();
   assert.equal(readTetsukoRecord(loaded).affection, 60, "読み込んでもハートは同じ");
+  assert.equal(tetsukoPlayedToday(loaded), true, "読み込んでも今日遊んだ記録は残る");
   assert.equal(createSession(loaded).joy, 60, "読み込んだ後の画面も、溜まったハートから");
   core.setState(value);
   assert(core.save());
@@ -532,11 +559,15 @@ function bestVisit(session) {
   bestVisit(after);
   assert.equal(after.joy, JOY_MAX, "5つの後は5つのまま");
   assert.equal(keep(peakReaction(after)).full, false, "そろった時のとっておきは一度だけ");
+  assert.equal(sessionResult(after).affectionUp, false, "満タンで満足しても、好感度は増えない");
+  assert.equal(sessionResult(after).care, 0);
   assert(settleTetsukoTime(full, sessionResult(after)).committed);
   assert.equal(events.length, 1, "読み込み後も、もう一度は知らせない");
-  // 旧保存（affection の無い記録）でも入れて、0 から溜まる。
+  // 旧保存（affection・playedDay の無い記録）でも入れて、0 から溜まり、その日から遊べる。
   const old = save({ count: 7, record: { sessions: 9, peaks: 6, found: ["waiting", "first_rub"] } });
   delete old.flags[TETSUKO_TIME_FLAG].affection;
+  delete old.flags[TETSUKO_TIME_FLAG].playedDay;
+  assert.equal(tetsukoPlayedToday(old), false);
   const oldSession = createSession(old, { visitKey: tetsukoVisitKey(old) });
   assert.equal(oldSession.joy, 0);
   assert.equal(oldSession.pastPeaks, 6, "旧い記録の、ごきげんの回数はそのまま");
@@ -546,19 +577,22 @@ function bestVisit(session) {
   off();
 }
 
-// ハートが5つそろうまでの来訪回数（tools/balance/tetsuko_hearts.mjs。画面と同じ間合いで、来訪0回から通って確定する）:
-// 1回では届かない。色々お世話して通えば数回。なでるだけだと、ずっとかかる。
+// ハートが5つそろうまでの来訪回数（tools/balance/tetsuko_hearts.mjs）:
+// およそ10回の訪問で満タン。気ままに遊ぶと+1に届かない日もあり得る。なでるだけでは届かない。
 {
-  const m = measure({ presses: [10, 20], days: [5, 23, 41, 77] });
-  for (const [key, row] of Object.entries(m)) assert(row.fastest >= JOY_MAX / VISIT_JOY, `${key}: 1回や2回ではそろわない`);
-  assert(m["attentive/20"].visits <= 6 && m["casual/20"].visits <= 7 && m["buttons/20"].visits <= 7, "ふつうに色々お世話して通えば、6〜7回までにそろう");
-  assert(m["casual/10"].visits <= 9, "短く済ませる日が多くても、10回もかからない");
-  assert(m["petter/20"].visits >= 2 * m["casual/20"].visits, "なでるだけだと、色々お世話するより倍以上かかる");
+  const m = measure({ presses: [20], days: [5, 23, 41, 77] });
+  for (const [key, row] of Object.entries(m)) assert(row.fastest >= JOY_MAX / VISIT_JOY, `${key}: 10回未満ではそろわない`);
+  assert(m["attentive/20"].visits >= 10 && m["attentive/20"].visits <= 12, "丁寧に色々お世話して通えば、およそ10回でそろう");
+  assert(m["buttons/20"].visits >= 10 && m["buttons/20"].visits <= 13, "ボタンを順に押しても、およそ10〜13回でそろう");
+  assert(m["casual/20"].visits >= 10 && m["casual/20"].visits <= 15 && m["casual/20"].missRate > 0, "気ままに遊ぶと届かない日も混ざり、およそ10〜14回");
+  assert(m["petter/20"].missRate >= 0.5, "なでるだけでは+1に届きにくい");
 }
 
 // 置いてある物をタップして誘う（§10）: 箱なら顔を出す・入る、ボールなら見送る・転がす。一緒に遊んだことになる。
 {
   const session = createSession(save({ count: 0, day: 6 }));
+  session.maxTurns = 20;
+  session.goal = 999;
   assert.equal(invite(session, "box"), null, "置いていない物では誘えない");
   assert.equal(session.meaningful, false);
   placeProp(session, "floor", "box");
@@ -568,7 +602,7 @@ function bestVisit(session) {
   assert.equal(first.id, "ball_watch");
   assert.equal(first.invited, "ball");
   assert.equal(session.meaningful, true, "物で誘ったら、ふれあったことになる");
-  assert(first.joy.gain >= JOY.invite);
+  assert(first.joy.care >= JOY.invite);
   assert.equal(keep(invite(session, "ball")).id, "ball_paw", "続けて誘うと、別の反応");
   assert.equal(keep(invite(session, "ball")).id, "ball_watch");
   placeProp(session, "floor", "box");
@@ -587,7 +621,7 @@ function bestVisit(session) {
 {
   const value = save({ count: 0, day: 60 });
   let visits = 0;
-  while (MOMENTS.some(moment => !readTetsukoRecord(value).found.includes(moment.id)) && visits < 12) {
+  while (MOMENTS.some(moment => !readTetsukoRecord(value).found.includes(moment.id)) && visits < 14) {
     const session = createSession(value, { visitKey: tetsukoVisitKey(value) });
     keep(openingReaction(session));
     const stage = session.stage;
@@ -595,8 +629,17 @@ function bestVisit(session) {
     if (stage >= 3) { placeProp(session, "bed", "bed"); placeProp(session, "floor", "box"); }
     else if (stage >= 1) { placeProp(session, "bench", "cushion"); placeProp(session, "floor", "box"); }
     else placeProp(session, "floor", "ball");
-    for (const kind of ["pet", "play", "play", "play", "catch", "brush", "watch", "watch"]) keep(act(session, kind));
-    for (let i = 0; i < 16; i += 1) keep(autonomous(session));
+    // まだ見つかっていないしぐさに合わせて自然に遊ぶ（切り上がるまで）。
+    for (const kind of ["watch", "watch", "brush", "pet", "play", "play", "play", "catch"]) {
+      if (session.ended) break;
+      if (kind === "watch" && session.found.includes("paws_together") && (stage < 3 || session.found.includes("lap_nap"))) continue;
+      if (kind === "brush" && session.found.includes("brush_bliss")) continue;
+      if (kind === "pet" && (stage < 3 || session.found.includes("first_rub"))) continue;
+      keep(act(session, kind));
+    }
+    for (let i = 0; i < 16 && !session.ended; i += 1) keep(autonomous(session));
+    keep(peakReaction(session));
+    keep(wrapUpReaction(session));
     keep(farewell(session));
     const settled = settleTetsukoTime(value, sessionResult(session));
     assert(settled.committed);
@@ -605,7 +648,7 @@ function bestVisit(session) {
   }
   const record = readTetsukoRecord(value);
   assert.deepEqual(record.found, MOMENTS.map(moment => moment.id), `12件すべて見つかる（${visits}回の訪問）`);
-  assert(visits <= 8, `数回の訪問で揃う（${visits}回）`);
+  assert(visits <= 12, `十数回の訪問で揃う（${visits}回）`);
   assert.equal(record.album.length, 0, "写真を撮らなくても、発見は記録される");
   assert.equal(value.flags[OUTINGS_FLAG].tetsuko, visits);
 }
@@ -656,6 +699,14 @@ function bestVisit(session) {
   assert.deepEqual(settleTetsukoTime(value, undefined), { committed: false });
   assert.deepEqual(settleTetsukoTime(null, { meaningful: true, visitKey: "x" }), { committed: false });
   assert.deepEqual(value, before);
+
+  assert.deepEqual(settleTetsukoTime(value, { ...sessionResult(session), played: true }), { committed: false });
+  assert.equal(tetsukoPlayedToday(value), true, "画面を開いてすぐ帰っても、当日の遊びは終了");
+  assert.equal(readTetsukoRecord(value).props.floor, null, "配置だけの変更は記録しない");
+  assert.equal(readTetsukoRecord(value).sessions, readTetsukoRecord(before).sessions);
+  assert.deepEqual(value.flags[OUTINGS_FLAG], before.flags[OUTINGS_FLAG]);
+  assert.deepEqual(await openTetsukoTime({ value, visitKey: tetsukoVisitKey(value) }),
+    { meaningful: false, visitKey: tetsukoVisitKey(value) }, "同じ日は画面を開く処理にも入らない");
 }
 
 // 確定点: 確定で変わるのは来訪記録と _tetsuko_time だけ。能力・経験値・お金・好感度・日付・時間帯・体力は不変
@@ -734,6 +785,8 @@ function bestVisit(session) {
   for (const day of [1, 2, 3, 4, 5, 6, 7, 8]) {
     for (const count of [0, 1, 2, 3, 6]) {
       const session = createSession(save({ count, day }));
+      session.maxTurns = 999;
+      session.goal = 999;
       for (const slot of SLOTS) for (const prop of PROPS) placeProp(session, slot, prop.id);
       keep(openingReaction(session));
       for (const kind of ["pet", "play", "play", "play", "play", "miss", "play", "miss", "play", "catch", "brush", "brush", "brush", "treat", "watch", "watch", "pet", "pet", "pet", "pet"]) keep(act(session, kind));
@@ -745,6 +798,8 @@ function bestVisit(session) {
       if (peak.line) everyText.push(`LINE:${peak.line.text}`);
       session.peakReady = true;
       keep(peakReaction(session));
+      session.wrapReady = true; session.wrapped = false;
+      keep(wrapUpReaction(session));
       keep(farewell(session));
     }
   }
