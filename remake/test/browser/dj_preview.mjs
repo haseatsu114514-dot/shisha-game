@@ -73,7 +73,19 @@ try{
    await page.waitForTimeout(120);const after=await snap(page);assert.deepEqual(after.bpms,before.bpms);assert.deepEqual(after.beats,before.beats);assert.deepEqual(after.playing,[false,false]);assert.equal(after.fx.fixes,0);
   }
   // ▶ A starts the set: A on air, B cued at the next 4-bar line (beat 16 in SET 1: 8 s, DJF03), B's waveform stays still.
-  await press('play-a');await until(page,'audio',s=>s.running&&s.rms>1e-5,errors);
+  const retry = page.locator('#retry-audio');
+  assert(await retry.isHidden());
+  if (kind === 'pc') {
+   const track = '**/assets/audio/dj/*dance-monster.mp3';
+   await page.route(track, route => route.fulfill({contentType:'audio/mpeg', body:'invalid audio'}), {times:1});
+   await press('play-a');
+   await retry.waitFor();
+   assert.equal(await page.locator('#coaching').innerText(),'音源を読み込めませんでした');
+   assert(await page.locator('#point-play-a').isHidden());
+   await press('retry-audio');
+  } else await press('play-a');
+  await until(page,'audio',s=>s.running&&s.rms>1e-5,errors);
+  assert(await retry.isHidden());
   let started=await snap(page);assert.deepEqual(started.playing,[true,false]);assert.equal(started.phase,'cue');assert.deepEqual([started.cue.from,started.cue.to,started.cue.start],[0,1,16]);assert.equal(started.grid,16);
   await until(page,'deck A DOM',()=>true,errors);
   assert.equal(await page.locator('#indicator-a').textContent(),'ON AIR');assert.equal(await page.locator('#deck-a').getAttribute('data-playing'),'true');

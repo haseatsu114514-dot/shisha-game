@@ -1,4 +1,4 @@
-import { DJAudio } from './audio.mjs';
+import { DJAudio, TrackLoadError } from './audio.mjs';
 import { beatAt, lowCutDb, PHRASE, FOLLOW_BAND, REQUESTS, phaseError, SNAP_BAND, SYNC_FLOOR, mod, gains, toward, keyMatch, energyMatch, quality, followHint, moodOf, MOODS, GRADE_FLOOR, RANK_FLOOR, PICK_FLOOR, RANK_LINES, quickEntry, entryReach, PHONES_ALLOWANCE } from './model.mjs';
 import { FEEL, applyFeelOverrides } from './feel.mjs';
 import { DJSfx } from './sfx.mjs';
@@ -31,6 +31,7 @@ const sideOf = id => id ? '右' : '左', deckOf = id => id ? 'B' : 'A';
 const pickOne = list => list[Math.floor(Math.random() * list.length)];
 const artUrl = key => `../../img/ui/dj/art-${key}.webp`;
 let pickIndex = null; // 試聴 (DJK06): the card picked to listen to (tap it again, or この曲にする, to load it)
+let retryDeck = null;
 let audio, disposed = false, frame = 0, view = { mode: 'idle' }, message = '', subMessage = '', toastUntil = 0, judgeUntil = 0, shownPlay = null, lastCount = '', shownTracks = [null, null], shownSelect = null;
 let moodShown = null, helpManual = null, missStreak = 0, awaySince = 0, awaySaid = false, clashSince = 0, clashSaid = false, comboSaid = 0, shown = {}, particles = [];
 const SHAKES = ['shake-drop', 'shake-sway', 'shake-big', 'shake-stumble'];
@@ -62,6 +63,7 @@ function measure(t) {
 }
 addEventListener('resize', () => { geo.at = -1e9; });
 function create() {
+  retryDeck = null;
   audio = new DJAudio(undefined, { setIndex, allowance: ALLOWANCE, entry: quickEntry(SETS[setIndex]) }); sfx = new DJSfx(audio);
   if (embedded) { audio.muted = gameMuted; if (Number.isFinite(gameVolume)) audio.volume = Math.max(0, Math.min(.36, .18 * gameVolume / .5)); }
   audio.onInterrupted = () => status('音声が中断されました。▶で再開します。');
@@ -114,16 +116,26 @@ for (const id of [0, 1]) {
   const key = id ? 'b' : 'a';
   $('play-' + key).addEventListener('click', () => startDeck(id));
 }
+$('retry-audio').addEventListener('click', () => { if (retryDeck !== null) startDeck(retryDeck); });
 async function startDeck(id) {
+  const player = audio;
+  if (player.busy) return;
   const key = id ? 'b' : 'a';
   // 予約中の ▶ をもう一度押すと、予約を取り消して入りの待機に戻る（DJR01・2026-11-25 オーナー指示）。ほかの鳴っている ▶ は何もしない
   if (audio.mix.decks[id].playing) { if (view?.reserved && audio.cancelReserve(id)) unreserved(id); return; } // ▶ only starts: a deck leaves the air when its transition ends
   // after an interruption (tab hidden, audio session lost) any ▶ brings back every deck that was playing, in step
   const m = audio.mix, resume = !m.running && m.phase !== 'idle' && m.resumeDecks.length > 0;
   try {
-    if (await (resume ? audio.start() : audio.play(id))) { helpManual = null; fx.played = true; if (document.hidden) { await pause(); return; } status(resume ? '再開' : `${key.toUpperCase()} ON AIR`); }
+    const started = await (resume ? player.start() : player.play(id));
+    if (player !== audio || disposed) return;
+    retryDeck = null;
+    if (started) { helpManual = null; fx.played = true; if (document.hidden) { await pause(); return; } status(resume ? '再開' : `${key.toUpperCase()} ON AIR`); }
     else if (!resume) refuse(id);
-  } catch (e) { status(`${e.message}。▶から再試行できます。`); }
+  } catch (e) {
+    if (player !== audio || disposed) return;
+    retryDeck = e instanceof TrackLoadError ? id : null;
+    status(`${e.message} ▶から再試行できます。`);
+  }
 }
 /** 予約を取り消した: the press's word and ring go away, a soft click answers, and the navi is back to the count (the ▶ can be pressed again). */
 function unreserved(id) {
@@ -668,7 +680,10 @@ function render() {
   put('set-progress', `${m.phase === 'done' ? m.count : Math.min(m.count, m.transitions.length + 1 + (m.phase === 'mix' ? 1 : 0))} / ${m.count}`);
   put('set-next', cue ? `NEXT ▶ ${cue.to ? 'B' : 'A'}` : m.phase === 'select' ? '選曲' : m.phase === 'done' ? 'LAST TRACK' : '');
   shown.hint = faderGuide(m, away); shown.away = away;
-  showNavi(n, m);
+  const retry = $('retry-audio');
+  if (retry.hidden !== (retryDeck === null)) retry.hidden = retryDeck === null;
+  if (retry.disabled !== audio.busy) retry.disabled = audio.busy;
+  showNavi(retry.hidden ? n : { ...n, main: audio.busy ? '音源を読み込み中…' : '音源を読み込めませんでした', sub: '', points: [], count: '', warn: true }, m);
   beatMeter(m);
   countTicks(m, now);
   const help = helpManual ?? (m.phase === 'idle');

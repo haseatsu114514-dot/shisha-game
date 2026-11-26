@@ -3,6 +3,7 @@ import { TRACKS, SETS, buildBufferTrackData, previewBeat } from './tracks.mjs';
 import { FEEL } from './feel.mjs';
 
 const CLIP_BARS = 2, CLIP_SECONDS = 3.5;
+export class TrackLoadError extends Error {}
 
 async function decodeTrack(context, key, url, signal, priority) {
   const response = await fetch(url, { signal, priority });
@@ -51,7 +52,13 @@ export class DJAudio {
   }
   get now() { return this.context?.currentTime || 0; }
   async decodeDeck(key) {
-    const context = this.context, t = await this.loadTrack(context, key, this.loading.signal);
+    const context = this.context;
+    let t;
+    try { t = await this.loadTrack(context, key, this.loading.signal); }
+    catch (cause) {
+      if (this.loading.signal.aborted) throw cause;
+      throw new TrackLoadError(`${TRACKS[key].title} の音源を読み込めませんでした。`, { cause });
+    }
     if (!t.buffer) {
       const buffer = context.createBuffer(1, t.samples.length, t.sampleRate);
       buffer.copyToChannel(t.samples, 0);
@@ -95,8 +102,9 @@ export class DJAudio {
         this.meterData = new Float32Array(this.analyser.fftSize);
         this.initialResume = this.context.resume();
         this.initialResume.catch(() => {});
-        await Promise.all([this.ensure(0), this.ensure(1)]);
       }
+      // The first attempt may have loaded just one deck. Retry the missing track before starting the set.
+      if (this.mix.phase === 'idle') await Promise.all([this.ensure(0), this.ensure(1)]);
       if (deckId !== null) { onAir = this.mix.running; await this.ensure(deckId); onAir = false; }
       await (this.initialResume || this.context.resume()); this.initialResume = null;
       if (this.disposed || revision !== this.revision) {

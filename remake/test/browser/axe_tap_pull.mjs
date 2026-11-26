@@ -344,6 +344,20 @@ await suite('axe-tap-pull', async check => {
     await phase(page, 'result');
     assert.equal(await root(page).getAttribute('data-outcome'), 'drop');
     assert.match(await page.locator('.axe-note').innerText(), /柄から当たって落下/);
+    const review = page.locator('.axe-power-review-text');
+    assert.match(await review.innerText(), /^↻\d+% 速く弾く$/);
+
+    await ready(page).click();
+    await phase(page, 'choice');
+    await aim(page);
+    await root(page).focus();
+    await page.keyboard.down('Space');
+    await page.waitForFunction(() => Number(document.querySelector('[data-test="axe-game"]').dataset.rawPower) >= .9);
+    await page.keyboard.up('Space');
+    await phase(page, 'result');
+    assert.equal(await root(page).getAttribute('data-outcome'), 'drop');
+    assert.match(await review.innerText(), /^↻\d+% Spaceを早めに離す$/);
+    assert(await review.evaluate(el => el.scrollWidth <= el.clientWidth), 'the correction fits beside the rotation');
   });
 
   await check('own-axe-flies-and-sticks-in-its-colours', async page => {
