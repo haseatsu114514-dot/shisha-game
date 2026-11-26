@@ -224,7 +224,9 @@ await suite("axe-throw", async run => {
     for(let n=0;n<4;n++)await page.keyboard.press('Tab');assert(await help.evaluate(n=>n.contains(document.activeElement)));
     await page.keyboard.press('Escape');assert.equal(await help.count(),0);assert.equal(await game(page).getAttribute('data-phase'),'power');
     await page.waitForTimeout(100);assert.notEqual(await game(page).getAttribute('data-held'),frozen.held);
-    await page.keyboard.press('Escape');assert.equal(await game(page).count(),0);
+    await page.keyboard.press('Escape');
+    await page.locator('[data-test="axe-quit-confirm"]').click();
+    assert.equal(await game(page).count(),0);
   },options);
   await check('visible-sway-focus-budget-and-release',async page=>{
     await page.evaluate(async()=>{const mini=await import('./js/minigames/axe.js');window.swayGame=mini.runAxeThrow({ inputMode: "gauges", reducedMotion:true});});
@@ -245,7 +247,7 @@ await suite("axe-throw", async run => {
     },true));
     await stopGauge(page,.62);await phase(page,'result');await pressReady(page);await phase(page,'choice');
     await pressReady(page);await phase(page,'horizontal');await page.locator('[data-test="axe-focus"]:not([disabled])').waitFor();
-    await page.keyboard.press('Escape');const result=await page.evaluate(()=>swayGame);assert.equal(result.throws.length,1);
+    await page.keyboard.press('Escape');await page.locator('[data-test="axe-quit-confirm"]').click();const result=await page.evaluate(()=>swayGame);assert.equal(result.throws.length,1);
     const visible=await page.evaluate(()=>visibleRelease),shot=result.throws[0];
     assert.equal(shot.landing.x,visible.x);assert.equal(shot.landing.y,visible.y);assert.notDeepEqual(shot.aim,shot.baseAim);
   });
@@ -270,6 +272,7 @@ await suite("axe-throw", async run => {
     assert.equal(await page.locator('[data-test="axe-round"]').textContent(),"1 / 3 投");
     assert.match(await page.locator(".axe-call-status").textContent(),/残り2回/);
     await shoot(page,{touch,keyboard}); await page.keyboard.press("Escape");
+    await page.locator('[data-test="axe-quit-confirm"]').click();
     await page.locator('[data-test="axe-start"]').waitFor();
     assert.deepEqual(await storageSnapshot(page),before,"Practice must preserve raw legacy saves and LIME");
   },options);
@@ -317,7 +320,7 @@ await suite("axe-throw", async run => {
     assert(await game(page).evaluate(root=>root.contains(document.activeElement)),"Disabling the primary button must keep focus inside the game");
     await page.keyboard.press("Space"); await phase(page,"vertical");
     for(let i=0;i<10;i++) await page.keyboard.press("Tab"); assert(await game(page).evaluate(root=>root.contains(document.activeElement)));
-    await page.keyboard.press("Escape"); assert.equal(await game(page).count(),0);
+    await page.keyboard.press("Escape"); await page.locator('[data-test="axe-quit-confirm"]').click(); assert.equal(await game(page).count(),0);
   });
   await check("pointer-double-click",async page => {
     await standalone(page); await page.locator('[data-test="axe-action"]:not([disabled])').dblclick(); await phase(page,"horizontal");

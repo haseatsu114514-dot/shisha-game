@@ -47,6 +47,7 @@ export const PLAYER = Object.freeze({
   staminaDrain: 0.9,     // ムチを入れていない間の消耗（1秒あたり）
   staminaRecover: 2.6,   // ムチを入れていない間の回復 ×調子（調子0.9なら +2.3/秒）
   rhythmDecay: 0.07,     // 1秒あたりの割合で調子が落ちる（PERFECT なら高いまま、GOOD だけなら中くらいで釣り合う）
+  warning: 40,           // スタミナ表示で注意に切り替わる
   tired: 30,             // これを下回ると速度が落ち始める
 });
 
@@ -452,6 +453,13 @@ export function standings(state) {
   }).map((camel, index) => ({ id: camel.id, name: camel.name, color: camel.color, position: index + 1, distance: camel.distance, finishedAt: camel.finishedAt }));
 }
 
+/** ゴール時に残した息の配点（最大8点）。結果の助言でも使う。 */
+export function finishStaminaPoints(remain) {
+  return Math.floor(remain < PLAYER.tired
+    ? 8 * Math.max(0, remain) / PLAYER.tired
+    : clamp(8 - Math.max(0, remain - PLAYER.warning) / 7, 0, 8));
+}
+
 /**
  * 採点（0〜100）: 順位（40）＋声かけの正確さ（35）＋ムチとスタミナの使い方（25）。
  * 完走していない状態には null。
@@ -464,12 +472,12 @@ export function scoreRace(state) {
   const timingRaw = judged ? 35 * (stats.perfect + stats.good * 0.6) / judged : 0;
   const timing = clamp(timingRaw - stats.miss * 2 - stats.spam, 0, 35);
   // ムチとスタミナ: スパートでムチを入れたか（8: 3秒で満点）、息が無いのに押し続けていないか（9）、
-  // 息を残しすぎていないか（8: 残り0〜30で満点。使い切って勝つのがいちばん）。
+  // 息を使いつつ減速ラインを割らずに終えたか（8: 残り30〜40で満点）。
   const spurt = 8 * clamp(stats.spurtWhip / 3, 0, 1);
   const pressed = stats.whipTime + stats.emptyWhip;
   const efficiency = pressed > 0 ? 9 * clamp(1 - stats.emptyWhip / pressed, 0, 1) : 4;
   const remain = player.stamina;
-  const pacing = remain <= 30 ? 8 : clamp(8 - (remain - 30) / 7, 0, 8);
+  const pacing = finishStaminaPoints(remain);
   const stamina = clamp(Math.round(spurt + efficiency + pacing), 0, 25);
   const total = clamp(Math.round(rankPoints + timing + stamina), 0, 100);
   return { total, grade: gradeOf(total), rank, time: state.finishedAt, cup: state.cup,
@@ -480,7 +488,7 @@ export function scoreRace(state) {
 
 /**
  * テスト・自動操作用: 方針どおりに最後まで走らせる。
- * policy: "perfect"（毎回ぴたり・中盤は息が満ちたら短くムチ・スパートで使い切る）／"good"／"cruise"（声はぴたり・ムチなし）
+ * policy: "perfect"（毎回ぴたり・中盤は息が満ちたら短くムチ・スパートで減速ラインまで使う）／"good"／"cruise"（声はぴたり・ムチなし）
  *         ／"hold"（声はぴたり・ムチを押しっぱなし）／"none"（何もしない）／"spam"（連打）／関数(state)→{voice, whip}
  */
 export function simulateRace({ seed = 1, policy = "perfect", cup = "practice", dt = 1 / 60 } = {}) {
@@ -498,11 +506,11 @@ export function simulateRace({ seed = 1, policy = "perfect", cup = "practice", d
   return { state, score: scoreRace(state) };
 }
 
-/** 上手なムチ: スパートでは使い切る。中盤は息が満ちている時だけ短く入れ、スパートの前に貯め直す。 */
+/** 上手なムチ: スパートでは減速ラインまで使う。中盤は息が満ちている時だけ短く入れ、スパートの前に貯め直す。 */
 const smartWhip = state => {
   const { player } = state;
   if (!whipReady(state)) return false;
-  if (inSpurt(state)) return true;
+  if (inSpurt(state)) return player.stamina > PLAYER.tired + 1; // 1フレームぶんの消費で減速ラインを割らない
   // 競り合いは、スパートのぶんを残して抜き切る。
   if (player.duel) return player.stamina > 50;
   const progress = player.distance / state.length;

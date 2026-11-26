@@ -88,7 +88,6 @@ export const CARDS = Object.freeze([
   { id: "venue_heat", name: "会場の熱気", type: "event", need: 2, when: "turn", tx: "全員の次の一口の判定熱+1。" },
   { id: "go_second", name: "後の先", type: "event", need: 1, when: "turn", tx: "次のラウンド、自分が後手になる。" },
   { id: "buyout", name: "買い占め", type: "event", need: 0, when: "prep", tx: "このターンの「詰める」で、さらに2枚取れる。" },
-  { id: "repack", name: "詰め直し", type: "event", need: 1, when: "prep", tx: "ボウルの葉を2枚まで場の山に戻し、同じ枚数を場から取る。" },
   { id: "encore", name: "アンコール", type: "event", need: 7, pay: { fire: 2 }, when: "puff", tx: "最終セッションだけ。熱を2落として使う。この一口の点をもう一度得る。" },
   { id: "sumi", name: "スミさん", type: "person", need: 3, when: "any", tx: "【炭を見る目】自分の炭カードは着火が1ターン早い（フラット炭は置いたターンにのせられる）。" },
   { id: "naru", name: "なる", type: "person", need: 2, when: "any", tx: "【甘さを追う】主役がスイートなら、ジャストの一口+1。" },
@@ -131,10 +130,10 @@ export const INTRO = Object.freeze({
   rules: Object.freeze({ useVote: false, useBonus: false, prepack: true, autoEmbers: 3, prepTurns: 2, startHeat: 3 }),
 });
 
-// 大会。sessions=セッション数（1セッション=3ラウンド） judges=審査員（空なら審査カードを使わず、毎回「ふつうに吸う」） task=課題フレーバー
+// 大会。sessions=セッション数（1セッション=3ラウンド） judges=審査員（空なら審査カードを使わず、毎回「ふつうに吸う」） task=場に必ず並ぶ課題フレーバー
 export const TOURNAMENTS = Object.freeze([
   { id: "practice", name: "練習試合", sessions: 3, judges: [], task: null, blurb: "審査カードなし。毎回「ふつうに吸う」。はじめての一戦に。" },
-  { id: "crown", name: "SMOKE CROWN CUP", sessions: 3, judges: ["kamizono", "hakase", "sensu"], task: "lemon", blurb: "課題はレモン。吸い方はおだやか。" },
+  { id: "crown", name: "SMOKE CROWN CUP", sessions: 3, judges: ["kamizono", "hakase", "sensu"], task: "lemon", blurb: "レモンが場に出る。吸い方はおだやか。" },
   { id: "open_cloud", name: "HAZE: OPEN CLOUD", sessions: 3, judges: ["kamizono", "sensu", "hakase"], task: null, blurb: "課題なし。葉選びから勝負。" },
   { id: "national", name: "HAZE: NATIONAL TOKYO", sessions: 4, judges: ["emir", "hakase", "sensu"], task: null, blurb: "4セッション。上にも下にも揺れる。" },
   { id: "grand", name: "HAZE: GRAND SMOKE", sessions: 4, judges: ["sensu", "emir", "taiyo"], task: null, blurb: "4セッション。吸い方が荒い。" },
@@ -150,7 +149,7 @@ export const FIRST_MARKET = Object.freeze(["lemon", "mint", "blueberry", "peach"
 // 第0.8版（蒸らし・一口ごとに葉が減る）: CPUはボウルに入るだけ詰める（配合の比はそのまま）。a は実況の煽りと内寄せを1枚ずつ、
 // 火おこしとひと息に替えた（数字は docs/design/card_game/v0.3_design.md の「10.」）
 export const KITS = Object.freeze([
-  { id: "a", tier: "advanced", name: "ミックスの構え型", bowl: "funnel", hmd: "lotus", plan: [["blueberry", 8], ["mint", 4]],
+  { id: "a", tier: "advanced", name: "ミックスの構え型", bowl: "funnel", hmd: "lotus", plan: [["blueberry", 8], ["mint", 2], ["ice_grape", 2]],
     blurb: "帯の真ん中に置き、吸いの技で受ける。相手は煽りで揺さぶる。",
     cards: [["flat", 8], ["dense_flat", 2], ["cube", 2], ["heat_in", 3], ["heat_out", 3], ["ash_tap", 2], ["add_coal", 2], ["breath", 2], ["fan", 1], ["inner", 1], ["blow", 2], ["all_in", 2], ["duel", 2], ["windguard", 2], ["timer", 1], ["diffuser", 1], ["hype", 1], ["go_second", 1], ["mashiro", 1], ["packy", 1]] },
   { id: "b", tier: "advanced", name: "単品の火持ち型", bowl: "clay", hmd: "amaburst", plan: [["double_apple", 12]],
@@ -159,7 +158,7 @@ export const KITS = Object.freeze([
   { id: "c", tier: "advanced", name: "低温の攻め型", bowl: "silicone", hmd: "tanukish", plan: [["rose", 7], ["peach", 4]],
     blurb: "味値4のローズ。ジャストのすぐ上が焦げ。読む・逃がす・ブローで攻めきる。",
     cards: [["flat", 9], ["dense_flat", 2], ["heat_out", 3], ["heat_in", 3], ["blow", 2], ["read", 2], ["inner", 2], ["ash_tap", 2], ["tongs", 2], ["breath", 2], ["show_smoke", 1], ["duel", 2], ["windguard", 2], ["timer", 1], ["venue_heat", 1], ["go_second", 1], ["fan", 2], ["packy", 1]] },
-  { id: "d", tier: "advanced", name: "一つ火の低温型", bowl: "funnel", hmd: "one_coal", plan: [["peach", 8], ["rose", 5]],
+  { id: "d", tier: "advanced", name: "一つ火の低温型", bowl: "funnel", hmd: "one_coal", plan: [["peach", 8], ["rose", 3], ["ice_grape", 2]],
     blurb: "キューブ炭1つで低い熱を保つ。炭を足す手間が少ないぶん、手札を技に回す。",
     cards: [["cube", 5], ["flat", 4], ["dense_flat", 1], ["heat_in", 3], ["show_smoke", 2], ["duel", 2], ["blow", 1], ["read", 3], ["inner", 2], ["breath", 2], ["tongs", 1], ["loosen", 2], ["ash_tap", 2], ["fan", 1], ["windguard", 1], ["timer", 1], ["diffuser", 1], ["draft", 1], ["venue_heat", 1], ["go_second", 1], ["buyout", 1], ["minto", 1], ["packy", 1]] },
 ]);
@@ -206,11 +205,11 @@ const CARD_RARITY = {
   heat_in: "C", heat_out: "C", blow: "U", show_smoke: "U", all_in: "R", duel: "R", read: "C", ash_tap: "C", add_coal: "U", tongs: "U", fan: "C",
   inner: "U", outer: "U", loosen: "U", breath: "C", reset: "R",
   windguard: "U", chacosta: "U", timer: "U", ice_hose: "R", diffuser: "R",
-  hype: "U", draft: "U", venue_heat: "U", go_second: "R", buyout: "U", repack: "U", encore: "SR",
+  hype: "U", draft: "U", venue_heat: "U", go_second: "R", buyout: "U", encore: "SR",
   sumi: "SR", naru: "SR", adam: "SR", minto: "SR", mashiro: "SR", tsumugi: "SR", packy: "SR",
 };
 const SERIES = Object.freeze([...FLAVORS.map((x) => `flavor:${x.id}`), ...BOWLS.map((x) => `bowl:${x.id}`), ...HMDS.map((x) => `hmd:${x.id}`), ...CARDS.map((x) => `card:${x.id}`)]);
-/** 通し番号の総数（葉20・ボウル4・HMD4・デッキのカード38） */
+/** 通し番号の総数（葉20・ボウル4・HMD4・デッキのカード37） */
 export const SERIES_SIZE = SERIES.length;
 /** 通し番号（1から）。知らない札は 0 */
 export const numberOf = (kind, id) => SERIES.indexOf(`${kind}:${id}`) + 1;

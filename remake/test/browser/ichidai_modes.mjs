@@ -66,12 +66,13 @@ await suite("ichidai-modes", async (check) => {
         if (root.dataset.wait === "cool" && root.dataset.turn === "me" && root.querySelector('[data-test="ichi-zone"] .ichi-coal-btn.can')) window.__ichiSeen.manualCool++;
       }).observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-wait"] });
     });
-    // あとは「おすすめで進める」だけで、最初の審査まで進める
+    // 光っている操作を手動で選んで、最初の審査まで進める。
+    assert.equal(await page.locator(t("ichi-do-hint")).count(), 0);
     const acts = [];
     for (let guard = 0; guard < 400 && !(await page.locator(t("ichi-result")).count()); guard++) {
       // 見つけるのと押すのを、画面の中で一度に行う（見つけたあとに番が替わってボタンが消えると、押すのを待ち続けてしまうため）
       const did = await page.evaluate(() => {
-        const g = document.querySelector('[data-test="ichi-game"]'), b = document.querySelector('[data-test="ichi-do-hint"]:not([disabled])');
+        const g = document.querySelector('[data-test="ichi-game"]'), b = document.querySelector('button.is-hint:not([disabled])');
         if (g.dataset.turn !== "me" || !b || !document.querySelector(".ichi-sheet").hidden) return null;
         const action = document.querySelector('[data-test="ichi-next-step"]')?.dataset.action || "?";
         b.click();
@@ -80,7 +81,7 @@ await suite("ichidai-modes", async (check) => {
       if (did) acts.push(did);
       await page.waitForTimeout(did ? 60 : 90);
     }
-    assert.equal(await page.locator(t("ichi-result")).count(), 1, `おすすめだけで最初の審査まで進む（打った手: ${acts.join(",")}）`);
+    assert.equal(await page.locator(t("ichi-result")).count(), 1, `案内どおりに手動で最初の審査まで進む（打った手: ${acts.join(",")}）`);
     for (const need of ["pack", "end"]) assert.ok(acts.includes(need), `案内に ${need} が出る（${acts.join(",")}）`);
     assert.ok(!acts.includes("steam"), "「蒸らす」という手は無い");
     // 準備の4ターンで、熱は0から上がっている（蒸らし: ターンの終わりに、火力へ1近づく）

@@ -10,7 +10,7 @@
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { FLAVORS, FLAVOR, CARDS, CARD, BOWLS, HMDS, JUDGES, PUFFS, TOURNAMENTS, KITS, BASIC_KITS, BASIC_CARDS, INTRO_KIT, INTRO, KIT, TYPE_LABEL, WHEN_LABEL, RARITIES, SERIES_SIZE, numberOf, rarityOf, expandDeck } from "../js/minigames/ichidai-data.js";
-import { RULES, createGame, act, canCharge, canPutOn, canPack, heatOf, fireOf, settledHeat, embersOf, coalHeat, coalMaxOf, leavesOf, firepower, coolStepsOf, slotsOf, scorePuff, judgedHeat, roundsOf, canPlay, impressionOf, rivalsOf, targetsOf, targetOf, pileOf, votePtsOf, growthOf } from "../js/minigames/ichidai-rules.js";
+import { RULES, createGame, act, canCharge, canPutOn, canPack, heatOf, fireOf, settledHeat, embersOf, coalHeat, coalMaxOf, leavesOf, firepower, coolStepsOf, slotsOf, scorePuff, personFitsBowl, judgedHeat, roundsOf, canPlay, impressionOf, rivalsOf, targetsOf, targetOf, pileOf, votePtsOf, growthOf } from "../js/minigames/ichidai-rules.js";
 import { aiAct } from "../js/minigames/ichidai-ai.js";
 
 const DOC = createRequire(import.meta.url)("../../docs/design/card_game/cards.js");
@@ -56,12 +56,12 @@ for (const kit of [...BASIC_KITS, INTRO_KIT]) {
   assert.equal(KIT[kit.id], kit);
 }
 for (const id of BASIC_CARDS) assert.ok(CARD[id] && CARD[id].type !== "person" && !CARD[id].pay?.fire === (id !== "all_in"), `基本のカード ${id}`);
+assert.equal(CARD.repack, undefined);
 for (const kit of [...KITS, ...BASIC_KITS, INTRO_KIT]) {
   const deck = expandDeck(kit.cards);
   assert.equal(deck.length, 40, `${kit.name} は40枚`);
   for (const [id, n] of kit.cards) {
     assert.ok(CARD[id], `${kit.name}: ${id}`);
-    assert.notEqual(id, "repack", "まだ動かないカードは入れない");
     if (id !== "flat" && id !== "cube") assert.ok(n <= (CARD[id].type === "person" ? 1 : 3), `${kit.name}: ${CARD[id].name} が多い`);
   }
   assert.ok(BOWLS.some((b) => b.id === kit.bowl) && HMDS.some((h) => h.id === kit.hmd));
@@ -71,6 +71,22 @@ for (const kit of [...KITS, ...BASIC_KITS, INTRO_KIT]) {
 // ── 3. 採点と炭 ──
 const fake = (over = {}) => ({ heat: 0, bowl: { mango: 6, vanilla: 3 }, main: "mango", bowlId: "funnel", hmd: "lotus", tools: [], person: null, zone: [], stove: [],
   pend: 0, sessMod: 0, usedLotus: true, usedSilicone: false, ...over });
+{
+  for (const [kit, person] of [[KIT.a, "mashiro"], [KIT.d, "minto"]]) {
+    const [main] = kit.plan[0];
+    assert(kit.cards.some(([id]) => id === person));
+    assert(personFitsBowl(fake({ bowl: Object.fromEntries(kit.plan), main }), person));
+  }
+  assert(!personFitsBowl(fake({ bowl: { blueberry: 8, mint: 4 }, main: "blueberry" }), "mashiro"));
+  assert(!personFitsBowl(fake({ bowl: { peach: 8, rose: 5 }, main: "peach" }), "minto"));
+
+  const crown = createGame({ tournament: "crown", players: [{ kit: "b" }, { kit: "d" }] });
+  assert(crown.market.includes("lemon"));
+  assert(crown.P.every(p => leavesOf(p) === 0));
+  const apple = fake({ bowl: Object.fromEntries(KIT.b.plan), main: "double_apple", bowlId: KIT.b.bowl, person: "adam" });
+  const labels = scorePuff(apple, 7, PUFFS.normal).parts.map(part => part.label);
+  for (const label of ["素焼きハガル", "原点", "アダム", "濃厚"]) assert(labels.includes(label));
+}
 {
   const p = fake(), q = PUFFS.normal;
   assert.deepEqual([6, 5, 4, 3, 7].map((h) => scorePuff(p, h, q).zone), ["just", "band", "off", "cold", "scorch"]);

@@ -1,7 +1,7 @@
 // 表示専用。競走・採点・保存には触れず、いまの息を読みやすくする。
-import { PLAYER, WHIP, GRADES, inSpurt, whipReady, whipDrain, staminaRecovery, camelCupQualified, camelMastered, camelExpert } from "./camel-race-model.js";
+import { PLAYER, WHIP, GRADES, finishStaminaPoints, inSpurt, whipReady, whipDrain, staminaRecovery, camelCupQualified, camelMastered, camelExpert } from "./camel-race-model.js";
 
-export const STAMINA_WARNING = 40;
+export const STAMINA_WARNING = PLAYER.warning;
 export const SPURT_RESERVE = WHIP.empty + WHIP.spurtDrain * 3;
 
 /** 数字は現在の消費/回復率の目安。未来の声の成功や順位を予言しない。 */
@@ -53,7 +53,7 @@ export function camelNextGoal(run, { mastered = false, best = null, struggling =
       const drops = [
         [8 * (1 - Math.min(1, stats.spurtWhip / 3)), `LAST SPURT でムチを3秒以上（今回 ${stats.spurtWhip}秒）`],
         [pressed > 0 ? 9 * stats.emptyWhip / pressed : 0, `息が切れたらムチを離す（今回 ${stats.emptyWhip}秒 押したまま）`],
-        [Math.min(8, Math.max(0, (stats.staminaLeft - 30) / 7)), `息を使い切ってゴールする（今回 残り${stats.staminaLeft}）`],
+        [8 - finishStaminaPoints(stats.staminaLeft), `息を${PLAYER.tired}〜${PLAYER.warning}残してゴールする（今回 残り${stats.staminaLeft}）`],
       ].sort((a, b) => b[0] - a[0]);
       tip = drops[0][0] > 0 ? drops[0][1] : "ムチは息のあるうちに離す";
     } else {

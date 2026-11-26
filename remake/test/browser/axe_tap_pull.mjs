@@ -117,6 +117,7 @@ await suite('axe-tap-pull', async check => {
     await start(page);
     // 針を止めて構えた後、的に触れて離すだけ（弾かない）なら投げない。狙いも動かない
     await aim(page);
+    assert.match(await page.locator('[data-test="axe-power-cue"]').textContent(), /上へ弾く.*Spaceは緑の帯で離す/);
     const before = await root(page).evaluate(n => [n.dataset.aimX, n.dataset.aimY]);
     const corner = await page.locator('.axe-target').evaluate(node => { const q = new DOMPoint(200, 120).matrixTransform(node.getScreenCTM()); return { x: q.x, y: q.y }; });
     await page.mouse.click(corner.x, corner.y); await page.waitForTimeout(300);
@@ -215,7 +216,7 @@ await suite('axe-tap-pull', async check => {
     assert.equal(await root(page).evaluate(node => node === document.activeElement), true, 'reaim restores keyboard focus');
     for (let i = 0; i < 3; i++) {
       await keyStance(page);
-      await page.keyboard.down('Space'); await page.waitForTimeout(744); await page.keyboard.up('Space');
+      await page.keyboard.down('Space'); await page.waitForTimeout(620); await page.keyboard.up('Space');
       await phase(page, 'result');
       assert.equal(await root(page).getAttribute('data-player-throws'), String(i + 1));
       await ready(page).click(); await phase(page, i === 2 ? 'summary' : 'choice');
@@ -224,7 +225,7 @@ await suite('axe-tap-pull', async check => {
     await phase(page, 'choice');
     assert.equal(await root(page).evaluate(node => node === document.activeElement), true, 'retry restores keyboard focus');
     await keyStance(page);
-    await page.keyboard.down('Space'); await page.waitForTimeout(744); await page.keyboard.up('Space');
+    await page.keyboard.down('Space'); await page.waitForTimeout(620); await page.keyboard.up('Space');
     await phase(page, 'result');
     assert.equal(await root(page).getAttribute('data-player-throws'), '1', 'retry starts a fresh game');
     assert.deepEqual(await storageSnapshot(page), before);

@@ -893,7 +893,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   /** ムチを押す・離す。押している間だけ騎手の腕が回り続け、ラクダが伸びる（スタミナを使う）。 */
   let whipDown = false;
   const onWhip = on => {
-    if (!race || (on && rotateGuarded())) return;
+    if (!race || (on && (paused || rotateGuarded()))) return;
     whipDown = !!on;
     // スタート前に押しても黙らない: ボタンが沈み、はじめが一言。押したまま GO を迎えると、そのままムチが入る（先行入力）。
     if (phase === "countdown" && on) { if (!signalButton.classList.contains("held")) { signalButton.classList.add("held"); hajime("まだだ……", "serious", 0.6); } return; }
@@ -973,7 +973,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       return;
     }
     if (event.key === "Enter" && phase === "goal") { event.preventDefault(); event.stopImmediatePropagation(); skipGoal(); return; }
-    if (!ours(event)) return;
+    if (paused || !ours(event)) return;
     armCamelAudio(); onKey(event); event.stopImmediatePropagation();
   };
   // タブを離れた・画面を切り替えた時は、自動で一時停止にする（自動操作のデモ・検査では止めない）。
@@ -1022,7 +1022,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   const abort = () => cleanup(runs.length > 0);
   signal?.addEventListener("abort", abort, { once: true });
   // ゴールした後の「やめる」は、閉じずに結果へ進む（走り切った記録を捨てない）。
-  closeButton.addEventListener("click", () => { if (phase === "goal") { sfx("click"); openResult(); return; } sfx("cancel"); cleanup(runs.length > 0); });
+  closeButton.addEventListener("click", () => { if (phase === "goal") { sfx("click"); openResult(); return; } if (phase === "race" || phase === "countdown") { openPause(); return; } sfx("cancel"); cleanup(runs.length > 0); });
   // ゴールの余韻は、少し見せた後なら画面のタップ・Space で飛ばせる。
   const skipGoal = () => { if (phase === "goal" && goalReal >= FEEL.goalSkipAfter) openResult(); };
   stageNode.addEventListener("pointerdown", event => { if (phase === "goal" && !event.target.closest?.("button")) skipGoal(); });

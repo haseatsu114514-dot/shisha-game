@@ -913,3 +913,19 @@ small.dc-sub { font-size: 20px; color: #f1e7d6; }
 body.reduce-shake .mo-tarot-flash, body.reduce-shake .mo-pk-flash, body.reduce-shake .mo-ck-flash,
 body.reduce-shake .ci-flash, body.reduce-shake .win-flash, body.reduce-shake .camel-flash, body.reduce-shake .dr-flash,
 body.reduce-shake .axe-declare-flash { display: none !important; }
+
+/* 離脱確認を開いている間は、ゲーム面を操作できない。 */
+.minigame-pause {
+  box-sizing: border-box;
+  max-width: calc(100vw - 32px);
+  margin: auto;
+  padding: 20px 26px;
+  border: 1px solid #b2966c;
+  border-radius: 12px;
+  background: #fff8ed;
+  color: #392820;
+  text-align: center;
+}
+.minigame-pause::backdrop { background: rgba(21, 15, 12, .6); }
+.minigame-pause h2 { margin: 0 0 16px; font-size: 20px; }
+.minigame-pause-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }

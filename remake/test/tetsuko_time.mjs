@@ -14,7 +14,7 @@ import { TETSUKO_TIME, TETSUKO_STAMINA, TETSUKO_CAMERA, TETSUKO_TOY_VIEW, TETSUK
 import {
   TETSUKO_TIME_FLAG, MOODS, MOMENTS, PROPS, SLOTS, ALBUM_LIMIT, PET_REST_STREAK, PLAY_PAW, PLAY_AUTO_CATCH, AUTO_DELAY,
   JOY, JOY_MAX, JOY_HEARTS, VISIT_JOY, VISIT_GOAL, VISIT_TURNS, CARE, CARE_CAP, PET_ZONES, SWEET_ZONES, WISH_PATIENCE,
-  moodOf, moodLabel, relationStage, sessionStage, readTetsukoRecord, createSession, openingReaction, act, canAct,
+  moodOf, moodLabel, relationStage, sessionStage, tetsukoVisits, readTetsukoRecord, createSession, openingReaction, act, canAct,
   autonomous, autoDelay, placeProp, canPlaceProp, takePhoto, farewell, sessionResult, unlockedProps, discoveryGuide,
   invite, peakReaction, wrapUpReaction, seekMoment, sweetZoneOf, joyHearts, visitGoalOf,
 } from "../js/minigames/tetsuko-model.js";
@@ -691,16 +691,34 @@ function bestVisit(session) {
   const value = save({ count: 2 });
   const before = structuredClone(value);
   const session = createSession(value, { visitKey: tetsukoVisitKey(value) });
-  keep(openingReaction(session));
   placeProp(session, "floor", "box");
-  assert.deepEqual(settleTetsukoTime(value, sessionResult(session)), { committed: false }, "何もせず帰ると確定しない");
-  assert.deepEqual(value, before, "保存は不変（配置だけの変更も残さない）");
+  assert.deepEqual(settleTetsukoTime(value, sessionResult(session)), { committed: false });
+  assert.deepEqual(value, before, "もようがえだけでは保存しない");
+
+  keep(openingReaction(session));
+  assert.deepEqual(settleTetsukoTime(value, sessionResult(session)), { committed: false });
+  assert.deepEqual(value, before, "入場が完了していない結果は保存しない");
+  assert.deepEqual(settleTetsukoTime(value, { ...sessionResult(session), played: true }), { committed: false, memoriesSaved: true });
+  assert(tetsukoPlayedToday(value));
+  assert.deepEqual(settleTetsukoTime(value, { ...sessionResult(session), played: true }), { committed: false });
+  value.day++;
+  assert.deepEqual(readTetsukoRecord(value).found, ["waiting"]);
+  assert.equal(readTetsukoRecord(value).props.floor, null);
+  assert.equal(readTetsukoRecord(value).sessions, 0);
+  assert.equal(readTetsukoRecord(value).affection, 0);
+  assert.equal(tetsukoVisits(value), 2);
+
+  const photoVisit = createSession(value, { visitKey: tetsukoVisitKey(value) });
+  keep(openingReaction(photoVisit));
+  assert.deepEqual(photoVisit.newFound, []);
+  assert(takePhoto(photoVisit));
+  assert.deepEqual(settleTetsukoTime(value, { ...sessionResult(photoVisit), played: true }), { committed: false, memoriesSaved: true });
+  assert.deepEqual(readTetsukoRecord(value).album.map(entry => entry.moment), ["waiting"]);
+  const saved = structuredClone(value);
   assert.deepEqual(settleTetsukoTime(value, { meaningful: true }), { committed: false }, "訪問キーが無ければ確定しない");
   assert.deepEqual(settleTetsukoTime(value, undefined), { committed: false });
   assert.deepEqual(settleTetsukoTime(null, { meaningful: true, visitKey: "x" }), { committed: false });
-  assert.deepEqual(value, before);
-
-  assert.deepEqual(settleTetsukoTime(value, { ...sessionResult(session), played: true }), { committed: false });
+  assert.deepEqual(value, saved);
   assert.equal(tetsukoPlayedToday(value), true, "画面を開いてすぐ帰っても、当日の遊びは終了");
   assert.equal(readTetsukoRecord(value).props.floor, null, "配置だけの変更は記録しない");
   assert.equal(readTetsukoRecord(value).sessions, readTetsukoRecord(before).sessions);

@@ -34,19 +34,26 @@ export function boardPoint(p) {
  *  - 斜め（maxLean〜wildLean）は横のぶれを最大に張り付けて投げは成立させる（下手な投げになるが無反応にはならない）。
  *  時刻は event.timeStamp（入力が起きた時刻）。検査は CDP の timestamp で同じ値を再現できる。 */
 export const FLICK = Object.freeze({ window: 90, minRise: .06, shortRise: .04, tapRise: .015, shortRaw: .34,
-  base: 3, perDouble: .16, lean: .25, maxLean: 1, wildLean: 1.4, driftCurve: 1.6 });
+  base: 2.4, perDouble: .16, lean: .25, maxLean: 1, wildLean: 1.4, driftCurve: 1.6 });
 /** 弾きの読み取り: 投げになるなら { throw: { raw, speed, rise, lean, short, wild } }、ならないなら { miss: 理由 | null }。
  *  理由: "shallow"（浅い）・"lean"（斜めすぎ）・"down"（下へ動いた）。null は触れただけ・戻しただけ・読めない入力。 */
 export function flickRead(samples, height) {
   if (!Array.isArray(samples) || samples.length < 2 || !Number.isFinite(height) || height <= 0) return { miss: null };
   if (!samples.every(s => s && [s.t, s.x, s.y].every(Number.isFinite))) return { miss: null };
-  const first = samples[0], last = samples[samples.length - 1];
+  const first = samples[0], release = samples.at(-1);
+  // 指を離す直前の停止や小さな戻りは、直近の弾きの頂点までで測る。
+  let end = samples.length - 1;
+  for (let i = end - 1; i > 0 && release.t - samples[i].t <= FLICK.window; i--) {
+    const sample = samples[i];
+    if (sample.y <= samples[end].y && release.y - sample.y <= height * FLICK.tapRise) end = i;
+  }
+  const last = samples[end];
   const rise = (first.y - last.y) / height;
   if (rise <= -FLICK.minRise) return { miss: "down" };
   if (rise < FLICK.shortRise) return { miss: rise >= FLICK.tapRise ? "shallow" : null };
   // 離す直前 window ms の区間（その区間より前の最後の点から）で速さと向きを測る。点が1つしか無ければ全体で測る。
   let from = 0;
-  for (let i = samples.length - 1; i >= 0; i--) if (last.t - samples[i].t >= FLICK.window) { from = i; break; }
+  for (let i = end - 1; i >= 0; i--) if (last.t - samples[i].t >= FLICK.window) { from = i; break; }
   const a = samples[from], dt = last.t - a.t, dy = a.y - last.y, dx = last.x - a.x;
   if (!(dt > 0) || !(dy > 0)) return { miss: null };
   const lean = dx / dy;

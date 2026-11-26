@@ -81,6 +81,9 @@ async function fits(page) {
 }
 async function cancel(page, before) {
   await root(page).focus(); await page.keyboard.press("Escape");
+  // プレイ途中の Esc は、確認ダイアログで「やめる」を選んで抜ける。
+  const confirm = page.locator('[data-test="axe-quit-confirm"]');
+  if (await confirm.count()) await confirm.click();
   const result = await page.evaluate(() => window.axePolishPromise);
   assert(result.cancelled && !result.completed);
   assert.deepEqual(await storageSnapshot(page), before);

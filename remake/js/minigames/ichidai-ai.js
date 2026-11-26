@@ -11,7 +11,7 @@
 // （審査カードは見ずに、残りの吸い方の期待値）を比べて良いほうを使う。熱の狙いは「その熱で使える一口のカード（必要火力）」まで
 // 含めた期待点で決める。rules.reactAfterReveal のときは、めくったあとに一口のカードを選ぶ（取っておく値打ちと比べる）。
 import { CARD, FLAVOR, FLAVORS, BOWL, JUDGE, PUFFS } from "./ichidai-data.js";
-import { heatOf, fireOf, settledHeat, embersOf, coalHeat, coalMaxOf, leavesOf, coolStepsOf, judgedHeat, scorePuff, unseenPuffs,
+import { heatOf, fireOf, settledHeat, embersOf, coalHeat, coalMaxOf, leavesOf, coolStepsOf, judgedHeat, scorePuff, personFitsBowl, unseenPuffs,
   canPlay, canPlace, canAsh, canPack, packLimit, roundsOf, isLastSession, isLastOfSession, puffPreview, rivalsOf, votePtsOf, voteScore } from "./ichidai-rules.js";
 
 const cnt = (p, id) => p.hand.filter((x) => x === id).length;
@@ -36,7 +36,7 @@ const direct = (h) => ({ need: h, at: (paid = 0) => Math.max(0, h - paid) });
 const ctxNow = (G, p) => lagged(G, heatOf(p), fireOf(p));
 
 // 手元での値打ち（低いものから種火にする・捨てる）
-const VALUE = { buyout: 0.3, repack: 0, encore: 1.2, go_second: 0.8, outer: 1.0, tongs: 0.9, fan: 1.0, loosen: 1.0, breath: 0.8, add_coal: 0.9 };
+const VALUE = { buyout: 0.3, encore: 1.2, go_second: 0.8, outer: 1.0, tongs: 0.9, fan: 1.0, loosen: 1.0, breath: 0.8, add_coal: 0.9 };
 function cardValue(G, p, id) {
   const c = CARD[id];
   if (c.type === "coal") return 2.2;
@@ -313,7 +313,7 @@ function permanent(G, p) {
   for (let i = 0; i < p.hand.length; i++) {
     const id = p.hand[i], c = CARD[id];
     if (c.type !== "tool" && c.type !== "person") continue;
-    if (c.type === "person" && p.person) continue;
+    if (c.type === "person" && (p.person || !personFitsBowl(p, id) || (id === "packy" && !G.R.useVote))) continue;
     if (c.type === "tool" && (p.tools.length >= G.R.toolMax || p.tools.includes(id))) continue;
     if (!canPlay(G, p, id).ok) continue;
     const v = (c.type === "person" ? 2.2 : W[id] ?? 1.0) * scale;

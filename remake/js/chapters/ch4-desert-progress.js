@@ -4,7 +4,7 @@ import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-ma
 // 2026-11-02 オーナー「ヌールはシーシャ屋もしつつガイドもしてる。シーシャの方へ行くと交流が深まり、好感度3ぐらいでサンドボードに誘われる。
 // 最初は無料、その後は相場」（DSR21）: 宿の隣のカフェ・オアシス（ヌールの父の店。表にツアーデスク）で一台頼んで話すと好感度が上がる。
 // 段階の会話は♥0・1・2・3で読み、♥3の誘いで砂丘へ。2回目以降の砂丘は 6,000円（相場: ガイド付きのサンドボード単体 約150ディルハム）。
-import { readResult, resultTier, rankAtLeast, RANK_ORDER, RULES_VERSION } from "../minigames/desert-ride-model.js";
+import { readResult, resultTier, desertBestKey, desertDisplayBests, rankAtLeast, RANK_ORDER, RULES_VERSION } from "../minigames/desert-ride-model.js";
 import { recordTierClear, tierLine } from "../core/play-tiers.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
@@ -267,10 +267,11 @@ export function desertRecords(value) {
   const legacyBest = readResult(raw.legacyBest);
   // 初級の自己ベスト（#3779）。初級は自己ベスト・評価のご褒美（bestRank）に数えないので、別に持つ
   const easyBest = readResult(raw.easyBest);
+  const bests = desertDisplayBests({ best, easyBest, bests: raw.bests });
   const ranks = [best?.rank, legacyBest?.rank, raw.bestRank].filter(rank => RANK_ORDER.includes(rank));
   const bestRank = ranks.sort((a, b) => RANK_ORDER.indexOf(b) - RANK_ORDER.indexOf(a))[0] ?? null;
   const firstClear = raw.firstClear && Number.isInteger(raw.firstClear.day) ? { chapter: raw.firstClear.chapter ?? null, day: raw.firstClear.day } : null;
-  return { runs: integer(raw.runs) ?? 0, best, ...(legacyBest ? { legacyBest } : {}), ...(easyBest ? { easyBest } : {}), bestRank, firstClear, rewarded: raw.rewarded === true, wins: integer(raw.wins) ?? 0,
+  return { runs: integer(raw.runs) ?? 0, best, ...(Object.keys(bests).length ? { bests } : {}), ...(legacyBest ? { legacyBest } : {}), ...(easyBest ? { easyBest } : {}), bestRank, firstClear, rewarded: raw.rewarded === true, wins: integer(raw.wins) ?? 0,
     naruMet: raw.naruMet === true, naruWins: integer(raw.naruWins) ?? 0 };
 }
 
@@ -304,14 +305,18 @@ export function recordDesertResult(value, data, { awardExp = null } = {}) {
   // 旧ルールの高得点を残し、新ルールの初回は必ず新しいベストとして扱う。
   if (before.best?.rulesVersion === RULES_VERSION && result.rulesVersion !== RULES_VERSION) return null;
   const legacyBest = before.legacyBest || (counted && !sameRules && before.best ? before.best : null);
-  const newBest = counted ? !sameRules || result.score > before.best.score : !before.easyBest || result.score > before.easyBest.score;
-  const easyBest = !counted && newBest ? result : before.easyBest;
+  const newOverallBest = counted ? !sameRules || result.score > before.best.score : !before.easyBest || result.score > before.easyBest.score;
+  const easyBest = !counted && newOverallBest ? result : before.easyBest;
+  const bests = before.bests || {};
+  const key = desertBestKey(result), top = bests[key];
+  const newBest = result.rulesVersion === RULES_VERSION ? !top || result.score > top.score : newOverallBest;
+  if (newBest && result.rulesVersion === RULES_VERSION) bests[key] = { score: result.score, rank: result.rank, rulesVersion: result.rulesVersion };
   const firstClear = !before.firstClear;
   const who = result.race?.who === "naru" ? "naru" : "noor", won = result.race?.won === true;
   const noorWin = counted && won && who === "noor";
   const firstWin = noorWin && before.wins === 0, firstNaruWin = won && who === "naru" && before.naruWins === 0;
   const thirdWin = noorWin && before.wins === DESERT_THIRD_WIN - 1;
-  const desert = { ...(legacyBest ? { legacyBest } : {}), runs: before.runs + 1, best: counted && newBest ? result : before.best, ...(easyBest ? { easyBest } : {}),
+  const desert = { ...(legacyBest ? { legacyBest } : {}), runs: before.runs + 1, best: counted && newOverallBest ? result : before.best, ...(Object.keys(bests).length ? { bests } : {}), ...(easyBest ? { easyBest } : {}),
     firstClear: before.firstClear || { chapter: Number.isInteger(value.chapter) ? value.chapter : null, day: Number.isInteger(value.day) ? value.day : 0 },
     rewarded: before.rewarded, wins: before.wins + (noorWin ? 1 : 0), naruMet: before.naruMet, naruWins: before.naruWins + (won && who === "naru" ? 1 : 0) };
   let exp = 0;

@@ -742,6 +742,7 @@ async function playTetsukoTime(outing, visitKey, owner) {
 /** 確定と回復を同じ処理の中で行う（確定しなければ何も変えない）。 */
 function settleTetsukoVisit(outing, result) {
   const settled = settleTetsukoTime(state, result);
+  if (settled.memoriesSaved) save();
   if (!settled.committed) return false;
   addStamina(settled.stamina);
   toast(outing.toast || "てつこに、少し元気をもらった", { kind: "good" });
