@@ -872,14 +872,14 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
         sfx("perfect", { gain: FEEL.se.perfect.gain, rate: 1 + Math.min(combo - 1, FEEL.se.comboMax) * FEEL.se.comboStep });
         showFeedback("PERFECT", "perfect", sub); hajime("ハイッ！", "smile");
         stop(result.duel ? FEEL.stopPerfectDuel : FEEL.stopPerfect); setTremble("perfect", "player"); setShake("perfect"); if (!reducedMotion) glow = FEEL.glowPerfect[0];
-      } else { sfx("good", FEEL.se.good); showFeedback("GOOD", "good", sub || (result.dt > 0 ? "少し遅め" : "少し早め")); hajime("よしっ", "smile"); }
+      } else { sfx("good", FEEL.se.good); showFeedback("GOOD", "good", [result.dt > 0 ? "少し遅め" : "少し早め", sub].filter(Boolean).join("\n")); hajime("よしっ", "smile"); }
       // 当たった瞬間に体が伸び、止めが明けると画面の前へ出る（「その場で一伸び」を目で見せる）。
       setStretch("player", perfect ? FEEL.stretchPerfect : FEEL.stretchGood); kick((perfect ? FEEL.kickPerfect : FEEL.kickGood) * duel);
       burst(result.type);
       if (combo === 5 && !marks.has("combo")) { marks.add("combo"); say(CALLS.combo); }
       // ほめる（#095）: 続いた声は、区切りごとに歓声と文字で祝う。
       if (FEEL.cheerEvery >= 1 && combo % Math.round(FEEL.cheerEvery) === 0) {
-        floaters.push({ text: `${combo}連続！`, kind: "up", row: 1, age: 0, life: 1.2 });
+        // 連続数は輪のそばの判定に集約する。祝う音はそのまま。
         sfx("crowd", FEEL.se.cheer);
         if (combo === 10 && !marks.has("combo10")) { marks.add("combo10"); say(CALLS.combo10, true); }
       }
@@ -944,6 +944,9 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   signalButton.addEventListener("keydown", event => { if (event.key === " " || event.key === "Enter") event.preventDefault(); });
   signalButton.addEventListener("contextmenu", event => event.preventDefault());
   const isWhipKey = event => event.key === "x" || event.key === "X" || event.code === "KeyX";
+  let resultInputUntil = 0;
+  const resultHeldKeys = new Set();
+  const resultKey = event => event.code === "Space" || event.key === " " ? "Space" : event.key === "Enter" ? "Enter" : null;
   const onKey = event => {
     if (sheet.hidden === false) return;
     if (isWhipKey(event)) { event.preventDefault(); event.stopPropagation(); if (!event.repeat) onWhip(true); return; }
@@ -959,6 +962,13 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   const isPauseKey = event => event.key === "Escape" || event.key === "p" || event.key === "P";
   const windowKey = event => {
     if (phase === "loading") return;
+    const key = resultKey(event);
+    // 声かけの続きで結果のボタンを押さない。長押しは、ガード後も離すまで受けない。
+    if (phase === "result" && key && (performance.now() < resultInputUntil || event.repeat || resultHeldKeys.has(key))) {
+      resultHeldKeys.add(key);
+      event.preventDefault(); event.stopImmediatePropagation();
+      return;
+    }
     if (rotateGuarded()) {
       if (ours(event) || isPauseKey(event) || event.key === "Enter") {
         event.preventDefault();
@@ -988,6 +998,13 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   document.addEventListener("rotateguardchange", onRotateGuardChange);
   onRotateGuardChange();
   const windowKeyUp = event => {
+    const key = resultKey(event);
+    const held = resultHeldKeys.delete(key);
+    // Space の既定クリックは keyup で発生するため、押した時のガードも引き継ぐ。
+    if (key && (held || (phase === "result" && performance.now() < resultInputUntil))) {
+      event.preventDefault(); event.stopImmediatePropagation();
+      return;
+    }
     if (!isWhipKey(event)) return;
     onWhip(false);
     if (ours(event)) { event.preventDefault(); event.stopImmediatePropagation(); }
@@ -2645,6 +2662,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     // 「？」で遊び方を読んだあとは、同じ結果のカードへ戻す（採点・記録はやり直さない）。
     const showResult = () => {
       setPhase("result");
+      resultInputUntil = performance.now() + 800;
       sheet.replaceChildren(card);
       sheet.hidden = false;
       // 低い画面ではカードが内側スクロールになる。素の focus() だとボタンへ勝手にスクロールして

@@ -547,6 +547,9 @@ await suite("tonari-floor", async (check) => {
       assert.equal(await sidebarShuffle.isDisabled(), true);
       assert.match(await sidebarShuffle.evaluate((n) => getComputedStyle(n).backgroundImage), /\/bar-shuffle-off\.webp/);
       assert.equal(await lastLog(), "ミックスを入れ替える（2秒かかる）");
+      assert.equal(await page.locator(t("shuffle-notice")).innerText(), "注文タイマー再開・入れ替え後は1卓へ");
+      assert(await page.locator(t("shuffle-notice")).isVisible());
+      if (platform === "pc") await page.screenshot({ path: `${shots}/tonari-floor-shuffle-notice.png` });
       // その間は、注文待ちの卓を押しても列は開かない（客は待っている）
       await table(1).click();
       assert.equal(await api((a) => a.mode()), "live");
@@ -565,6 +568,7 @@ await suite("tonari-floor", async (check) => {
       assert.equal(await page.locator(t("presets")).getAttribute("data-busy"), "false");
       assert.equal(await count.textContent(), "2秒", "入れ替えが済んだら、元の「2秒」に戻る");
       assert.equal(await lastLog(), "新しいミックスが並んだ");
+      assert.equal(await page.locator(t("shuffle-notice")).innerText(), "注文タイマー進行中・1卓へ戻ろう");
       assert.equal(await api((a) => C.model.floorWaitLeft(a.state(), 1)), waitBefore - 4, "入れ替えの間も、客の待ち時間は減る");
       const second = await hand(g1.order.wish);
       assert(second.every((m) => !first.some((x) => x.id === m.id)), "並んでいた物は出てこない");
@@ -576,6 +580,7 @@ await suite("tonari-floor", async (check) => {
       await page.locator(`.tf-mix-option[data-mix="${pick.id}"]`).click();
       assert.equal(await api((a) => a.mode()), "live");
       assert.deepEqual(await api((a) => { const x = a.state().tables[0]; return [x.phase, x.mix]; }), ["prep", pick.id]);
+      assert.equal(await page.locator(t("shuffle-notice")).isVisible(), false, "注文を受けた卓への案内を残さない");
       const afterServe = await page.locator(".tf-preset").evaluateAll((list) => list.map((n) => n.dataset.mix));
       assert.equal(afterServe.length, second.length);
       assert.equal(afterServe.includes(pick.id), false);

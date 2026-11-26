@@ -40,6 +40,13 @@ async function open(page, { visits = 5, record = { sessions: 3, peaks: 3 }, agai
   }, { visits, record, again });
   const screen = page.locator(dt("tetsuko-time-screen"));
   await screen.waitFor();
+  await page.evaluate(() => {
+    window.__visitNotices = [];
+    const notice = document.querySelector('[data-test="tetsuko-visit-notice"]');
+    new MutationObserver(() => {
+      if (!notice.hidden) window.__visitNotices.push(notice.textContent);
+    }).observe(notice, { attributes: true, childList: true, subtree: true, characterData: true });
+  });
   return screen;
 }
 // 帰って、結果を同じ確定点で確定する（本編の呼び出し側と同じ順）。
@@ -157,6 +164,8 @@ await suite("tetsuko-feel", async check => {
     await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-time-screen"]')?.dataset.peak === "1", null, { timeout: 10000 });
     assert.equal(await screen.getAttribute("data-peak"), "1", "Reaching +1 triggers the special wrap-up moment");
     assert.equal(await screen.getAttribute("data-ended"), "up");
+    assert.equal(await get("visit-notice").innerText(), "今日のふれあいはおしまい");
+    assert((await page.evaluate(() => window.__visitNotices)).includes("そろそろおしまい"));
     assert.match(await caption(), /膝に乗ってきた|頭をこすりつけて/, "A special moment at the stage she trusts you");
     assert.match(await caption(), /今日はこれぐらいにしておこう。/);
     assert.match(await get("joy-note").textContent(), /なかよし度 \+1/);
@@ -201,6 +210,8 @@ await suite("tetsuko-feel", async check => {
     }
     await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-time-screen"]')?.dataset.ended === "none", null, { timeout: 10000 });
     assert.notEqual(await screen.getAttribute("data-peak"), "1");
+    assert.equal(await get("visit-notice").innerText(), "今日のふれあいはおしまい");
+    assert((await page.evaluate(() => window.__visitNotices)).includes("そろそろおしまい"));
     assert.equal(await get("joy-note").getAttribute("data-kind"), "none");
     assert.match(await get("joy-note").textContent(), /今日はこれぐらいにしておこう。/);
     assert.match(await get("caption").textContent(), /今日はこれぐらいにしておこう。/);
@@ -284,6 +295,29 @@ await suite("tetsuko-feel", async check => {
     assert.equal(second.flags._tetsuko_time.playedDay, 37);
     assert.equal(await page.evaluate(() => window.__hearts.length), 1, "Never announced twice");
   }, { reducedMotion: "reduce" });
+
+  // 終わりが近づくと、終わる前に予告が出る。見守りだけだと膝の上で寝続けて回数が進まないことがあるため、
+  // ここはなでる操作で回数を重ね、予告が「おしまい」より先に記録されることを確かめる。
+  await check("tetsuko-ending-notice-before-wrap-up", async page => {
+    await open(page, { record: { sessions: 3, affection: 20, found: ["waiting"] } });
+    const get = id => page.locator(dt(`tetsuko-${id}`));
+    await get("pet").click();
+    const petAt = async (rx, ry) => {
+      const box = await get("cat").boundingBox();
+      await page.mouse.click(box.x + box.width * rx, box.y + box.height * ry);
+    };
+    let shown = false;
+    for (let i = 0; i < 8 && !shown; i += 1) {
+      await petAt(.5, .25);
+      await page.waitForTimeout(1200);
+      shown = await page.evaluate(() => (window.__visitNotices || []).includes("そろそろおしまい"));
+    }
+    assert(shown, "終了前に「そろそろおしまい」の予告が出る");
+    const notice = page.locator(dt("tetsuko-visit-notice"));
+    assert(await notice.isVisible(), "予告が見えている");
+    const box = await notice.boundingBox();
+    assert(box && box.width > 0 && box.x >= 0 && box.x + box.width <= 844, "横持ち画面内に予告が収まる");
+  }, { viewport: { width: 844, height: 390 }, reducedMotion: "reduce" });
 
   // 触らずに眺めているだけでも、隣で見守ったことになる（「そっと見守る」のボタンは無い）。てつこは自分で動き、帰ると来訪が数えられる。
   await check("tetsuko-feel-just-watching-counts-as-being-with-her", async page => {

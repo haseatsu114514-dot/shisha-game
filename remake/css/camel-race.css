@@ -124,7 +124,7 @@
 /* 声の判定: 自分のラクダの頭の上の輪のすぐ上に、太い縁取りで大きく（2026-11-02 オーナー「演出がしょぼい」） */
 .camel-feedback { position: absolute; left: 30.8%; top: 53.5%; display: grid; justify-items: center; gap: .1em; transform: translate(-50%, -50%) scale(.7); opacity: 0; font-weight: 900; pointer-events: none; white-space: nowrap; contain: layout style; }
 .camel-feedback b { font-size: clamp(24px, 4.6cqw, 52px); letter-spacing: .06em; line-height: 1; paint-order: stroke fill; -webkit-text-stroke: .16em rgba(26,12,4,.9); text-shadow: 0 .08em 0 rgba(0,0,0,.35); }
-.camel-feedback small { font-size: clamp(13px, 1.7cqw, 20px); letter-spacing: .1em; color: #fff6e5; paint-order: stroke fill; -webkit-text-stroke: .22em rgba(26,12,4,.85); }
+.camel-feedback small { white-space: pre-line; text-align: center; font-size: clamp(13px, 1.7cqw, 20px); letter-spacing: .1em; color: #fff6e5; paint-order: stroke fill; -webkit-text-stroke: .22em rgba(26,12,4,.85); }
 .camel-feedback.show { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: camel-pop .75s cubic-bezier(.2,1.4,.4,1) both; }
 .camel-feedback[data-kind="perfect"] b { color: #ffd84a; -webkit-text-stroke-color: #5a2e04; text-shadow: 0 .08em 0 rgba(0,0,0,.35), 0 0 .35em rgba(255,200,80,.75); }
 .camel-feedback[data-kind="good"] b { color: #9fe8ff; }
