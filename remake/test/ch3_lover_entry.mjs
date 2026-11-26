@@ -28,12 +28,21 @@ async function fixture() {
     invitationGrowth: () => ({ budget: 1, points: 2 }),
     petitAfterDate: async () => false, // プチ修羅場（デートの後の寄り道）は remake/test/petit_shuraba.mjs
     strainOf: () => 0, STRAIN_SIGN2: 7, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
-    // phone.js の openPhone（runItem）と同じく、読んだ通は既読と受信箱の履歴に残る。
-    openPhone: async messages => {
-      phones.push(messages.map(m => m.id));
-      for (const m of messages) {
-        if (!core.state.limeRead.includes(m.id)) core.state.limeRead.push(m.id);
-        core.state.inbox.push({ id: m.id, originId: m.id, day: core.state.day, msg: { ...m }, read: true, done: true, log: [] });
+    deliverLimeMessage: m => {
+      const item = { id: m.id, originId: m.id, day: core.state.day, msg: { ...m }, read: false, done: false, log: [] };
+      core.state.inbox.push(item);
+      return item;
+    },
+    // phone.js の runItem と同じ項目を既読にする。
+    openLime: async ({ story }) => {
+      assert(story.sequential);
+      phones.push(story.items.map(item => item.id));
+      for (const item of story.items) {
+        assert(core.state.inbox.includes(item));
+        assert.equal(item.read, false);
+        assert.equal(item.done, false);
+        if (!core.state.limeRead.includes(item.id)) core.state.limeRead.push(item.id);
+        item.read = item.done = true;
       }
       return [];
     },
@@ -101,6 +110,10 @@ await check('chapter 3 lover LIME comes from lover.json without date invitations
   assert.equal(due[0].type, 'chat');
   assert(lover.morning.mashiro.some(v => JSON.stringify(v.m) === JSON.stringify(due[0].messages)), 'Text must be the lover.json morning pool');
   same(f.entry.pendingLoverLime({ senders: ['ageha'] }), []);
+  s.inbox.push({ id: due[0].id, day: s.day, msg: due[0], read: false, done: false });
+  assert.equal(await f.entry.readLoverLime(), false, 'Already delivered unread LIME stays in the inbox');
+  assert.equal(s.inbox.length, 1);
+  s.inbox.pop();
   assert.equal(await f.entry.readLoverLime(), true);
   same(f.phones, [['_lover_morning_mashiro_d30']]);
   assert(s.limeRead.includes('_lover_morning_mashiro_d30'));

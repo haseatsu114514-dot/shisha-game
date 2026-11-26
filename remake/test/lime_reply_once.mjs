@@ -532,13 +532,14 @@ test('only a priced invitation opts into wrapping without changing the acceptanc
 test('forced story LIME wraps custom closing replies and preserves ordinary close controls', async () => {
   for (const label of [null, '……誰？', '……はい。ありがとうございます、スミさん']) {
     const f = await fixture();
-    const pending = f.api.openPhone([{ id: 'story-close', sender: 'sumi', messages: [], close_label: label }]);
+    const item = f.api.deliverLimeMessage({ id: 'story-close', sender: 'sumi', messages: [], close_label: label });
+    const pending = f.api.openLime({ story: { items: [item], sequential: true } });
     const chat = f.nodes.findLast(node => node.spec === 'div.lime-chat');
     const actions = f.nodes.findLast(node => node.spec === 'div.lime-actions');
     Object.defineProperty(chat, 'scrollHeight', { get: () => actions.children.some(node => node.spec?.includes('.multiline')) ? 900 : 500 });
     await flush();
     const button = f.nodes.findLast(node => node.dataset?.test === 'phone-next');
-    assert(button, 'openPhone reaches its actual closing control');
+    assert(button, 'Story LIME reaches its actual closing control');
     assert.equal(button.text, label || 'スマホを閉じる');
     assert.equal(button.spec.includes('.multiline'), !!label);
     assert.match(button.spec, /\.lime-reply\.ghost/);

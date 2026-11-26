@@ -82,9 +82,10 @@ try {
           core.newGame(); core.config.bgmVolume = 0; core.config.seVolume = 0;
           (await import('./js/core/ui.js')).showScreen('home', document.createElement('div'));
           window.storyPhoneClosed = false;
-          void (await import('./js/daily/phone.js')).openPhone([
-            { id: 'story-close-layout', sender: 'sumi', messages: ['お疲れさま'], close_label: label },
-          ], { title: '表彰式のあと', time: 'PM 10:18' }).then(() => { storyPhoneClosed = true; });
+          const { deliverLimeMessage, openLime } = await import('./js/daily/phone.js');
+          const item = deliverLimeMessage({ id: 'story-close-layout', sender: 'sumi', messages: ['お疲れさま'], close_label: label });
+          void openLime({ story: { items: [item], title: '表彰式のあと', time: 'PM 10:18', sequential: true } })
+            .then(() => { storyPhoneClosed = true; });
         }, label);
         const button = control(page, 'phone-next');
         await button.waitFor();

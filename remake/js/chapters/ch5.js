@@ -250,7 +250,7 @@ const LIME_SCREEN = {
 };
 
 /**
- * 節目の LIME を既存の受信箱（openPhone）で読む。第5章で会った相手からだけ届き、読み終えたら保存する。
+ * 節目の LIME を共通の受信箱で読む。第5章で会った相手からだけ届き、スマホを閉じてから保存する。
  * 読み終える前に離れた分は受信箱から外し、次にこのカードへ戻ったときに届け直す（第5章には LIME 一覧の入口が無い）。
  */
 async function deliverLime(owner, milestone) {
@@ -258,15 +258,22 @@ async function deliverLime(owner, milestone) {
   if (!current(owner)) return false;
   const due = chapterFiveLimeDue(state, milestone, DB.lime, hasContact);
   if (!due.length) return true;
-  const { openPhone } = await import("../daily/phone.js");
+  const { deliverLimeMessage, openLime } = await import("../daily/phone.js");
   if (!current(owner)) return false;
   const ids = new Set(due.map(m => m.id));
   state.inbox = state.inbox.filter(item => !ids.has(item.originId || item.id));
   showScreen("none", null);
   hud();
-  await openPhone(due, LIME_SCREEN[milestone]);
-  if (!current(owner)) return false;
-  state.inbox = state.inbox.filter(item => item.done || !ids.has(item.originId || item.id));
+  const items = due.map(deliverLimeMessage);
+  const controller = owner.controller = new AbortController();
+  try {
+    // onRead は本文の既読時（返信前）にも呼ばれる。保存は一組を閉じる時まで待つ。
+    await openLime({ story: { ...LIME_SCREEN[milestone], items, sequential: true, signal: controller.signal } });
+  } finally {
+    owner.state.inbox = owner.state.inbox.filter(item => item.done || !items.includes(item));
+    if (owner.controller === controller) owner.controller = null;
+  }
+  if (!current(owner) || controller.signal.aborted) return false;
   save();
   return true;
 }

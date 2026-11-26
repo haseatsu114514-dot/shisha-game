@@ -41,10 +41,11 @@ async function misfire(pick) {
   const owner = state;
   const opened = await play("petit_lime_misfire_open");
   if (state !== owner || !opened || opened.cancelled) return false;
-  const { openPhone } = await import("./phone.js"); // phone.js → romance.js → ここ、の循環を避けて使う時に読む
+  const { deliverLimeMessage, openLime } = await import("./phone.js"); // phone.js → romance.js → ここ、の循環を避けて使う時に読む
   if (state !== owner) return false;
-  await openPhone([{ id: "_petit_lime_misfire", sender: pick.to, type: "chat", lover: true,
-    messages: [{ me: true, text: data.sent }, ...lines.m], replies: lines.r }], { title: "帰り道", time: state.slot ? "夜" : "昼" });
+  const item = deliverLimeMessage({ id: "_petit_lime_misfire", sender: pick.to, type: "chat", lover: true,
+    messages: [{ me: true, text: data.sent }, ...lines.m], replies: lines.r });
+  await openLime({ story: { items: [item], title: "帰り道", time: state.slot ? "夜" : "昼", sequential: true } });
   if (state !== owner) return false;
   markPetit(owner, pick.key);
   strainSuspect(owner, [pick.to]); // 誤爆を受け取った恋人

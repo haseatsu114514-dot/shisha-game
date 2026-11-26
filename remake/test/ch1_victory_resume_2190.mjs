@@ -107,12 +107,6 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
     },
     sensuCutin: async rank => { cutins.push(rank); observe("cutin", { rank }); await pause("cutin"); },
     sceneMoment: async () => {}, // 章の要所の一度きりの演出（#2688 A6）。見た目だけなので進行には関わらない
-    openPhone: async (messages, options) => {
-      assert.equal(titlePresent, false, "LOAD's title screen must be removed before phone content appears");
-      observe("phone", { title: options.title, ids: messages.map(message => message.id) });
-      await pause("phone");
-      return [];
-    },
     // #4035 D3: 大会の通知は共通受信箱（deliverLimeMessage + openLime）で届く。
     // 実物と同じく、届けた項目を受信箱へ積んで返し、読む側は現在の所有者の箱にある項目だけを完了にする。
     deliverLimeMessage: message => {
