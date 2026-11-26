@@ -1,22 +1,10 @@
 import unittest
-from check_story_canon import (character_shop_name_errors, confirmed_r5_baito_errors,
+from check_story_canon import (character_shop_name_errors,
                                confirmed_r5_r6_dialogue_errors, lime_first_person_errors, text_errors)
 
 
 class CanonRegressionTests(unittest.TestCase):
     def test_r5_r6_confirmed_old_lines_only(self):
-        old_baito = '店流に整えて出す（マシマシは体に毒なので）'
-        def baito(text):
-            return {'events': [{'id': 'baito_jiro_call', 'choices': [{'text': text}]}]}
-        self.assertEqual(len(confirmed_r5_baito_errors(baito(old_baito))), 1)
-        for text in ('店流に整えて出す（全マシだと味が崩れるので）',
-                     '「マシマシは体に毒なので」は誤り',
-                     'マシマシは体に毒なので、とは言えない'):
-            with self.subTest(text=text):
-                self.assertEqual(confirmed_r5_baito_errors(baito(text)), [])
-        self.assertEqual(confirmed_r5_baito_errors({'events': [
-            {'id': 'other', 'choices': [{'text': old_baito}]}]}), [])
-
         cases = (
             ('ch2_kumicho.json', 'ch2_kumicho_third', 'kumicho',
              'こうして煙を出してるうちは、誰も傷つかねえ。それだけの話でさ',

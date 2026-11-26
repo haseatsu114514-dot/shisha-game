@@ -367,7 +367,7 @@ test('accepted invitation saves one existing acknowledgement after the player re
   const legacy = { id: '_sumi_baito_inv_d3', sender: 'sumi', type: 'invitation', time_slot: 'noon',
     accept_event: '__sumi_baito__', accept_text: '入ります！',
     accept_reply: { sender: 'sumi', stamp: 'st_sumi_ack' },
-    hint: '乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく',
+    hint: '乗るとそのまま昼から夜までの店番へ（行動を2回使う）。いつもの給料に上乗せがつく',
     messages: ['急で悪い。今日、昼のシフト入れるか？', '常連の団体が入ってな。人手が足りん', '……代わりと言っちゃなんだが、給料は弾むぞ'],
     decline_response: { text: '……そうか。なら、こっちで回す' } };
   assert.deepEqual(JSON.parse(JSON.stringify(generated)), legacy);

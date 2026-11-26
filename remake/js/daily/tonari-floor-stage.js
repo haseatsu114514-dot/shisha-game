@@ -54,7 +54,7 @@ export const STAGES = Object.freeze({
 //     無い人はコードの影絵（tonari-floor-art.js）で描く。
 //     例: first: { idle: "../../img/ui/tonari-floor/guest-first.webp" }, "train-a": { idle: "…/guest-train-a.webp" }
 // - props: 卓の上の一台（shisha）など。無ければ置かない。
-// - cutins: 画面を横切る帯の絵（open＝営業開始／fever＝フィーバーの突入／close＝営業終了）。無ければ色の帯だけ。
+// - cutins: 画面を横切る帯の絵（open＝営業開始／fever＝フィーバーの突入／close＝営業終了）。人物を重ねる時は { background, portrait }。
 export const floorArtPath = (name) => `../../img/ui/tonari-floor/${name}.webp`;
 const guestFaces = (id) => Object.freeze({
   idle: floorArtPath(`guest-${id}`),
@@ -83,7 +83,10 @@ export const FLOOR_ART = Object.freeze({
   props: Object.freeze({}),
   cutins: Object.freeze({
     open: floorArtPath("cutin-open"),
-    fever: floorArtPath("cutin-fever"),
+    fever: Object.freeze({
+      background: floorArtPath("cutin-fever-plain"),
+      portrait: "../../img/ui/character_intros/graphic/hajime.webp",
+    }),
     close: floorArtPath("cutin-close"),
   }),
 });

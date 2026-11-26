@@ -1,7 +1,7 @@
 // tonari フロア営業の台本（単価・気分・フレーバー・ミックス・客・ケア・夜の種類・評価）。ルールは tonari-floor-model.js、画面は tonari-floor-view.js。
 // 遊びの形（2026-11-20 オーナー）: 一人で店を回す。客は「フルーツ系が吸いたい」のように気分を言うだけで、
 // 提供は、並んでいるミックスの一覧から選ぶ（原作の、キャストを卓に着ける所にあたる。一覧はシャッフルできる）。
-// お金はすべて店のもの。はじめの所持金には入らない（日当と売上ボーナスは tonari.js が渡す）。
+// 売上は店のお金。はじめには tonari.js が日当（基本給・売上歩合・手当）を渡す。
 // 原価・仕入れ・利益は扱わない（「ただ満足させて売上をいかに上げるかのゲームにする」。東京編・ドバイ編のバイトでも同じ遊びを使う）。
 
 // 単価（2026-11-20 オーナー指定）: 基本（シーシャ一台）2,000円・チャージ700円（ひとり）・
@@ -33,6 +33,7 @@ const FULL_NAMES = Object.freeze({
   grapefruit: "グレープ｜フルーツ", pineapple: "パイナップル", blueberry: "ブルーベリー", strawberry: "ストロベリー",
   lemon_tea: "レモン｜ティー", cherry: "レッド｜チェリー", passion_fruit: "パッション｜フルーツ", chocolate: "チョコレート",
   cotton_candy: "コットン｜キャンディ", hazelnut: "ヘーゼル｜ナッツ", white_gummy_bear: "ホワイト｜グミベア", double_apple: "ダブル｜アップル",
+  dragonfruit: "ドラゴン｜フルーツ", red_gummy_bear: "レッド｜グミベア", spring_water: "スプリング｜ウォーター",
   black_tea: "ブラック｜ティー", absal_earlgrey: "アール｜グレイ", white_musk: "ホワイト｜ムスク", sakura: "桜",
 });
 const flavor = (id, label, family, also = [], chapter = 1) => {
@@ -57,11 +58,14 @@ export const FLAVORS = Object.freeze(Object.fromEntries([
   flavor("melon", "メロン", "fruit"), flavor("banana", "バナナ", "fruit", ["sweet"]), flavor("coconut", "ココナッツ", "fruit", ["sweet"]),
   flavor("lychee", "ライチ", "fruit", ["deep"]), flavor("lemon_tea", "レモンティー", "fruit", ["deep"]),
   flavor("cherry", "チェリー", "fruit", [], 2), flavor("passion_fruit", "パッション", "fruit", [], 2),
+  flavor("dragonfruit", "ドラゴンフルーツ", "fruit", [], 2),
   // sweet（スイート）
   flavor("vanilla", "バニラ", "sweet"), flavor("chocolate", "チョコ", "sweet"), flavor("caramel", "キャラメル", "sweet"), flavor("cotton_candy", "わたあめ", "sweet"),
   flavor("hazelnut", "ナッツ", "sweet"), flavor("honey", "ハニー", "sweet"), flavor("cola", "コーラ", "sweet"),
   flavor("coffee", "コーヒー", "sweet", ["deep"]), flavor("cappuccino", "カプチーノ", "sweet", ["deep"]),
   flavor("milk", "ミルク", "sweet", [], 2), flavor("white_gummy_bear", "グミ", "sweet", ["fruit"], 2),
+  flavor("red_gummy_bear", "レッドグミベア", "sweet", ["fruit"], 2),
+  flavor("spring_water", "スプリングウォーター", "deep", [], 2),
   // 花・茶葉（リラックス）。ブラックティーの本編カテゴリは spice。
   flavor("black_tea", "ティー", "deep"), flavor("absal_earlgrey", "アールグレイ", "deep", ["fresh"]),
   flavor("rose", "ローズ", "deep"), flavor("jasmine", "ジャスミン", "deep"), flavor("lavender", "ラベンダー", "deep"), flavor("chamomile", "カモミール", "deep"),
@@ -86,17 +90,28 @@ export const MIXES = Object.freeze(Object.fromEntries([
   mix("mintshake", ["peppermint_shake"], "fresh", "sweet"), mix("colamint", ["cola", "mint"], "fresh", "sweet"),
   mix("applemint", ["double_apple", "mint"], "fresh", "fruit"), mix("lavendermint", ["lavender", "mint"], "fresh", "deep"),
   mix("coolmint", ["cool_mint"], "fresh"), mix("doublemint", ["mint", "cool_mint"], "fresh", null, "ダブル｜ミント"),
+  mix("mint", ["mint"], "fresh"), mix("rosemint", ["rose", "mint"], "fresh", "deep"), mix("jasminemint", ["jasmine", "mint"], "fresh", "deep"),
+  mix("cherrymint", ["cherry", "mint"], "fresh", "fruit"), mix("passionmint", ["passion_fruit", "mint"], "fresh", "fruit"),
+  mix("dragonmint", ["dragonfruit", "mint"], "fresh", "fruit", "ドラゴン｜ミント"),
+  mix("gummymint", ["white_gummy_bear", "mint"], "fresh", "sweet"), mix("redgummymint", ["red_gummy_bear", "mint"], "fresh", "sweet", "赤グミ｜ミント"),
+  mix("milkmint", ["milk", "mint"], "fresh", "sweet"), mix("sakuramint", ["sakura", "mint"], "fresh", "deep"),
+  mix("springmint", ["spring_water", "mint"], "fresh", "deep", "スプリング｜ミント"),
   // ---- 果物を使う定番 ----
   mix("peachmango", ["peach", "mango"], "fruit"), mix("grapeberry", ["grape", "blueberry"], "fruit"), mix("raspberrycassis", ["raspberry", "cassis"], "fruit"),
   mix("guavapine", ["guava", "pineapple"], "fruit"), mix("mangoorange", ["mango", "orange"], "fruit", "fresh"), mix("pineorange", ["pineapple", "orange"], "fruit", "fresh"),
   mix("lemonorange", ["lemon", "orange"], "fruit", "fresh"), mix("watermelonkiwi", ["watermelon", "kiwi"], "fruit", "fresh"),
   mix("grapefruit", ["grapefruit"], "fruit", "fresh"), mix("mangococonut", ["mango", "coconut"], "fruit", "sweet"),
-  mix("bananavanilla", ["banana", "vanilla"], "fruit", "sweet"), mix("melonvanilla", ["melon", "vanilla"], "fruit", "sweet"),
+  mix("bananavanilla", ["banana", "vanilla"], "sweet", "fruit"), mix("melonvanilla", ["melon", "vanilla"], "fruit", "sweet"),
   mix("berryvanilla", ["blueberry", "vanilla"], "fruit", "sweet"), mix("strawberryvanilla", ["strawberry", "vanilla"], "fruit", "sweet"),
   mix("peachlychee", ["peach", "lychee"], "fruit", "deep"), mix("lycheerose", ["lychee", "rose"], "deep", "fruit"), mix("peachtea", ["peach", "black_tea"], "deep", "fruit"),
   mix("lemontea", ["lemon_tea"], "fruit", "deep"),
   mix("pinepassion", ["pineapple", "passion_fruit"], "fruit"), mix("cherryvanilla", ["cherry", "vanilla"], "fruit", "sweet"),
   mix("mangomilk", ["mango", "milk"], "fruit", "sweet"), mix("strawberrymilk", ["strawberry", "milk"], "fruit", "sweet"),
+  mix("grapelychee", ["grape", "lychee"], "fruit", "deep"), mix("cassislychee", ["cassis", "lychee"], "fruit", "deep"),
+  mix("guavalychee", ["guava", "lychee"], "fruit", "deep"), mix("cassisgrapefruit", ["cassis", "grapefruit"], "fruit", "fresh", "カシス｜グレフル"),
+  mix("kiwigrape", ["kiwi", "grape"], "fruit", "fresh"), mix("melonpeach", ["melon", "peach"], "fruit"),
+  mix("guavamango", ["guava", "mango"], "fruit"), mix("pinecoconut", ["pineapple", "coconut"], "fruit", "sweet"),
+  mix("passionorange", ["passion_fruit", "orange"], "fruit", "fresh"), mix("dragonlychee", ["dragonfruit", "lychee"], "fruit", "deep", "ドラゴン｜ライチ"),
   // ---- 甘い香りを使う定番 ----
   mix("chocovanilla", ["chocolate", "vanilla"], "sweet"), mix("caramelvanilla", ["caramel", "vanilla"], "sweet"), mix("caramelnuts", ["caramel", "hazelnut"], "sweet"),
   mix("choconuts", ["chocolate", "hazelnut"], "sweet"), mix("honeynuts", ["honey", "hazelnut"], "sweet"), mix("vanillacola", ["vanilla", "cola"], "sweet"),
@@ -106,6 +121,10 @@ export const MIXES = Object.freeze(Object.fromEntries([
   mix("cafemocha", ["coffee", "chocolate"], "sweet", "deep", "カフェ｜モカ"), mix("cappuccino", ["cappuccino"], "sweet", "deep"),
   mix("honeyginger", ["honey", "ginger"], "sweet", "fresh"), mix("caramelapple", ["caramel", "double_apple"], "sweet", "fresh"),
   mix("honeymilk", ["honey", "milk"], "sweet"), mix("caramelmilk", ["caramel", "milk"], "sweet"), mix("whitegummy", ["white_gummy_bear"], "sweet", "fruit"),
+  mix("vanillacinnamon", ["vanilla", "cinnamon"], "sweet", "fresh"), mix("vanillashake", ["vanilla", "peppermint_shake"], "sweet", "fresh", "バニラ｜シェイク"),
+  mix("caramelcappuccino", ["caramel", "cappuccino"], "sweet", "deep"), mix("nutscoffee", ["hazelnut", "coffee"], "sweet", "deep"),
+  mix("cottonrose", ["cotton_candy", "rose"], "sweet", "deep"), mix("redgummy", ["red_gummy_bear"], "sweet", "fruit"),
+  mix("gummypine", ["white_gummy_bear", "pineapple"], "sweet", "fruit"),
   // ---- 花・お茶・スパイスを使う定番 ----
   mix("rosejasmine", ["rose", "jasmine"], "deep"), mix("muskrose", ["white_musk", "rose"], "deep"), mix("rosetea", ["rose", "black_tea"], "deep"),
   mix("jasminetea", ["jasmine", "black_tea"], "deep"), mix("cardamomtea", ["cardamom", "black_tea"], "deep", "fresh"), mix("gingertea", ["ginger", "black_tea"], "deep", "fresh"),
@@ -116,21 +135,33 @@ export const MIXES = Object.freeze(Object.fromEntries([
   mix("chamomilehoney", ["chamomile", "honey"], "deep", "sweet"), mix("cardamomhoney", ["cardamom", "honey"], "fresh", "sweet"),
   mix("earlgrey", ["absal_earlgrey"], "deep", "fresh"), mix("lavenderlemon", ["lavender", "lemon"], "deep", "fresh"),
   mix("milktea", ["absal_earlgrey", "milk"], "deep", "sweet", "ミルク｜ティー"), mix("sakurapeach", ["sakura", "peach"], "deep", "fruit"),
+  mix("muskjasmine", ["white_musk", "jasmine"], "deep"), mix("chamomiletea", ["chamomile", "black_tea"], "deep"),
+  mix("honeytea", ["honey", "black_tea"], "deep", "sweet"), mix("vanillatea", ["vanilla", "black_tea"], "deep", "sweet"),
+  mix("muskvanilla", ["white_musk", "vanilla"], "deep", "sweet"), mix("cardamomearlgrey", ["absal_earlgrey", "cardamom"], "deep", "fresh", "スパイス｜紅茶"),
+  mix("earlgreyorange", ["absal_earlgrey", "orange"], "deep", "fruit", "オレンジ｜ティー"), mix("chamomilepeach", ["chamomile", "peach"], "deep", "fruit"),
+  mix("sakurajasmine", ["sakura", "jasmine"], "deep"), mix("springlychee", ["spring_water", "lychee"], "deep", "fruit", "スプリング｜ライチ"),
+  mix("sakuratea", ["sakura", "absal_earlgrey"], "deep", "fresh", "サクラ｜ティー"), mix("chamomilemilk", ["chamomile", "milk"], "deep", "sweet"),
+  // 第2章の客が好む葉。本編で買えるフレーバーを使う。
+  mix("dragonfruit", ["dragonfruit"], "fruit"), mix("berryredgummy", ["strawberry", "red_gummy_bear"], "fruit", "sweet", "イチゴ｜赤グミ"), mix("springwater", ["spring_water"], "deep"),
   // ---- 3種のミックス（2026-11-20 オーナー「ミックスは3種のも入れて欲しい」・TFL47）。仕込みが長いぶん、合った時の満足が少し高い。
   //      名前は、右の列の札に収まるよう5字までの切れ目で。材料は、（）が2行に収まる並び（まん中と後ろ、または前の二つが短い） ----
   mix("mojito", ["lemon", "mint", "honey"], "fresh", "fruit", "モヒート"), mix("suikacooler", ["watermelon", "mint", "lemon"], "fresh", "fruit", "スイカ｜クーラー"),
-  mix("berrysmoothie", ["frozen_berry", "banana", "vanilla"], "fresh", "fruit", "ベリー｜スムージー"), mix("grapesoda", ["ice_grape", "mint", "cola"], "fresh", "sweet", "グレープ｜ソーダ"),
-  mix("minttea", ["mint", "jasmine", "honey"], "fresh", "deep", "ミント｜ティー"),
+  mix("berrysmoothie", ["frozen_berry", "banana", "vanilla"], "fruit", "sweet", "ベリー｜スムージー"), mix("grapesoda", ["ice_grape", "mint", "cola"], "fresh", "sweet", "グレープ｜ソーダ"),
+  mix("minttea", ["mint", "jasmine", "honey"], "fresh", "deep", "ミント｜ティー"), mix("cherrycooler", ["cherry", "lemon", "mint"], "fresh", "fruit", "チェリー｜クーラー"),
   mix("tropical", ["pineapple", "mango", "banana"], "fruit", null, "トロピカル"), mix("berries", ["blueberry", "raspberry", "cassis"], "fruit", null, "ベリーズ"),
   mix("vitamin", ["lemon", "orange", "kiwi"], "fruit", "fresh", "ビタミン"), mix("peachmelba", ["peach", "raspberry", "vanilla"], "fruit", "sweet", "ピーチ｜メルバ"),
+  mix("berryrose", ["blueberry", "raspberry", "rose"], "fruit", "deep", "ベリー｜ローズ"), mix("sangria", ["grape", "orange", "cassis"], "fruit", "fresh", "サングリア"),
   mix("fruittea", ["peach", "lemon", "black_tea"], "deep", "fruit", "フルーツ｜ティー"), mix("fruitmilk", ["banana", "peach", "milk"], "fruit", "sweet", "フルーツ｜牛乳"),
   mix("tiramisu", ["chocolate", "coffee", "vanilla"], "sweet", "deep", "ティラミス"), mix("chocoparfait", ["chocolate", "banana", "vanilla"], "sweet", "fruit", "チョコ｜パフェ"),
   mix("honeytoast", ["caramel", "honey", "vanilla"], "sweet", null, "ハニー｜トースト"), mix("creamsoda", ["melon", "vanilla", "cola"], "sweet", "fruit", "クリーム｜ソーダ"),
-  mix("caramelmacchiato", ["caramel", "coffee", "vanilla"], "sweet", "deep", "キャラメル｜マキアート"),
+  mix("caramelmacchiato", ["caramel", "coffee", "vanilla"], "sweet", "deep", "キャラメル｜マキアート"), mix("churros", ["caramel", "cinnamon", "vanilla"], "sweet", "fresh", "チュロス"),
   mix("nutslatte", ["hazelnut", "coffee", "milk"], "sweet", "deep", "ナッツ｜ラテ"), mix("pudding", ["caramel", "vanilla", "milk"], "sweet", null, "プリン"),
+  mix("cinnamonmilk", ["cinnamon", "honey", "milk"], "sweet", "fresh", "シナモン｜ミルク"), mix("vanillalatte", ["coffee", "vanilla", "milk"], "sweet", "deep", "バニラ｜ラテ"),
   mix("chai", ["black_tea", "cinnamon", "honey"], "deep", "fresh", "チャイ"), mix("flowergarden", ["lavender", "rose", "jasmine"], "deep", null, "フラワー｜ガーデン"),
+  mix("sweetgarden", ["rose", "vanilla", "jasmine"], "deep", "sweet", "スイート｜ガーデン"), mix("coolherb", ["lavender", "mint", "chamomile"], "deep", "fresh", "クール｜ハーブ"),
   mix("applepie", ["double_apple", "cinnamon", "vanilla"], "sweet", "fresh", "アップル｜パイ"), mix("herbtea", ["chamomile", "lavender", "honey"], "deep", "sweet", "ハーブ｜ティー"),
   mix("gingerlemon", ["ginger", "lemon", "honey"], "fresh", "fruit", "ジンジャー｜レモン"), mix("sakuralatte", ["sakura", "absal_earlgrey", "milk"], "deep", "sweet", "サクラ｜ラテ"),
+  mix("sakurachai", ["sakura", "cinnamon", "black_tea"], "deep", "fresh", "サクラ｜チャイ"),
 ].map((m) => [m.id, m])));
 /** ミックスが出回る章（材料のいちばん遅い章）。 */
 export const mixChapter = (id) => Math.max(...MIXES[id].flavors.map((f) => FLAVORS[f].chapter));
@@ -162,16 +193,119 @@ export const GUESTS = Object.freeze(Object.fromEntries([
   guest("friends", "友だち連れの方", 2, "long", "plain", "talker", 3, ["bun", "pony"]),
 ].map((g) => [g.id, g])));
 // たまに遊びに来る、本編の人物（2026-11-20 オーナー「好感度1以上の人物がたまにレアで遊びに来たりとかも入れたい」）。
-// 来る条件（顔見知り・好感度1以上・章）は tonari.js が決める。ここは気分と台詞だけ。台詞は大会の前後どちらでも通る言葉にする（交流の時系列ルール）。
-// 好感度は動かさない。chapters＝来てよい章、wish＝気分。
-const visitor = (id, name, chapters, stay, rank, drinks, wish, quote, lines) => Object.freeze({ id, name, chapters: Object.freeze(chapters), stay, rank, drinks, wish, quote, lines: Object.freeze(lines) });
+// 来る条件（顔見知り・好感度1以上・章）は tonari.js が決める。ここは注文と台詞だけ。台詞は大会の前後どちらでも通る言葉にする（交流の時系列ルール）。
+// 好感度は動かさない。chapters＝来てよい章。
+// 個性（2026-11-25 オーナー「ライバルとか来たりするけど口調が他のモブと同じだったり注文も同じなのでちゃんと個性を持たせて」・TFL65・66）:
+//   order＝その人だけの注文。気分（wish）に加えて、好きなフレーバー（has）を名指しする。has の入った一台が◎、気分がメインの一台が○、ほかは×
+//   （モブの客は気分を言うだけで、名指ししない）。label＝卓の札の気分の所に出す言葉。refill＝おかわりの注文（言い出す一言ごと）。
+//   lines＝来店から帰るまでの、その人の口調の言葉: best／good／off（提供した時）・calls（頼みの言葉 said と、応えた時 good）・miss（頼みを外した時）・
+//   check（会計を頼む時）・skip（おかわりを聞きそびれた時）・bye／byeLow（見送り）・mad（待たせて帰る時）。台詞なので句点で終えない
+const visitor = (id, name, chapters, stay, rank, drinks, order, refill, lines) => Object.freeze({
+  id, name, chapters: Object.freeze(chapters), stay, rank, drinks,
+  order: Object.freeze({ ...order, has: Object.freeze(order.has) }), refill: Object.freeze({ ...refill, has: Object.freeze(refill.has) }),
+  lines: Object.freeze({ ...lines, calls: Object.freeze(lines.calls) }),
+});
 export const VISITORS = Object.freeze(Object.fromEntries([
-  visitor("tsumugi", "つむぎ", [1, 2], "long", "plain", 1, "deep", "……はじめさん。落ち着くのを、お願いします", {
-    best: "……やわらかい色、です。好きです、これ", good: "……落ち着きます。ありがとうございます", off: "……少し、にぎやかな色、ですね", bye: "……ごちそうさまでした。また、描きに来ます" }),
-  visitor("naru", "なる", [1], "normal", "keen", 1, "sweet", "よう、はじめ。甘いやつ、頼むわ", {
-    best: "……うまいな。焼き菓子みたいだ", good: "いいじゃん。ちゃんと甘い", off: "ん、甘いのを頼んだんだけどな", bye: "ごちそうさん。また来るわ" }),
-  visitor("adam", "アダム", [1, 2], "normal", "keen", 1, "fruit", "……はじめよ。今日は、果実の煙を頼む", {
-    best: "……よい。果実が、まっすぐ立っている", good: "……悪くない", off: "……これは、果実ではない", bye: "……また来る" }),
+  // つむぎ: ラベンダーを好む（characters.json）。煙に色が見える（言葉に色が出るが、人の判定はしない）。ていねいで、間に「……」
+  visitor("tsumugi", "つむぎ", [1, 2], "long", "plain", 1,
+    { wish: "deep", label: "ラベンダー", has: ["lavender"], quote: "……はじめさん。ラベンダーの、ありますか" },
+    { wish: "deep", label: "お花", has: ["lavender", "rose", "jasmine", "chamomile", "sakura"], quote: "……もう少し、描いていきます。次は、お花のを" }, {
+      best: "……やわらかい紫。好きな色です、これ", good: "……落ち着く色、です。ありがとうございます", off: "……少し、にぎやかな色、ですね",
+      calls: {
+        thin: { said: "……煙の色が、薄くなってきました", good: "……色が、戻りました" },
+        harsh: { said: "……縁が、ちりちりした色に。熱い、かもです", good: "……やわらかく、なりました" },
+        thirsty: { said: "……すみません。お水、もらえますか", good: "……ありがとうございます。助かります" },
+      },
+      miss: "……あ、えっと。そうじゃ、なくて", check: "……お会計、お願いします", skip: "……やっぱり、今日はここまでにします",
+      bye: "……ごちそうさまでした。また、描きに来ます", byeLow: "……ごちそうさま、でした", mad: "……すみません。今日は、帰ります",
+    }),
+  // なる: バニラと甘いお菓子系が軸（characters.json）。気さくで面倒見がいい。待たされても怒らない
+  visitor("naru", "なる", [1], "normal", "keen", 1,
+    { wish: "sweet", label: "バニラ", has: ["vanilla"], quote: "よう、はじめ。バニラの効いた甘いやつ、頼むわ" },
+    { wish: "sweet", label: "チョコ・キャラメル", has: ["chocolate", "caramel"], quote: "もう一台いけるな。次はチョコかキャラメルで" }, {
+      best: "……うまいな。焼き菓子みたいだ", good: "甘いのはいいな。バニラは、次の楽しみにしとく", off: "ん、甘いのを頼んだんだけどな",
+      calls: {
+        thin: { said: "おい、煙が痩せてきた。炭、見てくれるか", good: "よし、戻った。早いな" },
+        harsh: { said: "ちょっと焦げてる。熱、下げてくれ", good: "うん、甘さが戻った" },
+        thirsty: { said: "悪い、水もらえるか", good: "サンキュ。気が利くな" },
+      },
+      miss: "いや、そうじゃなくてな", check: "はじめ、会計頼む", skip: "……まあいいや。会計で",
+      bye: "ごちそうさん。また来るわ", byeLow: "……ごちそうさん", mad: "忙しそうだな。また来るわ",
+    }),
+  // アダム: ダブルアップル特化（characters.json）。芝居がかった言い回しで、林檎を宇宙の原点のように語る
+  visitor("adam", "アダム", [1, 2], "normal", "keen", 1,
+    { wish: "fresh", label: "ダブルアップル", has: ["double_apple"], quote: "……はじめよ。ダブルアップルを。宇宙の原点を、一台" },
+    { wish: "fresh", label: "ダブルアップル", has: ["double_apple"], quote: "……幕間だ。もう一台、林檎を。メーカーは任せる" }, {
+      best: "……よい。林檎が、まっすぐ立っている", good: "……悪くない。だが、林檎がいない", off: "……これは、林檎ではない",
+      calls: {
+        thin: { said: "……煙が細い。林檎が、息をしていない", good: "……よい。呼吸が戻った" },
+        harsh: { said: "……熱すぎる。アニスが焦げている", good: "……うむ。香りが還ってきた" },
+        thirsty: { said: "……水を。舌を、まっさらにしたい", good: "……感謝する" },
+      },
+      miss: "……違う。そうではない", check: "……会計を。幕を下ろそう", skip: "……ならば、ここで幕だ",
+      bye: "……また来る。林檎を、絶やすな", byeLow: "……また来る", mad: "……出直そう。林檎は、待つことも知っている",
+    }),
+  // 私服の話者は oneesan。名乗る前の会話にも使うので、店での素性には触れない。
+  visitor("minto", "お姉さん", [1, 2, 3, 4, 5], "normal", "plain", 1,
+    { wish: "fresh", label: "ミント", has: ["mint"], quote: "…今日は、ミントを吸いに来たの" },
+    { wish: "fresh", label: "ミント", has: ["mint"], quote: "…きみのミント、もう一台吸っていっていい？" }, {
+      best: "…このミント、息を吐いたあとも涼しいね", good: "すっとするね。次はミントも吸いたいな", off: "…今日は、もう少し涼しいのがよかったな",
+      calls: {
+        thin: { said: "…煙が薄くなってきたみたい", good: "うん、また香る。ありがとう" },
+        harsh: { said: "少し喉に当たるの。熱を下げてもらえる？", good: "…これならゆっくり吸えるね" },
+        thirsty: { said: "お水を一杯、もらってもいい？", good: "ありがとう。ひと息つけた" },
+      },
+      miss: "…あのね、お願いしたのは別のことなの", check: "そろそろ、お会計してもらえる？", skip: "…やっぱり、続きは今度にしようかな",
+      bye: "ごちそうさま。ここで吸うと落ち着くね", byeLow: "今日はこの辺で。ごちそうさま", mad: "…今日は帰るね。またゆっくり来るから",
+    }),
+  visitor("ageha", "あげは", [2, 3, 4, 5], "normal", "plain", 1,
+    { wish: "sweet", label: "ホワイトグミベア", has: ["white_gummy_bear"], quote: "ハジメっち、うちホワイトグミベアがいい！" },
+    { wish: "sweet", label: "レッドグミベア", has: ["red_gummy_bear"], quote: "次、レッドグミベア！ 白と吸い比べたいじゃん" }, {
+      best: "これこれ！ グミ、ほんとに噛めそう", good: "この甘さも好き。グミの方も気になる！", off: "んー、うち今日はグミの口なんだよね",
+      calls: {
+        thin: { said: "ハジメっち、さっきより煙少なくない？", good: "戻った！ このひと口待ってた！" },
+        harsh: { said: "あっつ！ 炭、ひとつ下ろせる？", good: "うん、今のめちゃ吸いやすい！" },
+        thirsty: { said: "うち、お水もらっていい？", good: "ありがと！ 生き返った〜" },
+      },
+      miss: "待って、そっちじゃないってば", check: "ハジメっち、お会計よろしく！", skip: "やっぱもう出るね。お会計で！",
+      bye: "ごちそうさま！ またグミ吸いに来るね", byeLow: "じゃあね、ハジメっち", mad: "今日は時間切れ！ また今度ね",
+    }),
+  visitor("kumicho", "神崎竜二", [2, 3, 4, 5], "normal", "keen", 1,
+    { wish: "fruit", label: "ドラゴンフルーツ", has: ["dragonfruit"], quote: "あんちゃん、ドラゴンフルーツを一台頼みやす" },
+    { wish: "fruit", label: "ドラゴンフルーツ", has: ["dragonfruit"], quote: "もう一服したいねえ。ドラゴンフルーツで頼みやす" }, {
+      best: "ああ、いいねえ。葉の甘みがよく出てやす", good: "いい果物でさ。ドラゴンフルーツも吸いたいねえ", off: "あんちゃん、頼んだ葉と違いやせんか",
+      calls: {
+        thin: { said: "あんちゃん、炭を見ちゃくれませんかね。煙が細い", good: "おう、しっかり出てきやした" },
+        harsh: { said: "こいつはちいと熱い。炭を下ろしておくんなせえ", good: "そうそう。こいつが吸いたかったんでさ" },
+        thirsty: { said: "水を一杯、いただけやすか", good: "いやあ、ありがてえ" },
+      },
+      miss: "あんちゃん、そいつは別の卓じゃありやせんか", check: "勘定をお願いしやす", skip: "いや、今日は勘定にしてくだせえ",
+      bye: "いい一服でやした。あんちゃん、ごちそうさん", byeLow: "そろそろお暇しやす", mad: "出直すとしやすか。あんちゃん、またな",
+    }),
+  visitor("kuraudo", "†黒羅雨℃†", [2, 3, 4, 5], "normal", "keen", 1,
+    { wish: "fruit", label: "カシス", has: ["cassis"], quote: "…カシスを。余韻が残るやつ" },
+    { wish: "fruit", label: "カシス", has: ["cassis"], quote: "もう一台。…カシスを、もう一度吸いたい" }, {
+      best: "…吐き切っても、まだカシスがいる", good: "果物の香りはいい。…カシスも欲しかった", off: "…思ってた香りと違う",
+      calls: {
+        thin: { said: "…煙が途切れる。炭を見てくれ", good: "…そのままでいい。香ってきた" },
+        harsh: { said: "…熱が強い。少し下げてほしい", good: "今くらいがいい。…ありがとう" },
+        thirsty: { said: "…水、一杯もらえるか", good: "助かった。喉が乾いてた" },
+      },
+      miss: "…そっちじゃない。こっちの卓だ", check: "…会計、いいか", skip: "…いや、ここで終わりにする",
+      bye: "…最後のひと口がよかった。また来る", byeLow: "…今日は、これで", mad: "…席、空けるよ。また今度",
+    }),
+  visitor("samechan", "？？？", [2, 3, 4, 5], "normal", "plain", 1,
+    { wish: "deep", label: "スプリングウォーター", has: ["spring_water"], quote: "お主、スプリングウォーターはあるかの？" },
+    { wish: "deep", label: "スプリングウォーター", has: ["spring_water"], quote: "もう一台、スプリングウォーターを所望するぞ" }, {
+      best: "うむ、この花の香りじゃ。ひと口で分かるぞ", good: "落ち着くのう。次はあの花の香りも頼むぞ", off: "むむ、今日は花の香りがよかったのじゃ",
+      calls: {
+        thin: { said: "お主、煙が細くなっておるぞ", good: "おお、またたっぷり出るようになったのう" },
+        harsh: { said: "ちと熱いのう。炭を下ろしてくれんか", good: "うむ、ちょうどよい熱じゃ" },
+        thirsty: { said: "水を一杯もらえるかの", good: "かたじけない。喉が潤ったぞ" },
+      },
+      miss: "む？ 頼みたいのはそれではないぞ", check: "お主、勘定を頼むぞ", skip: "いや、今日はここまでにしておくかの",
+      bye: "よい席じゃった。また寄らせてもらうぞ", byeLow: "では、そろそろ帰るとしようかの", mad: "今日は引き上げるぞ、コロちゃん",
+    }),
 ].map((v) => [v.id, v])));
 
 export const RANK_LABEL = Object.freeze({ plain: "一般", keen: "こだわり" });
@@ -185,23 +319,51 @@ export const VERBS = Object.freeze([
   Object.freeze({ id: "chat", label: "雑談する", note: "感想を聞く" }),
 ]);
 
-// ケアの種類（客からの頼み）。label は卓の札の短い言葉、sight は様子を読む夜（!だけ出る夜）の一文、said は言葉で伝わる夜の一言、
-// good は正しく応えた時、verb が正解。炭の調整は、頼まれる前に自分から行く（model の「調整」）。放っておくと thin か harsh で頼まれる。
+// ケアの種類（客からの頼み）。台詞・地の文・正しく応えた時の一言を組にする。
+// 炭の調整は自分から行える。放っておくと、汎用の客は thin か harsh で頼む。
+const call = (verb, label, lines) => Object.freeze({
+  verb, label, lines: Object.freeze(lines.map(([said, sight, good]) => Object.freeze({ said, sight, good }))),
+});
 export const CALLS = Object.freeze({
-  thin: Object.freeze({ verb: "add", label: "煙が薄い", said: "あの、煙が薄くなってきたみたいで",
-    sight: "煙が細い。ホースを見て、首をかしげている。", good: "うん、しっかり出てきた" }),
-  harsh: Object.freeze({ verb: "ease", label: "熱を下げて", said: "すみません、少し熱いかも。熱、下げてもらえますか",
-    sight: "眉を寄せて、ホースをそっと置いた。煙は濃い。", good: "うん、やわらかくなった" }),
-  thirsty: Object.freeze({ verb: "water", label: "喉が渇いた", said: "ふう……少し喉が渇いてきたな",
-    sight: "喉に手をやって、小さく咳払いをした。グラスは空だ。", good: "ありがとう。気が利きますね" }),
-  cough: Object.freeze({ verb: "teach", label: "むせている", said: "けほっ……これ、吸い方合ってます？",
-    sight: "深く吸いこみすぎて、むせている。", good: "なるほど、ゆっくり吸えばいいんですね" }),
-  chatty: Object.freeze({ verb: "chat", label: "話したそう", said: "これ、おいしいですね。何を混ぜてるんですか？",
-    sight: "こちらを見て、目が合うとにこっと笑った。", good: "へえ、そうなんだ。また頼もうかな" }),
+  thin: call("add", "煙が薄い", [
+    ["あの、煙が薄くなってきたみたいで", "煙が細い。ホースを見て、首をかしげている。", "うん、しっかり出てきた"],
+    ["さっきより煙が少ないんですけど、炭を見てもらえますか？", "ひと口吸って、吐いた煙を見つめる。煙はすぐに消えた。", "ああ、さっきの香りが戻ってきた"],
+    ["…あれ、もうほとんど煙が出ないな", "ホースを取り直してもう一度吸う。煙はほとんど出ない。", "今度はちゃんと出る。ありがとう"],
+    ["煙も香りも弱くなってきました。炭、足せますか？", "台の上をのぞき込んでいる。口元から細い煙がひと筋だけ上がった。", "また香ってきましたね"],
+  ]),
+  harsh: call("ease", "熱を下げて", [
+    ["すみません、少し熱いかも。熱、下げてもらえますか", "眉を寄せて、ホースをそっと置いた。煙は濃い。", "うん、やわらかくなった"],
+    ["さっきから煙が喉に当たるんです。炭、少し下ろせますか？", "濃い煙を吐くなり、目を細めてホースを置いた。", "今のは喉に引っかからないですね"],
+    ["…ちょっと焦げっぽいです。熱が強いのかな", "煙が立つ台から少し身を引いた。かすかに焦げた匂いがする。", "焦げた感じ、なくなりました"],
+    ["ひと口目より熱くなってきたので、少し見てもらえますか？", "ひと口吸っただけで顔をしかめた。台にはまだ赤い炭が載っている。", "これくらいの熱なら、ゆっくり吸えそう"],
+  ]),
+  thirsty: call("water", "喉が渇いた", [
+    ["ふう……少し喉が渇いてきたな", "喉に手をやって、小さく咳払いをした。グラスは空だ。", "ありがとう。気が利きますね"],
+    ["すみません、お水を一杯いただけますか？", "空になったグラスを手に、カウンターへ目を向けた。", "冷たくておいしい。ひと息つけます"],
+    ["だいぶ吸ったなあ。お水、もらってもいいですか？", "ホースを置き、グラスを傾ける。底で氷だけが鳴った。", "喉が潤った。助かりました"],
+    ["…喉が渇いちゃった。お冷や、ありますか？", "グラスの最後のひと口を飲み干し、唇をぬらした。", "お水ちょうど欲しかったところです"],
+  ]),
+  cough: call("teach", "むせている", [
+    ["けほっ……これ、吸い方合ってます？", "深く吸いこみすぎて、むせている。", "なるほど、ゆっくり吸えばいいんですね"],
+    ["…思ったより煙が来ますね。どれくらい吸えばいいんですか？", "勢いよく吸った途端、煙を吐ききれずに何度も咳き込んだ。", "少しずつなら、香りがよく分かります"],
+    ["初めてで加減が分からなくて。もう一度、吸い方を聞いてもいいですか？", "ホースを口元まで持ち上げては下ろす。胸の前で小さく手を上げた。", "息を整えてから、もう一回やってみます"],
+    ["…吸うたびにむせちゃうな。コツってありますか？", "続けざまに吸って、口元を押さえた。ホースを握ったまま呼吸を整えている。", "間を空けると楽ですね。今度はむせなかった"],
+  ]),
+  chatty: call("chat", "話したそう", [
+    ["これ、おいしいですね。何を混ぜてるんですか？", "こちらを見て、目が合うとにこっと笑った。", "へえ、そうなんだ。また頼もうかな"],
+    ["この香り、最後にふわっと来ますね。何の葉だろう", "煙を吐いて口元をほころばせた。目が合うと、ミックスの札を指さした。", "聞いたあとだと、いっそう香りますね"],
+    ["こういう組み合わせ、初めてです。よく出るんですか？", "ミックスの名前を指でなぞり、通りかかるこちらに笑いかけた。", "好みがひとつ増えました"],
+    ["最初と今とで香りが違う気がします。面白いですね、これ", "ひと口ごとに少し考え込んでいる。目が合うと、話しかけるように体を向けた。", "今度は違う香りも試したくなりました"],
+  ]),
 });
 
 /** 外した時の一言（ケアごとに分けない。責めない言い方にする）。 */
-export const CALL_MISS = "えっと、そうじゃなくて……";
+export const CALL_MISS = Object.freeze([
+  "えっと、そうじゃなくて……",
+  "すみません、お願いしたかったのは別のことなんです",
+  "…ごめんなさい。伝え方が悪かったかな",
+  "ありがとう。でも、そっちじゃないんです",
+]);
 
 /** 提供した時の一言。 */
 export const SERVE_LINES = Object.freeze({
@@ -249,10 +411,38 @@ export const MOODS = Object.freeze([
   Object.freeze({ id: "mad", label: "激怒", min: 0, color: "#ef6a5a", face: "moodMad" }),
 ]);
 
-/** 営業の評価。min＝全組の満足の平均。bonus＝店からの売上ボーナス（チップではない）。 */
+/** 営業の評価。min＝全組の満足の平均。 */
 export const RANKS = Object.freeze([
-  Object.freeze({ id: "S", stamp: "大入り", min: 88, bonus: 1500, line: "文句なしだ。一人で、店じゅうをいい顔にして帰した" }),
-  Object.freeze({ id: "A", stamp: "上々", min: 74, bonus: 1000, line: "いい営業だった。卓の様子が、よく見えていたぞ" }),
-  Object.freeze({ id: "B", stamp: "まずまず", min: 56, bonus: 500, line: "回せてはいた。次は、待たせている卓から先に見ろ" }),
-  Object.freeze({ id: "C", stamp: "ばたばた", min: 0, bonus: 0, line: "ばたついたな。まあ、一人で回せば最初はこうだ" }),
+  Object.freeze({ id: "S", stamp: "大入り", min: 88, line: "文句なしだ。一人で、店じゅうをいい顔にして帰した" }),
+  Object.freeze({ id: "A", stamp: "上々", min: 74, line: "いい営業だった。卓の様子が、よく見えていたぞ" }),
+  Object.freeze({ id: "B", stamp: "まずまず", min: 56, line: "回せてはいた。次は、待たせている卓から先に見ろ" }),
+  Object.freeze({ id: "C", stamp: "ばたばた", min: 0, line: "ばたついたな。まあ、一人で回せば最初はこうだ" }),
 ]);
+
+/**
+ * チュートリアル（2026-11-25 オーナー「またチュートリアルを作りたい」・TFL64）。はじめての店番の前に、スミさんが横について一通りやらせる。
+ * 一つずつ「やること」を出し、それ以外の操作は受けない（やることが済むと次へ）。時間は、待つ段（仕込み・入れ替え）だけ流れる。
+ * 客と並ぶミックスは決めてある（tonari-floor-model.js の createFloorTutorial）。text＝スミさんの言葉（台詞なので句点で終えない）、
+ * panel＝接客の画面の中で読む言葉（その段は画面の中に出す）。並びと段の中身は tonari-floor-view.js の TUTORIAL_FLOW。
+ */
+export const TUTORIAL = Object.freeze({
+  hello: "一通りやってみるぞ。客は来たら、空いてる卓に勝手に座る",
+  arrive: "……来たな。卓の上を見てろ",
+  wish: "札の色と印が、客の吸いたい気分だ。りんごの印は、フルーティ",
+  open: "1卓を押して、注文を聞いてこい",
+  pick: "札の左の大きい印が、客の気分と同じなら◎だ。◎の一台を出せ",
+  prep: "仕込みは勝手に進む。仕上がれば、卓へ運ばれる",
+  shuffle: "2卓はリラックスの気分だが、合う一台が並んでない。シャッフルで入れ替えろ",
+  shuffling: "入れ替えの間は出せない。待たせた分だけ、客の満足は下がるぞ",
+  quick: "右の一覧の札を押せば、そのまま出せる。◎の札を押せ",
+  prep2: "出した一台は一覧から抜けて、次のが入る",
+  care: "1卓の様子が変わった。押して、頼みを聞いてこい",
+  careAnswer: "むせてるな。吸い方を案内してやれ",
+  tend: "2卓の炭が減ってきた。言われる前に整えに行け。押すだけでいい",
+  bill: "1卓がお会計だ。会計も、押すだけでいい",
+  fever: "いい接客をすると、フィーバーの灯りが溜まる。光っているボタンを押してみろ",
+  feverWait: "フィーバーの間は、卓が最高の居心地になる。灯りが減っていくのを見てろ",
+  feverStop: "もう一度押せば切れるぞ。使わなかった灯りは、次に取っておける",
+  done: "……一通りは以上だ。あとは本番で、手際を見せろ",
+  nudge: "そこじゃない。光ってる所だ",
+});

@@ -70,6 +70,7 @@ assert.match(kujiSource, /order: luckyOrder\(shuffle\(order\), g\.prizes, growth
 assert.equal(effects.SKILL_TUNING.baitoPay, 0.1);
 const tonari = readFileSync(new URL("../js/daily/tonari.js", import.meta.url), "utf8");
 assert.match(tonari, /const quickPay = growthSkill\(owner, "K27"\) \? Math\.round\(basePay \* SKILL_TUNING\.baitoPay\) : 0;/);
-assert.match(tonari, /callingBonus \+ quickPay;/, "日当に足す");
+assert.match(tonari, /total: .*callingBonus \+ quickPay/, "日当の手当に足す");
+assert.match(tonari, /floorShiftPay\(owner.chapter, floorNight.sales, allowances\)/, "手当を支給額に含める");
 
 console.log("[growth unique skills] PASS: K25 listen +2 on small talks only, K26 kuji luck keeps the box and moves high prizes forward, K27 shift pay +10%, board 204 / v15");

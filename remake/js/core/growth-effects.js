@@ -68,7 +68,8 @@ export const perkMultiplier = node => (node.kind === "gate" ? GATE_TIER.mult : P
 
 export function boardPerks(nodes = []) {
   const sums = { stamina: 0, sleep: 0, charm: 0, stage: 0, heat: 0, pull: 0,
-    dodge: 0, breath: 0, gauge: 0, leaf: 0, tongue: 0, coal: 0 };
+    dodge: 0, breath: 0, gauge: 0, leaf: 0, tongue: 0, coal: 0,
+    floorRare: 0, floorTop: 0, floorMatch: 0 };
   for (const id of new Set(Array.isArray(nodes) ? nodes : [])) {
     if (typeof id !== "string" || !Object.hasOwn(NODE_BY_ID, id)) continue;
     const node = NODE_BY_ID[id];

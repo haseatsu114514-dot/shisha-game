@@ -66,6 +66,7 @@ function buildNodes() {
     const c = LAYOUTS[n.board].cells.find((x) => x.key === n.cell);
     if (at[`${n.board}:${n.cell}`]) throw new Error(`${n.id} と ${at[`${n.board}:${n.cell}`]} が同じマス`);
     Object.assign(n, { gx: c.x, gy: c.y, ring: c.ring, band: c.band, ...((n.kind === "stat" || n.kind === "gate") && c.perk ? { perk: c.perk } : {}),
+      ...(BOARD_SHAPES[n.board].doublePerks.includes(n.cell) ? { worth: 2 } : {}),
       ...(n.kind === "stat" && c.feature ? { feature: c.feature } : {}), ...(n.kind === "stat" && c.notable ? { notable: c.notable } : {}) });
     if (n.feature && FEATURES[n.feature]?.board !== n.board) throw new Error(`${n.id} の✦ ${n.feature} が盤に合わない`);
     if (n.notable && NOTABLES[n.notable]?.board !== n.board) throw new Error(`${n.id} の要 ${n.notable} が盤に合わない`);

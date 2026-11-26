@@ -80,7 +80,9 @@ await suite("desert-ride", async check => {
     pageReadySelector: t("desert-page-start"),
   });
 
-  await check("practice-captions-fit-between-hud-and-idle-finish-is-neutral", async page => {
+  for (const [suffix, options] of [
+    ["", {}], ["-phone", { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true }],
+  ]) await check(`practice-captions-fit-between-hud-and-idle-finish-is-neutral${suffix}`, async page => {
     await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     await page.locator(t("desert-page-tutorial")).click();
     await phase(page, "practice");
@@ -105,7 +107,8 @@ await suite("desert-ride", async check => {
     // 何も操作せず終わっても習得・成功とは断定しない。再練習と本番の両方を選べる。
     await page.evaluate(() => window.__desertRide.setSpeedUp(8));
     await phase(page, "practiced");
-    const end = await page.locator(t("desert-practiced")).innerText();
+    // スマホでは終了カードの補足文を隠すので、文面はDOMで確認する。
+    const end = await page.locator(t("desert-practiced")).textContent();
     assert.match(end, /ヌール「もう一度練習してもいいし、本番へ進んでもいいよ」/);
     assert.doesNotMatch(end, /体が動きを覚えた|上手！/);
     assert(await page.locator(t("desert-start")).isVisible());
@@ -114,6 +117,35 @@ await suite("desert-ride", async check => {
     await page.keyboard.press("Escape");
     await page.locator(t("desert-quit-confirm")).click();
     await phase(page, "menu");
+    await page.locator(t("desert-leave")).click();
+  }, options);
+
+  // Sラインに届いても敗北ならA。その理由だけを案内し、得点未達・勝利・単独走では出さない。
+  await check("s-rank-requires-a-rival-win-result-guidance", async page => {
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
+    await page.locator(t("desert-page-start")).click();
+    const sLine = await page.evaluate(async () => (await import("./js/minigames/desert-ride-model.js")).RANKS.find(([rank]) => rank === "S")[1]);
+    for (const [score, won, expectedRank, needsWin] of [
+      [sLine, false, "A", true], [sLine + 1000, false, "A", true],
+      [sLine - 1, false, "A", false], [sLine, true, "S", false], [sLine, null, "S", false],
+    ]) {
+      await page.locator(t("desert-start")).click();
+      await phase(page, "run");
+      await page.evaluate(({ score, won }) => {
+        const r = window.__desertRide, g = r.game;
+        r.skipCountdown(); r.setSpeedUp(8);
+        g.score = score; g.finished = true; g.finishTime = 60; g.z = g.course.length;
+        g.race = won === null ? null : { who: "noor", won, gap: 1 };
+        g.stats.recoveries = 1;
+      }, { score, won });
+      await phase(page, "result");
+      assert.equal(await page.locator(t("desert-result")).getAttribute("data-rank"), expectedRank);
+      assert.equal((await resultText(page)).includes("S評価にはライバルに勝つ必要がある"), needsWin);
+      assert.equal(await page.locator(t("desert-next-rank")).count(), score < sLine ? 1 : 0);
+      assert.match(await page.locator(t("desert-recoveries")).innerText(), /立て直し/);
+      await page.locator(t("desert-choose-tier")).click();
+      await phase(page, "menu");
+    }
     await page.locator(t("desert-leave")).click();
   });
 
@@ -210,7 +242,12 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(t("desert-help-panel")).isVisible(), false, "the how-to is hidden until ? is pressed");
     await page.locator(t("desert-help")).click();
     assert.match(await page.locator(t("desert-help-panel")).innerText(), /Space で大ジャンプ/);
-    assert.match(await page.locator(t("desert-help-panel")).innerText(), /目印（25%）まで溜まったら/);
+    const help = await page.locator(t("desert-help-panel")).innerText();
+    assert.match(help, /目印（25%）まで溜まったら/);
+    assert.match(help, /360°、720°…と回り続ける/);
+    assert.match(help, /半回転（180°）ごとの区切りに着地を合わせる/);
+    assert.match(help, /ブースト中は岩にぶつかっても大丈夫/);
+    assert.match(help, /ライバル戦のS評価は、Sラインの得点に加えてライバルに勝つ必要がある/);
     await page.keyboard.press("Escape");
     assert.equal(await page.locator(t("desert-help-panel")).isVisible(), false, "Escape closes the how-to");
     assert.equal(await page.locator(t("desert-start")).isVisible(), true);
@@ -263,7 +300,7 @@ await suite("desert-ride", async check => {
     assert.match(text, /RESULT/); assert.match(text, /転倒 0 回/); assert.match(text, /自己ベスト更新/);
     // 2026-11-13 にコースを組み替えた（最初の起伏・連続起伏3つ → 2,000m・門・スラローム）ので、コースAの大ジャンプは 7 → 10 → 8 回
     assert.match(text, /大ジャンプ 8 回/);
-    assert.match(text, /トリック 8 回（最高 720）/);
+    assert.match(text, /トリック 8 回（最高 720°）/);
     // 勝った時の加点は、結果のカードにも出る。S なので「次の評価まで」は出ない
     assert.equal(await page.locator(t("desert-race-points")).innerText(), "+600点");
     assert.equal(await page.locator(t("desert-next-rank")).count(), 0, "nothing above S to aim for"); assert.match(text, /ブースト ([2-9]|1[0-5]) 回/); // 2026-11-13 から減る前に使うので回数が増えた
@@ -443,7 +480,17 @@ await suite("desert-ride", async check => {
     });
     await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     await page.locator(t("desert-page-reduce")).check();
-    await page.locator(t("desert-page-tutorial")).tap();
+    await page.locator(t("desert-page-start")).tap();
+    await page.locator(t("desert-help")).tap();
+    const help = await page.locator(t("desert-help-panel")).innerText();
+    assert.match(help, /空中で「左へ」か「右へ」を押し続けると、360°、720°…と回り続ける/);
+    assert.match(help, /ブースト中は岩にぶつかっても大丈夫/);
+    assert.match(help, /刻むたびにブーストが溜まる/);
+    const sRule = page.locator(".dr-howto li").filter({ hasText: "ライバル戦のS評価" });
+    await sRule.scrollIntoViewIfNeeded();
+    assert(await sRule.isVisible(), "the longer touch help scrolls through the S requirement");
+    await page.keyboard.press("Escape");
+    await page.locator(t("desert-practice")).tap();
     await phase(page, "practice");
     assert.equal(await page.locator(t("desert-ride")).getAttribute("data-reduced-motion"), "true");
     await assertSpeedo(page);
@@ -542,7 +589,7 @@ await suite("desert-ride", async check => {
     assert(captions.some(text => /空中で「左へ」か「右へ」を押し続けて/.test(text)), `the lesson teaches the spin (${captions.join(" / ")})`);
     assert(captions.some(text => /ゲージが目印まで溜まったね。「BOOST」で一気に加速/.test(text)), `the lesson explains stocked boost (${captions.join(" / ")})`);
     // 2026-11-25: 壁の後にカーブ（切り込み）と砂流れの段。ヌールが話す
-    assert(captions.some(text => /矢印の向きに「左へ」を押して、切り込んで/.test(text)), `the lesson teaches carving (${captions.join(" / ")})`);
+    assert(captions.some(text => /矢印の向きに合わせて「左へ」を押して、切り込んで/.test(text)), `the lesson teaches carving (${captions.join(" / ")})`);
     assert(captions.some(text => /砂が流れてる所があるでしょ/.test(text)) && captions.some(text => /砂が運んでくれるの/.test(text)), `the lesson rides a sand flow (${captions.join(" / ")})`);
     assert.match(await page.locator(t("desert-practiced")).innerText(), /練習おわり/);
     await page.locator(t("desert-start")).tap();
@@ -691,7 +738,7 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-page-start")).click();
     await page.locator(t("desert-menu")).waitFor();
     await page.locator(t("desert-help")).click();
-    assert.match(await page.locator(t("desert-help-panel")).innerText(), /カーブでは外へ流される。曲がる向きへ切り込むと踏ん張れて、ブーストも貯まる/);
+    assert.match(await page.locator(t("desert-help-panel")).innerText(), /カーブでは外へ流される。曲がる向きへ切り込むほど熱が高まり、金の残像と砂しぶきが出る。刻むたびにブーストが溜まる/);
     await page.locator(t("desert-help-close")).click();
     // なるとの勝負: スタートの合図の間だけ、人物と数字に重ならない画面の下に名乗りが出る
     await page.locator(t("desert-start-naru")).click();

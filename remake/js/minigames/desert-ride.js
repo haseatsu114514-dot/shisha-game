@@ -208,22 +208,22 @@ const TUTORIAL = {
   landPerfect: "完璧な着地！ その調子",
   landGood: "いい着地。もうちょっと遅く押すと完璧",
   landPlain: "着地の直前に押すと、体勢が整うよ",
-  trick: "次は回転！ 跳んだら空中で ← か → を押し続けて",
-  trickLetGo: "離しても次の半回転までは回るよ。着地より前に離してね",
-  trickDone: "回った！ たくさん回るほど点が大きいよ",
+  trick: "次は回転！ 跳んだら空中で ← か → を押し続けて。360°、720°…と回り続けるよ",
+  trickLetGo: "離すと半回転の区切りまで回り切るよ。回りかけだと転ぶから、早めに離して着地を合わせてね",
+  trickDone: "回った！ 回転を決めると点もブーストゲージも伸びるの。たくさん回るほど高得点だよ",
   trickFall: "回りかけで着地すると転んじゃう。もう少し早く離して",
-  boost: "ゲージが目印まで溜まったね。↓（BOOST）で一気に加速、岩も砕けるよ",
-  boostGo: "そのまま、岩に突っ込んで！",
+  boost: "ゲージが目印まで溜まったね。↓（BOOST）で一気に加速。ブースト中は岩にぶつかっても大丈夫だよ",
+  boostGo: "でも、岩はよけてね。砕くたびにブーストが短くなるし、深い砂に入ると切れるよ",
   recover: "次は立て直し。岩の壁にわざと当たって、すぐ ↓（BOOST）！",
   recoverNow: "今！ すぐ ↓（BOOST）で立て直して",
   recoverDone: "立て直した！ 転んだのは無しになって、そのまま加速",
   recoverLate: "惜しい。当たった直後に押せば、立て直せるよ",
-  recoverSmash: "砕いちゃった！ ブーストが無い時に当たったら、直後に ↓（BOOST）で立て直せるよ",
+  recoverSmash: "砕いちゃった！ ブーストがないときに当たったら、直後に ↓（BOOST）で立て直せるよ",
   recoverDodge: "よけたね。当たっちゃった時は、直後に ↓（BOOST）で立て直せるよ",
-  curve: "カーブでは外に流されるよ。矢印の向き（←）へ押して、切り込んで",
-  carveOn: "そう、それ！ 板の下が光って、砂に金の線が刻まれてるでしょ",
-  carveGauge: "切り込んでる間は、ブーストが貯まるの。内側に寄りすぎたら、少し離してまた押して",
-  carveLong: "カーブの間、切り込むほど砂しぶきが高く上がっていくよ",
+  curve: "カーブでは外に流されるよ。矢印の向き（←）を押して、切り込んで",
+  carveOn: "そう、それがカービング！ 切り込むほど熱が高まって、砂しぶきも大きくなるよ",
+  carveGauge: "刻むたびに、ブーストが溜まるの。内側に寄りすぎたら、少し離してまた押して",
+  carveLong: "切り込み続けて熱が高まると、金の残像も出るの。砂しぶきも高くなるよ",
   carveLate: "惜しい！ 曲がる向きへ押し続けると、流されないで切り込めるよ",
   carveMiss: "カーブでは曲がる向きへ押し続けてみて。本番のカーブはチャンスだよ",
   flow: "あ、見て！ 砂が流れてる所があるでしょ。あそこに乗ってみて",
@@ -236,13 +236,13 @@ const TUTORIAL_TOUCH = {
   move: "ハジメ、まずは「左へ」「右へ」で動いてみて",
   bump: "砂の山が来たら、手前で「ジャンプ」！ 大きく跳べるよ",
   brace: "空中ではジャンプが「LAND」に変わるの。輪が重なったら押して",
-  trick: "次は回転！ 跳んだら空中で「左へ」か「右へ」を押し続けて",
-  boost: "ゲージが目印まで溜まったね。「BOOST」で一気に加速、岩も砕けるよ",
+  trick: "次は回転！ 跳んだら空中で「左へ」か「右へ」を押し続けて。360°、720°…と回り続けるよ",
+  boost: "ゲージが目印まで溜まったね。「BOOST」で一気に加速。ブースト中は岩にぶつかっても大丈夫だよ",
   recover: "次は立て直し。岩の壁にわざと当たって、すぐ「BOOST」！",
   recoverNow: "今！ すぐ「BOOST」で立て直して",
-  recoverSmash: "砕いちゃった！ ブーストが無い時に当たったら、直後に「BOOST」で立て直せるよ",
+  recoverSmash: "砕いちゃった！ ブーストがないときに当たったら、直後に「BOOST」で立て直せるよ",
   recoverDodge: "よけたね。当たっちゃった時は、直後に「BOOST」で立て直せるよ",
-  curve: "カーブでは外に流されるよ。矢印の向きに「左へ」を押して、切り込んで",
+  curve: "カーブでは外に流されるよ。矢印の向きに合わせて「左へ」を押して、切り込んで",
 };
 /** 練習でヌールが話す全部の台詞（検査で、吹き出しに収まるかを確かめる）。 */
 export const TUTORIAL_LINES = Object.freeze([...Object.values(TUTORIAL), ...Object.values(TUTORIAL_TOUCH)]);
@@ -259,21 +259,27 @@ const HOWTO = {
     "← → で左右。砂の上なので、少し遅れてついてくる",
     "岩は ← → でよけるか、平らな所で Space を押して跳び越える（大きい岩は跳んだ高い所で越える）",
     "起伏の手前で Space で大ジャンプ。空中ではボタンが LAND に変わり、輪が重なった時に Space で着地が決まる（加速・ブースト回復）",
-    "大ジャンプ後に ← → で回転。回り始めたら横には動かせない。離すと次の半回転まで回り、回りかけで着地すると転ぶ。岩はぎりぎりでかすめるほど、点もブーストも大きい",
-    `ゲージが目印（${BOOST_MIN_PERCENT}%）まで溜まったら ↓（BOOST）。超加速して岩も砕く（砕くたびに少し短くなり、深い砂で切れる）`,
+    "空中で ← か → を押し続けると、360°、720°…と回り続ける。回転を決めると点とブーストゲージが伸びる",
+    "大ジャンプで回り始めたら横には動かせない。離すと次の半回転まで回る",
+    "回りかけで着地すると転ぶ。早めに離して半回転（180°）ごとの区切りに着地を合わせる。岩はぎりぎりでかすめるほど、点もブーストも大きい",
+    `ゲージが目印（${BOOST_MIN_PERCENT}%）まで溜まったら ↓（BOOST）。一気に加速し、ブースト中は岩にぶつかっても大丈夫。ただし岩はよけよう（砕くたびに短くなり、深い砂で切れる）`,
     "岩に当たった直後は、ゲージが少しでもあればブーストで立て直せる",
-    "カーブでは外へ流される。曲がる向きへ切り込むと踏ん張れて、ブーストも貯まる",
+    "カーブでは外へ流される。曲がる向きへ切り込むほど熱が高まり、金の残像と砂しぶきが出る。刻むたびにブーストが溜まる",
     "砂が流れている明るい帯に乗ると、ゲージを使わずに速くなる（ブーストより遅く、岩は砕けない）",
+    "ライバル戦のS評価は、Sラインの得点に加えてライバルに勝つ必要がある",
   ],
   touch: [
     "「左へ」「右へ」で左右。砂の上なので、少し遅れてついてくる",
     "岩は「左へ」「右へ」でよけるか、平らな所で「ジャンプ」して跳び越える（大きい岩は跳んだ高い所で越える）",
     "起伏の手前で「ジャンプ」で大ジャンプ。空中ではボタンが「LAND」に変わり、輪が重なった時に押すと着地が決まる（加速・ブースト回復）",
-    "大ジャンプ後に「左へ」「右へ」で回転。回り始めたら横には動かせない。離すと次の半回転まで回り、回りかけで着地すると転ぶ。岩はぎりぎりでかすめるほど、点もブーストも大きい",
-    `ゲージが目印（${BOOST_MIN_PERCENT}%）まで溜まったら「BOOST」。超加速して岩も砕く（砕くたびに少し短くなり、深い砂で切れる）`,
+    "空中で「左へ」か「右へ」を押し続けると、360°、720°…と回り続ける。回転を決めると点とブーストゲージが伸びる",
+    "大ジャンプで回り始めたら横には動かせない。離すと次の半回転まで回る",
+    "回りかけで着地すると転ぶ。早めに離して半回転（180°）ごとの区切りに着地を合わせる。岩はぎりぎりでかすめるほど、点もブーストも大きい",
+    `ゲージが目印（${BOOST_MIN_PERCENT}%）まで溜まったら「BOOST」。一気に加速し、ブースト中は岩にぶつかっても大丈夫。ただし岩はよけよう（砕くたびに短くなり、深い砂で切れる）`,
     "岩に当たった直後は、ゲージが少しでもあれば「BOOST」で立て直せる",
-    "カーブでは外へ流される。曲がる向きへ切り込むと踏ん張れて、ブーストも貯まる",
+    "カーブでは外へ流される。曲がる向きへ切り込むほど熱が高まり、金の残像と砂しぶきが出る。刻むたびにブーストが溜まる",
     "砂が流れている明るい帯に乗ると、ゲージを使わずに速くなる（ブーストより遅く、岩は砕けない）",
+    "ライバル戦のS評価は、Sラインの得点に加えてライバルに勝つ必要がある",
   ],
 };
 
@@ -1013,8 +1019,8 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         // それまでは相手がゴールの先ですぐ止まるので、後から来ると距離が縮んで見え、結果の秒差と合わなかった）
         const raceDone = game.race, rivalDone = game.rivalFinishT !== null;
         setText(hudNodes.race, countdown > 0 ? `VS ${name}`
-          : raceDone ? (raceDone.won ? `${name}に ${raceDone.gap.toFixed(1)}秒差` : `${name}の勝ち ＋${raceDone.gap.toFixed(1)}秒`)
-          : rivalDone ? `${name} ゴール ＋${Math.max(0, game.t - game.rivalFinishT).toFixed(1)}秒`
+          : raceDone ? (raceDone.won ? `${name}に ${raceDone.gap.toFixed(1)}秒差` : `${name}の勝ち +${raceDone.gap.toFixed(1)}秒`)
+          : rivalDone ? `${name} ゴール +${Math.max(0, game.t - game.rivalFinishT).toFixed(1)}秒`
           : side ? `${name}と並走` : gap > 0 ? `${name}に ${shownGap}m 差` : `${name}まで ${shownGap}m`);
         setData(hudNodes.race, "lead", countdown > 0 ? "" : raceDone ? (raceDone.won ? "you" : "noor") : rivalDone ? "noor" : side ? "" : gap > 0 ? "you" : "noor");
         // 前後が入れ替わった瞬間（内部の距離で3以上の差がついた時）に一言。スタート直後の並びは数えない
@@ -1079,7 +1085,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         // 2026-11-25: カーブ（切り込み）と砂流れ。本番では文字で教えないので、ここでヌールが話す
         if (game.z > PRACTICE_CURVE.from - 30) { tut.step = "curve"; say("curve"); }
       } else if (tut.step === "curve") {
-        // 切り込み（カービング）は3段で話す: 切り込めた（光る弧と金の線）→ 1回刻んだ（ブーストが貯まる・押したり離したり）→ 熱が高まった（砂しぶきが高く）
+        // 切り込み（カービング）は3段で話す: 切り込めた（熱と砂しぶき）→ 1回刻んだ（ブーストが溜まる・押したり離したり）→ 熱が高まった（金の残像と高い砂しぶき）
         if (game.carving) { tut.step = "carveOn"; tell(tutorialText("carveOn")); }
         else if (game.z > PRACTICE_CURVE.to) { tut.step = "flowWait"; tell(tutorialText("carveMiss")); }
       } else if (tut.step === "carveOn") {
@@ -1268,9 +1274,9 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
           lastLand = event.grade;
           const big360 = trick && trick.half >= 2; // 360 以上は角度と着地を一つの結果にまとめる
           if (big360) showCutin(trick, event.grade);
-          if (event.grade === "perfect") { SE.perfect(); if (!big360) showPop(trick ? `${trick.degrees} PERFECT!` : "PERFECT", trick ? "trick" : "perfect"); burst(30, 1.5); }
-          else if (event.grade === "good") { SE.good(); if (!big360) showPop(trick ? `${trick.degrees}! GOOD` : "GOOD", trick ? "trick" : "good"); burst(18, 1.1); }
-          else if (event.grade === "plain") { if (trick && !big360) showPop(`${trick.degrees}!`, "trick"); burst(12, 0.9); }
+          if (event.grade === "perfect") { SE.perfect(); if (!big360) showPop(trick ? `${trick.degrees}° PERFECT!` : "PERFECT", trick ? "trick" : "perfect"); burst(30, 1.5); }
+          else if (event.grade === "good") { SE.good(); if (!big360) showPop(trick ? `${trick.degrees}°! GOOD` : "GOOD", trick ? "trick" : "good"); burst(18, 1.1); }
+          else if (event.grade === "plain") { if (trick && !big360) showPop(`${trick.degrees}°!`, "trick"); burst(12, 0.9); }
           else burst(6, 0.6);
           if (event.gaugeGained > 0) floater(`BOOST +${Math.round(event.gaugeGained * 100)}%`, "gauge");
           else if (event.points) floater(`+${event.points}`, event.grade);
@@ -1370,11 +1376,12 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     function nextGoal(result) {
       const next = [...RANKS].reverse().find(([, min]) => min > result.score);
       const touch = touchUi();
-      const tip = result.tricks === 0 ? (touch ? "空中で「左へ」か「右へ」を押し続けると回転。点がいちばん伸びる" : "空中で ← か → を押し続けると回転。点がいちばん伸びる")
+      const tip = result.rank === "A" && !next && result.race && !result.race.won ? "S評価にはライバルに勝つ必要がある"
+        : result.tricks === 0 ? (touch ? "空中で「左へ」か「右へ」を押し続けると回転。点がいちばん伸びる" : "空中で ← か → を押し続けると回転。点がいちばん伸びる")
         : result.perfect === 0 ? "着地は、輪がボタンに重なった時に押すと完璧"
         : result.boosts === 0 ? (touch ? "ゲージが目印まで溜まったら「BOOST」で超加速" : "ゲージが目印まで溜まったら ↓（BOOST）で超加速")
         : result.falls > 0 && !result.recoveries ? (touch ? "岩に当たった直後に「BOOST」で立て直せる" : "岩に当たった直後に ↓（BOOST）で立て直せる")
-        : next && result.bestTrick < 720 ? "長く回るほど点が大きい（360 → 540 → 720）"
+        : next && result.bestTrick < 720 ? "長く回るほど点が大きい（360° → 540° → 720°）"
         : next && result.nearMiss < 3 ? "岩はぎりぎりでかすめるほど、点もブーストも大きい" : "";
       return { next: next ? { rank: next[0], points: next[1] - result.score } : null, tip };
     }
@@ -1422,9 +1429,9 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
             statRow("大ジャンプ", `${result.bigJumps} 回`, "desert-jumps"),
             statRow("着地", `完璧 ${result.perfect} ／ 良い ${result.good}`, "desert-landings"),
             statRow("岩をかすめた", `${result.nearMiss} 回`, "desert-near"),
-            statRow("トリック", result.tricks ? `${result.tricks} 回（最高 ${result.bestTrick}）` : "0 回", "desert-tricks"),
+            statRow("トリック", result.tricks ? `${result.tricks} 回（最高 ${result.bestTrick}°）` : "0 回", "desert-tricks"),
             statRow("ブースト", `${result.boosts} 回${result.smashed ? `（岩を ${result.smashed} 個粉砕）` : ""}`, "desert-boosts"),
-            result.recoveries ? statRow("リカバリー", `${result.recoveries} 回`, "desert-recoveries") : null,
+            result.recoveries ? statRow("立て直し", `${result.recoveries} 回`, "desert-recoveries") : null,
             result.carves ? statRow("カービング", `${result.carves} 回`, "desert-carves") : null,
             result.courseName ? statRow("コース", result.courseName, "desert-result-course") : null,
           ].filter(Boolean)),

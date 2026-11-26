@@ -10,8 +10,8 @@ data/dialogue/*.json を走査し、以下を検査:
     - 旧名・旧設定・旧タイトルの混入（にしお / ましろさん / シーシャ・ステーション /
       地方予選 / ドクター・ケムリ / 煙の向こう側 / 技術力 / 洞察力 など）
     - 略記「DA」（ダブルアップルは略さない）
-    - 選択肢が全角26字を超える（選択肢は1行・GUI22。バイトの対応 data/baito_events.json と
-      恋人の会話 remake/data/lover.json の選択肢も同じ枠に出るので一緒に見る）
+    - 選択肢が全角26字を超える（選択肢は1行・GUI22。恋人の会話 remake/data/lover.json の
+      選択肢も同じ枠に出るので一緒に見る）
 
   WARN（exit は 0 のまま。気付きのため列挙）:
     - 手動改行 \\n（改行はコード側 autoWrap に一本化したい）
@@ -55,7 +55,7 @@ MAX_PAGE_FULLWIDTH = 48  # 24×2行。これを超えると改ページで割れ
 # リメイク版の選択肢の枠（.vn-choice: 幅720px・内幅658px・24px・字間0.04em）に1行で入る字数。
 # 1字24.96px なので26字（649px）まで。CSS を変えたら remake/test/choice_oneline.mjs で測り直す
 CHOICE_LIMIT = 26
-EXTRA_CHOICE_FILES = [REPO / "data" / "baito_events.json", REPO / "remake" / "data" / "lover.json"]
+EXTRA_CHOICE_FILES = [REPO / "remake" / "data" / "lover.json"]
 
 
 DA_RE = re.compile(r"(?<![A-Za-z])DA(?![A-Za-z])")

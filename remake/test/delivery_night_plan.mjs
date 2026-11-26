@@ -65,6 +65,8 @@ const overrides = {
   },
   spotById: id => spots[id] || { id, kind: 'rest', stamina: 0 },
   tonariMenu: async () => tonariPicks.shift() || null,
+  // 店番（TFL62）: 昼からだけ入れて、昼と夜の2コマ使う。店番の途中は保存を止める
+  SHIFT_SLOTS: 2, SHIFT_STAMINA: 40, shiftOpen: () => state.slot === 0, holdActionSave: () => noop,
   visitChar: async id => { state.story[id] = (state.story[id] || 0) + 1; calls.push({ type: 'visit', id }); },
   // This ports-only fixture checks the night flow around the shared rival handoff.
   deliverToRival: async ({ id }) => {
