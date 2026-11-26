@@ -16,7 +16,7 @@
 
 /* ---- コースを画面いっぱいに（16:9 を保ち、余りは黒）。見出し・順位・ボタンはこの上に重ねる ---- */
 .camel-stage { position: relative; container-type: size; width: min(100cqw, 177.78cqh); aspect-ratio: 16 / 9; overflow: hidden; background: #e2c48c; }
-.camel-canvas { display: block; width: 100%; height: 100%; background: #e2c48c; transform-origin: center top; }
+.camel-canvas { display: block; width: 100%; height: 100%; background: #e2c48c; }
 
 /* ---- 重ねる HUD（文字は cqw で縮む） ---- */
 .camel-hud { position: absolute; inset: 0; pointer-events: none; font-size: clamp(12px, 1.25cqw, 16px); }

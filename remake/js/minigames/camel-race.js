@@ -710,7 +710,6 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   let paused = false, frozen = false, resumeLead = 0, resumeShown = -1, coach = null, targetId = null;
   let duel = new CamelRaceDuel();
   let duelMix = 0, duelPan = 0, duelScale = 1, duelFocusPan = 0, duelPivotY = 0;
-  let duelClip = null;
   // 調整・検査用（コンソールから __camelRace.feel を書き換える。fx は今の演出の状態）。閉じたら片付ける。
   const debug = { feel: FEEL, get fx() {
     return { phase, t: race?.t ?? 0, stop: hitStop, shake: { ...shakeFx }, flash: { ...flashFx }, glow, lunge, jockeyPop,
@@ -1187,8 +1186,6 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     raceCamels = [race.player, ...race.rivals];
     racersById = Object.fromEntries(raceCamels.map(camel => [camel.id, camel]));
     duel = new CamelRaceDuel();
-    if (duelScale !== 1) canvas.style.transform = "";
-    duelClip = null;
     duelMix = 0; duelPan = 0; duelScale = 1; duelFocusPan = 0; duelPivotY = 0;
     camelsByLane = LANES.map(lane => raceCamels.find(camel => camel.id === lane.id));
     updateRaceRows();
@@ -1552,7 +1549,6 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   const screenX = camel => PLAYER_SCREEN_X + (viewDistance(camel) - camAt) * PX_PER_M;
   function animateDuelView(dt) {
     if (reducedMotion || (!duel.pair && duelMix === 0)) return;
-    const previousScale = duelScale, previousPivotY = duelPivotY;
     if (duel.pair) {
       const [a, b] = duel.pair;
       const middle = (racersById[a].distance + racersById[b].distance) / 2;
@@ -1567,17 +1563,6 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     const blend = duelMix * duelMix * (3 - 2 * duelMix);
     duelPan = duelFocusPan * blend;
     duelScale = 1 + (DUEL_VIEW.scale - 1) * blend;
-    // 元の解像度のコースを拡大する。画角が変わらない間は描画範囲とスタイルを使い回す。
-    if (duelScale !== previousScale || (duelScale !== 1 && duelPivotY !== previousPivotY)) {
-      duelClip = null;
-      if (duelScale !== 1) {
-        const visibleW = W / duelScale, visibleH = H / duelScale;
-        // 拡大で画面外へ出る画素は描かない。合成時の端の補間に2pxの余白を残す。
-        duelClip = new Path2D();
-        duelClip.rect((W - visibleW) / 2 - 2, duelPivotY * (1 - 1 / duelScale) - 2, visibleW + 4, visibleH + 4);
-      }
-      canvas.style.transform = duelScale === 1 ? "" : `translate3d(0, ${(1 - duelScale) * duelPivotY / H * 100}%, 0) scale(${duelScale})`;
-    }
   }
   // SUV は自分のラクダの少し前を並走する（左下・右下のボタンに隠れない画面の中央寄り）。
   // SUV（調教師の車）は自分のラクダの少し前を並走し、ラクダが伸びると半分だけ遅れてついていく。
@@ -1591,8 +1576,10 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     camAt = race ? viewDistance(race.player) - (playerX() - PLAYER_SCREEN_X) / PX_PER_M : 0;
     const camX = camAt;
     ctx.clearRect(0, 0, W, H);
+    const zoomed = duelScale !== 1;
+    // コースを拡大後の座標に直接描く。Canvas の描画領域で画面外を切り取る。
+    if (zoomed) ctx.setTransform(duelScale, 0, 0, duelScale, (1 - duelScale) * W / 2, (1 - duelScale) * duelPivotY);
     ctx.save();
-    if (duelClip) ctx.clip(duelClip);
     // 揺れ（GO・ムチ・ゴール）と、ムチの間だけ自分のラクダへ少し寄る。
     if (!reducedMotion && race) {
       // 揺れは種類ごとに横・縦の幅と長さが違う（FEEL.shake）。最初が強く、二乗で収まる。
@@ -1660,6 +1647,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     } else { drawFence(camX, 604, 1); drawNearPosts(camX); drawSuv(); drawLight(); }
     ctx.restore();
     drawFlash();
+    if (zoomed) ctx.resetTransform();
   }
   /** 閃光: PERFECT は騎手のまわりだけ金色に、競り勝ち・ムチ切れ・ゴールは画面全体（最初の一瞬は暗く落とす）。 */
   function drawFlash() {

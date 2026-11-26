@@ -73,10 +73,20 @@ async function transition(page, layout, seconds) {
   }), { layout, seconds });
 }
 
-const renderedScale = page => page.locator(".camel-canvas").evaluate(canvas => {
-  const transform = getComputedStyle(canvas).transform;
-  return transform === "none" ? 1 : new DOMMatrixReadOnly(transform).a;
-});
+async function observeRenderedScale(page) {
+  await page.evaluate(() => {
+    // Read the transform while the race camera is active for a world draw.
+    const { drawImage } = CanvasRenderingContext2D.prototype;
+    CanvasRenderingContext2D.prototype.drawImage = function (image, ...args) {
+      if (this.canvas.classList.contains("camel-canvas") && image.src?.endsWith("/bg_dubai_camel_track_morning.webp")) {
+        window.__duelRenderedScale = this.getTransform().a;
+      }
+      return drawImage.call(this, image, ...args);
+    };
+  });
+}
+
+const renderedScale = page => page.evaluate(() => window.__duelRenderedScale);
 
 function assertSmooth(frames, from, to) {
   const lower = Math.min(from, to);
@@ -119,6 +129,7 @@ async function assertTouchLayout(page) {
 
 await suite("camel-duel-zoom", async check => {
   await check("desktop-zoom-follows-the-leading-pair", async page => {
+    await observeRenderedScale(page);
     await launch(page);
     const cheerButton = page.locator(cheer);
     const cheerPrompt = page.getByText(prompt, { exact: true });
@@ -144,6 +155,7 @@ await suite("camel-duel-zoom", async check => {
     assert(Math.abs(zoomedScale - 1.36) < .01, "a sustained close race reaches 1.36x zoom");
     assertSmooth(zoomIn, 1, zoomedScale);
     assert(Math.abs(await renderedScale(page) - zoomedScale) < .001, "the canvas applies the duel scale");
+    assert.equal(await page.locator(".camel-canvas").evaluate(canvas => getComputedStyle(canvas).transform), "none");
     await cheerButton.waitFor({ state: "visible" });
     await cheerPrompt.waitFor({ state: "visible" });
     await cheerButton.click();
@@ -180,7 +192,7 @@ await suite("camel-duel-zoom", async check => {
     assert.equal(zoomOut.at(-1).pair, null);
     assert(Math.abs(zoomOut.at(-1).scale - 1) < .01, "the view returns to its original scale");
     assertSmooth(zoomOut, zoomedScale, 1);
-    await page.waitForFunction(() => getComputedStyle(document.querySelector(".camel-canvas")).transform === "none");
+    await page.waitForFunction(() => window.__duelRenderedScale === 1);
     assert.equal(await cheerButton.isVisible(), false);
     assert.equal(await cheerPrompt.isVisible(), false);
 
