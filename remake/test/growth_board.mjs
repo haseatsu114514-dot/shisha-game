@@ -212,7 +212,7 @@ for (const [key, boardKey, ids, amounts] of [
   assert.deepEqual(ids.map((id) => N[id].band), [1, 3]);
 }
 for (const [id, value] of Object.entries({ B2: 8, B17: 1.8, S3: 12, S14: 18, W1: 4, W13: 6 })) {
-  assert.equal(Number(/[\\d.]+/.exec(board.perkOf(N[id]).text)[0]), value);
+  assert.equal(Number(/[\d.]+/.exec(board.perkOf(N[id]).text)[0]), value);
 }
 assert.deepEqual(board.HIDANE_NAME, { any: "白火", body: "紅火", sense: "蒼火", wisdom: "翠火" }, "火種の名前（SBD62）");
 
