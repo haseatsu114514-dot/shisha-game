@@ -8,7 +8,7 @@ import { TIERS } from "../core/play-tiers.js";
 
 // 2026-11-13 オーナー「もっとコースを複雑にしたり少し長くしたい」で 1,700 → 2,000m（1本 約50秒 → 約55〜58秒）。
 // 練習は 2026-11-25 に、壁の後へカーブ（切り込み）と砂流れの段を足して 800 → 1,100m、同日カーブを長くして（切り込みを3段で説明）1,250m。
-export const COURSE = Object.freeze({ length: 2000, practiceLength: 1250, laneHalf: 1 });
+export const COURSE = Object.freeze({ length: 2000, practiceLength: 1460, laneHalf: 1 });
 // コースの山と平地（2026-11-13 オーナー「手応えレビューの内容を実装して、より面白く」。docs/spec/desert_ride.md「山と平地」）:
 // firstBump: 最初の要素は岩の無い起伏（走り出して約5秒で最初の「跳ぶ」）。start: 乱数の配置が始まる距離。
 // gapFrom→gapTo: 要素の間隔（進むほど詰まる）。
@@ -304,15 +304,19 @@ export function placeFlows(features, length) {
  * 説明の順番が固定なので乱数は使わない。壁（PRACTICE_WALL）は4つ並びで、コースの中（端の深い砂の内側）ではよけられない（立て直しを一度やってみる所）。
  * カーブ（PRACTICE_CURVE）は岩の無い左曲がり。砂流れ（PRACTICE_FLOW）はその先の真ん中。どちらも、ヌールの説明を読んでから入れる距離を空ける。
  */
-export const PRACTICE_WALL = 720;
+// 説明から実践まで、最高速でも2秒以上の岩の無い助走を取る（物理・本番配置は共通のまま）。
+export const PRACTICE_LESSONS = Object.freeze({ rock: 90, firstRock: 200, bump: 220, firstBump: 340,
+  secondRock: 440, trick: 460, trickBump: 580, boost: 645, smash: 750, smash2: 800, recover: 820 });
+export const PRACTICE_WALL = 930;
 // カーブは約6秒（ヌールの説明3つを読める長さ。押したり離したりで切り込むと「+15」が2〜4回）。
 // 2026-11-25 オーナー「カービングに演出を入れたい。チュートリアルでも触れて欲しい」で 80m → 200m
-export const PRACTICE_CURVE = Object.freeze({ from: 820, to: 1020, c: -0.85 });
-export const PRACTICE_FLOW = 1100;
+export const PRACTICE_CURVE = Object.freeze({ from: 1030, to: 1230, c: -0.85 });
+export const PRACTICE_FLOW = 1310;
 const PRACTICE_WALL_X = Object.freeze([-0.66, -0.22, 0.22, 0.66]);
 export function practiceCourse() {
   const length = COURSE.practiceLength;
-  const features = [rock(150, 0.35), bump(240), rock(330, -0.3), bump(410), rock(540, 0), rock(590, 0.05),
+  const L = PRACTICE_LESSONS;
+  const features = [rock(L.firstRock, 0.35), bump(L.firstBump), rock(L.secondRock, -0.3), bump(L.trickBump), rock(L.smash, 0), rock(L.smash2, 0.05),
     ...PRACTICE_WALL_X.map(x => rock(PRACTICE_WALL, x))];
   const C = PRACTICE_CURVE;
   const curves = [{ z: 0, c: 0 }, { z: C.from - 20, c: 0 }, { z: C.from + 10, c: C.c }, { z: C.to - 10, c: C.c }, { z: C.to + 20, c: 0 }, { z: length + 400, c: 0 }];

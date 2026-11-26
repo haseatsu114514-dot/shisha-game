@@ -1,7 +1,7 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の規則: コースの決定性と公平さ、ジャンプ・着地・転倒、採点と評価の境目。
 import assert from "node:assert/strict";
 import test from "node:test";
-import { RIVAL_COAST, CHARGE, COURSE, LAYOUT, NEAR, GATE, SLALOM, PRACTICE_WALL, PRACTICE_CURVE, PRACTICE_FLOW, FLOW, flowAt, PLAYER, nearReward, recoverWindow, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
+import { RIVAL_COAST, CHARGE, COURSE, LAYOUT, NEAR, GATE, SLALOM, PRACTICE_LESSONS, PRACTICE_WALL, PRACTICE_CURVE, PRACTICE_FLOW, FLOW, flowAt, PLAYER, nearReward, recoverWindow, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
   summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS, jumpPeak, jumpHeight,
   TIER_TUNING, tierOf, resultTier } from "../js/minigames/desert-ride-model.js";
 
@@ -61,7 +61,7 @@ test("the practice course is short, fixed and in the lesson order (rock, bump, r
   assert.equal(wall.length, 4);
   for (const r of wall) assert(Math.abs(r.x) + r.w <= 1, "the wall stays inside the course");
   for (let x = -EDGE; x <= EDGE + 1e-9; x += 0.01) assert(wall.some(r => Math.abs(x - r.x) < r.w + PLAYER.half), `the wall cannot be dodged inside the course (x=${x.toFixed(2)})`);
-  assert(PRACTICE_WALL - 590 > SPEED.boost * (BOOST.duration - BOOST.smashCost * 2) * 0.7, "the wall sits past the smash lesson");
+  assert(PRACTICE_WALL - PRACTICE_LESSONS.smash2 > SPEED.boost * (BOOST.duration - BOOST.smashCost * 2) * 0.7, "the wall sits past the smash lesson");
   assert(COURSE.practiceLength - PRACTICE_WALL >= 60, "room to coast after the wall");
   assert.equal(rivalRun(course).samples.length > 0, true, "the rival can run any course (the screen only races in the main run)");
 });

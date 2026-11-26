@@ -61,14 +61,18 @@
 .dr-start-pop.show { animation: dr-feedback .9s linear forwards; }
 
 /* ---- 練習の説明 ---- */
-/* 練習の説明（2026-11-25）: ヌールの顔・名前・吹き出し。左右の HUD の間の上の方（それまでは文字だけの帯）。本番では出さない */
-.dr-guide { position: absolute; left: 50%; top: 80px; transform: translateX(-50%); width: min(760px, calc(100% - 600px)); box-sizing: border-box; display: flex; align-items: center; gap: 14px; padding: 10px 24px 10px 10px; border-radius: 20px; background: rgba(40,26,30,.82); border: 1px solid rgba(255,226,170,.45); box-shadow: 0 6px 18px rgba(0,0,0,.22); pointer-events: none; }
+/* 一文だけの小さな案内を空側へ寄せ、コース上部を空ける。 */
+.dr-guide { position: absolute; left: 50%; top: 16px; transform: translateX(-50%); width: min(680px, calc(100% - 600px)); box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 12px; background: rgba(40,26,30,.82); border: 1px solid rgba(255,226,170,.45); pointer-events: none; }
 .dr-guide[hidden] { display: none; }
-.dr-guide-face { width: 66px; height: 66px; flex: none; box-sizing: border-box; border-radius: 50%; object-fit: cover; background: #5a3a2a; border: 3px solid #f2c46b; }
-.dr-guide-body { flex: 1; min-width: 0; display: grid; gap: 2px; text-align: left; }
-.dr-guide-name { font-size: 16px; font-weight: 800; letter-spacing: .14em; color: #f2c46b; }
-/* 行の高さは整数の px、上下に少し余白（小数の高さや矢印の字形が 1px はみ出して測れる） */
-.dr-caption { margin: 0; padding: 3px 0; color: #fff5e6; font-size: 24px; font-weight: 700; letter-spacing: .03em; line-height: 33px; white-space: normal; overflow-wrap: anywhere; }
+.dr-guide-face { width: 36px; height: 36px; flex: none; box-sizing: border-box; border-radius: 50%; object-fit: cover; background: #5a3a2a; border: 2px solid #f2c46b; }
+.dr-guide-body { flex: 1; min-width: 0; display: grid; gap: 0; text-align: left; }
+.dr-guide-name { font-size: 14px; font-weight: 800; color: #f2c46b; }
+.dr-caption { margin: 0; padding: 2px 0; color: #fff5e6; font-size: 20px; font-weight: 700; line-height: 27px; white-space: normal; overflow-wrap: anywhere; }
+.dr-caption kbd, .dr-action-cue kbd { font: inherit; border: 1px solid #f2c46b; border-radius: 4px; padding: 0 3px; background: #574031; }
+.dr-return-cue, .dr-action-cue { position: absolute; left: 50%; transform: translateX(-50%); padding: 5px 12px; border-radius: 8px; color: #fff5e6; background: rgba(40,26,30,.86); pointer-events: none; font-size: 22px; font-weight: 700; }
+.dr-return-cue { top: 46%; border: 1px solid #f2c46b; }
+.dr-action-cue { top: 36%; display: flex; align-items: center; gap: 8px; font-size: 18px; }
+.dr-return-cue[hidden], .dr-action-cue[hidden] { display: none; }
 
 /* ---- 操作ボタン（スマホ）: 下辺の左右に大きく、中央の視界は空ける ---- */
 .dr-controls { position: absolute; inset: auto 0 0; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 18px 16px; pointer-events: none; }
@@ -150,10 +154,8 @@
   .dr-gauge { height: 24px; }
   .dr-time { font-size: 26px; }
   .dr-button { min-height: 84px; }
-  .dr-guide { top: 92px; }
-  .dr-guide-face { width: 76px; height: 76px; }
-  .dr-guide-name { font-size: 20px; }
-  .dr-caption { font-size: 26px; line-height: 36px; }
+  .dr-caption { font-size: 22px; line-height: 29px; }
+  .dr-action-cue { font-size: 22px; }
   .dr-touch, .dr-touch.dr-boost { font-size: 24px; }
   .dr-touch.dr-jump { font-size: 24px; }
   .dr-card { width: 1000px; padding: 22px 40px 24px; }
