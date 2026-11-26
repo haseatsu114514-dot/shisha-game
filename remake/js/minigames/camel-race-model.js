@@ -323,8 +323,8 @@ function stepDuel(state) {
   }
 }
 
-/** dt 秒ぶん進める。プレイヤーがゴールした時点でレースは終わる（順位はその時点で確定）。 */
-export function stepRace(state, dt) {
+/** dt 秒ぶん進める。cheerSpeed は画面側で上限を設けた、この歩だけの応援による増速（m/s）。 */
+export function stepRace(state, dt, cheerSpeed = 0) {
   if (state.finished || !(dt > 0)) return state;
   dt = Math.min(dt, 0.05);
   const { player } = state;
@@ -375,7 +375,8 @@ export function stepRace(state, dt) {
   const target = PLAYER.base * (PLAYER.rhythmFloor + PLAYER.rhythmSpan * player.rhythm) * staminaFactor + player.surge + boost;
   const ease = state.t < PLAYER.startSeconds ? PLAYER.startEase : PLAYER.ease;
   player.speed += (target - player.speed) * Math.min(1, dt / (player.whipping ? Math.min(WHIP.ease, ease) : ease));
-  player.distance += player.speed * dt;
+  const travelSpeed = player.speed + cheerSpeed;
+  player.distance += travelSpeed * dt;
   // ライバル。
   for (const rival of state.rivals) {
     if (rival.finishedAt !== null) continue;
@@ -401,11 +402,11 @@ export function stepRace(state, dt) {
   stepDuel(state);
   const spurtNow = inSpurt(state);
   if (spurtNow && !state.spurtCues) respaceSpurtCues(state);
-  if (spurtNow && (before === 0 || (player.distance - player.speed * dt) / state.length < RACE.spurtFrom)) {
+  if (spurtNow && (before === 0 || (player.distance - travelSpeed * dt) / state.length < RACE.spurtFrom)) {
     state.events.push({ t: state.t, kind: "spurt" });
   }
   if (player.distance >= state.length || state.t >= RACE.maxTime) {
-    player.finishedAt = player.distance >= state.length ? state.t - (player.distance - state.length) / player.speed : state.t;
+    player.finishedAt = player.distance >= state.length ? state.t - (player.distance - state.length) / travelSpeed : state.t;
     player.distance = Math.min(player.distance, state.length);
     state.finished = true;
     state.finishedAt = player.finishedAt;
