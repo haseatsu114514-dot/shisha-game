@@ -529,7 +529,11 @@ await suite("tonari-floor", async (check) => {
       await page.locator(`.tf-mix-option[data-mix="${pick.id}"]`).click();
       assert.equal(await api((a) => a.mode()), "live");
       assert.deepEqual(await api((a) => { const x = a.state().tables[0]; return [x.phase, x.mix]; }), ["prep", pick.id]);
-      assert.equal(await api((a, id) => a.state().hand.includes(id), pick.id), false);
+      const afterServe = await page.locator(".tf-preset").evaluateAll((list) => list.map((n) => n.dataset.mix));
+      assert.equal(afterServe.length, second.length);
+      assert.equal(afterServe.includes(pick.id), false);
+      assert.deepEqual(afterServe.filter((id, i) => second[i].id !== pick.id),
+        second.filter((option) => option.id !== pick.id).map((option) => option.id), "提供すると、その枠だけに次の札が入る");
       // 上の帯の仕込み中: 枠の丸が一つ灯る。どの卓の何かは、読み上げに出す（画面の文字にはしない）
       assert.deepEqual(await page.locator(t("making")).evaluate((n) => [n.getAttribute("aria-label"), [...n.querySelectorAll(".tf-making-pips > i")].map((i) => i.dataset.on)]),
         [`仕込み中: 1卓 ${pick.name}`, ["true", "false"]]);
