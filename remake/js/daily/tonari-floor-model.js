@@ -162,7 +162,7 @@ const personalOrder = (o) => ({ wish: o.wish, quote: o.quote, pref: { label: o.l
  * @param opts.dusk 昼から夜まで通しの店番（2026-11-25 オーナー「昼から始めて2コマ使う」・TFL62）。営業の半ばで日が暮れ、
  *   そこから来る客は夜の呼び名になる（画面は店内の絵を夜へ替える）。daytime と一緒に使う
  */
-export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = false, daytime = false, night = null, visitor = null, visitorName = null, dusk = false } = {}) {
+export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = false, daytime = false, night = null, visitor = null, visitorName = null, dusk = false, floorPerks = null } = {}) {
   const def = night ? NIGHTS[night] || NIGHTS.usual : pickNight(level, seed, { rainy, daytime });
   const random = rng((Number(seed) >>> 0) ^ 0x51ed27);
   const duskAt = dusk && daytime ? Math.round(def.length / 2) : null; // 日が暮れる刻み
@@ -191,6 +191,7 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = fal
   const deck = shuffled(mixIdsFor(chapter), random); // その章の店で出せるミックス
   return {
     seed: Number(seed) >>> 0, level, chapter, night: def.id, title: byTime(def.title, daytime), daytime: !!daytime, dusk: duskAt,
+    floorPerks: { floorMatch: floorPerks?.floorMatch || 0, floorTop: floorPerks?.floorTop || 0 },
     visitor: who && guests.g3?.charId ? who.id : null,
     hint: level >= 3 ? "sight" : "said",
     t: 0, length: def.length, done: false, closing: null, rolls: 0,
@@ -432,7 +433,9 @@ function tickOnce(s) {
     if (!table.call && s.t >= table.stayEnd) {
       // 居心地の良い客は、自分からおかわり（トップ替え）を頼むことがある。一卓に一度まで
       // おかわりも、客が吸いたい気分を言い、並んだミックスから選んで出す（2026-11-25 オーナー指示）。閉店で聞きそびれた分は、それまでの会計で帰る
-      if (!table.extended && s.length - s.t >= T.top + 10 && roll(s) < EXTEND_CHANCE[floorStage(table.mood).id]) {
+      const baseChance = EXTEND_CHANCE[floorStage(table.mood).id];
+      const chance = baseChance > 0 ? baseChance + s.floorPerks.floorTop / 100 : 0;
+      if (!table.extended && s.length - s.t >= T.top + 10 && roll(s) < chance) {
         const who = VISITORS[guest.charId];
         guest.order = who ? personalOrder(who.refill) : makeOrder(() => roll(s)); // 本編の人物は、その人のおかわり（TFL66）
         Object.assign(table, { phase: "order", refill: true, extended: true, since: s.t, call: null, wants: [] });
