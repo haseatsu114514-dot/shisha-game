@@ -1,5 +1,5 @@
 // フロア営業を最後まで回す検査用の操作役。pace＝一つの操作にかかる刻み（2＝手際がよい、16＝ほぼ放置）。
-// pick＝注文に出す一台: "best"（並んでいる中でいちばん合うもの。◎も○も無ければ、3秒かけてシャッフルしてから）/ "first"（いちばん上をそのまま）/ "off"（いちばん合わないもの）/ "greedy"（◎が出るまでシャッフルし続ける）。
+// pick＝注文に出す一台: "best"（並んでいる中でいちばん合うもの。◎も○も無ければ、シャッフルしてから）/ "first"（いちばん上をそのまま）/ "off"（いちばん合わないもの）/ "greedy"（◎が出るまでシャッフルし続ける）。
 // tend＝頼まれる前に炭を整えに行くか。頼みには正しい手で応え、会計はすぐ受ける。フィーバーは溜まって卓が2つ以上くつろいでいれば使う。
 import {
   createFloorNight, floorTick, floorAct, floorTap, floorResult, floorUrgency, floorFeverLevel, floorHand, floorShuffleLeft, floorShuffleTime, floorWaitLeft,
@@ -25,7 +25,7 @@ export function floorBotAction(s, { pick = "best", fever = true, tend = true } =
     const wish = s.guests[order.guestId].order;
     if (pick === "first") return { type: "order", tableId: order.id, mix: s.hand[0] };
     const choice = bestMix(s, wish, { worst: pick === "off" });
-    // 合う一台が無ければ入れ替える（3秒かかる）。客がもう待てない時は、あるもので出す
+    // 合う一台が無ければ入れ替える。客がもう待てない時は、あるもので出す
     if (pick === "best" && choice.rating === "none" && floorWaitLeft(s, order.id) > floorShuffleTime + 4) return { type: "shuffle" };
     // 欲張り: ◎が出るまで、客の待ち時間を見ずに入れ替え続ける
     if (pick === "greedy" && choice.rating !== "best") return { type: "shuffle" };
