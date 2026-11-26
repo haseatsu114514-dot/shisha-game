@@ -308,6 +308,7 @@
   background: linear-gradient(90deg, #18110c10, #18110cd9);
 }
 .axe-game.axe-first-person[data-phase="result"]:not([data-tutorial="true"]) .axe-panel .axe-result-card::before { content: none; }
+.axe-first-person .axe-power-review-text { white-space: normal; text-wrap: pretty; }
 .axe-first-person .axe-zoom figcaption { background: #130e0bdd; border: 0; border-bottom: 1px solid #b58b5b; border-radius: 0; }
 .axe-first-person .axe-zoom figcaption :is(strong, .axe-zoom-power) {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; clip-path: inset(50%); overflow: hidden;

@@ -73,7 +73,7 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
     onPower(raw);
     // Re-check after callbacks/capture changes before committing a throw.
     if (!available()) { power = 0; onPower(0); onCancel(); return; }
-    onRelease(lean, tiltValue); focused();
+    onRelease(lean, tiltValue, previous.id === 'keyboard' ? 'keyboard' : 'pointer'); focused();
   }
   function aimAt(next) {
     if (dead || flick || !canAim()) return false;

@@ -7,7 +7,7 @@ import {cancelReserve,createSet,makeDeck,playDeck,pauseMix,resumeMix,beatAt,phas
 import {FEEL,applyFeelOverrides} from '../previews/dj/feel.mjs';
 import {DJSfx} from '../previews/dj/sfx.mjs';
 import {renderTrack,peakAt} from '../previews/dj/synth.mjs';
-import {DJAudio} from '../previews/dj/audio.mjs';
+import {DJAudio,TrackLoadError} from '../previews/dj/audio.mjs';
 import {TRACKS,SETS,buildTrackData,buildBufferTrackData,peakAt as fullPeakAt,previewBeat} from '../previews/dj/tracks.mjs';
 let groups=0;async function check(name,fn){await fn();groups++;console.log('PASS '+name);}
 const near=(a,b,e=1e-7)=>assert(Math.abs(a-b)<e,`${a} != ${b}`);
@@ -367,6 +367,21 @@ await check('audio: first ▶ loads the two deck tracks and starts exactly one s
  loads.length=0;const a=new DJAudio(Context,{setIndex:0,loadTrack});assert.equal(a.context,null);assert(await a.play(0));
  assert.deepEqual(loads,['danceMonster','digitalLemonade']);assert.equal(a.context.sources.length,1);assert.deepEqual(a.mix.decks.map(d=>d.playing),[true,false]);near(a.voices[0].source.playbackRate.value,1);near(a.voices[0].source.started.offset,.006);near(a.voices[0].source.loopStart,.006);
  assert.equal(await a.play(0),false);assert.equal(a.context.sources.length,1);await a.dispose();
+});
+await check('audio: retrying the first ▶ reloads a failed standby track and reuses the ready deck',async()=>{
+ let attempts=0;
+ const a=new DJAudio(Context,{loadTrack:async(c,key)=>{
+  if(key==='digitalLemonade' && ++attempts===1){
+   await a.ensure(0);
+   throw new Error('decode failed');
+  }
+  return loadTrack(c,key);
+ }});
+ await assert.rejects(a.play(0),TrackLoadError);
+ const ready=a.tracks[0];
+ assert(ready);assert.equal(a.tracks[1],null);
+ assert(await a.play(0));assert.equal(attempts,2);assert.equal(a.tracks[0],ready);assert(a.tracks[1]);
+ assert.deepEqual(a.mix.decks.map(d=>d.playing),[true,false]);await a.dispose();
 });
 await check('audio: an early ▶ schedules the source on the entry line (予約), at the master\'s tempo (a 120 BPM track is sped up to 122)',async()=>{
  const a=new DJAudio(Context,{setIndex:2,loadTrack});await a.play(0);const c=a.context,A=a.mix.decks[0];

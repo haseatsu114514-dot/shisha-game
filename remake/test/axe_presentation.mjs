@@ -75,9 +75,18 @@ test("the power verdict names the zone, the direction and the size of the fix", 
   assert.match(powerVerdict(.5).text, /待って放す/); assert.match(powerVerdict(.75).text, /早く放す/);
   assert.equal(powerVerdict(.3).zone, "drop"); assert.equal(powerVerdict(.75).zone, "edge");
   assert.equal(powerVerdict(.62, { inputMode: "tap-pull" }).short, "↻62% ちょうどいい");
-  assert.equal(powerVerdict(.9, { inputMode: "tap-pull" }).short, "↻90% もっとゆっくり");
+  assert.equal(powerVerdict(.9, { inputMode: "tap-pull" }).short, "↻90% ゆっくり弾く");
   assert.equal(powerVerdict(.5).short, "↻50% 少し待って");
   for (let p = 0; p <= 1; p += .01) assert(powerVerdict(p, { inputMode: "tap-pull" }).short.length <= 12, "one short line on the result card");
+});
+test("a drop puts the release control's correction beside the measured rotation", () => {
+  for (const [power, key, flick] of [[.3, "Spaceを長めに押す", "速く弾く"], [.9, "Spaceを早めに離す", "ゆっくり弾く"]]) {
+    for (const [source, action] of [["keyboard", key], ["pointer", flick]]) {
+      const options = { inputMode: "tap-pull", source };
+      assert.equal(powerVerdict(power, options).short, `↻${power * 100}% ${action}`);
+      if (source === "keyboard") assert.ok(shotFeedback(shot(0, 0, power), options).tip.includes("次は" + action + "。"));
+    }
+  }
 });
 test("development feel overrides touch only known numbers and the freeze switch", () => {
   const target = structuredClone(AXE_FEEL);

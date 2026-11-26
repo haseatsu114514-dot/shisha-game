@@ -184,6 +184,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const taught = new Set();
   let pauseDialog = null;
   let pullInput = null, rawPower = 0, windowFocused = true;
+  let lastThrowInput = null;
   // 接触の止め（ヒットストップ）: この投で板に当たった音を鳴らしたか、止めの間のフレーム数、着弾の揺れの位相（投ごとに変える）
   let contacted = null, holdFrame = 0, shakePhase = [0, 0], missNote = "";
   const T = AXE_FEEL.tempo, C = AXE_FEEL.cue;
@@ -671,8 +672,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     },
     // tilt: 弾いた向きの傾き（横/縦の速さ比、±1 で 45°）。斜めに弾いた分だけ斧が横へ流れ、着地点が横へずれる
     // （2026-11-22 オーナー要望）。まっすぐ弾けば 0。狙いの記録（baseAim）は触れた所のまま
-    onRelease: (lean = 0, tilt = 0) => {
+    onRelease: (lean, tilt, source) => {
       if (actor !== "player" || phase !== "power" || isPaused()) return;
+      lastThrowInput = source;
       lastAction = performance.now(); unlockAudio(); void preloadAxeSe();
       // 緑の帯の外で弾くと力んで横へ流れやすい（指摘7・桜井 #236。帯の内外で結果が変わるように）。
       // 小さい斜めは減衰カーブ（flickDriftScale）で弱める（2026-11-22 アシスト）
@@ -757,7 +759,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const key = lessonContext && coachLines[lessonContext + "_" + id] ? lessonContext + "_" + id : id;
     const line = coachLines[tapPull && TAP_LESSON_VARIANTS.includes(key) ? key + "_tap" : key];
     if (tapPull) { titles.power = "③ 上へ弾いて投げる"; titles.target = "今の一投と、刃が触れた所"; }
-    const scoreLine = last ? `今回は${last.score}点。${shotFeedback(last, { inputMode }).tip}` : "";
+    const scoreLine = last ? `今回は${last.score}点。${shotFeedback(last, { inputMode, source: lastThrowInput }).tip}` : "";
     const text = tapPull && id === "target" && last ? scoreLine + "\n" + line
       : line + (id === "result" && last ? " " + scoreLine : "");
     const close = () => {
@@ -1423,7 +1425,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const last = shown;
     resultCard.hidden = !["result", "summary"].includes(phase);
     rankBadge.hidden = phase !== "summary" || tutorial;
-    const review = phase === "result" && actor === "player" && last ? powerVerdict(last.power, { inputMode }) : null;
+    const review = phase === "result" && actor === "player" && last ? powerVerdict(last.power, { inputMode, source: lastThrowInput }) : null;
     powerReview.hidden = !review;
     if (review) {
       powerMark.style.left = Math.max(0, Math.min(100, last.power * 100)) + "%";
@@ -1445,7 +1447,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         rankBadge.dataset.stamped = String(countedTotal() === totalOf(shots));
         rankLetter.textContent = rankBadge.dataset.rank; rankTitle.textContent = tutorial ? "" : "「" + titleOf(shots, rules.max) + "」";
       } else if (last) {
-        const feedbackText = shotFeedback(last, { inputMode, closed });
+        const feedbackText = shotFeedback(last, { inputMode, source: lastThrowInput, closed });
         resultLabel.textContent = sd ? (last.score ? "SUDDEN DEATH HIT" : "SUDDEN DEATH MISS") : feedbackText.label;
         resultNumber.textContent = "+" + last.score; resultUnit.textContent = "PTS";
         const target = last.zone?.kind === "bull" ? clusterPlaces[last.zone.cluster] + "の赤" : last.zone?.kind === "five" ? zoneLabel(last) : "";

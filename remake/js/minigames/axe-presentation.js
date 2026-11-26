@@ -25,18 +25,28 @@ export function contactHold(shot) {
   return shot.dropReason === "off-board" ? 0 : AXE_FEEL.hitstop.drop;
 }
 
-/** The thrower's own rotation, in words that say which way and how much to change (2026-11-13 指摘4・桜井 #023・#009).
- *  inputMode "tap-pull" speaks of flick speed; the legacy gauges speak of when to let go. */
-export function powerVerdict(power, { inputMode = "gauges" } = {}) {
+const spaceAdvice = low => low ? "Spaceを長めに押す" : "Spaceを早めに離す";
+
+/** The thrower's own rotation, with a correction for the control used to release the axe. */
+export function powerVerdict(power, { inputMode = "gauges", source } = {}) {
   const pct = Math.round(power * 100), tap = inputMode === "tap-pull";
-  // short は結果カードの1行（↻ は回転の印）。text は読み上げと説明用の全文
+  // short は回転率の隣に出す短い助言。text は読み上げと説明用の全文
   if (power >= POWER.sweetMin && power <= POWER.sweetMax) return { pct, zone: "sweet", text: "回転 " + pct + "% · ちょうどいい", short: "↻" + pct + "% ちょうどいい" };
   const low = power < POWER.sweetMin, far = (low ? POWER.sweetMin - power : power - POWER.sweetMax) > .08;
   const drop = power < POWER.stickMin || power > POWER.stickMax;
   const state = power < POWER.stickMin ? "柄から当たる" : power > POWER.stickMax ? "回りすぎ" : low ? "回転が足りない" : "回り気味";
-  const fix = tap ? (low ? (far ? "もっと速く弾く" : "あと少し速く") : (far ? "もっとゆっくり弾く" : "少しゆっくり"))
-    : (low ? (far ? "もっと待って放す" : "あと少し待って放す") : (far ? "もっと早く放す" : "少し早く放す"));
-  const brief = tap ? (low ? (far ? "もっと速く" : "少し速く") : (far ? "もっとゆっくり" : "少しゆっくり")) : (low ? (far ? "もっと待って" : "少し待って") : (far ? "もっと早く" : "少し早く"));
+  let fix, brief;
+  if (!tap) {
+    fix = low ? (far ? "もっと待って放す" : "あと少し待って放す") : (far ? "もっと早く放す" : "少し早く放す");
+    brief = low ? (far ? "もっと待って" : "少し待って") : (far ? "もっと早く" : "少し早く");
+  } else if (source === "keyboard") {
+    fix = spaceAdvice(low);
+    brief = fix;
+  } else {
+    fix = low ? (far ? "もっと速く弾く" : "あと少し速く") : (far ? "もっとゆっくり弾く" : "少しゆっくり");
+    if (drop) brief = low ? "速く弾く" : "ゆっくり弾く";
+    else brief = low ? (far ? "もっと速く" : "少し速く") : (far ? "もっとゆっくり" : "少しゆっくり");
+  }
   return { pct, zone: drop ? "drop" : "edge", low, text: "回転 " + pct + "% · " + state + " · " + fix, short: "↻" + pct + "% " + brief };
 }
 
@@ -57,12 +67,15 @@ function direction(landing, targets) {
 }
 
 /** Copy follows the resolved outcome; it never changes scoring or the next throw. */
-export function shotFeedback(shot, { inputMode = "gauges", closed } = {}) {
+export function shotFeedback(shot, { inputMode = "gauges", source, closed } = {}) {
   // 弾いて投げる操作では % はゲージの語彙なので、動作の言葉で言う（指摘4）
-  const advice = inputMode === "tap-pull" ? (shot.dropReason === "weak" ? "次は、ひと息で今より少し速く弾こう。" : "次は、もうひと呼吸ゆっくり弾こう。")
-    : "次は緑の54〜70%で放そう。";
-  if (shot.outcome === "drop") return { label: "DROP", tone: "drop",
-    tip: (shot.dropReason === "weak" ? "柄から当たって落下。" : "回りすぎて落下。") + advice + (shot.half !== undefined ? "落下すると追加の宣言を1回もらえる。" : "") };
+  if (shot.outcome === "drop") {
+    const low = shot.dropReason === "weak";
+    let advice = "次は緑の54〜70%で放そう。";
+    if (inputMode === "tap-pull") advice = source === "keyboard" ? "次は" + spaceAdvice(low) + "。" : (low ? "次は上へ少し速く弾こう。" : "次は上へ少しゆっくり弾こう。");
+    return { label: "DROP", tone: "drop",
+      tip: (low ? "柄から当たって落下。" : "回りすぎて落下。") + advice + (shot.half !== undefined ? "落下すると追加の宣言を1回もらえる。" : "") };
+  }
   if (shot.outcome === "killshot") return { label: "KILLSHOT", tone: "killshot",
     tip: shot.score === 8 ? "宣言した青の中心に刃が届いた！ 8点の最高の一投。" : "宣言した青に刃が触れた！ 狙いと回転が決まった。" };
   if (shot.outcome === "bull") return { label: "BULL'S EYE", tone: "bull",

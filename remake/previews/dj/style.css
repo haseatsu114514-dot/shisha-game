@@ -168,6 +168,8 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 .steps li.now{color:var(--gold)}.steps li.now i{background-image:url('../../img/ui/craft-night/step-now.webp');color:#fff;filter:drop-shadow(0 0 6px #f0a64a);animation:lamp 1s ease-in-out infinite alternate}
 @keyframes lamp{to{filter:drop-shadow(0 0 12px #ffc857)}}
 .say{min-width:0;display:flex;flex-direction:column;justify-content:center}
+.say:has(#retry-audio:not([hidden])){flex-direction:row;align-items:center;justify-content:space-between;gap:6px}
+#retry-audio{flex:none;font-size:20px}
 .coach{font-size:22px;font-weight:900;line-height:1.25;letter-spacing:.02em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .coach.warn{color:var(--warn)}
 .coach-sub{font-size:14px;font-weight:700;line-height:1.35;color:#cfc4e2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
