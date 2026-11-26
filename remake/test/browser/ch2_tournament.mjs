@@ -38,11 +38,22 @@ async function seed(page, { known = false, stage = '', auto = 'good', progress =
     void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
   }, {known,stage,auto,progress,strawberryTrial,lovers});
 }
-// 応援・祝福のトークが先に並ぶ場合も、返信を選びながら最後の「スマホを閉じる」まで読む（#1653 ⑦）。
+// 応援・祝福とスミさんの連絡を受信箱から読む（#4035 D3）。
 async function phone(page,touch=false) {
   const press=sel=>touch?page.locator(sel).first().tap():page.locator(sel).first().click();
   for(;;){
-    await page.locator(`${dt('phone-next')}, ${dt('reply-0')}`).first().waitFor();
+    await page.locator(`${dt('phone-next')}, ${dt('reply-0')}, ${dt('phone-close')}`).first().waitFor();
+    if(await page.locator(dt('phone-close')).count()){
+      const sender=await page.evaluate(()=>{
+        const s=window.__remake.state;
+        const notice=s.inbox.find(i=>i.id===`ch2_tournament_sumi_${s.flags._ch2_tournament.stage==='morning'?'morning':'tokyo'}`);
+        if(!notice)throw Error('Missing chapter 2 LIME group');
+        const next=[...(notice.requiredMessageIds||[]),notice.id].map(id=>s.inbox.find(i=>i.id===id)).find(i=>!i.done);
+        return next&&(next.account||next.msg.sender);
+      });
+      if(!sender){await press(dt('phone-close'));return;}
+      await press(dt(`lime-chat-${sender}`));continue;
+    }
     if(await page.locator(dt('reply-0')).count()){await press(dt('reply-0'));await page.locator(dt('phone-next')).waitFor();continue;}
     const last=(await page.locator(dt('phone-next')).first().innerText()).includes('閉じる');
     await press(dt('phone-next'));

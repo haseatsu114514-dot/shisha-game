@@ -78,7 +78,7 @@ test("拡張性: 店舗データの差し替え（卓数6・独自単価・独�
     name: "将来の6卓店",
     price: { shisha: 3000, charge: 1000, top: 2000, drink: 800 },
     entry: { basePay: 15000, commissionPercent: 10 },
-    rules: { tableCount: 6, slots: 3, feverTargets: [0, 2, 4, 6] },
+    rules: { tableCount: 6, slots: 3 },
   };
   let s = createFloorNight({ venue: custom, seed: 5, level: 2, chapter: 3 });
   assert.equal(s.tables.length, 6);
@@ -177,7 +177,11 @@ test("店舗ごとの難易度差: 待ち時間・sight移行・仕込み枠・V
   assert.equal(pickNight(0, 1, { venue: "mukai" }).id, "first");
   assert.equal(pickNight(3, 1, { venue: "mukai", rainy: true }).id, "rain");
   assert.equal(floorPlan(d0).title, "ドバイの初シフト");
-  assert.equal(floorVenueFeverLength(m2), 32);
+  for (const s of [t2, m2, d2]) {
+    assert.equal(floorVenueFeverLength(s), 30);
+    const opened = createFloorNight({ venue: s.venue, chapter: s.chapter, level: 3, seed: 0xffffffff });
+    assert.ok(floorVenue(s.venue).nightPool.early.includes(opened.night));
+  }
   assert.equal(floorVenueLastCall(d2), 40);
 });
 
@@ -332,9 +336,9 @@ test("レア来店者（mukai・ドバイ・同行恋人）: 固有口調17種�
   ds.hand[0] = liked;
   ds = act(ds, { type: "order", tableId: tid, mix: liked });
   ds = until(ds, (x) => at(x, tid).phase === "enjoy", 60);
-  ds.tables[tid - 1].nextCall = ds.t; ds.tables[tid - 1].coalAt = ds.t;
-  ds = until(ds, (x) => !!at(x, tid).call, 5);
-  assert.equal(floorCallLine(ds, tid).said, DUBAI_VISITORS.da_silva.lines.calls[at(ds, tid).call.type].said);
+  ds = until(ds, (x) => !!at(x, tid).call, at(ds, tid).stayEnd - ds.t);
+  assert.equal(at(ds, tid).call.type, "thirsty");
+  assert.equal(floorCallLine(ds, tid).said, DUBAI_VISITORS.da_silva.lines.calls.thirsty.said);
 });
 
 test("店舗ごとの進み具合記録（_mukai_floor / _dubai_floor）が独立して更新される", () => {

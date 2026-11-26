@@ -95,17 +95,28 @@ export const MIXES = Object.freeze(Object.fromEntries([
   mix("mintshake", ["peppermint_shake"], "fresh", "sweet"), mix("colamint", ["cola", "mint"], "fresh", "sweet"),
   mix("applemint", ["double_apple", "mint"], "fresh", "fruit"), mix("lavendermint", ["lavender", "mint"], "fresh", "deep"),
   mix("coolmint", ["cool_mint"], "fresh"), mix("doublemint", ["mint", "cool_mint"], "fresh", null, "ダブル｜ミント"),
+  mix("mint", ["mint"], "fresh"), mix("rosemint", ["rose", "mint"], "fresh", "deep"), mix("jasminemint", ["jasmine", "mint"], "fresh", "deep"),
+  mix("cherrymint", ["cherry", "mint"], "fresh", "fruit"), mix("passionmint", ["passion_fruit", "mint"], "fresh", "fruit"),
+  mix("dragonmint", ["dragonfruit", "mint"], "fresh", "fruit", "ドラゴン｜ミント"),
+  mix("gummymint", ["white_gummy_bear", "mint"], "fresh", "sweet"), mix("redgummymint", ["red_gummy_bear", "mint"], "fresh", "sweet", "赤グミ｜ミント"),
+  mix("milkmint", ["milk", "mint"], "fresh", "sweet"), mix("sakuramint", ["sakura", "mint"], "fresh", "deep"),
+  mix("springmint", ["spring_water", "mint"], "fresh", "deep", "スプリング｜ミント"),
   // ---- 果物を使う定番 ----
   mix("peachmango", ["peach", "mango"], "fruit"), mix("grapeberry", ["grape", "blueberry"], "fruit"), mix("raspberrycassis", ["raspberry", "cassis"], "fruit"),
   mix("guavapine", ["guava", "pineapple"], "fruit"), mix("mangoorange", ["mango", "orange"], "fruit", "fresh"), mix("pineorange", ["pineapple", "orange"], "fruit", "fresh"),
   mix("lemonorange", ["lemon", "orange"], "fruit", "fresh"), mix("watermelonkiwi", ["watermelon", "kiwi"], "fruit", "fresh"),
   mix("grapefruit", ["grapefruit"], "fruit", "fresh"), mix("mangococonut", ["mango", "coconut"], "fruit", "sweet"),
-  mix("bananavanilla", ["banana", "vanilla"], "fruit", "sweet"), mix("melonvanilla", ["melon", "vanilla"], "fruit", "sweet"),
+  mix("bananavanilla", ["banana", "vanilla"], "sweet", "fruit"), mix("melonvanilla", ["melon", "vanilla"], "fruit", "sweet"),
   mix("berryvanilla", ["blueberry", "vanilla"], "fruit", "sweet"), mix("strawberryvanilla", ["strawberry", "vanilla"], "fruit", "sweet"),
   mix("peachlychee", ["peach", "lychee"], "fruit", "deep"), mix("lycheerose", ["lychee", "rose"], "deep", "fruit"), mix("peachtea", ["peach", "black_tea"], "deep", "fruit"),
   mix("lemontea", ["lemon_tea"], "fruit", "deep"),
   mix("pinepassion", ["pineapple", "passion_fruit"], "fruit"), mix("cherryvanilla", ["cherry", "vanilla"], "fruit", "sweet"),
   mix("mangomilk", ["mango", "milk"], "fruit", "sweet"), mix("strawberrymilk", ["strawberry", "milk"], "fruit", "sweet"),
+  mix("grapelychee", ["grape", "lychee"], "fruit", "deep"), mix("cassislychee", ["cassis", "lychee"], "fruit", "deep"),
+  mix("guavalychee", ["guava", "lychee"], "fruit", "deep"), mix("cassisgrapefruit", ["cassis", "grapefruit"], "fruit", "fresh", "カシス｜グレフル"),
+  mix("kiwigrape", ["kiwi", "grape"], "fruit", "fresh"), mix("melonpeach", ["melon", "peach"], "fruit"),
+  mix("guavamango", ["guava", "mango"], "fruit"), mix("pinecoconut", ["pineapple", "coconut"], "fruit", "sweet"),
+  mix("passionorange", ["passion_fruit", "orange"], "fruit", "fresh"), mix("dragonlychee", ["dragonfruit", "lychee"], "fruit", "deep", "ドラゴン｜ライチ"),
   // ---- 甘い香りを使う定番 ----
   mix("chocovanilla", ["chocolate", "vanilla"], "sweet"), mix("caramelvanilla", ["caramel", "vanilla"], "sweet"), mix("caramelnuts", ["caramel", "hazelnut"], "sweet"),
   mix("choconuts", ["chocolate", "hazelnut"], "sweet"), mix("honeynuts", ["honey", "hazelnut"], "sweet"), mix("vanillacola", ["vanilla", "cola"], "sweet"),
@@ -115,6 +126,10 @@ export const MIXES = Object.freeze(Object.fromEntries([
   mix("cafemocha", ["coffee", "chocolate"], "sweet", "deep", "カフェ｜モカ"), mix("cappuccino", ["cappuccino"], "sweet", "deep"),
   mix("honeyginger", ["honey", "ginger"], "sweet", "fresh"), mix("caramelapple", ["caramel", "double_apple"], "sweet", "fresh"),
   mix("honeymilk", ["honey", "milk"], "sweet"), mix("caramelmilk", ["caramel", "milk"], "sweet"), mix("whitegummy", ["white_gummy_bear"], "sweet", "fruit"),
+  mix("vanillacinnamon", ["vanilla", "cinnamon"], "sweet", "fresh"), mix("vanillashake", ["vanilla", "peppermint_shake"], "sweet", "fresh", "バニラ｜シェイク"),
+  mix("caramelcappuccino", ["caramel", "cappuccino"], "sweet", "deep"), mix("nutscoffee", ["hazelnut", "coffee"], "sweet", "deep"),
+  mix("cottonrose", ["cotton_candy", "rose"], "sweet", "deep"), mix("redgummy", ["red_gummy_bear"], "sweet", "fruit"),
+  mix("gummypine", ["white_gummy_bear", "pineapple"], "sweet", "fruit"),
   // ---- 花・お茶・スパイスを使う定番 ----
   mix("rosejasmine", ["rose", "jasmine"], "deep"), mix("muskrose", ["white_musk", "rose"], "deep"), mix("rosetea", ["rose", "black_tea"], "deep"),
   mix("jasminetea", ["jasmine", "black_tea"], "deep"), mix("cardamomtea", ["cardamom", "black_tea"], "deep", "fresh"), mix("gingertea", ["ginger", "black_tea"], "deep", "fresh"),
@@ -125,23 +140,33 @@ export const MIXES = Object.freeze(Object.fromEntries([
   mix("chamomilehoney", ["chamomile", "honey"], "deep", "sweet"), mix("cardamomhoney", ["cardamom", "honey"], "fresh", "sweet"),
   mix("earlgrey", ["absal_earlgrey"], "deep", "fresh"), mix("lavenderlemon", ["lavender", "lemon"], "deep", "fresh"),
   mix("milktea", ["absal_earlgrey", "milk"], "deep", "sweet", "ミルク｜ティー"), mix("sakurapeach", ["sakura", "peach"], "deep", "fruit"),
+  mix("muskjasmine", ["white_musk", "jasmine"], "deep"), mix("chamomiletea", ["chamomile", "black_tea"], "deep"),
+  mix("honeytea", ["honey", "black_tea"], "deep", "sweet"), mix("vanillatea", ["vanilla", "black_tea"], "deep", "sweet"),
+  mix("muskvanilla", ["white_musk", "vanilla"], "deep", "sweet"), mix("cardamomearlgrey", ["absal_earlgrey", "cardamom"], "deep", "fresh", "スパイス｜紅茶"),
+  mix("earlgreyorange", ["absal_earlgrey", "orange"], "deep", "fruit", "オレンジ｜ティー"), mix("chamomilepeach", ["chamomile", "peach"], "deep", "fruit"),
+  mix("sakurajasmine", ["sakura", "jasmine"], "deep"), mix("springlychee", ["spring_water", "lychee"], "deep", "fruit", "スプリング｜ライチ"),
+  mix("sakuratea", ["sakura", "absal_earlgrey"], "deep", "fresh", "サクラ｜ティー"), mix("chamomilemilk", ["chamomile", "milk"], "deep", "sweet"),
   // 第2章の客が好む葉。本編で買えるフレーバーを使う。
   mix("dragonfruit", ["dragonfruit"], "fruit"), mix("berryredgummy", ["strawberry", "red_gummy_bear"], "fruit", "sweet", "イチゴ｜赤グミ"), mix("springwater", ["spring_water"], "deep"),
   // ---- 3種のミックス（2026-11-20 オーナー「ミックスは3種のも入れて欲しい」・TFL47）。仕込みが長いぶん、合った時の満足が少し高い。
   //      名前は、右の列の札に収まるよう5字までの切れ目で。材料は、（）が2行に収まる並び（まん中と後ろ、または前の二つが短い） ----
   mix("mojito", ["lemon", "mint", "honey"], "fresh", "fruit", "モヒート"), mix("suikacooler", ["watermelon", "mint", "lemon"], "fresh", "fruit", "スイカ｜クーラー"),
-  mix("berrysmoothie", ["frozen_berry", "banana", "vanilla"], "fresh", "fruit", "ベリー｜スムージー"), mix("grapesoda", ["ice_grape", "mint", "cola"], "fresh", "sweet", "グレープ｜ソーダ"),
-  mix("minttea", ["mint", "jasmine", "honey"], "fresh", "deep", "ミント｜ティー"),
+  mix("berrysmoothie", ["frozen_berry", "banana", "vanilla"], "fruit", "sweet", "ベリー｜スムージー"), mix("grapesoda", ["ice_grape", "mint", "cola"], "fresh", "sweet", "グレープ｜ソーダ"),
+  mix("minttea", ["mint", "jasmine", "honey"], "fresh", "deep", "ミント｜ティー"), mix("cherrycooler", ["cherry", "lemon", "mint"], "fresh", "fruit", "チェリー｜クーラー"),
   mix("tropical", ["pineapple", "mango", "banana"], "fruit", null, "トロピカル"), mix("berries", ["blueberry", "raspberry", "cassis"], "fruit", null, "ベリーズ"),
   mix("vitamin", ["lemon", "orange", "kiwi"], "fruit", "fresh", "ビタミン"), mix("peachmelba", ["peach", "raspberry", "vanilla"], "fruit", "sweet", "ピーチ｜メルバ"),
+  mix("berryrose", ["blueberry", "raspberry", "rose"], "fruit", "deep", "ベリー｜ローズ"), mix("sangria", ["grape", "orange", "cassis"], "fruit", "fresh", "サングリア"),
   mix("fruittea", ["peach", "lemon", "black_tea"], "deep", "fruit", "フルーツ｜ティー"), mix("fruitmilk", ["banana", "peach", "milk"], "fruit", "sweet", "フルーツ｜牛乳"),
   mix("tiramisu", ["chocolate", "coffee", "vanilla"], "sweet", "deep", "ティラミス"), mix("chocoparfait", ["chocolate", "banana", "vanilla"], "sweet", "fruit", "チョコ｜パフェ"),
   mix("honeytoast", ["caramel", "honey", "vanilla"], "sweet", null, "ハニー｜トースト"), mix("creamsoda", ["melon", "vanilla", "cola"], "sweet", "fruit", "クリーム｜ソーダ"),
-  mix("caramelmacchiato", ["caramel", "coffee", "vanilla"], "sweet", "deep", "キャラメル｜マキアート"),
+  mix("caramelmacchiato", ["caramel", "coffee", "vanilla"], "sweet", "deep", "キャラメル｜マキアート"), mix("churros", ["caramel", "cinnamon", "vanilla"], "sweet", "fresh", "チュロス"),
   mix("nutslatte", ["hazelnut", "coffee", "milk"], "sweet", "deep", "ナッツ｜ラテ"), mix("pudding", ["caramel", "vanilla", "milk"], "sweet", null, "プリン"),
+  mix("cinnamonmilk", ["cinnamon", "honey", "milk"], "sweet", "fresh", "シナモン｜ミルク"), mix("vanillalatte", ["coffee", "vanilla", "milk"], "sweet", "deep", "バニラ｜ラテ"),
   mix("chai", ["black_tea", "cinnamon", "honey"], "deep", "fresh", "チャイ"), mix("flowergarden", ["lavender", "rose", "jasmine"], "deep", null, "フラワー｜ガーデン"),
+  mix("sweetgarden", ["rose", "vanilla", "jasmine"], "deep", "sweet", "スイート｜ガーデン"), mix("coolherb", ["lavender", "mint", "chamomile"], "deep", "fresh", "クール｜ハーブ"),
   mix("applepie", ["double_apple", "cinnamon", "vanilla"], "sweet", "fresh", "アップル｜パイ"), mix("herbtea", ["chamomile", "lavender", "honey"], "deep", "sweet", "ハーブ｜ティー"),
   mix("gingerlemon", ["ginger", "lemon", "honey"], "fresh", "fruit", "ジンジャー｜レモン"), mix("sakuralatte", ["sakura", "absal_earlgrey", "milk"], "deep", "sweet", "サクラ｜ラテ"),
+  mix("sakurachai", ["sakura", "cinnamon", "black_tea"], "deep", "fresh", "サクラ｜チャイ"),
   // ---- 第3章以降のミックス（mukai・ドバイの店番で並ぶ。第1・2章の mixIdsFor には入らない） ----
   mix("mountainmist", ["mountain_mist"], "fruit", "fresh"), mix("blastmint", ["nightside_blast_mint"], "fresh"),
   mix("limemint", ["lime", "mint"], "fresh", "fruit"), mix("lemonlime", ["lemon", "lime"], "fruit", "fresh"),
@@ -315,23 +340,51 @@ export const VERBS = Object.freeze([
   Object.freeze({ id: "chat", label: "雑談する", note: "感想を聞く" }),
 ]);
 
-// ケアの種類（客からの頼み）。label は卓の札の短い言葉、sight は様子を読む夜（!だけ出る夜）の一文、said は言葉で伝わる夜の一言、
-// good は正しく応えた時、verb が正解。炭の調整は、頼まれる前に自分から行く（model の「調整」）。放っておくと thin か harsh で頼まれる。
+// ケアの種類（客からの頼み）。台詞・地の文・正しく応えた時の一言を組にする。
+// 炭の調整は自分から行える。放っておくと、汎用の客は thin か harsh で頼む。
+const call = (verb, label, lines) => Object.freeze({
+  verb, label, lines: Object.freeze(lines.map(([said, sight, good]) => Object.freeze({ said, sight, good }))),
+});
 export const CALLS = Object.freeze({
-  thin: Object.freeze({ verb: "add", label: "煙が薄い", said: "あの、煙が薄くなってきたみたいで",
-    sight: "煙が細い。ホースを見て、首をかしげている。", good: "うん、しっかり出てきた" }),
-  harsh: Object.freeze({ verb: "ease", label: "熱を下げて", said: "すみません、少し熱いかも。熱、下げてもらえますか",
-    sight: "眉を寄せて、ホースをそっと置いた。煙は濃い。", good: "うん、やわらかくなった" }),
-  thirsty: Object.freeze({ verb: "water", label: "喉が渇いた", said: "ふう……少し喉が渇いてきたな",
-    sight: "喉に手をやって、小さく咳払いをした。グラスは空だ。", good: "ありがとう。気が利きますね" }),
-  cough: Object.freeze({ verb: "teach", label: "むせている", said: "けほっ……これ、吸い方合ってます？",
-    sight: "深く吸いこみすぎて、むせている。", good: "なるほど、ゆっくり吸えばいいんですね" }),
-  chatty: Object.freeze({ verb: "chat", label: "話したそう", said: "これ、おいしいですね。何を混ぜてるんですか？",
-    sight: "こちらを見て、目が合うとにこっと笑った。", good: "へえ、そうなんだ。また頼もうかな" }),
+  thin: call("add", "煙が薄い", [
+    ["あの、煙が薄くなってきたみたいで", "煙が細い。ホースを見て、首をかしげている。", "うん、しっかり出てきた"],
+    ["さっきより煙が少ないんですけど、炭を見てもらえますか？", "ひと口吸って、吐いた煙を見つめる。煙はすぐに消えた。", "ああ、さっきの香りが戻ってきた"],
+    ["…あれ、もうほとんど煙が出ないな", "ホースを取り直してもう一度吸う。煙はほとんど出ない。", "今度はちゃんと出る。ありがとう"],
+    ["煙も香りも弱くなってきました。炭、足せますか？", "台の上をのぞき込んでいる。口元から細い煙がひと筋だけ上がった。", "また香ってきましたね"],
+  ]),
+  harsh: call("ease", "熱を下げて", [
+    ["すみません、少し熱いかも。熱、下げてもらえますか", "眉を寄せて、ホースをそっと置いた。煙は濃い。", "うん、やわらかくなった"],
+    ["さっきから煙が喉に当たるんです。炭、少し下ろせますか？", "濃い煙を吐くなり、目を細めてホースを置いた。", "今のは喉に引っかからないですね"],
+    ["…ちょっと焦げっぽいです。熱が強いのかな", "煙が立つ台から少し身を引いた。かすかに焦げた匂いがする。", "焦げた感じ、なくなりました"],
+    ["ひと口目より熱くなってきたので、少し見てもらえますか？", "ひと口吸っただけで顔をしかめた。台にはまだ赤い炭が載っている。", "これくらいの熱なら、ゆっくり吸えそう"],
+  ]),
+  thirsty: call("water", "喉が渇いた", [
+    ["ふう……少し喉が渇いてきたな", "喉に手をやって、小さく咳払いをした。グラスは空だ。", "ありがとう。気が利きますね"],
+    ["すみません、お水を一杯いただけますか？", "空になったグラスを手に、カウンターへ目を向けた。", "冷たくておいしい。ひと息つけます"],
+    ["だいぶ吸ったなあ。お水、もらってもいいですか？", "ホースを置き、グラスを傾ける。底で氷だけが鳴った。", "喉が潤った。助かりました"],
+    ["…喉が渇いちゃった。お冷や、ありますか？", "グラスの最後のひと口を飲み干し、唇をぬらした。", "お水ちょうど欲しかったところです"],
+  ]),
+  cough: call("teach", "むせている", [
+    ["けほっ……これ、吸い方合ってます？", "深く吸いこみすぎて、むせている。", "なるほど、ゆっくり吸えばいいんですね"],
+    ["…思ったより煙が来ますね。どれくらい吸えばいいんですか？", "勢いよく吸った途端、煙を吐ききれずに何度も咳き込んだ。", "少しずつなら、香りがよく分かります"],
+    ["初めてで加減が分からなくて。もう一度、吸い方を聞いてもいいですか？", "ホースを口元まで持ち上げては下ろす。胸の前で小さく手を上げた。", "息を整えてから、もう一回やってみます"],
+    ["…吸うたびにむせちゃうな。コツってありますか？", "続けざまに吸って、口元を押さえた。ホースを握ったまま呼吸を整えている。", "間を空けると楽ですね。今度はむせなかった"],
+  ]),
+  chatty: call("chat", "話したそう", [
+    ["これ、おいしいですね。何を混ぜてるんですか？", "こちらを見て、目が合うとにこっと笑った。", "へえ、そうなんだ。また頼もうかな"],
+    ["この香り、最後にふわっと来ますね。何の葉だろう", "煙を吐いて口元をほころばせた。目が合うと、ミックスの札を指さした。", "聞いたあとだと、いっそう香りますね"],
+    ["こういう組み合わせ、初めてです。よく出るんですか？", "ミックスの名前を指でなぞり、通りかかるこちらに笑いかけた。", "好みがひとつ増えました"],
+    ["最初と今とで香りが違う気がします。面白いですね、これ", "ひと口ごとに少し考え込んでいる。目が合うと、話しかけるように体を向けた。", "今度は違う香りも試したくなりました"],
+  ]),
 });
 
 /** 外した時の一言（ケアごとに分けない。責めない言い方にする）。 */
-export const CALL_MISS = "えっと、そうじゃなくて……";
+export const CALL_MISS = Object.freeze([
+  "えっと、そうじゃなくて……",
+  "すみません、お願いしたかったのは別のことなんです",
+  "…ごめんなさい。伝え方が悪かったかな",
+  "ありがとう。でも、そっちじゃないんです",
+]);
 
 /** 提供した時の一言。 */
 export const SERVE_LINES = Object.freeze({
@@ -408,7 +461,9 @@ export const TUTORIAL = Object.freeze({
   careAnswer: "むせてるな。吸い方を案内してやれ",
   tend: "2卓の炭が減ってきた。言われる前に整えに行け。押すだけでいい",
   bill: "1卓がお会計だ。会計も、押すだけでいい",
-  fever: "いい接客をすると、フィーバーの灯りが溜まる。溜まったら、押してみろ",
-  done: "フィーバーの間は、卓が最高の居心地になる。……一通りは以上だ。あとは本番で、手際を見せろ",
+  fever: "いい接客をすると、フィーバーの灯りが溜まる。光っているボタンを押してみろ",
+  feverWait: "フィーバーの間は、卓が最高の居心地になる。灯りが減っていくのを見てろ",
+  feverStop: "もう一度押せば切れるぞ。使わなかった灯りは、次に取っておける",
+  done: "……一通りは以上だ。あとは本番で、手際を見せろ",
   nudge: "そこじゃない。光ってる所だ",
 });

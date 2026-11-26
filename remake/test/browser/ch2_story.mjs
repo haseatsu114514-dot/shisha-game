@@ -7,10 +7,21 @@ const map = '[data-destination-selection]:not(.done)';
 const end = t('ch2-tournament-entry');
 // DAY9 試煙会で一度だけ渡す苺の試供品（ch2-strawberry-trial.js の STRAWBERRY_SAMPLE、#1650）。まかないで試さなければ残る
 const withStrawberrySample = stock => ({ ...stock, afsahr_strawberry: (stock.afsahr_strawberry || 0) + 12 });
-// 大会の朝・夜のスマホは複数のトークが並ぶ。返信を選びながら「スマホを閉じる」まで読む（#1653 ⑦）。
+// 大会の朝・夜の受信箱で、応援・祝福とスミさんの連絡を読む（#4035 D3）。
 async function readPhone(page) {
   for (;;) {
-    await page.locator(`${t('phone-next')}, ${t('reply-0')}`).first().waitFor();
+    await page.locator(`${t('phone-next')}, ${t('reply-0')}, ${t('phone-close')}`).first().waitFor();
+    if (await page.locator(t('phone-close')).count()) {
+      const sender = await page.evaluate(() => {
+        const s = window.__remake.state;
+        const notice = s.inbox.find(i => i.id === `ch2_tournament_sumi_${s.flags._ch2_tournament.stage === 'morning' ? 'morning' : 'tokyo'}`);
+        if (!notice) throw Error('Missing chapter 2 LIME group');
+        const next = [...(notice.requiredMessageIds || []), notice.id].map(id => s.inbox.find(i => i.id === id)).find(i => !i.done);
+        return next && (next.account || next.msg.sender);
+      });
+      if (!sender) { await page.locator(t('phone-close')).click(); return; }
+      await page.locator(t(`lime-chat-${sender}`)).click(); continue;
+    }
     if (await page.locator(t('reply-0')).count()) { await page.locator(t('reply-0')).first().click(); await page.locator(t('phone-next')).waitFor(); continue; }
     const last = (await page.locator(t('phone-next')).first().innerText()).includes('閉じる');
     await page.locator(t('phone-next')).first().click();

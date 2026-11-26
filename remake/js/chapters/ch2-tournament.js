@@ -23,7 +23,7 @@ import { recordTournamentLoss, retryAssistOffer, applyRetryAssistChoice } from "
 import { chosenAssistLevel } from "../craft/retry-assist-level.js";
 import { applyAssistRecovery } from "./tournament-resources.js";
 import { play } from "../vn/engine.js";
-import { openPhone, openLime } from "../daily/phone.js";
+import { deliverLimeMessage, openLime } from "../daily/phone.js";
 import { playBgm, SE } from "../core/audio.js";
 import { newSession, openBench, waitBenchReady, benchRoot } from "../craft/session.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
@@ -119,21 +119,28 @@ async function read(owner, name) {
   if (owner.controller === controller) owner.controller = null;
   return live(owner) && !!result && !result.cancelled;
 }
-// others: スミさんの連絡より先に読む、ほかの相手のLIME。届け直しで重ねないよう開く直前に集める。
+// others: スミさんの連絡と一緒に読む応援・祝福。受信箱を閉じても、全通の読了まで章を進めない。
 async function message(owner, suffix, lines, others = () => []) {
   hud(owner);
   const key = `ch2_tournament_sumi_${suffix}`;
-  const old = state.inbox.find(item => item.id === key);
-  if (old?.done) return true;
-  if (old) await openLime({ sender: "sumi" });
-  else {
-    const before = others();
-    await openPhone([...before, { id: key, sender: "sumi", type: "message", messages: lines, afterClose: [] }],
-      { title: before.length ? null : "スミさん", time: suffix === "morning" ? "大会当日の朝" : "大会の夜" });
+  let notice = state.inbox.find(item => item.id === key);
+  if (!notice) {
+    const before = others().map(m => state.inbox.find(item => item.id === m.id) || deliverLimeMessage(m));
+    notice = deliverLimeMessage({ id: key, sender: "sumi", type: "message", messages: lines, afterClose: [] });
+    // スミさんを先に読んで閉じたりLOADしても、未読の応援・返事待ちの祝福を飛ばさない。
+    // 旧保存にはこの欄がなく、その時点で先行トークは読了済みなので追加しない。
+    notice.requiredMessageIds = before.map(item => item.id);
+    save();
   }
+  const required = [...(notice.requiredMessageIds || []), key];
+  const pending = () => required.find(id => !state.inbox.find(item => item.id === id)?.done);
+  const next = pending();
+  if (!next) return true;
+  const item = state.inbox.find(item => item.id === next);
+  await openLime({ sender: item?.account || item?.msg.sender || "sumi" });
   if (!live(owner)) return false;
   save();
-  return !!state.inbox.find(item => item.id === key)?.done;
+  return !pending();
 }
 function checkpoint(stage) { progress().stage = stage; save(); }
 
