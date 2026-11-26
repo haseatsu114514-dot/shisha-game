@@ -41,7 +41,7 @@ const values = {
   "scene-motions.js": { shiftClose: async () => {} },
   "bus.js": { emit() {}, on: () => () => {} },
   "growth.js": { EXP: { tutorial: 10 }, gainExp: () => 0, growthEnabled: () => false, hidaneTotal: () => 0, readyLessons: () => [], consultLessons: async () => [] },
-  "growth-effects.js": { callingSalesBonus: (_, condition) => calling ? Math.round(1000 * condition.bonusRate) : 0, growthSkill: (_, id) => quick && id === "K27", SKILL_TUNING: { baitoPay: .1 } },
+  "growth-effects.js": { growthPerks: () => null, callingSalesBonus: (_, condition) => calling ? Math.round(1000 * condition.bonusRate) : 0, growthSkill: (_, id) => quick && id === "K27", SKILL_TUNING: { baitoPay: .1 } },
   "reel.js": { installReel() {} },
   "weather.js": { isRainy: () => rainy, weatherOf: () => (rainy ? "rain" : "sun"), RAIN_SPOT_TEXTS: {} },
 };
