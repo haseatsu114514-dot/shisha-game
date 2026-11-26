@@ -290,9 +290,15 @@ export function runTonariFloor({
       ]),
     ];
     const shuffleButton = el("button.tf-shuffle", { type: "button", "aria-label": `シャッフル（${shuffleCost}かかる）`, dataset: test("shuffle-side"), onclick: () => doShuffle() }, shuffleFace(sideCount));
-    // 入れ替えの最中に、一覧の上へ掛ける札（進みの棒つき）
+    // 入れ替えの最中に、一覧の上へ掛ける札（進みの棒と残り秒つき）
     const busyBar = el("i");
-    const busyCover = el("div.tf-presets-busy", { "aria-hidden": true, dataset: test("shuffle-busy") }, [glyph("shuffle"), el("b", { text: "入れ替え中" }), el("span.tf-bar", {}, [busyBar])]);
+    const busySec = el("span.tf-busy-sec");
+    const busyCover = el("div.tf-presets-busy", { "aria-hidden": true, dataset: test("shuffle-busy") }, [
+      el("span.tf-busy-badge", {}, [glyph("shuffle")]),
+      el("b", { text: "入れ替え中" }),
+      el("span.tf-bar", {}, [busyBar]),
+      busySec,
+    ]);
     // 右の列は、画面の上の端から下の端まで。上にミックスの一覧、下にボタンの段（シャッフルとフィーバー。フィーバーはあとで足す）（TFL52）
     const actions = el("div.tf-actions", {}, [shuffleButton]);
     const side = el("aside.tf-presets", { "aria-label": "ミックスの一覧とフィーバー", dataset: { ...test("presets"), busy: "false" } }, [
@@ -308,11 +314,19 @@ export function runTonariFloor({
     ]);
     const feverFill = el("i.tf-fever-fill");
     // フィーバーのボタンとゲージは、右の列のボタンの段（シャッフルの下）に置く（2026-11-20 オーナー「フィーバーボタンやゲージとか一部のボタンを
-    // サイドバーに移動したり、スペースを活用して欲しい」・TFL41／「右のサイドバーにボタンとして設置したい」・TFL52）。一行の名前と、その下の細いゲージ
+    // サイドバーに移動したり、スペースを活用して欲しい」・TFL41／「右のサイドバーにボタンとして設置したい」・TFL52）。一行の名前と、その下の3段目盛りゲージ
     const feverLabel = el("b", { text: "フィーバー" });
+    const feverVal = el("span.tf-bonus-val", { "aria-hidden": true });
+    const feverTicks = [];
+    for (let mark = floorFeverCost; mark < floorFeverMax; mark += floorFeverCost) {
+      feverTicks.push(el("i.tf-fever-tick", {
+        dataset: { first: String(mark === floorFeverCost) },
+        style: { left: `${(mark / floorFeverMax) * 100}%` },
+      }));
+    }
     const bonusButton = el("button.tf-bonus", { type: "button", dataset: test("bonus"), onclick: () => useFever() }, [
-      el("span.tf-bonus-head", {}, [el("span.tf-bonus-lamp", {}, [glyph("lamp")]), feverLabel]),
-      el("span.tf-bonus-gauge", { "aria-hidden": true, style: { "--tf-fever-start": `${floorFeverCost / floorFeverMax * 100}%` } }, [feverFill]),
+      el("span.tf-bonus-head", {}, [el("span.tf-bonus-lamp", {}, [glyph("lamp")]), feverLabel, feverVal]),
+      el("span.tf-bonus-gauge", { "aria-hidden": true, style: { "--tf-fever-start": `${floorFeverCost / floorFeverMax * 100}%` } }, [feverFill, ...feverTicks]),
     ]);
     actions.append(bonusButton);
     const bottom = el("footer.tf-bottom", {}, [ticker]);
@@ -716,6 +730,8 @@ export function runTonariFloor({
       shuffleButton.dataset.wait = String(wait > 0);
       const count = String(wait > 0 ? seconds(wait) : shuffleSeconds);
       if (sideCount.textContent !== count) sideCount.textContent = count;
+      const busyText = wait > 0 ? `あと${seconds(wait)}秒` : "";
+      if (busySec.textContent !== busyText) busySec.textContent = busyText;
       // 合う一台が並んでいない時は、シャッフルを光らせる
       shuffleButton.dataset.call = String(!!target && wait === 0 && hand.every((mix) => mix.rating === "none"));
     }
@@ -758,15 +774,25 @@ export function runTonariFloor({
         lastCalled = true;
         if (leftTicks > venueLastCall - 4) { SE.count(); showBanner("ラストオーダー", "新しい来店は、ここまで"); log("ラストオーダーです", ""); }
       }
-      // 使った分だけ減るゲージ。発動中は同じボタンで切り上げられる。
+      // 使った分だけ減るゲージ（最大300＝3ストック、100で15秒分・小分け使用可）。発動中は同じボタンで切り上げられる。
       const feverOn = state.feverLeft > 0;
       const feverReady = floorFeverReady(state);
+      const feverCanUse = !feverOn && feverReady && state.tables.some((x) => x.phase === "enjoy");
       host.dataset.fever = feverOn ? "on" : feverReady ? "ready" : "";
       bonusButton.dataset.fever = host.dataset.fever; // 画面外の右に置いた時の見た目用（host の外なので、ボタン自身に持たせる）
-      bonusButton.disabled = !feverOn && (!feverReady || !state.tables.some((x) => x.phase === "enjoy"));
+      bonusButton.dataset.usable = String(feverOn || feverCanUse);
+      bonusButton.disabled = !feverOn && !feverCanUse;
       const filled = state.fever / floorFeverMax * 100;
       feverFill.style.width = `${filled}%`;
+      const stocks = Math.floor(state.fever / floorFeverCost);
+      bonusButton.dataset.stocks = String(stocks);
       feverLabel.textContent = feverOn ? "終了する" : state.feverResume ? "再開する" : "フィーバー";
+      const valText = feverOn ? `${seconds(state.feverLeft)}秒`
+        : !feverCanUse && feverReady ? "待機"
+        : state.feverResume ? `残${seconds(state.feverResume)}秒`
+        : feverReady ? `×${stocks}`
+        : `${Math.floor(state.fever)}/${floorFeverCost}`;
+      if (feverVal.textContent !== valText) feverVal.textContent = valText;
       const action = feverOn ? "フィーバーを終了" : state.feverResume ? "フィーバーを再開" : feverReady ? "フィーバーを使う" : "フィーバー";
       bonusButton.setAttribute("aria-label", `${action}、ゲージ残り${Math.round(filled)}％`);
       // 日が暮れたら、店内の絵を夜へ（昼から夜まで通しの店番）。出来事の行で一度だけ知らせる
