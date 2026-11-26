@@ -1101,6 +1101,31 @@ await suite("tonari-floor", async (check) => {
     assert(done.same, "営業で好感度は動かない");
   });
 
+  await run("minto-private-visitor", async (page) => {
+    await setup(page);
+    for (const [identity, nameKnown, expected] of [[false, false, "お姉さん"], [true, false, "みんと"], [true, true, "栞"]]) {
+      await page.evaluate(({ identity, nameKnown }) => {
+        const s = C.fresh();
+        Object.assign(s.flags, { _minto_identity_revealed: identity, _minto_name_known: nameKnown });
+        window.visit = C.view.runTonariFloor({ seed: 3, level: 1, visitor: "minto" });
+      }, { identity, nameKnown });
+      await page.locator(t("option-start")).click();
+      await page.evaluate(() => C.until("s.tables[2].phase === 'order'", [3]));
+      const spot = page.locator('.tf-spot[data-id="3"]');
+      assert.match(await spot.locator(".tf-tag-who img").getAttribute("src"), /face_minto_private/);
+      assert((await page.locator(t("log")).innerText()).includes(expected + "が遊びに来た"));
+      await page.locator(t("table-3")).click();
+      assert.equal(await page.locator(".tf-visit-info > b").innerText(), expected);
+      assert.match(await page.locator(".tf-visit-who img").getAttribute("src"), /face_minto_private/);
+      assert.match(await page.locator(".tf-sheet-quote").innerText(), /ミント/);
+      await page.keyboard.press("Escape");
+      await page.evaluate(() => C.view.floorTest.api.act({ type: "finish" }));
+      assert.equal(await page.locator(t("visitor")).innerText(), `今日は、${expected}が遊びに来た`);
+      await page.locator(t("option-continue")).click();
+      await page.evaluate(() => window.visit);
+    }
+  });
+
   // 実時間: 営業中だけ時計が進み、ミックスを選ぶ間・休止・フィーバーの突入・別タブで止まる。キーボードだけでも回せる。
   await run("pc-clock-and-keys", async (page) => {
     await setup(page, { manual: false });
