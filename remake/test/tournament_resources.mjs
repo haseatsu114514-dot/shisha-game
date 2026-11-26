@@ -84,10 +84,10 @@ for (const [chapter, phase] of [[1, "daily"], [1, "aftermath"], [2, "tournament"
 // Execute the actual tournamentDay prefix through its first newSession call.
 // UI/story/assets are stubs; resource functions and source ordering are real.
 const source = fs.readFileSync(new URL("../js/chapters/ch1.js", import.meta.url), "utf8");
-const boundaries = source.slice(source.indexOf("async function enterTournamentDay()"), source.indexOf("async function tournamentDay()"));
+const boundaries = source.slice(source.indexOf("async function readTournamentInbox("), source.indexOf("async function tournamentDay()"));
 const start = source.indexOf("async function tournamentDay()");
 const end = source.indexOf("  const cs = startTournamentCraft();", start);
-assert(boundaries.startsWith("async function enterTournamentDay()") && start >= 0 && end > start);
+assert(boundaries.startsWith("async function readTournamentInbox(") && start >= 0 && end > start);
 const prefix = boundaries + source.slice(start, end) + '  return startTournamentCraft();\n}';
 core.newGame(); // regulationFor closes over the real core.state, not the sandbox's `state`; reset it to Chapter 1 defaults
 const entrant = core.newState();
@@ -97,7 +97,8 @@ const context = vm.createContext({
   state: entrant, TOURNAMENT_DAY: 14, NIGHT_EVENTS: [], SHOP_FLAVORS: ["lemon"], TONARI: "", TONARI_N: "", STAGE: "",
   syncNightQueue: stub, runNightPlan: stub, playTsumugiStory: stub, sketchScene: stub,
   prepareFlavorStock: stub, lastNight: stub, warmCraftAssets: () => Promise.resolve([]), clearScreen: stub, initHud: stub,
-  showHud: stub, playBgm: stub, dayCard: stub, morningMessages: () => [], openPhone: stub,
+  showHud: stub, playBgm: stub, dayCard: stub, morningMessages: () => [], deliverLimeMessage: assert.fail,
+  openLime: () => assert.fail("No phone opens without cheers"),
   play: id => played.push(id),
   // 会場の会話は中継の枠つきの playLive で読む（TSH04）。ここでは読んだ台本だけを記録する。
   playLive: id => played.push(id), ch1LiveStandings: () => [],
@@ -152,6 +153,27 @@ for (let i = 0; i < 4; i++) {
     { label: "音楽を準備しています…" }, { label: "大会の準備をしています…" },
   ], "every initial/retry run keeps both ordered loading gates");
 }
+// LOAD after reading one cheer must resume the other before capturing entry resources.
+const resumedEntry = core.newState();
+Object.assign(resumedEntry, { day: 14, phase: "tournament", stamina: 47 });
+resumedEntry.inbox.push({ id: "a", chapter: 1, day: 14, done: true, requiredMessageIds: ["a", "b"] },
+  { id: "b", msg: { sender: "minto" }, done: false });
+context.state = resumedEntry;
+context.morningMessages = () => assert.fail("LOAD must not draw more cheers");
+let reopened = 0;
+context.openLime = ({ sender, story }) => {
+  assert.equal(sender, "minto");
+  assert.equal(resumedEntry.tournament.entryResources, undefined);
+  assert.equal(resumedEntry.tournament.attempts, 0);
+  if (++reopened === 2) story.items[1].done = true;
+};
+await vm.runInContext("tournamentDay()", context);
+assert.equal(reopened, 2, "closing with an unread cheer reopens the pending thread");
+assert.equal(resumedEntry.tournament.entryResources.stamina, 47);
+assert.equal(resumedEntry.tournament.attempts, 1);
+await vm.runInContext("tournamentDay()", context);
+assert.equal(reopened, 2, "a later attempt does not reopen morning LIME");
+
 const victory = source.slice(source.indexOf("async function victory(cs)"), source.indexOf('  const after = DB.dialogues.ch1_tournament_after;'));
 assert.match(victory, /^async function victory\(cs\) \{\s*const owner = state;/, "victory captures the state owner in its own scope");
 assert(victory.includes("delete owner.tournament.entryResources"), "victory clears the captured owner's retry snapshot");

@@ -27,7 +27,7 @@ import { syncNightQueue, runNightPlan, finishDeferredNights } from "../daily/nig
 import { initHud, showHud, daysLeft } from "../daily/hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay } from "../core/chapter-clock.js";
-import { openPhone, morningMessages } from "../daily/phone.js";
+import { deliverLimeMessage, morningMessages, openLime } from "../daily/phone.js";
 import { chapterGrowthChart } from "../daily/status.js";
 import { onDialogueEnter } from "../daily/romance.js";
 import { recordRomanceChoice, bondCondition } from "../daily/bonds.js";
@@ -614,17 +614,40 @@ const STEPS_ALL = CRAFT_STEPS;
 // 中間順位の出来栄えは、ある工程の点だけで平均する（ロートスでアルミを飛ばすと穴あけの点が無い）。
 const avgScore = (...values) => { const f = values.filter(Number.isFinite); return f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0; };
 
-// 入場の確定地点。初回だけ phase=tournament と当日の資源を保存する。
-async function enterTournamentDay() {
+// 一覧から途中で閉じたら次の未読・返信待ちを開く。LOAD後は古い章の続きを動かさない。
+async function readTournamentInbox(items, { time, title }) {
+  const owner = state;
+  let next;
+  while (state === owner && (next = items.find(item => !item.done))) {
+    await openLime({ sender: next.account || next.msg.sender, story: { items, time, title, onRead: save } });
+    if (state === owner) save();
+  }
+}
+
+// 入場の確定地点。応援の組は先頭の1通に記録し、LOADでその朝の抽選をやり直さない。
+async function enterTournamentDay(group) {
+  const owner = state;
   state.phase = "tournament";
   state.tournament.rulesVersion = 2;
   state.day = TOURNAMENT_DAY;
   state.slot = 0;
   showHud(true);
   playBgm("kansetsu_shomei_to_black_coffee");
-  await dayCard(`DAY ${TOURNAMENT_DAY}`, "SMOKE CROWN CUP 当日");
-  const cheers = morningMessages({ tournamentDay: true });
-  if (cheers.length) await openPhone(cheers, { time: "AM 7:40" });
+  if (!group) {
+    await dayCard(`DAY ${TOURNAMENT_DAY}`, "SMOKE CROWN CUP 当日");
+    if (state !== owner) return;
+    const cheers = morningMessages({ tournamentDay: true }).map(deliverLimeMessage);
+    if (cheers.length) {
+      group = cheers[0];
+      group.requiredMessageIds = cheers.map(item => item.id);
+      save();
+    }
+  }
+  if (group) {
+    const items = owner.inbox.filter(item => group.requiredMessageIds.includes(item.id));
+    await readTournamentInbox(items, { time: "AM 7:40", title: "大会当日" });
+    if (state !== owner) return;
+  }
   captureEntryResources(state); // 初回制作前に一度だけ。在庫と体力を同じ境界で保存。
   save();
   toast("大会直前のデータをセーブした");
@@ -700,7 +723,11 @@ async function tournamentDay() {
   clearScreen();
   initHud({ menu: () => openTournamentMenu() });
   const newTournament = state.phase !== "tournament";
-  if (newTournament) await enterTournamentDay();
+  const owner = state;
+  const group = !newTournament && !state.tournament.entryResources && state.inbox.find(item =>
+    item.chapter === 1 && item.day === TOURNAMENT_DAY && Array.isArray(item.requiredMessageIds));
+  if (newTournament || group) await enterTournamentDay(group);
+  if (state !== owner) return;
   showHud(false);
   prepareTournamentAttempt(newTournament);
   const carryP = difficultyForRun(state, difficultyEvidence(state));
@@ -897,30 +924,36 @@ async function victory(cs) {
     if (state !== owner) return; // 背景の準備中にLOADされたら、古い会話・電話・報酬を始めない。
     return run();
   };
+  const readNotice = async (message, display, beforeDelivery) => {
+    let item = owner.inbox.find(item => item.id === message.id);
+    if (!item) {
+      if (beforeDelivery) await beforeDelivery();
+      if (state !== owner) return;
+      item = deliverLimeMessage(message);
+      save();
+    }
+    await readTournamentInbox([item], display);
+  };
   const steps = [
     inScene(lobby, () => play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: lobby })),
-    inScene(lobby, () => openPhone([
-      {
-        id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
-          "おう。優勝、見事だった",
-          ...(v.comment ? [v.comment] : []),
-          "最後の調整まで、よく作りきったな",
-          "今日は喜べ。帰ったら、一緒に一服しよう",
-        ], close_label: "……はい。ありがとうございます、スミさん",
-      },
-    ], { time: "PM 6:52", title: "表彰式のあと" })),
+    inScene(lobby, () => readNotice({
+      id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
+        "おう。優勝、見事だった",
+        ...(v.comment ? [v.comment] : []),
+        "最後の調整まで、よく作りきったな",
+        "今日は喜べ。帰ったら、一緒に一服しよう",
+      ], close_label: "……はい。ありがとうございます、スミさん",
+    }, { time: "PM 6:52", title: "表彰式のあと" })),
     inScene(TONARI_N, () => play({ ...after, lines: withMix(after.lines.slice(tonariAt)) })),
     inScene(TONARI_N, () => play("interval_day1_naru_lime")),
     inScene(TONARI_N, () => gainStat("guts", 1)),
     // 優勝の夜。記録を続ける博士の伏線へ。
     // 横線のノイズで見出しが「???」に置き換わってから文面が出る（#2688 A6。第5章の挑戦状と9000の伏線）
-    inScene(TONARI_N, async () => { await sceneMoment("scanGlitch", { from: "LIME", to: "???" }); return openPhone([
-      {
-        id: "_sys_unknown_recorded", sender: "???", messages: [
-          "本日のあなたの試合データは、すべて記録させていただきました。",
-        ], close_label: "……誰？",
-      },
-    ], { time: "PM 11:47", title: "優勝の夜" }); }),
+    inScene(TONARI_N, () => readNotice({
+      id: "_sys_unknown_recorded", sender: "???", messages: [
+        "本日のあなたの試合データは、すべて記録させていただきました。",
+      ], close_label: "……誰？",
+    }, { time: "PM 11:47", title: "優勝の夜" }, () => sceneMoment("scanGlitch", { from: "LIME", to: "???" }))),
     inScene(BG("bg_home_day"), () => play("interval_day1_morning_win")),
     inScene(BG("kemurikusa"), () => play("ch1_naru_promise")),
     inScene(BG("kemurikusa"), () => play("interval_day2_adam_lime")),

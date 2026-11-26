@@ -29,6 +29,10 @@ await suite("ch1-victory-resume-2190", async check => {
       await page.reload();
       await page.locator('[data-test="title-load"]').click();
       await page.locator('[data-test="slot-0"]').click();
+      if (step === 5) {
+        await page.locator(".mo-scan").waitFor();
+        assert.equal(await page.locator(".phone-overlay").count(), 0, "the glitch precedes the unknown contact");
+      }
       await page.locator(phone ? ".phone-overlay.show" : "#vn.active").waitFor();
       await page.waitForFunction(expected => [...document.querySelectorAll("#bg > .bg-img.show")]
         .some(n => `${n.dataset.sceneBg || ""} ${n.style.backgroundImage}`.includes(expected)), background);
@@ -39,6 +43,43 @@ await suite("ch1-victory-resume-2190", async check => {
         const { state: s } = await import("./js/core/state.js");
         return JSON.stringify([s.day, s.slot, s.money, s.flavorStock, s.affinity]);
       }), before, "Restoring a scene does not alter saved resources or the calendar");
+      if (phone) {
+        const sumi = step === 1;
+        const id = sumi ? "_sys_sumi_scoresheet" : "_sys_unknown_recorded";
+        const label = sumi ? "……はい。ありがとうございます、スミさん" : "……誰？";
+        const nextBg = sumi ? "bg_tonari_inside_night" : "bg_home_day";
+        const next = page.locator('[data-test="phone-next"]');
+        await next.waitFor();
+        assert.equal(await next.textContent(), label);
+        assert.match(await next.getAttribute("class"), /multiline/);
+        assert.equal(await page.locator(".phone-status span").first().textContent(), sumi ? "PM 6:52" : "PM 11:47");
+        assert.equal(await page.locator(".phone-status span").nth(1).textContent(), sumi ? "表彰式のあと" : "優勝の夜");
+        if (!sumi) assert.equal(await page.locator(".lime-name").textContent(), "？？？");
+        const saved = await page.evaluate(async id => {
+          const core = await import("./js/core/state.js");
+          core.saveToSlot("suien_remake_slot1"); // this step, read, before pressing the closing line
+          const item = core.state.inbox.find(i => i.id === id);
+          return [item.msg.sender, item.read, item.done, item.replyState, item.log];
+        }, id);
+        assert.deepEqual(saved, [sumi ? "sumi" : "???", true, true, "none", []]);
+        await next.click();
+        const after = async () => {
+          await page.locator("#vn.active").waitFor();
+          assert.equal(await page.locator(".phone-overlay").count(), 0);
+          await page.waitForFunction(bg => [...document.querySelectorAll("#bg > .bg-img.show")]
+            .some(n => n.dataset.sceneBg?.includes(bg) || n.style.backgroundImage.includes(bg)), nextBg);
+          assert.deepEqual(await page.evaluate(({ id }) => {
+            const s = window.__remake.state;
+            return [s.tournament.victory.step, s.inbox.filter(i => i.id === id).length,
+              s.limeRead.filter(key => key === id).length, JSON.stringify([s.day, s.slot, s.money, s.flavorStock, s.affinity])];
+          }, { id }), [step + 1, 1, 1, before]);
+        };
+        await after();
+        await page.reload();
+        await page.locator('[data-test="title-load"]').click();
+        await page.locator('[data-test="slot-1"]').click();
+        await after(); // read items at the old checkpoint resume at the next scene
+      }
     }, { viewport: { width: 1180, height: 757 } });
   }
 

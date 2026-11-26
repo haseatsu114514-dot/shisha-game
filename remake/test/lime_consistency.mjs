@@ -1361,3 +1361,66 @@ console.log("PASS L01-L43 noor friend lime hook");
   assert.equal(saves.length, beforeCloseSaves, "closed chapter session cannot save after the phone");
   console.log("[#4035 D3] PASS chapter 2 inbox: morning/night, pending replies, reload, rewards, legacy and session guard");
 }
+
+// 第1章はスミさんの固定通知が朝にはない。実際に選ばれた応援だけを束ねて保存する。
+{
+  const source = await fs.readFile(new URL("js/chapters/ch1.js", root), "utf8");
+  const start = source.indexOf("async function readTournamentInbox(");
+  const end = source.indexOf("function prepareTournamentAttempt(", start);
+  assert(start >= 0 && end > start);
+  const lover = JSON.parse(await fs.readFile(new URL("data/lover.json", root), "utf8"));
+  const seed = () => {
+    reset({ day: 14, phase: "tournament", tournament: {}, lovers: ["minto"], loveLevel: { minto: 1 } });
+    db.lover = lover;
+    phone.deliverLimeMessage({ id: "older", sender: "minto", messages: ["別の未読"] });
+  };
+  seed();
+  const cheers = [allMessages.find(m => m.id === "encourage_tsumugi"), allMessages.find(m => m.id === "encourage_rio"),
+    romance.loverMessages({ tournamentDay: true }).find(m => m.sender === "minto")];
+  assert(cheers[2].replies.length);
+  const outcome = () => clone({ inbox: state.inbox.map(({ requiredMessageIds, ...item }) => item),
+    read: state.limeRead, flags: state.flags, money: state.money });
+  const previous = phone.openPhone(cheers);
+  for (const m of cheers) {
+    if (m.replies?.length) await click("reply-0");
+    await click("phone-next");
+  }
+  await previous;
+  const expected = outcome(), expectedGains = clone(gains);
+
+  seed();
+  const saves = [];
+  let selections = 0, entries = 0;
+  const entry = vm.createContext({ state, TOURNAMENT_DAY: 14, showHud: noop, playBgm: noop, dayCard: noop, toast: noop,
+    captureEntryResources: () => entries++, save: () => saves.push(clone(state)),
+    morningMessages: ({ tournamentDay }) => { assert(tournamentDay); selections++; return cheers; },
+    deliverLimeMessage: phone.deliverLimeMessage, openLime: phone.openLime });
+  vm.runInContext(source.slice(start, end), entry);
+  const reading = entry.enterTournamentDay();
+  await settle();
+  assert.deepEqual(saves[0].inbox[1].requiredMessageIds, cheers.map(m => m.id));
+  assert(saves[0].inbox.every(i => !i.read), "all cheers are saved before the first opens");
+  // 1通読んで一覧から閉じる。次の未読に戻り、制作前の資源はまだ確定しない。
+  await click("phone-next"); await click("phone-close");
+  assert.equal(entries, 0);
+  assert.equal(state.inbox[2].done, true);
+  assert.equal(state.inbox[3].read, false);
+  // 私用の応援は、本文を読んだ後で返事を残したままLOADする。
+  await click("phone-next"); await click("lime-chat-minto_private");
+  assert(find(layers.modal, "reply-0"));
+  const firstGains = clone(gains);
+  const saved = saves.at(-1);
+  assert(saved.inbox[2].done && saved.inbox[3].read && !saved.inbox[3].done);
+  entry.state = {}; // 旧セッションの完了で新しいSAVEに触れない。
+  await click("lime-back"); await click("phone-close"); await reading;
+  assert.equal(saves.at(-1), saved); assert.equal(entries, 0);
+  reset(saved); entry.state = state;
+  const resume = entry.enterTournamentDay(state.inbox[1]);
+  await settle();
+  await click("reply-0");
+  await closeThread(resume);
+  assert.equal(entries, 1); assert.equal(selections, 1);
+  assert.deepEqual(outcome(), expected, "unrelated unread, replies, flags and history match the direct phone");
+  assert.deepEqual([...firstGains, ...gains], expectedGains);
+  console.log("[#4035 D3] PASS chapter 1 morning inbox, early close, LOAD, rewards and entry checkpoint");
+}

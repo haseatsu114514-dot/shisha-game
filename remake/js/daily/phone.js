@@ -4,7 +4,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // ルール: 同じ相手からは1日1話題まで（小分けの連投はOK）／連絡先を交換した相手だけ（master_spec #7/#26）
 // 朝に何通・誰から届くかの配分は lime-pacing.js（基本2通・仲の深さで間隔・長く連絡のない人から。LM08〜）
 // 朝は通知だけ出して受信箱に積み、プレイヤーが好きなときにアプリを開いて読む（オーナー指定）。
-// 物語の節目（大会の朝・優勝の夜）だけは openPhone で必ず読ませる。
+// 物語の節目（大会の朝・優勝の夜）では、章が指定した連絡を必ず読ませる。
 // 見た目は旧版の LIME（ノッチ付きの端末・緑のヘッダー・白と黄緑の吹き出し・明るい返信欄）を踏襲する。
 import { el, sleep, fitOneLine, yen } from "../core/util.js";
 import { DB, displayName, limeAccountName, faceIconUrl } from "../core/data.js";
@@ -899,7 +899,6 @@ export function invitationReadBeforeMeeting(invite) {
   return accountOf(item) || invite.sender || null;
 }
 
-const thread = (account) => state.inbox.filter((i) => accountOf(i) === account);
 const plain = (raw) => String(hooks.interpolate ? hooks.interpolate(String(raw)) : raw).replace(/\[\/?[a-z]+[^\]]*\]/gi, "").replace(/<[^>]+>/g, "");
 const dayLabel = (item) => (item.chapter != null && item.chapter !== state.chapter
   ? `第${item.chapter}章 DAY ${item.day}`
@@ -1136,7 +1135,7 @@ function declineConflictingInvites(acceptedItem, opts = {}) {
  * 1件ぶんのやりとり（未読なら吹き出しを流す→返信・誘いの返事）。
  * 返信を選ぶ前に戻る/閉じるで抜けたら、次に開いたときに選択から再開
  */
-async function runItem(item, ui, accepted, { forced = false } = {}) {
+async function runItem(item, ui, accepted, { forced = false, onRead = null } = {}) {
   const session = state;
   const m = item.msg;
   const g = ui.gen;
@@ -1158,6 +1157,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       if (!state.limeRead.includes(m.id)) state.limeRead.push(m.id);
       syncMintoKnowledge();
       readReward(item);
+      if (item.replyState === "waiting") onRead?.();
     }
   }
   if (!alive()) return;
@@ -1343,11 +1343,12 @@ function drawHistory(items, ui) {
  * @param shortcuts 章が足す入口の行（トーク一覧の一番上）。[{ id, label, sub?, tag?, attention?, icon?, run }]。
  *   押すとスマホを閉じてから run() を呼ぶ（例: 第3章の東京の「地元との連絡」）。
  * @param contactView 章の連絡先一覧。訪問の履歴と章の操作だけを表示し、受信箱の未読・招待には触れない。
+ * @param story 物語の節目。今回届けた受信箱の項目だけを、その場面の時刻と見出しで読む。
  */
 export async function openLime({ tutorial = false, sender = null, fixedNight = () => false, beforeClose = null,
-  shortcuts = [], contactView = null } = {}) {
+  shortcuts = [], contactView = null, story = null } = {}) {
   const signal = contactView?.signal;
-  if (!contactView) {
+  if (!contactView && !story) {
     // HUD・案内の穴・プッシュ通知のどこから開いても、地図の上の初回案内を片付ける。
     layers.fx.querySelectorAll(".lime-coach").forEach((coach) => coach.remove());
     state.flags._lime_tut = 1;
@@ -1355,7 +1356,9 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
   }
   const owner = state;
   const accepted = [];
-  const ui = phoneShell({ time: clockNow(), title: `DAY ${chapterDay(state)}` });
+  const inbox = () => story?.items ?? state.inbox;
+  const thread = account => inbox().filter(item => accountOf(item) === account);
+  const ui = phoneShell({ time: story?.time ?? clockNow(), title: story?.title ?? `DAY ${chapterDay(state)}` });
   ui.inviteOptions = { fixedNight };
   let resolveClose;
   const closed = new Promise((r) => { resolveClose = r; });
@@ -1366,7 +1369,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
 
   const showInboxRows = () => {
     const senders = [];
-    for (const it of [...state.inbox].reverse()) if (!senders.includes(accountOf(it))) senders.push(accountOf(it));
+    for (const it of [...inbox()].reverse()) if (!senders.includes(accountOf(it))) senders.push(accountOf(it));
     if (tutorial) {
       ui.chat.append(el("div.lime-tip", [
         el("b", { text: "LIMEの使い方" }),
@@ -1488,11 +1491,19 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
       if (it.read && it.done) continue;
       const previous = items[items.indexOf(it) - 1];
       if (!it.read && (!previous || it.day !== previous.day || it.chapter !== previous.chapter)) ui.note(dayLabel(it), ".day");
-      const result = await runItem(it, ui, accepted);
+      const result = await runItem(it, ui, accepted, { forced: !!story, onRead: story?.onRead });
+      if (active() && it.done) story?.onRead?.();
       if (result === "deferred" && ui.live(g)) { showList(); return; }
     }
     if (!ui.live(g)) return;
-    ui.actions.replaceChildren(backButton);
+    const label = story && items.at(-1)?.msg.close_label;
+    if (label) {
+      ui.actions.replaceChildren(el("button.lime-reply.ghost.multiline", {
+        text: label, dataset: { test: "phone-next" },
+        onclick: () => { SE.click(); resolveClose(); },
+      }));
+      ui.scroll();
+    } else ui.actions.replaceChildren(backButton);
   };
 
   signal?.addEventListener("abort", resolveClose, { once: true });
@@ -1504,7 +1515,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
   // 準備が失敗した場合もスマホの操作ロックを残さない。
   try {
     if (!contactView && state === owner) {
-      if (state.pendingInvite) delete state.pendingInvite.awaitingLimeClose;
+      if (!story && state.pendingInvite) delete state.pendingInvite.awaitingLimeClose;
       await beforeClose?.();
     }
   } finally { await ui.close(); }
