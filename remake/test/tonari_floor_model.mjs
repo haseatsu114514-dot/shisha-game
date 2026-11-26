@@ -94,9 +94,10 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
     assert.ok(mix.sub === null || (WISH_IDS.includes(mix.sub) && mix.sub !== mix.main && has(mix.sub)), `${name}: サブの属性が材料にある`);
     if (single) assert.equal(mix.main, FLAVORS[mix.flavors[0]].family, `${name}: 単品の系統がメイン`);
   }
+  // フローズンベリー廃止（2026-11-26 オーナー決定）で第1章 fresh のメインは19件が上限
   for (const chapter of [1, 2]) for (const wish of WISH_IDS) {
     const main = mixIdsFor(chapter).filter((id) => MIXES[id].main === wish).length;
-    assert.ok(main >= 20, `第${chapter}章・${wish}: メインのミックスが20件以上ある（${main}）`);
+    assert.ok(main >= 19, `第${chapter}章・${wish}: メインのミックスが19件以上ある（${main}）`);
   }
   // 1種（単品）・2種・3種が、どの章でも並ぶ
   for (const chapter of [1, 2]) {
@@ -337,7 +338,8 @@ test("シャッフル: 並んでいるミックスを全部入れ替える。入
 
 test("提供したミックスは、次のシャッフルでもう一度出ることがある", () => {
   let appeared = false;
-  for (let seed = 1; seed <= 128 && !appeared; seed++) {
+  // 母数が変わると乱数の並びがずれる（フローズンベリー廃止後は初出が seed 132）ため、走査は 256 まで
+  for (let seed = 1; seed <= 256 && !appeared; seed++) {
     let s = until(createFloorNight({ seed, level: 1 }), (x) => at(x, 1).phase === "order");
     const served = s.hand[0];
     s = act(s, { type: "order", tableId: 1, mix: served });

@@ -142,7 +142,6 @@ const FLAVOR_IMPRESSIONS = {
   death_by_ice: "突き抜けるような冷涼感なんだな",
   blueberry_mint: "ベリーの果実感にミントの清涼感もある",
   frozen_citrus: "柑橘の酸味と冷涼感が重なるんだな",
-  frozen_berry: "ベリーの甘さに冷たさが重なるんだな",
   cardamom: "独特のスパイスの香りなんだな",
   cinnamon: "温かみのあるスパイスの香りなんだな",
   clove: "重厚なスパイスの香りなんだな",

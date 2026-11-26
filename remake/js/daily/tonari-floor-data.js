@@ -29,7 +29,7 @@ export const WISH_IDS = Object.freeze(WISHES.map((w) => w.id));
 // （「｜」は、狭い札で折ってよい所。data/flavors.json の名前と食い違うと検査で止まる）
 const FULL_NAMES = Object.freeze({
   cool_mint: "クール｜ミント", blueberry_mint: "ブルーベリー｜ミント", ice_grape: "アイス｜グレープ", ice_lemon: "アイス｜レモン",
-  peppermint_shake: "ペパーミント｜シェイク", frozen_citrus: "フローズン｜シトラス", frozen_berry: "フローズン｜ベリー",
+  peppermint_shake: "ペパーミント｜シェイク", frozen_citrus: "フローズン｜シトラス",
   grapefruit: "グレープ｜フルーツ", pineapple: "パイナップル", blueberry: "ブルーベリー", strawberry: "ストロベリー",
   lemon_tea: "レモン｜ティー", cherry: "レッド｜チェリー", passion_fruit: "パッション｜フルーツ", chocolate: "チョコレート",
   cotton_candy: "コットン｜キャンディ", hazelnut: "ヘーゼル｜ナッツ", white_gummy_bear: "ホワイト｜グミベア", double_apple: "ダブル｜アップル",
@@ -48,7 +48,6 @@ export const FLAVORS = Object.freeze(Object.fromEntries([
   flavor("mint", "ミント", "fresh"), flavor("cool_mint", "クールミント", "fresh"), flavor("blueberry_mint", "ベリーミント", "fresh", ["fruit"]),
   flavor("ice_grape", "アイスグレープ", "fresh", ["fruit"]), flavor("ice_lemon", "アイスレモン", "fresh", ["fruit"]),
   flavor("peppermint_shake", "ミントシェイク", "fresh", ["sweet"]), flavor("frozen_citrus", "フローズンシトラス", "fresh", ["fruit"]),
-  flavor("frozen_berry", "フローズンベリー", "fresh", ["fruit"]),
   flavor("double_apple", "アップル", "fresh", ["fruit"]), flavor("cinnamon", "シナモン", "fresh", ["sweet"]),
   flavor("cardamom", "カルダモン", "fresh"), flavor("ginger", "ジンジャー", "fresh"),
   // fruit（フルーティ）
@@ -92,7 +91,7 @@ export const MIXES = Object.freeze(Object.fromEntries([
   mix("pinemint", ["pineapple", "mint"], "fruit", "fresh"), mix("peachmint", ["peach", "mint"], "fruit", "fresh"), mix("watermelonmint", ["watermelon", "mint"], "fruit", "fresh"),
   mix("berrymint", ["blueberry_mint"], "fresh", "fruit"), mix("icelemon", ["ice_lemon"], "fresh", "fruit"),
   mix("icegrape", ["ice_grape"], "fresh", "fruit"), mix("frozencitrus", ["frozen_citrus"], "fresh", "fruit"),
-  mix("frozenberry", ["frozen_berry"], "fresh", "fruit"), mix("chocomint", ["chocolate", "mint"], "sweet", "fresh"),
+  mix("chocomint", ["chocolate", "mint"], "sweet", "fresh"),
   mix("mintshake", ["peppermint_shake"], "fresh", "sweet"), mix("colamint", ["cola", "mint"], "sweet", "fresh"),
   mix("applemint", ["double_apple", "mint"], "fruit", "fresh"), mix("lavendermint", ["lavender", "mint"], "deep", "fresh"),
   mix("coolmint", ["cool_mint"], "fresh"), mix("doublemint", ["mint", "cool_mint"], "fresh", null, "ダブル｜ミント"),
@@ -152,7 +151,7 @@ export const MIXES = Object.freeze(Object.fromEntries([
   // ---- 3種のミックス（2026-11-20 オーナー「ミックスは3種のも入れて欲しい」・TFL47）。仕込みが長いぶん、合った時の満足が少し高い。
   //      名前は、右の列の札に収まるよう5字までの切れ目で。材料は、（）が2行に収まる並び（まん中と後ろ、または前の二つが短い） ----
   mix("mojito", ["lemon", "mint", "honey"], "fruit", "fresh", "モヒート"), mix("suikacooler", ["watermelon", "mint", "lemon"], "fruit", "fresh", "スイカ｜クーラー"),
-  mix("berrysmoothie", ["frozen_berry", "banana", "vanilla"], "fresh", "fruit", "ベリー｜スムージー"), mix("grapesoda", ["ice_grape", "mint", "cola"], "fresh", "sweet", "グレープ｜ソーダ"),
+  mix("grapesoda", ["ice_grape", "mint", "cola"], "fresh", "sweet", "グレープ｜ソーダ"),
   mix("minttea", ["mint", "jasmine", "honey"], "fresh", "deep", "ミント｜ティー"), mix("cherrycooler", ["cherry", "lemon", "mint"], "fruit", "fresh", "チェリー｜クーラー"),
   mix("tropical", ["pineapple", "mango", "banana"], "fruit", null, "トロピカル"), mix("berries", ["blueberry", "raspberry", "cassis"], "fruit", null, "ベリーズ"),
   mix("vitamin", ["lemon", "orange", "kiwi"], "fruit", "fresh", "ビタミン"), mix("peachmelba", ["peach", "raspberry", "vanilla"], "fruit", "sweet", "ピーチ｜メルバ"),

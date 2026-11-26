@@ -1157,32 +1157,6 @@
       "maker": "af"
     },
     {
-      "id": "frozen_berry",
-      "name": "アルファーヘブン フローズンベリー",
-      "short_name": "AF フローズンベリー",
-      "category": "cooling",
-      "price": 1550,
-      "description": "ミックスベリーを凍らせたような果実冷涼感。甘さと冷たさのバランスが取りやすい万能枠。",
-      "heat_tolerance": 1.0,
-      "leaf": "blond",
-      "stats": {
-        "heat_resistance": 5,
-        "refreshing": 7,
-        "sweet_natural": 5,
-        "sweet_confection": 3,
-        "cooling": 6,
-        "assertiveness": 4,
-        "acquired_taste": 1,
-        "smoke_body": 4,
-        "sourness": 4,
-        "spiciness": 1,
-        "floral": 2,
-        "nicotine": 3
-      },
-      "ng_flavors": [],
-      "maker": "af"
-    },
-    {
       "id": "cardamom",
       "name": "アフサール カルダモン",
       "short_name": "アフサール カルダモン",
