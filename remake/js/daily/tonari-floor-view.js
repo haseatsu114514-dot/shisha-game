@@ -1,7 +1,7 @@
 // tonari フロア営業の画面（ワンオペ・ミックスを一覧から選ぶ形）。店の時間は実時間で流れ、ミックスやケアを選んでいる間と
 // フィーバーの突入演出・休止・別タブの間は止まる（営業の時計と、画面の動きの時計は別）。
 // 画面の構成: 上＝仕込み中の一台（左）・残り時間（中央）・売上（右）／右＝ミックスの一覧（原作の、控えの列にあたる）／卓の上＝卓の札／
-//   下＝選んでいる卓の詳細（左）・出来事の行とはじめの心の声（中央）・フィーバーのゲージ（右）。
+//   下＝出来事の行とはじめの心の声（中央）・フィーバー（右）。
 // 注文待ちの卓を押すと、店内がその卓へ寄り、左にミックスの列が出る（属性の印と、客の気分との合い方 ◎ ○ × つき。シャッフルできる）。
 // 文字で説明しすぎない: 気分とミックスの属性は色と印（wishChip・attrBadge）で見せ、卓の札の見出しは押すと進む用件の時だけ出す。
 // 炭の調整（頼まれる前に自分から）と会計は、卓を押すだけ。客からの頼み（ケア）は、卓へ寄って5つの手から選ぶ。
@@ -299,12 +299,12 @@ export function runTonariFloor({
       el("span.tf-bar", {}, [busyBar]),
       busySec,
     ]);
-    // 右の列は、画面の上の端から下の端まで。上にミックスの一覧、下にボタンの段（シャッフルとフィーバー。フィーバーはあとで足す）（TFL52）
+    // 右の列は、画面の上の端から下の端まで。上にミックスの一覧、下にシャッフル。
     const actions = el("div.tf-actions", {}, [shuffleButton]);
-    const side = el("aside.tf-presets", { "aria-label": "ミックスの一覧とフィーバー", dataset: { ...test("presets"), busy: "false" } }, [
+    const side = el("aside.tf-presets", { "aria-label": "ミックスの一覧とシャッフル", dataset: { ...test("presets"), busy: "false" } }, [
       el("div.tf-preset-box", {}, [handList, busyCover]), actions,
     ]);
-    // 下の帯は、出来事の行とはじめの心の声だけ（押すと、心の声が指す卓へ）。選んでいる卓のドックは無くした（卓の札と同じ情報のため。TFL49）
+    // 出来事の行とはじめの心の声は下の帯の中央（押すと、心の声が指す卓へ）。
     const logLines = el("div.tf-log", { "aria-hidden": true, dataset: test("log") });
     const hintText = el("p", { dataset: test("advice") });
     const hajimeFace = faceIconUrl("hajime");
@@ -313,8 +313,7 @@ export function runTonariFloor({
       el("span.tf-advice", {}, [hajimeFace ? el("img", { src: hajimeFace, alt: "はじめ", draggable: false }) : null, hintText]),
     ]);
     const feverFill = el("i.tf-fever-fill");
-    // フィーバーのボタンとゲージは、右の列のボタンの段（シャッフルの下）に置く（2026-11-20 オーナー「フィーバーボタンやゲージとか一部のボタンを
-    // サイドバーに移動したり、スペースを活用して欲しい」・TFL41／「右のサイドバーにボタンとして設置したい」・TFL52）。一行の名前と、その下の3段目盛りゲージ
+    // フィーバーは出来事の行の右。灯り・状態バッジ・3段目盛りゲージを一つのボタンにまとめる。
     const feverLabel = el("b", { text: "フィーバー" });
     const feverVal = el("span.tf-bonus-val", { "aria-hidden": true });
     const feverTicks = [];
@@ -325,11 +324,11 @@ export function runTonariFloor({
       }));
     }
     const bonusButton = el("button.tf-bonus", { type: "button", dataset: test("bonus"), onclick: () => useFever() }, [
-      el("span.tf-bonus-head", {}, [el("span.tf-bonus-lamp", {}, [glyph("lamp")]), feverLabel, feverVal]),
+      el("span.tf-bonus-head", {}, [el("span.tf-bonus-lamp", {}, [glyph("lamp")]), feverLabel]),
       el("span.tf-bonus-gauge", { "aria-hidden": true, style: { "--tf-fever-start": `${floorFeverCost / floorFeverMax * 100}%` } }, [feverFill, ...feverTicks]),
+      feverVal,
     ]);
-    actions.append(bonusButton);
-    const bottom = el("footer.tf-bottom", {}, [ticker]);
+    const bottom = el("footer.tf-bottom", {}, [ticker, bonusButton]);
     // チュートリアルのスミさん（下の帯の所に出す。下の帯はその間は隠れるので、重ならない）。待つ段は時間が流れ、やる段は止まる
     const coachText = el("p.tf-coach-text", { dataset: test("coach-text") });
     const coachNextButton = el("button.tf-coach-next", { type: "button", text: "次へ", dataset: test("coach-next"), onclick: () => coachTalkDone() });
@@ -399,12 +398,12 @@ export function runTonariFloor({
       mode = next;
       host.dataset.mode = next;
       const blocked = next !== "live";
-      for (const node of [spotsBox, top, side, ticker]) node.inert = blocked;
+      for (const node of [spotsBox, top, side, bottom]) node.inert = blocked;
       placeActions();
     }
     // シャッフルとフィーバーのボタンは、親指ボタンの出る端末（横に余白のあるスマホ）では、画面外の右（会話の SKIP・次へ の所）に置く
     // （2026-11-20 オーナー「フィーバーとかシャッフルボタンは画面外の右側の、普段はオートとかスキップとかあるような画面外UIにボタンとして置いて」・TFL54）。
-    // 余白の無い端末（PC・16:9）では、右の列の下（ボタンの段）のまま。置き場所が変わってもボタンは同じ物なので、表示の更新はそのまま効く
+    // 余白の無い端末では、シャッフルを右の列、フィーバーを下の帯に出す。同じボタンを移すので表示の更新はそのまま効く。
     function placeActions() {
       if (!active) return;
       const slot = host.isConnected ? sideSlot("floor", host) : null;
@@ -414,7 +413,8 @@ export function runTonariFloor({
         slot.inert = mode !== "live";
       } else if (shuffleButton.parentElement !== actions) {
         releaseSideSlot("floor");
-        actions.replaceChildren(shuffleButton, bonusButton);
+        actions.append(shuffleButton);
+        bottom.append(bonusButton);
       }
       host.dataset.gutter = String(!!slot);
     }

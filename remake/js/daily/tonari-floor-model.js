@@ -865,7 +865,7 @@ export const floorDusk = (s) => s.dusk !== null && s.dusk !== undefined && s.t >
 
 // ---- チュートリアル（TFL64）: はじめての店番の前に、スミさんが一通りやらせる。客・並ぶミックス・山の順は決めてある ----
 // 1卓のフルーティの客には◎が一つ（○も一つ）。2卓のリラックスの客には合う一台が無く、シャッフルすると◎と○が並ぶ。
-const TUTORIAL_HAND = Object.freeze(["peachmango", "chocovanilla", "lemonmint", "caramelnuts", "colamint"]);
+const TUTORIAL_HAND = Object.freeze(["peachmango", "chocovanilla", "vanillapeach", "caramelnuts", "colamint"]);
 const TUTORIAL_DECK = Object.freeze(["grapemint", "watermelonmint", "rosejasmine", "peachlychee", "chocobanana", "honeylemon"]);
 /** チュートリアルの営業（時間切れ・帰ってしまう客・勝手に出る頼みが無い）。 */
 export function createFloorTutorial({ chapter = 1, daytime = true } = {}) {

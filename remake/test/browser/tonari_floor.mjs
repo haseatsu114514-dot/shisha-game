@@ -243,7 +243,7 @@ await suite("tonari-floor", async (check) => {
       assert.equal(await coach(), "hello");
       assert.equal(await text(), C_TUTORIAL.hello);
       assert.equal(await page.locator(t("intro")).count(), 0, "開店前の札は出さない");
-      assert.equal(await page.locator(".tf-bottom").evaluate((n) => getComputedStyle(n).visibility), "hidden", "下の帯は隠れて、スミさんの言葉が出る");
+      assert.equal(await page.locator(".tf-ticker").evaluate((n) => getComputedStyle(n).visibility), "hidden", "出来事の行は隠れて、スミさんの言葉が出る");
       // 読む段で、ほかを押しても進まない
       await page.evaluate(() => C.view.floorTest.api.act({ type: "shuffle" }));
       assert.equal(await page.evaluate(() => C.view.floorTest.api.state().shuffles), 0);
@@ -408,7 +408,7 @@ await suite("tonari-floor", async (check) => {
       const wishColor = await page.evaluate((id) => { const probe = Object.assign(document.createElement("i"), { style: `color:${C.floorData.WISHES.find((w) => w.id === id).color}` }); document.body.append(probe); const c = getComputedStyle(probe).color; probe.remove(); return c; }, first[0].main);
       assert(badge.main >= 16 && badge.sub < badge.main * 0.7, JSON.stringify(badge));
       assert.equal(badge.color, wishColor);
-      // シャッフルは金の横長ボタン。紋の画像と時計付きの「2秒」が載る。
+      // シャッフルは右の列で大きく押せる金のボタン。紋と名前が載り、かかる秒数を持つ。
       await page.locator(`${t("shuffle-side")} .tf-shuffle-emblem`).evaluate((img) => img.decode());
       const shuffleSkin = await page.locator(t("shuffle-side")).evaluate((n) => {
         const emblem = n.querySelector("img.tf-shuffle-emblem");
@@ -417,11 +417,14 @@ await suite("tonari-floor", async (check) => {
           cost: n.querySelector(".tf-shuffle-cost").textContent.trim(),
           clock: !!n.querySelector(".tf-shuffle-cost svg"),
           emblem: emblem?.naturalWidth === 160 && emblem.alt === "" && emblem.getAttribute("aria-hidden") === "true",
-          frame: getComputedStyle(n).backgroundImage, // 絵は原画の半分の寸法でそのまま敷く（九分割の継ぎ目を出さない。TFL57）
+          frame: getComputedStyle(n).backgroundImage, // 一枚絵の枠を使う（TFL57）
+          height: n.offsetHeight,
+          fontSize: parseFloat(getComputedStyle(n.querySelector(".tf-shuffle-main > span")).fontSize),
         };
       });
       assert.deepEqual([shuffleSkin.label, shuffleSkin.cost, shuffleSkin.clock, shuffleSkin.emblem], ["シャッフル", "2秒", true, true]);
       assert.match(shuffleSkin.frame, /\/bar-shuffle\.webp/);
+      assert(shuffleSkin.height >= 64 && shuffleSkin.fontSize >= 28, `シャッフルの高さ・文字サイズ: ${JSON.stringify(shuffleSkin)}`);
       assert.equal(await spot(1).getAttribute("data-target"), "true");
       assert.equal(await page.locator(t("screen")).getAttribute("data-ordering"), "true");
       // 画面の外へはみ出さない・押せる大きさ（実画素で40px以上）
@@ -439,11 +442,12 @@ await suite("tonari-floor", async (check) => {
       assert.equal(await page.evaluate(() => document.querySelector(".tonari-floor").scrollLeft), 0);
       // 上の帯は左から「仕込み中・残り時間・売上・休止」。触らない情報（仕込み中・残り時間・売上）は小さな札で、押す所（休止）だけ指の大きさ（TFL49）。
       // 残り時間と売上は、ひとまとめで画面のまん中（TFL50）
-      // 下の帯は出来事の行だけ（店内のまん中の下）。右の列は上から「シャッフル・ミックスの一覧・フィーバー」で、画面の上の端から下の端まで
+      // 出来事の行は店内中央の下にあり、その右脇にフィーバーが並ぶ。右の列はミックスの一覧とシャッフルで、画面の上の端から下の端まで
       const bands = await page.evaluate(() => {
         const rect = (sel) => document.querySelector(sel).getBoundingClientRect();
         const x = (sel) => { const r = rect(sel); return (r.left + r.right) / 2; };
         const stage = rect("#stage"), side = rect(".tf-presets"), top = rect(".tf-top"), bottom = rect(".tf-bottom");
+        const ticker = rect(".tf-ticker"), bonus = rect(".tf-bonus");
         // 空席の卓は札を出さないので、押し所だけを見る
         const tags = [...document.querySelectorAll(".tf-spot")].map((n) => { const s = n.querySelector(".tf-seat").getBoundingClientRect(), box = n.querySelector(".tf-tag-box");
           const r = box.getClientRects().length ? box.getBoundingClientRect() : s;
@@ -454,7 +458,8 @@ await suite("tonari-floor", async (check) => {
         return { top: [x(".tf-making"), x(".tf-clock"), x(".tf-sales")], mid: x(".tf-top-mid"), ticker: x(".tf-ticker"), roomCenter: (bottom.left + bottom.right) / 2, center: (stage.left + stage.right) / 2, hudRects, stageH: stage.height,
           side: { left: side.left, top: side.top, bottom: side.bottom }, sideRight: side.left > (stage.left + stage.right) / 2, hud: top.bottom, hudTop: top.top, foot: bottom.top, footRight: bottom.right, stageBottom: stage.bottom, tags,
           topRight: Math.max(rect(".tf-sales").right, rect(".tf-pause-button").right), salesPause: [rect(".tf-sales").right, rect(".tf-pause-button").left], clockSales: [rect(".tf-clock").right, rect(".tf-sales").left],
-          column: [y(".tf-preset-box"), y(".tf-shuffle"), y(".tf-bonus")], inSide: [".tf-shuffle", ".tf-preset-box", ".tf-bonus"].map(inSide), bonusInSide: !!document.querySelector(".tf-presets .tf-bonus"), bonusInFoot: !!document.querySelector(".tf-bottom .tf-bonus"),
+          column: [y(".tf-preset-box"), y(".tf-shuffle")], inSide: [".tf-shuffle", ".tf-preset-box"].map(inSide),
+          bonusInFoot: !!document.querySelector(".tf-bottom .tf-bonus"), bonusBesideLog: bonus.left >= ticker.right - 1 && bonus.right <= side.left - 1 && Math.abs(bonus.bottom - bottom.bottom) <= 1,
           overflow: document.querySelector(".tf-presets").scrollWidth - document.querySelector(".tf-presets").clientWidth };
       });
       assert(bands.top[0] < bands.top[1] && bands.top[1] < bands.top[2] && Math.abs(bands.mid - bands.center) < 4, `残り時間と売上は、画面の上のまん中: ${bands.mid} / ${bands.center}`);
@@ -464,9 +469,9 @@ await suite("tonari-floor", async (check) => {
       assert(bands.sideRight && Math.abs(bands.side.top - bands.hudTop) <= 2 && bands.side.bottom <= bands.stageBottom + 1 && bands.side.bottom >= bands.foot, "右の列は、画面の上の端から下の端まで");
       assert(bands.topRight <= bands.side.left - 2 && bands.salesPause[0] <= bands.salesPause[1] && bands.clockSales[0] <= bands.clockSales[1], `売上と休止は、残り時間と右の列のあいだに収まる: ${JSON.stringify([bands.clockSales, bands.salesPause, bands.topRight, bands.side.left])}`);
       assert(bands.footRight <= bands.side.left + 2, `下の帯が右の列に被る: ${bands.footRight} > ${bands.side.left}`);
-      // フィーバーのボタンとゲージは、右の列のいちばん下（下の帯には置かない）
-      assert.deepEqual([bands.bonusInSide, bands.bonusInFoot, bands.inSide, bands.overflow <= 1], [true, false, [true, true, true], true]);
-      assert(bands.column[0][1] <= bands.column[1][0] + 1 && bands.column[1][1] <= bands.column[2][0] + 1, `右の列の3段が重なる: ${JSON.stringify(bands.column)}`);
+      assert(bands.bonusInFoot && bands.bonusBesideLog, "フィーバーは出来事の行と右の列の間に収まる");
+      assert.deepEqual([bands.inSide, bands.overflow <= 1], [[true, true], true]);
+      assert(bands.column[0][1] <= bands.column[1][0] + 1, `ミックスの一覧とシャッフルが重なる: ${JSON.stringify(bands.column)}`);
       for (const [i, tag] of bands.tags.entries()) {
         assert(tag.right <= bands.side.left + 2, `${i + 1}卓の札・押し所が右の列に被る: ${tag.right} > ${bands.side.left}`);
         assert(tag.top >= bands.hud - 2, `${i + 1}卓の札が上の帯に被る`);
@@ -538,20 +543,27 @@ await suite("tonari-floor", async (check) => {
       assert.equal(await page.locator(t("shuffle-busy")).isVisible(), true);
       assert.match(await page.locator(t("shuffle-busy")).innerText(), /入れ替え中/);
       assert.equal(await page.locator(".tf-preset-list").evaluate((n) => getComputedStyle(n).visibility), "hidden", "入れ替えの最中は、ミックスを見せない");
-      assert.equal(await page.locator(t("shuffle-side")).isDisabled(), true);
-      assert.match(await page.locator(t("shuffle-side")).evaluate((n) => getComputedStyle(n).backgroundImage), /\/bar-shuffle-off\.webp/);
+      const sidebarShuffle = page.locator(t("shuffle-side"));
+      assert.equal(await sidebarShuffle.isDisabled(), true);
+      assert.match(await sidebarShuffle.evaluate((n) => getComputedStyle(n).backgroundImage), /\/bar-shuffle-off\.webp/);
       assert.equal(await lastLog(), "ミックスを入れ替える（2秒かかる）");
       // その間は、注文待ちの卓を押しても列は開かない（客は待っている）
       await table(1).click();
       assert.equal(await api((a) => a.mode()), "live");
       assert.equal(await spot(1).locator(".tf-pop").last().innerText(), "入れ替え中…");
-      // 押すと、ボタンの「2秒」がそのまま秒読みになる（TFL50）
-      assert.equal(await page.locator(t("shuffle-count")).first().textContent(), "2秒");
+      // ボタンに残り秒と進捗が出る（TFL50）
+      const count = sidebarShuffle.locator(t("shuffle-count"));
+      const progress = () => sidebarShuffle.evaluate((n) => ({ value: n.style.getPropertyValue("--p"),
+        width: parseFloat(getComputedStyle(n, "::after").width), button: n.offsetWidth }));
+      assert.equal(await count.textContent(), "2秒");
+      assert.equal((await progress()).width, 0);
       await tick(2);
-      assert.equal(await page.locator(t("shuffle-count")).first().textContent(), "1秒");
+      assert.equal(await count.textContent(), "1秒");
+      const halfway = await progress();
+      assert(halfway.value === "50%" && halfway.width > 0 && halfway.width < halfway.button, JSON.stringify(halfway));
       await tick(2);
       assert.equal(await page.locator(t("presets")).getAttribute("data-busy"), "false");
-      assert.equal(await page.locator(t("shuffle-count")).first().textContent(), "2秒", "入れ替えが済んだら、元の「2秒」に戻る");
+      assert.equal(await count.textContent(), "2秒", "入れ替えが済んだら、元の「2秒」に戻る");
       assert.equal(await lastLog(), "新しいミックスが並んだ");
       assert.equal(await api((a) => C.model.floorWaitLeft(a.state(), 1)), waitBefore - 4, "入れ替えの間も、客の待ち時間は減る");
       const second = await hand(g1.order.wish);
@@ -716,6 +728,12 @@ await suite("tonari-floor", async (check) => {
       assert.equal(await page.locator(t("bonus")).isDisabled(), false);
       assert.equal(await page.locator(t("screen")).getAttribute("data-fever"), "ready");
       assert.equal(await page.locator(`${t("bonus")} b`).innerText(), "フィーバー");
+      const feverBadge = page.locator(`${t("bonus")} .tf-bonus-val`);
+      assert.equal(await feverBadge.isVisible(), true);
+      assert.equal(await feverBadge.textContent(), "×1");
+      const gaugeMarks = await page.locator(`${t("bonus")} .tf-fever-tick`).evaluateAll((marks) =>
+        marks.map((mark) => [Math.round(parseFloat(mark.style.left)), mark.getBoundingClientRect().height > 0]));
+      assert.deepEqual(gaugeMarks, [[33, true], [67, true]], "ゲージは100と200の目盛りで三分割する");
       const bgmBefore = await page.evaluate(() => C.audio.requestedBgm());
       // フィーバーの帯の間は卓の札を隠す。帯の文字は右の列まで届かない
       assert.deepEqual(await page.locator(t("bonus")).evaluate((button) => {
@@ -818,7 +836,7 @@ await suite("tonari-floor", async (check) => {
           for (let x = n; x && x !== root.parentNode; x = x.parentElement) { const cs = getComputedStyle(x); if (cs.visibility === "hidden" || cs.display === "none" || Number(cs.opacity) < 0.05) return false; }
           return true; };
         const kinds = { pop: ".tf-pop", head: ".tf-tag-want", box: ".tf-tag-box", plate: ".tf-plate", cutin: ".tf-cutin > b, .tf-cutin > small", banner: ".tf-banner",
-          making: ".tf-making", clock: ".tf-clock", sales: ".tf-sales", pause: ".tf-pause-button", side: ".tf-presets", ticker: ".tf-ticker" };
+          making: ".tf-making", clock: ".tf-clock", sales: ".tf-sales", pause: ".tf-pause-button", side: ".tf-presets", ticker: ".tf-ticker", fever: ".tf-bonus" };
         const seen = new Map(), counts = { frames: 0, pops: 0, bands: 0, twoPops: 0 };
         const look = () => {
           counts.frames++;
@@ -1090,7 +1108,7 @@ await suite("tonari-floor", async (check) => {
 
   // たまに遊びに来る本編の人物: 顔アイコンで出て、その人の気分と言葉で返す。精算に名前が残り、好感度は動かない。
   // 親指ボタンの出る端末（横に余白のあるスマホ）では、シャッフルとフィーバーは画面外の右（会話の SKIP・次へ の所）に置く。
-  // 右の列はミックスの一覧だけになる。余白の無い端末・PC では右の列の下のまま（ほかのケース）。（TFL54）
+  // 右の列はミックスの一覧だけになる。余白が無い端末では、一覧の下がシャッフル、出来事の行の脇がフィーバー。（TFL54）
   await run("touch-side-pad", async (page) => {
     await setup(page);
     await page.evaluate(async () => {
@@ -1113,10 +1131,18 @@ await suite("tonari-floor", async (check) => {
       const list = rect(document.querySelector(".tf-preset-box")), side = rect(document.querySelector(".tf-presets"));
       return { gutter: document.querySelector(".tonari-floor").dataset.gutter, inSlot: [slot.contains(shuffle), slot.contains(bonus)],
         outside: [rect(shuffle), rect(bonus)].every((r) => r.left >= stage.right - 1), order: rect(bonus).bottom <= rect(shuffle).top + 1,
-        big: [rect(shuffle), rect(bonus)].every((r) => r.width >= 44 && r.height >= 44), listFill: side.bottom - list.bottom };
+        big: [rect(shuffle), rect(bonus)].every((r) => r.width >= 44 && r.height >= 44), padWidth: bonus.offsetWidth, listFill: side.bottom - list.bottom };
     });
-    assert.deepEqual([place.gutter, place.inSlot, place.outside, place.order, place.big], ["true", [true, true], true, true, true], JSON.stringify(place));
+    assert.deepEqual([place.gutter, place.inSlot, place.outside, place.order, place.big, place.padWidth], ["true", [true, true], true, true, true, 96], JSON.stringify(place));
     assert(place.listFill <= 12, `右の列は、ミックスの一覧だけで下まで使う: ${place.listFill}`);
+    const bonus = page.locator(t("bonus"));
+    const badge = bonus.locator(".tf-bonus-val");
+    const setFever = (amount) => page.evaluate((amount) => { const a = C.view.floorTest.api; a.state().fever = amount; a.tick(1); }, amount);
+    await setFever(100);
+    assert.equal(await bonus.isDisabled(), true);
+    assert.equal(await badge.isVisible(), true);
+    assert.equal(await badge.textContent(), "待機");
+    await setFever(0);
     // 余白ではボタン全体に専用の絵を敷く。押したら紋の代わりに輪を出し、残り秒を表示する。
     const shuffle = page.locator(t("shuffle-side"));
     const skin = () => shuffle.evaluate((n) => getComputedStyle(n).backgroundImage);
@@ -1136,11 +1162,15 @@ await suite("tonari-floor", async (check) => {
     assert.equal(await shuffle.locator(".tf-shuffle-emblem").isVisible(), true);
     // フィーバーは余白のボタンでも途中終了でき、ラベルは枠に収まる
     assert(await page.evaluate(() => C.until("s.tables.some((x) => x.phase === 'enjoy')")));
-    await page.evaluate(() => { const a = C.view.floorTest.api; a.state().fever = 100; a.tick(1); });
-    const bonus = page.locator(t("bonus"));
+    for (const stocks of [3, 2, 1]) {
+      await setFever(stocks * 100);
+      assert.equal(await badge.textContent(), `×${stocks}`);
+    }
+    assert.equal(await bonus.locator(".tf-bonus-gauge").isVisible(), true);
     await bonus.tap();
     await afterBand(page);
     assert.equal(await bonus.locator("b").innerText(), "終了する");
+    assert.match(await badge.textContent(), /^\d+秒$/);
     assert(await bonus.evaluate((n) => {
       const button = n.getBoundingClientRect(), text = document.createRange();
       text.selectNodeContents(n.querySelector("b"));
@@ -1150,6 +1180,7 @@ await suite("tonari-floor", async (check) => {
     await page.evaluate(() => C.view.floorTest.api.tick(1));
     await bonus.tap();
     assert.equal(await bonus.locator("b").innerText(), "再開する");
+    assert.match(await badge.textContent(), /^残\d+秒$/);
     // 接客の画面の間は、余白のボタンも隠れる
     const id = await page.evaluate(() => { const a = C.view.floorTest.api; for (let i = 0; i < 60 && !a.state().tables.some((x) => x.phase === "order"); i++) a.tick(1);
       return a.state().tables.find((x) => x.phase === "order")?.id; });
