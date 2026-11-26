@@ -2,7 +2,7 @@
 // pick＝注文に出す一台: "best"（並んでいる中でいちばん合うもの。◎も○も無ければ、3秒かけてシャッフルしてから）/ "first"（いちばん上をそのまま）/ "off"（いちばん合わないもの）/ "greedy"（◎が出るまでシャッフルし続ける）。
 // tend＝頼まれる前に炭を整えに行くか。頼みには正しい手で応え、会計はすぐ受ける。フィーバーは溜まって卓が2つ以上くつろいでいれば使う。
 import {
-  createFloorNight, floorTick, floorAct, floorTap, floorResult, floorUrgency, floorFeverLevel, floorHand, floorShuffleLeft, floorShuffleTime, floorWaitLeft,
+  createFloorNight, floorTick, floorAct, floorTap, floorResult, floorUrgency, floorFeverReady, floorHand, floorShuffleLeft, floorShuffleTime, floorWaitLeft,
 } from "../js/daily/tonari-floor-model.js";
 import { CALLS } from "../js/daily/tonari-floor-data.js";
 
@@ -18,7 +18,7 @@ export function floorBotAction(s, { pick = "best", fever = true, tend = true } =
   const by = (kind) => kinds.filter(([, k]) => k === kind)
     .sort((a, b) => floorUrgency(s, b[0].id) - floorUrgency(s, a[0].id)).map(([table]) => table);
   const enjoying = s.tables.filter((table) => table.phase === "enjoy").length;
-  if (fever && floorFeverLevel(s) >= 1 && !s.feverLeft && enjoying >= 2) return { type: "fever" };
+  if (fever && floorFeverReady(s) && !s.feverLeft && enjoying >= 2) return { type: "fever" };
   // 入れ替えの最中は、ミックスを出せない（その間に、ほかの用件へ回る）
   const [order] = floorShuffleLeft(s) ? [] : by("order");
   if (order) {
