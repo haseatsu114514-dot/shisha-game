@@ -590,10 +590,10 @@ await suite("desert-ride", async check => {
     await phase(page, "practiced");
     const captions = await page.evaluate(() => window.__captions);
     assert(captions.some(text => /空中で「左へ」か「右へ」を押し続けて/.test(text)), `the lesson teaches the spin (${captions.join(" / ")})`);
-    assert(captions.some(text => /ゲージが目印まで溜まったね。「BOOST」で一気に加速/.test(text)), `the lesson explains stocked boost (${captions.join(" / ")})`);
+    assert(captions.some(text => /ゲージが目印まで溜まったら「BOOST」で加速/.test(text)), `the lesson explains stocked boost (${captions.join(" / ")})`);
     // 2026-11-25: 壁の後にカーブ（切り込み）と砂流れの段。ヌールが話す
     assert(captions.some(text => /矢印の向きに合わせて「左へ」を押して、切り込んで/.test(text)), `the lesson teaches carving (${captions.join(" / ")})`);
-    assert(captions.some(text => /砂が流れてる所があるでしょ/.test(text)) && captions.some(text => /砂が運んでくれるの/.test(text)), `the lesson rides a sand flow (${captions.join(" / ")})`);
+    assert(captions.some(text => /砂が流れてる所に乗ってみて/.test(text)) && captions.some(text => /砂が運んでくれるの/.test(text)), `the lesson rides a sand flow (${captions.join(" / ")})`);
     assert.match(await page.locator(t("desert-practiced")).innerText(), /練習おわり/);
     await page.locator(t("desert-start")).tap();
     await phase(page, "run");
@@ -732,7 +732,7 @@ await suite("desert-ride", async check => {
     // 練習では、ヌールの説明と一緒に立て直しの札を出す
     await page.locator(t("desert-practice")).click();
     await phase(page, "practice");
-    await ride(page, () => { window.__drawn.length = 0; const g = window.__desertRide.game; g.z = 716; g.x = 0; g.vx = 0; g.gauge = 0.6; g.chargedAt = g.t; g.boostT = 0; g.speed = 20; });
+    await ride(page, async () => { const { PRACTICE_WALL } = await import("./js/minigames/desert-ride-model.js"); window.__drawn.length = 0; const g = window.__desertRide.game; g.z = PRACTICE_WALL - 4; g.x = 0; g.vx = 0; g.gauge = 0.6; g.chargedAt = g.t; g.boostT = 0; g.speed = 20; });
     await page.waitForFunction(() => window.__desertRide.game.falls >= 1);
     await page.waitForFunction(() => window.__drawn.some(text => /立て直せ/.test(text)));
     await page.keyboard.press("Escape");

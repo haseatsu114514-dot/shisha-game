@@ -830,7 +830,7 @@
       "id": "desert-ride-rules",
       "title": "DESERT RIDE course fairness, jump/landing/fall rules, ranks and the chapter 4 desk/outing/record rules",
       "kind": "quick",
-      "run": ["node --test remake/test/desert_ride.mjs remake/test/ch4_desert.mjs"]
+      "run": ["node --test remake/test/desert_ride.mjs remake/test/ch4_desert.mjs remake/test/desert_ride_guide.mjs"]
     },
     {
       "id": "desert-ride",
@@ -843,6 +843,7 @@
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/desert-ride-model.js",
         "remake/js/minigames/desert-ride-art.js",
+        "remake/js/minigames/desert-ride-guide.js",
         "remake/js/minigames/minigame-loading.js",
         "remake/img/ui/desert_ride/**",
         "remake/js/chapters/ch4-desert.js",
@@ -858,6 +859,34 @@
         "remake/js/core/play-tiers.js"
       ],
       "run": ["node remake/test/browser/desert_ride.mjs"]
+    },
+    {
+      "id": "desert-ride-guide",
+      "title": "DESERT RIDE return-to-course guide and practice lesson spacing",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 10,
+      "paths": [
+        "remake/js/core/stage-fit.js",
+        "remake/js/minigames/desert-ride.js",
+        "remake/js/minigames/desert-ride-model.js",
+        "remake/js/minigames/desert-ride-art.js",
+        "remake/js/minigames/desert-ride-guide.js",
+        "remake/js/minigames/minigame-loading.js",
+        "remake/img/ui/desert_ride/**",
+        "remake/js/chapters/ch4-desert.js",
+        "remake/js/chapters/ch4-desert-progress.js",
+        "remake/js/chapters/ch4.js",
+        "remake/js/chapters/ch4-map-model.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/desert-ride-page.js",
+        "remake/desert-ride.html",
+        "remake/css/desert-ride.css",
+        "data/dialogue/ch4_desert.json",
+        "remake/test/browser/desert_ride_guide.mjs",
+        "remake/js/core/play-tiers.js"
+      ],
+      "run": ["node remake/test/browser/desert_ride_guide.mjs"]
     },
     {
       "id": "desert-ride-feel",

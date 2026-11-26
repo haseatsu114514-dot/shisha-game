@@ -10,7 +10,8 @@ import { withMinigameStyles } from "./minigame-styles.js";
 import { el } from "../core/util.js";
 import { SE, unlockAudio, createDesertRideSe, desertZapGap, currentBgm, playBgm, preloadBgm, resetBgmTempo } from "../core/audio.js";
 import { BOOST, CARVE, EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
-  rivalRun, rivalAt, desertBestKey, desertDisplayBests, RULES_VERSION, DISPLAY, toKmh, toMeters, JUMP, SCORE, RANKS, PLAYER, NEAR, PRACTICE_WALL, PRACTICE_CURVE, PRACTICE_FLOW, FLOW } from "./desert-ride-model.js";
+  rivalRun, rivalAt, desertBestKey, desertDisplayBests, RULES_VERSION, DISPLAY, toKmh, toMeters, JUMP, SCORE, RANKS, PLAYER, NEAR, PRACTICE_LESSONS, PRACTICE_WALL, PRACTICE_CURVE, PRACTICE_FLOW, FLOW } from "./desert-ride-model.js";
+import { createReturnGuide } from "./desert-ride-guide.js";
 import { TIERS, TIER_LABEL } from "../core/play-tiers.js";
 import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose, spinFrames, preloadHudArt, warmDesertUi } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
@@ -238,52 +239,52 @@ const RANK_WORDS = { S: "最高の一本", A: "見事な滑り", B: "いい滑�
 const BOOST_MIN_PERCENT = BOOST.minGauge * 100;
 // 練習の説明は、砂丘のガイドのヌールが話す（2026-11-25 オーナー「チュートリアルもあってもいいかも。ヌールが説明してくれる感じの」）。
 // 顔のアイコンと名前の吹き出しで出す。ヌールは普通の日本語で、はじめを「ハジメ」と呼ぶ（語録は混ぜない）。台詞の末尾に「。」を付けない。
-// 本番では説明の文字を出さない（同「体勢崩した時とかブーストで立て直すとか文字が出るのは無くしたい。チュートリアルとかで文字で説明はいいけど」）。
+// 本番では通常の操作説明を出さない（低速でコース外に留まる時だけ復帰案内を出す）。従来方針（同「体勢崩した時とかブーストで立て直すとか文字が出るのは無くしたい。チュートリアルとかで文字で説明はいいけど」）。
 const TUTORIAL = {
   move: "ハジメ、まずは ← → で左右に動いてみて",
-  rock: "岩に当たると転ぶよ。先を見て、早めによけてね",
-  fallRock: "大丈夫、転んでも砂は痛くないよ。次は早めによけてね",
-  bump: "砂の山が来たら、手前で Space！ 大きく跳べるよ",
-  brace: "着地の直前、輪がボタンに重なったら Space。ぴたっと決まるから",
-  retryBump: "惜しい！ 次の山で、もう一回跳んでみよう",
-  landPerfect: "完璧な着地！ その調子",
-  landGood: "いい着地。もうちょっと遅く押すと完璧",
+  rock: "先を見て、岩は早めによけてね",
+  fallRock: "大丈夫、次は早めによけてね",
+  bump: "砂の山の手前で Space、大きく跳べるよ",
+  brace: "着地の直前、輪が重なったら Space",
+  retryBump: "次の山で、もう一回跳んでみよう",
+  landPerfect: "完璧な着地、その調子",
+  landGood: "もうちょっと遅く押すと完璧",
   landPlain: "着地の直前に押すと、体勢が整うよ",
-  trick: "次は回転！ 跳んだら空中で ← か → を押し続けて。360°、720°…と回り続けるよ",
-  trickLetGo: "離すと半回転の区切りまで回り切るよ。回りかけだと転ぶから、早めに離して着地を合わせてね",
-  trickDone: "回った！ 回転を決めると点もブーストゲージも伸びるの。たくさん回るほど高得点だよ",
-  trickFall: "回りかけで着地すると転んじゃう。もう少し早く離して",
-  boost: "ゲージが目印まで溜まったね。↓（BOOST）で一気に加速。ブースト中は岩にぶつかっても大丈夫だよ",
-  boostGo: "でも、岩はよけてね。砕くたびにブーストが短くなるし、深い砂に入ると切れるよ",
-  recover: "次は立て直し。岩の壁にわざと当たって、すぐ ↓（BOOST）！",
-  recoverNow: "今！ すぐ ↓（BOOST）で立て直して",
-  recoverDone: "立て直した！ 転んだのは無しになって、そのまま加速",
-  recoverLate: "惜しい。当たった直後に押せば、立て直せるよ",
-  recoverSmash: "砕いちゃった！ ブーストがないときに当たったら、直後に ↓（BOOST）で立て直せるよ",
-  recoverDodge: "よけたね。当たっちゃった時は、直後に ↓（BOOST）で立て直せるよ",
-  curve: "カーブでは外に流されるよ。矢印の向き（←）を押して、切り込んで",
-  carveOn: "そう、それがカービング！ 切り込むほど熱が高まって、砂しぶきも大きくなるよ",
-  carveGauge: "刻むたびに、ブーストが溜まるの。内側に寄りすぎたら、少し離してまた押して",
-  carveLong: "切り込み続けて熱が高まると、金の残像も出るの。砂しぶきも高くなるよ",
-  carveLate: "惜しい！ 曲がる向きへ押し続けると、流されないで切り込めるよ",
-  carveMiss: "カーブでは曲がる向きへ押し続けてみて。本番のカーブはチャンスだよ",
-  flow: "あ、見て！ 砂が流れてる所があるでしょ。あそこに乗ってみて",
-  flowGo: "速いでしょ？ 砂が運んでくれるの。本番にもときどき流れてるよ",
-  flowMiss: "乗り逃しちゃった。本番でも、流れる砂を見つけたら乗ってみて",
-  finish: "いい感じ！ あとは、ゴールまで滑るだけ",
+  trick: "跳んだら空中で ← か → を押し続けて",
+  trickLetGo: "早めに離して、着地を合わせてね",
+  trickDone: "回転を決めると点もゲージも伸びるの",
+  trickFall: "もう少し早く離して、着地を合わせてね",
+  boost: "ゲージが目印まで溜まったら ↓（BOOST）で加速",
+  boostGo: "岩を砕くたびにブーストが短くなるよ",
+  recover: "岩の壁に当たったら、すぐ ↓（BOOST）で立て直して",
+  recoverNow: "すぐ ↓（BOOST）で立て直して",
+  recoverDone: "立て直したら、そのまま加速",
+  recoverLate: "当たった直後に押せば、立て直せるよ",
+  recoverSmash: "ブーストがないときは、当たった直後に ↓ で立て直せるよ",
+  recoverDodge: "当たっちゃった時は、直後に ↓ で立て直せるよ",
+  curve: "矢印の向き（←）を押して、切り込んで",
+  carveOn: "切り込むほど熱が高まるよ",
+  carveGauge: "内側に寄りすぎたら、少し離してまた押して",
+  carveLong: "熱が高まると、金の残像も出るの",
+  carveLate: "曲がる向きへ押し続けると、切り込めるよ",
+  carveMiss: "カーブでは曲がる向きへ押し続けてみて",
+  flow: "砂が流れてる所に乗ってみて",
+  flowGo: "砂が運んでくれるの",
+  flowMiss: "本番でも、流れる砂を見つけたら乗ってみて",
+  finish: "あとは、ゴールまで滑るだけ",
 };
 // タッチ端末ではキーの名前（Space／← →／↓）を出さず、画面のボタンの名前で言う（#2838）。
 const TUTORIAL_TOUCH = {
   move: "ハジメ、まずは「左へ」「右へ」で動いてみて",
-  bump: "砂の山が来たら、手前で「ジャンプ」！ 大きく跳べるよ",
-  brace: "空中ではジャンプが「LAND」に変わるの。輪が重なったら押して",
-  trick: "次は回転！ 跳んだら空中で「左へ」か「右へ」を押し続けて。360°、720°…と回り続けるよ",
-  boost: "ゲージが目印まで溜まったね。「BOOST」で一気に加速。ブースト中は岩にぶつかっても大丈夫だよ",
-  recover: "次は立て直し。岩の壁にわざと当たって、すぐ「BOOST」！",
-  recoverNow: "今！ すぐ「BOOST」で立て直して",
-  recoverSmash: "砕いちゃった！ ブーストがないときに当たったら、直後に「BOOST」で立て直せるよ",
-  recoverDodge: "よけたね。当たっちゃった時は、直後に「BOOST」で立て直せるよ",
-  curve: "カーブでは外に流されるよ。矢印の向きに合わせて「左へ」を押して、切り込んで",
+  bump: "砂の山の手前で「ジャンプ」、大きく跳べるよ",
+  brace: "輪が重なったら「LAND」を押して",
+  trick: "空中で「左へ」か「右へ」を押し続けて",
+  boost: "ゲージが目印まで溜まったら「BOOST」で加速",
+  recover: "岩の壁に当たったら、すぐ「BOOST」で立て直して",
+  recoverNow: "すぐ「BOOST」で立て直して",
+  recoverSmash: "ブーストがないときは、当たった直後に「BOOST」",
+  recoverDodge: "当たっちゃった時は、直後に「BOOST」",
+  curve: "矢印の向きに合わせて「左へ」を押して、切り込んで",
 };
 /** 練習でヌールが話す全部の台詞（検査で、吹き出しに収まるかを確かめる）。 */
 export const TUTORIAL_LINES = Object.freeze([...Object.values(TUTORIAL), ...Object.values(TUTORIAL_TOUCH)]);
@@ -386,7 +387,12 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     const guideFace = el("img.dr-guide-face", { src: faceIconUrl("noor") || imgFileUrl("ui/face_icons/face_noor.webp"), alt: "", onerror: event => { event.currentTarget.hidden = true; } });
     const guideBox = el("div.dr-guide", { hidden: true, dataset: { test: "desert-guide" } }, [guideFace, el("div.dr-guide-body", [el("b.dr-guide-name", { text: guide || "ヌール" }), caption])]);
     /** 練習の説明を出す（空なら吹き出しごと隠す）。 */
-    const tell = (text = "") => { caption.textContent = text; guideBox.hidden = !text; if (tut && game) tut.toldAt = game.t; };
+    const tell = (text = "") => {
+      caption.replaceChildren(...text.split(/(Space|←|→|↓|「(?:左へ|右へ|ジャンプ|LAND|BOOST)」)/g)
+        .map((part, i) => i % 2 ? el("kbd", { text: part }) : part));
+      guideBox.hidden = !text;
+      if (tut && game) tut.toldAt = game.t;
+    };
     /** 今の説明を出してから seconds 秒たったか（続けて話す時、前の一言を読む間を空ける）。 */
     const toldFor = seconds => !tut || game.t - (tut.toldAt ?? -9) >= seconds;
     const pop = el("div.dr-pop", { "aria-hidden": "true" });
@@ -398,7 +404,11 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     const panel = el("div.dr-panel");
     const controls = el("div.dr-controls", { hidden: true });
     const quit = el("button.dr-quit", { type: "button", text: "✕", title: "やめる", "aria-label": "やめる", dataset: { test: "desert-quit" }, hidden: true });
-    root.append(canvas, hud, fxCanvas, startPop, versus, guideBox, controls, panel);
+    const returnGuide = createReturnGuide();
+    const returnCue = el("div.dr-return-cue", { hidden: true, role: "status", dataset: { test: "desert-return-cue" } });
+    const actionKey = el("kbd"), actionRole = el("span");
+    const actionCue = el("div.dr-action-cue", { hidden: true, dataset: { test: "desert-action-cue" } }, [actionKey, actionRole]);
+    root.append(canvas, hud, fxCanvas, startPop, versus, guideBox, returnCue, actionCue, controls, panel);
     host.append(root);
     root.focus({ preventScroll: true });
 
@@ -591,7 +601,10 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     panel.addEventListener("focusin", event => { if (event.target.matches("button")) rideSe.play("cursor", 0.25); });
 
     // ---- 進行 -------------------------------------------------------------------------
-    function setPhase(name) { root.dataset.phase = name; }
+    function setPhase(name) {
+      root.dataset.phase = name;
+      returnGuide(null); returnCue.hidden = true; actionCue.hidden = true;
+    }
     function showMenu(message = "") {
       rideSe.stop();
       resetBgmTempo();
@@ -1019,6 +1032,17 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     const progressPercent = z => `${Number((100 * Math.min(1, z / game.course.length)).toFixed(1))}%`;
     let lastLandRing = "";
     function updateHud() {
+      const running = game && !game.finished && countdown <= 0 && (mode === "run" || mode === "practice");
+      const direction = returnGuide(running ? game : null);
+      returnCue.hidden = !direction;
+      if (direction) setText(returnCue, direction === "right" ? "→ 右へ戻ろう" : "← 左へ戻ろう");
+      const airborne = game?.air > 0;
+      actionCue.hidden = !running || mode !== "practice" || game.fallT > 0 || (airborne && game.airKind === "bounce");
+      if (!actionCue.hidden) {
+        setText(actionKey, touchUi() ? (airborne ? "LAND" : "ジャンプ") : "Space");
+        setText(actionRole, airborne ? "着地" : "跳ぶ");
+      }
+
       if (!hudNodes || !game) return;
       if (mode !== "practice") {
         const score = Math.max(0, Math.round(game.score));
@@ -1102,35 +1126,35 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       if (tut.step === "move") {
         if (Math.abs(game.x) > 0.25) tut.moved = true;
         if (tut.moved && game.z > 60) { tut.step = "rock"; say("rock"); }
-        else if (game.z > 90) { tut.step = "rock"; say("rock"); }
+        else if (game.z > PRACTICE_LESSONS.rock) { tut.step = "rock"; say("rock"); }
       } else if (tut.step === "rock") {
-        if (game.z > 170) { tut.step = "bump"; say("bump"); }
+        if (game.z > PRACTICE_LESSONS.bump) { tut.step = "bump"; say("bump"); }
       } else if (tut.step === "bump") {
         if (game.air > 0 && game.airKind === "big") { tut.step = "brace"; say("brace"); }
         else if (events.some(e => e.kind === "land" && e.grade === "bounce")) { tut.bumpTries += 1; tut.step = "bumpAgain"; say("retryBump"); }
       } else if (tut.step === "bumpAgain") {
         if (game.air > 0 && game.airKind === "big") { tut.step = "brace"; say("brace"); }
-        else if (game.z > 330) { tut.step = "rock2"; tell(tutorialText("rock")); }
+        else if (game.z > PRACTICE_LESSONS.secondRock) { tut.step = "rock2"; tell(tutorialText("rock")); }
       } else if (tut.step === "brace") {
         const landed = events.find(e => e.kind === "land" && e.grade !== "bounce");
-        if (landed) { tut.step = game.z < 300 ? "rock2" : "finish"; tell(tutorialText(landed.grade === "perfect" ? "landPerfect" : landed.grade === "good" ? "landGood" : "landPlain")); }
+        if (landed) { tut.step = game.z < PRACTICE_LESSONS.secondRock ? "rock2" : "finish"; tell(tutorialText(landed.grade === "perfect" ? "landPerfect" : landed.grade === "good" ? "landGood" : "landPlain")); }
       } else if (tut.step === "rock2") {
-        if (game.z > 345) { tut.step = "trick"; say("trick"); }
+        if (game.z > PRACTICE_LESSONS.trick) { tut.step = "trick"; say("trick"); }
       } else if (tut.step === "trick") {
         if (game.spinDir !== 0 && game.spinHold) { tut.step = "trickLetGo"; say("trickLetGo"); }
         if (events.some(e => e.kind === "trick")) { tut.step = "boostWait"; tell(tutorialText("trickDone")); }
         else if (events.some(e => e.kind === "fall" && e.reason === "spin")) { tut.step = "boostWait"; tell(tutorialText("trickFall")); }
-        else if (game.z > 470) tut.step = "boostWait";
+        else if (game.z > PRACTICE_LESSONS.boost - 5) tut.step = "boostWait";
       } else if (tut.step === "trickLetGo") {
         if (events.some(e => e.kind === "trick")) { tut.step = "boostWait"; tell(tutorialText("trickDone")); }
         else if (events.some(e => e.kind === "fall" && e.reason === "spin")) { tut.step = "boostWait"; tell(tutorialText("trickFall")); }
-        else if (game.z > 470) tut.step = "boostWait";
+        else if (game.z > PRACTICE_LESSONS.boost - 5) tut.step = "boostWait";
       } else if (tut.step === "boostWait") {
-        if (game.z > 475 && game.air <= 0) { tut.step = "boost"; chargeBoost(game, 1); say("boost"); }
+        if (game.z > PRACTICE_LESSONS.boost && game.air <= 0) { tut.step = "boost"; chargeBoost(game, 1); say("boost"); }
       } else if (tut.step === "boost" || tut.step === "boostGo") {
         if (tut.step === "boost" && game.boostT > 0) { tut.step = "boostGo"; say("boostGo"); }
         // 岩の壁にわざと当たって、立て直しを一度やってみる（練習は猶予が長い）
-        if (game.z > PRACTICE_WALL - 110) { tut.step = "recover"; say("recover"); }
+        if (game.z > PRACTICE_LESSONS.recover) { tut.step = "recover"; say("recover"); }
       } else if (tut.step === "recover") {
         // 立て直しに使うゲージは、壁の直前で渡す（早く渡すと、当たる前のブーストで使い切って壁を砕いてしまう）
         if (!tut.wallGauge && game.z > PRACTICE_WALL - 14) { tut.wallGauge = true; chargeBoost(game, Math.max(0, 0.6 - game.gauge)); }
@@ -1170,7 +1194,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       if (!(mode === "run" || mode === "practice") || !game || game.finished) return;
       if (game.stats.carves > 0 || game.carving) carved = true;
       if (carved || curveCueLeft <= 0 || game.air > 0 || game.fallT > 0 || countdown > 0) return;
-      if (Math.abs(curveAt(game.course, game.z)) < 0.4) return;
+      if (Math.abs(game.x) > EDGE || Math.abs(curveAt(game.course, game.z)) < 0.4) return;
       curveCueOn = true;
       curveCueLeft -= dt;
     }
