@@ -70,20 +70,6 @@
 /* ---- 操作ボタン（調教師のリモコン）。左下と右下の角に重ね、真ん中の道と SUV は見せる ---- */
 .camel-controls { position: absolute; left: 1.6cqw; right: 1.6cqw; bottom: 1.6cqw; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; gap: 2cqw; pointer-events: none; contain: layout style; }
 .camel-controls[hidden] { display: none; }
-.camel-cheer {
-  position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); box-sizing: border-box;
-  display: grid; place-content: center; gap: .12em; width: min(24cqw, 220px);
-  min-height: max(9.5cqh, calc(58px / var(--k, 1))); padding: .3em .15em;
-  border: 2px solid #ffe3a0; border-radius: max(8px, 1cqw); background: linear-gradient(#68301b, #3e1b13);
-  box-shadow: inset 0 -3px #27110d, 0 4px 8px #27110d66;
-  color: var(--cr-sand); font: inherit; font-size: max(clamp(13px, 1.75cqw, 23px), calc(15px / var(--k, 1)));
-  font-weight: 900; text-align: center; line-height: 1.15; pointer-events: auto; cursor: pointer;
-  touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent;
-}
-.camel-cheer[hidden] { display: none; }
-.camel-cheer small { font-size: max(.65em, calc(11px / var(--k, 1))); color: #ffe3a0; }
-.camel-cheer:active { background: #873a20; box-shadow: inset 0 2px 4px #27110d; }
-.camel-cheer:focus-visible { outline: 2px solid #fff4d6; outline-offset: 2px; }
 .camel-control { --tone: var(--cr-gold); --rh: max(52px, 9.5cqh); position: relative; overflow: hidden; pointer-events: auto; width: var(--cr-control-width, 31cqw); display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1cqw;
   min-height: var(--rh); padding: .6cqw 1.3cqw .6cqw .9cqw; border: 1px solid rgba(255,255,255,.16); border-radius: 1.4cqw; color: var(--cr-sand); font: inherit; text-align: left; cursor: pointer;
   background: linear-gradient(180deg, rgba(48,32,18,.9), rgba(20,13,7,.92)); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.35), 0 6px 16px rgba(0,0,0,.4);

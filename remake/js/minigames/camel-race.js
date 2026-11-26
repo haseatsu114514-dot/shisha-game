@@ -608,11 +608,8 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     el("kbd", { text: "X" })]);
   const pacingText = el("span"), reserveText = el("small");
   const pacingNode = el("div.camel-pacing", { hidden: true, dataset: { test: "camel-pacing" } }, [pacingText, reserveText]);
-  const cheerButton = el("button.camel-cheer", { type: "button", hidden: true, dataset: { test: "camel-cheer" } }, [
-    el("strong", { text: "応援" }), el("small", { text: "連打して応援！" }),
-  ]);
   // 息の予告はムチのボタンのすぐ上に積む（2026-11-11。画面の中央下は SUV とはじめを見せる）。読み込み中は隠す。
-  const controls = el("div.camel-controls", { hidden: true }, [voiceButton, cheerButton, el("div.camel-control-stack", [pacingNode, signalButton])]);
+  const controls = el("div.camel-controls", { hidden: true }, [voiceButton, el("div.camel-control-stack", [pacingNode, signalButton])]);
   const closeButton = el("button.camel-close", { type: "button", text: "✕", title: "やめる", "aria-label": "やめる", dataset: { test: "camel-close" } });
   // 一時停止（2026-11-13・CRF13）。走っている間と合図の間だけ出す。Esc・P でも止まる。
   const pauseButton = el("button.camel-close.camel-pause", { type: "button", html: '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.6" height="12" rx="1" fill="currentColor"/><rect x="9.4" y="2" width="3.6" height="12" rx="1" fill="currentColor"/></svg>', "aria-label": "一時停止", title: "一時停止（Esc）", hidden: true, dataset: { test: "camel-pause" } });
@@ -716,8 +713,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       stretch: Object.fromEntries([...stretches].map(([id, item]) => [id, { ...item }])), tremble: Object.fromEntries(trembles), marks: hitMarks.length,
       countdown: countdownLeft, countdownTotal, goalReal, combo, runs: runs.length, whipHeld: !!race?.player.whipHeld, whipping: !!race?.player.whipping,
       paused, frozen, resumeLead, coach: coach?.step ?? null, target: targetId, far: far(), reducedMotion,
-      duelCamera: { pair: duel.pair?.slice() ?? null, scale: duelScale, pan: duelPan, taps: duel.taps,
-        distanceBoost: duel.distanceBoost, distanceApplied: duel.distanceApplied } };
+      duelCamera: { pair: duel.pair?.slice() ?? null, scale: duelScale, pan: duelPan } };
   },
   // 確認用の道具（試遊ページだけ。本編では null）。#193「デバッグモード」: 息・調子を指定、コースの好きな所へ移動、画面を止める。
   debug: debugTools ? {
@@ -776,12 +772,6 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   const fgPebbles = Array.from({ length: 18 }, (_, i) => ({ x: (i * 197) % W, y: ROAD_BOTTOM + 5 + ((i * 11) % Math.max(8, H - ROAD_BOTTOM - 9)), w: 12 + (i * 7) % 24, light: i % 3 === 0 }));
   const rivalSeed = () => (seed ?? crypto.getRandomValues(new Uint32Array(1))[0]) >>> 0;
 
-  const syncCheer = () => {
-    const hidden = phase !== "race" || paused || resumeLead > 0 || !duel.canCheer;
-    if (cheerButton.hidden === hidden) return;
-    if (hidden && document.activeElement === cheerButton) root.focus({ preventScroll: true });
-    cheerButton.hidden = hidden;
-  };
   const setPhase = next => {
     if (phase === "race" && next !== "race") duel.end(race.t);
     phase = next; root.dataset.phase = next;
@@ -790,7 +780,6 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     pacingNode.hidden = !["countdown", "race"].includes(next);
     pauseButton.hidden = !["countdown", "race"].includes(next);
     if (next !== "race") boostLabel.hidden = true;
-    syncCheer();
   };
   const announce = text => { live.textContent = text; };
   const syncFeedbackPosition = () => {
@@ -944,14 +933,6 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     button.addEventListener("keydown", event => { if (event.key === " " || event.key === "Enter") event.preventDefault(); });
   };
   press(voiceButton, onVoice);
-  const onCheer = () => {
-    if (!cheerButton.hidden && !rotateGuarded() && !frozen) duel.cheer();
-  };
-  cheerButton.addEventListener("pointerdown", event => {
-    event.preventDefault();
-    event.stopPropagation();
-  });
-  cheerButton.addEventListener("click", onCheer);
   // ムチは押している間だけ。指が少しずれても離れないよう、押した要素に捕まえておく。
   signalButton.addEventListener("pointerdown", event => {
     event.preventDefault();
@@ -992,12 +973,6 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       return;
     }
     if (event.key === "Enter" && phase === "goal") { event.preventDefault(); event.stopImmediatePropagation(); skipGoal(); return; }
-    if (event.target === cheerButton && (event.code === "Space" || event.key === " " || event.key === "Enter")) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      if (!event.repeat) onCheer();
-      return;
-    }
     if (!ours(event)) return;
     armCamelAudio(); onKey(event); event.stopImmediatePropagation();
   };
@@ -1070,7 +1045,6 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   function openPause() {
     if (paused || !race || (phase !== "race" && phase !== "countdown")) return;
     paused = true; root.dataset.paused = "true"; resumeLead = 0;
-    syncCheer();
     onWhip(false); resetBgmTempo();
     const resume = el("button.btn.primary", { type: "button", text: "つづける", dataset: { test: "camel-resume" }, onclick: () => { sfx("select"); resumeRace(); } });
     const restart = el("button.btn", { type: "button", text: "最初からやり直す", dataset: { test: "camel-restart" }, onclick: () => { sfx("select"); startRace(); } });
@@ -1089,7 +1063,6 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     paused = false; delete root.dataset.paused;
     sheet.hidden = true; sheet.replaceChildren();
     if (phase === "race") { resumeLead = Math.max(0, FEEL.pauseLead); resumeShown = -1; }
-    syncCheer();
     last = null;
     root.focus({ preventScroll: true });
     announce("再開。");
@@ -1274,14 +1247,11 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
           if (action.voice) onVoice();
           onWhip(!!action.whip);
         }
-        const step = Math.min(acc, 1 / 60);
-        stepRace(race, step, duel.takeSpeed(step));
-        acc -= step;
+        const step = Math.min(acc, 1 / 60); stepRace(race, step); acc -= step;
       }
       consumeEvents();
       updateRaceRows();
       if (!race.finished) duel.update(race.t, raceRows);
-      syncCheer();
       watchRace();
       coachTick();
       if (race.finished) {

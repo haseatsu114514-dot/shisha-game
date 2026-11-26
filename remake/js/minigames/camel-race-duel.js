@@ -2,7 +2,6 @@
 const CAMERA = Object.freeze({
   start: 3, interval: 0.1, enterGap: 2, enterTime: 0.9, exitGap: 4.5, exitTime: 0.35, cooldown: 2,
 });
-const CHEER = Object.freeze({ distance: 0.04, pending: 0.16, speed: 0.4, perPair: 12, perRace: 24 });
 const samePair = (pair, a, b) => pair && (pair[0] === a && pair[1] === b || pair[0] === b && pair[1] === a);
 
 export class CamelRaceDuel {
@@ -12,13 +11,6 @@ export class CamelRaceDuel {
   separatedSince = null;
   nextSample = CAMERA.start;
   readyAt = CAMERA.start;
-  taps = 0;
-  totalTaps = 0;
-  pending = 0;
-  distanceApplied = 0;
-
-  get distanceBoost() { return this.totalTaps * CHEER.distance; }
-  get canCheer() { return !!this.pair?.includes("player"); }
 
   update(t, rows) {
     if (t < this.nextSample) return;
@@ -60,8 +52,6 @@ export class CamelRaceDuel {
         this.pair = this.candidate;
         this.candidate = null;
         this.separatedSince = null;
-        this.pending = 0;
-        this.taps = 0;
       }
       return;
     }
@@ -72,23 +62,5 @@ export class CamelRaceDuel {
     this.pair = this.candidate = null;
     this.separatedSince = null;
     this.readyAt = t + CAMERA.cooldown;
-    this.pending = 0;
-    this.taps = 0;
-  }
-
-  cheer() {
-    if (!this.canCheer || this.taps >= CHEER.perPair || this.totalTaps >= CHEER.perRace
-      || this.pending + CHEER.distance > CHEER.pending + 1e-9) return;
-    this.pending += CHEER.distance;
-    this.taps++;
-    this.totalTaps++;
-  }
-
-  takeSpeed(dt) {
-    if (this.pending <= 0) return 0;
-    const distance = Math.min(this.pending, CHEER.speed * dt);
-    this.pending -= distance;
-    this.distanceApplied += distance;
-    return distance / dt;
   }
 }
