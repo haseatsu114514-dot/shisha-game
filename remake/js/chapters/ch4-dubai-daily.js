@@ -464,7 +464,7 @@ async function performDubaiSpot(entry, io, { staminaGuard, holdSaveUntilActionEn
     const customerCost = baseCafe.cost || 0;
     const canPay = spendableMoney(state) >= customerCost;
     const canShift = dubaiShiftOpen(state);
-    const doneToday = state.visitedDay.dubai_cafe_shift === state.day;
+    const doneToday = state.visitedDay?.dubai_cafe_shift === state.day;
     const shiftAvailable = canShift && !doneToday;
     const pick = await modal({
       title: "中心地のカフェ",
@@ -584,7 +584,7 @@ async function performDubaiSpot(entry, io, { staminaGuard, holdSaveUntilActionEn
  * 昼から夜までの2コマ（体力40）。基本給（第4章 14,000円）＋売上の歩合10%＋手当。中断・LOADで巻き戻す。
  */
 async function runDubaiCafeShift(owner, { staminaGuard, holdSaveUntilActionEnds } = {}) {
-  if (!dubaiShiftOpen(owner) || owner.visitedDay.dubai_cafe_shift === owner.day) {
+  if (!dubaiShiftOpen(owner) || owner.visitedDay?.dubai_cafe_shift === owner.day) {
     toast("シフトは昼から入る。夜からは入れない");
     return unused;
   }
@@ -599,6 +599,7 @@ async function runDubaiCafeShift(owner, { staminaGuard, holdSaveUntilActionEnds 
     extraVisitorIds: companion ? [companion] : [],
   });
   if (!outcome || state !== owner) return unused;
+  owner.visitedDay ||= {};
   owner.visitedDay.dubai_cafe_shift = owner.day;
   owner.flags._shift_through_night = owner.day;
   applyStats({ technique: 2, charm: 2 });

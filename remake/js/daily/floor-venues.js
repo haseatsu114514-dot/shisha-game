@@ -57,8 +57,9 @@ export const TONARI_RULES = Object.freeze({
   billGrace: 16,
   cool: 6,
   lastCall: 40,
-  fever: 32,
+  fever: 30,
   feverDrink: 10,
+  feverFirstDrink: 3,
   shuffle: 4, // 2秒（0.5秒刻みで4刻み。全店舗で統一）
   shuffleMatchPercent: 78,
   sightAt: 3, // 4回目（level >= 3）から、客の様子を読んで応える
@@ -71,7 +72,7 @@ export const TONARI_RULES = Object.freeze({
   richWantBonus: 0,
   richSingleCut: 0,
   keenCut: Object.freeze({ best: 0, good: 6, none: 4 }),
-  feverTargets: Object.freeze([0, 2, 4, 5]),
+  feverTargets: 2,
 });
 
 // ---- 東京 mukai（第3章・第5章）のデータ ----
@@ -355,7 +356,7 @@ export const FLOOR_VENUES = Object.freeze({
       ["order", "客の気分と同じ印のミックスを出す"],
       ["shuffle", "合うのが無ければシャッフル（{shuffle}かかる）"],
       ["add", "炭が減ったら、頼まれる前に調整へ"],
-      ["lamp", "ゲージが溜まったらフィーバー"],
+      ["lamp", "フィーバーはもう一度押すと終了。残りは次に使える"],
     ]),
     guests: GUESTS,
     nights: NIGHTS,
@@ -407,7 +408,6 @@ export const FLOOR_VENUES = Object.freeze({
         careLate: -12, tendMiss: -9, billDecay: 0.55, wait: 12, decay: 0.085,
       }),
       keenCut: freezeObj({ best: 0, good: 8, none: 6 }),
-      feverTargets: freezeObj([0, 2, 4, 5]),
     }),
     introHints: freezeObj([
       ["order", "常連は好きな系統を名指しすることもある"],
@@ -468,7 +468,6 @@ export const FLOOR_VENUES = Object.freeze({
       richWantBonus: 6, // VIP・語らい組に3種ミックスが合うと大きく加点
       richSingleCut: 8, // VIP・語らい組に単品を出すと減点
       keenCut: freezeObj({ best: 0, good: 10, none: 8 }),
-      feverTargets: freezeObj([0, 2, 4, 5]),
     }),
     introHints: freezeObj([
       ["order", "言葉の壁がある。客の様子と印を見て応える"],
