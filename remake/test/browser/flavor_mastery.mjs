@@ -57,7 +57,7 @@ await suite('flavor-mastery',async check=>{
   await page.locator('[data-test="after-none"]').click();await page.waitForFunction(()=>shiftDone);
   const result=await page.evaluate(()=>({xp:__remake.state.flavorMastery,stock:__remake.state.flavorStock,money:__remake.state.money}));
   assert.deepEqual(result.xp,{},'customer orders never grant flavor experience');
-  assert.deepEqual(result.stock,{lemon:50});assert(result.money>=51000); // 2コマ分の基本給16,000＋急なシフト5,000
+  assert.deepEqual(result.stock,{lemon:50});assert.equal(result.money,41000); // 初期所持金27,000＋基本給8,000＋急なシフト5,000＋好調1,000
  });
  await check('lemon-tournament-is-supplied-not-consumed' ,async page=>{
   // 課題のレモンは大会が無制限に支給する。本番で何g使っても私物在庫は減らない（#1052）。

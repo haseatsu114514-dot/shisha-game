@@ -7,6 +7,7 @@
 // 炭の調整（頼まれる前に自分から）と会計は、卓を押すだけ。客からの頼み（ケア）は、卓へ寄って5つの手から選ぶ。
 // 状態と金額は tonari-floor-model.js から読むだけで、本編の所持金・在庫・日付には触れない。
 import { el, yen } from "../core/util.js";
+import { FLOOR_COMMISSION_PERCENT } from "../core/shift-pay.js";
 import { showScreen, clearScreen, retire, toast } from "../core/ui.js";
 import { SE, playBgm, preloadBgm, requestedBgm } from "../core/audio.js";
 import { state as gameState } from "../core/state.js";
@@ -128,6 +129,8 @@ export function runTonariFloor({
   mount = null, kind = null,
   // topSales＝これまでの売上の最高（超えると、精算に「自己ベスト」が出る。0 は記録なし）
   topSales = 0,
+  // getAllowances＝精算時に本編の店番でつく手当の合計を取得する
+  getAllowances = () => 0,
   // dusk＝昼から夜まで通しの店番（本編のバイト。TFL62）。営業の半ばで日が暮れ、店内の絵を artNight（夜の絵）へ替える
   dusk = false, artNight = null,
   // tutorial＝チュートリアル（スミさんが横について一通りやらせる。TFL64）。結果は { tutorial: true, skipped }。
@@ -142,7 +145,7 @@ export function runTonariFloor({
   if (!mount && instantFloor()) {
     if (tutorial) return Promise.resolve({ tutorial: true, skipped: true });
     const opened = openNight();
-    return Promise.resolve(floorResult(floorAct(opened, { type: "finish" })));
+    return Promise.resolve(floorResult(floorAct(opened, { type: "finish" }), getAllowances()));
   }
   stylesheet();
   const layout = currentStage(stage);
@@ -1160,7 +1163,7 @@ export function runTonariFloor({
           el("p.tf-eyebrow", { text: "tonari" }),
           el("h2#tf-pause-title", { text: closing ? "早じまいにする？" : "ひと休み" }),
           el("p", { text: closing
-            ? "いまいる客を送り出して、店を閉めます。日当は変わりませんが、まだ来ていない客の分は売上になりません。"
+            ? "いまいる客を送り出して、店を閉めます。基本給はそのまま受け取れます。歩合は閉店までの売上で決まります。"
             : "休止中は、店の時間が止まっています。" }),
           coach ? el("div.tf-options", { dataset: { count: 2 } }, [
             option("つづける", "", resume, { primary: true, key: "resume" }),
@@ -1214,7 +1217,8 @@ export function runTonariFloor({
     }
     // 結果（精算）: 左に売上の内訳と合計、右に評価・ファン・満足の内訳・好評だったミックス（原価・利益は扱わない）
     function renderResult() {
-      const result = floorResult(state);
+      const result = floorResult(state, getAllowances());
+      const pay = result.pay;
       const record = topSales > 0 && result.sales > topSales; // これまでの売上の最高を超えた
       const drinks = result.groups.reduce((sum, row) => sum + Math.round((row.drink || 0) / PRICE.drink), 0);
       const items = [
@@ -1255,10 +1259,14 @@ export function runTonariFloor({
             sumiFace ? el("img", { src: sumiFace, alt: "", draggable: false }) : null,
             el("span", { text: `スミ「${result.comment}」` }),
           ]),
-          el("p.tf-slip-bonus", { dataset: { none: String(!result.bonus) }, text: result.bonus
-            ? `店からの売上ボーナス ＋${yen(result.bonus)}（日当とは別）` : "今回の売上ボーナスはなし（日当はいつもどおり）" }),
+          el("p.tf-slip-pay", { dataset: test("pay") }, [
+            el("span", { text: `基本給 ${yen(pay.base)}` }),
+            el("span", { text: `＋ 歩合（売上の${FLOOR_COMMISSION_PERCENT}%）${yen(pay.commission)}` }),
+            pay.allowances ? el("span", { text: `＋ 手当 ${yen(pay.allowances)}` }) : null,
+            el("strong", { text: `＝ 支給額 ${yen(pay.total)}` }),
+          ]),
           el("div.tf-options", { dataset: { count: 1 } }, [
-            option("シフトを終える", "", () => settle(alive() ? floorResult(state) : null), { primary: true, key: "continue" }),
+            option("シフトを終える", "", () => settle(alive() ? result : null), { primary: true, key: "continue" }),
           ]),
         ]),
       ]);

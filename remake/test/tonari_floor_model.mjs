@@ -700,7 +700,24 @@ test("締め: 全組を送り出すか時間で終わる。早じまいもでき
   const early = floorResult(act(serveFirst(createFloorNight({ seed: 9, level: 0 })), { type: "finish" }));
   assert.equal(early.closing, "early");
   assert.equal(early.served, 1);
+  assert.equal(early.sales, 3300);
+  assert.deepEqual(early.pay, { base: 8000, commission: 330, allowances: 0, total: 8330 });
+  const empty = floorResult(act(createFloorNight({ chapter: 2 }), { type: "finish" }), 5000);
+  assert.equal(empty.sales, 0);
+  assert.deepEqual(empty.pay, { base: 10000, commission: 0, allowances: 5000, total: 15000 });
   assert.equal(floorAct(s, { type: "finish" }), s, "終わった営業は進めない");
+});
+
+test("報酬は章ごとの基本給と売上の1割。円未満は切り捨て、評価は歩合に影響しない", () => {
+  for (const [i, base] of [8000, 10000, 12000, 14000, 16000].entries()) {
+    const night = createFloorNight({ chapter: i + 1 });
+    night.sales = 12349;
+    const low = floorResult(night);
+    const high = floorResult({ ...night, results: [{ mood: 100 }] });
+    assert.deepEqual([low.rank, high.rank], ["C", "S"]);
+    assert.deepEqual(low.pay, { base, commission: 1234, allowances: 0, total: base + 1234 });
+    assert.deepEqual(high.pay, low.pay);
+  }
 });
 
 test("通し: 気分に合う一台を選んで調整に回れば大入り。合わせない・放っておく夜は評価が低い", () => {
@@ -709,6 +726,7 @@ test("通し: 気分に合う一台を選んで調整に回れば大入り。合
     assert.equal(quick.rank, "S", `${night}: 合う一台を選んで、手際よく回せば大入り（${quick.score}）`);
     assert.equal(quick.left, 0);
     assert.equal(quick.sales, quick.groups.reduce((sum, g) => sum + g.total, 0));
+    assert.equal(quick.pay.total, 8000 + quick.sales / 10);
     assert.ok(quick.fans > 0 && quick.counts.tend >= 1);
     assert.ok(quick.mixes.length >= 1 && quick.mixes[0].avg >= quick.mixes.at(-1).avg);
     const blind = playFloorBot({ seed: 11, level, night, pace: 3, pick: "first" }).result;
@@ -717,6 +735,7 @@ test("通し: 気分に合う一台を選んで調整に回れば大入り。合
     assert.ok(lazy.score < quick.score && lazy.counts.tendLate >= 1, `${night}: 調整に行かないと下がる（${lazy.score}）`);
     const idle = playFloorBot({ seed: 11, level, night, pace: 16, pick: "first" }).result;
     assert.ok(["B", "C"].includes(idle.rank), `${night}: ほぼ放置（${idle.rank}）`);
+    assert.ok(idle.pay.commission < quick.pay.commission, `${night}: 売上を伸ばすと歩合が上がる`);
   }
   assert.equal(floorBotAction(createFloorNight({ seed: 1 }), {}), null, "開店直後は、することが無い");
 });

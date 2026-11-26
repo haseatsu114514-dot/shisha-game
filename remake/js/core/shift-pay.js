@@ -1,4 +1,4 @@
-// 通常シフトの昇給。勤務回数や章番号ではなく、この周回で確定した大会の実績を使う。
+// mukai の昇給は、この周回で確定した大会の実績を使う。
 // 保存する値は増やさない。旧セーブにも次の勤務から適用し、過去の日当は精算し直さない。
 const recorded = value => value === true || value === 1;
 
@@ -25,4 +25,15 @@ export const shiftBasePay = (value, base = 8000) => base + shiftAchievementBonus
 export function shiftPayNote(value, base = 8000) {
   const achievement = shiftAchievement(value);
   return `基本${shiftBasePay(value, base).toLocaleString("ja-JP")}円${achievement ? `（${achievement.label}を反映）` : ""}`;
+}
+
+// tonari の店番（昼と夜の2コマ・#4252）。章進行で基本給が上がる。
+const FLOOR_SHIFT_BASE = Object.freeze([8000, 10000, 12000, 14000, 16000]);
+export const FLOOR_COMMISSION_PERCENT = 10;
+export const floorShiftBasePay = (chapter = 1) => FLOOR_SHIFT_BASE[Math.min(chapter, FLOOR_SHIFT_BASE.length) - 1] ?? FLOOR_SHIFT_BASE[0];
+
+export function floorShiftPay(chapter, sales, allowances = 0) {
+  const base = floorShiftBasePay(chapter);
+  const commission = Math.floor(sales * FLOOR_COMMISSION_PERCENT / 100);
+  return { base, commission, allowances, total: base + commission + allowances };
 }

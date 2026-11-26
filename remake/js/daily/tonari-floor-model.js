@@ -1,5 +1,5 @@
 // tonari フロア営業のルール（ワンオペ・ミックスを一覧から選ぶ形）。時間は刻み（tick）で進み、操作は刻みを使わない。
-// 本編の状態・給与・在庫から独立した純粋な関数だけを置く（同じ種と同じ操作なら同じ一晩になる）。
+// 本編の状態・在庫から独立した純粋な関数だけを置く（同じ種と同じ操作なら同じ一晩になる）。
 // 画面（tonari-floor-view.js）が実時間で floorTick を呼び、ミックスやケアを選んでいる間は呼ばない（時間停止）。
 //
 // 卓の流れ: empty →（来店・自動で着席）→ order（注文待ち。約9秒で怒って帰る）→ prep（仕込み。同時に2台まで）
@@ -7,6 +7,7 @@
 //   客は気分（フルーティ／スイート／刺激系／リラックス）を言うだけ。並んでいるミックス（手札）から、合う一台を選んで出す。
 //   炭は、頼まれなくても自分から調整に行く（炭の残りが少なくなったら）。放っておくと、客から頼まれる。
 //   滞在が終わる時、居心地の良い客は自分からおかわり（トップ替え）を頼むことがある。おかわりも、客が吸いたい気分を言い、並んだミックスから選んで出す。
+import { floorShiftPay } from "../core/shift-pay.js";
 import {
   PRICE, FLAVORS, AROMATIC_SPICES, MIXES, WISHES, HAND_SIZE, VISITORS, STAY, GUESTS, CALLS, NIGHTS, RANKS, MOODS, mixIdsFor,
   SERVE_LINES, SEND_LINES, CALL_MISS, byTime,
@@ -724,7 +725,7 @@ export function floorOutlook(s) {
   return { score, rank: rank.id, stamp: rank.stamp, left, next: upper ? { rank: upper.id, stamp: upper.stamp, need: Math.max(0, upper.min - score), blocked: upper.id === "S" && left > 0 } : null };
 }
 
-export function floorResult(s) {
+export function floorResult(s, allowances = 0) {
   const groups = s.results.map((row) => ({ ...row }));
   const score = groups.length ? Math.round(groups.reduce((sum, row) => sum + row.mood, 0) / groups.length) : 0;
   const left = groups.filter((row) => row.left).length;
@@ -736,7 +737,8 @@ export function floorResult(s) {
   return {
     night: s.night, title: s.title, sales: s.sales, visitor: s.visitor,
     items: { charge: sum("charge"), shisha: sum("shisha"), drink: sum("drink"), top: sum("top") },
-    fans: s.fans, score, rank: rank.id, stamp: rank.stamp, bonus: rank.bonus, comment: rank.line,
+    fans: s.fans, score, rank: rank.id, stamp: rank.stamp, comment: rank.line,
+    pay: floorShiftPay(s.chapter, s.sales, allowances),
     groups, served: groups.filter((row) => !row.left).length, came: groups.length, left,
     stages: Object.fromEntries(MOODS.map((m) => [m.id, groups.filter((row) => row.stage === m.id).length])),
     counts: { ...s.counts }, fevers: s.fevers, shuffles: s.shuffles, streak: s.bestStreak, closing: s.closing, mixes,
