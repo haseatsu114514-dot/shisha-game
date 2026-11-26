@@ -37,6 +37,40 @@ async function init(page) {
 }
 
 await suite("ch1-tournament", async check => {
+  await check("morning-cheers-reload", async page => {
+    await init(page);
+    await page.evaluate(() => {
+      const s = T.core.state;
+      Object.assign(s, { phase: "daily", day: 14, contacts: ["tsumugi", "rio"], stamina: 49 });
+      for (const ev of Object.values(T.chapter.NIGHT_EVENTS)) for (const key of ev.doneKeys || []) s.flags[key] = true;
+      for (const step of T.story.TSUMUGI_STORY) s.flags[step.flag] = true;
+      s.flags._ev_last_night = true;
+      void T.chapter.devTournament();
+    });
+    const next = page.locator('[data-test="phone-next"]');
+    await next.waitFor();
+    assert.equal(await page.locator(".phone-status span").first().textContent(), "AM 7:40");
+    const ids = await page.evaluate(() => T.core.state.inbox.find(i => i.requiredMessageIds).requiredMessageIds);
+    assert.deepEqual([...ids].sort(), ["encourage_rio", "encourage_tsumugi"]);
+    await next.click();
+    await page.reload(); // the first cheer is saved, the other is still unread
+    await page.locator('[data-test="title-load"]').click();
+    await page.locator('[data-test="slot-0"]').click();
+    await next.waitFor();
+    assert.deepEqual(await page.evaluate(() => window.__remake.state.limeRead), ids);
+    assert.equal(await page.evaluate(() => window.__remake.state.tournament.attempts), 0);
+    await next.click();
+    await page.locator('[data-test="phone-close"]').click();
+    await page.waitForFunction(() => window.__remake.state?.tournament.attempts === 1);
+    const result = await page.evaluate(() => {
+      const s = window.__remake.state;
+      return { ids: s.inbox.filter(i => i.done && i.read).map(i => i.id), read: s.limeRead,
+        stamina: s.tournament.entryResources.stamina };
+    });
+    assert.deepEqual(result, { ids, read: ids, stamina: 49 });
+    assert.equal(await page.locator(".phone-overlay").count(), 0);
+  });
+
   for (const touch of [false, true]) await check(`completion-comments-${touch ? "touch" : "pc"}`, async page => {
     await init(page);
     await page.evaluate(async () => {

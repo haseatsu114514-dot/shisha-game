@@ -8,7 +8,7 @@ const dialogues=Object.fromEntries(story.map(d=>[d.dialogue_id,d]));
 async function run(failure=null,{pullMode="success",insight=30}={}){
  const trace=[],texts=[];let ended=false,resolvePull,enterPull,error=null;
  const atPull=new Promise(r=>enterPull=r),rejected=new Error("controlled pull rejection");
- const state={phase:'tournament',day:14,slot:0,flags:{},stats:{technique:30,insight,sense:30},met:{},tournament:{attempts:0}};
+ const state={phase:'tournament',day:14,slot:0,flags:{},stats:{technique:30,insight,sense:30},met:{},inbox:[],tournament:{attempts:0}};
  const cs={holes:{score:70},heat:{score:70},steam:{score:70},pull:{score:70},mixInfo:{score:70},tournamentStory:{seen:[]}};
  function el(){return {classList:{add(){}},append(){},replaceChildren(){},remove(){}};}
  const end=new Error('review boundary completed');

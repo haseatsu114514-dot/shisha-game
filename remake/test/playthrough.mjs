@@ -446,6 +446,14 @@ log(`attempts=${s.tournament.attempts} lastRank=${s.tournament.lastRank} total=$
 if (s.phase !== "cleared") throw new Error(`expected cleared, got ${s.phase}`);
 const recognitionComments = await page.evaluate(() => Object.entries((window.__remake.DB || {}).dialogues || {}).flatMap(([id, d]) =>
   id.startsWith("ch1_craft_recognition_") ? d.lines.filter(l => l.speaker === "sumi").map(l => l.text) : []));
+const morning = s.inbox.find(item => item.chapter === 1 && item.day === 14 && item.requiredMessageIds);
+if (!morning?.requiredMessageIds.length) throw new Error("Missing tournament morning cheers");
+for (const id of [...morning.requiredMessageIds, "_sys_sumi_scoresheet", "_sys_unknown_recorded"]) {
+  const items = s.inbox.filter(item => item.id === id);
+  if (items.length !== 1 || !items[0].read || !items[0].done || s.limeRead.filter(key => key === id).length !== 1) {
+    throw new Error(`Tournament LIME did not finish exactly once: ${id}`);
+  }
+}
 const scoreSheet = s.inbox.find(item => item.id === "_sys_sumi_scoresheet");
 if (!recognitionComments.length || !scoreSheet?.msg.messages.some(text => recognitionComments.includes(text))) {
   throw new Error("A successful tournament did not acknowledge any actual craft step");

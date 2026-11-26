@@ -113,6 +113,25 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
       await pause("phone");
       return [];
     },
+    // #4035 D3: 大会の通知は共通受信箱（deliverLimeMessage + openLime）で届く。
+    // 実物と同じく、届けた項目を受信箱へ積んで返し、読む側は現在の所有者の箱にある項目だけを完了にする。
+    deliverLimeMessage: message => {
+      const item = { id: message.id, originId: message.id, day: current().day, chapter: current().chapter,
+        msg: { ...message }, read: false, done: false, replyState: "none", log: [] };
+      current().inbox.push(item);
+      return item;
+    },
+    openLime: async ({ story }) => {
+      assert.equal(titlePresent, false, "LOAD's title screen must be removed before phone content appears");
+      observe("phone", { title: story.title, ids: story.items.map(item => item.id) });
+      const owner = current();
+      await pause("phone");
+      if (current() === owner) {
+        for (const item of story.items) { item.read = true; item.done = true; }
+        if (story.onRead) story.onRead();
+      }
+      return [];
+    },
     el: (selector, attrs = {}, children = []) => ({ selector, isConnected: true, addEventListener() {}, focus() {},
       ...(Array.isArray(attrs) ? { children: attrs } : { ...attrs, children }) }),
     radar: () => ({}),
@@ -262,8 +281,14 @@ assert.deepEqual(legacyWinner.money, [], "old paid save is not paid again");
 
 const complete = await harness({ paid: false, revealed: false });
 await checkRun(complete);
-const checkpointByStep = new Map(complete.writes.filter(saved => saved.tournament.victory?.paid)
-  .map(saved => [saved.tournament.victory.step, saved]));
+// #4035 D3 以降、大会の通知は配達時と既読時にも段の途中で保存される。
+// 各段のチェックポイントは「その段に入った時点の保存」（最初に現れたもの）を指す。
+const checkpointByStep = new Map();
+for (const saved of complete.writes) {
+  if (!saved.tournament.victory?.paid) continue;
+  const step = saved.tournament.victory.step;
+  if (!checkpointByStep.has(step)) checkpointByStep.set(step, saved);
+}
 for (let step = 0; step <= 10; step++) {
   const snapshot = checkpointByStep.get(step);
   assert(snapshot, `real AUTO checkpoint ${step} must have been saved`);
