@@ -46,7 +46,7 @@
 .camel-dot[data-who="player"] { z-index: 1; width: 1.25em; height: 1.25em; background: radial-gradient(circle at 35% 35%, #fff6d6, var(--cr-gold) 55%, var(--cr-gold-deep)); box-shadow: 0 0 0 2px #fff, 0 0 10px rgba(255,215,122,.8); }
 
 /* 順位: 右上に縦に4枚。入れ替わると上下へ滑る */
-.camel-standings { --row-h: 2.6em; --row-gap: .35em; position: absolute; right: 1.6cqw; top: calc(1.6cqw + 46px); width: 13.5em; height: calc(var(--row-h) * 4 + var(--row-gap) * 3); margin: 0; padding: 0; list-style: none; contain: layout style; }
+.camel-standings { --row-h: 2.6em; --row-gap: .35em; position: absolute; right: 1.6cqw; top: calc(1.6cqw + var(--q-hit) + 2px); width: 13.5em; height: calc(var(--row-h) * 4 + var(--row-gap) * 3); margin: 0; padding: 0; list-style: none; contain: layout style; }
 .camel-standings li { position: absolute; left: 0; right: 0; top: calc(var(--pos, 0) * (var(--row-h) + var(--row-gap))); height: var(--row-h);
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: .55em; align-items: center; padding: 0 .7em 0 .45em; box-sizing: border-box;
   border-radius: .7em; background: linear-gradient(180deg, rgba(40,26,14,.9), rgba(18,11,6,.9)); border: 1px solid rgba(255,255,255,.08);
@@ -272,7 +272,7 @@
   .camel-clock-sub, .camel-speed-bar, .camel-rhythm small, .camel-voice .camel-control-text strong, .camel-signal-head { display: none; }
   .camel-progress { left: 22cqw; right: 22cqw; }
   .camel-close { min-height: max(44px, var(--cr-tap)); padding-inline: 18px; font-size: max(18px, var(--cr-min)); }
-  .camel-standings { --row-h: 2.2em; --row-gap: .3em; top: calc(1.6cqw + max(44px, var(--cr-tap)) + 10px); width: 12em; }
+  .camel-standings { --row-h: 2.2em; --row-gap: .3em; top: calc(1.6cqw + var(--q-hit) + 2px); width: 12em; }
   .camel-standings li { grid-template-columns: auto minmax(0, 1fr) auto; }
   .camel-chip-gap { display: inline; font-size: max(18px, var(--cr-min)); }
   .camel-call { max-width: 44%; font-size: max(clamp(12px, 1.3cqw, 17px), var(--cr-min)); }
@@ -321,7 +321,7 @@
 @media (prefers-reduced-motion: reduce) { .camel-cup:not(:disabled):hover { transform: none; } }
 
 /* ---- 「？」の統一と、常に出す文をもう一段減らす（#2729・2026-11-08 オーナー指摘「文字が多い・？が大きい」） ----
-   「？」: 見た目は細い線の丸（::before）。大きさは #4131 の共通標準（丸38px・押せる箱52px、--q-* 式）で、カードの右上のまま。
+   「？」: 見た目は細い線の丸（::before）。大きさは #4131 の共通標準（丸43px・押せる箱58px、--q-* 式）で、カードの右上のまま。
    スマホでは、時計の上の英字「CAMEL RACE」、遊び方の「HOW TO PLAY n/3」（下の点で分かる）と大会選びの「HABIBA RACING CLUB」、
    大会選びの前置きの一文と時間の決まり（カードの title へ）、各大会の「CUP 01」の英字を出さない。 */
 .camel-game { --q-hit: max(58px, calc(54px / var(--k, 1))); --q-font: max(27px, calc(15px / var(--k, 1))); --q-dot: calc(var(--q-font) + 16px); }

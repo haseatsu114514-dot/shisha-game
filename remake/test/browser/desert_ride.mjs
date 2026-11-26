@@ -37,7 +37,7 @@ const assertSpeedo = async page => {
     return { dial: rect(".dr-speedo"), bar: rect(".dr-boost-meter"), clock: rect(".dr-clock"), panel: rect(".dr-hud-right"), quit: rect(".dr-quit") };
   });
   assert(rows.dial.bottom <= rows.bar.top && rows.bar.bottom <= rows.clock.top, "dial, boost bar and clock have separate rows");
-  assert(rows.clock.bottom <= rows.panel.bottom && rows.panel.bottom <= rows.quit.top, "clock and quit stay outside each other's bounds");
+  assert(rows.quit.bottom <= rows.panel.top && rows.clock.bottom <= rows.panel.bottom, "quit sits above the HUD panel without overlapping the clock");
   const flameLoads = await page.evaluate(() => performance.getEntriesByType("resource").filter(entry => /boost-(aura|burst|spark)\.webp/.test(entry.name)).length);
   assert.equal(flameLoads, 0, "boost does not load the screen-obscuring flame effects");
 };
@@ -499,11 +499,11 @@ await suite("desert-ride", async check => {
       assert(box.y > stage.y + stage.height * 0.7, "buttons sit at the bottom");
     }
     assert(right.x + right.width < stage.x + stage.width * 0.35 && jump.x > stage.x + stage.width * 0.7, "the middle of the view stays clear");
-    // やめるは ✕ の丸ボタン。指で押せる大きさ（実寸 38px 以上）で、HUD・下辺のボタンと重ならない（#2838）
+    // やめるは右上の ✕ の丸ボタン（#4131 共通標準）。指で押せる大きさ（実寸 38px 以上）で、HUD の上に収まり下辺のボタンとも重ならない
     const quitBox = await page.locator(t("desert-quit")).boundingBox(), hudRight = await page.locator(".dr-hud-right").boundingBox();
     assert.equal(await page.locator(t("desert-quit")).innerText(), "✕");
     assert(quitBox.width >= 38 && quitBox.height >= 38, `quit is big enough (${quitBox.width}x${quitBox.height})`);
-    assert(quitBox.y >= hudRight.y + hudRight.height && quitBox.y + quitBox.height <= jump.y, "quit sits between the HUD and the touch buttons");
+    assert(quitBox.y >= stage.y && quitBox.y + quitBox.height <= hudRight.y && hudRight.y + hudRight.height <= jump.y, "quit sits at top-right above the HUD and clear of the touch buttons");
     await page.waitForFunction(() => [...document.querySelectorAll(".dr-touch")].every(button => button.classList.contains("art-ready")));
     // 2026-11-11 オーナー「スティックはいらない。左右ボタンを大きく。ジャンプとブーストも大きく」
     assert.equal(await page.locator(".dr-stick").count(), 0, "no stick: left/right are buttons only");
