@@ -86,9 +86,10 @@
 .dr-touch.on, .dr-touch:active { background: rgba(255,214,150,.78); color: #3a2520; transform: scale(.97); }
 .dr-touch.dr-jump.on, .dr-touch.dr-jump:active { background: rgba(255,170,90,.92); }
 @media (hover: hover) and (pointer: fine) { .dr-touch { opacity: .55; } .dr-touch:hover { opacity: .9; } .desert-ride:not([data-gauge="full"]) .dr-touch.dr-boost { opacity: .3; } }
-/* やめる: ✕ の丸ボタン（#4131 共通標準: 箱 --q-hit・丸 --q-dot を ::before で描く）。HUD 右の箱の下に置き、下辺のタッチボタンとは離す */
-.dr-quit { position: absolute; right: 22px; top: 204px; width: var(--q-hit); height: var(--q-hit); padding: 0; display: grid; place-items: center; isolation: isolate; border: 0; border-radius: 50%; background: transparent; color: #4a2f28; font: 900 var(--q-font)/1 var(--font); cursor: pointer; }
-.dr-quit::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box; width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,248,236,.82); pointer-events: none; }
+/* やめる: ✕ の丸ボタン（#4131 共通標準: 箱 --q-hit・丸 --q-dot を ::before で描く）。画面右上の HUD の上に置き、操作ボタンと離す */
+.dr-quit { position: absolute; right: 22px; top: 14px; width: var(--q-hit); height: var(--q-hit); padding: 0; display: grid; place-items: center; isolation: isolate; border: 0; border-radius: 50%; background: transparent; color: #4a2f28; font: 900 var(--q-font)/1 var(--font); cursor: pointer; }
+.dr-quit::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box; width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); border: 1.5px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,248,236,.82); pointer-events: none; }
+.dr-quit:is(:hover, :focus-visible)::before { background: #fff; border-color: #b2652f; }
 .dr-quit[hidden] { display: none; }
 
 /* ---- カード（メニュー・リザルト） ---- */
@@ -101,7 +102,7 @@
 /* 遊び方: 右上の「？」を押した時だけ、カードの上に重ねて見せる（常時は出さない） */
 .dr-help-btn { position: absolute; right: 18px; top: 18px; width: var(--q-hit); height: var(--q-hit); padding: 0; display: grid; place-items: center; isolation: isolate; border: 0; border-radius: 50%; background: transparent; color: #b2652f; font: 900 var(--q-font)/1 var(--font); cursor: pointer; }
 .dr-help-btn::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box; width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); border: 2px solid rgba(120,80,50,.45); border-radius: 50%; background: rgba(255,255,255,.7); pointer-events: none; }
-.dr-help-btn:is(:hover, :focus-visible) { outline: 3px solid rgba(212,82,31,.5); outline-offset: 2px; }
+.dr-help-btn:focus-visible { outline: 3px solid rgba(212,82,31,.5); outline-offset: 2px; }
 .dr-help-btn:is(:hover, :focus-visible)::before { background: #fff; }
 .dr-help { display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .dr-menu[data-help="open"] > :not(.dr-help) { display: none; }
@@ -148,8 +149,6 @@
   .dr-combo { min-height: 28px; }
   .dr-gauge { height: 24px; }
   .dr-time { font-size: 26px; }
-  .dr-quit { top: 252px; width: var(--q-hit); height: var(--q-hit); font-size: var(--q-font); }
-  .dr-help-btn { width: 84px; height: 84px; font-size: 44px; }
   .dr-button { min-height: 84px; }
   .dr-guide { top: 92px; }
   .dr-guide-face { width: 76px; height: 76px; }
@@ -281,8 +280,8 @@ html:root[data-density="phone"] .desert-ride .dr-card .dr-kicker { display: none
 .desert-ride[data-gauge="full"] .dr-touch.dr-boost.art-ready, .desert-ride[data-gauge="boost"] .dr-touch.dr-boost.art-ready { background: transparent; filter: drop-shadow(0 0 12px rgba(255,157,49,.9)); }
 .desert-ride .dr-touch:focus-visible, .desert-ride .dr-quit:focus-visible { outline: 3px solid #fff7cf; outline-offset: 3px; }
 
-/* メーター、バー、時計に独立した行を与える。やめるボタンは HUD の外側へ置く。 */
-.desert-ride .dr-hud-right { position: relative; display: grid; grid-template-rows: 118px 28px 26px; row-gap: 5px; box-sizing: border-box; width: 260px; min-width: 260px; }
+/* メーター、バー、時計に独立した行を与える。やめるボタン（✕）は右上（HUD の上）へ置き、HUD はその下へ下げる（#4131）。 */
+.desert-ride .dr-hud-right { position: relative; display: grid; grid-template-rows: 118px 28px 26px; row-gap: 5px; box-sizing: border-box; width: 260px; min-width: 260px; margin-top: calc(var(--q-hit) + 4px); }
 /* 速度メーター（2026-11-11 作り直し。オーナー「見た目がしょぼい。数字とバーが被ってる」）:
    左に針の文字盤（生成した文字盤の画像の上に、目盛り・熱の色の弧・赤い帯・針を描く）、右に大きな数字。数字は文字盤の外で、重ならない。 */
 .desert-ride .dr-speedo { display: grid; grid-template-columns: 118px minmax(0, 1fr); align-items: center; column-gap: 8px; box-sizing: border-box; width: 100%; min-width: 0; min-height: 0; }
@@ -304,7 +303,7 @@ html:root[data-density="phone"] .desert-ride .dr-card .dr-kicker { display: none
 .desert-ride .dr-kmh { font-size: 62px; line-height: .86; letter-spacing: -.02em; }
 .desert-ride .dr-speedo-read small { letter-spacing: .12em; }
 .desert-ride .dr-boost-meter, .desert-ride .dr-clock { margin-top: 0; min-width: 0; }
-.desert-ride .dr-hud-right .dr-quit { top: calc(100% + 12px); right: 0; pointer-events: auto; }
+.desert-ride .dr-hud-right .dr-quit { top: auto; bottom: calc(100% + 4px); right: 0; pointer-events: auto; }
 #stage[data-wide] .desert-ride .dr-hud-right .dr-quit { right: 0; }
 html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch { width: 168px; height: 168px; }
 html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-boost,
