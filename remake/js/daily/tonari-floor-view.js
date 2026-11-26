@@ -15,7 +15,7 @@ import { displayName, faceIconUrl } from "../core/data.js";
 import { buildVersioned } from "../core/asset-version.js";
 import { sideSlot, releaseSideSlot } from "../core/side-area.js";
 import {
-  createFloorNight, floorTick, floorAct, floorTap, floorHint, floorResult, floorUrgency, floorWaitLeft,
+  createFloorNight, floorTick, floorAct, floorTap, floorOrderTarget, floorHint, floorResult, floorUrgency, floorWaitLeft,
   floorStayLeft, floorCoalLeft, floorTendDue, floorMaking, floorHand, floorShuffleLeft, floorTimeLeft, floorStage, floorBill, floorFeverLevel,
   mixName, mixNameParts, mixFlavorParts, mixFullName, floorOutlook, floorLastCall, floorPlan, floorFeverLength, floorSlots, floorShuffleTime, FLOOR_TICK_MS, FLOOR_TABLE_COUNT,
   floorCallLine, floorDusk, createFloorTutorial, floorTutorialCue,
@@ -668,14 +668,9 @@ export function runTonariFloor({
       making.setAttribute("aria-label", list.length
         ? `仕込み中: ${active.map((m) => `${m.tableId}卓 ${m.label}`).join("、")}${waiting ? `。順番待ち ${waiting}台` : ""}` : "仕込み中: なし");
     }
-    // ミックスを出す先: 選んでいる卓が注文待ちならその卓、でなければいちばん急ぎの注文待ちの卓
-    function targetTable() {
-      const waiting = state.tables.filter((x) => x.phase === "order").sort((a, b) => floorUrgency(state, b.id) - floorUrgency(state, a.id));
-      return waiting.find((x) => x.id === selected) || waiting[0] || null;
-    }
     // 右の列: 並んでいるミックス。左に属性の印（メインが大きく、サブが小さい）。注文待ちの卓があれば、その客に合う札（◎・○）が灯り、合わない札は沈む
     function syncHand() {
-      const target = targetTable();
+      const target = floorOrderTarget(state, selected);
       const order = target ? state.guests[target.guestId].order : null;
       const wish = order?.wish || null;
       const hand = floorHand(state, order);
@@ -811,13 +806,13 @@ export function runTonariFloor({
     // 右の列のミックスをひと押しで出す（いちばん急ぎの注文待ちの卓へ。選んでいる卓が注文待ちなら、その卓へ）
     function quickServe(mixId) {
       if (mode !== "live") return;
-      const target = targetTable();
+      const target = floorOrderTarget(state, selected);
       if (!target) { SE.error(); log("注文待ちの卓がありません"); return; }
       select(target.id);
       if (!perform({ type: "order", tableId: target.id, mix: mixId })) SE.error();
     }
     function doShuffle() {
-      if (!perform({ type: "shuffle" })) { SE.error(); return; }
+      if (!perform({ type: "shuffle", tableId: selected })) { SE.error(); return; }
       // 入れ替えには時間がかかるので、列は閉じて店へ戻る（その間に、ほかの卓を見られる）
       if (mode === "panel" && panel?.kind === "order") closePanel({ cancel: false });
     }
