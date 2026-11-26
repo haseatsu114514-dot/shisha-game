@@ -172,9 +172,9 @@ assert(all.DB.dialogues.ch1_tsumugi_bond_finale && all.DB.dialogues.ch1_rio_bond
 assert(all.DB.friends.friends.naru.chats.length > 0); // 友人のたまのLIME（remake/data/friends.json）
 assert(all.DB.manifest.backgrounds.includes("bg_tonari_inside_day.png"));
 assert(all.DB.flavors.every((f) => (f.leaf || "blond") === "blond"));
-// DB.flavors はローダがブロンドのみに絞るため、メーカー検証は生データ全85種を対象にする（2026-11-02 新フレーバー7種・NF01、2026-11-15 カシス追加）。
+// DB.flavors はローダがブロンドのみに絞るため、メーカー検証は生データ全84種を対象にする（2026-11-02 新フレーバー7種・NF01、2026-11-15 カシス追加、2026-11-26 フローズンベリー廃止）。
 const rawFlavors = realJSON("../data/flavors.json").flavors;
-assert.equal(rawFlavors.length, 85);
+assert.equal(rawFlavors.length, 84);
 const makerProblems = flavorMakerProblems(rawFlavors);
 assert.equal(makerProblems.length, 0, `Invalid flavor makers: ${JSON.stringify(makerProblems)}`);
 assert.deepEqual(flavorMakerProblems([
