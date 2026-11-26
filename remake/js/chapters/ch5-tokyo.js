@@ -157,7 +157,9 @@ async function careForTetsuko(owner) {
   const result = await openTetsukoTime({ value: owner, visitKey,
     bg: sceneBg("bg_street", timeOfDay()).url, isCurrent: () => state === owner });
   if (state !== owner || result?.cancelled) return false;
-  return settleTetsukoTime(owner, { ...result, visitKey, meaningful: stageRead || !!result?.meaningful }).committed;
+  const settled = settleTetsukoTime(owner, { ...result, visitKey, meaningful: stageRead || !!result?.meaningful });
+  if (settled.memoriesSaved) save();
+  return settled.committed;
 }
 
 let loading = null;

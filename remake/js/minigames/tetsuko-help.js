@@ -28,7 +28,7 @@ export const HELP = Object.freeze([
   ]) }),
 ]);
 
-export const HELP_NOTE = "1日1回、てつこと遊んでしぐさを手帳に残そう。";
+export const HELP_NOTE = "なかよし度は次の日に引き継がれる。ごきげんな日が10回で、ハートが5つそろう。";
 
 /**
  * 「？」の中身を作る（DOM は呼び出し側の el で作る）。

@@ -886,6 +886,21 @@ export function summary(game) {
 /** 結果の段（#3779）。段の無い結果（段ができる前の保存・なるとの勝負）は中級＝今の遊びとして扱う。 */
 export const resultTier = value => tierOf(value?.tier);
 
+/** 自己ベスト表示の区分。報酬と段の判定は従来どおり resultTier を使う。 */
+export const desertBestKey = result => result.race?.who === "naru" ? "naru" : resultTier(result);
+export function desertDisplayBests({ best, easyBest, bests } = {}) {
+  const records = {};
+  // 本編の総合ベストには対戦相手と段が残る。旧試遊ページの総合ベストは区分できない。
+  const knownKey = best?.finished ? desertBestKey(best) : null;
+  for (const key of [...TIERS, "naru"]) {
+    const top = bests?.[key] ?? (key === "easy" ? easyBest : key === knownKey ? best : null);
+    if (top?.rulesVersion === RULES_VERSION && Number.isFinite(top.score) && RANK_ORDER.includes(top.rank)) {
+      records[key] = { score: top.score, rank: top.rank, rulesVersion: top.rulesVersion };
+    }
+  }
+  return records;
+}
+
 /** 保存する記録の形を検査して整える（形が合わなければ null）。段（tier）は知っている値だけ残す（無ければ resultTier で中級）。 */
 export function readResult(value) {
   if (!value || typeof value !== "object" || value.finished !== true) return null;

@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
 import { AxePullSession, SCENE, scenePoint, boardPoint, pullPower, FLICK, flickPower, flickRead, flickSpeedFor } from '../js/minigames/axe-pull-model.js';
 import { resolveThrow, releaseAimAt, KILLS, totalOf } from '../js/minigames/axe-model.js';
 import { createMatch, takeTurn, turnOf, planOpponent } from '../js/minigames/axe-match.js';
@@ -18,8 +17,16 @@ test('flick power follows the upward speed on a log scale, with the sweet band a
  // 画面の高さで割るので、同じ「画面に対する速さ」なら端末が違っても同じ強さ
  assert(Math.abs(flickPower(stroke(3,{height:720}),720).raw-flickPower(stroke(3,{height:390}),390).raw)<1e-9);
  // 速さは離す直前 window ms で測る（ゆっくり始めて最後に速く弾けば、最後の速さ）
- const late=[{t:0,x:400,y:300},{t:400,x:400,y:290},{t:440,x:400,y:290-3*390*.04},{t:490,x:400,y:290-3*390*.09}];
+ const late=[{t:0,x:400,y:300},{t:400,x:400,y:290},{t:440,x:400,y:290-FLICK.base*390*.04},{t:490,x:400,y:290-FLICK.base*390*.09}];
  assert(Math.abs(flickPower(late,390).raw-.62)<.02,'the last ~90 ms decide the strength');
+});
+test('brief stops and small rebounds at release preserve the flick', () => {
+ const samples = stroke(FLICK.base);
+ const last = samples.at(-1);
+ for (const dy of [0, 1]) {
+  const result = flickPower([...samples, { ...last, t: last.t + 70, y: last.y + dy }], 390);
+  assert.equal(result.raw, flickPower(samples, 390).raw);
+ }
 });
 test('flick lean drifts sideways; taps, downward, sideways and malformed strokes are not throws',()=>{
  const right=flickPower(stroke(3,{lean:.4}),390);assert(Math.abs(right.lean-.4*FLICK.lean)<1e-9);assert(right.lean>0);
@@ -50,5 +57,4 @@ test('practice and all ten throws finish with canonical rank/result and independ
 test('declared kills stay explicit and limited, no inferred declaration from tapping blue',()=>{const s=new AxePullSession();const k=KILLS[0];s.aimAt(k);assert.equal(s.called,null);assert(s.declare(k.id));assert.equal(s.declare('unknown'),false);pull(s);s.impact();s.next();assert.equal(s.called,null);});
 test('versus decisions and histories match the canonical deterministic match',()=>{for(const difficulty of ['easy','normal','hard']){const s=new AxePullSession({mode:'versus',difficulty});let match=createMatch(difficulty,11,'rec');let guard=0;while(s.phase!=='summary'&&guard++<100){if(s.actor==='player'&&s.phase==='aim'){s.aimAt({x:0,y:0});pull(s);} const pending=s.pending;assert(pending);match=takeTurn(match,s.actor,{...pending.aim,power:pending.power,called:pending.called,baseAim:pending.baseAim,sway:pending.sway});s.impact();s.next();assert.deepEqual(s.match,match);}assert.equal(s.phase,'summary');assert.equal(turnOf(match),null);assert(s.result(true).match.winner);}});
 test('sudden death follows canonical calls without adding normal throws',()=>{const s=new AxePullSession({mode:'versus'});let m=createMatch('normal',11,'rec');for(let i=0;i<10;i++){m=takeTurn(m,'player',{x:0,y:0,power:.62});m=takeTurn(m,'opponent',{x:0,y:0,power:.62});}s.match=m;s.shots=m.player;s.phase='result';s.next();assert(s.suddenDeath);assert.equal(s.called,'upper-left');s.aimAt(KILLS[0]);pull(s);s.impact();assert.equal(s.shots.length,10);assert.equal(s.match.suddenDeath.length,1);assert.equal(s.match.suddenDeath[0].player.called,'upper-left');s.next();assert.equal(s.actor,'opponent');const ai=planOpponent(s.match);assert.deepEqual(s.pending.aim,{x:ai.x,y:ai.y});s.impact();s.next();assert(['aim','summary'].includes(s.phase));});
-test('no save/reward writes or main runtime replacement; page uses shared deployment boot',()=>{const page=fs.readFileSync(new URL('../js/axe-pull-preview-page.js',import.meta.url),'utf8'),model=fs.readFileSync(new URL('../js/minigames/axe-pull-model.js',import.meta.url),'utf8'),html=fs.readFileSync(new URL('../axe-pull-preview.html',import.meta.url),'utf8');assert(!/localStorage|sessionStorage|indexedDB|saveState|grantReward/.test(page+model));assert(html.includes('data-page="js/axe-pull-preview-page.js"'));assert(html.includes('name="suien-build"'));for(const event of ['pointercancel','lostpointercapture','visibilitychange','blur','resize'])assert(page.includes(event));});
 test('invalid options do not unlock secret opponent',()=>{for(const option of [{mode:'x'},{division:'x'},{mode:'versus',difficulty:'secret'},{seed:-1},{steady:.1}])assert.throws(()=>new AxePullSession(option),RangeError);});

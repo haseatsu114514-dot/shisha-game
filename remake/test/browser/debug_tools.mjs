@@ -596,6 +596,7 @@ await suite("debug-tools", async check => {
       && window.__bgmElements.some(a => a.src.startsWith("blob:") && !a.paused && a.volume > 0));
     await waitTitleStopped();
     await page.locator(t("camel-close")).click();
+    await page.locator(t("camel-pause-quit")).click();
     await waitTitleRestored();
 
     // DESERT RIDE: starts bgm_ethnic12 in practice and restores title when leaving via its own buttons.
@@ -606,6 +607,7 @@ await suite("debug-tools", async check => {
       && window.__bgmElements.some(a => a.src.startsWith("blob:") && !a.paused && a.volume > 0));
     await waitTitleStopped();
     await page.locator(t("desert-quit")).click();
+    await page.locator(t("desert-quit-confirm")).click();
     await page.locator(t("desert-leave")).click();
     await waitTitleRestored();
 
@@ -653,6 +655,7 @@ await suite("debug-tools", async check => {
     await page.locator(t("tetsuko-cat")).waitFor({ timeout: 30000 });
     await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "bgm_tetsuko_time");
     await page.locator(t("tetsuko-time-back")).click();
+    await page.locator(t("tetsuko-quit-confirm")).click();
     await waitTitleRestored();
 
     // Switching directly from tetsuko (which replaced #screen) to ichidai stops bgm_tetsuko_time and restores title on exit.

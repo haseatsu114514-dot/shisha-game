@@ -1,3 +1,4 @@
+import { openMinigamePause } from "./minigame-pause.js";
 import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-mastery.js";
 import { withMinigameStyles } from "./minigame-styles.js";
 import { emit } from "../core/bus.js";
@@ -45,15 +46,15 @@ export const TETSUKO_STAMINA = TOKYO_OUTINGS.find(outing => outing.id === "tetsu
  * 意味のあるふれあい（result.meaningful）で、まだ確定していない訪問キー（result.visitKey）のときだけ、
  * この一回の処理の中で (a) 来訪記録 _ch3_outings.tetsuko を +1、(b) _tetsuko_time に小物の配置・発見・
  * アルバム・おやつの日・とっておきの通算回数・溜まったごきげん（affection）・訪問キーを書き、{ committed:true, stamina:12 } を返す。
- * 呼び出し側が同じ処理の中で addStamina(12) と toast を出す。画面を開いてすぐ帰った回は、遊んだ日だけ記録する。
+ * 呼び出し側が同じ処理の中で addStamina(12) と toast を出す。画面を開いてすぐ帰った回は、遊んだ日と、その日に発見・撮影したしぐさを記録する。
  * #2455: 確定後に共通の達人進捗を記録し、認定時の火種は growth の購読先で精算する。
  * #3779: ごきげんは来訪をまたいで溜まる。この回の分（result.care・上限 VISIT_JOY）を足し、ハートが初めて5つそろった確定で
  * "tetsuko-hearts"（{ state, affection, full: true }）を一度だけ知らせる（火種は growth の購読先が精算する）。5つの後は5つのまま。
  * 直接増やさないもの: 経験値・能力・人物の好感度・お金・日付・時間帯。
  * 「少し構っていく」（台本だけ読む短い経路）も同じ確定点を通る（result に小物・発見が無ければ記録を保つ）。
  * @param {object} value 現在のセーブ
- * @param {{ meaningful?: boolean, played?: boolean, visitKey?: string, props?: object, found?: string[], album?: object[], treatDay?: number|null, peaks?: number, care?: number }} [result]
- * @returns {{ committed: boolean, stamina?: number }}
+ * @param {{ meaningful?: boolean, played?: boolean, photoTaken?: boolean, newFound?: string[], visitKey?: string, props?: object, found?: string[], album?: object[], treatDay?: number|null, peaks?: number, care?: number }} [result]
+ * @returns {{ committed: boolean, stamina?: number, memoriesSaved?: boolean }}
  */
 export function settleTetsukoTime(value, result) {
   if (!value?.flags || typeof result?.visitKey !== "string" || !result.visitKey) return { committed: false };
@@ -61,7 +62,16 @@ export function settleTetsukoTime(value, result) {
   if (record.lastKey === result.visitKey || tetsukoPlayedToday(value)) return { committed: false };
   const playedDay = Number.isFinite(value.day) ? value.day : record.playedDay;
   if (!result.meaningful) {
-    if (result.played) value.flags[TETSUKO_TIME_FLAG] = { ...record, playedDay };
+    if (!result.played) return { committed: false };
+    if (result.newFound?.length || result.photoTaken) {
+      value.flags[TETSUKO_TIME_FLAG] = readTetsukoRecord({ flags: { [TETSUKO_TIME_FLAG]: {
+        ...record, playedDay,
+        found: [...record.found, ...(result.newFound || [])],
+        album: result.photoTaken ? result.album : record.album,
+      } } });
+      return { committed: false, memoriesSaved: true };
+    }
+    value.flags[TETSUKO_TIME_FLAG] = { ...record, playedDay };
     return { committed: false };
   }
   syncPlayMastery(value);
@@ -238,7 +248,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
   const moodText = moodLabel(moodOf(session.day), session.stage);
 
   return await new Promise(resolve => {
-    let done = false, leaving = false, wrapping = false, mounted = false, panel = null;
+    let done = false, leaving = false, wrapping = false, mounted = false, panel = null, pauseDialog = null;
     let farewellTimer = 0, farewellUntil = 0;
     let timer = 0, stepTimer = 0, fxTimer = 0, purrTimer = 0, walkTimer = 0, stillTimer = 0, heldTimer = 0, flashTimer = 0, quietUntil = 0;
     let capTimer = 0, peakTimer = 0, peakGlowTimer = 0, pounceTimer = 0, ghostTimer = 0, joyTimer = 0, wishTimer = 0, peerTimer = 0, artTimer = 0;
@@ -314,7 +324,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       [el("span.tt-tool-ico", { html: icon(ico) }), el("span.tt-tool-label", { text: label })]);
     const decorButton = tool_("decor", "もようがえ", "decor", () => openDecor());
     const bookButton = tool_("book", "てつこ手帳", "book", () => openBook());
-    const backButton = tool_("time-back", "帰る", "back", () => leave());
+    const backButton = tool_("time-back", "帰る", "back", askLeave);
     const shot = tool_("photo", "撮影", "photo", () => snap(), { class: "tt-shot", disabled: true, "aria-keyshortcuts": "P" });
     // 遊び方は画面に常に出さず、「？」を開いた時だけ見せる（#2717・ミニゲーム共通の方針）。
     const helpButton = el("button.tt-tool.tt-help-btn", { type: "button", dataset: { test: "tetsuko-help" }, "aria-label": HELP_TITLE, title: HELP_TITLE,
@@ -1268,7 +1278,13 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       schedule();
     }
     const onKey = event => {
-      if (event.key === "Escape" && panel) { event.preventDefault(); closePanel(); return; }
+      if (event.key === "Escape") {
+        if (pauseDialog?.open || done || leaving || event.defaultPrevented || !host.isConnected || !isCurrent()
+            || layers.modal?.classList.contains("show")) return;
+        event.preventDefault(); event.stopPropagation();
+        if (!event.repeat) { if (panel) closePanel(); else askLeave(); }
+        return;
+      }
       if (event.key.toLowerCase() !== "p" || event.defaultPrevented || event.repeat || event.isComposing
           || event.ctrlKey || event.altKey || event.metaKey || shot.disabled || !host.isConnected || !isCurrent()
           || layers.modal?.classList.contains("show")) return;
@@ -1279,6 +1295,17 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
     };
 
     // -- 帰る（気を許した段階で、ふれあいの後なら戸の前まで見送ってくれる）
+    function askLeave() {
+      if (done || leaving || pauseDialog?.open) return;
+      if (wrapping) { leave(); return; }
+      closePanelQuietly();
+      panel = "quit";
+      renderButtons();
+      pauseDialog = openMinigamePause(host, { id: "tetsuko", title: "帰る？", quitLabel: "帰る",
+        onResume: closePanel,
+        onQuit: () => { closePanelQuietly(); leave(); },
+      });
+    }
     function onFarewellTimer() {
       if (done) return;
       if (wrapping && panel) { farewellTimer = setTimeout(onFarewellTimer, 400); return; }

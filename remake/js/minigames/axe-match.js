@@ -5,7 +5,7 @@ export const DIFFICULTIES = {
   easy: { name: "やさしい", aim: .38, kill: .14, power: [.38, .86] },
   normal: { name: "ふつう", aim: .22, kill: .09, power: [.46, .78] },
   hard: { name: "むずかしい", aim: .10, kill: .05, power: [.54, .70] },
-  secret: { name: "裏ボス", aim: .085, kill: .045, power: [.54, .70] },
+  secret: { name: "裏ボス", aim: .08, kill: .035, power: [.54, .70] },
 };
 export const MATCH_THROWS = MODES.league.throws;
 /** From the third sudden-death attempt on, a double miss is measured. */
@@ -73,7 +73,8 @@ function randomFor(seed, index) {
 /** The opponent reads its own closures like a real thrower: centre first, then an open outer bull. */
 export function openAim(history, division, index = history.length) {
   const closed = closuresOf(history, index, MATCH_THROWS, division);
-  const open = CLUSTERS.find(c => division === "pro" ? !closed.cluster.has(c.id) : !(closed.bull.has(c.id) && closed.five.has(c.id)));
+  const open = CLUSTERS.find(c => division === "pro" ? !closed.cluster.has(c.id) : !closed.bull.has(c.id));
+  if (!open && division === "am") return CLUSTERS.find(c => !closed.five.has(c.id)) || CLUSTERS[0];
   return open || CLUSTERS[0];
 }
 export function planOpponent(match) {

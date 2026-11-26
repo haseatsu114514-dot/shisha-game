@@ -8,9 +8,9 @@ const get = page => page.evaluate(() => structuredClone(window.__remake.state));
 const ride = (page, code) => page.evaluate(code);
 const game = page => page.evaluate(() => { const g = window.__desertRide?.game; return g ? { z: g.z, x: g.x, air: g.air, airKind: g.airKind, t: g.t, score: g.score, falls: g.falls, finished: g.finished, hops: g.stats.hops, bigJumps: g.stats.bigJumps } : null; });
 const phase = (page, value) => page.waitForFunction(value => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === value, value, { timeout: 90000 });
-const autoplayToResult = async (page, skill = "expert") => {
+const autoplayToResult = async (page, skill = "expert", speed = 8) => {
   await phase(page, "run"); // 初回/相手変更の画像準備が終わってから自動操縦を設定する。
-  await page.evaluate(skill => { window.__desertRide.autoplay(skill); window.__desertRide.setSpeedUp(8); }, skill);
+  await page.evaluate(([skill, speed]) => { window.__desertRide.autoplay(skill); window.__desertRide.setSpeedUp(speed); }, [skill, speed]);
   await phase(page, "result");
 };
 const resultText = async page => (await page.locator(t("desert-result")).innerText()).replace(/\s+/g, " ");
@@ -112,6 +112,7 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-practice")).click();
     await phase(page, "practice");
     await page.keyboard.press("Escape");
+    await page.locator(t("desert-quit-confirm")).click();
     await phase(page, "menu");
     await page.locator(t("desert-leave")).click();
   });
@@ -154,6 +155,7 @@ await suite("desert-ride", async check => {
     const later = await sample();
     assert(Math.abs(later.x - practice.after.x) < .15, "no stuck steering after a rotate interruption");
     await page.keyboard.press("Escape");
+    await page.locator(t("desert-quit-confirm")).click();
     await phase(page, "menu");
     await page.locator(t("desert-start")).tap();
     await phase(page, "run");
@@ -161,6 +163,7 @@ await suite("desert-ride", async check => {
     await page.waitForFunction(() => window.__desertRide?.game?.t > 0);
     assert((await assertHeld()).before.t > 0, "the live race is interrupted");
     await page.keyboard.press("Escape");
+    await page.locator(t("desert-quit-confirm")).click();
     await phase(page, "menu");
     await page.locator(t("desert-leave")).tap();
   }, { hasTouch: true, isMobile: true, reducedMotion: "reduce", viewport: { width: 844, height: 390 } });
@@ -189,6 +192,7 @@ await suite("desert-ride", async check => {
     assert.deepEqual(missing, [], "all common and selected rival art finished loading before the run");
     // 2回目からは読み終わっているので、ロード画面を出さずにすぐ始まる。
     await page.keyboard.press("Escape");
+    await page.locator(t("desert-quit-confirm")).click();
     await phase(page, "menu");
     await page.locator(t("desert-start")).click();
     await phase(page, "run");
@@ -248,7 +252,8 @@ await suite("desert-ride", async check => {
       const node = document.querySelector('[data-test="desert-kmh"]');
       new MutationObserver(() => window.__kmh.push(Number(node.textContent))).observe(node, { childList: true, characterData: true, subtree: true });
     });
-    await autoplayToResult(page, "expert");
+    // メーターの針は描画フレームごとに追従する。ピークを測る走行は通常速度で流す。
+    await autoplayToResult(page, "expert", 1);
     const shownKmh = await page.evaluate(() => Math.max(...window.__kmh));
     assert(shownKmh >= 85 && shownKmh <= 95, `boost tops out near 91 km/h on the meter (${shownKmh})`);
     const cutins = await page.evaluate(() => window.__cutins);
@@ -268,17 +273,26 @@ await suite("desert-ride", async check => {
     const total = Number((await page.locator(t("desert-total")).innerText()).replace(/[^\d]/g, ""));
     assert(total >= 16000, `S needs 16000+ (${total})`);
     assert.match(await page.locator(t("desert-time")).innerText(), /(4[5-9]|5\d)\.\d 秒/, "a run takes about a minute");
-    // もう一度 → 途中でやめる（Escape）: 記録は残らず、メニューへ
+    // Esc で滑走を止め、もう一度 Esc で再開。離脱を確定したらメニューへ。
     await page.locator(t("desert-retry")).click();
     await phase(page, "run");
     await page.waitForFunction(() => window.__desertRide.game.z > 60);
+    const runClock = () => page.evaluate(() => window.__desertRide.game.t);
     await page.keyboard.press("Escape");
+    await page.locator(t("desert-pause")).waitFor();
+    const held = await runClock();
+    await page.waitForTimeout(200);
+    assert.equal(await runClock(), held);
+    await page.keyboard.press("Escape");
+    await page.waitForFunction(t => window.__desertRide.game.t > t, held);
+    await page.keyboard.press("Escape");
+    await page.locator(t("desert-quit-confirm")).click();
     await phase(page, "menu");
     assert.match(await page.locator(t("desert-menu")).innerText(), /途中でやめた/);
     assert.match(await page.locator(t("desert-best")).innerText(), new RegExp(`自己ベスト ${total.toLocaleString("ja-JP")}点 ／ S`));
     assert.equal(await page.evaluate(() => window.__desertRide.results.length), 1, "the abandoned run is not a result");
     await page.locator(t("desert-leave")).click();
-    await page.locator(t("desert-page-best")).waitFor();
+    await page.locator(t("desert-page-best")).first().waitFor();
     assert.equal(await page.locator(t("desert-ride")).count(), 0, "the game cleans itself up");
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_desert_ride_preview")).rank), "S");
     // ヌールに勝ったので、単体ページでもなる（好敵手）と勝負できる
@@ -293,7 +307,7 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(t("desert-race")).getAttribute("data-who"), "naru");
     assert.equal(await page.locator(t("desert-race")).getAttribute("data-won"), "false", "clean landings without spins lose to Naru");
     await page.locator(t("desert-leave")).click();
-    await page.locator(t("desert-page-best")).waitFor();
+    await page.locator(t("desert-page-best")).first().waitFor();
     assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), null, "the page never touches the real save");
   });
 
@@ -346,12 +360,12 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(t("desert-result-tier")).innerText(), "上級");
     assert.equal(await page.locator(t("desert-result-tier")).getAttribute("data-tier"), "hard");
     assert.equal(await page.locator(t("desert-race")).getAttribute("data-won"), "true");
-    assert.match(await page.locator(t("desert-best")).innerText(), /^自己ベスト更新/);
+    assert.match(await page.locator(t("desert-best")).innerText(), /^上級の自己ベスト更新/);
     // 段を替えるのはメニュー。前の段が選ばれたまま、その段の自己ベスト
     await page.locator(t("desert-choose-tier")).click();
     await phase(page, "menu");
     assert.equal(await tierChip(page, "hard").getAttribute("aria-checked"), "true");
-    assert.match(await page.locator(t("desert-best")).innerText(), /^自己ベスト .*／ S/);
+    assert.match(await page.locator(t("desert-best")).innerText(), /^上級の自己ベスト .*／ S/);
     // 初級: 自己ベストは別（まだ無いので出さない）。着地が甘い滑りでも勝てる
     await tierChip(page, "easy").click();
     assert.equal(await page.locator(t("desert-best")).count(), 0, "easy has its own best");
@@ -368,10 +382,11 @@ await suite("desert-ride", async check => {
     await phase(page, "run");
     assert.equal(await page.evaluate(() => window.__desertRide.game.tier), "easy");
     await page.keyboard.press("Escape");
+    await page.locator(t("desert-quit-confirm")).click();
     await phase(page, "menu");
     assert.match(await page.locator(t("desert-best")).innerText(), /^初級の自己ベスト/);
     await page.locator(t("desert-leave")).click();
-    await page.locator(t("desert-page-best")).waitFor();
+    await page.locator(t("desert-page-best")).first().waitFor();
     const saved = await page.evaluate(() => ({ main: JSON.parse(localStorage.getItem("suien_desert_ride_preview")), easy: JSON.parse(localStorage.getItem("suien_desert_ride_preview_easy")) }));
     assert.equal(saved.main.rank, "S"); assert.equal(saved.main.beatNoor, true, "a hard win brings Naru on the preview page");
     assert.equal(saved.easy.rulesVersion, 2); assert(saved.easy.score > 0);
@@ -415,7 +430,7 @@ await suite("desert-ride", async check => {
     await phase(page, "menu");
     assert.equal(await tierChip(page, "easy").getAttribute("aria-checked"), "true");
     await page.locator(t("desert-leave")).tap();
-    await page.locator(t("desert-page-best")).waitFor();
+    await page.locator(t("desert-page-best")).first().waitFor();
   }, { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
 
   await check("phone-touch-buttons-reduced-motion-and-tutorial", async page => {
@@ -536,7 +551,7 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(t("desert-result")).getAttribute("data-rank"), "C", "dodging without any jump is a C");
     assert.match(await resultText(page), /大ジャンプ 0 回/);
     await page.locator(t("desert-leave")).tap();
-    await page.locator(t("desert-page-best")).waitFor();
+    await page.locator(t("desert-page-best")).first().waitFor();
   }, { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
 
   // 2026-11-11: カーブの案内とカービング、ブースト中の曲の速さ、なるの名乗り
@@ -734,6 +749,7 @@ await suite("desert-ride", async check => {
     await page.waitForFunction(() => window.__desertRide.game.boostT > 0);
     assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "a second boost also keeps normal tempo");
     await page.keyboard.press("Escape");
+    await page.locator(t("desert-quit-confirm")).click();
     await phase(page, "menu");
     assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "quitting mid-boost restores the tempo");
     // 次の滑走では、一度切り込めたので案内は出ない
@@ -745,6 +761,7 @@ await suite("desert-ride", async check => {
     await page.waitForFunction(() => window.__desertRide.game.z > 470);
     assert.equal(await page.locator(t("desert-caption")).innerText(), "", "the curve tip is shown once");
     await page.keyboard.press("Escape");
+    await page.locator(t("desert-quit-confirm")).click();
     await phase(page, "menu");
     await page.locator(t("desert-leave")).click();
     await page.locator(t("desert-page-start")).waitFor();

@@ -115,7 +115,7 @@ test("the opponent reads its own closures: centre first, then an open outer bull
   const history = [resolveThrow(center, [], { division: "pro", throws: 10 })];
   assert.equal(openAim(history, "pro").id, "ul");
   const am = [resolveThrow(center, [], { division: "am", throws: 10 })];
-  assert.equal(openAim(am, "am").id, "center", "a closed six still offers the five");
+  assert.equal(openAim(am, "am").id, "ul", "the next open six is preferred to the central five");
   am.push(resolveThrow(center, am, { division: "am", throws: 10 }));
   assert.equal(openAim(am, "am").id, "ul");
   let match = createMatch("hard", 11, "pro");
@@ -166,7 +166,7 @@ test("fixed seeds 0..9999 give ordered difficulty distributions, legal calls and
   assert(stats.easy.dropRate > .1 && stats.easy.dropRate < .2);
   assert.equal(stats.normal.dropRate, 0); assert.equal(stats.hard.dropRate, 0);
   assert(stats.hard.killRate > stats.normal.killRate && stats.normal.killRate > stats.easy.killRate);
-  assert(stats.secret.mean > stats.hard.mean && stats.secret.mean < 61, "アダムは最強だが高得点で勝てる");
+  assert(stats.secret.mean >= stats.hard.mean + 3 && stats.secret.mean < 61, "アダムは最強だが高得点で勝てる");
   assert(stats.secret.p10 > stats.hard.p10);
   assert(stats.secret.p90 < 64, "十分に高い得点なら大半の試合で勝てる");
   console.log("Opponent distributions (10000 games each): " + JSON.stringify(stats));

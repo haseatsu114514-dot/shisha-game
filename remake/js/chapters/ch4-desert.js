@@ -172,7 +172,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     const tierState = () => ({ tiers: openTiers(owner, "desert"), cleared: tierRecord(owner, "desert").cleared });
     const { results } = await runDesertRide({
       host: host || document.getElementById("stage") || layers.screen, signal, tutorial: status.first,
-      best: before.best, legacyBest: before.legacyBest, easyBest: before.easyBest,
+      best: before.best, legacyBest: before.legacyBest, easyBest: before.easyBest, bests: before.bests,
       ...tierState(), tier: defaultTier(owner, "desert"),
       tierNotes: tierRecord(owner, "desert").cleared.includes("hard") ? null : { hard: `クリアで白火${TIER_HARD_GIFT}` },
       onTier: tier => { if (current() && rememberTier(owner, "desert", tier)) save(); },

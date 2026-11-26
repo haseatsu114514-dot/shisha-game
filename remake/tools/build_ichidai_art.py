@@ -57,20 +57,20 @@ def cover(image, size):
     return cut
 
 
-def tracked(base, suffix):
-    """git が追跡しているファイル（画像を取ってこない sparse checkout でも一覧は分かる）。git が無ければ空。"""
+def sparse_files(base, suffix):
+    """疎チェックアウトで省略された画像だけ補う。作業中に削除した画像は数えない。"""
     try:
-        out = subprocess.run(["git", "ls-files", "-z", "--", str(base.relative_to(ROOT))], cwd=ROOT, capture_output=True, check=True).stdout
+        out = subprocess.run(["git", "ls-files", "-t", "-z", "--", str(base.relative_to(ROOT))], cwd=ROOT, capture_output=True, check=True).stdout
     except (OSError, subprocess.CalledProcessError):
         return set()
-    return {ROOT / p for p in out.decode("utf-8").split("\0") if p.endswith(suffix)}
+    return {ROOT / entry[2:] for entry in out.decode("utf-8").split("\0") if entry.startswith("S ") and entry.endswith(suffix)}
 
 
 def files(base, kind, suffix, with_tracked):
-    """base/kind の中の絵。with_tracked なら、手元に無くても git が追跡しているものを足す。"""
+    """base/kind の中の絵。with_tracked なら、疎チェックアウトで展開されていないものを足す。"""
     here = set((base / kind).glob(f"*{suffix}")) if (base / kind).is_dir() else set()
     if with_tracked:
-        here |= {p for p in tracked(base, suffix) if p.parent == base / kind}
+        here |= {p for p in sparse_files(base, suffix) if p.parent == base / kind}
     return sorted(here)
 
 

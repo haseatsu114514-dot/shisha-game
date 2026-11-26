@@ -20,7 +20,7 @@ import { SHOP_EQUIPMENT_ART } from "../daily/shop-equipment-art.js";
 
 export const ICHIDAI_ART = Object.freeze({
   flavor: [],
-  card: ["add_coal", "all_in", "ash_tap", "blow", "breath", "buyout", "diffuser", "draft", "duel", "encore", "fan", "go_second", "heat_in", "heat_out", "hype", "ice_hose", "inner", "loosen", "outer", "read", "repack", "reset", "show_smoke", "timer", "tongs", "venue_heat", "windguard"],
+  card: ["add_coal", "all_in", "ash_tap", "blow", "breath", "buyout", "diffuser", "draft", "duel", "encore", "fan", "go_second", "heat_in", "heat_out", "hype", "ice_hose", "inner", "loosen", "outer", "read", "reset", "show_smoke", "timer", "tongs", "venue_heat", "windguard"],
   table: ["mat"],
   back: ["deck", "judge"],
 });
@@ -56,7 +56,7 @@ const CARD_ICON = {
   read: "skill_K07", ash_tap: "skill_K14", add_coal: "perk_heat", tongs: "skill_K11", fan: "perk_coal", inner: "skill_K06", outer: "skill_K17",
   loosen: "perk_leaf", breath: "perk_sleep", reset: "skill_K24",
   windguard: "perk_dodge", timer: "perk_gauge", ice_hose: "perk_pull", diffuser: "skill_K02",
-  hype: "skill_K13", draft: "skill_K05", venue_heat: "perk_stage", go_second: "skill_K04", buyout: "skill_K20", repack: "skill_K18", encore: "skill_K10",
+  hype: "skill_K13", draft: "skill_K05", venue_heat: "perk_stage", go_second: "skill_K04", buyout: "skill_K20", encore: "skill_K10",
 };
 /** 顔アイコン。本編のデータを読んでいれば設定の画風に合わせ、試遊ページでは現行の絵を直接読む */
 export const faceUrl = (charId) => (charId ? faceIconUrl(charId) || imgFileUrl(`ui/face_icons/face_${characterArtStem(charId)}.webp`) : null);
