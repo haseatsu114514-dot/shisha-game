@@ -711,18 +711,23 @@ await suite("desert-ride", async check => {
     await ride(page, () => { window.__drawn.length = 0; });
     const rock = await ride(page, () => { const g = window.__desertRide.game; return g.course.features.find(f => f.kind === "rock" && f.z > g.z + 120 && !g.course.flows.some(w => f.z > w.z - 20 && f.z < w.z + w.length + 40)); });
     await page.evaluate(rock => { const g = window.__desertRide.game; g.z = rock.z - 3; g.x = rock.x; g.vx = 0; g.gauge = 0.6; g.chargedAt = g.t; g.boostT = 0; g.speed = 30; }, rock);
-    await page.waitForFunction(() => window.__desertRide.game.falls === 1);
-    await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.recover === "ready");
-    await page.waitForTimeout(120);
-    const fallen = await ride(page, () => ({ pop: document.querySelector(".dr-pop").textContent, drawn: window.__drawn.join(" ") }));
+    // 立て直せるフレームで表示を読み、同じフレームで BOOST を押す（本番の受付は0.45秒）。
+    const fallFrame = await page.waitForFunction(() => {
+      const ride = window.__desertRide;
+      if (ride.game.falls !== 1 || document.querySelector('[data-test="desert-ride"]').dataset.recover !== "ready") return false;
+      const text = { pop: document.querySelector(".dr-pop").textContent, drawn: window.__drawn.join(" ") };
+      ride.boost();
+      return text;
+    });
+    const fallen = await fallFrame.jsonValue();
     assert.doesNotMatch(fallen.pop, /転倒|回り切れず/, "no fall label");
     assert.doesNotMatch(fallen.drawn, /立て直/, "no recover banner on the canvas");
-    await ride(page, () => window.__desertRide.boost());
     await page.waitForFunction(() => window.__desertRide.game.stats.recoveries === 1);
     await page.waitForTimeout(200);
     const recovered = await ride(page, () => ({ pop: document.querySelector(".dr-pop").textContent, drawn: window.__drawn.join(" ") }));
     assert.doesNotMatch(`${recovered.pop} ${recovered.drawn}`, /リカバリー|立て直/, "no recovery label");
     await page.keyboard.press("Escape");
+    await page.locator(t("desert-quit-confirm")).click();
     await phase(page, "menu");
     // 練習では、ヌールの説明と一緒に立て直しの札を出す
     await page.locator(t("desert-practice")).click();
@@ -731,6 +736,7 @@ await suite("desert-ride", async check => {
     await page.waitForFunction(() => window.__desertRide.game.falls >= 1);
     await page.waitForFunction(() => window.__drawn.some(text => /立て直せ/.test(text)));
     await page.keyboard.press("Escape");
+    await page.locator(t("desert-quit-confirm")).click();
     await phase(page, "menu");
     await page.locator(t("desert-leave")).click();
   });

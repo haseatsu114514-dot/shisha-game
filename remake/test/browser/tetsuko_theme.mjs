@@ -84,8 +84,7 @@ async function openTetsuko(page) {
   const help = page.locator("#modal.show button", { hasText: "シフトに入る" });
   await help.waitFor();
   await help.click();
-  await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
-  await page.locator(dt("mukai-order-0")).click();
+  // suite の既定では店番が早じまいになり、そのまま裏口の選択へ進む。
   await page.locator(dt("tokyo-tetsuko-game")).click({ timeout: 60000 });
   const screen = page.locator(dt("tetsuko-time-screen"));
   await screen.waitFor({ timeout: 60000 });
