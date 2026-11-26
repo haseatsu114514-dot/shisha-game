@@ -898,7 +898,7 @@ await suite("tonari-floor", async (check) => {
       });
       await page.locator(t("option-start")).click();
       await afterBand(page);
-      for (const hand of [["apple", "cappuccino", "cottoncandy", "mintshake", "berrymint"], ["berries", "flowergarden", "caramelmacchiato", "berrysmoothie", "nutslatte"], ["chai", "tropical", "pinepassion", "earlgrey", "sakuralatte"]]) {
+      for (const hand of [["apple", "cappuccino", "cottoncandy", "mintshake", "berrymint"], ["berries", "flowergarden", "caramelmacchiato", "grapesoda", "nutslatte"], ["chai", "tropical", "pinepassion", "earlgrey", "sakuralatte"]]) {
         await page.evaluate((hand) => { const a = C.view.floorTest.api, s = a.state(); s.hand = hand; if (s.tables[0].phase === "empty") a.tick(4); else a.tick(1); }, hand);
         const expected = await page.evaluate((hand) => hand.map((id) => ({ name: C.model.mixName(id), full: C.model.mixFullName(id), single: C.model.mixIsSingle(id), flavors: C.model.mixFlavorNames(id) })), hand);
         const rows = await page.locator(".tf-preset").evaluateAll((list) => list.map((n) => { const row = n.getBoundingClientRect(), name = n.querySelector(".tf-preset-name"), nr = name.getBoundingClientRect(), node = n.querySelector(".tf-recipe"), rr = node?.getBoundingClientRect();
