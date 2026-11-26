@@ -74,6 +74,19 @@ const RECOVER_UI_ART = "ui/desert_ride_hud/recover-badge.webp";
 const RESULT_UI_ART = ["board", "ribbon_win", "ribbon_lose", "medal_s", "medal_a", "medal_b", "medal_c", "button_primary", "button_secondary"]
   .map(name => `ui/desert_ride_result/${name}.webp`);
 const warmedUiImages = new Map();
+function warmUiImage(file) {
+  if (!warmedUiImages.has(file)) {
+    const image = prepareImage(imgFileUrl(file)).catch(() => { warmedUiImages.delete(file); });
+    warmedUiImages.set(file, image);
+  }
+  return warmedUiImages.get(file);
+}
+
+export function preloadHudArt() {
+  for (const name of ["panel", "bolt", "gauge-frame", "course-plate", "speedo-dial"]) {
+    void warmUiImage(`ui/desert_ride_hud/${name}.webp`);
+  }
+}
 
 /** 滑り始めてから空き時間に1枚ずつ先読みし、CSS から使う画像を保持する。 */
 export async function warmDesertUi(practice, isCurrent) {
@@ -87,12 +100,8 @@ export async function warmDesertUi(practice, isCurrent) {
         else setTimeout(resolve, 100);
       });
       if (!isCurrent()) return;
-      if (!warmedUiImages.has(file)) {
-        const image = prepareImage(imgFileUrl(file)).catch(() => { warmedUiImages.delete(file); });
-        warmedUiImages.set(file, image);
-      }
     }
-    await warmedUiImages.get(file);
+    await warmUiImage(file);
   }
 }
 
