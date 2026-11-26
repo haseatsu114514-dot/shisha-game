@@ -35,6 +35,7 @@ const FULL_NAMES = Object.freeze({
   cotton_candy: "コットン｜キャンディ", hazelnut: "ヘーゼル｜ナッツ", white_gummy_bear: "ホワイト｜グミベア", double_apple: "ダブル｜アップル",
   dragonfruit: "ドラゴン｜フルーツ", red_gummy_bear: "レッド｜グミベア", spring_water: "スプリング｜ウォーター",
   black_tea: "ブラック｜ティー", absal_earlgrey: "アール｜グレイ", white_musk: "ホワイト｜ムスク", sakura: "桜",
+  mountain_mist: "マウンテン｜ミスト", nightside_blast_mint: "ブラスト｜ミント",
 });
 const flavor = (id, label, family, also = [], chapter = 1) => {
   const parts = Object.freeze((FULL_NAMES[id] || label).split("｜"));
@@ -70,6 +71,10 @@ export const FLAVORS = Object.freeze(Object.fromEntries([
   flavor("black_tea", "ティー", "deep"), flavor("absal_earlgrey", "アールグレイ", "deep", ["fresh"]),
   flavor("rose", "ローズ", "deep"), flavor("jasmine", "ジャスミン", "deep"), flavor("lavender", "ラベンダー", "deep"), flavor("chamomile", "カモミール", "deep"),
   flavor("white_musk", "ムスク", "deep"), flavor("sakura", "サクラ", "deep", [], 2),
+  // 第3章以降で出回るフレーバー（東京 mukai・ドバイの店番で棚に加わる。第1・2章の並びには影響しない）
+  flavor("lime", "ライム", "fruit", ["fresh"], 3), flavor("biscuit", "ビスケット", "sweet", [], 3),
+  flavor("pistachio", "ピスタチオ", "sweet", ["deep"], 3), flavor("mountain_mist", "マウンテンミスト", "fruit", ["fresh"], 3),
+  flavor("nightside_blast_mint", "ブラストミント", "fresh", [], 3),
 ].map((f) => [f.id, f])));
 
 // ミックスの一覧（店で出せる一台）。営業中は、この中から HAND_SIZE 個が並び、選んで出す。出すと次の一つが補充され、シャッフルで全部を入れ替えられる。
@@ -162,6 +167,22 @@ export const MIXES = Object.freeze(Object.fromEntries([
   mix("applepie", ["double_apple", "cinnamon", "vanilla"], "sweet", "fresh", "アップル｜パイ"), mix("herbtea", ["chamomile", "lavender", "honey"], "deep", "sweet", "ハーブ｜ティー"),
   mix("gingerlemon", ["ginger", "lemon", "honey"], "fresh", "fruit", "ジンジャー｜レモン"), mix("sakuralatte", ["sakura", "absal_earlgrey", "milk"], "deep", "sweet", "サクラ｜ラテ"),
   mix("sakurachai", ["sakura", "cinnamon", "black_tea"], "deep", "fresh", "サクラ｜チャイ"),
+  // ---- 第3章以降のミックス（mukai・ドバイの店番で並ぶ。第1・2章の mixIdsFor には入らない） ----
+  mix("mountainmist", ["mountain_mist"], "fruit", "fresh"), mix("blastmint", ["nightside_blast_mint"], "fresh"),
+  mix("limemint", ["lime", "mint"], "fresh", "fruit"), mix("lemonlime", ["lemon", "lime"], "fruit", "fresh"),
+  mix("limepeach", ["lime", "peach"], "fruit", "fresh"), mix("limecola", ["lime", "cola"], "fruit", "sweet"),
+  mix("biscuittea", ["biscuit", "black_tea"], "deep", "sweet", "ビスケット｜ティー"),
+  mix("chocobiscuit", ["chocolate", "biscuit"], "sweet", null, "チョコ｜ビスケット"),
+  mix("pistachiomilk", ["pistachio", "milk"], "sweet", "deep", "ピスタチオ｜ミルク"),
+  mix("blastearlgrey", ["absal_earlgrey", "nightside_blast_mint"], "fresh", "deep", "ブラスト｜グレイ"),
+  mix("biscuitrose", ["biscuit", "rose"], "deep", "sweet", "ビスケット｜ローズ"),
+  mix("limejasmine", ["lime", "jasmine"], "deep", "fruit", "ライム｜ジャスミン"),
+  mix("oasismint", ["lemon", "lime", "mint"], "fresh", "fruit", "オアシス｜ミント"),
+  mix("pistachiolatte", ["pistachio", "coffee", "milk"], "sweet", "deep", "ピスタチオ｜ラテ"),
+  mix("luqaimat", ["biscuit", "honey", "cardamom"], "sweet", "fresh", "ルカイ｜マット"),
+  mix("pistachiohoney", ["pistachio", "honey", "milk"], "sweet", "deep", "ピスタチオ｜ハニー"),
+  mix("limeginger", ["lime", "ginger", "honey"], "fresh", "fruit", "ライム｜ジンジャー"),
+  mix("earllime", ["absal_earlgrey", "lime", "honey"], "deep", "fruit", "アール｜ライム"),
 ].map((m) => [m.id, m])));
 /** ミックスが出回る章（材料のいちばん遅い章）。 */
 export const mixChapter = (id) => Math.max(...MIXES[id].flavors.map((f) => FLAVORS[f].chapter));

@@ -23,7 +23,9 @@ import { layers, setBg, toast, modal } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
 import { showHud } from "../daily/hud.js";
-import { addMoney, addStamina, earnStat, gainAffinity, affinityLevel, visitAffinity } from "../core/stats.js";
+import { addMoney, addStamina, applyStats, earnStat, gainAffinity, affinityLevel, visitAffinity } from "../core/stats.js";
+import { FLOOR_VENUES, floorVenuePayText } from "../daily/floor-venues.js";
+import { runVenueFloorShift } from "../daily/floor-shift.js";
 import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
 import { consultLessons } from "../core/growth.js";
@@ -97,6 +99,11 @@ export const DUBAI_DAILY_IDS = Object.freeze([
 ]);
 
 const read = id => chapterFourProgress(state).read[id] === true;
+const DUBAI_SHIFT_EXP = Object.freeze({ key: "dubai:center_cafe_shift", place: "dubai:center_cafe_shift" });
+/** 中心地のカフェのシフト（店番・Issue #4254）が解禁されているか（初回訪問 ch4_dubai_cafe の読了後）。 */
+export const dubaiShiftUnlocked = (value = state) => chapterFourProgress(value).read.ch4_dubai_cafe === true;
+/** 中心地のカフェのシフトに今入れるか（解禁済み・昼から2コマ）。 */
+export const dubaiShiftOpen = (value = state) => dubaiShiftUnlocked(value) && value.slot === 0;
 const dubaiDay = (value = state) => Math.max(1, value.day - chapterFourProgress(value).startDay + 1);
 const innToolCareDue = () => dubaiDay() >= 2 && !read("ch4_inn_tool_care");
 /** 日常ループの最後の朝（DAY13＝前夜祭と前夜の日）の通算日。 */
@@ -157,6 +164,14 @@ const spotNow = entry => {
   if (current?.place === "inn") {
     const visitHint = innDayCallHint()?.short;
     return visitHint ? { ...current, visitHint } : current;
+  }
+  // 中心地のカフェ: 初回訪問後は昼のシフト（店番・2コマ）も選べる。所持金が一台分に足りない昼でもシフト目的で入れるよう地図の利用料を 0 にする。
+  if (current?.place === "center_cafe" && dubaiShiftUnlocked(state)) {
+    const shiftNote = dubaiShiftOpen(state)
+      ? `昼はシフト（店番・2コマ・${floorVenuePayText("dubai", state.chapter)}）にも入れる。`
+      : "シフト（店番・2コマ）は昼から入れる。";
+    const freeForShift = dubaiShiftOpen(state) && spendableMoney(state) < (current.cost || 0);
+    return { ...current, ...(freeForShift ? { cost: 0 } : {}), desc: `${current.desc}${shiftNote}` };
   }
   // 締めくくりは一台を頼む来店ではない。地図の所持金判定にも無料を伝える。
   return current?.place === "longlong" && finaleAtVisit(LONGLONG_CHAR)
@@ -424,7 +439,7 @@ async function offerLastNightCall(io, owner) {
 // ---- 行き先の処理 -------------------------------------------------------------------------
 const unused = { used: false, exerted: false };
 
-async function performDubaiSpot(entry, io, { staminaGuard }) {
+async function performDubaiSpot(entry, io, { staminaGuard, holdSaveUntilActionEnds } = {}) {
   if (entry.region !== DUBAI) return null;
   const owner = state;
   syncChapterFourDay(state);
@@ -443,6 +458,44 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   if (entry.place === "inn") { const chain = await visitInnChain(owner, staminaGuard); if (chain) return chain; }
   // 読了・LOADなどで地図の無料表示が古くなっても、通常の一台を無料にしない。
   if (entry.place === "longlong") entry = spotNow(CH4_DUBAI_SPOTS.find(spot => spot.place === "longlong"));
+  // 中心地のカフェ: 初回訪問後は「客として一台吸う」か「シフトに入る（店番・2コマ）」を選ぶ（Issue #4254）。
+  if (entry.place === "center_cafe" && dubaiShiftUnlocked(state)) {
+    const baseCafe = CH4_DUBAI_SPOTS.find(spot => spot.place === "center_cafe");
+    const customerCost = baseCafe.cost || 0;
+    const canPay = spendableMoney(state) >= customerCost;
+    const canShift = dubaiShiftOpen(state);
+    const doneToday = state.visitedDay?.dubai_cafe_shift === state.day;
+    const shiftAvailable = canShift && !doneToday;
+    const pick = await modal({
+      title: "中心地のカフェ",
+      className: "dubai-cafe-choice",
+      body: "現地のメニューから一台吸うか、店のシフト（店番）に入るか。",
+      options: [
+        {
+          label: canPay ? `客として一台吸う（${priceText(customerCost)}）` : `客として一台吸う（${priceText(customerCost)}・お金が足りない）`,
+          value: "customer",
+          test: "dubai-cafe-customer",
+          disabled: !canPay,
+          primary: !shiftAvailable && canPay,
+        },
+        {
+          label: doneToday
+            ? "シフトに入る（店番・今日はもう終わった）"
+            : canShift
+              ? `シフトに入る（店番・昼から夜まで2コマ・${floorVenuePayText("dubai", state.chapter)}）`
+              : "シフトに入る（店番・昼から2コマ・夜からは入れない）",
+          value: "shift",
+          test: "dubai-cafe-shift",
+          disabled: !shiftAvailable,
+          primary: shiftAvailable,
+        },
+        { label: "やめておく", value: null, test: "dubai-cafe-cancel" },
+      ],
+    });
+    if (!pick || state !== owner) return unused;
+    if (pick === "shift") return await runDubaiCafeShift(owner, { staminaGuard, holdSaveUntilActionEnds });
+    entry = dubaiSpotAt(baseCafe, state.slot);
+  }
   if ((entry.cost || 0) > spendableMoney(state)) { toast(`お金が足りない（${priceText(entry.cost)}）`, { se: "error" }); return unused; }
   if (entry.stamina < 0 && !(await staminaGuard(entry.stamina))) return unused;
   // 夜がにぎわう店（ch4-dubai-local.js）: 先に店の夜を読む。初めての夜は短い場面、二度目からは最初の一行だけ。
@@ -524,6 +577,33 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   // 路地裏のカフェの日常の会話で話すのは店員で、シェイクの授業は大会で名を明かすまで伏せる。シェイクへの相談は第5章の屋敷（ch5-dubai.js）。
   if (entry.teacher && state === owner) await keepDailyHud(() => consultLessons(entry.teacher));
   return { used: true, exerted: innTrial || (entry.stamina || 0) < 0 };
+}
+
+/**
+ * 中心地のカフェのシフト（店番・Issue #4254）。
+ * 昼から夜までの2コマ（体力40）。基本給（第4章 14,000円）＋売上の歩合10%＋手当。中断・LOADで巻き戻す。
+ */
+async function runDubaiCafeShift(owner, { staminaGuard, holdSaveUntilActionEnds } = {}) {
+  if (!dubaiShiftOpen(owner) || owner.visitedDay?.dubai_cafe_shift === owner.day) {
+    toast("シフトは昼から入る。夜からは入れない");
+    return unused;
+  }
+  const shiftEntry = FLOOR_VENUES.dubai.entry;
+  if (staminaGuard && !(await staminaGuard(-shiftEntry.stamina))) return unused;
+  if (state !== owner) return unused;
+  holdSaveUntilActionEnds?.();
+  const companion = overseasCompanion(owner).companion;
+  const outcome = await runVenueFloorShift({
+    venue: "dubai",
+    owner,
+    extraVisitorIds: companion ? [companion] : [],
+  });
+  if (!outcome || state !== owner) return unused;
+  owner.visitedDay ||= {};
+  owner.visitedDay.dubai_cafe_shift = owner.day;
+  owner.flags._shift_through_night = owner.day;
+  applyStats({ technique: 2, charm: 2 });
+  return { used: true, exerted: true, slotsUsed: shiftEntry.slots, exp: DUBAI_SHIFT_EXP };
 }
 
 /**

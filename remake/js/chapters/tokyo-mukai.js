@@ -1,20 +1,20 @@
-// 東京の mukai のシフト（VOL09・2026-11-02 オーナー「ムカイでもバイトできるようにしたい」）。第3章の東京と第5章の東京で共通。
-// tonari のシフト（daily/tonari.js の今日の注文）と同じく、その日の注文に合う配合を二つから選び、客の反応を見る。
-// 一度シフトに入った次の日からは、知らない客に何を聞くか・あいまいな注文をどう読むかを選ぶ注文も混ざる（#2020 E）。
+// 東京の mukai のシフト（VOL09・Issue #4254）。第3章の東京と第5章の東京で共通。
+// tonari と同じ店番ゲーム（フロア営業・daily/floor-venues.js の venue: "mukai"）を回し、
+// 基本給（章ごとの共通テーブル）＋売上の歩合10%＋手当（魅力・調子・心得の盤 K27・呼ばれた日の上乗せ）を受け取る。
 // 店の業務用の葉なので私物は減らず、お客さんへの提供は熟練度を稼がない（2026-10-26 の規則）。
-// 基本日当と実績昇給は tonari と同額。ムカイさんの LIME で呼ばれた日は上乗せ（VOL10）。
-// 台詞は data/dialogue/mukai_shift.json（注文ごとの客の反応）。導入の一言は章の側（第3章は手伝いの場面、第5章は手伝いの小会話）。
-import { state, save, timeOfDay } from "../core/state.js";
-import { DB, bgUrl } from "../core/data.js";
-import { modal, toast } from "../core/ui.js";
-import { play } from "../vn/engine.js";
-import { addMoney, addStamina, earnStat } from "../core/stats.js";
+// 旧・二択注文の定数（MUKAI_ORDERS 等）は既存参照との互換のため残す。
+import { state, save } from "../core/state.js";
+import { DB } from "../core/data.js";
+import { earnStat } from "../core/stats.js";
 import { readDialogues } from "../core/chapter-data.js";
-import { shiftBasePay } from "../core/shift-pay.js";
+import { floorVenueBasePay, floorVenuePayText } from "../daily/floor-venues.js";
+import { runVenueFloorShift } from "../daily/floor-shift.js";
 
 export const MUKAI_PAY = 8000;
 export const MUKAI_CALLED_BONUS = 5000;
-export const mukaiShiftPay = (value, called = false) => shiftBasePay(value, MUKAI_PAY) + (called ? MUKAI_CALLED_BONUS : 0);
+export const mukaiShiftPay = (value = state, called = false) =>
+  floorVenueBasePay("mukai", value?.chapter || 3) + (called ? MUKAI_CALLED_BONUS : 0);
+export const mukaiShiftPayText = (value = state) => floorVenuePayText("mukai", value?.chapter || 3);
 export const MUKAI_SHIFT_STAMINA = -14;
 export const MUKAI_SHIFT_FLAG = "_mukai_shift_day"; // 最後に mukai のシフトに入った通算日（誘いの間隔に使う）
 
@@ -57,29 +57,26 @@ export async function loadMukaiShift() {
 }
 
 /**
- * シフトを一回。導入（章の側の場面）→ 今日の注文を二択で作る → 客の反応 → 日当・体力・能力。
- * 読み終えて true。中断・LOADは false（日当・体力・記録を残さない）。能力は日常ループの行動の中で効く。
+ * シフトを一回。導入（章の側の場面）→ mukai フロア営業（店番ゲーム）→ 日当・体力・能力。
+ * 完走して true。中断・LOADは false（日当・体力・記録を残さない）。能力は日常ループの行動の中で効く。
  * @param opts.intro () => Promise<boolean> 導入の場面（章の側）
  * @param opts.called ムカイさんの LIME で呼ばれたシフト（日当に上乗せ）
+ * @param opts.signal AbortSignal（中断用）
  */
-export async function runMukaiShift({ intro, called = false } = {}) {
+export async function runMukaiShift({ intro, called = false, signal = null } = {}) {
   const owner = state;
-  await loadMukaiShift();
-  if (state !== owner || !await intro()) return false;
-  const order = mukaiOrderOf(owner);
-  const index = await modal({ title: "今日の注文", className: "mukai-order",
-    body: `カウンター越しに注文を聞いた。<br>「${order.text}」 ${order.ask || "店の葉で一台を作る。"}`,
-    options: order.labels.map((label, i) => ({ label, value: i, test: `mukai-order-${i}` })) });
-  if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return false;
-  const result = await play(DB.dialogues[`mukai_shift_${order.id}_${index}`], { bg: bgUrl("bg_mukai_shop", timeOfDay()) });
-  if (state !== owner || !result || result.cancelled) return false;
-  const pay = mukaiShiftPay(owner, called);
-  addMoney(pay);
-  addStamina(MUKAI_SHIFT_STAMINA);
+  const outcome = await runVenueFloorShift({
+    venue: "mukai",
+    owner,
+    called,
+    intro,
+    signal,
+    staminaCost: -MUKAI_SHIFT_STAMINA,
+  });
+  if (!outcome || state !== owner) return false;
   earnStat("charm", 4);
   earnStat("technique", 2);
   state.flags[MUKAI_SHIFT_FLAG] = state.day;
   save();
-  toast(`mukaiの日当 +${pay.toLocaleString("ja-JP")}円${called ? "（呼ばれた日の上乗せ込み）" : ""}`, { kind: "good" });
   return true;
 }

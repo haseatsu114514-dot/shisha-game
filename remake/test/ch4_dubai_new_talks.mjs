@@ -35,6 +35,8 @@ const overrides = {
   camelDailySpot: () => null, desertDailySpots: () => [], canReflect: () => false,
   dubaiSpotAt: entry => entry, nightVisit: () => null,
   spendableMoney: () => 100000, stallChoices: () => [],
+  // 中心地のカフェの二択（Issue #4254）では客として吸う側を選び、それ以外のモーダルは従来どおり未選択（中止）にする
+  modal: async ({ options } = {}) => options?.some(option => option.value === 'customer') ? 'customer' : undefined,
   setBg: async () => {}, bgUrl: id => id,
   play: async dialogue => { played.push(dialogue.dialogue_id); return { cancelled }; },
   // 通いの続き（#3097）。段の判定・記録は visit_chains.mjs が実物で確かめる。ここはスークの来店の分岐だけ
