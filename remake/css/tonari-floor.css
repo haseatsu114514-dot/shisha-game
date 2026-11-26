@@ -1087,7 +1087,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .side-slot .tf-bonus-head b { text-align: center; font-size: inherit; color: #c7ad97; scale: 0.9 1; } /* 絵の内側の枠に掛からない幅に */
 .side-slot .tf-bonus-gauge { width: 100%; height: 9px; }
 .side-slot .tf-bonus[data-fever="ready"] { --tf-pad-image: url("../img/ui/tonari-floor/pad-fever-ready.webp"); }
-.side-slot .tf-bonus[data-fever="ready"]:not(:disabled) { filter: drop-shadow(0 0 3px #ffd98a) drop-shadow(0 0 10px #ffb45acc); animation: tf-ready 1.1s ease-in-out infinite; }
+.side-slot .tf-bonus[data-fever="ready"]:not(:disabled) { filter: drop-shadow(0 0 3px #ffd98a) drop-shadow(0 0 10px #ffb45acc); }
 .side-slot .tf-bonus[data-fever="ready"]:disabled { filter: saturate(0.78) brightness(0.9); animation: none; }
 .side-slot .tf-bonus[data-fever="ready"] .tf-bonus-lamp { background-image: url("../img/ui/tonari-floor/lamp-on.webp"); background-color: #c9742a; }
 .side-slot .tf-bonus[data-fever="on"] { --tf-pad-image: url("../img/ui/tonari-floor/pad-fever-on.webp"); filter: drop-shadow(0 0 3px #d9c2ff) drop-shadow(0 0 12px #b592ffaa); }
