@@ -240,7 +240,7 @@ const fake = (over = {}) => ({ heat: 0, bowl: { mango: 6, vanilla: 3 }, main: "m
   assert.deepEqual(act(G, { type: "charge", hand: 0 }), { ok: false, reason: "炭を足すのは1ターンに1つ" });
   // 引かずに置くことはできない: 山札も灰も空なら、チャージできない
   { const keep = [p.deck, p.ash]; p.turn.charges = 0; p.turn.adds = 0; p.deck = []; p.ash = [];
-    assert.deepEqual(act(G, { type: "charge", hand: 0 }), { ok: false, reason: "引く札が無いので置けない" }); [p.deck, p.ash] = keep; }
+    assert.deepEqual(act(G, { type: "charge", hand: 0 }), { ok: false, reason: "引く札がないので置けない" }); [p.deck, p.ash] = keep; }
   // 火力は10を超えてもよい（熱は10まで）。第0.7版までの「熱は10まで」で炭を足せない決まりは無い
   { p.turn.charges = 0; p.turn.adds = 0; p.zone = [{ id: "cube", up: true }, { id: "cube", up: true }, { id: "cube", up: true }]; p.stove = [{ id: "cube", stage: 2 }];
     ok({ type: "puton", stove: 0 }); assert.equal(fireOf(p), 12); p.heat = 10; assert.equal(settledHeat(G, p.heat, fireOf(p)), 10); }

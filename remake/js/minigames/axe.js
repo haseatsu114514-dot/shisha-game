@@ -250,7 +250,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   let boardScaleG = null; // 一人称の表示変換グループ（上の層）。構築の最後に board の中身をここへ寄せる
   const artBoard = svg("svg", { viewBox: `${VIEW.x} ${VIEW.y} ${VIEW.size} ${VIEW.size}`, class: "axe-target-art", "aria-hidden": "true" });
   const board = svg("svg", { viewBox: `${VIEW.x} ${VIEW.y} ${VIEW.size} ${VIEW.size}`, class: "axe-target", role: "button", tabindex: "0",
-    "aria-label": "的。ゲージ操作中はタップでも止められます。構える前は青をタップして宣言できます", "data-test": "axe-target" });
+    "aria-label": "的。ゲージ操作中はタップでも止められる。構える前は青をタップして宣言できる", "data-test": "axe-target" });
   board.addEventListener("click", event => {
     // 2026-11-13 オーナー「狙いの定め方が分かりずらい」「タップで位置決めるのもむずい」「縦横の軸は最初のに戻してもいい、投げる時だけ」:
     // 弾いて投げる操作でも、狙いは横→縦のゲージを的のタップで止める。上へ弾くのは投げる時（power）だけで、その時は的に触れても狙いは動かない。
@@ -557,7 +557,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     return `M72 ${baseY}Q${ctrl.x.toFixed(1)} ${ctrl.y.toFixed(1)} ${tip.x.toFixed(1)} ${tip.y.toFixed(1)}M${wing(-1)}L${tip.x.toFixed(1)} ${tip.y.toFixed(1)}L${wing(1)}`;
   }
   const flickArrowPath = svg("path", { d: flickArrowD(0), stroke: "#fff2bd", "stroke-width": 4.5, "stroke-linecap": "round", "stroke-linejoin": "round" });
-  const pullHandle = el("button.axe-pull-handle", { type: "button", "aria-label": "上へ素早く弾いて投げる（狙いはそのまま）。Space長押しでも投げられます", dataset: { test: "axe-pull-handle" } }, [
+  const pullHandle = el("button.axe-pull-handle", { type: "button", "aria-label": "上へ素早く弾いて投げる（狙いはそのまま）。Space長押しでも投げられる", dataset: { test: "axe-pull-handle" } }, [
     el("span.axe-flick-emblem", { "aria-hidden": "true" }, [
       svg("svg", { viewBox: "0 0 144 300", class: "axe-flick-arrows", fill: "none" }, [
         svg("path", { d: "M16 250V56Q16 25 48 19L78 14Q128 10 128 50V250Q127 280 72 288Q17 285 16 250Z", fill: "#151b1d", "fill-opacity": .93, stroke: "#e0b674", "stroke-width": 3 }),
@@ -1061,7 +1061,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (!hud) return strength;
     const label = powerActive ? "③ 回転 " + Math.round(power * 100) + "% · " + strength : "③ 回転";
     if (powerLabel.textContent !== label) powerLabel.textContent = label;
-    const readout = phase !== "power" ? strength : strength === "適正" ? "いま放す！" : power < POWER.sweetMin ? "緑の帯まで待つ" : "回りすぎ · 次の緑で放す";
+    const readout = phase !== "power" ? strength : strength === "適正" ? "いま放す！" : power < POWER.sweetMin ? "緑の帯まで待つ" : power <= POWER.stickMax ? "回り気味 · 次の緑で放す" : "回りすぎ · 次の緑で放す";
     if (powerReadout.textContent !== readout) powerReadout.textContent = readout;
     const gaugeLabel = label + "。緑は適正、茶色は刺さる範囲";
     if (gauge.getAttribute("aria-label") !== gaugeLabel) gauge.setAttribute("aria-label", gaugeLabel);
@@ -1390,7 +1390,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     reaim.disabled = retry.disabled = isPaused() || performance.now() - lastAction < T.guard;
     action.disabled = isPaused() || ["loading", "flight", "opponent-ready"].includes(phase) || cycles[phase] && elapsed < T.guard || performance.now() - lastAction < T.guard;
     const nextAction = { loading: "読み込み中…", failed: "もう一度読み込む", choice: "構える", horizontal: "横を止める", vertical: "縦を止める", power: strength === "適正" ? "いま放す！" : "緑の帯で放す",
-      "opponent-ready": rivalName + "が構えています…", flight: "飛んでいく…", result: versus ? turnOf(match) === "opponent" ? rivalName + "の番へ" : turnOf(match) === null ? "結果を見る" : "あなたの番へ" : shots.length === rules.throws ? "結果を見る" : "次の一投へ",
+      "opponent-ready": rivalName + "が構えている…", flight: "飛んでいく…", result: versus ? turnOf(match) === "opponent" ? rivalName + "の番へ" : turnOf(match) === null ? "結果を見る" : "あなたの番へ" : shots.length === rules.throws ? "結果を見る" : "次の一投へ",
       summary: series && !seriesWinner() ? "第" + (gameIndex + 2) + "ゲームへ" : "終了" }[phase] || "";
     const label = tapPull && phase === "power" ? "上へ弾いて投げる" : nextAction;
     if (actionLabel.textContent !== label) actionLabel.textContent = label;
@@ -1428,7 +1428,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       }
     }
     drawImpact(displayedShot);
-    const nextNote = document.hidden ? "一時停止中" : phase === "loading" ? "準備しています…" : phase === "failed" ? "画像を読み込めませんでした。もう一度お試しください。"
+    const nextNote = document.hidden ? "一時停止中" : phase === "loading" ? "準備中…" : phase === "failed" ? "画像を読み込めませんでした。もう一度お試しください。"
       : phase === "choice" ? sd ? "サドンデス。" + killPlaces[called] + "の青へ、1本。" : switching() ? "後半5投。的を交代。閉じた赤と5は再び開く。" : !tutorial && rules.throws > 1 && shots.length === rules.throws - 1 ? lastNote() : "狙いを決めて、構える。" : phase === "horizontal" ? "① 横の位置を止めよう" : phase === "vertical" ? "② 縦の位置を止めよう"
       : phase === "opponent-ready" ? sd ? rivalName + "のサドンデス" : called ? rivalName + "がキルショットを宣言" : rivalName + "の投擲を見よう" : phase === "power" ? "③ 白い刃先＋緑の回転で放す" : phase === "flight" ? "それっ！"
       : phase === "result" ? !last ? "" : last.outcome === "drop" ? (last.dropReason === "weak" ? "柄から当たって落下 · 0点" : "回りすぎて落下 · 0点") : last.outcome === "killshot" ? "キルショット！ " + last.score + "点"

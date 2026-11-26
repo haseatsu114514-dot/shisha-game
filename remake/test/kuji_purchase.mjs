@@ -269,14 +269,14 @@ try {
     const fresh = await run("K.oldBox('g3000', 0)");
     assert.equal(fresh.box.order.length, 40, "未開封の旧箱は今の箱に入れ替わる");
     assert.equal(fresh.box.price, 1000); assert.equal(fresh.box.drawn, 0);
-    assert.match(fresh.text, /機材くじ（1回1,000円）[\s\S]*残り 40 \/ 40 枚/);
+    assert.match(fresh.text, /機材くじ（1回1,000円）[\s\S]*残り 40\/40枚/);
     assert.doesNotMatch(fresh.text, /旧箱/);
     // 引き途中の旧箱は、当時の景品と当時の値段（1回3,000円）のまま引き切る。安くなった値段で前の中身は引けない。
     const before = await run("K.prepare({grade:'g3000',money:10000})");
     const kept = await run("K.oldBox('g3000', 3)");
     assert.equal(kept.box.order.length, 20, "引き途中の旧箱はそのまま");
     assert.equal(kept.box.price, 3000, "1回の値段は値下げ前のもの");
-    assert.match(kept.text, /機材くじ（1回3,000円）[\s\S]*残り 17 \/ 20 枚[\s\S]*（旧箱・次回は40枚で1回1,000円）/);
+    assert.match(kept.text, /機材くじ（1回3,000円）[\s\S]*残り 17\/20枚[\s\S]*（旧箱・次回は40枚で1回1,000円）/);
     assert.equal(kept.button, "×1 ¥3,000");
     await run("K.click()");
     const drawn = await run("K.snapshot()");

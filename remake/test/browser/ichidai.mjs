@@ -427,7 +427,7 @@ await suite("ichidai", async (check) => {
     assert.equal(await page.locator(t("ichi-game")).count(), 1);
     await page.locator(t("ichi-close")).click();
     await page.locator(t("ichi-quit-yes")).click();
-    assert.match(await page.locator(t("ichi-menu-result")).innerText(), /まだ対戦していません/);
+    assert.match(await page.locator(t("ichi-menu-result")).innerText(), /まだ対戦していない/);
   }, page1("seed=11&foe=b&assist=0")); // 相手の一式は b に決め打ち（炭4つまでの一式で、相手の火力ゾーンの並びを確かめるため）。ガイドは切る（炭の手引きが出る）
 
   await check("touch-landscape-fits-and-buttons-are-tappable", async (page) => {

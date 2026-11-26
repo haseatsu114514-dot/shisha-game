@@ -73,7 +73,7 @@ export function shotFeedback(shot, { inputMode = "gauges", closed } = {}) {
     return { label: "MISS", tone: "miss", tip: "宣言した青だけが得点対象。" + toward };
   }
   if (shot.zone?.kind === "closed") return { label: "CLOSED", tone: "miss",
-    tip: "この半分で使った5の円に触れて0点。開いている赤い中心へ回ろう。" };
+    tip: "この前半・後半ですでに閉じた5の円に触れて0点。開いている赤い中心へ回ろう。" };
   const hit = shot.outcome === "hit";
   const focus = shot.sway?.fatigue >= .7 && !shot.sway.focused ? "構えが長いときは「息を整える」も。" : "";
   const closedNote = !shot.closedAdjust ? "" : shot.zone?.kind === "five" ? "閉じた赤に触れたので5の円の点。" : "閉じた円に触れたのでリングの点。";

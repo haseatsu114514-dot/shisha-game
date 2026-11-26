@@ -84,7 +84,7 @@ export const CARDS = Object.freeze([
   { id: "ice_hose", name: "アイスホース", type: "tool", need: 4, when: "any", tx: "上側のズレを適温として扱う。" },
   { id: "diffuser", name: "ディフューザー", type: "tool", need: 3, when: "any", tx: "ズレの一口でも、ミックスと相性の加点を得る。" },
   { id: "hype", name: "実況の煽り", type: "event", need: 5, when: "turn", tx: "相手の次の一口の判定熱+1。" },
-  { id: "draft", name: "すきま風", type: "event", need: 3, when: "turn", tx: "相手の炭を1つ、相手が選んで火を1下げる。" },
+  { id: "draft", name: "すきま風", type: "event", need: 3, when: "turn", tx: "相手の炭のうち、火の小さい炭1つの火を1下げる。" },
   { id: "venue_heat", name: "会場の熱気", type: "event", need: 2, when: "turn", tx: "全員の次の一口の判定熱+1。" },
   { id: "go_second", name: "後の先", type: "event", need: 1, when: "turn", tx: "次のラウンド、自分が後手になる。" },
   { id: "buyout", name: "買い占め", type: "event", need: 0, when: "prep", tx: "このターンの「詰める」で、さらに2枚取れる。" },
@@ -135,7 +135,7 @@ export const INTRO = Object.freeze({
 export const TOURNAMENTS = Object.freeze([
   { id: "practice", name: "練習試合", sessions: 3, judges: [], task: null, blurb: "審査カードなし。毎回「ふつうに吸う」。はじめての一戦に。" },
   { id: "crown", name: "SMOKE CROWN CUP", sessions: 3, judges: ["kamizono", "hakase", "sensu"], task: "lemon", blurb: "課題はレモン。吸い方はおだやか。" },
-  { id: "open_cloud", name: "HAZE: OPEN CLOUD", sessions: 3, judges: ["kamizono", "sensu", "hakase"], task: null, blurb: "課題なし。葉えらびから勝負。" },
+  { id: "open_cloud", name: "HAZE: OPEN CLOUD", sessions: 3, judges: ["kamizono", "sensu", "hakase"], task: null, blurb: "課題なし。葉選びから勝負。" },
   { id: "national", name: "HAZE: NATIONAL TOKYO", sessions: 4, judges: ["emir", "hakase", "sensu"], task: null, blurb: "4セッション。上にも下にも揺れる。" },
   { id: "grand", name: "HAZE: GRAND SMOKE", sessions: 4, judges: ["sensu", "emir", "taiyo"], task: null, blurb: "4セッション。吸い方が荒い。" },
 ]);

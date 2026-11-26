@@ -44,7 +44,7 @@ function menu(outcome = null) {
     el("p", { text: "カードゲーム（試遊ページ）" }),
     el("h1", { text: ICHIDAI_TITLE }),
     el("p", { text: "葉を詰め、炭で熱を保ち、審査員の一口を競う。吸い方は、めくるまで分からない。" }),
-    el("p", { dataset: { test: "ichi-menu-result" }, text: last ? `前回：${last.winner === 0 ? "勝ち" : last.winner == null ? "引き分け" : last.players > 2 ? `${last.rank}位` : "負け"}（${last.scores.join(" 対 ")}）／ ${record.wins}勝 ${record.losses}敗` : "まだ対戦していません" }),
+    el("p", { dataset: { test: "ichi-menu-result" }, text: last ? `前回：${last.winner === 0 ? "勝ち" : last.winner == null ? "引き分け" : last.players > 2 ? `${last.rank}位` : "負け"}（${last.scores.join(" 対 ")}）／ ${record.wins}勝 ${record.losses}敗` : "まだ対戦していない" }),
     ...buttons,
   ]));
 }
