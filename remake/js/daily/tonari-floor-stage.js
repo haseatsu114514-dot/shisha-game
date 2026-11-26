@@ -91,8 +91,15 @@ export const FLOOR_ART = Object.freeze({
 /** 相対パスの絵を、このファイルから見た URL にする（data: や http(s): はそのまま）。 */
 export const artUrl = (src) => (!src ? null : /^(data:|blob:|https?:|\/)/.test(src) ? src : new URL(src, import.meta.url).href);
 
-/** いま使う舞台。検査や配置図では stage を直接渡す。 */
-export const currentStage = (stage = null) => stage || STAGES[FLOOR_ART.stage] || STAGES.classic;
+// 各店は当面 tonari と同じ間取り。専用の店内画や増卓は STAGES に配置を足し、その店の stage を替える。
+export const FLOOR_VENUES = Object.freeze({
+  tonari: Object.freeze({ label: "tonari", stage: FLOOR_ART.stage, pace: 1 }),
+  mukai: Object.freeze({ label: "mukai", stage: FLOOR_ART.stage, pace: 1.2 }),
+  dubai: Object.freeze({ label: "中心地のカフェ", stage: FLOOR_ART.stage, pace: 1.4 }),
+});
+
+/** 店舗の配置。検査や配置図では stage を直接渡す。 */
+export const currentStage = (stage = null, venue = "tonari") => stage || STAGES[FLOOR_VENUES[venue].stage];
 
 /** 卓の中心（キーボードで卓を移る時の位置）。 */
 export const spotCenter = (spot) => spot.seat || [spot.box[0] + spot.box[2] / 2, spot.box[1] + spot.box[3] / 2];

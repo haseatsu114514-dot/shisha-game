@@ -13,6 +13,7 @@ import {
   PRICE, FLAVORS, MIXES, WISHES, WISH_IDS, HAND_SIZE, GUESTS, VISITORS, CALLS, VERBS, NIGHTS, RANKS, MOODS, SERVE_LINES, SEND_LINES, mixIdsFor, mixChapter,
   TUTORIAL, CALL_MISS,
 } from "../js/daily/tonari-floor-data.js";
+import { currentStage } from "../js/daily/tonari-floor-stage.js";
 import { playFloorBot, bestMix, floorBotAction } from "./tonari_floor_bot.mjs";
 
 const at = (s, id) => s.tables[id - 1];
@@ -448,6 +449,24 @@ test("会計: ひと押しで受ける。ファンは満足の段で決まる。
   assert.equal(done.sales, done.items.charge + done.items.shisha + done.items.drink + done.items.top);
   assert.deepEqual(["cost", "service", "profit", "presets"].filter((key) => key in done), []);
   assert.equal(done.mixes[0].label, mixName(plain.results.find((row) => row.tableId === 1).mix), "好評だったミックスに残る");
+});
+
+test("店舗の卓は配置から作る。増やした6卓目も着席・注文・全卓フィーバーの対象になる", () => {
+  const original = currentStage();
+  for (const venue of ["mukai", "dubai"]) assert.equal(currentStage(null, venue), original);
+  const stage = { ...original, spots: [...original.spots, { seat: [12, 70], plate: [13, 76], name: "追加の卓" }] };
+  let s = createFloorNight({ chapter: 4, venue: "dubai", stage, night: "full" });
+  assert.equal(s.tables.length, 6);
+  // 6人を同時に迎え、追加した卓まで通常の操作で接客する。
+  Object.values(s.guests).slice(0, 6).forEach((guest) => { guest.arrive = 1; });
+  s = floorTick(s);
+  assert.equal(floorTap(s, 6), "order");
+  for (const table of s.tables) s = act(s, { type: "order", tableId: table.id, mix: s.hand[0] });
+  s = until(s, (next) => next.tables.every((table) => table.phase === "enjoy"));
+  s.fever = 300;
+  s = act(s, { type: "fever" });
+  assert.equal(s.tables.filter((table) => table.fever).length, 6);
+  assert.equal(createFloorNight().tables.length, original.spots.length);
 });
 
 test("フィーバー: 3段。段ごとに対象の卓が増え、その間は満足が最高で、炭も進まない", () => {

@@ -17,14 +17,15 @@ import { sideSlot, releaseSideSlot } from "../core/side-area.js";
 import {
   createFloorNight, floorTick, floorAct, floorTap, floorHint, floorResult, floorUrgency, floorWaitLeft,
   floorStayLeft, floorCoalLeft, floorTendDue, floorMaking, floorHand, floorShuffleLeft, floorTimeLeft, floorStage, floorBill, floorFeverLevel,
-  mixName, mixNameParts, mixFlavorParts, mixFullName, floorOutlook, floorLastCall, floorPlan, floorFeverLength, floorSlots, floorShuffleTime, FLOOR_TICK_MS, FLOOR_TABLE_COUNT,
+  mixName, mixNameParts, mixFlavorParts, mixFullName, floorOutlook, floorLastCall, floorPlan, floorFeverLength, floorSlots, floorShuffleTime, FLOOR_TICK_MS,
   floorCallLine, floorDusk, createFloorTutorial, floorTutorialCue,
 } from "./tonari-floor-model.js";
 import { RANKS,
   MIXES, WISHES, VERBS, CALLS, MOODS, PRICE, VISITORS, TUTORIAL,
 } from "./tonari-floor-data.js";
+import { chapterHubBgm } from "../core/story-audio.js";
 import { glyph, guestArt } from "./tonari-floor-art.js";
-import { FLOOR_ART, artUrl, currentStage, floorArtPath, spotCenter } from "./tonari-floor-stage.js";
+import { FLOOR_ART, FLOOR_VENUES, artUrl, currentStage, floorArtPath, spotCenter } from "./tonari-floor-stage.js";
 
 /**
  * 検査用。manual を立てると実時間では進まず、api.tick(n) で刻みを送る。
@@ -51,7 +52,6 @@ const WISH_ICON = { fruit: "wishFruit", sweet: "wishSweet", fresh: "wishFresh", 
 const FEVER_BGM = "bgm_purikura";
 // 画面を横切る帯（営業開始・フィーバー・営業終了）が出ている長さ。その間は、卓の札と手応えの言葉を出さない（文字の上に文字を重ねない。TFL45）
 const CUTIN_MS = 1500;
-const SHIFT_BGM = "tonari"; // フィーバーの前に流れていた曲が分からない時に戻す先
 const SALES_STEP = 10000; // 店の売上がこの額をまたぐたびに、下の帯で知らせる
 const test = (key) => ({ test: `tonari-floor-${key}` });
 const quoted = (text) => (text.startsWith("（") ? text : `「${text}」`);
@@ -122,7 +122,7 @@ function spotInDirection(spots, id, key) {
  * @param opts.fans これまでの店のファンの合計（表示だけに使う）
  */
 export function runTonariFloor({
-  seed = 0, level = 0, chapter = 1, fans = 0, visitor = null, rainy = false, night = false, art = null,
+  seed = 0, level = 0, chapter = 1, venue = "tonari", fans = 0, visitor = null, rainy = false, night = false, art = null,
   // night＝夜のシフト（絵と時計・呼び名を夜にする）。stage＝店内の絵と位置。guests・props＝絵の登録（検査と配置図で差し替える）
   stage = null, guests = FLOOR_ART.guests, props = FLOOR_ART.props, cutins = FLOOR_ART.cutins,
   // mount＝画面を載せる先（デバッグの試遊。省くと本編の画面として出す）。kind＝営業の種類を名指しする（省くと回数と天気で決まる）
@@ -141,14 +141,15 @@ export function runTonariFloor({
   if (signal?.aborted || !isCurrent()) return Promise.resolve(null);
   const speaker = visitor === "minto" ? "oneesan" : visitor;
   const visitorName = gameState && (speaker === "oneesan" || speaker === "samechan") ? displayName(speaker, gameState) : null;
-  const openNight = () => createFloorNight({ seed, level, chapter, rainy, daytime: !night, visitor, visitorName, night: kind, dusk });
+  const layout = currentStage(stage, venue);
+  const venueLabel = FLOOR_VENUES[venue].label;
+  const openNight = () => createFloorNight({ seed, level, chapter, venue, stage: layout, rainy, daytime: !night, visitor, visitorName, night: kind, dusk });
   if (!mount && instantFloor()) {
     if (tutorial) return Promise.resolve({ tutorial: true, skipped: true });
     const opened = openNight();
     return Promise.resolve(floorResult(floorAct(opened, { type: "finish" }), getAllowances()));
   }
   stylesheet();
-  const layout = currentStage(stage);
   const SPOTS = layout.spots;
   const seated = layout.style === "seated";
   const roomArt = layout.art ? artUrl(night ? layout.art.night : layout.art.day) : art;
@@ -156,7 +157,7 @@ export function runTonariFloor({
   const frontArt = layout.art ? artUrl(night ? layout.art.frontNight : layout.art.frontDay) : null;
   const shishaArt = artUrl(props?.shisha);
   const daytime = !night;
-  let state = tutorial ? createFloorTutorial({ chapter, daytime }) : openNight();
+  let state = tutorial ? createFloorTutorial({ chapter, daytime, stage: layout }) : openNight();
   const plan = floorPlan(state);
   // 客の絵は、どこでも「丸の中の顔」（全身は描かない）。本編の人物は顔アイコン
   const artOf = (guest, { happy = false } = {}) => {
@@ -187,7 +188,7 @@ export function runTonariFloor({
       el("div.tf-glow", { "aria-hidden": true }, layout.lamps.map(([x, y, r]) => el("i", { style: { "--x": `${x}%`, "--y": `${y}%`, "--r": r } }))),
       el("div.tf-haze", { "aria-hidden": true }, [el("i"), el("i"), el("i")]),
     ]);
-    const spotsBox = el("div.tf-spots", { role: "group", "aria-label": `全${FLOOR_TABLE_COUNT}卓。矢印キーで選ぶ` });
+    const spotsBox = el("div.tf-spots", { role: "group", "aria-label": `全${SPOTS.length}卓。矢印キーで選ぶ` });
     SPOTS.forEach((spot, i) => {
       const id = i + 1;
       const tap = () => tapTable(id);
@@ -333,8 +334,8 @@ export function runTonariFloor({
     }
     const flash = el("div.tf-flash", { "aria-hidden": true });
     const announce = el("p.tf-sr", { "aria-live": "polite", "aria-atomic": "true" });
-    const host = el("section.tonari-floor", { "aria-label": "tonari フロア営業", dataset: {
-      ...test("screen"), night: String(night), mode, stage: layout.id, style: layout.style } }, [
+    const host = el("section.tonari-floor", { "aria-label": `${venueLabel} フロア営業`, dataset: {
+      ...test("screen"), venue, night: String(night), mode, stage: layout.id, style: layout.style } }, [
       stageBox, top, side, bottom, coachBox, cutinBand, flash, layer, banner, announce,
     ]);
     host.dataset.tutorial = String(!!tutorial);
@@ -829,7 +830,7 @@ export function runTonariFloor({
       // 突入の演出: 時間を止めて、帯と曲を切り替える
       const level = state.feverLevel;
       feverSalesAt = state.sales;
-      feverBgm = requestedBgm() || SHIFT_BGM;
+      feverBgm = requestedBgm() || (venue === "tonari" ? "tonari" : chapterHubBgm(chapter));
       playBgm(FEVER_BGM);
       cutin("FEVER TIME!", `Lv${level}　${state.tables.filter((x) => x.fever).length}卓が最高の居心地`, "fever", "fever");
       log(`フィーバー Lv${level}！`, "good");
@@ -1107,7 +1108,7 @@ export function runTonariFloor({
       ];
       return el("section.tf-intro", { role: "dialog", "aria-modal": "true", "aria-labelledby": "tf-intro-title", dataset: test("intro") }, [
         el("div.tf-intro-card", {}, [
-          el("p.tf-eyebrow", { text: "tonari・ワンオペ営業" }),
+          el("p.tf-eyebrow", { text: `${venueLabel}・ワンオペ営業` }),
           el("h2#tf-intro-title", { text: plan.title }),
           el("p.tf-forecast", { text: `今日の予報：${plan.forecast}${fans > 0 ? `　／　店のファン ${fans}人` : ""}` }),
           // 気分（＝ミックスの属性）の色と印の見本
@@ -1160,7 +1161,7 @@ export function runTonariFloor({
       const closing = panel.kind === "close";
       return el("section.tf-pause", { role: "dialog", "aria-modal": "true", "aria-labelledby": "tf-pause-title", dataset: test(closing ? "close-panel" : "pause-panel") }, [
         el("div.tf-intro-card", {}, [
-          el("p.tf-eyebrow", { text: "tonari" }),
+          el("p.tf-eyebrow", { text: venueLabel }),
           el("h2#tf-pause-title", { text: closing ? "早じまいにする？" : "ひと休み" }),
           el("p", { text: closing
             ? "いまいる客を送り出して、店を閉めます。基本給はそのまま受け取れます。歩合は閉店までの売上で決まります。"
@@ -1230,7 +1231,7 @@ export function runTonariFloor({
       ];
       return el("section.tf-result", { role: "dialog", "aria-modal": "true", "aria-labelledby": "tf-result-title", dataset: { ...test("result"), rank: result.rank } }, [
         el("div.tf-slip", {}, [
-          el("p.tf-eyebrow", { text: `tonari・${result.title}・本日の精算` }),
+          el("p.tf-eyebrow", { text: `${venueLabel}・${result.title}・本日の精算` }),
           el("div.tf-slip-body", {}, [
             el("div.tf-slip-sales", {}, [
               el("dl.tf-slip-items", {}, items.map(([name, value]) => el("div", {}, [el("dt", { text: name }), el("dd", { text: value })]))),
@@ -1255,10 +1256,10 @@ export function runTonariFloor({
           el("p.tf-slip-counts", { text: `いい調整 ${result.counts.tend}回・いいケア ${result.counts.care}回・追加ドリンク ${result.counts.drink}杯・おかわり ${result.counts.extend}人・フィーバー ${result.fevers}回${result.streak >= 2 ? `・ぴったり ${result.streak}連続` : ""}` }),
           // 大入りの夜は、紙吹雪で祝う（文字は足さない）
           result.rank === "S" ? el("div.tf-confetti", { "aria-hidden": true }, Array.from({ length: 22 }, (_, i) => el("i", { style: { "--i": String(i) } }))) : null,
-          el("p.tf-slip-sumi", {}, [
+          venue === "tonari" ? el("p.tf-slip-sumi", {}, [
             sumiFace ? el("img", { src: sumiFace, alt: "", draggable: false }) : null,
             el("span", { text: `スミ「${result.comment}」` }),
-          ]),
+          ]) : null,
           el("p.tf-slip-pay", { dataset: test("pay") }, [
             el("span", { text: `基本給 ${yen(pay.base)}` }),
             el("span", { text: `＋ 歩合（売上の${FLOOR_COMMISSION_PERCENT}%）${yen(pay.commission)}` }),

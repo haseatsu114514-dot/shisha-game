@@ -13,7 +13,9 @@ import {
   SERVE_LINES, SEND_LINES, CALL_MISS, byTime,
 } from "./tonari-floor-data.js";
 
-export const FLOOR_TABLE_COUNT = 5;
+import { currentStage, FLOOR_VENUES } from "./tonari-floor-stage.js";
+
+export const FLOOR_TABLE_COUNT = currentStage().spots.length;
 /** 1刻みの実時間（ミリ秒）。画面の時計と検査で同じ値を使う。 */
 export const FLOOR_TICK_MS = 500;
 
@@ -43,7 +45,7 @@ const RATE_MOOD = Object.freeze({ best: 90, good: 72, none: 30 });
 const RICH_MOOD = 4;
 const KEEN_CUT = Object.freeze({ best: 0, good: 6, none: 4 });
 const RATE_GRADE = Object.freeze({ best: "best", good: "good", none: "off" });
-const FEVER = Object.freeze({ level: 100, max: 300, care: 10, tend: 8, best: 14, good: 7, send: 4, targets: Object.freeze([0, 2, 4, FLOOR_TABLE_COUNT]),
+const FEVER = Object.freeze({ level: 100, max: 300, care: 10, tend: 8, best: 14, good: 7, send: 4, targets: Object.freeze([0, 2, 4, Infinity]),
   // 流れ（◎を続けて出した数）: 2連続めから、◎で溜まるゲージが＋3ずつ増える（＋9まで）。◎以外を出すか、客が帰ると切れる
   streakStep: 3, streakCap: 3 });
 const FANS = Object.freeze({ max: 3, good: 2, ok: 1, low: 0, mad: -2, left: -3 });
@@ -162,7 +164,7 @@ const personalOrder = (o) => ({ wish: o.wish, quote: o.quote, pref: { label: o.l
  * @param opts.dusk 昼から夜まで通しの店番（2026-11-25 オーナー「昼から始めて2コマ使う」・TFL62）。営業の半ばで日が暮れ、
  *   そこから来る客は夜の呼び名になる（画面は店内の絵を夜へ替える）。daytime と一緒に使う
  */
-export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = false, daytime = false, night = null, visitor = null, visitorName = null, dusk = false } = {}) {
+export function createFloorNight({ seed = 0, level = 0, chapter = 1, venue = "tonari", stage = null, rainy = false, daytime = false, night = null, visitor = null, visitorName = null, dusk = false } = {}) {
   const def = night ? NIGHTS[night] || NIGHTS.usual : pickNight(level, seed, { rainy, daytime });
   const random = rng((Number(seed) >>> 0) ^ 0x51ed27);
   const duskAt = dusk && daytime ? Math.round(def.length / 2) : null; // 日が暮れる刻み
@@ -190,12 +192,12 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = fal
   }
   const deck = shuffled(mixIdsFor(chapter), random); // その章の店で出せるミックス
   return {
-    seed: Number(seed) >>> 0, level, chapter, night: def.id, title: byTime(def.title, daytime), daytime: !!daytime, dusk: duskAt,
+    seed: Number(seed) >>> 0, level, chapter, venue, night: def.id, title: byTime(def.title, daytime), daytime: !!daytime, dusk: duskAt,
     visitor: who && guests.g3?.charId ? who.id : null,
     hint: level >= 3 ? "sight" : "said",
     t: 0, length: def.length, done: false, closing: null, rolls: 0,
     guests, upcoming: Object.keys(guests), came: 0,
-    tables: Array.from({ length: FLOOR_TABLE_COUNT }, (_, i) => emptyTable(i + 1)),
+    tables: currentStage(stage, venue).spots.map((_, i) => emptyTable(i + 1)),
     hand: deck.slice(0, HAND_SIZE), deck: deck.slice(HAND_SIZE), shuffleAt: 0, shuffles: 0, stock: null,
     fever: 0, feverLeft: 0, feverLevel: 0, fevers: 0, streak: 0, bestStreak: 0,
     sales: 0, fans: 0, results: [], mixes: {},
@@ -762,8 +764,8 @@ export const floorDusk = (s) => s.dusk !== null && s.dusk !== undefined && s.t >
 const TUTORIAL_HAND = Object.freeze(["peachmango", "chocovanilla", "lemonmint", "caramelnuts", "colamint"]);
 const TUTORIAL_DECK = Object.freeze(["grapemint", "watermelonmint", "rosejasmine", "peachlychee", "chocobanana", "honeylemon"]);
 /** チュートリアルの営業（時間切れ・帰ってしまう客・勝手に出る頼みが無い）。 */
-export function createFloorTutorial({ chapter = 1, daytime = true } = {}) {
-  const s = createFloorNight({ seed: 1, level: 0, chapter, daytime, night: "first" });
+export function createFloorTutorial({ chapter = 1, daytime = true, stage = null } = {}) {
+  const s = createFloorNight({ seed: 1, level: 0, chapter, daytime, stage, night: "first" });
   const guest = (id, kindId, wish, say, arrive) => {
     const kind = GUESTS[kindId];
     return { id, kind: kindId, art: kindId, pair: null, name: byTime(kind.name, daytime), party: 1, stay: kind.stay, rank: "plain", trait: kind.trait,
