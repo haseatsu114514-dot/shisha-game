@@ -20,7 +20,7 @@
 .dr-bolt { font-size: 18px; line-height: 1; color: #d4521f; }
 .desert-ride[data-gauge="full"] .dr-bolt { color: #ff7a2a; text-shadow: 0 0 10px rgba(255,170,60,.9); }
 .dr-gauge { position: relative; flex: 1; height: 22px; border-radius: 8px; background: rgba(90,60,40,.2); overflow: hidden; }
-.dr-gauge i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #f6c453, #f08a2c); transition: width .15s linear; }
+.dr-gauge i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #b89868, #9c7648); transition: width .15s linear; }
 .dr-gauge[data-state="full"] i { background: linear-gradient(90deg, #ffd65a, #ff7a2a, #ffd65a); background-size: 200% 100%; animation: dr-gauge-full .8s linear infinite; }
 .dr-gauge[data-state="boost"] i { background: linear-gradient(90deg, #ff9a3c, #ff3f1a); }
 @keyframes dr-gauge-full { from { background-position: 0 0; } to { background-position: 200% 0; } }

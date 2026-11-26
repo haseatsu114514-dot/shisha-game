@@ -537,9 +537,16 @@ function applyBoost(game, minGauge) {
   return "boost";
 }
 
+// rivalRun の同期シミュレーションでは配置が変わらず、通過済みの要素は先頭に連続する。
+// 外から配置・passed を編集できるゲームや、未整列のコースには通常の走査を使う。
+const sortedRivalGames = new WeakSet();
+const pendingStart = game => sortedRivalGames.has(game) ? game.passed.size : 0;
+
 /** 次の起伏（まだ越えていない）までの距離。無ければ Infinity。 */
 export function nextBumpDistance(game) {
-  for (const feature of game.course.features) {
+  const features = game.course.features;
+  for (let i = pendingStart(game); i < features.length; i++) {
+    const feature = features[i];
     if (feature.kind !== "bump" || game.passed.has(feature)) continue;
     if (feature.z >= game.z) return feature.z - game.z;
   }
@@ -755,9 +762,15 @@ export function step(game, input, dt) {
     if (game.air <= 0) land(game);
   }
   // 越えた要素を順に判定する
-  for (const feature of game.course.features) {
-    if (game.passed.has(feature) || feature.z > game.z) continue;
-    if (feature.z <= z0 && !game.passed.has(feature)) { game.passed.add(feature); continue; }
+  const features = game.course.features;
+  for (let i = pendingStart(game); i < features.length; i++) {
+    const feature = features[i];
+    if (feature.z > game.z) {
+      if (sortedRivalGames.has(game)) break;
+      continue;
+    }
+    if (game.passed.has(feature)) continue;
+    if (feature.z <= z0) { game.passed.add(feature); continue; }
     game.passed.add(feature);
     if (feature.kind === "bump") {
       game.lastBump = { t: game.t, used: false };
@@ -927,6 +940,12 @@ const BOT_LOOK = Object.freeze({ horizon: 2.2, dt: 1 / 20, every: 3, commit: 0.3
 // 砂流れに乗る見返り（帯の上にいる1秒あたり。自分の位置へ戻る重み 1.2/レーン より強いので、届く帯には乗りに行く）。
 // 2026-11-25: ヌール・なる・検査のボットとも本番の4本の帯をすべて通る値。2.25 以上では、帯へ寄る分だけ上級のヌールとなるの差が縮んだ（検査の境目 1 秒を割る）
 const BOT_FLOW_PULL = 1.75;
+// botSteer は同期処理。各候補に共通する予測表を呼び出し間で再利用する。
+const LOOK_STEPS = Math.round(BOT_LOOK.horizon / BOT_LOOK.dt);
+const steerTable = {
+  drift: new Float64Array(LOOK_STEPS), side: new Int8Array(LOOK_STEPS), grip: new Uint8Array(LOOK_STEPS),
+  hits: Array.from({ length: LOOK_STEPS }, () => []), flowOn: new Array(LOOK_STEPS),
+};
 /**
  * 自動操作の舵。2.2秒先まで横の動き（慣性・カーブで外へ流される力）を試算し、岩に当たらず端にも出ない押し方を選ぶ。
  * 「何もしない／左右どちらかを 0.2〜1.4 秒押して離す」の中から、いちばん安全で自分の位置（lane）へ戻れるものを選び直す（every 歩ごと）。
@@ -935,26 +954,31 @@ function botSteer(game, skill, memo) {
   memo.steerTick = (memo.steerTick ?? -1) + 1;
   if (memo.steerDir != null && memo.steerTick % BOT_LOOK.every !== 0) return { left: memo.steerDir < 0, right: memo.steerDir > 0 };
   const course = game.course, speed = Math.max(SPEED.min, game.speed), { horizon, dt } = BOT_LOOK, lane = memo.lane ?? 0;
-  const steps = Math.round(horizon / dt), reach = game.z + speed * horizon + 4;
+  const steps = LOOK_STEPS, reach = game.z + speed * horizon + 4;
   // 空中の区間（今の大ジャンプと、これから跳ぶ起伏）。大ジャンプ中は岩を越え、← → は回転に使うので横へは動かさない
   // 飛ぶ距離は短めに見積もる（ブーストが切れると速さが落ちる）。着地のすぐ先の岩は、跳ぶ前から位置をずらしてよける
   const spans = [], glide = time => (game.boostT >= time ? speed : Math.min(speed, SPEED.max)) * time * 0.95;
   if (game.air > 0 && game.airKind === "big") spans.push([game.z, game.z + glide(game.air)]);
   const rocks = [];
-  for (const f of course.features) {
+  for (let i = pendingStart(game); i < course.features.length; i++) {
+    const f = course.features[i];
+    if (f.z > reach && sortedRivalGames.has(game)) break;
     if (f.z <= game.z || f.z > reach || game.passed.has(f)) continue;
     if (f.kind === "rock") rocks.push(f);
     else if (skill !== "none") spans.push([f.z, f.z + glide(JUMP.bigAir * (0.85 + 0.3 * Math.min(1, speed / SPEED.max)))]);
   }
   const inAir = z => spans.some(([from, to]) => z >= from && z < to);
   // 各歩の地面の状態は、どの押し方でも同じ（前へ進む速さは変わらない）
-  const drift = new Float64Array(steps), side = new Int8Array(steps), grip = new Uint8Array(steps), hits = [], flowOn = [];
+  const { drift, side, grip, hits, flowOn } = steerTable;
   const flows = (course.flows || []).filter(flow => flow.z + flow.length > game.z && flow.z < reach);
   for (let k = 0; k < steps; k++) {
     const z = game.z + speed * dt * k, curve = curveAt(course, z);
     drift[k] = curve * STEER.curveDrift * (speed / SPEED.max) * dt; side[k] = Math.sign(curve); grip[k] = inAir(z) ? 0 : 1;
-    hits.push(rocks.filter(rock => rock.z > z && rock.z <= z + speed * dt && !inAir(rock.z)));
-    flowOn.push(grip[k] ? flows.find(flow => z >= flow.z && z < flow.z + flow.length) ?? null : null);
+    hits[k].length = 0;
+    for (const rock of rocks) {
+      if (rock.z > z && rock.z <= z + speed * dt && !inAir(rock.z)) hits[k].push(rock);
+    }
+    flowOn[k] = grip[k] ? flows.find(flow => z >= flow.z && z < flow.z + flow.length) : null;
   }
   const damp = Math.max(0, 1 - STEER.damping * dt);
   let best = null;
@@ -1047,6 +1071,7 @@ export function rivalRun(course, { who = "noor", maxTime = 200, tier } = {}) {
   const { skill, startX, only360, startSpeed, easeOff = true, charge = 1, boostAt = 1 } = { ...(RIVALS[who] || RIVALS.noor), ...tuned?.noor };
   const rubber = tuned && Object.keys(tuned.rubber).length ? Object.freeze({ ...RUBBER, ...tuned.rubber }) : RUBBER;
   const game = createGame(course, { charge }), memo = { lane: startX, only360, boostAt, finishBoostAt: RIVAL_FINISH_BOOST_AT }, samples = [];
+  if (course.features.every((feature, i, list) => i === 0 || list[i - 1].z <= feature.z)) sortedRivalGames.add(game);
   game.x = startX; game.speed = startSpeed;
   const snap = () => samples.push({ t: game.t, z: game.z, x: game.x, vx: game.vx, air: game.air, airTotal: game.airTotal, airPeak: game.airPeak, airKind: game.airKind,
     landingPress: game.landingPress, fallT: game.fallT, landedAt: game.landedAt, rot: game.rot, boostT: game.boostT, flow: game.inFlow ? 1 : 0 });

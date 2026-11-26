@@ -60,17 +60,20 @@ await suite("desert-ride", async check => {
       const ride = window.__desertRide;
       ride.game.gauge = gauge;
       window.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", cancelable: true }));
-      const meter = document.querySelector('[data-test="desert-gauge"]');
-      return { frames: meter.getAnimations()[0]?.effect.getKeyframes(), cues: ride.soundLevels().cues, boosts: ride.game.stats.boosts };
+      const frames = selector => document.querySelector(selector).getAnimations()
+        .flatMap(animation => animation.effect.getKeyframes()).filter(frame => frame.outline || frame.outlineColor);
+      return { meter: frames(".dr-gauge"), button: frames(".dr-touch.dr-boost"), cues: ride.soundLevels().cues, boosts: ride.game.stats.boosts };
     }, gauge);
     const normal = await pressBoost(0.249);
-    assert(normal.frames?.some(frame => frame.translate === "-4px"), "rejection shakes the gauge");
+    for (const frames of [normal.meter, normal.button]) assert(frames.some(frame => frame.translate === "-4px"), "rejection shakes both controls");
     assert.equal(normal.boosts, 0);
     assert.deepEqual(normal.cues, ["boostShort"]);
 
     await page.emulateMedia({ reducedMotion: "reduce" });
     const reduced = await pressBoost(0.249);
-    assert(reduced.frames?.some(frame => frame.outline) && reduced.frames.every(frame => !frame.translate), "reduced motion only highlights the gauge");
+    for (const frames of [reduced.meter, reduced.button]) {
+      assert(frames.some(frame => frame.outline) && frames.every(frame => !frame.translate), "reduced motion only highlights each control");
+    }
     assert.deepEqual(reduced.cues, ["boostShort", "boostShort"]);
     const accepted = await pressBoost(0.25);
     assert.equal(accepted.boosts, 1);
