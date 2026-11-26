@@ -92,21 +92,34 @@ for (const score of [60, 70, 80, 86, 90, 100]) {
     .reduce((n, [k, w]) => n + w * (k === "safety" ? 100 - BASE_STATS.burnRisk : k === "pull" ? 100 : BASE_STATS[k]), 0) * 100) / 100);
 }
 
+// 準備のボーナスは提供ラウンドの審査点へ一度だけ乗る。
+{
+  const cs = craft();
+  const base = sakuraiMine(cs, 1);
+  const boosted = sakuraiMine(cs, 1, 5);
+  for (const judge of CH1_JUDGES) assert.equal(boosted[judge] - base[judge], 5);
+  for (const round of [0, 2, 3]) assert.deepEqual(sakuraiMine(cs, round, 5), sakuraiMine(cs, round));
+}
+
 // 柱3: 攻めの帯で終えた回は全審査員の評価に上積み。失敗した記録には乗らない。
 {
   const plain = sakuraiMine(craft(), 3), attack = sakuraiMine(craft({ attack: [3] }), 3);
   for (const judge of CH1_JUDGES) assert.equal(attack[judge] - plain[judge], ATTACK_BAND.bonus);
   const failed = craft({ attack: [3] }); failed.careHistory[1].failed = "burnt";
   assert.deepEqual(sakuraiMine(failed, 3), plain);
-  // 調整2回目を真ん中で終えると、最後に攻めてくるみんとにその回の1位を取られる。攻めると取り返せる。
+  // 満点なら攻めの帯を使わずに最終回の1位を取れる。
   // 千須の最後の1点は、どちらでも、もう一口吸った台（はじめ）へ入る（#3916）。
   const center = match(craft());
   assert.equal(center.lastPoint, "hajime");
-  assert.equal(center.picks[3].uezono.first, "minto");
-  const bold = match(craft({ attack: [3] }));
+  assert.equal(center.picks[3].uezono.first, "hajime");
+  assert.equal(center.views[3].uezono.naru, 99);
+  assert.equal(center.views[3].uezono.minto, 100);
+  const close = match(craft({ care: [100, 98] }));
+  assert.equal(close.picks[3].uezono.first, "minto");
+  const bold = match(craft({ care: [100, 98], attack: [3] }));
   assert.equal(bold.lastPoint, "hajime");
   assert.equal(bold.attacks[3], true);
-  assert(hajimeVotes(bold) > hajimeVotes(center));
+  assert(hajimeVotes(bold) > hajimeVotes(close));
 }
 
 // 逆転: 出だしでつまずいても、後半を攻めれば勝てる（いままでの審査では前半で決まっていた）。
@@ -164,7 +177,7 @@ for (const base of [70, 80, 90]) {
       assert.equal(craftVersionForSession(mode, chapter, config, search),
         protectedMatch ? craftVersionFrom(config, search) : "sakurai", `${chapter}/${mode}/${craftVersion}/${search}`);
     }
-    assert.equal(attackGuide({ chapter, mode, craftVersion: "sakurai" }), !protectedMatch);
+    assert.equal(attackGuide({ chapter, mode, craftVersion: "sakurai" }), false);
   }
   assert.equal(attackGuide({ chapter: 1, mode: "tournament", craftVersion: "sakurai", voteStyle: "sakurai" }), true);
 }

@@ -1,6 +1,6 @@
 import { el } from "../core/util.js";
 import { buildVersioned } from "../core/asset-version.js";
-import { toast } from "../core/ui.js";
+import { modal, toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, benchRoot, craftTest, setBenchWater, explainTutorialStep } from "./session.js";
@@ -148,7 +148,21 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
     stop(); done = true; cleanup();
     reject(new DOMException("Water step interrupted", "AbortError"));
   }
-  listen(confirm, "click", finish);
+  listen(confirm, "click", async () => {
+    if (!available()) return;
+    stop();
+    if (q === 0) {
+      const accepted = await modal({
+        title: "水が入っていません",
+        options: [
+          { label: "水なしで進む", value: true, test: "water-empty-accept" },
+          { label: "水入れに戻る", value: false, primary: true, test: "water-empty-back" },
+        ],
+      });
+      if (!accepted) return;
+    }
+    finish();
+  });
   if (signal) listen(signal, "abort", cancel);
   const observer = new MutationObserver(() => {
     if (!root.isConnected || !isCurrent() || panel.closest('.done')) cancel();

@@ -169,8 +169,10 @@ await suite("craft-readiness", async check => {
     // 3個目は放っておくと灰になって落ちる（取り頃の1.75倍）
     await page.evaluate(gap => { coalClock = 1000 + (5.8 + 2 * gap) * 1.8 * 1000; }, gap);
     await page.locator('[data-test="step-summary"]').waitFor();
+    // 自動落下の炭は段階スコアではなく autoDropScore（14）で数える（pack16判断分で導入）。
+    // 合計は (100 + 100 + 14) / 3 = 71。
     assert.deepEqual(await page.evaluate(() => ({ phases: cs.heat.picks, score: cs.heat.score, automatic: cs.heat.timings.map(t => t.automatic) })),
-      { phases: ["just", "just", "over"], score: 89, automatic: [false, false, true] });
+      { phases: ["just", "just", "over"], score: 71, automatic: [false, false, true] });
     assert.equal(await page.locator('[data-test="coal-count"]').textContent(), "3 / 3");
     assert.equal(await page.evaluate(() => JSON.stringify(T.core.state)), await page.evaluate(() => before));
   });

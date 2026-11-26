@@ -75,9 +75,9 @@ await suite('craft-rank-wire', async check => {
     await page.evaluate(() => window.heatRun);
     assert.notEqual(await page.locator('.craft-rank').getAttribute('data-grade'), 'unavailable');
     // Use the actual session fields and refresh path; no production score override hook.
-    for (const [grade, score, progress] of [['B', 70, '33'], ['S', 92.5, '50'], ['SS', 96, '33'], ['SSS', 99, '100'], ['B', 70, '33']]) {
+    for (const [grade, score, progress] of [['B', 70, '33'], ['S', 92.5, '50'], ['SS', 96, '50'], ['SSS', 97, '100'], ['B', 70, '33']]) {
       const change = await page.evaluate(score => {
-        // 全工程に同じ点を置いて、桜井版の境目（SS=95 / SSS=98）を見る
+        // 全工程に同じ点を置いて、桜井版の境目（SS=95 / SSS=97）を見る
         T.cs.heat.score = score;
         T.cs.holes = { score };
         T.cs.pullDone = true;

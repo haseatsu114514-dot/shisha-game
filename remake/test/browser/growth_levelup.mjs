@@ -521,9 +521,12 @@ await suite("growth-levelup", async (runCheck) => {
     const run=async(nodes,learned)=>page.evaluate(async({nodes,learned})=>{
       const growth=await import("./js/core/growth.js");growth.setGrowthPreview(true);const g=growth.ensureGrowth();g.nodes=nodes;g.learned=learned;
       const session=await import("./js/craft/session.js");session.craftTest.auto="good";
-      const cs=session.newSession("tournament");cs.steam={score:100,temp:(await import("./js/craft/temperature-model.js")).temperatureBands(cs).center};session.openBench(cs);
+      const cs=session.newSession("tournament");session.openBench(cs);
+      await (await import("./js/craft/steam.js")).runSteamDodge(cs);
+      const calm=cs.dragonCalm===true;
+      cs.steam.temp=(await import("./js/craft/temperature-model.js")).temperatureBands(cs).center;
       await (await import("./js/craft/pull.js")).runPull(cs);
-      return {calm:cs.dragonCalm===true,streak:cs.dragonStreak,justs:cs.pull.justs};
+      return {calm,streak:cs.dragonStreak,justs:cs.pull.justs};
     },{nodes,learned});
     const on=await run(["K15","K21","M-S7"],["M-S7"]);
     assert.equal(on.calm,true);assert.ok(on.streak>=3);

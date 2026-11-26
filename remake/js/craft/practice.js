@@ -100,16 +100,16 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
 }
 
 /** スミさんが用意した一台。前半の操作・提供の成績は捏造しない。 */
-export function newCarePracticeSession() {
-  const cs = newSession("tutorial");
+export function newCarePracticeSession(mode = "tutorial") {
+  const cs = newSession(mode);
   cs.practiceScope = "care";
   const flavor = state.flags._prep_flavor || "double_apple";
   cs.mix = { [flavor]: 10, mint: 2 };
   cs.mixInfo = evaluateMix(cs);
   cs.pack = "normal";
   cs.place = "triangle";
-  cs.holes = { total: 24, outer: 24, middle: 0, inner: 0 };
-  cs.heat = { heatPower: 50 };
+  cs.holes = { total: 24, outer: 24, middle: 0 };
+  cs.heat = { heatPower: 50, ...(mode === "drill" ? { picks: ["pre", "pre", "pre"] } : {}) };
   cs.steamSeconds = 480;
   // 標準の焼き炭・8分の蒸らしから計算。提供後の冷え方は本番の runCare が適用する。
   cs.practiceSource = { temperature: temperatureAfterSteam(cs, cs.steamSeconds, 0) };

@@ -47,7 +47,8 @@ export async function runHeat(cs) {
     lines: [
       picks.map((g) => HEAT_GRADES[g].label).join("・"),
       res.just === coalCount(cs) ? "全部、全面が赤い取り頃で取れた。火が素直だ" : res.just ? "取り頃で取れた炭がある" : "取り頃を逃した。焼け具合が読みにくい",
-      res.over ? "待ちすぎた炭にも火は入っているが、炭が小さくなり熱が落ちやすい。生焼けより減点は軽い" : "",
+      timings.some(timing => timing.phase === "over" && !timing.automatic) ? "待ちすぎた炭にも火は入っているが、炭が小さくなり熱が落ちやすい。生焼けより減点は軽い" : "",
+      timings.some(timing => timing.automatic) ? "自動で落ちた炭は、取り上げた炭より評価が低い" : "",
       res.early ? "黒い面が残る炭がある。えぐみが出やすい" : "",
     ],
   });
@@ -92,7 +93,7 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
 
   const pick = (c, elapsedSeconds = (gameClock.now() - t0) / 1000, automatic = false) => {
     if (c.picked || finished || t0 === null || gameClock.paused) return;
-    const timing = evaluateCoalTiming(elapsedSeconds, c.tj, justSec);
+    const timing = evaluateCoalTiming(elapsedSeconds, c.tj, justSec, { automatic });
     const g = timing.phase;
     c.p = elapsedSeconds / c.tj;
     c.picked = g;

@@ -1,5 +1,5 @@
 // 穴の数・天候は採点の直減点ではなく、実際の温度の動きへつなぐ。
-import { clamp } from "../core/util.js";
+import { clamp, rand } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
 import { mixMasteryProfile } from "../core/flavor-mastery.js";
@@ -13,6 +13,7 @@ import { BURST_TEMP, COLD_OUT } from "./temperature-model.js";
 export { IDEAL, OPTIMAL, DANGER_TEMP, BURST_TEMP, COLD_OUT, temperatureBands, isIdealTemperature, isOptimalTemperature, isRainbowTemperature, visualTemperature } from "./temperature-model.js";
 // 熱い構成・長い蒸らしは過熱する。吸い出しで実温度を見て調整する。
 export const STEAM_LIMIT = .88;
+export const rollSteamVariation = () => ({ offset: rand(-.05, .05), transfer: rand(.92, 1.08) });
 /** 温度計の一番上に届くと爆発して焦げる。 */
 export const isBurnt = (temp) => temp >= BURST_TEMP - 1e-6;
 /** 提供後（熱管理）にここまで冷えると、シーシャがダメになる（TH19）。 */
@@ -90,11 +91,10 @@ export function steamFocusNote(cs) {
 }
 
 export function craftConditions(cs) {
-  const { sparsity } = foilHeatProfile(cs.holes);
-  return { rainy: !!cs.environment?.rainy, sparsity };
+  return { rainy: !!cs.environment?.rainy };
 }
 
-/** 少穴は上下の調整が大きく、雨は熱が入る側だけ少し鈍い。 */
+/** アルミの配置と炭で吸引への反応が変わる。雨は熱が入る側だけ少し鈍い。 */
 export function heatDelta(cs, delta) {
   const { rainy } = craftConditions(cs);
   return delta * foilHeatProfile(cs.holes).response * (rainy && delta > 0 ? 0.9 : 1)

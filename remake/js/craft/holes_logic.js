@@ -4,8 +4,7 @@ const DEG = Math.PI / 180;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 export const RINGS = [
   { id: "outer", label: "外周", r: 0.8, targets: 12, period: 6.4, weight: 0.5, role: "熱の広がり・安定感" },
-  { id: "middle", label: "中周", r: 0.54, targets: 8, period: 5.2, weight: 0.3, role: "中ほどへ熱を届ける" },
-  { id: "inner", label: "内周", r: 0.28, targets: 4, period: 3.8, weight: 0.2, role: "中心へ熱を入れる（開けすぎ注意）" },
+  { id: "middle", label: "中周", r: 0.54, targets: 12, period: 5.2, weight: 0.3, role: "中ほどへ熱を届ける" },
 ];
 // アルミを使わないHMD（ロートス型）。ボウルに直接のせるので、アルミ張り＋穴あけをしない。
 export const FOIL_FREE_HMS = ["lotos_hagal", "lotos_plus"];
@@ -26,9 +25,9 @@ export function usesFoil(cs) {
 export const VENT_CLOSED_FACTOR = 1.10;
 export function skippedFoilResult(vent) {
   return {
-    skipped: true, total: 24, outer: 12, middle: 8, inner: 4,
+    skipped: true, total: 24, outer: 12, middle: 12,
     evenness: 0.75, outerEven: 0.75, precision: 0.75, completion: 1,
-    innerExcess: 0, minimumComplete: true, dots: [], score: null,
+    minimumComplete: true, dots: [], score: null,
     ...(vent === "closed" ? { vent } : {}),
   };
 }
@@ -82,38 +81,21 @@ export function holeSizeStability(rings) {
 }
 const sizeName = (size) => Object.entries(HOLE_SIZES).find(([, value]) => value === size)?.[0] || "small";
 
-/** 外周だけの12穴は1.35倍、全24穴は1倍。途中の密度は連続的に変わる */
-export const timingToleranceFor = (count) => 1 + clamp((24 - count) / 12, 0, 1) * 0.35;
-export function foilDensityProfile(rings) {
-  const countOf = (id) => rings.find((ring) => ring.id === id)?.holes.length || 0;
-  const count = rings.reduce((sum, ring) => sum + ring.holes.length, 0);
-  const density = clamp(count / 24, 0, 1);
-  return { count, density, sparse: 1 - density, outer: countOf("outer"), middle: countOf("middle"), inner: countOf("inner") };
-}
-
-/** 実際の穴数・配置から熱を読む。旧12/8/4配置の外周比を基準に小さく補正する。
- * 少穴の不安定さは吸い方への応答に反映し、待機中の温度を勝手に振らせない。
- * 配置を持たない既存セッションは配置補正なし。
- */
+/** 外周に集中するほど温度が安定する。アルミなし・配置未記録の台は配置補正なし。 */
 export function foilHeatProfile(holes) {
-  const count = Number.isFinite(holes?.total) ? holes.total : 24;
-  const sparsity = holes ? clamp((24 - count) / 12, 0, 1) : 0;
-  const hasLayout = [holes?.outer, holes?.middle, holes?.inner].every(Number.isFinite);
-  const spread = hasLayout && count > 0 ? clamp((holes.outer - holes.middle - holes.inner) / count, -1, 1) : 0;
+  const hasLayout = !holes?.skipped && [holes?.outer, holes?.middle, holes?.total].every(Number.isFinite);
+  const spread = hasLayout && holes.total > 0 ? clamp((holes.outer - holes.middle) / holes.total, -1, 1) : 0;
   const ventFactor = holes?.vent === "closed" ? VENT_CLOSED_FACTOR : 1;
   return {
-    sparsity,
-    warmup: (1 - sparsity * 0.2 - spread * 0.03) * ventFactor,
-    response: (1 + sparsity * 0.25 - spread * 0.05) * ventFactor,
-    stability: spread * 4 - sparsity * 6,
+    warmup: (1 - spread * 0.03) * ventFactor,
+    response: (1 - spread * 0.05) * ventFactor,
+    stability: spread * 4,
   };
 }
 
 /** 均等度50 / タイミング精度30 / 穴サイズ安定15（実穴径） / 手際5。未着手リングや空き目印は減点しない */
 export function evaluateFoil(rings, tally, timeRatio, goodWin) {
-  const profile = foilDensityProfile(rings);
-  const tolerance = timingToleranceFor(profile.count);
-  const timingWindow = goodWin * tolerance;
+  const total = rings.reduce((sum, ring) => sum + ring.holes.length, 0);
   const per = rings.map((ring) => {
     const angles = ring.holes.map((hole) => normalizeAngle(hole.a)).sort((a, b) => a - b);
     const count = angles.length;
@@ -125,10 +107,10 @@ export function evaluateFoil(rings, tally, timeRatio, goodWin) {
       even = clamp(1 - deviation * 1.1, 0, 1);
     }
     // 精度はズレに対してなだらかに落ちる（#3023: 二値ではなくグラデーション。判定幅の2倍のズレで0）。
-    const precision = count ? ring.holes.reduce((sum, hole) => sum + (hole.size === HOLE_SIZES.shallow ? 0 : clamp(1 - hole.d / (timingWindow * 2), 0, 1)), 0) / count : 0;
+    const precision = count ? ring.holes.reduce((sum, hole) => sum + (hole.size === HOLE_SIZES.shallow ? 0 : clamp(1 - hole.d / (goodWin * 2), 0, 1)), 0) / count : 0;
     return { id: ring.id, count, even, precision, taken: ring.taken.filter(Boolean).length, targets: ring.targets, weight: ring.weight };
   });
-  // 開けたリングだけで重みを正規化。内側を開けない選択を品質不足にしない。
+  // 開けたリングだけで重みを正規化する。
   const activeWeight = per.filter((ring) => ring.count > 0).reduce((sum, ring) => sum + ring.weight, 0);
   const evenness = activeWeight ? per.reduce((sum, ring) => sum + ring.even * ring.weight, 0) / activeWeight : 0;
   const precision = activeWeight ? per.reduce((sum, ring) => sum + ring.precision * ring.weight, 0) / activeWeight : 0;
@@ -140,13 +122,13 @@ export function evaluateFoil(rings, tally, timeRatio, goodWin) {
   rings.forEach((ring) => ring.holes.forEach((hole) => { holeSizes[sizeName(Number.isFinite(hole.size) ? hole.size : HOLE_SIZES.small)]++; }));
   // 浅い穴は配置として残すが、針が通りにくい分を1穴ごとに大きく減点する。
   const shallowPenalty = holeSizes.shallow * 8;
-  const score = profile.count ? Math.max(0, Math.round(100 * (evenness * 0.5 + precision * 0.3 + sizeStab * 0.15 + clamp(timeRatio * 2.5, 0, 1) * 0.05) - shallowPenalty)) : 0;
+  const score = total ? Math.max(0, Math.round(100 * (evenness * 0.5 + precision * 0.3 + sizeStab * 0.15 + clamp(timeRatio * 2.5, 0, 1) * 0.05) - shallowPenalty)) : 0;
   const ringOf = (id) => per.find((ring) => ring.id === id);
   const dots = rings.flatMap((ring) => ring.holes.map((hole) => [Math.cos(hole.a) * ring.r, Math.sin(hole.a) * ring.r * 0.34]));
   return {
     score, evenness, precision, completion, sizeStab, holeSizes, timeRatio,
-    outer: profile.outer, middle: profile.middle, inner: profile.inner, total: profile.count,
-    innerExcess: Math.max(0, profile.inner - 4), outerEven: ringOf("outer")?.even || 0,
-    tally: { ...tally }, dots, minimumComplete: minimumRingComplete(rings), densityProfile: profile, timingTolerance: tolerance,
+    outer: ringOf("outer")?.count || 0, middle: ringOf("middle")?.count || 0, total,
+    outerEven: ringOf("outer")?.even || 0,
+    tally: { ...tally }, dots, minimumComplete: minimumRingComplete(rings),
   };
 }

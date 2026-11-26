@@ -7,7 +7,13 @@ import { STEAM_STAGES, STEAM_TABLES, steamStageOf, steamTableFor, steamPace, pic
 const W = 784, H = 414, HEART_SPEED = 290, HIT_R = 4, WORD_HALF_H = 13.5, OBJECT_HALF = 11;
 
 // 舞台の格: 練習系は practice、大会は章、明示の cs.stage が最優先。不明な章は小さい大会側へ倒す。
-for (const mode of ['drill', 'rehearsal', 'tutorial', 'practice', undefined]) assert.equal(steamStageOf({ mode, chapter: 4 }), 'practice', `${mode}`);
+for (const mode of ['drill', 'rehearsal', 'practice']) {
+  assert.equal(steamStageOf({ mode, chapter: 1 }), 'practice');
+  for (const [chapter, stage] of [[2, 'prefectural'], [3, 'national'], [4, 'world'], [5, 'exhibition']]) {
+    assert.equal(steamStageOf({ mode, chapter }), stage);
+  }
+}
+for (const mode of ['tutorial', undefined]) assert.equal(steamStageOf({ mode, chapter: 4 }), 'practice', `${mode}`);
 const byChapter = { 1: 'local', 2: 'prefectural', 3: 'national', 4: 'world', 5: 'exhibition' };
 for (const [chapter, stage] of Object.entries(byChapter)) assert.equal(steamStageOf({ mode: 'tournament', chapter: Number(chapter) }), stage);
 for (const chapter of [undefined, null, 'x', 0, -3, 1.5, 5.5, 9, Infinity]) assert.equal(steamStageOf({ mode: 'tournament', chapter }), 'local', `chapter ${chapter}`);

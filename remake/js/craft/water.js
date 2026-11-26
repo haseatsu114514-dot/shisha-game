@@ -1,5 +1,5 @@
 // 実水量だけを扱う。波・入力・温度・得点は保存値に含めない。
-export const WATER = Object.freeze({ neutral: .50, low: .45, high: .55, pour: .12, drain: .03 });
+export const WATER = Object.freeze({ neutral: .50, low: .44, high: .56, pour: .18, drain: .03 });
 export const STEM_TIP = .30;
 export const DEEP_WATER_LIMIT = .85;
 

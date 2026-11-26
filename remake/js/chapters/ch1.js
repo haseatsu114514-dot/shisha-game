@@ -814,7 +814,7 @@ async function tournamentDay() {
   await playTournamentEvent(cs, "tasting", venue());
   // 最終工程と試飲の表示後に4回目を確定。最後の1点・同点規則はVOTE01に委ねる。
   const usesVotes = state.tournament.rulesVersion >= 2;
-  if (usesVotes) castCh1Votes(state.tournament, 3, cs, carryP);
+  if (usesVotes) castCh1Votes(state.tournament, 3, cs, { carryP });
   const out = outcomeOf(cs.total, usesVotes ? state.tournament.voteAttempt.result.rank : undefined);
   state.tournament.lastRank = out.rank;
   state.tournament.lastTotal = cs.total;

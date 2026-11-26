@@ -25,9 +25,9 @@ const isString = (v) => typeof v === "string";
 // コードが名前で読む必須フィールド（全フレーバーに存在することが前提）。
 const REQUIRED_FIELDS = [
   "id", "name", "short_name", "category", "price", "description",
-  "heat_tolerance", "smoke_weight", "steam_bias", "leaf", "stats", "maker",
+  "heat_tolerance", "leaf", "stats", "maker",
 ];
-// flavor-profile.js / steps.js が名前で読む特性値キー。
+// ゲームとフレーバー編集ツールが共有する特性値キー。
 const STAT_KEYS = [
   "heat_resistance", "refreshing", "sweet_natural", "sweet_confection", "cooling",
   "assertiveness", "acquired_taste", "smoke_body", "sourness", "spiciness", "floral", "nicotine",
@@ -35,7 +35,7 @@ const STAT_KEYS = [
 // shop.js CAT_LABEL のキー集合。
 const CATEGORIES = new Set(["cooling", "sweet", "fruit", "spice", "floral"]);
 // 存在すれば有限な number でなければならない数値フィールド（値域の根拠がないものは型だけを見る）。
-const NUMERIC_FIELDS = ["heat_tolerance", "smoke_weight", "steam_bias", "chapter_min", "mix_life"];
+const NUMERIC_FIELDS = ["heat_tolerance", "chapter_min", "mix_life"];
 
 check(Array.isArray(flavors) && flavors.length > 0, "flavors.json: flavors が空または配列でない");
 

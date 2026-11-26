@@ -9,6 +9,7 @@ export const HEAT_TUNING = {
   windowBase: 0.5,          // 取り出し窓（ジャスト帯）の基準の広さ（秒）。能力・体調・チュートリアルで変わる
   superiorTongBonus: 0.05,  // 上物トング（くじ景品）所持で窓へ加える秒。「取り頃が少し長くなる」効果
   earlyPenalty: { raw: 15, early: 45 }, // 早取りの得点（黒い面が残る＝重め）
+  autoDropScore: 14,       // 自動落下は生焼けの早取りより低い
   latePenalty: { hot: 80, over: 68 },   // 遅取りの得点（炭が減る・熱が落ちるだけ＝軽め）
   readyRange: [4.2, 7.4],   // 取り頃が始まるまでの秒（炭ごとに抽選。チュートリアルは1.25倍）
   readyGap: 0.75,           // CRN09: 隣り合う炭の取り頃の開き始めを、この秒だけは離す（同時に開いて腕前で取れない、を無くす。基準の窓0.5秒＋0.25秒）
@@ -67,14 +68,14 @@ export function phaseOf(p, jw) {
 }
 
 /** 理想は既存のジャスト判定帯の中央。体調・能力・チュートリアルの幅も共通で使う。 */
-export function evaluateCoalTiming(elapsedSeconds, justStartSeconds, justSeconds) {
-  const phase = phaseOf(elapsedSeconds / justStartSeconds, justSeconds / justStartSeconds);
+export function evaluateCoalTiming(elapsedSeconds, justStartSeconds, justSeconds, { automatic = false } = {}) {
+  const phase = automatic ? "over" : phaseOf(elapsedSeconds / justStartSeconds, justSeconds / justStartSeconds);
   const idealSeconds = justStartSeconds + justSeconds / 2;
   const grade = HEAT_GRADES[phase];
   return {
     phase, elapsedSeconds, idealSeconds, errorSeconds: elapsedSeconds - idealSeconds,
     rating: phase === "just" ? "PERFECT" : grade.kind === "good" ? "GOOD" : "MISS",
-    label: grade.label, score: grade.score,
+    label: grade.label, score: automatic ? HEAT_TUNING.autoDropScore : grade.score,
   };
 }
 

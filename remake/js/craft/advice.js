@@ -106,10 +106,10 @@ export function improvementOf(cs) {
   return weakest?.line || (canRepeat ? "次の練習：同じ手順でもう一台作り、今回の仕上がりを再現しよう。" : "");
 }
 
-/** 結果カード共通の2行（今回よかったこと／次に変える一つ）。空の行は出さない（#1909）。 */
+/** 結果カード共通の講評と、確定時のNG理由。 */
 export function craftReviewLines(cs) {
   if (!cs) return [];
-  return [goodPointOf(cs), improvementOf(cs)].filter(text => typeof text === "string" && text);
+  return [goodPointOf(cs), improvementOf(cs), ...(cs.mixInfo?.ngReasons || [])].filter(text => typeof text === "string" && text);
 }
 
 /** 実際に完了した工程から一つだけ認める。未記録の成功は推測しない。 */

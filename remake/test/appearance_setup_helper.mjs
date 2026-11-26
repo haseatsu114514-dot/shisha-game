@@ -102,6 +102,7 @@ for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["sto
         if (selector.includes("water-confirm")) assert.equal(phase, "crafting", name);
         else if (selector.includes("mix-ok")) { assert.equal(phase, "confirmed", name); throw reachedMix; }
       },
+      ...(selector.includes("water-empty-accept") ? { isVisible: async () => false } : {}),
       count: async () => 0,
       scrollIntoViewIfNeeded: async () => {},
       click: async () => { assert(selector.includes("water-confirm")); phase = "confirmed"; inputs.push("click"); },

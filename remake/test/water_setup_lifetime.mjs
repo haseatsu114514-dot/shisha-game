@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { confirmWaterSetup } from "./browser/water_setup.mjs";
 
-for (const touch of [false, true]) {
+for (const touch of [false, true]) for (const empty of [false, true]) {
   const calls = [];
   const page = {
     async waitForSelector(selector, options) {
@@ -14,10 +14,14 @@ for (const touch of [false, true]) {
         async dispose() { calls.push("dispose"); },
       };
     },
-    locator() { assert.fail("must not re-query another view after visible wait"); },
+    locator(selector) {
+      assert.equal(selector, '[data-test="water-empty-accept"]');
+      return { isVisible: async () => empty,
+        click: async () => calls.push("accept-click"), tap: async () => calls.push("accept-tap") };
+    },
   };
   await confirmWaterSetup(page, { touch });
-  assert.deepEqual(calls, ["visible", "scroll", touch ? "tap" : "click", "dispose"]);
+  assert.deepEqual(calls, ["visible", "scroll", touch ? "tap" : "click", "dispose", ...(empty ? [touch ? "accept-tap" : "accept-click"] : [])]);
 }
 let clicks = 0, disposed = 0;
 const detached = new Error("old view detached");
@@ -31,4 +35,4 @@ await assert.rejects(confirmWaterSetup({
 assert.equal(clicks, 0); assert.equal(disposed, 1);
 const missing = new Error("visible wait failed");
 await assert.rejects(confirmWaterSetup({ async waitForSelector() { throw missing; } }), error => error === missing);
-console.log("PASS 4 new water helper lifetime cases: mouse/touch pinned input, detached failure cleanup, missing wait propagation");
+console.log("PASS 6 water helper lifetime cases: mouse/touch pinned input, detached failure cleanup, missing wait propagation");

@@ -88,13 +88,14 @@ async function harness(initial = fresh(), { cancelEnding = false, holdDrill = fa
       assert.deepEqual(choices[0].dialogue.lines, scene.lines.slice(at - 1, at + 1));
       assert.equal(choices[0].dialogue.lines.at(-1).choices.length, 4);
     },
-    assertDrillMenu(count = 5) { assert.equal(screen, "tonari"); assert.equal(nodes(menu).filter(node => node.tagName === "button").length, count); },
+    assertDrillMenu(count = 6) { assert.equal(screen, "tonari"); assert.equal(nodes(menu).filter(node => node.tagName === "button").length, count); },
   };
 }
 
 {
   const h = await harness(), task = h.chooseDrill();
-  h.assertDrillMenu(4);
+  h.assertDrillMenu(5);
+  assert(h.button("drill-care"), "熱管理の本番ドリルが選べる");
   assert.equal(h.button("drill-back"), undefined, "The default selector retains its original required-choice contract");
   h.button("drill-heat").click();
   assert.equal(await task, "heat", "Default callers receive a real drill id");

@@ -335,7 +335,8 @@ await suite("craft-progress", async check => {
     await page.locator(".hole-chooser .ht-help summary").tap();
     await page.locator(".hole-chooser-scroll").evaluate(node => { node.scrollTop = node.scrollHeight; });
     const opened = await measure();
-    assert(opened.help.length >= 2 && opened.help.every(size => size >= 11), `Optional explanation is readable: ${JSON.stringify(opened)}`);
+    // #4198: 説明文は1段落に統合された（どちらも24穴・配置の違い）。段落数ではなく読めることを見る。
+    assert(opened.help.length >= 1 && opened.help.every(size => size >= 11), `Optional explanation is readable: ${JSON.stringify(opened)}`);
     assert(opened.startVisible && opened.targets.every(size => size >= 43.5), JSON.stringify(opened));
     await start.tap();
     await page.locator('[data-test="hole-punch"]').waitFor();

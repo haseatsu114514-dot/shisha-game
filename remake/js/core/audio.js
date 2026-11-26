@@ -530,6 +530,7 @@ function noise({ dur = 0.3, vol = 0.2, delay = 0, filter = 1200, q = 0.8, type =
   g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
   src.connect(f).connect(g).connect(seBus);
   src.start(t, offset, dur);
+  return src;
 }
 
 /** 一口の間だけ録音ループ。止め際は最後の一泡。非表示/消音中は止め、同じ一口だけ再開。 */
@@ -624,7 +625,11 @@ export const SE = {
   count: () => { tone({ freq: 880, type: "square", dur: 0.08, vol: 0.12 }); tone({ freq: 440, type: "sine", dur: 0.25, vol: 0.12 }); },
   stamp: () => { tone({ freq: 90, to: 50, type: "sine", dur: 0.18, vol: 0.35 }); noise({ dur: 0.08, vol: 0.18, filter: 1200 }); },
   crowd: (sec = 2.2) => { noise({ dur: sec, vol: 0.16, filter: 700, q: 0.4 }); noise({ dur: sec * 0.8, vol: 0.08, filter: 1800, q: 0.6, delay: 0.2 }); },
-  drumroll: (sec = 2) => { const n = Math.floor(sec * 22); for (let i = 0; i < n; i++) noise({ dur: 0.05, vol: 0.05 + (i / n) * 0.12, filter: 900, delay: i / 22 }); },
+  drumroll: (sec = 2) => {
+    const n = Math.floor(sec * 22);
+    const beats = Array.from({ length: n }, (_, i) => noise({ dur: 0.05, vol: 0.05 + (i / n) * 0.12, filter: 900, delay: i / 22 }));
+    return () => beats.forEach(beat => beat?.stop());
+  },
   // 1位確定の「プチュン」（ブラウン管が落ちる音）
   puchun: () => { tone({ freq: 4200, to: 60, type: "sine", dur: 0.35, vol: 0.28 }); noise({ dur: 0.1, vol: 0.2, filter: 6000, type: "highpass" }); },
   // 敗北の「パリン」

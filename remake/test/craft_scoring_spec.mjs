@@ -11,6 +11,10 @@ const { state, newGame, setState } = await import("../js/core/state.js");
 const { MAKER_SPECS, makerOfFlavor, makerMixProfile, compareEquipment, flavorThermalGuide } = await import("../js/craft/temperature-model.js");
 const { coalWarmth } = await import("../js/craft/coals.js");
 const { flavorFamilyGrams, giftBowlEffect, computeShisha, bonusOf, finalize } = await import("../js/craft/score.js");
+const { hasStartupShortfall } = await import("../js/craft/pull.js");
+const { temperatureAfterSteam } = await import("../js/craft/conditions.js");
+const { HEAT_GRADES, evaluateCoalTiming } = await import("../js/craft/heat_logic.js");
+const { craftRankThresholds } = await import("../js/craft/common.js");
 const { skippedFoilResult } = await import("../js/craft/holes_logic.js");
 const { improvementOf } = await import("../js/craft/advice.js");
 const { advanceToChapterTwo } = await import("../js/chapters/ch2-progress.js");
@@ -257,7 +261,7 @@ const flat = coalWarmth({ equip: { charcoal: "flat_charcoal" }, place: "triangle
 const cube = coalWarmth({ equip: { charcoal: "cube_charcoal" }, place: "triangle" });
 assert(flat.widthFactor > cube.widthFactor, "Flat charcoal should have wider effective temperature zone");
 assert.equal(flat.burnRisk, 0);
-assert(cube.burnRisk > 10, "Cube charcoal should carry higher burnRisk");
+assert.equal(cube.burnRisk, 7.5, "Cube charcoal carries 2.5 extra burnRisk per coal");
 assert(flat.response < cube.response, "Flat charcoal should have gentler pull temperature jump");
 assert(cube.power > flat.power && cube.smokeBonus > flat.smokeBonus);
 
@@ -339,11 +343,7 @@ assert.equal(cmpSuyaki.rows[0].tone, "technical");
 
 const cmpCube = compareEquipment("cube_charcoal", "flat_charcoal");
 assert.match(cmpCube.rows[0].value, /-10%.*繊細な温度合わせが必要/);
-assert.match(cmpCube.rows[1].value, /×0\.90 → ×1\.13/);
-assert.match(cmpCube.rows[2].value, /煙量 \+6 ／ 焦げリスク \+10\.5/);
-for (const charcoal of ["flat_charcoal", "dense_flat_charcoal"]) {
-  assert.match(compareEquipment(charcoal, charcoal).rows[1].value, /火力×0\.90/);
-}
+assert.match(cmpCube.rows[2].value, /煙量 \+6 ／ 焦げリスク \+7\.5/);
 
 const mintGuide = flavorThermalGuide(DB.flavorById.mint);
 assert.equal(mintGuide.makerLabel, "アルファーヘブン");
@@ -351,6 +351,40 @@ assert.match(mintGuide.tempBandLabel, /高温向き/);
 
 const vanillaGuide = flavorThermalGuide(DB.flavorById.vanilla);
 assert.match(vanillaGuide.tempBandLabel, /低温・繊細/);
+
+// 通常の上げ吸いで届く台と、雨・20g・デンスの立ち上がり不足を分ける。
+const coldSetup = {
+  mode: "tournament", equip: { bowl: "suyaki_hagal", hms: "lotos_hagal", charcoal: "flat_charcoal" },
+  pack: "firm", mix: { absal_mint: 20 }, mixInfo: { total: 20 },
+  environment: { rainy: true, ambientC: 21 }, heat: { heatPower: 30 },
+  holes: { total: 24, outer: 24, middle: 0 },
+};
+for (const plan of [{ zeroSteam: true, steamSeconds: 0 }, { steamSeconds: 480 }]) {
+  const cs = { ...coldSetup, ...plan };
+  assert(hasStartupShortfall(cs, temperatureAfterSteam(cs, plan.steamSeconds)));
+}
+const standard = { ...coldSetup, pack: "normal", steamSeconds: 480, mix: { double_apple: 12 }, mixInfo: { total: 12 },
+  equip: { ...coldSetup.equip, bowl: "silicone_bowl" }, heat: { heatPower: 70 } };
+assert(!hasStartupShortfall(standard, temperatureAfterSteam(standard, 480)));
+
+const dropped = evaluateCoalTiming(9, 5, .5, { automatic: true });
+assert.equal(dropped.phase, "over");
+assert(dropped.score < HEAT_GRADES.raw.score);
+assert.equal(evaluateCoalTiming(9, 5, .5).score, HEAT_GRADES.over.score);
+
+// 焼き上がりの実値を使い、ボーナスなしの12g標準ボウルでも桜井版SSSに届く。
+newGame();
+const perfect = { ...standard, chapter: 1, mode: "rehearsal", craftVersion: "sakurai", place: "triangle", pack: "firm",
+  mix: { double_apple: 9, mint: 3 },
+  holes: { ...standard.holes, score: 100, minimumComplete: true, outerEven: 1 },
+  heat: { score: 100, heatPower: 70, heatStability: 80, burnRisk: 30, aromaRetention: 70 },
+  steam: { score: 100 }, pullDone: true, careHistory: [{ score: 100 }, { score: 100 }] };
+perfect.mixInfo = evaluateMix(perfect);
+perfect.pull = { score: 100, pulls: 3, temp: temperatureBands(perfect).center };
+finalize(perfect);
+assert.equal(perfect.bonusNotes.length, 0);
+assert.equal(craftRankThresholds(perfect).at(-1), 97);
+assert(perfect.total >= 97 && perfect.total < 98);
 
 console.log("[craft scoring spec] PASS: 6 makers, +2.5 ceiling, flat vs cube charcoal, shop equipment comparison, canonical judge formula, and pipe refund migration verified");
 

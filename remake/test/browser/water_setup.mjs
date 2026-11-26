@@ -7,4 +7,8 @@ export async function confirmWaterSetup(page, { touch = false } = {}) {
     await confirm.scrollIntoViewIfNeeded();
     if (touch) await confirm.tap(); else await confirm.click();
   } finally { await confirm.dispose(); }
+  const accept = page.locator('[data-test="water-empty-accept"]');
+  if (await accept.isVisible()) {
+    if (touch) await accept.tap(); else await accept.click();
+  }
 }

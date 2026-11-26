@@ -77,6 +77,17 @@ gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s
  s=core.newGame();
 }
 {
+ let old=core.newGame();
+ old.flavorMastery={mint:12,cool_mint:18,nightside_blast_mint:36,dark_chocolate:12,ice_lemon:6};
+ core.save();old=core.load();
+ assert.deepEqual(old.flavorMastery,{mint:36,chocolate:12,lemon:6});
+ for (const [id, family] of [["cool_mint","mint"],["nightside_blast_mint","mint"],["dark_chocolate","chocolate"],["ice_lemon","lemon"]]) {
+   assert.equal(DB.flavorById[id].family,family);
+   assert.equal(masteryLevel(old,id,DB.flavorById),masteryLevel(old,family,DB.flavorById));
+ }
+ s=core.newGame();
+}
+{
  // 第4回へ集約しても、既読の旧回で得た経験値を二重に受け取らず、未取得分は失わない。
  const naru=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch1_naru.json',import.meta.url))).dialogues;
  const first=naru.find(d=>d.dialogue_id==='ch1_naru_first');

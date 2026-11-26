@@ -88,10 +88,9 @@ async function chooseTemplate(panel, cs) {
   });
   const editHint = previous ? el("small.hole-reuse-hint", { text: "開け直す穴を選べます。" }) : null;
   const help = el("details.ht-help", [
-    el("summary", { text: "穴数と熱の回り方" }),
+    el("summary", { text: "配置と熱の回り方" }),
     illustrated ? counts : null,
-    el("p", { text: "多い穴は熱が早く回り、安定しやすい。穴あけでズレる機会も増える" }),
-    el("p", { text: "少ない穴は穴あけが楽。熱はゆっくり入り、吸い方で温度が動きやすい" }),
+    el("p", { text: "どちらも24穴。外周に集中させると温度が安定し、中周にも開けると吸い方で温度を動かしやすい" }),
     illustrated ? note : null,
   ]);
   const title = el("b.ht-title", { text: illustrated ? "穴の配置" : "穴あけテンプレート" });
@@ -202,9 +201,9 @@ export async function runHoles(cs) {
   root?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", { dataset: { test: "hole-guide" } }, [
     el("ul", [
       ["狙う", "光る目印の近くを針が行き来する。重なったところで押す"],
-      ["押し加減", "少し押し込んでから離す。短すぎると浅い穴になり、大きく減点される。長く押すほど穴が大きくなる"],
+      ["押し加減", "少し押し込んでから離す。大きさの評価は小穴で揃えると満点。短すぎると浅い穴になり、長すぎると大きな穴になって減点される"],
       ["ズレたとき", "ミスにはならず、ズレた位置のまま穴として残る（点は低くなる）。針は次の目印へ進む"],
-      ["採点", "間隔のそろい50・狙いの正確さ30・穴の大きさのそろい15・時間5。浅い穴はさらに1穴8点減点"],
+      ["採点", "間隔のそろい50・狙いの正確さ30・小穴のそろい15・時間5。浅い穴はさらに1穴8点減点"],
       ...rings.map(ring => [ring.label, ring.role]),
       // スマホの右の列は狭く、能力の効果は「技」「感」の札だけを出す。中身はここで読む（css/craft-phone.css。PC は今までどおり画面に出る）
       ...(effectVisible("technique") ? [["技", "技術で針がゆっくり", "bench-guide-phone"]] : []),
@@ -255,19 +254,18 @@ export async function runHoles(cs) {
       effectVisible("technique") ? effectBadge("technique", "技") : null,
       senseBand(basePerfWin, 12), effectLine("technique", "技", "技術で針がゆっくり"),
       el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), feedback, plan,
-      el("p.hr-depth-hint", { dataset: { test: "hole-depth-hint" }, text: "押す長さで深さが変わる。短すぎると浅く、長いほど大きい穴に。" }),
+      el("p.hr-depth-hint", { dataset: { test: "hole-depth-hint" }, text: "押す長さで深さが変わる。大きさの評価は小穴で揃えると満点。" }),
       punchBtn, begin || !renewal ? row : null]);
   panel.append(el("div.holes", [el("div.hr-stage", [disc]), side]));
 
   // ---- 状態
-  const tally = { perfect: 0, good: 0, miss: 0, rough: 0, tooClose: 0, blank: 0, tooMany: 0, shallow: 0 };
+  const tally = { perfect: 0, good: 0, miss: 0, rough: 0, tooClose: 0, blank: 0, shallow: 0 };
   const countHole = (ring, { size, kind }) => {
     if (size === HOLE_SIZES.shallow) tally.shallow++;
     else if (kind === "perfect" || kind === "good") tally[kind]++;
     else {
       ring.extra++;
       tally[kind === "close" ? "tooClose" : "rough"]++;
-      if (ring.id === "inner") tally.tooMany++;
     }
   };
   const state = rings.map((rg, i) => {
@@ -667,12 +665,11 @@ export async function runHoles(cs) {
       spacingAdvice,
       `目印の達成：${res.tally.perfect + res.tally.good + (res.tally.rough || 0) + res.tally.tooClose + res.tally.shallow}/${Object.values(template.counts).reduce((sum, count) => sum + count, 0)}か所（EXCELLENT ${res.tally.perfect}・GOOD ${res.tally.good}）`,
       `穴あけ入力：${res.total}回 ／ ズレて開いた穴：${(res.tally.rough || 0) + res.tally.tooClose}回（近すぎた穴を含む）／ 浅い穴：${res.tally.shallow}回`,
-      `実際に開いた穴：外周 ${res.outer}・中周 ${res.middle}・内周 ${res.inner}（計 ${res.total} 穴）`,
+      `実際に開いた穴：外周 ${res.outer}・中周 ${res.middle}（計 ${res.total} 穴）`,
       "ズレた穴も開いた穴として残り、間隔と熱の回り方に影響する",
       `穴の大きさ：浅い ${res.holeSizes.shallow}・小 ${res.holeSizes.small}・少し大きい ${res.holeSizes.wide}・大きい ${res.holeSizes.large}`,
       res.holeSizes.shallow && !depthFirst ? shallowAdvice : "",
-      res.innerExcess ? "内周を開けすぎた。焦げやすくなるかもしれない" : res.outerEven > 0.8 ? "外周がきれいに揃った。熱が全体に回りそうだ" : "",
-      res.total < 24 ? "穴を控えめに仕上げた。吸い出しでは温度の動きをよく見よう" : "",
+      res.outerEven > 0.8 ? "外周がきれいに揃った。熱が全体に回りそうだ" : "",
     ],
   });
 

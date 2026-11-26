@@ -101,20 +101,22 @@ try {
   const boundaries = {
     both_over_5g: [[5, 6, false], [6, 5, false], [5.1, 5.1, true], [6, 6, true]],
     both_over_4g: [[4, 5, false], [5, 4, false], [4.1, 4.1, true], [5, 5, true]],
-    combined_over_10g: [[4, 6, false], [4, 6.1, true], [6, 4.1, true]],
+    combined_over_10g: [[4, 6, false], [4, 6.1, true], [6, 4.1, true], [8, 8, false], [8, 9, true]],
     ratio_close: [[5, 6, true], [6, 5, true], [5, 6.1, false], [6.1, 5, false]],
   };
   for (const ng of ngMixes) {
     const [a, b] = ng.flavors;
     for (const [ga, gb, hit] of [...boundaries[ng.condition], [0, 12, false], [12, 0, false], [0, 0, false]]) {
+      const base = ng.combined_ratio ? { double_apple: (ga + gb > 12 ? 20 : 12) - ga - gb } : {};
       for (const mix of [
-        { [a]: ga, [b]: gb },
-        { [`test_${a}`]: ga, [`test_${b}`]: gb },
-        { [a]: ga / 2, [`test_${a}`]: ga / 2, [b]: gb / 2, [`test_${b}`]: gb / 2 },
+        { ...base, [a]: ga, [b]: gb },
+        { ...base, [`test_${a}`]: ga, [`test_${b}`]: gb },
+        { ...base, [a]: ga / 2, [`test_${a}`]: ga / 2, [b]: gb / 2, [`test_${b}`]: gb / 2 },
       ]) {
         DB.ngMixes = [];
         const plain = mixOf(mix);
-        DB.ngMixes = [ng];
+        // 比率の境目は、系統限定とは独立に検証する。
+        DB.ngMixes = [ng.combined_ratio ? { ...ng, only_listed_flavors: false } : ng];
         const result = mixOf(mix);
         assert.deepEqual(result.ngReasons, hit ? [ng.text] : [], `${ng.id}: ${JSON.stringify(mix)}`);
         assert.equal(result.score, Math.round(plain.score + (hit ? ng.penalty * 3 : 0)), "existing penalty and rounding stay unchanged");
@@ -147,4 +149,4 @@ try {
 } finally {
   DB.ngMixes = ngMixes; DB.flavorById = originalFlavors; DB.recipes = recipes;
 }
-console.log("[NG mix] PASS: all rules, family sums, strict 4g/5g/10g boundaries, ratio ±1g, zero, penalties, golden coexistence");
+console.log("[NG mix] PASS: all rules, family sums, strict 4g/5g and 10/12 proportion boundaries, ratio ±1g, zero, penalties, golden coexistence");

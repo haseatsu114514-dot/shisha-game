@@ -528,8 +528,13 @@
 .heat-compact .heat-error { font-size: 14px; line-height: 1.2; padding-left: 0; border-left: 0; }
 @media (prefers-reduced-motion: reduce) { .coal, .coal-stored, .coal.pikan .coal-corners { transition: none; animation: none; } .coal.pikan .c-core { opacity: 1; } }
 
-/* キッチンタイマー：液晶と四つのボタンだけをコードで重ねる。 */
+/* キッチンタイマー：液晶と四つのボタンを重ね、下に時間のプリセットを並べる。 */
 .steam-timer { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; height: 100%; padding-bottom: 24px; }
+.steam-timer-actions { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.steam-timer-actions > p { margin: 0; }
+.steam-presets { display: flex; justify-content: center; gap: 8px; }
+.steam-startup-warning { color: var(--paper-ink, #ffd180); font-weight: 700; line-height: 1.3; }
+.steam-startup-warning:empty { display: none; }
 .steam-clock { position: relative; width: 520px; height: 348px; flex: none; }
 .steam-clock-skin { position: absolute; inset: 0; pointer-events: none; }
 .timer-display { position: absolute; left: 12%; width: 76%; top: 17%; height: 38%; display: grid; place-items: center; color: #192e28; }
@@ -706,7 +711,7 @@
 .rc-card { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 14px; color: #bbb; }
 .rc-card.me { color: var(--neon-amber); }
 .rc-shisha { width: 24px; height: 40px; border-radius: 12px 12px 4px 4px; box-shadow: 0 0 14px currentColor; }
-.rc-crt { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 2px, transparent 2px 4px); }
+.rc-crt { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 2px, transparent 2px 4px); }
 .count-screen.almost { animation: almost 0.5s ease-in-out; }
 @keyframes almost { 50% { transform: scaleY(0.2); filter: brightness(2); } }
 .count-screen.puchun { animation: puchun 0.6s var(--ease-snap) forwards; }

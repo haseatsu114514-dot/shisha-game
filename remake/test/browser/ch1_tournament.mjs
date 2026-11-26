@@ -205,6 +205,8 @@ await suite("ch1-tournament", async check => {
       const water = page.locator('.bench [data-test="water-confirm"]');
       if (await water.isVisible()) {
         await water.click({ timeout: Math.max(1, deadline - Date.now()) });
+        const accept = page.locator('[data-test="water-empty-accept"]');
+        if (await accept.isVisible()) await accept.click();
       }
       const skip = page.locator('#vn.active [data-test="vn-skip"]:not(.on)');
       if (await skip.count()) await skip.click();
@@ -638,6 +640,9 @@ await suite("ch1-tournament", async check => {
     assert.equal(await page.locator('.rc-card.spot').count(), 1, "The spotlight visits one finalist per count");
     await assertFits(page, '.count-screen .tournament-heading, .rc-ring, .rc-pray, .rc-card');
     await capture(page, `count-finalists-${touch ? "touch" : "pc"}`);
+    await page.locator('[data-test="result-count"]').locator('.tournament-heading h1').click();
+    await page.locator('[data-test="result-count"].puchun').waitFor({ timeout: 2000 });
+    assert.notEqual(await page.locator('[data-test="result-count"]').getAttribute("data-count"), "0");
     await page.evaluate(async () => { await countdown; (await import("./js/core/ui.js")).retireScreen(); window.cut = T.result.sensuCutin(1, attempt); });
     const final = page.locator('[data-test="final-vote"]');
     await final.and(page.locator('.show')).waitFor();

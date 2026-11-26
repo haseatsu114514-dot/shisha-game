@@ -35,7 +35,7 @@ const up = ZONES.find(z => z.id === "up").justDelta;
 const finish = (cs, seconds) => temperatureAfterSteam(cs, seconds, 0);
 const score = cs => { const temp = finish(cs, 600); return computeShisha({ ...cs, pull: { ...pullResult(temp, 3, 0, temperatureBands(cs)), temp, pulls: 3 } }); };
 for (const cs of [opened, missing]) {
-  assert.deepEqual(cs.holes, legacy);
+  assert.deepEqual(cs.holes, { ...skippedFoilResult("open") });
   assert.equal(finish(cs, 600), finish(old, 600));
   for (const zone of ZONES) for (const delta of [zone.delta, zone.justDelta]) assert.equal(heatDelta(cs, delta), heatDelta(old, delta));
   assert.deepEqual(score(cs), score(old));

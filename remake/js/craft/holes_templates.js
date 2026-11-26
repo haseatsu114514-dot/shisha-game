@@ -7,12 +7,12 @@ export const HOLE_TEMPLATES = [
   {
     id: "outer24", label: "外周24穴",
     unlockFlag: "_hole_outer24_unlocked",
-    counts: { outer: 24, middle: 0, inner: 0 },
+    counts: { outer: 24, middle: 0 },
     description: "外周から広く熱を回す。温度を落ち着かせやすい",
   },
   {
     id: "outer12-middle12", label: "外周12穴＋中周12穴",
-    counts: { outer: 12, middle: 12, inner: 0 },
+    counts: { outer: 12, middle: 12 },
     description: "中周にも熱を届ける。外周だけより温度を動かしやすい",
   },
 ];

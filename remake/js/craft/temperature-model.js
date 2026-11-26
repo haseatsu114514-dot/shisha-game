@@ -254,7 +254,7 @@ export function makerMixProfile(cs, flavorById = DB.flavorById) {
 
 export const EQUIP_CATEGORY_GUIDE = Object.freeze({
   bowl: "ボウル（ハガル）：フレーバー（葉）を詰める器。容量と材質で「適温の広さ・味の濃さ・温まる速さ」が変わる。",
-  hms: "HMD（ヒートマネジメント）：ボウルの上に載せて炭を入れる金属製の蓋。熱の当たり方と安定感が変わる。",
+  hms: "HMD（ヒートマネジメント）：ボウルの上に載せて炭を入れる金属製の蓋。適温帯の広さや熱安定が変わる。",
   charcoal: "炭（チャコール）：熱源の形状。フラット（平型）とキューブ（角型）は大きさの違いで、熱の持ちと燃焼時間が変わる。",
 });
 
@@ -288,33 +288,33 @@ export const EQUIP_THERMAL_SPECS = Object.freeze({
   }),
   lotos_hagal: Object.freeze({
     id: "lotos_hagal", type: "hms", widthFactor: 1.00, stabilityBonus: 2,
-    warmup: "じんわり（標準）", response: "素直（基準）", fitNote: "全ボウル対応",
-    summary: "じんわり温まる標準HMD。蓋の通気で熱のこもり方を変えられる。",
+    fitNote: "全ボウル対応・アルミなし可",
+    summary: "適温帯の広さの基準になるHMD。熱安定を+2補正する。",
   }),
   lotos_plus: Object.freeze({
     id: "lotos_plus", type: "hms", widthFactor: 1.04, stabilityBonus: 4,
-    warmup: "じんわり（標準）", response: "素直（ロートスと同じ）", fitNote: "全ボウル対応・アルミ不要",
-    summary: "アルミを張らずに使うロートスの上位モデル。適温帯が+4%・熱安定が+2伸びる。",
+    fitNote: "全ボウル対応・アルミなし可",
+    summary: "ロートスより適温帯が4%広く、熱安定が2高い。",
   }),
   tanukish_lid: Object.freeze({
     id: "tanukish_lid", type: "hms", widthFactor: 1.08, stabilityBonus: 5,
-    warmup: "穏やか", response: "マイルド（熱が上がりすぎない）", fitNote: "12g/15gボウル専用（素焼き20g非対応）",
-    summary: "熱当たりが柔らかく、適温帯が+8%・熱安定が+3伸びる。吸い出しで通り過ぎにくく初心者にも扱いやすい。",
+    fitNote: "素焼き20gを除くボウル",
+    summary: "ロートスより適温帯が8%広く、熱安定が3高い。",
   }),
   winkwink_hagal: Object.freeze({
     id: "winkwink_hagal", type: "hms", widthFactor: 1.05, stabilityBonus: 4,
-    warmup: "ややゆっくり", response: "マイルド（蓄熱重視）", fitNote: "素焼き20g含む全ボウル対応",
-    summary: "素焼きの大口径にも載る大型タヌキッシュ。適温帯+5%・高い蓄熱性で大容量ボウルを安定させる。",
+    fitNote: "素焼き20g含む全ボウル対応",
+    summary: "素焼きにも載る大型タヌキッシュ。適温帯は基準より5%広く、熱安定を+4補正する。",
   }),
   amaburst_hms: Object.freeze({
     id: "amaburst_hms", type: "hms", widthFactor: 0.88, stabilityBonus: 0,
-    warmup: "非常に早い（高火力）", response: "鋭い（1口で強く上がる）", fitNote: "素焼き20g含む全ボウル対応",
-    summary: "直炭に近い高火力HMD。適温帯は-12%狭まるが、温まりにくい素焼き20gや高耐熱ミックスを一気に立ち上げられる。",
+    fitNote: "素焼き20g含む全ボウル対応",
+    summary: "適温帯は基準より12%狭い。熱安定の補正は0。",
   }),
   dr_kemuri_proto_hmd: Object.freeze({
     id: "dr_kemuri_proto_hmd", type: "hms", widthFactor: 1.06, stabilityBonus: 4,
-    warmup: "じんわり（標準）", response: "素直（熱が均一に回る）", fitNote: "全ボウル対応",
-    summary: "チャコール博士の試作の銀の蓋。熱を蓋全体に回して均一に落とし、適温帯が+6%広がる。葉が傷んでも適温帯が狭まりにくい。",
+    fitNote: "全ボウル対応",
+    summary: "チャコール博士の試作の銀の蓋。適温帯が+6%広がり、葉が傷んだときの適温帯の縮みを半分にする。",
   }),
   flat_charcoal: Object.freeze({
     id: "flat_charcoal", type: "charcoal", widthFactor: 1.04, power: flatThreePower, response: 1.00, burnRisk: 0, smokeBonus: 0,
@@ -327,9 +327,9 @@ export const EQUIP_THERMAL_SPECS = Object.freeze({
     summary: "ココナッツ殻を固く詰めた上位のフラット炭。火力はフラットと同じで、適温帯が少し広い（×1.06）。焦げリスクは増えない。",
   }),
   cube_charcoal: Object.freeze({
-    id: "cube_charcoal", type: "charcoal", widthFactor: 0.94, power: 1.13, response: 1.12, burnRisk: 10.5, smokeBonus: 6,
+    id: "cube_charcoal", type: "charcoal", widthFactor: 0.94, power: 1.13, response: 1.12, burnRisk: 7.5, smokeBonus: 6,
     warmup: "強い（火力×1.13・煙量+6）", responseLabel: "強め（吸引で熱が上がりやすい）",
-    summary: "角型の高火力炭。煙の量（+6）と立ち上がりに優れる反面、適温帯が狭まり（×0.94）焦げリスク（+10.5）も上がるため温度管理が重要。",
+    summary: "角型の高火力炭。煙の量（+6）と立ち上がりに優れる反面、適温帯が狭まり（×0.94）焦げリスク（+7.5）も上がるため温度管理が重要。",
   }),
 });
 
@@ -385,10 +385,10 @@ export function compareEquipment(targetId, currentId) {
   } else if (target.type === "hms") {
     const stabDiff = target.stabilityBonus - (current?.stabilityBonus || 0);
     rows.push({
-      label: "熱安定・反応",
+      label: "熱安定",
       value: same
-        ? `${target.response}（熱安定 +${target.stabilityBonus}）`
-        : `${current.response} → ${target.response}（熱安定 ${stabDiff >= 0 ? `+${stabDiff}` : stabDiff}）`,
+        ? `+${target.stabilityBonus}`
+        : `+${current.stabilityBonus} → +${target.stabilityBonus}`,
       tone: stabDiff > 0 ? "easy" : stabDiff < 0 ? "technical" : "neutral",
     });
     rows.push({ label: "対応ボウル", value: target.fitNote, tone: "neutral" });

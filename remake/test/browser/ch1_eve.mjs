@@ -27,6 +27,7 @@ async function setup(page, { fresh = true, day = 13, manual = false, auto = "goo
       for (const id of ["sumi", "tsumugi", "pakki", "sensu", "uezono", "dr_charcoal", "naru", "adam", "minto"]) E.intro.markIntroSeen(id);
     } else E.core.load();
     E.ui.clearScreen(); E.ch1.setupHooks(); E.vn.vnTest.turbo = !manual;
+    if (manual) E.core.config.skipSeenOnly = false; // advanceTo/finish は未読の台詞も SKIP で送る。
     E.vn.vnTest.choose = () => 3; // automated compatibility cases choose sleep
     E.session.craftTest.auto = auto;
     E.entries = []; E.steps = []; E.benches = 0;
@@ -269,6 +270,8 @@ await suite("ch1-eve", async check => {
         await page.locator('[data-test="opt-false"]').click();
         await advanceTo(page, '[data-test="water-confirm"]');
         await page.locator('[data-test="water-confirm"]').click();
+        const accept = page.locator('[data-test="water-empty-accept"]');
+        if (await accept.isVisible()) await accept.click();
         await advanceTo(page, '[data-test="mix-ok"]');
       }
       if (stage === "during-drill") await page.locator('[data-test="coal-0"]').waitFor();

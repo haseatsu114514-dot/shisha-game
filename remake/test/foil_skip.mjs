@@ -38,7 +38,7 @@ const skip = skippedFoilResult();
 assert.equal(skip.skipped, true);
 assert.equal(skip.score, null);
 assert.equal(skip.minimumComplete, true);
-assert(skip.innerExcess === 0 && skip.total === 24);
+assert(skip.total === 24);
 
 // 3. finalize: 飛ばした一台は穴あけの重みを外し、残り4工程で割り直す（損も得もしない）
 const base = { heat: { score: 80 }, careHistory: [{ score: 70 }, { score: 90 }], stats: { craftQuality: 60 }, mode: "rehearsal", equip: { bowl: "silicone_bowl" } };

@@ -3,6 +3,7 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { appearanceOptions } from "../../js/appearance/model.js";
+import { confirmWaterSetup } from "./water_setup.mjs";
 
 const repositoryRoot = fileURLToPath(new URL("../../../", import.meta.url));
 const catalogPath = "asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json";

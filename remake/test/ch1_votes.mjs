@@ -4,12 +4,12 @@ import { beginCh1Votes, castCh1Votes, ch1Standings, CH1_JUDGES, CH1_CONTESTANTS 
 const craft = parts => ({ holes: { score: parts[0] }, heat: { score: parts[1] },
   stats: { craftQuality: parts[2] }, careHistory: [{ score: parts[3] }, { score: parts[4] }],
   total: parts.reduce((a, b) => a + b, 0) / 5 });
-function match(parts) {
+function match(parts, serveBonus = 0) {
   const attempt = {};
   beginCh1Votes(attempt);
   const cs = craft(parts);
   for (let round = 0; round < 4; round++) {
-    assert.equal(castCh1Votes(attempt, round, cs), true);
+    assert.equal(castCh1Votes(attempt, round, cs, { serveBonus }), true);
     assert.equal(castCh1Votes(attempt, round, cs), false, "二重投入しない");
   }
   return attempt.voteAttempt;
@@ -34,12 +34,16 @@ assert.equal(CH1_CONTESTANTS.length, 4);
 assert.equal(match([80, 80, 80, 80, 80]).result.rank, 3);
 assert.equal(match([90, 90, 90, 90, 90]).result.rank, 1);
 for (const score of [60, 80, 90, 100]) assert.equal(match([score, score, score, score, score]).lastPoint, "hajime");
-// 2回目の調整はなる（87）の方が上でも、最後の1点ははじめへ。アダムと並び、同点は制作総合点で決まる。
+// 最後の1点ははじめへ。審査点で並んだ工程でもはじめに票が入る。
 const close = match([84, 87, 86, 86, 86]);
 assert.equal(close.lastPoint, "hajime");
 assert.equal(close.beforeLast.sensu.hajime + 1, close.votes.sensu.hajime);
 assert.equal(close.beforeLast.sensu.naru, close.votes.sensu.naru);
-assert.deepEqual(close.result.rows.slice(0, 2).map(row => [row.id, row.points]), [["hajime", 13], ["adam", 13]]);
+assert.deepEqual(close.result.rows.slice(0, 2).map(row => [row.id, row.points]), [["hajime", 14], ["adam", 13]]);
+const unprepared = match([80, 80, 80, 80, 80]);
+const prepared = match([80, 80, 80, 80, 80], 5);
+assert.notDeepEqual(prepared.picks[1], unprepared.picks[1], "準備の加点で提供の票が動く");
+for (const round of [0, 2, 3]) assert.deepEqual(prepared.picks[round], unprepared.picks[round]);
 for (const base of [60, 70, 80, 84, 85, 86, 90]) {
   const baseline = match([base, base, base, base, base]).result.votes;
   for (let part = 0; part < 5; part++) {

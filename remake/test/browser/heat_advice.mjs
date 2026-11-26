@@ -56,7 +56,8 @@ await suite("heat-advice", async check => {
       assert.deepEqual(actual.automatic, pattern === "late-auto" ? [true, true, true]
         : pattern === "early" ? [false, false, false] : [false, true, true]);
       assert.equal(actual.over, pattern === "early" ? 0 : pattern === "mixed" ? 2 : 3);
-      assert.equal(actual.score, pattern === "early" ? 15 : pattern === "mixed" ? 50 : 68);
+      // #4198: 自動で落ちた炭は専用の14点（autoDropScore）。mixed は (15+14+14)/3 の切り捨てで14点。
+      assert.equal(actual.score, pattern === "early" ? 15 : 14);
       const feedback = page.locator('[data-test="craft-feedback"]');
       await feedback.waitFor({ state: "visible" });
       const text = await feedback.textContent();
@@ -73,10 +74,12 @@ await suite("heat-advice", async check => {
       assert.match(summary, new RegExp(`工程点：${actual.score}点 ／ 取り頃：0/3個`));
       await page.locator('[data-test="step-details"]').click();
       if (pattern !== "early") {
-        assert.match(await page.locator(".rc-lines").innerText(), /火は入っている.*生焼けより減点は軽い/);
+        // #4198: この2パターンの「過ぎた炭」は全て自動落下。結果の行は自動落下用の文になる。
+        assert.match(await page.locator(".rc-lines").innerText(), /自動で落ちた炭は、取り上げた炭より評価が低い/);
       }
       assert(!/次は.*待とう/.test(summary), "The summary must describe the picks without contradicting timing advice");
-      assert.equal(await page.locator('[data-test="craft-rating"]').textContent(), pattern === "late-auto" ? "○" : "△",
+      // #4198: 自動落下の炭は工程点14に下がったため、見守る人の評価も△になる（旧仕様は○）。
+      assert.equal(await page.locator('[data-test="craft-rating"]').textContent(), "△",
         "Timing misses and the existing heat evaluation remain separate axes");
       assert.deepEqual(await storageSnapshot(page), saved, "Heat results must not write player saves");
       await page.locator('[data-test="step-next"]').click();

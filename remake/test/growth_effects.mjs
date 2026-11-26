@@ -359,6 +359,13 @@ const blindBefore=JSON.stringify(blindCs);assert.equal(bonusOf(blindCs).bonus,2.
 assert.equal(bonusOf({...blindCs,blindVariance:-3}).bonus,-3);assert.equal(bonusOf({...blindCs,blindService:false}).bonus,0);
 assert.equal(bonusOf({...blindCs,pullDone:false}).bonus,0);assert.equal(bonusOf({...blindCs,failed:true}).bonus,0);
 assert.equal(bonusOf(JSON.parse(JSON.stringify(blindCs))).bonus,2.4,"セッション保存の振れ幅を再抽選しない");
+for (const blindVariance of [-3, 0, 3]) {
+  const swing = (mix, pull) => bonusOf({ ...blindCs, blindVariance, mixInfo: { score: mix }, pull: { score: pull } }).bonus;
+  assert.equal(swing(100, 100), 3);
+  assert(swing(90, 80) >= swing(50, 50));
+  if (blindVariance < 3) assert(swing(90, 80) > swing(50, 50));
+  assert(swing(20, 20) < 0);
+}
 growth.setGrowthPreview(false);assert.equal(bonusOf(blindCs).bonus,0);assert.deepEqual(effects.floralLayers(core.state,flowerCs,DB.flavorById),[]);
 console.log("[growth effects] PASS: additive legacy growth, 160+67=227, no resource use or repeated LOAD gain, condition boundaries, fractional affinity/fortune, UI totals, leaf/mastery/gauge/heat/pull/stage and mode off");
 // 集団交流は一行動。各人の初回・交流の幅だけを重複なく数える（SPEC X1/X2/X3/X11）。

@@ -275,16 +275,12 @@ await suite("mix-temperature", async check => {
     // DS風は廃止（横画面一本化）。横持ちタッチの通常表示で、低め/高めの札が収まり観客の欄より前に出ることを確かめる。
     await prepare(page, "drill");
     assert.equal(await page.locator("body.game-ds").count(), 0);
-    for (const care of [false, true]) for (const band of ["low", "high", "attack"]) {
+    for (const care of [false, true]) for (const band of ["low", "high"]) {
       await page.evaluate(async ({ care, band }) => {
         const cs = QA.session.newSession("drill");
         cs.mix = { mint: 12 }; cs.mixInfo = { total: 12 }; cs.pack = "normal";
         const bands = QA.conditions.temperatureBands(cs);
-        // 桜井版は適温の上端が「攻めの帯」。高めの味と、攻めの上書きを別々に確かめる。
-        const attack = (await import("./js/craft/attack-band.js")).attackRange(bands);
-        const highEdge = bands.ideal[0] + .65 * (bands.ideal[1] - bands.ideal[0]);
-        const temp = band === "low" ? bands.ideal[0] + .04 : band === "high"
-          ? (highEdge + attack.low) / 2 : (attack.low + attack.high) / 2;
+        const temp = band === "low" ? bands.ideal[0] + .04 : bands.ideal[1] - .02;
         cs.steam = { temp, score: 100 };
         cs.holes = { total: 24, minimumComplete: true };
         if (care) cs.pull = { temp, score: 100, pulls: 2 };
@@ -294,7 +290,7 @@ await suite("mix-temperature", async check => {
       }, { care, band });
       if (care) await page.locator('[data-test="care-coal-0"]').click();
       await page.locator('[data-test="pull-stop"]:enabled').waitFor();
-      await page.locator(".pull-state").filter({ hasText: ({ low: "適温・低", high: "適温・高", attack: "攻めの帯" })[band] }).waitFor();
+      await page.locator(".pull-state").filter({ hasText: ({ low: "適温・低", high: "適温・高" })[band] }).waitFor();
       await assertFits(page, ".pull-read");
       // 作り分ける葉の配合でも虹は出る（2026-11-10 オーナー指示）
       assert.equal(await page.locator(".thermo-optimal").isVisible(), true);

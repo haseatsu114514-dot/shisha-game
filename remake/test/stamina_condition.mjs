@@ -57,10 +57,10 @@ const mocks = {
   "core/util.js": { el, sleep: async () => {}, clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), rand: (lo, hi) => (lo + hi) / 2, pick: (pool) => pool[0] },
   "core/ui.js": { countdown: async () => {}, flash() {}, shake() {} },
   "core/state.js": { state: { flags: {} }, hasAffinity, config: { statEffectColors: true } },
-  "core/audio.js": { SE: new Proxy({}, { get: () => () => {} }) },
+  "core/audio.js": { SE: new Proxy({}, { get: () => () => {} }), startBubbling() {} },
   "core/stats.js": { tier01: () => 0, step: () => 1 },
-  "craft/session.js": { waitBenchReady: async () => {}, explainTutorialStep: async () => true, benchRoot: () => bench, scoreStep() {}, setBenchTemperature() {}, pauseBenchTemperature() {}, craftTest: { auto: null }, stepPanel: id => (panel = el("div.panel", { dataset: { step: id } })), refreshBench() {}, tickerSay() {}, reactAudience() {}, setPlayerMental() {}, presentBenchResult: () => ({ evaluation: { mark: "○", tone: "warm" }, hasAudience: false }) },
-  "craft/art.js": { artImg: () => el("img"), artHeight: () => 80 },
+  "craft/session.js": { waitBenchReady: async () => {}, explainTutorialStep: async () => true, benchRoot: () => bench, scoreStep() {}, setBenchTemperature() {}, setBenchDraw() {}, failBench() {}, setBenchLeaf() {}, dockBenchLeaf() {}, strainBench() {}, pauseBenchTemperature() {}, craftTest: { auto: null }, stepPanel: id => (panel = el("div.panel", { dataset: { step: id } })), refreshBench() {}, tickerSay() {}, reactAudience() {}, setPlayerMental() {}, presentBenchResult: () => ({ evaluation: { mark: "○", tone: "warm" }, hasAudience: false }) },
+  "craft/art.js": { artImg: () => el("img"), artHeight: () => 80, mixColor: () => "" },
   "craft/digital-clock.js": { buildDigitalClock: () => ({ root: el("output"), update() {} }) },
   "craft/mental.js": { buildMentalTrace: () => ({ root: el("div"), update: () => "steady", hit: () => "shaken", recoverStep: () => "unsteady" }) },
   "craft/smoke-art.js": { smokeUrl: () => "" },
@@ -154,8 +154,8 @@ const expiredCs = { mode: "tournament", equip: {} };
 const expiredRun = heatModule.namespace.runHeat(expiredCs); await settle(); await frame(1000 + 1.8 * (5.8 + 2 * heatLogic.HEAT_TUNING.readyGap) * 1000); await settle();
 assert.equal(expiredCs.heat.over, 3);
 assert(expiredCs.heat.timings.every((timing) => timing.automatic && timing.errorSeconds > 0 && timing.rating === "MISS"));
-assert.equal(expiredCs.heat.timingAccuracy, 68);
-assert.equal(find("step-summary").children[0].text, "工程点：68点 ／ 取り頃：0/3個");
+assert.equal(expiredCs.heat.timingAccuracy, 14);
+assert.equal(find("step-summary").children[0].text, "工程点：14点 ／ 取り頃：0/3個");
 nextButton().onclick(); await expiredRun;
 console.log("[coal timing] PASS: unchanged thresholds, ideal window center, live two-decimal early/late errors, input-time sampling, frozen per-coal results, separate score and window counts, and auto removal");
 async function steam(ratio) {

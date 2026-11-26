@@ -72,17 +72,17 @@ const LESSON = {
  * 押し続けると繰り返す（配合の ＋／−・CRN・P9）。0.4秒押したら0.12秒ごとに繰り返す。
  * 1回押しは従来どおり click で1回。繰り返した後の click は数えない。
  */
-function holdRepeat(button, step, enabled = true) {
-  if (!enabled) return button; // 桜井版（リニューアル前）は1回押しだけ（CRN16）
+function holdRepeat(button, step) {
   let wait = 0, every = 0, repeated = false;
   const stop = () => { clearTimeout(wait); clearInterval(every); wait = every = 0; };
-  button.addEventListener("pointerdown", () => {
+  button.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || button.disabled) return;
     stop(); repeated = false;
     wait = setTimeout(() => { every = setInterval(() => { if (button.disabled || !button.isConnected) return stop(); repeated = true; step(); }, 120); }, 400);
   });
-  for (const type of ["pointerup", "pointerleave", "pointercancel"]) button.addEventListener(type, stop);
+  for (const type of ["pointerup", "pointerleave", "pointercancel", "lostpointercapture"]) button.addEventListener(type, stop);
   button.addEventListener("click", (event) => {
-    if (repeated) { repeated = false; event.stopImmediatePropagation(); event.preventDefault(); }
+    if (repeated && event.detail > 0) { repeated = false; event.stopImmediatePropagation(); event.preventDefault(); }
   }, { capture: true });
   return button;
 }
@@ -251,7 +251,7 @@ export function evaluateMix(cs) {
     const hit =
       (ng.condition === "both_over_5g" && aGrams > 5 && bGrams > 5) ||
       (ng.condition === "both_over_4g" && aGrams > 4 && bGrams > 4) ||
-      (ng.condition === "combined_over_10g" && aGrams + bGrams > 10) ||
+      (ng.condition === "combined_over_10g" && aGrams + bGrams > (ng.combined_ratio == null ? 10 : total * ng.combined_ratio)) ||
       (ng.condition === "ratio_close" && Math.abs(aGrams - bGrams) <= 1);
     if (hit) {
       score += ng.penalty * 3 * (bridge ? LESSON_TUNING.cardamomPenalty : 1);
@@ -486,9 +486,9 @@ export async function stepMix(cs) {
         cs.staffPractice ? el("small.fr-stock.fr-stock-staff", [`まかない ${staffStock(state, id)}g ／ 私物 ${flavorStock(id)}g`, el("span.fr-reg-supply", { text: "（まかない優先）" })]) : null,
         ratio,
       ]),
-      holdRepeat(el("button.fr-btn", { text: "−", "aria-label": `${f?.short_name || f?.name || id}を1g減らす`, dataset: { test: `mix-minus-${id}` }, onclick: () => change(-1) }), () => change(-1), renewalCraft(cs)),
+      holdRepeat(el("button.fr-btn", { text: "−", "aria-label": `${f?.short_name || f?.name || id}を1g減らす`, dataset: { test: `mix-minus-${id}` }, onclick: () => change(-1) }), () => change(-1)),
       g,
-      holdRepeat(el("button.fr-btn", { text: "＋", "aria-label": `${f?.short_name || f?.name || id}を1g足す`, dataset: { test: `mix-plus-${id}` }, onclick: () => change(1) }), () => change(1), renewalCraft(cs)),
+      holdRepeat(el("button.fr-btn", { text: "＋", "aria-label": `${f?.short_name || f?.name || id}を1g足す`, dataset: { test: `mix-plus-${id}` }, onclick: () => change(1) }), () => change(1)),
     ]);
     return { id, g, ratio, row };
   });
@@ -621,8 +621,8 @@ export async function stepMix(cs) {
     toast(short ? `黄金比まで、あと少し。もう少し${leafName(short)}を` : "黄金比まで、あと少し",
       { kind: short && effectVisible("insight") ? "insight-hint" : "" });
   }
-  // 配合中の予告には出さず、確定したNG理由だけを1件知らせる。
-  if (cs.mixInfo.ngReasons.length) toast(cs.mixInfo.ngReasons[0]);
+  // 配合中の予告には出さず、確定したNG理由をすべて知らせる。
+  for (const reason of cs.mixInfo.ngReasons) toast(reason);
   await sleep(200);
 }
 
