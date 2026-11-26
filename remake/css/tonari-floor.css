@@ -1,6 +1,6 @@
 /* tonari フロア営業（ワンオペ＆フレーバー調合型）。舞台（1280〜1600×720）いっぱいに店内を敷き、卓の札は絵の座標（％）へ置く。
    板・ボタンは tonari フロア営業の専用の絵を九分割で使う。
-   画面の構成: 上＝仕込み中の一台・残り時間・売上／右＝ミックスの一覧（カウンター側。卓の札と重ならない）／下＝卓のドック・出来事の行とはじめの心の声・フィーバー。
+   画面の構成: 上＝仕込み中の一台・残り時間・売上／右＝ミックスの一覧とシャッフル／下＝出来事の行とはじめの心の声・フィーバー。
    注文待ちの卓を押すと、店内がその卓へ寄り、左にミックスの列（属性の印と、気分との合い方つき）・下に大きなドックが出る。客からの頼み（ケア）も同じ形。
    文字を減らして、色と印で読む: 気分＝ミックスの属性は4色と4つの印（.tf-wish・.tf-attr）、卓の札の見出しは押すと進む用件の時だけ。
    炭の調整と会計は、卓を押すだけ。 */
@@ -16,6 +16,7 @@
   --tf-tap: max(44px, calc(41px / var(--k, 1))); /* 指で押す所の高さ（小さい画面でも実画素で40px） */
   --tf-pad-l: max(16px, var(--stage-safe-l, 0px)); --tf-pad-r: max(16px, var(--stage-safe-r, 0px));
   --tf-side: 232px; /* 右の列の幅（TFL52 でミックスの札を大きくするため 212px から広げた）。上の帯の休止・下の帯・帯の演出は、この手前で止まる */
+  --tf-fever-width: 176px;
   color: var(--tf-ivory); background: #2a1c15; line-height: 1.25; font-variant-numeric: tabular-nums;
   user-select: none; -webkit-user-select: none; touch-action: manipulation;
 }
@@ -454,17 +455,14 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 
 /* ---- 右の列（カウンター側）: ミックスの一覧。押すと、いちばん急ぎの注文待ちの卓へそのまま出す。
    札の左は属性の印（メインが大きく、サブが小さい）。注文待ちの卓がある間は、その客に合う札が灯り（◎＝金の縁、○）、合わない札は沈む ---- */
-/* 列は、画面の上の端から下の端まで（売上と休止は、列の手前へ寄せた）。上はミックスの一覧（空いた高さを分け合う）、下にボタンの段（シャッフルとフィーバー）。
-   ボタンは一行ずつの細い形にして、空いた分を一覧の札に回す（2026-11-20 オーナー「フィーバーとかシャッフルボタンは右のサイドバーにボタンとして設置したい。
-   その分ミックスのリストを大きくしたりとか」・TFL52）。一覧の札は、名前（2行まで）と、使ったフレーバー（2行まで）が入る高さを取る */
+/* 列は画面の上下に伸ばす。一覧の札に名前と材料を2行ずつ入れ、下端にシャッフルを置く。 */
 .tf-presets {
   position: absolute; right: var(--tf-pad-r); top: 8px; bottom: 10px; width: var(--tf-side); padding: 6px 8px 7px;
   display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 6px; transition: opacity 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   z-index: 12; /* 画面を横切る帯（.tf-cutin）より手前。帯の端が、ミックスの名前に掛からない */
 }
 .tf-preset-box { position: relative; display: grid; min-height: 0; }
-/* ボタンの段: シャッフルとフィーバーを、一行ずつのボタンで縦に並べる（親指の届く右下） */
-.tf-actions { display: grid; gap: 6px; }
+.tf-actions { display: grid; }
 /* 親指ボタンの出る端末では、二つのボタンは画面外の右へ移る（下の「画面外の右」）。列はミックスの一覧だけになる */
 .tonari-floor[data-gutter="true"] .tf-presets { grid-template-rows: minmax(0, 1fr); }
 .tonari-floor[data-gutter="true"] .tf-actions { display: none; }
@@ -509,11 +507,14 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   position: relative; overflow: hidden;
   flex: 1 1 auto; min-width: 0; min-height: var(--tf-tap); display: inline-flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px; padding: 1px 6px;
   border: none; border-radius: 10px; background: url("../img/ui/tonari-floor/bar-shuffle.webp") center / 100% 100% no-repeat;
-  color: #2a1a08; /* 絵は原画の半分の寸法でそのまま敷く（九分割の継ぎ目・透明な角に既定の背景が透けるのを避ける。TFL57） */
+  color: #2a1a08; /* 一枚絵をボタン全体に敷き、九分割の継ぎ目を出さない（TFL57） */
   font-size: var(--tf-small); font-weight: 700; line-height: 1; white-space: nowrap;
 }
 :where(.tonari-floor) button.tf-shuffle { color: #2a1a08; }
 .tf-shuffle-emblem { display: block; width: 24px; height: 24px; flex: 0 0 auto; }
+.tf-actions .tf-shuffle { min-height: calc(var(--tf-tap) + 24px); font-size: var(--tf-big); }
+.tf-actions .tf-shuffle-main { gap: 8px; }
+.tf-actions .tf-shuffle-emblem { width: 34px; height: 34px; }
 .tf-shuffle:is(:hover, :focus-visible):not(:disabled) { filter: brightness(1.12); }
 .tf-shuffle:active:not(:disabled) { translate: 0 2px; }
 .tf-shuffle:disabled { background-image: url("../img/ui/tonari-floor/bar-shuffle-off.webp"); }
@@ -521,7 +522,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-shuffle[data-wait="true"] { opacity: 1; }
 :where(.tonari-floor) button.tf-shuffle[data-wait="true"] { color: #fff1c4; }
 .tf-actions .tf-shuffle[data-wait="true"]::after {
-  content: ""; position: absolute; left: 8px; bottom: 5px; height: 3px; border-radius: 2px; pointer-events: none;
+  content: ""; position: absolute; left: 8px; bottom: 7px; height: 4px; border-radius: 2px; pointer-events: none;
   width: calc((100% - 16px) * var(--p, 0%) / 100%);
   background: linear-gradient(90deg, #ff9d4a, #ffe299); box-shadow: 0 0 6px #ffd98a99;
   transition: width 0.45s linear;
@@ -572,7 +573,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-bar i { display: block; height: 100%; width: 0; border-radius: 4px; background: linear-gradient(90deg, #ff9d4a, #ffe299); transition: width 0.5s linear; }
 
 
-/* ---- 下の帯: 出来事の行とはじめの心の声だけ。店内のまん中の下に、小さな箱で（TFL49。ドックは無くした） ---- */
+/* ---- 下の帯: 出来事とはじめの心の声は店内の中央。フィーバーはその右に固定する。 ---- */
 .tf-bottom {
   position: absolute; left: var(--tf-pad-l); right: calc(var(--tf-pad-r) + var(--tf-side) + 10px); bottom: 10px; /* 右の列の手前まで */
   display: flex; justify-content: center; align-items: flex-end; pointer-events: none;
@@ -600,23 +601,26 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-advice p { min-width: 0; font-size: var(--tf-small); font-weight: 700; line-height: 1.15; color: #ffe5aa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px #000a; }
 /* フィーバーのゲージ（最大300＝3ストック、100で15秒分・小分け使用可）。1/3（100）と2/3（200）の目盛りで残量と使える量を明示する */
 .tf-bonus {
-  position: relative; display: grid; align-content: center; gap: 4px; width: 100%; min-width: 0; min-height: var(--tf-tap); padding: 5px 8px 6px; border: none; border-radius: 14px;
-  /* 左の切り出しにランプの窪みを含め、ボタン幅が変わっても窪みは伸ばさない。 */
-  background: url("../img/ui/tonari-floor/bar-fever.webp") center / 100% 100% no-repeat; /* 原画の半分の寸法でそのまま敷く（九分割の縦の継ぎ目が出ていた。TFL57） */
+  position: relative; display: grid; align-content: center; gap: 4px; border: none; border-radius: 14px;
   transition: filter 0.25s ease, scale 0.2s ease;
 }
-/* 上に灯り・ボタン名・ストック／残秒、下に3段目盛りゲージ。 */
-.tf-bonus-head { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.tf-bottom > .tf-bonus {
+  position: absolute; right: 0; bottom: 0; width: var(--tf-fever-width); min-height: max(64px, var(--tf-tap));
+  grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "head head" "gauge status"; align-items: center;
+  padding: 6px 10px 10px 40px; background: url("../img/ui/tonari-floor/bar-fever.webp") center / 100% 100% no-repeat;
+}
+.tf-bonus-head { grid-area: head; display: flex; align-items: center; min-width: 0; }
 .tf-bonus-lamp { position: relative; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #33243c; box-shadow: inset 0 0 0 2px #e7c27a; flex: 0 0 auto; }
 .tf-bonus-lamp { background-image: url("../img/ui/tonari-floor/lamp-off.webp"); background-position: center; background-size: auto 93%; background-repeat: no-repeat; }
+.tf-bottom .tf-bonus-lamp { position: absolute; left: 11.4%; top: 41%; translate: -50% -50%; width: 26px; height: 26px; }
 .tonari-floor[data-fever="ready"] .tf-bonus-lamp { background-image: url("../img/ui/tonari-floor/lamp-on.webp"); }
 .tonari-floor[data-fever="on"] .tf-bonus-lamp { background-image: url("../img/ui/tonari-floor/lamp-fever.webp"); }
 .tf-bonus-lamp .tf-icon { visibility: hidden; position: relative; z-index: 1; width: 24px; height: 24px; color: #fff7e6; filter: drop-shadow(0 1px 2px #0009); }
-.tf-bonus-head b { flex: 1 1 auto; min-width: 0; text-align: left; font-size: 20px; color: #a8947c; line-height: 1.1; white-space: nowrap; }
+.tf-bonus-head b { flex: 1 1 auto; min-width: 0; text-align: left; font-size: max(20px, calc(11px / var(--k, 1))); color: #c7ad97; line-height: 1.1; white-space: nowrap; }
 .tf-bonus-val {
-  flex: 0 0 auto; padding: 3px 6px; border-radius: 9px; white-space: nowrap;
+  grid-area: status; padding: 2px 5px; border-radius: 9px; white-space: nowrap;
   background: #140c18cc; border: 1px solid #8a6a4888; color: #c9b597;
-  font-size: 14px; font-weight: 700; line-height: 1; letter-spacing: 0;
+  font-size: max(14px, calc(9.5px / var(--k, 1))); font-weight: 700; line-height: 1; letter-spacing: 0;
 }
 .tf-bonus[data-fever="ready"][data-usable="true"] .tf-bonus-val {
   background: #3a1f08e6; border-color: #ffe299; color: #fff4c8; box-shadow: 0 0 8px #ffb45a66;
@@ -628,7 +632,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   background: #281448e6; border-color: #e6d2ff; color: #fff; box-shadow: 0 0 8px #b592ff88;
 }
 .tf-bonus-gauge {
-  position: relative; display: block; box-sizing: border-box; min-width: 0; height: 11px; padding: 2px;
+  grid-area: gauge; position: relative; display: block; box-sizing: border-box; min-width: 0; height: 11px; padding: 2px;
   border-radius: 5px; border-image: url("../img/ui/tonari-floor/gauge-slot.webp") 12 fill / 2px 4px / 0 stretch;
   box-shadow: inset 0 1px 3px #000c; overflow: hidden;
 }
@@ -639,14 +643,13 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-fever-tick[data-first="true"] { width: 2px; background: #fff4c8e6; box-shadow: 0 0 4px #2a1a08; }
 .tf-fever-fill { border-radius: 3px; display: block; height: 100%; width: 0; background: linear-gradient(90deg, #b87034, #e4a958); transition: width 0.5s linear; }
 .tf-bonus[data-fever="ready"] .tf-fever-fill { background: linear-gradient(90deg, #ff9d4a, #ffe59e); box-shadow: 0 0 8px #ffd98a88; }
-.tf-actions .tf-bonus[data-fever="ready"] { background-image: url("../img/ui/tonari-floor/bar-fever-ready.webp"); }
-.tf-actions .tf-bonus[data-fever="ready"]:not(:disabled) { filter: drop-shadow(0 0 3px #ffd98a) drop-shadow(0 0 10px #ffb45acc); }
-.tf-actions .tf-bonus[data-fever="ready"]:disabled { filter: saturate(0.78) brightness(0.9); animation: none; }
+.tf-bottom .tf-bonus[data-fever="ready"] { background-image: url("../img/ui/tonari-floor/bar-fever-ready.webp"); }
+.tf-bottom .tf-bonus[data-fever="ready"]:not(:disabled) { filter: drop-shadow(0 0 3px #ffd98a) drop-shadow(0 0 10px #ffb45acc); }
+.tf-bottom .tf-bonus[data-fever="ready"]:disabled { filter: saturate(0.78) brightness(0.9); animation: none; }
 .tonari-floor[data-fever="ready"] .tf-bonus-head b, .tonari-floor[data-fever="on"] .tf-bonus-head b { color: #fff1c4; }
-.tf-actions .tf-bonus[data-fever="ready"]:disabled .tf-bonus-head b { color: #d8c29e; }
+.tf-bottom .tf-bonus[data-fever="ready"]:disabled .tf-bonus-head b { color: #d8c29e; }
 .tonari-floor[data-fever="ready"] .tf-bonus-lamp { background-color: #c9742a; }
-.tf-actions .tf-bonus[data-fever="on"] { background-image: url("../img/ui/tonari-floor/bar-fever-on.webp"); filter: drop-shadow(0 0 3px #d9c2ff) drop-shadow(0 0 12px #b592ffaa); }
-.tf-actions .tf-bonus[data-fever="on"] .tf-bonus-head b { font-size: 18px; }
+.tf-bottom .tf-bonus[data-fever="on"] { background-image: url("../img/ui/tonari-floor/bar-fever-on.webp"); filter: drop-shadow(0 0 3px #d9c2ff) drop-shadow(0 0 12px #b592ffaa); }
 .tonari-floor[data-fever="on"] .tf-bonus-lamp { background-color: #8a6ad0; }
 .tf-bonus[data-fever="on"] .tf-fever-fill { background: linear-gradient(90deg, #b592ff, #f5ebff); box-shadow: 0 0 8px #d9c2ff99; }
 /* ---- 接客の画面（卓へ行って対応する場面）と、帯の演出の間の店内 ---- */
@@ -1077,11 +1080,11 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .side-slot .tf-shuffle[data-wait="true"] .tf-shuffle-unit { font-size: 0.62em; }
 .side-slot .tf-bonus {
   --tf-pad-image: url("../img/ui/tonari-floor/pad-fever.webp");
-  height: 100px; display: grid; align-content: start; justify-items: center; gap: 6px; padding: 7px 10px 8px; color: #fff1c4;
+  height: 118px; grid-template-areas: "head" "status" "gauge";
+  align-content: start; justify-items: center; padding: 12px 10px 10px; color: #fff1c4;
 }
-.side-slot .tf-bonus-head { flex-direction: column; gap: 8px; }
+.side-slot .tf-bonus-head { flex-direction: column; gap: 4px; }
 .side-slot .tf-bonus-head b { text-align: center; font-size: inherit; color: #c7ad97; scale: 0.9 1; } /* 絵の内側の枠に掛からない幅に */
-.side-slot .tf-bonus-val { display: none; }
 .side-slot .tf-bonus-gauge { width: 100%; height: 9px; }
 .side-slot .tf-bonus[data-fever="ready"] { --tf-pad-image: url("../img/ui/tonari-floor/pad-fever-ready.webp"); }
 .side-slot .tf-bonus[data-fever="ready"]:not(:disabled) { filter: drop-shadow(0 0 3px #ffd98a) drop-shadow(0 0 10px #ffb45acc); animation: tf-ready 1.1s ease-in-out infinite; }
@@ -1091,20 +1094,21 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .side-slot .tf-bonus[data-fever="on"] .tf-bonus-lamp { background-image: url("../img/ui/tonari-floor/lamp-fever.webp"); background-color: #8a6ad0; }
 .side-slot .tf-bonus:is([data-fever="ready"], [data-fever="on"]) .tf-bonus-head b { color: #fff1c4; }
 .side-slot .tf-bonus[data-fever="ready"]:disabled .tf-bonus-head b { color: #d8c29e; }
-@media (prefers-reduced-motion: reduce) { .side-slot .tf-bonus[data-fever="ready"] { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .side-slot .tf-bonus[data-fever="ready"]:not(:disabled) { animation: none; } }
 
 
 /* ---- 昼から夜まで通しの店番（本編のバイト・TFL62）: 営業の半ばで日が暮れたら、夜の店内の絵をゆっくり灯す ---- */
 .tf-room img.tf-room-night { opacity: 0; transition: opacity 2.4s ease, filter 1.2s ease; }
 .tonari-floor[data-dusk="true"] .tf-room img.tf-room-night { opacity: 1; }
 
-/* ---- チュートリアル（TFL64）: スミさんの言葉は下の帯の所に出す。その間、下の帯と残り時間は隠す（UI の上に UI を重ねない） ---- */
-.tonari-floor[data-tutorial="true"] :is(.tf-bottom, .tf-clock) { visibility: hidden; }
+/* ---- チュートリアル（TFL64）: スミさんの言葉は通常のログの代わりに出し、フィーバーの押し所は空ける。 ---- */
+.tonari-floor[data-tutorial="true"] :is(.tf-ticker, .tf-clock) { visibility: hidden; }
 .tf-coach {
   position: absolute; left: var(--tf-pad-l); right: calc(var(--tf-pad-r) + var(--tf-side) + 10px); bottom: 10px; z-index: 6;
   display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 10px;
   background: #0e0913eb; border: 2px solid #e7c27a; border-radius: 14px; box-shadow: 0 4px 14px #000a;
 }
+.tonari-floor[data-gutter="false"] .tf-coach { right: calc(var(--tf-pad-r) + var(--tf-side) + var(--tf-fever-width) + 22px); }
 .tonari-floor:is([data-mode="panel"], [data-mode="pause"]) .tf-coach { visibility: hidden; }
 .tf-coach > img { width: 48px; height: 48px; border-radius: 50%; flex: 0 0 auto; object-fit: cover; box-shadow: 0 0 0 2px #e7c27a; }
 .tf-coach-body { flex: 1 1 auto; min-width: 0; }
