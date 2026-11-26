@@ -86,7 +86,7 @@ export const MOMENTS = Object.freeze([
     memo: "ブラシは背中から。途中でやめると、しっぽで続けろと言う。" },
   { id: "waiting", name: "こちらを待っていた", hint: "何度か通ううちに……", face: "normal", art: "lookback",
     memo: "戸の開く音を、もう覚えているらしい。" },
-  { id: "first_rub", name: "初めてすりすり", hint: "すっかり気を許したら、なでてみると……", face: "smile", art: "rub",
+  { id: "first_rub", name: "はじめてすりすり", hint: "すっかり気を許したら、なでてみると……", face: "smile", art: "rub",
     memo: "すねに頭をこすりつけるのが、てつこの挨拶。" },
   { id: "box_peek", name: "箱から顔だけ", hint: "箱があると……", face: "normal", art: null,
     memo: "箱があると、とりあえず入る。" },
@@ -373,7 +373,7 @@ export function act(session, kind, opts = {}) {
 // なでた場所ごとの反応（顔なじみから。様子見の段階は、どこをなでてもされるがまま）。
 const ZONE_TEXT = Object.freeze({
   head: "頭をなでると、てつこが目を細めた。",
-  chin: "あごの下をかくと、首をのばしてきた。",
+  chin: "あごの下をかくと、首を伸ばしてきた。",
   back: "背中のほうまでなでると、しっぽがゆっくり揺れた。",
 });
 
@@ -684,7 +684,7 @@ export function peakReaction(session) {
       : { text: "てつこが膝に乗ってきた。そのまま丸くなる。", face: "sleep", pose: "lap", spot: "lap", moment: "lap_nap", pop: "ごろごろ",
         line: { id: "lap", speaker: "mukai_master", text: "……起こすなよ" } };
   } else if (session.stage === 2) shape = { text: "てつこが、手のひらに頭をぶつけてきた。", face: "smile", spot: "front", pop: "ごつん" };
-  else if (session.stage === 1) shape = { text: "てつこが、指先の匂いをたしかめに来た。", spot: "front", pop: "くんくん" };
+  else if (session.stage === 1) shape = { text: "てつこが、指先の匂いを確かめに来た。", spot: "front", pop: "くんくん" };
   else shape = { text: "てつこが、ゆっくりまばたきを返した。", face: "smile", pop: "……" };
   session.lapTicks = 0;
   // 満足したので、出していたおねだりは引っこめる（しばらくは次を出さない）。

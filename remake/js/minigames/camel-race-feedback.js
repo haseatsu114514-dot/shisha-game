@@ -57,7 +57,7 @@ export function camelNextGoal(run, { mastered = false, best = null, struggling =
       ].sort((a, b) => b[0] - a[0]);
       tip = drops[0][0] > 0 ? drops[0][1] : "ムチは息のあるうちに離す";
     } else {
-      tip = stats.duels > stats.duelsWon ? "競り合いは、声を当てるかムチで抜き切る" : "前のラクダの後ろで息を貯めて、最後に差す";
+      tip = stats.duels > stats.duelsWon ? "競り合いは、声を当てるかムチで抜き切る" : "前のラクダの後ろで息を溜めて、最後に差す";
     }
     tip = `伸びる所：${tip}`;
   }
@@ -65,10 +65,10 @@ export function camelNextGoal(run, { mastered = false, best = null, struggling =
   if (!mastered) {
     if (run.cup === "rookie" && !camelCupQualified(run)) cup = { label: "標準大会まで", items: [{ text: "3位以内", ok: false }] };
     else if (run.cup === "standard" && !camelMastered(run)) cup = { label: "中級認定まで", items: [
-      { text: "3位以内", ok: run.rank <= 3 }, { text: `声かけ ${parts.timing}／20点`, ok: parts.timing >= 20 },
-      { text: `スタミナ ${parts.stamina}／20点`, ok: parts.stamina >= 20 }, { text: `連打 ${stats.spam}回（1回まで）`, ok: stats.spam <= 1 }] };
+      { text: "3位以内", ok: run.rank <= 3 }, { text: `声かけ ${parts.timing}点（20点以上）`, ok: parts.timing >= 20 },
+      { text: `スタミナ ${parts.stamina}点（20点以上）`, ok: parts.stamina >= 20 }, { text: `連打 ${stats.spam}回（1回まで）`, ok: stats.spam <= 1 }] };
     else if (run.cup === "expert" && !camelExpert(run)) cup = { label: "称号まで", items: [
-      { text: "1位", ok: run.rank === 1 }, { text: `S評価（${run.total}／85点）`, ok: run.total >= 85 }, { text: "連打なし", ok: stats.spam === 0 }] };
+      { text: "1位", ok: run.rank === 1 }, { text: `S評価（${run.total}点／85点以上）`, ok: run.total >= 85 }, { text: "連打なし", ok: stats.spam === 0 }] };
   }
   // 自己ベストに届かなかった時は、そこまでの点（目標を手の届く所に見せる）。
   const record = Number.isFinite(best) && run.total < best ? `自己ベスト ${Math.round(best)}点まで あと ${Math.round(best) - run.total}点` : null;

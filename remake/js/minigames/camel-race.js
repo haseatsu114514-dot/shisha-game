@@ -21,7 +21,7 @@ import { CAMEL_RACE_BGM, camelRaceBgmRate } from "./camel-race-bgm.js";
 import { camelStaminaReadout, camelNextGoal, SPURT_RESERVE } from "./camel-race-feedback.js";
 
 export const CAMEL_RACE_TITLE = "CAMEL RACE";
-const CUP_TIME_NOTE = "この訪問中の再挑戦は日付を進めません。完走して戻ると従来どおり昼の1行動を使います。";
+const CUP_TIME_NOTE = "この訪問中の再挑戦では日付は進まない。完走して戻ると昼の1行動を使う。";
 const W = 1280, H = 720;
 const PX_PER_M = 18;              // 1m＝18px（画面に約70mが入る）
 const PLAYER_SCREEN_X = 420;      // 自分のラクダの基本の位置。速くなると前へ、遅くなると後ろへ少しずれる（カメラが遅れて追う）
@@ -1043,7 +1043,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     sheet.replaceChildren(el("div.camel-card.camel-cup-card", { title: CUP_TIME_NOTE, dataset: { test: "camel-cups" } }, [
       el("p.camel-eyebrow", { text: "HABIBA RACING CLUB" }),
       el("h2", { text: "ハビーバと、次の大会へ" }),
-      el("p", { text: "入門＝初級・標準＝中級・上級＝上級。上級大会で3位以内なら白火がひとつ（一度だけ）。" }),
+      el("p", { text: "入門（初級）・標準（中級）・上級の三段階。上級大会で3位以内なら白火がひとつ（一度だけ）。" }),
       el("p.camel-cup-rule", { text: `${TIER_RULE_LINE}。${PLAY_RULES.practice}`, dataset: { test: "camel-tier-rule" } }),
       el("div.camel-cups", CAMEL_CUPS.map((cup, index) => {
         const enabled = unlocked.has(cup.id);
@@ -1057,7 +1057,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
           el("img.camel-cup-badge", { src: imgFileUrl(`ui/camel_race/world/cup-${cup.id}.webp`), alt: "", dataset: { test: "camel-cup-badge" },
             onerror: event => { event.currentTarget.remove(); } }),
           el("small", { text: tier ? `${TIER_LABEL[tier]} · CUP 0${index}` : "PRACTICE", dataset: { test: "camel-cup-tier", tier: tier || "" } }),
-          el("strong", { text: cup.name }), el("span", { dataset: { test: "camel-cup-length" }, text: `${cup.length.toLocaleString("ja-JP")}m ・ 4頭${cupBest(cup.id) >= 0 ? ` ・ ベスト ${cupBest(cup.id)}点` : ""}` }),
+          el("strong", { text: cup.name }), el("span", { dataset: { test: "camel-cup-length" }, text: `${cup.length.toLocaleString("ja-JP")}m・4頭${cupBest(cup.id) >= 0 ? `・ベスト ${cupBest(cup.id)}点` : ""}` }),
           el("span", { text: enabled ? cup.note : `${cup.id === "standard" ? "入門" : "標準"}大会3位以内（${TIER_LABEL[cup.id === "standard" ? "easy" : "normal"]}クリア）で解放` }),
           el("b", { text: mastered ? cup.id === "expert" ? "砂漠の名調教師" : "中級認定済み" : topCleared ? "上級クリア済み" : enabled ? "出走する →" : "未解放" }),
         ]);
@@ -2419,7 +2419,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       el("div.camel-result-head", [
         el("div.camel-medal", { dataset: { rank: String(score.rank) } }, [el("strong", { text: String(score.rank) }), el("span", { text: "位" })]),
         el("div.camel-result-score", [
-          el("p.camel-time", { text: `TIME ${fmtTime(score.time)}${resultEdge ? `  ・  ${resultEdge.name}と ${resultEdge.seconds.toFixed(2)}秒差` : ""}`, dataset: { test: "camel-result-time" } }),
+          el("p.camel-time", { text: `TIME ${fmtTime(score.time)}${resultEdge ? `・${resultEdge.name}と ${resultEdge.seconds.toFixed(2)}秒差` : ""}`, dataset: { test: "camel-result-time" } }),
           el("p.camel-total", [el("small", { text: "SCORE" }), totalNode, el("small", { text: "/ 100" })]),
         ]),
         el("div.camel-grade-letter", { dataset: { grade: score.grade } }, [el("small", { text: "評価" }), el("strong", { text: score.grade })]),

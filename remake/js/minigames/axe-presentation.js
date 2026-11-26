@@ -46,7 +46,7 @@ export const clusterPlaces = { center: "中央", ul: "左上", ur: "右上", ll:
 export function declarationCue(prevCalled, nextCalled) {
   if (!nextCalled || nextCalled === prevCalled) return null;
   if (!KILLS.some(target => target.id === nextCalled)) return null;
-  return { label: "KILL SHOT 宣言", target: nextCalled, place: killPlaces[nextCalled] };
+  return { label: "KILLSHOT 宣言", target: nextCalled, place: killPlaces[nextCalled] };
 }
 
 function direction(landing, targets) {
@@ -62,7 +62,7 @@ export function shotFeedback(shot, { inputMode = "gauges", closed } = {}) {
   const advice = inputMode === "tap-pull" ? (shot.dropReason === "weak" ? "次は、ひと息で今より少し速く弾こう。" : "次は、もうひと呼吸ゆっくり弾こう。")
     : "次は緑の54〜70%で放そう。";
   if (shot.outcome === "drop") return { label: "DROP", tone: "drop",
-    tip: (shot.dropReason === "weak" ? "柄から当たって落下。" : "回りすぎて落下。") + advice + (shot.half !== undefined ? "落下は追加の宣言を1回もらえる。" : "") };
+    tip: (shot.dropReason === "weak" ? "柄から当たって落下。" : "回りすぎて落下。") + advice + (shot.half !== undefined ? "落下すると追加の宣言を1回もらえる。" : "") };
   if (shot.outcome === "killshot") return { label: "KILLSHOT", tone: "killshot",
     tip: shot.score === 8 ? "宣言した青の中心に刃が届いた！ 8点の最高の一投。" : "宣言した青に刃が触れた！ 狙いと回転が決まった。" };
   if (shot.outcome === "bull") return { label: "BULL'S EYE", tone: "bull",
