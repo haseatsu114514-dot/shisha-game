@@ -15,7 +15,8 @@ await suite("hiyori-intro", async (check) => {
   ]) {
     await check(label, async (page) => {
       await page.evaluate(async () => {
-        const core = await import("./js/core/state.js"), { DB, displayName } = await import("./js/core/data.js");
+        const core = await import("./js/core/state.js"), { DB, displayName, loadDeferredDialogues } = await import("./js/core/data.js");
+        await loadDeferredDialogues();
         const vn = await import("./js/vn/engine.js"), daily = await import("./js/daily/hiyori.js");
         const spots = await import("./js/daily/spots.js");
         const s = core.newGame();

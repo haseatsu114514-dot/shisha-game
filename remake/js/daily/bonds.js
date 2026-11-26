@@ -75,13 +75,7 @@ export const BOND_FINALES = {
   // シェイクの連絡は手紙（chapters/ch5-travel.js）。締めくくりの後にも一通届く（chapters/dubai-bonds.js の SHEIKH_BOND_LETTERS）。
   da_silva: { dialogue: DUBAI_BOND_FINALES.da_silva, gift: "suyaki_da_silva" },
   sheikh: { dialogue: DUBAI_BOND_FINALES.sheikh, gift: "suyaki_sheikh" },
-  hiyori: {
-    get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
-    get gift() { return hiyoriRoute().finale?.gift || null; },
-    get question() { return hiyoriRoute().finale?.question || ""; },
-    get flag() { return hiyoriRoute().finale?.flag || ""; },
-    get night() { return !!hiyoriRoute().finale?.night; },
-  },
+  hiyori: { dialogue: "hiyori_bond_finale", gift: "suyaki_hiyori", question: "bond_q2_hiyori", flag: "_hiyori_bond_finale_done", night: true },
 };
 
 /**
@@ -96,13 +90,18 @@ export const BOND_QUESTIONS = {
   ageha: { dialogue: "ch2_ageha_bond_question", choice: AFFINITY_GATE_CHOICES.ageha, host: "remake_ch2_ageha_newcomer", when: "after" },
   // ましろ（#2022）: 第3章の寄り道「閉店後の練習」を読んだ後、♥3で場面カードから。
   mashiro: { dialogue: "ch3_mashiro_bond_question", choice: AFFINITY_GATE_CHOICES.mashiro, host: "ch3_mashiro_practice", when: "visit" },
-  hiyori: {
-    get dialogue() { return hiyoriRoute().question?.dialogue || ""; },
-    get choice() { return hiyoriRoute().question?.choice || ""; },
-    get host() { return hiyoriRoute().question?.host || ""; },
-    when: "after",
-  },
+  hiyori: { dialogue: "hiyori_bond_question", choice: "bond_q1_hiyori", host: "hiyori_work_talk", flag: "_hiyori_bond_question_done", when: "after" },
 };
+
+// 台本読込時に、既存のルート判定が使う形を正本から作る。when は afterStory 専用。
+export function hiyoriBondDefinitions() {
+  const { dialogue, choice, host, flag } = BOND_QUESTIONS.hiyori;
+  return { question: { dialogue, choice, host, flag }, finale: { ...BOND_FINALES.hiyori } };
+}
+
+// ひよりは台本の到着後だけ使える。現在の route を読むので差し替えや未登録の項目もそのまま反映する。
+export const bondFinale = (id) => id === "hiyori" ? hiyoriRoute().finale : BOND_FINALES[id];
+export const bondQuestion = (id) => id === "hiyori" ? hiyoriRoute().question : BOND_QUESTIONS[id];
 
 // ---------------------------------------------------------------- 隠し恋愛値
 
@@ -130,7 +129,7 @@ export function romanceOpen(id) {
   if (id === "samechan" && (!chapterFeatureEnabled(state.chapter, "samechanRomance")
     || !state.flags[questionDoneKey("samechan")]
     || state.romanceChoices?.bond_q1_samechan?.char !== id)) return false;
-  const def = BOND_FINALES[id];
+  const def = bondFinale(id);
   // 最後の質問がない相手は、実際に答えた質問がある時だけ（未回答を恋愛と推測しない）
   return !!(def?.question || def?.laterConfession && answers(id).length) && !isLover(id) && !state.flags[`_friend_${id}`]
     && answers(id).every((a) => a.value > 0);
@@ -139,7 +138,7 @@ export function romanceOpen(id) {
 /** 恋愛の答えを重ねたか（答えた質問がすべて恋愛寄りで、締めくくりの最後の質問でも恋愛を選んだ） */
 function romanceChosen(id) {
   if (BOND_FINALES[id]?.laterConfession) return romanceOpen(id);
-  const last = BOND_FINALES[id]?.question;
+  const last = bondFinale(id)?.question;
   return !!last && (state.romanceChoices?.[last]?.value || 0) > 0 && romanceOpen(id);
 }
 
@@ -155,9 +154,10 @@ export function bondCondition(line) {
 
 /** 固有会話（host）を読んだ直後に呼ぶ。対応する質問が残っていれば続けて出す */
 export async function afterStory(dialogueId, { bg = null, signal = null, deferSave = false } = {}) {
-  if (hiyoriRoute().question?.host && dialogueId === hiyoriRoute().question.host) return playHiyoriQuestion({ bg, signal, deferSave });
+  const host = bondQuestion("hiyori")?.host;
+  if (host && dialogueId === host) return playHiyoriQuestion({ bg, signal, deferSave });
   for (const [id, q] of Object.entries(BOND_QUESTIONS)) {
-    if (q.when !== "after" || !(q.host === dialogueId || q.alsoAfter?.includes(dialogueId)) || !questionOpen(id)) continue;
+    if (id === "hiyori" || q.when !== "after" || !(q.host === dialogueId || q.alsoAfter?.includes(dialogueId)) || !questionOpen(id)) continue;
     return playQuestionVisit(id, { bg, signal, deferSave });
   }
   return true;
@@ -176,7 +176,7 @@ function resumeChoice(scene, key, answer) {
 
 /** 質問を実際に再生できるか。地図の在店表示も同じ条件を読む。 */
 export function hiyoriQuestionReady() {
-  const q = hiyoriRoute().question, scene = DB.dialogues[q?.dialogue];
+  const q = bondQuestion("hiyori"), scene = DB.dialogues[q?.dialogue];
   if (!state || !hiyoriRoute().enabled || !state.flags._hiyori_work_talk_done
     || !state.flags._hiyori_real_self_known || !state.met.hiyori || !chapterFeatureEnabled(state.chapter, "hiyoriDaily")
     || !q?.flag || state.flags[q.flag] || !scene?.lines?.length || scene.metadata?.preview_only
@@ -188,7 +188,7 @@ export function hiyoriQuestionReady() {
 /** 正式仕事相談の後、質問の反応も読み終えてから締めくくりへ進む。 */
 export async function playHiyoriQuestion({ bg = null, signal = null, deferSave = false } = {}) {
   if (!hiyoriQuestionReady() || signal?.aborted) return false;
-  const q = hiyoriRoute().question, scene = DB.dialogues[q.dialogue];
+  const q = bondQuestion("hiyori"), scene = DB.dialogues[q.dialogue];
   const answer = state.romanceChoices[q.choice];
   const owner = state;
   const result = await play(resumeChoice(scene,q.choice,answer), { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal, growthScene: true });
@@ -203,7 +203,7 @@ const questionOpen = (id) => {
   if (id === "hiyori" && !hiyoriRoute().enabled) return false;
   if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
   if (AFFINITY_GATE_CHOICES[id] && affinityLevel(id) < 3) return false;
-  const q = BOND_QUESTIONS[id];
+  const q = bondQuestion(id);
   const answer = state.romanceChoices?.[q?.choice];
   return !!q && !!DB.dialogues[q.dialogue]?.lines?.length && !questionComplete(state, id)
     && (!answer || answer.char === id && Number.isFinite(answer.value) && answer.value >= 0);
@@ -212,7 +212,7 @@ const hostSeen = (id) => {
   if (id === "minto") return !!(state.flags._minto_private_done || state.flags._minto_fifth_done);
   if (id === "ageha") return !!state.flags[`_ch2_read_${BOND_QUESTIONS.ageha.host}`];
   if (id === "mashiro") return !!state.flags[`_ch3_read_${BOND_QUESTIONS.mashiro.host}`];
-  const q = BOND_QUESTIONS[id];
+  const q = bondQuestion(id);
   const at = (VISIT_SEQ[id] || []).indexOf(q?.host);
   return at >= 0 && storyCount(id) > at;
 };
@@ -226,7 +226,7 @@ const questionsInFlight = new WeakMap();
 export async function playQuestionVisit(id, { bg = null, signal = null, deferSave = false } = {}) {
   if (id === "hiyori") return playHiyoriQuestion({ bg, signal, deferSave });
   if (!questionOpen(id) || signal?.aborted) return false;
-  const q = BOND_QUESTIONS[id], owner = state;
+  const q = bondQuestion(id), owner = state;
   const active = questionsInFlight.get(owner) || new Set();
   if (active.has(id)) return false;
   questionsInFlight.set(owner, active); active.add(id);
@@ -248,7 +248,10 @@ export async function playQuestionVisit(id, { bg = null, signal = null, deferSav
 
 export const finaleSeen = (id) => !!state.finales?.[id];
 /** 締めくくりの台詞 id。スティーブは第5章の東京では第5章用の書き出し（#2705） */
-const finaleDialogue = (id) => BOND_FINALES[id]?.tokyoDialogue && (state.chapter || 1) >= 5 ? BOND_FINALES[id].tokyoDialogue : BOND_FINALES[id]?.dialogue;
+const finaleDialogue = (id) => {
+  const def = bondFinale(id);
+  return def?.tokyoDialogue && (state.chapter || 1) >= 5 ? def.tokyoDialogue : def?.dialogue;
+};
 /** 締めくくりに要る好感度の段階（既定は♥5＝MAX。heart を持つ相手だけ別） */
 export const finaleHeart = (id) => BOND_FINALES[id]?.heart || 5;
 /** 鉄の煙の再訪三つ（chapters/ch3-story-wiring.js の任意場面。既読は _ch3_read_<id>）。 */
@@ -332,7 +335,7 @@ export function finaleDue(id) {
   if (id === "master_hookah" && (state.chapter || 1) !== 4) return false; // 龍龍水煙所は第4章ドバイの日常だけ
   // シェイクの屋敷は第5章のドバイだけ（読むのは屋敷の行き先から。地元にいる間も MENU は「次に屋敷で会うと」を示す）
   if ((id === "da_silva" || id === "sheikh") && (state.chapter || 1) !== 5) return false;
-  const def = BOND_FINALES[id];
+  const def = bondFinale(id);
   if (!def || finaleSeen(id) || !DB.dialogues[finaleDialogue(id)] || !storiesDone(id)) return false;
   if (affinityLevel(id) < finaleHeart(id) || questionVisitDue(id)) return false;
   // つむぎは第1章本筋のDAY11「絵を描き終えて応募する」を関係の節目にする。
@@ -343,13 +346,16 @@ export function finaleDue(id) {
 }
 
 /** 店で会ったときに始めるか（私的な約束で会う相手は除く・閉店後の場面は夜だけ） */
-export const finaleAtVisit = (id) => finaleDue(id) && !BOND_FINALES[id].invite && (!BOND_FINALES[id].night || state.slot >= 1);
-export const isFinaleEvent = (dialogueId) => Object.values(BOND_FINALES).some((d) => d.dialogue === dialogueId || d.tokyoDialogue === dialogueId);
+export const finaleAtVisit = (id) => finaleDue(id) && !BOND_FINALES[id].invite && (!bondFinale(id).night || state.slot >= 1);
+export const isFinaleEvent = (dialogueId) => Object.keys(BOND_FINALES).some((id) => {
+  const def = bondFinale(id);
+  return (def?.dialogue ?? "") === dialogueId || def?.tokyoDialogue === dialogueId;
+});
 
 /** 締めくくりを再生し、ルート（恋人／恋愛／友情）を記録して専用ハガルを渡す。一度だけ */
 export async function playFinale(id, { bg = null, deferSave = false, signal = null } = {}) {
   if (["hiyori", "samechan", "mashiro", "ayatori", "noor", "steve", "volk", "master_hookah", "da_silva", "sheikh"].includes(id) && !finaleDue(id)) return false;
-  const def = BOND_FINALES[id];
+  const def = bondFinale(id);
   if (!def || finaleSeen(id) || !DB.dialogues[finaleDialogue(id)]) return false;
   const owner = state;
   // 中断保存に実回答が残ったサメちゃんの最終質問は、その答えの続きへ戻す。

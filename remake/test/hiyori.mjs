@@ -36,6 +36,7 @@ async function fit() {
 }
 try {
   await page.goto(base);
+  await page.evaluate(() => import("./js/main.js").then(() => {}));
   await page.locator('[data-test="title-new"]').waitFor();
   await page.locator("#boot").waitFor({ state: "detached" });
   await page.evaluate(async () => {
@@ -46,6 +47,7 @@ try {
       bonds: await import("./js/daily/bonds.js"), romance: await import("./js/daily/romance.js"),
       ch1: await import("./js/chapters/ch1.js"), audio: await import("./js/core/audio.js"),
     };
+    await QA.data.loadDeferredDialogues();
     QA.ch1.setupHooks();
     QA.fresh = () => {
       const state = QA.core.newGame();
@@ -83,13 +85,20 @@ try {
       QA.blips = [];
       QA.originalBlip = QA.audio.SE.blip;
       QA.audio.SE.blip = (id) => QA.blips.push(id);
+      // 本文の2文字目が出たフレームで本心欄を観測する。別のブラウザ往復の間にも文字送りは進む。
+      const observer = new MutationObserver(() => {
+        if ((document.querySelector(".vn-text")?.textContent.length || 0) < 2) return;
+        observer.disconnect();
+        QA.innerHiddenAtStart = document.querySelector(".vn-inner").hidden;
+      });
+      observer.observe(document.querySelector("#vn"), { subtree: true, childList: true, characterData: true });
       window.scene = QA.vn.play({ lines: [
         { speaker: "hiyori", text: "静かな時間だね……", inner: "会社の通知がないって最高かよ！！！" },
         { speaker: "hajime", text: "落ち着きますね", inner: "これはひより以外では表示しない" },
       ] });
     });
-    await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent?.length >= 2);
-    assert(await page.locator(".vn-inner").evaluate((n) => n.hidden));
+    await page.waitForFunction(() => typeof QA.innerHiddenAtStart === "boolean");
+    assert(await page.evaluate(() => QA.innerHiddenAtStart));
     await page.waitForFunction(() => document.querySelector(".vn-text").textContent === "静かな時間だね……");
     const publicBlips = await page.evaluate(() => QA.blips.length);
     await page.waitForFunction(() => document.querySelector(".vn-inner").textContent.length > 3);

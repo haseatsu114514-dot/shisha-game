@@ -2,7 +2,7 @@
 import { DB, loadConfessionDialogue } from "../core/data.js";
 import { state } from "../core/state.js";
 import { affinityLevel, affinityGateWaiting } from "../core/stats.js";
-import { BOND_QUESTIONS, BOND_FINALES, questionVisitDue, finaleDue, finaleHeart, settledFriend, finaleReachable, beforeTokyoDeparture } from "./bonds.js";
+import { bondQuestion, bondFinale, BOND_FINALES, questionVisitDue, finaleDue, finaleHeart, settledFriend, finaleReachable, beforeTokyoDeparture } from "./bonds.js";
 import { romanceRouteOpen, romanceRouteEligible, confessionHeld } from "./romance.js";
 import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 
@@ -16,7 +16,7 @@ const summary = (kind, label, hint) => ({ kind, label, hint });
 
 function confessionStatusOpen(id) {
   // 取得前は締めくくりの最終質問があるルートを、実際の回答から案内する。
-  return romanceRouteOpen(id) || (!DB.confessionDialogueLoaded && !!BOND_FINALES[id]?.question && romanceRouteEligible(id));
+  return romanceRouteOpen(id) || (!DB.confessionDialogueLoaded && !!bondFinale(id)?.question && romanceRouteEligible(id));
 }
 
 export function prepareRelationshipStatus() {
@@ -33,7 +33,7 @@ export function prepareRelationshipStatus() {
 // 段階の仕組み（♥3で方向を選ぶ・♥5で特別なイベントと贈り物）は人間関係タブの全体ガイドに一度だけ置く。
 // ここでは次の一手だけを示し、各人の行では反復しない。
 function finaleHint(id) {
-  const def = BOND_FINALES[id];
+  const def = bondFinale(id);
   if (finaleDue(id)) {
     if (def.invite) return "LIMEの私的な約束で、特別なイベントへ。";
     return `${def.night ? "夜、" : "次に"}${meetingPlace[id] || "いつもの場所"}で会うと、特別なイベントへ。`;
@@ -90,7 +90,7 @@ export function relationshipStatus(id) {
     const hint = agehaWords ? (state.chapter >= 3 ? "帰郷してMELTY PUFFを訪ねた翌日に、本人の言葉を聞ける。"
         : "県大会のあとも、店に通う約束は続く。本人の言葉は、そのあとで。")
       : state.finales?.[id] ? "相手との大切な交流を見届けた。"
-      : id === "hiyori" && !BOND_FINALES[id]?.gift ? "ひよりとの交流を続けよう。関係の続きは、これからの物語で。"
+      : id === "hiyori" && !bondFinale(id)?.gift ? "ひよりとの交流を続けよう。関係の続きは、これからの物語で。"
       : id === "hiyori" && !hiyoriFinaleReady() ? "まだ聞いていないひよりの話を進めよう。斧投げや仕事の話を見届けてから、次の節目へ。"
       : id === "ageha" ? (lv >= 5 && (state.chapter === 2 || beforeTokyoDeparture()) ? finaleHint(id) : "")
       : lv >= 5 ? finaleHint(id)
@@ -103,7 +103,7 @@ export function relationshipStatus(id) {
   // 後発キャラは現在の物語の範囲で案内し、未接続の告白を約束しない。
   if (id === "hiyori") {
     if (lv >= 3 && affinityGateWaiting(id)) return summary("choice", "スミさんとの再会待ち", "スミさんのLIMEを読んで、夜のtonariで再会しよう。");
-    const q = BOND_QUESTIONS[id];
+    const q = bondQuestion(id);
     const script = DB.dialogues[q?.dialogue];
     if (!script?.lines?.length || script.metadata?.preview_only) {
       return summary("neutral", "交流中", "スミさんやひよりとの交流を、少しずつ深めよう。");
@@ -113,7 +113,7 @@ export function relationshipStatus(id) {
     return summary("neutral", "交流中", "今はLIMEで連絡を取り合える。SHISHARKでの交流は第2章から。");
   }
 
-  const question = BOND_QUESTIONS[id];
+  const question = bondQuestion(id);
   const canChoose = !!DB.dialogues[question?.dialogue] || id === "samechan" && !!DB.dialogues.samechan_shop_bond_question;
   if (canChoose) {
     if (lv < 3) return summary("neutral", "交流中", ""); // ♥3の節目の説明は全体ガイドに集約

@@ -7,6 +7,7 @@ async function setup(page) {
     window.S={core:await import("./js/core/state.js"),data:await import("./js/core/data.js"),vn:await import("./js/vn/engine.js"),
       daily:await import("./js/daily/hiyori.js"),route:await import("./js/core/hiyori-route.js"),axe:await import("./js/daily/hiyori-axe.js"),
       tonari:await import("./js/daily/tonari.js"),calendar:await import("./js/daily/calendar.js"),phone:await import("./js/daily/phone.js")};
+    await S.data.loadDeferredDialogues();
     (await import("./js/chapters/ch1.js")).setupHooks();
     S.fresh=()=>{
       const s=S.core.newGame();Object.assign(s,{phase:"daily",day:10,slot:1,money:90000,stamina:80});

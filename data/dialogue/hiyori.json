@@ -11,19 +11,6 @@
       "peach_talk",
       "promise"
     ],
-    "question": {
-      "dialogue": "hiyori_bond_question",
-      "choice": "bond_q1_hiyori",
-      "host": "hiyori_work_talk",
-      "flag": "_hiyori_bond_question_done"
-    },
-    "finale": {
-      "dialogue": "hiyori_bond_finale",
-      "question": "bond_q2_hiyori",
-      "gift": "suyaki_hiyori",
-      "flag": "_hiyori_bond_finale_done",
-      "night": true
-    },
     "events": [
       {
         "id": "meeting",
