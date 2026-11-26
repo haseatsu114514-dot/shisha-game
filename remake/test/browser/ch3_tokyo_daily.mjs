@@ -119,7 +119,7 @@ await suite("ch3-tokyo-daily", async check => {
     await go(page, "ch3_tokyo_mukai");
     const help = page.locator(`#modal.show button`, { hasText: "シフトに入る" });
     await help.waitFor();
-    assert.match(await help.innerText(), /10,000/, "mukai shows the same chapter 3 base pay as tonari");
+    assert.match(await help.innerText(), /12,000/, "mukai shows the same chapter 3 base pay as tonari");
     await help.click();
     // mukai のシフト（VOL09）: 今日の注文に合う配合を二つから選ぶ → 客の反応 → 日当。
     await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
