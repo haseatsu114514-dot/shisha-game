@@ -30,7 +30,7 @@ async function setup(page, restore = false) {
 }
 
 await suite("lover-milestones", async check => {
-  await check("normal-play-exp-notice-without-board", async page => {
+  await check("normal-play-exp-without-board-or-notice", async page => {
     await setup(page);
     const result = await page.evaluate(async () => {
       const growth = await import("./js/core/growth.js"), hud = await import("./js/daily/hud.js"), ui = await import("./js/core/ui.js");
@@ -40,8 +40,9 @@ await suite("lover-milestones", async check => {
       return { before, after: s.stats, xp: s.growth.xp, level: s.growth.level, hidane: growth.hidaneTotal(),
         menu: growth.growthMenuItems(), board: await growth.openGrowthBoard(), night: growth.settleGrowth() };
     });
-    const notice = page.locator(".toast").filter({ hasText: "EXP +25（累計 25）" });
-    await notice.waitFor();
+    await page.waitForTimeout(750); // 獲得通知の集約時間（700ms）を過ぎても数値トーストは出ない。
+    const notice = page.locator(".toast").filter({ hasText: /EXP\s*[+＋]\s*\d+/i });
+    assert.equal(await notice.count(), 0);
     assert.deepEqual(result.after, result.before); assert.equal(result.xp, 25);
     assert.equal(result.level, 1); assert.equal(result.hidane, 0);
     assert.deepEqual(result.menu, []); assert.equal(result.board, null); assert.equal(result.night, null);
@@ -50,7 +51,7 @@ await suite("lover-milestones", async check => {
     assert.equal(await page.locator(".gain-card.stat").count(), 0);
   }, { reducedMotion: "reduce" });
 
-  await check("milestone-exp-notice", async page => {
+  await check("milestone-exp-updates-gauge-without-notice", async page => {
     await setup(page);
     await page.evaluate(async () => {
       const growth = await import("./js/core/growth.js");
@@ -60,11 +61,15 @@ await suite("lover-milestones", async check => {
       hud.initHud({}); hud.showHud(true);
       await M.romance.playLoverMilestone("rio");
     });
-    const chip = page.locator('[data-test="exp-chip"]');
-    await chip.waitFor();
-    assert.match(await chip.textContent(), /EXP\s*\+25/);
+    await page.waitForTimeout(750);
+    assert.equal(await page.locator('[data-test="exp-chip"]').count(), 0);
+    const gauge = page.locator('[data-test="hud-exp"]');
+    assert(await gauge.isVisible());
+    assert.match(await gauge.getAttribute("title"), /次のレベルまで EXP 180/);
     assert.equal(await page.locator(".gain-card.stat").count(), 0);
-    assert.doesNotMatch(await page.evaluate(() => M.vn.backlog().map(line => line.text).join(" ")), /【(?:技術|センス|根性|魅力|洞察)】.*上が/);
+    const backlog = await page.evaluate(() => M.vn.backlog().map(line => line.text).join(" "));
+    assert.doesNotMatch(backlog, /【(?:技術|センス|根性|魅力|洞察)】.*上が/);
+    assert.doesNotMatch(backlog, /EXP\s*[+＋]\s*\d+/i);
   }, { reducedMotion: "reduce" });
 
   await check("exp-only-all-milestones", async page => {

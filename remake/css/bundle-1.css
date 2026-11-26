@@ -5653,11 +5653,6 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .hud-exp .hx-target { flex: none; font-size: 12px; font-weight: 700; color: #b8741a; white-space: nowrap; }
 .hud-exp .hx-target[hidden] { display: none; }
 .hud-exp[data-milestone="true"] .hx-bar::after { content: ""; position: absolute; right: 1px; top: 1px; width: 8px; height: 2px; border-radius: 1px; background: radial-gradient(circle, #ffb347 40%, transparent 45%) 0 0 / 4px 2px repeat-x; }
-.exp-chip { position: absolute; left: 6px; top: 20px; z-index: 2; display: flex; gap: 6px; align-items: baseline; padding: 2px 8px; border-radius: 10px;
-  background: rgba(34, 22, 8, 0.92); border: 1px solid rgba(244, 210, 122, 0.7); white-space: nowrap; pointer-events: none; animation: exp-chip 2.2s ease-out forwards; }
-.exp-chip b { color: #ffe08a; font-size: 13px; }
-.exp-chip span { color: #f1dcb0; font-size: 12px; font-weight: 700; }
-@keyframes exp-chip { 0% { opacity: 0; transform: translateY(-4px); } 12% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(6px); } }
 /* 未使用の火種: 琥珀の炎の丸と個数（LIMEの赤丸と別の色） */
 .hud-level { position: relative; }
 .hidane-badge { position: absolute; right: -7px; top: -7px; min-width: 20px; height: 20px; padding: 0 4px; box-sizing: border-box; display: grid; place-items: center;

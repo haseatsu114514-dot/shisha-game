@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
 
-const hudEvents = ["hud", "money", "exp-gain", "level-up", "hidane-gift"];
+const hudEvents = ["hud", "money", "level-up", "hidane-gift"];
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 const context = vm.createContext({
   clearTimeout() {},
@@ -25,7 +25,7 @@ const dependencies = {
   "../core/util.js": { el: () => ({ append() {} }), yen: undefined, sleep: undefined },
   "../core/ui.js": {
     layers: { hud: { replaceChildren: () => beforeRebind.push(hudEvents.map(count)) } },
-    toast: undefined, gainCard: undefined,
+    gainCard: undefined,
   },
   "../core/audio.js": { SE: undefined },
   "../core/state.js": { state: undefined },
@@ -60,6 +60,7 @@ for (let init = 1; init <= 3; init++) {
   assert.deepEqual(hudEvents.map(count), withHud, `one listener per HUD event after initHud ${init}: ${hudEvents.join(", ")}`);
   assert.deepEqual(beforeRebind.at(-1), otherListeners, `previous HUD listeners released before rebind ${init}`);
   assert.equal(count("stamina-change"), 1, `module-lifetime subscription after initHud ${init}`);
+  assert.equal(count("exp-gain"), 0, `no EXP display listener after initHud ${init}`);
 }
 bus.namespace.emit("money", { delta: 0 });
 assert.equal(otherMoneyCalls, 1, "initHud must preserve the other money listener");
