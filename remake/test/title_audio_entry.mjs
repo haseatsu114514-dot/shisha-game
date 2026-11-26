@@ -153,6 +153,8 @@ console.log("PASS: first gesture, deferred/rejected resume, stop/replacement rac
 // (title.js keeps currentArt across menu redraws; a new pick happens only on boot/reload);
 // accepted exits do not redraw.
 let buttons = new Map(), selectedSlot = null, confirm = false, renders = 0, picks = 0, wipes = 0;
+const latest = { key: "slot3", raw: "slot3 snapshot", data: { day: 12 } };
+const loadRequests = [];
 const events = [], hudClasses = new Set(["show"]), galleryCloses = [], configCloses = [];
 const body = { dataset: { screen: "title" } };
 function el(selector, attrs = {}, children = []) {
@@ -171,11 +173,12 @@ function el(selector, attrs = {}, children = []) {
 }
 const title = await load(await read("../js/scenes/title.js"), {
   el, bgUrl: () => "title-bg", layers: { hud: { classList: { remove: k => hudClasses.delete(k) } } },
-  showScreen: name => { body.dataset.screen = name; renders++; }, peekSave: () => ({}), anySlotSaved: () => true,
+  showScreen: name => { body.dataset.screen = name; renders++; }, peekSave: () => ({}),
+  peekLatestSaveEntry: () => latest, saveHeadline: data => data ? `DAY ${data.day}` : "",
   playBgm: k => events.push(k), stopBgm: fade => events.push(`stop:${fade}`),
   SE: { select() {} }, smokeWipe: fn => fn(), toast: () => {},
   modal: options => options.title === "設定" ? new Promise(resolve => configCloses.push(resolve)) : Promise.resolve(confirm),
-  loadWithRecovery: async () => !!selectedSlot,
+  loadWithRecovery: async ({ initialSlot }) => { loadRequests.push(initialSlot); return !!selectedSlot; },
   wipeSave: () => wipes++,
   resumeGame: () => events.push("resume"), startNewGame: () => events.push("new"),
   openGallery: () => new Promise(resolve => galleryCloses.push(resolve)),
@@ -189,7 +192,9 @@ const art = { ready: true, file: "test", character: "test", url: "test" };
 const show = () => { buttons = new Map(); title.showTitle(art); };
 const click = async id => { buttons.get(id).onclick(); await flush(); };
 show(); assert.equal(body.dataset.screen, "title"); assert.equal(hudClasses.has("show"), false);
-assert.deepEqual([...buttons.keys()], ["title-new", "title-load", "title-gallery", "title-config"]);
+assert.deepEqual([...buttons.keys()], ["title-new", "title-continue", "title-load", "title-gallery", "title-config"]);
+assert.equal(buttons.get("title-continue").querySelector(".ti-note").text, "DAY 12");
+assert.equal(buttons.get("title-load").querySelector(".ti-note"), undefined);
 for (const [id, closes] of [["title-gallery", galleryCloses], ["title-config", configCloses]]) {
   const before = renders, beforePicks = picks;
   await click(id); assert.equal(renders, before, "keep title until subview closes");
@@ -202,11 +207,12 @@ for (const id of ["title-new", "title-load"]) {
   assert.equal(renders, before + 1); assert.equal(picks, beforePicks, "cancelling reuses the current art");
   assert.equal(wipes, 0, "cancelling must not erase saves");
 }
-for (const [id, expected] of [["title-load", "resume"], ["title-new", "new"]]) {
+for (const [id, expected] of [["title-continue", "resume"], ["title-load", "resume"], ["title-new", "new"]]) {
   show(); await click("title-gallery");
   selectedSlot = "slot1"; confirm = true;
   const before = renders, beforePicks = picks;
   await click(id); assert.deepEqual(events.slice(-2), ["stop:0", expected]);
+  if (expected === "resume") assert.equal(loadRequests.at(-1), id === "title-continue" ? latest : null);
   // Even while the wipe still has data-screen=title, the outgoing title is retired.
   galleryCloses.shift()(); await flush();
   assert.equal(renders, before); assert.equal(picks, beforePicks, "accepted exit never rebuilds title");
@@ -217,7 +223,7 @@ let before = renders; galleryCloses.shift()(); await flush(); assert.equal(rende
 await click("title-config"); body.dataset.screen = "map";
 before = renders; configCloses.shift()(); await flush(); assert.equal(renders, before);
 hudClasses.add("show"); show(); assert.equal(hudClasses.has("show"), false);
-console.log("PASS: four retained menus, gallery/config return, NEW/LOAD cancel rotation, accepted exits and stale-close guards");
+console.log("PASS: direct continue uses the displayed latest save, LOAD opens the picker, and accepted exits and stale-close guards hold");
 
 // First narration must be entered even when the cold-open decoration is still decoding.
 let mounted = false, firstDialogue = null;

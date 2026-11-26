@@ -11,7 +11,7 @@ async function setup(page, day = 4, slot = 1) {
       ch1: await import('./js/chapters/ch1.js'), story: await import('./js/chapters/tsumugi-story.js'),
       tonari: await import('./js/daily/tonari.js'), craft: await import('./js/craft/session.js') };
     C.ch1.setupHooks(); C.vn.vnTest.turbo = true; C.craft.craftTest.auto = 'good';
-    C.data.DB.baito = []; // 接客の抽選報酬を除き、実際の基本給・シフト・遭遇を比較。
+    // シフトは店番（TFL62）。support.mjs の既定で、この検査では回さない（売上ボーナスなし）。基本給・シフト・遭遇を比較する。
     C.fresh = (day, slot) => {
       const s = C.core.newGame();
       Object.assign(s, { phase: 'daily', day, slot, money: 30000, stamina: 100, weatherSeed: 4 });
@@ -39,7 +39,6 @@ async function setup(page, day = 4, slot = 1) {
       }
     }).observe(document.getElementById('fx'), { childList: true, subtree: true });
     C.afterTimer = setInterval(() => {
-      document.querySelector('[data-test="shift-order-0"]')?.click();
       document.querySelector('[data-test="after-none"]')?.click();
       document.querySelector('[data-test="reel-intro"]')?.click();
       document.querySelector('[data-test="drill-heat"]')?.click();
@@ -89,12 +88,13 @@ await suite('action-context', async check => {
         assert.equal(r.first.done, seen); assert.equal(r.first.trace.includes('ch1_ageha_encounter'), seen);
         assert(!r.replayed && !r.oldReplayed); assert(!r.first.met && !r.first.nameKnown);
         assert.equal(r.first.money, r.old.money); assert.equal(r.first.stamina, r.old.stamina);
-        assert.equal(r.first.slot, r.slot); assert.deepEqual(r.first.stats, r.old.stats);
+        // 店番は昼から夜まで（TFL62）: 上がりは夜の時間帯になる（行動枠を進めるのは calendar）
+        assert.equal(r.first.slot, Math.max(r.slot, 1)); assert.deepEqual(r.first.stats, r.old.stats);
         assert(r.first.money >= 38000); assert.match(r.first.bg, /bg_tonari_inside/);
         if (seen) {
           assert(r.first.trace.indexOf('remake_baito_end') < r.first.trace.indexOf('ch1_ageha_encounter'));
           const lines = r.first.lines.filter(l => l.id === 'ch1_ageha_encounter');
-          assert(lines.every(l => /bg_street/.test(l.bg) && l.slot === r.slot));
+          assert(lines.every(l => /bg_street/.test(l.bg) && l.slot === Math.max(r.slot, 1)));
           assert(lines.every(l => !/夕暮れ|夕陽/.test(l.text)));
           assert.match(lines[0].text, /シフトが終わったあと/);
           assert(lines.some(l => /荷物をスミさんに渡した/.test(l.text)));
@@ -111,6 +111,8 @@ await suite('action-context', async check => {
       await page.evaluate(({ day, action }) => {
         if (action === 'baito' && day === 4) C.core.state.pendingInvite = {
           sender: 'sumi', event: '__sumi_baito__', day, slot: 1 };
+        // 自分で入るシフトは昼から（TFL62。夜は札が押せない）。昼から夜まで2コマ使って、その日が終わる
+        if (action === 'baito' && day === 5) C.core.state.slot = 0;
         C.core.save(); C.core.load(); C.start();
       }, { day, action });
       if (!(action === 'baito' && day === 4)) {

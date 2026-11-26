@@ -179,7 +179,8 @@ try {
     await fit();
     await page.locator('[data-test="choice-1"]').click();
     await page.evaluate(() => window.scene);
-    assert.equal(await page.locator('[data-test="vn-skip"]').evaluate((n) => n.classList.contains("on")), false);
+    // SKIPは場面をまたいで保持する（#3558 項目7・オーナー決定 2026-11-25）。場面が終わっても有効なまま。
+    assert.equal(await page.locator('[data-test="vn-skip"]').evaluate((n) => n.classList.contains("on")), true);
   });
 
   await check("event completion, prerequisites, concurrency, friendship and confession", async () => {

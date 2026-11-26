@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 const root = new URL('../js/', import.meta.url);
-const state = {}, DB = { dialogues: {}, baito: [], equipById: {} };
+const state = {}, DB = { dialogues: {}, equipById: {} };
 let trace = [], saves = [], rainy = false;
 const noop = () => {};
 const el = (tag, attrs = {}, children = []) => Array.isArray(attrs)
@@ -26,7 +26,7 @@ const ports = {
   addMoney: n => { state.money += n; trace.push(['money', n]); },
   applyStats: stats => trace.push(['stats', stats]), step: () => 1,
   currentCondition: () => ({ bonusRate: 1, shiftBonus: 0 }),
-  isRainy: () => rainy, RAIN_BAITO: [], RAIN_BAITO_BONUS: 1200,
+  isRainy: () => rainy,
   shiftClose: async () => trace.push(['close']), meetHiyoriAtTonari: async () => {},
   hasNewStory: () => false, spotFollowupDue: () => null,
   axeThrowExposed: () => true, canStudyAttack: () => false, canStudyCubeCoals: () => false,
@@ -65,7 +65,7 @@ function reset(overrides = {}) {
   for (const key of Object.keys(state)) delete state[key];
   Object.assign(state, { chapter: 1, day: 2, slot: 1, flags: {}, owned: [], money: 20000, stamina: 100,
     baitoCount: 0, usedBaito: [], baitoRecent: [] }, structuredClone(overrides));
-  DB.dialogues = {}; DB.baito = []; trace = []; saves = []; rainy = false;
+  DB.dialogues = {}; trace = []; saves = []; rainy = false;
 }
 const plays = () => trace.filter(t => t[0] === 'play').map(t => t[1]);
 const chapters = [1, 2, 3, 4, 5, '1', undefined];
@@ -98,8 +98,11 @@ for (const chapter of chapters) for (const day of [1, 2, 13, 14])
 reset(); await rig.giveEarlyHomeRig(); // Missing gift dialogue still grants/saves, as before.
 assert.deepEqual(plays(), []); assert(state.owned.includes(rig.SUMI_RIG)); assert.equal(saves.length, 1);
 // Actual complete shifts: count is incremented before eligibility; first eligible cameo wins.
+// The shift is the floor (店番・TFL62): noon to night, chapter-based pay and 40 stamina for two slots.
+// Dynamic import is unavailable in this VM, so the shift ends without commission. The old customer events are gone (TFL63).
 const cameoFlags = ['_ev_kuraudo_cameo', '_ev_reviewer_cameo', '_ev_uezono_cameo'];
 const cameoScenes = ['ch1_kuraudo_cameo', 'ch1_reviewer_cameo', 'ch1_uezono_cameo'];
+const baseByChapter = { 1: 8000, 2: 10000, 3: 12000, 4: 14000, 5: 16000 };
 for (const chapter of chapters) for (const day of [1, 2, 3, 4, 5, 6, 13, 14])
   for (const count of [1, 2, 3, 4, 5]) for (const mask of [0, 1, 3, 7]) for (const agehaScript of [false, true]) {
     const flags = Object.fromEntries(cameoFlags.filter((_, i) => mask & (1 << i)).map(k => [k, true]));
@@ -110,26 +113,25 @@ for (const chapter of chapters) for (const day of [1, 2, 3, 4, 5, 6, 13, 14])
     await tonari.doBaito();
     const ids = plays();
     assert.deepEqual(ids.filter(id => cameoScenes.includes(id)), expected < 0 ? [] : [cameoScenes[expected]]);
-    assert.equal(ids.includes('remake_baito_routine'), expected < 0);
+    assert(!ids.some(id => /^baito_|remake_baito_routine/.test(id)), 'no old customer events');
     assert.equal(ids.includes('ch1_ageha_encounter'), chapter === 1 && day >= 4 && agehaScript);
     for (let i = 0; i < 3; i++) assert.equal(!!state.flags[cameoFlags[i]], !!(mask & (1 << i)) || i === expected);
     assert.equal(!!state.flags._ev_ageha_cameo, chapter === 1 && day >= 4 && agehaScript);
     assert.equal(state.baitoCount, count); assert.equal(state.lastBaitoDay, day);
-    assert.equal(state.money, 28000); assert.equal(state.stamina, 76); assert.equal(saves.length, 0);
+    assert.equal(state.money, 20000 + (baseByChapter[chapter] ?? 8000)); assert.equal(state.stamina, 60); assert.equal(saves.length, 0);
     assert.deepEqual(structuredClone(trace.find(t => t[0] === 'stats')), ['stats', { technique: 2, charm: 2 }]);
-    assert.equal(state.baitoRecent.length, expected < 0 ? 0 : 1);
-    if (expected >= 0) assert.equal(state.baitoRecent[0].id, cameoScenes[expected]);
+    assert.equal(state.baitoRecent.length, 0, 'the old customer history is no longer written');
     cases++;
   }
-// All read flags suppress repeat cameos; ordinary customer and empty-pool fallbacks remain intact.
-for (const chapter of chapters) for (const pool of [[], [{ id: 'ordinary', text: 'いつもの注文', choices: [], customers: ['regular'] }]]) {
+// All read flags suppress repeat cameos. A called shift on a rainy day pays the call bonus (the old rain bonus went with the old shift).
+for (const chapter of chapters) {
   reset({ chapter, day: 6, baitoCount: 3, flags: Object.fromEntries([...cameoFlags, '_ev_ageha_cameo'].map(k => [k, true])) });
-  DB.dialogues.ch1_ageha_encounter = {}; DB.baito = pool; rainy = true;
+  DB.dialogues.ch1_ageha_encounter = {}; rainy = true;
   await tonari.doBaito({ called: true });
   assert(!plays().some(id => [...cameoScenes, 'ch1_ageha_encounter'].includes(id)));
-  assert(plays().includes(pool.length ? 'baito_ordinary' : 'remake_baito_routine'));
-  assert.equal(state.money, 34200); assert.equal(saves.length, 0);
-  assert.equal(state.usedBaito.includes('ordinary'), !!pool.length);
+  assert(!plays().some(id => /^baito_|remake_baito_(routine|rain)/.test(id)));
+  assert.equal(state.money, 25000 + (baseByChapter[chapter] ?? 8000)); assert.equal(saves.length, 0);
+  assert.deepEqual(state.usedBaito, []);
   cases++;
 }
 // Missing cameo scripts still mark their existing flags/history (no new fallback behavior).
@@ -137,22 +139,19 @@ for (let i = 0; i < 3; i++) {
   reset({ day: 6, baitoCount: i + 1, flags: Object.fromEntries(cameoFlags.slice(0, i).map(k => [k, true])) });
   await tonari.doBaito(); assert(plays().includes(cameoScenes[i])); assert(state.flags[cameoFlags[i]]);
 }
-// Tournament achievement pay is wired into the actual shift, not only the pure model.
-for (const [flags, base] of [
-  [{}, 8000], [{ _ch1_cleared: true }, 9000], [{ _ch2_cleared: true }, 10000],
-  [{ _ch3_tournament_won: true }, 11000], [{ _ch4_cleared: true }, 12000],
-]) for (const called of [false, true]) {
-  reset({ chapter: 5, flags });
+// The actual shift pays the chapter's base wage regardless of the tournament flags in the save.
+for (const [ch, base] of Object.entries(baseByChapter)) for (const flags of [{}, { _ch4_cleared: true }]) for (const called of [false, true]) {
+  reset({ chapter: Number(ch), flags });
   assert.equal(await tonari.doBaito({ called }), true);
   assert.equal(state.money, 20000 + base + (called ? 5000 : 0));
-  assert.equal(state.stamina, 76);
+  assert.equal(state.stamina, 60);
   assert.equal(state.baitoCount, 1);
   assert.equal(trace.filter(([kind]) => kind === 'money').length, 1, 'raise is part of one payment');
-  assert(trace.some(([kind, text]) => kind === 'toast' && text.includes(`基本${base.toLocaleString('ja-JP')}円`)), 'receipt matches actual base');
+  assert(trace.some(([kind, text]) => kind === 'toast' && text.includes(`基本給${base.toLocaleString('ja-JP')}円＋歩合0円`)), 'receipt matches base and commission');
 }
 reset({ chapter: 5, flags: { _ch4_cleared: true } });
 const parallel = await Promise.all([tonari.doBaito(), tonari.doBaito()]);
 assert.equal(parallel.filter(Boolean).length, 1);
-assert.equal(state.money, 32000, 'simultaneous duplicate does not double pay the raised shift');
-console.log(`PASS ch1 daily features: ${cases} boundary cases and achievement payment/receipt/duplicate cases; actual registry/home-rig/tonari, controlled ports`);
+assert.equal(state.money, 36000, 'simultaneous duplicate does not double pay the shift');
+console.log(`PASS ch1 daily features: ${cases} boundary cases and chapter payment/receipt/duplicate cases; actual registry/home-rig/tonari, controlled ports`);
 

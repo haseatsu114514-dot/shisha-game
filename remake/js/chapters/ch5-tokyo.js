@@ -148,8 +148,8 @@ const readTurn = turn => { if (turn.key) state.flags[turn.key] = turn.count + 1;
 const CH3_ACTIVITY_SCENES = [...GYM_SCENES.day, ...GYM_SCENES.night].filter(id => id.startsWith("ch3_"));
 const CH3_SCENES = [...PARK_SCENES.day, ...PARK_SCENES.night].filter(id => id.startsWith("ch3_")).concat(TETSUKO.stages, TETSUKO.loop);
 async function careForTetsuko(owner) {
-  const { openTetsukoTime, settleTetsukoTime, tetsukoVisitKey } = await import("../minigames/tetsuko-time.js");
-  if (state !== owner) return false;
+  const { openTetsukoTime, settleTetsukoTime, tetsukoVisitKey, tetsukoPlayedToday } = await import("../minigames/tetsuko-time.js");
+  if (state !== owner || tetsukoPlayedToday(owner)) return false;
   const visitKey = tetsukoVisitKey(owner);
   const stageRead = (outingCounts(owner).tetsuko || 0) < TETSUKO.stages.length;
   if (stageRead && !await read(outingDialogueId(owner, TETSUKO), "bg_street", owner)) return false;
@@ -422,8 +422,18 @@ export async function chapterFiveMukaiShift(owner = state, { called = false } = 
   return true;
 }
 
-/** シフトの帰りに裏口のてつこへ（行動を使わない。体力が少し戻る・VOL11）。 */
+/** シフトの帰りに裏口のてつこへ（行動を使わない。体力が少し戻る・VOL11）。1日1回まで。 */
 async function offerTetsuko(owner) {
+  const { tetsukoPlayedToday } = await import("../minigames/tetsuko-time.js");
+  if (state !== owner) return;
+  if (tetsukoPlayedToday(state)) {
+    await modal({ title: "裏口のてつこ", body: "帰りに裏口をのぞくと、てつこはベンチで休んでいる。今日はもう遊んだので、また明日にしよう。",
+      options: [
+        { label: "てつこといっしょ（今日はもう遊んだ）", value: null, test: "tokyo-tetsuko-done", disabled: true },
+        { label: "そっとしておく", value: null, test: "tokyo-tetsuko-no", primary: true },
+      ] });
+    return;
+  }
   const go = await modal({ title: "裏口のてつこ", body: "帰りに裏口をのぞくと、看板猫のてつこがベンチで丸くなっている。",
     options: [{ label: "てつこといっしょ", value: true, test: "tokyo-tetsuko-yes", primary: true }, { label: "今日はそっとしておく", value: false, test: "tokyo-tetsuko-no" }] });
   if (!go || state !== owner) return;

@@ -9,14 +9,14 @@ import path from "node:path";
 
 const read = file => readFile(new URL(file, import.meta.url), "utf8");
 const strip = source => source.replace(/^import .*;\s*$/gm, "").replace(/\bexport /g, "");
-const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment, kujiReveal, flavorMastery, growthStarter, legacyCastSave] = await Promise.all([
+const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment, kujiReveal, flavorMastery, growthStarter, legacyCastSave, chapterSave] = await Promise.all([
   read("../js/daily/kuji.js"), read("../js/core/state.js"), read("../js/core/util.js"),
   read("../js/core/stats.js"), read("../../data/kuji.json"), read("../js/core/travel-budget.js"),
   read("../js/core/gallery-progress.js"), read("../js/daily/kuji-tickets.js"), read("../../data/equipment.json"),
   read("../js/daily/kuji-reveal.js"), // 結果の札（賞・景品名・重複の表示）。ガラガラと粒子は高速送りでは読み込まない
   // state.js と gallery-progress.js の依存も埋め込み、本番の SAVE/LOAD を通す。
   read("../js/core/flavor-mastery.js"), read("../js/core/growth-starter.js"),
-  read("../js/core/legacy-cast-save.js"),
+  read("../js/core/legacy-cast-save.js"), read("../js/core/chapter-save.js"),
 ]);
 // くじ限定の台（KJ05）だけ実データを渡す（重複でくじ券に替わるかの判定に使う）
 const kujiOnly = Object.fromEntries(JSON.parse(equipment).equipment.filter(e => e.kuji_only).map(e => [e.id, e]));
@@ -33,6 +33,7 @@ ${strip(galleryProgress)}
 ${strip(flavorMastery)}
 ${strip(growthStarter)}
 ${strip(legacyCastSave)}
+${strip(chapterSave)}
 ${strip(core).replace('function save()', 'function persistState()')}
 function save() { saves++; persistState(); }
 ${strip(stats.match(/export function addMoney\(n\) \{[\s\S]*?\n\}/)[0])}
@@ -225,7 +226,7 @@ try {
   assert.equal(last.state.owned.filter(id=>id==='nightside_premier_hagal').length,1);
   assert.equal(last.flavorGrants,1); assert.equal(last.saves,1); assert.equal(last.settlements,1);
   await run("K.finish()");
-  assert.match((await run("K.snapshot()")).notices.join(" "), /火種 紅火 ＋1/);
+  assert.match((await run("K.snapshot()")).notices.join(" "), /火種 紅火 \+1/);
   const loaded = await run("K.load()");
   assert.deepEqual(loaded.state,last.state,"real SAVE/LOAD preserves charged ticket and both prizes");
   await run("K.forceOld()");
@@ -268,14 +269,14 @@ try {
     const fresh = await run("K.oldBox('g3000', 0)");
     assert.equal(fresh.box.order.length, 40, "未開封の旧箱は今の箱に入れ替わる");
     assert.equal(fresh.box.price, 1000); assert.equal(fresh.box.drawn, 0);
-    assert.match(fresh.text, /機材くじ（1回1,000円）[\s\S]*のこり 40 \/ 40 枚/);
+    assert.match(fresh.text, /機材くじ（1回1,000円）[\s\S]*残り 40\/40枚/);
     assert.doesNotMatch(fresh.text, /旧箱/);
     // 引き途中の旧箱は、当時の景品と当時の値段（1回3,000円）のまま引き切る。安くなった値段で前の中身は引けない。
     const before = await run("K.prepare({grade:'g3000',money:10000})");
     const kept = await run("K.oldBox('g3000', 3)");
     assert.equal(kept.box.order.length, 20, "引き途中の旧箱はそのまま");
     assert.equal(kept.box.price, 3000, "1回の値段は値下げ前のもの");
-    assert.match(kept.text, /機材くじ（1回3,000円）[\s\S]*のこり 17 \/ 20 枚[\s\S]*（旧箱・次回は40枚で1回1,000円）/);
+    assert.match(kept.text, /機材くじ（1回3,000円）[\s\S]*残り 17\/20枚[\s\S]*（旧箱・次回は40枚で1回1,000円）/);
     assert.equal(kept.button, "×1 ¥3,000");
     await run("K.click()");
     const drawn = await run("K.snapshot()");
@@ -306,7 +307,7 @@ try {
   assert.equal(lastBatch.saves, 3);
   const batchCards = await run("K.batchResults()");
   assert.equal(batchCards.length, 4, "last-one appears beside three tickets");
-  assert.match(batchCards.at(-1), /火種 紅火 ＋1/);
+  assert.match(batchCards.at(-1), /火種 紅火 \+1/);
   console.log("PASS 5/10 batch charge, immediate saves, last-one result and load");
   // KJ05: 限定台くじは第5章だけ。くじ券1枚で1回（お金は使わない）、連打・古いボタンでも1枚だけ。0枚では押せない。
   {

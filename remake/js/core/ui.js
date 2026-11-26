@@ -749,8 +749,9 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
       el("div.modal-actions", options.map((o) =>
         el(`button.btn${o.primary ? ".primary" : ""}`, {
           text: o.label,
+          ...(o.disabled ? { disabled: true } : {}),
           dataset: { test: o.test || "" },
-          onclick: () => { if (!settled && !signal?.aborted) { SE.select(); close(o.value); } },
+          onclick: () => { if (!o.disabled && !settled && !signal?.aborted) { SE.select(); close(o.value); } },
         })
       )),
     ]);
@@ -771,8 +772,8 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
     };
     const abort = () => close(null);
     const buttons = [...box.querySelectorAll(".modal-actions button")];
-    const primary = buttons.find((button) => button.classList.contains("primary")) || buttons[0];
-    const dismiss = [...buttons].reverse().find((button) => !button.classList.contains("primary")) || primary;
+    const primary = buttons.find((button) => !button.disabled && button.classList.contains("primary")) || buttons.find((button) => !button.disabled) || buttons[0];
+    const dismiss = [...buttons].reverse().find((button) => !button.disabled && !button.classList.contains("primary")) || primary;
     const onKeyDown = (e) => {
       if (!box.isConnected || !layers.modal.classList.contains("show")) return;
       // 設定からセーブの引っ越しを開いた場合は、一番上の小窓の中を巡る。

@@ -116,13 +116,19 @@ for (const id of [0, 1]) {
 }
 async function startDeck(id) {
   const key = id ? 'b' : 'a';
-  if (audio.mix.decks[id].playing) return; // ▶ only starts: a deck leaves the air when its transition ends
+  // 予約中の ▶ をもう一度押すと、予約を取り消して入りの待機に戻る（DJR01・2026-11-25 オーナー指示）。ほかの鳴っている ▶ は何もしない
+  if (audio.mix.decks[id].playing) { if (view?.reserved && audio.cancelReserve(id)) unreserved(id); return; } // ▶ only starts: a deck leaves the air when its transition ends
   // after an interruption (tab hidden, audio session lost) any ▶ brings back every deck that was playing, in step
   const m = audio.mix, resume = !m.running && m.phase !== 'idle' && m.resumeDecks.length > 0;
   try {
     if (await (resume ? audio.start() : audio.play(id))) { helpManual = null; fx.played = true; if (document.hidden) { await pause(); return; } status(resume ? '再開' : `${key.toUpperCase()} ON AIR`); }
     else if (!resume) refuse(id);
   } catch (e) { status(`${e.message}。▶から再試行できます。`); }
+}
+/** 予約を取り消した: the press's word and ring go away, a soft click answers, and the navi is back to the count (the ▶ can be pressed again). */
+function unreserved(id) {
+  fx.entry = null; shownPlay = null; judgeUntil = 0; $('judge').textContent = ''; $('judge-sub').textContent = '';
+  sfx.play('nope'); status(`予約を取り消した。カウントに合わせて、もう一度 ${id ? 'B' : 'A'} の ▶`);
 }
 /** #2456 §4: a ▶ further than the OK band from the entry line is not taken. It shakes its head (like a ▶ that cannot play, DJG08) and the
  *  navi says when it will be taken. Nothing is lost: the count comes round on the next line. */
@@ -234,7 +240,8 @@ function flushJogs(perf) {
 }
 /** ビートメーター: 金の点が真ん中の枠にあれば拍は合っている。ズレると点が左右へ出る（右 = 入れた曲が先へ走っている）。皿の上の矢印は回す向き。 */
 function beatMeter(m) {
-  const sync = m.phase === 'mix' && m.running ? view.sync : null, off = !!sync?.off, state = !sync ? 'idle' : off ? 'off' : 'lock';
+  // 拍が合っていても、フェーダーに触るまでは「ぴったり」と出さない（入れた曲はまだ聞こえていない。DJR02）。ズレはいつでも知らせる
+  const sync = m.phase === 'mix' && m.running ? view.sync : null, off = !!sync?.off, state = !sync ? 'idle' : off ? 'off' : m.fader?.touched ? 'lock' : 'idle';
   if (state !== shown.beat) { shown.beat = state; setAttr($('beat'), 'data-state', state); put('beat-label', state === 'off' ? 'ズレ！ 皿で直す' : state === 'lock' ? '拍 ぴったり' : '拍'); }
   setVar($('beat-dot'), '--x', (sync ? Math.max(-1, Math.min(1, sync.error / FEEL.jog.meterSpan)) : 0).toFixed(3));
   const jog = off ? `${sync.deck ? 'b' : 'a'}-${sync.error > 0 ? 'ccw' : 'cw'}` : '';
@@ -413,7 +420,7 @@ function faderGuide(m, away) {
   if (mixing) {
     const g = m.cue.to === 1 ? view.guide : 1 - view.guide, side = followHint(m, view.guide);
     setStyle(band, 'transform', `translateX(${(x0 + (g - FOLLOW_BAND) * track).toFixed(1)}px)`); setStyle(band, 'width', `${Math.round(FOLLOW_BAND * 2 * track)}px`); // moved with transform: no layout
-    band.classList.toggle('in', Math.abs(toward(m) - view.guide) <= FOLLOW_BAND);
+    band.classList.toggle('in', !!m.fader.touched && Math.abs(toward(m) - view.guide) <= FOLLOW_BAND);
     if (view.follow) {
       band.classList.remove('hit', 'miss'); void band.offsetWidth; band.classList.add(view.follow.hit ? 'hit' : 'miss');
       if (view.follow.hit && view.follow.combo >= 4) { note(); if (view.follow.combo >= 16) note(); }
@@ -423,7 +430,9 @@ function faderGuide(m, away) {
       }
     }
     const on = m.cue.to === 1 ? '右' : '左', back = m.cue.to === 1 ? '左' : '右', done = toward(m) >= .9 && view.guide >= .9;
-    if (side === 0 || done) { hint = done ? 'そのまま！' : 'いい感じ、そのまま'; ok = true; }
+    // フェーダーに触るまでは褒めない（DJR02）: 枠を追いかけ始めるよう、向きだけ示す
+    if (!m.fader.touched) { hint = m.cue.to === 1 ? `枠に合わせて${on}へ動かそう →` : `← 枠に合わせて${on}へ動かそう`; target = Math.max(g, m.cue.to === 1 ? .12 : .88); }
+    else if (side === 0 || done) { hint = done ? 'そのまま！' : 'いい感じ、そのまま'; ok = true; }
     else if (side > 0) { hint = m.cue.to === 1 ? `もっと${on}へ →` : `← もっと${on}へ`; target = g; }
     else { hint = m.cue.to === 1 ? `← 行きすぎ、少し${back}へ` : `行きすぎ、少し${back}へ →`; target = g; }
   } else if (away) { target = m.master === 0 ? 0 : 1; hint = m.master === 0 ? '← 左へ戻す' : '右へ戻す →'; }
@@ -537,7 +546,7 @@ function navi(m, now, away) {
   if (m.phase === 'mix') {
     const to = cue.to, bar = Math.min(8, Math.floor(view.progress * 8) + 1);
     // #2456 §4: ▶ was pressed a little early. The track is held for the entry line and comes in exactly on it (the count and the ring go on).
-    if (view.reserved) { const u = view.untilIn; return { ...out, step: 2, untilHead: u, count: u <= 4 && u > 0 ? String(Math.ceil(u)) : '', main: `予約した！ ${deckOf(to)} は 0 でぴったり入る`, sub: 'あとは待つだけ。入ったら光る枠を追いかけよう', points: [] }; }
+    if (view.reserved) { const u = view.untilIn; return { ...out, step: 2, untilHead: u, count: u <= 4 && u > 0 ? String(Math.ceil(u)) : '', main: `予約した！ ${deckOf(to)} は 0 でぴったり入る`, sub: 'あとは待つだけ（早すぎたら、もう一度 ▶ で取り消せる）', points: [] }; }
     // DJG: the incoming track has slipped out of time. Turn its platter the way the arrows run (ahead → back, behind → on) until the gold dot is in the frame.
     if (view.sync?.off) return { ...out, step: 3, warn: true, main: `ズレた！ ${sideOf(to)}の皿を${view.sync.error > 0 ? '左回り' : '右回り'}に回そう`, sub: '金の点が枠に入れば戻る。フェーダーはそのまま', points: ['fader', `jog-${to ? 'b' : 'a'}`] };
     // #2456 §4-2: the grace is over but the incoming track still cannot be heard. The outgoing one keeps playing until the fader is half way.
@@ -632,9 +641,12 @@ function render() {
     put('bpm-' + key, d.track ? d.bpm.toFixed(2) : '--');
     const beat = mod(beatAt(d, now), PHRASE);
     put('beat-' + key, d.playing && beatAt(d, now) < 0 ? '予約・0 で入る' : d.playing ? `再生・${Math.floor(beat / 4) + 1}小節 ${Math.floor(beat % 4) + 1}拍` : '停止中');
-    setAttr(play, 'aria-pressed', String(d.playing)); play.disabled = audio.busy || !d.track || d.playing;
     // the approach ring goes on while a ▶ pressed a little early waits for the entry line (予約): it closes onto the button as the track comes in
-    const held = !!(view.reserved && cue && cue.to === id), mine = !!(cue && cue.to === id && m.running && ((!cue.pressed && m.phase === 'cue') || held));
+    const held = !!(view.reserved && cue && cue.to === id);
+    // 予約中の ▶ は押せる（もう一度押すと取り消し・DJR01）。aria-label でも知らせる
+    setAttr(play, 'aria-pressed', String(d.playing)); play.disabled = audio.busy || !d.track || (d.playing && !held);
+    setAttr(play, 'aria-label', held ? `${key.toUpperCase()}の予約を取り消す` : `${key.toUpperCase()}を再生`);
+    const mine = !!(cue && cue.to === id && m.running && ((!cue.pressed && m.phase === 'cue') || held));
     const soon = mine && n.untilHead != null && n.untilHead <= 4 && n.untilHead > 0;
     play.classList.toggle('cue-open', mine && !held && n.untilHead === 0);
     play.classList.toggle('cue-soon', soon);

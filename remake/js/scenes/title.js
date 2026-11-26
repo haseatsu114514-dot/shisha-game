@@ -6,7 +6,7 @@ import { DB, bgUrl } from "../core/data.js";
 import { readGalleryProgress } from "../core/gallery-progress.js";
 import { galleryEntries, galleryStats } from "../core/gallery-catalog.js";
 import { layers, showScreen, setBg, smokeWipe, modal, toast } from "../core/ui.js";
-import { peekSave, peekLatestSave, newGame, wipeSave, config, saveConfig, anySlotSaved, readSlot, SAVE_SLOTS } from "../core/state.js";
+import { peekSave, peekLatestSaveEntry, newGame, wipeSave, config, saveConfig, readSlot, SAVE_SLOTS } from "../core/state.js";
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { playBgm, stopBgm, SE, applyVolumes } from "../core/audio.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
@@ -217,6 +217,7 @@ let cursorTest = null;
 let keepCursor = false;
 let keysBound = false;
 let titleLive = () => false; // いま出ているタイトルが操作を受け付けているか（showTitle が差し替える）
+let refreshTitleSaves = () => {};
 
 const liveItems = () => [...document.querySelectorAll("#screen > .title .title-menu > .title-item")];
 
@@ -232,16 +233,7 @@ function bindTitleKeys() {
   keysBound = true;
   window.addEventListener("storage", (event) => {
     if (!titleLive() || (event.key !== null && !SAVE_SLOTS.some(slot => slot.key === event.key))) return;
-    const rows = liveItems();
-    const load = rows.find(row => row.dataset.test === "title-load");
-    if (!load) return;
-    load.disabled = !anySlotSaved();
-    const text = load.disabled ? "" : latestSaveNote();
-    const note = load.querySelector(".ti-note");
-    if (!text) note?.remove();
-    else if (note) note.textContent = text;
-    else load.append(el("span.ti-note", { text }));
-    if (load.disabled && load.classList.contains("is-current")) setCursor(rows, rows[0]);
+    refreshTitleSaves();
   });
   document.addEventListener("keydown", (e) => {
     if (!titleLive() || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
@@ -275,11 +267,6 @@ function bindTitleKeys() {
   });
 }
 
-/** 「つづきから」に添える1行（いちばん新しいセーブの章・日付）。読めない時は出さない。 */
-function latestSaveNote() {
-  try { return saveHeadline(peekLatestSave()) || ""; } catch { return ""; }
-}
-
 function galleryLabel() {
   try {
     const value = parseCastSave(localStorage.getItem("suien_remake_gallery") || "[]");
@@ -298,7 +285,7 @@ export function showTitle(preparedArt = null) {
   layers.hud.classList.remove("show");
   setBg(bgUrl("bg_title"), { instant: true });
   playBgm("title");
-  const hasSaves = anySlotSaved();
+  let latest = peekLatestSaveEntry();
   const cyclePkg = startPackageFromMeta(cycleMetaSeen);
   const menu = el("nav.title-menu");
   const rows = []; // メニューの行（作った順）
@@ -316,6 +303,13 @@ export function showTitle(preparedArt = null) {
     ]);
     rows.push(node);
     return node;
+  };
+  const loadGame = async (initialSlot = null) => {
+    if (!current()) return;
+    if (!await loadWithRecovery({ initialSlot })) { refresh(); return; }
+    if (!current()) return;
+    leaving = true;
+    smokeWipe(() => { stopBgm(0); resumeGame(); }, { color: "dark" });
   };
 
   menu.append(
@@ -348,23 +342,29 @@ export function showTitle(preparedArt = null) {
       // 周回開始では wipeSave()/newGame() を呼ばず、startNextCycle が作った state のまま opening へ。
       smokeWipe(() => { stopBgm(0); startNewGame(); }, { color: "dark" });
     }, "title-next-cycle")] : []),
-    item("LOAD", "つづきから", async () => {
-      const loaded = await loadWithRecovery();
-      if (!current()) return;
-      if (!loaded) { refresh(); return; }
-      clearLog();
-      leaving = true;
-      smokeWipe(() => { stopBgm(0); resumeGame(); }, { color: "dark" });
-    }, "title-load", !hasSaves, hasSaves ? latestSaveNote() : ""),
+    item("CONTINUE", "つづきから", () => { if (latest) void loadGame(latest); }, "title-continue", !latest, saveHeadline(latest?.data)),
+    item("LOAD", "ロード", () => loadGame(), "title-load", !latest),
     item(galleryLabel(), "ギャラリー", () => openGallery().then(refresh), "title-gallery"),
     item("CONFIG", "設定", () => openConfig().then(refresh), "title-config"),
   );
 
   // カーソルの初期位置。決定を押すだけで本編へ入れるよう、いちばん使う行に置く。
   const byTest = (test) => rows.find((n) => n.dataset.test === test && !n.disabled);
+  const continueRow = rows.find((n) => n.dataset.test === "title-continue");
+  const loadRow = rows.find((n) => n.dataset.test === "title-load");
+  refreshTitleSaves = () => {
+    latest = peekLatestSaveEntry();
+    continueRow.disabled = loadRow.disabled = !latest;
+    const text = saveHeadline(latest?.data);
+    const note = continueRow.querySelector(".ti-note");
+    if (!text) note?.remove();
+    else if (note) note.textContent = text;
+    else continueRow.append(el("span.ti-note", { text }));
+    if (!latest && [continueRow, loadRow].some((row) => row.classList.contains("is-current"))) setCursor(rows, rows[0]);
+  };
   const remembered = keepCursor ? byTest(cursorTest) : null;
   keepCursor = false;
-  setCursor(rows, remembered || byTest("title-load") || byTest("title-new"));
+  setCursor(rows, remembered || byTest("title-continue") || byTest("title-new"));
   bindTitleKeys();
 
   const art = preparedArt || currentArt || pickTitleArt();

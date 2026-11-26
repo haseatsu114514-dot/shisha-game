@@ -1,4 +1,5 @@
-// 本番tonariシフトをVMで実行。接客条件・一度限り・同じ客の連日登場・昼の閉店矛盾を検証。
+// 本番tonariシフトをVMで実行。店番（昼から夜まで・TFL62）の日当と体調・カメオの一度限り・上がりの会話・昼の閉店矛盾を検証。
+// 旧バイトの接客（data/baito_events.json の抽選）は TFL63 で廃止した。店番の画面はこの VM では読まない（歩合なしで勤務だけ済む）。
 // node --experimental-vm-modules remake/test/daily_consistency.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
@@ -6,12 +7,9 @@ import vm from "node:vm";
 import { seeded } from "../js/core/util.js";
 import { conditionForRatio } from "../js/core/condition.js";
 const root = new URL("../", import.meta.url), dataRoot = new URL("../../", import.meta.url);
-const baitoData = JSON.parse(await fs.readFile(new URL("data/baito_events.json", dataRoot), "utf8"));
-const categories = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
-const events = baitoData.events.filter((e) => categories.has(e.category));
 const scenes = JSON.parse(await fs.readFile(new URL("data/dialogue/remake_ch1.json", dataRoot), "utf8")).dialogues;
 const sumi = JSON.parse(await fs.readFile(new URL("data/dialogue/ch1_sumi.json", dataRoot), "utf8")).dialogues;
-const state = {}, db = { baito: events, dialogues: {} }, plays = [], money = [], menus = [], toasts = [];
+const state = {}, db = { dialogues: {} }, plays = [], money = [], menus = [], toasts = [];
 let rainy = false, selectedPools = [], charmStep = 1, hiyoriDue = false, calling = false, quick = false;
 class Element { constructor(spec) { this.spec = spec; this.children = []; this.dataset = {}; } append(...nodes) { this.children.push(...nodes.flat().filter(Boolean)); } }
 function el(spec, attrs = {}, children = []) { if (Array.isArray(attrs)) { children = attrs; attrs = {}; } const node = new Element(spec); Object.assign(node, attrs); node.append(children); return node; }
@@ -45,7 +43,7 @@ const values = {
   "growth.js": { EXP: { tutorial: 10 }, gainExp: () => 0, growthEnabled: () => false, hidaneTotal: () => 0, readyLessons: () => [], consultLessons: async () => [] },
   "growth-effects.js": { callingSalesBonus: (_, condition) => calling ? Math.round(1000 * condition.bonusRate) : 0, growthSkill: (_, id) => quick && id === "K27", SKILL_TUNING: { baitoPay: .1 } },
   "reel.js": { installReel() {} },
-  "weather.js": { isRainy: () => rainy, weatherOf: () => (rainy ? "rain" : "sun"), RAIN_BAITO: ["baito_rainy_day"], RAIN_BAITO_BONUS: 500, RAIN_SPOT_TEXTS: {} },
+  "weather.js": { isRainy: () => rainy, weatherOf: () => (rainy ? "rain" : "sun"), RAIN_SPOT_TEXTS: {} },
 };
 const context = vm.createContext({ Math, Set, Promise, console, AbortController }); const mods = new Map();
 async function load(name) { if (mods.has(name)) return mods.get(name); const mod = values[name]
@@ -53,173 +51,48 @@ async function load(name) { if (mods.has(name)) return mods.get(name); const mod
   : new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "train-passengers.js" ? "motions" : ["coals.js", "attack-training.js"].includes(name) ? "craft" : ["shift-pay.js", "chapter-features.js", "stat-step-tables.js", "flavor-mastery.js", "cinema-discovery.js", "rules.js", "affinity-stages.js", "axe-bar-discovery.js", "city-locations.js", "trpg-discovery.js", "ryuji-visit.js", "travel-budget.js", "chapter-clock.js", "play-mastery.js"].includes(name) ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod; }
 const module = await load("tonari.js"); await module.evaluate(); const tonari = module.namespace;
-const byid = Object.fromEntries(events.map((e) => [e.id, e]));
 function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, stamina: 74, flags: { _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true, _ev_uezono_cameo: true }, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {}, visits: {}, contacts: [], visitedDay: {}, lovers: [], loveLevel: {}, finales: {}, spotVisits: {} }, overrides);
   // 既読段階を注入する在店fixtureでは、その段階を読める♥も明示する（加算の検証は別suite）。
   if (!overrides.affinity) state.affinity = Object.fromEntries(Object.entries(state.story).map(([id,n]) => [id,[0,9,20,33,48,66][Math.min(5,n)] || 0]));
   // DAY8の接客fixtureは、それまでの必須場面を読了した通常営業。
   Object.assign(state.flags, { _tsumugi_contest_research: true, _tsumugi_contest_progress: true });
   state.money = 0;
-  db.baito = events; rainy = calling = quick = false; charmStep = 1; plays.length = 0; money.length = 0; menus.length = 0; toasts.length = 0; selectedPools = []; }
-function selected() { return plays.find((scene) => typeof scene === "object" && scene.dialogue_id?.startsWith("baito_"))?.dialogue_id; }
-const custom = (id, fields = {}) => ({ id, category: "regular", text: "注文を受けた", choices: [], customers: [id], ...fields });
-// #1178 C1-01: 読み込んだ常連回は面識・在店予定を守り、別IDの同じ客も連日出さない。
-assert(byid.baito_tsumugi_art, "つむぎの絵の接客回がロード対象にない");
-reset(); db.baito = [byid.baito_tsumugi_art]; await tonari.doBaito(); assert.equal(selected(), undefined);
-for (const known of [{ met: { tsumugi: true } }, { flags: { _met_tsumugi: true, _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true, _ev_uezono_cameo: true } }, { story: { tsumugi: 1 } }]) {
-  reset(known); db.baito = [byid.baito_tsumugi_art]; await tonari.doBaito();
-  assert.equal(selected(), "baito_baito_tsumugi_art");
-}
-for (const schedule of [{ day: 8, slot: 1 }, { day: 11, slot: 1 }]) {
-  reset({ ...schedule, met: { tsumugi: true } }); db.baito = [byid.baito_tsumugi_art];
-  await tonari.doBaito(); assert.equal(selected(), undefined);
-}
-reset({ met: { tsumugi: true }, baitoRecent: [{ id: "baito_tsumugi_rain", chapter: 1, day: 7, customers: ["tsumugi"] }] });
-db.baito = [byid.baito_tsumugi_art]; await tonari.doBaito(); assert.equal(selected(), undefined);
-// 未対面つむぎは雨でも閉店でも選ばない。旧進行とmet/flagの各記録なら永久封鎖しない。
-reset(); rainy = true; db.baito = [byid.baito_tsumugi_rain]; await tonari.doBaito(); assert.equal(selected(), undefined); assert(plays.some((s) => s.dialogue_id === "remake_baito_routine"));
-for (const known of [{ met: { tsumugi: true } }, { flags: { _met_tsumugi: true, _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true, _ev_uezono_cameo: true } }, { story: { tsumugi: 1 } }]) {
-  reset(known); rainy = true; db.baito = [byid.baito_tsumugi_rain]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_tsumugi_rain");
-}
-reset({ met: { tsumugi: true } }); db.baito = [byid.baito_tsumugi_rain]; await tonari.doBaito();
-assert.equal(selected(), undefined, "つむぎの雨の接客を晴天に出さない");
-reset({ met: { tsumugi: true } }); rainy = true; db.baito = [byid.baito_regular_01, byid.baito_tsumugi_rain]; await tonari.doBaito();
-assert.equal(selected(), "baito_baito_tsumugi_rain", "雨の接客を通常の接客より優先する");
-reset(); db.baito = [byid.baito_tsumugi_closing]; await tonari.doBaito(); assert.equal(selected(), undefined);
-reset({ day: 6, slot: 1, met: { tsumugi: true } }); db.baito = [byid.baito_tsumugi_closing]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_tsumugi_closing");
-// chapter、正/否定flag、set_flag、既読旧記録をすべて尊重。
-reset({ chapter: 2 }); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), undefined);
-// #2032: 第2章固有の接客はロード対象で、第1章には出ず第2章で出る。章指定の無い回は第2章にも混ざる。
-const ch2Events = events.filter((e) => e.chapter === 2);
-assert(ch2Events.length >= 4, "第2章固有の接客がロード対象に4件以上ない");
-for (const ev of ch2Events) {
-  const slot = ev.time_slot === "night" ? 1 : 0;
-  // 正のtrigger_flagは両章で立て、第1章で出ないのが章の条件のためだと確かめる（否定flagは立てない）。
-  const unlock = () => { if (ev.trigger_flag && !ev.trigger_flag.startsWith("!")) state.flags[ev.trigger_flag] = true; };
-  reset({ slot }); unlock(); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), undefined, `${ev.id} が第1章に出た`);
-  reset({ chapter: 2, slot }); unlock(); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), `baito_${ev.id}`, `${ev.id} が第2章に出ない`);
-}
-reset({ chapter: 2 }); db.baito = [byid.baito_ch2_yuzugaya_commuter]; await tonari.doBaito();
-assert.equal(selected(), undefined, "柚ヶ谷からの帰宅客が昼に出た");
-// 新作の苺はDAY9の試煙会と試供品受領を読み終えてから接客に出す。
-const strawberryFan = byid.baito_ch2_strawberry_fan;
-reset({ chapter: 2, day: 1 }); db.baito = [strawberryFan]; await tonari.doBaito();
-assert.equal(selected(), undefined, "DAY1に新作苺の接客が出た");
-reset({ chapter: 2, day: 9 }); state.flags._ch2_read_remake_ch2_ageha_tasting = true;
-db.baito = [strawberryFan]; await tonari.doBaito();
-assert.equal(selected(), undefined, "試煙会の後、試供品受領前に新作苺の接客が出た");
-reset({ chapter: 2, day: 10 }); state.flags._ch2_read_ch2_strawberry_sample = true;
-db.baito = [strawberryFan]; await tonari.doBaito();
-assert.equal(selected(), "baito_baito_ch2_strawberry_fan", "試供品受領後に新作苺の接客が出ない");
-// #2032: 第2章の味の不調中は、自分で吸って味を確かめる閉店後の一服を出さない。不調の記録が残る第4章では出す。
-// 第3章の東京へ発つ前の3日も不調のまま（ch3_prep_opening「無理に吸って確かめるな」。味が戻るのは東京）。
-for (const [chapter, distant, shown, prep] of [[2, true, false], [2, false, true], [4, true, true],
-  [3, true, false, { departed: false }], [3, false, true, { departed: false }]]) {
-  reset({ chapter, slot: 1 }); if (distant) state.flags._ch2_taste_distant = true;
-  if (prep) state.flags._ch3_prep = { startDay: 8, days: 3, step: 0, ...prep };
-  for (const id of ["baito_closing_smoke", "baito_trouble_04"]) {
-    plays.length = 0;
-    state.baitoRecent = [];
-    db.baito = [byid[id]]; await tonari.doBaito();
-    assert.equal(selected(), shown ? `baito_${id}` : undefined, `${id} chapter=${chapter} distant=${distant} prep=${JSON.stringify(prep)}`);
-  }
-}
-// #2032: スミさんの飯は「残る匂い」（しばらく飯はうちで食ってけ）を読んだ第2章だけ。昼夜どちらのシフトでも出る。
-const staffMeal = byid.baito_ch2_staff_meal;
-assert(staffMeal, "第2章のスミさんの飯の回がロード対象にない");
-assert(!/まかない/.test(JSON.stringify(staffMeal)), "飯の回で「まかない（練習）」と紛れる語を使わない");
-assert(staffMeal.choices.every((choice) => !choice.money_bonus), "飯は売上ではない");
-reset({ chapter: 2 }); db.baito = [staffMeal]; await tonari.doBaito(); assert.equal(selected(), undefined, "残る匂いの前に飯が出た");
-for (const slot of [0, 1]) {
-  reset({ chapter: 2, slot }); state.flags._ch2_read_ch2_lingering_smell = true;
-  db.baito = [staffMeal]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_ch2_staff_meal", `slot=${slot} で飯が出ない`);
-}
-reset(); state.flags._ch2_read_ch2_lingering_smell = true; db.baito = [staffMeal]; await tonari.doBaito(); assert.equal(selected(), undefined, "第1章に飯が出た");
-// priority: 未読なら次のシフトで必ず飯（抽選の先頭が別の客でも）。一度読めば通常の抽選に戻る。
-reset({ chapter: 2 }); state.flags._ch2_read_ch2_lingering_smell = true;
-db.baito = [byid.baito_regular_01, staffMeal]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_ch2_staff_meal", "残る匂いの後の最初のシフトで飯が出ない");
-assert.deepEqual(state.usedBaito, ["baito_ch2_staff_meal"]);
-reset({ chapter: 2, usedBaito: ["baito_ch2_staff_meal"] }); state.flags._ch2_read_ch2_lingering_smell = true;
-db.baito = [byid.baito_regular_01, staffMeal]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_regular_01", "読んだ後も飯が優先され続けた");
-// 旧セーブの既読記録でも一度きり。通常回まで既読で未読候補が尽きても飯へ戻さない。
-reset({ chapter: 2, usedBaito: ["baito_ch2_staff_meal"] }); state.flags._ch2_read_ch2_lingering_smell = true;
-db.baito = [staffMeal]; await tonari.doBaito(); assert.equal(selected(), undefined, "既読セーブで飯が再選出された");
-reset({ chapter: 2, usedBaito: ["baito_ch2_staff_meal", "baito_regular_01"] }); state.flags._ch2_read_ch2_lingering_smell = true;
-db.baito = [byid.baito_regular_01, staffMeal]; await tonari.doBaito();
-assert.equal(selected(), "baito_baito_regular_01", "未読候補が尽きた際に飯が再選出された");
-reset({ chapter: 2 }); db.baito = [byid.baito_mysterious_customer, byid.baito_regular_03]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_regular_03");
-reset(); db.baito = [custom("locked", { trigger_flag: "needs_contact" })]; await tonari.doBaito(); assert.equal(selected(), undefined);
-state.flags.needs_contact = true; await tonari.doBaito(); assert.equal(selected(), "baito_locked");
-reset(); db.baito = [byid.baito_mob_flavor_police]; await tonari.doBaito(); assert(state.flags.ch1_flavor_police_event); plays.length = 0; state.day++;
-await tonari.doBaito(); assert.equal(selected(), undefined);
-reset({ usedBaito: ["baito_mob_flavor_police"] }); db.baito = [byid.baito_mob_flavor_police]; await tonari.doBaito(); assert.equal(selected(), undefined);
-// 同じ常連が複数IDに居ても今日/昨日に再登場しない。当章の履歴4件を記録。
-for (const family of ["occhan", "takahashi", "freelancer"]) {
-  reset({ baitoRecent: [{ id: "previous", chapter: 1, day: 7, customers: [family] }] }); db.baito = [custom("same_face", { customers: [family] }), custom("different_face")];
-  await tonari.doBaito(); assert.equal(selected(), "baito_different_face");
-}
-reset({ baitoRecent: [{ id: "occhan_before", chapter: 1, day: 7, customers: ["occhan"] }] }); db.baito = [byid.baito_regular_01, byid.baito_smoke_ring, byid.baito_mob_03, byid.baito_regulars_chat, byid.baito_regular_04]; await tonari.doBaito(); assert.equal(selected(), undefined);
-reset({ baitoRecent: [{ id: "repeat", chapter: 1, day: 8, customers: [] }] }); db.baito = [custom("repeat", { customers: [] }), custom("other")]; await tonari.doBaito(); assert.equal(selected(), "baito_other");
-reset({ baitoRecent: [{ id: "old", chapter: 1, day: 6, customers: ["occhan"] }] }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_regular_01");
-reset({ chapter: 2, baitoRecent: [{ id: "old", chapter: 1, day: 7, customers: ["occhan"] }] }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_regular_01");
-reset(); db.baito = Array.from({ length: 6 }, (_, i) => custom(`rotating_${i}`));
-for (let i = 0; i < 6; i++) { state.day = 8 + i; await tonari.doBaito(); }
-assert.equal(state.baitoRecent.length, 4); assert.equal(state.baitoRecent[0].id, "rotating_2"); assert.equal(state.baitoRecent[3].day, 13);
-// 一度きりの初来店/誕生日/初めてコールと、戻ってくる常連を分ける。
-const oneOffIds = ["baito_beginner_01", "baito_couple_time", "baito_mob_01", "baito_mob_02", "baito_jiro_call"];
-for (const id of oneOffIds) { reset({ usedBaito: [id] }); db.baito = [byid[id], byid.baito_regular_01]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_regular_01"); }
-reset({ usedBaito: ["baito_regular_01"] }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_regular_01");
-// 昼に閉店回、夜に昼下がり回を出さない。晴れに雨回を出さない。
-for (const id of ["baito_closing_smoke", "baito_closing_late", "baito_atmosphere_03"]) { reset(); db.baito = [byid[id]]; await tonari.doBaito(); assert.equal(selected(), undefined); reset({ slot: 1 }); db.baito = [byid[id]]; await tonari.doBaito(); assert.equal(selected(), `baito_${id}`); }
-reset({ slot: 1 }); db.baito = [byid.baito_atmosphere_02]; await tonari.doBaito(); assert.equal(selected(), undefined);
-// 「午後の光」の回は晴れの昼だけ。みんとの正体を知った後は、初対面の目で語る回を出さない（一度きり）。
-reset(); rainy = true; db.baito = [byid.baito_atmosphere_02]; await tonari.doBaito(); assert.equal(selected(), undefined);
-reset(); db.baito = [byid.baito_atmosphere_02]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_atmosphere_02");
-reset(); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_mysterious_customer");
-reset({ usedBaito: ["baito_mysterious_customer"] }); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), undefined);
-reset({ flags: { _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true, _ev_uezono_cameo: true, _minto_identity_revealed: true } }); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), undefined);
-reset(); db.baito = [byid.baito_rainy_day]; await tonari.doBaito(); assert.equal(selected(), undefined);
-reset(); rainy = true; db.baito = [byid.baito_regular_01, byid.baito_rainy_day]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_rainy_day");
-// chapter1の正体を伏せた3客はそれぞれ一度きり、chapter2に持ち越さない。
-reset({ day: 6, baitoCount: 1, flags: {} }); db.baito = [byid.baito_regular_01];
+  rainy = calling = quick = false; charmStep = 1; plays.length = 0; money.length = 0; menus.length = 0; toasts.length = 0; selectedPools = []; }
+// 第1章の正体を伏せた3客（カメオ）は、それぞれ一度きり。第2章に持ち越さない。
+reset({ day: 6, baitoCount: 1, flags: {} });
 await tonari.doBaito(); await tonari.doBaito(); await tonari.doBaito(); await tonari.doBaito();
 for (const scene of ["ch1_kuraudo_cameo", "ch1_reviewer_cameo", "ch1_uezono_cameo"]) assert.equal(plays.filter((s) => s === scene).length, 1);
-reset({ chapter: 2, baitoCount: 1, flags: {} }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(!plays.includes("ch1_kuraudo_cameo"));
-// 報酬/choicesは保持。昼シフト後のUIと台本にレジ締めや閉店を持ち込まない。
-reset(); db.baito = [byid.baito_regular_01]; await tonari.doBaito({ called: true }); assert.equal(money[0], 13000); assert(!JSON.stringify(menus).includes("閉店"));
-// 体力の消耗後の色で制作の売上上乗せを決める。基本給・急なシフト・雨の手当は維持。
-for (const [stamina, expectedPay, expectedChoice] of [[75, 15075, 2300], [74, 14000, 2000], [49, 13750, 1000], [24, 13750, 1000]]) {
+reset({ chapter: 2, baitoCount: 1, flags: {} }); await tonari.doBaito(); assert(!plays.includes("ch1_kuraudo_cameo"));
+// 旧バイトの接客（抽選の客・今日の注文）は出ない（TFL63）
+assert(!plays.some((scene) => /^baito_|remake_baito_(routine|rain)/.test(typeof scene === "string" ? scene : scene.dialogue_id || "")));
+// 第1章の2コマ分の基本給（8,000円）。昼シフト後のUIと台本にレジ締めや閉店を持ち込まない。
+reset(); await tonari.doBaito({ called: true }); assert.equal(money[0], 14000, "8,000＋急なシフト5,000＋好調1,000（体力74から昼の分を引いて54）"); assert(!JSON.stringify(menus).includes("閉店"));
+// 体力は昼の分（20）を引いた時の色で、仕上げの調子（指名の倍率・好調の上乗せ）を決める。夜の分（20）は店番の後に引く。基本給・急なシフトは維持。
+for (const [stamina, expectedPay] of [[75, 14575], [70, 13500], [45, 13250], [24, 13250]]) {
   reset({ stamina }); charmStep = 3; rainy = true;
-  db.baito = [custom("condition", { choices: [{ text: "作る", result: "一台を仕上げた", stats: { technique: 3 }, money_bonus: 2000 }] })];
   await tonari.doBaito({ called: true });
   assert.equal(money[0], expectedPay, `Shift condition at stamina=${stamina}`);
-  const reward = plays.find((scene) => scene.dialogue_id === "baito_condition").branches.c0.at(-1);
-  assert.equal(reward.money, expectedChoice);
-  assert.equal(reward.stats.technique, 3);
+  assert.equal(state.stamina, Math.max(0, Math.max(0, stamina - 20) - 20), "昼の分と夜の分で、合わせて40");
 }
-reset({ stamina: 24 }); db.baito = []; await tonari.doBaito(); assert.equal(money[0], 8000, "Exhaustion cut the guaranteed base wage");
+reset({ stamina: 24 }); await tonari.doBaito(); assert.equal(money[0], 8000, "Exhaustion cut the guaranteed base wage");
 const fatigueWarning = () => toasts.some(({ text, kind }) => kind === "warn" && text.includes("ボーナスは半額"));
 assert.equal(fatigueWarning(), false);
-reset({ stamina: 24 }); db.baito = []; calling = quick = true; await tonari.doBaito();
-assert.equal(money[0], 9300);
+reset({ stamina: 24 }); calling = quick = true; await tonari.doBaito();
+assert.equal(money[0], 9300); // 8,000＋呼び込み500（不調で半額）＋仕事が早い800
 assert(toasts.some(({ text }) => text.includes("仕事が早い") && text.endsWith("+800円")));
 assert(fatigueWarning(), "指名がなくても呼び込みボーナスの半減を知らせる");
-reset({ stamina: 24 }); db.baito = [byid.baito_regular_01]; await tonari.doBaito();
-assert(fatigueWarning(), "指名や呼び込みがなくても接客ボーナスの半減を知らせる");
-assert.equal(money[0], 8000, "接客報酬は日当に加算し直さない");
 // #1081 B05: シフト上がりのスミ会話は必須で、メニューに選択肢は無い。
-// 統合spots.jsの夜限定gateをそのまま使い、昼は夜限定の固有会話（ch1_sumi_training）を
-// 流さず定型の一言にし、夜は固有会話を流して既読（story）を進める。
+// 統合spots.jsの夜限定gateをそのまま使う。店番は昼から夜まで（TFL62）なので、上がりは夜: 夜限定の固有会話（ch1_sumi_training）が流れ、既読（story）が進む。
 db.dialogues = Object.fromEntries([...scenes, ...sumi].map((s) => [s.dialogue_id, s]));
-reset({ story: { sumi: 2 }, affinity: { sumi: 20 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito();
-assert(plays.includes("remake_sumi_after_shift"), "昼のシフト上がりは定型の一言");
-assert(!plays.includes("ch1_sumi_training"), "昼は夜限定の固有会話を流さない");
-assert.equal(state.story.sumi, 2, "定型の一言では既読を進めない");
-assert(!JSON.stringify(menus).includes("スミさんと話す"), "シフト上がりメニューにスミ会話の選択肢は無い");
-reset({ slot: 1, story: { sumi: 2 }, affinity: { sumi: 20 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito();
-assert(plays.includes("ch1_sumi_training"), "夜のシフト上がりは固有会話を流す");
+reset({ story: { sumi: 2 }, affinity: { sumi: 20 } }); await tonari.doBaito();
+assert.equal(state.slot, 1, "昼に入った店番の上がりは夜");
+assert(plays.includes("ch1_sumi_training"), "上がりは夜なので、夜限定の固有会話を流す");
 assert(!plays.includes("remake_sumi_after_shift"), "固有会話がある日は定型の一言にしない");
 assert.equal(state.story.sumi, 3, "固有会話の既読が進む");
+assert(!JSON.stringify(menus).includes("スミさんと話す"), "シフト上がりメニューにスミ会話の選択肢は無い");
+reset({ story: { sumi: 3 }, affinity: { sumi: 33 }, flags: { _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true, _ev_uezono_cameo: true } });
+await tonari.doBaito();
+assert(!plays.includes("ch1_sumi_training"), "読んだ固有会話は繰り返さない");
 
 const handoff = scenes.find((s) => s.dialogue_id === "remake_delivery_minto_handoff");
 assert(handoff && /peppermint/.test(handoff.metadata.bg) && /この後よかったら/.test(JSON.stringify(handoff)));
@@ -245,10 +118,6 @@ for (const [day, slot, present] of [[6, 0, false], [6, 1, true], [8, 0, true], [
   await tonari.tonariCustomer();
   assert.equal(plays.includes("ch1_tsumugi_second"), present);
   assert.equal(state.story.tsumugi, present ? 2 : 1);
-  plays.length = 0;
-  db.baito = [byid.baito_tsumugi_rain]; rainy = true;
-  await tonari.doBaito();
-  assert.equal(selected() === "baito_baito_tsumugi_rain", present);
 }
 // #782 P2: DAY8昼の実来店で個別会話3→4へ進んでも、その日の夜に再登場しない。
 reset({ day: 8, slot: 0, story: { tsumugi: 3 }, hearts: { tsumugi: 3 }, visits: {}, contacts: [],
@@ -261,9 +130,6 @@ state.slot = 1;
 assert(!peopleModule.namespace.spotPeople({ id: "tonari", kind: "tonari" }).some(p => p.id === "tsumugi"),
   "昼の会話進行で同じ夜の在店表示が復活した");
 assert.equal(spots.hasNewEvent({ id: "tonari", kind: "tonari" }), false);
-plays.length = 0; rainy = true; db.baito = [byid.baito_tsumugi_rain];
-await tonari.doBaito();
-assert.equal(selected(), undefined, "昼に会ったつむぎが夜の接客候補へ戻った");
 // 後半の夜専用会話はDAY12夜に引き続き到達できる。
 reset({ day: 12, slot: 1, story: { tsumugi: 4 }, hearts: { tsumugi: 4 }, visits: {}, contacts: [],
   flags: { _tsumugi_contest_submitted: true }, visitedDay: {} });
@@ -283,11 +149,7 @@ for (const [slot, guest, welcome] of [[0, true, false], [0, false, true], [1, tr
   assert.equal(state.stamina, 58);
   assert.equal(state.story.minto, 2);
 }
-for (const event of events) {
-  if (event.time_slot !== "night") assert(!/金曜の夜|土曜の夜|夕方6時|毎週木曜|閉店後/.test(JSON.stringify(event)), event.id);
-  assert(Array.isArray(event.customers));
-}
-console.log("[remake daily] customer flags/chapter/weather/time, legacy one-off history, recurring families, four records, cameos, shift-time copy: PASS");
+console.log("[remake daily] floor shift pay and condition halves, cameos once, after-shift talk at night, shift-time copy: PASS");
 
 // 隣町からの私用の客。実際の抽選・地図・読了記録を使い、料金や好感度は増やさない。
 const cityModule = await load("city-guests.js"); await cityModule.evaluate();

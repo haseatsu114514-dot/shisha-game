@@ -40,7 +40,7 @@ import { petitAfterDate } from "../daily/petit-shuraba.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { runMukaiShift, loadMukaiShift, mukaiShiftPay, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
 import { addRoamerSpots } from "../daily/roamers.js";
-import { openTetsukoTime, settleTetsukoTime, tetsukoVisitKey } from "../minigames/tetsuko-time.js";
+import { openTetsukoTime, settleTetsukoTime, tetsukoVisitKey, tetsukoPlayedToday } from "../minigames/tetsuko-time.js";
 import { chainStageAt } from "./visit-chains.js";
 import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
 import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
@@ -708,6 +708,14 @@ async function readMashiroBond(kind, staminaGuard, owner) {
 async function offerTetsuko(owner) {
   const outing = outingById("tetsuko");
   if (!outing) return;
+  if (tetsukoPlayedToday(state)) {
+    await modal({ title: "裏口のてつこ", body: "帰りに裏口をのぞくと、てつこはベンチで休んでいる。今日はもう遊んだので、また明日にしよう。",
+      options: [
+        { label: "てつこといっしょ（今日はもう遊んだ）", value: null, test: "tokyo-tetsuko-done", disabled: true },
+        { label: "そっとしておく", value: null, test: "tokyo-tetsuko-no", primary: true },
+      ] });
+    return;
+  }
   const pick = await modal({ title: "裏口のてつこ", body: "帰りに裏口をのぞくと、看板猫のてつこがベンチで丸くなっている。",
     options: [
       { label: "てつこといっしょ", value: "game", test: "tokyo-tetsuko-game", primary: true },

@@ -33,13 +33,14 @@ await suite("tutorial-growth", async check => {
     await page.waitForFunction(() => window.scoutReceipt);
     const receipt = await page.evaluate(() => window.scoutReceipt);
     assert.equal(receipt.growth.today.learned.ch1_scout, 10);
-    assert.deepEqual([receipt.money, receipt.stamina, receipt.visitedDay.naru], [24000, 84, 1]);
+    // 偵察の一服は店の経費（#4234: スミさんのおつかい・配達の間はお金が減らない）。体力は使う
+    assert.deepEqual([receipt.money, receipt.stamina, receipt.visitedDay.naru], [27000, 84, 1]);
     assert(await page.locator("[data-test='hud-exp'] .hx-settled").evaluate(el => parseFloat(el.style.width) > 0));
     await page.reload();
     await button(page, "title-new").waitFor();
     await page.evaluate(async (record) => {
       const core = await import("./js/core/state.js");
-      // An old day-one autosave might have charged and visited but not yet set the scout done flag.
+      // An old day-one autosave might have visited but not yet set the scout done flag.
       delete record.growth.today.learned.ch1_scout;
       localStorage.setItem(core.SAVE_KEY, JSON.stringify(record));
       core.load();
@@ -51,7 +52,7 @@ await suite("tutorial-growth", async check => {
       const s = __remake.state;
       return [s.money, s.growth.xp, s.growth.today.learned.ch1_scout ?? 0];
     });
-    assert.deepEqual(after, [24000, receipt.growth.xp, 0]);
+    assert.deepEqual(after, [27000, receipt.growth.xp, 0]);
   }, phone);
 
   // #3819: 登録のついで（slot 0）も帰り道（slot 2）も、案内は PEPPERMINT → EDEN の順

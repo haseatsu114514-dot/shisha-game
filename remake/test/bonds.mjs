@@ -86,7 +86,7 @@ try {
         out.push({ charm, pts, times, got: state.affinity.naru, legacy: Math.round(pts * mult) * times, carry: state.affinityCarry.naru });
       }
     }
-    // 占い（一度だけ ×2。台帳 URA03）
+    // 占い（一度だけ ×1.5。#4197・台帳 URA03）
     let state = fresh();
     state.story.rio = spots.VISIT_SEQ.rio.length;
     state.fortune = { char: "rio" };
@@ -124,7 +124,7 @@ try {
     assert(Math.abs(r.got + r.carry - r.legacy * 0.85) < 1e-6, `not 85%: ${JSON.stringify(r)}`);
   }
   assert.deepEqual(pace.out.filter((r) => r.pts === 1).map((r) => r.got), [85, 85, 85, 85, 85]);
-  assert.equal(pace.fortune.got, 17); assert.equal(pace.fortune.left, undefined); assert.equal(pace.fortune.second, 17 + 8); // 20×0.85=17、次は8.5の0.5を持ち越す
+  assert.equal(pace.fortune.got, 12); assert.equal(pace.fortune.left, undefined); assert.equal(pace.fortune.second, 12 + 9); // 占いは×1.5（#4197）: 15×0.85=12.75 → 12（0.75を持ち越す）、次は8.5＋0.75=9.25 → 9
   assert.equal(pace.lover.shop, 9, "lover affinity must not grow outside private scenes");
   assert.equal(pace.lover.after, 9 + 5 + 1); assert.equal(pace.lover.carry, 0);
   assert.deepEqual(pace.waiting, { level: 5, answer: null, due: null });
@@ -646,6 +646,12 @@ try {
     const option = await window.T.waitFor('[data-test="opt-suyaki_tsumugi"]');
     const offered = !!option;
     option.click();
+    // 器具の後、初期のHMDではロータスのアルミを使うかを聞く（#4191）。使わずに進む
+    let finished = false; choosing.then(() => { finished = true; });
+    for (let i = 0; i < 100 && !finished; i++) {
+      document.querySelector('.bench [data-test="opt-false"]')?.click();
+      await new Promise((r) => setTimeout(r, 50));
+    }
     await choosing;
     const equipped = cs.equip.bowl;
     const status = await import("./js/daily/status.js");
@@ -859,7 +865,8 @@ try {
         vn.vnTest.choose = (id, labels) => id === "ch1_rio_bond_question" ? 1 - value : 0;
         const s = core.newGame();
         Object.assign(s, { phase: "daily", day: rules.RIO_AWAY_DAY === 5 ? 6 : 5, slot: 1, money: 10000, stamina: 100 });
-        s.met.rio = true; s.story.rio = 2; s.affinity.rio = 20; s.stats.charm = 10;
+        // 3回目の物語（15×0.85=12.75。#4197）で♥3（33）に届く手前から始める
+        s.met.rio = true; s.story.rio = 2; s.affinity.rio = 21; s.stats.charm = 10;
         const events = [], enter = vn.hooks.onEnter;
         vn.hooks.onEnter = (id, scene) => { events.push(id); enter?.(id, scene); };
         const used = (await stats.paidAction(() => shop.visitRio())).value;
@@ -874,7 +881,7 @@ try {
       assert.equal(result.after.stamina, 86, "one showroom visit, not two");
       assert.equal(result.after.story.rio, 3); assert.equal(result.after.visits.rio, 1);
       assert.equal(result.after.affinity.rio, 33);
-      assert(Math.abs(result.after.affinityCarry.rio - .6) < 1e-9);
+      assert(Math.abs(result.after.affinityCarry.rio - .75) < 1e-9); // 21 + 12.75 = 33.75
       assert.equal(result.after.romanceChoices.bond_q1_rio.value, value);
       assert(result.after.flags._rio_affinity_question_done && result.after.flags._rio_sample_received);
       assert.equal(result.after.flavorStock.nightside_earlgrey, 50);

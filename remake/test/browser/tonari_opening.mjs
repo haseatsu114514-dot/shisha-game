@@ -19,6 +19,8 @@ async function setup(page) {
     const opening = await import("./js/scenes/tonari-opening.js");
     core.newGame();
     core.config.textSpeed = 4;
+    // このスイートは未読の場面もSKIPで進める前提。SKIP既定が既読のみ（#4214 U-08）になったため、検査では「全部」に設定する。
+    core.config.skipSeenOnly = false;
     core.state.flags._intro_hajime = core.state.flags._intro_sumi = true;
     ui.clearScreen();
     window.O531 = { core, vn, data, opening, cues: [], lines: [], done: false };
@@ -105,6 +107,9 @@ await suite("tonari-opening", async check => {
       await assertClean(page);
       // Ordinary lines in another scene must not inherit the one-off exception.
       await page.evaluate(() => {
+        // SKIPは場面をまたいで保持される（#3558 項目7・2026-11-25）ため、手動で送る場面は開始前に明示的に止める。
+        const skipBtn = document.querySelector('[data-test="vn-skip"]');
+        if (skipBtn?.getAttribute("aria-pressed") === "true") skipBtn.click();
         O531.follow = O531.vn.play({ dialogue_id: "__after_hajime_intro", lines: [
           { speaker: "hajime", face: "normal", text: "いつもの一人称視点。" },
         ] });

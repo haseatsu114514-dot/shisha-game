@@ -37,7 +37,8 @@ async function stopAtPhoto(page) {
   });
   assert.equal(result.url, "img/cgs/cg_minto_cheki.webp"); assert.deepEqual(result.size, [1920, 1080]);
   assert(result.gallery.includes(id) && result.gallery.includes("cg_minto_first_cheki"));
-  assert.equal(result.money, 27000, "The actual accepted store invitation was not charged once");
+  // 料金は読み終えてから払う（#4192 読了後精算）。写真の場面ではまだ手元のまま。
+  assert.equal(result.money, 30000, "The store invitation is not charged before the scene is read");
 }
 
 await suite("minto-cheki-cg", async check => {
@@ -78,6 +79,7 @@ await suite("minto-cheki-cg", async check => {
       assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_slot1") === manualBefore), true);
       await page.locator('[data-test="vn-skip"]').click();
       await page.waitForFunction(() => K.core.state.slot === 1 && !!document.querySelector('[data-test="pin-minto"]'));
+      assert.equal(await page.evaluate(() => K.core.state.money), 27000, "The accepted store invitation is charged once after reading");
       await page.evaluate(() => { void K.gallery.openGallery(); });
       await page.locator('[data-test="gal-cg_minto_cheki"]').click();
       assert.match(await page.locator(".gal-viewer.show .gal-media-image").getAttribute("src"), /cg_minto_cheki\.webp/);
@@ -109,6 +111,7 @@ await suite("minto-cheki-cg", async check => {
       assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_slot2") === legacyBefore), true);
       await page.locator('[data-test="vn-skip"]').click();
       await page.waitForFunction(() => K.core.state.slot === 1 && !!document.querySelector('[data-test="pin-minto"]'));
+      assert.equal(await page.evaluate(() => K.core.state.money), 27000, "The accepted store invitation is charged once after reading");
       assert.equal(await page.evaluate(() => K.core.state.pendingInvite), null);
     }, options);
 

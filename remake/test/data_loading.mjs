@@ -34,7 +34,7 @@ function realJSON(url) {
 }
 const fixtureFetch = async (url) => ({ ok: true, status: 200, json: async () => realJSON(url) });
 
-// 起動時は41ファイル（casual_lime.json・巻頭ポエムの chapter_poems.json を含む）を読み、同時接続が8本を超えない。
+// 起動時は40ファイル（casual_lime.json・巻頭ポエムの chapter_poems.json を含む。旧バイトの接客台本 baito_events.json は TFL63 で廃止）を読み、同時接続が8本を超えない。
 const requests = [];
 let active = 0, maximum = 0;
 const all = await loader(async (url, options) => {
@@ -76,14 +76,15 @@ assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/b
 assert.equal(all.faceIconUrl("oneesan", null, { style: "classic" }), "img/ui/face_icons/face_minto_private.webp");
 assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/new/face_minto_private.webp");
 assert.equal(all.portraitInfo("oneesan", "normal").face, "ura_normal");
-assert.equal(requests.length, 41);
-assert.equal(new Set(requests).size, 41);
+assert.equal(requests.length, 40);
+assert.equal(new Set(requests).size, 40);
+assert(!requests.some((path) => path.endsWith("baito_events.json")), "旧バイトの接客台本は読まない（TFL63）");
 for (const file of ["hiyori", "cinema", "tournament_craft", "confession", "lover_events"]) {
   assert(!requests.includes(`../data/dialogue/${file}.json`));
 }
 assert.equal(maximum, 8);
 assert.equal(active, 0);
-assert.equal(progress.length, 41);
+assert.equal(progress.length, 40);
 assert.equal(all.DB.loverEventsLoaded, false);
 assert.equal(all.DB.dialogues.samechan_cinema_introduction, undefined);
 assert.equal(all.DB.dialogues.cinema_first_screening, undefined);
@@ -120,10 +121,7 @@ assert.equal(all.DB.lime.length, 239); // 139 + 王煙楼8・アダム2・クラ
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
-assert(all.DB.baito.some(event => event.id === "baito_tsumugi_art"), "つむぎの常連接客が起動時に除外された");
-for (const id of ["baito_tsumugi_01", "baito_minto_romance", "baito_ageha_romance"]) {
-  assert(!all.DB.baito.some(event => event.id === id), `未接続の物語イベントを一括解放しない: ${id}`);
-}
+assert.equal(all.DB.baito, undefined, "旧バイトの接客台本（いつものシフト）は廃止（TFL63）");
 assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loaded from real data");
 assert.equal(all.DB.characters.hiyori.name, "泡沫ひより");
 assert.equal(all.DB.characters.hiyori.reading, "うたかた ひより");
@@ -182,13 +180,13 @@ assert.deepEqual(flavorMakerProblems([
 const deferred = all.loadDeferredDialogues();
 assert.equal(all.loadDeferredDialogues(), deferred);
 await deferred;
-assert.equal(requests.length, 42);
+assert.equal(requests.length, 41);
 assert.equal(requests.at(-1), "../data/dialogue/hiyori.json");
 assert.equal(all.DB.hiyori.route.enabled, true);
 assert(all.DB.dialogues.hiyori_meeting);
 assert(all.DB.dialogues.hiyori_preview_gap.lines[0].inner);
 assert.equal(all.loadDeferredDialogues(), deferred);
-assert.equal(requests.length, 42);
+assert.equal(requests.length, 41);
 assert.equal(all.DB.dialogues.cinema_first_screening, undefined);
 assert.equal(all.DB.dialogues.tournament_craft_packed_intro, undefined);
 
@@ -198,7 +196,7 @@ assert.equal(all.loadCinemaDialogue(), cinema);
 const tournament = all.loadTournamentCraftDialogue();
 assert.equal(all.loadTournamentCraftDialogue(), tournament);
 await Promise.all([cinema, tournament]);
-assert.equal(requests.length, 44);
+assert.equal(requests.length, 43);
 assert(requests.includes("../data/dialogue/cinema.json"));
 assert(requests.includes("../data/dialogue/tournament_craft.json"));
 assert(all.DB.dialogues.samechan_cinema_introduction);
@@ -207,7 +205,7 @@ assert.equal(all.DB.dialogues.tournament_craft_packed_intro.lines[0].speaker, "p
 assert(all.DB.dialogues.tournament_craft_care_recovered.lines[0].text);
 assert.equal(all.loadCinemaDialogue(), cinema);
 assert.equal(all.loadTournamentCraftDialogue(), tournament);
-assert.equal(requests.length, 44);
+assert.equal(requests.length, 43);
 
 for (const [file, method, dialogue] of [
   ["cinema", "loadCinemaDialogue", "cinema_first_screening"],
@@ -349,7 +347,7 @@ for (const phase of ["headers", "body"]) {
   assert.equal(started.length, startedAtFailure);
 }
 
-console.log("[remake data] 41 boot JSON files, deferred dialogues and retry, max 8 requests, gallery catalog, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+console.log("[remake data] 40 boot JSON files, deferred dialogues and retry, max 8 requests, gallery catalog, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
 
 assert.equal(all.DB.limeTemplates.sumi_baito.accept_reply.stamp, "st_sumi_ack");
 assert.equal(all.DB.limeTemplates.sumi_baito.reasons.length, 3);

@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
-import {createSet,makeDeck,playDeck,pauseMix,resumeMix,beatAt,phaseError,gains,updateSet,nudgeDeck,SYNC_BAND,SNAP_BAND,DRIFT_BEATS,SYNC_FLOOR,SLIP_FLOOR,quality,floorStep,scoreTransition,scoreFromErr,scoreFromRatio,rankFromScore,scoreSet,lowCutDb,LOW_CUT_DB,PHRASE,LEAD,GRACE,FOLLOW_BAND,toward,gradeOf,ENTRY_BANDS,PHONES_ALLOWANCE,dancerPose,guideAt,keyMatch,energyMatch,pickRating,chooseTrack,REQUESTS,PICK_FLOOR,GRADE_FLOOR,RANK_FLOOR,FOLLOW_FLOOR,FLOOR_WARM,FOLLOW_SWEET,MOODS,moodOf,followHint,QUICK_GRID,quickEntry,RANK_LINES} from '../previews/dj/model.mjs';
+import {cancelReserve,createSet,makeDeck,playDeck,pauseMix,resumeMix,beatAt,phaseError,gains,updateSet,nudgeDeck,SYNC_BAND,SNAP_BAND,DRIFT_BEATS,SYNC_FLOOR,SLIP_FLOOR,quality,floorStep,scoreTransition,scoreFromErr,scoreFromRatio,rankFromScore,scoreSet,lowCutDb,LOW_CUT_DB,PHRASE,LEAD,GRACE,FOLLOW_BAND,toward,gradeOf,ENTRY_BANDS,PHONES_ALLOWANCE,dancerPose,guideAt,keyMatch,energyMatch,pickRating,chooseTrack,REQUESTS,PICK_FLOOR,GRADE_FLOOR,RANK_FLOOR,FOLLOW_FLOOR,FLOOR_WARM,FOLLOW_SWEET,MOODS,moodOf,followHint,QUICK_GRID,quickEntry,RANK_LINES} from '../previews/dj/model.mjs';
 import {FEEL,applyFeelOverrides} from '../previews/dj/feel.mjs';
 import {DJSfx} from '../previews/dj/sfx.mjs';
 import {renderTrack,peakAt} from '../previews/dj/synth.mjs';
@@ -12,14 +12,16 @@ import {TRACKS,SETS,buildTrackData,buildBufferTrackData,peakAt as fullPeakAt,pre
 let groups=0;async function check(name,fn){await fn();groups++;console.log('PASS '+name);}
 const near=(a,b,e=1e-7)=>assert(Math.abs(a-b)<e,`${a} != ${b}`);
 const S1=SETS[0],S2=SETS[1],S3=SETS[2];
+// 皿の仕組みの検査は、いつもズレる版で確かめる（本物のセットは DJR03 から「たまにズレる」）。数値は以前の SET 2・3 と同じ
+const SLIP2={...S2,drift:{windows:[[6,20]],size:[.12,.2]}},SLIP3={...S3,drift:{windows:[[4,11],[17,25]],size:[.16,.3]}};
 const sec=(d,beats)=>beats*60/d.bpm; // seconds for beats on a deck
 
 await check('sets: an opening pair plus picks up to count; every track arrives at the playing tempo (no tempo faders, DJG); SET 1 never slips, SET 2 once, SET 3 twice',()=>{
  const m=createSet(S1);assert.deepEqual(m.decks.map(d=>d.bpm),[120,120]);assert.deepEqual(m.decks.map(d=>d.track),['danceMonster','digitalLemonade']);assert.deepEqual(m.played,['danceMonster','digitalLemonade']);assert.equal(m.count,3);assert.equal(m.phase,'idle');near(m.floor,.5);
  const m3=createSet(S3);assert.deepEqual(m3.decks.map(d=>d.bpm),[122,122],'SET 3: the 120 BPM track is brought up to 122');assert.deepEqual(m3.decks.map(d=>d.nativeBpm),[122,120]);
  assert.equal(SETS.length,3);assert.deepEqual(SETS.map(s=>s.count),[3,4,4]);for(const s of SETS){assert.equal(s.tracks.length,2);for(const k of s.tracks)assert(TRACKS[k]);assert(!('detune' in s));}
- assert.equal(S1.drift,null);assert.deepEqual(S2.drift,{windows:[[6,20]],size:[.12,.2]});assert.deepEqual(S3.drift,{windows:[[4,11],[17,25]],size:[.16,.3]});
- for(const s of SETS)for(const [from,to] of s.drift?.windows||[]){assert(from>=2&&to+DRIFT_BEATS<=PHRASE-2,'a slip settles with beats left to fix it');assert(s.drift.size[0]>SYNC_BAND&&s.drift.size[1]<.5);}
+ assert.equal(S1.drift,null);assert.deepEqual(S2.drift,{windows:[[6,20]],size:[.1,.16],chance:.25});assert.deepEqual(S3.drift,{windows:[[4,11],[17,25]],size:[.12,.22],chance:.25});
+ for(const s of [...SETS,SLIP2,SLIP3])for(const [from,to] of s.drift?.windows||[]){assert(from>=2&&to+DRIFT_BEATS<=PHRASE-2,'a slip settles with beats left to fix it');assert(s.drift.size[0]>SYNC_BAND&&s.drift.size[1]<.5);}
  for(const t of Object.values(TRACKS)){assert.match(t.camelot,/^(1[0-2]|[1-9])[AB]$/);assert(Number.isInteger(t.energy)&&t.energy>=1&&t.energy<=5);}
 });
 await check('decks: a track plays at its own tempo unless it is brought in at another; BPM rounds to 0.01',()=>{
@@ -80,6 +82,23 @@ await check('guide line: eases 0→1 over the 8 bars; one check per beat, combo,
  assert(updateSet(m2,sec(b,33.5)).follow.hit,'B→A follows the mirrored line');
  const f=createSet(S1);playDeck(f,0,0);updateSet(f,t0);playDeck(f,1,t0);const floor=f.floor;f.mix=guideAt(1/32);updateSet(f,t0+sec(a,1.01));assert(f.floor>floor,'a hit lifts the floor');
 });
+await check('予約の取り消し（DJR01）: ▶ held for the line can be taken back by pressing it again before the line; the cue is open again and the heat step is undone',()=>{
+ const m=createSet(S1);playDeck(m,0,0);const a=m.decks[0],t0=sec(a,32),early=t0-sec(a,1.5);updateSet(m,early);const floor=m.floor;
+ assert(playDeck(m,1,early));assert(m.cue.pressed.reserved);assert.equal(m.phase,'mix');assert(m.decks[1].playing);assert(updateSet(m,early+.01).reserved);
+ assert.equal(cancelReserve(m,0,early+.02),false,'the playing deck has nothing to take back');
+ assert(cancelReserve(m,1,early+.02));assert.equal(m.phase,'cue');assert.equal(m.cue.pressed,null);assert(!m.decks[1].playing);assert.equal(m.fader,null);assert.equal(m.lastPlay,null);near(m.floor,floor,1e-3);
+ const v=updateSet(m,early+.05);assert(!v.reserved);assert.equal(v.mode,'cue');
+ assert(playDeck(m,1,t0),'pressed again on the line: it comes in');assert.equal(m.lastPlay.grade,'PERFECT');assert.equal(m.lastPlay.reserved,false);
+ assert.equal(cancelReserve(m,1,t0+sec(a,.5)),false,'once the line has come the track is in: nothing to take back');
+ const late=createSet(S1);playDeck(late,0,0);updateSet(late,t0+sec(a,1));assert(playDeck(late,1,t0+sec(a,1)));assert.equal(cancelReserve(late,1,t0+sec(a,1.1)),false,'a late ▶ was never held');
+});
+await check('フェーダーに触るまで「ぴったり」は出ない（DJR02）: a fader left alone on the line is not a hit (no combo, nothing shown); once the line leaves it, it misses as before',()=>{
+ const m=createSet(S1);playDeck(m,0,0);const a=m.decks[0],t0=sec(a,32);updateSet(m,t0);playDeck(m,1,t0);
+ let shown=[];for(let b=1;b<=12;b++){const v=updateSet(m,t0+sec(a,b+.01));if(v.follow)shown.push(v.follow);}
+ assert(!m.fader.touched);assert.equal(m.fader.hits,0,'never a hit while untouched');assert.equal(m.fader.best,0);assert(shown.length>0&&shown.every(f=>!f.hit),'the beats it falls off the line are shown as misses');
+ assert(shown[0].beat>=5,`the first beats on the line show nothing (first shown: beat ${shown[0].beat})`);assert.equal(m.fader.checks,12,'every beat still counts');
+ m.mix=guideAt(13/32);let v=updateSet(m,t0+sec(a,13.01));assert(m.fader.touched,'moved: touched');assert.deepEqual(v.follow,{beat:13,hit:true,combo:1});
+});
 await check('transition end: score recorded, outgoing deck stops and empties, then 選曲 offers two fresh tracks',()=>{
  const m=createSet(S1,()=>0);playDeck(m,0,0);const a=m.decks[0],t0=sec(a,32);updateSet(m,t0);playDeck(m,1,t0+.01);
  for(let i=1;i<=32;i++){m.mix=guideAt(i/32);updateSet(m,t0+sec(a,i)-.001);}
@@ -131,12 +150,22 @@ function rideSlips(m,fix=null){
 await check('ズレ (DJG): the plan of a transition. One slip per window on a whole beat, either way, inside the size range; SET 1 has none',()=>{
  const signs=new Set();
  for(let seed=1;seed<=120;seed++){let x=seed;const rng=()=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return x/4294967296;};
-  for(const set of SETS){const m=createSet(set,rng);playDeck(m,0,0);const t0=sec(m.decks[0],32);updateSet(m,t0);playDeck(m,1,t0);const plan=m.fader.drifts,w=set.drift?.windows||[];
+  for(const set of [S1,SLIP2,SLIP3]){const m=createSet(set,rng);playDeck(m,0,0);const t0=sec(m.decks[0],32);updateSet(m,t0);playDeck(m,1,t0);const plan=m.fader.drifts,w=set.drift?.windows||[];
    assert.equal(plan.length,w.length,set.name);plan.forEach((d,i)=>{assert(Number.isInteger(d.at)&&d.at>=w[i][0]&&d.at<=w[i][1],`${set.name} at ${d.at}`);const size=Math.abs(d.size);assert(size>=set.drift.size[0]&&size<=set.drift.size[1]);signs.add(Math.sign(d.size));assert(!d.started&&!d.ended);});}}
  assert.deepEqual([...signs].sort(),[-1,1],'the track runs ahead in some transitions and falls behind in others');
 });
+await check('ズレは基本起きない（DJR03・2026-11-25 オーナー「拍のズレを基本発生させない」）: SET 2・3 の窓は4回に1回くらいだけズレる。SET 1 は一度もズレない',()=>{
+ const count={};
+ for(let seed=1;seed<=800;seed++){let x=seed*0x9e3779b9>>>0;const rng=()=>{x=(x+0x6d2b79f5)>>>0;let t=Math.imul(x^x>>>15,x|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296;}; // mulberry32
+  for(const set of SETS){const m=createSet(set,rng);playDeck(m,0,0);const t0=sec(m.decks[0],32);updateSet(m,t0);playDeck(m,1,t0);
+   const c=count[set.name]||(count[set.name]={mixes:0,slips:0,none:0});c.mixes++;c.slips+=m.fader.drifts.length;if(!m.fader.drifts.length)c.none++;
+   for(const d of m.fader.drifts){const size=Math.abs(d.size);assert(size>=set.drift.size[0]&&size<=set.drift.size[1]);}}}
+ assert.equal(count['SET 1'].slips,0);
+ for(const name of ['SET 2','SET 3']){const c=count[name],windows=SETS.find(s=>s.name===name).drift.windows.length,rate=c.slips/(c.mixes*windows);
+  assert(rate>.18&&rate<.32,`${name}: a window slips about a quarter of the time (${rate})`);assert(c.none/c.mixes>.5,`${name}: most mixes go through in time (${c.none}/${c.mixes})`);}
+});
 await check('ズレ: builds over 3 beats (the host is told to change the rate twice), then stays until it is fixed; beats out of time are counted and the sound cools the room',()=>{
- const m=createSet(S2,()=>0);playDeck(m,0,0);const a=m.decks[0],b=m.decks[1],t0=sec(a,32);updateSet(m,t0);playDeck(m,1,t0);
+ const m=createSet(SLIP2,()=>0);playDeck(m,0,0);const a=m.decks[0],b=m.decks[1],t0=sec(a,32);updateSet(m,t0);playDeck(m,1,t0);
  assert.deepEqual(m.fader.drifts.map(d=>[d.at,d.size]),[[6,-.12]],'rng 0: at beat 6, falling 0.12 beat behind');
  const at=into=>t0+sec(a,into);let v;
  for(let i=1;i<=5;i++){m.mix=guideAt(i/32);v=updateSet(m,at(i+.01));assert.equal(v.retuned,null);assert(!v.sync.off);near(v.sync.error,0,1e-9);}
@@ -150,7 +179,7 @@ await check('ズレ: builds over 3 beats (the host is told to change the rate tw
  m.mix=.5;assert(quality(m,at(14.5))<.75,'two tracks rubbing sound worse');const clean=createSet(S1);playDeck(clean,0,0);updateSet(clean,t0);playDeck(clean,1,t0);clean.mix=.5;near(quality(clean,at(14.5)),1);
 });
 await check('皿 (DJG): turning the right way brings the track back; QUANTIZE catches a turn that lands close or passes through; the wrong way takes it further; in time nothing moves',()=>{
- const slipped=()=>{const m=createSet(S2,()=>0);playDeck(m,0,0);const a=m.decks[0],t0=sec(a,32);updateSet(m,t0);playDeck(m,1,t0);for(let i=1;i<=10;i++){m.mix=guideAt(i/32);updateSet(m,t0+sec(a,i+.01));}return {m,now:t0+sec(a,10.3),a,b:m.decks[1]};};
+ const slipped=()=>{const m=createSet(SLIP2,()=>0);playDeck(m,0,0);const a=m.decks[0],t0=sec(a,32);updateSet(m,t0);playDeck(m,1,t0);for(let i=1;i<=10;i++){m.mix=guideAt(i/32);updateSet(m,t0+sec(a,i+.01));}return {m,now:t0+sec(a,10.3),a,b:m.decks[1]};};
  let {m,now,a,b}=slipped();near(phaseError(a,b,now),-.12,2e-3);
  assert.equal(nudgeDeck(m,0,.05,now),null,'the playing deck has nothing to fix');assert.equal(nudgeDeck(m,1,0,now),null);assert.equal(nudgeDeck(m,1,NaN,now),null);near(phaseError(a,b,now),-.12,2e-3);
  let r=nudgeDeck(m,1,-.05,now);assert.equal(r.fixed,false);near(r.error,-.17,2e-3);                                   // the wrong way
@@ -166,16 +195,16 @@ await check('皿 (DJG): turning the right way brings the track back; QUANTIZE ca
 await check('ズレ → 採点: fixed within a beat or two the ビート item stays 100, left alone it falls to 30; every slip can be fixed (SET 2・3, 60 seeds)',()=>{
  const quick=(v,now)=>{};
  for(let seed=1;seed<=60;seed++){
-  for(const set of [S2,S3]){
+  for(const set of [SLIP2,SLIP3]){
    let x=seed;const rng=()=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return x/4294967296;};
    const m=createSet(set,rng,quickEntry());playDeck(m,0,0);const {v,log}=rideSlips(m,(view,now)=>{const r=nudgeDeck(m,view.sync.deck,-view.sync.error,now);assert(r&&r.fixed,'turning back by the error lands on the beat');});
    const t=v.transition;assert(t,`${set.name} seed ${seed}`);assert.equal(t.drifts,set.drift.windows.length);assert.equal(t.fixes,t.drifts);assert.equal(log.slipped,t.drifts);assert(log.retuned>=t.drifts&&log.retuned<=t.drifts*2,'a slip caught while it builds stops there');
    assert(log.offBeats<=t.drifts,'caught on the first half beat it was out');assert.equal(t.parts[0],100,`ビート ${t.sync}`);assert.equal(t.parts[2],100);assert.equal(t.rank,'S');assert.equal(m.decks[m.master].bpm,m.decks[1-m.master]?.bpm??m.decks[m.master].bpm);
   }
  }
- const left=createSet(S2,()=>0,quickEntry());playDeck(left,0,0);const alone=rideSlips(left).v.transition;assert.deepEqual([alone.drifts,alone.fixes],[1,0]);assert.equal(alone.parts[0],30,`left alone from beat 8 on: ${alone.sync}`);assert.equal(alone.parts[2],100);assert.notEqual(alone.rank,'S');
- const slow=createSet(S2,()=>0,quickEntry());playDeck(slow,0,0);let waited=0;const late=rideSlips(slow,(view,now)=>{if(++waited>=10)nudgeDeck(slow,view.sync.deck,-view.sync.error,now);}).v.transition;assert.equal(late.parts[0],85,`five beats out of time: ${late.sync}`);
- const fixed=createSet(S2,()=>0,quickEntry());playDeck(fixed,0,0);rideSlips(fixed,(view,now)=>nudgeDeck(fixed,view.sync.deck,-view.sync.error,now));assert(fixed.floor>left.floor+.1,`fixing keeps the room warm: ${fixed.floor} vs ${left.floor}`);
+ const left=createSet(SLIP2,()=>0,quickEntry());playDeck(left,0,0);const alone=rideSlips(left).v.transition;assert.deepEqual([alone.drifts,alone.fixes],[1,0]);assert.equal(alone.parts[0],30,`left alone from beat 8 on: ${alone.sync}`);assert.equal(alone.parts[2],100);assert.notEqual(alone.rank,'S');
+ const slow=createSet(SLIP2,()=>0,quickEntry());playDeck(slow,0,0);let waited=0;const late=rideSlips(slow,(view,now)=>{if(++waited>=10)nudgeDeck(slow,view.sync.deck,-view.sync.error,now);}).v.transition;assert.equal(late.parts[0],85,`five beats out of time: ${late.sync}`);
+ const fixed=createSet(SLIP2,()=>0,quickEntry());playDeck(fixed,0,0);rideSlips(fixed,(view,now)=>nudgeDeck(fixed,view.sync.deck,-view.sync.error,now));assert(fixed.floor>left.floor+.1,`fixing keeps the room warm: ${fixed.floor} vs ${left.floor}`);
  const s1=createSet(S1,()=>0,quickEntry());playDeck(s1,0,0);const r1=rideSlips(s1);assert.deepEqual([r1.log.slipped,r1.log.retuned,r1.v.transition.parts[0]],[0,0,100]);
 });
 await check('scores: thresholds, ビート = share of beats in time, fader = share of beats on the guide line (late 60, never 30), ranks, FLOOR bonus',()=>{
@@ -405,8 +434,8 @@ await check('audio: slip and platter keep their timing; selection prefetches jus
  const a=new DJAudio(Context,{setIndex:1,loadTrack,loadPreview,rng:()=>0});await a.play(0);const c=a.context,A=a.mix.decks[0];
  c.currentTime=sec(A,32);a.update();await a.play(1);c.currentTime=sec(A,34);a.update();assert.deepEqual(loads,['ravingEnergy','cutAndDry']);
  const first=a.voices[1],rate=first.source.playbackRate;near(rate.value,1);assert.equal(a.nudge(1,.1),null,'in time: the platter moves nothing');assert.equal(a.voices[1],first);
- c.currentTime=sec(A,38.01);a.update();near(rate.value,1-.12/DRIFT_BEATS,1e-9);assert.equal(a.voices[1],first,'the rate changes on the playing voice');
- c.currentTime=sec(A,41.01);a.update();near(rate.value,1);near(phaseError(A,a.mix.decks[1],c.currentTime),-.12,2e-3);
+ c.currentTime=sec(A,38.01);a.update();near(rate.value,1-.1/DRIFT_BEATS,1e-9);assert.equal(a.voices[1],first,'the rate changes on the playing voice');
+ c.currentTime=sec(A,41.01);a.update();near(rate.value,1);near(phaseError(A,a.mix.decks[1],c.currentTime),-.1,2e-3); // SET 2 slips .10〜.16 (DJR03); rng 0 takes the smallest
  let r=a.nudge(1,.04);assert.equal(r.fixed,false);assert.notEqual(a.voices[1],first,'a turn re-seeks the incoming deck');assert(first.stopped);const second=a.voices[1];
  r=a.nudge(1,.3);assert.equal(r.fixed,true);assert.notEqual(a.voices[1],second);near(phaseError(A,a.mix.decks[1],c.currentTime),0,1e-9);assert.equal(a.nudge(0,.1),null);
  a.setMix(1);for(let i=42;i<=64;i++){c.currentTime=sec(A,i);a.update();}

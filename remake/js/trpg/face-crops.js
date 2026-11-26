@@ -2,7 +2,7 @@
 // for every character (and the same numbers used to write costumes/frames.json).
 import { resolvePortrait } from "../core/portrait-resolver.js";
 import { portraitStyle } from "../core/portrait-style.js";
-import { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, NPC_FRAMES, EXTRA_PORTRAIT_FRAMES, PORTRAIT_FACE_SHIFTS } from "./face-crops-data.js";
+import { COSTUME_PORTRAIT_BOUNDS, FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, NPC_FRAMES, EXTRA_PORTRAIT_FRAMES, PORTRAIT_FACE_SHIFTS } from "./face-crops-data.js";
 
 export { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, NPC_FRAMES, EXTRA_PORTRAIT_FRAMES, PORTRAIT_FACE_SHIFTS };
 
@@ -171,11 +171,21 @@ export function npcBustStyle(id) {
   };
 }
 
-function anchoredFrameStyle({ cx, eyeY, widthPx, srcW = 896, srcH = 1200, faceFrac, eyeFrac, forImg = false }) {
+function anchoredFrameStyle({ cx, eyeY, widthPx, srcW = 896, srcH = 1200, faceFrac, eyeFrac, forImg = false,
+  horizontalBounds, crownTop = eyeY, boxAspect = 0 }) {
+  let scale = faceFrac / widthPx;
+  const crownHeight = (eyeY - crownTop) * boxAspect;
+  if (crownHeight * scale > eyeFrac) scale = (eyeFrac - 0.02) / crownHeight;
+  if (horizontalBounds) {
+    const [left, right] = horizontalBounds;
+    scale = Math.min(scale, 0.96 / (right - left));
+    const halfWidth = 0.48 / scale;
+    cx = Math.max(right - halfWidth, Math.min(left + halfWidth, cx));
+  }
   const style = {
     position: "absolute",
     left: "50%",
-    width: `${(faceFrac * srcW / widthPx) * 100}%`,
+    width: `${scale * srcW * 100}%`,
     maxWidth: "none",
     top: `${eyeFrac * 100}%`,
     transform: `translate(-${(cx / srcW) * 100}%, -${(eyeY / srcH) * 100}%)`,
@@ -185,7 +195,8 @@ function anchoredFrameStyle({ cx, eyeY, widthPx, srcW = 896, srcH = 1200, faceFr
 }
 
 /** Frame any role costume bust (card or speaker img) at uniform cheek scale and eye line. */
-export function bustFrameStyle(face, id, typical = null, { faceFrac = BUST.face, eyeFrac = BUST.eye, forImg = false } = {}) {
+export function bustFrameStyle(face, id, typical = null,
+  { faceFrac = BUST.face, eyeFrac = BUST.eye, forImg = false, costumeKey, boxAspect = 0 } = {}) {
   return anchoredFrameStyle({
     cx: face.cx,
     eyeY: face.eye_y,
@@ -193,10 +204,14 @@ export function bustFrameStyle(face, id, typical = null, { faceFrac = BUST.face,
     faceFrac,
     eyeFrac,
     forImg,
+    horizontalBounds: COSTUME_PORTRAIT_BOUNDS[costumeKey],
+    crownTop: face.figtop,
+    boxAspect,
   });
 }
 
 /** Frame a standing portrait img inside any rectangular box by eye line and face center. */
-export function standingFrameStyle({ cx, eyeY, w, srcW = 896, srcH = 1200 }, { faceFrac = 0.245, eyeFrac = 0.35, forImg = true } = {}) {
-  return anchoredFrameStyle({ cx, eyeY, widthPx: w, srcW, srcH, faceFrac, eyeFrac, forImg });
+export function standingFrameStyle({ cx, eyeY, w, srcW = 896, srcH = 1200 },
+  { faceFrac = 0.245, eyeFrac = 0.35, forImg = true, horizontalBounds } = {}) {
+  return anchoredFrameStyle({ cx, eyeY, widthPx: w, srcW, srcH, faceFrac, eyeFrac, forImg, horizontalBounds });
 }

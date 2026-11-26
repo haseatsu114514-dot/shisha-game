@@ -1,7 +1,7 @@
 // The debug menu calls the current game implementations directly. Results live only in memory.
 import { config, newState } from "../core/state.js";
 import { bgmDuckLevel, duckBgm, playBgm, requestedBgm, stopBgm } from "../core/audio.js";
-import { DJ_SETS } from "../minigames/dj.js";
+import { DJ_SETS, djUrl } from "../minigames/dj.js";
 import { CAMEL_CUPS } from "../minigames/camel-race-model.js";
 
 const GAMES = [
@@ -16,12 +16,20 @@ const GAMES = [
     if (signal.aborted) return;
     return runCamelRace({ host, signal, cups: CAMEL_CUPS.map(cup => cup.id) });
   } },
+  // 砂丘はヌールにもなる（好敵手）にも挑める（本編ではヌールに勝つと来る。2026-11-25 オーナー「デバッグからなると対戦できるようにしたい」）
   { id: "desert", label: "DESERT RIDE（砂丘）", start: async (host, signal) => {
     const { runDesertRide } = await import("../minigames/desert-ride.js");
     if (signal.aborted) return;
-    return runDesertRide({ host, signal });
+    return runDesertRide({ host, signal, rivals: ["noor", "naru"] });
   } },
-  ...DJ_SETS.map(set => ({ id: `dj-${set.id}`, label: `DJ ${set.name}`, start: async (host, signal) => {
+  { id: "desert-naru", label: "DESERT RIDE（なると勝負）", start: async (host, signal) => {
+    const { runDesertRide } = await import("../minigames/desert-ride.js");
+    if (signal.aborted) return;
+    return runDesertRide({ host, signal, rivals: ["noor", "naru"], startRival: "naru" });
+  } },
+  // DJ だけ iframe で開く。iPhone の Safari では、拡大縮小（transform）された #stage の中にある iframe が
+  // 真っ黒に描かれてしまうことがあるため、デバッグでは stage の外（body 直下・画面いっぱい）に出して開く。
+  ...DJ_SETS.map(set => ({ id: `dj-${set.id}`, label: `DJ ${set.name}`, fixed: true, djSet: set.id, start: async (host, signal) => {
     const { runDjSet } = await import("../minigames/dj.js");
     if (signal.aborted) return;
     return runDjSet({ host, signal, set: set.id, muted: !!(config.mute || config.muted), volume: config.bgmVolume });
@@ -117,8 +125,16 @@ export function mountMiniGameDebug() {
       current = controller;
       const host = document.createElement("div");
       host.dataset.test = "debug-minigame-host";
-      Object.assign(host.style, { position: "absolute", inset: "0", zIndex: "100", background: "#100d18" });
-      if (game.id !== "tetsuko") stage.append(host);
+      if (game.fixed) {
+        // stage の拡大縮小の外に出す。ノッチ回避の幅は、stage 上のpxではなく画面のpxで渡す（dj.js の枠が参照する）。
+        Object.assign(host.style, { position: "fixed", inset: "0", zIndex: "2147482000", background: "#100d18" });
+        host.style.setProperty("--stage-safe-l", "env(safe-area-inset-left, 0px)");
+        host.style.setProperty("--stage-safe-r", "env(safe-area-inset-right, 0px)");
+        document.body.append(host);
+      } else {
+        Object.assign(host.style, { position: "absolute", inset: "0", zIndex: "100", background: "#100d18" });
+        if (game.id !== "tetsuko") stage.append(host);
+      }
       const close = document.createElement("button");
       close.type = "button";
       const returnsToTitle = screenBefore === "title" || screenLost;
@@ -167,8 +183,31 @@ export function mountMiniGameDebug() {
       panel.prepend(close);
       if (toggle) toggle.textContent = "DBG・終了";
       panel.hidden = true;
+      // DJ の iframe が読み込まれなかった場合の見張り: 真っ黒なまま放置せず、直接開くリンクを出す。
+      let watchTimer = null;
+      if (game.djSet) {
+        const deadline = Date.now() + 10000;
+        const checkFrame = () => {
+          if (controller.signal.aborted || !host.isConnected) return;
+          let loaded = false;
+          try { loaded = !!host.querySelector("iframe")?.contentDocument?.querySelector("#dj-stage"); } catch { loaded = false; }
+          if (loaded) return;
+          if (Date.now() < deadline) { watchTimer = setTimeout(checkFrame, 500); return; }
+          host.replaceChildren();
+          const note = document.createElement("p");
+          note.style.cssText = "color:#f4f0e6;font:14px/1.6 system-ui,sans-serif;padding:24px 16px 8px;margin:0";
+          note.textContent = "DJ の画面を読み込めませんでした。通信状態を確認するか、下のリンクから直接開いてください。";
+          const link = document.createElement("a");
+          link.href = djUrl(game.djSet, { muted: !!(config.mute || config.muted), volume: config.bgmVolume });
+          link.textContent = "DJ を直接開く";
+          link.style.cssText = "color:#a6e9e4;font:700 15px system-ui,sans-serif;padding:8px 16px";
+          host.append(note, link);
+        };
+        watchTimer = setTimeout(checkFrame, 500);
+      }
       try { await game.start(host, controller.signal); }
-      catch (error) { if (!controller.signal.aborted) { host.textContent = `開始できませんでした: ${error.message}`; if (!host.isConnected) stage.append(host); } return; }
+      catch (error) { if (!controller.signal.aborted) { host.textContent = `開始できませんでした: ${error.message}`; if (!host.isConnected) (game.fixed ? document.body : stage).append(host); } return; }
+      finally { if (watchTimer) clearTimeout(watchTimer); }
       if (current === controller && !controller.signal.aborted) close.click();
     };
     row.append(button);

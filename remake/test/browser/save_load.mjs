@@ -59,7 +59,9 @@ await suite("save-load", async check => {
   }, { serviceWorkers: "block" });
 
   await check("title-sees-autosave-from-another-tab", async page => {
+    const resume = page.locator('[data-test="title-continue"]');
     const load = page.locator('[data-test="title-load"]');
+    assert(await resume.isDisabled());
     assert(await load.isDisabled());
     const writer = await page.context().newPage();
     try {
@@ -71,8 +73,9 @@ await suite("save-load", async check => {
         core.save();
         return localStorage.getItem(core.SAVE_SLOTS[0].key);
       });
+      await page.locator('[data-test="title-continue"]:enabled').waitFor();
       await page.locator('[data-test="title-load"]:enabled').waitFor();
-      assert.match(await load.innerText(), /DAY 7/);
+      assert.match(await resume.locator(".ti-note").innerText(), /DAY 7/);
       await page.locator('[data-test="title-new"]').click();
       await page.locator('[data-test="cancel-new"]').click();
       assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), saved);
@@ -92,7 +95,7 @@ await suite("save-load", async check => {
     }
   });
 
-  await check("one-manual-slot-and-retired-data-survive-reopen", async page => {
+  await check("three-manual-slots-keep-slot-one-and-retired-data", async page => {
     await prepare(page);
     const retired = await page.evaluate(async () => {
       const { core } = QA;
@@ -108,8 +111,12 @@ await suite("save-load", async check => {
     });
     const labels = async () => page.locator(".save-slot .ss-info b").allTextContents();
     await page.locator('[data-test="title-load"]').click();
-    assert.equal(await page.locator(".save-slot").count(), 2);
-    assert.equal(await page.locator('[data-test="slot-2"]').count(), 0);
+    assert.equal(await page.locator(".save-slot").count(), 4);
+    for (const index of [2, 3]) {
+      const slot = page.locator(`[data-test="slot-${index}"]`);
+      assert.match(await slot.innerText(), new RegExp(`スロット ${index}.*空き`, "s"));
+      assert(await slot.isDisabled());
+    }
     assert.deepEqual(await page.locator(".ss-phase").allTextContents(), ["初日", "初日終了"]);
     const captions = await labels();
     for (const caption of captions) assert.match(caption, /第2章.*DAY 1/);
@@ -117,6 +124,66 @@ await suite("save-load", async check => {
     await page.locator('[data-test="title-load"]').click();
     assert.deepEqual(await labels(), captions);
     assert.deepEqual(await page.evaluate(() => ["suien_remake_slot2", "suien_remake_slot3"].map(key => localStorage.getItem(key))), retired);
+  });
+
+  await check("continue-loads-latest-and-log-survives-only-same-save", async page => {
+    await prepare(page);
+    const button = id => page.locator(`[data-test="${id}"]`);
+    const map = page.locator("#screen .map:not(.done)");
+    const text = "同じセーブの会話ログの検査行";
+    const olderMoney = 12345;
+    await page.evaluate(async olderMoney => {
+      const { core } = QA;
+      (await import("./js/vn/engine.js")).vnTest.turbo = true;
+      const values = [
+        [0, { day: 5, savedAt: 1 }],
+        [2, { money: olderMoney, savedAt: 2 }],
+        [3, { savedAt: 3 }],
+      ];
+      for (const [index, changes] of values) {
+        localStorage.setItem(core.SAVE_SLOTS[index].key, JSON.stringify({ ...core.state, ...changes }));
+      }
+      (await import("./js/scenes/title.js")).showTitle();
+    }, olderMoney);
+    const resume = button("title-continue");
+    assert.match(await resume.locator(".ti-note").innerText(), /DAY 6/);
+    await resume.click();
+    await map.waitFor({ timeout: 30000 });
+    assert.equal(await page.locator(".saveload-modal").count(), 0);
+    assert.equal(await page.evaluate(() => QA.core.state.money), 45678);
+    assert.equal(await page.evaluate(() => QA.core.state.day), 6);
+
+    await page.evaluate(async text => {
+      const { play } = await import("./js/vn/engine.js");
+      await play({ dialogue_id: "qa_pack20_reload_log", lines: [{ text }] });
+    }, text);
+    const hasLogLine = () => page.evaluate(async text => {
+      const { backlog } = await import("./js/vn/engine.js");
+      return backlog().some(line => line.text === text);
+    }, text);
+    assert(await hasLogLine());
+
+    const returnToTitle = async () => {
+      await button("hud-menu").click();
+      await button("menu-tab-system").click();
+      await Promise.all([page.waitForEvent("load"), button("menu-title").click()]);
+      await button("title-new").waitFor({ timeout: 30000 });
+      await page.locator("#boot").waitFor({ state: "detached" });
+    };
+    await returnToTitle();
+    await button("title-load").click();
+    await button("slot-3").click();
+    await map.waitFor({ timeout: 30000 });
+    assert(await hasLogLine(), "the original manual save restores the existing conversation log");
+
+    const loadMoney = index => page.evaluate(async index => {
+      const core = await import("./js/core/state.js");
+      return core.loadFromSlot(core.SAVE_SLOTS[index].key)?.money;
+    }, index);
+    assert.equal(await loadMoney(0), 45678);
+    assert(await hasLogLine(), "the same autosave keeps the existing conversation log");
+    assert.equal(await loadMoney(2), olderMoney);
+    assert.equal(await hasLogLine(), false, "a different snapshot from the same cycle clears the conversation log");
   });
 
   await check("chapter-five-same-day-slots-name-the-card-before-loading", async page => {
@@ -195,11 +262,11 @@ await suite("save-load", async check => {
         oldStats: document.querySelectorAll(".ss-stat, .ss-stat i").length,
         background: getComputedStyle(document.querySelector(".save-slot")).backgroundColor };
     });
-    assert.equal(layout.cards.length, 2);
+    assert.equal(layout.cards.length, 4);
     assert.equal(layout.oldStats, 0);
     assert(layout.panel.x >= 0 && layout.panel.y >= 0 && layout.panel.right <= 844 && layout.panel.bottom <= 390, JSON.stringify(layout));
     assert(layout.cards.every(card => card.x >= layout.panel.x && card.right <= layout.panel.right && card.y >= layout.panel.y && card.bottom <= layout.panel.bottom), JSON.stringify(layout));
-    assert(layout.cards.every(card => card.width >= 200 && card.height >= 150), JSON.stringify(layout));
+    assert(layout.cards.every(card => card.width >= 200 && card.height >= 110), JSON.stringify(layout));
     assert(layout.infoFont >= 11.5, JSON.stringify(layout));
     assert.notEqual(layout.background, "rgba(0, 0, 0, 0)");
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
@@ -345,14 +412,15 @@ await suite("save-load", async check => {
     });
     const summary = slot => page.locator(`[data-test="slot-${slot}"] .ss-growth .ss-stat`)
       .evaluateAll(nodes => nodes.map(node => node.textContent));
+    // 才能の総数は main 側（#4197: 盤の数え直しで27→26）、slot-2 は U-01 の手動枠として存在し空であること。
     const expected = ["Lv.2", "火種2", "才能1/26", "感覚1/26", "理論1/26"];
-    const retiredSlotHidden = () => page.locator('[data-test="slot-2"]').count();
+    const newSlotEmpty = () => page.locator('[data-test="slot-2"].blank').count();
     const assertGrowthFits = async () => assert.deepEqual(await page.locator(".ss-growth .ss-stat")
       .evaluateAll(nodes => nodes.filter(node => node.scrollWidth > node.clientWidth + 1).map(node => node.textContent)), []);
     await page.locator('[data-test="title-load"]').click();
     assert.deepEqual(await summary(0), expected);
     assert.deepEqual(await summary(1), expected);
-    assert.equal(await retiredSlotHidden(), 0);
+    assert.equal(await newSlotEmpty(), 1);
     await assertGrowthFits();
     await assertFits(page, ".save-slot, [data-test='slot-cancel']");
     await page.locator('[data-test="slot-cancel"]').click();
@@ -370,7 +438,7 @@ await suite("save-load", async check => {
       assert.deepEqual(await summary(0), expected);
       assert.deepEqual(await summary(1), expected);
       assert.equal(await page.locator(".ss-stat i").count(), 0);
-      assert.equal(await retiredSlotHidden(), 0);
+      assert.equal(await newSlotEmpty(), 1);
       await assertGrowthFits();
       await assertFits(page, ".save-slot, [data-test='slot-cancel']");
       await page.locator('[data-test="slot-cancel"]').click();
@@ -416,12 +484,14 @@ await suite("save-load", async check => {
     });
   }, options);
 
-  for (const [label, options] of [
-    ["desktop-ui", { viewport: { width: 1280, height: 720 } }],
-    ["mobile-ui", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  for (const [label, options, slotIndex] of [
+    ["desktop-ui", { viewport: { width: 1280, height: 720 } }, 2],
+    ["mobile-ui", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, 3],
   ]) {
     await check(label, async page => {
       await prepare(page);
+      const slot = page.locator(`[data-test="slot-${slotIndex}"]`);
+      const readSlot = () => page.evaluate(index => QA.copy(QA.core.readSlot(QA.core.SAVE_SLOTS[index].key)), slotIndex);
       // Use production resume/menu handlers, then click the actual save/load controls.
       await page.evaluate(async () => {
         // Read any newly added story catch-up before exercising the map's save menu.
@@ -440,9 +510,9 @@ await suite("save-load", async check => {
       await page.locator('[data-test="menu-tab-system"]').click();
       await page.locator('[data-test="menu-save"]').click();
       assert(await page.locator('[data-test="slot-0"]').isDisabled());
-      await page.locator('[data-test="slot-1"]').click();
+      await slot.click();
       await page.locator("#modal.show").waitFor({ state: "hidden" });
-      let saved = await page.evaluate(() => QA.copy(QA.core.readSlot("suien_remake_slot1")));
+      let saved = await readSlot();
       assert.equal(saved.money, 45678); assert.equal(saved.day, 6);
       await page.evaluate(() => { QA.core.state.money = 999; });
       // Cancel overwrite and cancel a load: neither may change storage or current progress.
@@ -450,13 +520,13 @@ await suite("save-load", async check => {
       await page.locator('[data-test="hud-menu"]').click();
       await page.locator('[data-test="menu-tab-system"]').click();
       await page.locator('[data-test="menu-save"]').click();
-      await page.locator('[data-test="slot-1"]').click();
+      await slot.click();
       await page.locator("#modal .modal-actions button").first().click();
       await page.locator('[data-test="slot-cancel"]').click();
       await page.locator('[data-test="hud-menu"]').click();
       await page.locator('[data-test="menu-tab-system"]').click();
       await page.locator('[data-test="menu-load"]').click();
-      await page.locator('[data-test="slot-1"]').click();
+      await slot.click();
       await page.locator("#modal .modal-actions button").first().click();
       assert.deepEqual(await storageSnapshot(page), before);
       assert.equal(await page.evaluate(() => QA.core.state.money), 999);
@@ -465,17 +535,17 @@ await suite("save-load", async check => {
       await page.locator('[data-test="hud-menu"]').click();
       await page.locator('[data-test="menu-tab-system"]').click();
       await page.locator('[data-test="menu-save"]').click();
-      await page.locator('[data-test="slot-1"]').click();
+      await slot.click();
       await page.locator('[data-test="confirm-overwrite"]').click();
       await page.locator("#modal.show").waitFor({ state: "hidden" });
-      saved = await page.evaluate(() => QA.copy(QA.core.readSlot("suien_remake_slot1")));
+      saved = await readSlot();
       assert.equal(saved.money, 12345);
       await page.evaluate(() => { QA.core.state.money = 999; });
       // A confirmed manual load reloads the document and resumes directly on the map.
       await page.locator('[data-test="hud-menu"]').click();
       await page.locator('[data-test="menu-tab-system"]').click();
       await page.locator('[data-test="menu-load"]').click();
-      await page.locator('[data-test="slot-1"]').click();
+      await slot.click();
       await Promise.all([
         page.waitForEvent("load"),
         page.locator('[data-test="confirm-load"]').click(),

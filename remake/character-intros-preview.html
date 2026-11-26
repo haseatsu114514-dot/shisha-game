@@ -41,6 +41,7 @@ async function run(selected) {
   try {
     for (const id of selected) {
       selector.value = id; status.textContent = `${realName(id)} — ${DB.characters[id].intro_cutin.title}`;
+      newGame().met[id] = true;
       await playIntro(id);
     }
     status.textContent = '再生終了。ゲームの保存データは変更していません。';

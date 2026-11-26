@@ -176,7 +176,7 @@ const DESERT_SE = Object.freeze({
   zap1: "zap_1.wav", zap2: "zap_2.wav", zap3: "zap_3.wav",
 });
 const DESERT_ZAPS = Object.freeze(["zap1", "zap2", "zap3"]);
-const DESERT_CUES = Object.freeze(["spin", "overtake", "overtaken", "boostShort"]);
+const DESERT_CUES = Object.freeze(["spin", "overtake", "overtaken", "boostShort", "carve"]);
 /**
  * 放電の「ビリッ」の次までの秒数。ゲージが1割を超えると鳴り始め、溜まるほど間隔が詰まる（1割で約1.6秒、満タンで約0.35秒）。
  * 毎回少しずらす（rand は 0〜1）。1割に満たない間は鳴らさない（Infinity）。
@@ -231,6 +231,11 @@ export function createDesertRideSe() {
     } else if (kind === "boostShort") {
       tone({ freq: 300, type: "triangle", dur: 0.055, vol });
       tone({ freq: 220, type: "triangle", dur: 0.075, vol: vol * 0.8, delay: 0.055 });
+    } else if (kind === "carve") {
+      // カービングの刻み（2026-11-25）: 続けて切り込むほど高い、短い上がりの2音（ゲージへ光の粒が飛ぶ「貯まった」の音）。6回目で頭打ち
+      const freq = 560 * (1 + 0.08 * (Math.min(6, Math.max(1, n)) - 1));
+      tone({ freq, to: freq * 1.18, type: "sine", dur: 0.07, vol });
+      tone({ freq: freq * 1.5, type: "triangle", dur: 0.11, vol: vol * 0.7, delay: 0.05 });
     }
   }
   function loop(id, gain, rate = 1) {

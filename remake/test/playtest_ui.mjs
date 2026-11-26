@@ -186,6 +186,8 @@ try {
   }
 
   await page.evaluate(() => {
+    // このプローブは未読の場面を SKIP で進める前提。U-08 で既定が「既読のみ」になったため、ここだけ従来の前提に戻す（#4214）。
+    T.core.config.skipSeenOnly = false;
     T.core.newGame(); Object.assign(T.core.state, { phase: "daily", day: 4, stamina: 70 });
     Object.assign(T.core.state.flags, { _intro_sumi: true, _intro_customer: true, _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true, _ev_uezono_cameo: true });
     T.DB.baito = [{ id: "skip_probe", category: "beginner", text: "注文が入った", choices: [
@@ -203,26 +205,36 @@ try {
   await page.locator('[data-test="shift-order-0"]').click({ timeout: 10000 });
   await page.locator('[data-test="after-none"]').click({ timeout: 30000 });
   await page.waitForFunction(() => T.shiftDone, { timeout: 5000 });
-  assert.equal(await page.locator('[data-test="vn-skip"].on').count(), 0, "SKIP carried into the next action");
-  console.log("[playtest UI] PASS: actual baito carries SKIP through its scenes, pauses for choices and clears at shift end");
+  // SKIPは場面をまたいで保持する（#3558 項目7・オーナー決定 2026-11-25）。シフト終了でも解除されない。
+  assert.equal(await page.locator('[data-test="vn-skip"].on').count(), 1, "SKIP was cleared at shift end");
+  console.log("[playtest UI] PASS: actual baito carries SKIP through its scenes, pauses for choices and keeps SKIP after the shift");
 
   await page.evaluate(() => {
     T.core.newGame(); T.core.state.phase = "daily";
     T.core.state.met.sumi = true;
     T.introDone = false;
+    // SKIPは場面をまたいで保持される（#3558 項目7・2026-11-25）ため、前のバイトのSKIPが残っていたら開始前に明示的に止める（この後のクリックで確定的にONにする）。
+    const skipBtn = document.querySelector('[data-test="vn-skip"]');
+    if (skipBtn?.getAttribute("aria-pressed") === "true") skipBtn.click();
     T.intro = T.vn.play({ dialogue_id: "skip_intro_probe", lines: [
       { speaker: "", text: "紹介を待つ" }, { speaker: "sumi", text: "ようこそ" },
     ] }).then(() => { T.introDone = true; });
   });
   await page.waitForSelector("#vn.active .vn-text");
-  await page.locator('[data-test="vn-skip"]').click();
+  // U-04 で「SKIP 中の初登場カットイン」は短縮＋入力透過が仕様になった。短縮されない保証が残るのは通常再生（#4214）。
+  // 通常再生では1行目で止まるので、ページ内から台詞欄へ pointerup を送って送る（エンジンは host の pointerup で受ける。
+  // 実クリックは .vn-cg 層に遮られるため、この場面送りに限ってページ内発火を使う）。
+  for (let i = 0; i < 10 && !await page.locator('.cutin[data-char="sumi"]').isVisible().catch(() => false); i++) {
+    await page.evaluate(() => document.querySelector(".vn-box")?.dispatchEvent(new PointerEvent("pointerup", { bubbles: true })));
+    await page.waitForTimeout(400);
+  }
   await page.waitForSelector('.cutin[data-char="sumi"]');
   await page.locator(".cutin").click(); await page.keyboard.press("Enter");
   await page.waitForTimeout(1000);
-  assert.equal(await page.locator('.cutin[data-char="sumi"]:not(.out)').count(), 1, "Active SKIP shortened the intro");
+  assert.equal(await page.locator('.cutin[data-char="sumi"]:not(.out)').count(), 1, "Click or Enter shortened the introduction");
   assert.equal(await page.evaluate(() => T.introDone), false);
   await page.waitForFunction(() => T.introDone, { timeout: 5000 });
-  console.log("[playtest UI] PASS: already-active SKIP, click and Enter cannot shorten the introduction");
+  console.log("[playtest UI] PASS: in normal play, click and Enter cannot shorten the introduction");
 
   const shark = await page.evaluate(async () => {
     T.core.newGame(); T.core.state.phase = "daily";

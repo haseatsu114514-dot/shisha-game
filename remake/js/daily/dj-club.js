@@ -49,7 +49,7 @@ const bestText = (s, id) => {
   const item = djRecords(s).sets[id];
   // 開き方は全ミニゲーム共通（ひとつ下の段のクリア・#4195 M-35）。DJ のクリアは B 以上で回しきること
   if (!djSetOpen(s, id)) return `${TIER_LABEL[DJ_SETS[id - 2]?.tier] || "ひとつ下"}クリア（${DJ_SETS[id - 2]?.name || "前のセット"}を B 以上）で開く`;
-  return item.best ? `自己ベスト ${item.best.rank}・${item.best.total}点 · ${item.plays}回` : `${DJ_SETS[id - 1].tracks}曲をつなぐ · まだ記録はありません`;
+  return item.best ? `自己ベスト ${item.best.rank}・${item.best.total}点 · ${item.plays}回` : `${DJ_SETS[id - 1].tracks}曲をつなぐ · まだ記録なし`;
 };
 
 /** 入ってセットを選ぶ。戻ると false を返す（遊んでも行動は進まないので常に false）。 */

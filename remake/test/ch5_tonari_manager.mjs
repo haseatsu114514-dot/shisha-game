@@ -22,7 +22,7 @@ const values = {
   play: async scene => { played.push(scene); return {}; },
 };
 const context = vm.createContext({ console, localStorage: { getItem: () => null } });
-const module = new vm.SourceTextModule(`${source}\nexport { serveShiftOrder };`, { context });
+const module = new vm.SourceTextModule(source, { context });
 const imports = new Map([...source.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)]
   .map(([, names, path]) => [path, names.split(",").map(n => n.trim())]));
 await module.link(path => {
@@ -32,8 +32,11 @@ await module.link(path => {
   }, { context });
 });
 await module.evaluate();
-const serveShiftOrder = () => module.namespace.serveShiftOrder(state, new AbortController().signal);
 const text = node => node ? [node.text || "", ...(node.children || []).map(text)].join(" ") : "";
+const card = () => {
+  const find = node => !node ? null : node.dataset?.test === "tonari-baito" ? node : (node.children || []).map(find).find(Boolean) || null;
+  return find(screen);
+};
 
 // メニューは非同期の選択待ち。表示だけを検査しても状態・行動は変えない。
 module.namespace.tonariMenu();
@@ -41,37 +44,26 @@ assert.match(text(screen), /店長として店に立つ/);
 assert.match(text(screen), /人手に合わせてスミさんが店に立ってくれる/);
 assert.match(text(screen), /つむぎが接客/);
 assert.doesNotMatch(text(screen), /シフトに入る（バイト）|常連席にはつむぎ/);
+// 店長の店番も、昼から夜まで（2コマ・TFL62）。夜からは入れない
+assert.match(text(card()), /昼から夜まで、今日の営業を引き受ける（2コマ）/);
+assert.match(text(card()), /夜からは入れない/);
+assert.equal(card().disabled, true);
 present = false;
 module.namespace.tonariMenu();
 assert.doesNotMatch(text(screen), /つむぎが接客/);
 assert.equal(state.slot, 1);
+state.slot = 0;
+module.namespace.tonariMenu();
+assert.equal(!!card().disabled, false, "昼は店番に入れる");
+assert.doesNotMatch(text(card()), /夜からは入れない/);
 
-// 出張の枠でつむぎの相談を出さない。戻った枠では既存の相談も選ばれる。
-for (let day = 70; day < 90; day++) {
-  state.day = day;
-  state.flags = {};
-  await serveShiftOrder();
-  assert.doesNotMatch(order.title + order.body, /つむぎ/);
-  assert.match(played.at(-1), /ch5_world_viewer/);
-}
-present = true;
-const seen = new Set();
-for (let day = 70; day < 110; day++) {
-  state.day = day;
-  state.flags = {};
-  await serveShiftOrder();
-  seen.add(played.at(-1));
-}
-assert([...seen].some(id => /ch5_tsumugi/.test(id)));
-assert([...seen].some(id => /ch5_world_viewer/.test(id)));
-
-// 前章の表示・一般客向けの注文は変更しない。
+// 前章の表示は変更しない（店番の札は一つだけ。旧バイトの「フロアを任される」は無い・TFL63）。
 state.chapter = 1;
 state.flags = {};
+present = true;
 module.namespace.tonariMenu();
 assert.match(text(screen), /シフトに入る（バイト）/);
+assert.match(text(card()), /【はじめての店番】昼から夜まで、五つの卓を一人で回す（2コマ）/);
 assert.match(text(screen), /常連席にはつむぎがいる/);
-await serveShiftOrder();
-assert.doesNotMatch(played.at(-1), /ch5_/);
-console.log("ch5 tonari manager: menu, absent/present orders, chapter-one regression passed");
-
+assert.doesNotMatch(text(screen), /フロアを任される/);
+console.log("ch5 tonari manager: manager card (noon to night, closed at night), Tsumugi present/absent, chapter-one card passed");

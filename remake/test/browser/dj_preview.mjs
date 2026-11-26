@@ -156,7 +156,7 @@ try{
   // Leave the fader at A until the band has moved on a little: the gold arrows appear between the cap and the band and point to B (still inside the ±0.14 band, so no beat is missed).
   const behind=await until(page,'behind',s=>s.phase==='mix'&&s.guide>.09,errors,8000,20);assert.equal(behind.mix,0);
   assert(await page.locator('#fader-arrows').isVisible(),'arrows toward the band');assert(!(await page.locator('#fader-arrows').evaluate(e=>e.classList.contains('left'))),'they point right, toward B');
-  assert.match(await page.locator('#fader-hint').textContent(),/もっと右へ/);
+  assert.match(await page.locator('#fader-hint').textContent(),/右へ動かそう/,'untouched: asked to move it, never praised (DJR02)');
   let mixed=null,comboText='',onLine=false;
   for(let i=0;i<600;i++){
    const s=await snap(page);if(s.phase!=='mix')break;
@@ -212,7 +212,10 @@ try{
   for(;;){
    s=await snap(page);assert(Date.now()<deadline,`no slip: ${JSON.stringify({phase:s.phase,fader:s.fader})}`);
    if(s.phase==='cue'&&s.cue&&!s.cue.pressed&&s.remaining<=.05)await page.locator('#play-b').click();
-   else if(s.phase==='mix'){await ride(s);if(s.sync?.off){slip=s;break;}assert(s.fader.drifts.length===1&&!s.fader.fixes);}
+   else if(s.phase==='mix'){
+    // DJR03: SET 2 slips only now and then. When this mix has no slip planned, raise one with the page's own hook (__dj.slip) to try the platter
+    if(!s.fader.drifts.length&&s.progress<.25)await page.evaluate(()=>__dj.slip(.15));
+    await ride(s);if(s.sync?.off){slip=s;break;}assert(s.fader.drifts.length<=1&&!s.fader.fixes);}
    assert.notEqual(s.phase,'select','the slip comes before the 8 bars end');await page.waitForTimeout(15);
   }
   const ahead=slip.sync.error>0;assert.equal(slip.sync.deck,1);assert.equal(slip.jog,ahead?'b-ccw':'b-cw');assert.match(slip.navi,ahead?/ズレた！ 右の皿を左回りに回そう/:/ズレた！ 右の皿を右回りに回そう/);assert(slip.points.includes('jog-b'));

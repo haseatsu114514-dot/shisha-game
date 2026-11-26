@@ -1428,7 +1428,7 @@ html:root[data-ui-theme] body:not(:root) .vn-box {
   bottom:var(--vn-dialogue-bottom); padding:var(--vn-body-top) var(--vn-body-side) 16px;
 }
 html:root[data-ui-theme] body:not(:root) .vn-text {
-  font-size:28px; font-weight:700; line-height:44px; min-height:88px; letter-spacing:.035em;
+  font-size:28px; font-weight:500; line-height:44px; min-height:88px; letter-spacing:.035em;
 }
 html:root:is([data-ui-theme="cut-paper"],[data-ui-theme="amber"],[data-ui-theme="classic"]) body:not(:root) .vn-text {
   font-family:"Suien Blue Mincho",serif; font-weight:400; letter-spacing:.04em;
@@ -1777,8 +1777,6 @@ html:root[data-ui-theme="paper"] .gb-hidane { color: var(--paper-ink); }
 html:root[data-ui-theme="paper"] .gb-hidane b { color: var(--paper-ink); }
 html:root[data-ui-theme="paper"] .gb-hidane i { filter: drop-shadow(0 0 1px #38283f99); }
 /* 地図の左上に出る EXP の札とレベルアップの帯 */
-html:root[data-ui-theme="paper"] .exp-chip { color: #fff; background: var(--lavender-art) center / 256px repeat, var(--lavender); border: 1px solid var(--lavender); box-shadow: 0 3px 8px #2a1a3a40; }
-html:root[data-ui-theme="paper"] .exp-chip :is(b, span) { color: #fff; }
 html:root[data-ui-theme="paper"] .gb-wallet { background: var(--paper); border: 1px solid var(--paper-line); }
 html:root[data-ui-theme="paper"] .gb-hidane.zero { opacity: .55; }
 /* 盤の部品の絵（GB04・SBD123。盤の絵が読めた時だけ）: 選んでいない札は紙の見出し札、選んでいる札は黒いガラス、丸いボタンは紙の丸、見出しの下に飾り罫。
@@ -3446,11 +3444,9 @@ body #stage[data-wide] .cfg-seg-btn { font-size: max(24px, var(--wide-min)); min
 body #stage[data-wide] .cfg-modal .ui-theme-select { font-size: max(24px, calc(17px / var(--k, 1))); min-height: max(60px, var(--wide-tap)); }
 body #stage[data-wide] .cfg-modal .modal-actions .btn { min-height: max(76px, var(--wide-tap)); font-size: max(26px, calc(13px / var(--k, 1))); }
 
-/* セーブ／ロード: 固定1280×720内で2枚を広く使う。縮小後も文字を読める寸法にする。 */
-body #stage[data-wide] .saveload-modal { max-height: 660px; }
+/* セーブ／ロード: 4枠を表示し、縮小後も文字を読める寸法にする。 */
 body #stage[data-wide] .saveload-modal h3 { font-size: max(32px, var(--wide-min)); }
 body #stage[data-wide] .saveload-modal .ss-note { font-size: max(24px, var(--wide-min)); }
-body #stage[data-wide] .saveload-modal .save-slot { min-height: 390px; }
 body #stage[data-wide] .saveload-modal .ss-label { font-size: max(30px, var(--wide-min)); }
 body #stage[data-wide] .saveload-modal .ss-label small { font-size: max(24px, var(--wide-min)); }
 body #stage[data-wide] .saveload-modal .ss-info b { font-size: max(28px, var(--wide-min)); }
@@ -6715,21 +6711,9 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-card .hud-exp .hx-left[hidden],
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-card .hud-exp .hx-target[hidden] { display: none; }
 :root[data-look="neo"] body.reduce-shake:not(.game-ds) #stage #hud .hud-stamina.low .hud-bar b { animation: none; }
-/* 増減の通知（所持金・EXP）は板の下に出す。 */
+/* 所持金の増減は板の下に出す。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .money-pop { right: 12px; top: calc(100% + 4px); font-size: max(14px, var(--neo-hud-sub)); color: #9fe8b4; text-shadow: 0 1px 3px rgba(0, 0, 0, .8); }
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .money-pop.minus { color: #ffa3a3; }
-:root[data-look="neo"] body:not(.game-ds) #stage #hud .exp-chip {
-  left: 10px;
-  top: calc(100% + 5px);
-  color: #fff;
-  background: rgba(21, 13, 34, .92);
-  border: 1px solid rgba(227, 189, 110, .6);
-  box-shadow: none;
-}
-/* 「今夜 Lv UP」の札が出ている時は、その下の段に出す（重ねない）。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-exp:has(> :is(.hx-left, .hx-target):not([hidden])) .exp-chip { top: calc(100% + 15px + max(12px, var(--neo-hud-sub) - 2px) * 1.3 + 6px); }
-:root[data-look="neo"] body:not(.game-ds) #stage #hud .exp-chip b { color: var(--neo-ui-gold-hi); font-size: max(13px, var(--neo-hud-sub)); }
-:root[data-look="neo"] body:not(.game-ds) #stage #hud .exp-chip span { color: var(--neo-ui-ink); font-size: max(12px, var(--neo-hud-sub) - 2px); }
 /* 「出発まで」（第3・4章の出発前の3日）と「勝負の日まで」（第5章）の行は、板を伸ばさないよう日付の下へ小さな札で下げる
    （「今夜 Lv UP」と同じ考え方）。板の中に並べると板が 130px ほど伸び、出発前の地元の地図で KEMURIKUSA の看板と居る人の顔に掛かった。
    印（トロフィー）と日数は板の中と同じ。 */

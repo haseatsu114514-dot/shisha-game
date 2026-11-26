@@ -14,19 +14,17 @@ const root = new URL("../../", import.meta.url);
 const read = (path) => fs.readFile(new URL(path, root), "utf8");
 
 const hiyoriData = JSON.parse(await read("data/dialogue/hiyori.json"));
-const baitoData = JSON.parse(await read("data/baito_events.json"));
 
 let state = {};
 const db = {
   dialogues: Object.fromEntries((hiyoriData.dialogues || []).map((s) => [s.dialogue_id, s])),
-  baito: baitoData.events || [],
   hiyori: hiyoriData,
   flavorById: {},
 };
 
 const plays = [], visitCalls = [], screens = [];
 let storyReady = false, menuPick = "after-none";
-let hudListener, loadAt, cancelAt, orderPick;
+let hudListener, loadAt, cancelAt, floorOutcome;
 function loadSave() {
   state = { flags: {}, visitedDay: {} };
   stateModule.setExport("state", state);
@@ -101,8 +99,8 @@ synthetic("util.js", { el, pick: (list) => list[0] });
 synthetic("data.js", { DB: db, bgUrl: (id) => id });
 const stateModule = synthetic("state.js", { state, config: { statEffectColors: true }, timeOfDay: () => "day" });
 synthetic("stats.js", {
-  addMoney() {}, addStamina() {}, applyStats() {}, step: () => 1,
-  currentCondition: () => ({}), affinityLevel,
+  addMoney: (amount) => { state.money += amount; }, addStamina() {}, applyStats() {}, step: () => 1,
+  currentCondition: () => ({ bonusRate: 1.15, shiftBonus: 1000, health: "green" }), affinityLevel,
 });
 synthetic("ui.js", {
   showScreen: (name, node) => {
@@ -114,7 +112,7 @@ synthetic("ui.js", {
     node.remove = () => { node.removed = true; };
     return node;
   },
-  setBg() {}, toast() {}, retire() {}, modal: async () => orderPick,
+  setBg() {}, toast() {}, retire() {},
 });
 synthetic("audio.js", { SE: new Proxy({}, { get: () => () => {} }), playBgm() {}, currentBgm: () => null });
 synthetic("bus.js", { on: (_, fn) => { hudListener = fn; return () => { hudListener = null; }; } });
@@ -135,7 +133,12 @@ synthetic("spots.js", {
 });
 synthetic("fortune-rumor.js", { hearFortuneRumor: async () => false });
 synthetic("session.js", { DRILLS: {} });
-synthetic("weather.js", { isRainy: () => false, RAIN_BAITO: "remake_baito_rain", RAIN_BAITO_BONUS: 0 });
+synthetic("weather.js", { isRainy: () => false });
+// 店番（フロア営業・TFL62）の画面は差し替える。チュートリアルはすぐ済み、営業は floorOutcome を返す（null＝途中で LOAD・中断）
+synthetic("tonari-floor-view.js", {
+  runTonariFloor: async (opts) => (opts.tutorial ? { tutorial: true, skipped: false } : floorOutcome),
+  FLOOR_VISITORS: {},
+});
 synthetic("scene-motions.js", { shiftClose: async () => {} });
 synthetic("hiyori.js", { meetHiyoriAtTonari: async () => {} });
 synthetic("attack-lesson.js", { canStudyAttack: () => false, studyAttack: async () => {} });
@@ -183,7 +186,7 @@ function reset(overrides = {}) {
   }, structuredClone(overrides));
   plays.length = 0; visitCalls.length = 0; screens.length = 0;
   storyReady = false; menuPick = "after-none";
-  loadAt = null; cancelAt = null; orderPick = 0;
+  loadAt = null; cancelAt = null; floorOutcome = { rank: "B", stamp: "まずまず", fans: 1, sales: 12000 };
 }
 
 // --- B05: 固有会話がある日は visitChar、無い日は定型の一言 ---
@@ -297,10 +300,20 @@ for (const [scene, flag, flags] of [
   assert(plays.includes(scene));
   assert.equal(state.flags[flag], undefined);
 }
-reset();
-orderPick = undefined;
+reset({ slot: 0 });
+floorOutcome = null; // 店番の途中で止まった
 assert.equal(await tonari.doBaito(), false);
 assert(!plays.includes("remake_baito_end"));
+assert.equal(state.slot, 0, "止まったシフトは、出勤前の時間帯（昼）のまま");
+assert.equal(state.money, 5000, "中断では支給しない");
+// 店番は昼から夜まで（TFL62）: 済んだら、上がりの場面からは夜。はじめての店番は、スミさんの前振りとチュートリアルの後
+reset({ slot: 0 });
+assert.equal(await tonari.doBaito(), true);
+assert.equal(state.slot, 1, "上がりは夜の店");
+assert.equal(state.money, 15200, "基本給8,000円＋歩合1,200円＋好調1,000円を入金する");
+assert.equal(state.flags._tonari_floor_tutorial, true);
+assert.deepEqual(state.flags._tonari_floor, { nights: 1, best: "B", fans: 1, top: 12000 });
+assert(plays.indexOf("tonari_floor_first") > plays.indexOf("remake_baito_start") && plays.indexOf("remake_baito_end") > plays.indexOf("tonari_floor_first"));
 
 // --- B06: 露出判定はスロットに依存しない（昼のバイト上がりでも露出する） ---
 reset({ ...PREREQ_STATE, slot: 0 });

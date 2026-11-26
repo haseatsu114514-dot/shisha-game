@@ -18,7 +18,8 @@
       "part": "GM",
       "role": "案内と、郵便猫ミトン",
       "color": "#b8a3cc",
-      "costumeRole": "mitten"
+      "costumeRole": "mitten",
+      "costumeSpeaker": "郵便猫ミトン"
     },
     {
       "id": "hajime",

@@ -162,6 +162,8 @@ await suite("ch1-tournament", async check => {
         const { chapter, vn, intro } = T;
         const { TSUMUGI_STORY } = T.story;
         const { state } = T.core;
+        // U-08で既読のみSKIPが既定になったため、未読前提のこの測定では全行SKIPへ明示的に切り替える。
+        T.core.config.skipSeenOnly = false;
         Object.assign(state, { phase: "tournament", day: 14, flavors: ["double_apple", "mint", "blueberry"], flavorStock: { double_apple: 50, mint: 50, blueberry: 50, lemon: 50 } });
         for (const step of TSUMUGI_STORY) state.flags[step.flag] = true;
         if (variant === "current-read") state.flags._ev_first_practice = true;

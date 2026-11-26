@@ -133,8 +133,8 @@ for (const scenario of scenarios) {
     // The GM's own voice: face and badge and "ゲームマスター（name）", at the table and when narrating (the narration shows no art at all).
     assert.deepEqual([seen['table:gm'].who, seen['table:gm'].aside, seen['table:gm'].face, seen['table:gm'].mark], ['ゲームマスター', gm, 1, 1]);
     assert.deepEqual([seen.narration.who, seen.narration.aside, seen.narration.art, seen.narration.gm], ['ゲームマスター', gm, 0, true]);
-    // A character the GM plays: a standing NPC portrait when one exists (credited to the game master, never the GM's own face).
-    assert.equal(seen.npc.aside, 'ゲームマスター ' + gm, 'the GM is credited beside the character they play');
+    // A character the GM plays: GMPC attribution and a standing NPC portrait when their costume is unavailable.
+    assert.equal(seen.npc.aside, 'GMPC ' + gm, 'the GM is credited beside the character they play');
     assert.deepEqual([seen.npc.art, seen.npc.face, seen.npc.mark, seen.npc.gm, seen.npc.portrait], [1, 1, 0, false, 'npc']);
     assert.match(seen.npc.src, /\/img\/ui\/trpg\/npc\/(oru|mira)\.webp$/);
     assert(seen.npc.who && seen.npc.who !== gm && !/物語|\{pc/.test(seen.npc.who), 'the story character is named: ' + seen.npc.who);
@@ -537,6 +537,48 @@ test('the shopkeeper tutorial plays on the cover, blocks the start until it ends
   }
 });
 
+test('each authored Sai role uses its existing costume and marks GMPC in the dock and log', async () => {
+  const frames = JSON.parse(await readFile(new URL('../img/ui/trpg/costumes/frames.json', import.meta.url), 'utf8'));
+  const costumeFrames = Object.fromEntries(frames.map(f => [`${f.scenario}/${f.character}/${f.role_id}`, f]));
+  const cases = [
+    ['regular_harbor', '旅人オル', 'oru', '漁師の親方', 'fisher_boss'],
+    ['regular_mail', '郵便猫ミトン', 'mitten', '灯台守のおじいさん', 'lighthouse_keeper'],
+    ['purikura_hero', '写真屋のおじいさん', 'shopkeep', '魔王プリズマ', 'purizuma'],
+    ['mist_kingdom', '霧の王', 'herald', '霧の王女ミナ', 'mina'],
+  ];
+  for (const [file, role, costume, other, npcId] of cases) {
+    const { pictureBook, ...scenario } = JSON.parse(await readFile(new URL(`../../data/dialogue/trpg_${file}.json`, import.meta.url), 'utf8'));
+    const lines = scenario.dialogues.flatMap(block => block.lines);
+    const find = role => lines.find(line => line.speaker === 'sai' && line.role === role);
+    scenario.sessionZero = null;
+    scenario.dialogues.find(block => block.dialogue_id === scenario.intro).lines = [
+      find('GM／卓の会話'), find(other + '／物語'), find(role + '／物語'), find('GM／場面'),
+    ];
+    assert(scenario.dialogues.find(block => block.dialogue_id === scenario.intro).lines.every(Boolean));
+    const { api, root, q } = mount(scenario, { costumeFrames });
+    const art = () => root.querySelector('.trpg-speaker-art');
+    const label = () => root.querySelector('.trpg-speaker-label').children.map(n => n.textContent);
+    q('trpg-start').click();
+    assert.deepEqual(label(), ['ゲームマスター', 'sai']);
+    assert.equal(art().querySelector('.trpg-gm-badge').textContent, 'GM');
+    q('trpg-next').click();
+    assert.deepEqual(label(), [other, 'GMPC sai']);
+    assert(art().querySelector('img').getAttribute('src').endsWith(`/trpg/npc/${npcId}.webp`));
+    q('trpg-next').click();
+    assert.deepEqual(label(), [role, 'GMPC sai']);
+    const img = art().querySelector('img');
+    assert(img.getAttribute('src').endsWith(`/trpg/costumes/${scenario.id}/sai_${costume}.webp`));
+    assert.equal(img.getAttribute('alt'), role);
+    assert(img.style.width.endsWith('%'), 'the costume uses its measured face frame');
+    q('trpg-next').click();
+    assert.deepEqual(label(), ['ゲームマスター', 'sai']);
+    assert.equal(art().children.length, 0);
+    q('trpg-log').click();
+    assert(root.querySelectorAll('.trpg-log-line').some(line => line.children[0].textContent === role + ' · GMPC sai'));
+    api.destroy();
+  }
+});
+
 test('all 24 NPC portraits render in .trpg-speaker-art without disturbing unpictured fallbacks, korochan, or asset preloading', async () => {
   const pres = await load(new URL('../js/trpg/presentation.js', import.meta.url)); await pres.evaluate();
   const { TRPG_NPC_BY_NAME, TRPG_NPC_IDS } = pres.namespace;
@@ -563,7 +605,7 @@ test('all 24 NPC portraits render in .trpg-speaker-art without disturbing unpict
   q('trpg-start').click();
   for (const [npcName, npcId] of expectedNames) {
     assert.equal(root.dataset.kind, 'npc');
-    assert.deepEqual(label(), [npcName, 'ゲームマスター ' + gm]);
+    assert.deepEqual(label(), [npcName, 'GMPC ' + gm]);
     assert.equal(art().dataset.portrait, 'npc');
     const img = art().querySelector('img');
     assert(img, npcName + ' renders an <img>');
@@ -579,10 +621,12 @@ test('all 24 NPC portraits render in .trpg-speaker-art without disturbing unpict
   assert.equal(art().dataset.portrait, undefined);
   assert.equal(art().querySelectorAll('img').length, 0);
   assert.equal(art().querySelector('.trpg-npc-figure').dataset.shape, 'person');
+  assert.deepEqual(label(), ['主人アルマン', 'GMPC ' + gm]);
   q('trpg-next').click();
   // paper NPC keeps paper fallback and clears data-portrait
   assert.equal(art().dataset.portrait, undefined);
   assert.equal(art().querySelector('.trpg-npc-figure').dataset.shape, 'paper');
+  assert.deepEqual(label(), ['予告状', 'ゲームマスター ' + gm]);
   q('trpg-next').click();
   // samechan korochan line keeps コロちゃん behavior unchanged
   assert.equal(root.dataset.kind, 'table');
@@ -815,6 +859,43 @@ const pictureBookScenario = {
   })) },
 };
 const flush = () => new Promise(resolve => setImmediate(resolve));
+
+test('dialogue warms two upcoming portraits and reuses a repeated speaker image', t => {
+  const images = [], previousImage = context.Image;
+  context.Image = class {
+    set src(url) { this.url = url; images.push(this); }
+    decode() { return Promise.resolve(); }
+    removeAttribute(name) { assert.equal(name, 'src'); this.cancelled = true; }
+  };
+  t.after(() => { context.Image = previousImage; });
+  const base = scenarios[0];
+  const scenario = { ...base, sessionZero: null, intro: 'warmup-test', dialogues: [...base.dialogues, {
+    dialogue_id: 'warmup-test', lines: [
+      { speaker: 'hiyori', text: 'はじめよう。' },
+      { speaker: 'adam', text: 'よろしく。' },
+      { speaker: 'tsumugi', text: '楽しみ。' },
+      { speaker: 'adam', face: 'smile', text: '僕も。' },
+      { speaker: 'adam', face: 'smile', text: 'さあ行こう。' },
+    ],
+  }] };
+  const manifest = { portraits: Object.fromEntries(base.cast.map(({ id }) => [id, { faces: ['normal', 'smile'] }])) };
+  const { api, q, root } = mount(scenario, { manifest });
+  t.after(() => api.destroy());
+  const requested = () => images.map(img => img.url.split('/').at(-1));
+  assert.deepEqual(requested(), []);
+  q('trpg-start').click();
+  assert.deepEqual(requested(), ['chr_adam_normal.png', 'chr_tsumugi_normal.png']);
+  q('trpg-next').click();
+  assert.deepEqual(requested(), ['chr_adam_normal.png', 'chr_tsumugi_normal.png', 'chr_adam_smile.png']);
+  q('trpg-next').click();
+  q('trpg-next').click();
+  const speakerImage = root.querySelector('.trpg-speaker-art').firstChild;
+  q('trpg-next').click();
+  assert.equal(root.querySelector('.trpg-speaker-art').firstChild, speakerImage);
+  assert.equal(requested().filter(name => name === 'chr_adam_smile.png').length, 1);
+  api.destroy();
+  assert(images.every(img => img.cancelled));
+});
 
 test('picture book waits for decode, preloads one page, and turns, returns and skips before the unchanged opening', async t => {
   const fetched = [], marks = [], themes = [];

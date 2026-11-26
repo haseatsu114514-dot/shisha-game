@@ -86,9 +86,11 @@ await suite("hiyori-axe-story",async check=>{
       await unchanged(page);await finish(page,label==="touch");assert(await page.evaluate(()=>S.run));
       const result=await page.evaluate(async()=>{
         const done=S.before(),replay=await S.daily.playHiyoriEvent("axe_reveal");
+        // LOGは新規開始・別セーブの読込で消える（#4214 U-11）ので、台詞の確認は保存・読込の前に取る。
+        const dialogues=S.vn.backlog().filter(l=>l.name==="ひより").map(l=>l.text);
         S.core.saveToSlot("suien_remake_slot1");S.core.newGame();S.core.loadFromSlot("suien_remake_slot1");
         return {done,replay,loaded:S.before(),work:!!S.core.state.flags._hiyori_work_talk_done,
-          dialogues:S.vn.backlog().filter(l=>l.name==="ひより").map(l=>l.text)};
+          dialogues};
       });
       assert.equal(result.done.money,87000);assert.equal(result.done.stamina,70);assert.equal(result.done.slot,2);
       assert.equal(result.done.story,3);assert(result.done.known&&!result.replay&&!result.work);assert.deepEqual(result.loaded,result.done);
@@ -155,8 +157,8 @@ await suite("hiyori-axe-story",async check=>{
     await setup(page);
     // B06 exposes the axe outing only after the mandatory Sumi talk at shift end.
     await page.evaluate(async()=>{
+      S.core.state.slot=0;
       const timer=setInterval(()=>{
-        document.querySelector('[data-test="shift-order-0"]')?.click();
         document.querySelector('[data-test="after-none"]')?.click();
       },20);
       try { await S.tonari.doBaito(); } finally { clearInterval(timer); }

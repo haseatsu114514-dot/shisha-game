@@ -561,14 +561,21 @@ export function playTimeMs(value = state) {
 
 // このタブの進行の基になったAUTO原文。枠の表示・確認だけでは更新しない。
 let autoBaseRaw = null;
+let currentAutoRaw = null;
 function readRaw(key) {
   try { return localStorage.getItem(key); } catch { return null; }
 }
 
-export function setState(s, baseRaw = readRaw(SAVE_KEY)) {
+/** 現在のプレイが読み込んだ、または書き込んだ AUTO の原文。 */
+export const currentAutoSaveSource = () => currentAutoRaw;
+
+export function setState(s, baseRaw = readRaw(SAVE_KEY), { sourceRaw = null, autoResume = false } = {}) {
+  const previousAutoRaw = currentAutoRaw;
   autoBaseRaw = baseRaw;
+  currentAutoRaw = sourceRaw ? baseRaw : null;
   state = s;
   playClockAt = s && pageVisible() ? Date.now() : null;
+  emit("state-replaced", { sourceRaw, previousAutoRaw, autoResume });
   emit("hud"); // ロード・はじめからでも、前の残量と通知を画面に持ち越さない。
   return state;
 }
@@ -624,6 +631,7 @@ function writeSave(target = state, { manualLoad = false, expectedRaw = autoBaseR
     }
     localStorage.setItem(SAVE_KEY, raw);
     autoBaseRaw = raw;
+    if (target === state) currentAutoRaw = raw;
     lastComplementedAutosaveRaw = raw;
     noteSaveResult(true);
     return { raw, saved: true };
@@ -669,14 +677,17 @@ export function load() {
   try { migrated = migrate(s); } catch { migrated = null; }
   if (!migrated) return null;
   captureUnrecordedChapterStart(migrated);
-  return setState(migrated, raw);
+  return setState(migrated, raw, { sourceRaw: raw, autoResume: true });
 }
 
-// ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に1枠）
+// ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に3枠）
 
 export const SAVE_SLOTS = [
   { key: SAVE_KEY, label: "オートセーブ", auto: true },
   { key: "suien_remake_slot1", label: "スロット 1" },
+  // 廃止済みの旧 slot2/slot3 に残るデータは、引っ越しと同じくそのまま保管する。
+  { key: "suien_remake_manual2", label: "スロット 2" },
+  { key: "suien_remake_manual3", label: "スロット 3" },
 ];
 const BOOT_LOAD_KEY = "suien_remake_boot_load";
 
@@ -689,17 +700,19 @@ export function readSlot(key) {
 export function isLoadableSave(s) {
   try { return !!migrate(s); } catch { return false; }
 }
-/** 全枠のうち savedAt が最新のセーブ（同点・欠落は SAVE_SLOTS 順で先のもの）。無ければ null */
-export function peekLatestSave() {
+/** 全枠のうち savedAt が最新の枠（同点・欠落は SAVE_SLOTS 順で先のもの）。無ければ null */
+export function peekLatestSaveEntry() {
   let best = null, bestAt = -Infinity;
   for (const slot of SAVE_SLOTS) {
-    const s = readSlot(slot.key);
-    if (!s) continue;
-    const at = Number.isFinite(s.savedAt) ? s.savedAt : -Infinity;
-    if (!best || at > bestAt) { best = s; bestAt = at; }
+    const raw = readRaw(slot.key);
+    const data = parseSave(raw);
+    if (!data?.day) continue;
+    const at = Number.isFinite(data.savedAt) ? data.savedAt : -Infinity;
+    if (!best || at > bestAt) { best = { key: slot.key, data, raw }; bestAt = at; }
   }
   return best;
 }
+export const peekLatestSave = () => peekLatestSaveEntry()?.data ?? null;
 export const anySlotSaved = () => SAVE_SLOTS.some((s) => readSlot(s.key));
 
 /** 今の状態を手動の枠に書く。別タブの保存と競合していなければAUTOも更新する。 */
@@ -721,8 +734,9 @@ export function saveToSlotResult(key) {
 }
 
 /** 枠から読み込んで今の状態にする。以後のオートセーブもこのデータから続く */
-export function loadFromSlot(key, { validate } = {}) {
+export function loadFromSlot(key, { validate, expectedRaw } = {}) {
   const sourceRaw = readRaw(key);
+  if (expectedRaw !== undefined && sourceRaw !== expectedRaw) return null;
   const s = parseSave(sourceRaw);
   if (!s?.day) return null;
   // 移行で想定外の例外が出ても、進行中の状態と保存元を保ったまま読み込み失敗にする。
@@ -736,7 +750,7 @@ export function loadFromSlot(key, { validate } = {}) {
   const { raw, saved } = writeSave(migrated, { manualLoad: key !== SAVE_KEY, expectedRaw: sourceRaw });
   // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。
   if (!saved && key !== SAVE_KEY) return null;
-  return setState(migrated, saved ? raw : sourceRaw);
+  return setState(migrated, saved ? raw : sourceRaw, { sourceRaw });
 }
 
 /** 章頭へ戻す操作も、同じAUTOを基にしている間だけ確定する。 */
@@ -782,7 +796,7 @@ export const config = {
   seVolume: 0.7,
   textSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい 4=瞬時
   autoSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい
-  skipSeenOnly: false, // 旧来の全スキップを維持し、設定で既読のみへ切替
+  skipSeenOnly: true, // 既読のみが既定。設定で「全部」に切替
   reduceShake: false,
   voiceBlip: true,   // 文字送りの声（キャラ別の音程）
   // 一度見た演出（連絡先交換・シフト終了）を2回目以降だけ短くする。初回は必ずフルで見せる。

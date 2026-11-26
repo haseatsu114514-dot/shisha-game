@@ -19,7 +19,7 @@ import { imgFileUrl } from "./core/img-file.js";
 import { warmInBackground } from "./core/loading-prefetch.js";
 import { withLoading, comicLoadingRequired, preferLoadingComic, primeLoadingArt, warmNextLoadingComic } from "./core/loading.js";
 import { gameLoadingOptions } from "./core/loading-context.js";
-import { vnTest, enableSeenLinePersistence, tapAdvance } from "./vn/engine.js";
+import { vnTest, enableSeenLinePersistence, enableLogReload, tapAdvance } from "./vn/engine.js";
 import { initSideArea } from "./core/side-area.js";
 import { installSaveFailedNotice } from "./core/save-failed-notice.js";
 import { createDevInspector } from "./core/dev-inspector.js";
@@ -33,6 +33,7 @@ import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth, openGrowthBoard
 installNoZoom(); // ダブルタップによる拡大を止める（#2826。ピンチは禁止しない）
 installDoubleTapGuard(); // ダブルタップ拡大の保険（#2852）。no-zoom が入っていれば __suienNoZoom を見て自動で何もしない
 enableSeenLinePersistence(); // 既読SKIPの記録は本編でだけ端末に残す
+enableLogReload();
 // デバッグ用の道具（URL に ?debug=1 で左下に「DBG」・?debug=0 で消す。速さ・シーシャ作りの自動など）。
 // リリース前に、この1行と remake/js/dev/ のフォルダを消す（remake/README.md「デバッグ用の道具」）
 try { const q = new URLSearchParams(location.search).get("debug"); if (q !== null) localStorage.setItem("suien_debug", q === "1" ? "1" : "0"); if (localStorage.getItem("suien_debug") === "1") import("./dev/debug-panel.js").then(m => m.mountDebugPanel()).catch(e => console.error(e)); } catch {}

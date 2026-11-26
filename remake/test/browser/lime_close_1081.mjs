@@ -94,6 +94,8 @@ await suite('lime-close-1081', async check => {
     await page.locator('.vn-text').waitFor();
     await act('vn-auto');
     assert.equal(await page.locator('[data-test="vn-auto"]').getAttribute('aria-pressed'), 'true');
+    // この場面は未読の続きをSKIPで進める前提。SKIP既定が既読のみ（#4214 U-08）になったため、検査では「全部」に設定する。
+    await page.evaluate(async () => { (await import('./js/core/state.js')).config.skipSeenOnly = false; });
     await act('vn-skip');
     assert.equal(await page.locator('[data-test="vn-skip"]').getAttribute('aria-pressed'), 'true');
     await page.waitForFunction(async () => (await import('./js/core/state.js')).state.money === 27000);

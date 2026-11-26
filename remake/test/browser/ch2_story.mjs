@@ -7,10 +7,21 @@ const map = '[data-destination-selection]:not(.done)';
 const end = t('ch2-tournament-entry');
 // DAY9 試煙会で一度だけ渡す苺の試供品（ch2-strawberry-trial.js の STRAWBERRY_SAMPLE、#1650）。まかないで試さなければ残る
 const withStrawberrySample = stock => ({ ...stock, afsahr_strawberry: (stock.afsahr_strawberry || 0) + 12 });
-// 大会の朝・夜のスマホは複数のトークが並ぶ。返信を選びながら「スマホを閉じる」まで読む（#1653 ⑦）。
+// 大会の朝・夜の受信箱で、応援・祝福とスミさんの連絡を読む（#4035 D3）。
 async function readPhone(page) {
   for (;;) {
-    await page.locator(`${t('phone-next')}, ${t('reply-0')}`).first().waitFor();
+    await page.locator(`${t('phone-next')}, ${t('reply-0')}, ${t('phone-close')}`).first().waitFor();
+    if (await page.locator(t('phone-close')).count()) {
+      const sender = await page.evaluate(() => {
+        const s = window.__remake.state;
+        const notice = s.inbox.find(i => i.id === `ch2_tournament_sumi_${s.flags._ch2_tournament.stage === 'morning' ? 'morning' : 'tokyo'}`);
+        if (!notice) throw Error('Missing chapter 2 LIME group');
+        const next = [...(notice.requiredMessageIds || []), notice.id].map(id => s.inbox.find(i => i.id === id)).find(i => !i.done);
+        return next && (next.account || next.msg.sender);
+      });
+      if (!sender) { await page.locator(t('phone-close')).click(); return; }
+      await page.locator(t(`lime-chat-${sender}`)).click(); continue;
+    }
     if (await page.locator(t('reply-0')).count()) { await page.locator(t('reply-0')).first().click(); await page.locator(t('phone-next')).waitFor(); continue; }
     const last = (await page.locator(t('phone-next')).first().innerText()).includes('閉じる');
     await page.locator(t('phone-next')).first().click();
@@ -178,7 +189,8 @@ await suite('ch2-story', async check => {
     await reload(page); await atMap(page, 5, 0);
     const s = await state(page); assert(s.flags._ch2_read_ch2_abyss_baito); assert(s.flags._ch2_night_4_done); assert.equal(s.money, 36000);
     const log = await page.evaluate(async () => (await import('./js/vn/engine.js')).backlog().map(l => l.text).join('\n'));
-    assert(!log.includes('炭を、落とした。')); assert(log.includes('同じ夜'));
+    // 再読込をまたぐLOG保持（#4214 U-11）で、落炭の行は復元されて1回だけ残る。再生し直すと2回になる。
+    assert.equal(log.split('炭を、落とした。').length - 1, 1); assert(log.includes('同じ夜'));
   });
   await check('full-rest-still-reads-fixed-accident-without-payment', async page => {
     await seed(page, { sick: true }); await atMap(page, 4, 0);

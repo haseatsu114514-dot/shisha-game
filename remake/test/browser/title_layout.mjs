@@ -104,7 +104,8 @@ try {
       await p.locator("#modal.show .cfg").waitFor(); await noDisplaySwitch(p);
       await button(p, "cfg-close").click(); await p.waitForFunction(() => !document.querySelector("#modal.show"));
       assert.equal(await p.locator(".title-art").getAttribute("data-art"), artBefore, "CONFIG must keep the approved original art");
-      assert.equal(await p.locator(".title-item").count(), 4);
+      assert.equal(await p.locator(".title-item").count(), 5);
+      assert.equal(await button(p, "title-continue").isEnabled(), true);
       assert.equal(await button(p, "title-load").isEnabled(), true);
       await p.screenshot({ path: path.join(dir, `${device}-title.png`) });
       await p.reload(); await ready(p);
@@ -144,7 +145,7 @@ try {
     });
     await check(`${device}-legacy-continue`, options, async p => {
       await seed(p);
-      await button(p, "title-load").click(); await button(p, "slot-1").click();
+      await button(p, "title-continue").click();
       await p.locator("body.vn-open").waitFor();
       await landscapeOnly(p); await noDisplaySwitch(p);
       const saved = await p.evaluate(async () => {
@@ -193,35 +194,40 @@ try {
     }, operation));
   }
   await check("image-failure", sizes.phone, async p => {
-    assert.equal(await p.locator(".title-item").count(), 4);
+    assert.equal(await p.locator(".title-item").count(), 5);
     await p.locator(".title-logo-fallback:not([hidden])").waitFor();
     await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
     await p.locator("#modal.show .modal-actions button").click(); await landscapeOnly(p);
   }, p => p.route(/(?:title_arts\/|bg_title|ui_title_logo_rich)/, route => route.fulfill({ status: 200, contentType: "image/png", body: "invalid-image" })));
   // #2863: スマホ横持ち（Safariのバーあり含む）で、通常版の文字は実寸11px以上・押す所は38px以上。
   // 副題（はじめから等）は残して実寸11px以上（2026-11-08 オーナー指示）。主文より小さく、主文のすぐ右の同じ行に並ぶ。
-  // 下中央の操作ヒント・表示設定は出さず、メニュー行は72px以上・行間16px。
+  // 下中央の操作ヒント・表示設定は出さず、メニュー行は72px以上。
   for (const [w, h] of [[844, 390], [844, 340]]) await check(`phone-landscape-${w}x${h}-sizes`, { viewport: { width: w, height: h }, isMobile: true, hasTouch: true }, async p => {
+    await seed(p);
     for (const cycle of [false, true]) {
       if (cycle) {
-        // NEXT CYCLE が出る5行でもステージ内に収まる（導線の表示だけを確かめる。開始はしない）
+        // NEXT CYCLE が出る6行でもステージ内に収まる。
         await p.evaluate(async () => {
           const meta = await import("./js/core/cycle-meta.js");
           meta.saveCycleMeta({ ...meta.emptyCycleMeta(), unlocked: true });
         });
         await p.reload(); await ready(p); await button(p, "title-next-cycle").waitFor();
-        assert.equal(await p.locator(".title-item").count(), 5);
       }
       const m = await p.evaluate(() => {
         // 縮み率は高さで測る（ワイドステージ #2861 では幅が1280より広がるが、高さは720のまま）
         const stage = document.querySelector("#stage").getBoundingClientRect(), k = stage.height / 720;
-        const items = [...document.querySelectorAll(".title-item")].map(n => n.getBoundingClientRect());
+        const rows = [...document.querySelectorAll(".title-item")];
+        const items = rows.map(n => n.getBoundingClientRect());
         const shown = n => { const r = n.getBoundingClientRect(), s = getComputedStyle(n); return r.width > 2 && r.height > 2 && s.visibility !== "hidden" && !s.clipPath.includes("inset(50%)"); };
         const texts = [...document.querySelectorAll(".title *")].filter(n => [...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim()) && shown(n))
           .map(n => ({ text: n.textContent.trim(), px: parseFloat(getComputedStyle(n).fontSize) * k }));
         return { k, texts, heights: items.map(r => r.height / k), real: items.map(r => r.height),
           gaps: items.slice(1).map((r, i) => (r.top - items[i].bottom) / k), bottom: Math.max(...items.map(r => r.bottom)) <= stage.bottom + 1,
-          subtitles: [...document.querySelectorAll(".title-item")].map(n => {
+          reachable: rows.every((n, i) => {
+            const r = items[i];
+            return !n.disabled && n.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+          }),
+          subtitles: rows.map(n => {
             const en = n.querySelector(".ti-en"), ja = n.querySelector(".ti-ja"), a = en.getBoundingClientRect(), b = ja.getBoundingClientRect();
             return { text: ja.textContent, shown: shown(ja), px: parseFloat(getComputedStyle(ja).fontSize) * k, enPx: parseFloat(getComputedStyle(en).fontSize) * k,
               rightOfEn: b.left >= a.right - .5 && b.left - a.right <= 16 * k + 1, sameLine: b.top < a.bottom && b.bottom > a.top,
@@ -229,9 +235,10 @@ try {
           }), foot: document.querySelectorAll(".title-foot").length,
           toolbar: document.querySelectorAll(".title-layout-toolbar, .title-layout-options").length };
       });
+      assert.equal(m.heights.length, cycle ? 6 : 5);
       assert(m.texts.length > 0 && m.texts.every(t => t.px >= 11 - 1e-6), JSON.stringify(m.texts));
       assert(m.heights.every(v => v >= 72 - .5) && m.real.every(v => v >= 38 - .5), JSON.stringify(m));
-      assert(m.gaps.every(v => Math.abs(v - 16) < .5) && m.bottom, JSON.stringify(m));
+      assert(m.gaps.every(v => Math.abs(v - (cycle ? 10 : 16)) < .5) && m.bottom && m.reachable, JSON.stringify(m));
       assert(m.subtitles.length === m.heights.length && m.subtitles.every(t => t.shown && t.px >= 11 - 1e-6 && t.px < t.enPx && t.rightOfEn && t.sameLine && t.inRow),
         JSON.stringify(m.subtitles));
       assert.deepEqual([m.foot, m.toolbar], [0, 0]);
@@ -247,7 +254,7 @@ try {
       const a = n.querySelector(".ti-en").getBoundingClientRect(), ja = n.querySelector(".ti-ja"), b = ja.getBoundingClientRect();
       return { px: parseFloat(getComputedStyle(ja).fontSize), gap: Math.round(b.left - a.right), sameLine: b.top < a.bottom && b.bottom > a.top, w: b.width };
     }));
-    assert(subs.length === 4 && subs.every(t => t.px === 15 && t.gap === 16 && t.sameLine && t.w > 0), JSON.stringify(subs));
+    assert(subs.length === 5 && subs.every(t => t.px === 15 && t.gap === 16 && t.sameLine && t.w > 0), JSON.stringify(subs));
   });
   // 2026-11-13「タイトル画面のクオリティを上げたい」: 構図・カーソル・キー操作・「つづきから」の添え書き。
   // 台（背景の x=880）は、ロゴと人物の絵の間に見える。カーソルは開いた時からおすすめの行に1つだけ付く。
@@ -268,7 +275,7 @@ try {
     assert.deepEqual(await cursor(), ["title-new"]);
     assert.equal(await p.locator(".ti-note").count(), 0);
     if (device === "pc") {
-      // ↑↓は押せない行（LOAD）を飛ばして一巡し、Home／End で端へ。動かした行にフォーカスも移る。
+      // ↑↓は押せない「つづきから」と「ロード」を飛ばして一巡し、Home／End で端へ。
       const focused = () => p.evaluate(() => document.activeElement?.dataset?.test ?? null);
       await p.keyboard.press("ArrowDown"); assert.deepEqual([await cursor(), await focused()], [["title-gallery"], "title-gallery"]);
       await p.keyboard.press("ArrowDown"); assert.deepEqual(await cursor(), ["title-config"]);
@@ -288,10 +295,10 @@ try {
     }
     // セーブがある: おすすめは「つづきから」。いちばん新しいセーブの章と日付を、主文の下の行に添える。
     await seed(p);
-    assert.deepEqual(await cursor(), ["title-load"]);
+    assert.deepEqual(await cursor(), ["title-continue"]);
     const note = await p.evaluate(() => {
       const k = document.querySelector("#stage").getBoundingClientRect().height / 720;
-      const row = document.querySelector('[data-test="title-load"]'), n = row.querySelector(".ti-note"), en = row.querySelector(".ti-en");
+      const row = document.querySelector('[data-test="title-continue"]'), n = row.querySelector(".ti-note"), en = row.querySelector(".ti-en");
       const r = n.getBoundingClientRect(), box = row.getBoundingClientRect(), a = en.getBoundingClientRect();
       return { text: n.textContent, count: document.querySelectorAll(".ti-note").length, real: parseFloat(getComputedStyle(n).fontSize) * k, enReal: parseFloat(getComputedStyle(en).fontSize) * k,
         below: r.top >= a.bottom - 1, alignedWithMain: Math.abs(r.left - a.left) < 1, inRow: r.left >= box.left - .5 && r.right <= box.right + .5 && r.bottom <= box.bottom + .5,
@@ -300,10 +307,13 @@ try {
     assert.match(note.text, /^第1章　DAY 6・(昼|夜)$/);
     assert(note.count === 1 && note.real >= 11 - 1e-6 && note.real < note.enReal && note.below && note.alignedWithMain && note.inRow && note.oneLine, JSON.stringify(note));
     if (device === "pc") {
-      // 何も触らずに決定キーだけで「つづきから」の枠選びが開く。
+      // 「ロード」は枠選びを開き、「つづきから」はそのまま再開する。
+      await p.keyboard.press("ArrowDown"); assert.deepEqual(await cursor(), ["title-load"]);
       await p.keyboard.press("Enter"); await button(p, "slot-cancel").waitFor(); await button(p, "slot-cancel").click();
       await p.waitForFunction(() => !document.querySelector("#modal.show"));
       assert.deepEqual(await cursor(), ["title-load"]);
+      await p.keyboard.press("ArrowUp"); assert.deepEqual(await cursor(), ["title-continue"]);
+      await p.keyboard.press("Enter"); await p.locator("body.vn-open").waitFor();
     } else {
       // スマホ（タッチ）: 押した行にカーソルが移る。添え書きが入っても行の高さと間隔は変わらない（72px以上・16px）。
       await button(p, "title-config").tap(); await p.locator("#modal.show .cfg").waitFor();

@@ -1638,8 +1638,14 @@ html:root .trpg-root.trpg-cinematic .trpg-table-person.active .trpg-seat-face { 
 /* 顔の切り抜きは view.js の circleStyle（頬の幅と目の高さを揃えた枠）。幅と位置はインラインで指定する。 */
 html:root .trpg-root.trpg-cinematic .trpg-seat-face img { position: absolute; left: 50%; max-width: none; }
 html:root .trpg-root.trpg-cinematic .trpg-seat-head { display: block; flex: 1; min-width: 0; }
+/* Keep up to two lines inside the 68px face row so names cannot lift the rail. */
 html:root .trpg-root.trpg-cinematic .trpg-seat-head .trpg-seat-name,
-html:root .trpg-root.trpg-cinematic .trpg-table-person[data-part="gm"] .trpg-seat-name { display: block; max-width: 100%; font-size: max(24px, var(--tt-min)); font-weight: 700; white-space: normal; text-wrap: balance; color: #fff4d6; text-shadow: 0 1px 2px #000, 0 0 6px #000a; }
+html:root .trpg-root.trpg-cinematic .trpg-table-person[data-part="gm"] .trpg-seat-name {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; max-height: 68px; overflow: hidden;
+  max-width: 100%; font-size: max(22px, calc(10 * var(--tt-u))); font-weight: 700;
+  white-space: normal; overflow-wrap: anywhere; text-wrap: balance;
+  color: #fff4d6; text-shadow: 0 1px 2px #000, 0 0 6px #000a;
+}
 html:root .trpg-root.trpg-cinematic .trpg-table-person.active .trpg-seat-name { color: #fffbea; }
 html:root .trpg-root.trpg-cinematic .trpg-table :is(.trpg-seat-pc, .trpg-seat-speaking, .trpg-seat-stats, .trpg-seat-ability, .trpg-seat-mark) { display: none; }
 
@@ -1658,6 +1664,9 @@ html:root .trpg-root.trpg-cinematic .trpg-cover-pc-copy > span { font-size: max(
 html:root .trpg-root.trpg-cinematic .trpg-cover-party { gap: 10px; bottom: 40px; right: 40px; }
 html:root .trpg-root.trpg-cinematic .trpg-cover-person { width: 104px; gap: 4px; }
 html:root .trpg-root.trpg-cinematic .trpg-cover-person :is(strong, small, span) { font-size: max(18px, var(--tt-min)); }
+html:root .trpg-root.trpg-cinematic .trpg-cover-person > :is(strong, small[data-part="pl"]) {
+  max-width: calc(100% + 8px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 @media (pointer: coarse) {
   html:root .trpg-root.trpg-cinematic .trpg-cover-copy .trpg-cover-actions .trpg-button,
   html:root .trpg-root.trpg-cinematic .trpg-cover-pc .trpg-button { min-height: 84px; }
@@ -2531,6 +2540,11 @@ html:root .trpg-root.trpg-cinematic {
    文字は規格の変数（css/phone-density.css）: --phone-text（本文・実寸 約12px）／--phone-sub（補足・実寸 11.5px）／--phone-tap（押す所・実寸 39px）。
    進行・判定・台詞・セーブには触れない。 */
 
+/* ---- 物語の台詞（GM・PL の語り）: 本編の会話と同じくらいの大きさに（2026-11-25 オーナー「細かい文字が多くて見づらい」）。
+   PC は 24px のまま。スマホは 28px（844×390 で実寸 約15px。本編の会話の本文と同じ）。最長の台詞（54字）でも2行で箱に収まる ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-speech p { font-size: 28px; line-height: 1.5; max-width: 900px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-speaker-label strong { font-size: var(--phone-text); }
+
 /* ---- 聞き込み: 題と説明を読める大きさに。前置きの一文は「あと N つ」と同じ内容なので出さない ---- */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-selection-title > small { font-size: var(--phone-sub); margin-bottom: 2px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-interview-prompt { display: none; }
@@ -3168,6 +3182,17 @@ html:root body.reduce-shake .trpg-root .trpg-roll-show :is(.trpg-rs-lines, .trpg
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] :is(.trpg-die, .trpg-die-body, .trpg-d20-value, .trpg-reroll-stamp, .trpg-dice-total, .trpg-dice-total > strong, .trpg-dice-grade, .trpg-dice-near, .trpg-roll-special, .trpg-roll-reward, .trpg-dice-row, .trpg-roll-gauge-mark) {
   animation-duration: .01s !important; animation-delay: 0s !important; transition-duration: .01s !important; transition-delay: 0s !important;
 }
+/* スマホ軽量化（data-density="phone" の時だけ。PC の見た目は変えない）:
+   iPhone では演出の山場で描画が限界を超えてページごと落ちることがあるため、一番重い描画だけを軽い形に置き換える。
+   ・ファンブルの全面 backdrop-filter（画面全体の再描画）を外す。地の色づけは残る。
+   ・回る光の筋（1900px 四方の層＋合成モード）は層を小さくし、通常合成にする。
+   ・ダイスの光の影は、ぼかしの重ねがけを1本にまとめる。 */
+html:root[data-density="phone"] .trpg-root .trpg-roll-show[data-tone="fumble"] .trpg-rs-tint { backdrop-filter: none; -webkit-backdrop-filter: none; }
+html:root[data-density="phone"] .trpg-root .trpg-roll-show .trpg-rs-rays { width: 1100px; height: 1100px; margin: -550px 0 0 -550px; mix-blend-mode: normal; }
+html:root[data-density="phone"] .trpg-root .trpg-roll-show .trpg-rs-die[data-render="3d"][data-state="hover"] .trpg-rs-d3,
+html:root[data-density="phone"] .trpg-root .trpg-roll-show .trpg-rs-die[data-state="hover"] .trpg-rs-body { filter: drop-shadow(0 0 12px #ffe9a8); }
+html:root[data-density="phone"] .trpg-root .trpg-roll-show .trpg-rs-die[data-render="3d"][data-glow="critical"] .trpg-rs-d3,
+html:root[data-density="phone"] .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="critical"] .trpg-rs-body { filter: drop-shadow(0 0 18px #ffb84a); }
 /* A paper scenario on a small table. Scoped to the preview / mounted minigame. */
 #trpg-app { position: absolute; inset: 0; }
 .trpg-screen { position: absolute; inset: 0; background: #171c1e; }
@@ -3932,10 +3957,12 @@ body[data-scene-mood="dread"] #bg::after { content: ""; position: absolute; inse
   transition: opacity 0.15s, transform 0.2s var(--ease-out);
 }
 .vn-name.show { opacity: 1; transform: none; }
+/* 本文の太さは 500（2026-11-26 オーナー実機指摘「メインテロップ太すぎ」で 700 から引き下げ。
+   逆に選択肢は継承の 400 で細く見えたため .vn-choice 側で 700 を明示した）。 */
 .vn-text {
   font-family: var(--font);
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.48;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -3951,7 +3978,7 @@ body[data-scene-mood="dread"] #bg::after { content: ""; position: absolute; inse
 .vn-inner {
   margin-top: 8px;
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.45;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -4051,6 +4078,7 @@ body:not(:root) .vn-choices:has(> .vn-choice:nth-child(6)) > .vn-choice {
   width: 720px;
   padding: 16px 30px;
   font-size: 24px;
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-align: center;
   /* 選択肢は1行（GUI22）。文言は全角26字まで。はみ出すときは engine.js の fitOneLine が字を縮める */
@@ -4460,10 +4488,13 @@ body:not(:root) .vn-choices:has(> .vn-choice:nth-child(6)) > .vn-choice {
 @media (pointer: coarse) and (hover: none) {
   .title:not(:root) :is(.ti-ja, .ti-note) { font-size: max(15px, calc(11.2px / var(--k, 1))); }
 }
-/* NEXT CYCLE が出て5行になるときは、ロゴの上下の余白を詰めて720pxに収める。 */
+/* 5行ではロゴの前後を詰め、NEXT CYCLE が出る6行ではロゴと行間も縮める。 */
 .title:not(:root) .title-left:has(.title-menu > :nth-child(5)) { top: 16px; }
 .title:not(:root) .title-left:has(.title-menu > :nth-child(5)) .title-brand { height: 200px; }
 .title:not(:root) .title-left:has(.title-menu > :nth-child(5)) .title-logo { top: 20px; }
+.title:not(:root) .title-left:has(.title-menu > :nth-child(6)) .title-brand { height: 144px; }
+.title:not(:root) .title-left:has(.title-menu > :nth-child(6)) .title-logo { top: 4px; width: 416px; }
+.title-menu:has(> :nth-child(6)) { gap: 10px; margin-top: 12px; }
 /* 選んでいる行（.is-current）はいつも1つ。開いた時はおすすめの行に付き、マウス・Tab・↑↓で動く（scenes/title.js）。
    マウスを乗せた行・フォーカスのある行も同じ見た目（script が is-current をそこへ移すので、2行が同時に光ることはない）。 */
 .title-item:is(.is-current, :hover, :focus-visible):not(:disabled) { color: var(--gold-hi); transform: translateX(10px); outline: none; }
@@ -4479,6 +4510,7 @@ body:not(:root) .vn-choices:has(> .vn-choice:nth-child(6)) > .vn-choice {
 .title.enter .title-item:nth-child(3) { animation-delay: 0.1s; }
 .title.enter .title-item:nth-child(4) { animation-delay: 0.15s; }
 .title.enter .title-item:nth-child(5) { animation-delay: 0.2s; }
+.title.enter .title-item:nth-child(6) { animation-delay: 0.25s; }
 @keyframes title-item-in { from { opacity: 0; translate: -14px 0; } }
 .title-ver { position: absolute; right: 20px; bottom: 20px; z-index: 2; font-size: max(13px, calc(11.2px / var(--k, 1))); letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.55); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85); pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
@@ -5629,11 +5661,6 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .hud-exp .hx-target { flex: none; font-size: 12px; font-weight: 700; color: #b8741a; white-space: nowrap; }
 .hud-exp .hx-target[hidden] { display: none; }
 .hud-exp[data-milestone="true"] .hx-bar::after { content: ""; position: absolute; right: 1px; top: 1px; width: 8px; height: 2px; border-radius: 1px; background: radial-gradient(circle, #ffb347 40%, transparent 45%) 0 0 / 4px 2px repeat-x; }
-.exp-chip { position: absolute; left: 6px; top: 20px; z-index: 2; display: flex; gap: 6px; align-items: baseline; padding: 2px 8px; border-radius: 10px;
-  background: rgba(34, 22, 8, 0.92); border: 1px solid rgba(244, 210, 122, 0.7); white-space: nowrap; pointer-events: none; animation: exp-chip 2.2s ease-out forwards; }
-.exp-chip b { color: #ffe08a; font-size: 13px; }
-.exp-chip span { color: #f1dcb0; font-size: 12px; font-weight: 700; }
-@keyframes exp-chip { 0% { opacity: 0; transform: translateY(-4px); } 12% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(6px); } }
 /* 未使用の火種: 琥珀の炎の丸と個数（LIMEの赤丸と別の色） */
 .hud-level { position: relative; }
 .hidane-badge { position: absolute; right: -7px; top: -7px; min-width: 20px; height: 20px; padding: 0 4px; box-sizing: border-box; display: grid; place-items: center;

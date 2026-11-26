@@ -148,6 +148,7 @@ assert(goodWins <= 4, `GOOD-only rarely wins (${goodWins}/20)`);
   assert.equal(score.total, Math.min(100, score.parts.rank + score.parts.timing + score.parts.stamina));
   assert(score.parts.timing <= 35 && score.parts.stamina <= 25);
   assert.equal(RIVAL_PROFILES.length, RACE.rivals);
+  assert.deepEqual(RIVAL_PROFILES.map(profile => [profile.id, profile.name]), [["front", "カマル"], ["closer", "リーフ"], ["steady", "サブール"]]);
   assert.deepEqual(Object.keys(POLICIES), ["perfect", "good", "cruise", "hold", "none", "spam"]);
 }
 

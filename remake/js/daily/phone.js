@@ -451,7 +451,7 @@ function mukaiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
 
 /**
  * スミさんからの「急で悪い、昼のシフト入れるか？」。序盤の固定2回（DAY3/8）＋4日以上バイトに出ていない朝。
- * 乗るとそのまま昼のシフトへ（行動1回・給料に上乗せ）。各章の大会当日は来ない
+ * 乗るとそのまま昼から夜までの店番へ（行動2回・給料に上乗せ。TFL62）。各章の大会当日は来ない
  */
 function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
   if (tournamentDay || !chapterFeatureEnabled(state.chapter, "hiyoriDaily") || (chapterFeatureEnabled(state.chapter, "sumiStoryShifts") && state.day >= TOURNAMENT_DAY)) return null;
@@ -1077,22 +1077,21 @@ function pendingMaxHeartChat(item) {
 }
 
 /** 好感度がすでにMAXなら、日常の雑談の好感度を少量のEXPに置き換える。 */
-function settleMaxAffinityChat(item, ui, replied = false) {
+function settleMaxAffinityChat(item, replied = false) {
   const m = item.msg;
   if (!isMaxHeartChat(m)) return false;
   // 既読・返信済みの同じ話題があっても、再案内や再表示ではEXPを入れない。
   if (maxHeartChatRewardDue(item, replied)) {
-    const got = gainExp(MAX_HEART_CHAT_EXP, { key: "lime_chat", silent: true });
-    if (got > 0) ui.note(`EXP +${got}`); // スマホ内だけに表示し、トーク履歴やHUDには重ねて残さない
+    gainExp(MAX_HEART_CHAT_EXP, { key: "lime_chat", silent: true });
   }
   return true;
 }
 
 /** 読み終えたときの報酬（返信の無い連絡で好感度が少し上がる） */
-function readReward(item, ui) {
+function readReward(item) {
   const m = item.msg;
   if (m.type !== "rumor" && m.type !== "invitation" && !(m.replies && m.replies.length) && m.sender !== "???" && m.sender !== "sumi") {
-    if (settleMaxAffinityChat(item, ui)) return;
+    if (settleMaxAffinityChat(item)) return;
     const lover = isLover(m.sender);
     // 返事を読むだけにした報告は、指定された好感度に返信と同じ倍率を掛ける。
     if (!lover && Number.isFinite(m.read_affinity)) {
@@ -1158,7 +1157,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       item.read = true;
       if (!state.limeRead.includes(m.id)) state.limeRead.push(m.id);
       syncMintoKnowledge();
-      readReward(item, ui);
+      readReward(item);
     }
   }
   if (!alive()) return;
@@ -1288,7 +1287,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     const responseMedia = replyMedia(item, r.response_media);
     if (responseMedia) item.log.push({ me: false, ...responseMedia });
     if (r.response) item.log.push({ me: false, text: r.response });
-    if (!(points > 0 && !r.action && settleMaxAffinityChat(item, ui, true))) {
+    if (!(points > 0 && !r.action && settleMaxAffinityChat(item, true))) {
       bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
       try {
         gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1), {
@@ -1408,7 +1407,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
         ]),
         el("div.lcr-side", [
           el("small", { text: dayLabel(last) }),
-          openInv ? el("span.lcr-tag", { text: "誘い" }) : xpChat ? el("span.lcr-tag", { text: `♥5・基礎EXP +${MAX_HEART_CHAT_EXP}`,
+          openInv ? el("span.lcr-tag", { text: "誘い" }) : xpChat ? el("span.lcr-tag", { text: "♥5・経験値",
             title: "日常の雑談では好感度の代わりに経験値が入る。獲得量には章の倍率が掛かる。", dataset: { test: "lime-chat-exp" } }) : last.msg.type === "chat" ? el("span.lcr-tag", { text: "雑談" }) : null,
         ]),
       ]));

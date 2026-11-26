@@ -22,7 +22,7 @@ await suite("ichidai-modes", async (check) => {
     const next = page.locator(t("ichi-next-step"));
     await next.waitFor();
     assert.equal(await next.getAttribute("data-action"), "embers");
-    assert.match(await next.innerText(), /手札から3枚えらんで「炭を置く」/);
+    assert.match(await next.innerText(), /手札から3枚選んで「炭を置く」/);
     // 案内の札は、上から「流れ」（このターンの順番と、いまどこか）・「ねらい」（何を目ざすか）・「つぎ」
     assert.deepEqual([await page.locator(`${t("ichi-steps")} span`).allInnerTexts().then((x) => x.map((y) => y.replace(/\s+/g, ""))), await page.locator(t("ichi-steps")).getAttribute("data-now")], [["1炭にする札を選ぶ", "2"], "0"]); // 名前を出すのは、いまの段だけ（ほかは番号と title）
     assert.deepEqual(await page.locator(`${t("ichi-steps")} span`).evaluateAll((list) => list.map((n) => n.title)), ["炭にする札を選ぶ", "炭を置く"]);

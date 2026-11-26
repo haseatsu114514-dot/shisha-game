@@ -200,18 +200,17 @@ await suite("growth-levelup", async (runCheck) => {
       window.mintoVn=await import("./js/vn/engine.js");window.mintoTonari=await import("./js/daily/tonari.js");
       window.mintoStats=await import("./js/core/stats.js");
       window.startMinto=(enabled,learned)=>{
-        const s=mintoCore.newGame();Object.assign(s,{chapter:1,day:3,slot:1,money:20000,stamina:160,weatherSeed:456});s.stats.guts=100;
+        const s=mintoCore.newGame();Object.assign(s,{chapter:1,day:3,slot:0,money:20000,stamina:160,weatherSeed:456});s.stats.guts=100;
         mintoGrowth.setGrowthPreview(enabled);Object.assign(mintoGrowth.ensureGrowth(),{nodes:["M-B1"],learned:learned?["M-B1"]:[]});
         s.flags._ev_ageha_cameo=true;mintoVn.vnTest.turbo=true;
         window.mintoLines=[];mintoVn.hooks.onLine=id=>mintoLines.push(id);
         window.mintoRun=mintoTonari.doBaito({called:true});window.mintoDuplicate=mintoTonari.doBaito({called:true});
       };
-      (await import("./js/core/data.js")).DB.baito=[];
     });
     const outcomes=[];
     for(const [enabled,learned] of [[false,true],[true,false],[true,true]]){
       await page.evaluate(([enabled,learned])=>startMinto(enabled,learned),[enabled,learned]);
-      await page.locator(t("shift-order-0")).click();await page.locator(t("after-none")).click();
+      await page.locator(t("after-none")).click();
       outcomes.push(await page.evaluate(async()=>{
         const done=await mintoRun,duplicate=await mintoDuplicate,s=mintoCore.state;
         const result={done,duplicate,earned:s.money-20000,stamina:s.stamina,count:s.baitoCount,
@@ -224,17 +223,18 @@ await suite("growth-levelup", async (runCheck) => {
     assert.equal(outcomes[2].earned-outcomes[1].earned,1150);
     for(let i=0;i<outcomes.length;i++){
       const r=outcomes[i];assert(r.done&&r.reload);assert.equal(r.duplicate,false);assert.equal(r.count,1);
-      assert.equal(r.stamina,142);assert.equal(r.calling,i===2); // 根性100の既存の消耗軽減: 24→18
+      assert.equal(r.stamina,130);assert.equal(r.calling,i===2); // 根性100の既存の消耗軽減: 昼夜各20→各15
     }
     // 支払後のSAVE/LOADから同じ行動枠を再入力しても、授業の上乗せは再支給しない。
     await page.evaluate(()=>{
+      mintoCore.state.slot=0; // 支払済みの同じ昼枠を再入力する
       window.mintoRepeatMoney=mintoCore.state.money;window.mintoLines=[];
       window.mintoRun=mintoTonari.doBaito({called:true});
     });
     await page.locator(t("after-none")).click();
     const repeat=await page.evaluate(async()=>{await mintoRun;return{earned:mintoCore.state.money-mintoRepeatMoney,
       calling:mintoLines.includes("baito_minto_calling"),stamp:mintoCore.state.flags._minto_calling_paid};});
-    assert.equal(repeat.earned,outcomes[1].earned);assert.equal(repeat.calling,false);assert.equal(repeat.stamp,"1:3:1");
+    assert.equal(repeat.earned,outcomes[1].earned);assert.equal(repeat.calling,false);assert.equal(repeat.stamp,"1:3:0");
     await page.evaluate(()=>{mintoVn.hooks.onLine=null;});
   });
   await check("LOAD-during-calling-pays-neither-old-nor-new-owner",async(page)=>{
@@ -243,16 +243,15 @@ await suite("growth-levelup", async (runCheck) => {
       window.mintoCore=await import("./js/core/state.js");const growth=await import("./js/core/growth.js");
       window.mintoVn=await import("./js/vn/engine.js");const tonari=await import("./js/daily/tonari.js");
       mintoCore.state.money=54321;mintoCore.saveToSlot("minto-owner-proof");
-      const s=mintoCore.newGame();Object.assign(s,{chapter:1,day:3,slot:1,money:20000,stamina:160});s.stats.guts=100;
+      const s=mintoCore.newGame();Object.assign(s,{chapter:1,day:3,slot:0,money:20000,stamina:160});s.stats.guts=100;
       growth.setGrowthPreview(true);Object.assign(growth.ensureGrowth(),{nodes:["M-B1"],learned:["M-B1"]});
-      (await import("./js/core/data.js")).DB.baito=[];mintoVn.vnTest.turbo=true;
+      mintoVn.vnTest.turbo=true;
       mintoVn.hooks.onLine=id=>{
         if(id!=="baito_minto_calling"||window.mintoLoaded)return;
         mintoCore.loadFromSlot("minto-owner-proof");window.mintoLoaded=JSON.stringify(mintoCore.state);
       };
       window.mintoOld=s;window.mintoRun=tonari.doBaito();
     });
-    await page.locator(t("shift-order-0")).click();
     const r=await page.evaluate(async()=>({result:await mintoRun,swapped:!!window.mintoLoaded,
       same:JSON.stringify(mintoCore.state)===window.mintoLoaded,oldMoney:mintoOld.money,newMoney:mintoCore.state.money}));
     assert.equal(r.result,false);assert(r.swapped&&r.same);assert.equal(r.oldMoney,20000);assert.equal(r.newMoney,54321);
@@ -918,18 +917,20 @@ await suite("growth-levelup", async (runCheck) => {
       assert.doesNotMatch(await exp.innerText(), /あと\d/);
       assert.match(await exp.getAttribute("title"), /次のレベルまで EXP 205/);
 
-      // 自由行動1回 → チップ1枚（内訳の数字は出さない）
+      // 自由行動でゲージが伸び、獲得ポイントのチップは出ない。
+      const fill = exp.locator(".hx-today");
+      const previousFill = await fill.evaluate(node => parseFloat(node.style.width));
       await page.evaluate(async () => {
         const stats = await import("./js/core/stats.js");
         __remake.state.met.naru = true;
         await stats.paidAction(async () => { stats.addStamina(-16); return true; }, { exp: { key: "naru", person: "naru" } });
       });
       const chip = page.locator(t("exp-chip"));
-      await chip.waitFor();
-      assert.match(await chip.innerText(), /EXP \+70[\s\S]*はじめて/);
+      assert.equal(await chip.count(), 0);
+      assert(await fill.evaluate(node => parseFloat(node.style.width)) > previousFill);
       assert.match(await exp.getAttribute("title"), /次のレベルまで EXP 135/);
       await page.waitForTimeout(400);
-      await page.screenshot({ path: `${out}/growth-levelup-${label}-chip.png` });
+      await page.screenshot({ path: `${out}/growth-levelup-${label}-gauge.png` });
 
       // 満タンを越えたら、その場でレベルが上がって火種が手持ちに入る（SBD108・SBD122）。画面の上に短い札が出て、操作は止まらない
       await page.evaluate(async () => (await import("./js/core/growth.js")).gainExp(400));
@@ -938,6 +939,7 @@ await suite("growth-levelup", async (runCheck) => {
       await card.waitFor();
       assert.deepEqual(await card.evaluate((node) => [node.dataset.from, node.dataset.to, node.dataset.line]), ["1", "3", "LEVEL UP Lv.3　白火 ＋4"], "レベル1つで火種2つ");
       assert.match(await card.innerText(), /LEVEL UP[\s\S]*Lv\.3[\s\S]*×4/);
+      assert.doesNotMatch(await card.innerText(), /EXP\s*[+＋]\s*\d+/i);
       assert.doesNotMatch(await card.innerText(), /？？？/, "名乗っていない相手の名前は出さない");
       await assertFits(page, ".lvup-plate");
       const badge = page.locator(t("hud-hidane"));
@@ -949,7 +951,7 @@ await suite("growth-levelup", async (runCheck) => {
       await page.screenshot({ path: `${out}/growth-levelup-${label}-full.png` });
       assert.equal(await page.locator(BLOCKING).count(), 0);
       await page.locator(t("levelup")).waitFor({ state: "detached", timeout: 15000 });
-      await page.waitForFunction(() => !document.querySelector('[data-test="exp-chip"]'));
+      assert.equal(await chip.count(), 0);
       await assertFits(page, '[data-test="hud-exp"]');
 
       // 寝る前は何も出ない（もう上がっている）
@@ -1712,6 +1714,7 @@ await suite("growth-levelup", async (runCheck) => {
       const path = board.pathTo("M-W1", new Set()).path;
       if (!board.commitPending(path).some(n => n.id === "M-W1")) throw new Error("legal lesson path");
       shiftCore.state.flags._ev_ageha_cameo = true;
+      shiftCore.state.slot = 0; // シフト（店番）は昼から入る（TFL62）
       const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true;
       window.shiftLines = []; vn.hooks.onLine = id => shiftLines.push(id);
       window.shiftRun = (async () => {
@@ -1721,8 +1724,7 @@ await suite("growth-levelup", async (runCheck) => {
       })();
     });
     await page.locator(t("tonari-baito")).click();
-    await page.locator(t("shift-order-0")).click();
-    await page.locator(t("after-lesson-M-W1")).waitFor();
+    await page.locator(t("after-lesson-M-W1")).waitFor(); // 店番はこの検査では回さない（support.mjs）。「今日の注文」は無い（TFL63）
     const before = await page.evaluate(() => ({ day: shiftCore.state.day, slot: shiftCore.state.slot,
       stamina: shiftCore.state.stamina, money: shiftCore.state.money, paid: JSON.stringify(shiftCore.state.growth.paid),
       fire: JSON.stringify(shiftCore.state.growth.hidane) }));

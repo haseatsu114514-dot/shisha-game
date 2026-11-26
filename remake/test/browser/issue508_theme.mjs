@@ -10,6 +10,8 @@ async function prepare(page) {
       data: await import("./js/core/data.js"), ch1: await import("./js/chapters/ch1.js"),
       night: await import("./js/daily/night-events.js") };
     T.ch1.setupHooks();
+    // このスイートは未読の場面もSKIPで進める前提。SKIP既定が既読のみ（#4214 U-08）になったため、検査では「全部」に設定する。
+    T.core.config.skipSeenOnly = false;
     (await import("./js/core/ui.js")).clearScreen();
     // The production chapter-two loader registers its lazily loaded scenes.
     await (await import("./js/chapters/ch2-city-data.js")).loadPreparationDialogues();
@@ -209,6 +211,9 @@ await suite("issue508-theme", async checkAll => {
         T.core.state.flags._salaryman_service_water]), [!touch, touch]);
       assert.equal(await page.locator('img[data-speaker="salaryman"]').count(), 0);
       await page.evaluate(() => { T.fresh(); window.finished = false;
+        // SKIPは場面をまたいで保持される（#3558 項目7・2026-11-25）ため、手動で送る場面は開始前に明示的に止める。
+        const skipBtn = document.querySelector('[data-test="vn-skip"]');
+        if (skipBtn?.getAttribute("aria-pressed") === "true") skipBtn.click();
         T.vn.play("ch1_salaryman_change").then(() => { window.finished = true; }); });
       await advanceTo(page, "夜のtonari。いつもの時間に、いつもの鉄仮面さんが来た。……でも、今日は少し違う。", touch);
       const normal = await snapshotPortrait(page, "normal");
@@ -228,6 +233,9 @@ await suite("issue508-theme", async checkAll => {
         ["ch2_sumi_silence", "はじめくん、県大会に出るんでしょう。すごいことですよ", "normal"],
       ]) {
         await page.evaluate(id => { T.fresh(); T.core.state.chapter = 2; window.finished = false;
+          // SKIPは場面をまたいで保持される（#3558 項目7・2026-11-25）ため、手動で送る場面は開始前に明示的に止める。
+          const skipBtn = document.querySelector('[data-test="vn-skip"]');
+          if (skipBtn?.getAttribute("aria-pressed") === "true") skipBtn.click();
           T.vn.play(id).then(() => { window.finished = true; }); }, id);
         await advanceTo(page, text, touch); await snapshotPortrait(page, face);
         await assertFits(page, ".vn-box");
@@ -251,6 +259,8 @@ await suite("issue508-theme", async checkAll => {
     await page.reload(); await page.locator(process.env.READY_SELECTOR || '[data-test="title-new"]').waitFor(); await prepare(page);
     const result = await page.evaluate(async () => {
       T.core.loadFromSlot("suien_remake_slot1"); T.vn.vnTest.turbo = true;
+      // 再読込をまたいだLOG保持（#4214 U-11）で読み込み時に前回のLOGが戻るため、ここからの再生分だけを数える。
+      T.vn.backlog().length = 0;
       T.night.syncNightQueue(T.ch1.NIGHT_EVENTS);
       await T.night.runNightPlan(T.ch1.NIGHT_EVENTS);
       const lines = T.lines();

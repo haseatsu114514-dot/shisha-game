@@ -27,6 +27,8 @@ const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_B
 // scene endings and navigation are covered by motion_endings/navigation_transitions.
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, reducedMotion: "reduce" });
 await installLoadingComicReader(page);
+// 店番（フロア営業・TFL62）は回さない（シフトを通り過ぎるだけ。support.mjs の floorGame と同じ）
+await page.addInitScript(() => { try { localStorage.setItem("suien_floor", "instant"); } catch {} });
 const loadReport = process.env.LOAD_REPORT ? await recordLoad(page, BASE) : null;
 await page.addInitScript(() => {
   if (window.top !== window) return; // 会話計測フックは本編だけ。歩行frameに相対importを注入しない。
@@ -328,6 +330,11 @@ for (;;) {
   }
   if (snap.screen === "map" && (await page.$(".hud-lime.has")) && (await click('[data-test="hud-phone"]'))) { limeOpened++; continue; }
   if (snap.screen === "map") {
+    // シフト（店番・TFL62）は昼からだけ入れて、昼と夜の2コマを使う。夜に当たったシフトは、先の外出と入れ替えて次の昼へ回す
+    if (snap.slot !== 0 && String(PLAN[planIdx] || "").startsWith("baito")) {
+      const swap = PLAN.findIndex((x, i) => i > planIdx && !/^(baito|shop)/.test(x));
+      if (swap > planIdx) [PLAN[planIdx], PLAN[swap]] = [PLAN[swap], PLAN[planIdx]];
+    }
     const { item, requiredPurchase } = nextPlanAction({ planIdx, phase: snap.phase,
       midcheckDone: snap.midcheckDone, lemonPurchased });
     const [kind, arg] = item.split(":");

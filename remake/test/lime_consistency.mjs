@@ -1091,7 +1091,7 @@ function legacySumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}
     accept_event: "__sumi_baito__",
     accept_text: "入ります！",
     accept_reply: { sender: "sumi", stamp: "st_sumi_ack" },
-    hint: "乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく",
+    hint: "乗るとそのまま昼から夜までの店番へ（行動を2回使う）。いつもの給料に上乗せがつく",
     messages: [
       "急で悪い。今日、昼のシフト入れるか？",
       reasons[state.day % reasons.length],
@@ -1267,3 +1267,97 @@ console.log("PASS #2035 phone chapter features", { chapterGateCases });
   assert.equal(volkHeart.trigger_value, 3);
 }
 console.log("PASS L01-L43 noor friend lime hook");
+
+// #4035 D3: 第2章の実際の入口を、本番受信箱・返信処理と組み合わせて通す。
+// 章の描画と存命判定だけ代役。旧専用画面と同じ既読・返信・報酬が一度だけ確定する。
+{
+  const source = await fs.readFile(new URL("js/chapters/ch2-tournament.js", root), "utf8");
+  const start = source.indexOf("async function message(");
+  const end = source.indexOf("\nfunction checkpoint(", start);
+  assert(start >= 0 && end > start);
+  let active = true;
+  const saves = [];
+  const entryContext = vm.createContext({ state, hud: noop, live: () => active,
+    save: () => saves.push(clone(state)),
+    deliverLimeMessage: phone.deliverLimeMessage, openLime: phone.openLime,
+    openPhone: () => { throw Error("D3: chapter 2 must use the inbox"); },
+  });
+  const readMessage = vm.runInContext(`(${source.slice(start, end)})`, entryContext);
+  const entry = suffix => reset({ chapter: 2, day: 28, slot: suffix === "morning" ? 0 : 1,
+    phase: suffix === "morning" ? "tournament" : "aftermath", flags: { _ch2_day1: { startDay: 15 } } });
+  const resultOf = () => state.inbox.map(({ id, originId, account, read, done, replyState, log }) =>
+    ({ id, originId, account, read, done, replyState, log: clone(log) }));
+
+  for (const suffix of ["morning", "tokyo"]) {
+    const ids = suffix === "morning" ? ["encourage_ch2_tsumugi_welcome", "encourage_ch2_minto"]
+      : ["ch2_congrats_tsumugi_welcome", "ch2_congrats_minto"];
+    const peers = ids.map(id => allMessages.find(m => m.id === id));
+    assert(peers.every(Boolean));
+    const key = `ch2_tournament_sumi_${suffix}`;
+    const lines = ["既存の章メッセージ"];
+    const sumi = { id: key, sender: "sumi", type: "message", messages: lines, afterClose: [] };
+
+    // 比較元: 従来の強制順送りで全通を読む。
+    entry(suffix);
+    const previous = phone.openPhone([...peers, sumi]);
+    for (const m of [...peers, sumi]) {
+      if (m.replies?.length) await click("reply-0");
+      await click("phone-next");
+    }
+    await previous;
+    const expected = resultOf(), expectedGains = clone(gains);
+
+    entry(suffix); saves.length = 0;
+    let collected = 0;
+    const others = () => { collected++; return peers; };
+    let reading = readMessage({}, suffix, lines, others);
+    await settle();
+    assert.equal(state.inbox.length, 3, "all messages are delivered before opening the inbox");
+    assert.equal(saves[0].inbox.length, 3, "delivery is saved before UI interaction");
+    // 他のトークを先に選んでも、スミさんだけ読んで章を進められない。
+    await click("lime-back"); await click("lime-chat-sumi");
+    await closeThread(reading);
+    assert.equal(await reading, false, "unread cheers/congratulations keep the chapter checkpoint");
+    assert(state.inbox.find(i => i.id === key).done);
+    assert(!state.inbox.find(i => i.id === ids[1]).done);
+    const firstGains = clone(gains);
+    const saved = clone(state);
+    reset(saved); // SAVE/LOAD後にも未読グループと返事待ちを保持する。
+    reading = readMessage({}, suffix, lines, others);
+    await settle();
+    for (const id of ids) {
+      const pending = state.inbox.find(i => i.id === id);
+      if (pending.done) continue;
+      await click("lime-back");
+      await click(`lime-chat-${pending.account || pending.msg.sender}`);
+      if (pending.msg.replies?.length) await click("reply-0");
+    }
+    await closeThread(reading);
+    assert.equal(await reading, true);
+    assert.equal(collected, 1, "reload never regenerates the already delivered group");
+    assert.deepEqual(resultOf(), expected, "read/reply/account/history match the previous path");
+    assert.deepEqual([...firstGains, ...gains], expectedGains, "same rewards, once only");
+    const finished = clone(state);
+    assert.equal(await readMessage({}, suffix, lines, others), true);
+    assert.deepEqual(clone(state), finished, "completed entry does not reopen or redeliver");
+  }
+
+  // 既存保存（関連通ID欄なし）と、他の応援がない入口。
+  for (const existing of [false, true]) {
+    entry("morning");
+    const key = "ch2_tournament_sumi_morning";
+    if (existing) phone.deliverLimeMessage({ id: key, sender: "sumi", messages: ["既存の章メッセージ"] });
+    const reading = readMessage({}, "morning", ["既存の章メッセージ"]);
+    await closeThread(reading);
+    assert.equal(await reading, true);
+    assert.equal(state.inbox.length, 1); assert.deepEqual(gains, []);
+  }
+  entry("tokyo"); saves.length = 0;
+  const reading = readMessage({}, "tokyo", ["既存の章メッセージ"]);
+  await settle(); const beforeCloseSaves = saves.length;
+  active = false;
+  await closeThread(reading);
+  assert.equal(await reading, false, "closed chapter session cannot advance");
+  assert.equal(saves.length, beforeCloseSaves, "closed chapter session cannot save after the phone");
+  console.log("[#4035 D3] PASS chapter 2 inbox: morning/night, pending replies, reload, rewards, legacy and session guard");
+}

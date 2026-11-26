@@ -196,10 +196,10 @@ test('maxed acquaintance: completed first read grants EXP once, including simult
   await f.finish(); await Promise.all([a, b]);
   assert.equal(f.original.xp, 5); assert.equal(f.original.affinity, 66);
   assert.deepEqual(f.original.gains, []); assert.deepEqual(f.original.limeRead, [f.item.id]);
-  assert.deepEqual(f.notes, ['EXP +5']); assert.deepEqual(logs(f.item), []);
+  assert.deepEqual(f.notes, []); assert.deepEqual(logs(f.item), []);
   const loaded = f.replaceState(JSON.parse(JSON.stringify(f.original)));
   await f.run(loaded.inbox[0]);
-  assert.equal(loaded.xp, 5); assert.deepEqual(f.notes, ['EXP +5']);
+  assert.equal(loaded.xp, 5); assert.deepEqual(f.notes, []);
 });
 
 test('an interrupted first read does not grant XP; it can still grant on a later complete read', async () => {
@@ -223,9 +223,9 @@ test('maxed friend: selecting a rewarded reply grants one EXP award and no affin
   for (const pick of f.picks) pick.resolve(f.reply);
   await f.finish(); await Promise.all([a, b]);
   assert.equal(f.original.xp, 8); assert.equal(f.original.affinity, 66);
-  assert.deepEqual(f.original.gains, []); assert.deepEqual(f.notes, ['EXP +8']);
+  assert.deepEqual(f.original.gains, []); assert.deepEqual(f.notes, []);
   assert.deepEqual(logs(f.item), expectedLog);
-  await f.run(); assert.equal(f.original.xp, 8); assert.deepEqual(f.notes, ['EXP +8']);
+  await f.run(); assert.equal(f.original.xp, 8); assert.deepEqual(f.notes, []);
 });
 
 test('friend whose reply just reaches MAX earns only normal affinity', async () => {
@@ -241,7 +241,7 @@ test('resends and duplicate origins cannot award EXP', async () => {
   await finishRead(f);
   await f.run({ ...resend, id: resend.originId + '_again', msg: { ...resend.msg, messages: [] } });
   await f.run({ ...resend, msg: { ...resend.msg, messages: [] } });
-  assert.equal(f.original.xp, 5); assert.deepEqual(f.notes, ['EXP +5']);
+  assert.equal(f.original.xp, 5); assert.deepEqual(f.notes, []);
 });
 
 for (const [name, fields, options, expected] of [
@@ -367,7 +367,7 @@ test('accepted invitation saves one existing acknowledgement after the player re
   const legacy = { id: '_sumi_baito_inv_d3', sender: 'sumi', type: 'invitation', time_slot: 'noon',
     accept_event: '__sumi_baito__', accept_text: '入ります！',
     accept_reply: { sender: 'sumi', stamp: 'st_sumi_ack' },
-    hint: '乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく',
+    hint: '乗るとそのまま昼から夜までの店番へ（行動を2回使う）。いつもの給料に上乗せがつく',
     messages: ['急で悪い。今日、昼のシフト入れるか？', '常連の団体が入ってな。人手が足りん', '……代わりと言っちゃなんだが、給料は弾むぞ'],
     decline_response: { text: '……そうか。なら、こっちで回す' } };
   assert.deepEqual(JSON.parse(JSON.stringify(generated)), legacy);

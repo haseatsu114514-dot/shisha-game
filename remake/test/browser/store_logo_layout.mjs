@@ -81,6 +81,8 @@ await suite('store-logo-layout', async check => {
         const saved = await storageSnapshot(page);
         await page.evaluate(async mode => {
           const vn = await import('./js/vn/engine.js');
+          // skipモードは未読の1行をSKIPで流す前提。SKIP既定が既読のみ（#4214 U-08）になったため、検査では「全部」に設定する。
+          L.core.config.skipSeenOnly = false;
           L.core.config.textSpeed = 4; L.finished = false;
           L.dialogue = vn.play({ dialogue_id: `logo_layout_${mode}`, lines: [{ speaker: '', text: '地図へ戻る。' }] })
             .then(() => { L.finished = true; });
