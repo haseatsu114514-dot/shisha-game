@@ -7,9 +7,9 @@ import {
 import { CALLS } from "../js/daily/tonari-floor-data.js";
 
 const ORDER = ["best", "good", "none"];
-/** 並んでいるミックスから、その気分にいちばん合う一台（worst＝いちばん合わない一台）。 */
+/** 並んでいるミックスから、その注文にいちばん合う一台（worst＝いちばん合わない一台）。本編の人物の名指しの注文も同じ物差しで見る。 */
 export function bestMix(s, order, { worst = false } = {}) {
-  const hand = floorHand(s, order.wish).sort((a, b) => (ORDER.indexOf(a.rating) - ORDER.indexOf(b.rating)) * (worst ? -1 : 1));
+  const hand = floorHand(s, order).sort((a, b) => (ORDER.indexOf(a.rating) - ORDER.indexOf(b.rating)) * (worst ? -1 : 1));
   return hand[0];
 }
 

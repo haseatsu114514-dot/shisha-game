@@ -11,7 +11,7 @@
   "suites": [
     {
       "id": "tonari-floor",
-      "title": "tonari floor service (one-person): guest wishes, mixes built from game flavors with main/sub attributes, timed shuffle, coal tending, care calls, refills, fever, rating and shift boundaries",
+      "title": "tonari floor service (one-person, the in-game part-time job from noon to night): guest wishes, rare visitors' own speech and named orders, mixes built from game flavors with main/sub attributes, timed shuffle, coal tending, care calls, refills, fever, dusk, tutorial, rating and shift boundaries",
       "kind": "quick",
       "run": ["node --test remake/test/tonari_floor_model.mjs", "node --experimental-vm-modules remake/test/tonari_floor_shift.mjs"]
     },
@@ -428,10 +428,10 @@
       "run": ["node remake/test/water_comfort.mjs", "node remake/test/pull_water.mjs"]
     },
     {
-      "id": "shift-mix-record",
-      "title": "Shift mix recording, dialogue and tournament feedback (#1414, #1415)",
+      "id": "tournament-after-feedback",
+      "title": "Chapter 1 tournament after-night feedback: Tsumugi's line and interview/growth branches (#1414)",
       "kind": "quick",
-      "run": ["node remake/test/shift_mix_record.mjs"]
+      "run": ["node remake/test/tournament_after_feedback.mjs"]
     },
     {
       "id": "mukai-shift-orders",
@@ -1434,7 +1434,7 @@
     },
     {
       "id": "tonari-floor-browser",
-      "title": "tonari floor service on the real screen: shift flow, mix list with flavors and shuffle, coal tending, PC/touch controls, no overlapping text, clock stops and LOAD",
+      "title": "tonari floor service on the real screen: noon-to-night shift flow, step-by-step tutorial (PC/touch), mix list with flavors and shuffle, coal tending, rare visitor's named order, PC/touch controls, no overlapping text, clock stops and LOAD",
       "kind": "browser",
       "weight": 1.6,
       "timeout": 10,

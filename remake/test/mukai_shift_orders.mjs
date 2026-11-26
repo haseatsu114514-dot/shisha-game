@@ -1,6 +1,6 @@
 // 東京の mukai のシフトの注文（chapters/tokyo-mukai.js・VOL09）。#2020 E: 一度シフトに入った次の日からは、
 // 知らない客に何を聞くか・あいまいな注文をどう読むかを選ぶ「任される注文」も混ざる。最初のシフトは従来の4種だけ。
-// ブラウザ不要。注文表と選び方の部分だけを取り出して動かす（shift_mix_record.mjs と同じやり方）。
+// ブラウザ不要。注文表と選び方の部分だけを取り出して動かす（以前の今日の注文の検査と同じやり方）。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";

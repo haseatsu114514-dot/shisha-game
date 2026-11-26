@@ -125,7 +125,8 @@ console.log("[782] 昼夜/固定日/延期/旧セーブ/一度きり: PASS");
     const desc = test => button(test).children.find(node => node.selector === "small").attrs.text;
     assert.equal(desc("tonari-baito").includes("新しい話"), sumi);
     assert.equal(desc("tonari-customer").includes("新しい話"), tsumugi);
-    assert.equal(desc("tonari-baito").includes("夜のシフト後"), night);
+    // シフト（店番）は昼から夜まで。夜からは入れない（TFL62）
+    assert.equal(desc("tonari-baito").includes("夜からは入れない"), night);
     assert.equal(desc("tonari-customer").includes("つむぎ"), known);
     assert.equal(button("tonari-practice"), undefined, "#2213 B04: まかない練習はシフト上がりで選ぶ（独立の行動にしない）");
     button(choose ? `tonari-${choose}` : "sub-back").attrs.onclick();
@@ -134,17 +135,17 @@ console.log("[782] 昼夜/固定日/延期/旧セーブ/一度きり: PASS");
   }
   await inspect({ sumi: true, tsumugi: true, night: true, choose: "customer" });
   menuState.met.tsumugi = true;
-  await inspect({ sumi: true, tsumugi: true, night: true, known: true, choose: "baito" });
+  await inspect({ sumi: true, tsumugi: true, night: true, known: true, choose: "customer" });
   menuState.visitedDay = { tonari_customer: 6, tonari_baito: 6 };
   await inspect({ known: true });
   menuState.visitedDay = {}; menuState.slot = 0;
-  await inspect({ sumi: true }); // 昼でも読める序盤のスミ会話
+  await inspect({ sumi: true, choose: "baito" }); // 昼でも読める序盤のスミ会話。昼はシフトに入れる
   menuState.story.sumi = 2;
-  await inspect(); // スミ3本目は夜限定、つむぎも不在
+  await inspect({ sumi: true }); // スミ3本目は夜限定だが、店番の上がりは夜なので読める（TFL62）。つむぎは不在
   menuState.slot = 1;
   await inspect({ sumi: true, tsumugi: true, night: true, known: true });
   menuState.story = { sumi: 6, tsumugi: 6 };
-  await inspect({ known: true }); // 既読済み
+  await inspect({ known: true, night: true }); // 既読済み（夜なので、シフトの札は閉じている）
   menuState.story = {}; menuState.day = 8; menuState.slot = 0;
   await inspect({ sumi: true, tsumugi: true, known: true }); // 昼在店日
   menuState.flags._tsumugi_contest_progress = false;

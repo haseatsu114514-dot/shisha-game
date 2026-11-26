@@ -25,7 +25,6 @@ export const DB = {
   flavorById: {},
   equipment: [],
   equipById: {},
-  baito: [],          // 全章で使う接客イベント（章ごとの条件は各イベントに持つ）
   dialogues: {},      // dialogue_id -> dialogue
   confessionDialogueLoaded: false,
   loverEventsLoaded: false, // 節目なしと、台本の取得前を区別する
@@ -67,7 +66,6 @@ const CINEMA_DIALOGUE_FILE = "cinema";
 const TOURNAMENT_CRAFT_DIALOGUE_FILE = "tournament_craft";
 // 遊び場へ入った時の、店の人とのやり取り（daily/venue-arrivals.js）。タイトルでは先読みせず、店の入口で読む（小さい台本なので待ちは短い）。
 const VENUE_ARRIVAL_DIALOGUE_FILE = "venue_arrivals";
-const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;
 const JSON_CONCURRENCY = 8;
 
@@ -138,7 +136,6 @@ export async function loadAll(onProgress = () => {}, onManifest = () => {}) {
     ["relationshipMemories", `${ROOT}data/relationship_memories.json`],
     ["flavors", `${ROOT}data/flavors.json`],
     ["equipment", `${ROOT}data/equipment.json`],
-    ["baito", `${ROOT}data/baito_events.json`],
     ["glossary", `${ROOT}data/glossary.json`],
     ["lime", `${ROOT}data/lime_messages.json`],
     ["recipes", `${ROOT}data/recipes.json`],
@@ -190,7 +187,6 @@ export async function loadAll(onProgress = () => {}, onManifest = () => {}) {
   DB.flavorById = Object.fromEntries(raw.flavors.flavors.map((f) => [f.id, f]));
   DB.equipment = raw.equipment.equipment;
   DB.equipById = Object.fromEntries(DB.equipment.map((e) => [e.id, e]));
-  DB.baito = raw.baito.events.filter((e) => BAITO_CATEGORIES.has(e.category));
   DB.glossary = raw.glossary.groups;
   DB.lime = raw.lime.messages;
   DB.limeTemplates = raw.lime.templates;

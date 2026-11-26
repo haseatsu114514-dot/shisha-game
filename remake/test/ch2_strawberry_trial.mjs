@@ -142,7 +142,7 @@ const el = (tag, props = {}, children = []) => {
 const buttons = node => [node?.dataset?.test ? node : null, ...(node?.children || []).flatMap(buttons)].filter(Boolean);
 const tonariPorts = {
   ...shiftPay,
-  ...calendarPorts, el, DB: { dialogues: {}, baito: [], flavorById: {} }, config: {},
+  ...calendarPorts, el, DB: { dialogues: {}, flavorById: {} }, config: {},
   SE: { select() {}, cancel() {} }, CHARM_BONUS: [0], step: () => 1,
   currentCondition: () => ({ bonusRate: 1, shiftBonus: 0, health: "green" }),
   play: async () => ({}), dialogueSequence: run => run(), readyLessons: () => [], modal: async () => 0,
@@ -163,6 +163,9 @@ const tonariModule = new vm.SourceTextModule(tonariSource, {
 await tonariModule.link(portLinker(tonariSource, tonariPorts));
 await tonariModule.evaluate();
 calendarPorts.doBaito = tonariModule.namespace.doBaito;
+// 店番（TFL62）: 昼からだけ入れて、2コマ使う（実 tonari.js の値）。店番の画面はこの VM では読めないので、売上ボーナスなしで勤務だけ済む
+Object.assign(calendarPorts, { SHIFT_SLOTS: tonariModule.namespace.SHIFT_SLOTS, SHIFT_STAMINA: tonariModule.namespace.SHIFT_STAMINA,
+  shiftOpen: tonariModule.namespace.shiftOpen, holdActionSave: () => () => {} });
 
 const calendarSource = fs.readFileSync(new URL("remake/js/daily/calendar.js", root), "utf8");
 const calendarModule = new vm.SourceTextModule(`${calendarSource}\nexport { performSpotAction }; export const configureTest = () => { chapterDef = {}; };`, {

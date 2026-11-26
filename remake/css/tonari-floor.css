@@ -35,6 +35,14 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   content: ""; position: absolute; inset: 0; background: currentColor;
   mask: url("../img/ui/tonari-floor/icons.webp") var(--tf-icon-position) / 800% 300% no-repeat;
 }
+.tf-icon[data-mark] {
+  background: currentColor;
+  mask: var(--tf-mark-image) center / contain no-repeat;
+}
+.tf-icon[data-mark="best"] { --tf-mark-image: url("../img/ui/floor/mark-best.webp"); }
+.tf-icon[data-mark="good"] { --tf-mark-image: url("../img/ui/floor/mark-good.webp"); }
+.tf-icon[data-mark="miss"] { --tf-mark-image: url("../img/ui/floor/mark-miss.webp"); }
+.tf-icon[data-mark="bad"] { --tf-mark-image: url("../img/ui/floor/mark-bad.webp"); }
 /* 気分（＝ミックスの属性）の札: 色と印（フルーティ＝橙・りんご／スイート＝桃・あめ／リフレッシュ＝水色・雪／リラックス＝藤・月） */
 .tf-wish { position: relative; display: inline-flex; align-items: center; gap: 4px; font-weight: 700; white-space: nowrap; color: #1b1220; }
 .tf-wish .tf-icon { width: 22px; height: 22px; }
@@ -212,8 +220,6 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-tag-anger .tf-icon svg { stroke-width: 3.2; }
 .tf-spot:is([data-urgent="high"], [data-mood="mad"]) .tf-tag-anger { display: grid; animation: tf-anger 0.5s ease-in-out infinite alternate; }
 @keyframes tf-anger { to { scale: 1.18; rotate: 8deg; } }
-/* 激怒の顔は、形に入れない怒りの印 */
-.tf-spot[data-mood="mad"] .tf-tag-face .tf-icon svg { stroke-width: 3; }
 .tf-tag-gauge { display: none; height: 9px; border-radius: 5px; background: #10201acc; overflow: hidden; }
 .tf-tag-gauge i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #9fd8e0, #f0fbff); transition: width 0.5s linear; }
 .tf-spot:is([data-gauge="make"], [data-gauge="coal"]) .tf-tag-gauge { display: block; }
@@ -641,7 +647,6 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-visit-mix .tf-recipe { font-size: var(--tf-tiny); padding-left: 0.5em; }
 .tf-visit-face { display: inline-flex; color: var(--tf-mood-color, var(--tf-mid)); }
 .tf-visit-face .tf-icon { width: 40px; height: 40px; }
-.tf-visit-face .tf-icon svg { stroke-width: 2.2; }
 .tf-visit-bars { flex: 1 1 180px; display: grid; gap: 3px; min-width: 0; }
 .tf-visit-bars span { display: flex; align-items: center; gap: 8px; }
 .tf-visit-bars small { flex: 0 0 2.4em; font-size: var(--tf-small); color: var(--tf-dim); line-height: 1.05; }
@@ -658,11 +663,6 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   background: #140c0888; color: #ffd98a; filter: drop-shadow(0 0 16px currentColor) drop-shadow(0 4px 6px #000c);
 }
 .tf-verdict .tf-icon { width: 170px; height: 170px; }
-.tf-verdict .tf-icon svg { opacity: 0; }
-.tf-verdict .tf-icon { background: url("../img/ui/tonari-floor/verdict-best.webp") center / contain no-repeat; }
-.tf-sheet[data-verdict="good"] .tf-verdict .tf-icon { background-image: url("../img/ui/tonari-floor/verdict-good.webp"); }
-.tf-sheet[data-verdict="miss"] .tf-verdict .tf-icon { background-image: url("../img/ui/tonari-floor/verdict-miss.webp"); }
-.tf-sheet[data-verdict="bad"] .tf-verdict .tf-icon { background-image: url("../img/ui/tonari-floor/verdict-bad.webp"); }
 .tf-verdict b { font-size: 34px; line-height: 1.1; color: #fff7e6; text-shadow: 0 2px 6px #000; }
 .tf-sheet[data-verdict] .tf-verdict { display: grid; animation: tf-verdict 0.45s var(--ease-snap, ease); }
 .tf-sheet[data-verdict="good"] .tf-verdict { color: #9be8b4; }
@@ -928,3 +928,43 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .side-slot .tf-bonus[data-fever="on"] .tf-fever-levels > i > i { background: linear-gradient(90deg, #b592ff, #f0e4ff); }
 @media (prefers-reduced-motion: reduce) { .side-slot .tf-bonus[data-fever="ready"] { animation: none; } }
 
+
+/* ---- 昼から夜まで通しの店番（本編のバイト・TFL62）: 営業の半ばで日が暮れたら、夜の店内の絵をゆっくり灯す ---- */
+.tf-room img.tf-room-night { opacity: 0; transition: opacity 2.4s ease, filter 1.2s ease; }
+.tonari-floor[data-dusk="true"] .tf-room img.tf-room-night { opacity: 1; }
+
+/* ---- チュートリアル（TFL64）: スミさんの言葉は下の帯の所に出す。その間、下の帯と残り時間は隠す（UI の上に UI を重ねない） ---- */
+.tonari-floor[data-tutorial="true"] :is(.tf-bottom, .tf-clock) { visibility: hidden; }
+.tf-coach {
+  position: absolute; left: var(--tf-pad-l); right: calc(var(--tf-pad-r) + var(--tf-side) + 10px); bottom: 10px; z-index: 6;
+  display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 10px;
+  background: #0e0913eb; border: 2px solid #e7c27a; border-radius: 14px; box-shadow: 0 4px 14px #000a;
+}
+.tonari-floor:is([data-mode="panel"], [data-mode="pause"]) .tf-coach { visibility: hidden; }
+.tf-coach > img { width: 48px; height: 48px; border-radius: 50%; flex: 0 0 auto; object-fit: cover; box-shadow: 0 0 0 2px #e7c27a; }
+.tf-coach-body { flex: 1 1 auto; min-width: 0; }
+.tf-coach-text { font-size: var(--tf-text); font-weight: 700; line-height: 1.3; color: var(--tf-ivory); text-wrap: pretty; overflow-wrap: anywhere; }
+.tf-coach-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
+.tf-coach-next, .tf-coach-skip { min-height: var(--tf-tap); padding: 0 18px; border-radius: 12px; font-weight: 700; white-space: nowrap; }
+.tf-coach-next { border: none; background: linear-gradient(#ffe3a0, #e0a94e); color: var(--tf-ink); font-size: var(--tf-text); box-shadow: 0 2px 0 #7a5420; }
+.tf-coach-next[hidden] { display: none; }
+.tf-coach-skip { border: 1px solid #8a6a48; background: #1b1220cc; color: var(--tf-dim); font-size: var(--tf-small); }
+.tf-coach[data-nudge="true"] { animation: tf-shake 0.4s ease; }
+/* 光らせる所: 卓の札（はじめての営業の、心の声が指す卓と同じ輪）・シャッフル・フィーバー・右の一覧の◎の札 */
+.tf-spot[data-coach="true"] .tf-tag-box::before {
+  content: ""; position: absolute; inset: -9px; border-radius: 18px; border: 4px solid #fff1af; pointer-events: none;
+  animation: tf-guide 1.1s ease-out infinite;
+}
+:is(.tf-shuffle, .tf-bonus, .tf-preset)[data-coach="true"] { outline: 4px solid #fff1af; outline-offset: 3px; animation: tf-coach-pulse 1.1s ease-in-out infinite; }
+@keyframes tf-coach-pulse { 50% { outline-color: #fff1af55; } }
+/* 接客の画面: 今の段で押す一つだけ。ほかは沈める。スミさんの言葉は、見出しのすぐ下に */
+.tf-sheet-main:has(.tf-sheet-coach) { grid-template-rows: auto auto 1fr auto; }
+.tf-sheet-coach { display: flex; align-items: center; gap: 10px; padding: 4px 8px; border-radius: 12px; background: #0e0913d9; border: 1px solid #e7c27a;
+  font-size: var(--tf-text); font-weight: 700; line-height: 1.25; color: #ffe2a6; }
+.tf-sheet-coach img { width: 40px; height: 40px; border-radius: 50%; flex: 0 0 auto; object-fit: cover; }
+.tf-list .tf-option[data-coach="off"] { opacity: 0.42; filter: saturate(0.4); }
+.tf-list .tf-option[data-coach="focus"] { outline: 4px solid #fff1af; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .tf-room img.tf-room-night { transition: none; }
+  .tf-coach[data-nudge="true"], :is(.tf-shuffle, .tf-bonus, .tf-preset)[data-coach="true"] { animation: none; }
+}
