@@ -325,7 +325,7 @@ try {
       const bubble = await page.locator('.rw-bubble').innerText();
       if (preview) {
         assert.match(bubble, /経験値/);
-        assert.doesNotMatch(bubble, /上がった|【/);
+        assert.doesNotMatch(bubble, /上がった|【|\d/);
       } else assert.match(bubble, /【.+】が.+上がった/);
       await waitForSpin(page.evaluate(() => window.savedSpin), "saved result");
       const after = await page.evaluate(() => installSnapshot());
@@ -338,11 +338,8 @@ try {
       await page.evaluate(() => installProbe.reel.presentNow());
       assert.deepEqual(await page.evaluate(() => installSnapshot()), after, "再表示で二重付与しない");
       const cards = await page.evaluate(() => window.rewardCards);
-      assert.equal(cards.length, capped ? 0 : 1, "結果カードも一度だけ、上限で0なら通知しない");
-      if (!capped) {
-        assert.match(cards[0].cls, preview ? /\bexp\b/ : /\bstat\b/);
-        if (preview) assert.match(cards[0].text, /EXP \+15/);
-      }
+      assert.equal(cards.length, preview ? 0 : 1, "旧成長でだけ能力の結果カードが一度出る");
+      if (!preview) assert.match(cards[0].cls, /\bstat\b/);
     }, false, preview);
   }
 

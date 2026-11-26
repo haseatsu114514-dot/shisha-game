@@ -7,7 +7,7 @@ import { HOME_CITY_EN, currentCity } from "../core/city-locations.js";
 // 左上に DAY カード、右上に LIME と MENU。ステータスは全画面MENU（daily/menu.js）のタブへ移し、
 // 五角形のステータスボタンは廃止した（DUI05）。未使用の火種の印は MENU の右上に出す。
 import { el, yen, sleep } from "../core/util.js";
-import { layers, toast, gainCard } from "../core/ui.js";
+import { layers, gainCard } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { SE } from "../core/audio.js";
 import { state } from "../core/state.js";
@@ -151,24 +151,9 @@ export function initHud(h) {
     dom.moneyRow.append(pop);
     setTimeout(() => pop.remove(), 1400);
   }));
-  busOffs.push(on("exp-gain", showExpChip));
   busOffs.push(on("level-up", (info) => announceGrowth("level", info)));
   busOffs.push(on("hidane-gift", (gift) => announceGrowth("gift", gift)));
   installMenuKey();
-}
-
-/** 1行動につき1枚の「EXP +N　はじめて・なじみ」（内訳の数字は出さない。REPORT R7） */
-function showExpChip({ total, tags = [], publicReward = false }) {
-  if (!dom || !(total > 0)) return;
-  if (!growthEnabled()) {
-    if (publicReward) toast(`EXP +${total}（累計 ${state.growth?.xp || 0}）`, { kind: "good" });
-    return;
-  }
-  const chip = el("div.exp-chip", { role: "status", dataset: { test: "exp-chip" } }, [
-    el("b", { text: `EXP +${total}` }), tags.length ? el("span", { text: tags.join("・") }) : null,
-  ]);
-  dom.exp.append(chip);
-  setTimeout(() => chip.remove(), 2200);
 }
 
 /**
