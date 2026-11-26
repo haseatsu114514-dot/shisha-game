@@ -50,7 +50,7 @@ function bookBody(progress) {
     el("p.shop-stamps-lead", { text: "Dr.fookahがLIMEで配っている、各地のシーシャ屋の判子帳。店で一台を吸うと、判子を一つもらえる。" }),
     el("p.shop-stamps-lead", { text: `地域の判子がそろうとくじ券を${REGION_TICKETS}枚、全部そろうとさらに${COMPLETE_BONUS_TICKETS}枚。任意の店は一店につき${OPTIONAL_SHOP_TICKETS}枚。博士との勝負の日を決めるまで集められる。` }),
     el("p.shop-stamps-total", { dataset: { test: "shop-stamps-total" }, text: `判子 ${progress.count}/${progress.total}` }),
-    el("p.shop-stamps-lead", { text: `任意の店 ${progress.optionalCount}/2。行けない店があっても帳面は完成できる。` }),
+    el("p.shop-stamps-lead", { text: `任意の店 ${progress.optionalCount}/${progress.optionalTotal}。行けない店があっても帳面は完成できる。` }),
     ...progress.regions.map(entry => el(`section.shop-stamps-region${entry.complete ? ".done" : ""}`, { dataset: { test: `shop-stamps-${entry.id}` } }, [
       el("div.shop-stamps-head", [
         el("b", { text: entry.label }),

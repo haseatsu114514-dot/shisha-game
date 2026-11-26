@@ -1721,6 +1721,7 @@
         {"speaker": "hajime", "face": "normal", "text": "一回目は、ここで作りたくて。お父さんの席で、いいですか"},
         {"speaker": "noor", "face": "surprise", "text": "父の席？"},
         {"speaker": "", "face": "", "text": "奥の席で、ダブルアップルを詰める。いつもより、ほんの少しだけ火を弱くした。"},
+        {"speaker": "", "face": "", "text": "ゆっくり蒸らして、煙が立ってからホースを渡した。"},
         {"speaker": "", "face": "", "text": "ヌールさんは父の席に座って、三口だけ吸った。それから、四口目を吸った。"},
         {"speaker": "noor", "face": "smile", "text": "……四口目、吸っちゃった。三口までって決めてるのに"},
         {"speaker": "hajime", "face": "smile", "text": "火を弱くしたので、長く持ちます"},
@@ -1819,6 +1820,7 @@
         {"speaker": "hajime", "face": "normal", "text": "今日は、俺が詰めます。太陽さんが、帰りそびれた人の役で"},
         {"speaker": "da_silva", "face": "excited", "text": "ハハ！ 俺が客か。いいぞ、座る！"},
         {"speaker": "", "face": "", "text": "パッションフルーツを詰めて、炭を置く。その前に、水のグラスを太陽の前に置いた。"},
+        {"speaker": "", "face": "", "text": "素焼きに熱が回るまで、二人で待った。"},
         {"speaker": "da_silva", "face": "smile", "text": "……水、先。俺の順番だ"},
         {"speaker": "", "face": "", "text": "太陽は一口吸って、しばらく噴水の音を聞いていた。"},
         {"speaker": "da_silva", "face": "normal", "text": "静か。……でも、祭りのあとの味。いい一台"}
@@ -1909,6 +1911,7 @@
         {"speaker": "sheikh", "face": "surprise", "text": "……ここで、それを使うのか"},
         {"speaker": "hajime", "face": "normal", "text": "旅人のシェイクさんの器ですけど、今日は屋敷で吸ってほしくて"},
         {"speaker": "", "face": "", "text": "葉より先に、水を一杯。葡萄を縁まで盛って、炭を三つ。路地裏の店と同じ手順で作った。"},
+        {"speaker": "", "face": "", "text": "煙が立つまで、シェイクさんと黙って待った。"},
         {"speaker": "sheikh", "face": "normal", "text": "……屋敷で、路地裏の煙がする"},
         {"speaker": "sheikh", "face": "smile", "text": "悪くない。二人の私が、同じ席に座っているようだ"},
         {"speaker": "hajime", "face": "smile", "text": "外套、着てきてもいいですよ"},

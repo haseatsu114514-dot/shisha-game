@@ -265,10 +265,11 @@ export async function performTokyoSpot(spot, { staminaGuard, holdSaveUntilAction
     if (!loverReady && owner.lovers?.includes("mashiro")) toast("恋人の会話を読み込めませんでした。もう一度お試しください");
     const mashiroMilestoneDue = () => loverMilestonesDue(["mashiro"]).length > 0;
     const loverTime = loverReady && mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() });
-    const friendTalk = bondAfterNext(state, "mashiro");
+    let friendTalk = bondAfterNext(state, "mashiro");
+    if (friendTalk?.kind !== "story") friendTalk = null;
     if (friendTalk && !loverTime) {
       const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
-        { label: "ましろちゃんと話す", value: "friend", test: "tokyo-mukai-friend", primary: friendTalk.kind === "story" },
+        { label: "ましろちゃんと話す", value: "friend", test: "tokyo-mukai-friend", primary: true },
         { label: `シフトに入る（店番・${mukaiShiftPayText(state)}）`, value: "shift", test: "tokyo-mukai-shift" },
         { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
       if (!pick || state !== owner) return { used: false, exerted: false };

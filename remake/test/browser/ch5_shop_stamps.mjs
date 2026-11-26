@@ -162,6 +162,7 @@ await suite("ch5-shop-stamps", async check => {
     const panel = page.locator(`#modal.show ${dt("shop-stamps")}`);
     await panel.waitFor();
     assert.equal(await panel.locator(dt("shop-stamps-total")).textContent(), "判子 2/10");
+    assert.match(await panel.textContent(), /任意の店 0\/3。/);
     assert.equal(await panel.locator(`${dt("shop-stamp-adam")}[data-stamped="1"]`).count(), 1);
     assert.equal(await panel.locator(`${dt("shop-stamp-naru")}[data-stamped="0"]`).count(), 1);
     assert.match(await panel.locator(dt("shop-stamps-home")).textContent(), /1\/4/);

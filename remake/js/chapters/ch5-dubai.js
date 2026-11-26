@@ -19,7 +19,7 @@ import { showHud } from "../daily/hud.js";
 import { CAMEL_DAILY_SPOT_ID, CAMEL_SCENES, CAMEL_STAGES, CH4_CAMEL_SCENE_FILES, CH5_CAMEL_MEET, camelDailySpot, camelRaceRecord, camelSceneBg,
   chapterFiveCamelMeetDue, advanceChapterFiveCamelMeet } from "./ch4-camel-progress.js";
 import { DESERT_CAFE_PRICE, DESERT_GUIDE, DESERT_SPOT_IDS, NOOR_LOVER_SCENES, completeDesertReunion, desertChapterFiveSpots, desertProgress,
-  noorConfessionWaiting, noorLoverReadFlag, noorLoverSceneDue, desertDaytime, desertCafeVisit, completeDesertCafeVisit,
+  noorConfessionWaiting, noorLoverReadFlag, noorLoverSceneDue, noorFarisDue, completeNoorFaris, desertDaytime, desertCafeVisit, completeDesertCafeVisit,
   CH5_NOOR_DESK_ID, CH5_NOOR_CAFE_CHATS, CH5_NOOR_DESK_CHATS } from "./ch4-desert-progress.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { play } from "../vn/engine.js";
@@ -497,13 +497,33 @@ async function visitNoorCafe(spot, owner) {
 
 async function visitNoorDesk(spot, owner) {
   if (!owner.finales?.[DESERT_GUIDE] || !desertDaytime(owner)) return unused;
-  const chain = await visitNoorChain(owner, 0);
-  if (chain) return chain;
-  if (state !== owner) return unused;
   const day = owner.day;
   const visit = desertCafeVisit(owner, day);
   if (visit?.kind !== "talk") return unused;
-  if (!await read(visit.id, spot.preview, owner) || !completeDesertCafeVisit(owner, visit, day)) return unused;
+  const pair = noorFarisDue(owner, day);
+  if (pair && !DB.dialogues[pair]?.lines?.length) {
+    try { await (await import("./ch4-desert.js")).loadDesertDialogues(); } catch { toast(LOAD_FAILED); return unused; }
+    if (state !== owner) return unused;
+  }
+  const chain = await visitNoorChain(owner, 0);
+  if (state !== owner) return unused;
+  const result = chain ?? await readNoorDeskTalk(spot, owner, visit, day);
+  if (result.used && pair && await read(pair, spot.preview, owner)) completeNoorFaris(owner, pair, day);
+  return result;
+}
+
+async function readNoorDeskTalk(spot, owner, visit, day) {
+  let after = bondAfterNext(owner, DESERT_GUIDE);
+  if (after?.kind !== "story") after = null;
+  if (after) {
+    try { await loadBondAfterScenes(DB); } catch { after = null; }
+    if (state !== owner) return unused;
+  }
+  if (!await read(after?.scene || visit.id, spot.preview, owner)) return unused;
+  if (after) {
+    if (!completeDesertReunion(owner, day)) return unused;
+    markBondAfterRead(owner, DESERT_GUIDE, after);
+  } else if (!completeDesertCafeVisit(owner, visit, day)) return unused;
   return { used: true, exerted: false };
 }
 

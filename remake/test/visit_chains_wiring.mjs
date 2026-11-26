@@ -6,9 +6,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import * as chains from "../js/chapters/visit-chains.js";
+import * as desertRules from "../js/chapters/ch4-desert-progress.js";
+import { recordShopStamp, shopStampsProgress } from "../js/chapters/ch5-shop-stamps-model.js";
 import { chapterFiveTalkIds } from "../js/chapters/ch5-talks.js";
-import { CH5_NOOR_CAFE_CHATS, CH5_NOOR_DESK_CHATS, CH5_NOOR_DESK_ID, DESERT_GUIDE,
-  desertDaytime, desertCafeVisit, completeDesertCafeVisit, completeDesertReunion } from "../js/chapters/ch4-desert-progress.js";
 import * as longlongRules from "../js/chapters/ch4-longlong.js";
 import { CH5_FIRST_TALKS } from "../js/chapters/ch5-first-talks.js";
 
@@ -17,10 +17,19 @@ const plainOf = value => JSON.parse(JSON.stringify(value)); // vm の中で作�
 const realScenes = Object.fromEntries(JSON.parse(text("../../data/dialogue/visit_chains.json")).dialogues.map(d => [d.dialogue_id, d]));
 
 /** remake/js/<rel> を vm で読み、import の名前を overrides（無ければ何もしない関数）につなぐ。 */
-async function load(rel, overrides) {
+async function load(rel, overrides, dynamic = {}) {
   const source = text(`../js/${rel}`);
   const context = vm.createContext({ console, structuredClone, AbortController });
-  const module = new vm.SourceTextModule(source, { context, identifier: rel });
+  const module = new vm.SourceTextModule(source, { context, identifier: rel, async importModuleDynamically(specifier) {
+    const exports = dynamic[specifier];
+    assert(exports, `unexpected dynamic import ${specifier}`);
+    const mod = new vm.SyntheticModule(Object.keys(exports), function () {
+      for (const [name, value] of Object.entries(exports)) this.setExport(name, value);
+    }, { context });
+    await mod.link(() => {});
+    await mod.evaluate();
+    return mod;
+  } });
   const bindings = new Map();
   for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)) {
     const names = match[1].split(",").map(name => name.trim()).filter(Boolean);
@@ -52,12 +61,13 @@ let chooser = () => 0;
 let cancelNext = false;
 const stub = id => ({ dialogue_id: id, lines: [{ speaker: "", face: "", text: id }] });
 const readDialogues = async (name, ids) => Object.fromEntries(ids.map(id => [id, name === "visit_chains" ? realScenes[id] : stub(id)]));
+const { ns: bondAfter } = await load("core/bond-after.js", { readDialogues });
 /** vn/engine.js の play と同じ順で、選択→分岐の差し込み、条件→分岐の差し込みを行う（台詞は shown に残す）。 */
 async function play(idOrDialogue) {
   const dialogue = typeof idOrDialogue === "string" ? DB.dialogues[idOrDialogue] : idOrDialogue;
   assert(dialogue?.lines?.length, `missing dialogue ${idOrDialogue?.dialogue_id || idOrDialogue}`);
   played.push(dialogue.dialogue_id);
-  if (cancelNext) { cancelNext = false; return { cancelled: true }; }
+  if (cancelNext === true || cancelNext === dialogue.dialogue_id) { cancelNext = false; return { cancelled: true }; }
   const queue = [...dialogue.lines];
   while (queue.length) {
     const line = queue.shift();
@@ -129,7 +139,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   const money = { spent: 0 };
   const affinity = {};
   const stats = {};
-  const tokyo = await load("chapters/ch5-tokyo.js", { chapterFiveTalkIds,
+  const tokyo = await load("chapters/ch5-tokyo.js", { chapterFiveTalkIds, ...bondAfter,
     get state() { return state; }, save() {}, timeOfDay: () => "day", markMet() {}, DB, sceneBg: () => ({ url: "", tint: null }),
     setBg: async () => {}, toast() {}, vanRide: async () => {}, play, readDialogues,
     addMoney: n => { state.money += n; money.spent -= n; }, addStamina: n => { state.stamina += n; },
@@ -141,7 +151,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     // ましろと過ごす時間（BLC03・mashiro-time.js）。台本の一覧は配列で読むので、空で差し込む
     MASHIRO_TIME_SCENES: [], MASHIRO_TIME_FILE: "mashiro_time", mashiroTimeOpen: () => false, loverMilestonesDue: () => [],
     chainStageAt: chains.chainStageAt, chainVisitDue, playChainStage, recordChapterFiveTalk: chains.recordChapterFiveTalk,
-    modal: async () => "talk",
+    modal: async ({ options }) => options.find(option => option.test === "tokyo-mukai-friend")?.value,
   });
   const { performTokyoSpot, tokyoSpotsNow, TOKYO_SPOTS } = tokyo.ns;
   setState({ chapter: 5, day: 80, slot: 0, money: 100000, stamina: 100, flags: { _ch2_region: "tokyo" }, met: { steve: true } });
@@ -190,10 +200,14 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   assert(TOKYO_SPOTS.every(entry => !Object.hasOwn(entry, "hasNew")), "元の行き先は変えない");
 
   setState({ chapter: 5, day: 90, slot: 0, money: 50000, stamina: 100, met: { mashiro: true },
-    flags: { _ch2_region: "tokyo", _ch5: { part: "free", read: {} }, _ch5_tokyo_talks: { ch5_tokyo_mashiro: 7 } } });
+    finales: { mashiro: { route: "friend" } }, owned: ["suyaki_mashiro"],
+    flags: { _ch2_region: "tokyo", _ch5: { part: "free", read: {} },
+      _bond_after: { mashiro: bondAfter.BOND_AFTER.mashiro.scenes.map(scene => scene.id) } } });
   const mukai = () => tokyoSpotsNow().find(entry => entry.id === "ch5_tokyo_mukai");
-  assert((await performTokyoSpot(mukai())).used);
-  assert.equal(played.at(-1), "ch5_tokyo_mashiro_h");
+  for (const id of chapterFiveTalkIds("ch5_tokyo_mashiro")) {
+    assert((await performTokyoSpot(mukai())).used);
+    assert.equal(played.at(-1), id, "♥5後の5本を読み終えたら、第5章の小会話を読む");
+  }
   assert.equal(mukai().hasNew?.(), true);
   assert((await performTokyoSpot(mukai())).used);
   assert.equal(played.at(-1), "ch5_chain_mashiro_handle_1");
@@ -267,35 +281,90 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
 // ---- 第5章のドバイ: 路地裏のカフェ（閉店後の段は夜だけ・代金なし） ---------------------------------------------
 {
   const gained = [];
-  const dubai = await load("chapters/ch5-dubai.js", { chapterFiveTalkIds, CH5_NOOR_CAFE_CHATS, CH5_NOOR_DESK_CHATS,
-    CH5_NOOR_DESK_ID, DESERT_GUIDE, desertDaytime, desertCafeVisit, completeDesertCafeVisit, completeDesertReunion,
+  const desert = await load("chapters/ch4-desert.js", { ...desertRules, ...bondAfter,
+    get state() { return state; }, DB, readDialogues, play, spendableMoney: value => value.money,
+    addMoney: n => { state.money += n; }, visitAffinity: () => 5, gainAffinity() {}, save() {},
+    showScreen() {}, layers: { hud: { replaceChildren() {}, classList: { remove() {} } } }, setBg: async () => {},
+  }, { "../core/data.js": { bgUrl: id => id } });
+  const dubai = await load("chapters/ch5-dubai.js", { chapterFiveTalkIds, ...bondAfter, ...desertRules,
     get state() { return state; }, save() {}, timeOfDay: () => (state.slot ? "night" : "day"), markMet() {}, DB,
     sceneBg: () => ({ url: "", tint: null }), setBg: async () => {}, toast() {}, modal: async () => null, layers: { hud: {} },
     play, readDialogues, addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; }, earnStat() {}, gainAffinity: (id, n) => { gained.push([id, n]); },
     visitAffinity: () => 5, affinityLevel: () => 0, spendableMoney: value => value.money, finaleAtVisit: () => false,
     consultLessons: async () => {}, nextDubaiBondStory: () => null, DUBAI_LETTER_AGAIN: [], DUBAI_LETTER_DAYS: 2,
     CH5_CAMEL_MEET: { scene: "ch5_camel_meet" }, CH4_CAMEL_SCENE_FILES: { ch4_camel_race: [] }, SHEIKH_BOND_IDS: [], TAIYO_BOND_IDS: [],
-    DESERT_SPOT_IDS: { dunes: "dunes", desk: "desk" }, CAMEL_DAILY_SPOT_ID: "camel", MOSQUE_VISITING_HOURS: {},
+    CAMEL_DAILY_SPOT_ID: "camel", MOSQUE_VISITING_HOURS: {},
     // クリーク沿いの場面の束（SPV03・ch4-dubai-local.js）。台本の一覧は配列で読むので、空で差し込む
     CREEK_SCENES: { day: [], night: [] }, CREEK_SPOT_IDS: [], CREEK_TURN: "dubai_creek", creekSpotScenes: () => ({}), quietTurn: () => null,
     chainStageAt: chains.chainStageAt, chainVisitDue, playChainStage,
-  });
+  }, { "./ch4-desert.js": desert.ns });
   const { performDubaiSpot, DUBAI_SPOTS } = dubai.ns;
-  setState({ chapter: 5, day: 90, slot: 0, money: 50000, stamina: 100, finales: { noor: { route: "friend" } },
+  const stamps = await load("chapters/ch5-shop-stamps.js", { get state() { return state; }, recordShopStamp, grantKujiTickets: n => n });
+  const daily = await load("chapters/ch5-daily.js", { get state() { return state; }, performDubaiSpot, noteShopStamp: stamps.ns.noteShopStamp });
+  const definition = daily.ns.chapterFiveDailyDefinition({});
+  const visitShop = async spot => {
+    const result = await definition.performSpot(spot);
+    if (result.used) definition.afterSpot(spot);
+    return result;
+  };
+  setState({ chapter: 5, day: 90, slot: 0, money: 50000, stamina: 100, finales: { noor: { chapter: 4, route: "friend" } },
     flags: { _ch2_region: "dubai", _ch5: { part: "free", read: {} },
       _ch4_desert: { v: 2, talks: 6, chats: 7, lastTalkDay: 10, outings: 1, lastOutingDay: 9 } } });
-  const desk = { id: CH5_NOOR_DESK_ID, region: "dubai" };
+  state.owned = ["suyaki_noor"];
+  const desk = { id: desertRules.CH5_NOOR_DESK_ID, region: "dubai", preview: "bg_dubai_cafe_salim_day" };
+  cancelNext = true;
+  assert.equal((await visitShop(desk)).used, false);
+  assert.equal(shopStampsProgress(state).optionalCount, 0, "中断した来店には判子を押さない");
+  assert.equal(state.flags._bond_after, undefined, "中断した場面は既読にしない");
+  for (const { id } of bondAfter.BOND_AFTER.noor.scenes) {
+    assert((await visitShop(desk)).used);
+    assert.equal(shopStampsProgress(state).optionalCount, 1, "締めくくり後もオアシスの判子は一つ");
+    assert.equal(played.at(-1), id);
+    assert(state.flags._bond_after.noor.includes(id));
+    assert.equal((await performDubaiSpot(desk)).used, false, "♥5後の場面も一日にひと話");
+    state.day++;
+  }
+  assert.equal(state.flags._ch4_desert.chats, 7, "♥5後の場面では小会話の巡回を進めない");
   assert((await performDubaiSpot(desk)).used);
   assert.equal(played.at(-1), "ch5_noor_cafe_chat_h");
   assert.equal((await performDubaiSpot(desk)).used, false, "一日にひと話");
+  state.flags._met_faris = true;
+  const { seat, again } = desertRules.NOOR_FARIS_SCENES;
+  cancelNext = seat;
   for (const phase of [1, 2]) {
     state.day++;
     assert((await performDubaiSpot(desk)).used);
-    assert.equal(played.at(-1), `ch5_chain_noor_photo_${phase}`);
+    assert.deepEqual(played.slice(-2), [`ch5_chain_noor_photo_${phase}`, seat]);
+    assert.equal(state.flags._noor_story_faris_seat, phase === 1 ? undefined : state.day, "中断した席の会話は次の来店で読み直す");
+    assert.equal((await performDubaiSpot(desk)).used, false);
   }
   assert.equal(state.flags._ch4_desert.chats, 8);
   assert.equal(state.money, 50000);
   assert.deepEqual(gained, []);
+
+  state.day++;
+  assert((await performDubaiSpot(desk)).used);
+  assert.equal(played.at(-1), again);
+  assert.equal(state.flags._noor_story_faris_seat_again, true);
+  state.day++;
+  assert((await performDubaiSpot(desk)).used);
+  assert(![seat, again].includes(played.at(-1)), "両方読んだ後はデスクの会話だけ");
+
+  // 締めくくり前の元のカフェ。第4章の地図から一台頼んでも、同じ読了記録が付く。
+  setState({ chapter: 4, day: 8, slot: 0, money: 5000, flags: { _met_faris: true, _ch4_desert: { talks: 1 } } });
+  assert((await desert.ns.performDesertSpot({ place: "tour_desk" }, { day: state.day })).used);
+  assert.equal(played.at(-1), seat);
+  assert.equal(state.flags._noor_story_faris_seat, state.day);
+  assert.equal(state.money, 5000 - desertRules.DESERT_CAFE_PRICE);
+
+  // 締めくくり前の保存で第5章へ進んだ場合も、元の入口から判子をもらえる。
+  state.chapter = 5;
+  state.day++;
+  state.money = 5000;
+  assert((await visitShop({ id: desertRules.DESERT_SPOT_IDS.desk, region: "dubai", place: "tour_desk" })).used);
+  assert.equal(shopStampsProgress(state).optionalCount, 1);
+  assert.deepEqual(gained, [["noor", 5]]);
+  gained.length = 0;
 
   setState({ chapter: 5, day: 90, slot: 0, money: 50000, stamina: 100, flags: { _ch2_region: "dubai" }, met: {} });
   const alley = DUBAI_SPOTS.find(entry => entry.id === "ch5_dubai_alley");

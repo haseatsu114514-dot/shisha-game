@@ -131,6 +131,26 @@ for (const region of M.SHOP_STAMP_REGIONS) {
 // ---------------------------------------------------------------- 2. 判子: 第5章で、一店に一つ
 const grantTo = value => n => grantKujiTickets(n, "shop_stamps", value);
 {
+  const cafeId = "ch4_dubai_tour_desk", deskId = "ch5_dubai_noor_desk";
+  for (const finished of [false, true]) {
+    const value = freeSave({ met: [...mandatoryMet, "noor"] });
+    value.flags._ch4_desert = { v: 2, talks: 6 };
+    if (finished) value.finales.noor = { chapter: 4, route: "friend" };
+    const spots = regionSpots(value, "dubai");
+    const spot = spots.find(s => s.id === (finished ? deskId : cafeId));
+    assert(spot && !spot.unavailable);
+    const other = finished ? cafeId : deskId;
+    assert(!spots.some(s => s.id === other));
+    const stamp = M.recordShopStamp(value, spot.id, grantTo(value));
+    assert.equal(stamp.shop.id, cafeId);
+    assert.equal(stamp.shop.optional, true);
+    assert.equal(M.recordShopStamp(value, other, grantTo(value)), null);
+    assert.deepEqual(M.shopStampsState(value).shops, { [cafeId]: value.day });
+    assert.equal(M.shopStampsProgress(value).optionalCount, 1);
+    assert.equal(value.kujiTickets, 1);
+  }
+}
+{
   for (const chapter of [1, 2, 3, 4]) {
     const value = freeSave({ fields: { chapter } });
     assert.equal(M.recordShopStamp(value, "naru", grantTo(value)), null, `第${chapter}章の来店は数えない`);
@@ -190,6 +210,8 @@ const grantTo = value => n => grantKujiTickets(n, "shop_stamps", value);
   assert.deepEqual(M.shopStampsState(value).rewards, { dubai: 1, tokyo: 1, widehanga: 1, home: 1, all: 1 });
   const progress = M.shopStampsProgress(value);
   assert.equal(progress.complete, true);
+  assert.equal(progress.optionalCount, 0);
+  assert.equal(progress.optionalTotal, 3);
   assert(progress.regions.every(r => r.complete && r.rewarded));
   for (const id of order) assert.equal(M.recordShopStamp(value, id, grant), null, "そろった後は何も増えない");
   assert.equal(value.kujiTickets, 5);
@@ -199,7 +221,9 @@ const grantTo = value => n => grantKujiTickets(n, "shop_stamps", value);
     assert.equal(extra.count, 10, "必須の判子数は増えない");
   }
   assert.equal(value.kujiTickets, 8, "13店で最大8枚");
-  assert.equal(M.shopStampsProgress(value).optionalCount, 3);
+  const stamped = M.shopStampsProgress(value);
+  assert.equal(stamped.optionalCount, 3);
+  assert.equal(stamped.optionalTotal, 3);
 }
 {
   const value = freeSave();

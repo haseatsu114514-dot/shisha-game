@@ -16,7 +16,7 @@
 //   柚ヶ谷: MELTY PUFF・神崎煙草店・貴方ノ為ノ此ノ煙。（あげは・神崎・クラウドには第2章の大会で必ず会う）
 //   東京: Smoke & Glory・鉄の煙（スティーブ・ヴォルクには第3章の大会で必ず会う）
 //   ドバイ: 路地裏のカフェ（いつでも行ける）
-//   任意の店: SHISHARK はサメちゃんに会った保存だけ、カフェ・オアシスはヌールの締めくくりまで。
+//   任意の店: SHISHARK はサメちゃんに会った保存だけ。カフェ・オアシスはヌールの締めくくり後のデスクでも同じ判子。
 //     煙幕（綾取）は期間限定の間借りが好評につき延長営業している店（#3676・2026-11-15）。必須10店の設計は変えず任意に足す。
 //   行けない保存でも必須10店の達成を妨げない。tonari・mukai は働く店なので載せない。
 //
@@ -25,6 +25,7 @@
 //   rewards : 受け取ったくじ券 { 地域のID または "all": 実際に増えた枚数 }（一度だけ渡すための記録）
 //   opened  : LIMEの帳面を一度開いた（一覧の行の赤い丸を消す）
 import { HOME_CITY_NAME, CH2_CITY_NAME } from "../core/city-locations.js";
+import { CH5_NOOR_DESK_ID, DESERT_SPOT_IDS } from "./ch4-desert-progress.js";
 
 export const SHOP_STAMPS_FLAG = "_ch5_shop_stamps";
 /** 地域の判子がそろった時のくじ券の枚数。 */
@@ -51,15 +52,16 @@ export const SHOP_STAMP_REGIONS = Object.freeze([
     shop("ch2_ageha", "MELTY PUFF"), shop("ch2_kumicho", "神崎煙草店"), shop("ch2_rei", "貴方ノ為ノ此ノ煙。"),
   ]),
   region("tokyo", "東京", [shop("ch5_tokyo_steve", "Smoke & Glory"), shop("ch5_tokyo_volk", "鉄の煙"), shop("ch5_tokyo_saku", "煙幕", true)]),
-  region("dubai", "ドバイ", [shop("ch5_dubai_alley", "路地裏のカフェ"), shop("ch4_dubai_tour_desk", "カフェ・オアシス", true)]),
+  region("dubai", "ドバイ", [shop("ch5_dubai_alley", "路地裏のカフェ"), shop(DESERT_SPOT_IDS.desk, "カフェ・オアシス", true)]),
 ]);
 export const SHOP_STAMP_TOTAL = SHOP_STAMP_REGIONS.reduce((n, entry) => n + entry.shops.filter(item => !item.optional).length, 0);
 const REQUIRED_IDS = new Set(SHOP_STAMP_REGIONS.flatMap(entry => entry.shops.filter(item => !item.optional).map(item => item.id)));
 
 /** 地図の行き先のIDから、帳面の店と地域を引く。載っていなければ null。 */
 export function shopStampEntry(spotId) {
+  const shopId = spotId === CH5_NOOR_DESK_ID ? DESERT_SPOT_IDS.desk : spotId;
   for (const entry of SHOP_STAMP_REGIONS) {
-    const found = entry.shops.find(item => item.id === spotId);
+    const found = entry.shops.find(item => item.id === shopId);
     if (found) return { region: entry, shop: found };
   }
   return null;
@@ -94,7 +96,8 @@ export function shopStampsProgress(value) {
       rewarded: Object.hasOwn(record.rewards, entry.id) };
   });
   const count = regions.reduce((n, entry) => n + entry.count, 0);
-  return { count, total: SHOP_STAMP_TOTAL, optionalCount: regions.flatMap(entry => entry.shops).filter(item => item.optional && item.stamped).length,
+  const optional = regions.flatMap(entry => entry.shops).filter(item => item.optional);
+  return { count, total: SHOP_STAMP_TOTAL, optionalCount: optional.filter(item => item.stamped).length, optionalTotal: optional.length,
     complete: count === SHOP_STAMP_TOTAL, opened: record.opened, regions };
 }
 
@@ -108,8 +111,8 @@ export function recordShopStamp(value, spotId, grant = () => 0) {
   const found = shopStampEntry(spotId);
   if (!found) return null;
   const record = shopStampsState(value);
-  if (Object.hasOwn(record.shops, spotId)) return null;
-  record.shops[spotId] = Number.isInteger(value.day) ? value.day : 0;
+  if (Object.hasOwn(record.shops, found.shop.id)) return null;
+  record.shops[found.shop.id] = Number.isInteger(value.day) ? value.day : 0;
   const firstStamp = Object.keys(record.shops).length === 1;
   const regionDone = !found.shop.optional && found.region.shops.filter(item => !item.optional).every(item => Object.hasOwn(record.shops, item.id));
   const count = Object.keys(record.shops).filter(id => REQUIRED_IDS.has(id)).length;
