@@ -9,6 +9,7 @@ import { STAT_JA, hasAffinity } from "../js/core/state.js";
 import { chapterDay, chapterDaysLeft, departurePrep, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 import { chapterFeatureEnabled } from "../js/core/chapter-features.js";
 import { TOKYO_FREE_TIMES_V3 } from "../js/core/tokyo-clock.js";
+import { CH5_LIME_MILESTONES, CH5_PROLOGUE, chapterFiveLimeDue } from "../js/chapters/ch5-progress.js";
 const root = new URL("../", import.meta.url);
 const dataRoot = new URL("../../", import.meta.url);
 const limeData = JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8"));
@@ -972,7 +973,7 @@ assert.deepEqual(clone(state.inbox), savedCheer);
 reset();
 console.log("[1897] PASS tournament-day cheers follow data senders, contacts, ch1 ageha and hiyori gate");
 
-// #1668 2-8: 第5章の節目のLIMEは朝の配信に乗らない。openPhone で読むと返信つきで一度だけ履歴に残り、好感度は動かない。
+// #1668 2-8: 第5章の節目のLIMEは朝の配信に乗らない。返信つきで一度だけ履歴に残り、好感度は動かない。
 {
   const chapterFive = allMessages.filter((m) => m.trigger_condition === "ch5_milestone");
   for (const day of [6, 14]) for (const tournamentDay of [false, true]) {
@@ -984,9 +985,16 @@ console.log("[1897] PASS tournament-day cheers follow data senders, contacts, ch
     reset({ chapter: 5, phase: "aftermath", day: 70, contacts: ["mashiro", "adam"], met: { mashiro: true, adam: true } });
     const due = chapterFive.filter((m) => m.milestone === milestone);
     assert.equal(due.length, 2);
-    const session = phone.openPhone(due, { title: "勝負のあと", time: "夜" });
+    const items = due.map(phone.deliverLimeMessage);
+    const checkpoints = [];
+    const onRead = () => checkpoints.push(items.map(item => [item.read, item.done]));
+    const session = phone.openLime({ story: { items, title: "勝負のあと", time: "夜", sequential: true, onRead } });
     for (let index = 0; index < due.length; index += 1) { await click(`reply-${index % 2}`); await click("phone-next"); }
     await session;
+    assert.deepEqual(checkpoints, [
+      [[true, false], [false, false]], [[true, true], [false, false]],
+      [[true, true], [true, false]], [[true, true], [true, true]],
+    ]);
     assert.deepEqual(state.inbox.map((i) => i.id), due.map((m) => m.id));
     for (const [index, entry] of state.inbox.entries()) {
       const reply = due[index].replies[index % 2];
@@ -998,6 +1006,93 @@ console.log("[1897] PASS tournament-day cheers follow data senders, contacts, ch
   }
   reset();
   console.log("[1668] PASS chapter 5 milestone LIME stays out of morning delivery and reads once with a reply");
+}
+
+// #2035: 第5章の章側の入口と実際のLIMEを通し、本文だけ読んだ通は中断時に取り下げる。
+{
+  reset({ chapter: 5, phase: "scheduled", day: 70, contacts: ["mashiro", "adam"], flags: {
+    _ch5_match_scheduled: true,
+    _ch5: { part: "scheduled", startDay: 65, stage: CH5_PROLOGUE.length, titleSeen: true,
+      read: { ch5_free_mashiro_visit: true, ch5_free_eden_adam: true }, scheduleDecision: "decide",
+      aftermath: 0, finale: 0, finaleScenes: null, won: null },
+  } });
+  const milestone = CH5_LIME_MILESTONES.prep;
+  const [first, second] = chapterFiveLimeDue(state, milestone, allMessages, values["spots.js"].hasContact);
+  const unrelated = phone.deliverLimeMessage({ id: "old-unread", sender: "adam", messages: ["別の未読"] });
+  const stale = phone.deliverLimeMessage(first);
+  const saves = [];
+  const source = await fs.readFile(new URL("js/chapters/ch5.js", root), "utf8");
+  const start = source.indexOf("const LIME_SCREEN =");
+  const end = source.indexOf("\n/** 読了", start);
+  assert(start >= 0 && end > start);
+  const context = vm.createContext({ state, DB: db, AbortController, CH5_LIME_MILESTONES, chapterFiveLimeDue,
+    current: owner => owner.active, showScreen: noop, hud: noop, save: () => saves.push(clone(state.inbox)) });
+  const deliver = vm.runInContext(`${source.slice(start, end)}\ndeliverLime`, context, {
+    importModuleDynamically: specifier => load(specifier.split("/").at(-1)),
+  });
+
+  const owner = { state, active: true, controller: null };
+  const reading = deliver(owner, milestone);
+  await click("reply-0");
+  assert.equal((await click("phone-next")).text, "次のトーク ▸");
+  await settle();
+  assert(find(layers.modal, "reply-0"));
+  assert(state.limeRead.includes(second.id), "The body was read, but no reply was sent");
+  assert.deepEqual(saves, [], "Do not save on body read or reply");
+  owner.active = false;
+  owner.controller.abort();
+  assert.equal(await reading, false);
+  assert.deepEqual(state.inbox.map(item => item.id), [unrelated.id, first.id]);
+  assert(state.inbox[1].done && state.inbox[1] !== stale);
+  assert.deepEqual(saves, []);
+  assert.equal(owner.controller, null);
+
+  const revisit = deliver({ state, active: true, controller: null }, milestone);
+  await click("reply-1");
+  assert.equal((await click("phone-next")).text, "スマホを閉じる");
+  assert.equal(await revisit, true);
+  assert.deepEqual(state.inbox.map(item => item.id), [unrelated.id, first.id, second.id]);
+  assert.deepEqual(state.inbox.map(item => item.done), [false, true, true]);
+  assert.equal(state.limeRead.filter(id => id === second.id).length, 1);
+  assert.equal(saves.length, 1);
+  assert.equal(await deliver({ state, active: true, controller: null }, milestone), true);
+  assert.equal(saves.length, 1);
+  console.log("[2035] PASS chapter 5 abort/revisit keeps only completed messages and saves after closing");
+}
+
+// #2035: 誤爆の本番経路を実際のLIMEへ接続し、保存と締めの場面まで通す。
+{
+  reset({ chapter: 2, day: 20, slot: 1, lovers: ["minto", "rio"] });
+  db.lover = JSON.parse(await fs.readFile(new URL("data/lover.json", root), "utf8"));
+  const events = [];
+  const source = await fs.readFile(new URL("js/daily/petit-shuraba.js", root), "utf8");
+  const start = source.indexOf("async function misfire(");
+  const end = source.indexOf("\n/** 恋人", start);
+  assert(start >= 0 && end > start);
+  const misfire = vm.runInNewContext(`${source.slice(start, end)}\nmisfire`, {
+    state, DB: db,
+    play: async id => { events.push(id); return { cancelled: false }; },
+    markPetit: (owner, key) => { assert.equal(owner, state); events.push(key); },
+    strainSuspect: (owner, ids) => { assert.equal(owner, state); assert.deepEqual(clone(ids), ["rio"]); },
+    save: () => { assert(state.inbox[0].done); events.push("save"); },
+  }, { importModuleDynamically: specifier => load(specifier.split("/").at(-1)) });
+  const reading = misfire({ to: "rio", key: "lime_misfire" });
+  await settle();
+  const [firstBubble] = layers.modal.querySelectorAll(".lime-row");
+  assert(firstBubble?.classList.contains("me"));
+  assert.deepEqual(events, ["petit_lime_misfire_open"]);
+  await click("reply-1");
+  assert.deepEqual(events, ["petit_lime_misfire_open"]);
+  await click("phone-next");
+  assert.equal(await reading, true);
+  assert.deepEqual(events, ["petit_lime_misfire_open", "lime_misfire", "save", "petit_lime_misfire_close"]);
+  const [misdirected] = state.inbox;
+  assert(misdirected.read && misdirected.done);
+  assert.deepEqual(state.limeRead, ["_petit_lime_misfire"]);
+  const reply = db.lover.misfire.to.rio.r[1];
+  assert.deepEqual(clone(misdirected.log), [{ me: true, text: reply.text }, { me: false, text: reply.response }]);
+  assert(gains.every(gain => gain.pts === 0));
+  console.log("[2035] PASS misfire keeps its own message, reply, reward and save order");
 }
 
 console.log("[remake LIME] notification/reply/invitations/legacy + #782 contact/unread/once/gap/priority + #1081 C04 unread guard: PASS");
@@ -1280,7 +1375,6 @@ console.log("PASS L01-L43 noor friend lime hook");
   const entryContext = vm.createContext({ state, hud: noop, live: () => active,
     save: () => saves.push(clone(state)),
     deliverLimeMessage: phone.deliverLimeMessage, openLime: phone.openLime,
-    openPhone: () => { throw Error("D3: chapter 2 must use the inbox"); },
   });
   const readMessage = vm.runInContext(`(${source.slice(start, end)})`, entryContext);
   const entry = suffix => reset({ chapter: 2, day: 28, slot: suffix === "morning" ? 0 : 1,
@@ -1297,9 +1391,10 @@ console.log("PASS L01-L43 noor friend lime hook");
     const lines = ["既存の章メッセージ"];
     const sumi = { id: key, sender: "sumi", type: "message", messages: lines, afterClose: [] };
 
-    // 比較元: 従来の強制順送りで全通を読む。
+    // 強制順送りで全通を読んだ場合と比較する。
     entry(suffix);
-    const previous = phone.openPhone([...peers, sumi]);
+    const items = [...peers, sumi].map(phone.deliverLimeMessage);
+    const previous = phone.openLime({ story: { items, sequential: true } });
     for (const m of [...peers, sumi]) {
       if (m.replies?.length) await click("reply-0");
       await click("phone-next");
@@ -1380,7 +1475,8 @@ console.log("PASS L01-L43 noor friend lime hook");
   assert(cheers[2].replies.length);
   const outcome = () => clone({ inbox: state.inbox.map(({ requiredMessageIds, ...item }) => item),
     read: state.limeRead, flags: state.flags, money: state.money });
-  const previous = phone.openPhone(cheers);
+  const items = cheers.map(phone.deliverLimeMessage);
+  const previous = phone.openLime({ story: { items, sequential: true } });
   for (const m of cheers) {
     if (m.replies?.length) await click("reply-0");
     await click("phone-next");

@@ -5,7 +5,7 @@
 import { state, save } from "../core/state.js";
 import { friendMessages } from "../daily/bonds.js";
 import { casualMessages } from "../daily/casual-lime.js";
-import { openPhone } from "../daily/phone.js";
+import { deliverLimeMessage, openLime } from "../daily/phone.js";
 
 /**
  * いま届く友人LIME（最大1通）。友人のLIMEが無ければ、知り合いの雑談（最大1通）。
@@ -22,7 +22,10 @@ export function pendingFriendLime({ exclude = [] } = {}) {
 export async function readFriendLime({ exclude = [], title = "友人からのLIME", time = null } = {}) {
   const due = pendingFriendLime({ exclude });
   if (!due.length) return false;
-  await openPhone(due, { title, time: time || (state.slot ? "夜" : "昼") });
+  const owner = state;
+  const items = due.map(deliverLimeMessage);
+  await openLime({ story: { items, title, time: time || (state.slot ? "夜" : "昼"), sequential: true } });
+  if (state !== owner) return false;
   save();
   return true;
 }

@@ -919,8 +919,8 @@ const MISSED_REPLY_NOTE = "返しそびれた";
 const needsMissedReplyFallback = (item) => !(item.log || []).length && item.replyState === "expired" && isMissedReply(item);
 const clockNow = () => (state.phase === "tournament" ? "大会の朝" : state.slot >= 1 ? "夜" : "昼");
 
-/** 端末の枠（ノッチ・ステータスバー・ヘッダー・本文・返信欄）。openLime と openPhone で共用 */
-function phoneShell({ time, title }) {
+/** 端末の枠（ノッチ・ステータスバー・ヘッダー・本文・返信欄）。 */
+function phoneShell({ time, title, signal }) {
   const owner = state;
   const header = el("div.lime-header");
   const chat = el("div.lime-chat");
@@ -939,7 +939,7 @@ function phoneShell({ time, title }) {
 
   // gen: 画面（一覧⇄トーク）を切り替えるたびに進める。古い画面の続き（吹き出し）が新しい画面に混ざらないように
   const ui = { header, chat, actions, phone, open: true, gen: 0, lastSide: null, cancel: null };
-  ui.live = (g) => ui.open && ui.gen === g && state === owner;
+  ui.live = (g) => ui.open && ui.gen === g && state === owner && !signal?.aborted;
   // 履歴の一括描画中はスクロールを保留し、最後に1回だけ実行する（scrollHeight の連続参照による強制リフローを避ける）。
   let scrollHold = 0;
   let scrollPending = false;
@@ -1344,10 +1344,12 @@ function drawHistory(items, ui) {
  *   押すとスマホを閉じてから run() を呼ぶ（例: 第3章の東京の「地元との連絡」）。
  * @param contactView 章の連絡先一覧。訪問の履歴と章の操作だけを表示し、受信箱の未読・招待には触れない。
  * @param story 物語の節目。今回届けた受信箱の項目だけを、その場面の時刻と見出しで読む。
+ *   sequential を指定すると、受信した順に1件ずつ表示し、最後のトークからスマホを閉じる。
+ *   signal で章の終了時にスマホを閉じる。
  */
 export async function openLime({ tutorial = false, sender = null, fixedNight = () => false, beforeClose = null,
   shortcuts = [], contactView = null, story = null } = {}) {
-  const signal = contactView?.signal;
+  const signal = story?.signal ?? contactView?.signal;
   if (!contactView && !story) {
     // HUD・案内の穴・プッシュ通知のどこから開いても、地図の上の初回案内を片付ける。
     layers.fx.querySelectorAll(".lime-coach").forEach((coach) => coach.remove());
@@ -1358,7 +1360,8 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
   const accepted = [];
   const inbox = () => story?.items ?? state.inbox;
   const thread = account => inbox().filter(item => accountOf(item) === account);
-  const ui = phoneShell({ time: story?.time ?? clockNow(), title: story?.title ?? `DAY ${chapterDay(state)}` });
+  const title = story?.title ?? (story?.sequential && state.phase === "tournament" ? "大会当日" : `DAY ${chapterDay(state)}`);
+  const ui = phoneShell({ time: story?.time ?? clockNow(), title, signal });
   ui.inviteOptions = { fixedNight };
   let resolveClose;
   const closed = new Promise((r) => { resolveClose = r; });
@@ -1448,24 +1451,34 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
     }));
   };
 
-  const showThread = async (id) => {
+  const showThread = async (id, index = null) => {
     if (!active() || (contactView && !contactView.contacts().includes(id))) return;
-    const sender = contactView ? accountFor(id) : id;
+    const item = index === null ? null : story.items[index];
+    const sender = item ? accountOf(item) : contactView ? accountFor(id) : id;
     ui.gen++;
     const g = ui.gen;
     ui.chat.classList.remove("list");
     ui.chat.replaceChildren();
     ui.actions.replaceChildren();
     ui.lastSide = null;
-    ui.header.replaceChildren(
-      el(contactView ? "button.lime-back.lime-contact-back" : "button.lime-back", {
-        text: "‹", ariaLabel: "トーク一覧へ戻る", dataset: { test: "lime-back" },
-        onclick: () => { if (!contactView) SE.cancel(); showList(); },
-      }),
-      avatar(sender),
-      el("span.lime-name", { text: limeName(sender) }),
-    );
-    const items = thread(sender);
+    if (item) {
+      const left = story.items.length - index - 1;
+      ui.header.replaceChildren(
+        el("span.lime-logo", { text: "LIME" }),
+        el("div.lime-peer", [avatar(sender), el("span.lime-name", { text: limeName(sender) })]),
+        el("span.lime-unread", { text: left ? `未読 ${left}` : "" }),
+      );
+    } else {
+      ui.header.replaceChildren(
+        el(contactView ? "button.lime-back.lime-contact-back" : "button.lime-back", {
+          text: "‹", ariaLabel: "トーク一覧へ戻る", dataset: { test: "lime-back" },
+          onclick: () => { if (!contactView) SE.cancel(); showList(); },
+        }),
+        avatar(sender),
+        el("span.lime-name", { text: limeName(sender) }),
+      );
+    }
+    const items = item ? [item] : thread(sender);
     const backButton = el("button.lime-reply.ghost", {
       text: "‹ トーク一覧へ", dataset: { test: "phone-next" },
       onclick: () => { if (!contactView) SE.click(); showList(); },
@@ -1482,25 +1495,32 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
       })), backButton);
       return;
     }
-    const status = storyThreadStatus(sender, state);
+    const status = !item && storyThreadStatus(sender, state);
     if (status) ui.chat.append(el("p.lime-tip", { text: status, dataset: { test: "lime-story-contact" } }));
     // 既読ぶんは履歴としてすぐ出し、未読・返事待ちを順に流す
-    drawHistory(items.filter((i) => i.read), ui);
+    if (!item) drawHistory(items.filter((i) => i.read), ui);
     for (const it of items) {
       if (!ui.live(g)) return;
       if (it.read && it.done) continue;
       const previous = items[items.indexOf(it) - 1];
-      if (!it.read && (!previous || it.day !== previous.day || it.chapter !== previous.chapter)) ui.note(dayLabel(it), ".day");
+      if (!item && !it.read && (!previous || it.day !== previous.day || it.chapter !== previous.chapter)) ui.note(dayLabel(it), ".day");
       const result = await runItem(it, ui, accepted, { forced: !!story, onRead: story?.onRead });
       if (active() && it.done) story?.onRead?.();
       if (result === "deferred" && ui.live(g)) { showList(); return; }
     }
     if (!ui.live(g)) return;
     const label = story && items.at(-1)?.msg.close_label;
-    if (label) {
-      ui.actions.replaceChildren(el("button.lime-reply.ghost.multiline", {
-        text: label, dataset: { test: "phone-next" },
-        onclick: () => { SE.click(); resolveClose(); },
+    if (item || label) {
+      const next = item && story.items[index + 1];
+      ui.actions.replaceChildren(el(`button.lime-reply.ghost${label ? ".multiline" : ""}`, {
+        text: label || (next ? "次のトーク ▸" : "スマホを閉じる"),
+        dataset: { test: "phone-next" },
+        onclick: () => {
+          if (!active() || !ui.live(g)) return;
+          SE.click();
+          if (next) showThread(null, index + 1);
+          else resolveClose();
+        },
       }));
       ui.scroll();
     } else ui.actions.replaceChildren(backButton);
@@ -1508,6 +1528,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
 
   signal?.addEventListener("abort", resolveClose, { once: true });
   if (signal?.aborted) resolveClose();
+  else if (story?.sequential && story.items.length) void sleep(420).then(() => showThread(null, 0));
   else if (!contactView && sender && thread(sender).length) showThread(sender);
   else showList();
   await closed;
@@ -1521,44 +1542,6 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
   } finally { await ui.close(); }
   // 入口の行を選んだ: スマホを閉じてから、その画面へ。
   if (chosenShortcut && state === owner) await chosenShortcut.run();
-  return accepted;
-}
-
-/**
- * 物語の節目で必ず読ませる LIME（大会の朝の応援・優勝の夜など）。メッセージを順に流す。
- * 読んだものは受信箱にも履歴として残る。戻り値: 受けた誘い
- */
-export async function openPhone(messages, { title = null, time = "朝" } = {}) {
-  const accepted = [];
-  const ui = phoneShell({ time, title: title || (state.phase === "tournament" ? "大会当日" : `DAY ${chapterDay(state)}`) });
-  await sleep(420);
-  if (!ui.live(ui.gen)) return accepted;
-  for (const m of messages) {
-    const item = receiveItem(m);
-    state.inbox.push(item);
-    ui.chat.replaceChildren();
-    ui.actions.replaceChildren();
-    ui.lastSide = null;
-    const left = messages.length - 1 - messages.indexOf(m);
-    ui.header.replaceChildren(
-      el("span.lime-logo", { text: "LIME" }),
-      el("div.lime-peer", [avatar(accountOf(item)), el("span.lime-name", { text: limeName(accountOf(item)) })]),
-      el("span.lime-unread", { text: left ? `未読 ${left}` : "" }),
-    );
-    await runItem(item, ui, accepted, { forced: true });
-    if (!ui.live(ui.gen)) return accepted;
-    item.done = true;
-    await new Promise((resolve) => {
-      const last = messages.at(-1) === m;
-      ui.actions.replaceChildren(el(`button.lime-reply.ghost${m.close_label ? ".multiline" : ""}`, {
-        text: m.close_label || (last ? "スマホを閉じる" : "次のトーク ▸"),
-        dataset: { test: "phone-next" },
-        onclick: () => { SE.click(); resolve(); },
-      }));
-      ui.scroll();
-    });
-  }
-  await ui.close();
   return accepted;
 }
 
