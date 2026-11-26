@@ -105,6 +105,22 @@ async function harness(chapter, value) {
       });
       return dep;
     }
+    if (specifier === "../core/chapter-card.js") {
+      // 章カードも実物を使う（スタブだと card が未定義になりエラー画面の経路を検証できない）。
+      const dep = new vm.SourceTextModule(readFileSync(depUrl, "utf8"), { context });
+      const cardDeps = new Map([
+        ["util.js", ["el"]],
+        ["ui.js", ["showScreen"]],
+      ]);
+      await dep.link(async inner => {
+        const innerUrl = new URL(inner, depUrl);
+        const names = cardDeps.get(innerUrl.pathname.split("/").at(-1)) || [];
+        return new vm.SyntheticModule(names, function () {
+          for (const name of names) this.setExport(name, bindings[name] ?? (() => {}));
+        }, { context, identifier: `${innerUrl.href}#chapter-card` });
+      });
+      return dep;
+    }
     if (specifier === "./ch3-aftermath-progress.js") {
       const dep = new vm.SourceTextModule(readFileSync(depUrl, "utf8"), { context });
       await dep.link(async () => synthetic(new URL("../js/core/tokyo-visits.js", import.meta.url), ["syncTokyoVisits"]));
