@@ -2,9 +2,11 @@
 // - 触らなくても、数秒で頭の上におねだりの吹き出しが出て、応えられる道具が知らされる
 // - なでる場所で反応が変わる。しっぽは触らせてくれないが、ごきげんは減らない。擬音が猫のそばに出る
 // - じゃらしは 3 回で前足、次のひと振りで飛びつき、先がそこにあれば抱えこむ
-// - ごきげんのハートは来訪をまたいで溜まる（§11・#3779）。1回の来訪ではハート1つ分まで: 色々お世話して、その回の分が溜まると
-//   「とっておき」が出て「今日は、もう満足らしい」。ハートは減らない。初めて5つそろうと、とっておきと「ハートが5つそろった」を出し、
-//   確定で一度だけ "tetsuko-hearts" を知らせる。溜まったハートとかずは結果と記録に残る
+// - 好感度（ごきげんのハート）は来訪をまたいで溜まる（§11・#3779・2026-11-26 仕様変更）。
+//   1日1回、1回の来訪で好感度が +1（VISIT_JOY = 10、満タン 100 まで約10回）入った時点で
+//   「とっておき」と「今日はこれぐらいにしておこう。」を出して切り上げ、操作を止めて終わる。
+//   +1 に届かずにやりとり上限に達した日も「今日はこれぐらいにしておこう。」で自然に終わる。
+//   初めて5つそろうと「ハートが5つそろった！」を出し、確定で一度だけ "tetsuko-hearts" を知らせる。
 // - 触らずに眺めているだけでも、隣で見守ったことになる（「そっと見守る」「止める」のボタンは無い）
 // 本編の入口・確定（回復12・来訪1回）は ch3_tokyo_daily.mjs、専用テーマと基本画面の文字は tetsuko_theme.mjs が見る。
 // ここは画面を直接開く（本編の道のりを通らない短い検査）。確定は、同じ確定点 settleTetsukoTime をページの中で呼んで確かめる。
@@ -59,7 +61,10 @@ await suite("tetsuko-feel", async check => {
     assert(await shot.isVisible() && await shot.isDisabled(), "The shutter is visible even before there is a moment");
     await page.keyboard.press("p");
     assert.equal(await note.count(), 0, "No photo without a moment");
-    await page.locator(dt("tetsuko-time-back")).click();
+    const empty = await leaveAndSettle(page);
+    assert.equal(empty.result.meaningful, false);
+    assert.equal(empty.settled.committed, false, "Leaving immediately earns no visit reward");
+    assert.equal(empty.flags._tetsuko_time.playedDay, 36, "Opening the game still uses today's play");
     await shot.waitFor({ state: "detached" });
 
     await open(page, { record: { sessions: 3, props: { floor: "box", bed: "bed" } } });
@@ -102,21 +107,32 @@ await suite("tetsuko-feel", async check => {
     assert(["pet", "play", "brush", "treat", "watch", "decor"].includes(wish), `She shows what she wants (${wish})`);
     assert.equal(await get("wish").isVisible(), true);
     assert.equal(await page.evaluate(() => document.querySelectorAll(".tt-act.asked, .tt-tool.asked").length), wish === "watch" ? 0 : 1, "Exactly the tool that answers is marked");
-    // なでる: 触った場所で反応が変わる。しっぽは触らせてくれない（ごきげんは減らない）。擬音が出る。
-    const box = await get("cat").boundingBox();
-    const at = (rx, ry) => [box.x + box.width * rx, box.y + box.height * ry];
-    await page.mouse.click(...at(.5, .25));
+    // なでる: 触った場所で反応が変わる。しっぽは触らせてくれない（好感度は減らない）。擬音が出る。
+    await screen.evaluate(node => {
+      const feedback = window.__tetsukoFeedback = { pops: [], caught: false, held: false };
+      new MutationObserver(records => {
+        for (const record of records) {
+          if (record.attributeName === "data-toy" && (record.oldValue === "held" || node.dataset.toy === "held")) feedback.held = true;
+          for (const child of record.addedNodes) {
+            if (child.matches?.(".tt-pop")) feedback.pops.push(child.textContent);
+            if (record.target.matches?.(".tt-text") && /抱えこんで/.test(child.textContent)) feedback.caught = true;
+          }
+        }
+      }).observe(node, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-toy"], attributeOldValue: true });
+    });
+    const petAt = async (rx, ry) => {
+      const box = await get("cat").boundingBox();
+      await page.mouse.click(box.x + box.width * rx, box.y + box.height * ry);
+    };
+    await petAt(.5, .25);
     await page.waitForFunction(() => /すり寄って/.test(document.querySelector('[data-test="tetsuko-caption"]')?.textContent));
-    assert(await page.locator(".tt-pop").count() >= 1, "A short sound word pops beside her");
-    const afterRub = await joy();
-    assert(afterRub > 0);
-    await page.mouse.click(...at(.5, .55));
+    assert(await page.evaluate(() => window.__tetsukoFeedback.pops.includes("すりすり")), "A short sound word pops beside her");
+    assert.equal(await joy(), 0, "Hearts stay until today's +1 is reached");
+    await petAt(.5, .55);
     await page.waitForFunction(() => /あご|お気に入り|押しつけて/.test(document.querySelector('[data-test="tetsuko-caption"]')?.textContent));
-    assert(await joy() > afterRub, "Each stroke adds a little");
-    const beforeTail = await joy();
-    await page.mouse.click(...at(.14, .86));
+    await petAt(.14, .86);
     await page.waitForFunction(() => /しっぽ/.test(document.querySelector('[data-test="tetsuko-caption"]')?.textContent));
-    assert.equal(await joy(), beforeTail, "Touching her tail costs nothing");
+    assert.equal(await joy(), 0, "Touching her tail costs nothing");
     // じゃらし: 持ち替えると少し引いた画になる。3回で前足、次のひと振りで飛びつき、先がそこにあれば抱えこむ。
     await get("play").click();
     assert.equal(await screen.getAttribute("data-tool"), "toy");
@@ -125,24 +141,30 @@ await suite("tetsuko-feel", async check => {
     await get("note").filter({ hasText: "はじめて前足が出た" }).waitFor();
     await get("play").click();
     await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-cat"]')?.dataset.at === "free", null, { timeout: 5000 });
-    await page.waitForFunction(() => /抱えこんで/.test(document.querySelector('[data-test="tetsuko-caption"]')?.textContent), null, { timeout: 5000 });
-    assert.equal(await screen.getAttribute("data-toy"), "held", "The toy stays in her arms for a moment");
-    // じゃらしだけでは、その回の分は溜まりきらない。おやつ・ブラシ・なでるも合わせて、その回の分（ハート1つ）が溜まると「とっておき」:
-    // 写真に撮れるしぐさが出て「今日は、もう満足らしい」。ハートは空に戻らない（来訪をまたいで溜まる）。
+    await page.waitForFunction(() => window.__tetsukoFeedback.caught, null, { timeout: 5000 });
+    assert(await page.evaluate(() => window.__tetsukoFeedback.held), "The toy stays in her arms for a moment");
+    // おやつ・ブラシ等も合わせて今日の好感度+1（VISIT_JOY = 10）へ届くと「とっておき」と「今日はこれぐらいにしておこう。」で切り上げる。
     const visitJoy = await page.evaluate(async () => (await import("./js/minigames/tetsuko-model.js")).VISIT_JOY);
-    assert(await joy() < visitJoy, "Playing with the toy alone does not fill today's share");
     await settle(page);
-    const care = ["treat", "brush", "brush", "pet", "brush", "pet", "play", "pet", "play"];
-    for (let i = 0; i < 40 && await screen.getAttribute("data-peak") !== "1"; i += 1) {
+    const care = ["treat", "brush", "pet"];
+    for (let i = 0; i < 12 && await screen.getAttribute("data-peak") !== "1"; i += 1) {
       const id = care[i % care.length];
-      if (await get(id).isEnabled() && !(id === "play" && await screen.getAttribute("data-toy") === "held")) await get(id).click();
+      if (await get(id).isEnabled()) await get(id).click();
       await page.waitForTimeout(450);
     }
-    assert.equal(await screen.getAttribute("data-peak"), "1", "Caring for her in many ways fills today's share");
+    await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-time-screen"]')?.dataset.peak === "1", null, { timeout: 10000 });
+    assert.equal(await screen.getAttribute("data-peak"), "1", "Reaching +1 triggers the special wrap-up moment");
+    assert.equal(await screen.getAttribute("data-ended"), "up");
     assert.match(await caption(), /膝に乗ってきた|頭をこすりつけて/, "A special moment at the stage she trusts you");
-    assert.match(await get("joy-note").textContent(), /今日は、もう満足らしい/, "She is content for today");
-    assert.equal(await get("joy-note").getAttribute("data-kind"), "visit");
-    assert.equal(await joy(), visitJoy, "The hearts stay: one heart today, kept for the next visit");
+    assert.match(await caption(), /今日はこれぐらいにしておこう。/);
+    assert.match(await get("joy-note").textContent(), /なかよし度 \+1/);
+    assert.match(await get("joy-note").textContent(), /今日はこれぐらいにしておこう。/);
+    assert.equal(await get("joy-note").getAttribute("data-kind"), "up");
+    assert.equal(await joy(), visitJoy, "Hearts advance by one visit's share (+10 / 100)");
+    // +1 到達後は操作ボタンが止まり、だらだら続けられない。
+    for (const id of ["pet", "play", "brush", "treat", "decor"]) {
+      assert.equal(await get(id).isDisabled(), true, `${id} locks after +1 wrap-up`);
+    }
     await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-photo"]')?.matches(":enabled"));
     await get("photo").click();
     // 手帳に、ごきげんにした通算の回数が出る（前の3回＋今回）。
@@ -152,35 +174,86 @@ await suite("tetsuko-feel", async check => {
     const { result, settled, flags } = await leaveAndSettle(page);
     assert.equal(result.meaningful, true);
     assert.equal(result.peaks, 1);
+    assert.equal(result.affectionUp, true);
+    assert.equal(result.endReason, "up");
     assert(result.found.includes("first_rub") && result.found.includes("hug_toy"));
     assert(result.album.length >= 1);
     assert.deepEqual(settled, { committed: true, stamina: 12 }, "The same settle point as before: one visit, 12 stamina");
     assert.equal(flags._ch3_outings.tetsuko, 6);
     assert.equal(flags._tetsuko_time.peaks, 4, "The lifetime count of happy peaks is kept for the notebook");
-    assert.equal(flags._tetsuko_time.affection, visitJoy, "Today's heart is kept across visits");
+    assert.equal(flags._tetsuko_time.affection, visitJoy, "Today's gain is kept across visits");
+    assert.equal(flags._tetsuko_time.playedDay, 36, "Today is marked as already played");
     assert.equal(result.care, visitJoy);
     assert.equal(await screen.count(), 0);
   });
 
-  // ハートは来訪をまたいで溜まる: 溜まった分から始まり、初めて5つそろうと「とっておき」と「ハートが5つそろった」。確定で一度だけ知らせ、
-  // 5つの後は5つのまま（次の来訪でも、もう一度は知らせない）。
+  // +1 に届かずに終わる日: なでるだけでは今日の+1に届かず、やりとり上限で「今日はこれぐらいにしておこう。」と自然に切り上げて自動終了する。
+  await check("tetsuko-feel-wrap-up-without-affection-gain", async page => {
+    const screen = await open(page, { record: { sessions: 3, peaks: 1, affection: 20, found: ["waiting", "first_rub"] } });
+    const get = id => page.locator(dt(`tetsuko-${id}`));
+    const box = await get("cat").boundingBox();
+    // なでるだけを繰り返すと +1 に届かないままやりとり上限に達する。
+    for (let i = 0; i < 8 && await screen.getAttribute("data-ended") !== "none"; i += 1) {
+      if (await get("pet").isEnabled()) await page.mouse.click(box.x + box.width * .14, box.y + box.height * .86);
+      await page.waitForTimeout(300);
+    }
+    await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-time-screen"]')?.dataset.ended === "none", null, { timeout: 10000 });
+    assert.notEqual(await screen.getAttribute("data-peak"), "1");
+    assert.equal(await get("joy-note").getAttribute("data-kind"), "none");
+    assert.match(await get("joy-note").textContent(), /今日はこれぐらいにしておこう。/);
+    assert.match(await get("caption").textContent(), /今日はこれぐらいにしておこう。/);
+    assert.equal(Number(await get("joy").getAttribute("data-value")), 20, "Affection stays unchanged on a +0 day");
+    for (const id of ["pet", "play", "brush", "treat", "decor"]) {
+      assert.equal(await get(id).isDisabled(), true, `${id} locks on +0 wrap-up`);
+    }
+    // 帰るを押さなくても切り上げ後に自動で閉じ、+0 のままその日の来訪が確定できる。
+    await page.waitForFunction(() => window.__tetsukoResult, null, { timeout: 10000 });
+    const { result, settled, flags } = await page.evaluate(async () => {
+      const time = await import("./js/minigames/tetsuko-time.js");
+      const settled = time.settleTetsukoTime(window.__tetsukoValue, window.__tetsukoResult);
+      return { result: window.__tetsukoResult, settled, flags: window.__tetsukoValue.flags };
+    });
+    assert.equal(result.meaningful, true);
+    assert.equal(result.affectionUp, false);
+    assert.equal(result.endReason, "none");
+    assert.equal(result.care, 0);
+    assert.equal(settled.committed, true);
+    assert.equal(flags._tetsuko_time.affection, 20);
+    assert.equal(flags._tetsuko_time.playedDay, 36);
+    assert.equal(await screen.count(), 0);
+  }, { reducedMotion: "reduce" });
+
+  // ハートは来訪をまたいで溜まる: 溜まった分から始まり、初めて5つそろうと「とっておき」と「ハートが5つそろった！」。確定で一度だけ知らせ、
+  // 同じ日の二度目は確定しない。5つの後は5つのまま（次の来訪でも、もう一度は知らせない）。
   await check("tetsuko-feel-hearts-carry-over-and-fill-to-five", async page => {
     await page.evaluate(async () => {
       const { on } = await import("./js/core/bus.js");
       window.__hearts = [];
       on("tetsuko-hearts", event => window.__hearts.push({ affection: event.affection, full: event.full, same: event.state === window.__tetsukoValue }));
     });
-    const screen = await open(page, { record: { sessions: 6, peaks: 5, affection: 90, found: ["waiting"] } });
+    const screen = await open(page, { record: { sessions: 9, peaks: 9, affection: 90, found: ["waiting"] } });
     const get = id => page.locator(dt(`tetsuko-${id}`));
     const hearts = async () => [Number(await get("joy").getAttribute("data-value")), await get("joy").getAttribute("aria-label")];
     assert.deepEqual(await hearts(), [90, "ごきげん 4 / 5"], "The hearts start where the last visits left them");
     assert.deepEqual(await page.evaluate(() => [...document.querySelectorAll(".tt-heart")].map(node => node.dataset.full)),
       ["true", "true", "true", "true", "false"], "Four full hearts and a half");
-    await get("treat").click();
+    const steps = ["treat", "brush", "pet", "brush", "pet"];
+    let triedLeaving = false;
     for (let i = 0; i < 12 && await screen.getAttribute("data-peak") !== "1"; i += 1) {
-      if (await screen.getAttribute("data-toy") !== "held") await get("play").click();
+      const id = steps[i % steps.length];
+      if (await get(id).isEnabled()) {
+        triedLeaving ||= await get(id).evaluate(button => {
+          button.click();
+          const screen = button.closest(".tetsuko-time");
+          const back = screen.querySelector('[data-test="tetsuko-time-back"]');
+          if (!back.disabled || screen.dataset.ended) return false;
+          back.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+          return true;
+        });
+      }
       await page.waitForTimeout(450);
     }
+    assert(triedLeaving, "Leaving is blocked until the wrap-up and special moment are shown");
     assert.equal(await screen.getAttribute("data-peak"), "1", "Her fifth heart fills");
     assert.match(await get("joy-note").textContent(), /ハートが5つそろった！/);
     assert.equal(await get("joy-note").getAttribute("data-kind"), "full");
@@ -188,13 +261,25 @@ await suite("tetsuko-feel", async check => {
     assert.deepEqual(await page.evaluate(() => window.__hearts), [], "Nothing is announced before she goes home");
     const first = await leaveAndSettle(page);
     assert.equal(first.flags._tetsuko_time.affection, 100);
+    assert.equal(first.flags._tetsuko_time.playedDay, 36);
     assert.deepEqual(await page.evaluate(() => window.__hearts), [{ affection: 100, full: true, same: true }], "Five hearts are announced once, when settled");
-    // 次の来訪: 5つのまま。もう一度は知らせない。
+    // 同じ日はもう遊んだ扱いになり、二重確定しない。
+    const sameDay = await page.evaluate(async () => {
+      const time = await import("./js/minigames/tetsuko-time.js");
+      return {
+        played: time.tetsukoPlayedToday(window.__tetsukoValue),
+        again: time.settleTetsukoTime(window.__tetsukoValue, { ...window.__tetsukoResult, visitKey: "3:36:1:1" }),
+      };
+    });
+    assert.equal(sameDay.played, true);
+    assert.deepEqual(sameDay.again, { committed: false });
+    // 次の日: 5つのまま。もう一度は知らせない。
     await open(page, { again: true });
     assert.deepEqual(await hearts(), [100, "ごきげん 5 / 5"], "Five hearts stay five");
     await get("pet").click();
     const second = await leaveAndSettle(page);
     assert.equal(second.flags._tetsuko_time.affection, 100);
+    assert.equal(second.flags._tetsuko_time.playedDay, 37);
     assert.equal(await page.evaluate(() => window.__hearts.length), 1, "Never announced twice");
   }, { reducedMotion: "reduce" });
 
@@ -230,12 +315,12 @@ await suite("tetsuko-feel", async check => {
       return seen;
     });
     assert.deepEqual(facing, ["-1 1", "-1 1", "none", "-1 1", "none"], "Walking faces the way she walks; otherwise the art turns with her");
-    assert(Number(await page.locator(dt("tetsuko-joy")).getAttribute("data-value")) > 0, "Being together fills her hearts a little");
     const { result, settled, flags } = await leaveAndSettle(page);
     assert.equal(result.meaningful, true, "Just watching her counts");
     assert(result.found.includes("paws_together") || result.found.includes("lap_nap"));
     assert.equal(settled.committed, true);
     assert.equal(flags._ch3_outings.tetsuko, 6);
+    assert.equal(flags._tetsuko_time.playedDay, 36);
     assert.equal(await screen.count(), 0);
   });
 
@@ -248,10 +333,30 @@ await suite("tetsuko-feel", async check => {
     await page.waitForFunction(() => /抱えこんで/.test(document.querySelector('[data-test="tetsuko-caption"]')?.textContent), null, { timeout: 5000 });
     assert.notEqual(await get("cat").getAttribute("data-at"), "free", "She does not leap when motion is reduced");
     assert.equal(await page.locator(".tt-bit").count(), 0, "No flying bits when motion is reduced");
-    assert(Number(await get("joy").getAttribute("data-value")) > 0);
     const { result } = await leaveAndSettle(page);
+    assert.equal(result.meaningful, true);
     assert(result.found.includes("hug_toy"));
   }, { reducedMotion: "reduce" });
+
+  await check("tetsuko-pounce-lands-even-with-help-open", async page => {
+    const screen = await open(page);
+    const cat = page.locator(dt("tetsuko-cat"));
+    // 飛びつきと「？」を同じフレームで操作し、着地タイマーより先にパネルを開く。
+    await screen.evaluate(node => {
+      const play = node.querySelector('[data-test="tetsuko-play"]');
+      for (let i = 0; i < 4; i += 1) play.click();
+      node.querySelector('[data-test="tetsuko-help"]').click();
+    });
+    assert.equal(await screen.getAttribute("data-panel"), "help");
+    await page.waitForFunction(() => {
+      const caption = document.querySelector('[data-test="tetsuko-caption"]');
+      return /抱えこんで|空振り/.test(caption?.textContent);
+    });
+    assert.notEqual(await cat.getAttribute("data-art"), "leap", "The jump sprite clears even if the landing art is still loading");
+    await page.keyboard.press("Escape");
+    assert.equal(await screen.getAttribute("data-panel"), "");
+    assert.notEqual(await cat.getAttribute("data-art"), "leap");
+  });
 
   await check("tetsuko-decor-rejects-overlap-and-returns-drag", async page => {
     await open(page, { record: { sessions: 3, props: { floor: "tunnel" } } });

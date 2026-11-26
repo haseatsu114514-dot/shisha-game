@@ -196,10 +196,10 @@ test('maxed acquaintance: completed first read grants EXP once, including simult
   await f.finish(); await Promise.all([a, b]);
   assert.equal(f.original.xp, 5); assert.equal(f.original.affinity, 66);
   assert.deepEqual(f.original.gains, []); assert.deepEqual(f.original.limeRead, [f.item.id]);
-  assert.deepEqual(f.notes, ['EXP +5']); assert.deepEqual(logs(f.item), []);
+  assert.deepEqual(f.notes, []); assert.deepEqual(logs(f.item), []);
   const loaded = f.replaceState(JSON.parse(JSON.stringify(f.original)));
   await f.run(loaded.inbox[0]);
-  assert.equal(loaded.xp, 5); assert.deepEqual(f.notes, ['EXP +5']);
+  assert.equal(loaded.xp, 5); assert.deepEqual(f.notes, []);
 });
 
 test('an interrupted first read does not grant XP; it can still grant on a later complete read', async () => {
@@ -223,9 +223,9 @@ test('maxed friend: selecting a rewarded reply grants one EXP award and no affin
   for (const pick of f.picks) pick.resolve(f.reply);
   await f.finish(); await Promise.all([a, b]);
   assert.equal(f.original.xp, 8); assert.equal(f.original.affinity, 66);
-  assert.deepEqual(f.original.gains, []); assert.deepEqual(f.notes, ['EXP +8']);
+  assert.deepEqual(f.original.gains, []); assert.deepEqual(f.notes, []);
   assert.deepEqual(logs(f.item), expectedLog);
-  await f.run(); assert.equal(f.original.xp, 8); assert.deepEqual(f.notes, ['EXP +8']);
+  await f.run(); assert.equal(f.original.xp, 8); assert.deepEqual(f.notes, []);
 });
 
 test('friend whose reply just reaches MAX earns only normal affinity', async () => {
@@ -241,7 +241,7 @@ test('resends and duplicate origins cannot award EXP', async () => {
   await finishRead(f);
   await f.run({ ...resend, id: resend.originId + '_again', msg: { ...resend.msg, messages: [] } });
   await f.run({ ...resend, msg: { ...resend.msg, messages: [] } });
-  assert.equal(f.original.xp, 5); assert.deepEqual(f.notes, ['EXP +5']);
+  assert.equal(f.original.xp, 5); assert.deepEqual(f.notes, []);
 });
 
 for (const [name, fields, options, expected] of [

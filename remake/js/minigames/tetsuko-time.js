@@ -5,16 +5,16 @@ import { emit } from "../core/bus.js";
 //
 // 動線（オーナー判断 2026-11-04・実装計画 §1）: mukai で行動を使う → 帰りに裏口をのぞく（ch3-tokyo-daily.js の
 // offerTetsuko）→「てつこといっしょ」→ 来訪4回未満なら既存の段階会話を先に読む（関係進展の正本）→ この画面 →
-// 「帰る」→ settleTetsukoTime で確定 → 呼び出し側が回復12と toast。地図のピンは作らない。第5章の入口は今回触らない。
+// 閉じたら settleTetsukoTime で確定し、呼び出し側が回復12と toast。第3章・第5章とも地図のピンは作らない。
 //
 // 画面（計画 §5・UI v2 は docs/spec/tetsuko_time.md §6）: #stage（1280×720）の #screen 層に重ねる。HUD はそのまま。
 // 背景は裏口の絵（届くまでは bg_street に CSS の壁・戸・ベンチ）。猫は既存の5表情を同じ枠で切り出して大きく見せ、
 // しぐさの絵が届いた物から差し替える（tetsuko-art.js の ART_READY）。小物・UI も同じ。文字は絵に焼き込まない。
 // 手元の道具: なでる手／猫じゃらし／ブラシ。じゃらしは指やマウスで直接動かし、てつこが飛びつく。ブラシは猫をなぞる。
-// どれも下のボタン1回でも同じ結果（筆圧・精度・時間制限は求めない）。「帰る」は膝に乗られている時も含めて、いつでも押せる。
+// どれも下のボタン1回でも同じ結果（筆圧・精度・時間制限は求めない）。「帰る」は膝に乗られている時にも押せる。
 // 手応えの作り直し（§10・2026-11-11）: ごきげんのハート・おねだりの吹き出し・なでる場所・飛びつきと空振り・擬音と小さな粒・
 // 触らずにいると見守ったことになる。常に出す文字は道具の名前だけにし、反応の一行は少しで消す。
-// ハートは来訪をまたいで溜まる（§11・#3779）。1回の来訪で溜まるのはハート1つ分まで。
+// ハートは来訪をまたいで溜まる（§11・#3779）。好感度+1（ハート半個分）に届いたらその日を切り上げる。
 //
 // 素材は Codex への依頼（asset_sources/tetsuko-care/README.md）。設計・コード担当は別個体の猫や未承認の素材を生成・採用しない。
 //
@@ -22,10 +22,11 @@ import { emit } from "../core/bus.js";
 // 本ファイルの top-level（確定点）は DOM 非依存で、Node のテストからそのまま import できる。
 import { TOKYO_OUTINGS } from "../chapters/ch3-outing-progress.js";
 import {
-  OUTINGS_FLAG, TETSUKO_TIME_FLAG, readTetsukoRecord, tetsukoVisits, createSession, openingReaction, act, canAct, toyOut,
+  OUTINGS_FLAG, TETSUKO_TIME_FLAG, readTetsukoRecord, tetsukoVisits, tetsukoPlayedToday, createSession, openingReaction, act, canAct, toyOut,
   autonomous, autoDelay, placeProp, canPlaceProp, takePhoto, farewell, sessionResult, moodOf, moodLabel, propById, momentById, propUnlocked,
-  MOMENTS, PROPS, SLOTS, SLOT_NAMES, discoveryGuide, invite, peakReaction, seekMoment, joyHearts, JOY_MAX, JOY_HEARTS, PLAY_AUTO_CATCH, VISIT_JOY,
+  MOMENTS, PROPS, SLOTS, SLOT_NAMES, discoveryGuide, invite, peakReaction, wrapUpReaction, seekMoment, joyHearts, JOY_MAX, JOY_HEARTS, PLAY_AUTO_CATCH, VISIT_JOY,
 } from "./tetsuko-model.js";
+export { tetsukoPlayedToday };
 import { ART_READY, PROP_SURFACE_LIFT, hasPose, poseUrl, artAttrs, hasUi, tkIconUrl } from "./tetsuko-art.js";
 import { tetsukoTheme } from "./tetsuko-theme.js";
 import { HELP_TITLE, helpCard } from "./tetsuko-help.js";
@@ -44,20 +45,25 @@ export const TETSUKO_STAMINA = TOKYO_OUTINGS.find(outing => outing.id === "tetsu
  * 意味のあるふれあい（result.meaningful）で、まだ確定していない訪問キー（result.visitKey）のときだけ、
  * この一回の処理の中で (a) 来訪記録 _ch3_outings.tetsuko を +1、(b) _tetsuko_time に小物の配置・発見・
  * アルバム・おやつの日・とっておきの通算回数・溜まったごきげん（affection）・訪問キーを書き、{ committed:true, stamina:12 } を返す。
- * 呼び出し側が同じ処理の中で addStamina(12) と toast を出す。それ以外は { committed:false } で、保存には一切触らない。
+ * 呼び出し側が同じ処理の中で addStamina(12) と toast を出す。画面を開いてすぐ帰った回は、遊んだ日だけ記録する。
  * #2455: 確定後に共通の達人進捗を記録し、認定時の火種は growth の購読先で精算する。
  * #3779: ごきげんは来訪をまたいで溜まる。この回の分（result.care・上限 VISIT_JOY）を足し、ハートが初めて5つそろった確定で
  * "tetsuko-hearts"（{ state, affection, full: true }）を一度だけ知らせる（火種は growth の購読先が精算する）。5つの後は5つのまま。
- * 直接増やさないもの: 経験値・能力・好感度・お金・日付・時間帯。
+ * 直接増やさないもの: 経験値・能力・人物の好感度・お金・日付・時間帯。
  * 「少し構っていく」（台本だけ読む短い経路）も同じ確定点を通る（result に小物・発見が無ければ記録を保つ）。
  * @param {object} value 現在のセーブ
- * @param {{ meaningful?: boolean, visitKey?: string, props?: object, found?: string[], album?: object[], treatDay?: number|null, peaks?: number, care?: number }} [result]
+ * @param {{ meaningful?: boolean, played?: boolean, visitKey?: string, props?: object, found?: string[], album?: object[], treatDay?: number|null, peaks?: number, care?: number }} [result]
  * @returns {{ committed: boolean, stamina?: number }}
  */
 export function settleTetsukoTime(value, result) {
-  if (!value?.flags || !result?.meaningful || typeof result.visitKey !== "string" || !result.visitKey) return { committed: false };
+  if (!value?.flags || typeof result?.visitKey !== "string" || !result.visitKey) return { committed: false };
   const record = readTetsukoRecord(value);
-  if (record.lastKey === result.visitKey) return { committed: false };
+  if (record.lastKey === result.visitKey || tetsukoPlayedToday(value)) return { committed: false };
+  const playedDay = Number.isFinite(value.day) ? value.day : record.playedDay;
+  if (!result.meaningful) {
+    if (result.played) value.flags[TETSUKO_TIME_FLAG] = { ...record, playedDay };
+    return { committed: false };
+  }
   syncPlayMastery(value);
   const counts = value.flags[OUTINGS_FLAG] && typeof value.flags[OUTINGS_FLAG] === "object" ? value.flags[OUTINGS_FLAG] : {};
   value.flags[OUTINGS_FLAG] = { ...counts, tetsuko: tetsukoVisits(value) + 1 };
@@ -67,9 +73,10 @@ export function settleTetsukoTime(value, result) {
     found: [...record.found, ...(Array.isArray(result.found) ? result.found : [])],
     album: Array.isArray(result.album) ? result.album : record.album,
     treatDay: result.treatDay === undefined ? record.treatDay : result.treatDay,
+    playedDay,
     // とっておきを見た通算の回数（手帳に出すだけ）。壊れた値は足さない。
     peaks: record.peaks + Math.max(0, Math.floor(Number(result.peaks) || 0)),
-    // 溜まったごきげん: この回の分は VISIT_JOY まで（1回では5つにならない）。壊れた値・「少し構っていく」（care が無い）は足さない。
+    // 溜まった好感度: 1回の成功訪問は VISIT_JOY まで（満タンまでおよそ10回）。壊れた値・「少し構っていく」（care が無い）は足さない。
     affection: record.affection + Math.min(VISIT_JOY, Math.max(0, Math.floor(Number(result.care) || 0))),
   } } });
   value.flags[TETSUKO_TIME_FLAG] = { ...next, sessions: record.sessions + 1, lastKey: result.visitKey };
@@ -118,7 +125,7 @@ const HEART_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS.heart}</s
 const WISH_ICON = Object.freeze({ pet: "hand", play: "teaser", brush: "brush", treat: "treat", watch: "watch", decor: "decor" });
 const WISH_LABEL = Object.freeze({ pet: "なでてほしい", play: "じゃらしで遊びたい", brush: "ブラシをかけてほしい", treat: "おやつがほしい", watch: "そばにいてほしい", decor: "何か置いてほしい" });
 // 居場所の x（歩く向きと、じゃらしの先の初めの位置に使う。CSS の --x と同じ値）
-const SPOT_X = Object.freeze({ bench: 292, floor: 548, bed: 1012, front: 668, lap: 640, "slot-bench": 400, "slot-floor": 700, "slot-bed": 1012 });
+const SPOT_X = Object.freeze({ bench: 348, floor: 548, bed: 1012, front: 668, lap: 640, "slot-bench": 400, "slot-floor": 700, "slot-bed": 1012 });
 const HAND_AT = Object.freeze({ x: 1310, y: 540 }); // じゃらしの棒の根元（はじめの手元＝右の外。下の操作の帯に重ねない）
 // カメラ（TKT17・てつこを主役に）: 舞台（.tt-cam）を寄せて、てつこの体の真ん中を画面の at に映す。舞台の外は映さない。
 // もようがえの間は引いて（zoom 1）置き場所を全部見せる。座標はどれも舞台（1280×720）の px。猫の枠の高さは CSS の .tt-cat と同じ。
@@ -156,7 +163,7 @@ export function petZoneAt(rx, ry, { curled = false, flip = false } = {}) {
   if (ry < 0.64) return "chin";
   return x < 0.28 ? "tail" : "back";
 }
-const STEP_MS = 1000, STEP_REDUCED_MS = 700, FAREWELL_MS = 6500, FAREWELL_REDUCED_MS = 5000, AFTER_ACTION_MS = 1600;
+const STEP_MS = 1000, STEP_REDUCED_MS = 700, FAREWELL_MS = 6500, FAREWELL_REDUCED_MS = 5000, WRAP_MS = 4500, WRAP_REDUCED_MS = 2200, AFTER_ACTION_MS = 1600;
 const STROKE_PX = 80, STROKE_GAP_MS = 420, BRUSH_PX = 100, BRUSH_GAP_MS = 520;
 const TOY_SWING_PX = 170, TOY_SWING_GAP_MS = 480, TOY_STILL_MS = 750, TOY_CATCH_PX = 300, TOY_HELD_MS = 1700;
 const POUNCE_MS = 380, POUNCE_HIT_PX = 150, POUNCE_LEAD = 0.5, HEADING_FRESH_MS = 140;
@@ -188,7 +195,7 @@ const LIFE = Object.freeze(["tilt", "sway", "peer", "nod", "hop"]);
 const BIT = Object.freeze({ heart: "♥", spark: "✦", note: "♪", zzz: "z" });
 
 /**
- * 「てつこといっしょ」の画面を開く（#2454 §10-2）。「帰る」か中断で閉じ、確定に渡す結果を返す。
+ * 「てつこといっしょ」の画面を開く（#2454 §10-2）。切り上げ・「帰る」・中断で閉じ、確定に渡す結果を返す。
  * 保存はここでは書かない（確定は呼び出し側が settleTetsukoTime で同じ処理の中に行う）。
  * @param {object} ctx
  * @param {object} ctx.value 現在のセーブ（読むだけ）
@@ -196,9 +203,10 @@ const BIT = Object.freeze({ heart: "♥", spark: "✦", note: "♪", zzz: "z" })
  * @param {string} [ctx.bg] 背景の URL（裏口）。裏口の絵（bg_mukai_backdoor）が届くまでの代わり
  * @param {() => boolean} [ctx.isCurrent] このセッションがまだ有効か（LOAD/章跨ぎで false）
  * @param {AbortSignal} [ctx.signal] 中断シグナル（pagehide などで閉じる）
- * @returns {Promise<object>} sessionResult。中断・LOAD では { meaningful:false }
+ * @returns {Promise<object>} sessionResult と入場の記録。中断・LOAD・訪問済みでは meaningful:false
  */
 export function openTetsukoTime(options = {}) {
+  if (tetsukoPlayedToday(options.value)) return Promise.resolve({ meaningful: false, visitKey: options.visitKey ?? null });
   return withMinigameStyles("tetsuko", options.signal, () => startTetsukoTime(options));
 }
 
@@ -212,7 +220,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
     import("../core/data.js"),
     import("../core/transition-kit.js"),
   ]);
-  if (signal?.aborted || !isCurrent()) return idle;
+  if (signal?.aborted || !isCurrent() || tetsukoPlayedToday(value)) return idle;
   const tod = value.slot >= 1 ? "night" : "day";
   const backdoor = ART_READY.background ? data.sceneBg?.("bg_mukai_backdoor", tod) : null;
   const scene = backdoor?.url ? backdoor : bg ? { url: bg, tint: null } : null;
@@ -230,7 +238,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
   const moodText = moodLabel(moodOf(session.day), session.stage);
 
   return await new Promise(resolve => {
-    let done = false, leaving = false, mounted = false, panel = null;
+    let done = false, leaving = false, wrapping = false, mounted = false, panel = null;
     let farewellTimer = 0, farewellUntil = 0;
     let timer = 0, stepTimer = 0, fxTimer = 0, purrTimer = 0, walkTimer = 0, stillTimer = 0, heldTimer = 0, flashTimer = 0, quietUntil = 0;
     let capTimer = 0, peakTimer = 0, peakGlowTimer = 0, pounceTimer = 0, ghostTimer = 0, joyTimer = 0, wishTimer = 0, peerTimer = 0, artTimer = 0;
@@ -328,11 +336,13 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
     const slotOf = id => SLOTS.find(slot => session.props[slot] === id) || null;
     const noteInput = () => { lastInputAt = Date.now(); if (!ghost.hidden) ghost.hidden = true; clearTimeout(ghostTimer); };
     function renderProps() {
+      const walking = !!cat.dataset.walk;
       for (const slot of SLOTS) {
         const id = session.props[slot];
         const node = slots[slot];
         node.dataset.prop = id || "";
-        node.classList.toggle("holding", !!id && session.cat.inside === id);
+        // 歩いて向かっている途中は、箱の手前壁やトンネルのしっぽを先に出さない（猫が二重に見える・手前壁の裏を歩くのを防ぐ）。
+        node.classList.toggle("holding", !!id && session.cat.inside === id && !walking);
         if ((node.firstElementChild?.dataset.prop || "") === (id || "")) continue;
         node.replaceChildren(...(id ? [propNode(id)] : []));
       }
@@ -352,9 +362,10 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       if (at === "floor" && free) at = "free";
       else if (free) clearFree();
       const toX = at === "free" ? free.x : SPOT_X[at] ?? 548;
-      const scale = at === "slot-bench" || at === "bench" ? (c.inside === "box" ? .76 : .88) : at === "lap" ? .98 : at === "front" ? 1.06 : c.inside === "box" ? .9 : 1;
-      const baseY = at === "slot-bench" || at === "bench" ? (backdoor?.url ? 424 : 436) : at === "lap" ? 530 : at === "front" ? 552 : 550;
-      const footY = at === "free" ? free.y : baseY - (PROP_SURFACE_LIFT[c.inside] || 0) * scale;
+      // 小物の天面リフトは小物の表示縮尺（ベンチ上は zoom: .82、床は 1）に合わせる。
+      const propScale = at === "slot-bench" ? .82 : 1;
+      const baseY = at === "bench" ? (backdoor?.url ? 438 : 436) : at === "slot-bench" ? 436 : at === "lap" ? 590 : at === "front" ? 552 : 550;
+      const footY = at === "free" ? free.y : baseY - (PROP_SURFACE_LIFT[c.inside] || 0) * propScale;
       // 天面を離れた時や高さの違う場所へ移る時は、床を横切る空中歩行をさせない。
       const heightChanged = lastFootY !== null && Math.abs(footY - lastFootY) > 2;
       if (heightChanged) cat.style.transition = "none";
@@ -368,7 +379,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
         cat.style.setProperty("--travel-ms", `${travel}ms`);
         yard.style.setProperty("--travel-ms", `${travel}ms`);
         if (hasPose("walk_a") && hasPose("walk_b")) stepFrames = setInterval(() => { walkFrame = walkFrame === "walk_a" ? "walk_b" : "walk_a"; renderPose(); }, 220);
-        walkTimer = setTimeout(() => { delete cat.dataset.walk; clearInterval(stepFrames); walkFrame = "walk_a"; renderPose(); }, travel);
+        walkTimer = setTimeout(() => { delete cat.dataset.walk; clearInterval(stepFrames); walkFrame = "walk_a"; renderPose(); renderProps(); }, travel);
       }
       else if (heightChanged) { delete cat.dataset.walk; clearTimeout(walkTimer); clearInterval(stepFrames); }
       lastAt = at; lastX = toX; lastFootY = footY;
@@ -427,6 +438,8 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       const load = poseLoads.get(src);
       if (load === "ready" || typeof Image === "undefined") { applyPose(art, src); return; }
       if (load === "failed") { cat.dataset.art = ""; pose.hidden = true; return; }
+      // 着地後の絵が届くまでは、その姿勢の表情を見せる。飛びつきの絵を地面に残さない。
+      if (cat.dataset.art === "leap" && art !== "leap") { cat.dataset.art = ""; pose.hidden = true; }
       if (!load) {
         poseLoads.set(src, "loading");
         const image = new Image();
@@ -441,7 +454,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       for (const item of DOCK) {
         const button = dockButtons[item.kind];
         const ok = canAct(session, item.kind);
-        button.disabled = !ok || leaving || !!panel;
+        button.disabled = !ok || leaving || wrapping || pouncing || !!panel;
         button.classList.toggle("active", !!item.tool && item.tool === tool);
         button.title = !ok && item.locked ? item.locked : "";
       }
@@ -449,9 +462,11 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       const shootable = canShoot();
       shot.disabled = !shootable;
       shot.classList.toggle("ready", shootable && !session.album.some(entry => entry.moment === session.moment));
-      shot.title = shootable ? `今のしぐさ（${momentById(session.moment)?.name}）を写真に残す（P）` : "しぐさが見えると撮影できます";
+      shot.title = shootable ? `今のしぐさ（${momentById(session.moment)?.name}）を写真に残す（P）` : "しぐさが見えると撮影できる";
       decorButton.classList.toggle("new", session.newProps.length > 0);
-      for (const button of [decorButton, bookButton, helpButton]) button.disabled = leaving;
+      decorButton.disabled = leaving || wrapping;
+      for (const button of [bookButton, helpButton]) button.disabled = leaving;
+      backButton.disabled = leaving || (wrapping && !host.dataset.ended);
       host.dataset.tool = tool;
       host.dataset.toy = held ? "held" : tool === "toy" ? "out" : "";
       renderSlots();
@@ -657,6 +672,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
         } else {
           session.cat = final;
           show(reaction);
+          queueEnd();
         }
       };
       next();
@@ -689,11 +705,17 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       setTimeout(() => card.remove(), TOAST_MS);
       if (kind === "found") { bookButton.classList.remove("got"); void bookButton.offsetWidth; bookButton.classList.add("got"); }
     }
-    // とっておきの時の札: ハートが初めて5つそろった時と、この回のお世話が上限に届いた時（今日は満足。ハートはまた来た時に）。
-    function joyToast(full) {
-      const card = el("div.tt-toast.tt-toast-joy", { dataset: { kind: full ? "full" : "visit", test: "tetsuko-joy-note" } }, [
-        el("span.tt-toast-heart", { "aria-hidden": "true", html: HEART_SVG }),
-        el("p", [el("small", { text: "ごきげん" }), el("b", { text: full ? "ハートが5つそろった！" : "今日は、もう満足らしい。" })]),
+    // 切り上げ時の札: 好感度+1／ハートが初めて5つそろった／満タン後の満足／今日は届かず。
+    function joyToast(kind) {
+      const copy = {
+        full: { sub: "なかよし度", body: "ハートが5つそろった！" },
+        up: { sub: "なかよし度 +1", body: "今日はこれぐらいにしておこう。" },
+        visit: { sub: "ごきげん", body: "今日はこれぐらいにしておこう。" },
+        none: { sub: "また明日", body: "今日はこれぐらいにしておこう。" },
+      }[kind] || { sub: "ごきげん", body: "今日はこれぐらいにしておこう。" };
+      const card = el("div.tt-toast.tt-toast-joy", { dataset: { kind, test: "tetsuko-joy-note" } }, [
+        kind !== "none" ? el("span.tt-toast-heart", { "aria-hidden": "true", html: HEART_SVG }) : null,
+        el("p", [el("small", { text: copy.sub }), el("b", { text: copy.body })]),
       ]);
       for (const old of chips.querySelectorAll(".tt-toast-joy")) old.remove();
       chips.prepend(card);
@@ -711,8 +733,9 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
     }
 
     // -- 操作
-    function doAct(kind, opts = {}) {
-      if (done || leaving || panel) return null;
+    function doAct(kind, { landing = false, ...opts } = {}) {
+      if (done || leaving || wrapping || (panel && !landing)) return null;
+      if (kind === "treat" && free) clearFree();
       const reaction = act(session, kind, opts);
       if (!reaction) return null;
       noteInput();
@@ -720,16 +743,16 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       play(reaction);
       // 捕まえたら、じゃらしはしばらく猫の胸元にある。
       if (reaction.kind === "catch") holdToy();
-      queuePeak(reaction);
+      queueEnd({ waitForSteps: !!reaction.steps?.length });
       schedule();
       return reaction;
     }
     function press(item) {
-      if (done || leaving || panel) return;
+      if (done || leaving || wrapping || pouncing || panel) return;
       noteInput();
       if (item.kind === "play") {
         if (tool !== "toy") setTool("toy");
-        if (held || pouncing) return;
+        if (held) return;
         // ボタンでも1回振ったことになる（先が猫の近くで小さく揺れる）。
         const home = toyHome();
         toyGoal = { x: home.x + (session.swings % 2 ? -46 : 46), y: home.y - 18 };
@@ -738,6 +761,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
         return;
       }
       if (item.tool) setTool(item.tool);
+      else if (tool === "toy") setTool("hand");
       // ボタンのなでるは、頭→あご→背中の順に手を移す（ボタンだけでも、お気に入りの場所が見つかる）。
       if (item.kind === "pet") { doAct("pet", { zone: ["head", "chin", "back"][pressZone++ % 3] }); return; }
       doAct(item.kind);
@@ -802,7 +826,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       if (Math.abs(toyVel.x) + Math.abs(toyVel.y) > .25 || Math.hypot(toyGoal.x - toyTip.x, toyGoal.y - toyTip.y) > .5) toyFrame = requestAnimationFrame(springToy);
     }
     function moveToy(point) {
-      if (done || held || panel || leaving) return;
+      if (done || held || panel || leaving || wrapping) return;
       const next = clampTip(point), now = performance.now();
       if (toyGoal) {
         toyTravel += Math.hypot(next.x - toyGoal.x, next.y - toyGoal.y) * cam.k; // 振った長さは画面の上で測る（寄せても手の動きは同じ）
@@ -837,9 +861,11 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
         if (done || leaving || tool !== "toy") return;
         const c = catCenter(), tip = toyTip || toyGoal;
         const near = !!tip && (reduced || session.stage === 0 ? Math.hypot(tip.x - c.x, tip.y - c.y) <= TOY_CATCH_PX : Math.abs(tip.x - c.x) <= POUNCE_HIT_PX);
-        doAct(sure || near ? "catch" : "miss");
+        // パネルが開いても着地させる。途中の飛びつきの絵のまま止まるのを防ぐ。
+        doAct(sure || near ? "catch" : "miss", { landing: true });
       };
       if (reduced || session.stage === 0 || !toyTip) { land(); return; }
+      if (sure) session.cat = { ...session.cat, spot: "floor", pose: "paw", art: "leap", inside: null };
       // 狙うのは手の行き先（指・マウスの位置）を少し先読みした所。ゆっくり動かす・止めると届き、速く振る・切り返すと空振りになる。
       // （先そのものは少し遅れてついてくるので、遅れた先へ跳ぶと届かない。）
       const goal = toyGoal || toyTip;
@@ -859,12 +885,15 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       cat.style.setProperty("--y", `${free.y}px`);
       cat.style.setProperty("--s", String(free.s));
       Object.assign(cat.dataset, { at: "free", flip: String(dir < 0), inside: "" });
-      lastAt = "free"; lastX = free.x;
+      lastAt = "free"; lastX = free.x; lastFootY = free.y;
+      renderPose();
+      renderProps();
+      renderButtons();
       const apex = Math.max(70, Math.min(190, 560 - point.y));
       motion?.cancel();
       motion = body.animate?.([{ transform: "translateY(0) rotate(0deg) scale(1.1, .86)" },
         { transform: `translateY(-${apex}px) rotate(${dir * 12}deg) scale(.94, 1.1)`, offset: .5 },
-        { transform: "translateY(0) rotate(0deg) scale(1.12, .86)", offset: .92 }, { transform: "none" }], { duration: ms + 90, easing: "ease-out" }) || null;
+        { transform: "translateY(0) rotate(0deg) scale(1.06, .92)", offset: .92 }, { transform: "none" }], { duration: ms, easing: "ease-out" }) || null;
       SE.swish?.();
       pounceTimer = setTimeout(() => { pouncing = false; onLand(); }, ms);
     }
@@ -878,13 +907,13 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       heldTimer = setTimeout(() => { held = false; toyTip = toyGoal = tool === "toy" ? toyHome() : null; renderButtons(); placeToy(); }, TOY_HELD_MS);
     }
     yard.addEventListener("pointermove", event => {
-      if (tool !== "toy" || panel || leaving) return;
+      if (tool !== "toy" || panel || leaving || wrapping) return;
       if (event.pointerType !== "mouse" && !(event.buttons & 1)) return;
       noteInput();
       moveToy(yardPoint(event));
     });
     yard.addEventListener("pointerdown", event => {
-      if (tool !== "toy" || panel || leaving || done) return;
+      if (tool !== "toy" || panel || leaving || wrapping || done) return;
       noteInput();
       yard.setPointerCapture?.(event.pointerId);
       moveToy(yardPoint(event));
@@ -913,7 +942,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
     };
     const unlean = () => { cat.style.removeProperty("--lean"); cat.dataset.press = ""; };
     cat.addEventListener("pointerdown", event => {
-      if (done || leaving || panel || tool === "toy") return;
+      if (done || leaving || wrapping || panel || tool === "toy") return;
       noteInput();
       cat.setPointerCapture?.(event.pointerId);
       const point = yardPoint(event);
@@ -921,7 +950,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       lean(event);
     });
     cat.addEventListener("pointermove", event => {
-      if (!stroke || event.pointerId !== stroke.id || !(event.buttons & 1) || panel || done || leaving) return;
+      if (!stroke || event.pointerId !== stroke.id || !(event.buttons & 1) || panel || done || leaving || wrapping) return;
       const point = yardPoint(event), now = Date.now();
       stroke.dist += Math.hypot(point.x - stroke.x, point.y - stroke.y);
       stroke.x = point.x; stroke.y = point.y;
@@ -940,29 +969,30 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       const stroked = stroke?.done;
       stroke = null;
       unlean();
-      if (stroked || panel || done || leaving || tool === "toy") return;
+      if (stroked || panel || done || leaving || wrapping || tool === "toy") return;
       if (tool === "brush") { lastBrushAt = Date.now(); doAct("brush"); return; }
       lastPetAt = Date.now();
       doAct("pet", { zone: zoneOf(event) });
     });
     // 置いてある物をタップして、てつこを誘う（箱なら入る・顔を出す、ボールなら転がす・見送る）。
     function pokeProp(slot) {
-      if (done || leaving || panel) return;
+      if (done || leaving || wrapping || panel) return;
       const reaction = invite(session, session.props[slot]);
       if (!reaction) return;
+      clearTimeout(stepTimer);
       noteInput();
       quietUntil = Date.now() + AFTER_ACTION_MS;
       show(reaction);
-      queuePeak(reaction);
+      queueEnd();
       schedule();
     }
 
-    // -- ハートが初めて5つそろった時と、この回のお世話が上限に届いた時に、少し間を置いて「とっておき」（段階ごとのしぐさ）。
-    //    ハートは減らず、来訪をまたいで溜まったまま（§11）。
-    function queuePeak(reaction) {
-      if (!reaction?.joy?.peak) return;
-      clearTimeout(peakTimer);
-      peakTimer = setTimeout(firePeak, reduced ? 300 : PEAK_DELAY_MS);
+    // -- 好感度+1到達またはやりとり上限で切り上げて終わる（+1の後にだらだら続けられない）。
+    function queueEnd({ waitForSteps = false } = {}) {
+      if (!session.ended) return;
+      wrapping = true;
+      renderButtons();
+      if (!waitForSteps) peakTimer = setTimeout(session.peakReady ? firePeak : fireWrapUp, reduced ? 300 : PEAK_DELAY_MS);
     }
     function firePeak() {
       if (done || leaving) return;
@@ -973,11 +1003,24 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       if (tool === "toy") setTool("hand");
       quietUntil = Date.now() + PEAK_GLOW_MS;
       host.dataset.peak = "1";
+      host.dataset.ended = session.endReason || "up";
       clearTimeout(peakGlowTimer);
       peakGlowTimer = setTimeout(() => { host.dataset.peak = ""; }, PEAK_GLOW_MS);
       show(reaction);
-      joyToast(!!reaction.full);
-      schedule();
+      joyToast(reaction.full ? "full" : reaction.up ? "up" : "visit");
+      finishFarewellAfter(reduced ? WRAP_REDUCED_MS : WRAP_MS);
+    }
+    function fireWrapUp() {
+      if (done || leaving) return;
+      if (panel || pouncing || held || document.hidden) { peakTimer = setTimeout(fireWrapUp, 400); return; }
+      const reaction = wrapUpReaction(session);
+      if (!reaction) return;
+      clearTimeout(stepTimer);
+      if (tool === "toy") setTool("hand");
+      host.dataset.ended = "none";
+      show(reaction);
+      joyToast("none");
+      finishFarewellAfter(reduced ? WRAP_REDUCED_MS : WRAP_MS);
     }
 
     // -- 自律行動（画面を開いている間だけ。閉じている間は進めない）。落ち着く間は、小さな身じろぎだけ入れる。
@@ -1005,11 +1048,11 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       // LOAD などで画面が差し替わったら、ここで閉じる（確定しない）。
       if (host.isConnected) mounted = true;
       if (!isCurrent() || (mounted && !host.isConnected)) { finish(true); return; }
-      if (leaving || panel || held || pouncing || stroke || document.hidden || Date.now() < quietUntil) { schedule(); return; }
+      if (leaving || wrapping || panel || held || pouncing || stroke || document.hidden || Date.now() < quietUntil) { schedule(); return; }
       // 見つけたばかりのしぐさは、写真を撮れるようにしばらく保つ（その間も体は小さく動き、おねだりは出る）。
       const reaction = autonomous(session, { idle: Date.now() - lastInputAt >= WATCH_IDLE_MS, holding: Date.now() < photoUntil });
       if (reaction.quiet) life();
-      else { show(reaction); queuePeak(reaction); }
+      else { show(reaction); queueEnd(); }
       schedule();
     }
 
@@ -1027,13 +1070,13 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       flashTimer = setTimeout(() => { host.dataset.flash = ""; }, 700);
       toast("photo", id);
       flyToBook(id);
-      if (leaving) finishFarewellAfter(TOAST_MS);
+      if (leaving || host.dataset.ended) finishFarewellAfter(TOAST_MS);
       photoUntil = 0; renderButtons();
     }
 
     // -- もようがえ: 道具箱から物を選び、光った場所をタップして置く。置いた物をタップすると片付ける。
     function openDecor() {
-      if (done || leaving) return;
+      if (done || leaving || wrapping) return;
       noteInput();
       SE.click?.();
       closePanelQuietly();
@@ -1079,7 +1122,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
           hit.setAttribute("aria-label", `${SLOT_NAMES[slot]}に置く`);
         } else {
           // ふだんは、置いてある物をタップして誘える（じゃらしを振っている間は、じゃらしに任せる）。
-          const playable = !panel && !leaving && !!id && tool !== "toy";
+          const playable = !panel && !leaving && !wrapping && !!id && tool !== "toy";
           hit.hidden = !playable;
           Object.assign(hit.dataset, { mode: "play", allowed: "false", filled: String(!!id) });
           hit.disabled = false;
@@ -1217,7 +1260,13 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       help.hidden = true; help.replaceChildren();
       renderSlots();
     }
-    function closePanel() { closePanelQuietly(); lastInputAt = Date.now(); renderButtons(); schedule(); }
+    function closePanel() {
+      closePanelQuietly();
+      lastInputAt = Date.now();
+      renderButtons();
+      if (host.dataset.ended) { farewellUntil = 0; finishFarewellAfter(reduced ? WRAP_REDUCED_MS : WRAP_MS); }
+      schedule();
+    }
     const onKey = event => {
       if (event.key === "Escape" && panel) { event.preventDefault(); closePanel(); return; }
       if (event.key.toLowerCase() !== "p" || event.defaultPrevented || event.repeat || event.isComposing
@@ -1229,22 +1278,30 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       snap();
     };
 
-    // -- 帰る（いつでも押せる。気を許した段階で、ふれあいの後なら戸の前まで見送ってくれる）
+    // -- 帰る（気を許した段階で、ふれあいの後なら戸の前まで見送ってくれる）
+    function onFarewellTimer() {
+      if (done) return;
+      if (wrapping && panel) { farewellTimer = setTimeout(onFarewellTimer, 400); return; }
+      finish();
+    }
     function finishFarewellAfter(ms) {
       const until = Date.now() + ms;
       if (until <= farewellUntil) return;
       farewellUntil = until;
       clearTimeout(farewellTimer);
-      farewellTimer = setTimeout(finish, ms);
+      farewellTimer = setTimeout(onFarewellTimer, ms);
     }
     function leave() {
-      if (done || leaving) return;
+      if (done || leaving || (wrapping && !host.dataset.ended)) return;
       SE.select?.();
+      // 切り上げ中は「帰る」でそのまま即終了する（とっておき後に余計な待ちを作らない）。
+      if (wrapping) { finish(); return; }
       const bye = farewell(session);
       if (!bye) { finish(); return; }
       leaving = true;
       clearTimeout(stepTimer); clearTimeout(peakTimer); clearTimeout(pounceTimer);
       pouncing = false;
+      motion?.cancel();
       closePanelQuietly();
       setTool("hand");
       show(bye);
@@ -1265,7 +1322,7 @@ async function startTetsukoTime({ value = null, visitKey = null, bg = null, isCu
       signal?.removeEventListener?.("abort", abort);
       if (layers.screen?.firstElementChild === host) showScreen("none", null);
       if (audio.currentBgm() === "bgm_tetsuko_time") audio.playBgm(bgmBefore);
-      resolve(aborted || !isCurrent() ? idle : sessionResult(session));
+      resolve(aborted || !isCurrent() ? idle : { ...sessionResult(session), played: true });
     }
     const abort = () => finish(true);
 

@@ -54,7 +54,7 @@ assert(!masteryRecord(cat,'tetsuko').done);
 assert.equal(masteryRecord(cat,'tetsuko').count,3,'memories are kept before friendship stage four');
 const catNext=Object.assign(core.newState(),buildCarryPackage(cat));
 syncPlayMastery(catNext);assert.equal(masteryRecord(catNext,'tetsuko').count,3);assert(!masteryRecord(catNext,'tetsuko').done);
-settleTetsukoTime(cat,{meaningful:true,visitKey:'b'});assert(masteryRecord(cat,'tetsuko').done);
+cat.day+=1;settleTetsukoTime(cat,{meaningful:true,visitKey:'b'});assert(masteryRecord(cat,'tetsuko').done);
 const run={cup:'standard',rank:3,parts:{timing:20,stamina:20},stats:{spam:1}};
 assert(camelMastered(run));assert(!camelMastered({...run,stats:{spam:2}}));assert(!camelMastered({...run,parts:{timing:19,stamina:25}}));
 assert(!camelExpert({...run,cup:'expert',rank:1,total:90}),'expert still requires no spam');

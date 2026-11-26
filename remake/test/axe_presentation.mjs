@@ -10,7 +10,7 @@ const bandMiddle = score => (RINGS[5 - score].radius + RINGS[6 - score].radius) 
 
 test("declaring a new killshot blue gives one cue; same blue, normal, or non-killshot gives none", () => {
   const [first, second] = KILLS;
-  assert.deepEqual(declarationCue(null, first.id), { label: "KILL SHOT 宣言", target: first.id, place: "左上" });
+  assert.deepEqual(declarationCue(null, first.id), { label: "KILLSHOT 宣言", target: first.id, place: "左上" });
   assert.equal(declarationCue(first.id, first.id), null);
   assert.equal(declarationCue(first.id, null), null);
   assert.equal(declarationCue(null, null), null);

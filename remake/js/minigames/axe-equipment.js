@@ -35,4 +35,11 @@ export function axeGreenBand(id = 'house') {
   const f = AXE_EQUIPMENT[id].powerErrorScale;
   return { min: POWER.ideal + (POWER.sweetMin - POWER.ideal) / f, max: POWER.ideal + (POWER.sweetMax - POWER.ideal) / f };
 }
-export const axeEffect = gear => `手ぶれ ${Math.round((1 - gear.steady) * 100)}%減 / 回転のずれ ${Math.round((1 - gear.powerErrorScale) * 100)}%減`;
+export function axeEffect(gear) {
+  const steadyReduction = Math.round((1 - gear.steady) * 100);
+  const powerReduction = Math.round((1 - gear.powerErrorScale) * 100);
+  const effects = [];
+  if (steadyReduction) effects.push(`手ぶれ ${steadyReduction}%減`);
+  if (powerReduction) effects.push(`回転のずれ ${powerReduction}%減`);
+  return effects.join(' / ') || '標準';
+}

@@ -38,9 +38,9 @@ for (const [i,k] of KILLS.entries()) { const b=document.createElement('button');
 function cancel() { game?.cancelPull(); space=false; if(pointer!==null) { const id=pointer; pointer=null; if($('grip').hasPointerCapture(id)) $('grip').releasePointerCapture(id); } }
 function start() { cancel(); game=new AxePullSession({mode:$('mode').value,division:$('division').value,difficulty:$('difficulty').value,equipmentId:ownsAxe(demoWallet,$('equipment').value)?$('equipment').value:bestOwnedAxe(demoWallet).id}); flight=0; marks.replaceChildren(); axe.replaceChildren(); $('menu').close(); $('summary').close(); blocked=false; last=0; update(); focusScene(); }
 function update() {
-  const active=game.canAim()||game.phase==='pull'; $('score').textContent=`${totalOf(game.shots)} pt · ${Math.min(game.shots.length+1,game.rules.throws)}/${game.rules.throws}${game.match?`\nひより ${totalOf(game.match.opponent)} pt`:''}`;
-  $('instruction').textContent=game.phase==='result'?`${game.actor==='opponent'?'ひより · ':''}${game.last.score}点${game.last.stuck?'':' / 落下'}`:game.phase==='flight'?(game.actor==='opponent'?'ひよりの投球':''):game.suddenDeath?'サドンデス · 指定の青を狙う':!game.selected?'的をタップして、狙いを決める':game.phase==='pull'?'緑の位置で、離す':'右のハンドルを引く';
-  $('next').hidden=game.phase!=='result'; $('next').textContent=game.match&&game.actor==='player'?'ひよりの投球へ':game.shots.length===game.rules.throws?'結果へ':'次の投球'; $('pull').hidden=!active; $('grip').disabled=!active||!game.selected; $('focus').disabled=!active||!game.selected||game.focusUsed;
+  const active=game.canAim()||game.phase==='pull'; $('score').textContent=`${totalOf(game.shots)}点 · ${Math.min(game.shots.length+1,game.rules.throws)}/${game.rules.throws}${game.match?`\nひより ${totalOf(game.match.opponent)}点`:''}`;
+  $('instruction').textContent=game.phase==='result'?`${game.actor==='opponent'?'ひより · ':''}${game.last.score}点${game.last.stuck?'':' / 落下'}`:game.phase==='flight'?(game.actor==='opponent'?'ひよりの投擲':''):game.suddenDeath?'サドンデス · 指定の青を狙う':!game.selected?'的をタップして、狙いを決める':game.phase==='pull'?'緑の位置で、離す':'右のハンドルを引く';
+  $('next').hidden=game.phase!=='result'; $('next').textContent=game.match&&game.actor==='player'?'ひよりの番へ':game.shots.length===game.rules.throws?'結果へ':'次の一投'; $('pull').hidden=!active; $('grip').disabled=!active||!game.selected; $('focus').disabled=!active||!game.selected||game.focusUsed;
   for (const b of $('calls').children) { b.disabled=!game.canAim()||game.suddenDeath||!canCall(b.dataset.call,game.shots,game.rules.throws); b.setAttribute('aria-pressed',String(game.called===b.dataset.call)); }
   const closed=closuresOf(game.shots,game.shots.length,game.rules.throws,game.division);
   for (const c of clusters) { c.bull.setAttribute('fill',closed.bull.has(c.id)||closed.cluster.has(c.id)?'#716b5d':'#a83127'); c.closed.setAttribute('visibility',closed.cluster.has(c.id)?'visible':'hidden'); c.five.setAttribute('stroke',closed.five.has(c.id)?'#797162':'#252927'); }
@@ -61,7 +61,7 @@ $('grip').addEventListener('pointermove',e=>{if(pointer!==e.pointerId)return; ga
 $('grip').addEventListener('pointerup',e=>{if(pointer!==e.pointerId)return; const id=pointer; pointer=null; release(id,pullPoint(e)); if($('grip').hasPointerCapture(id))$('grip').releasePointerCapture(id);});
 $('grip').addEventListener('lostpointercapture',()=>{if(pointer!==null){cancel();update();}});
 $('focus').addEventListener('click',()=>{game.focus();focusScene();update();});
-$('next').addEventListener('click',()=>{ if(!game.next())return; bladeFlash.setAttribute('visibility','hidden'); axe.replaceChildren(); if(game.phase==='summary') {const r=game.result(true); $('result').textContent=`${r.total} / ${r.maximum}点\nランク ${r.rank} · ${game.equipment.name}${r.match?`\n${r.match.winner==='player'?'あなたの勝ち':'ひよりの勝ち'}`:''}\nセーブ・報酬には反映しません`; $('summary').showModal();blocked=true;} else if(game.phase==='flight')beginFlight(); update(); if(game.phase==='aim')focusScene(); });
+$('next').addEventListener('click',()=>{ if(!game.next())return; bladeFlash.setAttribute('visibility','hidden'); axe.replaceChildren(); if(game.phase==='summary') {const r=game.result(true); $('result').textContent=`${r.total} / ${r.maximum}点\nRANK ${r.rank} · ${game.equipment.name}${r.match?`\n${r.match.winner==='player'?'あなたの勝ち':'ひよりの勝ち'}`:''}\nセーブ・報酬には反映しません`; $('summary').showModal();blocked=true;} else if(game.phase==='flight')beginFlight(); update(); if(game.phase==='aim')focusScene(); });
 function menu() {cancel();blocked=true;$('menu').showModal();update();}
 $('settings').addEventListener('click',menu); $('restart').addEventListener('click',start); $('again').addEventListener('click',start); $('summary-settings').addEventListener('click',()=>{$('summary').close();menu();});
 $('menu').addEventListener('close',()=>{blocked=$('summary').open;last=0;if(!blocked)focusScene();}); $('summary').addEventListener('cancel',e=>e.preventDefault());
@@ -86,7 +86,7 @@ function renderShop(preferred) {
     button.addEventListener('click', () => { if (buyAxe(demoWallet, gear.id)) { renderShop(bestOwnedAxe(demoWallet).id); } });
     $('axe-offers').append(button);
   }
-  $('axe-effect').textContent = axeEffect(AXE_EQUIPMENT[$('equipment').value] || HOUSE_AXE) + '。この設定で最初から、で反映。点数・刃の大きさは共通。';
+  $('axe-effect').textContent = axeEffect(AXE_EQUIPMENT[$('equipment').value] || HOUSE_AXE) + '。「この設定で最初から」で反映。点数・刃の大きさは共通。';
 }
 $('equipment').addEventListener('change', renderShop);
 renderShop(); start(); requestAnimationFrame(frame);

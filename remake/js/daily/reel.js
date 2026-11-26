@@ -1166,13 +1166,9 @@ async function presentFreeze(r) {
   announce(r);
 }
 
-// 報酬カード。停止を経ずに結果を表示する場合も、ここで報酬を精算する。
+// 旧成長の報酬カード。停止を経ずに結果を表示する場合も、ここで報酬を精算する。
 function announce(r) {
   applyReward(r);
-  if (r.xp > 0 && !r.quiet) {
-    gainCard({ kind: "exp", source: "slot", badge: "経", top: "SLOT BONUS", main: `EXP +${r.xp}` });
-    return;
-  }
   if (!(r.got > 0) || r.quiet || !r.target) return;
   const fx = r.starTo ? DB.statusTexts?.statTierFx?.[r.target]?.[r.starTo - 1] : "";
   gainCard({

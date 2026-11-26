@@ -9,7 +9,7 @@ import { newState } from "../../js/core/state.js";
 import { OUTINGS_FLAG } from "../../js/chapters/ch3-outing-progress.js";
 import { WATCH_IDLE_MS, settleTetsukoTime, tetsukoVisitKey } from "../../js/minigames/tetsuko-time.js";
 import {
-  TETSUKO_TIME_FLAG, JOY_MAX, createSession, openingReaction, act, canAct, autonomous, autoDelay, peakReaction, placeProp, invite, slotOf,
+  TETSUKO_TIME_FLAG, JOY_MAX, createSession, openingReaction, act, canAct, autonomous, autoDelay, peakReaction, wrapUpReaction, placeProp, invite, slotOf,
   unlockedProps, rng, readTetsukoRecord, sessionResult, SWEET_ZONES,
 } from "../../js/minigames/tetsuko-model.js";
 
@@ -101,7 +101,7 @@ export function runVisit(value, { player, presses: budget, seed = 1 }) {
   };
   seen(openingReaction(s));
   const gapOf = () => type.gap[0] + r() * (type.gap[1] - type.gap[0]);
-  while (presses < budget && t < 10 * 60 * 1000) {
+  while (!s.ended && presses < budget && t < 10 * 60 * 1000) {
     if (peakAt <= Math.min(nextTick, nextAct)) { t = peakAt; peakAt = Infinity; peakReaction(s); quietUntil = t + 2400; continue; }
     if (nextTick <= nextAct) {
       t = nextTick;
@@ -126,12 +126,13 @@ export function runVisit(value, { player, presses: budget, seed = 1 }) {
     seen(reaction);
     quietUntil = t + (kind === "treat" ? TREAT_MS : 0) + AFTER_ACTION_MS;
     // ボタンのじゃらしで飛びついたら、先は猫の近くにあるので捕まえる（画面の press → pounce → land と同じ）。
-    if (reaction?.pounce) { t += POUNCE_MS; seen(act(s, "catch")); quietUntil = t + AFTER_ACTION_MS; }
+    if (reaction?.pounce && !s.ended) { t += POUNCE_MS; seen(act(s, "catch")); quietUntil = t + AFTER_ACTION_MS; }
     if (reaction?.kind === "catch" || s.last === "catch") heldUntil = t + TOY_HELD_MS;
     nextTick = t + autoDelay(s);
     nextAct = t + gapOf();
   }
-  if (peakAt < Infinity) peakReaction(s);
+  if (s.peakReady) peakReaction(s);
+  if (s.wrapReady) wrapUpReaction(s);
   return { ...sessionResult(s), seconds: Math.round(t / 1000) };
 }
 
@@ -161,9 +162,12 @@ export function measure({ players = PLAYER_TYPES, presses = [10, 20, 40], days =
   for (const player of players) for (const n of presses) {
     const runs = days.map(day => visitsToFull({ player, presses: n, day }));
     const visits = runs.map(run => run.visits ?? Infinity);
+    const allVisits = runs.flatMap(run => run.perVisit);
+    const zeroDays = allVisits.filter(v => v === 0).length;
     out[`${player}/${n}`] = {
       visits: median(visits), fastest: Math.min(...visits), slowest: Math.max(...visits),
       perVisit: median(runs.flatMap(run => run.perVisit.slice(0, -1))),
+      missRate: allVisits.length ? +(zeroDays / allVisits.length).toFixed(2) : 0,
     };
   }
   return out;
@@ -175,7 +179,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   else for (const [key, row] of Object.entries(result)) {
     const [player, n] = key.split("/");
     console.log(`${player.padEnd(9)} 1回に${String(n).padStart(2)}手: ハート5つまで 中央${String(row.visits).padStart(3)}回（最短${row.fastest}・最長${row.slowest}）`
-      + ` 1回あたり 中央${String(row.perVisit).padStart(3)}（ハート${(row.perVisit / (JOY_MAX / 5)).toFixed(2)}）`);
+      + ` 1回あたり 中央${String(row.perVisit).padStart(3)}（未達率${Math.round(row.missRate * 100)}%）`);
   }
 }
 void TETSUKO_TIME_FLAG;

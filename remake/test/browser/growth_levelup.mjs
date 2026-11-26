@@ -914,18 +914,20 @@ await suite("growth-levelup", async (runCheck) => {
       assert.doesNotMatch(await exp.innerText(), /あと\d/);
       assert.match(await exp.getAttribute("title"), /次のレベルまで EXP 205/);
 
-      // 自由行動1回 → チップ1枚（内訳の数字は出さない）
+      // 自由行動でゲージが伸び、獲得ポイントのチップは出ない。
+      const fill = exp.locator(".hx-today");
+      const previousFill = await fill.evaluate(node => parseFloat(node.style.width));
       await page.evaluate(async () => {
         const stats = await import("./js/core/stats.js");
         __remake.state.met.naru = true;
         await stats.paidAction(async () => { stats.addStamina(-16); return true; }, { exp: { key: "naru", person: "naru" } });
       });
       const chip = page.locator(t("exp-chip"));
-      await chip.waitFor();
-      assert.match(await chip.innerText(), /EXP \+70[\s\S]*はじめて/);
+      assert.equal(await chip.count(), 0);
+      assert(await fill.evaluate(node => parseFloat(node.style.width)) > previousFill);
       assert.match(await exp.getAttribute("title"), /次のレベルまで EXP 135/);
       await page.waitForTimeout(400);
-      await page.screenshot({ path: `${out}/growth-levelup-${label}-chip.png` });
+      await page.screenshot({ path: `${out}/growth-levelup-${label}-gauge.png` });
 
       // 満タンを越えたら、その場でレベルが上がって火種が手持ちに入る（SBD108・SBD122）。画面の上に短い札が出て、操作は止まらない
       await page.evaluate(async () => (await import("./js/core/growth.js")).gainExp(400));
@@ -934,6 +936,7 @@ await suite("growth-levelup", async (runCheck) => {
       await card.waitFor();
       assert.deepEqual(await card.evaluate((node) => [node.dataset.from, node.dataset.to, node.dataset.line]), ["1", "3", "LEVEL UP Lv.3　白火 ＋4"], "レベル1つで火種2つ");
       assert.match(await card.innerText(), /LEVEL UP[\s\S]*Lv\.3[\s\S]*×4/);
+      assert.doesNotMatch(await card.innerText(), /EXP\s*[+＋]\s*\d+/i);
       assert.doesNotMatch(await card.innerText(), /？？？/, "名乗っていない相手の名前は出さない");
       await assertFits(page, ".lvup-plate");
       const badge = page.locator(t("hud-hidane"));
@@ -945,7 +948,7 @@ await suite("growth-levelup", async (runCheck) => {
       await page.screenshot({ path: `${out}/growth-levelup-${label}-full.png` });
       assert.equal(await page.locator(BLOCKING).count(), 0);
       await page.locator(t("levelup")).waitFor({ state: "detached", timeout: 15000 });
-      await page.waitForFunction(() => !document.querySelector('[data-test="exp-chip"]'));
+      assert.equal(await chip.count(), 0);
       await assertFits(page, '[data-test="hud-exp"]');
 
       // 寝る前は何も出ない（もう上がっている）

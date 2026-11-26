@@ -371,7 +371,7 @@ export function canCharge(G, p) {
   if ((p.turn.adds || 0) >= G.R.coalAdds) return fail(ADD_LIMIT(G));
   if ((p.turn.charges || 0) >= G.R.chargePerTurn) return fail(G.R.chargePerTurn === 1 ? "チャージ＆ドローは1ターンに1回" : `チャージは1ターンに${G.R.chargePerTurn}回まで`);
   // 置いたら必ず1枚引く（引かずに置くことはできない）。引く札がどこにも無ければ置けない
-  if (G.R.chargeDraw > 0 && !p.deck.length && !p.ash.length) return fail("引く札が無いので置けない");
+  if (G.R.chargeDraw > 0 && !p.deck.length && !p.ash.length) return fail("引く札がないので置けない");
   if (!coalRoom(p)) return fail(`炭は${coalMaxOf(p)}つまで`);
   if (!p.hand.length) return fail("手札がない");
   return OK;
@@ -631,7 +631,7 @@ const EFFECTS = {
     if (!o) return;
     if (G.P.length > 2) say(G, `${o.name}をねらう。`, p.index);
     emit(G, { t: "target", p: p.index, to: o.index, id: "draft" });
-    if (hasTool(o, "windguard") || o.bowl.lavender >= 2) { say(G, "相手の炭は守られている。", o.index); return; }
+    if (hasTool(o, "windguard") || o.bowl.lavender >= 2) { say(G, `${o.name}の炭は守られている。`, o.index); return; }
     if (!o.zone.length) return;
     G.stack.push(w); G.wait = { type: "weaken", player: o.index, by: p.index };
   },

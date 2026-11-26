@@ -56,6 +56,25 @@ function assertOnce(value) {
 
 try {
   await suite('lime-reply-once', async check => {
+    await check('max-heart-chat-exp-without-points', async page => {
+      await page.evaluate(async () => {
+        const core = await import('./js/core/state.js'), data = await import('./js/core/data.js');
+        (await import('./js/core/growth.js')).setGrowthPreview(true);
+        const s = core.newGame();
+        s.met.minto = true; s.contacts.push('minto'); s.affinity.minto = 66;
+        const msg = structuredClone(data.DB.lime.find(m => m.id === 'lime_minto_day5'));
+        Object.assign(msg, { type: 'chat', casual: true });
+        s.inbox = [{ id: msg.id, originId: msg.id, day: 1, msg, read: false, done: false, replyState: 'waiting', log: [] }];
+        (await import('./js/core/ui.js')).showScreen('home', document.createElement('div'));
+        void (await import('./js/daily/phone.js')).openLime();
+      });
+      assert.equal(await control(page, 'lime-chat-exp').innerText(), '♥5・経験値');
+      await control(page, 'lime-chat-minto').click();
+      await page.getByRole('button', { name: replyText, exact: true }).click();
+      await control(page, 'phone-next').waitFor();
+      assert.equal(await page.evaluate(async () => (await import('./js/core/state.js')).state.growth.xp), 5);
+      assert.doesNotMatch(await page.locator('.lime-chat').innerText(), /EXP\s*[+＋]\s*\d+/i);
+    });
     for (const [kind, label] of [['default', null], ['short', '……誰？'], ['long', '……はい。ありがとうございます、スミさん']]) {
       await check(`story-close-${kind}-1180`, async page => {
         await page.evaluate(async label => {

@@ -404,13 +404,25 @@ await suite("ch4-camel-race-controls", async check => {
         for (const node of document.querySelectorAll(".loading-comic-title")) if (!window.__comicTitles.includes(node.textContent)) window.__comicTitles.push(node.textContent);
       }).observe(document, { childList: true, subtree: true });
     });
-    await page.route(url => /\/img\/ui\/camel_race\/.+\.webp/.test(url.href), async route => { await new Promise(resolve => setTimeout(resolve, 1500)); await route.continue(); });
-    await page.goto(new URL("camel-race.html?pilot=perfect", baseURL).href, { waitUntil: "domcontentloaded" });
-    await page.locator(dt("camel-menu-quick")).click();
+    let releaseArt;
+    const pendingArt = new Promise(resolve => { releaseArt = resolve; });
+    // 舞台の絵が届いても、UI の最後の1枚を待っている間は本体を見せない。
+    await page.route("**/img/ui/camel_race/ui/remote-whip-pressed.webp", async route => { await pendingArt; await route.continue(); });
+    const game = page.locator(dt("camel-game"));
+    try {
+      await page.goto(new URL("camel-race.html?pilot=perfect", baseURL).href, { waitUntil: "domcontentloaded" });
+      await page.locator(dt("camel-menu-quick")).click();
+      await page.locator(".loading-gate .loading-comic-title").waitFor();
+      assert.equal(await game.getAttribute("data-phase"), "loading");
+      assert.equal(await game.isVisible(), false, "the game stays hidden until the UI art has settled");
+    } finally {
+      releaseArt();
+    }
     await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
     assert.equal((await page.evaluate(() => window.__comicTitles)).length, 1, "one comic was shown while the art loaded");
     assert.equal(await page.locator(".loading-gate").count(), 0, "the loading screen is gone");
-    assert.equal(await page.locator(dt("camel-game")).getAttribute("data-art"), "sprites", "the race starts with the art ready");
+    assert.equal(await game.getAttribute("data-art"), "sprites", "the race starts with the art ready");
+    assert.equal(await game.evaluate(node => node.classList.contains("cr-remote")), true, "the remote is already styled");
   });
 }, { entry: new URL("camel-race.html", baseURL).href, readySelector: '[data-test="camel-menu-quick"]' });
 

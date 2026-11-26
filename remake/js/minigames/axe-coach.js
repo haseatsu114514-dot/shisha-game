@@ -32,7 +32,7 @@ export function coachDialog({ text, title, step = 1, total = 7, kind = "welcome"
   const lineId = "axe-coach-line-" + ++dialogCount;
   // Before a real game the last button leads on into it, and skipping goes straight there too.
   const ahead = context === "first" ? "本番へ" : context === "event" ? "投げに行く" : null;
-  const next = el("button.axe-button.axe-primary", { type: "button", text: nextLabel || ({ welcome: ahead ? "1投教わる" : "レッスンをはじめる", target: "やってみる", result: "振り返る", finish: ahead || "レッスンを終える" })[kind] || "やってみる",
+  const next = el("button.axe-button.axe-primary", { type: "button", text: nextLabel || ({ welcome: ahead ? "1投教わる" : "レッスンを始める", target: "やってみる", result: "振り返る", finish: ahead || "レッスンを終える" })[kind] || "やってみる",
     dataset: { test: "axe-coach-next" }, onclick: onNext });
   const skip = el("button.axe-button.axe-coach-skip", { type: "button", text: ahead ? "説明をとばす" : "レッスンをやめる", dataset: { test: "axe-coach-skip" }, onclick: onSkip });
   const panel = el("section.axe-coach", { role: "dialog", "aria-modal": "true", "aria-label": title, "aria-describedby": lineId,
@@ -42,7 +42,7 @@ export function coachDialog({ text, title, step = 1, total = 7, kind = "welcome"
         src: portrait.src, alt: "斧崎マキ", style: { "--portrait-ax": `${portrait.ax * 100}%`,
           "--head-ratio": (1 - portrait.h - portrait.b) / portrait.aspect },
       })]),
-        el("div.axe-coach-identity", [el("small", { text: "斧投げBar店員" }), el("strong", { text: "斧崎マキ" })]),
+        el("div.axe-coach-identity", [el("small", { text: "斧投げBar店主" }), el("strong", { text: "斧崎マキ" })]),
         el("span.axe-coach-progress", { text: step + " / " + total, "aria-label": "レッスン " + step + " / " + total })]),
       el("div.axe-coach-scroll", { tabindex: "0" }, [el("h2.axe-coach-title", { text: title }),
         el("p.axe-coach-line", { id: lineId, text, dataset: { test: "axe-coach-line" } }), kind === "target" && scoringGuide()]),

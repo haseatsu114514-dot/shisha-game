@@ -28,7 +28,7 @@ export const ART_READY = Object.freeze({
 /** しぐさの絵（1024×768）の基準: 画面の上の大きさと足元。CSS の .tt-cat と同じ縮尺で重ねる。 */
 export const POSE_CANVAS = Object.freeze({ w: 1024, h: 768, ax: 512, ay: 736 });
 // 天面まで足元ごと上げる量（猫の枠内 px）。立ち絵としぐさ絵で共通。
-export const PROP_SURFACE_LIFT = Object.freeze({ bed: 62, cushion: 45 });
+export const PROP_SURFACE_LIFT = Object.freeze({ bed: 56, cushion: 38 });
 
 export const hasPose = name => !!name && ART_READY.poses.includes(name);
 export const hasProp = id => ART_READY.props.includes(id);

@@ -217,6 +217,13 @@ await suite("tetsuko-theme", async check => {
       for (const text of got.texts) assert(text.px >= 11, `${where}: "${text.text}" is at least 11px on the phone (${text.px.toFixed(1)})`);
       assert(got.taps.length > 0, `${where}: some buttons are visible`);
       for (const tap of got.taps) assert(tap.w >= 38 && tap.h >= 38, `${where}: ${tap.name} is at least 38px on the phone (${tap.w.toFixed(1)}×${tap.h.toFixed(1)})`);
+      if (where === "base") {
+        // 基本画面の操作ボタンは #4131 の「？」と同じ実寸 54px 基準（小数丸め許容 52px 以上）に拡大する。
+        const main = new Set(["tetsuko-photo", "tetsuko-decor", "tetsuko-book", "tetsuko-time-back", "tetsuko-help", "tetsuko-pet", "tetsuko-play", "tetsuko-brush", "tetsuko-treat"]);
+        for (const tap of got.taps.filter(t => main.has(t.name))) {
+          assert(tap.w >= 52 && tap.h >= 52, `${where}: ${tap.name} reaches the enlarged phone target (${tap.w.toFixed(1)}×${tap.h.toFixed(1)})`);
+        }
+      }
       assert(got.gaps.tools >= 12 && got.gaps.dock >= 12, `${where}: neighbouring tools keep 12px apart`);
     };
     await expectSizes("base");
@@ -259,13 +266,23 @@ await suite("tetsuko-theme", async check => {
     if (phone) await shot.tap();
     else await page.keyboard.press("p");
     assert(!await shot.evaluate(node => node.classList.contains("ready")), "The same moment does not ask for a photo twice");
-    assert(Number(await get("joy").getAttribute("data-value")) > 0, "Playing fills her hearts");
+    assert.equal(await page.locator(".tt-toast").getAttribute("data-kind"), "photo", "Photo toast confirms the shot");
     // 手帳から次の遊びを選ぶと、てつこのおねだり（吹き出し）がその手がかりになり、もようがえが呼ばれる。
     await get("book").click();
     await get("book-box_peek").click();
     await get("seek").click();
     await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-time-screen"]')?.dataset.wish === "decor", null, { timeout: 25000 });
     assert.equal(await get("wish").isVisible(), true, "Her wish bubble is shown above her head");
+    if (phone) {
+      const overlapsTools = await get("wish").evaluate(wish => {
+        const bubble = wish.getBoundingClientRect();
+        return [...wish.closest(".tetsuko-time").querySelectorAll(".tt-tools button")].some(button => {
+          const tap = button.getBoundingClientRect();
+          return bubble.left < tap.right && tap.left < bubble.right && bubble.top < tap.bottom && tap.top < bubble.bottom;
+        });
+      });
+      assert.equal(overlapsTools, false, "The enlarged buttons do not cover the wish bubble");
+    }
     assert(await get("decor").evaluate(node => node.classList.contains("asked")), "The tool that answers her wish is marked");
     await get("decor").click();
     await get("item-box").click();

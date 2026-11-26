@@ -2,18 +2,20 @@
 // ?pilot=perfect&speed=4&skip=1 で自動操作・早回し・チュートリアル省略（ブラウザテスト用）。
 import { el } from "./core/util.js";
 import { imgFileUrl } from "./core/img-file.js";
-import { initStageFit } from "./core/stage-fit.js";
+import { initStageFit, syncBackdrop } from "./core/stage-fit.js";
 import { initSideArea } from "./core/side-area.js";
 import { calmFlash } from "./core/transition-kit.js";
 initStageFit(document.getElementById("stage")); // 画面の当て方は本編と同じ共通部品（#3076）
+syncBackdrop(imgFileUrl("backgrounds/bg_dubai_camel_track_morning.webp"), "", true);
 initSideArea({ stage: document.getElementById("stage"), standalone: true }); // 左右の余白の煙と縁（YHK）
 import { runCamelRace } from "./minigames/camel-race.js";
 import { SE, unlockAudio } from "./core/audio.js";
 import { loadCamelArt } from "./minigames/camel-race.js";
 // 本編（main.js）と同じく、最初のユーザー操作で音を解禁する（自動再生制限・#3065）。
-// これが無いと試遊ページでは BGM・SE が一切鳴らなかった。
-window.addEventListener("pointerdown", unlockAudio);
-window.addEventListener("keydown", unlockAudio);
+// これが無いと試遊ページでは BGM・SE が一切鳴らなかった。本編用SEの一斉先読みは行わない（warm: false）。
+const unlockCamelAudio = () => unlockAudio({ warm: false });
+window.addEventListener("pointerdown", unlockCamelAudio);
+window.addEventListener("keydown", unlockCamelAudio);
 const host = document.getElementById("camel-app");
 const params = new URLSearchParams(location.search);
 let best = null;
@@ -40,7 +42,7 @@ function menu(result = null) {
       onload: event => { event.currentTarget.style.opacity = "1"; },
       onerror: event => { event.currentTarget.replaceWith("CAMEL RACE"); } })]),
     el("p", { text: "ラクダは自分で走る。横を走る車から、ロボット騎手へ「声」と「ムチ」を送るだけ。輪が重なる瞬間に Space（当たるとぐっと伸びる）、X は押している間ムチ（スタミナを使う）。" }),
-    el("p", { dataset: { test: "camel-menu-result" }, text: result?.last ? `前回：${result.last.rank}位 ／ スコア ${result.last.total}（${result.last.grade}）${best ? ` ／ 自己ベスト ${best.total}` : ""}` : "まだ記録はありません。" }),
+    el("p", { dataset: { test: "camel-menu-result" }, text: result?.last ? `前回：${result.last.rank}位 ／ スコア ${result.last.total}（${result.last.grade}）${best ? ` ／ 自己ベスト ${best.total}` : ""}` : "まだ記録なし" }),
     ...buttons,
   ]));
 }
