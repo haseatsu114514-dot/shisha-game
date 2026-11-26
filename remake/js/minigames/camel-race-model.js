@@ -97,7 +97,7 @@ export const gradeOf = score => GRADES.find(([, min]) => score >= min)[0];
 // whip は各ライバルのムチの使い方（使う進み具合の区間・間隔 span 秒ごとに burst 秒だけ振る）。
 // guts は並びかけられた時に粘れる回数（競り合い）。
 export const RIVAL_PROFILES = Object.freeze([
-  { id: "front", name: "ナジュム", color: "#4fae6a", speeds: [19.9, 18.4, 17.6], note: "先行型。前半で前に出る", whip: { from: 0, to: 0.35, span: 6.5, burst: 1.5 }, guts: 1 },
+  { id: "front", name: "カマル", color: "#4fae6a", speeds: [19.9, 18.4, 17.6], note: "先行型。前半で前に出る", whip: { from: 0, to: 0.35, span: 6.5, burst: 1.5 }, guts: 1 },
   { id: "closer", name: "リーフ", color: "#4b8ee0", speeds: [17.7, 18.3, 20.6], note: "追い込み型。最後に伸びる", whip: { from: 0.6, to: 1, span: 6.5, burst: 1.5 }, guts: 2 },
   { id: "steady", name: "サブール", color: "#a46ad8", speeds: [18.6, 18.6, 18.7], note: "安定型。一定の足で走る", whip: { from: 0.1, to: 0.9, span: 8, burst: 1 }, guts: 1 },
 ].map(profile => Object.freeze(profile)));

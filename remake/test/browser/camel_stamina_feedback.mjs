@@ -47,6 +47,12 @@ await suite('camel-stamina-feedback', async check => {
     })));
     assert.ok(Object.values(boxes).every(b => b.x >= 0 && b.y >= 0 && b.right <= (mobile ? 844 : 1280) + 1 && b.bottom <= (mobile ? 390 : 720) + 1));
     const overlaps = (a, b) => a.x < b.right && a.right > b.x && a.y < b.bottom && a.bottom > b.y;
+    if (mobile) {
+      const voice = boxes['.camel-voice'], whip = boxes['.camel-signal'];
+      assert(voice.bottom - voice.y >= 57.75 && whip.bottom - whip.y >= 57.75, 'both remotes have at least 58 CSS px of tap height');
+      assert(Math.abs((voice.right - voice.x) - (whip.right - whip.x)) < 1, 'the remotes are equally wide');
+      assert(voice.right < whip.x, 'the two remotes leave the road between them');
+    }
     assert.equal(overlaps(boxes['.camel-pacing'], boxes['.camel-voice']), false);
     assert.equal(overlaps(boxes['.camel-pacing'], boxes['.camel-signal']), false);
     await page.locator('[data-test="camel-close"]').click();
