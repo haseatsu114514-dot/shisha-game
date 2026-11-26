@@ -91,6 +91,7 @@ async function realModule(name, path) {
   return mod;
 }
 
+await realModule("travel-budget.js", "remake/js/core/travel-budget.js");
 await realModule("shift-pay.js", "remake/js/core/shift-pay.js");
 await realModule("stat-step-tables.js", "remake/js/core/stat-step-tables.js");
 await realModule("chapter-features.js", "remake/js/core/chapter-features.js");
@@ -350,6 +351,17 @@ assert.equal(axe.hiyoriAxeReady(), true);
 assert(!(await menuOptionTexts()).includes("ひよりと斧投げへ"), "ready でも未露出ならメニューに出ない");
 state.flags._axe_throw_unlocked = true;
 assert((await menuOptionTexts()).includes("ひよりと斧投げへ"), "露出フラグが立てばメニューに出る");
+
+state.chapter = 2;
+state.flags._ch2_region = "widehanga";
+state.flags._ch2_preparation_started = true;
+const axeFee = hiyoriData.route.events.find(event => event.id === "axe_reveal").cost;
+for (const reserve of [199, 200]) {
+  state.money = axeFee + reserve;
+  await menuOptionTexts();
+  assert.equal(find(screens.at(-1).node, "tonari-hiyori-axe").disabled, reserve < 200);
+  assert.equal(axe.hiyoriAxeAffordable(), reserve >= 200);
+}
 
 console.log("[after-shift B05/B06] mandatory Sumi talk branch, one-line fallback, axe exposure timing/menu gating: PASS");
 

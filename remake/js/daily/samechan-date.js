@@ -1,6 +1,7 @@
 // Samechanのデートは、VN読了後に料金・行動・選択した成長を一緒に確定する。
 import { DB } from "../core/data.js";
 import { state, save, STAT_KEYS } from "../core/state.js";
+import { spendableMoney } from "../core/travel-budget.js";
 import { addMoney, addStamina, earnStat, gainAffinity, paidAction, prepareLoveAffinity, privateBondScope } from "../core/stats.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { dateVenue, dateScene, relationshipDayTotal, relationshipDayOf, dateTopic, advanceDateTopic } from "./date-scene.js";
@@ -38,7 +39,7 @@ export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = 
     if (invite) { state.pendingInvite = null; save(); }
     return { done: true, spent: 0 }; // 同じ読了を料金や報酬へ再換算しない。
   }
-  if (state.money < cost) return no;
+  if (spendableMoney(state) < cost) return no;
   const venue = dateVenue("samechan", old?.stamp === stamp ? old.venue : null);
   const choiceFlags = { a: `_samechan_date_${stamp}_a`, b: `_samechan_date_${stamp}_b` };
   const choice = state.flags[choiceFlags.a] ? "a" : state.flags[choiceFlags.b] ? "b" : null;

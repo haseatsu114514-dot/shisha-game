@@ -5,6 +5,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
+import { spendableMoney } from "../js/core/travel-budget.js";
 import * as chains from "../js/chapters/visit-chains.js";
 import { chapterFiveTalkIds } from "../js/chapters/ch5-talks.js";
 import { CH5_NOOR_CAFE_CHATS, CH5_NOOR_DESK_CHATS, CH5_NOOR_DESK_ID, DESERT_GUIDE,
@@ -272,7 +273,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     get state() { return state; }, save() {}, timeOfDay: () => (state.slot ? "night" : "day"), markMet() {}, DB,
     sceneBg: () => ({ url: "", tint: null }), setBg: async () => {}, toast() {}, modal: async () => null, layers: { hud: {} },
     play, readDialogues, addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; }, earnStat() {}, gainAffinity: (id, n) => { gained.push([id, n]); },
-    visitAffinity: () => 5, affinityLevel: () => 0, spendableMoney: value => value.money, finaleAtVisit: () => false,
+    visitAffinity: () => 5, affinityLevel: () => 0, spendableMoney, finaleAtVisit: () => false,
     consultLessons: async () => {}, nextDubaiBondStory: () => null, DUBAI_LETTER_AGAIN: [], DUBAI_LETTER_DAYS: 2,
     CH5_CAMEL_MEET: { scene: "ch5_camel_meet" }, CH4_CAMEL_SCENE_FILES: { ch4_camel_race: [] }, SHEIKH_BOND_IDS: [], TAIYO_BOND_IDS: [],
     DESERT_SPOT_IDS: { dunes: "dunes", desk: "desk" }, CAMEL_DAILY_SPOT_ID: "camel", MOSQUE_VISITING_HOURS: {},
@@ -300,18 +301,29 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   setState({ chapter: 5, day: 90, slot: 0, money: 50000, stamina: 100, flags: { _ch2_region: "dubai" }, met: {} });
   const alley = DUBAI_SPOTS.find(entry => entry.id === "ch5_dubai_alley");
   const visit = () => performDubaiSpot(alley, { staminaGuard: async () => true });
+  state.flags._ch2_preparation_started = true;
+  state.money = alley.cost - 1;
+  assert.equal((await visit()).used, false);
+  assert.equal(state.money, alley.cost - 1);
   for (const id of ["ch5_dubai_alley", "ch5_dubai_alley_b", "ch5_dubai_alley_c"]) {
     assert.equal(alley.hasNew(), false);
-    await visit();
+    state.money = alley.cost;
+    assert((await visit()).used);
+    assert.equal(state.money, 0);
     assert.equal(played.at(-1), id);
   }
   assert.equal(alley.hasNew(), true, "一通り読んだら「！」");
   chooser = () => 1; // この店の葉を、俺の作り方で
+  state.money = alley.cost - 1;
+  assert.equal((await visit()).used, false);
+  assert.equal(state.money, alley.cost - 1);
+  state.money = alley.cost;
   const before = state.money;
   await visit();
   assert.equal(played.at(-1), "ch5_chain_gift_1");
   assert.equal(before - state.money, 3000, "一台を頼む来店は代金どおり");
   assert.equal(state.flags._ch5_dubai_talks.ch5_dubai_alley, 3);
+  state.money = 50000;
   state.day += 1;
   assert.equal(alley.hasNew(), false, "閉店後の段は昼には出さない");
   await visit();

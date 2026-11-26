@@ -5,7 +5,7 @@ import path from "node:path";
 import vm from "node:vm";
 const root = new URL("../js/", import.meta.url);
 const dataRoot = new URL("../../data/dialogue/", import.meta.url);
-const actual = new Set(["core/bond-after.js", "core/chapter-data.js", "core/shift-pay.js","core/chapter-features.js", "core/flavor-mastery.js","core/cinema-discovery.js", "daily/cinema.js","core/affinity-stages.js", "core/chapter-save.js", "core/state.js", "core/legacy-cast-save.js","core/portrait-style.js", "core/gallery-progress.js", "core/rules.js", "core/bus.js", "core/chapter-clock.js", "daily/fortune-schedule.js", "core/fortune-effects.js",
+const actual = new Set(["core/travel-budget.js", "core/bond-after.js", "core/chapter-data.js", "core/shift-pay.js","core/chapter-features.js", "core/flavor-mastery.js","core/cinema-discovery.js", "daily/cinema.js","core/affinity-stages.js", "core/chapter-save.js", "core/state.js", "core/legacy-cast-save.js","core/portrait-style.js", "core/gallery-progress.js", "core/rules.js", "core/bus.js", "core/chapter-clock.js", "daily/fortune-schedule.js", "core/fortune-effects.js",
   "daily/fortune-rumor.js", "daily/weather.js", "daily/tonari.js", "daily/spots.js", "daily/fortune.js", "daily/spot-access.js",
   "daily/spot-people.js", "daily/map-reveals.js", "daily/tsumugi-schedule.js", "chapters/tsumugi-story.js", "daily/calendar.js"]);
 const DB = { flavorById: {}, dialogues: {}, characters: { naru: { name: "なる" } }, fortuneTrivia: {}, flavors: [], recipes: [], baito: [] };
@@ -22,7 +22,7 @@ const mocks = {
   layers: { modal: el(), fx: el() }, SE: new Proxy({}, { get: () => noop }), DRILLS: {}, AXE_BAR: null,
   sceneBg: () => ({}), withScenePreparation: task => task, imageReady: async () => false, setBackgroundWeatherSource: noop, setBg: async () => {}, showScreen: noop,
   addStamina: n => { core.state.stamina += n; }, addMoney: n => { core.state.money += n; },
-  gainAffinity: noop, visitAffinity: kind => ({ story: 16, talk: 8 })[kind], releaseAffinity: () => 0, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], setStoryAffinityCap: noop, releaseStoryAffinity: () => 0, affinityGateWaiting: () => false, earnStat: noop, ensureAffinityLevel: (id,level) => { core.state.affinity[id] = Math.max(core.state.affinity[id] || 0, [0,9,20,33,48,66][level]); }, syncMintoKnowledge: noop, meetHiyoriAtTonari: async () => false, afterStory: async () => true, playBgm: noop, syncSamechanKnowledge: noop, syncNightQueue: noop, expireInvitations: noop, initHud: noop, showHud: noop, setPhoneBadge: noop, presentNow: async ({label}={}) => { if(mode==="calendar"&&label==="今回のスロット")throw Error("after-action boundary"); }, spendableMoney: s => s.money, returnFareReserve: () => 0, affinityLevel: () => 0, currentCondition: () => ({ bonusRate: 1, shiftBonus: 0 }),
+  gainAffinity: noop, visitAffinity: kind => ({ story: 16, talk: 8 })[kind], releaseAffinity: () => 0, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], setStoryAffinityCap: noop, releaseStoryAffinity: () => 0, affinityGateWaiting: () => false, earnStat: noop, ensureAffinityLevel: (id,level) => { core.state.affinity[id] = Math.max(core.state.affinity[id] || 0, [0,9,20,33,48,66][level]); }, syncMintoKnowledge: noop, meetHiyoriAtTonari: async () => false, afterStory: async () => true, playBgm: noop, syncSamechanKnowledge: noop, syncNightQueue: noop, expireInvitations: noop, initHud: noop, showHud: noop, setPhoneBadge: noop, presentNow: async ({label}={}) => { if(mode==="calendar"&&label==="今回のスロット")throw Error("after-action boundary"); }, affinityLevel: () => 0, currentCondition: () => ({ bonusRate: 1, shiftBonus: 0 }),
   questionVisitDue: () => false, finaleAtVisit: () => false, spotFollowupDue: () => null, maybeRecruitTrpgMember: async () => {},
   // 占い師は昼にも夜にも現れる（台帳 URA）。営業時間の門は無い
   openingStatus: () => ({ ok: true }),
@@ -49,7 +49,10 @@ const mocks = {
     }
     if (key === "venue_tonari_night" && mode === "greeting-cancel") return { cancelled: true };
     if (key === "remake_fortune_offer") core.state.flags._fortune_go = true;
-    if (key === "remake_fortune_pick_live") core.state.flags._fortune_pick_naru = true;
+    if (key === "remake_fortune_pick_live") {
+      core.state.flags._fortune_pick_naru = true;
+      if (mode === "spend-while-picking") core.state.money--;
+    }
     return { id: key };
   },
 };
@@ -228,6 +231,48 @@ await check("day or night, fee, once per appearance and live result application 
     s.money = 10000; assert.equal(await fortune.doFortune(), true); assert.equal(s.money, 7000); assert.equal(s.slot, slot, "no time used");
     assert.equal(await fortune.doFortune(), false); assert.equal(s.money, 7000); assert.equal(s.fortune.char, "naru");
   }
+});
+await check("fortune protects the return fare before the offer and after picking a target", async () => {
+  const s = fresh();
+  s.chapter = 2;
+  s.flags._ch2_region = "widehanga";
+  s.flags._ch2_preparation_started = true;
+  s.met.naru = true;
+  s.affinity.naru = 5;
+  assert(discovery.placeFortuneNow(s));
+  const fee = fortune.FORTUNE_FEE;
+  s.money = fee + 199;
+  assert.equal(await fortune.doFortune(), false);
+  assert(!trace.includes("remake_fortune_offer"));
+  assert.equal(s.money, fee + 199);
+
+  s.money = fee + 200;
+  mode = "spend-while-picking";
+  assert.equal(await fortune.doFortune(), false);
+  assert(trace.includes("remake_fortune_pick_live"));
+  assert.equal(trace.at(-1), "remake_fortune_broke");
+  assert.equal(s.money, fee + 199);
+  assert.equal(s.flags._fortune_pick_naru, undefined);
+  assert.equal(s.fortune?.char, undefined);
+  assert(fortune.fortuneToday());
+
+  mode = "normal";
+  s.money = fee + 200;
+  assert(await fortune.doFortune());
+  assert.equal(s.money, 200);
+  assert.equal(s.fortune.char, "naru");
+});
+await check("Tokyo fortune costs the exact fee with no fare reserve", async () => {
+  const s = fresh();
+  s.chapter = 5;
+  s.flags._ch2_region = "tokyo";
+  s.flags._ch2_preparation_started = true;
+  s.met.naru = true;
+  s.affinity.naru = 5;
+  assert(discovery.placeFortuneNow(s, "tokyo"));
+  s.money = fortune.FORTUNE_FEE;
+  assert(await fortune.doFortune());
+  assert.equal(s.money, 0);
 });
 await check("calendar resume uses current schedule; repeated display notice is not duplicated", async () => {
   const s = fresh(); s.flags[key] = true; s.seed = 3; toPlan(s); s.flags[`_morning_${s.day}`] = true;
