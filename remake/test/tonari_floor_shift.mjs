@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import vm from "node:vm";
 import { VISITORS } from "../js/daily/tonari-floor-data.js";
 import * as game from "../js/core/state.js";
+import { growthPerks } from "../js/core/growth-effects.js";
 
 // 本物のセーブAPI: 長い勤務の途中で既存の会話がsaveしても、体力等の一部だけを保存しない。
 const memory = new Map();
@@ -50,7 +51,7 @@ const sliced = (context, importModuleDynamically) => new vm.SourceTextModule(tex
 async function floorBoundary(mode) {
   const account = { day: 4, chapter: 1, slot: 0, weatherSeed: 18, flags: { _shift_mix_citrus: 1 }, money: 30000, inventory: { mint: 3 },
     met: { tsumugi: true }, affinity: { tsumugi: 9, adam: 30 } };
-  const context = vm.createContext({ state: account, TONARI_BG: "tonari", isRainy: () => false,
+  const context = vm.createContext({ state: account, TONARI_BG: "tonari", growthPerks, isRainy: () => false,
     bgUrl: (_, time) => `bg-${time}`, toast: () => {}, affinityLevel: (id) => ((account.affinity[id] || 0) >= 9 ? 1 : 0) });
   const calls = [];
   const view = new vm.SyntheticModule(["runTonariFloor", "FLOOR_VISITORS"], function () {
@@ -125,6 +126,12 @@ async function floorBoundary(mode) {
   assert.deepEqual([...seen].sort(), ["tsumugi", null].sort(), "来るのは条件を満たす人だけ。来ない日のほうが多い");
   const rate = calls.slice(-60).filter((c) => c.visitor).length;
   assert.ok(rate >= 4 && rate <= 24, `たまに来る（60日で${rate}回）`);
+  account.growth = { nodes: ["B8", "B22", "W7", "S9"] };
+  for (let day = 1; day <= 60; day++) { account.day = day; await module.namespace.serveFloor(account, signal); }
+  const trained = calls.slice(-60);
+  assert.deepEqual([trained[0].floorPerks.floorMatch, trained[0].floorPerks.floorTop], [8, 4], "盤の強化が本番の店番へ渡る");
+  assert.ok(trained.every(c => !c.visitor || c.visitor === "tsumugi"), "来店強化でも面識・好感度・章の条件を守る");
+  assert.ok(trained.filter(c => c.visitor).length > rate, "同じ60日に盤の来店強化を加えると、来る日が増える");
   // 第2章ではなるは来ない（店を休んで修行に出ている）。面識と好感度がそろえば、アダムは来る
   Object.assign(account, { chapter: 2, met: { tsumugi: true, naru: true, adam: true }, affinity: { tsumugi: 9, naru: 20, adam: 30 } });
   const newcomers = ["ageha", "kumicho", "kuraudo", "samechan"];
@@ -139,7 +146,7 @@ for (const mode of ["done", "load", "abandon", "again"]) await floorBoundary(mod
 {
   const account = { day: 4, chapter: 1, slot: 0, weatherSeed: 18, flags: {}, money: 30000 };
   const toasts = [];
-  const context = vm.createContext({ state: account, TONARI_BG: "tonari", isRainy: () => false, bgUrl: () => "bg",
+  const context = vm.createContext({ state: account, TONARI_BG: "tonari", growthPerks, isRainy: () => false, bgUrl: () => "bg",
     toast: (text) => toasts.push(text), affinityLevel: () => 0 });
   const module = sliced(context, async () => { throw Error("offline"); });
   await module.link(() => { throw Error("unexpected import"); });

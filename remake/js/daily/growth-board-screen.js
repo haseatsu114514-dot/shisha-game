@@ -23,7 +23,7 @@ import {
   BOARD_KEYS, BOARD_JA, BOARD_HEAD, REWARD_JA, FEATURES,
   HUB, NODES, NODE_BY_ID, boardNodes, ringsOpen, statCount, statTotal, replay, nodeStatus, commitPending, connected,
   pathTo, pendingTowards, lessonLock, hasMet, availableCount, paymentFor, spendableHidane,
-  GRID, lessonKnown, perkOf, HIDANE_NAME, perkTotals, featuresOf, statsFilled, HUB_AT, statRatio, boardRoutes, NOTABLES, overlapNote,
+  GRID, lessonKnown, perkIcon, perkOf, HIDANE_NAME, perkTotals, featuresOf, statsFilled, HUB_AT, statRatio, boardRoutes, NOTABLES, overlapNote,
 } from "../core/growth-board.js";
 
 // ---------------------------------------------------------------- 配置（盤の領域 760×488。紋は下の端 380,452。横13×縦9 の方眼で上へ育つ。SBD62）
@@ -46,6 +46,7 @@ const svg = (tag, attrs = {}, children = []) => {
 };
 /** 恩恵の文の数字だけ（「最大体力 ＋12」）。text は perkTotals の合計入りの文、sum は上書きする合計 */
 const fmtPerk = (text, sum) => text.replace(/[\d.]+/, String(Math.round(sum * 10) / 10));
+const shortPerkValue = (text) => /[＋−][\d.]+(?:%|ポイント)?/.exec(text)?.[0].replace("ポイント", "pt") || "";
 const payText = (pay) => Object.entries(pay).map(([k, n]) => `${HIDANE_NAME[k]}${n}`).join("＋") || "火種いらず";
 /**
  * 生成画像（GB03 5.2。remake/img/ui/growth_board/*.webp）。全部読めた時だけ盤に `has-art` を付けて画像の見た目にする。
@@ -53,7 +54,7 @@ const payText = (pay) => Object.entries(pay).map(([k, n]) => `${HIDANE_NAME[k]}$
  */
 const ART_DIR = "img/ui/growth_board/";
 /** マスのアイコン（SBD73「漢字が多いのでアイコンを」）: 恩恵・スキル・極み・色の台座。has-art の時だけ出し、漢字は下に残す */
-const iconOf = (node) => node.kind === "stat" ? (node.peak ? "peak" : node.perk ? `perk_${node.perk}` : null)
+const iconOf = (node) => node.kind === "stat" ? (node.peak ? "peak" : node.perk ? perkIcon(node.perk) : null)
   : node.kind === "skill" ? `skill_${node.id}` : node.kind === "gate" ? "gate" : null;
 /**
  * 札の顔（faces/<人>.webp）がある人。asset_sources/ui/growth-board-20261030/faces/make_faces.py の WHO と同じ。
@@ -722,14 +723,14 @@ export function openBoard({ place = null, onExit = null, lessonVisit = null } = 
       if (was != null && was !== width) requestAnimationFrame(() => { fill.style.width = `${width}%`; });
       barSeen.set(key, width);
       // 名前と長い文は出さず、アイコン・棒・数字だけ（SBD116）。文は押さえた時の説明（title）と読み上げに残す
-      const icon = el("img.gb-bar-icon", { src: `${ART_DIR}icons/perk_${p.key}.webp`, alt: "", draggable: "false", loading: "lazy" });
+      const icon = el("img.gb-bar-icon", { src: `${ART_DIR}icons/${perkIcon(p.key)}.webp`, alt: "", draggable: "false", loading: "lazy" });
       icon.addEventListener("error", () => icon.replaceWith(el("span.gb-bar-glyph", { text: p.glyph })));
       // 押すと、その能力の名前と今の合計が一行で出る（もう一度押すと閉じる）。アイコンの意味は「？」の「能力」のページにもある
       return el(`button.gb-bar${was != null && was < width ? ".grew" : ""}${barOpen === key ? ".open" : ""}`, { type: "button", title: `${p.name}：${p.text}`, "aria-expanded": String(barOpen === key),
         dataset: { test: `board-bar-${p.key}` }, onclick: () => { barOpen = barOpen === key ? null : key; SE.click?.(); keepFocus(() => renderSide(view())); } }, [
         el("span.gb-bar-name", [icon, el("span.gb-sr", { text: `${p.name}：${p.text}` })]),
         el("i.gb-bar-line", { "aria-hidden": "true" }, [fill]),
-        el(`span.gb-bar-sum${p.sum ? "" : ".zero"}`, { "aria-hidden": "true", text: shortSum(p) }),
+        el(`span.gb-bar-sum${p.sum ? "" : ".zero"}`, { "aria-hidden": "true", text: shortPerkValue(p.text) }),
       ]);
     });
     const opened = totals.find((p) => `${board}:${p.key}` === barOpen);
@@ -793,7 +794,6 @@ export function openBoard({ place = null, onExit = null, lessonVisit = null } = 
   const goalName = (n) => n.kind === "skill" ? `スキル「${n.name}」` : n.kind === "lesson" ? `${whoName(n.who)}の授業「${n.name}」`
     : n.kind === "gate" ? `色の台座（${perkOf(n)?.name || ""}）` : n.feature ? `✦ ${FEATURES[n.feature].name}` : `要のマス「${NOTABLES[n.notable]?.name || ""}」`;
   /** 横棒の右の短い数字（「＋12」「＋6%」「−2%」）。文は title に残す */
-  const shortSum = (p) => /[＋−][\d.]+%?/.exec(p.text)?.[0] || "";
   /** 近い目的地の絵: スキルのアイコン・授業の顔・台座の色の火・能力のアイコン */
   function goalIcon(n) {
     const src = n.kind === "lesson" ? boardFaceUrl(n.who) || faceIconUrl(n.who, state)
@@ -965,7 +965,7 @@ export function openBoard({ place = null, onExit = null, lessonVisit = null } = 
   }
   /** マスから昇る獲得の表示の中身: 能力は絵と「＋8」、スキル・授業・✦・要のマスは名前つきで大きく */
   function gainOf(node, compact = false) {
-    const perk = perkOf(node), short = perk ? /[＋−][\d.]+%?/.exec(perk.text)?.[0] || "" : "";
+    const perk = perkOf(node), short = perk ? shortPerkValue(perk.text) : "";
     const icon = node.kind === "gate" ? `${ART_DIR}hidane_${node.board}.webp` : iconOf(node) ? `${ART_DIR}icons/${iconOf(node)}.webp` : null;
     if (node.peak) return { text: "極み", icon, big: true };
     if (node.kind === "skill") return { text: node.name, icon, big: true };
@@ -1120,7 +1120,7 @@ export function openBoard({ place = null, onExit = null, lessonVisit = null } = 
       const iconUrl = (node) => iconOf(node) ? `${ART_DIR}icons/${iconOf(node)}.webp` : null;
       const squares = committed.filter((n) => n.kind === "stat");
       const perks = [...new Set(squares.filter((n) => !n.peak && n.perk).map((n) => n.perk))];
-      if (squares.length) gainCard({ kind: "info", badge: "火", icon: perks.length === 1 ? `${ART_DIR}icons/perk_${perks[0]}.webp` : `${ART_DIR}hidane_any.webp`,
+      if (squares.length) gainCard({ kind: "info", badge: "火", icon: perks.length === 1 ? `${ART_DIR}icons/${perkIcon(perks[0])}.webp` : `${ART_DIR}hidane_any.webp`,
         top: "LIGHT", main: `能力の火を${squares.length}つ灯した`, sub: perkDeltaText(committed, before) });
       const gates = committed.filter((n) => n.kind === "gate");
       if (gates.length) gainCard({ kind: "info", badge: "関", icon: `${ART_DIR}hidane_${gates[0].board}.webp`, top: "BREAK", main: `色の台座に${gates.length}つはめた`, sub: "この先の道が開き、台座の能力が手に入った" });
@@ -1328,7 +1328,7 @@ function perkDeltaRows(committed, before) {
     const was = perkTotals(board, before), now = perkTotals(board, after);
     for (const p of now) {
       const delta = p.sum - (was.find((x) => x.key === p.key)?.sum || 0);
-      if (delta > 0.001) rows.push({ icon: `${ART_DIR}icons/perk_${p.key}.webp`, glyph: p.glyph, name: p.name, value: /[＋−][\d.]+%?/.exec(fmtPerk(p.text, delta))?.[0] || "" });
+      if (delta > 0.001) rows.push({ icon: `${ART_DIR}icons/${perkIcon(p.key)}.webp`, glyph: p.glyph, name: p.name, value: shortPerkValue(fmtPerk(p.text, delta)) });
     }
   }
   return rows;

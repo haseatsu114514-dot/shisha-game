@@ -1,6 +1,6 @@
 // tonari フロア営業（ワンオペ・ミックスを一覧から選ぶ形）: 勤務札→導入→営業→締め→日当の流れ、実画面の操作（PC／横持ちタッチ）、時計の停止、LOAD の境界。
 // 客は気分（フルーティ／スイート／刺激系／リラックス）を言うだけ。注文待ち・頼みの卓を押すと「接客の画面」へ替わる（左に大きな選択肢、右に卓の様子。店内の札や帯は隠れる）。
-// 右にミックスの一覧（ひと押しでも出せる・シャッフルは3秒かかる）。ミックスの札には属性の印（メインが大きく、サブが小さい）。
+// 右にミックスの一覧（ひと押しでも出せる・シャッフルは2秒かかる）。ミックスの札には属性の印（メインが大きく、サブが小さい）。
 // 炭の調整（頼まれる前に）と会計は卓を押すだけ。卓の札は、押すと進む用件の時だけ見出しを出し、手応えの言葉は見出しの所に出す（UI の上に UI を重ねない）。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
@@ -408,7 +408,7 @@ await suite("tonari-floor", async (check) => {
       const wishColor = await page.evaluate((id) => { const probe = Object.assign(document.createElement("i"), { style: `color:${C.floorData.WISHES.find((w) => w.id === id).color}` }); document.body.append(probe); const c = getComputedStyle(probe).color; probe.remove(); return c; }, first[0].main);
       assert(badge.main >= 16 && badge.sub < badge.main * 0.7, JSON.stringify(badge));
       assert.equal(badge.color, wishColor);
-      // シャッフルは金の横長ボタン。紋の画像と時計付きの「3秒」が載る。
+      // シャッフルは金の横長ボタン。紋の画像と時計付きの「2秒」が載る。
       await page.locator(`${t("shuffle-side")} .tf-shuffle-emblem`).evaluate((img) => img.decode());
       const shuffleSkin = await page.locator(t("shuffle-side")).evaluate((n) => {
         const emblem = n.querySelector("img.tf-shuffle-emblem");
@@ -420,7 +420,7 @@ await suite("tonari-floor", async (check) => {
           frame: getComputedStyle(n).backgroundImage, // 絵は原画の半分の寸法でそのまま敷く（九分割の継ぎ目を出さない。TFL57）
         };
       });
-      assert.deepEqual([shuffleSkin.label, shuffleSkin.cost, shuffleSkin.clock, shuffleSkin.emblem], ["シャッフル", "3秒", true, true]);
+      assert.deepEqual([shuffleSkin.label, shuffleSkin.cost, shuffleSkin.clock, shuffleSkin.emblem], ["シャッフル", "2秒", true, true]);
       assert.match(shuffleSkin.frame, /\/bar-shuffle\.webp/);
       assert.equal(await spot(1).getAttribute("data-target"), "true");
       assert.equal(await page.locator(t("screen")).getAttribute("data-ordering"), "true");
@@ -526,34 +526,34 @@ await suite("tonari-floor", async (check) => {
       await page.locator(t("sheet-later")).click();
       assert.equal(await api((a) => a.mode()), "live");
       assert.equal(await api((a) => a.state().tables[0].phase), "order", "「あとで」で閉じても、注文は残る");
-      // シャッフル: 並んでいるミックスを全部入れ替える。入れ替えには3秒かかり（2026-11-25 オーナー指示で4秒から短縮）、その間はミックスを出せない（列は閉じて、店へ戻る）
+      // シャッフル: 並んでいるミックスを全部入れ替える。入れ替えには2秒かかり、その間はミックスを出せない（列は閉じて、店へ戻る）
       await table(1).click();
       assert.deepEqual(await page.locator(t("shuffle")).evaluate((n) => [n.querySelector(".tf-shuffle-main > span:not(.tf-icon)").textContent, n.querySelector(".tf-shuffle-cost").textContent.trim(), n.getAttribute("aria-label")]),
-        ["シャッフル", "3秒", "シャッフル（3秒かかる）"], "かかる秒数が、ボタンに出ている");
+        ["シャッフル", "2秒", "シャッフル（2秒かかる）"], "かかる秒数が、ボタンに出ている");
       const waitBefore = await api((a) => C.model.floorWaitLeft(a.state(), 1));
       await page.locator(t("shuffle")).click();
       assert.equal(await api((a) => a.mode()), "live", "入れ替えには時間がかかるので、列は閉じる");
-      assert.deepEqual(await api((a) => [a.state().shuffles, C.model.floorShuffleLeft(a.state())]), [1, 6]);
+      assert.deepEqual(await api((a) => [a.state().shuffles, C.model.floorShuffleLeft(a.state())]), [1, 4]);
       assert.equal(await page.locator(t("presets")).getAttribute("data-busy"), "true");
       assert.equal(await page.locator(t("shuffle-busy")).isVisible(), true);
       assert.match(await page.locator(t("shuffle-busy")).innerText(), /入れ替え中/);
       assert.equal(await page.locator(".tf-preset-list").evaluate((n) => getComputedStyle(n).visibility), "hidden", "入れ替えの最中は、ミックスを見せない");
       assert.equal(await page.locator(t("shuffle-side")).isDisabled(), true);
       assert.match(await page.locator(t("shuffle-side")).evaluate((n) => getComputedStyle(n).backgroundImage), /\/bar-shuffle-off\.webp/);
-      assert.equal(await lastLog(), "ミックスを入れ替える（3秒かかる）");
+      assert.equal(await lastLog(), "ミックスを入れ替える（2秒かかる）");
       // その間は、注文待ちの卓を押しても列は開かない（客は待っている）
       await table(1).click();
       assert.equal(await api((a) => a.mode()), "live");
       assert.equal(await spot(1).locator(".tf-pop").last().innerText(), "入れ替え中…");
-      // 押すと、ボタンの「3秒」がそのまま秒読みになる（TFL50）
-      assert.equal(await page.locator(t("shuffle-count")).first().textContent(), "3秒");
-      await tick(2);
+      // 押すと、ボタンの「2秒」がそのまま秒読みになる（TFL50）
       assert.equal(await page.locator(t("shuffle-count")).first().textContent(), "2秒");
-      await tick(4);
+      await tick(2);
+      assert.equal(await page.locator(t("shuffle-count")).first().textContent(), "1秒");
+      await tick(2);
       assert.equal(await page.locator(t("presets")).getAttribute("data-busy"), "false");
-      assert.equal(await page.locator(t("shuffle-count")).first().textContent(), "3秒", "入れ替えが済んだら、元の「3秒」に戻る");
+      assert.equal(await page.locator(t("shuffle-count")).first().textContent(), "2秒", "入れ替えが済んだら、元の「2秒」に戻る");
       assert.equal(await lastLog(), "新しいミックスが並んだ");
-      assert.equal(await api((a) => C.model.floorWaitLeft(a.state(), 1)), waitBefore - 6, "入れ替えの間も、客の待ち時間は減る");
+      assert.equal(await api((a) => C.model.floorWaitLeft(a.state(), 1)), waitBefore - 4, "入れ替えの間も、客の待ち時間は減る");
       const second = await hand(g1.order.wish);
       assert(second.every((m) => !first.some((x) => x.id === m.id)), "並んでいた物は出てこない");
       await table(1).click();
@@ -564,7 +564,11 @@ await suite("tonari-floor", async (check) => {
       await page.locator(`.tf-mix-option[data-mix="${pick.id}"]`).click();
       assert.equal(await api((a) => a.mode()), "live");
       assert.deepEqual(await api((a) => { const x = a.state().tables[0]; return [x.phase, x.mix]; }), ["prep", pick.id]);
-      assert.equal(await api((a, id) => a.state().hand.includes(id), pick.id), false);
+      const afterServe = await page.locator(".tf-preset").evaluateAll((list) => list.map((n) => n.dataset.mix));
+      assert.equal(afterServe.length, second.length);
+      assert.equal(afterServe.includes(pick.id), false);
+      assert.deepEqual(afterServe.filter((id, i) => second[i].id !== pick.id),
+        second.filter((option) => option.id !== pick.id).map((option) => option.id), "提供すると、その枠だけに次の札が入る");
       // 上の帯の仕込み中: 枠の丸が一つ灯る。どの卓の何かは、読み上げに出す（画面の文字にはしない）
       assert.deepEqual(await page.locator(t("making")).evaluate((n) => [n.getAttribute("aria-label"), [...n.querySelectorAll(".tf-making-pips > i")].map((i) => i.dataset.on)]),
         [`仕込み中: 1卓 ${pick.name}`, ["true", "false"]]);
@@ -1125,8 +1129,8 @@ await suite("tonari-floor", async (check) => {
     const progress = () => shuffle.evaluate((n) => n.style.getPropertyValue("--p"));
     assert.equal(await progress(), "0%");
     await page.evaluate(() => C.view.floorTest.api.tick(2));
-    assert.equal(await page.locator(t("shuffle-count")).textContent(), "2秒");
-    assert.equal(await progress(), "33%");
+    assert.equal(await page.locator(t("shuffle-count")).textContent(), "1秒");
+    assert.equal(await progress(), "50%");
     await page.evaluate(() => C.view.floorTest.api.tick(8));
     assert.match(await skin(), /\/pad-shuffle\.webp/);
     assert.equal(await shuffle.locator(".tf-shuffle-emblem").isVisible(), true);

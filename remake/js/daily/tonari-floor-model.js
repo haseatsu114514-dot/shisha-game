@@ -29,10 +29,12 @@ const T = Object.freeze({
   billGrace: 16, cool: 6, // 会計を待ってくれる長さ・会計のあと次の客が入れるまで
   lastCall: 40, // 閉店までこの刻みを切ったら、新しい客は来ない
   fever: 30, feverDrink: 10, feverFirstDrink: 3,
-  shuffle: 6, // シャッフル（並んでいるミックスの入れ替え）にかかる長さ。約3秒（2026-11-25 オーナー指示で4秒から1秒短く）。その間は、ミックスを出せない
+  shuffle: 4, // 基本2秒（Issue #4255）。その間もフロアの時計は進む
 });
 /** 炭の残りがこの割合を切ったら、調整どき（自分から行ける）。 */
 const TEND_FROM = 0.35;
+// 通常の注文を選んでシャッフルした時、5枚のうちに◎が並ぶ確率（盤の加算前）。
+const SHUFFLE_MATCH_PERCENT = 78;
 // decay＝くつろいでいる間に炭が進んで少しずつ下がる分（持続性の高いミックスほどゆるやか）。feverAfter＝フィーバーが明けた後に残る上乗せ
 // wait＝注文を待たせた分だけ、提供した時の満足から引く上限（待ち時間の3分の1までは引かない。シャッフルで待たせると、ここで損をする）
 const MOOD = Object.freeze({ start: 40, care: 5, careMiss: -8, careLate: -10, tend: 6, tendMiss: -7, billDecay: 0.4, wait: 9,
@@ -162,7 +164,7 @@ const personalOrder = (o) => ({ wish: o.wish, quote: o.quote, pref: { label: o.l
  * @param opts.dusk 昼から夜まで通しの店番（2026-11-25 オーナー「昼から始めて2コマ使う」・TFL62）。営業の半ばで日が暮れ、
  *   そこから来る客は夜の呼び名になる（画面は店内の絵を夜へ替える）。daytime と一緒に使う
  */
-export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = false, daytime = false, night = null, visitor = null, visitorName = null, dusk = false } = {}) {
+export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = false, daytime = false, night = null, visitor = null, visitorName = null, dusk = false, floorPerks = null } = {}) {
   const def = night ? NIGHTS[night] || NIGHTS.usual : pickNight(level, seed, { rainy, daytime });
   const random = rng((Number(seed) >>> 0) ^ 0x51ed27);
   const duskAt = dusk && daytime ? Math.round(def.length / 2) : null; // 日が暮れる刻み
@@ -191,6 +193,7 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = fal
   const deck = shuffled(mixIdsFor(chapter), random); // その章の店で出せるミックス
   return {
     seed: Number(seed) >>> 0, level, chapter, night: def.id, title: byTime(def.title, daytime), daytime: !!daytime, dusk: duskAt,
+    floorPerks: { floorMatch: floorPerks?.floorMatch || 0, floorTop: floorPerks?.floorTop || 0 },
     visitor: who && guests.g3?.charId ? who.id : null,
     hint: level >= 3 ? "sight" : "said",
     t: 0, length: def.length, done: false, closing: null, rolls: 0,
@@ -226,7 +229,7 @@ function nextCallLineIndex(s, key, length) {
 const ownLine = (guest, key) => VISITORS[guest?.charId]?.lines[key];
 /**
  * 本編の人物の注文に合う一台が並んでいなければ、山のいちばん上に一つ取り置く（次に一覧へ入る一台・シャッフルした時の最初の一台）。
- * 名指しの注文でも、シャッフル一回で応えられる（3秒は待たせる）。ふつうの客には何もしない。
+ * 名指しの注文でも、シャッフル一回で応えられる。ふつうの客には何もしない。
  */
 function reserveFor(s, order) {
   if (!order?.pref || s.hand.some((id) => rateMix(id, order) === "best")) return;
@@ -237,6 +240,46 @@ function reserveFor(s, order) {
   s.stock = pick;
 }
 const stockDrawn = (s) => { if (s.stock && s.hand.includes(s.stock)) s.stock = null; };
+/** 右の一覧から提供する卓。選択した注文待ちの卓を優先し、それ以外は最も長く待つ卓。 */
+export function floorOrderTarget(s, selectedId) {
+  const waiting = s.tables.filter((t) => t.phase === "order");
+  return waiting.find((t) => t.id === selectedId) || waiting.sort((a, b) => a.since - b.since)[0] || null;
+}
+
+function shuffleHand(s, selectedId) {
+  // 提供済みの一台も再抽選の対象。チュートリアルだけは手順に合わせた山を使う。
+  const deck = s.tutorial ? [...s.deck, ...s.hand] : shuffled(mixIdsFor(s.chapter), () => roll(s));
+  const fresh = deck.filter((id) => !s.hand.includes(id));
+  const target = guestAt(s, floorOrderTarget(s, selectedId))?.order;
+  let hand = fresh.slice(0, HAND_SIZE);
+  if (target && !s.tutorial) {
+    const reserved = [];
+    // 別の卓を選んでいても、注文待ちのレア客の好物は一枠確保する。
+    const rareTable = s.tables.find((t) => t.phase === "order" && guestAt(s, t).order.pref);
+    if (rareTable) {
+      const rareOrder = guestAt(s, rareTable).order;
+      const favorite = (id) => rateMix(id, rareOrder) === "best";
+      const pick = [s.stock, ...fresh, ...s.hand].find(favorite);
+      if (pick) reserved.push(pick);
+    }
+    let candidates = fresh;
+    if (!target.pref) {
+      const best = (id) => MIXES[id].main === target.wish;
+      if (roll(s) * 100 < SHUFFLE_MATCH_PERCENT + s.floorPerks.floorMatch) {
+        const pick = fresh.find(best);
+        if (pick && !reserved.some(best)) reserved.push(pick);
+      } else {
+        candidates = fresh.filter((id) => !best(id));
+      }
+    }
+    hand = [...new Set([...reserved, ...candidates])].slice(0, HAND_SIZE);
+    hand = shuffled(hand, () => roll(s));
+  }
+  s.hand = hand;
+  s.deck = deck.filter((id) => !hand.includes(id));
+  s.stock = null;
+}
+
 const orderWait = (s) => (s.level <= 0 ? T.orderFirst : T.order); // チュートリアルでは、待ち時間そのものが進まない（tickOnce）
 const billTotal = (bill) => (bill ? bill.charge + bill.shisha + bill.drink + bill.top : 0);
 
@@ -464,7 +507,9 @@ function tickOnce(s) {
     if (!table.call && s.t >= table.stayEnd) {
       // 居心地の良い客は、自分からおかわり（トップ替え）を頼むことがある。一卓に一度まで
       // おかわりも、客が吸いたい気分を言い、並んだミックスから選んで出す（2026-11-25 オーナー指示）。閉店で聞きそびれた分は、それまでの会計で帰る
-      if (!table.extended && s.length - s.t >= T.top + 10 && roll(s) < EXTEND_CHANCE[floorStage(table.mood).id]) {
+      const baseChance = EXTEND_CHANCE[floorStage(table.mood).id];
+      const chance = baseChance > 0 ? baseChance + s.floorPerks.floorTop / 100 : 0;
+      if (!table.extended && s.length - s.t >= T.top + 10 && roll(s) < chance) {
         const who = VISITORS[guest.charId];
         guest.order = who ? personalOrder(who.refill) : makeOrder(() => roll(s)); // 本編の人物は、その人のおかわり（TFL66）
         Object.assign(table, { phase: "order", refill: true, extended: true, since: s.t, call: null, wants: [] });
@@ -510,7 +555,7 @@ export function floorTap(s, tableId) {
 
 /**
  * 操作を一つ確定する。できない操作は同じ state を返す（画面は何も進めない）。
- * action: { type: "order", tableId, mix: ミックスID（並んでいる中から） } / { type: "shuffle" } / { type: "tend", tableId }
+ * action: { type: "order", tableId, mix: ミックスID（並んでいる中から） } / { type: "shuffle", tableId?: 選択中の卓 } / { type: "tend", tableId }
  *   / { type: "care", tableId, verb } / { type: "bill", tableId } / { type: "fever" } / { type: "feverStop" } / { type: "finish" }
  */
 export function floorAct(state, action) {
@@ -539,23 +584,14 @@ export function floorAct(state, action) {
         earn(s, table, "charge", PRICE.charge * guest.party);
         earn(s, table, "drink", PRICE.drink * guest.party);
       }
-      note(s, { type: "order", tableId: table.id, mix: action.mix, rating: mixRatings(action.mix)[guest.order.wish], refill });
+      note(s, { type: "order", tableId: table.id, mix: action.mix, rating: rateMix(action.mix, guest.order), refill });
       break;
     }
     case "shuffle": {
       // 並んでいるミックスを全部入れ替える。入れ替えには時間がかかり（T.shuffle）、その間はミックスを出せない（ほかの卓は見られる）。
       // 合う一台が出るまで何度でも回せるが、そのぶん客を待たせる
       if (s.t < s.shuffleAt) return state;
-      // チュートリアルは山の順のまま（並ぶ物を決めてある）
-      const rest = s.tutorial ? [...s.deck, ...s.hand] : shuffled([...s.deck, ...s.hand], () => roll(s));
-      // 同じ並びに戻らないよう、いま出ている物は後ろへ回す
-      const fresh = rest.filter((id) => !s.hand.includes(id));
-      let next = [...fresh, ...rest.filter((id) => s.hand.includes(id))];
-      // 本編の人物の注文に取り置いた一台は、入れ替えた一覧に必ず入る
-      if (s.stock && !s.hand.includes(s.stock)) next = [s.stock, ...next.filter((id) => id !== s.stock)];
-      s.hand = next.slice(0, HAND_SIZE);
-      s.deck = next.slice(HAND_SIZE);
-      stockDrawn(s);
+      shuffleHand(s, action.tableId);
       s.shuffleAt = s.t + T.shuffle;
       s.shuffles += 1;
       note(s, { type: "shuffle", ticks: T.shuffle });

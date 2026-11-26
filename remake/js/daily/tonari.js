@@ -1,7 +1,7 @@
 import { floorShiftBasePay, floorShiftPay, FLOOR_COMMISSION_PERCENT } from "../core/shift-pay.js";
 import { CHARM_BONUS } from "../core/stat-step-tables.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
-import { callingSalesBonus, growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
+import { callingSalesBonus, growthPerks, growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
 import { on } from "../core/bus.js";
 import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 // tonari（バイト先）: 客として一服／シフトに入る（昼から夜まで店番＝フロア営業→シフト後にスミさん）。
@@ -484,11 +484,11 @@ function floorProgress(s = state) {
  * フロアにたまに遊びに来る、本編の人物（5回に1回ほど）。顔見知りで、好感度1以上、その章に来られる人だけ。
  * 面識だけ・好感度だけでは来ない（交流の時系列ルール）。はじめての営業には来ない。来ても好感度は動かさない。
  */
-function floorVisitor(owner, seed, nights, visitors) {
+function floorVisitor(owner, seed, nights, visitors, bonus) {
   if (nights < 1 || !visitors) return null;
   const able = Object.values(visitors).filter((v) => v.chapters.includes(owner.chapter) && owner.met?.[v.id] && affinityLevel(v.id) >= 1);
   const roll = ((seed >>> 5) ^ Math.imul((owner.day || 0) + 1, 0x9e3779b1)) >>> 0;
-  return able.length && roll % 5 === 0 ? able[(roll >>> 8) % able.length].id : null;
+  return able.length && roll % 100 < 20 + bonus ? able[(roll >>> 8) % able.length].id : null;
 }
 const loadFloorView = () => import("./tonari-floor-view.js");
 /** チュートリアル（スミさんが横について一通りやらせる・TFL64）。飛ばしても済んだことにする。中断・LOAD は false。 */
@@ -515,13 +515,14 @@ async function serveFloor(owner, signal, getAllowances) {
     return { sales: 0, fallback: true };
   }
   if (!current()) return null;
-  const visitor = floorVisitor(owner, seed, progress.nights, view.FLOOR_VISITORS);
+  const floorPerks = growthPerks(owner);
+  const visitor = floorVisitor(owner, seed, progress.nights, view.FLOOR_VISITORS, floorPerks?.floorRare || 0);
   let result;
   // 開店前の札から「遊び方（チュートリアル）」を選んだら、チュートリアルを開いてから、同じ一日を始め直す
   for (;;) {
     result = await view.runTonariFloor({
       seed, level: progress.nights, chapter: owner.chapter, fans: progress.fans, topSales: progress.top, getAllowances,
-      visitor, rainy: isRainy(), night: false, dusk: true, art: bgUrl(TONARI_BG, "day"), artNight: bgUrl(TONARI_BG, "night"),
+      visitor, floorPerks, rainy: isRainy(), night: false, dusk: true, art: bgUrl(TONARI_BG, "day"), artNight: bgUrl(TONARI_BG, "night"),
       offerTutorial: true, isCurrent: current, signal,
     });
     if (!current() || !result) return null;

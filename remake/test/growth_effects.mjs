@@ -508,26 +508,25 @@ growth.setGrowthPreview(false);
  growth.setGrowthPreview(false); assert.equal(bonusOf(cup()).bonus,0);
  console.log("[notable contracts] PASS: all 9 named squares, 6 features, B19 +0.3 actual score, repeats/LOAD/off");
 }
-// #3117: 眠り1マスの+2%を端数として保存し、睡眠を重ねた時の実回復へ返す。
+// #3117: 眠りマスの上乗せを端数として保存し、睡眠を重ねた時の実回復へ返す。
 {
   const { buildCarryPackage } = await import("../js/core/carry.js");
   const { startNextCycle } = await import("../js/core/cycle-start.js");
-  const sleepNodes = board.NODES.filter(n => n.kind === "stat" && n.perk === "sleep" && n.band === 1).slice(0, 2).map(n => n.id);
-  assert.equal(sleepNodes.length, 2);
+  const sleepNodes = ["B6", "B2"]; // 通常の眠り＋4%、集約した眠り＋8%
   const resetSleep = (count) => {
     growth.setGrowthPreview(true); core.newGame();
     growth.ensureGrowth().nodes = sleepNodes.slice(0, count);
   };
   const night = (amount = 14) => { core.state.stamina = 50; return stats.addStamina(amount, { sleep: true }); };
-  // 近くの眠りのマスは1つ＋4%（単位2%×近くの帯2。SBD111）。14回復の＋4%は一晩0.56で、2晩に1回ほど追加1になる
-  for (const [count, expected] of [[0, [14,14,14,14]], [1, [14,15,14,15]], [2, [15,15,15,15]]]) {
+  // 近くの通常の眠りのマスは1つ＋4%（単位2%×近くの帯2。SBD111）。14回復の＋4%は一晩0.56で、2晩に1回ほど追加1になる
+  for (const [count, expected] of [[0, [14,14,14,14]], [1, [14,15,14,15]], [2, [15,16,16,15]]]) {
     resetSleep(count);
     assert.deepEqual(Array.from({ length: 4 }, () => night()), expected, `${count}マス: 毎晩増えたとは扱わず、整数になった夜だけ返す`);
   }
   resetSleep(1);
   assert.equal(Array.from({ length: 100 }, () => night()).reduce((a,b) => a+b, 0), 1456, "100晩の+4%は合計56。丸めの積み増しをしない");
   resetSleep(2);
-  assert.equal(Array.from({ length: 100 }, () => night()).reduce((a,b) => a+b, 0), 1512, "+8%も元の割合を維持");
+  assert.equal(Array.from({ length: 100 }, () => night()).reduce((a,b) => a+b, 0), 1568, "通常と集約を重ねた+12%も元の割合を維持");
   resetSleep(1); night(); night(); night();
   assert(Math.abs(core.state.growth.sleepCarry - .68) < 1e-9);
   core.save(); core.load();

@@ -179,7 +179,7 @@ await suite("growth-fx", async (check) => {
       assert.equal(await goals.locator(".gb-goal-cost").count(), 3, "どの行にも火種の粒か「今」");
       await assertFits(page, t("board-goals"));
       // 右の横棒はアイコン・棒・数字だけ。押すと名前と合計が一行で出て、もう一度押すと閉じる（SBD117）
-      assert.deepEqual(await page.locator(`${t("board-bars")} .gb-bar-sum`).allInnerTexts(), ["＋0%", "＋0%", "−0%", "＋0"], "どの能力にも符号つきの短い数字");
+      assert.deepEqual(await page.locator(`${t("board-bars")} .gb-bar-sum`).allInnerTexts(), ["＋0%", "＋0%", "−0%", "＋0", "＋0pt"], "どの能力にも符号つきの短い数字");
       assert.equal(await page.locator(t("board-bar-note")).count(), 0);
       await tap(t("board-bar-heat"));
       assert.match(await page.locator(t("board-bar-note")).innerText(), /火加減[\s\S]*炭焼き・熱管理のジャスト帯 ＋0%/);
@@ -207,7 +207,8 @@ await suite("growth-fx", async (check) => {
       assert.equal(await help.locator(".gh-row").count(), 7, "マスの種類は7つ");
       await tap(t("board-help-tab-perks"));
       const perks = await help.locator("[data-perk]").evaluateAll((rows) => rows.map((row) => [row.dataset.perk, row.querySelector("b").textContent, row.querySelector(".gh-text span").textContent]));
-      assert.equal(perks.length, 12, "能力は12");
+      assert.equal(perks.length, 15, "各盤の能力は店番の能力を含め5種類");
+      assert.deepEqual(perks.filter(([key]) => key.startsWith("floor")).map(([key]) => key), ["floorRare", "floorTop", "floorMatch"]);
       assert(perks.every(([key, name, text]) => key && name && text), `どの能力にも名前と一言がある: ${JSON.stringify(perks)}`);
       // 授業のページ（SBD140・SBD155）: ながれの4手順と、札の下の印5つ（道が届いた「あと♥1」・♥が足りた「♥達成」を足した）
       await tap(t("board-help-tab-lesson"));

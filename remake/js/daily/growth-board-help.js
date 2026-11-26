@@ -5,7 +5,7 @@
 import { el } from "../core/util.js";
 import { modal } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { BOARD_JA, BOARD_WHERE, HIDANE_NAME, PERK_TIERS, GATE_TIER, SQUARE_PERKS } from "../core/growth-board-data.js";
+import { BOARD_JA, BOARD_WHERE, HIDANE_NAME, PERK_TIERS, GATE_TIER, SQUARE_PERKS, perkIcon } from "../core/growth-board-data.js";
 import { HIDANE_PER_LEVEL, KEY_GIFT, COLORED_GIFT, WIN_HIDANE, BOARD_TOTAL, COLOR_LIMIT } from "../core/growth.js";
 
 const ART = "img/ui/growth_board/";
@@ -28,6 +28,8 @@ const step = (i) => el("span.gh-step", [pic(`flow_${i}.webp`, ".gh-step-pic"), e
 export const PERK_HELP = Object.freeze({
   stamina: "最大体力が増える", sleep: "寝た時の体力の戻りが増える", charm: "好感度が上がりやすい", stage: "大会の審査員の第一印象が上がる",
   heat: "炭焼き・熱管理のジャスト帯が広がる", pull: "吸い出しのジャスト帯が広がる", dodge: "蒸らしの当たり判定が小さくなる", breath: "リフレッシュの範囲が広がる",
+  floorRare: "店番にレア客が来やすくなる", floorTop: "店番でトップ替えを頼まれやすくなる",
+  floorMatch: "店番のシャッフルで注文に合うミックスが出やすくなる",
   gauge: "作りのゲージがゆっくりになる", leaf: "吸いすぎの葉のダメージが減る", tongue: "フレーバーの熟練度が伸びやすい", coal: "炭の熱が下がりにくい",
 });
 
@@ -80,7 +82,7 @@ export const HELP_PAGES = Object.freeze([
   { id: "perks", title: "能力", build: () => el("div.gh-perks", Object.keys(BOARD_JA).map((k) => el(`section.gh-perk-col.b-${k}`, [
     el("h4", { text: `${BOARD_JA[k]}盤` }),
     el("ul", Object.entries(SQUARE_PERKS[k].perks).map(([key, p]) => el("li", { dataset: { perk: key } }, [
-      el("span.gh-perk-icon", { "aria-hidden": "true" }, [pic(`icons/perk_${key}.webp`)]),
+      el("span.gh-perk-icon", { "aria-hidden": "true" }, [pic(`icons/${perkIcon(key)}.webp`)]),
       el("div.gh-text", [el("b", { text: p.name }), el("span", { text: PERK_HELP[key] || "" })]),
     ]))),
   ]))) },
