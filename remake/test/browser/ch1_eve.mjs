@@ -27,6 +27,7 @@ async function setup(page, { fresh = true, day = 13, manual = false, auto = "goo
       for (const id of ["sumi", "tsumugi", "pakki", "sensu", "uezono", "dr_charcoal", "naru", "adam", "minto"]) E.intro.markIntroSeen(id);
     } else E.core.load();
     E.ui.clearScreen(); E.ch1.setupHooks(); E.vn.vnTest.turbo = !manual;
+    if (manual) E.core.config.skipSeenOnly = false; // advanceTo/finish は未読の台詞も SKIP で送る。
     E.vn.vnTest.choose = () => 3; // automated compatibility cases choose sleep
     E.session.craftTest.auto = auto;
     E.entries = []; E.steps = []; E.benches = 0;
