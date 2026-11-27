@@ -674,3 +674,56 @@ Do not draw: digits, letters, text, symbols, logos, a hand, a table, a shadow on
 
 15回目の組み直しの絵 `ui-kitchen-timer-tall.webp` は使わなくなったので、`img/` から外した。
 
+この回の3枚（丸いボタン・長いスタート・4つのボタン）は、17回目で実物に合わせた絵に替えたため、試作の `img/` から外した（原画は v4/ にそのまま残す）。
+
+## 17回目: 縦長のキッチンタイマーを、実物に合わせた作りで描き直す（VPL129・3パターン×候補2枚）
+
+オーナー「こんなかだと四つよりだけど……縦タイマーの見た目がなんか変だから調べたりしてリアルな見た目にして」。16回目の絵は、おもちゃや電卓のように見えていた。
+実物のキッチンタイマーを調べた。ドリテック T-549 は約 W62×D15×H90mm の縦長で、磁石・ストラップ・スタンドの3通りで置ける。キーは「分」「秒」「スタート/ストップ」が基本で、リセットは2つのキーの同時押しが多い。これに合わせて、作りを次のようにした。
+- 縦横比は 62:90。
+- 液晶はくぼんだ窓で、透明なカバーに薄い映り込みがある。
+- キーはゴムで少し盛り上がり、間をあける。
+- 本体の縁に合わせ目と厚みを見せる。
+- スピーカーの小さな穴を付ける。
+
+キーの並びは、オーナーが寄った4つ（2段2列）のまま。
+`gpt-image-2.6-sunburst` の編集（images/edits・品質 high・背景は透明・1024×1536・各2枚）で作った。鍵は環境変数から読み、値は記録していない。入力は2枚。店の背景 `remake/img/backgrounds/bg_tonari_inside_day.webp` は画風の手本にし、本編のタイマー `remake/img/ui/making/kitchen_timer.webp` は色の手本だけにした（形は写さない）。
+
+試作に入れる時の手直しは16回目と同じ（本体の外枠で切り抜いて幅720。数字とボタンの字は試作が重ねる）。液晶の窓のふちは映り込みで色が途切れるため、左右対称として左の端を右の端から出した。
+
+| 原画（v4/） | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `ktimer-real-slim-original.webp`（1024×1536） | `ui-ktimer-tall-slim.webp`（720×1112） | 案1 大きな液晶（液晶が上半分・液晶とボタンの間にスピーカーの穴の列） |
+| `ktimer-real-std-original.webp`（1024×1536） | `ui-ktimer-tall-std.webp`（720×1119） | 案2 ストラップ穴（上にストラップの穴・下にスピーカーの丸い穴） |
+| `ktimer-real-bumper-original.webp`（1024×1536） | `ui-ktimer-tall-bumper.webp`（720×1062） | 案3 シリコンの縁（白い面を淡い緑のシリコンの縁が包む） |
+| `ktimer-real-slim-candidate2-original.webp` | 使わない | 案1のもう1枚。キーが小さめ |
+| `ktimer-real-std-candidate2-original.webp` | 使わない | 案2のもう1枚。キーが小さく、本体の白い所が広い |
+| `ktimer-real-bumper-candidate2-original.webp` | 使わない | 案3のもう1枚。全体に小さくまとまり、キーが小さい |
+
+生成後の確認（素材規約の必須チェック）:
+- 液晶は無地（映り込みのほか）で、数字・区画・記号が無い。キーは無地で、字・記号が無い。擬似文字・ロゴが無い。
+- プラスチックの厚み・合わせ目・ゴムのキーが分かる。テカリは液晶のカバーの映り込みだけで、エアブラシのグラデは無い。
+- 背景は透明で、床の影・手・台・枠が無い。
+- 合格（各2枚のうち1枚を使う）。シーシャ台の機材ではないため、§4 の8行は当てはまらない。
+
+共通の指示:
+
+```text
+The first reference image is a background from this game (a small Japanese shisha bar). Match its illustration style: a polished anime game illustration with clean outlines, soft cel shading and warm light. Do NOT draw the room; it is only a style reference.
+The second reference is this game's old kitchen timer. Use ONLY its color scheme (cream-white plastic body, pale sage-green LCD, light warm-gray keys, one pale mint-green key). Do NOT copy its chunky shape or layout.
+Draw one object on a fully transparent background: a realistic, believable digital kitchen timer like the ones sold in Japanese home-goods stores, designed as a portrait (upright) product from the start.
+- Seen straight from the front at eye level, perfectly frontal and centered, filling about 88 percent of the image height.
+- Real product proportions: about 62 mm wide, 90 mm tall and 15 mm thick (width to height about 0.69). Matte cream-white ABS plastic with softly rounded corners, a thin parting line along the edge where the front cover meets the back case, and a gentle highlight along the top edge, so it reads as a real molded plastic object with thickness, not a flat sticker.
+- In the upper part: a recessed rectangular LCD window about 52 mm wide and 30 mm tall, with a narrow darker frame and a clear cover with a faint reflection. The LCD behind it is the typical pale gray-green of a reflective LCD and is completely blank: no digits, no segments, no icons, no text.
+- Below the LCD: exactly four soft rubber keys arranged in a 2 by 2 grid, each a rounded rectangle about 22 mm wide and 13 mm tall, slightly domed, with small even gaps and a little shadow at their base. Top-left, top-right and bottom-left keys are light warm gray; the bottom-right key is pale mint green. The keys are completely blank: no letters, no symbols, no printing.
+- Do not draw: digits, letters, text, symbols, logos, brand names, a hand, a table, a floor shadow, a background, a frame, a watermark.
+```
+
+パターンごとの指示（共通の指示のあとに足した）:
+
+```text
+[slim] Extra details: the body is a little slimmer and taller (about 58 mm wide and 92 mm tall), the LCD is large and fills most of the upper half, and there is a row of tiny speaker holes centered between the LCD and the keys. No strap hole.
+[std] Extra details: a small round strap hole near the top center of the body, and a small round speaker grille of tiny holes centered on the body below the keys.
+[bumper] Extra details: the cream-white front panel is held in a soft silicone bumper frame in pale sage green that wraps around the whole edge with rounded corners, like many modern kitchen timers. A small speaker grille of tiny holes centered on the panel below the keys.
+```
+
