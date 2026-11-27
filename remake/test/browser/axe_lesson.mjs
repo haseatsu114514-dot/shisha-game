@@ -181,7 +181,9 @@ await suite("axe-lesson", async check => {
     await action(page); await stop(page, .5, 3600, "vertical"); await stop(page, .5, 3600, "power");
     await gauge(page, .62, 2400); assert.equal((await previewMatchesModel(page)).outcome, "killshot-miss");
     assert.equal((await previewMatchesModel(page)).score, 0);
+    // 途中の Esc は、すぐやめずに「つづける／やめる」を確かめる（2026-11-26 から）。「やめる」を押して終える
     await game(page).focus(); await page.keyboard.press("Escape");
+    await page.locator('[data-test="axe-quit-confirm"]').click();
     const result = await page.evaluate(() => window.lessonPromise);
     assert(result.cancelled && !result.completed); assert.equal(result.throws.length, 0);
     assert.deepEqual(await storageSnapshot(page), before);
