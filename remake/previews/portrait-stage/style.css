@@ -301,8 +301,8 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .row .perk { height: 3.2rem; padding: 0 1rem 0 0.8rem; } .row .perk .ic { font-size: 1.8rem; } .row .perk b { font-size: 1.7rem; } .row .perk small { font-size: 1.3rem; }
 .row .stamp { width: 3.2rem; height: 3.2rem; font-size: 1.5rem; } .row.closed .ava img { filter: grayscale(1) brightness(0.65); }
 /* シーシャ作り: 上は工程の並びだけ */
-.steps { position: absolute; z-index: 5; left: 50%; top: max(1.3rem, env(safe-area-inset-top, 0px)); transform: translateX(-50%); display: flex; align-items: center; gap: 0.3rem; padding: 0.5rem; border: 0.1rem solid #ffffff26; border-radius: 3rem; background: #120c1d99; -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); }
-.steps span { width: 3.2rem; height: 3.2rem; display: grid; place-items: center; border-radius: 3rem; font-size: 1.8rem; color: #ffffff59; }
+.steps { position: absolute; z-index: 5; left: 50%; top: max(1.3rem, env(safe-area-inset-top, 0px)); transform: translateX(-50%); display: flex; align-items: center; gap: 0.2rem; padding: 0.5rem; border: 0.1rem solid #ffffff26; border-radius: 3rem; background: #120c1d99; -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); }
+.steps span { width: 3rem; height: 3rem; display: grid; place-items: center; border-radius: 3rem; font-size: 1.8rem; color: #ffffff59; }
 .steps span.done { color: var(--acc); }
 .steps span.now { width: auto; display: flex; gap: 0.6rem; padding: 0 1.3rem 0 1rem; color: var(--deep); background: var(--acc); box-shadow: 0 0 1.6rem color-mix(in srgb, var(--acc) 55%, transparent); }
 .steps span.now b { font-family: var(--mincho); font-size: 1.75rem; letter-spacing: 0.08em; white-space: nowrap; }
@@ -548,7 +548,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .phone.puffing .tool-mouthpiece { filter: drop-shadow(0 0 0.9rem var(--acc)) drop-shadow(0 0.2rem 0.5rem #0b0812); }
 
 /* 工程の並びは絵記号だけ。今の工程は少し大きい光る丸 */
-.steps span.now { width: 4.6rem; height: 3.6rem; padding: 0; display: grid; font-size: 2.1rem; }
+.steps span.now { width: 4.2rem; height: 3.4rem; padding: 0; display: grid; font-size: 2.1rem; }
 
 /* 制作ランク（VPL30）: 案A パッドの裏に透かし／案B 舞台の左上の札／案C 工程の段の右端。絵は本編の D〜SSS */
 .rank { position: absolute; pointer-events: none; }
@@ -581,6 +581,69 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .rank-a .rank-box { width: 32rem; height: 25rem; margin-top: 4.4rem; -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent); mask-image: radial-gradient(closest-side, #000 62%, transparent); }
 .rank-a .rank-art { opacity: 0.16; filter: saturate(0.7); }
 .rank-a .rank-fill { opacity: 0.55; filter: none; clip-path: inset(calc((1 - var(--p, 0)) * 100%) 0 0 0); transition: clip-path 0.45s var(--ease-out); }
+
+/* ───────── 水入れ・配合・雑念よけ（VPL36） ───────── */
+/* 押している間だけ動くボタン（注ぐ・こぼす）は、押している間少し沈んで明るくなる */
+.btn-a.pressing:not(.hold) { transform: scale(0.95); filter: brightness(1.15); }
+.btn-a.center.pour { top: calc(10.6rem + var(--aux-g, 0rem)); width: 14rem; height: 14rem; margin-left: -7rem; }
+.btn-a.sub { top: calc(13.1rem + var(--aux-g, 0rem)); width: 9rem; height: 9rem; }
+.btn-a.sub.l { left: 1.6rem; right: auto; } .btn-a.sub.r { right: 1.6rem; }
+.btn-a.sub .t { font-size: 2.6rem; } .btn-a.sub .tool-svg { inset: 16%; width: 68%; height: 68%; }
+.btn-a.sub[disabled] .t { opacity: 0.5; }
+.tool-pour .gl-handle { fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; }
+.btn-a.pour.pressing .gl-drops circle { animation: drop-fall 0.42s linear infinite; }
+.btn-a.pour.pressing .gl-drops circle:nth-child(2) { animation-delay: -0.14s; } .btn-a.pour.pressing .gl-drops circle:nth-child(3) { animation-delay: -0.28s; }
+.btn-a.sub.pressing .gl-drop { animation: drop-fall 0.6s linear infinite; }
+@keyframes drop-fall { 0% { transform: translateY(-6px); opacity: 0.3; } 50% { opacity: 1; } 100% { transform: translateY(6px); opacity: 0.3; } }
+.tool-bomb .gl-rays { fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; }
+.btn-a.bomb .cool { position: absolute; z-index: 2; inset: 0.5rem; border-radius: 50%; pointer-events: none; background: conic-gradient(#0b0812c4 calc(var(--cool, 0) * 360deg), transparent 0); }
+
+/* 水入れ: ボトルの中だけに水が満ちる。ステムの先が少し浸かる、二本の線のあいだがちょうどいい（水面の色: 赤＝届いていない、緑＝ちょうど、金＝そのほか） */
+.bottle { position: absolute; left: 50%; top: 7.4rem; width: 31rem; aspect-ratio: 1280 / 1133; transform: translateX(-50%); }
+.bottle > img, .bottle-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bottle > img { filter: drop-shadow(0 1rem 1.6rem #000a); }
+.w-body { opacity: 0.78; }
+.w-surf { fill: #e8fbff; transition: fill 0.2s; }
+.bottle[data-zone="none"] .w-surf { fill: #ff6b6b; } .bottle[data-zone="ideal"] .w-surf { fill: #5fe39a; } .bottle[data-zone="shallow"] .w-surf, .bottle[data-zone="deep"] .w-surf { fill: #ffd35a; }
+.w-line { fill: none; stroke: #fff3b0; stroke-width: 7; stroke-dasharray: 24 16; }
+.bottle[data-zone="ideal"] .w-line { stroke: #5fe39a; }
+.w-stem { fill: #c9d1dc; stroke: #2a2230; stroke-width: 6; }
+.w-stream { fill: none; stroke: #9fe6f3; stroke-width: 16; stroke-linecap: round; opacity: 0; transition: opacity 0.12s; }
+.bottle.pouring .w-stream { opacity: 0.85; }
+
+/* 配合: 器が葉で満ちていき、下の12の枠が葉の色で埋まる */
+.mixbowl { position: absolute; left: 50%; top: 6.4rem; width: 21rem; aspect-ratio: 1; transform: translateX(-50%); }
+.mixbowl img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 1rem 1.4rem #000a); }
+.mixbowl .b-airy, .mixbowl .b-full { opacity: 0; transition: opacity 0.25s; }
+.leaf-drop { position: absolute; top: 20%; width: 3rem; height: 3rem; pointer-events: none; }
+.leaf-drop img { width: 100%; height: 100%; filter: drop-shadow(0 0 0.35rem var(--c)); }
+.mixbar { position: absolute; left: 50%; top: 28rem; transform: translateX(-50%); display: flex; align-items: center; gap: 1rem; padding: 0.6rem 1.2rem; border: 0.1rem solid #ffffff26; border-radius: 3rem; background: #0b0812b3; }
+.mixbar .slots { display: flex; gap: 0.3rem; }
+.mixbar .slots i { width: 1.5rem; height: 1.9rem; border-radius: 0.4rem; background: var(--c, #ffffff14); box-shadow: inset 0 0 0 0.1rem #ffffff26; }
+.mixsum { font-size: 2.2rem; font-variant-numeric: tabular-nums; } .mixsum small { margin-left: 0.2rem; font-size: 1.2rem; color: #ffffffa6; }
+.mixbar.full { border-color: #ffe2a6; box-shadow: 0 0 1.4rem #ffcf6b80; } .mixbar.full .mixsum { color: #ffe2a6; }
+.mixbar.nudge { animation: nudge 0.3s; }
+@keyframes nudge { 25% { translate: -0.5rem 0; } 75% { translate: 0.5rem 0; } }
+.mixcard .leaf { width: 4.6rem; height: 4.6rem; display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--c) 40%, transparent), transparent 72%); box-shadow: inset 0 0 0 0.2rem var(--c); }
+.mixcard .leaf img { width: 2.9rem; height: 2.9rem; }
+.mixcard b { font-size: 1.3rem; }
+.mixcard .grams { font-size: 1.2rem; color: #ffffffa6; } .mixcard .grams em { font-style: normal; font-size: 2.4rem; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+.mixcard .need { position: absolute; right: 0.7rem; top: 0.5rem; font-size: 1.1rem; color: #ffd35a; } .mixcard.met .need { color: #5fe39a; }
+
+/* 雑念よけ: 上の絵いっぱいが雑念の場。上の細い線が残り時間、予告の波は来る縁が金に光る */
+.dodge { position: absolute; inset: 0; background: #0b0812 center / cover no-repeat; touch-action: none; }
+.dodge canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dodge::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.15s; }
+.dodge[data-warn="top"]::after { opacity: 1; box-shadow: inset 0 2.6rem 2.2rem -1.6rem #e3c788; animation: warn-blink 0.25s steps(2) infinite; }
+.dodge[data-warn="left"]::after { opacity: 1; box-shadow: inset 2.6rem 0 2.2rem -1.6rem #e3c788; animation: warn-blink 0.25s steps(2) infinite; }
+.dodge[data-warn="right"]::after { opacity: 1; box-shadow: inset -2.6rem 0 2.2rem -1.6rem #e3c788; animation: warn-blink 0.25s steps(2) infinite; }
+@keyframes warn-blink { 50% { opacity: 0.45; } }
+.d-time { position: absolute; left: 1.4rem; right: 1.4rem; top: 7.8rem; height: 0.5rem; overflow: hidden; border-radius: 1rem; background: #ffffff1f; }
+.d-time i { display: block; height: 100%; transform-origin: left center; background: linear-gradient(90deg, #ffcf6b, #fff3d6); }
+.d-stamp { position: absolute; left: 50%; top: 40%; padding: 0.4rem 1.8rem 0.6rem; border: 0.4rem solid currentColor; border-radius: 1rem; transform: translate(-50%, -50%) rotate(-8deg); font-family: var(--mincho); font-size: 4.4rem; letter-spacing: 0.1em; white-space: nowrap; color: #ffe2a6; background: #0b0812b3; animation: stamp-in 0.35s cubic-bezier(0.2, 0.8, 0.3, 1.3); }
+.d-stamp[data-kind="ok"] { color: #fff; } .d-stamp[data-kind="bad"] { color: #ff8a7a; }
+@keyframes stamp-in { 0% { transform: translate(-50%, -50%) rotate(-8deg) scale(2.2); opacity: 0; } 100% { transform: translate(-50%, -50%) rotate(-8deg) scale(1); opacity: 1; } }
+.phone[data-scene="steam"] .dp-core { translate: calc(var(--sx, 0) * 3.4rem) calc(var(--sy, 0) * 3.4rem); }
 
 /* ───────── 背の低い画面 ───────── */
 @container phone (max-height: 80rem) {
@@ -619,6 +682,16 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
   .rank-b { top: 5.6rem; } .rank-b .rank-box { width: 8.6rem; height: 7.2rem; } .rank-b .rank-meter { width: 6rem; height: 0.4rem; }
   .rank-c .rank-box { width: 6.6rem; height: 5rem; } .rank-c .rank-meter { width: 4.8rem; }
   .rank-a .rank-box { width: 24rem; height: 18.5rem; margin-top: 3rem; }
+}
+
+@container phone (max-height: 80rem) {
+  .bottle { width: 27rem; top: 6.8rem; } .mixbowl { width: 17rem; top: 6rem; } .mixbar { top: 23.4rem; }
+  .btn-a.center.pour { top: calc(9.4rem + var(--aux-g, 0rem)); width: 12.4rem; height: 12.4rem; margin-left: -6.2rem; } .btn-a.sub { top: calc(11.6rem + var(--aux-g, 0rem)); width: 8rem; height: 8rem; }
+}
+@container phone (max-height: 71rem) {
+  .bottle { width: 21rem; top: 6rem; } .mixbowl { width: 13.4rem; top: 5.6rem; } .mixbar { top: 19.2rem; scale: 0.86; } .mixcard .leaf { width: 3.6rem; height: 3.6rem; } .mixcard .leaf img { width: 2.2rem; height: 2.2rem; } .mixcard .grams em { font-size: 2rem; }
+  .btn-a.center.pour { top: calc(7.8rem + var(--aux-g, 0rem)); width: 10.6rem; height: 10.6rem; margin-left: -5.3rem; } .btn-a.sub { top: calc(9.6rem + var(--aux-g, 0rem)); width: 7rem; height: 7rem; } .btn-a.sub .t { font-size: 2.2rem; }
+  .d-time { top: 7rem; } .d-stamp { font-size: 3.6rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

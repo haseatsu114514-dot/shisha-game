@@ -38,6 +38,10 @@ const IMG = {
   ciBgMinto: `${REMAKE_IMG}ui/character_intros/graphic/bg_minto.webp`,
   ciSumi: `${REMAKE_IMG}ui/character_intros/graphic/sumi.webp`,
   ciBgSumi: `${REMAKE_IMG}ui/character_intros/graphic/bg_sumi.webp`,
+  // 水入れ・配合・雑念よけの絵（本編の制作で使う絵・VPL36）
+  bottle: `${REMAKE_IMG}ui/making/hookah_base.webp`,
+  bowlEmpty: `${REMAKE_IMG}ui/making/bowl_empty_silicone.webp`,
+  mindWorld: `${REMAKE_IMG}ui/making/steam_mind_world.webp`,
   // 制作ランクの絵（本編の D〜SSS・CSL10）
   ...Object.fromEntries(["D", "C", "B", "A", "S", "SS", "SSS"].map((g) => [`rank${g}`, `${REMAKE_IMG}ui/craft-rank/rank-${g}.webp`])),
   ...(globalThis.PORTRAIT_STAGE_ASSETS || {}),
@@ -99,8 +103,13 @@ const PACKS = [
   { id: "firm", name: "デンスパック", dens: 3, locked: true },
 ];
 // 工程（上の並び）と、スミさんの一言
-const STEPS = [["pack", "詰め"], ["holes", "穴あけ"], ["coal", "炭"], ["water", "水"], ["steam", "蒸らし"], ["pull", "吸い出し"], ["care", "調整"]];
+const STEPS = [["water", "水入れ"], ["mix", "配合"], ["pack", "詰め方"], ["holes", "穴あけ"], ["coal", "炭"], ["steam", "蒸らし"], ["pull", "吸い出し"], ["care", "調整"]];
+// この試作で遊べる作る場面（本編と同じ順。炭と調整は省く）
+const CRAFT_SCENES = ["water", "mix", "pack", "holes", "steam", "pull"];
 const COACH = {
+  water: "線のあいだまで注げ",
+  mix: "レモンを2g以上。合わせて12g",
+  steam: "雑念は、よけて流せ",
   pack: "詰め方を見比べて決めよう。迷ったらノーマル",
   holes: "目印に重なったら押せ。色が満ちたら離せ",
   pull: "手元を見ているぞ。落ち着いていけ",
@@ -153,8 +162,36 @@ const CUT_VARIANTS = {
 };
 const CUT_HOLD = 3800; // 紹介を見せる長さ（ms）。横画面の今の版とほぼ同じ
 
-const SCENES = ["map", "minto", "tonari", "pack", "holes", "pull", "cutin"];
-const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", pack: "詰め", holes: "穴あけ", pull: "吸う", cutin: "登場" }; // 1台表示の切り替え
+// 水入れ（VPL36）。本編 remake/js/craft/water.js の値: 目安 0.44〜0.56、ステムの先 0.30、深すぎ 0.85、注ぐ 0.18/秒・こぼす 0.03/秒。水は空から
+const WATER = { low: 0.44, high: 0.56, stem: 0.3, deep: 0.85, pour: 0.18, drain: 0.03 };
+const waterZone = (w) => w <= 0 ? "empty" : w < WATER.stem ? "none" : w < WATER.low ? "shallow" : w <= WATER.high ? "ideal" : "deep";
+const WATER_SAY = { none: "ステムに届いてないぞ", shallow: "浅いな。吸いが軽くなる", ideal: "いい浸かり具合だ", deep: "深いな。吸いが重くなる" };
+// ボトル（img/ui/making/hookah_base.webp・1280×1133）の内側の形。水位0〜1を底（y=990）から肩（y=470）へ当てる
+const BOTTLE_IN = "M510 130 L520 150 L532 170 L536 190 L536 210 L542 230 L542 250 L546 270 L546 350 L542 370 L536 390 L532 410 L520 430 L510 450 L494 470 L470 490 L436 510 L406 530 L378 550 L356 570 L338 590 L322 610 L310 630 L296 650 L290 670 L284 690 L278 710 L274 730 L274 790 L278 810 L284 830 L292 850 L300 870 L314 890 L330 910 L352 930 L378 950 L402 970 L436 1000 L840 1000 L874 970 L898 950 L924 930 L946 910 L960 890 L974 870 L982 850 L992 830 L996 810 L1000 790 L1000 730 L996 710 L992 690 L984 670 L978 650 L966 630 L956 610 L938 590 L920 570 L900 550 L870 530 L838 510 L806 490 L782 470 L766 450 L756 430 L746 410 L736 390 L730 370 L730 350 L726 330 L726 270 L730 250 L730 230 L736 210 L736 190 L740 170 L750 150 L760 130 Z";
+const waterY = (w) => 990 - w * 520;
+// 配合（VPL36）。本編 steps.js の stepMix: 葉を1gずつ器へ。器（シリコン）は12g、第1章の課題はレモン2g以上
+const MIX = [
+  { id: "apple", name: "ダブルアップル", color: "#e0524d" },
+  { id: "mint", name: "ミント", color: "#5fe3b0" },
+  { id: "lemon", name: "レモン", color: "#f2d24b", need: 2 },
+];
+const MIX_CAP = 12;
+// 弾幕＝蒸らしの雑念よけ（VPL36）。本編 steam.js の runSteamDodge と steam-patterns.js の calm（第1章）。3分蒸らし＝9秒。
+// 弾は4辺からハートを狙い、5つに4つが雑念の言葉。2.8秒ごとに0.75秒の予告（縁が金に光る）のあと波が来る。
+// 当たるのはハートの真ん中の芯だけ。当たったあと0.9秒は無敵。点は 100−14×被弾、判子は 0回＝無心、2回まで＝持ちこたえた、それ以上＝雑念まみれ。
+// 場は幅390の単位で測る（本編は784×414の横長。縦の場に合わせて弾と移動を少し遅くした）
+const DODGE_WORDS = [
+  "ちゃんと熱、入ってるかな", "時間が足りないかも", "少し急ぎすぎたかな",
+  "失敗したらどうしよう", "うまく作れるかな", "詰め方、これでよかった？", "炭、熾きてたかな",
+  "詰めすぎたか？", "灰、落ちないか", "穴、足りてたかな", "温度、大丈夫か",
+  "香り、飛んでないか", "手が、汗ばむ", "時間ばかり気になる", "深呼吸、わすれてた",
+  "熱、強すぎないかな", "煙、ちゃんと出るかな", "さっきの手順、大丈夫か", "吸い出しで崩したくない",
+];
+const DODGE = { time: 9000, ready: 1200, every: 460, speed: [105, 145], wave: 2800, warn: 750, invuln: 900, bombCool: 8000, bombR: 120, move: 220, slow: 95, core: 4 };
+const HEART = typeof Path2D === "function" ? new Path2D("M0 7C-11-1-11-10-4.5-10-1.5-10 0-7.5 0-6.5 0-7.5 1.5-10 4.5-10 11-10 11-1 0 7Z") : null;
+
+const SCENES = ["map", "minto", "tonari", "water", "mix", "pack", "holes", "steam", "pull", "cutin"];
+const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", water: "水", mix: "配合", pack: "詰め", holes: "穴あけ", steam: "弾幕", pull: "吸う", cutin: "登場" }; // 1台表示の切り替え
 // 一覧（PC）に並べる場面
 const GALLERY = [
   { scene: "map", caption: "地図（選んだ店へ画面が動く）" },
@@ -165,8 +202,11 @@ const GALLERY = [
   { scene: "minto", step: 4, choice: true, caption: "返事を選ぶ" },
   { scene: "tonari", step: 2, caption: "会話（2人・スミさんが話す）" },
   { scene: "tonari", step: 3, caption: "会話（2人・つむぎが話す）" },
-  { scene: "pack", caption: "作る・詰め" },
+  { scene: "water", caption: "作る・水入れ", water: 0.5 },
+  { scene: "mix", caption: "作る・配合（葉を詰める）", mix: [7, 3, 2] },
+  { scene: "pack", caption: "作る・詰め方" },
   { scene: "holes", caption: "作る・穴あけ" },
+  { scene: "steam", caption: "作る・蒸らし（雑念よけ）" },
   { scene: "pull", caption: "作る・吸い出し" },
 ];
 
@@ -216,6 +256,8 @@ const ICONS = {
   heat: '<path d="M6 11l6-6 6 6M6 18l6-6 6 6"/>',
   pack: '<path d="M5 8h14l-1.500 5.500a4 4 0 0 1-3.900 3h-3.200a4 4 0 0 1-3.900-3zM9 20h6M12 16.500V20"/>',
   holes: '<circle cx="12" cy="12" r="8.500"/><circle cx="12" cy="7.300" r="1.100" class="f"/><circle cx="16.300" cy="10.500" r="1.100" class="f"/><circle cx="14.700" cy="15.700" r="1.100" class="f"/><circle cx="9.300" cy="15.700" r="1.100" class="f"/><circle cx="7.700" cy="10.500" r="1.100" class="f"/>',
+  mix: '<path d="M5 19.500C5 11 11 5 19.500 4.500 19.500 13 13 19.500 5 19.500z"/><path d="M5 19.500l8.500-8.500"/>',
+  target: '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.700" class="f"/><path d="M12 2.500v4M12 17.500v4M2.500 12h4M17.500 12h4"/>',
   coal: '<path d="M12 3.500c1 3.500 5 5.200 5 9.700a5 5 0 0 1-10 0c0-2 1-3.300 2-4.600.300 1.600 1 2.500 2 2.900-.300-2.900.200-5.400 1-8z"/>',
   water: '<path d="M12 3.500c3 4 6 7 6 10.500a6 6 0 0 1-12 0c0-3.500 3-6.500 6-10.500z"/>',
   steam: '<path d="M7 20c-2-2.500 2-4.500 0-7s2-4.500 0-7M12 20c-2-2.500 2-4.500 0-7s2-4.500 0-7M17 20c-2-2.500 2-4.500 0-7s2-4.500 0-7"/>',
@@ -253,6 +295,9 @@ const BTN = {
   rest: { label: "休み", svg: '<path d="M20.5 5.5a11 11 0 1 0 6 15.5 9 9 0 0 1-6-15.5z"/>' },
   poke: { label: "刺す", tool: "needle" },
   puff: { label: "吸う", tool: "mouthpiece" },
+  pour: { label: "注ぐ", tool: "pour" },
+  drain: { label: "少しこぼす", tool: "drain" },
+  bomb: { label: "雑念を払う", tool: "bomb" },
 };
 // ボタンいっぱいの 100×100 で描く。刺す: 大きな穴あけの針（持ち手・口金・太い針）と、その下のアルミ。押し具合（--level）で針が下がってアルミを突き、満ちた所で金の火花
 // 吸う: マウスピース（ホースの切れ端・金具・先へ細くなる持ち手・吸い口のチップ）を斜めに。吸うたびに少し動いて光る
@@ -264,6 +309,17 @@ const TOOL_SVG = {
     <rect x="-4" y="45" width="16" height="10" rx="4"/><rect x="13.5" y="43.3" width="7.5" height="13.4" rx="1.6"/>
     <path d="M22.5 42.8L78 45Q82 45.3 82 48.2V51.8Q82 54.7 78 55L22.5 57.2Z"/><path class="gl-ring" d="M31 43.6V56.4M72 45V55"/>
     <rect class="gl-tip" x="84" y="46.4" width="20" height="7.2" rx="2.6"/></g></g></svg>`,
+  // 注ぐ: 傾けた水差しと、口から落ちる水の粒（注いでいる間は粒が流れる）
+  pour: `<svg class="tool-svg tool-pour" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(24 50 50)">
+    <path d="M30 30H64L76 23L73 34L66 40V70Q66 80 56 80H40Q30 80 30 70Z"/><path class="gl-handle" d="M30 40Q15 40 15 54Q15 67 30 67"/></g>
+    <g class="gl-drops"><circle cx="85" cy="50" r="3.4"/><circle cx="86.5" cy="63" r="4"/><circle cx="88" cy="77" r="4.6"/></g></svg>`,
+  // こぼす: 傾けた小びんと、口からこぼれる一滴
+  drain: `<svg class="tool-svg tool-drain" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(-38 50 52)">
+    <rect x="43" y="14" width="14" height="22" rx="3"/><path d="M42 36H58L70 54A21 21 0 1 1 30 54Z"/></g>
+    <path class="gl-drop" d="M24 50C24 50 17 60 17 64A7 7 0 0 0 31 64C31 60 24 50 24 50Z"/></svg>`,
+  // 雑念を払う: 真ん中から広がる光（使ったあと8秒で戻る。戻るまでの残りは影で示す）
+  bomb: `<svg class="tool-svg tool-bomb" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="12"/>
+    <path class="gl-rays" d="M50 16v13M50 71v13M16 50h13M71 50h13M26 26l9 9M65 65l9 9M74 26l-9 9M35 65l-9 9"/></svg>`,
 };
 const btnFace = (kind) => {
   const b = BTN[kind];
@@ -301,16 +357,19 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0 } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null } = {}) {
     this.el = el;
     el.lang = "ja";
     this.fixed = fixed; // 一覧では場面を固定し、その場面の中の操作だけ動かす
     this.aux = [1, 2, 3].includes(aux) ? aux : 1; // 補助ボタンの配置案
     this.moreOpen = !!more;
     el.dataset.aux = String(this.aux);
+    this.uid = (Phone.seq = (Phone.seq || 0) + 1); // SVG の id を台ごとに分ける
+    this.keys = new Set();
     this.rankAt = RANK_PLACES[rank] ? rank : "d"; // ランクの置き場所の案
     el.dataset.rank = this.rankAt;
     this.st = { scene, sel: DEFAULT_SPOT, step, page: 0, grade: Math.max(0, Math.min(6, Number(grade) || 0)), gradeP: Number(gradeP) || 0, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4,
+      water: Number(water) || 0, mix: Array.isArray(mix) ? [...mix] : [0, 0, 0], mixSel: 0, slow: false,
       ci: ["a", "b", "c"].includes(ci) ? ci : "a", who: CUTINS[who] ? who : "minto", ciPhase: "off" };
     this.cam = null;      // 地図をドラッグした時の位置（選び直すと選んだ店へ戻る）
     this.t0 = performance.now();
@@ -359,6 +418,9 @@ class Phone {
     if (st.scene === "map") { this.cam = null; this.camera(false); this.syncMap(); }
     if (this.talk) { this.cast = {}; this.applyLine({ instant, delay }); }
     if (st.scene === "holes") this.drawHoles();
+    if (st.scene === "water") this.syncWater();
+    if (st.scene === "mix") this.syncMix();
+    if (st.scene === "steam") requestAnimationFrame(() => this.startDodge());
     if (!this.talk && st.scene !== "map") this.fitCoach();
   }
 
@@ -366,9 +428,13 @@ class Phone {
   fitCoach() {
     const say = this.el.querySelector(".coach .say-text");
     if (!say) return;
-    const text = COACH[this.st.scene];
+    const text = this.coachSay ?? COACH[this.st.scene];
     say.textContent = text;
+    // 吹き出しは文の幅に縮むので、測る間だけ使える幅いっぱいに広げる（短い一言が要らない所で折れないように）
+    const bubble = say.parentElement;
+    bubble.style.flex = "1 1 auto";
     const pages = paginateForBox(text, say);
+    bubble.style.flex = "";
     if (pages.length === 1) say.innerHTML = plain(pages[0]);
     else console.warn("スミさんの一言が2行に収まらない:", text);
   }
@@ -684,13 +750,14 @@ class Phone {
     const { st } = this, at = STEPS.findIndex(([id]) => id === st.scene);
     const pic = st.scene === "pack" ? `<img class="bg" src="${IMG.tonari}" alt=""><img class="bowl" src="${IMG[`bowl_${PACKS[st.pack].id}`]}" alt="">`
       : st.scene === "holes" ? `<img class="bg" src="${IMG.tonari}" alt=""><div class="foil"><img src="${IMG.foil}" alt=""><svg viewBox="-100 -100 200 200" class="foil-marks"></svg></div>`
+      : st.scene === "water" ? this.waterPic() : st.scene === "mix" ? this.mixPic() : st.scene === "steam" ? this.steamPic()
       : `<img class="bg" src="${IMG.tonari}" alt=""><img class="pull-actor" src="${IMG.pullActor}" alt=""><img class="puff" src="${IMG.smoke}" alt="">`;
     // 日付・体力・お金は出さない。上は工程の並びだけ。名前の文字は出さず、今の工程は光る丸で示す（VPL31）
     return `
       <img class="amb" src="${IMG.tonari}" alt="">
       <div class="pic craft craft-${st.scene}">${pic}</div>
       <i class="veil"></i>
-      ${this.thermoHtml()}
+      ${["water", "mix", "steam"].includes(st.scene) ? "" : this.thermoHtml()}
       <div class="steps" aria-label="工程">${STEPS.map(([id, name], i) => `<span class="${i === at ? "now" : i < at ? "done" : ""}" aria-label="${name}"${i === at ? ` aria-current="step"` : ""}>${icon(id)}</span>`).join("")}</div>
       ${this.rankAt === "a" ? "" : this.rankHtml()}
       <div class="body">
@@ -757,6 +824,324 @@ class Phone {
     }).catch(() => {});
   }
 
+  /* ── 水入れ（VPL36）: 押している間だけ水が動く。ステムの先が少し浸かる、二本の金の線のあいだがちょうどいい ── */
+  waterPic() {
+    const id = `bw${this.uid}`, line = (w) => waterY(w).toFixed(0);
+    return `<img class="bg" src="${IMG.tonari}" alt=""><div class="bottle" data-zone="empty"><img src="${IMG.bottle}" alt="">
+      <svg class="bottle-svg" viewBox="0 0 1280 1133" aria-hidden="true"><defs><clipPath id="${id}"><path d="${BOTTLE_IN}"/></clipPath>
+        <linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#74d9ea"/><stop offset="1" stop-color="#3582b4"/></linearGradient></defs>
+        <path class="w-stream" d="M640 -60V400"/>
+        <rect class="w-stem" x="622" y="20" width="36" height="${(waterY(WATER.stem) - 20).toFixed(0)}" rx="12"/>
+        <g clip-path="url(#${id})"><rect class="w-body" x="0" y="1000" width="1280" height="0" fill="url(#${id}g)"/><rect class="w-surf" x="0" y="1000" width="1280" height="12"/>
+          <path class="w-line" d="M200 ${line(WATER.low)}H1080M200 ${line(WATER.high)}H1080"/></g>
+      </svg></div>`;
+  }
+
+  syncWater() {
+    const { st, el } = this, w = st.water, y = waterY(w);
+    const bottle = el.querySelector(".bottle");
+    if (!bottle) return;
+    const body = bottle.querySelector(".w-body"), surf = bottle.querySelector(".w-surf");
+    body.setAttribute("y", y.toFixed(1)); body.setAttribute("height", w > 0 ? (1000 - y).toFixed(1) : "0");
+    surf.setAttribute("y", (y - 6).toFixed(1)); surf.style.opacity = w > 0 ? "1" : "0";
+    bottle.querySelector(".w-stream").setAttribute("d", `M640 -60V${y.toFixed(0)}`);
+    const zone = waterZone(w);
+    if (bottle.dataset.zone !== zone) bottle.dataset.zone = zone;
+    bottle.classList.toggle("pouring", !!this.pouring);
+    bottle.classList.toggle("draining", !!this.draining);
+    const ok = el.querySelector('[data-act="decide"]');
+    if (ok) { ok.disabled = w <= 0; ok.classList.toggle("hot", zone === "ideal"); }
+    el.querySelector(".btn-a.pour")?.classList.toggle("pressing", !!this.pouring);
+    el.querySelector('[data-hold="drain"]')?.classList.toggle("pressing", !!this.draining);
+  }
+
+  /** 水入れ: この水量で進む。スミさんが浸かり具合を一言で返す（失敗は無く、吸い心地が変わるだけ・本編と同じ）。 */
+  decideWater() {
+    const { st } = this, zone = waterZone(st.water);
+    if (zone === "empty" || this.deciding) return;
+    this.pouring = this.draining = false;
+    this.say(WATER_SAY[zone]);
+    this.deciding = true;
+    setTimeout(() => {
+      this.deciding = false;
+      if (this.fixed) { st.water = 0.5; this.say(null); this.syncWater(); } else if (st.scene === "water") this.setScene("mix");
+    }, 1400);
+  }
+
+  /** スミさんの一言を差し替える（null で元の一言）。 */
+  say(text) {
+    this.coachSay = text;
+    const coach = this.el.querySelector(".coach");
+    if (text) { this.quiet = false; coach?.classList.remove("quiet"); }
+    this.fitCoach();
+  }
+
+  /* ── 配合（VPL36）: 葉を1gずつ器へ。器が満ちていき、下の12の枠が葉の色で埋まる ── */
+  mixPic() {
+    return `<img class="bg" src="${IMG.tonari}" alt=""><div class="mixbowl"><img class="b-empty" src="${IMG.bowlEmpty}" alt=""><img class="b-airy" src="${IMG.bowl_airy}" alt=""><img class="b-full" src="${IMG.bowl_normal}" alt=""></div>
+      <div class="mixbar" aria-hidden="true"><span class="slots"></span><b class="mixsum"></b></div>`;
+  }
+
+  mixTotal() { return this.st.mix.reduce((a, b) => a + b, 0); }
+  mixOk() { return this.mixTotal() === MIX_CAP && MIX.every((f, i) => !f.need || this.st.mix[i] >= f.need); }
+
+  syncMix() {
+    const { st, el } = this, total = this.mixTotal(), t = total / MIX_CAP;
+    const bowl = el.querySelector(".mixbowl");
+    if (!bowl) return;
+    const clamp = (v) => Math.max(0, Math.min(1, v)).toFixed(2);
+    bowl.querySelector(".b-airy").style.opacity = clamp((t - 0.08) / 0.4);
+    bowl.querySelector(".b-full").style.opacity = clamp((t - 0.55) / 0.45);
+    const colors = MIX.flatMap((f, i) => Array(st.mix[i]).fill(f.color));
+    el.querySelector(".mixbar .slots").innerHTML = Array.from({ length: MIX_CAP }, (_, i) => `<i${colors[i] ? ` style="--c:${colors[i]}"` : ""}></i>`).join("");
+    el.querySelector(".mixsum").innerHTML = `${total}<small>/${MIX_CAP}g</small>`;
+    el.querySelector(".mixbar").classList.toggle("full", total === MIX_CAP);
+  }
+
+  addMix(by) {
+    const { st, el } = this, i = st.mixSel;
+    if ((by > 0 && this.mixTotal() >= MIX_CAP) || (by < 0 && st.mix[i] <= 0)) {
+      const bar = el.querySelector(".mixbar");
+      bar?.classList.remove("nudge"); void bar?.offsetWidth; bar?.classList.add("nudge");
+      return;
+    }
+    st.mix[i] += by;
+    if (by > 0) this.dropLeaf(MIX[i].color);
+    this.patch(); this.syncMix();
+  }
+
+  /** 葉を1g入れた時、葉がひとつ器へ落ちる。 */
+  dropLeaf(color) {
+    const bowl = this.el.querySelector(".mixbowl");
+    if (!bowl || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const leaf = document.createElement("span");
+    leaf.className = "leaf-drop"; leaf.style.setProperty("--c", color);
+    leaf.innerHTML = `<img src="${IMG.leaf}" alt="">`;
+    const x = 42 + Math.random() * 16;
+    leaf.style.left = `${x}%`;
+    bowl.append(leaf);
+    leaf.animate([{ transform: "translate(-50%, -260%) rotate(-30deg)", opacity: 0 }, { opacity: 1, offset: 0.25 }, { transform: "translate(-50%, 0) rotate(20deg)", opacity: 0 }],
+      { duration: 520, easing: "cubic-bezier(0.5, 0, 0.9, 0.6)" }).finished.then(() => leaf.remove()).catch(() => leaf.remove());
+  }
+
+  decideMix() {
+    if (!this.mixOk() || this.deciding) return;
+    this.say("いい配合だ。詰めていこう");
+    this.deciding = true;
+    setTimeout(() => {
+      this.deciding = false;
+      if (this.fixed) { this.say(null); } else if (this.st.scene === "mix") this.setScene("pack");
+    }, 1200);
+  }
+
+  /* ── 弾幕＝蒸らしの雑念よけ（VPL36）: 上の絵いっぱいが雑念の場。十字キー（スティック）か、場を指でなぞって動く ── */
+  steamPic() {
+    return `<div class="dodge" data-warn="" style="background-image:url(${IMG.mindWorld})"><canvas></canvas><i class="d-time"><i></i></i><div class="d-stamp" hidden></div></div>`;
+  }
+
+  dodgeSize() {
+    const field = this.el.querySelector(".dodge"), canvas = field?.querySelector("canvas");
+    if (!canvas || !field.clientWidth) return null;
+    const w = field.clientWidth, h = field.clientHeight, k = Math.min(2, devicePixelRatio || 1);
+    if (canvas.width !== Math.round(w * k) || canvas.height !== Math.round(h * k)) { canvas.width = Math.round(w * k); canvas.height = Math.round(h * k); }
+    return { field, ctx: canvas.getContext("2d"), u: canvas.width / 390, H: h / w * 390 };
+  }
+
+  startDodge() {
+    const size = this.dodgeSize();
+    if (!size || this.st.scene !== "steam") return;
+    const now = performance.now();
+    this.dodge = { t0: now + DODGE.ready, heart: { x: 195, y: size.H * 0.7 }, bullets: [], hits: 0, safeUntil: 0, bombAt: -1e9, rings: [],
+      nextSpawn: 0, nextWave: 1600, warn: null, over: false, H: size.H };
+    if (this.fixed) {
+      // 一覧は途中の一コマ: 言葉と炭・玉が四方から迫り、上から扇の波が来る
+      const d = this.dodge, H = size.H;
+      d.t0 = now - 4200;
+      [["失敗したらどうしよう", 120, H * 0.32], ["温度、大丈夫か", 300, H * 0.48], ["穴、足りてたかな", 90, H * 0.6], ["手が、汗ばむ", 290, H * 0.8]].forEach(([word, x, y]) => d.bullets.push({ x, y, word, hw: word.length * 6.7 }));
+      [[230, H * 0.36, "orb", 6], [160, H * 0.5, "coal", 7], [330, H * 0.64, "smoke", 9], [60, H * 0.42, "orb", 6]].forEach(([x, y, kind, r]) => d.bullets.push({ x, y, kind, r }));
+      for (let i = 0; i < 5; i++) d.bullets.push({ x: 195 + (i - 2) * 26, y: H * 0.18 + Math.abs(i - 2) * 8, kind: "orb", r: 6 });
+      d.heart = { x: 210, y: H * 0.68 };
+      size.field.querySelector(".d-time i").style.transform = `scaleX(${(1 - 4200 / DODGE.time).toFixed(3)})`;
+      this.drawDodge(now);
+      return;
+    }
+    clearTimeout(this.coachTimer);
+    setTimeout(() => { if (this.st.scene === "steam") { this.quiet = true; this.el.querySelector(".coach")?.classList.add("quiet"); } }, DODGE.ready - 100);
+  }
+
+  spawnBullet(d) {
+    const word = Math.random() < 0.8, r = Math.random();
+    const side = r < 0.4 ? "top" : r < 0.65 ? "left" : r < 0.9 ? "right" : "bottom";
+    const text = word ? DODGE_WORDS[Math.floor(Math.random() * DODGE_WORDS.length)] : null, hw = word ? text.length * 6.7 : 0;
+    const kind = word ? "word" : ["coal", "orb", "orb", "smoke"][Math.floor(Math.random() * 4)];
+    const rad = { coal: 7, orb: 6, smoke: 9 }[kind] || 0;
+    const x = side === "left" ? -hw - 10 : side === "right" ? 400 + hw : 20 + Math.random() * 350;
+    const y = side === "top" ? -14 : side === "bottom" ? d.H + 14 : 70 + Math.random() * (d.H - 140);
+    const speed = (DODGE.speed[0] + Math.random() * (DODGE.speed[1] - DODGE.speed[0])) * (word ? 0.8 : 1);
+    const ang = Math.atan2(d.heart.y - y, d.heart.x - x);
+    d.bullets.push({ x, y, vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed, word: text, hw, kind, r: rad });
+  }
+
+  /** 予告つきの波（本編 steam-patterns.js の fan・ring・rain・sweep を縦の場に合わせたもの）。 */
+  spawnWave(d, wave) {
+    const push = (b) => d.bullets.push({ r: 6, kind: "orb", ...b });
+    if (wave.type === "fan") {
+      const x0 = 60 + Math.random() * 270, base = Math.atan2(d.heart.y + 14, d.heart.x - x0);
+      for (let i = -2; i <= 2; i++) push({ x: x0, y: -14, vx: Math.cos(base + i * 0.24) * 125, vy: Math.sin(base + i * 0.24) * 125 });
+    } else if (wave.type === "ring") {
+      const x0 = 80 + Math.random() * 230, y0 = 80;
+      for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; push({ x: x0, y: y0, vx: Math.cos(a) * 100, vy: Math.sin(a) * 100 }); }
+    } else if (wave.type === "rain") {
+      for (let i = 0; i < 10; i++) push({ kind: "smoke", r: 9, x: 22 + i * 38 + Math.random() * 10, y: -14 - Math.random() * 80, vx: 0, vy: 120 });
+    } else {
+      const rows = 9, open = 1 + Math.floor(Math.random() * (rows - 4)), dir = wave.side === "left" ? 1 : -1;
+      for (let i = 0; i < rows; i++) if (i < open || i > open + 2) push({ kind: "coal", r: 7, x: dir > 0 ? -12 : 402, y: 80 + i * (d.H - 120) / (rows - 1), vx: dir * 130, vy: 0 });
+    }
+    if (d.bullets.length > 90) d.bullets.splice(0, d.bullets.length - 90);
+  }
+
+  stepDodge(now, dt) {
+    const d = this.dodge;
+    if (!d || this.fixed) return;
+    const field = this.el.querySelector(".dodge");
+    if (!field) return;
+    const t = now - d.t0;
+    if (!d.over && t >= 0) {
+      // 動く: スティック → キー → 指でなぞった所へ
+      let vx = 0, vy = 0;
+      if (this.stick) ({ x: vx, y: vy } = this.stick);
+      for (const k of this.keys) { if (k === "left") vx -= 1; if (k === "right") vx += 1; if (k === "up") vy -= 1; if (k === "down") vy += 1; }
+      if (this.dragTo) {
+        const dx = this.dragTo.x - d.heart.x, dy = this.dragTo.y - d.heart.y, dist = Math.hypot(dx, dy);
+        if (dist > 1.5) { vx = dx / dist * Math.min(1, dist / 18); vy = dy / dist * Math.min(1, dist / 18); }
+      }
+      const len = Math.hypot(vx, vy);
+      if (len > 1) { vx /= len; vy /= len; }
+      const sp = (this.st.slow ? DODGE.slow : DODGE.move) * dt;
+      d.heart.x = Math.max(12, Math.min(378, d.heart.x + vx * sp));
+      d.heart.y = Math.max(70, Math.min(d.H - 16, d.heart.y + vy * sp));
+      // 弾と波
+      if (t >= d.nextSpawn) { this.spawnBullet(d); d.nextSpawn = t + DODGE.every; }
+      if (!d.warn && t >= d.nextWave - DODGE.warn && d.nextWave < DODGE.time - 600) {
+        const type = ["fan", "ring", "rain", "sweep"][Math.floor(Math.random() * 4)];
+        d.warn = { type, at: d.nextWave, side: type === "sweep" ? (Math.random() < 0.5 ? "left" : "right") : "top" };
+        field.dataset.warn = d.warn.side;
+      }
+      if (d.warn && t >= d.warn.at) { this.spawnWave(d, d.warn); d.warn = null; field.dataset.warn = ""; d.nextWave += DODGE.wave; }
+      for (const b of d.bullets) { b.x += (b.vx || 0) * dt; b.y += (b.vy || 0) * dt; }
+      d.bullets = d.bullets.filter((b) => b.x > -200 && b.x < 600 && b.y > -120 && b.y < d.H + 60);
+      // 当たるのはハートの芯だけ。当たったら0.9秒は無敵
+      if (now >= d.safeUntil) {
+        const h = d.heart, c = DODGE.core;
+        const hit = d.bullets.find((b) => b.word ? Math.abs(h.x - b.x) < b.hw + c && Math.abs(h.y - b.y) < 6 + c : Math.hypot(h.x - b.x, h.y - b.y) < b.r + c);
+        if (hit) {
+          d.hits += 1; d.safeUntil = now + DODGE.invuln;
+          d.bullets.splice(d.bullets.indexOf(hit), 1);
+          this.el.querySelector(".pic")?.animate([{ translate: "0 0" }, { translate: "-0.5rem 0.3rem" }, { translate: "0.4rem -0.2rem" }, { translate: "0 0" }], { duration: 240 });
+        }
+      }
+      field.querySelector(".d-time i").style.transform = `scaleX(${Math.max(0, 1 - t / DODGE.time).toFixed(3)})`;
+      if (t >= DODGE.time) this.endDodge();
+    }
+    const btn = this.el.querySelector(".btn-a.bomb");
+    if (btn) btn.style.setProperty("--cool", Math.max(0, 1 - (now - d.bombAt) / DODGE.bombCool).toFixed(3));
+    this.drawDodge(now);
+  }
+
+  drawDodge(now) {
+    const size = this.dodgeSize(), d = this.dodge;
+    if (!size || !d) return;
+    const { ctx, u, field } = size;
+    ctx.setTransform(u, 0, 0, u, 0, 0);
+    ctx.clearRect(0, 0, 390, d.H);
+    for (const r of d.rings) {
+      const k = (now - r.at) / 520;
+      if (k > 1) continue;
+      ctx.beginPath(); ctx.arc(r.x, r.y, DODGE.bombR * k, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255, 226, 166, ${(1 - k).toFixed(2)})`; ctx.lineWidth = 4; ctx.stroke();
+    }
+    const fade = d.over ? Math.max(0, 1 - (now - d.endAt) / 500) : 1;
+    ctx.globalAlpha = fade;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.font = `700 13.5px ${getComputedStyle(field).fontFamily}`;
+    for (const b of d.bullets) {
+      if (b.word) {
+        ctx.shadowColor = "rgba(11, 8, 18, 0.95)"; ctx.shadowBlur = 5; ctx.fillStyle = "#efe6ff"; ctx.fillText(b.word, b.x, b.y); ctx.shadowBlur = 0;
+      } else if (b.kind === "coal") {
+        ctx.fillStyle = "#2a2230"; ctx.strokeStyle = "#ff8a4c"; ctx.lineWidth = 2; ctx.shadowColor = "#ff8a4c"; ctx.shadowBlur = 8;
+        ctx.beginPath(); ctx.roundRect?.(b.x - 7, b.y - 7, 14, 14, 3); ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0;
+      } else if (b.kind === "orb") {
+        const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r * 1.8);
+        g.addColorStop(0, "#ffffff"); g.addColorStop(0.35, "#d9c8ff"); g.addColorStop(1, "rgba(195, 176, 255, 0)");
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(b.x, b.y, b.r * 1.8, 0, Math.PI * 2); ctx.fill();
+      } else {
+        ctx.fillStyle = "rgba(225, 220, 238, 0.5)"; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+    // ハート: 当たるのは白い芯だけ。当たった直後は桃色で点滅
+    const h = d.heart, hurt = now < d.safeUntil;
+    if (HEART && !(hurt && Math.floor(now / 90) % 2)) {
+      ctx.save(); ctx.translate(h.x, h.y + 1.5); ctx.scale(1.15, 1.15);
+      ctx.shadowColor = hurt ? "#ef8795" : "#ff5f7e"; ctx.shadowBlur = 10;
+      ctx.fillStyle = hurt ? "#ef8795" : "#ff5f7e"; ctx.fill(HEART); ctx.restore();
+    }
+    ctx.shadowColor = "#ffffff"; ctx.shadowBlur = 6; ctx.fillStyle = "#ffffff";
+    ctx.beginPath(); ctx.arc(h.x, h.y - 1.5, DODGE.core, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+  }
+
+  /** 雑念を払う（本編のリフレッシュ）: 周りの雑念を消す。使ったあと8秒で戻る。 */
+  bomb() {
+    const d = this.dodge, now = performance.now();
+    if (!d || d.over || this.fixed || now < d.t0) return;
+    if (now - d.bombAt < DODGE.bombCool) {
+      const btn = this.el.querySelector(".btn-a.bomb");
+      btn?.classList.remove("res-off"); void btn?.offsetWidth; btn?.classList.add("res-off");
+      return;
+    }
+    d.bombAt = now;
+    d.rings.push({ x: d.heart.x, y: d.heart.y, at: now });
+    d.bullets = d.bullets.filter((b) => Math.hypot(b.x - d.heart.x, b.y - d.heart.y) > DODGE.bombR);
+  }
+
+  /** 時間切れ: 判子を出し、工程が済んだのでランクが上がり、吸い出しへ。 */
+  endDodge() {
+    const d = this.dodge;
+    if (!d || d.over) return;
+    d.over = true; d.endAt = performance.now();
+    const field = this.el.querySelector(".dodge");
+    if (field) field.dataset.warn = "";
+    const stamp = field?.querySelector(".d-stamp");
+    if (stamp) {
+      stamp.textContent = d.hits === 0 ? "無心" : d.hits <= 2 ? "持ちこたえた" : "雑念まみれ";
+      stamp.dataset.kind = d.hits === 0 ? "good" : d.hits <= 2 ? "ok" : "bad";
+      stamp.hidden = false;
+    }
+    this.st.gradeP = 1; this.syncRank();
+    setTimeout(() => this.rankUp(), 1000);
+    setTimeout(() => { if (this.st.scene === "steam") this.setScene("pull"); }, 4100);
+  }
+
+  /** 十字キーをスティックとして使う: 押した所の向きと、真ん中からの距離で動く。 */
+  setStick(event) {
+    const pad = this.stickEl;
+    if (!pad) return;
+    const box = pad.getBoundingClientRect(), r = box.width / 2;
+    let x = (event.clientX - box.left - r) / r, y = (event.clientY - box.top - r) / r;
+    const len = Math.hypot(x, y);
+    if (len < 0.16) { x = 0; y = 0; } else { const k = Math.min(1, (len - 0.16) / 0.6) / len; x *= k; y *= k; }
+    this.stick = { x, y };
+    pad.style.setProperty("--sx", x.toFixed(2)); pad.style.setProperty("--sy", y.toFixed(2));
+  }
+
+  /** 雑念の場を指でなぞる: その場所へハートが向かう。 */
+  setDragTo(event) {
+    const field = this.el.querySelector(".dodge"), d = this.dodge;
+    if (!field || !d) return;
+    const box = field.getBoundingClientRect(), k = 390 / box.width;
+    this.dragTo = { x: (event.clientX - box.left) * k, y: (event.clientY - box.top) * k - 26 };
+  }
+
   /** 熱ゲージ（温度帯）。シーシャ作りの間ずっと右に大きく出す。色の意味は本編と同じ（緑＝適温の目安、虹＝合わせやすい範囲、炎＝焦げる）。 */
   thermoHtml() {
     const t = this.st.temp, pc = (v) => `${(v * 100).toFixed(1)}%`;
@@ -774,13 +1159,30 @@ class Phone {
   /** スミさんの一言は小さな吹き出しで出し、少しすると顔だけになる（顔を押すとまた出る）。 */
   craftTelopHtml() {
     const { st } = this;
-    const cards = st.scene === "pack" ? `<div class="cards">${PACKS.map((p, i) => `<button class="card${p.locked ? " locked" : ""}" data-act="pack" data-pack="${i}" aria-current="${i === st.pack}">
+    let cards = st.scene === "pack" ? `<div class="cards">${PACKS.map((p, i) => `<button class="card${p.locked ? " locked" : ""}" data-act="pack" data-pack="${i}" aria-current="${i === st.pack}">
       <img src="${IMG[`bowl_${p.id}`]}" alt=""><b>${p.name}</b><span class="dens">${[1, 2, 3].map((n) => `<i class="${n <= p.dens ? "on" : ""}"></i>`).join("")}</span>${p.locked ? icon("lock") : ""}</button>`).join("")}</div>` : "";
+    if (st.scene === "mix") cards = `<div class="cards mixcards">${MIX.map((f, i) => `<button class="card mixcard${f.need && st.mix[i] >= f.need ? " met" : ""}" data-act="mixsel" data-i="${i}" aria-current="${i === st.mixSel}" aria-label="${f.name} ${st.mix[i]}g">
+      <span class="leaf" style="--c:${f.color}"><img src="${IMG.leaf}" alt=""></span><b>${f.name}</b><span class="grams"><em>${st.mix[i]}</em>g</span>${f.need ? `<small class="need">${f.need}g〜</small>` : ""}</button>`).join("")}</div>`;
     return `<button class="coach" data-act="coach" aria-label="スミさんの一言"><img src="${IMG.faceSumi}" alt=""><span class="say"><span class="say-text">${esc(COACH[st.scene])}</span></span></button>${cards}`;
   }
 
   craftCtrlHtml() {
     const { st } = this;
+    if (st.scene === "water") {
+      // 真ん中の大きな「注ぐ」と左の「こぼす」は押している間だけ水が動く。右の「決定」で、この水量で進む
+      return `${this.auxHtml("craft", CRAFT_CHIPS)}
+        <button class="btn-a sub l" data-act="drain" data-hold="drain" aria-label="${BTN.drain.label}">${btnFace("drain")}</button>
+        ${aHtml("pour", { cls: "center pour" })}
+        <button class="btn-a sub r" data-act="decide" aria-label="決定"${st.water > 0 ? "" : " disabled"}><span class="t">決定</span></button>`;
+    }
+    if (st.scene === "mix") {
+      // 左右で葉を選び、上下で1gずつ。合わせて12gで課題を満たすと「決定」が押せる
+      return `${this.auxHtml("craft", CRAFT_CHIPS)}${dpadHtml("up down left right")}${aHtml("ok", { disabled: !this.mixOk() })}`;
+    }
+    if (st.scene === "steam") {
+      // 十字キーはスティック（押した向きと強さで動く）。Aで雑念を払う。精密は遅く細かく動く切り替え
+      return `${this.auxHtml("craft", [...CRAFT_CHIPS, ["slow", "target", "精密に動く", "精密", "", st.slow]])}${dpadHtml("up down left right")}${aHtml("bomb", { cls: "bomb", extra: `<i class="cool"></i>` })}`;
+    }
     if (st.scene === "pack") {
       return `${this.auxHtml("craft", CRAFT_CHIPS)}${dpadHtml("left right")}${aHtml("ok", { disabled: !!PACKS[st.pack].locked })}`;
     }
@@ -836,6 +1238,8 @@ class Phone {
     else if (act === "list") { st.list = !st.list; this.patch(); }
     else if (act === "pick") { const same = st.pick === Number(hit.dataset.pick); st.pick = Number(hit.dataset.pick); this.applyLine({ instant: true }); if (same) this.pressA(); }
     else if (act === "pack") { st.pack = Number(hit.dataset.pack); this.patch(); }
+    else if (act === "decide") this.decideWater();
+    else if (act === "mixsel") { st.mixSel = Number(hit.dataset.i); this.patch(); this.syncMix(); }
     else if (act === "more") {
       this.moreOpen = !this.moreOpen;
       hit.classList.toggle("on", this.moreOpen); hit.setAttribute("aria-expanded", String(this.moreOpen));
@@ -846,7 +1250,8 @@ class Phone {
     else if (act === "serve") { if (!this.fixed) this.setScene("map"); }
     else if (act === "fn") {
       const id = hit.dataset.fn;
-      if (id === "list") { st.list = !st.list; this.patch(); }
+      if (id === "slow") { st.slow = !st.slow; hit.classList.toggle("on", st.slow); }
+      else if (id === "list") { st.list = !st.list; this.patch(); }
       else if (id === "next") { // 「！」の付いた店を順に回る
         const marks = ORDER.filter((i) => SPOTS[i].mark), after = marks.find((i) => ORDER.indexOf(i) > ORDER.indexOf(st.sel));
         this.select(after ?? marks[0]);
@@ -858,6 +1263,16 @@ class Phone {
 
   onDown(event) {
     const { st } = this;
+    if (st.scene === "water") {
+      const btn = event.target.closest('.btn-a.pour, [data-hold="drain"]');
+      if (btn && !this.deciding) { btn.setPointerCapture?.(event.pointerId); if (btn.dataset.hold === "drain") this.draining = true; else this.pouring = true; this.syncWater(); return; }
+    }
+    if (st.scene === "steam" && this.dodge) {
+      const pad = event.target.closest(".dpad");
+      if (pad) { this.stickEl = pad; pad.setPointerCapture?.(event.pointerId); this.setStick(event); return; }
+      const field = event.target.closest(".dodge");
+      if (field) { this.dragId = event.pointerId; field.setPointerCapture?.(event.pointerId); this.setDragTo(event); return; }
+    }
     if (st.scene === "holes" && event.target.closest('.btn-a[data-act="a"]')) { event.target.closest(".btn-a").setPointerCapture?.(event.pointerId); this.startHold(); return; }
     const map = event.target.closest("[data-map]");
     if (map && !st.overview && this.view) { this.drag = { id: event.pointerId, x: event.clientX, y: event.clientY, ox: this.view.x, oy: this.view.y, moved: false }; return; }
@@ -866,6 +1281,8 @@ class Phone {
   }
 
   onMove(event) {
+    if (this.stickEl) { this.setStick(event); return; }
+    if (this.dragTo && event.pointerId === this.dragId) { this.setDragTo(event); return; }
     const drag = this.drag;
     if (!drag || drag.id !== event.pointerId) return;
     const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
@@ -877,6 +1294,9 @@ class Phone {
 
   onUp(event) {
     if (this.holdAt) { this.endHold(); return; }
+    if (this.pouring || this.draining) { this.pouring = this.draining = false; this.syncWater(); return; }
+    if (this.stickEl) { this.stickEl.style.removeProperty("--sx"); this.stickEl.style.removeProperty("--sy"); this.stickEl = null; this.stick = null; return; }
+    if (this.dragTo) { this.dragTo = null; return; }
     if (this.drag) { this.dragged = this.drag.moved; this.drag = null; if (this.dragged) setTimeout(() => { this.dragged = false; }, 0); return; }
     if (this.swipe) {
       const dx = event.clientX - this.swipe.x; this.swipe = null;
@@ -896,6 +1316,10 @@ class Phone {
       st.pick = (st.pick + (dir === "down" ? 1 : line.choice.length - 1)) % line.choice.length; this.applyLine({ instant: true });
     } else if (st.scene === "pack" && (dir === "left" || dir === "right")) {
       st.pack = (st.pack + (dir === "right" ? 1 : PACKS.length - 1)) % PACKS.length; this.patch();
+    } else if (st.scene === "mix") {
+      // 左右で葉を選び、上下で1gずつ
+      if (dir === "left" || dir === "right") { st.mixSel = (st.mixSel + (dir === "right" ? 1 : MIX.length - 1)) % MIX.length; this.patch(); this.syncMix(); }
+      else this.addMix(dir === "up" ? 1 : -1);
     }
   }
 
@@ -914,6 +1338,9 @@ class Phone {
       if (scene) this.enterShop(scene); else this.toast("この試作では入れません");
       return;
     }
+    if (st.scene === "water") return; // 注ぐ・こぼすは押している間だけ。進むのは「決定」
+    if (st.scene === "mix") { this.decideMix(); return; }
+    if (st.scene === "steam") { this.bomb(); return; }
     if (this.talk) {
       const line = this.line;
       if (this.typedAt && performance.now() < this.typedAt) { // 文字送りの途中なら全文を出す
@@ -924,7 +1351,7 @@ class Phone {
       st.choosing = false;
       if (st.step + 1 < this.talk.steps.length) { st.step += 1; this.applyLine(); }
       else if (this.fixed) { st.step = 0; this.render(); }
-      else this.setScene(st.scene === "minto" ? "tonari" : "pack");
+      else this.setScene(st.scene === "minto" ? "tonari" : "water");
       return;
     }
     if (st.scene === "pack") { if (!PACKS[st.pack].locked && !this.fixed) this.setScene("holes"); return; }
@@ -1001,7 +1428,7 @@ class Phone {
     setTimeout(() => btn?.classList.remove("res-good", "res-off"), 520);
     // 10個開け終えたら穴あけの工程が済み、ランクが1段上がる。大きく出たランクが収まってから次の工程へ
     if (st.holes.length >= HOLE_COUNT) setTimeout(() => this.rankUp(), 500);
-    if (st.holes.length >= HOLE_COUNT) setTimeout(() => { if (this.fixed) { st.holes = []; st.gradeP = 0; this.patch(); this.drawHoles(); this.syncRank(); } else this.setScene("pull"); }, 3300);
+    if (st.holes.length >= HOLE_COUNT) setTimeout(() => { if (this.fixed) { st.holes = []; st.gradeP = 0; this.patch(); this.drawHoles(); this.syncRank(); } else this.setScene("steam"); }, 3300);
   }
 
   /** 地図から店へ: 選んだ店へ寄ってから、煙の幕で店内へ替える。 */
@@ -1019,9 +1446,12 @@ class Phone {
   setScene(scene, { arrive = false } = {}) {
     clearTimeout(this.ciTimer);
     this.el.classList.remove("cutin-on");
-    const crafting = (id) => ["pack", "holes", "pull"].includes(id);
+    const crafting = (id) => CRAFT_SCENES.includes(id);
     if (!crafting(this.st.scene) && crafting(scene)) Object.assign(this.st, { grade: 0, gradeP: 0 });
     else if (crafting(scene)) this.st.gradeP = 0;
+    Object.assign(this.st, { water: 0, mix: [0, 0, 0], mixSel: 0 });
+    Object.assign(this, { dodge: null, pouring: false, draining: false, deciding: false, coachSay: null, stick: null, dragTo: null });
+    this.keys.clear();
     Object.assign(this.st, { scene, step: 0, page: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1, temp: 0.4 });
     this.quiet = false;
     this.render({ delay: arrive ? 1200 : 0 }); // 店に着いた時は、店名の札が出てから文字を送る
@@ -1033,6 +1463,14 @@ class Phone {
   tick(now) {
     if (this.dead) return;
     const { st, el } = this;
+    const dt = Math.min(0.05, (now - (this.lastT ?? now)) / 1000);
+    this.lastT = now;
+    // 水入れ: 押している間だけ水が動く（注ぐ 0.18/秒・こぼす 0.03/秒）
+    if (st.scene === "water" && !this.deciding && (this.pouring || this.draining)) {
+      st.water = Math.max(0, Math.min(1, st.water + ((this.pouring ? WATER.pour : 0) - (this.draining ? WATER.drain : 0)) * dt));
+      this.syncWater();
+    }
+    if (st.scene === "steam") this.stepDodge(now, dt);
     if (st.scene === "pull") {
       const meter = el.querySelector(".meter");
       if (meter && !this.hold) {
@@ -1086,7 +1524,10 @@ class Phone {
     if (this.st.scene === "map") this.camera(false);
     else if (this.st.scene === "cutin" && this.cast && Object.keys(this.cast).length) this.layoutActors({ speaking: this.st.who, instant: true });
     else if (this.talk) this.layoutActors({ speaking: this.line.kind === "say" ? this.line.id : null, instant: true });
-    else this.fitCoach();
+    else {
+      if (this.st.scene === "steam" && this.dodge) { const size = this.dodgeSize(); if (size) { this.dodge.H = size.H; this.drawDodge(performance.now()); } }
+      this.fitCoach();
+    }
   }
 }
 
@@ -1169,7 +1610,7 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
     if (button.dataset.scene) current.setScene(button.dataset.scene);
     else if (button.dataset.rank || "rankup" in button.dataset) {
       // ランクの置き場所の案を替える／上がる動きを見る。作る場面でなければ穴あけへ
-      const crafting = ["pack", "holes", "pull"].includes(current.st.scene);
+      const crafting = CRAFT_SCENES.includes(current.st.scene);
       if (button.dataset.rank) {
         current.rankAt = button.dataset.rank; current.el.dataset.rank = button.dataset.rank;
         nav.querySelectorAll("[data-rank]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.rank === current.rankAt)));
@@ -1197,10 +1638,28 @@ app.addEventListener("click", (event) => {
 addEventListener("keydown", (event) => {
   if (!current) return;
   const dir = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" }[event.key];
+  const scene = current.st.scene, enter = event.key === "Enter" || event.key === " " || event.key === "z";
+  // 雑念よけ: 矢印は押している間ずっと動く。Shift で精密の切り替え、Enter・Space で雑念を払う
+  if (scene === "steam" && (dir || event.key === "Shift")) {
+    event.preventDefault();
+    if (dir) current.keys.add(dir);
+    else if (!event.repeat) { current.st.slow = !current.st.slow; current.el.querySelector('[data-fn="slow"]')?.classList.toggle("on", current.st.slow); }
+    return;
+  }
+  // 水入れ: Enter・Space を押している間は注ぐ、↓を押している間は少しこぼす、→で決定
+  if (scene === "water" && (enter || dir === "down" || dir === "right")) {
+    event.preventDefault();
+    if (dir === "right") current.decideWater();
+    else if (!event.repeat && !current.deciding) { if (dir === "down") current.draining = true; else current.pouring = true; current.syncWater(); }
+    return;
+  }
   if (dir) { event.preventDefault(); current.move(dir); }
   else if (event.key === "Enter" || event.key === " " || event.key === "z") { event.preventDefault(); if (current.st.scene === "holes") { if (!event.repeat) current.startHold(); } else current.pressA(); }
 });
 addEventListener("keyup", (event) => {
+  const dir = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" }[event.key];
+  if (current?.st.scene === "steam" && dir) current.keys.delete(dir);
+  if (current?.st.scene === "water" && (current.pouring || current.draining)) { current.pouring = current.draining = false; current.syncWater(); }
   if (current?.st.scene === "holes" && (event.key === "Enter" || event.key === " " || event.key === "z")) { event.preventDefault(); current.endHold(); }
 });
 addEventListener("resize", fit);
