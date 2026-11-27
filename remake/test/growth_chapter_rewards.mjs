@@ -4,7 +4,21 @@ import fs from "node:fs";
 import vm from "node:vm";
 import { chapterFiveUnrecordedDialogue } from "../js/chapters/ch5-unrecorded.js";
 import { trackCompletionTaps } from "../js/chapters/completion-card-input.js";
-globalThis.document = { addEventListener() {} }; globalThis.window = {};
+// 実 chapter-actions の button() が実 util の el() を使うため、最小の DOM だけ用意する
+// （appearance_selection.mjs と同じ形。find() が dataset/children を辿り、onclick を直接呼ぶ）。
+class Element {
+  constructor(tag) {
+    this.tag = tag; this.children = []; this.dataset = {}; this.attrs = {}; this.handlers = {};
+    this.style = { setProperty() {} }; this.classList = { add() {}, remove() {} };
+  }
+  append(...nodes) { this.children.push(...nodes); }
+  addEventListener(name, fn) { this.handlers[name] = fn; this[`on${name}`] = fn; }
+  setAttribute(key, value) { this.attrs[key] = value; }
+}
+globalThis.Node = Element;
+globalThis.document = { addEventListener() {}, createElement: tag => new Element(tag),
+  createTextNode: text => Object.assign(new Element("#text"), { textContent: text }) };
+globalThis.window = {};
 const storage = new Map();
 globalThis.localStorage = { getItem: k => storage.get(k) ?? null, setItem: (k,v) => storage.set(k,String(v)), removeItem: k => storage.delete(k) };
 const core = await import("../js/core/state.js"), growth = await import("../js/core/growth.js");
@@ -17,7 +31,8 @@ for(const file of fs.readdirSync(new URL("../../data/dialogue/",import.meta.url)
   const data=JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${file}`,import.meta.url)));
   for(const d of data.dialogues||[])dialogues[d.dialogue_id]=d;
 }
-const node=(tag,props={},children=[])=>Array.isArray(props)?{tag,children:props}:{tag,...props,children};
+const node=(tag,props={},children=[])=>{const n=Array.isArray(props)?{tag,children:props}:{tag,...props,children};
+  n.addEventListener??=()=>{};return n;};
 const find=(n,id)=>n?.dataset?.test===id?n:(n?.children||[]).filter(Boolean).map(x=>find(x,id)).find(Boolean);
 const stateBindings=[];
 const syncBindings=()=>stateBindings.forEach(m=>m.setExport("state",core.state));
