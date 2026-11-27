@@ -587,6 +587,7 @@ html:root[data-density="phone"] .desert-ride .dr-card.dr-result .dr-actions:has(
   background:
     linear-gradient(96deg, rgba(40, 14, 6, 0) 34%, rgba(40, 14, 6, .34) 58%, rgba(30, 10, 4, .62) 100%),
     linear-gradient(180deg, rgba(20, 44, 96, .28) 0%, rgba(20, 44, 96, 0) 30%, rgba(120, 44, 10, 0) 62%, rgba(96, 34, 8, .42) 100%),
+    url("../img/ui/desert_ride/title_bg.webp") center / cover no-repeat,
     url("../img/ui/desert_ride/backdrop_day_land.webp") center 220px / 1800px 500px no-repeat,
     url("../img/ui/desert_ride/backdrop_day_sky.webp") center 0 / 1800px 416px no-repeat,
     #e8ab5a; }
@@ -678,47 +679,21 @@ html:root .desert-ride .dr-card.dr-menu .dr-button.dr-button:active { transform:
 html:root .desert-ride .dr-card.dr-menu .dr-help-actions .dr-button.dr-button { flex: none; width: 280px; min-height: 68px; }
 html:root .desert-ride .dr-card.dr-menu .dr-help-actions .dr-button.dr-button.dr-help-more { width: 240px; filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .35)) brightness(.86); font-size: 21px; }
 
-/* 遊び方の図解（2026-11-27 オーナー「文字で説明しすぎず、UIやボタンで視覚的に」）: 6枚の絵札。上に小さな場面の絵（滑走の絵を並べる）、
-   左下に押すボタンの絵、下に見出しと一言。文章の説明は「くわしく」の中 */
+/* 遊び方の図解（2026-11-27 オーナー「文字で説明しすぎず、UIやボタンで視覚的に」）: 6枚の絵札。札いっぱいの一枚絵（生成した場面）の裾に、
+   暗い帯を敷いて見出し・押すボタンの絵・一言を重ねる。文章の説明は「くわしく」の中 */
 .desert-ride .dr-menu .dr-how-cards { margin: 0; padding: 0; list-style: none; min-height: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
-.dr-how-card { position: relative; min-width: 0; min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto auto; padding: 8px 10px 9px; border-radius: 10px; color: #fff4e2;
-  background: linear-gradient(180deg, rgba(255, 226, 180, .12), rgba(255, 226, 180, .05)); border: 1px solid rgba(255, 210, 150, .3); box-shadow: inset 0 1px 0 rgba(255, 240, 210, .14); }
-.dr-how-scene { position: relative; min-height: 0; overflow: hidden; border-radius: 7px; background: linear-gradient(180deg, #7fbdea 0, #b9dcf2 30%, #f6d08a 30.5%, #eeb45c 62%, #e39a42 100%); box-shadow: inset 0 0 0 2px rgba(60, 24, 8, .55), inset 0 -18px 22px rgba(120, 50, 10, .22); }
-.dr-how-scene > * { position: absolute; display: block; }
-.dr-how-scene img { height: auto; filter: drop-shadow(0 6px 5px rgba(90, 40, 8, .35)); }
-.dr-how-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 46px; margin-top: 5px; }
+.dr-how-card { position: relative; min-width: 0; min-height: 0; overflow: hidden; border-radius: 10px; color: #fff4e2; background: #e9b25a;
+  box-shadow: 0 0 0 2px #c9964a, 0 0 0 4px #3c1808, 0 6px 10px rgba(20, 8, 4, .5); }
+.dr-how-scene { position: absolute; inset: 0; }
+.dr-how-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; }
+.dr-how-caption { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 12px 8px; background: linear-gradient(180deg, rgba(40, 14, 6, 0), rgba(40, 14, 6, .78) 34%, rgba(34, 12, 6, .94)); }
+.dr-how-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 46px; }
 .dr-how-keys { display: flex; align-items: center; gap: 5px; flex: none; }
 .dr-how-key { width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 3px 3px rgba(40, 14, 4, .55)); }
 .dr-how-keys kbd { margin-left: 3px; padding: 2px 9px 3px; font: 900 18px/1.2 var(--font); color: #3a1a08; background: linear-gradient(180deg, #fff6e0, #e9cf9c); border-radius: 6px; border-bottom: 3px solid #a57a3e; white-space: nowrap; }
-.dr-how-title { font-size: 26px; font-weight: 900; letter-spacing: .08em; line-height: 1.15; color: #ffe2a6; text-shadow: 0 2px 0 rgba(30, 10, 4, .6); }
-.dr-how-note { font-size: 19px; font-weight: 700; line-height: 1.3; color: #f6e6cf; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* 場面の絵（各カード）。人物は場面の下の端から少しはみ出す大きさ */
-.dr-how-scene .how-rider { left: 50%; bottom: -14px; width: 86px; transform: translateX(-50%); }
-.dr-how-card[data-how="dodge"] .how-rock { left: 50%; top: 26%; width: 128px; transform: translateX(-38%); }
-.dr-how-card[data-how="dodge"] .how-rider { left: 33%; width: 84px; }
-.dr-how-card[data-how="dodge"] .how-arc { left: 30%; top: 12%; width: 74px; height: 56px; box-sizing: border-box; border: 6px solid #fff; border-right-color: transparent; border-bottom-color: transparent; border-radius: 70% 0 0 0; filter: drop-shadow(0 2px 0 rgba(90, 40, 8, .5)); }
-.dr-how-card[data-how="dodge"] .how-arc::after { content: ""; position: absolute; right: -15px; top: -15px; border: 12px solid transparent; border-left-color: #fff; }
-.dr-how-card[data-how="jump"] .how-crest { left: 8%; right: 8%; bottom: -34px; height: 74px; border-radius: 50%; background: radial-gradient(ellipse at 50% 0, #ffe2a4, #eeb45c 60%, #d98a36); box-shadow: 0 -3px 0 rgba(255, 244, 210, .7); }
-.dr-how-card[data-how="jump"] .how-rider { bottom: 26px; width: 78px; transform: translateX(-50%) rotate(-6deg); }
-.dr-how-card[data-how="jump"] .how-ring { left: 50%; bottom: 4px; width: 92px; height: 30px; margin-left: -46px; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 0 0 5px rgba(255, 200, 80, .75), 0 0 16px rgba(255, 220, 120, .9); }
-.dr-how-card[data-how="spin"] .how-rider { bottom: 2px; width: 96px; }
-.dr-how-card[data-how="spin"] .how-spin-arrow { left: 50%; top: 50%; width: 132px; height: 96px; margin: -44px 0 0 -66px; box-sizing: border-box; border: 6px solid #fff; border-bottom-color: transparent; border-radius: 50%; transform: rotate(-12deg); filter: drop-shadow(0 2px 0 rgba(90, 40, 8, .5)); }
-.dr-how-card[data-how="spin"] .how-spin-arrow::after { content: ""; position: absolute; right: -4px; bottom: 2px; border: 12px solid transparent; border-top-color: #fff; transform: rotate(-24deg); }
-.dr-how-scene .how-tag { right: calc(10px + var(--i, 0) * 0px); top: calc(10px + var(--i, 0) * 34px); padding: 2px 9px 3px; font: 900 18px/1.2 var(--font); font-style: normal; color: #5a2206; background: linear-gradient(180deg, #ffe08a, #f0a53a); border-radius: 999px; box-shadow: 0 2px 0 rgba(60, 20, 4, .5); }
-.dr-how-card[data-how="boost"] .how-glow { left: 50%; bottom: -46px; width: 210px; height: 190px; margin-left: -105px; border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(255, 255, 240, .95), rgba(255, 226, 120, .85) 38%, rgba(255, 150, 40, .5) 66%, rgba(255, 120, 20, 0)),
-    repeating-conic-gradient(from 8deg, rgba(255, 244, 200, .55) 0 6deg, rgba(255, 244, 200, 0) 6deg 18deg); }
-.dr-how-card[data-how="boost"] .how-bolt { left: 16px; top: 10px; width: 44px; filter: drop-shadow(0 0 8px rgba(255, 220, 110, .95)); }
-.dr-how-card[data-how="boost"] .how-gauge { right: 12px; top: 14px; width: 132px; height: 20px; border-radius: 8px; background: linear-gradient(90deg, #ffd65a 0, #ff7a2a 58%, rgba(60, 30, 12, .75) 58%); box-shadow: 0 0 0 3px #fff3d6, 0 0 0 5px #7a3e12, 0 0 14px rgba(255, 190, 80, .8); }
-.dr-how-card[data-how="boost"] .how-gauge::after { content: ""; position: absolute; left: 25%; top: -6px; bottom: -6px; width: 4px; background: #fff; box-shadow: 0 0 0 1px #3a1a08; }
-.dr-how-card[data-how="carve"] .how-sign { right: 18px; top: 8px; width: 78px; }
-.dr-how-card[data-how="carve"] .how-rider { left: 44%; width: 88px; }
-.dr-how-card[data-how="carve"] .how-trail { left: 44%; bottom: -44px; width: 190px; height: 130px; box-sizing: border-box; border: 7px solid #ffe07a; border-left-color: transparent; border-bottom-color: transparent; border-radius: 0 90% 0 0; filter: drop-shadow(0 0 6px rgba(255, 200, 90, .95)); }
-.dr-how-card[data-how="flow"] .how-stream { left: 36%; right: 36%; top: 30%; bottom: 0; background: linear-gradient(180deg, rgba(255, 246, 214, .2), #fff1c8 30%, #ffe6a8); clip-path: polygon(34% 0, 66% 0, 100% 100%, 0 100%); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .5); }
-.dr-how-card[data-how="flow"] .how-flag { left: 27%; bottom: 8px; width: 15px; filter: sepia(1) saturate(5) hue-rotate(-12deg) brightness(1.25) drop-shadow(0 3px 2px rgba(90, 40, 8, .4)); }
-.dr-how-card[data-how="flow"] .how-flag-r { left: auto; right: 23%; }
-.dr-how-card[data-how="flow"] .how-chevrons { left: 50%; top: 2%; width: 0; height: 0; margin-left: -16px; border: 16px solid transparent; border-bottom: 20px solid #fff; filter: drop-shadow(0 22px 0 rgba(255, 255, 255, .7)) drop-shadow(0 2px 0 rgba(90, 40, 8, .45)); }
-.dr-how-card[data-how="flow"] .how-rider { width: 66px; bottom: -22px; }
+.dr-how-title { font-size: 27px; font-weight: 900; letter-spacing: .08em; line-height: 1.15; color: #ffe2a6; text-shadow: 0 2px 0 rgba(30, 10, 4, .8); }
+.dr-how-note { display: block; font-size: 19px; font-weight: 700; line-height: 1.3; color: #fff1dc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 0 rgba(30, 10, 4, .8); }
+.dr-how-scene .how-tag { position: absolute; right: 10px; top: calc(10px + var(--i, 0) * 34px); padding: 2px 9px 3px; font: 900 18px/1.2 var(--font); font-style: normal; color: #5a2206; background: linear-gradient(180deg, #ffe08a, #f0a53a); border-radius: 999px; box-shadow: 0 2px 0 rgba(60, 20, 4, .5); }
 
 @media (prefers-reduced-motion: reduce) { .dr-menu-rider { animation: none; } }
 .desert-ride[data-reduced-motion="true"] .dr-menu-rider { animation: none; }
@@ -743,10 +718,10 @@ html:root[data-density="phone"] .desert-ride .dr-menu .dr-howto li { padding: 10
 html:root[data-density="phone"] .desert-ride .dr-menu .dr-howto li::before { width: 128px; top: 12px; font-size: 24px; }
 html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-help-actions .dr-button.dr-button { width: 340px; min-height: var(--phone-tap, 84px); }
 html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-help-actions .dr-button.dr-button.dr-help-more { width: 300px; font-size: 26px; }
-html:root[data-density="phone"] .desert-ride .dr-menu .dr-how-cards { gap: 8px 12px; }
-html:root[data-density="phone"] .desert-ride .dr-how-card { padding: 6px 8px 7px; }
+html:root[data-density="phone"] .desert-ride .dr-menu .dr-how-cards { gap: 10px 12px; }
+html:root[data-density="phone"] .desert-ride .dr-how-caption { padding: 22px 10px 6px; }
 html:root[data-density="phone"] .desert-ride .dr-how-title { font-size: 30px; }
-html:root[data-density="phone"] .desert-ride .dr-how-head { min-height: 52px; margin-top: 3px; }
+html:root[data-density="phone"] .desert-ride .dr-how-head { min-height: 52px; }
 html:root[data-density="phone"] .desert-ride .dr-how-note { font-size: 24px; }
 html:root[data-density="phone"] .desert-ride .dr-how-key { width: 52px; height: 52px; }
 html:root[data-density="phone"] .desert-ride .dr-how-scene .how-tag { font-size: 24px; top: calc(8px + var(--i, 0) * 40px); }

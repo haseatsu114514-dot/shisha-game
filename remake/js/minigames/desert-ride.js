@@ -297,23 +297,17 @@ const touchUi = () => typeof matchMedia === "function" && matchMedia("(hover: no
 const tutorialText = key => (touchUi() && TUTORIAL_TOUCH[key]) || TUTORIAL[key];
 // 遊び方（メニューの「？」で開いた時だけ見せる。常時は出さない）
 // 遊び方の図解（2026-11-27 オーナー「文字で説明しすぎず、UIやボタンで視覚的に分かるように」「まだ文字が多い」）:
-// 開いた時は6枚の絵札だけ（小さな場面の絵・押すボタンの絵・短い見出しと一言）。文章の説明（HOWTO）は「くわしく」を押した時だけ出す。
-// scene は場面に並べる絵（クラス名と、絵のファイル。ファイルが無い行は CSS が描く飾り）
+// 開いた時は6枚の絵札だけ（一枚絵・押すボタンの絵・短い見出しと一言）。文章の説明（HOWTO）は「くわしく」を押した時だけ出す。
+// 絵は gpt-image-2.6-sunburst で生成した場面（asset_sources/ui/minigame-visuals-20261127/desert/。滑走の絵を参照に渡して人物と砂丘をそろえた）
 const HOWTO_CARDS = Object.freeze([
-  { id: "dodge", title: "よける", note: "岩は左右でかわす", keys: ["left", "right"], pc: "← →",
-    scene: [["how-rock", "ui/desert_ride/rock_large.webp"], ["how-arc"], ["how-rider", DESERT_ART.riderLeft.file]] },
-  { id: "jump", title: "大ジャンプ", note: "起伏で押す → 輪で着地", keys: ["jump", "land"], pc: "Space",
-    scene: [["how-crest"], ["how-ring"], ["how-rider", DESERT_ART.riderJump.file]] },
-  { id: "spin", title: "スピン", note: "空中で押しっぱなし", keys: ["left", "right"], pc: "← →", tags: ["360°", "720°"],
-    scene: [["how-spin-arrow"], ["how-rider", DESERT_ART.hajimeSpin090.file]] },
-  { id: "boost", title: "ブースト", note: "目印をこえたら発動", keys: ["boost"], pc: "↓",
-    // 走っている間に出さないことにした炎の絵（boost-burst など）は、ここでも読まない。光は CSS で描く
-    scene: [["how-glow"], ["how-rider", DESERT_ART.rider.file], ["how-bolt", "ui/desert_ride_hud/bolt.webp"], ["how-gauge"]] },
-  { id: "carve", title: "カーブ", note: "矢印の向きへ切り込む", keys: ["left"], pc: "←",
-    scene: [["how-sign", "ui/desert_ride_controls/curve_left.webp"], ["how-trail"], ["how-rider", DESERT_ART.riderLeft.file]] },
-  { id: "flow", title: "砂流れ", note: "金の旗の帯で加速", keys: [], pc: "",
-    scene: [["how-stream"], ["how-flag", DESERT_ART.flag.file], ["how-flag.how-flag-r", DESERT_ART.flag.file], ["how-rider", DESERT_ART.rider.file], ["how-chevrons"]] },
+  { id: "dodge", title: "よける", note: "岩は左右でかわす", keys: ["left", "right"], pc: "← →" },
+  { id: "jump", title: "大ジャンプ", note: "起伏で押す → 輪で着地", keys: ["jump", "land"], pc: "Space" },
+  { id: "spin", title: "スピン", note: "空中で押しっぱなし", keys: ["left", "right"], pc: "← →", tags: ["360°", "720°"] },
+  { id: "boost", title: "ブースト", note: "目印をこえたら発動", keys: ["boost"], pc: "↓" },
+  { id: "carve", title: "カーブ", note: "矢印の向きへ切り込む", keys: ["left"], pc: "←" },
+  { id: "flow", title: "砂流れ", note: "金の旗の帯で加速", keys: [], pc: "" },
 ]);
+const howtoArt = id => `ui/desert_ride_howto/how_${id}.webp`;
 // 遊び方の一行ごとの見出しの札（HOWTO の並びと同じ順）
 const HOWTO_TOPICS = Object.freeze(["左右", "岩", "大ジャンプ", "回転", "回転", "着地", "ブースト", "立て直し", "カーブ", "砂流れ", "S評価"]);
 const HOWTO = {
@@ -635,22 +629,24 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         art("dr-menu-rider", DESERT_ART.riderJump.file),
       ]);
     }
-    /** 遊び方の図解の1枚: 小さな場面の絵・押すボタンの絵（PC はキーも）・見出し・一言。 */
+    /** 遊び方の図解の1枚: 一枚絵（札いっぱい）の裾に、見出し・押すボタンの絵（PC はキーも）・一言を重ねる。 */
     function howCard(card) {
-      const art = (cls, file) => file ? el(`img.${cls}`, { src: imgFileUrl(file), alt: "", decoding: "async", onerror: event => { event.currentTarget.hidden = true; } }) : el(`i.${cls}`);
+      const art = (cls, file) => el(`img.${cls}`, { src: imgFileUrl(file), alt: "", decoding: "async", onerror: event => { event.currentTarget.hidden = true; } });
       return el("li.dr-how-card", { dataset: { how: card.id, test: "desert-help-card" } }, [
         el("div.dr-how-scene", { "aria-hidden": "true" }, [
-          ...card.scene.map(([cls, file]) => art(cls, file)),
+          art("dr-how-art", howtoArt(card.id)),
           ...(card.tags || []).map((text, index) => el("em.how-tag", { text, style: { "--i": String(index) } })),
         ]),
-        el("div.dr-how-head", [
-          el("b.dr-how-title", { text: card.title }),
-          el("div.dr-how-keys", { "aria-hidden": "true" }, [
-            ...card.keys.map(name => art("dr-how-key", DESERT_CONTROL_ART[name])),
-            !touchUi() && card.pc ? el("kbd", { text: card.pc }) : null,
+        el("div.dr-how-caption", [
+          el("div.dr-how-head", [
+            el("b.dr-how-title", { text: card.title }),
+            el("div.dr-how-keys", { "aria-hidden": "true" }, [
+              ...card.keys.map(name => art("dr-how-key", DESERT_CONTROL_ART[name])),
+              !touchUi() && card.pc ? el("kbd", { text: card.pc }) : null,
+            ]),
           ]),
+          el("span.dr-how-note", { text: card.note }),
         ]),
-        el("span.dr-how-note", { text: card.note }),
       ]);
     }
     function showMenu(message = "") {
