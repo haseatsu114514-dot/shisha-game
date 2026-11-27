@@ -41,7 +41,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .switch button[aria-pressed="true"] { background: #f1d79a; color: #24160a; }
 
 /* ───────── スマホの枠 ───────── */
-.phone { --acc: #c3b0ff; --ctrl-h: 28.6rem; --ring: 19.4rem; --a: 14rem; --pad-top: 5.7rem; position: relative; width: 39rem; height: 84.4rem; overflow: hidden; container: phone / size; isolation: isolate; font-size: 1.4rem; line-height: 1.5; color: #fff; background: var(--deep); user-select: none; -webkit-user-select: none; }
+.phone { --acc: #c3b0ff; --ctrl-h: 29.2rem; --ring: 19.4rem; --a: 14rem; --pad-top: 6.2rem; position: relative; width: 39rem; height: 84.4rem; overflow: hidden; container: phone / size; isolation: isolate; font-size: 1.4rem; line-height: 1.5; color: #fff; background: var(--deep); user-select: none; -webkit-user-select: none; }
 .amb { position: absolute; left: -15%; top: -10%; width: 130%; height: 120%; object-fit: cover; filter: blur(3.2rem) brightness(0.44) saturate(1.4); }
 .pic { position: absolute; left: 0; right: 0; top: 0; height: calc(100% - var(--ctrl-h) - 5.6rem); overflow: hidden; -webkit-mask-image: linear-gradient(180deg, #000 0, #000 66%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 66%, transparent 100%); }
 .pic::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 10rem; background: linear-gradient(180deg, #0b0812b8, transparent); pointer-events: none; }
@@ -274,18 +274,99 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .serve { position: absolute; right: 1.2rem; top: 1.2rem; height: 3.5rem; padding: 0 1.4rem; display: flex; align-items: center; gap: 0.7rem; border: 0.1rem solid color-mix(in srgb, var(--acc) 70%, transparent); border-radius: 2rem; background: color-mix(in srgb, var(--acc) 18%, #120c1d99); }
 .serve b { font-size: 1.28rem; letter-spacing: 0.1em; } .serve small { font-size: 1.05rem; color: #ffffffb3; }
 
+/* ───────── 文字を減らす: 絵記号・顔・光で伝える部品 ───────── */
+.ic { flex: none; width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.ic .f { fill: currentColor; stroke: none; }
+/* 上の表示: 地図は絵記号つき、会話は場所の名前だけ */
+.pill .ic { font-size: 1.8rem; color: #ffffffd9; } .pill .ic:first-of-type { color: var(--acc); }
+.pill .sep { width: 0.1rem; height: 1.4rem; background: #ffffff40; }
+.hud.slim .where { border-left-width: 0.2rem; opacity: 0.92; } .hud.slim .where b { font-size: 1.7rem; }
+/* 補助の札: 丸い絵記号 */
+.chips { gap: 1.1rem; padding: 1.1rem 1.2rem 0; }
+.chip { width: 4.3rem; height: 4.3rem; padding: 0; display: grid; place-items: center; border-radius: 50%; font-size: 2.1rem; letter-spacing: 0; }
+.chip em { right: -0.3rem; top: -0.3rem; font-size: 1.05rem; font-weight: 700; }
+/* 十字キー: 役割は絵記号で。使わない時は薄く */
+.dp .ic { position: absolute; left: 50%; margin-left: -0.9rem; font-size: 1.8rem; color: #ffffffe6; filter: drop-shadow(0 0.1rem 0.3rem #000); }
+.dp-up .ic { top: 21%; } .dp-down .ic { bottom: 21%; }
+.dpad.idle { opacity: 0.5; }
+/* 名前: 一言だけ */
+.name .ic { align-self: center; font-size: 2.3rem; color: #cfc3ea; }
+.name.narr { min-height: 1.2rem; margin-bottom: 0.4rem; } .name.narr::after { display: none; }
+/* 地図のピン: 顔か絵記号 */
+.pin-dot { width: 3.7rem; height: 3.7rem; overflow: visible; border: 0.22rem solid #fff; font-size: 2rem; color: #fff; background: #1a1228; box-shadow: 0 0.4rem 1rem #000c; transition: transform 0.25s var(--ease-out), border-color 0.2s, box-shadow 0.2s; }
+.pin-dot img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.pin-dot em { position: absolute; right: -0.6rem; top: -0.6rem; width: 1.9rem; height: 1.9rem; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-size: 1.25rem; font-weight: 900; color: #24160a; background: #ffe2a6; box-shadow: 0 0 0 0.16rem #0b0812; }
+.pin-dot em.off { font-size: 1rem; color: #fff; background: #b54a45; }
+.pin.closed .pin-dot { color: #fff; background: #1a1228; font-size: 2rem; } .pin.closed .pin-dot img { filter: grayscale(1) brightness(0.65); }
+.pin[aria-current="true"] .pin-dot { background: #1a1228; border-color: var(--acc); transform: translate(-50%, -50%) scale(1.2); box-shadow: 0 0 0 0.3rem color-mix(in srgb, var(--acc) 45%, transparent), 0 0 2.2rem var(--acc); }
+.pin-flag { bottom: 3.3rem; } .pin-ring { width: 5.6rem; height: 5.6rem; margin: -2.8rem 0 0 -2.8rem; }
+.beacon { height: 4.2rem; padding: 0 0.5rem; gap: 0.4rem; }
+.ava { position: relative; flex: none; display: grid; place-items: center; border-radius: 50%; color: var(--acc); background: #1a1228; }
+.ava img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.beacon .ava { width: 3.2rem; height: 3.2rem; font-size: 1.8rem; }
+.mini > span { right: 0.3rem; bottom: 0.3rem; width: 2.2rem; height: 2.2rem; padding: 0; display: grid; place-items: center; border-radius: 50%; font-size: 1.4rem; }
+.mini.far { width: 4.3rem; height: 4.3rem; padding: 0; border-radius: 50%; } .mini.far > span { width: auto; height: auto; font-size: 2.1rem; }
+/* 行き先の札: 顔・名前・絵記号つきの数字だけ */
+.dest { grid-template-columns: 1fr auto; }
+.who .ava { width: 5.6rem; height: 5.6rem; font-size: 2.8rem; box-shadow: 0 0 0 0.15rem var(--acc), 0 0.4rem 1rem #000a; }
+.who .ava i.on { position: absolute; right: 0.1rem; bottom: 0.1rem; width: 1.3rem; height: 1.3rem; border-radius: 50%; background: #6fe0a0; box-shadow: 0 0 0 0.22rem #120c1d, 0 0 0.9rem #6fe0a0; }
+.who b { font-size: 2rem; letter-spacing: 0.04em; }
+.dest.closed .ava img { filter: grayscale(1) brightness(0.65); } .dest.closed .who b { color: #ffffff99; }
+.perk { display: flex; align-items: center; gap: 0.6rem; height: 3.9rem; padding: 0 1.4rem 0 1.1rem; border: 0.1rem solid #ffe2a680; border-radius: 2rem; color: #ffe2a6; background: #ffe2a614; white-space: nowrap; }
+.perk .ic { font-size: 2.2rem; } .perk b { font-family: var(--mincho); font-size: 2.1rem; letter-spacing: 0.02em; } .perk small { font-size: 1.5rem; font-weight: 700; }
+.stamp { width: 4.2rem; height: 4.2rem; display: grid; place-items: center; border: 0.22rem solid #ff9a8f; border-radius: 50%; font-family: var(--mincho); font-style: normal; font-size: 2rem; color: #ff9a8f; transform: rotate(-10deg); }
+.sheet header { align-items: center; padding: 1.2rem 1.6rem 1rem; font-size: 2.4rem; } .sheet header span { flex: 1; }
+.sheet header button { width: 3.6rem; height: 3.6rem; padding: 0; border-radius: 50%; font-size: 2rem; line-height: 1; }
+.row { grid-template-columns: 4.8rem 1fr auto; } .row > b { font-family: var(--mincho); font-size: 1.72rem; letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .ava { width: 4.8rem; height: 4.8rem; font-size: 2.4rem; box-shadow: 0 0 0 0.12rem #ffffff40; }
+.row .perk { height: 3.2rem; padding: 0 1rem 0 0.8rem; } .row .perk .ic { font-size: 1.8rem; } .row .perk b { font-size: 1.7rem; } .row .perk small { font-size: 1.3rem; }
+.row .stamp { width: 3.2rem; height: 3.2rem; font-size: 1.5rem; } .row.closed .ava img { filter: grayscale(1) brightness(0.65); }
+/* シーシャ作り: 上は工程の並びだけ */
+.steps { position: absolute; z-index: 5; left: 50%; top: max(1.3rem, env(safe-area-inset-top, 0px)); transform: translateX(-50%); display: flex; align-items: center; gap: 0.3rem; padding: 0.5rem; border: 0.1rem solid #ffffff26; border-radius: 3rem; background: #120c1d99; -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); }
+.steps span { width: 3.2rem; height: 3.2rem; display: grid; place-items: center; border-radius: 3rem; font-size: 1.8rem; color: #ffffff59; }
+.steps span.done { color: var(--acc); }
+.steps span.now { width: auto; display: flex; gap: 0.6rem; padding: 0 1.3rem 0 1rem; color: var(--deep); background: var(--acc); box-shadow: 0 0 1.6rem color-mix(in srgb, var(--acc) 55%, transparent); }
+.steps span.now b { font-family: var(--mincho); font-size: 1.75rem; letter-spacing: 0.08em; white-space: nowrap; }
+.thermo .ic { font-size: 2rem; color: #9df0b7; filter: drop-shadow(0 0.1rem 0.3rem #000); }
+/* スミさんの一言: 小さな吹き出し。少しすると顔だけになる */
+.coach { display: flex; align-items: flex-end; gap: 1rem; width: 100%; margin-bottom: 0.2rem; text-align: left; }
+.coach img { flex: none; width: 5.2rem; height: 5.2rem; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 0.15rem var(--acc), 0 0.4rem 1rem #000a; }
+.coach .say { padding: 1.1rem 1.6rem 1.2rem; border: 0.1rem solid #ffffff30; border-radius: 1.9rem 1.9rem 1.9rem 0.5rem; font-size: 1.8rem; line-height: 1.6; font-weight: 500; letter-spacing: 0.03em; word-break: auto-phrase; background: linear-gradient(180deg, #1e1632cc, #0e0a18e6); -webkit-backdrop-filter: blur(1.6rem); backdrop-filter: blur(1.6rem); box-shadow: 0 1.2rem 2.4rem #000a, inset 0 0.1rem 0 #ffffff3d; transition: opacity 0.4s, transform 0.4s var(--ease-out); transform-origin: 0 100%; }
+.coach.quiet .say { opacity: 0; transform: translateY(0.6rem) scale(0.94); }
+/* 詰め: 絵の札を横に3枚。密度は点の数で */
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; margin-top: 1rem; }
+.card { position: relative; display: grid; justify-items: center; gap: 0.4rem; padding: 0.7rem 0.4rem 1.1rem; border: 0.1rem solid #ffffff38; border-radius: 1.7rem; background: #120c1d8c; -webkit-backdrop-filter: blur(1.4rem); backdrop-filter: blur(1.4rem); box-shadow: 0 0.6rem 1.4rem #0008, inset 0 0.1rem 0 #ffffff29; transition: transform 0.25s var(--ease-out), border-color 0.2s, background 0.2s, box-shadow 0.2s; }
+.card img { width: 7.6rem; height: 7.6rem; object-fit: contain; filter: drop-shadow(0 0.5rem 0.8rem #000a); }
+.card b { font-size: 1.5rem; white-space: nowrap; }
+.dens { display: flex; gap: 0.4rem; } .dens i { width: 1rem; height: 1rem; border-radius: 50%; box-shadow: inset 0 0 0 0.16rem #ffffff80; } .dens i.on { background: var(--acc); box-shadow: 0 0 0.6rem var(--acc); }
+.card[aria-current="true"] { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 24%, #120c1dcc); transform: translateY(-0.5rem); box-shadow: 0 0 0 0.15rem color-mix(in srgb, var(--acc) 55%, transparent), 0 0 2.4rem color-mix(in srgb, var(--acc) 40%, transparent), 0 0.8rem 1.6rem #0009; }
+.card.locked img, .card.locked b, .card.locked .dens { opacity: 0.45; } .card .ic { position: absolute; right: 0.8rem; top: 0.8rem; font-size: 1.8rem; color: #ffffffcc; }
+/* 穴あけ: 輪の点＝開けた穴、真ん中の丸＝押している間の大きさ */
+.dial svg { transform: none; }
+.pip { fill: #ffffff33; } .pip.done { fill: #fff; } .pip.good { fill: #ffe2a6; filter: drop-shadow(0 0 2px #ffcf6b); }
+.want { fill: none; stroke: #ffffff38; stroke-width: 7.4; } .grow { fill: var(--acc); opacity: 0.92; }
+.dial.ok .grow { fill: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); } .dial.ok .want { stroke: #ffe2a680; }
+.foil-marks .tip.ok { stroke: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); }
+/* 合った時は A が光る（説明の文字の代わり） */
+.btn-a.hot { border-color: #fff; box-shadow: 0 0 0 0.8rem #ffffff2e, 0 0 4.6rem #fff, 0 0 2rem var(--acc), 0 1.4rem 2.6rem #000b, inset 0 0.25rem 0.5rem #ffffffb3, inset 0 -0.8rem 1.6rem #0b081240; }
+/* 吸い出し: 両端は矢印の絵記号、葉と回数は点だけ */
+.gauge .end { position: absolute; top: 0; font-size: 2.6rem; filter: drop-shadow(0 0.1rem 0.4rem #000); } .gauge .end.l { left: -2.4rem; color: #8cc8ff; } .gauge .end.r { right: -2.4rem; color: #ffb27a; }
+.lamps { align-items: center; pointer-events: none; top: 24.4rem; } .lamps > .leaves, .lamps > .pulls { display: flex; align-items: center; gap: 0.3rem; } .lamps > .pulls { gap: 0.5rem; } .lamps .pulls i { width: 1.4rem; height: 1.4rem; } .lamps .leaves img { width: 2.3rem; height: 2.3rem; }
+.serve { width: auto; gap: 0.5rem; padding: 0 1.2rem; height: 4.3rem; top: 1.1rem; font-size: 2.2rem; }
+.serve i { width: 1rem; height: 1rem; border-radius: 50%; box-shadow: inset 0 0 0 0.16rem #ffffff99; }
+
 /* ───────── 背の低い画面 ───────── */
 @container phone (max-height: 80rem) {
-  .body, .pic, .smoke, .sheet { --ctrl-h: 26.2rem; } .ctrl { --ctrl-h: 26.2rem; --ring: 17.4rem; --a: 12.6rem; --pad-top: 5.5rem; }
-  .btn-a.center { top: 13.9rem; width: 11.2rem; height: 11.2rem; margin-left: -5.6rem; } .gauge { left: 4.6rem; right: 4.6rem; top: 5.5rem; } .lamps { top: 21.4rem; } .foil { width: 27rem; }
+  .body, .pic, .smoke, .sheet { --ctrl-h: 26.2rem; } .ctrl { --ctrl-h: 26.2rem; --ring: 17.2rem; --a: 12.4rem; --pad-top: 5.8rem; } .chip { width: 3.9rem; height: 3.9rem; font-size: 1.9rem; } .chips { padding-top: 1rem; }
+  .btn-a.center { top: 13.9rem; width: 11.2rem; height: 11.2rem; margin-left: -5.6rem; } .gauge { left: 4.6rem; right: 4.6rem; top: 5.9rem; } .ctrl .lamps { top: 22rem; } .foil { width: 27rem; }
 }
 @container phone (max-height: 71rem) {
-  .body, .pic, .smoke, .sheet { --ctrl-h: 22.6rem; } .ctrl { --ctrl-h: 22.6rem; --ring: 15rem; --a: 11rem; --pad-top: 4.7rem; }
-  .chips { padding-top: 0.9rem; } .chip { height: 3.1rem; font-size: 1.12rem; padding: 0 1.2rem; } .serve { height: 3.1rem; top: 0.9rem; }
-  .btn-a .t { font-size: 2.8rem; } .btn-a.center { top: 11.7rem; width: 9.6rem; height: 9.6rem; margin-left: -4.8rem; } .gauge { left: 7rem; right: 7rem; top: 4.8rem; } .lamps { top: 18.2rem; }
+  .body, .pic, .smoke, .sheet { --ctrl-h: 22.6rem; } .ctrl { --ctrl-h: 22.6rem; --ring: 14.8rem; --a: 10.8rem; --pad-top: 5rem; }
+  .chips { padding-top: 0.8rem; gap: 0.9rem; } .chip { width: 3.5rem; height: 3.5rem; font-size: 1.7rem; } .serve { height: 3.5rem; top: 0.8rem; font-size: 1.8rem; }
+  .btn-a .t { font-size: 2.8rem; } .btn-a.center { top: 11.7rem; width: 9.6rem; height: 9.6rem; margin-left: -4.8rem; } .gauge { left: 7rem; right: 7rem; top: 5.1rem; } .ctrl .lamps { top: 18.8rem; } .lamps .leaves img { width: 1.9rem; height: 1.9rem; }
   .glass { min-height: 9.8rem; padding: 1.2rem 1.6rem 1.3rem; } .text { font-size: 1.74rem; line-height: 1.68; } .name b { font-size: 2.2rem; } .name { margin-bottom: 0.6rem; min-height: 2.6rem; }
   .choice { height: 4.3rem; font-size: 1.6rem; } .choices { gap: 0.6rem; margin-top: 0.7rem; } .packs .choice { height: 3.9rem; } .foil { width: 22rem; top: 17%; } .row { height: 5.6rem; } .mini { width: 9.6rem; top: 7.4rem; }
-  .who img, .who > i { width: 4.2rem; height: 4.2rem; } .dial b { font-size: 3.2rem; }
+  .who .ava { width: 4.6rem; height: 4.6rem; } .card img { width: 5.4rem; height: 5.4rem; } .card { padding: 0.5rem 0.4rem 0.8rem; } .coach img { width: 4.4rem; height: 4.4rem; } .coach .say { font-size: 1.62rem; padding: 0.9rem 1.3rem 1rem; } .steps span { width: 2.8rem; height: 2.8rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,5 +1,6 @@
 // 縦画面C案「煙の舞台」の試作（2026-11-27・#4134・要望台帳 VPL03〜）。
 // 第1章の場面（橙須の地図→入店→会話→返事／tonari の2人会話／シーシャ作り3工程）で、配置と動きを確かめる。
+// 方針: その場面で要るものだけを出す。説明は文字より、顔・絵記号・光で伝える（VPL12・VPL13）。
 // 絵・立ち絵・台詞は本編の素材を読むだけ。本編の進行・判定・保存は呼ばない。
 // 一覧（PC）: index.html?view=gallery　／　1台（スマホ）: index.html?view=play&scene=map|minto|tonari|pack|holes|pull
 // 絵は本編が表示に使う WebP 版（remake/img/）を読む（元PNGを直接書くと公開物の軽量化から外れる）。
@@ -12,7 +13,6 @@ const IMG = {
   tonari: `${REMAKE_IMG}backgrounds/bg_tonari_inside_day.webp`,
   minto_smile: `${NEW}minto/chr_minto_smile.webp`,
   minto_wink: `${NEW}minto/chr_minto_wink.webp`,
-  minto_normal: `${NEW}minto/chr_minto_normal.webp`,
   sumi_normal: `${NEW}sumi/chr_sumi_normal.webp`,
   sumi_smile: `${NEW}sumi/chr_sumi_smile.webp`,
   tsumugi_normal: `${NEW}tsumugi/chr_tsumugi_normal.webp`,
@@ -20,6 +20,8 @@ const IMG = {
   faceMinto: `${REMAKE_IMG}ui/face_icons/new/face_minto.webp`,
   faceSumi: `${REMAKE_IMG}ui/face_icons/new/face_sumi.webp`,
   faceTsumugi: `${REMAKE_IMG}ui/face_icons/new/face_tsumugi.webp`,
+  faceNaru: `${REMAKE_IMG}ui/face_icons/new/face_naru.webp`,
+  faceAdam: `${REMAKE_IMG}ui/face_icons/new/face_adam.webp`,
   bowl_airy: `${REMAKE_IMG}ui/making/bowl_packed_airy.webp`,
   bowl_normal: `${REMAKE_IMG}ui/making/bowl_packed_normal.webp`,
   bowl_firm: `${REMAKE_IMG}ui/making/bowl_packed_firm.webp`,
@@ -27,10 +29,6 @@ const IMG = {
   pullActor: `${REMAKE_IMG}ui/making/hajime_craft_pull.webp`,
   leaf: `${REMAKE_IMG}ui/making/ui_mockup_flavor_leaf.webp`,
   smoke: `${REMAKE_IMG}ui/making/smoke_thick.webp`,
-  thumbNaru: `${REMAKE_IMG}backgrounds/kemurikusa.webp`,
-  thumbAdam: `${REMAKE_IMG}backgrounds/bg_eden_shop.webp`,
-  thumbShop: `${REMAKE_IMG}backgrounds/bg_fookah_showroom.webp`,
-  thumbHome: `${REMAKE_IMG}backgrounds/bg_home_day.webp`,
   ...(globalThis.PORTRAIT_STAGE_ASSETS || {}),
 };
 
@@ -44,14 +42,15 @@ const CAST = {
 const ASPECT = 896 / 1200;
 
 // 第1章 DAY5 昼の橙須（座標は remake/js/daily/spots.js と同じ。地図の絵に対する %）
+// face=そこに居る人の顔、glyph=人の居ない場所の絵記号、fee=料金、perk=[絵記号, 短い語]
 const SPOTS = [
-  { id: "tonari", label: "tonari", area: "バイト先", x: 86, y: 36, who: "スミさん 在店", fee: "バイト先", mark: true, face: "faceSumi", thumb: "tonari" },
-  { id: "naru", label: "KEMURIKUSA", area: "商店街の外れ", x: 70, y: 24, who: "なる 在店", fee: "料金 ¥3,000", mark: true, thumb: "thumbNaru" },
-  { id: "adam", label: "EDEN", area: "下町", x: 46, y: 48, who: "本日定休日", fee: "休み", closed: true, thumb: "thumbAdam" },
-  { id: "minto", label: "PEPPERMINT", area: "繁華街", x: 32, y: 59, who: "みんと 在店", fee: "料金 ¥3,000", mark: true, face: "faceMinto", thumb: "shop" },
-  { id: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 30, who: "1階は時間消費なし", fee: "仕入れ", thumb: "thumbShop" },
-  { id: "kannon", label: "観音堂", area: "古町", x: 18, y: 57, who: "盤は時間消費なし", fee: "心得の盤" },
-  { id: "rest", label: "家", area: "自宅", x: 89, y: 44, who: "自宅で休む", fee: "体力回復", thumb: "thumbHome" },
+  { id: "tonari", label: "tonari", x: 86, y: 36, face: "faceSumi", who: "スミさん", mark: true, perk: ["work", "バイト"] },
+  { id: "naru", label: "KEMURIKUSA", x: 70, y: 24, face: "faceNaru", who: "なる", mark: true, fee: "3,000" },
+  { id: "adam", label: "EDEN", x: 46, y: 48, face: "faceAdam", who: "アダム", closed: true },
+  { id: "minto", label: "PEPPERMINT", x: 32, y: 59, face: "faceMinto", who: "みんと", mark: true, fee: "3,000" },
+  { id: "shop", label: "Dr.fookah", x: 36, y: 30, glyph: "cart", who: "仕入れ", perk: ["clock0", "0"] },
+  { id: "kannon", label: "観音堂", x: 18, y: 57, glyph: "board", who: "心得の盤", perk: ["clock0", "0"] },
+  { id: "rest", label: "家", x: 89, y: 44, glyph: "bed", who: "休む", perk: ["heart", "＋"] },
 ];
 const DEFAULT_SPOT = 3;
 // 左右キー・点・一覧の並び。地図の左から右の順にして、右を押すと画面も右へ動くようにする
@@ -84,14 +83,16 @@ const TALKS = {
   },
 };
 const PACKS = [
-  { id: "airy", name: "ふんわり", note: "空気を残す・軽い吸い心地" },
-  { id: "normal", name: "ノーマル", note: "均等にならす・基本" },
-  { id: "firm", name: "デンスパック", note: "心得の盤で習得", locked: true },
+  { id: "airy", name: "ふんわり", dens: 1 },
+  { id: "normal", name: "ノーマル", dens: 2 },
+  { id: "firm", name: "デンスパック", dens: 3, locked: true },
 ];
-const CRAFT = {
-  pack: { step: "詰め", coach: "詰め方を見比べて決めよう。迷ったらノーマル", hint: "十字キーの上下で見比べて、Aで決める" },
-  holes: { step: "穴あけ", coach: "空気を通す穴。針が目印に重なったら押し込む", hint: "押している長さで穴の大きさが変わる" },
-  pull: { step: "吸い出し", coach: "手元を見ているぞ。落ち着いていけ", hint: "針が白い帯に来たら「吸う」" },
+// 工程（上の並び）と、スミさんの一言
+const STEPS = [["pack", "詰め"], ["holes", "穴あけ"], ["coal", "炭"], ["water", "水"], ["steam", "蒸らし"], ["pull", "吸い出し"], ["care", "調整"]];
+const COACH = {
+  pack: "詰め方を見比べて決めよう。迷ったらノーマル",
+  holes: "空気を通す穴。針が目印に重なったら押し込む",
+  pull: "手元を見ているぞ。落ち着いていけ",
 };
 const HOLE_COUNT = 10;
 
@@ -117,21 +118,69 @@ const tri = () => `<svg viewBox="0 0 24 24" aria-hidden="true" class="tri"><path
 const typed = (text, delay = 0) => `<span class="type" style="--d:${delay}ms">${[...text].map((ch, i) => `<span style="--i:${i}">${esc(ch)}</span>`).join("")}</span>`;
 const TYPE_MS = 26;
 
+// 文字の代わりに使う絵記号（24×24・線画）
+const ICONS = {
+  chat: '<path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H11l-4.5 4v-4A2.5 2.5 0 0 1 4 13.5z"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  list: '<path d="M9 7h11M9 12h11M9 17h11"/><circle cx="4.5" cy="7" r="1.3" class="f"/><circle cx="4.5" cy="12" r="1.3" class="f"/><circle cx="4.5" cy="17" r="1.3" class="f"/>',
+  wide: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+  near: '<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>',
+  bang: '<path d="M12 4.5v9.5"/><circle cx="12" cy="18.7" r="1.4" class="f"/>',
+  log: '<path d="M4.5 12a7.500 7.500 0 1 0 2.400-5.500"/><path d="M4 4.500v4.500h4.500"/><path d="M12 8v4.500l3 2"/>',
+  auto: '<path d="M8 5.500v13l11-6.500z" class="f"/>',
+  skip: '<path d="M4 6v12l8-6zM13 6v12l8-6z" class="f"/>',
+  book: '<path d="M12 6.500C10 5 7 4.600 4 5v13c3-.400 6 0 8 1.500 2-1.500 5-1.900 8-1.500V5c-3-.400-6 0-8 1.500zM12 6.500v13"/>',
+  gear: '<circle cx="12" cy="12" r="3.300"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.600 5.600l2.100 2.100M16.300 16.300l2.100 2.100M5.600 18.400l2.100-2.100M16.300 7.700l2.100-2.100"/>',
+  help: '<path d="M8.500 9a3.500 3.500 0 1 1 5.600 2.800c-1.200.900-2.100 1.600-2.100 3.200"/><circle cx="12" cy="19" r="1.300" class="f"/>',
+  coin: '<circle cx="12" cy="12" r="8.500"/><path d="M8.500 7.500l3.500 5 3.500-5M12 12.500V17M9 12.500h6M9 15h6"/>',
+  heart: '<path d="M12 20s-7.500-4.600-7.500-10A4.300 4.300 0 0 1 12 7.600 4.300 4.300 0 0 1 19.500 10c0 5.400-7.500 10-7.500 10z" class="f"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.500v3M12 18.500v3M2.500 12h3M18.500 12h3M5.300 5.300l2.100 2.100M16.600 16.600l2.100 2.100M5.300 18.700l2.100-2.100M16.600 7.400l2.100-2.100"/>',
+  rain: '<path d="M7.500 14.500a4.500 4.500 0 0 1 .300-9 5.500 5.500 0 0 1 10.500 1.800 3.700 3.700 0 0 1-.800 7.200z"/><path d="M8.500 17.500l-1 3M12.500 17.500l-1 3M16.500 17.500l-1 3"/>',
+  bed: '<path d="M3 18.500V7M3 14.500h18v4M21 14.500V12a2.500 2.500 0 0 0-2.500-2.500H10v5"/><circle cx="6.500" cy="11.300" r="1.700"/>',
+  cart: '<path d="M3 5h2.500l2.200 10h10l2-7H7"/><circle cx="9.500" cy="19" r="1.400"/><circle cx="16.500" cy="19" r="1.400"/>',
+  work: '<rect x="3.500" y="8" width="17" height="11" rx="2"/><path d="M9 8V6a1.500 1.500 0 0 1 1.500-1.500h3A1.500 1.500 0 0 1 15 6v2M3.500 13h17"/>',
+  board: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9.300h16M4 14.700h16M9.300 4v16M14.700 4v16"/>',
+  clock0: '<circle cx="12" cy="12" r="8.500"/><path d="M12 7.500V12l3 2"/>',
+  lock: '<rect x="5.500" y="10.500" width="13" height="9.500" rx="2"/><path d="M8.500 10.500V8a3.500 3.500 0 0 1 7 0v2.500"/>',
+  think: '<path d="M7 15a4 4 0 0 1-.500-7.900 5 5 0 0 1 9.600-.900A4.200 4.200 0 0 1 17 15z"/><circle cx="8.500" cy="18.500" r="1.200"/><circle cx="5.500" cy="21" r=".800"/>',
+  thermo: '<path d="M10 14.500v-9a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z"/><path d="M12 9v8"/>',
+  bell: '<path d="M3.500 18h17M5.500 18a6.500 6.500 0 0 1 13 0M12 9v2.500"/><circle cx="12" cy="7.600" r="1.300"/>',
+  cool: '<path d="M6 6l6 6 6-6M6 13l6 6 6-6"/>',
+  heat: '<path d="M6 11l6-6 6 6M6 18l6-6 6 6"/>',
+  pack: '<path d="M5 8h14l-1.500 5.500a4 4 0 0 1-3.900 3h-3.200a4 4 0 0 1-3.900-3zM9 20h6M12 16.500V20"/>',
+  holes: '<circle cx="12" cy="12" r="8.500"/><circle cx="12" cy="7.300" r="1.100" class="f"/><circle cx="16.300" cy="10.500" r="1.100" class="f"/><circle cx="14.700" cy="15.700" r="1.100" class="f"/><circle cx="9.300" cy="15.700" r="1.100" class="f"/><circle cx="7.700" cy="10.500" r="1.100" class="f"/>',
+  coal: '<path d="M12 3.500c1 3.500 5 5.200 5 9.700a5 5 0 0 1-10 0c0-2 1-3.300 2-4.600.300 1.600 1 2.500 2 2.900-.300-2.900.200-5.400 1-8z"/>',
+  water: '<path d="M12 3.500c3 4 6 7 6 10.500a6 6 0 0 1-12 0c0-3.500 3-6.500 6-10.500z"/>',
+  steam: '<path d="M7 20c-2-2.500 2-4.500 0-7s2-4.500 0-7M12 20c-2-2.500 2-4.500 0-7s2-4.500 0-7M17 20c-2-2.500 2-4.500 0-7s2-4.500 0-7"/>',
+  pull: '<path d="M3 9.500h10a3 3 0 1 0-3-3M3 14.500h14a3 3 0 1 1-3 3"/>',
+};
+ICONS.care = ICONS.bell;
+const icon = (name) => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
+/** 人が居る場所は顔、居ない場所は絵記号 */
+const avatar = (spot) => spot.face ? `<img src="${IMG[spot.face]}" alt="">` : icon(spot.glyph);
+const perkHtml = (spot) => spot.closed ? `<em class="stamp">休</em>` : spot.fee ? `<span class="perk">${icon("coin")}<b>${spot.fee}</b></span>` : `<span class="perk">${icon(spot.perk[0])}<small>${spot.perk[1]}</small></span>`;
+
 /* ───────── 部品 ───────── */
 
-function hudHtml(place) {
+/** 上の表示。地図だけ日付・体力・お金を出す。会話は場所の名前だけ、シーシャ作りは何も出さない（工程の並びだけ）。 */
+function hudHtml(kind, place) {
+  if (kind === "talk") return `<div class="hud slim"><div class="where"><b>${place[0]}</b></div></div>`;
   return `<div class="hud">
     <div class="where"><b>${place[0]}</b><small>${place[1]}</small></div>
-    <div class="stats"><span class="pill"><small>DAY</small><b>5</b><em>昼・雨</em></span><span class="pill"><span class="bar" style="--v:80%"><i></i></span><b>¥42,000</b></span></div>
+    <div class="stats"><span class="pill"><small>DAY</small><b>5</b>${icon("sun")}${icon("rain")}</span>
+      <span class="pill">${icon("heart")}<span class="bar" style="--v:80%"><i></i></span><i class="sep"></i>${icon("coin")}<b>42,000</b></span></div>
   </div>`;
 }
 
-function dpadHtml(live, labels = {}) {
-  const key = (dir, label) => `<button class="dp dp-${dir}${live.includes(dir) ? " live" : ""}" data-act="dir" data-dir="${dir}" aria-label="${labels[dir] || label}">${tri()}${labels[dir] ? `<span>${labels[dir]}</span>` : ""}</button>`;
-  return `<div class="dpad" role="group" aria-label="十字キー">${key("up", "上")}${key("left", "左")}${key("right", "右")}${key("down", "下")}<i class="dp-core"></i></div>`;
+function dpadHtml(live, marks = {}) {
+  const key = (dir, label) => `<button class="dp dp-${dir}${live.includes(dir) ? " live" : ""}" data-act="dir" data-dir="${dir}" aria-label="${marks[dir]?.[1] || label}">${tri()}${marks[dir] ? icon(marks[dir][0]) : ""}</button>`;
+  return `<div class="dpad${live ? "" : " idle"}" role="group" aria-label="十字キー">${key("up", "上")}${key("left", "左")}${key("right", "右")}${key("down", "下")}<i class="dp-core"></i></div>`;
 }
 const aHtml = (label, { disabled = false, cls = "" } = {}) => `<button class="btn-a ${cls}" data-act="a" ${disabled ? "disabled" : ""}><span class="t">${label}</span><span class="k">A</span></button>`;
-const chipsHtml = (chips) => `<div class="chips">${chips.map(([id, label, badge, on]) => `<button class="chip${on ? " on" : ""}" data-act="fn" data-fn="${id}">${label}${badge ? `<em>${badge}</em>` : ""}</button>`).join("")}</div>`;
+/** 補助の札は絵記号だけ（読み上げ用の名前は aria-label に持つ） */
+const chipsHtml = (chips) => `<div class="chips">${chips.map(([id, name, label, badge, on]) => `<button class="chip${on ? " on" : ""}" data-act="fn" data-fn="${id}" aria-label="${label}">${icon(name)}${badge ? `<em>${badge}</em>` : ""}</button>`).join("")}</div>`;
+const TALK_CHIPS = (st) => [["log", "log", "LOG"], ["auto", "auto", "AUTO", "", st.auto], ["skip", "skip", "SKIP", "", st.skip], ["terms", "book", "用語"], ["config", "gear", "設定"]];
+const CRAFT_CHIPS = [["help", "help", "説明"], ["menu", "menu", "MENU"]];
 
 function meterHtml() {
   const C = 100, RO = 92, RI = 60;
@@ -196,15 +245,15 @@ class Phone {
       <div class="pic map${st.overview ? " overview" : ""}" data-map>
         <div class="map-pan"><img src="${IMG.map}" alt="橙須の地図" draggable="false">
           ${SPOTS.map((spot, i) => `<div class="pin${spot.closed ? " closed" : ""}" style="--mx:${spot.x}%;--my:${spot.y}%" data-spot="${i}">
-            <i class="pin-ring"></i><i class="pin-dot">${spot.closed ? "休" : spot.mark ? "!" : ""}</i><span class="pin-flag">${esc(spot.label)}</span>
+            <i class="pin-ring"></i><span class="pin-dot">${avatar(spot)}${spot.closed ? `<em class="off">休</em>` : spot.mark ? `<em>!</em>` : ""}</span><span class="pin-flag">${esc(spot.label)}</span>
             <button class="pin-hit" data-act="spot" data-spot="${i}" aria-label="${esc(spot.label)}"></button></div>`).join("")}
         </div>
         <div class="beacons"></div>
       </div>
       <i class="veil"></i>
-      ${hudHtml(["第1章", "橙須"])}
+      ${hudHtml("map", ["第1章", "橙須"])}
       <button class="mini${st.overview ? " far" : ""}" data-act="overview" aria-label="全体を見る・寄る"><img src="${IMG.map}" alt=""><i class="mini-view"></i>
-        ${SPOTS.map((spot, i) => `<i class="mini-pin${spot.mark ? " mark" : ""}" style="left:${spot.x}%;top:${spot.y}%" data-spot="${i}"></i>`).join("")}<span>${st.overview ? "寄る" : "全体"}</span></button>
+        ${SPOTS.map((spot, i) => `<i class="mini-pin${spot.mark ? " mark" : ""}" style="left:${spot.x}%;top:${spot.y}%" data-spot="${i}"></i>`).join("")}<span>${icon(st.overview ? "near" : "wide")}</span></button>
       <div class="body">
         <div class="telop" data-slot="telop">${this.destHtml()}</div>
         <div class="ctrl" data-slot="ctrl">${this.mapCtrlHtml()}</div>
@@ -214,10 +263,10 @@ class Phone {
 
   destHtml() {
     const spot = SPOTS[this.st.sel];
-    return `<div class="name"><b>${esc(spot.label)}</b><span>${esc(spot.area)}</span></div>
+    return `<div class="name"><b>${esc(spot.label)}</b></div>
       <div class="glass dest${spot.closed ? " closed" : ""}" data-swipe>
-        <div class="who">${spot.face ? `<img src="${IMG[spot.face]}" alt="">` : `<i>${spot.closed ? "休" : esc(spot.label[0])}</i>`}<span>${esc(spot.who)}</span></div>
-        <div class="fee"><b>${esc(spot.fee)}</b></div>
+        <div class="who"><span class="ava">${avatar(spot)}${spot.face && !spot.closed ? `<i class="on"></i>` : ""}</span><b>${esc(spot.who)}</b></div>
+        ${perkHtml(spot)}
         <div class="dots">${ORDER.map((i) => `<button data-act="spot" data-spot="${i}" aria-current="${i === this.st.sel}" aria-label="${esc(SPOTS[i].label)}" class="${SPOTS[i].mark ? "mark" : ""}"></button>`).join("")}</div>
       </div>`;
   }
@@ -225,16 +274,15 @@ class Phone {
   mapCtrlHtml() {
     const { st } = this, spot = SPOTS[st.sel];
     const marks = SPOTS.filter((s) => s.mark).length;
-    return `${chipsHtml([["lime", "LIME", "1"], ["menu", "MENU"], ["list", "一覧", "", st.list], ["next", `！の店 ${marks}`]])}
-      ${dpadHtml(st.list ? "up down" : "up down left right", st.list ? {} : { up: st.overview ? "寄る" : "全体", down: "一覧" })}${aHtml(st.list ? "決定" : spot.closed ? "定休日" : "行く", { disabled: !st.list && spot.closed })}`;
+    return `${chipsHtml([["lime", "chat", "LIME", "1"], ["menu", "menu", "MENU"], ["next", "bang", "用事のある店へ", String(marks)]])}
+      ${dpadHtml(st.list ? "up down" : "up down left right", st.list ? {} : { up: st.overview ? ["near", "寄る"] : ["wide", "全体を見る"], down: ["list", "一覧"] })}${aHtml(st.list ? "決定" : spot.closed ? "休み" : "行く", { disabled: !st.list && spot.closed })}`;
   }
 
   sheetHtml() {
-    return `<header><b>行き先</b><small>${SPOTS.length}か所</small><button data-act="list" aria-label="閉じる">閉じる</button></header>
+    return `<header>${icon("list")}<span></span><button data-act="list" aria-label="閉じる">×</button></header>
       <div class="rows">${ORDER.map((i) => [SPOTS[i], i]).map(([spot, i]) => `<button class="row${spot.closed ? " closed" : ""}" data-act="spot-go" data-spot="${i}" aria-current="${i === this.st.sel}">
-        <span class="thumb">${spot.face ? `<img src="${IMG[spot.face]}" alt="">` : spot.thumb ? `<img src="${IMG[spot.thumb]}" alt="">` : `<i>${esc(spot.label[0])}</i>`}</span>
-        <span class="main"><b>${esc(spot.label)}</b><small>${esc(spot.area)}・${esc(spot.who)}</small></span>
-        <span class="side">${spot.mark ? `<em>!</em>` : ""}<small>${esc(spot.fee)}</small></span></button>`).join("")}</div>`;
+        <span class="ava">${avatar(spot)}</span><b>${esc(spot.label)}</b>
+        <span class="side">${spot.mark ? `<em>!</em>` : ""}${perkHtml(spot)}</span></button>`).join("")}</div>`;
   }
 
   /** 選んだ店が見える位置へ地図を動かす（寄り）。全体表示では地図の幅を画面に合わせる。 */
@@ -288,14 +336,14 @@ class Phone {
       const cx = Math.min(w - 14, Math.max(14, px)), cy = Math.min(bottom, Math.max(top, py));
       list.push({ i, spot, px, py, cx, cy, side: px < w / 2 ? "l" : "r" });
     });
-    const gap = w * 0.102; // 案内1つぶんの高さ
+    const gap = w * 0.118; // 案内1つぶんの高さ
     for (const side of ["l", "r"]) {
       const group = list.filter((b) => b.side === side).sort((a, b) => a.py - b.py);
       group.forEach((b, n) => { if (n && b.cy < group[n - 1].cy + gap) b.cy = group[n - 1].cy + gap; });
     }
     layer.innerHTML = list.map((b) => {
       const angle = Math.atan2(b.py - b.cy, b.px - b.cx) * 180 / Math.PI;
-      return `<button class="beacon ${b.side}" data-act="spot" data-spot="${b.i}" style="left:${b.cx}px;top:${b.cy}px"><i style="transform:rotate(${angle.toFixed(0)}deg)"></i><span>${esc(b.spot.label)}</span><em>!</em></button>`;
+      return `<button class="beacon ${b.side}" data-act="spot" data-spot="${b.i}" aria-label="${esc(b.spot.label)}" style="left:${b.cx}px;top:${b.cy}px"><i style="transform:rotate(${angle.toFixed(0)}deg)"></i><span class="ava">${avatar(b.spot)}</span><em>!</em></button>`;
     }).join("");
   }
 
@@ -323,7 +371,7 @@ class Phone {
     const { el, st } = this;
     el.querySelector("[data-map]")?.classList.toggle("overview", st.overview);
     const mini = el.querySelector(".mini");
-    if (mini) { mini.classList.toggle("far", st.overview); mini.querySelector("span").textContent = st.overview ? "寄る" : "全体"; }
+    if (mini) { mini.classList.toggle("far", st.overview); mini.querySelector("span").innerHTML = icon(st.overview ? "near" : "wide"); }
   }
 
   /** 場面の中の変化は、テロップ・操作・一覧だけ描き直す（絵は動きを見せるために残す）。 */
@@ -340,6 +388,7 @@ class Phone {
       el.querySelector('[data-slot="telop"]').innerHTML = this.craftTelopHtml();
       el.querySelector('[data-slot="ctrl"]').innerHTML = this.craftCtrlHtml();
       const bowl = el.querySelector(".bowl"); if (bowl) bowl.src = IMG[`bowl_${PACKS[st.pack].id}`];
+      if (this.quiet) el.querySelector(".coach")?.classList.add("quiet");
     }
   }
 
@@ -351,7 +400,7 @@ class Phone {
       <img class="amb" src="${IMG[talk.bg]}" alt="">
       <div class="pic stage"><img class="bg" src="${IMG[talk.bg]}" alt=""><div class="actors"></div></div>
       <i class="veil"></i><img class="smoke" src="${IMG.smoke}" alt="">
-      ${hudHtml(talk.place)}
+      ${hudHtml("talk", talk.place)}
       <div class="body">
         <div class="telop" data-slot="telop"></div>
         <div class="ctrl" data-slot="ctrl"></div>
@@ -369,15 +418,15 @@ class Phone {
     if (speaking) this.cast[speaking] = line.face;
     this.layoutActors({ speaking, entering, instant });
 
-    const who = line.kind === "say" ? CAST[line.id] : null;
-    const name = line.kind === "say" ? `<div class="name"><b>${who.name}</b><span>${who.en}</span></div>`
-      : line.kind === "player" ? `<div class="name player"><b>はじめ</b><span>HAJIME</span></div>`
-      : line.kind === "inner" ? `<div class="name inner"><b>はじめ</b><span>心の声</span></div>` : `<div class="name narr"><span>—</span></div>`;
+    // 名前は一言だけ（ローマ字の添え書きは無し）。心の声は吹き出しの絵記号で見分ける
+    const name = line.kind === "say" ? `<div class="name"><b>${CAST[line.id].name}</b></div>`
+      : line.kind === "player" ? `<div class="name player"><b>はじめ</b></div>`
+      : line.kind === "inner" ? `<div class="name inner">${icon("think")}<b>はじめ</b></div>` : `<div class="name narr"></div>`;
     const choosing = st.choosing && line.choice;
     el.querySelector('[data-slot="telop"]').innerHTML = `${name}
       <div class="glass${line.kind === "narr" ? " narr" : ""}${choosing ? " ask" : ""}"><p class="text ${line.kind}">${instant || choosing ? esc(line.text) : typed(line.text, delay)}</p>${choosing ? "" : `<i class="next"></i>`}</div>
       ${choosing ? `<div class="choices">${line.choice.map((text, i) => `<button class="choice" data-act="pick" data-pick="${i}" aria-current="${i === st.pick}" style="--i:${i}"><i></i>${esc(text)}</button>`).join("")}</div>` : ""}`;
-    el.querySelector('[data-slot="ctrl"]').innerHTML = `${chipsHtml([["log", "LOG"], ["auto", "AUTO", "", st.auto], ["skip", "SKIP", "", st.skip], ["terms", "用語"], ["config", "設定"]])}
+    el.querySelector('[data-slot="ctrl"]').innerHTML = `${chipsHtml(TALK_CHIPS(st))}
       ${dpadHtml(choosing ? "up down" : "")}${aHtml(choosing ? "決定" : "次へ")}`;
     this.typedAt = instant || choosing ? 0 : performance.now() + delay + [...line.text].length * TYPE_MS + 120;
     el.classList.toggle("typing", !!this.typedAt);
@@ -391,9 +440,9 @@ class Phone {
     const w = box.clientWidth, h = box.clientHeight;
     if (!w || !h) return;
     const pair = ids.length >= 2;
-    const body = h * (pair ? 1.04 : 1.3);       // 身長比1.0の人の「頭の先〜足元」の長さ
+    const body = h * (pair ? 1.08 : 1.3);       // 身長比1.0の人の「頭の先〜足元」の長さ
     const feet = h * (pair ? 1.28 : 1.46);      // 足元の高さ（絵の下にはみ出す）
-    const safeTop = h * (pair ? 0.185 : 0.085); // 頭がこれより上へ行かない（左右は上の表示の下、中央は表示の間）
+    const safeTop = h * (pair ? 0.13 : 0.07);   // 頭がこれより上へ行かない（会話の上は場所の名前だけなので、ほぼ上まで使える）
     ids.forEach((id, index) => {
       const c = CAST[id];
       const scale = pair ? c.scale : 1 + (c.scale - 1) * 0.5;
@@ -424,47 +473,51 @@ class Phone {
   /* ── シーシャ作り ── */
 
   craftHtml() {
-    const { st } = this, info = CRAFT[st.scene];
+    const { st } = this, at = STEPS.findIndex(([id]) => id === st.scene);
     const pic = st.scene === "pack" ? `<img class="bg" src="${IMG.tonari}" alt=""><img class="bowl" src="${IMG[`bowl_${PACKS[st.pack].id}`]}" alt="">`
       : st.scene === "holes" ? `<img class="bg" src="${IMG.tonari}" alt=""><div class="foil"><img src="${IMG.foil}" alt=""><svg viewBox="-100 -100 200 200" class="foil-marks"></svg></div>`
       : `<img class="bg" src="${IMG.tonari}" alt=""><img class="pull-actor" src="${IMG.pullActor}" alt=""><img class="puff" src="${IMG.smoke}" alt="">
-         <div class="thermo"><small>温度帯</small><span><i></i></span></div>`;
+         <div class="thermo">${icon("thermo")}<span><i></i></span></div>`;
+    // 日付・体力・お金は出さない。上は工程の並びだけ（今の工程だけ名前を出す）
     return `
       <img class="amb" src="${IMG.tonari}" alt="">
       <div class="pic craft craft-${st.scene}">${pic}</div>
       <i class="veil"></i>
-      ${hudHtml(["tonari", "練習"])}
-      <div class="stepchip"><small>LESSON</small><b>${info.step}</b></div>
+      <div class="steps" aria-label="工程">${STEPS.map(([id, name], i) => `<span class="${i === at ? "now" : i < at ? "done" : ""}" aria-label="${name}">${icon(id)}${i === at ? `<b>${name}</b>` : ""}</span>`).join("")}</div>
       <div class="body">
         <div class="telop" data-slot="telop">${this.craftTelopHtml()}</div>
         <div class="ctrl craft" data-slot="ctrl">${this.craftCtrlHtml()}</div>
       </div>`;
   }
 
+  /** スミさんの一言は小さな吹き出しで出し、少しすると顔だけになる（顔を押すとまた出る）。 */
   craftTelopHtml() {
-    const { st } = this, info = CRAFT[st.scene];
-    const options = st.scene === "pack" ? `<div class="choices packs">${PACKS.map((p, i) => `<button class="choice${p.locked ? " locked" : ""}" data-act="pack" data-pack="${i}" aria-current="${i === st.pack}" style="--i:${i}"><i></i><span><b>${p.name}</b><small>${p.note}</small></span></button>`).join("")}</div>` : "";
-    return `<div class="name"><img src="${IMG.faceSumi}" alt=""><b>スミさん</b><span>SUMI</span></div>
-      <div class="glass${st.scene === "pack" ? " ask" : ""}"><p class="text">${esc(info.coach)}</p>${st.scene === "pack" ? "" : `<div class="hint"><b>${info.step}</b><span>${info.hint}</span></div>`}</div>${options}`;
+    const { st } = this;
+    const cards = st.scene === "pack" ? `<div class="cards">${PACKS.map((p, i) => `<button class="card${p.locked ? " locked" : ""}" data-act="pack" data-pack="${i}" aria-current="${i === st.pack}">
+      <img src="${IMG[`bowl_${p.id}`]}" alt=""><b>${p.name}</b><span class="dens">${[1, 2, 3].map((n) => `<i class="${n <= p.dens ? "on" : ""}"></i>`).join("")}</span>${p.locked ? icon("lock") : ""}</button>`).join("")}</div>` : "";
+    return `<button class="coach" data-act="coach" aria-label="スミさんの一言"><img src="${IMG.faceSumi}" alt=""><span class="say">${esc(COACH[st.scene])}</span></button>${cards}`;
   }
 
   craftCtrlHtml() {
     const { st } = this;
     if (st.scene === "pack") {
-      return `${chipsHtml([["help", "説明"], ["menu", "MENU"]])}${dpadHtml("up down")}${aHtml("決める", { disabled: !!PACKS[st.pack].locked })}`;
+      return `${chipsHtml(CRAFT_CHIPS)}${dpadHtml("left right")}${aHtml("決める", { disabled: !!PACKS[st.pack].locked })}`;
     }
     if (st.scene === "holes") {
-      const done = st.holes.length, good = st.holes.filter((hole) => hole.good).length;
-      return `${chipsHtml([["help", "説明"], ["menu", "MENU"]])}
-        <div class="dial" style="--fill:0"><svg viewBox="0 0 100 100"><circle class="dial-bg" cx="50" cy="50" r="42"/><circle class="dial-just" cx="50" cy="50" r="42" pathLength="100" stroke-dasharray="20 80" stroke-dashoffset="-40"/><circle class="dial-fill" cx="50" cy="50" r="42" pathLength="100"/></svg>
-          <b>${done}<small>/${HOLE_COUNT}</small></b><span>穴の大きさ</span><em>ぴったり ${good}</em></div>
+      // 輪の10個の点＝開けた穴（金はぴったり）。真ん中の丸が押している間ふくらみ、薄い輪に重なる大きさで離す
+      const pips = Array.from({ length: HOLE_COUNT }, (_, i) => {
+        const a = (i * 360 / HOLE_COUNT - 90) * Math.PI / 180, hole = st.holes[i];
+        return `<circle class="pip${hole ? (hole.good ? " good" : " done") : ""}" cx="${(41 * Math.cos(a)).toFixed(1)}" cy="${(41 * Math.sin(a)).toFixed(1)}" r="3.4"/>`;
+      }).join("");
+      return `${chipsHtml(CRAFT_CHIPS)}
+        <div class="dial"><svg viewBox="-50 -50 100 100">${pips}<circle class="want" r="15.5"/><circle class="grow" r="4"/></svg></div>
         ${aHtml("刺す", { cls: "hold" })}`;
     }
-    return `${chipsHtml([["help", "説明"], ["menu", "MENU"]])}
-      <button class="serve" data-act="serve"><b>提供する</b><small>あと2口</small></button>
-      <div class="gauge"><span class="lab l">下げ吸い</span><span class="lab r">上げ吸い</span>${meterHtml()}</div>
-      <div class="lamps"><span><small>フレーバーの持ち</small><span class="leaves">${`<img src="${IMG.leaf}" alt="">`.repeat(5)}</span></span>
-        <span><small>吸い出し</small><span class="pulls">${Array.from({ length: 5 }, (_, i) => `<i class="${i < st.pulls ? "on" : ""}"></i>`).join("")}<b>${st.pulls}/5</b></span></span></div>
+    return `${chipsHtml(CRAFT_CHIPS)}
+      <button class="serve" data-act="serve" aria-label="提供する（あと2口）">${icon("bell")}<i></i><i></i></button>
+      <div class="gauge"><span class="end l">${icon("cool")}</span><span class="end r">${icon("heat")}</span>${meterHtml()}</div>
+      <div class="lamps"><span class="leaves">${`<img src="${IMG.leaf}" alt="">`.repeat(5)}</span>
+        <span class="pulls">${Array.from({ length: 5 }, (_, i) => `<i class="${i < st.pulls ? "on" : ""}"></i>`).join("")}</span></div>
       ${aHtml("吸う", { cls: "center" })}`;
   }
 
@@ -501,6 +554,7 @@ class Phone {
     else if (act === "list") { st.list = !st.list; this.patch(); }
     else if (act === "pick") { const same = st.pick === Number(hit.dataset.pick); st.pick = Number(hit.dataset.pick); this.applyLine({ instant: true }); if (same) this.pressA(); }
     else if (act === "pack") { st.pack = Number(hit.dataset.pack); this.patch(); }
+    else if (act === "coach") { this.quiet = !this.quiet; hit.classList.toggle("quiet", this.quiet); }
     else if (act === "a") { if (st.scene !== "holes") this.pressA(); }
     else if (act === "serve") { if (!this.fixed) this.setScene("map"); }
     else if (act === "fn") {
@@ -551,8 +605,8 @@ class Phone {
       else { st.list = true; this.patch(); }
     } else if (this.talk && st.choosing && line.choice && (dir === "up" || dir === "down")) {
       st.pick = (st.pick + (dir === "down" ? 1 : line.choice.length - 1)) % line.choice.length; this.applyLine({ instant: true });
-    } else if (st.scene === "pack" && (dir === "up" || dir === "down")) {
-      st.pack = (st.pack + (dir === "down" ? 1 : PACKS.length - 1)) % PACKS.length; this.patch();
+    } else if (st.scene === "pack" && (dir === "left" || dir === "right")) {
+      st.pack = (st.pack + (dir === "right" ? 1 : PACKS.length - 1)) % PACKS.length; this.patch();
     }
   }
 
@@ -588,6 +642,14 @@ class Phone {
     }
   }
 
+  /** シーシャ作り: スミさんの一言は3秒ほどで畳み、手元の操作だけを残す（一覧では出したまま）。 */
+  hushCoach() {
+    clearTimeout(this.coachTimer);
+    if (this.fixed || this.talk || this.st.scene === "map") return;
+    const scene = this.st.scene;
+    this.coachTimer = setTimeout(() => { if (this.st.scene === scene) { this.quiet = true; this.el.querySelector(".coach")?.classList.add("quiet"); } }, 3400);
+  }
+
   toast(text) {
     this.el.querySelector(".toast")?.remove();
     const note = document.createElement("div");
@@ -603,7 +665,6 @@ class Phone {
     const target = st.holes.length * 360 / HOLE_COUNT;
     const size = Math.min(1, heldMs / 900);
     st.holes.push({ deg: this.tipDeg ?? target, r: 2.2 + size * 4.2, good: Math.abs((this.tipDeg ?? target) - target) < 5 && size > 0.3 && size < 0.62 });
-    this.el.querySelector(".dial")?.style.setProperty("--fill", "0");
     this.patch(); this.drawHoles();
     if (st.holes.length >= HOLE_COUNT) setTimeout(() => { if (this.fixed) { st.holes = []; this.patch(); this.drawHoles(); } else this.setScene("pull"); }, 900);
   }
@@ -622,23 +683,38 @@ class Phone {
 
   setScene(scene, { arrive = false } = {}) {
     Object.assign(this.st, { scene, step: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1 });
+    this.quiet = false;
     this.render({ delay: arrive ? 1200 : 0 }); // 店に着いた時は、店名の札が出てから文字を送る
+    this.hushCoach();
     if (arrive) { this.el.classList.add("arriving"); setTimeout(() => this.el.classList.remove("arriving"), 1500); }
     this.onScene?.(scene);
   }
 
   tick(now) {
     const { st, el } = this;
-    if (st.scene === "pull" && !this.hold) el.querySelector(".meter")?.style.setProperty("--needle", `${(Math.sin((now - this.t0) / 620) * 76).toFixed(1)}deg`);
+    if (st.scene === "pull") {
+      const meter = el.querySelector(".meter");
+      if (meter && !this.hold) {
+        const deg = Math.sin((now - this.t0) / 620) * 76, t = (deg + 90) / 180;
+        meter.style.setProperty("--needle", `${deg.toFixed(1)}deg`);
+        // 針が白い帯に入っている間、「吸う」が光る
+        el.querySelector(".btn-a")?.classList.toggle("hot", (t > 0.44 && t < 0.56) || (t > 0.13 && t < 0.2) || (t > 0.8 && t < 0.87));
+      }
+    }
     if (st.scene === "holes") {
       const target = st.holes.length * 360 / HOLE_COUNT;
       this.tipDeg = target + Math.sin((now - this.t0) / 430) * 15;
-      const tip = el.querySelector(".foil-marks .tip");
+      const tip = el.querySelector(".foil-marks .tip"), aligned = Math.abs(this.tipDeg - target) < 5;
       if (tip && st.holes.length < HOLE_COUNT) {
         const a = (this.tipDeg - 90) * Math.PI / 180;
         tip.setAttribute("cx", (62 * Math.cos(a)).toFixed(2)); tip.setAttribute("cy", (62 * Math.sin(a)).toFixed(2));
+        tip.classList.toggle("ok", aligned);   // 針先が目印に重なると金色
+        el.querySelector(".btn-a")?.classList.toggle("hot", aligned && !this.holdAt);
       }
-      if (this.holdAt) el.querySelector(".dial")?.style.setProperty("--fill", String(Math.min(1, (now - this.holdAt) / 900)));
+      // 押している間、真ん中の丸がふくらむ。薄い輪に重なる大きさで金色
+      const fill = this.holdAt ? Math.min(1, (now - this.holdAt) / 900) : 0, dial = el.querySelector(".dial");
+      dial?.querySelector(".grow")?.setAttribute("r", (4 + fill * 24).toFixed(1));
+      dial?.classList.toggle("ok", fill > 0.3 && fill < 0.62);
     }
     if (this.talk && this.typedAt && now >= this.typedAt) { this.typedAt = 0; el.classList.remove("typing"); }
     requestAnimationFrame(this.tick);
@@ -664,11 +740,12 @@ function showGallery() {
   root.style.fontSize = "";
   app.innerHTML = `<main class="gallery">
     <h1 class="g-title">縦画面「煙の舞台」 第1章の場面</h1>
-    <p class="g-lead">C案を第1章の場面で詰めた試作です。パッドを大きくしてテロップを少し上げ、立ち絵の位置と地図の動きを作り直しました。どの画面も十字キーとAを押せます。</p>
+    <p class="g-lead">C案を第1章の場面で詰めた試作です。その場面で要るものだけを出し、説明の文字を減らして、顔・絵記号・光で伝える形にしています。どの画面も十字キーとAを押せます。</p>
     <ul class="g-points">
       <li><b>立ち位置</b>1人は中央で少し寄り、2人は左右で身長差そのまま。話している側が手前で明るい</li>
       <li><b>地図</b>左右キーで隣の店へ画面が送られる。上で全体、下で一覧。指でずらす・「！」の店へ飛ぶ</li>
       <li><b>パッド</b>輪の十字キーとAを大きく（幅の約半分と1/3強）。作る場面は工程ごとの操作に替わる</li>
+      <li><b>出すもの</b>日付・体力・お金は地図だけ。会話は場所の名前だけ、シーシャ作りは工程の並びだけ</li>
     </ul>
     <p class="g-note">絵・立ち絵・台詞は本編の素材、配置と動きが今回の案です。本編の進行や保存には触れません。<a href="?view=play" data-go="play">1台で通して触る</a></p>
     <div class="g-grid">${GALLERY.map((item, i) => `<figure class="g-cell"><article class="phone" data-i="${i}"></article><figcaption>${item.caption}</figcaption></figure>`).join("")}</div>
