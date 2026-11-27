@@ -1429,7 +1429,7 @@ class Phone {
     const now = performance.now();
     // 雑念よけの長さ（VPL105）: タイマーで決めた蒸らし時間を、本編と同じ長さに縮めて遊ぶ（5分＝12秒）。タイマーを通らない時はこれまでの9秒
     this.dodgeMs = this.steamSec ? steamPlaySeconds(this.steamSec) * 1000 : DODGE.time;
-    this.dodge = { t0: now + DODGE.ready, heart: { x: 195, y: size.H * 0.7 }, bullets: [], hits: 0, safeUntil: 0, bombAt: -1e9, atkAt: -1e9, slashes: [], lastHit: -1e9, calmSince: 0, beat: 0, beatAt: now, rings: [],
+    this.dodge = { t0: now + DODGE.ready, heart: { x: 195, y: size.H * 0.5 }, bullets: [], hits: 0, safeUntil: 0, bombAt: -1e9, atkAt: -1e9, slashes: [], lastHit: -1e9, calmSince: 0, beat: 0, beatAt: now, rings: [],
       nextSpawn: 0, nextWave: 1600, warn: null, over: false, H: size.H };
     if (this.fixed) {
       // 一覧は途中の一コマ: 言葉と炭・玉が四方から迫り、上から扇の波が来る
@@ -1438,7 +1438,7 @@ class Phone {
       [["失敗したらどうしよう", 120, H * 0.32], ["温度、大丈夫か", 300, H * 0.48], ["穴、足りてたかな", 90, H * 0.6], ["手が、汗ばむ", 290, H * 0.8]].forEach(([word, x, y]) => d.bullets.push({ x, y, word, hw: word.length * 6.7 }));
       [[230, H * 0.36, "orb", 6], [160, H * 0.5, "coal", 7], [330, H * 0.64, "smoke", 9], [60, H * 0.42, "orb", 6]].forEach(([x, y, kind, r]) => d.bullets.push({ x, y, kind, r }));
       for (let i = 0; i < 5; i++) d.bullets.push({ x: 195 + (i - 2) * 26, y: H * 0.18 + Math.abs(i - 2) * 8, kind: "orb", r: 6 });
-      d.heart = { x: 210, y: H * 0.68 };
+      d.heart = { x: 210, y: H * 0.56 };
       size.field.querySelector(".d-time i").style.transform = `scaleX(${(1 - 4200 / DODGE.time).toFixed(3)})`;
       this.drawDodge(now);
       return;
@@ -1454,7 +1454,7 @@ class Phone {
     const kind = word ? "word" : ["coal", "orb", "orb", "smoke"][Math.floor(Math.random() * 4)];
     const rad = { coal: 8, orb: 7, smoke: 9 }[kind] || 0;
     const x = side === "left" ? -hw - 10 : side === "right" ? 400 + hw : 20 + Math.random() * 350;
-    const y = side === "top" ? -14 : side === "bottom" ? d.H + 14 : 70 + Math.random() * (d.H - 140);
+    const y = side === "top" ? -14 : side === "bottom" ? d.H + 14 : 24 + Math.random() * (d.H - 48); // 場はランクの下から始まるので、上の余白は時間の線の分だけ（VPL120）
     const speed = (DODGE.speed[0] + Math.random() * (DODGE.speed[1] - DODGE.speed[0])) * (word ? 0.8 : 1);
     const ang = Math.atan2(d.heart.y - y, d.heart.x - x);
     d.bullets.push({ x, y, vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed, word: text, hw, kind, r: rad });
@@ -1462,7 +1462,7 @@ class Phone {
 
   /** 予告つきの波（本編 steam-patterns.js の fan・ring・rain・sweep を縦の場に合わせたもの）。 */
   /** 予告つきの波。第1章（calm）は本編 steam-patterns.js のとおり横なぎだけ: 9本の帯のうち続く3本が通り道。 */
-  laneOf(d) { const top = 74, h = (d.H - top - 18) / 9; return { top, h }; }
+  laneOf(d) { const top = 24, h = (d.H - top - 18) / 9; return { top, h }; }
   spawnWave(d, wave) {
     const { top, h } = this.laneOf(d), dir = wave.side === "left" ? 1 : -1;
     for (let i = 0; i < 9; i++) if (i < wave.open || i > wave.open + 2) d.bullets.push({ kind: "coal", r: 8, x: dir > 0 ? -14 : 404, y: top + h * (i + 0.5), vx: dir * 135, vy: 0 });
@@ -1488,7 +1488,7 @@ class Phone {
       if (len > 1) { vx /= len; vy /= len; }
       const sp = (this.st.slow ? DODGE.slow : DODGE.move) * dt;
       d.heart.x = Math.max(12, Math.min(378, d.heart.x + vx * sp));
-      d.heart.y = Math.max(70, Math.min(d.H - 16, d.heart.y + vy * sp));
+      d.heart.y = Math.max(20, Math.min(d.H - 16, d.heart.y + vy * sp));
       // 弾と波
       if (t >= d.nextSpawn) { this.spawnBullet(d); d.nextSpawn = t + DODGE.every; }
       if (!d.warn && t >= d.nextWave - DODGE.warn && d.nextWave < (this.dodgeMs || DODGE.time) - 600) {
@@ -1545,8 +1545,8 @@ class Phone {
     const lv = this.fixed ? "steady" : this.mindLevel(now), mind = MIND_INK[lv], stress = this.fixed ? 0.1 : this.mindTension(now);
     ctx.setTransform(u, 0, 0, u, 0, 0);
     ctx.clearRect(0, 0, 390, d.H);
-    // 奥の時計（本編: 場の中央奥に不透明度 .16、色は心の状態）。場の真ん中より少し下（VPL63）
-    const cy = d.H * 0.6;
+    // 奥の時計（本編: 場の中央奥に不透明度 .16、色は心の状態）。場の真ん中（VPL63 は少し下、VPL120 で真ん中に。心も真ん中から始まる）
+    const cy = d.H * 0.5;
     const left = Math.max(0, Math.ceil(((this.dodgeMs || DODGE.time) - Math.max(0, now - d.t0)) / 1000));
     const text = `0${Math.floor(left / 60)}${String(left % 60).padStart(2, "0")}`.slice(-3);
     ctx.save(); ctx.globalAlpha = 0.16; ctx.fillStyle = mind;
