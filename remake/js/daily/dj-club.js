@@ -120,6 +120,7 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
       if (!pick || !current()) break;
       host.hidden = true;
       stopBgm(0.4);
+      void import("../core/extra-games.js").then((m) => m.recordExtraPlay("dj")).catch(() => {}); // タイトルの EXTRA（EXT01）
       const { results } = await runDjSet({ host: document.getElementById("stage") || layers.screen, set: pick, signal: controller.signal,
         muted: !!config.mute, volume: config.bgmVolume, phones: ownsGear(owner, "gear_headphones"), best: djRecords(owner).sets[pick]?.best?.total ?? null,
         onResult: result => {

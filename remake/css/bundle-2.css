@@ -7693,23 +7693,23 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item .ti-en::before { content: none; }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item .ti-ja { color: var(--neo-ui-dim); }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item .ti-note { color: var(--neo-ui-gold); }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled) {
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled, .is-locked) {
   color: #fff;
   background: linear-gradient(to right, rgba(58, 38, 88, .86), rgba(46, 29, 69, .5) 68%, rgba(46, 29, 69, 0));
   transform: translateX(8px);
   outline: none;
 }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled)::before {
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled, .is-locked)::before {
   width: 4px;
   background: var(--neo-ui-gold);
   box-shadow: 0 0 14px rgba(227, 189, 110, .8);
 }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled)::after { opacity: 1; }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled) .ti-en { color: var(--neo-ui-gold-hi); }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled) .ti-ja { color: var(--neo-ui-ink); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled, .is-locked)::after { opacity: 1; }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled, .is-locked) .ti-en { color: var(--neo-ui-gold-hi); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled, .is-locked) .ti-ja { color: var(--neo-ui-ink); }
 /* 枠線はキーボードで動かしている間だけ（選んでいる行は金の線と明るい札で分かる。マウスを動かすと消える）。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .title[data-nav="key"]:not([data-layout="ds"]) .title-item:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 3px; }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:disabled { opacity: .42; }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(:disabled, .is-locked) { opacity: .42; }
 :root[data-look="neo"] body.reduce-shake:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item { transition: color .2s ease; }
 :root[data-look="neo"] body.reduce-shake:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled) { transform: none; }
 @media (prefers-reduced-motion: reduce) {
@@ -9182,8 +9182,8 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 .retro-menu b { font-weight: 400; font-size: calc(var(--d) * 16); letter-spacing: .06em; }
 .retro-menu small { color: var(--r-violet); font-size: calc(var(--d) * 12); }
 .retro-shell .retro-menu:active { transform: translate(calc(var(--d) * 2), calc(var(--d) * 2)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-deep); }
-.retro-shell .retro-menu[disabled] { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); box-shadow: none; color: var(--r-dim); cursor: default; transform: none; }
-.retro-menu[disabled] small { color: var(--r-dim); }
+.retro-shell .retro-menu:is([disabled], .is-locked) { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); box-shadow: none; color: var(--r-dim); cursor: default; transform: none; }
+.retro-menu:is([disabled], .is-locked) small { color: var(--r-dim); }
 
 .retro-toptext {
   position: absolute;
@@ -9628,6 +9628,14 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
   text-align: center;
   pointer-events: none;
 }
+
+/* EXTRA（あそびば・EXT01）の一覧は札が8枚。横一列に押し込まず2列に並べる（とじるは横いっぱい）。まだ遊んでいない札は「？？？」に鍵の印 */
+.retro-shell .retro-sheet .rs-foot:has(> [data-test$="extra-close"]) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: calc(var(--d) * 3); }
+.retro-shell .retro-sheet .rs-foot:has(> [data-test$="extra-close"]) > [data-test$="extra-close"] { grid-column: 1 / -1; }
+.retro-shell .retro-sheet .rs-foot:has(> [data-test$="extra-close"]) > .rs-btn { justify-content: center; align-items: center; text-align: center; }
+.retro-shell .retro-sheet .rs-foot:has(> [data-test$="extra-close"]) > .rs-btn:disabled { flex-direction: row; gap: 0.4em; letter-spacing: 0.2em; }
+.retro-shell .retro-sheet .rs-foot:has(> [data-test$="extra-close"]) > .rs-btn:disabled::before { content: ""; flex: none; width: 1em; height: 1em; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm1.6 0h3.8V5a1.9 1.9 0 0 0-3.8 0z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm1.6 0h3.8V5a1.9 1.9 0 0 0-3.8 0z'/%3E%3C/svg%3E") center / contain no-repeat; }
 
 /* ===== css/loading.css ===== */
 /* Loading screen: a printed two-panel comic intermission over a dim neon lounge (owner mockup

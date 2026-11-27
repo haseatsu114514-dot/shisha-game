@@ -52,6 +52,7 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
   beforeRace();
   const test = typeof window !== "undefined" ? window.__remake?.camelTest : null;
   const { value: outcome } = await paidAction(async () => {
+    void import("../core/extra-games.js").then((m) => m.recordExtraPlay("camel")).catch(() => {}); // タイトルの EXTRA（EXT01）
     const result = await runCamelRace({ host, signal, tutorial: camel.plays === 0, best: camel.best, allowRetry: true,
       cups: availableCamelCups(value), cupRecords: { ...camel.cups, ...(camel.practiceBest ? { practice: { best: camel.practiceBest } } : {}) }, pilot: test?.pilot ?? null, timeScale: test?.timeScale ?? 1, ...(options || {}) });
     if (!result.completed || !result.best || !isCurrent() || state !== value) return { completed: false };

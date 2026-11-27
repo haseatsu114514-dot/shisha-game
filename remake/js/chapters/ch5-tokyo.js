@@ -154,6 +154,7 @@ async function careForTetsuko(owner) {
   const stageRead = (outingCounts(owner).tetsuko || 0) < TETSUKO.stages.length;
   if (stageRead && !await read(outingDialogueId(owner, TETSUKO), "bg_street", owner)) return false;
   if (state !== owner) return false;
+  void import("../core/extra-games.js").then((m) => m.recordExtraPlay("tetsuko")).catch(() => {}); // タイトルの EXTRA（EXT01）
   const result = await openTetsukoTime({ value: owner, visitKey,
     bg: sceneBg("bg_street", timeOfDay()).url, isCurrent: () => state === owner });
   if (state !== owner || result?.cancelled) return false;

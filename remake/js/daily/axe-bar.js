@@ -109,6 +109,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
         if (lessonOpen || gearOpen || picked || !current()) return;
         lessonOpen = true; host.hidden = true; host.inert = true;
         try {
+          void import("../core/extra-games.js").then((m) => m.recordExtraPlay("axe")).catch(() => {}); // タイトルの EXTRA の解禁（EXT01）
           const lesson = await runAxeThrow({ host: document.getElementById("stage"), tutorial: true, opponent: null, signal: abort.signal, allowRetry: true });
           // A finished lesson counts as the owner's first-play tutorial, so the first paid game does not repeat it.
           if (lesson.completed && current()) owner.flags._axe_lesson_done = true;
@@ -207,6 +208,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     });
     if (!mode || !available() || !await staminaGuard(AXE_BAR.stamina) || !available()) return false;
     host.hidden = true;
+    void import("../core/extra-games.js").then((m) => m.recordExtraPlay("axe")).catch(() => {}); // タイトルの EXTRA の解禁（EXT01）
     // The first paid throw at the bar starts with the owner's free one-throw lesson. Skipping it leads straight on.
     if (!owner.flags._axe_lesson_done) {
       await runAxeThrow({ host: document.getElementById("stage"), tutorial: true, opponent: null, lessonContext: "first", allowRetry: false, signal: abort.signal });
