@@ -80,7 +80,9 @@ const bgReady = new Map(); // url -> { promise, image, keep }（一度読んだ�
 const IMAGE_CACHE_ENTRIES = 128, KEPT_IMAGE_BYTES = 48 * 1024 * 1024;
 // 作業台の再表示には現在・次の工程を残す。通常の画面を開いても追い出さず、
 // 工程や章が増えたときには作業台の中で古い順に解放する。
-const CRAFT_IMAGE_BYTES = 128 * 1024 * 1024;
+// 大会の作業台（審査員4人の立ち絵・器3種・炭・会場）だけで、デコード後に約136MB（33枚）になる。
+// 128MB では最初に読んだはじめの表情が手放され、開き直すたびに読み直していた（craft_readiness）。余裕を見て 160MB。
+const CRAFT_IMAGE_BYTES = 160 * 1024 * 1024;
 function trimImages(pin) {
   const budget = pin ? CRAFT_IMAGE_BYTES : KEPT_IMAGE_BYTES;
   let bytes = 0, count = 0;

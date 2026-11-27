@@ -5,6 +5,7 @@ import { LOOK_EVENT, currentLook } from "../core/look.js";
 const loaders = {
   neo: () => import("./neo.js"),
   retro: () => import("./retro.js"),
+  vertical: () => import("./vertical.js"),
 };
 const loaded = new Map();
 let installed = false;
