@@ -48,7 +48,7 @@ export const FLAVORS = Object.freeze(Object.fromEntries([
   flavor("mint", "ミント", "fresh"), flavor("cool_mint", "クールミント", "fresh"), flavor("blueberry_mint", "ベリーミント", "fresh", ["fruit"]),
   flavor("ice_grape", "アイスグレープ", "fresh", ["fruit"]), flavor("ice_lemon", "アイスレモン", "fresh", ["fruit"]),
   flavor("peppermint_shake", "ミントシェイク", "fresh", ["sweet"]), flavor("frozen_citrus", "フローズンシトラス", "fresh", ["fruit"]),
-  flavor("double_apple", "アップル", "fresh", ["fruit"]), flavor("cinnamon", "シナモン", "fresh", ["sweet"]),
+  flavor("double_apple", "ダブルアップル", "fresh"), flavor("cinnamon", "シナモン", "fresh", ["sweet"]),
   flavor("cardamom", "カルダモン", "fresh"), flavor("ginger", "ジンジャー", "fresh"),
   // fruit（フルーティ）
   flavor("lemon", "レモン", "fruit", ["fresh"]), flavor("orange", "オレンジ", "fruit", ["fresh"]), flavor("grapefruit", "グレープフルーツ", "fruit", ["fresh"]),
@@ -80,7 +80,7 @@ export const FLAVORS = Object.freeze(Object.fromEntries([
 // main＝メインの属性（その気分の客に ◎）、sub＝サブの属性（その気分の客に ○。無いミックスもある）。それ以外の気分には ×。
 // ひと目で分かるよう、合い方はこの二つだけで決める（2026-11-20 オーナー「一目で何属性がメインなのかわかりやすくして」）。
 // main はミックスの顔となる材料の family、sub は2番手の材料の family が基本。同系統なら、他の材料や also からサブを選ぶこともある。
-// アップルミントはオーナー指定で、ダブルアップルのリンゴ感（also の fruit）をメインにする。単品のダブルアップルは family の fresh。
+// ダブルアップルは、アニスとリコリスでリンゴ風味に仕立てたスパイス。棚にはリンゴそのもののフレーバーがない。
 // name を省くと材料の label をつなげる。name の「｜」は、狭い札で折ってよい位置（表示では消える）。出回る章は、材料のいちばん遅い章（mixChapter）。
 // name＝ミックスの名前（「｜」は、狭い札で折ってよい所）。省くと、2種は材料の呼び名をつなげる（レモンミント）。
 // 1種の物はミックスではないので、名前は付けず「本編のフレーバー名＋単」（ダブルアップル単・コットンキャンディ単）になる（TFL47）
@@ -93,7 +93,7 @@ export const MIXES = Object.freeze(Object.fromEntries([
   mix("icegrape", ["ice_grape"], "fresh", "fruit"), mix("frozencitrus", ["frozen_citrus"], "fresh", "fruit"),
   mix("chocomint", ["chocolate", "mint"], "sweet", "fresh"),
   mix("mintshake", ["peppermint_shake"], "fresh", "sweet"), mix("colamint", ["cola", "mint"], "sweet", "fresh"),
-  mix("applemint", ["double_apple", "mint"], "fruit", "fresh"), mix("lavendermint", ["lavender", "mint"], "deep", "fresh"),
+  mix("applemint", ["double_apple", "mint"], "fresh", null, "スパイス｜ミント"), mix("lavendermint", ["lavender", "mint"], "deep", "fresh"),
   mix("coolmint", ["cool_mint"], "fresh"), mix("doublemint", ["mint", "cool_mint"], "fresh", null, "ダブル｜ミント"),
   mix("mint", ["mint"], "fresh"), mix("rosemint", ["rose", "mint"], "deep", "fresh"), mix("jasminemint", ["jasmine", "mint"], "deep", "fresh"),
   mix("cherrymint", ["cherry", "mint"], "fruit", "fresh"), mix("passionmint", ["passion_fruit", "mint"], "fruit", "fresh"),
@@ -124,7 +124,7 @@ export const MIXES = Object.freeze(Object.fromEntries([
   mix("chocobanana", ["chocolate", "banana"], "sweet", "fruit"), mix("chocoorange", ["chocolate", "orange"], "sweet", "fruit"),
   mix("caramelbanana", ["caramel", "banana"], "sweet", "fruit"), mix("colalemon", ["cola", "lemon"], "sweet", "fruit"),
   mix("cafemocha", ["coffee", "chocolate"], "sweet", "deep", "カフェ｜モカ"), mix("cappuccino", ["cappuccino"], "sweet", "deep"),
-  mix("honeyginger", ["honey", "ginger"], "sweet", "fresh"), mix("caramelapple", ["caramel", "double_apple"], "sweet", "fresh"),
+  mix("honeyginger", ["honey", "ginger"], "sweet", "fresh"), mix("caramelapple", ["caramel", "double_apple"], "sweet", "fresh", "スパイス｜キャラメル"),
   mix("honeymilk", ["honey", "milk"], "sweet"), mix("caramelmilk", ["caramel", "milk"], "sweet"), mix("whitegummy", ["white_gummy_bear"], "sweet", "fruit"),
   mix("vanillacinnamon", ["vanilla", "cinnamon"], "sweet", "fresh"), mix("vanillashake", ["vanilla", "peppermint_shake"], "sweet", "fresh", "バニラ｜シェイク"),
   mix("caramelcappuccino", ["caramel", "cappuccino"], "sweet", "deep"), mix("nutscoffee", ["hazelnut", "coffee"], "sweet", "deep"),
@@ -133,7 +133,7 @@ export const MIXES = Object.freeze(Object.fromEntries([
   // ---- 花・お茶・スパイスを使う定番 ----
   mix("rosejasmine", ["rose", "jasmine"], "deep"), mix("muskrose", ["white_musk", "rose"], "deep"), mix("rosetea", ["rose", "black_tea"], "deep"),
   mix("jasminetea", ["jasmine", "black_tea"], "deep"), mix("cardamomtea", ["cardamom", "black_tea"], "fresh", "deep"), mix("gingertea", ["ginger", "black_tea"], "fresh", "deep"),
-  mix("apple", ["double_apple"], "fresh", "fruit"), mix("cinnamonapple", ["cinnamon", "double_apple"], "fresh", "fruit"),
+  mix("apple", ["double_apple"], "fresh"), mix("cinnamonapple", ["cinnamon", "double_apple"], "fresh", "sweet", "シナモン｜スパイス"),
   mix("cinnamonorange", ["cinnamon", "orange"], "fresh", "fruit"), mix("jasminepeach", ["jasmine", "peach"], "deep", "fruit"),
   mix("jasminelychee", ["jasmine", "lychee"], "deep", "fruit"), mix("roseberry", ["rose", "raspberry"], "deep", "fruit"),
   mix("cinnamontea", ["cinnamon", "black_tea"], "fresh", "deep"), mix("lavenderhoney", ["lavender", "honey"], "deep", "sweet"),
@@ -253,10 +253,10 @@ export const VISITORS = Object.freeze(Object.fromEntries([
       miss: "いや、そうじゃなくてな", check: "はじめ、会計頼む", skip: "……まあいいや。会計で",
       bye: "ごちそうさん。また来るわ", byeLow: "……ごちそうさん", mad: "忙しそうだな。また来るわ",
     }),
-  // アダム: ダブルアップル特化（characters.json）。芝居がかった言い回しで、林檎を宇宙の原点のように語る
+  // アダム: ダブルアップル特化（characters.json）。注文では名指しし、感想では芝居がかった調子で「林檎」と呼ぶ（TFL65）。
   visitor("adam", "アダム", [1, 2], "normal", "keen", 1,
     { wish: "fresh", label: "ダブルアップル", has: ["double_apple"], quote: "……はじめよ。ダブルアップルを。宇宙の原点を、一台" },
-    { wish: "fresh", label: "ダブルアップル", has: ["double_apple"], quote: "……幕間だ。もう一台、林檎を。メーカーは任せる" }, {
+    { wish: "fresh", label: "ダブルアップル", has: ["double_apple"], quote: "……幕間だ。ダブルアップルを、もう一台。メーカーは任せる" }, {
       best: "……よい。林檎が、まっすぐ立っている", good: "……悪くない。だが、林檎がいない", off: "……これは、林檎ではない",
       calls: {
         thin: { said: "……煙が細い。林檎が、息をしていない", good: "……よい。呼吸が戻った" },
