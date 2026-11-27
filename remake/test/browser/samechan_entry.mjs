@@ -164,10 +164,10 @@ await suite("samechan-entry", async check => {
       assert.equal(r.after.money, before.money - 3000); assert.equal(r.after.stamina, 0);
       assert(r.after.flags._samechan_quiet_seat_done);
       assert.equal(r.after.story.samechan, 4);
-      // 静かな席は段階の会話（16・BLC01）。85%の伸びは端数の持ち越しも含めて一度だけ入る。
+      // 静かな席は段階の会話（15・pack18 71dda357 で16から変更・BLC01）。85%の伸びは端数の持ち越しも含めて一度だけ入る。
       const gain = (r.after.affinity.samechan || 0) + (r.after.affinityCarry.samechan || 0)
         - before.affinity - before.carry;
-      assert(Math.abs(gain - 16 * 0.85) < 1e-9, `Visit reward applied ${gain / (16 * 0.85)} times`);
+      assert(Math.abs(gain - 15 * 0.85) < 1e-9, `Visit reward applied ${gain / (15 * 0.85)} times`);
       assert.deepEqual(r.repeated, r.after);
     }, options);
 
