@@ -707,7 +707,8 @@ async function dailyMap(page, { phone }) {
     assert(inside(choice, sub.rect) && choice.width >= 600 && choice.height >= 72 && choice.real >= 38, `行動の選択肢の大きさ ${JSON.stringify(choice)}`);
     assert(dark(choice.face) && light(choice.color), "選択肢は夜紫の札に白い字");
   }
-  assert(inside(sub.back, sub.rect) && sub.back.real >= (phone ? 38 : 30), "戻るボタンが板の中");
+  // スマホの戻るは CSS で実寸 38px（calc(38px / var(--k))）。レイアウトは 1/64px 単位で丸めるので、実寸が 37.99px になる分だけ見込む。
+  assert(inside(sub.back, sub.rect) && sub.back.real >= (phone ? 38 - 0.01 : 30), `戻るボタンが板の中 ${JSON.stringify(sub.back)}`);
   await press(page, page.locator("#screen .sub-menu .sub-back"));
   await page.locator("#screen .map:not(.done)").waitFor({ timeout: 20000 });
 
