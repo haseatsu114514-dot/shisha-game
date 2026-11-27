@@ -67,8 +67,8 @@ function readCutin(host) {
  */
 const TITLE_CROP = {
   2: { from: 0.44, to: 0.846, top: 0 }, // 人物1人（オーナー合格）
-  3: { from: 0.47, to: 1, top: 6 }, // 右の3人が切れずに収まる
-  4: { from: 0.4, to: 1, top: 9 }, // 手前の人物と後ろの人物・ドバイの塔
+  3: { from: 0.42, to: 0.94, top: 0 }, // ましろ（三つ編み・絵の横 0.68）を真ん中寄りに。絵は画面の上まで（VPN20）
+  4: { from: 0.4, to: 1, top: 0 }, // 手前の人物と後ろの人物・ドバイの塔。絵は画面の上まで（VPN20）
   5: { from: 0.5, to: 0.933, top: 0 }, // 機械の頭
 };
 const DEFAULT_CROP = { from: 0.45, to: 1, top: 0 };
