@@ -115,14 +115,17 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5, undefined);
     await page.locator(dt("ch4-chapter-five")).click();
 
-    // 2. プロローグ2場面（章タイトル→橋渡し→帰郷）
-    await page.locator(scene("ch5_bridge_after_return")).waitFor({ timeout: 60000 });
+    // 2. プロローグ（つむぎ目線の面接をカード無しで読む→章タイトル→新人編→店の手→巻頭ポエム→挑戦状。#4253）
+    await page.locator(scene("ch5_tsumugi_first_day")).waitFor({ timeout: 60000 });
     state = await get(page);
     assert.equal(state.chapter, 5);
     assert.equal(state.day, 51);
     assert.equal(state.flags._ch5.titleSeen, true);
+    assert.equal(state.flags._ch5.prologueRoute, "tsumugi");
+    assert.equal(state.flags._ch5.read.ch5_tsumugi_interview, true, "The interview is read before the chapter title");
     assert.equal(state.flags._ch4_cleared, true, "The Chapter 4 clear record must stay");
-    for (const id of ["ch5_bridge_after_return", "ch5_opening"]) {
+    for (const id of ["ch5_tsumugi_first_day", "ch5_tsumugi_lessons", "ch5_tsumugi_cough", "ch5_tsumugi_doctor", "ch5_tsumugi_look_first",
+      "ch5_tsumugi_full_house", "ch5_tsumugi_third", "ch5_shop_hands", "ch5_opening"]) {
       await page.locator(scene(id)).waitFor();
       await page.locator(dt("ch5-continue")).click();
     }
@@ -130,7 +133,7 @@ await suite("ch5-full-flow", async check => {
     await mapReady(page, { day: 51, slot: 0 });
     state = await get(page);
     assert.equal(state.flags._ch5.part, "free");
-    assert.equal(state.flags._ch5.stage, 2);
+    assert.equal(state.flags._ch5.stage, 10);
     assert.equal(state.flags._ch5.matchDay, undefined);
     assert.match(await page.locator(".hud").innerText(), /勝負の日まで[\s\S]*未定/);
     // ヒロインの店は、会ったことがあれば第5章の通いの小会話で出る（#2033 F）。この保存では会っていない。
@@ -151,11 +154,10 @@ await suite("ch5-full-flow", async check => {
     const resumed = await get(page);
     assert.equal(resumed.flags._ch5.part, "free");
     assert.equal(resumed.flags._ch5.read.ch5_free_mashiro_visit, true);
-    assert.equal(resumed.flags._ch5.stage, 2, "Reload must not replay the prologue");
+    assert.equal(resumed.flags._ch5.stage, 10, "Reload must not replay the prologue");
 
-    // 4. 夜の tonari: 初めての客 → 寝て翌日（DAY2）。閉店後の練習は夜だけ。
-    await go(page, "tonari");
-    await committed(page, "ch5_free_first_visitor");
+    // 4. 夜は家で休んで翌日（DAY2）。新人編から入った保存に「初めての客」は無い（#4253）。閉店後の練習は夜だけ。
+    await go(page, "rest");
     await mapReady(page, { day: 52, slot: 0 });
     // 昼は家で休む（練習の場面は夜だけなので、昼の tonari ではいつものメニューになる）。
     await go(page, "rest");
@@ -175,8 +177,9 @@ await suite("ch5-full-flow", async check => {
     state = await get(page);
     for (const key of ["money", "stats"])
       assert.deepEqual(state[key], beforePrep[key], `${key} must not change by the prep`);
-    for (const id of ["ch5_free_mashiro_visit", "ch5_free_first_visitor", "ch5_free_tonari_practice"])
+    for (const id of ["ch5_free_mashiro_visit", "ch5_free_tonari_practice"])
       assert.equal(state.flags._ch5.read[id], true);
+    assert.equal(state.flags._ch5.read.ch5_free_first_visitor, undefined);
 
     // 5. 博士に連絡（1回目）: 「記録に残らない一日」を先に読み、日を決める → その夜を越えて翌朝が勝負の日。
     await page.evaluate(async () => {
@@ -201,10 +204,12 @@ await suite("ch5-full-flow", async check => {
       const { DB } = await import("./js/core/data.js");
       const source = DB.dialogues.ch5_unrecorded_day;
       return { actual: window.__unrecordedLines.map(line => line.text || "").join("\n"),
-        expected: ["mashiro_seen", "visitor_seen", "practice_seen"].flatMap(key => source.branches[key]).map(line => line.text),
+        expected: ["mashiro_seen", "practice_seen"].flatMap(key => source.branches[key]).map(line => line.text),
+        unread: source.branches.visitor_seen.map(line => line.text),
         choices: window.__unrecordedLines.filter(line => line.type === "choice").map(line => line.id) };
     });
     for (const remembered of ordinaryWork.expected) assert(ordinaryWork.actual.includes(remembered), remembered);
+    for (const unread of ordinaryWork.unread) assert(!ordinaryWork.actual.includes(unread), unread);
     assert.deepEqual(ordinaryWork.choices, ["ch5_unrecorded_task"], "The required scene keeps one ordinary work choice");
     assert.match(ordinaryWork.actual, /日を決めるかどうかは、まだこれから/);
 
@@ -302,7 +307,7 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.phase, "cleared");
     assert.equal(state.flags._ch4_cleared, true);
     assert.deepEqual(state.flags._ch5.prep, { trial: "heat", adjusted: true }, "The prep record must survive to the end");
-    for (const id of ["ch5_bridge_after_return", "ch5_opening", "ch5_free_mashiro_visit", "ch5_free_first_visitor",
+    for (const id of ["ch5_tsumugi_interview", "ch5_tsumugi_third", "ch5_shop_hands", "ch5_opening", "ch5_free_mashiro_visit",
       "ch5_free_tonari_practice", "ch5_unrecorded_day", "ch5_schedule_contact", "ch5_timeout",
       "ch5_match_day_arrival", "ch5_copy_first_cup", "ch5_relationship_before_second_cup",
       "ch5_second_cup_result", "ch5_second_cup_result_afterglow", "ch5_doctor_after_match", "ch5_doctor_cocreation",
@@ -1466,7 +1471,7 @@ await suite("ch5-full-flow", async check => {
     // 答えを客席のつむぎが聞き、千須は宿題を一つ残す（2026-11-24 添削 N3・N8。勝敗共通）
     assert.deepEqual(first.slice(-6).map(([, speaker, text]) => [speaker, text]).slice(0, 5), [
       ["sensu", "一つだけ聞く。君が作れない夜に来た客は、どうする"],
-      ["hajime", "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が"],
+      ["hajime", "俺が作れない日は、つむぎちゃんが作ります。つむぎちゃんが作れない日は、俺が"],
       ["", "客席の端で、つむぎがスケッチブックを胸に抱え直した。"],
       ["sensu", "……それを、店と呼ぶんだろうな"],
       ["sensu", "だが、うちの新人の夜には、まだ隣がいない。……そこは、私の宿題だ"],
@@ -1518,7 +1523,7 @@ await suite("ch5-full-flow", async check => {
     await page.locator(scene("ch5_doctor_cocreation")).waitFor();
     const first = await readLines();
     assert(first.includes("……正解の味を、一つだけ探していたのかもしれません"), "The winner's first half keeps the doctor's own words");
-    assert.equal(first.at(-5), "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が");
+    assert.equal(first.at(-5), "俺が作れない日は、つむぎちゃんが作ります。つむぎちゃんが作れない日は、俺が");
     assert.equal(first.at(-4), "客席の端で、つむぎがスケッチブックを胸に抱え直した。");
     await page.locator(dt("ch5-continue")).click();
     await page.locator(scene("ch5_return_to_tonari")).waitFor();
@@ -1544,9 +1549,14 @@ await suite("ch5-full-flow", async check => {
       "スミさん。tonariって、どうしてこの名前なんですか", "客の隣に座れる店にしたかった……それだけだ",
       "別の日。閉店後、栞さんの部屋で遅い夕飯を作った。", "返事を聞きながら、もう一つボウルを出す。",
       "閉店の少し前。奥まった席に、いつもの鉄仮面さんが座った。",
-      "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"].map(text => lines.indexOf(text));
+      "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。",
+      "戸締まり、頼める？ 明日の朝、返して",
+      "スミさんが、昔からそうしてきたように。",
+      "手のひらの鍵束が、思ったより重かった。",
+      "いらっしゃいませ"].map(text => lines.lastIndexOf(text));
     assert(order.every((index, i) => index >= 0 && (i === 0 || index > order[i - 1])), `finale order: ${order}`);
-    assert.equal(order.at(-1), lines.length - 1, "The last picture is the oldest trophy");
+    // 最後は、半年後の自分の店の「いらっしゃいませ」（2026-11-27 オーナー「自分の店を持てるようになるとこで終わりたい」）
+    assert.equal(order.at(-1), lines.length - 1, "The story ends on the first welcome of Hajime's own shop");
     assert.equal(order[5], order[4] + 1, "The name scene follows the daily scene without a break");
   });
 });
