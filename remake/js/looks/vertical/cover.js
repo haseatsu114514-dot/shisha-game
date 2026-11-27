@@ -74,8 +74,16 @@ const TITLE_FOCUS = {
 };
 const DEFAULT_FOCUS = 0.65;
 
-/** 覆いの中の章タイトル（本編の .chapter-title-shield の .chapter-card）。無ければ null。 */
+/** 覆いの中の章タイトル（本編の .chapter-title-shield の .chapter-card、第1章は専用の演出 .ch1-title-motion）。無ければ null。 */
 function readChapterTitle(roots) {
+  // 第1章は専用の演出（chapters/ch1-title-motion.js）。縦画面では、縦長の絵（案7・VPN25）で同じ案Aに組む
+  const first = roots.find((node) => node.matches(".ch1-title-motion"));
+  if (first) {
+    if (first.dataset.phase !== "playing") return null;
+    const entry = CHAPTER_TITLE_ART.find((item) => item.chapter === 1);
+    return entry && { chapter: 1, no: entry.no, name: entry.name, english: String(entry.read || "").split("──").pop().trim(),
+      art: entry.portrait || entry.url, tall: !!entry.portrait, out: false };
+  }
   const shield = roots.find((node) => node.matches(".chapter-title-shield"));
   const card = shield?.querySelector(".chapter-card");
   if (!card) return null;
@@ -85,7 +93,8 @@ function readChapterTitle(roots) {
   return {
     chapter: entry.chapter, no: entry.no, name: entry.name,
     english: String(entry.read || "").split("──").pop().trim(),
-    art: card.classList.contains("illustrated") ? img?.currentSrc || img?.src || entry.url : "",
+    art: card.classList.contains("illustrated") ? entry.portrait || img?.currentSrc || img?.src || entry.url : "",
+    tall: !!entry.portrait && card.classList.contains("illustrated"),
     out: card.classList.contains("out"),
   };
 }
@@ -148,6 +157,7 @@ export function createCoverScene(frame, own) {
   /** 章タイトル（案A）を組む。絵は横長の一枚から人物を切り出し、章名は文字で組む（絵に描き込まれた題字は画面の外になる）。 */
   function renderCall(title) {
     call.dataset.chapter = String(title.chapter);
+    call.dataset.shape = title.tall ? "tall" : "wide"; // 縦長の絵は幅いっぱい、横長の絵は高さいっぱい（どちらも同じ枠で溶かす）
     call.style.cssText = `--ct-focus:${TITLE_FOCUS[title.chapter] ?? DEFAULT_FOCUS}`;
     call.setAttribute("aria-label", [title.no, title.name, title.english].filter(Boolean).join("　"));
     call.replaceChildren(

@@ -708,6 +708,8 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
   -webkit-mask-image: linear-gradient(180deg, #000 0, #000 62%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 62%, transparent 100%); }
 .vt-ct-art { position: absolute; top: 0; left: 50%; height: 100%; width: auto; max-width: none; transform: translateX(calc(var(--ct-focus, 0.65) * -100%));
   animation: vt-ct-art 1.6s cubic-bezier(.22, .61, .36, 1) 0.1s both; }
+/* 縦長の絵（第1章・VPN25）は幅いっぱいに置く（枠より少し長いので、裾は枠の溶かしに入る） */
+.vt-ct[data-shape="tall"] .vt-ct-art { left: 0; width: 100%; height: auto; transform: none; }
 @keyframes vt-ct-art { 0% { opacity: 0; filter: blur(calc(0.6 * var(--u))) brightness(.72); } 45% { opacity: 1; } 100% { opacity: 1; filter: none; } }
 .vt-ct-veil { position: absolute; left: 0; right: 0; top: 38%; bottom: 0; background: linear-gradient(180deg, transparent, #0b0812e6 42%, #0b0812f2 100%); pointer-events: none; }
 .vt-ct-copy { position: absolute; left: calc(2.8 * var(--u)); right: calc(2.8 * var(--u)); top: 56%; display: grid; gap: calc(0.8 * var(--u)); text-shadow: 0 calc(0.2 * var(--u)) calc(1.8 * var(--u)) #000, 0 0 calc(0.4 * var(--u)) #000; animation: vt-ct-copy 1.2s cubic-bezier(.16, 1, .3, 1) 0.7s both; }

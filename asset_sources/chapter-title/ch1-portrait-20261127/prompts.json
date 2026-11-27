@@ -163,5 +163,37 @@
   ],
   "result": "d5_v1.png",
   "prompt": "Vertical 2:3 chapter title key visual for a Japanese visual-novel game about shisha (hookah) lounges, chapter 1 \"A Town Tied by Smoke\". Match the painting style, line quality, color richness and cinematic lighting of the attached chapter title illustrations (modern anime key visual, clean cel shading with 2-3 shadow steps, no airbrushed shine, NOT a 1990s OVA/cel style). Characters must be the SAME people as the attached standing sprites: identical faces, eye colors, hairstyles, outfits and colors. Hajime (the young man in a black cap, black hoodie and black pants) wears NO necklace. Composition: keep all characters and the main motif inside the upper 60% of the frame; the lower 35% must be a calm, darker, low-detail area (soft haze or shadow) because the chapter title text will be overlaid there later. Absolutely no text, letters, numbers, logos or readable signage anywhere (shop signs are glowing blank shapes or light only). Do not draw any hookah, shisha pipe, hose, charcoal, foil, cigarettes or vapes; smoke appears only as soft drifting wisps and ribbons. Scene: Frame the characters LARGE and close like the attached chapter title illustrations (waist-up or chest-up, faces big and expressive, strong cinematic key light and rich color), not small figures in a wide scene. Symbolic poster: Hajime in the center, waist-up, holding out one open hand. Fine glowing threads of smoke run from his hand to the faint, half-transparent figures of Sumi, Tsumugi, Minto, Naru and Adam arranged around and behind him in the dark, as if the smoke ties them all together. Deep night blue with warm gold light on the threads."
+ },
+ {
+  "id": "d3_fix",
+  "title": "ライバルたち（なる・アダムを新しいデザインに）",
+  "tag": "a",
+  "model": "gpt-image-2.6-sunburst",
+  "endpoint": "/v1/images/edits",
+  "size": "1024x1536",
+  "quality": "high",
+  "references": [
+   "raw/d3_v1.png",
+   "new/naru/chr_naru_normal.webp",
+   "new/adam/chr_adam_normal.webp"
+  ],
+  "result": "d3_fix_a.png",
+  "prompt": "Edit the FIRST image. Keep everything the same: the vertical composition, camera, poses, positions, lighting colors, smoke, background, the dark calm lower third, and the young man in the black cap and black hoodie in the center and the black-haired girl with horns on the left must stay exactly as they are. Redraw ONLY two people to match the current character designs in the attached reference sprites: (1) the silver-haired young man on the right: match reference 'naru' exactly — cream and dark-brown color-block zip jacket with a high collar over a dark brown turtleneck, NO necklace, NO chains, NO dog tags, same silver hair and amber eyes, same confident smile and pose; (2) the man with red-and-green split hair at the back: match reference 'adam' exactly — white crew-neck T-shirt and a black apron tied at the waist, muscular build, same arms-crossed pose and proud look. Same painting style as the first image. No text, no letters, no logos anywhere. No hookah or shisha equipment."
+ },
+ {
+  "id": "d3_fix",
+  "title": "ライバルたち（なる・アダムを新しいデザインに）",
+  "tag": "b",
+  "model": "gpt-image-2.6-sunburst",
+  "endpoint": "/v1/images/edits",
+  "size": "1024x1536",
+  "quality": "high",
+  "references": [
+   "raw/d3_v1.png",
+   "new/naru/chr_naru_normal.webp",
+   "new/adam/chr_adam_normal.webp"
+  ],
+  "result": "d3_fix_b.png",
+  "prompt": "Edit the FIRST image. Keep everything the same: the vertical composition, camera, poses, positions, lighting colors, smoke, background, the dark calm lower third, and the young man in the black cap and black hoodie in the center and the black-haired girl with horns on the left must stay exactly as they are. Redraw ONLY two people to match the current character designs in the attached reference sprites: (1) the silver-haired young man on the right: match reference 'naru' exactly — cream and dark-brown color-block zip jacket with a high collar over a dark brown turtleneck, NO necklace, NO chains, NO dog tags, same silver hair and amber eyes, same confident smile and pose; (2) the man with red-and-green split hair at the back: match reference 'adam' exactly — white crew-neck T-shirt and a black apron tied at the waist, muscular build, same arms-crossed pose and proud look. Same painting style as the first image. No text, no letters, no logos anywhere. No hookah or shisha equipment."
  }
 ]

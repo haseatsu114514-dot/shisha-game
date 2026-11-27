@@ -413,6 +413,31 @@ await suite("look_vertical", async (check) => {
     await page.waitForFunction(() => document.querySelector(".vt-ct")?.hidden !== false || !document.querySelector(".chapter-title-shield"));
   }, { ...TALL, pageEntry: entry });
 
+  await check("chapter-one-title-call-tall-art", async (page) => {
+    // VPN25: 第1章の専用の演出（ch1-title-motion）の間も、縦画面は案A。絵は縦長の一枚（案7）を幅いっぱいに置き、ぼかしは他の章と同じ枠
+    await waitScene(page, "title");
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"); const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 1 });
+      document.body.dataset.screen = "none"; (await import("./js/core/ui.js")).clearScreen();
+      window.titleRun = (await import("./js/chapters/ch1-title-motion.js")).playCh1Title();
+    });
+    await page.locator('.vt-ct:not([hidden])[data-shape="tall"] img.vt-ct-art').waitFor({ timeout: 20000 });
+    await page.waitForTimeout(1800);
+    const call = await page.evaluate(() => {
+      const root = document.querySelector(".vt-ct"), shell = document.querySelector(".vt-shell").getBoundingClientRect();
+      const pic = root.querySelector(".vt-ct-pic").getBoundingClientRect(), art = root.querySelector(".vt-ct-art").getBoundingClientRect();
+      return { cover: document.querySelector(".vt-shell").dataset.cover, en: root.querySelector(".vt-ct-en").textContent, name: root.querySelector(".vt-ct-name").textContent,
+        read: root.querySelector(".vt-ct-read").textContent, art: root.querySelector(".vt-ct-art").getAttribute("src"),
+        ratio: +(pic.height / shell.height).toFixed(3), artWide: Math.abs(art.width - shell.width) <= 1, artTall: art.height >= pic.height - 1 };
+    });
+    assert.equal(call.cover, "title");
+    assert.deepEqual([call.en, call.name, call.read], ["CHAPTER 1", "煙がつなぐ街", "Smoke & Ties"]);
+    assert.match(call.art, /ch1-title-portrait\.webp/);
+    assert.equal(call.ratio, 0.64, "the same fade frame as the other chapters");
+    assert(call.artWide && call.artTall, `the tall art fills the frame ${JSON.stringify(call)}`);
+    await page.evaluate(() => window.titleRun);
+  }, { ...TALL, pageEntry: entry });
+
   await check("unsupported-scenes-show-the-rotate-hint", async (page) => {
     await waitScene(page, "title");
     await page.evaluate(async () => {
