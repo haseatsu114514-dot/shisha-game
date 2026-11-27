@@ -529,7 +529,8 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .btn-a[disabled] .t:has(> .glyph) { font-size: 3rem; opacity: 0.55; }
 .btn-a .t.tool { position: absolute; z-index: 1; inset: 0; margin: 0; display: block; }
 /* 刺す・吸うは道具の白い図形（VPL34）。ボタンいっぱいの 100×100 */
-.tool-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; fill: currentColor; filter: drop-shadow(0 0.2rem 0.5rem #0b0812) drop-shadow(0 0 0.15rem #0b0812); }
+/* ボタンの縁から離すため、真ん中の78%に収める（VPL35） */
+.tool-svg { position: absolute; inset: 11%; width: 78%; height: 78%; overflow: visible; fill: currentColor; filter: drop-shadow(0 0.2rem 0.5rem #0b0812) drop-shadow(0 0 0.15rem #0b0812); }
 /* 刺す: 押し具合（--level）で針が下がってアルミを突く。満ちた所で金の火花、深すぎると針がさらに沈む */
 .tool-needle .gl-needle { transform: translateY(calc(var(--level, 0) * 8px)); transition: transform 0.2s var(--ease-out); }
 .btn-a.hold.pressing .tool-needle .gl-needle { transition: none; }
@@ -569,13 +570,11 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .rank-c .rank-meter { width: 5.6rem; height: 0.4rem; margin-top: 0; }
 .phone[data-rank="c"] .steps { left: 1rem; transform: none; }
 
-.rank-d { z-index: 5; left: 1rem; top: 6.4rem; transition: left 0.3s, top 0.3s; }
-.rank-d .rank-box { width: 11rem; height: 9.2rem; filter: drop-shadow(0 0.4rem 0.8rem #000b); }
-.rank-d .rank-meter { width: 7.6rem; }
-/* 吸い出しは人物が左に立つので、人物の右・熱ゲージの左の空きへ */
-.phone[data-scene="pull"] .rank-d { left: auto; right: 6.8rem; top: 6.2rem; }
-/* 詰めは器が上の真ん中にあるので、器の脚の横（左の少し下）へ */
-.phone[data-scene="pack"] .rank-d { top: 12.4rem; }
+/* 案D（VPL33・VPL35）: 工程を終えた時に上の絵へどかっと出て、右上（工程の並びの右、熱ゲージの上）へ収まる */
+.rank-d { z-index: 5; right: 0.9rem; top: max(0.6rem, calc(env(safe-area-inset-top, 0px) - 0.6rem)); }
+.rank-d .rank-box { width: 8.2rem; height: 6.1rem; filter: drop-shadow(0 0.3rem 0.6rem #000b); }
+.rank-d .rank-meter { width: 6rem; height: 0.45rem; margin-top: 0; }
+.phone[data-rank="d"] .steps { left: 1rem; transform: none; }
 .rank-impact { position: absolute; z-index: 29; left: 50%; top: 34%; width: 26rem; height: 26rem; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); background: radial-gradient(circle, transparent 52%, #ffe2a6cc 58%, #ffcf6b66 64%, transparent 72%); }
 
 .rank-a { z-index: 0; left: 0; right: 0; bottom: 0; height: calc(var(--ctrl-h) + var(--aux-h, 0rem)); display: grid; place-items: center; }
