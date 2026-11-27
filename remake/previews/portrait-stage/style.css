@@ -47,6 +47,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .switch .panel { display: none; gap: 4px; margin-top: 4px; padding: 5px; border-radius: 14px; background: #0a0710f0; border: 1px solid #ffffff38; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: 0 10px 24px #000b; }
 .switch.open .panel { display: grid; }
 .switch .panel > div { display: flex; align-items: center; justify-content: center; gap: 2px; }
+.switch .sep { width: 1px; height: 18px; margin: 0 4px; background: #ffffff38; }
 .switch small { padding: 0 6px; font-size: 10px; font-weight: 700; color: #9a8fae; }
 .switch button:not(.grip), .switch a { height: 28px; padding: 0 9px; display: grid; place-items: center; border-radius: 100px; font-weight: 700; white-space: nowrap; color: #d8cfe6; text-decoration: none; }
 .switch button[aria-pressed="true"] { background: #f1d79a; color: #24160a; }
@@ -233,6 +234,8 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .foil-marks .hole { fill: #0b0812; stroke: #00000080; stroke-width: 0.8; } .foil-marks .hole.good { stroke: #ffe2a6; stroke-width: 1.2; }
 .foil-marks .tip { fill: none; stroke: #5ee6ff; stroke-width: 2.2; filter: drop-shadow(0 0 3px #5ee6ff); }
 .pic.craft-pull > .bg { filter: brightness(0.85); transform: none; }
+.pic.craft-holes { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%); }
+.pic.craft-holes .foil { top: auto; bottom: 6.4rem; }
 .pull-actor { position: absolute; max-width: none; height: 82%; left: -36%; bottom: 4%; filter: drop-shadow(0 0.6rem 1.4rem #0008); }
 .puff { position: absolute; max-width: none; width: 60%; left: 34%; top: 14%; opacity: 0; pointer-events: none; mix-blend-mode: screen; }
 .phone.puffing .puff { animation: puff 1.5s var(--ease-out); }
@@ -328,8 +331,24 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .dial svg { transform: none; }
 .pip { fill: #ffffff33; } .pip.done { fill: #fff; } .pip.good { fill: #ffe2a6; filter: drop-shadow(0 0 2px #ffcf6b); }
 .want { fill: none; stroke: #ffffff38; stroke-width: 7.4; } .grow { fill: var(--acc); opacity: 0.92; }
-.dial.ok .grow { fill: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); } .dial.ok .want { stroke: #ffe2a680; }
+.last { fill: #fff; opacity: 0.9; } .last.good { fill: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); } .last.over { fill: #ff8a7e; } .last.under { fill: #ffffffa6; }
 .foil-marks .tip.ok { stroke: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); }
+.foil-marks .grow-hole { fill: #0b0812; stroke: #fff; stroke-width: 0.8; } .foil-marks .grow-hole.good { stroke: #ffe2a6; stroke-width: 1.3; filter: drop-shadow(0 0 3px #ffcf6b); } .foil-marks .grow-hole.over { stroke: #ff6b5e; stroke-width: 1.3; }
+
+/* 穴あけの「刺す」: 押している間に沈み込み、縁の輪が伸びる。金の区間がちょうどいい長さ、越えると赤。離すと結果が光る・揺れる */
+.btn-a.hold { --fill: 0; scale: calc(1 - var(--fill) * 0.1); transition: transform 0.1s, scale 0.08s linear, border-color 0.15s; }
+.btn-a.hold::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; box-shadow: inset 0 calc(var(--fill) * 1.2rem) calc(var(--fill) * 2.6rem) #0b0812cc; }
+.press { position: absolute; left: -1.3rem; top: -1.3rem; width: calc(100% + 2.6rem); height: calc(100% + 2.6rem); transform: rotate(-90deg); overflow: visible; pointer-events: none; }
+.pr-track { fill: none; stroke: #ffffff24; stroke-width: 3.2; }
+.pr-good { fill: none; stroke: #ffe2a6; stroke-width: 3.2; opacity: 0.55; transition: opacity 0.2s; }
+.pr-fill { fill: none; stroke: #fff; stroke-width: 4.6; stroke-linecap: round; }
+.btn-a.hold.pressing .pr-good { opacity: 1; filter: drop-shadow(0 0 2px #ffcf6b); }
+.btn-a.hold[data-zone="good"] { border-color: #ffe2a6; box-shadow: 0 0 0 0.8rem #ffe2a62e, 0 0 4rem #ffcf6b, 0 1.4rem 2.6rem #000b, inset 0 0.25rem 0.5rem #ffffff80; }
+.btn-a.hold[data-zone="good"] .pr-fill { stroke: #ffe2a6; filter: drop-shadow(0 0 3px #ffcf6b); } .btn-a.hold[data-zone="good"] .t { color: #fff3d6; }
+.btn-a.hold[data-zone="over"] { border-color: #ff6b5e; } .btn-a.hold[data-zone="over"] .pr-fill { stroke: #ff6b5e; } .btn-a.hold[data-zone="over"] .t { color: #ffd2cc; }
+.btn-a.hold.res-good { animation: res-good 0.5s ease-out; } .btn-a.hold.res-off { animation: res-off 0.4s ease-out; }
+@keyframes res-good { 0% { box-shadow: 0 0 0 0 #ffe2a6, 0 0 3rem #ffcf6b; } 100% { box-shadow: 0 0 0 2.4rem #ffe2a600, 0 0 3rem #ffcf6b00; } }
+@keyframes res-off { 20% { translate: -0.6rem 0; } 45% { translate: 0.5rem 0; } 70% { translate: -0.3rem 0; } 100% { translate: 0 0; } }
 /* 熱ゲージ: 右に大きく。本編（remake/css/craft.css の .thermo-*）と同じ色の意味。緑の帯＝適温の目安（両端に白い刻み）、
    真ん中の虹＝合わせやすい範囲（中央に白線）、一番上＝焦げる帯（炎の印）。今の温度は外から指す矢印と管を横切る線。今より上は少し暗い */
 .thermo { position: absolute; z-index: 5; right: 1.1rem; top: 7.4rem; bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 10.2rem); width: 5.4rem; display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: 0.6rem; pointer-events: none; }
@@ -408,9 +427,80 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .phone[data-aux="3"] .btn-a.center { scale: 0.88; transform-origin: 50% 0; }
 .phone[data-aux="3"] .sheet { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) - 1.6rem); }
 
+/* ───────── 登場カットイン（縦画面の案 a・b・c） ───────── */
+.cv { position: absolute; inset: 0; z-index: 45; overflow: hidden; isolation: isolate; background: var(--ci-shadow); cursor: pointer; --art-w: 52rem; --art-top: 1.5rem; --art-x: 19.5rem; --band-top: 57%; }
+.cv-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 78% 50%; animation: cv-bg 0.7s var(--ease-out) both; }
+.cv-veil { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 0%, transparent 46%, color-mix(in srgb, var(--ci-shadow) 70%, transparent) 62%, var(--ci-shadow) 86%); }
+.cv-art { position: absolute; z-index: 1; width: var(--art-w); max-width: none; left: calc(var(--art-x) - var(--focus) * var(--art-w)); top: var(--art-top);
+  -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 84%); mask-image: linear-gradient(180deg, #000 60%, transparent 84%); filter: drop-shadow(0 1rem 2rem #0009); }
+.cv-band { position: absolute; z-index: 2; background: #f6f3e9; box-shadow: 0 1.2rem 2.4rem #0009; animation: cv-wipe 0.4s var(--ease-out) 0.22s both; }
+.cv-accent { position: absolute; background: var(--ci); }
+.cv-name { font-family: var(--gothic); font-size: var(--name-size); font-weight: 900; line-height: 1.05; letter-spacing: -0.05em; white-space: nowrap; color: #090e15; animation: cv-stamp 0.45s var(--ease-out) 0.46s both; }
+.cv-name ruby { ruby-position: over; } .cv-name rt { font-size: 0.24em; font-weight: 700; letter-spacing: 0.04em; color: #2a2e36; }
+.cv-gap { display: inline-block; width: 0.3em; }
+.cv-tag { position: absolute; z-index: 3; padding: 0.4rem 1.3rem 0.5rem; border-left: 0.35rem solid var(--ci); font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; white-space: nowrap; color: #f8f6ee; background: #101820ed; animation: cv-tag 0.4s var(--ease-out) 0.66s both; }
+.cv-say { position: absolute; z-index: 3; animation: cv-up 0.5s var(--ease-out) 0.86s both; }
+.cv-quote { margin: 0; font-size: 2.5rem; font-weight: 700; line-height: 1.42; letter-spacing: -0.02em; color: #f8f6ee; text-shadow: 0 0.2rem 1rem #000a; }
+.cv-flavor { display: flex; align-items: baseline; gap: 1rem; margin: 1rem 0 0; }
+.cv-flavor small { font-size: 1.3rem; font-weight: 700; color: var(--ci); } .cv-flavor b { font-size: 2rem; color: #f8f6ee; }
+.cv-next { position: absolute; z-index: 4; right: 2.4rem; bottom: calc(2.4rem + env(safe-area-inset-bottom, 0px)); width: 1.4rem; height: 1.4rem; border: solid #fff; border-width: 0 0.28rem 0.28rem 0; transform: rotate(45deg); opacity: 0; animation: cv-next 1.2s ease-in-out 1.4s infinite; }
+.cv-flash { position: absolute; z-index: 9; top: -10%; bottom: -10%; left: 0; width: 55%; background: linear-gradient(90deg, transparent, var(--ci2) 40%, #fff 50%, var(--ci2) 60%, transparent); transform: translateX(-140%) skewX(-18deg); animation: cv-flash 0.55s ease-out both; pointer-events: none; }
+.cv.out { animation: cv-out 0.38s ease-in forwards; pointer-events: none; }
+.cv.still, .cv.still * { animation: none !important; } .cv.still .cv-flash { display: none; } .cv.still .cv-next { opacity: 0.8; }
+@keyframes cv-bg { from { opacity: 0; transform: scale(1.12); } }
+@keyframes cv-wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes cv-stamp { from { opacity: 0; transform: scale(1.35); filter: blur(0.6rem); } }
+@keyframes cv-tag { from { opacity: 0; translate: -2rem 0; } }
+@keyframes cv-up { from { opacity: 0; translate: 0 1.4rem; } }
+@keyframes cv-next { 0%, 100% { opacity: 0.9; translate: 0 0; } 50% { opacity: 0.4; translate: 0 0.4rem; } }
+@keyframes cv-flash { 0% { transform: translateX(-140%) skewX(-18deg); opacity: 1; } 100% { transform: translateX(260%) skewX(-18deg); opacity: 0.6; } }
+@keyframes cv-out { to { opacity: 0; transform: translateX(-8%); } }
+/* 動きの型（データの motion）: bounce=弾んで入る、soft=静かに浮かぶ、sharp=横から突入 */
+.cv[data-m="bounce"] .cv-art { animation: cv-art-bounce 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
+.cv[data-m="soft"] .cv-art { animation: cv-art-soft 1s var(--ease-out) 0.05s both; } .cv[data-m="soft"] .cv-flash { animation-duration: 0.9s; opacity: 0.5; }
+.cv[data-m="sharp"] .cv-art { animation: cv-art-sharp 0.4s var(--ease-out) 0.08s both; }
+@keyframes cv-art-bounce { from { opacity: 0; transform: translateY(4rem) scale(0.82); } }
+@keyframes cv-art-soft { from { opacity: 0; transform: translateY(2rem); } }
+@keyframes cv-art-sharp { from { opacity: 0; transform: translateX(-30%); } }
+
+/* 案A 縦のポスター: 上に人物、真ん中に斜めの帯と名前、下に一言 */
+.cv-a .cv-band { left: -8%; right: -8%; top: var(--band-top); height: calc(var(--name-size) * 1.5 + 2.4rem); display: flex; align-items: center; padding-left: calc(8% + 2.4rem); transform: rotate(-5deg); }
+.cv-a .cv-accent { left: 0; right: 0; bottom: -1.3rem; height: 0.8rem; }
+.cv-a .cv-name { transform: skewX(-10deg) scaleX(0.92); transform-origin: left center; }
+.cv-a .cv-tag { left: 1.8rem; top: calc(var(--band-top) - 4.4rem); transform: rotate(-5deg); }
+.cv-a .cv-say { left: 2.4rem; right: 2rem; top: calc(var(--band-top) + var(--name-size) * 1.5 + 6rem); } .cv-a .cv-quote { font-size: 2.7rem; }
+
+/* 案B 縦書きの名札: 人物を大きく、右に縦長の帯で名前を縦書き、一言は下の斜めの帯 */
+.cv-b { --art-w: 62rem; --art-top: 0.5rem; --art-x: 15rem; }
+.cv-b .cv-art { -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent 92%); mask-image: linear-gradient(180deg, #000 70%, transparent 92%); }
+.cv-b .cv-veil { background: linear-gradient(180deg, transparent 0%, transparent 58%, color-mix(in srgb, var(--ci-shadow) 80%, transparent) 76%, var(--ci-shadow) 92%); }
+.cv-b .cv-band { right: 2.4rem; top: 4%; height: 64%; width: calc(var(--name-size) * 1.55 + 1.6rem); display: flex; justify-content: center; padding-top: 2.4rem; transform: rotate(3deg); animation-name: cv-wipe-down; }
+.cv-b .cv-accent { top: 0; bottom: 0; left: -1.2rem; width: 0.7rem; }
+.cv-b .cv-name { writing-mode: vertical-rl; text-orientation: mixed; letter-spacing: 0.02em; line-height: 1; }
+.cv-b .cv-name rt { font-size: 0.26em; }
+.cv-b .cv-tag { left: 1.8rem; bottom: calc(21.4rem + env(safe-area-inset-bottom, 0px)); transform: rotate(-4deg); }
+.cv-b .cv-say { left: -5%; right: -5%; bottom: calc(5.6rem + env(safe-area-inset-bottom, 0px)); padding: 2rem 2.6rem 2rem calc(5% + 2.4rem); border-top: 0.45rem solid var(--ci); background: color-mix(in srgb, var(--ci-shadow) 90%, #000); transform: rotate(-4deg); }
+.cv-b .cv-quote { font-size: 2.35rem; }
+@keyframes cv-wipe-down { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+
+/* 案C 上の舞台だけ: 絵の場所だけが紹介に変わる。一言はテロップ、Aで次へ */
+.cv-c { inset: 0 0 auto 0; z-index: 4; height: calc(100% - var(--ctrl-h) - var(--aux-h, 0rem) - 5.6rem); --art-w: 38rem; --art-top: -1rem; --band-top: 44%;
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 84%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 84%, transparent 100%); }
+.cv-c .cv-veil { background: linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--ci-shadow) 80%, transparent) 70%, var(--ci-shadow) 92%); }
+.cv-c .cv-art { -webkit-mask-image: linear-gradient(180deg, #000 50%, transparent 72%); mask-image: linear-gradient(180deg, #000 50%, transparent 72%); }
+.cv-c .cv-band { left: -8%; right: -8%; top: var(--band-top); height: calc(var(--name-size) * 1.5 + 1.8rem); display: flex; align-items: center; padding-left: calc(8% + 2.2rem); transform: rotate(-5deg); }
+.cv-c .cv-accent { left: 0; right: 0; bottom: -1rem; height: 0.6rem; }
+.cv-c .cv-name { transform: skewX(-10deg) scaleX(0.92); transform-origin: left center; }
+.cv-c .cv-tag { left: 1.8rem; top: calc(var(--band-top) - 3.9rem); font-size: 1.55rem; transform: rotate(-5deg); }
+.phone.cutin-on .ci-title-row b { font-size: 1.9rem; letter-spacing: 0.04em; color: var(--acc); }
+.cv-telop { font-size: 2.05rem; font-weight: 700; }
+.cv-telop-flavor { display: flex; align-items: baseline; gap: 0.9rem; margin: 0.7rem 0 0; }
+.cv-telop-flavor small { font-size: 1.2rem; font-weight: 700; color: var(--acc); } .cv-telop-flavor b { font-size: 1.7rem; }
+.phone.cutin-on .ctrl .btn-a::before { animation-duration: 1.4s; }
+
 /* ───────── 背の低い画面 ───────── */
 @container phone (max-height: 80rem) {
-  .body, .pic, .smoke, .sheet, .thermo { --ctrl-h: 26.2rem; } .ctrl { --ctrl-h: 26.2rem; --ring: 18.2rem; --a: 13.2rem; --pad-base: 6.3rem; } .chip { width: 3.9rem; height: 3.9rem; font-size: 1.9rem; } .chips { padding-top: 1rem; }
+  .body, .pic, .smoke, .sheet, .thermo, .cv-c { --ctrl-h: 26.2rem; } .ctrl { --ctrl-h: 26.2rem; --ring: 18.2rem; --a: 13.2rem; --pad-base: 6.3rem; } .chip { width: 3.9rem; height: 3.9rem; font-size: 1.9rem; } .chips { padding-top: 1rem; }
   .btn-a.center { top: calc(14.2rem + var(--aux-g, 0rem)); width: 11.6rem; height: 11.6rem; margin-left: -5.8rem; } .gauge { left: 4.6rem; right: 4.6rem; top: calc(6.2rem + var(--aux-g, 0rem)); } .foil { width: 25rem; } .ctrl .leaves { top: 1rem; height: 3.9rem; }
   .phone[data-scene="pack"] .thermo { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 19rem); } .thermo { top: 6.8rem; }
 }
@@ -418,8 +508,12 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
   .chips.labeled .chip { height: 4.8rem; font-size: 1.9rem; } .phone[data-aux="1"] .serve, .phone[data-aux="3"] .serve { height: 4.8rem; } .sh { height: 4.6rem; } .phone[data-aux="2"] .serve { height: 4.6rem; }
   .tabbar { height: 5.2rem; } .phone[data-aux="3"] .btn-a.center { scale: 0.86; }
 }
+@container phone (max-height: 80rem) { .cv { --band-top: 55%; } .cv-a .cv-say { top: calc(var(--band-top) + var(--name-size) * 1.5 + 5rem); } }
 @container phone (max-height: 71rem) {
-  .body, .pic, .smoke, .sheet, .thermo { --ctrl-h: 22.6rem; } .ctrl { --ctrl-h: 22.6rem; --ring: 15.4rem; --a: 11.2rem; --pad-base: 5.4rem; }
+  .cv { --band-top: 50%; --art-w: 44rem; --art-top: 1rem; } .cv-a .cv-quote { font-size: 2.3rem; } .cv-a .cv-say { top: calc(var(--band-top) + var(--name-size) * 1.4 + 4.4rem); } .cv-a .cv-band { height: calc(var(--name-size) * 1.4 + 2rem); }
+}
+@container phone (max-height: 71rem) {
+  .body, .pic, .smoke, .sheet, .thermo, .cv-c { --ctrl-h: 22.6rem; } .ctrl { --ctrl-h: 22.6rem; --ring: 15.4rem; --a: 11.2rem; --pad-base: 5.4rem; }
   .chips { padding-top: 0.8rem; gap: 0.9rem; } .chip { width: 3.5rem; height: 3.5rem; font-size: 1.7rem; } .serve { height: 3.5rem; top: 0.8rem; font-size: 1.8rem; }
   .btn-a .t { font-size: 3rem; } .btn-a.center { top: calc(12.2rem + var(--aux-g, 0rem)); width: 9.8rem; height: 9.8rem; margin-left: -4.9rem; } .pips { bottom: 1.4rem; } .pips i { width: 0.8rem; height: 0.8rem; }
   .gauge { left: 7rem; right: 7rem; top: calc(5.4rem + var(--aux-g, 0rem)); } .ctrl .leaves { top: 0.8rem; height: 3.5rem; } .ctrl .leaves img { width: 1.8rem; height: 1.8rem; }
