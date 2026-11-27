@@ -208,39 +208,18 @@ Do not paint: people, animals, text, letters, logos, signs, hookahs, shisha pipe
 ## 2026-11-27 席の位置に合わせて作り直し（VPM39）
 
 オーナー「３とかの席番号いまあるけど…ちょっとずれてるから気になる　ただ余白とかのバランスは良いからいじるなら背景」。
-席のカードの位置（`floor.mjs` の `VENUE_VIEW`。奥 x 20・50・80、手前 x 24・76。y は VPM30 のまま）は変えず、**家具の方を席に合わせた**。空いた席の番号の丸が、奥はソファのまん中、手前は脇の卓の上に乗る。tonari も同じ（`../portrait-stage-floor-20261127/README.md`）。
+席のカードの位置（`floor.mjs` の `VENUE_VIEW`。奥 x 20・50・80、手前 x 24・76。y は VPM30 のまま）は変えず、**家具の方を席に合わせた**。空いた席の番号の丸が、奥はソファのまん中、手前は脇の卓の上に乗る。tonari も同じ（`../portrait-stage-floor-20261127/README.md`。依頼文の形もそこ）。
 
-- 採用: mukai 昼（描き直し2枚の1枚め）・夜（2枚の1枚め）、ドバイ 昼（2枚の2枚め。描き直しで明るくなったので、明るさを ×0.935 して前と同じにした）・夜（2枚の2枚め）
-- 平均の明るさ: mukai 昼113・夜92、ドバイ 昼140・夜120（前は 110・92・141・121）
+- 採用: mukai 昼（3枚の1枚め）・夜（2枚の2枚め）、ドバイ 昼（3枚の2枚め。明るく出たので、明るさを ×0.94 して前と同じにした）・夜（2枚の1枚め）
+- 平均の明るさ: mukai 昼113・夜92、ドバイ 昼141・夜121（前は 111・92・141・121）
+- 測った位置（絵の幅に対する %。まん中）: mukai 奥 20.3・49.9・79.8、手前の卓 24.7・75.1。ドバイ 奥 20.5・50.0・79.5、手前の卓 24.1・75.8
 - `floor-dubai-day-bright-original.webp` は、VPM30 の1回めの明るい昼（使っていない）
 
-### 作り方（3店とも同じ）
+### 作り方
 
-1. **横にずらす（下絵）**: いまの絵（VPM30）の家具を、横方向だけ動かした（scratch の `seat_warp.py`。昼と夜に同じ変形）。
-   - 奥の列（絵の上から46%まで）: 左右のソファを卓ごと外へ（中心を約25%・75% → 20%・80%）。ソファの幅は変えず、ソファのあいだの壁を伸ばし、外の角を詰めた
-   - 手前の列（54〜87%）: 脇の卓を内側へ（中心を約21%・79% → 24%・76%）。壁ぎわのソファを少し伸ばし、まん中の床を少し詰めた
-   - 46〜54%・87〜92% は、重みをなめらかに変えてつないだ。カウンター（92%から下）は動かしていない
-   - 測ったいまの位置（絵の幅に対する %。左右の端）: tonari 奥 14.2–36.7／39.2–61.0／63.6–86.2・脇の卓 16.3–26.7／73.0–83.7、mukai 奥 14.0–35.0／39.5–60.0／65.5–86.4・脇の卓 14.0–27.3／72.4–85.6、ドバイ 奥 14.4–35.5／40.0–60.5／64.0–85.0・脇の卓 15.0–26.7／72.8–84.5
-2. **描き直す（昼）**: ずらしただけでは、奥の卓の脚・敷物や床の線・左右の壁が少し曲がる。下絵を画像生成API（`gpt-image-2.6-sunburst`・`/images/edits`・1024×1024・品質 medium）に渡して、位置はそのままに描き直した（下の依頼文）。各店2枚から、下絵とのずれ（0）と明るさで1枚を選んだ
-3. **夜**: 選んだ昼の絵から、VPM30 と同じ夜の依頼文で作った（各店2枚から1枚）。昼と夜の位置のずれは0
-
-### 依頼文（昼の描き直し。3店とも同じ）
-
-```text
-The attached picture is a retouched draft of a background for a shop-management game: the furniture was moved sideways with an image editor, so some areas are slightly stretched, squeezed or bent (the edges of the rug or the floor pattern, the legs of the low tables in front of the back sofas, the floor boards or tiles near the middle of the picture, the narrow side walls, some ceiling lamps).
-
-Repaint it as a clean, finished painting of the same room in exactly the same hand-painted anime background style and the same colors, light and brightness (visible brushwork, flat 2-3 step shading, no line art, no photo look, no 3D render look).
-
-KEEP THE LAYOUT EXACTLY (this is the most important rule; the picture is used with fixed seat positions in the game):
-- Same camera, same square composition, same perspective, same height of every element.
-- Every sofa, armchair, bench, table, cushion, plant, lamp, window and the bar counter stays exactly where it is in the draft and keeps its size. Do not move anything back toward the center or toward the walls.
-- The three sofas of the back row stay where they are: their centers at about 20, 50 and 80 percent of the picture width.
-- The two small side tables in the front stay where they are: their centers at about 24 and 76 percent of the picture width.
-
-Fix only the editing damage:
-- Lines that should be straight are straight: the outline of the rug or of the floor inlay, the table tops and legs, the floor boards or tiles (they follow one-point perspective toward the center of the back wall), the window frames.
-- Furniture has normal, natural proportions; nothing looks stretched or bent.
-- The side walls, corners and plants look natural.
-
-Do not add anything new. Do not paint: people, animals, text, letters, logos, hookahs, shisha pipes, hoses, charcoal, smoke. No lens flare, no bloom haze, no light rays, no glossy or wet-looking floor.
-```
+- **生成し直し**: 画像生成API（`gpt-image-2.6-sunburst`・`/images/edits`・1024×1024・品質 medium）に参照の絵を2枚渡して、新しく描いた（下の依頼文。各店3枚から1枚）。
+  - 1枚め＝形と画風の手本: VPM30 の絵（歪みのない、その店の家具と画風）
+  - 2枚め＝位置の手本: 1回めの作り直しの絵（家具を席の位置へ横にずらした下絵を描き直したもの。**形は歪んでいたので、位置だけ**を使うと依頼文に書いた）
+- 1回めの作り直し（家具を横にずらした下絵を、そのまま描き直した絵）は、オーナー「なんかソファとかカーペットとか歪んじゃって見える　再生成で直した方がいいかも」で使わなかった
+- **夜**: 選んだ昼の絵から、VPM30 と同じ夜の依頼文で作った（各店2枚から1枚）。昼と夜の位置のずれは0
+- 選び方: 奥のソファ・手前の脇の卓の左右の端を、目盛りを重ねて読み、席（奥 20/50/80%・手前 24/76%）に近いもの。3店とも、家具のまん中は席から1%以内

@@ -90,35 +90,33 @@ Do not paint: people, animals, text, letters, logos, hookahs, shisha pipes, hose
 
 オーナー「３とかの席番号いまあるけど…ちょっとずれてるから気になる　ただ余白とかのバランスは良いからいじるなら背景」。
 席のカードの位置（VPM32・VPM34）はそのままにして、**家具の方を席に合わせた**: 奥の2人掛けのまん中が 20%・50%・80%、手前の脇の卓のまん中が 24%・76%。空いた席の番号の丸が、奥はソファのまん中、手前は脇の卓の上に乗る。
-平均の明るさ: 昼 115（前と同じ）・夜 95（前 97）。
 
-### 作り方（3店とも同じ）
+- 採用: 昼（3枚の3枚め）・夜（2枚の2枚め）。平均の明るさ: 昼 116・夜 95（前は 115・97）
+- 測った位置（絵の幅に対する %。左右の端 → まん中）: 奥 9.1–30.0 → 19.5、39.5–60.8 → 50.1、69.6–89.3 → 79.4。手前の脇の卓 18.5–29.0 → 23.8、71.3–81.8 → 76.6
 
-1. **横にずらす（下絵）**: いまの絵（VPM30）の家具を、横方向だけ動かした（scratch の `seat_warp.py`。昼と夜に同じ変形）。
-   - 奥の列（絵の上から46%まで）: 左右のソファを卓ごと外へ（中心を約25%・75% → 20%・80%）。ソファの幅は変えず、ソファのあいだの壁を伸ばし、外の角を詰めた
-   - 手前の列（54〜87%）: 脇の卓を内側へ（中心を約21%・79% → 24%・76%）。壁ぎわのソファを少し伸ばし、まん中の床を少し詰めた
-   - 46〜54%・87〜92% は、重みをなめらかに変えてつないだ。カウンター（92%から下）は動かしていない
-   - 測ったいまの位置（絵の幅に対する %。左右の端）: tonari 奥 14.2–36.7／39.2–61.0／63.6–86.2・脇の卓 16.3–26.7／73.0–83.7、mukai 奥 14.0–35.0／39.5–60.0／65.5–86.4・脇の卓 14.0–27.3／72.4–85.6、ドバイ 奥 14.4–35.5／40.0–60.5／64.0–85.0・脇の卓 15.0–26.7／72.8–84.5
-2. **描き直す（昼）**: ずらしただけでは、奥の卓の脚・敷物や床の線・左右の壁が少し曲がる。下絵を画像生成API（`gpt-image-2.6-sunburst`・`/images/edits`・1024×1024・品質 medium）に渡して、位置はそのままに描き直した（下の依頼文）。各店2枚から、下絵とのずれ（0）と明るさで1枚を選んだ
-3. **夜**: 選んだ昼の絵から、VPM30 と同じ夜の依頼文で作った（各店2枚から1枚）。昼と夜の位置のずれは0
+### 作り方
 
-### 依頼文（昼の描き直し。3店とも同じ）
+- **生成し直し**: 画像生成API（`gpt-image-2.6-sunburst`・`/images/edits`・1024×1024・品質 medium）に参照の絵を2枚渡して、新しく描いた（下の依頼文。各店3枚から1枚）。
+  - 1枚め＝形と画風の手本: VPM30 の絵（歪みのない、その店の家具と画風）
+  - 2枚め＝位置の手本: 1回めの作り直しの絵（家具を席の位置へ横にずらした下絵を描き直したもの。**形は歪んでいたので、位置だけ**を使うと依頼文に書いた）
+- 1回めの作り直し（家具を横にずらした下絵を、そのまま描き直した絵）は、オーナー「なんかソファとかカーペットとか歪んじゃって見える　再生成で直した方がいいかも」で使わなかった
+- **夜**: 選んだ昼の絵から、VPM30 と同じ夜の依頼文で作った（各店2枚から1枚）。昼と夜の位置のずれは0
+- 選び方: 奥のソファ・手前の脇の卓の左右の端を、目盛りを重ねて読み、席（奥 20/50/80%・手前 24/76%）に近いもの。3店とも、家具のまん中は席から1%以内
+
+### 依頼文（tonari・昼。mukai・ドバイも同じ形で、家具の呼び名だけ替えた）
 
 ```text
-The attached picture is a retouched draft of a background for a shop-management game: the furniture was moved sideways with an image editor, so some areas are slightly stretched, squeezed or bent (the edges of the rug or the floor pattern, the legs of the low tables in front of the back sofas, the floor boards or tiles near the middle of the picture, the narrow side walls, some ceiling lamps).
+Two reference images are attached.
+- FIRST image: the room, the furniture design and the painting style. Copy its furniture shapes, natural proportions, colors, light, brightness and decoration.
+- SECOND image: the SAME room in a rough draft where some furniture was moved with an image editor. It has editing damage (stretched, squeezed or bent two-seat olive sofas with chunky wooden frames, tables, the Persian-style rug and the wooden floor boards, walls and plants). Use the SECOND image ONLY to know WHERE each piece of furniture stands. Do not copy any shape from it.
 
-Repaint it as a clean, finished painting of the same room in exactly the same hand-painted anime background style and the same colors, light and brightness (visible brushwork, flat 2-3 step shading, no line art, no photo look, no 3D render look).
+Paint a NEW, clean, finished painting of the room from the FIRST image, with the same camera and composition as the FIRST image, but with the furniture standing at the positions of the SECOND image:
+- BACK ROW: the three two-seat olive sofas with chunky wooden frames against the back wall, facing the viewer. Their centers at 20, 50 and 80 percent of the picture width. Each one has the same size and the same natural proportions as in the FIRST image (about 21 percent of the picture width wide), so the gaps between them are wider than in the FIRST image, and the left and right ones stand close to the back corners of the room. Each keeps its own low wooden coffee table directly in front of it, centered under it.
+- SIDES: the two two-seat olive sofas against the left and the right side walls, facing inward, as in the FIRST image. Their small wooden side tables stand a little further toward the center of the room than in the FIRST image: the centers of these two small tables at 24 and 76 percent of the picture width, at the same height as in the FIRST image.
+- The vertical position of every object is the same as in the FIRST image.
+- Everything has natural, undistorted proportions. Straight lines are straight: the outline of the Persian-style rug (a clean rectangle in one-point perspective), the floor boards (they run toward the center of the back wall), table tops and legs, window frames.
 
-KEEP THE LAYOUT EXACTLY (this is the most important rule; the picture is used with fixed seat positions in the game):
-- Same camera, same square composition, same perspective, same height of every element.
-- Every sofa, armchair, bench, table, cushion, plant, lamp, window and the bar counter stays exactly where it is in the draft and keeps its size. Do not move anything back toward the center or toward the walls.
-- The three sofas of the back row stay where they are: their centers at about 20, 50 and 80 percent of the picture width.
-- The two small side tables in the front stay where they are: their centers at about 24 and 76 percent of the picture width.
+Keep the same hand-painted anime background style as the FIRST image: visible brushwork, flat 2-3 step shading, no line art, no photo look, no 3D render look. The same colors, the same light and the same overall brightness as the FIRST image.
 
-Fix only the editing damage:
-- Lines that should be straight are straight: the outline of the rug or of the floor inlay, the table tops and legs, the floor boards or tiles (they follow one-point perspective toward the center of the back wall), the window frames.
-- Furniture has normal, natural proportions; nothing looks stretched or bent.
-- The side walls, corners and plants look natural.
-
-Do not add anything new. Do not paint: people, animals, text, letters, logos, hookahs, shisha pipes, hoses, charcoal, smoke. No lens flare, no bloom haze, no light rays, no glossy or wet-looking floor.
+Do not paint: people, animals, text, letters, logos, signs, hookahs, shisha pipes, hoses, charcoal, smoke. No lens flare, no bloom haze, no light rays, no glossy or wet-looking floor.
 ```
