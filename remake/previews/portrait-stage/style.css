@@ -47,7 +47,9 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .switch .grip i { width: 20px; height: 3px; border-radius: 3px; background: #ffffffa6; }
 .switch .panel { display: none; gap: 4px; margin-top: 4px; padding: 5px; border-radius: 14px; background: #0a0710f0; border: 1px solid #ffffff38; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: 0 10px 24px #000b; }
 .switch.open .panel { display: grid; }
-.switch .panel > div { display: flex; align-items: center; justify-content: center; gap: 2px; }
+.switch .panel > div { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px; }
+/* 場面が増えて1行に収まらない時は折り返す（VPS05）。つまみ全体は画面の幅まで */
+.switch { width: max-content; max-width: calc(100vw - 16px); }
 .switch .sep { width: 1px; height: 18px; margin: 0 4px; background: #ffffff38; }
 .switch small { padding: 0 6px; font-size: 10px; font-weight: 700; color: #9a8fae; }
 .switch button:not(.grip), .switch a { height: 28px; padding: 0 9px; display: grid; place-items: center; border-radius: 100px; font-weight: 700; white-space: nowrap; color: #d8cfe6; text-decoration: none; }
