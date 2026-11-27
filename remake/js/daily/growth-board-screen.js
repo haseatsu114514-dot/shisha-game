@@ -88,6 +88,7 @@ const PANEL_FACE = {
   K10: "serious", K16: "smug", K11: "serious", K14: "surprise", K01: "serious", K02: "smile", K05: "surprise", K17: "normal",
   K09: "smile", K18: "serious", K19: "smile", K21: "smug", K22: "normal", K23: "smug", K24: "serious",
   K25: "smile", K26: "excited", K27: "serious", // v15 のユニークなスキル（聞き上手・くじ運・仕事が早い。SBD154）
+  K28: "smile", K29: "excited", K30: "thinking", // v16 の店番のスキル（売り上手・波に乗る・フロアを読む。SBD157）
 };
 /** スキル説明の白黒漫画コマ。共用する日常スキルは同じ場面を使う（#3425・SBD129）。 */
 const SKILL_ART = {
@@ -99,6 +100,8 @@ const SKILL_ART = {
   K02: "sk_notebook", K24: "sk_notebook", K23: "sk_notebook",
   K06: "sk_steam_calm", K22: "sk_steam_calm",
   K25: "sk_k04", K26: "sk_k16", K27: "sk_prep",
+  // 店番のスキル（SBD157）: 店先で客を迎える・勝負の流れ・卓の空気を読む場面を共用する
+  K28: "sk_k04", K29: "sk_k16", K30: "sk_k07",
 };
 const ART_FILES = ["board_glass", "screen_backdrop", "hub_body", "hub_sense", "hub_wisdom", "frame_skill", "frame_lesson", "frame_gate", "frame_peak", "frame_seal",
   "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame", "wall_seal", "silhouette_unknown",

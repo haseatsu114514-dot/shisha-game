@@ -200,7 +200,7 @@ export function createFloorNight({ venue = "tonari", seed = 0, level = 0, chapte
     venue: v.id,
     ...(typeof venue === "object" && venue ? { venueOverride: structuredClone(venue) } : {}),
     seed: Number(seed) >>> 0, level, chapter, night: def.id, title: byTime(def.title, daytime), daytime: !!daytime, dusk: duskAt,
-    floorPerks: { floorMatch: floorPerks?.floorMatch || 0, floorTop: floorPerks?.floorTop || 0 },
+    floorPerks: floorPerksOf(floorPerks),
     visitor: visitorAllowed && guests.g3?.charId ? who.id : null,
     hint: level >= r.sightAt ? "sight" : "said",
     t: 0, length: def.length, done: false, closing: null, rolls: 0,
@@ -213,6 +213,25 @@ export function createFloorNight({ venue = "tonari", seed = 0, level = 0, chapte
     log: [],
   };
 }
+
+/**
+ * 営業に持ち込む心得の盤の効き目（保存できる値だけ）。floorMatch／floorTop＝能力のマスの恩恵（#4255）。
+ * shuffleScale／commission／feverTables／floorRead＝店番のスキル（仕事が早い・売り上手・波に乗る・フロアを読む。SBD157）。
+ */
+function floorPerksOf(perks) {
+  const scale = Number(perks?.shuffleScale);
+  return {
+    floorMatch: perks?.floorMatch || 0, floorTop: perks?.floorTop || 0,
+    shuffleScale: scale > 0 && scale <= 1 ? scale : 1,
+    commission: Math.max(0, Number(perks?.commission) || 0),
+    feverTables: Math.max(0, Math.floor(Number(perks?.feverTables) || 0)),
+    floorRead: perks?.floorRead === true,
+  };
+}
+/** シャッフルにかかる刻み（店舗の長さ × 仕事が早い。最低1刻み）。 */
+const shuffleTicksOf = (s) => Math.max(1, Math.round(rulesOf(s).shuffle * (s.floorPerks?.shuffleScale ?? 1)));
+/** フィーバーが広がる卓の数（店舗の数 ＋ 波に乗る）。 */
+const feverTargetsOf = (s) => rulesOf(s).feverTargets + (s.floorPerks?.feverTables || 0);
 
 function emptyTable(id) {
   return { id, phase: "empty", guestId: null, mood: 0, since: 0, mix: null, grade: null, rating: null, make: null,
@@ -259,7 +278,9 @@ function shuffleHand(s, selectedId) {
   // 提供済みの一台も再抽選の対象。チュートリアルだけは手順に合わせた山を使う。
   const deck = s.tutorial ? [...s.deck, ...s.hand] : shuffled(mixIdsFor(s.chapter), () => roll(s));
   const fresh = deck.filter((id) => !s.hand.includes(id));
-  const target = guestAt(s, floorOrderTarget(s, selectedId))?.order;
+  const targetTable = floorOrderTarget(s, selectedId);
+  const target = guestAt(s, targetTable)?.order;
+  const matchPercent = r.shuffleMatchPercent + s.floorPerks.floorMatch;
   let hand = fresh.slice(0, handSize);
   if (target && !s.tutorial) {
     const reserved = [];
@@ -280,11 +301,25 @@ function shuffleHand(s, selectedId) {
       }
     } else {
       const best = (id) => MIXES[id].main === target.wish;
-      if (roll(s) * 100 < r.shuffleMatchPercent + s.floorPerks.floorMatch) {
+      if (roll(s) * 100 < matchPercent) {
         const pick = fresh.find(best);
         if (pick && !reserved.some(best)) reserved.push(pick);
       } else {
         candidates = fresh.filter((id) => !best(id));
+      }
+    }
+    // フロアを読む（K30。SBD157）: 注文を待つほかの卓（おかわりも）にも、待たせている順に、同じ確率で合う一台を引き寄せる。
+    // すでに並べる一台で応えられる卓は抽選しない。名指しの注文は好物、ふつうの注文は気分がメインの一台。
+    if (s.floorPerks.floorRead) {
+      const others = s.tables.filter((t) => t.phase === "order" && t !== targetTable && guestAt(s, t)?.order)
+        .sort((a, b) => a.since - b.since || a.id - b.id);
+      for (const table of others) {
+        if (reserved.length >= handSize) break;
+        const order = guestAt(s, table).order;
+        const fits = order.pref ? (id) => rateMix(id, order) === "best" : (id) => MIXES[id].main === order.wish;
+        if (reserved.some(fits) || roll(s) * 100 >= matchPercent) continue;
+        const pick = (order.pref ? [s.stock, ...fresh, ...s.hand] : fresh).find((id) => id && fits(id) && !reserved.includes(id));
+        if (pick) reserved.push(pick);
       }
     }
     hand = [...new Set([...reserved, ...candidates])].slice(0, handSize);
@@ -623,9 +658,10 @@ export function floorAct(state, action) {
       // 合う一台が出るまで何度でも回せるが、そのぶん客を待たせる
       if (s.t < s.shuffleAt) return state;
       shuffleHand(s, action.tableId);
-      s.shuffleAt = s.t + r.shuffle;
+      const ticks = shuffleTicksOf(s);
+      s.shuffleAt = s.t + ticks;
       s.shuffles += 1;
-      note(s, { type: "shuffle", ticks: r.shuffle });
+      note(s, { type: "shuffle", ticks });
       return s; // 開店前でも出来る（閉店の判定はしない）
     }
     case "tend": {
@@ -675,7 +711,7 @@ export function floorAct(state, action) {
       if (!floorFeverReady(s) || s.feverLeft > 0) return state;
       // まだフィーバーがあまり届いていない卓から。あとは滞在の残りが長い順。
       const targets = s.tables.filter((x) => x.phase === "enjoy")
-        .sort((a, b) => a.feverTicks - b.feverTicks || b.stayEnd - a.stayEnd || a.id - b.id).slice(0, r.feverTargets);
+        .sort((a, b) => a.feverTicks - b.feverTicks || b.stayEnd - a.stayEnd || a.id - b.id).slice(0, feverTargetsOf(s));
       if (!targets.length) return state;
       for (const target of targets) {
         target.fever = true;
@@ -843,7 +879,9 @@ export function floorResult(s, allowances = 0) {
     venue: v.id, night: s.night, title: s.title, sales: s.sales, visitor: s.visitor,
     items: { charge: sum("charge"), shisha: sum("shisha"), drink: sum("drink"), top: sum("top") },
     fans: s.fans, score, rank: rank.id, stamp: rank.stamp, comment: rank.line,
-    pay: floorVenueShiftPay(v, s.chapter, s.sales, allowances),
+    // 歩合の上乗せ（売り上手。SBD157）は営業を開いた時の盤で決める。本編の入金も同じ値を使う
+    commissionBonus: s.floorPerks?.commission || 0,
+    pay: floorVenueShiftPay(v, s.chapter, s.sales, allowances, s.floorPerks?.commission || 0),
     groups, served: groups.filter((row) => !row.left).length, came: groups.length, left,
     stages: Object.fromEntries(MOODS.map((m) => [m.id, groups.filter((row) => row.stage === m.id).length])),
     counts: { ...s.counts }, fevers: s.fevers, shuffles: s.shuffles, streak: s.bestStreak, closing: s.closing, mixes,
@@ -912,7 +950,10 @@ export const floorLastCall = T.lastCall;
 export const floorSlots = T.slots;
 export const floorVenueTableCount = (s) => rulesOf(s).tableCount;
 export const floorVenueSlots = (s) => rulesOf(s).slots;
-export const floorVenueShuffleTime = (s) => rulesOf(s).shuffle;
+/** その営業のシャッフルにかかる刻み（店舗の長さに、心得の盤の「仕事が早い」を掛けたもの）。 */
+export const floorVenueShuffleTime = (s) => shuffleTicksOf(s);
+/** その営業でフィーバーが広がる卓の数（店舗の数に、心得の盤の「波に乗る」を足したもの）。 */
+export const floorFeverTargets = (s) => feverTargetsOf(s);
 export const floorVenueFeverLength = (s) => rulesOf(s).fever;
 export const floorVenueLastCall = (s) => rulesOf(s).lastCall;
 export const floorVenuePrice = (s) => venueOf(s).price;

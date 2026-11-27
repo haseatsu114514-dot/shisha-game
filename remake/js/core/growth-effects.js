@@ -7,8 +7,10 @@ import { STAMINA_CONDITIONS } from "./condition.js";
 /** 調整用の初期値。通常マスの百分率とは別に重ねる（SPEC 2.5）。 */
 export const SKILL_TUNING = Object.freeze({ sleep: .1, first: .2, mastery: .2, leaf: .2, holesSeconds: 6, strain: .75,
   forecastRead: .15, bargain: .1, critical: 1.5, criticalCap: 3, momentum: 2, smokeRing: 1, afterglowSeconds: 3, afterglowSpeed: .65,
-  // SBD154: 聞き上手＝通いの小会話の好感度に足す点、くじ運＝後ろ半分の上の賞が前半へ移る確率、仕事が早い＝基本の日当に掛ける割合
-  listen: 2, kujiLuck: .5, baitoPay: .1 });
+  // SBD154: 聞き上手＝通いの小会話の好感度に足す点、くじ運＝後ろ半分の上の賞が前半へ移る確率
+  listen: 2, kujiLuck: .5,
+  // SBD157（店番）: 仕事が早い＝シャッフルにかかる刻みに掛ける割合（2秒→1秒）、売り上手＝歩合に足すポイント、波に乗る＝フィーバーが広がる卓の数に足す数
+  quickShuffle: .5, commission: 3, feverTables: 1 });
 const skillIds = new Set(SKILLS.map(s => s.id));
 const lessonIds = new Set(LESSONS.map(s => s.id));
 export const LESSON_TUNING = Object.freeze({ stamina: 20, mix: 4, cardamomPenalty: .5, lavenderSleep: .2, single: 4, flowerLayer: 2, blindSwing: 3, dragonStreak: 3, deepHeat: .27, sharkRadius: 1.5, climateVariation: .5, callingSales: 1000, grapeReception: 2 });
@@ -92,6 +94,26 @@ export function boardPerks(nodes = []) {
 
 /** 旧能力の保存値は保持し、確定済みの盤の恩恵を各使用箇所で加算する。 */
 export const growthPerks = s => growthEnabled() ? boardPerks(s?.growth?.nodes) : null;
+
+/**
+ * 店番（フロア営業）に渡す盤の効き目（SBD157）。能力のマスの恩恵（レア客・トップ替え・注文の読み）に、店番のスキルの効き目を足した形。
+ * 保存できる値だけ（営業の state にそのまま入る）。盤が無効なら null（店番は素の決まりで動く）。
+ * - shuffleScale: シャッフルにかかる長さに掛ける割合（仕事が早い K27）
+ * - commission: 歩合に足すポイント（売り上手 K28）
+ * - feverTables: フィーバーが広がる卓に足す数（波に乗る K29）
+ * - floorRead: シャッフルが、注文を待つほかの卓の気分も読む（フロアを読む K30）
+ */
+export function growthFloorPerks(s) {
+  const perks = growthPerks(s);
+  if (!perks) return null;
+  return {
+    floorRare: perks.floorRare, floorTop: perks.floorTop, floorMatch: perks.floorMatch,
+    shuffleScale: growthSkill(s, "K27") ? SKILL_TUNING.quickShuffle : 1,
+    commission: growthSkill(s, "K28") ? SKILL_TUNING.commission : 0,
+    feverTables: growthSkill(s, "K29") ? SKILL_TUNING.feverTables : 0,
+    floorRead: growthSkill(s, "K30"),
+  };
+}
 
 /** 才能盤の能力マスの進み具合。台座・追加マス・仮置きは数えない。 */
 export function bodyStaminaBonuses(s) {

@@ -10,7 +10,7 @@ const root = new URL("../", import.meta.url), dataRoot = new URL("../../", impor
 const scenes = JSON.parse(await fs.readFile(new URL("data/dialogue/remake_ch1.json", dataRoot), "utf8")).dialogues;
 const sumi = JSON.parse(await fs.readFile(new URL("data/dialogue/ch1_sumi.json", dataRoot), "utf8")).dialogues;
 const state = {}, db = { dialogues: {} }, plays = [], money = [], menus = [], toasts = [];
-let rainy = false, selectedPools = [], charmStep = 1, hiyoriDue = false, calling = false, quick = false;
+let rainy = false, selectedPools = [], charmStep = 1, hiyoriDue = false, calling = false;
 class Element { constructor(spec) { this.spec = spec; this.children = []; this.dataset = {}; } append(...nodes) { this.children.push(...nodes.flat().filter(Boolean)); } }
 function el(spec, attrs = {}, children = []) { if (Array.isArray(attrs)) { children = attrs; attrs = {}; } const node = new Element(spec); Object.assign(node, attrs); node.append(children); return node; }
 function find(node, id) { if (node.dataset?.test === id) return node; return node.children?.map((child) => find(child, id)).find(Boolean); }
@@ -41,7 +41,7 @@ const values = {
   "scene-motions.js": { shiftClose: async () => {} },
   "bus.js": { emit() {}, on: () => () => {} },
   "growth.js": { EXP: { tutorial: 10 }, gainExp: () => 0, growthEnabled: () => false, hidaneTotal: () => 0, readyLessons: () => [], consultLessons: async () => [] },
-  "growth-effects.js": { growthPerks: () => null, callingSalesBonus: (_, condition) => calling ? Math.round(1000 * condition.bonusRate) : 0, growthSkill: (_, id) => quick && id === "K27", SKILL_TUNING: { baitoPay: .1 } },
+  "growth-effects.js": { growthPerks: () => null, callingSalesBonus: (_, condition) => calling ? Math.round(1000 * condition.bonusRate) : 0, growthFloorPerks: () => null },
   "reel.js": { installReel() {} },
   "weather.js": { isRainy: () => rainy, weatherOf: () => (rainy ? "rain" : "sun"), RAIN_SPOT_TEXTS: {} },
 };
@@ -57,7 +57,7 @@ function reset(overrides = {}) { Object.keys(state).forEach((key) => delete stat
   // DAY8の接客fixtureは、それまでの必須場面を読了した通常営業。
   Object.assign(state.flags, { _tsumugi_contest_research: true, _tsumugi_contest_progress: true });
   state.money = 0;
-  rainy = calling = quick = false; charmStep = 1; plays.length = 0; money.length = 0; menus.length = 0; toasts.length = 0; selectedPools = []; }
+  rainy = calling = false; charmStep = 1; plays.length = 0; money.length = 0; menus.length = 0; toasts.length = 0; selectedPools = []; }
 // 第1章の正体を伏せた3客（カメオ）は、それぞれ一度きり。第2章に持ち越さない。
 reset({ day: 6, baitoCount: 1, flags: {} });
 await tonari.doBaito(); await tonari.doBaito(); await tonari.doBaito(); await tonari.doBaito();
@@ -77,9 +77,8 @@ for (const [stamina, expectedPay] of [[75, 14575], [70, 13500], [45, 13250], [24
 reset({ stamina: 24 }); await tonari.doBaito(); assert.equal(money[0], 8000, "Exhaustion cut the guaranteed base wage");
 const fatigueWarning = () => toasts.some(({ text, kind }) => kind === "warn" && text.includes("ボーナスは半額"));
 assert.equal(fatigueWarning(), false);
-reset({ stamina: 24 }); calling = quick = true; await tonari.doBaito();
-assert.equal(money[0], 9300); // 8,000＋呼び込み500（不調で半額）＋仕事が早い800
-assert(toasts.some(({ text }) => text.includes("仕事が早い") && text.endsWith("+800円")));
+reset({ stamina: 24 }); calling = true; await tonari.doBaito();
+assert.equal(money[0], 8500); // 8,000＋呼び込み500（不調で半額）。仕事が早いは SBD157 でシャッフルの速さへ移り、日当には足さない
 assert(fatigueWarning(), "指名がなくても呼び込みボーナスの半減を知らせる");
 // #1081 B05: シフト上がりのスミ会話は必須で、メニューに選択肢は無い。
 // 統合spots.jsの夜限定gateをそのまま使う。店番は昼から夜まで（TFL62）なので、上がりは夜: 夜限定の固有会話（ch1_sumi_training）が流れ、既読（story）が進む。
