@@ -546,9 +546,9 @@ const TOOL_SVG = {
     <path class="gl-pipe" d="M18 8H40Q50 8 50 17V18"/><rect x="43.5" y="17" width="13" height="7" rx="2"/>
     <g class="gl-drops"><circle cx="50" cy="30.5" r="2.6"/><circle cx="50" cy="37.5" r="2.9"/></g>${BOTTLE_ICON}${BOTTLE_WATER}</svg>`,
   // こぼす（VPL84・VPL85）: 同じボトルを少し傾け、口から水がこぼれる。中の水の面は傾けても水平（ボトルの内側で切り抜く）
-  drain: `<svg class="tool-svg tool-drain" viewBox="0 0 100 100" aria-hidden="true"><defs><clipPath id="drain-in"><path transform="translate(58 56) rotate(-40) translate(-50 -75)" d="${BOTTLE_PATH}Z"/></clipPath></defs>
+  drain: `<svg class="tool-svg tool-drain" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(100 0) scale(-1 1)"><defs><clipPath id="drain-in"><path transform="translate(58 56) rotate(-40) translate(-50 -75)" d="${BOTTLE_PATH}Z"/></clipPath></defs>
     <rect x="0" y="60" width="100" height="40" clip-path="url(#drain-in)"/><g transform="translate(58 56) rotate(-40) translate(-50 -75)">${BOTTLE_ICON}</g>
-    <g class="gl-drop"><path d="M25 46C25 46 19.5 53.5 19.5 56.5A5.5 5.5 0 0 0 30.5 56.5C30.5 53.5 25 46 25 46Z"/><path d="M22 66C22 66 17.5 71.5 17.5 74A4.5 4.5 0 0 0 26.5 74C26.5 71.5 22 66 22 66Z"/></g></svg>`,
+    <g class="gl-drop"><path d="M25 46C25 46 19.5 53.5 19.5 56.5A5.5 5.5 0 0 0 30.5 56.5C30.5 53.5 25 46 25 46Z"/><path d="M22 66C22 66 17.5 71.5 17.5 74A4.5 4.5 0 0 0 26.5 74C26.5 71.5 22 66 22 66Z"/></g></g></svg>`,
   // 提供（VPL86）: 料理を出す時の蓋（クロッシュ）。吸い出しの右下の丸いボタン
   serve: `<svg class="tool-svg tool-serve" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="27" r="6"/><path d="M17 72A33 33 0 0 1 83 72Z"/><rect x="8" y="77" width="84" height="8" rx="4"/></svg>`,
   // リフレッシュ（VPL62）: 真ん中の心と、そこから広がる波で雑念の粒を外へ払う形。効果（心の周りを払う）がそのまま見える
@@ -1111,7 +1111,8 @@ class Phone {
     const id = `bw${this.uid}`, { w, h } = BOTTLE;
     // 水流は、受け口の穴の手前の縁より上だけ手前に描く（その下は受け口の陰。胴の中の分は奥の SVG の .w-stream.in がガラス越しに見せる）
     return `<svg class="bottle-svg fx" viewBox="0 0 ${w} ${h}" aria-hidden="true"><defs><clipPath id="${id}f"><rect class="w-fxclip" x="-400" y="-900" width="${w + 800}" height="0"/></clipPath></defs>
-      <g clip-path="url(#${id}f)"><path class="w-stream" fill="url(#${id}s)" d=""/></g><path class="w-spill" d=""/><g clip-path="url(#${id})"><g class="w-drops">${`<circle r="0"/>`.repeat(7)}</g></g></svg>`;
+      <g clip-path="url(#${id}f)"><path class="w-stream" fill="url(#${id}s)" d=""/></g><path class="w-spill" d=""/>
+      <g clip-path="url(#${id})"><path class="w-band" d=""/><path class="w-line2" d=""/></g><g class="w-mark"><rect x="0" y="-26" width="92" height="52" rx="26"/><text x="46" y="12">目安</text></g><g clip-path="url(#${id})"><g class="w-drops">${`<circle r="0"/>`.repeat(7)}</g></g></svg>`;
   }
 
   /** 水入れ（VPL46・VPL81）: 蛇口の下で、口の開いたボトルを少し傾けて満たす。水位計は出さない。二本の線が目安 */
@@ -1195,6 +1196,14 @@ class Phone {
     S.surf.setAttribute("d", shown ? top : "");
     const [, yl] = tiltPoint(BOTTLE.cx, waterY(WATER.low), ang), [, yh] = tiltPoint(BOTTLE.cx, waterY(WATER.high), ang);
     S.line.setAttribute("d", `M-40 ${yl.toFixed(1)}H${BOTTLE.w + 40}M-40 ${yh.toFixed(1)}H${BOTTLE.w + 40}`);
+    // 目安の線は、ガラスの手前にも太く描き、2本のあいだを薄く塗る。ボトルの右に「目安」の札（VPL119）
+    S.band ??= S.svg.parentElement.querySelector(".w-band"); S.line2 ??= S.svg.parentElement.querySelector(".w-line2"); S.mark ??= S.svg.parentElement.querySelector(".w-mark");
+    if (S.band) {
+      S.band.setAttribute("d", `M-40 ${yh.toFixed(1)}H${BOTTLE.w + 40}V${yl.toFixed(1)}H-40Z`);
+      S.line2.setAttribute("d", `M-40 ${yl.toFixed(1)}H${BOTTLE.w + 40}M-40 ${yh.toFixed(1)}H${BOTTLE.w + 40}`);
+      const ym = (waterY(WATER.low) + waterY(WATER.high)) / 2, [mx, my] = tiltPoint(BOTTLE_WALL(ym)[1] + 34, ym, ang);
+      S.mark.setAttribute("transform", `translate(${mx.toFixed(1)} ${((yl + yh) / 2).toFixed(1)})`);
+    }
     // 水流（上が少し太く、下へ細る。わずかに揺れる）
     if (S.head != null && S.head - S.tail > 4) {
       const t = now / 1000, wob = (yy) => Math.sin(t * 19 + yy * 0.045) * 1.6 + Math.sin(t * 31 + yy * 0.09) * 0.8, y0 = S.tail, y1 = S.head, seg = 6;
@@ -2194,7 +2203,7 @@ class Phone {
     return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="timer-a">
       <div class="ktimer"><img src="${IMG.kitchenTimer}" alt=""><output class="lcd" aria-live="polite"></output>
         ${keys.map(([k, label]) => `<button class="kt-key kt-${k}" data-act="timer" data-key="${k}">${label}</button>`).join("")}</div>
-      <div class="t-forecast"><span class="tf-head">蒸らし後の温度の目安</span><b class="tf-range"></b><small class="tf-dodge"></small></div></div>`;
+      </div>`;
   }
 
   /** タイマーのボタン（下の画面と、絵の物理ボタンの両方から）。分＝＋1分、秒＝＋10秒、早見＝その分、リセット＝0、スタート＝雑念よけへ */
@@ -2225,8 +2234,8 @@ class Phone {
     const b = bandsOf(st.mix), pred = steamPredict(sec);
     const name = (t) => t >= b.best[0] && t <= b.best[1] ? "最適温" : t >= b.zone[0] && t <= b.zone[1] ? "適温" : t > b.zone[1] ? "熱い" : t < 0.2 ? "低温" : "ぬるい";
     const lo = name(pred - STEAM_SPREAD), hi = name(pred + STEAM_SPREAD);
-    el.querySelector(".tf-range").textContent = set ? (lo === hi ? `${lo}のあたり` : `${lo}〜${hi}`) : "—";
-    el.querySelector(".tf-dodge").textContent = set ? `雑念よけは約${Math.ceil(steamPlaySeconds(sec))}秒` : "時間を決めると、雑念よけの長さが分かる";
+    // 蒸らし後の温度の目安は、右の温度計の針と幅で見せる（下の目安の札は VPL116 でなくした）。読み上げ用に温度計へ言葉を残す
+    el.querySelector(".thermo")?.setAttribute("aria-label", set ? `蒸らし後の温度の目安 ${lo === hi ? `${lo}のあたり` : `${lo}〜${hi}`}・雑念よけは約${Math.ceil(steamPlaySeconds(sec))}秒` : "蒸らし後の温度の目安");
     st.temp = set ? pred : 0.4;
     const thermo = el.querySelector(".thermo");
     if (thermo) { thermo.dataset.selected = String(set); this.syncThermo(); }
