@@ -782,10 +782,10 @@ html:root .desert-ride .dr-card.dr-menu .dr-tiers[data-slots="4"] .dr-tier.dr-ti
 html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier-naru b { letter-spacing: 0; }
 html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier-naru:not(:disabled):not([data-state="chosen"]) { color: #f3e6ff; border-color: #9a7ac8; background: linear-gradient(180deg, #44305a, #241634); }
 html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier-naru:disabled b { color: #b9a58e; }
-.dr-tier-face { display: block; width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid #c9a6ff; background: #3a2448; box-shadow: 0 2px 0 rgba(30, 10, 4, .55); }
+.dr-tier-face { display: block; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #c9a6ff; background: #3a2448; box-shadow: 0 2px 0 rgba(30, 10, 4, .55); }
 .dr-tier-naru[data-state="chosen"] .dr-tier-face { border-color: #fff6c8; }
 html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-tiers[data-slots="4"] .dr-tier.dr-tier b { font-size: 30px; }
-html:root[data-density="phone"] .desert-ride .dr-tier-face { width: 42px; height: 42px; }
+html:root[data-density="phone"] .desert-ride .dr-tier-face { width: 46px; height: 46px; }
 
 /* ---- 結果のメダルと札を、ランクごとの絵に（2026-11-27 オーナー「メダルのデザインがなんか合成感すごい　ちゃんとランクごとのメダルを生成で作ってあげて　CSS感がある部分は綺麗にしたい」・DSR106）----
    メダルは S・A・B・C の4枚を、字を金属の浮き彫りとして描き込んだ絵にした（gpt-image-2.6-sunburst。asset_sources/ui/minigame-visuals-20261127/desert/）。

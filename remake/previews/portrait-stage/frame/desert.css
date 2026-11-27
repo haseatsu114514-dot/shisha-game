@@ -119,7 +119,9 @@
 #stage .dr-card.dr-menu .dr-button.dr-button { min-height: 92px; font-size: 27px; letter-spacing: .02em; padding: 8px 10px; white-space: nowrap; }
 /* 「報酬対象外」「評価報酬・なる解放の対象外」「○級クリアで開く」は出さない（2026-11-27 オーナー「報酬対象外とかシステム的な説明は載せない」）。閉じた段は鍵の形で見せる */
 #stage .dr-tier-flag, #stage .dr-tier small:is([data-kind="easy"], [data-kind="locked"]), #stage .dr-result-tags small { display: none; }
-#stage .dr-tier:disabled::after { content: ""; width: 34px; height: 30px; margin-top: 4px; border-radius: 6px; background: #8d7a66; box-shadow: 0 -22px 0 -9px #2a1c16, 0 -22px 0 -4px #8d7a66; }
+/* 閉じた段の錠は、名前の下に1つだけ大きく（名前の左の小さな錠は出さない。前の形は錠の輪が名前に重なっていた） */
+#stage .dr-card.dr-menu .dr-tier.dr-tier:disabled b::before { display: none; }
+#stage .dr-tier:disabled::after { content: ""; width: 28px; height: 33px; margin-top: 6px; background: #8d7a66; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24'%3E%3Cpath d='M10 1a6 6 0 0 0-6 6v3H3a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V7a6 6 0 0 0-6-6zm-3 9V7a3 3 0 0 1 6 0v3H7z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24'%3E%3Cpath d='M10 1a6 6 0 0 0-6 6v3H3a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V7a6 6 0 0 0-6-6zm-3 9V7a3 3 0 0 1 6 0v3H7z'/%3E%3C/svg%3E") center / contain no-repeat; }
 #stage .dr-tier:disabled .dr-tier-stars { display: none; }
 #stage .dr-tier-stars { height: 26px; font-size: 24px; line-height: 26px; }
 /* なるの札（4枚目・DSR107）: 4枚が幅に収まるよう、名前は少し小さく。開いたら顔、閉じている間は「？？？」と錠 */
