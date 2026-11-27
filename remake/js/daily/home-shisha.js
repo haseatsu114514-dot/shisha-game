@@ -114,7 +114,7 @@ const FLAVOR_IMPRESSIONS = {
   siga: "葉巻みたいな重い香りなんだな",
   nightside_blast_mint: "鋭い清涼感があるんだな",
   mint: "冴えのある清涼感なんだな",
-  double_apple: "アニスが香る。りんご一色じゃないんだな",
+  double_apple: "アニスとリコリスが重なると、りんごみたいに香るんだな",
   blueberry: "ブルーベリーの果実らしい香りなんだな",
   strawberry: "想像した苺の甘さとは違う。繊細な味なんだ",
   vanilla: "厚みのある、丸い甘さなんだな",

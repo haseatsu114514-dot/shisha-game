@@ -583,8 +583,8 @@ export async function stepMix(cs) {
       }
       else { cs.mix = { double_apple: 5, mint: 7 }; }
       if (reg?.flavor === "strawberry") {
-        const apple = autoSkill() === "good" ? Math.min(12 - reg.min, flavorStock("double_apple")) : 0;
-        cs.mix = { [supplyId]: 12 - apple, ...(apple ? { double_apple: apple } : {}) };
+        const doubleAppleGrams = autoSkill() === "good" ? Math.min(12 - reg.min, flavorStock("double_apple")) : 0;
+        cs.mix = { [supplyId]: 12 - doubleAppleGrams, ...(doubleAppleGrams ? { double_apple: doubleAppleGrams } : {}) };
       }
       if (reg?.flavor === "lemon") cs.mix = { lemon: 3, double_apple: 9 };
       if (reg?.flavor === "chocolate") cs.mix = { chocolate: 4, double_apple: 8 };
