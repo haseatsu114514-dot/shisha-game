@@ -727,3 +727,18 @@ Draw one object on a fully transparent background: a realistic, believable digit
 [bumper] Extra details: the cream-white front panel is held in a soft silicone bumper frame in pale sage green that wraps around the whole edge with rounded corners, like many modern kitchen timers. A small speaker grille of tiny holes centered on the panel below the keys.
 ```
 
+## 18回目: 縦長のキッチンタイマーを案1に決め、縦を少し詰める（VPL130・生成なし）
+
+オーナー「案1で　これを若干縦幅削れるとこ削っていい　そうすればちょうど良くなりそう」。17回目の案1（`ktimer-real-slim-original.webp`）を使い、縦を約12%詰めた（縦横比 0.65→0.73）。
+新しく生成はしていない。行ごとの変化がなだらかな帯だけを選び、縦に縮めてつないだ。帯を抜き取ると液晶のうすいグラデーションに段が出たため、抜き取りはやめた。ボタンの下は、角の丸みが始まる所に近いので触らない。
+
+| 元の行（1024×1536 の原画） | 縮めた後 | 所 |
+|---|---|---|
+| 181〜228（48行） | 28行 | 液晶の上の本体 |
+| 420〜699（280行） | 180行 | 液晶の下半分（映り込みの無い所） |
+| 743〜797（55行） | 35行 | 液晶とスピーカーの穴の間 |
+| 818〜870（53行） | 33行 | スピーカーの穴とボタンの間 |
+
+詰めたあと、本体の外枠で切り抜き、幅720にした（`remake/previews/portrait-stage/img/ui-ktimer-tall.webp`・720×982）。液晶とボタンの位置は、縮めた分だけずらして `app.mjs` の `KTIMER` に割合で書いた。
+案2・案3（`ui-ktimer-tall-std.webp`・`ui-ktimer-tall-bumper.webp`）と、詰める前の `ui-ktimer-tall-slim.webp` は、試作の `img/` から外した（原画は v4/ にそのまま残す）。
+

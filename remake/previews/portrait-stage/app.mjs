@@ -63,10 +63,8 @@ const IMG = {
   stove: `${OWN_IMG}ui-stove-zoom.webp`,
   coalCold: `${REMAKE_IMG}ui/making/heat_flat_cold.webp`,
   kitchenTimer: `${REMAKE_IMG}ui/making/kitchen_timer.webp`, // 蒸らしのタイマー（本編と同じ絵。VPL105）
-  // 縦長のキッチンタイマー（実物のキッチンタイマーに合わせた作りで生成。画風は店の背景、色は本編のタイマー。液晶の数字とボタンの字は試作が重ねる。VPL129）
-  ktTall_slim: `${OWN_IMG}ui-ktimer-tall-slim.webp`,
-  ktTall_std: `${OWN_IMG}ui-ktimer-tall-std.webp`,
-  ktTall_bumper: `${OWN_IMG}ui-ktimer-tall-bumper.webp`,
+  // 縦長のキッチンタイマー（実物に合わせた作りで生成し（VPL129 の案1 大きな液晶）、縦を少し詰めた（VPL130）。液晶の数字とボタンの字は試作が重ねる）
+  kitchenTimerTall: `${OWN_IMG}ui-ktimer-tall.webp`,
   coalLit: `${REMAKE_IMG}ui/making/heat_flat_lit.webp`,
   // 炭壺とトングを持ち、コンロの熱の明かりに下から照らされたはじめ（生成・背景なし。会場の背景に重ねる・VPL57）
   coalHajime: `${OWN_IMG}craft-coal-hajime.webp`,
@@ -163,18 +161,9 @@ const clockTime = (sec) => `${String(Math.floor(sec / 60)).padStart(2, "0")}:${S
 // 蒸らし後の温度の目安（この試作の吸い出しの温度の物差し）。5分で吸い出しの初め（0.40）、長いほど高い。気温や炭の状態で ±0.03 前後する
 const steamPredict = (sec) => Math.max(0.06, Math.min(0.95, 0.4 + steamHeatFor(sec)));
 const STEAM_SPREAD = 0.03;
-// 縦長のキッチンタイマーの絵の案（VPL129。実物に合わせた作り・ボタンは2段2列）。液晶とボタンの位置は絵の中の割合（液晶＝左・上・幅・高さ、ボタン＝中心の横・縦・幅・高さ・字の大きさ cqw）
-const TIMER_LOOKS = {
-  slim: { name: "大きな液晶", lead: "少し細長い本体で、液晶が上半分を大きく占める。液晶とボタンの間にスピーカーの小さな穴の列。数字がいちばん大きい",
-    ar: [885, 1367], lcd: [12.54, 12.8, 74.58, 33.07],
-    keys: { min: [29.49, 63.57, 33.0, 12.0, 8.4], sec: [69.04, 63.71, 32.54, 11.71, 8.4], reset: [29.27, 80.54, 32.55, 12.0, 5], start: [68.81, 80.4, 32.09, 11.71, 4.6] } },
-  std: { name: "ストラップ穴", lead: "いちばん素直な形。上にストラップを通す穴、ボタンの下にスピーカーの丸い穴。実物の店先によくある作り",
-    ar: [907, 1409], lcd: [12.68, 15.97, 74.53, 25.55],
-    keys: { min: [29.44, 54.01, 34.4, 11.36, 8.4], sec: [70.01, 54.01, 34.4, 11.36, 8.4], reset: [29.44, 70.19, 34.4, 11.92, 5], start: [69.79, 70.05, 33.96, 11.64, 4.6] } },
-  bumper: { name: "シリコンの縁", lead: "白い面を、淡い緑のシリコンの縁が包む（最近の実物に多い作り）。ボタンの下にスピーカーの穴",
-    ar: [917, 1353], lcd: [14.94, 15.0, 70.12, 26.02],
-    keys: { min: [29.88, 54.33, 33.58, 11.23, 8.4], sec: [69.79, 54.33, 34.02, 11.23, 8.4], reset: [29.88, 71.18, 33.58, 11.23, 5], start: [69.58, 71.18, 33.59, 11.23, 4.6] } },
-};
+// 縦長のキッチンタイマー（VPL130 で案1 大きな液晶に決め、縦を少し詰めた）。液晶とボタンの位置は絵の中の割合（液晶＝左・上・幅・高さ、ボタン＝中心の横・縦・幅・高さ・字の大きさ cqw）
+const KTIMER = { ar: [885, 1207], lcd: [12.54, 12.84, 74.58, 29.16],
+  keys: { min: [29.49, 58.74, 33.0, 13.58, 8.4], sec: [69.04, 58.91, 32.54, 13.25, 8.4], reset: [29.27, 77.97, 32.55, 13.59, 5], start: [68.81, 77.8, 32.09, 13.25, 4.6] } };
 // 液晶の7つの区画（本編 remake/js/craft/digital-clock.js と同じ形。数字を絵に焼き込まない）
 const SEG_DIGITS = ["abcdef", "bc", "abdeg", "abcdg", "bcfg", "acdfg", "acdefg", "abc", "abcdefg", "abcdfg"];
 const SEG_PATHS = { a: "M6 2h28l4 4-4 4H6L2 6Z", b: "m38 8 4 4v20l-4 4-4-4V12Z", c: "m38 38 4 4v20l-4 4-4-4V42Z", d: "M6 64h28l4 4-4 4H6l-4-4Z", e: "m2 38 4 4v20l-4 4-4-4V42Z", f: "m2 8 4 4v20l-4 4-4-4V12Z", g: "M6 33h28l4 4-4 4H6l-4-4Z" };
@@ -618,7 +607,7 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", steamSec = 0, tlook = "slim", grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false, temp = null, ...ext } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", steamSec = 0, grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false, temp = null, ...ext } = {}) {
     this.el = el;
     this.extOpts = ext; // 別ファイルの場面の見せ方（店番の営業の種類・一覧に並べる場面 shot など。1台表示では URL の値がそのまま入る）
     el.lang = "ja";
@@ -629,7 +618,6 @@ class Phone {
     this.uid = (Phone.seq = (Phone.seq || 0) + 1); // SVG の id を台ごとに分ける
     this.keys = new Set();
     this.rankAt = RANK_PLACES[rank] ? rank : "d"; // ランクの置き場所の案
-    el.dataset.tlook = TIMER_LOOKS[tlook] ? tlook : "slim"; // 縦長のキッチンタイマーの絵の案（VPL129）
     this.steamSec = Math.max(0, Math.min(STEAM_MAX, Math.round((Number(steamSec) || 0) / 10) * 10)); // 蒸らし時間（秒。VPL105）。次の雑念よけの長さと、吸い出しの初めの温度に効く
     this.venue = VENUES[venue] ? venue : "tonari"; // 作る場面の会場（背景）
     this.attackLearned = !!attack; // 雑念よけのアタックを覚えたか（覚えると精密と入れ替える切り替えが出る・VPL62）
@@ -2219,13 +2207,12 @@ class Phone {
   /** 蒸らしのタイマー（VPL105）: 上の画面に本編と同じキッチンタイマー（液晶と4つの物理ボタン）と、蒸らし後の温度の目安・雑念よけの長さ。 */
   timerPic() {
     const keys = [["min", "分"], ["sec", "秒"], ["start", "スタート<br>＆ストップ"], ["reset", "リセット"]]; // 絵の物理ボタンの位置は CSS（.kt-min など）
-    const look = TIMER_LOOKS[this.el.dataset.tlook] || TIMER_LOOKS.slim, pc = (v) => `${v}%`;
+    const look = KTIMER, pc = (v) => `${v}%`;
     const keyStyle = (k) => { const [x, y, w, h, fs] = look.keys[k]; return `left:${pc(x)};top:${pc(y)};width:${pc(w)};height:${pc(h)};font-size:${fs}cqw`; };
-    const label = (k, text) => k === "start" && look.keys.start[5] ? "スタート＆ストップ" : text; // 横長のボタンは1行
     return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="timer-a">
-      <div class="ktimer" style="--ar:${look.ar[0] / look.ar[1]};aspect-ratio:${look.ar[0]} / ${look.ar[1]}"><img src="${IMG[`ktTall_${this.el.dataset.tlook in TIMER_LOOKS ? this.el.dataset.tlook : "slim"}`]}" alt="">
+      <div class="ktimer" style="--ar:${look.ar[0] / look.ar[1]};aspect-ratio:${look.ar[0]} / ${look.ar[1]}"><img src="${IMG.kitchenTimerTall}" alt="">
         <output class="lcd" aria-live="polite" style="left:${pc(look.lcd[0])};top:${pc(look.lcd[1])};width:${pc(look.lcd[2])};height:${pc(look.lcd[3])}"></output>
-        ${keys.map(([k, text]) => `<button class="kt-key kt-${k}" data-act="timer" data-key="${k}" style="${keyStyle(k)}">${label(k, text)}</button>`).join("")}</div>
+        ${keys.map(([k, text]) => `<button class="kt-key kt-${k}" data-act="timer" data-key="${k}" style="${keyStyle(k)}">${text}</button>`).join("")}</div>
       </div>`;
   }
 
@@ -2485,10 +2472,6 @@ function showGallery() {
     <p class="g-note">本編の制作ランク（D〜SSS の絵）を縦画面のどこに置くか。どの案も、工程を終えてランクが上がった瞬間は舞台の真ん中に大きく出し（下の英語まで読める）、置き場所へ縮めて収める。1台表示の右上のつまみ →「ランク」で案を替え、「↑」で上がる動きを何度でも見られる。</p>
     ${Object.entries(RANK_PLACES).map(([v, place]) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}${v === "d" ? "（オーナー案）" : ""}</small>${place.name}<a href="?view=play&scene=holes&rank=${v}">1台で動きを見る</a></h3><p>${place.lead}</p>
       <div class="g-grid">${[["pack", 1, 0.3, "詰め（ランクC）"], ["holes", 2, 0.6, "穴あけ（ランクB・進み6割）"], ["pull", 4, 0.4, "吸い出し（ランクS）"]].map(([scene, grade, gradeP, cap]) => `<figure class="g-cell"><article class="phone" data-rank="${v}" data-scene="${scene}" data-grade="${grade}" data-gp="${gradeP}"></article><figcaption>${cap}</figcaption></figure>`).join("")}</div></section>`).join("")}
-    <h2 class="g-sub">縦長のキッチンタイマーの絵の案（VPL129）</h2>
-    <p class="g-note">タイマーは縦長に決め（VPL127）、ボタンは4つ（2段2列）に寄せた。VPL128 の絵は形が変だったため、実物のキッチンタイマー（幅62×高さ90mm前後・くぼんだ液晶・ゴムのキー・スピーカーの穴）に合わせた作りで描き直した。どれも蒸らし時間5分。1台表示の右上のつまみ →「タイマー」でも替えられる。</p>
-    ${Object.entries(TIMER_LOOKS).map(([v, f], i) => `<section class="g-aux"><h3><small>案${i + 1}${v === "slim" ? "（おすすめ・いまの既定）" : ""}</small>${f.name}<a href="?view=play&scene=timer&tlook=${v}">1台で触る</a></h3><p>${f.lead}</p>
-      <div class="g-grid"><figure class="g-cell"><article class="phone" data-tlookdemo="${v}" data-scene="timer"></article><figcaption>5分</figcaption></figure></div></section>`).join("")}
     <h2 class="g-sub">「？」（説明）の置き場所</h2>
     <section class="g-aux"><h3><small>案Aで決定</small>${HELP_PLACE.name}<a href="?view=play&scene=pull">1台で触る</a></h3><p>${HELP_PLACE.lead}</p>
       <div class="g-grid">${[["mix", "配合"], ["holes", "穴あけ"], ["pull", "吸い出し"]].map(([scene, cap]) => `<figure class="g-cell"><article class="phone" data-helpdemo="a" data-scene="${scene}"></article><figcaption>${cap}</figcaption></figure>`).join("")}</div></section>
@@ -2509,7 +2492,6 @@ function showGallery() {
       BROADCAST_READY.then(show);
     }
   });
-  app.querySelectorAll(".phone[data-tlookdemo]").forEach((el) => phones.push(new Phone(el, "timer", { fixed: true, tlook: el.dataset.tlookdemo, steamSec: 300, mix: [7, 3, 2], grade: 2 })));
   app.querySelectorAll(".phone[data-helpdemo]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, grade: 2, gradeP: 0.4 })));
   app.querySelectorAll(".phone[data-ci]").forEach((el) => phones.push(new Phone(el, "cutin", { fixed: true, ci: el.dataset.ci, who: el.dataset.who })));
   app.querySelectorAll(".phone[data-ext]").forEach((el) => phones.push(new Phone(el, el.dataset.ext, { fixed: true, ...EXT[el.dataset.ext].META.gallery.shots[Number(el.dataset.shotI)] })));
@@ -2539,13 +2521,12 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
       <div><small>登場</small>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div>
       <div><small>雑念よけ</small><button data-attack aria-pressed="${params.has("attack")}">アタック習得</button></div>
       <div><small>会場</small>${Object.entries(VENUES).map(([v, name]) => `<button data-venue="${v}" aria-pressed="${v === (params.get("venue") || "tonari")}">${name}</button>`).join("")}</div>
-      <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "d")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div>
-      <div><small>タイマー</small>${Object.keys(TIMER_LOOKS).map((v, i) => `<button data-tlook="${v}" aria-pressed="${v === (params.get("tlook") || "slim")}">案${i + 1}</button>`).join("")}</div></div></nav>`}</div>`;
+      <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "d")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div></div></nav>`}</div>`;
   const el = app.querySelector(".phone");
   // 先に大きさを決めてから描く（立ち絵と地図の位置は絵の大きさから決まる）
   const box = app.getBoundingClientRect(), rem = Math.min(box.width / 39, box.height / 66);
   root.style.fontSize = `${rem}px`; el.style.height = `${Math.min(box.height, rem * 92)}px`;
-  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { ...Object.fromEntries(params), step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", tlook: params.get("tlook") || "slim", mix: params.get("mix")?.split(",").map(Number), venue: params.get("venue") || "tonari", attack: params.has("attack"), grade: params.get("grade"), ...opts });
+  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { ...Object.fromEntries(params), step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", mix: params.get("mix")?.split(",").map(Number), venue: params.get("venue") || "tonari", attack: params.has("attack"), grade: params.get("grade"), ...opts });
   current = make(scene);
   const nav = app.querySelector(".switch");
   if (!nav) return;
@@ -2585,12 +2566,6 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
         if (crafting) current.render(); else current.setScene("holes");
       } else if (crafting) current.rankUp({ loop: true });
       else { current.setScene("holes"); setTimeout(() => current.rankUp({ loop: true }), 400); }
-    }
-    else if (button.dataset.tlook) {
-      // 縦長のキッチンタイマーの絵の案を替える（VPL129）
-      current.el.dataset.tlook = button.dataset.tlook;
-      nav.querySelectorAll("[data-tlook]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.tlook === button.dataset.tlook)));
-      if (current.st.scene === "timer") current.render(); else current.setScene("timer");
     }
     else if (button.dataset.ci || button.dataset.who) {
       // 登場カットインの案・人物を替えて、その場で流す
