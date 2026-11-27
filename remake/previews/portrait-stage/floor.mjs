@@ -687,7 +687,7 @@ export class FloorScene {
       html = () => list.map((mix, i) => {
         const ok = !live || !this.coach || this.coachExpects({ type: "order", tableId: table.id, mix: mix.id }); // チュートリアル: 今の段でやる一つだけを押せる
         const len = [...mix.name].length;
-        return `<button class="fl-opt" data-act="fl-pick" data-i="${i}" data-rating="${mix.rating || ""}" data-len="${len >= 11 ? "xxl" : len >= 10 ? "xl" : len >= 9 ? "l" : len >= 8 ? "m" : ""}"
+        return `<button class="fl-opt" data-act="fl-pick" data-i="${i}" data-rating="${mix.rating || ""}" data-len="${len >= 11 ? "xxl" : len >= 10 ? "xl" : len >= 9 ? "l" : len >= 8 ? "m" : len >= 7 ? "s" : ""}"
           aria-label="${mix.full}、${WISH[mix.main].label}${mix.sub ? `・${WISH[mix.sub].label}` : ""}${mix.rating ? `、${table.id}卓に${RATE_MARK[mix.rating]}` : ""}"${live && !ok ? " disabled" : ""}${live && this.coach && ok ? ` data-coach="true"` : ""}>
           ${attrHtml(this.art, mix.id)}<span class="fl-opt-text"><b>${esc(mix.name)}</b>${mix.single ? "" : `<small>${mix.recipe.map(esc).join("・<wbr>")}</small>`}</span>
           ${mix.rating ? `<i class="fl-opt-rate" data-rating="${mix.rating}">${RATE_MARK[mix.rating]}</i>` : ""}</button>`;
@@ -771,11 +771,14 @@ export class FloorScene {
     const GO = { order: ["order", "聞く"], care: ["ask", "聞く"], tend: ["add", "整える"], bill: ["bill", "会計"] };
     const go = need ? `<button class="fl-go" data-act="fl-table" data-id="${table.id}" data-need="${need}"${shuffling ? " disabled" : ""}${glow ? ` data-coach="true"` : ""}>${icon(GO[need][0])}<b>${shuffling ? "入替中" : GO[need][1]}</b></button>` : "";
     who.innerHTML = `<span class="fl-guest-face">${guest ? this.guestImg(guest, happy) : ""}<b class="fl-guest-no" aria-label="${table.id}卓">${table.id}</b>${mood}<i class="fl-guest-mark" aria-hidden="true"></i></span>
-      <div class="fl-guest-side">
-        <div class="fl-guest-top"><b class="fl-guest-name">${guest ? esc(guest.name) : table.phase === "cool" ? "片付け中" : "空席"}</b>${chip}${side}</div>
-        <p class="fl-quote" data-sight="${sight}"><span class="fl-q"></span></p>
+      <div class="fl-guest-side">${need
+        // 用件がある席（まだ聞いていない）: 上の行は呼び名だけ、下の行に用件の札（会計は金額も）。右の押す所と並んでも切れないように
+        ? `<div class="fl-guest-top"><b class="fl-guest-name">${esc(guest.name)}</b></div><div class="fl-guest-need">${chip}${side}</div>`
+        : `<div class="fl-guest-top"><b class="fl-guest-name">${guest ? esc(guest.name) : table.phase === "cool" ? "片付け中" : "空席"}</b>${chip}${side}</div>
+        <p class="fl-quote" data-sight="${sight}"><span class="fl-q"></span></p>`}
       </div>${go}`;
-    this.fitText(who.querySelector(".fl-q"), lead); // 吹き出しの余白の内側（.fl-q）の幅で測って折る
+    const q = who.querySelector(".fl-q");
+    if (q) this.fitText(q, lead); // 吹き出しの余白の内側（.fl-q）の幅で測って折る
   }
 
   /* ── 評判（VPM20。試作だけの決まり）: ◎○を出すと上がり、下がらずに積み上がる。節目で、取っておいた客が来る ── */

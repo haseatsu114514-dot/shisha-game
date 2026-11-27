@@ -218,6 +218,11 @@
 .fl-guest-top .fl-wish.long { white-space: nowrap; padding: 0 0.95rem 0 0.7rem; line-height: 1; } .fl-guest-top .fl-again { left: -0.5rem; top: -0.5rem; width: 1.6rem; height: 1.6rem; }
 .fl-guest-top .fl-need[data-tone="wait"], .fl-guest-top .fl-need[data-tone="idle"] { --c: #ffffff26; color: #ffffffd9; } .fl-guest-top .fl-need[data-tone="fever"] { --c: #c9a6ff; }
 .fl-guest-top em { margin-left: auto; flex: none; display: flex; align-items: center; gap: 0.3rem; font-style: normal; font-size: 1.6rem; font-weight: 700; color: var(--gold); } .fl-guest-top em .ic { font-size: 1.7rem; }
+/* 用件がある席（まだ聞いていない）は、呼び名の下に用件の札（会計は金額も） */
+.fl-guest-need { display: flex; align-items: center; gap: 0.8rem; min-width: 0; height: 3rem; }
+.fl-guest-need .fl-wish, .fl-guest-need .fl-need { flex: 0 1 auto; min-width: 0; height: 2.9rem; padding: 0 1.2rem 0 0.9rem; font-size: 1.56rem; box-shadow: none; } .fl-guest-need .ic { font-size: 1.8rem; }
+.fl-guest-need .fl-wish.long { white-space: nowrap; line-height: 1; } .fl-guest-need .fl-wish:has(.fl-again) { margin-left: 0.6rem; }
+.fl-guest-need em { flex: none; display: flex; align-items: center; gap: 0.3rem; font-style: normal; font-size: 1.6rem; font-weight: 700; color: var(--gold); } .fl-guest-need em .ic { font-size: 1.7rem; }
 /* 吸っている一台（属性の印と名前）と、満足の顔 */
 .fl-mixchip { flex: 0 1 auto; min-width: 0; display: inline-flex; align-items: center; gap: 0.8rem; height: 2.6rem; padding: 0 1rem 0 0.5rem; border-radius: 1.3rem; font-size: 1.34rem; background: #ffffff1a; }
 .fl-mixchip .fl-attr { width: 2.1rem; height: 2.1rem; } .fl-mixchip b { min-width: 0; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -255,13 +260,13 @@
 .fl-opt-text small { font-size: 1.14rem; line-height: 1.3; color: #ffffffb3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* 使ったフレーバーは、「・」の所でだけ折って、2行まで */
 .fl-rows .fl-opt-text small { white-space: normal; word-break: keep-all; overflow-wrap: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
-/* 長い名前（8字・9字・10字・11字）は、字を少し小さくし、横にだけ縮めて（長体）、1行に収める */
+/* 長い名前（7字〜11字）は、字を少し小さくし、横にだけ縮めて（長体）、1行に収める（右上の合い方の印に、名前の端が隠れない幅にする） */
 .fl-opt[data-len] .fl-opt-text b { --sx: 1; width: calc(100% / var(--sx)); transform: scaleX(var(--sx)); transform-origin: 0 50%; letter-spacing: 0; }
 .fl-opt[data-len=""] .fl-opt-text b { width: auto; transform: none; letter-spacing: 0.01em; }
-.fl-opt[data-len="m"] .fl-opt-text b { --sx: 0.95; font-size: 1.42rem; } .fl-opt[data-len="l"] .fl-opt-text b { --sx: 0.87; font-size: 1.38rem; }
-.fl-opt[data-len="xl"] .fl-opt-text b { --sx: 0.81; font-size: 1.32rem; } .fl-opt[data-len="xxl"] .fl-opt-text b { --sx: 0.76; font-size: 1.28rem; }
+.fl-opt[data-len="s"] .fl-opt-text b { --sx: 0.96; font-size: 1.5rem; } .fl-opt[data-len="m"] .fl-opt-text b { --sx: 0.9; font-size: 1.42rem; } .fl-opt[data-len="l"] .fl-opt-text b { --sx: 0.82; font-size: 1.38rem; }
+.fl-opt[data-len="xl"] .fl-opt-text b { --sx: 0.77; font-size: 1.32rem; } .fl-opt[data-len="xxl"] .fl-opt-text b { --sx: 0.72; font-size: 1.28rem; }
 /* その客との合い方: 札の右上の角に */
-.fl-opt-rate { position: absolute; z-index: 1; right: -0.4rem; top: -0.6rem; width: 2.6rem; height: 2.6rem; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-size: 2rem; font-weight: 900; line-height: 1; color: #ffffff80; background: #2a2040; box-shadow: 0 0 0 0.12rem #0b0812; }
+.fl-opt-rate { position: absolute; z-index: 1; right: -0.6rem; top: -0.7rem; width: 2.3rem; height: 2.3rem; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-size: 1.8rem; font-weight: 900; line-height: 1; color: #ffffff80; background: #2a2040; box-shadow: 0 0 0 0.12rem #0b0812; }
 .fl-opt-rate[data-rating="best"] { color: #1a1228; background: #ffd84d; box-shadow: 0 0 0 0.12rem #0b0812, 0 0 1.2rem #ffcf6b; } .fl-opt-rate[data-rating="good"] { color: #1a1228; background: #fff; }
 /* 合う一台（◎）は金の縁で灯り、合わない札は名前と地が沈む（属性の印は沈めない） */
 .fl-opt[data-rating="best"] { border-color: var(--gold); background: #4a3a1ee6; box-shadow: 0 0.4rem 1rem #0007, 0 0 1.4rem #ffcf6b66; }
@@ -416,7 +421,7 @@
   .fl-quote { font-size: 1.34rem; line-height: 1.32; padding: 0.3rem 1rem 0.35rem; } .fl-guest-name { font-size: 1.5rem; } .fl-guest-top .fl-wish, .fl-guest-top .fl-need, .fl-mixchip { height: 2.2rem; font-size: 1.24rem; } .fl-guest-top em { font-size: 1.36rem; } .fl-guest-face > img.fl-guest-mood { width: 2.3rem; height: 2.3rem; right: -0.6rem; bottom: -0.4rem; }
   .fl-go { width: 7.4rem; font-size: 1.4rem; } .fl-go .ic { font-size: 2.1rem; }
   .fl-main { gap: 0.5rem; } .fl-mixhead { height: 1.6rem; } .fl-mixhead b { font-size: 1.26rem; } .fl-mixhead small { font-size: 1.12rem; } .fl-busy { inset: 2.1rem 0 0; }
-  .fl-opt { gap: 1rem; padding: 0 0.7rem 0 0.8rem; } .fl-attr, .fl-opt-icon, .fl-opt-locked img { width: 3.2rem; height: 3.2rem; } .fl-opt-text small { font-size: 1.06rem; line-height: 1.24; } .fl-opt-rate { width: 2.4rem; height: 2.4rem; font-size: 1.8rem; }
+  .fl-opt { gap: 1rem; padding: 0 0.7rem 0 0.8rem; } .fl-attr, .fl-opt-icon, .fl-opt-locked img { width: 3.2rem; height: 3.2rem; } .fl-opt-text small { font-size: 1.06rem; line-height: 1.24; } .fl-opt-rate { width: 2.2rem; height: 2.2rem; font-size: 1.7rem; } .fl-guest-need { height: 2.5rem; } .fl-guest-need .fl-wish, .fl-guest-need .fl-need { height: 2.4rem; font-size: 1.34rem; } .fl-guest-need em { font-size: 1.4rem; }
   .fl-deck[data-kind="care"] .fl-opt-icon { width: 4.2rem; height: 4.2rem; font-size: 2.5rem; } .fl-deck[data-kind="care"] .fl-opt-text b { font-size: 1.7rem; } .fl-deck[data-kind="care"] .fl-opt { gap: 0.5rem; }
   /* チュートリアルの間は、スミさんの言葉の分だけ札が低くなるので、使ったフレーバーは1行まで */
   .phone[data-coach="true"] .fl-rows .fl-opt-text small { -webkit-line-clamp: 1; }
