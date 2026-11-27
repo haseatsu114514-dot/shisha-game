@@ -1149,6 +1149,847 @@
           "text": "（ましろちゃんが黙ってホースを返したのも、そういうことかな）"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_mukai_sign_bulb",
+      "comment": "RLS10⑥（第3章はムカイさん・ましろを厚く描く・2026-11-27 VOL21 第3弾）。mukaiの二日目の後、大会前に一度。看板の電球が切れて付け替える。閉店後も片づけの間は灯りを点けておくムカイさんの理由と、tonariの入口の灯り（スミさんの店の作法）を知っている同業者の一言。大会・恋愛に触れない。好感度は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店間際のmukai。入口の看板の灯りが、二度またたいて消えた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……切れたか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは奥から脚立を出してくると、ハットを脱いでカウンターに置いた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "僕、押さえてるねぇ、……落ちないでねぇ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "ましろが寝なければ、落ちない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "脚立の脚を、ましろが両腕で抱える。俺は新しい電球を箱から出して、下で待った。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "はじめくん、球"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手渡すと、ムカイさんは古い球を外して、俺の手のひらに落とした。まだ熱い。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あつっ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……悪い。最後まで働いてたんだな、そいつも"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新しい球がはまると、看板が白く灯った。通りの暗さが、一歩ぶんだけ下がる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もう閉店なのに、今つけ直すんですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "片づけが終わるまでは、点けておく"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "終電を逃した客が、たまに歩いてくる。灯りが見えたら、まだやってると思う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "やってないのに？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "水くらいは出せる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "前に一人、ほんとに来たんだよぉ。お水飲んで、朝いちばんの電車までソファで寝てったの"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……いびきが、うるさかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（それでも、追い返さなかったんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "tonariも、閉めたあと、入口の灯りを一つだけ残すんです"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "知ってる。夜中に仕入れの相談で寄った時、あそこだけ点いてた"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "スミらしい灯りだと思った。本人には言うなよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（スミさんとムカイさん、似てるところがあるのかも）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "脚立をたたむと、ましろが古い電球を、店の明かりにかざしていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "切れたのに、ちょっときれいだねぇ。中の細い線が、ちぎれてる"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……捨てるぞ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "僕がもらう。窓のとこに、置いとくの"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……好きにしろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけが終わるまで、看板は通りを照らしていた。結局、その夜は誰も歩いてこなかった。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "それでいい。来ない夜のほうが、ずっと多い"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……来た夜のために、毎晩点ける"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（灯りって、来なかった夜のぶんも、ちゃんと働いてるんだ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mukai_breaker",
+      "comment": "RLS10⑥（第3章はムカイさん・ましろを厚く描く・2026-11-27 VOL21 第3弾）。mukaiの二日目の後、大会前に一度。混んだ夜にブレーカーが落ち、暗い店で炭の赤とボトルの音だけが残る。ましろは音で奥の台の炭の寄りすぎに気づく。ムカイさんの貼り紙「やかんは、炭のあと」。大会・恋愛・味の回復に触れない。好感度は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "混み合った夜のmukai。カウンターの中で、ケトルと炭のヒーターが一緒に唸っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんが、奥のエアコンを一段強くした。その瞬間だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ばつん、と音がして、店の灯りが一度に消えた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……停電か？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "暗い客席に、ボウルの炭だけが赤く残る。台ごとに、小さな火の点が浮かんでいた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……ブレーカーです。そのまま、座っていてください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんはスマホの明かりを点けて、奥へ歩いていった。足音は、いつもと同じ速さだった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん、ヒーターのふた、閉めといて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あ、うん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手探りでふたを閉める。電気が止まっても、中の炭はまだ赤かった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ふたしとけば、しばらく冷めないの。焦るとこ、そこじゃないよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃん、落ち着いてるね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ムカイさんが「座っていてください」って言う時は、すぐ直るから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際の席から、小さな笑い声がした。常連のお客さんだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "暗いと、煙の音がよく聞こえるな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われて、耳をすます。どの台からも、ボトルの水が低く鳴っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（いつもは、話し声に混ざって聞こえない音だ）"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ほんとだぁ。みんなの台、少しずつ音が違うねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "あの奥の台、ちょっと速い。……あとで、炭を見てあげて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ぱちん、と奥で音がして、灯りが一斉に戻った。客席から、ぱらぱらと拍手が起きる。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……失礼しました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "戻ってきたムカイさんはケトルのプラグを抜き、紙に何か書いて、壁に貼った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「やかんは、炭のあと」。太い字だった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "前にも、同じこと書いてなかった？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "serious",
+          "text": "……前のは、はがれた"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "今度は、テープ二枚で貼っとこうねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の台を見に行くと、ましろの言うとおり、炭が真ん中に寄りすぎていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "マスター、さっきの暗いの、もう一回できないか。音がよかった"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……ブレーカーは、注文を受けていない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それでも閉店前の最後の十分、ムカイさんは客席の照明を一段だけ落とした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "誰も何も言わなかった。ボトルの低い音だけが、店の中に続いていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mukai_wrong_beans",
+      "comment": "RLS10⑥（第3章はムカイさん・ましろを厚く描く・2026-11-27 VOL21 第3弾）。mukaiの二日目の後、大会前に一度。問屋からカフェインを抜いた豆が間違って届き、ムカイさんは閉めずに「夜でも眠れるコーヒー」と貼り出す。嘘は書かず、淹れ方のほうを寄せる。はじめは飲まないので、味の不調の時期を問わない。大会・恋愛に触れない。好感度は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店前のmukai。届いたばかりの豆の袋を前に、ムカイさんが腕を組んでいた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "serious",
+          "text": "……違う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何がですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "カフェインを抜いた豆だ。頼んだのは、いつもの深煎り"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "問屋さん、電話出ないねぇ。……まだ寝てるんだよぉ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "朝いちばんの常連が来るまで、あと二十分。棚の豆は、昨日で使い切っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、コーヒーはお休みにしますか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……しない。紙と、太いペンを"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは入口に、一枚貼り紙をした。「本日、夜でも眠れるコーヒー」。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ムカイさん、言い方うまいねぇ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……嘘は、書いてない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最初の常連さんは、貼り紙を二度読んでから、いつもの席に座った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "眠れるコーヒーってのは、何だい"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "豆が間違って届きました。今日は、これしかありません"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "正直だねえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは、いつもより少し細かく挽いて、いつもより少しゆっくり湯を落とした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（豆が違うぶん、淹れ方のほうを寄せてるんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "淹れ方って、豆に合わせて変えるんですね"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "豆が言うことを聞かないなら、こっちが聞く"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ムカイさん、湯を落とす時、ちょっとだけ息止めてるの。いつもより長い"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……軽いな。けど、悪くない"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "夜に飲めるんなら、帰りにも寄ろうかね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その日の夜は、いつもより客が三人多かった。みんな、貼り紙を見たと言った。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "間違いで、お客さん増えちゃったねぇ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……明日は、いつもの豆に戻す"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "えー、もったいないよぉ。夜だけ、眠れるほうにすれば"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……考えておく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後、ムカイさんは問屋への注文票に、一行書き足していた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの深煎りの下に、小さな字で。眠れるほうの豆が、半分だけ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mukai_ayatori_beans",
+      "comment": "RLS10⑥（第3章は綾取・ムカイさんを厚く描く・2026-11-27 VOL21 第3弾）。客席の綾取（ch3_ayatori_mukai_visit）の後、大会前に一度。綾取が煙幕の吸わない連れのために豆を買いに来て、ムカイさんに名前を伏せて選ばされる（綾取の店のやり方の裏返し）。綾取はましろが眠れているかだけ尋ね、ムカイさんは来たことをましろに言わない（本人が言うこと。二人の話は大会の後・正本どおり）。好感度は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼のmukai。カウンターの端に、綾取が座っていた。注文は、シーシャではなかった。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "豆を、少し分けてほしくて。煙幕に、吸わないお連れさんも来るんです"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……どんな店だ"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "果物とお茶の一台が多いです。お菓子を思わせて、でも甘くはない"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "目を閉じろ"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "surprise",
+          "text": "……え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは、豆の瓶を三つ並べた。綾取が目を閉じると、ふたを開けて順に鼻先へ寄せる。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "名前は言わない。どれがいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は三つとも嗅いでから、二つ目を指さした。目を開けて、瓶のラベルを見る。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "surprise",
+          "text": "……浅煎り。僕、自分は深いほうを選ぶと思ってた"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "店の煙が甘いなら、豆は軽いほうが邪魔をしない"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smug",
+          "text": "名前を伏せて選ばせるの、僕の店のやり方なんですけど"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……知ってる。はじめくんから聞いた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（話したの、一回だけなのに）"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "やられる側って、こういう気分なんですね。……ちょっと、くやしい"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "くやしいなら、客は楽しんでる"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "……じゃあ今日の僕は、いいお客さんだったってことですね"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "ああ。迷う時間の長い客は、いい客だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（ムカイさんなりの、褒め言葉だ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は笑って、浅煎りを二百グラム買った。代金を置く手つきが、少し丁寧だった。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "……ムカイさん。ましろ、ちゃんと寝てますか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……店でも寝てる"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "そっか。昔から、そうなんです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取が出ていったあと、奥からましろが顔を出した。あくびを一つして、カウンターの瓶を見る。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "誰か来てたぁ？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……豆の客だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（名前は、言わないんだ）"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "言うなら、本人が言う"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mukai_birthday",
+      "comment": "RLS10⑥（第3章はムカイさん・ましろを厚く描く・2026-11-27 VOL21 第3弾）。mukaiの二日目の後、大会前に一度。窓際の常連の誕生日を、ムカイさんは去年の会計の一言から覚えていた。ラテにろうそく一本、ましろのいつもの一台、はじめが伝票の裏に一言。ろうそくを吹いて泡が欠けても「このままでいい」。大会・恋愛・味の回復に触れない。好感度は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のmukai。ムカイさんが、カウンターの下から小さな箱を出した。ろうそくが一本だけ入っている。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "窓際の常連さん、今日が誕生日だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "知ってたんですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "去年、会計の時に「今日で六十だ」と言っていた"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ムカイさん、そういうの、全部覚えてるんだよぉ。言わないだけで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは、いつものラテの泡に、ろうそくを一本だけ立てた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "ましろ、あの人のいつもの一台を。はじめくんは、これに何か書いてくれ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "渡されたのは、伝票の裏だった。少し考えて、「いつもありがとうございます」とだけ書く。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕も書くぅ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは、その下に小さな星の絵を一つ描き足した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんがトレーを持って、窓際の席へ歩いていく。俺たちは、カウンターから見ていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……なんだ、これは"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "誕生日だと、去年うかがいました"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "覚えてたのか。……女房も忘れてたのに"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの陰で、ましろが小さく手を叩いた。音は、ほとんど出ていなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "常連さんは、ろうそくを吹き消そうとして、ラテの泡ごと少し吹き飛ばした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "あ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……作り直します"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "いや、いい。このままでいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "泡の欠けたラテを、常連さんは時間をかけて飲んだ。ましろの一台も、いつもより長く吸っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、伝票の裏の紙を、財布にしまっていくのが見えた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "星の絵、持ってってくれたねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ムカイさん、来年も覚えてるんですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……書いておく。ましろは、忘れる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "僕、忘れないよぉ、……たぶん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは、伝票の束のいちばん下に、小さく日付を書き足していた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mukai_chalkboard",
+      "comment": "RLS10⑥（VOL21 第4便・2026-11-27 オーナー「さらに不足分を」）。mukaiの二日目の後、味が戻る前だけ・大会前に一度。入口の黒板のシーシャの欄を任されたはじめが、味を言い切れずに止まる。ましろの「味じゃなくても、今日の店のこと」で、炭と座る時間のことを書く。ましろの「言えることから一つずつ」（ch3_mashiro_recovery）を受ける。好感度・能力・お金は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店前のmukai。ムカイさんが、入口の小さな黒板に今日のコーヒーを書いていた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "はじめくん。下の段、シーシャの欄を書いてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺がですか。……何を書けばいいんだろう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今の舌では、今日の葉の味を言い切れない。チョークを持ったまま、手が止まった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "味じゃなくてもいいんだよぉ。今日の店のこと、書けば"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日の店のこと……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少し考えて、「炭は、ゆっくりめ。座る時間は、長めにどうぞ」と書いた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……悪くない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼過ぎ、黒板の前で足を止めた客が、そのまま入ってきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際の席に座って、長めに吸っていった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ほらねぇ。言えることから、一つずつ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（味が言えなくても、店のことなら、言えることがある）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店の時、ムカイさんは黒板の字を消さずに、そのまま店の中へしまった。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……明日は、また明日の店のことを書け"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。明日の炭のことなら、ちゃんと言えそうです"
+        }
+      ]
     }
   ]
 }

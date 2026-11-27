@@ -63,6 +63,27 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // RLS10⑥（VOL21 第2弾）: 裏口でてつこに餌を出すムカイさん。懐かれなくても、席だけ用意して待つ。
   ch3_mukai_tetsuko: { file: "ch3_mukai", label: "てつこの皿", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_mukai_intro"] },
+  // RLS10⑥（VOL21 第3弾）: 看板の電球を付け替える。片づけの間は灯りを点けておくムカイさんと、tonariの入口の灯りを知っている同業者の一言。
+  ch3_mukai_sign_bulb: { file: "ch3_mukai", label: "看板の電球", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mukai_intro"] },
+  // RLS10⑥（VOL21 第3弾）: 混んだ夜にブレーカーが落ち、暗い店でボトルの音を聴く。ましろが音で奥の台の炭に気づく。
+  ch3_mukai_breaker: { file: "ch3_mukai", label: "暗い店の音", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mukai_intro"] },
+  // RLS10⑥（VOL21 第3弾）: カフェインを抜いた豆が間違って届き、「夜でも眠れるコーヒー」と貼り出す。
+  ch3_mukai_wrong_beans: { file: "ch3_mukai", label: "眠れるコーヒー", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mukai_intro"] },
+  // RLS10⑥（VOL21 第3弾）: 窓際の常連の誕生日に、ラテにろうそく一本。
+  ch3_mukai_birthday: { file: "ch3_mukai", label: "ろうそく一本", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mukai_intro"] },
+  // RLS10⑥（VOL21 第3弾）: 綾取が煙幕の吸わない連れのために豆を買いに来て、ムカイさんに名前を伏せて選ばされる。
+  ch3_mukai_ayatori_beans: { file: "ch3_mukai", label: "名前を伏せた豆", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_ayatori_mukai_visit"] },
+  // RLS10⑥（VOL21 第4便）: 入口の黒板のシーシャの欄。味が言えなくても、店のこと（炭と座る時間）なら書ける。味が戻る前だけ。
+  ch3_mukai_chalkboard: { file: "ch3_mukai", label: "入口の黒板", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mukai_intro"], before: ["ch3_taste_return"] },
+  // RLS10⑥（VOL21 第3弾）: ましろの番のまかないは激辛カレー。辛さは痛みなので、味が遠いはじめにも届く。味が戻る前だけ。
+  ch3_mashiro_curry: { file: "ch3_mashiro", label: "辛いまかない", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mukai_intro"], before: ["ch3_taste_return"] },
   // 台本が「大会後」。大会前のカードには出ず、勝利後は ch3-aftermath-progress.js の寄り道から読む。
   ch3_cigarman_trace: { file: "ch3_mukai", label: "大会後の客席", location: "mukai", bg: "bg_mukai_shop" },
   // エミルは大会当日に初めて名乗る審査員。面識ができる前に体験会を置かない。大会後の入口は
@@ -112,6 +133,12 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // RLS10⑥（VOL21 第2弾）: 福岡の店のバイトの子から初めての配合が届く。パン屋の紙袋の後、大会前に一度。
   ch3_ayatori_parcel: { file: "ch3_rivals", label: "福岡からの小包", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_ayatori_bakery"] },
+  // RLS10⑥（VOL21 第3弾）: 間借りの店を貸した人の父（昔の乾物屋）が見回りに来る。白紙の札に「昼の乾物屋」。
+  ch3_ayatori_owner_visit: { file: "ch3_rivals", label: "乾物屋の昼", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_ayatori_first"] },
+  // RLS10⑥（VOL21 第3弾）: 声のかすれた綾取の代わりに、はじめが注文を聞く。大げさな噂は自信がない日に書く。
+  ch3_ayatori_hoarse: { file: "ch3_rivals", label: "かすれ声の夜", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_ayatori_first"] },
   // 綾取とましろの過去。ましろ側はレモンケーキの客を見た煙幕の初訪問後、綾取側はmukaiへ客として来た後。
   ch3_ayatori_mashiro_tea_tin: { file: "ch3_saku_mashiro", label: "茶缶の半分", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_ayatori_first"] },
@@ -189,16 +216,18 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
 export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_double_apple: ["ch3_minto_small_lies"],
   ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_shadow", "ch3_mukai_latte_cat", "ch3_mukai_no_hat", "ch3_cigarman_trace", "ch3_mukai_yoru_playlist",
-    "ch3_mukai_scale_coffee", "ch3_mukai_tetsuko"],
+    "ch3_mukai_scale_coffee", "ch3_mukai_tetsuko",
+    "ch3_mukai_sign_bulb", "ch3_mukai_breaker", "ch3_mukai_wrong_beans", "ch3_mukai_birthday", "ch3_mukai_ayatori_beans", "ch3_mukai_chalkboard"],
   // 綾取・スティーブの締めくくり（#2028）は寄り道ではなく、煙幕・Smoke & Glory を訪ねた時の「〜に呼ばれる」から
   // （daily/bonds.js の条件。版3は ch3-tokyo-daily.js、優勝の翌日は ch3-aftermath.js、旧行程は ch3.js の場面カード）。
-  ch3_rivals: ["ch3_emil_workshop", "ch3_ayatori_bakery", "ch3_ayatori_parcel", "ch3_ayatori_lime", "ch3_ayatori_missed", "ch3_ayatori_cleanup", "ch3_ayatori_liar", "ch3_ayatori_first_reply", "ch3_ayatori_bond_finale", "ch3_steve_lime", "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_steve_bond_finale"],
+  ch3_rivals: ["ch3_emil_workshop", "ch3_ayatori_bakery", "ch3_ayatori_parcel", "ch3_ayatori_owner_visit", "ch3_ayatori_hoarse", "ch3_ayatori_lime", "ch3_ayatori_missed", "ch3_ayatori_cleanup", "ch3_ayatori_liar", "ch3_ayatori_first_reply", "ch3_ayatori_bond_finale", "ch3_steve_lime", "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_steve_bond_finale"],
   // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
     "ch3_mashiro_black_tea", "ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",
     "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea", "ch3_mashiro_toolbox", "ch3_mashiro_doze", "ch3_mashiro_heavy_room",
     "ch3_mashiro_star_tea", "ch3_mashiro_star_tea_arrow",
     "ch3_mashiro_mukai_syrup_shelf", "ch3_mashiro_mukai_shelf_tags",
+    "ch3_mashiro_curry",
     "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale",
     // 恋人のましろと過ごす時間（BLC03・chapters/mashiro-time.js の MASHIRO_TIME_SCENES と同じ並び）。
     "mashiro_time_counter", "mashiro_time_train", "mashiro_time_errand", "mashiro_time_braid",
