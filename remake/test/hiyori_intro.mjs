@@ -23,6 +23,7 @@ await suite("hiyori-intro", async (check) => {
         s.flags._axe_bar_legacy_access = true; // #577: 従来の初対面・紹介回帰は旧保存の導線
         Object.assign(s, { phase: "daily", day: 4, money: 90000, seed: 131 });
         core.config.textSpeed = 4;
+        core.config.skipSeenOnly = false; // Control 長押しで未読の台詞も送る（既定は既読のみ・#4194）
         window.I = { core, DB, vn, daily, spots, displayName, seen: [] };
         new MutationObserver(rs => rs.forEach(r => r.addedNodes.forEach(n => {
           if (n.classList?.contains("cutin")) I.seen.push(n.dataset.char);
@@ -32,9 +33,12 @@ await suite("hiyori-intro", async (check) => {
       await page.waitForSelector("#vn.active .vn-next.show");
       const before = await page.evaluate(() => ({ name: I.displayName("hiyori", I.core.state), seen: I.seen }));
       assert.deepEqual(before, { name: "？？？", seen: [] });
-      await page.keyboard.down("Control");
+      // 初対面のカットインは通常の送りで迎える（SKIP中のカットインは短い表示になる・#4194 のカットイン短縮表示）
+      for (let i = 0; i < 80 && !(await page.locator('.cutin[data-char="hiyori"]').count()); i++) {
+        if (await page.locator("#vn.active .vn-next.show").count()) await page.keyboard.press("Enter");
+        await page.waitForTimeout(120);
+      }
       await page.waitForSelector('.cutin.in[data-char="hiyori"]');
-      await page.keyboard.up("Control");
       await page.waitForTimeout(1600);
       const cutin = await page.evaluate(() => {
         const host = document.querySelector('.cutin[data-char="hiyori"]');

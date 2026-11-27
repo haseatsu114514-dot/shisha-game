@@ -21,6 +21,7 @@ async function setup(page, { rumor = false, legacy = false, met = false } = {}) 
     if (met) { s.met.hiyori = true; s.flags._hiyori_meeting_done = true; }
     if (legacy) { s.schema = 15; A.core.save(); A.core.load(); }
     A.core.config.textSpeed = 4; A.core.config.bgmVolume = 0;
+    A.core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
     A.vn.vnTest.turbo = false;
     A.vn.hooks.onLine = (id, line) => A.lines.push({ id, text: line.text, speaker: line.speaker });
     A.core.save();
@@ -34,6 +35,12 @@ const resources = page => page.evaluate(() => {
     formal: s.flags._hiyori_meeting_done, memories: s.relationshipMemories });
 });
 async function finishScene(page, mode = "normal") {
+  // SKIP は場面をまたいで入ったまま（#4228）。前の場面から入っていれば、会話画面が見える前に読み終わることがあるので、
+  // 読み終わりだけを待つ（続く検査が次の画面を待つ）
+  if (mode === "skip" && await page.evaluate(() => !!document.querySelector('[data-test="vn-skip"].on'))) {
+    await page.waitForFunction(() => !A.vn.isPlaying(), null, { timeout: 45000 });
+    return;
+  }
   await page.locator("#vn.active").waitFor();
   if (mode === "auto" || mode === "skip") {
     const button = page.locator(t(mode === "auto" ? "vn-auto" : "vn-skip"));

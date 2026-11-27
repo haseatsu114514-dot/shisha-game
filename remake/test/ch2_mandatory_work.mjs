@@ -235,4 +235,53 @@ const day6 = CH2_NIGHTS.find(night => night.day === 6);
 assert.equal(day6.schedule, "preparation"); assert.equal(day6.deadline, 7);
 assert.deepEqual([...day6.prerequisites], ["_ch2_read_ch2_sofa_burn"]);
 
-console.log("ch2_mandatory_work: PASS reciprocal cup, both roles, actual-choice echoes, interruption/LOAD, legacy saves, no costs/rewards/cure");
+// VOL17 (#3097 plan 2-10): the in-between scenes. DAY4/DAY10 are read inside the existing fixed
+// nights, DAY7 at home in the morning without spending the daytime action. Interruption/LOAD keeps
+// nothing and resumes at the same scene; completed scenes are not replayed; no costs/rewards.
+{
+  reset(); interruption = { id: "ch2_full_house_help", atStart: true };
+  await assert.rejects(run(4), /未読の場面/);
+  assert(!state.flags._ch2_read_ch2_full_house_help && !state.flags._ch2_read_ch2_sofa_burn && !state.flags._ch2_night_4_done);
+  reload(); interruption = null; played = [];
+  const before = resources();
+  await run(4);
+  assert.deepEqual(played, ["ch2_full_house_help", "ch2_sofa_burn", "ch2_abyss_baito"]);
+  assert(state.flags._ch2_read_ch2_full_house_help && state.flags._ch2_night_4_done);
+  assert.deepEqual(resources(), before);
+  // A save stopped after the accident (browser ch2_story accident-checkpoint) gets no help scene inserted.
+  reset({ _ch2_read_ch2_sofa_burn: true }); await run(4);
+  assert.deepEqual(played, ["ch2_abyss_baito"]);
+
+  reset(); interruption = { id: "ch2_phone_score_sheet", atStart: true };
+  await assert.rejects(run(10), /未読の場面/);
+  assert(state.flags._ch2_read_ch2_sumi_silence && !state.flags._ch2_read_ch2_phone_score_sheet && !state.flags._ch2_night_10_done);
+  reload(); interruption = null; played = [];
+  await run(10);
+  assert.deepEqual(played, ["ch2_phone_score_sheet"], "LOAD resumes at the sheet without replaying Ageha or Sumi");
+  assert(state.flags._ch2_night_10_done);
+  played = []; await run(10);
+  assert.deepEqual(played, [], "a completed night is not replayed");
+
+  const morning = (flags, slot = 0) => { reset(flags); state.day = abs(7); state.slot = slot; };
+  morning({ _ch2_read_ch2_ent_clinic: true }); interruption = { id: "ch2_morning_notes", atStart: true };
+  assert.equal(await story.namespace.readChapterTwoDayScene(7), false);
+  assert(!state.flags._ch2_read_ch2_morning_notes); assert.equal(state.slot, 0);
+  reload(); interruption = null; played = [];
+  const beforeMorning = resources();
+  assert.equal(await story.namespace.readChapterTwoDayScene(7), false, "no daytime errand on DAY7");
+  assert.deepEqual(played, ["ch2_morning_notes"]);
+  assert(state.flags._ch2_read_ch2_morning_notes); assert.equal(state.slot, 0, "the daytime action is kept");
+  assert.deepEqual(resources(), beforeMorning);
+  played = []; await story.namespace.readChapterTwoDayScene(7);
+  assert.deepEqual(played, [], "once");
+  morning({}); await story.namespace.readChapterTwoDayScene(7);
+  assert.deepEqual(played, [], "only after the clinic was read");
+  morning({ _ch2_read_ch2_ent_clinic: true }, 1); await story.namespace.readChapterTwoDayScene(7);
+  assert.deepEqual(played, [], "not on a sick morning (slot already advanced)");
+  // The clinic and Naru's lunch keep spending the daytime action.
+  reset(); state.day = abs(6); state.slot = 0;
+  assert.equal(await story.namespace.readChapterTwoDayScene(6), true);
+  assert.deepEqual(played, ["ch2_ent_clinic"]); assert.equal(state.slot, 1);
+}
+
+console.log("ch2_mandatory_work: PASS reciprocal cup, both roles, actual-choice echoes, interruption/LOAD, legacy saves, no costs/rewards/cure, VOL17 in-between scenes");

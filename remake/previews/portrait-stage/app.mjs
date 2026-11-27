@@ -42,7 +42,8 @@ const IMG = {
   ciSumi: `${REMAKE_IMG}ui/character_intros/graphic/sumi.webp`,
   ciBgSumi: `${REMAKE_IMG}ui/character_intros/graphic/bg_sumi.webp`,
   // 作り直した絵（gpt-image-2.6-sunburst・VPL38）: ボトル・ハガル（空・ふんわり・ノーマル・デンス）・はじめの吸い出し
-  bottle: `${OWN_IMG}ui-bottle-pro.webp`, // 本編の大会公式モデルの台のベース（VPL46）
+  bottle: `${OWN_IMG}ui-bottle-open.webp`, // 口の開いたボトル（本編の大会公式モデルの台のベースを入力にした生成。VPL46・VPL81）
+  faucet: `${OWN_IMG}ui-faucet.webp`, // 水入れの蛇口（VPL81）
   bowlEmpty: `${OWN_IMG}ui-bowl-empty.webp`,
   bowl_airy: `${OWN_IMG}ui-bowl-airy.webp`,
   bowl_normal: `${OWN_IMG}ui-bowl-normal.webp`,
@@ -129,16 +130,16 @@ const TALKS = {
   },
 };
 const PACKS = [
-  { id: "airy", name: "ふんわり", dens: 1 },
-  { id: "normal", name: "ノーマル", dens: 2 },
-  { id: "firm", name: "デンスパック", dens: 3, locked: true },
+  { id: "airy", name: "ふんわり", dens: 1, speed: 3, rate: "熱が早い", note: "過熱に注意" },
+  { id: "normal", name: "ノーマル", dens: 2, speed: 2, rate: "熱は標準", note: "帯は配合どおり" },
+  { id: "firm", name: "デンスパック", dens: 3, speed: 1, rate: "熱が遅い", note: "蒸らし長め", locked: true },
 ];
 // 工程（上の並び）と、スミさんの一言
 const STEPS = [["water", "水入れ"], ["mix", "配合"], ["pack", "詰め方"], ["holes", "穴あけ"], ["coal", "炭焼き"], ["steam", "蒸らし"], ["pull", "吸い出し"], ["care", "調整"]];
 // この試作で遊べる作る場面（本編と同じ順。炭と調整は省く）
 const CRAFT_SCENES = ["water", "mix", "pack", "holes", "coal", "steam", "pull"];
 // 温度ゲージを出す場面（VPL61）。穴あけ・炭焼き・雑念よけの間は消し、吸い出しで戻す
-const THERMO_ON = new Set(["pack", "pull"]);
+const THERMO_ON = new Set(["mix", "pack", "pull"]); // 配合は帯だけ（VPL78）
 const COACH = {
   water: "線のあいだまで注げ",
   coal: "全面が赤くなったら取れ",
@@ -176,8 +177,22 @@ const TEMP_DANGER = 0.9;
 const SCALE_COLORS = [[0, "#fff4d2"], [.13, "#ffedb0"], [.26, "#ffe270"], [.37, "#ffd12a"], [.40, "#f6d559"], [.42, "#67d2a3"],
   [.44, "#4fcf98"], [.54, "#74e0b0"], [.64, "#4fcf98"], [.66, "#79d9a9"], [.71, "#ffb247"], [.76, "#ff8a2a"],
   [.83, "#ff3f17"], [.89, "#eb210d"], [.94, "#b0140a"], [1, "#650609"]];
-const SCALE = `linear-gradient(0deg, ${SCALE_COLORS.map(([at, color]) => `${color} ${at * 100}%`).join(", ")})`;
-const tempState = (t) => t >= TEMP_BEST[0] && t <= TEMP_BEST[1] ? "best" : t >= TEMP_ZONE[0] && t <= TEMP_ZONE[1] ? "ok" : t >= TEMP_DANGER ? "burn" : "";
+// 配合で温度帯が動く（VPL78）。本編 temperature-model.js と同じく、葉ごとの熱への強さ（data/flavors.json の heat_tolerance）を
+// グラムで重み付けした平均 t を、基準の帯（緑 0.42〜0.66・虹 0.50〜0.58）へ掛ける。ミント多めは上へ、スイカ・ストロベリー多めは下へ。
+// （本編はここへ機材・メーカーの幅の補正も掛ける。試作は第1章の同じメーカーの葉だけなので、位置だけ動かす）
+const bandsOf = (mix) => {
+  const total = mix.reduce((n, g) => n + g, 0);
+  const t = total ? mix.reduce((n, g, i) => n + g * (MIX[i].tol || 1), 0) / total : 1;
+  return { selected: total > 0, t, zone: TEMP_ZONE.map((v) => v * t), best: TEMP_BEST.map((v) => v * t) };
+};
+// 色の柱は、緑の所が帯に重なるように伸び縮みさせる（本編の visualTemperature と同じ考え方）
+const scaleOf = (b) => {
+  const at = (v) => v <= TEMP_ZONE[0] ? v / TEMP_ZONE[0] * b.zone[0]
+    : v <= TEMP_ZONE[1] ? b.zone[0] + (v - TEMP_ZONE[0]) / (TEMP_ZONE[1] - TEMP_ZONE[0]) * (b.zone[1] - b.zone[0])
+    : b.zone[1] + (v - TEMP_ZONE[1]) / (1 - TEMP_ZONE[1]) * (1 - b.zone[1]);
+  return `linear-gradient(0deg, ${SCALE_COLORS.map(([v, color]) => `${color} ${(at(v) * 100).toFixed(1)}%`).join(", ")})`;
+};
+const tempState = (t, b) => t >= b.best[0] && t <= b.best[1] ? "best" : t >= b.zone[0] && t <= b.zone[1] ? "ok" : t >= TEMP_DANGER ? "burn" : "";
 
 // 登場カットイン（縦画面の案）。文言は data/characters.json の intro_cutin、色は remake/data/manifest.json の introArt、
 // 好きなフレーバーは remake/js/vn/intro-flavors.js の写し。name は [字, ふりがな] の並び（null は苗字と名前の小さな空き）
@@ -200,10 +215,25 @@ const CUT_HOLD = 3800; // 紹介を見せる長さ（ms）。横画面の今の�
 const WATER = { low: 0.44, high: 0.56, stem: 0.3, deep: 0.85, pour: 0.18, drain: 0.03 };
 const waterZone = (w) => w <= 0 ? "empty" : w < WATER.stem ? "none" : w < WATER.low ? "shallow" : w <= WATER.high ? "ideal" : "deep";
 const WATER_SAY = { none: "ステムに届いてないぞ", shallow: "浅いな。吸いが軽くなる", ideal: "いい浸かり具合だ", deep: "深いな。吸いが重くなる" };
-// 水入れのボトルは、本編の大会公式モデルの台（img/ui/scene_props/shisha_home_pro.webp）のガラスのベースを切り出して使う（VPL46・img/ui-bottle-pro.webp・464×650）。
-// 内側の形と水位: 底（y=570）から上へ。底近くまで入ったステムの先（y=532）が水位0.30になる
-const BOTTLE_IN = "M173 150 L177 160 L177 180 L176 190 L175 200 L172 210 L168 220 L163 230 L157 240 L149 250 L141 260 L132 270 L124 280 L115 290 L108 300 L102 310 L97 320 L93 330 L90 340 L88 350 L86 360 L85 370 L85 400 L84 410 L83 420 L82 430 L81 440 L79 450 L76 460 L72 470 L68 480 L62 490 L54 500 L43 510 L30 520 L19 530 L13 540 L10 550 L9 560 L11 570 L452 570 L454 560 L453 550 L450 540 L445 530 L433 520 L419 510 L409 500 L401 490 L395 480 L391 470 L387 460 L384 450 L382 440 L381 430 L380 420 L379 410 L378 400 L378 380 L377 370 L376 360 L375 350 L373 340 L370 330 L366 320 L361 310 L355 300 L348 290 L340 280 L331 270 L322 260 L313 250 L306 240 L299 230 L294 220 L290 210 L288 200 L287 190 L286 180 L286 160 L290 150 Z";
-const waterY = (w) => 570 - w * 127;
+// 水入れのボトル（VPL81）: 口の開いたガラスのベース単体（ステムは外してある）を、蛇口の下で少し傾けて満たす。
+// 絵は img/ui-bottle-open.webp（540×711）。本編の大会公式モデルの台のベース（VPL46）を入力にした生成で、ガラスの面は半透明にしてある（水が透けて見える）。
+// inner＝内側の形（絵の輪郭からガラスの厚みだけ内へ）。底（y=668）から口の下（y=30）まで。
+// ちょうどいい水位（0.44〜0.56）が、ボトルの高さの約6割に来る（VPL81）。口の下まで来たら満杯（WATER_MAX）
+const BOTTLE = { w: 540, h: 711, cx: 270, base: 668, top: 30, pivot: [270, 690], mouth: [270, 20], rest: 8, drain: 17,
+  inner: "M179 30 L185 44 L189 58 L192 72 L194 86 L195 100 L196 114 L196 128 L195 142 L193 156 L189 170 L184 184 L176 198 L167 212 L157 226 L146 240 L135 254 L125 268 L116 282 L108 296 L102 310 L97 324 L94 338 L92 352 L91 366 L90 380 L90 394 L90 408 L90 422 L89 436 L88 450 L86 464 L83 478 L80 492 L75 506 L68 520 L59 534 L47 548 L38 562 L27 576 L21 590 L19 604 L21 618 L26 632 L34 646 L48 660 L59 668 L481 668 L492 660 L506 646 L514 632 L519 618 L520 604 L518 590 L513 576 L502 562 L493 548 L480 534 L471 520 L465 506 L460 492 L456 478 L453 464 L451 450 L450 436 L449 422 L449 408 L449 394 L448 380 L448 366 L447 352 L445 338 L442 324 L437 310 L431 296 L423 282 L414 268 L403 254 L393 240 L382 226 L371 212 L362 198 L355 184 L349 170 L345 156 L343 142 L342 128 L342 114 L343 100 L344 86 L347 72 L349 58 L353 44 L360 30Z" };
+const waterY = (w) => BOTTLE.base - w * (BOTTLE.base - BOTTLE.top) * 1.2;
+const WATER_MAX = 0.86;
+// ボトルを ang 度傾けた時の、絵の中の点（x, y）の画面上の位置
+const tiltPoint = (x, y, ang) => { const r = ang * Math.PI / 180, [px, py] = BOTTLE.pivot, dx = x - px, dy = y - py; return [px + dx * Math.cos(r) - dy * Math.sin(r), py + dx * Math.sin(r) + dy * Math.cos(r)]; };
+// 内側の左右の壁（高さ y での x）。水面の波を壁で跳ね返すのに使う
+const BOTTLE_WALL = (() => {
+  const pts = BOTTLE.inner.slice(1, -1).split(" L").map((p) => p.split(" ").map(Number)), n = pts.length / 2;
+  const left = pts.slice(0, n), right = pts.slice(n).reverse();
+  const at = (side, y) => { let i = 1; while (i < n - 1 && side[i][1] < y) i++; const [x0, y0] = side[i - 1], [x1, y1] = side[i]; return x0 + (x1 - x0) * Math.max(0, Math.min(1, (y - y0) / (y1 - y0))); };
+  return (y) => [at(left, y), at(right, y)];
+})();
+// 蛇口（img/ui-faucet.webp・360×310）: 吐水口の真ん中は絵の左から13.7%・下の端。少し傾けたボトルの口の真上に置く
+const FAUCET = (() => { const [mx, my] = tiltPoint(...BOTTLE.mouth, BOTTLE.rest), w = 357, h = w * 310 / 360; return { x: mx - w * 0.1371, y: my - 60 - h, w, h, nx: mx, ny: my - 60 }; })();
 // 配合（VPL36）。本編 steps.js の stepMix: 葉を1gずつ器へ。器（シリコン）は12g、第1章の課題はレモン2g以上
 // 葉のジャンルは店番ゲーム（remake/js/daily/tonari-floor-data.js の WISHES・tonari-floor-art.js の印）と同じ（VPL47）
 const GENRES = {
@@ -214,18 +244,19 @@ const GENRES = {
 };
 // 第1章の葉（本編の ID）。ジャンルは店番の表（ダブルアップル＝刺激系＋フルーティ、ミント＝刺激系、レモン＝フルーティ＋刺激系）。
 // パッケージの切り出しは本編 remake/js/daily/shop-art.js の box（512×512 の絵）
+// 熱への強さ（tol）は本編 data/flavors.json の heat_tolerance（配合の温度帯に使う・VPL78）
 // 葉の色（leaf）は実物に合わせて、色を付けた果物系＝赤寄り、ミントやシナモン・柑橘＝茶色寄り（VPL50・VPL53）
 const MIX = [
-  { id: "double_apple", name: "ダブルアップル", genre: "fresh", sub: "fruit", leaf: "red", box: [105, 53, 304, 405] },
-  { id: "mint", name: "ミント", genre: "fresh", leaf: "brown", box: [124, 85, 264, 347] },
-  { id: "lemon", name: "レモン", genre: "fruit", sub: "fresh", leaf: "brown", need: 2, box: [104, 51, 306, 408] },
-  { id: "blueberry", name: "ブルーベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
-  { id: "strawberry", name: "ストロベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
-  { id: "grape", name: "グレープ", genre: "fruit", leaf: "red", box: [110, 57, 295, 404] },
-  { id: "watermelon", name: "スイカ", genre: "fruit", sub: "fresh", leaf: "red", box: [104, 51, 305, 408] },
-  { id: "orange", name: "オレンジ", genre: "fruit", sub: "fresh", leaf: "brown", box: [104, 51, 306, 408] },
-  { id: "pineapple", name: "パイナップル", genre: "fruit", leaf: "brown", box: [104, 51, 306, 408] },
-  { id: "cinnamon", name: "シナモン", genre: "fresh", sub: "sweet", leaf: "brown", box: [102, 51, 308, 409] },
+  { id: "double_apple", tol: 1, name: "ダブルアップル", genre: "fresh", sub: "fruit", leaf: "red", box: [105, 53, 304, 405] },
+  { id: "mint", tol: 1.2, name: "ミント", genre: "fresh", leaf: "brown", box: [124, 85, 264, 347] },
+  { id: "lemon", tol: 1.1, name: "レモン", genre: "fruit", sub: "fresh", leaf: "brown", need: 2, box: [104, 51, 306, 408] },
+  { id: "blueberry", tol: 0.9, name: "ブルーベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
+  { id: "strawberry", tol: 0.85, name: "ストロベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
+  { id: "grape", tol: 0.95, name: "グレープ", genre: "fruit", leaf: "red", box: [110, 57, 295, 404] },
+  { id: "watermelon", tol: 0.85, name: "スイカ", genre: "fruit", sub: "fresh", leaf: "red", box: [104, 51, 305, 408] },
+  { id: "orange", tol: 1, name: "オレンジ", genre: "fruit", sub: "fresh", leaf: "brown", box: [104, 51, 306, 408] },
+  { id: "pineapple", tol: 1.1, name: "パイナップル", genre: "fruit", leaf: "brown", box: [104, 51, 306, 408] },
+  { id: "cinnamon", tol: 1.05, name: "シナモン", genre: "fresh", sub: "sweet", leaf: "brown", box: [102, 51, 308, 409] },
 ];
 const pkgHtml = (f, h) => {
   const [x, y, w, hh] = f.box, k = h / hh, r = (v) => `${(v * k).toFixed(2)}rem`;
@@ -972,35 +1003,134 @@ class Phone {
   }
 
   /* ── 水入れ（VPL36・VPL37）: 押している間だけ水が動く。ステムの先が少し浸かる、二本の線のあいだがちょうどいい ── */
-  /** ボトルの水（3案で共通）。作り直したボトルの内側の形で切り抜く。neon は絵を使わず光る線で描く。 */
+  /** ボトルの中の水と、蛇口・水流。水は画面に対して水平なので、傾けたボトルの絵とは別に（傾けない SVG で）描き、内側の形で切り抜く。 */
   bottleSvg() {
-    const id = `bw${this.uid}`, line = (w) => waterY(w).toFixed(0);
-    const bubbles = [0, 1, 2, 3, 4].map((i) => `<circle cx="${212 + (i % 3) * 18}" cy="556" r="${4 + (i % 2) * 2}" style="--i:${i}"/>`).join("");
-    return `<svg class="bottle-svg" viewBox="0 0 464 650" aria-hidden="true"><defs><clipPath id="${id}"><path d="${BOTTLE_IN}"/></clipPath>
-        <linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fe3f2"/><stop offset="1" stop-color="#2f78b0"/></linearGradient></defs>
-        <path class="w-stream" d="M232 -40V200"/>
-        <g clip-path="url(#${id})"><rect class="w-body" x="0" y="650" width="464" height="0" fill="url(#${id}g)"/><rect class="w-surf" x="0" y="650" width="464" height="4"/>
-          <g class="w-bubbles">${bubbles}</g>
-          <path class="w-line" d="M0 ${line(WATER.low)}H464M0 ${line(WATER.high)}H464"/></g>
+    const id = `bw${this.uid}`, { w, h, inner } = BOTTLE, F = FAUCET, n = (v) => v.toFixed(1);
+    return `<svg class="bottle-svg" viewBox="0 0 ${w} ${h}" aria-hidden="true"><defs><clipPath id="${id}"><path class="w-clip" d="${inner}"/></clipPath>
+        <linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fe6fa"/><stop offset="0.16" stop-color="#3fb4e6"/><stop offset="1" stop-color="#1757a6"/></linearGradient>
+        <linearGradient id="${id}s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8fd8f5" stop-opacity="0.7"/><stop offset="0.4" stop-color="#ffffff" stop-opacity="1"/><stop offset="1" stop-color="#6fc4ee" stop-opacity="0.75"/></linearGradient>
+        <linearGradient id="${id}m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.3" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff"/></linearGradient>
+        <mask id="${id}k" maskUnits="userSpaceOnUse" x="${n(F.x)}" y="${n(F.y)}" width="${n(F.w)}" height="${n(F.h)}"><rect x="${n(F.x)}" y="${n(F.y)}" width="${n(F.w)}" height="${n(F.h)}" fill="url(#${id}m)"/></mask></defs>
+        <image class="w-faucet" href="${IMG.faucet}" x="${n(F.x)}" y="${n(F.y)}" width="${n(F.w)}" height="${n(F.h)}" mask="url(#${id}k)"/>
+        <g clip-path="url(#${id})"><path class="w-body" fill="url(#${id}g)" d=""/><path class="w-deep" d=""/>
+          <g class="w-bubbles">${`<circle r="0"/>`.repeat(12)}</g>
+          <path class="w-surf" d=""/><path class="w-line" d=""/></g>
       </svg>`;
   }
 
-  /** 水入れ（VPL46）: 大会仕様のボトルへ直接注ぐ。水位計は出さない。ステムの先と二本の線が目安 */
+  /** ガラスの手前に重ねる分: 蛇口の水流と、水面で跳ねるしぶき（ガラスの白に埋もれないように）。 */
+  bottleFxSvg() {
+    const id = `bw${this.uid}`, { w, h } = BOTTLE;
+    return `<svg class="bottle-svg fx" viewBox="0 0 ${w} ${h}" aria-hidden="true"><path class="w-stream" fill="url(#${id}s)" d=""/><g clip-path="url(#${id})"><g class="w-drops">${`<circle r="0"/>`.repeat(7)}</g></g></svg>`;
+  }
+
+  /** 水入れ（VPL46・VPL81）: 蛇口の下で、口の開いたボトルを少し傾けて満たす。水位計は出さない。二本の線が目安 */
   waterPic() {
-    return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="water-a" data-zone="empty"><div class="bottle pro"><img src="${IMG.bottle}" alt="">${this.bottleSvg()}</div></div>`;
+    return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="water-a" data-zone="empty"><div class="bottle open">${this.bottleSvg()}<img class="b-glass" src="${IMG.bottle}" alt="">${this.bottleFxSvg()}</div></div>`;
+  }
+
+  /**
+   * 水の揺れ（VPL81）。毎コマ動かす。
+   * ・水面は左右28本の柱の高さで持ち、隣どうしを引き合うばね（波が左右へ伝わり、ガラスの壁で跳ね返る）。
+   * ・全体の傾き（左右へゆっくり揺れる）は別のばね。ボトルを傾けた・戻した時、注ぎはじめ・注ぎ終わりに揺れ出す。
+   * ・蛇口の水は吐水口から落ち、水面に当たった所を押し下げて波を起こす。泡が上がり、しぶきが跳ねる。
+   * ・「少しこぼす」の間は、ボトルをもう少し傾ける。
+   */
+  stepWater(dt, now) {
+    const root = this.el.querySelector(".water-a"), svg = root?.querySelector(".bottle-svg");
+    if (!svg) return;
+    const N = 28, DX = BOTTLE.w / (N - 1);
+    let S = this.wsim;
+    if (!S || S.svg !== svg) {
+      const q = (c) => root.querySelector(c);
+      S = this.wsim = { svg, h: new Float32Array(N), v: new Float32Array(N), ang: BOTTLE.rest, angV: 0, slope: 0, slopeV: 0, head: null, tail: null, bub: [], drops: [], spawn: 0, was: false,
+        glass: root.querySelector(".b-glass"), clip: q(".w-clip"), body: q(".w-body"), deep: q(".w-deep"), surf: q(".w-surf"), line: q(".w-line"), stream: q(".w-stream"),
+        bubEls: [...root.querySelectorAll(".w-bubbles circle")], dropEls: [...root.querySelectorAll(".w-drops circle")] };
+    }
+    const w = this.st.water, still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // ボトルの傾き（こぼす間は大きく傾ける）
+    const target = this.draining ? BOTTLE.drain : BOTTLE.rest, av0 = S.angV;
+    S.angV += ((target - S.ang) * 70 - S.angV * 15) * dt; S.ang += S.angV * dt;
+    const ang = S.ang;
+    // 水位（画面上の高さ）と、その高さでの壁
+    const yLocal = waterY(w), [axisX, level] = tiltPoint(BOTTLE.cx, yLocal, ang);
+    const [wl, wr] = BOTTLE_WALL(Math.max(BOTTLE.top, Math.min(BOTTLE.base, yLocal)));
+    const xl = tiltPoint(wl, yLocal, ang)[0], xr = tiltPoint(wr, yLocal, ang)[0];
+    const iL = Math.max(0, Math.floor(xl / DX)), iR = Math.min(N - 1, Math.ceil(xr / DX));
+    // 蛇口の水: 注ぎはじめは吐水口から落ちていき、止めると上から切れて落ちる
+    const F = FAUCET, iS = Math.round(F.nx / DX);
+    const surfAt = () => level + S.slope * (F.nx - axisX) + S.h[iS];
+    const land = w > 0 ? surfAt() : tiltPoint(F.nx, BOTTLE.base, 0)[1];
+    if (this.pouring) { S.head = Math.min(land, (S.head ?? F.ny) + 2600 * dt); S.tail = F.ny; }
+    else if (S.head != null) { S.tail = (S.tail ?? F.ny) + 2600 * dt; S.head = Math.min(land, S.head + 2600 * dt); if (S.tail >= S.head) S.head = S.tail = null; }
+    const hitting = S.head != null && S.head >= land - 2 && w > 0;
+    // 傾きの揺れ: ボトルを動かした分と、注ぎはじめ・終わりで揺れ出す
+    if (hitting !== S.was) { S.slopeV += (hitting ? 0.5 : -0.35) * (still ? 0.2 : 1); S.was = hitting; }
+    // 水が当たる所は、細かく不規則に叩かれる（当たった所が沈み、両隣が跳ね上がって、波になって左右へ伝わる）
+    if (hitting && !still) {
+      S.kick = (S.kick || 0) + dt;
+      while (S.kick > 0.04) {
+        S.kick -= 0.04;
+        S.v[iS] += 190 + Math.random() * 190;
+        for (const j of [iS - 1, iS + 1]) if (j >= iL && j <= iR) S.v[j] -= 90 + Math.random() * 150;
+        for (const j of [iS - 2, iS + 2]) if (j >= iL && j <= iR) S.v[j] += (Math.random() - 0.5) * 170;
+      }
+    }
+    const steps = Math.max(1, Math.ceil(dt / (1 / 240))), d = dt / steps;
+    for (let k = 0; k < steps; k++) {
+      S.slopeV += (-S.slope * 46 - S.slopeV * 1.5) * d + (S.angV - av0) / steps * 0.016; // ボトルを傾けると、水は遅れて付いてくる
+      if (hitting && !still) S.slopeV += (Math.random() - 0.5) * 1.6 * d;
+      S.slope += S.slopeV * d;
+      for (let i = iL; i <= iR; i++) {
+        const hl = S.h[i > iL ? i - 1 : i], hr = S.h[i < iR ? i + 1 : i];
+        S.v[i] += ((hl + hr - 2 * S.h[i]) * 620 - S.h[i] * 16 - S.v[i] * 1.7) * d;
+      }
+      if (hitting && !still) S.v[iS] += 1800 * d; // 水が当たり続ける所は少しへこむ
+      for (let i = iL; i <= iR; i++) S.h[i] = Math.max(-16, Math.min(16, S.h[i] + S.v[i] * d));
+    }
+    for (let i = 0; i < N; i++) if (i < iL || i > iR) { S.h[i] = S.h[i < iL ? iL : iR]; S.v[i] = 0; }
+    S.slope = Math.max(-0.16, Math.min(0.16, S.slope));
+    // 描く: 傾けたボトルの絵と切り抜き、水面、目安の線
+    S.glass.style.transform = `rotate(${ang.toFixed(2)}deg)`;
+    S.clip.setAttribute("transform", `rotate(${ang.toFixed(2)} ${BOTTLE.pivot[0]} ${BOTTLE.pivot[1]})`);
+    const y = (i) => level + S.slope * (i * DX - axisX) + S.h[i];
+    let top = `M${-DX} ${y(0).toFixed(1)} L0 ${y(0).toFixed(1)}`;
+    for (let i = 1; i < N; i++) { const xm = (i - 0.5) * DX, ym = (y(i - 1) + y(i)) / 2; top += ` Q${((i - 1) * DX).toFixed(1)} ${y(i - 1).toFixed(1)} ${xm.toFixed(1)} ${ym.toFixed(1)}`; }
+    top += ` L${BOTTLE.w} ${y(N - 1).toFixed(1)} L${BOTTLE.w + DX} ${y(N - 1).toFixed(1)}`;
+    const shown = w > 0;
+    S.body.setAttribute("d", shown ? `${top} V${BOTTLE.h + 260} H${-DX} Z` : "");
+    S.deep.setAttribute("d", shown ? `${top} V${BOTTLE.h + 260} H${-DX} Z` : "");
+    S.deep.setAttribute("transform", "translate(0 18)");
+    S.surf.setAttribute("d", shown ? top : "");
+    const [, yl] = tiltPoint(BOTTLE.cx, waterY(WATER.low), ang), [, yh] = tiltPoint(BOTTLE.cx, waterY(WATER.high), ang);
+    S.line.setAttribute("d", `M-40 ${yl.toFixed(1)}H${BOTTLE.w + 40}M-40 ${yh.toFixed(1)}H${BOTTLE.w + 40}`);
+    // 水流（上が少し太く、下へ細る。わずかに揺れる）
+    if (S.head != null && S.head - S.tail > 4) {
+      const t = now / 1000, wob = (yy) => Math.sin(t * 19 + yy * 0.045) * 1.6 + Math.sin(t * 31 + yy * 0.09) * 0.8, y0 = S.tail, y1 = S.head, seg = 6;
+      let lft = "", rgt = "";
+      for (let k = 0; k <= seg; k++) { const yy = y0 + (y1 - y0) * k / seg, half = 13 - 4.5 * k / seg + Math.sin(t * 23 + k) * 0.7, cx = F.nx + (still ? 0 : wob(yy)); lft += `${k ? "L" : "M"}${(cx - half).toFixed(1)} ${yy.toFixed(1)} `; rgt = `L${(cx + half).toFixed(1)} ${yy.toFixed(1)} ` + rgt; }
+      S.stream.setAttribute("d", `${lft}${rgt}Z`);
+    } else S.stream.setAttribute("d", "");
+    // 泡としぶき
+    if (hitting && !still) {
+      S.spawn += dt;
+      while (S.spawn > 0.035) {
+        S.spawn -= 0.035;
+        if (S.bub.length < S.bubEls.length) S.bub.push({ x: F.nx + (Math.random() - 0.5) * 34, y: land + 14 + Math.random() * 70, r: 2.5 + Math.random() * 5, vy: -(70 + Math.random() * 120), vx: (Math.random() - 0.5) * 50, life: 0.45 + Math.random() * 0.5, t: 0 });
+        if (S.drops.length < S.dropEls.length && Math.random() < 0.6) S.drops.push({ x: F.nx + (Math.random() - 0.5) * 12, y: land - 2, r: 2 + Math.random() * 2.6, vx: (Math.random() - 0.5) * 260, vy: -(150 + Math.random() * 230), t: 0 });
+      }
+    }
+    S.bub = S.bub.filter((b) => { b.t += dt; b.x += b.vx * dt; b.y += b.vy * dt; return b.t < b.life && b.y > level - 4; });
+    S.bubEls.forEach((el, i) => { const b = S.bub[i]; if (b) { el.setAttribute("cx", b.x.toFixed(1)); el.setAttribute("cy", b.y.toFixed(1)); el.setAttribute("r", b.r.toFixed(1)); el.style.opacity = (0.75 * (1 - b.t / b.life)).toFixed(2); } else el.setAttribute("r", "0"); });
+    S.drops = S.drops.filter((p) => { p.t += dt; p.vy += 1500 * dt; p.x += p.vx * dt; p.y += p.vy * dt; return p.t < 0.7 && (p.vy < 0 || p.y < level + 4); });
+    S.dropEls.forEach((el, i) => { const p = S.drops[i]; if (p) { el.setAttribute("cx", p.x.toFixed(1)); el.setAttribute("cy", p.y.toFixed(1)); el.setAttribute("r", p.r.toFixed(1)); } else el.setAttribute("r", "0"); });
   }
 
   syncWater() {
-    const { st, el } = this, w = st.water, y = waterY(w);
+    const { st, el } = this, w = st.water;
     const root = el.querySelector(".water-a");
     if (!root) return;
     root.style.setProperty("--w", w.toFixed(3));
-    for (const svg of root.querySelectorAll(".bottle-svg")) {
-      const body = svg.querySelector(".w-body"), surf = svg.querySelector(".w-surf");
-      body.setAttribute("y", y.toFixed(1)); body.setAttribute("height", w > 0 ? (650 - y).toFixed(1) : "0");
-      surf.setAttribute("y", (y - 2).toFixed(1)); surf.style.opacity = w > 0 ? "1" : "0";
-      svg.querySelector(".w-stream").setAttribute("d", `M232 -40V${y.toFixed(0)}`);
-    }
     const zone = waterZone(w);
     if (root.dataset.zone !== zone) root.dataset.zone = zone;
     root.classList.toggle("pouring", !!this.pouring);
@@ -1039,24 +1169,32 @@ class Phone {
       <img class="b-full brown" src="${IMG.bowl_normal_brown}" alt=""><img class="b-full red" src="${IMG.bowl_normal}" alt=""></div>`;
   }
 
-  /** 上の画面: はかりの上に器。器ははかりの台の半分ほどの幅（VPL56）。前の表示窓（横30〜63%・縦82〜96%）に重さ */
+  /** 上の画面: はかりの上に器。右に、この配合の温度帯（VPL78）。前の表示窓（横30〜63%・縦82〜96%）に重さ */
   mixPic() {
     return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="mix-a"><div class="scale"><img src="${IMG.scale}" alt="">${this.mixBowl("on-scale")}<b class="digits" aria-hidden="true"><span class="d-num">00</span><span class="d-unit">g</span></b></div></div>`;
   }
 
-  /** 下の画面のフレーバーの一覧（VPL52・VPL56）: 画面の下半分を縦に広く使い、縦にスライドする行（パッケージ・名前・ジャンル・−／＋・g）。 */
+  /**
+   * 下の画面（VPL78・案B「葉の棚」）: 10種の葉を5×2で全部並べ、入れた葉にグラムの札を付ける（何を何g入れたかが、送らずに見える）。
+   * 押して選んだ葉だけ、下に大きな −／＋ の段が出る。いちばん下にジャンルのボタンと「決定」。グラムは1g単位（VPL79）。
+   */
   mixCardsHtml() {
-    const { st } = this, total = this.mixTotal();
-    const btn = (i, by, f) => `<button class="mr-btn" data-act="mixadd" data-i="${i}" data-by="${by}" aria-label="${f.name}を1g${by > 0 ? "増やす" : "減らす"}">${by > 0 ? "＋" : "−"}</button>`;
-    // 上に店番と同じ4つのジャンルのボタン。押すとそのジャンルの葉が上に並ぶ（もう一度押すと元の順）（VPL66）
+    const { st } = this;
     const chips = `<div class="genre-bar" role="group" aria-label="ジャンルで並べ替え">${Object.entries(GENRES).map(([id, g]) => `<button class="gchip${st.mixSort === id ? " on" : ""}" data-act="mixsort" data-g="${id}" style="--g:${g.color}" aria-pressed="${st.mixSort === id}"><svg viewBox="0 0 24 24" aria-hidden="true">${g.icon}</svg><b>${g.name}</b></button>`).join("")}</div>`;
-    const rows = this.mixOrder().map((i) => {
+    const tiles = this.mixOrder().map((i) => {
       const f = MIX[i], match = !st.mixSort || f.genre === st.mixSort || f.sub === st.mixSort;
-      return `<div class="mixrow${i === st.mixSel ? " on" : ""}${match ? "" : " dim"}" data-act="mixsel" data-i="${i}" role="option" aria-selected="${i === st.mixSel}">
-      ${pkgHtml(f, 7)}<span class="mr-name"><b>${f.name}${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</b><span class="mr-tags">${genreHtml(f.genre, false)}${f.sub ? genreHtml(f.sub, false) : ""}</span></span>
-      ${btn(i, -1, f)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(i, 1, f)}</div>`;
+      return `<button class="mixtile${match ? "" : " dim"}" data-act="mixsel" data-i="${i}" role="option" aria-selected="false">
+        ${pkgHtml(f, 5.8)}<span class="mt-name">${f.name}</span><span class="mr-tags">${genreHtml(f.genre, false)}${f.sub ? genreHtml(f.sub, false) : ""}</span>${f.need ? `<i class="mt-need">${f.need}g〜</i>` : ""}<b class="mt-g"></b></button>`;
     }).join("");
-    return `${chips}<div class="picker rows" role="listbox" aria-label="フレーバー">${rows}</div>`;
+    return `<div class="picker shelf" role="listbox" aria-label="フレーバー">${tiles}</div><div class="mixsel"></div>${chips}`;
+  }
+
+  /** 選んだ葉の段（パッケージ・名前・ジャンル・−／＋・g）。選び直すたびに作り直す。 */
+  mixSelHtml() {
+    const { st } = this, i = st.mixSel, f = MIX[i];
+    const btn = (by) => `<button class="mr-btn" data-act="mixadd" data-i="${i}" data-by="${by}" aria-label="${f.name}を1g${by > 0 ? "増やす" : "減らす"}">${by > 0 ? "＋" : "−"}</button>`;
+    return `${pkgHtml(f, 5.6)}<span class="mr-name"><b>${f.name}${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</b><span class="mr-tags">${genreHtml(f.genre, false)}${f.sub ? genreHtml(f.sub, false) : ""}</span></span>
+      ${btn(-1)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(1)}`;
   }
 
   /** 一覧の並び。ジャンルを選んでいる時は、そのジャンルが主の葉 → 副の葉 → ほか の順（それぞれ元の順のまま）。 */
@@ -1071,8 +1209,8 @@ class Phone {
     st.mixSort = st.mixSort === g ? null : g;
     const ctrl = this.el.querySelector('[data-slot="ctrl"]');
     if (ctrl) { ctrl.innerHTML = this.craftCtrlHtml(); this.syncMix(); }
-    const list = this.el.querySelector(".picker.rows");
-    if (list) { list.scrollTop = 0; list.classList.remove("resort"); void list.offsetWidth; list.classList.add("resort"); }
+    const list = this.el.querySelector(".picker.shelf");
+    if (list) { list.classList.remove("resort"); void list.offsetWidth; list.classList.add("resort"); }
   }
 
   mixTotal() { return this.st.mix.reduce((a, b) => a + b, 0); }
@@ -1091,13 +1229,33 @@ class Phone {
     }
     const num = el.querySelector(".digits .d-num");
     if (num) { num.textContent = String(total).padStart(2, "0"); el.querySelector(".digits").classList.toggle("full", total === MIX_CAP); }
-    el.querySelectorAll(".picker [data-i]").forEach((card) => {
-      const i = Number(card.dataset.i), on = i === st.mixSel;
-      if (card.classList.contains("mr-btn")) return;
-      card.classList.toggle("on", on); card.setAttribute("aria-selected", String(on));
-      const em = card.querySelector(".mr-g em"); if (em) em.textContent = String(st.mix[i]);
-      card.querySelector(".need")?.classList.toggle("met", st.mix[i] >= (MIX[i].need || 0));
+    // 棚: 選んでいる葉・入れた葉（グラムの札）・課題の葉の印
+    el.querySelectorAll(".mixtile").forEach((tile) => {
+      const i = Number(tile.dataset.i), on = i === st.mixSel, g = st.mix[i];
+      tile.classList.toggle("on", on); tile.setAttribute("aria-selected", String(on));
+      tile.classList.toggle("zero", g === 0);
+      tile.querySelector(".mt-g").textContent = g ? `${g}g` : "";
+      tile.querySelector(".mt-need")?.classList.toggle("met", g >= (MIX[i].need || 0));
+      tile.setAttribute("aria-label", `${MIX[i].name} ${g}グラム`);
     });
+    // 選んだ葉の段（葉を替えた時だけ作り直す。押している −／＋ を作り直さない）
+    const sel = el.querySelector(".mixsel");
+    if (sel) {
+      if (sel.dataset.i !== String(st.mixSel)) { sel.dataset.i = String(st.mixSel); sel.innerHTML = this.mixSelHtml(); }
+      sel.querySelector(".mr-g em").textContent = String(st.mix[st.mixSel]);
+      sel.querySelector(".need")?.classList.toggle("met", st.mix[st.mixSel] >= (MIX[st.mixSel].need || 0));
+    }
+    // 温度帯: 葉を足すたびに緑と虹の帯が動く（VPL78）
+    const thermo = el.querySelector(".thermo.bands");
+    if (thermo) {
+      const b = bandsOf(st.mix), pc = (v) => `${(v * 100).toFixed(1)}%`;
+      thermo.dataset.selected = String(b.selected);
+      thermo.querySelector(".th-bar").style.background = scaleOf(b);
+      const zone = thermo.querySelector(".th-zone"), best = thermo.querySelector(".th-best");
+      zone.style.bottom = pc(b.zone[0]); zone.style.height = pc(b.zone[1] - b.zone[0]);
+      best.style.bottom = pc(b.best[0]); best.style.height = pc(b.best[1] - b.best[0]);
+      thermo.querySelector(".th-note").innerHTML = b.selected ? "この配合の<br>適温" : "葉を入れると<br>出る";
+    }
     const ok = el.querySelector(".btn-a.mix-ok");
     if (ok) { ok.disabled = !this.mixOk(); ok.classList.toggle("hot", this.mixOk()); }
   }
@@ -1637,24 +1795,24 @@ class Phone {
 
   /** 熱ゲージ（温度帯）。シーシャ作りの間ずっと右に大きく出す。色の意味は本編と同じ（緑＝適温の目安、虹＝合わせやすい範囲、炎＝焦げる）。 */
   thermoHtml(fade = "") {
-    const t = this.st.temp, pc = (v) => `${(v * 100).toFixed(1)}%`;
-    return `<div class="thermo ${tempState(t)} ${fade}" style="--t:${t}" role="meter" aria-label="煙の温度" aria-valuemin="0" aria-valuemax="1" aria-valuenow="${t.toFixed(2)}">
+    const t = this.st.temp, pc = (v) => `${(v * 100).toFixed(1)}%`, b = bandsOf(this.st.mix);
+    // 配合の場面は、加熱前なので帯だけ（今の温度の印は出さない）。葉を入れるまでは帯も出さない
+    const mixing = this.st.scene === "mix";
+    return `<div class="thermo ${mixing ? "bands" : tempState(t, b)} ${fade}" data-selected="${!mixing || b.selected}" style="--t:${t}" role="meter" aria-label="${mixing ? "この配合の適温" : "煙の温度"}" aria-valuemin="0" aria-valuemax="1" aria-valuenow="${t.toFixed(2)}">
       <span class="th-icon">${icon("thermo")}</span>
-      <span class="th-tube"><span class="th-bar" style="background:${SCALE}">
-        <i class="th-zone" style="bottom:${pc(TEMP_ZONE[0])};height:${pc(TEMP_ZONE[1] - TEMP_ZONE[0])}"></i>
-        <i class="th-best" style="bottom:${pc(TEMP_BEST[0])};height:${pc(TEMP_BEST[1] - TEMP_BEST[0])}"></i>
+      <span class="th-tube"><span class="th-bar" style="background:${scaleOf(b)}">
+        <i class="th-zone" style="bottom:${pc(b.zone[0])};height:${pc(b.zone[1] - b.zone[0])}"></i>
+        <i class="th-best" style="bottom:${pc(b.best[0])};height:${pc(b.best[1] - b.best[0])}"></i>
         <i class="th-danger" style="bottom:${pc(TEMP_DANGER)}">${icon("coal")}</i>
         <i class="th-dim"></i>
         <i class="th-now"></i>
-      </span><i class="th-pointer"></i></span></div>`;
+      </span><i class="th-pointer"></i></span>${mixing ? `<small class="th-note"></small>` : ""}</div>`;
   }
 
   /** スミさんの一言は小さな吹き出しで出し、少しすると顔だけになる（顔を押すとまた出る）。 */
   craftTelopHtml() {
     const { st } = this;
-    let cards = st.scene === "pack" ? `<div class="cards">${PACKS.map((p, i) => `<button class="card${p.locked ? " locked" : ""}" data-act="pack" data-pack="${i}" aria-current="${i === st.pack}">
-      <img src="${IMG[`bowl_${p.id}`]}" alt=""><b>${p.name}</b><span class="dens">${[1, 2, 3].map((n) => `<i class="${n <= p.dens ? "on" : ""}"></i>`).join("")}</span>${p.locked ? icon("lock") : ""}</button>`).join("")}</div>` : "";
-    return `<button class="coach" data-act="coach" aria-label="スミさんの一言"><img src="${IMG.faceSumi}" alt=""><span class="say"><span class="say-text">${esc(COACH[st.scene])}</span></span></button>${cards}`;
+    return `<button class="coach" data-act="coach" aria-label="スミさんの一言"><img src="${IMG.faceSumi}" alt=""><span class="say"><span class="say-text">${esc(COACH[st.scene])}</span></span></button>`;
   }
 
   craftCtrlHtml() {
@@ -1666,7 +1824,7 @@ class Phone {
         <button class="btn-a sub r" data-act="decide" aria-label="決定"${st.water > 0 ? "" : " disabled"}><span class="t">決定</span></button>`;
     }
     if (st.scene === "mix") {
-      // 十字キーは出さず、下の画面にフレーバーの一覧（案A・B は横、案C は縦にスライド）。各札の −／＋ で1gずつ。合わせて12gで課題を満たすと「決定」（VPL52）
+      // 十字キーは出さず、下の画面に葉の棚（10種を全部）と、選んだ葉の −／＋ の段。合わせて12gで課題を満たすと「決定」（VPL52・VPL78）
       return `${this.mixCardsHtml()}${aHtml("ok", { cls: "mix-ok", disabled: !this.mixOk() })}`;
     }
     if (st.scene === "coal") {
@@ -1681,7 +1839,15 @@ class Phone {
       return `${dpadHtml("up down left right")}${subBtn}${swap}${aHtml("bomb", { cls: "bomb", extra: `<small class="act-label">リフレッシュ</small><i class="cool"></i>` })}`;
     }
     if (st.scene === "pack") {
-      return `${dpadHtml("left right")}${aHtml("ok", { disabled: !!PACKS[st.pack].locked })}`;
+      // 十字キーは出さず、3枚の大きな札を直接押して選ぶ（VPL77）。札には詰まり具合（点）と熱の入りの速さ（炎と矢印の数）。
+      // 左下に、選んでいる詰め方の温まり方（本編の詰め方の注記と同じ言葉）。右下の「決定」で進む
+      const sel = PACKS[st.pack];
+      const cards = PACKS.map((p, i) => `<button class="card${p.locked ? " locked" : ""}" data-act="pack" data-pack="${i}" aria-current="${i === st.pack}" aria-label="${p.name}。${p.rate}">
+        <img src="${IMG[`bowl_${p.id}`]}" alt=""><b>${p.name}</b><span class="dens">${[1, 2, 3].map((n) => `<i class="${n <= p.dens ? "on" : ""}"></i>`).join("")}</span>
+        <span class="heat-sp" data-sp="${p.speed}">${icon("coal")}${[1, 2, 3].map((n) => `<i class="${n <= p.speed ? "on" : ""}"></i>`).join("")}</span>${p.locked ? icon("lock") : ""}</button>`).join("");
+      return `<div class="cards">${cards}</div>
+        <div class="packinfo${sel.locked ? " locked" : ""}"><b>${sel.name}</b><span>${sel.locked ? "まだ教わっていない" : `${sel.rate}。${sel.note}`}</span></div>
+        ${aHtml("ok", { cls: "pack-ok", disabled: !!sel.locked })}`;
     }
     if (st.scene === "holes") {
       // 「刺す」を真ん中に大きく置く。押すと色が下から上へ満ち、満ちた瞬間に金に光る（ここで離す）。周りの10個の点＝開けた穴（金＝ちょうどいい）
@@ -1690,7 +1856,8 @@ class Phone {
         return `<circle class="pip${hole ? (hole.good ? " good" : " done") : ""}" cx="${(46 * Math.cos(a)).toFixed(1)}" cy="${(46 * Math.sin(a)).toFixed(1)}" r="2.6"/>`;
       }).join("");
       return `<svg class="hole-pips" viewBox="-50 -50 100 100" aria-label="開けた穴 ${st.holes.length}/${HOLE_COUNT}">${pips}</svg>
-        ${aHtml("poke", { cls: "hold center", extra: `<i class="fill"></i><i class="fill-line"></i>` })}`;
+        ${aHtml("poke", { cls: "hold center", extra: `<i class="fill"></i><i class="fill-line"></i>` })}
+        <span class="hole-count" aria-hidden="true">${icon("holes")}<b>${st.holes.length}</b><small>/${HOLE_COUNT}</small></span>`;
     }
     // 葉（フレーバーの持ち）は上の段の真ん中、吸った回数は「吸う」の中の点。ボタンに重ねない
     return `<span class="leaves" role="img" aria-label="フレーバーの持ち 5">${`<img src="${IMG.leaf}" alt="">`.repeat(5)}</span>
@@ -1820,9 +1987,9 @@ class Phone {
     } else if (st.scene === "pack" && (dir === "left" || dir === "right")) {
       st.pack = (st.pack + (dir === "right" ? 1 : PACKS.length - 1)) % PACKS.length; this.patch();
     } else if (st.scene === "mix") {
-      // キーボード: 上下で葉を選び、左右で1gずつ（画面では各行の −／＋）
-      if (dir === "up" || dir === "down") { const order = this.mixOrder(), k = order.indexOf(st.mixSel); st.mixSel = order[(k + (dir === "down" ? 1 : order.length - 1)) % order.length]; this.syncMix(); this.el.querySelector(`.picker [data-i="${st.mixSel}"]`)?.scrollIntoView({ block: "nearest" }); }
-      else this.addMix(dir === "right" ? 1 : -1);
+      // キーボード: 左右で棚の葉を選び、上下で1gずつ（画面では棚を押して選び、下の段の −／＋）
+      if (dir === "left" || dir === "right") { const order = this.mixOrder(), k = order.indexOf(st.mixSel); st.mixSel = order[(k + (dir === "right" ? 1 : order.length - 1)) % order.length]; this.syncMix(); }
+      else this.addMix(dir === "up" ? 1 : -1);
     }
   }
 
@@ -1882,7 +2049,7 @@ class Phone {
     if (!thermo) return;
     thermo.style.setProperty("--t", String(t));
     thermo.setAttribute("aria-valuenow", t.toFixed(2));
-    thermo.className = `thermo ${tempState(t)}`;
+    thermo.className = `thermo ${tempState(t, bandsOf(this.st.mix))}`;
   }
 
   /** シーシャ作り: スミさんの一言は3秒ほどで畳み、手元の操作だけを残す（一覧では出したまま）。 */
@@ -1975,9 +2142,12 @@ class Phone {
     this.lastT = now;
     if (this.ext) { this.ext.tick(now); requestAnimationFrame(this.tick); return; }
     // 水入れ: 押している間だけ水が動く（注ぐ 0.18/秒・こぼす 0.03/秒）
-    if (st.scene === "water" && !this.deciding && (this.pouring || this.draining)) {
-      st.water = Math.max(0, Math.min(1, st.water + ((this.pouring ? WATER.pour : 0) - (this.draining ? WATER.drain : 0)) * dt));
-      this.syncWater();
+    if (st.scene === "water") {
+      if (!this.deciding && (this.pouring || this.draining)) {
+        st.water = Math.max(0, Math.min(WATER_MAX, st.water + ((this.pouring ? WATER.pour : 0) - (this.draining ? WATER.drain : 0)) * dt));
+        this.syncWater();
+      }
+      this.stepWater(dt, now); // 水面の揺れ・水流・ボトルの傾きは毎コマ動かす（VPL81）
     }
     if (st.scene === "steam") this.stepDodge(now, dt);
     if (st.scene === "coal") this.stepCoals(now);
