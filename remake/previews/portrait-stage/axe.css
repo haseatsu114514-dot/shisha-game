@@ -90,7 +90,7 @@
 .ax-tools .ax-tag { flex: none; padding: 0 0.5rem; white-space: nowrap; }
 .ax-tools [data-act="ax-focus"] { min-width: 12rem; } /* 集中→集中中→使用済み で、横の並びが動かないように */
 /* 今の刃先: 見出しの下に点。落下する回転の間は、見出しの所に理由を出す */
-.ax-live { margin-left: auto; min-width: 0; display: grid; justify-items: end; padding-right: 0.3rem; line-height: 1.12; white-space: nowrap; }
+.ax-live { margin-left: auto; min-width: 0; display: grid; justify-items: end; padding-right: 0.3rem; line-height: 1.22; white-space: nowrap; }
 .ax-live[hidden] { display: none; }
 .ax-live small { font-size: 1.16rem; font-weight: 700; color: #c9b68f; } .ax-live b { font-size: 2.4rem; color: var(--orange); font-variant-numeric: tabular-nums; }
 .ax-live em { font-style: normal; font-size: 1.05rem; font-weight: 700; color: #ff9a8f; } .ax-live em:empty, .ax-live[data-drop="true"] small { display: none; }

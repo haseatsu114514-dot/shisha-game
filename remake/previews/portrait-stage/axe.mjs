@@ -256,6 +256,8 @@ export class AxeScene {
     addEventListener("keydown", (e) => this.keyDown(e), { ...opt, capture: true });
     addEventListener("keyup", (e) => this.keyUp(e), { ...opt, capture: true });
     addEventListener("blur", () => this.flickCancel(), opt);
+    // 書体が届く前に測った折り目は、届いてから測り直す
+    document.fonts?.ready.then(() => { if (!this.dead && this.r) this.relayout(); });
     if (this.shot) this.pose(this.shot);
     this.setPhase(this.phase, { keep: true });
     this.relayout();
@@ -829,7 +831,7 @@ export class AxeScene {
     let pages = paginateForBox(text, node);
     if (pages.length > 1) { node.classList.add("small"); pages = paginateForBox(text, node); }
     node.innerHTML = plain(pages[0]);
-    if (pages.length > 1) console.warn("2行に収まらない:", text);
+    if (pages.length > 1 && document.fonts?.status !== "loading") console.warn("2行に収まらない:", text);
   }
 
   /** 次への助言は2行まで（本編の助言は3文になる時がある。縦では先の2行＝原因と直し方までを出す）。 */
