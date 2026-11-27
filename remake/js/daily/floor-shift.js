@@ -1,8 +1,8 @@
 // 店番ゲーム（フロア営業）の本編シフト共通ランナー（mukai・ドバイ中心地のカフェ共用。Issue #4254）。
-// 画面の呼び出し・手当計算・心得の盤（floorRare / floorTop / floorMatch）・進み具合の保存・日当支給・中断/LOAD時の巻き戻しを揃える。
+// 画面の呼び出し・手当計算・心得の盤（floorRare / floorTop / floorMatch と店番のスキル。SBD157）・進み具合の保存・日当支給・中断/LOAD時の巻き戻しを揃える。
 // tonari.js の既存境界テスト（remake/test/tonari_floor_shift.mjs）に影響させないため、別モジュールとして切り出している。
 import { CHARM_BONUS } from "../core/stat-step-tables.js";
-import { callingSalesBonus, growthPerks, growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
+import { callingSalesBonus, growthFloorPerks } from "../core/growth-effects.js";
 import { on } from "../core/bus.js";
 import { bgUrl } from "../core/data.js";
 import { toast } from "../core/ui.js";
@@ -12,7 +12,7 @@ import { playBgm } from "../core/audio.js";
 import { isRainy } from "./weather.js";
 import { dirhamText } from "../chapters/ch4-dubai-local.js";
 import {
-  floorVenue, floorVenueBasePay, floorVenueShiftPay, floorVenueProgress, recordFloorVenueProgress, floorVenueVisitor,
+  floorVenue, floorVenueShiftPay, floorVenueCommissionPercent, floorVenueProgress, recordFloorVenueProgress, floorVenueVisitor,
 } from "./floor-venues.js";
 
 const activeVenueShifts = new WeakSet();
@@ -69,22 +69,19 @@ export async function runVenueFloorShift({
     const getAllowances = () => {
       if (allowanceCache) return allowanceCache;
       const bonus = Math.round(CHARM_BONUS[step("charm") - 1] * condition.bonusRate);
-      const basePay = floorVenueBasePay(v, owner.chapter);
-      const quickPay = growthSkill(owner, "K27") ? Math.round(basePay * SKILL_TUNING.baitoPay) : 0;
       allowanceCache = {
         bonus,
         extra,
         callingBonus,
         shiftBonus: condition.shiftBonus,
-        quickPay,
-        total: bonus + extra + condition.shiftBonus + callingBonus + quickPay,
+        total: bonus + extra + condition.shiftBonus + callingBonus,
       };
       return allowanceCache;
     };
 
     const seed = venueShiftSeed(owner, v.id);
     const progress = floorVenueProgress(owner, v);
-    const floorPerks = growthPerks(owner);
+    const floorPerks = growthFloorPerks(owner);
     const visitor = floorVenueVisitor(owner, v, seed, progress.nights, floorPerks?.floorRare || 0, {
       affinityLevel,
       extraVisitorIds,
@@ -135,7 +132,9 @@ export async function runVenueFloorShift({
     if (secondHalf > 0) addStamina(-secondHalf);
     if (!result.fallback) recordFloorVenueProgress(owner, v, result);
     const detail = getAllowances();
-    const pay = floorVenueShiftPay(v, owner.chapter, result.sales || 0, detail.total);
+    // 売り上手（K28。SBD157）: 歩合の率に足す。営業の精算と同じ値（営業を開いた時の盤）を使う
+    const commissionBonus = result.fallback ? 0 : result.commissionBonus || 0;
+    const pay = floorVenueShiftPay(v, owner.chapter, result.sales || 0, detail.total, commissionBonus);
     addMoney(pay.total);
     if (detail.callingBonus) owner.flags._minto_calling_paid = shiftKey;
     const allowanceNote = pay.allowances ? `＋手当${pay.allowances.toLocaleString("ja-JP")}円` : "";
@@ -145,7 +144,8 @@ export async function runVenueFloorShift({
     if (detail.bonus) toast(`指名ボーナス（魅力）+${detail.bonus.toLocaleString("ja-JP")}円`, { kind: config.statEffectColors !== false ? "charm-bonus" : "good" });
     if (detail.extra) toast(`急なシフトの上乗せ +${detail.extra.toLocaleString("ja-JP")}円`, { kind: "good" });
     if (detail.shiftBonus) toast(`仕上げは好調。手当 +${detail.shiftBonus.toLocaleString("ja-JP")}円`, { kind: "good" });
-    if (detail.quickPay) toast(`仕事が早い。基本の日当の上乗せ +${detail.quickPay.toLocaleString("ja-JP")}円`, { kind: "good" });
+    const commissionExtra = pay.commission - floorVenueShiftPay(v, owner.chapter, result.sales || 0, 0).commission;
+    if (commissionExtra > 0) toast(`売り上手。歩合は売上の${floorVenueCommissionPercent(v, commissionBonus)}%（+${commissionExtra.toLocaleString("ja-JP")}円）`, { kind: "good" });
     if (condition.health === "red" && (detail.bonus > 0 || detail.callingBonus > 0)) {
       toast("疲れで仕上げが不安定。指名・呼び込みのボーナスは半額", { kind: "warn" });
     }

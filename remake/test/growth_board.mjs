@@ -29,7 +29,7 @@ for (const [a, b] of [["body", "sense"], ["sense", "wisdom"], ["body", "wisdom"]
   const A = keys(a), B = keys(b), diff = [...A].filter((k) => !B.has(k)).length + [...B].filter((k) => !A.has(k)).length;
   assert(diff >= 12, `${a} と ${b} の形が違う（違うマス ${diff}）`);
 }
-const expect = { body: [8, 6], sense: [9, 8], wisdom: [9, 8] }; // v15（SBD154）で火種2のユニークなスキルを各盤に1つ足した（聞き上手・くじ運・仕事が早い）。 // 第4章以降の授業（煙楼先生・博士）を足した。SBD91 // 差し入れ上手（K20）を人柄の通常マスへ置き換えて才能盤のスキルは7 // スキル各8（中ほどの面白いスキル2つを足した。SBD66） // スキル各6・授業20（カルダモンは感覚盤へ。SBD60）
+const expect = { body: [9, 6], sense: [10, 8], wisdom: [10, 8] }; // v15（SBD154）で火種2のユニークなスキルを各盤に1つ足した（聞き上手・くじ運・仕事が早い）。v16（SBD157）で店番のスキルを各盤に1つ足した（売り上手・波に乗る・フロアを読む）。 // 第4章以降の授業（煙楼先生・博士）を足した。SBD91 // 差し入れ上手（K20）を人柄の通常マスへ置き換えて才能盤のスキルは7 // スキル各8（中ほどの面白いスキル2つを足した。SBD66） // スキル各6・授業20（カルダモンは感覚盤へ。SBD60）
 for (const k of board.BOARD_KEYS) {
   const nodes = board.boardNodes(k);
   assert.equal(nodes.filter((n) => n.kind === "stat").length, SHAPE_SIZE[k][0]+(k==="body"?1:0), `${k}: 能力のマス`);
@@ -101,8 +101,8 @@ for (const l of board.LESSONS) {
   assert(board.pathTo(l.id, others).cost <= board.pathTo(l.id, new Set()).cost, `${l.id}: 先に進んだ道で遠くならない`);
 }
 // 帯と強さ: 火種4のスキルは近く、6と8は関門の先。極みも関門の先。どの関門の先にもスキルがある
-for (const s of board.SKILLS) assert.equal(N[s.id].band, s.cost === 4 ? 1 : s.cost === 2 ? 2 : 3, `${s.id}（火種${s.cost}）の帯: 4＝近く・2＝中ほど・5と7＝関門の先`);
-for (const k of board.BOARD_KEYS) assert.deepEqual([...board.SKILLS,...board.STAT_UPGRADES].filter((s) => s.board === k).map((s) => s.cost).sort(), [2, 2, 2, 4, 4, 5, 5, 7, 7], `${k}: スキルの火種`);
+for (const s of board.SKILLS) assert.equal(N[s.id].band, s.cost === 4 ? 1 : s.cost === 2 ? 2 : 3, `${s.id}（火種${s.cost}）の帯: 4＝近く・2＝中ほど・5と6＝関門の先（v16 で7→6）`);
+for (const k of board.BOARD_KEYS) assert.deepEqual([...board.SKILLS,...board.STAT_UPGRADES].filter((s) => s.board === k).map((s) => s.cost).sort(), [2, 2, 2, 2, 4, 4, 5, 5, 6, 6], `${k}: スキルの火種（v16 で店番のスキル2を足し、7→6）`);
 for (const k of board.BOARD_KEYS) {
   const nodes = board.boardNodes(k);
   // 極みは道につながらない。その盤の能力のマスを全部灯すと灯せる（SBD63）
@@ -148,12 +148,22 @@ for (const k of board.BOARD_KEYS) {
       void onlyToSpot;
     }
     // 通行料のスキル（線が2本＝通り抜けられる）: 才能は K03/K04（火種4）が弧の上、感覚・理論は火種2のスキルが輪の上
-    // v15（SBD154）のユニークなスキル（K25〜K27）は道の脇の行き止まりで、通行料ではない
-    const tolls = k === "body" ? ["K03", "K04"] : nodes.filter((n) => n.kind === "skill" && n.cost === 2 && !["K25", "K26", "K27"].includes(n.id)).map((n) => n.id);
+    // v15（SBD154）のユニークなスキル（K25〜K27）と v16（SBD157）の店番のスキル（K28〜K30）は道の脇の行き止まりで、通行料ではない
+    const sideSkills = ["K25", "K26", "K27", "K28", "K29", "K30"];
+    const tolls = k === "body" ? ["K03", "K04"] : nodes.filter((n) => n.kind === "skill" && n.cost === 2 && !sideSkills.includes(n.id)).map((n) => n.id);
     for (const id of ["K25", "K26", "K27"].filter((x) => byId[x])) {
       assert.deepEqual(byId[id].links.map((l) => N[l].cell), ["0,-2"], `${id}: 紋の上の道の脇（行き止まり）`);
       assert.equal(byId[id].ring, 2, `${id}: 第2章から`);
     }
+    // 店番のスキル（SBD157）: 才能はユニークなスキルの向かい、感覚は渦の内側、理論は「注文の読み」のマスの隣。どれも関門なしで第2章から
+    const floorSide = { body: ["K28", "0,-2"], sense: ["K29", "3,-3"], wisdom: ["K30", "0,-3"] }[k];
+    const floorSkill = byId[floorSide[0]];
+    assert.deepEqual(floorSkill.links.map((l) => N[l].cell), [floorSide[1]], `${floorSkill.id}: 道の脇（行き止まり）`);
+    assert.equal(floorSkill.ring, 2, `${floorSkill.id}: 第2章から`);
+    assert.equal(floorSkill.band, 2, `${floorSkill.id}: 関門なしの中ほど`);
+    assert.equal(floorSkill.cost, 2, `${floorSkill.id}: 火種2`);
+    assert.equal(floorSkill.scene, "店番");
+    if (k === "wisdom") assert.equal(N[floorSkill.links[0]].perk, "floorMatch", "フロアを読むは注文の読みのマスの隣");
     for (const id of tolls) assert(byId[id].links.length >= 2, `${id}: 通行料のスキルは通り抜けられる`);
   }
   // 授業は会う章の順に紋から遠い（SBD65）: どの章の授業も、前の章の授業より近くない。
@@ -220,7 +230,10 @@ assert.equal(N["M-W6"].board, "sense", "カルダモンは感覚盤（3つの盤
 assert.deepEqual([N["M-W2"].ring, N["M-W6"].ring], [2, 2], "スミさんの四つ置き・カルダモンは第2章から");
 // 各スキル・授業は、データの章（届けたい章）までに開く
 for (const item of [...board.SKILLS, ...board.STAT_UPGRADES, ...board.LESSONS]) assert(N[item.id].ring <= (item.ring ?? 1), `${item.id} の章`);
-assert.equal(board.SKILLS.length, 26, "K20は通常マスへ変更（2026-11-01 オーナー指示）。v15（SBD154）でユニークなスキル3つを足して26");
+assert.equal(board.SKILLS.length, 29, "K20は通常マスへ変更（2026-11-01 オーナー指示）。v15（SBD154）でユニークなスキル3つ、v16（SBD157）で店番のスキル3つを足して29");
+// v16（SBD157）: 店番のスキルを足しても盤の大きさを保つため、火種7の強いスキル（各盤2つ）を6にした
+assert.deepEqual(["K12", "K13", "K11", "K14", "K17", "K09"].map((id) => N[id].cost), [6, 6, 6, 6, 6, 6]);
+assert.equal(board.SKILLS.filter((s) => s.cost === 7).length, 0, "火種7のスキルは無い（v16）");
 const bodyCore = new Set(board.boardNodes("body").filter(n => n.kind === "stat" && !n.peak && n.id !== "K20").map(n => n.id));
 assert.equal(board.statCount("body", new Set([...bodyCore, "K20"])), 25);
 assert.equal(board.statsFilled("body", bodyCore), true, "K20は極みの条件に含めない");
@@ -229,12 +242,12 @@ assert.equal(N.K20.kind,"stat");assert.equal(N.K20.perk,"charm");assert.equal(N.
 assert.equal(board.perkOf(N.K20).text,"好感度が上がりやすく（＋5%）","火種2のマスは恩恵も2マス分（SBD112）");
 for (const k of board.BOARD_KEYS) {
   const sk = [...board.SKILLS,...board.STAT_UPGRADES].filter((x) => x.board === k);
-  assert.equal(sk.reduce((n, x) => n + x.cost, 0), 38, `${k}: スキルの火種は各38（v15 でユニークなスキルの火種2を足した）`);
+  assert.equal(sk.reduce((n, x) => n + x.cost, 0), 38, `${k}: スキルの火種は各38（v15 でユニークなスキルの火種2を足した。v16 は店番のスキルの2を、火種7→6の2つで相殺）`);
   assert.equal(sk.filter((x) => x.ring === 1).length, 2, `${k}: 第1章のスキルは各2つ`);
   assert.equal(board.boardNodes(k).reduce((n, x) => n + x.cost, 0), 68, `${k}: 盤は各68（v15 でユニークなスキルの火種2を足した）`);
   assert.equal(board.boardNodes(k).filter((x) => x.ring === 1).reduce((n, x) => n + x.cost, 0), 17, `${k}: 第1章で開く範囲は各17（能力のマス9・スキル2つ。SBD62）`);
 }
-assert.equal(board.BOARD_TOTAL_COST, 204, "盤の全部で204（v15。v14 までは198。1レベル2つ。SPEC 1.6a）");
+assert.equal(board.BOARD_TOTAL_COST, 204, "盤の全部で204（v15。v14 までは198。v16 の店番のスキルは火種7→6で相殺して204のまま。1レベル2つ。SPEC 1.6a）");
 // 中央の1周目: 設計の約140（レベル112＋節目10＋大会10＋♥5数人。SPEC 1.6a）に、大会の優勝2回ぶんの白火6（SBD110。勝率の目安は 7・6・5・3割＝WIN09）を足した約146。
 // v15（SBD154）で盤が198→204になったので、設計の140だけでは 68.6%。優勝の白火（SBD110 以降の上乗せ）を数えて約7割（71.6%）
 assert(146 >= 0.7 * board.BOARD_TOTAL_COST, "中央の1周目の火種（約146）で、3つの盤をどれも7割まで開ける");
@@ -616,7 +629,7 @@ assert.deepEqual(growth.growthMenuItems(), []);
 growth.setGrowthPreview(true);
 assert.equal(growth.growthMenuItems().length, 1);
 growth.setGrowthPreview(false);
-console.log("[growth board] PASS: v13 ring-tree boards (loops, forked perks, 3 notables, toll skills on loops), heart lessons deep (ch1 behind a skill at 6-7, later at the far end beyond a gate; v14), heart-free lessons near and farther by chapter, peak only after filling the board, no steps (perk totals + ✦ squares), bands near×1/mid×2/beyond-gate×3, gates by colored hidane, 22 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 68 (204 total, about 70% in run 1), 3 unique side skills (K25-K27; v15), connect rules, replay, color-first payment, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
+console.log("[growth board] PASS: v13 ring-tree boards (loops, forked perks, 3 notables, toll skills on loops), heart lessons deep (ch1 behind a skill at 6-7, later at the far end beyond a gate; v14), heart-free lessons near and farther by chapter, peak only after filling the board, no steps (perk totals + ✦ squares), bands near×1/mid×2/beyond-gate×3, gates by colored hidane, 22 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 68 (204 total, about 70% in run 1), 3 unique side skills (K25-K27; v15), 3 floor-shift side skills (K28-K30; v16), connect rules, replay, color-first payment, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
 
 // 組み直し: 実際の経路と支払を使う保存fixture。獲得ペースの通し証明とは分ける。
 const respec = await import("../js/core/growth-respec.js");

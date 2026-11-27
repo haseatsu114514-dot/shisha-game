@@ -332,6 +332,8 @@ const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", water: "水"
 // 場面の名前・光の色・一覧（PC）に並べる場面・つまみの選び方は、各ファイルの META に書く（場面を足す時、ここは EXT_CLASSES に1つ足すだけ）
 const EXT_CLASSES = [TitleScene, FloorScene, LimeScene, GrowthScene, AxeScene];
 const EXT = Object.fromEntries(EXT_CLASSES.map((cls) => [cls.META.id, cls]));
+/** 場面のつまみ（META.options）。一つでも、並び（盤＝どの盤・どの章 など）でもよい。label は切り替えの行の見出し（無ければ場面の名前） */
+const extOptions = (cls) => [].concat(cls.META.options || []);
 const EXT_SCENES = Object.keys(EXT);
 SCENES.push(...EXT_SCENES);
 Object.assign(SCENE_LABEL, Object.fromEntries(EXT_CLASSES.map((cls) => [cls.META.id, cls.META.label])));
@@ -2280,7 +2282,7 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
     <button class="grip" data-grip aria-expanded="false" aria-label="切り替えを開く"><i></i></button>
     <div class="panel"><div>${SCENES.filter((id) => !EXT_SCENES.includes(id)).map((id) => `<button data-scene="${id}" aria-pressed="${id === scene}">${SCENE_LABEL[id]}</button>`).join("")}</div>
       <div>${EXT_SCENES.map((id) => `<button data-scene="${id}" aria-pressed="${id === scene}">${SCENE_LABEL[id]}</button>`).join("")}</div>
-      ${EXT_CLASSES.filter((cls) => cls.META.options).map((cls) => `<div><small>${cls.META.label}</small>${Object.entries(cls.META.options.values).map(([value, name]) => `<button data-opt="${cls.META.id}:${cls.META.options.name}:${value}" aria-pressed="${value === (params.get(cls.META.options.name) || cls.META.options.default)}">${name}</button>`).join("")}</div>`).join("")}
+      ${EXT_CLASSES.flatMap((cls) => extOptions(cls).map((opt) => `<div><small>${opt.label || cls.META.label}</small>${Object.entries(opt.values).map(([value, name]) => `<button data-opt="${cls.META.id}:${opt.name}:${value}" aria-pressed="${value === (params.get(opt.name) || opt.default)}">${name}</button>`).join("")}</div>`)).join("")}
       <div><small>登場</small>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div>
       <div><small>雑念よけ</small><button data-attack aria-pressed="${params.has("attack")}">アタック習得</button></div>
       <div><small>会場</small>${Object.entries(VENUES).map(([v, name]) => `<button data-venue="${v}" aria-pressed="${v === (params.get("venue") || "tonari")}">${name}</button>`).join("")}</div>
@@ -2296,7 +2298,7 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
   const sync = () => nav.querySelectorAll("[data-scene]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.scene === current.st.scene)));
   current.onScene = sync;
   // 別ファイルの場面の選び方（店番の営業の種類など）。場面の中で替わった時（チュートリアルを終えて、はじめての営業へ）も合わせる
-  const syncOpt = () => nav.querySelectorAll("[data-opt]").forEach((b) => { const [id, name, value] = b.dataset.opt.split(":"); b.setAttribute("aria-pressed", String(value === (current.extOpts[name] || EXT[id].META.options.default))); });
+  const syncOpt = () => nav.querySelectorAll("[data-opt]").forEach((b) => { const [id, name, value] = b.dataset.opt.split(":"); b.setAttribute("aria-pressed", String(value === (current.extOpts[name] || extOptions(EXT[id]).find((opt) => opt.name === name)?.default))); });
   current.onExtOption = (name, value) => { current.extOpts[name] = value; syncOpt(); };
   let idle;
   const open = (on) => { nav.classList.toggle("open", on); nav.querySelector("[data-grip]").setAttribute("aria-expanded", String(on)); clearTimeout(idle); if (on) idle = setTimeout(() => open(false), 4200); };

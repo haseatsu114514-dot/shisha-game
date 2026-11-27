@@ -9,12 +9,14 @@ import { earnStat } from "../core/stats.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { floorVenueBasePay, floorVenuePayText } from "../daily/floor-venues.js";
 import { runVenueFloorShift } from "../daily/floor-shift.js";
+import { growthFloorPerks } from "../core/growth-effects.js";
 
 export const MUKAI_PAY = 8000;
 export const MUKAI_CALLED_BONUS = 5000;
 export const mukaiShiftPay = (value = state, called = false) =>
   floorVenueBasePay("mukai", value?.chapter || 3) + (called ? MUKAI_CALLED_BONUS : 0);
-export const mukaiShiftPayText = (value = state) => floorVenuePayText("mukai", value?.chapter || 3);
+// 歩合の率は心得の盤の「売り上手」（K28。SBD157）で上がる
+export const mukaiShiftPayText = (value = state) => floorVenuePayText("mukai", value?.chapter || 3, growthFloorPerks(value)?.commission);
 export const MUKAI_SHIFT_STAMINA = -14;
 export const MUKAI_SHIFT_FLAG = "_mukai_shift_day"; // 最後に mukai のシフトに入った通算日（誘いの間隔に使う）
 

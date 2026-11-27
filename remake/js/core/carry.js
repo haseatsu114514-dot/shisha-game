@@ -631,8 +631,11 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_ch2_rest_rain", "progression"],
   ["_spot_seen_choizap_ch2_rain", "progression"],
   ["_spot_seen_cs_ch2_rain", "progression"],
+  ["_spot_seen_choizap_ch2_aircon", "progression"], // VOL16（#3097 計画 2-9）
+  ["_spot_seen_choizap_ch2_balance", "progression"], // VOL16
   ["_spot_seen_choizap_ch2_neck", "progression"], // #3097 第2弾
   ["_spot_seen_choizap_ch2_numbers", "progression"],
+  ["_spot_seen_choizap_ch2_shoelace", "progression"], // VOL16
   ["_spot_seen_choizap_ch2_stairs", "progression"], // #3097 第1弾
   ["_spot_seen_choizap_minto", "person"],
   ["_spot_seen_choizap_naru", "person"],
@@ -646,8 +649,10 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_kannon_adam_lunch", "person"],
   ["_spot_seen_kannon_adam_pakki", "person"],
   ["_spot_seen_kannon_ch2_wish", "progression"],
+  ["_spot_seen_kannon_ch2_coin", "progression"], // VOL16（#3097 計画 2-9）
   ["_spot_seen_kannon_ch2_incense", "progression"], // #3097 第2弾
   ["_spot_seen_kannon_ch2_omikuji", "progression"], // #3097 第1弾
+  ["_spot_seen_kannon_ch2_temizu", "progression"], // VOL16
   ["_spot_seen_kannon_oldman", "progression"],
   ["_spot_seen_samechan_shop_minto_gift", "person"],
   ["_stk_ch3_names_blacked", "progression"], // 第3章2日目の夜、ノートの教わった人の名前を塗りつぶした（2026-11-24 添削 N1。第3章で書き戻し、第5章の開幕で返る）

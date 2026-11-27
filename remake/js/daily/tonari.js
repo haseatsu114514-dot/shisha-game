@@ -1,7 +1,7 @@
-import { floorShiftBasePay, floorShiftPay, FLOOR_COMMISSION_PERCENT } from "../core/shift-pay.js";
+import { floorShiftBasePay, floorShiftPay, floorCommissionPercent } from "../core/shift-pay.js";
 import { CHARM_BONUS } from "../core/stat-step-tables.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
-import { callingSalesBonus, growthPerks, growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
+import { callingSalesBonus, growthFloorPerks } from "../core/growth-effects.js";
 import { on } from "../core/bus.js";
 import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 // tonari（バイト先）: 客として一服／シフトに入る（昼から夜まで店番＝フロア営業→シフト後にスミさん）。
@@ -51,7 +51,8 @@ export const SHIFT_SLOTS = 2;
 export const SHIFT_STAMINA = 40;
 /** シフトに入れるか（昼からだけ。夜からは入れない）。 */
 export const shiftOpen = (s = state) => s.slot === 0;
-const shiftPayText = () => `基本給${floorShiftBasePay(state.chapter).toLocaleString("ja-JP")}円＋売上の${FLOOR_COMMISSION_PERCENT}%`;
+// 歩合の率は、心得の盤の「売り上手」（K28。SBD157）を灯していれば上がる
+const shiftPayText = () => `基本給${floorShiftBasePay(state.chapter).toLocaleString("ja-JP")}円＋売上の${floorCommissionPercent(growthFloorPerks(state)?.commission)}%`;
 function shiftNote(forecast = "", stamp = "") {
   const manager = state.chapter >= 5;
   const what = manager ? "昼から夜まで、今日の営業を引き受ける（2コマ）。仕事終わりにはスミさんと話せる"
@@ -227,10 +228,7 @@ async function baitoShift({ called, story, owner, signal }) {
   const getAllowances = () => {
     if (shiftAllowances) return shiftAllowances;
     const bonus = Math.round(CHARM_BONUS[step("charm") - 1] * condition.bonusRate);
-    const basePay = floorShiftBasePay(owner.chapter);
-    // 仕事が早い（心得の盤のスキル K27。SBD154）: 基本の日当の1割を上乗せ
-    const quickPay = growthSkill(owner, "K27") ? Math.round(basePay * SKILL_TUNING.baitoPay) : 0;
-    shiftAllowances = { bonus, quickPay, total: bonus + extra + condition.shiftBonus + callingBonus + quickPay };
+    shiftAllowances = { bonus, total: bonus + extra + condition.shiftBonus + callingBonus };
     return shiftAllowances;
   };
   // 精算までに取得したスキルを手当に反映し、画面と入金で同じ手当を使う。
@@ -241,8 +239,10 @@ async function baitoShift({ called, story, owner, signal }) {
   await setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
   if (!current()) return false;
   if (callingBonus && !await read("baito_minto_calling", { bg: TONARI_BG })) return false;
-  const { bonus, quickPay, total: allowances } = getAllowances();
-  const pay = floorShiftPay(owner.chapter, floorNight.sales, allowances);
+  const { bonus, total: allowances } = getAllowances();
+  // 売り上手（心得の盤のスキル K28。SBD157）: 歩合の率に足す（営業の精算と同じ値。盤の仕事が早いは SBD157 でシャッフルの速さへ移した）
+  const commissionBonus = floorNight.commissionBonus || 0;
+  const pay = floorShiftPay(owner.chapter, floorNight.sales, allowances, commissionBonus);
   await shiftClose();
   const closing = state.chapter >= 5 ? { lines: [
     { speaker: "", face: "", text: "今日の仕事を終えて、手取りを帳面に記した。" },
@@ -258,7 +258,8 @@ async function baitoShift({ called, story, owner, signal }) {
   if (bonus) toast(`指名ボーナス（魅力）+${bonus.toLocaleString("ja-JP")}円`, { kind: config.statEffectColors !== false ? "charm-bonus" : "good" });
   if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString("ja-JP")}円`, { kind: "good" });
   if (condition.shiftBonus) toast(`仕上げは好調。手当 +${condition.shiftBonus.toLocaleString("ja-JP")}円`, { kind: "good" });
-  if (quickPay) toast(`仕事が早い。基本の日当の上乗せ +${quickPay.toLocaleString("ja-JP")}円`, { kind: "good" });
+  const commissionExtra = pay.commission - floorShiftPay(owner.chapter, floorNight.sales, 0).commission;
+  if (commissionExtra > 0) toast(`売り上手。歩合は売上の${floorCommissionPercent(commissionBonus)}%（+${commissionExtra.toLocaleString("ja-JP")}円）`, { kind: "good" });
   if (condition.health === "red" && (bonus > 0 || callingBonus > 0)) {
     toast("疲れで仕上げが不安定。指名・呼び込みのボーナスは半額", { kind: "warn" });
   }
@@ -515,7 +516,7 @@ async function serveFloor(owner, signal, getAllowances) {
     return { sales: 0, fallback: true };
   }
   if (!current()) return null;
-  const floorPerks = growthPerks(owner);
+  const floorPerks = growthFloorPerks(owner);
   const visitor = floorVisitor(owner, seed, progress.nights, view.FLOOR_VISITORS, floorPerks?.floorRare || 0);
   let result;
   // 開店前の札から「遊び方（チュートリアル）」を選んだら、チュートリアルを開いてから、同じ一日を始め直す
