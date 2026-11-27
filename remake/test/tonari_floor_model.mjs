@@ -519,20 +519,21 @@ test("雑談の台本: 味・趣味・何気ない話・愚痴をたっぷり。
   const mob = [...Object.entries(CALLS).filter(([k]) => k !== "chatty").flatMap(([, c]) => c.lines.flatMap((l) => [l.said, l.good])), ...CALL_MISS];
   for (const line of mob) assert.ok(!lines.has(line), line);
   assert.equal(CALLS.chatty.lines, CHAT_COMMON, "どの店でも通る味の話が、頼みの雑談の既定");
-  // 店ごと: 味の話（全店共通）＋その店の客の話。どの店（tonari・東京 mukai・ドバイ）も、趣味・何気ない話・愚痴を十本以上ずつ（TFL71）
+  // 店ごと: 味の話（全店共通・30本以上）＋その店の客の話。どの店（tonari・東京 mukai・ドバイ）も、趣味・何気ない話・愚痴を20本以上ずつ（TFL71・73）
   const topics = (list) => Object.fromEntries(["taste", "hobby", "daily", "gripe"].map((t) => [t, list.filter((c) => c.topic === t).length]));
   for (const v of venues) {
-    assert.ok(Object.values(topics(v.chats)).every((n) => n >= 10), `${v.id}: ${JSON.stringify(topics(v.chats))}`);
-    assert.ok(v.chats.length >= 50, `${v.id}: 雑談 ${v.chats.length} 本`);
+    const counts = topics(v.chats);
+    assert.ok(counts.taste >= 30 && ["hobby", "daily", "gripe"].every((t) => counts[t] >= 20), `${v.id}: ${JSON.stringify(counts)}`);
+    assert.ok(v.chats.length >= 90, `${v.id}: 雑談 ${v.chats.length} 本`);
     assert.ok(CHAT_COMMON.every((c) => v.chats.includes(c)), v.id);
     assert.ok(v.chats.some((c) => c.at === "day") && v.chats.some((c) => c.at === "night"), `${v.id}: 昼だけ・夜だけの話もある`);
-    // レアで来る本編の人物は、全員その人だけの雑談を持つ（三本ずつ。ドバイへ同行した人は二本から）
-    for (const who of Object.values(v.visitors)) assert.ok(v.visitorChats[who.id]?.length >= 3, `${v.id}: ${who.id}`);
+    // レアで来る本編の人物は、全員その人だけの雑談を持つ（五本ずつ。ドバイへ同行した人は三本から）
+    for (const who of Object.values(v.visitors)) assert.ok(v.visitorChats[who.id]?.length >= 5, `${v.id}: ${who.id}`);
   }
-  for (const id of OVERSEAS_HEROINES) assert.ok(FLOOR_VENUES.dubai.visitorChats[id]?.length >= 2, `ドバイへ同行した ${id}`);
+  for (const id of OVERSEAS_HEROINES) assert.ok(FLOOR_VENUES.dubai.visitorChats[id]?.length >= 3, `ドバイへ同行した ${id}`);
   // つむぎが働く日の話: 客がつむぎのことを話す物と、つむぎ本人が返す物
   const staff = CHAT_STAFF.tsumugi;
-  assert.ok(staff.length >= 12 && staff.filter((c) => c.by === "tsumugi").length >= 4 && staff.filter((c) => !c.by).length >= 6);
+  assert.ok(staff.length >= 20 && staff.filter((c) => c.by === "tsumugi").length >= 8 && staff.filter((c) => !c.by).length >= 10);
   assert.ok(staff.filter((c) => c.by === "tsumugi").every((c) => c.reply.startsWith("……")), "つむぎは、間に「……」を置いて話す");
 });
 
