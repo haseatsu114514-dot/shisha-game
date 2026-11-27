@@ -68,6 +68,8 @@ mukaiで行動を使った帰りの裏口では、ふれあいの画面「てつ
 
 縦画面C案「煙の舞台」を第1章の場面で詰めた試作（2026-11-27・要望台帳の VPL03〜55。本編には未接続）は `http://127.0.0.1:8123/remake/previews/portrait-stage/`。橙須の地図（左右キーで隣の店へ画面が送られる・上で全体・下で一覧）、1人と2人の会話の立ち位置、返事、シーシャ作り7工程（水入れ・配合・詰め方・穴あけ・炭焼き・蒸らしの雑念よけ・吸い出し）を、大きくしたパッドで実際に押して確かめる（`?view=play&scene=map|minto|tonari|water|mix|pack|holes|coal|steam|pull|cutin`。補助ボタンは案1、登場カットインは案Aで決定（`scene=cutin&who=minto|sumi`）。シーシャ作りのランクは案D（上にどかっと→空いた所へ）で、見比べ用に `rank=a|b|c`、ランクは `grade=0〜6`（D〜SSS）。PCの一覧は `?view=gallery`）。
 
+同じ試作に、タイトル・店番（tonari のフロア営業）・LIME・心得の盤・斧投げを縦へ移した場面がある（2026-11-27・要望台帳の VPM01〜14。本編には未接続。この5つは十字キーと丸ボタンを置かず、押すだけで進む）。1台表示はタイトルから始まり、タイトル→地図→tonari の入口（「シフトに入る（バイト）」＝店番／「ひよりと斧投げへ」＝斧投げ）、地図の LIME の札→LIME、観音堂→心得の盤、と通せる。直接開くなら `?view=play&scene=title|floor|lime|growth|axe`（店番の営業の種類は `&shift=usual|first|full|tutorial`）。店番のルール・数値・台詞は本編の `js/daily/tonari-floor-model.js`・`tonari-floor-data.js` をそのまま呼び、縦の画面だけ `previews/portrait-stage/floor.mjs`・`title.mjs` に置いている（本編の店番の規則を変えると、この試作にもそのまま効く）。LIME（`lime.mjs`）・心得の盤（`growth.mjs`）・斧投げ（`axe.mjs`）も同じ作りで、本編のデータと規則をそのまま読む。
+
 煙の描き方の見本（2026-11-11〜12・[要望台帳](../docs/owner_requests.md) の KMR。本編には未接続）は `http://127.0.0.1:8123/remake/previews/smoke-styles/`。「いま」の煙（本編の数値の写し）と、もこもこの房で描く3種（繊細ドット・ドット絵もくもく・アニメもくもく）・流体で描く3種（リアル・ドット×リアル・セル画）を、同じ場面で見比べる。絵柄を「ドット絵」にすると、背景と立ち絵も細かいドット絵（`make_pixel_art.py` がゲームの絵から変換した見本用の絵）に替わる。
 
 ラクダレース（第4章ドバイの任意ミニゲーム）の試遊は `http://127.0.0.1:8123/remake/camel-race.html`。レース中は右上のボタン（Esc・P）で一時停止できる。手応えの数値（止め・揺れ・音量など）はコンソールの `__camelRace.feel` か URL の `?feel=stopPerfect:0.2` でその場で変えられ、試遊ページでは `__camelRace.debug` で息・調子・位置を指定できる（[仕様](../docs/spec/camel_race.md) §11）。DJ（`previews/dj/`）は `__dj.feel`・`?feel=`・`__dj.slip()`（[README](previews/dj/README.md) の「手応え」「ズレと皿」）。
