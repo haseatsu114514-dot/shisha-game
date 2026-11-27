@@ -571,3 +571,128 @@
 /* トンネルから出るしっぽ（#3214）: トンネルの奥の口（右の縁の後ろ）から地面に沿って出て、上へ巻く。根元はトンネルの縁に隠す */
 .tetsuko-time[data-art-props~="tunnel_tail"] .tt-prop[data-prop="tunnel"] > .tt-prop-tail { left: 102px; bottom: 30px; width: 110px; height: 105px; z-index: 1; transform-origin: 8% 90%; }
 
+/* ---- §12（2026-11-27）: ごきげんの上がり下がり・なかよしの肉球・残りの回数・帰りの札・膝の一枚絵・おみやげ */
+/* 肉球（なかよし。薄い肉球の上に、溜まった分だけ下から色の付いた肉球を見せる。絵は粒と同じ ui_tk_fx_paw） */
+.tt-paw { position: relative; display: block; flex: none; width: 30px; height: 30px; }
+.tt-paw::before, .tt-paw::after { content: ""; position: absolute; inset: 0; background: url("../img/ui/tetsuko/ui_tk_fx_paw.webp") center / contain no-repeat; }
+.tt-paw::before { filter: grayscale(1) brightness(1.08); opacity: .4; }
+.tt-paw::after { clip-path: inset(calc((1 - var(--f, 0)) * 100%) 0 0 0); transition: clip-path .7s ease-out; }
+.tt-paw.pop { animation: tt-paw-pop .55s ease-out .35s; }
+@keyframes tt-paw-pop { 40% { scale: 1.5; rotate: -12deg; } 70% { scale: .92; } }
+.tt-paws { display: flex; gap: 3px; }
+/* 上の札: ハートの隣に、なかよしの段（肉球と数字）と、付き合ってくれる残りの回数（丸） */
+.tt-bond { display: inline-flex; align-items: center; gap: 1px; padding: 2px 13px 2px 5px; border: 3px solid var(--tk-ink, #3b2416); border-radius: 24px;
+  background: var(--tk-cream, #fff5e4); box-shadow: 0 3px 0 rgba(59, 36, 22, .35); }
+.tt-bond .tt-paw { width: 36px; height: 36px; }
+.tt-bond b { font-size: 26px; font-weight: 900; line-height: 1; color: var(--tk-ink, #3b2416); }
+.tt-turns { display: flex; align-items: center; gap: 5px; padding: 9px 11px; border-radius: 18px; background: rgba(59, 36, 22, .6); }
+.tt-turns i { display: block; width: 12px; height: 12px; border-radius: 50%; background: #ffd98a; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .22); transition: background .3s ease, scale .3s ease; }
+.tt-turns i[data-used="true"] { background: rgba(255, 245, 228, .2); box-shadow: none; scale: .66; }
+.tt-turns[data-low="true"] i:not([data-used="true"]) { animation: tt-pip-low 1s ease-in-out infinite; }
+@keyframes tt-pip-low { 50% { background: #ff8a5c; scale: 1.3; } }
+.tetsuko-time[data-reduced="true"] .tt-turns[data-low="true"] i:not([data-used="true"]) { animation: none; background: #ff8a5c; }
+/* 「そろそろおしまい」は読み上げ用に残し、画面は残りの回数の丸で見せる */
+.tetsuko-time .tt-visit-notice { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* ごきげんが下がった: ハートの札が揺れ、減った分のハートが1つこぼれ落ちる */
+.tt-joy.drop { animation: tt-joy-drop .5s ease-out; }
+@keyframes tt-joy-drop { 15% { translate: -7px 0; } 30% { translate: 7px 0; } 45% { translate: -5px 0; } 60% { translate: 4px 0; } 100% { translate: 0 0; } }
+.tetsuko-time[data-reduced="true"] .tt-joy.drop { animation: none; }
+.tt-fall-heart { position: absolute; z-index: 26; width: 36px; height: 36px; margin: -18px 0 0 -18px; pointer-events: none; filter: grayscale(.85) brightness(.82);
+  animation: tt-fall-heart .85s ease-in forwards; }
+.tt-fall-heart svg { display: block; width: 100%; height: 100%; fill: #f2607c; stroke: var(--tk-ink, #3b2416); stroke-width: 1.8; stroke-linejoin: round; }
+@keyframes tt-fall-heart { 0% { opacity: 1; transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-14px) rotate(-12deg); } 100% { opacity: 0; transform: translateY(130px) rotate(46deg) scale(.7); } }
+/* 怒りのしるし（嫌がった時。頭の斜め上） */
+.tt-anger { position: absolute; z-index: 3; width: 52px; height: 52px; translate: -50% -50%; pointer-events: none; animation: tt-anger 1.25s ease-out both;
+  filter: drop-shadow(2px 0 0 #3b2416) drop-shadow(-2px 0 0 #3b2416) drop-shadow(0 2px 0 #3b2416) drop-shadow(0 -2px 0 #3b2416); }
+.tt-anger[data-strong="true"] { width: 68px; height: 68px; }
+.tt-anger svg { display: block; width: 100%; height: 100%; fill: none; stroke: #ff5b5f; stroke-width: 3.6; stroke-linecap: round; }
+@keyframes tt-anger { 0% { opacity: 0; scale: .3; } 14% { opacity: 1; scale: 1.3; } 28% { scale: .95; } 42% { scale: 1.16; } 56% { scale: 1; } 84% { opacity: 1; } 100% { opacity: 0; scale: .9; } }
+/* 撮影: しぐさは見えているのに撮らせてくれない時（ごきげんが足りない）は、要るハートの数を出す */
+.tt-shot-need { display: none; position: absolute; right: -10px; top: -12px; align-items: center; gap: 1px; padding: 1px 8px 1px 4px; border: 2px solid var(--tk-ink, #3b2416);
+  border-radius: 14px; background: var(--tk-cream, #fff5e4); font-style: normal; }
+.tt-shot[data-shy="true"] .tt-shot-need { display: inline-flex; }
+.tt-shot-need span { display: block; width: 20px; height: 20px; }
+.tt-shot-need svg { display: block; width: 100%; height: 100%; fill: #f2607c; stroke: var(--tk-ink, #3b2416); stroke-width: 2; stroke-linejoin: round; }
+.tt-shot-need b { font-size: 17px; font-weight: 900; line-height: 1; color: var(--tk-ink, #3b2416); }
+.tt-shot[data-shy="true"] .tt-tool-ico { opacity: .5; }
+/* おみやげ（シール） */
+.tt-gift { display: block; width: 64px; height: 64px; }
+.tt-gift img { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 3px 0 rgba(59, 36, 22, .25)); }
+.tt-gift i { display: grid; place-items: center; width: 100%; height: 100%; font-style: normal; font-weight: 800; }
+/* 帰りの札: 今日のハート → なかよし（肉球が伸びる）。節目なら、おみやげが出る。手元の道具の場所に出す */
+.tetsuko-time[data-result="1"] .tt-dock { visibility: hidden; }
+.tt-result { position: absolute; right: 36px; bottom: 28px; z-index: 24; display: grid; grid-template-columns: auto auto auto; align-items: center; gap: 8px 14px;
+  padding: 14px 22px 16px 20px; border: 3px solid var(--tk-ink, #3b2416); border-radius: 20px; background: var(--tk-cream, #fff5e4); color: var(--tk-ink, #3b2416);
+  font: inherit; cursor: pointer; box-shadow: 0 6px 0 rgba(59, 36, 22, .35), 0 14px 26px rgba(0, 0, 0, .3); animation: tt-result-in .45s cubic-bezier(.2, 1.4, .4, 1) both; }
+@keyframes tt-result-in { 0% { opacity: 0; translate: 0 40px; scale: .9; } }
+.tetsuko-time[data-reduced="true"] .tt-result { animation: none; }
+.tt-result-hearts { display: flex; gap: 2px; }
+.tt-result-hearts .tt-heart { width: 32px; height: 32px; }
+.tt-result-arrow { width: 0; height: 0; border-left: 15px solid var(--tk-tabby, #f08a2e); border-top: 10px solid transparent; border-bottom: 10px solid transparent; }
+.tt-result-bond { display: grid; grid-template-columns: auto auto; align-items: center; gap: 0 8px; }
+.tt-result-bond small { grid-column: 1 / -1; font-size: 15px; font-weight: 800; line-height: 1.2; text-align: left; color: var(--tk-tabby-text, #a24a12); }
+.tt-result-bond .tt-paw { width: 34px; height: 34px; }
+.tt-result-gain { min-width: 50px; font-size: 28px; font-weight: 900; line-height: 1; text-align: left; color: #d83f72; opacity: 0; translate: 0 8px; transition: opacity .3s ease, translate .3s ease; }
+.tt-result[data-filled="1"] .tt-result-gain { opacity: 1; translate: 0 0; }
+.tt-result-gifts { grid-column: 1 / -1; display: flex; justify-content: center; gap: 18px; padding-top: 6px; border-top: 2px dashed rgba(59, 36, 22, .25); }
+.tt-result-gifts:empty { display: none; }
+.tt-result-gift { display: inline-flex; align-items: center; gap: 8px; animation: tt-gift-in .6s cubic-bezier(.2, 1.5, .4, 1) both; }
+.tt-result-gift b { font-size: 20px; font-weight: 800; }
+.tt-result-ember .tt-bond-mark { width: 52px; height: 52px; }
+.tt-result-ember .tt-bond-mark[data-mark="ember"] svg { width: 40px; height: 40px; filter: drop-shadow(0 0 6px rgba(255, 170, 60, .7)); }
+@keyframes tt-gift-in { 0% { opacity: 0; scale: .3; rotate: -20deg; } }
+.tetsuko-time[data-reduced="true"] .tt-result-gift { animation: none; }
+/* 手帳: 題の右に、なかよしの肉球と節目のしるし（おみやげ・火種）。列ごと1つのボタンで、押すと右のページに、もらったおみやげが出る */
+.tt-book-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.tt-book-bond { display: flex; align-items: flex-start; gap: 4px; padding: 3px 8px 2px; border: 2px solid transparent; border-radius: 12px; background: none; font: inherit; color: inherit; cursor: pointer; }
+.tt-book-bond:hover, .tt-book-bond[aria-pressed="true"] { border-color: var(--tt-amber, #f08a2e); background: rgba(255, 255, 255, .7); }
+.tt-book-bond:focus-visible { outline: 3px solid var(--tt-amber, #f08a2e); outline-offset: 2px; }
+.tt-book-bond small { align-self: center; margin-right: 4px; font-size: 14px; font-weight: 800; color: var(--tk-tabby-text, #a24a12); }
+.tt-book-bond-col { display: grid; justify-items: center; gap: 0; }
+.tt-book-bond .tt-paw { width: 26px; height: 26px; }
+.tt-bond-mark { display: grid; place-items: center; width: 30px; height: 30px; font-style: normal; }
+.tt-bond-mark .tt-gift { width: 30px; height: 30px; }
+.tt-bond-mark[data-got="false"] .tt-gift img { filter: brightness(0); opacity: .2; }
+.tt-bond-mark[data-mark="ember"] svg { display: block; width: 22px; height: 22px; fill: #f08a2e; stroke: var(--tk-ink, #3b2416); stroke-width: 1.7; stroke-linejoin: round; }
+.tt-bond-mark[data-mark="ember"][data-white="true"] svg { fill: #fffdf6; }
+.tt-bond-mark[data-mark="ember"][data-got="false"] svg { fill: none; opacity: .3; }
+/* 右のページの「なかよし」: 大きな肉球と、おみやげ3つ（もらった物は絵と名前と一言。まだの物は影と「？？？」） */
+.tt-bond-detail { gap: 10px; }
+.tt-bond-detail h4 { margin: 0; }
+.tt-bond-detail .tt-paws { gap: 5px; }
+.tt-bond-detail .tt-paws .tt-paw { width: 44px; height: 44px; }
+.tt-gift-list { list-style: none; display: grid; gap: 8px; width: 100%; margin: 4px 0 0; padding: 0; }
+.tt-gift-list li { display: grid; grid-template-columns: 72px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 12px; align-items: center; text-align: left; }
+.tt-gift-list .tt-gift { grid-row: 1 / 3; width: 72px; height: 72px; }
+.tt-gift-list b { align-self: end; font-size: 19px; color: var(--tt-ink, #3b2416); }
+.tt-gift-memo { align-self: start; font-size: 16px; line-height: 1.4; color: var(--tt-ink, #3b2416); }
+.tt-gift-list li[data-got="false"] .tt-gift img { filter: brightness(0); opacity: .2; }
+.tt-gift-list li[data-got="false"] b { grid-row: 1 / 3; align-self: center; opacity: .45; }
+/* 膝で寝る: 小さな絵は、膝ごと描いた一枚絵（1400×900・猫の真ん中が 50% / 44%）から、てつこのあたりを見せる */
+.tt-thumb[data-whole="1"] img { left: -30%; top: 4%; width: 160%; }
+/* 膝の一枚絵（重ね合わせをやめ、膝ごと描いた1枚を出す）。幅 800px に置くと、猫の体の真ん中が舞台の (640, 440)。
+   左右と上の端（膝の先）は、切れ目が見えないように薄く消す。出ている間は、猫の立ち絵・しぐさの絵と影を隠し、当たり判定だけ絵の猫に重ねる。 */
+.tt-lap-art { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%), linear-gradient(180deg, transparent 0, #000 13%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%), linear-gradient(180deg, transparent 0, #000 13%);
+  mask-composite: intersect; }
+.tt-lap-art[hidden] { display: none; }
+.tetsuko-time[data-art-scenes~="lap_nap"] .tt-lap[data-scene]:not([data-scene=""]) { left: 640px; top: 212px; width: 800px; height: 514px; margin-left: -400px; border-radius: 0;
+  background: none; box-shadow: none; }
+.tetsuko-time[data-art-scenes~="lap_nap"] .tt-lap[data-scene]:not([data-scene=""])::after { display: none; }
+.tt-cat-body, .tt-cat-shadow { transition: opacity .3s ease; }
+.tt-cat[data-scene="lap"] { --x: 640px; --y: 600px; --s: 1.45; }
+.tt-cat[data-scene="lap"] :is(.tt-cat-body, .tt-cat-shadow) { opacity: 0; }
+.tetsuko-time .tt-slot { transition: opacity .4s ease; }
+.tetsuko-time[data-lap="1"] .tt-slot { opacity: 0; }
+.tetsuko-time[data-lap="1"] .tt-slot-hit { pointer-events: none; }
+/* 膝の一枚絵の間は、裏口の景色を少し暗く・ぼかして、手前の膝とてつこに目が行くようにする（膝の端が景色に溶ける） */
+.tt-cam-set { transition: filter .6s ease; }
+.tetsuko-time[data-lap="1"] .tt-cam-set { filter: brightness(.55) saturate(.85) blur(2px); }
+.tetsuko-time[data-reduced="true"] .tt-cam-set { transition: none; }
+/* ハートの枠（なかよしの段で3〜5つ）の外は、まだ開いていない: 小さく薄く見せる。帰りの札で枠が増える時は、ぽんと開く */
+.tt-heart[data-locked="true"] { opacity: .32; scale: .72; filter: grayscale(1); }
+.tt-heart { transition: opacity .4s ease, scale .4s cubic-bezier(.2, 1.6, .4, 1), filter .4s ease; }
+.tt-result .tt-heart[data-opens="true"][data-locked="false"] { animation: tt-heart-open .7s ease-out .2s both; }
+@keyframes tt-heart-open { 0% { scale: .72; } 45% { scale: 1.45; rotate: -10deg; } 100% { scale: 1; } }

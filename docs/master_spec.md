@@ -28,10 +28,10 @@
 
 - **斧投げ**: 段は WATL のリーグの部門そのもので、投げる物理・点の数え方は変えない。部門の差は閉じ方だけなので、線を B にそろえると「ふつう」の腕がどの段もほぼ100%になる。中級・上級は A にした（「ふつう」の腕で 67%／53%）。計測と細目は [spec/axe_throw.md](spec/axe_throw.md)。
 - **サンドボード**: 段は「滑る」（ヌールとの勝負）だけ。なるとの勝負と練習は段の外。初級の結果は自己ベスト・Aランクの色火・勝ち数・達人認定に数えない（自己ベストは `easyBest` に別に残す）。細目と勝率は [spec/desert_ride.md](spec/desert_ride.md)。
-- **てつこ**: 段を持たない。ハート（好感度）は来訪をまたいで溜まり（`_tetsuko_time.affection`。減らない）、1回の来訪で溜まるのはハート1つ分まで（いちばん早くて5回）。おやつ・遊び・ブラシなど、いろいろなお世話で溜まる。初めて5つそろったら白火1つ（`tetsuko-heart`）。細目は [spec/tetsuko_time.md](spec/tetsuko_time.md) §11。
+- **てつこ**: 段を持たない。画面のハート5つは、その日のごきげん（来るたびに始めから。嫌がることを続けると少し下がる。ハート3つで写真、4つで膝）。来訪をまたいで溜まるのは、なかよしの肉球5つ（`_tetsuko_time.affection`。減らない。帰る時のハートの数で伸び、1回の来訪で肉球半分まで）。肉球3つで色つきの火種1つ（`tetsuko-bond`・感覚）、5つで白火1つ（`tetsuko-heart`）。節目で、てつこがおみやげ（どんぐり・びんの王冠・はとの羽）を置いていく。細目は [spec/tetsuko_time.md](spec/tetsuko_time.md) §12。
 - **TRPG**: 三段階にしない。最後の本『朝霧の王国と、最後の一台』（`mist-kingdom`。部員の6冊をクリアで入荷）で、サイが GM の席から物語に降りて霧の王を演じ、いつもの笑顔の断れない提案で立ちはだかる。見せ場は、はじめが初めてサイの提案を断ること。本棚は9冊のまま。初めてクリアしたら白火1つ（`trpg-finale`）。正本は [spec/trpg_scenario_authoring.md](spec/trpg_scenario_authoring.md) と `brand/character_profiles.md` のサイの節。
 - **対象外**: 一台勝負（カード。保留中）。ひよりとの斧投げの勝負など、物語の中の勝負は段の外。
-- 合わせて増える火種は白火6つ（上級クリア4・てつこのハート5・TRPG の最後の本）。成長の仕様との関係は [stat-design/ADDENDUM-0349.md](stat-design/ADDENDUM-0349.md) の「#3779」。
+- 合わせて増える火種は白火6つ（上級クリア4・てつこの肉球5・TRPG の最後の本）と、色つき1つ（てつこの肉球3・2026-11-27）。成長の仕様との関係は [stat-design/ADDENDUM-0349.md](stat-design/ADDENDUM-0349.md) の「#3779」。
 - 検証: `remake/test/play_tiers.mjs`・`axe_tiers.mjs`・`ch4_camel_race.mjs`・`dj_club.mjs`・`desert_ride.mjs`・`ch4_desert.mjs`・`tetsuko_time.mjs`、ブラウザは `play_spots`・`desert_ride`・`ch4_camel_race`・`dj_club`・`tetsuko_feel`。
 
 ## 2026-11-20 第1章の勝因と千須の最後の1点（#3916・WIN）

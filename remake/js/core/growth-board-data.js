@@ -333,8 +333,10 @@ export const PLAY_REWARDS = [
   { id: "camel-hard", game: "camel", tier: "hard", label: "ラクダレース 上級クリア", gift: { any: 1 } },
   { id: "desert-hard", game: "desert", tier: "hard", label: "サンドボード 上級クリア", gift: { any: 1 } },
   { id: "dj-hard", game: "dj", tier: "hard", label: "DJ 上級クリア", gift: { any: 1 } },
-  // てつこは段を持たない。来訪をまたいで溜まる好感度がハート5（flags._tetsuko_time.affection が満タン）に届いたら白火1つ（#3779）
-  { id: "tetsuko-heart", game: "tetsuko", affection: true, label: "てつこの好感度 ♥5", gift: { any: 1 } },
+  // てつこは段を持たない。来訪をまたいで溜まる、なかよし（flags._tetsuko_time.affection。肉球5つ＝100）が
+  // 肉球3つ（60）で色つきの火種1つ（2026-11-27 追加。機嫌を読む遊びなので感覚）、肉球5つ（満タン）で白火1つ（#3779）
+  { id: "tetsuko-bond", game: "tetsuko", affection: 60, label: "てつこと なかよし 肉球3つ", gift: { sense: 1 } },
+  { id: "tetsuko-heart", game: "tetsuko", affection: true, label: "てつこと なかよし 肉球5つ", gift: { any: 1 } },
   // TRPG は三段階にしない。サイが立ちはだかる最後の本（data/trpg_catalog.json の finale）を初めてクリアしたら白火1つ（#3779）
   { id: "trpg-finale", game: "trpg", scenario: "mist-kingdom", label: "TRPG 最後の本をクリア", gift: { any: 1 } },
 ];

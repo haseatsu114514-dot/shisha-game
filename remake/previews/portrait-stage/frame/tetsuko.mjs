@@ -4,11 +4,13 @@
 // 進行の値は newState() の使い捨て（デバッグ入口と同じ作り方）。来訪の記録・手帳・小物は、このページを開いている間だけ値の中に覚える
 // （確定は本編と同じ settleTetsukoTime。値に書くだけで、保存はしない。本編の保存の関数は呼ばない）。
 // ?visits=0〜4 は通った回数（段階。既定 4＝気を許した後）。?shot=visit|pet|toy|decor|book|end は、一覧（PC）に並べる止め絵。
+// ?bond=0〜100 は、なかよし（肉球5つ＝100。既定 46＝肉球2つ・ハートの枠5つ・おみやげ2つ）。?mood=calm|sleepy|playful|clingy|grumpy は今日の気分（既定 calm）。
 import { loadAll } from "../../../js/core/data.js";
 import { initLayers } from "../../../js/core/ui.js";
 import { newState } from "../../../js/core/state.js";
 import { unlockAudio } from "../../../js/core/audio.js";
 import { openTetsukoTime, settleTetsukoTime } from "../../../js/minigames/tetsuko-time.js";
+import { MOODS, BOND_GIFTS, moodFor, sessionStage } from "../../../js/minigames/tetsuko-model.js";
 import { initPortraitFit, shot, param, tellParent, until } from "./frame.mjs";
 
 const stage = document.getElementById("stage");
@@ -78,12 +80,18 @@ async function pose(name) {
   } else if (name === "book") { // てつこ手帳
     document.querySelector(test("book")).click();
     await wait(600);
-  } else if (name === "end") { // 今日の終わり: ごきげんになるまで、おやつ・なでるを続けて、切り上げの一言が出た所
-    const screen = document.querySelector(test("time-screen")), cat = document.querySelector(test("cat"));
-    document.querySelector(test("treat")).click();
-    await wait(2600);
-    for (let i = 0; i < 60 && !screen.dataset.ended; i++) { cat.click(); await wait(450); }
-    await wait(1500); // 切り上げの札と一言が出そろうのを待つ
+  } else if (name === "end") { // 今日の終わり: おやつ・じゃらし・ブラシ・なでる、と付き合ってくれる回数を使い切って、帰りの札（ハート → なかよし）が出た所
+    const screen = document.querySelector(test("time-screen"));
+    const press = async (id, ms) => { if (!screen.dataset.ended) { document.querySelector(test(id)).click(); await wait(ms); } };
+    await press("treat", 4300);
+    for (let i = 0; i < 5; i++) await press("play", i < 3 ? 700 : 1500);
+    await wait(1400);
+    await press("brush", 1300); await press("brush", 1300);
+    for (let i = 0; i < 3; i++) await press("pet", 1100);
+    await wait(2600); // とっておき（ハートがいっぱいの時）が出ていれば、落ち着くのを待つ
+    for (let i = 0; i < 24 && !screen.dataset.ended; i++) await press("brush", 1200);
+    await until(() => document.querySelector(test("result"))?.dataset.filled === "1");
+    await wait(900); // 肉球が伸び終わるのを待つ
   }
   // 止め絵は、作った場面をそのまま残す: 画面の写しを取り、動いている本物は閉じる（放っておくと、てつこが動き続け、やがて今日の分が終わって画面が消える）
   const live = document.querySelector(test("time-screen")), still = live.cloneNode(true);
@@ -98,9 +106,16 @@ async function play() {
   await loadAll();
   // 進行の値: デバッグ入口（js/dev/minigame-launcher.js）と同じ第3章の昼。通った回数は ?visits=（既定は気を許した後）
   const value = newState();
-  Object.assign(value, { chapter: 3, phase: "daily", day: 5 });
   const visits = Math.max(0, Math.min(9, Number(param("visits") ?? 4) || 0));
+  // 今日の気分（?mood=）: その気分になる日から始める（気分は本編と同じく通算日で決まる。ご機嫌ななめは顔なじみから）
+  const mood = MOODS.some(item => item.id === param("mood")) ? param("mood") : "calm";
+  let day = 5;
+  for (let i = 0; i < 400 && moodFor(day, sessionStage(visits)).id !== mood; i++) day += 1;
+  Object.assign(value, { chapter: 3, phase: "daily", day });
   value.flags._ch3_outings = { ...(value.flags._ch3_outings || {}), tetsuko: visits };
+  // なかよし（?bond=）と、そこまでに貰っているおみやげ
+  const bond = Math.max(0, Math.min(100, Number(param("bond") ?? 46) || 0));
+  value.flags._tetsuko_time = { affection: bond, gifts: BOND_GIFTS.filter(gift => gift.at <= bond).map(gift => gift.id) };
   value.met = { ...(value.met || {}), mukai_master: true };
   if (shot) pose(shot).catch(error => console.warn(error));
   for (let visit = 0; ; visit++) {

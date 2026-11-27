@@ -146,3 +146,19 @@ OpenAI の画像 API（`gpt-image-2.6-sunburst`）で生成した原画と、送
 - 横（既定）では読まない（`DESERT_ART` とは別の `DESERT_VALLEY_ART`。`loadDesertArt({ valley: true })` の時だけ）
 - 原画の SHA-256（先頭16桁）: `valley_day` 7cd8ff7e5a025890, `valley_dusk` c426aae4a9817c9a
 
+## てつこといっしょ — `tetsuko/`（膝の一枚絵・おみやげ）
+
+採用 3 枚（生成 4 枚）。オーナー「てつこのゲームは足に乗ったりする写真は重ねると違和感出るから専用の生成した方が良さげ」「仲の良さが一定までいくと何なものくれたり」（docs/spec/tetsuko_time.md §12）。
+
+| 原画（`tetsuko/originals/`） | 使う所 | ゲームの絵 |
+|---|---|---|
+| `lap_nap.png` | 膝の上で寝ている、てつこ（一人称で見下ろした黒いカーゴパンツの膝ごと1枚）。図鑑・写真の「膝で寝る」も、この絵から | `remake/img/ui/tetsuko/scene_lap_nap.webp` |
+| `lap_sit.png` | 膝に乗ってきた・膝の上でなでている、てつこ（起きて、こちらを見上げる） | `remake/img/ui/tetsuko/scene_lap_sit.webp` |
+| `gifts.png`（横に3つ） | なかよしの節目のおみやげ: どんぐり・びんの王冠・はとの羽（帰りの札と手帳のシール） | `remake/img/ui/tetsuko/gift_{acorn,cap,feather}.webp` |
+
+- **変換**: 膝の絵は、猫の体の真ん中が (700, 400) に来るよう 1400×900 を切り出した WebP（quality 88）。画面は幅 800px に置き、左右と上の端（膝の先）を薄く消す（`remake/css/tetsuko-time.css` の「膝の一枚絵」）。おみやげは1つずつ切り出し、長い辺を 232px にして 256×256 の真ん中に置いた WebP（quality 92）。
+- **参照画像**: 採用済みの膝（`prop_lap.webp`）と、てつこのしぐさの絵（`cat_loaf`・`cat_belly`・`cat_groom`）、おみやげは手帳の札（`ui_tk_badge`）とボール（`prop_ball`）を渡して、描き方・色・線をそろえた（`tetsuko/prompts.md`）。
+- **検品**（`docs/asset_ai_guidance.md` の必須項目）: 猫はスコティッシュフォールドの茶トラ（折れ耳・白い口元と胸と足先）で、しぐさの絵と同じ顔・線／膝は prop_lap と同じ黒いカーゴパンツ（ポケットの蓋つき）で、手・足・ベンチ・床は描いていない／猫は布に沈み、接する所に影がある（浮いて見えない）／文字・擬似文字・Z の記号なし／おみやげの王冠に銘柄・字なし。寝ている絵は2案生成し、2案目を採用（1案目は猫が少し小さく、あごの下の布の沈みが弱かった。保存していない）。
+- **組み込み**: `remake/js/minigames/tetsuko-art.js` の `ART_READY.scenes`・`gifts`、`tetsuko-time.js` の膝（`.tt-lap-art`）・帰りの札・手帳。
+- 原画の SHA-256（先頭16桁）: `lap_nap` 1c55c74d1a7287b4, `lap_sit` 36ce4869576633af, `gifts` a5808514e73b7d57
+- 題字のロゴ（`ui_tk_logo.webp`）は `logos/` の生成。左上の題の札の代わりに出す（`remake/css/tetsuko-theme.css` の「題字のロゴ」。字は読み上げ用に残して見えなくする）。

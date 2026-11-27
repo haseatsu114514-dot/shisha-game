@@ -5,8 +5,10 @@
 // - 動きを減らす設定では演出を出さず、題の札はすぐ見える
 // - ミニゲーム共通の方針（オーナー・2026-11-06）: 基本画面に常に見える文字は題・道具の名前だけ（反応の一行は少しで消える）。
 //   今日の様子は「？」の中。操作と遊び方は「？」を開いた時だけ見え、画面の道具がすべて載っている
-// - 手応えの作り直し（§10・2026-11-11）: 手帳で選んだしぐさが、おねだりの吹き出しになる。撮影は右上のボタンとPキー。
-//   おねだり・なでる場所・飛びつき・ごきげん・見守りの手応えは tetsuko_feel.mjs（画面を直接開く短い検査）
+// - 手応えの作り直し（§10・2026-11-11）: 手帳で選んだしぐさが、おねだりの吹き出しになる。撮影は右上のボタンとPキー
+//   （§12・2026-11-27: 撮らせてくれるのは、ハートが3つある時。先にごきげんを上げてから撮る）。
+//   おねだり・なでる場所・飛びつき・ごきげん・なかよし・見守りの手応えは tetsuko_feel.mjs（画面を直接開く短い検査）
+// この検査のセーブは、東京の通算 33 日目（のんびりの日）・来訪5回（気を許した段階）・なかよし 0（ハートの枠3つ・付き合ってくれる回数8）。
 // - スマホ横持ち（#2842）: 844×340 で、基本画面・「？」・手帳・もようがえの文字が実寸 11px 以上、押せる所が実寸 38px 以上、
 //   隣り合う道具の間が 12px（ステージ上）以上
 // 遊び・確定（回復12・来訪1回）は ch3_tokyo_daily.mjs と tetsuko_time.mjs が見る。
@@ -172,12 +174,16 @@ await suite("tetsuko-theme", async check => {
     assert.equal(look.frame, true, "The cardboard frame surrounds the screen");
     for (const color of LAVENDER) assert(!look.colors.includes(color), `No daily lavender paper left (${color})`);
     // 基本画面: 反応の一行は少しで消え、常に見える文字は道具の名前だけ（題の札は別に数える）。ごきげんはハート、気分は読み上げだけ。
-    assert.equal(await page.locator(".tt-heart").count(), 5, "Five hearts show how happy she is");
+    // 数字は、なかよしの段（肉球の隣）と、撮らせてくれるのに要るハートの数（撮影の札。しぐさが見えていて、ごきげんが足りない間だけ）。
+    assert.equal(await screen.getAttribute("data-mood"), "calm", "The seeded day is a calm day");
+    assert.equal(await page.locator(".tt-status .tt-heart").count(), 5, "Five hearts show how happy she is");
+    assert.equal(await page.locator(`${dt("tetsuko-turns")} i`).count(), 8, "Dots show how many turns she will stay");
     assert.match(await page.locator(dt("tetsuko-mood")).getAttribute("aria-label"), /今日は/, "Today's mood is still read aloud");
     await page.waitForFunction(() => document.querySelector(".tt-caption")?.dataset.stale === "true"
       && getComputedStyle(document.querySelector(".tt-caption")).opacity === "0", null, { timeout: 20000 });
     const shown = await page.evaluate(visibleTexts);
-    assert.deepEqual(shown.sort(), [...CONTROLS].sort(), "Only the names of the controls stay on the base screen");
+    assert.deepEqual(shown.filter(text => !/^\d+$/.test(text)).sort(), [...CONTROLS].sort(), "Only the names of the controls stay on the base screen");
+    assert.deepEqual(shown.filter(text => /^\d+$/.test(text)).sort(), ["0", "3"], "The only numbers are her paw level and the hearts the camera needs");
     // 「？」: 開くと遊び方が出て、画面の道具がすべて載っている。開いている間は下の帯と道具が隠れる。Esc で閉じる。
     await page.locator(dt("tetsuko-help")).click();
     const panel = page.locator(dt("tetsuko-help-panel"));
@@ -255,10 +261,25 @@ await suite("tetsuko-theme", async check => {
     await seed(page);
     const screen = await openTetsuko(page);
     const get = id => page.locator(dt(`tetsuko-${id}`));
-    // 一つの短い遊び: 振る→狙う→前足→写真。撮影の札はしぐさにかかわらず右上にある。
+    // 一つの短い遊び: ごきげんを上げる（おやつ・ブラシ・なでる）→ 振る→狙う→前足→写真。撮影の札はしぐさにかかわらず右上にある。
     const shot = get("photo");
     assert(await shot.isVisible(), "The shutter is visible before playing");
     const initialShot = await shot.boundingBox();
+    // 撮らせてくれるのは、ハートが3つある時。来た時は、しぐさ（待っていた）が見えていても、まだ撮れない。
+    assert.equal(await shot.getAttribute("data-shy"), "true", "She is camera-shy at first");
+    assert(!await shot.evaluate(node => node.classList.contains("ready")));
+    const hearts = () => page.evaluate(() => Number(document.querySelector('[data-test="tetsuko-joy"]').dataset.hearts));
+    await get("treat").click();
+    await page.waitForFunction(() => /顔を洗い/.test(document.querySelector('[data-test="tetsuko-caption"]')?.textContent), null, { timeout: 15000 });
+    for (const id of ["brush", "brush", "pet", "pet", "pet"]) {
+      if (await hearts() >= 3) break;
+      await get(id).click();
+      await page.waitForTimeout(700);
+    }
+    assert.equal(await hearts(), 3, "Treat, brush and petting fill her three heart slots");
+    // 枠がいっぱいで「とっておき」（すりすり）。落ち着くのを待ってから、じゃらしへ。
+    await page.waitForFunction(() => /頭をこすりつけて/.test(document.querySelector('[data-test="tetsuko-caption"]')?.textContent), null, { timeout: 15000 });
+    await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-time-screen"]').dataset.peak !== "1", null, { timeout: 15000 });
     await get("play").click();
     await get("play").click();
     await get("play").click();

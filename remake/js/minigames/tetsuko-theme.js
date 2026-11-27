@@ -1,11 +1,13 @@
 // 「てつこといっしょ」の専用テーマ「茶トラと段ボール」（#2717）の飾り。見た目は css/tetsuko-theme.css。
 // 日常の紙×ラベンダーとは別の画面だと入った瞬間に分かるように、次の3つを足す（遊び・保存・確定には触らない）:
 // - 全画面の外枠: 段ボールを切り抜いた窓から裏口をのぞく形（SVG。切り口の波の段も描く）
-// - 左上の題: 折れ耳の付いた札「てつこといっしょ / TETSUKO TIME」（日常の HUD はこの画面では隠す）
+// - 左上の題: 生成したロゴの絵（tk_logo。届く前は折れ耳の付いた札「てつこといっしょ / TETSUKO TIME」）（日常の HUD はこの画面では隠す）
 // - 入った時の演出: 閉じた箱のテープがはがれ、ふたが手前へ開き、真ん中の題が左上の札へ収まる（約1.2秒）
 // 演出は操作を止めない（pointer-events なし・開いてすぐ触れる）。動きを減らす設定では演出を出さない。
 // 基本画面は必要なUIだけ（ミニゲーム共通の方針）: 今日の様子は文で出さず、気分の小さなしるしだけ（文は「？」で読める）。
 // DOM の部品は呼び出し側の el（core/util.js）で作る。top-level は DOM 非依存（Node のテストから import できる）。
+
+import { hasUi } from "./tetsuko-art.js";
 
 const W = 1280, H = 720;
 /** 外枠の寸法（1280×720 の px）。窓は inset の位置で角を丸めて切り抜き、切り口の厚みの分だけ内側から裏口が見える。 */
@@ -50,11 +52,13 @@ function frameSvg() {
  * @param {object} [p.SE] 効果音（audio.js の SE。テープの音は pour。始まりの曲は画面の専用 BGM（bgm_tetsuko_time）に任せ、ジングルは重ねない）
  */
 export function tetsukoTheme({ el, title, roman, reduced = false, SE = {} }) {
-  const plate = (extra = "") => el(`div.tt-logo${extra}`, { "aria-hidden": "true" }, [
+  // 題の札。ロゴの絵（tk_logo）が届いていれば、CSS が絵を出して字を見えなくする（字は残る）。
+  // 左上の札は、絵の時は読み上げで題を読む（role="img"）。演出の札は飾りなので読み上げない。
+  const plate = (extra = "", attrs = { "aria-hidden": "true" }) => el(`div.tt-logo${extra}`, attrs, [
     el("i.tt-logo-ear.l"), el("i.tt-logo-ear.r"), el("i.tt-logo-paw"),
     el("b.tt-logo-title", { text: title }), el("small.tt-logo-roman", { text: roman }),
   ]);
-  const logo = plate();
+  const logo = plate("", hasUi("tk_logo") ? { role: "img", "aria-label": title } : { "aria-hidden": "true" });
   const frame = el("div.tt-frame", { "aria-hidden": "true", html: frameSvg() });
   const card = reduced ? null : el("div.tt-intro-card", [plate(".tt-logo-card")]);
   const intro = reduced ? null : el("div.tt-intro", { "aria-hidden": "true", dataset: { test: "tetsuko-intro" } }, [
