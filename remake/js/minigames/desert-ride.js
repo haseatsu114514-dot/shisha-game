@@ -241,28 +241,28 @@ const BOOST_MIN_PERCENT = BOOST.minGauge * 100;
 // 顔のアイコンと名前の吹き出しで出す。ヌールは普通の日本語で、はじめを「ハジメ」と呼ぶ（語録は混ぜない）。台詞の末尾に「。」を付けない。
 // 本番では通常の操作説明を出さない（低速でコース外に留まる時だけ復帰案内を出す）。従来方針（同「体勢崩した時とかブーストで立て直すとか文字が出るのは無くしたい。チュートリアルとかで文字で説明はいいけど」）。
 const TUTORIAL = {
-  move: "ハジメ、まずは ← → で左右に動いてみて",
+  move: "ハジメ、まずは「左へ」「右へ」で動いてみて",
   rock: "先を見て、岩は早めによけてね",
   fallRock: "大丈夫、次は早めによけてね",
-  bump: "砂の山の手前で Space、大きく跳べるよ",
-  brace: "着地の直前、輪が重なったら Space",
+  bump: "砂の山の手前で「ジャンプ」、大きく跳べるよ",
+  brace: "輪が重なったら「LAND」を押して",
   retryBump: "次の山で、もう一回跳んでみよう",
   landPerfect: "完璧な着地、その調子",
   landGood: "もうちょっと遅く押すと完璧",
   landPlain: "着地の直前に押すと、体勢が整うよ",
-  trick: "跳んだら空中で ← か → を押し続けて",
+  trick: "空中で「左へ」か「右へ」を押し続けて",
   trickLetGo: "早めに離して、着地を合わせてね",
   trickDone: "回転を決めると点もゲージも伸びるの",
   trickFall: "もう少し早く離して、着地を合わせてね",
-  boost: "ゲージが目印まで溜まったら ↓（BOOST）で加速",
+  boost: "ゲージが目印まで溜まったら「BOOST」で加速",
   boostGo: "岩を砕くたびにブーストが短くなるよ",
-  recover: "岩の壁に当たったら、すぐ ↓（BOOST）で立て直して",
-  recoverNow: "すぐ ↓（BOOST）で立て直して",
+  recover: "岩の壁に当たったら、すぐ「BOOST」で立て直して",
+  recoverNow: "すぐ「BOOST」で立て直して",
   recoverDone: "立て直したら、そのまま加速",
   recoverLate: "当たった直後に押せば、立て直せるよ",
-  recoverSmash: "ブーストがないときは、当たった直後に ↓ で立て直せるよ",
-  recoverDodge: "当たっちゃった時は、直後に ↓ で立て直せるよ",
-  curve: "矢印の向き（←）を押して、切り込んで",
+  recoverSmash: "ブーストがないときは、当たった直後に「BOOST」",
+  recoverDodge: "当たっちゃった時は、直後に「BOOST」",
+  curve: "矢印の向きに合わせて「左へ」を押して、切り込んで",
   carveOn: "切り込むほど熱が高まるよ",
   carveGauge: "内側に寄りすぎたら、少し離してまた押して",
   carveLong: "熱が高まると、金の残像も出るの",
@@ -273,58 +273,32 @@ const TUTORIAL = {
   flowMiss: "本番でも、流れる砂を見つけたら乗ってみて",
   finish: "あとは、ゴールまで滑るだけ",
 };
-// タッチ端末ではキーの名前（Space／← →／↓）を出さず、画面のボタンの名前で言う（#2838）。
-const TUTORIAL_TOUCH = {
-  move: "ハジメ、まずは「左へ」「右へ」で動いてみて",
-  bump: "砂の山の手前で「ジャンプ」、大きく跳べるよ",
-  brace: "輪が重なったら「LAND」を押して",
-  trick: "空中で「左へ」か「右へ」を押し続けて",
-  boost: "ゲージが目印まで溜まったら「BOOST」で加速",
-  recover: "岩の壁に当たったら、すぐ「BOOST」で立て直して",
-  recoverNow: "すぐ「BOOST」で立て直して",
-  recoverSmash: "ブーストがないときは、当たった直後に「BOOST」",
-  recoverDodge: "当たっちゃった時は、直後に「BOOST」",
-  curve: "矢印の向きに合わせて「左へ」を押して、切り込んで",
-};
+// キーの名前（Space／← →／↓）は出さず、どの端末でも画面のボタンの名前で言う（2026-11-27 オーナー「PC版のスペースとかの表示を全てのゲームから無くす。スマホゲーにするから」）。
 /** 練習でヌールが話す全部の台詞（検査で、吹き出しに収まるかを確かめる）。 */
-export const TUTORIAL_LINES = Object.freeze([...Object.values(TUTORIAL), ...Object.values(TUTORIAL_TOUCH)]);
+export const TUTORIAL_LINES = Object.freeze(Object.values(TUTORIAL));
 // カーブの合図（2026-11-13 オーナー「カービングとかすると何が起こるのかの説明が長い。文字で説明するよりエフェクトで」）:
 // 切り込んでいない間だけ人物の横に切り込む向きの矢印（≫）を出す。2026-11-25 に矢印の横の一言「切り込め」もやめた（本番は文字を出さない。
 // 切り込みの説明は練習のヌールが話す）。切り込むと、板の下に光る弧・「+30」・ゲージへ飛ぶ光の粒で、何が起きたかを見せる。
 // 一度切り込めたら、その日は出さない。切り込まないままでも、合わせて CURVE_CUE_SECONDS 秒まで
 const CURVE_CUE_SECONDS = 10;
-const touchUi = () => typeof matchMedia === "function" && matchMedia("(hover: none) and (pointer: coarse)").matches;
-const tutorialText = key => (touchUi() && TUTORIAL_TOUCH[key]) || TUTORIAL[key];
+const tutorialText = key => TUTORIAL[key];
 // 遊び方（メニューの「？」で開いた時だけ見せる。常時は出さない）
 // 遊び方の図解（2026-11-27 オーナー「文字で説明しすぎず、UIやボタンで視覚的に分かるように」「まだ文字が多い」）:
-// 開いた時は6枚の絵札だけ（一枚絵・押すボタンの絵・短い見出しと一言）。文章の説明（HOWTO）は「くわしく」を押した時だけ出す。
+// 開いた時は6枚の絵札だけ（一枚絵・押す画面のボタンの絵・短い見出しと一言。キーの名前は出さない）。文章の説明（HOWTO）は「くわしく」を押した時だけ出す。
 // 絵は gpt-image-2.6-sunburst で生成した場面（asset_sources/ui/minigame-visuals-20261127/desert/。滑走の絵を参照に渡して人物と砂丘をそろえた）
 const HOWTO_CARDS = Object.freeze([
-  { id: "dodge", title: "よける", note: "岩は左右でかわす", keys: ["left", "right"], pc: "← →" },
-  { id: "jump", title: "大ジャンプ", note: "起伏で押す → 輪で着地", keys: ["jump", "land"], pc: "Space" },
-  { id: "spin", title: "スピン", note: "空中で押しっぱなし", keys: ["left", "right"], pc: "← →", tags: ["360°", "720°"] },
-  { id: "boost", title: "ブースト", note: "目印をこえたら発動", keys: ["boost"], pc: "↓" },
-  { id: "carve", title: "カーブ", note: "矢印の向きへ切り込む", keys: ["left"], pc: "←" },
-  { id: "flow", title: "砂流れ", note: "金の旗の帯で加速", keys: [], pc: "" },
+  { id: "dodge", title: "よける", note: "岩は左右でかわす", keys: ["left", "right"] },
+  { id: "jump", title: "大ジャンプ", note: "起伏で押す → 輪で着地", keys: ["jump", "land"] },
+  { id: "spin", title: "スピン", note: "空中で押しっぱなし", keys: ["left", "right"], tags: ["360°", "720°"] },
+  { id: "boost", title: "ブースト", note: "目印をこえたら発動", keys: ["boost"] },
+  { id: "carve", title: "カーブ", note: "矢印の向きへ切り込む", keys: ["left"] },
+  { id: "flow", title: "砂流れ", note: "金の旗の帯で加速", keys: [] },
 ]);
 const howtoArt = id => `ui/desert_ride_howto/how_${id}.webp`;
 // 遊び方の一行ごとの見出しの札（HOWTO の並びと同じ順）
 const HOWTO_TOPICS = Object.freeze(["左右", "岩", "大ジャンプ", "回転", "回転", "着地", "ブースト", "立て直し", "カーブ", "砂流れ", "S評価"]);
-const HOWTO = {
-  keys: [
-    "← → で左右。砂の上なので、少し遅れてついてくる",
-    "岩は ← → でよけるか、平らな所で Space を押して跳び越える（大きい岩は跳んだ高い所で越える）",
-    "起伏の手前で Space で大ジャンプ。空中ではボタンが LAND に変わり、輪が重なった時に Space で着地が決まる（加速・ブースト回復）",
-    "空中で ← か → を押し続けると、360°、720°…と回り続ける。回転を決めると点とブーストゲージが伸びる",
-    "大ジャンプで回り始めたら横には動かせない。離すと次の半回転まで回る",
-    "回りかけで着地すると転ぶ。早めに離して半回転（180°）ごとの区切りに着地を合わせる。岩はぎりぎりでかすめるほど、点もブーストも大きい",
-    `ゲージが目印（${BOOST_MIN_PERCENT}%）まで溜まったら ↓（BOOST）。一気に加速し、ブースト中は岩にぶつかっても大丈夫。ただし岩はよけよう（砕くたびに短くなり、深い砂で切れる）`,
-    "岩に当たった直後は、ゲージが少しでもあればブーストで立て直せる",
-    "カーブでは外へ流される。曲がる向きへ切り込むほど熱が高まり、金の残像と砂しぶきが出る。刻むたびにブーストが溜まる",
-    "砂が流れている明るい帯に乗ると、ゲージを使わずに速くなる（ブーストより遅く、岩は砕けない）",
-    "ライバル戦のS評価は、Sラインの得点に加えてライバルに勝つ必要がある",
-  ],
-  touch: [
+// 文章の説明（「くわしく」で出す）。キーの名前は出さず、画面のボタンの名前で言う
+const HOWTO = [
     "「左へ」「右へ」で左右。砂の上なので、少し遅れてついてくる",
     "岩は「左へ」「右へ」でよけるか、平らな所で「ジャンプ」して跳び越える（大きい岩は跳んだ高い所で越える）",
     "起伏の手前で「ジャンプ」で大ジャンプ。空中ではボタンが「LAND」に変わり、輪が重なった時に押すと着地が決まる（加速・ブースト回復）",
@@ -336,8 +310,7 @@ const HOWTO = {
     "カーブでは外へ流される。曲がる向きへ切り込むほど熱が高まり、金の残像と砂しぶきが出る。刻むたびにブーストが溜まる",
     "砂が流れている明るい帯に乗ると、ゲージを使わずに速くなる（ブーストより遅く、岩は砕けない）",
     "ライバル戦のS評価は、Sラインの得点に加えてライバルに勝つ必要がある",
-  ],
-};
+  ];
 
 /**
  * 砂丘を滑る。host（本編は #stage）の上に全画面で重ね、「砂丘を下りる」か signal の中断で閉じる。
@@ -402,7 +375,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     const guideBox = el("div.dr-guide", { hidden: true, dataset: { test: "desert-guide" } }, [guideFace, el("div.dr-guide-body", [el("b.dr-guide-name", { text: guide || "ヌール" }), caption])]);
     /** 練習の説明を出す（空なら吹き出しごと隠す）。 */
     const tell = (text = "") => {
-      caption.replaceChildren(...text.split(/(Space|←|→|↓|「(?:左へ|右へ|ジャンプ|LAND|BOOST)」)/g)
+      caption.replaceChildren(...text.split(/(「(?:左へ|右へ|ジャンプ|LAND|BOOST)」)/g)
         .map((part, i) => i % 2 ? el("kbd", { text: part }) : part));
       guideBox.hidden = !text;
       if (tut && game) tut.toldAt = game.t;
@@ -629,7 +602,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         art("dr-menu-rider", DESERT_ART.riderJump.file),
       ]);
     }
-    /** 遊び方の図解の1枚: 一枚絵（札いっぱい）の裾に、見出し・押すボタンの絵（PC はキーも）・一言を重ねる。 */
+    /** 遊び方の図解の1枚: 一枚絵（札いっぱい）の裾に、見出し・押す画面のボタンの絵・一言を重ねる。 */
     function howCard(card) {
       const art = (cls, file) => el(`img.${cls}`, { src: imgFileUrl(file), alt: "", decoding: "async", onerror: event => { event.currentTarget.hidden = true; } });
       return el("li.dr-how-card", { dataset: { how: card.id, test: "desert-help-card" } }, [
@@ -640,10 +613,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         el("div.dr-how-caption", [
           el("div.dr-how-head", [
             el("b.dr-how-title", { text: card.title }),
-            el("div.dr-how-keys", { "aria-hidden": "true" }, [
-              ...card.keys.map(name => art("dr-how-key", DESERT_CONTROL_ART[name])),
-              !touchUi() && card.pc ? el("kbd", { text: card.pc }) : null,
-            ]),
+            el("div.dr-how-keys", { "aria-hidden": "true" }, card.keys.map(name => art("dr-how-key", DESERT_CONTROL_ART[name]))),
           ]),
           el("span.dr-how-note", { text: card.note }),
         ]),
@@ -666,7 +636,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       // 絵札の絵は、初めて開いた時に読む（入口を出した時や滑り出しに、使わない絵の読み込みを重ねない）
       const howCards = el("ul.dr-how-cards", { dataset: { test: "desert-help-cards" } });
       const howDetail = el("ul.dr-howto", { hidden: true, dataset: { test: "desert-help-detail" } },
-        HOWTO[touchUi() ? "touch" : "keys"].map((text, index) => el("li", { text, dataset: { topic: HOWTO_TOPICS[index] || "" } })));
+        HOWTO.map((text, index) => el("li", { text, dataset: { topic: HOWTO_TOPICS[index] || "" } })));
       const showDetail = open => {
         howDetail.hidden = !open; howCards.hidden = open; howDetail.scrollTop = 0;
         more.textContent = open ? "図解にもどる" : "くわしく"; more.setAttribute("aria-expanded", String(open));
@@ -1135,7 +1105,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       const airborne = game?.air > 0;
       actionCue.hidden = !running || mode !== "practice" || game.fallT > 0 || (airborne && game.airKind === "bounce");
       if (!actionCue.hidden) {
-        setText(actionKey, touchUi() ? (airborne ? "LAND" : "ジャンプ") : "Space");
+        setText(actionKey, airborne ? "LAND" : "ジャンプ");
         setText(actionRole, airborne ? "着地" : "跳ぶ");
       }
 
@@ -1501,7 +1471,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
           rings.push({ age: 0, life: 0.45, power: 0.9, grade: "flow" });
           if (!reducedMotion) view.kick = Math.max(view.kick, FEEL.flowKick);
         }
-        else if (event.kind === "gaugeFull") { rideSe.play("thunder", SE_GAIN.thunder); zapBurstT = 0.35; zapClock = 0.6; floater(touchUi() ? "BOOST OK" : "BOOST OK ↓", "gauge"); } // 満タンは雷の一発だけ
+        else if (event.kind === "gaugeFull") { rideSe.play("thunder", SE_GAIN.thunder); zapBurstT = 0.35; zapClock = 0.6; floater("BOOST OK", "gauge"); } // 満タンは雷の一発だけ
         else if (event.kind === "boost") onBoostEvent("boost");
         else if (event.kind === "recover") onBoostEvent("recover");
         else if (event.kind === "boostEnd") { if (event.reason === "edge") floater("深い砂でブースト切れ…", "behind"); }
@@ -1560,12 +1530,11 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     /** 次の評価までの点と、今回の滑りでいちばん伸びる所のひとこと（結果のカード）。 */
     function nextGoal(result) {
       const next = [...RANKS].reverse().find(([, min]) => min > result.score);
-      const touch = touchUi();
       const tip = result.rank === "A" && !next && result.race && !result.race.won ? "S評価にはライバルに勝つ必要がある"
-        : result.tricks === 0 ? (touch ? "空中で「左へ」か「右へ」を押し続けると回転。点がいちばん伸びる" : "空中で ← か → を押し続けると回転。点がいちばん伸びる")
+        : result.tricks === 0 ? "空中で「左へ」か「右へ」を押し続けると回転。点がいちばん伸びる"
         : result.perfect === 0 ? "着地は、輪がボタンに重なった時に押すと完璧"
-        : result.boosts === 0 ? (touch ? "ゲージが目印まで溜まったら「BOOST」で超加速" : "ゲージが目印まで溜まったら ↓（BOOST）で超加速")
-        : result.falls > 0 && !result.recoveries ? (touch ? "岩に当たった直後に「BOOST」で立て直せる" : "岩に当たった直後に ↓（BOOST）で立て直せる")
+        : result.boosts === 0 ? "ゲージが目印まで溜まったら「BOOST」で超加速"
+        : result.falls > 0 && !result.recoveries ? "岩に当たった直後に「BOOST」で立て直せる"
         : next && result.bestTrick < 720 ? "長く回るほど点が大きい（360° → 540° → 720°）"
         : next && result.nearMiss < 3 ? "岩はぎりぎりでかすめるほど、点もブーストも大きい" : "";
       return { next: next ? { rank: next[0], points: next[1] - result.score } : null, tip };
@@ -1858,7 +1827,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
      */
     function drawRecoverHint() {
       if (mode !== "practice" || !game || !canRecover(game)) return;
-      const text = touchUi() ? "BOOST で立て直せ！" : "↓ BOOST で立て直せ！";
+      const text = "BOOST で立て直せ！";
       const p = placeAt(game.z, game.x), unit = p ? p.scale * (H / 2) : 0;
       const pulse = reducedMotion ? 1 : 1 + 0.06 * Math.sin(performance.now() / 45);
       ctx.save();

@@ -80,7 +80,7 @@ test("the power verdict names the zone, the direction and the size of the fix", 
   for (let p = 0; p <= 1; p += .01) assert(powerVerdict(p, { inputMode: "tap-pull" }).short.length <= 12, "one short line on the result card");
 });
 test("a drop puts the release control's correction beside the measured rotation", () => {
-  for (const [power, key, flick] of [[.3, "Spaceを長めに押す", "速く弾く"], [.9, "Spaceを早めに離す", "ゆっくり弾く"]]) {
+  for (const [power, key, flick] of [[.3, "長めに押す", "速く弾く"], [.9, "早めに離す", "ゆっくり弾く"]]) {
     for (const [source, action] of [["keyboard", key], ["pointer", flick]]) {
       const options = { inputMode: "tap-pull", source };
       assert.equal(powerVerdict(power, options).short, `↻${power * 100}% ${action}`);

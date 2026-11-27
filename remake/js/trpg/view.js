@@ -1767,7 +1767,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("p", { text: "切り札は各人一度ずつ。先に助けを借りるか、最後のために札を残すか、相談しながら決めましょう。" }),
       el("p", { text: "仲間の切り札は、振る前に札を選ぶと判定に＋" + DICE.support + "。振り直しは、出目を見てからサイコロ1個を選んで振り直します。新しい出目を採用するので、下がることもあります。クリティカル（20の目）の時は振り直せません。" }),
       head("操作"),
-      el("p", { text: "クリック・タップで操作。会話はEnter／Spaceでも進みます。Tabでボタンを選び、Enterで決定できます。" }),
+      el("p", { text: "画面をタップして進めます。選ぶ時は、札やボタンをタップ。" }),
     ], [button("卓に戻る", "trpg-help-close", () => pop.close(), { class: "primary" })]);
   }
   function exit() {

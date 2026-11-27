@@ -236,7 +236,7 @@ await suite("desert-ride", async check => {
 
   await check("standalone-page-keyboard-run-result-best-and-quit", async page => {
     await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
-    assert.match(await page.locator(".dr-page-keys").innerText(), /目印（25%）に届いたら/);
+    assert.equal(await page.locator(".dr-page-keys").count(), 0, "the page shows no keyboard key list (a phone game)");
     await page.locator(t("desert-page-start")).click();
     await page.locator(t("desert-menu")).waitFor();
     assert.match(await page.locator(t("desert-menu")).innerText(), /DESERT RIDE/);
@@ -260,11 +260,12 @@ await suite("desert-ride", async check => {
     }
     assert(cards.filter(card => card.how !== "flow").every(card => card.keys > 0), "each action card shows the button to press");
     assert.equal(await page.locator(t("desert-help-detail")).isVisible(), false, "the written rules stay folded until asked");
-    assert.doesNotMatch(await page.locator(t("desert-help-panel")).innerText(), /Space で大ジャンプ/);
+    assert.doesNotMatch(await page.locator(t("desert-help-panel")).innerText(), /「ジャンプ」で大ジャンプ/);
     await page.locator(t("desert-help-more")).click();
     assert.equal(await page.locator(t("desert-help-cards")).isVisible(), false);
     assert.equal(await page.locator(t("desert-help-more")).innerText(), "図解にもどる");
-    assert.match(await page.locator(t("desert-help-panel")).innerText(), /Space で大ジャンプ/);
+    assert.match(await page.locator(t("desert-help-panel")).innerText(), /「ジャンプ」で大ジャンプ/);
+    assert.doesNotMatch(await page.locator(t("desert-help-panel")).innerText(), /Space|Enter|Esc|キー/, "the written rules name on-screen buttons only");
     const help = await page.locator(t("desert-help-panel")).innerText();
     assert.match(help, /目印（25%）まで溜まったら/);
     assert.match(help, /360°、720°…と回り続ける/);
@@ -520,7 +521,7 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-page-reduce")).check();
     await page.locator(t("desert-page-start")).tap();
     await page.locator(t("desert-help")).tap();
-    // タッチでは図解の札にキーの名前を出さない（押すボタンの絵だけ）。札は指で読める大きさ
+    // 図解の札にキーの名前を出さない（押すボタンの絵だけ）。札は指で読める大きさ
     const touchCards = await page.locator(t("desert-help-card")).evaluateAll(nodes => nodes.map(node => ({
       keycaps: node.querySelectorAll("kbd").length, keys: node.querySelectorAll(".dr-how-key").length,
       font: Math.min(...[".dr-how-title", ".dr-how-note"].map(selector => parseFloat(getComputedStyle(node.querySelector(selector)).fontSize))),

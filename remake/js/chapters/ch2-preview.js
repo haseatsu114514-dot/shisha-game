@@ -82,7 +82,7 @@ function renderEntry() {
       el("p.ch2-entry-description", { text: "地元の大会の、その先へ。隣町の大きな駅を出ると、人の流れと、まだ知らない煙が待っている。" }),
       el("p.ch2-preview-note", { text: "街と4つの訪問先・県大会ホールの挨拶、準備中の室内見学を遊べます。あげはも県大会のライバルです。日常の続きと県大会は未収録。本編と別に進み、本編のセーブは変更せず、再読み込みでリセットされます。" }),
       el("div.ch2-actions", [button("隣町へ向かう", "ch2-preview-start", startPreview, true), el("a.ch2-text-link", { href: "index.html", text: "本編タイトルへ" })]),
-      el("p.ch2-entry-controls", { text: "会話：クリック・タップ・Enter ／ 地図：行き先を選ぶ" }),
+      el("p.ch2-entry-controls", { text: "会話：タップで進む ／ 地図：行き先を選ぶ" }),
     ]),
   ]));
   focusTest("ch2-preview-start");

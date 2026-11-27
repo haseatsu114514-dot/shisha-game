@@ -41,7 +41,7 @@ function menu(result = null) {
       style: "opacity:0;transition:opacity .18s ease",
       onload: event => { event.currentTarget.style.opacity = "1"; },
       onerror: event => { event.currentTarget.replaceWith("CAMEL RACE"); } })]),
-    el("p", { text: "ラクダは自分で走る。横を走る車から、ロボット騎手へ「声」と「ムチ」を送るだけ。輪が重なる瞬間に Space（当たるとぐっと伸びる）、X は押している間ムチ（スタミナを使う）。" }),
+    el("p", { text: "ラクダは自分で走る。横を走る車から、ロボット騎手へ「声」と「ムチ」を送るだけ。輪が重なる瞬間に左のボタンで声（当たるとぐっと伸びる）、右のボタンは押している間ムチ（スタミナを使う）。" }),
     el("p", { dataset: { test: "camel-menu-result" }, text: result?.last ? `前回：${result.last.rank}位 ／ スコア ${result.last.total}（${result.last.grade}）${best ? ` ／ 自己ベスト ${best.total}` : ""}` : "まだ記録なし" }),
     ...buttons,
   ]));

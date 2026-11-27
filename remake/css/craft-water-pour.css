@@ -23,8 +23,6 @@
 .wpour-result small { font-size: 12px; font-weight: 700; color: #cfc2ad; }
 .wpour-next[hidden] { display: none; }
 .wpour-next { width: 100%; min-width: 0; font-size: 15px; }
-.wpour-keys { margin: auto 0 0; font-size: 12px; font-weight: 700; color: #a99a88; }
-@media (hover: none) { .wpour-keys { display: none; } }
 
 /* 試遊の横長の舞台。瓶の横で目安・操作・結果を同じ位置に読めるようにする。 */
 body.craft-stage .bench .wpour { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; }
@@ -35,9 +33,8 @@ body.craft-stage .bench .wpour-info {
 body.craft-stage .bench .wpour-head > div { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; }
 body.craft-stage .bench .wpour-head small { font-size: 18px; }
 body.craft-stage .bench .wpour-goal { font-size: 22px; line-height: 1.4; }
-body.craft-stage .bench :is(.wpour-status, .wpour-spilled, .wpour-result small, .wpour-keys) { font-size: max(18px, var(--bench-small, 0px)); line-height: 1.35; }
+body.craft-stage .bench :is(.wpour-status, .wpour-spilled, .wpour-result small) { font-size: max(18px, var(--bench-small, 0px)); line-height: 1.35; }
 body.craft-stage .bench .wpour-actions { gap: 12px; }
 body.craft-stage .bench :is(.wpour-actions .btn, .wpour-next) { min-height: max(68px, var(--bench-tap, 0px)); font-size: 22px; }
-body.craft-stage .bench .wpour-keys { margin: 0; }
-body.craft-stage .bench .wpour[data-grade] :is(.wpour-actions, .wpour-status, .wpour-keys) { display: none; }
+body.craft-stage .bench .wpour[data-grade] :is(.wpour-actions, .wpour-status) { display: none; }
 body.craft-stage .bench .wpour-grade { font-size: 22px; }

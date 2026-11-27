@@ -89,12 +89,12 @@ const ICONS = Object.freeze({
 });
 const TUTORIAL = [
   // どのページも絵と一言（2026-11-27 オーナー「文字で説明しすぎず、UIやボタンで視覚的に」「まだ文字が多い」）。細かい決まり（more）は「くわしく」を押した時だけ出す。
-  // 4ページ目は駆け引き（風よけと競り合い・2026-11-11）。キーは kbd で添え、タッチ端末では CSS で隠す。結果・大会選びの「？」から読み直せる。
+  // 4ページ目は駆け引き（風よけと競り合い・2026-11-11）。キーの名前（Space・X）は出さない（2026-11-27 オーナー「PC版のスペースとかの表示を全てのゲームから無くす」）。結果・大会選びの「？」から読み直せる。
   { icon: "camel", art: "howto-camel", title: "ラクダは、自分で走る", body: "★がハビーバ。声とムチを送るだけ。",
     more: "手前を走る金のゼッケン（★）がハビーバ。操縦はしない。背中のロボット騎手へ「声」と「ムチ」を送るだけ。" },
-  { icon: "voice", art: "howto-voice", title: "声 ── 左のボタン", key: "Space", body: "輪が重なった瞬間に押す。",
+  { icon: "voice", art: "howto-voice", title: "声 ── 左のボタン", body: "輪が重なった瞬間に押す。",
     more: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。輪の縮む速さは毎回ちがうので、よく見て押す。外したり連打したりすると、スタミナ（息）が減る。" },
-  { icon: "signal", art: "howto-whip", title: "ムチ ── 右を長押し", key: "X", body: "押すと加速、息が減る。空になる前に離す。",
+  { icon: "signal", art: "howto-whip", title: "ムチ ── 右を長押し", body: "押すと加速、息が減る。空になる前に離す。",
     more: "押している間は加速して息が減り、離すと調子に応じて回復。40以下で注意、30未満は減速。空になる前に離し、輪に合わせた声で整える。ゲージの白い印は終盤3秒ぶんの目安。最後の4分の1の LAST SPURT はムチがよく効く。" },
   // 駆け引き（2026-11-11）。絵は CR-WD07（#3217）。
   { icon: "camel", art: "howto-tactics", title: "前のラクダを使う", body: "真後ろは風よけ。並んだら声かムチで抜く。",
@@ -604,13 +604,11 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   const voiceButton = el("button.camel-control.camel-voice", { type: "button", "aria-label": "声をかける", dataset: { test: "camel-voice", cue: "off" } }, [
     el("span.camel-control-icon", { html: ICONS.voice }),
     el("span.camel-control-text", [el("strong", { text: "声をかける" }),
-      el("span.camel-rhythm", { "aria-hidden": "true" }, [el("small", { text: "調子" }), el("span.camel-rhythm-bars", rhythmBars)])]),
-    el("kbd", { text: "Space" })]);
+      el("span.camel-rhythm", { "aria-hidden": "true" }, [el("small", { text: "調子" }), el("span.camel-rhythm-bars", rhythmBars)])])]);
   const signalButton = el("button.camel-control.camel-signal", { type: "button", "aria-label": "ムチ（押している間）", dataset: { test: "camel-signal", state: "ready" } }, [
     el("i.camel-control-cool", { "aria-hidden": "true" }),
     el("span.camel-control-icon", { html: ICONS.signal }),
-    el("span.camel-control-text", [el("span.camel-signal-head", [el("strong", { text: "ムチ" }), signalCost]), staminaNode]),
-    el("kbd", { text: "X" })]);
+    el("span.camel-control-text", [el("span.camel-signal-head", [el("strong", { text: "ムチ" }), signalCost]), staminaNode])]);
   const pacingText = el("span"), reserveText = el("small");
   const pacingNode = el("div.camel-pacing", { hidden: true, dataset: { test: "camel-pacing" } }, [pacingText, reserveText]);
   // 息の予告はムチのボタンのすぐ上に積む（2026-11-11。画面の中央下は SUV とはじめを見せる）。読み込み中は隠す。
@@ -1128,7 +1126,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       ]),
       el("div.camel-tutorial-body", [
         el("p.camel-eyebrow", { text: `HOW TO PLAY  ${page + 1} / ${TUTORIAL.length}` }),
-        el("h2", [step.title, step.key ? el("kbd.camel-key", { text: step.key }) : null]), bodyNode,
+        el("h2", { text: step.title }), bodyNode,
         el("div.camel-steps", { "aria-hidden": "true" }, TUTORIAL.map((_, i) => el("i", { class: i === page ? "on" : null }))),
       ]),
       el("div.camel-card-actions", lastPage ? [moreButton, next] : [moreButton, skip, next]),

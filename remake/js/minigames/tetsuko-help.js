@@ -21,7 +21,7 @@ export const HELP = Object.freeze([
     Object.freeze({ icon: "watch", name: "見守る", text: "何もしないでいると、隣で見守ったことになる。" }),
   ]) }),
   Object.freeze({ title: "上の道具", rows: Object.freeze([
-    Object.freeze({ icon: "photo", name: "撮影", text: "しぐさが見えたら、撮影ボタンかPキーで撮る。" }),
+    Object.freeze({ icon: "photo", name: "撮影", text: "しぐさが見えたら、撮影ボタンで撮る。" }),
     Object.freeze({ icon: "decor", name: "もようがえ", text: "物を選んで、光った場所をタップ。置いた物はタップで片付く。" }),
     Object.freeze({ icon: "book", name: "てつこ手帳", text: "しぐさと写真が残る。探すしぐさも選べる。" }),
     Object.freeze({ icon: "back", name: "帰る", text: "遊びを切り上げて裏口を出る。" }),

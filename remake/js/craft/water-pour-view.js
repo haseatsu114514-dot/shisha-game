@@ -55,7 +55,6 @@ export function mountWaterPour(panel, {
     h("div.wpour-actions", {}, [pourBtn, tiltBtn, decideBtn]),
     h("p.wpour-spilled", {}, ["こぼした水 ", spilledOut]),
     result, nextBtn,
-    h("p.wpour-keys", { text: "Space 注ぐ ／ → 傾ける ／ Enter 決める" }),
   ]);
   const root = h("div.wpour", { dataset: { test: "water-pour" } }, [stage, side]);
   panel.append(root);

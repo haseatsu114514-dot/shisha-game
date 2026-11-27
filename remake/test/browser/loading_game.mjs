@@ -45,13 +45,9 @@ for (const [label, options] of [["pc", {}], ["phone-touch", { viewport: { width:
     const title = await page.locator(".loading-comic-title").innerText();
     assert(freshTitles.has(title), `Without a save, the boot comic is one of the people a new game has met, got ${title}`);
     assert.equal(await page.locator('[data-test="title-new"]').count(), 0, "The title waits until the reader moves on");
-    if (options.touch) {
-      assert.equal(await page.locator(".loading-gate .loading-proceed").innerText(), "タップで進む");
-      await page.locator(".loading-gate").tap();
-    } else {
-      assert.equal(await page.locator(".loading-gate .loading-proceed").innerText(), "クリック・Enter で進む");
-      await page.keyboard.press("Enter");
-    }
+    assert.equal(await page.locator(".loading-gate .loading-proceed").innerText(), "タップで進む");
+    if (options.touch) await page.locator(".loading-gate").tap();
+    else await page.keyboard.press("Enter");
     await page.locator('[data-test="title-new"]').waitFor();
     await page.locator("#boot").waitFor({ state: "detached" });
     assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_loading_comics_read"))), [freshTitles.get(title)],

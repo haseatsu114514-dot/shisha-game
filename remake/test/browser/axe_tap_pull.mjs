@@ -117,7 +117,9 @@ await suite('axe-tap-pull', async check => {
     await start(page);
     // 針を止めて構えた後、的に触れて離すだけ（弾かない）なら投げない。狙いも動かない
     await aim(page);
-    assert.match(await page.locator('[data-test="axe-power-cue"]').textContent(), /上へ弾く.*Spaceは緑の帯で離す/);
+    const powerCue = await page.locator('[data-test="axe-power-cue"]').textContent();
+    assert.match(powerCue, /上へ弾く/);
+    assert.doesNotMatch(powerCue, /Space|Enter/, 'the cue names no keyboard key');
     const before = await root(page).evaluate(n => [n.dataset.aimX, n.dataset.aimY]);
     const corner = await page.locator('.axe-target').evaluate(node => { const q = new DOMPoint(200, 120).matrixTransform(node.getScreenCTM()); return { x: q.x, y: q.y }; });
     await page.mouse.click(corner.x, corner.y); await page.waitForTimeout(300);
@@ -356,7 +358,7 @@ await suite('axe-tap-pull', async check => {
     await page.keyboard.up('Space');
     await phase(page, 'result');
     assert.equal(await root(page).getAttribute('data-outcome'), 'drop');
-    assert.match(await review.innerText(), /^↻\d+% Spaceを早めに離す$/);
+    assert.match(await review.innerText(), /^↻\d+% 早めに離す$/);
     assert(await review.evaluate(el => el.scrollWidth <= el.clientWidth), 'the correction fits beside the rotation');
   });
 
