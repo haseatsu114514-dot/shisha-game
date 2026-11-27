@@ -6,6 +6,8 @@
 // 絵は本編が表示に使う WebP 版（remake/img/）を読む（元PNGを直接書くと公開物の軽量化から外れる）。
 
 const REMAKE_IMG = new URL("../../img/", import.meta.url).href;
+// この試作のために画像生成（gpt-image-2.6-sunburst）で作った絵。原画とプロンプトは asset_sources/ui/portrait-stage-20261127/
+const OWN_IMG = new URL("img/", import.meta.url).href;
 const NEW = `${REMAKE_IMG}sprites/character_variants/new/`;
 const IMG = {
   map: `${REMAKE_IMG}backgrounds/bg_osu_map_day.webp`,
@@ -33,6 +35,9 @@ const IMG = {
   ciBgMinto: `${REMAKE_IMG}ui/character_intros/graphic/bg_minto.webp`,
   ciSumi: `${REMAKE_IMG}ui/character_intros/graphic/sumi.webp`,
   ciBgSumi: `${REMAKE_IMG}ui/character_intros/graphic/bg_sumi.webp`,
+  holeLens: `${OWN_IMG}hole-lens.webp`,
+  holeNeedle: `${OWN_IMG}hole-needle.webp`,
+  loupe: `${OWN_IMG}ui-loupe.webp`,
   ...(globalThis.PORTRAIT_STAGE_ASSETS || {}),
 };
 
@@ -95,7 +100,7 @@ const PACKS = [
 const STEPS = [["pack", "詰め"], ["holes", "穴あけ"], ["coal", "炭"], ["water", "水"], ["steam", "蒸らし"], ["pull", "吸い出し"], ["care", "調整"]];
 const COACH = {
   pack: "詰め方を見比べて決めよう。迷ったらノーマル",
-  holes: "空気を通す穴。針が目印に重なったら押し込む",
+  holes: "目印に重なったら、トンと一突き。深さは押し具合で決まる",
   pull: "手元を見ているぞ。落ち着いていけ",
 };
 const HOLE_COUNT = 10;
@@ -107,8 +112,13 @@ const pressZone = (fill) => fill <= 0 ? "" : fill < GOOD_PRESS[0] ? "under" : fi
 const holeDepth = (fill) => fill < GOOD_PRESS[0] ? "shallow" : fill < GOOD_PRESS[1] ? "small" : fill < 1 ? "wide" : "large";
 // 箔の上の穴の半径（箔の幅を200とした値）。標準は箔の幅の約3%。比は本編の HOLE_SIZES（0.2・1・1.35・1.7）に近づけた
 const HOLE_R = { shallow: 1.3, small: 3, wide: 4, large: 5 };
-// 左の輪（拡大した見本）での半径: 点線の丸がちょうどいい大きさ
-const LENS_R = { shallow: 5, small: 11, wide: 15, large: 19 };
+// ルーペの断面での針先の高さ（上から%）: 構えた位置・アルミの線・ちょうどいい深さの下端・いちばん深い所
+const LENS_Y = { rest: 22, foil: 43, good: 57, deep: 90 };
+/** 押した具合（0〜1）→ ルーペの断面での針先の高さ。浅い間はアルミに届くまで、ちょうどいい間はアルミを抜けて葉の上の方、越えると深く刺さる */
+const needleDepth = (fill) => fill <= 0 ? LENS_Y.rest
+  : fill < GOOD_PRESS[0] ? LENS_Y.rest + (LENS_Y.foil - LENS_Y.rest) * fill / GOOD_PRESS[0]
+  : fill < GOOD_PRESS[1] ? LENS_Y.foil + (LENS_Y.good - LENS_Y.foil) * (fill - GOOD_PRESS[0]) / (GOOD_PRESS[1] - GOOD_PRESS[0])
+  : LENS_Y.good + (LENS_Y.deep - LENS_Y.good) * Math.min(1, (fill - GOOD_PRESS[1]) / (1 - GOOD_PRESS[1]));
 // 熱ゲージ: 本編（remake/js/craft/thermometer.js・temperature-model.js）と同じ色の意味。
 // 管は一本のグラデーション（クリーム→黄→適温のミント緑→橙→赤→深紅）。緑が適温の目安、真ん中の虹が合わせやすい範囲、一番上が焦げる帯（炎）
 const TEMP_ZONE = [0.42, 0.66];
@@ -644,21 +654,21 @@ class Phone {
       return `${this.auxHtml("craft", CRAFT_CHIPS)}${dpadHtml("left right")}${aHtml("決める", { disabled: !!PACKS[st.pack].locked })}`;
     }
     if (st.scene === "holes") {
-      // 左の輪: 10個の点＝開けた穴（金はちょうどいい大きさ）。真ん中は直前の穴の大きさと、ちょうどいい大きさの薄い輪
+      // 左: ルーペで見た断面。針が一瞬でアルミを突き、どこまで刺さったかが見える。金の帯＝ちょうどいい深さ。縁の10個の点＝開けた穴（金はちょうどいい）
       const pips = Array.from({ length: HOLE_COUNT }, (_, i) => {
         const a = (i * 360 / HOLE_COUNT - 90) * Math.PI / 180, hole = st.holes[i];
-        return `<circle class="pip${hole ? (hole.good ? " good" : " done") : ""}" cx="${(41 * Math.cos(a)).toFixed(1)}" cy="${(41 * Math.sin(a)).toFixed(1)}" r="3.4"/>`;
+        return `<circle class="pip${hole ? (hole.good ? " good" : " done") : ""}" cx="${(44.5 * Math.cos(a)).toFixed(1)}" cy="${(44.5 * Math.sin(a)).toFixed(1)}" r="2.6"/>`;
       }).join("");
       const last = st.holes.at(-1);
-      const lastDot = last ? `<circle class="last ${pressZone(last.size)}" r="${LENS_R[holeDepth(last.size)]}"/>` : "";
-      // 「刺す」ボタンの縁の輪: 押している間だけ伸びる。金の区間がちょうどいい長さ、越えると赤
-      const ring = `<svg class="press" viewBox="0 0 100 100" aria-hidden="true">
-          <circle class="pr-track" cx="50" cy="50" r="46" pathLength="100"/>
-          <circle class="pr-good" cx="50" cy="50" r="46" pathLength="100" stroke-dasharray="${((GOOD_PRESS[1] - GOOD_PRESS[0]) * 100).toFixed(1)} 100" stroke-dashoffset="${(-GOOD_PRESS[0] * 100).toFixed(1)}"/>
-          <circle class="pr-fill" cx="50" cy="50" r="46" pathLength="100" stroke-dasharray="0 100"/></svg>`;
+      const lastY = last ? needleDepth(last.size) : null;
       return `${this.auxHtml("craft", CRAFT_CHIPS)}
-        <div class="dial"><svg viewBox="-50 -50 100 100">${pips}${lastDot}<circle class="want" r="${LENS_R.small}"/><circle class="lens-grow" r="0"/></svg></div>
-        ${aHtml("刺す", { cls: "hold", extra: ring })}`;
+        <div class="lens" style="--tip:${LENS_Y.rest}%;--foil:${LENS_Y.foil}%;--good:${LENS_Y.good}%" aria-label="針の深さ">
+          <div class="lens-view"><img class="lens-bg" src="${IMG.holeLens}" alt="">
+            <i class="lens-deep"></i><i class="lens-good"></i>
+            ${last ? `<i class="lens-mark ${pressZone(last.size)}" style="top:${lastY.toFixed(1)}%"></i>` : ""}
+            <img class="lens-needle" src="${IMG.holeNeedle}" alt=""></div>
+          <img class="lens-frame" src="${IMG.loupe}" alt=""><svg class="lens-pips" viewBox="-50 -50 100 100">${pips}</svg></div>
+        ${aHtml("刺す", { cls: "hold" })}`;
     }
     // 葉（フレーバーの持ち）は上の段の真ん中、吸った回数は「吸う」の中の点。ボタンに重ねない
     return `${this.auxHtml("craft", CRAFT_CHIPS)}
@@ -915,7 +925,6 @@ class Phone {
         btn.style.setProperty("--fill", fill.toFixed(3));
         if (btn.dataset.zone !== zone) btn.dataset.zone = zone;
         if (!this.holdAt) btn.classList.remove("pressing");
-        btn.querySelector(".pr-fill")?.setAttribute("stroke-dasharray", `${(fill * 100).toFixed(1)} 100`);
       }
       // 穴は押した長さに沿って育つ（浅い→標準→少し大きい→大きい）。目印の点線の丸を満たした所がちょうどいい
       const grown = (table) => fill <= 0 ? 0 : fill < GOOD_PRESS[0] ? table.shallow * fill / GOOD_PRESS[0]
@@ -927,9 +936,12 @@ class Phone {
         grow.setAttribute("r", grown(HOLE_R).toFixed(2));
         grow.setAttribute("class", `grow-hole ${zone}`);
       }
-      const lens = el.querySelector(".dial .lens-grow");
-      if (lens) { lens.setAttribute("r", grown(LENS_R).toFixed(2)); lens.setAttribute("class", `lens-grow ${zone}`); }
-      el.querySelector(".dial")?.classList.toggle("pressing", !!this.holdAt);
+      const lens = el.querySelector(".lens");
+      if (lens) {
+        lens.style.setProperty("--tip", `${needleDepth(fill).toFixed(2)}%`);
+        lens.classList.toggle("pressing", !!this.holdAt);
+        if (lens.dataset.zone !== zone) lens.dataset.zone = zone;
+      }
       if (this.holdAt && now - this.holdAt >= HOLD_FULL) this.endHold(); // 本編と同じく、押し続けると刺し抜ける
     }
     if ((this.talk || st.scene === "cutin") && this.typedAt && now >= this.typedAt) { this.typedAt = 0; el.classList.remove("typing"); }
