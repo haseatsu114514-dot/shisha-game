@@ -247,6 +247,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .hole-count .ic { align-self: center; font-size: 2rem; color: #ffe2a6; margin-right: 0.2rem; } .hole-count b { font-size: 2.4rem; } .hole-count small { font-size: 1.4rem; color: #ffffffa6; }
 .puff { position: absolute; max-width: none; width: 60%; left: 34%; top: 14%; opacity: 0; pointer-events: none; mix-blend-mode: screen; }
 .phone.puffing .puff { animation: puff 1.5s var(--ease-out); }
+.smoke-box { position: absolute; z-index: 2; pointer-events: none; } /* 吸い出しで吐く煙の 16:9 の箱（VPL88）。はじめの絵の上、温度計の下 */
 @keyframes puff { 0% { opacity: 0; transform: translate(0, 12%) scale(0.5); } 22% { opacity: 0.85; } 100% { opacity: 0; transform: translate(-6%, -22%) scale(1.25); } }
 /* 吸い出し: メーターの中心に「吸う」 */
 .gauge { position: absolute; left: 3.2rem; right: 3.2rem; top: calc(6.6rem + var(--aux-g, 0rem)); }

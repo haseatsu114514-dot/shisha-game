@@ -7,6 +7,8 @@
 
 // テロップの文は本編と同じ組版で、表示する箱の実際の幅と書体で測って2行ずつに分ける（VPL29）
 import { paginateForBox } from "../../js/vn/layout.js";
+// 吸い出しで吐く煙は、本編の共通の煙（KMR14「繊細ドット」・KMR15「煙が成績表」）をそのまま使う（VPL88）
+import { smokeLayer, workerBreath, ringBreath, smokeTint, smokeAllowed } from "../../js/core/smoke.js";
 // タイトル画面と店番（フロア営業）は、場面ごとの別ファイルに置く（VPM01・VPM02）。店番は本編のルール（状態を持たない関数）を呼ぶが、本編の進行・保存には触れない
 import { TitleScene } from "./title.mjs";
 import { FloorScene } from "./floor.mjs";
@@ -138,6 +140,10 @@ const STEPS = [["water", "水入れ"], ["mix", "配合"], ["pack", "詰め方"],
 // この試作で遊べる作る場面（本編と同じ順。炭と調整は省く）
 const CRAFT_SCENES = ["water", "mix", "pack", "holes", "coal", "steam", "pull"];
 // 温度ゲージを出す場面（VPL61）。穴あけ・炭焼き・雑念よけの間は消し、吸い出しで戻す
+// 吸い出しのはじめの口元（img/craft-pull-hajime.webp の中の位置。横・縦の割合）。絵に描かれた煙と同じく、右上へ吐く
+const PULL_MOUTH = [0.575, 0.292];
+// 煙の輪（本編 craft/fx.js の RING と同じ: 口元から右へ吹いた縦長の輪）
+const SMOKE_RING = { radius: .03, size: .012, squash: [.55, 1], grow: .03, drift: .085, rise: .05, life: 1.7 };
 const THERMO_ON = new Set(["mix", "pack", "pull"]); // 配合は帯だけ（VPL78）
 const COACH = {
   water: "線のあいだまで注げ",
@@ -2048,12 +2054,49 @@ class Phone {
       // 吸うたびに温度が動く（上げ吸いで上がり、下げ吸いで下がる）
       st.temp = Math.min(0.95, Math.max(0.06, st.temp + 0.05 + ((this.needleT ?? 0.5) - 0.5) * 0.32));
       this.hold = performance.now();
-      el.classList.remove("puffing"); void el.offsetWidth; el.classList.add("puffing");
+      // 吸って、少し間をおいて口元から吐く（VPL88。本編の煙が出せない時＝「動きを減らす」は、これまでの煙の絵）
+      if (smokeAllowed()) { const last = st.pulls >= 5; setTimeout(() => this.exhale({ last }), 420); }
+      else { el.classList.remove("puffing"); void el.offsetWidth; el.classList.add("puffing"); }
       this.patch();
       this.syncThermo();
       setTimeout(() => { this.hold = 0; if (st.pulls >= 5 && this.fixed) { st.pulls = 0; st.temp = 0.4; st.gradeP = 0; this.patch(); this.syncThermo(); this.syncRank(); } }, 700);
       if (st.pulls >= 5 && !this.fixed) setTimeout(() => this.setScene("map"), this.venue === "stage" ? 4800 : 3300);
     }
+  }
+
+  /**
+   * 吸い出しで吐く煙（VPL88）。本編の「煙が成績表」（KMR15）と同じく、吐いた時の温度で煙の姿が変わる:
+   *   最適温＝たっぷり長く残る（5口目なら吐き終わりに煙の輪）／適温＝まとまった煙／ぬるい＝薄く小さい／熱すぎ＝むせてちぎれる。
+   * 色は配合の葉の色をうっすら。煙の升目は 16:9 なので、口元の周りに 16:9 の箱を置いて載せる（縦の画面にそのまま広げると房がつぶれる）。
+   */
+  exhale({ last = false } = {}) {
+    const { st, el } = this, pic = el.querySelector(".pic.craft-pull"), cg = pic?.querySelector(".pull-cg");
+    if (st.scene !== "pull" || !cg || !cg.complete || !smokeAllowed()) return;
+    const pr = pic.getBoundingClientRect(), cr = cg.getBoundingClientRect();
+    if (!pr.width || !cr.width) return;
+    const mx = cr.left - pr.left + cr.width * PULL_MOUTH[0], my = cr.top - pr.top + cr.height * PULL_MOUTH[1];
+    let box = pic.querySelector(".smoke-box");
+    if (!box) { box = document.createElement("div"); box.className = "smoke-box"; pic.append(box); }
+    const bw = pr.width * 1.5, bh = bw * 9 / 16, bx = mx - bw * 0.34, by = my - bh * 0.62;
+    Object.assign(box.style, { left: `${bx}px`, top: `${by}px`, width: `${bw}px`, height: `${bh}px` });
+    const b = bandsOf(st.mix), t = st.temp, state = tempState(t, b);
+    const quality = state === "best" ? "best" : state === "ok" ? "good" : t < b.zone[0] ? "thin" : "harsh";
+    const colors = [smokeTint(this.mixColor(), .3)], x = (mx - bx) / bw, y = (my - by) / bh;
+    // 本編のはじめは横向き（煙は顔の前へ出る）。縦の絵は正面向きなので、口元から少し右下へ吐き、顔の外へ出てから昇らせる（目元にかけない）
+    const breaths = workerBreath(quality, { x, y, colors }).map((s) => ({ ...s, angle: s.angle + 0.34, buoy: s.buoy * 0.35, speed: s.speed * 1.3, spread: Math.min(s.spread, 0.34) }));
+    if (last && quality === "best") breaths.push(...ringBreath({ ...SMOKE_RING, x: x + .035, y: y - .012, colors: [smokeTint(this.mixColor(), .08)], delay: 1.9 }));
+    const layer = smokeLayer(box, { zIndex: 1, className: "pull-smoke", gridScale: .5 });
+    layer.canvas.dataset.quality = quality;
+    layer.breathe(breaths);
+  }
+
+  /** 配合の葉の色（グラムで重み付けしたジャンルの色）。葉が無ければ煙の白 */
+  mixColor() {
+    const total = this.st.mix.reduce((n, g) => n + g, 0);
+    if (!total) return "#d9d2e6";
+    const rgb = [0, 0, 0];
+    this.st.mix.forEach((g, i) => { if (!g) return; const c = GENRES[MIX[i].genre].color; [1, 3, 5].forEach((k, j) => { rgb[j] += parseInt(c.slice(k, k + 2), 16) * g / total; }); });
+    return `#${rgb.map((v) => Math.round(v).toString(16).padStart(2, "0")).join("")}`;
   }
 
   /** 熱ゲージの針と、適温の帯に入った時の光を今の温度に合わせる（作り直さずに動かす）。 */
