@@ -438,6 +438,26 @@
         },
         {
           "speaker": "",
+          "face": "",
+          "text": "カウンターの奥から、ムカイさんが水のグラスを置いた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "ましろの知り合いか。ゆっくりしていけ"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "ありがとうございます。……椅子の向きが、みんな少しずつ違うんですね"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "座る人に合わせてある。いつもの客の分だけな"
+        },
+        {
+          "speaker": "",
           "text": "綾取はメニューを開き、ぶどうと紅茶の欄へ指を置いた。"
         },
         {
@@ -3292,6 +3312,107 @@
           "speaker": "steve",
           "text": "ハジメと乗ると、秒が消えるな。……今日のカードは、余白だけだ",
           "face": "smile"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_ayatori_parcel",
+      "comment": "RLS10⑥（第3章は綾取を厚く描く・2026-11-27 VOL21 第2弾）。パン屋の紙袋（ch3_ayatori_bakery）の後、大会前に一度。福岡の店のバイトの子から、初めての配合が届く。いいところも直すところも同じ大きさの字で返す。店の仕事は本物で、噂は自分で流す（正本）。大会・恋愛に触れない。好感度は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙幕のカウンターに、小さな段ボールが載っていた。差出人は、福岡の店だ。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "いいところに。開けるの、見届けて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "中には、葉の小袋が一つと、折りたたんだ紙が一枚。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "バイトの子の、初めての配合だって。……「感想ください。正直に」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "福岡のお客さんに、出すんですか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "出したいんだって。だから、僕が先に吸う"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取はその袋の葉だけで一台を組んだ。炭を置く手は、いつもよりゆっくりだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口吸って、綾取は眉を少し寄せた。それから、もう一口。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "……甘い。甘すぎて、最後のほうで喉が渇く"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "でも、最初の一口は、ちゃんとあの子の顔がする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "顔、ですか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "お客さんに喜んでほしい顔。……僕の最初の一台も、こうだった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は新しい紙に、甘すぎるところ、喉が渇くところ、最初の一口がいいところを書いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "どれも、同じ大きさの字だった。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "直すところだけ書くと、次から黙っちゃうからね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（いいところも、同じ大きさで書くんだ）"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smug",
+          "text": "今の、僕の店の企業秘密ね。噂にはしないで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "噂にしたら、怒られますか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "怒らない。ちょっと大げさにして、僕が流す"
         }
       ]
     }

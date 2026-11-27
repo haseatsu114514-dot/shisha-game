@@ -124,6 +124,8 @@
         "ch3_cigarman_shadow",
         "ch3_mukai_latte_cat",
         "ch3_mukai_no_hat",
+        "ch3_mukai_scale_coffee",
+        "ch3_mukai_tetsuko",
         "ch3_cigarman_trace",
         "ch3_emil_workshop",
         "ch3_mashiro_play_1",
@@ -132,6 +134,7 @@
         "ch3_mashiro_practice",
         "ch3_mashiro_black_tea",
         "ch3_ayatori_bakery",
+        "ch3_ayatori_parcel",
         "ch3_ayatori_mashiro_tea_tin",
         "ch3_ayatori_mashiro_soon_back",
         "ch3_mashiro_mukai_syrup_shelf",
@@ -610,6 +613,24 @@
         "ch3_ayatori_first"
       ],
       "comment": "RLS10。煙幕の初訪問の後、大会前に一度。はじめと綾取の、東京でのお客さん同士の友情。"
+    },
+    "ch3_ayatori_parcel": {
+      "seen": [
+        "ch3_ayatori_bakery"
+      ],
+      "comment": "RLS10⑥（VOL21 第2弾）。パン屋の紙袋の後、大会前に一度。福岡の店のバイトの子の初めての配合に、いいところも直すところも同じ大きさの字で返す。"
+    },
+    "ch3_mukai_scale_coffee": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "RLS10⑥（VOL21 第2弾）。mukaiの二日目の後、味が戻る前だけ（味が戻った後は ch3-story-wiring.js の before で閉じる）。量りとタイマーで淹れるコーヒー。"
+    },
+    "ch3_mukai_tetsuko": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "RLS10⑥（VOL21 第2弾）。mukaiの二日目の後、大会前に一度。ムカイさんとてつこの皿。出発前のスミさんの「懐かれてない」を受ける。"
     },
     "ch3_ayatori_mashiro_tea_tin": {
       "seen": [
