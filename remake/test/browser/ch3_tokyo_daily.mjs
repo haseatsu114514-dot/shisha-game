@@ -684,7 +684,7 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(open.nextScene, "mashiro_time_train", "The next day reads the next short scene");
   });
 
-  // 日常ループの東京の CHOI-ZAP も、旧行程（ch3-activity-progress.js）と同じく3日間「風邪をひきにくい」を付ける（spot.gym・daily/calendar.js）。
+  // 日常ループの東京の サクッとジム も、旧行程（ch3-activity-progress.js）と同じく3日間「風邪をひきにくい」を付ける（spot.gym・daily/calendar.js）。
   await check("the-tokyo-choizap-grants-the-fit-days", async page => {
     await seed(page);
     await page.evaluate(async () => {

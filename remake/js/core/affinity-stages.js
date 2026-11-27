@@ -8,7 +8,7 @@ export const VISIT_SEQ = {
   rio: ["ch1_rio_first", "ch1_rio_second", "ch1_rio_third", "ch1_rio_fourth", "ch1_rio_fifth", "ch1_rio_sixth"],
 };
 
-// ♥2〜♥5。最後の白・赤のグミベアの試作（#2023）は味の会話を兼ねる。
+// ♥2〜♥5。最後の白・赤のくまグミの試作（#2023）は味の会話を兼ねる。
 export const AGEHA_AFFINITY_VISITS = ["remake_ch2_ageha_gyaru", "remake_ch2_ageha_newcomer", "remake_ch2_ageha_magazine", "remake_ch2_ageha_gummy"];
 // 第2章の神崎・クラウドの通常訪問列（#1648）。初回chatの後、必要ハートに届いた最古の未読を一訪問一本読む。
 // 短い続編・再訪は既存の保存フラグ、長い段階会話は `_ch2_read_<scene>` で既読を持つ。

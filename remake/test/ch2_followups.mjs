@@ -341,7 +341,7 @@ fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // + 同じ5人の続き5本（#3097 第3弾）
 // + 第2章で初めて家で休んだ時のノートの場面（ch2_home.json・#3957）
 // + tonariの窓際の席のつむぎ3本と、なるのモンブランの続き1本（ch2_home.json・#3097 第5弾）
-// + 地元の顔なじみの続き5本（観音堂の老人・喫茶こはくのマスター2本、CHOI-ZAPのスタッフ3本。ch2_home.json・VOL16）
+// + 地元の顔なじみの続き5本（観音堂の老人・喫茶こはくのマスター2本、サクッとジムのスタッフ3本。ch2_home.json・VOL16）
 assert.equal(Object.keys(loaderDB.dialogues).length, 147 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
 assert(loaderDB.dialogues.ch2_rest_notebook?.lines?.length, "first chapter 2 rest scene is loaded");
 for (const id of ["ch2_minto_nickname_notes", "ch2_rio_plain_lunch", "ch2_adam_apple_errand", "ch2_samechan_poster", "ch2_hiyori_mirror_pose",

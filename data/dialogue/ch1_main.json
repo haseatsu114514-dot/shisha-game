@@ -314,7 +314,7 @@
           {
             "speaker": "sumi",
             "face": "normal",
-            "text": "地元の店のエースが揃う。KEMURIKUSAのなる、EDENのアダム、PEPPERMINTのみんと"
+            "text": "地元の店のエースが揃う。KEMURIYAのなる、EDENのアダム、PEPPERMINTのみんと"
           },
           {
             "speaker": "sumi",
@@ -1805,7 +1805,7 @@
           {
             "speaker": "naru",
             "face": "smile",
-            "text": "お、あんたが4人目？ 俺はなる。KEMURIKUSAってとこでやってる"
+            "text": "お、あんたが4人目？ 俺はなる。KEMURIYAってとこでやってる"
           },
           {
             "type": "set_flag",

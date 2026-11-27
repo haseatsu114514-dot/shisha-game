@@ -697,7 +697,7 @@
     },
     {
       "dialogue_id": "ch3_prep_ageha",
-      "comment": "#3097 PR-I（計画 3-3）。東京へ発つ前の準備3日、MELTY PUFFの来店で一度だけ（daily/spots.js の CHAPTER_TALKS・chapters/ch2-preparation.js の visitPreparationSpot）。県大会の別れ際の「落ち着いたら、また一台作ろ」「次は、うちの店ね」（ch2_tournament_farewell）を、帰郷の再会 ch3_ageha_reunion（「グミベア、楽しみにしてました」）まで残す。手の震え・前夜の点の話は再会で本人が話すので触れない。味の話はしない。",
+      "comment": "#3097 PR-I（計画 3-3）。東京へ発つ前の準備3日、MELTY PUFFの来店で一度だけ（daily/spots.js の CHAPTER_TALKS・chapters/ch2-preparation.js の visitPreparationSpot）。県大会の別れ際の「落ち着いたら、また一台作ろ」「次は、うちの店ね」（ch2_tournament_farewell）を、帰郷の再会 ch3_ageha_reunion（「くまグミ、楽しみにしてました」）まで残す。手の震え・前夜の点の話は再会で本人が話すので触れない。味の話はしない。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_ageha_entry.webp"
       },
@@ -705,7 +705,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "MELTY PUFFの扉を開けると、あげはがカウンターで、グミベアを色ごとに分けていた。"
+          "text": "MELTY PUFFの扉を開けると、あげはがカウンターで、くまグミを色ごとに分けていた。"
         },
         {
           "speaker": "ageha",

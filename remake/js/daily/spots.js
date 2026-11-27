@@ -65,7 +65,7 @@ export const SPOTS = [
   AXE_BAR,
   { id: "tonari", kind: "tonari", label: "tonari", area: "バイト先", x: 86, y: 36, theme: "baito", glyph: "店", face: "sumi",
     desc: "バイト先。一服か、シフトに入るか。" },
-  { id: "naru", kind: "rival", charId: "naru", label: "KEMURIKUSA", area: "商店街の外れ", x: 70, y: 24, theme: "rival", glyph: "煙", face: "naru", cost: VISIT_COST, closedOn: 3,
+  { id: "naru", kind: "rival", charId: "naru", label: "KEMURIYA", area: "商店街の外れ", x: 70, y: 24, theme: "rival", glyph: "煙", face: "naru", cost: VISIT_COST, closedOn: 3,
     desc: "甘い香りの人気店。凄腕がいるらしい。", stamina: -16 },
   { id: "adam", kind: "rival", charId: "adam", label: "EDEN", area: "下町", x: 46, y: 48, theme: "rival", glyph: "煙", face: "adam", cost: VISIT_COST, closedOn: 5,
     desc: "アニスが香る店。いつもダブルアップル。", stamina: -16 },
@@ -83,7 +83,7 @@ export const SPOTS = [
     pool: ["kannon_cat", "kannon_pigeons", "kannon_sweep", "kannon_incense", "kannon_steps", "kannon_banners", "kannon_adam", "kannon_oldman"],
     nightPool: ["venue_kannon_night", "venue_kannon_night_c", "venue_kannon_night_b", "venue_kannon_night_d"],
     desc: "心得の盤を開くか、境内で過ごせる。" },
-  { id: "choizap", kind: "spot", label: "CHOI-ZAP", area: "ジム", x: 20, y: 24, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
+  { id: "choizap", kind: "spot", label: "サクッとジム", area: "ジム", x: 20, y: 24, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
     first: "ch1_choizap_first", bg: "bg_choizap",
     pool: ["choizap_lesson", "choizap_scenery", "choizap_mirror", "choizap_dumbbell", "choizap_stretch", "choizap_posture", "choizap_oldman", "choizap_minto"],
     nightPool: ["venue_choizap_night", "venue_choizap_night_c", "venue_choizap_night_b", "venue_choizap_night_d"],
@@ -134,7 +134,7 @@ export function quietTurn(spotId, ids, bundle = "") {
   const count = Math.max(0, Math.floor(Number(state.flags[key]) || 0));
   return { id: pool[count % pool.length], key, count };
 }
-/** 夜の束がある施設の夜か（観音堂・CHOI-ZAP）。夜は雨の回を出さない。 */
+/** 夜の束がある施設の夜か（観音堂・サクッとジム）。夜は雨の回を出さない。 */
 const nightBundle = (spot) => state.slot === 1 && !!spot.nightPool;
 const quietVisit = (spot) => quietTurn(spot.id, quietSpotPool(spot, state.slot), nightBundle(spot) ? "night" : "");
 const rainVisit = (spot) => isRainy() && !nightBundle(spot) ? quietTurn(spot.id, RAIN_SPOT_TEXTS[spot.id], "rain") : null;
@@ -774,7 +774,7 @@ export async function visitSpot(spot) {
   refreshPlaceCue(spot.id);
   const n = (state.spotVisits?.[spot.id] || 0) + 1;
   const owner = state;
-  // 初回は場所の紹介（CHOI-ZAP は入会まで）。再訪と夜は、静かな回を束ごとに順番に読む（quietTurn）。
+  // 初回は場所の紹介（サクッとジム は入会まで）。再訪と夜は、静かな回を束ごとに順番に読む（quietTurn）。
   let id = spot.first, turn = null;
   const revisit = spot.id === "choizap" ? !!state.flags._gym_member : n > 1 || spot.id !== "kannon" && nightBundle(spot);
   if (revisit) turn = quietVisit(spot);

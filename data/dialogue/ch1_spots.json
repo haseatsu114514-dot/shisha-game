@@ -6,7 +6,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「CHOI-ZAP」。みんとに教えてもらったジム。"
+          "text": "「サクッとジム」。みんとに教えてもらったジム。"
         },
         {
           "speaker": "",
@@ -111,7 +111,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "※CHOI-ZAP会員登録済み。初回キャンペーンで3ヶ月は追加料金なしで利用できます。"
+            "text": "※サクッとジム会員登録済み。初回キャンペーンで3ヶ月は追加料金なしで利用できます。"
           }
         ],
         "decline": [
@@ -642,7 +642,7 @@
           {
             "speaker": "old_man",
             "face": "",
-            "text": "今回のSMOKE CROWN CUP、本命は去年勝ったKEMURIKUSAのなるだ"
+            "text": "今回のSMOKE CROWN CUP、本命は去年勝ったKEMURIYAのなるだ"
           },
           {
             "speaker": "old_man",
@@ -684,7 +684,7 @@
           {
             "speaker": "old_man",
             "face": "",
-            "text": "KEMURIKUSAの焼き菓子みたいな香り、また吸いたいなあ"
+            "text": "KEMURIYAの焼き菓子みたいな香り、また吸いたいなあ"
           },
           {
             "speaker": "old_man",
@@ -821,7 +821,7 @@
         {
           "speaker": "old_man",
           "face": "",
-          "text": "ところでSMOKE CROWN CUP、去年の優勝はKEMURIKUSAのなるだよ。県じゃ負けたけどな"
+          "text": "ところでSMOKE CROWN CUP、去年の優勝はKEMURIYAのなるだよ。県じゃ負けたけどな"
         },
         {
           "speaker": "old_man",
@@ -1653,7 +1653,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "CHOI-ZAP。無人の受付を通り、アプリのフォーム動画を開く。"
+          "text": "サクッとジム。無人の受付を通り、アプリのフォーム動画を開く。"
         },
         {
           "speaker": "",
@@ -1681,7 +1681,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "CHOI-ZAPで軽く汗を流す。"
+          "text": "サクッとジムで軽く汗を流す。"
         },
         {
           "speaker": "",
@@ -3171,7 +3171,7 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "あら、KEMURIKUSAさん。バニラの追加、次の便で入るよ"
+          "text": "あら、KEMURIYAさん。バニラの追加、次の便で入るよ"
         },
         {
           "speaker": "naru",
@@ -3313,7 +3313,7 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "こはくで会ったね。……KEMURIKUSAの子、私の前だと固まるでしょ"
+          "text": "こはくで会ったね。……KEMURIYAの子、私の前だと固まるでしょ"
         },
         {
           "speaker": "hajime",

@@ -400,14 +400,14 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "その匂い、ホワイトグミベアだったんですね"
+            "text": "その匂い、しろくまグミだったんですね"
           }
         ],
         "first_gummy_new": [
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "その匂い、ホワイトグミベアですよね"
+            "text": "その匂い、しろくまグミですよね"
           }
         ]
       }
@@ -1027,7 +1027,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "グミベアの煙も、ここで吸ったら似合いそうです"
+          "text": "くまグミの煙も、ここで吸ったら似合いそうです"
         },
         {
           "speaker": "ageha",

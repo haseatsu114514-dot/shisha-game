@@ -253,7 +253,7 @@ await suite("lesson-consult-coverage", async (check) => {
     assert.equal(result.money, 3000);
   });
 
-  // (c) 第5章の通い店: KEMURIKUSA でなるに、MELTY PUFF であげはさんに相談する。大会後なので、はじめはため口
+  // (c) 第5章の通い店: KEMURIYA でなるに、MELTY PUFF であげはさんに相談する。大会後なので、はじめはため口
   await check("ch5-regular-shops-teach-naru-and-ageha-in-casual-speech", async (page) => {
     await chapterFive(page, { met: { naru: true, ageha: true, minto: true }, affinity: { naru: 66, ageha: 66, minto: 66 }, lit: ["M-W3", "M-S4", "M-B1"] });
     const result = await page.evaluate(async () => {
