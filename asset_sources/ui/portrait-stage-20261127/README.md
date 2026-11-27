@@ -327,3 +327,13 @@ Do not draw: any background, a necklace, a second hose, a forked hose, the hooka
 
 オーナーの指摘（缶は変・水位計はいらない・雑念よけは本編の横画面のデザインを縦に）を受けて、3回目の絵のうち次は試作から外した（原画とプロンプトは記録として残す）: `v2/tins-original.webp`（葉の缶。本編の店のパッケージ `remake/img/shop/heaven10/` に替えた）、`v2/gauge-original.webp`（水位計）、`v2/bottle-original.webp`（ボトル。本編の大会公式モデルの台 `remake/img/ui/scene_props/shisha_home_pro.webp` のガラスのベースを切り出した `ui-bottle-pro.webp` に替えた）、`v2/bowl-top-original.webp`・`v2/leaf-texture-original.webp`（真上から見た器の案）、`v2/bg-water/smoke/washi-original.webp`（雑念よけの3案の背景。本編の `steam_mind_world.webp` に戻した）、`v2/bowl-airy/normal/firm-original.webp`（葉が糸状に見えたので v3 に替えた）。試作の `img/` に残るのは、ボタンの面2枚・はかり・ボトル（大会仕様の切り出し）・器5枚・吸い出しのはじめ。
 
+## 5回目: 葉の色と照りを実物の写真に寄せる（VPL50・4枚）
+
+オーナーが実物の写真2枚（ボウルに詰めたシーシャの葉。ブログの画像）を示して「後シーシャの葉っぱのデザインはこう　赤っぽかったり茶色っぽかったりメーカーによる」。
+写真から読み取った見た目（ちぎれた葉の破片と短い刻み・シロップで濡れて強い照り・縁が透ける・小さな塊・深い赤〜赤橙と琥珀〜キャラメル色が混ざる）を言葉で指定して作り直した。写真は著作権があるため生成の入力には使っていない。
+4枚とも空の器（`v2/bowl-empty-original.webp`）を入力にした編集。`v3/bowl-partial/airy/normal/firm-red-original.webp` が試作の `img/ui-bowl-partial/airy/normal/firm.webp`（4回目の琥珀色の葉は置き換えた）。
+
+```text
+Fill this same bowl with real shisha (hookah) tobacco, rendered photorealistically like a close-up photograph while the bowl keeps its drawn look: chopped molasses tobacco, irregular torn leaf pieces about 3 to 10 mm mixed with some short thin shreds, NOT long strands, NOT noodles, NOT worms; the pieces are soaked in syrup: very glossy and wet, with translucent edges, sticking together in small clumps; colors like a red-dyed fruit shisha mixed with a natural one: deep crimson red and reddish orange pieces mixed with amber and caramel brown pieces. Packing: even density, the surface lightly pressed flat about 2 mm below the rim. Keep the bowl's shape, color, angle, size and position exactly the same. Transparent background. No foil, no charcoal, no smoke, no text.
+```
+
