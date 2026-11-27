@@ -168,6 +168,66 @@
           "text": "一人ずつだ。葉より先に顔を見ろ"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それも、スミさんの言葉ですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "マスターのだ。……ここが、葉巻のバーだった頃の"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……ここ、バーだったんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "カウンターは、その頃のままだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん、ここで働いてたんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "客だ。背伸びして、奥の席に通ってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（奥の席。……今は、つむぎちゃんがよく座ってる席だ）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "マスターの古い友達が、たまに異国の台を持ってきてな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……葉巻より、そっちがやりたくなった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "マスターは、今は"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "……病気で、店を閉めた。鍵だけ、俺に預けてな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんはそれ以上言わずに、葉の袋を開けた。"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "鉄仮面さんには休憩の長さを、仕込み中のスミさんには吸える時間を聞いた。"
@@ -578,6 +638,41 @@
           "speaker": "",
           "face": "",
           "text": "答えを待つ間、男はゆっくりと笑った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸い終えると、男はホースを置いて、しばらく台を眺めていた。"
+        },
+        {
+          "speaker": "traveler",
+          "face": "normal",
+          "text": "……ハジメは、私の名を聞かないな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "名前は吸い終わってから聞け、ってスミさんに言われてて"
+        },
+        {
+          "speaker": "traveler",
+          "face": "normal",
+          "text": "吸い終わったぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……また来てくれそうなので。次の一台のあとにします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "男は空のボウルを見たまま、しばらく黙っていた。"
+        },
+        {
+          "speaker": "traveler",
+          "face": "normal",
+          "text": "……なぜだろうな。懐かしい"
         },
         {
           "type": "remember",
@@ -1469,7 +1564,10 @@
           "face": "normal",
           "text": "注文より先に、水が置かれた"
         },
-        {"type": "show_cg", "cg_id": "cg_ch4_young_sumi_water"},
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ch4_young_sumi_water"
+        },
         {
           "speaker": "sheikh",
           "face": "normal",
@@ -1480,12 +1578,74 @@
           "face": "normal",
           "text": "カルダモンだけの、軽い一台だった"
         },
-        {"type": "hide_cg"},
+        {
+          "type": "hide_cg"
+        },
         {
           "type": "condition",
           "condition_type": "finale_seen",
           "char_id": "sumi",
           "next_true": "sumi_bowl"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "……あの日の一台も、君の一台も、なぜか懐かしかった"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "名は、吸い終わってから。……あれは、私の家の作法だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……え"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "砂漠では、旅人を三日もてなしてから、名と用件を聞く。祖父から、そう教わった"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "若い頃、君の国の古い友の店へ、台を持ち込んでは、その話をした。葉巻の店だ"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "主人が訳して、奥の席の青年に聞かせていた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……tonariは、元は葉巻のバーなんです。マスターの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクの手が、杯の上で止まった。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "surprise",
+          "text": "……では、あの奥の席の青年が、路地裏の"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "あの青年の名は、聞かずじまいだった。あいつが病で店を閉めてから、日本へは行っていない"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "あいつは、三日を一台に縮めて訳した。……そのまま、残ったか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（スミさんの口癖は、マスターが一台に縮めた、砂漠のもてなしだったんだ）"
         },
         {
           "speaker": "sheikh",
@@ -1655,6 +1815,51 @@
           "speaker": "sumi",
           "face": "thinking",
           "text": "……あの店、まだあったか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "シェイク、昔、ここに通ってたそうです。マスターの古い友達だって"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの手が、止まった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "surprise",
+          "text": "……葡萄の兄さんか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "路地裏で座った時、どっかで見た顔だとは思った"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "あの人が、ここへ異国の台を持ってきた。……俺の、最初のシーシャだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "『名前は吸い終わってから』も、シェイクの家の作法だって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "砂漠だと、三日もてなしてから聞くそうです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "……マスターが、一台に縮めた。葉巻屋に三日いる客はいねえってな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "路地裏でも、名前は聞かなかった。……教わったとおりにな"
         },
         {
           "speaker": "hajime",
@@ -1956,13 +2161,18 @@
         },
         {
           "speaker": "sumi",
+          "face": "thinking",
+          "text": "……一人でもなかったがな"
+        },
+        {
+          "speaker": "sumi",
           "face": "serious",
           "text": "お前が休めねえ店じゃ、次の店の話もできねえ"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "明日、面接だ。お前がやれ"
+          "text": "応募が来たら、面接はお前がやれ"
         },
         {
           "speaker": "hajime",
@@ -2011,53 +2221,24 @@
           "text": "（いつかの店が、一歩だけ近くなった。そう思ったら、指先が熱くなった）"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "誰か来ますかね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "……来るだろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは、奥の席を一度だけ見た。"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "その夜、募集の紙を入口に貼った。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "翌日。約束の時間ちょうどに、ドアベルが鳴った。"
-        },
-        {
-          "type": "sfx",
-          "id": "doorbell"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "入口に立っていたのは、見慣れた紫のパーカーだった。"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……あの。面接、ここで合ってますか"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "つむぎちゃん？"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "胸に抱えたいつものタブレットに、履歴書の封筒が一枚、重ねてあった。"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "serious",
-          "text": "……募集の紙、見ました。作るほうも、やってみたいんです"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……座って。今、お水出すね"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "いつもの奥の席ではなく、カウンターの前の椅子。つむぎは、そこに座った。"
         }
       ],
       "branches": {
@@ -2093,7 +2274,7 @@
           }
         ]
       },
-      "comment": "シェイクの話の回収（#2534）。写真は第1章 ch1_sumi_final でしまったのと同じレジ横の引き出し（伝票の束の下）から出し、読んでいれば眺めていた写真、読んでいなければ毎日開けていた引き出しとして見せる。連絡は、はじめが促さずスミさん自身が打って送り、写真はしまわず閉店作業のあとも立てたまま。土産は第1章DAY5の古い瓶（開店の支度で拭く棚の物）の隣へ。末尾の店長・面接（#2606・#2637）は変えない。"
+      "comment": "シェイクの話の回収（#2534）。写真は第1章 ch1_sumi_final でしまったのと同じレジ横の引き出し（伝票の束の下）から出し、読んでいれば眺めていた写真、読んでいなければ毎日開けていた引き出しとして見せる。連絡は、はじめが促さずスミさん自身が打って送り、写真はしまわず閉店作業のあとも立てたまま。土産は第1章DAY5の古い瓶（開店の支度で拭く棚の物）の隣へ。末尾は店長の任命（#2606・#2637）と募集の掲示まで。面接の来店から着席までは、第5章の最初の場面 ch5_tsumugi_interview（つむぎ目線・#4253）へ移した。"
     },
     {
       "dialogue_id": "ch4_defeat",
@@ -2393,8 +2574,23 @@
         },
         {
           "speaker": "sensu",
-          "face": "thinking",
-          "text": "昔、終電を逃した晩に、古い小さな店へ入った。あの席に、助けられた"
+          "face": "normal",
+          "text": "前に話した、終電の晩の店だ。……客のはずのあいつが、カウンターで炭を見ていた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……スミさんが通ってた、葉巻のバーだ）"
+        },
+        {
+          "speaker": "sensu",
+          "face": "smile",
+          "text": "あいつの最初の一台だ。袖を焦がされた"
+        },
+        {
+          "speaker": "sensu",
+          "face": "normal",
+          "text": "あの席に、助けられた"
         },
         {
           "speaker": "sensu",

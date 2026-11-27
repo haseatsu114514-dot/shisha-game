@@ -1140,3 +1140,33 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   .tf-room img.tf-room-night { transition: none; }
   .tf-coach[data-nudge="true"], :is(.tf-shuffle, .tf-bonus, .tf-preset)[data-coach="true"] { animation: none; }
 }
+
+/* ---- 開店前・休止・精算の窓の見た目（2026-11-27 オーナー「ソシャゲや市販ゲームみたいな見た目に。生成も取り入れて」「文字で説明しすぎず」・TFL67）:
+   暗い箱をやめ、四隅に真鍮の唐草とモザイクの石が付いた枠（frame-ornate。生成した絵の九分割）にする。開店前は、上にモザイクランプの飾り、
+   営業の名前は真鍮の題札の上。精算は、見出しを題札にして枠の上の縁へ載せ、数の内訳を印と数に、支給額を大きくする。文言・並び・押す所は前と同じ ---- */
+.tf-slip, .tf-intro-card { background: linear-gradient(#0e0913, #0e0913) center / calc(100% - 20px) calc(100% - 20px) no-repeat;
+  border-image: url("../img/ui/tonari-floor/frame-ornate.webp") 132 fill / 52px / 0 stretch; box-shadow: none; filter: drop-shadow(0 18px 26px #000c); }
+/* 開店前: ランプの飾りと題札 */
+.tf-intro-card { padding-top: 18px; }
+.tf-intro-card::before { content: ""; display: block; height: 78px; margin: -6px 0 -8px; background: url("../img/ui/tonari-floor/deco-ornament.webp") center / contain no-repeat; }
+.tf-intro .tf-intro-card h2, .tf-pause .tf-intro-card h2 { justify-self: center; min-width: 520px; padding: 20px 96px 24px; font-size: 44px; line-height: 1.1; color: #fff3d0;
+  background: url("../img/ui/tonari-floor/deco-ribbon.webp") center / 100% 100% no-repeat; text-shadow: 0 2px 0 #2a0c1c, 0 0 14px #f0a64a55; }
+/* 精算: 見出しを題札にして、枠の上の縁へ載せる */
+.tf-slip { padding-top: 46px; }
+.tf-slip > .tf-eyebrow { position: absolute; left: 50%; top: -30px; transform: translateX(-50%); box-sizing: border-box; min-width: 560px; padding: 18px 96px 22px; text-align: center; white-space: nowrap;
+  font-size: var(--tf-text); font-weight: 800; letter-spacing: 0.12em; color: #fff3d0; background: url("../img/ui/tonari-floor/deco-ribbon.webp") center / 100% 100% no-repeat; text-shadow: 0 2px 0 #2a0c1c; }
+/* 数の内訳: 印と数。名前は読み上げ用（字は出さない） */
+.tf-slip-counts { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 22px; }
+.tf-count { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.tf-count .tf-icon { width: 30px; height: 30px; color: var(--tf-brass); }
+.tf-count b { font-size: var(--tf-big); line-height: 1; color: #fff1c4; }
+.tf-count-unit { font-size: var(--tf-small); color: var(--tf-dim); }
+.tf-count-name, .tf-count-sep { display: inline-block; width: 0; height: 1px; overflow: hidden; white-space: pre; }
+/* 支給額を主役に */
+.tf-slip-pay { align-items: center; padding: 8px 18px; }
+.tf-slip-pay > span { font-size: var(--tf-small); color: var(--tf-dim); }
+.tf-slip-pay strong { font-size: 34px; line-height: 1.1; margin-left: 8px; }
+
+/* 休止の窓で札が3つ並ぶ時（はじめての営業の「ゆっくりにする」）: 主の札（幅 320px 以上）が隣の札に重なっていたので、窓を広げて列を分ける */
+.tf-pause .tf-intro-card:has(.tf-options > .tf-option:nth-child(3)) { width: 940px; }
+.tf-pause .tf-options:has(> .tf-option:nth-child(3)) { grid-template-columns: 326px minmax(0, 1fr) minmax(0, 1fr); }

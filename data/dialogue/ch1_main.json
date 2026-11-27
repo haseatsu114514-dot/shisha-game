@@ -151,6 +151,21 @@
         },
         {
           "speaker": "hajime",
+          "face": "normal",
+          "text": "あの人の名前、まだ聞けてないんですよね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "名前なんざ、吸い終わってから聞け"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……毎晩、吸い終わってるんだけどな）"
+        },
+        {
+          "speaker": "hajime",
           "face": "smile",
           "text": "ああいうふうに言ってもらえると、明日も作りたくなりますね"
         },

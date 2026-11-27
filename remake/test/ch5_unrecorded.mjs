@@ -71,8 +71,8 @@ fresh.slot = 1;
 assert.equal(tonari(home()).hasNew, undefined, "Mashiro's scene waits until daytime");
 fresh.slot = 0;
 assert(progress.completeChapterFiveScene(fresh, "ch5_free_mashiro_visit"));
-assert.equal(tonari(home()).hasNew?.(), true, "The next visitor is available");
-assert(progress.completeChapterFiveScene(fresh, "ch5_free_first_visitor"));
+// つむぎ目線の新人編から入った保存には「初めての客」が無い（#4253）。次は夜の閉店後の練習
+assert.equal(progress.completeChapterFiveScene(fresh, "ch5_free_first_visitor"), false);
 assert.equal(tonari(home()).hasNew, undefined, "The workbench scene waits until night");
 fresh.slot = 1;
 assert.equal(tonari(home()).hasNew?.(), true);

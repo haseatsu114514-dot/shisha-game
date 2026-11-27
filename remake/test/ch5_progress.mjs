@@ -5,7 +5,8 @@ import { selectStoryEnding } from "../js/core/story-routes.js";
 import { chapterDay, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 import { invitationVisitSpot, visitReminderSpot } from "../js/daily/invitations.js";
 import { exhibitionResultReason } from "../js/craft/tournament-result-reason.js";
-import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SCENES, CH5_MATCH_SCENES, CH5_AFTERMATH,
+import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_LEGACY_PROLOGUE, CH5_PROLOGUE_COVERED,
+  CH5_FREE_SCENES, CH5_MATCH_SCENES, CH5_AFTERMATH,
   CH5_ENDING_IDS, CH5_SCENE_FILES, CH5_GUEST_VISITS, canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveEndingContext, beginChapterFiveFinale,
@@ -25,6 +26,7 @@ const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import
 // 場面表の全IDが台本に実在し、本文がある。廃止した夢の前後と振り返りの仮台本は通しの台本にも登録しない。
 const files = { ch5_main: readData("dialogue/ch5_main").dialogues, ending: readData("dialogue/ending").dialogues,
   relationship_conflicts: readData("dialogue/relationship_conflicts").dialogues };
+files.ch1_sumi = readData("dialogue/ch1_sumi").dialogues;
 const connected = [];
 for (const [file, ids] of Object.entries(CH5_SCENE_FILES)) {
   for (const id of ids) {
@@ -49,10 +51,13 @@ for (const [id, key] of Object.entries(CH5_SCENE_BGM)) {
   assert(hasBgm(key), `unknown bgm ${key}`);
 }
 
-// story_routes との整合: プロローグ後半は before_match[0]、後日談は after_match と同じ順。
+// story_routes との整合: つむぎ目線の新人編と橋渡しは opening、プロローグの最後（挑戦状）は before_match[0]、
+// 後日談は after_match と同じ順（#4253）。旧来の並びも最後は同じ挑戦状。
 const routes = readData("story_routes");
 const r5 = routes.chapters["5"];
-assert.equal(CH5_PROLOGUE[1].id, r5.before_match[0]);
+assert.deepEqual(CH5_PROLOGUE.slice(0, -1).map(scene => scene.id), r5.opening);
+assert.equal(CH5_PROLOGUE.at(-1).id, r5.before_match[0]);
+assert.equal(CH5_LEGACY_PROLOGUE.at(-1).id, r5.before_match[0]);
 assert.equal(r5.before_match[1], "ch5_unrecorded_day");
 assert.deepEqual(r5.postpone, ["ch5_timeout"]);
 assert.equal(CH5_MATCH_SCENES.firstCup, r5.first_cup[0]);
@@ -170,7 +175,8 @@ assert.equal(value.phase, "opening");
 assert.deepEqual(value.statsAtChapterStart, value.stats);
 assert.notEqual(value.statsAtChapterStart, value.stats);
 assert.deepEqual(value.flags._ch5, { startDay: 61, stage: 0, part: "prologue", titleSeen: false,
-  read: {}, scheduleDecision: null, aftermath: 0, finale: 0, finaleScenes: null, won: null, secondCup: null });
+  read: {}, scheduleDecision: null, aftermath: 0, finale: 0, finaleScenes: null, won: null, secondCup: null,
+  prologueRoute: "tsumugi" });
 assert.equal(value.flags._ch5_match_scheduled, false);
 assert.equal(value.flags._ch5_match_started, false);
 assert.equal(value.flags._ch4_cleared, true, "The Chapter 4 clear record must stay");
@@ -200,8 +206,10 @@ assert.equal(canAdvanceToChapterFive(value), false, "A second advance must be re
 rejects(value, advanceToChapterFive);
 roundTrip(value);
 
-// プロローグ: 順番どおりに2場面だけ。順番違い・別partの場面は確定しない。
-for (const wrong of ["ch5_opening", "ch5_unrecorded_day", "ch5_schedule_contact", "ch5_timeout"])
+// プロローグ: つむぎ目線の新人編から挑戦状まで、順番どおりに1回ずつ（#4253）。順番違い・別partの場面は確定しない。
+assert.deepEqual(CH5_PROLOGUE.map(scene => scene.id), ["ch5_tsumugi_interview", "ch5_tsumugi_first_day", "ch5_tsumugi_lessons", "ch5_tsumugi_cough",
+  "ch5_tsumugi_doctor", "ch5_tsumugi_look_first", "ch5_tsumugi_full_house", "ch5_tsumugi_third", "ch5_shop_hands", "ch5_opening"]);
+for (const wrong of ["ch5_opening", "ch5_bridge_after_return", "ch5_tsumugi_serving", "ch5_unrecorded_day", "ch5_schedule_contact", "ch5_timeout"])
   rejects(value, v => completeChapterFiveScene(v, wrong));
 for (const [index, scene] of CH5_PROLOGUE.entries()) {
   assert.equal(value.flags._ch5.stage, index);
@@ -213,8 +221,12 @@ assert.equal(value.flags._ch5.part, "free");
 assert.equal(value.phase, "daily");
 
 // 自由行動: 自由場面は順不同で1回ずつ。連絡の場面は選択の記録が先。
+// 新人編で読んだ場面と重なる自由場面（と「初めての客」）は出さず、確定もしない。相談相手だけが残る。
 assert.deepEqual(chapterFiveFreeRemaining(value).map(scene => scene.id),
-  CH5_FREE_SCENES.map(scene => scene.id));
+  CH5_FREE_SCENES.map(scene => scene.id).filter(id => !CH5_PROLOGUE_COVERED.includes(id)));
+assert.deepEqual(chapterFiveFreeRemaining(value).map(scene => scene.id),
+  ["ch5_free_mashiro_visit", "ch5_free_tonari_practice", "ch5_tsumugi_counsel", "ch5_free_eden_adam"]);
+for (const id of CH5_PROLOGUE_COVERED) rejects(value, v => completeChapterFiveScene(v, id));
 rejects(value, v => completeChapterFiveScene(v, "ch5_timeout"));
 rejects(value, v => completeChapterFiveScene(v, "ch5_schedule_contact"));
 rejects(value, v => recordChapterFiveScheduleDecision(v, "bogus"));
@@ -222,16 +234,41 @@ assert.equal(value.flags._ch5.scheduleDecision, null);
 assert.equal(completeChapterFiveScene(value, "ch5_free_tonari_practice"), true, "Free scenes are order-free");
 rejects(value, v => completeChapterFiveScene(v, "ch5_free_tonari_practice"));
 assert.deepEqual(chapterFiveFreeRemaining(value).map(scene => scene.id),
-  ["ch5_free_mashiro_visit", "ch5_free_first_visitor", "ch5_tsumugi_serving", "ch5_tsumugi_makes_for_hajime", "ch5_tsumugi_busy_night", "ch5_tsumugi_little_notes", "ch5_tsumugi_counsel", "ch5_tsumugi_menu_board", "ch5_free_eden_adam"]);
+  ["ch5_free_mashiro_visit", "ch5_tsumugi_counsel", "ch5_free_eden_adam"]);
 // #1588: EDEN の任意場面も自由行動の一つとして1回だけ読める（tonari の並びとは別の入口）。
 assert.equal(CH5_FREE_SCENES.find(scene => scene.id === "ch5_free_eden_adam")?.location, "EDEN");
 assert.equal(completeChapterFiveScene(value, "ch5_free_eden_adam"), true);
 rejects(value, v => completeChapterFiveScene(v, "ch5_free_eden_adam"));
 assert.deepEqual(chapterFiveFreeRemaining(value).map(scene => scene.id),
-  ["ch5_free_mashiro_visit", "ch5_free_first_visitor", "ch5_tsumugi_serving", "ch5_tsumugi_makes_for_hajime", "ch5_tsumugi_busy_night", "ch5_tsumugi_little_notes", "ch5_tsumugi_counsel", "ch5_tsumugi_menu_board"]);
+  ["ch5_free_mashiro_visit", "ch5_tsumugi_counsel"]);
 assert.equal(completeChapterFiveScene(value, "ch5_unrecorded_day"), true);
 rejects(value, v => completeChapterFiveScene(v, "ch5_unrecorded_day"));
 roundTrip(value);
+
+// 旧来の並び（prologueRoute の無い、つむぎ目線編より前に第5章へ入った保存）: 橋渡し→帰郷の2場面のあと、
+// 自由行動でつむぎの6場面と「初めての客」を読む。途中の保存（stage 1・自由行動の stage 2）もそのまま読める。
+{
+  const legacy = clearedCh4Save();
+  assert.equal(advanceToChapterFive(legacy), true);
+  delete legacy.flags._ch5.prologueRoute;
+  assert.deepEqual(CH5_LEGACY_PROLOGUE.map(scene => scene.id), ["ch5_bridge_after_return", "ch5_opening"]);
+  rejects(legacy, v => completeChapterFiveScene(v, "ch5_tsumugi_interview"));
+  for (const [index, scene] of CH5_LEGACY_PROLOGUE.entries()) {
+    assert.equal(legacy.flags._ch5.stage, index);
+    assert.equal(completeChapterFiveScene(legacy, scene.id), true, scene.id);
+    roundTrip(legacy);
+  }
+  assert.equal(legacy.flags._ch5.part, "free");
+  assert.equal(legacy.flags._ch5.stage, 2);
+  assert.deepEqual(chapterFiveFreeRemaining(legacy).map(scene => scene.id), CH5_FREE_SCENES.map(scene => scene.id));
+  assert.equal(completeChapterFiveScene(legacy, "ch5_tsumugi_serving"), true);
+  // 並びの印が違う（stage が合わない・知らない値）保存は読まない。
+  for (const broken of [{ prologueRoute: "tsumugi" }, { prologueRoute: "other" }]) {
+    const copy = structuredClone(legacy);
+    Object.assign(copy.flags._ch5, broken);
+    assert.throws(() => chapterFiveProgress(copy), `prologueRoute ${broken.prologueRoute}`);
+  }
+}
 
 // defer 経路: 先送りは free のまま、timeout を読むまで決定が残り、読了で白紙に戻る。
 {
@@ -498,7 +535,7 @@ for (const [total, category, expected, reason] of [
   // 千須への返事（STK05）: 採点の言い方にしない。
   const tail = lines(CH5_AFTER_MATCH_TAIL);
   assert(tail.some(line => line.speaker === "hajime"
-    && line.text === "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が"));
+    && line.text === "俺が作れない日は、つむぎちゃんが作ります。つむぎちゃんが作れない日は、俺が"));
   assert(tail.some(line => line.speaker === "sensu") && !tail.some(line => /点|合格|採点/.test(line.text)));
   // 後半（勝敗共通）: 場面の区切りの地の文で始まり、検品札 → エンコード → 味の分からない審査員 → 一緒に作る一台。
   const record = files.ch5_main.find(row => row.dialogue_id === "ch5_doctor_cocreation");
@@ -515,7 +552,12 @@ for (const [total, category, expected, reason] of [
   assert(order.every((index, i) => index >= 0 && (i === 0 || index > order[i - 1])), `order: ${order}`);
   assert.equal(order.at(-1), record.lines.length - 1, "The scene still ends on the doctor's last line");
   // 温度計の一言は、第2章で借りた保存だけ（フラグが無ければ分岐を読まない）。
-  const thermo = record.lines.find(line => line.type === "condition");
+  const thermo = record.lines.find(line => line.type === "condition" && line.condition_type === "flag");
+  // 博士が一人だけ会った人（C.STATIONのつむぎ。#4253）の一言は、新人編の博士の場面を読んだ保存だけ
+  const metOne = record.lines.find(line => line.type === "condition" && line.next_true === "met_one");
+  assert.deepEqual([metOne.condition_type, metOne.dialogue], ["story_seen", "ch5_tsumugi_doctor"]);
+  assert.equal(record.lines[record.lines.indexOf(metOne) - 1].text, "……会ってなくても、その人たちの手は、今日の9000の煙にいました");
+  assert.match(record.branches.met_one[0].text, /一人だけ、会った人がいます/);
   assert.deepEqual([thermo.condition_type, thermo.flag, thermo.next_true, thermo.next_false],
     ["flag", "_stk_kemuri_thermo_borrowed", "thermo", undefined]);
   assert.equal(record.lines.indexOf(thermo), order[3] + 1, "Right after the judging lines");
@@ -540,10 +582,12 @@ for (const [total, category, expected, reason] of [
   // つむぎの接客を読んだ保存では、最後の一言をつむぎの受け売りに替える（2026-11-24 添削 N7。ch5.js が既読で選ぶ）
   assert.deepEqual(held.slice(5).map(line => [line.speaker, line.text]), [
     ["hajime", "なら、先にどうぞ。最初は、ゆっくり吸ってください"],
-    ["hajime", "（……つむぎの、受け売りだ）"],
+    ["hajime", "（……つむぎちゃんの、受け売りだ）"],
   ]);
-  assert(files.ch5_main.find(row => row.dialogue_id === "ch5_tsumugi_serving").lines
-    .some(line => line.text?.includes("最初は、ゆっくり吸ってください")), "The borrowed words are Tsumugi's own");
+  // 受け売りの元は、つむぎ目線の新人編の接客（ch5_tsumugi_look_first）と、旧来の並びの自由場面（ch5_tsumugi_serving）。
+  for (const id of ["ch5_tsumugi_look_first", "ch5_tsumugi_serving"])
+    assert(files.ch5_main.find(row => row.dialogue_id === id).lines
+      .some(line => line.text?.includes("最初は、ゆっくり吸ってください")), `The borrowed words are Tsumugi's own: ${id}`);
   const body = scene.lines.filter(line => !line.cue);
   const voice = body.findIndex(line => line.text === "9000がなぞるのは、大会の日の俺だ。店の声は、記録にない。");
   assert(voice > 0 && body[voice].speaker === "", "The line is narration, not Hajime's inner voice");
@@ -552,7 +596,8 @@ for (const [total, category, expected, reason] of [
   // ch5.js は cue の行を場面本体から外し、制作のあとに読む。
   const runner = readFileSync(new URL("../js/chapters/ch5.js", import.meta.url), "utf8");
   for (const cue of ["second_cup_adjust", "second_cup_newcomer", "second_cup_newcomer_tsumugi"]) assert(runner.includes(`"${cue}"`), cue);
-  assert(runner.includes('"ch5_tsumugi_serving"'), "The variant is chosen by whether Tsumugi's serving scene was read");
+  assert(runner.includes('NEWCOMER_TSUMUGI_SOURCES = Object.freeze(["ch5_tsumugi_look_first", "ch5_tsumugi_serving"])'),
+    "The variant is chosen by whether one of Tsumugi's serving scenes was read");
 }
 
 // 開幕と決戦当日（STK01・STK05）: 博士が「借りものの集まり」と問い、千須が博士の側に立つ。当日は客席にいる。
@@ -780,28 +825,135 @@ for (const scenes of [
   const endingLines = id => files.ending.find(row => row.dialogue_id === id).lines.map(line => [line.speaker || "", line.text]);
   const normal = endingLines("ending_normal");
   const at = text => normal.findIndex(([, body]) => body === text);
+  // 賄いの後半はスミさんの出資の話（2026-11-27 オーナー「すみさんが出資して新店を任されて、ついに自分の店を持てる」）。
+  // tonari は、はじめがつむぎに頼む。店の名前は、最後の場面で「今度は、最後まで書けた」
   const order = ["裏返して、店の名前を書きかけたところで、ペンを止めた。",
     "三ヶ月目に決めた名前は、もう書けなかった。あれは、俺ひとりの城の名前だった。",
     "店はもう、お前が回してる。俺が言うことも、だいぶ減ったな",
     "スミさん。tonariって、どうしてこの名前なんですか",
     "客の隣に座れる店にしたかった……それだけだ",
-    "tonariは任せた。お前の店の名前は、その先まで取っとけ"].map(at);
+    "……で、お前の店の話だ"].map(at);
   assert(order.every((index, i) => index >= 0 && (i === 0 || index === order[i - 1] + 1)), `ending_normal order: ${order}`);
   assert.deepEqual(order.map(index => normal[index][0]), ["", "", "sumi", "hajime", "sumi", "sumi"]);
-  assert.deepEqual(endingLines("ending_salaryman_name").filter(([speaker]) => speaker).map(([, text]) => text), [
+  for (const text of ["半分、俺が出す。残りは、お前の手で返せ", "つむぎちゃんに、頼みます", "なら、名前はそれまでに決めとけ。今度は、書けるだろ"])
+    assert(normal.some(([, body]) => body === text), text);
+  assert(!normal.some(([, body]) => body === "tonariは任せた。お前の店の名前は、その先まで取っとけ"), "The old ending line is replaced");
+  assert.deepEqual(endingLines("ending_salaryman_name").filter(([speaker]) => speaker).slice(0, 5).map(([, text]) => text), [
     "ダブルアップルにミント少し、ですね", "……今日の、[pause]良かったよ", "……笑いました？",
     "……表です。表克己。いつも、ありがとうございます", "ありがとうございます……また明日"]);
-  // 最後の地の文はトロフィー。つむぎの開店前の練習（ノートの猫）を読んだ保存だけ、その後に『表さん』を書き足す一行（2026-11-24 添削 N9）
+  // 名乗りの後はトロフィー。つむぎのノートの猫を読んだ保存だけ、その後に『表さん』を書き足す一行（2026-11-24 添削 N9）
   {
     const name = files.ending.find(row => row.dialogue_id === "ending_salaryman_name");
-    assert.deepEqual(endingLines("ending_salaryman_name").filter(([, text]) => text).at(-1), ["", "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"]);
-    const tail = name.lines.at(-1);
+    const trophy = name.lines.findIndex(line => line.text === "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。");
+    assert(trophy > 0, "The trophy line stays");
+    // ノートの猫は、つむぎ目線の新人編では初日（ch5_tsumugi_first_day）、旧来の並びでは自由場面の開店前の練習（#4253）
+    const [first, tail] = name.lines.slice(trophy + 1, trophy + 3);
+    assert.deepEqual([first.type, first.condition_type, first.dialogue, first.next_true],
+      ["condition", "story_seen", "ch5_tsumugi_first_day", "omote_note"]);
     assert.deepEqual([tail.type, tail.condition_type, tail.dialogue, tail.next_true],
       ["condition", "story_seen", "ch5_tsumugi_little_notes", "omote_note"]);
     assert.match(name.branches.omote_note[0].text, /『表さん』/);
-    assert(files.ch5_main.find(row => row.dialogue_id === "ch5_tsumugi_little_notes").lines
-      .some(line => line.text?.includes("ネクタイを締めていた")), "The necktie cat is in Tsumugi's notebook scene");
+    for (const id of ["ch5_tsumugi_first_day", "ch5_tsumugi_little_notes"])
+      assert(files.ch5_main.find(row => row.dialogue_id === id).lines
+        .some(line => line.text?.includes("ネクタイを締めていた")), `The necktie cat is in Tsumugi's notebook scene: ${id}`);
+    // 終幕の最後（2026-11-27 オーナー「バトンが渡るとこにエモさ」）: 第1章の戸締まりの夜（ch1_sumi_closing）を、はじめ→つむぎで写す。
+    // スミさんが数え直す（マスター・スミ・ひより・はじめ・つむぎ）。ひよりに会っていない保存では、はじめが聞き返す。最後は入口の灯り。
+    const closing = files.ch1_sumi.find(row => row.dialogue_id === "ch1_sumi_closing").lines.map(line => line.text);
+    assert(closing.includes("戸締まり、頼む。明日の朝、返せ") && closing.includes("暇だったからな"), "The first chapter's night is still there");
+    const mirror = name.lines.slice(trophy + 3).map(line => line.text).filter(Boolean);
+    for (const text of ["炭を扱う前に、息を吐くようになったね", "暇だったから", "戸締まり、頼める？ 明日の朝、返して",
+      "マスター、俺、ひより、はじめ、……それから、お前だ"]) assert(mirror.includes(text), text);
+    assert(mirror.includes("スミさんが、昔からそうしてきたように。"));
+    // 物語の最後は、半年後の自分の店の最初の朝。第1章の最初の一文と鍵束の重さを写し、「いらっしゃいませ」で終わる
+    const shop = mirror.slice(mirror.indexOf("スミさんが、昔からそうしてきたように。") + 1);
+    assert.equal(shop[0], "半年後。駅の向こうの、元は喫茶店だった小さな店。");
+    for (const text of ["買い物メモの裏に、店の名前を書いた。今度は、最後まで書けた。", "手のひらの鍵束が、思ったより重かった。"])
+      assert(shop.includes(text), text);
+    assert(closing.includes("裏口の閉まる音。手のひらの鍵束が、思ったより重かった。"), "The first chapter's key ring line");
+    assert.equal(shop.at(-1), "いらっしゃいませ");
+    const met = name.lines.find(line => line.type === "condition" && line.condition_type === "met");
+    assert.deepEqual([met.char_id, met.next_true, met.next_false], ["hiyori", "hiyori_met", "hiyori_unmet"]);
+    assert.equal(name.branches.hiyori_unmet[0].text, "ひより？");
+    // 終幕の開始: 帰ってきたスミさんに、はじめが「おかえりなさい」を返す
+    assert.deepEqual(endingLines("ending_start").filter(([speaker]) => speaker).slice(0, 3).map(([, text]) => text),
+      ["おかえりなさい、スミさん", "……ここは、もうお前の店だろ", "スミさんが帰ってくる店でもあるんで"]);
   }
+
+// つむぎ目線の新人編（#4253）: 面接は判明の一行まで名前・一人称・店名を出さない。つむぎ目線の間は本人の立ち絵を出さず、
+// はじめは立ち絵を明示する。三人目で視点がはじめに戻る（はじめの立ち絵を下げ、以後つむぎの立ち絵を出す）。恋愛状態で分けない。
+{
+  const scene = id => files.ch5_main.find(row => row.dialogue_id === id);
+  const interview = scene("ch5_tsumugi_interview").lines;
+  const reveal = interview.findIndex(line => line.speaker === "hajime" && line.text === "つむぎちゃん？");
+  assert(reveal > 0, "The applicant is revealed by Hajime's call");
+  const before = interview.slice(0, reveal);
+  assert(before.every(line => !line.text || !/つむぎ|はじめ|tonari|スミ|私|俺|パーカー|タブレット/.test(line.text)), "Nothing gives her away before the call");
+  assert.deepEqual(before.filter(line => line.speaker).map(line => [line.speaker, line.text]), [["???", "……あの。面接、ここで合ってますか"]]);
+  assert.equal(interview[reveal - 1].type, "bg", "The tonari background appears with the reveal");
+  const pov = ["ch5_tsumugi_interview", "ch5_tsumugi_first_day", "ch5_tsumugi_lessons", "ch5_tsumugi_cough", "ch5_tsumugi_doctor",
+    "ch5_tsumugi_look_first", "ch5_tsumugi_full_house"];
+  for (const id of pov) {
+    const rows = [...scene(id).lines, ...Object.values(scene(id).branches || {}).flat()];
+    for (const line of rows) {
+      if (line.speaker === "tsumugi") assert.equal(line.portrait, false, `${id}: Tsumugi is the viewpoint (${line.text})`);
+      if (line.speaker === "hajime") assert.equal(line.portrait, "hajime", `${id}: Hajime is seen (${line.text})`);
+      assert(!line.text || !/^（/.test(line.text) || line.speaker === "", `${id}: her inner voice has no name tag`);
+      assert(line.condition_type !== "romance" && line.condition_type !== "lover", `${id}: same story for every romance state`);
+    }
+  }
+  const third = scene("ch5_tsumugi_third").lines;
+  const swap = third.findIndex(line => line.type === "hide_portrait" && line.char_id === "hajime");
+  assert(swap > 0 && third[swap - 1].text === "（……今日は、ホースを置くまで待つ日だ）", "She answers her interview question herself");
+  assert.equal(third[swap + 1].type, "fx");
+  assert(third.slice(0, swap).every(line => line.speaker !== "tsumugi" || line.portrait === false));
+  assert(third.slice(swap).every(line => line.speaker !== "hajime" || line.portrait === undefined), "Back to Hajime's eyes");
+  assert(third.slice(swap).some(line => line.text === "つむぎは、俺がホースを置くまで、何も言わなかった。"));
+  assert.equal(third.at(-1).text, "（……休みの日は、つむぎちゃんが開ける）");
+  // 煙の色は、つむぎ目線の地の文だけに出す本人の知覚。はじめ目線へ戻った後と橋渡しには出さない。
+  const colorLines = id => scene(id).lines.filter(line => line.speaker === "" && /色/.test(line.text || "")).length;
+  for (const id of ["ch5_tsumugi_first_day", "ch5_tsumugi_cough", "ch5_tsumugi_look_first"]) assert(colorLines(id) >= 1, id);
+  assert(!third.slice(swap).some(line => /色/.test(line.text || "")), "No smoke colors in Hajime's eyes");
+  assert.equal(colorLines("ch5_shop_hands"), 0);
+  // 教わった手つきを名前と一緒に渡す（2026-11-27 オーナー）。どの保存でも会っている大会の相手だけを名指しし、つむぎは猫を描く
+  const lessons = scene("ch5_tsumugi_lessons").lines.map(line => line.text || "");
+  for (const name of ["なる", "スティーブ", "ヴォルク", "綾取", "太陽", "王煙楼"]) assert(lessons.some(text => text.includes(name)), name);
+  assert(lessons.includes("（……全部、はじめさんなのに）"));
+  // 満席の夜の三番と五番はプレイヤーが選ぶ。どちらも失敗にしない（両方の分岐に戻り先の台詞がある）。
+  const house = scene("ch5_tsumugi_full_house");
+  const choice = house.lines.find(line => line.type === "choice");
+  assert.deepEqual(choice.choices.map(option => option.next), ["five_first", "three_first"]);
+  for (const key of ["five_first", "three_first"]) assert(house.branches[key].length >= 2, key);
+  assert.equal(house.lines.at(-1).text, "声は、裏返らなかった。");
+  // はじめの呼び方は「つむぎちゃん」のまま（2026-11-27 オーナー）。第5章の話し言葉に呼び捨てを残さない。
+  for (const row of files.ch5_main) {
+    for (const line of [...row.lines, ...Object.values(row.branches || {}).flat()]) {
+      if (line.speaker === "hajime" && line.text?.includes("つむぎ")) assert.match(line.text, /つむぎちゃん/, `${row.dialogue_id}: ${line.text}`);
+    }
+  }
+  // 深化（2026-11-27 オーナー）: 対決のきっかけ・育成の苦悩・博士とつむぎ・送り出し。新人編の場面を読んだ保存だけに出す行は
+  // story_seen で分け、旧来の並びの保存（新人編を読んでいない）では読まない。
+  const gated = (id, key) => {
+    const row = scene(id);
+    const line = row.lines.find(item => item.type === "condition" && item.next_true === key);
+    assert(line && line.condition_type === "story_seen" && row.branches[key]?.length, `${id}: ${key}`);
+    return line.dialogue;
+  };
+  const opening = scene("ch5_opening").lines.map(line => line.text);
+  assert(opening.includes("作れるのは、君だけです。新人は動画をなぞって、外す"), "The world-final video is the doctor's reason to challenge");
+  assert.equal(gated("ch5_opening", "cough_confess"), "ch5_tsumugi_cough");
+  assert.match(scene("ch5_opening").branches.cough_confess[0].text, /私です/);
+  assert.equal(gated("ch5_opening", "manual_echo"), "ch5_shop_hands");
+  assert(scene("ch5_shop_hands").lines.some(line => line.text?.includes("『つむぎちゃんへ』")), "The unfinished manual");
+  assert.equal(gated("ch5_copy_first_cup", "cough_echo"), "ch5_tsumugi_cough");
+  assert.equal(gated("ch5_unrecorded_day", "unsaid"), "ch5_tsumugi_cough");
+  const sendoff = scene("ch5_match_day_arrival").lines.filter(line => line.next_true === "sendoff").map(line => line.dialogue);
+  assert.deepEqual(sendoff, ["ch5_tsumugi_full_house", "ch5_tsumugi_menu_board"], "She sends him off wherever she drew the board");
+  assert(scene("ch5_match_day_arrival").branches.sendoff.some(line => line.text === "いってらっしゃい、はじめさん"));
+  // 巻頭ポエムは新人編の保存では挑戦状の直前、章題は面接の後（ch5.js）。旧来の並びは章題の前のまま。
+  const runner = readFileSync(new URL("../js/chapters/ch5.js", import.meta.url), "utf8");
+  assert.match(runner, /scene\.id === CH5_BEFORE_TITLE/);
+  assert.match(runner, /id === "ch5_opening" && chapterFiveProgress\(state\)\.prologueRoute === CH5_TSUMUGI_ROUTE && !chapterFiveRead\(state, id\)/);
+}
   // 終幕を何度も閉じない（C9・STK27）: 日常の場面の次が名乗りなら、ch5.js はカードを挟まず続けて読む。並びと保存の形は変えない。
   assert.match(readFileSync(new URL("../js/chapters/ch5.js", import.meta.url), "utf8"),
     /FINALE_CONTINUES = Object\.freeze\(\{ ending_daily_smoke: "ending_salaryman_name" \}\)/);

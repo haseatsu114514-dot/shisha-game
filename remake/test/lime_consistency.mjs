@@ -1012,7 +1012,7 @@ console.log("[1897] PASS tournament-day cheers follow data senders, contacts, ch
 {
   reset({ chapter: 5, phase: "scheduled", day: 70, contacts: ["mashiro", "adam"], flags: {
     _ch5_match_scheduled: true,
-    _ch5: { part: "scheduled", startDay: 65, stage: CH5_PROLOGUE.length, titleSeen: true,
+    _ch5: { part: "scheduled", startDay: 65, stage: CH5_PROLOGUE.length, titleSeen: true, prologueRoute: "tsumugi",
       read: { ch5_free_mashiro_visit: true, ch5_free_eden_adam: true }, scheduleDecision: "decide",
       aftermath: 0, finale: 0, finaleScenes: null, won: null },
   } });
