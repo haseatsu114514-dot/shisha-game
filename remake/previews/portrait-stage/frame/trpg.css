@@ -59,7 +59,7 @@ html:root[data-density="phone"][data-layout="portrait"] { --phone-text: 24px; --
 #stage .trpg-root.trpg-cinematic .trpg-cover-copy .trpg-cover-actions { order: 2; margin-top: 14px; display: flex; flex-wrap: wrap; gap: 12px; }
 #stage .trpg-root.trpg-cinematic .trpg-cover-copy .trpg-cover-actions .trpg-button { flex: 1 1 0; min-height: 84px; }
 #stage .trpg-root.trpg-cinematic .trpg-cover-copy .trpg-cover-actions .trpg-button.primary { flex: 1 1 100%; order: 2; min-height: 108px; font-size: 32px; letter-spacing: .14em; }
-#stage .trpg-root.trpg-cinematic .trpg-cover-party { left: 20px; right: 20px; bottom: 372px; width: auto; justify-content: space-between; gap: 8px; }
+#stage .trpg-root.trpg-cinematic .trpg-cover-party { left: 20px; right: 20px; bottom: 396px; width: auto; justify-content: space-between; gap: 8px; }
 #stage .trpg-root.trpg-cinematic .trpg-cover-person { flex: 1 1 0; min-width: 0; }
 
 /* ───────── 重ねて出る札（メモ・遊び方・ログ・シート・宣言・判定など）: 幅いっぱいの1列に ───────── */
@@ -257,3 +257,4 @@ html:root[data-density="phone"][data-layout="portrait"] { --phone-text: 24px; --
   .trpg-heat-pop span, .trpg-aid small, .trpg-reroll-choice small, .trpg-notes-grid > p, .trpg-evidence-fold summary, .trpg-stage-companions button span, .trpg-roll-equation,
   .trpg-selection-title > small, .trpg-stage-investigation, .trpg-stage-investigation strong, .trpg-hypothesis-stage .trpg-modal-actions small, .trpg-search-slot, .trpg-search-slot small) { font-size: 22px; }
 #stage .trpg-root.trpg-cinematic .trpg-seat-mark { min-width: 30px; height: 30px; }
+#stage .trpg-root.trpg-cinematic :is(.trpg-tutorial-panel :is(span, i, small), .trpg-ability-receipt, .trpg-dice-near, .trpg-ending .trpg-kicker), #stage .trpg-root.trpg-cinematic > .trpg-incarnate-skip { font-size: 22px; }
