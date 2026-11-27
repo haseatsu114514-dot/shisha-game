@@ -792,7 +792,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* 判定が出たら、客の言葉は返事に替わる。印に隠れないよう、下へ寄せる */
 .tf-sheet[data-verdict] .tf-visit .tf-sheet-quote { z-index: 4; bottom: 12px; }
 @keyframes tf-verdict { from { opacity: 0; scale: 1.9; } 70% { scale: 0.94; } }
-/* 雑談に応えた時の会話（TFL68〜70）: 客の話しかけ → はじめ（つむぎ）の返し → 客のひとことを、卓の様子の下から順に出す。
+/* 雑談に応えた時の会話（TFL68〜72）: 客の話しかけ → はじめ（つむぎ）の返しの二つを、卓の様子の下から順に出す。
    判定の印は上の端に小さく寄せ、吹き出しと重ねない。客は明るい吹き出しで右、店の側は名札つきの暗い吹き出しで左 */
 .tf-sheet[data-talk="true"] .tf-visit .tf-sheet-quote { display: none; }
 .tf-sheet[data-talk="true"] .tf-verdict {
@@ -809,7 +809,6 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
   animation: tf-talk-in 0.3s ease both;
 }
 .tf-talk-line:nth-child(2) { animation-delay: 0.35s; }
-.tf-talk-line:nth-child(3) { animation-delay: 0.7s; }
 .tf-talk-line:not([data-who="guest"]) {
   justify-self: start; display: flex; align-items: baseline; gap: 10px; border-radius: 18px 18px 18px 6px;
   border-image: url("../img/ui/tonari-floor/mix-card.webp") 24 fill / 12px / 0 stretch; color: #fff1c4; box-shadow: 0 0 0 2px #c9a25e, 0 6px 14px #000a;

@@ -114,8 +114,9 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
   assert.deepEqual(Object.keys(CALLS), ["thin", "harsh", "thirsty", "cough", "chatty"], "炭の調整は、頼みではなく自分から行く");
   for (const call of Object.values(CALLS)) {
     assert.ok(VERBS.some((v) => v.id === call.verb) && call.lines.length >= 3);
-    for (const { said, sight, good } of call.lines) {
-      assert.ok(said && !said.endsWith("。") && good && !good.endsWith("。"));
+    for (const { said, sight, good, reply } of call.lines) {
+      const back = call.verb === "chat" ? reply : good; // 雑談は、客の話しかけとはじめの返しの二回（TFL72）
+      assert.ok(said && !said.endsWith("。") && back && !back.endsWith("。"));
       assert.ok(sight.endsWith("。"));
     }
   }
@@ -474,7 +475,7 @@ test("頼みの台詞と地の文は、同じ営業内で同じ一文が続か�
   }
 });
 
-// ---- 雑談（TFL68〜70）: 客の話しかけ → はじめ（つむぎ）の返し → 客のひとこと ----
+// ---- 雑談（TFL68〜72）: 客の話しかけ → はじめ（つむぎ）の返しの二回のキャッチボール ----
 /** 1卓の客に、雑談の頼みを n 回出させて、そのたびに応える。出た雑談（台本の行）と、応えた後の state を返す。 */
 function chatRounds(s, n, tableId = 1) {
   const shown = [];
@@ -485,12 +486,12 @@ function chatRounds(s, n, tableId = 1) {
     const asked = floorCallLine(s, tableId);
     s = act(s, { type: "care", tableId, verb: "chat" });
     const care = s.log.find((e) => e.type === "care");
-    shown.push({ said: asked.said, sight: asked.sight, reply: care.reply, by: care.by, good: at(s, tableId).line });
+    shown.push({ said: asked.said, sight: asked.sight, reply: care.reply, by: care.by, line: at(s, tableId).line });
   }
   return { s, shown };
 }
 
-test("雑談の台本: 味・趣味・何気ない話・愚痴をたっぷり。どれも2行に収まる短い会話で、大会に触れない（TFL68〜70）", () => {
+test("雑談の台本: 味・趣味・何気ない話・愚痴をたっぷり。客とはじめの二回のキャッチボールで、どれも2行に収まり、大会に触れない（TFL68〜72）", () => {
   const venues = Object.values(FLOOR_VENUES);
   const rows = [
     ...CHAT_COMMON, ...CHAT_TONARI, ...CHAT_MUKAI, ...CHAT_DUBAI, ...Object.values(CHAT_STAFF).flat(),
@@ -498,7 +499,9 @@ test("雑談の台本: 味・趣味・何気ない話・愚痴をたっぷり。
   ];
   const lines = new Set();
   for (const row of rows) {
-    for (const key of ["said", "reply", "good"]) {
+    assert.deepEqual(Object.keys(row).filter((k) => ["said", "sight", "reply", "good"].includes(k)), ["said", "sight", "reply"], `二回のキャッチボール（客のひとことは無い）: ${row.said}`);
+    assert.ok(!/[？?]$/.test(row.reply), `返しは質問で終えず、言い切って会話を閉じる: ${row.reply}`);
+    for (const key of ["said", "reply"]) {
       const line = row[key];
       assert.ok(line && !line.endsWith("。"), `台詞は句点で終えない: ${line}`);
       assert.ok([...line].length <= 34, `吹き出し2行まで（34字まで）: ${line}`);
@@ -508,7 +511,7 @@ test("雑談の台本: 味・趣味・何気ない話・愚痴をたっぷり。
     }
     assert.ok(row.sight.endsWith("。") && !lines.has(row.sight), row.sight);
     lines.add(row.sight);
-    assert.ok(!/大会|本番|優勝|予選|審査|決勝/.test(`${row.said}${row.reply}${row.good}${row.sight}`), `大会の前後どちらでも通る: ${row.said}`);
+    assert.ok(!/大会|本番|優勝|予選|審査|決勝/.test(`${row.said}${row.reply}${row.sight}`), `大会の前後どちらでも通る: ${row.said}`);
     assert.ok(!row.by || CHAT_SPEAKERS[row.by], row.by);
     assert.ok(!row.at || ["day", "night"].includes(row.at), row.at);
   }
@@ -546,7 +549,7 @@ test("雑談: その店の話から選び、出しきるまで同じ話を繰り
   for (const c of shown) {
     const row = byLine.get(c.said);
     assert.ok(row && row.at !== "day", c.said);
-    assert.deepEqual([c.sight, c.reply, c.by, c.good], [row.sight, row.reply, "hajime", row.good], "話しかけ・返し・ひとことは一組");
+    assert.deepEqual([c.sight, c.reply, c.by, c.line], [row.sight, row.reply, "hajime", row.reply], "話しかけと返しは一組。卓の言葉は返し");
   }
   assert.ok(after.counts.care >= shown.length, "雑談に応えるのもケアに数える");
   // 昼の営業（日が暮れる前）: 夜だけの話は出ない
@@ -578,7 +581,7 @@ test("雑談: つむぎが働く日（第5章の tonari）は、一部がつむ�
   assert.ok(shown.length - hers.length >= 6, "ふつうの雑談も混ざる");
   for (const c of hers) {
     const row = staff.find((x) => x.said === c.said);
-    assert.deepEqual([c.reply, c.by, c.good], [row.reply, row.by || "hajime", row.good]);
+    assert.deepEqual([c.reply, c.by, c.line], [row.reply, row.by || "hajime", row.reply]);
   }
   assert.ok(hers.some((c) => c.by === "tsumugi") && hers.some((c) => c.by === "hajime"), "つむぎが返す話も、はじめが返す話もある");
   assert.equal(createFloorNight({ seed: 21, staff: "nobody" }).staff, null);
@@ -862,7 +865,7 @@ test("レアな来店: 本編の人物は三組目として来て、その人の
     assert.ok(talked, `${who.id}: その人だけの雑談（${floorCallLine(s, table.id).said}）`);
     assert.equal(floorCallLine(s, table.id).sight, talked.sight);
     const chatted = act(s, { type: "care", tableId: table.id, verb: "chat" });
-    assert.equal(at(chatted, table.id).line, talked.good);
+    assert.equal(at(chatted, table.id).line, talked.reply);
     assert.deepEqual(["said", "reply", "by"].map((k) => chatted.log.find((e) => e.type === "care")[k]), [talked.said, talked.reply, "hajime"], "画面に会話を渡す");
     s = chatted;
     at(s, table.id).nextCall = s.t;

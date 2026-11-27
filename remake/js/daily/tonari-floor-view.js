@@ -562,7 +562,9 @@ export function runTonariFloor({
           case "call": SE.tick(); log(e.coal ? `${e.tableId}卓　炭を見てほしそうです` : `${e.tableId}卓で、お客さんの様子が変わりました`, e.coal ? "bad" : ""); break;
           case "care":
             if (e.ok) { SE.perfect(); hit(e.tableId, "good"); pop(e.tableId, "いいケア", "best", "best"); } else { SE.miss(); hit(e.tableId, "off"); pop(e.tableId, "ちがった…", "off", "bad"); }
-            say(e.tableId, e.line, e.ok ? "good" : "bad");
+            // 雑談の返しは店の側の言葉なので、話した人の名前を添える（TFL72）
+            if (e.reply) log(`${e.tableId}卓　${CHAT_SPEAKERS[e.by] || CHAT_SPEAKERS.hajime}${quoted(e.reply)}`, "good");
+            else say(e.tableId, e.line, e.ok ? "good" : "bad");
             break;
           case "callLate": SE.miss(); pop(e.tableId, "見逃した", "off"); log(`${e.tableId}卓の頼みを見逃しました`, "bad"); break;
           case "drink":
@@ -935,12 +937,12 @@ export function runTonariFloor({
       if (cancel) SE.cancel();
       if (id && mode === "live") select(id, true);
     }
-    // 選んだ結果の印（◎ ○ △ ×）。雑談に応えた時は、会話（客の話しかけ・はじめかつむぎの返し・客のひとこと）も持つ（TFL68〜70）
+    // 選んだ結果の印（◎ ○ △ ×）。雑談に応えた時は、会話（客の話しかけと、はじめかつむぎの返し）も持つ（TFL68〜72）
     function verdictOf(events) {
       for (const e of events) {
         if (e.type !== "care") continue;
         if (!e.ok) return { mark: "bad", text: "ちがったみたい", line: e.line };
-        const talk = e.reply ? [["guest", e.said], [e.by || "hajime", e.reply], ["guest", e.line]] : null;
+        const talk = e.reply ? [["guest", e.said], [e.by || "hajime", e.reply]] : null;
         return { mark: "best", text: "いいケア！", line: e.line, talk };
       }
       return null;
@@ -950,8 +952,8 @@ export function runTonariFloor({
       who === "guest" ? null : el("b.tf-talk-name", { text: CHAT_SPEAKERS[who] || CHAT_SPEAKERS.hajime }),
       el("span", { text: quoted(text) }),
     ])));
-    // 会話を読む長さ（時間は止まっている。押せば先へ進む）: 字数に合わせて、2.4〜5秒
-    const talkMs = (talk) => Math.min(5000, Math.max(2400, 1200 + 45 * talk.reduce((n, [, text]) => n + [...text].length, 0)));
+    // 会話を読む長さ（時間は止まっている。押せば先へ進む）: 字数に合わせて、2〜4秒
+    const talkMs = (talk) => Math.min(4000, Math.max(2000, 1000 + 50 * talk.reduce((n, [, text]) => n + [...text].length, 0)));
     function choose(action, button) {
       if (!panel || mode !== "panel") return;
       if (panel.locked) { closePanel({ cancel: false }); return; } // 印が出ている間にもう一度押したら、先へ進む

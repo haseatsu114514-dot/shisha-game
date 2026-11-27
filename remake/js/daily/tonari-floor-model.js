@@ -254,7 +254,7 @@ function nextCallLineIndex(s, key, length) {
   turns[key] = turn + 1;
   return (s.seed + turn) % length;
 }
-// ---- 雑談（TFL68〜70）: 客の話しかけ → はじめ（つむぎ）の返し → 客のひとこと。台本は floor-chats.js ----
+// ---- 雑談（TFL68〜72）: 客の話しかけ → はじめ（つむぎ）の返しの二回のキャッチボール。台本は floor-chats.js ----
 /** 種と回数から決まる 32bit の値（rolls を進めないので、雑談の選び方は他の抽選の並びを変えない）。 */
 function hash32(a, b) {
   let h = Math.imul((a >>> 0) ^ 0x2c1b3c6d, 0x297a2d39) ^ Math.imul((b >>> 0) + 1, 0x85ebca6b);
@@ -735,7 +735,7 @@ export function floorAct(state, action) {
       if (coal) resetCoal(s, table, ok ? 1 : 0.6);
       if (ok) {
         table.mood = clamp(table.mood + r.mood.care);
-        table.line = chat?.good || ownLine(s, guest, "calls")?.[type]?.good
+        table.line = chat?.reply || ownLine(s, guest, "calls")?.[type]?.good
           || call.lines[nextCallLineIndex(s, `good:${type}`, call.lines.length)].good;
         s.counts.care += 1;
         gain(s, FEVER.care);
@@ -744,7 +744,7 @@ export function floorAct(state, action) {
         table.line = ownLine(s, guest, "miss") || CALL_MISS[nextCallLineIndex(s, "miss", CALL_MISS.length)];
         s.counts.careMiss += 1;
       }
-      // 雑談に応えた時は、会話（客の話しかけ・はじめかつむぎの返し・客のひとこと）を画面に渡す
+      // 雑談に応えた時は、会話（客の話しかけと、はじめかつむぎの返し）を画面に渡す。line は返し
       note(s, { type: "care", tableId: table.id, call: type, ok, line: table.line,
         ...(ok && chat ? { said: chat.said, reply: chat.reply, by: chat.by || "hajime" } : {}) });
       // 雑談がはずむと、もう一杯頼みたくなる

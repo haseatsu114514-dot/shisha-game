@@ -1241,7 +1241,7 @@ await suite("tonari-floor", async (check) => {
     });
     assert.equal(await api((a) => a.state().tables[2].call), null);
     assert.equal(await spot.getAttribute("data-tap"), "tend");
-    // 先に、その人だけの雑談で話しかけてくる（TFL70）。応えると、話しかけ・はじめの返し・ひとことの会話が出る
+    // 先に、その人だけの雑談で話しかけてくる（TFL70）。応えると、話しかけとはじめの返しの会話が出る（二回のキャッチボール・TFL72）
     assert(await page.evaluate(() => C.until("s.tables[2].call?.type === 'chatty'", [3])));
     await page.locator(t("table-3")).click();
     const chat = await page.evaluate(() => { const s = C.view.floorTest.api.state(); return C.floorChats.VISITOR_CHATS.tonari.adam.find((c) => c.said === C.model.floorCallLine(s, 3).said); });
@@ -1251,7 +1251,7 @@ await suite("tonari-floor", async (check) => {
     await page.locator(t("option-chat")).click();
     await page.locator(t("talk")).waitFor();
     assert.deepEqual(await page.locator(".tf-talk-line").evaluateAll((list) => list.map((n) => [n.dataset.who, n.querySelector(".tf-talk-name")?.textContent || "", n.querySelector("span").textContent])),
-      [["guest", "", `「${chat.said}」`], ["hajime", "はじめ", `「${chat.reply}」`], ["guest", "", `「${chat.good}」`]]);
+      [["guest", "", `「${chat.said}」`], ["hajime", "はじめ", `「${chat.reply}」`]]);
     assert.equal(await page.locator(".tf-visit .tf-sheet-quote").isVisible(), false, "会話の間は、ひとつの吹き出しを出さない");
     const talkBox = await page.locator(t("talk")).boundingBox(), viewBox = await page.locator(".tf-visit-view").boundingBox();
     assert(talkBox.y >= viewBox.y && talkBox.y + talkBox.height <= viewBox.y + viewBox.height, "会話は卓の様子の中に収まる");
