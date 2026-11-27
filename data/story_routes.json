@@ -254,6 +254,17 @@
       ]
     },
     "5": {
+      "opening": [
+        "ch5_tsumugi_interview",
+        "ch5_tsumugi_first_day",
+        "ch5_tsumugi_lessons",
+        "ch5_tsumugi_cough",
+        "ch5_tsumugi_doctor",
+        "ch5_tsumugi_look_first",
+        "ch5_tsumugi_full_house",
+        "ch5_tsumugi_third",
+        "ch5_shop_hands"
+      ],
       "before_match": [
         "ch5_opening",
         "ch5_unrecorded_day",

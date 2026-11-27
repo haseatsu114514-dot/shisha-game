@@ -2,7 +2,8 @@
 // 第4章からの帰郷後、橙須・tonari で SHISHA-9000 との勝負に至る流れを場面単位で管理する。
 //
 // 流れ（骨格）:
-//   prologue   : 橋渡し → 帰郷 → 自由行動へ
+//   prologue   : つむぎ目線の新人編（面接→…→三人目で視点がはじめに戻る）→ 店の手 → 挑戦状 → 自由行動へ（#4253）。
+//                並びは ch5-prologue.js。prologueRoute の無い旧保存は、旧来の 橋渡し → 帰郷 のまま
 //   free       : tonari の自由場面 →「博士に連絡する」で日程の場面へ。連絡は閉店後の練習と試作を終えてから（chapterFiveCallOpen・
 //                2026-11-20 オーナー）。その後は期限なしで、好きな日に決められる
 //     prep     : 「閉店後の練習」のあと、試作→スミさんの返答→再調整の選択（#1666。結果は試合と後日談に返る）
@@ -24,15 +25,25 @@ import { selectPostEndingConflict } from "../core/story-routes.js";
 import { captureChapterStart, ChapterSaveError } from "../core/chapter-save.js";
 import { STORY_BGM } from "../core/story-audio.js";
 import { TOURNAMENT_VENUE_BG } from "../core/tournament-venues.js";
-import { CH5_PROLOGUE } from "./ch5-prologue.js";
+import { CH5_PROLOGUE, CH5_LEGACY_PROLOGUE, CH5_TSUMUGI_ROUTE, chapterFivePrologue } from "./ch5-prologue.js";
 import { SUMI_TRIAL_IDS, sumiTrialRecall } from "./ch5-sumi-trial.js";
 
-export { CH5_PROLOGUE };
+export { CH5_PROLOGUE, CH5_LEGACY_PROLOGUE, CH5_TSUMUGI_ROUTE, chapterFivePrologue };
 
 // ---- 背景の対応表（1か所に集約）----------------------------------------------------
 // 第5章の勝負会場は SMOKE LAB。その他は既存 bg を使用する。
 export const CH5_SCENE_BG = Object.freeze({
-  ch5_bridge_after_return: "bg_tonari_inside_night", // 仮置き bg
+  // つむぎ目線の新人編（#4253）。面接は街の道中から入り、台本の bg 行で判明の時に tonari へ替える
+  ch5_tsumugi_interview: "bg_street_day",
+  ch5_tsumugi_first_day: "bg_tonari_opening_coal",  // 開店前の炭（一週間後は台本の bg 行で昼）
+  ch5_tsumugi_lessons: "bg_tonari_inside_night",     // 閉店後、教わった手つきを名前と一緒に渡す
+  ch5_tsumugi_cough: "bg_tonari_inside_day",         // 一人の昼番（夕方は台本の bg 行）
+  ch5_tsumugi_doctor: "bg_c_station_night",          // C.STATION のカウンターの端（cs_kemuri_sample と同じ席）
+  ch5_tsumugi_look_first: "bg_tonari_inside_day",    // 昼のノート（夕方の二人連れは台本の bg 行）
+  ch5_tsumugi_full_house: "bg_tonari_inside_night",  // 満席の夜（翌朝の黒板は台本の bg 行）
+  ch5_tsumugi_third: "bg_tonari_inside_day",         // はじめの休みの日（ここで視点がはじめに戻る）
+  ch5_shop_hands: "bg_tonari_inside_night",          // 視点が戻った後の橋渡し（旧 ch5_bridge_after_return の組み替え）
+  ch5_bridge_after_return: "bg_tonari_inside_night", // 仮置き bg（旧来の並びだけ）
   ch5_opening: "bg_osu_map_finale",                  // #1177 選定マップ（ch5_osu_07・夜／帰郷場面）
   ch5_free: "bg_osu_map_finale",                     // #1177 選定マップ（ch5_osu_07・夜／自由行動カード画面）
   ch5_unrecorded_day: "bg_tonari_inside_day",        // 仮置き bg
@@ -159,6 +170,8 @@ export const CH5_SCENE_BGM = Object.freeze({
 // 自由行動で再生する場面。tonari の3件は昼→夕→夜の順に1回ずつ（台本コメントの時間帯に合わせる）。
 // そのあと、後輩スタッフのつむぎの6場面（接客→はじめに作る→満席の夜→開店前の練習→相談相手→店先の黒板）を順に1回ずつ（#2606）。
 // 閉店後の練習（試作）より後に置き、勝負までの流れを遅らせない。
+// つむぎ目線の新人編から入った保存（prologueRoute: tsumugi）では、冒頭で読んだ場面と重なる5本と、
+// 新人編の「むせた一口」と同じ注文になる「初めての客」を出さない（CH5_PROLOGUE_COVERED）。相談相手だけが残る。
 // EDEN の任意場面（#1588）は tonari の並びとは別の入口から、いつでも1回だけ読める。
 export const CH5_FREE_SCENES = Object.freeze([
   { id: "ch5_free_mashiro_visit", label: "ましろの訪問", location: "tonari" },
@@ -172,6 +185,11 @@ export const CH5_FREE_SCENES = Object.freeze([
   { id: "ch5_tsumugi_menu_board", label: "店先の黒板", location: "tonari" },
   { id: "ch5_free_eden_adam", label: "二つのダブルアップル", location: "EDEN" },
 ].map(scene => Object.freeze(scene)));
+// つむぎ目線の新人編で読む（または読む必要が無くなる）自由場面。旧来の並びの保存だけが自由行動で読む。
+export const CH5_PROLOGUE_COVERED = Object.freeze(["ch5_free_first_visitor", "ch5_tsumugi_serving",
+  "ch5_tsumugi_makes_for_hajime", "ch5_tsumugi_busy_night", "ch5_tsumugi_little_notes", "ch5_tsumugi_menu_board"]);
+const freeScenesOf = progress => progress.prologueRoute === CH5_TSUMUGI_ROUTE
+  ? CH5_FREE_SCENES.filter(scene => !CH5_PROLOGUE_COVERED.includes(scene.id)) : CH5_FREE_SCENES;
 
 // 第5章に日本へ寄る人の、tonari での一台（#4010）。本人のLIMEの誘い（data/lime_messages.json の reminder_spot: tonari）を
 // 受けた昼に、daily/calendar.js の約束として読む。自由行動の並び（CH5_FREE_SCENES）には入れず、勝負までの流れを変えない。
@@ -274,7 +292,7 @@ const CONFLICT_CALLS = Object.values(CH5_CALL_SCENES);
 // 台本の読み込み対象（ch5.js が FILES に使う）。夢の2場面とテスト専用場面は接続しない。
 export const CH5_SCENE_FILES = Object.freeze({
   ch5_main: Object.freeze([
-    ...CH5_PROLOGUE.map(scene => scene.id),
+    ...CH5_PROLOGUE.map(scene => scene.id), ...CH5_LEGACY_PROLOGUE.map(scene => scene.id),
     "ch5_unrecorded_day",
     ...CH5_FREE_SCENES.map(scene => scene.id),
     ...Object.values(CH5_GUEST_VISITS),
@@ -353,7 +371,7 @@ export function advanceToChapterFive(value) {
   value.statsAtChapterStart = { ...value.stats };
   value.flags._ch5 = { startDay: value.day, stage: 0, part: "prologue", titleSeen: false,
     read: {}, scheduleDecision: null, aftermath: 0, finale: 0, finaleScenes: null, won: null,
-    secondCup: null };
+    secondCup: null, prologueRoute: CH5_TSUMUGI_ROUTE };
   // 台本コメントが名指しする日程フラグ。進行との対応は chapterFiveProgress が検証する。
   value.flags._ch5_match_scheduled = false;
   value.flags._ch5_match_started = false;
@@ -372,8 +390,11 @@ export function chapterFiveProgress(value) {
   check(!!progress, "_ch5");
   check(integer(progress.startDay, 1, Infinity), "_ch5.startDay");
   check(PARTS.includes(progress.part), "_ch5.part");
-  check(integer(progress.stage, 0, CH5_PROLOGUE.length)
-    && (progress.part === "prologue" ? progress.stage < CH5_PROLOGUE.length : progress.stage === CH5_PROLOGUE.length),
+  // 冒頭の並び（#4253）。無い旧保存は旧来の2場面、tsumugi は新人編から挑戦状までの並び。
+  check(progress.prologueRoute === undefined || progress.prologueRoute === CH5_TSUMUGI_ROUTE, "_ch5.prologueRoute");
+  const prologue = chapterFivePrologue(progress);
+  check(integer(progress.stage, 0, prologue.length)
+    && (progress.part === "prologue" ? progress.stage < prologue.length : progress.stage === prologue.length),
     "_ch5.stage / part");
   check(typeof progress.titleSeen === "boolean", "_ch5.titleSeen");
   check(!!progress.read && typeof progress.read === "object" && !Array.isArray(progress.read), "_ch5.read");
@@ -427,7 +448,7 @@ export const chapterFiveRead = (value, id) => chapterFiveProgress(value).read[id
 export function chapterFiveFreeRemaining(value) {
   const progress = chapterFiveProgress(value);
   if (progress.part !== "free") return [];
-  return CH5_FREE_SCENES.filter(scene => progress.read[scene.id] !== true);
+  return freeScenesOf(progress).filter(scene => progress.read[scene.id] !== true);
 }
 
 // ---- 閉店後の試作（#1666）-------------------------------------------------------------
@@ -826,17 +847,18 @@ export function completeChapterFiveScene(value, id) {
   const progress = chapterFiveProgress(value);
   const { part } = progress;
   if (part === "prologue") {
-    if (CH5_PROLOGUE[progress.stage]?.id !== id) return false;
+    const prologue = chapterFivePrologue(progress);
+    if (prologue[progress.stage]?.id !== id) return false;
     progress.read[id] = true;
     progress.stage += 1;
-    if (progress.stage === CH5_PROLOGUE.length) {
+    if (progress.stage === prologue.length) {
       progress.part = "free";
       value.phase = "daily";
     }
     return true;
   }
   if (part === "free") {
-    if (CH5_FREE_SCENES.some(scene => scene.id === id)) {
+    if (freeScenesOf(progress).some(scene => scene.id === id)) {
       if (progress.read[id] === true) return false;
       progress.read[id] = true;
       return true;

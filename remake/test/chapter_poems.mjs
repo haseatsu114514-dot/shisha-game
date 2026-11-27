@@ -150,21 +150,27 @@ function indexesOf(source, needle) {
   for (let at = source.indexOf(needle); at >= 0; at = source.indexOf(needle, at + 1)) found.push(at);
   return found;
 }
-// [ファイル, 章タイトル呼び出し, 詩の呼び出し, 期待する個数]
+// [ファイル, 章タイトル呼び出し, 詩の呼び出し, 期待する個数, 章タイトルと組にならない詩の呼び出し数]
+// 第5章は、つむぎ目線の新人編から入った保存だけ、詩を挑戦状（ch5_opening）の直前に読む（#4253）。旧来の並びは章タイトルの前のまま。
 const WIRING = [
   ["remake/js/chapters/ch1.js", "playCh1Title()", 'playChapterPoem(1)', 1],
   ["remake/js/chapters/ch2.js", "chapterTitle(chapterTitleEntry(2))", "playChapterPoem(2, { owner, current })", 1],
   ["remake/js/chapters/ch3.js", "chapterTitle(chapterTitleEntry(3))", "playChapterPoem(3, { owner, current })", 3],
   ["remake/js/chapters/ch4.js", "chapterTitle(CHAPTER_TITLE_ART.find(entry => entry.chapter === 4))", "playChapterPoem(4, { owner, current })", 1],
-  ["remake/js/chapters/ch5.js", "chapterTitle(CHAPTER_TITLE_ART.find(entry => entry.chapter === 5))", "playChapterPoem(5, { owner, current })", 1],
+  ["remake/js/chapters/ch5.js", "chapterTitle(CHAPTER_TITLE_ART.find(entry => entry.chapter === 5))", "playChapterPoem(5, { owner, current })", 1, 1],
 ];
-for (const [file, titleCall, poemCall, count] of WIRING) {
+for (const [file, titleCall, poemCall, count, unpaired = 0] of WIRING) {
   const source = read(file);
   assert.match(source, /import \{ playChapterPoem(, preparePoemPanel)? \} from "\.\.\/scenes\/chapter-poem\.js";/, `${file}: import がない`);
   const titles = indexesOf(source, titleCall);
   const poems = indexesOf(source, poemCall);
   assert.equal(titles.length, count, `${file}: 章タイトルの呼び出し数`);
-  assert.equal(poems.length, count, `${file}: 詩の呼び出し数`);
+  assert.equal(poems.length, count + unpaired, `${file}: 詩の呼び出し数`);
+  // 組にならない詩は、章タイトルの組より後ろで、挑戦状を初めて読む時だけ（第5章）
+  for (const at of poems.slice(count)) {
+    assert.ok(at > titles.at(-1), `${file}: 組にならない詩は章タイトルの処理より後`);
+    assert.ok(source.slice(Math.max(0, at - 240), at).includes('id === "ch5_opening"'), `${file}: 組にならない詩は挑戦状の直前だけ`);
+  }
   // 詩は、対応する章タイトルの直前（前の章タイトルより後）に置き、titleSeen を立てる前に読み終える（再開時に繰り返さない）
   for (const [i, title] of titles.entries()) {
     assert.ok(poems[i] < title, `${file}: 詩は章タイトルの前（${i + 1}つ目）`);

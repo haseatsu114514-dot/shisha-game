@@ -1415,6 +1415,16 @@
           "text": "……今日は、顔が見えた"
         },
         {
+          "speaker": "sensu",
+          "face": "normal",
+          "text": "昔、終電を逃した晩に、古い小さな店へ入った。灯りが、まだ点いていた"
+        },
+        {
+          "speaker": "sensu",
+          "face": "normal",
+          "text": "今日の煙は、あの店の灯りに似ていた"
+        },
+        {
           "type": "hide_portrait",
           "char_id": "sensu"
         },
@@ -2384,6 +2394,11 @@
           "speaker": "tsumugi",
           "face": "normal",
           "text": "……はじめさんのと。いつか、自分の手も"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……見えてる煙の色を、自分の手で出してみたいんです"
         },
         {
           "speaker": "sumi",

@@ -37,7 +37,7 @@ import { craftReviewLines } from "../craft/advice.js";
 import { craftReviewBlock } from "../craft/tournament-graphics.js";
 import { exhibitionResultReason } from "../craft/tournament-result-reason.js";
 import { naruTastingCategory } from "../craft/naru-tasting.js";
-import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_SCENE_FILES, CH5_PREP_TRIALS,
+import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_MATCH_SCENES, CH5_SCENE_FILES, CH5_PREP_TRIALS,
   chapterFiveAftermathScene, chapterFiveSceneTail,
   chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho, chapterFiveLoverEcho,
   canAffordChapterFivePrepTrial, CH5_PREP_TRIAL_STAMINA, CH5_PREP_TRIAL_STAMINA_NOTE,
@@ -52,6 +52,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
 import { setSceneMood } from "../core/scene-mood.js";
 import { readCycleMeta, recordTrueEndForRun } from "../core/cycle-meta.js";
 import { chapterFiveUnrecordedDialogue } from "./ch5-unrecorded.js";
+import { CH5_BEFORE_TITLE, CH5_TSUMUGI_ROUTE, chapterFivePrologue } from "./ch5-prologue.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -69,10 +70,11 @@ const ADJUST_CUE = "second_cup_adjust";
 // この cue の行（初めて会う客に尋ね、先に吸ってもらう。STK02）も制作後に回し、調整の行に続けて台本のまま読む。
 // 提供できなかった一台（failed）では読まない。
 const NEWCOMER_CUE = "second_cup_newcomer";
-// つむぎの接客（ch5_tsumugi_serving）を読んだ保存では、初めて会う客への最後の一言を、この cue の行（つむぎの受け売り）に替える
-// （2026-11-24 添削 N7）。読んでいなければ NEWCOMER_CUE の行のまま。
+// つむぎの接客を読んだ保存では、初めて会う客への最後の一言を、この cue の行（つむぎの受け売り）に替える
+// （2026-11-24 添削 N7）。読んでいなければ NEWCOMER_CUE の行のまま。接客は、つむぎ目線の新人編では
+// ch5_tsumugi_look_first、旧来の並びの保存では自由行動の ch5_tsumugi_serving（#4253）。
 const NEWCOMER_TSUMUGI_CUE = "second_cup_newcomer_tsumugi";
-const NEWCOMER_TSUMUGI_SOURCE = "ch5_tsumugi_serving";
+const NEWCOMER_TSUMUGI_SOURCES = Object.freeze(["ch5_tsumugi_look_first", "ch5_tsumugi_serving"]);
 const HELD_CUES = [ADJUST_CUE, NEWCOMER_CUE, NEWCOMER_TSUMUGI_CUE];
 // 調整の区分（naruTastingCategory と同じ土台）→ 制作直後の地の文。steady / unknown は台本の本文のまま。
 const ADJUST_LINES = {
@@ -163,9 +165,15 @@ async function openChapter(advance) {
     const progress = chapterFiveProgress(state);
     playBgm(CH5_DEFAULT_BGM); // 仮置き: 第5章専用BGMが無いので既存曲を流用（#1177 で差し替え）
     if (progress.part === "prologue" && !progress.titleSeen) {
-      await setBg(bgUrl(CH5_SCENE_BG[CH5_PROLOGUE[0].id]), { instant: true });
+      const scene = chapterFivePrologue(progress)[progress.stage];
+      await setBg(bgUrl(CH5_SCENE_BG[scene.id]), { instant: true });
       if (!current(owner)) return;
-      if (!await playChapterPoem(5, { owner, current })) return; // 章タイトルの前の巻頭ポエム
+      if (scene.id === CH5_BEFORE_TITLE) {
+        // つむぎ目線の面接は章題の前に、カードを挟まず読む。巻頭ポエムは挑戦状の直前へ移した（#4253。readScene）
+        if (!await readAndCommit(owner, CH5_BEFORE_TITLE)) return;
+      } else if (progress.prologueRoute !== CH5_TSUMUGI_ROUTE) {
+        if (!await playChapterPoem(5, { owner, current })) return; // 旧来の並び: 章タイトルの前の巻頭ポエム
+      }
       await chapterTitle(CHAPTER_TITLE_ART.find(entry => entry.chapter === 5));
       if (!current(owner)) return;
       progress.titleSeen = true;
@@ -200,6 +208,11 @@ async function readScene(owner, id, { keepHud = false } = {}) {
   showScreen("none", null);
   if (!keepHud) hud(); // 日常ループ（#2033）の途中では、日常のHUDを消さない
   await setBg(bgUrl(CH5_SCENE_BG[id]));
+  // つむぎ目線の新人編から入った保存では、巻頭ポエム（博士の一人称）を挑戦状の直前に読む（#4253）。初めて読むときだけ
+  if (id === "ch5_opening" && chapterFiveProgress(state).prologueRoute === CH5_TSUMUGI_ROUTE && !chapterFiveRead(state, id)) {
+    if (!await playChapterPoem(5, { owner, current })) return false;
+  }
+  if (!current(owner)) return false;
   // 挑戦状と9000の登場は、第1章の優勝の夜の「???」と同じ横線のノイズで見出しが置き換わる（#2688 A6）。初めて読むときだけ
   const scan = SCAN_SCENES[id];
   if (scan && !chapterFiveRead(state, id)) { await sceneMoment("scanGlitch", scan); if (!current(owner)) return false; }
@@ -298,7 +311,7 @@ async function renderStage(owner) {
   if (!current(owner)) return;
   if (!await chapterGrowthNight(owner, () => current(owner))) return;
   const progress = chapterFiveProgress(state);
-  if (progress.part === "prologue") return renderScene(owner, CH5_PROLOGUE[progress.stage], "");
+  if (progress.part === "prologue") return renderScene(owner, chapterFivePrologue(progress)[progress.stage], "");
   if (progress.part === "free") {
     if (chapterFiveTimeoutPending(state)) return renderTimeoutCard(owner);
     return chapterFivePrepPending(state) ? renderPrep(owner) : renderFree(owner);
@@ -551,7 +564,7 @@ async function craftSecondCup(owner) {
   // 調整の行に続けて、初めて会う客に尋ねる行を台本のまま読む。提供できなかった一台では読まない（先に吸ってもらえない）。
   const newcomer = held.filter(line => line.cue === NEWCOMER_CUE);
   const borrowed = held.filter(line => line.cue === NEWCOMER_TSUMUGI_CUE);
-  const greeting = borrowed.length && chapterFiveRead(state, NEWCOMER_TSUMUGI_SOURCE)
+  const greeting = borrowed.length && NEWCOMER_TSUMUGI_SOURCES.some(id => chapterFiveRead(state, id))
     ? [...newcomer.slice(0, -1), ...borrowed] : newcomer;
   const after = [...(text ? [{ speaker: "", face: "", text }] : []),
     ...(failed ? [] : greeting)];
