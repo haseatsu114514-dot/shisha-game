@@ -648,7 +648,9 @@ function tickOnce(s) {
         guest.order = who ? personalOrder(who.refill) : makeOrder(() => roll(s), guest); // 本編の人物は、その人のおかわり（TFL66）
         Object.assign(table, { phase: "order", refill: true, extended: true, since: s.t, call: null, wants: [] });
         s.counts.extend += 1;
-        table.line = who ? guest.order.quote : `${lineFor(s, v.sendLines.extend, table.id)}${guest.order.quote}`;
+        // おかわりの前置きと気分の一言は、文として区切る（「〜いきたいな。フルーツ系が吸いたいな」。「？」で終わる前置きはそのまま続ける。VPM35）
+        const lead = lineFor(s, v.sendLines.extend, table.id);
+        table.line = who ? guest.order.quote : `${lead}${/[？！…]$/.test(lead) ? "" : "。"}${guest.order.quote}`;
         reserveFor(s, guest.order);
         note(s, { type: "extend", tableId: table.id, line: table.line, wish: guest.order.wish });
       } else {

@@ -1,11 +1,12 @@
-// 様式「縦画面」（煙の舞台・C案。js/looks/vertical.js・要望台帳 VPN）: 縦持ちで、本編の第1章を縦の外枠に写して遊ぶ。
+// 様式「縦画面」（煙の舞台・C案。js/looks/vertical.js・要望台帳 VPN）: 縦持ちで、本編を縦の外枠に写して遊ぶ（第1章から作り、VPN17 で全章へ）。
 // 確かめること: タイトル→会話（本編の会話の箱が縦のテロップと同じ比の幅になり、2行ずつ送れる）、返事の中継、
 // 地図（左右で隣の店・一覧・決定で店に入る）、tonari の行動選び、LIME・MENU のシート、心得の盤（縦の外枠へ移して十字キーと丸ボタンで灯す・決定）、
-// 登場カットインの縦のポスター、まだ縦にしていない場面（シーシャ作り）は回転案内、横持ちと第2章は旧版、様式を替えると何も残らない。
+// 登場カットインの縦のポスター、まだ縦にしていない場面（シーシャ作り）は回転案内、横持ちは旧版、様式を替えると何も残らない、
+// 第2〜5章の日常（朝の小窓・地図・駅から隣町・場面カード・東京の地図の小窓・第5章の地図）も縦の外枠のまま。
 // 自動操作のブラウザの既定は旧版なので ?look=vertical を付けて選ぶ。
 import assert from "node:assert/strict";
 import { suite, baseURL } from "./support.mjs";
-import { arm } from "./look_chapter_seeds.mjs";
+import { arm, seedChapterTwoDaily, seedChapterThree, seedChapterFive } from "./look_chapter_seeds.mjs";
 
 const t = (id) => `[data-test="${id}"]`;
 const entry = `${baseURL}${baseURL.includes("?") ? "&" : "?"}look=vertical`;
@@ -396,7 +397,7 @@ await suite("look_vertical", async (check) => {
     await assertPadHome(page, "short map");
   }, { ...SHORT, pageEntry: entry });
 
-  await check("landscape-and-chapter-two-use-the-current-screen", async (page) => {
+  await check("landscape-uses-the-current-screen", async (page) => {
     // 横持ち: 外枠を出さず、本編の画面のまま
     await page.locator(t("title-new")).waitFor();
     await page.waitForTimeout(400);
@@ -404,14 +405,12 @@ await suite("look_vertical", async (check) => {
     assert.deepEqual(state, { shell: false, vt: "", opacity: "1" });
   }, { ...WIDE, pageEntry: entry });
 
-  await check("chapter-two-and-switching-looks-leave-no-trace", async (page) => {
+  await check("switching-looks-leaves-no-trace", async (page) => {
     await waitScene(page, "title");
-    // 第2章は旧版（縦画面は第1章から作っている）
+    // 設定で旧版へ替えると、縦の外枠・回転案内の文・本編の会話の箱の幅の上書きが残らない
     await page.evaluate(async () => {
-      const core = await import("./js/core/state.js");
-      const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 2, day: 15, slot: 0 });
       document.body.dataset.screen = "none";
-      (await import("./js/core/look.js")).refreshLook();
+      (await import("./js/core/look.js")).setLook("classic");
     });
     await page.waitForFunction(() => document.documentElement.dataset.look === "classic");
     await page.waitForFunction(() => !document.querySelector(".vt-shell") && !document.documentElement.dataset.vt);
@@ -422,5 +421,94 @@ await suite("look_vertical", async (check) => {
     }));
     assert.deepEqual(residue, { shells: 0, hints: 0, attrs: [], textWidth: "" });
     assert((await page.evaluate(() => document.getElementById("rotate-hint").innerText)).includes("横向きでお楽しみください"));
+  }, { ...TALL, pageEntry: entry });
+
+  /** 縦の外枠が回転案内へ落ちなかったか（場面転換の間も）を見張る。 */
+  const watchHint = (page) => page.evaluate(() => {
+    window.__hintSeen = false;
+    clearInterval(window.__hintWatch);
+    window.__hintWatch = setInterval(() => { if (getComputedStyle(document.getElementById("rotate-hint")).display !== "none") window.__hintSeen = true; }, 40);
+  });
+  const hintSeen = (page) => page.evaluate(() => { clearInterval(window.__hintWatch); return window.__hintSeen; });
+
+  await check("chapter-two-morning-map-and-station-in-the-shell", async (page) => {
+    // VPN17: 第2章以降の日常パートも縦の外枠のまま（旧版の画面にも回転案内にもならない）
+    await waitScene(page, "title");
+    await watchHint(page);
+    await seedChapterTwoDaily(page);
+    // 朝の行き先の小窓（文と選択肢だけ）は、その場の背景の上の問いと返事の札
+    await waitScene(page, "menu", 40000);
+    const dialog = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll("#modal.show .modal-actions > button")].map((n) => n.textContent.trim()),
+      vertical: [...document.querySelectorAll(".vt-choice b")].map((n) => n.textContent.trim()),
+    }));
+    assert(dialog.classic.length >= 2, JSON.stringify(dialog));
+    assert.deepEqual(dialog.vertical.map((text) => text.replace(/\s+/g, "")), dialog.classic.map((text) => text.replace(/\s+/g, "")));
+    await assertPadHome(page, "chapter 2 morning");
+    await pressA(page); // 地元・橙須で過ごす
+    await waitScene(page, "map", 30000);
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "vertical");
+    assert.match(await page.locator(".vt-hud").textContent(), /第2章/);
+    await assertPadHome(page, "chapter 2 map");
+    // 駅: 一覧から選び、行き先（案内の箱のボタン）を十字キーと決定で選ぶ → 乗車の確認 → 隣町の地図
+    await pad(page, "down");
+    await page.locator(t("vt-row-station")).tap();
+    await page.locator('.vt-map-actions:not([hidden]) .vt-choice[aria-current="true"]').waitFor();
+    const first = await page.locator(".vt-map-actions .vt-choice").first().textContent();
+    assert.match(first, /柚ヶ谷/, "the first destination is picked for the round button");
+    await pressA(page);
+    await page.waitForFunction(() => /移動する/.test(document.querySelector('.vt-map-actions:not([hidden]) .vt-choice[aria-current="true"]')?.textContent || ""));
+    await pressA(page);
+    await page.waitForFunction(() => document.querySelector('#screen > :not(.done).map[data-station-arrived="widehanga"]'), null, { timeout: 30000 });
+    await waitScene(page, "map", 30000);
+    await page.waitForTimeout(600);
+    assert.equal(await page.evaluate(() => window.__remake.state.money), 35800);
+    assert.equal(await page.locator(".vt-map-actions:not([hidden]) .vt-choice").count(), 0, "the ride's confirm buttons do not stay on the next map");
+    const pins = await page.evaluate(() => ({ vertical: [...document.querySelectorAll(".vt-pin")].length, live: [...document.querySelectorAll("#screen > :not(.done).map .map-pins > .spot-pin")].filter((n) => !n.hidden).length }));
+    assert(pins.vertical > 0 && pins.vertical === pins.live, `the town's pins are shown ${JSON.stringify(pins)}`);
+    assert.equal(await hintSeen(page), false, "no rotate hint through the morning, the map and the ride");
+    assert.equal(await page.evaluate(() => window.dailyError || ""), "");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("chapter-three-card-and-tokyo-dialog", async (page) => {
+    await waitScene(page, "title");
+    await seedChapterThree(page, { cards: true });
+    await page.reload();
+    // 場面カード（ボタンだけの画面）は、背景の上の問いと返事の札
+    await waitScene(page, "menu", 40000);
+    const card = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll("#screen .ch3-wayfinding .ch3-wayfinding-map, #screen main.ch2-contest > .ch2-contest-actions button")]
+        .filter((n) => n.getClientRects().length).map((n) => n.textContent.trim().replace(/\s+/g, "")),
+      vertical: [...document.querySelectorAll(".vt-choice b")].map((n) => n.textContent.trim().replace(/\s+/g, "")),
+    }));
+    assert(card.classic.length >= 2, JSON.stringify(card));
+    assert.deepEqual(card.vertical, card.classic);
+    await assertPadHome(page, "chapter 3 card");
+    // 東京の地図（最前面の <dialog>）は自分の作りで縦に並ぶ。外枠を引っ込め、回転案内は出さない
+    await watchHint(page);
+    await pressA(page);
+    await page.waitForFunction(() => document.querySelector("dialog[open]") && document.querySelector(".vt-shell").hidden);
+    await page.waitForTimeout(900);
+    assert.equal(await hintSeen(page), false, "no rotate hint under the Tokyo dialog");
+    await page.keyboard.press("Escape");
+    await waitScene(page, "menu");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("chapter-five-home-map", async (page) => {
+    await waitScene(page, "title");
+    await seedChapterFive(page);
+    await page.reload();
+    await waitScene(page, "title", 30000);
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await arm(page);
+    await page.locator(t("vt-title-load")).tap();
+    await page.locator(t("slot-0")).waitFor({ state: "attached" });
+    await page.evaluate(() => document.querySelector('[data-test="slot-0"]').click());
+    await waitScene(page, "map", 40000);
+    await page.waitForTimeout(800);
+    assert.match(await page.locator(".vt-hud").textContent(), /第5章/);
+    const spots = await page.evaluate(() => [...document.querySelectorAll(".vt-pin")].map((n) => n.dataset.spot));
+    assert(spots.includes("ch5_to_tokyo"), `the trip to Tokyo is a pin: ${spots}`);
+    await assertPadHome(page, "chapter 5 map");
   }, { ...TALL, pageEntry: entry });
 }, { acknowledgeGrowth: false }); // 盤を自分で操作する（成長のお知らせを自動で閉じる仕組みは、開いた盤をすぐ閉じてしまう）

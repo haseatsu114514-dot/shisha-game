@@ -19,8 +19,9 @@ export const PLAYER_DEFAULT_LOOK = "vertical";
 /** 起動時の移行の版（LK09＝1・LK23＝2・LK24＝3）。 */
 export const LOOK_VERSION = 3;
 /** 様式ごとに効く章。null はすべての章。新版は LK13（2026-11-11「新版を広げる」）、DS風は LK21（2026-11-12「DS版にも戻せるように」）で全章。
- * 縦画面（煙の舞台・VPN01）は第1章から作っている（2026-11-27 オーナー「第1章を今日作った縦UIで作って」）。第2章からは旧版で表示する。 */
-export const LOOK_CHAPTERS = Object.freeze({ neo: null, retro: null, vertical: [1] });
+ * 縦画面（煙の舞台・VPN01）は第1章から作り、VPN17（2026-11-27 オーナー「マップとか会話とか日常パートは良い感じなのでその辺の二章以降を進めといて」）で全章に広げた。
+ * まだ縦にしていない場面（シーシャ作り・大会・店番・ミニゲーム）は、どの章でも回転案内のまま。 */
+export const LOOK_CHAPTERS = Object.freeze({ neo: null, retro: null, vertical: null });
 export const LOOK_EVENT = "lookchange";
 
 /**
