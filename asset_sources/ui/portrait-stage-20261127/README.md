@@ -528,3 +528,55 @@ Draw one object only, on a fully transparent background: the work sink behind th
 - Warm reflections of the bar lights on the steel, a few soft highlights, very clean.
 Do not draw: a faucet, a tap, water, dishes, cups, bottles, hookahs, sponges, towels, people, hands, a wall, tiles, a window, text, letters, logos, watermark.
 ```
+
+## 12回目: 吸い出しのはじめの絵から煙を消す（VPL96・生成なし）
+
+オーナー「あと最初から少し煙吐いてる絵になってるからそこはなくしたい　アニメーションで煙出せばいいから」。
+4回目の `craft-pull-hajime.webp`（背景なし）には、口元から右上へ細い煙が描かれていた。吸い出しでは「吸う」を押すと本編の動く煙を吐く（VPL88）ので、絵の煙は消した。画像生成は使っていない。
+
+- 消し方: 口元の右の範囲（横 440〜780・縦 190〜430）で、白っぽく色の薄い画素と縁の半透明の画素のうち、透明な背景からつながっているものだけを透明にした（目の白・吸い口の照りなど、人物の内側の白は残る）。
+- 口の横で煙の下になっていた頬は、隣の肌の色で埋め、あごの線を吸い口までつないだ。
+- 人物・吸い口・ホース・顔は変えていない。原画 `v3/hajime-pull-original.webp` はそのまま残す（煙が描かれた元の絵）。
+
+| 原画 | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `v3/hajime-pull-original.webp`（変えていない） | `craft-pull-hajime.webp`（798×1200・煙を消した） | 吸い出しのはじめ |
+
+## 13回目: 吸い出しで吐く時のはじめ（VPL100・候補2枚から1枚）
+
+オーナー「シーシャの吸い出しで煙を吐く時はホース加えたままではなく吐いてる見た目にして」。
+`gpt-image-2.6-sunburst` の編集（images/edits・品質 high・背景は透明・1024×1536・2枚）で作った。鍵は環境変数から読み、値は記録していない。入力は、12回目で煙を消した `craft-pull-hajime.webp`（くわえている絵）1枚だけ。同じ絵の「次の瞬間」として、口と手元だけを変えるよう指示した。そのため、人物の位置・大きさは元の絵とほぼ同じになった（帽子・頭・肩の左右の端のずれは 1024 幅で数ピクセル）。
+
+試作では、「吸う」を押して少しあと、くわえた絵の上にこの絵を重ねて出し、開いた口元から煙を吐く。吐き終わって少ししたら、くわえた絵へ戻す。
+
+### 生成前に決めた8行（§4.3）
+
+```
+人物      : hajime（今の吸い出しの絵＝正規の立ち絵2枚から作った4回目の絵を、そのまま入力にする）
+場面      : 完成・喫煙（吸った直後に、吸い口を口から離して吐く）
+台の型    : 画面に入れない（人物だけ・背景なし）
+HMD       : 画面に入れない
+炭        : 画面に入れない
+ホース    : 右手の硬いハンドルの下の金具 → ホース1本 → 画面の右下の外へ（元の絵と同じ）
+吸い口    : 使い捨てチップ（青緑の半透明）をハンドルの先に装着。口から手のひら1つ分離す
+構図      : 元の絵と同じ（腰から上・帽子の上端まで・背景なし）。手を胸の高さへ下げ、チップは右上を向く
+```
+
+| 原画（v3/） | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `hajime-exhale-original.webp`（1024×1536） | `craft-pull-hajime-exhale.webp`（798×1200・元の絵と同じ大きさ） | 吸い出しで吐く間。開いた口の前（横 55%・縦 28.7%）から煙を出す |
+| `hajime-exhale-candidate2-original.webp`（1024×1536） | 使わない | もう1枚の候補。ハンドルを縦に立てて持ち、手が下の金具寄り。元の絵のハンドルの斜めの向きとつながりにくいので使わない |
+
+生成後の確認（§4.4）: 人物は元の絵と同じ（顔・髪・帽子の印・パーカー・左手はポケット）。ハンドルは向きが正しく（チップが細い側・下へ太くなる・下の端に真ちゅうの金具）、ホースは金具からの1本だけで、画面の右下の外まで途切れず、分岐・3つ目の端がない。チップは唇から離れている。口は小さく丸く開き、頬はふくらませていない。煙・湯気・台の本体・ハガル・炭・文字・ロゴ（帽子の印のほか）が無い。背景は透明。合格（2枚のうち1枚を使う）。
+
+```text
+This image is the exact base illustration. Edit it into the next moment while keeping it the same picture: the same young man (Hajime), the same face and age, short messy black hair, black baseball cap with the white smoke-line emblem, black zip hoodie with white drawstrings, black t-shirt, the left hand in the hoodie pocket, the same art style, line weight, cel shading and colors, the same framing, size and position on the canvas (head, shoulders and body exactly where they are now), and the fully transparent background.
+Change only this: he has just finished a draw and has taken the hookah hose handle away from his mouth to exhale.
+- His right hand, still loosely holding the same rigid black handle, has moved down and slightly forward to about chest height. The handle is held diagonally with the short translucent teal disposable tip pointing up and to the right, clearly away from his face, about a hand's width below and in front of his chin. The tip does not touch his lips.
+- The handle keeps its correct orientation and shape: the teal tip is the narrow end, the handle becomes slightly thicker toward the lower end, and at that lower end the brass hose adapter connects to exactly one soft black hose that hangs down and leaves the frame at the lower right. No second hose, no forked hose, no break in the hose.
+- Mouth: lips slightly parted in a small, relaxed, rounded opening, as if gently blowing out. Eyes calm, looking slightly down, the same calm and natural expression (no exaggerated pursed lips, no puffed cheeks).
+- Do not draw any smoke, vapor or mist anywhere. The smoke is animated separately in the game.
+Polished anime game illustration style with clean dark outlines and two or three tone cel shading, no airbrushed gloss.
+Do not draw: any background, smoke, a necklace, a second hose, a forked hose, the hookah body, a bowl, charcoal, text, letters, logos other than the cap emblem, watermark, frame.
+```
+
