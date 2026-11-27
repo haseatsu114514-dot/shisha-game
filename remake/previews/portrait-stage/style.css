@@ -1070,6 +1070,14 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .thermo.forecast .th-now { display: none; }
 .thermo.forecast[data-selected="false"] :is(.th-range, .th-pointer) { opacity: 0; }
 
+/* タイマーの場面の空きを埋める案（VPL124）。a＝はじめの待ち姿／b＝蒸らしの湯気／c＝上に寄せるだけ */
+.t-wait, .t-steam { display: none; }
+.phone[data-tfill="a"] .t-wait { display: block; position: absolute; z-index: 0; width: 56rem; max-width: none; left: calc(50% - 2.8rem - 56rem * 0.565); top: 0.5rem; pointer-events: none; filter: drop-shadow(0 1rem 2rem #000a) brightness(0.92); }
+.phone[data-tfill="b"] .t-steam { display: block; position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.phone:is([data-tfill="b"], [data-tfill="c"]) .timer-a { justify-content: center; padding-bottom: 3.6rem; } /* タイマーを上寄りに（VPL124） */
+.phone[data-tfill="a"] .timer-a { padding-bottom: 2rem; } /* 案A: はじめの頭と肩が見える所まで、タイマーを少し上へ */
+.timer-a { z-index: 1; }
+
 /* 温度計（VPL103）: 配合・詰め方・吸い出しで、上端・長さ・太さをそろえる。長さは、いちばん狭い配合の上の画面に合わせる（下の段の高さ --cp-mix から決める）。
    いちばん下の一言の段（配合の「この配合の適温」など）は、どの場面でも同じ高さを取っておく（空でも管の長さが変わらない） */
 .phone[data-kind="craft"] .thermo { top: 10.8rem; bottom: auto; height: calc(100cqh - var(--cp-mix) - var(--band) - 15.2rem); grid-template-rows: auto 1fr 2.8rem; }
