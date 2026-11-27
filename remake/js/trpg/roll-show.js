@@ -9,7 +9,7 @@
 //   4. 補正のチップが入り、目標までのゲージが伸びる。30の旗を越えたら旗が弾け飛ぶ。届かなければ「あと N」が残る。
 //   5. 評価の大文字が叩きつけられる。成功＝金・紙吹雪・集中線、クリティカル＝四方から文字が飛んでくる・金の噴水・大揺れ、
 //      ひと手間＝緑、思わぬ出来事＝落ちてくる重い文字・画面が沈む、ファンブル＝ダイスが割れ・青く暗く・文字が崩れる。
-// スキル（仲間の切り札・振り直し）を使った判定は、投げる前に「SKILL!」のカットインで誰の何が発動したかを見せる。
+// スキル（仲間の助力・振り直し）を使った判定は、投げる前に「SKILL!」のカットインで誰の何が発動したかを見せる。
 // 振り直せる時は、評価のあとに「○○の「△△」で振り直せる！」と知らせる。
 // タップ・Enter・Space・Escape で結果まで飛ばせる。動きを減らす設定と、本番のDOM以外（単体テストの簡易DOM）では null を返し、
 // 呼び出し側がこれまでどおり卓の窓の中で見せる。揺れを減らす設定（body.reduce-shake）では揺れ・閃光・寄りを省く。
@@ -34,7 +34,7 @@ const CRACK = '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><
 // 評価のロゴ（Codex 作・#4082・asset_sources/trpg-roll-logos/）。評価の色（tone）→ 絵の名前。
 const LOGO_FILES = Object.freeze({ critical: "critical", fumble: "fumble", success: "success", mixed: "partial", trouble: "miss", skill: "skill" });
 const logoUrl = kind => LOGO_FILES[kind] ? new URL(`../../img/ui/trpg/roll-logos/${LOGO_FILES[kind]}.webp`, import.meta.url).href : "";
-// スキルのカットインは投げた直後に出るので、切り札を選べる時だけ先に読む。
+// スキルのカットインは投げた直後に出るので、スキルを選べる時だけ先に読む。
 // 評価のロゴは、出目が決まった時に劇場の img が必要な1枚を読み始める。
 let skillLogoRequested = false;
 export function preloadSkillLogo() {
@@ -102,7 +102,10 @@ export function playRollShow(host, show) {
     el("span.trpg-rs-crack", { html: CRACK }),
   ]));
   const plus = [el("span.trpg-rs-plus.a", { text: "+" }), el("span.trpg-rs-plus.b", { text: "+" })];
-  const chip = el("div.trpg-rs-chip", [el("small", { text: show.bonusLabel || "補正" }), el("b", { text: "＋" + bonus })]);
+  // 補正がいくつか重なる時（能力＋助力など）は、何が足されて＋N になったかを丸の中に書く（縦の試作が bonusParts を渡す時だけ。VPG30）
+  const parts = Array.isArray(show.bonusParts) && show.bonusParts.length > 1 ? show.bonusParts : null;
+  const chip = el("div.trpg-rs-chip", { dataset: { parts: parts ? String(parts.length) : "" } },
+    [el("small", { text: parts ? parts.join("\n") : show.bonusLabel || "補正" }), el("b", { text: "＋" + bonus })]); // 内訳は1つずつ改行（丸の中で語の途中で折れない）
   const head = el("header.trpg-rs-head", [
     el("small.trpg-rs-kicker", { text: thrown === null ? "DICE ROLL" : "RE-ROLL" }),
     el("strong", { text: show.title }), show.who ? el("span", { text: show.who + (show.bonusLabel && show.bonusLabel !== "補正" ? " · " + show.bonusLabel : "") }) : null,
@@ -134,7 +137,7 @@ export function playRollShow(host, show) {
     el("div.trpg-rs-skill-inner", [
       el("span.trpg-rs-skill-face", skill.face ? [skill.face] : []),
       el("div.trpg-rs-skill-copy", [
-        el("div.trpg-rs-skill-kicker", [el("img.trpg-rs-skill-logo", { src: logoUrl("skill"), alt: "", decoding: "async" }), el("small", { text: (skill.who || "") + "の切り札" })]),
+        el("div.trpg-rs-skill-kicker", [el("img.trpg-rs-skill-logo", { src: logoUrl("skill"), alt: "", decoding: "async" }), el("small", { text: (skill.who || "") + "のスキル" })]),
         el("strong", [word("「" + skill.name + "」", "skill")]),
         el("em", { text: skill.effect || "" }),
       ]),
@@ -309,7 +312,8 @@ export function playRollShow(host, show) {
   animate(head, [{ opacity: 0, transform: "translateX(-120px) skewX(-20deg)" }, { opacity: 1, transform: "none" }], { duration: 360, delay: 80, easing: EASE.out });
   animate(goalNode, [{ opacity: 0, scale: "2.4", rotate: "20deg" }, { opacity: 1, scale: "1", rotate: "0deg" }], { duration: 380, delay: 200, easing: EASE.back });
   animate(hint, [{ opacity: 0 }, { opacity: .75 }], { duration: 300, delay: 600 });
-  if (skillNode) playSkill();
+  // カットインの間は印を立てる（縦の試作は、この間サイコロの間の「＋」を隠す。VPG33）
+  if (skillNode) { node.dataset.cutin = "true"; playSkill(); }
   after(lead, main);
 
   /** スキル発動のカットイン: 金の帯が斜めに走り、使った人の顔と技の名前が叩きつけられる。ダイスはその後に投げ込まれる。 */
@@ -324,6 +328,7 @@ export function playRollShow(host, show) {
   }
 
   function main() {
+  delete node.dataset.cutin;
   sound("shake");
 
   // ---- 2. 投げ込み ----
@@ -652,11 +657,11 @@ export function playRollShow(host, show) {
 }
 
 /**
- * 劇場の中で切り札を選ぶ（縦の試作・VPG29。2026-11-27 オーナー「スキルはダイス劇場内で発動選ぶ」）。
+ * 劇場の中でスキルを使うか選ぶ（縦の試作・VPG29。2026-11-27 オーナー「スキルはダイス劇場内で発動選ぶ」）。
  * 劇場と同じ幕・見出し・目標の盾の上に、選ぶ札を置いて、押されるまで待つ。投げる前（助力を使うか）と、
  * 出目が出た後（振り直すか）の両方に使う。判定・確率・回数は呼び出し側が決めた値をそのまま書き、ここでは何も決めない。
  * @param host 判定の窓を載せている幕（.trpg-overlay）
- * @param opts { title, who, goal, dice: [a, b] | null（投げる前は null）, total, label: 評価の一言, tone,
+ * @param opts { title, who, goal, dice: [a, b] | null（投げる前は null）, total, bonus, bonusParts: 補正の内訳（例 ["手際＋2", "助力＋7"]）, label: 評価の一言, tone,
  *               prompt: 問いかけの一言, choices: [{ face: Node, owner, name, text, odds, test }], keep: { text, test },
  *               onPick(index), onKeep() }
  * @returns { node, cancel() } 。押す・やめるのどちらかで片付き、onPick / onKeep を一度だけ呼ぶ。
@@ -676,8 +681,19 @@ export function showRollChoice(host, opts) {
     ]);
     return { die, value };
   });
-  const verdict = dice ? el("div.trpg-rs-choice-verdict", { dataset: { tone } }, [
-    el("strong", { text: "合計 " + opts.total }), opts.label ? el("span", { text: String(opts.label) }) : null,
+  // 出目の後は、合計が出目と補正の足し算だと分かる式を出す（2026-11-27 オーナー「ダイスが19と1で29になってるけどバグ？」VPG30）。
+  // 劇場の本体と同じく、2つのサイコロの間に「＋」、補正は真鍮の丸（何が足されたか＋N）で。
+  const bonus = Number(opts.bonus) || 0, parts = Array.isArray(opts.bonusParts) ? opts.bonusParts : [];
+  const plus = dice ? el("span.trpg-rs-plus.a.trpg-rs-choice-plus", { text: "+", "aria-hidden": "true" }) : null;
+  const verdict = dice ? el("div.trpg-rs-choice-verdict", { dataset: { tone }, "aria-label": dice[0] + " ＋ " + dice[1] + (bonus ? " ＋ 補正" + bonus : "") + " ＝ 合計 " + opts.total + (opts.label ? "。" + opts.label : "") }, [
+    el("div.trpg-rs-choice-eq", { dataset: { test: "trpg-show-equation" } }, [
+      el("span.trpg-rs-eq-num", { text: String(dice[0]) }), el("i", { text: "＋" }), el("span.trpg-rs-eq-num", { text: String(dice[1]) }),
+      bonus ? el("i", { text: "＋" }) : null,
+      bonus ? el("span.trpg-rs-eq-chip", [el("small", { text: parts.length ? parts.join("・\u200b") : "補正" }), el("b", { text: String(bonus) })]) : null, // 折れる時は「・」の後だけ
+      el("i", { text: "＝" }),
+      el("strong", { text: String(opts.total) }),
+    ].filter(Boolean)),
+    opts.label ? el("span.trpg-rs-choice-label", { text: String(opts.label) }) : null,
   ].filter(Boolean)) : null;
   const cards = opts.choices.map((choice, index) => el("button.trpg-rs-pick", { type: "button", dataset: { test: choice.test }, onclick: finish(() => opts.onPick(index)) }, [
     el("span.trpg-rs-pick-face", { "aria-hidden": "true" }, choice.face ? [choice.face] : []),
@@ -688,8 +704,8 @@ export function showRollChoice(host, opts) {
     el("em.trpg-rs-pick-odds", { text: choice.odds || "" }),
   ]));
   const keep = el("button.trpg-rs-keep", { type: "button", dataset: { test: opts.keep?.test || "trpg-show-keep" }, onclick: finish(() => opts.onKeep()) }, [opts.keep?.text || "このまま"]);
-  const panel = el("div.trpg-rs-choose", { role: "group", "aria-label": opts.prompt || "切り札" }, [el("p.trpg-rs-choose-prompt", { text: opts.prompt || "" }), ...cards, keep]);
-  const camera = el("div.trpg-rs-camera", [head, goalNode, ...dieNodes.map(d => d.die), verdict, panel].filter(Boolean));
+  const panel = el("div.trpg-rs-choose", { role: "group", "aria-label": opts.prompt || "スキル" }, [el("p.trpg-rs-choose-prompt", { text: opts.prompt || "" }), ...cards, keep]);
+  const camera = el("div.trpg-rs-camera", [head, goalNode, ...dieNodes.map(d => d.die), plus, verdict, panel].filter(Boolean));
   const node = el("div.trpg-roll-show.trpg-rs-choosing", { dataset: { phase: "choose", tone, rolled: String(!!dice) } },
     [el("i.trpg-rs-veil"), el("i.trpg-rs-lines"), el("div.trpg-rs-fit", [camera]), el("i.trpg-rs-vignette")]);
   function onKey(event) {

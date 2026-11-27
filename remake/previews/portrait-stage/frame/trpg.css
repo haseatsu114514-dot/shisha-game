@@ -160,7 +160,7 @@ html:root[data-density="phone"][data-layout="portrait"] { --phone-text: 24px; --
 #stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-roll-chance { order: 3; }
 #stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-roll-details { order: 4; align-self: stretch; }
 #stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > :is(.trpg-rerolls, .trpg-aid, .trpg-roll-receipts) { order: 5; align-self: stretch; width: auto; }
-/* 振った後: サイコロ → 合計と出来 → 目標までの目盛り → 切り札 → 振り直し */
+/* 振った後: サイコロ → 合計と出来 → 目標までの目盛り → スキル → 振り直し */
 #stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-dice-total { order: 3; }
 #stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-roll-gauge { order: 3; position: relative; align-self: stretch; margin: 26px 10px 6px; }
 #stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-roll-trump { order: 4; }
@@ -550,7 +550,7 @@ html:root[data-density="phone"][data-layout="portrait"] #stage .trpg-root.trpg-c
 #stage .trpg-root .trpg-roll-show .trpg-rs-mega { font-size: 118px; }
 #stage .trpg-root .trpg-roll-show .trpg-rs-verdict-line > strong { font-size: 96px; }
 #stage .trpg-root .trpg-roll-show .trpg-rs-verdict-line > em { font-size: 30px; }
-/* 仲間の切り札のカットイン: 幅 720 に収まる大きさに */
+/* 仲間のスキルのカットイン: 幅 720 に収まる大きさに */
 #stage .trpg-root .trpg-roll-show .trpg-rs-skill { top: 282px; height: 300px; }
 #stage .trpg-root .trpg-roll-show .trpg-rs-skill-inner { gap: 22px; padding: 0 20px; }
 #stage .trpg-root .trpg-roll-show .trpg-rs-skill-face { width: 144px; height: 144px; }
@@ -645,8 +645,8 @@ html:root[data-density="phone"][data-layout="portrait"] #stage .trpg-root.trpg-c
 #stage .trpg-root .trpg-inline-help-body :is(span, .trpg-declare-rule) { font-size: 23px; line-height: 1.55; }
 #stage .trpg-root .trpg-inline-help-body { background: linear-gradient(170deg, #2f1c10, #1d1109); }
 
-/* ── 切り札は劇場の中で選ぶ（VPG29。roll-show.js の showRollChoice）: 劇場と同じ幕・見出し・目標・サイコロの上に、選ぶ札を置く。
-      投げる前＝「切り札を使う？」（仲間の助力）、出目が出た後＝「振り直す？」（1個目・2個目）。どちらも「使わずに振る／このまま続ける」で先へ ── */
+/* ── スキルは劇場の中で選ぶ（VPG29。roll-show.js の showRollChoice）: 劇場と同じ幕・見出し・目標・サイコロの上に、選ぶ札を置く。
+      投げる前＝「スキルを使う？」（仲間の助力）、出目が出た後＝「振り直す？」（1個目・2個目）。どちらも「使わずに振る／このまま続ける」で先へ ── */
 #stage .trpg-root .trpg-roll-show.trpg-rs-choosing { cursor: default; }
 #stage .trpg-root .trpg-roll-show.trpg-rs-choosing :is(.trpg-rs-head, .trpg-rs-goal, .trpg-rs-die) { opacity: 1; }
 #stage .trpg-root .trpg-roll-show.trpg-rs-choosing .trpg-rs-lines { opacity: .14; }
@@ -694,3 +694,39 @@ html:root[data-density="phone"][data-layout="portrait"] #stage .trpg-root.trpg-c
 #stage .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] .trpg-dice-total .trpg-dice-grade { font-size: 52px; font-weight: 900; line-height: 1.15; }
 #stage .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] .trpg-dice-total strong { font-size: 32px; opacity: .9; }
 #stage .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] .trpg-modal-actions .trpg-button { min-height: 96px; font-size: 34px; }
+
+/* ── 合計の式・題の位置・スキルの知らせの位置（VPG30〜VPG33。2026-11-27 オーナー「これダイスが19と1で29になってるけどバグ？」
+      「選んだ香りを一台にするって記載がなんか変な位置にあるサイコロ前後」「スキル使った時なんか上の方にスキル名とか発動したの出るのが変　位置を整えて」） ── */
+/* 補正の丸: 補正が重なる時は、何が足されて＋N になったか（手際＋2・助力＋7）を丸の中に2行まで（roll-show.js が data-parts を付ける） */
+#stage .trpg-root .trpg-roll-show .trpg-rs-chip[data-parts]:not([data-parts=""]) > small { max-width: 150px; white-space: pre-line; overflow: visible; font-size: 26px; line-height: 1.08; text-align: center; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-chip[data-parts]:not([data-parts=""]) > b { font-size: 48px; }
+/* 「振り直す？」: 劇場と同じく2つのサイコロの間に「＋」。その下に「19 ＋ 1 ＋ 補正 ＝ 29」の式（補正は真鍮の札に、何が足されたかと数）と評価の一言 */
+#stage .trpg-root .trpg-roll-show .trpg-rs-choice-plus { opacity: 1; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-choice-verdict { top: 588px; flex-direction: column; align-items: center; gap: 8px; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-choice-eq { display: flex; align-items: center; justify-content: center; gap: 12px; max-width: 690px; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-choice-eq > :is(.trpg-rs-eq-num, strong) { font-size: 56px; font-weight: 900; line-height: 1; color: #fff8e6; text-shadow: 0 3px 0 #000, 0 0 16px #000c; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-choice-eq > strong { font-size: 68px; color: #ffe08a; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-choice-eq > i { font-style: normal; font-size: 44px; font-weight: 900; line-height: 1; color: #ffd76a; -webkit-text-stroke: 6px #1a0f04; paint-order: stroke fill; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-eq-chip { display: grid; justify-items: center; min-width: 104px; padding: 8px 16px 6px; border-radius: 20px; color: #3a2a10;
+  background: linear-gradient(180deg, #f9e3a0, #dcae4a); box-shadow: 0 0 0 3px #1a0f04, 0 6px 14px #000a; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-eq-chip > small { max-width: 300px; font-size: 26px; font-weight: 900; line-height: 1.15; text-align: center; word-break: keep-all; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-eq-chip > b { font-size: 48px; font-weight: 900; line-height: 1; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-choice-verdict > .trpg-rs-choice-label { font-size: 40px; }
+#stage .trpg-root .trpg-roll-show.trpg-rs-choosing[data-rolled="true"] .trpg-rs-choose { top: 772px; gap: 14px; }
+#stage .trpg-root .trpg-roll-show.trpg-rs-choosing[data-rolled="true"] .trpg-rs-choose-prompt { margin: 0; }
+/* スキルのカットインは、見出しのすぐ下ではなく、サイコロが飛び込む前の画面の真ん中に */
+#stage .trpg-root .trpg-roll-show .trpg-rs-skill { top: 500px; height: 300px; }
+/* カットインの間は、まだ止まっていないサイコロの間の「＋」を出さない（振り直しの劇場では、帯の上に「＋」だけ浮いて見えた） */
+#stage .trpg-root .trpg-roll-show[data-cutin="true"] .trpg-rs-plus { opacity: 0 !important; }
+/* 劇場の間の「盛り上がり ＋1」の知らせは、画面の上の端ではなく、カットインの帯のすぐ下の真ん中に（帯の下の端＝舞台の 800） */
+#stage .trpg-root.trpg-cinematic:has(.trpg-roll-show) :is(.trpg-heat-pop, .trpg-heat-pop:not([data-tier="0"])) {
+  left: 50%; right: auto; top: calc(50% + 170px * var(--rs-k, .88)); translate: -50% 0; max-width: calc(100% - 40px); }
+/* 振る前の窓・劇場の後の窓の題: 窓の縁（飾りの角）に掛からないよう、内側に余白を取って真ん中に。決まり（30以上で成功）はその下の行に */
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage > h2 { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  margin: 10px 12px 14px; padding: 0 8px; text-align: center; font-size: 30px; font-weight: 700; line-height: 1.3; letter-spacing: .04em; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage > h2 .trpg-roll-rule { position: static; margin: 0; font-size: 22px; opacity: .85; }
+/* 劇場の後の窓: 評価の一言の下に、合計が出目と補正の足し算だと分かる1行（「19 ＋ 1 ＋ 補正9 ＝ 合計 29」） */
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] .trpg-dice-total { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: baseline; column-gap: 10px; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] .trpg-dice-total .trpg-dice-grade { order: -1; flex-basis: 100%; text-align: center; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] .trpg-roll-equation { display: inline; font-size: 26px; font-weight: 700; color: #e9dcc0; opacity: .9; }
+

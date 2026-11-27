@@ -246,8 +246,9 @@ await suite("portrait-games", async check => {
     assert(await page.locator('[data-test="trpg-pan-prev"]').isDisabled(), "there is nothing beyond the left pane");
   }, { ...PHONE, pageEntry: frame("trpg.html?jump=explore"), pageReadySelector: '[data-test="trpg-book-spread"]' });
 
-  // ボドゲカフェの切り札は、ダイス劇場の中で選ぶ（VPG29）: 振る前の窓に助力の札は無く、振ると劇場の幕の上で「切り札を使う？」。
-  // 使うと助力の切り札のカットインから投げ込まれ、振り直せる出目なら劇場の中で「振り直す？」（1個目・2個目）が出る。
+  // ボドゲカフェのスキルは、ダイス劇場の中で選ぶ（VPG29）: 振る前の窓に助力の札は無く、振ると劇場の幕の上で「スキルを使う？」。
+  // 使うと助力のスキルのカットインから投げ込まれ、振り直せる出目なら劇場の中で「振り直す？」（1個目・2個目）が出る。
+  // 「振り直す？」には、合計が出目と補正の足し算だと分かる式（VPG30）。題は窓の縁に掛からない（VPG32）。画面の字は「切り札」でなく「スキル」（VPG31）
   // 振り直すと、その1個だけを劇場で投げ直し、後の窓は評価の一言・合計・続けるだけ（VPG28）
   await check("trpg-portrait-skills-are-chosen-in-the-dice-show", async page => {
     const vis = selector => page.locator(selector).filter({ visible: true }).first();
@@ -267,10 +268,17 @@ await suite("portrait-games", async check => {
     assert.equal(await page.locator(".trpg-roll-stage .trpg-aid").count(), 0, "the aid card is not in the window");
     assert.equal(await page.locator(".trpg-roll-stage .trpg-roll-scene").isVisible(), false, "the dice picture waits for the show");
     await boxesInside(page, ['[data-test="trpg-roll-chance"] > strong', '[data-test="trpg-roll"]']);
+    const titleInside = () => page.evaluate(() => {
+      const box = document.querySelector(".trpg-roll-stage").getBoundingClientRect(), title = document.querySelector(".trpg-roll-stage > h2").getBoundingClientRect();
+      return title.left >= box.left + 8 && title.right <= box.right - 8 && title.top >= box.top + 8;
+    });
+    assert(await titleInside(), "the check's title sits inside the window, clear of the frame");
     await vis('[data-test="trpg-roll"]').tap();
     const support = vis('[data-test="trpg-show-support"]');
     await support.waitFor({ timeout: 10000 });
     assert.match(await support.innerText(), /成功 約\d+%.*→.*\d+%/s, "the card shows the odds without and with the aid");
+    assert.equal((await page.locator(".trpg-rs-choose-prompt").innerText()).trim(), "スキルを使う？");
+    assert.doesNotMatch(await page.locator(".trpg-roll-show").innerText(), /切り札/, "the show says スキル, not 切り札");
     await boxesInside(page, ['[data-test="trpg-show-support"]', '[data-test="trpg-show-nosupport"]'], { tap: 44 });
     await support.tap();
     // 劇場（助力のカットイン → 投げ込み）。振り直せる出目なら、劇場の中で選ぶ札が出る
@@ -281,6 +289,16 @@ await suite("portrait-games", async check => {
     assert.equal(reached, "reroll", "the seeded throw misses, so the reroll is offered in the show");
     assert.equal(await page.evaluate(() => window.__trpg.state && document.querySelectorAll(".trpg-rerolls").length), 0, "the window does not offer the reroll");
     await boxesInside(page, ['[data-test="trpg-show-reroll-0"]', '[data-test="trpg-show-reroll-1"]', '[data-test="trpg-show-keep"]'], { tap: 44 });
+    // 合計は「出目＋出目＋補正」。補正の札に、何が足されたか（能力・助力）と数が出る
+    const eq = await page.evaluate(() => {
+      const node = document.querySelector('[data-test="trpg-show-equation"]');
+      return { dice: [...node.querySelectorAll(".trpg-rs-eq-num")].map(n => Number(n.textContent)), bonus: Number(node.querySelector(".trpg-rs-eq-chip > b")?.textContent),
+        parts: node.querySelector(".trpg-rs-eq-chip > small")?.textContent || "", total: Number(node.querySelector("strong").textContent) };
+    });
+    assert(eq.bonus > 0, `the bonus is part of the equation: ${JSON.stringify(eq)}`);
+    assert.equal(eq.dice[0] + eq.dice[1] + eq.bonus, eq.total, "dice + bonus = total");
+    assert.match(eq.parts, /助力＋7/, "the bonus says what was added");
+    await boxesInside(page, ['[data-test="trpg-show-equation"]']);
     await vis('[data-test="trpg-show-reroll-1"]').tap();
     await page.waitForFunction(() => document.querySelector('.trpg-roll-show[data-thrown="1"]'), null, { timeout: 5000 });
     await vis('[data-test="trpg-settle"]').waitFor({ timeout: 20000 });
@@ -290,6 +308,8 @@ await suite("portrait-games", async check => {
     }
     await boxesInside(page, ['[data-test="trpg-roll-total"]', '[data-test="trpg-settle"]']);
     assert.equal(await page.locator(".trpg-rerolls").count(), 0, "no reroll is left in the window");
+    assert(await titleInside(), "the title sits inside the window after the show too");
+    assert.match(await page.locator(".trpg-roll-stage .trpg-roll-equation").innerText(), /＋ 補正\d+ ＝/, "the total after the show says it adds the bonus");
   }, { ...PHONE, pageEntry: frame("trpg.html?jump=aid"), pageReadySelector: '[data-test="trpg-book-spread"]' });
 
   // てつこといっしょ: 付き合ってくれる回数を使い切ると、帰りの札（ハート → なかよし）が縦の画面に収まって出る。
