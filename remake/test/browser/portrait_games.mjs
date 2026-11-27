@@ -195,6 +195,47 @@ await suite("portrait-games", async check => {
     assert.equal(await page.evaluate(() => [...document.styleSheets].some(sheet => /portrait\.css/.test(sheet.href || ""))), false, "portrait.css is not loaded");
   }, { pageEntry: `${baseURL}previews/dj/index.html?set=1&mute=1`, pageReadySelector: "#play-a" });
 
+  // ボドゲカフェの調べる場面（VPG23）: 部屋の絵を縦で大きく見せ、左半分・右半分を「左・右」の札と横に払うので切り替える。
+  // 今の側に無い印は隠れ、反対側の札にまだ調べていない数が出る。右へ移ると隠れていた印が画面の中に出て、押すと手がかりが増える
+  await check("trpg-portrait-explore-pans-left-and-right", async page => {
+    await page.waitForFunction(() => document.getElementById("stage")?.dataset.exploring === "true", null, { timeout: 180000 });
+    await page.waitForTimeout(600);
+    const view = page.viewportSize();
+    const pic = await page.locator(".trpg-room > img").boundingBox();
+    assert(pic.height >= view.height * .4 && pic.width > view.width * 1.6, `the room picture is tall and wider than the screen: ${JSON.stringify(pic)}`);
+    const spots = () => page.evaluate(() => [...document.querySelectorAll(".trpg-room.interactive .trpg-spot")].map(n => ({ id: n.dataset.test, off: n.dataset.off === "true", checked: n.classList.contains("checked") })));
+    let now = await spots();
+    const leftShown = now.filter(n => !n.off), leftHidden = now.filter(n => n.off);
+    assert(leftShown.length && leftHidden.length, `the left half shows some spots and hides the rest: ${JSON.stringify(now)}`);
+    await boxesInside(page, leftShown.map(n => `[data-test="${n.id}"] > i`), { tap: 44 });
+    await boxesInside(page, ['[data-test="trpg-pan-left"]', '[data-test="trpg-pan-right"]'], { tap: 44 });
+    assert.equal(await page.locator('[data-test="trpg-pan-right"] em').innerText(), String(leftHidden.filter(n => !n.checked).length), "the right tab counts the spots waiting there");
+    await page.locator('[data-test="trpg-pan-right"]').tap();
+    await page.waitForFunction(() => document.getElementById("stage").dataset.pan === "right");
+    await page.waitForTimeout(500);
+    now = await spots();
+    const target = now.find(n => !n.off && leftHidden.some(h => h.id === n.id));
+    assert(target, `a spot hidden on the left shows on the right: ${JSON.stringify(now)}`);
+    await boxesInside(page, [`[data-test="${target.id}"] > i`], { tap: 44 });
+    const notes = page.locator('[data-test="trpg-compare-notes"]');
+    const before = await notes.innerText();
+    await page.locator(`[data-test="${target.id}"] > i`).tap();
+    await page.waitForFunction(() => document.getElementById("stage").dataset.exploring === "false");
+    for (let i = 0; i < 80; i++) {
+      if (await page.evaluate(() => document.getElementById("stage").dataset.exploring === "true")) break;
+      await page.evaluate(() => [...document.querySelectorAll('[data-test="trpg-next"]')].find(n => n.offsetParent && !n.disabled)?.click());
+      await page.waitForTimeout(250);
+    }
+    assert(await page.locator(`[data-test="${target.id}"]`).evaluate(n => n.classList.contains("checked")), "the spot is now investigated");
+    assert.notEqual(await notes.innerText(), before, "the memo counts the new clue");
+    // 絵を右へ払うと左半分へ戻る
+    const box = await page.locator(".trpg-room > img").boundingBox();
+    const y = pic.y + pic.height * .5;
+    await page.mouse.move(view.width * .2, y); await page.mouse.down(); await page.mouse.move(view.width * .5, y, { steps: 6 }); await page.mouse.move(view.width * .8, y, { steps: 6 }); await page.mouse.up();
+    await page.waitForFunction(() => document.getElementById("stage").dataset.pan === "left");
+    assert(box, "the picture is laid out");
+  }, { ...PHONE, pageEntry: frame("trpg.html?jump=explore"), pageReadySelector: '[data-test="trpg-book-spread"]' });
+
   // てつこといっしょ: 付き合ってくれる回数を使い切ると、帰りの札（ハート → なかよし）が縦の画面に収まって出る。
   // なかよし 58 から帰ると、肉球3つの節目（60）を越えて色つきの火種のしるしが並ぶ（TKT35・TKT39）。ご機嫌ななめの日でも一日は終わる（TKT36）
   await check("tetsuko-portrait-day-ends-on-the-result-card", async page => {

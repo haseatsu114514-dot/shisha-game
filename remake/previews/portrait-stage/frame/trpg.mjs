@@ -12,9 +12,9 @@ import { trpgTrialState } from "../../../js/trpg/trial-state.js";
 import { initPortraitFit, shot, param, tellParent, until } from "./frame.mjs";
 
 const stage = document.getElementById("stage"), host = document.getElementById("trpg-app");
-// ダイスの劇場（js/trpg/roll-show.js）は、縦では 720×1240 の縦長の舞台に組み替えて（trpg.css）、画面の幅いっぱい近くまで大きく見せる。
+// ダイスの劇場（js/trpg/roll-show.js）は、縦では 720×1300 の縦長の舞台に組み替えて（trpg.css）、画面の幅いっぱい近くまで大きく見せる。
 // 倍率は幅（640）と高さ（ステージの高さ）の両方に収まる大きさ（VPG22）
-const RS_W = 720, RS_H = 1240;
+const RS_W = 720, RS_H = 1300;
 initPortraitFit(stage, ({ width, height }) => {
   stage.style.setProperty("--rs-k", String(Math.min(width / RS_W, (height - 24) / RS_H).toFixed(4)));
   syncExplore();
@@ -24,6 +24,8 @@ document.documentElement.dataset.density = "phone";
 document.documentElement.dataset.layout = "portrait";
 
 const SHOT_SCENARIO = "ordinary-cup"; // 止め絵に使う物語（世界一普通の一台）
+// ?jump=explore などは、止め絵と同じ場面まで自動で進めて、そこから遊べる（止め絵と違い、画面を押せる。検査用）
+const jump = param("jump"), scene = shot || jump;
 let controller = null, state = null, resources = null;
 
 /** 本棚を開く（卓を遊び終えたら次の夜、閉じたら枠に知らせて開き直す）。 */
@@ -42,7 +44,7 @@ async function boot() {
   resources = await loadTrpgClubResources();
   state = trpgTrialState(newState(), resources.catalog, "ready");
   // 店長の説明（はじめての卓）は本編と同じに出す。止め絵だけは説明を飛ばして、場面をそろえる
-  if (shot) { state.flags ||= {}; state.flags._trpg_tutorial_seen = true; state.seed = 7; }
+  if (scene) { state.flags ||= {}; state.flags._trpg_tutorial_seen = true; state.seed = 7; }
   shelf();
   window.__trpg = Object.freeze({ get state() { return state; }, get ready() { return !!host.querySelector('[data-test="trpg-book-spread"]'); } });
 }
@@ -209,4 +211,4 @@ new MutationObserver(() => { if (!stepQueued) { stepQueued = true; requestAnimat
 
 window.addEventListener("pagehide", () => controller?.destroy());
 boot().catch(error => { console.error(error); host.textContent = "ボドゲカフェを準備できませんでした。読み込み直してください。"; });
-if (shot) pose(shot).catch(error => console.warn(error));
+if (scene) pose(scene).catch(error => console.warn(error));
