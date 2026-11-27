@@ -496,6 +496,20 @@ export const LOADING_COMICS = [
     ],
   },
   {
+    // 2026-11-27 オーナー依頼。②のスマホの画面に asset_sources/parody/ageha-karusugi-banner のパロディバナーを合成（台本・生成記録は 91-ageha-model-job/）。
+    id: "ageha-model-job",
+    title: "モデルの仕事",
+    cast: ["ageha"],
+    contexts: ["craft"],
+    minChapter: 1,
+    note: "番外編のギャグ漫画です。左から右へお読みください。（91-ageha-model-job）",
+    caption: "あげはは、雑誌の読者モデルもしている店長。",
+    panels: [
+      { src: imgFileUrl("loading/ageha-model-job-1.webp"), alt: "あげはの店で、あげはがスマホを高く掲げて大喜び「モデルの仕事取れた！」。はじめが拍手して「雑誌ですか？」。" },
+      { src: imgFileUrl("loading/ageha-model-job-2.webp"), alt: "あげはがドヤ顔でピースしながらスマホの画面を突き出す。画面には、両手で口元を覆ったあげはの写真と「うわっ…私のシーシャ、軽すぎ…？」の見出しの広告。はじめは真顔で汗をかき「よく見るやつ…」。" },
+    ],
+  },
+  {
     id: "rei-castle-cake",
     title: "ケーキの飾り",
     cast: ["kuraudo"],
