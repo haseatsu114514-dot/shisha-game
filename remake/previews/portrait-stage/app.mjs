@@ -124,6 +124,8 @@ const PACKS = [
 const STEPS = [["water", "水入れ"], ["mix", "配合"], ["pack", "詰め方"], ["holes", "穴あけ"], ["coal", "炭焼き"], ["steam", "蒸らし"], ["pull", "吸い出し"], ["care", "調整"]];
 // この試作で遊べる作る場面（本編と同じ順。炭と調整は省く）
 const CRAFT_SCENES = ["water", "mix", "pack", "holes", "coal", "steam", "pull"];
+// 温度ゲージを出す場面（VPL61）。穴あけ・炭焼き・雑念よけの間は消し、吸い出しで戻す
+const THERMO_ON = new Set(["pack", "pull"]);
 const COACH = {
   water: "線のあいだまで注げ",
   coal: "全面が赤くなったら取れ",
@@ -229,6 +231,11 @@ const DODGE_WORDS = [
   "香り、飛んでないか", "手が、汗ばむ", "時間ばかり気になる", "深呼吸、わすれてた",
   "熱、強すぎないかな", "煙、ちゃんと出るかな", "さっきの手順、大丈夫か", "吸い出しで崩したくない",
 ];
+// アタック（本編 steam-slash.js）: 上前方の扇形で言葉の弾を斬る。届く距離80、待ち1.8秒。斬った言葉の数だけ心が落ち着く
+const ATTACK = { reach: 92, half: 0.95, cool: 1800, calm: 300 };
+// 心の状態（本編 steam-mind.js）: 被弾の衝撃は4秒で引き、被弾の数だけ少し残る。6秒落ち着いていると無心
+const MIND_LV = ["clear", "steady", "unsteady", "shaken"];
+const MIND_INK = { clear: "#a8e6ff", steady: "#86d6c5", unsteady: "#e4bc77", shaken: "#ef8795" };
 const DODGE = { time: 9000, ready: 1200, every: 460, speed: [105, 145], wave: 2800, warn: 750, invuln: 900, bombCool: 8000, bombR: 120, move: 220, slow: 95, core: 4 };
 // 炭焼き（VPL54・VPL55）: 本編 remake/js/craft/heat_logic.js の値。炭は3個、取り頃は4.2〜7.4秒の抽選（隣の炭と0.75秒以上ずらす）、
 // ジャストの幅は0.5秒（試作はレッスンと同じ×1.5）。p＝経過÷取り頃で判定し、1.75倍で灰になって落ちる。窓が開く0.3秒前に一度だけ瞬く
@@ -275,6 +282,7 @@ const GALLERY = [
   { scene: "coal", caption: "作る・炭焼き（tonari）" },
   { scene: "coal", caption: "作る・炭焼き（大会の会場に替えた例）", venue: "stage" },
   { scene: "steam", caption: "作る・蒸らし（雑念よけ）" },
+  { scene: "steam", caption: "作る・蒸らし（アタックを覚えた後）", attack: true },
   { scene: "pull", caption: "作る・吸い出し（tonari）" },
   { scene: "pull", caption: "作る・吸い出し（PEPPERMINT に替えた例）", venue: "shop" },
 ];
@@ -366,7 +374,7 @@ const BTN = {
   puff: { label: "吸う", tool: "mouthpiece" },
   pour: { label: "注ぐ", tool: "pour" },
   drain: { label: "少しこぼす", tool: "drain" },
-  bomb: { label: "雑念を払う", tool: "bomb" },
+  bomb: { label: "リフレッシュ（心の周りの雑念を払う）", tool: "bomb" },
 };
 // ボタンいっぱいの 100×100 で描く
 // 吸う: マウスピース（ホースの切れ端・金具・先へ細くなる持ち手・吸い口のチップ）を斜めに。吸うたびに少し動いて光る
@@ -386,10 +394,16 @@ const TOOL_SVG = {
   drain: `<svg class="tool-svg tool-drain" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(-38 50 52)">
     <rect x="43" y="14" width="14" height="22" rx="3"/><path d="M42 36H58L70 54A21 21 0 1 1 30 54Z"/></g>
     <path class="gl-drop" d="M24 50C24 50 17 60 17 64A7 7 0 0 0 31 64C31 60 24 50 24 50Z"/></svg>`,
-  // 雑念を払う: 本編のリフレッシュ（青い渦）と同じく、渦で雑念を吹き払う形（VPL45）。使ったあと8秒で戻る。戻るまでの残りは影で示す
+  // リフレッシュ（VPL62）: 真ん中の心と、そこから広がる波で雑念の粒を外へ払う形。効果（心の周りを払う）がそのまま見える
   bomb: `<svg class="tool-svg tool-bomb" viewBox="0 0 100 100" aria-hidden="true">
-    <path class="gl-swirl" d="M52 50a3.5 3.5 0 1 1-6 2.5 9 9 0 1 1 17-4.5 15.5 15.5 0 1 1-29 8 22 22 0 1 1 41-12"/>
-    <circle cx="26" cy="24" r="5"/><circle cx="17" cy="35" r="3.2"/></svg>`,
+    <path class="gl-heart" d="M50 60C42.500 54.500 37 50 37 44.500A6.500 6.500 0 0 1 50 41.500 6.500 6.500 0 0 1 63 44.500C63 50 57.500 54.500 50 60Z"/>
+    <circle class="gl-wave" cx="50" cy="50" r="23"/><circle class="gl-wave2" cx="50" cy="50" r="34"/>
+    <g class="gl-out"><circle cx="13" cy="17" r="4"/><circle cx="88" cy="16" r="3.400"/><circle cx="10" cy="84" r="3.400"/><circle cx="89" cy="85" r="4"/>
+    <path d="M19 23l5 5M82 22l-5 5M16 78l5-5M83 79l-5-5"/></g></svg>`,
+  // 精密（VPL62）: 照準。遅く細かく動く切り替え
+  slow: `<svg class="tool-svg tool-slow" viewBox="0 0 100 100" aria-hidden="true"><circle class="gl-ring" cx="50" cy="50" r="22"/><circle cx="50" cy="50" r="6"/><path class="gl-ticks" d="M50 14v14M50 72v14M14 50h14M72 50h14"/></svg>`,
+  // アタック（VPL62）: 上へ振る斬撃の弧。習得すると精密と入れ替えられる
+  attack: `<svg class="tool-svg tool-attack" viewBox="0 0 100 100" aria-hidden="true"><path class="gl-arc" d="M18 70C26 38 52 20 84 18"/><path d="M84 18L70 14 76 28Z"/><path class="gl-arc2" d="M30 80C38 58 54 44 76 38"/></svg>`,
 };
 const btnFace = (kind) => {
   const b = BTN[kind];
@@ -427,7 +441,7 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari" } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false } = {}) {
     this.el = el;
     el.lang = "ja";
     this.fixed = fixed; // 一覧では場面を固定し、その場面の中の操作だけ動かす
@@ -438,8 +452,9 @@ class Phone {
     this.keys = new Set();
     this.rankAt = RANK_PLACES[rank] ? rank : "d"; // ランクの置き場所の案
     this.venue = VENUES[venue] ? venue : "tonari"; // 作る場面の会場（背景）
+    this.attackLearned = !!attack; // 雑念よけのアタックを覚えたか（覚えると精密と入れ替える切り替えが出る・VPL62）
     this.st = { scene, sel: DEFAULT_SPOT, step, page: 0, grade: Math.max(0, Math.min(6, Number(grade) || 0)), gradeP: Number(gradeP) || 0, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4,
-      water: Number(water) || 0, mix: MIX.map((f, i) => (Array.isArray(mix) ? mix[i] : 0) || 0), mixSel: 0, slow: false,
+      water: Number(water) || 0, mix: MIX.map((f, i) => (Array.isArray(mix) ? mix[i] : 0) || 0), mixSel: 0, slow: false, sub: attack ? "attack" : "slow",
       ci: ["a", "b", "c"].includes(ci) ? ci : "a", who: CUTINS[who] ? who : "minto", ciPhase: "off" };
     this.cam = null;      // 地図をドラッグした時の位置（選び直すと選んだ店へ戻る）
     this.t0 = performance.now();
@@ -829,7 +844,7 @@ class Phone {
       <img class="amb" src="${IMG[this.venue]}" alt="">
       <div class="pic craft craft-${st.scene}">${pic}</div>
       <i class="veil"></i>
-      ${["water", "mix", "coal"].includes(st.scene) ? "" : this.thermoHtml()}
+      ${THERMO_ON.has(st.scene) ? this.thermoHtml(this.thermoWas === false ? "fade-in" : "") : this.thermoWas ? this.thermoHtml("fade-out") : ""}
       <button class="help-q" data-act="fn" data-fn="help" aria-label="説明">?</button>
       <div class="steps" aria-label="工程">${STEPS.map(([id, name], i) => `<span class="${i === at ? "now" : i < at ? "done" : ""}" aria-label="${name}"${i === at ? ` aria-current="step"` : ""}>${icon(id)}</span>`).join("")}</div>
       ${this.rankAt === "a" ? "" : this.rankHtml()}
@@ -1068,7 +1083,7 @@ class Phone {
     const size = this.dodgeSize();
     if (!size || this.st.scene !== "steam") return;
     const now = performance.now();
-    this.dodge = { t0: now + DODGE.ready, heart: { x: 195, y: size.H * 0.7 }, bullets: [], hits: 0, safeUntil: 0, bombAt: -1e9, rings: [],
+    this.dodge = { t0: now + DODGE.ready, heart: { x: 195, y: size.H * 0.7 }, bullets: [], hits: 0, safeUntil: 0, bombAt: -1e9, atkAt: -1e9, slashes: [], lastHit: -1e9, calmSince: 0, beat: 0, beatAt: now, rings: [],
       nextSpawn: 0, nextWave: 1600, warn: null, over: false, H: size.H };
     if (this.fixed) {
       // 一覧は途中の一コマ: 言葉と炭・玉が四方から迫り、上から扇の波が来る
@@ -1142,8 +1157,7 @@ class Phone {
         const h = d.heart, c = DODGE.core;
         const hit = d.bullets.find((b) => b.word ? Math.abs(h.x - b.x) < b.hw + c && Math.abs(h.y - b.y) < 6 + c : Math.hypot(h.x - b.x, h.y - b.y) < b.r + c);
         if (hit) {
-          d.hits += 1; d.safeUntil = now + DODGE.invuln;
-          field.style.setProperty("--mind", MIND[Math.min(3, d.hits)]); field.dataset.mind = String(Math.min(3, d.hits));
+          d.hits += 1; d.safeUntil = now + DODGE.invuln; d.lastHit = now; d.calmSince = now;
           d.bullets.splice(d.bullets.indexOf(hit), 1);
           this.el.querySelector(".pic")?.animate([{ translate: "0 0" }, { translate: "-0.5rem 0.3rem" }, { translate: "0.4rem -0.2rem" }, { translate: "0 0" }], { duration: 240 });
         }
@@ -1151,6 +1165,11 @@ class Phone {
       field.querySelector(".d-time i").style.transform = `scaleX(${Math.max(0, 1 - t / DODGE.time).toFixed(3)})`;
       if (t >= DODGE.time) this.endDodge();
     }
+    // 心の状態（VPL64）: 場の縁の暗がりと、奥の時計・心拍線の色に出す
+    const lv = this.mindLevel(now);
+    if (field.dataset.level !== lv) { field.dataset.level = lv; field.dataset.mind = String(MIND_LV.indexOf(lv)); }
+    const sub = this.el.querySelector(".act-sub.attack");
+    if (sub) { const c = Math.max(0, 1 - (now - d.atkAt) / ATTACK.cool); sub.style.setProperty("--cool", c.toFixed(3)); sub.classList.toggle("ready", c <= 0); }
     const btn = this.el.querySelector(".btn-a.bomb");
     if (btn) {
       const cool = Math.max(0, 1 - (now - d.bombAt) / DODGE.bombCool);
@@ -1162,18 +1181,30 @@ class Phone {
     this.drawDodge(now);
   }
 
+  /** 心の状態（本編 steam-mind.js の式を写したもの）。 */
+  mindTension(now) {
+    const d = this.dodge;
+    const struck = Math.max(0, 1 - (now - d.lastHit) / 4000 + Math.min(0.2, d.hits * 0.025));
+    return d.hits ? Math.min(1, struck) : 0;
+  }
+  mindLevel(now) {
+    const d = this.dodge, t = this.mindTension(now);
+    return t > 0.65 ? "shaken" : t > 0.25 ? "unsteady" : t < 0.05 && now - Math.max(d.t0, d.calmSince) >= 6000 ? "clear" : "steady";
+  }
+
   drawDodge(now) {
     const size = this.dodgeSize(), d = this.dodge;
     if (!size || !d) return;
     const { ctx, u, field } = size;
-    const mind = MIND[Math.min(3, d.hits)];
+    const lv = this.fixed ? "steady" : this.mindLevel(now), mind = MIND_INK[lv], stress = this.fixed ? 0.1 : this.mindTension(now);
     ctx.setTransform(u, 0, 0, u, 0, 0);
     ctx.clearRect(0, 0, 390, d.H);
-    // 奥の時計（本編: 場の中央奥に不透明度 .16、色は心の状態）
+    // 奥の時計（本編: 場の中央奥に不透明度 .16、色は心の状態）。場の真ん中より少し下（VPL63）
+    const cy = d.H * 0.6;
     const left = Math.max(0, Math.ceil((DODGE.time - Math.max(0, now - d.t0)) / 1000));
     const text = `0${Math.floor(left / 60)}${String(left % 60).padStart(2, "0")}`.slice(-3);
     ctx.save(); ctx.globalAlpha = 0.16; ctx.fillStyle = mind;
-    const k = 1.25, w = 44 * k, x0 = 195 - (w * 3 + 14) / 2, y0 = d.H * 0.42 - 38 * k;
+    const k = 1.25, w = 44 * k, x0 = 195 - (w * 3 + 14) / 2, y0 = cy - 38 * k;
     [...text].forEach((digit, i) => {
       ctx.save(); ctx.translate(x0 + i * w + (i > 0 ? 14 : 0), y0); ctx.scale(k, k);
       for (const seg of SEG7_ON[Number(digit)]) ctx.fill(SEG7_PATH[seg]);
@@ -1181,6 +1212,21 @@ class Phone {
     });
     ctx.beginPath(); ctx.arc(x0 + w + 7, y0 + 26 * k, 3.4, 0, Math.PI * 2); ctx.arc(x0 + w + 7, y0 + 50 * k, 3.4, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
+    // 心拍線（VPL64・本編 mental.js）: 時計の高さを横切る脈の線。無心はゆっくり小さく、緊張するほど速く大きく乱れる
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduce && !this.fixed) d.beat += Math.max(0, now - d.beatAt) / 1000 * (lv === "clear" ? 42 : 58 + stress * 62);
+    d.beatAt = now;
+    const tt = reduce ? 0 : now / 1000;
+    ctx.save(); ctx.beginPath();
+    for (let x = 0; x <= 390; x += 3) {
+      const phase = (x + d.beat) % 104;
+      const pulse = -24 * Math.exp(-(((phase - 38) / 3.4) ** 2)) + 12 * Math.exp(-(((phase - 43) / 4.2) ** 2)) - 5 * Math.exp(-(((phase - 28) / 6) ** 2));
+      const noise = stress * 6 * Math.sin(x * 0.2 + tt * 21) * Math.sin(x * 0.07 - tt * 13);
+      const y = cy + pulse * (lv === "clear" ? 0.4 : 0.5 + stress * 1.4) + noise;
+      if (x) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+    }
+    ctx.strokeStyle = mind; ctx.globalAlpha = lv === "shaken" ? 0.42 : 0.3; ctx.lineWidth = lv === "shaken" ? 2.2 : 1.6;
+    ctx.shadowColor = mind; ctx.shadowBlur = 6; ctx.stroke(); ctx.restore();
     // 予告: 通り道の帯を点線で（本編 steam-art.js の色）
     if (d.warn) {
       const { top, h } = this.laneOf(d);
@@ -1240,6 +1286,44 @@ class Phone {
     }
     ctx.fillStyle = "#ffffff"; ctx.shadowColor = "#ffffff"; ctx.shadowBlur = 4;
     ctx.beginPath(); ctx.arc(h.x, h.y - 2, DODGE.core, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+    // リフレッシュが使える間は、届く範囲を心の周りに薄い点線の輪で見せる（何が起きるボタンかを場で伝える・VPL62）
+    if (!d.over && now - d.bombAt >= DODGE.bombCool) {
+      ctx.save(); ctx.setLineDash([4, 8]); ctx.lineDashOffset = -now / 60; ctx.strokeStyle = "rgba(168, 230, 255, 0.3)"; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.arc(h.x, h.y, DODGE.bombR, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+    }
+    // アタックの斬撃: 上前方の扇
+    for (const sl of d.slashes) {
+      const q = (now - sl.at) / 260;
+      if (q > 1) continue;
+      ctx.save(); ctx.globalAlpha = 1 - q; ctx.strokeStyle = "#fff3d6"; ctx.shadowColor = "#ffcf6b"; ctx.shadowBlur = 12; ctx.lineWidth = 5 * (1 - q) + 1;
+      ctx.beginPath(); ctx.arc(sl.x, sl.y, ATTACK.reach * (0.55 + 0.45 * q), -Math.PI / 2 - ATTACK.half, -Math.PI / 2 + ATTACK.half); ctx.stroke(); ctx.restore();
+    }
+  }
+
+  /** 精密（遅く細かく動く）を切り替える。 */
+  toggleSlow() {
+    const { st } = this;
+    st.slow = !st.slow;
+    const b = this.el.querySelector(".act-sub.slow");
+    if (b) { b.classList.toggle("on", st.slow); b.setAttribute("aria-pressed", String(st.slow)); }
+  }
+
+  /** アタック（VPL62）: 上前方の扇の中の弾を斬る。斬った言葉の数だけ心が落ち着く。待ちは1.8秒。 */
+  attack() {
+    const d = this.dodge, now = performance.now();
+    if (!this.attackLearned || !d || d.over || this.fixed || now < d.t0 || now - d.atkAt < ATTACK.cool) return;
+    d.atkAt = now;
+    d.slashes.push({ x: d.heart.x, y: d.heart.y, at: now });
+    d.bits = d.bits || [];
+    let words = 0;
+    d.bullets = d.bullets.filter((b) => {
+      const dx = b.x - d.heart.x, dy = b.y - d.heart.y, dist = Math.hypot(dx, dy) - (b.word ? b.hw * 0.5 : 0);
+      const ang = Math.abs(Math.atan2(dx, -dy));
+      const cut = dist <= ATTACK.reach && ang <= ATTACK.half && dy < 8;
+      if (cut) { d.bits.push({ x: b.x, y: b.y, word: b.word, at: now, seed: Math.random() * 6 }); if (b.word) words += 1; }
+      return !cut;
+    });
+    if (words) { d.lastHit -= words * ATTACK.calm; d.calmSince -= words * ATTACK.calm; }
   }
 
   /** 雑念を払う（本編のリフレッシュ）: 周りの雑念を消す。使ったあと8秒で戻る。 */
@@ -1383,9 +1467,9 @@ class Phone {
   }
 
   /** 熱ゲージ（温度帯）。シーシャ作りの間ずっと右に大きく出す。色の意味は本編と同じ（緑＝適温の目安、虹＝合わせやすい範囲、炎＝焦げる）。 */
-  thermoHtml() {
+  thermoHtml(fade = "") {
     const t = this.st.temp, pc = (v) => `${(v * 100).toFixed(1)}%`;
-    return `<div class="thermo ${tempState(t)}" style="--t:${t}" role="meter" aria-label="煙の温度" aria-valuemin="0" aria-valuemax="1" aria-valuenow="${t.toFixed(2)}">
+    return `<div class="thermo ${tempState(t)} ${fade}" style="--t:${t}" role="meter" aria-label="煙の温度" aria-valuemin="0" aria-valuemax="1" aria-valuenow="${t.toFixed(2)}">
       <span class="th-icon">${icon("thermo")}</span>
       <span class="th-tube"><span class="th-bar" style="background:${SCALE}">
         <i class="th-zone" style="bottom:${pc(TEMP_ZONE[0])};height:${pc(TEMP_ZONE[1] - TEMP_ZONE[0])}"></i>
@@ -1421,9 +1505,11 @@ class Phone {
       return `<div class="stove"><img src="${IMG.stove}" alt="">${COAL_AT.map(([x, y], i) => `<button class="coal" data-act="coal" data-i="${i}" style="left:${x * 100}%;top:${y * 100}%" aria-label="炭 ${i + 1}"><img class="c-cold" src="${IMG.coalCold}" alt=""><img class="c-lit" src="${IMG.coalLit}" alt=""><i class="c-ash"></i></button>`).join("")}</div>`;
     }
     if (st.scene === "steam") {
-      // 十字キーはスティック（押した向きと強さで動く）。Aで雑念を払う。精密は遅く細かく動く切り替え
-      // 精密（遅く細かく動く）はパッドの右上の小さな丸（VPL51）
-      return `<button class="slowbtn${st.slow ? " on" : ""}" data-act="fn" data-fn="slow" aria-label="精密に動く" aria-pressed="${st.slow}">${icon("target")}</button>${dpadHtml("up down left right")}${aHtml("bomb", { cls: "bomb", extra: `<i class="cool"></i>` })}`;
+      // 十字キーはスティック（押した向きと強さで動く）。右下の大きな丸がリフレッシュ、その左上が精密（アタックを覚えたら切り替えで入れ替わる）（VPL62）
+      const sub = this.attackLearned && st.sub === "attack" ? "attack" : "slow";
+      const subBtn = `<button class="act-sub ${sub}${sub === "slow" && st.slow ? " on" : ""}" data-act="sub" aria-label="${sub === "slow" ? "精密に動く" : "アタック"}"${sub === "slow" ? ` aria-pressed="${st.slow}"` : ""}>${TOOL_SVG[sub]}<small>${sub === "slow" ? "精密" : "アタック"}</small><i class="cool"></i></button>`;
+      const swap = this.attackLearned ? `<button class="act-swap" data-act="swap" aria-label="精密とアタックを入れ替える"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9h12l-3.5-3.5M19 15H7l3.5 3.5"/></svg></button>` : "";
+      return `${dpadHtml("up down left right")}${subBtn}${swap}${aHtml("bomb", { cls: "bomb", extra: `<small class="act-label">リフレッシュ</small><i class="cool"></i>` })}`;
     }
     if (st.scene === "pack") {
       return `${dpadHtml("left right")}${aHtml("ok", { disabled: !!PACKS[st.pack].locked })}`;
@@ -1480,6 +1566,8 @@ class Phone {
     else if (act === "pack") { st.pack = Number(hit.dataset.pack); this.patch(); }
     else if (act === "decide") this.decideWater();
     else if (act === "coal") this.takeCoal(Number(hit.dataset.i));
+    else if (act === "sub") { if (hit.classList.contains("attack")) this.attack(); else this.toggleSlow(); }
+    else if (act === "swap") { st.sub = st.sub === "attack" ? "slow" : "attack"; if (st.sub === "attack") st.slow = false; this.patch(); }
     else if (act === "mixsel") { st.mixSel = Number(hit.dataset.i); this.syncMix(); }
     else if (act === "mixadd") { st.mixSel = Number(hit.dataset.i); this.addMix(Number(hit.dataset.by)); }
     else if (act === "more") {
@@ -1492,7 +1580,7 @@ class Phone {
     else if (act === "serve") { if (!this.fixed) this.setScene("map"); }
     else if (act === "fn") {
       const id = hit.dataset.fn;
-      if (id === "slow") { st.slow = !st.slow; hit.classList.toggle("on", st.slow); hit.setAttribute("aria-pressed", String(st.slow)); }
+      if (id === "slow") this.toggleSlow();
       else if (id === "list") { st.list = !st.list; this.patch(); }
       else if (id === "next") { // 「！」の付いた店を順に回る
         const marks = ORDER.filter((i) => SPOTS[i].mark), after = marks.find((i) => ORDER.indexOf(i) > ORDER.indexOf(st.sel));
@@ -1692,6 +1780,8 @@ class Phone {
     if (!crafting(this.st.scene) && crafting(scene)) Object.assign(this.st, { grade: 0, gradeP: 0 });
     else if (crafting(scene)) this.st.gradeP = 0;
     Object.assign(this.st, { water: 0, mix: MIX.map(() => 0), mixSel: 0 });
+    // 前の場面で温度ゲージが出ていたか（出ていた→消える場面ならふっと消し、出ていなかった→出る場面ならふっと出す）
+    this.thermoWas = crafting(this.st.scene) ? THERMO_ON.has(this.st.scene) : undefined;
     Object.assign(this, { dodge: null, heat: null, pouring: false, draining: false, deciding: false, coachSay: null, stick: null, dragTo: null });
     this.keys.clear();
     Object.assign(this.st, { scene, step: 0, page: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1, temp: 0.4 });
@@ -1833,13 +1923,14 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
     <button class="grip" data-grip aria-expanded="false" aria-label="切り替えを開く"><i></i></button>
     <div class="panel"><div>${SCENES.map((id) => `<button data-scene="${id}" aria-pressed="${id === scene}">${SCENE_LABEL[id]}</button>`).join("")}</div>
       <div><small>登場</small>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div>
+      <div><small>雑念よけ</small><button data-attack aria-pressed="${params.has("attack")}">アタック習得</button></div>
       <div><small>会場</small>${Object.entries(VENUES).map(([v, name]) => `<button data-venue="${v}" aria-pressed="${v === (params.get("venue") || "tonari")}">${name}</button>`).join("")}</div>
       <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "d")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div></div></nav>`}</div>`;
   const el = app.querySelector(".phone");
   // 先に大きさを決めてから描く（立ち絵と地図の位置は絵の大きさから決まる）
   const box = app.getBoundingClientRect(), rem = Math.min(box.width / 39, box.height / 66);
   root.style.fontSize = `${rem}px`; el.style.height = `${Math.min(box.height, rem * 92)}px`;
-  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", venue: params.get("venue") || "tonari", grade: params.get("grade"), ...opts });
+  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", venue: params.get("venue") || "tonari", attack: params.has("attack"), grade: params.get("grade"), ...opts });
   current = make(scene);
   const nav = app.querySelector(".switch");
   if (!nav) return;
@@ -1853,6 +1944,13 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
     if ("grip" in button.dataset) return open(!nav.classList.contains("open"));
     open(true);
     if (button.dataset.scene) current.setScene(button.dataset.scene);
+    else if ("attack" in button.dataset) {
+      // アタックを覚えた状態を切り替える（覚えると、精密の隣に入れ替えのボタンが出る）
+      current.attackLearned = !current.attackLearned;
+      if (!current.attackLearned) current.st.sub = "slow";
+      button.setAttribute("aria-pressed", String(current.attackLearned));
+      current.setScene("steam");
+    }
     else if (button.dataset.venue) {
       // 作る場面の会場（背景）を替える。作る場面でなければ炭焼きへ
       current.venue = button.dataset.venue;
@@ -1894,9 +1992,10 @@ addEventListener("keydown", (event) => {
   if (scene === "steam" && (dir || event.key === "Shift")) {
     event.preventDefault();
     if (dir) current.keys.add(dir);
-    else if (!event.repeat) { current.st.slow = !current.st.slow; current.el.querySelector('[data-fn="slow"]')?.classList.toggle("on", current.st.slow); }
+    else if (!event.repeat) current.toggleSlow();
     return;
   }
+  if (scene === "steam" && (event.key === "z" || event.key === "x")) { event.preventDefault(); if (event.key === "z" && current.attackLearned) current.attack(); else current.pressA(); return; }
   // 水入れ: Enter・Space を押している間は注ぐ、↓を押している間は少しこぼす、→で決定
   if (scene === "water" && (enter || dir === "down" || dir === "right")) {
     event.preventDefault();

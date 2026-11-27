@@ -590,7 +590,6 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .btn-a.pour.pressing .gl-drops circle:nth-child(2) { animation-delay: -0.14s; } .btn-a.pour.pressing .gl-drops circle:nth-child(3) { animation-delay: -0.28s; }
 .btn-a.sub.pressing .gl-drop { animation: drop-fall 0.6s linear infinite; }
 @keyframes drop-fall { 0% { transform: translateY(-6px); opacity: 0.3; } 50% { opacity: 1; } 100% { transform: translateY(6px); opacity: 0.3; } }
-.tool-bomb .gl-swirl { fill: none; stroke: currentColor; stroke-width: 6.5; stroke-linecap: round; }
 .btn-a.bomb .cool { position: absolute; z-index: 2; inset: 0.5rem; border-radius: 50%; pointer-events: none; background: conic-gradient(#0b0812c4 calc(var(--cool, 0) * 360deg), transparent 0); }
 
 /* 水入れ（VPL36・VPL37）: 作り直したボトル（640×631）の中だけに水が満ちる。水面の色: 赤＝ステムに届いていない、緑＝ちょうど、金＝そのほか */
@@ -684,8 +683,6 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .help-q { position: absolute; z-index: 6; right: 9.4rem; top: max(1.6rem, calc(env(safe-area-inset-top, 0px) + 0.3rem)); width: 3.4rem; height: 3.4rem; display: grid; place-items: center; border: 0.1rem solid #ffffff38; border-radius: 50%; background: #0b081266; color: #ffffffb3; font-size: 1.8rem; font-weight: 700; opacity: 0.6; }
 .help-q:active { opacity: 1; }
 .phone:not([data-kind="craft"]) .help-q { display: none; }
-.slowbtn { position: absolute; right: 2rem; top: calc(var(--pad-top) - 5.8rem); width: 5.4rem; height: 5.4rem; display: grid; place-items: center; border: 0.12rem solid #ffffff40; border-radius: 50%; background: radial-gradient(circle at 50% 30%, #2a2040, #0b0812); color: #ffd35a; font-size: 2.6rem; opacity: 0.85; }
-.slowbtn.on { border-color: #ffd35a; box-shadow: 0 0 1.2rem #ffd35a80; opacity: 1; }
 
 /* 炭焼き（VPL54・VPL57）: 下の画面は本編の電熱コンロを幅いっぱいに。炭は大きくし、押せる範囲も絵より広い。
    炭は黒い面（cold）と赤（lit）の絵を重ね、--red で焼け、--ash で灰をまとう */
@@ -738,11 +735,42 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .phone[data-scene="steam"] .body { pointer-events: none; } .phone[data-scene="steam"] .ctrl { pointer-events: auto; }
 .phone[data-scene="steam"] .coach { transition: opacity 0.3s; } .phone[data-scene="steam"] .coach.quiet { opacity: 0; }
 .phone[data-scene="steam"] .thermo { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 2rem); }
-.slowbtn { right: 1.6rem; top: 0.3rem; width: 5rem; height: 5rem; font-size: 2.5rem; }
 /* 工程の並びを詰め、右上の「？」と並べる（VPL51） */
 .phone[data-kind="craft"] .steps span { width: 2.6rem; height: 2.6rem; font-size: 1.55rem; }
 .phone[data-kind="craft"] .steps span.now { width: 3.8rem; height: 3rem; font-size: 1.9rem; }
 .help-q { right: 9.8rem; width: 3rem; height: 3rem; font-size: 1.6rem; }
+
+/* 温度ゲージ（VPL61）: 穴あけ・炭焼き・雑念よけの間は消す。前の場面で出ていた時はふっと消え、吸い出しでふっと戻る */
+.thermo.fade-out { animation: thermo-out 0.7s ease-in 0.15s forwards; pointer-events: none; }
+.thermo.fade-in { animation: thermo-in 0.8s var(--ease-out) 0.2s backwards; }
+@keyframes thermo-out { to { opacity: 0; transform: translateX(1.6rem); } }
+@keyframes thermo-in { from { opacity: 0; transform: translateX(1.6rem); } }
+
+/* 雑念よけの操作（VPL62）: 左は十字キー（スティック）。右下の大きな丸がリフレッシュ、その左上が精密（アタックを覚えたら、右上の切り替えで精密とアタックが入れ替わる）。
+   位置は十字キーの輪の大きさ（--ring）と上端（--pad-top）から決め、背の低い画面でも同じ並びになる */
+.phone[data-scene="steam"] .btn-a.bomb { left: auto; right: 1.6rem; top: calc(var(--pad-top) + var(--ring) * 0.36); width: calc(var(--ring) * 0.63); height: calc(var(--ring) * 0.63); margin: 0; }
+.btn-a.bomb .tool-svg { inset: 9% 16% 25% 16%; width: 68%; height: 66%; }
+.tool-bomb .gl-heart { fill: currentColor; }
+.tool-bomb .gl-wave, .tool-bomb .gl-wave2 { fill: none; stroke: currentColor; stroke-width: 4.5; }
+.tool-bomb .gl-wave2 { stroke-width: 3.5; stroke-dasharray: 9 7; opacity: 0.75; }
+.tool-bomb .gl-out circle { fill: currentColor; } .tool-bomb .gl-out path { fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; opacity: 0.8; }
+.btn-a.bomb.ready .gl-wave2 { animation: wave-out 1.6s ease-out infinite; transform-origin: 50px 50px; }
+@keyframes wave-out { 0% { transform: scale(0.7); opacity: 0.9; } 100% { transform: scale(1.15); opacity: 0; } }
+.act-label { position: absolute; z-index: 2; left: 0; right: 0; bottom: 13%; text-align: center; font-size: calc(var(--ring) * 0.066); font-weight: 800; letter-spacing: 0.04em; color: #fff; text-shadow: 0 0.1rem 0.4rem #0b0812; pointer-events: none; }
+.btn-a.bomb .cool { z-index: 3; }
+.act-sub { position: absolute; left: calc(0.9rem + var(--ring) * 1.1); top: calc(var(--pad-top) - var(--ring) * 0.06); width: calc(var(--ring) * 0.43); height: calc(var(--ring) * 0.43); display: block; padding: 0; border: 0.14rem solid color-mix(in srgb, #ffd35a 70%, #fff); border-radius: 50%; color: #fff; background: radial-gradient(circle at 50% 30%, #ffd35a33, transparent 60%), url("img/ui-button.webp") center / 100% 100% no-repeat; box-shadow: 0 0 0 0.5rem #ffffff0f, 0 0.8rem 1.6rem #000b; touch-action: manipulation; }
+.act-sub .tool-svg { inset: 10% 18% 30% 18%; width: 64%; height: 60%; }
+.act-sub small { position: absolute; left: 0; right: 0; bottom: 12%; text-align: center; font-size: calc(var(--ring) * 0.058); font-weight: 800; letter-spacing: 0.04em; text-shadow: 0 0.1rem 0.4rem #0b0812; pointer-events: none; }
+.act-sub:active { scale: 0.94; }
+.act-sub.slow.on { border-color: #ffd35a; box-shadow: 0 0 0 0.3rem #ffd35a66, 0 0 2rem #ffd35a99, 0 0.8rem 1.6rem #000b; color: #ffe8a8; }
+.act-sub.attack { border-color: color-mix(in srgb, #ff9a6b 70%, #fff); background: radial-gradient(circle at 50% 30%, #ff9a6b33, transparent 60%), url("img/ui-button.webp") center / 100% 100% no-repeat; }
+.act-sub .cool { position: absolute; inset: 0.3rem; border-radius: 50%; pointer-events: none; background: conic-gradient(#0b0812c4 calc(var(--cool, 0) * 360deg), transparent 0); }
+.act-sub.slow .cool { display: none; }
+.tool-slow .gl-ring { fill: none; stroke: currentColor; stroke-width: 5; } .tool-slow circle:not(.gl-ring) { fill: currentColor; } .tool-slow .gl-ticks { fill: none; stroke: currentColor; stroke-width: 5; stroke-linecap: round; }
+.tool-attack .gl-arc { fill: none; stroke: currentColor; stroke-width: 7; stroke-linecap: round; } .tool-attack .gl-arc2 { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; opacity: 0.6; } .tool-attack path:not([class]) { fill: currentColor; }
+.act-swap { position: absolute; left: calc(0.9rem + var(--ring) * 1.6); top: calc(var(--pad-top) - var(--ring) * 0.025); width: calc(var(--ring) * 0.22); height: calc(var(--ring) * 0.22); display: grid; place-items: center; padding: 0; border: 0.12rem solid #ffffff59; border-radius: 50%; background: #120c1dd9; box-shadow: 0 0.4rem 1rem #000a; color: #fff; }
+.act-swap svg { width: 62%; height: 62%; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.act-swap:active { scale: 0.92; }
 
 /* ───────── 背の低い画面 ───────── */
 @container phone (max-height: 80rem) {
@@ -786,15 +814,13 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 @container phone (max-height: 80rem) {
   .water-a .bottle { width: 23rem; } .btn-a.center.pour { top: calc(9.4rem + var(--aux-g, 0rem)); width: 12.4rem; height: 12.4rem; margin-left: -6.2rem; } .btn-a.sub { top: calc(11.6rem + var(--aux-g, 0rem)); width: 8rem; height: 8rem; }
   .mixrow { min-height: 6.2rem; } .mr-btn { width: 4.4rem; height: 4.4rem; } .picker.rows { bottom: 9.6rem; } .mixfoot { bottom: 1.8rem; } .btn-a.mix-ok { width: 8rem; height: 8rem; bottom: 0.6rem; }
-  .slowbtn { width: 4.4rem; height: 4.4rem; top: 0.1rem; }
-}
+  }
 @container phone (max-height: 71rem) {
   .water-a .bottle { width: 18rem; top: 5.4rem; } .btn-a.center.pour { top: calc(7.8rem + var(--aux-g, 0rem)); width: 10.6rem; height: 10.6rem; margin-left: -5.3rem; } .btn-a.sub { top: calc(9.6rem + var(--aux-g, 0rem)); width: 7rem; height: 7rem; } .btn-a.sub .t { font-size: 2.2rem; }
   .d-time { top: 7rem; } .d-stamp { font-size: 3.6rem; }
   .mixrow { min-height: 5.6rem; padding: 0.2rem 0.8rem; } .mixrow .pkg { scale: 0.86; margin: -0.4rem -0.3rem; } .mr-name b { font-size: 1.5rem; } .mr-btn { width: 4rem; height: 4rem; font-size: 2rem; } .mr-g em { font-size: 2.3rem; }
   .picker.rows { bottom: 8.4rem; gap: 0.5rem; } .mixfoot { bottom: 1.4rem; } .mixbar { padding: 0.5rem 0.9rem; } .btn-a.mix-ok { width: 7rem; height: 7rem; bottom: 0.5rem; } .btn-a.mix-ok .t { font-size: 2.2rem; }
-  .judges { top: 6.6rem; } .jtag { font-size: 1.5rem; } .slowbtn { width: 3.8rem; height: 3.8rem; top: -0.4rem; font-size: 2rem; }
-}
+  .judges { top: 6.6rem; } .jtag { font-size: 1.5rem; } }
 
 @media (prefers-reduced-motion: reduce) {
   .phone *, .phone *::before, .phone *::after, .phone::after { animation-duration: 0.01s !important; animation-iteration-count: 1 !important; transition-duration: 0.01s !important; }
