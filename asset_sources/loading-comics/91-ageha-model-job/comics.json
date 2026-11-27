@@ -8,35 +8,58 @@
   "dialogue": [
     "モデルの仕事取れた！",
     "雑誌ですか？",
-    "顔、ほぼ手。"
+    "よく見るやつ…"
   ],
   "first_speaker": "ageha",
   "panel1": "あげはの店の店内。右のあげはがスマホを高く掲げて大喜び「モデルの仕事取れた！」（左上に高く）。左のはじめが拍手して「雑誌ですか？」（右下）。",
-  "panel2": "駅の通路の壁に大きな広告。中身はパロディバナー「うわっ…私のシーシャ、軽すぎ…？」（両手で口元を覆うあげはの写真）。あげはは広告を指さしてピースのドヤ顔、はじめは見上げて汗「顔、ほぼ手。」。",
+  "panel2": "①と同じあげはの店。あげはがドヤ顔でピースしながら、スマホの画面を突き出して見せる。画面はブラウザでパロディバナー「うわっ…私のシーシャ、軽すぎ…？」（両手で口元を覆うあげはの写真）を開いたところ。はじめは真顔で汗「よく見るやつ…」。",
   "caption": "あげはは、雑誌の読者モデルもしている店長。",
-  "type": "期待はずれ（雑誌モデルのはずが、顔の隠れた広告）",
-  "note": "2026-11-27 オーナー依頼（あげはの漫画で、モデルの仕事が取れたと言ってオチがパロディバナー）。あげはが読者モデル（data/characters.json）なのは正本どおり。広告の仕事はギャグの誇張。広告の文言は広告主のものなので一人称が「私」でもよい（あげはの台詞の一人称は「うち」）。",
-  "source": "91-ageha-model-job.png",
-  "source_sha256": "fb933cc30cf890b0c5565a0076a1fd27a9d88eaa044e12bcb81a8b4e9e7015a2",
-  "generator": "OpenAI images/edits（gpt-image-2.6-sunburst・quality medium・1536x1024）→ ②のポスターに poster.png を合成",
-  "prompt": "prompt.txt",
+  "type": "期待はずれ（雑誌モデルのはずが、ネットでよく見る広告）",
+  "note": "2026-11-27 オーナー依頼（あげはの漫画で、モデルの仕事が取れたと言ってオチがパロディバナー）。続けて「スマホのどっかのページに出して」「はじめのツッコミも違う言葉に よく見るやつ…とか」→ ②を駅のポスターから、あげはがスマホの画面で見せる形に描き直し、ツッコミを「顔、ほぼ手。」から「よく見るやつ…」に変えた。あげはが読者モデル（data/characters.json）なのは正本どおり。広告の仕事はギャグの誇張。広告の文言は広告主のものなので一人称が「私」でもよい（あげはの台詞の一人称は「うち」）。",
+  "source": {
+    "panel1": "panel1.png（raw/v1-b.png の①を切り出したもの）",
+    "panel2": "panel2.png（raw/v2-panel2-b.png の画面に screen.png を合成）"
+  },
+  "source_sha256": {
+    "panel1": "7ff2309854ce23c556c0adfd5bca78bc1d545258481b97d13e5f0237ae83ca36",
+    "panel2": "93fdcb7c9e1e97791eb4d940e448ea0a384d0bc8343db1567ddcc73921a0a205"
+  },
+  "generator": "OpenAI images/edits（gpt-image-2.6-sunburst・quality medium）。①は2コマの下敷きで生成（generate.py・prompt.txt）、②は1枚絵で描き直し（generate_panel2.py・prompt-panel2.txt）→ 空白の画面に screen.png を合成",
+  "prompt": {
+    "v1_two_panels": "prompt.txt（②の駅のポスター案は不採用。①だけ使う）",
+    "v2_panel2": "prompt-panel2.txt"
+  },
   "scripts": {
-    "generate": "generate.py（下敷き・立ち絵2枚・既存のあげは漫画2コマを参照に生成）",
-    "poster": "render_poster.js（パロディバナーを空白の比率 約1.41:1 に組み直す）",
-    "composite": "composite.py（raw/v1-b.png の空白を検出して poster.png をはめ込む）"
+    "generate": "generate.py（下敷き・立ち絵2枚・既存のあげは漫画2コマを参照に2コマを生成）",
+    "generate_panel2": "generate_panel2.py（採用した①と立ち絵2枚を参照に②だけを生成）",
+    "screen": "render_screen.js + screen.html（ブラウザでパロディバナーを開いたスマホの画面）",
+    "composite": "composite.py（raw/v2-panel2-b.png の空白の画面を検出して screen.png をはめ込む）",
+    "cut": "python3 tools/loading_comic_cut.py panel panel1.png panel2.png --id ageha-model-job"
   },
   "candidates": {
     "raw/v1-a.png": {
       "sha256": "69e4f0260885f9236e34249ee05267b8870ec46880a4466a452df9aa7aef1047",
-      "status": "不採用（コマ枠の高さが 517px で比率 1.40。余白埋めで端が切れる）"
+      "status": "不採用（2コマ・駅のポスター案。枠の比率 1.40）"
     },
     "raw/v1-b.png": {
       "sha256": "3269a631064fa7ad9b17c63842ff03c50f5bd9cbf56f91de4806aa1a59304867",
-      "status": "採用（枠の比率 1.515 で規格に最も近い）"
+      "status": "①だけ採用（②の駅のポスター案はスマホ案に置き換え）"
     },
     "raw/v1-c.png": {
       "sha256": "9efea7c3896d9fa0ad0ab968b9ad68930c8a735c6fe07de675aa01ec19ab6bd9",
-      "status": "不採用（内容は同等。②のポスターの空白が 1.5:1 と横長）"
+      "status": "不採用（2コマ・駅のポスター案）"
+    },
+    "raw/v2-panel2-a.png": {
+      "sha256": "553526960733eadc39443bad59acc7f5fcc24475063284369a9bafa177babb0f",
+      "status": "不採用（内容は同等。あげははウインク。画面がやや小さい）"
+    },
+    "raw/v2-panel2-b.png": {
+      "sha256": "b714fac07a00bb69e1fd6fe380b988e45a4a35a87ab2a42544ced10ba2dab77a",
+      "status": "②に採用（ドヤ顔・吹き出しが縁から離れている）"
+    },
+    "raw/v2-panel2-c.png": {
+      "sha256": "a4e956104c9ccebf6cea97edd35607aa22650b4619108687f8593d7c516b757c",
+      "status": "不採用（吹き出しが左の縁に近い）"
     }
   },
   "references": {
@@ -53,24 +76,28 @@
       "remake/img/loading/ageha-full-coord-1.webp",
       "remake/img/loading/ageha-full-coord-2.webp"
     ],
-    "poster": "asset_sources/parody/ageha-karusugi-banner/banner.html"
+    "screen": "asset_sources/parody/ageha-karusugi-banner/ageha_shisha_karusugi.png（screen.html が読む）"
   },
   "regions": [
     {
+      "panel": 1,
       "x": 36,
       "y": 272,
       "width": 721,
       "height": 476,
       "sourceWidth": 1536,
-      "sourceHeight": 1024
+      "sourceHeight": 1024,
+      "source": "raw/v1-b.png"
     },
     {
-      "x": 779,
-      "y": 272,
-      "width": 721,
-      "height": 476,
+      "panel": 2,
+      "x": 0,
+      "y": 0,
+      "width": 1536,
+      "height": 1024,
       "sourceWidth": 1536,
-      "sourceHeight": 1024
+      "sourceHeight": 1024,
+      "source": "panel2.png"
     }
   ],
   "delivery": [
@@ -78,22 +105,23 @@
       "file": "remake/img/loading/ageha-model-job-1.webp",
       "width": 721,
       "height": 481,
-      "sha256": "3e3d9fafa6f5e572c2ed716bf58cbeae9af3a07be563d5783a231303c99c0947"
+      "sha256": "982a67b59c15fa3b2ecf2b7591aabc55249a223bcf3f1a826f2d5d896485a0d8"
     },
     {
       "file": "remake/img/loading/ageha-model-job-2.webp",
-      "width": 721,
-      "height": 481,
-      "sha256": "ea37ef6beece1e6fbb13b32d54d47af7df8c5458d4d50dca03e457cda7491c37"
+      "width": 1440,
+      "height": 960,
+      "sha256": "3e46a1b1b867add48bf77aa4fd01a6283eb7572a4b022b839501eac43a0ea9d3"
     }
   ],
   "qa": {
-    "cut": "tools/loading_comic_cut.py sheet: 2コマとも比率 1.515 → ok。fill: 余白 1% 以下で拡大なし。check: OK（721x481・3:2）",
-    "dialogue_verbatim": "3つの台詞を台本と一字一句照合（！？・句読点も同じ）",
+    "cut": "tools/loading_comic_cut.py panel: ①721x476（1.515）→ ok・②1536x1024（1.500）→ ok。fill: 余白 1% 以下で拡大なし。check: OK（①721x481・②1440x960）",
+    "dialogue_verbatim": "3つの台詞を台本と一字一句照合（！？・…も同じ）",
     "reading_order": "①は右のあげはが先に話し、吹き出しは左上に高く・尻尾はあげはへ。はじめの返事は右下",
-    "identity": "はじめ（黒キャップ・黒パーカー・ドッグタグ）、あげは（ツインテール・ピンクと白のクマの髪留め・ヒョウ柄ジャケット・チョーカー）。両コマで、はじめが左・あげはが右",
-    "extra_text": "②の広告の文字は合成したパロディバナー（オチそのもの）。生成AIには文字を描かせず、空白で描かせて後から合成した",
-    "prohibited_items": "シーシャ機材・炭・煙・武器・お酒・実在のロゴなし。人物は2人だけ"
+    "identity": "はじめ（黒キャップ・黒パーカー・ドッグタグ）、あげは（ツインテール・ピンクと白のクマの髪留め・ヒョウ柄ジャケット・チョーカー）。両コマで、はじめが左・あげはが右。②は①を参照に描いたので同じ画風",
+    "extra_text": "②のスマホの画面の文字（広告・アドレスバーの架空のURL kemuri-search.jp・時刻）は合成したもの。広告はオチそのもの。生成AIには文字を描かせず、空白で描かせて後から合成した",
+    "prohibited_items": "シーシャ機材・炭・煙・武器・お酒・実在のロゴなし。人物は2人だけ",
+    "in_game": "craft-preview.html のロード画面にこの話を出し、PC 1280x720・スマホ横 844x390 で表示を確認（qa/）。PC では広告の見出しが読める。スマホ横では見出しは小さいが、ピンクの見出しと口元を覆う写真で分かる"
   },
   "status": "registered",
   "registered": true
