@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-27 18:08 UTC",
+ "generated": "2026-11-27 20:26 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -697,6 +697,19 @@
   "cg_naru_last_chance.png",
   "cg_naru_next_entry.png",
   "cg_oneesan_first_smoke.png",
+  "cg_purikura_ageha_gyarupi.png",
+  "cg_purikura_ageha_half_heart.png",
+  "cg_purikura_ageha_henkao.png",
+  "cg_purikura_ageha_mori.png",
+  "cg_purikura_hiyori_naisho.png",
+  "cg_purikura_hiyori_otsukare.png",
+  "cg_purikura_kumicho_kinen.png",
+  "cg_purikura_kumicho_trio.png",
+  "cg_purikura_rio_record.png",
+  "cg_purikura_rio_tamaniwa.png",
+  "cg_purikura_solo_first.png",
+  "cg_purikura_tsumugi_neko.png",
+  "cg_purikura_tsumugi_nigaoe.png",
   "cg_rio_confession.png",
   "cg_ryuji_purikura.png",
   "cg_saku_mashiro_childhood.png",
@@ -3869,7 +3882,20 @@
   "cgs/cg_minto_cheki_side_by_side.png",
   "cgs/cg_minto_cheki_stiff_peace.png",
   "cgs/cg_minto_secret_cheki_blush.png",
-  "cgs/cg_minto_secret_cheki_hush.png"
+  "cgs/cg_minto_secret_cheki_hush.png",
+  "cgs/cg_purikura_ageha_gyarupi.png",
+  "cgs/cg_purikura_ageha_half_heart.png",
+  "cgs/cg_purikura_ageha_henkao.png",
+  "cgs/cg_purikura_ageha_mori.png",
+  "cgs/cg_purikura_hiyori_naisho.png",
+  "cgs/cg_purikura_hiyori_otsukare.png",
+  "cgs/cg_purikura_kumicho_kinen.png",
+  "cgs/cg_purikura_kumicho_trio.png",
+  "cgs/cg_purikura_rio_record.png",
+  "cgs/cg_purikura_rio_tamaniwa.png",
+  "cgs/cg_purikura_solo_first.png",
+  "cgs/cg_purikura_tsumugi_neko.png",
+  "cgs/cg_purikura_tsumugi_nigaoe.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

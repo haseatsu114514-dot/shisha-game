@@ -41,6 +41,8 @@ function photo(value) {
     || unique(people).length !== people.length || value.mode === "pair" && people[1] !== "ageha") return null;
   return { chapter: value.chapter, day: value.day, slot: value.slot, mode: value.mode, people: [...people],
     ...(Number.isInteger(value.chapterDay) && value.chapterDay > 0 ? { chapterDay: value.chapterDay } : {}),
+    // 撮った写真の絵（PFC18・core/purikura-data.js）。絵の無い撮影・旧セーブは無し
+    ...(typeof value.cg === "string" && /^cg_[a-z0-9_]+$/.test(value.cg) ? { cg: value.cg } : {}),
   };
 }
 export const purikuraId = p => ["purikura", p.chapter, p.day, p.slot, p.mode, ...p.people].join("-");

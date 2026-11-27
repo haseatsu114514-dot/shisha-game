@@ -229,15 +229,37 @@ for (const c of ALL_MINTO_CHEKIS) {
   const owned = galleryEntries(actualManifest, actualCatalog, g.normalizeGalleryProgress({ keepsakes: [c.id] }), new Set());
   assert.equal(owned.find(item => item.id === c.cg).unlocked, true, c.id);
 }
-const adoptedChekis = ALL_MINTO_CHEKIS.length;
+// MELTY PUFF のプリクラ（PFC18）。第2章・プリクラの札で、撮影の記録に絵があれば解放（絵のある記録は撮影ごとの項目に重ねない）。
+const { PURIKURA_PHOTOS } = modules.get(new URL("purikura-data.js", root).href).namespace;
+assert.equal(PURIKURA_PHOTOS.length, 13);
+const purikuraChar = { ageha: "ageha", tsumugi: "tsumugi", rio: "rio" };
+for (const p of PURIKURA_PHOTOS) {
+  const entry = actualEntries.find(item => item.id === p.cg);
+  assert(entry, p.cg);
+  assert.deepEqual({ chapter: entry.chapter, char: entry.char, kind: entry.kind, title: entry.title, unlocked: entry.unlocked },
+    { chapter: 2, char: purikuraChar[p.with] || "other", kind: "purikura", title: p.label, unlocked: false }, p.cg);
+  const shot = { chapter: 2, day: 18, slot: 1, mode: p.with === "solo" ? "solo" : p.with === "ageha" ? "pair" : "guest",
+    people: p.with === "solo" ? ["hajime"] : ["hajime", p.with], cg: p.cg };
+  const owned = galleryEntries(actualManifest, actualCatalog, g.normalizeGalleryProgress({ purikura: [shot] }), new Set());
+  assert.equal(owned.find(item => item.id === p.cg).unlocked, true, p.cg);
+  assert.equal(owned.filter(item => item.photo).length, 0, "a pictured shot is not repeated as a face photo");
+}
+{
+  const legacy = { chapter: 2, day: 18, slot: 1, mode: "guest", people: ["hajime", "adam"] };
+  const mixed = galleryEntries(actualManifest, actualCatalog, g.normalizeGalleryProgress({ purikura: [legacy, { ...legacy, day: 19, cg: "cg_not_in_manifest" }] }), new Set());
+  assert.equal(mixed.filter(item => item.photo).length, 2, "shots without a manifest picture stay as face photos");
+  assert.equal(g.normalizeGalleryProgress({ purikura: [{ ...legacy, cg: "../evil" }] }).purikura[0].cg, undefined, "an unsafe picture id is dropped");
+}
+const adoptedChekis = ALL_MINTO_CHEKIS.length + PURIKURA_PHOTOS.length; // チェキとプリクラ（どちらも manifest の写真）
 assert.equal(actualManifest.cgs.length, 34 + adoptedStills.length + adoptedChekis);
 assert.equal(actualEntries.filter(e => e.cg).length, 31 + adoptedStills.length + adoptedChekis, "two alternate strips and the DAY3 sketch-in-progress are excluded");
 assert.equal(actualStats.total, 31 + adoptedStills.length + adoptedChekis, "current catalog has no approved additions");
 assert.equal(actualStats.unlocked, 0);
 assert.equal(actualStats.rate, 0);
 const expectedChars = {
-  minto: 5 + adoptedChekis, ageha: 3, tsumugi: 3, naru: 3, rio: 1, mashiro: 4, other: 12,
+  minto: 5 + ALL_MINTO_CHEKIS.length, ageha: 3, tsumugi: 3, naru: 3, rio: 1, mashiro: 4, other: 12,
 };
+for (const p of PURIKURA_PHOTOS) expectedChars[purikuraChar[p.with] || "other"]++;
 for (const [, , char] of adoptedStills) expectedChars[char]++;
 for (const entry of actualEntries) assert(Object.hasOwn(CHAR_LABELS, entry.char), `${entry.id} has a character tag`);
 assert.equal(actualEntries.find(e => e.id === "cg_ch3_childhood_offered_hand").char, "mashiro");
