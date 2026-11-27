@@ -104,6 +104,9 @@
 #stage .dr-card.dr-menu { display: flex; flex-direction: column; box-sizing: border-box; padding: 0 20px 30px; }
 #stage .dr-menu-head { position: static; order: 1; flex: none; width: auto; padding: 64px 0 0 16px; z-index: 2; }
 #stage .dr-menu .dr-title { max-width: none; font-size: 124px; }
+/* 題字のロゴ（DSR108）: 縦は幅いっぱい近くに大きく */
+#stage .desert-ride .dr-menu[data-kind="title"] .dr-title { width: 560px; font-size: 0; }
+#stage .desert-ride .dr-menu[data-kind="title"] .dr-menu-head { padding: 34px 0 0; display: grid; justify-items: center; }
 #stage .dr-menu[data-kind="practiced"] .dr-title { font-size: 88px; }
 #stage .dr-menu-hero { position: relative; order: 2; flex: 1 1 0; min-height: 0; left: auto; bottom: auto; width: auto; height: auto; }
 #stage .dr-menu-rival { left: 30px; bottom: 96px; width: 200px; }

@@ -117,3 +117,18 @@ OpenAI の画像 API（`gpt-image-2.6-sunburst`）で生成した原画と、送
 - **検品**: メダルの字はそれぞれ S・A・B・C の1字だけで、正立・中央。ほかの字・数字なし／COMBO の綴りが正しい（C・O・M・B・O）／名札と漆の札は中が空いていて、字・擬似文字なし
 - 前のメダル（`medal_s|a|b|c.webp`。#3686）は使わなくなったが、絵は残してある（記録は `asset_sources/desert-ride-result-3686/`）
 - 原画の SHA-256（先頭16桁）: `medal_S` 700feed14fc7f58c, `medal_A` b6e00a350b0b21ed, `medal_B` 15ceaf4ef4a07b66, `medal_C` ce833681a67c2e2d, `plate_rank` 15c3cc44395ed591, `stamp_best` b9d25adfa4adbfc9, `stat_combo` f3c4f8c02ab4ce6e
+
+## ミニゲームの題字のロゴ（DSR108・CRF29）— `logos/`
+
+オーナー「あと各ミニゲームのタイトルは生成して　今なんかデザートライドとかダサいしロゴ」。CSS の金のグラデーションの字（砂丘）や、字だけの題字（ラクダ）を、**絵の入ったロゴ**に替えた。プロンプトは `logos/prompts.md`。
+
+| 原画（`logos/originals/`） | 使う所 | ゲームの絵 |
+|---|---|---|
+| `logo_desert_ride.png` | 砂丘の入口の題字（夕日・砂丘・砂を切って走る板。横の入口・縦の入口とも）（`remake/css/desert-ride.css` の末尾・`frame/desert.css`） | `remake/img/ui/desert_ride/logo.webp`（900×605） |
+| `logo_camel_race.png` | ラクダレースの入口の題字（走るラクダとロボット騎手・赤いリボン・ゴールの旗。単独ページの入口・縦の大会選び）（`remake/js/camel-race-page.js`・`frame/camel.css`）。レース中の小さな題字は前の `word-title.webp` のまま | `remake/img/ui/camel_race/ui/logo.webp`（900×550） |
+| `logo_tetsuko.png` | 「てつこといっしょ」の題字（丸い手書き風のひらがなと、寝そべるてつこ・足あと） | `remake/img/ui/tetsuko/ui_tk_logo.webp`（820×390） |
+
+- **変換**: 透過の余白を切り落とし、横 900px（てつこは 820px）に縮めた WebP（quality 90・透過あり）。
+- **検品**: 綴りが正しい（DESERT RIDE・CAMEL RACE・てつこといっしょ）。ほかの字・擬似文字なし／人物は背面か小さく顔なし（砂丘）／ロボット騎手はラクダレースの絵と同じ作り／てつこは毛色がゲームの絵と同じ。
+- 原画の SHA-256（先頭16桁）: `logo_desert_ride` 3e65c260581a2bf7, `logo_camel_race` 0f1f023a5e361a03, `logo_tetsuko` cc89f937cf1e5cb2
+

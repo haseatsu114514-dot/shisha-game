@@ -37,7 +37,7 @@ function menu(result = null) {
   host.replaceChildren(el("div.camel-menu", [
     el("p", { text: "第4章ドバイ編・任意ミニゲーム（試遊ページ）" }),
     // 題名は手描きの字（CR-UI14）。読み終えるまでは出さず（読み込み中の代替文字が手描きへ切り替わるポップインを防ぐ。Issue #3643）、読めなければ文字のまま。
-    el("h1", [el("img.camel-menu-title", { src: imgFileUrl("ui/camel_race/ui/word-title.webp"), alt: "CAMEL RACE",
+    el("h1", [el("img.camel-menu-title", { src: imgFileUrl("ui/camel_race/ui/logo.webp"), alt: "CAMEL RACE", // 題字は生成したロゴ（CRF29）
       style: "opacity:0;transition:opacity .18s ease",
       onload: event => { event.currentTarget.style.opacity = "1"; },
       onerror: event => { event.currentTarget.replaceWith("CAMEL RACE"); } })]),

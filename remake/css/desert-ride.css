@@ -812,3 +812,13 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-best[data-new="true"
 /* 段の札（初級・中級・上級）: 革の名札 */
 .dr-result-tier, .dr-result-tier[data-tier] { padding: 6px 22px 8px; border-radius: 0; box-shadow: none; color: #ffeec8; text-shadow: 0 2px 0 rgba(30, 10, 4, .8);
   background: transparent url("../img/ui/desert_ride_result/plate_rank.webp") center / 100% 100% no-repeat; }
+
+/* ---- 入口の題字をロゴの絵に（2026-11-27 オーナー「各ミニゲームのタイトルは生成して　今なんかデザートライドとかダサいしロゴ」・DSR108）----
+   それまでの「CSS の金のグラデーションの字」と英字の帯（DUBAI · SAND DUNES）をやめ、生成したロゴ（img/ui/desert_ride/logo.webp。夕日・砂丘・砂を切る板）を置く。
+   字は読み上げ用に残して見えなくする。練習のおわりの題（「練習おわり」）は字のまま */
+.desert-ride .dr-menu[data-kind="title"] .dr-kicker { display: none; }
+.desert-ride .dr-menu[data-kind="title"] .dr-title { width: 470px; max-width: none; aspect-ratio: 900 / 605; padding: 0; transform: rotate(-2deg); transform-origin: 50% 50%;
+  font-size: 0; line-height: 0; color: transparent; -webkit-text-fill-color: transparent;
+  background: url("../img/ui/desert_ride/logo.webp") center / contain no-repeat; -webkit-background-clip: border-box; background-clip: border-box;
+  filter: drop-shadow(0 10px 14px rgba(60, 20, 0, .45)); }
+.desert-ride .dr-menu[data-kind="title"] .dr-menu-head { top: 20px; }
