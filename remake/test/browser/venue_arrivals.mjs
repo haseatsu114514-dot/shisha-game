@@ -17,6 +17,7 @@ async function setup(page, { chapter = 1, day = 6, slot = 1, money = 12000, rain
     // 天気は保存の種で決まる。検査したい天気になる種を選ぶ
     for (let seed = 1; seed < 2000; seed++) { s.weatherSeed = seed; if (V.weather.isRainy() === rain) break; }
     V.core.config.textSpeed = 4; V.core.config.bgmVolume = 0; V.core.config.seVolume = 0;
+    V.core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
     V.vn.hooks.onLine = (id, line) => V.lines.push({ id, speaker: line.speaker || "", text: line.text });
     V.ids = () => [...new Set(V.lines.map(line => line.id))];
     V.flags = () => Object.fromEntries(Object.entries(V.core.state.flags).filter(([key]) => key.startsWith("_venue_arrival_")));

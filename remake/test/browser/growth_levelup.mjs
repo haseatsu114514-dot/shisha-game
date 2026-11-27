@@ -1581,7 +1581,8 @@ await suite("growth-levelup", async (runCheck) => {
     await page.locator(t(`board-node-${first}`)).click();
     const perk = await page.locator(t("board-perk")).innerText();
     const total = await page.locator(t("board-perk-total")).innerText();
-    assert.match(total, /の合計：.*＋0%（端数は次の睡眠へ） → .*＋4%（端数は次の睡眠へ）/, `いま→灯すと（近くの眠りは＋4%。SBD111）: ${total}`);
+    // 最初のマスは才能の B2（眠り）。#4255 で2マス分を集約し、一つ灯すと従来（＋4%・SBD111）の2倍の＋8%。
+    assert.match(total, /の合計：.*＋0%（端数は次の睡眠へ） → .*＋8%（端数は次の睡眠へ）/, `いま→灯すと（近くの眠り B2 は＋8%。#4255）: ${total}`);
     await page.locator(t("board-light")).click();
     await page.locator(t(`board-node-${first}`)).click(); // 仮置きで隣へ選択が進むので戻す
     assert.match(await page.locator(t("board-perk-total")).innerText(), /仮置き中/);

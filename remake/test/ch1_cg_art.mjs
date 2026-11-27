@@ -25,6 +25,7 @@ async function prepare(page) {
     const ui = await import("./js/core/ui.js"), engine = await import("./js/vn/engine.js");
     const gallery = await import("./js/scenes/gallery.js");
     core.newGame(); core.save(); core.config.textSpeed = 4;
+    core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
     for (const id of ["hajime", "sumi", "tsumugi", "minto", "naru", "adam", "sensu", "dr_charcoal", "oneesan"]) {
       core.state.met[id] = true; core.state.flags[`_intro_${id}`] = true;
     }

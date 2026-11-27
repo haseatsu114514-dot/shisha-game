@@ -17,6 +17,7 @@ async function prepare(page) {
       _errand_scout_done: true, _delivery_adam_done: true, _delivery_minto_done: true });
     s.met.minto = true; s.story.minto = 1; s.affinity.minto = 20;
     core.config.textSpeed = 4; ch1.setupHooks(); engine.vnTest.turbo = false; ui.clearScreen();
+    core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
     localStorage.setItem("suien_remake_gallery", JSON.stringify(["cg_minto_first_cheki"]));
     window.K = { core, data, engine, phone, calendar, gallery, ui };
   });

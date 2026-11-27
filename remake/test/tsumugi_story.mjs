@@ -371,7 +371,7 @@ try {
   const SKETCH = "cg_ch1_tsumugi_sketch_wip";
   const FOCUS = ["cg-focus-sketch-cat", "cg-focus-sketch-blank"]; // 0=猫の顔 1=未着色の右側（選択肢の順と一致）
   const draft = await open();
-  await draft.evaluate(() => { T.vn.vnTest.turbo = false; T.core.config.textSpeed = 4; });
+  await draft.evaluate(() => { T.vn.vnTest.turbo = false; T.core.config.textSpeed = 4; T.core.config.skipSeenOnly = false; }); // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
   const cgSnap = () => {
     const node = document.querySelector(".vn-cg");
     return { cg: node?.dataset.cg || "", show: !!node?.classList.contains("show"),

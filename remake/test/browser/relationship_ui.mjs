@@ -12,6 +12,7 @@ async function setup(page) {
     };
     await R.data.loadDeferredDialogues();
     R.ch1.setupHooks();
+    R.core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
     R.fresh = () => {
       const s = R.core.newGame();
       Object.assign(s, { phase: "daily", day: 12, slot: 1 });
