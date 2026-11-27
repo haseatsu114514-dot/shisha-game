@@ -260,6 +260,22 @@ const MINTO_COOL_MINT_SEEN = "_minto_cool_mint_done";
 export const mintoCoolMintDue = () => !state.flags[MINTO_COOL_MINT_SEEN]
   && !!state.flags[MINTO_CHEKI_KEEP_SEEN]
   && !!DB.dialogues[MINTO_COOL_MINT]?.lines?.length;
+/** みんととの2ショットチェキ（PFC17）。2ショットは頼んで出るものではなく、来店の会話の流れで撮って、そのまま渡してくれる。
+ * 2回目の固有会話の後、新しい話が無い来店で、この順に一本ずつ（写真は台本の buy_keepsake が0円で記念品へ入れる）。
+ * あいだに一度は、いつもの来店（チェキを頼める回）を挟む。core/minto-cheki-data.js の MINTO_TWOSHOT_CHEKIS と同じ順。 */
+export const MINTO_TWOSHOT_EVENTS = Object.freeze([
+  "minto_twoshot_half_heart",
+  "minto_twoshot_stiff_peace",
+  "minto_twoshot_drink",
+  "minto_twoshot_horns_prank",
+  "minto_twoshot_side_by_side",
+]);
+export const mintoTwoShotDue = () => {
+  if (storyCount("minto") < 2) return null;
+  const at = state.flags._minto_twoshot_at;
+  if (Number.isInteger(at) && (state.visits.minto || 0) < at + 1) return null;
+  return MINTO_TWOSHOT_EVENTS.find((id) => !state.flags[`_spot_seen_${id}`] && DB.dialogues[id]?.lines?.length) || null;
+};
 /**
  * 章が明けて最初の来店で一度だけ読む後日談（#2026）。第1章で実際に通った店主だけ（regulars は
  * 章の切り替え時の記録。ch2-progress.js）。既読は台本末尾の set_flag。第2章の地元の地図だけが入口。
@@ -414,7 +430,7 @@ export function hasNewStory(charId) {
   if (charId === "rio" && rioBlueberryDue()) return true;
   if (charId === "rio" && rioStoryExtraDue()) return true;
   if (charId === "tsumugi" && (tsumugiPinkDue() || tsumugiStoryExtraDue())) return true;
-  if (charId === "minto" && (mintoSideSeatDue() || mintoQuietHelloDue() || mintoTimerHandDue() || mintoChekiKeepDue() || mintoCoolMintDue())) return true;
+  if (charId === "minto" && (mintoSideSeatDue() || mintoQuietHelloDue() || mintoTimerHandDue() || mintoChekiKeepDue() || mintoCoolMintDue() || mintoTwoShotDue())) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id && !visitStorySkipped(state, charId, id)) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
@@ -676,6 +692,13 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
       if (!await read(MINTO_COOL_MINT, DB.dialogues[MINTO_COOL_MINT].metadata?.bg ? {} : { bg })) return false;
       state.flags[MINTO_COOL_MINT_SEEN] = true;
       gainAffinity(charId, visitAffinity("story"), affinityOptions);
+    } else if (charId === "minto" && mintoTwoShotDue()) {
+      // 2ショットの回（PFC17）。完読してから既読。中断では旗を残さず、次の来店で読み直せる。
+      const scene = mintoTwoShotDue();
+      if (!await read(scene, DB.dialogues[scene].metadata?.bg ? {} : { bg })) return false;
+      state.flags[`_spot_seen_${scene}`] = true;
+      state.flags._minto_twoshot_at = visit;
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
     } else if (bondAfter) {
       if (!await read(bondAfter.scene, DB.dialogues[bondAfter.scene].metadata?.bg ? {} : { bg })) return false;
       markBondAfterRead(state, charId, bondAfter);
@@ -759,7 +782,9 @@ export async function visitRival(spot, { expense = false } = {}) {
   const welcome = spot.charId === "minto" && state.slot === 0 && hiyoriShopEncounterDue(spot)
     ? null : `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
   // 初来店（台本の中に記念のチェキがある）と、正体がつながった日の来店では、チェキを頼む選択を出さない。
+  // 2ショットの回（その場で撮って渡してくれる）を読んだ来店でも出さない。
   const chekiBefore = spot.charId === "minto" && !expense && storyCount("minto") >= 1 && !mintoRevealAtVisit("minto");
+  const twoShotBefore = state.flags._minto_twoshot_at;
   const completed = await visitChar(spot.charId, { welcome });
   // 配達やチュートリアルの面識ではなく、自主来店の会話を終えてから地図に出す。
   if (completed && state === owner) {
@@ -767,7 +792,7 @@ export async function visitRival(spot, { expense = false } = {}) {
     addStamina(spot.stamina || -16);
     state.flags[`_spot_guide_${spot.charId}`] = true;
     // 来店の精算のあとで、チェキを頼むか選ぶ（PFC14）
-    if (chekiBefore) await offerMintoCheki();
+    if (chekiBefore && state.flags._minto_twoshot_at === twoShotBefore) await offerMintoCheki();
   }
   return completed;
 }

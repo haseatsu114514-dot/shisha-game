@@ -693,7 +693,6 @@
   "cg_minto_first_cheki.png",
   "cg_minto_secret_cheki_blush.png",
   "cg_minto_secret_cheki_hush.png",
-  "cg_minto_secret_cheki_parfait.png",
   "cg_naru_after_hours.png",
   "cg_naru_last_chance.png",
   "cg_naru_next_entry.png",
@@ -3870,8 +3869,7 @@
   "cgs/cg_minto_cheki_side_by_side.png",
   "cgs/cg_minto_cheki_stiff_peace.png",
   "cgs/cg_minto_secret_cheki_blush.png",
-  "cgs/cg_minto_secret_cheki_hush.png",
-  "cgs/cg_minto_secret_cheki_parfait.png"
+  "cgs/cg_minto_secret_cheki_hush.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

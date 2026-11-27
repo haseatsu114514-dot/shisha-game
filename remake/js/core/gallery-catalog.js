@@ -25,7 +25,7 @@ const cgChapters = {
   cg_ageha_first_purikura: 2, cg_ryuji_purikura: 2,
   cg_saku_mashiro_childhood: 3, cg_mashiro_double_apple: 3,
   cg_minto_casual: 1, cg_minto_cheki: 1, cg_minto_first_cheki: 1,
-  // PEPPERMINTで頼むチェキは第1章から撮れる（daily/minto-cheki.js）
+  // PEPPERMINTのチェキ（頼むチェキ・2ショットの回・こっそりの一枚）は第1章から撮れる（daily/minto-cheki.js・daily/spots.js）
   ...Object.fromEntries(ALL_MINTO_CHEKIS.map(c => [c.cg, 1])),
   cg_naru_after_hours: 2, cg_naru_last_chance: 3, cg_naru_next_entry: 3,
   cg_oneesan_first_smoke: 1, cg_tsumugi_smoke_color: 1,
@@ -90,7 +90,7 @@ const labels = {
   cg_minto_first_cheki: "みんとの初来店チェキ", cg_minto_cheki: "みんととのツーショット",
   cg_ageha_first_purikura: "あげはとの初プリ", cg_ryuji_purikura: "神崎との職人プリ",
   cg_ch2_ageha_purikura_strip: "あげはと半分このプリクラ",
-  ...Object.fromEntries(ALL_MINTO_CHEKIS.map(c => [c.cg, c.secret ? `ないしょのチェキ・${c.label}` : `みんとのチェキ・${c.label}`])),
+  ...Object.fromEntries(ALL_MINTO_CHEKIS.map(c => [c.cg, c.secret ? `ないしょのチェキ・${c.label}` : c.twoShot ? `2ショットチェキ・${c.label}` : `みんとのチェキ・${c.label}`])),
 };
 const localAsset = (path, extensions) => typeof path === "string"
   && /^(?:img|\.\.\/assets)\/[a-zA-Z0-9_./-]+$/.test(path)

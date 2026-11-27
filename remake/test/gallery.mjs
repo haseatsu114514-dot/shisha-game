@@ -217,15 +217,15 @@ for (const [id, chapter, char, title] of adoptedStills) {
   assert.equal(entry.unlocked, false, id);
   assert.equal(unlockedStills.find(item => item.id === id).unlocked, true, id);
 }
-// PEPPERMINTで頼むチェキ（PFC14）。みんと・第1章・題名つきで、記念品として持てば解放される（見たCGの記録が無くても）。
+// PEPPERMINTのチェキ（PFC14・15・17）。みんと・第1章・題名つきで、記念品として持てば解放される（見たCGの記録が無くても）。
 const { ALL_MINTO_CHEKIS } = modules.get(new URL("minto-cheki-data.js", root).href).namespace;
-assert.equal(ALL_MINTO_CHEKIS.length, 16);
+assert.equal(ALL_MINTO_CHEKIS.length, 15);
 for (const c of ALL_MINTO_CHEKIS) {
   const entry = actualEntries.find(item => item.id === c.cg);
   assert(entry, c.cg);
   assert.deepEqual({ chapter: entry.chapter, char: entry.char, kind: entry.kind, unlocked: entry.unlocked },
     { chapter: 1, char: "minto", kind: "cheki", unlocked: false }, c.cg);
-  assert.equal(entry.title, (c.secret ? "ないしょのチェキ・" : "みんとのチェキ・") + c.label);
+  assert.equal(entry.title, (c.secret ? "ないしょのチェキ・" : c.twoShot ? "2ショットチェキ・" : "みんとのチェキ・") + c.label);
   const owned = galleryEntries(actualManifest, actualCatalog, g.normalizeGalleryProgress({ keepsakes: [c.id] }), new Set());
   assert.equal(owned.find(item => item.id === c.cg).unlocked, true, c.id);
 }

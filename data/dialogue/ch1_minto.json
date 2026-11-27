@@ -3261,281 +3261,6 @@
       }
     },
     {
-      "dialogue_id": "minto_cheki_half_heart",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "みんとはカメラをカウンターに置いて、セルフタイマーを押した。"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "はじめくん、手かして！ 半分ずつでハートね♡"
-        },
-        {
-          "type": "show_cg",
-          "cg_id": "cg_minto_cheki_half_heart",
-          "effect": "cheki"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "余白に『2ショット 記念日♡』と書いてくれた。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（半分ずつのハートって、思ったより照れるな）"
-        },
-        {
-          "type": "buy_keepsake",
-          "item_id": "minto_cheki_half_heart",
-          "next_failure": "cheki_short"
-        },
-        {
-          "type": "hide_cg"
-        }
-      ],
-      "branches": {
-        "cheki_short": [
-          {
-            "speaker": "hajime",
-            "face": "sad",
-            "text": "……すみません、手持ちが足りなくて"
-          },
-          {
-            "speaker": "minto",
-            "face": "smile",
-            "text": "大丈夫っ♡ また今度、撮ろうね！"
-          }
-        ]
-      },
-      "metadata": {
-        "bg": "res://assets/backgrounds/peppermint.png"
-      }
-    },
-    {
-      "dialogue_id": "minto_cheki_stiff_peace",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "みんとはカメラをカウンターに置いて、セルフタイマーを押した。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "並んだとたん、背すじがまっすぐ伸びた。ピースの手も、胸の前で固まる。"
-        },
-        {
-          "type": "show_cg",
-          "cg_id": "cg_minto_cheki_stiff_peace",
-          "effect": "cheki"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "余白には『かたいよ〜？ 次は笑ってね』と書かれた。"
-        },
-        {
-          "speaker": "minto",
-          "face": "wink",
-          "text": "はじめくん、敬礼みたいなピースだったよ？"
-        },
-        {
-          "type": "buy_keepsake",
-          "item_id": "minto_cheki_stiff_peace",
-          "next_failure": "cheki_short"
-        },
-        {
-          "type": "hide_cg"
-        }
-      ],
-      "branches": {
-        "cheki_short": [
-          {
-            "speaker": "hajime",
-            "face": "sad",
-            "text": "……すみません、手持ちが足りなくて"
-          },
-          {
-            "speaker": "minto",
-            "face": "smile",
-            "text": "大丈夫っ♡ また今度、撮ろうね！"
-          }
-        ]
-      },
-      "metadata": {
-        "bg": "res://assets/backgrounds/peppermint.png"
-      }
-    },
-    {
-      "dialogue_id": "minto_cheki_horns_prank",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "みんとはカメラをカウンターに置いて、セルフタイマーを押した。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "シャッターの直前、後ろから頭の上に、指のツノを立てられた。"
-        },
-        {
-          "type": "show_cg",
-          "cg_id": "cg_minto_cheki_horns_prank",
-          "effect": "cheki"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "余白に『はじめくんも 悪魔の仲間♡』と書いてくれた。"
-        },
-        {
-          "speaker": "minto",
-          "face": "wink",
-          "text": "ようこそ、こっち側へ♡"
-        },
-        {
-          "type": "buy_keepsake",
-          "item_id": "minto_cheki_horns_prank",
-          "next_failure": "cheki_short"
-        },
-        {
-          "type": "hide_cg"
-        }
-      ],
-      "branches": {
-        "cheki_short": [
-          {
-            "speaker": "hajime",
-            "face": "sad",
-            "text": "……すみません、手持ちが足りなくて"
-          },
-          {
-            "speaker": "minto",
-            "face": "smile",
-            "text": "大丈夫っ♡ また今度、撮ろうね！"
-          }
-        ]
-      },
-      "metadata": {
-        "bg": "res://assets/backgrounds/peppermint.png"
-      }
-    },
-    {
-      "dialogue_id": "minto_cheki_side_by_side",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "みんとはカメラをカウンターに置いて、セルフタイマーを押した。"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "はい、並んで並んで♡ はじめくんは親指ね！"
-        },
-        {
-          "type": "show_cg",
-          "cg_id": "cg_minto_cheki_side_by_side",
-          "effect": "cheki"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "余白には『相性 ばっちり♡』と書いてくれた。"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "ね？ 並ぶと、相性ばっちりでしょ♡"
-        },
-        {
-          "type": "buy_keepsake",
-          "item_id": "minto_cheki_side_by_side",
-          "next_failure": "cheki_short"
-        },
-        {
-          "type": "hide_cg"
-        }
-      ],
-      "branches": {
-        "cheki_short": [
-          {
-            "speaker": "hajime",
-            "face": "sad",
-            "text": "……すみません、手持ちが足りなくて"
-          },
-          {
-            "speaker": "minto",
-            "face": "smile",
-            "text": "大丈夫っ♡ また今度、撮ろうね！"
-          }
-        ]
-      },
-      "metadata": {
-        "bg": "res://assets/backgrounds/peppermint.png"
-      }
-    },
-    {
-      "dialogue_id": "minto_cheki_drink",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "みんとはカメラをカウンターに置いて、セルフタイマーを押した。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "なぜか、ピンクのソーダのグラスを持たされたまま並んだ。"
-        },
-        {
-          "type": "show_cg",
-          "cg_id": "cg_minto_cheki_drink",
-          "effect": "cheki"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "余白に『ちゃんと 飲んでね♡』と書いてくれた。"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "シーシャの合間も、ちゃんと水分とってね♡"
-        },
-        {
-          "type": "buy_keepsake",
-          "item_id": "minto_cheki_drink",
-          "next_failure": "cheki_short"
-        },
-        {
-          "type": "hide_cg"
-        }
-      ],
-      "branches": {
-        "cheki_short": [
-          {
-            "speaker": "hajime",
-            "face": "sad",
-            "text": "……すみません、手持ちが足りなくて"
-          },
-          {
-            "speaker": "minto",
-            "face": "smile",
-            "text": "大丈夫っ♡ また今度、撮ろうね！"
-          }
-        ]
-      },
-      "metadata": {
-        "bg": "res://assets/backgrounds/peppermint.png"
-      }
-    },
-    {
       "dialogue_id": "minto_secret_cheki_hush",
       "lines": [
         {
@@ -3676,55 +3401,142 @@
       }
     },
     {
-      "dialogue_id": "minto_secret_cheki_parfait",
+      "dialogue_id": "minto_twoshot_half_heart",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "カメラを取りに行ったみんとが、トレイを一枚持って戻ってきた。"
+          "speaker": "minto",
+          "face": "smile",
+          "text": "ねえ、はじめくん。うちで2ショット、まだ撮ったことないよね？"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "トレイの下から、チェキが一枚、すっと差し出される。"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "並んで撮るやつ？ ……そういえば、ないかも"
         },
         {
           "speaker": "minto",
-          "face": "normal",
-          "text": "……今日は、これ。撮らなくていいから"
-        },
-        {
-          "type": "show_cg",
-          "cg_id": "cg_minto_secret_cheki_parfait"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "閉店後の店で撮ったらしい。私服のみんとが、チョコミントのパフェを持っていた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "余白には『チョコミント ……すき』。サインは『栞』だった。"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "……閉店後に、ひとりで作ってみたの"
+          "face": "wink",
+          "text": "じゃあ今日を、はじめくんの2ショット記念日にしよ♡"
         },
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "……ちゃんと、おいしかったよ"
+          "text": "記念日だから、今日のはみんとのおごりでーすっ♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとはカメラをカウンターに置いて、セルフタイマーを押した。"
         },
         {
           "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくん、手かして！ 半分ずつでハートね♡"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_minto_cheki_half_heart",
+          "effect": "cheki"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "撮れた写真の余白に、みんとが『2ショット 記念日♡』と書いた。"
+        },
+        {
+          "speaker": "hajime",
           "face": "normal",
-          "text": "……お店のチェキじゃないから、お代はいらない"
+          "text": "（半分ずつのハートって、思ったより照れるな）"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はい、どうぞ♡ 今日のこと、ちゃんと覚えといてね？"
         },
         {
           "type": "buy_keepsake",
-          "item_id": "minto_secret_cheki_parfait"
+          "item_id": "minto_cheki_half_heart"
+        },
+        {
+          "type": "hide_cg"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受け取ったチェキを、財布の奥にそっとしまった。"
+        }
+      ],
+      "branches": {},
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      }
+    },
+    {
+      "dialogue_id": "minto_twoshot_stiff_peace",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今日のPEPPERMINTは、常連さんでいっぱいだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "2ショットチェキの順番が、ひとつずつ進んでいく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "常連さんの一人が「お兄さんも撮りなよ！ 俺のおごりで！」と手を挙げた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（え、俺も？ みんなの見てる前で？）"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "はーい、ご指名いただきましたっ♡ はじめくん、こっちこっち！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとはカメラをカウンターに置いて、セルフタイマーを押した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "並んだとたん、背すじがまっすぐ伸びた。ピースの手も、胸の前で固まる。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_minto_cheki_stiff_peace",
+          "effect": "cheki"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店のあちこちから、拍手と笑い声が上がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "余白には『かたいよ〜？ 次は笑ってね』と書かれた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "はじめくん、敬礼みたいなピースだったよ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……みんなに見られてると、無理だって"
+        },
+        {
+          "type": "buy_keepsake",
+          "item_id": "minto_cheki_stiff_peace"
         },
         {
           "type": "hide_cg"
@@ -3732,12 +3544,220 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "……はいっ♡ 本日もご来店、ありがとうございましたっ♡"
+          "text": "ふふっ。じゃあ次は、空いてる日にね♡"
+        }
+      ],
+      "branches": {},
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      }
+    },
+    {
+      "dialogue_id": "minto_twoshot_drink",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙を吐いたあと、喉の奥が少しかわいていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "はじめくん、さっきから何も飲んでないでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そういえば。煙に夢中で、忘れてた"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "だめだよ〜。シーシャの合間は、ちゃんと水分とらなきゃ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "受け取った一枚は、ほかのチェキとは別のポケットにしまった。"
+          "text": "みんとは、ピンクのソーダのグラスを持ってきた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "これはサービス♡ 飲んだ証拠に、2ショットで撮っとこ？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとはカメラをカウンターに置いて、セルフタイマーを押した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "グラスを持たされたまま、みんとの隣に並んだ。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_minto_cheki_drink",
+          "effect": "cheki"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "余白に『ちゃんと 飲んでね♡』と書いて、チェキを渡してくれた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "これを見たら、お水のこと思い出してね♡"
+        },
+        {
+          "type": "buy_keepsake",
+          "item_id": "minto_cheki_drink"
+        },
+        {
+          "type": "hide_cg"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……わかった。見えるところに置いとく"
+        }
+      ],
+      "branches": {},
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      }
+    },
+    {
+      "dialogue_id": "minto_twoshot_horns_prank",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そのツノ、毎日つけてて重くない？"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "ツノじゃなくて、小悪魔の証でーす♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "……あ、いいこと思いついた。はじめくん、2ショット撮ろ？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとはカメラをカウンターに置いて、セルフタイマーを押した。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はい、前向いてー♡ 動いちゃだめだよ？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シャッターの直前、後ろから頭の上に、指のツノを立てられた。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_minto_cheki_horns_prank",
+          "effect": "cheki"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……今、頭の上で何かしてた？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "余白に『はじめくんも 悪魔の仲間♡』と書いてくれた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "ようこそ、こっち側へ♡ このチェキは、いたずらのおわびね"
+        },
+        {
+          "type": "buy_keepsake",
+          "item_id": "minto_cheki_horns_prank"
+        },
+        {
+          "type": "hide_cg"
+        }
+      ],
+      "branches": {},
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      }
+    },
+    {
+      "dialogue_id": "minto_twoshot_side_by_side",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくん、今日は『シーシャ相性チェック』の日なの♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "質問は一個だけ。煙は、ゆっくり吸う派？ たくさん吸う派？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ゆっくり派、かな。一台を長く味わいたい"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "みんとも、ゆっくり派なの！ ……これは、相性ばっちりですね♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "相性ばっちりの人には、2ショットチェキをプレゼントでーすっ♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとはカメラをカウンターに置いて、セルフタイマーを押した。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はい、並んで並んで♡ はじめくんは親指ね！"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_minto_cheki_side_by_side",
+          "effect": "cheki"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "余白には『相性 ばっちり♡』と書いてくれた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……質問、本当に一個だけだったな）"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "ね？ 並ぶと、相性ばっちりでしょ♡"
+        },
+        {
+          "type": "buy_keepsake",
+          "item_id": "minto_cheki_side_by_side"
+        },
+        {
+          "type": "hide_cg"
         }
       ],
       "branches": {},

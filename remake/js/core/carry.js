@@ -536,6 +536,7 @@ export const FLAG_EXACT_RULES = [
   ["_met_volk", "person"],
   ["_minto_cheki_keep_done", "person"],
   ["_minto_cool_mint_done", "person"], // 極冷ミントの味見（SPC15・daily/spots.js）
+  ["_minto_twoshot_at", "person"], // 2ショットの回を読んだ来店の回数（PFC17・daily/spots.js。あいだに一度いつもの来店を挟む）
   ["_minto_fifth_done", "person"],
   ["_minto_history_shared", "person"],
   ["_minto_identity_revealed", "person"],

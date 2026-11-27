@@ -1,22 +1,30 @@
-// PEPPERMINTで頼むみんとのチェキ（PFC14・#3941）。
-// 普通のチェキは持っていないものから無作為（被りなし）。正体と本名を知った後は、頼むとたまに私服の一枚をこっそりくれる。
+// PEPPERMINTのみんとのチェキ（PFC14・15・17・#3941）。
+// 頼むチェキ（ソロ）は持っていないものから無作為（被りなし）。正体と本名を知った後は、頼むとたまに私服の一枚をこっそりくれる。
+// 2ショットは頼んで出るものではなく、来店の会話の流れで撮って渡してくれる一度ずつの回。
 // 台本・絵・記念品のつながりと、選び方・来店への接続を確かめる。VN と画面は差し替え（ブラウザの受け入れ試験ではない）。
 // node --experimental-vm-modules remake/test/minto_cheki_collection.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import * as chekiData from "../js/core/minto-cheki-data.js";
 
-const { MINTO_CHEKIS, MINTO_SECRET_CHEKIS, ALL_MINTO_CHEKIS, MINTO_CHEKI_PRICE } = chekiData;
+const { MINTO_CHEKIS, MINTO_TWOSHOT_CHEKIS, MINTO_SECRET_CHEKIS, ALL_MINTO_CHEKIS, MINTO_CHEKI_PRICE } = chekiData;
 const root = new URL("../../", import.meta.url);
 const read = p => fs.readFileSync(new URL(p, root), "utf8");
 const scenes = Object.fromEntries(JSON.parse(read("data/dialogue/ch1_minto.json")).dialogues.map(d => [d.dialogue_id, d]));
 const manifest = JSON.parse(read("remake/data/manifest.json"));
+// CI の quick は画像を取得しない（疎な取得）。画像は作業ツリーではなく git の管理一覧で確かめる。
+const tracked = new Set(execFileSync("git", ["ls-files", "--", "assets/cgs", "remake/img/cgs"], { cwd: fileURLToPath(root), encoding: "utf8" }).split("\n"));
 const textOf = scene => [...scene.lines, ...Object.values(scene.branches || {}).flat()].map(line => line.text || "").join("\n");
 
 // ---------------------------------------------------------------- A. 台本・絵・記念品
-assert.equal(MINTO_CHEKIS.length, 13);
-assert.equal(MINTO_SECRET_CHEKIS.length, 3);
+assert.equal(MINTO_CHEKIS.length, 8);
+assert.equal(MINTO_TWOSHOT_CHEKIS.length, 5);
+assert.equal(MINTO_SECRET_CHEKIS.length, 2, "激レアは2種（チョコミントのパフェは外した）");
+assert(!ALL_MINTO_CHEKIS.some(c => /parfait/.test(c.id)) && !Object.keys(scenes).some(id => /parfait/.test(id)));
+assert(MINTO_CHEKIS.every(c => c.kind === "solo") && MINTO_TWOSHOT_CHEKIS.every(c => c.twoShot) && MINTO_SECRET_CHEKIS.every(c => c.secret));
 assert.equal(new Set(ALL_MINTO_CHEKIS.map(c => c.id)).size, ALL_MINTO_CHEKIS.length);
 const ask = scenes.minto_cheki_ask;
 const choice = ask.lines.find(line => line.type === "choice");
@@ -30,18 +38,26 @@ for (const c of ALL_MINTO_CHEKIS) {
   const scene = scenes[c.scene];
   assert(scene, c.scene);
   assert(manifest.cgs.includes(`${c.cg}.png`), c.cg);
+  assert(manifest.webp.includes(`cgs/${c.cg}.png`), c.cg);
   for (const file of [`assets/cgs/${c.cg}.png`, `remake/img/cgs/${c.cg}.webp`, `remake/img/cgs/thumbs/${c.cg}.webp`]) {
-    assert(fs.existsSync(new URL(file, root)), file);
+    assert(tracked.has(file), file);
   }
   const shows = scene.lines.filter(line => line.type === "show_cg");
   assert.deepEqual(shows.map(line => line.cg_id), [c.cg], c.scene);
-  // 普通のチェキはその場で撮る（シャッターの演出）。私服の一枚は前に撮ったものを渡すので演出なし。
+  // 頼むチェキと2ショットはその場で撮る（シャッターの演出）。私服の一枚は前に撮ったものを渡すので演出なし。
   assert.equal(shows[0].effect, c.secret ? undefined : "cheki", c.scene);
+  // 2ショットは会話の流れの後で撮って渡す: 撮る前に会話が4行以上あり、渡す（記念品に入る）のは撮った後
+  const at = line => scene.lines.indexOf(line);
+  if (c.twoShot) {
+    assert(scene.lines.slice(0, at(shows[0])).filter(line => line.text).length >= 4, c.scene);
+    assert(/セルフタイマー/.test(textOf(scene)), c.scene);
+  }
   const buys = scene.lines.filter(line => line.type === "buy_keepsake");
   assert.deepEqual(buys.map(line => line.item_id), [c.id], c.scene);
   assert(scene.lines.some(line => line.type === "hide_cg"), c.scene);
-  assert.equal(c.cost, c.secret ? 0 : MINTO_CHEKI_PRICE, c.id);
-  // サインが本名の一枚だけが「栞」を書く。普通のチェキと頼む場面には出さない。
+  assert(at(buys[0]) > at(shows[0]), c.scene);
+  assert.equal(c.cost, c.kind === "solo" ? MINTO_CHEKI_PRICE : 0, c.id);
+  // サインが本名の一枚だけが「栞」を書く。頼むチェキ・2ショット・頼む場面には出さない。
   assert.equal(/栞/.test(textOf(scene)), !!c.secret, c.scene);
   for (const line of [...scene.lines, ...Object.values(scene.branches || {}).flat()]) {
     if (!line.text) continue;
@@ -100,13 +116,13 @@ const newSave = (patch = {}) => {
 };
 const seq = (...values) => { let i = 0; return () => values[i++ % values.length]; };
 
-// 正体を知る前: 普通のチェキだけ。持っていないものから選び、13枚で尽きる。
+// 正体を知る前: 頼むチェキ（ソロ）だけ。持っていないものから選び、全部そろうと尽きる。2ショットは頼んでも出ない。
 let s = newSave();
 assert.equal(cheki.mintoChekiOfferDue(), true);
 const got = [];
 for (let n = 0; n < MINTO_CHEKIS.length; n++) {
   const pick = cheki.pickMintoCheki(s, () => 0.999);
-  assert(pick && !pick.secret, "no secret before the reveal");
+  assert(pick && pick.kind === "solo", "solo only: no secret before the reveal, no two-shot from a request");
   assert(!s.keepsakes.includes(pick.id), "never a duplicate");
   s.keepsakes.push(pick.id); got.push(pick.id);
 }
@@ -174,16 +190,21 @@ assert.equal(await cheki.offerMintoCheki({ rand: seq(0, 0) }), true);
 assert(MINTO_SECRET_CHEKIS.some(c => c.scene === played[1]), played[1]);
 
 // ---------------------------------------------------------------- C. 来店への接続
-let state, offers = 0;
+let state, offers = 0, spotPlays = [], spotCancel = false;
+const spotsDB = { dialogues: { remake_repeat_minto_0: { dialogue_id: "remake_repeat_minto_0", lines: [{ speaker: "minto", text: "repeat" }] },
+  ch1_minto_identity_reveal: { dialogue_id: "ch1_minto_identity_reveal", lines: [{ speaker: "minto", text: "reveal" }] } }, manifest: {} };
 const spotsModule = await loadWithStubs("remake/js/daily/spots.js", {
   "../core/state.js": { markMet: id => { state.met[id] = true; } },
-  "../core/data.js": { DB: { dialogues: { remake_repeat_minto_0: { dialogue_id: "remake_repeat_minto_0", lines: [{ speaker: "minto", text: "repeat" }] },
-    ch1_minto_identity_reveal: { dialogue_id: "ch1_minto_identity_reveal", lines: [{ speaker: "minto", text: "reveal" }] } }, manifest: {} } },
+  "../core/data.js": { DB: spotsDB },
   "../core/stats.js": {
     gainAffinity: () => {}, visitAffinity: () => 8, affinityLevel: () => 5, releaseAffinity: () => 0,
     AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], earnStat: () => {}, addStamina: () => {}, addMoney: () => {}, ensureAffinityLevel: () => {},
   },
-  "../vn/engine.js": { play: async scene => ({ id: typeof scene === "string" ? scene : scene.dialogue_id, visited: [] }) },
+  "../vn/engine.js": { play: async scene => {
+    const id = typeof scene === "string" ? scene : scene.dialogue_id;
+    spotPlays.push(id);
+    return spotCancel ? { id, visited: [], cancelled: true } : { id, visited: [] };
+  } },
   "../core/affinity-stages.js": { VISIT_SEQ: { minto: ["ch1_minto_first", "ch1_minto_second"] }, visitStorySkipped: () => false },
   "./weather.js": { isRainy: () => false, RAIN_SPOT_TEXTS: {} },
   "./bonds.js": { questionVisitDue: () => false, finaleAtVisit: () => false, afterStory: async () => true },
@@ -218,4 +239,42 @@ visitSave(); offers = 0;
 await spots.visitRival(peppermint, { expense: true });
 assert.equal(offers, 0, "not on an errand visit");
 
-console.log(`OK: minto cheki — ${MINTO_CHEKIS.length} no-repeat chekis, ${MINTO_SECRET_CHEKIS.length} secret ones after the reveal and her name, offered after ordinary PEPPERMINT visits`);
+// ---------------------------------------------------------------- D. 2ショットの回（会話の流れで撮って渡す）
+assert.deepEqual([...spots.MINTO_TWOSHOT_EVENTS], MINTO_TWOSHOT_CHEKIS.map(c => c.scene), "データと同じ順");
+Object.assign(spotsDB.dialogues, Object.fromEntries(MINTO_TWOSHOT_CHEKIS.map(c => [c.scene, scenes[c.scene]])));
+// 2回目の固有会話の前は出ない
+visitSave({ story: { minto: 1 } });
+assert.equal(spots.mintoTwoShotDue(), null);
+// 新しい話が無い来店で、順に一本ずつ。あいだに一度はいつもの来店（チェキを頼める回）を挟む。
+visitSave();
+const order = [];
+const shots = () => order.filter(id => id !== "ordinary").length;
+for (let n = 0; n < 20 && !(shots() === MINTO_TWOSHOT_CHEKIS.length && order.at(-1) === "ordinary"); n++) {
+  const due = spots.mintoTwoShotDue();
+  assert.equal(spots.hasNewStory("minto"), !!due);
+  spotPlays = []; offers = 0;
+  assert.equal(await spots.visitRival(peppermint), true);
+  if (due) {
+    assert(spotPlays.includes(due), due);
+    assert.equal(state.flags[`_spot_seen_${due}`], true);
+    assert.equal(state.flags._minto_twoshot_at, state.visits.minto);
+    assert.equal(offers, 0, "その場で撮って渡した来店では、チェキを頼む選択を出さない");
+    order.push(due);
+  } else {
+    assert(spotPlays.some(id => /^remake_repeat_minto_/.test(id)), "いつもの来店");
+    assert.equal(offers, 1, "いつもの来店ではチェキを頼める");
+    if (order.length) order.push("ordinary");
+  }
+}
+assert.deepEqual(order.filter(id => id !== "ordinary"), MINTO_TWOSHOT_CHEKIS.map(c => c.scene));
+assert(order.every((id, i) => id === "ordinary" || order[i + 1] === "ordinary"), "2ショットの回は続けて出ない");
+assert.equal(spots.mintoTwoShotDue(), null, "5本読み終えたら出ない");
+// 中断では既読にせず、次の来店で読み直せる
+visitSave(); spotCancel = true;
+assert.equal(await spots.visitRival(peppermint), false);
+assert.equal(state.flags._spot_seen_minto_twoshot_half_heart, undefined);
+assert.equal(state.flags._minto_twoshot_at, undefined);
+spotCancel = false;
+assert.equal(spots.mintoTwoShotDue(), "minto_twoshot_half_heart");
+
+console.log(`OK: minto cheki — ${MINTO_CHEKIS.length} no-repeat solo chekis on request, ${MINTO_TWOSHOT_CHEKIS.length} two-shot visit events handed after their talk, ${MINTO_SECRET_CHEKIS.length} secret ones after the reveal and her name`);
