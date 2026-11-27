@@ -4,6 +4,10 @@
 
 > 2026-11-02 に `remake/README.md` から移した。新しい節が上。実装は `remake/css/`・`remake/js/`、採用記録は `docs/owner_requests.md`（CUI・DUI・GUI）。
 
+## 2026-11-27 様式「縦画面」（煙の舞台・C案。第1章）
+
+オーナー「第1章を今日作った縦UIで作って」（`docs/owner_requests.md` の VPN）。設定の「見た目」に「縦画面」を足した（`?look=vertical` でも選べる。既定は旧版のまま）。縦持ちの間だけ、試作 `remake/previews/portrait-stage/` と同じ縦の画面（上に絵・テロップ・補助ボタンの段・輪の十字キーと丸ボタン）で本編を写して中継する。仕組みは DS風の外枠と同じ（本編の画面は見えないまま動かし、場面の見分けは `looks/retro/detect.js`、シートは `looks/retro/sheet.js` を共用）。会話は、縦画面の間だけ本編の会話の箱をテロップと同じ比の幅にして、本編の組版が2行ずつにページを分ける。心得の盤は本編の盤の要素を縦の外枠へ移して縦向きに並べ直す。第1章だけで効き（`LOOK_CHAPTERS.vertical = [1]`）、横持ちと第2章以降は旧版の画面。まだ縦にしていない場面（シーシャ作り・大会・店番・ミニゲーム）は回転案内。作りは `js/looks/vertical.js`・`js/looks/vertical/`・`css/look-vertical.css`（使う時だけ読み込む）、検査は `remake/test/browser/look_vertical.mjs`。
+
 ## 2026-11-11 見た目の様式：新版（既定）／旧版／DS風（LK。どれも全章）
 
 オーナー依頼（2026-11-11）: 「今の様式も戻れるように残しつつ、新版として今のを磨き上げたやつと、DS風を作ってみて。まずは1章だけ。また切り替えられるように」。台帳は `docs/owner_requests.md` の LK。
