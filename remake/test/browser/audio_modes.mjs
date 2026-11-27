@@ -17,6 +17,7 @@ try {
         phone: await import('./js/daily/phone.js'), audio: await import('./js/core/audio.js'), events: [] };
       const s = A.core.newGame(); s.flags._intro_sumi = true; s.met.sumi = true;
       Object.assign(A.core.config, { textSpeed: 2, voiceBlip: true, seVolume: .8, bgmVolume: 0 });
+      A.core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
       A.audio.stopBgm(0); A.audio.applyVolumes();
       for (const id of ['click', 'blip', 'phoneReceive', 'phoneSend', 'doorbell', 'select', 'perfect']) {
         const native = A.audio.SE[id]; A.audio.SE[id] = (...args) => {

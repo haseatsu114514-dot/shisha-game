@@ -104,6 +104,7 @@ async function start(page, script = SCRIPT) {
     Object.assign(state, { phase: "daily", chapter: 1, day: 6, slot: 1 });
     for (const id of ["minto", "tsumugi", "sumi", "hiyori"]) state.met[id] = true;
     core.config.textSpeed = 4;
+    core.config.skipSeenOnly = false; // SKIP の点灯を見る。未読の台詞も SKIP で送る（既定は既読のみ・#4194）
     (await import("./js/core/look.js")).refreshLook();
     (await import("./js/core/ui.js")).clearScreen();
     const vn = await import("./js/vn/engine.js");
@@ -706,7 +707,8 @@ async function dailyMap(page, { phone }) {
     assert(inside(choice, sub.rect) && choice.width >= 600 && choice.height >= 72 && choice.real >= 38, `行動の選択肢の大きさ ${JSON.stringify(choice)}`);
     assert(dark(choice.face) && light(choice.color), "選択肢は夜紫の札に白い字");
   }
-  assert(inside(sub.back, sub.rect) && sub.back.real >= (phone ? 38 : 30), "戻るボタンが板の中");
+  // スマホの戻るは CSS で実寸 38px（calc(38px / var(--k))）。レイアウトは 1/64px 単位で丸めるので、実寸が 37.99px になる分だけ見込む。
+  assert(inside(sub.back, sub.rect) && sub.back.real >= (phone ? 38 - 0.01 : 30), `戻るボタンが板の中 ${JSON.stringify(sub.back)}`);
   await press(page, page.locator("#screen .sub-menu .sub-back"));
   await page.locator("#screen .map:not(.done)").waitFor({ timeout: 20000 });
 
@@ -972,7 +974,8 @@ async function modals(page, { phone }) {
   }, STAGE_PX);
   let list = await slots();
   let box = (await measureModal(page)).rect;
-  assert.deepEqual(list.map((slot) => [slot.test, slot.off, slot.blank]), [["slot-0", true, false], ["slot-1", false, true]]);
+  // 手動セーブは3枠（#4194）。オート枠には書けず、手動の空き枠は書ける。
+  assert.deepEqual(list.map((slot) => [slot.test, slot.off, slot.blank]), [["slot-0", true, false], ["slot-1", false, true], ["slot-2", false, true], ["slot-3", false, true]]);
   for (const slot of list) {
     assert(inside(slot, box, 1) && slot.real >= 38, `セーブの枠が収まる ${JSON.stringify(slot)}`);
     assert(noPaperFrame(slot.frame) && light(slot.ink) && slot.face.slice(0, 3).reduce((sum, v) => sum + v, 0) < 300, `セーブの枠は夜紫の札 ${JSON.stringify(slot)}`);
@@ -996,7 +999,8 @@ async function modals(page, { phone }) {
   assertModal(await measureModal(page), "ロード", { phone });
   list = await slots();
   box = (await measureModal(page)).rect;
-  assert.deepEqual(list.map((slot) => [slot.test, slot.off, slot.blank]), [["slot-0", false, false], ["slot-1", false, false]]);
+  // ロードでは空き枠を押せない（#4194 の手動3枠）。
+  assert.deepEqual(list.map((slot) => [slot.test, slot.off, slot.blank]), [["slot-0", false, false], ["slot-1", false, false], ["slot-2", true, true], ["slot-3", true, true]]);
   for (const slot of list) assert(inside(slot, box, 1), `ロードの枠が収まる ${JSON.stringify(slot)}`);
   await press(page, page.locator('[data-test="slot-1"]'));
   await page.locator('#modal.show [data-test="confirm-load"]').waitFor();
@@ -1046,7 +1050,8 @@ async function title(page, { phone }) {
   await page.waitForTimeout(1300); // タイトルの絵の出現（1 秒）
   const m = await measureTitle(page);
   assert.equal(m.look, "neo");
-  assert.deepEqual(m.items.map((item) => item.test), ["title-new", "title-load", "title-gallery", "title-config"]);
+  // つづきから（#4194）はセーブが無くても行として出し、押せないだけ。
+  assert.deepEqual(m.items.map((item) => item.test), ["title-new", "title-continue", "title-load", "title-gallery", "title-config"]);
   for (const [index, item] of m.items.entries()) {
     assert(inside(item, STAGE) && item.height >= 72 - .5 && item.real >= 38 && item.width >= 300, `${item.test}: 札の押せる大きさ ${JSON.stringify(item)}`);
     assert(item.face.includes("linear-gradient") && noPaperFrame(item.frame), `${item.test}: 控えめな夜紫の札 ${item.face}`);
@@ -1054,7 +1059,7 @@ async function title(page, { phone }) {
     assert.equal(item.mark, "none", "選んだ印は「◆」ではなく金の線");
     if (index) assert(item.top - m.items[index - 1].bottom >= 15.5, `${item.test}: 行の間隔は現行と同じ（16px）`);
   }
-  assert(m.items[1].disabled, "セーブが無ければ LOAD は押せない");
+  assert(m.items[1].disabled && m.items[2].disabled, "セーブが無ければ CONTINUE と LOAD は押せない");
   // 絵とロゴは変えない（現行で測り直して比べる）。行の高さ・間隔も現行以上。
   await setLook(page, "classic");
   await page.waitForTimeout(300);
@@ -1069,7 +1074,7 @@ async function title(page, { phone }) {
   await setLook(page, "neo");
   // 選んでいる行（キーボードの移動）に金の線が出る。
   await page.locator('[data-test="title-new"]').focus();
-  await page.keyboard.press("Tab"); // LOAD は押せないので GALLERY へ
+  await page.keyboard.press("Tab"); // CONTINUE と LOAD は押せないので GALLERY へ
   await page.waitForTimeout(350);
   const focused = await measureTitle(page);
   const on = focused.items.find((item) => item.focused);
@@ -1087,7 +1092,7 @@ async function title(page, { phone }) {
   await press(page, page.locator("#modal .modal-actions button").last());
   await page.locator("#modal.show").waitFor({ state: "hidden" });
   await page.locator('[data-test="title-new"]').waitFor();
-  assert.equal((await measureTitle(page)).items.length, 4);
+  assert.equal((await measureTitle(page)).items.length, 5);
 }
 
 /** 指定した部品の計算済みスタイル（疑似要素を含む）。 */
