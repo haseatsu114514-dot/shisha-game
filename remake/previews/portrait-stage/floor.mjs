@@ -1,7 +1,9 @@
 // 縦画面C案「煙の舞台」: 店番（tonari フロア営業）を縦へ移した試作（要望台帳 VPM02）。
 // ルール・数値・客・ミックス・台詞は本編のもの（remake/js/daily/tonari-floor-model.js・tonari-floor-data.js）をそのまま呼ぶ。
-// ここで作るのは縦の画面だけ: 上の絵＝店内と5つの卓の札／真ん中＝はじめの心の声とミックスの一覧／下＝補助の段（シャッフル・フィーバー・休止）と十字キー・丸ボタン。
-// 十字キーで卓を選び、丸ボタンでその卓の用件（注文を聞く・炭を整える・会計・頼みを聞く）。注文と頼みは「接客の画面」に替わり、その間は時間が止まる（本編と同じ）。
+// ここで作るのは縦の画面だけ: 上の絵＝店内と5つの卓の札／真ん中＝はじめの心の声／下＝ミックスの一覧（属性の印・名前・使ったフレーバー）と、
+// シャッフル・フィーバー・休止。十字キーと丸ボタンは置かない（2026-11-27 オーナー「縦レイアウトは必ず十字ボタンや決定ボタンはいらない　その分を専用UIに」
+// 「店番ゲームはアイコンだけじゃミックスの中身わかんない」・VPM07・VPM08）。卓の札を押すと用件が進み（注文・頼みは「接客の画面」。その間は時間が止まる・本編と同じ）、
+// 一覧の札を押すと、いちばん長く注文を待っている卓へそのまま出す。
 // 本編の進行・所持金・保存には触れない。音は鳴らさない（この試作には音の仕組みが無い）。
 import {
   createFloorNight, createFloorTutorial, floorTick, floorAct, floorTap, floorTutorialCue, floorOrderTarget, floorHint, floorResult,
@@ -73,31 +75,6 @@ const MOOD_ART = { max: "mood-max", good: "mood-good", ok: "mood-ok", low: "mood
 const RATE_MARK = { best: "◎", good: "○", none: "×" };
 const MEDAL = { S: "medal-s", A: "medal-a", B: "medal-b", C: "medal-c" };
 
-// 丸ボタンの顔（卓の用件ごと）。白い図形で描き、文字は使わない（VPL31・VPL34）。読み上げ用の名前は aria-label
-const FL_BTN = {
-  fl_open: { label: "開店する", text: "開店" },
-  fl_order: { label: "注文を聞く", tool: "fl_order" },
-  fl_care: { label: "頼みを聞く", tool: "fl_care" },
-  fl_tend: { label: "炭を整える", tool: "fl_tend" },
-  fl_bill: { label: "会計する", tool: "fl_bill" },
-  fl_go: { label: "用事のある卓へ", svg: '<path d="M8 9l8 7-8 7M17 9l8 7-8 7"/>' },
-  fl_idle: { label: "用事なし", svg: '<circle cx="8" cy="16" r="1.800"/><circle cx="16" cy="16" r="1.800"/><circle cx="24" cy="16" r="1.800"/>' },
-};
-const FL_TOOL = {
-  // 注文を聞く: 伝票（上に留め具、中に3本の行）
-  fl_order: `<svg class="tool-svg tool-fl" viewBox="0 0 100 100" aria-hidden="true"><path d="M30 19h40a6 6 0 0 1 6 6v54a6 6 0 0 1-6 6H30a6 6 0 0 1-6-6V25a6 6 0 0 1 6-6z"/><rect x="39" y="12" width="22" height="13" rx="4"/>
-    <path class="gl-cut" d="M35 42h30M35 55h30M35 68h17"/></svg>`,
-  // 頼みを聞く: 吹き出しの中に「！」
-  fl_care: `<svg class="tool-svg tool-fl" viewBox="0 0 100 100" aria-hidden="true"><path d="M22 20h56a7 7 0 0 1 7 7v36a7 7 0 0 1-7 7H52L34 87V70H22a7 7 0 0 1-7-7V27a7 7 0 0 1 7-7z"/>
-    <path class="gl-cut" d="M50 31v20"/><circle class="gl-cutf" cx="50" cy="60" r="3"/></svg>`,
-  // 炭を整える: 熾きた炭（立方体）と、立ちのぼる熱
-  fl_tend: `<svg class="tool-svg tool-fl" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 38 77 52v24L50 90 23 76V52z"/><path class="gl-cut" d="M23 52l27 14 27-14M50 66v24"/>
-    <path class="gl-line" d="M36 30c-5-6 5-9 0-16M50 26c-5-6 5-9 0-16M64 30c-5-6 5-9 0-16"/></svg>`,
-  // 会計する: 伝票の控え（下がぎざぎざ）と、右下に硬貨
-  fl_bill: `<svg class="tool-svg tool-fl" viewBox="0 0 100 100" aria-hidden="true"><path d="M22 13h44v70l-7.300-5.500L51.300 83 44 77.500 36.700 83l-7.400-5.500L22 83z"/><path class="gl-cut" d="M31 29h26M31 42h26M31 55h13"/>
-    <circle class="gl-coin" cx="71" cy="66" r="17"/><path class="gl-cut thin" d="M65 60l6 7 6-7M71 67v8M66 69h10"/></svg>`,
-};
-
 /** 属性の印（メイン＝大きい角丸、サブ＝右下に重なる小さい丸）。絵は本編の印（remake/img/ui/tonari-floor/attr-*.webp）。 */
 const attrHtml = (art, id) => {
   const { main, sub } = MIXES[id];
@@ -133,8 +110,6 @@ export class FloorScene {
   constructor(phone, kit, { shift = "usual", shot = null } = {}) {
     Object.assign(this, { phone, kit, el: phone.el, shot });
     Object.assign(kit.ICONS, FL_ICONS);
-    Object.assign(kit.BTN, FL_BTN);
-    Object.assign(kit.TOOL_SVG, FL_TOOL);
     this.shiftId = FLOOR_SHIFTS[shift] ? shift : "usual";
     this.art = (name) => `${kit.REMAKE_IMG}ui/tonari-floor/${name}.webp`;
     this.roomDay = `${kit.REMAKE_IMG}backgrounds/bg_tonari_inside_day.webp`;
@@ -213,14 +188,16 @@ export class FloorScene {
       <div class="fl-band" data-on="false"></div>
       <div class="fl-notice" data-on="false"></div>
       <i class="fl-flash"></i>
-      <div class="body">
+      <div class="body fl-body">
         <div class="telop fl-telop" data-slot="telop">
           <button class="fl-ticker" data-act="fl-hint" aria-label="はじめの心の声"><span class="fl-log"></span><span class="fl-voice"><img src="${this.face("hajime")}" alt=""><b></b></span></button>
           <button class="coach fl-coach" data-act="fl-coach" aria-label="スミさんの言葉" hidden><img src="${this.face("sumi")}" alt=""><span class="say"><span class="say-text"></span><i class="fl-coach-next"></i></span></button>
-          <div class="fl-hand" data-busy="false"><i class="fl-target"></i><div class="fl-mixes"></div>
-            <div class="fl-busy">${icon("shuffle")}<b>入れ替え中</b><span class="fl-busy-bar"><i></i></span><small></small></div></div>
         </div>
-        <div class="ctrl fl-ctrl" data-slot="ctrl"></div>
+        <div class="fl-deck" data-slot="deck" data-busy="false"><i class="fl-target"></i>
+          <div class="fl-rows"></div>
+          <div class="fl-busy">${icon("shuffle")}<b>入れ替え中</b><span class="fl-busy-bar"><i></i></span><small></small></div>
+          <div class="fl-acts" data-slot="acts"></div>
+        </div>
       </div>
       <div class="fl-layer" data-slot="layer"></div>`;
   }
@@ -232,11 +209,11 @@ export class FloorScene {
         who: root.querySelector(".fl-who"), cell: root.querySelector(".fl-cell"), bar: root.querySelector(".fl-bar i"), count: root.querySelector(".fl-count"), keys: {} })),
       making: q(".fl-making"), clock: q(".fl-clock b"), timebar: q(".fl-timebar i"), sales: q(".fl-sales b"), outlook: q(".fl-outlook"),
       band: q(".fl-band"), notice: q(".fl-notice"), flash: q(".fl-flash"), ticker: q(".fl-ticker"), log: q(".fl-log"), voice: q(".fl-voice b"),
-      coach: q(".fl-coach"), coachText: q(".fl-coach .say-text"), hand: q(".fl-hand"), mixes: q(".fl-mixes"), busy: q(".fl-busy"),
-      ctrl: q('[data-slot="ctrl"]'), layer: q('[data-slot="layer"]'),
+      coach: q(".fl-coach"), coachText: q(".fl-coach .say-text"), deck: q(".fl-deck"), rows: q(".fl-rows"), busy: q(".fl-busy"),
+      acts: q('[data-slot="acts"]'), layer: q('[data-slot="layer"]'),
     };
     if (this.shot) this.pose(this.shot);
-    this.renderCtrl();
+    this.renderActs();
     this.renderLayer();
     this.sync();
     if (this.mode === "live" && !this.phone.fixed) this.lastAt = performance.now();
@@ -541,28 +518,49 @@ export class FloorScene {
     making.setAttribute("aria-label", list.length ? `仕込み中: ${active.map((m) => `${m.tableId}卓 ${m.label}`).join("、")}${waiting ? `。順番待ち ${waiting}台` : ""}` : "仕込み中: なし");
   }
 
-  /** ミックスの一覧（5つ）。属性の印だけで見せ、注文待ちの卓があれば、その客に合う札に判（◎・○）が付く。押すと、その卓へそのまま出す。 */
-  syncHand() {
-    const s = this.s, { hand, mixes, busy } = this.refs;
-    const target = floorOrderTarget(s, this.sel);
-    const order = target ? s.guests[target.guestId].order : null;
-    const list = floorHand(s, order);
-    const key = `${s.hand.join(",")}/${order?.wish || ""}/${order?.pref?.label || ""}/${target?.id || ""}`;
-    if (hand.dataset.key !== key) {
-      hand.dataset.key = key;
-      hand.dataset.target = target ? String(target.id) : "";
-      hand.style.setProperty("--c", order ? WISH[order.wish].color : "transparent");
-      hand.querySelector(".fl-target").textContent = target ? String(target.id) : "";
-      mixes.innerHTML = list.map((mix, i) => `<button class="fl-mix" data-act="fl-mix" data-i="${i}" data-rating="${mix.rating || ""}"
-        aria-label="${mix.full}、${WISH[mix.main].label}${mix.sub ? `・${WISH[mix.sub].label}` : ""}${mix.rating ? `、${target.id}卓に${RATE_MARK[mix.rating]}` : ""}">
-        ${attrHtml(this.art, mix.id)}<span class="fl-kinds">${mix.flavors.map(() => `<i></i>`).join("")}</span>
-        ${mix.rating && mix.rating !== "none" ? `<i class="fl-rate" data-rating="${mix.rating}">${RATE_MARK[mix.rating]}</i>` : ""}</button>`).join("");
-      this.coachFocus();
+  /** 下の一覧。ふだんと注文の接客ではミックス5つ（属性の印・名前・使ったフレーバー・その客との合い方 ◎○×）、頼みの接客では5つの手。
+   *  ふだんは、札を押すと、いちばん長く注文を待っている卓へそのまま出す（出す先は、卓の点線と一覧の左上の番号で分かる）。 */
+  syncDeck() {
+    const s = this.s, { deck, rows, busy } = this.refs, { icon, esc } = this.kit;
+    const panel = this.mode === "panel" ? this.panel : null;
+    const care = panel?.kind === "care";
+    let key, html, target = null, order = null;
+    if (care) {
+      key = `care/${panel.id}/${this.coach?.index ?? ""}`;
+      html = () => this.panelOptions().map(({ verb, action }, i) => {
+        const ok = !this.coach || this.coachExpects(action); // チュートリアル: 今の段でやる一つだけを押せる
+        return `<button class="fl-opt" data-act="fl-pick" data-i="${i}" aria-label="${verb.label}"${ok ? "" : " disabled"}${this.coach && ok ? ` data-coach="true"` : ""}>
+          <span class="fl-opt-icon">${icon(VERB_ICON[verb.id])}</span><span class="fl-opt-text"><b>${verb.label}</b><small>${verb.note}</small></span></button>`;
+      }).join("");
+    } else {
+      target = panel ? s.tables[panel.id - 1] : floorOrderTarget(s, this.sel);
+      order = target?.guestId ? s.guests[target.guestId].order : null;
+      const list = floorHand(s, order);
+      key = `mix/${s.hand.join(",")}/${order?.wish || ""}/${order?.pref?.label || ""}/${target?.id || ""}/${panel ? "p" : "l"}/${this.coach?.index ?? ""}`;
+      this.noMatch = !!order && list.every((mix) => mix.rating === "none");
+      html = () => list.map((mix, i) => {
+        // チュートリアル: 接客の画面では今の段でやる一つだけを押せる。店では、出す札（◎）を光らせる
+        const ok = !panel || !this.coach || this.coachExpects({ type: "order", tableId: target.id, mix: mix.id });
+        const glow = this.coach && (panel ? ok : this.coach.step.focus?.[0] === "hand" && mix.rating === "best");
+        return `<button class="fl-opt" data-act="fl-pick" data-i="${i}" data-rating="${mix.rating || ""}"
+          aria-label="${mix.full}、${WISH[mix.main].label}${mix.sub ? `・${WISH[mix.sub].label}` : ""}${mix.rating ? `、${target.id}卓に${RATE_MARK[mix.rating]}` : ""}"${ok ? "" : " disabled"}${glow ? ` data-coach="true"` : ""}>
+          ${attrHtml(this.art, mix.id)}<span class="fl-opt-text"><b>${esc(mix.name)}</b>${mix.single ? "" : `<small>（${mix.recipe.join("・")}）</small>`}</span>
+          ${mix.rating ? `<i class="fl-opt-rate" data-rating="${mix.rating}">${RATE_MARK[mix.rating]}</i>` : ""}</button>`;
+      }).join("");
     }
-    for (const spot of this.refs.tables) spot.root.dataset.target = String(String(target?.id || "") === spot.root.dataset.id);
+    if (deck.dataset.key !== key) {
+      deck.dataset.key = key;
+      deck.dataset.kind = care ? "care" : "mix";
+      deck.dataset.target = !panel && target ? String(target.id) : "";
+      deck.style.setProperty("--c", order ? WISH[order.wish].color : "transparent");
+      deck.querySelector(".fl-target").textContent = !panel && target ? String(target.id) : "";
+      rows.innerHTML = html();
+    }
+    if (panel) this.syncCursor();
+    for (const spot of this.refs.tables) spot.root.dataset.target = String(!panel && String(target?.id || "") === spot.root.dataset.id);
     // 入れ替えの最中は、一覧を隠して進みを出す（ミックスは出せない）
-    const wait = floorShuffleLeft(s);
-    hand.dataset.busy = String(wait > 0);
+    const wait = care ? 0 : floorShuffleLeft(s);
+    deck.dataset.busy = String(wait > 0);
     busy.querySelector(".fl-busy-bar i").style.width = `${Math.round((1 - wait / RULES.shuffle) * 100)}%`;
     busy.querySelector("small").textContent = wait > 0 ? `あと${seconds(wait)}秒` : "";
     const chip = this.el.querySelector(".fl-chip-shuffle");
@@ -571,7 +569,7 @@ export class FloorScene {
       chip.dataset.wait = String(wait > 0);
       chip.querySelector("span").textContent = wait > 0 ? `あと${seconds(wait)}秒` : "シャッフル";
       // 合う一台が並んでいない時は、シャッフルを光らせる
-      chip.dataset.call = String(!!target && wait === 0 && list.every((mix) => mix.rating === "none"));
+      chip.dataset.call = String(wait === 0 && !care && !!this.noMatch);
     }
   }
 
@@ -580,7 +578,7 @@ export class FloorScene {
     if (!r) return;
     s.tables.forEach((table, i) => this.syncTable(r.tables[i], table));
     this.syncMaking();
-    this.syncHand();
+    this.syncDeck();
     r.clock.textContent = floorTimeLeft(s);
     r.timebar.style.width = `${Math.max(0, 100 - (s.t / s.length) * 100).toFixed(1)}%`;
     const leftTicks = s.length - s.t, leftSec = Math.ceil(leftTicks / 2);
@@ -618,7 +616,6 @@ export class FloorScene {
     this.hint = hint;
     for (const spot of r.tables) spot.root.dataset.guide = String(s.level === 0 && !this.coach && String(hint.tableId) === spot.root.dataset.id);
     if (hint.text !== this.lastHint) { this.lastHint = hint.text; r.voice.textContent = hint.text; }
-    this.syncA();
   }
 
   /** フィーバーの札: 灯りと残量。使える量まで溜まると金に灯り、使っている間は紫。もう一度押すと終了し、残りは次に使える。 */
@@ -650,70 +647,31 @@ export class FloorScene {
     step(start);
   }
 
-  /* ── 下の操作（補助の段・十字キー・丸ボタン）。場面ごとに替える ── */
+  /* ── いちばん下の段（押す所）。場面ごとに替える: 店＝シャッフル・フィーバー・休止／接客＝あとで（とシャッフル）／開店前＝遊び方・開店する／精算＝次へ ── */
 
-  /** 丸ボタンが今することを決める: 選んでいる卓の用件。用件が無ければ、はじめの心の声が指す卓へ移る。 */
-  aKind() {
-    if (this.mode === "intro") return ["fl_open", false];
-    if (this.mode === "result") return [this.resultPage === 0 ? "next" : "ok", false];
-    if (this.mode === "panel" || this.mode === "pause") return ["ok", false];
-    if (this.coach?.step.talk) return ["next", false];
-    const tap = floorTap(this.s, this.sel);
-    if (tap === "order") return ["fl_order", floorShuffleLeft(this.s) > 0];
-    if (tap === "care") return ["fl_care", false];
-    if (tap === "tend") return ["fl_tend", false];
-    if (tap === "bill") return ["fl_bill", false];
-    const go = this.hint?.tableId && this.hint.tableId !== this.sel;
-    return go ? ["fl_go", false] : ["fl_idle", true];
-  }
-
-  syncA() {
-    const btn = this.el.querySelector(".fl-ctrl .btn-a");
-    if (!btn) return;
-    const [kind, dim] = this.aKind();
-    if (btn.dataset.kind !== kind) {
-      btn.dataset.kind = kind;
-      btn.setAttribute("aria-label", this.kit.BTN[kind].label);
-      btn.innerHTML = this.kit.btnFace(kind);
-    }
-    btn.disabled = !!dim;
-    btn.classList.toggle("hot", ["fl_order", "fl_care", "fl_tend", "fl_bill"].includes(kind) && !dim);
-  }
-
-  renderCtrl() {
-    const { kit, mode } = this, { icon, dpadHtml, aHtml } = kit;
-    const chip = (act, name, label, cls = "", inner = "") => `<button class="chip ${cls}" data-act="${act}" aria-label="${label}">${icon(name)}<span>${label}</span>${inner}</button>`;
-    let chips, dirs;
-    if (mode === "intro") {
-      chips = this.tutorial ? "" : chip("fl-howto", "help", "遊び方");
-      dirs = "";
-    } else if (mode === "panel") {
-      const ordering = this.panel.kind === "order";
-      chips = `${chip("fl-later", "back", "あとで")}${ordering ? chip("fl-shuffle", "shuffle", "シャッフル", "fl-chip-shuffle fl-gold") : ""}`;
-      dirs = "up down";
-    } else if (mode === "pause") {
-      chips = chip("fl-resume", "back", "つづける");
-      dirs = "up down";
-    } else if (mode === "result") {
-      chips = "";
-      dirs = "";
-    } else {
-      chips = `${chip("fl-shuffle", "shuffle", "シャッフル", "fl-chip-shuffle fl-gold")}
-        <button class="chip fl-chip-fever" data-act="fl-fever" aria-label="フィーバー"><img class="fl-lamp" src="${this.art("lamp-on")}" alt=""><span class="fl-fever-main"><span class="fl-fever-name"><b>フィーバー</b><small></small></span>
-          <span class="fl-fever-gauge"><i class="fl-fever-fill"></i>${[1, 2].map((n) => `<u style="left:${n * floorFeverCost / floorFeverMax * 100}%"></u>`).join("")}</span></span></button>
-        ${chip("fl-pause", "pause", "休止", "fl-chip-pause")}`;
-      dirs = "up down left right";
-    }
-    const [kind, dim] = this.aKind();
-    this.refs.ctrl.innerHTML = `<div class="chips labeled fl-chips" data-mode="${mode}">${chips}</div>${dpadHtml(dirs)}${aHtml(kind, { disabled: dim })}`;
-    this.refs.ctrl.querySelector(".btn-a").dataset.kind = kind;
+  renderActs() {
+    const { icon } = this.kit, mode = this.mode;
+    const act = (id, name, label, cls = "") => `<button class="fl-act ${cls}" data-act="${id}" aria-label="${label}">${name ? icon(name) : ""}<span>${label}</span></button>`;
+    const shuffle = act("fl-shuffle", "shuffle", "シャッフル", "fl-chip-shuffle fl-gold");
+    const fever = `<button class="fl-act fl-chip-fever" data-act="fl-fever" aria-label="フィーバー"><img class="fl-lamp" src="${this.art("lamp-on")}" alt=""><span class="fl-fever-main"><span class="fl-fever-name"><b>フィーバー</b><small></small></span>
+      <span class="fl-fever-gauge"><i class="fl-fever-fill"></i>${[1, 2].map((n) => `<u style="left:${n * floorFeverCost / floorFeverMax * 100}%"></u>`).join("")}</span></span></button>`;
+    const pause = act("fl-pause", "pause", "休止", "sub small");
+    let html;
+    if (mode === "intro") html = `${this.tutorial ? "" : act("fl-howto", "help", "遊び方", "sub")}${act("fl-start", "", this.tutorial ? "はじめる" : "開店する", "primary")}`;
+    else if (mode === "result") html = act("fl-result-next", "", this.resultPage === 0 ? "次へ" : "シフトを終える", "primary");
+    else if (mode === "pause") html = "";
+    else if (mode === "panel") html = `${act("fl-later", "back", "あとで", "sub")}${this.panel.kind === "order" ? shuffle : ""}`;
+    else if (this.coach?.step.talk) html = `${act("fl-coach", "", "次へ", "primary")}${pause}`;
+    else html = `${shuffle}${fever}${pause}`;
+    const key = `${mode}/${this.panel?.kind || ""}/${!!this.coach?.step.talk}/${this.tutorial}/${this.resultPage}`;
+    if (this.refs.acts.dataset.key !== key) { this.refs.acts.dataset.key = key; this.refs.acts.dataset.mode = mode; this.refs.acts.innerHTML = html; }
     this.coachFocus();
   }
 
   setMode(mode) {
     this.mode = mode;
     this.el.dataset.flMode = mode;
-    this.renderCtrl();
+    this.renderActs();
     this.renderLayer();
     this.sync();
     this.lastAt = performance.now();
@@ -724,8 +682,7 @@ export class FloorScene {
   select(id) {
     this.sel = id;
     for (const spot of this.refs.tables) spot.root.dataset.sel = String(spot.root.dataset.id === String(id));
-    this.syncHand(); // ミックスを出す先（選んでいる注文待ちの卓）が変わる
-    this.syncA();
+    this.syncDeck(); // ミックスを出す先（選んでいる注文待ちの卓）が変わる
   }
 
   /** 卓の用件を進める（札を押した時・丸ボタンを押した時で同じ）。 */
@@ -758,16 +715,16 @@ export class FloorScene {
   quickServe(index) {
     if (this.mode !== "live" || this.band) return;
     const target = floorOrderTarget(this.s, this.sel), mix = this.s.hand[index];
-    if (!target) { this.log("注文待ちの卓がありません"); this.nudge(this.refs.hand); return; }
+    if (!target) { this.log("注文待ちの卓がありません"); this.nudge(this.refs.rows.children[index]); return; }
     this.select(target.id);
-    if (!this.perform({ type: "order", tableId: target.id, mix })) this.nudge(this.refs.hand);
+    if (!this.perform({ type: "order", tableId: target.id, mix })) this.nudge(this.refs.rows.children[index]);
   }
 
   doShuffle() {
     if (!this.perform({ type: "shuffle", tableId: this.sel })) { this.nudge(this.el.querySelector(".fl-chip-shuffle")); return; }
     // 入れ替えには時間がかかるので、接客の画面は閉じて店へ戻る（その間に、ほかの卓を見られる）
     if (this.mode === "panel" && this.panel?.kind === "order") this.closePanel();
-    else this.syncHand();
+    else this.syncDeck();
   }
 
   useFever() {
@@ -790,23 +747,30 @@ export class FloorScene {
     const hit = event.target.closest("[data-act]");
     if (!hit || !this.el.contains(hit)) return false;
     const act = hit.dataset.act;
+    this.keyNav = false;
     if (act === "fl-table") this.tapTable(Number(hit.dataset.id));
-    else if (act === "fl-mix") this.quickServe(Number(hit.dataset.i));
+    else if (act === "fl-pick") this.pickRow(Number(hit.dataset.i));
     else if (act === "fl-hint") this.followHint();
     else if (act === "fl-shuffle") this.doShuffle();
     else if (act === "fl-fever") this.useFever();
     else if (act === "fl-pause") { if (this.mode === "live" && !this.band) this.setModePause("pause"); }
-    else if (act === "fl-resume") this.resume();
     else if (act === "fl-later") this.closePanel();
     else if (act === "fl-howto") this.startTutorial();
+    else if (act === "fl-start") this.start();
+    else if (act === "fl-result-next") this.resultNext();
     else if (act === "fl-coach") this.coachTalkDone();
-    else if (act === "fl-opt") { if (!this.panel || this.panel.locked) { this.choose(); return true; } this.panel.cursor = Number(hit.dataset.i); this.syncCursor(); this.choose(); }
-    else if (act === "fl-pick") { this.pausePick = Number(hit.dataset.i); this.pauseChoose(); }
+    else if (act === "fl-pause-pick") { this.pausePick = Number(hit.dataset.i); this.pauseChoose(); }
     else return false;
     return true;
   }
 
+  /** 一覧の札を押した: 接客の画面ならその札で決める。店なら、そのまま出す。 */
+  pickRow(index) {
+    if (this.mode === "panel") { if (this.panel && !this.panel.locked) this.panel.cursor = index; this.choose(); } else this.quickServe(index);
+  }
+
   move(dir) {
+    this.keyNav = true; // 矢印キーで選んでいる間だけ、選んでいる札に枠を出す
     if (this.mode === "panel") {
       if (this.panel.locked || (dir !== "up" && dir !== "down")) return;
       const n = this.panelOptions().length;
@@ -832,7 +796,7 @@ export class FloorScene {
     }
   }
 
-  /** PC のキー: F＝フィーバー、S＝シャッフル、Esc＝休止／接客の画面を閉じる（本編の PC 操作と同じ）。 */
+  /** PC のキー（矢印＝卓を選ぶ／一覧の札を選ぶ、Enter＝進める）のほか: F＝フィーバー、S＝シャッフル、Esc＝休止／接客の画面を閉じる（本編の PC 操作と同じ）。 */
   onKey(key) {
     const k = key.toLowerCase();
     if (k === "f") { this.useFever(); return true; }
@@ -844,6 +808,7 @@ export class FloorScene {
     return false;
   }
 
+  /** Enter（PC）: 選んでいる卓の用件を進める。用件が無ければ、はじめの心の声が指す卓へ移る。 */
   pressA() {
     if (this.band) return;
     if (this.mode === "intro") return this.start();
@@ -852,22 +817,23 @@ export class FloorScene {
     if (this.mode === "result") return this.resultNext();
     if (this.mode !== "live") return;
     if (this.coach?.step.talk) return this.coachTalkDone();
-    const [kind] = this.aKind();
-    if (kind === "fl_go") this.followHint(); else this.tapTable(this.sel);
+    const busy = ["order", "care", "tend", "bill"].includes(floorTap(this.s, this.sel));
+    if (busy || !this.hint?.tableId || this.hint.tableId === this.sel) this.tapTable(this.sel); else this.followHint();
   }
 
-  /* ── 接客の画面（注文＝ミックスを選ぶ／頼み＝5つの手から選ぶ）。上の絵とテロップの場所に重ね、パッドは残す。開いている間、店の時間は止まる ── */
+  /* ── 接客の画面（注文＝ミックスを選ぶ／頼み＝5つの手から選ぶ）。上の絵と心の声の場所が、その卓の客の顔と一言に替わり、
+     下の一覧はそのまま（頼みの時は5つの手に替わる）。開いている間、店の時間は止まる（本編と同じ） ── */
 
   panelOptions() {
     const s = this.s, table = s.tables[this.panel.id - 1], guest = s.guests[table.guestId];
-    return this.panel.kind === "order" ? floorHand(s, guest.order).map((mix) => ({ mix, action: { type: "order", tableId: table.id, mix: mix.id } }))
+    return this.panel.kind === "order" ? floorHand(s, guest?.order).map((mix) => ({ mix, action: { type: "order", tableId: table.id, mix: mix.id } }))
       : VERBS.map((verb) => ({ verb, action: { type: "care", tableId: table.id, verb: verb.id } }));
   }
 
   openPanel(kind, id, { quiet = false } = {}) {
     if (this.coach?.step.expect?.panel === kind && this.coach.step.expect.tableId === id) this.coachNext(); // 卓を開く段は、開いたら次へ
     this.panel = { kind, id, cursor: 0, locked: false };
-    // はじめは、いちばん合う一台に印を置く（頼みは上から）
+    // 矢印キーの印は、はじめ、いちばん合う一台に置く（頼みは上から）
     if (kind === "order") {
       const opts = this.panelOptions();
       const best = opts.findIndex((o) => o.mix.rating === "best"), good = opts.findIndex((o) => o.mix.rating === "good");
@@ -884,36 +850,37 @@ export class FloorScene {
     const id = this.panel?.id;
     this.panel = null;
     this.setMode("live");
-    // チュートリアルで次に指す卓があれば、そこを選んでおく（丸ボタンでそのまま進める）
+    // チュートリアルで次に指す卓があれば、そこを選んでおく
     const next = this.coach?.step.focus?.[0] === "table" ? this.coach.step.focus[1] : id;
     if (next) this.select(next);
   }
 
+  /** 矢印キーで選んでいる札（PC）。指で押す時は使わない。 */
   syncCursor() {
-    this.refs.layer.querySelectorAll(".fl-opt").forEach((node, i) => node.setAttribute("aria-current", String(i === this.panel.cursor)));
+    const keys = this.keyNav;
+    [...this.refs.rows.children].forEach((node, i) => node.setAttribute("aria-current", String(!!keys && !!this.panel && i === this.panel.cursor)));
   }
 
   choose() {
     const { panel } = this;
     if (!panel || this.mode !== "panel") return;
     if (panel.locked) { this.closePanel(); return; } // 印が出ている間にもう一度押したら、先へ進む
-    const option = this.panelOptions()[panel.cursor];
-    if (!option) return;
-    const node = this.refs.layer.querySelectorAll(".fl-opt")[panel.cursor];
-    if (node?.disabled || !this.perform(option.action)) { this.nudge(node); return; }
+    const option = this.panelOptions()[panel.cursor], node = this.refs.rows.children[panel.cursor];
+    if (!option || node?.disabled || !this.perform(option.action)) { this.nudge(node); return; }
     if (this.mode !== "panel" || !this.panel) return; // 営業が締まった
     const care = this.s.log.find((e) => e.type === "care");
     if (!care || this.phone.fixed) { this.closePanel(); return; }
-    // 頼み: 判定の印（◎ ×）が卓の様子のまん中に大きく出て、吹き出しが客の返事に替わる。1秒で店へ戻る
+    // 頼み: 判定の印（◎ ×）が客の顔の所に大きく出て、吹き出しが客の返事に替わる。1秒で店へ戻る
     panel.locked = true;
     const sheet = this.refs.layer.querySelector(".fl-sheet");
     sheet.dataset.verdict = care.ok ? "best" : "bad";
-    node.dataset.picked = "true";
+    this.refs.rows.children[panel.cursor]?.setAttribute("data-picked", "true");
     sheet.querySelector(".fl-verdict").innerHTML = `<img src="${this.art(care.ok ? "verdict-best" : "verdict-bad")}" alt=""><b>${care.ok ? "いいケア！" : "ちがったみたい"}</b>`;
     if (care.line) { const quote = sheet.querySelector(".fl-quote"); quote.dataset.sight = "false"; this.fitText(quote, quoted(care.line)); }
     this.verdictTimer = this.later(() => { if (this.panel?.locked && this.mode === "panel") this.closePanel(); }, 1000);
   }
 
+  /** 接客の画面の上: その卓の客の顔・呼び名・気分（頼みの時は用件）・ご利用の金額と、客の一言。 */
   panelHtml() {
     const s = this.s, { kit } = this, { icon, esc } = kit;
     const table = s.tables[this.panel.id - 1], guest = s.guests[table.guestId];
@@ -926,32 +893,19 @@ export class FloorScene {
       sight = s.hint !== "said";
       lead = sight ? call.sight : quoted(call.said);
     }
-    const options = this.panelOptions().map(({ mix, verb, action }, i) => {
-      // チュートリアル: 今の段でやる一つだけを押せる（ほかは沈める）
-      const ok = !this.coach || this.coachExpects(action);
-      const attrs = `class="fl-opt" data-act="fl-opt" data-i="${i}" aria-current="${i === this.panel.cursor}"${ok ? "" : " disabled"}${this.coach && ok ? ` data-coach="true"` : ""}`;
-      if (mix) {
-        return `<button ${attrs} data-rating="${mix.rating}" aria-label="${mix.full}、${RATE_MARK[mix.rating]}">${attrHtml(this.art, mix.id)}
-          <span class="fl-opt-text"><b>${esc(mix.name)}</b>${mixIsSingle(mix.id) ? "" : `<small>（${mixFlavorNames(mix.id).join("・")}）</small>`}</span>
-          <i class="fl-opt-rate" data-rating="${mix.rating}">${RATE_MARK[mix.rating]}</i></button>`;
-      }
-      return `<button ${attrs} aria-label="${verb.label}"><span class="fl-opt-icon">${icon(VERB_ICON[verb.id])}</span>
-        <span class="fl-opt-text"><b>${verb.label}</b><small>${verb.note}</small></span></button>`;
-    }).join("");
     const served = table.phase === "enjoy" || table.phase === "bill";
     return `<section class="fl-sheet" data-kind="${this.panel.kind}" role="dialog" aria-label="${table.id}卓 ${ordering ? "ミックスを選ぶ" : "頼みを聞く"}" style="--c:${ordering ? wish.color : stage.color}">
-      <header class="fl-visit">
-        <img class="fl-visit-bg" src="${floorDusk(s) ? this.roomNight : this.roomDay}" alt="">
+      <img class="fl-visit-bg" src="${floorDusk(s) ? this.roomNight : this.roomDay}" alt="">
+      <div class="fl-visit">
         <div class="fl-visit-row"><span class="fl-visit-who">${this.guestImg(guest)}<b class="fl-visit-no" aria-label="${table.id}卓">${table.id}</b></span>
           <div class="fl-visit-side">
             <div class="fl-visit-name"><b>${esc(guest.name)}</b>${served ? `<img src="${this.art(MOOD_ART[stage.id])}" alt="${stage.label}">` : ""}${served && table.mix ? attrHtml(this.art, table.mix) : ""}</div>
             <div class="fl-visit-kind">${ordering ? this.wishChip(guest.order, { refill: table.refill }) : `<span class="fl-need" data-tone="act">${icon(table.call.coal ? "add" : "ask")}<b>${table.call.coal ? "炭の調整" : "ケア"}</b></span>`}<em>${icon("coins")}${yen(floorBill(s, table.id)?.total || 0)}</em></div>
           </div></div>
         <p class="fl-quote" data-sight="${sight}">${esc(lead)}</p>
-        <div class="fl-verdict" aria-hidden="true"></div>
-      </header>
-      ${this.coach ? `<div class="coach fl-sheet-coach"><img src="${this.face("sumi")}" alt=""><span class="say"><span class="say-text"></span></span></div>` : ""}
-      <div class="fl-list">${options}</div>
+        ${this.coach ? `<div class="coach fl-sheet-coach"><img src="${this.face("sumi")}" alt=""><span class="say"><span class="say-text"></span></span></div>` : ""}
+      </div>
+      <div class="fl-verdict" aria-hidden="true"></div>
     </section>`;
   }
 
@@ -1002,7 +956,7 @@ export class FloorScene {
       <p class="fl-eyebrow">${VENUE.name}</p>
       <h2 class="fl-title plain"><span>${closing ? "早じまいにする？" : "ひと休み"}</span></h2>
       <p class="fl-forecast">${closing ? "いまいる客を送り出して、店を閉めます" : "休止中は、店の時間が止まっています"}</p>
-      <div class="choices">${this.pauseOptions().map(([label], i) => `<button class="choice" data-act="fl-pick" data-i="${i}" aria-current="${i === this.pausePick}" style="--i:${i}"><i></i>${label}</button>`).join("")}</div>
+      <div class="choices">${this.pauseOptions().map(([label], i) => `<button class="choice" data-act="fl-pause-pick" data-i="${i}" aria-current="${i === this.pausePick}" style="--i:${i}"><i></i>${label}</button>`).join("")}</div>
     </section>`;
   }
 
@@ -1033,8 +987,8 @@ export class FloorScene {
   }
 
   resultNext() {
-    if (this.resultPage === 0) { this.resultPage = 1; this.renderCtrl(); this.renderLayer(); return; }
-    if (this.phone.fixed) { this.resultPage = 0; this.renderCtrl(); this.renderLayer(); return; }
+    if (this.resultPage === 0) { this.resultPage = 1; this.renderActs(); this.renderLayer(); return; }
+    if (this.phone.fixed) { this.resultPage = 0; this.renderActs(); this.renderLayer(); return; }
     this.phone.setScene("map");
   }
 
@@ -1190,8 +1144,6 @@ export class FloorScene {
     for (const spot of this.refs.tables) spot.root.dataset.coach = String(kind === "table" && spot.root.dataset.id === String(id));
     this.el.querySelector(".fl-chip-shuffle")?.setAttribute("data-coach", String(kind === "shuffle"));
     this.el.querySelector(".fl-chip-fever")?.setAttribute("data-coach", String(kind === "fever"));
-    this.refs.hand.dataset.coach = String(kind === "hand");
-    this.refs.mixes.querySelectorAll(".fl-mix").forEach((node) => { node.dataset.coach = String(kind === "hand" && node.dataset.rating === "best"); });
   }
 
   /** 段に入る: スミさんの段取りを起こし、言葉と光らせる所を替える。待つ段がもう済んでいれば、すぐ次へ。 */
@@ -1205,10 +1157,9 @@ export class FloorScene {
     }
     clearTimeout(this.nudgeTimer);
     if (step.focus?.[0] === "table") this.sel = step.focus[1];
+    this.renderActs(); // 読む段は「次へ」、やる段はシャッフル・フィーバー・休止
     this.sync();
     this.coachSay();
-    this.coachFocus();
-    this.syncA();
     if (step.wait && step.wait(this.s)) this.coachNext();
   }
 
@@ -1221,9 +1172,8 @@ export class FloorScene {
     if (!this.tutorial) { this.shiftId = "tutorial"; this.open(); }
     this.mode = "live";
     this.coach = { index: -1, step: FloorScene.FLOW[0] };
-    if (this.refs) { this.el.dataset.flMode = "live"; this.renderCtrl(); this.renderLayer(); }
+    if (this.refs) { this.el.dataset.flMode = "live"; this.renderLayer(); }
     this.coachEnter(0);
-    if (this.refs) this.renderCtrl();
   }
 
   /** 一通り済んだ（または飛ばした）: そのまま、はじめてのワンオペの開店前へ。 */
@@ -1236,7 +1186,7 @@ export class FloorScene {
     this.refs.coach.hidden = true;
     this.refs.room.dataset.dusk = "false";
     this.refs.log.textContent = "";
-    this.refs.hand.dataset.key = "";
+    this.refs.deck.dataset.key = "";
     for (const spot of this.refs.tables) { spot.keys = {}; spot.fx.innerHTML = ""; }
     this.setMode("intro");
     this.phone.onExtOption?.("shift", this.shiftId);

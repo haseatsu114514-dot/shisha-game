@@ -1,8 +1,8 @@
 // 縦画面C案「煙の舞台」: タイトル画面を縦へ移した試作（要望台帳 VPM01）。
 // 本編（remake/js/scenes/title.js）の部品をそのまま使う: 背景 bg_title、人物のキービジュアル（1キャラ1枚・縦長の絵）、ロゴ、
 // メニュー（NEW GAME・CONTINUE・LOAD・GALLERY・CONFIG）、版の表示。
-// 縦の並べ方: 上の絵＝キービジュアルを画面いっぱいに、その裾にロゴ／真ん中＝はじめる2つ（NEW GAME・CONTINUE）／
-// 補助の段＝LOAD・GALLERY・CONFIG（名前つきの段・VPL20）／下＝十字キーの上下で選び、丸ボタンで決定。
+// 縦の並べ方: キービジュアルを画面いっぱいに、その裾にロゴ／下に5行のメニュー（押すとそのまま選べる）。
+// 十字キーと丸ボタンは置かない（2026-11-27 オーナー「縦レイアウトは必ず十字ボタンや決定ボタンはいらない」・VPM07）。PC は矢印キーと Enter でも選べる。
 // 保存は読まない（本編の進行・保存には触れない）。「セーブあり」の見え方は、この試作の地図と同じ第1章 DAY 5 を仮に出す。
 
 // 人物ごとのキービジュアル（remake/js/core/title-art-unlock.js の TITLE_KEY_VISUALS の写し）。
@@ -23,11 +23,6 @@ const KEY_VISUALS = {
 const MET = ["tsumugi", "minto", "sumi", "naru", "adam"];
 export const TITLE_ARTS = Object.keys(KEY_VISUALS);
 const ART_ASPECT = 1536 / 1024; // キービジュアルは縦長（2:3）
-
-const ICONS = {
-  load: '<path d="M4 8.500A2.500 2.500 0 0 1 6.500 6H10l2 2.500h5.500A2.500 2.500 0 0 1 20 11v6.500a2.500 2.500 0 0 1-2.500 2.500h-11A2.500 2.500 0 0 1 4 17.500z"/><path d="M12 11.500v5M9.500 14.200l2.500 2.500 2.500-2.500"/>',
-  gallery: '<rect x="3.500" y="5" width="17" height="14" rx="2.200"/><circle cx="9" cy="10" r="1.600"/><path d="M4 17l5-4.500 3.500 3 3-2.500 4.500 4"/>',
-};
 
 let lastArt = null; // 続けて同じ人物を出さない（本編の pickTitleArt と同じ）
 
@@ -52,44 +47,40 @@ export class TitleScene {
   constructor(phone, kit, { save = true, art = null } = {}) {
     save = save !== "0" && save !== false; // 1台表示では ?save=0 で「セーブなし」
     Object.assign(this, { phone, kit, el: phone.el, save });
-    Object.assign(kit.ICONS, ICONS);
     const pool = save ? MET : TITLE_ARTS;
     const fresh = pool.filter((id) => id !== lastArt);
     this.artId = KEY_VISUALS[art] ? art : phone.fixed ? pool[0] : fresh[Math.floor(Math.random() * fresh.length)];
     lastArt = this.artId;
+    // 本編と同じ5行（remake/js/scenes/title.js）。セーブが無ければ CONTINUE・LOAD は押せない
     this.items = [
       { id: "new", en: "NEW GAME", ja: "はじめから" },
       { id: "continue", en: "CONTINUE", ja: "つづきから", note: save ? "第1章　DAY 5" : "", disabled: !save },
+      { id: "load", en: "LOAD", ja: "ロード", disabled: !save },
+      { id: "gallery", en: "GALLERY", ja: "ギャラリー" },
+      { id: "config", en: "CONFIG", ja: "設定" },
     ];
     // 決定を押すだけで本編へ入れるよう、いちばん使う行に置く（セーブがあれば CONTINUE）
     this.pick = save ? 1 : 0;
   }
 
   html() {
-    const { kit } = this, { icon, dpadHtml, aHtml, REMAKE_IMG } = kit, art = KEY_VISUALS[this.artId];
-    const chip = (id, name, label, ja, disabled = false) => `<button class="chip" data-act="tt-sub" data-id="${id}" aria-label="${ja}"${disabled ? " disabled" : ""}>${icon(name)}<span>${label}</span></button>`;
+    const { REMAKE_IMG } = this.kit, art = KEY_VISUALS[this.artId];
     return `
       <img class="amb" src="${REMAKE_IMG}backgrounds/bg_title.webp" alt="">
       <div class="pic tt-pic"><img class="bg" src="${REMAKE_IMG}backgrounds/bg_title.webp" alt="">
         <img class="tt-art" src="${REMAKE_IMG}ui/title_arts/${art.file}.webp" alt="" data-character="${this.artId}"><i class="tt-ember"></i></div>
       <i class="veil tt-veil"></i><img class="smoke" src="${REMAKE_IMG}ui/making/smoke_thick.webp" alt="">
       <div class="tt-ver">ver. dev</div>
-      <div class="body">
-        <div class="telop tt-telop" data-slot="telop">
-          <div class="tt-brand"><div class="tt-logo-smoke" aria-hidden="true"><i></i><i></i><i></i></div>
-            <img class="tt-logo" src="${REMAKE_IMG}ui/ui_title_logo_rich.webp" alt="水煙前線 -EN:CODE-"></div>
-          <nav class="choices tt-menu" aria-label="メニュー">${this.menuHtml()}</nav>
-        </div>
-        <div class="ctrl tt-ctrl" data-slot="ctrl">
-          <div class="chips labeled">${chip("load", "load", "LOAD", "ロード", !this.save)}${chip("gallery", "gallery", "GALLERY", "ギャラリー")}${chip("config", "gear", "CONFIG", "設定")}</div>
-          ${dpadHtml("up down")}${aHtml("ok")}
-        </div>
+      <div class="body tt-body">
+        <div class="tt-brand"><div class="tt-logo-smoke" aria-hidden="true"><i></i><i></i><i></i></div>
+          <img class="tt-logo" src="${REMAKE_IMG}ui/ui_title_logo_rich.webp" alt="水煙前線 -EN:CODE-"></div>
+        <nav class="tt-menu" aria-label="メニュー">${this.menuHtml()}</nav>
       </div>
       <i class="tt-wipe"></i>`;
   }
 
   menuHtml() {
-    return this.items.map((item, i) => `<button class="choice tt-item" data-act="tt-pick" data-i="${i}" aria-current="${i === this.pick}"${item.disabled ? " disabled" : ""} style="--i:${i}">
+    return this.items.map((item, i) => `<button class="tt-item" data-act="tt-pick" data-i="${i}" aria-current="${i === this.pick}"${item.disabled ? " disabled" : ""} style="--i:${i}">
       <i></i><span class="tt-en">${item.en}</span><span class="tt-side"><span class="tt-ja">${item.ja}</span>${item.note ? `<span class="tt-note">${item.note}</span>` : ""}</span></button>`).join("");
   }
 
@@ -116,9 +107,11 @@ export class TitleScene {
 
   pressA() {
     if (this.leaving) return;
-    const node = this.el.querySelectorAll(".tt-item")[this.pick];
-    node?.classList.add("is-picked"); // 押した行は一瞬光らせる
-    if (this.phone.fixed) { setTimeout(() => node?.classList.remove("is-picked"), 400); return; }
+    const item = this.items[this.pick], node = this.el.querySelectorAll(".tt-item")[this.pick];
+    if (!item || item.disabled) return;
+    node?.classList.remove("is-picked"); void node?.offsetWidth; node?.classList.add("is-picked"); // 押した行は一瞬光らせる
+    if (item.id !== "new" && item.id !== "continue") { this.phone.toast("この試作では開きません"); return; }
+    if (this.phone.fixed) return;
     // 煙の幕で覆って、本編（この試作では第1章の地図）へ
     this.leaving = true;
     this.el.classList.add("tt-leaving");
@@ -134,7 +127,6 @@ export class TitleScene {
       this.pressA();
       return true;
     }
-    if (hit.dataset.act === "tt-sub") { this.phone.toast("この試作では開きません"); return true; }
     return false;
   }
 

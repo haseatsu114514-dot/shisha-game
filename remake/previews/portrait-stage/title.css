@@ -1,21 +1,23 @@
 /* 縦画面C案「煙の舞台」: タイトル画面（title.mjs）。長さは rem（スマホの幅 39rem）。
-   上の絵＝キービジュアル（縦長の絵を画面いっぱいに。裾は煙でぼかす）とロゴ、真ん中＝はじめる2つ、補助の段＝LOAD・GALLERY・CONFIG、下＝十字キーと丸ボタン。 */
+   キービジュアル（縦長の絵）を画面いっぱいに置き、裾を煙でぼかしてロゴを重ねる。下は5行のメニュー（押すとそのまま選べる）。
+   十字キーと丸ボタンは置かない（VPM07）。 */
 
 .phone[data-kind="title"] { --acc: #f1d79a; }
-.tt-pic, .tt-telop, .tt-ver { --ctrl-h: 29.2rem; }
-.pic.tt-pic { height: calc(100% - var(--ctrl-h) - 5rem); -webkit-mask-image: linear-gradient(180deg, #000 0, #000 62%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 62%, transparent 100%); }
+/* 高さで変わる寸法は、枠（.phone）ではなく中の部品に持たせる。--row＝メニューの1行、--tt-low＝メニュー全体の高さ */
+.tt-pic, .tt-body, .tt-ver { --row: 5.4rem; --row-gap: 0.7rem; --pad-b: max(1.8rem, env(safe-area-inset-bottom, 0px)); --tt-low: calc(var(--row) * 5 + var(--row-gap) * 4 + var(--pad-b)); }
+.pic.tt-pic { height: calc(100% - var(--tt-low) - 4rem); -webkit-mask-image: linear-gradient(180deg, #000 0, #000 62%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 62%, transparent 100%); }
 .pic.tt-pic > .bg { object-position: 46% 50%; }
 .tt-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 /* 熾火の明かり（絵の裾でゆっくり明滅する） */
 .tt-ember { position: absolute; left: 0; right: 0; bottom: 0; height: 46%; background: radial-gradient(ellipse at 50% 100%, #ff7a3d59 0, transparent 62%); mix-blend-mode: screen; pointer-events: none; animation: tt-ember 4.6s ease-in-out infinite alternate; }
 @keyframes tt-ember { from { opacity: 0.35; } to { opacity: 0.95; } }
 .tt-veil { top: 30%; background: linear-gradient(180deg, transparent 0%, #0b081259 24%, #0b0812c7 48%, #0b0812eb 100%); }
-.phone[data-kind="title"] .smoke { opacity: 0.3; }
+.phone[data-kind="title"] .smoke { top: auto; bottom: 22rem; opacity: 0.3; }
 .tt-ver { position: absolute; z-index: 5; right: 1.4rem; top: max(1.3rem, env(safe-area-inset-top, 0px)); font-size: 1.1rem; letter-spacing: 0.06em; color: #ffffff8c; text-shadow: 0 0.1rem 0.4rem #000; pointer-events: none; }
 
 /* ロゴ: 絵の裾に重ねる。うしろに煙がゆっくり流れる */
-.tt-telop { margin: 0 1.4rem; }
-.tt-brand { position: relative; display: grid; justify-items: center; margin: 0 0 1.5rem; }
+.tt-body { padding: 0 1.4rem var(--pad-b); }
+.tt-brand { position: relative; display: grid; justify-items: center; margin: 0 0 1.6rem; }
 .tt-logo { position: relative; z-index: 1; width: min(32rem, 37cqh); height: auto; filter: drop-shadow(0 0.5rem 1.4rem #000c) drop-shadow(0 0 0.4rem #0b0812); }
 .tt-logo-smoke { position: absolute; inset: -3rem -1.4rem -1.6rem; overflow: hidden; pointer-events: none; }
 .tt-logo-smoke i { position: absolute; bottom: -20%; left: 6%; width: 18rem; height: 14rem; border-radius: 50%; background: radial-gradient(circle, #e6d6ff40 0, #c9a6ff1f 40%, transparent 70%); filter: blur(1.2rem); animation: tt-smoke 14s ease-in-out infinite; }
@@ -23,29 +25,28 @@
 .tt-logo-smoke i:nth-child(3) { left: 62%; width: 15rem; animation-duration: 12s; animation-delay: -3s; }
 @keyframes tt-smoke { 0% { transform: translate(-1.5rem, 2rem) scale(0.8); opacity: 0; } 30% { opacity: 1; } 100% { transform: translate(2.5rem, -8rem) scale(1.4); opacity: 0; } }
 
-/* メニュー: 英字を大きく、日本語を小さく添える（本編のタイトルと同じ見せ方）。選んでいる行に金のひし形 */
-.tt-menu { gap: 0.9rem; margin: 0; }
-.tt-item { height: 5.9rem; gap: 1.3rem; padding: 0 1.9rem; border-radius: 1.9rem; min-width: 0; }
-.tt-side { margin-left: auto; display: grid; justify-items: end; gap: 0.3rem; line-height: 1; }
-.tt-item > i { width: 1.2rem; height: 1.2rem; border-radius: 0.2rem; transform: rotate(45deg); box-shadow: inset 0 0 0 0.16rem #ffffff66; }
+/* メニュー: 英字を大きく、日本語を小さく添える（本編のタイトルと同じ見せ方）。5行とも押せる。選んでいる行に金のひし形 */
+.tt-menu { display: grid; gap: var(--row-gap); margin: 0; }
+.tt-item { display: flex; align-items: center; gap: 1.3rem; min-width: 0; height: var(--row); padding: 0 1.9rem; border: 0.1rem solid #ffffff38; border-radius: 1.9rem; text-align: left; color: #f0eaf8; background: #120c1d99; -webkit-backdrop-filter: blur(1.4rem); backdrop-filter: blur(1.4rem); box-shadow: 0 0.6rem 1.4rem #0008, inset 0 0.1rem 0 #ffffff29; transition: border-color 0.2s, background 0.2s, transform 0.1s; animation: rise 0.36s var(--ease-out) backwards; animation-delay: calc(var(--i) * 60ms); }
+.tt-item:active { transform: scale(0.98); }
+.tt-item > i { flex: none; width: 1.2rem; height: 1.2rem; border-radius: 0.2rem; transform: rotate(45deg); box-shadow: inset 0 0 0 0.16rem #ffffff66; }
+.tt-item[aria-current="true"] { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 24%, #120c1dcc); box-shadow: 0 0 0 0.15rem color-mix(in srgb, var(--acc) 55%, transparent), 0 0 2.4rem color-mix(in srgb, var(--acc) 40%, transparent), 0 0.6rem 1.4rem #0008; }
 .tt-item[aria-current="true"] > i { background: var(--acc); box-shadow: 0 0 0 0.3rem color-mix(in srgb, var(--acc) 30%, transparent), 0 0 1rem var(--acc); }
 .tt-en { font-size: 2.2rem; font-weight: 700; letter-spacing: 0.16em; line-height: 1; white-space: nowrap; }
-.tt-ja { font-size: 1.3rem; font-weight: 500; letter-spacing: 0.04em; color: #ffffffa6; white-space: nowrap; }
+.tt-side { margin-left: auto; display: grid; justify-items: end; gap: 0.35rem; line-height: 1; }
+.tt-ja { font-size: 1.36rem; font-weight: 500; letter-spacing: 0.04em; color: #ffffffb3; white-space: nowrap; }
 .tt-note { font-size: 1.3rem; letter-spacing: 0.06em; color: var(--acc); white-space: nowrap; }
 .tt-item[aria-current="true"] .tt-en { color: #fff3cf; }
 .tt-item[disabled] { opacity: 0.4; }
 .tt-item.is-picked { animation: tt-pick 0.32s ease-out; }
 @keyframes tt-pick { 0% { filter: brightness(1); } 40% { filter: brightness(1.9); } 100% { filter: brightness(1); } }
-.tt-ctrl .chips.labeled .chip span { letter-spacing: 0.1em; }
-.tt-ctrl .chip[disabled] { opacity: 0.4; }
 
-/* 入ってきた時: 絵 → ロゴ → メニュー → 操作の順に出す */
+/* 入ってきた時: 絵 → ロゴ → メニュー の順に出す */
 .phone.tt-enter .tt-art { animation: tt-art-in 1.3s var(--ease-out) backwards; }
 @keyframes tt-art-in { from { opacity: 0; transform: scale(1.08); } }
 .phone.tt-enter .tt-logo { animation: tt-logo-in 1.4s 0.25s var(--ease-out) backwards; }
 @keyframes tt-logo-in { from { opacity: 0; transform: translateY(1.2rem); filter: blur(0.6rem); } }
-.phone.tt-enter .tt-item { animation-delay: calc(0.75s + var(--i) * 0.07s); }
-.phone.tt-enter .tt-ctrl { animation: body-in 0.6s 0.9s var(--ease-out) backwards; }
+.phone.tt-enter .tt-item { animation-delay: calc(0.7s + var(--i) * 0.07s); }
 /* はじめる時: 煙の幕で覆ってから本編へ */
 .tt-wipe { position: absolute; z-index: 40; inset: 0; opacity: 0; pointer-events: none; background: radial-gradient(circle at 50% 60%, #2a2040, #0b0812 70%); }
 .phone.tt-leaving .tt-wipe { animation: tt-wipe 0.72s ease-in forwards; }
@@ -53,11 +54,11 @@
 .phone.tt-leaving .tt-art { transition: transform 0.72s ease-in; transform: scale(1.06); }
 
 @container phone (max-height: 80rem) {
-  .tt-pic, .tt-telop, .tt-ver { --ctrl-h: 26.2rem; }
-  .tt-item { height: 5.4rem; } .tt-brand { margin-bottom: 1.2rem; }
+  .tt-pic, .tt-body, .tt-ver { --row: 5rem; --row-gap: 0.6rem; --pad-b: max(1.4rem, env(safe-area-inset-bottom, 0px)); }
+  .tt-brand { margin-bottom: 1.2rem; }
 }
 @container phone (max-height: 71rem) {
-  .tt-pic, .tt-telop, .tt-ver { --ctrl-h: 22.6rem; }
-  .tt-item { height: 4.7rem; font-size: 1.6rem; } .tt-en { font-size: 1.9rem; } .tt-ja, .tt-note { font-size: 1.2rem; } .tt-menu { gap: 0.7rem; } .tt-brand { margin-bottom: 0.9rem; }
+  .tt-pic, .tt-body, .tt-ver { --row: 4.3rem; --row-gap: 0.5rem; --pad-b: max(1.1rem, env(safe-area-inset-bottom, 0px)); }
+  .tt-en { font-size: 1.9rem; } .tt-ja, .tt-note { font-size: 1.2rem; } .tt-brand { margin-bottom: 0.9rem; }
 }
 @media (prefers-reduced-motion: reduce) { .tt-ember, .tt-logo-smoke i { animation: none; } }

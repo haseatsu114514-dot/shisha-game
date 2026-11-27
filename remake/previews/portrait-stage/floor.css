@@ -1,17 +1,24 @@
 /* 縦画面C案「煙の舞台」: 店番（tonari フロア営業）の縦の画面（floor.mjs）。長さは rem（スマホの幅 39rem）。
-   上の絵＝店内と5つの卓の札、真ん中＝はじめの心の声とミックスの一覧、下＝補助の段と十字キー・丸ボタン。
-   卓の札・気分の札・属性の印・満足の顔・メダルは本編の絵（remake/img/ui/tonari-floor/）。 */
+   上の絵＝店内と5つの卓の札、真ん中＝はじめの心の声、下＝ミックスの一覧（属性の印・名前・使ったフレーバー）と、シャッフル・フィーバー・休止。
+   十字キーと丸ボタンは置かない（VPM07）。卓の札・気分の札・属性の印・満足の顔・メダルは本編の絵（remake/img/ui/tonari-floor/）。 */
 
 .phone[data-kind="floor"] { --gold: #ffe2a6; }
-/* 高さで変わる寸法は、枠（.phone）ではなく中の部品に持たせる（枠そのものは @container で書き換えられない） */
-.fl-tables, .fl-layer, .fl-band, .fl-notice { --ctrl-h: 29.2rem; --fl-mid: 14.6rem; --tag-h: 10.3rem; --tag-w: 11.7rem; }
+/* 高さで変わる寸法は、枠（.phone）ではなく中の部品に持たせる（枠そのものは @container で書き換えられない）。
+   --row＝一覧の札の高さ、--acts＝いちばん下の段の高さ、--tick＝心の声の高さ。--fl-acts＝下の段、--fl-deck＝一覧と下の段、--fl-low＝心の声まで含めた下の高さ */
+.fl-room, .fl-tables, .fl-layer, .fl-band, .fl-notice, .fl-body {
+  --row: 5.3rem; --row-gap: 0.5rem; --acts: 5.8rem; --tick: 5.4rem; --tag-h: 11.4rem; --tag-w: 11.9rem;
+  --pad-b: max(1.3rem, env(safe-area-inset-bottom, 0px));
+  --fl-acts: calc(var(--acts) + var(--pad-b) + 0.9rem);
+  --fl-deck: calc(var(--row) * 5 + var(--row-gap) * 4 + 0.9rem + var(--fl-acts));
+  --fl-low: calc(var(--fl-deck) + var(--tick) + 0.9rem);
+}
 
 /* ───────── 店内 ───────── */
-.pic.fl-room { height: calc(100% - var(--ctrl-h) - 7.6rem); -webkit-mask-image: linear-gradient(180deg, #000 0, #000 80%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 80%, transparent 100%); }
+.pic.fl-room { height: calc(100% - var(--fl-low) + 5.4rem); -webkit-mask-image: linear-gradient(180deg, #000 0, #000 80%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 80%, transparent 100%); }
 .pic.fl-room > .bg { object-position: 62% 50%; filter: brightness(0.86) saturate(1.05); }
 .fl-night { opacity: 0; transition: opacity 6s ease; }
 .fl-room[data-dusk="true"] .fl-night { opacity: 1; }
-.phone[data-kind="floor"] .veil { top: 46%; }
+.phone[data-kind="floor"] .veil { top: 30%; }
 /* フィーバーの間、店内に色のついた灯りが揺れる */
 .fl-lights { position: absolute; inset: 0; opacity: 0; pointer-events: none; mix-blend-mode: screen; transition: opacity 0.5s;
   background: radial-gradient(circle at 20% 26%, #ff5fd0aa 0, transparent 34%), radial-gradient(circle at 80% 34%, #7a6bffaa 0, transparent 36%), radial-gradient(circle at 50% 70%, #ffcf6b99 0, transparent 40%); }
@@ -44,7 +51,7 @@
 @keyframes fl-beat { 0% { transform: scale(1.25); } 100% { transform: scale(1); } }
 
 /* ───────── 卓の札（上に3つ・下に2つ）: 見出し＝気分か用件、左＝客の顔と卓番号、右＝残り秒か満足の顔、下の棒＝仕込みの進み／炭の残り ───────── */
-.fl-tables { position: absolute; z-index: 4; left: 0; right: 0; top: 5.6rem; bottom: calc(var(--ctrl-h) + var(--fl-mid) + 0.6rem); pointer-events: none; transition: opacity 0.2s; }
+.fl-tables { position: absolute; z-index: 4; left: 0; right: 0; top: 5.6rem; bottom: calc(var(--fl-low) + 0.5rem); pointer-events: none; transition: opacity 0.2s; }
 .fl-table { --c: transparent; position: absolute; left: calc(var(--x) - var(--tag-w) / 2); width: var(--tag-w); height: var(--tag-h); display: grid; grid-template-rows: 2.9rem 1fr; pointer-events: auto; transition: transform 0.2s var(--ease-out), filter 0.2s; }
 .fl-table[data-row="0"] { top: calc((100% - 2 * var(--tag-h)) * 0.24); }
 .fl-table[data-row="1"] { top: calc(var(--tag-h) + (100% - 2 * var(--tag-h)) * 0.7); }
@@ -124,62 +131,74 @@
 .phone[data-fl-mode="intro"] .fl-telop, .phone[data-fl-mode="result"] .fl-telop, .phone[data-fl-mode="panel"] .fl-telop, .phone[data-fl-mode="pause"] .fl-telop { visibility: hidden; }
 .phone[data-fl-mode="intro"] .fl-table, .phone[data-fl-mode="result"] .fl-table, .phone[data-fl-mode="panel"] .fl-table, .phone[data-fl-mode="pause"] .fl-table { pointer-events: none; }
 
-/* ───────── 真ん中: はじめの心の声（押すと、その卓へ）と、ミックスの一覧（押すと、そのまま出す） ───────── */
-.fl-telop { display: grid; gap: 0.8rem; margin-bottom: 0.1rem; }
-.fl-ticker { display: grid; gap: 0.1rem; width: 100%; min-height: 5.4rem; padding: 0.6rem 1.3rem 0.7rem; border: 0.1rem solid #ffffff30; border-radius: 1.7rem; text-align: left; background: linear-gradient(180deg, #1e163299 0%, #0e0a18cc 100%); -webkit-backdrop-filter: blur(1.6rem) saturate(1.4); backdrop-filter: blur(1.6rem) saturate(1.4); box-shadow: 0 1rem 2.2rem #0009, inset 0 0.1rem 0 #ffffff3d; }
+/* ───────── 真ん中: はじめの心の声（押すと、その卓へ）。チュートリアルの間は、スミさんの言葉 ───────── */
+.fl-body { display: flex; flex-direction: column; gap: 0.9rem; padding-bottom: var(--pad-b); }
+.fl-telop { margin: 0 1.2rem; }
+.fl-ticker { display: grid; align-content: center; gap: 0.1rem; width: 100%; height: var(--tick); padding: 0 1.3rem; border: 0.1rem solid #ffffff30; border-radius: 1.7rem; text-align: left; background: linear-gradient(180deg, #1e163299 0%, #0e0a18cc 100%); -webkit-backdrop-filter: blur(1.6rem) saturate(1.4); backdrop-filter: blur(1.6rem) saturate(1.4); box-shadow: 0 1rem 2.2rem #0009, inset 0 0.1rem 0 #ffffff3d; }
 .fl-log { min-height: 1.8rem; font-size: 1.22rem; line-height: 1.8rem; color: #ffffffa6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fl-voice { display: flex; align-items: center; gap: 0.8rem; min-width: 0; }
 .fl-voice img { flex: none; width: 2.6rem; height: 2.6rem; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 0.12rem var(--acc); }
 .fl-voice b { min-width: 0; font-size: 1.62rem; font-weight: 700; letter-spacing: 0.02em; color: #e9e0fb; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fl-coach[hidden] { display: none; }
 .phone[data-coach="true"] .fl-ticker, .phone[data-coach="true"] .fl-clock, .phone[data-coach="true"] .fl-status .sep { display: none; }
-.fl-coach { min-height: 5.4rem; margin: 0; align-items: center; }
-.fl-coach .say { position: relative; flex: 1 1 auto; min-width: 0; padding: 0.8rem 1.4rem 0.9rem; font-size: 1.72rem; line-height: 1.5; }
+.fl-coach { height: var(--tick); margin: 0; align-items: center; }
+.fl-coach img { width: 5rem; height: 5rem; }
+.fl-coach .say { position: relative; flex: 1 1 auto; min-width: 0; padding: 0.5rem 1.4rem 0.6rem; font-size: 1.7rem; line-height: 1.42; }
 .fl-coach .say-text.small, .fl-sheet-coach .say-text.small, .fl-boss .say-text.small { font-size: 0.86em; }
-.fl-coach-next { display: none; position: absolute; right: 1.2rem; bottom: 0.9rem; width: 0.9rem; height: 0.9rem; border: solid var(--acc); border-width: 0 0.22rem 0.22rem 0; transform: rotate(45deg); animation: bob 1.2s ease-in-out infinite; }
+.fl-coach-next { display: none; position: absolute; right: 1.2rem; bottom: 0.8rem; width: 0.9rem; height: 0.9rem; border: solid var(--acc); border-width: 0 0.22rem 0.22rem 0; transform: rotate(45deg); animation: bob 1.2s ease-in-out infinite; }
 .fl-coach[data-talk="true"] .fl-coach-next { display: block; }
 .fl-coach.fl-nudge img { animation: fl-shake 0.4s linear; }
-.fl-hand { --c: transparent; position: relative; padding: 0.6rem; border: 0.14rem solid color-mix(in srgb, var(--c) 78%, #ffffff30); border-radius: 1.9rem; background: #120c1db3; -webkit-backdrop-filter: blur(1.2rem); backdrop-filter: blur(1.2rem); box-shadow: 0 1rem 2rem #0009, inset 0 0.1rem 0 #ffffff29; transition: border-color 0.25s; }
-.fl-hand[data-target]:not([data-target=""]) { box-shadow: 0 1rem 2rem #0009, 0 0 1.6rem color-mix(in srgb, var(--c) 45%, transparent); }
-.fl-target { position: absolute; z-index: 2; left: -0.5rem; top: -0.9rem; width: 2.2rem; height: 2.2rem; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-size: 1.3rem; font-weight: 900; line-height: 1; color: #1a1228; background: var(--c); box-shadow: 0 0 0 0.16rem #0b0812; }
-.fl-target:empty { display: none; }
-.fl-mixes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.6rem; transition: opacity 0.2s; }
-.fl-mix { position: relative; height: 6.3rem; display: grid; place-items: center; border: 0.12rem solid #ffffff2e; border-radius: 1.3rem; background: #ffffff14; transition: transform 0.12s, border-color 0.2s, opacity 0.2s; }
-.fl-mix:active { transform: scale(0.93); }
-.fl-attr { position: relative; flex: none; width: 4.3rem; height: 4.3rem; display: block; }
-.fl-attr > img { width: 100%; height: 100%; filter: drop-shadow(0 0.2rem 0.4rem #0009); }
-.fl-attr > img.sub { position: absolute; right: -0.8rem; bottom: -0.6rem; width: 54%; height: 54%; }
-.fl-mix .fl-attr { margin: 0 0.5rem 0.3rem 0; }
-/* 左上の点＝使うフレーバーの数（1種は仕込みが早い、3種は合った時の満足が少し高い） */
-.fl-kinds { position: absolute; left: 0.5rem; top: 0.55rem; display: grid; gap: 0.22rem; }
-.fl-kinds i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #ffffffb3; }
-.fl-rate { position: absolute; right: -0.6rem; top: -0.8rem; width: 2.6rem; height: 2.6rem; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-size: 2.1rem; font-weight: 900; line-height: 1; color: #1a1228; background: #fff; box-shadow: 0 0 0 0.16rem #0b0812, 0 0.2rem 0.5rem #000a; }
-.fl-rate[data-rating="best"] { background: #ffd84d; box-shadow: 0 0 0 0.16rem #0b0812, 0 0 1rem #ffcf6b; }
-.fl-mix[data-rating="best"] { border-color: var(--gold); background: #ffe2a62e; animation: fl-best 1.3s ease-in-out infinite; }
-@keyframes fl-best { 50% { box-shadow: 0 0 1.6rem #ffcf6bb3; } }
-.fl-mix[data-rating="good"] { border-color: #ffffff80; }
-.fl-mix[data-rating="none"] { background: #0b081299; border-color: #ffffff14; } .fl-mix[data-rating="none"] .fl-attr { transform: scale(0.84); } .fl-mix[data-rating="none"] .fl-kinds { opacity: 0.4; }
-.fl-mix[data-coach="true"] { animation: fl-guide 1s ease-in-out infinite; }
-.fl-busy { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; gap: 1rem; font-size: 1.5rem; }
-.fl-busy .ic { font-size: 2.2rem; color: var(--gold); animation: fl-spin 1s linear infinite; }
-@keyframes fl-spin { to { transform: rotate(360deg); } }
-.fl-busy-bar { position: relative; width: 9rem; height: 0.6rem; border-radius: 1rem; background: #ffffff2e; overflow: hidden; } .fl-busy-bar i { position: absolute; inset: 0 auto 0 0; background: var(--gold); transition: width 0.5s linear; }
-.fl-busy small { font-size: 1.3rem; font-weight: 700; color: var(--gold); }
-.fl-hand[data-busy="true"] .fl-busy { display: flex; } .fl-hand[data-busy="true"] .fl-mixes { opacity: 0.12; pointer-events: none; }
 .fl-nudge { animation: fl-shake 0.4s linear; }
 
-/* ───────── 補助の段: シャッフル（金）・フィーバー（灯りと残量）・休止 ───────── */
-.fl-chips .chip { flex: 1 1 0; }
-.fl-chips .chip.fl-gold { flex: 1.25 1 0; color: #2a1a06; border-color: #fff3cf; background: linear-gradient(180deg, #ffe9b0, #e9b85a); box-shadow: 0 0.4rem 1rem #0008, inset 0 0.1rem 0 #fff9; }
-.fl-chips .chip.fl-gold[data-call="true"] { animation: fl-gold 0.9s ease-in-out infinite; }
+/* ───────── 下: ミックスの一覧（5つ。属性の印・名前・使ったフレーバー・その客との合い方）と、いちばん下の押す所の段 ─────────
+   十字キーと丸ボタンの代わりに、ここを専用UIにする（VPM07）。札を押すと、その一台を出す */
+.fl-deck { --c: transparent; position: relative; margin: 0 1.2rem; }
+.fl-rows { display: grid; gap: var(--row-gap); padding: 0; border-radius: 1.8rem; transition: opacity 0.2s; }
+.fl-opt { position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.4rem; height: var(--row); padding: 0 1.1rem 0 1rem; border: 0.12rem solid #ffffff38; border-radius: 1.6rem; text-align: left; background: #1d1530cc; -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); box-shadow: 0 0.4rem 1rem #0007, inset 0 0.1rem 0 #ffffff24; transition: border-color 0.15s, background 0.15s, transform 0.1s; }
+.fl-opt:active { transform: scale(0.98); }
+.fl-attr { position: relative; flex: none; width: 3.9rem; height: 3.9rem; display: block; }
+.fl-attr > img { width: 100%; height: 100%; filter: drop-shadow(0 0.2rem 0.4rem #0009); }
+.fl-attr > img.sub { position: absolute; right: -0.8rem; bottom: -0.6rem; width: 54%; height: 54%; }
+.fl-opt-icon { width: 3.9rem; height: 3.9rem; display: grid; place-items: center; border-radius: 1.1rem; font-size: 2.5rem; color: var(--gold); background: #0b0812b3; box-shadow: inset 0 0 0 0.1rem #ffe2a659; }
+.fl-opt-text { min-width: 0; display: grid; gap: 0.1rem; }
+.fl-opt-text b { font-size: 1.82rem; line-height: 1.25; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fl-opt-text small { font-size: 1.2rem; line-height: 1.3; color: #ffffffb3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fl-opt-rate { width: 3.3rem; height: 3.3rem; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-size: 2.6rem; font-weight: 900; line-height: 1; color: #ffffff59; }
+.fl-opt-rate[data-rating="best"] { color: #1a1228; background: #ffd84d; box-shadow: 0 0 1.2rem #ffcf6b; } .fl-opt-rate[data-rating="good"] { color: #1a1228; background: #fff; }
+/* 注文待ちの卓がある間: 合う一台（◎）は金の縁で灯り、合わない札は名前と地が沈む（属性の印は沈めない） */
+.fl-opt[data-rating="best"] { border-color: var(--gold); background: #4a3a1ee6; box-shadow: 0 0.4rem 1rem #0007, 0 0 1.4rem #ffcf6b66; }
+.fl-opt[data-rating="good"] { border-color: #ffffff80; }
+.fl-opt[data-rating="none"] { background: #120c1dd9; border-color: #ffffff1f; } .fl-opt[data-rating="none"] .fl-opt-text { opacity: 0.5; }
+.fl-opt[aria-current="true"] { outline: 0.2rem solid #fff; outline-offset: 0.15rem; }
+.fl-opt[disabled] { opacity: 0.35; } .fl-opt[data-coach="true"] { animation: fl-guide 1s ease-in-out infinite; }
+.fl-opt[data-picked="true"] { border-color: var(--gold); }
+/* 出す先の卓の番号（一覧の左上）。色はその客の気分 */
+.fl-target { position: absolute; z-index: 2; left: -0.6rem; top: -1rem; width: 2.4rem; height: 2.4rem; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-size: 1.4rem; font-weight: 900; line-height: 1; color: #1a1228; background: var(--c); box-shadow: 0 0 0 0.16rem #0b0812, 0 0 1rem var(--c); }
+.fl-target:empty { display: none; }
+.fl-busy { position: absolute; left: 0; right: 0; top: 0; height: calc(var(--row) * 5 + var(--row-gap) * 4); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1.2rem; font-size: 1.9rem; border-radius: 1.8rem; background: #0b0812b3; }
+.fl-busy .ic { font-size: 3.6rem; color: var(--gold); animation: fl-spin 1s linear infinite; }
+@keyframes fl-spin { to { transform: rotate(360deg); } }
+.fl-busy-bar { position: relative; width: 16rem; height: 0.8rem; border-radius: 1rem; background: #ffffff2e; overflow: hidden; } .fl-busy-bar i { position: absolute; inset: 0 auto 0 0; background: var(--gold); transition: width 0.5s linear; }
+.fl-busy small { font-size: 1.6rem; font-weight: 700; color: var(--gold); }
+.fl-deck[data-busy="true"] .fl-busy { display: flex; } .fl-deck[data-busy="true"] .fl-rows { opacity: 0.18; pointer-events: none; }
+/* いちばん下の段: シャッフル（金）・フィーバー（灯りと残量）・休止。接客・開店前・精算では、その場面の押す所に替わる */
+.fl-acts { display: flex; gap: 0.7rem; height: var(--acts); margin-top: 0.9rem; }
+.fl-act { position: relative; flex: 1 1 0; min-width: 0; height: 100%; display: flex; align-items: center; justify-content: center; gap: 0.7rem; padding: 0 1rem; border: 0.12rem solid #ffffff2b; border-radius: 1.7rem; font-size: 1.6rem; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; color: #e7e0f2; background: #ffffff1a; -webkit-backdrop-filter: blur(0.8rem); backdrop-filter: blur(0.8rem); transition: transform 0.1s; }
+.fl-act:active { transform: scale(0.96); }
+.fl-act .ic { font-size: 2.2rem; }
+.fl-act.fl-gold, .fl-act.primary { color: #2a1a06; border-color: #fff3cf; background: linear-gradient(180deg, #ffe9b0, #e9b85a); box-shadow: 0 0.4rem 1rem #0008, inset 0 0.1rem 0 #fff9; }
+.fl-act.primary { flex: 2.2 1 0; font-family: var(--mincho); font-size: 2.3rem; letter-spacing: 0.16em; }
+.fl-act.small { flex: 0 0 6.6rem; flex-direction: column; gap: 0.2rem; font-size: 1.15rem; } .fl-act.small .ic { font-size: 2rem; }
+.fl-act.fl-gold[data-call="true"] { animation: fl-gold 0.9s ease-in-out infinite; }
 @keyframes fl-gold { 50% { box-shadow: 0 0 0 0.4rem #ffe2a659, 0 0 2.2rem #ffcf6b; } }
-.fl-chips .chip.fl-gold[data-wait="true"], .fl-chips .chip.fl-gold[disabled] { color: #ffffffb3; border-color: #ffffff2b; background: #ffffff1f; box-shadow: none; }
-.fl-chips .chip.fl-chip-fever { flex: 2.1 1 0; flex-direction: row; gap: 0.7rem; padding: 0 1rem 0 0.5rem; }
-.fl-lamp { flex: none; height: 82%; width: auto; filter: grayscale(0.9) brightness(0.7); transition: filter 0.3s; }
-.fl-fever-main { flex: 1; min-width: 0; display: grid; gap: 0.5rem; }
-.fl-chips .chip .fl-fever-name { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; font-size: 1.25rem; letter-spacing: 0.04em; line-height: 1; }
-.fl-fever-name small { font-size: 1.05rem; color: #ffffffb3; font-variant-numeric: tabular-nums; }
-.fl-chips .chip .fl-fever-gauge { position: relative; display: block; height: 0.7rem; border-radius: 1rem; background: #0b0812cc; box-shadow: inset 0 0 0 0.1rem #ffffff33; overflow: hidden; }
+.fl-act.fl-gold[data-wait="true"], .fl-act.fl-gold[disabled] { color: #ffffffb3; border-color: #ffffff2b; background: #ffffff1f; box-shadow: none; }
+.fl-act.fl-chip-fever { flex: 1.25 1 0; gap: 0.6rem; padding: 0 1rem 0 0.4rem; }
+.fl-act.fl-chip-shuffle { flex: 1.2 1 0; gap: 0.5rem; padding: 0 0.6rem; font-size: 1.5rem; letter-spacing: 0.02em; }
+.fl-lamp { flex: none; height: 84%; width: auto; filter: grayscale(0.9) brightness(0.7); transition: filter 0.3s; }
+.fl-fever-main { flex: 1; min-width: 0; display: grid; gap: 0.6rem; }
+.fl-fever-name { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; font-size: 1.4rem; letter-spacing: 0.04em; line-height: 1; }
+.fl-fever-name small { font-size: 1.15rem; color: #ffffffb3; font-variant-numeric: tabular-nums; }
+.fl-fever-gauge { position: relative; display: block; height: 0.8rem; border-radius: 1rem; background: #0b0812cc; box-shadow: inset 0 0 0 0.1rem #ffffff33; overflow: hidden; }
 .fl-fever-fill { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: linear-gradient(90deg, #b06bff, #ff7ad9, #ffd84d); transition: width 0.4s linear; }
 .fl-fever-gauge u { position: absolute; top: 0; bottom: 0; width: 0.14rem; background: #0b0812; }
 .fl-chip-fever[disabled] { opacity: 0.72; }
@@ -187,22 +206,13 @@
 .fl-chip-fever[data-usable="true"] .fl-lamp { filter: none; } .fl-chip-fever[data-usable="true"] .fl-fever-name small { color: #5a3b0a; }
 .phone[data-fever="on"] .fl-chip-fever { color: #fff; border-color: #e3c2ff; background: linear-gradient(180deg, #8a4fe0, #4a2496); animation: none; box-shadow: 0 0 2rem #b06bffb3; }
 .phone[data-fever="on"] .fl-chip-fever .fl-lamp { filter: hue-rotate(250deg) saturate(1.4) brightness(1.2); } .phone[data-fever="on"] .fl-chip-fever .fl-fever-name small { color: #fff; }
-.fl-chips .chip.fl-chip-pause { flex: 0.72 1 0; }
-.fl-chips .chip[data-coach="true"] { animation: fl-guide 1s ease-in-out infinite; }
-.fl-chips[data-mode="intro"], .fl-chips[data-mode="panel"], .fl-chips[data-mode="pause"] { justify-content: flex-start; }
-.fl-chips[data-mode="intro"] .chip, .fl-chips[data-mode="panel"] .chip, .fl-chips[data-mode="pause"] .chip { flex: none; width: 9.6rem; }
-.fl-chips:empty { min-height: 6.4rem; }
-/* 丸ボタンの中の白い図形（用件ごと） */
-.tool-fl .gl-cut { fill: none; stroke: #0b0812; stroke-opacity: 0.62; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
-.tool-fl .gl-cut.thin { stroke-width: 3.4; } .tool-fl .gl-cutf { fill: #0b0812; fill-opacity: 0.62; }
-.tool-fl .gl-line { fill: none; stroke: currentColor; stroke-width: 4.6; stroke-linecap: round; }
-.tool-fl .gl-coin { stroke: #0b0812; stroke-opacity: 0.62; stroke-width: 4; }
-.fl-ctrl .btn-a[data-kind="fl_go"] .glyph, .fl-ctrl .btn-a[data-kind="fl_idle"] .glyph { width: 1.9em; height: 1.9em; }
-.fl-ctrl .btn-a[data-kind="fl_idle"] .glyph circle { fill: currentColor; stroke: none; }
-.fl-ctrl .btn-a[data-kind="fl_open"] .t { font-size: 3.4rem; }
+.fl-act[data-coach="true"] { animation: fl-guide 1s ease-in-out infinite; }
+/* 開店前・休止・精算の間は、一覧と心の声を出さない（札の上に札を重ねない）。接客の間は、心の声だけ隠す */
+.phone[data-fl-mode="intro"] .fl-rows, .phone[data-fl-mode="result"] .fl-rows, .phone[data-fl-mode="pause"] .fl-rows,
+.phone[data-fl-mode="intro"] .fl-target, .phone[data-fl-mode="result"] .fl-target, .phone[data-fl-mode="pause"] .fl-target, .phone[data-fl-mode="panel"] .fl-target { visibility: hidden; }
 
 /* ───────── 帯（営業開始・フィーバー・営業終了）・まん中の札・画面の光 ───────── */
-.fl-band { position: absolute; z-index: 25; left: -12%; right: -12%; top: calc((100% - var(--ctrl-h) - var(--fl-mid)) * 0.5 - 2rem); height: 10.4rem; display: grid; place-content: center; justify-items: center; gap: 0.2rem; opacity: 0; pointer-events: none; transform: rotate(-5deg);
+.fl-band { position: absolute; z-index: 25; left: -12%; right: -12%; top: calc((100% - var(--fl-low)) * 0.5 - 2rem); height: 10.4rem; display: grid; place-content: center; justify-items: center; gap: 0.2rem; opacity: 0; pointer-events: none; transform: rotate(-5deg);
   background: linear-gradient(90deg, transparent 0, #120c1df5 10%, #2a1b40f5 50%, #120c1df5 90%, transparent 100%); border-block: 0.2rem solid #f1d79a; box-shadow: 0 1.2rem 3rem #000c; }
 .fl-band b { font-family: var(--mincho); font-size: 4.2rem; letter-spacing: 0.2em; margin-right: -0.2em; line-height: 1.2; text-shadow: 0 0.3rem 1rem #000; }
 .fl-band small { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.24em; color: #f1d79a; }
@@ -213,7 +223,7 @@
 .fl-band[data-on="true"] b { animation: fl-band-text 1.5s var(--ease-out) forwards; }
 @keyframes fl-band { 0% { opacity: 0; transform: rotate(-5deg) scaleY(0.1); } 12% { opacity: 1; transform: rotate(-5deg) scaleY(1); } 82% { opacity: 1; transform: rotate(-5deg) scaleY(1); } 100% { opacity: 0; transform: rotate(-5deg) scaleY(0.1); } }
 @keyframes fl-band-text { 0% { transform: translateX(-4rem); } 14% { transform: translateX(0.6rem); } 82% { transform: translateX(-0.6rem); } 100% { transform: translateX(5rem); } }
-.fl-notice { position: absolute; z-index: 24; left: 50%; top: calc((100% - var(--ctrl-h) - var(--fl-mid)) * 0.5 + 1rem); transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 0.2rem; padding: 0.9rem 2rem 1rem; border: 0.12rem solid #f1d79a; border-radius: 1.6rem; white-space: nowrap; background: #120c1df2; box-shadow: 0 1rem 2.4rem #000c; opacity: 0; pointer-events: none; }
+.fl-notice { position: absolute; z-index: 24; left: 50%; top: calc((100% - var(--fl-low)) * 0.5 + 1rem); transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 0.2rem; padding: 0.9rem 2rem 1rem; border: 0.12rem solid #f1d79a; border-radius: 1.6rem; white-space: nowrap; background: #120c1df2; box-shadow: 0 1rem 2.4rem #000c; opacity: 0; pointer-events: none; }
 .fl-notice b { font-family: var(--mincho); font-size: 2.2rem; letter-spacing: 0.1em; } .fl-notice small { font-size: 1.3rem; font-weight: 700; color: #f1d79a; }
 .fl-notice[data-on="true"] { animation: toast 1.4s ease-out forwards; }
 .phone[data-band="true"] .fl-notice { opacity: 0; animation: none; }
@@ -224,10 +234,12 @@
 @keyframes fl-flash { 0% { opacity: 0.85; } 100% { opacity: 0; } }
 @keyframes fl-flash-bad { 0% { opacity: 1; } 100% { opacity: 0; } }
 
-/* ───────── 重ねる画面（開店前・接客の画面・休止・精算）: 上の絵とテロップの場所に重ね、パッドは残す ───────── */
-.fl-layer { position: absolute; z-index: 20; left: 0; right: 0; top: 0; bottom: var(--ctrl-h); pointer-events: none; }
+/* ───────── 重ねる画面（開店前・接客の画面・休止・精算）: いちばん下の段は残す。接客の画面は、下の一覧も残す ───────── */
+.fl-layer { position: absolute; z-index: 20; left: 0; right: 0; top: 0; bottom: var(--fl-acts); pointer-events: none; }
+.fl-layer[data-mode="panel"] { bottom: calc(var(--fl-deck) + 0.2rem); }
+.fl-layer[data-mode="pause"] { bottom: 0; }
 .fl-layer > * { pointer-events: auto; }
-.fl-intro { position: absolute; left: 1.4rem; right: 1.4rem; top: 58%; transform: translateY(-50%); display: grid; justify-items: center; gap: 1.1rem; padding: 0 1.6rem 2.4rem; border: 0.12rem solid #f1d79a99; border-radius: 2.4rem; background: linear-gradient(180deg, #1e1632eb, #0e0a18f5); -webkit-backdrop-filter: blur(1.6rem); backdrop-filter: blur(1.6rem); box-shadow: 0 2rem 4rem #000c, inset 0 0.1rem 0 #ffffff3d; animation: rise 0.4s var(--ease-out) backwards; }
+.fl-intro { position: absolute; left: 1.4rem; right: 1.4rem; top: 54%; transform: translateY(-50%); display: grid; justify-items: center; gap: 1.1rem; padding: 0 1.6rem 2.4rem; border: 0.12rem solid #f1d79a99; border-radius: 2.4rem; background: linear-gradient(180deg, #1e1632eb, #0e0a18f5); -webkit-backdrop-filter: blur(1.6rem); backdrop-filter: blur(1.6rem); box-shadow: 0 2rem 4rem #000c, inset 0 0.1rem 0 #ffffff3d; animation: rise 0.4s var(--ease-out) backwards; }
 .fl-orn { width: 23rem; margin: -3.4rem 0 -0.6rem; filter: drop-shadow(0 0.4rem 0.8rem #000a); }
 .fl-eyebrow { margin: 0; font-size: 1.4rem; font-weight: 700; letter-spacing: 0.22em; color: #f1d79a; }
 .fl-title { width: 31rem; max-width: 100%; aspect-ratio: 1000 / 162; margin: 0; display: grid; place-items: center; background: center / 100% 100% no-repeat; font-family: var(--mincho); font-size: 2.6rem; letter-spacing: 0.14em; line-height: 1; text-shadow: 0 0.2rem 0.6rem #000; }
@@ -238,54 +250,37 @@
 .fl-wishes .fl-wish { height: 3rem; font-size: 1.5rem; padding: 0 1.2rem 0 0.9rem; } .fl-wishes .fl-wish .ic { font-size: 1.7rem; }
 .fl-pause .fl-eyebrow { margin-top: 2.2rem; } .fl-pause .fl-title.plain { margin-top: 0; } .fl-pause .choices { width: 100%; margin-top: 0.6rem; }
 
-/* 接客の画面: 上に卓の様子（客の顔と一言）、下に5つの札。十字キーの上下で選び、丸ボタンで決める（札を押してもよい） */
-.fl-sheet { position: absolute; inset: 0; display: flex; flex-direction: column; background: #0b0812f2; animation: fl-sheet 0.25s var(--ease-out); }
-@keyframes fl-sheet { from { opacity: 0; transform: translateY(1.2rem); } }
-.fl-visit { --who: 9.8rem; position: relative; flex: 1 1 0; min-height: 12rem; display: flex; flex-direction: column; justify-content: center; gap: 1.3rem; padding: max(1.3rem, env(safe-area-inset-top, 0px)) 1.4rem 1.1rem; overflow: hidden; border-bottom: 0.14rem solid var(--c); }
-.fl-visit-row { position: relative; z-index: 2; display: flex; align-items: center; gap: 1.4rem; }
-.fl-visit-side { flex: 1 1 auto; min-width: 0; display: grid; gap: 0.9rem; justify-items: start; }
-.fl-visit-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 62% 60%; transform: scale(1.5); filter: brightness(0.72) blur(0.15rem); }
-.fl-visit::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #0b081299 0, transparent 30%, transparent 55%, #0b0812e6 100%); pointer-events: none; }
-.fl-visit-no { position: absolute; left: -0.3rem; top: -0.3rem; width: 2.9rem; height: 2.9rem; display: grid; place-items: center; border-radius: 50%; font-size: 1.7rem; font-weight: 900; line-height: 1; color: #1a1228; background: #fff; box-shadow: 0 0 0 0.18rem #0b0812, 0 0.3rem 0.8rem #000a; }
-.fl-visit-kind .fl-wish, .fl-visit-kind .fl-need { height: 3.4rem; padding: 0 1.4rem 0 1.1rem; font-size: 1.7rem; } .fl-visit-kind .ic { font-size: 1.9rem; }
+/* 接客の画面: 上の絵と心の声の場所が、その卓の客の顔・呼び名・気分（頼みは用件）・ご利用の金額と、客の一言に替わる。下の一覧はそのまま */
+.fl-sheet { --who: 12.4rem; position: absolute; inset: 0; overflow: hidden; border-bottom: 0.16rem solid var(--c); background: #0b0812; animation: fl-sheet 0.25s var(--ease-out); }
+@keyframes fl-sheet { from { opacity: 0; } }
+.fl-visit-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 62% 50%; transform: scale(1.25); filter: brightness(0.6) blur(0.2rem); }
+.fl-sheet::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #0b081266 0, transparent 30%, #0b0812a6 62%, #0b0812f2 100%); pointer-events: none; }
+.fl-visit { position: absolute; z-index: 2; left: 1.4rem; right: 1.4rem; bottom: 1.4rem; display: grid; gap: 1.4rem; }
+.fl-visit-row { display: flex; align-items: center; gap: 1.6rem; }
+.fl-visit-side { flex: 1 1 auto; min-width: 0; display: grid; gap: 1rem; justify-items: start; }
 .fl-visit-who { position: relative; flex: none; width: var(--who); height: var(--who); border-radius: 50%; background: #f3e9d6; box-shadow: 0 0 0 0.3rem var(--c), 0 0 0 0.5rem #0b0812, 0 1rem 2.4rem #000c; }
 .fl-visit-who img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: 50% 16%; }
-.fl-quote { position: relative; z-index: 2; margin: 0; padding: 0.9rem 1.4rem 1rem; border-radius: 1.6rem; font-size: 1.7rem; font-weight: 700; line-height: 1.5; word-break: auto-phrase; line-break: strict; color: #2a1d14; background: #fffaf0; box-shadow: 0 0.5rem 1.4rem #000a; }
-.fl-quote::after { content: ""; position: absolute; left: calc(var(--who) / 2 - 0.7rem); top: -0.6rem; width: 1.4rem; height: 1.4rem; background: inherit; transform: rotate(45deg); border-radius: 0.2rem; }
-.fl-quote.small { font-size: 1.5rem; }
-.fl-quote[data-sight="true"] { font-weight: 500; color: #efe8fa; background: #1d1530f2; box-shadow: 0 0 0 0.1rem #ffffff40, 0 0.5rem 1.4rem #000a; }
-.fl-visit-name { width: 100%; display: flex; align-items: center; gap: 0.8rem; font-size: 1.6rem; text-shadow: 0 0.1rem 0.4rem #000; }
-.fl-visit-name b { min-width: 0; font-size: 1.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .fl-visit-name img { flex: none; width: 2.8rem; height: 2.8rem; }
-
+.fl-visit-no { position: absolute; left: -0.2rem; top: -0.2rem; width: 3.2rem; height: 3.2rem; display: grid; place-items: center; border-radius: 50%; font-size: 1.9rem; font-weight: 900; line-height: 1; color: #1a1228; background: #fff; box-shadow: 0 0 0 0.18rem #0b0812, 0 0.3rem 0.8rem #000a; }
+.fl-visit-name { width: 100%; display: flex; align-items: center; gap: 0.8rem; text-shadow: 0 0.1rem 0.4rem #000; }
+.fl-visit-name b { min-width: 0; font-size: 2.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .fl-visit-name img { flex: none; width: 3.2rem; height: 3.2rem; }
+.fl-visit-name .fl-attr { width: 2.8rem; height: 2.8rem; margin: 0 0.6rem 0 0.2rem; }
 .fl-visit-kind { width: 100%; display: flex; align-items: center; gap: 0.8rem; }
-.fl-visit-kind em { margin-left: auto; flex: none; display: flex; align-items: center; gap: 0.4rem; font-style: normal; font-size: 1.6rem; font-weight: 700; color: var(--gold); text-shadow: 0 0.1rem 0.4rem #000; }
-.fl-visit-kind em .ic { font-size: 1.6rem; }
-.fl-visit-name .fl-attr { width: 2.5rem; height: 2.5rem; margin: 0 0.6rem 0 0.2rem; }
-.fl-verdict { position: absolute; z-index: 3; inset: 0; display: grid; place-content: center; justify-items: center; gap: 0.4rem; pointer-events: none; }
-.fl-verdict img { width: 13rem; height: 13rem; animation: fl-verdict 0.5s var(--ease-out); filter: drop-shadow(0 0.8rem 1.6rem #000c); }
+.fl-visit-kind .fl-wish, .fl-visit-kind .fl-need { height: 3.4rem; padding: 0 1.4rem 0 1.1rem; font-size: 1.7rem; } .fl-visit-kind .ic { font-size: 1.9rem; }
+.fl-visit-kind em { margin-left: auto; flex: none; display: flex; align-items: center; gap: 0.4rem; font-style: normal; font-size: 1.7rem; font-weight: 700; color: var(--gold); text-shadow: 0 0.1rem 0.4rem #000; }
+.fl-visit-kind em .ic { font-size: 1.7rem; }
+.fl-quote { position: relative; margin: 0; padding: 1rem 1.5rem 1.1rem; border-radius: 1.7rem; font-size: 1.8rem; font-weight: 700; line-height: 1.5; word-break: auto-phrase; line-break: strict; color: #2a1d14; background: #fffaf0; box-shadow: 0 0.5rem 1.4rem #000a; }
+.fl-quote::after { content: ""; position: absolute; left: calc(var(--who) / 2 - 0.7rem); top: -0.6rem; width: 1.4rem; height: 1.4rem; background: inherit; transform: rotate(45deg); border-radius: 0.2rem; }
+.fl-quote.small { font-size: 1.56rem; }
+.fl-quote[data-sight="true"] { font-weight: 500; color: #efe8fa; background: #1d1530f2; box-shadow: 0 0 0 0.1rem #ffffff40, 0 0.5rem 1.4rem #000a; }
+.fl-verdict { position: absolute; z-index: 3; left: 0; right: 0; top: 0; bottom: 42%; display: grid; place-content: center; justify-items: center; gap: 0.4rem; pointer-events: none; }
+.fl-verdict img { width: 14rem; height: 14rem; animation: fl-verdict 0.5s var(--ease-out); filter: drop-shadow(0 0.8rem 1.6rem #000c); }
 .fl-verdict b { padding: 0.3rem 1.4rem; border-radius: 2rem; font-size: 1.9rem; color: #1a1228; background: #fff; box-shadow: 0 0.4rem 1rem #000a; }
 @keyframes fl-verdict { 0% { transform: scale(2.2) rotate(-12deg); opacity: 0; } 100% { transform: none; opacity: 1; } }
-.fl-sheet[data-verdict] .fl-visit-who { filter: brightness(0.6); }
-.fl-sheet-coach { margin: 0.9rem 1.2rem -0.2rem; width: auto; align-items: center; }
-.fl-sheet-coach img { width: 4.4rem; height: 4.4rem; } .fl-sheet-coach .say { flex: 1 1 auto; padding: 0.7rem 1.3rem 0.8rem; font-size: 1.62rem; line-height: 1.5; }
-.fl-list { flex: none; display: grid; gap: 0.6rem; padding: 1rem 1.2rem 0.8rem; }
-.fl-opt { position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.5rem; height: 5.7rem; padding: 0 1.1rem 0 1rem; border: 0.12rem solid #ffffff38; border-radius: 1.6rem; text-align: left; background: #1d153099; box-shadow: inset 0 0.1rem 0 #ffffff24; transition: border-color 0.15s, background 0.15s, transform 0.1s; }
-.fl-opt:active { transform: scale(0.98); }
-.fl-opt .fl-attr { width: 3.9rem; height: 3.9rem; }
-.fl-opt-icon { width: 3.9rem; height: 3.9rem; display: grid; place-items: center; border-radius: 1.1rem; font-size: 2.5rem; color: var(--gold); background: #0b0812b3; box-shadow: inset 0 0 0 0.1rem #ffe2a659; }
-.fl-opt-text { min-width: 0; display: grid; gap: 0.1rem; }
-.fl-opt-text b { font-size: 1.86rem; line-height: 1.25; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fl-opt-text small { font-size: 1.22rem; line-height: 1.3; color: #ffffffb3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fl-opt-rate { width: 3.4rem; height: 3.4rem; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-size: 2.7rem; font-weight: 900; line-height: 1; color: #ffffff59; }
-.fl-opt-rate[data-rating="best"] { color: #1a1228; background: #ffd84d; box-shadow: 0 0 1.2rem #ffcf6b; } .fl-opt-rate[data-rating="good"] { color: #1a1228; background: #fff; }
-.fl-opt[data-rating="best"] { border-color: #ffe2a6b3; background: #ffe2a61f; }
-.fl-opt[data-rating="none"] .fl-opt-text, .fl-opt[data-rating="none"] .fl-attr { opacity: 0.55; }
-.fl-opt[aria-current="true"] { border-color: #fff; background: color-mix(in srgb, var(--acc) 30%, #1d1530e6); box-shadow: 0 0 0 0.16rem #ffffffd9, 0 0 2rem color-mix(in srgb, var(--acc) 50%, transparent); }
-.fl-opt[disabled] { opacity: 0.35; } .fl-opt[data-coach="true"] { animation: fl-guide 1s ease-in-out infinite; }
-.fl-opt[data-picked="true"] { border-color: var(--gold); }
+.fl-sheet-coach { margin: 0; width: auto; align-items: center; }
+.fl-sheet-coach img { width: 4.6rem; height: 4.6rem; } .fl-sheet-coach .say { flex: 1 1 auto; padding: 0.7rem 1.3rem 0.8rem; font-size: 1.64rem; line-height: 1.5; }
 
 /* 精算: 1枚め＝評価と店の売上、2枚め＝好評だったミックス・数の内訳・スミさんの一言・日当 */
-.fl-result { position: absolute; left: 1.2rem; right: 1.2rem; top: max(4.4rem, env(safe-area-inset-top, 0px) + 3rem); bottom: -4.6rem; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; gap: 0.4rem; padding: 2.6rem 1.6rem 2.2rem; border: 0.12rem solid #f1d79a99; border-radius: 2.4rem; background: linear-gradient(180deg, #1e1632f2, #0e0a18f7); -webkit-backdrop-filter: blur(1.6rem); backdrop-filter: blur(1.6rem); box-shadow: 0 2rem 4rem #000c, inset 0 0.1rem 0 #ffffff3d; animation: rise 0.4s var(--ease-out) backwards; }
+.fl-result { position: absolute; left: 1.2rem; right: 1.2rem; top: max(4.4rem, env(safe-area-inset-top, 0px) + 3rem); bottom: 0.4rem; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; gap: 0.4rem; padding: 2.6rem 1.6rem 2.2rem; border: 0.12rem solid #f1d79a99; border-radius: 2.4rem; background: linear-gradient(180deg, #1e1632f2, #0e0a18f7); -webkit-backdrop-filter: blur(1.6rem); backdrop-filter: blur(1.6rem); box-shadow: 0 2rem 4rem #000c, inset 0 0.1rem 0 #ffffff3d; animation: rise 0.4s var(--ease-out) backwards; }
 .fl-eyebrow.ribbon { position: absolute; left: 50%; top: -2.3rem; width: 31rem; max-width: calc(100% - 1rem); aspect-ratio: 1000 / 162; transform: translateX(-50%); display: grid; place-items: center; background: center / 100% 100% no-repeat; font-size: 1.36rem; letter-spacing: 0.06em; color: #fff3cf; white-space: nowrap; text-shadow: 0 0.1rem 0.4rem #000; }
 .fl-medal { position: relative; width: min(15rem, 22cqh); aspect-ratio: 1; display: grid; place-items: center; animation: fl-verdict 0.55s 0.3s var(--ease-out) backwards; }
 .fl-medal img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 0.8rem 1.4rem #000c); }
@@ -321,25 +316,27 @@
 
 /* ───────── 背の低い画面 ───────── */
 @container phone (max-height: 80rem) {
-  .fl-tables, .fl-layer, .fl-band, .fl-notice { --ctrl-h: 26.2rem; }
-  .fl-opt { height: 5.2rem; } .fl-list { gap: 0.5rem; padding-top: 0.8rem; } .fl-visit { --who: 7.4rem; gap: 1rem; }
+  .fl-room, .fl-tables, .fl-layer, .fl-band, .fl-notice, .fl-body { --row: 4.9rem; --row-gap: 0.45rem; --acts: 5.3rem; --tick: 5rem; --tag-h: 10rem; }
+  .fl-sheet { --who: 9.6rem; } .fl-visit { gap: 1.1rem; bottom: 1.1rem; } .fl-quote { font-size: 1.7rem; padding: 0.8rem 1.3rem 0.9rem; }
+  .fl-opt-text b { font-size: 1.74rem; } .fl-attr, .fl-opt-icon { width: 3.6rem; height: 3.6rem; }
   .fl-result { padding: 2.2rem 1.4rem 2rem; } .fl-total b { font-size: 3.6rem; } .fl-stages img { width: 2.8rem; height: 2.8rem; }
 }
 @container phone (max-height: 71rem) {
-  .fl-tables, .fl-layer, .fl-band, .fl-notice { --ctrl-h: 22.6rem; }
-  .fl-tables, .fl-layer, .fl-band, .fl-notice { --fl-mid: 12.9rem; --tag-h: 9.3rem; --tag-w: 11.2rem; }
+  .fl-room, .fl-tables, .fl-layer, .fl-band, .fl-notice, .fl-body { --row: 4.35rem; --row-gap: 0.4rem; --acts: 4.8rem; --tick: 4.6rem; --tag-h: 9.2rem; --tag-w: 11.2rem; --pad-b: max(0.9rem, env(safe-area-inset-bottom, 0px)); }
+  .fl-body { gap: 0.7rem; } .fl-acts { margin-top: 0.7rem; }
   .fl-tables { top: 5.1rem; } .fl-cell b { font-size: 2.4rem; }
   .fl-wish, .fl-need, .fl-pop { height: 2.3rem; font-size: 1.24rem; } .fl-table { grid-template-rows: 2.6rem 1fr; }
-  .fl-ticker { min-height: 4.8rem; padding: 0.4rem 1.2rem 0.5rem; } .fl-voice b { font-size: 1.5rem; } .fl-voice img { width: 2.3rem; height: 2.3rem; } .fl-coach { min-height: 4.8rem; } .fl-coach .say { font-size: 1.56rem; padding: 0.6rem 1.2rem 0.7rem; }
-  .fl-mix { height: 5.5rem; } .fl-attr { width: 3.8rem; height: 3.8rem; } .fl-telop { gap: 0.6rem; }
-  .fl-opt { height: 4.5rem; gap: 1.3rem; } .fl-opt .fl-attr, .fl-opt-icon { width: 3.3rem; height: 3.3rem; } .fl-opt-text b { font-size: 1.66rem; } .fl-opt-text small { font-size: 1.12rem; } .fl-opt-rate { width: 2.9rem; height: 2.9rem; }
-  .fl-list { gap: 0.4rem; padding: 0.7rem 1.2rem 0.5rem; } .fl-quote { font-size: 1.54rem; padding: 0.6rem 1.2rem 0.7rem; } .fl-quote.small { font-size: 1.4rem; } .fl-visit { --who: 6.2rem; gap: 0.9rem; padding-bottom: 0.8rem; } .fl-visit-name b { font-size: 1.7rem; } .fl-result { bottom: -3.6rem; } .fl-sheet-coach .say { font-size: 1.48rem; } .fl-sheet-coach img { width: 3.8rem; height: 3.8rem; }
+  .fl-voice b { font-size: 1.5rem; } .fl-voice img { width: 2.3rem; height: 2.3rem; } .fl-log { min-height: 1.6rem; line-height: 1.6rem; font-size: 1.14rem; }
+  .fl-coach img { width: 4.2rem; height: 4.2rem; } .fl-coach .say { font-size: 1.5rem; padding: 0.3rem 1.2rem 0.4rem; }
+  .fl-opt { gap: 1.2rem; } .fl-attr, .fl-opt-icon { width: 3.2rem; height: 3.2rem; } .fl-opt-text b { font-size: 1.62rem; } .fl-opt-text small { font-size: 1.1rem; } .fl-opt-rate { width: 2.8rem; height: 2.8rem; font-size: 2.2rem; }
+  .fl-act { font-size: 1.46rem; } .fl-act.primary { font-size: 2rem; } .fl-fever-name { font-size: 1.26rem; }
+  .fl-sheet { --who: 7.6rem; } .fl-visit { gap: 0.9rem; bottom: 0.9rem; } .fl-quote { font-size: 1.56rem; padding: 0.6rem 1.2rem 0.7rem; } .fl-quote.small { font-size: 1.4rem; } .fl-visit-name b { font-size: 1.8rem; }
+  .fl-sheet-coach .say { font-size: 1.48rem; } .fl-sheet-coach img { width: 3.8rem; height: 3.8rem; } .fl-verdict img { width: 10rem; height: 10rem; }
   .fl-intro { gap: 0.8rem; padding-bottom: 1.8rem; } .fl-orn { width: 19rem; margin-top: -2.8rem; } .fl-title { font-size: 2.3rem; width: 28rem; } .fl-forecast { font-size: 1.46rem; }
   .fl-result { top: 3.6rem; padding: 2rem 1.3rem 1.8rem; gap: 0.2rem; } .fl-total b { font-size: 3.1rem; } .fl-items { padding: 0.7rem 1rem; gap: 0.3rem 1.4rem; } .fl-items div { font-size: 1.24rem; }
-  .fl-stages img { width: 2.4rem; height: 2.4rem; } .fl-stages span { font-size: 1.6rem; } .fl-items div { font-size: 1.24rem; } .fl-tops li { min-height: 4.2rem; } .fl-tops .fl-opt-text b { font-size: 1.46rem; } .fl-sub { font-size: 1.7rem; }
+  .fl-stages img { width: 2.4rem; height: 2.4rem; } .fl-stages span { font-size: 1.6rem; } .fl-tops li { min-height: 4.2rem; } .fl-tops .fl-opt-text b { font-size: 1.46rem; } .fl-sub { font-size: 1.7rem; }
   .fl-counts span { font-size: 1.5rem; } .fl-boss .say { font-size: 1.46rem; } .fl-pay { padding: 0.6rem 1rem 0.7rem; } .fl-pay strong b { font-size: 2.1rem; } .fl-band { height: 8.6rem; } .fl-band b { font-size: 3.5rem; }
-  .fl-chips:empty { min-height: 5.1rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .fl-table .fl-box, .fl-need, .fl-mix, .fl-chips .chip, .fl-lights, .fl-anger, .fl-confetti i, .fl-busy .ic { animation: none !important; }
+  .fl-table .fl-box, .fl-need, .fl-opt, .fl-act, .fl-lights, .fl-anger, .fl-confetti i, .fl-busy .ic { animation: none !important; }
 }
