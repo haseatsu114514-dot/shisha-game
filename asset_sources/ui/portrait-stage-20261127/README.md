@@ -528,3 +528,92 @@ Draw one object only, on a fully transparent background: the work sink behind th
 - Warm reflections of the bar lights on the steel, a few soft highlights, very clean.
 Do not draw: a faucet, a tap, water, dishes, cups, bottles, hookahs, sponges, towels, people, hands, a wall, tiles, a window, text, letters, logos, watermark.
 ```
+
+## 12回目: 吸い出しのはじめの絵から煙を消す（VPL96・生成なし）
+
+オーナー「あと最初から少し煙吐いてる絵になってるからそこはなくしたい　アニメーションで煙出せばいいから」。
+4回目の `craft-pull-hajime.webp`（背景なし）には、口元から右上へ細い煙が描かれていた。吸い出しでは「吸う」を押すと本編の動く煙を吐く（VPL88）ので、絵の煙は消した。画像生成は使っていない。
+
+- 消し方: 口元の右の範囲（横 440〜780・縦 190〜430）で、白っぽく色の薄い画素と縁の半透明の画素のうち、透明な背景からつながっているものだけを透明にした（目の白・吸い口の照りなど、人物の内側の白は残る）。
+- 口の横で煙の下になっていた頬は、隣の肌の色で埋め、あごの線を吸い口までつないだ。
+- 人物・吸い口・ホース・顔は変えていない。原画 `v3/hajime-pull-original.webp` はそのまま残す（煙が描かれた元の絵）。
+
+| 原画 | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `v3/hajime-pull-original.webp`（変えていない） | `craft-pull-hajime.webp`（798×1200・煙を消した） | 吸い出しのはじめ |
+
+## 13回目: 吸い出しで吐く時のはじめ（VPL100・候補2枚から1枚）
+
+オーナー「シーシャの吸い出しで煙を吐く時はホース加えたままではなく吐いてる見た目にして」。
+`gpt-image-2.6-sunburst` の編集（images/edits・品質 high・背景は透明・1024×1536・2枚）で作った。鍵は環境変数から読み、値は記録していない。入力は、12回目で煙を消した `craft-pull-hajime.webp`（くわえている絵）1枚だけ。同じ絵の「次の瞬間」として、口と手元だけを変えるよう指示した。そのため、人物の位置・大きさは元の絵とほぼ同じになった（帽子・頭・肩の左右の端のずれは 1024 幅で数ピクセル）。
+
+試作では、「吸う」を押して少しあと、くわえた絵の上にこの絵を重ねて出し、開いた口元から煙を吐く。吐き終わって少ししたら、くわえた絵へ戻す。
+
+### 生成前に決めた8行（§4.3）
+
+```
+人物      : hajime（今の吸い出しの絵＝正規の立ち絵2枚から作った4回目の絵を、そのまま入力にする）
+場面      : 完成・喫煙（吸った直後に、吸い口を口から離して吐く）
+台の型    : 画面に入れない（人物だけ・背景なし）
+HMD       : 画面に入れない
+炭        : 画面に入れない
+ホース    : 右手の硬いハンドルの下の金具 → ホース1本 → 画面の右下の外へ（元の絵と同じ）
+吸い口    : 使い捨てチップ（青緑の半透明）をハンドルの先に装着。口から手のひら1つ分離す
+構図      : 元の絵と同じ（腰から上・帽子の上端まで・背景なし）。手を胸の高さへ下げ、チップは右上を向く
+```
+
+| 原画（v3/） | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `hajime-exhale-original.webp`（1024×1536） | `craft-pull-hajime-exhale.webp`（798×1200・元の絵と同じ大きさ） | 吸い出しで吐く間。開いた口の前（横 55%・縦 28.7%）から煙を出す |
+| `hajime-exhale-candidate2-original.webp`（1024×1536） | 使わない | もう1枚の候補。ハンドルを縦に立てて持ち、手が下の金具寄り。元の絵のハンドルの斜めの向きとつながりにくいので使わない |
+
+生成後の確認（§4.4）: 人物は元の絵と同じ（顔・髪・帽子の印・パーカー・左手はポケット）。ハンドルは向きが正しく（チップが細い側・下へ太くなる・下の端に真ちゅうの金具）、ホースは金具からの1本だけで、画面の右下の外まで途切れず、分岐・3つ目の端がない。チップは唇から離れている。口は小さく丸く開き、頬はふくらませていない。煙・湯気・台の本体・ハガル・炭・文字・ロゴ（帽子の印のほか）が無い。背景は透明。合格（2枚のうち1枚を使う）。
+
+```text
+This image is the exact base illustration. Edit it into the next moment while keeping it the same picture: the same young man (Hajime), the same face and age, short messy black hair, black baseball cap with the white smoke-line emblem, black zip hoodie with white drawstrings, black t-shirt, the left hand in the hoodie pocket, the same art style, line weight, cel shading and colors, the same framing, size and position on the canvas (head, shoulders and body exactly where they are now), and the fully transparent background.
+Change only this: he has just finished a draw and has taken the hookah hose handle away from his mouth to exhale.
+- His right hand, still loosely holding the same rigid black handle, has moved down and slightly forward to about chest height. The handle is held diagonally with the short translucent teal disposable tip pointing up and to the right, clearly away from his face, about a hand's width below and in front of his chin. The tip does not touch his lips.
+- The handle keeps its correct orientation and shape: the teal tip is the narrow end, the handle becomes slightly thicker toward the lower end, and at that lower end the brass hose adapter connects to exactly one soft black hose that hangs down and leaves the frame at the lower right. No second hose, no forked hose, no break in the hose.
+- Mouth: lips slightly parted in a small, relaxed, rounded opening, as if gently blowing out. Eyes calm, looking slightly down, the same calm and natural expression (no exaggerated pursed lips, no puffed cheeks).
+- Do not draw any smoke, vapor or mist anywhere. The smoke is animated separately in the game.
+Polished anime game illustration style with clean dark outlines and two or three tone cel shading, no airbrushed gloss.
+Do not draw: any background, smoke, a necklace, a second hose, a forked hose, the hookah body, a bowl, charcoal, text, letters, logos other than the cap emblem, watermark, frame.
+```
+
+## 14回目: 水入れの流し台を、ボトルと同じ低い目線で蛇口ごと作り直す（VPL101・候補2枚から1枚）
+
+オーナー「水入れゲームシンクとボトルのサイズや立体感が変」。11回目の流し台は高い所から見下ろした絵で、横から見たボトルと目線が合っていなかった。ボトルの方が流し台より大きく見え、足は流し台の手前に浮いていた。蛇口の先も宙に浮いていた。
+`gpt-image-2.6-sunburst` の編集（images/edits・品質 high・背景は透明・1536×1024・2枚）で作った。鍵は環境変数から読み、値は記録していない。入力は2枚で、店の背景 `remake/img/backgrounds/bg_tonari_inside_day.webp` は絵柄と光の参考、ボトル `remake/previews/portrait-stage/img/ui-bottle-open.webp` は目線をそろえる参考にした（どちらも描かないよう指示）。
+
+試作に入れる時の手直し（生成はしていない）:
+- 蛇口のまっすぐな柱の所（絵の上から300行目）の1行を323行くり返して、首を伸ばした。吐水口からカウンターの手前の縁までを、ボトルの口から足の少し上までの長さに合わせるため（柱は上下に一様なので、伸ばしても形は変わらない）。
+- 縮めて 1152×1010 にした。
+
+試作では、吐水口がボトルの口の真上（FAUCET.nx・ny）に来るよう置き、流し台の幅をボトルの約2倍にした。カウンターの手前の縁から下（絵の縦 85.3% より下）は、同じ絵をもう1枚ボトルの上に重ねて、ボトルの足を隠す。
+
+| 原画（v3/） | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `sink-low-original.webp`（1536×1024） | `ui-sink-faucet.webp`（1152×1010・柱を伸ばした） | 水入れの流し台と蛇口（奥）と、カウンターの手前の縁（ボトルの上） |
+| `sink-low-candidate2-original.webp`（1536×1024） | 使わない | もう1枚の候補。流し台の中が浅く見え、ボトルを入れた時に中の奥行きが出にくいため使わない |
+
+11回目の `ui-sink.webp` と、9回目の蛇口 `ui-faucet.webp` は試作で使わなくなったので、`img/` から外した（原画は v3/ にそのまま残す）。
+
+生成後の確認（素材規約の必須チェック）:
+- 流し台は空で乾いている。水・ボトル・食器・人・壁・文字・ロゴが無い。
+- 目線は低く、カウンターの手前の縁がまっすぐな横線。流し台の床は手前の縁に隠れ、奥と左右の内側の壁が見える。
+- 蛇口はカウンターの奥に1本だけ立ち、首を曲げて吐水口が下を向く。
+- カウンターより上は透明（蛇口のほか）。
+- 合格（2枚のうち1枚を使う）。シーシャ台の機材ではないため、§4 の8行は当てはまらない。
+
+```text
+Match the illustration style and the warm lighting of the first reference image (a polished anime game background of a small Japanese shisha bar with clean outlines and soft cel shading). Do NOT draw the room from it; it is only a style and lighting reference.
+The second reference is the glass water base of a hookah that will be placed into this sink later by the game. Match its viewing angle exactly: seen straight from the front, with the eye only a little above the counter (looking down about 15 degrees). Do NOT draw that glass base.
+Draw on a fully transparent background one object only: the work sink of this shisha bar with its faucet, where the staff fill the glass hookah bases with water.
+- A brushed stainless-steel counter that spans the whole width of the image (cut off by the left and right edges). Because the eye is low, the counter top is a fairly thin band in perspective. The front edge of the counter top is one straight horizontal line at about 80 percent of the image height; below it, the vertical front face of the counter (a plain stainless apron) continues down to the bottom edge of the image.
+- Set into the counter, centered, one deep rectangular stainless-steel sink basin about 68 percent of the image width. From this low angle you look into it: the inner back wall and the two inner side walls are visible in perspective, and the basin floor is hidden behind the front edge of the counter.
+- On the back part of the counter, behind the basin and a little left of center, a tall gooseneck bar faucet in brushed stainless steel: a round base, a vertical column rising high above the counter, a smooth arch at the top, and a short spout that points straight down, ending exactly above the horizontal center of the image at about 15 percent of the image height from the top. One small lever handle on the column.
+- Everything above the back edge of the counter is fully transparent except the faucet.
+- Warm reflections of the bar lights on the steel, a few soft highlights, very clean.
+Do not draw: water, a hookah, a glass base, bottles, glasses, dishes, sponges, towels, people, hands, a wall, tiles, a window, text, letters, logos, watermark.
+```
+
