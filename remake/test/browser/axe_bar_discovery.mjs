@@ -21,7 +21,6 @@ async function setup(page, { rumor = false, legacy = false, met = false } = {}) 
     if (met) { s.met.hiyori = true; s.flags._hiyori_meeting_done = true; }
     if (legacy) { s.schema = 15; A.core.save(); A.core.load(); }
     A.core.config.textSpeed = 4; A.core.config.bgmVolume = 0;
-    A.core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
     A.vn.vnTest.turbo = false;
     A.vn.hooks.onLine = (id, line) => A.lines.push({ id, text: line.text, speaker: line.speaker });
     A.core.save();
