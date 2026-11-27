@@ -28,6 +28,8 @@ export function createSheetScene(frame) {
     inner.sync(state);
     host.dataset.kind = inner.kind || "";
     frame.root.dataset.sheet = inner.kind || "";
+    // LIME は試作どおり（VPM07・VPM10・VPN15）スマホのアプリの画面いっぱいに出し、十字キーと丸ボタンは置かない（戻る・閉じるは画面の中）
+    frame.root.dataset.layout = inner.kind === "lime" ? "full" : "";
     // 「閉じる」は丸ボタンに任せる（補助ボタンの段には並べない）
     frame.setChips(keys.filter((key) => key.id !== "close").map((key) => ({
       id: key.id, icon: ICON_OF[key.id] || (key.id.startsWith("tab-") ? "dots" : key.id.startsWith("shop-") ? "list" : "dots"),
@@ -47,7 +49,7 @@ export function createSheetScene(frame) {
       inner.pane.hidden = false;
       inner.enter();
     },
-    leave() { inner.leave(); inner.pane.hidden = true; delete frame.root.dataset.sheet; keys = []; },
+    leave() { inner.leave(); inner.pane.hidden = true; delete frame.root.dataset.sheet; frame.root.dataset.layout = ""; keys = []; },
     sync,
     dir(dir) {
       const body = host.querySelector(".rs-body");

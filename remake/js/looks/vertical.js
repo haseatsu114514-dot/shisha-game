@@ -99,6 +99,7 @@ function start() {
     sceneName = next || "";
     scene = next ? scenes[next] : null;
     frame.root.dataset.scene = sceneName;
+    frame.root.dataset.layout = scene?.layout || ""; // "full": 下画面を出さない場面（試作どおりのタイトルなど）
     frame.root.hidden = !scene;
     if (next !== "cover") holdSince = 0; // 覆いを待つ時間は、覆いに入るたびに数え直す（前の転換から数えると、すぐ待ちすぎと判断してしまう）
     if (scene) {

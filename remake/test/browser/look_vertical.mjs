@@ -61,9 +61,9 @@ async function assertPadHome(page, label, home = null) {
 }
 
 /** 第1章 DAY5 の昼の地図を、本物の日常ループ（runDaily）で出す。 */
-async function setupDaily(page, { slot = 0 } = {}) {
+async function setupDaily(page, { slot = 0, talk = false } = {}) {
   await arm(page);
-  await page.evaluate(async (slot) => {
+  await page.evaluate(async ({ slot, talk }) => {
     const core = await import("./js/core/state.js");
     const s = core.newGame();
     Object.assign(s, { phase: "daily", chapter: 1, day: 5, slot, money: 42000, stamina: 80, weatherSeed: 1234 });
@@ -72,13 +72,16 @@ async function setupDaily(page, { slot = 0 } = {}) {
     for (const id of ["minto", "naru", "adam", "tsumugi", "rio"]) s.met[id] = true;
     s.contacts.push("minto", "naru", "tsumugi");
     Object.assign(s.affinity, { minto: 40, sumi: 22, naru: 12, tsumugi: 66 });
+    // LIME の一覧とトークを見る検査用に、読み終えたトークを1件だけ置く（印や通知は増えない）
+    if (talk) s.inbox.push({ id: "vt-talk", originId: "vt-talk", day: 4, chapter: 1, read: true, done: true, log: [{ text: "こちらこそ", me: true }],
+      msg: { id: "vt-talk", sender: "minto", type: "chat", messages: ["きのうはありがと！"] } });
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
     core.save(); core.load();
     (await import("./js/chapters/ch1.js")).setupHooks();
     (await import("./js/core/ui.js")).clearScreen();
     window.dailyRun = (await import("./js/daily/calendar.js")).runDaily({ untilDay: 14, nightEvents: {} })
       .catch((error) => { window.dailyError = String(error.stack || error); });
-  }, slot);
+  }, { slot, talk });
   await page.locator("#screen .map:not(.done)").waitFor({ state: "attached", timeout: 20000 });
   await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
   await waitScene(page, "map");
@@ -98,7 +101,10 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "title");
     assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "vertical");
     await assertFits(page, "title");
-    const home = await assertPadHome(page, "title");
+    // タイトルは試作どおり（VPM01・VPM07）: キービジュアルとロゴ、5行のメニュー。十字キーと丸ボタンは置かない
+    assert.equal(await page.evaluate(() => document.querySelector(".vt-shell").dataset.layout), "full");
+    assert.equal(await page.locator(".vt-tt-item").count(), 5);
+    assert.equal(await page.evaluate(() => document.querySelector(".vt-ctrl").getClientRects().length), 0, "no pad on the title");
     assert.equal(await page.evaluate(() => getComputedStyle(document.getElementById("viewport")).opacity), "0", "the landscape stage is hidden behind the shell");
     assert.equal(await page.evaluate(() => getComputedStyle(document.getElementById("rotate-hint")).display), "none", "no rotate hint over the title");
     await manual(page);
@@ -140,7 +146,7 @@ await suite("look_vertical", async (check) => {
     await pressA(page);
     await waitScene(page, "vn");
     await assertFits(page, "conversation");
-    await assertPadHome(page, "conversation", home);
+    await assertPadHome(page, "conversation");
   }, { ...TALL, pageEntry: entry });
 
   await check("map-shop-and-choice", async (page) => {
@@ -213,7 +219,7 @@ await suite("look_vertical", async (check) => {
   }, { ...TALL, pageEntry: entry });
 
   await check("tonari-menu-lime-and-menu-sheets", async (page) => {
-    await setupDaily(page);
+    await setupDaily(page, { talk: true });
     const home = await assertPadHome(page, "map");
     // 最初の行き先は tonari（「！」の店）。決定 → 行動選び
     await page.waitForFunction(() => document.querySelector('.vt-pin[aria-current="true"]')?.dataset.spot === "tonari");
@@ -225,12 +231,31 @@ await suite("look_vertical", async (check) => {
     assert.match(await page.locator(".vt-where b").textContent(), /tonari/);
     await page.locator(t("vt-chip-back")).tap();
     await waitScene(page, "map");
-    // LIME → シート、丸ボタン（閉じる）
+    // LIME → 試作どおり（VPM07・VPM10）画面いっぱいのアプリ。十字キーと丸ボタンは置かず、LINE寄りの白い一覧と緑の「スマホを閉じる」
     await page.locator(t("vt-chip-lime")).tap();
     await waitScene(page, "sheet");
-    assert.equal(await page.evaluate(() => document.querySelector(".vt-shell").dataset.sheet), "lime");
-    await pressA(page);
+    const lime = await page.evaluate(() => {
+      const shell = document.querySelector(".vt-shell");
+      const host = document.querySelector(".vt-sheet-host").getBoundingClientRect(), frame = shell.getBoundingClientRect();
+      const row = document.querySelector(".vt-sheet-host .s-lime-chat-row"), close = document.querySelector(".vt-sheet-host .s-lime-reply.s-ghost");
+      return { sheet: shell.dataset.sheet, layout: shell.dataset.layout, pad: [".vt-dpad", ".vt-a", ".vt-chips"].map((sel) => document.querySelector(sel).getClientRects().length),
+        fill: [host.top - frame.top, frame.bottom - host.bottom], row: row && getComputedStyle(row).backgroundColor, close: close && getComputedStyle(close).backgroundColor };
+    });
+    assert.equal(lime.sheet, "lime");
+    assert.equal(lime.layout, "full", "LIME hides the pad");
+    assert.deepEqual(lime.pad, [0, 0, 0], "no pad or chips on LIME");
+    assert(lime.fill.every((gap) => Math.abs(gap) <= 1), `LIME fills the frame ${JSON.stringify(lime.fill)}`);
+    assert.equal(lime.row, "rgb(255, 255, 255)", "talk list rows are white");
+    assert.equal(lime.close, "rgb(6, 199, 85)", "close button is LIME green");
+    // 一覧の行 → トーク（青みの背景）→ 戻る → スマホを閉じる で地図へ
+    await page.locator(".vt-sheet-host .s-lime-chat-row").first().tap();
+    await page.waitForFunction(() => document.querySelector(".vt-sheet-host .s-lime-bubble"));
+    assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector(".vt-sheet-host .rs-body")).backgroundColor), "rgb(140, 171, 216)");
+    await page.locator(".vt-sheet-host .s-lime-back").tap();
+    await page.waitForFunction(() => document.querySelector(".vt-sheet-host .s-lime-chat-row"));
+    await page.locator(".vt-sheet-host .s-lime-reply.s-ghost").tap();
     await waitScene(page, "map");
+    assert.equal(await page.evaluate(() => document.querySelector(".vt-shell").dataset.layout), "", "the pad comes back on the map");
     // MENU → タブが補助ボタンの段に並び、押すと本編のタブが切り替わる
     await page.locator(t("vt-chip-menu")).tap();
     await waitScene(page, "sheet");
@@ -268,33 +293,46 @@ await suite("look_vertical", async (check) => {
       window.boardRun = growth.openGrowthBoard({ place: "kannon" });
     });
     await waitScene(page, "board");
-    // 本編の盤の要素が、縦の外枠の中へ移っている（本編の盤の規則のまま）
-    await page.locator(".vt-board-frame > .gboard").waitFor({ state: "attached" });
-    assert.equal(await page.locator("#fx > .gboard").count(), 0);
+    // 試作と同じ縦の盤（VPN14）: 上の題・3枚の盤の札・盤・選んでいるマスの札。本編の盤は演出の層に見えないまま開いていて、状態はそこから読む
+    await page.locator(".vb .vb-node").first().waitFor({ state: "attached" });
+    assert.equal(await page.locator("#fx > .gboard").count(), 1, "the game's board stays open behind the shell");
+    assert.equal(await page.locator(".vb-tab").count(), 3);
     await assertFits(page, "board");
     await assertPadHome(page, "board", home);
-    const nodes = () => page.evaluate(() => (window.__remake?.state || null) && JSON.parse(JSON.stringify((window.__remake.state.growth?.nodes) || [])));
-    const litBefore = (await nodes()) || [];
-    // 丸ボタン: 今灯せるマスを選ぶ → もう一度で灯す（仮置き）
+    const nodes = () => page.evaluate(() => JSON.parse(JSON.stringify(window.__remake?.state?.growth?.nodes || [])));
+    const litBefore = await nodes();
+    const cursor = () => page.evaluate(() => document.querySelector('.vb-node[aria-pressed="true"]')?.dataset.id || "");
+    // 盤の札の数と火種は本編の盤と同じ
+    const wallet = await page.evaluate(() => document.querySelector('[data-test="vt-board-wallet"]').textContent.replace(/\s+/g, ""));
+    assert.match(wallet, /^3/, `the wallet shows the white fire ${wallet}`);
+    // 丸ボタン: カーソルのマス（紋のすぐ上・今灯せる）を灯す（仮置き）。本編の盤にも仮置きが入る
+    await page.waitForFunction(() => /灯す|はめる|教わる/.test(document.querySelector('[data-test="vt-a"]')?.textContent || ""));
+    const first = await cursor();
     await pressA(page);
-    await page.locator(".gb-node.selected").waitFor({ state: "attached" });
-    await page.waitForFunction(() => document.querySelector('[data-test="vt-a"]')?.textContent.includes("灯す") || document.querySelector('[data-test="vt-a"]')?.textContent.includes("はめる"));
-    await pressA(page);
-    await page.locator('.gb-node[data-status="pending"]').waitFor({ state: "attached" });
-    // 十字キーで隣のマスへ（選んでいるマスが変わる）
-    const from = await page.evaluate(() => document.querySelector(".gb-node.selected")?.dataset.test || "");
+    await page.waitForFunction((id) => document.querySelector(`#fx .gb-node[data-test="board-node-${id}"]`)?.dataset.status === "pending", first);
+    await page.locator(`.vb-node.s-pending[data-id="${first}"]`).waitFor({ state: "attached" });
+    await page.locator(t("vt-board-decide")).waitFor();
+    // 十字キーで隣のマスへ（カーソルが動き、本編の盤でも同じマスを選ぶ）
     for (const dir of ["up", "left", "right", "down"]) {
       await pad(page, dir);
       await page.waitForTimeout(250);
-      if (await page.evaluate((from) => (document.querySelector(".gb-node.selected")?.dataset.test || "") !== from, from)) break;
+      if ((await cursor()) !== first) break;
     }
-    assert.notEqual(await page.evaluate(() => document.querySelector(".gb-node.selected")?.dataset.test || ""), from, "the pad moves to a neighbouring square");
+    const moved = await cursor();
+    assert.notEqual(moved, first, "the pad moves to a neighbouring square");
+    assert.equal(await page.evaluate(() => document.querySelector("#fx .gb-node.selected")?.dataset.test || ""), `board-node-${moved}`, "the game's board selects the same square");
+    // 盤の札を替える（本編の盤の札も替わる）
+    await page.locator(t("vt-board-tab-sense")).tap();
+    await page.waitForFunction(() => document.querySelector('#fx [data-test="board-tab-sense"]')?.getAttribute("aria-selected") === "true");
+    await page.locator(t("vt-board-tab-body")).tap();
+    await page.waitForFunction(() => document.querySelector('#fx [data-test="board-tab-body"]')?.getAttribute("aria-selected") === "true");
     // 決定 → 盤が閉じて地図へ。灯したマスが保存されている
-    await page.locator(t("vt-chip-decide")).tap();
+    await page.locator(t("vt-board-decide")).tap();
     await page.waitForFunction(() => !document.querySelector(".gboard"), null, { timeout: 15000 });
     await waitScene(page, "map");
-    const litAfter = (await nodes()) || [];
+    const litAfter = await nodes();
     assert.equal(litAfter.length, litBefore.length + 1, `one square was lit ${JSON.stringify([litBefore, litAfter])}`);
+    assert(litAfter.includes(first), "the square lit with the round button is saved");
   }, { ...TALL, pageEntry: entry });
 
   await check("intro-cutin-poster", async (page) => {
