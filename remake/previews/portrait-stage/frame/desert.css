@@ -163,17 +163,18 @@
 #stage .dr-result-side { flex: 1 1 0; min-height: 0; padding-top: 0; gap: 12px; }
 #stage .dr-result-tags { margin: 0; }
 #stage .dr-result .dr-rows { grid-template-columns: 1fr 1fr; gap: 0 14px; padding: 4px 0; border-width: 18px 26px; border-image-width: 18px 26px; }
-/* 記録の1ます: 左に印、右に値。名前の字は出さず、生成した印（gpt-image-2.6-sunburst。asset_sources/ui/minigame-visuals-20261127/portrait/）で見せる
-   （2026-11-27 オーナー「視覚でわかるようにできそうな情報を生成したり」。名前は読み上げ用に DOM に残る） */
-#stage .dr-result .dr-row { display: flex; flex-direction: row; align-items: center; gap: 12px; min-width: 0; padding: 6px 0; line-height: 1.15; }
-#stage .dr-result .dr-row > span { flex: none; width: 84px; height: 84px; overflow: hidden; font-size: 0; color: transparent; background: center / contain no-repeat; filter: drop-shadow(0 3px 3px rgba(20, 8, 2, .5)); }
-#stage .dr-result .dr-row[data-test="desert-time"] > span { background-image: url("../../../img/ui/desert_ride_result/stat_time.webp"); }
-#stage .dr-result .dr-row[data-test="desert-combo"] > span { background-image: url("../../../img/ui/desert_ride_result/stat_combo.webp"); }
-#stage .dr-result .dr-row[data-test="desert-falls"] > span { background-image: url("../../../img/ui/desert_ride_result/stat_fall.webp"); }
-#stage .dr-result .dr-row[data-test="desert-landings"] > span { background-image: url("../../../img/ui/desert_ride_result/stat_land.webp"); }
-#stage .dr-result .dr-row[data-test="desert-tricks"] > span { background-image: url("../../../img/ui/desert_ride_result/stat_trick.webp"); }
-#stage .dr-result .dr-row[data-test="desert-boosts"] > span { background-image: url("../../../img/ui/desert_ride_result/stat_boost.webp"); }
-#stage .dr-result .dr-row strong { flex: 1 1 0; min-width: 0; font-size: 28px; white-space: normal; text-align: left; }
+/* 記録の1ます: 左に印、右に短い名前と値。印は生成した絵（gpt-image-2.6-sunburst。asset_sources/ui/minigame-visuals-20261127/portrait/）。
+   はじめは名前の字を消して印だけにしていたが、オーナー「29になってる鎖付きのやつなんなのかよくわからない」（VPG16）で、印だけでは意味が通じないものがあると分かったので、短い名前を添える */
+#stage .dr-result .dr-row { display: grid; grid-template-columns: 76px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 10px; row-gap: 0; align-items: center; align-content: center; min-width: 0; padding: 6px 0; line-height: 1.2; }
+#stage .dr-result .dr-row::before { content: ""; grid-row: 1 / 3; width: 76px; height: 76px; background: var(--stat, none) center / contain no-repeat; filter: drop-shadow(0 3px 3px rgba(20, 8, 2, .5)); }
+#stage .dr-result .dr-row > span { grid-column: 2; align-self: end; justify-self: start; text-align: left; font-size: 22px; font-weight: 700; color: #e9caa0; white-space: nowrap; }
+#stage .dr-result .dr-row strong { grid-column: 2; align-self: start; justify-self: start; min-width: 0; font-size: 28px; white-space: normal; text-align: left; }
+#stage .dr-result .dr-row[data-test="desert-time"] { --stat: url("../../../img/ui/desert_ride_result/stat_time.webp"); }
+#stage .dr-result .dr-row[data-test="desert-combo"] { --stat: url("../../../img/ui/desert_ride_result/stat_combo.webp"); }
+#stage .dr-result .dr-row[data-test="desert-falls"] { --stat: url("../../../img/ui/desert_ride_result/stat_fall.webp"); }
+#stage .dr-result .dr-row[data-test="desert-landings"] { --stat: url("../../../img/ui/desert_ride_result/stat_land.webp"); }
+#stage .dr-result .dr-row[data-test="desert-tricks"] { --stat: url("../../../img/ui/desert_ride_result/stat_trick.webp"); }
+#stage .dr-result .dr-row[data-test="desert-boosts"] { --stat: url("../../../img/ui/desert_ride_result/stat_boost.webp"); }
 /* 記録は6つ（時間・コンボ・転倒・着地・トリック・ブースト）。大ジャンプ・かすめた・立て直し・カービング・コースは、縦では出さない */
 #stage .dr-result .dr-row:is([data-test="desert-jumps"], [data-test="desert-near"], [data-test="desert-recoveries"], [data-test="desert-carves"], [data-test="desert-result-course"]) { display: none; }
 #stage .dr-result .dr-tier-note { margin: 0; font-size: 24px; }
@@ -193,7 +194,8 @@
   #stage .dr-result .dr-total strong { font-size: 66px; }
   #stage .dr-result-side { gap: 8px; }
   #stage .dr-result .dr-row { padding: 3px 0; }
-  #stage .dr-result .dr-row > span { width: 62px; height: 62px; }
+  #stage .dr-result .dr-row { grid-template-columns: 58px minmax(0, 1fr); padding: 3px 0; }
+  #stage .dr-result .dr-row::before { width: 58px; height: 58px; }
   #stage .dr-result .dr-row strong { font-size: 24px; }
   /* ボタンは、主の下に残りを1段で */
   #stage .dr-card.dr-result .dr-button.dr-button { flex: 1 1 0; min-height: 84px; font-size: 24px; letter-spacing: 0; padding: 8px 4px; }

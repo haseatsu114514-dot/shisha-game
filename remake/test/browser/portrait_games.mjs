@@ -163,11 +163,21 @@ await suite("portrait-games", async check => {
       await settled();
       await boxesInside(page, ["#crossfader"], { tap: 44 });
       assert(await seen("wave-a") > 0.97 && await seen("crossfader") > 0.99, "the waveforms and the crossfader are in the window");
+      // ズレ直しのボタン（VPG15）: つなぎの最中にズレたら、真ん中に寄ったまま、直す向きのボタンが光り、押し続けると直る
+      assert.equal(await page.evaluate(() => window.__dj.slip(0.22)), true);
+      await page.waitForFunction(() => document.getElementById("beat").dataset.state === "off", null, { timeout: 8000 });
+      await page.waitForTimeout(300);
+      assert.equal(await focus(), "wide", "a slip keeps the window on the mixer");
+      assert.equal(await page.locator("#nudge-back.go").count(), 1, "the button that fixes it glows");
+      await boxesInside(page, ["#nudge-back", "#nudge-fwd"], { tap: 44 });
+      const fixed = await hold(page, "#nudge-back", 2500, () => window.__dj.fx.fixes);
+      assert(fixed > 0, "holding the button brings the track back in time");
     }, { ...options, pageEntry: `${baseURL}previews/dj/index.html?set=1&layout=portrait&mute=1`, pageReadySelector: "#play-a" });
   }
 
   await check("dj-landscape-default-is-untouched", async page => {
     assert.equal(await page.evaluate(() => document.documentElement.dataset.layout ?? null), null);
+    assert.equal(await page.locator("#nudge-back").isVisible() || await page.locator("#nudge-fwd").isVisible(), false, "the nudge buttons are portrait only");
     assert.equal(await page.evaluate(() => document.getElementById("dj-stage").dataset.focus ?? null), null);
     const stage = await page.evaluate(() => document.getElementById("dj-stage").offsetWidth);
     assert(stage >= 1280, `landscape stage keeps its width: ${stage}`);

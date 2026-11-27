@@ -901,6 +901,7 @@
         "remake/previews/dj/index.html",
         "remake/previews/dj/portrait.mjs",
         "remake/previews/dj/portrait.css",
+        "remake/previews/dj/app.mjs",
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/camel-race.js",
         "remake/js/minigames/tetsuko-time.js",

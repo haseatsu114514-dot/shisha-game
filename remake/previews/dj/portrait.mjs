@@ -45,9 +45,10 @@ if (params.get('layout') === 'portrait') {
   function focus() {
     if (forced) return forced;
     if (shown('pick') || $('score-result').childElementCount) return 'wide';
+    // つなぎの最中は真ん中（横フェーダー）。拍がズレても皿へは寄らず、横フェーダーのすぐ上の ◀・▶（ズレ直しのボタン・VPG15）で直す
+    if (shown('guide')) return 'wide';
     for (const key of ['a', 'b']) if (shown('jog-arrows-' + key)) return key; // ズレを直す皿
     for (const key of ['a', 'b']) if (shown('point-play-' + key)) return key; // いま押す ▶
-    if (shown('guide')) return 'wide';                                        // つなぎの最中は、横フェーダー（皿は引きで）
     const roles = ['a', 'b'].map(key => $('deck-' + key).dataset.role);
     const next = roles.indexOf('next');
     // カウント待ちの間に、次に入れる曲の皿へ先に寄っておく（片方が鳴っていて、もう片方に曲が載っている時）
