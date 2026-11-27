@@ -903,7 +903,13 @@ await suite("tonari-floor", async (check) => {
       });
       await page.locator(t("option-start")).click();
       await afterBand(page);
-      for (const hand of [["apple", "cappuccino", "cottoncandy", "mintshake", "berrymint"], ["berries", "flowergarden", "caramelmacchiato", "grapesoda", "nutslatte"], ["chai", "tropical", "pinepassion", "earlgrey", "sakuralatte"]]) {
+      const hands = [
+        ["apple", "cappuccino", "cottoncandy", "mintshake", "berrymint"],
+        ["berries", "flowergarden", "caramelmacchiato", "grapesoda", "nutslatte"],
+        ["chai", "tropical", "pinepassion", "earlgrey", "sakuralatte"],
+        ["applemint", "caramelapple", "cinnamonapple", "applepie", "apple"],
+      ];
+      for (const hand of hands) {
         await page.evaluate((hand) => { const a = C.view.floorTest.api, s = a.state(); s.hand = hand; if (s.tables[0].phase === "empty") a.tick(4); else a.tick(1); }, hand);
         const expected = await page.evaluate((hand) => hand.map((id) => ({ name: C.model.mixName(id), full: C.model.mixFullName(id), single: C.model.mixIsSingle(id), flavors: C.model.mixFlavorNames(id) })), hand);
         const rows = await page.locator(".tf-preset").evaluateAll((list) => list.map((n) => { const row = n.getBoundingClientRect(), name = n.querySelector(".tf-preset-name"), nr = name.getBoundingClientRect(), node = n.querySelector(".tf-recipe"), rr = node?.getBoundingClientRect();
@@ -1222,7 +1228,7 @@ await suite("tonari-floor", async (check) => {
     await page.locator(t("sheet")).waitFor();
     assert.equal(await page.locator(".tf-visit-info > b").innerText(), "アダム");
     assert.equal(await page.locator(".tf-sheet-quote").innerText(), "「……はじめよ。ダブルアップルを。宇宙の原点を、一台」");
-    // ◎はダブルアップルの入った一台だけ。刺激系のメインでも、林檎が無ければ○
+    // ◎はダブルアップルの入った一台だけ。刺激系のメインでも、ダブルアップルが無ければ○
     const marks = await page.locator(".tf-mix-option").evaluateAll((list) => list.map((n) => [n.dataset.mix, n.dataset.rating]));
     const flavorsOf = await page.evaluate((ids) => Object.fromEntries(ids.map((id) => [id, C.floorData.MIXES[id].flavors])), marks.map(([id]) => id));
     for (const [id, rating] of marks) assert.equal(rating === "best", flavorsOf[id].includes("double_apple"), id);
