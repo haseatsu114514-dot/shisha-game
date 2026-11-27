@@ -241,15 +241,6 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .puff { position: absolute; max-width: none; width: 60%; left: 34%; top: 14%; opacity: 0; pointer-events: none; mix-blend-mode: screen; }
 .phone.puffing .puff { animation: puff 1.5s var(--ease-out); }
 @keyframes puff { 0% { opacity: 0; transform: translate(0, 12%) scale(0.5); } 22% { opacity: 0.85; } 100% { opacity: 0; transform: translate(-6%, -22%) scale(1.25); } }
-/* 穴あけ: 押している長さの輪 */
-.dial { position: absolute; left: 0.9rem; top: var(--pad-top); width: var(--ring); height: var(--ring); border-radius: 50%; display: grid; align-content: center; justify-items: center; border: 0.1rem solid #ffffff40; background: radial-gradient(circle, #ffffff0a, #ffffff1f); -webkit-backdrop-filter: blur(1.4rem); backdrop-filter: blur(1.4rem); box-shadow: 0 1.2rem 2.6rem #000a, inset 0 0.1rem 0 #ffffff59; }
-.dial svg { position: absolute; inset: 0; transform: rotate(-90deg); }
-.dial-bg { fill: none; stroke: #ffffff26; stroke-width: 7; }
-.dial-just { fill: none; stroke: #ffffffb3; stroke-width: 7; stroke-dasharray: 32 68; stroke-dashoffset: -30; }
-.dial-fill { fill: none; stroke: var(--acc); stroke-width: 7; stroke-linecap: round; stroke-dasharray: calc(var(--fill) * 100) 100; filter: drop-shadow(0 0 3px var(--acc)); }
-.dial b { font-size: 4rem; line-height: 1; font-variant-numeric: tabular-nums; } .dial b small { font-size: 1.8rem; color: #ffffffa6; }
-.dial span { margin-top: 0.5rem; font-size: 1.22rem; font-weight: 700; letter-spacing: 0.1em; color: #ffffffb3; }
-.dial em { margin-top: 0.3rem; font-style: normal; font-size: 1.22rem; font-weight: 700; color: var(--acc); }
 /* 吸い出し: メーターの中心に「吸う」 */
 .gauge { position: absolute; left: 3.2rem; right: 3.2rem; top: calc(6.6rem + var(--aux-g, 0rem)); }
 .gauge .lab { position: absolute; top: 0.2rem; font-size: 1.22rem; font-weight: 700; letter-spacing: 0.1em; text-shadow: 0 0.1rem 0.5rem #000; }
@@ -328,13 +319,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .dens { display: flex; gap: 0.4rem; } .dens i { width: 1rem; height: 1rem; border-radius: 50%; box-shadow: inset 0 0 0 0.16rem #ffffff80; } .dens i.on { background: var(--acc); box-shadow: 0 0 0.6rem var(--acc); }
 .card[aria-current="true"] { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 24%, #120c1dcc); transform: translateY(-0.5rem); box-shadow: 0 0 0 0.15rem color-mix(in srgb, var(--acc) 55%, transparent), 0 0 2.4rem color-mix(in srgb, var(--acc) 40%, transparent), 0 0.8rem 1.6rem #0009; }
 .card.locked img, .card.locked b, .card.locked .dens { opacity: 0.45; } .card .ic { position: absolute; right: 0.8rem; top: 0.8rem; font-size: 1.8rem; color: #ffffffcc; }
-/* 穴あけ: 輪の点＝開けた穴、真ん中の丸＝押している間の大きさ */
-.dial svg { transform: none; }
 .pip { fill: #ffffff33; } .pip.done { fill: #fff; } .pip.good { fill: #ffe2a6; filter: drop-shadow(0 0 2px #ffcf6b); }
-.want { fill: none; stroke: #ffe2a6; stroke-width: 1.6; stroke-dasharray: 3.2 2.4; opacity: 0.85; } .grow { fill: var(--acc); opacity: 0.92; }
-.last { fill: #0b0812; stroke: #fbf4e0; stroke-width: 1.4; opacity: 0.75; } .last.good { stroke: #ffe2a6; filter: drop-shadow(0 0 3px #ffcf6b); } .last.over { stroke: #ff8a7e; } .last.under { stroke: #ffffffa6; }
-.lens-grow { fill: #0b0812; stroke: #fff; stroke-width: 1.4; } .lens-grow.good { stroke: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); } .lens-grow.over { stroke: #ff6b5e; }
-.dial.pressing .last { opacity: 0.25; }
 .foil-marks .tip.ok { stroke: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); }
 .foil-marks .grow-hole { fill: #0b0812; stroke: #fff; stroke-width: 0.8; } .foil-marks .grow-hole.good { stroke: #ffe2a6; stroke-width: 1.3; filter: drop-shadow(0 0 3px #ffcf6b); } .foil-marks .grow-hole.over { stroke: #ff6b5e; stroke-width: 1.3; }
 
@@ -517,22 +502,25 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .btn-a.hold[data-zone="over"] { box-shadow: 0 0 0 0.35rem #ff6b5e, 0 0 3.4rem #ff6b5e99, 0 1.4rem 2.6rem #000b; }
 .btn-a.hold[data-zone="under"] { box-shadow: 0 0 0 0.3rem #ffffffb3, 0 1.4rem 2.6rem #000b; }
 
-/* 穴あけのルーペ: 断面（ハガル・葉・アルミ）の上で針が一瞬で刺さる。金の帯＝ちょうどいい深さ、その下の赤み＝深すぎ */
-.lens { position: absolute; left: 0.9rem; top: var(--pad-top); width: var(--ring); height: var(--ring); filter: drop-shadow(0 1.2rem 2rem #000b); }
-.lens-view { position: absolute; inset: 6%; border-radius: 50%; overflow: hidden; background: #1a0f14; }
-.lens-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.lens-good { position: absolute; left: 0; right: 0; top: var(--foil); height: calc(var(--good) - var(--foil)); background: linear-gradient(180deg, #ffe2a659, #ffe2a626); box-shadow: inset 0 0.15rem 0 #ffe2a6, inset 0 -0.15rem 0 #ffe2a6; transition: background 0.15s; }
-.lens-deep { position: absolute; left: 0; right: 0; top: var(--good); bottom: 0; background: linear-gradient(180deg, #ff6b5e00, #ff3b2e40); }
-.lens[data-zone="good"] .lens-good { background: linear-gradient(180deg, #ffe2a6a6, #ffe2a659); box-shadow: inset 0 0.18rem 0 #fff3d6, inset 0 -0.18rem 0 #fff3d6, 0 0 1.6rem #ffcf6b; }
-.lens[data-zone="over"] .lens-deep { background: linear-gradient(180deg, #ff6b5e40, #ff3b2e80); }
-.lens-needle { position: absolute; left: 50%; width: auto; height: 74%; bottom: calc(100% - var(--tip)); transform: translateX(-50%); filter: drop-shadow(0.2rem 0.3rem 0.3rem #000a); transition: bottom 0.22s var(--ease-out); }
-.lens.pressing .lens-needle { transition: none; }
-.lens-mark { position: absolute; left: 50%; width: 30%; height: 0.3rem; margin: -0.15rem 0 0 -15%; border-radius: 1rem; background: #fff; box-shadow: 0 0 0.6rem #fff; opacity: 0.9; }
-.lens-mark.good { background: #ffe2a6; box-shadow: 0 0 0.8rem #ffcf6b; } .lens-mark.over { background: #ff6b5e; box-shadow: 0 0 0.8rem #ff6b5e; }
-.lens.pressing .lens-mark { opacity: 0.25; }
-.lens-frame { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.lens-pips { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.lens-pips .pip { fill: #2a1d12; stroke: #00000080; stroke-width: 0.5; } .lens-pips .pip.done { fill: #fff; } .lens-pips .pip.good { fill: #ffe2a6; filter: drop-shadow(0 0 1.5px #ffcf6b); }
+
+/* 穴あけの「刺す」（VPL27）: 真ん中に大きく。押すと色が下から上へ一気に満ち、満ちた瞬間に金に光って弾む（ここで離す）。0.5秒を越えると赤＝深すぎ */
+.btn-a.hold.center { overflow: hidden; }
+.btn-a.hold .fill { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; transform-origin: 50% 100%; transform: scaleY(var(--level, 0));
+  background: linear-gradient(0deg, #fff8e6e6, #ffffffb3); mix-blend-mode: screen; opacity: 0.55; transition: transform 0.18s ease-out, background 0.15s; }
+.btn-a.hold.pressing .fill { transition: none; }
+.btn-a.hold .fill-line { position: absolute; left: 8%; right: 8%; bottom: calc(var(--level, 0) * 100%); height: 0.25rem; margin-bottom: -0.12rem; border-radius: 1rem; background: #fff; box-shadow: 0 0 0.8rem #fff; opacity: 0; pointer-events: none; }
+.btn-a.hold.pressing[data-zone="under"] .fill-line { opacity: 1; }
+.btn-a.hold[data-zone="good"] .fill { background: linear-gradient(0deg, #ffcf6b, #fff3d6); opacity: 0.8; }
+.btn-a.hold[data-zone="good"] .t { color: #3a2408; text-shadow: 0 0.1rem 0 #fff8e6; }
+.btn-a.hold.pressing[data-zone="good"] { animation: hole-full 0.22s ease-out; }
+.btn-a.hold[data-zone="over"] .fill { background: linear-gradient(0deg, #ff3b2e, #ff9a8f); opacity: 0.75; animation: hole-over 0.3s steps(2) infinite; }
+.btn-a.hold .t { position: relative; z-index: 1; }
+@keyframes hole-full { 0% { scale: calc(1 - var(--fill) * 0.1); } 45% { scale: 1.07; } 100% { scale: calc(1 - var(--fill) * 0.1); } }
+@keyframes hole-over { 50% { opacity: 0.45; } }
+.btn-a.hold.center { top: calc(10.2rem + var(--aux-g, 0rem)); width: 15rem; height: 15rem; margin-left: -7.5rem; }
+.btn-a.hold.center::after { z-index: 2; }
+.hole-pips { position: absolute; left: 50%; top: calc(10.2rem + var(--aux-g, 0rem) - 3.2rem); width: 21.4rem; height: 21.4rem; margin-left: -10.7rem; pointer-events: none; overflow: visible; }
+.hole-pips .pip { fill: #ffffff26; stroke: #ffffff4d; stroke-width: 0.5; } .hole-pips .pip.done { fill: #fff; } .hole-pips .pip.good { fill: #ffe2a6; filter: drop-shadow(0 0 1.5px #ffcf6b); }
 
 /* ───────── 背の低い画面 ───────── */
 @container phone (max-height: 80rem) {
@@ -544,8 +532,10 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
   .chips.labeled .chip { height: 4.8rem; font-size: 1.9rem; } .phone[data-aux="1"] .serve, .phone[data-aux="3"] .serve { height: 4.8rem; } .sh { height: 4.6rem; } .phone[data-aux="2"] .serve { height: 4.6rem; }
   .tabbar { height: 5.2rem; } .phone[data-aux="3"] .btn-a.center { scale: 0.86; }
 }
+@container phone (max-height: 80rem) { .btn-a.hold.center { top: calc(9rem + var(--aux-g, 0rem)); width: 13.6rem; height: 13.6rem; margin-left: -6.8rem; } .hole-pips { top: calc(9rem + var(--aux-g, 0rem) - 2.9rem); width: 19.4rem; height: 19.4rem; margin-left: -9.7rem; } }
 @container phone (max-height: 80rem) { .cv { --band-top: 55%; } .cv-a .cv-say { top: calc(var(--band-top) + var(--name-size) * 1.5 + 5rem); } }
 @container phone (max-height: 71rem) {
+  .btn-a.hold.center { top: calc(7.6rem + var(--aux-g, 0rem)); width: 11.6rem; height: 11.6rem; margin-left: -5.8rem; } .hole-pips { top: calc(7.6rem + var(--aux-g, 0rem) - 2.4rem); width: 16.4rem; height: 16.4rem; margin-left: -8.2rem; }
   .cv { --band-top: 50%; --art-w: 44rem; --art-top: 1rem; } .cv-a .cv-quote { font-size: 2.3rem; } .cv-a .cv-say { top: calc(var(--band-top) + var(--name-size) * 1.4 + 4.4rem); } .cv-a .cv-band { height: calc(var(--name-size) * 1.4 + 2rem); }
 }
 @container phone (max-height: 71rem) {

@@ -2,16 +2,18 @@
 
 オーナー「画像生成APIが使えるようになったので再度練ったり作ってみて生成を取り入れて　2.6サンバーストを使う」（要望台帳 VPL25・VPL26）。
 縦画面C案の試作 `remake/previews/portrait-stage/` のために、OpenAI の画像生成 API（モデル `gpt-image-2.6-sunburst`、1024×1024、品質 medium）で作った。
-このフォルダには原画（WebPに変換したもの）とプロンプトを残す。試作が読むのは、切り出して縮めた `remake/previews/portrait-stage/img/` の5枚。
+このフォルダには原画（WebPに変換したもの）とプロンプトを残す。試作が読むのは、切り出して縮めた `remake/previews/portrait-stage/img/` の絵（下の表。VPL27 以降は2枚）。
 本編の画面にはまだ組み込んでいない（試作の合格後に、本編の素材の置き場と規格に合わせて作り直す）。
+
+**VPL27 で穴あけをボタンの色が満ちる見せ方に変えたため、ルーペの断面（lens）・針（needle）・ルーペの縁（loupe）の3枚は試作から外した。** 試作の `img/` に残るのは `ui-button.webp` と `ui-dpad.webp` の2枚。3枚の原画とプロンプトは、断面の見せ方を見直す時のためにこのフォルダに残す。
 
 | 原画 | 試作で使う絵 | 使う場所 |
 |---|---|---|
-| `lens-original.webp` | `img/hole-lens.webp`（中央を640×640で切り出し。アルミの線は上から約43%） | 穴あけの左のルーペ（断面） |
-| `needle-original.webp` | `img/hole-needle.webp`（不透明な所だけ切り出し） | 穴あけのルーペの針 |
+| `lens-original.webp` | `img/hole-lens.webp`（中央を640×640で切り出し。アルミの線は上から約43%） | 穴あけの左のルーペ（断面）。VPL27 で外した |
+| `needle-original.webp` | `img/hole-needle.webp`（不透明な所だけ切り出し） | 穴あけのルーペの針。VPL27 で外した |
 | `abtn-original.webp` | `img/ui-button.webp`（512×512） | 丸ボタン（行く・次へ・決める・刺す・吸う）の面 |
 | `dpad-original.webp` | `img/ui-dpad.webp`（512×512） | 輪の十字キーの面 |
-| `loupe-original.webp` | `img/ui-loupe.webp`（512×512） | 穴あけのルーペの縁 |
+| `loupe-original.webp` | `img/ui-loupe.webp`（512×512） | 穴あけのルーペの縁。VPL27 で外した |
 
 生成は5枚・各1回（作り直しなし）。
 

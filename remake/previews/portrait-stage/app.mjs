@@ -35,9 +35,6 @@ const IMG = {
   ciBgMinto: `${REMAKE_IMG}ui/character_intros/graphic/bg_minto.webp`,
   ciSumi: `${REMAKE_IMG}ui/character_intros/graphic/sumi.webp`,
   ciBgSumi: `${REMAKE_IMG}ui/character_intros/graphic/bg_sumi.webp`,
-  holeLens: `${OWN_IMG}hole-lens.webp`,
-  holeNeedle: `${OWN_IMG}hole-needle.webp`,
-  loupe: `${OWN_IMG}ui-loupe.webp`,
   ...(globalThis.PORTRAIT_STAGE_ASSETS || {}),
 };
 
@@ -100,25 +97,20 @@ const PACKS = [
 const STEPS = [["pack", "詰め"], ["holes", "穴あけ"], ["coal", "炭"], ["water", "水"], ["steam", "蒸らし"], ["pull", "吸い出し"], ["care", "調整"]];
 const COACH = {
   pack: "詰め方を見比べて決めよう。迷ったらノーマル",
-  holes: "目印に重なったら、トンと一突き。深さは押し具合で決まる",
+  holes: "目印に重なったらトンと押して、色が満ちたら離せ",
   pull: "手元を見ているぞ。落ち着いていけ",
 };
 const HOLE_COUNT = 10;
-// 穴あけ: 押していた長さで穴の大きさが決まる。本編（remake/js/craft/holes_logic.js の PRESS・HOLE_SIZES）と同じ4段階:
-// 0.12秒未満＝浅い、0.5秒まで＝標準（ちょうどいい）、0.85秒まで＝少し大きい、0.85秒で刺し抜ける＝大きい
+// 穴あけ: 一瞬押して、その押し具合で深さが決まる（VPL27）。「刺す」を押すと約0.2秒で色が下から上へ満ち、満ちた瞬間に離すのがちょうどいい。
+// 満ちる前に離す＝浅い、満ちたまま0.5秒を越える＝深すぎ（少し大きい穴）、0.85秒で刺し抜ける＝大きい。
+// 0.5秒・0.85秒は本編（remake/js/craft/holes_logic.js の PRESS）と同じ。浅いの境は本編の0.12秒を、満ちるのが見える0.2秒にしている
 const HOLD_FULL = 850;
-const GOOD_PRESS = [120 / HOLD_FULL, 500 / HOLD_FULL];
+const FILL_MS = 200;
+const GOOD_PRESS = [FILL_MS / HOLD_FULL, 500 / HOLD_FULL];
 const pressZone = (fill) => fill <= 0 ? "" : fill < GOOD_PRESS[0] ? "under" : fill < GOOD_PRESS[1] ? "good" : "over";
 const holeDepth = (fill) => fill < GOOD_PRESS[0] ? "shallow" : fill < GOOD_PRESS[1] ? "small" : fill < 1 ? "wide" : "large";
 // 箔の上の穴の半径（箔の幅を200とした値）。標準は箔の幅の約3%。比は本編の HOLE_SIZES（0.2・1・1.35・1.7）に近づけた
 const HOLE_R = { shallow: 1.3, small: 3, wide: 4, large: 5 };
-// ルーペの断面での針先の高さ（上から%）: 構えた位置・アルミの線・ちょうどいい深さの下端・いちばん深い所
-const LENS_Y = { rest: 22, foil: 43, good: 57, deep: 90 };
-/** 押した具合（0〜1）→ ルーペの断面での針先の高さ。浅い間はアルミに届くまで、ちょうどいい間はアルミを抜けて葉の上の方、越えると深く刺さる */
-const needleDepth = (fill) => fill <= 0 ? LENS_Y.rest
-  : fill < GOOD_PRESS[0] ? LENS_Y.rest + (LENS_Y.foil - LENS_Y.rest) * fill / GOOD_PRESS[0]
-  : fill < GOOD_PRESS[1] ? LENS_Y.foil + (LENS_Y.good - LENS_Y.foil) * (fill - GOOD_PRESS[0]) / (GOOD_PRESS[1] - GOOD_PRESS[0])
-  : LENS_Y.good + (LENS_Y.deep - LENS_Y.good) * Math.min(1, (fill - GOOD_PRESS[1]) / (1 - GOOD_PRESS[1]));
 // 熱ゲージ: 本編（remake/js/craft/thermometer.js・temperature-model.js）と同じ色の意味。
 // 管は一本のグラデーション（クリーム→黄→適温のミント緑→橙→赤→深紅）。緑が適温の目安、真ん中の虹が合わせやすい範囲、一番上が焦げる帯（炎）
 const TEMP_ZONE = [0.42, 0.66];
@@ -654,21 +646,14 @@ class Phone {
       return `${this.auxHtml("craft", CRAFT_CHIPS)}${dpadHtml("left right")}${aHtml("決める", { disabled: !!PACKS[st.pack].locked })}`;
     }
     if (st.scene === "holes") {
-      // 左: ルーペで見た断面。針が一瞬でアルミを突き、どこまで刺さったかが見える。金の帯＝ちょうどいい深さ。縁の10個の点＝開けた穴（金はちょうどいい）
+      // 「刺す」を真ん中に大きく置く。押すと色が下から上へ満ち、満ちた瞬間に金に光る（ここで離す）。周りの10個の点＝開けた穴（金＝ちょうどいい）
       const pips = Array.from({ length: HOLE_COUNT }, (_, i) => {
         const a = (i * 360 / HOLE_COUNT - 90) * Math.PI / 180, hole = st.holes[i];
-        return `<circle class="pip${hole ? (hole.good ? " good" : " done") : ""}" cx="${(44.5 * Math.cos(a)).toFixed(1)}" cy="${(44.5 * Math.sin(a)).toFixed(1)}" r="2.6"/>`;
+        return `<circle class="pip${hole ? (hole.good ? " good" : " done") : ""}" cx="${(46 * Math.cos(a)).toFixed(1)}" cy="${(46 * Math.sin(a)).toFixed(1)}" r="2.6"/>`;
       }).join("");
-      const last = st.holes.at(-1);
-      const lastY = last ? needleDepth(last.size) : null;
       return `${this.auxHtml("craft", CRAFT_CHIPS)}
-        <div class="lens" style="--tip:${LENS_Y.rest}%;--foil:${LENS_Y.foil}%;--good:${LENS_Y.good}%" aria-label="針の深さ">
-          <div class="lens-view"><img class="lens-bg" src="${IMG.holeLens}" alt="">
-            <i class="lens-deep"></i><i class="lens-good"></i>
-            ${last ? `<i class="lens-mark ${pressZone(last.size)}" style="top:${lastY.toFixed(1)}%"></i>` : ""}
-            <img class="lens-needle" src="${IMG.holeNeedle}" alt=""></div>
-          <img class="lens-frame" src="${IMG.loupe}" alt=""><svg class="lens-pips" viewBox="-50 -50 100 100">${pips}</svg></div>
-        ${aHtml("刺す", { cls: "hold" })}`;
+        <svg class="hole-pips" viewBox="-50 -50 100 100" aria-label="開けた穴 ${st.holes.length}/${HOLE_COUNT}">${pips}</svg>
+        ${aHtml("刺す", { cls: "hold center", extra: `<i class="fill"></i><i class="fill-line"></i>` })}`;
     }
     // 葉（フレーバーの持ち）は上の段の真ん中、吸った回数は「吸う」の中の点。ボタンに重ねない
     return `${this.auxHtml("craft", CRAFT_CHIPS)}
@@ -845,6 +830,7 @@ class Phone {
   startHold() {
     if (this.st.scene !== "holes" || this.holdAt || this.st.holes.length >= HOLE_COUNT) return;
     this.holdAt = performance.now();
+    this.el.querySelector(".btn-a.hold")?.style.setProperty("--level", "0");
     this.el.querySelector(".btn-a.hold")?.classList.add("pressing");
   }
 
@@ -918,7 +904,7 @@ class Phone {
         tip.classList.toggle("ok", aligned);   // 針先が目印に重なると金色
         el.querySelector(".btn-a")?.classList.toggle("hot", aligned && !this.holdAt);
       }
-      // 押している間: 「刺す」が沈み、縁の輪が伸びる（金の区間＝ちょうどいい、赤＝押しすぎ）。針先では穴が育っていく
+      // 押している間: 「刺す」が少し沈み、色が下から満ちる（満ちたら金＝離す時、0.5秒を越えると赤＝深すぎ）。針先では穴が育っていく
       const fill = this.holdAt ? Math.min(1, (now - this.holdAt) / HOLD_FULL) : 0, zone = pressZone(fill);
       const btn = el.querySelector(".btn-a.hold");
       if (btn) {
@@ -936,11 +922,10 @@ class Phone {
         grow.setAttribute("r", grown(HOLE_R).toFixed(2));
         grow.setAttribute("class", `grow-hole ${zone}`);
       }
-      const lens = el.querySelector(".lens");
-      if (lens) {
-        lens.style.setProperty("--tip", `${needleDepth(fill).toFixed(2)}%`);
-        lens.classList.toggle("pressing", !!this.holdAt);
-        if (lens.dataset.zone !== zone) lens.dataset.zone = zone;
+      if (btn) {
+        const held = this.holdAt ? now - this.holdAt : 0;
+        const t = Math.min(1, held / FILL_MS);
+        btn.style.setProperty("--level", this.holdAt ? (1 - (1 - t) ** 2).toFixed(3) : "0"); // 押し始めに速く、満ちる直前にゆるむ
       }
       if (this.holdAt && now - this.holdAt >= HOLD_FULL) this.endHold(); // 本編と同じく、押し続けると刺し抜ける
     }
@@ -975,12 +960,13 @@ function showGallery() {
       <li><b>地図</b>左右キーで隣の店へ画面が送られる。上で全体、下で一覧。指でずらす・「！」の店へ飛ぶ</li>
       <li><b>パッド</b>輪の十字キーとAを大きく（幅の約半分と1/3強）。作る場面は工程ごとの操作に替わる</li>
       <li><b>補助ボタン</b>案1「名前つきの段」で確定（絵記号に短い名前を添えて横いっぱいに大きく）</li>
+      <li><b>登場カットイン</b>案A「縦のポスター」で確定</li>
       <li><b>出すもの</b>地図は章・日付・レベル・体力・お金（天気は降る雨で見せる）。会話は場所の名前だけ、シーシャ作りは工程の並びと熱ゲージだけ</li>
     </ul>
     <p class="g-note">絵・立ち絵・台詞は本編の素材、配置と動きが今回の案です。本編の進行や保存には触れません。<a href="?view=play" data-go="play">1台で通して触る</a></p>
     <div class="g-grid">${GALLERY.map((item, i) => `<figure class="g-cell"><article class="phone" data-i="${i}"></article><figcaption>${item.caption}</figcaption></figure>`).join("")}</div>
-    <h2 class="g-sub">登場カットイン（縦画面）の案</h2>
-    ${["a", "b", "c"].map((v) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}</small>${CUT_VARIANTS[v].name}<a href="?view=play&scene=cutin&ci=${v}" data-go="play" data-ci="${v}">1台で動きを見る</a></h3><p>${CUT_VARIANTS[v].lead}</p>
+    <h2 class="g-sub">登場カットイン（縦画面）</h2>
+    ${["a"].map((v) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}で決定</small>${CUT_VARIANTS[v].name}<a href="?view=play&scene=cutin&ci=${v}" data-go="play" data-ci="${v}">1台で動きを見る</a></h3><p>${CUT_VARIANTS[v].lead}</p>
       <div class="g-grid">${["minto", "sumi"].map((who) => `<figure class="g-cell"><article class="phone" data-ci="${v}" data-who="${who}"></article><figcaption>${who === "minto" ? "みんと" : "スミさん"}</figcaption></figure>`).join("")}</div></section>`).join("")}
   </main>`;
   app.querySelectorAll(".phone[data-i]").forEach((el) => { const item = GALLERY[Number(el.dataset.i)]; phones.push(new Phone(el, item.scene, { fixed: true, ...item })); });
@@ -1005,7 +991,7 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
   app.innerHTML = `<div class="frame"><article class="phone"></article>${bare ? "" : `<nav class="switch" aria-label="場面と案の切り替え">
     <button class="grip" data-grip aria-expanded="false" aria-label="切り替えを開く"><i></i></button>
     <div class="panel"><div>${SCENES.map((id) => `<button data-scene="${id}" aria-pressed="${id === scene}">${SCENE_LABEL[id]}</button>`).join("")}</div>
-      <div><small>登場</small>${["a", "b", "c"].map((v) => `<button data-ci="${v}" aria-pressed="${v === ci}">${v.toUpperCase()}</button>`).join("")}<i class="sep"></i>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div></div></nav>`}</div>`;
+      <div><small>登場</small>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div></div></nav>`}</div>`;
   const el = app.querySelector(".phone");
   // 先に大きさを決めてから描く（立ち絵と地図の位置は絵の大きさから決まる）
   const box = app.getBoundingClientRect(), rem = Math.min(box.width / 39, box.height / 66);
