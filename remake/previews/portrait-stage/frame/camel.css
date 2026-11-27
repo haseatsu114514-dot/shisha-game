@@ -2,13 +2,14 @@
    本編の画面（js/minigames/camel-race.js を layout: "portrait" で呼ぶ）の部品をそのまま使い、置き場所と大きさだけ縦用に替える。色・絵・動きは css/camel-race.css のまま。
    コースは横長（1280×720）の横スクロールなので、縦では自分のラクダのまわりだけを見せる:
      .camel-stage を幅 1280 のまま置き（HUD の寸法は cqw＝この幅が基準なので、横と同じ大きさで出る）、--z 倍に拡大縮小して、左右を切る。
-     見えている幅は 640 / --z（ステージ上の px）。その中心は絵の x=520（自分のラクダは 320〜470 に居て、競り合いの寄りは 640 に集まる。どちらも切れない所）。
+     見えている幅は 640 / --z（ステージ上の px）。その中心は絵の x=460（自分のラクダは 320〜470 に居る）。
+     本編は見えている範囲を自分で測り（camel-race.js の viewL・viewR）、競り合いの寄りの中心・相手の名前と差の札・浮き出す字を、その内側に置く。
    並べ方: 上＝コースの絵（空の所に、進み具合・一時停止・やめる・ファーリスの声）。
            下＝操作の板: 順位（2列×2段）／時計と速さ｜息の予告／声とムチの大きなボタン（左の親指で声、右の親指でムチ）。
    文字を減らす: 題名「CAMEL RACE」・大会名の添え字・「km/h」・「調子」・「押している間」は出さない（数字と形で分かる）。 */
 
 #stage .camel-game { display: block; background: #1a110a; --q-hit: calc(54px / var(--k, 1) / var(--z, 1)); --q-font: calc(16px / var(--k, 1) / var(--z, 1)); --cr-min: calc(12px / var(--k, 1) / var(--z, 1)); --cr-tap: calc(44px / var(--k, 1) / var(--z, 1)); }
-#stage .camel-stage { --vw: calc(640px / var(--z, 1)); --vl: calc(520px - 320px / var(--z, 1)); --vr: calc(1280px - var(--vl) - var(--vw));
+#stage .camel-stage { --vw: calc(640px / var(--z, 1)); --vl: calc(460px - 320px / var(--z, 1)); --vr: calc(1280px - var(--vl) - var(--vw));
   position: absolute; left: 0; top: 0; width: 1280px; height: calc(100cqh / var(--z, 1)); aspect-ratio: auto; overflow: visible; background: #1a110a;
   transform-origin: 0 0; transform: translateX(calc(var(--vl) * var(--z, 1) * -1)) scale(var(--z, 1)); }
 #stage .camel-canvas { width: 1280px; height: 720px; }
@@ -95,7 +96,11 @@
 #stage .camel-game .camel-cup :is(span, b) { font-size: 22px; line-height: 1.4; }
 #stage .camel-cup b { padding-top: 8px; font-size: 24px; }
 #stage .camel-cup-badge { width: 72px; height: 72px; }
-#stage .camel-cup-rule { font-size: 22px; }
+/* 札は 紋章・大会名・距離（とベスト）・出走の印だけ。段の英字・説明・解放の条件は出さず、閉じた大会は鍵の形で見せる（2026-11-27 オーナー「システム的な説明は載せない」） */
+#stage .camel-cup-rule, #stage .camel-cup > small, #stage .camel-cup > span:nth-of-type(2) { display: none; }
+#stage .camel-cup { min-height: 190px; justify-content: flex-start; }
+#stage .camel-cup:disabled > b { font-size: 0; display: grid; justify-items: start; }
+#stage .camel-cup:disabled > b::before { content: ""; width: 40px; height: 34px; margin-top: 22px; border-radius: 7px; background: #9a8a74; box-shadow: 0 -25px 0 -11px #f3ead8, 0 -25px 0 -5px #9a8a74; }
 
 /* 結果: 上に順位のメダル・点・評価の判、下に3本の棒と次の目標。ボタンは1段 */
 #stage .camel-result .camel-result-head { grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; padding-right: 0; margin: 46px 0 18px; }
@@ -125,3 +130,14 @@
 #stage .camel-pause-card > :is(.camel-eyebrow, p) { display: none; }
 #stage .camel-sheet .camel-card.camel-pause-card .camel-card-actions { flex-wrap: wrap; }
 #stage .camel-sheet .camel-card.camel-pause-card .camel-card-actions .btn.primary { flex: 1 1 100%; min-height: 100px; font-size: 32px; }
+
+/* ───────── 大会選び＝入口の画面: 上に手描きの題字、後ろにスタート前のコース、下（親指の届く所）に大会の札 ─────────
+   題字は本編の絵（img/ui/camel_race/ui/word-title.webp。単独ページの入口と同じ）。幕は上を薄く・下を濃くして、コースの絵を見せる */
+#stage .camel-game[data-phase="cups"] .camel-sheet { align-items: end; padding-bottom: 26px; background: linear-gradient(180deg, rgba(12, 8, 5, .18) 0%, rgba(12, 8, 5, .1) 34%, rgba(12, 8, 5, .78) 58%, rgba(12, 8, 5, .92) 100%); }
+#stage .camel-game[data-phase="cups"] .camel-sheet::before { content: ""; position: absolute; left: 50%; top: 56px; width: 570px; aspect-ratio: 1024 / 341; transform: translateX(-50%) rotate(-2deg);
+  background: url("../../../img/ui/camel_race/ui/word-title.webp") center / contain no-repeat; filter: drop-shadow(0 6px 0 rgba(40, 18, 4, .55)) drop-shadow(0 14px 18px rgba(20, 8, 2, .6)); pointer-events: none; }
+#stage .camel-cup-card > h2 { font-size: 30px; }
+#stage .camel-cup strong { padding-right: 70px; font-size: 28px; letter-spacing: 0; white-space: nowrap; }
+/* ゴールの字は幅に収める */
+#stage .camel-banner[data-kind="goal"] { font-size: 52px; } #stage .camel-banner[data-kind="goal-place"] { font-size: 44px; }
+#stage .camel-banner[data-kind="spurt"] { font-size: 44px; }

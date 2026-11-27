@@ -1,5 +1,6 @@
 // 縦画面の試作: ミニゲームの縦用ページ（remake/previews/portrait-stage/frame/）。
 // 本編のゲームを layout: "portrait" で動かした時に、絵・HUD・押す所が縦の画面に収まり、タッチで動くこと。既定（横）には印が付かないこと。
+// DJ は本体のページ（remake/previews/dj/）が ?layout=portrait で縦になり、次に触る側の皿へ寄ること。
 import assert from "node:assert/strict";
 import { baseURL, suite } from "./support.mjs";
 
@@ -74,8 +75,13 @@ await suite("portrait-games", async check => {
       // コースは左右を切って置く。順位は2列×2段、声は左・ムチは右で、どちらもコースの下
       const view = page.viewportSize(), canvas = await page.locator(".camel-canvas").boundingBox();
       assert(canvas.width > view.width * 1.3 && canvas.x < 0 && canvas.x + canvas.width > view.width, `the course is cropped at both sides: ${JSON.stringify(canvas)}`);
-      const [first, second, third] = await Promise.all([1, 2, 3].map(pos => page.locator(`.camel-standings li[data-pos='${pos}']`).boundingBox()));
-      assert(Math.abs(first.y - second.y) < 2 && second.x > first.x + first.width - 2 && third.y > first.y + first.height - 2, "standings form a 2x2 grid");
+      // 順位の札は入れ替わる時にます目の間を滑るので、落ち着いた所で 2列×2段 になっていることを見る
+      await page.waitForFunction(() => {
+        const box = pos => document.querySelector(`.camel-standings li[data-pos='${pos}']`)?.getBoundingClientRect();
+        const [first, second, third, fourth] = [1, 2, 3, 4].map(box);
+        return first && second && third && fourth && Math.abs(first.top - second.top) < 2 && second.left > first.right - 2
+          && third.top > first.bottom - 2 && Math.abs(third.top - fourth.top) < 2 && Math.abs(third.left - first.left) < 2;
+      }, null, { timeout: 8000 });
       const voice = await page.locator('[data-test="camel-voice"]').boundingBox(), whip = await page.locator('[data-test="camel-signal"]').boundingBox();
       assert(voice.x + voice.width <= whip.x && voice.y >= canvas.y + canvas.height - 1 && whip.y >= canvas.y + canvas.height - 1, "voice (left) and whip (right) sit below the course");
       for (const hidden of [".camel-title", ".camel-clock-sub", ".camel-speed-read small", ".camel-signal-note", ".camel-rhythm small"]) {
@@ -88,10 +94,59 @@ await suite("portrait-games", async check => {
       await page.locator('[data-test="camel-paused"]').waitFor();
       await boxesInside(page, ['[data-test="camel-resume"]', '[data-test="camel-restart"]', '[data-test="camel-pause-quit"]'], { tap: 44 });
     }, { ...options, pageEntry: frame("camel.html?skip=1"), pageReadySelector: '[data-test="camel-cups"]' });
+
+    // てつこといっしょ: 上にてつこ、下に道具。なでると反応が返る
+    await check(`tetsuko-time-portrait-layout-${suffix}`, async page => {
+      const t = name => `[data-test="tetsuko-${name}"]`;
+      await boxesInside(page, [t("cat")]);
+      await boxesInside(page, [t("pet"), t("play"), t("brush"), t("treat"), t("help")], { tap: 44 });
+      const cat = await page.locator(t("cat")).boundingBox(), pet = await page.locator(t("pet")).boundingBox();
+      assert(pet.y > cat.y + cat.height / 2, "the hand tools sit below the cat");
+      const before = await page.locator(t("caption")).innerText();
+      await page.locator(t("pet")).tap();
+      await page.locator(t("cat")).tap();
+      await page.waitForFunction(text => document.querySelector('[data-test="tetsuko-caption"]')?.innerText !== text, before, { timeout: 15000 });
+      assert.equal(await page.evaluate(() => Object.keys(localStorage).filter(key => /^suien/.test(key) && !/board_tutorial|roamers|floor|step_intro/.test(key)).length), 0, "the portrait frame writes no game save");
+    }, { ...options, pageEntry: frame("tetsuko.html"), pageReadySelector: '[data-test="tetsuko-time-screen"]' });
+
+    // DJ は本体のページ（previews/dj）が ?layout=portrait の時だけ縦になる。次に触る側の皿へ寄る
+    await check(`dj-portrait-focus-follows-the-next-touch-${suffix}`, async page => {
+      const focus = () => page.evaluate(() => document.getElementById("dj-stage").dataset.focus);
+      assert.equal(await page.evaluate(() => document.documentElement.dataset.layout), "portrait");
+      assert.equal(await focus(), "a", "before the first play: the left deck");
+      const view = page.viewportSize();
+      await boxesInside(page, ["#play-a", "#platter-a", "#crossfader", "#help", "#restart"], { tap: 44 });
+      const playA = await page.locator("#play-a").boundingBox();
+      assert(playA.x + playA.width / 2 < view.width / 2, "the left deck's play button is on the left thumb side");
+      // 右の皿は枠の外へ出ている（並べ方の CSS が届いてから滑って出るので、出きるのを待つ）
+      await page.waitForFunction(() => document.getElementById("play-b").getBoundingClientRect().left >= innerWidth, null, { timeout: 5000 });
+      await page.locator("#play-a").tap();
+      await page.waitForFunction(() => document.getElementById("deck-a").dataset.playing === "true", null, { timeout: 30000 });
+      await page.waitForFunction(() => document.getElementById("dj-stage").dataset.focus === "b", null, { timeout: 10000 });
+      await page.waitForTimeout(700); // 寄る動き
+      await boxesInside(page, ["#play-b", "#platter-b", "#crossfader"], { tap: 44 });
+      const playB = await page.locator("#play-b").boundingBox();
+      assert(playB.x + playB.width / 2 > view.width / 2, "the right deck's play button is on the right thumb side");
+      // 早押しは予約（0 で入る）。入ったら、つなぎの間は両方の皿を引いて見せる
+      await page.waitForFunction(() => !document.getElementById("point-play-b").hidden, null, { timeout: 60000 });
+      await page.locator("#play-b").tap();
+      await page.waitForFunction(() => !document.getElementById("guide").hidden, null, { timeout: 30000 });
+      assert.equal(await focus(), "wide", "while mixing: both decks, pulled back");
+      await page.waitForTimeout(700);
+      await boxesInside(page, ["#platter-a", "#platter-b", "#crossfader"]);
+    }, { ...options, pageEntry: `${baseURL}previews/dj/index.html?set=1&layout=portrait&mute=1`, pageReadySelector: "#play-a" });
   }
 
+  await check("dj-landscape-default-is-untouched", async page => {
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.layout ?? null), null);
+    assert.equal(await page.evaluate(() => document.getElementById("dj-stage").dataset.focus ?? null), null);
+    const stage = await page.evaluate(() => document.getElementById("dj-stage").offsetWidth);
+    assert(stage >= 1280, `landscape stage keeps its width: ${stage}`);
+    assert.equal(await page.evaluate(() => [...document.styleSheets].some(sheet => /portrait\.css/.test(sheet.href || ""))), false, "portrait.css is not loaded");
+  }, { pageEntry: `${baseURL}previews/dj/index.html?set=1&mute=1`, pageReadySelector: "#play-a" });
+
   await check("prototype-hosts-the-game-frames", async page => {
-    for (const [scene, ready] of [["desert", '[data-test="desert-start"]'], ["camel", '[data-test="camel-tutorial"]']]) {
+    for (const [scene, ready] of [["desert", '[data-test="desert-start"]'], ["camel", '[data-test="camel-tutorial"]'], ["dj", "#play-a"], ["tetsuko", '[data-test="tetsuko-time-screen"]']]) {
       await page.goto(`${baseURL}previews/portrait-stage/index.html?view=play&scene=${scene}&bare`, { waitUntil: "load" });
       const host = page.locator(".phone .gm-frame");
       await host.waitFor();

@@ -86,3 +86,16 @@ OpenAI の画像 API（`gpt-image-2.6-sunburst`）で生成した原画と、送
 - **組み込み**: `remake/css/trpg-theme.css` の「本棚の文字を減らし、印と顔で見せる」（TRP10）と「本をめくって物語を選ぶ」（TRP11）。
 - 原画の SHA-256（先頭16桁）: `book_locked` f2dd53fffecad4d0, `dice_icon` c4ae0219c3887db9, `book_open` 581c2719a0642b5d
 
+## 縦画面の試作 — `portrait/`（VPG09）
+
+オーナー「縦レイアウトにした中で…さらに簡略化で視覚でわかるようにできそうな情報を生成したりとか見直して」「見た目しょぼいのは生成したりとかAPIで」。縦画面C案「煙の舞台」の試作（`remake/previews/portrait-stage/`）で使う絵。プロンプトは `portrait/prompts.md`。
+
+| 原画（`portrait/originals/`） | 使う所 | ゲームの絵 |
+|---|---|---|
+| `desert_stats.png`（3列×2段の6つの印） | 砂丘の結果の記録の名前（時間・コンボ・転倒・着地・トリック・ブースト）を、字ではなく印で見せる（縦だけ。`frame/desert.css`） | `remake/img/ui/desert_ride_result/stat_time.webp`・`stat_combo.webp`・`stat_fall.webp`・`stat_land.webp`・`stat_trick.webp`・`stat_boost.webp` |
+| `tk_deck.png` | 「てつこといっしょ」の縦の操作の板の地（段ボール箱の底。上の縁に段ボールの断面）（`frame/tetsuko.css`） | `remake/img/ui/tetsuko/ui_tk_deck_portrait.webp` |
+| `tk_book_portrait.png` | 「てつこといっしょ」の縦の手帳の台紙（縦開きのリング手帳。上の紙にしぐさの札、下の紙に写真と一言）（`frame/tetsuko.css`） | `remake/img/ui/tetsuko/ui_tk_book_portrait.webp` |
+
+- **変換**: 印は升ごとに絵の入っている範囲を切り出し、正方形にそろえて 192×192 の WebP（quality 92）。板の地は 1280×853 の WebP（quality 88・不透明）。手帳は透過の余白を切り落とした 986×1517 の WebP（quality 90）。紙の位置（上の紙 7〜45%・下の紙 51〜89%・左右 5〜95%）は絵の画素から測り、CSS の置き場所に使っている
+- **検品**: 文字・擬似文字なし／印は砂丘のボタン・メダルと同じ革と金の作りで、6つとも升からはみ出していない／手帳は真っすぐで、紙は無地／板の地は物や字が無く、うすい足あとだけ
+- 原画の SHA-256（先頭16桁）: `desert_stats` 59b1a3d333235607, `tk_deck` 5f168678e1813678, `tk_book_portrait` 08bd0a1ae27f2fbb

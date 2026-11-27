@@ -679,10 +679,24 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   // 画面が小さい（スマホ）ほどラクダが遠く小さく見えるので、動きを割り増す（桜井氏の動画 #047・#091）。
   // 画面に出ている大きさは、ステージごと縮められた後の実寸で測る（始める時と画面の大きさが変わった時だけ。毎コマは測らない）。
   let viewScale = 1, voiceTop = H;
+  // 縦では、横長のコースの左右を切って見せる（並べ方の CSS の側）。見えている範囲（絵の画素）を持ち、競り合いの寄り・絵の中の字と印はその内側に置く。
+  // 横は絵の幅いっぱい（0〜W）なので、下の式はどれも今までと同じ値になる。
+  let viewL = 0, viewR = W;
+  const viewCx = () => (viewL + viewR) / 2, viewW = () => viewR - viewL;
+  /** いま見えている範囲（寄りの倍率を戻した、描く時の座標）。 */
+  const viewSpan = () => { const half = viewW() / (2 * duelScale); return [viewCx() - half, viewCx() + half]; };
   const measureView = () => {
     const { width, height, top } = stageNode.getBoundingClientRect();
     viewScale = width > 0 ? clamp(W / width, 1, 1.6) : 1;
     if (!controls.hidden && height > 0) voiceTop = (voiceButton.getBoundingClientRect().top - top) * H / height;
+    if (portrait) {
+      const shown = canvas.getBoundingClientRect(), frame = root.getBoundingClientRect();
+      if (shown.width > 0 && frame.width > 0) {
+        viewL = clamp((frame.left - shown.left) * W / shown.width, 0, W - 1);
+        viewR = clamp((frame.right - shown.left) * W / shown.width, viewL + 1, W);
+        voiceTop = H; // 声のボタンはコースの下にある（重ならない）
+      }
+    }
   };
   window.addEventListener("resize", measureView);
   const far = () => 1 + (viewScale - 1) * FEEL.farGain;
@@ -753,7 +767,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   };
   const basePlayerX = () => Math.min(FRAME_X.limit, frameX + camShift) + lunge;
   const playerX = () => basePlayerX() - duelPan;
-  const duelScreenX = x => W / 2 + (x - W / 2) * duelScale;
+  const duelScreenX = x => viewCx() + (x - viewCx()) * duelScale;
   const duelScreenY = y => duelPivotY + (y - duelPivotY) * duelScale;
   let lastPosition = 0, leaderId = null, marks = new Set();
   // スマホではコース（1280×720）が半分ほどに縮むので、Canvas の名札・吹き出し・順位の文字だけ大きくする。
@@ -824,7 +838,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   const cuePoint = () => {
     const x = playerX() + CUE_AT.dx, y = laneOf("player").y + CUE_AT.dy;
     if (duelScale === 1) return { x, y };
-    const sx = duelScreenX(x), edge = clamp(sx, 148, W - 148);
+    const sx = duelScreenX(x), edge = clamp(sx, viewL + 148, viewR - 148);
     return { x: x + (edge - sx) / duelScale, y, detached: edge !== sx };
   };
   /** 声が当たった所から火花と波紋を飛ばす（PERFECT は金で多く、GOOD は水色で少なく、外れは灰の煙）。 */
@@ -1551,7 +1565,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     if (duel.pair) {
       const [a, b] = duel.pair;
       const middle = (racersById[a].distance + racersById[b].distance) / 2;
-      const pan = basePlayerX() - W / 2 + (middle - race.player.distance) * PX_PER_M;
+      const pan = basePlayerX() - viewCx() + (middle - race.player.distance) * PX_PER_M;
       const pivotY = (laneOf(a).y + laneOf(b).y) / 2 + 110;
       const follow = duelMix === 0 ? 1 : Math.min(1, dt * DUEL_VIEW.follow);
       duelFocusPan += (pan - duelFocusPan) * follow;
@@ -1577,7 +1591,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     ctx.clearRect(0, 0, W, H);
     const zoomed = duelScale !== 1;
     // コースを拡大後の座標に直接描く。Canvas の描画領域で画面外を切り取る。
-    if (zoomed) ctx.setTransform(duelScale, 0, 0, duelScale, (1 - duelScale) * W / 2, (1 - duelScale) * duelPivotY);
+    if (zoomed) ctx.setTransform(duelScale, 0, 0, duelScale, (1 - duelScale) * viewCx(), (1 - duelScale) * duelPivotY);
     ctx.save();
     // 揺れ（GO・ムチ・ゴール）と、ムチの間だけ自分のラクダへ少し寄る。
     if (!reducedMotion && race) {
@@ -1589,7 +1603,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       // 揺れで画面の端が空かないよう、ずれた分だけ自分のラクダを軸に拡大して覆う。
       const zoom = 1 + Math.max(Math.abs(dx) / 320, Math.abs(dy) / 170) + whip * 0.035 + (phase === "goal" && slow > 0 ? 0.05 * Math.min(1, slow) : 0);
       if (zoom > 1) {
-        const lane = laneOf("player"), baseX = basePlayerX(), px = baseX + (W / 2 - baseX) * duelMix;
+        const lane = laneOf("player"), baseX = basePlayerX(), px = baseX + (viewCx() - baseX) * duelMix;
         ctx.translate(px, lane.y); ctx.scale(zoom, zoom); ctx.translate(-px, -lane.y);
       }
     }
@@ -1996,7 +2010,10 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       const gap = phase === "race" && camel.id === targetId ? Math.max(1, Math.ceil(camel.distance - race.player.distance)) : 0;
       const label = gap ? `${camel.name}  あと${gap}m` : camel.name;
       const sprite = getRivalTagSprite(camel, label, gap, zoom);
-      ctx.drawImage(sprite.canvas, tx - sprite.ox, ty - sprite.oy, sprite.cw, sprite.ch);
+      // 縦では、名前と差の札が見えている端で切れないよう、内側へ寄せる（ラクダが見えている間だけ）
+      const [seenL, seenR] = viewSpan();
+      const tagX = portrait && tx > seenL && tx < seenR ? clamp(tx - sprite.ox, seenL + 6, Math.max(seenL + 6, seenR - 6 - sprite.cw)) : tx - sprite.ox;
+      ctx.drawImage(sprite.canvas, tagX, ty - sprite.oy, sprite.cw, sprite.ch);
     }
   }
   /** 自分のラクダの足元の金の輪（脈打つ）。いちばん先に描いて、ラクダの下に敷く。 */
@@ -2088,7 +2105,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   }
   function drawOffscreen() {
     const zoom = Math.min(textScale, 1.3);
-    const left = W / 2 - W / (2 * duelScale), right = W - left;
+    const [left, right] = viewSpan();
     for (const rival of race.rivals) {
       const sx = screenX(rival);
       if (sx >= left - 40 && sx <= right + 40) continue;
@@ -2505,7 +2522,12 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       ctx.globalAlpha = k < 0.15 ? k / 0.15 : 1 - Math.max(0, (k - 0.6) / 0.4);
       ctx.font = `900 ${Math.round(30 * textScale)}px ${FONT}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
       const duel = f.kind === "duel";
-      const y = lane.y - (duel ? 196 : 96 + (f.row || 0) * 44) - k * 40, fx = playerX() + (duel ? 40 : 150);
+      const y = lane.y - (duel ? 196 : 96 + (f.row || 0) * 44) - k * 40;
+      let fx = playerX() + (duel ? 40 : 150);
+      if (portrait) { // 縦では、字が見えている端で切れないよう内側へ寄せる
+        const [seenL, seenR] = viewSpan(), half = ctx.measureText(f.text).width / 2 + 10;
+        fx = clamp(fx, seenL + half, Math.max(seenL + half, seenR - half));
+      }
       ctx.lineJoin = "round";
       ctx.lineWidth = 7; ctx.strokeStyle = duel ? "#4a1a04" : up ? "#0c3a18" : "#4a0c0c"; ctx.strokeText(f.text, fx, y);
       ctx.fillStyle = duel ? "#ffcf5a" : up ? "#9dffb4" : "#ff9a9a"; ctx.fillText(f.text, fx, y);

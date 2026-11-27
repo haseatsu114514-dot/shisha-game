@@ -1,0 +1,94 @@
+/* DJ の縦画面（?layout=portrait の時だけ portrait.mjs が読む。横の画面には掛からない）。
+   板は幅 640（スマホの幅 390px で 0.61 倍）。字は 22px 以上（実寸 13px）、押す所は 72px 以上（実寸 44px）。
+   並べ方（上から）: フロア（お客さんと熱）／案内（手順のランプ・いまやること・2曲の流れ）／皿の置き場（寄る）／ミキサー（横フェーダーは親指の届くいちばん下・幅いっぱい）。
+   皿の置き場は、次に触る側へ寄る（data-focus。portrait.mjs）: a＝左の皿を大きく、b＝右の皿を大きく、wide＝両方を引いて並べる（つなぐ・選ぶ・結果）。
+   左の皿の ▶ は左下（左の親指）、右の皿の ▶ は右下（右の親指）。案内の「左の ▶」「右の ▶」と、寄る向き・押す側がそろう。
+   文字を減らす: 手順のランプは今の段だけ名前を出す。案内の小さい2行目・STANDBY の札・QUANTIZE／AUTO EQ のランプ・機材の札・曲のクレジットの印は出さない。 */
+html[data-layout=portrait] #dj-stage { width: 640px !important; height: var(--ph, 1385px); transform: translate(-50%, -50%) scale(var(--ps, 1)); }
+
+/* ── フロア ── */
+html[data-layout=portrait] .floor { height: 300px; }
+html[data-layout=portrait] .heat { left: 8px; top: 6px; width: 400px; }
+html[data-layout=portrait] .floor-hud { right: 8px; top: 6px; gap: 6px; }
+html[data-layout=portrait] .set-info { position: absolute; right: 0; top: 86px; font-size: 22px; }
+html[data-layout=portrait] .set-info .next { display: none; }
+/* 遊び方・やり直す・戻る は形だけ（？・↺・←）。字は出さない */
+html[data-layout=portrait] .floor-hud button.small { width: 82px; min-height: 82px; padding: 0; font-size: 0; }
+html[data-layout=portrait] .floor-hud button.small::before { font: 900 34px/1 var(--mono); color: #f1eafa; }
+html[data-layout=portrait] #help::before { content: "？"; } html[data-layout=portrait] #restart::before { content: "↺"; } html[data-layout=portrait] #exit::before { content: "←"; }
+html[data-layout=portrait] .voice[data-slot="0"] { left: 2%; top: 150px; } html[data-layout=portrait] .voice[data-slot="2"] { right: 2%; top: 146px; }
+html[data-layout=portrait] .voice[data-slot="1"] { left: calc(50% - 135px); top: 132px; }
+html[data-layout=portrait] .voice[data-slot="3"] { left: 6%; top: 124px; } html[data-layout=portrait] .voice[data-slot="4"] { right: 6%; top: 126px; }
+html[data-layout=portrait] .count { top: 86px; }
+html[data-layout=portrait] .toast { top: 96px; max-width: calc(100% - 16px); }
+/* 遊び方の板: 2列×2段。前置きの見出しと下の一文は出さない（絵と短い一言で分かる） */
+html[data-layout=portrait] .howto { top: 96px; width: calc(100% - 20px); }
+html[data-layout=portrait] .howto h2, html[data-layout=portrait] .how-foot { display: none; }
+html[data-layout=portrait] .howto ol { grid-template-columns: 1fr 1fr; gap: 6px; margin: 2px 0; }
+html[data-layout=portrait] .howto li { grid-template-columns: 60px 1fr; }
+html[data-layout=portrait] .how-pic { width: 60px; height: 60px; }
+html[data-layout=portrait] .howto li b { font-size: 24px; } html[data-layout=portrait] .howto li p { font-size: 20px; white-space: nowrap; }
+
+/* ── ブース: 案内／皿の置き場／ミキサー ── */
+html[data-layout=portrait] .console { margin: 0; padding: 6px 10px 12px; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px; overflow: hidden; }
+html[data-layout=portrait] .navi { grid-column: 1; grid-row: 1; grid-template-columns: minmax(0, 1fr); grid-template-rows: 44px minmax(68px, auto) 76px; gap: 2px; }
+html[data-layout=portrait] .lane { grid-column: 1; }
+html[data-layout=portrait] .steps { justify-content: center; gap: 10px; }
+html[data-layout=portrait] .steps li { font-size: 0; padding: 0; gap: 8px; }
+html[data-layout=portrait] .steps li i { width: 40px; height: 40px; font-size: 20px; }
+html[data-layout=portrait] .steps li.now { font-size: 24px; }
+html[data-layout=portrait] .coach { font-size: 26px; line-height: 1.3; white-space: normal; text-align: center; min-height: 2.6em; display: grid; align-items: center; }
+html[data-layout=portrait] .coach-sub, html[data-layout=portrait] .navi > .credits { display: none; }
+html[data-layout=portrait] .lane { padding-right: 0; }
+
+html[data-layout=portrait] .deck, html[data-layout=portrait] .deck.b { --jog: var(--pjog, 420px); grid-column: 1; grid-row: 2; transition: transform .5s cubic-bezier(.2, .8, .2, 1), opacity .3s; will-change: transform; }
+html[data-layout=portrait] .deck-indicator { display: none; }
+/* ▶ は外側の下の角に大きく（左の皿は左下＝左の親指、右の皿は右下＝右の親指。案内の「左の ▶」「右の ▶」と同じ側）。皿はその反対側の上、曲名は ▶ の上 */
+html[data-layout=portrait] .deck.a .platter { left: auto; right: 0; } html[data-layout=portrait] .deck.b .platter { right: auto; left: 0; }
+html[data-layout=portrait] .deck-controls { width: 150px; height: 150px; }
+html[data-layout=portrait] .deck.a .deck-controls { right: auto; left: 0; } html[data-layout=portrait] .deck.b .deck-controls { left: auto; right: 0; }
+html[data-layout=portrait] .deck-controls::before { background-size: 480px 150px; }
+html[data-layout=portrait] .deck.a .deck-controls::before { transform: scaleX(-1); } html[data-layout=portrait] .deck.b .deck-controls::before { transform: none; }
+html[data-layout=portrait] .deck-play { width: 136px; height: 136px; }
+html[data-layout=portrait] .point.play { bottom: 150px; left: calc(50% - 36px); width: 72px; height: 72px; }
+html[data-layout=portrait] .lcd { width: 150px; height: auto; max-height: none; min-height: 0; top: 0; bottom: auto; flex-direction: column; justify-content: flex-start; gap: 2px; padding: 4px 0; }
+html[data-layout=portrait] .deck.a .lcd { right: auto; left: 0; align-items: flex-start; flex-direction: column; } html[data-layout=portrait] .deck.b .lcd { left: auto; right: 0; align-items: flex-end; flex-direction: column; }
+html[data-layout=portrait] .lcd .track-name { max-width: 150px; font-size: 22px; line-height: 1.2; white-space: normal; text-align: left; } html[data-layout=portrait] .deck.b .lcd .track-name { text-align: right; }
+html[data-layout=portrait] .deck.a .jog-arrows { top: 14px; left: auto; right: calc(var(--jog) / 2 - 62px); } html[data-layout=portrait] .deck.b .jog-arrows { top: 14px; right: auto; left: calc(var(--jog) / 2 - 62px); }
+/* 寄る先 */
+html[data-layout=portrait] #dj-stage[data-focus="a"] .deck.b { transform: translateX(108%); opacity: 0; pointer-events: none; }
+html[data-layout=portrait] #dj-stage[data-focus="b"] .deck.a { transform: translateX(-108%); opacity: 0; pointer-events: none; }
+html[data-layout=portrait] #dj-stage[data-focus="wide"] .deck.a { transform: translateX(-25%) scale(.5); }
+html[data-layout=portrait] #dj-stage[data-focus="wide"] .deck.b { transform: translateX(25%) scale(.5); }
+
+html[data-layout=portrait] .mixrow { grid-column: 1; grid-row: 3; grid-template-columns: minmax(0, 1fr); }
+html[data-layout=portrait] .channels { grid-template-columns: 12px minmax(0, 1fr) 12px; }
+html[data-layout=portrait] #led-quantize, html[data-layout=portrait] #led-autoeq { display: none; }
+html[data-layout=portrait] .beat { grid-column: 2; } html[data-layout=portrait] .meter.b { grid-column: 3; }
+/* 横フェーダーは指で追い続けるので、つかむ帯を太く（縦が短い端末でも実寸 44px 以上）、つまみも大きく */
+html[data-layout=portrait] .xtrack { height: 136px; }
+html[data-layout=portrait] #crossfader { top: 14px; height: 96px; }
+html[data-layout=portrait] #crossfader::-webkit-slider-thumb { width: 84px; height: 84px; }
+html[data-layout=portrait] #crossfader::-moz-range-thumb { width: 84px; height: 84px; }
+
+/* ── 選曲: 札を縦に2枚。前置きの一文と下の注記は出さない ── */
+html[data-layout=portrait] .pick { top: 306px; width: calc(100% - 16px); box-sizing: border-box; }
+html[data-layout=portrait] .pick-tip, html[data-layout=portrait] .pick-hint, html[data-layout=portrait] .pick-meta { display: none; }
+html[data-layout=portrait] .pick-title { font-size: 26px; } html[data-layout=portrait] .request { font-size: 24px; }
+html[data-layout=portrait] .pick-cards { grid-template-columns: 1fr; gap: 10px; }
+html[data-layout=portrait] .pick-card { grid-template-columns: 120px minmax(0, 1fr); min-height: 150px; }
+html[data-layout=portrait] .pick-art { width: 120px; height: 120px; }
+html[data-layout=portrait] .pick-card b { font-size: 26px; } html[data-layout=portrait] .pick-row { font-size: 22px; } html[data-layout=portrait] .pick-row > small { font-size: 20px; }
+html[data-layout=portrait] .pick-foot { justify-content: stretch; } html[data-layout=portrait] .pick-go { flex: 1; min-height: 88px; font-size: 28px; }
+
+/* ── 結果: 評価・点・フロアの熱と、つなぎごとの評価だけ（曲名・項目の内訳・助言の文は出さない） ── */
+html[data-layout=portrait] .result-card { width: calc(100% - 20px); box-sizing: border-box; }
+html[data-layout=portrait] .result-head small { font-size: 20px; } html[data-layout=portrait] .result-mood { font-size: 22px; }
+html[data-layout=portrait] .result-card table { font-size: 22px; }
+html[data-layout=portrait] .result-card :is(th, td):is(:nth-child(2), :nth-child(5), :nth-child(6)), html[data-layout=portrait] .result-card thead, html[data-layout=portrait] .result-card .advice { display: none; }
+html[data-layout=portrait] .result-card td.rank { font-size: 28px; text-align: right; }
+html[data-layout=portrait] .result-goal { font-size: 22px; }
+html[data-layout=portrait] .result-actions { margin-top: 12px; } html[data-layout=portrait] .result-actions button { min-height: 88px; font-size: 28px; }
+
+/* 一覧（PC）の止め絵は触れない */
+html[data-layout=portrait][data-fixed] body { pointer-events: none; }

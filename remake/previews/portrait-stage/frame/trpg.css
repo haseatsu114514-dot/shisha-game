@@ -7,7 +7,11 @@
    調べる場面だけは、調べる場所が全部見えるよう絵を横長のまま出し、場所を下の大きな札に並べる（絵には番号の印）。
    文字を減らす: 英字の飾り・前置きの文・重複する見出しは出さない（下の各所に書く）。台詞と選択肢の文は変えない。 */
 
-#stage .trpg-root.trpg-cinematic { --pic-h: calc(100% - 478px); --seat-h: 92px; background: #071416; }
+/* 字の下限: 本編のスマホ向けは実寸 11〜11.5px。縦は幅が狭く細かく見えるので、実寸 13px（ステージ上 22px）まで上げる */
+html:root[data-density="phone"][data-layout="portrait"] { --phone-text: 24px; --phone-sub: 22px; }
+#stage .trpg-root { --tt-min: 22px; --lib-small: 22px; --lib-body: 22px; }
+/* --pic-h＝絵の高さ、--zone-b＝絵の上の端から画面の下までの長さ（絵の中に置かれた部品を、画面の下へ寄せるのに使う） */
+#stage .trpg-root.trpg-cinematic { --pic-h: calc(var(--stage-h, 1385px) - 478px); --zone-b: var(--stage-h, 1385px); --seat-h: 92px; background: #071416; }
 
 /* ───────── 部屋の絵 ───────── */
 #stage .trpg-root.trpg-cinematic .trpg-room { inset: 0 0 auto; height: var(--pic-h); }
@@ -60,18 +64,196 @@
 
 /* ───────── 重ねて出る札（メモ・遊び方・ログ・シート・宣言・判定など）: 幅いっぱいの1列に ───────── */
 #stage .trpg-root .trpg-overlay, #stage .trpg-root.trpg-cinematic .trpg-overlay:not(:has(.trpg-roll-stage, .trpg-builder-stage)), #stage .trpg-root.trpg-cinematic .trpg-overlay:has(:is(.trpg-roll-stage, .trpg-hypothesis-stage)) { padding: 20px 14px; }
+/* 札の幅は、中身ではなく画面の幅で決める（中身が広い札が画面の外へ広がらないように） */
+#stage .trpg-root .trpg-overlay { grid-template-columns: minmax(0, 1fr); }
 #stage .trpg-root .trpg-modal, #stage .trpg-root.trpg-cinematic .trpg-modal:is(.trpg-roll-stage, .trpg-hypothesis-stage, .trpg-declare-stage, .trpg-sheet-stage, .trpg-builder-stage, .trpg-notes-stage), #stage .trpg-root .trpg-modal.trpg-shelf-help-card, #stage .trpg-root .trpg-modal-wide { width: 100%; max-width: 100%; max-height: 100%; box-sizing: border-box; }
 
 /* 行動の宣言: 3人の案を縦に並べる（顔・案・成功の見込みを1枚ずつ横長の札に） */
 #stage .trpg-root.trpg-cinematic .trpg-modal.trpg-declare-stage { padding: 10px 6px; }
 #stage .trpg-root.trpg-cinematic .trpg-approach-list { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-#stage .trpg-root.trpg-cinematic .trpg-approach { display: grid; grid-template-columns: 92px minmax(0, 1fr); grid-template-areas: "face copy" "meta meta"; gap: 10px 14px; min-height: 0; padding: 14px 16px; }
-#stage .trpg-root.trpg-cinematic .trpg-approach-face { grid-area: face; width: 92px; height: 92px; }
-#stage .trpg-root.trpg-cinematic .trpg-approach-copy { grid-area: copy; }
-#stage .trpg-root.trpg-cinematic .trpg-approach-meta { grid-area: meta; }
+#stage .trpg-root.trpg-cinematic .trpg-approach { display: grid; grid-template-columns: 92px minmax(0, 1fr); grid-template-areas: "face who" "face what" "meta meta"; grid-template-rows: auto 1fr auto; gap: 2px 14px; min-height: 0; padding: 14px 16px; align-items: center; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-face { grid-area: face; width: 92px; height: 92px; align-self: start; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-copy > small { grid-area: who; align-self: end; font-size: 22px; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-copy > strong { grid-area: what; align-self: start; font-size: 26px; line-height: 1.35; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-copy > span { display: none; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-meta { grid-area: meta; margin-top: 10px; }
+#stage .trpg-root.trpg-cinematic .trpg-inline-help-body { left: auto; right: -70px; width: min(560px, calc(100cqw - 60px)); }
 
 /* 「物語の中へ」（役への変身）: 3枚の札を縦の幅に収める */
 #stage .trpg-root.trpg-cinematic .trpg-incarnate-kicker { top: 20%; }
 #stage .trpg-root.trpg-cinematic .trpg-incarnate-cards { top: 27%; gap: 22px; transform: scale(.74); transform-origin: 50% 0; }
 #stage .trpg-root.trpg-cinematic .trpg-incarnate-place { inset: auto 6% 180px; }
 #stage .trpg-root.trpg-cinematic > .trpg-incarnate-skip { right: 20px; bottom: 30px; }
+
+/* ───────── 選ぶ・調べる時（台詞が引いている間）: 絵の下が操作の場所 ───────── */
+/* 札を選ぶ場面は、札を置く場所を広く取る（絵を低くする）。絵の高さが変わる時は、なめらかに */
+#stage .trpg-root.trpg-cinematic.trpg-idle:has(.trpg-selection) { --pic-h: calc(var(--stage-h, 1385px) - 716px); }
+#stage .trpg-root.trpg-cinematic .trpg-room { overflow: visible; transition: height .28s ease, top .28s ease; }
+/* 場面の一言（場所・今やること）: 絵のすぐ下 */
+#stage .trpg-root.trpg-cinematic .trpg-stage-cue, #stage .trpg-root.trpg-cinematic[data-phase="explore"] .trpg-stage-cue { left: 14px; right: 14px; top: calc(var(--pic-h) + 14px); width: auto; max-width: none; transform: none; }
+#stage .trpg-root.trpg-cinematic .trpg-stage-cue .trpg-kicker { display: none; } /* 場所の名前は表紙と絵で分かる */
+/* 進むボタン: 下いっぱい。右にメモ */
+#stage .trpg-root.trpg-cinematic .trpg-stage-action { left: 14px; right: 126px; top: calc(var(--zone-b) - 120px); bottom: auto; transform: none; justify-content: stretch; white-space: normal; }
+#stage .trpg-root.trpg-cinematic .trpg-stage-action .trpg-button { flex: 1 1 0; min-width: 0; min-height: 100px; padding: 8px 12px; font-size: 26px; }
+#stage .trpg-root.trpg-cinematic .trpg-stage-action .trpg-button.primary { min-width: 0; font-size: 28px; }
+#stage .trpg-root.trpg-cinematic .trpg-stage-pockets { right: 12px; top: calc(var(--zone-b) - 114px); bottom: auto; }
+
+/* 選ぶ札の場所: 絵の下に、見出し・選んだ物の札・選択肢を上から並べる */
+#stage .trpg-root.trpg-cinematic .trpg-selection { inset: auto; left: 0; right: 0; top: var(--pic-h); height: calc(var(--stage-h, 1385px) - var(--pic-h) - 132px); box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; padding: 12px 10px 0; }
+#stage .trpg-root.trpg-cinematic .trpg-selection > * { position: static; left: auto; right: auto; top: auto; width: auto; transform: none; flex: none; }
+#stage .trpg-root.trpg-cinematic .trpg-selection-title h2 { margin: 0; font-size: 30px; }
+#stage .trpg-root.trpg-cinematic .trpg-selection-title > small { margin: 0 0 2px; }
+#stage .trpg-root.trpg-cinematic .trpg-choice-tabs { gap: 8px; flex-wrap: wrap; }
+#stage .trpg-root.trpg-cinematic .trpg-choice-tabs button { flex: 1 1 0; min-width: 0; min-height: 76px; }
+/* 絵つきの札: 3枚を横に。絵の下に名前（説明は、選んだ札だけ絵の裾に出る＝本編と同じ） */
+#stage .trpg-root.trpg-cinematic .trpg-choice-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; justify-content: stretch; }
+#stage .trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice:not(.trpg-text-choice) { flex: none; width: auto; height: auto; min-height: 0; display: flex; flex-direction: column; align-items: center; }
+#stage .trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice:not(.trpg-text-choice) .trpg-object-art { position: relative; left: auto; top: auto; width: 100%; height: auto; aspect-ratio: 1; margin-bottom: -18px; }
+#stage .trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice:not(.trpg-text-choice) > .trpg-object-label { position: relative; left: auto; bottom: auto; transform: none; width: auto; max-width: 100%; box-sizing: border-box; padding: 6px 8px; font-size: 22px; line-height: 1.3; white-space: normal; }
+#stage .trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice:not(.trpg-text-choice) > .trpg-object-detail { bottom: 62px; left: 0; right: 0; padding: 8px 4px 4px; font-size: 22px; line-height: 1.35; }
+/* 字だけの札（A・B・C）: 縦に3枚。左に印、右に題と一言 */
+#stage .trpg-root.trpg-cinematic .trpg-choice-cards:has(.trpg-text-choice) { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+#stage .trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice.trpg-text-choice { flex: none; width: auto; height: auto; min-height: 0; display: grid; grid-template-columns: 60px minmax(0, 1fr); grid-template-areas: "mark label" "mark detail"; align-items: center; column-gap: 14px; row-gap: 2px; padding: 14px 16px; text-align: left; }
+#stage .trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice.trpg-text-choice > span.trpg-text-choice-mark { grid-area: mark; width: 60px; height: 60px; font-size: 28px; }
+#stage .trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice.trpg-text-choice > strong.trpg-object-label { grid-area: label; font-size: 26px; }
+#stage .trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice.trpg-text-choice > span.trpg-object-detail { grid-area: detail; font-size: 22px; line-height: 1.4; }
+#stage .trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice.trpg-text-choice > .trpg-hint-mark { grid-column: 1 / -1; }
+/* 聞き込みの話題: 縦に並べた大きな札 */
+#stage .trpg-root.trpg-cinematic .trpg-interview-prompt { display: none; }
+#stage .trpg-root.trpg-cinematic .trpg-topic-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+#stage .trpg-root.trpg-cinematic .trpg-topic { width: auto; min-height: 88px; padding: 10px 18px; justify-content: center; }
+#stage .trpg-root.trpg-cinematic .trpg-topic strong { font-size: 26px; }
+
+/* ───────── 調べる場面: 絵を横長のまま出し（場所が全部見える）、場所は下の大きな札に。絵には番号の印 ───────── */
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] { --zone-b: calc(var(--stage-h, 1385px) - 96px); }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room { top: 96px; height: 360px; box-sizing: border-box; padding: 0 12px; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 10px; counter-reset: spot; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room > img { position: absolute; inset: 0; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room::after { background: linear-gradient(180deg, #071317a8, transparent 30%); }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room::before { content: ""; flex: 0 0 100%; height: 412px; }
+/* 「手がかり 0/3」の一行だけ（場面の題は上の帯と場面の札で分かる） */
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-stage-cue { top: 370px; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-stage-cue h2 { display: none; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot { position: static; counter-increment: spot; flex: 0 0 calc(50% - 5px); width: auto; height: 92px; min-height: 92px; margin: 0; transform: none; translate: none; display: flex; align-items: center; justify-content: flex-start; gap: 12px; padding: 0 14px; box-sizing: border-box;
+  border: 2px solid #d2ae6688; border-radius: 14px; background: linear-gradient(180deg, #173b3af2, #0e2829f5); box-shadow: 0 4px 12px #0006; backdrop-filter: none; color: #fff4d6; text-align: left; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot > i { position: static; flex: none; display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; font-size: 26px; font-weight: 700; color: #2a1b0c; text-shadow: none; background: linear-gradient(180deg, #fff1c8, #d2ae66); box-shadow: inset 0 -3px 0 #0003; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot > span { position: static; inset: auto; transform: none; translate: none; opacity: 1; visibility: visible; min-width: 0; width: auto; max-width: none; padding: 0; border: 0; background: none; box-shadow: none; font-size: 26px; font-weight: 700; line-height: 1.25; color: inherit; text-shadow: none; white-space: normal; text-align: left; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot.checked { border-color: #8fae9a88; background: linear-gradient(180deg, #12292bcc, #0b1c1ed9); color: #b9c9bb; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot.checked > i { background: #2c4a44; color: #d8e7cf; }
+/* 絵の上の番号の印（札と同じ番号。場所は本編の位置のまま） */
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot::before { content: counter(spot); position: absolute; left: inherit; top: inherit; right: auto; bottom: auto; inset-inline-end: auto; width: 46px; height: 46px; margin: -23px 0 0 -23px; display: grid; place-items: center; border: 2px solid #fff4d6; border-radius: 50%;
+  font-size: 24px; font-weight: 700; line-height: 1; color: #2a1b0c; background: linear-gradient(180deg, #fff1c8, #d2ae66); box-shadow: 0 0 0 5px #efd5a433, 0 4px 12px #000a; animation: none; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot.checked::before { content: "✓"; color: #d8e7cf; background: #2c4a44; border-color: #cee0c6; box-shadow: 0 4px 12px #000a; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot::after { content: none; }
+/* 仲間に相談: いちばん下の左。右はメモ */
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-stage-companions { position: absolute; left: 12px; right: 126px; bottom: auto; top: calc(var(--zone-b) - 120px); gap: 10px; align-items: stretch; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-stage-companions button { flex: 1 1 0; min-width: 0; min-height: 100px; flex-direction: row; justify-content: center; gap: 10px; padding: 6px 8px; border: 2px solid #d2ae6666; border-radius: 14px; background: #0e2829d9; font-size: 22px; white-space: normal; text-align: left; }
+
+/* ───────── 判定（振る前・振った後）: 1列に ───────── */
+#stage .trpg-root.trpg-cinematic .trpg-modal.trpg-roll-stage { padding: 12px 14px; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { position: static; display: flex; flex-direction: column; align-items: center; gap: 10px; min-height: 0; padding-left: 0; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > * { position: static; left: auto; top: auto; right: auto; width: auto; max-width: 100%; margin: 0; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-roll-actor { order: 1; align-self: stretch; justify-content: center; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-stake { order: 0; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-roll-scene { order: 2; min-height: 0; align-self: stretch; justify-content: center; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-row { zoom: .8; margin: 4px auto; justify-content: center; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-roll-chance { order: 3; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-roll-details { order: 4; align-self: stretch; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > :is(.trpg-rerolls, .trpg-aid, .trpg-roll-receipts) { order: 5; align-self: stretch; width: auto; }
+/* 振った後: サイコロ → 合計と出来 → 目標までの目盛り → 切り札 → 振り直し */
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-dice-total { order: 3; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-roll-gauge { order: 3; position: relative; align-self: stretch; margin: 26px 10px 6px; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > .trpg-roll-trump { order: 4; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-rerolls { flex-direction: column; gap: 10px; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-rerolls .trpg-button { width: auto; }
+/* 見立て（手がかりから選ぶ）: 札は3枚を横に、ボタンは縦に */
+#stage .trpg-root.trpg-cinematic .trpg-modal.trpg-hypothesis-stage { padding: 12px 10px; }
+#stage .trpg-root.trpg-cinematic .trpg-hypothesis-stage .trpg-choice-cards { height: auto; width: 100%; }
+#stage .trpg-root.trpg-cinematic .trpg-hypothesis-stage .trpg-object-choice { flex: none; width: auto; height: auto; min-height: 0; }
+#stage .trpg-root.trpg-cinematic .trpg-evidence-fold { width: auto; max-width: 100%; }
+#stage .trpg-root.trpg-cinematic .trpg-hypothesis-stage .trpg-modal-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+#stage .trpg-root.trpg-cinematic .trpg-hypothesis-stage .trpg-modal-actions .trpg-button { width: auto; min-width: 0; white-space: normal; }
+
+/* ───────── 重なって出る知らせ: 絵の中に収める ───────── */
+#stage .trpg-root.trpg-cinematic .trpg-clue-card { top: 156px; max-width: calc(100% - 40px); min-width: 0; padding: 10px 22px 12px; }
+#stage .trpg-root.trpg-cinematic .trpg-clue-card strong { white-space: normal; text-align: center; }
+#stage .trpg-root.trpg-cinematic .trpg-heat-pop, #stage .trpg-root.trpg-cinematic .trpg-heat-pop:not([data-tier="0"]) { left: auto; right: 10px; top: 96px; transform: none; }
+#stage .trpg-root.trpg-cinematic .trpg-scene-card { top: calc(var(--pic-h) * .5 - 30px); }
+#stage .trpg-root.trpg-cinematic .trpg-scene-card strong { font-size: 44px; }
+#stage .trpg-root.trpg-cinematic .trpg-cutin { top: calc(var(--pic-h) * .5 - 150px); height: 170px; gap: 16px; justify-content: flex-start; padding-left: 16px; box-sizing: border-box; }
+#stage .trpg-root.trpg-cinematic .trpg-cutin-figure { flex: 0 0 160px; height: 170px; }
+#stage .trpg-root.trpg-cinematic .trpg-cutin-copy { min-width: 0; }
+#stage .trpg-root.trpg-cinematic .trpg-cutin-copy strong { font-size: 46px; white-space: nowrap; }
+
+/* ───────── ダイスの演出: 横長の舞台（1280×720）を、式（サイコロ＋サイコロ＋補正）が切れない大きさまで広げる ───────── */
+/* 本編は画面の幅に合わせて 0.5 倍にする。縦は上下が空くので 0.62 倍にして、見出しと目標は舞台の上へ出す */
+#stage .trpg-root .trpg-roll-show .trpg-rs-fit { position: absolute; left: 50%; top: 46%; margin: -360px 0 0 -640px; transform: scale(.62) !important; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-head { left: 152px; top: -140px; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-hint { right: 140px; top: 486px; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-head > strong { font-size: 54px; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-head > span { font-size: 34px; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-goal { right: 130px; top: -158px; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-goal > span { font-size: 26px; }
+#stage .trpg-root .trpg-roll-show :is(.trpg-rs-kicker, .trpg-rs-goal > small, .trpg-rs-sum > small) { display: none; } /* 英字の飾り（DICE ROLL・TARGET・TOTAL）は出さない */
+#stage .trpg-root .trpg-roll-show .trpg-rs-skip { right: 16px; bottom: 20px; font-size: 22px; }
+
+/* ───────── メモ（手がかりの紙）: 1列で読む ───────── */
+#stage .trpg-root.trpg-cinematic .trpg-notes-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+#stage .trpg-root.trpg-cinematic .trpg-notes-grid .trpg-note-card :is(h3, p, small) { font-size: 22px; line-height: 1.5; }
+#stage .trpg-root.trpg-cinematic .trpg-notes-grid .trpg-note-card h3 { font-size: 26px; }
+
+/* ───────── 結末: 絵の中に題と一言、下にボタン ───────── */
+#stage .trpg-root.trpg-cinematic .trpg-ending { left: 24px; right: 24px; top: 150px; bottom: 16px; }
+#stage .trpg-root.trpg-cinematic .trpg-ending h2 { font-size: 46px; margin: 8px 0 12px; }
+#stage .trpg-root.trpg-cinematic .trpg-ending p { max-width: none; font-size: 24px; line-height: 1.7; margin: 0 0 12px; }
+#stage .trpg-root.trpg-cinematic[data-phase="ending"] .trpg-stage-action { gap: 8px; }
+#stage .trpg-root.trpg-cinematic[data-phase="ending"] .trpg-stage-action .trpg-button { font-size: 22px; line-height: 1.25; padding: 6px 4px; }
+
+/* ───────── 物語を選ぶ: 2列の札。絵・題・時間・囲む人の顔・開くボタンだけ（紹介文は表紙で読む） ───────── */
+#stage .trpg-root.trpg-library .trpg-library-header { top: 12px; left: 16px; right: 10px; align-items: center; }
+#stage .trpg-root.trpg-library :is(.trpg-library-header .trpg-kicker, .trpg-library-meta > span, .trpg-library-intro, .trpg-library-byline, .trpg-library-copy > p, .trpg-library-details > span:nth-child(n+2), .trpg-library-cast > div > span:last-child, .trpg-library-footer) { display: none; }
+#stage .trpg-root.trpg-library .trpg-library-header h1 { margin: 0; font-size: 36px; white-space: nowrap; }
+#stage .trpg-root.trpg-library .trpg-library-meta { gap: 4px; padding: 0; }
+#stage .trpg-root.trpg-library .trpg-library-meta .trpg-icon-button { width: 78px; height: 78px; }
+#stage .trpg-root.trpg-library .trpg-library-books { left: 10px; right: 10px; top: 106px; bottom: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-content: start; overflow-y: auto; }
+#stage .trpg-root.trpg-library .trpg-library-book { min-height: 0; }
+#stage .trpg-root.trpg-library .trpg-library-art { height: 150px; }
+#stage .trpg-root.trpg-library .trpg-library-number { left: 10px; top: 4px; font-size: 32px; }
+#stage .trpg-root.trpg-library .trpg-library-genre { right: 6px; top: 8px; padding: 2px 10px; font-size: 22px; }
+#stage .trpg-root.trpg-library .trpg-library-copy { padding: 8px 10px 10px; }
+#stage .trpg-root.trpg-library .trpg-library-copy h2 { margin: 0 0 4px; font-size: 28px; line-height: 1.3; min-height: 2.6em; }
+#stage .trpg-root.trpg-library .trpg-library-details { margin: 0 0 6px; gap: 10px; font-size: 22px; }
+#stage .trpg-root.trpg-library .trpg-library-cast { gap: 6px; margin-bottom: 10px; }
+#stage .trpg-root.trpg-library .trpg-library-face { width: 50px; height: 56px; }
+#stage .trpg-root.trpg-library .trpg-library-actions { grid-template-columns: minmax(0, 1fr) 80px; gap: 6px; }
+#stage .trpg-root.trpg-library :is(.trpg-library-actions > button, .trpg-library-copy > button) { min-height: 80px; padding-inline: 6px; justify-content: center; gap: 6px; font-size: 24px; white-space: nowrap; }
+#stage .trpg-root.trpg-library :is(.trpg-library-actions > button, .trpg-library-copy > button) > span:last-child:not(:first-child) { display: none; } /* 「→」は出さない（金の札で押せると分かる） */
+/* 「絵本をみる」は、字をやめて本の形の印に */
+#stage .trpg-root.trpg-library .trpg-library-actions > .trpg-picturebook-open { font-size: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff4d6' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 6.5c-2-1.300-4.600-1.800-8-1.500v13c3.400-.300 6 .200 8 1.500 2-1.300 4.600-1.800 8-1.500V5c-3.400-.300-6 .200-8 1.500z'/%3E%3Cpath d='M12 6.500v13'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: center; background-size: 44px; }
+
+/* ───────── 判定と宣言の、読まなくてよい添え字は出さない ───────── */
+#stage .trpg-root.trpg-cinematic :is(.trpg-roll-context, .trpg-roll-chance > small, .trpg-approach-first) { display: none; }
+
+/* ───────── キャラクターシート: 1人ずつ大きく見せて、横に送る（本編のスマホと同じ送り方） ───────── */
+#stage .trpg-root.trpg-cinematic .trpg-modal.trpg-sheet-stage { padding: 10px 0; }
+#stage .trpg-root.trpg-cinematic .trpg-sheet-grid { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 34px 10px; }
+#stage .trpg-root.trpg-cinematic .trpg-sheet { flex: 0 0 100%; box-sizing: border-box; scroll-snap-align: center; display: grid; grid-template-columns: 190px minmax(0, 1fr); column-gap: 14px; align-content: start; }
+#stage .trpg-root.trpg-cinematic .trpg-sheet > * { grid-column: 1 / -1; grid-row: auto; }
+/* 役の姿は左に小さく、名前と役は右に */
+#stage .trpg-root.trpg-cinematic .trpg-sheet > .trpg-sheet-costume { grid-column: 1; grid-row: 1; display: block; width: 190px; height: 250px; overflow: hidden; }
+#stage .trpg-root.trpg-cinematic .trpg-sheet > .trpg-sheet-costume :is(img, i, span) { max-width: 100%; max-height: 100%; }
+#stage .trpg-root.trpg-cinematic .trpg-sheet > .trpg-sheet-head { grid-column: 2; grid-row: 1; align-self: center; }
+/* 聞き込みの話題・メモの字を読みやすく */
+#stage .trpg-root.trpg-cinematic .trpg-topic strong { color: #fff4d6; }
+#stage .trpg-root.trpg-cinematic .trpg-stage-pockets button { font-size: 22px; }
+#stage .trpg-root.trpg-cinematic .trpg-stage-pockets :is(small, span) { font-size: 22px; }
+/* 調べる場所の札は、押しやすい高さに */
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot { height: 104px; min-height: 104px; }
+/* 宣言の「見込みは勢い＋4込み」のような計算の内訳は出さない */
+#stage .trpg-root.trpg-cinematic .trpg-declare-included { display: none; }
+#stage .trpg-root.trpg-cinematic .trpg-choice-tabs .trpg-choice-token { font-size: 22px; }
+
+/* ───────── 小さな添え字も、実寸 13px（ステージ上 22px）まで上げる ───────── */
+#stage .trpg-root.trpg-cinematic :is(.trpg-seat-mark, .trpg-roll-rule, .trpg-odds :is(span, small, b), .trpg-roll-trump, .trpg-roll-gauge-goal, .trpg-stake :is(b, span), .trpg-choice-tab :is(small, span),
+  .trpg-heat-pop span, .trpg-aid small, .trpg-reroll-choice small, .trpg-notes-grid > p, .trpg-evidence-fold summary, .trpg-stage-companions button span, .trpg-roll-equation,
+  .trpg-selection-title > small, .trpg-stage-investigation, .trpg-stage-investigation strong, .trpg-hypothesis-stage .trpg-modal-actions small, .trpg-search-slot, .trpg-search-slot small) { font-size: 22px; }
+#stage .trpg-root.trpg-cinematic .trpg-seat-mark { min-width: 30px; height: 30px; }

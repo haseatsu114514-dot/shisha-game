@@ -1,7 +1,7 @@
 // 縦画面の試作: ボドゲカフェ（短編TRPG）を縦の画面で動かす（縦試作の枠 ../index.html?view=play&scene=trpg が iframe で読む。単体でも開ける）。
 // 本編の単独ページ（remake/js/trpg/preview.js）と同じ mountTrpgCollection を呼ぶだけ。物語・台詞・判定・絵・音は本編のまま、並べ方は trpg.css。
 // この卓は本編の保存を読まない・書かない（mountTrpgCollection の決まり）。
-// ?shot=library|cover|talk|choice|roll は、一覧（PC）に並べる止め絵。?scenario=・?seed=・?traveler=・?tutorial=1 は単独ページと同じ。
+// ?shot=library|cover|talk|choice|roll|topics|explore は、一覧（PC）に並べる止め絵（choice＝行動の宣言、roll＝判定の結果、topics＝聞き込み、explore＝部屋を調べる）。?scenario=・?seed=・?traveler=・?tutorial=1 は単独ページと同じ。
 import { mountTrpgCollection } from "../../../js/trpg/collection.js";
 import { initPortraitFit, shot, param, until } from "./frame.mjs";
 
@@ -28,29 +28,31 @@ function boot() {
 
 const find = selector => [...document.querySelectorAll(selector)].find(node => node.offsetParent !== null && !node.disabled) || null;
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+// 止め絵の場面ごとの「ここで止める」条件（卓が入力を待っている時だけ）
+const SHOT_READY = {
+  talk: () => find('[data-test="trpg-next"]') && !document.querySelector(".trpg-incarnate"),
+  choice: () => find(".trpg-approach-list .trpg-approach"),
+  roll: () => find(".trpg-dice-total") && !document.querySelector(".trpg-roll-show"),
+  topics: () => document.querySelector(".trpg-root.trpg-idle") && find(".trpg-topic-list .trpg-topic"),
+  explore: () => document.querySelector('.trpg-root.trpg-idle[data-phase="explore"]') && find(".trpg-spot"),
+};
 /** 止め絵の場面を作る（画面のボタンを、遊ぶ人と同じ順に押していく）。 */
 async function pose(name) {
   await until(() => collection?.loaded);
   if (name === "library") return;
   await until(() => find('[data-test="trpg-start"]'));
   if (name === "cover") return;
+  const ready = SHOT_READY[name] || SHOT_READY.talk;
   find('[data-test="trpg-start"]').click();
-  await wait(600);
-  // 絵本（任意）はとばす
-  if (document.querySelector('[data-test="trpg-picturebook"]')) {
-    find('[data-test="trpg-picturebook-skip"]')?.click();
-    (await until(() => find('[data-test="trpg-picturebook-next"]'))).click();
-    await until(() => !document.querySelector('[data-test="trpg-picturebook"]'));
-  }
-  await until(() => find('[data-test="trpg-next"]'));
-  if (name === "talk") { await wait(900); return; }
-  // 選ぶ場面・ダイスまで、会話を送る
-  const wanted = name === "roll" ? '[data-test="trpg-roll-show"], .trpg-roll-show, [data-test="trpg-roll"]' : '[data-test^="trpg-choice"], [data-test^="trpg-option"], .trpg-choice, .trpg-choices button';
-  for (let i = 0; i < 400; i++) {
-    if (find(wanted)) break;
-    const next = find('[data-test="trpg-incarnate-skip"]') || find('[data-test="trpg-next"]');
-    if (next) next.click();
-    await wait(140);
+  await wait(500);
+  for (let step = 0; step < 600 && !ready(); step++) {
+    const show = document.querySelector(".trpg-roll-show");
+    // ダイスの演出は、画面を押して結果へ送る。絵本（任意）はとばす
+    if (show) host.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    else (find('[data-test="trpg-picturebook-skip"]') || find('[data-test="trpg-picturebook-next"]') || find('[data-test="trpg-incarnate-skip"]')
+      || find('[data-test="trpg-next"]') || find('[data-test="trpg-roll"]') || find('[data-test="trpg-settle"]') || find(".trpg-approach-list .trpg-approach")
+      || find('.trpg-topic-list .trpg-topic:not(.selected)') || find(".trpg-stage-action .trpg-button.primary"))?.click();
+    await wait(show ? 420 : 120);
   }
   await wait(900);
 }
