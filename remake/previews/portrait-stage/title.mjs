@@ -32,10 +32,25 @@ const ICONS = {
 let lastArt = null; // 続けて同じ人物を出さない（本編の pickTitleArt と同じ）
 
 export class TitleScene {
+  /** 場面の名札（app.mjs が読む）: 名前・光の色・一覧（PC）に並べる場面。 */
+  static META = {
+    id: "title", label: "タイトル", acc: "#f1d79a",
+    gallery: {
+      title: "タイトル画面",
+      note: "本編のタイトル（背景・人物のキービジュアル・ロゴ・メニュー）を縦へ。キービジュアルは縦長の絵なので、画面いっぱいに置き、裾にロゴを重ねる。人物の絵は開くたびに替わる（セーブがあれば出会った人物だけ）。",
+      shots: [
+        { caption: "セーブあり（CONTINUE から）", art: "tsumugi" },
+        { caption: "セーブなし（NEW GAME から）", save: "0", art: "mashiro" },
+        { caption: "人物の絵が替わる（スミさん）", art: "sumi" },
+      ],
+    },
+  };
+
   /**
    * @param opts save＝セーブがある時の見え方（CONTINUE・LOAD が押せる）、art＝出す人物（省くと、出会った人物から順に替わる）
    */
   constructor(phone, kit, { save = true, art = null } = {}) {
+    save = save !== "0" && save !== false; // 1台表示では ?save=0 で「セーブなし」
     Object.assign(this, { phone, kit, el: phone.el, save });
     Object.assign(kit.ICONS, ICONS);
     const pool = save ? MET : TITLE_ARTS;

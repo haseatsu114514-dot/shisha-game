@@ -105,6 +105,26 @@ const attrHtml = (art, id) => {
 };
 
 export class FloorScene {
+  /** 場面の名札（app.mjs が読む）: 名前・光の色・1台表示のつまみの選び方・一覧（PC）に並べる場面。 */
+  static META = {
+    id: "floor", label: "店番", acc: "#ffc978",
+    options: { name: "shift", default: "usual", values: Object.fromEntries(Object.entries(FLOOR_SHIFTS).map(([id, shift]) => [id, shift.name])) },
+    gallery: {
+      title: "店番（tonari のフロア営業）",
+      note: "本編の店番（バイト）を縦へ。ルール・数値・客・ミックス・台詞は本編のものをそのまま使い、画面だけ縦に組んだ。",
+      shots: [
+        { caption: "開店前", shot: "intro" },
+        { caption: "営業中", shot: "live" },
+        { caption: "接客の画面・注文（ミックスを選ぶ）", shot: "order" },
+        { caption: "接客の画面・頼み（5つの手から）", shot: "care" },
+        { caption: "フィーバー", shot: "fever" },
+        { caption: "精算（1枚め・評価と売上）", shot: "result" },
+        { caption: "精算（2枚め・内訳と日当）", shot: "result2" },
+        { caption: "遊び方（スミさんと一通り）", shot: "coach", shift: "tutorial" },
+      ],
+    },
+  };
+
   /**
    * @param phone 1台ぶんの画面（app.mjs の Phone）
    * @param kit app.mjs の部品（icon・esc・dpadHtml・aHtml・BTN・TOOL_SVG・ICONS・REMAKE_IMG）
@@ -1219,6 +1239,6 @@ export class FloorScene {
     this.refs.hand.dataset.key = "";
     for (const spot of this.refs.tables) { spot.keys = {}; spot.fx.innerHTML = ""; }
     this.setMode("intro");
-    this.phone.onFloorShift?.(this.shiftId);
+    this.phone.onExtOption?.("shift", this.shiftId);
   }
 }

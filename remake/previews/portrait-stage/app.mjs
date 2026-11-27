@@ -9,7 +9,10 @@
 import { paginateForBox } from "../../js/vn/layout.js";
 // タイトル画面と店番（フロア営業）は、場面ごとの別ファイルに置く（VPM01・VPM02）。店番は本編のルール（状態を持たない関数）を呼ぶが、本編の進行・保存には触れない
 import { TitleScene } from "./title.mjs";
-import { FloorScene, FLOOR_SHIFTS } from "./floor.mjs";
+import { FloorScene } from "./floor.mjs";
+import { LimeScene } from "./lime.mjs";
+import { GrowthScene } from "./growth.mjs";
+import { AxeScene } from "./axe.mjs";
 
 const REMAKE_IMG = new URL("../../img/", import.meta.url).href;
 // この試作のために画像生成（gpt-image-2.6-sunburst）で作った絵。原画とプロンプトは asset_sources/ui/portrait-stage-20261127/
@@ -276,10 +279,13 @@ const LOOKS = {
 
 const SCENES = ["map", "minto", "tonari", "water", "mix", "pack", "holes", "coal", "steam", "pull", "cutin"];
 const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", water: "水", mix: "配合", pack: "詰め", holes: "穴あけ", coal: "炭焼き", steam: "弾幕", pull: "吸う", cutin: "登場" }; // 1台表示の切り替え
-// 別ファイルの場面（タイトル・店番・VPM01・VPM02）。1台表示の切り替えでは、別の段に並べる
-const EXT_SCENES = ["title", "floor"];
+// 別ファイルの場面（タイトル・店番・LIME・心得の盤・斧投げ。VPM01〜）。1台表示の切り替えでは、別の段に並べる。
+// 場面の名前・光の色・一覧（PC）に並べる場面・つまみの選び方は、各ファイルの META に書く（場面を足す時、ここは EXT_CLASSES に1つ足すだけ）
+const EXT_CLASSES = [TitleScene, FloorScene, LimeScene, GrowthScene, AxeScene];
+const EXT = Object.fromEntries(EXT_CLASSES.map((cls) => [cls.META.id, cls]));
+const EXT_SCENES = Object.keys(EXT);
 SCENES.push(...EXT_SCENES);
-Object.assign(SCENE_LABEL, { title: "タイトル", floor: "店番" });
+Object.assign(SCENE_LABEL, Object.fromEntries(EXT_CLASSES.map((cls) => [cls.META.id, cls.META.label])));
 // 一覧（PC）に並べる場面
 const GALLERY = [
   { scene: "map", caption: "地図（選んだ店へ画面が動く）" },
@@ -298,23 +304,6 @@ const GALLERY = [
   { scene: "steam", caption: "作る・蒸らし（雑念よけ）" },
   { scene: "pull", caption: "作る・吸い出し（tonari）" },
   { scene: "pull", caption: "作る・吸い出し（PEPPERMINT の背景に替えた例）", pullBg: "shop" },
-];
-
-// 一覧（PC）に並べるタイトルと店番の場面（VPM01・VPM02）
-const TITLE_SHOTS = [
-  { caption: "セーブあり（CONTINUE から）", save: true, art: "tsumugi" },
-  { caption: "セーブなし（NEW GAME から）", save: false, art: "mashiro" },
-  { caption: "人物の絵が替わる（スミさん）", save: true, art: "sumi" },
-];
-const FLOOR_SHOTS = [
-  { caption: "開店前", shot: "intro" },
-  { caption: "営業中（卓を選んで、丸ボタンで用件）", shot: "live" },
-  { caption: "接客の画面・注文（ミックスを選ぶ）", shot: "order" },
-  { caption: "接客の画面・頼み（5つの手から）", shot: "care" },
-  { caption: "フィーバー", shot: "fever" },
-  { caption: "精算（1枚め・評価と売上）", shot: "result" },
-  { caption: "精算（2枚め・内訳と日当）", shot: "result2" },
-  { caption: "遊び方（スミさんと一通り）", shot: "coach", shift: "tutorial" },
 ];
 
 /** 登場カットインの名前（ふりがなは ruby。縦書きでも同じ書き方で右に付く） */
@@ -446,12 +435,8 @@ const AUX = {
   3: { name: "いちばん下の帯", lead: "スマホのアプリのような帯を画面の最下段に置く。親指が自然に届く位置。そのぶんパッドが上がり、絵が少し小さくなる" },
 };
 const AUX2 = { map: { l: "lime", r: "menu", more: [] }, talk: { l: "log", r: "more", more: ["auto", "skip", "terms", "config"] }, craft: { l: "more", r: null, more: ["help", "menu"] } };
-// 別ファイルの場面（タイトル・店番）へ渡す部品と、その場面の作り方。acc＝その場面の光の色
+// 別ファイルの場面へ渡す部品
 const KIT = { icon, esc, plain, dpadHtml, aHtml, btnFace, BTN, TOOL_SVG, ICONS, REMAKE_IMG, paginateForBox };
-const EXT = {
-  title: { acc: "#f1d79a", make: (phone) => new TitleScene(phone, KIT, phone.extOpts) },
-  floor: { acc: "#ffc978", make: (phone) => new FloorScene(phone, KIT, phone.extOpts) },
-};
 
 function meterHtml() {
   const C = 100, RO = 92, RI = 60;
@@ -471,9 +456,9 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null, look = "a", pullBg = "tonari", shift = "usual", shot = null, save = true, art = null } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null, look = "a", pullBg = "tonari", ...ext } = {}) {
     this.el = el;
-    this.extOpts = { shift, shot, save, art }; // タイトル・店番の見せ方（営業の種類・一覧に並べる場面・セーブの有無・人物の絵）
+    this.extOpts = ext; // 別ファイルの場面の見せ方（店番の営業の種類・一覧に並べる場面 shot など。1台表示では URL の値がそのまま入る）
     el.lang = "ja";
     this.fixed = fixed; // 一覧では場面を固定し、その場面の中の操作だけ動かす
     this.aux = [1, 2, 3].includes(aux) ? aux : 1; // 補助ボタンの配置案
@@ -529,9 +514,9 @@ class Phone {
     this.ext?.destroy(); this.ext = null;
     if (EXT[st.scene]) { // タイトル・店番は、別ファイルの場面が描く
       el.dataset.kind = st.scene;
-      el.style.setProperty("--acc", EXT[st.scene].acc);
+      el.style.setProperty("--acc", EXT[st.scene].META.acc);
       clearTimeout(this.ciTimer);
-      this.ext = EXT[st.scene].make(this);
+      this.ext = new EXT[st.scene](this, KIT, this.extOpts);
       el.innerHTML = this.ext.html();
       this.ext.mount();
       return;
@@ -1893,12 +1878,9 @@ function showGallery() {
     </ul>
     <p class="g-note">絵・立ち絵・台詞は本編の素材、配置と動きが今回の案です。本編の進行や保存には触れません。<a href="?view=play" data-go="play">1台で通して触る</a></p>
     <div class="g-grid">${GALLERY.map((item, i) => `<figure class="g-cell"><article class="phone" data-i="${i}"></article><figcaption>${item.caption}</figcaption></figure>`).join("")}</div>
-    <h2 class="g-sub">タイトル画面</h2>
-    <p class="g-note">本編のタイトル（背景・人物のキービジュアル・ロゴ・メニュー）を縦へ。キービジュアルは縦長の絵なので、上の絵いっぱいに置き、裾にロゴを重ねる。はじめる2つ（NEW GAME・CONTINUE）は十字キーの上下と決定で選び、LOAD・GALLERY・CONFIG は補助の段。人物の絵は開くたびに替わる（セーブがあれば出会った人物だけ）。<a href="?view=play&scene=title">1台で動きを見る</a></p>
-    <div class="g-grid">${TITLE_SHOTS.map((item, i) => `<figure class="g-cell"><article class="phone" data-tt="${i}"></article><figcaption>${item.caption}</figcaption></figure>`).join("")}</div>
-    <h2 class="g-sub">店番（tonari のフロア営業）</h2>
-    <p class="g-note">本編の店番（バイト）を縦へ。ルール・数値・客・ミックス・台詞は本編のものをそのまま使い、画面だけ縦に組んだ。上の絵に5つの卓（上に3つ・下に2つ）、真ん中にはじめの心の声とミックスの一覧（属性の印。合う一台に◎○）、補助の段にシャッフル・フィーバー・休止。十字キーで卓を選び、丸ボタンが卓の用件（注文を聞く・炭を整える・会計・頼みを聞く）に替わる。注文と頼みは「接客の画面」に替わり、その間は時間が止まる。<a href="?view=play&scene=floor">1台で遊ぶ</a>（<a href="?view=play&scene=floor&shift=tutorial">遊び方から</a>）</p>
-    <div class="g-grid">${FLOOR_SHOTS.map((item, i) => `<figure class="g-cell"><article class="phone" data-fl="${i}"></article><figcaption>${item.caption}</figcaption></figure>`).join("")}</div>
+    ${EXT_CLASSES.map((cls) => `<h2 class="g-sub">${cls.META.gallery.title}</h2>
+    <p class="g-note">${cls.META.gallery.note} <a href="?view=play&scene=${cls.META.id}">1台で触る</a></p>
+    <div class="g-grid">${cls.META.gallery.shots.map((item, i) => `<figure class="g-cell"><article class="phone" data-ext="${cls.META.id}" data-shot-i="${i}"></article><figcaption>${item.caption}</figcaption></figure>`).join("")}</div>`).join("")}
     <h2 class="g-sub">水入れ・配合・雑念よけの見た目（3案ずつ）</h2>
     <p class="g-note">シーシャ作りの3つの工程に、それぞれ専用の見た目を3案。ボトル・ハガル・水位計・はかり・缶・背景は画像生成（gpt-image-2.6-sunburst）で作り、水や葉の量・数字・弾はコードで重ねる。遊び方は3案とも同じ。1台表示の右上のつまみ →「見た目」で案を替えて触れる。</p>
     ${Object.keys(LOOKS).map((scene) => `<section class="g-aux"><h3>${{ water: "水入れ", mix: "配合（グラム決め）", steam: "蒸らし（雑念よけ）" }[scene]}<a href="?view=play&scene=${scene}">1台で動きを見る</a></h3>
@@ -1913,8 +1895,7 @@ function showGallery() {
   </main>`;
   app.querySelectorAll(".phone[data-i]").forEach((el) => { const item = GALLERY[Number(el.dataset.i)]; phones.push(new Phone(el, item.scene, { fixed: true, ...item })); });
   app.querySelectorAll(".phone[data-ci]").forEach((el) => phones.push(new Phone(el, "cutin", { fixed: true, ci: el.dataset.ci, who: el.dataset.who })));
-  app.querySelectorAll(".phone[data-tt]").forEach((el) => phones.push(new Phone(el, "title", { fixed: true, ...TITLE_SHOTS[Number(el.dataset.tt)] })));
-  app.querySelectorAll(".phone[data-fl]").forEach((el) => phones.push(new Phone(el, "floor", { fixed: true, ...FLOOR_SHOTS[Number(el.dataset.fl)] })));
+  app.querySelectorAll(".phone[data-ext]").forEach((el) => phones.push(new Phone(el, el.dataset.ext, { fixed: true, ...EXT[el.dataset.ext].META.gallery.shots[Number(el.dataset.shotI)] })));
   app.querySelectorAll(".phone[data-lk]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, look: el.dataset.lk, water: 0.5, mix: [7, 3, 2], grade: 1, gradeP: 0.4 })));
   app.querySelectorAll(".phone[data-gp]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, rank: el.dataset.rank, grade: Number(el.dataset.grade), gradeP: Number(el.dataset.gp) })));
   scrollTo(0, 0);
@@ -1937,7 +1918,8 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
   app.innerHTML = `<div class="frame"><article class="phone"></article>${bare ? "" : `<nav class="switch" aria-label="場面と案の切り替え">
     <button class="grip" data-grip aria-expanded="false" aria-label="切り替えを開く"><i></i></button>
     <div class="panel"><div>${SCENES.filter((id) => !EXT_SCENES.includes(id)).map((id) => `<button data-scene="${id}" aria-pressed="${id === scene}">${SCENE_LABEL[id]}</button>`).join("")}</div>
-      <div>${EXT_SCENES.map((id) => `<button data-scene="${id}" aria-pressed="${id === scene}">${SCENE_LABEL[id]}</button>`).join("")}<i class="sep"></i>${Object.entries(FLOOR_SHIFTS).map(([id, shift]) => `<button data-shift="${id}" aria-pressed="${id === (params.get("shift") || "usual")}">${shift.name}</button>`).join("")}</div>
+      <div>${EXT_SCENES.map((id) => `<button data-scene="${id}" aria-pressed="${id === scene}">${SCENE_LABEL[id]}</button>`).join("")}</div>
+      ${EXT_CLASSES.filter((cls) => cls.META.options).map((cls) => `<div><small>${cls.META.label}</small>${Object.entries(cls.META.options.values).map(([value, name]) => `<button data-opt="${cls.META.id}:${cls.META.options.name}:${value}" aria-pressed="${value === (params.get(cls.META.options.name) || cls.META.options.default)}">${name}</button>`).join("")}</div>`).join("")}
       <div><small>登場</small>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div>
       <div><small>見た目</small>${["a", "b", "c"].map((v) => `<button data-look="${v}" aria-pressed="${v === (params.get("look") || "a")}">案${v.toUpperCase()}</button>`).join("")}</div>
       <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "d")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div></div></nav>`}</div>`;
@@ -1945,14 +1927,15 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
   // 先に大きさを決めてから描く（立ち絵と地図の位置は絵の大きさから決まる）
   const box = app.getBoundingClientRect(), rem = Math.min(box.width / 39, box.height / 66);
   root.style.fontSize = `${rem}px`; el.style.height = `${Math.min(box.height, rem * 92)}px`;
-  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", look: params.get("look") || "a", grade: params.get("grade"), shift: params.get("shift") || "usual", shot: params.get("shot"), save: params.get("save") !== "0", art: params.get("art"), ...opts });
+  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { ...Object.fromEntries(params), step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", look: params.get("look") || "a", grade: params.get("grade"), ...opts });
   current = make(scene);
   const nav = app.querySelector(".switch");
   if (!nav) return;
   const sync = () => nav.querySelectorAll("[data-scene]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.scene === current.st.scene)));
   current.onScene = sync;
-  const syncShift = () => nav.querySelectorAll("[data-shift]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.shift === current.extOpts.shift)));
-  current.onFloorShift = (id) => { current.extOpts.shift = id; syncShift(); }; // チュートリアルを終えると、はじめての営業へ移る
+  // 別ファイルの場面の選び方（店番の営業の種類など）。場面の中で替わった時（チュートリアルを終えて、はじめての営業へ）も合わせる
+  const syncOpt = () => nav.querySelectorAll("[data-opt]").forEach((b) => { const [id, name, value] = b.dataset.opt.split(":"); b.setAttribute("aria-pressed", String(value === (current.extOpts[name] || EXT[id].META.options.default))); });
+  current.onExtOption = (name, value) => { current.extOpts[name] = value; syncOpt(); };
   let idle;
   const open = (on) => { nav.classList.toggle("open", on); nav.querySelector("[data-grip]").setAttribute("aria-expanded", String(on)); clearTimeout(idle); if (on) idle = setTimeout(() => open(false), 4200); };
   nav.addEventListener("click", (event) => {
@@ -1961,7 +1944,7 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
     if ("grip" in button.dataset) return open(!nav.classList.contains("open"));
     open(true);
     if (button.dataset.scene) current.setScene(button.dataset.scene);
-    else if (button.dataset.shift) { current.extOpts.shift = button.dataset.shift; current.extOpts.shot = null; syncShift(); current.setScene("floor"); } // 店番の営業の種類を替えて、開店前から
+    else if (button.dataset.opt) { const [id, name, value] = button.dataset.opt.split(":"); current.extOpts[name] = value; current.extOpts.shot = null; syncOpt(); current.setScene(id); } // 選び方を替えて、その場面を最初から
     else if (button.dataset.look) {
       // 水入れ・配合・雑念よけの見た目の案を替える。その3場面でなければ水入れへ
       current.lookAt = button.dataset.look; current.el.dataset.look = button.dataset.look;
