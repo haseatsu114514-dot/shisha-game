@@ -41,12 +41,21 @@ const IMG = {
   bowl_normal: `${OWN_IMG}ui-bowl-normal.webp`,
   bowl_firm: `${OWN_IMG}ui-bowl-firm.webp`,
   pullHajime: `${OWN_IMG}craft-pull-hajime.webp`, // 人物だけ（背景なし）。場所の背景に重ねる（VPL41）
+  // 炭焼き（VPL54・VPL55）: 本編の電熱コンロ・炭（黒い面・赤）・炭壺・トングを持つはじめ。HMD は生成
+  stove: `${REMAKE_IMG}ui/making/heat_stove.webp`,
+  coalCold: `${REMAKE_IMG}ui/making/heat_flat_cold.webp`,
+  coalLit: `${REMAKE_IMG}ui/making/heat_flat_lit.webp`,
+  carrier: `${REMAKE_IMG}ui/making/heat_carrier.webp`,
+  hajimeTongs: `${REMAKE_IMG}ui/making/hajime_craft_heat.webp`,
+  hmd: `${OWN_IMG}ui-hmd.webp`,
   // 配合のはかり（VPL37）
   scale: `${OWN_IMG}ui-scale.webp`,
-  // 葉のパッケージは本編の店の絵（remake/img/shop/heaven10/・VPL39）
-  pkg_double_apple: `${REMAKE_IMG}shop/heaven10/double_apple.webp`,
-  pkg_mint: `${REMAKE_IMG}shop/heaven10/mint.webp`,
-  pkg_lemon: `${REMAKE_IMG}shop/heaven10/lemon.webp`,
+  // 葉のパッケージは本編の店の絵（remake/img/shop/heaven10/ の10種・VPL39）
+  ...Object.fromEntries(["mint", "double_apple", "blueberry", "strawberry", "pineapple", "lemon", "orange", "grape", "watermelon", "cinnamon"].map((id) => [`pkg_${id}`, `${REMAKE_IMG}shop/heaven10/${id}.webp`])),
+  // 器の葉は、写真のような刻み葉（赤寄り・茶色寄り）を器の口に流し込んだ絵（VPL53）。配合ではフレーバーの色の割合で重ねる
+  leafRed: `${OWN_IMG}ui-leaf-red.webp`,
+  leafBrown: `${OWN_IMG}ui-leaf-brown.webp`,
+  ...Object.fromEntries(["partial", "airy", "normal", "firm"].map((k) => [`bowl_${k}_brown`, `${OWN_IMG}ui-bowl-${k}-brown.webp`])),
   bowl_partial: `${OWN_IMG}ui-bowl-partial.webp`,
   // 雑念よけは本編（横画面）の見た目を縦に組み直す（VPL44）: 本編の雑念の場
   mindWorld: `${REMAKE_IMG}ui/making/steam_mind_world.webp`,
@@ -111,11 +120,12 @@ const PACKS = [
   { id: "firm", name: "デンスパック", dens: 3, locked: true },
 ];
 // 工程（上の並び）と、スミさんの一言
-const STEPS = [["water", "水入れ"], ["mix", "配合"], ["pack", "詰め方"], ["holes", "穴あけ"], ["coal", "炭"], ["steam", "蒸らし"], ["pull", "吸い出し"], ["care", "調整"]];
+const STEPS = [["water", "水入れ"], ["mix", "配合"], ["pack", "詰め方"], ["holes", "穴あけ"], ["coal", "炭焼き"], ["steam", "蒸らし"], ["pull", "吸い出し"], ["care", "調整"]];
 // この試作で遊べる作る場面（本編と同じ順。炭と調整は省く）
-const CRAFT_SCENES = ["water", "mix", "pack", "holes", "steam", "pull"];
+const CRAFT_SCENES = ["water", "mix", "pack", "holes", "coal", "steam", "pull"];
 const COACH = {
   water: "線のあいだまで注げ",
+  coal: "全面が赤くなったら取れ",
   mix: "レモンを2g以上。合わせて12g",
   steam: "雑念は、よけて流せ",
   pack: "詰め方を見比べて決めよう。迷ったらノーマル",
@@ -188,10 +198,18 @@ const GENRES = {
 };
 // 第1章の葉（本編の ID）。ジャンルは店番の表（ダブルアップル＝刺激系＋フルーティ、ミント＝刺激系、レモン＝フルーティ＋刺激系）。
 // パッケージの切り出しは本編 remake/js/daily/shop-art.js の box（512×512 の絵）
+// 葉の色（leaf）は実物に合わせて、色を付けた果物系＝赤寄り、ミントやシナモン・柑橘＝茶色寄り（VPL50・VPL53）
 const MIX = [
-  { id: "double_apple", name: "ダブルアップル", genre: "fresh", sub: "fruit", box: [105, 53, 304, 405] },
-  { id: "mint", name: "ミント", genre: "fresh", box: [124, 85, 264, 347] },
-  { id: "lemon", name: "レモン", genre: "fruit", sub: "fresh", need: 2, box: [104, 51, 306, 408] },
+  { id: "double_apple", name: "ダブルアップル", genre: "fresh", sub: "fruit", leaf: "red", box: [105, 53, 304, 405] },
+  { id: "mint", name: "ミント", genre: "fresh", leaf: "brown", box: [124, 85, 264, 347] },
+  { id: "lemon", name: "レモン", genre: "fruit", sub: "fresh", leaf: "brown", need: 2, box: [104, 51, 306, 408] },
+  { id: "blueberry", name: "ブルーベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
+  { id: "strawberry", name: "ストロベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
+  { id: "grape", name: "グレープ", genre: "fruit", leaf: "red", box: [110, 57, 295, 404] },
+  { id: "watermelon", name: "スイカ", genre: "fruit", sub: "fresh", leaf: "red", box: [104, 51, 305, 408] },
+  { id: "orange", name: "オレンジ", genre: "fruit", sub: "fresh", leaf: "brown", box: [104, 51, 306, 408] },
+  { id: "pineapple", name: "パイナップル", genre: "fruit", leaf: "brown", box: [104, 51, 306, 408] },
+  { id: "cinnamon", name: "シナモン", genre: "fresh", sub: "sweet", leaf: "brown", box: [102, 51, 308, 409] },
 ];
 const pkgHtml = (f, h) => {
   const [x, y, w, hh] = f.box, k = h / hh, r = (v) => `${(v * k).toFixed(2)}rem`;
@@ -211,6 +229,14 @@ const DODGE_WORDS = [
   "熱、強すぎないかな", "煙、ちゃんと出るかな", "さっきの手順、大丈夫か", "吸い出しで崩したくない",
 ];
 const DODGE = { time: 9000, ready: 1200, every: 460, speed: [105, 145], wave: 2800, warn: 750, invuln: 900, bombCool: 8000, bombR: 120, move: 220, slow: 95, core: 4 };
+// 炭焼き（VPL54・VPL55）: 本編 remake/js/craft/heat_logic.js の値。炭は3個、取り頃は4.2〜7.4秒の抽選（隣の炭と0.75秒以上ずらす）、
+// ジャストの幅は0.5秒（試作はレッスンと同じ×1.5）。p＝経過÷取り頃で判定し、1.75倍で灰になって落ちる。窓が開く0.3秒前に一度だけ瞬く
+const HEAT = { count: 3, ready: [4200, 7400], gap: 750, just: 750, drop: 1.75, blink: 300, lead: 900 };
+const heatJudge = (p, jw) => p < 0.35 ? ["raw", 15, "MISS"] : p < 0.7 ? ["early", 45, "MISS"] : p < 1 ? ["pre", 78, "GOOD"] : p < 1 + jw ? ["just", 100, "EXCELLENT"] : p < 1.3 + jw ? ["hot", 80, "GOOD"] : ["over", 68, "MISS"];
+// コンロの上の炭の中心（コンロの絵 1280×853 に対する割合）
+const COAL_AT = [[0.44, 0.3], [0.32, 0.55], [0.56, 0.55]];
+const LOOKS_COAL_SLOTS = { b: [[0.5, 0.42], [0.36, 0.6], [0.64, 0.6]], c: [[0.5, 0.12], [0.34, 0.2], [0.66, 0.2]] };
+
 // 本編の心と弾の絵（remake/js/craft/steam-art.js の HEART_ART・BULLET_ART の写し）。心は水色・白い縁、当たるのは真ん中の白い丸だけ
 const HEART = typeof Path2D === "function" ? new Path2D("M14 24C9 20 2.5 15.5 2.5 9.5a6 6 0 0 1 11.5-2 6 6 0 0 1 11.5 2C25.5 15.5 19 20 14 24Z") : null;
 const BULLET_SVG = {
@@ -228,6 +254,11 @@ const SEG7_PATH = typeof Path2D === "function" ? Object.fromEntries(Object.entri
 
 // 専用の見た目（VPL37）: 水入れ・配合・雑念よけを3案ずつ。?look=a|b|c、1台表示の右上のつまみ →「見た目」で切り替える
 const LOOKS = {
+  coal: {
+    a: { name: "トングを持つはじめ", lead: "上にトングを構えたはじめ。下のコンロで炭をタッチすると、炭がトングの先へ移り、判定の札が出る" },
+    b: { name: "炭壺へ入れる", lead: "上に本編の炭壺を真上から。タッチした炭が壺の中へ落ちて並び、取った数と焼け具合がひと目でわかる" },
+    c: { name: "HMDへ載せる", lead: "上にハガルとHMD。タッチした炭がHMDの中へ並んでいく（取った炭はこの後HMDに載せる）" },
+  },
   mix: {
     a: { name: "はかりで量る", lead: "はかりの上に器を載せ、表示窓の数字が1gずつ増える。器ははかりに見合う大きさ。下の札は本編のパッケージと店番と同じジャンルの印" },
     b: { name: "パッケージから注ぐ", lead: "選んだ葉のパッケージが器の上で傾き、1gごとに葉がこぼれ落ちる。器の下の12の枠はジャンルの色で埋まる" },
@@ -235,8 +266,8 @@ const LOOKS = {
   },
 };
 
-const SCENES = ["map", "minto", "tonari", "water", "mix", "pack", "holes", "steam", "pull", "cutin"];
-const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", water: "水", mix: "配合", pack: "詰め", holes: "穴あけ", steam: "弾幕", pull: "吸う", cutin: "登場" }; // 1台表示の切り替え
+const SCENES = ["map", "minto", "tonari", "water", "mix", "pack", "holes", "coal", "steam", "pull", "cutin"];
+const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", water: "水", mix: "配合", pack: "詰め", holes: "穴あけ", coal: "炭焼き", steam: "弾幕", pull: "吸う", cutin: "登場" }; // 1台表示の切り替え
 // 一覧（PC）に並べる場面
 const GALLERY = [
   { scene: "map", caption: "地図（選んだ店へ画面が動く）" },
@@ -251,6 +282,7 @@ const GALLERY = [
   { scene: "mix", caption: "作る・配合（葉を詰める）", mix: [7, 3, 2] },
   { scene: "pack", caption: "作る・詰め方" },
   { scene: "holes", caption: "作る・穴あけ" },
+  { scene: "coal", caption: "作る・炭焼き" },
   { scene: "steam", caption: "作る・蒸らし（雑念よけ）" },
   { scene: "pull", caption: "作る・吸い出し（tonari）" },
   { scene: "pull", caption: "作る・吸い出し（PEPPERMINT の背景に替えた例）", pullBg: "shop" },
@@ -419,7 +451,7 @@ class Phone {
     el.dataset.look = this.lookAt;
     el.dataset.rank = this.rankAt;
     this.st = { scene, sel: DEFAULT_SPOT, step, page: 0, grade: Math.max(0, Math.min(6, Number(grade) || 0)), gradeP: Number(gradeP) || 0, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4,
-      water: Number(water) || 0, mix: Array.isArray(mix) ? [...mix] : [0, 0, 0], mixSel: 0, slow: false,
+      water: Number(water) || 0, mix: MIX.map((f, i) => (Array.isArray(mix) ? mix[i] : 0) || 0), mixSel: 0, slow: false,
       ci: ["a", "b", "c"].includes(ci) ? ci : "a", who: CUTINS[who] ? who : "minto", ciPhase: "off" };
     this.cam = null;      // 地図をドラッグした時の位置（選び直すと選んだ店へ戻る）
     this.t0 = performance.now();
@@ -471,6 +503,7 @@ class Phone {
     if (st.scene === "water") this.syncWater();
     if (st.scene === "mix") this.syncMix();
     if (st.scene === "steam") requestAnimationFrame(() => this.startDodge());
+    if (st.scene === "coal") this.startCoals();
     if (!this.talk && st.scene !== "map") this.fitCoach();
   }
 
@@ -800,14 +833,15 @@ class Phone {
     const { st } = this, at = STEPS.findIndex(([id]) => id === st.scene);
     const pic = st.scene === "pack" ? `<img class="bg" src="${IMG.tonari}" alt=""><img class="bowl" src="${IMG[`bowl_${PACKS[st.pack].id}`]}" alt="">`
       : st.scene === "holes" ? `<img class="bg" src="${IMG.tonari}" alt=""><div class="foil"><img src="${IMG.foil}" alt=""><svg viewBox="-100 -100 200 200" class="foil-marks"></svg></div>`
-      : st.scene === "water" ? this.waterPic() : st.scene === "mix" ? this.mixPic() : st.scene === "steam" ? this.steamPic()
+      : st.scene === "water" ? this.waterPic() : st.scene === "mix" ? this.mixPic() : st.scene === "steam" ? this.steamPic() : st.scene === "coal" ? this.coalPic()
       : `<img class="bg" src="${IMG[this.pullBg || "tonari"]}" alt=""><img class="pull-cg" src="${IMG.pullHajime}" alt=""><img class="puff" src="${IMG.smoke}" alt="">`;
     // 日付・体力・お金は出さない。上は工程の並びだけ。名前の文字は出さず、今の工程は光る丸で示す（VPL31）
     return `
       <img class="amb" src="${IMG.tonari}" alt="">
       <div class="pic craft craft-${st.scene}">${pic}</div>
       <i class="veil"></i>
-      ${["water", "mix"].includes(st.scene) ? "" : this.thermoHtml()}
+      ${["water", "mix", "coal"].includes(st.scene) ? "" : this.thermoHtml()}
+      <button class="help-q" data-act="fn" data-fn="help" aria-label="説明">?</button>
       <div class="steps" aria-label="工程">${STEPS.map(([id, name], i) => `<span class="${i === at ? "now" : i < at ? "done" : ""}" aria-label="${name}"${i === at ? ` aria-current="step"` : ""}>${icon(id)}</span>`).join("")}</div>
       ${this.rankAt === "a" ? "" : this.rankHtml()}
       <div class="body">
@@ -937,12 +971,13 @@ class Phone {
 
   /* ── 配合（VPL36・VPL48）: 葉を1gずつ器へ。葉は本編のパッケージ、ジャンルは店番と同じ ── */
   mixBowl(cls = "") {
-    return `<div class="mixbowl ${cls}"><img class="b-empty" src="${IMG.bowlEmpty}" alt=""><img class="b-airy" src="${IMG.bowl_partial}" alt=""><img class="b-full" src="${IMG.bowl_normal}" alt=""></div>`;
+    return `<div class="mixbowl ${cls}"><img class="b-empty" src="${IMG.bowlEmpty}" alt="">
+      <img class="b-airy brown" src="${IMG.bowl_partial_brown}" alt=""><img class="b-airy red" src="${IMG.bowl_partial}" alt="">
+      <img class="b-full brown" src="${IMG.bowl_normal_brown}" alt=""><img class="b-full red" src="${IMG.bowl_normal}" alt=""></div>`;
   }
 
   mixPic() {
     const look = this.lookAt, { st } = this;
-    const bar = `<div class="mixbar" aria-hidden="true"><span class="slots"></span><b class="mixsum"></b></div>`;
     if (look === "a") {
       // はかり: 器ははかりの台に見合う大きさ（VPL43）。前の表示窓（横30〜63%・縦82〜96%）に重さ
       return `<img class="bg" src="${IMG.tonari}" alt=""><div class="mix-a"><div class="scale"><img src="${IMG.scale}" alt="">${this.mixBowl("on-scale")}<b class="digits" aria-hidden="true"><span class="d-num">00</span><span class="d-unit">g</span></b></div></div>`;
@@ -950,22 +985,26 @@ class Phone {
     if (look === "b") {
       // パッケージから注ぐ: 選んだ葉のパッケージが器の上で傾く
       const f = MIX[st.mixSel];
-      return `<img class="bg" src="${IMG.tonari}" alt=""><div class="mix-b"><div class="pour-pkg" data-i="${st.mixSel}">${pkgHtml(f, 15)}</div>${this.mixBowl()}${bar}</div>`;
+      return `<img class="bg" src="${IMG.tonari}" alt=""><div class="mix-b"><div class="pour-pkg" data-i="${st.mixSel}">${pkgHtml(f, 15)}</div>${this.mixBowl()}</div>`;
     }
     // 本編の配合を縦に: 上は器と合計の帯、葉の行はテロップの所に並ぶ
-    return `<img class="bg" src="${IMG.tonari}" alt=""><div class="mix-c">${this.mixBowl()}${bar}</div>`;
+    return `<img class="bg" src="${IMG.tonari}" alt=""><div class="mix-c">${this.mixBowl()}</div>`;
   }
 
-  /** 葉の札（はかり・パッケージから注ぐ）／葉の行（本編の配合を縦に）。 */
+  /** 下の画面のフレーバーの一覧（VPL52）。案A・B は横にスライドする札、案C は縦にスライドする本編の葉の行。どれも −／＋ で1gずつ。 */
   mixCardsHtml() {
-    const { st } = this, total = this.mixTotal();
-    if (this.lookAt === "c") {
-      return `<div class="mixrows">${MIX.map((f, i) => `<div class="mixrow${i === st.mixSel ? " on" : ""}${f.need && st.mix[i] >= f.need ? " met" : ""}" data-act="mixsel" data-i="${i}">
-        ${pkgHtml(f, 5.6)}<span class="mr-name"><b>${f.name}</b><span class="mr-tags">${genreHtml(f.genre)}${f.sub ? genreHtml(f.sub, false) : ""}${f.need ? `<small class="need">${f.need}g〜</small>` : ""}</span><small class="ratio">比率 ${total ? Math.round(st.mix[i] / total * 100) : 0}%</small></span>
-        <button class="mr-btn" data-act="mixadd" data-i="${i}" data-by="-1" aria-label="${f.name}を1g減らす">−</button><span class="mr-g"><em>${st.mix[i]}</em>g</span><button class="mr-btn" data-act="mixadd" data-i="${i}" data-by="1" aria-label="${f.name}を1g増やす">＋</button></div>`).join("")}</div>`;
+    const { st } = this, total = this.mixTotal(), rows = this.lookAt === "c";
+    const btn = (i, by, f) => `<button class="mr-btn" data-act="mixadd" data-i="${i}" data-by="${by}" aria-label="${f.name}を1g${by > 0 ? "増やす" : "減らす"}">${by > 0 ? "＋" : "−"}</button>`;
+    const need = (f, i) => f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : "";
+    const tags = (f, named) => `${genreHtml(f.genre, named)}${f.sub ? genreHtml(f.sub, false) : ""}`;
+    if (rows) {
+      return `<div class="picker rows" role="listbox" aria-label="フレーバー">${MIX.map((f, i) => `<div class="mixrow${i === st.mixSel ? " on" : ""}" data-act="mixsel" data-i="${i}" role="option" aria-selected="${i === st.mixSel}">
+        ${pkgHtml(f, 5.4)}<span class="mr-name"><b>${f.name}</b><span class="mr-tags">${tags(f, true)}${need(f, i)}</span><small class="ratio">比率 ${total ? Math.round(st.mix[i] / total * 100) : 0}%</small></span>
+        ${btn(i, -1, f)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(i, 1, f)}</div>`).join("")}</div>`;
     }
-    return `<div class="cards mixcards">${MIX.map((f, i) => `<button class="card mixcard${f.need && st.mix[i] >= f.need ? " met" : ""}" data-act="mixsel" data-i="${i}" aria-current="${i === st.mixSel}" aria-label="${f.name} ${st.mix[i]}g">
-      ${pkgHtml(f, 6.2)}<span class="mc-tags">${genreHtml(f.genre, false)}${f.sub ? genreHtml(f.sub, false) : ""}</span><span class="grams"><em>${st.mix[i]}</em>g</span>${f.need ? `<small class="need">${f.need}g〜</small>` : ""}</button>`).join("")}</div>`;
+    return `<div class="picker strip" role="listbox" aria-label="フレーバー">${MIX.map((f, i) => `<div class="pcard${i === st.mixSel ? " on" : ""}" data-act="mixsel" data-i="${i}" role="option" aria-selected="${i === st.mixSel}">
+      ${need(f, i)}${pkgHtml(f, 4.8)}<b class="pc-name">${f.name}</b><span class="pc-tags">${tags(f, false)}</span>
+      <span class="pc-g">${btn(i, -1, f)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(i, 1, f)}</span></div>`).join("")}</div>`;
   }
 
   mixTotal() { return this.st.mix.reduce((a, b) => a + b, 0); }
@@ -976,8 +1015,11 @@ class Phone {
     const clamp = (v) => Math.max(0, Math.min(1, v)).toFixed(2);
     const bowl = el.querySelector(".mixbowl");
     if (bowl) {
-      bowl.querySelector(".b-airy").style.opacity = clamp((t - 0.05) / 0.35);
-      bowl.querySelector(".b-full").style.opacity = clamp((t - 0.5) / 0.5);
+      // 赤寄りの葉の割合で、茶色の層の上に赤の層を重ねる
+      const red = total ? MIX.reduce((n, f, i) => n + (f.leaf === "red" ? st.mix[i] : 0), 0) / total : 1;
+      const part = Math.max(0, Math.min(1, (t - 0.05) / 0.35)), full = Math.max(0, Math.min(1, (t - 0.5) / 0.5));
+      bowl.querySelector(".b-airy.brown").style.opacity = part.toFixed(2); bowl.querySelector(".b-airy.red").style.opacity = (part * red).toFixed(2);
+      bowl.querySelector(".b-full.brown").style.opacity = full.toFixed(2); bowl.querySelector(".b-full.red").style.opacity = (full * red).toFixed(2);
     }
     // 12の枠はジャンルの色。葉が替わる所に細い区切り
     const fill = MIX.flatMap((f, i) => Array.from({ length: st.mix[i] }, (_, k) => ({ c: GENRES[f.genre].color, first: k === 0 })));
@@ -987,6 +1029,17 @@ class Phone {
     el.querySelector(".mixbar")?.classList.toggle("full", total === MIX_CAP);
     const num = el.querySelector(".digits .d-num");
     if (num) { num.textContent = String(total).padStart(2, "0"); el.querySelector(".digits").classList.toggle("full", total === MIX_CAP); }
+    const total2 = total;
+    el.querySelectorAll(".picker [data-i]").forEach((card) => {
+      const i = Number(card.dataset.i), on = i === st.mixSel;
+      if (card.classList.contains("mr-btn")) return;
+      card.classList.toggle("on", on); card.setAttribute("aria-selected", String(on));
+      const em = card.querySelector(".mr-g em"); if (em) em.textContent = String(st.mix[i]);
+      card.querySelector(".need")?.classList.toggle("met", st.mix[i] >= (MIX[i].need || 0));
+      const ratio = card.querySelector(".ratio"); if (ratio) ratio.textContent = `比率 ${total2 ? Math.round(st.mix[i] / total2 * 100) : 0}%`;
+    });
+    const ok = el.querySelector(".btn-a.mix-ok");
+    if (ok) { ok.disabled = !this.mixOk(); ok.classList.toggle("hot", this.mixOk()); }
     const pour = el.querySelector(".pour-pkg");
     if (pour && Number(pour.dataset.i) !== st.mixSel) { pour.dataset.i = String(st.mixSel); pour.innerHTML = pkgHtml(MIX[st.mixSel], 15); }
   }
@@ -1000,7 +1053,7 @@ class Phone {
     }
     st.mix[i] += by;
     if (by > 0) this.dropLeaf();
-    this.patch(); this.syncMix();
+    this.syncMix();
   }
 
   /** 葉を1g入れた時、写真調の葉の粒がいくつか器へ落ちる（器の絵の葉の所を小さく切り取って使う）。 */
@@ -1012,8 +1065,8 @@ class Phone {
       const bit = document.createElement("i");
       bit.className = "leaf-bit";
       bit.style.left = `${40 + Math.random() * 20}%`;
-      bit.style.backgroundImage = `url(${IMG.bowl_normal})`;
-      bit.style.backgroundPosition = `${35 + Math.random() * 30}% ${10 + Math.random() * 10}%`;
+      bit.style.backgroundImage = `url(${MIX[this.st.mixSel].leaf === "red" ? IMG.leafRed : IMG.leafBrown})`;
+      bit.style.backgroundPosition = `${Math.random() * 100}% ${Math.random() * 100}%`;
       bowl.append(bit);
       bit.animate([{ transform: `translate(-50%, ${from * 100}%) rotate(${Math.random() * 90}deg)`, opacity: 0 }, { opacity: 1, offset: 0.2 }, { transform: `translate(${-50 + (Math.random() - 0.5) * 120}%, 260%) rotate(${Math.random() * 200}deg)`, opacity: 0 }],
         { duration: 520 + n * 70, delay: n * 60, easing: "cubic-bezier(0.5, 0, 0.9, 0.6)", fill: "backwards" }).finished.then(() => bit.remove()).catch(() => bit.remove());
@@ -1279,6 +1332,95 @@ class Phone {
     this.dragTo = { x: (event.clientX - box.left) * k, y: (event.clientY - box.top) * k - 26 };
   }
 
+  /* ── 炭焼き（VPL54・VPL55）: 下のコンロの炭が黒から赤へ焼けていく。全面が赤くなった「取り頃」でタッチして取り出す ── */
+  coalPic() {
+    const look = this.lookAt, bg = `<img class="bg" src="${IMG.tonari}" alt="">`;
+    if (look === "b") return `${bg}<div class="coal-up up-b"><div class="carrier"><img src="${IMG.carrier}" alt=""><div class="slots"></div></div><div class="judges"></div></div>`;
+    if (look === "c") return `${bg}<div class="coal-up up-c"><div class="hmdbowl"><img src="${IMG.hmd}" alt=""><div class="slots"></div></div><div class="judges"></div></div>`;
+    return `${bg}<div class="coal-up up-a"><div class="tongs"><img src="${IMG.hajimeTongs}" alt=""><i class="tip"></i></div><div class="judges"></div></div>`;
+  }
+
+  startCoals() {
+    const now = performance.now(), readies = [];
+    while (readies.length < HEAT.count) {
+      const r = HEAT.ready[0] + Math.random() * (HEAT.ready[1] - HEAT.ready[0]);
+      if (readies.every((x) => Math.abs(x - r) >= HEAT.gap)) readies.push(r);
+    }
+    this.heat = { t0: now + HEAT.lead, coals: readies.map((ready) => ({ ready, taken: false, blinked: false })), done: false };
+    if (this.fixed) {
+      // 一覧は途中の一コマ: 1個は取った後、1個は取り頃、1個はまだ黒い面が残る
+      const h = this.heat;
+      h.t0 = now - 4000; h.coals = [{ ready: 3000, taken: true, judge: heatJudge(1.05, 0.15) }, { ready: 4000, taken: false }, { ready: 7000, taken: false }];
+      this.placeTaken(0, h.coals[0].judge, false);
+      this.stepCoals(now);
+    }
+  }
+
+  stepCoals(now) {
+    const h = this.heat;
+    if (!h) return;
+    const t = now - h.t0;
+    this.el.querySelector(".stove")?.classList.toggle("on", t >= 0);
+    h.coals.forEach((c, i) => {
+      const btn = this.el.querySelector(`.coal[data-i="${i}"]`);
+      if (!btn || c.taken) return;
+      const p = Math.max(0, t / c.ready), jw = HEAT.just / c.ready;
+      // 焼け色: 黒い面から赤へ（取り頃で全面が赤い）、過ぎると灰をまとう
+      btn.style.setProperty("--red", Math.min(1, 0.08 + p * 0.92).toFixed(3));
+      btn.style.setProperty("--ash", Math.max(0, Math.min(1, (p - 1 - jw) / 0.55)).toFixed(3));
+      if (!c.blinked && t >= c.ready - HEAT.blink) { c.blinked = true; btn.classList.remove("blink"); void btn.offsetWidth; btn.classList.add("blink"); }
+      if (!this.fixed && p >= HEAT.drop) { c.taken = true; c.judge = ["over", 14, "MISS"]; btn.classList.add("dropped"); this.placeTaken(i, c.judge, true); this.checkCoalsDone(); }
+    });
+  }
+
+  takeCoal(i) {
+    const h = this.heat;
+    if (!h || this.fixed) return;
+    const c = h.coals[i], t = performance.now() - h.t0;
+    if (!c || c.taken || t < 0) return;
+    c.taken = true;
+    c.judge = heatJudge(t / c.ready, HEAT.just / c.ready);
+    const btn = this.el.querySelector(`.coal[data-i="${i}"]`);
+    btn?.classList.add("taken");
+    this.placeTaken(i, c.judge, false);
+    this.st.gradeP = h.coals.filter((x) => x.taken).length / h.coals.length; this.syncRank();
+    this.checkCoalsDone();
+  }
+
+  /** 取った炭を上の画面へ: トングの先・炭壺の中・HMDの中。判定の札も出す。 */
+  placeTaken(i, judge, dropped) {
+    const up = this.el.querySelector(".coal-up");
+    if (!up) return;
+    const look = this.lookAt, [kind, , label] = judge;
+    const piece = `<span class="tcoal ${kind}${dropped ? " ash" : ""}"><img src="${IMG.coalCold}" alt=""><img class="lit" src="${IMG.coalLit}" alt=""></span>`;
+    if (look === "a") {
+      const tip = up.querySelector(".tip");
+      tip.innerHTML = dropped ? "" : piece;
+      tip.classList.remove("got"); void tip.offsetWidth; if (!dropped) tip.classList.add("got");
+    } else {
+      const slots = up.querySelector(".slots"), [x, y] = LOOKS_COAL_SLOTS[look][slots.children.length] || [0.5, 0.5];
+      const el = document.createElement("span");
+      el.className = "slot"; el.style.left = `${x * 100}%`; el.style.top = `${y * 100}%`; el.innerHTML = piece;
+      if (!dropped) slots.append(el);
+    }
+    const tag = document.createElement("b");
+    tag.className = `jtag ${label.toLowerCase()}`; tag.textContent = dropped ? "MISS" : label;
+    tag.style.setProperty("--k", String(i));
+    up.querySelector(".judges").append(tag);
+    if (!this.fixed) setTimeout(() => tag.classList.add("out"), 1200);
+  }
+
+  checkCoalsDone() {
+    const h = this.heat;
+    if (!h || h.done || !h.coals.every((c) => c.taken)) return;
+    h.done = true;
+    this.st.gradeP = 1; this.syncRank();
+    const score = Math.round(h.coals.reduce((n, c) => n + c.judge[1], 0) / h.coals.length);
+    this.say(score >= 90 ? "火が素直だ。いい焼け具合" : score >= 70 ? "まあまあだ。次は色をよく見ろ" : "早すぎか遅すぎだ。全面の赤を待て");
+    setTimeout(() => this.rankUp(), 700);
+    setTimeout(() => { if (this.st.scene === "coal") this.setScene("steam"); }, 3600);
+  }
+
   /** 熱ゲージ（温度帯）。シーシャ作りの間ずっと右に大きく出す。色の意味は本編と同じ（緑＝適温の目安、虹＝合わせやすい範囲、炎＝焦げる）。 */
   thermoHtml() {
     const t = this.st.temp, pc = (v) => `${(v * 100).toFixed(1)}%`;
@@ -1298,7 +1440,6 @@ class Phone {
     const { st } = this;
     let cards = st.scene === "pack" ? `<div class="cards">${PACKS.map((p, i) => `<button class="card${p.locked ? " locked" : ""}" data-act="pack" data-pack="${i}" aria-current="${i === st.pack}">
       <img src="${IMG[`bowl_${p.id}`]}" alt=""><b>${p.name}</b><span class="dens">${[1, 2, 3].map((n) => `<i class="${n <= p.dens ? "on" : ""}"></i>`).join("")}</span>${p.locked ? icon("lock") : ""}</button>`).join("")}</div>` : "";
-    if (st.scene === "mix") cards = this.mixCardsHtml();
     return `<button class="coach" data-act="coach" aria-label="スミさんの一言"><img src="${IMG.faceSumi}" alt=""><span class="say"><span class="say-text">${esc(COACH[st.scene])}</span></span></button>${cards}`;
   }
 
@@ -1306,21 +1447,25 @@ class Phone {
     const { st } = this;
     if (st.scene === "water") {
       // 真ん中の大きな「注ぐ」と左の「こぼす」は押している間だけ水が動く。右の「決定」で、この水量で進む
-      return `${this.auxHtml("craft", CRAFT_CHIPS)}
-        <button class="btn-a sub l" data-act="drain" data-hold="drain" aria-label="${BTN.drain.label}">${btnFace("drain")}</button>
+      return `<button class="btn-a sub l" data-act="drain" data-hold="drain" aria-label="${BTN.drain.label}">${btnFace("drain")}</button>
         ${aHtml("pour", { cls: "center pour" })}
         <button class="btn-a sub r" data-act="decide" aria-label="決定"${st.water > 0 ? "" : " disabled"}><span class="t">決定</span></button>`;
     }
     if (st.scene === "mix") {
-      // 左右で葉を選び、上下で1gずつ。合わせて12gで課題を満たすと「決定」が押せる
-      return `${this.auxHtml("craft", CRAFT_CHIPS)}${dpadHtml("up down left right")}${aHtml("ok", { disabled: !this.mixOk() })}`;
+      // 十字キーは出さず、下の画面にフレーバーの一覧（案A・B は横、案C は縦にスライド）。各札の −／＋ で1gずつ。合わせて12gで課題を満たすと「決定」（VPL52）
+      return `${this.mixCardsHtml()}<div class="mixfoot"><div class="mixbar" aria-hidden="true"><span class="slots"></span><b class="mixsum"></b></div></div>${aHtml("ok", { cls: "mix-ok", disabled: !this.mixOk() })}`;
+    }
+    if (st.scene === "coal") {
+      // 下の画面はコンロ。炭を直接タッチして取り出す（VPL55）
+      return `<div class="stove"><img src="${IMG.stove}" alt="">${COAL_AT.map(([x, y], i) => `<button class="coal" data-act="coal" data-i="${i}" style="left:${x * 100}%;top:${y * 100}%" aria-label="炭 ${i + 1}"><img class="c-cold" src="${IMG.coalCold}" alt=""><img class="c-lit" src="${IMG.coalLit}" alt=""><i class="c-ash"></i></button>`).join("")}</div>`;
     }
     if (st.scene === "steam") {
       // 十字キーはスティック（押した向きと強さで動く）。Aで雑念を払う。精密は遅く細かく動く切り替え
-      return `${this.auxHtml("craft", [...CRAFT_CHIPS, ["slow", "target", "精密に動く", "精密", "", st.slow]])}${dpadHtml("up down left right")}${aHtml("bomb", { cls: "bomb", extra: `<i class="cool"></i>` })}`;
+      // 精密（遅く細かく動く）はパッドの右上の小さな丸（VPL51）
+      return `<button class="slowbtn${st.slow ? " on" : ""}" data-act="fn" data-fn="slow" aria-label="精密に動く" aria-pressed="${st.slow}">${icon("target")}</button>${dpadHtml("up down left right")}${aHtml("bomb", { cls: "bomb", extra: `<i class="cool"></i>` })}`;
     }
     if (st.scene === "pack") {
-      return `${this.auxHtml("craft", CRAFT_CHIPS)}${dpadHtml("left right")}${aHtml("ok", { disabled: !!PACKS[st.pack].locked })}`;
+      return `${dpadHtml("left right")}${aHtml("ok", { disabled: !!PACKS[st.pack].locked })}`;
     }
     if (st.scene === "holes") {
       // 「刺す」を真ん中に大きく置く。押すと色が下から上へ満ち、満ちた瞬間に金に光る（ここで離す）。周りの10個の点＝開けた穴（金＝ちょうどいい）
@@ -1328,13 +1473,11 @@ class Phone {
         const a = (i * 360 / HOLE_COUNT - 90) * Math.PI / 180, hole = st.holes[i];
         return `<circle class="pip${hole ? (hole.good ? " good" : " done") : ""}" cx="${(46 * Math.cos(a)).toFixed(1)}" cy="${(46 * Math.sin(a)).toFixed(1)}" r="2.6"/>`;
       }).join("");
-      return `${this.auxHtml("craft", CRAFT_CHIPS)}
-        <svg class="hole-pips" viewBox="-50 -50 100 100" aria-label="開けた穴 ${st.holes.length}/${HOLE_COUNT}">${pips}</svg>
+      return `<svg class="hole-pips" viewBox="-50 -50 100 100" aria-label="開けた穴 ${st.holes.length}/${HOLE_COUNT}">${pips}</svg>
         ${aHtml("poke", { cls: "hold center", extra: `<i class="fill"></i><i class="fill-line"></i>` })}`;
     }
     // 葉（フレーバーの持ち）は上の段の真ん中、吸った回数は「吸う」の中の点。ボタンに重ねない
-    return `${this.auxHtml("craft", CRAFT_CHIPS)}
-      <span class="leaves" role="img" aria-label="フレーバーの持ち 5">${`<img src="${IMG.leaf}" alt="">`.repeat(5)}</span>
+    return `<span class="leaves" role="img" aria-label="フレーバーの持ち 5">${`<img src="${IMG.leaf}" alt="">`.repeat(5)}</span>
       <button class="serve" data-act="serve" aria-label="提供する（あと2口）">${icon("bell")}<span>提供</span><i></i><i></i></button>
       <div class="gauge"><span class="end l">${icon("cool")}</span><span class="end r">${icon("heat")}</span>${meterHtml()}</div>
       ${aHtml("puff", { cls: "center", extra: `<span class="pips" aria-label="吸った回数 ${st.pulls}/5">${Array.from({ length: 5 }, (_, i) => `<i class="${i < st.pulls ? "on" : ""}"></i>`).join("")}</span>` })}`;
@@ -1375,7 +1518,8 @@ class Phone {
     else if (act === "pick") { const same = st.pick === Number(hit.dataset.pick); st.pick = Number(hit.dataset.pick); this.applyLine({ instant: true }); if (same) this.pressA(); }
     else if (act === "pack") { st.pack = Number(hit.dataset.pack); this.patch(); }
     else if (act === "decide") this.decideWater();
-    else if (act === "mixsel") { st.mixSel = Number(hit.dataset.i); this.patch(); this.syncMix(); }
+    else if (act === "coal") this.takeCoal(Number(hit.dataset.i));
+    else if (act === "mixsel") { st.mixSel = Number(hit.dataset.i); this.syncMix(); }
     else if (act === "mixadd") { st.mixSel = Number(hit.dataset.i); this.addMix(Number(hit.dataset.by)); }
     else if (act === "more") {
       this.moreOpen = !this.moreOpen;
@@ -1387,7 +1531,7 @@ class Phone {
     else if (act === "serve") { if (!this.fixed) this.setScene("map"); }
     else if (act === "fn") {
       const id = hit.dataset.fn;
-      if (id === "slow") { st.slow = !st.slow; hit.classList.toggle("on", st.slow); }
+      if (id === "slow") { st.slow = !st.slow; hit.classList.toggle("on", st.slow); hit.setAttribute("aria-pressed", String(st.slow)); }
       else if (id === "list") { st.list = !st.list; this.patch(); }
       else if (id === "next") { // 「！」の付いた店を順に回る
         const marks = ORDER.filter((i) => SPOTS[i].mark), after = marks.find((i) => ORDER.indexOf(i) > ORDER.indexOf(st.sel));
@@ -1456,7 +1600,7 @@ class Phone {
     } else if (st.scene === "mix") {
       // 左右で葉を選び、上下で1gずつ
       const rows = this.lookAt === "c", pick = rows ? (dir === "up" || dir === "down") : (dir === "left" || dir === "right");
-      if (pick) { st.mixSel = (st.mixSel + (dir === (rows ? "down" : "right") ? 1 : MIX.length - 1)) % MIX.length; this.patch(); this.syncMix(); }
+      if (pick) { st.mixSel = (st.mixSel + (dir === (rows ? "down" : "right") ? 1 : MIX.length - 1)) % MIX.length; this.syncMix(); this.el.querySelector(`.picker [data-i="${st.mixSel}"]`)?.scrollIntoView({ block: "nearest", inline: "nearest" }); }
       else this.addMix(dir === (rows ? "right" : "up") ? 1 : -1);
     }
   }
@@ -1566,7 +1710,7 @@ class Phone {
     setTimeout(() => btn?.classList.remove("res-good", "res-off"), 520);
     // 10個開け終えたら穴あけの工程が済み、ランクが1段上がる。大きく出たランクが収まってから次の工程へ
     if (st.holes.length >= HOLE_COUNT) setTimeout(() => this.rankUp(), 500);
-    if (st.holes.length >= HOLE_COUNT) setTimeout(() => { if (this.fixed) { st.holes = []; st.gradeP = 0; this.patch(); this.drawHoles(); this.syncRank(); } else this.setScene("steam"); }, 3300);
+    if (st.holes.length >= HOLE_COUNT) setTimeout(() => { if (this.fixed) { st.holes = []; st.gradeP = 0; this.patch(); this.drawHoles(); this.syncRank(); } else this.setScene("coal"); }, 3300);
   }
 
   /** 地図から店へ: 選んだ店へ寄ってから、煙の幕で店内へ替える。 */
@@ -1587,8 +1731,8 @@ class Phone {
     const crafting = (id) => CRAFT_SCENES.includes(id);
     if (!crafting(this.st.scene) && crafting(scene)) Object.assign(this.st, { grade: 0, gradeP: 0 });
     else if (crafting(scene)) this.st.gradeP = 0;
-    Object.assign(this.st, { water: 0, mix: [0, 0, 0], mixSel: 0 });
-    Object.assign(this, { dodge: null, pouring: false, draining: false, deciding: false, coachSay: null, stick: null, dragTo: null });
+    Object.assign(this.st, { water: 0, mix: MIX.map(() => 0), mixSel: 0 });
+    Object.assign(this, { dodge: null, heat: null, pouring: false, draining: false, deciding: false, coachSay: null, stick: null, dragTo: null });
     this.keys.clear();
     Object.assign(this.st, { scene, step: 0, page: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1, temp: 0.4 });
     this.quiet = false;
@@ -1609,6 +1753,7 @@ class Phone {
       this.syncWater();
     }
     if (st.scene === "steam") this.stepDodge(now, dt);
+    if (st.scene === "coal") this.stepCoals(now);
     if (st.scene === "pull") {
       const meter = el.querySelector(".meter");
       if (meter && !this.hold) {

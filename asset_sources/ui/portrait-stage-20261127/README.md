@@ -337,3 +337,43 @@ Do not draw: any background, a necklace, a second hose, a forked hose, the hooka
 Fill this same bowl with real shisha (hookah) tobacco, rendered photorealistically like a close-up photograph while the bowl keeps its drawn look: chopped molasses tobacco, irregular torn leaf pieces about 3 to 10 mm mixed with some short thin shreds, NOT long strands, NOT noodles, NOT worms; the pieces are soaked in syrup: very glossy and wet, with translucent edges, sticking together in small clumps; colors like a red-dyed fruit shisha mixed with a natural one: deep crimson red and reddish orange pieces mixed with amber and caramel brown pieces. Packing: even density, the surface lightly pressed flat about 2 mm below the rim. Keep the bowl's shape, color, angle, size and position exactly the same. Transparent background. No foil, no charcoal, no smoke, no text.
 ```
 
+## 6回目: 写真のような刻み葉の素材と、炭焼きのHMD（VPL53・VPL55・3枚）
+
+オーナー「まだフレーバーの葉の見た目がおかしい　てかてかしててベタベタ感弱かったりなんかつぶつぶしてたりAI感すごいし何かわからない」。器ごと生成すると、葉がてかてかの絵になり白い粒が出た。そこで器と葉を分けた。葉だけを、上から撮った山盛りの刻み葉の写真のような素材として2枚（赤寄り・茶色寄り、品質 high）生成し、空の器（`img/ui-bowl-empty.webp`）の口の楕円にはめ込んで、途中（まだらに置く）・ふんわり（すき間を暗くする）・ノーマル・デンス（少し暗く締める）の4段階×2色をコードで作った。原画は `v3/leaf-red-original.webp`・`v3/leaf-brown-original.webp`、試作が読むのは `img/ui-leaf-red/brown.webp`（落ちる葉の粒）と `img/ui-bowl-*.webp`・`img/ui-bowl-*-brown.webp`。
+オーナー「下画面で炭をタッチして取り出すのでいいかも　上にはトング持ったはじめが映るか上に炭壺があってそこに入れるか」。3案目の「HMDへ載せる」のために、空の器を入力にした編集でハガルの上のロータス型HMDを生成した（`v3/hmd-original.webp` → `img/ui-hmd.webp`）。
+
+### HMD の生成前に決めたこと（§4.3）
+
+```text
+人物      : なし
+場面      : 炭焼き（取った炭を入れる器具の見本）
+台の型    : 写さない（ハガルとHMDだけ）
+HMD       : ロータス型。ハガルの口と同じ径、高さ指2本分、側面の細い通気口と床の小穴、蓋は外して写さない
+炭        : なし（取った炭はコードで重ねる）
+ホース    : なし／吸い口: なし
+構図      : 斜め上35度。黒いシリコンのハガル（空の器を入力にして形をそろえる）。透明背景
+```
+
+生成後の確認（§4.4）: HMD は1つの型でハガルの口の上に載り、径がそろい、高さは低い。蓋・煙突・取っ手を混ぜていない。炭・アルミ・葉・文字が無い。合格。葉の素材は、白い粒・きらめき・てかりが無く、長い糸状でない。合格。
+
+### 刻み葉の素材（赤寄り）
+
+```text
+A realistic close-up photograph taken from directly above of a small loose heap of chopped shisha (hookah) tobacco on a plain dark surface, filling the whole frame edge to edge. The tobacco is torn leaf pieces about 5 to 15 mm with some short fibrous shreds, saturated with thick molasses syrup: damp, sticky and clumped together into soft lumps with a few strings of syrup between them, a satin wet look (NOT mirror glossy, NOT plastic, NOT candy). Soft even diffuse lighting from above, natural colors, sharp focus, true-to-life texture. No white specks, no sparkles, no glitter, no sugar crystals, no water droplets, no bokeh, no bowl, no hands, no tools, no text. Color: a red-dyed fruit flavor mixed with natural leaf: deep crimson and red-brown pieces with some dark caramel-brown pieces.
+```
+
+### 刻み葉の素材（茶色寄り）
+
+```text
+A realistic close-up photograph taken from directly above of a small loose heap of chopped shisha (hookah) tobacco on a plain dark surface, filling the whole frame edge to edge. The tobacco is torn leaf pieces about 5 to 15 mm with some short fibrous shreds, saturated with thick molasses syrup: damp, sticky and clumped together into soft lumps with a few strings of syrup between them, a satin wet look (NOT mirror glossy, NOT plastic, NOT candy). Soft even diffuse lighting from above, natural colors, sharp focus, true-to-life texture. No white specks, no sparkles, no glitter, no sugar crystals, no water droplets, no bokeh, no bowl, no hands, no tools, no text. Color: a natural blonde-leaf flavor: caramel, amber and medium brown pieces with a few darker brown pieces.
+```
+
+### ハガルとHMD（空の器を入力にした編集）
+
+```text
+Use the reference image as the exact bowl: the same black silicone shisha bowl with a thin copper rim, the same shape, color, angle and size.
+Draw that bowl with a lotus-type heat management device (HMD) sitting on top of it, as used in present-day Japanese shisha bars: a single short round stainless-steel cup that sits on the bowl's rim and covers the mouth of the bowl, the same diameter as the bowl's mouth and only about two fingers tall, with a few slim vertical vent slots around its side and a ring of small holes in its flat floor. The lid is removed and not shown, so the empty inside of the cup is visible from above.
+Seen from the front and slightly above (about 35 degrees), centered, the bowl and HMD filling about 80 percent of the image. Polished anime game illustration style with clean dark outlines and two or three tone cel shading, no airbrushed gloss, matching the reference.
+The HMD is empty. Do not draw: charcoal, foil, tobacco, smoke, flames, a lid, a chimney, hands, tongs, text, logos, watermark, shadow on the ground. Transparent background.
+```
+
