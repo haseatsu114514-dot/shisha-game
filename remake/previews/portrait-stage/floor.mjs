@@ -15,7 +15,6 @@ import { floorVenue } from "../../js/daily/floor-venues.js";
 const VENUE = floorVenue("tonari");
 const RULES = VENUE.rules;
 const WISH = Object.fromEntries(WISHES.map((w) => [w.id, w]));
-const MOOD = Object.fromEntries(MOODS.map((m) => [m.id, m]));
 const seconds = (ticks) => Math.ceil(ticks * FLOOR_TICK_MS / 1000);
 const yen = (n) => `${Math.round(n).toLocaleString("ja-JP")}円`;
 const quoted = (text) => (text.startsWith("（") ? text : `「${text}」`);
@@ -891,7 +890,7 @@ export class FloorScene {
     sheet.dataset.verdict = care.ok ? "best" : "bad";
     node.dataset.picked = "true";
     sheet.querySelector(".fl-verdict").innerHTML = `<img src="${this.art(care.ok ? "verdict-best" : "verdict-bad")}" alt=""><b>${care.ok ? "いいケア！" : "ちがったみたい"}</b>`;
-    if (care.line) sheet.querySelector(".fl-quote").textContent = quoted(care.line);
+    if (care.line) { const quote = sheet.querySelector(".fl-quote"); quote.dataset.sight = "false"; this.fitText(quote, quoted(care.line)); }
     this.verdictTimer = this.later(() => { if (this.panel?.locked && this.mode === "panel") this.closePanel(); }, 1000);
   }
 
@@ -923,10 +922,12 @@ export class FloorScene {
     return `<section class="fl-sheet" data-kind="${this.panel.kind}" role="dialog" aria-label="${table.id}卓 ${ordering ? "ミックスを選ぶ" : "頼みを聞く"}" style="--c:${ordering ? wish.color : stage.color}">
       <header class="fl-visit">
         <img class="fl-visit-bg" src="${floorDusk(s) ? this.roomNight : this.roomDay}" alt="">
-        <div class="fl-visit-top"><b class="fl-visit-no">${table.id}<small>卓</small></b>
-          <span class="fl-visit-kind">${ordering ? this.wishChip(guest.order, { refill: table.refill }) : `<span class="fl-need" data-tone="act">${icon(table.call.coal ? "add" : "ask")}<b>${table.call.coal ? "炭の調整" : "ケア"}</b></span>`}</span></div>
-        <div class="fl-visit-mid"><span class="fl-visit-who">${this.guestImg(guest)}</span><p class="fl-quote" data-sight="${sight}">${esc(lead)}</p></div>
-        <div class="fl-visit-name"><b>${esc(guest.name)}</b>${served ? `<img src="${this.art(MOOD_ART[stage.id])}" alt="${stage.label}">` : ""}${served && table.mix ? attrHtml(this.art, table.mix) : ""}<em>${icon("coins")}${yen(floorBill(s, table.id)?.total || 0)}</em></div>
+        <div class="fl-visit-row"><span class="fl-visit-who">${this.guestImg(guest)}<b class="fl-visit-no" aria-label="${table.id}卓">${table.id}</b></span>
+          <div class="fl-visit-side">
+            <div class="fl-visit-name"><b>${esc(guest.name)}</b>${served ? `<img src="${this.art(MOOD_ART[stage.id])}" alt="${stage.label}">` : ""}${served && table.mix ? attrHtml(this.art, table.mix) : ""}</div>
+            <div class="fl-visit-kind">${ordering ? this.wishChip(guest.order, { refill: table.refill }) : `<span class="fl-need" data-tone="act">${icon(table.call.coal ? "add" : "ask")}<b>${table.call.coal ? "炭の調整" : "ケア"}</b></span>`}<em>${icon("coins")}${yen(floorBill(s, table.id)?.total || 0)}</em></div>
+          </div></div>
+        <p class="fl-quote" data-sight="${sight}">${esc(lead)}</p>
         <div class="fl-verdict" aria-hidden="true"></div>
       </header>
       ${this.coach ? `<div class="coach fl-sheet-coach"><img src="${this.face("sumi")}" alt=""><span class="say"><span class="say-text"></span></span></div>` : ""}
@@ -1055,7 +1056,14 @@ export class FloorScene {
     layer.dataset.mode = this.mode;
     this.el.dataset.flMode = this.mode;
     if (this.mode === "panel" && this.coach) this.coachSay();
+    if (this.mode === "panel") this.fitQuote();
     if (this.mode === "result") this.fitBoss();
+  }
+
+  /** 接客の画面の客の一言も、本編の組版で折る（2行まで。収まらない時は字を一段小さく）。 */
+  fitQuote() {
+    const quote = this.refs.layer.querySelector(".fl-quote");
+    if (quote && !this.panel?.locked) this.fitText(quote, quote.textContent);
   }
 
   /** 精算のスミさんの一言も、本編の組版で折る（2行まで）。 */
@@ -1078,6 +1086,7 @@ export class FloorScene {
 
   relayout() {
     if (this.coach) this.coachSay();
+    if (this.mode === "panel") this.fitQuote();
     if (this.mode === "result") this.fitBoss();
   }
 

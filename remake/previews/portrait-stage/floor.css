@@ -241,23 +241,25 @@
 /* 接客の画面: 上に卓の様子（客の顔と一言）、下に5つの札。十字キーの上下で選び、丸ボタンで決める（札を押してもよい） */
 .fl-sheet { position: absolute; inset: 0; display: flex; flex-direction: column; background: #0b0812f2; animation: fl-sheet 0.25s var(--ease-out); }
 @keyframes fl-sheet { from { opacity: 0; transform: translateY(1.2rem); } }
-.fl-visit { --who: 10.6rem; position: relative; flex: 1 1 0; min-height: 12rem; display: flex; flex-direction: column; justify-content: space-between; gap: 0.6rem; padding: max(1.3rem, env(safe-area-inset-top, 0px)) 1.4rem 0.9rem; overflow: hidden; border-bottom: 0.14rem solid var(--c); }
-.fl-visit-top, .fl-visit-mid, .fl-visit-name { position: relative; z-index: 2; }
-.fl-visit-top { display: flex; align-items: center; justify-content: space-between; }
-.fl-visit-mid { display: flex; align-items: center; gap: 1.6rem; }
+.fl-visit { --who: 9.8rem; position: relative; flex: 1 1 0; min-height: 12rem; display: flex; flex-direction: column; justify-content: center; gap: 1.3rem; padding: max(1.3rem, env(safe-area-inset-top, 0px)) 1.4rem 1.1rem; overflow: hidden; border-bottom: 0.14rem solid var(--c); }
+.fl-visit-row { position: relative; z-index: 2; display: flex; align-items: center; gap: 1.4rem; }
+.fl-visit-side { flex: 1 1 auto; min-width: 0; display: grid; gap: 0.9rem; justify-items: start; }
 .fl-visit-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 62% 60%; transform: scale(1.5); filter: brightness(0.72) blur(0.15rem); }
 .fl-visit::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #0b081299 0, transparent 30%, transparent 55%, #0b0812e6 100%); pointer-events: none; }
-.fl-visit-no { display: flex; align-items: baseline; gap: 0.2rem; height: 3.4rem; padding: 0 1.3rem; border-radius: 2rem; font-family: var(--mincho); font-size: 2.2rem; line-height: 3.4rem; color: #1a1228; background: #fff; box-shadow: 0 0.3rem 0.8rem #000a; }
-.fl-visit-no small { font-size: 1.3rem; }
+.fl-visit-no { position: absolute; left: -0.3rem; top: -0.3rem; width: 2.9rem; height: 2.9rem; display: grid; place-items: center; border-radius: 50%; font-size: 1.7rem; font-weight: 900; line-height: 1; color: #1a1228; background: #fff; box-shadow: 0 0 0 0.18rem #0b0812, 0 0.3rem 0.8rem #000a; }
 .fl-visit-kind .fl-wish, .fl-visit-kind .fl-need { height: 3.4rem; padding: 0 1.4rem 0 1.1rem; font-size: 1.7rem; } .fl-visit-kind .ic { font-size: 1.9rem; }
-.fl-visit-who { flex: none; width: var(--who); height: var(--who); border-radius: 50%; overflow: hidden; background: #f3e9d6; box-shadow: 0 0 0 0.3rem var(--c), 0 0 0 0.5rem #0b0812, 0 1rem 2.4rem #000c; }
-.fl-visit-who img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 16%; }
-.fl-quote { position: relative; flex: 0 1 auto; min-width: 0; margin: 0; padding: 0.9rem 1.4rem 1rem; border-radius: 1.6rem; font-size: 1.7rem; font-weight: 700; line-height: 1.45; word-break: auto-phrase; color: #2a1d14; background: #fffaf0; box-shadow: 0 0.5rem 1.4rem #000a; }
-.fl-quote::after { content: ""; position: absolute; left: -0.6rem; top: 50%; width: 1.4rem; height: 1.4rem; margin-top: -0.7rem; background: inherit; transform: rotate(45deg); border-radius: 0.2rem; }
+.fl-visit-who { position: relative; flex: none; width: var(--who); height: var(--who); border-radius: 50%; background: #f3e9d6; box-shadow: 0 0 0 0.3rem var(--c), 0 0 0 0.5rem #0b0812, 0 1rem 2.4rem #000c; }
+.fl-visit-who img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: 50% 16%; }
+.fl-quote { position: relative; z-index: 2; margin: 0; padding: 0.9rem 1.4rem 1rem; border-radius: 1.6rem; font-size: 1.7rem; font-weight: 700; line-height: 1.5; word-break: auto-phrase; line-break: strict; color: #2a1d14; background: #fffaf0; box-shadow: 0 0.5rem 1.4rem #000a; }
+.fl-quote::after { content: ""; position: absolute; left: calc(var(--who) / 2 - 0.7rem); top: -0.6rem; width: 1.4rem; height: 1.4rem; background: inherit; transform: rotate(45deg); border-radius: 0.2rem; }
+.fl-quote.small { font-size: 1.5rem; }
 .fl-quote[data-sight="true"] { font-weight: 500; color: #efe8fa; background: #1d1530f2; box-shadow: 0 0 0 0.1rem #ffffff40, 0 0.5rem 1.4rem #000a; }
-.fl-visit-name { display: flex; align-items: center; gap: 0.8rem; font-size: 1.6rem; text-shadow: 0 0.1rem 0.4rem #000; }
-.fl-visit-name b { font-size: 1.8rem; } .fl-visit-name img { width: 2.8rem; height: 2.8rem; }
-.fl-visit-name em { margin-left: auto; display: flex; align-items: center; gap: 0.4rem; font-style: normal; font-weight: 700; color: var(--gold); }
+.fl-visit-name { width: 100%; display: flex; align-items: center; gap: 0.8rem; font-size: 1.6rem; text-shadow: 0 0.1rem 0.4rem #000; }
+.fl-visit-name b { min-width: 0; font-size: 1.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .fl-visit-name img { flex: none; width: 2.8rem; height: 2.8rem; }
+
+.fl-visit-kind { width: 100%; display: flex; align-items: center; gap: 0.8rem; }
+.fl-visit-kind em { margin-left: auto; flex: none; display: flex; align-items: center; gap: 0.4rem; font-style: normal; font-size: 1.6rem; font-weight: 700; color: var(--gold); text-shadow: 0 0.1rem 0.4rem #000; }
+.fl-visit-kind em .ic { font-size: 1.6rem; }
 .fl-visit-name .fl-attr { width: 2.5rem; height: 2.5rem; margin: 0 0.6rem 0 0.2rem; }
 .fl-verdict { position: absolute; z-index: 3; inset: 0; display: grid; place-content: center; justify-items: center; gap: 0.4rem; pointer-events: none; }
 .fl-verdict img { width: 13rem; height: 13rem; animation: fl-verdict 0.5s var(--ease-out); filter: drop-shadow(0 0.8rem 1.6rem #000c); }
@@ -320,7 +322,7 @@
 /* ───────── 背の低い画面 ───────── */
 @container phone (max-height: 80rem) {
   .fl-tables, .fl-layer, .fl-band, .fl-notice { --ctrl-h: 26.2rem; }
-  .fl-opt { height: 5.2rem; } .fl-list { gap: 0.5rem; padding-top: 0.8rem; } .fl-visit { --who: 9.2rem; }
+  .fl-opt { height: 5.2rem; } .fl-list { gap: 0.5rem; padding-top: 0.8rem; } .fl-visit { --who: 7.4rem; gap: 1rem; }
   .fl-result { padding: 2.2rem 1.4rem 2rem; } .fl-total b { font-size: 3.6rem; } .fl-stages img { width: 2.8rem; height: 2.8rem; }
 }
 @container phone (max-height: 71rem) {
@@ -331,7 +333,7 @@
   .fl-ticker { min-height: 4.8rem; padding: 0.4rem 1.2rem 0.5rem; } .fl-voice b { font-size: 1.5rem; } .fl-voice img { width: 2.3rem; height: 2.3rem; } .fl-coach { min-height: 4.8rem; } .fl-coach .say { font-size: 1.56rem; padding: 0.6rem 1.2rem 0.7rem; }
   .fl-mix { height: 5.5rem; } .fl-attr { width: 3.8rem; height: 3.8rem; } .fl-telop { gap: 0.6rem; }
   .fl-opt { height: 4.5rem; gap: 1.3rem; } .fl-opt .fl-attr, .fl-opt-icon { width: 3.3rem; height: 3.3rem; } .fl-opt-text b { font-size: 1.66rem; } .fl-opt-text small { font-size: 1.12rem; } .fl-opt-rate { width: 2.9rem; height: 2.9rem; }
-  .fl-list { gap: 0.4rem; padding: 0.7rem 1.2rem 0.5rem; } .fl-quote { font-size: 1.54rem; } .fl-visit { --who: 7.8rem; } .fl-result { bottom: -3.6rem; } .fl-sheet-coach .say { font-size: 1.48rem; } .fl-sheet-coach img { width: 3.8rem; height: 3.8rem; }
+  .fl-list { gap: 0.4rem; padding: 0.7rem 1.2rem 0.5rem; } .fl-quote { font-size: 1.54rem; padding: 0.6rem 1.2rem 0.7rem; } .fl-quote.small { font-size: 1.4rem; } .fl-visit { --who: 6.2rem; gap: 0.9rem; padding-bottom: 0.8rem; } .fl-visit-name b { font-size: 1.7rem; } .fl-result { bottom: -3.6rem; } .fl-sheet-coach .say { font-size: 1.48rem; } .fl-sheet-coach img { width: 3.8rem; height: 3.8rem; }
   .fl-intro { gap: 0.8rem; padding-bottom: 1.8rem; } .fl-orn { width: 19rem; margin-top: -2.8rem; } .fl-title { font-size: 2.3rem; width: 28rem; } .fl-forecast { font-size: 1.46rem; }
   .fl-result { top: 3.6rem; padding: 2rem 1.3rem 1.8rem; gap: 0.2rem; } .fl-total b { font-size: 3.1rem; } .fl-items { padding: 0.7rem 1rem; gap: 0.3rem 1.4rem; } .fl-items div { font-size: 1.24rem; }
   .fl-stages img { width: 2.4rem; height: 2.4rem; } .fl-stages span { font-size: 1.6rem; } .fl-items div { font-size: 1.24rem; } .fl-tops li { min-height: 4.2rem; } .fl-tops .fl-opt-text b { font-size: 1.46rem; } .fl-sub { font-size: 1.7rem; }

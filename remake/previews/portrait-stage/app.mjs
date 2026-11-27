@@ -7,7 +7,7 @@
 
 // テロップの文は本編と同じ組版で、表示する箱の実際の幅と書体で測って2行ずつに分ける（VPL29）
 import { paginateForBox } from "../../js/vn/layout.js";
-// タイトル画面と店番（フロア営業）は、場面ごとの別ファイルに置く（VPM01・VPM02）
+// タイトル画面と店番（フロア営業）は、場面ごとの別ファイルに置く（VPM01・VPM02）。店番は本編のルール（状態を持たない関数）を呼ぶが、本編の進行・保存には触れない
 import { TitleScene } from "./title.mjs";
 import { FloorScene, FLOOR_SHIFTS } from "./floor.mjs";
 
