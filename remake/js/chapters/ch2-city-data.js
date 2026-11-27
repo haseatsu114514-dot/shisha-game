@@ -63,7 +63,8 @@ const CITY_IDS = ["arrival", ...STOPS.map((stop) => stop.id), ...Object.keys(ROO
 // 読み込みを軽くするため名前を並べる。一致は remake/test/ch2_home_talks.mjs が確かめる。
 export const CH2_RAIN_IDS = Object.freeze(["cafe_ch2_rain", "choizap_ch2_rain", "cs_ch2_rain", "ch2_rest_rain"]);
 export const CH2_COMMUTE_IDS = Object.freeze(["ch2_commute_morning_regulars", "ch2_commute_return_tonari", "ch2_commute_morning_doze", "ch2_commute_return_window",
-  "ch2_commute_morning_corner", "ch2_commute_return_vocab", "ch2_commute_morning_signs", "ch2_commute_return_wake"]);
+  "ch2_commute_morning_corner", "ch2_commute_return_vocab", "ch2_commute_morning_signs", "ch2_commute_return_wake",
+  "ch2_commute_morning_scores", "ch2_commute_return_reunion"]);
 
 export async function loadCityDialogues() {
   const dialogues = await readDialogues("ch2_city", CITY_IDS);

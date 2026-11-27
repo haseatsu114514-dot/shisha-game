@@ -22,6 +22,10 @@ export const COMMUTE_SCENES = Object.freeze([
   { id: "ch2_commute_return_vocab", leg: "return", flag: "_ch2_commute_vocab" },
   { id: "ch2_commute_morning_signs", leg: "morning", flag: "_ch2_commute_signs" },
   { id: "ch2_commute_return_wake", leg: "return", flag: "_ch2_commute_wake" },
+  // VOL21 第4便: 答案を見せ合う高校生（朝）。点にならない一言を大事にしまう方を見て、はじめはまだ点の順番に戻る
+  { id: "ch2_commute_morning_scores", leg: "morning", flag: "_ch2_commute_scores" },
+  // VOL21 第4便: 負けた試合を笑って話す会社員の二人（夜）。はじめは、勝ったことしか話せない
+  { id: "ch2_commute_return_reunion", leg: "return", flag: "_ch2_commute_reunion" },
 ]);
 const COMMUTE_DAY = "_ch2_commute_day";
 

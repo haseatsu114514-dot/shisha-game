@@ -1909,6 +1909,87 @@
           "text": "ムカイさんは、伝票の束のいちばん下に、小さく日付を書き足していた。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_mukai_chalkboard",
+      "comment": "RLS10⑥（VOL21 第4便・2026-11-27 オーナー「さらに不足分を」）。mukaiの二日目の後、味が戻る前だけ・大会前に一度。入口の黒板のシーシャの欄を任されたはじめが、味を言い切れずに止まる。ましろの「味じゃなくても、今日の店のこと」で、炭と座る時間のことを書く。ましろの「言えることから一つずつ」（ch3_mashiro_recovery）を受ける。好感度・能力・お金は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店前のmukai。ムカイさんが、入口の小さな黒板に今日のコーヒーを書いていた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "はじめくん。下の段、シーシャの欄を書いてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺がですか。……何を書けばいいんだろう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今の舌では、今日の葉の味を言い切れない。チョークを持ったまま、手が止まった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "味じゃなくてもいいんだよぉ。今日の店のこと、書けば"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日の店のこと……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少し考えて、「炭は、ゆっくりめ。座る時間は、長めにどうぞ」と書いた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……悪くない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼過ぎ、黒板の前で足を止めた客が、そのまま入ってきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際の席に座って、長めに吸っていった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ほらねぇ。言えることから、一つずつ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（味が言えなくても、店のことなら、言えることがある）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店の時、ムカイさんは黒板を消さずに、そのまま店の中へしまった。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……明日は、明日の店のことを書け"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。明日の炭のことなら、言えそうです"
+        }
+      ]
     }
   ]
 }

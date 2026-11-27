@@ -318,7 +318,7 @@ console.log('PASS: #1925 actual normal/after-close/rest invitation paths return 
     assert(!/大会|本番|県大会|優勝|審査|味/.test(JSON.stringify(dlg)), `${scene.id}: any day of the preparation, before or after the taste trouble`);
     commuteDB.dialogues[scene.id] = dlg;
   }
-  assert.equal(COMMUTE_SCENES.map(scene => scene.leg).join(), 'morning,return,morning,return,morning,return,morning,return');
+  assert.equal(COMMUTE_SCENES.map(scene => scene.leg).join(), 'morning,return,morning,return,morning,return,morning,return,morning,return');
   const { CH2_COMMUTE_IDS } = await import(new URL('remake/js/chapters/ch2-city-data.js', root));
   assert.equal(COMMUTE_SCENES.map(scene => scene.id).join(), CH2_COMMUTE_IDS.join(), 'the chapter 2 loader publishes every commute scene');
   const readTo = n => Object.fromEntries(COMMUTE_SCENES.slice(0, n).map(scene => [scene.flag, true]));

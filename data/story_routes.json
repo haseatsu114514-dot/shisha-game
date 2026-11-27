@@ -131,6 +131,7 @@
         "ch3_mukai_wrong_beans",
         "ch3_mukai_birthday",
         "ch3_mukai_ayatori_beans",
+        "ch3_mukai_chalkboard",
         "ch3_mashiro_curry",
         "ch3_cigarman_trace",
         "ch3_emil_workshop",
@@ -956,6 +957,12 @@
         "ch3_rival_volk_steve_greeting"
       ],
       "comment": "#3468 F案の後日の一言: 挨拶で「続きはうちで」と約束した後の Smoke & Glory。"
+    },
+    "ch3_mukai_chalkboard": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "RLS10⑥（VOL21 第4便）。入口の黒板のシーシャの欄。味が戻る前だけ、大会前に一度（味が戻った後は ch3-story-wiring.js の before で閉じる）。"
     }
   },
   "near_conflict": {

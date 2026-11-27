@@ -168,6 +168,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_commute_v1", "progression"],
   ["_ch2_commute_vocab", "progression"],
   ["_ch2_commute_wake", "progression"],
+  ["_ch2_commute_scores", "progression"],
+  ["_ch2_commute_reunion", "progression"],
   ["_ch2_commute_window", "progression"],
   ["_ch2_commute_window_sent", "person"],
   ["_ch2_day1", "progression"],

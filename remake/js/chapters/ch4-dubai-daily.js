@@ -64,7 +64,7 @@ import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/b
 export const DUBAI = "dubai";
 // #3097: 3本→5本。f〜h は第4章ボリューム第2便（2026-11-27。絵はがき・「ゆっくりどうぞ」の練習・タオルのラクダ）
 const INN_REST_SCENES = ["ch4_inn_rest", "ch4_inn_rest_b", "ch4_inn_rest_c", "ch4_inn_rest_d", "ch4_inn_rest_e",
-  "ch4_inn_rest_f", "ch4_inn_rest_g", "ch4_inn_rest_h"];
+  "ch4_inn_rest_f", "ch4_inn_rest_g", "ch4_inn_rest_h", "ch4_inn_rest_i"]; // i は第4便（シャツが一時間で乾く・葉の袋の口）
 // スミさんからの夜の電話（#3097 計画 4-1）。DAY7 の時差の電話（CH4_SUMI_CALL）を読んだ後、夜に宿で休むと、休む場面の代わりに
 // 一本ずつ順に読む（一度きり。読み終えたら休む巡回だけに戻り、休む巡回の回数は進めない）。つむぎが同じ便で来ていれば、
 // tonari のつむぎの話（_c）は飛ばす。読んだ数は再訪の会話の記録の sumi_call に置く。

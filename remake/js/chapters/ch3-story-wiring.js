@@ -78,6 +78,9 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // RLS10⑥（VOL21 第3弾）: 綾取が煙幕の吸わない連れのために豆を買いに来て、ムカイさんに名前を伏せて選ばされる。
   ch3_mukai_ayatori_beans: { file: "ch3_mukai", label: "名前を伏せた豆", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_ayatori_mukai_visit"] },
+  // RLS10⑥（VOL21 第4便）: 入口の黒板のシーシャの欄。味が言えなくても、店のこと（炭と座る時間）なら書ける。味が戻る前だけ。
+  ch3_mukai_chalkboard: { file: "ch3_mukai", label: "入口の黒板", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mukai_intro"], before: ["ch3_taste_return"] },
   // RLS10⑥（VOL21 第3弾）: ましろの番のまかないは激辛カレー。辛さは痛みなので、味が遠いはじめにも届く。味が戻る前だけ。
   ch3_mashiro_curry: { file: "ch3_mashiro", label: "辛いまかない", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_mukai_intro"], before: ["ch3_taste_return"] },
@@ -214,7 +217,7 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_double_apple: ["ch3_minto_small_lies"],
   ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_shadow", "ch3_mukai_latte_cat", "ch3_mukai_no_hat", "ch3_cigarman_trace", "ch3_mukai_yoru_playlist",
     "ch3_mukai_scale_coffee", "ch3_mukai_tetsuko",
-    "ch3_mukai_sign_bulb", "ch3_mukai_breaker", "ch3_mukai_wrong_beans", "ch3_mukai_birthday", "ch3_mukai_ayatori_beans"],
+    "ch3_mukai_sign_bulb", "ch3_mukai_breaker", "ch3_mukai_wrong_beans", "ch3_mukai_birthday", "ch3_mukai_ayatori_beans", "ch3_mukai_chalkboard"],
   // 綾取・スティーブの締めくくり（#2028）は寄り道ではなく、煙幕・Smoke & Glory を訪ねた時の「〜に呼ばれる」から
   // （daily/bonds.js の条件。版3は ch3-tokyo-daily.js、優勝の翌日は ch3-aftermath.js、旧行程は ch3.js の場面カード）。
   ch3_rivals: ["ch3_emil_workshop", "ch3_ayatori_bakery", "ch3_ayatori_parcel", "ch3_ayatori_owner_visit", "ch3_ayatori_hoarse", "ch3_ayatori_lime", "ch3_ayatori_missed", "ch3_ayatori_cleanup", "ch3_ayatori_liar", "ch3_ayatori_first_reply", "ch3_ayatori_bond_finale", "ch3_steve_lime", "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_steve_bond_finale"],
