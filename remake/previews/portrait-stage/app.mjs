@@ -45,17 +45,18 @@ const IMG = {
   ciBgSumi: `${REMAKE_IMG}ui/character_intros/graphic/bg_sumi.webp`,
   // 作り直した絵（gpt-image-2.6-sunburst・VPL38）: ボトル・ハガル（空・ふんわり・ノーマル・デンス）・はじめの吸い出し
   bottle: `${OWN_IMG}ui-bottle-open.webp`, // 口の開いたボトル（本編の大会公式モデルの台のベースを入力にした生成。VPL46・VPL81）
-  faucet: `${OWN_IMG}ui-faucet.webp`, // 水入れの蛇口（VPL81）
-  sink: `${OWN_IMG}ui-sink.webp`, // 水入れの流し台（カウンターに埋め込んだステンレスのシンク。VPL92）
+  sink: `${OWN_IMG}ui-sink-faucet.webp`, // 水入れの流し台と蛇口（ボトルと同じ低い目線。蛇口はカウンターの奥に付く。VPL92・VPL101）
   bowlEmpty: `${OWN_IMG}ui-bowl-empty.webp`,
   bowl_airy: `${OWN_IMG}ui-bowl-airy.webp`,
   bowl_normal: `${OWN_IMG}ui-bowl-normal.webp`,
   bowl_firm: `${OWN_IMG}ui-bowl-firm.webp`,
   pullHajime: `${OWN_IMG}craft-pull-hajime.webp`, // 人物だけ（背景なし）。場所の背景に重ねる（VPL41）
+  pullHajimeExhale: `${OWN_IMG}craft-pull-hajime-exhale.webp`, // 吸い口を口から離して吐く時（VPL100）。上の絵と同じ大きさ・位置
   // 炭焼き（VPL54・VPL55・VPL57）: 本編の電熱コンロ・炭（黒い面・赤）
   // 寄りで写したコンロ（本編の heat_stove.webp を入力にした生成・VPL65）。コイルが画面いっぱい
   stove: `${OWN_IMG}ui-stove-zoom.webp`,
   coalCold: `${REMAKE_IMG}ui/making/heat_flat_cold.webp`,
+  kitchenTimer: `${REMAKE_IMG}ui/making/kitchen_timer.webp`, // 蒸らしのタイマー（本編と同じ絵。VPL105）
   coalLit: `${REMAKE_IMG}ui/making/heat_flat_lit.webp`,
   // 炭壺とトングを持ち、コンロの熱の明かりに下から照らされたはじめ（生成・背景なし。会場の背景に重ねる・VPL57）
   coalHajime: `${OWN_IMG}craft-coal-hajime.webp`,
@@ -140,42 +141,64 @@ const PACKS = [
 // 工程（上の並び）と、スミさんの一言
 const STEPS = [["water", "水入れ"], ["mix", "配合"], ["pack", "詰め方"], ["holes", "穴あけ"], ["coal", "炭焼き"], ["steam", "蒸らし"], ["pull", "吸い出し"], ["care", "調整"]];
 // この試作で遊べる作る場面（本編と同じ順。炭と調整は省く）
-const CRAFT_SCENES = ["water", "mix", "pack", "holes", "coal", "steam", "pull"];
+const CRAFT_SCENES = ["water", "mix", "pack", "holes", "coal", "timer", "steam", "pull"]; // timer＝雑念よけの前に蒸らす時間を決める（工程の並びでは「蒸らし」。VPL105）
+// 工程の並びで光らせる工程（タイマーは蒸らしの一部）
+const stepOf = (scene) => scene === "timer" ? "steam" : scene;
+// 蒸らし時間（VPL105）。本編 remake/js/craft/steam-time.js と同じ: 10秒刻み・最長10分。温まり方と雑念よけの長さは 3/5/8/10分 の値をつなぐ
+const STEAM_MAX = 600;
+const steamLerp = (sec, pts) => { if (sec <= pts[0][0]) return pts[0][1]; for (let i = 1; i < pts.length; i++) { const [e, v] = pts[i], [b, u] = pts[i - 1]; if (sec <= e) return u + (v - u) * (sec - b) / (e - b); } return pts.at(-1)[1]; };
+const steamHeatFor = (sec) => steamLerp(sec, [[0, -0.14], [180, -0.06], [300, 0], [480, 0.12], [600, 0.18]]);
+const steamPlaySeconds = (sec) => steamLerp(sec, [[10, 4], [180, 9], [300, 12], [480, 16], [600, 20]]);
+const clockTime = (sec) => `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`;
+// 蒸らし後の温度の目安（この試作の吸い出しの温度の物差し）。5分で吸い出しの初め（0.40）、長いほど高い。気温や炭の状態で ±0.03 前後する
+const steamPredict = (sec) => Math.max(0.06, Math.min(0.95, 0.4 + steamHeatFor(sec)));
+const STEAM_SPREAD = 0.03;
+// 液晶の7つの区画（本編 remake/js/craft/digital-clock.js と同じ形。数字を絵に焼き込まない）
+const SEG_DIGITS = ["abcdef", "bc", "abdeg", "abcdg", "bcfg", "acdfg", "acdefg", "abc", "abcdefg", "abcdfg"];
+const SEG_PATHS = { a: "M6 2h28l4 4-4 4H6L2 6Z", b: "m38 8 4 4v20l-4 4-4-4V12Z", c: "m38 38 4 4v20l-4 4-4-4V42Z", d: "M6 64h28l4 4-4 4H6l-4-4Z", e: "m2 38 4 4v20l-4 4-4-4V42Z", f: "m2 8 4 4v20l-4 4-4-4V12Z", g: "M6 33h28l4 4-4 4H6l-4-4Z" };
+const lcdSvg = (sec) => { const d = clockTime(sec).replace(":", ""); return `<svg viewBox="-4 -2 223 80" aria-hidden="true">${[2, 52, 122, 172].map((x, i) => `<g transform="translate(${x} 0)">${Object.entries(SEG_PATHS).map(([k, p]) => `<path class="${SEG_DIGITS[Number(d[i])].includes(k) ? "on" : ""}" d="${p}"/>`).join("")}</g>`).join("")}<circle class="on" cx="108" cy="25" r="3"/><circle class="on" cx="108" cy="50" r="3"/></svg>`; };
 // 温度ゲージを出す場面（VPL61）。穴あけ・炭焼き・雑念よけの間は消し、吸い出しで戻す
-// 吸い出しのはじめの口元（img/craft-pull-hajime.webp の中の位置。横・縦の割合）。絵に描かれた煙と同じく、右上へ吐く
-const PULL_MOUTH = [0.575, 0.292];
-// 吸い出しで吐く煙を、温度から連続して決める（VPL93）。本編 workerBreath の「適温」の吐き方を元に、項目ごとに温度で動かす。
-//   低い……ほんの少し。薄く小さく短い。帯の下端へ近づくほど増える
-//   帯の中……中心（最適温）に近いほど、たっぷりまとまったなめらかな煙が長く残る
-//   高すぎ……量は爆煙になるが、荒れてちぎれて横に散り、灰色に濁って早く崩れる（いい煙ではない）。熱いほどむせた短い煙も混ざる
-const SMOKE_GRAY = [0.6, 0.56, 0.52];
+// 吐く時のはじめの口元（img/craft-pull-hajime-exhale.webp の中の、開いた唇の前。横・縦の割合）。絵には煙を描かず、吐いた時だけ動く煙を出す（VPL96・VPL100）
+const PULL_MOUTH = [0.55, 0.287];
+// 吸い出しで吐く煙を、温度から連続して決める（VPL93・VPL94・VPL95）。本編 workerBreath の「適温」の吐き方を元に、項目ごとに温度で動かす。
+// 煙の「量」と「濃さ・白さ」を分けて決める:
+//   量……温度そのもので増える（熱いほど葉から多く出る）。低い＝少し、最適温＝たっぷり、高すぎ＝爆煙
+//   濃さ・白さ……最適温に近いほど白く濃い。外れるとどちらへも薄くなる（低い＝薄くて少ない／高すぎ＝薄くて大きすぎる）
+// 熱に強い葉（ミントなど）の配合は帯が上にずれ、最適温が高いぶん、白く濃いまま量も多くなる（VPL95）
+const SMOKE_GRAY = [0.74, 0.72, 0.7];
 const lerp = (a, b, k) => a + (b - a) * Math.max(0, Math.min(1, k));
 function smokeByTemp(t, b, { x, y, color }) {
   const [lo, hi] = b.zone, mid = (b.best[0] + b.best[1]) / 2, base = workerBreath("good", { x, y })[0];
-  const tint = smokeTint(color, 0.3);
-  if (t < lo) { // 低い
+  // 帯の位置で決まる量の倍率（基準の配合＝1.04。ミント多め≒1.25。スイカ・ストロベリー多めでも 0.9 まで）
+  const heat = lerp(0.9, 1.3, (mid - 0.47) / 0.2);
+  if (t < lo) { // 低い: 薄くて少ない。帯の下端へ近づくほど増える
     const k = (t - 0.12) / (lo - 0.12);
-    return { quality: "thin", nice: 0, breaths: [{ ...base, colors: [tint], rate: lerp(5, 12, k), size: lerp(0.018, 0.029, k), dur: lerp(0.55, 1.05, k), life: lerp(1.05, 1.9, k), alpha: lerp(0.5, 0.76, k), hold: lerp(0.2, 0.36, k), speed: lerp(0.22, 0.38, k), spread: lerp(0.3, 0.42, k) }] };
+    return { quality: "thin", nice: 0, heat, breaths: [{ ...base, colors: [smokeTint(color, 0.3)], rate: lerp(6, 12, k), size: lerp(0.022, 0.03, k), dur: lerp(0.65, 1.05, k), life: lerp(1.3, 1.9, k),
+      alpha: lerp(0.42, 0.6, k), hold: lerp(0.26, 0.36, k), speed: lerp(0.24, 0.36, k), spread: lerp(0.32, 0.42, k) }] };
   }
-  if (t <= hi) { // 帯の中: 中心に近いほどいい煙
-    const q = 1 - Math.abs(t - mid) / Math.max(mid - lo, hi - mid);
-    const best = t >= b.best[0] && t <= b.best[1];
-    return { quality: best ? "best" : "good", nice: q, breaths: [{ ...base, colors: [tint], rate: lerp(12, 19, q), size: lerp(0.029, 0.043, q), dur: lerp(1.05, 1.75, q), life: lerp(1.9, 3, q), alpha: lerp(0.76, 0.9, q), hold: lerp(0.36, 0.5, q), speed: lerp(0.38, 0.44, q), turb: lerp(0.1, 0.06, q), spread: lerp(0.42, 0.36, q) }] };
+  if (t <= hi) { // 帯の中: 最適温に近いほど白く濃く、量も増える。帯の上の方ほど量は多め
+    const q = 1 - Math.abs(t - mid) / Math.max(mid - lo, hi - mid), up = (t - lo) / (hi - lo);
+    const best = t >= b.best[0] && t <= b.best[1], more = heat * lerp(0.88, 1.15, up);
+    return { quality: best ? "best" : "good", nice: q, heat, breaths: [{ ...base, colors: [smokeTint(color, lerp(0.28, 0.07, q))], rate: lerp(12, 27, q) * more, size: lerp(0.03, 0.05, q) * Math.sqrt(more),
+      dur: lerp(1.1, 1.95, q), life: lerp(2, 3.4, q), alpha: lerp(0.6, 1, q), hold: lerp(0.36, 0.54, q), speed: lerp(0.38, 0.46, q), turb: lerp(0.1, 0.05, q), spread: lerp(0.42, 0.34, q) }] };
   }
-  // 高すぎ: 爆煙だが荒れる
-  const h = (t - hi) / (TEMP_DANGER - hi), dirty = tint.map((v, i) => lerp(v, SMOKE_GRAY[i], 0.25 + 0.45 * h));
-  const plume = { ...base, colors: [dirty], rate: lerp(22, 36, h), size: lerp(0.042, 0.058, h), dur: lerp(1.3, 1.9, h), life: lerp(1.7, 1.15, h), alpha: lerp(0.84, 0.76, h), hold: lerp(0.3, 0.2, h),
-    speed: lerp(0.5, 0.64, h), spread: lerp(0.6, 1, h), turb: lerp(0.24, 0.46, h), drag: lerp(1.9, 2.7, h), sway: 0, flat: true };
+  // 高すぎ: 量は爆煙だが、薄くて大きすぎる（濃さは5段で塗るので、0.64〜0.8 で最適温の 1 より2段ほど薄い）。荒れてちぎれて横に散り、白さも抜けて早く崩れる（いい煙ではない）。熱いほどむせた短い煙も混ざる
+  const h = (t - hi) / (TEMP_DANGER - hi), pale = smokeTint(color, 0.2).map((v, i) => lerp(v, SMOKE_GRAY[i], 0.15 + 0.3 * h));
+  const plume = { ...base, colors: [pale], rate: lerp(26, 64, h) * heat, size: lerp(0.055, 0.115, h), dur: lerp(1.7, 2.4, h), life: lerp(2.3, 1.8, h), alpha: lerp(0.8, 0.64, h), hold: lerp(0.34, 0.24, h),
+    speed: lerp(0.6, 0.86, h), spread: lerp(0.55, 0.85, h), turb: lerp(0.12, 0.2, h), drag: lerp(1.5, 1.8, h), sway: 0, flat: true, lean: true };
   const breaths = [plume];
-  if (h > 0.35) breaths.push({ ...plume, dur: 0.22, rate: 30, size: 0.026, life: 0.9, speed: 0.66, spread: 1.1, delay: 0.15 }, { ...plume, dur: 0.22, rate: 30, size: 0.026, life: 0.9, speed: 0.55, spread: 1.1, angle: plume.angle - 0.25, delay: 0.65 });
-  return { quality: "harsh", nice: 0, breaths };
+  if (h > 0.35) breaths.push({ ...plume, dur: 0.22, rate: 30, size: 0.03, life: 0.9, speed: 0.7, spread: 1.2, delay: 0.15 }, { ...plume, dur: 0.22, rate: 30, size: 0.03, life: 0.9, speed: 0.58, spread: 1.2, angle: plume.angle - 0.25, delay: 0.65 });
+  return { quality: "harsh", nice: 0, heat, breaths };
 }
+// 煙のおおよその量（房の数×大きさ²×寿命の和）。確かめ用に煙の層へ書き残す
+const smokeAmount = (breaths) => breaths.reduce((n, s) => n + (s.rate || 0) * (s.dur || 0) * (s.size || 0) ** 2 * (s.life || 0) * 1e4, 0);
 // 煙の輪（本編 craft/fx.js の RING と同じ: 口元から右へ吹いた縦長の輪）
 const SMOKE_RING = { radius: .03, size: .012, squash: [.55, 1], grow: .03, drift: .085, rise: .05, life: 1.7 };
-const THERMO_ON = new Set(["mix", "pack", "pull"]); // 配合は帯だけ（VPL78）
+const THERMO_ON = new Set(["mix", "pack", "timer", "pull"]); // 配合は帯だけ（VPL78）。タイマーは蒸らし後の目安（VPL105）
 const COACH = {
   water: "線のあいだまで注げ",
   coal: "全面が赤くなったら取れ",
+  timer: "蒸らす時間を決めろ。迷ったら5分",
   mix: "レモンを2g以上。合わせて12g",
   steam: "雑念は、よけて流せ",
   pack: "詰め方を見比べて決めよう。迷ったらノーマル",
@@ -185,6 +208,12 @@ const COACH = {
 // 制作ランク（VPL30）。本編のリニューアルと同じく、D から始まり、工程を1つ終えるたびに1段上がる（CRN01・CRN12）。
 // この試作では穴あけと吸い出し（提供）を終えた時に上がる。上がった瞬間は舞台の真ん中に大きく出して（下の英語まで読める）、置き場所へ縮めて収める
 const GRADES = ["D", "C", "B", "A", "S", "SS", "SSS"];
+// 「？」（説明）の置き場所の案（VPL99）。左上の「？」をやめ、その分だけ上の工程の並びを左へ寄せた。どの案も作る7場面で同じ場所に出る
+const HELP_PLACES = {
+  a: { name: "スミさんの一言の右端", lead: "スミさんの一言と同じ段の右端に小さな「？」。困った時に手元の一言を見る流れのまま押せる。7場面とも同じ高さで、上の工程の並び・ランク・温度計とぶつからない" },
+  b: { name: "スミさんの顔に札", lead: "スミさんの顔の右上に小さな「？」の札を付ける。部品を増やさずに「スミさんに聞く」と分かる。押せる所は札だけ（顔を押すと一言を隠す、は今のまま）" },
+  c: { name: "工程の並びの右端", lead: "上の工程の並びの帯の右端に「？」を入れる。前の左上と同じく画面の上にまとまるが、帯の中に入るので工程は左へ寄せたまま" },
+};
 const RANK_PLACES = {
   d: { name: "工程の終わりに上へどかっと → 右上へ", lead: "工程（穴あけ・吸い出しなど）を終えた時、上の絵の真ん中にどかっと落ちてきて（絵が揺れ、衝撃の輪が広がる）、そのあと右上（工程の並びの右、熱ゲージの上）へ移って札になる。下の細い線が次のランクまでの進み" },
   a: { name: "パッドの裏に透かし", lead: "操作パネルの裏に大きく薄く敷く。工程が進むと、文字が下から明るく満ちていく。上がった瞬間だけ舞台に大きく出て、裏へ沈む" },
@@ -267,14 +296,14 @@ const BOTTLE_WALL = (() => {
   const at = (side, y) => { let i = 1; while (i < n - 1 && side[i][1] < y) i++; const [x0, y0] = side[i - 1], [x1, y1] = side[i]; return x0 + (x1 - x0) * Math.max(0, Math.min(1, (y - y0) / (y1 - y0))); };
   return (y) => [at(left, y), at(right, y)];
 })();
-// 蛇口（img/ui-faucet.webp・360×310）: 吐水口の真ん中は絵の左から13.7%・下の端。少し傾けたボトルの口の真上に置く
-const FAUCET = (() => { const [mx, my] = tiltPoint(...BOTTLE.mouth, BOTTLE.rest), w = 357, h = w * 310 / 360; return { x: mx - w * 0.1371, y: my - 60 - h, w, h, nx: mx, ny: my - 60 }; })();
+// 蛇口の吐水口（nx・ny）: 少し傾けたボトルの口の真上 60 の所。蛇口は流し台の絵（img/ui-sink-faucet.webp）に描いてあり、吐水口がここに来るよう CSS で置く（VPL101）
+const FAUCET = (() => { const [mx, my] = tiltPoint(...BOTTLE.mouth, BOTTLE.rest); return { nx: mx, ny: my - 60 }; })();
 // 配合（VPL36）。本編 steps.js の stepMix: 葉を1gずつ器へ。器（シリコン）は12g、第1章の課題はレモン2g以上
 // 葉のジャンルは店番ゲーム（remake/js/daily/tonari-floor-data.js の WISHES・tonari-floor-art.js の印）と同じ（VPL47）
 const GENRES = {
   fruit: { name: "フルーティ", color: "#ff8f6b", icon: '<path d="M12 8.2c-1.7-1.3-4.7-1.1-6.1 1.1-1.6 2.5-.6 6.8 1.7 9.3 1.3 1.5 2.9 1.6 4.4.7 1.5.9 3.1.8 4.4-.7 2.3-2.5 3.3-6.8 1.7-9.3-1.4-2.2-4.4-2.4-6.1-1.1z" fill="currentColor"/><path d="M12 8.2c0-2.2 1-3.9 3.2-4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' },
   sweet: { name: "スイート", color: "#f7a8d8", icon: '<circle cx="12" cy="12" r="4.6" fill="currentColor"/><path d="M7.6 12 3 8.2v7.6zM16.4 12 21 8.2v7.6z" fill="currentColor"/>' },
-  fresh: { name: "刺激系", color: "#7fd8e8", icon: '<path d="M10.5 3H19l-5.6 7.1H18L4.7 21l4.4-8H4.6z" fill="currentColor"/>' },
+  fresh: { name: "刺激", color: "#7fd8e8", icon: '<path d="M10.5 3H19l-5.6 7.1H18L4.7 21l4.4-8H4.6z" fill="currentColor"/>' },
   deep: { name: "リラックス", color: "#b9a6ff", icon: '<path d="M19.6 14.9A8.2 8.2 0 1 1 9.1 4.4a6.6 6.6 0 0 0 10.5 10.5z" fill="currentColor"/>' },
 };
 // 第1章の葉（本編の ID）。ジャンルは店番の表（ダブルアップル＝刺激系＋フルーティ、ミント＝刺激系、レモン＝フルーティ＋刺激系）。
@@ -282,15 +311,15 @@ const GENRES = {
 // 熱への強さ（tol）は本編 data/flavors.json の heat_tolerance（配合の温度帯に使う・VPL78）
 // 葉の色（leaf）は実物に合わせて、色を付けた果物系＝赤寄り、ミントやシナモン・柑橘＝茶色寄り（VPL50・VPL53）
 const MIX = [
-  { id: "double_apple", tol: 1, name: "ダブルアップル", genre: "fresh", sub: "fruit", leaf: "red", box: [105, 53, 304, 405] },
+  { id: "double_apple", tol: 1, name: "ダブルアップル", wrap: "ダブル|アップル", genre: "fresh", sub: "fruit", leaf: "red", box: [105, 53, 304, 405] },
   { id: "mint", tol: 1.2, name: "ミント", genre: "fresh", leaf: "brown", box: [124, 85, 264, 347] },
   { id: "lemon", tol: 1.1, name: "レモン", genre: "fruit", sub: "fresh", leaf: "brown", need: 2, box: [104, 51, 306, 408] },
-  { id: "blueberry", tol: 0.9, name: "ブルーベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
-  { id: "strawberry", tol: 0.85, name: "ストロベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
+  { id: "blueberry", tol: 0.9, name: "ブルーベリー", wrap: "ブルー|ベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
+  { id: "strawberry", tol: 0.85, name: "ストロベリー", wrap: "ストロ|ベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
   { id: "grape", tol: 0.95, name: "グレープ", genre: "fruit", leaf: "red", box: [110, 57, 295, 404] },
   { id: "watermelon", tol: 0.85, name: "スイカ", genre: "fruit", sub: "fresh", leaf: "red", box: [104, 51, 305, 408] },
   { id: "orange", tol: 1, name: "オレンジ", genre: "fruit", sub: "fresh", leaf: "brown", box: [104, 51, 306, 408] },
-  { id: "pineapple", tol: 1.1, name: "パイナップル", genre: "fruit", leaf: "brown", box: [104, 51, 306, 408] },
+  { id: "pineapple", tol: 1.1, name: "パイナップル", wrap: "パイ|ナップル", genre: "fruit", leaf: "brown", box: [104, 51, 306, 408] },
   { id: "cinnamon", tol: 1.05, name: "シナモン", genre: "fresh", sub: "sweet", leaf: "brown", box: [102, 51, 308, 409] },
 ];
 const pkgHtml = (f, h) => {
@@ -362,8 +391,8 @@ const SEG7 = { a: "M6 2h28l4 4-4 4H6L2 6Z", b: "m38 8 4 4v20l-4 4-4-4V12Z", c: "
 const SEG7_ON = ["abcdef", "bc", "abdeg", "abcdg", "bcfg", "acdfg", "acdefg", "abc", "abcdefg", "abcdfg"];
 const SEG7_PATH = typeof Path2D === "function" ? Object.fromEntries(Object.entries(SEG7).map(([k, d]) => [k, new Path2D(d)])) : {};
 
-const SCENES = ["map", "minto", "tonari", "water", "mix", "pack", "holes", "coal", "steam", "pull", "cutin"];
-const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", water: "水", mix: "配合", pack: "詰め", holes: "穴あけ", coal: "炭焼き", steam: "弾幕", pull: "吸う", cutin: "登場" }; // 1台表示の切り替え
+const SCENES = ["map", "minto", "tonari", "water", "mix", "pack", "holes", "coal", "timer", "steam", "pull", "cutin"];
+const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", water: "水", mix: "配合", pack: "詰め", holes: "穴あけ", coal: "炭焼き", timer: "タイマー", steam: "弾幕", pull: "吸う", cutin: "登場" }; // 1台表示の切り替え
 // 別ファイルの場面（タイトル・店番・LIME・心得の盤・斧投げ。VPM01〜）。1台表示の切り替えでは、別の段に並べる。
 // 場面の名前・光の色・一覧（PC）に並べる場面・つまみの選び方は、各ファイルの META に書く（場面を足す時、ここは EXT_CLASSES に1つ足すだけ）
 const EXT_CLASSES = [TitleScene, FloorScene, LimeScene, GrowthScene, AxeScene, DesertScene, CamelScene, DjScene, TetsukoScene, TrpgScene];
@@ -390,15 +419,18 @@ const GALLERY = [
   { scene: "coal", caption: "作る・炭焼き（tonari）" },
   { scene: "coal", caption: "作る・炭焼き（大会の会場に替えた例）", venue: "stage" },
   { scene: "holes", caption: "大会でランクが出る瞬間（観客のコメントが流れる）", venue: "stage", nico: true, grade: 3 },
+  { scene: "timer", caption: "作る・蒸らしのタイマー（雑念よけの前に時間を決める）" },
+  { scene: "timer", caption: "作る・蒸らしのタイマー（5分に合わせた所）", steamSec: 300 },
   { scene: "steam", caption: "作る・蒸らし（雑念よけ）" },
   { scene: "steam", caption: "作る・蒸らし（アタックを覚えた後）", attack: true },
   { scene: "pull", caption: "作る・吸い出し（tonari）" },
   // 吸い出しで吐く煙は温度で変わる（VPL93）。数秒おきに、その温度のまま吐く
-  { scene: "pull", caption: "吐く煙: 低い（0.25）。ほんの少し", temp: 0.25, smokeDemo: true },
-  { scene: "pull", caption: "吐く煙: 適温の下の端（0.44）", temp: 0.44, smokeDemo: true },
-  { scene: "pull", caption: "吐く煙: 最適温（0.54）。いちばんいい煙", temp: 0.54, smokeDemo: true },
-  { scene: "pull", caption: "吐く煙: 少し熱い（0.72）。量は多いが荒れる", temp: 0.72, smokeDemo: true },
-  { scene: "pull", caption: "吐く煙: 高すぎ（0.86）。爆煙だが濁ってちぎれる", temp: 0.86, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 低い（0.25）。薄くて少ない", temp: 0.25, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 適温の下の端（0.44）。まだ薄め", temp: 0.44, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 最適温（0.54）。白く濃く、たっぷり", temp: 0.54, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 少し熱い（0.72）。量は多いが薄く荒れる", temp: 0.72, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 高すぎ（0.86）。爆煙だが薄くて大きすぎる", temp: 0.86, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: ミント多め（熱に強い）の最適温（0.64）。白く濃く、量も多い", temp: 0.64, mix: [0, 10, 2], smokeDemo: true },
   { scene: "pull", caption: "作る・吸い出し（PEPPERMINT に替えた例）", venue: "shop" },
 ];
 
@@ -457,6 +489,8 @@ const ICONS = {
 };
 ICONS.care = ICONS.bell;
 const icon = (name) => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
+// 「？」（説明）のボタン。置き場所は案 a/b/c（HELP_PLACES）
+const helpBtn = (at) => `<button class="help-q help-${at}" data-act="fn" data-fn="help" aria-label="説明">?</button>`;
 /** 人が居る場所は顔、居ない場所は絵記号 */
 const avatar = (spot) => spot.face ? `<img src="${IMG[spot.face]}" alt="">` : icon(spot.glyph);
 const perkHtml = (spot) => spot.closed ? `<em class="stamp">休</em>` : spot.fee ? `<span class="perk">${icon("coin")}<b>${spot.fee}</b></span>` : `<span class="perk">${icon(spot.perk[0])}<small>${spot.perk[1]}</small></span>`;
@@ -565,7 +599,7 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false, temp = null, ...ext } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", help = "a", steamSec = 0, grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false, temp = null, ...ext } = {}) {
     this.el = el;
     this.extOpts = ext; // 別ファイルの場面の見せ方（店番の営業の種類・一覧に並べる場面 shot など。1台表示では URL の値がそのまま入る）
     el.lang = "ja";
@@ -576,6 +610,9 @@ class Phone {
     this.uid = (Phone.seq = (Phone.seq || 0) + 1); // SVG の id を台ごとに分ける
     this.keys = new Set();
     this.rankAt = RANK_PLACES[rank] ? rank : "d"; // ランクの置き場所の案
+    this.helpAt = HELP_PLACES[help] ? help : "a"; // 「？」の置き場所の案（VPL99）
+    this.steamSec = Math.max(0, Math.min(STEAM_MAX, Math.round((Number(steamSec) || 0) / 10) * 10)); // 蒸らし時間（秒。VPL105）。次の雑念よけの長さと、吸い出しの初めの温度に効く
+    el.dataset.help = this.helpAt;
     this.venue = VENUES[venue] ? venue : "tonari"; // 作る場面の会場（背景）
     this.attackLearned = !!attack; // 雑念よけのアタックを覚えたか（覚えると精密と入れ替える切り替えが出る・VPL62）
     this.initTemp = temp != null && temp !== "" && Number.isFinite(Number(temp)) ? Math.max(0.05, Math.min(0.95, Number(temp))) : null; // 吸い出しの初めの温度（?temp=・一覧の煙の見本。VPL93）
@@ -644,6 +681,7 @@ class Phone {
     if (st.scene === "water") this.syncWater();
     if (st.scene === "mix") this.syncMix();
     if (st.scene === "steam") requestAnimationFrame(() => this.startDodge());
+    if (st.scene === "timer") this.syncTimer();
     if (st.scene === "coal") this.startCoals();
     if (!this.talk && st.scene !== "map") this.fitCoach();
   }
@@ -971,20 +1009,19 @@ class Phone {
   /* ── シーシャ作り ── */
 
   craftHtml() {
-    const { st } = this, at = STEPS.findIndex(([id]) => id === st.scene);
+    const { st } = this, at = STEPS.findIndex(([id]) => id === stepOf(st.scene));
     const bg = `<img class="bg" src="${IMG[this.venue]}" alt="">`;
     const pic = st.scene === "pack" ? `${bg}<img class="bowl" src="${IMG[`bowl_${PACKS[st.pack].id}`]}" alt="">`
       : st.scene === "holes" ? `${bg}<div class="foil"><img src="${IMG.foil}" alt=""><svg viewBox="-100 -100 200 200" class="foil-marks"></svg></div>`
-      : st.scene === "water" ? this.waterPic() : st.scene === "mix" ? this.mixPic() : st.scene === "steam" ? this.steamPic() : st.scene === "coal" ? this.coalPic()
-      : `${bg}<img class="pull-cg" src="${IMG.pullHajime}" alt=""><img class="puff" src="${IMG.smoke}" alt="">`;
+      : st.scene === "water" ? this.waterPic() : st.scene === "mix" ? this.mixPic() : st.scene === "steam" ? this.steamPic() : st.scene === "coal" ? this.coalPic() : st.scene === "timer" ? this.timerPic()
+      : `${bg}<img class="pull-cg hold" src="${IMG.pullHajime}" alt=""><img class="pull-cg exhale" src="${IMG.pullHajimeExhale}" alt=""><img class="puff" src="${IMG.smoke}" alt="">`;
     // 日付・体力・お金は出さない。上は工程の並びだけ。名前の文字は出さず、今の工程は光る丸で示す（VPL31）
     return `
       <img class="amb" src="${IMG[this.venue]}" alt="">
       <div class="pic craft craft-${st.scene}">${pic}</div>
       <i class="veil"></i>
       ${THERMO_ON.has(st.scene) ? this.thermoHtml(this.thermoWas === false ? "fade-in" : "") : this.thermoWas ? this.thermoHtml("fade-out") : ""}
-      <button class="help-q" data-act="fn" data-fn="help" aria-label="説明">?</button>
-      <div class="steps" aria-label="工程">${STEPS.map(([id, name], i) => `<span class="${i === at ? "now" : i < at ? "done" : ""}" aria-label="${name}"${i === at ? ` aria-current="step"` : ""}>${icon(id)}</span>`).join("")}</div>
+      <div class="steps" aria-label="工程">${STEPS.map(([id, name], i) => `<span class="${i === at ? "now" : i < at ? "done" : ""}" aria-label="${name}"${i === at ? ` aria-current="step"` : ""}>${icon(id)}</span>`).join("")}${this.helpAt === "c" ? helpBtn("c") : ""}</div>
       ${this.rankAt === "a" ? "" : this.rankHtml()}
       <div class="body">
         ${this.rankAt === "a" ? this.rankHtml() : ""}
@@ -1010,7 +1047,11 @@ class Phone {
       box.dataset.grade = g; box.setAttribute("aria-label", `ランク ${g}`);
       box.querySelectorAll(".rank-art").forEach((img) => { img.src = IMG[`rank${g}`]; });
     }
-    box.style.setProperty("--p", this.st.gradeP.toFixed(3));
+    // 進みが伸びる時は、ゆっくり減速して止まり、伸びた所が一度光る。工程が変わって0へ戻る時は、縮む動きを見せずに戻す
+    const meter = box.querySelector(".rank-meter"), was = Number(box.style.getPropertyValue("--p")) || 0, now = this.st.gradeP;
+    if (meter && now < was) { meter.classList.add("reset"); meter.classList.remove("gain"); requestAnimationFrame(() => requestAnimationFrame(() => meter.classList.remove("reset"))); }
+    else if (meter && now > was) { meter.classList.remove("gain"); void meter.offsetWidth; meter.classList.add("gain"); }
+    box.style.setProperty("--p", now.toFixed(3));
   }
 
   /** 工程を終えたら1段上げる。舞台の真ん中に大きく出し（下の英語まで読める）、置き場所へ縮めて収める（本編の burstRank と同じ流れ）。 */
@@ -1054,13 +1095,11 @@ class Phone {
   /* ── 水入れ（VPL36・VPL37）: 押している間だけ水が動く。ステムの先が少し浸かる、二本の線のあいだがちょうどいい ── */
   /** ボトルの中の水と、蛇口・水流。水は画面に対して水平なので、傾けたボトルの絵とは別に（傾けない SVG で）描き、内側の形で切り抜く。 */
   bottleSvg() {
-    const id = `bw${this.uid}`, { w, h, inner } = BOTTLE, F = FAUCET, n = (v) => v.toFixed(1);
+    const id = `bw${this.uid}`, { w, h, inner } = BOTTLE; // 蛇口は流し台の絵に描いてある（吐水口がボトルの口の上 FAUCET.nx・ny に来るよう置く。VPL101）
     return `<svg class="bottle-svg" viewBox="0 0 ${w} ${h}" aria-hidden="true"><defs><clipPath id="${id}"><path class="w-clip" d="${inner}"/></clipPath>
         <linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fe6fa"/><stop offset="0.16" stop-color="#3fb4e6"/><stop offset="1" stop-color="#1757a6"/></linearGradient>
         <linearGradient id="${id}s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8fd8f5" stop-opacity="0.7"/><stop offset="0.4" stop-color="#ffffff" stop-opacity="1"/><stop offset="1" stop-color="#6fc4ee" stop-opacity="0.75"/></linearGradient>
-        <linearGradient id="${id}m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.3" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff"/></linearGradient>
-        <mask id="${id}k" maskUnits="userSpaceOnUse" x="${n(F.x)}" y="${n(F.y)}" width="${n(F.w)}" height="${n(F.h)}"><rect x="${n(F.x)}" y="${n(F.y)}" width="${n(F.w)}" height="${n(F.h)}" fill="url(#${id}m)"/></mask></defs>
-        <image class="w-faucet" href="${IMG.faucet}" x="${n(F.x)}" y="${n(F.y)}" width="${n(F.w)}" height="${n(F.h)}" mask="url(#${id}k)"/>
+      </defs>
         <g clip-path="url(#${id})"><path class="w-body" fill="url(#${id}g)" d=""/><path class="w-deep" d=""/>
           <g class="w-bubbles">${`<circle r="0"/>`.repeat(12)}</g>
           <path class="w-stream in" fill="url(#${id}s)" d=""/>
@@ -1078,7 +1117,8 @@ class Phone {
 
   /** 水入れ（VPL46・VPL81）: 蛇口の下で、口の開いたボトルを少し傾けて満たす。水位計は出さない。二本の線が目安 */
   waterPic() {
-    return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="water-a" data-zone="empty"><div class="bottle open"><img class="sink" src="${IMG.sink}" alt="">${this.bottleSvg()}<img class="b-glass" src="${IMG.bottle}" alt="">${this.bottleFxSvg()}</div></div>`;
+    // 流し台は2枚重ね: 奥（カウンター・流し台の中・蛇口）と、手前（カウンターの手前の縁から下）。ボトルの足は手前の縁に隠れて、流し台の中に立つ（VPL101）
+    return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="water-a" data-zone="empty"><div class="bottle open"><img class="sink" src="${IMG.sink}" alt="">${this.bottleSvg()}<img class="b-glass" src="${IMG.bottle}" alt="">${this.bottleFxSvg()}<img class="sink front" src="${IMG.sink}" alt=""></div></div>`;
   }
 
   /**
@@ -1254,7 +1294,8 @@ class Phone {
     const { st } = this, i = st.mixSel, f = MIX[i];
     const btn = (by) => `<button class="mr-btn" data-act="mixadd" data-i="${i}" data-by="${by}" aria-label="${f.name}を1g${by > 0 ? "増やす" : "減らす"}">${by > 0 ? "＋" : "−"}</button>`;
     // 下の段で「決定」の左に入るので、パッケージとジャンルは出さない（棚の札が光っている）。名前・課題の印・−／＋・g だけ（VPL83）
-    return `<span class="mr-name"><b class="${[...f.name].length >= 7 ? "long" : ""}">${f.name}</b>${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</span>
+    // 長い名前は、入りきらない時だけ語の切れ目（wrap の「|」）で2行に折る（VPL106。端末の字の幅で「−」の下に隠れないように）
+    return `<span class="mr-name"><b class="${[...f.name].length >= 7 ? "long" : ""}">${f.wrap ? f.wrap.split("|").join("<wbr>") : f.name}</b>${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</span>
       ${btn(-1)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(1)}`;
   }
 
@@ -1377,6 +1418,8 @@ class Phone {
     const size = this.dodgeSize();
     if (!size || this.st.scene !== "steam") return;
     const now = performance.now();
+    // 雑念よけの長さ（VPL105）: タイマーで決めた蒸らし時間を、本編と同じ長さに縮めて遊ぶ（5分＝12秒）。タイマーを通らない時はこれまでの9秒
+    this.dodgeMs = this.steamSec ? steamPlaySeconds(this.steamSec) * 1000 : DODGE.time;
     this.dodge = { t0: now + DODGE.ready, heart: { x: 195, y: size.H * 0.7 }, bullets: [], hits: 0, safeUntil: 0, bombAt: -1e9, atkAt: -1e9, slashes: [], lastHit: -1e9, calmSince: 0, beat: 0, beatAt: now, rings: [],
       nextSpawn: 0, nextWave: 1600, warn: null, over: false, H: size.H };
     if (this.fixed) {
@@ -1439,7 +1482,7 @@ class Phone {
       d.heart.y = Math.max(70, Math.min(d.H - 16, d.heart.y + vy * sp));
       // 弾と波
       if (t >= d.nextSpawn) { this.spawnBullet(d); d.nextSpawn = t + DODGE.every; }
-      if (!d.warn && t >= d.nextWave - DODGE.warn && d.nextWave < DODGE.time - 600) {
+      if (!d.warn && t >= d.nextWave - DODGE.warn && d.nextWave < (this.dodgeMs || DODGE.time) - 600) {
         d.warn = { type: "sweep", at: d.nextWave, side: Math.random() < 0.5 ? "left" : "right", open: Math.floor(Math.random() * 7) };
         field.dataset.warn = d.warn.side;
       }
@@ -1456,8 +1499,8 @@ class Phone {
           this.el.querySelector(".pic")?.animate([{ translate: "0 0" }, { translate: "-0.5rem 0.3rem" }, { translate: "0.4rem -0.2rem" }, { translate: "0 0" }], { duration: 240 });
         }
       }
-      field.querySelector(".d-time i").style.transform = `scaleX(${Math.max(0, 1 - t / DODGE.time).toFixed(3)})`;
-      if (t >= DODGE.time) this.endDodge();
+      field.querySelector(".d-time i").style.transform = `scaleX(${Math.max(0, 1 - t / (this.dodgeMs || DODGE.time)).toFixed(3)})`;
+      if (t >= (this.dodgeMs || DODGE.time)) this.endDodge();
     }
     // 心の状態（VPL64）: 場の縁の暗がりと、奥の時計・心拍線の色に出す
     const lv = this.mindLevel(now);
@@ -1495,7 +1538,7 @@ class Phone {
     ctx.clearRect(0, 0, 390, d.H);
     // 奥の時計（本編: 場の中央奥に不透明度 .16、色は心の状態）。場の真ん中より少し下（VPL63）
     const cy = d.H * 0.6;
-    const left = Math.max(0, Math.ceil((DODGE.time - Math.max(0, now - d.t0)) / 1000));
+    const left = Math.max(0, Math.ceil(((this.dodgeMs || DODGE.time) - Math.max(0, now - d.t0)) / 1000));
     const text = `0${Math.floor(left / 60)}${String(left % 60).padStart(2, "0")}`.slice(-3);
     ctx.save(); ctx.globalAlpha = 0.16; ctx.fillStyle = mind;
     const k = 1.25, w = 44 * k, x0 = 195 - (w * 3 + 14) / 2, y0 = cy - 38 * k;
@@ -1759,7 +1802,7 @@ class Phone {
     this.stepJudge = nicoJudge(score);
     this.say(score >= 90 ? "火が素直だ。いい焼け具合" : score >= 70 ? "まあまあだ。次は色をよく見ろ" : "早すぎか遅すぎだ。全面の赤を待て");
     setTimeout(() => this.rankUp(), 700);
-    setTimeout(() => { if (this.st.scene === "coal") this.setScene("steam"); }, this.venue === "stage" ? 5000 : 3600);
+    setTimeout(() => { if (this.st.scene === "coal") this.setScene("timer"); }, this.venue === "stage" ? 5000 : 3600);
   }
 
   /**
@@ -1858,22 +1901,23 @@ class Phone {
   thermoHtml(fade = "") {
     const t = this.st.temp, pc = (v) => `${(v * 100).toFixed(1)}%`, b = bandsOf(this.st.mix);
     // 配合の場面は、加熱前なので帯だけ（今の温度の印は出さない）。葉を入れるまでは帯も出さない
-    const mixing = this.st.scene === "mix";
-    return `<div class="thermo ${mixing ? "bands" : tempState(t, b)} ${fade}" data-selected="${!mixing || b.selected}" style="--t:${t}" role="meter" aria-label="${mixing ? "この配合の適温" : "煙の温度"}" aria-valuemin="0" aria-valuemax="1" aria-valuenow="${t.toFixed(2)}">
+    const mixing = this.st.scene === "mix", timing = this.st.scene === "timer";
+    // タイマーの場面は、蒸らし後の温度の目安（針と、前後する幅）。時間を決めるまでは出さない（VPL105）
+    return `<div class="thermo ${mixing ? "bands" : `${timing ? "forecast " : ""}${tempState(t, b)}`} ${fade}" data-selected="${mixing ? b.selected : timing ? this.steamSec >= 10 : true}" style="--t:${t}" role="meter" aria-label="${mixing ? "この配合の適温" : "煙の温度"}" aria-valuemin="0" aria-valuemax="1" aria-valuenow="${t.toFixed(2)}">
       <span class="th-icon">${icon("thermo")}</span>
       <span class="th-tube"><span class="th-bar" style="background:${scaleOf(b)}">
         <i class="th-zone" style="bottom:${pc(b.zone[0])};height:${pc(b.zone[1] - b.zone[0])}"></i>
         <i class="th-best" style="bottom:${pc(b.best[0])};height:${pc(b.best[1] - b.best[0])}"></i>
         <i class="th-danger" style="bottom:${pc(TEMP_DANGER)}">${icon("coal")}</i>
         <i class="th-dim"></i>
-        <i class="th-now"></i>
-      </span><i class="th-pointer"></i></span>${mixing ? `<small class="th-note"></small>` : ""}</div>`;
+        <i class="th-now"></i>${timing ? `<i class="th-range" style="--spread:${STEAM_SPREAD}"></i>` : ""}
+      </span><i class="th-pointer"></i></span>${mixing ? `<small class="th-note"></small>` : timing ? `<small class="th-note">目安</small>` : ""}</div>`;
   }
 
   /** スミさんの一言は小さな吹き出しで出し、少しすると顔だけになる（顔を押すとまた出る）。 */
   craftTelopHtml() {
     const { st } = this;
-    return `<button class="coach" data-act="coach" aria-label="スミさんの一言"><img src="${IMG.faceSumi}" alt=""><span class="say"><span class="say-text">${esc(COACH[st.scene])}</span></span></button>`;
+    return `<button class="coach" data-act="coach" aria-label="スミさんの一言"><img src="${IMG.faceSumi}" alt=""><span class="say"><span class="say-text">${esc(COACH[st.scene])}</span></span></button>${this.helpAt === "c" ? "" : helpBtn(this.helpAt)}`;
   }
 
   craftCtrlHtml() {
@@ -1891,6 +1935,14 @@ class Phone {
     if (st.scene === "coal") {
       // 下の画面はコンロ。炭を直接タッチして取り出す（VPL55）
       return `<div class="stove"><img src="${IMG.stove}" alt="">${COAL_AT.map(([x, y], i) => `<button class="coal" data-act="coal" data-i="${i}" style="left:${x * 100}%;top:${y * 100}%" aria-label="炭 ${i + 1}"><i class="c-seat"></i><img class="c-cold" src="${IMG.coalCold}" alt=""><img class="c-lit" src="${IMG.coalLit}" alt=""><i class="c-ash"></i></button>`).join("")}</div>`;
+    }
+    if (st.scene === "timer") {
+      // 蒸らしのタイマー（VPL105。本編の蒸らしのタイマーと同じ操作）: 上の段に早見の 3分・5分・8分 とリセット、
+      // いちばん下の段に 分（＋1分）・秒（＋10秒）・スタート（右下＝決定の場所）。上の絵のタイマーの物理ボタンも同じように押せる
+      return `<div class="presets">${[3, 5, 8].map((m) => `<button class="preset" data-act="timer" data-key="p${m}" aria-pressed="${this.steamSec === m * 60}">${m}分</button>`).join("")}<button class="preset reset" data-act="timer" data-key="reset">リセット</button></div>
+        <button class="btn-a sub l t-min" data-act="timer" data-key="min" aria-label="1分足す"><span class="t">分</span><small class="btn-lab">＋1分</small></button>
+        <button class="btn-a center t-sec" data-act="timer" data-key="sec" aria-label="10秒足す"><span class="t">秒</span><small class="btn-lab">＋10秒</small></button>
+        <button class="btn-a sub r t-start" data-act="timer" data-key="start" aria-label="スタート"${this.steamSec < 10 ? " disabled" : ""}><span class="t">スタート</span></button>`;
     }
     if (st.scene === "steam") {
       // 十字キーはスティック（押した向きと強さで動く）。右下の大きな丸がリフレッシュ、その左上が精密（アタックを覚えたら切り替えで入れ替わる）（VPL62）
@@ -1963,6 +2015,7 @@ class Phone {
     else if (act === "pick") { const same = st.pick === Number(hit.dataset.pick); st.pick = Number(hit.dataset.pick); this.applyLine({ instant: true }); if (same) this.pressA(); }
     else if (act === "pack") { st.pack = Number(hit.dataset.pack); this.patch(); }
     else if (act === "decide") this.decideWater();
+    else if (act === "timer") this.timerKey(hit.dataset.key);
     else if (act === "coal") this.takeCoal(Number(hit.dataset.i));
     else if (act === "sub") { if (hit.classList.contains("attack")) this.attack(); else this.toggleSlow(); }
     else if (act === "swap") { st.sub = st.sub === "attack" ? "slow" : "attack"; if (st.sub === "attack") st.slow = false; this.patch(); }
@@ -2097,8 +2150,10 @@ class Phone {
       st.temp = Math.min(0.95, Math.max(0.06, st.temp + 0.05 + ((this.needleT ?? 0.5) - 0.5) * 0.32));
       this.hold = performance.now();
       // 吸って、少し間をおいて口元から吐く（VPL88。本編の煙が出せない時＝「動きを減らす」は、これまでの煙の絵）
-      if (smokeAllowed()) { const last = st.pulls >= 5; setTimeout(() => this.exhale({ last }), 420); }
-      else { el.classList.remove("puffing"); void el.offsetWidth; el.classList.add("puffing"); }
+      // 吐いている途中で押したら、吸い口を口へ戻してから吸う（VPL100）
+      this.exhalePose(0);
+      if (smokeAllowed()) { const last = st.pulls >= 5; clearTimeout(this.exhaleTimer); this.exhaleTimer = setTimeout(() => this.exhale({ last }), 420); }
+      else { el.classList.remove("puffing"); void el.offsetWidth; el.classList.add("puffing"); clearTimeout(this.exhaleTimer); this.exhaleTimer = setTimeout(() => this.exhalePose(1500), 420); }
       this.patch();
       this.syncThermo();
       setTimeout(() => { this.hold = 0; if (st.pulls >= 5 && this.fixed) { st.pulls = 0; st.temp = 0.4; st.gradeP = 0; this.patch(); this.syncThermo(); this.syncRank(); } }, 700);
@@ -2107,8 +2162,8 @@ class Phone {
   }
 
   /**
-   * 吸い出しで吐く煙（VPL88）。本編の「煙が成績表」（KMR15）と同じく、吐いた時の温度で煙の姿が変わる:
-   *   最適温＝たっぷり長く残る（5口目なら吐き終わりに煙の輪）／適温＝まとまった煙／ぬるい＝薄く小さい／熱すぎ＝むせてちぎれる。
+   * 吸い出しで吐く煙（VPL88）。本編の「煙が成績表」（KMR15）と同じく、吐いた時の温度で煙の姿が変わる（smokeByTemp）:
+   *   最適温＝白く濃く、たっぷり長く残る（5口目なら吐き終わりに煙の輪）／ぬるい＝薄くて少ない／熱すぎ＝爆煙だが薄くて大きすぎ、ちぎれる。
    * 色は配合の葉の色をうっすら。煙の升目は 16:9 なので、口元の周りに 16:9 の箱を置いて載せる（縦の画面にそのまま広げると房がつぶれる）。
    */
   exhale({ last = false } = {}) {
@@ -2122,14 +2177,69 @@ class Phone {
     const bw = pr.width * 1.5, bh = bw * 9 / 16, bx = mx - bw * 0.34, by = my - bh * 0.62;
     Object.assign(box.style, { left: `${bx}px`, top: `${by}px`, width: `${bw}px`, height: `${bh}px` });
     const b = bandsOf(st.mix), t = st.temp, x = (mx - bx) / bw, y = (my - by) / bh;
-    const { quality, nice, breaths: raw } = smokeByTemp(t, b, { x, y, color: this.mixColor() });
+    const { quality, nice, heat, breaths: raw } = smokeByTemp(t, b, { x, y, color: this.mixColor() });
     // 本編のはじめは横向き（煙は顔の前へ出る）。縦の絵は正面向きなので、口元から少し右下へ吐き、顔の外へ出てから昇らせる（目元にかけない）。
     // 横への広がりは、いい煙ほど細くまとめ、熱すぎる煙は荒れたまま散らす
     const breaths = raw.map((s) => ({ ...s, angle: s.angle + 0.34, buoy: s.buoy * 0.35, speed: s.speed * 1.3, spread: quality === "harsh" ? s.spread : Math.min(s.spread, 0.34) }));
     if (last && quality === "best") breaths.push(...ringBreath({ ...SMOKE_RING, x: x + .035, y: y - .012, colors: [smokeTint(this.mixColor(), .08)], delay: 1.9 }));
+    // 吸い口を口から離した絵に替えて吐き、吐き終わって少ししたら吸い口を口へ戻す（VPL100。次に「吸う」を押せば、すぐ戻す）
+    this.exhalePose(Math.max(1600, Math.max(...breaths.map((s) => ((s.delay || 0) + s.dur) * 1000)) + 1100));
     const layer = smokeLayer(box, { zIndex: 1, className: "pull-smoke", gridScale: .5 });
-    Object.assign(layer.canvas.dataset, { quality, nice: nice.toFixed(2), temp: t.toFixed(2) });
+    Object.assign(layer.canvas.dataset, { quality, nice: nice.toFixed(2), temp: t.toFixed(2), heat: heat.toFixed(2), amount: smokeAmount(breaths).toFixed(1), alpha: breaths[0].alpha.toFixed(2) });
     layer.breathe(breaths);
+  }
+
+  /** 蒸らしのタイマー（VPL105）: 上の画面に本編と同じキッチンタイマー（液晶と4つの物理ボタン）と、蒸らし後の温度の目安・雑念よけの長さ。 */
+  timerPic() {
+    const keys = [["min", "分"], ["sec", "秒"], ["start", "スタート<br>＆ストップ"], ["reset", "リセット"]]; // 絵の物理ボタンの位置は CSS（.kt-min など）
+    return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="timer-a">
+      <div class="ktimer"><img src="${IMG.kitchenTimer}" alt=""><output class="lcd" aria-live="polite"></output>
+        ${keys.map(([k, label]) => `<button class="kt-key kt-${k}" data-act="timer" data-key="${k}">${label}</button>`).join("")}</div>
+      <div class="t-forecast"><span class="tf-head">蒸らし後の温度の目安</span><b class="tf-range"></b><small class="tf-dodge"></small></div></div>`;
+  }
+
+  /** タイマーのボタン（下の画面と、絵の物理ボタンの両方から）。分＝＋1分、秒＝＋10秒、早見＝その分、リセット＝0、スタート＝雑念よけへ */
+  timerKey(key) {
+    const phys = key === "min" || key === "sec" || key === "start" || key === "reset" ? key : null;
+    const kt = phys && this.el.querySelector(`.kt-${phys}`);
+    if (kt) { kt.classList.remove("hit"); void kt.offsetWidth; kt.classList.add("hit"); }
+    if (key === "start") {
+      if (this.steamSec < 10) return;
+      this.el.querySelector(".timer-a")?.classList.add("go");
+      if (this.fixed) setTimeout(() => this.el.querySelector(".timer-a")?.classList.remove("go"), 900);
+      else setTimeout(() => { if (this.st.scene === "timer") this.setScene("steam"); }, 650);
+      return;
+    }
+    this.steamSec = key === "reset" ? 0 : key === "min" ? Math.min(STEAM_MAX, this.steamSec + 60) : key === "sec" ? Math.min(STEAM_MAX, this.steamSec + 10) : Number(key.slice(1)) * 60;
+    this.syncTimer();
+  }
+
+  /** 液晶・早見の印・スタートの可否・蒸らし後の温度の目安・雑念よけの長さを、今の蒸らし時間に合わせる。 */
+  syncTimer() {
+    const { el, st } = this, sec = this.steamSec, set = sec >= 10;
+    const lcd = el.querySelector(".timer-a .lcd");
+    if (!lcd) return;
+    lcd.innerHTML = lcdSvg(sec); lcd.setAttribute("aria-label", `蒸らし時間 ${Math.floor(sec / 60)}分${sec % 60}秒`);
+    el.querySelectorAll(".presets .preset[data-key^='p']").forEach((b) => b.setAttribute("aria-pressed", String(sec === Number(b.dataset.key.slice(1)) * 60)));
+    el.querySelectorAll(".t-start, .kt-start").forEach((b) => { b.disabled = !set; });
+    el.querySelectorAll(".t-min, .kt-min, .t-sec, .kt-sec").forEach((b) => { b.disabled = sec >= STEAM_MAX; });
+    const b = bandsOf(st.mix), pred = steamPredict(sec);
+    const name = (t) => t >= b.best[0] && t <= b.best[1] ? "最適温" : t >= b.zone[0] && t <= b.zone[1] ? "適温" : t > b.zone[1] ? "熱い" : t < 0.2 ? "低温" : "ぬるい";
+    const lo = name(pred - STEAM_SPREAD), hi = name(pred + STEAM_SPREAD);
+    el.querySelector(".tf-range").textContent = set ? (lo === hi ? `${lo}のあたり` : `${lo}〜${hi}`) : "—";
+    el.querySelector(".tf-dodge").textContent = set ? `雑念よけは約${Math.ceil(steamPlaySeconds(sec))}秒` : "時間を決めると、雑念よけの長さが分かる";
+    st.temp = set ? pred : 0.4;
+    const thermo = el.querySelector(".thermo");
+    if (thermo) { thermo.dataset.selected = String(set); this.syncThermo(); }
+  }
+
+  /** 吐く時の姿（VPL100）。ms の間、吸い口を口から離して吐く絵にし、そのあと吸い口をくわえた絵へ戻す。0 ですぐ戻す */
+  exhalePose(ms) {
+    const pic = this.el.querySelector(".pic.craft-pull");
+    clearTimeout(this.poseTimer);
+    if (!pic) return;
+    pic.classList.toggle("exhaling", ms > 0);
+    if (ms > 0) this.poseTimer = setTimeout(() => pic.isConnected && pic.classList.remove("exhaling"), ms);
   }
 
   /** 配合の葉の色（グラムで重み付けしたジャンルの色）。葉が無ければ煙の白 */
@@ -2147,7 +2257,7 @@ class Phone {
     if (!thermo) return;
     thermo.style.setProperty("--t", String(t));
     thermo.setAttribute("aria-valuenow", t.toFixed(2));
-    thermo.className = `thermo ${tempState(t, bandsOf(this.st.mix))}`;
+    thermo.className = `thermo ${this.st.scene === "timer" ? "forecast " : ""}${tempState(t, bandsOf(this.st.mix))}`;
   }
 
   /** シーシャ作り: スミさんの一言は3秒ほどで畳み、手元の操作だけを残す（一覧では出したまま）。 */
@@ -2225,7 +2335,7 @@ class Phone {
     this.thermoWas = crafting(this.st.scene) ? THERMO_ON.has(this.st.scene) : undefined;
     Object.assign(this, { dodge: null, heat: null, pouring: false, draining: false, deciding: false, coachSay: null, stick: null, dragTo: null });
     this.keys.clear();
-    Object.assign(this.st, { scene, step: 0, page: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1, temp: this.initTemp ?? 0.4 });
+    Object.assign(this.st, { scene, step: 0, page: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1, temp: this.initTemp ?? (scene === "pull" && this.steamSec ? steamPredict(this.steamSec) : 0.4) });
     this.quiet = false;
     this.render({ delay: arrive ? 1200 : 0 }); // 店に着いた時は、店名の札が出てから文字を送る
     this.hushCoach();
@@ -2344,6 +2454,10 @@ function showGallery() {
     <p class="g-note">本編の制作ランク（D〜SSS の絵）を縦画面のどこに置くか。どの案も、工程を終えてランクが上がった瞬間は舞台の真ん中に大きく出し（下の英語まで読める）、置き場所へ縮めて収める。1台表示の右上のつまみ →「ランク」で案を替え、「↑」で上がる動きを何度でも見られる。</p>
     ${Object.entries(RANK_PLACES).map(([v, place]) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}${v === "d" ? "（オーナー案）" : ""}</small>${place.name}<a href="?view=play&scene=holes&rank=${v}">1台で動きを見る</a></h3><p>${place.lead}</p>
       <div class="g-grid">${[["pack", 1, 0.3, "詰め（ランクC）"], ["holes", 2, 0.6, "穴あけ（ランクB・進み6割）"], ["pull", 4, 0.4, "吸い出し（ランクS）"]].map(([scene, grade, gradeP, cap]) => `<figure class="g-cell"><article class="phone" data-rank="${v}" data-scene="${scene}" data-grade="${grade}" data-gp="${gradeP}"></article><figcaption>${cap}</figcaption></figure>`).join("")}</div></section>`).join("")}
+    <h2 class="g-sub">「？」（説明）の置き場所</h2>
+    <p class="g-note">左上の「？」をやめ、上の工程の並びを左へ寄せた（VPL99）。空いた所に置く3案。案Aがおすすめ。1台表示の右上のつまみ →「？の場所」でも替えられる。</p>
+    ${Object.entries(HELP_PLACES).map(([v, place]) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}${v === "a" ? "（おすすめ）" : ""}</small>${place.name}<a href="?view=play&scene=pull&help=${v}">1台で触る</a></h3><p>${place.lead}</p>
+      <div class="g-grid">${[["mix", "配合"], ["holes", "穴あけ"], ["pull", "吸い出し"]].map(([scene, cap]) => `<figure class="g-cell"><article class="phone" data-helpdemo="${v}" data-scene="${scene}"></article><figcaption>${cap}</figcaption></figure>`).join("")}</div></section>`).join("")}
     <h2 class="g-sub">登場カットイン（縦画面）</h2>
     ${["a"].map((v) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}で決定</small>${CUT_VARIANTS[v].name}<a href="?view=play&scene=cutin&ci=${v}" data-go="play" data-ci="${v}">1台で動きを見る</a></h3><p>${CUT_VARIANTS[v].lead}</p>
       <div class="g-grid">${["minto", "sumi"].map((who) => `<figure class="g-cell"><article class="phone" data-ci="${v}" data-who="${who}"></article><figcaption>${who === "minto" ? "みんと" : "スミさん"}</figcaption></figure>`).join("")}</div></section>`).join("")}
@@ -2361,6 +2475,7 @@ function showGallery() {
       BROADCAST_READY.then(show);
     }
   });
+  app.querySelectorAll(".phone[data-helpdemo]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, help: el.dataset.helpdemo, grade: 2, gradeP: 0.4 })));
   app.querySelectorAll(".phone[data-ci]").forEach((el) => phones.push(new Phone(el, "cutin", { fixed: true, ci: el.dataset.ci, who: el.dataset.who })));
   app.querySelectorAll(".phone[data-ext]").forEach((el) => phones.push(new Phone(el, el.dataset.ext, { fixed: true, ...EXT[el.dataset.ext].META.gallery.shots[Number(el.dataset.shotI)] })));
   app.querySelectorAll(".phone[data-gp]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, rank: el.dataset.rank, grade: Number(el.dataset.grade), gradeP: Number(el.dataset.gp) })));
@@ -2389,12 +2504,13 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
       <div><small>登場</small>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div>
       <div><small>雑念よけ</small><button data-attack aria-pressed="${params.has("attack")}">アタック習得</button></div>
       <div><small>会場</small>${Object.entries(VENUES).map(([v, name]) => `<button data-venue="${v}" aria-pressed="${v === (params.get("venue") || "tonari")}">${name}</button>`).join("")}</div>
-      <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "d")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div></div></nav>`}</div>`;
+      <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "d")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div>
+      <div><small>？の場所</small>${Object.keys(HELP_PLACES).map((v) => `<button data-help="${v}" aria-pressed="${v === (params.get("help") || "a")}">案${v.toUpperCase()}</button>`).join("")}</div></div></nav>`}</div>`;
   const el = app.querySelector(".phone");
   // 先に大きさを決めてから描く（立ち絵と地図の位置は絵の大きさから決まる）
   const box = app.getBoundingClientRect(), rem = Math.min(box.width / 39, box.height / 66);
   root.style.fontSize = `${rem}px`; el.style.height = `${Math.min(box.height, rem * 92)}px`;
-  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { ...Object.fromEntries(params), step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", venue: params.get("venue") || "tonari", attack: params.has("attack"), grade: params.get("grade"), ...opts });
+  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { ...Object.fromEntries(params), step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", help: params.get("help") || "a", venue: params.get("venue") || "tonari", attack: params.has("attack"), grade: params.get("grade"), ...opts });
   current = make(scene);
   const nav = app.querySelector(".switch");
   if (!nav) return;
@@ -2434,6 +2550,12 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
         if (crafting) current.render(); else current.setScene("holes");
       } else if (crafting) current.rankUp({ loop: true });
       else { current.setScene("holes"); setTimeout(() => current.rankUp({ loop: true }), 400); }
+    }
+    else if (button.dataset.help) {
+      // 「？」の置き場所の案を替える（VPL99）。作る場面でなければ吸い出しへ
+      current.helpAt = button.dataset.help; current.el.dataset.help = button.dataset.help;
+      nav.querySelectorAll("[data-help]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.help === current.helpAt)));
+      if (CRAFT_SCENES.includes(current.st.scene)) current.render(); else current.setScene("pull");
     }
     else if (button.dataset.ci || button.dataset.who) {
       // 登場カットインの案・人物を替えて、その場で流す
