@@ -523,27 +523,25 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .hole-pips { position: absolute; left: 50%; top: calc(10.2rem + var(--aux-g, 0rem) - 3.2rem); width: 21.4rem; height: 21.4rem; margin-left: -10.7rem; pointer-events: none; overflow: visible; }
 .hole-pips .pip { fill: #ffffff26; stroke: #ffffff4d; stroke-width: 0.5; } .hole-pips .pip.done { fill: #fff; } .hole-pips .pip.good { fill: #ffe2a6; filter: drop-shadow(0 0 1.5px #ffcf6b); }
 
-/* 丸ボタンは文字ではなく絵（VPL31）。線画は文字と同じ色・影。大きさはボタンの文字の大きさ（.t の font-size）に比例 */
+/* 丸ボタンの顔（VPL31・VPL32）: 店に入る・決めるは漢字の「決定」。次へ・休みは線画、刺す・吸うは道具の絵 */
 .btn-a .glyph { display: block; width: 1.75em; height: 1.75em; fill: none; stroke: currentColor; stroke-width: 2.7; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0.2rem 0.5rem #0b0812) drop-shadow(0 0 0.15rem #0b0812); overflow: visible; }
-.btn-a .glyph .f { fill: currentColor; stroke: none; }
-.btn-a .t { margin-right: 0; }
-.btn-a.hold.center .t { font-size: 4rem; }
-.btn-a[disabled] .t { font-size: 3rem; opacity: 0.55; }
-/* 刺す: 押し具合（--level）で針が下がってアルミを突く。満ちた所で金の火花、深すぎると針がさらに沈んで赤 */
-.g-poke .gl-needle { transform: translateY(calc(var(--level, 0) * 5.5px)); transition: transform 0.2s var(--ease-out); }
-.btn-a.hold.pressing .g-poke .gl-needle { transition: none; }
-.btn-a.hold[data-zone="over"] .g-poke .gl-needle { transform: translateY(8.5px); }
-.g-poke .gl-foil { stroke: #ece6f5; stroke-width: 2.2; }
-.g-poke .gl-dent { stroke-width: 2.2; opacity: clamp(0, calc((var(--level, 0) - 0.55) * 4), 1); }
-.g-poke .gl-spark { stroke: #ffcf6b; stroke-width: 2; opacity: 0; transition: opacity 0.12s; }
-.btn-a.hold[data-zone="good"] .g-poke .gl-spark, .btn-a.hold.res-good .g-poke .gl-spark { opacity: 1; }
-.btn-a.hold[data-zone="good"] .g-poke .gl-foil { stroke: #6b4a14; }
-.btn-a.hold[data-zone="over"] .t { color: #ffd2cc; }
-/* 吸う: 吸うたびに煙がのぼる */
-.g-puff .gl-mouth { stroke-width: 4.2; }
-.g-puff .gl-smoke { stroke-width: 2.2; opacity: 0.8; }
-.phone.puffing .g-puff .gl-smoke { animation: glyph-smoke 1.2s var(--ease-out); }
-@keyframes glyph-smoke { 0% { opacity: 0.2; transform: translateY(3px); } 40% { opacity: 1; } 100% { opacity: 0.8; transform: none; } }
+.btn-a .t:has(> .glyph) { margin-right: 0; }
+.btn-a[disabled] .t:has(> .glyph) { font-size: 3rem; opacity: 0.55; }
+.btn-a .t.tool { position: absolute; z-index: 1; inset: 0; margin: 0; display: block; }
+.btn-a .t.tool img { position: absolute; left: 50%; pointer-events: none; }
+/* 刺す: 大きな針。押し具合（--level）で下がってアルミを突く。満ちた所で金の火花、深すぎると針がさらに沈む */
+.tool-needle img { top: 4%; height: 73%; width: auto; transform: translate(-50%, calc(var(--level, 0) * 12%)); filter: drop-shadow(0 0 0.12rem #fff8e6) drop-shadow(0 0.3rem 0.5rem #0b0812cc); transition: transform 0.2s var(--ease-out); }
+.btn-a.hold.pressing .tool-needle img { transition: none; }
+.btn-a.hold[data-zone="over"] .tool-needle img { transform: translate(-50%, 17%); }
+.tool-foil { position: absolute; left: 16%; width: 68%; top: 77%; aspect-ratio: 5; overflow: visible; fill: none; stroke-linecap: round; }
+.tool-foil .gl-foil { stroke: #ece6f5; stroke-width: 4; filter: drop-shadow(0 0.1rem 0.2rem #0b0812); }
+.tool-foil .gl-dent { stroke: #ece6f5; stroke-width: 3.5; opacity: clamp(0, calc((var(--level, 0) - 0.55) * 4), 1); }
+.tool-foil .gl-spark { stroke: #ffcf6b; stroke-width: 3.5; opacity: 0; transition: opacity 0.12s; }
+.btn-a.hold[data-zone="good"] .gl-spark, .btn-a.hold.res-good .gl-spark { opacity: 1; }
+.btn-a.hold[data-zone="good"] .gl-foil, .btn-a.hold[data-zone="good"] .gl-dent { stroke: #7a5418; }
+/* 吸う: マウスピース。黒い持ち手が暗いボタンに沈まないよう、薄い光で縁取る。吸うたびに口の先が光る */
+.tool-mouthpiece img { top: 41%; width: 80%; height: auto; transform: translate(-50%, -50%); filter: drop-shadow(0 0 0.18rem #fffc) drop-shadow(0 0 0.6rem #ffffff59) drop-shadow(0 0.3rem 0.5rem #0b0812); transition: transform 0.35s var(--ease-out), filter 0.35s; }
+.phone.puffing .tool-mouthpiece img { transform: translate(-53%, -47%) scale(1.06); filter: drop-shadow(0 0 0.2rem #fff) drop-shadow(0 0 1.2rem #8ff0e0) drop-shadow(0 0.3rem 0.5rem #0b0812); }
 
 /* 工程の並びは絵記号だけ。今の工程は少し大きい光る丸 */
 .steps span.now { width: 4.6rem; height: 3.6rem; padding: 0; display: grid; font-size: 2.1rem; }
@@ -567,6 +565,15 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .rank-c .rank-box { width: 7.6rem; height: 5.8rem; filter: drop-shadow(0 0.3rem 0.6rem #000b); }
 .rank-c .rank-meter { width: 5.6rem; height: 0.4rem; margin-top: 0; }
 .phone[data-rank="c"] .steps { left: 1rem; transform: none; }
+
+.rank-d { z-index: 5; left: 1rem; top: 6.4rem; transition: left 0.3s, top 0.3s; }
+.rank-d .rank-box { width: 11rem; height: 9.2rem; filter: drop-shadow(0 0.4rem 0.8rem #000b); }
+.rank-d .rank-meter { width: 7.6rem; }
+/* 吸い出しは人物が左に立つので、人物の右・熱ゲージの左の空きへ */
+.phone[data-scene="pull"] .rank-d { left: auto; right: 6.8rem; top: 6.2rem; }
+/* 詰めは器が上の真ん中にあるので、器の脚の横（左の少し下）へ */
+.phone[data-scene="pack"] .rank-d { top: 12.4rem; }
+.rank-impact { position: absolute; z-index: 29; left: 50%; top: 34%; width: 26rem; height: 26rem; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); background: radial-gradient(circle, transparent 52%, #ffe2a6cc 58%, #ffcf6b66 64%, transparent 72%); }
 
 .rank-a { z-index: 0; left: 0; right: 0; bottom: 0; height: calc(var(--ctrl-h) + var(--aux-h, 0rem)); display: grid; place-items: center; }
 .rank-a .rank-box { width: 32rem; height: 25rem; margin-top: 4.4rem; -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent); mask-image: radial-gradient(closest-side, #000 62%, transparent); }
@@ -605,12 +612,13 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 @container phone (max-height: 80rem) {
   .rank-b { top: 6rem; } .rank-b .rank-box { width: 9.8rem; height: 8.2rem; } .rank-b .rank-meter { width: 6.8rem; }
   .rank-a .rank-box { width: 28rem; height: 21.5rem; margin-top: 3.6rem; }
+  .tool-mouthpiece img { top: 39%; width: 76%; }
 }
 @container phone (max-height: 71rem) {
   .rank-b { top: 5.6rem; } .rank-b .rank-box { width: 8.6rem; height: 7.2rem; } .rank-b .rank-meter { width: 6rem; height: 0.4rem; }
   .rank-c .rank-box { width: 6.6rem; height: 5rem; } .rank-c .rank-meter { width: 4.8rem; }
   .rank-a .rank-box { width: 24rem; height: 18.5rem; margin-top: 3rem; }
-  .btn-a.hold.center .t { font-size: 3.4rem; }
+  .tool-mouthpiece img { top: 37%; width: 70%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
