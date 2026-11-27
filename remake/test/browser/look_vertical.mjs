@@ -41,17 +41,24 @@ async function assertFits(page, label) {
 }
 
 /**
- * 土台の配置（VPN09）: 上画面と下画面が 6:4 で、十字キーと丸ボタンは場面が替わっても同じ位置（指を置いたまま遊べる）。
- * 最初に測った位置を覚え、以後の場面で同じ位置か確かめる。
+ * 土台の配置（VPN09・VPN16）: 下画面の高さと十字キー・丸ボタンの大きさと位置は、試作の会話画面と同じ（幅 39 に対して下画面 30.2・
+ * 補助ボタンの段の下 8.2 から十字キー 20.4・丸ボタン 14.6。背の低い画面は試作と同じ段階で縮む）。
+ * 十字キーと丸ボタンは場面が替わっても同じ位置（指を置いたまま遊べる）。最初に測った位置を覚え、以後の場面で同じ位置か確かめる。
  */
 async function assertPadHome(page, label, home = null) {
   const box = await page.evaluate(() => {
     const r = (selector) => { const b = document.querySelector(selector).getBoundingClientRect(); return [b.left, b.top, b.width, b.height].map((v) => Math.round(v)); };
-    const shell = document.querySelector(".vt-shell").getBoundingClientRect();
-    return { shellH: shell.height, split: document.querySelector(".vt-ctrl").getBoundingClientRect().top - shell.top, dpad: r(".vt-dpad"), a: r(".vt-a"),
+    const shell = document.querySelector(".vt-shell").getBoundingClientRect(), ctrl = document.querySelector(".vt-ctrl").getBoundingClientRect();
+    const u = shell.width / 39, tall = shell.height / u;
+    const size = tall > 80 ? [30.2, 8.2, 20.4, 14.6] : tall > 71 ? [27.2, 7.4, 18.2, 13.2] : [23.6, 6.5, 15.4, 11.2];
+    return { u, size, ctrlH: ctrl.height, ctrlBottom: shell.bottom - ctrl.bottom, padTop: document.querySelector(".vt-dpad").getBoundingClientRect().top - ctrl.top,
+      panel: getComputedStyle(document.querySelector(".vt-ctrl")).backgroundImage, dpad: r(".vt-dpad"), a: r(".vt-a"),
       aShown: getComputedStyle(document.querySelector(".vt-a")).display !== "none", dpadShown: getComputedStyle(document.querySelector(".vt-dpad")).display !== "none" };
   });
-  assert(Math.abs(box.split - box.shellH * 0.6) <= 2, `${label}: the upper and lower screens are 6:4 ${JSON.stringify(box)}`);
+  const [ctrlH, padTop, ring, a] = box.size.map((n) => n * box.u);
+  assert(Math.abs(box.ctrlH - ctrlH) <= 2 && Math.abs(box.ctrlBottom) <= 1, `${label}: the lower screen is as tall as the prototype's ${JSON.stringify(box)}`);
+  assert(Math.abs(box.padTop - padTop) <= 2 && Math.abs(box.dpad[2] - ring) <= 2 && Math.abs(box.a[2] - a) <= 2, `${label}: the pad sits right under the chips like the prototype ${JSON.stringify(box)}`);
+  assert.equal(box.panel, "none", `${label}: no board under the pad (the scene shows through like the prototype)`);
   assert(box.aShown && box.dpadShown, `${label}: the pad and the round button stay on screen`);
   if (home) {
     assert.deepEqual(box.dpad, home.dpad, `${label}: the pad stays where the thumb rests`);
