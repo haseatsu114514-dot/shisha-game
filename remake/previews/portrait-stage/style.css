@@ -247,6 +247,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .hole-count .ic { align-self: center; font-size: 2rem; color: #ffe2a6; margin-right: 0.2rem; } .hole-count b { font-size: 2.4rem; } .hole-count small { font-size: 1.4rem; color: #ffffffa6; }
 .puff { position: absolute; max-width: none; width: 60%; left: 34%; top: 14%; opacity: 0; pointer-events: none; mix-blend-mode: screen; }
 .phone.puffing .puff { animation: puff 1.5s var(--ease-out); }
+.smoke-box { position: absolute; z-index: 2; pointer-events: none; } /* 吸い出しで吐く煙の 16:9 の箱（VPL88）。はじめの絵の上、温度計の下 */
 @keyframes puff { 0% { opacity: 0; transform: translate(0, 12%) scale(0.5); } 22% { opacity: 0.85; } 100% { opacity: 0; transform: translate(-6%, -22%) scale(1.25); } }
 /* 吸い出し: メーターの中心に「吸う」 */
 .gauge { position: absolute; left: 3.2rem; right: 3.2rem; top: calc(6.6rem + var(--aux-g, 0rem)); }
@@ -619,6 +620,9 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .b-glass, .bottle-svg { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
 .b-glass { transform-origin: 50% 98.75%; transform: rotate(8deg); filter: drop-shadow(0 1.2rem 1.8rem #000b); pointer-events: none; }
 .bottle-svg { overflow: visible; }
+/* 流し台（VPL92）: ボトルの足が流し台の底の前寄り（ドレンの手前）に乗る。絵は 1152×768、底の前寄りは絵の縦 86%・横の真ん中は 51.4% */
+.bottle .sink { position: absolute; z-index: 0; left: -60.5%; top: 15.6%; width: 215%; max-width: none; height: auto; pointer-events: none; filter: drop-shadow(0 1rem 1.6rem #0009); }
+.w-spill { fill: #bfeaff; opacity: 0.85; filter: drop-shadow(0 0 3px #bfeaff); }
 .w-faucet { filter: drop-shadow(0 6px 8px #0009); }
 .w-body { opacity: 0.94; } .w-deep { fill: #123f80; opacity: 0.22; }
 .w-surf { fill: none; stroke: #e8fbff; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
@@ -924,21 +928,29 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 /* 水入れ: こぼす・注ぐ・決定を同じ大きさで1段に並べる（左下・真ん中・右下） */
 .phone[data-kind="craft"] .btn-a.sub.l { right: auto; top: auto; left: var(--edge); bottom: var(--low); width: var(--ok); height: var(--ok); margin: 0; }
 .phone[data-scene="water"] .btn-a.center.pour { top: auto; bottom: var(--low); width: var(--ok); height: var(--ok); margin-left: calc(var(--ok) / -2); }
-.phone[data-scene="water"] .water-a .bottle { bottom: 5.6rem; }
+.phone[data-scene="water"] .water-a .bottle { bottom: 5.6rem; width: min(23.5rem, calc((100cqh - var(--cp) - 13.3rem) * 0.5)); } /* 流し台が見えるよう一回り小さく（VPL92） */
+.phone[data-scene="water"] .veil { top: calc(100% - var(--cp) - var(--band) - 3rem); } /* 紫の幕は一言のすぐ上から下だけ（流し台を暗くしない） */
 /* 雑念よけ: 精密（アタック）も同じ大きさ */
 .phone[data-scene="steam"] .act-sub { width: var(--ok); height: var(--ok); }
 .phone[data-scene="steam"] .act-sub small { font-size: calc(var(--ok) * 0.12); }
 .phone[data-scene="steam"] .act-swap { left: calc(2.6rem + var(--ring) + var(--ok)); top: calc(0.9rem + var(--ok) / 2 - var(--ring) * 0.11); }
 /* 真ん中の押し続ける丸（刺す・吸う） */
 .phone[data-scene="holes"] .ctrl > * { --hb: var(--hold); --hp: calc(var(--hold) * 1.45); --hy: calc(var(--cp) - var(--hold-y) - var(--hp) / 2); }
-.pic.craft-holes .foil { bottom: 9rem; }
-.phone[data-scene="pull"] > * { --puff: calc(var(--hold) * 0.86); --hold-y: 15rem; --g-side: 4.4rem; --g-up: 14.45rem; }
+.pic.craft-holes .foil { bottom: 9rem; width: 31.6rem; } /* 上の画面の余白を使って大きく（VPL90） */
+/* 吸い出し（VPL89）: いちばん下の段に 葉の持ち（左）と 提供（右）を同じ高さの横長で並べ、その上に強さのゲージと「吸う」をまとめる */
+.phone[data-scene="pull"] > * { --pill: 5.4rem; --puff: 14rem; --hold-y: calc(var(--low) + var(--pill) + 0.8rem + var(--puff) / 2); --g-side: 4.9rem; --g-up: 13.97rem; }
 .phone[data-scene="pull"] .btn-a.center { top: calc(var(--cp) - var(--hold-y) - var(--puff) / 2); width: var(--puff); height: var(--puff); margin-left: calc(var(--puff) / -2); }
 .phone[data-scene="pull"] .gauge { left: var(--g-side); right: var(--g-side); top: calc(var(--cp) - var(--hold-y) - var(--g-up)); }
-.phone[data-scene="pull"] .ctrl .leaves { top: auto; left: var(--edge); bottom: calc(var(--low) + var(--ok) / 2 - 2.15rem); transform: none; }
-.btn-a.serve-ok .pips { bottom: 11%; gap: 0.35rem; } .btn-a.serve-ok .pips i { width: 0.8rem; height: 0.8rem; }
+.phone[data-scene="pull"] .ctrl .leaves { top: auto; left: var(--edge); bottom: var(--low); height: var(--pill); transform: none; padding: 0 1.3rem; }
+.serve-pill { position: absolute; right: var(--edge); bottom: var(--low); height: var(--pill); display: flex; align-items: center; gap: 0.8rem; padding: 0 1.6rem 0 1.3rem; border: 0.16rem solid color-mix(in srgb, var(--acc) 82%, #fff); border-radius: calc(var(--pill) / 2); color: #fff;
+  background: radial-gradient(120% 140% at 50% 0%, color-mix(in srgb, var(--acc) 46%, transparent), #120c1de6 70%); box-shadow: 0 0 0 0.5rem #ffffff12, 0 0 2.4rem color-mix(in srgb, var(--acc) 45%, transparent), 0 1rem 2rem #000b, inset 0 0.2rem 0.4rem #ffffff66; touch-action: manipulation; }
+.serve-pill .tool-svg { position: static; inset: auto; width: calc(var(--pill) * 0.62); height: calc(var(--pill) * 0.62); flex: none; }
+.serve-pill b { font-size: calc(var(--pill) * 0.36); letter-spacing: 0.1em; text-shadow: 0 0.1rem 0.4rem #0b0812; }
+.serve-pill .pips { position: static; transform: none; gap: 0.35rem; } .serve-pill .pips i { width: 0.85rem; height: 0.85rem; }
+.serve-pill:active { scale: 0.95; }
 /* 配合: 上にジャンルのボタン、真ん中に葉の棚、下の段に選んだ葉の −／＋ と決定 */
 .phone[data-scene="mix"] > * { --mix-h: var(--cp); --tile: 7.3rem; --pkz: 0.72; }
+.phone[data-scene="mix"] .mix-a { --sw: min(29rem, calc((100cqh - var(--cp) - var(--band) - 10.6rem) / 1.03)); } .phone[data-scene="mix"] .mix-a .scale { top: auto; bottom: 3rem; } /* はかりは一言のすぐ上に置く（VPL91） */
 .phone[data-scene="mix"] .genre-bar { top: 0.6rem; bottom: auto; left: 1rem; right: 1rem; }
 .phone[data-scene="mix"] .picker.shelf { top: 5.6rem; }
 .phone[data-scene="mix"] .mixsel { top: auto; bottom: var(--low); left: 1rem; right: calc(var(--ok) + var(--edge) + 0.8rem); height: var(--ok); grid-template-columns: minmax(0, 1fr) auto 3.8rem auto; gap: 0.6rem; padding: 0 0.9rem 0 1.2rem; }
@@ -946,7 +958,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 /* 詰め方: 札は上、選んだ詰め方の温まり方は下の段で決定の左。器は一言にかからない大きさ */
 .phone[data-scene="pack"] .ctrl > * { --card-h: min(18.4rem, calc(var(--cp) - var(--ok) - var(--low) - 2.2rem)); --pok: var(--ok); }
 .phone[data-scene="pack"] .packinfo { left: var(--edge); bottom: var(--low); right: calc(var(--ok) + var(--edge) + 1rem); }
-.pic.craft-pack .bowl { top: 13%; height: 66%; }
+.pic.craft-pack .bowl { top: 18%; height: 66%; } /* 下の余白の分だけ下げる（VPL91） */
 /* 炭焼き: コンロは下の端にそろえ、パネルの高さに収める（絵は 3:2） */
 .phone[data-scene="coal"] .veil { top: calc(100% - var(--cp) - 12.2rem); }
 .phone[data-scene="coal"] .stove { top: auto; bottom: -1rem; width: calc((var(--cp) - 0.6rem) * 1.5); }
@@ -962,13 +974,13 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 @container phone (max-height: 80rem) {
   .phone[data-kind="craft"] > * { --cp-std: 26.6rem; --cp-mix: 30.4rem; --cp-water: 12.6rem; --hold: 15.6rem; --hold-y: 12.4rem; --ok: 10rem; --edge: 1.2rem; --low: 1.2rem; --band: 2.6rem; }
   .phone[data-scene="mix"] > * { --tile: 6.5rem; --pkz: 0.64; } .phone[data-scene="mix"] .picker.shelf { top: 5.2rem; }
-  .phone[data-scene="pull"] > * { --hold-y: 13.2rem; --g-side: 6rem; --g-up: 12.9rem; }
+  .phone[data-scene="pull"] > * { --pill: 4.8rem; --puff: 12.4rem; --g-side: 6.3rem; --g-up: 12.63rem; } .pic.craft-holes .foil { width: 27.6rem; }
   .phone[data-kind="craft"] .coach .say { font-size: 1.5rem; }
 }
 @container phone (max-height: 71rem) {
   .phone[data-kind="craft"] > * { --cp-std: 24rem; --cp-mix: 27.4rem; --cp-water: 11.2rem; --hold: 13.4rem; --hold-y: 11rem; --ok: 8.8rem; --edge: 1rem; --low: 1rem; --band: 2.4rem; }
   .phone[data-scene="mix"] > * { --tile: 5.9rem; --pkz: 0.56; } .phone[data-scene="mix"] .picker.shelf { top: 4.8rem; } .phone[data-scene="mix"] .mixtile .mt-name { display: none; }
-  .phone[data-scene="pull"] > * { --hold-y: 11.8rem; --g-side: 8rem; --g-up: 11rem; }
+  .phone[data-scene="pull"] > * { --pill: 4.4rem; --puff: 11rem; --g-side: 7.4rem; --g-up: 11.58rem; } .pic.craft-holes .foil { width: 23rem; }
   .phone[data-kind="craft"] .coach .say { font-size: 1.4rem; }
 }
 
