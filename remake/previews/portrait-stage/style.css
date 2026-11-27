@@ -1071,8 +1071,8 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .thermo.forecast[data-selected="false"] :is(.th-range, .th-pointer) { opacity: 0; }
 
 /* タイマーの場面の空きを埋める案（VPL124）。a＝はじめの待ち姿／b＝蒸らしの湯気／c＝上に寄せるだけ */
-/* タイマーの後ろに、本編の「蒸らしを待つはじめ」（VPL124・VPL125 で案Aに決定）。はじめのあごがタイマーの上の縁に来るよう、タイマーの高さに合わせて上下させる（背の低い画面では、帽子が工程の並びにかからない所まで上へ） */
-.t-wait { position: absolute; z-index: 0; width: 56rem; max-width: none; left: calc(50% - 2.8rem - 56rem * 0.565); top: max(-6rem, calc(100cqh - var(--cp) - var(--band) - 59.5rem)); pointer-events: none; filter: drop-shadow(0 1rem 2rem #000a) brightness(0.92); }
+/* タイマーの後ろに、本編の「蒸らしを待つはじめ」（VPL124・VPL125 で案Aに決定）。はじめのあごがタイマーの上の縁に来るよう、タイマーの高さに合わせて上下させる（背の低い画面では、帽子が工程の並びにかからない所まで上へ。縦長の画面では上の端に留め、あごとタイマーの間に胸元を見せる） */
+.t-wait { position: absolute; z-index: 0; width: 56rem; max-width: none; left: calc(50% - 2.8rem - 56rem * 0.565); top: clamp(-6rem, calc(100cqh - var(--cp) - var(--band) - 59.5rem), 0.5rem); pointer-events: none; filter: drop-shadow(0 1rem 2rem #000a) brightness(0.92); }
 .phone[data-scene="timer"] .timer-a { padding-bottom: 2rem; }
 .timer-a { z-index: 1; }
 
