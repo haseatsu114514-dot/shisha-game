@@ -65,8 +65,10 @@ export function pickPurikuraPhoto(partner, { rand = Math.random, save: s = state
   return from[Math.min(from.length - 1, Math.floor(rand() * from.length))];
 }
 
+// 審査員（characters.json の role が judge…。上園・千須会長・チャコール博士など）はプリクラの対象外（PFC22 オーナー）。
+const purikuraJudge = id => /^judge/.test(DB.characters[id]?.role || "");
 export const purikuraGuests = spot => spotPeople(spot).filter(person => person.role === "guest" && person.known
-  && person.id !== "ageha" && !!DB.characters[person.id]);
+  && person.id !== "ageha" && !!DB.characters[person.id] && !purikuraJudge(person.id));
 
 async function revisitPurikura(background, spot, { live, read, stamp }) {
   if (state.flags._ageha_purikura_offer === stamp) return true;

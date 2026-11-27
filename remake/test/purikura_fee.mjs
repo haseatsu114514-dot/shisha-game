@@ -31,7 +31,7 @@ async function fixture() {
   if(o.title==='誰と撮る？')return mode==='guest'?guest:mode;
   return mode;
  }})],
- ['core/data.js',fixed('core/data.js',{DB:{characters:{hajime:{},ageha:{},kumicho:{},kuraudo:{},tsumugi:{},rio:{},hiyori:{}}},displayName:id=>id,portraitInfo:id=>({src:id+'.webp'}),cgUrl:id=>`img/cgs/${id}.webp`})],
+ ['core/data.js',fixed('core/data.js',{DB:{characters:{hajime:{},ageha:{},kumicho:{},kuraudo:{},tsumugi:{},rio:{},hiyori:{},adam:{role:'rival_ch1'},uezono:{role:'judge'},sensu:{role:'judge'},dr_charcoal:{role:'judge_and_hidden_boss'}}},displayName:id=>id,portraitInfo:id=>({src:id+'.webp'}),cgUrl:id=>`img/cgs/${id}.webp`})],
  ['core/util.js',fixed('core/util.js',{el})],
  ['core/bus.js',fixed('core/bus.js',{emit:(...args)=>log.push({kind:'emit',args})})],
   ['daily/spot-people.js',fixed('daily/spot-people.js',{spotPeople:()=>present})],
@@ -254,6 +254,17 @@ await check('PFC20 the first solo is always the first-challenge picture, then th
  const history=[{cg:'cg_purikura_solo_first'}],seen=['cg_purikura_solo_first'];
  for(let n=1;n<solos.length;n++){const p=f.pick('solo',{rand:()=>0.999,save:at(history)});assert(!seen.includes(p.cg));seen.push(p.cg);history.push({cg:p.cg});}
  assert.deepEqual([...seen].sort(),[...solos].sort());
+});
+// PFC22: 審査員（上園・千須会長・チャコール博士）はプリクラの対象外。居合わせても「○○と撮る」に出さない。
+await check('PFC22 judges are never offered as purikura partners; other acquaintances still are',async f=>{
+ f.state.money=999999;f.setMode('solo');
+ f.setPeople(['uezono','sensu','dr_charcoal','adam'].map(id=>({id,role:'guest',known:true,name:id})));
+ assert.equal(await f.offer(),true);
+ assert.equal(tests(f.log.find(l=>l.title==='誰と撮る？')),'purikura-with-adam,purikura-pair,purikura-solo,purikura-guest-back');
+ f.next();f.setPeople(['uezono','sensu','dr_charcoal'].map(id=>({id,role:'guest',known:true,name:id})));
+ assert.equal(await f.offer(),true);
+ assert.equal(tests(f.log.filter(l=>l.title==='誰と撮る？').at(-1)),'purikura-pair,purikura-solo,purikura-guest-back','only judges present: Ageha offers herself or solo');
+ assert.equal(f.log.filter(l=>l.id==='remake_ch2_purikura_choose').length,1);
 });
 console.log(JSON.stringify({groups,failures,scope:'actual offer/keepsakes/travel/photo and actual addMoney; controlled VM/state/VN/UI/Map-JSON, not browser/menu LOAD'}));
 if(failures)process.exitCode=1;
