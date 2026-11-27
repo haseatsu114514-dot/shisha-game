@@ -87,6 +87,9 @@ export class AxeScene {
       axe: `${img}ui/axe_throw/throwing_axe.webp`, chips: `${img}ui/axe_throw/wood-chips.webp`, cut: `${img}ui/axe_throw/cut-mark.webp`,
       face: (name) => `${img}sprites/character_variants/new/${MATE}/chr_${MATE}_${name}.webp`,
     };
+    // 途中で切り替わる絵（緑のボタン・選んだ札・帯・集計の板・ひよりの表情）は先に読む。切り替えた瞬間に枠や顔が消えないように
+    this.preload = [...["button-throw-green", "tag-selected", "tag-selected-amber", "banner-green", "banner-orange", "chalk-window", "rank-medallion"].map((name) => `${img}ui/axe_throw/${name}.webp`),
+      ...COMPANIONS[MATE].faces.map((name) => this.art.face(name))].map((src) => Object.assign(new Image(), { src }));
     this.reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     this.timers = new Set();
     this.life = new AbortController();
