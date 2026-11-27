@@ -3,7 +3,7 @@
   "dialogues": [
     {
       "dialogue_id": "ch4_tournament_morning_open",
-      "comment": "導入。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "comment": "導入。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。 VOL21 第2弾（2026-11-27）: なるの靴紐の結び直し。",
       "lines": [
         {
           "speaker": "",
@@ -24,6 +24,21 @@
           "speaker": "naru",
           "face": "smile",
           "text": "俺もだ。会場まで歩くぞ。走らないから安心しろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるの靴紐は、右だけ三回結び直した跡があった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……三回も、結び直したのか"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "うるせえ。結び目が気に入らなかっただけだ"
         }
       ]
     },
@@ -51,7 +66,7 @@
     },
     {
       "dialogue_id": "ch4_tournament_morning_close",
-      "comment": "締め。なると会場まで歩く。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "comment": "締め。なると会場まで歩く。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。 VOL21 第2弾（2026-11-27）: 会場まで歩く間のノートの話（数字ばかりだった頃）。 VOL21 第2弾（2026-11-27）: 会場の扉の前の後に、開場一時間前の舞台袖の控室（王煙楼・空いた四つ目の椅子・段取りの紙「各台の前に、抽選で選ばれた客が一人ずつ座る」・パッキーの発声練習）を置く。王者の正体は控室でも伏せる。",
       "lines": [
         {
           "speaker": "",
@@ -71,7 +86,106 @@
         {
           "speaker": "",
           "face": "",
+          "text": "白い道を、日陰を選んで歩く。並ぶと、なるの方が半歩だけ速い。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "昨日の夜、ノートを最初から読み返した。……県大会の頃の字、ひでえな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺のもだよ。あの頃は、数字ばっかりだった"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "今日のぶんは、帰ってから書こうぜ。……二人とも、いい字でな"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "会場の扉の前で、二人同時に、長く息を吐いた。"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_grand_smoke_stage"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開場の一時間前。舞台袖の控室には、椅子が四つと、大きな鏡が一枚あった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼は、もう来ていた。上着を椅子に掛けて、湯気の立つ茶を飲んでいる。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "おはよう。少しは眠れたかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……少しは"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "それでいい。眠りすぎた朝は、手が客より先に動く"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "王煙楼さんでも、緊張するんですか"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "laugh",
+          "text": "するよ。だから、もう三杯目だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "四つ目の椅子は、空いたままだった。鏡の前に、白い布の包みが一つ置いてある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（王者は、控室にも来ないのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "係の人が、今日の段取りの紙を配りに来た。通訳アプリで、一行ずつ読む。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "各台の前に、抽選で選ばれた客が一人ずつ座る。最後の一口まで、その人が吸う。"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "客は選べない、か。店と同じだな"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "誰が座っても、その日のその人の一台になる。店でも、舞台でもね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ドアの向こうで、パッキーの発声練習が聞こえた。「ぷぷぷっ！」が、三回。"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……あれ、練習するもんなのか"
         }
       ]
     },
