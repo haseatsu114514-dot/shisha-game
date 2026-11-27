@@ -10,7 +10,7 @@ assert.equal(LOOK_VERSION, 3, "移行の版は LK24 で 3");
 assert.deepEqual(DISABLED_LOOKS, ["neo"], "新版は設定で選べない（LK23。コードは残す）");
 assert.equal(LOOK_CHAPTERS.neo, null, "新版はすべての章（LK13）");
 assert.equal(LOOK_CHAPTERS.retro, null, "DS風もすべての章（LK21）");
-assert.deepEqual(LOOK_CHAPTERS.vertical, [1], "縦画面は第1章から作っている（VPN01）");
+assert.equal(LOOK_CHAPTERS.vertical, null, "縦画面はすべての章（VPN17。第1章から作り、日常パートを第2章以降へ広げた）");
 assert(!DISABLED_LOOKS.includes("vertical"), "縦画面は設定で選べる");
 
 // 自動操作の印（navigator.webdriver）を差し替えて、両方の既定を確かめる
@@ -41,8 +41,7 @@ for (const chapter of [undefined, 1, 2, 3, 4, 5]) assert.equal(effectiveLook("ne
 // DS風もすべての章で効く（LK21。章が分からないタイトルでも）
 for (const chapter of [undefined, 1, 2, 3, 4, 5]) assert.equal(effectiveLook("retro", chapter), "retro", `DS風は第${chapter ?? "?"}章でもDS風`);
 // 縦画面は第1章（章が分からないタイトルも第1章として）だけ。第2章からは旧版で表示する（VPN01）
-for (const chapter of [undefined, 1]) assert.equal(effectiveLook("vertical", chapter), "vertical", `縦画面は第${chapter ?? "?"}章で縦画面`);
-for (const chapter of [2, 3, 4, 5]) assert.equal(effectiveLook("vertical", chapter), "classic", `縦画面は第${chapter}章では旧版`);
+for (const chapter of [undefined, 1, 2, 3, 4, 5]) assert.equal(effectiveLook("vertical", chapter), "vertical", `縦画面は第${chapter ?? "?"}章でも縦画面（VPN17）`);
 
 // 起動時の移行（LK09→LK23→LK24）: 既定は縦画面。それまでの既定だった旧版と、選べない新版の端末は一度だけ縦画面へ移す（lookVersion 3）。
 const migrate = (saved) => { const config = { ...saved }; const look = migrateLook(config); return [look, config.look, config.lookVersion]; };

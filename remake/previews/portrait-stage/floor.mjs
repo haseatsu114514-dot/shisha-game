@@ -53,16 +53,17 @@ const SALES_STEP = 10000;
 //     奥の壁に沿って3つ＝row 0、手前の左右に内向きで2つ＝row 1）、
 //   chapter＝その店に来る章（並ぶミックスとレア客が変わる）、night＝夜だけの店（はじめから夜の絵）、visitors＝遊びに来る本編の人物（顔のアイコンがある人だけ）、boss＝精算で一言いう人の顔。
 //   奥の3つは、カードの間をあけるため（VPM32）、ソファのまん中（絵の幅の約25%・75%）より少し外の 20%・80%（カードはソファより幅が広いので、ソファの上に乗ったまま）。
+//   手前の左右の2つは、少し内側の 24%・76%（VPM34。壁ぎわのソファの内側の小さな卓のあたり）。
 //   絵を替える時は、席の表も合わせる
 const VENUE_VIEW = {
   tonari: { art: "tonari", chapter: 1, night: false, boss: "sumi",
-    seats: [{ x: 20, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 80, y: 41.5, row: 0 }, { x: 20, y: 74, row: 1 }, { x: 80, y: 74, row: 1 }],
+    seats: [{ x: 20, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 80, y: 41.5, row: 0 }, { x: 24, y: 74, row: 1 }, { x: 76, y: 74, row: 1 }],
     visitors: ["tsumugi", "naru", "adam"] },
   mukai: { art: "mukai", chapter: 3, night: true, boss: "mukai_master",
-    seats: [{ x: 20, y: 42.5, row: 0 }, { x: 50, y: 42.5, row: 0 }, { x: 80, y: 42.5, row: 0 }, { x: 20, y: 74, row: 1 }, { x: 80, y: 74, row: 1 }],
+    seats: [{ x: 20, y: 42.5, row: 0 }, { x: 50, y: 42.5, row: 0 }, { x: 80, y: 42.5, row: 0 }, { x: 24, y: 74, row: 1 }, { x: 76, y: 74, row: 1 }],
     visitors: ["steve", "volk", "yoru"] },
   dubai: { art: "dubai", chapter: 4, night: false, boss: null,
-    seats: [{ x: 20, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 80, y: 41.5, row: 0 }, { x: 20, y: 74, row: 1 }, { x: 80, y: 74, row: 1 }],
+    seats: [{ x: 20, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 80, y: 41.5, row: 0 }, { x: 24, y: 74, row: 1 }, { x: 76, y: 74, row: 1 }],
     visitors: ["naru", "da_silva", "master_hookah"] },
 };
 // 試作だけの客の呼び名（VPM31）: オーナー「シーシャ屋のモブでおばあちゃんいるのは変　20〜30代メインに　いてもたまに40.50」。
@@ -128,6 +129,12 @@ const WISH_ICON = { fruit: "wishFruit", sweet: "wishSweet", fresh: "wishFresh", 
 const CALL_ICON = { thin: "thin", harsh: "harsh", thirsty: "glass", cough: "ask", chatty: "talk" };
 const MOOD_ART = { max: "mood-max", good: "mood-good", ok: "mood-ok", low: "mood-low", mad: "mood-mad" };
 const RATE_MARK = { best: "◎", good: "○", none: "×" };
+// ミックス案の右上の丸い印（VPM36）: 文字（◎○×）は、字の形のせいで丸の中心から少しずれるので、24×24 の図形で描いて、まん中にそろえる
+const RATE_SVG = {
+  best: '<circle cx="12" cy="12" r="8.9"/><circle cx="12" cy="12" r="5.2"/>',
+  good: '<circle cx="12" cy="12" r="8.2"/>',
+  none: '<path d="M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/>',
+};
 const MEDAL = { S: "medal-s", A: "medal-a", B: "medal-b", C: "medal-c" };
 
 /** 属性の印（メイン＝大きい角丸、サブ＝右下に重なる小さい丸）。絵は本編の印（remake/img/ui/tonari-floor/attr-*.webp）。 */
@@ -759,7 +766,7 @@ export class FloorScene {
         return `<button class="fl-opt" data-act="fl-pick" data-i="${i}" data-rating="${mix.rating || ""}" data-len="${len >= 11 ? "xxl" : len >= 10 ? "xl" : len >= 9 ? "l" : len >= 8 ? "m" : len >= 7 ? "s" : ""}"
           aria-label="${mix.full}、${WISH[mix.main].label}${mix.sub ? `・${WISH[mix.sub].label}` : ""}${mix.rating ? `、${table.id}卓に${RATE_MARK[mix.rating]}` : ""}"${live && !ok ? " disabled" : ""}${live && this.coach && ok ? ` data-coach="true"` : ""}>
           ${attrHtml(this.art, mix.id)}<span class="fl-opt-text"><b>${esc(mix.name)}</b>${mix.single ? "" : `<small>${mix.recipe.map(esc).join("・<wbr>")}</small>`}</span>
-          ${mix.rating ? `<i class="fl-opt-rate" data-rating="${mix.rating}">${RATE_MARK[mix.rating]}</i>` : ""}</button>`;
+          ${mix.rating ? `<i class="fl-opt-rate" data-rating="${mix.rating}"><svg viewBox="0 0 24 24" aria-hidden="true">${RATE_SVG[mix.rating]}</svg></i>` : ""}</button>`;
       }).join("") + Array.from({ length: HAND_MAX - list.length }, () => `<span class="fl-opt fl-opt-locked" role="img" aria-label="まだ開いていない、ミックス案の枠（心得の盤で開く）">
           <i class="fl-chain"></i><i class="fl-chain"></i><img src="${REMAKE_IMG}ui/growth_board/wall_seal.webp" alt=""></span>`).join("");
     }

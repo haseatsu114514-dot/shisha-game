@@ -78,9 +78,9 @@ await suite("look-default", async (check) => {
     assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).config.bgmVolume), 0.2);
   });
 
-  await check("player-default-vertical-is-chapter-1-for-now", async (page) => {
+  await check("player-default-vertical-applies-to-every-chapter", async (page) => {
     await asPlayer(page, undefined);
-    // 既定の縦画面は、縦にしてある第1章で効く。まだ縦にしていない第2章からは旧版で表示する（選んだ様式は縦画面のまま）。
+    // 既定の縦画面は、どの章でも縦画面で表示する（VPN17。第1章から作り、第2章以降の日常パートへ広げた）。
     for (const chapter of [2, 3, 4, 5, 1]) {
       await page.evaluate(async (chapter) => {
         const core = await import("./js/core/state.js");
@@ -89,7 +89,7 @@ await suite("look-default", async (check) => {
       }, chapter);
       await page.waitForTimeout(650);
       const state = await look(page);
-      assert.deepEqual([state.look, state.choice], [chapter === 1 ? "vertical" : "classic", "vertical"], `第${chapter}章: ${chapter === 1 ? "縦画面" : "旧版で表示"}`);
+      assert.deepEqual([state.look, state.choice], ["vertical", "vertical"], `第${chapter}章も縦画面`);
     }
   });
 });

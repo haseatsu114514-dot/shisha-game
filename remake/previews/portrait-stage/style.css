@@ -1039,8 +1039,8 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 @container phone (max-height: 71rem) { .phone[data-scene="steam"] .ctrl { --ring: 18.4rem; } }
 
 /* 蒸らしのタイマー（VPL105）: 上の画面に本編のキッチンタイマー（液晶・4つの物理ボタン）と、蒸らし後の温度の目安。下は早見とリセット、分・秒・スタート */
-.timer-a { position: absolute; left: 0; right: 5.6rem; top: 8.4rem; bottom: 5.6rem; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 1.4rem; } /* キッチンタイマーは一言のすぐ上へ寄せる（VPL122。下半分の空きをなくす） */
-.ktimer { position: relative; flex: none; width: min(32rem, calc((100cqh - var(--cp) - var(--band) - 24.4rem) / 0.9)); aspect-ratio: 1280 / 1150; container-type: inline-size; } /* 下の目安の札をなくした分、縦にも大きく（VPL116。絵を縦に約3割のばす）。背の低い画面では、後ろのはじめの頭と肩が見える所まで小さくする（VPL125） */
+.timer-a { position: absolute; left: 0; right: 5.6rem; top: 5.8rem; bottom: 3.2rem; z-index: 1; display: flex; flex-direction: column; align-items: center; } /* 横長のタイマーはランクのすぐ下から（VPL126）。案D（縦長）は下の VPL127 の所で置き直す */
+.ktimer { position: relative; z-index: 1; flex: none; width: 35rem; aspect-ratio: 1280 / 1150; container-type: inline-size; } /* 下の目安の札をなくした分、縦にも大きく（VPL116。絵を縦に約3割のばす）。VPL126 で 32rem→35rem（絵の左右の透明な縁を列の外へ出し、描いた所を温度計の手前まで広げる） */
 .ktimer > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.6rem #000b); pointer-events: none; }
 .ktimer .lcd { position: absolute; left: 13.6%; width: 72.8%; top: 22%; height: 33.4%; display: grid; place-items: center; color: #192e28; }
 .ktimer .lcd svg { width: 88%; height: 86%; }
@@ -1070,11 +1070,13 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .thermo.forecast .th-now { display: none; }
 .thermo.forecast[data-selected="false"] :is(.th-range, .th-pointer) { opacity: 0; }
 
-/* タイマーの場面の空きを埋める案（VPL124）。a＝はじめの待ち姿／b＝蒸らしの湯気／c＝上に寄せるだけ */
-/* タイマーの後ろに、本編の「蒸らしを待つはじめ」（VPL124・VPL125 で案Aに決定）。はじめのあごがタイマーの上の縁に来るよう、タイマーの高さに合わせて上下させる（背の低い画面では、帽子が工程の並びにかからない所まで上へ。縦長の画面では上の端に留め、あごとタイマーの間に胸元を見せる） */
-.t-wait { position: absolute; z-index: 0; width: 56rem; max-width: none; left: calc(50% - 2.8rem - 56rem * 0.565); top: clamp(-6rem, calc(100cqh - var(--cp) - var(--band) - 59.5rem), 0.5rem); pointer-events: none; filter: drop-shadow(0 1rem 2rem #000a) brightness(0.92); }
-.phone[data-scene="timer"] .timer-a { padding-bottom: 2rem; }
-.timer-a { z-index: 1; }
+/* 縦長のキッチンタイマー（VPL127 で縦長に決め、VPL129 で実物に合わせた絵に描き直した）。ランクの下から一言の上までの高さに合わせ、まん中にそろえる。絵ごとの縦横比は --ar（液晶とボタンの位置は app.mjs の TIMER_LOOKS） */
+.phone[data-scene="timer"] .veil { top: calc(100% - var(--cp) - 5rem); } /* 紫の幕は一言のすぐ上から下だけ（上の画面を暗くしない） */
+.phone[data-scene="timer"] .pic { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); } /* 上の絵の下のぼかしは、一言のすぐ上だけ（初期値の 66% からだと、タイマーの下半分が暗くなる） */
+.phone[data-scene="timer"] .timer-a { top: 9.4rem; bottom: 2.4rem; justify-content: center; container-type: size; }
+.phone[data-scene="timer"] .ktimer { width: min(31.4rem, 100cqh * var(--ar)); }
+.phone[data-scene="timer"] .ktimer .lcd svg { width: 90%; height: 88%; }
+.phone[data-scene="timer"] .kt-key { border-radius: 3cqw; }
 
 /* 温度計（VPL103）: 配合・詰め方・吸い出しで、上端・長さ・太さをそろえる。長さは、いちばん狭い配合の上の画面に合わせる（下の段の高さ --cp-mix から決める）。
    いちばん下の一言の段（配合の「この配合の適温」など）は、どの場面でも同じ高さを取っておく（空でも管の長さが変わらない） */

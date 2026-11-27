@@ -88,6 +88,7 @@ export function createMapScene(frame) {
 
   let list = [], sel = null, overview = false, listOpen = false, cam = null, viewBox = null;
   let pinSig = "", cardSig = "", sheetSig = "", actionSig = "", lastLiveSel = null;
+  let actSel = 0; // 案内の箱のボタンのうち、十字キーの上下で選んでいるもの（決定で押す）
 
   // 左から右の順（右を押すと画面も右へ動く）
   const order = () => [...list].sort((a, b) => a.x - b.x || a.y - b.y);
@@ -256,11 +257,19 @@ export function createMapScene(frame) {
     if (sig === actionSig) return;
     actionSig = sig;
     actions.hidden = !buttons.length;
+    actSel = Math.max(0, buttons.findIndex((button) => !button.disabled)); // 新しく出たら、押せるいちばん上を選んでおく（決定を押すだけで進める）
     actions.replaceChildren(...buttons.map((button, index) => el("button.vt-choice", {
-      type: "button", disabled: button.disabled, style: { "--i": String(index) },
-      onclick: (event) => { event.stopPropagation(); infoButtons().filter((b) => b !== goButton())[index]?.click(); },
+      type: "button", disabled: button.disabled, style: { "--i": String(index) }, dataset: { test: `vt-map-action-${index}` },
+      onclick: (event) => { event.stopPropagation(); actSel = index; markActions(); pressAction(index); },
     }, [el("i"), el("span", [el("b", { text: textOf(button) })])])));
+    markActions();
   }
+  const actionButtons = () => infoButtons().filter((button) => button !== goButton());
+  const actionsOpen = () => !actions.hidden && actions.childElementCount > 0;
+  function markActions() {
+    [...actions.children].forEach((node, index) => node.setAttribute("aria-current", String(index === actSel)));
+  }
+  function pressAction(index) { actionButtons()[index]?.click(); }
 
   function canGo() {
     const pin = current();
@@ -304,8 +313,11 @@ export function createMapScene(frame) {
       reel ? { id: "reel", icon: "slot", label: "スロット" } : null,
       { id: "wide", icon: overview ? "near" : "wide", label: overview ? "寄る" : "全体", on: overview, name: overview ? "寄る" : "全体を見る" },
     ].filter(Boolean));
+    const choosing = actionsOpen() && !overview;
     frame.setPad(listOpen
       ? { dirs: ["up", "down"], a: { face: "ok", label: "選ぶ" } }
+      : choosing
+      ? { dirs: ["up", "down", "left", "right"], a: { face: "ok", label: "決定" } } // 駅の行き先などを上下で選ぶ（左右は隣の店へ）
       : {
         dirs: ["up", "down", "left", "right"],
         marks: { up: overview ? ["near", "寄る"] : ["wide", "全体を見る"], down: ["list", "一覧"] },
@@ -387,6 +399,7 @@ export function createMapScene(frame) {
       frame.over.hidden = false;
       frame.setAccent(ACC);
       pinSig = cardSig = sheetSig = actionSig = "";
+      actions.hidden = true; actions.replaceChildren(); // 前の地図の案内の箱の札（駅の確認など）を残さない
       viewBox = null; cam = null; overview = false; listOpen = false; lastLiveSel = null; sel = null;
     },
     leave() { sheet.hidden = true; listOpen = false; frame.root.classList.remove("vt-leaving"); },
@@ -400,6 +413,16 @@ export function createMapScene(frame) {
         if (next) { sel = next.id; selectLive(sel); cam = null; render(); camera(true); }
         return;
       }
+      if (actionsOpen() && !overview && (dir === "up" || dir === "down")) {
+        // 案内の箱のボタン（駅の行き先など）を上下で選ぶ。押せない札は飛ばす
+        const nodes = [...actions.children];
+        for (let i = 0; i < nodes.length; i++) {
+          actSel = (actSel + (dir === "down" ? 1 : nodes.length - 1)) % nodes.length;
+          if (!nodes[actSel].disabled) break;
+        }
+        markActions();
+        return;
+      }
       if (dir === "left") step(-1);
       else if (dir === "right") step(1);
       else if (dir === "up") { overview = !overview; cam = null; render(); camera(true); }
@@ -408,6 +431,7 @@ export function createMapScene(frame) {
     a() {
       if (listOpen) { listOpen = false; render(); return; }
       if (overview) { overview = false; cam = null; render(); camera(true); return; }
+      if (actionsOpen()) { pressAction(actSel); return; }
       go();
     },
     chip(id) {

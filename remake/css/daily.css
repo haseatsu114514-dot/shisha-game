@@ -2641,6 +2641,10 @@ body:not(:root) .map .spot-pin .lesson-badge::before { top: calc(50% - 6px); }
 body:not(:root) .map .spot-pin .lesson-badge::after { top: calc(50% + 1px); }
 /* 授業の名前は長いことがあるので、この札だけ折り返す（右下の案内の幅に収める） */
 body:not(:root) .map .mi-tag.mi-lesson { color: #10261a; background: #9be7b4; white-space: normal; max-width: 100%; box-sizing: border-box; border-radius: 12px; }
+/* 斧投げBarの料金の札（「プレイ 3,000円・記録閲覧無料」・D-26）も、スマホの文字の大きさでは案内の幅を超える。
+   区切り（・）の後でだけ折り、言葉の途中では折らない。PCでは1行のまま */
+body:not(:root) .map .mi-tag.mi-tag-split { white-space: normal; max-width: 100%; box-sizing: border-box; border-radius: 12px; }
+body:not(:root) .map .mi-tag-split > .mi-tag-part { display: inline-block; white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { .map .spot-pin .lesson-badge { animation: none; } }
 
 /* 極みの山場（2026-11-20 SBD138③）: 盤の奥が一度明るく燃える。カットインは金の二重の縁で大きく */

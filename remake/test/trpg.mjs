@@ -692,7 +692,9 @@ test("the shopkeeper's first-table tutorial explains GM, PL, PC, the sheet, decl
   assert(tutorial.lines.every(l => ["sai", "hajime"].includes(l.speaker)));
   const text = tutorial.lines.map(l => l.text).join("");
   // The table itself shows short marks only (TRF07): the rules they stand for are explained here and in the "?" help.
-  for (const word of ["GM", "PL", "PC", "キャラクターシート", "30以上", "おすすめ", "クリティカル", "ごほうび", "切り札", "振り直し", "連携札"]) assert(text.includes(word), word);
+  // 仲間の助力・振り直しの仕組みの名前は、画面と同じ「スキル」（2026-11-27 オーナー決定。台詞の「切り札」を置き換えた）。
+  for (const word of ["GM", "PL", "PC", "キャラクターシート", "30以上", "おすすめ", "クリティカル", "ごほうび", "スキル", "振り直し", "連携札"]) assert(text.includes(word), word);
+  assert(!text.includes("切り札"), "the tutorial names the companions' moves スキル, as the table does");
   const declare = tutorial.lines.filter(line => line.panel === "declare").map(line => line.text).join("");
   assert.match(declare, /手がかり.*見立て.*的中時.*準備の判定に＋5/);
   for (const l of tutorial.lines) assert(Array.from(l.text.replace("{gm}", "サメちゃん")).reduce((n, c) => n + (c.codePointAt(0) <= 255 ? 0.5 : 1), 0) <= 48, l.text);

@@ -253,7 +253,7 @@ await suite("trpg-reading", async check => {
     for (const kind of ["table", "declare", "roll", "aid", "fail"]) assert(seen.has(kind), `tutorial shows the ${kind} diagram`);
   }, { ...PHONE, viewport: size, ...preview("scenario=ordinary-cup&seed=9&tutorial=1"), pageReadySelector: '[data-test="trpg-tutorial-panel"]' });
 
-  // 判定の卓「判定の詳細」: PC では見通しの表がトレイと切り札の札の下に積まれ、卓の中を下へ送らないと見えなかった。
+  // 判定の卓「判定の詳細」: PC では見通しの表がトレイとスキルの札の下に積まれ、卓の中を下へ送らないと見えなかった。
   async function assertDetailsFit(page, label) {
     if (!await control(page, "trpg-roll-details").evaluate(n => n.open)) await hit(page, "trpg-details-toggle");
     await control(page, "trpg-forecast").waitFor();

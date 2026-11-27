@@ -26,8 +26,7 @@ initPortraitFit(stage, ({ width, height }) => {
 // 本編のスマホ向けの決まり（文字とタップの大きさ。css/phone-density.css・css/trpg-phone.css の data-density="phone"）を、縦でも使う
 document.documentElement.dataset.density = "phone";
 document.documentElement.dataset.layout = "portrait";
-// スキル（仲間の助力・振り直し）は、卓の窓ではなくダイス劇場の中で選ぶ（VPG29。本編の view.js がこの印を見る。横の本編は今までどおり窓で選ぶ）
-document.documentElement.dataset.trpgSkillsInShow = "true";
+// スキル（仲間の助力・振り直し）は、卓の窓ではなくダイス劇場の中で選ぶ（VPG29）。今は横の本編も同じ既定なので、印は立てない（view.js の skillsInShow）
 
 const SHOT_SCENARIO = "ordinary-cup"; // 止め絵に使う物語（世界一普通の一台）
 // ?jump=explore などは、止め絵と同じ場面まで自動で進めて、そこから遊べる（止め絵と違い、画面を押せる。検査用）

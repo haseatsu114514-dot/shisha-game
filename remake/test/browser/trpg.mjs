@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { startTrpgStory } from "./trpg_start.mjs";
+import { assertTrpgChoiceFits, rollTrpgCheck, startTrpgStory } from "./trpg_start.mjs";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = new URL("trpg-preview.html", process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
 const artifacts = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/trpg");
@@ -55,19 +55,19 @@ async function twistStep(page) {
   const card = page.locator('[data-test^="trpg-approach-"]').first();
   if (touch) await card.tap(); else await card.click();
   for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
-  const roll = page.locator('[data-test="trpg-roll"]');
-  if (touch) await roll.tap(); else await roll.click();
-  await page.locator('[data-test="trpg-settle"]').waitFor();
+  await rollTrpgCheck(page);
   const settle = page.locator('[data-test="trpg-settle"]');
   if (touch) await settle.tap(); else await settle.click();
   for (let i = 0; i < 60 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
 }
-async function checkRoll(page, { support = null, reroll = false } = {}) {
+// 助力と振り直しは、劇場を出せる時は劇場の中で、動きを減らす設定では窓で選ぶ（rollTrpgCheck）。どちらも使えたことを判定の記録で確かめる。
+// 劇場の中で選ぶ札が出たら、札が画面の中で押せることも確かめる（onChoice で中身も見られる）。
+async function checkRoll(page, { support = null, reroll = false, onChoice = null } = {}) {
   await declare(page);
-  if (support) await hit(page, '[data-test="trpg-support-' + support + '"]');
-  await hit(page, '[data-test="trpg-roll"]');
-  await page.locator('[data-test="trpg-settle"]').waitFor();
-  if (reroll) await hit(page, '[data-test="trpg-reroll-0"]');
+  await rollTrpgCheck(page, { support, reroll, onChoice: async kind => {
+    await assertTrpgChoiceFits(page, kind === "aid" ? ["trpg-show-support", "trpg-show-nosupport"] : ["trpg-show-reroll-0", "trpg-show-reroll-1", "trpg-show-keep"]);
+    await onChoice?.(kind);
+  } });
   await hit(page, '[data-test="trpg-settle"]');
   await nextLines(page);
 }
@@ -104,12 +104,23 @@ async function finish(page, choices) {
   const fields = Object.keys(choices);
   for (const field of fields.slice(0, 2)) await hit(page, '[data-test="trpg-plan-' + field + '-' + choices[field] + '"]');
   await hit(page, '[data-test="trpg-prepare-open"]');
-  await checkRoll(page, { support: choices.tool ? "hiyori" : "adam" });
+  await checkRoll(page, { support: choices.tool ? "hiyori" : "adam", onChoice: aidChoice(page) });
   const last = fields[2];
   await hit(page, '[data-test="trpg-plan-' + last + '-' + choices[last] + '"]');
   await hit(page, '[data-test="trpg-serve-open"]');
   await checkRoll(page, { support: "tsumugi" });
 }
+// 劇場の中の「スキルを使う？」: 仲間の顔と技、「＋7 · 連携札1枚」、見込みは「成功 約A% → B%」（使わない時 → 使った時）、「使わずに振る（約A%）」。
+const aidChoice = page => async kind => {
+  if (kind !== "aid") return;
+  assert.equal((await page.locator(".trpg-rs-choose-prompt").innerText()).trim(), "スキルを使う？");
+  const card = page.locator('[data-test="trpg-show-support"]');
+  const odds = await card.locator(".trpg-rs-pick-odds").innerText(), [, plain, aided] = /^成功 約(\d+)(?:〜\d+)?% → (\d+)/.exec(odds) || [];
+  assert(plain && Number(aided) > Number(plain), "The aid raises the odds: " + odds);
+  assert.match(await card.innerText(), /SKILL[\s\S]*の「[^」]+」[\s\S]*＋7 · 連携札1枚/);
+  assert.equal(await card.locator(".trpg-rs-pick-face img").count(), 1, "The companion's face is on the card");
+  assert.equal((await page.locator('[data-test="trpg-show-nosupport"]').innerText()).replace(/\s+/g, ""), "使わずに振る（約" + odds.split(" → ")[0].replace("成功 約", "") + "）");
+};
 async function fits(page) {
   const clips = await page.locator("button:not([hidden]), .trpg-speech p, .trpg-spot span, .trpg-object-label, .trpg-object-detail").evaluateAll(nodes => {
     const stage = document.getElementById("stage").getBoundingClientRect();
@@ -234,7 +245,7 @@ try {
     assert.equal(await page.locator('[data-test="trpg-ending-title"]').textContent(), "話の始まる一台");
   });
   // 判定に賭けるもの（TRF01〜03）: seed 54 は最初の判定で20が出る。クリティカル → 質問が3つ → 思わぬ来客の成功で準備にGMのヒント。
-  // スマホ横持ちで、ごほうびの札・切り札の札・ヒントの付箋が画面に収まることも一緒に見る。
+  // スマホ横持ちで、ごほうびの札・スキルの札・ヒントの付箋が画面に収まることも一緒に見る。
   await run("stakes-critical-question-and-gm-hint", { seed: "54" },
     { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, async page => {
       const snap = () => page.evaluate(() => __trpg.snapshot());
@@ -639,24 +650,36 @@ try {
       await show.locator('.trpg-rs-verdict[data-logo="true"] .trpg-rs-logo[src*="roll-logos/partial.webp"]').waitFor({ state: "visible" });
       assert.equal(await show.locator(".trpg-rs-logo").evaluate(n => n.naturalWidth > 0), true, "The PARTIAL logo is decoded");
       assert.deepEqual([...verdictLogos], ["partial.webp"], "The first roll requests its actual verdict");
-      // 評価が出るまで待つと、劇場は自分で閉じて結果の卓になる。卓は同じ動き・音を繰り返さない。
+      // 評価が出るまで待つと、成功しなかった出目は、劇場を閉じずに劇場の中で「振り直す？」を選ぶ（2026-11-27 オーナー決定。横の本編も既定）。
+      // 結果の窓は、選ぶまで下で待つ。窓には振り直しの札を出さない。
       await show.locator('.trpg-rs-sum strong').filter({ hasText: String(pending.dice[0] + pending.dice[1] + pending.bonus) }).waitFor();
-      await page.locator('[data-test="trpg-settle"]').waitFor();
-      assert.equal(await show.count(), 0, "The show leaves by itself");
-      assert.equal(await page.locator(".trpg-roll-stage").getAttribute("data-shown"), "true");
-      assert.equal(await page.locator('.trpg-roll-stage .trpg-die[data-render="3d"]').count(), 2, "The result table shows the same 3D dice");
-      // 振り直し: 選んだ1個だけが投げ直される。途中のタップで結果まで飛ぶ（卓の札は、劇場の間は押せない）。
-      await hit(page, '[data-test="trpg-reroll-0"]');
-      await show.waitFor();
+      const choose = page.locator(".trpg-roll-show.trpg-rs-choosing");
+      await choose.waitFor();
+      assert.equal(await show.count(), 1, "The show turns into the choice without closing");
+      assert.equal(await page.locator('[data-test="trpg-settle"]').count(), 0, "The result window waits under the show");
+      assert.equal(await page.locator('[data-test="trpg-reroll-0"]').count(), 0, "The window offers no reroll card");
+      assert.equal((await choose.locator(".trpg-rs-choose-prompt").innerText()).trim(), "振り直す？");
+      // 合計は「出目 ＋ 出目 ＋ 補正 ＝ 合計」の式で、判定の値そのまま。札の見込みは結果の窓の札と同じ書き方
+      const eq = await choose.locator('[data-test="trpg-show-equation"]').evaluate(q => ({ dice: [...q.querySelectorAll(".trpg-rs-eq-num")].map(n => Number(n.textContent)),
+        bonus: Number(q.querySelector(".trpg-rs-eq-chip > b").textContent), total: Number(q.querySelector("strong").textContent) }));
+      assert.deepEqual(eq, { dice: pending.dice, bonus: pending.bonus, total: pending.dice[0] + pending.dice[1] + pending.bonus });
+      for (const i of [0, 1]) assert.match(await page.locator(`[data-test="trpg-show-reroll-${i}"]`).innerText(), new RegExp(`${i + 1}個目（${pending.dice[i]}）を振り直す[\\s\\S]*(成功|ひと手間以上) 約\\d+%`));
+      await assertTrpgChoiceFits(page, ["trpg-show-reroll-0", "trpg-show-reroll-1", "trpg-show-keep"]);
+      // 振り直し: 選んだ1個だけが投げ直される。選ぶ札はその場で片付く。途中のタップで結果まで飛ぶ。
+      await hit(page, '[data-test="trpg-show-reroll-0"]');
+      await page.locator(".trpg-roll-show:not(.trpg-rs-choosing)").waitFor();
       const again = await seen(), rerolled = (await page.evaluate(() => __trpg.snapshot())).pending;
       assert.deepEqual([again.thrown, again.settle], ["0", false]);
-      assert.equal(await page.locator('[data-test^="trpg-reroll-"]:not([data-test="trpg-reroll-receipt"])').count(), 0, "The spent reroll cards leave at once");
+      assert.equal(await page.locator('[data-test^="trpg-show-"], [data-test^="trpg-reroll-"]:not([data-test="trpg-reroll-receipt"])').count(), 0, "The spent reroll cards leave at once");
       assert.deepEqual(again.dice, rerolled.dice);
       assert.equal(rerolled.rerolled, true);
       await page.waitForTimeout(400);
       if (options.hasTouch) await page.touchscreen.tap(422, 195); else await page.mouse.click(640, 360);
       await page.locator('[data-test="trpg-settle"]:not(:disabled)').waitFor();
       assert.equal(await show.count(), 0, "A tap skips to the result");
+      // 劇場のあとの結果の卓は、同じ動き・音を繰り返さない。出目は劇場と同じ立体の絵
+      assert.equal(await page.locator(".trpg-roll-stage").getAttribute("data-shown"), "true");
+      assert.equal(await page.locator('.trpg-roll-stage .trpg-die[data-render="3d"]').count(), 2, "The result table shows the same 3D dice");
       assert.equal(await page.locator('[data-test="trpg-reroll-receipt"]').count(), 1);
       assert.equal(await page.locator('[data-test="trpg-roll-total"] strong').textContent(), "合計 " + (rerolled.dice[0] + rerolled.dice[1] + rerolled.bonus));
       await hit(page, '[data-test="trpg-settle"]'); await nextLines(page);
@@ -677,6 +700,22 @@ try {
     assert.equal(await page.evaluate(() => window.__shows), 0, "Reduced motion keeps the quiet table");
     assert.equal(await page.locator(".trpg-roll-stage").getAttribute("data-shown"), null);
   });
+  // 成功した出目には振り直しを出さない（2026-11-27 オーナー決定）: 劇場の中にも結果の窓にも。動きを減らす設定の窓も同じ。
+  // seed 2 は最初の判定が 19＋11＋4＝34 の成功（20の目なし）。成功しなかった出目に出ることは roll-show-* と reroll-cancel-and-low-motion で見る。
+  for (const [label, options] of [["no-reroll-on-success-pc", {}], ["no-reroll-on-success-reduced-motion", { reducedMotion: "reduce" }]]) {
+    await run(label, { seed: "2", traveler: "quiet" }, options, async page => {
+      await startTrpgStory(page); await nextLines(page); await declare(page);
+      await page.evaluate(() => { window.__choices = 0; new MutationObserver(list => { for (const m of list) for (const n of m.addedNodes) if (n.classList?.contains("trpg-rs-choosing")) window.__choices++; }).observe(document.body, { childList: true, subtree: true }); });
+      const rolled = await rollTrpgCheck(page);
+      assert.deepEqual([rolled.pending.dice, rolled.pending.dice.includes(20)], [[19, 11], false], "Seed 2 opens with a plain success");
+      assert.equal(await page.locator('[data-test="trpg-roll-total"]').getAttribute("data-grade"), "success");
+      assert.equal(await page.evaluate(() => window.__choices), 0, "A success offers no reroll in the show");
+      assert.equal(await page.locator('[data-test^="trpg-reroll-"]:not([data-test="trpg-reroll-receipt"]), .trpg-roll-trump').count(), 0, "A success offers no reroll in the window");
+      const state = await page.evaluate(() => __trpg.snapshot());
+      assert.deepEqual([state.teamwork, state.used.hajime || false], [2, false], "Nothing is spent");
+      await hit(page, '[data-test="trpg-settle"]'); await nextLines(page);
+    });
+  }
   await run("double-input-and-integration-abort", { seed: "13", traveler: "quiet" }, {}, async page => {
     await startTrpgStory(page); await nextLines(page); await declare(page);
     await page.locator('[data-test="trpg-roll"]').evaluate(node => { node.click(); node.click(); });

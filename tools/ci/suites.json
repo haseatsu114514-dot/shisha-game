@@ -890,7 +890,7 @@
     },
     {
       "id": "portrait-games",
-      "title": "Portrait prototype frames for DESERT RIDE, the camel race, the DJ, Tetsuko and the TRPG: layout fits, touch works, landscape default untouched",
+      "title": "Portrait prototype frames for DESERT RIDE, the camel race, the DJ, Tetsuko and the TRPG: layout fits, touch works, landscape default untouched (DJ: the nudge buttons also in landscape)",
       "kind": "browser",
       "weight": 2,
       "timeout": 10,
@@ -902,6 +902,7 @@
         "remake/previews/dj/portrait.mjs",
         "remake/previews/dj/portrait.css",
         "remake/previews/dj/app.mjs",
+        "remake/previews/dj/style.css",
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/camel-race.js",
         "remake/js/minigames/tetsuko-time.js",
@@ -5565,10 +5566,10 @@
     },
     {
       "id": "look-vertical",
-      "title": "縦画面（煙の舞台・C案）: 第1章の会話を2行ずつ・返事・地図と店へ・tonari の行動選び・LIME と MENU のシート・心得の盤を十字キーで灯す・登場カットインの縦のポスター・シーシャ作りは回転案内・横持ちと第2章は旧版",
+      "title": "縦画面（煙の舞台・C案）: 会話を2行ずつ・返事・地図と店へ・tonari の行動選び・LIME と MENU のシート・心得の盤を十字キーで灯す・登場カットインの縦のポスター・シーシャ作りは回転案内・横持ちは旧版・第2〜5章の朝の小窓・駅から隣町・場面カード・東京の地図の小窓・第5章の地図・タイトルコールの案A",
       "kind": "browser",
-      "weight": 2.4,
-      "timeout": 8,
+      "weight": 3.6,
+      "timeout": 10,
       "paths": [
         "remake/css/look-vertical.css",
         "remake/js/looks/**",
@@ -5579,6 +5580,7 @@
         "remake/js/daily/tonari.js",
         "remake/js/daily/growth-board-screen.js",
         "remake/js/vn/intro.js",
+        "remake/js/core/chapter-title-art.js",
         "remake/js/vn/intro-art.js",
         "remake/test/browser/look_chapter_seeds.mjs",
         "remake/test/browser/look_vertical.mjs"

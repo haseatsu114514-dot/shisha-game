@@ -86,6 +86,8 @@ const fresh = (money = 1000) => {
 };
 const test = async (name, fn) => { await fn(); console.log(`PASS ${name}`); };
 const button = name => screen.querySelector(`[data-test=${name}]`);
+// 子の文字も含めた文（実DOMの textContent と同じ。料金の札は「・」で折れるよう区切りごとの span に分けてある）
+const textOf = node => (node.textContent || "") + node.children.map(c => typeof c === "object" ? textOf(c) : String(c)).join("");
 const open = async () => {
   const pending = map.chooseSpot({ regionId: core.state.flags._ch2_region, regions });
   for (let i = 0; i < 20 && !button("station-open"); i++) await new Promise(r => setTimeout(r, 0));
@@ -103,7 +105,7 @@ await test("map previews identify the axe fee, free time and the active fortune 
   const { pending } = await open();
   assert.match(button("map-fortune-notice").textContent, /古町の路地/);
   button("pin-axe_bar").click();
-  assert.match(button("map-cost").textContent, /3000円.*記録閲覧無料/);
+  assert.match(textOf(button("map-cost")), /3000円・記録閲覧無料/);
   button("pin-shop").click();
   assert.equal(button("map-time-use").textContent, "1階は時間消費なし");
   button("pin-fortune").click();

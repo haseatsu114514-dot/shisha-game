@@ -3,7 +3,7 @@ import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
 import { travelToCity as travel } from "./station_helpers.mjs";
 import { flickFromHandle, stanceAt } from "./axe_flick_input.mjs";
-import { startTrpgStory, turnToTrpgBook, waitForTrpgTable } from "./trpg_start.mjs";
+import { rollTrpgCheck, startTrpgStory, turnToTrpgBook, waitForTrpgTable } from "./trpg_start.mjs";
 const shots = process.env.COMPARISON_DIR;
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
@@ -127,9 +127,7 @@ async function twistStep(page) {
   const card = page.locator('[data-test^="trpg-approach-"]').first();
   if (touch) await card.tap(); else await card.click();
   for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
-  const roll = page.locator('[data-test="trpg-roll"]');
-  if (touch) await roll.tap(); else await roll.click();
-  await page.locator('[data-test="trpg-settle"]').waitFor();
+  await rollTrpgCheck(page); // 振り直せる出目は、劇場の中の「振り直す？」で「このまま続ける」
   const settle = page.locator('[data-test="trpg-settle"]');
   if (touch) await settle.tap(); else await settle.click();
   for (let i = 0; i < 60 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
@@ -138,7 +136,8 @@ async function declare(page) {
   const card = page.locator('[data-test^="trpg-approach-"]').first();
   if (await card.count() && await card.isVisible()) { await card.click(); await lines(page); }
 }
-async function roll(page) { await declare(page); await hit(page, "trpg-roll"); await page.locator(t("trpg-settle")).waitFor(); await hit(page, "trpg-settle"); await lines(page); }
+// 振って結果の窓へ。スキル（助力・振り直し）は劇場の中で選ぶので、ここでは「使わずに振る」「このまま続ける」で進む（rollTrpgCheck）
+async function roll(page) { await declare(page); await rollTrpgCheck(page); await hit(page, "trpg-settle"); await lines(page); }
 async function returnFromTable(page) {
   await page.locator(t("trpg-replay-save-question")).waitFor();
   await hit(page, "trpg-replay-save-no");

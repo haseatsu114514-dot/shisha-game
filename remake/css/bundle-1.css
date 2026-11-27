@@ -1023,7 +1023,7 @@ body:not(:root) .axe-bar-menu .axe-bar-tools > .gear-offer { flex: 0 1 auto; min
 /* The seat rail marks who is speaking. While the player chooses, it steps aside so cards and the main button stay clear. */
 .trpg-root.trpg-cinematic.trpg-idle:not([data-phase="cover"]) .trpg-table { visibility: hidden; }
 
-/* ===== 道具を使う手ざわり（2026-11-02）: ダイストレイに投げ込み、跳ねて止まる。切り札は場に置き、手がかりはメモへ。 ===== */
+/* ===== 道具を使う手ざわり（2026-11-02）: ダイストレイに投げ込み、跳ねて止まる。スキルは場に置き、手がかりはメモへ。 ===== */
 /* ダイストレイ: 木の縁と、目の詰んだフェルト。 */
 .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene {
   width: min(560px, 100%); min-height: 168px; margin: 8px auto 6px; border-radius: 16px; overflow: visible;
@@ -1106,7 +1106,7 @@ body:not(:root) .axe-bar-menu .axe-bar-tools > .gear-offer { flex: 0 1 auto; min
 @keyframes trpg-stamp { 0% { opacity: 0; transform: scale(1.6) rotate(-8deg); } 100% { opacity: 1; transform: none; } }
 .trpg-root.trpg-cinematic[data-paused="true"] :is(.trpg-die-body, .trpg-d20-value, .trpg-reroll-stamp, .trpg-teamwork i, .trpg-aid, .trpg-sheet, .trpg-note-card) { animation-play-state: paused !important; }
 
-/* 切り札を借りると、仲間のカードを場に置く。置いたカードには「場に出した」の印。 */
+/* 仲間のスキルを借りると、そのカードを場に置く。置いたカードには「場に出した」の印。 */
 .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid {
   position: relative; border: 1px solid #c9b48a; border-radius: 8px; box-shadow: 0 3px 0 #a98f6266, 0 6px 12px #0003;
   transition: transform .22s cubic-bezier(.2,1.3,.4,1), box-shadow .22s;
@@ -1116,7 +1116,7 @@ body:not(:root) .axe-bar-menu .axe-bar-tools > .gear-offer { flex: 0 1 auto; min
   content: "場に出した"; position: absolute; right: -10px; top: -12px; padding: 2px 8px; border: 2px solid #a33f44; border-radius: 4px;
   color: #a33f44; background: #fff8f0; font-size: 12px; font-weight: 700; transform: rotate(8deg); pointer-events: none;
 }
-/* 振り直しのボタンは、切り札のカード。 */
+/* 振り直しのボタンは、スキルのカード。 */
 .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice { border-radius: 8px; box-shadow: 0 3px 0 #a98f6255, 0 5px 10px #0002; transition: transform .18s; }
 .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice:hover:not(:disabled) { transform: translateY(-4px); }
 /* 上の連携札は小さなカード。使うと裏返って抜け、戻ると表になって入る。 */
@@ -1422,7 +1422,7 @@ html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice:hover:n
    文字を詰めない。決まりや操作の説明は「？」を開いた時だけ。基本の画面は遊ぶのに要る札だけにする。 */
 /* 進行は上のレールの小札（今の段）だけ。判定の回数・連携札の内訳は判定の舞台とログで読む。 */
 html:root .trpg-root.trpg-cinematic .trpg-table-status { display: none; }
-/* 座席の帯は「誰が話しているか」だけ。能力値と切り札の残りはキャラクターシートで見る。 */
+/* 座席の帯は「誰が話しているか」だけ。能力値とスキルの残りはキャラクターシートで見る。 */
 html:root .trpg-root.trpg-cinematic .trpg-table :is(.trpg-seat-stats, .trpg-seat-ability) { display: none; }
 /* シートの前置き（判定の決まり）は遊び方に書いてある。 */
 html:root .trpg-root.trpg-cinematic .trpg-sheet-stage .trpg-modal-intro { display: none; }
@@ -1943,7 +1943,7 @@ html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta > small {
 /* 聞き込み: 前置きの一文は出さない（題と「あと N つ」で足りる。スマホは以前から出していない）。増えた夜は数を金色に。 */
 html:root .trpg-root.trpg-cinematic .trpg-interview-prompt { display: none; }
 html:root .trpg-root.trpg-cinematic .trpg-interview .trpg-topic { justify-content: center; }
-/* 判定の卓: 使えない切り札の一言、補正の内訳に入れた 見立て・危機 の札。 */
+/* 判定の卓: 使えないスキルの一言、補正の内訳に入れた 見立て・危機 の札。 */
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid-spent { margin: 4px 0; text-align: center; color: #b9c4b6; font-size: max(13px, calc(11 * var(--roll-unit))); }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-receipts > :is(.trpg-roll-insight, .trpg-roll-consequence) { margin: 0 !important; text-align: left; }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-receipts > .trpg-roll-insight { color: #ffe39a; }
@@ -2415,13 +2415,13 @@ html:root[data-density="phone"] .trpg-campaign[data-view="shelf"] .trpg-campaign
   html:root[data-density="phone"] .trpg-campaign[data-view="shelf"] .trpg-campaign-person .trpg-campaign-face { zoom: .6; }
 }
 
-/* ---- PCの判定の卓: 切り札の札がある判定でも、振る前の卓が1画面に収まるよう、ダイストレイの余白を詰める（#3199・TRF24）。
+/* ---- PCの判定の卓: スキルの札がある判定でも、振る前の卓が1画面に収まるよう、ダイストレイの余白を詰める（#3199・TRF24）。
    小さい画面（max-width: 1000px / max-height: 600px）とスマホ横持ちは、それぞれの決まり（trpg-stage.css・trpg-phone.css）のまま。 ---- */
 @media (min-width: 1001px) and (min-height: 601px) {
   html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene { min-height: 132px; }
   html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene .trpg-dice-row { margin: 8px 0; }
-  /* 「判定の詳細」を開いた時（#3199・TRF24 の残件）: 見通しの表がトレイ・切り札の札の下に積まれ、卓の中を下へ送らないと見えなかった
-     （切り札の札がある判定で 145px はみ出し）。開いている間だけ、トレイと切り札の札を左、詳細（判定の説明・見通しの表）を右に並べる。
+  /* 「判定の詳細」を開いた時（#3199・TRF24 の残件）: 見通しの表がトレイ・スキルの札の下に積まれ、卓の中を下へ送らないと見えなかった
+     （スキルの札がある判定で 145px はみ出し）。開いている間だけ、トレイとスキルの札を左、詳細（判定の説明・見通しの表）を右に並べる。
      決まりの一文・成功のごほうび・誰が何で は上に通しで残す。表の数字は今までと同じ（見せ方だけ）。 */
   html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-auto-flow: row dense; column-gap: 28px; align-items: start;
@@ -2755,7 +2755,7 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-odds small { display: none; } /* 「30以上で成功」は右の説明と同じ */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast-head { margin-bottom: 2px; justify-content: center; }
 
-/* ---- 役衣装の姿（TMX04）: シートは 姿｜顔書きと能力｜特徴と切り札 の3列 ---- */
+/* ---- 役衣装の姿（TMX04）: シートは 姿｜顔書きと能力｜特徴とスキル の3列 ---- */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] { grid-template-columns: 196px 330px 1fr; column-gap: 24px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-costume { grid-column: 1; grid-row: 1 / span 6; width: 196px; height: 262px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-head { grid-column: 2; grid-row: 1; }
@@ -2764,10 +2764,10 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costu
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-origin:has(.trpg-builder-origin-art) { padding-left: 104px; min-height: 104px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-origin-art { width: 82px; }
 
-/* ---- 判定に賭けるもの（TRF02）: 成功のごほうびの札は1行。右の列で切り札の札を押し下げない ---- */
+/* ---- 判定に賭けるもの（TRF02）: 成功のごほうびの札は1行。右の列でスキルの札を押し下げない ---- */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-stake { margin: 0 auto 4px; padding-block: 2px; white-space: nowrap; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-reward { margin: 4px auto; padding-block: 2px; }
-/* 判定の決まりの一文は題の行の右へ。本文の先頭の一文は出さない（Safari のバーが出ている 844×340 でも、切り札の札の2行目まで見える）。 */
+/* 判定の決まりの一文は題の行の右へ。本文の先頭の一文は出さない（Safari のバーが出ている 844×340 でも、スキルの札の2行目まで見える）。 */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage > h2 { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 20px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage > h2 .trpg-roll-rule {
   display: inline; font-size: var(--phone-sub); font-weight: 400; letter-spacing: 0; color: #c6d4cb; white-space: nowrap;
@@ -2817,7 +2817,7 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-cue .trpg-
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot > span { max-width: none; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot[data-label-align] > span { transform: none; }
 
-/* チュートリアルの図: 図の下の説明（GM＝… / 30以上で成功… / 切り札は一人一度…）と GM・PL の札が実寸 8〜9px だった */
+/* チュートリアルの図: 図の下の説明（GM＝… / 30以上で成功… / スキルは一人一度…）と GM・PL の札が実寸 8〜9px だった */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-tutorial-panel { width: 960px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-tutorial-panel :is(p, .trpg-tutorial-seats b) { font-size: var(--phone-sub); line-height: 1.5; }
 
@@ -3200,7 +3200,7 @@ html:root .trpg-root .trpg-roll-show[data-tone="fumble"][data-phase="verdict"] .
 /* スキル発動のカットインの「SKILL!」は、ロゴの絵（読めない時は文字。roll-show.js）。 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-logo[hidden] { display: none; }
 /* スキル発動のカットイン（TRF38 で作り直し）: 傾けない水平の帯。帯の中に「顔＋文字の塊」を1つ、上下左右の真ん中に置く。
-   文字の塊は左揃え: 1行目＝SKILL! のロゴと「○○の切り札」、2行目＝技の名前、3行目＝効き目の札。 */
+   文字の塊は左揃え: 1行目＝SKILL! のロゴと「○○のスキル」、2行目＝技の名前、3行目＝効き目の札。 */
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill { position: absolute; left: 0; right: 0; top: 232px; height: 280px; z-index: 6; opacity: 0; pointer-events: none; }
 html:root .trpg-root .trpg-roll-show .trpg-rs-skill-band {
   position: absolute; inset: 0; transform-origin: 50% 50%;
@@ -3239,7 +3239,69 @@ html:root .trpg-root .trpg-roll-show .trpg-rs-hint > strong { font-size: 30px; f
 html:root .trpg-root .trpg-roll-show .trpg-rs-hint > span { grid-column: 1 / -1; font-size: 18px; font-weight: 700; color: #b9f2e4; }
 @keyframes trpg-rs-hint-glow { to { box-shadow: 0 0 46px #5fe0c4; } }
 
-/* 卓の側: スキルの札（仲間の切り札・振り直し）を「SKILL」の札として目立たせる。大きさ・並びは変えず、光と印だけ足す。 */
+/* カットインの間は、まだ止まっていないサイコロの間の「＋」を出さない（振り直しの劇場で、帯の上に「＋」だけ浮いて見えた。VPG33） */
+html:root .trpg-root .trpg-roll-show[data-cutin="true"] .trpg-rs-plus { opacity: 0 !important; }
+/* 補正が重なる時（能力＋助力など）は、何が足されて＋N になったかを丸の中に1つずつ改行して書く（roll-show.js が data-parts を付ける。VPG30） */
+html:root .trpg-root .trpg-roll-show .trpg-rs-chip[data-parts]:not([data-parts=""]) > small { max-width: 112px; white-space: pre-line; overflow: visible; line-height: 1.1; text-align: center; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-chip[data-parts]:not([data-parts=""]) > b { font-size: 36px; }
+
+/* ======== スキルは劇場の中で選ぶ（VPG29 → 2026-11-27 オーナー決定で横の本編も既定。roll-show.js の showRollChoice） ========
+   劇場と同じ幕・見出し・目標・サイコロの上に、選ぶ札を置いて押されるまで待つ。投げる前＝「スキルを使う？」（仲間の助力）、
+   出目が出た後＝「振り直す？」（1個目・2個目）。どちらも「使わずに振る／このまま続ける」で先へ。札の見た目は縦の試作
+   （previews/portrait-stage/frame/trpg.css）に合わせ、横の 1280×720 の舞台では、サイコロを少し小さく上へ寄せ、その下に
+   式（出目＋出目＋補正＝合計）と評価の一言、問いかけ、札と「このまま」の1列。押す所はどれも舞台の 148px の高さで、
+   スマホ横持ち（844×390・舞台は約0.54倍）でも、縦持ちのまま開いた時（390×844・約0.3倍）でも実寸 44px 以上。
+   縦の試作は位置と大きさを trpg.css で上書きする。 */
+html:root .trpg-root .trpg-roll-show.trpg-rs-choosing { cursor: default; }
+html:root .trpg-root .trpg-roll-show.trpg-rs-choosing :is(.trpg-rs-head, .trpg-rs-goal, .trpg-rs-die) { opacity: 1; }
+html:root .trpg-root .trpg-roll-show.trpg-rs-choosing .trpg-rs-lines { opacity: .14; }
+html:root .trpg-root .trpg-roll-show.trpg-rs-choosing .trpg-rs-vignette { opacity: .5; }
+/* 周りの暗がりは幕だけに掛け、見出し・目標・札の上には重ねない（横の舞台では札が四隅の暗い所に来る） */
+html:root .trpg-root .trpg-roll-show.trpg-rs-choosing .trpg-rs-fit { z-index: 1; }
+/* サイコロは劇場と同じ場所から、少し小さく上へ（下に式と札の段を空ける）。間の「＋」も同じ高さへ */
+html:root .trpg-root .trpg-roll-show.trpg-rs-choosing .trpg-rs-die { scale: .66; translate: 0 -70px; }
+html:root .trpg-root .trpg-roll-show.trpg-rs-choosing .trpg-rs-choice-plus { top: 230px; opacity: 1; }
+/* 投げる前のサイコロは、もう少し小さく暗く（まだ振っていない） */
+html:root .trpg-root .trpg-roll-show.trpg-rs-choosing[data-rolled="false"] .trpg-rs-die { filter: brightness(.7) saturate(.8); scale: .6; translate: 0 -46px; }
+html:root .trpg-root .trpg-roll-show.trpg-rs-choosing[data-rolled="false"] .trpg-rs-shadow { opacity: .5; }
+/* 出目が出た後: サイコロの下に「19 ＋ 1 ＋ 補正 ＝ 29」の式（補正は真鍮の札に、何が足されたかと数）と評価の一言を1行に */
+html:root .trpg-root .trpg-roll-show .trpg-rs-choice-verdict { position: absolute; left: 0; right: 0; top: 336px; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 26px; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-choice-eq { display: flex; align-items: center; justify-content: center; gap: 12px; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-choice-eq > :is(.trpg-rs-eq-num, strong) { font-size: 50px; font-weight: 900; line-height: 1; color: #fff8e6; text-shadow: 0 3px 0 #000, 0 0 16px #000c; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-choice-eq > strong { font-size: 62px; color: #ffe08a; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-choice-eq > i { font-style: normal; font-size: 40px; font-weight: 900; line-height: 1; color: #ffd76a; -webkit-text-stroke: 6px #1a0f04; paint-order: stroke fill; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-eq-chip { display: grid; justify-items: center; min-width: 96px; padding: 6px 14px 5px; border-radius: 18px; color: #3a2a10;
+  background: linear-gradient(180deg, #f9e3a0, #dcae4a); box-shadow: 0 0 0 3px #1a0f04, 0 6px 14px #000a; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-eq-chip > small { max-width: 300px; font-size: 24px; font-weight: 900; line-height: 1.15; text-align: center; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-eq-chip > b { font-size: 40px; font-weight: 900; line-height: 1; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-choice-verdict > .trpg-rs-choice-label { font-size: 38px; font-weight: 900; color: var(--rs); text-shadow: 0 2px 0 #000, 0 0 14px #000c; }
+/* 選ぶ札の段: 問いかけの下に、札（1〜2枚）と「このまま」を1列に（data-picks は札の数） */
+html:root .trpg-root .trpg-roll-show .trpg-rs-choose { position: absolute; left: 40px; right: 40px; top: 430px; display: grid; grid-template-columns: repeat(2, minmax(0, 480px)) 220px;
+  justify-content: center; align-items: stretch; gap: 8px 16px; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-choose[data-picks="1"] { grid-template-columns: minmax(0, 560px) 300px; }
+html:root .trpg-root .trpg-roll-show.trpg-rs-choosing[data-rolled="false"] .trpg-rs-choose { top: 400px; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-choose-prompt { grid-column: 1 / -1; margin: 0; text-align: center; font-size: 38px; font-weight: 900; color: #fff3c4; text-shadow: 0 3px 0 #000, 0 0 16px #000c; letter-spacing: .04em; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-pick { display: grid; grid-template-columns: 84px minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; gap: 6px 14px; min-height: 148px; padding: 12px 16px 12px 12px;
+  box-sizing: border-box; border: 3px solid #ffd98f; border-radius: 18px; background: linear-gradient(170deg, #1b3a36f2, #0c2224f5); color: #fff4d6; font-family: inherit; text-align: left;
+  box-shadow: 0 0 0 4px #ffd98f33, 0 12px 30px #000c; cursor: pointer; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-pick:hover, html:root .trpg-root .trpg-roll-show .trpg-rs-pick:focus-visible { border-color: #fff1c8; box-shadow: 0 0 0 6px #ffd98f66, 0 12px 30px #000c; outline: none; }
+/* 顔はスキルのカットインと同じ丸（顔の絵は img の位置と大きさで丸の中に収める） */
+html:root .trpg-root .trpg-roll-show .trpg-rs-pick-face { grid-row: 1 / span 2; align-self: center; position: relative; width: 84px; height: 84px; border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 40% 30%, #fff6dc, #d9b062); box-shadow: 0 0 0 4px #ffd76a, 0 0 0 7px #1a0f04; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-pick-face img { position: absolute; max-width: none; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-pick-copy { display: grid; gap: 4px; min-width: 0; }
+/* 誰の何のスキルか: 長い技の名前は札の中で折り返す（切らない） */
+html:root .trpg-root .trpg-roll-show .trpg-rs-pick-copy > small { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 700; color: #f2dca6; white-space: normal; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-pick-copy > small > b { flex: none; padding: 2px 10px; border-radius: 8px; font-size: 20px; line-height: 1.2; color: #031a16; background: #5fe0c4; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-pick-copy > strong { font-size: 30px; font-weight: 900; line-height: 1.25; color: #fff8e6; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-pick-odds { grid-column: 2; justify-self: start; padding: 4px 14px; border-radius: 12px; font-size: 24px; font-weight: 900; line-height: 1.2; color: #2a1b0c;
+  background: linear-gradient(180deg, #fff1c8, #e7c26f); text-align: center; white-space: nowrap; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-keep { align-self: stretch; min-width: 0; min-height: 148px; margin-top: 0; padding: 8px 18px; box-sizing: border-box; border: 2px solid #d2ae6699; border-radius: 22px;
+  background: #061416d9; color: #f3ead6; font-family: inherit; font-size: 24px; font-weight: 700; text-wrap: balance; cursor: pointer; box-shadow: 0 8px 20px #000a; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-keep:hover, html:root .trpg-root .trpg-roll-show .trpg-rs-keep:focus-visible { border-color: #f2dca6; background: #0c2224f0; outline: none; }
+
+/* 卓の側: スキルの札（仲間の助力・振り直し）を「SKILL」の札として目立たせる。大きさ・並びは変えず、光と印だけ足す。
+   劇場を出せる時は劇場の中で選ぶので、これらの札は動きを減らす設定の時だけ窓に出る。 */
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid { box-shadow: 0 0 0 2px #ffcf4a99, 0 0 18px #ffcf4a55, 0 3px 0 #a98f6266; }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid:not(:has(input:checked)) { animation: trpg-rs-skill-ready 1.2s ease-in-out infinite alternate; }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid::before {
@@ -7073,6 +7135,10 @@ body:not(:root) .map .spot-pin .lesson-badge::before { top: calc(50% - 6px); }
 body:not(:root) .map .spot-pin .lesson-badge::after { top: calc(50% + 1px); }
 /* 授業の名前は長いことがあるので、この札だけ折り返す（右下の案内の幅に収める） */
 body:not(:root) .map .mi-tag.mi-lesson { color: #10261a; background: #9be7b4; white-space: normal; max-width: 100%; box-sizing: border-box; border-radius: 12px; }
+/* 斧投げBarの料金の札（「プレイ 3,000円・記録閲覧無料」・D-26）も、スマホの文字の大きさでは案内の幅を超える。
+   区切り（・）の後でだけ折り、言葉の途中では折らない。PCでは1行のまま */
+body:not(:root) .map .mi-tag.mi-tag-split { white-space: normal; max-width: 100%; box-sizing: border-box; border-radius: 12px; }
+body:not(:root) .map .mi-tag-split > .mi-tag-part { display: inline-block; white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { .map .spot-pin .lesson-badge { animation: none; } }
 
 /* 極みの山場（2026-11-20 SBD138③）: 盤の奥が一度明るく燃える。カットインは金の二重の縁で大きく */
