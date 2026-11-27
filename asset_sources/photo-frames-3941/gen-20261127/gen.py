@@ -42,12 +42,16 @@ WHO = {
     "rio": "Rio (27-year-old woman) exactly as in her official sprite: very dark long wolf-cut hair with subtle slate-blue undertones, thick sweeping bangs, languid half-lidded blue-grey eyes, subtle cool smile, white shirt with rolled sleeves.",
     "shiori": "Shiori, who is Minto off duty (the same adult woman, late twenties) exactly as in her official plain-clothes sprite: long straight black hair with blunt bangs, green eyes, NO horns, NO wings, NO concept-cafe dress; cream cable-knit cardigan over a black top, long dark green skirt, small shoulder bag. Quiet, a little shy and tired, gentle smile.",
     "adam": "Adam (28-year-old man, double-apple shisha craftsman) exactly as in his official sprite: hair split in two colors — on the viewer's LEFT side apple red, on the viewer's RIGHT side apple green — serious deadpan face, plain white t-shirt and a black waist apron.",
+    "uezono": "Uezono (39-year-old man, a cheerful shisha columnist and tournament judge) exactly as in his official sprite: round friendly face, short messy dark-brown hair, round glasses, a big warm laugh, navy blazer over a light-blue shirt with a small notepad and pen in the chest pocket, beige chinos.",
+    "dr_charcoal": "Dr. Charcoal (38-year-old man, an equipment inventor and tournament judge) exactly as in his official sprite: messy brown hair, black square glasses, green eyes, short stubble, open-collar white shirt under a white lab coat with green and brown stains and three pens in the chest pocket. Gentle, a little absent-minded, childlike delight about equipment; never sinister or villain-like.",
+    "sensu": "Sensu (45-year-old man, chairman of a shisha chain and head judge) exactly as in his official sprite: black hair slicked back with grey at the sides, sharp composed face, black three-piece suit with a black tie, a wristwatch. Dignified and calm, a faint smile.",
     "sumi": "Sumi (46-year-old man, shisha shop owner) exactly as in his official sprite: black newsboy cap, square black-framed glasses, full short beard, tanned skin, charcoal shirt with rolled sleeves and a brown waist apron.",
 }
 SPRITE = {"minto": "minto/chr_minto_smile", "hajime": "hajime/chr_hajime_smile", "ageha": "ageha/chr_ageha_smile", "kumicho": "kumicho/chr_kumicho_normal",
           "rei": "rei/chr_rei_normal", "mashiro": "mashiro/chr_mashiro_smile", "tsumugi": "tsumugi/chr_tsumugi_smile", "samechan": "samechan/chr_samechan_smile",
           "naru": "naru/chr_naru_smile", "hiyori": "hiyori/chr_hiyori_smile", "sumi": "sumi/chr_sumi_smile", "yoru": "yoru/chr_yoru_smile", "rio": "rio/chr_rio_smile",
-          "shiori": "minto/chr_minto_ura_smile", "adam": "adam/chr_adam_normal"}
+          "shiori": "minto/chr_minto_ura_smile", "adam": "adam/chr_adam_normal",
+          "uezono": "maezono/chr_maezono_smile", "dr_charcoal": "dr_kemuri/chr_dr_kemuri_smile", "sensu": "sui/chr_sui_smile"}
 
 # 本編のチェキの台紙と写真の窓（motions/cheki.js の CARD・PHOTO_BOX と同じ）
 CW, CH = 993, 1584
@@ -101,7 +105,7 @@ def cheki_prompt(job):
     ])
 
 
-NAME = {"kumicho": "Kanzaki", "rei": "Kuraudo", "samechan": "Same-chan", "shiori": "Shiori"}
+NAME = {"kumicho": "Kanzaki", "rei": "Kuraudo", "samechan": "Same-chan", "shiori": "Shiori", "uezono": "Uezono", "dr_charcoal": "Dr. Charcoal", "sensu": "Sensu"}
 
 
 def partners(job):
@@ -122,6 +126,9 @@ def purikura_prompt(job):
         f"Top photo: {people} — {job['top']}. Bottom photo: {job['bottom']}.",
         *refs,
         "Purikura look: bright soft studio lighting, eyes slightly enlarged and sparkly, but each face must stay recognisably the same person as the sprite.",
+        ("These two are a romantic couple (lovers), so show a clearly closer, affectionate distance than friends: leaning together, cheek to cheek, linked arms, held hands or a hug from behind. "
+         "Tender and wholesome: both are adults, fully clothed, and there is no kissing on the lips." if job.get("lover") else
+         "They are friends: friendly, playful distance, not romantic." if partners(job) and not job.get("solo") else ""),
         "Each photo shows only what the photo booth's camera captures: the people posing toward the camera in front of the booth's plain backdrop. Never show anyone drawing on the photo or holding the booth's stylus, and never show the booth's screen or camera inside a photo; doodles exist only as pen marks drawn on top of the photos.",
         (f"Very few doodles, in small, neat, modest handwriting (she is shy): exactly {text}, written correctly and legibly, plus one or two tiny hearts or leaves. Write no other words." if job.get("quiet") else
          f"Hand-written glitter-pen doodles in Japanese on the photos and border: exactly {text}, written correctly and legibly, plus small hearts, stars and stamps. Write no other words."),
