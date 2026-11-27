@@ -578,6 +578,16 @@
           "speaker": "",
           "face": "",
           "text": "さっきのお客さんと、同じ言い方になった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後、はじめさんはカウンターの端で、ノートに何か書いては消していた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（何を書いているのかは、聞けなかった）"
         }
       ]
     },
@@ -913,6 +923,11 @@
           "speaker": "",
           "face": "",
           "text": "スミさんの煙は、今日も落ち着く色だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめさんが、カウンターの端に置いていた自分のノートを、そっと閉じた。"
         },
         {
           "speaker": "",
@@ -1327,6 +1342,11 @@
           "text": "つむぎは、俺がホースを置くまで、何も言わなかった。"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……面接の日、俺がうまく言えなかったやつだ）"
+        },
+        {
           "type": "hide_cg"
         },
         {
@@ -1437,6 +1457,26 @@
         },
         {
           "speaker": "sumi",
+          "face": "thinking",
+          "text": "千須がぼやいてたぞ。動画の一台を頼まれて、新人が困ってるってな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……C.STATIONで、ですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "優勝ってのは、そういう客も連れてくる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（つむぎちゃんからは、一度も聞いたことがない）"
+        },
+        {
+          "speaker": "sumi",
           "face": "normal",
           "text": "昼は、もうあいつ一人で回せる。お前も、外の話を断るなよ"
         },
@@ -1459,6 +1499,41 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "……じゃあ、頼らせてもらいます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レジ横の引き出しから、ノートを出した。表紙に、『つむぎちゃんへ』と書いてある。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭の数、蒸らしの時間、ホースの洗い方。三ページ目の途中で、字が止まっている。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "まだ書いてんのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭と時間までは、書けるんです。何を見て決めるかが、書けなくて"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "俺も、お前には一行も書いてねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……知ってます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートを、引き出しに戻した。たぶん、もう渡さない。"
         },
         {
           "speaker": "sumi",
@@ -1571,6 +1646,31 @@
         },
         {
           "speaker": "dr_charcoal",
+          "face": "normal",
+          "text": "世界大会の動画は、ご覧になりましたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……お客さんに、見せてもらいました"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "normal",
+          "text": "あれを見て、同じ一台を頼む人が、どの店にも来ています。C.STATIONにも"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "serious",
+          "text": "作れるのは、君だけです。新人は動画をなぞって、外す"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥で、つむぎがグラスを拭く手を止めた。"
+        },
+        {
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "9000なら、君の一番いい日を、毎日出せます。誰の前にでも"
         },
@@ -1593,6 +1693,12 @@
           "speaker": "dr_charcoal",
           "face": "normal",
           "text": "炭の置き方はなるさん。待ち方はスティーブさん。記録で、全部たどれます"
+        },
+        {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch5_shop_hands",
+          "next_true": "manual_echo"
         },
         {
           "type": "condition",
@@ -1703,7 +1809,13 @@
         {
           "speaker": "",
           "face": "",
-          "text": "千須が帰ったあと、奥でグラスを拭いていたつむぎが、手を止めた。"
+          "text": "千須が帰ったあと、つむぎがカウンターの奥から出てきた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch5_tsumugi_cough",
+          "next_true": "cough_confess"
         },
         {
           "speaker": "tsumugi",
@@ -1783,6 +1895,55 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "（……知り合い、なのか）"
+          }
+        ],
+        "manual_echo": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "（三ページで止めた手順書を、この人は最後まで書いたんだ）"
+          }
+        ],
+        "cough_confess": [
+          {
+            "speaker": "tsumugi",
+            "face": "baito_sad",
+            "text": "……さっきの、動画をなぞって外す新人。私です"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……え"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "baito_sad",
+            "text": "はじめさんが取材の日に、動画のとおりに作って。二口目で、むせさせました"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "baito_normal",
+            "text": "……大丈夫でした、って言いました。ごめんなさい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "（俺がいない昼に。……俺は、何も知らなかった）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（何を見て決めるのか、俺は言えなかった。残っていたのは、動画だけだ）"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "baito_normal",
+            "text": "C.STATIONで、博士に会いました。君の手のせいじゃない、って言われて"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "baito_serious",
+            "text": "博士の言ってること、少し分かるんです"
           }
         ]
       }
@@ -1870,6 +2031,12 @@
           "speaker": "dr_charcoal",
           "face": "serious",
           "text": "言われてからでは、一口遅い。9000は、言われる前に直します"
+        },
+        {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch5_tsumugi_cough",
+          "next_true": "unsaid"
         },
         {
           "speaker": "",
@@ -1975,13 +2142,18 @@
           "speaker": "",
           "text": "戻ると、博士は湯のみを両手で包んでいた。大会の映像は止まったままだ。"
         },
-        {"type": "show_cg", "cg_id": "cg_ch5_doctor_yunomi"},
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ch5_doctor_yunomi"
+        },
         {
           "speaker": "dr_charcoal",
           "face": "normal",
           "text": "……さて。勝負の日の話を、しましょうか"
         },
-        {"type": "hide_cg"},
+        {
+          "type": "hide_cg"
+        },
         {
           "speaker": "",
           "text": "博士の向かいに座り直した。日を決めるかどうかは、まだこれからだった。"
@@ -2046,6 +2218,13 @@
             "speaker": "",
             "text": "スミさんの返事を聞き、今夜の一台をどうするか、自分で決めた。"
           }
+        ],
+        "unsaid": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "（つむぎちゃんの昼のお客さんは、『大丈夫です』と言った。言わない日も、ある）"
+          }
         ]
       }
     },
@@ -2102,6 +2281,12 @@
           "text": "咳を一回、確認。熱を下げます"
         },
         {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch5_tsumugi_cough",
+          "next_true": "cough_echo"
+        },
+        {
           "speaker": "dr_charcoal",
           "face": "smile",
           "text": "気温、湿度、吸う速さも見ています。言われる前に、直せる"
@@ -2131,7 +2316,21 @@
           "face": "",
           "text": "自分の台を見る。追いつこうとして、待つ時間を削っていた。"
         }
-      ]
+      ],
+      "branches": {
+        "cough_echo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "客席の端で、つむぎが息を止めたのが見えた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "（……あの日のつむぎちゃんに、あった方がよかった手だ）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch5_relationship_before_second_cup",
@@ -2665,6 +2864,12 @@
           "text": "……会ってなくても、その人たちの手は、今日の9000の煙にいました"
         },
         {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch5_tsumugi_doctor",
+          "next_true": "met_one"
+        },
+        {
           "speaker": "dr_charcoal",
           "face": "normal",
           "text": "……逢縁くん。君の名前は、逢う縁と書くんですね"
@@ -2765,13 +2970,18 @@
           "face": "",
           "text": "博士が胸ポケットのペンを抜いた。画面の数字と、俺の言葉を、メモに並べて書く。"
         },
-        {"type": "show_cg", "cg_id": "cg_ch5_cocreation_notes"},
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ch5_cocreation_notes"
+        },
         {
           "speaker": "",
           "face": "",
           "text": "隣で、9000が二人の手元を見ていた。今日の一台も、記録に加わる。"
         },
-        {"type": "hide_cg"},
+        {
+          "type": "hide_cg"
+        },
         {
           "speaker": "",
           "face": "",
@@ -2789,6 +2999,23 @@
             "speaker": "dr_charcoal",
             "face": "normal",
             "text": "県大会の前に貸した温度計。あれが、9000のいちばん古い部品です"
+          }
+        ],
+        "met_one": [
+          {
+            "speaker": "dr_charcoal",
+            "face": "normal",
+            "text": "……一人だけ、会った人がいます。C.STATIONで、二口目の咳の話をしてくれた"
+          },
+          {
+            "speaker": "dr_charcoal",
+            "face": "normal",
+            "text": "あの一行も、9000の中にあります"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……つむぎちゃんの、あの日の昼だ）"
           }
         ]
       },
@@ -3798,6 +4025,18 @@
           "text": "スミさんは、ペットボトルを一本、俺のケースの横に押し込んだ。"
         },
         {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch5_tsumugi_full_house",
+          "next_true": "sendoff"
+        },
+        {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch5_tsumugi_menu_board",
+          "next_true": "sendoff"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "SMOKE LABに着いた。白い廊下の先で、博士の研究室の扉が開いていた。",
@@ -3984,7 +4223,61 @@
           "text": "……はい"
         }
       ],
-      "comment": "出典: CH5-PRIORITY3-TEXT.md §6。接続済み（ch5-progress.js CH5_MATCH_SCENES.arrival）。日程決定後の「会場へ行く」で、確認「この先、勝負の終わりまで自由行動に戻れません。会場へ向かいますか」を出す（Q15の現行実装は ch5.js renderScheduled）。「向かう」で _ch5_match_started を立て、本場面→ch5_copy_first_cup へ進む。「まだ行かない」は日程を維持してカードに留まり、取り消しは別操作。会場SMOKE LAB（Q13）と常連・博士が募った客（Q14）は本文に記載済み。Q18の博士は同一人物。9000の照合と博士の「誤差」は、記録と今日の違い・票の割れへの前振り（DXM01）。つむぎ・千須の客席描写も本文にある。冒頭はtonari。SMOKE LAB到着で背景を切り替え、9000の姿を初めて見るところでスチルを出す。検品札と職人の話は doctor_after_match、上着の匂いは return_to_tonari で扱う。"
+      "comment": "出典: CH5-PRIORITY3-TEXT.md §6。接続済み（ch5-progress.js CH5_MATCH_SCENES.arrival）。日程決定後の「会場へ行く」で、確認「この先、勝負の終わりまで自由行動に戻れません。会場へ向かいますか」を出す（Q15の現行実装は ch5.js renderScheduled）。「向かう」で _ch5_match_started を立て、本場面→ch5_copy_first_cup へ進む。「まだ行かない」は日程を維持してカードに留まり、取り消しは別操作。会場SMOKE LAB（Q13）と常連・博士が募った客（Q14）は本文に記載済み。Q18の博士は同一人物。9000の照合と博士の「誤差」は、記録と今日の違い・票の割れへの前振り（DXM01）。つむぎ・千須の客席描写も本文にある。冒頭はtonari。SMOKE LAB到着で背景を切り替え、9000の姿を初めて見るところでスチルを出す。検品札と職人の話は doctor_after_match、上着の匂いは return_to_tonari で扱う。",
+      "branches": {
+        "sendoff": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "表へ出ると、店先の黒板の前に、つむぎがしゃがんでいた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "『本日休業』。その横で、葉っぱの耳の猫がトングを握って、前を向いている。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……早いね"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "休みの札だけだと、寂しいので"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "私、あとから行きます。客席の、いちばん端に"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "serious",
+            "text": "確かめてきてください。どっちになっても、私、明日もここで作ります"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（要らなくなりますか、と聞いた日の顔じゃなかった）"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "いってらっしゃい、はじめさん"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "最初の音だけ、少し裏返った。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "……いってきます"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch5_prep_trial_heat",

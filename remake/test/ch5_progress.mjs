@@ -551,7 +551,12 @@ for (const [total, category, expected, reason] of [
   assert(order.every((index, i) => index >= 0 && (i === 0 || index > order[i - 1])), `order: ${order}`);
   assert.equal(order.at(-1), record.lines.length - 1, "The scene still ends on the doctor's last line");
   // 温度計の一言は、第2章で借りた保存だけ（フラグが無ければ分岐を読まない）。
-  const thermo = record.lines.find(line => line.type === "condition");
+  const thermo = record.lines.find(line => line.type === "condition" && line.condition_type === "flag");
+  // 博士が一人だけ会った人（C.STATIONのつむぎ。#4253）の一言は、新人編の博士の場面を読んだ保存だけ
+  const metOne = record.lines.find(line => line.type === "condition" && line.next_true === "met_one");
+  assert.deepEqual([metOne.condition_type, metOne.dialogue], ["story_seen", "ch5_tsumugi_doctor"]);
+  assert.equal(record.lines[record.lines.indexOf(metOne) - 1].text, "……会ってなくても、その人たちの手は、今日の9000の煙にいました");
+  assert.match(record.branches.met_one[0].text, /一人だけ、会った人がいます/);
   assert.deepEqual([thermo.condition_type, thermo.flag, thermo.next_true, thermo.next_false],
     ["flag", "_stk_kemuri_thermo_borrowed", "thermo", undefined]);
   assert.equal(record.lines.indexOf(thermo), order[3] + 1, "Right after the judging lines");
@@ -893,6 +898,25 @@ for (const scenes of [
       if (line.speaker === "hajime" && line.text?.includes("つむぎ")) assert.match(line.text, /つむぎちゃん/, `${row.dialogue_id}: ${line.text}`);
     }
   }
+  // 深化（2026-11-27 オーナー）: 対決のきっかけ・育成の苦悩・博士とつむぎ・送り出し。新人編の場面を読んだ保存だけに出す行は
+  // story_seen で分け、旧来の並びの保存（新人編を読んでいない）では読まない。
+  const gated = (id, key) => {
+    const row = scene(id);
+    const line = row.lines.find(item => item.type === "condition" && item.next_true === key);
+    assert(line && line.condition_type === "story_seen" && row.branches[key]?.length, `${id}: ${key}`);
+    return line.dialogue;
+  };
+  const opening = scene("ch5_opening").lines.map(line => line.text);
+  assert(opening.includes("作れるのは、君だけです。新人は動画をなぞって、外す"), "The world-final video is the doctor's reason to challenge");
+  assert.equal(gated("ch5_opening", "cough_confess"), "ch5_tsumugi_cough");
+  assert.match(scene("ch5_opening").branches.cough_confess[0].text, /私です/);
+  assert.equal(gated("ch5_opening", "manual_echo"), "ch5_shop_hands");
+  assert(scene("ch5_shop_hands").lines.some(line => line.text?.includes("『つむぎちゃんへ』")), "The unfinished manual");
+  assert.equal(gated("ch5_copy_first_cup", "cough_echo"), "ch5_tsumugi_cough");
+  assert.equal(gated("ch5_unrecorded_day", "unsaid"), "ch5_tsumugi_cough");
+  const sendoff = scene("ch5_match_day_arrival").lines.filter(line => line.next_true === "sendoff").map(line => line.dialogue);
+  assert.deepEqual(sendoff, ["ch5_tsumugi_full_house", "ch5_tsumugi_menu_board"], "She sends him off wherever she drew the board");
+  assert(scene("ch5_match_day_arrival").branches.sendoff.some(line => line.text === "いってらっしゃい、はじめさん"));
   // 巻頭ポエムは新人編の保存では挑戦状の直前、章題は面接の後（ch5.js）。旧来の並びは章題の前のまま。
   const runner = readFileSync(new URL("../js/chapters/ch5.js", import.meta.url), "utf8");
   assert.match(runner, /scene\.id === CH5_BEFORE_TITLE/);
