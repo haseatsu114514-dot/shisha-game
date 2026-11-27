@@ -90,4 +90,61 @@ const night = day => CH2_NIGHTS.find(entry => entry.day === day);
   assert(lobby.lines.some(line => line.flag === "_ch2_ageha_secret") && lobby.branches.secret.length);
   assert(lobby.branches.known.some(line => line.text === "撮った。県大会の記念。今日は、同じ舞台だ"));
 }
+
+// ---- VOL17（#3097 計画 2-10）: 本筋の間の場面3本。自由な行動・夜を使わず、本筋の順・選択・報酬を変えない
+{
+  const ids = day => night(day).steps.map(step => step.id);
+  const step = (day, id) => night(day).steps.find(entry => entry.id === id);
+  // DAY4: 満席の閉店前の手伝い → 炭の事故。事故を読んだ保存（途中保存）には足さない
+  assert.deepEqual(ids(4), ["ch2_full_house_help", "ch2_sofa_burn", "ch2_abyss_baito"]);
+  assert(step(4, "ch2_full_house_help").when({ flags: {} }));
+  assert(!step(4, "ch2_full_house_help").when({ flags: { _ch2_read_ch2_sofa_burn: true } }), "not inserted after the accident");
+  // DAY10: あげは → スミさんの沈黙 → 帰り道の採点表（DAY11の「開いたままの採点表」の前）
+  assert.deepEqual(ids(10), ["remake_ch2_ageha_slump", "ch2_sumi_silence", "ch2_phone_score_sheet"]);
+  // DAY7の朝: 行動を使わない家の場面。耳鼻科を読んだ保存だけ、その朝だけ、一度だけ
+  const notes = CH2_DAY_SCENES.find(scene => scene.id === "ch2_morning_notes");
+  assert.equal(notes.day, 7); assert.equal(notes.keepsAction, true);
+  assert.deepEqual(CH2_DAY_SCENES.filter(scene => scene.keepsAction).map(scene => scene.id), ["ch2_morning_notes"],
+    "the clinic and Naru's lunch still use the daytime action");
+  const save = (day, flags = {}, slot = 0) => ({ chapter: 2, slot, flags: { ...flags }, day: 14 + day });
+  const home = (day, flags, slot) => chapterTwoDaySceneDue(save(day, flags, slot), day, dialogues, { keepsAction: true })?.id || null;
+  const clinicRead = { _ch2_taste_distant: true, _ch2_read_ch2_ent_clinic: true };
+  assert.equal(home(7, clinicRead), "ch2_morning_notes");
+  assert.equal(home(7, { _ch2_taste_distant: true }), null, "only after the clinic");
+  assert.equal(home(7, clinicRead, 1), null, "not on a sick morning / once the morning is gone");
+  assert.equal(home(7, { ...clinicRead, _ch2_read_ch2_morning_notes: true }), null, "once");
+  for (const day of [2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13]) assert.equal(home(day, clinicRead), null, `DAY${day}`);
+  assert.equal(chapterTwoDaySceneDue(save(7, clinicRead), 7, dialogues), null, "the daytime query keeps its meaning (no errand notice on DAY7)");
+  assert.equal(chapterTwoDaySceneDue({ chapter: 3, slot: 0, flags: clinicRead }, 7, dialogues, { keepsAction: true }), null, "chapter 2 only");
+  // 夜を増やさない・自由な夜（DAY2・8）を塞がない
+  assert.deepEqual(CH2_NIGHTS.map(entry => entry.day), [3, 4, 5, 6, 7, 9, 10, 11, 12, 13]);
+  // 報酬・選択・面識の操作を持たない
+  for (const id of ["ch2_full_house_help", "ch2_morning_notes", "ch2_phone_score_sheet"]) {
+    const all = [...dialogues[id].lines, ...Object.values(dialogues[id].branches || {}).flat()];
+    assert(!all.some(line => ["apply", "note", "choice", "set_flag", "show_cg"].includes(line.type)), `${id}: no reward, choice or flag`);
+    assert.doesNotMatch(text(id), /【|上がった|♥|好感度/, `${id}: no reward cue`);
+    assert.deepEqual([...new Set(all.filter(line => typeof line.text === "string").map(line => line.speaker))].filter(Boolean).sort(),
+      id === "ch2_full_house_help" ? ["hajime", "sumi"] : ["hajime"], `${id}: speakers`);
+  }
+  // 正本との食い違い: 店の匂いは残る匂いの場面の一度だけ・スミさんは顔色や食事を言わない（STK22）・心因と断定しない
+  const help = text("ch2_full_house_help"), morning = text("ch2_morning_notes"), sheet = text("ch2_phone_score_sheet");
+  assert.match(help, /エプロン/, "the apron that shrinks before the tournament lobby");
+  assert.match(help, /預けていたノート/, "the DAY4 beat: picking up the notebook");
+  assert.doesNotMatch(help, /焦げ|匂い|鉄仮面|顔色|眠れ|寝て/);
+  assert.doesNotMatch(morning, /心因|ストレス|気のせい|治っ|スミさん|夕飯|台を組/);
+  assert.match(morning, /書き留め/); assert.match(morning, /吸って確かめない/);
+  assert.match(sheet, /練習の採点表/, "the sheet that is open on DAY11");
+  assert.doesNotMatch(sheet, /なるさん|KEMURIKUSA|持ち点|審査/, "no foreshadowed split, no tournament scoring");
+  const confrontation = read("ch2_isolation").dialogues.find(row => row.dialogue_id === "ch2_naru_confrontation");
+  assert(confrontation.lines.some(line => /練習の採点表/.test(line.text || "")), "DAY11 still shows the open practice sheet");
+  // 採点表のメモ: 受診を読んだ保存だけ耳鼻科のメモ、朝のメモを読んだ保存だけ「吸って確かめない」
+  const sheetRows = dialogues.ch2_phone_score_sheet;
+  const clinicGate = sheetRows.lines.find(line => line.type === "condition");
+  assert.equal(clinicGate.flag, "_ch2_read_ch2_ent_clinic"); assert(!clinicGate.next_false);
+  const notesGate = sheetRows.branches[clinicGate.next_true].find(line => line.type === "condition");
+  assert.equal(notesGate.flag, "_ch2_read_ch2_morning_notes");
+  assert.match(sheetRows.branches[notesGate.next_true].map(line => line.text).join(""), /吸って確かめない/);
+  assert.doesNotMatch(sheetRows.branches[notesGate.next_false].map(line => line.text).join(""), /吸って確かめない|朝/);
+  assert.doesNotMatch(sheetRows.lines.map(line => line.text || "").join(""), /耳鼻科|吸って確かめない/, "the clinic memo only on the gated branch");
+}
 console.log("ch2_story_extra OK");
