@@ -687,3 +687,63 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 @media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
   .camel-game.cr-gauge-frame .camel-stamina-bar { height: 1.1em; }
 }
+
+/* ---- 2026-11-27 文字を一段大きく（オーナー「UIや文字が全体的に見づらい。サイズ感も工夫して」・CRF27）:
+   これまで PC では HUD の字が 11〜16px、遊び方・結果のカードが 12〜15px、横持ちスマホではほぼ全部が下限の実寸 11.5px に張り付いていた。
+   PC・タブレットは HUD とカードを約 1.2 倍に（縮めた窓でも実寸 12.5px を下回らせない）、スマホは下限を実寸 13px に上げてカードを広げる。
+   HUD の部品は em で字に付いていくので、置き場所は変えない。 ---- */
+@media (orientation: portrait), (min-width: 1025px), (min-height: 521px), (pointer: fine), (hover: hover) {
+  .camel-game { --cr-pc-min: calc(12.5px / var(--k, 1)); }
+  .camel-hud { font-size: max(clamp(13px, 1.5cqw, 19.2px), var(--cr-pc-min)); }
+  .camel-control-text { font-size: max(clamp(13px, 1.45cqw, 18.5px), var(--cr-pc-min)); }
+  .camel-call { font-size: max(clamp(13px, 1.5cqw, 19.2px), var(--cr-pc-min)); }
+  .camel-pacing { font-size: max(clamp(12px, 1.3cqw, 16.6px), var(--cr-pc-min)); }
+  .camel-card:not(.camel-cup-card) { width: min(820px, 100%); }
+  .camel-card h2 { font-size: max(28px, calc(15px / var(--k, 1))); }
+  .camel-card p { font-size: max(18px, var(--cr-pc-min)); }
+  .camel-eyebrow { font-size: max(16px, var(--cr-pc-min)); }
+  .camel-time { font-size: max(17px, var(--cr-pc-min)); }
+  .camel-total small, .camel-stats small { font-size: max(15px, var(--cr-pc-min)); }
+  .camel-grade-letter small { font-size: max(14px, calc(11.5px / var(--k, 1))); }
+  .camel-score-row { grid-template-columns: 96px 1fr 84px; font-size: max(18px, var(--cr-pc-min)); }
+  .camel-stats b { font-size: max(18px, var(--cr-pc-min)); }
+  .camel-next { font-size: max(17px, var(--cr-pc-min)); }
+  .camel-game .camel-sheet .camel-card .camel-card-actions .btn { min-height: 56px; font-size: max(19px, var(--cr-pc-min)); }
+  /* 大会選び: 前置きは札より控えめに、札の中（距離・条件・出走）を読める大きさへ */
+  .camel-cup-card > p { font-size: max(16px, var(--cr-pc-min)); line-height: 1.6; }
+  .camel-cup small { font-size: max(13px, calc(11.5px / var(--k, 1))); }
+  .camel-cup strong { font-size: max(1.9cqw, calc(15px / var(--k, 1))); }
+  .camel-cup span, .camel-cup b { font-size: max(1.25cqw, var(--cr-pc-min)); }
+}
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .camel-game { --cr-min: calc(13px / var(--k, 1)); }
+  .camel-card:not(.camel-cup-card) { width: min(900px, 100%); }
+  .camel-card h2 { font-size: max(24px, calc(15px / var(--k, 1))); }
+  .camel-tutorial-visual { width: 200px; }
+  .camel-rank-badge { font-size: 1em; }
+}
+html:root[data-density="phone"] .camel-game .camel-cup :is(span, b) { font-size: max(18px, calc(13px / var(--k, 1))); }
+
+
+/* ---- 2026-11-27 文字を減らす（オーナー「文字で説明しすぎず、UIやボタンで視覚的に」「まだ全体的に文字が多い」・CRF28）:
+   遊び方は絵を大きく・本文は一言（細かい決まりは「くわしく」）。結果の細目は「内訳」で出し入れ。
+   HUD の補足（大会名と距離・息の予告の2行目）と、大会選びの前置きの文は出さない（PC もスマホと同じに） ---- */
+.camel-more { align-self: center; margin-right: auto; min-height: 44px; padding: 4px 14px; border: 0; border-bottom: 2px dashed currentColor; border-radius: 0; background: none; color: var(--cr-gold); font: inherit; font-size: max(16px, var(--cr-min, var(--cr-pc-min, 16px))); font-weight: 800; letter-spacing: .06em; cursor: pointer; }
+.camel-game.cr-card .camel-more { color: #96690f; }
+.camel-more:is(:hover, :focus-visible) { filter: brightness(1.2); outline: none; border-bottom-style: solid; }
+.camel-more[aria-pressed="true"], .camel-more[aria-expanded="true"] { border-bottom-style: solid; }
+.camel-stats[hidden] { display: none; }
+.camel-tutorial-text[data-more="true"] { font-size: .9em; }
+.camel-clock-sub, .camel-pacing small { display: none; }
+.camel-game .camel-cup-card > p:not(.camel-eyebrow), .camel-game .camel-cup-card > .camel-cup-note { display: none; }
+@media (orientation: portrait), (min-width: 1025px), (min-height: 521px), (pointer: fine), (hover: hover) {
+  .camel-tutorial-visual { width: 360px; }
+  .camel-tutorial .camel-tutorial-text { font-size: max(21px, var(--cr-pc-min)); font-weight: 700; }
+  .camel-tutorial .camel-tutorial-text[data-more="true"] { font-size: max(17px, var(--cr-pc-min)); font-weight: 500; }
+}
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .camel-tutorial-visual { width: 320px; }
+  .camel-tutorial .camel-tutorial-text { font-size: max(26px, calc(14px / var(--k, 1))); font-weight: 700; }
+  .camel-tutorial .camel-tutorial-text[data-more="true"] { font-size: var(--cr-min); font-weight: 500; }
+}
+

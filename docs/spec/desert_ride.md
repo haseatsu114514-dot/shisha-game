@@ -268,3 +268,17 @@ Game sprite, back view of a 22-year-old Japanese man riding a bright orange sand
 
 オーナー「デバックからなると対戦できるようにしたい」。`?debug=1` のデバッグパネルのミニゲーム（`remake/js/dev/minigame-launcher.js`）で、「DESERT RIDE（砂丘）」はヌールにもなるにも挑めるメニューで開く（`rivals: ["noor", "naru"]`。本編ではヌールに勝つとなるが来る）。「DESERT RIDE（なると勝負）」はメニューを通さず、なるとの本番からすぐ始まる（`runDesertRide` の `startRival: "naru"`）。どちらも本編の保存は読み書きしない。検証は `remake/test/browser/debug_tools.mjs` の `minigames-start-directly-without-writing-normal-save`。
 
+## 入口の画面と遊び方の見た目（2026-11-27・DSR95〜DSR97）
+
+オーナー「仮でCSSとか入ってるのを、ソシャゲや市販ゲームみたいな見た目に」「文字が見づらい」。入口（`showMenu`）と練習のおわりの札を、白いカードから一枚の絵の画面にした。
+
+- **構成**（`remake/js/minigames/desert-ride.js` の `showMenu`・`menuHero`、`remake/css/desert-ride.css` の「入口の画面・練習のおわり」）: 滑走と同じ遠景（`backdrop_day_sky`・`backdrop_day_land`）を敷く。左に題字（`.dr-menu-head`。金の斜体の2行組み）と二人の絵（`.dr-menu-hero`。はじめの跳ぶ姿 `riderJump` と、ヌールの滑る姿 `noorRider`。足元に砂けむり）。右に革の板（`.dr-menu-board`。結果の記録の板 `desert_ride_result/board.webp` の 9-slice）。板の中は上から、前置きの一文（やめた時などの知らせも同じ所。スマホでは出さない）・段の札・自己ベスト・ボタン。
+- **ボタン**: 結果と同じ札の絵（主＝`button_primary`、ほか＝`button_secondary`）。主の「滑る／もう一度滑る／本番を滑る」は一段ぶん横いっぱい。選んでいるボタンは金の光で示す（四角い枠は出さない）。頭に印（▶・VS・旗・出口。DSR97）を付け、名前は短く「なると勝負」「練習」（読み上げは「なると勝負する」「練習から始める／練習をもう一度」のまま）。
+- **段の札**（DSR97 で印に）: 革の札。選んでいる段は橙に灯って「✓」。段の手触りは星の数（`.dr-tier-stars`。★・★★・★★★）、クリア済みは右上に CLEAR の判、開いたばかりは NEW、閉じた段は点線の縁と錠の印。下の一言（`tierSub`）は種類（`tierSubKind`）で出し分け、印で見せるもの（word・cleared・fresh・easy）は字を出さずに読み上げ用に残し、閉じた段の条件（locked）と呼び出し側の案内（note。上級の「クリアで白火1」）だけ字で出す。初級には「報酬対象外」の小さな札（`.dr-tier-flag`）。
+- **自己ベスト**（DSR97）: 「BEST 30,793 Ⓢ」の形（点と評価のメダル。なる戦は「VS なる」）。「◯級の自己ベスト」「点 ／」は読み上げ用（`.dr-quiet`）。
+- **前置きの一文**（DSR97）: 入口では出さない。やめた時などの知らせ（`showMenu(message)`）がある時だけ、板のいちばん上に出す。
+- **遊び方**（DSR97 で図解に）: 「？」は画面の右上。開くと板いっぱいに広がり、**図解の6枚**（`HOWTO_CARDS`: よける・大ジャンプ・スピン・ブースト・カーブ・砂流れ。3×2）が出る。1枚は、上に小さな場面（`.dr-how-scene`。滑走の絵 `rider_*`・岩・看板・旗などを CSS で並べる）、下に見出しと押すボタンの絵（`desert_ride_controls`。PC はキーの名前も）、その下に一言（14字まで・1行）。文章の説明（`HOWTO` の11行。行ごとに何の話かの札 `HOWTO_TOPICS`）は「くわしく」（`desert-help-more`）を押した時だけ出て、「図解にもどる」で戻る。開き直すと図解から。
+- **文字の大きさ**（舞台 1280×720 上）: 段の名前 30px（スマホ 32px）・下の一言 16px（スマホ 24px）・主のボタン 34px（スマホ 42px）・ほかのボタン 24px（スマホ 30px）・図解の見出し 26px（スマホ 30px）・図解の一言 19px（スマホ 24px）・「くわしく」の文章 20px（スマホ 28px）。
+- **絵は使い回し**: 専用の絵はまだ作っていない（画像生成 API のキーの入れ替え待ち。要望台帳 MGV01）。題字・板・札を専用の絵に替える時は、CSS の画像指定を差し替える。図解の場面を1枚絵に替える時は、`HOWTO_CARDS` の `scene` を絵1枚にする。
+- 動き軽減では、はじめの絵の揺れを止める。単体ページ（`desert-ride.html`）の開く前の画面は変えていない。
+

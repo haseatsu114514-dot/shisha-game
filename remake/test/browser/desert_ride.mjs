@@ -244,6 +244,26 @@ await suite("desert-ride", async check => {
     // 遊び方は常時出さず、「？」を開いた時だけ（#2838）
     assert.equal(await page.locator(t("desert-help-panel")).isVisible(), false, "the how-to is hidden until ? is pressed");
     await page.locator(t("desert-help")).click();
+    // 2026-11-27 オーナー「文字で説明しすぎず、UIやボタンで視覚的に」: 開いた時は図解の6枚だけ（場面の絵・押すボタンの絵・短い見出しと一言）。
+    // 文章の説明は「くわしく」を押した時だけ出て、「図解にもどる」で戻る
+    const cards = await page.locator(t("desert-help-card")).evaluateAll(nodes => nodes.map(node => ({
+      how: node.dataset.how, title: node.querySelector(".dr-how-title").textContent, note: node.querySelector(".dr-how-note").textContent,
+      keys: node.querySelectorAll(".dr-how-key").length, scene: node.querySelector(".dr-how-scene").children.length,
+      noteFits: node.querySelector(".dr-how-note").scrollWidth <= node.querySelector(".dr-how-note").clientWidth + 1,
+      visible: node.getBoundingClientRect().height > 60,
+    })));
+    assert.deepEqual(cards.map(card => card.how), ["dodge", "jump", "spin", "boost", "carve", "flow"]);
+    assert.deepEqual(cards.map(card => card.title), ["よける", "大ジャンプ", "スピン", "ブースト", "カーブ", "砂流れ"]);
+    for (const card of cards) {
+      assert(card.visible && card.scene > 0 && card.noteFits, `${card.how}: the card shows a scene and its one-line note fits`);
+      assert(card.note.length <= 14, `${card.how}: the note stays short (${card.note})`);
+    }
+    assert(cards.filter(card => card.how !== "flow").every(card => card.keys > 0), "each action card shows the button to press");
+    assert.equal(await page.locator(t("desert-help-detail")).isVisible(), false, "the written rules stay folded until asked");
+    assert.doesNotMatch(await page.locator(t("desert-help-panel")).innerText(), /Space で大ジャンプ/);
+    await page.locator(t("desert-help-more")).click();
+    assert.equal(await page.locator(t("desert-help-cards")).isVisible(), false);
+    assert.equal(await page.locator(t("desert-help-more")).innerText(), "図解にもどる");
     assert.match(await page.locator(t("desert-help-panel")).innerText(), /Space で大ジャンプ/);
     const help = await page.locator(t("desert-help-panel")).innerText();
     assert.match(help, /目印（25%）まで溜まったら/);
@@ -251,9 +271,18 @@ await suite("desert-ride", async check => {
     assert.match(help, /半回転（180°）ごとの区切りに着地を合わせる/);
     assert.match(help, /ブースト中は岩にぶつかっても大丈夫/);
     assert.match(help, /ライバル戦のS評価は、Sラインの得点に加えてライバルに勝つ必要がある/);
+    await page.locator(t("desert-help-more")).click();
+    assert.equal(await page.locator(t("desert-help-cards")).isVisible(), true, "the pictures come back");
+    assert.equal(await page.locator(t("desert-help-detail")).isVisible(), false);
+    await page.locator(t("desert-help-more")).click();
     await page.keyboard.press("Escape");
     assert.equal(await page.locator(t("desert-help-panel")).isVisible(), false, "Escape closes the how-to");
     assert.equal(await page.locator(t("desert-start")).isVisible(), true);
+    // 開き直すと、図解から始まる
+    await page.locator(t("desert-help")).click();
+    assert.equal(await page.locator(t("desert-help-cards")).isVisible(), true, "reopening starts from the pictures");
+    assert.equal(await page.locator(t("desert-help-detail")).isVisible(), false);
+    await page.keyboard.press("Escape");
     await page.locator(t("desert-start")).click();
     await phase(page, "run");
     // 本番はスタートの合図（3・2・1・GO）から。合図の間は進まず、ヌールが左に並んでいる
@@ -382,6 +411,12 @@ await suite("desert-ride", async check => {
     assert.deepEqual(await page.evaluate(() => window.__desertRide.tiers), ["easy", "normal", "hard"], "the preview opens all three tiers");
     assert.equal(await tierChip(page, "easy").getAttribute("aria-checked"), "true", "?tier=easy picks easy");
     assert.match(await tierChip(page, "hard").innerText(), /上級\s*手ごわい/);
+    // 2026-11-27: 段の手触りは星の数で見せ、言葉（やさしい・ふつう・手ごわい）は読み上げ用に畳む。初級だけ「報酬対象外」の小さな札
+    const stars = await page.locator(`${t("desert-tier")} .dr-tier-stars`).evaluateAll(nodes => nodes.map(node => getComputedStyle(node, "::before").content.replace(/"/g, "").length));
+    assert.deepEqual(stars, [1, 2, 3], "one, two and three stars");
+    assert(await tierChip(page, "hard").locator("small").evaluate(node => node.getBoundingClientRect().width <= 1.5 && node.dataset.kind === "word"), "the word under the stars is kept for screen readers only");
+    assert.equal(await tierChip(page, "easy").locator(".dr-tier-flag").innerText(), "報酬対象外");
+    assert.equal(await page.locator(".dr-tier-flag").count(), 1, "only the easy tier carries the note");
     // 上級を選んで滑る: 岩が多い同じコース。HUD のコース名に段。回って決める滑りならヌールに勝てる
     await tierChip(page, "hard").click();
     assert.equal(await tierChip(page, "hard").getAttribute("aria-checked"), "true");
@@ -485,6 +520,15 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-page-reduce")).check();
     await page.locator(t("desert-page-start")).tap();
     await page.locator(t("desert-help")).tap();
+    // タッチでは図解の札にキーの名前を出さない（押すボタンの絵だけ）。札は指で読める大きさ
+    const touchCards = await page.locator(t("desert-help-card")).evaluateAll(nodes => nodes.map(node => ({
+      keycaps: node.querySelectorAll("kbd").length, keys: node.querySelectorAll(".dr-how-key").length,
+      font: Math.min(...[".dr-how-title", ".dr-how-note"].map(selector => parseFloat(getComputedStyle(node.querySelector(selector)).fontSize))),
+      noteFits: node.querySelector(".dr-how-note").scrollWidth <= node.querySelector(".dr-how-note").clientWidth + 1,
+    })));
+    assert.equal(touchCards.length, 6);
+    assert(touchCards.every(card => card.keycaps === 0 && card.font >= 24 && card.noteFits), `touch cards use button art and readable text (${JSON.stringify(touchCards)})`);
+    await page.locator(t("desert-help-more")).tap();
     const help = await page.locator(t("desert-help-panel")).innerText();
     assert.match(help, /空中で「左へ」か「右へ」を押し続けると、360°、720°…と回り続ける/);
     assert.match(help, /ブースト中は岩にぶつかっても大丈夫/);
@@ -747,6 +791,8 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-page-start")).click();
     await page.locator(t("desert-menu")).waitFor();
     await page.locator(t("desert-help")).click();
+    assert.equal(await page.locator(`${t("desert-help-card")}[data-how="carve"] .dr-how-note`).innerText(), "矢印の向きへ切り込む");
+    await page.locator(t("desert-help-more")).click();
     assert.match(await page.locator(t("desert-help-panel")).innerText(), /カーブでは外へ流される。曲がる向きへ切り込むほど熱が高まり、金の残像と砂しぶきが出る。刻むたびにブーストが溜まる/);
     await page.locator(t("desert-help-close")).click();
     // なるとの勝負: スタートの合図の間だけ、人物と数字に重ならない画面の下に名乗りが出る
