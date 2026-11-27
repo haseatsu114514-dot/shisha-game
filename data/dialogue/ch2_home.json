@@ -5457,6 +5457,601 @@
           "text": "夕方の常連が来るまで、あと少し。なるは栗の小皿を、カウンターの真ん中へ置き直した。"
         }
       ]
+    },
+    {
+      "dialogue_id": "kannon_ch2_coin",
+      "comment": "VOL16（#3097 計画 2-9）: 観音堂の老人。賽銭の五円玉と十円玉。wish の「毎朝の腰のお願い」の続き。大会・味・なるに触れない（DAY2〜13のどこで読んでも成り立つ）",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の観音堂。賽銭箱の前で、老人が小銭入れを逆さにして振っていた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "にいちゃん、すまんが、五円玉を持っとらんか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "五円玉、ですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "財布の小銭をかき分けると、奥に一枚だけ見つかった。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "十円と替えてくれんか。損はさせん。倍だよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "十円を入れるんじゃ、だめなんですか"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "五円は「ご縁」。十円は「遠縁」。入れると、縁が遠くなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "遠くなるんですか"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "まあ、わしがそう決めとるだけだがね。観音さんに聞いたことはない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "老人は大まじめな顔で、十円玉をこちらの手のひらに置いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受け取った五円玉を指先で一度磨いて、そっと箱へ落とす。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "毎日、一枚ずつ。……おかげで、財布の五円がいつも足りん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "毎日、ご縁を一つずつ、ですね"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "腰のためのご縁だよ。……まあ、今朝も痛かったがね"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "それで、にいちゃんは、その十円をどうする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手のひらの十円玉を見た。遠縁、という言葉が、まだ耳に残っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……入れます。遠くなっても、切れなきゃいいかなって"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "ほう。十円で、そこまで頼むか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "十円玉は、五円玉より少し重い音を立てて、箱の底に落ちた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "観音さんも、たまには両替してくれるさ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "老人は空の小銭入れをポケットにしまうと、箒を取りに戻っていった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_kannon_ch2_coin"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_ch2_temizu",
+      "comment": "VOL16（#3097 計画 2-9）: 喫茶こはくのマスターが豆の仕入れの帰りに観音堂の手水を使い、老人も加わる。柄杓一杯の作法。喫茶こはくは昼だけ開き、第2章の回がすでに5本（隔回で読むと昼の空き枠をほぼ使い切る）なので、マスターの続きは観音堂に置いた。大会・味に触れない",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼前の観音堂。手水鉢の前で、喫茶こはくのマスターが柄杓を手にしていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "柄杓で一度だけ水をくむ。左手、右手、口をすすいで、もう一度左手。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後に柄杓を立てて、柄を流す。水は、そこでちょうど無くなった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……一杯で、全部終わった）"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "おや、こんにちは。お参りですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。マスターも、お店の前にですか"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "豆の仕入れの帰りです。ここは、ちょうど通り道でして"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今の、柄杓一杯で全部やってましたよね"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "一杯で済ませるのが作法だそうです。……私も、最初はよく足りなくなりました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箒を持った老人が、手水鉢の向こうから顔を出した。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "マスターのは、いつ見てもきれいだね。わしは三杯使う"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "柄杓を借りて、なみなみとくんだ。左手を洗うだけで、半分がこぼれていった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……口の分が、もうありません"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "たくさんくむと、こぼすほうに気を取られます。最初に、使う分だけを"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "お湯を注ぐ時も同じでして。量を先に決めておくと、手が迷いません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（葉を詰める前に、何グラムか決めておくのと同じか）"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "わしは決めても、こぼすがね"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "では、こぼしても足りるくらいに、くんでください"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "ほれ見い。マスターは甘い"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二度目は、半分だけくんだ。最後に柄を流す分まで、ちゃんと残っていた。"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "お上手です。……では、お店でお待ちしています"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マスターは一礼して、商店街のほうへ歩いていった。歩く速さまで、さっきの所作と同じだった。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "……さて。わしは、三杯でいくか"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_kannon_ch2_temizu"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_ch2_aircon",
+      "comment": "VOL16（#3097 計画 2-9）: CHOI-ZAPのスタッフ。エアコンの温度の頼みが割れる日。昼夜どちらでも読むので時間帯を書かない。大会・味に触れない",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "CHOI-ZAPのスタッフが、エアコンのリモコンを手に、天井をにらんでいた。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "あ、お疲れさまです。……すみません、今、暑いですか？ 寒いですか？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え、……ちょうどいいと思います"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "よかった。今日はもう、暑いって方が二人、寒いって方が二人なんです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "見ると、走っている人は袖をまくり、ストレッチ台の人は上着を着たまま伸びていた。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "走る人は暑くて、伸ばす人は寒いんです。同じ部屋なのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "間を取って、真ん中にするんですか"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "真ん中にすると、四人とも少しずつ不満なんですよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "全員、ですか"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "なので温度はそのままで、扇風機を一台だけ、走る人のほうへ向けました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ランニングマシンの脇で、扇風機が首を振っていた。袖をまくった人が、軽く会釈する。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "部屋は一つでも、風は分けられるんですね"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "言ってもらえたから、分けられたんです"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "暑い、寒いは、言ってもらえるほうが助かるんですよ"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "何も言わずに来なくなる方が、いちばん心配で"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（何も言わずに、か）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariにも、途中で席を立つお客さんがいる。理由を聞けたことは、あまりない。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "風、強すぎたら言ってくださいね。……言われないと、たぶん気づかないので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。ちゃんと言います"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マシンに乗ると、扇風機の風が、首のあたりにちょうど届いた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_choizap_ch2_aircon"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_ch2_balance",
+      "comment": "VOL16（#3097 計画 2-9）: CHOI-ZAPのスタッフと老人。目を閉じた片足立ち。老人が記録を見ないのは choizap_ch2_stairs（画面にタオル）の続きなので、その後ろに並べる。昼夜どちらでも読む。大会・味に触れない",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マットの上に、テープで小さな四角が貼ってあった。横の紙には「目を閉じて片足立ち」。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "今週だけの企画なんです。目を閉じて、何秒立っていられるか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "目を閉じて、ですか"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "開けたままだと、皆さん一分以上立っちゃうので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "四角の中に立って、目を閉じた。右足を上げた途端、体がゆっくり横へ流れていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、……もうですか"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "八秒です。最初は、だいたいそのくらいですよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙には、会員さんの秒数が並んでいた。いちばん上の欄だけ、桁が一つ違う。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "あ、ちょうどご本人が"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "タオルを首にかけた老人が、四角に入った。目を閉じて片足を上げても、体はほとんど揺れない。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "コツ、教えてもらえませんか。皆さん、聞きたがってて"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "足の裏で、床をつかむ。あとは、何も考えん"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "倒れるかな、と思った時に倒れる。思わなきゃ、だいたい立っとる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらくして、老人は自分から足を下ろした。スタッフが紙に「六十」と書き足す。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "六十で下りると決めとる。それより長いと、膝が文句を言うんでね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "記録、毎回同じなんですか"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "知らん。書いとるのはスタッフさんで、わしは見とらん"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "……毎回、六十です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "もう一度、四角に立って、足の裏で床をつかむ。倒れるかな、と思いかけて、やめた。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "……二十秒！ さっきより、ずっと静かでした"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "考えとらん顔だったね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "考えないようにするのって、けっこう忙しいですね"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "そのうち、忙しくなくなるさ"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_choizap_ch2_balance"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_ch2_shoelace",
+      "comment": "VOL16（#3097 計画 2-9）: CHOI-ZAPのスタッフ。ほどけにくい靴ひもの結び方。昼夜どちらでも読む。大会・味に触れない",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マシンに乗る前に、しゃがんで靴ひもを結び直した。今日、これで三回目だ。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "それ、さっきもほどけてましたよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "見てたんですか"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "走ってる途中でほどけると、危ないので。つい、足元を見ちゃうんです"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "ほどけにくい結び方、ありますよ。最初のひと結びを、二回くぐらせるだけです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフはしゃがんで、自分の靴で見せてくれた。最初の結び目で、ひもが一回、余分にからむ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "真似をすると、結び目が少しだけ太くなった。引っぱっても、ゆるまない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ほんとだ。ほどけない"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "ほどく時は、端を引けばいつも通りです。固く結ぶのとは、違うんですよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "固くじゃなくて、からめるんですね"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "固結びにすると、帰りにほどけなくて困るので。……前に一回、やっちゃいました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "やったんですね"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "ジムの靴のまま、家に帰りました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で少し笑った。結び目を指でつまむと、ちゃんと形が残っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（エプロンのひもも、これで結んでみよう。シフトの途中で、よくゆるむから）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "走り終えてマシンを降りるまで、一度も足元を見なかった。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "お疲れさまです。……靴ひも、どうでした？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "一回も、気にしませんでした"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "よかった。気にしないで済むのが、いちばんなので"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_choizap_ch2_shoelace"
+        }
+      ]
     }
   ]
 }
