@@ -374,6 +374,41 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "vn", 15000);
   }, { ...TALL, pageEntry: entry });
 
+  await check("chapter-title-call-plan-a", async (page) => {
+    // VPN19: 章タイトル（タイトルコール）は画面いっぱいの案A。上に章タイトルの絵から切り出した人物、下に章名を本編の明朝で組む。
+    // 十字キーと丸ボタンは隠し、絵に描き込まれた題字を文字で二重に出さない
+    await waitScene(page, "title");
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"); const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 2, day: 15 });
+      document.body.dataset.screen = "none"; (await import("./js/core/ui.js")).clearScreen();
+      const { chapterTitleEntry } = await import("./js/core/chapter-title-art.js");
+      const entry = chapterTitleEntry(2);
+      window.titleRun = (await import("./js/core/ui.js")).chapterTitle({ no: entry.no, name: entry.name, read: entry.read, sub: entry.sub });
+    });
+    await page.locator('.vt-ct:not([hidden]) img.vt-ct-art').waitFor({ timeout: 20000 });
+    await page.waitForTimeout(1800);
+    const call = await page.evaluate(() => {
+      const root = document.querySelector(".vt-ct"), shell = document.querySelector(".vt-shell").getBoundingClientRect(), box = root.getBoundingClientRect();
+      const a = document.querySelector(".vt-a").getBoundingClientRect();
+      const onA = document.elementFromPoint(a.left + a.width / 2, a.top + a.height / 2);
+      return { scene: window.__verticalLook.scene(), cover: document.querySelector(".vt-shell").dataset.cover,
+        en: root.querySelector(".vt-ct-en").textContent, name: root.querySelector(".vt-ct-name").textContent, read: root.querySelector(".vt-ct-read").textContent,
+        sub: root.querySelector(".vt-ct-sub")?.textContent || "", art: root.querySelector("img.vt-ct-art").getAttribute("src"),
+        full: Math.abs(box.top - shell.top) <= 1 && Math.abs(box.bottom - shell.bottom) <= 1, padCovered: !onA?.closest(".vt-a"),
+        lines: document.querySelector(".vt-cover-lines").hidden, nameFont: getComputedStyle(root.querySelector(".vt-ct-name")).fontFamily };
+    });
+    assert.equal(call.scene, "cover");
+    assert.equal(call.cover, "title");
+    assert.deepEqual([call.en, call.name, call.read, call.sub], ["CHAPTER 2", "才能の壁", "Hollow Crown", "HAZE: OPEN CLOUD 編"]);
+    assert.match(call.art, /ch2-title\.webp/);
+    assert(call.full, "the title call covers the whole frame");
+    assert(call.padCovered, "the pad is hidden under the title call");
+    assert.equal(call.lines, true, "the chapter name is not repeated as plain text lines");
+    assert.match(call.nameFont, /Suien Name/, "the chapter name uses the game's Mincho");
+    await page.evaluate(() => window.titleRun);
+    await page.waitForFunction(() => document.querySelector(".vt-ct")?.hidden !== false || !document.querySelector(".chapter-title-shield"));
+  }, { ...TALL, pageEntry: entry });
+
   await check("unsupported-scenes-show-the-rotate-hint", async (page) => {
     await waitScene(page, "title");
     await page.evaluate(async () => {

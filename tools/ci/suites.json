@@ -5565,7 +5565,7 @@
     },
     {
       "id": "look-vertical",
-      "title": "縦画面（煙の舞台・C案）: 会話を2行ずつ・返事・地図と店へ・tonari の行動選び・LIME と MENU のシート・心得の盤を十字キーで灯す・登場カットインの縦のポスター・シーシャ作りは回転案内・横持ちは旧版・第2〜5章の朝の小窓・駅から隣町・場面カード・東京の地図の小窓・第5章の地図",
+      "title": "縦画面（煙の舞台・C案）: 会話を2行ずつ・返事・地図と店へ・tonari の行動選び・LIME と MENU のシート・心得の盤を十字キーで灯す・登場カットインの縦のポスター・シーシャ作りは回転案内・横持ちは旧版・第2〜5章の朝の小窓・駅から隣町・場面カード・東京の地図の小窓・第5章の地図・タイトルコールの案A",
       "kind": "browser",
       "weight": 3.6,
       "timeout": 10,
@@ -5579,6 +5579,7 @@
         "remake/js/daily/tonari.js",
         "remake/js/daily/growth-board-screen.js",
         "remake/js/vn/intro.js",
+        "remake/js/core/chapter-title-art.js",
         "remake/js/vn/intro-art.js",
         "remake/test/browser/look_chapter_seeds.mjs",
         "remake/test/browser/look_vertical.mjs"
