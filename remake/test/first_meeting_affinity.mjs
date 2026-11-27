@@ -253,7 +253,7 @@ await check('after-chapter revisit plays once on the first chapter-2 visit of a 
  const later=f.fresh();later.chapter=3;later.flags._ch1_regulars={adam:true};
  assert.equal(f.spots.afterChapterVisitDue('adam'),null,'only in chapter 2');
 });
-// #2035: 修行から戻ったなるの後日談は、第4章の出発前の準備期間に、休業中のKEMURIKUSAで一度だけ。
+// #2035: 修行から戻ったなるの後日談は、第4章の出発前の準備期間に、休業中のKEMURIYAで一度だけ。
 await check('naru after-return visit opens the closed shop once during the chapter-4 departure prep',async f=>{
  const s=f.fresh();s.chapter=4;s.phase='daily';s.met.naru=true;s.story.naru=3;s.flags._cafe_introduced=true;s.flags._ch2_read_ch2_naru_confrontation=true;
  const shop=f.spots.SPOTS.find(spot=>spot.id==='naru');

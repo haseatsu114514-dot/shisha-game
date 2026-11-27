@@ -287,9 +287,11 @@ console.log("[warmup defer] PASS: title prepares the dialogue frame, map entranc
   assert.equal(requested.length, 5, 'pinned bench art survives the decoded budget');
   await ui.imageReady('a', 100, { keep: true });
   assert.equal(requested.length, 6, 'other kept art stays bounded and does not count the pinned bench');
-  for (let i = 1; i <= 8; i++) await ui.imageReady(`bench-${i}`, 100, { keep: true, pin: true });
-  assert.equal(ui.imageReady.isReady('bench'), false, 'oldest craft art is released beyond 128 MiB');
-  assert.equal(ui.imageReady.isReady('bench-8'), true, 'current craft art stays ready');
+  // 作業台の上限は 160MiB（大会の作業台が約136MBのため）。16MiB の絵を11枚（176MiB）読むと最も古い1枚を手放す
+  for (let i = 1; i <= 10; i++) await ui.imageReady(`bench-${i}`, 100, { keep: true, pin: true });
+  assert.equal(ui.imageReady.isReady('bench'), false, 'oldest craft art is released beyond 160 MiB');
+  assert.equal(ui.imageReady.isReady('bench-1'), true, 'craft art within 160 MiB stays ready');
+  assert.equal(ui.imageReady.isReady('bench-10'), true, 'current craft art stays ready');
   assert.equal(ui.imageReady.isReady('a'), true, 'craft art does not displace other cached art');
 }
 {

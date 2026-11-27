@@ -1,6 +1,6 @@
 // 店番のモブの客の絵（試作用。VPM29）。店 → 客の絵のID（種類。二人連れは 種類-a / 種類-b）→ パターンの並び
 // キーは本編の客の絵のID（remake/js/daily/tonari-floor-data.js の GUESTS・floor-venues.js の MUKAI_GUESTS・DUBAI_GUESTS）。
-// 絵は 256×256 の透過 WebP（胸から上。頭頂が上から約4%・あごが約64%）。出典と作り方は asset_sources/ui/portrait-stage-mobs-20261127/README.md
+// 絵は 256×256 の透過 WebP（顔のアップ。本編の顔アイコン face_icons/new と同じ見た目の大きさ: 頭頂が上から約1%・あごが約85%。VPM31）。出典と作り方は asset_sources/ui/portrait-stage-mobs-20261127/README.md
 export const MOB_ART = {
   tonari: {
     first: [{ idle: "tonari-first-1.webp", happy: "tonari-first-1-happy.webp" }, { idle: "tonari-first-2.webp", happy: "tonari-first-2-happy.webp" }],

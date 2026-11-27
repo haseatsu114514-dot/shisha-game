@@ -97,7 +97,7 @@ const ASPECT = 896 / 1200;
 // face=そこに居る人の顔、glyph=人の居ない場所の絵記号、fee=料金、perk=[絵記号, 短い語]
 const SPOTS = [
   { id: "tonari", label: "tonari", x: 86, y: 36, face: "faceSumi", who: "スミさん", mark: true, perk: ["work", "バイト"] },
-  { id: "naru", label: "KEMURIKUSA", x: 70, y: 24, face: "faceNaru", who: "なる", mark: true, fee: "3,000" },
+  { id: "naru", label: "KEMURIYA", x: 70, y: 24, face: "faceNaru", who: "なる", mark: true, fee: "3,000" },
   { id: "adam", label: "EDEN", x: 46, y: 48, face: "faceAdam", who: "アダム", closed: true },
   { id: "minto", label: "PEPPERMINT", x: 32, y: 59, face: "faceMinto", who: "みんと", mark: true, fee: "3,000" },
   { id: "shop", label: "Dr.fookah", x: 36, y: 30, glyph: "cart", who: "仕入れ", perk: ["clock0", "0"] },

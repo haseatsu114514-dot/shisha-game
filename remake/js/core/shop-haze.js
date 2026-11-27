@@ -6,7 +6,7 @@ import { hazeLayer, smokeAllowed } from "./smoke.js";
 import { timeOfDay } from "./state.js";
 
 // シーシャ屋の店内の背景（時間帯・曇りの違いは同じ店として扱う）。
-// tonari／第1章の3店（KEMURIKUSA・EDEN・PEPPERMINT）／第2章（MELTY PUFF・神崎煙草店）／
+// tonari／第1章の3店（KEMURIYA・EDEN・PEPPERMINT）／第2章（MELTY PUFF・神崎煙草店）／
 // 第3章の東京（mukai・煙幕・Smoke & Glory・鉄の煙）／第4章のドバイ（龍龍水煙所・カフェ3つ）。
 // 葉や機材の店（Dr.fookah）・C.STATION・カフェ・ジム・クラブ・自宅・大会の舞台は入れない。
 const SHISHA_SHOPS = new Set([

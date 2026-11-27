@@ -11,8 +11,8 @@
 //   火種・心得の盤・大会・エンディング・進行の条件にはつながない（#2455）。周回では帳面を持ち越さない（core/carry.js）。
 //
 // 必須の店（SHOP_STAMP_REGIONS）: 第5章の地図に、運や好感度に関係なく必ず出る、一台を吸うシーシャ屋。
-//   地元: KEMURIKUSA・EDEN・PEPPERMINT・C.STATION（なる・アダム・みんとには第1章の大会で必ず会う。C.STATION は第1章の初日に
-//     スミさんに頼まれて KEMURIKUSA へ偵察に行くと地図に出る＝大会の参加登録の店）
+//   地元: KEMURIYA・EDEN・PEPPERMINT・C.STATION（なる・アダム・みんとには第1章の大会で必ず会う。C.STATION は第1章の初日に
+//     スミさんに頼まれて KEMURIYA へ偵察に行くと地図に出る＝大会の参加登録の店）
 //   柚ヶ谷: MELTY PUFF・神崎煙草店・貴方ノ為ノ此ノ煙。（あげは・神崎・クラウドには第2章の大会で必ず会う）
 //   東京: Smoke & Glory・鉄の煙（スティーブ・ヴォルクには第3章の大会で必ず会う）
 //   ドバイ: 路地裏のカフェ（いつでも行ける）
@@ -45,7 +45,7 @@ const region = (id, label, shops) => Object.freeze({ id, label, shops: Object.fr
  */
 export const SHOP_STAMP_REGIONS = Object.freeze([
   region("home", `地元・${HOME_CITY_NAME}`, [
-    shop("naru", "KEMURIKUSA"), shop("adam", "EDEN"), shop("minto", "PEPPERMINT"), shop("c_station", "C.STATION"),
+    shop("naru", "KEMURIYA"), shop("adam", "EDEN"), shop("minto", "PEPPERMINT"), shop("c_station", "C.STATION"),
     shop("shishark", "SHISHARK", true),
   ]),
   region("widehanga", `隣町・${CH2_CITY_NAME}`, [

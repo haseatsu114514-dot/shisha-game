@@ -7,6 +7,7 @@ export const LOOKS = Object.freeze([
   { id: "neo", label: "新版" },
   { id: "classic", label: "旧版" },
   { id: "retro", label: "DS風" },
+  { id: "vertical", label: "縦画面" },
 ]);
 /** 設定では選べない様式（コードは残す。新版は LK23 で選択不可に。戻す時はここから外す）。 */
 export const DISABLED_LOOKS = Object.freeze(["neo"]);
@@ -14,8 +15,9 @@ export const DISABLED_LOOKS = Object.freeze(["neo"]);
 export const BASE_LOOK = "classic";
 /** プレイヤーの端末で、何も選んでいない時の様式。LK23 で新版から旧版へ戻した。 */
 export const PLAYER_DEFAULT_LOOK = "classic";
-/** 様式ごとに効く章。null はすべての章。新版は LK13（2026-11-11「新版を広げる」）、DS風は LK21（2026-11-12「DS版にも戻せるように」）で全章。 */
-export const LOOK_CHAPTERS = Object.freeze({ neo: null, retro: null });
+/** 様式ごとに効く章。null はすべての章。新版は LK13（2026-11-11「新版を広げる」）、DS風は LK21（2026-11-12「DS版にも戻せるように」）で全章。
+ * 縦画面（煙の舞台・VPN01）は第1章から作っている（2026-11-27 オーナー「第1章を今日作った縦UIで作って」）。第2章からは旧版で表示する。 */
+export const LOOK_CHAPTERS = Object.freeze({ neo: null, retro: null, vertical: [1] });
 export const LOOK_EVENT = "lookchange";
 
 /**

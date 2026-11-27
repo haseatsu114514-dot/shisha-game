@@ -748,7 +748,7 @@ async function renderFreeTime(owner, window) {
       if (kind === "date") await readLoverMilestoneAt(owner, id);
       await renderStage(owner);
     }, true)] : []),
-    ...(gym.ok ? [button(owner, "CHOI-ZAPで体を動かす", "gym", async () => {
+    ...(gym.ok ? [button(owner, "サクッとジムで体を動かす", "gym", async () => {
       await trainInTokyo(owner, window.id);
       if (current(owner)) await renderStage(owner);
     }, true)] : []),

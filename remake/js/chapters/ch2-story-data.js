@@ -16,7 +16,7 @@ export const CH2_FREE_NIGHTS = [2, 8];
 // #921の柚ヶ谷店の客席を夜景にした背景。県大会ホールや地元店と区別する。
 export const C_STATION_TASTING_BG = CITY_BACKGROUNDS.c_station_night;
 export const CH2_NIGHTS = [
-  { day: 3, pin: "naru", label: "なるの祝福", beat: "夜。なるの話を聞きに、KEMURIKUSAへ──", doneFlag: "_ch2_naru_warm_done", steps: [
+  { day: 3, pin: "naru", label: "なるの祝福", beat: "夜。なるの話を聞きに、KEMURIYAへ──", doneFlag: "_ch2_naru_warm_done", steps: [
     { id: "ch2_naru_warm", file: "ch2_isolation" },
     { id: "remake_ch2_ageha_scout", file: "ch2_ageha_story", met: "ageha" },
     // 全体講評S6: あげはを見送ったあと、優勝目当ての客が大会の一台を半分残す。DAY4の居残りと炭の事故の前段。
@@ -67,14 +67,14 @@ export const CH2_NIGHTS = [
     // VOL17（#3097 計画 2-10）: ノートを取らずに帰る道で、スマホに練習の採点表を作る（DAY11の「開いたままの採点表」の前段）
     { id: "ch2_phone_score_sheet", file: "ch2_story_extra" },
   ] },
-  { day: 11, pin: "naru", label: "なるの言葉", beat: "夜。試作の話をしに、KEMURIKUSAへ──", steps: [
+  { day: 11, pin: "naru", label: "なるの言葉", beat: "夜。試作の話をしに、KEMURIYAへ──", steps: [
     { id: "ch2_naru_confrontation", file: "ch2_isolation" },
   ] },
-  // 正本どおり「DAY12の夜、ぺぱーみんとからの帰り」に閉じたケムリクサを見る。訪問は夜の行動だけ（昼はいつもの来店）。
+  // 正本どおり「DAY12の夜、ぺぱーみんとからの帰り」に閉じたKEMURIYAを見る。訪問は夜の行動だけ（昼はいつもの来店）。
   // 夜にほかの所へ行った時は、その夜に救済で読む。前夜（DAY13）へは持ち越さない。
   { day: 12, schedule: "visit", charId: "minto", slots: [1], deadline: 12, pin: "minto", label: "みんとの心配", beat: "夜。みんとの様子を見に、PEPPERMINTへ──", steps: [
     { id: "ch2_minto_warning", file: "ch2_isolation" },
-    // #929: 帰り道のケムリクサ。DAY11の選択の記録がある時だけ、距離の違いを見せる
+    // #929: 帰り道のKEMURIYA。DAY11の選択の記録がある時だけ、距離の違いを見せる
     { id: "ch2_naru_window", file: "ch2_isolation", bg: CH2_SCENE_BACKGROUNDS.naruWindow, when: ({ flags }) =>
       !flags._ch2_read_ch2_tsumugi_color && !!(flags._ch2_naru_listened || flags._ch2_naru_hurt) },
   ] },

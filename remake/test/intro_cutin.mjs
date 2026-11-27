@@ -45,7 +45,7 @@ try {
     return ids.filter((id) => id !== "pakki" && g.graphicIntro(id, "graphic") && !g.hasScaledFrame(id));
   }, ids);
   assert.deepEqual(unscaled, [], "頭の大きさをそろえる配置が無い（heads.json を測って tools/intro_graphic_frames.py を実行）");
-  assert.deepEqual(flavorCases.ageha, { main: "ホワイトグミベア／レッドグミベア" });
+  assert.deepEqual(flavorCases.ageha, { main: "しろくまグミ／あかくまグミ" });
   assert.equal(await page.evaluate(() => T.introFlavor("ageha", "unknown")), null, "正体不明版で好みを表示しない");
 
   // 1) 全員: 二つ名・名前・一言が画面（1280×720）の中に収まり、文字が空でない

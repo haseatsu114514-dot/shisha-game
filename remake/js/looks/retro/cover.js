@@ -48,7 +48,7 @@ function inlineText(node) {
  * 覆いの中に見えている文字を、上から順に行として読む。行は「ブロックの箱」ごと（インラインの子はつなげる）。
  * 戻り値: [{ text, size（ステージ上の字の大きさ px） }]
  */
-function readLines(root, opacity, lines) {
+export function readLines(root, opacity, lines) {
   if (SKIP_TAGS.has(root.localName) || root.hidden) return;
   const cs = getComputedStyle(root);
   if (cs.display === "none" || cs.visibility === "hidden") return;

@@ -759,7 +759,7 @@ test("chapter 5 Dubai: Café Oasis until Noor's finale, the dunes once invited; 
   assert.deepEqual(ch5Scene("ch5_noor_cafe_4").lines.map(line => line.speaker), cafe4.lines.map(line => line.speaker));
   assert.match(JSON.stringify(ch5Scene("ch5_noor_cafe_4").lines), /また日本に帰っちゃう/);
   assert.doesNotMatch(JSON.stringify(ch5Scene("ch5_noor_cafe_4").lines), /いつか日本に帰っちゃう/);
-  // 第5章のカフェ・砂丘は ch5-dubai.js から performDesertSpot を通算の日で呼び、なる（地元の KEMURIKUSA にいる）を呼ばない。
+  // 第5章のカフェ・砂丘は ch5-dubai.js から performDesertSpot を通算の日で呼び、なる（地元の KEMURIYA にいる）を呼ばない。
   // 第4章の書き出し（宿・大会の前）は第5章の場面に差し替える（差し替え表が欠けると「いつか日本に帰っちゃう」等が第5章に出る）
   const ch5Dubai = readFileSync(new URL("../js/chapters/ch5-dubai.js", import.meta.url), "utf8");
   assert.match(ch5Dubai, /performDesertSpot\(spot, \{ day: state\.day, showHud, naru: false, scene: chapterFiveNoorScene \}\)/);

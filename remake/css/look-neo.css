@@ -900,7 +900,7 @@
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .money-pop { right: 12px; top: calc(100% + 4px); font-size: max(14px, var(--neo-hud-sub)); color: #9fe8b4; text-shadow: 0 1px 3px rgba(0, 0, 0, .8); }
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .money-pop.minus { color: #ffa3a3; }
 /* 「出発まで」（第3・4章の出発前の3日）と「勝負の日まで」（第5章）の行は、板を伸ばさないよう日付の下へ小さな札で下げる
-   （「今夜 Lv UP」と同じ考え方）。板の中に並べると板が 130px ほど伸び、出発前の地元の地図で KEMURIKUSA の看板と居る人の顔に掛かった。
+   （「今夜 Lv UP」と同じ考え方）。板の中に並べると板が 130px ほど伸び、出発前の地元の地図で KEMURIYA の看板と居る人の顔に掛かった。
    印（トロフィー）と日数は板の中と同じ。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .dc-meta > .dc-row.goal {
   position: absolute;

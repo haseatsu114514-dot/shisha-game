@@ -64,7 +64,7 @@ try {
         gym: document.querySelector('[data-test="pin-choizap"] .facility-icon img').src,
         leakedShark: !!document.querySelector('[data-test="pin-shishark"], [data-test="pin-samechan"]') };
     });
-    assert.deepEqual(map.labels, ["tonari","KEMURIKUSA","EDEN","PEPPERMINT","Dr.fookah","喫茶こはく","観音堂","CHOI-ZAP","C.STATION","家"]);
+    assert.deepEqual(map.labels, ["tonari","KEMURIYA","EDEN","PEPPERMINT","Dr.fookah","喫茶こはく","観音堂","サクッとジム","C.STATION","家"]);
     assert(map.faces.every(f => f.width === (f.owner ? 32 : 52) && f.loaded), JSON.stringify(map.faces));
     assert(map.icons.every(i => (i.vector || i.logo || i.facility) && i.below && !i.oldGlyph));
     assert(map.badges.length >= 5 && map.badges.every(b => b.text === "!" && b.radius === "50%" && b.width === b.height));
@@ -160,7 +160,7 @@ try {
   // 店名は閉店日も残す。臨時休暇は別の札で伝え、訪問できない理由も一致する。
   await page.evaluate(async () => { T.core.state.flags._temporary_closed_naru="1:4"; await T.openMap(); });
   await page.waitForSelector('[data-test="pin-naru"] .pin-status');
-  assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIKUSA");
+  assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIYA");
   assert.equal(await page.locator('[data-test="pin-naru"] .pin-status').textContent(),"本日臨時休業");
   await page.locator('[data-test="pin-naru"]').click();
   assert.match(await page.locator(".map-info").getAttribute("aria-label"), /本日臨時休業/);
@@ -179,7 +179,7 @@ try {
   assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge').count(),0);
   assert.equal(await page.locator('[data-test="pin-choizap"]').count(),0);
   assert.equal(await page.locator('[data-test="pin-naru"] .pin-face').count(),0);
-  assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIKUSA");
+  assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIYA");
   await page.evaluate(async () => { T.core.state.chapter=2; await T.openMap(); });
   await page.waitForSelector('[data-test="pin-shishark"]');
   assert.equal(await page.locator('[data-test="pin-shishark"] .sub-label').textContent(),"SHISHARK");

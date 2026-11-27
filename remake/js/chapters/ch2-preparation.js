@@ -39,8 +39,10 @@ export const CH2_CLOSED_ON = Object.freeze({ kumicho: 0, kuraudo: 1 });
 const REPEAT_POOL = {
   ageha: ["remake_ch2_ageha_repeat", "remake_ch2_ageha_repeat_f", "remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "remake_ch2_ageha_repeat_e",
     "remake_ch2_ageha_repeat_g", "remake_ch2_ageha_repeat_h", "remake_ch2_ageha_repeat_i"], // #3097: g〜i（ch2_ageha_story.json）
-  kumicho: ["remake_ch2_kumicho_repeat", "remake_ch2_kumicho_repeat_b", "remake_ch2_kumicho_repeat_c", "remake_ch2_kumicho_repeat_d", "remake_ch2_kumicho_repeat_e"],
-  kuraudo: ["remake_ch2_kuraudo_repeat", "remake_ch2_kuraudo_repeat_b", "remake_ch2_kuraudo_repeat_c", "remake_ch2_kuraudo_repeat_d", "remake_ch2_kuraudo_repeat_e"],
+  kumicho: ["remake_ch2_kumicho_repeat", "remake_ch2_kumicho_repeat_b", "remake_ch2_kumicho_repeat_c", "remake_ch2_kumicho_repeat_d", "remake_ch2_kumicho_repeat_e",
+    "remake_ch2_kumicho_repeat_f", "remake_ch2_kumicho_repeat_g", "remake_ch2_kumicho_repeat_h", "remake_ch2_kumicho_repeat_i"], // VOL21 第3便: f〜i（ch2_preparation.json）
+  kuraudo: ["remake_ch2_kuraudo_repeat", "remake_ch2_kuraudo_repeat_b", "remake_ch2_kuraudo_repeat_c", "remake_ch2_kuraudo_repeat_d", "remake_ch2_kuraudo_repeat_e",
+    "remake_ch2_kuraudo_repeat_f", "remake_ch2_kuraudo_repeat_g", "remake_ch2_kuraudo_repeat_h", "remake_ch2_kuraudo_repeat_i"], // VOL21 第3便: f〜i（h は c のメモ帳の後に読む）
 };
 /** クラウドのライブの夜（RVE07）。台本は data/dialogue/ch2_rei.json（柚ヶ谷の台本と一緒に ch2-city-data.js が読み込む）。 */
 export const KURAUDO_LIVE_SCENE = "ch3_prep_kuraudo_live";

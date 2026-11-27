@@ -17,7 +17,7 @@ for (const data of [bytes, copy]) {
 }
 assert.deepEqual(Object.entries(FACILITY_ICONS).map(([id, { label }]) => [id, label]),
   [['rojiura_cinema', '路地裏シネマ'], ['kannondo', '観音堂'], ['home', '自宅'], ['kohaku', '喫茶こはく'], ['axe_bar', '斧投げBar'],
-    ['choizap', 'CHOI-ZAP'], ['trpg_bar', 'ボドゲカフェ'], ['fortune', '路上占い'],
+    ['choizap', 'サクッとジム'], ['trpg_bar', 'ボドゲカフェ'], ['fortune', '路上占い'],
     // MPI（2026-11-02 オーナー採用）: 1枚ずつの透過 WebP
     ['tokyo_park', '東京の公園'], ['mukai_back_room', 'mukaiの奥の部屋'], ['mukai_attic', 'mukaiの屋根裏'], ['smartphone', 'スマホ'],
     ['shinkansen_station', '新幹線の駅'], ['dubai_souq', 'スーク'], ['dubai_creek', 'クリーク沿い'], ['dubai_mosque', '風の回廊モスク'],

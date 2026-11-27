@@ -19,7 +19,7 @@ const SHOTS = process.env.SHOTS || "";
 const log = (...a) => console.log("[remake]", ...a);
 
 // 時間を使う行動計画は上から順に消費。必須購入は中間準備後の最初の自由マップで行う。
-// DAY1 の昼は案内つきのおつかい（Dr.fookah でレモン→KEMURIKUSA 偵察）、DAY2 の朝は参加登録のついでにスミさんの配達
+// DAY1 の昼は案内つきのおつかい（Dr.fookah でレモン→KEMURIYA 偵察）、DAY2 の朝は参加登録のついでにスミさんの配達
 // （PEPPERMINT・EDEN）と報告（#3819）。配達は行動枠と計画を消費しない。DAY2 の昼・夜から下の計画へ進む
 
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });

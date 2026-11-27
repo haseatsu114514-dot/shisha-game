@@ -5558,6 +5558,30 @@
       ]
     },
     {
+      "id": "look-vertical",
+      "title": "縦画面（煙の舞台・C案）: 第1章の会話を2行ずつ・返事・地図と店へ・tonari の行動選び・LIME と MENU のシート・心得の盤を十字キーで灯す・登場カットインの縦のポスター・シーシャ作りは回転案内・横持ちと第2章は旧版",
+      "kind": "browser",
+      "weight": 2.4,
+      "timeout": 8,
+      "paths": [
+        "remake/css/look-vertical.css",
+        "remake/js/looks/**",
+        "remake/js/core/look.js",
+        "remake/js/core/rotate-guard.js",
+        "remake/js/vn/engine.js",
+        "remake/js/daily/map.js",
+        "remake/js/daily/tonari.js",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/vn/intro.js",
+        "remake/js/vn/intro-art.js",
+        "remake/test/browser/look_chapter_seeds.mjs",
+        "remake/test/browser/look_vertical.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/look_vertical.mjs"
+      ]
+    },
+    {
       "id": "romance-hesitation",
       "title": "New romance hesitation model and VN controller: eight heroines, cancel, apology, LOAD and duplicate clicks",
       "kind": "quick",

@@ -124,6 +124,13 @@ export const PLACE_JA = { kannon: "観音堂", tokyo_shrine: "池の弁天堂", 
 
 let current = null;
 
+/**
+ * 縦画面（looks/vertical/board.js・VPN14）が、この盤を試作の縦の見た目で描き直すための読み取りと操作。
+ * 開いている盤が無ければ null。読み取りは今の盤の状態の写し、操作はこの画面の押した時と同じ関数を呼ぶだけ
+ * （払い方・仮置き・決定・保存・音・演出・はじめての案内は、この画面のまま動く）。
+ */
+export const boardControl = () => current?.control || null;
+
 /** 盤を開き、閉じるまで待つ。onExit は確定内容と同じ保存境界で呼ぶ。戻り値=確定したマス。 */
 export function openBoard({ place = null, onExit = null, lessonVisit = null } = {}) {
   if (current) return current.done;
@@ -1264,7 +1271,20 @@ export function openBoard({ place = null, onExit = null, lessonVisit = null } = 
     setTimeout(() => banner.remove(), 3200);
     setTimeout(() => { fresh.clear(); if (current?.owner === owner && root.isConnected) render(); }, 3200);
   }
-  current = { done, owner };
+  const control = {
+    peek: () => ({ board, selected, armed, pending: [...pending], target: g.target || null, canLight, place, rebuilding: !!rebuilding,
+      finishing, g, view: renderedView || view() }),
+    statusOf: (id) => NODE_BY_ID[id] ? status(NODE_BY_ID[id], renderedView || view()) : null,
+    stateText: (id) => { const n = NODE_BY_ID[id], v = renderedView || view(); return n ? stateText(n, status(n, v), v) : ""; },
+    nodeTitle: (id) => NODE_BY_ID[id] ? nodeTitle(NODE_BY_ID[id]) : "",
+    revealOf: (id) => NODE_BY_ID[id] ? revealOf(NODE_BY_ID[id]) : "hidden",
+    setBoard: (k) => { if (k !== board && BOARD_KEYS.includes(k)) part(`board-tab-${k}`)?.click(); },
+    /** マスを押す（選ぶ。選んだ「今灯せる」マスをもう一度押すと灯す）。ほかの盤のマスなら盤も替える */
+    tap: (id) => { const n = NODE_BY_ID[id]; if (!n || finishing) return; if (n.board !== board) { board = n.board; armed = null; render(); } tapNode(id); },
+    light: (id) => light(id), unlight: (id) => unlight(id), towards: (id) => towards(id), toggleTarget: (id) => toggleTarget(id),
+    reset: () => part("board-reset")?.click(), decide: () => part("board-decide")?.click(), close: () => close(), help: () => help(),
+  };
+  current = { done, owner, control };
   const releaseAudio = createGrowthBoardAudio();
   offOwner = on("hud", () => { if (owner !== state || !growthEnabled()) void finish(false); });
   layers.fx.append(root);

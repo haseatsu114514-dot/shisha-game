@@ -10,7 +10,7 @@ export const TOKYO_MAP_PLACES = Object.freeze({
   enmaku: place("enmaku", "煙幕", 45.3, 49.7),
   steve: place("steve", "Smoke & Glory", 23.3, 36.1),
   volk: place("volk", "鉄の煙", 55.9, 40.4),
-  gym: place("gym", "CHOI-ZAP", 34.9, 75.9),
+  gym: place("gym", "サクッとジム", 34.9, 75.9),
   park: place("park", "公園", 69, 62),
   // 心得の盤の内省（SPEC 2.8・#1788）。火種がある時だけ出る。地図の右下の池に浮かぶお堂（IR26・SBD98）。
   // お堂そのもの（昼の地図の 91,83 あたり）は右下の案内パネルの裏になるので、ピンの先は池の北の岸（お堂の真上）に置く。
