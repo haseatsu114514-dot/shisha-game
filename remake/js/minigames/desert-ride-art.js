@@ -58,6 +58,12 @@ export const DESERT_ART = Object.freeze({
   flag: Object.freeze({ file: "ui/desert_ride/flag_pole.webp", size: Object.freeze([110, 512]), foot: Object.freeze({ x: 0.0591, y: 1 }) }),
   goal: Object.freeze({ file: "ui/desert_ride/goal_banner.webp", size: Object.freeze([1024, 132]) }),
   puff: Object.freeze({ file: "ui/desert_ride/sand_puff.webp", size: Object.freeze([256, 141]) }),
+  // 派手なアクションの絵（DSR100・2026-11-27 オーナー「見本の派手な見た目を本編にも」）。遊び方の図解と同じ画風で生成した（gpt-image-2.6-sunburst。
+  // 原画・プロンプト・検品は asset_sources/ui/minigame-visuals-20261127/desert/）。origin は砂が出る点（絵に対する比率）。左へ飛ばす時は左右を反転して描く。
+  fxPlume: Object.freeze({ file: "ui/desert_ride/fx_plume.webp", size: Object.freeze([512, 505]), origin: Object.freeze({ x: 0.49, y: 0.97 }) }), // 踏み切り: 真上へ扇に噴き上がる砂
+  fxWake: Object.freeze({ file: "ui/desert_ride/fx_wake.webp", size: Object.freeze([640, 242]), origin: Object.freeze({ x: 0.02, y: 0.94 }) }),   // ブースト・着地・鋭く切った時: 右へ低く広がる砂
+  fxWave: Object.freeze({ file: "ui/desert_ride/fx_wave.webp", size: Object.freeze([640, 433]), origin: Object.freeze({ x: 0.06, y: 0.93 }) }),   // カーブ: 右へ巻き上がる砂の波
+  fxBolts: Object.freeze({ file: "ui/desert_ride/fx_bolts.webp", size: Object.freeze([512, 507]), origin: Object.freeze({ x: 0.5, y: 0.5 }) }),   // ブースト: 体のまわりの稲妻（中央は空いている）
   curveLeft: Object.freeze({ file: "ui/desert_ride_controls/curve_left.webp", size: Object.freeze([512, 560]) }),
   curveRight: Object.freeze({ file: "ui/desert_ride_controls/curve_right.webp", size: Object.freeze([512, 560]) }),
 });

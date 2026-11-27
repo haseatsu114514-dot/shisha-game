@@ -6,23 +6,34 @@ OpenAI の画像 API（`gpt-image-2.6-sunburst`）で生成した原画と、送
 
 ## 砂丘（DESERT RIDE）— `desert/`
 
-採用 7 枚（生成は 8 回。1枚めの試し＝よけるの図解の中画質版は不採用で、保存していない）。
+**今ゲームで使っている生成の絵は 5 枚**（入口の背景 1、派手なアクションの絵 4）。遊び方の図解 6 枚は、いったん採用した後、オーナーの指示で実際の画面のスクショに替えた（下の「遊び方の絵は、実際の画面のスクショ」）。生成は全部で 12 回（1枚めの試し＝よけるの図解の中画質版は不採用で、保存していない）。
 
 | 原画（`desert/originals/`） | 使う所 | ゲームの絵 |
 |---|---|---|
-| `how_dodge.png` | 遊び方の図解「よける」 | `remake/img/ui/desert_ride_howto/how_dodge.webp` |
-| `how_jump.png` | 遊び方の図解「大ジャンプ」 | `…/how_jump.webp` |
-| `how_spin.png` | 遊び方の図解「スピン」 | `…/how_spin.webp` |
-| `how_boost.png` | 遊び方の図解「ブースト」 | `…/how_boost.webp` |
-| `how_carve.png` | 遊び方の図解「カーブ」 | `…/how_carve.webp` |
-| `how_flow.png` | 遊び方の図解「砂流れ」 | `…/how_flow.webp` |
+| `how_dodge.png`・`how_jump.png`・`how_spin.png`・`how_boost.png`・`how_carve.png`・`how_flow.png` | 遊び方の図解（DSR98）。**今は使っていない**（DSR101 でスクショに替えた。派手なアクションの絵を作る時の画風の参照にした） | ―（`remake/img/ui/desert_ride_howto/how_*.webp` は、同じ名前のままスクショに差し替え） |
+| `fx_plume.png` | 踏み切りの砂の柱（真上へ扇に噴き上がる。ブースト発進の砂にも）（DSR100） | `remake/img/ui/desert_ride/fx_plume.webp` |
+| `fx_wake.png` | ブースト中に板の左右へ広がる砂・着地の砂・鋭く切った時の砂（右向きの絵。左は反転）（DSR100） | `…/fx_wake.webp` |
+| `fx_wave.png` | カーブの外へ巻き上がる砂の波（右向きの絵。左は反転）（DSR100） | `…/fx_wave.webp` |
+| `fx_bolts.png` | ブースト中、体のまわりを走る稲妻（中央は空いている）（DSR100） | `…/fx_bolts.webp` |
 | `title_bg.png` | 入口の背景（旗のコースとゴールの見える砂丘） | `remake/img/ui/desert_ride/title_bg.webp` |
 
 - **変換**: 図解は 1536×1024 → 768×512 の WebP（quality 86）。入口の背景は**左右を反転**してから上の 1536×864（16:9）を切り出した WebP（旗のコースが左＝人物の側へ来るように。右は板が載る）。
 - **参照画像**: 滑走で採用済みの絵（はじめの背面の各姿勢・岩・カーブの看板・旗・遠景）と、滑走中の実画面を毎回渡して、人物と砂丘の描き方をそろえた（`desert/prompts.md` に1枚ごとの一覧）。
 - **検品**（`docs/asset_ai_guidance.md` の必須項目）: 人物は背面だけで顔が写らない／服・髪・板の色は滑走の絵と同じ／文字・擬似文字なし（カーブの看板は矢印の記号だけ）／手・足・板のつながりに崩れなし／実画面で滑走の絵と並べて同じ描き手に見えることを確認。シーシャの機材は写っていない。
-- **組み込み**: `remake/js/minigames/desert-ride.js` の `HOWTO_CARDS`・`howCard`、`remake/css/desert-ride.css` の「遊び方の図解」と入口の背景。
+- **組み込み**: `remake/js/minigames/desert-ride.js` の `HOWTO_CARDS`・`howCard`（絵はスクショ）、`drawFx`・`drawGroundFx`（派手なアクションの絵）、`remake/css/desert-ride.css` の「遊び方の図解」と入口の背景。
 - 原画の SHA-256（先頭16桁）: `how_dodge` 7def0cba9882924c, `how_jump` 4d91ae213f79b358, `how_spin` b95c7dc31b25279f, `how_boost` b6cd0b55d2acd67f, `how_carve` a0a4011802e42699, `how_flow` 14256360440d7249, `title_bg` 73ce60a30fb06f67
+- **派手なアクションの絵（DSR100）**: 透過の余白を切り落として、`fx_plume` 512×505・`fx_wake` 640×242・`fx_wave` 640×433・`fx_bolts` 512×507 の WebP（quality 86。4枚で約490KB）。砂が出る点（`origin`）は `remake/js/minigames/desert-ride-art.js` に持つ。検品: 透過（砂色の地と空色の地の両方に置いて、縁に色のにじみ・四角い地が無いことを確認）／人物・板・地面・文字なし／砂は右向き・稲妻は中央が空いている、という指定どおり／実際の滑走に重ねて、踏み切り・着地・ブースト・カーブ・鋭く切った時の5場面を撮って確認。シーシャの機材は写していない。
+- 派手なアクションの絵の原画の SHA-256（先頭16桁）: `fx_plume` 002792c1bfe612e1, `fx_wake` 90ba5ee95ea041ae, `fx_wave` 84476f1e94e0a4b0, `fx_bolts` f46e0abca805066f
+
+### 遊び方の絵は、実際の画面のスクショ（DSR101）
+
+オーナー「操作の見本は生成というよりはスクショを使いたい　実際の画面の」。遊び方（「？」）の6枚は、**実際の滑走の画面を撮ったもの**に替えた（DSR100 の絵を入れた後の画面）。
+
+- 撮り方: `desert/howto-screenshots/capture.mjs`。単体ページ（`desert-ride.html`・コースD）を上手なボットに走らせ、各アクションの瞬間に止めて、画面（HUD も含む実際の表示・2倍の解像度）の人物のまわりを 3:2（舞台の上で 720×480）で切り出す。左上の得点の札と右上の速さの札が入らない幅にしてある。下の角には実際のボタンが写る（札では題の帯の下になる）。
+- 撮ったままの PNG（1440×960）: `desert/howto-screenshots/how_*.png`。ゲーム用は 768×512 の WebP（quality 84。6枚で約200KB）。
+- **「大ジャンプ」**は、回らずに跳んだ所を見せるため、踏み切った直後にボットを外して撮った。**「砂流れ」**は、帯が人物の真下に来ると体に隠れるので、この1枚だけ、帯の入口の手前で人物を帯の横へ置いて撮った（描いているのは実際の画面のまま。得点の字「かすめ」と光の粒が写っている）。ほかの4枚は、ボットが走っている途中をそのまま止めた。
+- 撮り直すと、ボットの走りが毎回少し違うので、同じコマにはならない。
+- スクショの SHA-256（先頭16桁）: `how_dodge` 603e906acf3aa6cd, `how_jump` 6cbe2ed54aad50b7, `how_spin` f8726e41d3a98c13, `how_boost` 10a4ddba6412e78c, `how_carve` 47449456337ee1d4, `how_flow` c27a64bebfb462c2
 
 ## 店番（フロア営業）— `floor/`
 

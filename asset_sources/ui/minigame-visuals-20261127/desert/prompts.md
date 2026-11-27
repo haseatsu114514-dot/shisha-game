@@ -73,3 +73,46 @@ Game tutorial illustration for a sandboarding minigame, in the same art style as
 ```text
 Wide establishing background painting for the title screen of a sandboarding minigame, in the same softly painted anime background style and palette as the reference backdrop (bright blue sky, golden Dubai desert dunes). View from the top of a huge dune at the start of the course, looking down a long smooth slope: the course is marked by two rows of small orange pennant flags on thin poles (like the reference flag) curving gently down the slope to a tiny white goal banner far below in the distance. Warm sun with a soft glow in the upper left sky, a few thin clouds, rippled sand texture in the foreground, layered dunes to the horizon. The left 45 percent of the image should stay open and uncluttered (sky above, plain sand below) because a logo and characters will be placed there; the right side also stays calm. No people, no vehicles, no text, no letters, no logos, no watermark, no border.
 ```
+
+# 派手なアクションの絵（DSR100・2026-11-27）
+
+モデル `gpt-image-2.6-sunburst`・`/v1/images/edits`（参照画像つき）・quality high・背景 transparent。1枚ずつ1回で採用。
+
+## `fx_plume.png` — 1024x1024
+
+参照画像:
+- 遊び方の図解「大ジャンプ」（その時点でゲームに入っていた生成の絵。砂しぶきの描き方の参照）
+- 遊び方の図解「カーブ」（砂の波の参照）
+
+```text
+A big burst of desert sand kicked straight up from one point at the bottom centre of the canvas, like the spray a sandboard throws when it launches off the lip of a dune, seen from behind. The spray fans upward and outward in a wide V / fountain shape that is densest at the bottom centre and breaks into streaks, clumps and fine grains toward the top and sides; it fills most of the canvas, symmetric left and right. Painted anime game VFX sprite in exactly the same hand-painted style, sand colour palette (warm golden-tan sand with bright cream highlights and darker ochre-brown clumps) and level of energy as the sand sprays in the reference illustrations. Isolated on a fully transparent background. Only the effect itself: no character, no board, no ground plane, no sky, no horizon, no shadow on a floor. Crisp readable silhouette with soft translucent dusty edges that fade to full transparency, plus many small flying sand grains and droplets around it. No text, no letters, no numbers, no logos, no watermark, no frame.
+```
+
+## `fx_wake.png` — 1536x1024
+
+参照画像:
+- 遊び方の図解「ブースト」（稲妻と砂の参照）
+- 遊び方の図解「よける」（板の縁の砂の参照）
+
+```text
+A long, low sideways spray of desert sand: it starts as a dense jet at the lower LEFT corner of the canvas and is thrown to the RIGHT and slightly upward, like the wake a fast sandboard throws out to one side while boosting. It stays low and wide (much wider than tall), thickest near the left origin, breaking into ragged tongues, streaks and scattered grains toward the right edge. The top half of the canvas stays mostly empty. Painted anime game VFX sprite in exactly the same hand-painted style, sand colour palette (warm golden-tan sand with bright cream highlights and darker ochre-brown clumps) and level of energy as the sand sprays in the reference illustrations. Isolated on a fully transparent background. Only the effect itself: no character, no board, no ground plane, no sky, no horizon, no shadow on a floor. Crisp readable silhouette with soft translucent dusty edges that fade to full transparency, plus many small flying sand grains and droplets around it. No text, no letters, no numbers, no logos, no watermark, no frame.
+```
+
+## `fx_wave.png` — 1536x1024
+
+参照画像:
+- 遊び方の図解「カーブ」（砂の波の参照）
+- 遊び方の図解「よける」（板の縁の砂の参照）
+
+```text
+A tall curling wave of desert sand thrown to the RIGHT from the lower LEFT corner of the canvas, like the big roost a sandboard carves out of a dune when it turns hard: a thick arcing wall of sand that rises up and curls over to the right, with a ragged feathered crest, sunlit cream highlights on top and darker ochre underneath, and a cloud of grains flying off the crest. It fills most of the canvas. Painted anime game VFX sprite in exactly the same hand-painted style, sand colour palette (warm golden-tan sand with bright cream highlights and darker ochre-brown clumps) and level of energy as the sand sprays in the reference illustrations. Isolated on a fully transparent background. Only the effect itself: no character, no board, no ground plane, no sky, no horizon, no shadow on a floor. Crisp readable silhouette with soft translucent dusty edges that fade to full transparency, plus many small flying sand grains and droplets around it. No text, no letters, no numbers, no logos, no watermark, no frame.
+```
+
+## `fx_bolts.png` — 1024x1024
+
+参照画像:
+- 遊び方の図解「ブースト」（稲妻と砂の参照）
+
+```text
+A ring of crackling golden-yellow lightning and energy sparks, like the electric boost aura around the rider's board in the reference illustration: jagged bright bolts with white-hot cores and warm orange-gold glow, arcing outward in all directions from an EMPTY centre (the centre third of the canvas is left completely transparent so a character can stand there), with small spark flecks between the bolts. Painted anime game VFX sprite, same style and colours as the lightning in the reference. Isolated on a fully transparent background; only the lightning: no character, no board, no sand, no ground, no sky. No text, no letters, no numbers, no logos, no watermark, no frame.
+```
