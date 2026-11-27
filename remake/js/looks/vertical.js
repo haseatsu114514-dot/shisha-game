@@ -100,6 +100,7 @@ function start() {
     scene = next ? scenes[next] : null;
     frame.root.dataset.scene = sceneName;
     frame.root.hidden = !scene;
+    if (next !== "cover") holdSince = 0; // 覆いを待つ時間は、覆いに入るたびに数え直す（前の転換から数えると、すぐ待ちすぎと判断してしまう）
     if (scene) {
       root.dataset.vtShell = "on";
       scene.enter();

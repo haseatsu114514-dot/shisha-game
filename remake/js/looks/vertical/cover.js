@@ -146,7 +146,8 @@ export function createCoverScene(frame, own) {
     wait.hidden = !!read.length || !!pics.length || !!cutin || gap;
     tip.hidden = holding || !state.pressable || !!cutin || performance.now() - Math.max(changedAt, lastTap) < 1500;
     frame.setChips([]);
-    frame.setPad({});
+    // 下画面はそのまま（指の位置を変えない）。丸ボタンは「次へ」＝本編の覆いへタップを中継
+    frame.setPad({ dirs: [], a: { face: "next", label: "次へ", disabled: holding || (!state.pressable && !gap) } });
     frame.setHud("none");
   }
 

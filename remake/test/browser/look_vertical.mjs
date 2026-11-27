@@ -40,6 +40,26 @@ async function assertFits(page, label) {
   assert(view.scroll <= view.w + 1, `${label}: the page scrolls sideways`);
 }
 
+/**
+ * 土台の配置（VPN09）: 上画面と下画面が 6:4 で、十字キーと丸ボタンは場面が替わっても同じ位置（指を置いたまま遊べる）。
+ * 最初に測った位置を覚え、以後の場面で同じ位置か確かめる。
+ */
+async function assertPadHome(page, label, home = null) {
+  const box = await page.evaluate(() => {
+    const r = (selector) => { const b = document.querySelector(selector).getBoundingClientRect(); return [b.left, b.top, b.width, b.height].map((v) => Math.round(v)); };
+    const shell = document.querySelector(".vt-shell").getBoundingClientRect();
+    return { shellH: shell.height, split: document.querySelector(".vt-ctrl").getBoundingClientRect().top - shell.top, dpad: r(".vt-dpad"), a: r(".vt-a"),
+      aShown: getComputedStyle(document.querySelector(".vt-a")).display !== "none", dpadShown: getComputedStyle(document.querySelector(".vt-dpad")).display !== "none" };
+  });
+  assert(Math.abs(box.split - box.shellH * 0.6) <= 2, `${label}: the upper and lower screens are 6:4 ${JSON.stringify(box)}`);
+  assert(box.aShown && box.dpadShown, `${label}: the pad and the round button stay on screen`);
+  if (home) {
+    assert.deepEqual(box.dpad, home.dpad, `${label}: the pad stays where the thumb rests`);
+    assert.deepEqual(box.a, home.a, `${label}: the round button stays where the thumb rests`);
+  }
+  return box;
+}
+
 /** 第1章 DAY5 の昼の地図を、本物の日常ループ（runDaily）で出す。 */
 async function setupDaily(page, { slot = 0 } = {}) {
   await arm(page);
@@ -78,6 +98,7 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "title");
     assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "vertical");
     await assertFits(page, "title");
+    const home = await assertPadHome(page, "title");
     assert.equal(await page.evaluate(() => getComputedStyle(document.getElementById("viewport")).opacity), "0", "the landscape stage is hidden behind the shell");
     assert.equal(await page.evaluate(() => getComputedStyle(document.getElementById("rotate-hint")).display), "none", "no rotate hint over the title");
     await manual(page);
@@ -119,6 +140,7 @@ await suite("look_vertical", async (check) => {
     await pressA(page);
     await waitScene(page, "vn");
     await assertFits(page, "conversation");
+    await assertPadHome(page, "conversation", home);
   }, { ...TALL, pageEntry: entry });
 
   await check("map-shop-and-choice", async (page) => {
@@ -129,6 +151,15 @@ await suite("look_vertical", async (check) => {
       mine: [...document.querySelectorAll(".vt-pin")].map((pin) => pin.dataset.spot).sort(),
     }));
     assert.deepEqual(pins.mine, pins.live, "one pin per destination");
+    const home = await assertPadHome(page, "map");
+    // 看板（VPN10）: 元の地図と同じ店のロゴ・施設の絵を、地図の中に小さく出す
+    const signs = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll(".vt-pin")].map((pin) => {
+      const art = pin.querySelector(".vt-pin-art > *"), live = document.querySelector(`#screen > .map:not(.done) .spot-pin[data-spot="${pin.dataset.spot}"] .ico > :is(.store-logo, .facility-icon)`);
+      const box = pin.querySelector(".vt-pin-art")?.getBoundingClientRect();
+      return [pin.dataset.spot, { mine: art?.dataset.storeLogo || art?.dataset.facility || "", live: live?.dataset.storeLogo || live?.dataset.facility || "", w: Math.round(box?.width || 0) }];
+    })));
+    for (const [id, sign] of Object.entries(signs)) assert.equal(sign.mine, sign.live, `${id}: the pin shows the same logo or facility art as the map ${JSON.stringify(sign)}`);
+    for (const id of ["tonari", "minto", "naru", "shop"]) assert(signs[id]?.mine && signs[id].w >= 30 && signs[id].w <= 110, `${id}: a small store logo on the map ${JSON.stringify(signs[id])}`);
     // 上の表示: 章・日付・お金
     const hud = await page.locator(t("vt-hud")).textContent();
     assert(hud.includes("第1章") && hud.includes("DAY 5") && hud.includes("42,000"), `the header shows the chapter, day and money: ${hud}`);
@@ -141,6 +172,11 @@ await suite("look_vertical", async (check) => {
     const after = await selected();
     assert.equal(after.mine, order[(order.indexOf(before.mine) + 1) % order.length]);
     assert.equal(after.live, after.mine, "the landscape map selects the same pin");
+    // 上＝全体を見る→もう一度で寄る
+    await pad(page, "up");
+    await page.waitForFunction(() => document.querySelector(".vt-map").classList.contains("overview"));
+    await pad(page, "up");
+    await page.waitForFunction(() => !document.querySelector(".vt-map").classList.contains("overview"));
     // 下＝一覧 → PEPPERMINT を選んで決定
     await pad(page, "down");
     await page.locator(t("vt-row-minto")).tap();
@@ -151,6 +187,7 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "vn", 30000);
     await page.locator(".vt-actor").first().waitFor({ state: "attached", timeout: 20000 });
     assert.match(await page.locator(".vt-where b").textContent(), /PEPPERMINT/);
+    await assertPadHome(page, "conversation in the shop", home);
     // 返事まで送る → 十字キーの下で次の札へ、決定で本編の選択肢を押す
     for (let i = 0; i < 30 && !(await page.locator(".vt-choice").count()); i++) {
       await typed(page);
@@ -161,6 +198,7 @@ await suite("look_vertical", async (check) => {
     const choices = await page.locator(".vt-choice").allTextContents();
     assert(choices.length >= 2, `the reply cards mirror the engine's choices ${JSON.stringify(choices)}`);
     await assertFits(page, "choice");
+    await assertPadHome(page, "choice", home);
     await pad(page, "down");
     assert.equal(await page.locator('.vt-choice[aria-current="true"]').getAttribute("data-index"), "1");
     // 本編の2番目の選択肢が押されること（決定は本編のボタンへの click として中継する）
@@ -176,10 +214,12 @@ await suite("look_vertical", async (check) => {
 
   await check("tonari-menu-lime-and-menu-sheets", async (page) => {
     await setupDaily(page);
+    const home = await assertPadHome(page, "map");
     // 最初の行き先は tonari（「！」の店）。決定 → 行動選び
     await page.waitForFunction(() => document.querySelector('.vt-pin[aria-current="true"]')?.dataset.spot === "tonari");
     await pressA(page);
     await waitScene(page, "menu");
+    await assertPadHome(page, "tonari menu", home);
     const options = await page.locator(".vt-choice b").allTextContents();
     assert(options.some((text) => text.includes("一服")), `the tonari actions are listed ${JSON.stringify(options)}`);
     assert.match(await page.locator(".vt-where b").textContent(), /tonari/);
@@ -198,12 +238,27 @@ await suite("look_vertical", async (check) => {
     await page.waitForFunction(() => document.querySelector('#modal .dm-tab[data-tab="people"]')?.getAttribute("aria-selected") === "true");
     assert.equal(await page.locator(t("vt-chip-tab-people")).getAttribute("aria-pressed"), "true");
     await assertFits(page, "menu");
+    await assertPadHome(page, "menu sheet", home);
     await pressA(page);
     await waitScene(page, "map");
+    // 前の場面転換（tonari から地図へ戻る）から6秒以上たってから別の店へ入っても、転換の間は外枠のまま（回転案内へ落ちない）。
+    // 覆いを待つ時間を、覆いに入るたびに数え直していなかった時は、ここで回転案内が一瞬出ていた
+    await page.waitForTimeout(6500);
+    await pad(page, "down");
+    await page.locator(t("vt-row-minto")).tap();
+    await page.waitForFunction(() => document.querySelector('.vt-pin[aria-current="true"]')?.dataset.spot === "minto");
+    await page.evaluate(() => {
+      window.__hintSeen = false;
+      window.__hintWatch = setInterval(() => { if (getComputedStyle(document.getElementById("rotate-hint")).display !== "none") window.__hintSeen = true; }, 40);
+    });
+    await pressA(page);
+    await waitScene(page, "vn", 30000);
+    assert.equal(await page.evaluate(() => { clearInterval(window.__hintWatch); return window.__hintSeen; }), false, "no rotate hint while entering the shop");
   }, { ...TALL, pageEntry: entry });
 
   await check("growth-board-with-pad", async (page) => {
     await setupDaily(page);
+    const home = await assertPadHome(page, "map");
     await page.evaluate(async () => {
       const growth = await import("./js/core/growth.js");
       const { state } = await import("./js/core/state.js");
@@ -217,6 +272,7 @@ await suite("look_vertical", async (check) => {
     await page.locator(".vt-board-frame > .gboard").waitFor({ state: "attached" });
     assert.equal(await page.locator("#fx > .gboard").count(), 0);
     await assertFits(page, "board");
+    await assertPadHome(page, "board", home);
     const nodes = () => page.evaluate(() => (window.__remake?.state || null) && JSON.parse(JSON.stringify((window.__remake.state.growth?.nodes) || [])));
     const litBefore = (await nodes()) || [];
     // 丸ボタン: 今灯せるマスを選ぶ → もう一度で灯す（仮置き）
@@ -289,6 +345,7 @@ await suite("look_vertical", async (check) => {
   await check("short-screen-fits", async (page) => {
     await setupDaily(page);
     await assertFits(page, "short map");
+    await assertPadHome(page, "short map");
   }, { ...SHORT, pageEntry: entry });
 
   await check("landscape-and-chapter-two-use-the-current-screen", async (page) => {

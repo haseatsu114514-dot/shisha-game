@@ -1,5 +1,6 @@
-// 縦画面「煙の舞台」（C案）の外枠。上に絵（背景・立ち絵・地図）、その下にテロップ、補助ボタンの段、輪の十字キーと丸ボタン。
-// 見た目は css/look-vertical.css。寸法は試作（remake/previews/portrait-stage/）と同じ比で、スマホの幅 39 を 1 単位（--u）として組む。
+// 縦画面「煙の舞台」（C案）の外枠。土台は上画面6：下画面4（VPN09）。上画面＝絵（背景・立ち絵・地図・盤）と、その下端に重ねる
+// テロップ・札・返事。下画面＝補助ボタンの段と輪の十字キー・丸ボタンで、どの場面でも同じ位置に置く（指を置いたまま遊べるように）。
+// 見た目は css/look-vertical.css（比は --split）。寸法は試作（remake/previews/portrait-stage/）と同じ比で、スマホの幅 39 を 1 単位（--u）として組む。
 // 中身（どの絵・どの文・どのボタン）は場面ごとの部品（looks/vertical/*.js）が入れる。ここは置き場所と押した時の振り分けだけ。
 import { el } from "../../core/util.js";
 
@@ -100,7 +101,7 @@ export function createFrame(handlers) {
 
   /**
    * 十字キーと丸ボタン。dirs: 押せる向き（["up","down"] など）。marks: { up: ["wide","全体"] } 役割の絵記号と読み上げ名。
-   * a: { face: "ok"|"go"|"next"|"rest"|"close", label, disabled, hot }。a が null なら丸ボタンを隠す。
+   * a: { face: "ok"|"go"|"next"|"rest"|"close", label, disabled, hot }。a が null なら丸ボタンを押せない形（薄く）にする（隠さない）。
    */
   function setPad({ dirs = [], marks = {}, a = null } = {}) {
     const sig = JSON.stringify([dirs, marks, a]);
@@ -116,14 +117,16 @@ export function createFrame(handlers) {
       key.innerHTML = `${TRI}${mark ? icon(mark[0]) : ""}`;
       key.setAttribute("aria-label", mark?.[1] || { up: "上", down: "下", left: "左", right: "右" }[dir]);
     }
-    buttonA.hidden = !a;
-    if (!a) return;
-    const face = FACES[a.face] || FACES.ok;
-    buttonA.disabled = !!a.disabled;
-    buttonA.classList.toggle("hot", !!a.hot);
-    buttonA.setAttribute("aria-label", a.label || face.label);
-    buttonA.innerHTML = face.text
-      ? `<span class="vt-a-t${[...(a.text || face.text)].length > 2 ? " small" : ""}">${escapeHtml(a.text || face.text)}</span>`
+    // 丸ボタンは消さない（押せない時は薄く残す）。どの場面でも同じ所に指を置いておけるように（VPN09）
+    const face = FACES[a?.face] || FACES.ok;
+    buttonA.disabled = !a || !!a.disabled;
+    buttonA.classList.toggle("idle", !a);
+    buttonA.classList.toggle("hot", !!a?.hot);
+    buttonA.setAttribute("aria-label", a?.label || face.label);
+    const label = a?.text || face.text;
+    buttonA.innerHTML = !a ? ""
+      : face.text
+      ? `<span class="vt-a-t${[...label].length > 2 ? " small" : ""}">${escapeHtml(label)}</span>`
       : `<span class="vt-a-t"><svg class="vt-glyph" viewBox="0 0 32 32" aria-hidden="true">${face.svg}</svg></span>`;
   }
 

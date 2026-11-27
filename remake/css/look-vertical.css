@@ -31,10 +31,20 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
   --u: min(calc(100vw / 39), calc(100dvh / 66));
   --acc: #c3b0ff;
   --deep: #0b0812;
-  --ctrl-h: calc(29.2 * var(--u));
-  --ring: calc(20.4 * var(--u));
-  --a: calc(14.6 * var(--u));
-  --pad-top: calc(7.1 * var(--u));
+  /* 土台の配置（VPN09・2026-11-27 オーナー「上画面下画面ぐらいの　やや上画面に余裕をもたせ 6:4 ぐらいが理想」）:
+     上画面（絵・テロップ・札・返事）と下画面（補助ボタンの段・輪の十字キー・丸ボタン）を 6:4 に分ける。
+     下画面の部品はどの場面でも同じ位置に置き、指を置いたまま遊べるようにする（「指の位置を移動させすぎず常に置いておけるように」）。
+     比は --split だけで変えられる */
+  --shell-h: min(100dvh, calc(92 * var(--u)));
+  --split: 0.6;
+  --top-h: calc(var(--shell-h) * var(--split));
+  --bottom-h: calc(var(--shell-h) - var(--top-h));
+  --chips-h: calc(6.6 * var(--u));
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  /* 十字キーは試作の大きさ（幅の約52%）を上限に、下画面に収まる大きさ。丸ボタンは十字キーとの比を試作のまま */
+  --ring: min(calc(20.4 * var(--u)), calc(var(--bottom-h) - var(--chips-h) - 2.4 * var(--u) - var(--safe-b)));
+  --a: calc(var(--ring) * 0.716);
+  --pad-top: calc(var(--chips-h) + (var(--bottom-h) - var(--chips-h) - var(--safe-b) - var(--ring)) / 2);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --gothic: var(--font, "Suien Gothic", "Noto Sans JP", sans-serif);
   --mincho: "Suien Name", "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
@@ -43,7 +53,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
   top: 0;
   left: 50%;
   width: calc(39 * var(--u));
-  height: min(100dvh, calc(92 * var(--u)));
+  height: var(--shell-h);
   margin-left: calc(-19.5 * var(--u));
   overflow: hidden;
   overflow: clip; /* はみ出した飾り（ぼかした背景）で外枠の中身が横へ送られないように（フォーカス・scrollIntoView でも動かない） */
@@ -69,10 +79,10 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-ic .f { fill: currentColor; stroke: none; }
 
 .vt-amb { position: absolute; left: -15%; top: -10%; width: 130%; height: 120%; max-width: none; object-fit: cover; filter: blur(calc(3.2 * var(--u))) brightness(0.44) saturate(1.4); }
-.vt-pic { position: absolute; left: 0; right: 0; top: 0; height: calc(100% - var(--ctrl-h) - 5.6 * var(--u)); overflow: hidden; overflow: clip;
-  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 66%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 66%, transparent 100%); }
+.vt-pic { position: absolute; left: 0; right: 0; top: 0; height: var(--top-h); overflow: hidden; overflow: clip;
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%); }
 .vt-pic::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: calc(10 * var(--u)); background: linear-gradient(180deg, #0b0812b8, transparent); pointer-events: none; }
-.vt-veil { position: absolute; left: 0; right: 0; top: 32%; bottom: 0; background: linear-gradient(180deg, transparent 0%, #0b081280 32%, #0b0812b8 58%, #0b0812d9 100%); pointer-events: none; }
+.vt-veil { position: absolute; left: 0; right: 0; top: calc(var(--top-h) * 0.42); bottom: var(--bottom-h); background: linear-gradient(180deg, transparent 0%, #0b081280 32%, #0b0812b8 58%, #0b0812d9 100%); pointer-events: none; }
 
 .vt-bg, .vt-bgimg { position: absolute; inset: 0; }
 .vt-bgimg { background-size: cover; background-repeat: no-repeat; }
@@ -118,8 +128,9 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-cg-art { background-size: contain; background-position: 50% 42%; }
 
 /* ───────── テロップと操作（下から積む） ───────── */
-.vt-body { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
-.vt-telop { position: relative; margin: 0 calc(1.2 * var(--u)); }
+/* 上画面の下端にテロップ・札・返事、下画面に操作 */
+.vt-body { position: absolute; z-index: 6; inset: 0; display: grid; grid-template-rows: var(--top-h) var(--bottom-h); pointer-events: none; }
+.vt-telop { position: relative; align-self: end; min-width: 0; max-height: calc(var(--top-h) - 7.2 * var(--u)); margin: 0 calc(1.2 * var(--u)) calc(1.2 * var(--u)); pointer-events: auto; }
 .vt-name { display: flex; align-items: baseline; gap: var(--u); min-height: calc(3 * var(--u)); margin: 0 calc(0.4 * var(--u)) calc(0.8 * var(--u)) calc(0.8 * var(--u)); text-shadow: 0 calc(0.2 * var(--u)) var(--u) #000, 0 0 calc(0.4 * var(--u)) #000; }
 .vt-name[hidden] { display: flex; visibility: hidden; }
 .vt-name b { font-family: var(--mincho); font-size: calc(2.6 * var(--u)); letter-spacing: 0.1em; line-height: 1.2; white-space: nowrap; }
@@ -160,8 +171,11 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-choice[aria-disabled="true"] small { color: #ff9a8f; }
 .vt-choice[data-hint="fortune"] b::after, .vt-choice[data-hint="growth"] b::after { content: "　✦"; color: #ffe2a6; }
 
-.vt-ctrl { position: relative; height: var(--ctrl-h); }
-.vt-chips { display: flex; justify-content: center; gap: calc(0.7 * var(--u)); padding: calc(1.2 * var(--u)) calc(1.2 * var(--u)) 0; }
+.vt-ctrl { position: relative; height: var(--bottom-h); pointer-events: auto;
+  background: linear-gradient(180deg, #1a1328f2 0%, #0d0915fa 60%, #0b0812 100%); box-shadow: 0 calc(-0.1 * var(--u)) 0 #ffffff1f, 0 calc(-1.2 * var(--u)) calc(2.4 * var(--u)) #0008; }
+/* 上画面と下画面の境目（細い光の線） */
+.vt-ctrl::before { content: ""; position: absolute; left: 8%; right: 8%; top: 0; height: calc(0.1 * var(--u)); background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--acc) 55%, #fff) 50%, transparent); opacity: 0.55; }
+.vt-chips { display: flex; justify-content: center; align-items: center; gap: calc(0.7 * var(--u)); height: var(--chips-h); padding: calc(0.7 * var(--u)) calc(1.2 * var(--u)) 0; }
 .vt-chip { position: relative; flex: 1 1 0; min-width: 0; max-width: calc(9 * var(--u)); height: calc(5.2 * var(--u)); display: grid; place-items: center; align-content: center; gap: calc(0.2 * var(--u)); padding: 0 calc(0.4 * var(--u)); border: calc(0.1 * var(--u)) solid #ffffff2b; border-radius: calc(1.4 * var(--u)); font-size: calc(1.1 * var(--u)); font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; color: #e7e0f2; background: #ffffff14; -webkit-backdrop-filter: blur(calc(0.8 * var(--u))); backdrop-filter: blur(calc(0.8 * var(--u))); }
 .vt-chip > span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .vt-shell[data-chips="4"] .vt-chip, .vt-shell[data-chips="5"] .vt-chip { letter-spacing: 0; }
@@ -197,13 +211,14 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-glyph { width: calc(6 * var(--u)); height: calc(6 * var(--u)); fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 calc(0.2 * var(--u)) calc(0.6 * var(--u)) #0b0812); }
 .vt-a:active { transform: scale(0.94); }
 .vt-a[disabled] { filter: grayscale(1) brightness(0.7); cursor: default; } .vt-a[disabled]::before { animation: none; }
+.vt-a.idle { opacity: 0.5; box-shadow: 0 calc(1.4 * var(--u)) calc(2.6 * var(--u)) #000b; }
 .vt-a.hot { box-shadow: 0 0 0 calc(0.35 * var(--u)) #ffffffcc, 0 0 calc(4.6 * var(--u)) #fff, 0 0 calc(2 * var(--u)) var(--acc), 0 calc(1.4 * var(--u)) calc(2.6 * var(--u)) #000b; }
 
 /* 上に重ねる物（地図の一覧・シート・覆いの文字・カットイン） */
-.vt-over { position: absolute; z-index: 8; inset: 0 0 calc(var(--ctrl-h) + env(safe-area-inset-bottom, 0px)) 0; pointer-events: none; }
+.vt-over { position: absolute; z-index: 8; inset: 0 0 var(--bottom-h) 0; pointer-events: none; }
 .vt-over > * { pointer-events: auto; }
 .vt-over[hidden] { display: none; }
-.vt-shell[data-scene="cover"] .vt-over { inset: 0; }
+.vt-shell[data-scene="cover"] .vt-over:has(> .vt-cv:not([hidden])) { inset: 0; }
 
 /* 知らせ（トースト・報酬の札） */
 .vt-notices { position: absolute; z-index: 30; left: calc(2 * var(--u)); right: calc(2 * var(--u)); top: calc(7.4 * var(--u) + env(safe-area-inset-top, 0px)); display: grid; justify-items: center; gap: calc(0.6 * var(--u)); pointer-events: none; }
@@ -222,10 +237,31 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-pin-dot { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); width: calc(3.4 * var(--u)); height: calc(3.4 * var(--u)); border-radius: 50%; display: grid; place-items: center; overflow: visible; font-family: var(--mincho); font-size: calc(1.5 * var(--u)); font-weight: 900; line-height: 1; color: #1a1228; background: #fff; box-shadow: 0 0 0 calc(0.25 * var(--u)) #0b0812b3, 0 calc(0.4 * var(--u)) calc(0.8 * var(--u)) #000c; transition: background 0.2s, box-shadow 0.2s, width 0.2s, height 0.2s; }
 .vt-pin-dot img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 .vt-pin-dot > i { font-style: normal; }
-.vt-pin-dot em { position: absolute; right: calc(-0.9 * var(--u)); top: calc(-0.9 * var(--u)); min-width: calc(1.9 * var(--u)); height: calc(1.9 * var(--u)); padding: 0 calc(0.3 * var(--u)); display: grid; place-items: center; border-radius: var(--u); font-family: var(--gothic); font-style: normal; font-size: calc(1.15 * var(--u)); font-weight: 900; color: #3a2408; background: #ffe2a6; box-shadow: 0 0 0 calc(0.2 * var(--u)) #0b0812, 0 0 calc(0.8 * var(--u)) #ffcf6b; }
-.vt-pin-dot em.off { color: #fff; background: #7e748f; box-shadow: 0 0 0 calc(0.2 * var(--u)) #0b0812; }
-.vt-pin-dot em.hidane { color: #fff; background: #ff8a5c; }
-.vt-pin.off .vt-pin-dot { filter: grayscale(0.8) brightness(0.7); }
+/* 看板（VPN10）: 元の横画面の地図と同じ店のロゴ（クリーム色の札）・施設の絵（シール）を、地図の縮尺で小さく。地点の真上に立てる */
+.vt-pin-body { position: absolute; left: 0; top: 0; transform: translate(-50%, -92%); transform-origin: 50% 100%; transition: transform 0.25s var(--ease-out), filter 0.25s; }
+.vt-pin:not(.has-art) .vt-pin-body { transform: translate(-50%, -50%); transform-origin: 50% 50%; }
+.vt-pin-body .vt-pin-dot { position: relative; left: auto; top: auto; transform: none; }
+.vt-pin[aria-current="true"] .vt-pin-body { transform: translate(-50%, -92%) scale(1.22); }
+.vt-pin[aria-current="true"]:not(.has-art) .vt-pin-body { transform: translate(-50%, -50%); }
+.vt-pin-sign { position: relative; display: block; border-radius: calc(0.7 * var(--u)); }
+.vt-pin-sign.logo { padding: calc(0.45 * var(--u)) calc(0.45 * var(--u)) calc(0.35 * var(--u)); border: calc(0.1 * var(--u)) solid #d9c7a5; background: #fffaf0; box-shadow: 0 calc(0.4 * var(--u)) calc(0.9 * var(--u)) #000b; }
+.vt-pin-sign.logo.dark { background: #1f1a29; }
+.vt-pin-sign.facility { filter: drop-shadow(0 calc(0.3 * var(--u)) calc(0.6 * var(--u)) #000c); }
+.vt-pin-art { position: relative; display: block; }
+.vt-pin-art [data-store-logo="minto"] > img { filter: brightness(2) saturate(1.25); }
+.vt-pin[aria-current="true"] .vt-pin-sign.logo { border-color: #ffe9a8; box-shadow: 0 0 0 calc(0.22 * var(--u)) var(--acc), 0 0 calc(1.8 * var(--u)) var(--acc), 0 calc(0.4 * var(--u)) calc(0.9 * var(--u)) #000b; }
+.vt-pin[aria-current="true"] .vt-pin-sign.facility { filter: drop-shadow(0 0 calc(0.3 * var(--u)) #ffe9a8) drop-shadow(0 0 calc(1.2 * var(--u)) var(--acc)); }
+.vt-pin-faces { position: absolute; left: calc(-1.1 * var(--u)); top: calc(-1.5 * var(--u)); display: flex; }
+.vt-pin-faces > * { width: calc(2.7 * var(--u)); height: calc(2.7 * var(--u)); margin-right: calc(-0.7 * var(--u)); border-radius: 50%; object-fit: cover; background: #2a2040; box-shadow: 0 0 0 calc(0.16 * var(--u)) #fff, 0 calc(0.2 * var(--u)) calc(0.5 * var(--u)) #000a; }
+.vt-pin-faces > i { display: grid; place-items: center; font-style: normal; font-size: calc(1.2 * var(--u)); font-weight: 900; color: #fff; }
+.vt-pin-badge { position: absolute; right: calc(-0.9 * var(--u)); top: calc(-0.9 * var(--u)); min-width: calc(1.9 * var(--u)); height: calc(1.9 * var(--u)); padding: 0 calc(0.3 * var(--u)); display: grid; place-items: center; border-radius: var(--u); font-family: var(--gothic); font-style: normal; font-size: calc(1.15 * var(--u)); font-weight: 900; color: #3a2408; background: #ffe2a6; box-shadow: 0 0 0 calc(0.2 * var(--u)) #0b0812, 0 0 calc(0.8 * var(--u)) #ffcf6b; }
+.vt-pin-badge.off { color: #fff; background: #b5413a; box-shadow: 0 0 0 calc(0.2 * var(--u)) #0b0812; }
+.vt-pin-badge.hidane { color: #fff; background: #ff8a5c; }
+.vt-pin-lesson { position: absolute; left: 50%; bottom: calc(-1.4 * var(--u)); transform: translateX(-50%); padding: 0 calc(0.5 * var(--u)); border-radius: calc(0.6 * var(--u)); font-style: normal; font-size: calc(1 * var(--u)); font-weight: 900; line-height: 1.5; white-space: nowrap; color: #3a2408; background: #c3f7d6; }
+.vt-pin.off .vt-pin-body { filter: grayscale(0.8) brightness(0.7); }
+.vt-pin.has-art .vt-pin-hit { left: calc(-3.6 * var(--u)); top: calc(-5.6 * var(--u)); width: calc(7.2 * var(--u)); height: calc(6.4 * var(--u)); border-radius: calc(1 * var(--u)); }
+/* 全体を見る時は、看板を地図と一緒に少し縮める（重なりすぎないように） */
+.vt-map.overview .vt-pin { transform: scale(calc(var(--inv, 1) * 0.62)); }
 .vt-pin[aria-current="true"] { z-index: 3; }
 .vt-pin[aria-current="true"] .vt-pin-dot { width: calc(4.6 * var(--u)); height: calc(4.6 * var(--u)); background: var(--acc); box-shadow: 0 0 0 calc(0.25 * var(--u)) #0b0812cc, 0 0 0 calc(0.45 * var(--u)) var(--acc), 0 0 calc(2 * var(--u)) var(--acc); }
 .vt-pin-hit { position: absolute; left: calc(-2.6 * var(--u)); top: calc(-2.6 * var(--u)); width: calc(5.2 * var(--u)); height: calc(5.2 * var(--u)); border-radius: 50%; }
@@ -313,9 +349,10 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-wait i { width: calc(0.8 * var(--u)); height: calc(0.8 * var(--u)); border-radius: 50%; background: var(--acc); opacity: 0.3; animation: vt-wait 1.2s ease-in-out infinite; }
 .vt-wait i:nth-child(2) { animation-delay: 0.2s; } .vt-wait i:nth-child(3) { animation-delay: 0.4s; }
 @keyframes vt-wait { 50% { opacity: 1; transform: translateY(calc(-0.4 * var(--u))); } }
-.vt-tip { position: absolute; left: 0; right: 0; bottom: calc(9 * var(--u) + env(safe-area-inset-bottom, 0px)); text-align: center; font-size: calc(1.3 * var(--u)); font-weight: 700; letter-spacing: 0.2em; color: #ffffffb3; animation: vt-cv-next 1.6s ease-in-out infinite; pointer-events: none; }
+.vt-tip { position: absolute; left: 0; right: 0; bottom: calc(2.4 * var(--u)); text-align: center; font-size: calc(1.3 * var(--u)); font-weight: 700; letter-spacing: 0.2em; color: #ffffffb3; animation: vt-cv-next 1.6s ease-in-out infinite; pointer-events: none; }
 .vt-tip[hidden] { display: none; }
-.vt-shell[data-scene="cover"] .vt-body { opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+/* 覆いの間も下画面はそのまま（指の位置を変えない）。補助ボタンは空で、十字キーは薄く、丸ボタンは「次へ」 */
+.vt-shell[data-scene="cover"] .vt-telop { visibility: hidden; }
 
 /* 登場カットイン（案A 縦のポスター: 上に人物、真ん中に斜めの帯と名前、下に一言） */
 .vt-cv { --art-w: calc(52 * var(--u)); --art-top: calc(1.5 * var(--u)); --art-x: calc(19.5 * var(--u)); --band-top: 57%; --focus: 0.5; --nsz: calc(var(--name-size, 6) * var(--u));
@@ -401,14 +438,14 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-sheet-host .retro-sheet .rs-fill { border-radius: inherit; }
 .vt-sheet-host .retro-sheet img { border-radius: calc(0.6 * var(--u)); }
 .vt-shell[data-scene="sheet"] .vt-telop { visibility: hidden; }
-.vt-shell[data-scene="sheet"] .vt-over { inset: 0 0 calc(var(--ctrl-h) + env(safe-area-inset-bottom, 0px)) 0; }
+.vt-shell[data-scene="sheet"] .vt-over { inset: 0 0 var(--bottom-h) 0; }
 
 @media (prefers-reduced-motion: reduce) {
   .vt-shell *, .vt-shell *::before, .vt-shell *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
 
 /* ───────── 心得の盤（本編の盤の要素を縦の外枠へ移して、縦長の論理の大きさ・幅 720 で並べ直す。js/looks/vertical/board.js） ───────── */
-.vt-board-host { position: absolute; z-index: 7; left: 0; right: 0; top: env(safe-area-inset-top, 0px); bottom: calc(var(--ctrl-h) + env(safe-area-inset-bottom, 0px)); overflow: hidden; }
+.vt-board-host { position: absolute; z-index: 7; left: 0; right: 0; top: env(safe-area-inset-top, 0px); bottom: var(--bottom-h); overflow: hidden; }
 .vt-board-frame { position: absolute; left: 0; top: 0; transform-origin: 0 0; font-size: 16px; line-height: 1.5; }
 .vt-board-frame > .gboard { position: absolute; inset: 0; grid-template-rows: auto minmax(0, 1fr) auto; }
 .vt-board-frame .gb-header { min-height: 64px; gap: 12px; padding: 0 14px; }

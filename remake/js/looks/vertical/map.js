@@ -17,12 +17,38 @@ const liveMap = () => document.querySelector("#screen > .map:not(.done)");
 const livePins = () => [...(liveMap()?.querySelectorAll(".map-pins > .spot-pin") || [])].filter((pin) => pin.style.visibility !== "hidden");
 const livePin = (id) => livePins().find((pin) => pin.dataset.spot === id);
 
+/** 本編のステージの拡縮（1280×720 を画面に合わせる倍率）。見えないまま動いているので、レイアウトの大きさから測れる。 */
+function stageScale() {
+  const stage = document.getElementById("stage");
+  const rect = stage?.getBoundingClientRect();
+  return rect?.width && stage.offsetWidth ? rect.width / stage.offsetWidth : 1;
+}
+
+/**
+ * ピンの看板の絵（VPN10: 元の横画面の地図と同じく、店のロゴ・施設の絵を地図の中に小さく出す）。
+ * 本編のピンの絵（core/store-logos.js の店のロゴ・daily/facility-icons.js の施設の絵）を、ステージ上の見た目の大きさと一緒に読む。
+ */
+function readArt(pin, k) {
+  const node = pin.querySelector(".ico > .store-logo, .ico > .facility-icon");
+  if (!node) return null;
+  const rect = node.getBoundingClientRect();
+  return {
+    node, kind: node.classList.contains("store-logo") ? "logo" : "facility",
+    key: node.dataset.storeLogo || node.dataset.facility || "",
+    dark: node.classList.contains("on-dark"),
+    w: rect.width / k, h: rect.height / k, // ステージ（1280 幅）の上での大きさ
+  };
+}
+
 function readPins() {
+  const k = stageScale();
   return livePins().map((pin) => {
     const name = textOf(pin.querySelector(".sub-label"));
     const def = spotDef(pin.dataset.spot);
     const badge = pin.querySelector(".evt-badge");
     return {
+      art: readArt(pin, k),
+      lesson: textOf(pin.querySelector(".lesson-badge")),
       id: pin.dataset.spot || "",
       name,
       status: textOf(pin.querySelector(".pin-status")),
@@ -107,7 +133,9 @@ export function createMapScene(frame) {
       y = h * 0.4 - mh * (spot?.y ?? 45) / 100;
     }
     if (!overview) { x = Math.min(0, Math.max(w - mw, x)); y = Math.min(0, Math.max(h * 0.86 - mh, y)); }
+    const resized = !viewBox || viewBox.mw !== mw;
     viewBox = { x, y, scale, w, h, mw, mh };
+    if (resized) renderPins();
     pan.classList.toggle("no-anim", !animate);
     pan.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
     pan.style.setProperty("--inv", String(1 / scale));
@@ -131,15 +159,35 @@ export function createMapScene(frame) {
     ? `<img src="${escapeHtml(pin.people[0].src)}" alt="">`
     : `<i>${escapeHtml(pin.glyph)}</i>`;
 
+  /** 看板の絵: 本編のピンの絵をそのまま写し、地図の縮尺（地図の絵の幅 / 1280）に合わせて縮める。絵の無い行き先は一文字の丸。 */
+  function signOf(pin, mapK) {
+    if (!pin.art) return el("span.vt-pin-dot", [el("i", { text: pin.glyph })]);
+    const w = pin.art.w * mapK, h = pin.art.h * mapK;
+    const copy = pin.art.node.cloneNode(true);
+    const layoutW = pin.art.node.offsetWidth || pin.art.w, layoutH = pin.art.node.offsetHeight || pin.art.h;
+    copy.removeAttribute("role");
+    Object.assign(copy.style, { position: "absolute", left: "0", top: "0", transformOrigin: "0 0", transform: `scale(${(w / layoutW).toFixed(4)}, ${(h / layoutH).toFixed(4)})` });
+    return el(`span.vt-pin-sign.${pin.art.kind}${pin.art.dark ? ".dark" : ""}`, { "aria-hidden": "true" }, [
+      el("span.vt-pin-art", { style: { width: `${w.toFixed(1)}px`, height: `${h.toFixed(1)}px` } }, [copy]),
+    ]);
+  }
+
   function renderPins() {
-    const sig = JSON.stringify(list.map((pin) => [pin.id, pin.x, pin.y, pin.badge, pin.off, pin.closed, pin.people.map((p) => p.src), pin.id === sel, pin.guide]));
+    const mapK = (viewBox?.mw || 0) / 1280 || 0.7;
+    const sig = JSON.stringify([mapK.toFixed(3), list.map((pin) => [pin.id, pin.x, pin.y, pin.badge, pin.off, pin.closed, pin.people.map((p) => p.src), pin.id === sel, pin.guide, pin.art?.key, pin.art?.w, pin.lesson])]);
     if (sig === pinSig) return;
     pinSig = sig;
-    pins.replaceChildren(...list.map((pin) => el(`div.vt-pin${pin.off ? ".off" : ""}${pin.closed ? ".closed" : ""}${pin.guide ? ".guide" : ""}`, {
+    pins.replaceChildren(...list.map((pin) => el(`div.vt-pin${pin.off ? ".off" : ""}${pin.closed ? ".closed" : ""}${pin.guide ? ".guide" : ""}${pin.art ? ".has-art" : ""}`, {
       style: { left: `${pin.x}%`, top: `${pin.y}%` }, dataset: { spot: pin.id }, "aria-current": String(pin.id === sel),
     }, [
       el("i.vt-pin-ring"),
-      el("span.vt-pin-dot", { html: `${avatar(pin)}${pin.closed ? '<em class="off">休</em>' : pin.badge ? `<em${pin.hidane ? ' class="hidane"' : ""}>${escapeHtml(pin.badge)}</em>` : ""}` }),
+      el("span.vt-pin-body", [
+        signOf(pin, mapK),
+        // 居る人の顔は、看板の左上に小さく（元の地図の顔の列と同じ役割）
+        pin.art && pin.people.length ? el("span.vt-pin-faces", pin.people.slice(0, 2).map((person) => person.src ? el("img", { src: person.src, alt: "" }) : el("i", { text: "?" }))) : null,
+        pin.closed ? el("em.vt-pin-badge.off", { text: "休" }) : pin.badge ? el(`em.vt-pin-badge${pin.hidane ? ".hidane" : ""}`, { text: pin.badge }) : null,
+        pin.lesson ? el("em.vt-pin-lesson", { text: pin.lesson }) : null,
+      ]),
       el("button.vt-pin-hit", { type: "button", "aria-label": pin.speech, dataset: { test: `vt-pin-${pin.id}` },
         onclick: (event) => { event.stopPropagation(); if (pin.id === sel && !overview) go(); else select(pin.id); } }),
     ])));
