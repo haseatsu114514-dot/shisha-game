@@ -78,23 +78,28 @@ await suite("desert-ride-feel", async check => {
       d.feel.stopPerfect = 30;
       const stretchLife = d.feel.stretchJump; d.feel.stretchJump = [stretchLife[0], stretchLife[1], 0.5]; // 伸びを長くして、コマの速さに左右されずに見る
       g.boostT = 0; g.speed = 30; d.autoplay("perfect");
-      const perfectBefore = g.stats.perfect; let stretch = null, half = null, late = null;
+      const perfectBefore = g.stats.perfect; let stretch = null, half = null, late = null, rise = 0, grains = 0;
       await new Promise(resolve => { const timer = setInterval(() => {
         if (g.air > 0 && g.airKind === "big") {
           const progress = 1 - g.air / g.airTotal, fx = d.fx;
           if (!stretch && g.airTotal - g.air < 0.25) stretch = fx.squash;
           if (Math.abs(progress - 0.5) < 0.03) half = fx.shownHeight / g.airPeak;
           if (Math.abs(progress - d.feel.jumpApex) < 0.03) late = fx.shownHeight / g.airPeak;
+          rise = Math.max(rise, fx.rise); grains = Math.max(grains, fx.grains); // 派手なアクション（DSR99）: カメラの上がりと、跳ね上げた砂つぶ
         }
         if (g.stats.perfect > perfectBefore && d.fx.hitStop > 0) { clearInterval(timer); resolve(); }
       }, 2); });
       const landed = { squash: d.fx.squash, rings: d.fx.rings, lastLand: d.fx.lastLand, apex: d.feel.jumpApex };
       d.endHitStop(); d.feel.stopPerfect = 0.06; d.feel.stretchJump = stretchLife;
-      return { stretch, half, late, landed };
+      return { stretch, half, late, landed, rise, grains, riseAfter: d.fx.rise, riseMax: d.feel.airRiseMax };
     });
     assert(jump.stretch && jump.stretch[0] < 1 && jump.stretch[1] > 1, `take-off stretches tall (${jump.stretch})`);
     assert(jump.landed.apex > 0.5 && jump.half < jump.late && jump.late > 0.99, `the apex comes late, so the fall is faster than the rise (${jump.half} at half, ${jump.late} at the apex)`);
     assert(jump.landed.squash[0] > 1.1 && jump.landed.squash[1] < 0.9, `a perfect landing squashes wide (${jump.landed.squash})`);
+    // 大ジャンプ（DSR99）: カメラも一緒に上がり（上限まで）、踏み切りで砂つぶが跳ね上がる。着地すれば地面へ戻る
+    assert(jump.rise > 0.6 && jump.rise <= jump.riseMax + 1e-6, `the camera rises with a big jump (${jump.rise} of ${jump.riseMax})`);
+    assert(jump.grains >= 10, `take-off kicks up sand grains (${jump.grains})`);
+    assert(jump.riseAfter < jump.rise, `the camera comes back down on landing (${jump.riseAfter})`);
     assert.equal(jump.landed.lastLand, "perfect"); assert(jump.landed.rings.includes("perfect"), "the landing ring carries the grade (gold for perfect)");
     // ゴール: 結果はその場で確定するが、カードはすぐ重ねない。幕の先へ滑り抜ける余韻（GOAL!・紙吹雪）を、ジャンプで飛ばせる
     await ride(page, () => { const d = window.__desertRide; d.feel.goalAfter = 600; d.autoplay("expert"); d.setSpeedUp(8); });
@@ -125,7 +130,7 @@ await suite("desert-ride-feel", async check => {
     assert.equal(await page.locator(t("desert-result")).getAttribute("data-rank"), "B");
     const total = Number((await page.locator(t("desert-total")).locator("strong").innerText()).replace(/[^\d]/g, ""));
     assert.equal(await page.locator(t("desert-next-rank")).innerText(), `次の評価 A まで あと ${(10000 - total).toLocaleString("ja-JP")}点`); // A の境目（2026-11-25 に 8,000 → 10,000。2026-11-17 に 7,000 → 8,000。2026-11-13 に 2,000m へ延ばして 6,000 → 7,000）
-    assert.match(await page.locator(t("desert-tip")).innerText(), /空中で ← か → を押し続けると回転/);
+    assert.match(await page.locator(t("desert-tip")).innerText(), /空中で「左へ」か「右へ」を押し続けると回転/); // キーの名前は出さない（MGV05）
     assert.equal(await ride(page, () => window.__desertRide.results.length), 2);
     // 結果のカードは舞台の中に収まる（行が増えても、上が切れない）
     const card = await page.locator(t("desert-result")).evaluate(node => ({ scroll: node.scrollHeight, client: node.clientHeight }));
@@ -148,10 +153,19 @@ await suite("desert-ride-feel", async check => {
     await page.waitForFunction(() => window.__desertRide.game.falls === 1);
     const fall = await ride(page, () => window.__desertRide.fx);
     assert.deepEqual({ hitStop: fall.hitStop, shake: fall.shake.t, flash: fall.flash.t, dark: fall.flashDark, squash: fall.squash }, { hitStop: 0, shake: 0, flash: 0, dark: 0, squash: [1, 1] });
-    await ride(page, () => { const d = window.__desertRide; d.autoplay("perfect"); d.setSpeedUp(8); });
+    await ride(page, () => {
+      const d = window.__desertRide; d.autoplay("perfect"); d.setSpeedUp(8);
+      // 動き軽減では、大ジャンプでもカメラは上がらず、足した砂つぶ（DSR99）も出ない。ゴールまでの最大値を見る
+      window.__calm = { rise: 0, grains: 0, jumps: 0 };
+      window.__calmTimer = setInterval(() => { const fx = d.fx, g = d.game; if (!g) return;
+        __calm.rise = Math.max(__calm.rise, fx.rise); __calm.grains = Math.max(__calm.grains, fx.grains); if (g.air > 0 && g.airKind === "big") __calm.jumps += 1; }, 4);
+    });
     await page.waitForFunction(() => window.__desertRide.fx.goal !== null, null, { timeout: 90000 });
     const goal = await ride(page, () => window.__desertRide.fx);
     assert.deepEqual({ confetti: goal.confetti, hitStop: goal.hitStop, flash: goal.flash.t }, { confetti: 0, hitStop: 0, flash: 0 });
+    const calm = await ride(page, () => { clearInterval(window.__calmTimer); return window.__calm; });
+    assert(calm.jumps > 0, "the calm run did take big jumps");
+    assert.deepEqual([calm.rise, calm.grains], [0, 0], `reduced motion keeps the camera on the ground and adds no sand grains (${JSON.stringify(calm)})`);
     await phase(page, "result");
   });
 });
