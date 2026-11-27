@@ -86,12 +86,14 @@
 .ax-tag > * { margin-block: -0.6rem; } .ax-tag .ic { font-size: 1.9rem; }
 .ax-tag:active { transform: scale(0.95); } .ax-tag[disabled] { opacity: 0.5; }
 .ax-tag[data-on="true"] { border-image-source: url("../../img/ui/axe_throw/tag-selected-amber.webp"); color: #2a1305; opacity: 1; }
-.ax-tools { flex: none; display: flex; align-items: center; gap: 0.7rem; margin-top: 0.4rem; }
-.ax-tools .ax-tag { padding: 0 0.7rem; }
-.ax-live { margin-left: auto; display: grid; grid-template-columns: auto auto; align-items: baseline; justify-items: end; column-gap: 0.6rem; padding-right: 0.4rem; line-height: 1.15; }
+.ax-tools { flex: none; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; }
+.ax-tools .ax-tag { flex: none; padding: 0 0.5rem; white-space: nowrap; }
+.ax-tools [data-act="ax-focus"] { min-width: 12rem; } /* 集中→集中中→使用済み で、横の並びが動かないように */
+/* 今の刃先: 見出しの下に点。落下する回転の間は、見出しの所に理由を出す */
+.ax-live { margin-left: auto; min-width: 0; display: grid; justify-items: end; padding-right: 0.3rem; line-height: 1.12; white-space: nowrap; }
 .ax-live[hidden] { display: none; }
-.ax-live small { font-size: 1.2rem; font-weight: 700; color: #c9b68f; } .ax-live b { font-size: 2.5rem; color: var(--orange); font-variant-numeric: tabular-nums; }
-.ax-live em { grid-column: 1 / -1; min-height: 1.4rem; font-style: normal; font-size: 1.15rem; font-weight: 700; color: #ff9a8f; white-space: nowrap; }
+.ax-live small { font-size: 1.16rem; font-weight: 700; color: #c9b68f; } .ax-live b { font-size: 2.4rem; color: var(--orange); font-variant-numeric: tabular-nums; }
+.ax-live em { font-style: normal; font-size: 1.05rem; font-weight: 700; color: #ff9a8f; } .ax-live em:empty, .ax-live[data-drop="true"] small { display: none; }
 .ax-call { flex: none; align-self: stretch; margin-top: 0.2rem; min-height: 5.6rem; border-image-source: url("../../img/ui/axe_throw/tag-slate-blue.webp"); justify-content: flex-start; gap: 1rem; }
 .ax-call .ic { font-size: 2.5rem; color: #9cecff; }
 .ax-call > span { display: flex; align-items: baseline; gap: 1rem; min-width: 0; } .ax-call b { font-size: 1.76rem; } .ax-call small { font-size: 1.36rem; font-weight: 700; color: #cfe9ff; white-space: nowrap; }
@@ -103,6 +105,7 @@
 .ax-primary b { font-size: 2.6rem; font-weight: 900; letter-spacing: 0.08em; }
 .ax-primary-icon { width: 3.8rem; height: 3.8rem; display: grid; place-items: center; border-radius: 50%; font-size: 2.3rem; color: #ffd9a8; background: #2a1305; }
 .ax-primary:active { transform: scale(0.97); filter: brightness(0.92); }
+.ax-primary[data-fill="true"] { flex: 1 1 auto; } .ax-primary[data-fill="true"] b { font-size: 3rem; } .ax-primary[data-fill="true"] .ax-primary-icon { width: 4.4rem; height: 4.4rem; font-size: 2.6rem; }
 .ax-primary[data-wide="true"] { flex: 1 1 auto; } .ax-primary[data-wide="true"] b { font-size: 3.4rem; } .ax-primary[data-wide="true"] .ax-primary-icon { width: 5rem; height: 5rem; font-size: 3rem; }
 .ax-pad[data-on-target="true"] .ax-primary[data-wide="true"] { border-image-source: url("../../img/ui/axe_throw/button-throw-green.webp"); color: #0f2a12; }
 .ax-pad[data-on-target="true"] .ax-primary[data-wide="true"] .ax-primary-icon { background: #0f2a12; color: #c8f2bd; }
@@ -158,7 +161,7 @@
 .ax-sum-throws { display: flex; gap: 0.8rem; padding: 0; list-style: none; }
 .ax-sum-throws li { display: flex; align-items: baseline; gap: 0.5rem; min-width: 6.4rem; justify-content: center; height: 3.6rem; padding-top: 0.5rem; border-radius: 1rem; background: #0b100e99; box-shadow: inset 0 0 0 0.1rem #ffffff24; }
 .ax-sum-throws i { font-style: normal; font-size: 1.1rem; color: #c9b68f; } .ax-sum-throws strong { font-size: 2.2rem; line-height: 1; }
-.ax-sum-stats { font-size: 1.3rem; line-height: 1.5; text-align: center; color: #d8d0c0; word-break: keep-all; overflow-wrap: anywhere; }
+.ax-sum-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 1.3rem; font-size: 1.3rem; line-height: 1.5; color: #d8d0c0; } .ax-sum-stats span { white-space: nowrap; }
 .ax-sum-goals { width: 100%; margin: 0; }
 .ax-sum-buttons { width: 100%; display: flex; align-items: stretch; gap: 1rem; margin-bottom: -0.8rem; }
 .ax-sum-buttons .ax-tag { flex: 1 1 0; min-height: 6.4rem; padding: 0 0.4rem; font-size: 1.8rem; white-space: nowrap; }

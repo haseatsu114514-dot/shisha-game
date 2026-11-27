@@ -8,7 +8,9 @@
 // 本編の進行・好感度・保存には触れない（返事を選んでも、この画面の中だけで終わる）。音は鳴らさない。
 
 const DATA_URL = new URL("../../../data/lime_messages.json", import.meta.url).href;
-const ASSETS = new URL("../../../assets/", import.meta.url).href;
+// アイコンの置き場は、フォルダ（ui/lime）まで書く。公開物の軽量化（remake/tools/slim_deploy.py）は、ここの書き方から「直接読む元PNG」を見分けるので、
+// 置き場の根もとだけを書くと、全部の元PNGを残すことになり、公開物が重くなる（この説明の中にも、置き場の根もとを引用符つきで書かない）
+const LIME_ICONS = new URL("../../../assets/ui/lime/", import.meta.url).href;
 let dataPromise = null;
 /** 台本（正本）を一度だけ読む。一覧（PC）に何台並んでも通信は1回。 */
 const loadData = () => (dataPromise ||= fetch(DATA_URL).then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); }));
@@ -216,7 +218,7 @@ export class LimeScene {
 
   avatar(account, cls = "") {
     const icon = ACCOUNTS[account]?.icon;
-    return icon ? `<img class="lm-face ${cls}" src="${ASSETS}ui/lime/${icon}" alt="">` : `<span class="lm-face blank ${cls}">？</span>`;
+    return icon ? `<img class="lm-face ${cls}" src="${LIME_ICONS}${icon}" alt="">` : `<span class="lm-face blank ${cls}">？</span>`;
   }
 
   /* ── 上の帯・下の返事の欄 ── */
@@ -348,7 +350,7 @@ export class LimeScene {
     Object.assign(this, { view: "thread", account, choice: null, lastSide: null });
     const { chat } = this.refs, items = this.thread(account);
     this.el.dataset.lmView = "thread";
-    if (ACCOUNTS[account]?.icon) this.refs.amb.src = `${ASSETS}ui/lime/${ACCOUNTS[account].icon}`;
+    if (ACCOUNTS[account]?.icon) this.refs.amb.src = `${LIME_ICONS}${ACCOUNTS[account].icon}`;
     this.showHead();
     chat.classList.remove("list");
     chat.innerHTML = "";

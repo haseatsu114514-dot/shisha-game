@@ -764,6 +764,7 @@ export class AxeScene {
     r.primary.hidden = !["choice", "horizontal", "vertical", "result"].includes(phase);
     r.primary.querySelector("b").textContent = { choice: "構える", horizontal: "横を止める", vertical: "縦を止める", result: this.shots.length === RULES.throws ? "結果を見る" : "次の一投へ" }[phase] || "";
     r.primary.dataset.wide = String(phase === "horizontal" || phase === "vertical");
+    r.primary.dataset.fill = String(phase === "choice"); // 構える→横→縦を、同じ場所の親指で続けて押せるように
     if (phase === "result" && last) {
       const fb = shotFeedback(last, { inputMode: "tap-pull", source: this.lastInput, closed: closuresOf(this.shots, this.shots.length, RULES.throws, OPTIONS.division) });
       r.result.dataset.tone = fb.tone;
@@ -806,7 +807,7 @@ export class AxeScene {
     q(".ax-rank").dataset.rank = rankOf(sum, RULES.max);
     q(".ax-sum-score em").textContent = `「${titleOf(this.shots, RULES.max)}」`;
     q(".ax-sum-throws").innerHTML = this.shots.map((s, i) => `<li><i>${i + 1}</i><strong>${s.score}</strong></li>`).join("");
-    q(".ax-sum-stats").textContent = `平均 ${stats.average.toFixed(2)}点/投 · ブル ${stats.bulls} · キル ${stats.killshots}/${stats.calls} · 落下 ${stats.drops} · チャレンジ ${done}/${this.goalIds.length}`;
+    q(".ax-sum-stats").innerHTML = [`平均 ${stats.average.toFixed(2)}点/投`, `ブル ${stats.bulls}`, `キル ${stats.killshots}/${stats.calls}`, `落下 ${stats.drops}`, `チャレンジ ${done}/${this.goalIds.length}`].map((s) => `<span>${s}</span>`).join("");
     q(".ax-sum-goals").innerHTML = this.goalsHtml(true);
   }
 
