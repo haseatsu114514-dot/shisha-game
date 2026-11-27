@@ -302,13 +302,13 @@ await suite("desert-ride", async check => {
     g = await game(page);
     assert(g.hops === 1 || g.bigJumps === 1, "Space jumps");
     assert(await page.locator(t("desert-left")).isVisible() && await page.locator(t("desert-jump")).isVisible(), "touch buttons are shown on PC too");
-    // Codex の採用画像（遠景の空・陸、主人公・ヌール・なるの背面、岩、旗、ゴール、砂煙）を読み込んで描いている
+    // Codex の採用画像（遠景の空・陸、主人公・ヌール・なるの背面、岩、旗、ゴール、砂煙）を読み込んで描いている。title_bg は入口の背景（2026-11-27 に生成・DSR98）
     const loaded = await page.evaluate(() => performance.getEntriesByType("resource").map(entry => entry.name).filter(name => name.includes("/img/ui/desert_ride/")).map(name => name.split("/").pop()).sort());
     assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "backdrop_dusk_land.webp", "backdrop_dusk_sky.webp", "flag_pole.webp", "goal_banner.webp",
       "rider_brace.webp", "rider_fall.webp", "rider_jump.webp", "rider_lean_left.webp", "rider_lean_right.webp",
       "rider_noor_brace.webp", "rider_noor_fall.webp", "rider_noor_jump.webp", "rider_noor_lean_left.webp", "rider_noor_lean_right.webp", "rider_noor_ride.webp",
       "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp", "spin_hajime_045.webp", "spin_hajime_090.webp", "spin_hajime_135.webp", "spin_hajime_180.webp",
-      "spin_noor_045.webp", "spin_noor_090.webp", "spin_noor_135.webp", "spin_noor_180.webp"]);
+      "spin_noor_045.webp", "spin_noor_090.webp", "spin_noor_135.webp", "spin_noor_180.webp", "title_bg.webp"]);
     // 空中トリックとブーストを使う理想の滑り: S、ヌールに勝つ。360 以上を決めるとカットインが走る
     await page.evaluate(() => {
       window.__cutins = [];

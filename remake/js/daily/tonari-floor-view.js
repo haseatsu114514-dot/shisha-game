@@ -1312,7 +1312,15 @@ export function runTonariFloor({
               ])) : [el("li", {}, [el("small", { text: "提供できた一台がありませんでした" })])]),
             ]),
           ]),
-          el("p.tf-slip-counts", { text: `いい調整 ${result.counts.tend}回・いいケア ${result.counts.care}回・追加ドリンク ${result.counts.drink}杯・おかわり ${result.counts.extend}人・フィーバー ${result.fevers}回${result.streak >= 2 ? `・ぴったり ${result.streak}連続` : ""}` }),
+          // 数の内訳は、印と数で見せる（2026-11-27 オーナー「文字で説明しすぎず、UIやボタンで視覚的に」・TFL67）。名前は読み上げ用に残し、文面は前と同じ
+          el("p.tf-slip-counts", {}, [
+            ["add", "いい調整", result.counts.tend, "回"], ["talk", "いいケア", result.counts.care, "回"], ["drink", "追加ドリンク", result.counts.drink, "杯"],
+            ["top", "おかわり", result.counts.extend, "人"], ["lamp", "フィーバー", result.fevers, "回"],
+            ...(result.streak >= 2 ? [["star", "ぴったり", result.streak, "連続"]] : []),
+          ].flatMap(([icon, label, value, unit], index) => [
+            index ? el("span.tf-count-sep", { text: "・" }) : null,
+            el("span.tf-count", { title: label }, [glyph(icon), el("span.tf-count-name", { text: `${label} ` }), el("b", { text: String(value) }), el("span.tf-count-unit", { text: unit })]),
+          ])),
           // 大入りの夜は、紙吹雪で祝う（文字は足さない）
           result.rank === "S" ? el("div.tf-confetti", { "aria-hidden": true }, Array.from({ length: 22 }, (_, i) => el("i", { style: { "--i": String(i) } }))) : null,
           el("p.tf-slip-sumi", {}, [
