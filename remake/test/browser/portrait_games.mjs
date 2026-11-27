@@ -35,7 +35,11 @@ await suite("portrait-games", async check => {
       const root = page.locator('[data-test="desert-ride"]');
       assert.equal(await root.getAttribute("data-layout"), "portrait");
       assert.equal(await page.evaluate(() => document.documentElement.dataset.rotateGuard ?? null), null, "no rotate guard in the portrait frame");
-      await boxesInside(page, ['[data-test="desert-start"]', '[data-test="desert-practice"]', '[data-test="desert-leave"]', '[data-test="desert-help"]', '[data-test="desert-tier"]'], { tap: 44 });
+      await boxesInside(page, ['[data-test="desert-start"]', '[data-test="desert-practice"]', '[data-test="desert-leave"]', '[data-test="desert-help"]', '[data-test="desert-tier"]', '[data-test="desert-tier-naru"]'], { tap: 44 });
+      // 段は本編と同じ解放（DSR107）: 最初は初級だけ。なるは4枚目の札で、開くまでは「？？？」
+      assert.deepEqual(await page.evaluate(() => window.__desertRide.tiers), ["easy"]);
+      assert.equal(await page.locator('[data-test="desert-tier-naru"]').isDisabled(), true);
+      assert.equal((await page.locator('[data-test="desert-tier-naru"]').innerText()).trim(), "？？？");
       await page.evaluate(() => window.__desertRide.start("run", "noor"));
       await page.waitForFunction(() => window.__desertRide.mode === "run" && window.__desertRide.game, null, { timeout: 30000 });
       await page.evaluate(() => window.__desertRide.skipCountdown());

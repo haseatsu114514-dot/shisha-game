@@ -25,8 +25,8 @@ await suite("debug-tools", async check => {
       assert.equal(await close.isVisible(), false, `${id}: no return button is overlaid on the game`);
       assert.equal(await close.evaluate(node => node.parentElement.dataset.test), "debug-panel");
       assert.match(await page.locator(t("debug-toggle")).innerText(), /終了/, "the visible toggle tells how to exit");
-      // 砂丘: メニューからなるとも勝負できる。「なると勝負」はメニューを通さず、なるとの本番から始まる（2026-11-25）
-      if (id === "desert") await page.locator(t("desert-start-naru")).waitFor({ timeout: 30000 });
+      // 砂丘: メニューからなるとも勝負できる（なるは段の札の4枚目・DSR107）。「なると勝負」はメニューを通さず、なるとの本番から始まる（2026-11-25）
+      if (id === "desert") await page.locator(`${t("desert-tier-naru")}:not([disabled])`).waitFor({ timeout: 30000 });
       if (id === "desert-naru") {
         await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "run" && window.__desertRide?.raceWith === "naru", null, { timeout: 60000 });
         assert.equal(await page.locator(t("desert-ride")).getAttribute("data-rival"), "naru");

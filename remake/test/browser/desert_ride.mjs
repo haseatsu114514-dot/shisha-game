@@ -370,7 +370,12 @@ await suite("desert-ride", async check => {
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_desert_ride_preview")).beatNoor), true);
     await page.locator(t("desert-page-naru")).waitFor();
     await page.locator(t("desert-page-start")).click();
-    await page.locator(t("desert-start-naru")).click();
+    // なるは段の札の4枚目（DSR107）。開いた札を選んで「滑る」
+    assert.equal(await page.locator(t("desert-tier-naru")).isDisabled(), false, "Naru's card is open after beating Noor on the preview page");
+    assert.equal(await page.locator(t("desert-start-naru")).count(), 0, "no separate Naru button on the menu");
+    await page.locator(t("desert-tier-naru")).click();
+    assert.equal(await page.locator(t("desert-tier-naru")).getAttribute("aria-checked"), "true");
+    await page.locator(t("desert-start")).click();
     await phase(page, "run");
     assert.equal(await page.evaluate(() => window.__desertRide.raceWith), "naru");
     assert.equal(await page.locator(t("desert-race-gap")).innerText(), "VS なる");
@@ -393,9 +398,14 @@ await suite("desert-ride", async check => {
       const chips = [...document.querySelectorAll('[data-test="desert-tier"]')].map(node => ({ tier: node.dataset.tier, box: rect(node),
         textInside: [...node.children].every(child => inside(rect(child), rect(node))) && node.scrollWidth <= node.clientWidth + 1,
         font: Math.min(...[...node.children].map(child => parseFloat(getComputedStyle(child).fontSize))) }));
-      return { card, stage, chips, start: rect(document.querySelector('[data-test="desert-start"]')), cardInStage: inside(card, stage), chipsInCard: chips.every(chip => inside(chip.box, card)) };
+      const naruNode = document.querySelector('[data-test="desert-tier-naru"]');
+      const naru = naruNode && { tier: "naru", box: rect(naruNode), textInside: [...naruNode.children].every(child => inside(rect(child), rect(naruNode))) && naruNode.scrollWidth <= naruNode.clientWidth + 1,
+        font: Math.min(...[...naruNode.children].filter(child => child.tagName !== "IMG").map(child => parseFloat(getComputedStyle(child).fontSize))) };
+      return { card, stage, chips: naru ? [...chips, naru] : chips, start: rect(document.querySelector('[data-test="desert-start"]')), cardInStage: inside(card, stage),
+        chipsInCard: chips.every(chip => inside(chip.box, card)) && (!naru || inside(naru.box, card)) };
     });
-    assert.deepEqual(got.chips.map(chip => chip.tier), ["easy", "normal", "hard"]);
+    // 段の札3枚と、4枚目のなるの札（DSR107）
+    assert.deepEqual(got.chips.map(chip => chip.tier), ["easy", "normal", "hard", "naru"]);
     assert(got.cardInStage && got.chipsInCard, "the chips stay inside the menu card, and the card inside the stage");
     for (const chip of got.chips) {
       assert(chip.textInside, `${chip.tier}: the label and the line under it fit in the chip`);
@@ -419,6 +429,11 @@ await suite("desert-ride", async check => {
     assert(await tierChip(page, "hard").locator("small").evaluate(node => node.getBoundingClientRect().width <= 1.5 && node.dataset.kind === "word"), "the word under the stars is kept for screen readers only");
     assert.equal(await tierChip(page, "easy").locator(".dr-tier-flag").innerText(), "報酬対象外");
     assert.equal(await page.locator(".dr-tier-flag").count(), 1, "only the easy tier carries the note");
+    // なるの札（DSR107）: 開くまでは「？？？」と錠。名前も顔も、開き方の文も出さない
+    const naruCard = page.locator(t("desert-tier-naru"));
+    assert.equal(await naruCard.isDisabled(), true, "Naru's card is locked until she opens");
+    assert.equal((await naruCard.innerText()).trim(), "？？？");
+    assert.equal(await naruCard.locator("img").count(), 0, "no face before she opens");
     // 上級を選んで滑る: 岩が多い同じコース。HUD のコース名に段。回って決める滑りならヌールに勝てる
     await tierChip(page, "hard").click();
     assert.equal(await tierChip(page, "hard").getAttribute("aria-checked"), "true");
@@ -797,8 +812,9 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-help-more")).click();
     assert.match(await page.locator(t("desert-help-panel")).innerText(), /カーブでは外へ流される。曲がる向きへ切り込むほど熱が高まり、金の残像と砂しぶきが出る。刻むたびにブーストが溜まる/);
     await page.locator(t("desert-help-close")).click();
-    // なるとの勝負: スタートの合図の間だけ、人物と数字に重ならない画面の下に名乗りが出る
-    await page.locator(t("desert-start-naru")).click();
+    // なるとの勝負: スタートの合図の間だけ、人物と数字に重ならない画面の下に名乗りが出る（なるは段の札の4枚目・DSR107）
+    await page.locator(t("desert-tier-naru")).click();
+    await page.locator(t("desert-start")).click();
     await phase(page, "run");
     assert.equal((await page.locator(t("desert-versus")).innerText()).replace(/\s+/g, " "), "好敵手 VS なる"); // 2026-11-13 オーナー「裏ボスなる　とかシステム的な書き方はしないで」
     await page.waitForFunction(() => {
@@ -985,11 +1001,16 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-choose-tier")).click();
     await phase(page, "menu");
     assert.match(await tier("hard").innerText(), /クリアで白火1/);
+    // なる（DSR107）: 中級でヌールに勝っても来ない。札は「？？？」のまま
+    assert.equal(await page.locator(t("desert-tier-naru")).isDisabled(), true, "a middle-tier win does not bring Naru");
+    assert.equal((await page.locator(t("desert-tier-naru")).innerText()).trim(), "？？？");
     await tier("hard").click();
     await page.locator(t("desert-start")).click();
     await autoplayToResult(page, "expert");
     assert.equal(await page.locator(t("desert-result-tier")).innerText(), "上級");
     assert.equal(await page.locator(t("desert-tier-note")).innerText(), "サンドボードの上級をクリア！ 白火が1つ届く。");
+    // 上級クリアで、なるが開く（結果に「なると勝負」。入口のなるの札は NEW）
+    assert.equal(await page.locator(t("desert-start-naru")).count(), 1, "clearing the top tier opens Naru");
     value = await get(page);
     assert.deepEqual(value.growth.playTiers.desert.cleared, ["easy", "normal", "hard"]);
     assert.equal(value.growth.rewards["desert-hard"], true);
@@ -1031,8 +1052,9 @@ await suite("desert-ride", async check => {
     const moneyBefore = (await get(page)).money;
     await page.locator(t("ch4-go-dunes")).click();
     await phase(page, "menu");
-    // ヌールに勝った後の外出: なるが砂丘に来て、勝負の相手に加わる（来た場面は一度だけ）
-    assert.equal(await page.locator(t("desert-start-naru")).count(), 1, "after beating Noor, Naru waits at the dunes");
+    // 上級をクリアした後の外出: なるが砂丘に来て、勝負の相手に加わる（来た場面は一度だけ。DSR107）。なるは段の札の4枚目
+    assert.equal(await page.locator(t("desert-tier-naru")).isDisabled(), false, "after clearing the top tier, Naru waits at the dunes");
+    assert.equal(await page.locator(t("desert-tier-naru")).locator("b").innerText(), "なる");
     value = await get(page);
     assert.equal(value.desert.naruMet, true);
     // 段は保存から: 3段とも開いていて、前に選んだ上級が選ばれている（上級はクリア済み）
@@ -1269,6 +1291,7 @@ await suite("desert-ride", async check => {
     await go("ch4_dubai_dunes");
     await phase(page, "menu");
     assert.equal(await page.locator(t("desert-start-naru")).count(), 0, "a day for the two of them");
+    assert.equal(await page.locator(t("desert-tier-naru")).isDisabled(), true, "Naru does not come on the confession day");
     await page.locator(t("desert-leave")).click();
     await page.waitForFunction(() => (window.__remake.state.lovers || []).includes("noor"));
     await dubaiMap(1);

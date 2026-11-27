@@ -5,7 +5,7 @@ import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-ma
 // 最初は無料、その後は相場」（DSR21）: 宿の隣のカフェ・オアシス（ヌールの父の店。表にツアーデスク）で一台頼んで話すと好感度が上がる。
 // 段階の会話は♥0・1・2・3で読み、♥3の誘いで砂丘へ。2回目以降の砂丘は 6,000円（相場: ガイド付きのサンドボード単体 約150ディルハム）。
 import { readResult, resultTier, desertBestKey, desertDisplayBests, rankAtLeast, RANK_ORDER, RULES_VERSION } from "../minigames/desert-ride-model.js";
-import { recordTierClear, tierLine } from "../core/play-tiers.js";
+import { recordTierClear, tierLine, tierRecord } from "../core/play-tiers.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
 import { camelRaceRecord, CAMEL_STAGES } from "./ch4-camel-progress.js";
@@ -275,8 +275,17 @@ export function desertRecords(value) {
     naruMet: raw.naruMet === true, naruWins: integer(raw.naruWins) ?? 0 };
 }
 
-/** 本番で競える相手。ヌールに一度勝つと、なる（裏の相手）が砂丘に来る。 */
-export const desertRivals = value => desertRecords(value).wins >= 1 ? ["noor", "naru"] : ["noor"];
+/**
+ * 本番で競える相手。上級をクリアする（上級でヌールより先にゴールする）と、なる（好敵手）が砂丘に来る
+ * （DSR107・2026-11-27 オーナー「なると勝負は上級まで全部やると級みたいに解放される完じ」。それまでは、ヌールに一度勝てば来ていた）。
+ * 前の決まりで、もうなるに会っている保存（来た場面を読んだ・なると滑った記録がある）からは取り上げない。
+ * ヌールに勝ってはいたが、まだなるに会っていない保存は、上級をクリアするまで待つ。
+ */
+export const desertRivals = value => {
+  const records = desertRecords(value);
+  const met = records.naruMet || records.naruWins > 0 || !!records.bests?.naru;
+  return met || tierRecord(value, "desert").cleared.includes("hard") ? ["noor", "naru"] : ["noor"];
+};
 /** なるが初めて砂丘に来た場面を読んだ印。 */
 export function markNaruMet(value) {
   if (!value || typeof value !== "object" || !value.desert || typeof value.desert !== "object") return false;

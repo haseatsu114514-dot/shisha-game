@@ -338,7 +338,8 @@ const HOWTO = [
  * @param opts.best 表示する自己ベスト { score, rank }（保存は呼び出し側）
  * @param opts.reducedMotion 揺れ・閃光・速度線を止める
  * @param opts.guide 練習と結果のひとことを言う人の名前（既定はヌール。練習の説明はヌールの顔と吹き出しで出す）
- * @param opts.rivals 本番で競える相手（"noor"、ヌールに勝った後は "naru" も）
+ * @param opts.rivals 本番で競える相手（"noor"、なるが開いていれば "naru" も。本編は上級クリアで開く・DSR107）
+ * @param opts.naruSlot 入口の段の札の4枚目に、なるの札を置くか（既定 true。開くまでは「？？？」と鍵。第5章のように、なるが来ない日は false で札ごと出さない）
  * 三段階（#3779・core/play-tiers.js）: ヌールとの勝負（「滑る」）の段。なるとの勝負と練習は段の外。ゲームは保存を読まず、段の解放は呼び出し側が渡す。
  * @param opts.tiers 選べる段（既定は3段とも。本編は openTiers）。閉じた段は札に「〜クリアで開く」と出して押せない
  * @param opts.tier 最初に選んでおく段（本編は defaultTier。開いていなければ、開いている中でいちばん上）
@@ -354,7 +355,8 @@ export function runDesertRide(options = {}) {
 
 function startDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, startRival = null, best = null, legacyBest = null, seed, courseId, rivals = ["noor"],
   tiers = TIERS, tier = "normal", cleared = [], tierNotes = null, easyBest = null, bests = null, onTier = null,
-  reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = "ヌール", speedUp = 1, layout = "landscape" } = {}) {
+  reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = "ヌール", speedUp = 1, layout = "landscape",
+  naruSlot = true } = {}) {
   // layout: "portrait" は縦画面の試作（remake/previews/portrait-stage/frame/desert.html）だけが渡す。画面の並べ方は data-layout を見るCSSが決め、
   // 規則・採点・描く中身は横と同じ。縦では横向きの案内（回転ガード）を見張らない。既定（横）の動きは変えない。
   const portrait = layout === "portrait";
@@ -383,6 +385,9 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     let chosenTier = openTiers.includes(tier) ? tier : openTiers[openTiers.length - 1];
     const clearedTiers = new Set(Array.isArray(cleared) ? cleared.filter(t => TIERS.includes(t)) : []);
     const freshTiers = new Set();
+    // なるの札（DSR107・2026-11-27 オーナー「なると勝負は上級まで全部やると級みたいに解放される」「なるは？？？にしといて開放までは」）:
+    // 段の札の4枚目。選んでいるか（chosenNaru）と、この場で新しく開いたか（freshNaru）。なるとの勝負は段の外なので、chosenTier とは別に持つ
+    let chosenNaru = false, freshNaru = false;
     const root = el("section.desert-ride", { dataset: { test: "desert-ride", phase: "menu", reducedMotion: String(!!reducedMotion), ...(portrait ? { layout: "portrait" } : {}) }, tabindex: "-1", "aria-label": "DESERT RIDE" });
     const canvas = el("canvas.dr-canvas", { width: W, height: H, "aria-hidden": "true" });
     const ctx = canvas.getContext("2d");
@@ -657,8 +662,9 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       startPop.classList.remove("show"); versus.classList.remove("show");
       setPhase("menu");
       // ボタンは頭に印（▶・VS・旗・出口）を付け、名前は短く（「なると勝負」「練習」。読み上げは前の名前のまま）
-      const start = el("button.btn.primary.dr-button.dr-act-start", { type: "button", text: results.length ? "もう一度滑る" : "滑る", dataset: { test: "desert-start" }, onclick: () => prepareAndStart("run", "noor") });
-      const naruButton = rivals.includes("naru") ? el("button.btn.dr-button.dr-act-vs", { type: "button", text: "なると勝負", "aria-label": "なると勝負する", dataset: { test: "desert-start-naru" }, onclick: () => prepareAndStart("run", "naru") }) : null;
+      // 「滑る」は選んでいる札の相手と滑る（なるの札を選んでいれば、なるとの勝負。DSR107 で別のボタン「なると勝負」は入口から外した）
+      const start = el("button.btn.primary.dr-button.dr-act-start", { type: "button", text: results.length ? "もう一度滑る" : "滑る", dataset: { test: "desert-start" },
+        onclick: () => prepareAndStart("run", chosenNaru && rivals.includes("naru") ? "naru" : "noor") });
       const practice = el("button.btn.ghost.dr-button.dr-act-practice", { type: "button", text: "練習", "aria-label": practiced || results.length ? "練習をもう一度" : "練習から始める", dataset: { test: "desert-practice" }, onclick: () => prepareAndStart("practice") });
       const leave = el("button.btn.ghost.dr-button.dr-act-leave", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish });
       // 遊び方は「？」を開いた時だけ（#2838・ミニゲーム共通の方針）。練習は「練習から始める」が説明を兼ねる。
@@ -700,7 +706,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
           tierRow,
           bestSlot,
           oldBest ? el("p.dr-legacy-best", { text: `旧ルールの記録 ${oldBest.score.toLocaleString("ja-JP")}点 ／ ${oldBest.rank}（別記録）`, dataset: { test: "desert-legacy-best" } }) : null,
-          el("div.dr-actions", [start, naruButton, practice, leave]),
+          el("div.dr-actions", [start, practice, leave]),
         ]),
       ]));
       syncTierRow();
@@ -708,11 +714,11 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     }
     // ---- 段（#3779）: メニューの「初級／中級／上級」の札。選んだ段は「滑る」「もう一度滑る」に効く（なるとの勝負・練習は段の外） ----
     const TIER_WORD = Object.freeze({ easy: "やさしい", normal: "ふつう", hard: "手ごわい" });
-    const tierRow = el("div.dr-tiers", { role: "radiogroup", "aria-label": "ヌールとの勝負の難しさ", dataset: { test: "desert-tiers" } });
+    const tierRow = el("div.dr-tiers", { role: "radiogroup", "aria-label": "勝負の難しさと相手", dataset: { test: "desert-tiers" } });
     const bestSlot = el("div.dr-best-slot");
     const bestLabel = key => key === "naru" ? "なる戦" : TIER_LABEL[key];
     const formatBest = top => `${top.score.toLocaleString("ja-JP")}点 ／ ${top.rank}`;
-    const easyExclusions = "評価報酬・なる解放の対象外";
+    const easyExclusions = "評価報酬の対象外";
     /** 段の札の下の一言: 閉じていれば開く条件、クリア済み、呼び出し側の案内（本編は上級に白火）、この場で開いた、ほかは段の手触り。 */
     function tierSub(t) {
       if (!openTiers.includes(t)) return `${TIER_LABEL[TIERS[TIERS.indexOf(t) - 1]]}クリアで開く`;
@@ -742,17 +748,32 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       if (tierNotes && typeof tierNotes[t] === "string" && tierNotes[t]) return "note";
       return freshTiers.has(t) ? "fresh" : "word";
     }
+    /** なるの札（4枚目）。開くまでは「？？？」と鍵で、名前も顔も開き方も出さない。開いたら名前と顔（星の代わり）。 */
+    function naruCard() {
+      const open = rivals.includes("naru"), chosen = open && chosenNaru;
+      const hide = event => { event.currentTarget.hidden = true; };
+      return el(`button.btn.dr-tier.dr-tier-naru${chosen ? ".primary" : ""}`, { type: "button", role: "radio", "aria-checked": String(chosen), disabled: !open,
+        "aria-label": open ? `${RIVAL_NAMES.naru}と勝負` : "まだ会っていない相手",
+        dataset: { test: "desert-tier-naru", tier: "naru", state: !open ? "locked" : chosen ? "chosen" : "open", ...(freshNaru ? { fresh: "true" } : {}) },
+        onclick: () => chooseTier("naru") }, open
+        ? [el("b", { text: RIVAL_NAMES.naru }), el("img.dr-tier-face", { src: faceIconUrl("naru") || imgFileUrl("ui/face_icons/face_naru.webp"), alt: "", "aria-hidden": "true", onerror: hide }),
+          el("small", { dataset: { kind: freshNaru ? "fresh" : "word" }, text: freshNaru ? "開いた！" : RIVAL_TITLES.naru })]
+        : [el("b", { text: "？？？" })]); // 錠の印は閉じた段と同じ（名前の左。CSS）
+    }
     function syncTierRow() {
+      const naruChosen = chosenNaru && rivals.includes("naru");
       tierRow.replaceChildren(...TIERS.map(t => {
-        const open = openTiers.includes(t), chosen = t === chosenTier;
+        const open = openTiers.includes(t), chosen = !naruChosen && t === chosenTier;
         return el(`button.btn.dr-tier${chosen ? ".primary" : ""}`, { type: "button", role: "radio", "aria-checked": String(chosen), disabled: !open,
           dataset: { test: "desert-tier", tier: t, state: !open ? "locked" : chosen ? "chosen" : "open", ...(freshTiers.has(t) ? { fresh: "true" } : {}), ...(clearedTiers.has(t) ? { cleared: "true" } : {}) },
           onclick: () => chooseTier(t) }, [el("b", { text: TIER_LABEL[t] }), el("i.dr-tier-stars", { "aria-hidden": "true" }),
             el("small", { dataset: { kind: tierSubKind(t) } }, phraseSpans(tierSub(t))),
             t === "easy" && open ? el("em.dr-tier-flag", { "aria-hidden": "true", text: "報酬対象外" }) : null]);
-      }));
+      }), ...(naruSlot ? [naruCard()] : []));
+      tierRow.dataset.slots = String(TIERS.length + (naruSlot ? 1 : 0));
       // 自己ベスト: 評価のメダルと点だけを見せる（「◯級の自己ベスト」「点 ／」は読み上げ用に残す）
-      bestSlot.replaceChildren(...[chosenTier, "naru"].filter(key => displayBests[key] && (key !== "naru" || rivals.includes("naru")))
+      // 選んでいる札の自己ベストだけ（なるの札なら、なる戦の自己ベスト）
+      bestSlot.replaceChildren(...[naruChosen ? "naru" : chosenTier].filter(key => displayBests[key])
         .map(key => el("p.dr-best", { dataset: { test: "desert-best", bestKey: key, rank: displayBests[key].rank } }, [
           el("span.dr-quiet", { text: `${bestLabel(key)}の自己ベスト ` }),
           el("b.dr-best-score", { text: displayBests[key].score.toLocaleString("ja-JP") }),
@@ -761,9 +782,16 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         ])));
     }
     function chooseTier(t) {
+      if (t === "naru") { // なるの札: 段の外。onTier（段の記憶）は呼ばない
+        if (!naruSlot || !rivals.includes("naru")) return;
+        chosenNaru = true;
+        syncTierRow();
+        tierRow.querySelector('[data-tier="naru"]')?.focus();
+        return;
+      }
       if (!openTiers.includes(t)) return;
-      const changed = t !== chosenTier;
-      chosenTier = t;
+      const changed = t !== chosenTier || chosenNaru;
+      chosenTier = t; chosenNaru = false;
       syncTierRow();
       tierRow.querySelector(`[data-tier="${t}"]`)?.focus();
       if (changed) { try { onTier?.(t); } catch (error) { console.error(error); } }
@@ -781,6 +809,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         const added = ["noor", "naru"].filter(who => reply.rivals.includes(who) && !rivals.includes(who));
         if (added.length) {
           rivals = [...rivals, ...added];
+          if (added.includes("naru")) freshNaru = true; // 入口のなるの札が「？？？」から開く
           void loadDesertArt({ rivals: added }).whenReady().catch(() => {});
         }
       }
@@ -852,6 +881,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       unlockAudio({ warm: false });
       rideSe.stop();
       raceWith = rivals.includes(who) ? who : "noor";
+      if (kind === "run") chosenNaru = raceWith === "naru";
       rideBgm = RIDE_BGM[kind === "practice" ? "practice" : raceWith];
       const ready = readyBgm ?? preloadBgm(rideBgm);
       playBgm(rideBgm);
@@ -3672,7 +3702,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       },
       start(kind = "run", who = "noor") { if (!mode) startRun(kind, who); }, leave: finish,
       // 段（#3779）: 選んでいる段・開いている段。chooseTier は札を押したのと同じ（閉じた段は選べない）
-      get tier() { return chosenTier; }, get tiers() { return [...openTiers]; }, chooseTier,
+      get tier() { return chosenTier; }, get tiers() { return [...openTiers]; }, chooseTier, get naruChosen() { return chosenNaru && rivals.includes("naru"); }, get rivals() { return [...rivals]; },
       // 検査用: 次の本番からコースを固定する（無い id は外す）。普段のコースは毎回ランダム
       setCourse(id) { queuedCourse = null; courseId = COURSE_PACKS.some(pack => pack.id === id) ? id : undefined; },
       pause(value) { paused = !!value; if (!paused) { last = performance.now(); } },

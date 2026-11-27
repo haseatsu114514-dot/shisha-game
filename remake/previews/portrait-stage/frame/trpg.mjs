@@ -79,6 +79,34 @@ async function pose(name) {
   await wait(900);
 }
 
+// 段の進み（見出しの「1/7 話を聞く」）を、段の名前と7つの点で見せる（VPG15。「1/7」の字は点で分かる。読み上げは本編の見出しのまま）。
+// 見出しの字は本編が書き換えるので、隣に点の列を置き、字だけを CSS で隠す（本編の DOM の中身には触れない）。
+const STEP = /^(\d+)\/(\d+)\s+(.+)$/;
+function syncStep() {
+  const node = host.querySelector('[data-test="trpg-heading-step"]');
+  if (!node) return;
+  const match = STEP.exec(node.textContent.trim());
+  let track = node.nextElementSibling?.classList.contains("p-step") ? node.nextElementSibling : null;
+  if (!match) { track?.remove(); node.classList.remove("p-step-source"); return; }
+  const [, at, of, label] = match;
+  if (!track) {
+    track = Object.assign(document.createElement("span"), { className: "p-step" });
+    track.setAttribute("aria-hidden", "true");
+    node.after(track);
+  }
+  const key = `${at}/${of} ${label}`;
+  if (track.dataset.key === key) return;
+  track.dataset.key = key;
+  const name = Object.assign(document.createElement("b"), { textContent: label });
+  const pips = Object.assign(document.createElement("span"), { className: "p-step-pips" });
+  for (let i = 1; i <= Number(of); i++) pips.append(Object.assign(document.createElement("i"), { className: i < Number(at) ? "done" : i === Number(at) ? "now" : "" }));
+  track.replaceChildren(name, pips);
+  node.classList.add("p-step-source");
+}
+let stepQueued = false;
+new MutationObserver(() => { if (!stepQueued) { stepQueued = true; requestAnimationFrame(() => { stepQueued = false; syncStep(); }); } })
+  .observe(host, { childList: true, subtree: true, characterData: true });
+
 window.addEventListener("pagehide", () => controller?.destroy());
 boot().catch(error => { console.error(error); host.textContent = "ボドゲカフェを準備できませんでした。読み込み直してください。"; });
 if (shot) pose(shot).catch(error => console.warn(error));

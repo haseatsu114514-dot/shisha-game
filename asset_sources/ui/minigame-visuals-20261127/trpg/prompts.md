@@ -28,3 +28,13 @@ Game UI icon, isolated on a transparent background: a small cluster of three tab
 ```text
 Game UI asset isolated on a fully transparent background: one open antique storybook seen exactly from directly above (flat orthographic top-down view, zero perspective, zero tilt, perfectly horizontal), filling almost the whole canvas edge to edge. The book lies open at its middle showing two large BLANK pages of warm cream parchment. Both pages are clean, flat, evenly lit, perfectly rectangular and mirror-symmetric, each page occupying nearly half of the canvas, with only a soft narrow shadow in the central gutter and slightly aged, faintly darker edges. The pages are completely empty: no writing, no illustrations, no ornaments, no lines, no stains in the middle. Around the pages a thin border of the dark teal leather cover is visible with small polished brass corner fittings at the four outer corners, and a few stacked page edges visible on the far left and far right sides. One thin crimson silk ribbon bookmark hangs out of the bottom of the gutter. Painted anime game-UI style with crisp clean edges, matching the dark-teal and brass tabletop-cafe interface in the reference screenshot. No text, no letters, no numbers, no logos, no watermark, no hands, no table, no background.
 ```
+
+## `book_open_portrait.png` — 1024x1536・背景 transparent（VPG15・縦画面の試作用。1案で採用）
+
+参照画像:
+- `remake/img/ui/trpg/book-open.webp`（横開きの本。画風・色・角の金具・しおりの紐をそろえる参照）
+
+```text
+The same open hardcover book as the reference image, but turned to open TOP-TO-BOTTOM for a tall phone screen: it is bound along a HORIZONTAL spine running straight across the middle of the canvas, and lies open flat, seen straight from above. There is an UPPER page above the spine and a LOWER page below the spine, both the same width; the upper page and the lower page are each a little less than half the height. Exactly the same materials, colours and painting style as the reference: blank warm cream parchment pages with a very faint paper grain and a soft shadow into the gutter along the horizontal spine, a thin stack of page edges visible along the outer left, right, top and bottom edges, a dark teal-green cloth hardcover showing as a narrow even border all around, and small brass corner protectors on the four outer corners. A short red ribbon bookmark hangs out from the bottom edge, centred. The book is perfectly straight (not rotated, no perspective tilt), centred, and fills almost the whole canvas in portrait orientation, isolated on a fully transparent background. The pages are completely blank: no text, no letters, no numbers, no drawings, no lines.
+```
+

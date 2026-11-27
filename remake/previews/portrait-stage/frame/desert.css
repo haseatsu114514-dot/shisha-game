@@ -122,6 +122,12 @@
 #stage .dr-tier:disabled::after { content: ""; width: 34px; height: 30px; margin-top: 4px; border-radius: 6px; background: #8d7a66; box-shadow: 0 -22px 0 -9px #2a1c16, 0 -22px 0 -4px #8d7a66; }
 #stage .dr-tier:disabled .dr-tier-stars { display: none; }
 #stage .dr-tier-stars { height: 26px; font-size: 24px; line-height: 26px; }
+/* なるの札（4枚目・DSR107）: 4枚が幅に収まるよう、名前は少し小さく。開いたら顔、閉じている間は「？？？」と錠 */
+#stage .dr-card.dr-menu .dr-tiers[data-slots="4"] { gap: 8px; }
+#stage .dr-card.dr-menu .dr-tiers[data-slots="4"] .dr-tier.dr-tier { padding: 8px 2px 9px; }
+#stage .dr-card.dr-menu .dr-tiers[data-slots="4"] .dr-tier.dr-tier b { font-size: 30px; letter-spacing: .02em; }
+#stage .dr-card.dr-menu .dr-tier.dr-tier-naru b { font-size: 28px; letter-spacing: 0; }
+#stage .dr-tier-face { width: 40px; height: 40px; }
 #stage .dr-card.dr-menu .dr-button.dr-button.primary { min-height: 116px; font-size: 42px; letter-spacing: .3em; }
 #stage .dr-menu .dr-help-btn.dr-help-btn { right: 12px; top: 14px; --q-hit: 88px; --q-font: 36px; }
 
@@ -175,6 +181,12 @@
 #stage .dr-result .dr-row[data-test="desert-landings"] { --stat: url("../../../img/ui/desert_ride_result/stat_land.webp"); }
 #stage .dr-result .dr-row[data-test="desert-tricks"] { --stat: url("../../../img/ui/desert_ride_result/stat_trick.webp"); }
 #stage .dr-result .dr-row[data-test="desert-boosts"] { --stat: url("../../../img/ui/desert_ride_result/stat_boost.webp"); }
+/* 並び: 時間・コンボ／転倒・ブースト（2列）、着地とトリックは値が長い（「完璧 8 ／ 良い 0」「8 回（最高 720°）」）ので幅いっぱいの行にする（折り返さない。オーナー「トリックの最高とか改行で見ずらい」） */
+#stage .dr-result .dr-row[data-test="desert-time"] { order: 1; } #stage .dr-result .dr-row[data-test="desert-combo"] { order: 2; }
+#stage .dr-result .dr-row[data-test="desert-falls"] { order: 3; } #stage .dr-result .dr-row[data-test="desert-boosts"] { order: 4; }
+#stage .dr-result .dr-row:is([data-test="desert-landings"], [data-test="desert-tricks"]) { order: 5; grid-column: 1 / -1; }
+#stage .dr-result .dr-row[data-test="desert-tricks"] { order: 6; }
+#stage .dr-result .dr-row strong { white-space: nowrap; }
 /* 記録は6つ（時間・コンボ・転倒・着地・トリック・ブースト）。大ジャンプ・かすめた・立て直し・カービング・コースは、縦では出さない */
 #stage .dr-result .dr-row:is([data-test="desert-jumps"], [data-test="desert-near"], [data-test="desert-recoveries"], [data-test="desert-carves"], [data-test="desert-result-course"]) { display: none; }
 #stage .dr-result .dr-tier-note { margin: 0; font-size: 24px; }

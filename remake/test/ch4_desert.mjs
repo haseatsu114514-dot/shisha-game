@@ -12,7 +12,8 @@ import { DESERT_FLAG, DESERT_TALKS, DESERT_TALK_HEARTS, DESERT_INVITE_STAGE, NOO
   NOOR_FARIS_SCENES, NOOR_FARIS_FLAGS, noorFarisDue, completeNoorFaris, NOOR_LOVER_SCENES, noorLoverReadFlag, noorLoverSceneDue } from "../js/chapters/ch4-desert-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { classifyFlag } from "../js/core/carry.js";
-import { openTiers, tierRecord, syncPlayTiers } from "../js/core/play-tiers.js";
+import { openTiers, tierRecord, syncPlayTiers, recordTierClear } from "../js/core/play-tiers.js";
+import { RULES_VERSION } from "../js/minigames/desert-ride-model.js";
 import { masteryRecord, syncPlayMastery } from "../js/core/play-mastery.js";
 import { tournamentFinished } from "../js/core/story-context.js";
 import { readFileSync } from "node:fs";
@@ -145,7 +146,9 @@ test("records keep the best by score, count runs, and reward the first finish on
   assert.deepEqual({ won: again.won, firstWin: again.firstWin }, { won: true, firstWin: false });
   assert.equal(desertRecords(value).wins, 2);
   assert.deepEqual(desertRecords(value).best.race, { won: true, gap: 2, who: "noor" });
-  // ヌールに勝つと、なる（裏の相手）が来る。初めて来た場面は一度だけ。なるへの勝ちは別に数える
+  // なる（好敵手）は上級をクリアすると来る（DSR107。中級までの勝ちでは来ない）。初めて来た場面は一度だけ。なるへの勝ちは別に数える
+  assert.deepEqual(desertRivals(value), ["noor"], "beating Noor below the top tier is not enough");
+  recordTierClear(value, "desert", "hard");
   assert.deepEqual(desertRivals(value), ["noor", "naru"]);
   assert.equal(markNaruMet(value), true); assert.equal(markNaruMet(value), false);
   assert.equal(desertRecords(value).naruMet, true);
@@ -208,7 +211,7 @@ test("three tiers: a win clears its tier; easy runs never count toward the best,
   assert.deepEqual({ tierAdded: normalWin.tierAdded, firstWin: normalWin.firstWin }, { tierAdded: ["normal"], firstWin: true });
   assert.deepEqual(openTiers(value, "desert"), ["easy", "normal", "hard"]);
   assert.deepEqual([desertRecords(value).wins, desertRecords(value).bestRank, desertRankAtLeast(value, "A")], [1, "A", true]);
-  assert.deepEqual(desertRivals(value), ["noor", "naru"]);
+  assert.deepEqual(desertRivals(value), ["noor"], "a middle-tier win does not bring Naru any more (DSR107)");
   assert.equal(masteryRecord(value, "desert").done, true, "a middle-tier win over Noor is mastery, as before");
   // 初級の S は、中級以上の評価（bestRank）を上げない
   recordDesertResult(value, { ...result(18000, "S"), race: { won: true, gap: 4, who: "noor" }, tier: "easy" });
@@ -220,6 +223,7 @@ test("three tiers: a win clears its tier; easy runs never count toward the best,
   assert.deepEqual([hardWin.tier, hardWin.tierAdded, hardWin.firstWin], ["hard", ["hard"], false]);
   assert.deepEqual(tiers(), ["easy", "normal", "hard"]);
   assert.deepEqual([desertRecords(value).wins, desertRecords(value).best.score], [2, 12000], "a hard win counts like a middle-tier win");
+  assert.deepEqual(desertRivals(value), ["noor", "naru"], "clearing the top tier brings Naru (DSR107)");
   // 段の無い結果（段ができる前の保存・遅れて届いた結果）は中級: 勝てば中級クリア（初級も一緒に）
   const old = fresh();
   const tierless = recordDesertResult(old, { ...result(8000, "A"), race: { won: true, gap: 1 } });
@@ -377,6 +381,7 @@ test("v2 keeps old scores separately and preserves highest earned rank, rewards 
   const value = fresh();
   const old = result(30000, "S", { race: { won: true, gap: 2, who: "noor" } });
   recordDesertResult(value, old);
+  recordTierClear(value, "desert", "hard"); // なるが開いている保存（DSR107: 上級クリアで開く）
   const previous = structuredClone(value.desert.best);
   const current = result(3500, "B", { rulesVersion: 2 });
   let called = 0;
@@ -766,6 +771,7 @@ test("chapter 5 Dubai: Café Oasis until Noor's finale, the dunes once invited; 
   assert.match(ch5Dubai, /finally \{ delete owner\.flags\[NOOR_PROMISE_FLAG\]; \}/);
   const desert = readFileSync(new URL("../js/chapters/ch4-desert.js", import.meta.url), "utf8");
   assert.match(desert, /const rivals = !naru \|\| \(confessionDay && !before\.naruMet\) \? \["noor"\] : desertRivals\(owner\)/);
+  assert.match(desert, /naruSlot: naru,/, "Chapter 5 shows no Naru card at all");
   assert.match(desert, /visitDesert\(\{ kind: cafe \? "desert_talk" : "desert", ok: true \}, \{ day, paid: cafe, naru, scene \}\)/);
   assert.match(desert, /naru = true, scene = id => id \}/, "Chapter 4 passes no scene and reads its own lines");
   // ♥5後の場面（#3693）が無い来店は、第5章の書き出しの差し替え（scene）を通して読む
@@ -812,3 +818,31 @@ test("chapter 5: a lover Noor meets hajime at the airport once, then walks him t
   for (const kind of Object.keys(NOOR_LOVER_SCENES)) assert.equal(classifyFlag(noorLoverReadFlag(kind)), "progression", kind);
 });
 
+// なるの解放（DSR107・2026-11-27 オーナー「なると勝負は上級まで全部やると級みたいに解放される完じ」）: 上級をクリアすると来る。
+// 前の決まり（ヌールに一度勝てば来た）で、もうなるに会っている保存は開いたまま。勝ってはいたが会っていない保存は、上級クリアまで待つ。
+test("Naru comes once the top tier is cleared; saves that already met her keep her (DSR107)", () => {
+  const value = fresh();
+  recordDesertResult(value, { ...result(9000, "A"), race: { won: true, gap: 1, who: "noor" }, tier: "easy" });
+  recordDesertResult(value, { ...result(9000, "A"), race: { won: true, gap: 1, who: "noor" }, tier: "normal" });
+  assert.deepEqual(desertRivals(value), ["noor"], "easy and middle-tier wins are not enough");
+  const hard = recordDesertResult(value, { ...result(12000, "A"), race: { won: true, gap: 0.2, who: "noor" }, tier: "hard" });
+  assert.deepEqual(hard.tierAdded, ["hard"]);
+  assert.deepEqual(desertRivals(value), ["noor", "naru"], "the top-tier clear brings Naru");
+  // なるに負けても勝っても、開いたまま（なるとの勝負は段の外）
+  recordDesertResult(value, { ...result(9000, "A"), race: { won: false, gap: 1, who: "naru" } });
+  assert.deepEqual(desertRivals(value), ["noor", "naru"]);
+  // 前の決まりで、もう会っている保存（来た場面を読んだ・なるに勝った・なる戦の自己ベストがある）は取り上げない
+  assert.deepEqual(desertRivals({ desert: { wins: 1, naruMet: true } }), ["noor", "naru"]);
+  assert.deepEqual(desertRivals({ desert: { wins: 1, naruWins: 1 } }), ["noor", "naru"]);
+  const raced = fresh();
+  recordDesertResult(raced, { ...result(8000, "B", { rulesVersion: RULES_VERSION }), race: { won: false, gap: 1, who: "naru" } });
+  assert.ok(desertRecords(raced).bests?.naru, "a race against Naru leaves her best");
+  assert.deepEqual(desertRivals(raced), ["noor", "naru"]);
+  // ヌールに勝ってはいたが、まだ会っていない保存は、上級をクリアするまで待つ（旧保存の取り込みは中級までしか埋めない）
+  const waiting = { desert: { wins: 3, naruMet: false, naruWins: 0 } };
+  syncPlayTiers(waiting);
+  assert.deepEqual(tierRecord(waiting, "desert").cleared, ["easy", "normal"]);
+  assert.deepEqual(desertRivals(waiting), ["noor"]);
+  // 壊れた保存でも throw しない
+  assert.deepEqual(desertRivals({ desert: "x", growth: { playTiers: { desert: "x" } } }), ["noor"]);
+});

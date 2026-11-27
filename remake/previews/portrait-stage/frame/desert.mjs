@@ -2,6 +2,8 @@
 // 本編の画面（remake/js/minigames/desert-ride.js）を layout: "portrait" で呼ぶだけ。規則・採点・絵・音は本編のまま、並べ方は desert.css。
 // 記録はこのページを開いている間だけ覚える（本編の保存にも、単独ページの記録にも触れない）。
 // ?shot=menu|help|practice|count|run|air|result は、一覧（PC）に並べる止め絵。?tier=easy|normal|hard、?course= は単独ページと同じ。
+// 段の解放は本編と同じ（DSR107）: 最初は初級だけ。その段でヌールに勝つと次の段が開き、上級をクリアすると、なるの札（4枚目。それまでは「？？？」）が開く。
+// ?open=all は、3段ともクリア済み・なるも開いた入口（一覧に並べる止め絵や、なるとの勝負を見る時）。
 import { runDesertRide } from "../../../js/minigames/desert-ride.js";
 import { desertBestKey, RULES_VERSION } from "../../../js/minigames/desert-ride-model.js";
 import { TIERS } from "../../../js/core/play-tiers.js";
@@ -11,7 +13,10 @@ const stage = document.getElementById("stage");
 initPortraitFit(stage);
 
 const bests = {};
-let beatNoor = false;
+// クリア済みの段（ページを開いている間だけ覚える。本編は保存の growth.playTiers.desert）
+const cleared = new Set(param("open") === "all" ? TIERS : []);
+const openTiersNow = () => TIERS.filter((t, i) => i === 0 || cleared.has(TIERS[i - 1]));
+const rivalsNow = () => cleared.has("hard") ? ["noor", "naru"] : ["noor"];
 /** 止め絵の場面を作る（本編の検査用の窓口 window.__desertRide を使う）。 */
 async function pose(name) {
   const ride = await until(() => window.__desertRide);
@@ -48,18 +53,20 @@ async function pose(name) {
 }
 
 async function play() {
-  const tier = TIERS.includes(param("tier")) ? param("tier") : "normal";
+  const asked = TIERS.includes(param("tier")) ? param("tier") : null;
   const courseId = param("course") || undefined;
   if (shot) pose(shot).catch(error => console.warn(error));
   for (;;) {
     const best = Object.values(bests).sort((a, b) => b.score - a.score)[0] || null;
     await runDesertRide({
-      host: stage, layout: "portrait", tutorial: false, best, bests, rivals: beatNoor ? ["noor", "naru"] : ["noor"], tiers: TIERS, tier, courseId,
+      host: stage, layout: "portrait", tutorial: false, best, bests, rivals: rivalsNow(), tiers: openTiersNow(), cleared: [...cleared],
+      tier: asked && openTiersNow().includes(asked) ? asked : openTiersNow().at(-1), courseId,
       onResult: result => {
         const key = desertBestKey(result);
         if (!bests[key] || result.score > bests[key].score) bests[key] = { score: result.score, rank: result.rank, rulesVersion: RULES_VERSION };
-        if (result.race?.who === "noor" && result.race.won && result.tier !== "easy") beatNoor = true;
-        return beatNoor ? { rivals: ["noor", "naru"] } : null;
+        // その段でヌールより先にゴールしたら、その段（と下の段）をクリア。なるとの勝負は段の外
+        if (result.race?.who === "noor" && result.race.won && TIERS.includes(result.tier)) for (const t of TIERS.slice(0, TIERS.indexOf(result.tier) + 1)) cleared.add(t);
+        return { tiers: openTiersNow(), cleared: [...cleared], rivals: rivalsNow() };
       },
     });
     // 「砂丘を下りる」: 本編では街へ戻る。試作では入口へ戻し、枠に知らせる

@@ -351,3 +351,27 @@ html:root[data-density="phone"][data-layout="portrait"] { --phone-text: 24px; --
 #stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="prev"] > [data-flip="in"] > .trpg-campaign-book-time,
 #stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="prev"] > [data-flip="out"] .trpg-campaign-book-copy > h2,
 #stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="prev"] > [data-flip="in"] .trpg-campaign-book-copy > :not(h2) { visibility: hidden; }
+
+/* ───────── 卓の字を、形で見せる（VPG15・2026-11-27 オーナー「文字多くなりがちなミニゲームなのでこれこそ視覚化アレンジをできるとこはしたい　意味不明にならない範囲で」） ─────────
+   段の進み: 「1/7 話を聞く」を、段の名前と7つの点に（点は trpg.mjs が置く。済んだ段＝金、今の段＝光る金、まだの段＝輪）。名前は字のまま残す */
+#stage .trpg-root.trpg-cinematic .trpg-heading > small.p-step-source { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+#stage .trpg-root.trpg-cinematic .trpg-heading > .p-step { display: grid; gap: 6px; justify-items: start; min-width: 0; }
+#stage .trpg-root.trpg-cinematic .trpg-heading > .p-step > b { font-size: 24px; font-weight: 900; line-height: 1.1; color: #fff4d6; text-shadow: 0 2px 4px #000c; white-space: nowrap; }
+#stage .trpg-root.trpg-cinematic .trpg-heading > .p-step > .p-step-pips { display: flex; gap: 5px; }
+#stage .trpg-root.trpg-cinematic .trpg-heading > .p-step i { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #d2ae66; background: #071416b0; box-shadow: 0 1px 3px #000a; }
+#stage .trpg-root.trpg-cinematic .trpg-heading > .p-step i.done { background: #b98e44; border-color: #e7c983; }
+#stage .trpg-root.trpg-cinematic .trpg-heading > .p-step i.now { background: radial-gradient(circle at 40% 35%, #fff6d0, #f0c45a 60%, #c98a24); border-color: #fff1c8; box-shadow: 0 0 0 3px #f0c45a55, 0 0 10px #f0c45a; }
+/* 行動の宣言の札: 技能は、その技能の印＋名前＋数（名前は残す）。見込みの帯は札の幅いっぱいに太く（金＝うまくいく・緑＝ひと手間） */
+#stage .trpg-root.trpg-cinematic .trpg-approach-meta { display: flex; align-items: center; gap: 12px; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-meta > b[data-stat] { display: inline-flex; align-items: center; gap: 6px; font-size: 22px; white-space: nowrap; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-meta > b[data-stat]::before { content: ""; flex: none; width: 28px; height: 28px; background: currentColor;
+  -webkit-mask: var(--stat-icon) center / contain no-repeat; mask: var(--stat-icon) center / contain no-repeat; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-meta > b[data-stat="eye"] { --stat-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 5C6.5 5 2.6 9 1.5 12c1.1 3 5 7 10.5 7s9.4-4 10.5-7C21.4 9 17.5 5 12 5zm0 11.2a4.2 4.2 0 1 1 0-8.4 4.2 4.2 0 0 1 0 8.4zm0-2.3a1.9 1.9 0 1 0 0-3.8 1.9 1.9 0 0 0 0 3.8z'/%3E%3C/svg%3E"); }
+#stage .trpg-root.trpg-cinematic .trpg-approach-meta > b[data-stat="talk"] { --stat-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 3.5h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-8.2L6.5 21v-4.5H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2zm3 6a1.4 1.4 0 1 0 0 2.8 1.4 1.4 0 0 0 0-2.8zm5 0a1.4 1.4 0 1 0 0 2.8 1.4 1.4 0 0 0 0-2.8zm5 0a1.4 1.4 0 1 0 0 2.8 1.4 1.4 0 0 0 0-2.8z'/%3E%3C/svg%3E"); }
+#stage .trpg-root.trpg-cinematic .trpg-approach-meta > b[data-stat="hand"] { --stat-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 11V4.8a1.6 1.6 0 0 1 3.2 0V10h.5V3.3a1.6 1.6 0 0 1 3.2 0V10h.5V4.6a1.6 1.6 0 0 1 3.2 0v9c0 4.6-2.9 8.4-7.4 8.4-3 0-4.8-1.6-6.3-4.2L2.6 13a1.6 1.6 0 0 1 2.7-1.7L8 14.6z'/%3E%3C/svg%3E"); }
+#stage .trpg-root.trpg-cinematic .trpg-approach-meta > b[data-stat="nerve"] { --stat-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.8 21 5v6.4c0 5.4-3.8 9.6-9 10.8-5.2-1.2-9-5.4-9-10.8V5zm-1.4 5.4-1.1 6h2.7l-1.2 5.4 5-7.2h-2.9l1.4-4.2z'/%3E%3C/svg%3E"); }
+#stage .trpg-root.trpg-cinematic .trpg-approach-meta > .trpg-odds-bar { flex: 1 1 0; min-width: 60px; height: 14px; border-radius: 999px; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-meta > small { font-size: 22px; white-space: nowrap; }
+/* 判定の結果: サイコロの目と「＋4」はすぐ上に並んでいるので、「13 ＋ 3 ＋ 補正4 ＝」の式は出さない（合計と出来を大きく） */
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-equation { display: none; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total strong { font-size: 40px; }
