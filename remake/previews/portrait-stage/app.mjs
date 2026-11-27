@@ -445,14 +445,17 @@ const BTN = {
   ok: { label: "決定", text: "決定" },
   next: { label: "次へ", svg: '<path d="M8.5 11.5l7.5 8 7.5-8"/>' },
   rest: { label: "休み", svg: '<path d="M20.5 5.5a11 11 0 1 0 6 15.5 9 9 0 0 1-6-15.5z"/>' },
-  poke: { label: "刺す", tool: "needle" },
-  puff: { label: "吸う", tool: "mouthpiece" },
-  pour: { label: "注ぐ", tool: "pour" },
-  drain: { label: "少しこぼす", tool: "drain" },
+  // word＝白い図形の下に添える短い言葉（VPL84: やはり図形＋言葉がいい）
+  poke: { label: "刺す", tool: "needle", word: "刺す" },
+  puff: { label: "吸う", tool: "mouthpiece", word: "吸う" },
+  pour: { label: "注ぐ", tool: "pour", word: "注ぐ" },
+  drain: { label: "少しこぼす", tool: "drain", word: "こぼす" },
   bomb: { label: "リフレッシュ（心の周りの雑念を払う）", tool: "bomb" },
 };
 // ボタンいっぱいの 100×100 で描く
 // 吸う: マウスピース（ホースの切れ端・金具・先へ細くなる持ち手・吸い口のチップ）を斜めに。吸うたびに少し動いて光る
+// シーシャのボトルの白い図形（ボタン用）: 上から 受け口・丸い肩の鐘形の胴・少し離した足の帯。口の真ん中は (46, 57)
+const BOTTLE_ICON = `<rect x="37" y="57" width="18" height="9" rx="1.6"/><path d="M39 66H53C53 71 66 73.5 68 85V88H24V85C26 73.5 39 71 39 66Z"/><rect x="19" y="90" width="54" height="6" rx="3"/>`;
 const TOOL_SVG = {
   // 刺す（VPL58）: ドライバーのような穴あけの道具を少し斜めに置くだけ。押すと、道具の向き（先の方）へ突き出て、離すと戻る
   needle: `<svg class="tool-svg tool-needle" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(32 50 50)"><g class="gl-needle">
@@ -461,14 +464,13 @@ const TOOL_SVG = {
     <rect x="-4" y="45" width="16" height="10" rx="4"/><rect x="13.5" y="43.3" width="7.5" height="13.4" rx="1.6"/>
     <path d="M22.5 42.8L78 45Q82 45.3 82 48.2V51.8Q82 54.7 78 55L22.5 57.2Z"/><path class="gl-ring" d="M31 43.6V56.4M72 45V55"/>
     <rect class="gl-tip" x="84" y="46.4" width="20" height="7.2" rx="2.6"/></g></g></svg>`,
-  // 注ぐ: 傾けた水差しと、口から落ちる水の粒（注いでいる間は粒が流れる）
-  pour: `<svg class="tool-svg tool-pour" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(24 50 50)">
-    <path d="M30 30H64L76 23L73 34L66 40V70Q66 80 56 80H40Q30 80 30 70Z"/><path class="gl-handle" d="M30 40Q15 40 15 54Q15 67 30 67"/></g>
-    <g class="gl-drops"><circle cx="85" cy="50" r="3.4"/><circle cx="86.5" cy="63" r="4"/><circle cx="88" cy="77" r="4.6"/></g></svg>`,
-  // こぼす: 傾けた小びんと、口からこぼれる一滴
-  drain: `<svg class="tool-svg tool-drain" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(-38 50 52)">
-    <rect x="43" y="14" width="14" height="22" rx="3"/><path d="M42 36H58L70 54A21 21 0 1 1 30 54Z"/></g>
-    <path class="gl-drop" d="M24 50C24 50 17 60 17 64A7 7 0 0 0 31 64C31 60 24 50 24 50Z"/></svg>`,
+  // 注ぐ（VPL84）: 蛇口から、シーシャのボトル（受け口・丸い肩の鐘形の胴・足の帯）の口へ水が落ちる。缶やジョウロに見えない形（注いでいる間は粒が流れる）
+  pour: `<svg class="tool-svg tool-pour" viewBox="0 0 100 100" aria-hidden="true">
+    <path class="gl-pipe" d="M6 10H33Q46 10 46 23V25"/><rect x="38.5" y="24" width="15" height="8" rx="2"/>
+    <g class="gl-drops"><circle cx="46" cy="39" r="2.8"/><circle cx="46" cy="47.5" r="3.2"/></g>${BOTTLE_ICON}</svg>`,
+  // こぼす（VPL84）: 同じボトルを口が左下を向くまで傾けて、水が少しこぼれる
+  drain: `<svg class="tool-svg tool-drain" viewBox="0 0 100 100" aria-hidden="true"><g transform="translate(58 37) scale(1.2) rotate(-115) translate(-46 -77)">${BOTTLE_ICON}</g>
+    <g class="gl-drop"><path d="M30 57C30 57 24.5 64.5 24.5 67.5A5.5 5.5 0 0 0 35.5 67.5C35.5 64.5 30 57 30 57Z"/><path d="M27 77C27 77 22.5 82.5 22.5 85A4.5 4.5 0 0 0 31.5 85C31.5 82.5 27 77 27 77Z"/></g></svg>`,
   // リフレッシュ（VPL62）: 真ん中の心と、そこから広がる波で雑念の粒を外へ払う形。効果（心の周りを払う）がそのまま見える
   bomb: `<svg class="tool-svg tool-bomb" viewBox="0 0 100 100" aria-hidden="true">
     <path class="gl-heart" d="M50 60C42.500 54.500 37 50 37 44.500A6.500 6.500 0 0 1 50 41.500 6.500 6.500 0 0 1 63 44.500C63 50 57.500 54.500 50 60Z"/>
@@ -484,7 +486,7 @@ const btnFace = (kind) => {
   const b = BTN[kind];
   if (b.text) return `<span class="t">${b.text}</span>`;
   if (b.svg) return `<span class="t"><svg class="glyph" viewBox="0 0 32 32" aria-hidden="true">${b.svg}</svg></span>`;
-  return `<span class="t tool">${TOOL_SVG[b.tool]}</span>`;
+  return `<span class="t tool">${TOOL_SVG[b.tool]}</span>${b.word ? `<small class="btn-lab">${b.word}</small>` : ""}`;
 };
 const aHtml = (kind, { disabled = false, cls = "", extra = "" } = {}) => `<button class="btn-a ${cls}" data-act="a" aria-label="${BTN[kind].label}" ${disabled ? "disabled" : ""}>${btnFace(kind)}${extra}</button>`;
 // 補助ボタン: [id, 絵記号, 読み上げの名前, 短い名前, 数の印, 押されているか]
@@ -1198,7 +1200,8 @@ class Phone {
   mixSelHtml() {
     const { st } = this, i = st.mixSel, f = MIX[i];
     const btn = (by) => `<button class="mr-btn" data-act="mixadd" data-i="${i}" data-by="${by}" aria-label="${f.name}を1g${by > 0 ? "増やす" : "減らす"}">${by > 0 ? "＋" : "−"}</button>`;
-    return `${pkgHtml(f, 5.6)}<span class="mr-name"><b>${f.name}${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</b><span class="mr-tags">${genreHtml(f.genre, false)}${f.sub ? genreHtml(f.sub, false) : ""}</span></span>
+    // 下の段で「決定」の左に入るので、パッケージとジャンルは出さない（棚の札が光っている）。名前・課題の印・−／＋・g だけ（VPL83）
+    return `<span class="mr-name"><b class="${[...f.name].length >= 7 ? "long" : ""}">${f.name}</b>${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</span>
       ${btn(-1)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(1)}`;
   }
 
