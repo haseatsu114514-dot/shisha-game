@@ -92,6 +92,9 @@
 @keyframes fl-tap { 50% { transform: translateY(0.18rem) scale(0.9); } }
 .fl-no { position: absolute; z-index: 2; left: -0.5rem; top: -0.5rem; width: 1.9rem; height: 1.9rem; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-size: 1.16rem; font-weight: 900; line-height: 1; color: #1a1228; background: #fff; box-shadow: 0 0 0 0.16rem #0b0812, 0 0.2rem 0.5rem #000a; }
 .fl-table[data-rare="true"] .fl-no { background: #ffd84d; }
+/* 丸の中の番号を、丸のまん中に（VPM37）: 字体の数字は文字の箱の中で下寄りなので、箱を数字の高さ（キャップハイト〜文字の下端）に切り詰めてから、まん中に置く */
+.fl-no > span, .fl-guest-no > span { display: block; text-box: trim-both cap alphabetic; }
+@supports not (text-box: trim-both cap alphabetic) { .fl-no > span, .fl-guest-no > span { transform: translateY(-0.06em); } }
 .fl-anger { position: absolute; z-index: 2; right: -1.1rem; top: calc(50% - 1.2rem); width: 2.4rem; height: 2.4rem; display: none; place-items: center; font-size: 2.2rem; color: #ff5a4c; filter: drop-shadow(0 0 0.2rem #0b0812) drop-shadow(0 0.1rem 0.2rem #0b0812); animation: fl-anger 0.5s ease-in-out infinite alternate; }
 .fl-table[data-urgent="high"] .fl-anger, .fl-table[data-mood="mad"] .fl-anger { display: grid; }
 @keyframes fl-anger { from { transform: rotate(-10deg) scale(0.9); } to { transform: rotate(10deg) scale(1.1); } }
@@ -114,12 +117,6 @@
 .fl-table[data-sel="true"] .fl-box { outline: 0.22rem solid #fff; outline-offset: 0.15rem; }
 .fl-table[data-guide="true"] .fl-box, .fl-table[data-coach="true"] .fl-box { animation: fl-guide 1s ease-in-out infinite; }
 @keyframes fl-guide { 50% { box-shadow: 0 0 0 0.5rem #fff8, 0 0 2.6rem #fff; } }
-/* はじめの印（VPM23）: 選んでいる席のカードの左下の角にいて、席を替えると、そこへ動く。操作すると弾む */
-.fl-me { --x: 22.5%; --y: 41.5%; position: absolute; z-index: 5; left: calc(var(--x) - var(--cw) / 2 - 1.1rem); top: calc(var(--y) - 0.6rem - 1.9rem); width: 2.4rem; height: 2.4rem; border-radius: 50%; background: #f3e9d6; box-shadow: 0 0 0 0.16rem #fff, 0 0.3rem 0.8rem #000a; pointer-events: none; transition: left 0.28s var(--ease-out), top 0.28s var(--ease-out), opacity 0.2s; }
-.fl-me img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-.fl-me[data-hop="true"] { animation: fl-hop 0.36s var(--ease-out); }
-.fl-me[data-off="true"] { opacity: 0; } /* 空いた席を選んでいる間は出さない */
-@keyframes fl-hop { 40% { transform: translateY(-0.7rem) scale(1.14); } }
 /* 来店した時は、カードが弾んで入ってくる */
 .fl-table[data-enter="true"] { animation: fl-enter 0.5s var(--ease-out); }
 @keyframes fl-enter { 0% { opacity: 0; transform: translateY(-1.6rem) scale(0.86); } 60% { opacity: 1; transform: translateY(0.3rem) scale(1.04); } 100% { transform: none; } }
@@ -456,5 +453,5 @@
   .fl-counts span { font-size: 1.5rem; } .fl-boss .say { font-size: 1.46rem; } .fl-pay { padding: 0.6rem 1rem 0.7rem; } .fl-pay strong b { font-size: 2.1rem; } .fl-band { height: 8.6rem; } .fl-band b { font-size: 3.5rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .fl-table, .fl-table .fl-box, .fl-table .fl-box::before, .fl-table .fl-box::after, .fl-cue .ic, .fl-no, .fl-need, .fl-opt, .fl-act, .fl-go, .fl-me, .fl-door, .fl-lights, .fl-anger, .fl-confetti i, .fl-busy .ic { animation: none !important; }
+  .fl-table, .fl-table .fl-box, .fl-table .fl-box::before, .fl-table .fl-box::after, .fl-cue .ic, .fl-no, .fl-need, .fl-opt, .fl-act, .fl-go, .fl-door, .fl-lights, .fl-anger, .fl-confetti i, .fl-busy .ic { animation: none !important; }
 }

@@ -31,11 +31,13 @@
 
 | 席 | 場所 | x | y |
 |---|---|---|---|
-| 1 | 奥の左（壁ぎわの2人掛け。カードはソファに重ねる） | 25 | 41.5 |
+| 1 | 奥の左（壁ぎわの2人掛け。カードはソファに重ねる） | 20 | 41.5 |
 | 2 | 奥のまん中 | 50 | 41.5 |
-| 3 | 奥の右 | 75 | 41.5 |
-| 4 | 手前の左（左の壁ぎわの内向きの2人掛け） | 18 | 74 |
-| 5 | 手前の右（右の壁ぎわの内向きの2人掛け） | 82 | 74 |
+| 3 | 奥の右 | 80 | 41.5 |
+| 4 | 手前の左（左の壁ぎわの内向きの2人掛けの、内側の脇の卓） | 24 | 74 |
+| 5 | 手前の右（右の壁ぎわの内向きの2人掛けの、内側の脇の卓） | 76 | 74 |
+
+席の位置は VPM32（カードの間をあけた）・VPM34（手前を内側へ）で変わり、絵は VPM39 でこの席に合わせて作り直した（下の「VPM39」）。
 
 ## 生成後に確かめたこと
 
@@ -82,4 +84,39 @@ Change only the light and the view outside:
 - The room stays clearly readable and fairly bright: sofas, tables, rug and floor keep their colors and details, nothing sinks into black. No sunlight patches on the floor or walls.
 
 Do not paint: people, animals, text, letters, logos, hookahs, shisha pipes, hoses, charcoal, smoke. No lens flare, no bloom haze, no light rays, no glossy wet-looking floor.
+```
+
+## VPM39: 席の位置に合わせて作り直し（2026-11-27）
+
+オーナー「３とかの席番号いまあるけど…ちょっとずれてるから気になる　ただ余白とかのバランスは良いからいじるなら背景」。
+席のカードの位置（VPM32・VPM34）はそのままにして、**家具の方を席に合わせた**: 奥の2人掛けのまん中が 20%・50%・80%、手前の脇の卓のまん中が 24%・76%。空いた席の番号の丸が、奥はソファのまん中、手前は脇の卓の上に乗る。
+
+- 採用: 昼（3枚の3枚め）・夜（2枚の2枚め）。平均の明るさ: 昼 116・夜 95（前は 115・97）
+- 測った位置（絵の幅に対する %。左右の端 → まん中）: 奥 9.1–30.0 → 19.5、39.5–60.8 → 50.1、69.6–89.3 → 79.4。手前の脇の卓 18.5–29.0 → 23.8、71.3–81.8 → 76.6
+
+### 作り方
+
+- **生成し直し**: 画像生成API（`gpt-image-2.6-sunburst`・`/images/edits`・1024×1024・品質 medium）に参照の絵を2枚渡して、新しく描いた（下の依頼文。各店3枚から1枚）。
+  - 1枚め＝形と画風の手本: VPM30 の絵（歪みのない、その店の家具と画風）
+  - 2枚め＝位置の手本: 1回めの作り直しの絵（家具を席の位置へ横にずらした下絵を描き直したもの。**形は歪んでいたので、位置だけ**を使うと依頼文に書いた）
+- 1回めの作り直し（家具を横にずらした下絵を、そのまま描き直した絵）は、オーナー「なんかソファとかカーペットとか歪んじゃって見える　再生成で直した方がいいかも」で使わなかった
+- **夜**: 選んだ昼の絵から、VPM30 と同じ夜の依頼文で作った（各店2枚から1枚）。昼と夜の位置のずれは0
+- 選び方: 奥のソファ・手前の脇の卓の左右の端を、目盛りを重ねて読み、席（奥 20/50/80%・手前 24/76%）に近いもの。3店とも、家具のまん中は席から1%以内
+
+### 依頼文（tonari・昼。mukai・ドバイも同じ形で、家具の呼び名だけ替えた）
+
+```text
+Two reference images are attached.
+- FIRST image: the room, the furniture design and the painting style. Copy its furniture shapes, natural proportions, colors, light, brightness and decoration.
+- SECOND image: the SAME room in a rough draft where some furniture was moved with an image editor. It has editing damage (stretched, squeezed or bent two-seat olive sofas with chunky wooden frames, tables, the Persian-style rug and the wooden floor boards, walls and plants). Use the SECOND image ONLY to know WHERE each piece of furniture stands. Do not copy any shape from it.
+
+Paint a NEW, clean, finished painting of the room from the FIRST image, with the same camera and composition as the FIRST image, but with the furniture standing at the positions of the SECOND image:
+- BACK ROW: the three two-seat olive sofas with chunky wooden frames against the back wall, facing the viewer. Their centers at 20, 50 and 80 percent of the picture width. Each one has the same size and the same natural proportions as in the FIRST image (about 21 percent of the picture width wide), so the gaps between them are wider than in the FIRST image, and the left and right ones stand close to the back corners of the room. Each keeps its own low wooden coffee table directly in front of it, centered under it.
+- SIDES: the two two-seat olive sofas against the left and the right side walls, facing inward, as in the FIRST image. Their small wooden side tables stand a little further toward the center of the room than in the FIRST image: the centers of these two small tables at 24 and 76 percent of the picture width, at the same height as in the FIRST image.
+- The vertical position of every object is the same as in the FIRST image.
+- Everything has natural, undistorted proportions. Straight lines are straight: the outline of the Persian-style rug (a clean rectangle in one-point perspective), the floor boards (they run toward the center of the back wall), table tops and legs, window frames.
+
+Keep the same hand-painted anime background style as the FIRST image: visible brushwork, flat 2-3 step shading, no line art, no photo look, no 3D render look. The same colors, the same light and the same overall brightness as the FIRST image.
+
+Do not paint: people, animals, text, letters, logos, signs, hookahs, shisha pipes, hoses, charcoal, smoke. No lens flare, no bloom haze, no light rays, no glossy or wet-looking floor.
 ```
