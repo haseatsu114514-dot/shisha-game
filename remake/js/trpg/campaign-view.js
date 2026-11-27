@@ -223,7 +223,9 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         if (!locked) art.prepend(sceneArt(el, scenario));
         if (cast.ok && faces.parentNode) faces.replaceChildren(...cast.participants.map(castFace));
       });
+      // 左の頁の絵の下: 作者と、かかる時間
       card.append(art, el("small.trpg-campaign-book-by", { text: locked ? "？？？ / 作 · ？？？" : scenario.collection + " / 作 · " + scenario.author }));
+      if (!locked) card.append(el("small.trpg-campaign-book-time", { text: scenario.duration }));
       // 今夜の卓は、名前の列の代わりに顔を並べる（名前は title と読み上げ用に残す。顔の絵が無い人は頭文字の丸）
       const castLine = () => el("p.trpg-campaign-book-cast", { title: cast.ok ? "今夜の卓：" + cast.participants.map(name).join("・") : cast.reason, dataset: { ok: String(!!cast.ok) },
       }, cast.ok ? [el("span", { text: "今夜の卓：" }), el("span.trpg-cast-names", { text: cast.participants.map(name).join("・") }), faces] : [cast.reason]);
@@ -259,7 +261,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
             else render("購入できませんでした。所持金と入荷状況を確認してください。");
           }, readOnly || spendableMoney(state) < book.price));
       } else {
-        copy.append(castLine(), el("small.trpg-campaign-book-time", { text: scenario.duration }), ...playButtons(book, scenario, cast, "この仲間で遊ぶ"));
+        copy.append(castLine(), ...playButtons(book, scenario, cast, "この仲間で遊ぶ"));
       }
       if (owned && state.chapter >= catalog.unlockChapter && progress.ok && hasPictureBook(scenario)) {
         const read = shelfButton("絵本をみる", "book", "trpg-picturebook-" + book.id, () => readPictureBook(scenario));

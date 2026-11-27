@@ -1309,7 +1309,7 @@ html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-cast[data-ok="fa
 .trpg-cast-faces { display: flex; align-items: center; gap: 9px; min-width: 0; }
 html:root .trpg-campaign[data-view="shelf"] .trpg-cast-face { flex: none; zoom: 1.2; border-radius: 50%; box-shadow: 0 0 0 3px #fffaf0, 0 0 0 4px #b98e44, 0 4px 7px #3a261066; }
 html:root .trpg-campaign[data-view="shelf"] .trpg-cast-face.trpg-cast-initial { zoom: 1; display: grid; place-items: center; width: 52px; height: 54px; font-size: 26px; font-weight: 900; font-style: normal; color: #f3e6c6; background: linear-gradient(180deg, #3d5a58, #23393a); }
-html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-time { align-self: flex-end; margin-top: -52px; margin-bottom: 14px; padding: 2px 12px; font-size: 16px; font-weight: 700; color: #5d4f3d; border: 1px solid #b9a67c; border-radius: 999px; }
+html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-book-time { position: absolute; left: 27.6%; top: 77.6%; translate: -50% 0; padding: 1px 14px; font-size: 16px; font-weight: 700; line-height: 1.4; color: #5d4f3d; border: 1px solid #b9a67c; border-radius: 999px; white-space: nowrap; }
 /* 遊び終えた本: 星と結末の名前。日付・顔ぶれ・その夜の呼び名・役は title で */
 html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-memory { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; padding: 8px 12px; border: 0; border-left: 4px solid #b98e44; border-radius: 3px; background: #b98e441f; color: #2a2117; }
 html:root .trpg-campaign[data-view="shelf"] .trpg-campaign-memory > strong { flex: 1 1 100%; min-width: 0; font-size: 20px; font-weight: 900; color: #3a2610; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1363,7 +1363,7 @@ html:root .trpg-campaign[data-view="shelf"] .trpg-page-turn[data-dir="next"] { r
 html:root .trpg-campaign[data-view="shelf"] .trpg-page-turn:disabled { opacity: 0; pointer-events: none; }
 html:root .trpg-campaign[data-view="shelf"] .trpg-page-turn:not(:disabled):is(:hover, :focus-visible) { filter: brightness(1.1); }
 html:root .trpg-campaign[data-view="shelf"] .trpg-page-turn:not(:disabled):active { translate: 0 calc(-50% + 3px); box-shadow: 0 1px 0 #5a3a0acc, 0 4px 8px #0007; }
-html:root .trpg-campaign[data-view="shelf"] .trpg-page-number { position: absolute; left: 8.4%; width: 38.4%; top: 80.5%; text-align: center; font-size: 17px; font-weight: 700; letter-spacing: .1em; color: #8a7652; pointer-events: none; }
+html:root .trpg-campaign[data-view="shelf"] .trpg-page-number { position: absolute; left: 8.4%; width: 38.4%; top: 83.6%; text-align: center; font-size: 17px; font-weight: 700; letter-spacing: .1em; color: #8a7652; pointer-events: none; }
 /* めくる紙。倒れきる（78%）まで、着地する側の頁は前の本のまま */
 html:root .trpg-campaign[data-view="shelf"] .trpg-page-leaf {
   position: absolute; top: 3.4%; bottom: 11%; left: 50.2%; width: 44.4%; z-index: 2; visibility: hidden; pointer-events: none; transform-origin: 0 50%; backface-visibility: visible;
@@ -1375,8 +1375,8 @@ html:root .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="prev"] .tr
 @keyframes trpg-leaf-next { 0% { transform: rotateY(0deg); opacity: 1; filter: brightness(1); } 40% { filter: brightness(.86); } 78% { transform: rotateY(-180deg); opacity: 1; filter: brightness(1); } 100% { transform: rotateY(-180deg); opacity: 0; } }
 @keyframes trpg-leaf-prev { 0% { transform: rotateY(0deg); opacity: 1; filter: brightness(1); } 40% { filter: brightness(.86); } 78% { transform: rotateY(180deg); opacity: 1; filter: brightness(1); } 100% { transform: rotateY(180deg); opacity: 0; } }
 html:root .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="next"] > [data-flip="out"] .trpg-campaign-book-copy,
-html:root .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="next"] > [data-flip="in"] > :is(.trpg-campaign-book-art, .trpg-campaign-book-by),
-html:root .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="prev"] > [data-flip="out"] > :is(.trpg-campaign-book-art, .trpg-campaign-book-by),
+html:root .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="next"] > [data-flip="in"] > :is(.trpg-campaign-book-art, .trpg-campaign-book-by, .trpg-campaign-book-time),
+html:root .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="prev"] > [data-flip="out"] > :is(.trpg-campaign-book-art, .trpg-campaign-book-by, .trpg-campaign-book-time),
 html:root .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="prev"] > [data-flip="in"] .trpg-campaign-book-copy { visibility: hidden; }
 html:root .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn] .trpg-page-number { visibility: hidden; }
 
