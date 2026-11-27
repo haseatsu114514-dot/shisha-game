@@ -181,9 +181,10 @@ await suite("tetsuko-theme", async check => {
     assert.match(await page.locator(dt("tetsuko-mood")).getAttribute("aria-label"), /今日は/, "Today's mood is still read aloud");
     await page.waitForFunction(() => document.querySelector(".tt-caption")?.dataset.stale === "true"
       && getComputedStyle(document.querySelector(".tt-caption")).opacity === "0", null, { timeout: 20000 });
-    const shown = await page.evaluate(visibleTexts);
+    // 撮影の札の「♥3」は、しぐさが見えている間だけ出る（しぐさは時間で移る）。文字と札の状態は同じ瞬間に読む
+    const { shown, shy } = await page.evaluate(`({ shown: (${visibleTexts})(), shy: document.querySelector(".tetsuko-time .tt-shot")?.dataset.shy === "true" })`);
     assert.deepEqual(shown.filter(text => !/^\d+$/.test(text)).sort(), [...CONTROLS].sort(), "Only the names of the controls stay on the base screen");
-    assert.deepEqual(shown.filter(text => /^\d+$/.test(text)).sort(), ["0", "3"], "The only numbers are her paw level and the hearts the camera needs");
+    assert.deepEqual(shown.filter(text => /^\d+$/.test(text)).sort(), shy ? ["0", "3"] : ["0"], "The only numbers are her paw level and, while she will not pose yet, the hearts the camera needs");
     // 「？」: 開くと遊び方が出て、画面の道具がすべて載っている。開いている間は下の帯と道具が隠れる。Esc で閉じる。
     await page.locator(dt("tetsuko-help")).click();
     const panel = page.locator(dt("tetsuko-help-panel"));
