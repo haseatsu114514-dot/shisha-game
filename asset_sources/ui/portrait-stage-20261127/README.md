@@ -630,3 +630,47 @@ Do not draw: water, a hookah, a glass base, bottles, glasses, dishes, sponges, t
 | 元の絵 | 試作で使う絵（img/） | 使う所 |
 |---|---|---|
 | `remake/img/ui/making/kitchen_timer.webp`（本編・1280×853） | `ui-kitchen-timer-tall.webp`（1280×1672・組み直し） | 蒸らしのタイマーの場面の案D |
+
+## 16回目: 縦長のキッチンタイマーを、初めから縦長の形で描き直す（VPL128・3パターン×候補2枚）
+
+オーナー「縦長タイマーがいいけどいま無理やり引き伸ばしてる感あるから作り直して見た目を縦長ように　生成してもいい　何パターンか見たい」。15回目の絵は横長の絵の部品を伸ばして組み直したもので、本体の白い所が広く、伸ばした感じが出ていた。
+`gpt-image-2.6-sunburst` の編集（images/edits・品質 high・背景は透明・1024×1536・各2枚）で作った。鍵は環境変数から読み、値は記録していない。入力は本編のタイマー `remake/img/ui/making/kitchen_timer.webp` 1枚だけで、画風・色・線の手本にした。並びの違う3パターンを、それぞれ2枚ずつ作った。
+
+試作に入れる時の手直し（生成はしていない）: 本体の外枠（透明でない所）で切り抜き、幅720に縮めた。液晶の数字と、ボタンの字（分・秒・リセット・スタート＆ストップ）は、試作が上に重ねる（絵に焼き込まない）。液晶とボタンの位置は、絵の色（液晶の緑・ボタンの灰と薄緑）から測り、`app.mjs` の `TIMER_LOOKS` に割合で書いた。
+
+| 原画（v4/） | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `ktimer-round-original.webp`（1024×1536） | `ui-ktimer-tall-round.webp`（720×1184） | 案1 丸いボタン（上が丸い本体・小さな足・丸いボタン3つと大きな丸いボタン） |
+| `ktimer-bar-original.webp`（1024×1536） | `ui-ktimer-tall-bar.webp`（720×1075） | 案2 長いスタート（分・秒・横長のボタン・小さなボタン） |
+| `ktimer-grid-original.webp`（1024×1536） | `ui-ktimer-tall-grid.webp`（720×1052） | 案3 4つのボタン（2段2列） |
+| `ktimer-round-candidate2-original.webp` | 使わない | 案1のもう1枚。大きな丸いボタンが小さめで、上の3つとの差が出にくい |
+| `ktimer-bar-candidate2-original.webp` | 使わない | 案2のもう1枚。ほぼ同じ形で、本体の下が少しすぼまる |
+| `ktimer-grid-candidate2-original.webp` | 使わない | 案3のもう1枚。ボタンが大きい分、液晶が小さい |
+
+生成後の確認（素材規約の必須チェック）:
+- 液晶は無地の緑で、数字・区画・記号が無い。ボタンは無地で、字・記号が無い。擬似文字が無い。
+- 本編のタイマーと同じ描き手に見える（クリーム色の本体・暖かい灰の輪郭線・2段の影・灰のボタンと薄緑のボタン1つ）。テカリやエアブラシのグラデは無い。
+- 背景は透明で、床の影・手・台・枠が無い。
+- 合格（各2枚のうち1枚を使う）。シーシャ台の機材ではないため、§4 の8行は当てはまらない。
+
+共通の指示:
+
+```text
+The reference image is the kitchen timer from this game: a cute, clean, slightly chunky illustration with a soft cream-white plastic body, a dark warm-gray outline, gentle two-tone shading, a sage-green blank LCD screen with a thin dark frame, light-gray rounded keys and one pale mint-green key. Keep exactly that art style, line weight, colors, material and level of detail, so it looks drawn by the same artist.
+Redesign it as a PORTRAIT (taller than wide) kitchen timer that was designed to be tall from the start. Proportions must look natural for a real portrait kitchen timer: not a stretched landscape timer, no large empty plastic areas, the screen and keys sized and spaced in a balanced way.
+Seen straight from the front, perfectly frontal, centered, filling about 88 percent of the image height, on a fully transparent background.
+The LCD screen is a wide rectangle near the top, completely blank and evenly sage green: no digits, no segments, no icons, no text.
+All keys are completely blank: no letters, no symbols, no icons, no printed labels. Every key is a separate, clearly outlined shape with a little gap around it.
+Do not draw: digits, letters, text, symbols, logos, a hand, a table, a shadow on the ground, a background, a frame, a watermark.
+```
+
+パターンごとの指示（共通の指示のあとに足した）:
+
+```text
+[round] Layout: a friendly rounded body with a gently arched top and softly rounded bottom corners, standing on a small flat foot. The blank LCD screen across the upper part. Below it, a row of three small round light-gray buttons. Below that row, one large round pale mint-green button in the center. All buttons are circles.
+[bar] Layout: the blank LCD screen across the upper part of the body. Below it, a row of two light-gray rounded keys side by side. Below that row, one wide pale mint-green key in a long rounded bar shape spanning almost the full width of the body. Below that, one small light-gray rounded key centered near the bottom. Rounded-rectangle body with softly rounded corners.
+[grid] Layout: the blank LCD screen across the upper part of the body. Below it, four equal rounded-rectangle keys in a 2 by 2 grid: top-left light gray, top-right light gray, bottom-left light gray, bottom-right pale mint green. The keys are large and easy to press. Rounded-rectangle body with softly rounded corners.
+```
+
+15回目の組み直しの絵 `ui-kitchen-timer-tall.webp` は使わなくなったので、`img/` から外した。
+
