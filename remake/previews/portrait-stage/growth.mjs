@@ -6,7 +6,9 @@
 //   上＝「地図」へ戻る・題・レベル・手持ちの火種と、盤の札3枚／真ん中＝盤（選んでいるマスにカーソル。十字キーで隣のマスへ動くと、盤がついてくる。
 //   指でずらす・つまんで拡大・「全体」「まとめ」も使える）／下＝選んでいるマスの札（名前・今の状態・効果）と、地図・会話と同じ十字キーと丸ボタン。
 //   丸ボタンは、選んでいるマスでできること: 今灯せる＝灯す（仮置き）→ 決定／道がまだ＝目標 → 灯す（道を仮置き）→ 決定。
-// 状態（レベル・火種・灯したマス・出会った人・♥）はこの場面の中だけの仮の値で、本編の進行・保存には触れない。
+// 状態（レベル・火種・灯したマス・出会った人・♥）は試作の中だけの仮の値で、本編の進行・保存には触れない。
+// 1台表示では、灯したマスを場面をまたいで残す（phone.boardPlay）。縦の店番はそれを読み、盤の店番のスキルを効かせる（VPM19・SBD157）。
+// ?chapter=2 で第2章の盤（店番のスキルなど、第2章から開くマスが灯せる。火種も多めの仮の値）。
 import {
   BOARD_KEYS, BOARD_JA, BOARD_HEAD, HIDANE_NAME, HUB_AT, GRID, FEATURES, NOTABLES, PERK_TIERS, GATE_TIER, SQUARE_PERKS, REWARD_JA, perkIcon,
 } from "../../js/core/growth-board-data.js";
@@ -16,6 +18,14 @@ import { perkMultiplier, boardPerks } from "../../js/core/growth-effects.js";
 /* ───────── この試作の仮の状態（第1章 DAY 5・Lv2。地図の上の表示と同じ） ───────── */
 // 白火は本編なら Lv2 で2つ。盤を触って確かめられるよう多めに持たせている（仮の値）
 const START = Object.freeze({ chapter: 1, level: 2, xp: 0.45, hidane: { any: 6, body: 0, sense: 0, wisdom: 0 } });
+// 第2章からの盤（?chapter=2〜5）。店番のスキル（売り上手・波に乗る・フロアを読む・仕事が早い）まで灯して確かめられる量の仮の火種
+const LATER_START = Object.freeze({ level: 14, xp: 0.3, hidane: { any: 26, body: 1, sense: 1, wisdom: 1 } });
+/** 試作の始めの状態（章ごと）。 */
+const startState = (chapter) => {
+  const ch = Math.min(5, Math.max(1, Math.floor(Number(chapter)) || 1));
+  const base = ch === 1 ? START : LATER_START;
+  return { s: { chapter: ch }, g: { level: base.level, nodes: [], hidane: { ...base.hidane }, target: null } };
+};
 // 出会っている人と♥（仮の値）。スミさんは最初から。ひよりは斧投げを明かす前、凛想はまだ会っていない扱い（札は「？」）
 const MET = new Set(["sumi", "minto", "naru", "adam", "tsumugi"]);
 const HEARTS = { minto: 2, naru: 1, adam: 1, tsumugi: 3 };
@@ -196,7 +206,9 @@ export class GrowthScene {
   /** 場面の名札（app.mjs が読む）: 名前・光の色・1台表示のつまみの選び方・一覧（PC）に並べる場面。 */
   static META = {
     id: "growth", label: "盤", acc: "#c3b0ff",
-    options: { name: "board", default: "body", values: { body: "才能盤", sense: "感覚盤", wisdom: "理論盤" } },
+    options: [{ name: "board", default: "body", values: { body: "才能盤", sense: "感覚盤", wisdom: "理論盤" } },
+      // 盤の章（VPM19）: 第2章からは、店番のスキルなど第2章から開くマスも灯せる。灯したマスは店番の場面に効く
+      { name: "chapter", label: "盤の章", default: "1", values: { 1: "第1章", 2: "第2章" } }],
     gallery: {
       title: "心得の盤（能力盤）",
       note: "本編の心得の盤を縦へ。マスの並び・名前・効果・費用は本編のデータをそのまま読む。盤は大きく見せて、一画面に全部は出さない: 選んでいるマスにカーソルがあり、十字キーで隣のマスへ動くと盤がついてくる。丸ボタンは、選んでいるマスでできること（灯す・目標・決定）。下に選んでいるマスの札。盤の合計と近い目的地は「まとめ」の札に。レベル・火種・♥は仮の値。",
@@ -208,6 +220,7 @@ export class GrowthScene {
         { caption: "授業の錠（♥が要る）", shot: "sealed", board: "wisdom" },
         { caption: "まとめ（盤の合計と、近い目的地）", shot: "sum" },
         { caption: "全体を見る（結界の先まで）", shot: "overview", board: "wisdom" },
+        { caption: "店番のスキル（第2章・フロアを読む）", shot: "floor", board: "wisdom", chapter: 2 },
       ],
     },
   };
@@ -215,11 +228,14 @@ export class GrowthScene {
   /**
    * @param opts board＝開く盤（body / sense / wisdom）、shot＝一覧（PC）に並べる時の場面
    */
-  constructor(phone, kit, { board = "body", shot = null } = {}) {
+  constructor(phone, kit, { board = "body", shot = null, chapter = null } = {}) {
     Object.assign(this, { phone, kit, el: phone.el, shot });
     this.art = (name) => `${kit.REMAKE_IMG}ui/growth_board/${name}.webp`;
-    this.s = { chapter: START.chapter };
-    this.g = { level: START.level, nodes: [], hidane: { ...START.hidane }, target: null };
+    // 1台表示では、灯したマスを場面をまたいで残す（地図へ戻って店番に入ると、灯したスキルが効く）。章を替えたら始めから
+    const fresh = startState(chapter);
+    const kept = !phone.fixed && phone.boardPlay?.s.chapter === fresh.s.chapter ? phone.boardPlay : null;
+    Object.assign(this, kept || fresh);
+    if (!phone.fixed) phone.boardPlay = { s: this.s, g: this.g };
     Object.assign(this, { board: BOARD_KEYS.includes(board) ? board : "body", selected: null, pending: [], overview: false, sheet: false, cam: null,
       pointers: new Map(), fresh: new Set(), cursors: {} });
     this.reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -241,6 +257,12 @@ export class GrowthScene {
     } else if (shot === "sealed") this.selected = "M-W3";
     else if (shot === "sum") this.sheet = true;
     else if (shot === "overview") this.overview = true;
+    else if (shot === "floor") {
+      // 第2章: 紋の上の道と「注文の読み」を灯し、仕事が早いを灯した後。隣の「フロアを読む」を選んでいる
+      for (const cell of ["0,-1", "0,-2", "1,-2", "0,-3"]) g.nodes.push(id("wisdom", cell)); // 舌・段取り・仕事が早い・注文の読み（火種5）
+      g.hidane.any -= 5;
+      this.selected = "K30";
+    }
   }
 
   view() { const v = replay(this.g, this.pending, this.s); this.pending = v.pending; return v; }

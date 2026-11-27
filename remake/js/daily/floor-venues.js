@@ -524,21 +524,26 @@ export function floorVenueBasePay(venueOrId = "tonari", chapter = 1) {
   return floorShiftBasePay(chapter);
 }
 
-/** 店舗・章ごとの日当計算（基本給＋売上の歩合10%＋手当）。 */
-export function floorVenueShiftPay(venueOrId = "tonari", chapter = 1, sales = 0, allowances = 0) {
+/** 店舗の歩合の率（%）。bonus＝心得の盤の「売り上手」（K28。SBD157）で足すポイント。 */
+export function floorVenueCommissionPercent(venueOrId = "tonari", bonus = 0) {
+  const v = floorVenue(venueOrId);
+  return (v.entry?.commissionPercent ?? FLOOR_COMMISSION_PERCENT) + Math.max(0, Number(bonus) || 0);
+}
+
+/** 店舗・章ごとの日当計算（基本給＋売上の歩合10%＋手当）。bonus＝歩合に足すポイント（売り上手）。 */
+export function floorVenueShiftPay(venueOrId = "tonari", chapter = 1, sales = 0, allowances = 0, bonus = 0) {
   const v = floorVenue(venueOrId);
   const pct = v.entry?.commissionPercent ?? FLOOR_COMMISSION_PERCENT;
-  if (v.entry?.basePay == null && pct === FLOOR_COMMISSION_PERCENT) return floorShiftPay(chapter, sales, allowances);
+  if (v.entry?.basePay == null && pct === FLOOR_COMMISSION_PERCENT) return floorShiftPay(chapter, sales, allowances, bonus);
   const base = floorVenueBasePay(v, chapter);
-  const commission = Math.floor(sales * pct / 100);
+  const commission = Math.floor(sales * floorVenueCommissionPercent(v, bonus) / 100);
   return { base, commission, allowances, total: base + commission + allowances };
 }
 
-/** メニュー・説明用の日当表記（「基本給12,000円＋売上の10%」）。 */
-export function floorVenuePayText(venueOrId = "tonari", chapter = 1) {
+/** メニュー・説明用の日当表記（「基本給12,000円＋売上の10%」）。bonus＝歩合に足すポイント（売り上手）。 */
+export function floorVenuePayText(venueOrId = "tonari", chapter = 1, bonus = 0) {
   const v = floorVenue(venueOrId);
-  const pct = v.entry?.commissionPercent ?? FLOOR_COMMISSION_PERCENT;
-  return `基本給${floorVenueBasePay(v, chapter).toLocaleString("ja-JP")}円＋売上の${pct}%`;
+  return `基本給${floorVenueBasePay(v, chapter).toLocaleString("ja-JP")}円＋売上の${floorVenueCommissionPercent(v, bonus)}%`;
 }
 
 /** 店舗ごとの来店者定義を引く（ドバイの同行恋人を含む）。 */

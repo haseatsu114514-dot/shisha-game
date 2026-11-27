@@ -30,6 +30,11 @@ const ENCOUNTERS = {
     { id: "kannon_ch2_omikuji", chapter: 2, slot: 0 },
     // #3097 第2弾: 香炉の煙を手にかける（吸わずに浴びる煙）
     { id: "kannon_ch2_incense", chapter: 2, slot: 0 },
+    // VOL16（#3097 計画 2-9）: 賽銭の五円玉と十円玉（wish の毎朝の腰のお願いの続き）
+    { id: "kannon_ch2_coin", chapter: 2, slot: 0 },
+    // VOL16: 仕入れ帰りの喫茶こはくのマスターと、柄杓一杯の手水。喫茶こはくは昼だけで第2章の回が5本あり、
+    // 一回おきに読むと昼の空き枠（約10）をほぼ使い切るので、マスターの続きはこちらに置く
+    { id: "kannon_ch2_temizu", chapter: 2, slot: 0 },
     { id: "kannon_adam", met: "adam", slot: 0 },
     // 荷が届いた話（EDENでの続き）を聞いた後。なるがアダムに昼飯を食べさせている（REL02）
     { id: "kannon_adam_lunch", met: ["adam", "naru"], flag: "_spot_follow_adam", slot: 0, rift: true },
@@ -43,6 +48,11 @@ const ENCOUNTERS = {
     { id: "choizap_ch2_stairs", chapter: 2 },
     // #3097 第2弾: 電車通いの首のストレッチ
     { id: "choizap_ch2_neck", chapter: 2 },
+    // VOL16（#3097 計画 2-9）: スタッフの続き。昼夜どちらでも読む。エアコンの温度・目を閉じた片足立ち（老人が記録を
+    // 見ないのは stairs のタオルの続きなので、その後ろ）・ほどけにくい靴ひも
+    { id: "choizap_ch2_aircon", chapter: 2 },
+    { id: "choizap_ch2_balance", chapter: 2 },
+    { id: "choizap_ch2_shoelace", chapter: 2 },
     { id: "choizap_minto", met: "minto", flag: "_minto_identity_revealed" },
     { id: "choizap_naru", met: "naru", rift: true },
     { id: "choizap_oldman" },

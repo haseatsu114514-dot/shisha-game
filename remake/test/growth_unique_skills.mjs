@@ -1,4 +1,6 @@
 // 心得の盤のユニークなスキル（2026-11-20 SBD154）: 聞き上手（K25）・くじ運（K26）・仕事が早い（K27）の効き目。
+// 仕事が早いは 2026-11-27（SBD157）に店番のシャッフルの速さへつなぎ直した。同じ時に足した店番のスキル（K28〜K30）の盤からの受け渡しもここで見る
+// （営業の中の効き目は tonari_floor_model.mjs）。
 // 灯していなければ今までと同じ、灯すと決めた分だけ変わる。くじ運は箱の中身と枚数を変えない。
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -22,7 +24,7 @@ for (const [id, [b, name]] of Object.entries(unique)) {
   assert.equal(board.pathTo(id, new Set()).cost, 4, `${id}: 紋から 能力のマス2つ＋火種2`);
 }
 assert.equal(growth.BOARD_TOTAL, 204, "盤の全部（＝受け取りの上限）は 198 → 204");
-assert.equal(growth.BOARD_VERSION, 15);
+assert.equal(growth.BOARD_VERSION, 16, "v16（SBD157）で店番のスキルを足した");
 
 // ---- 聞き上手: 通いの小会話の好感度に＋2（段階の会話は変えない）
 const s = core.newGame();
@@ -66,11 +68,32 @@ assert.notEqual(always, order, "元の並びは書き換えない");
 const kujiSource = readFileSync(new URL("../js/daily/kuji.js", import.meta.url), "utf8");
 assert.match(kujiSource, /order: luckyOrder\(shuffle\(order\), g\.prizes, growthSkill\(state, "K26"\), SKILL_TUNING\.kujiLuck\)/, "新しい箱を作る時だけ寄せる");
 
-// ---- 仕事が早い: 基本の日当の1割
-assert.equal(effects.SKILL_TUNING.baitoPay, 0.1);
+// ---- 仕事が早い: 店番のシャッフルが2秒→1秒（SBD157。基本の日当の1割の上乗せは無くした）
+assert.equal(N.K27.scene, "店番");
+assert.equal(effects.SKILL_TUNING.quickShuffle, 0.5);
+assert.equal(effects.SKILL_TUNING.baitoPay, undefined, "日当の上乗せは無い");
 const tonari = readFileSync(new URL("../js/daily/tonari.js", import.meta.url), "utf8");
-assert.match(tonari, /const quickPay = growthSkill\(owner, "K27"\) \? Math\.round\(basePay \* SKILL_TUNING\.baitoPay\) : 0;/);
-assert.match(tonari, /total: .*callingBonus \+ quickPay/, "日当の手当に足す");
-assert.match(tonari, /floorShiftPay\(owner.chapter, floorNight.sales, allowances\)/, "手当を支給額に含める");
+assert.doesNotMatch(tonari, /quickPay|baitoPay/, "日当の手当に足さない");
 
-console.log("[growth unique skills] PASS: K25 listen +2 on small talks only, K26 kuji luck keeps the box and moves high prizes forward, K27 shift pay +10%, board 204 / v15");
+// ---- 店番のスキル（SBD157）: 盤から店番へ渡す値。灯していなければ素の決まり
+{
+  const floor = { K27: ["wisdom", "仕事が早い"], K28: ["body", "売り上手"], K29: ["sense", "波に乗る"], K30: ["wisdom", "フロアを読む"] };
+  for (const [id, [b, name]] of Object.entries(floor)) {
+    assert.deepEqual([N[id].kind, N[id].board, N[id].name, N[id].cost, N[id].ring, N[id].scene], ["skill", b, name, 2, 2, "店番"], `${id} のデータ`);
+  }
+  g.nodes.length = 0;
+  const none = effects.growthFloorPerks(s);
+  assert.deepEqual(none, { floorRare: 0, floorTop: 0, floorMatch: 0, shuffleScale: 1, commission: 0, feverTables: 0, floorRead: false });
+  g.nodes.push("K27", "K28", "K29", "K30");
+  assert.deepEqual(effects.growthFloorPerks(s), { floorRare: 0, floorTop: 0, floorMatch: 0, shuffleScale: 0.5, commission: 3, feverTables: 1, floorRead: true });
+  // 能力のマスの恩恵（#4255）はそのまま一緒に渡る
+  const matchSquare = board.boardNodes("wisdom").find((n) => n.perk === "floorMatch" && n.band === 1);
+  g.nodes.push(matchSquare.id);
+  assert.equal(effects.growthFloorPerks(s).floorMatch, 8);
+  g.nodes.length = 0;
+  globalThis.localStorage.setItem("suien_growth_preview", "0");
+  assert.equal(effects.growthFloorPerks(s), null, "盤が無効なら店番は素の決まり");
+  globalThis.localStorage.removeItem("suien_growth_preview");
+}
+
+console.log("[growth unique skills] PASS: K25 listen +2 on small talks only, K26 kuji luck keeps the box and moves high prizes forward, K27 now speeds up the floor shuffle and K28-K30 hand commission / fever / floor reading to the floor shift (SBD157), board 204 / v16");

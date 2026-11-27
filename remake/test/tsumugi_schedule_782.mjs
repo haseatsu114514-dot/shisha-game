@@ -89,6 +89,7 @@ console.log("[782] 昼夜/固定日/延期/旧セーブ/一度きり: PASS");
   const noop = () => {};
   const ports = {
     state: menuState, config: {}, DB: { dialogues: {}, flavorById: {} },
+    growthFloorPerks: () => null, // 心得の盤の店番のスキル（SBD157）は無しで検査する
     timeOfDay: () => menuState.slot === 0 ? "day" : "night", bgUrl: () => "background",
     setBg: noop, playBgm: noop, retire: noop, SE: { select: noop, cancel: noop },
     el: (selector, attrs, children) => Array.isArray(attrs)
