@@ -3,24 +3,25 @@
 // 絵・立ち絵・台詞は本編の素材を読むだけ。本編の進行・判定・保存は呼ばない。
 // 一覧（PC）: index.html　／　1台を画面いっぱい（スマホ）: index.html?view=play&design=a|b|c&scene=map|talk|choice|craft
 
-const ASSETS = new URL("../../../assets/", import.meta.url).href;
+// 絵は本編が表示に使う WebP 版（remake/img/）を読む。元の PNG（assets/ 側）は公開時に外れるので直接書かない
+// （書くと remake/tools/slim_deploy.py が「直接の参照」として元PNGを公開物に残してしまう）。
 const REMAKE_IMG = new URL("../../img/", import.meta.url).href;
 const IMG = {
-  map: `${ASSETS}backgrounds/bg_osu_map_day.png`,
-  shop: `${ASSETS}backgrounds/peppermint.png`,
-  mintoWink: `${ASSETS}sprites/characters/minto/chr_minto_wink.png`,
-  mintoSmile: `${ASSETS}sprites/characters/minto/chr_minto_smile.png`,
-  faceMinto: `${ASSETS}ui/face_icons/face_minto.png`,
-  faceSumi: `${ASSETS}ui/face_icons/face_sumi.png`,
-  craftBg: `${ASSETS}backgrounds/bg_tonari_inside_day.png`,
+  map: `${REMAKE_IMG}backgrounds/bg_osu_map_day.webp`,
+  shop: `${REMAKE_IMG}backgrounds/peppermint.webp`,
+  mintoWink: `${REMAKE_IMG}sprites/characters/minto/chr_minto_wink.webp`,
+  mintoSmile: `${REMAKE_IMG}sprites/characters/minto/chr_minto_smile.webp`,
+  faceMinto: `${REMAKE_IMG}ui/face_icons/face_minto.webp`,
+  faceSumi: `${REMAKE_IMG}ui/face_icons/face_sumi.webp`,
+  craftBg: `${REMAKE_IMG}backgrounds/bg_tonari_inside_day.webp`,
   craftActor: `${REMAKE_IMG}ui/making/hajime_craft_pull.webp`,
   leaf: `${REMAKE_IMG}ui/making/ui_mockup_flavor_leaf.webp`,
   smoke: `${REMAKE_IMG}ui/making/smoke_thick.webp`,
-  thumbTonari: `${ASSETS}backgrounds/bg_tonari_inside_day.png`,
-  thumbNaru: `${ASSETS}backgrounds/kemurikusa.png`,
-  thumbAdam: `${ASSETS}backgrounds/bg_eden_shop.png`,
-  thumbShop: `${ASSETS}backgrounds/bg_fookah_showroom.png`,
-  thumbHome: `${ASSETS}backgrounds/bg_home_day.png`,
+  thumbTonari: `${REMAKE_IMG}backgrounds/bg_tonari_inside_day.webp`,
+  thumbNaru: `${REMAKE_IMG}backgrounds/kemurikusa.webp`,
+  thumbAdam: `${REMAKE_IMG}backgrounds/bg_eden_shop.webp`,
+  thumbShop: `${REMAKE_IMG}backgrounds/bg_fookah_showroom.webp`,
+  thumbHome: `${REMAKE_IMG}backgrounds/bg_home_day.webp`,
   ...(globalThis.PORTRAIT_LAYOUT_ASSETS || {}),
 };
 
