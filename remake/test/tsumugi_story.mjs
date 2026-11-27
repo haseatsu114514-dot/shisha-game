@@ -165,7 +165,7 @@ try {
   assert.equal(intro.error, undefined); assert.equal(intro.day, 1); assert.equal(intro.stories, 0);
   assert(intro.met); assert(intro.contact);
   assert(intro.lines.includes("うちの店の宣伝になるなら、交換しとけ"));
-  assert(!intro.lines.some(t => /みんと|コンカフェ|ケムリクサへ偵察/.test(t)));
+  assert(!intro.lines.some(t => /みんと|コンカフェ|KEMURIYAへ偵察/.test(t)));
   await opening.close();
   console.log("[tsumugi story] PASS: first-day introduction and contact before other errands/characters");
 

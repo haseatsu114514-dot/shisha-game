@@ -94,7 +94,7 @@ const visited = await simulate([], { 9: ['adam'], 12: [null, 'minto'] });
 assert.deepEqual(visited[12], []);
 assert.equal(Object.values(visited).filter(ran => ran.length).length, 8);
 assert.deepEqual(played.filter(id => /adam|minto|naru_window/.test(id)), ['ch2_adam_distance', 'ch2_minto_warning'],
-  'DAY11の記録が無い保存では、閉じたケムリクサを足さない');
+  'DAY11の記録が無い保存では、閉じたKEMURIYAを足さない');
 
 // 訪問できる日と時間帯: アダムはDAY7〜12、みんとはDAY12の夜だけ（昼は通常の来店）
 state = { chapter: 2, day: abs(6), slot: 0, phase: 'daily', flags: { _ch2_day1: { startDay: START } }, deferredNightEvents: [] };

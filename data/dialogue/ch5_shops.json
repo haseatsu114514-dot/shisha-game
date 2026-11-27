@@ -1,10 +1,10 @@
 {
-  "comment": "第5章の地元の店（#2033 F）。なるはKEMURIKUSAを再開している（第4章 ch4_naru_dubai_3）。はじめは第4章の世界大会の後の新しい王者。C.STATIONの常連（old_man）は第1章の cs_regular_chat の人。ヒロインの店（PEPPERMINT・SHISHARK・MELTY PUFF）は、恋人でも友人でも不自然にならない店での会話にする（オーナー指定 2026-11-02）。アダム（EDEN）とクラウド（「貴方ノ為ノ此ノ煙。」）の ch5_adam_shop・ch5_kuraudo_shop は、通い店ではない常連の店で第5章に一度だけ読む会話（chapters/ch5-first-talks.js）。好感度・代金・体力は台詞に書かず、chapters/ch5-shops.js が付ける。",
+  "comment": "第5章の地元の店（#2033 F）。なるはKEMURIYAを再開している（第4章 ch4_naru_dubai_3）。はじめは第4章の世界大会の後の新しい王者。C.STATIONの常連（old_man）は第1章の cs_regular_chat の人。ヒロインの店（PEPPERMINT・SHISHARK・MELTY PUFF）は、恋人でも友人でも不自然にならない店での会話にする（オーナー指定 2026-11-02）。アダム（EDEN）とクラウド（「貴方ノ為ノ此ノ煙。」）の ch5_adam_shop・ch5_kuraudo_shop は、通い店ではない常連の店で第5章に一度だけ読む会話（chapters/ch5-first-talks.js）。好感度・代金・体力は台詞に書かず、chapters/ch5-shops.js が付ける。",
   "dialogues": [
     {
       "dialogue_id": "ch5_naru_shop",
       "lines": [
-        { "speaker": "", "face": "", "text": "KEMURIKUSA。カウンターの奥で、なるがボウルに葉を詰めていた。" },
+        { "speaker": "", "face": "", "text": "KEMURIYA。カウンターの奥で、なるがボウルに葉を詰めていた。" },
         { "speaker": "naru", "face": "smile", "text": "お、世界一が来た" },
         { "speaker": "hajime", "face": "normal", "text": "その呼び方、やめてくれって" },
         { "speaker": "naru", "face": "smile", "text": "冗談だ。座れ。今日の一台、試してほしい" },
@@ -19,7 +19,7 @@
     {
       "dialogue_id": "ch5_naru_shop_b",
       "lines": [
-        { "speaker": "", "face": "", "text": "閉店前のKEMURIKUSA。なるが、カウンターを拭きながら顔を上げた。" },
+        { "speaker": "", "face": "", "text": "閉店前のKEMURIYA。なるが、カウンターを拭きながら顔を上げた。" },
         { "speaker": "naru", "face": "normal", "text": "博士との勝負、日はまだ決めてないんだってな" },
         { "speaker": "hajime", "face": "normal", "text": "うん。準備ができたら、こっちから連絡する" },
         { "speaker": "naru", "face": "serious", "text": "急かすやつがいたら言え。俺が代わりに文句を言ってやる" },
@@ -33,7 +33,7 @@
     {
       "dialogue_id": "ch5_naru_shop_c",
       "lines": [
-        { "speaker": "", "face": "", "text": "KEMURIKUSAの作業台。なるが、炭の置き方を一つずつ変えて試していた。" },
+        { "speaker": "", "face": "", "text": "KEMURIYAの作業台。なるが、炭の置き方を一つずつ変えて試していた。" },
         { "speaker": "naru", "face": "normal", "text": "俺の台は丸見えだ。うまくいかなかった方もな" },
         { "speaker": "hajime", "face": "normal", "text": "前も、そう言ってたよね" },
         { "speaker": "naru", "face": "smile", "text": "言ってた。言った本人が、今やっと分かってきた" },
@@ -363,7 +363,7 @@
         {
           "speaker": "rio",
           "face": "smile",
-          "text": "いらっしゃい。今日は、ケムリクサさんを帰さなかったの"
+          "text": "いらっしゃい。今日は、ケムリヤさんを帰さなかったの"
         },
         {
           "speaker": "rio",
@@ -483,12 +483,12 @@
     },
     {
       "dialogue_id": "ch5_rio_naru_order",
-      "metadata": { "setting": "なる→凛想の続き（#3468 E案）。第5章のDr.fookahの2階で、お茶の場面（ch5_rio_naru_tea）の後、通いの小会話を2本読んだ次の来店に一度だけ（chapters/ch5-shops.js の extras）。憧れはそのまま、仕事は少し対等に。呼び名（ケムリクサさん／円頓寺さん）は変えず、凛想は好意に気づかない。お茶はご褒美ではなく、仕入れ相談に座って話すためのもの。" },
+      "metadata": { "setting": "なる→凛想の続き（#3468 E案）。第5章のDr.fookahの2階で、お茶の場面（ch5_rio_naru_tea）の後、通いの小会話を2本読んだ次の来店に一度だけ（chapters/ch5-shops.js の extras）。憧れはそのまま、仕事は少し対等に。呼び名（ケムリヤさん／円頓寺さん）は変えず、凛想は好意に気づかない。お茶はご褒美ではなく、仕入れ相談に座って話すためのもの。" },
       "lines": [
         { "speaker": "", "face": "", "text": "2階に上がると、応接の机でなるが注文書を広げていた。" },
         { "speaker": "", "face": "", "text": "湯のみはまだ出ていない。なるの手には、ペンが握られている。" },
         { "speaker": "naru", "face": "normal", "text": "よう、はじめ。今、仕入れの相談中だ" },
-        { "speaker": "rio", "face": "normal", "text": "ケムリクサさん。前のバニラ、焼き菓子の台に回してたでしょ" },
+        { "speaker": "rio", "face": "normal", "text": "ケムリヤさん。前のバニラ、焼き菓子の台に回してたでしょ" },
         { "speaker": "rio", "face": "normal", "text": "熱が入った後半で、焦げた砂糖に寄らないか。袋の口で何度も確かめてた" },
         { "speaker": "", "face": "", "text": "なるのペンが、宙で止まった。" },
         { "speaker": "naru", "face": "surprise", "text": "……覚えてたんですか" },

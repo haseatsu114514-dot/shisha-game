@@ -493,7 +493,7 @@
     },
     {
       "dialogue_id": "recipe_find_luqaimat_hint",
-      "comment": "なる（第5章のKEMURIKUSA）。菓子の味から配合を組み立てる。ルカイマットは第4章のスークの屋台の菓子（ch4_dubai_daily.json）で、はじめが買ったかどうかに頼らない。ハニーとカルダモンは地元の店で買える。",
+      "comment": "なる（第5章のKEMURIYA）。菓子の味から配合を組み立てる。ルカイマットは第4章のスークの屋台の菓子（ch4_dubai_daily.json）で、はじめが買ったかどうかに頼らない。ハニーとカルダモンは地元の店で買える。",
       "lines": [
         {
           "speaker": "",

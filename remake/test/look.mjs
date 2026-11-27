@@ -1,14 +1,16 @@
 // 見た目の様式（core/look.js・LK01・LK09・LK23）: 既定は旧版（プレイヤー・自動操作とも）、新版は設定で選べない（コードは残す）、
-// 新版・DS風はすべての章で効く（LK13・LK21）、まだ選んでいない端末は一度だけ既定へ移す。
+// 新版・DS風はすべての章で効く（LK13・LK21）、縦画面（煙の舞台・VPN01）は第1章だけ、まだ選んでいない端末は一度だけ既定へ移す。
 import assert from "node:assert/strict";
 import { LOOKS, DISABLED_LOOKS, BASE_LOOK, PLAYER_DEFAULT_LOOK, LOOK_CHAPTERS, defaultLook, normalizeLook, effectiveLook, migrateLook } from "../js/core/look.js";
 
-assert.deepEqual(LOOKS.map((look) => look.id), ["neo", "classic", "retro"]);
+assert.deepEqual(LOOKS.map((look) => look.id), ["neo", "classic", "retro", "vertical"]);
 assert.equal(BASE_LOOK, "classic", "何も重ねない素の様式は旧版");
 assert.equal(PLAYER_DEFAULT_LOOK, "classic", "プレイヤーの既定は旧版（LK23）");
 assert.deepEqual(DISABLED_LOOKS, ["neo"], "新版は設定で選べない（LK23。コードは残す）");
 assert.equal(LOOK_CHAPTERS.neo, null, "新版はすべての章（LK13）");
 assert.equal(LOOK_CHAPTERS.retro, null, "DS風もすべての章（LK21）");
+assert.deepEqual(LOOK_CHAPTERS.vertical, [1], "縦画面は第1章から作っている（VPN01）");
+assert(!DISABLED_LOOKS.includes("vertical"), "縦画面は設定で選べる");
 
 // 自動操作の印（navigator.webdriver）を差し替えて、両方の既定を確かめる
 const withWebdriver = (value, run) => {
@@ -37,6 +39,9 @@ for (const chapter of [undefined, 1, 2, 3, 4, 5]) assert.equal(effectiveLook("cl
 for (const chapter of [undefined, 1, 2, 3, 4, 5]) assert.equal(effectiveLook("neo", chapter), "neo", `新版は第${chapter ?? "?"}章でも新版`);
 // DS風もすべての章で効く（LK21。章が分からないタイトルでも）
 for (const chapter of [undefined, 1, 2, 3, 4, 5]) assert.equal(effectiveLook("retro", chapter), "retro", `DS風は第${chapter ?? "?"}章でもDS風`);
+// 縦画面は第1章（章が分からないタイトルも第1章として）だけ。第2章からは旧版で表示する（VPN01）
+for (const chapter of [undefined, 1]) assert.equal(effectiveLook("vertical", chapter), "vertical", `縦画面は第${chapter ?? "?"}章で縦画面`);
+for (const chapter of [2, 3, 4, 5]) assert.equal(effectiveLook("vertical", chapter), "classic", `縦画面は第${chapter}章では旧版`);
 
 // 起動時の移行（LK09→LK23）: 既定は旧版。新版を選んでいた端末は一度だけ旧版へ移す（lookVersion 2）。
 const migrate = (saved) => { const config = { ...saved }; const look = migrateLook(config); return [look, config.look, config.lookVersion]; };

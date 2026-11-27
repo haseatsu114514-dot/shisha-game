@@ -29,7 +29,7 @@ state.chapter = 5;
 state.flags._hiyori_tonari_return_done = true;
 assert(!isClosed(naru));
 assert(plans().some(plan => plan.id === "hiyori" && plan.spotId === "naru"), "再開した店にひよりが居合わせる");
-state.day = 17; // KEMURIKUSAの定休日
+state.day = 17; // KEMURIYAの定休日
 assert(isClosed(naru));
 assert(plans().every(plan => plan.spotId !== "naru"));
-console.log("[roamers] PASS: KEMURIKUSA before and after reopening, and on its day off");
+console.log("[roamers] PASS: KEMURIYA before and after reopening, and on its day off");

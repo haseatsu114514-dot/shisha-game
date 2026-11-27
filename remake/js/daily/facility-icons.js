@@ -16,7 +16,7 @@ export const FACILITY_ICONS = Object.freeze({
   home: Object.freeze({ badge: Object.freeze([1453, 281]), label: '自宅', rect: Object.freeze([842, 125, 663, 556]) }),
   kohaku: Object.freeze({ badge: Object.freeze([1994, 293]), label: '喫茶こはく', rect: Object.freeze([1552, 104, 568, 539]) }),
   axe_bar: Object.freeze({ badge: Object.freeze([688, 153]), label: '斧投げBar', extra: true, rect: Object.freeze([56, 14, 655, 495]) }),
-  choizap: Object.freeze({ badge: Object.freeze([1466, 178]), label: 'CHOI-ZAP', extra: true, rect: Object.freeze([844, 49, 633, 459]) }),
+  choizap: Object.freeze({ badge: Object.freeze([1466, 178]), label: 'サクッとジム', extra: true, rect: Object.freeze([844, 49, 633, 459]) }),
   trpg_bar: Object.freeze({ badge: Object.freeze([1425, 650]), label: 'ボドゲカフェ', extra: true, rect: Object.freeze([821, 512, 664, 494]) }),
   // 路上占いは水晶玉だけのシール風アイコンに作り直し（2026-11-10 オーナー採用C案。旧出店アイコンは廃止）。
   fortune: single('map-facilities-fortune-crystal.webp', '路上占い', [384, 384], [285, 150]),
@@ -42,7 +42,7 @@ export const FACILITY_ICON_SIZES = Object.freeze([32, 48, 64, 80, 96, 128]);
 const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'kohaku',
   rojiura_cinema: 'rojiura_cinema',
   axe_bar: 'axe_bar', choizap: 'choizap', fortune: 'fortune', trpg_bar: 'trpg_bar',
-  ch3_tokyo_gym: 'choizap', // 第3章の東京のCHOI-ZAP（同じチェーンの高架下の店）
+  ch3_tokyo_gym: 'choizap', // 第3章の東京のサクッとジム（同じチェーンの高架下の店）
   ch5_tokyo_gym: 'choizap', // 第5章の東京でも同じ店（会員の時だけ地図に出る）
   // MPI: 東京・ドバイ・第5章の行き先。路地裏の神社は場所の決定待ち（#2166）
   ch3_tokyo_park: 'tokyo_park', ch5_tokyo_park: 'tokyo_park', ch3_tokyo_room: 'mukai_back_room', ch5_tokyo_attic: 'mukai_attic',

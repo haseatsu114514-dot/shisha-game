@@ -52,18 +52,22 @@ const SALES_STEP = 10000;
 //   seats＝絵の中の5つの席（x・y＝席のカードの「下の辺のまん中」を置く所。絵の幅・高さに対する %。カードは席のソファに重ね、下の辺は座面の手前。
 //     奥の壁に沿って3つ＝row 0、手前の左右に内向きで2つ＝row 1）、
 //   chapter＝その店に来る章（並ぶミックスとレア客が変わる）、night＝夜だけの店（はじめから夜の絵）、visitors＝遊びに来る本編の人物（顔のアイコンがある人だけ）、boss＝精算で一言いう人の顔。
+//   奥の3つは、カードの間をあけるため（VPM32）、ソファのまん中（絵の幅の約25%・75%）より少し外の 20%・80%（カードはソファより幅が広いので、ソファの上に乗ったまま）。
 //   絵を替える時は、席の表も合わせる
 const VENUE_VIEW = {
   tonari: { art: "tonari", chapter: 1, night: false, boss: "sumi",
-    seats: [{ x: 25, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 75, y: 41.5, row: 0 }, { x: 18, y: 74, row: 1 }, { x: 82, y: 74, row: 1 }],
+    seats: [{ x: 20, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 80, y: 41.5, row: 0 }, { x: 20, y: 74, row: 1 }, { x: 80, y: 74, row: 1 }],
     visitors: ["tsumugi", "naru", "adam"] },
   mukai: { art: "mukai", chapter: 3, night: true, boss: "mukai_master",
-    seats: [{ x: 25, y: 42.5, row: 0 }, { x: 50, y: 42.5, row: 0 }, { x: 75, y: 42.5, row: 0 }, { x: 18, y: 74, row: 1 }, { x: 82, y: 74, row: 1 }],
+    seats: [{ x: 20, y: 42.5, row: 0 }, { x: 50, y: 42.5, row: 0 }, { x: 80, y: 42.5, row: 0 }, { x: 20, y: 74, row: 1 }, { x: 80, y: 74, row: 1 }],
     visitors: ["steve", "volk", "yoru"] },
   dubai: { art: "dubai", chapter: 4, night: false, boss: null,
-    seats: [{ x: 25, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 75, y: 41.5, row: 0 }, { x: 18, y: 74, row: 1 }, { x: 82, y: 74, row: 1 }],
+    seats: [{ x: 20, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 80, y: 41.5, row: 0 }, { x: 20, y: 74, row: 1 }, { x: 80, y: 74, row: 1 }],
     visitors: ["naru", "da_silva", "master_hookah"] },
 };
+// 試作だけの客の呼び名（VPM31）: オーナー「シーシャ屋のモブでおばあちゃんいるのは変　20〜30代メインに　いてもたまに40.50」。
+//   本編の tonari の「年配の方」（elder。長居する、こだわりの客）は、試作では「常連の方」と呼び、絵も30代の常連にした（mob-art.mjs）。規則はそのまま
+const GUEST_NAME = { tonari: { elder: "常連の方" } };
 // 営業の種類（1台表示のつまみ・?shift= で選ぶ）
 export const FLOOR_SHIFTS = {
   usual: { name: "いつもの昼", opts: { level: 1, kind: "usual", visitor: true } },
@@ -231,7 +235,7 @@ export class FloorScene {
     try { localStorage.setItem(REP_KEY, JSON.stringify({ ...JSON.parse(localStorage.getItem(REP_KEY) || "{}"), [this.venue.id]: this.rep })); } catch { /* 残せない時は、この回だけ */ }
   }
 
-  /** 営業を作る。本編の規則をそのまま呼び、試作だけの決まり（ミックス案の数・評判で来る客）は「店の差し替え」で渡す。
+  /** 営業を作る。本編の規則をそのまま呼び、試作だけの決まり（ミックス案の数・評判で来る客・客の呼び名）は「店の差し替え」で渡す。
    *  評判で来る客（VPM20・VPM27）: 客の並びのうしろに3人足しておく。店の評判（積み上げ）が 25・50・75 に届いている分は、はじめから来る。
    *  届いていない分は来店の列から外して取っておき、営業の途中で届いたら列へ戻す。本編の人物（レア客）は、評判10から（届いていなければ取っておく）。
    *  その人が入れ替わった3人めの客の刻みには、足した1人めが来る（もとの客足は減らさない）。?visitor=adam で、来る人物を指定できる。 */
@@ -246,7 +250,9 @@ export class FloorScene {
     const late = Math.round(def.length * 0.6);
     const extra = [0, 1, 2].map((i) => singles[i % singles.length]);
     const plan = { ...def, cast: [...def.cast, ...extra], arrive: [...def.arrive, visitor && thirdAt !== null ? thirdAt : late, late, late] };
-    const venue = { id: this.venue.id, rules: { handSize: this.handSize }, nights: { ...this.venue.nights, [def.id]: plan } };
+    const rename = GUEST_NAME[this.venue.id] || {};
+    const guests = Object.fromEntries(Object.entries(this.venue.guests).map(([id, g]) => [id, rename[id] ? { ...g, name: rename[id] } : g]));
+    const venue = { id: this.venue.id, rules: { handSize: this.handSize }, nights: { ...this.venue.nights, [def.id]: plan }, guests };
     // 昼から夜まで通しの店（tonari・ドバイ）は、営業の半ばで日が暮れる。夜だけの店（mukai）は、はじめから夜
     const night = this.view.night;
     const s = createFloorNight({ venue, seed, level: opts.level, chapter: this.view.chapter, daytime: !night, dusk: !night, night: def.id, visitor, floorPerks: this.perks });

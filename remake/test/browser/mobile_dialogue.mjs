@@ -50,7 +50,7 @@ await suite("mobile-dialogue", async check => {
           dialogue_id: "qa_mobile_dialogue",
           lines: [
             { speaker: "hajime", face: "normal", text: "お疲れさまです。あ、さっきの常連さん、帰り際に『今日の、良かったよ』って" },
-            { speaker: "hajime", face: "normal", text: "この行の後に、幅いっぱいの行を置く。\nPEPPERMINTからの帰り道。KEMURIKUSAの前で足が" },
+            { speaker: "hajime", face: "normal", text: "この行の後に、幅いっぱいの行を置く。\nPEPPERMINTからの帰り道。KEMURIYAの前で足が" },
             { speaker: longName, portrait: false, text: "長い名前でも、名札からはみ出さない。" },
             { speaker: "", text: "地の文と本文の窓枠はそのまま。" },
             { speaker: "hiyori", portrait: false, text: "うん、今日はそれでいいと思う。", inner: "本当は少しだけ期待したけど、それは言わなくていい。" },
