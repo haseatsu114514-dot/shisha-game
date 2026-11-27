@@ -615,9 +615,9 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 
 /* 水入れ（VPL36・VPL37）: 作り直したボトル（640×631）の中だけに水が満ちる。水面の色: 赤＝ステムに届いていない、緑＝ちょうど、金＝そのほか */
 /* 水入れ（VPL81）: 口の開いたボトルを蛇口の下で少し傾けて満たす。水・水流・蛇口は傾けない SVG に描き（水面は画面に水平）、ガラスの絵をその上に重ねる */
-.bottle { position: relative; aspect-ratio: 540 / 711; }
+.bottle { position: relative; aspect-ratio: 540 / 800; }
 .b-glass, .bottle-svg { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
-.b-glass { transform-origin: 50% 97.05%; transform: rotate(8deg); filter: drop-shadow(0 1.2rem 1.8rem #000b); pointer-events: none; }
+.b-glass { transform-origin: 50% 98.75%; transform: rotate(8deg); filter: drop-shadow(0 1.2rem 1.8rem #000b); pointer-events: none; }
 .bottle-svg { overflow: visible; }
 .w-faucet { filter: drop-shadow(0 6px 8px #0009); }
 .w-body { opacity: 0.94; } .w-deep { fill: #123f80; opacity: 0.22; }
@@ -625,14 +625,14 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 [data-zone="none"] .w-surf { stroke: #ff8a8a; } [data-zone="ideal"] .w-surf { stroke: #7df0b0; } [data-zone="shallow"] .w-surf, [data-zone="deep"] .w-surf { stroke: #ffe07a; }
 .w-line { fill: none; stroke: #fff3b0; stroke-width: 3.6; stroke-dasharray: 12 8; }
 [data-zone="ideal"] .w-line { stroke: #5fe39a; }
-.w-stream { opacity: 0.8; filter: drop-shadow(0 0 3px #bfeaff); }
+.w-stream { opacity: 0.8; filter: drop-shadow(0 0 3px #bfeaff); } .w-stream.in { opacity: 1; } /* 胴の中の水流はガラス越しなので濃いめ */
 .bottle-svg.fx { pointer-events: none; }
 .w-bubbles circle { fill: #ffffff26; stroke: #e8fbff; stroke-width: 1.6; }
 .w-drops circle { fill: #e2f7ff; }
 .phone[data-scene="water"] .pic { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 95%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 95%, transparent 100%); }
 .water-a { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 46% at 50% 60%, #ffe2a61f, transparent 70%); }
 /* ボトルは下へ寄せる（吹き出しのすぐ上）。大きさは、蛇口（ボトルの上に約230）まで入る高さから決める */
-.water-a .bottle { position: absolute; left: calc(50% - 2.4rem); top: auto; bottom: 2rem; width: min(27.2rem, calc((100cqh - var(--ctrl-h) - var(--aux-h, 0rem) - 13.3rem) * 0.5745)); transform: translateX(-50%); }
+.water-a .bottle { position: absolute; left: calc(50% - 2.4rem); top: auto; bottom: 2rem; width: min(27.2rem, calc((100cqh - var(--ctrl-h) - var(--aux-h, 0rem) - 13.3rem) * 0.536)); transform: translateX(-50%); }
 /* 配合（VPL56）: 上ははかりと器、下は画面の半分を使うフレーバーの一覧。葉は本編のパッケージ、ジャンルの印は店番と同じ */
 /* VPL78（案B「葉の棚」）: 下の画面は 棚（5×2）＋選んだ葉の段＋いちばん下の段（ジャンルと決定）。高さは部品の大きさから決まる。
    上の画面は、はかりを左へ寄せて右に温度帯。はかりの大きさは、残った高さから決める（--sw） */
