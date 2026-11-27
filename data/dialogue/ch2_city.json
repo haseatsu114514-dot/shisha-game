@@ -1479,6 +1479,256 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch2_commute_morning_corner",
+      "comment": "VOL21 第3便（2026-11-27 オーナー「続けて良い」）。行き帰りの電車の小品（chapters/ch2-commute.js の COMMUTE_SCENES）。準備期間のどの日に読んでも成り立つよう、その日の出来事や体調に触れない。 朝の上り。大きな風呂敷の荷を抱えたおばあさんが、柚ヶ谷の同じ角で三十年、野菜を売っている。店は入れ替わっても、角は同じ",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "朝の上りで、大きな風呂敷の荷を抱えたおばあさんが、隣に立った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電車が揺れるたびに、荷が膝にぶつかる。黙って、手すりの側を譲った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "あら、ありがとね。柚ヶ谷まで、毎朝これなのよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "重そうですね。何が入ってるんですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "畑の野菜。駅の向こうの角で、三十年売ってるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "三十年、ですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "後ろのお店は、何度も変わったわねえ。洋服屋、喫茶店、今は煙の出るお店"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "お店は変わっても、角は同じ。毎朝来る人も、だいたい同じ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "おばあさんは風呂敷の結び目をほどいて、みかんを一つ、俺の手にのせた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "お兄さんも、毎朝この電車でしょ。顔、覚えたわよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（三十年、同じ角に立つって、どんな感じなんだろう）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_commute_corner"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_commute_return_vocab",
+      "comment": "VOL21 第3便（2026-11-27 オーナー「続けて良い」）。行き帰りの電車の小品（chapters/ch2-commute.js の COMMUTE_SCENES）。準備期間のどの日に読んでも成り立つよう、その日の出来事や体調に触れない。 夜の下り。単語帳の学生と帰りの電車で初めて言葉を交わす（ch2_commute_morning_regulars・doze の続き）。明日が試験で、はじめも「近いうちに」とだけ答える",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の下りで、見覚えのある単語帳が目に入った。朝の電車の、あの学生だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "学生は吊り革につかまったまま、同じページを何度もめくっていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……あ、いつもの人。帰りも、この電車なんですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は遅いんですね。勉強、大変そうです"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "明日、試験なんです。覚えたはずなのに、今になって全部抜けてく気がして"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "分かります。覚えたことほど、前の日に不安になるんですよね"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "いつもの人も、何かあるんですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。近いうちに"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "学生は少し笑って、単語帳を閉じた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "じゃあ、お互いに。また、朝の電車で"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の駅で、学生は人の波に紛れて降りていった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（名前も知らないのに、少しだけ、背中を押された気がする）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_commute_vocab"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_commute_morning_signs",
+      "comment": "VOL21 第3便（2026-11-27 オーナー「続けて良い」）。行き帰りの電車の小品（chapters/ch2-commute.js の COMMUTE_SCENES）。準備期間のどの日に読んでも成り立つよう、その日の出来事や体調に触れない。 朝の上り。窓から柚ヶ谷のシーシャ屋の看板を数える。駅に近づくほど増え、先週あった一枚が消えて、新しい一枚が増えている（激戦区の入れ替わり）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "柚ヶ谷が近づくと、窓の外に煙のマークの看板が増えていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一、二、三……。二つ前の駅から、もう五つ目だ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ビルの三階、雑居ビルの角、線路沿いの二階。どれも小さな看板だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "先週、高架の横に見えた赤い看板が、今朝は白い板になっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（なくなってる。……先週まで、あったのに）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その二つ先には、見たことのない新しい看板が掛かっていた。まだ、ビニールが付いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（消える店と、始まる店。毎週、入れ替わってるんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "数え終わる前に、電車がホームに滑り込んだ。今朝は、全部で九つだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この中で、何年も続いてる店は、どれくらいあるんだろう）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_commute_signs"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_commute_return_wake",
+      "comment": "VOL21 第3便（2026-11-27 オーナー「続けて良い」）。行き帰りの電車の小品（chapters/ch2-commute.js の COMMUTE_SCENES）。準備期間のどの日に読んでも成り立つよう、その日の出来事や体調に触れない。 夜の下り。毎晩同じ車両で眠る作業着の人を、降りる駅の手前ではじめが起こす（ch2_commute_morning_doze で学生に起こされた回の裏返し）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の下りの同じ車両には、いつも同じ席で眠る人がいる。作業着の、年配の男の人だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その人は、毎晩、地元の一つ手前の駅で飛び起きて降りていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今夜は、その駅のアナウンスが流れても、目を覚まさなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……起こした方が、いいよな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少し迷ってから、肩を軽く叩いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの、次の駅ですよね。いつも、ここで降りてるので"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "おっと、危ねえ。ありがとよ、兄ちゃん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "男の人は帽子をかぶり直すと、閉まりかけたドアの隙間から、片手を上げて降りていった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（この前は、俺が起こしてもらった。……今日は、こっちの番だ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓の外を、見慣れた地元の灯りが流れ始めた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_commute_wake"
+        }
+      ]
     }
   ]
 }

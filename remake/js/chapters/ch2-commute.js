@@ -16,6 +16,12 @@ export const COMMUTE_SCENES = Object.freeze([
   { id: "ch2_commute_return_tonari", leg: "return", flag: "_ch2_commute_tonari" },
   { id: "ch2_commute_morning_doze", leg: "morning", flag: "_ch2_commute_doze" },
   { id: "ch2_commute_return_window", leg: "return", flag: "_ch2_commute_window" },
+  // VOL21 第3便: 角の野菜売り（朝）・単語帳の学生と帰りに話す（夜。regulars・doze の続き）・
+  // 窓から看板を数える（朝）・眠る人を起こす（夜。doze の裏返し）
+  { id: "ch2_commute_morning_corner", leg: "morning", flag: "_ch2_commute_corner" },
+  { id: "ch2_commute_return_vocab", leg: "return", flag: "_ch2_commute_vocab" },
+  { id: "ch2_commute_morning_signs", leg: "morning", flag: "_ch2_commute_signs" },
+  { id: "ch2_commute_return_wake", leg: "return", flag: "_ch2_commute_wake" },
 ]);
 const COMMUTE_DAY = "_ch2_commute_day";
 

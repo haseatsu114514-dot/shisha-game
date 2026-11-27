@@ -62,7 +62,8 @@ const CITY_IDS = ["arrival", ...STOPS.map((stop) => stop.id), ...Object.keys(ROO
 // #3097 PR-B: 地元の雨の回（daily/spot-encounters.js の CHAPTER_RAIN の第2章）と、行き帰りの電車の小品（chapters/ch2-commute.js の COMMUTE_SCENES）。
 // 読み込みを軽くするため名前を並べる。一致は remake/test/ch2_home_talks.mjs が確かめる。
 export const CH2_RAIN_IDS = Object.freeze(["cafe_ch2_rain", "choizap_ch2_rain", "cs_ch2_rain", "ch2_rest_rain"]);
-export const CH2_COMMUTE_IDS = Object.freeze(["ch2_commute_morning_regulars", "ch2_commute_return_tonari", "ch2_commute_morning_doze", "ch2_commute_return_window"]);
+export const CH2_COMMUTE_IDS = Object.freeze(["ch2_commute_morning_regulars", "ch2_commute_return_tonari", "ch2_commute_morning_doze", "ch2_commute_return_window",
+  "ch2_commute_morning_corner", "ch2_commute_return_vocab", "ch2_commute_morning_signs", "ch2_commute_return_wake"]);
 
 export async function loadCityDialogues() {
   const dialogues = await readDialogues("ch2_city", CITY_IDS);
@@ -86,6 +87,8 @@ export async function loadPreparationDialogues() {
   required.push(...["kumicho", "kuraudo"].flatMap(id => ["b", "c", "d"].map(suffix => `remake_ch2_${id}_repeat_${suffix}`)));
   // 店の手入れ・出前・CDの入れ替え。大会の前後を問わない通いの日常（#3097）。
   required.push(...["ageha", "kumicho", "kuraudo"].map(id => `remake_ch2_${id}_repeat_e`));
+  // 神崎・クラウドの通いの小会話 f〜i（看板を下ろした店・ソファの継ぎ当て・貸し傘・開店のチラシ／粘着ローラー・弦・鉢植え・手書きのメニュー。VOL21 第3便）
+  required.push(...["kumicho", "kuraudo"].flatMap(id => ["f", "g", "h", "i"].map(suffix => `remake_ch2_${id}_repeat_${suffix}`)));
   // 好感度MAXの締めくくり（daily/bonds.js の BOND_FINALES・#2027）
   const files = { ch2_preparation: required, ch2_deliveries: [...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS],
     // ♥3の友人の外出（LIME lime_outing_kumicho_1・lime_outing_kuraudo_1 の accept_event。daily/calendar.js が再生する・#3097）
