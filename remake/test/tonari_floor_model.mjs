@@ -87,12 +87,14 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
     assert.deepEqual(mixFlavorParts(id).map((words) => words.join("")), mixFlavorNames(id));
     assert.equal(mixFullName(id), mix.flavors.length === 1 ? name : `${name}（${mixFlavorNames(id).join("・")}）`);
     assert.ok((mix.flavors.length === 1 ? /^[^（）0-9０-９]+単$/ : /^[^（）]+（[^（）0-9０-９]+）$/).test(mixFullName(id)) && !/グラム|[0-9０-９]\s*g/i.test(mixFullName(id)), mixFullName(id));
-    // 属性はメイン一つと、あればサブ一つ。アップルミントはオーナー指定でダブルアップルの also がメイン
+    // 属性はメイン一つと、あればサブ一つ。アップルミントとブルーベリーミントは名前の果物を主役にし、also がメイン
     const has = (wish) => mix.flavors.some((f) => FLAVORS[f].family === wish || FLAVORS[f].also.includes(wish));
     const appleFruit = id === "applemint" && mix.main === "fruit" && FLAVORS.double_apple.also.includes(mix.main);
-    assert.ok(WISH_IDS.includes(mix.main) && (appleFruit || mix.flavors.some((f) => FLAVORS[f].family === mix.main)), `${name}: メインの属性が材料の系統にある`);
+    const berryFruit = id === "berrymint" && single && mix.flavors[0] === "blueberry_mint"
+      && mix.main === "fruit" && mix.sub === "fresh" && FLAVORS.blueberry_mint.also.includes(mix.main);
+    assert.ok(WISH_IDS.includes(mix.main) && (appleFruit || berryFruit || mix.flavors.some((f) => FLAVORS[f].family === mix.main)), `${name}: メインの属性が材料の系統にある`);
     assert.ok(mix.sub === null || (WISH_IDS.includes(mix.sub) && mix.sub !== mix.main && has(mix.sub)), `${name}: サブの属性が材料にある`);
-    if (single) assert.equal(mix.main, FLAVORS[mix.flavors[0]].family, `${name}: 単品の系統がメイン`);
+    if (single) assert.equal(mix.main, berryFruit ? "fruit" : FLAVORS[mix.flavors[0]].family, `${name}: 単品の系統がメイン（ブルーベリーミントは果物が主役）`);
   }
   // フローズンベリー廃止（2026-11-26 オーナー決定）で第1章 fresh のメインは19件が上限
   for (const chapter of [1, 2]) for (const wish of WISH_IDS) {
@@ -132,7 +134,7 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
 test("ミックスの属性: メイン＝◎・サブ＝○・ほか＝×。提供した時の満足になる", () => {
   const fruitMintMixes = [
     "lemonmint", "grapemint", "orangemint", "pinemint", "peachmint", "watermelonmint", "cherrymint", "passionmint",
-    "dragonmint", "applemint", "limemint", "mojito", "suikacooler", "cherrycooler", "oasismint",
+    "dragonmint", "applemint", "berrymint", "limemint", "mojito", "suikacooler", "cherrycooler", "oasismint",
   ];
   for (const id of fruitMintMixes) {
     assert.deepEqual(mixRatings(id), { fruit: "best", sweet: "none", fresh: "good", deep: "none" }, mixName(id));
@@ -143,8 +145,9 @@ test("ミックスの属性: メイン＝◎・サブ＝○・ほか＝×。提�
   assert.equal(mixRatings("gingerlemon").fresh, "best");
   assert.deepEqual(mixRatings("honeyginger"), { fruit: "none", sweet: "best", fresh: "good", deep: "none" });
   assert.deepEqual(mixRatings("cardamomtea"), { fruit: "none", sweet: "none", fresh: "best", deep: "good" });
+  assert.deepEqual(mixRatings("cardamomearlgrey"), { fruit: "none", sweet: "none", fresh: "best", deep: "good" }, "スパイス紅茶は先頭のスパイスがメイン");
   assert.deepEqual(mixRatings("caramelmilk"), { fruit: "none", sweet: "best", fresh: "none", deep: "none" });
-  assert.deepEqual(mixRatings("milktea"), { fruit: "none", sweet: "good", fresh: "none", deep: "best" });
+  assert.deepEqual(mixRatings("milktea"), { fruit: "none", sweet: "best", fresh: "none", deep: "good" }, "ミルクティーは先頭のミルクがメイン");
   for (const id of Object.keys(MIXES)) {
     const marks = Object.values(mixRatings(id));
     assert.deepEqual([marks.filter((r) => r === "best").length, marks.filter((r) => r === "good").length], [1, MIXES[id].sub ? 1 : 0], id);
