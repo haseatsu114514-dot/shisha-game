@@ -1,6 +1,6 @@
 // タイトルの EXTRA（あそびば）。本編で遊んだミニゲームを、タイトルからいつでも遊び直せる（要望台帳 EXT01〜）。
 // 2026-11-27 オーナー「エクストラにしよう　斧投げを初めて体験したら解禁　それまでは？？？」「ミニゲームがいくつかあるのがわかるように
-// まだやってないのはロックしといたり」。
+// まだやってないのはロックしといたり」「店番とてつこと一台勝負はミニゲーム扱いにしない」。
 // 記録は端末に残す（ギャラリーと同じく、セーブを消しても・はじめから遊び直しても消えない）。本編の入口で遊び始めた時に recordExtraPlay を呼ぶ。
 // この部品より前に遊んだ分は、セーブに残る記録から拾う（extraPlayedInSave。記録の形が分かる遊びだけ）。
 // EXTRA で遊んだ結果は本編のセーブに残さない（scenes/extra.js が使い捨ての状態で開く）。
@@ -9,13 +9,11 @@ export const EXTRA_KEY = "suien_remake_extra_played";
 /** この遊びを初めて遊ぶと、タイトルに EXTRA が出る（それまでは「？？？」）。 */
 export const EXTRA_UNLOCK_GAME = "axe";
 
-/** 並びは本編で出会う順。一台勝負は本編の入口が既定で切（?ichidai=1）なので、解禁できないまま「？？？」が残らないよう入れていない。 */
+/** 並びは本編で出会う順。店番（tonari のフロア営業）・てつこ・一台勝負はミニゲームとして扱わない（2026-11-27 オーナー）。 */
 export const EXTRA_GAMES = Object.freeze([
   { id: "axe", label: "斧投げ" },
-  { id: "floor", label: "tonari の店番" },
   { id: "trpg", label: "ボドゲカフェ" },
   { id: "dj", label: "DJ" },
-  { id: "tetsuko", label: "てつこといっしょ" },
   { id: "camel", label: "ラクダレース" },
   { id: "desert", label: "砂丘のサンドボード" },
 ]);
@@ -46,9 +44,7 @@ export function extraPlayedInSave(save) {
   const found = new Set();
   const flags = save?.flags || {};
   if (flags._axe_lesson_done || (flags._axe_bar_records && Object.keys(flags._axe_bar_records).length)) found.add("axe");
-  if (count(flags._tonari_floor?.nights)) found.add("floor");
   if (Object.values(save?.dj?.sets || {}).some((set) => count(set?.plays))) found.add("dj");
-  if (flags._tetsuko_time && typeof flags._tetsuko_time === "object") found.add("tetsuko");
   return found;
 }
 

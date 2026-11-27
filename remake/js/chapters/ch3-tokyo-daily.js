@@ -733,7 +733,6 @@ async function playTetsukoTime(outing, visitKey, owner) {
   const stageRead = (outingCounts(state).tetsuko || 0) < outing.stages.length;
   if (stageRead && !await readPlain(outingDialogueId(state, outing), bg, owner)) return;
   if (state !== owner) return;
-  void import("../core/extra-games.js").then((m) => m.recordExtraPlay("tetsuko")).catch(() => {}); // タイトルの EXTRA（EXT01）
   const result = await openTetsukoTime({ value: state, visitKey, bg: BG(bg), isCurrent: () => state === owner });
   if (state !== owner) return;
   // 段階会話を読み終えていれば、画面ですぐ帰っても会話の分は確定する（「少し構っていく」と同じ）。

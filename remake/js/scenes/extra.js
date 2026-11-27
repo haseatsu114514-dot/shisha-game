@@ -4,7 +4,7 @@
 // 遊びの始め方は DBG のミニゲーム一覧（dev/minigame-launcher.js）と同じで、本編の状態には触れず、結果は捨てる（記録・お金・好感度・セーブは変わらない）。
 // 各遊びの「やめる」（DJ は中の出口、ボドゲカフェは「EXTRAへ戻る」）で抜けると、一覧に戻る。
 import { modal } from "../core/ui.js";
-import { config, newState, state, SAVE_SLOTS, readSlot } from "../core/state.js";
+import { config, state, SAVE_SLOTS, readSlot } from "../core/state.js";
 import { playBgm, stopBgm } from "../core/audio.js";
 import { EXTRA_GAMES, extraPlayed } from "../core/extra-games.js";
 
@@ -14,16 +14,6 @@ const START = {
     if (signal.aborted) return;
     playBgm("bgm_axe");
     return runAxeThrow({ host, signal, mode: "practice", opponent: null });
-  },
-  // tonari の店番は「いつもの夜」（本編の人物が一人遊びに来る）。客の並びは開くたびに変わる
-  floor: async (host, signal) => {
-    const [{ runTonariFloor, FLOOR_VISITORS }, { bgUrl }] = await Promise.all([import("../daily/tonari-floor-view.js"), import("../core/data.js")]);
-    if (signal.aborted) return;
-    playBgm("tonari");
-    const seed = Date.now() >>> 0;
-    const visitors = Object.keys(FLOOR_VISITORS);
-    return runTonariFloor({ mount: host, signal, seed, level: 1, chapter: 1, night: true, visitor: visitors[seed % visitors.length],
-      art: bgUrl("res://assets/backgrounds/bg_tonari_inside.png", "night") });
   },
   // ボドゲカフェは、本編と同じ本棚と卓を使い捨ての状態で開く試遊（URL の ?trial=trpg と同じもの）
   trpg: async (host, signal) => {
@@ -36,13 +26,6 @@ const START = {
     const { runDjSet } = await import("../minigames/dj.js");
     if (signal.aborted) return;
     return runDjSet({ host, signal, set, muted: !!(config.mute || config.muted), volume: config.bgmVolume });
-  },
-  tetsuko: async (_host, signal) => {
-    const value = newState();
-    value.chapter = 3; value.phase = "daily"; value.day = 5;
-    const { openTetsukoTime } = await import("../minigames/tetsuko-time.js");
-    if (signal.aborted) return;
-    return openTetsukoTime({ value, visitKey: "extra", signal });
   },
   camel: async (host, signal) => {
     const [{ runCamelRace }, { CAMEL_CUPS }] = await Promise.all([import("../minigames/camel-race.js"), import("../minigames/camel-race-model.js")]);
@@ -90,7 +73,7 @@ async function play(id, set) {
     host.style.setProperty("--stage-safe-l", "env(safe-area-inset-left, 0px)");
     host.style.setProperty("--stage-safe-r", "env(safe-area-inset-right, 0px)");
     document.body.append(host);
-  } else if (id !== "tetsuko") {
+  } else {
     Object.assign(host.style, { position: "absolute", inset: "0", zIndex: "100", background: "#100d18" });
     stage.append(host);
   }
@@ -102,7 +85,7 @@ async function play(id, set) {
 
 /**
  * EXTRA の一覧。とじるまで、遊ぶ → 一覧 を繰り返す。
- * @param reopenTitle 遊びが画面ごと入れ替えた後（てつこ）にタイトルを出し直す関数。戻った後は一覧をタイトルの上に開き直す。
+ * @param reopenTitle 遊びが画面ごと入れ替えた後にタイトルを出し直す関数。戻った後は一覧をタイトルの上に開き直す。
  */
 export async function openExtra({ reopenTitle } = {}) {
   for (;;) {

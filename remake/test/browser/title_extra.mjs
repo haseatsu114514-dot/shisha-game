@@ -2,7 +2,7 @@
 // 2026-11-27 オーナー「エクストラにしよう　斧投げを初めて体験したら解禁　それまでは？？？」
 // 「ミニゲームがいくつかあるのがわかるようにまだやってないのはロックしといたり」。
 //   1. 斧投げを遊ぶまでは「？？？／ひみつ」で開かない。押すと開き方を短く知らせ、↑↓のカーソルは乗らない。
-//   2. 遊んだ記録があれば EXTRA が開き、一覧は7つ。遊んでいないものは「？？？」で押せない。題に遊んだ数。
+//   2. 遊んだ記録があれば EXTRA が開き、一覧は5つ。遊んでいないものは「？？？」で押せない。題に遊んだ数。
 //   3. 一覧から斧投げを開き、「やめる」で一覧へ戻る。とじるとタイトルのまま（本編のセーブは変わらない）。
 //   4. この機能より前のセーブ（斧投げの体験済み）からも拾って開く。
 //   5. 縦画面（スマホ縦）でも同じ一覧がシートで出る。
@@ -11,7 +11,7 @@ import { suite, baseURL, storageSnapshot } from "./support.mjs";
 
 const t = (id) => `[data-test="${id}"]`;
 const KEY = "suien_remake_extra_played";
-const GAMES = ["axe", "floor", "trpg", "dj", "tetsuko", "camel", "desert"];
+const GAMES = ["axe", "trpg", "dj", "camel", "desert"]; // 店番・てつこ・一台勝負はミニゲームとして扱わない
 const ready = (page) => page.locator("#boot").waitFor({ state: "detached", timeout: 30000 });
 
 await suite("title_extra", async (check) => {
@@ -41,7 +41,7 @@ await suite("title_extra", async (check) => {
       ["EXTRA", "あそびば", false]);
     await row.click();
     await page.locator("#modal.show .extra-box").waitFor();
-    assert.equal((await page.locator("#modal.show .extra-box > h3").textContent()).trim(), "EXTRA 2/7");
+    assert.equal((await page.locator("#modal.show .extra-box > h3").textContent()).trim(), "EXTRA 2/5");
     const list = await page.locator("#modal.show .modal-actions button").evaluateAll((ns) => ns.map((n) => [n.dataset.test, n.textContent.trim(), n.disabled]));
     assert.deepEqual(list, [
       ...GAMES.map((id) => ["axe", "dj"].includes(id)

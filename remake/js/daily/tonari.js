@@ -498,7 +498,6 @@ async function floorTutorial(owner, signal) {
   let view;
   try { view = await loadFloorView(); } catch { return current(); } // 読めない時は、チュートリアルなしで進める
   if (!current()) return false;
-  void import("../core/extra-games.js").then((m) => m.recordExtraPlay("floor")).catch(() => {}); // タイトルの EXTRA（EXT01）
   const result = await view.runTonariFloor({ tutorial: true, chapter: owner.chapter, art: bgUrl(TONARI_BG, "day"), isCurrent: current, signal });
   if (!current() || !result) return false;
   owner.flags._tonari_floor_tutorial = true; // シフトの給料・行動消費と一緒に calendar で保存する
@@ -522,7 +521,6 @@ async function serveFloor(owner, signal, getAllowances) {
   // 第5章は、つむぎがスタッフとして店にいる日（出張の日は除く）。雑談の一部がつむぎの話になる（TFL69）
   const staff = owner.chapter >= 5 && tsumugiAtTonari(owner) ? "tsumugi" : null;
   let result;
-  void import("../core/extra-games.js").then((m) => m.recordExtraPlay("floor")).catch(() => {}); // タイトルの EXTRA（EXT01）
   // 開店前の札から「遊び方（チュートリアル）」を選んだら、チュートリアルを開いてから、同じ一日を始め直す
   for (;;) {
     result = await view.runTonariFloor({

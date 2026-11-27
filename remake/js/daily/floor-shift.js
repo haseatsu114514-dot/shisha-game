@@ -104,7 +104,6 @@ export async function runVenueFloorShift({
 
     let result;
     if (view) {
-      void import("../core/extra-games.js").then((m) => m.recordExtraPlay("floor")).catch(() => {}); // タイトルの EXTRA（EXT01）
       result = await view.runTonariFloor({
         venue: v.id,
         seed,
