@@ -38,7 +38,8 @@ assert.equal(C_STATION_TASTING_BG, CITY_BACKGROUNDS.c_station_night, "柚ヶ谷�
 assert.match(C_STATION_TASTING_BG, /bg_yuzugaya_c_station_night\.webp$/, "地元店や県大会ホールの背景と区別する");
 assert.notEqual(C_STATION_TASTING_BG, CITY_BACKGROUNDS.c_station, "昼の通常訪問用背景を変えない");
 assert.doesNotMatch(night(9).label, /試飲|店長同士/);
-assert.deepEqual(night(10).steps.map((s) => s.id), ["remake_ch2_ageha_slump", "ch2_sumi_silence"]);
+// VOL17: スミさんの沈黙の後に、帰り道のスマホの採点表（ch2_story_extra）が続く。あげは→沈黙の順は変えない
+assert.deepEqual(night(10).steps.map((s) => s.id), ["remake_ch2_ageha_slump", "ch2_sumi_silence", "ch2_phone_score_sheet"]);
 // #1733: 閉店間際のtonariであげはと会い、駅まで送ってから灯りの落ちた店へ戻る（帰宅後に引き返して終電後に会う順にしない）
 {
   const silence = read("data/dialogue/ch2_main.json").dialogues.find((d) => d.dialogue_id === "ch2_sumi_silence");
