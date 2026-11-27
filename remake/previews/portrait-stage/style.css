@@ -784,16 +784,18 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 /* 大会の観客のニコ動風コメント（VPL68・VPL72・VPL73）: ランクが出る時だけ、上の画面を埋めて右から左へ流れる。ランクの絵の後ろを通る。
    見た目はニコニコ動画に寄せる: 白い太字に黒い縁、一部だけニコ動の色（色は app.mjs の NICO_COLOR）、小さい文字、上と下に止まる大きな一言 */
 .nico-lane { position: absolute; z-index: 25; left: 0; right: 0; top: 7.2rem; height: calc(100% - var(--ctrl-h) - var(--aux-h, 0rem) - 15.6rem); overflow: hidden; pointer-events: none; container-type: inline-size; } /* 下はスミさん・はじめの一言の吹き出しにかからない */
-.nico { position: absolute; left: 0; top: 0; white-space: nowrap; font-family: var(--gothic); font-size: 2.3rem; font-weight: 700; line-height: 1.2; letter-spacing: 0; color: #fff;
+.nico { position: absolute; left: 0; top: 0; white-space: nowrap; font-family: var(--gothic); font-size: 2.3rem; font-weight: 600; line-height: 1.2; letter-spacing: 0; color: #fff;
   text-shadow: 0.09rem 0.09rem 0 #000, -0.09rem 0.09rem 0 #000, 0.09rem -0.09rem 0 #000, -0.09rem -0.09rem 0 #000, 0 0 0.25rem #000b;
   transform: translateX(100cqw); animation: nico-fly 4s linear both; will-change: transform; }
 .nico.small { font-size: 1.65rem; }
-.nico.big { font-size: 3.3rem; }
-.nico.ue, .nico.shita { left: 0; right: 0; z-index: 1; text-align: center; transform: none; animation: nico-stay 3s linear both; will-change: auto; }
+.nico.big { font-size: 3.3rem; font-weight: 800; }
+.nico.futo { font-weight: 900; text-shadow: 0.12rem 0.12rem 0 #000, -0.12rem 0.12rem 0 #000, 0.12rem -0.12rem 0 #000, -0.12rem -0.12rem 0 #000, 0 0.12rem 0 #000, 0 -0.12rem 0 #000, 0 0 0.3rem #000c; } /* 太字の人（VPL76） */
+.nico.ue, .nico.shita { left: 0; right: 0; z-index: 1; text-align: center; transform: none; opacity: 0; animation: nico-stay 3s linear forwards; will-change: auto; }
+.nico.ue.still, .nico.shita.still { opacity: 1; }
 .nico.ue { top: 0; } .nico.shita { top: auto; bottom: 0; }
 .nico.still { animation: none; }
 @keyframes nico-fly { from { transform: translateX(100cqw); } to { transform: translateX(-100%); } }
-@keyframes nico-stay { from, to { opacity: 1; } }
+@keyframes nico-stay { from, to { opacity: 1; } } /* 遅れて出る間は見えない（opacity: 0 → 出たら3秒そのまま） */
 .rank-burst.still { animation: none; }
 @media (prefers-reduced-motion: reduce) {
   .nico { transform: none; left: 7%; animation: nico-hold 4s ease both; }

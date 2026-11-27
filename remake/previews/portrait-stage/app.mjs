@@ -265,8 +265,14 @@ const BROADCAST_READY = BROADCAST ? Promise.resolve(BROADCAST) : fetch(new URL("
 const NICO_STEP = { holes: "holes", coal: "heat", steam: "steam", pull: "pull" };
 // ニコニコ動画のコメントの色（一般会員の色）と、出来ごとに色が付く割合。ほかは白
 const NICO_COLOR = { red: "#ff0000", pink: "#ff8080", orange: "#ffc000", yellow: "#ffff00", green: "#00ff00", cyan: "#00ffff", purple: "#c000ff" };
-const NICO_TINT = { perfect: [["yellow", "orange", "pink", "cyan", "green", "red"], 0.3], good: [["cyan", "green", "yellow"], 0.18], miss: [["pink", "cyan", "purple"], 0.14] };
-const NICO_SPAN = 2.4; // 秒。この間に出し切る（次の場面へ移る前に）
+// 1回に流れる本数（VPL76。毎行が埋まらない程度）と、赤以外の色が付く時の色
+const NICO_COUNT = { perfect: 11, great: 10, good: 7, miss: 8 };
+const NICO_TINT = { perfect: ["yellow", "orange", "pink", "cyan", "green"], good: ["cyan", "green", "yellow"], miss: ["pink", "cyan", "purple"] };
+// たまに混ざる変わり種（1本ごとの見込み）: 赤文字の人・ほかの色・太字・大きい・小さい
+const NICO_ODD = { red: 0.09, color: 0.06, futo: 0.1, big: 0.07, small: 0.1 };
+// 止まる大きな一言が出る見込み（出来ごと）。出る時は多くが赤
+const NICO_FIXED = { perfect: 0.55, great: 0.45, good: 0.2, miss: 0.35 };
+const NICO_SPAN = 3.2; // 秒。この間に出し切る。最初にどっと来て、あとはぽつぽつ
 const NICO_FLY = 4; // 秒。画面を横切る時間（ニコ動と同じく、長さによらず一定。長い文ほど速い）
 // 点（0〜100）→ 観客の反応の段階（本編 broadcast.js の judgeOf と同じ境目）
 const nicoJudge = (score) => score >= 88 ? "perfect" : score >= 74 ? "great" : score >= 55 ? "good" : "miss";
@@ -1535,60 +1541,80 @@ class Phone {
   }
 
   /**
-   * 大会の観客のコメントを右から左へ流す（VPL68・VPL72・VPL73）。ニコニコ動画のように画面を埋める。
-   * 文面は本編 broadcast.json（工程に触れた4本＋短い歓声。同じ短い一言は何人かが重ねて打つ）。
-   * 見た目もニコ動に寄せる: 白い文字に黒い縁、一部だけニコ動の色、長さによらず約4秒で横切る、上の行から空いている所へ入る、
-   * 上出来は上に止まる大きな一言、失敗は下に止まる一言。
+   * 大会の観客のコメントを右から左へ流す（VPL68・VPL72・VPL73・VPL76）。ニコニコ動画の流れ方に寄せる。
+   * 文面は本編 broadcast.json（工程に触れた3本＋短い歓声。同じ短い一言は何人かが重ねて打つ）。
+   * 出る間隔はばらばら（最初にどっと来て、あとはぽつぽつ）。行は上の方の空いている所から散らして選ぶので、毎行は埋まらない。
+   * 白い文字に黒い縁が基本で、たまに赤文字の人・ほかの色・太字・大きい・小さいが混ざる。止まる大きな一言（多くは赤）は出る時と出ない時がある。
+   * frozen（一覧の見本）は流れの途中で止め、変わり種を一通り見せる。
    */
   nicoBurst(kind, { frozen = false } = {}) {
     const B = BROADCAST;
     if (!B) return;
     const gk = kind === "great" ? "perfect" : kind, step = NICO_STEP[this.st.scene];
     const used = new Set();
-    const draw = (pool, n) => {
-      const rest = [...new Set(pool || [])].filter((t) => !used.has(t)), out = [];
+    const draw = (list, n) => {
+      const rest = [...new Set(list || [])].filter((t) => !used.has(t)), out = [];
       while (out.length < n && rest.length) out.push(...rest.splice(Math.floor(Math.random() * rest.length), 1));
       out.forEach((t) => used.add(t));
       return out;
     };
     const shuffle = (list) => { for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; } return list; };
     const pool = [...(B.nico?.[gk] || []), ...(B.chapter1?.nico?.[gk] || [])];
-    // 止まる一言（上出来は上・失敗は下）。短い一言から選ぶ
-    const fixedPos = gk === "perfect" ? "ue" : gk === "miss" ? "shita" : "";
-    const fixed = fixedPos ? draw(pool.filter((t) => [...t].length <= 12), 1)[0] : null;
-    const told = draw(B.completion?.[step]?.[kind] || [], 4);
-    const cheers = draw(pool, 10);
-    const echo = shuffle(pool.filter((t) => [...t].length <= 6)).slice(0, 2).flatMap((t) => Array(1 + Math.floor(Math.random() * 2)).fill(t));
-    const lines = [...told.slice(0, 2), ...shuffle([...told.slice(2), ...cheers, ...echo])];
+    const short = (t, n) => [...t].length <= n;
+    // 止まる一言（上出来は上・失敗は下・まずまずは上）
+    const fixedPos = gk === "miss" ? "shita" : "ue";
+    const fixed = frozen || Math.random() < (NICO_FIXED[kind] ?? 0.3) ? draw(pool.filter((t) => short(t, 10)), 1)[0] : null;
+    const n = NICO_COUNT[kind] ?? 8;
+    const told = draw(B.completion?.[step]?.[kind] || [], 3);
+    const echoOne = shuffle(pool.filter((t) => short(t, 6)))[0];
+    const echo = echoOne && Math.random() < 0.6 ? [echoOne, echoOne] : [];
+    const cheers = draw(pool, Math.max(0, n - told.length - echo.length));
+    const lines = [...told.slice(0, 1), ...shuffle([...told.slice(1), ...cheers, ...echo])].slice(0, n);
     let lane = this.el.querySelector(".nico-lane");
     if (!lane) { lane = document.createElement("div"); lane.className = "nico-lane"; lane.setAttribute("aria-hidden", "true"); this.el.append(lane); }
-    const [tints, rate] = NICO_TINT[gk] || NICO_TINT.good;
-    const make = (text, cls = "") => {
+    // 1本ずつの見た目（変わり種）。見本では赤・太字・大きいを必ず1本ずつ混ぜる
+    const forced = frozen ? { 1: "red", 3: "futo", 5: "big", 7: "small" } : {};
+    const looks = lines.map((_, i) => {
+      if (forced[i]) return forced[i];
+      const r = Math.random(), o = NICO_ODD;
+      return r < o.red ? "red" : r < o.red + o.color ? "color" : r < o.red + o.color + o.futo ? "futo" : r < o.red + o.color + o.futo + o.big ? "big" : r < o.red + o.color + o.futo + o.big + o.small ? "small" : "";
+    });
+    const make = (text, look) => {
       const c = document.createElement("div");
-      c.className = `nico ${cls}`.trim(); c.textContent = text;
-      if (Math.random() < rate) c.style.color = NICO_COLOR[tints[Math.floor(Math.random() * tints.length)]];
+      c.className = `nico ${look === "futo" || look === "big" || look === "small" ? look : ""}`.trim(); c.textContent = text;
+      if (look === "red") c.style.color = NICO_COLOR.red;
+      else if (look === "color") { const tints = NICO_TINT[gk] || NICO_TINT.good; c.style.color = NICO_COLOR[tints[Math.floor(Math.random() * tints.length)]]; }
       return c;
     };
-    // 流れる分: 出る時刻を NICO_SPAN 秒に散らし、幅を測ってから行を決める
+    // 出る時刻: 最初の数本は間が短く、あとは長い（指数分布の間隔）。NICO_SPAN 秒に収める
+    let t = 0.08 + Math.random() * 0.15;
+    const times = lines.map((_, i) => { const at = t; t += -Math.log(1 - Math.random()) * (i < 3 ? 0.2 : 0.42); return at; });
+    const squeeze = t > NICO_SPAN ? NICO_SPAN / t : 1;
     const W = lane.clientWidth, H = lane.clientHeight;
     const comments = lines.map((text, i) => {
-      const c = make(text, Math.random() < 0.15 ? "small" : "");
+      const c = make(text, looks[i]);
       c.style.visibility = "hidden"; lane.append(c);
-      return { c, t: i === 0 ? 0 : Math.random() * NICO_SPAN };
-    }).sort((a, b) => a.t - b.t);
-    // 行の高さは普通の文字（2.3rem）から決める。止まる一言の行（上出来は一番上・失敗は一番下）は、流れる分に使わない
+      return { c, t: times[i] * squeeze, big: looks[i] === "big" };
+    });
+    // 行の高さは普通の文字（2.3rem）から決める。止まる一言の行（上は一番上・下は一番下）は流れる分に使わない
     const rowH = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2.3 * 1.36;
     const rows = Math.max(5, Math.floor(H / rowH)), last = Array(rows).fill(null);
-    if (fixed) last[fixedPos === "ue" ? 0 : rows - 1] = { t: Infinity };
-    const T = 2.9; // 一覧の見本で止める時刻（秒）。出し切った直後で、画面の左右に散って見える
+    if (fixed) (fixedPos === "ue" ? [0, 1] : [rows - 1, rows - 2]).forEach((row) => { last[row] = { t: Infinity }; }); // 大きい字は1行半ほどあるので2行とっておく
+    const T = 2.4; // 一覧の見本で止める時刻（秒）
+    let prevRow = -9;
     comments.forEach((m) => {
       m.w = m.c.offsetWidth; m.v = (W + m.w) / NICO_FLY;
-      // 前のコメントの尻尾が画面に入りきり、前が抜けるまで追いつかない行（上から順に）
-      const free = (p) => !p || (p.t !== Infinity && m.t >= p.t + (p.w + rowH * 1.6) / p.v && m.t >= p.t + NICO_FLY - W / m.v);
-      let r = last.findIndex(free);
-      if (r < 0) r = (fixedPos === "ue" ? 1 : 0) + Math.floor(Math.random() * (rows - 1)); // 混んだら重なる（ニコ動の弾幕と同じ）
-      last[r] = m;
-      const c = m.c; c.style.top = `${r * rowH}px`; c.style.visibility = "";
+      // 前のコメントの尻尾が画面に入りきって少し間があき、前が抜けるまで追いつかない行
+      const free = (p) => !p || (p.t !== Infinity && m.t >= p.t + (p.w + rowH * 2.2) / p.v && m.t >= p.t + NICO_FLY - W / m.v);
+      const span = m.big ? 2 : 1;
+      const open = [];
+      for (let r = 0; r + span <= rows; r++) if (Array.from({ length: span }, (_, k) => free(last[r + k])).every(Boolean)) open.push(r);
+      // 空いている行から、少し上寄りに散らして選ぶ。すぐ前のコメントの隣の行は避ける（縦にきれいに並ばないように）。空きが無ければ重なる（ニコ動の弾幕と同じ）
+      const apart = open.filter((row) => Math.abs(row - prevRow) > 1), cand = apart.length ? apart : open;
+      const r = cand.length ? cand[Math.floor(Math.random() ** 1.25 * cand.length)] : (fixedPos === "ue" && fixed ? 2 : 0) + Math.floor(Math.random() * (rows - span - (fixed ? 2 : 0)));
+      prevRow = r;
+      for (let k = 0; k < span; k++) last[r + k] = m;
+      const c = m.c; c.style.top = `${r * rowH + (m.big ? rowH * 0.15 : 0)}px`; c.style.visibility = "";
       if (frozen) {
         const x = W - m.v * (T - m.t);
         if (m.t > T || x < -m.w) { c.remove(); return; }
@@ -1599,9 +1625,9 @@ class Phone {
       }
     });
     if (fixed) {
-      const c = make(fixed, `${fixedPos} big`);
-      c.style.color = NICO_COLOR[gk === "perfect" ? "yellow" : "pink"];
-      if (frozen) c.classList.add("still"); else { c.style.animationDelay = "0.35s"; c.addEventListener("animationend", () => c.remove(), { once: true }); }
+      const c = make(fixed, frozen || Math.random() < 0.65 ? "red" : "color");
+      c.classList.add(fixedPos, "big");
+      if (frozen) c.classList.add("still"); else { c.style.animationDelay = `${(0.3 + Math.random() * 1.2).toFixed(2)}s`; c.addEventListener("animationend", () => c.remove(), { once: true }); }
       lane.append(c);
     }
   }
