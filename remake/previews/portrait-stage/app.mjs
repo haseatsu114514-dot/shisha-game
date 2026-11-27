@@ -38,9 +38,6 @@ const IMG = {
   ciBgMinto: `${REMAKE_IMG}ui/character_intros/graphic/bg_minto.webp`,
   ciSumi: `${REMAKE_IMG}ui/character_intros/graphic/sumi.webp`,
   ciBgSumi: `${REMAKE_IMG}ui/character_intros/graphic/bg_sumi.webp`,
-  // 丸ボタンの道具の絵（画像生成。原画とプロンプトは asset_sources/ui/portrait-stage-20261127/・VPL32）
-  uiNeedle: `${OWN_IMG}ui-needle.webp`,
-  uiMouthpiece: `${OWN_IMG}ui-mouthpiece.webp`,
   // 制作ランクの絵（本編の D〜SSS・CSL10）
   ...Object.fromEntries(["D", "C", "B", "A", "S", "SS", "SSS"].map((g) => [`rank${g}`, `${REMAKE_IMG}ui/craft-rank/rank-${g}.webp`])),
   ...(globalThis.PORTRAIT_STAGE_ASSETS || {}),
@@ -247,8 +244,8 @@ function dpadHtml(live, marks = {}) {
   const key = (dir, label) => `<button class="dp dp-${dir}${live.includes(dir) ? " live" : ""}" data-act="dir" data-dir="${dir}" aria-label="${marks[dir]?.[1] || label}">${tri()}${marks[dir] ? icon(marks[dir][0]) : ""}</button>`;
   return `<div class="dpad${live ? "" : " idle"}" role="group" aria-label="十字キー">${key("up", "上")}${key("left", "左")}${key("right", "右")}${key("down", "下")}<i class="dp-core"></i></div>`;
 }
-// 丸ボタンの顔。店に入る・決めるは漢字の「決定」、次へと休みは絵記号、刺すと吸うは道具の絵（VPL31・VPL32）。
-// 読み上げ用の名前は aria-label に残す。絵記号は32×32の線画
+// 丸ボタンの顔。店に入る・決めるは漢字の「決定」、次へと休みは線画、刺すと吸うは道具の白い図形（VPL31・VPL32・VPL34）。
+// 読み上げ用の名前は aria-label に残す。ボタンの中の絵は画像を使わず、白い図形で描く（VPL34）
 const BTN = {
   go: { label: "店に入る", text: "決定" },
   ok: { label: "決定", text: "決定" },
@@ -257,14 +254,22 @@ const BTN = {
   poke: { label: "刺す", tool: "needle" },
   puff: { label: "吸う", tool: "mouthpiece" },
 };
-// 刺す: 大きな針（押し具合 --level で下がってアルミを突く）と、その下のアルミ。満ちた所で金の火花
-const NEEDLE_FOIL = '<svg class="tool-foil" viewBox="0 0 100 20" aria-hidden="true"><path class="gl-foil" d="M6 10H42M58 10H94"/><path class="gl-dent" d="M42 10q8 7 16 0"/><path class="gl-spark" d="M33 2l6 5M67 2l-6 5M50 15v5"/></svg>';
+// ボタンいっぱいの 100×100 で描く。刺す: 大きな穴あけの針（持ち手・口金・太い針）と、その下のアルミ。押し具合（--level）で針が下がってアルミを突き、満ちた所で金の火花
+// 吸う: マウスピース（ホースの切れ端・金具・先へ細くなる持ち手・吸い口のチップ）を斜めに。吸うたびに少し動いて光る
+const TOOL_SVG = {
+  needle: `<svg class="tool-svg tool-needle" viewBox="0 0 100 100" aria-hidden="true">
+    <g class="gl-needle"><path d="M40.5 17.5C40.5 11 44.6 6.5 50 6.5S59.5 11 59.5 17.5V28c0 4-2.2 6.4-4.4 7.5H44.9c-2.2-1.1-4.4-3.5-4.4-7.5z"/><rect x="43.5" y="37.5" width="13" height="5.5" rx="1.2"/><path d="M47.3 44.5h5.4l-.7 25.5L50 77.5 48 70z"/></g>
+    <path class="gl-foil" d="M14 82H42.5M57.5 82H86"/><path class="gl-dent" d="M42.5 82q7.5 6.5 15 0"/><path class="gl-spark" d="M35 72.5l4.5 4.5M65 72.5l-4.5 4.5M50 88v5"/></svg>`,
+  mouthpiece: `<svg class="tool-svg tool-mouthpiece" viewBox="0 0 100 100" aria-hidden="true"><g class="gl-mp"><g transform="translate(0 -5) rotate(-45 50 50) translate(50 50) scale(0.74) translate(-50 -50)">
+    <rect x="-4" y="45" width="16" height="10" rx="4"/><rect x="13.5" y="43.3" width="7.5" height="13.4" rx="1.6"/>
+    <path d="M22.5 42.8L78 45Q82 45.3 82 48.2V51.8Q82 54.7 78 55L22.5 57.2Z"/><path class="gl-ring" d="M31 43.6V56.4M72 45V55"/>
+    <rect class="gl-tip" x="84" y="46.4" width="20" height="7.2" rx="2.6"/></g></g></svg>`,
+};
 const btnFace = (kind) => {
   const b = BTN[kind];
   if (b.text) return `<span class="t">${b.text}</span>`;
   if (b.svg) return `<span class="t"><svg class="glyph" viewBox="0 0 32 32" aria-hidden="true">${b.svg}</svg></span>`;
-  return b.tool === "needle" ? `<span class="t tool tool-needle"><img src="${IMG.uiNeedle}" alt="">${NEEDLE_FOIL}</span>`
-    : `<span class="t tool tool-mouthpiece"><img src="${IMG.uiMouthpiece}" alt=""></span>`;
+  return `<span class="t tool">${TOOL_SVG[b.tool]}</span>`;
 };
 const aHtml = (kind, { disabled = false, cls = "", extra = "" } = {}) => `<button class="btn-a ${cls}" data-act="a" aria-label="${BTN[kind].label}" ${disabled ? "disabled" : ""}>${btnFace(kind)}${extra}</button>`;
 // 補助ボタン: [id, 絵記号, 読み上げの名前, 短い名前, 数の印, 押されているか]
