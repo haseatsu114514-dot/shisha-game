@@ -13,7 +13,7 @@ import { FloorScene } from "./floor.mjs";
 import { LimeScene } from "./lime.mjs";
 import { GrowthScene } from "./growth.mjs";
 import { AxeScene } from "./axe.mjs";
-import { DesertScene, CamelScene, DjScene, TetsukoScene } from "./games.mjs";
+import { DesertScene, CamelScene, DjScene, TetsukoScene, TrpgScene } from "./games.mjs";
 
 const REMAKE_IMG = new URL("../../img/", import.meta.url).href;
 // この試作のために画像生成（gpt-image-2.6-sunburst）で作った絵。原画とプロンプトは asset_sources/ui/portrait-stage-20261127/
@@ -300,7 +300,7 @@ const SCENES = ["map", "minto", "tonari", "water", "mix", "pack", "holes", "coal
 const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", water: "水", mix: "配合", pack: "詰め", holes: "穴あけ", coal: "炭焼き", steam: "弾幕", pull: "吸う", cutin: "登場" }; // 1台表示の切り替え
 // 別ファイルの場面（タイトル・店番・LIME・心得の盤・斧投げ。VPM01〜）。1台表示の切り替えでは、別の段に並べる。
 // 場面の名前・光の色・一覧（PC）に並べる場面・つまみの選び方は、各ファイルの META に書く（場面を足す時、ここは EXT_CLASSES に1つ足すだけ）
-const EXT_CLASSES = [TitleScene, FloorScene, LimeScene, GrowthScene, AxeScene, DesertScene, CamelScene, DjScene, TetsukoScene];
+const EXT_CLASSES = [TitleScene, FloorScene, LimeScene, GrowthScene, AxeScene, DesertScene, CamelScene, DjScene, TetsukoScene, TrpgScene];
 const EXT = Object.fromEntries(EXT_CLASSES.map((cls) => [cls.META.id, cls]));
 /** 場面のつまみ（META.options）。一つでも、並び（盤＝どの盤・どの章 など）でもよい。label は切り替えの行の見出し（無ければ場面の名前） */
 const extOptions = (cls) => [].concat(cls.META.options || []);

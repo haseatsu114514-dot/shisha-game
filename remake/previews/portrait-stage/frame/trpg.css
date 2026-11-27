@@ -24,7 +24,7 @@ html:root[data-density="phone"][data-layout="portrait"] { --phone-text: 24px; --
 #stage .trpg-root.trpg-cinematic .trpg-heading { position: static; flex: 1 1 0; min-width: 0; gap: 0; padding-left: 12px; }
 #stage .trpg-root.trpg-cinematic .trpg-heading > small { max-width: none; font-size: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #stage .trpg-root.trpg-cinematic .trpg-tools { flex: none; gap: 0; }
-#stage .trpg-root.trpg-cinematic .trpg-tools .trpg-button { width: 78px; min-width: 78px; height: 78px; min-height: 78px; }
+#stage .trpg-root.trpg-cinematic .trpg-tools .trpg-button { width: 82px; min-width: 82px; height: 82px; min-height: 82px; }
 #stage .trpg-root.trpg-cinematic :is(.trpg-teamwork, .trpg-heat) { position: absolute; top: 96px; margin: 0; padding: 6px 12px; border-radius: 999px; background: #071416b8; }
 #stage .trpg-root.trpg-cinematic .trpg-teamwork { left: 6px; }
 #stage .trpg-root.trpg-cinematic .trpg-heat { left: 112px; }
@@ -213,7 +213,7 @@ html:root[data-density="phone"][data-layout="portrait"] { --phone-text: 24px; --
 #stage .trpg-root.trpg-library :is(.trpg-library-header .trpg-kicker, .trpg-library-meta > span, .trpg-library-intro, .trpg-library-byline, .trpg-library-copy > p, .trpg-library-details > span:nth-child(n+2), .trpg-library-cast > div > span:last-child, .trpg-library-footer) { display: none; }
 #stage .trpg-root.trpg-library .trpg-library-header h1 { margin: 0; font-size: 36px; white-space: nowrap; }
 #stage .trpg-root.trpg-library .trpg-library-meta { gap: 4px; padding: 0; }
-#stage .trpg-root.trpg-library .trpg-library-meta .trpg-icon-button { width: 78px; height: 78px; }
+#stage .trpg-root.trpg-library .trpg-library-meta .trpg-icon-button { width: 82px; height: 82px; }
 #stage .trpg-root.trpg-library .trpg-library-books { left: 10px; right: 10px; top: 106px; bottom: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-content: start; overflow-y: auto; }
 #stage .trpg-root.trpg-library .trpg-library-book { min-height: 0; }
 #stage .trpg-root.trpg-library .trpg-library-art { height: 150px; }

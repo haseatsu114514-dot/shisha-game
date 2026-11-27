@@ -3,6 +3,7 @@
 // DJ は本体のページ（remake/previews/dj/）が ?layout=portrait で縦になり、次に触る側の皿へ寄ること。
 import assert from "node:assert/strict";
 import { baseURL, suite } from "./support.mjs";
+import { startTrpgStory } from "./trpg_start.mjs";
 
 const PHONE = { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true };
 const SHORT = { viewport: { width: 360, height: 640 }, hasTouch: true, isMobile: true };
@@ -95,6 +96,24 @@ await suite("portrait-games", async check => {
       await boxesInside(page, ['[data-test="camel-resume"]', '[data-test="camel-restart"]', '[data-test="camel-pause-quit"]'], { tap: 44 });
     }, { ...options, pageEntry: frame("camel.html?skip=1"), pageReadySelector: '[data-test="camel-cups"]' });
 
+    // ボドゲカフェ（TRPG）: 物語を選ぶ → 表紙 → 卓の会話まで、押す所が縦の画面に収まる
+    await check(`trpg-portrait-layout-${suffix}`, async page => {
+      const t = name => `[data-test="trpg-${name}"]`;
+      assert.equal(await page.evaluate(() => document.documentElement.dataset.layout), "portrait");
+      await boxesInside(page, [t("select-regular-harbor"), t("select-regular-mail"), t("library-help")], { tap: 44 });
+      const first = await page.locator(t("select-regular-harbor")).boundingBox(), second = await page.locator(t("select-regular-mail")).boundingBox();
+      assert(Math.abs(first.y - second.y) < 4 && second.x > first.x + first.width - 2, "story cards are laid out in two columns");
+      await page.locator(t("select-ordinary-cup")).tap();
+      await page.locator(t("start")).waitFor({ timeout: 30000 });
+      await boxesInside(page, [t("start"), t("exit")], { tap: 44 });
+      await startTrpgStory(page);
+      await page.locator(`${t("next")}:visible`).waitFor({ timeout: 30000 });
+      await boxesInside(page, [`${t("next")}:visible`, t("log"), t("sheets"), t("help"), t("exit")], { tap: 44 });
+      await boxesInside(page, [t("seat-gm"), t("heading-step")]);
+      const next = await page.locator(`${t("next")}:visible`).boundingBox(), seat = await page.locator(t("seat-gm")).boundingBox();
+      assert(next.y > seat.y, "the next button sits below the seats, at the bottom of the screen");
+    }, { ...options, pageEntry: frame("trpg.html"), pageReadySelector: '[data-test="trpg-select-ordinary-cup"]' });
+
     // てつこといっしょ: 上にてつこ、下に道具。なでると反応が返る
     await check(`tetsuko-time-portrait-layout-${suffix}`, async page => {
       const t = name => `[data-test="tetsuko-${name}"]`;
@@ -146,7 +165,7 @@ await suite("portrait-games", async check => {
   }, { pageEntry: `${baseURL}previews/dj/index.html?set=1&mute=1`, pageReadySelector: "#play-a" });
 
   await check("prototype-hosts-the-game-frames", async page => {
-    for (const [scene, ready] of [["desert", '[data-test="desert-start"]'], ["camel", '[data-test="camel-tutorial"]'], ["dj", "#play-a"], ["tetsuko", '[data-test="tetsuko-time-screen"]']]) {
+    for (const [scene, ready] of [["desert", '[data-test="desert-start"]'], ["camel", '[data-test="camel-tutorial"]'], ["dj", "#play-a"], ["tetsuko", '[data-test="tetsuko-time-screen"]'], ["trpg", '[data-test="trpg-select-ordinary-cup"]']]) {
       await page.goto(`${baseURL}previews/portrait-stage/index.html?view=play&scene=${scene}&bare`, { waitUntil: "load" });
       const host = page.locator(".phone .gm-frame");
       await host.waitFor();

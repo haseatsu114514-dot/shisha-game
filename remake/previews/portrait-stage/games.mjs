@@ -94,3 +94,17 @@ export const TetsukoScene = frameScene({
     { caption: "今日の終わり", shot: "end" },
   ],
 });
+
+export const TrpgScene = frameScene({
+  id: "trpg", label: "ボドゲ", acc: "#7fd9c4", page: "trpg",
+  title: "ボドゲカフェ（TRPG）",
+  note: "本編のTRPGを縦へ。物語・判定・台詞は本編のまま（本編のファイルは触っていない）、並べ方だけ縦にした。卓は上＝部屋の絵（真ん中を縦長に切り出す。絵の上の縁に段と道具、裾に話している人物）、その下に席4人、いちばん下に台詞と「次へ」。選ぶ時は絵を低くして札を下に並べ、調べる時だけ絵を横長のまま出して場所に番号の印を付け、同じ番号の大きな札を下に置く。物語選びは絵・題・時間・配役の顔だけの札（紹介文や作者の行は表紙に任せる）。英字の飾り・補正の内訳などの添え字は出さない。",
+  shots: [
+    { caption: "物語を選ぶ", shot: "library" },
+    { caption: "表紙", shot: "cover" },
+    { caption: "卓の会話", shot: "talk" },
+    { caption: "行動を宣言する", shot: "choice" },
+    { caption: "判定（サイコロ）", shot: "roll" },
+    { caption: "部屋を調べる（番号の印と札）", shot: "explore" },
+  ],
+});
