@@ -212,11 +212,13 @@ const COACH = {
 // 制作ランク（VPL30）。本編のリニューアルと同じく、D から始まり、工程を1つ終えるたびに1段上がる（CRN01・CRN12）。
 // この試作では穴あけと吸い出し（提供）を終えた時に上がる。上がった瞬間は舞台の真ん中に大きく出して（下の英語まで読める）、置き場所へ縮めて収める
 const GRADES = ["D", "C", "B", "A", "S", "SS", "SSS"];
-// 「？」（説明）の置き場所の案（VPL99）。左上の「？」をやめ、その分だけ上の工程の並びを左へ寄せた。どの案も作る7場面で同じ場所に出る
-const HELP_PLACES = {
-  a: { name: "スミさんの一言の右端", lead: "スミさんの一言と同じ段の右端に小さな「？」。困った時に手元の一言を見る流れのまま押せる。7場面とも同じ高さで、上の工程の並び・ランク・温度計とぶつからない" },
-  b: { name: "スミさんの顔に札", lead: "スミさんの顔の右上に小さな「？」の札を付ける。部品を増やさずに「スミさんに聞く」と分かる。押せる所は札だけ（顔を押すと一言を隠す、は今のまま）" },
-  c: { name: "工程の並びの右端", lead: "上の工程の並びの帯の右端に「？」を入れる。前の左上と同じく画面の上にまとまるが、帯の中に入るので工程は左へ寄せたまま" },
+// 「？」（説明）の置き場所（VPL99 で3案を見比べ、VPL109 で案Aに決定）: スミさんの一言と同じ段の右端＝下の画面の右上。作る場面すべてで同じ場所
+const HELP_PLACE = { name: "スミさんの一言の右端（下の画面の右上）", lead: "左上の「？」をやめ、上の工程の並びを左へ寄せた（VPL99）。「？」はスミさんの一言と同じ段の右端に置く。困った時に手元の一言を見る流れのまま押せ、上の工程の並び・ランク・温度計とぶつからない（VPL109 で決定）" };
+// シーシャ作りの上下の比率をそろえる案（VPL110）。いま／案A（境目だけそろえる）／案B（境目＋いちばん下の手元の段をそろえる）
+const SPLITS = {
+  now: { name: "いま", lead: "境目（390×844）は 水入れ 700・配合 528・雑念よけ 598・ほか 544。主な操作の高さも y=630〜772 にばらける" },
+  a: { name: "案A 境目だけそろえる", lead: "どの場面も、下の画面の高さを同じ（844 で 30rem＝境目 544）にする。水入れは下の画面が広がって上が空き、配合は棚を少し詰め、雑念よけは弾幕の場が少し狭くなる。押す所の高さは今のまま" },
+  b: { name: "案B 境目＋手元の段をそろえる", lead: "案Aに加えて、いちばん下の段を全場面で同じ3つの置き場（左＝補助・真ん中＝主な操作・右＝決定／進む）にする。穴あけの「刺す」と吸い出しの「吸う」を真ん中の置き場へ下げ、吸い出しの強さのゲージはその上の段へ、葉の持ちは左・提供は右の丸へ" },
 };
 const RANK_PLACES = {
   d: { name: "工程の終わりに上へどかっと → 右上へ", lead: "工程（穴あけ・吸い出しなど）を終えた時、上の絵の真ん中にどかっと落ちてきて（絵が揺れ、衝撃の輪が広がる）、そのあと右上（工程の並びの右、熱ゲージの上）へ移って札になる。下の細い線が次のランクまでの進み" },
@@ -493,8 +495,8 @@ const ICONS = {
 };
 ICONS.care = ICONS.bell;
 const icon = (name) => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
-// 「？」（説明）のボタン。置き場所は案 a/b/c（HELP_PLACES）
-const helpBtn = (at) => `<button class="help-q help-${at}" data-act="fn" data-fn="help" aria-label="説明">?</button>`;
+// 「？」（説明）のボタン（スミさんの一言の右端。VPL109）
+const HELP_BTN = `<button class="help-q help-a" data-act="fn" data-fn="help" aria-label="説明">?</button>`;
 /** 人が居る場所は顔、居ない場所は絵記号 */
 const avatar = (spot) => spot.face ? `<img src="${IMG[spot.face]}" alt="">` : icon(spot.glyph);
 const perkHtml = (spot) => spot.closed ? `<em class="stamp">休</em>` : spot.fee ? `<span class="perk">${icon("coin")}<b>${spot.fee}</b></span>` : `<span class="perk">${icon(spot.perk[0])}<small>${spot.perk[1]}</small></span>`;
@@ -603,7 +605,7 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", help = "a", steamSec = 0, grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false, temp = null, ...ext } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", split = "now", steamSec = 0, grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false, temp = null, ...ext } = {}) {
     this.el = el;
     this.extOpts = ext; // 別ファイルの場面の見せ方（店番の営業の種類・一覧に並べる場面 shot など。1台表示では URL の値がそのまま入る）
     el.lang = "ja";
@@ -614,9 +616,8 @@ class Phone {
     this.uid = (Phone.seq = (Phone.seq || 0) + 1); // SVG の id を台ごとに分ける
     this.keys = new Set();
     this.rankAt = RANK_PLACES[rank] ? rank : "d"; // ランクの置き場所の案
-    this.helpAt = HELP_PLACES[help] ? help : "a"; // 「？」の置き場所の案（VPL99）
+    el.dataset.split = SPLITS[split] ? split : "now"; // シーシャ作りの上下の比率の案（VPL110）
     this.steamSec = Math.max(0, Math.min(STEAM_MAX, Math.round((Number(steamSec) || 0) / 10) * 10)); // 蒸らし時間（秒。VPL105）。次の雑念よけの長さと、吸い出しの初めの温度に効く
-    el.dataset.help = this.helpAt;
     this.venue = VENUES[venue] ? venue : "tonari"; // 作る場面の会場（背景）
     this.attackLearned = !!attack; // 雑念よけのアタックを覚えたか（覚えると精密と入れ替える切り替えが出る・VPL62）
     this.initTemp = temp != null && temp !== "" && Number.isFinite(Number(temp)) ? Math.max(0.05, Math.min(0.95, Number(temp))) : null; // 吸い出しの初めの温度（?temp=・一覧の煙の見本。VPL93）
@@ -1025,7 +1026,7 @@ class Phone {
       <div class="pic craft craft-${st.scene}">${pic}</div>
       <i class="veil"></i>
       ${THERMO_ON.has(st.scene) ? this.thermoHtml(this.thermoWas === false ? "fade-in" : "") : this.thermoWas ? this.thermoHtml("fade-out") : ""}
-      <div class="steps" aria-label="工程">${STEPS.map(([id, name], i) => `<span class="${i === at ? "now" : i < at ? "done" : ""}" aria-label="${name}"${i === at ? ` aria-current="step"` : ""}>${icon(id)}</span>`).join("")}${this.helpAt === "c" ? helpBtn("c") : ""}</div>
+      <div class="steps" aria-label="工程">${STEPS.map(([id, name], i) => `<span class="${i === at ? "now" : i < at ? "done" : ""}" aria-label="${name}"${i === at ? ` aria-current="step"` : ""}>${icon(id)}</span>`).join("")}</div>
       ${this.rankAt === "a" ? "" : this.rankHtml()}
       <div class="body">
         ${this.rankAt === "a" ? this.rankHtml() : ""}
@@ -1921,7 +1922,7 @@ class Phone {
   /** スミさんの一言は小さな吹き出しで出し、少しすると顔だけになる（顔を押すとまた出る）。 */
   craftTelopHtml() {
     const { st } = this;
-    return `<button class="coach" data-act="coach" aria-label="スミさんの一言"><img src="${IMG.faceSumi}" alt=""><span class="say"><span class="say-text">${esc(COACH[st.scene])}</span></span></button>${this.helpAt === "c" ? "" : helpBtn(this.helpAt)}`;
+    return `<button class="coach" data-act="coach" aria-label="スミさんの一言"><img src="${IMG.faceSumi}" alt=""><span class="say"><span class="say-text">${esc(COACH[st.scene])}</span></span></button>${HELP_BTN}`;
   }
 
   craftCtrlHtml() {
@@ -2458,10 +2459,13 @@ function showGallery() {
     <p class="g-note">本編の制作ランク（D〜SSS の絵）を縦画面のどこに置くか。どの案も、工程を終えてランクが上がった瞬間は舞台の真ん中に大きく出し（下の英語まで読める）、置き場所へ縮めて収める。1台表示の右上のつまみ →「ランク」で案を替え、「↑」で上がる動きを何度でも見られる。</p>
     ${Object.entries(RANK_PLACES).map(([v, place]) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}${v === "d" ? "（オーナー案）" : ""}</small>${place.name}<a href="?view=play&scene=holes&rank=${v}">1台で動きを見る</a></h3><p>${place.lead}</p>
       <div class="g-grid">${[["pack", 1, 0.3, "詰め（ランクC）"], ["holes", 2, 0.6, "穴あけ（ランクB・進み6割）"], ["pull", 4, 0.4, "吸い出し（ランクS）"]].map(([scene, grade, gradeP, cap]) => `<figure class="g-cell"><article class="phone" data-rank="${v}" data-scene="${scene}" data-grade="${grade}" data-gp="${gradeP}"></article><figcaption>${cap}</figcaption></figure>`).join("")}</div></section>`).join("")}
+    <h2 class="g-sub">シーシャ作りの上下の比率をそろえる案（VPL110）</h2>
+    <p class="g-note">赤い線は上の画面と下の画面の境目。案A・案Bとも、どの場面も境目は同じ高さ。1台表示の右上のつまみ →「上下」でも替えられる。</p>
+    ${["now", "a", "b"].map((v) => `<section class="g-aux"><h3><small>${v === "b" ? "おすすめ" : v === "now" ? "比べる元" : "案"}</small>${SPLITS[v].name}<a href="?view=play&scene=pull&split=${v}">1台で触る</a></h3><p>${SPLITS[v].lead}</p>
+      <div class="g-grid">${CRAFT_SCENES.map((scene) => `<figure class="g-cell"><article class="phone" data-splitdemo="${v}" data-scene="${scene}"></article><figcaption>${SCENE_LABEL[scene]}</figcaption></figure>`).join("")}</div></section>`).join("")}
     <h2 class="g-sub">「？」（説明）の置き場所</h2>
-    <p class="g-note">左上の「？」をやめ、上の工程の並びを左へ寄せた（VPL99）。空いた所に置く3案。案Aがおすすめ。1台表示の右上のつまみ →「？の場所」でも替えられる。</p>
-    ${Object.entries(HELP_PLACES).map(([v, place]) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}${v === "a" ? "（おすすめ）" : ""}</small>${place.name}<a href="?view=play&scene=pull&help=${v}">1台で触る</a></h3><p>${place.lead}</p>
-      <div class="g-grid">${[["mix", "配合"], ["holes", "穴あけ"], ["pull", "吸い出し"]].map(([scene, cap]) => `<figure class="g-cell"><article class="phone" data-helpdemo="${v}" data-scene="${scene}"></article><figcaption>${cap}</figcaption></figure>`).join("")}</div></section>`).join("")}
+    <section class="g-aux"><h3><small>案Aで決定</small>${HELP_PLACE.name}<a href="?view=play&scene=pull">1台で触る</a></h3><p>${HELP_PLACE.lead}</p>
+      <div class="g-grid">${[["mix", "配合"], ["holes", "穴あけ"], ["pull", "吸い出し"]].map(([scene, cap]) => `<figure class="g-cell"><article class="phone" data-helpdemo="a" data-scene="${scene}"></article><figcaption>${cap}</figcaption></figure>`).join("")}</div></section>
     <h2 class="g-sub">登場カットイン（縦画面）</h2>
     ${["a"].map((v) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}で決定</small>${CUT_VARIANTS[v].name}<a href="?view=play&scene=cutin&ci=${v}" data-go="play" data-ci="${v}">1台で動きを見る</a></h3><p>${CUT_VARIANTS[v].lead}</p>
       <div class="g-grid">${["minto", "sumi"].map((who) => `<figure class="g-cell"><article class="phone" data-ci="${v}" data-who="${who}"></article><figcaption>${who === "minto" ? "みんと" : "スミさん"}</figcaption></figure>`).join("")}</div></section>`).join("")}
@@ -2479,7 +2483,8 @@ function showGallery() {
       BROADCAST_READY.then(show);
     }
   });
-  app.querySelectorAll(".phone[data-helpdemo]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, help: el.dataset.helpdemo, grade: 2, gradeP: 0.4 })));
+  app.querySelectorAll(".phone[data-splitdemo]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, split: el.dataset.splitdemo, grade: 2, gradeP: 0.4, steamSec: el.dataset.scene === "timer" ? 300 : 0 })));
+  app.querySelectorAll(".phone[data-helpdemo]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, grade: 2, gradeP: 0.4 })));
   app.querySelectorAll(".phone[data-ci]").forEach((el) => phones.push(new Phone(el, "cutin", { fixed: true, ci: el.dataset.ci, who: el.dataset.who })));
   app.querySelectorAll(".phone[data-ext]").forEach((el) => phones.push(new Phone(el, el.dataset.ext, { fixed: true, ...EXT[el.dataset.ext].META.gallery.shots[Number(el.dataset.shotI)] })));
   app.querySelectorAll(".phone[data-gp]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, rank: el.dataset.rank, grade: Number(el.dataset.grade), gradeP: Number(el.dataset.gp) })));
@@ -2509,12 +2514,12 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
       <div><small>雑念よけ</small><button data-attack aria-pressed="${params.has("attack")}">アタック習得</button></div>
       <div><small>会場</small>${Object.entries(VENUES).map(([v, name]) => `<button data-venue="${v}" aria-pressed="${v === (params.get("venue") || "tonari")}">${name}</button>`).join("")}</div>
       <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "d")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div>
-      <div><small>？の場所</small>${Object.keys(HELP_PLACES).map((v) => `<button data-help="${v}" aria-pressed="${v === (params.get("help") || "a")}">案${v.toUpperCase()}</button>`).join("")}</div></div></nav>`}</div>`;
+      <div><small>上下</small>${Object.entries(SPLITS).map(([v, sp]) => `<button data-split="${v}" aria-pressed="${v === (params.get("split") || "now")}">${v === "now" ? "いま" : `案${v.toUpperCase()}`}</button>`).join("")}</div></div></nav>`}</div>`;
   const el = app.querySelector(".phone");
   // 先に大きさを決めてから描く（立ち絵と地図の位置は絵の大きさから決まる）
   const box = app.getBoundingClientRect(), rem = Math.min(box.width / 39, box.height / 66);
   root.style.fontSize = `${rem}px`; el.style.height = `${Math.min(box.height, rem * 92)}px`;
-  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { ...Object.fromEntries(params), step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", help: params.get("help") || "a", venue: params.get("venue") || "tonari", attack: params.has("attack"), grade: params.get("grade"), ...opts });
+  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { ...Object.fromEntries(params), step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", split: params.get("split") || "now", venue: params.get("venue") || "tonari", attack: params.has("attack"), grade: params.get("grade"), ...opts });
   current = make(scene);
   const nav = app.querySelector(".switch");
   if (!nav) return;
@@ -2555,10 +2560,10 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
       } else if (crafting) current.rankUp({ loop: true });
       else { current.setScene("holes"); setTimeout(() => current.rankUp({ loop: true }), 400); }
     }
-    else if (button.dataset.help) {
-      // 「？」の置き場所の案を替える（VPL99）。作る場面でなければ吸い出しへ
-      current.helpAt = button.dataset.help; current.el.dataset.help = button.dataset.help;
-      nav.querySelectorAll("[data-help]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.help === current.helpAt)));
+    else if (button.dataset.split) {
+      // 上下の比率の案を替える（VPL110）。作る場面でなければ吸い出しへ
+      current.el.dataset.split = button.dataset.split;
+      nav.querySelectorAll("[data-split]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.split === button.dataset.split)));
       if (CRAFT_SCENES.includes(current.st.scene)) current.render(); else current.setScene("pull");
     }
     else if (button.dataset.ci || button.dataset.who) {
