@@ -122,6 +122,9 @@ def purikura_prompt(job):
         f"Top photo: {people} — {job['top']}. Bottom photo: {job['bottom']}.",
         *refs,
         "Purikura look: bright soft studio lighting, eyes slightly enlarged and sparkly, but each face must stay recognisably the same person as the sprite.",
+        ("These two are a romantic couple (lovers), so show a clearly closer, affectionate distance than friends: leaning together, cheek to cheek, linked arms, held hands or a hug from behind. "
+         "Tender and wholesome: both are adults, fully clothed, and there is no kissing on the lips." if job.get("lover") else
+         "They are friends: friendly, playful distance, not romantic." if partners(job) and not job.get("solo") else ""),
         "Each photo shows only what the photo booth's camera captures: the people posing toward the camera in front of the booth's plain backdrop. Never show anyone drawing on the photo or holding the booth's stylus, and never show the booth's screen or camera inside a photo; doodles exist only as pen marks drawn on top of the photos.",
         (f"Very few doodles, in small, neat, modest handwriting (she is shy): exactly {text}, written correctly and legibly, plus one or two tiny hearts or leaves. Write no other words." if job.get("quiet") else
          f"Hand-written glitter-pen doodles in Japanese on the photos and border: exactly {text}, written correctly and legibly, plus small hearts, stars and stamps. Write no other words."),

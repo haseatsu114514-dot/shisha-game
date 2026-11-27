@@ -1241,6 +1241,33 @@
       ]
     },
     {
+      "dialogue_id": "remake_ch2_purikura_match",
+      "comment": "撮ると決めた後、居合わせた知り合いがいる時の、あげはのおすすめ（PFC19）。相手は呼出元の選択肢で選ぶ（知り合い／あげは／一人）。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あ、ハジメっちの知り合い来てんじゃん！"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "せっかくだし、一緒に撮ってけばいいじゃん。もちろん、うちとでもソロでもいいよ♡"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_purikura_choose",
+      "comment": "撮ると決めた後、居合わせた知り合いがいない時（PFC19）。相手は呼出元の選択肢で選ぶ（あげは／一人）。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "おっけー！ 今日はうちと撮る？ それとも、ソロで攻める？"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_ch2_purikura_solo",
       "lines": [
         {

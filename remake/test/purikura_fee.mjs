@@ -24,7 +24,9 @@ async function fixture() {
   if(modalImpl)return modalImpl(o);
   if(o.options.some(x=>x.test==='purikura-insufficient'))return true;
   if(o.options.some(x=>x.test==='purikura-receive'))return true;
-  if(o.options.some(x=>x.test?.startsWith('purikura-with-')))return guest;
+  // PFC19: まず「撮る（400円）」か、次に相手（居合わせた知り合い／あげは／一人）
+  if(o.options.some(x=>x.test==='purikura-shoot'))return mode?true:null;
+  if(o.title==='誰と撮る？')return mode==='guest'?guest:mode;
   return mode;
  }})],
  ['core/data.js',fixed('core/data.js',{DB:{characters:{hajime:{},ageha:{},kumicho:{},kuraudo:{},tsumugi:{},rio:{},hiyori:{}}},displayName:id=>id,portraitInfo:id=>({src:id+'.webp'}),cgUrl:id=>`img/cgs/${id}.webp`})],
@@ -89,8 +91,8 @@ for(const phase of ['invite','mode','guest','shot','receive'])for(const outcome 
  f.setMode(phase==='guest'?'guest':'solo');
  f.setPlay(async id=>{if((phase==='invite'&&id==='remake_ch2_purikura_invite')||(phase==='shot'&&id==='remake_ch2_purikura_solo')){const r=intercept();return r?{id,visited:[]}:{cancelled:true};}return {id,visited:[]};});
  f.setModal(o=>{
-  if((phase==='mode'&&o.title==='プリクラ、撮っていく？')||(phase==='guest'&&o.title==='誰と撮る？')||(phase==='receive'&&o.options.some(x=>x.test==='purikura-receive'))){const r=intercept();return r===null?null:o.title==='誰と撮る？'?'kumicho':o.title==='プリクラ、撮っていく？'?'solo':true;}
-  return o.title==='プリクラ、撮っていく？'?(phase==='guest'?'guest':'solo'):o.title==='誰と撮る？'?'kumicho':true;
+  if((phase==='mode'&&o.title==='プリクラ、撮っていく？')||(phase==='guest'&&o.title==='誰と撮る？')||(phase==='receive'&&o.options.some(x=>x.test==='purikura-receive'))){const r=intercept();return r===null?null:o.title==='誰と撮る？'?(phase==='guest'?'kumicho':'solo'):o.title==='プリクラ、撮っていく？'?'solo':true;}
+  return o.title==='プリクラ、撮っていく？'?(phase==='guest'?'guest':'solo'):o.title==='誰と撮る？'?(phase==='guest'?'kumicho':'solo'):true;
  });
  const job=f.offer(controller.signal);if(outcome==='throw')await assert.rejects(job,/controlled interruption/);else {const result=await job;assert.equal(result,outcome==='cancel'&&['mode','guest'].includes(phase)?true:false);}
  assert(hit);assert.equal(original.money,1000);assert.equal(original.flags._ageha_purikura_history,undefined);assert.equal(original.keepsakes.length,0);
@@ -194,6 +196,42 @@ await check('PFC18 picker: slot-limited pictures, untaken first, then any; no pi
  assert.equal(f.pick('rio',{rand:()=>0,save:at(0,[{cg:'cg_purikura_rio_tamaniwa'}])}).cg,'cg_purikura_rio_record');
  assert.match(f.pick('rio',{rand:()=>0,save:at(0,[{cg:'cg_purikura_rio_tamaniwa'},{cg:'cg_purikura_rio_record'}])}).cg,/^cg_purikura_rio_/);
  assert.equal(f.pick('adam',{save:at(0)}),null);assert.equal(f.pick('kuraudo',{save:at(0)}),null);
+});
+// PFC19: 来店の会話の後にまず「撮る（400円）」→ 居合わせた知り合いがいれば、あげはがその人との2ショットを勧める → 相手（知り合い／あげは／一人）。
+const tests=l=>l.options.map(o=>o.test).join(',');
+await check('PFC19 shoot first, then Ageha suggests the present acquaintance and any partner can be chosen',async f=>{
+ f.state.money=999999;f.setMode('pair');assert.equal(await f.offer(),true);
+ assert.equal(f.log.filter(l=>l.kind==='modal').map(l=>l.title).join('|'),'プリクラ、撮っていく？|誰と撮る？|今日のプリクラ');
+ assert.equal(tests(f.log.find(l=>l.title==='プリクラ、撮っていく？')),'purikura-shoot,purikura-skip');
+ const pick=f.log.find(l=>l.title==='誰と撮る？');
+ assert.equal(tests(pick),'purikura-with-kumicho,purikura-with-kuraudo,purikura-pair,purikura-solo,purikura-guest-back');
+ assert.equal(pick.options[0].label,'神崎と撮る');assert.equal(pick.options[0].primary,true,'Ageha recommends the acquaintance');
+ const plays=f.log.filter(l=>l.kind==='play').map(l=>l.id);
+ assert.equal(plays.join(','),'remake_ch2_purikura_invite,remake_ch2_purikura_match,remake_ch2_purikura_pair');
+ assert.equal(f.state.money,999599);assert.match(f.state.flags._ageha_purikura_history.at(-1).cg,/^cg_purikura_ageha_/);
+});
+await check('PFC19 without acquaintances Ageha offers herself or solo; skipping at either step charges nothing',async f=>{
+ f.state.money=999999;f.setPeople([]);f.setMode('solo');assert.equal(await f.offer(),true);
+ const pick=f.log.find(l=>l.title==='誰と撮る？');assert.equal(tests(pick),'purikura-pair,purikura-solo,purikura-guest-back');assert.equal(pick.options[0].primary,true);
+ assert(f.log.some(l=>l.id==='remake_ch2_purikura_choose'));assert(!f.log.some(l=>l.id==='remake_ch2_purikura_match'));
+ assert.equal(f.state.money,999599);
+ f.next();f.setMode(null);assert.equal(await f.offer(),true);assert.equal(f.state.money,999599);
+ assert.equal(f.log.filter(l=>l.title==='誰と撮る？').length,1,'declining to shoot asks no partner');
+ f.next();f.setModal(o=>o.options.some(x=>x.test==='purikura-shoot')?true:o.title==='誰と撮る？'?null:true);
+ assert.equal(await f.offer(),true);assert.equal(f.state.money,999599);assert.equal(f.state.flags._ageha_purikura_history.length,1);
+ assert.equal(f.state.flags._ageha_purikura_offer,'2:4:0','backing out still ends today’s offer');
+});
+await check('PFC19 solo receipt is the first challenge once, then a daily solo',async f=>{
+ f.state.money=999999;f.setMode('solo');
+ for(let n=0;n<2;n++){assert.equal(await f.offer(),true);f.next();}
+ assert.equal(f.log.filter(l=>l.options?.some(o=>o.test==='purikura-receive')).map(l=>l.title).join('|'),'一人で初挑戦！|今日のソロぷり');
+});
+await check('PFC19 lovers get lover photos where they exist, otherwise friend photos; friends never get lover photos',async f=>{
+ const at=(lovers,history=[])=>({slot:0,lovers,flags:{_ageha_purikura_history:history}});
+ for(const id of ['ageha','tsumugi','rio','hiyori']){
+  for(const lovers of [[],[id],['someone_else']]){const p=f.pick(id,{rand:()=>0,save:at(lovers)});assert(p,id);assert.match(p.cg,new RegExp(`^cg_purikura_${id}_`));}
+ }
+ assert.equal(f.pick('solo',{rand:()=>0,save:at(['ageha'])}).cg,'cg_purikura_solo_first','solo ignores lovers');
 });
 console.log(JSON.stringify({groups,failures,scope:'actual offer/keepsakes/travel/photo and actual addMoney; controlled VM/state/VN/UI/Map-JSON, not browser/menu LOAD'}));
 if(failures)process.exitCode=1;
