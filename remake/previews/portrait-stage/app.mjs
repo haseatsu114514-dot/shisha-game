@@ -1080,12 +1080,6 @@ class Phone {
       bowl.querySelector(".b-airy.brown").style.opacity = part.toFixed(2); bowl.querySelector(".b-airy.red").style.opacity = (part * red).toFixed(2);
       bowl.querySelector(".b-full.brown").style.opacity = full.toFixed(2); bowl.querySelector(".b-full.red").style.opacity = (full * red).toFixed(2);
     }
-    // 12の枠はジャンルの色。葉が替わる所に細い区切り
-    const fill = MIX.flatMap((f, i) => Array.from({ length: st.mix[i] }, (_, k) => ({ c: GENRES[f.genre].color, first: k === 0 })));
-    const slots = el.querySelector(".mixbar .slots");
-    if (slots) slots.innerHTML = Array.from({ length: MIX_CAP }, (_, i) => `<i${fill[i] ? ` style="--c:${fill[i].c}"${fill[i].first && i ? ` class="cut"` : ""}` : ""}></i>`).join("");
-    el.querySelectorAll(".mixsum").forEach((sum) => { sum.innerHTML = `${total}<small>/${MIX_CAP}g</small>`; });
-    el.querySelector(".mixbar")?.classList.toggle("full", total === MIX_CAP);
     const num = el.querySelector(".digits .d-num");
     if (num) { num.textContent = String(total).padStart(2, "0"); el.querySelector(".digits").classList.toggle("full", total === MIX_CAP); }
     el.querySelectorAll(".picker [data-i]").forEach((card) => {
@@ -1102,8 +1096,8 @@ class Phone {
   addMix(by) {
     const { st, el } = this, i = st.mixSel;
     if ((by > 0 && this.mixTotal() >= MIX_CAP) || (by < 0 && st.mix[i] <= 0)) {
-      const bar = el.querySelector(".mixbar");
-      bar?.classList.remove("nudge"); void bar?.offsetWidth; bar?.classList.add("nudge");
+      const digits = el.querySelector(".digits"); // 下の段の重さの表示は外した（VPL74）。はかりの表示を揺らす
+      digits?.classList.remove("nudge"); void digits?.offsetWidth; digits?.classList.add("nudge");
       return;
     }
     st.mix[i] += by;
@@ -1644,7 +1638,7 @@ class Phone {
     }
     if (st.scene === "mix") {
       // 十字キーは出さず、下の画面にフレーバーの一覧（案A・B は横、案C は縦にスライド）。各札の −／＋ で1gずつ。合わせて12gで課題を満たすと「決定」（VPL52）
-      return `${this.mixCardsHtml()}<div class="mixfoot"><div class="mixbar" aria-hidden="true"><span class="slots"></span><b class="mixsum"></b></div></div>${aHtml("ok", { cls: "mix-ok", disabled: !this.mixOk() })}`;
+      return `${this.mixCardsHtml()}${aHtml("ok", { cls: "mix-ok", disabled: !this.mixOk() })}`;
     }
     if (st.scene === "coal") {
       // 下の画面はコンロ。炭を直接タッチして取り出す（VPL55）
