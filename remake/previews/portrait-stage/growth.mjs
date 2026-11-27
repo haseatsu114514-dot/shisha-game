@@ -2,8 +2,10 @@
 // 盤の形・マス・名前・効果・費用は本編のデータをそのまま読む（remake/js/core/growth-board-data.js・growth-board-layout.js・growth-effects.js。
 // どれも状態・保存・音に触れない）。規則（道のつながり・払い方・仮置きの積み直し・近い目的地）は remake/js/core/growth-board.js の写し
 // （あちらは本編の状態を読むので import しない）。文言は本編の画面 remake/js/daily/growth-board-screen.js のもの。
-// 縦の並べ方（十字キーと丸ボタンは置かない）: 上＝題・レベル・手持ちの火種と盤の札3枚／真ん中＝盤（指でずらす・つまんで拡大・「全体」）／
-// 下＝選んだマスの札（名前・効果・今の状態）と「灯す」「目標にする」、いちばん下に「取り消す」「決定」。マスを選んでいない時は、恩恵の合計と近い目的地。
+// 縦の並べ方（VPM15。盤は一画面に全部は出さず、大きく見せて十字キーで動かす）:
+//   上＝「地図」へ戻る・題・レベル・手持ちの火種と、盤の札3枚／真ん中＝盤（選んでいるマスにカーソル。十字キーで隣のマスへ動くと、盤がついてくる。
+//   指でずらす・つまんで拡大・「全体」「まとめ」も使える）／下＝選んでいるマスの札（名前・今の状態・効果）と、地図・会話と同じ十字キーと丸ボタン。
+//   丸ボタンは、選んでいるマスでできること: 今灯せる＝灯す（仮置き）→ 決定／道がまだ＝目標 → 灯す（道を仮置き）→ 決定。
 // 状態（レベル・火種・灯したマス・出会った人・♥）はこの場面の中だけの仮の値で、本編の進行・保存には触れない。
 import {
   BOARD_KEYS, BOARD_JA, BOARD_HEAD, HIDANE_NAME, HUB_AT, GRID, FEATURES, NOTABLES, PERK_TIERS, GATE_TIER, SQUARE_PERKS, REWARD_JA, perkIcon,
@@ -170,7 +172,25 @@ const CELL = 5.6, EDGE = 0.95;
 const PLANE_W = (GRID.w * 2 + EDGE * 2) * CELL, PLANE_H = (GRID.h + EDGE * 2) * CELL;
 const hubXY = (board) => HUB_AT[board].split(",").map(Number);
 const planeXY = (board, gx, gy) => { const [hx, hy] = hubXY(board); return [(gx + hx + GRID.w + EDGE) * CELL, (gy + hy + GRID.h + EDGE) * CELL]; };
-const ZOOM_MAX = 1.5;
+// 盤の見える大きさ: ふだんは NEAR（横に5マスほど。一画面に全部は出さず、十字キーで動かす）。指でつまむと ZOOM_MAX まで寄れる
+const NEAR = 1.36, ZOOM_MAX = 1.9;
+const HEADING = { left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1] };
+const DIRS = Object.keys(HEADING);
+/** その盤で、はじめにカーソルを置くマス: 紋のすぐ上（無ければ紋の隣）。 */
+const startNode = (board) => { const sides = boardNodes(board).filter((n) => n.links.includes(HUB)); return (sides.find((n) => n.gx === 0 && n.gy === -1) || sides[0])?.id || null; };
+/** 十字キーの行き先: その向きの斜め45度までの中で、いちばん近いマス（真っ直ぐと、線でつながった隣を先に）。無ければ null。 */
+function stepFrom(from, dir) {
+  const [hx, hy] = HEADING[dir];
+  let best = Infinity, to = null;
+  for (const n of boardNodes(from.board)) {
+    const dx = n.gx - from.gx, dy = n.gy - from.gy, along = dx * hx + dy * hy, across = Math.abs(dx * hy - dy * hx);
+    if (along <= 0 || across > along) continue;
+    const score = along + across * 1.5 - (from.links.includes(n.id) ? 0.4 : 0);
+    if (score < best) { best = score; to = n; }
+  }
+  return to;
+}
+const CHEVRON = `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.500 5.500L8 12l6.500 6.500"/></svg>`;
 
 export class GrowthScene {
   /** 場面の名札（app.mjs が読む）: 名前・光の色・1台表示のつまみの選び方・一覧（PC）に並べる場面。 */
@@ -179,13 +199,14 @@ export class GrowthScene {
     options: { name: "board", default: "body", values: { body: "才能盤", sense: "感覚盤", wisdom: "理論盤" } },
     gallery: {
       title: "心得の盤（能力盤）",
-      note: "本編の心得の盤を縦へ。マスの並び・名前・効果・費用は本編のデータをそのまま読む。上に題・レベル・手持ちの火種と盤の札3枚、真ん中に盤（指でずらす・つまんで拡大・「全体」）、下に選んだマスの札と「灯す」「目標にする」、いちばん下に「取り消す」「決定」。十字キーと丸ボタンは置かない。レベル・火種・♥は仮の値。",
+      note: "本編の心得の盤を縦へ。マスの並び・名前・効果・費用は本編のデータをそのまま読む。盤は大きく見せて、一画面に全部は出さない: 選んでいるマスにカーソルがあり、十字キーで隣のマスへ動くと盤がついてくる。丸ボタンは、選んでいるマスでできること（灯す・目標・決定）。下に選んでいるマスの札。盤の合計と近い目的地は「まとめ」の札に。レベル・火種・♥は仮の値。",
       shots: [
-        { caption: "才能盤（恩恵の合計と近い目的地）", shot: "home" },
-        { caption: "マスを選ぶ（効果と払う火種）", shot: "node" },
+        { caption: "才能盤（十字キーでカーソルを動かす）", shot: "home" },
+        { caption: "要のマス（効果と、払う火種）", shot: "node" },
         { caption: "スキルを目標にして、道を仮置き", shot: "path" },
         { caption: "灯したあと（感覚盤・スミさんの授業）", shot: "lit", board: "sense" },
         { caption: "授業の錠（♥が要る）", shot: "sealed", board: "wisdom" },
+        { caption: "まとめ（盤の合計と、近い目的地）", shot: "sum" },
         { caption: "全体を見る（結界の先まで）", shot: "overview", board: "wisdom" },
       ],
     },
@@ -199,22 +220,26 @@ export class GrowthScene {
     this.art = (name) => `${kit.REMAKE_IMG}ui/growth_board/${name}.webp`;
     this.s = { chapter: START.chapter };
     this.g = { level: START.level, nodes: [], hidane: { ...START.hidane }, target: null };
-    Object.assign(this, { board: BOARD_KEYS.includes(board) ? board : "body", selected: null, pending: [], overview: false, cam: null, pointers: new Map(), fresh: new Set() });
+    Object.assign(this, { board: BOARD_KEYS.includes(board) ? board : "body", selected: null, pending: [], overview: false, sheet: false, cam: null,
+      pointers: new Map(), fresh: new Set(), cursors: {} });
     this.reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!phone.fixed) phone.extOpts.shot = null; // 途中の場面から開くのは一度だけ
     if (shot) this.pose(shot);
+    // カーソルは、いつもどこかのマスにある（はじめは紋のすぐ上）
+    if (!this.selected || NODE_BY_ID[this.selected]?.board !== this.board) this.selected = startNode(this.board);
   }
 
   /** 一覧（PC）に並べる時の場面を作る。 */
   pose(shot) {
     const { g, s } = this, id = (board, cell) => NODES.find((n) => n.board === board && n.cell === cell)?.id;
-    if (shot === "node") this.selected = id("body", "1,0");
+    if (shot === "node") this.selected = id("body", "-1,0");
     else if (shot === "path") { this.selected = this.g.target = "K03"; this.pending = pendingTowards(g, [], "K03", s); }
     else if (shot === "lit") {
       for (const cell of ["-1,0", "0,-1", "0,-2"]) g.nodes.push(id("sense", cell));
       g.nodes.push("M-S1"); g.hidane.any -= 3;
       this.selected = "M-S1";
     } else if (shot === "sealed") this.selected = "M-W3";
+    else if (shot === "sum") this.sheet = true;
     else if (shot === "overview") this.overview = true;
   }
 
@@ -228,8 +253,10 @@ export class GrowthScene {
     return `
       <img class="amb" src="${kit.REMAKE_IMG}backgrounds/bg_kannon_day.webp" alt="">
       <div class="gb-top">
-        <div class="gb-head"><h2>心得の盤</h2>
-          <span class="gb-lv" aria-label="レベル${this.g.level}"><small>Lv</small><b>${this.g.level}</b><i><i style="width:${START.xp * 100}%"></i></i></span>
+        <div class="gb-head">
+          <button class="gb-back" data-act="gb-leave" aria-label="地図へ戻る">${CHEVRON}<span>地図</span></button>
+          <h2>心得の盤</h2>
+          <span class="gb-lv" aria-label="レベル${this.g.level}"><small>Lv</small><b>${this.g.level}</b></span>
           <span class="gb-wallet" data-slot="wallet"></span></div>
         <div class="gb-tabs" role="tablist" data-slot="tabs"></div>
       </div>
@@ -238,26 +265,29 @@ export class GrowthScene {
           <svg class="gb-lines" viewBox="0 0 ${PLANE_W} ${PLANE_H}" aria-hidden="true"></svg>
           <div class="gb-nodes"></div>
         </div>
-        <button class="gb-zoom" data-act="gb-zoom" aria-label="全体を見る">${icon("wide")}<span>全体</span></button>
+        <button class="gb-fab gb-sumbtn" data-act="gb-sum" aria-label="盤のまとめ（合計と近い目的地）">${icon("list")}<span>まとめ</span></button>
+        <button class="gb-fab gb-zoom" data-act="gb-zoom" aria-label="全体を見る">${icon("wide")}<span>全体</span></button>
+        <div class="gb-pend" data-slot="pend" hidden></div>
       </div>
       <div class="gb-panel">
         <div class="gb-card" data-slot="card"></div>
-        <div class="gb-foot" data-slot="foot"></div>
+        <div class="ctrl gb-ctrl" data-slot="gb-ctrl"></div>
       </div>
+      <div class="gb-sheet" data-slot="sheet" hidden></div>
       <div class="gb-result" data-slot="result" hidden></div>`;
   }
 
   mount() {
     const q = (sel) => this.el.querySelector(sel);
     this.refs = { view: q(".gb-view"), plane: q(".gb-plane"), lines: q(".gb-lines"), nodes: q(".gb-nodes"), wallet: q('[data-slot="wallet"]'),
-      tabs: q('[data-slot="tabs"]'), card: q('[data-slot="card"]'), foot: q('[data-slot="foot"]'), zoom: q(".gb-zoom"), result: q('[data-slot="result"]') };
+      tabs: q('[data-slot="tabs"]'), card: q('[data-slot="card"]'), ctrl: q('[data-slot="gb-ctrl"]'), pend: q('[data-slot="pend"]'), zoom: q(".gb-zoom"),
+      sheet: q('[data-slot="sheet"]'), result: q('[data-slot="result"]') };
     const view = this.refs.view;
     this.listeners = [["pointerdown", (e) => this.onDown(e)], ["pointermove", (e) => this.onMove(e)], ["pointerup", (e) => this.onUp(e)],
       ["pointercancel", (e) => this.onUp(e)], ["wheel", (e) => this.onWheel(e)]];
     for (const [type, fn] of this.listeners) view.addEventListener(type, fn, { passive: false });
     this.render();
     this.home(false);
-    if (this.selected) this.focus(this.selected);
   }
 
   destroy() {
@@ -273,7 +303,12 @@ export class GrowthScene {
     this.v = v;
     this.el.dataset.board = this.board;
     this.el.style.setProperty("--bc", COLOR[this.board]);
-    this.renderTop(v); this.renderBoard(v); this.renderCard(v); this.renderFoot(v);
+    this.cursors[this.board] = this.selected;
+    const pendWas = !this.refs.pend.hidden;
+    this.renderTop(v); this.renderBoard(v); this.renderCard(v); this.renderView(v); this.renderCtrl(v);
+    if (this.sheet) this.renderSheet(v);
+    this.refs.sheet.hidden = !this.sheet;
+    if (this.cam && pendWas !== !this.refs.pend.hidden) this.home(); // 「取り消す・決定」の段が出入りしたら、その分だけ盤を寄せ直す
   }
 
   renderTop(v) {
@@ -358,35 +393,63 @@ export class GrowthScene {
   stateText(node, st, v) {
     const { g, s } = this;
     if (st === "unlocked") return node.kind !== "lesson" ? "灯してある" : `相談できる。次に${whoName(node.who)}に会った時に話を聞こう`;
-    if (st === "pending") return "仮置き中。決定するまでは「やめる」で戻せる";
+    if (st === "pending") return "仮置き中。「決定」で灯る";
     if (st === "locked") return "結界の先。物語が進むと結界が解けて道が開く";
     if (node.kind === "lesson") {
       if (!lessonKnown(node, g, s)) return "物語が進んで出会うと、誰の授業かが分かる";
       const who = whoName(node.who);
       if (st === "sealed") return `つぎ：${who}と♥${node.need}まで仲良くなる（いま♥${lessonLock(node).heartNow}）`;
       if (st === "far") return `つぎ：盤の道をここまでつなぐ（あと火種${pathTo(node.id, v.unlocked).cost}）`;
-      if (st === "available") return `つぎ：「教わる」を押す（火種いらず）。そのあと${who}に会って習う`;
+      if (st === "available") return `今教われる（火種いらず）。そのあと${who}に会って習う`;
     }
     if (st === "far" && node.peak) return `能力のマスを全部灯すと灯せる（あと${boardNodes(node.board).filter((n) => n.kind === "stat" && !n.peak && !v.unlocked.has(n.id)).length}マス）`;
     if (st === "far") return `まだ道がつながっていない（ここまで 火種${pathTo(node.id, v.unlocked).cost}）`;
     if (st === "short" && node.kind === "gate") return "色の火（紅火・蒼火・翠火）が要る";
     if (st === "short") return `火種があと${Math.max(0, node.cost - spendableHidane(node, v.hidane, v.ctx))}つ要る。火種は貯めておける`;
-    return `${payText(paymentFor(node, v.hidane, v.ctx))}で払う`;
+    return `今灯せる（${payText(paymentFor(node, v.hidane, v.ctx))}で払う）`;
   }
 
-  /** 選んだマスの札。上に種類と名前、まん中に効果（2行まで）、下に今の状態と押す所。 */
+  /** そのマスを目標にできるか（まだ灯していない・仮置きでない・結界の内・誰の授業か分かっている）。 */
+  canTarget(node, st) {
+    return !this.g.nodes.includes(node.id) && st !== "pending" && st !== "locked" && !(node.kind === "lesson" && !lessonKnown(node, this.g, this.s));
+  }
+
+  /**
+   * 丸ボタンの働き（選んでいるマスでできる、いちばん主なこと）: { text＝ボタンの文字, label＝読み上げ, run }。できることが無ければ run は null。
+   * 今灯せるマス＝灯す（仮置き）／仮置きがある時＝決定／道がまだのマス＝目標にする → 目標のマスで、道を灯せる所まで灯す。
+   */
+  primary(v = this.v) {
+    const { g } = this, node = NODE_BY_ID[this.selected];
+    if (!node) return { text: "決定", label: "決定", run: null };
+    const st = this.status(node, v), id = node.id;
+    if (st === "available") {
+      const text = node.kind === "gate" ? "はめる" : node.cost ? "灯す" : "教わる";
+      return { text, label: `${text}（仮置き）`, run: () => this.light(id) };
+    }
+    if (v.pending.length) return { text: "決定", label: `決定（${v.pending.length}つ灯す）`, run: () => this.decide() };
+    if (this.canTarget(node, st)) {
+      if (g.target !== id) return { text: "目標", label: "目標にする", run: () => this.setTarget(id) };
+      if (pendingTowards(g, this.pending, id, this.s).length > this.pending.length) return { text: "灯す", label: "目標まで灯す（仮置き）", run: () => this.towards(id) };
+      return { text: "解除", label: "目標をやめる", run: () => this.setTarget(null) };
+    }
+    return { text: st === "unlocked" ? "済" : "", label: this.statusWord(node, st), run: null }; // 文字が無い時は、錠の印を出す
+  }
+
+  /** 選んでいるマスの札。左に絵と小さな押す所（目標・やめる）、右に名前・今の状態・効果の一行・説明（2行まで）。札の高さは変えない（盤が動かないように）。 */
   renderCard(v) {
-    const { g, s, kit } = this, { esc } = kit, node = this.selected ? NODE_BY_ID[this.selected] : null;
-    if (!node || node.board !== this.board) { this.refs.card.innerHTML = this.summaryHtml(v); this.refs.card.dataset.mode = "summary"; return; }
+    const { g, s, kit } = this, { esc } = kit, node = NODE_BY_ID[this.selected];
+    if (!node) { this.refs.card.innerHTML = ""; return; }
     const st = this.status(node, v), perk = perkOf(node), known = lessonKnown(node, g, s);
-    let kind, name, text, sub = "";
+    let kind = "", name, text, sub = "";
     if (node.kind === "stat") {
-      kind = node.peak ? `${BOARD_JA[node.board]}のマス（極み）` : perk.notable ? "要のマス" : `${BOARD_JA[node.board]}のマス`;
-      name = node.peak ? "極み" : perk.notable ? perk.notable.name : perk.name;
-      text = perk.notable ? perk.notable.text : node.feature ? `✦ 灯すと「${FEATURES[node.feature].text}」` : "";
+      kind = node.peak ? "極み" : perk.notable ? "要のマス" : "";
+      name = node.peak ? `${BOARD_JA[node.board]}の極み` : perk.notable ? perk.notable.name : perk.name;
       sub = perk.text;
+      // ふつうの能力のマスは、効果の下に、その盤でいま貯まっている合計（仮置きを含む）を添える
+      const total = perkTotals(node.board, v.unlocked).find((p) => p.key === node.perk);
+      text = perk.notable ? perk.notable.text : node.feature ? `✦ 灯すと「${FEATURES[node.feature].text}」` : total && !node.peak ? `この盤の合計：${shortPerkValue(total.text) || total.text}` : "";
     } else if (node.kind === "gate") {
-      kind = `${BOARD_JA[node.board]}の色の台座`; name = perk?.name || "色の台座";
+      kind = "色の台座"; name = perk?.name || "色の台座";
       text = `${HIDANE_NAME[node.board]}をはめると先へ進めて、この台座の能力が手に入る`; sub = perk?.text || "";
     } else if (node.kind === "skill") {
       // 章ごとの見せ方（本編の revealOf）: 開いている章＝全部、次の章＝名前と効果、その先＝伏せる
@@ -397,28 +460,24 @@ export class GrowthScene {
     } else {
       kind = `${whoName(node.who)}の授業`; name = node.name; text = `${REWARD_JA[node.reward]}：${node.text}`;
     }
-    const actions = [];
-    if (!g.nodes.includes(node.id) && st !== "pending" && st !== "locked" && !(node.kind === "lesson" && !known)) {
-      actions.push(`<button class="gb-btn" data-act="gb-target">${g.target === node.id ? "目標をやめる" : "目標にする"}</button>`);
-      if (g.target === node.id && st !== "available") actions.push(`<button class="gb-btn gold" data-act="gb-towards">目標まで灯す</button>`);
-    }
-    if (st === "pending") actions.push(`<button class="gb-btn" data-act="gb-undo">やめる</button>`);
-    if (st === "available") actions.push(`<button class="gb-btn primary" data-act="gb-light">${node.kind === "gate" ? `はめる（${payText(paymentFor(node, v.hidane, v.ctx))}）` : node.cost ? `灯す（火種${node.cost}）` : "教わる"}</button>`);
-    this.refs.card.dataset.mode = "node";
+    // 札の右の小さな押す所: 仮置きのマス＝やめる、それ以外＝目標にする／やめる（丸ボタンの働きとは別に、いつでも押せる）
+    const side = st === "pending" ? `<button class="gb-side" data-act="gb-undo">やめる</button>`
+      : this.canTarget(node, st) ? `<button class="gb-side aim" data-act="gb-target" aria-pressed="${g.target === node.id}" aria-label="${g.target === node.id ? "目標をやめる" : "目標にする"}"><i>◎</i>目標</button>` : "";
     this.refs.card.innerHTML = `
-      <div class="gb-card-head k-${node.peak ? "peak" : node.kind} s-${st}">
+      <div class="gb-card-side k-${node.peak ? "peak" : node.kind} s-${st}">
         <span class="gb-art"><img src="${this.nodeIcon(node)}" alt="">${(node.kind === "lesson" && !known) || this.hiddenSkill(node) ? `<b>?</b>` : ""}</span>
-        <div class="gb-name"><span><small>${esc(kind)}</small><em class="gb-chip s-${st}">${this.statusWord(node, st)}</em></span><b>${esc(name)}</b></div>
-        <button class="gb-x" data-act="gb-close" aria-label="選ぶのをやめる">×</button>
+        ${side}
       </div>
-      ${sub ? `<p class="gb-sub" data-fit>${esc(sub)}</p>` : ""}
-      ${text ? `<p class="gb-text" data-fit>${esc(text)}</p>` : ""}
-      <p class="gb-state s-${st}">${esc(this.stateText(node, st, v))}</p>
-      <div class="gb-actions" data-count="${actions.length}">${actions.join("")}</div>`;
+      <div class="gb-card-main">
+        <div class="gb-name">${kind ? `<small>${esc(kind)}</small>` : ""}<b>${esc(name)}</b></div>
+        <p class="gb-state s-${st}">${esc(this.stateText(node, st, v))}</p>
+        ${sub ? `<p class="gb-sub" data-fit>${esc(sub)}</p>` : ""}
+        ${text ? `<p class="gb-text" data-fit>${esc(text)}</p>` : ""}
+      </div>`;
     this.fitTexts();
   }
 
-  /** マスを選んでいない時: その盤の恩恵の合計（仮置きを含む）と、近い目的地（押すとそのマスへ）。 */
+  /** 盤のまとめの札の中身: その盤の恩恵の合計（仮置きを含む）と、近い目的地（押すとそのマスへカーソルが移る）。 */
   summaryHtml(v) {
     const { board, g, s, kit } = this, { esc } = kit;
     const totals = perkTotals(board, v.unlocked), base = perkTotals(board, new Set(g.nodes));
@@ -436,46 +495,96 @@ export class GrowthScene {
     const rows = goals.slice(0, 3).map(({ n, st, cost }) => {
       const name = n.kind === "gate" ? perkOf(n)?.name || "" : n.feature ? FEATURES[n.feature].name : n.notable ? NOTABLES[n.notable].name : n.name;
       const side = st === "sealed" ? `<em class="lock">♥${n.need}</em>` : cost ? `<em><img src="${this.art("hidane_any")}" alt="">${cost}</em>` : `<em class="now">今</em>`;
-      return `<button class="gb-goal k-${n.kind}" data-act="gb-goal" data-id="${n.id}" aria-label="${esc(name)} 火種${cost}"><span class="gb-goal-ico"><img src="${this.nodeIcon(n)}" alt=""></span>${side}<b>${esc(name)}</b></button>`;
+      return `<button class="gb-goal k-${n.kind}" data-act="gb-goal" data-id="${n.id}" aria-label="${esc(name)} 火種${cost}"><span class="gb-goal-ico"><img src="${this.nodeIcon(n)}" alt=""></span><b>${esc(name)}</b>${side}</button>`;
     }).join("");
     return `<div class="gb-sum-head"><b>${BOARD_JA[board]}盤</b><span>${statCount(board, v.unlocked)}/${statTotal(board)}</span></div>
       <div class="gb-perks">${perks}</div>
-      <small class="gb-sum-label">近い目的地</small>
+      <small class="gb-sum-label">近い目的地（押すと、そのマスへ）</small>
       <div class="gb-goals">${rows}</div>`;
   }
 
-  renderFoot(v) {
-    const n = v.pending.length;
-    this.refs.foot.innerHTML = `${n ? `<button class="gb-btn" data-act="gb-reset">取り消す</button>` : ""}
-      <button class="gb-btn ${n ? "primary" : "back"} big" data-act="gb-decide">${n ? `決定（${n}）` : "地図へ戻る"}</button>`;
-    this.refs.zoom.setAttribute("aria-label", this.overview ? "寄る" : "全体を見る");
-    this.refs.zoom.innerHTML = `${this.kit.icon(this.overview ? "near" : "wide")}<span>${this.overview ? "寄る" : "全体"}</span>`;
+  renderSheet(v) {
+    this.refs.sheet.innerHTML = `<div class="gb-sheet-card" style="--bc:${COLOR[this.board]}">${this.summaryHtml(v)}
+      <button class="gb-btn" data-act="gb-sheet-close">盤へ戻る</button></div>`;
   }
 
-  /** 札の文は本編の組版で折る（2行まで。収まらない時は字を一段小さく）。 */
+  /** 盤の上に浮かぶ押す所: 「全体／寄る」と、仮置きがある間の「取り消す・決定」。 */
+  renderView(v = this.v) {
+    this.refs.zoom.setAttribute("aria-label", this.overview ? "寄る" : "全体を見る");
+    this.refs.zoom.innerHTML = `${this.kit.icon(this.overview ? "near" : "wide")}<span>${this.overview ? "寄る" : "全体"}</span>`;
+    const n = v.pending.length, key = String(n);
+    this.refs.pend.hidden = !n;
+    if (this.refs.pend.dataset.key !== key) {
+      this.refs.pend.dataset.key = key;
+      this.refs.pend.innerHTML = n ? `<button class="gb-pill" data-act="gb-reset">取り消す</button><button class="gb-pill gold" data-act="gb-decide">決定（${n}）</button>` : "";
+    }
+  }
+
+  /** 下の操作の段: 地図・会話と同じ十字キーと丸ボタン。十字キーは動ける向きだけ灯り、丸ボタンの文字は、選んでいるマスでできることに替わる。 */
+  renderCtrl(v = this.v) {
+    const { kit } = this, node = NODE_BY_ID[this.selected];
+    const overlay = !this.refs.result.hidden || this.sheet;
+    const live = overlay ? "" : this.overview ? DIRS.join(" ") : DIRS.filter((dir) => node && stepFrom(node, dir)).join(" ");
+    let a;
+    if (overlay) a = kit.aHtml("next");
+    else if (this.overview) a = this.aBtn("寄る", "寄る");
+    else { const p = this.primary(v); a = this.aBtn(p.text, p.label, { disabled: !p.run }); }
+    const key = `${live}/${a}`;
+    if (this.ctrlKey === key) return;
+    this.ctrlKey = key;
+    this.refs.ctrl.innerHTML = `${kit.dpadHtml(live)}${a}`;
+  }
+
+  /** 丸ボタン（app.mjs の aHtml と同じ形。文字だけ、この場面の言葉にする）。 */
+  aBtn(text, label, { disabled = false } = {}) {
+    const face = text || `<svg class="glyph" viewBox="0 0 24 24" aria-hidden="true">${this.kit.ICONS.lock}</svg>`;
+    return `<button class="btn-a${text.length > 2 ? " gb-a3" : ""}" data-act="a" aria-label="${label}" ${disabled ? "disabled" : ""}><span class="t">${face}</span></button>`;
+  }
+
+  /** 札の文は本編の組版で折る（効果と説明は、それぞれ2行まで・合わせて3行まで。収まらない時は字を一段小さく、それでも余る文は押すと続きが出る）。 */
   fitTexts() {
-    const { paginateForBox, plain } = this.kit;
-    for (const node of this.refs.card.querySelectorAll("[data-fit]")) {
-      const text = node.dataset.full ?? node.textContent;
+    const { paginateForBox, plain } = this.kit, card = this.refs.card;
+    // 名前と今の状態は1行。入りきらない時だけ、字を一段ずつ小さくする
+    for (const [sel, steps] of [[".gb-name b", ["fit1", "fit2"]], [".gb-state", ["fit1"]]]) {
+      const node = card.querySelector(sel);
+      if (!node) continue;
+      node.classList.remove("fit1", "fit2");
+      for (const step of steps) { if (node.scrollWidth <= node.clientWidth + 1) break; node.classList.remove("fit1"); node.classList.add(step); }
+    }
+    let left = 3;
+    for (const node of card.querySelectorAll("[data-fit]")) {
+      const text = node.dataset.full ?? node.textContent, lines = Math.max(1, Math.min(2, left));
       node.dataset.full = text;
       node.classList.remove("gb-small", "gb-paged", "gb-fitted");
       node.textContent = text;
       if (!text || !node.clientWidth) continue;
-      let pages = paginateForBox(text, node);
-      if (pages.length > 1) { node.classList.add("gb-small"); pages = paginateForBox(text, node); }
-      // 2行に収まらない文は2行ずつに分け、押すと続きが出る（説明は2行まで・VPL29）。続きの印のぶん幅が狭くなるので、その幅で測り直す
-      if (pages.length > 1) { node.classList.add("gb-paged"); pages = paginateForBox(text, node); }
+      let pages = paginateForBox(text, node, undefined, lines);
+      // 効果の一行は、字を一段小さくすれば1行に入るなら、そうする（説明に2行を残す）
+      const oneLine = node.classList.contains("gb-sub") && pages.length === 1 && pages[0].includes("\n");
+      if (pages.length > 1 || oneLine) {
+        node.classList.add("gb-small");
+        const smaller = paginateForBox(text, node, undefined, lines);
+        if (oneLine && smaller[0].includes("\n")) node.classList.remove("gb-small"); else pages = smaller;
+      }
+      // 収まらない文は分けて、押すと続きが出る（説明は2行まで・VPL29）。続きの印のぶん幅が狭くなるので、その幅で測り直す
+      if (pages.length > 1) { node.classList.add("gb-paged"); pages = paginateForBox(text, node, undefined, lines); }
       const at = Math.min(Number(node.dataset.page) || 0, pages.length - 1);
       node.innerHTML = plain(pages[at]);
+      left -= pages[at].split("\n").length;
       node.classList.add("gb-fitted"); // 折る所は決めてあるので、ブラウザには折り直させない
       if (pages.length > 1) { node.dataset.act = "gb-more"; node.dataset.pages = String(pages.length); node.dataset.page = String(at); }
     }
   }
 
-  /* ── 盤の見える位置（指でずらす・つまんで拡大・全体） ── */
+  /* ── 盤の見える位置（カーソルを追う・指でずらす・つまんで拡大・全体） ── */
 
   rem() { return parseFloat(getComputedStyle(document.documentElement).fontSize) || 10; }
-  viewSize() { const r = this.rem(), v = this.refs.view; return [v.clientWidth / r, v.clientHeight / r]; }
+  /** 盤の見える広さ（rem）。仮置きがある間は、下に浮かぶ「取り消す・決定」の分だけ低く数える（その段がマスを隠さないように）。 */
+  viewSize() {
+    const r = this.rem(), v = this.refs.view, pend = this.refs.pend;
+    const pad = pend.hidden ? 0 : v.clientHeight - pend.offsetTop + 0.5 * r;
+    return [v.clientWidth / r, (v.clientHeight - pad) / r];
+  }
   fitScale() { const [w, h] = this.viewSize(); return Math.min(w / PLANE_W, h / PLANE_H); }
 
   setCam(cam, animate = true) {
@@ -491,33 +600,27 @@ export class GrowthScene {
     this.el.dataset.far = String(s < 0.72); // 引いた時は、マスの下の小さい札を出さない
   }
 
-  /** その盤の、いま開いている章のマスがちょうど入る位置（紋が下に来る）。 */
+  /** いまの見せ方に合わせて盤を置く: 全体＝盤がぜんぶ入る大きさ、ふだん＝カーソルのマスを真ん中に。 */
   home(animate = true) {
     const [w, h] = this.viewSize();
     if (!w || !h) return;
-    if (this.overview) { const s = this.fitScale(); this.setCam({ s, x: 0, y: 0 }, animate); return; }
-    const open = ringsOpen(this.s), pts = [planeXY(this.board, 0, 0), ...boardNodes(this.board).filter((n) => n.ring <= open).map((n) => planeXY(this.board, n.gx, n.gy))];
-    const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
-    const x0 = Math.min(...xs), x1 = Math.max(...xs), y1 = Math.max(...ys);
-    const s = Math.min(1.12, (w - 0.6) / (x1 - x0 + 5.2));
-    this.setCam({ s, x: w / 2 - (x0 + x1) / 2 * s, y: h - 5.8 - y1 * s }, animate);
+    if (this.overview) { this.setCam({ s: this.fitScale(), x: 0, y: 0 }, animate); return; }
+    this.focus(this.selected, animate);
   }
 
-  /** マスが見える位置へ寄る（全体を見ている時は、寄ってから真ん中へ）。 */
-  focus(id) {
+  /** カーソルのマスを、見える所の真ん中へ（盤がなめらかについてくる）。指でつまんで変えた大きさは、寄っている間はそのまま使う。 */
+  focus(id, animate = true) {
     const node = NODE_BY_ID[id], [w, h] = this.viewSize();
     if (!node || !w) return;
     const [x, y] = planeXY(node.board, node.gx, node.gy);
-    const s = this.overview || this.cam.s < 0.8 ? 1 : this.cam.s;
+    const s = this.overview || !this.cam || this.cam.s < 1 ? NEAR : this.cam.s;
     this.overview = false;
-    // もう見えている所にあるマスは動かさない（押すたびに盤が動くと落ち着かない）
-    const sx = x * s + this.cam.x, sy = y * s + this.cam.y, pad = 3.4;
-    if (s === this.cam.s && sx > pad && sx < w - pad && sy > pad && sy < h - pad) return;
-    this.setCam({ s, x: w / 2 - x * s, y: h * 0.5 - y * s });
+    this.setCam({ s, x: w / 2 - x * s, y: h / 2 - y * s }, animate);
+    this.renderView();
   }
 
   onDown(event) {
-    if (event.target.closest(".gb-zoom")) return;
+    if (event.target.closest(".gb-fab, .gb-pend")) return;
     this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     if (this.pointers.size === 1) this.drag = { x: event.clientX, y: event.clientY, cam: { ...this.cam }, moved: false };
     else if (this.pointers.size === 2) {
@@ -551,7 +654,7 @@ export class GrowthScene {
     if (this.pointers.size < 2) this.pinch = null;
     if (!this.pointers.size) {
       this.drag = null;
-      if (this.moved) { this.overview = this.cam.s <= this.fitScale() + 0.01; this.renderFoot(this.v); setTimeout(() => { this.moved = false; }, 0); }
+      if (this.moved) { this.syncOverview(); setTimeout(() => { this.moved = false; }, 0); }
     }
   }
 
@@ -559,7 +662,13 @@ export class GrowthScene {
     event.preventDefault();
     const r = this.rem(), box = this.refs.view.getBoundingClientRect();
     this.zoomAt(this.cam.s * (event.deltaY < 0 ? 1.12 : 0.89), (event.clientX - box.left) / r, (event.clientY - box.top) / r);
-    this.overview = this.cam.s <= this.fitScale() + 0.01; this.renderFoot(this.v);
+    this.syncOverview();
+  }
+
+  /** 指やホイールで盤がぜんぶ入る大きさまで引いたら「全体」の扱いにする（十字キーと丸ボタンの働きが替わる）。 */
+  syncOverview() {
+    this.overview = this.cam.s <= this.fitScale() + 0.01;
+    this.renderView(); this.renderCtrl();
   }
 
   /** 見えている所の (mx, my) を動かさずに拡大・縮小する。 */
@@ -571,12 +680,24 @@ export class GrowthScene {
 
   /* ── 操作 ── */
 
-  select(id, { focus = true } = {}) {
+  /** カーソルをそのマスへ移す（盤が違えば盤も替わる）。 */
+  select(id) {
+    if (!NODE_BY_ID[id]) return;
     this.selected = id;
-    if (id && NODE_BY_ID[id].board !== this.board) this.board = NODE_BY_ID[id].board;
+    this.board = NODE_BY_ID[id].board;
     this.render();
-    if (id && focus) this.focus(id);
-    if (id) this.renderFoot(this.v);
+    this.focus(id);
+    this.renderCtrl();
+  }
+
+  openBoard(board) {
+    this.board = board;
+    this.selected = this.cursors[board] || startNode(board);
+    this.overview = false;
+    this.render();
+    this.home();
+    this.renderCtrl();
+    this.phone.onExtOption?.("board", board);
   }
 
   light(id) {
@@ -597,10 +718,12 @@ export class GrowthScene {
     this.fresh = new Set();
   }
 
+  setTarget(id) { this.g.target = id; this.render(); }
+
   /** 仮置きを確定する: 払って灯し、何が増えたかを札で知らせる。 */
   decide() {
     const { g } = this, v = this.view();
-    if (!v.pending.length) { if (!this.phone.fixed) this.phone.setScene("map"); return; }
+    if (!v.pending.length) return;
     const before = new Set(g.nodes), committed = v.pending.map((id) => NODE_BY_ID[id]);
     for (const id of v.pending) { g.nodes.push(id); for (const [k, n] of Object.entries(v.pays[id])) g.hidane[k] -= n; }
     if (v.pending.includes(g.target)) g.target = null;
@@ -610,6 +733,9 @@ export class GrowthScene {
     this.fresh = new Set();
     this.showResult(committed, before);
   }
+
+  /** 地図へ戻る（決定していない仮置きは、灯さずに捨てる）。 */
+  leave() { if (!this.phone.fixed) this.phone.setScene("map"); }
 
   /** 決定のまとめの札: 灯した数、増えた能力（絵・名前・増えた量）、覚えたスキル・相談できる授業・要のマス（大きい順に3つまで）。 */
   showResult(committed, before) {
@@ -640,6 +766,7 @@ export class GrowthScene {
       <button class="gb-btn primary" data-act="gb-result-close">盤へ戻る</button></div>`;
     box.hidden = false;
     this.fitResult();
+    this.renderCtrl();
     clearTimeout(this.resultTimer);
     if (!this.phone.fixed && !items.length) this.resultTimer = setTimeout(() => this.closeResult(), 2600);
   }
@@ -656,7 +783,14 @@ export class GrowthScene {
     }
   }
 
-  closeResult() { clearTimeout(this.resultTimer); this.refs.result.hidden = true; this.refs.result.innerHTML = ""; }
+  closeResult() {
+    clearTimeout(this.resultTimer);
+    if (this.dead || this.refs.result.hidden) return;
+    this.refs.result.hidden = true; this.refs.result.innerHTML = "";
+    this.renderCtrl();
+  }
+
+  toggleSheet(open = !this.sheet) { this.sheet = open; this.render(); }
 
   nudge(node) { node.classList.remove("gb-nudge"); void node.offsetWidth; node.classList.add("gb-nudge"); }
 
@@ -664,48 +798,51 @@ export class GrowthScene {
     const hit = event.target.closest("[data-act]");
     if (this.moved) { this.moved = false; return true; } // 盤をずらした直後の指離しは、押したことにしない
     if (!hit || !this.el.contains(hit)) {
-      // 盤の何も無い所を押したら、選ぶのをやめる
-      if (event.target.closest(".gb-view") && this.selected) { this.select(null); return true; }
+      // 札のまわりの暗い所を押したら、札を閉じる
+      if (event.target === this.refs.result) { this.closeResult(); return true; }
+      if (event.target === this.refs.sheet) { this.toggleSheet(false); return true; }
       return false;
     }
     const act = hit.dataset.act, id = this.selected;
+    if (act === "dir" || act === "a") return false; // 十字キーと丸ボタンは app.mjs が受けて、move()・pressA() を呼ぶ
     if (act === "gb-result-close") this.closeResult();
     else if (!this.refs.result.hidden) return true;
-    else if (act === "gb-node") this.select(this.selected === hit.dataset.id ? null : hit.dataset.id);
-    else if (act === "gb-goal") this.select(hit.dataset.id);
-    else if (act === "gb-tab") { this.board = hit.dataset.board; this.selected = null; this.overview = false; this.render(); this.home(); this.phone.onExtOption?.("board", this.board); }
-    else if (act === "gb-zoom") { this.overview = !this.overview; this.home(); this.renderFoot(this.v); }
-    else if (act === "gb-close") this.select(null);
+    else if (act === "gb-sheet-close") this.toggleSheet(false);
+    else if (act === "gb-goal") { this.sheet = false; this.select(hit.dataset.id); }
+    else if (this.sheet) return true;
+    else if (act === "gb-node") {
+      // マスを押すとカーソルが移る。カーソルのあるマスをもう一度押した時は、灯せるなら灯す（仮置きまで。決定はしない）
+      if (hit.dataset.id !== id || this.overview) this.select(hit.dataset.id);
+      else if (this.status(NODE_BY_ID[id], this.v) === "available") this.light(id);
+    }
+    else if (act === "gb-tab") this.openBoard(hit.dataset.board);
+    else if (act === "gb-zoom") { this.overview = !this.overview; this.home(); this.renderView(); this.renderCtrl(); }
+    else if (act === "gb-sum") this.toggleSheet(true);
     else if (act === "gb-more") { hit.dataset.page = String((Number(hit.dataset.page) + 1) % Number(hit.dataset.pages)); this.fitTexts(); }
-    else if (act === "gb-light") this.light(id);
     else if (act === "gb-undo") { this.pending = this.pending.filter((x) => x !== id); this.render(); }
-    else if (act === "gb-target") { this.g.target = this.g.target === id ? null : id; this.render(); }
-    else if (act === "gb-towards") this.towards(id);
+    else if (act === "gb-target") this.setTarget(this.g.target === id ? null : id);
     else if (act === "gb-reset") { this.pending = []; this.render(); }
     else if (act === "gb-decide") this.decide();
+    else if (act === "gb-leave") this.leave();
     else return false;
     return true;
   }
 
-  /** PC のキー: 矢印で、その向きのいちばん近いマスへ。 */
+  /** 十字キー: カーソルを、その向きの隣のマスへ（盤がついてくる）。全体を見ている時は、まず寄った表示へ戻る。 */
   move(dir) {
-    const heading = { left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1] }[dir], nodes = boardNodes(this.board);
-    const from = this.selected ? NODE_BY_ID[this.selected] : null;
-    if (!from) { const first = nodes.find((n) => n.links.includes(HUB)); if (first) this.select(first.id); return; }
-    let best = Infinity, to = null;
-    for (const n of nodes) {
-      const dx = n.gx - from.gx, dy = n.gy - from.gy, along = dx * heading[0] + dy * heading[1], across = Math.abs(dx * heading[1] - dy * heading[0]);
-      if (along <= 0 || across > along * 1.6) continue;
-      if (along + across * 2 < best) { best = along + across * 2; to = n; }
-    }
+    if (!this.refs.result.hidden || this.sheet || !HEADING[dir]) return;
+    if (this.overview) { this.overview = false; this.home(); this.renderCtrl(); return; }
+    const to = stepFrom(NODE_BY_ID[this.selected], dir);
     if (to) this.select(to.id);
   }
 
-  /** PC の決定キー: 札のいちばん右の押す所（灯す・やめる）。何も選んでいなければ「決定／地図へ戻る」。 */
+  /** 丸ボタン: 選んでいるマスでできる、いちばん主なこと（primary）。札が出ている間は、札を閉じる。 */
   pressA() {
     if (!this.refs.result.hidden) { this.closeResult(); return; }
-    const button = [...this.refs.card.querySelectorAll(".gb-actions .gb-btn")].pop() || this.refs.foot.querySelector('[data-act="gb-decide"]');
-    button?.click();
+    if (this.sheet) { this.toggleSheet(false); return; }
+    if (this.overview) { this.overview = false; this.home(); this.renderCtrl(); return; }
+    const p = this.primary();
+    if (p.run) p.run(); else this.nudge(this.refs.card);
   }
 
   tick() {}
@@ -713,7 +850,6 @@ export class GrowthScene {
   relayout() {
     if (!this.refs) return;
     this.home(false);
-    if (this.selected) this.focus(this.selected);
     this.fitTexts();
   }
 }
