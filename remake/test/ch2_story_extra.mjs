@@ -134,7 +134,7 @@ const night = day => CH2_NIGHTS.find(entry => entry.day === day);
   assert.doesNotMatch(morning, /心因|ストレス|気のせい|治っ|スミさん|夕飯|台を組/);
   assert.match(morning, /書き留め/); assert.match(morning, /吸って確かめない/);
   assert.match(sheet, /練習の採点表/, "the sheet that is open on DAY11");
-  assert.doesNotMatch(sheet, /なるさん|KEMURIKUSA|持ち点|審査/, "no foreshadowed split, no tournament scoring");
+  assert.doesNotMatch(sheet, /なるさん|KEMURIYA|持ち点|審査/, "no foreshadowed split, no tournament scoring");
   const confrontation = read("ch2_isolation").dialogues.find(row => row.dialogue_id === "ch2_naru_confrontation");
   assert(confrontation.lines.some(line => /練習の採点表/.test(line.text || "")), "DAY11 still shows the open practice sheet");
   // 採点表のメモ: 受診を読んだ保存だけ耳鼻科のメモ、朝のメモを読んだ保存だけ「吸って確かめない」

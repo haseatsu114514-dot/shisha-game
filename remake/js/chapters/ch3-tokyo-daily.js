@@ -4,7 +4,7 @@
 //   - 本筋の場面: 昼の行動を使う場面（slotEvent）と夜の予定（nightEvents）。並びと日付は ch3-progress.js の CH3_DAILY_PLAN
 //   - 恋人の東京訪問: 約束した時間帯に、合流・散歩が一つの行動として入る（core/tokyo-visits.js）
 //   - 行き先: mukai（手伝い・ましろちゃんとの時間・店番・作業台・裏口のてつこ）・煙幕・Smoke & Glory・鉄の煙・公園・
-//     東京の店・CHOI-ZAP・池の弁天堂・クラブSEAM・mukaiの奥の部屋（地元との連絡は右上の LIME の一番上の行）
+//     東京の店・サクッとジム・池の弁天堂・クラブSEAM・mukaiの奥の部屋（地元との連絡は右上の LIME の一番上の行）
 //   - 寄り道（任意の場面）は、その場所を訪ねた時に一つずつ読む（行動を使うので選んで読む。台本の能力報酬も効く）。
 //     遠くからの電話（みんと・つむぎ・ひより）は、本筋の予定が無い夜に一つ届く
 //     地元からの電話（スミさん・アダム・凛想・神崎・サメちゃん・クラウド）は、奥の部屋で休んだ時に一本ずつ届く（#3097 第2弾）
@@ -106,7 +106,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
     preview: "bg_tokyo_park", stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   spot({ id: "ch3_tokyo_shop", place: "shop", label: "Dr.fookah 東京店", area: "駅前の店", x: 15, y: 51, theme: "shop", glyph: "卸",
     preview: "bg_fookah_tokyo", noTime: true, desc: "東京の店。葉を買える（時間は使わない）。" }),
-  spot({ id: "ch3_tokyo_gym", place: "gym", label: "CHOI-ZAP", area: "高架下のジム", x: 34.9, y: 75.9, theme: "gym", glyph: "体",
+  spot({ id: "ch3_tokyo_gym", place: "gym", label: "サクッとジム", area: "高架下のジム", x: 34.9, y: 75.9, theme: "gym", glyph: "体",
     preview: "bg_choizap", stamina: -8, stat: "charm", gym: true, desc: "全国の店で使える会員証で、体を動かす。" }),
   // 心得の盤の内省。公園の池に浮かぶお堂（IR26・SBD98）。id は仮置きの「路地裏の神社」の時のまま（互換）
   spot({ id: "ch3_tokyo_shrine", place: "shrine", label: "池の弁天堂", area: "公園の池", x: 91, y: 73, theme: "rest", glyph: "弁",

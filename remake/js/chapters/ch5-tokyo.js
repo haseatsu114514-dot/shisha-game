@@ -4,7 +4,7 @@
 // 便は昼に出て夜に着く（その日の昼と夜の2行動）。帰りも同じ。決まりは chapters/ch5-travel.js。
 // 最初に乗る日は、Dr.fookah の裏口で店員に乗せてもらう話になる（ch5_tokyo_van_first）。
 // 行き先: mukai（手伝い）・Smoke & Glory（スティーブ）・鉄の煙（ヴォルク）・煙幕（綾取）・公園・裏口のてつこ・東京の店・屋根裏・地元へ帰る。
-// 第3章の東京と同じく、CHOI-ZAP（会員の時だけ）とクラブSEAM（夜だけ・時間は使わない）にも寄れる（#2033）。
+// 第3章の東京と同じく、サクッとジム（会員の時だけ）とクラブSEAM（夜だけ・時間は使わない）にも寄れる（#2033）。
 // mukai では、ましろとの小会話と関係別の時間をシフトと別に選べる。
 // 綾取の煙幕は、期間限定の間借りが好評につき全国大会のあとも延長営業している（#3676・2026-11-15 オーナー指示）。
 // 第3章の帰郷の朝（ch3_enmaku_cleanup）で延長が決まる。福岡の店はバイトが回している。
@@ -79,9 +79,9 @@ export const TOKYO_SPOTS = Object.freeze([
     preview: "bg_fookah_tokyo", desc: "東京の店。第3章と同じ品ぞろえ。" }),
   spot({ id: "ch5_tokyo_attic", label: "屋根裏", area: "mukaiの上", x: 45, y: 63, theme: "rest", glyph: "休", preview: ATTIC_BG,
     stamina: 55, desc: "ムカイさんの屋根裏で休む。体力が大きく戻る。" }),
-  // CHOI-ZAP（無人のジム）: 会員の時だけ地図に出す（ch5-daily.js）。gym の印で、3日間の「風邪をひきにくい」が付く（daily/calendar.js）。
+  // サクッとジム（無人のジム）: 会員の時だけ地図に出す（ch5-daily.js）。gym の印で、3日間の「風邪をひきにくい」が付く（daily/calendar.js）。
   // 経験値の鍵は、第5章のほかの行き先と同じくこの行き先の id（第3章の東京の店とは分ける）。
-  spot({ id: "ch5_tokyo_gym", label: "CHOI-ZAP", area: "高架下のジム", x: 34.9, y: 75.9, theme: "gym", glyph: "体", preview: "bg_choizap",
+  spot({ id: "ch5_tokyo_gym", label: "サクッとジム", area: "高架下のジム", x: 34.9, y: 75.9, theme: "gym", glyph: "体", preview: "bg_choizap",
     stamina: -8, stat: "charm", gym: true, desc: "全国の店で使える会員証で、体を動かす。" }),
   // クラブSEAM（DJ・時間は使わない）: 夜だけ。店主の針間ヨルに会うまでは「地下の店」と出す（daily/map.js の charId・unknownLabel）。
   spot({ id: "ch5_tokyo_club", charId: "yoru", label: "クラブSEAM", area: "路地の地下", x: 86, y: 50, theme: "stadium", glyph: "♪", night: true,
@@ -97,7 +97,7 @@ export const TOKYO_SPOTS = Object.freeze([
 ]);
 
 /** 地元の地図に出す「東京へ（配送便）」。昼だけ出る。 */
-// 位置: CHOI-ZAP・観音堂・路上占いの出る場所と重ならない左端（新幹線の駅のアイコンだった頃に #2371 で決めた場所）。
+// 位置: サクッとジム・観音堂・路上占いの出る場所と重ならない左端（新幹線の駅のアイコンだった頃に #2371 で決めた場所）。
 // 駅の絵の頃（y: 40）と同じ所に見え、電車の「駅」（15,36）に重ならないよう少し下げた。
 export const TO_TOKYO_SPOT = Object.freeze({
   id: "ch5_to_tokyo", kind: "ch5_tokyo", label: "東京へ（配送便）", area: "Dr.fookah の搬入口", x: 8, y: 48, theme: "stadium", glyph: "便",
@@ -129,7 +129,7 @@ const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_toky
   "ch5_tokyo_gym_day", "ch5_tokyo_gym_night", "ch5_steve_bond_finale", "ch5_volk_bond_finale", ...MASHIRO_TALKS]);
 // てつこのお世話は第3章の続き（通うほど懐いていく。回数も第3章と同じ記録。ch3-outing-progress.js の stages・loop）
 const TETSUKO = TOKYO_OUTINGS.find(outing => outing.id === "tetsuko");
-// 公園と CHOI-ZAP は、昼・夜それぞれの小品を順番に読む（SPV03。daily/spots.js の quietTurn）。
+// 公園と サクッとジム は、昼・夜それぞれの小品を順番に読む（SPV03。daily/spots.js の quietTurn）。
 // 一本目は第5章の場面、続きは第3章で書いた東京の小品（章に触れない文だけ。「遠征バッジ」の ch3_choizap_app は第3章だけ）。
 const PARK_SCENES = Object.freeze({
   day: ["ch5_tokyo_park_day", "ch3_outing_park_walk_day_b", "ch3_outing_park_walk_day_c"],
@@ -245,7 +245,7 @@ export async function performTokyoSpot(spot, { staminaGuard, holdSaveUntilAction
     return { used: false, exerted: false };
   }
   if (spot.gym) {
-    // 第3章の東京の CHOI-ZAP と同じ手順（体力・魅力・初めて読んだ場面）。昼と夜で場面が違う。
+    // 第3章の東京の サクッとジム と同じ手順（体力・魅力・初めて読んだ場面）。昼と夜で場面が違う。
     if (staminaGuard && !(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
     const turn = quietScene(spot.id, GYM_SCENES), scene = turn.id;
     if (!await read(scene, spot.preview, owner)) return { used: false, exerted: false };

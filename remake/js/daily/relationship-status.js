@@ -7,7 +7,7 @@ import { romanceRouteOpen, romanceRouteEligible, confessionHeld } from "./romanc
 import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 
 const meetingPlace = {
-  sumi: "tonari", tsumugi: "tonari", naru: "KEMURIKUSA", adam: "EDEN",
+  sumi: "tonari", tsumugi: "tonari", naru: "KEMURIYA", adam: "EDEN",
   rio: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "SHISHARK", ageha: "MELTY PUFF",
   kumicho: "神崎煙草店", kuraudo: "貴方ノ為ノ此ノ煙。", mashiro: "mukai", ayatori: "煙幕", noor: "カフェ・オアシス", steve: "Smoke & Glory",
   volk: "鉄の煙", master_hookah: "龍龍水煙所", da_silva: "シェイクの屋敷の中庭", sheikh: "シェイクの屋敷",

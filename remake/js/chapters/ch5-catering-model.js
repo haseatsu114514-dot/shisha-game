@@ -123,7 +123,7 @@ export const CATERING_REQUESTS = Object.freeze([
     conditions: ["流れ星を待って、明け方まで長く回す", "眠気をごまかせる、すっとする味がほしい", "解説役の先輩はしゃべり通し。喉にきついのは困る"],
     options: [
       option("レモンティー＋ハニー", { lemon_tea: 8, honey: 4 }, "ok"),
-      option("デスバイアイス＋クールミント", { death_by_ice: 8, cool_mint: 4 }, "off"),
+      option("デスバイフロスト＋クールミント", { death_by_ice: 8, cool_mint: 4 }, "off"),
       option("グレープ＋ミント", { grape: 9, mint: 3 }, "best"),
     ] }),
   request({ id: "seaside_sunset", payout: 20000, title: "海辺の夕涼み", client: "海沿いに住む常連", place: "地元の海沿いのテラス", slot: 0, bg: "bg_street",

@@ -341,7 +341,7 @@ fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // + 同じ5人の続き5本（#3097 第3弾）
 // + 第2章で初めて家で休んだ時のノートの場面（ch2_home.json・#3957）
 // + tonariの窓際の席のつむぎ3本と、なるのモンブランの続き1本（ch2_home.json・#3097 第5弾）
-// + 地元の顔なじみの続き5本（観音堂の老人・喫茶こはくのマスター2本、CHOI-ZAPのスタッフ3本。ch2_home.json・VOL16）
+// + 地元の顔なじみの続き5本（観音堂の老人・喫茶こはくのマスター2本、サクッとジムのスタッフ3本。ch2_home.json・VOL16）
 // + 神崎・クラウドの通いの小会話 f〜i の8本（ch2_preparation.json）と、行き帰りの電車の小品4本（ch2_city.json）（VOL21 第3便）
 // + 行き帰りの電車の小品2本（答案を見せ合う高校生・負けた試合を笑う会社員。ch2_city.json・VOL21 第4便）
 assert.equal(Object.keys(loaderDB.dialogues).length, 161 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);

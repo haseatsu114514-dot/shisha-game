@@ -116,7 +116,7 @@ try{
   assert.equal(riftAndTrivia.afterRiftNormal,'本日臨時休業');
   assert.equal(riftAndTrivia.afterRiftHoliday,'本日臨時休業');
   assert.equal(riftAndTrivia.afterReloadTag,'本日臨時休業');
-  assert(riftAndTrivia.entryBlocked,'direct entry to KEMURIKUSA or Naru succeeded after rift');
+  assert(riftAndTrivia.entryBlocked,'direct entry to KEMURIYA or Naru succeeded after rift');
   assert(riftAndTrivia.adamPicked);
   assert.equal(riftAndTrivia.pickedChar,'adam');
   assert(riftAndTrivia.offeredChoices.every(t=>!t.includes('なる')),'Naru remained in fortune choices after rift');

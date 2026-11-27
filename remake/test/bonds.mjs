@@ -787,7 +787,7 @@ try {
       DB.lime = original;
     }
   });
-  // 1人なら: 締めくくりの4日後に雑談、さらに4日後にお誘い（10 % 7 === 3 はKEMURIKUSAの定休日＝午後）
+  // 1人なら: 締めくくりの4日後に雑談、さらに4日後にお誘い（10 % 7 === 3 はKEMURIYAの定休日＝午後）
   assert.deepEqual(friendsLime.timeline, { 6: ["naru:chat:-"], 10: ["naru:invitation:noon"] });
   assert(friendsLime.inviteText.includes("お店がお休み") && friendsLime.inviteText.includes("一服しようぜ"), friendsLime.inviteText);
   // 3人: 2日に1通・連日や同じ朝に重ならない・同じ相手は4日以上あく・お誘いは雑談のあとで全員で6日に1回

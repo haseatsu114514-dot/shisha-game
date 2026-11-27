@@ -17,7 +17,7 @@ export const FLAVORS = Object.freeze([
   { id: "mint", name: "ミント", brand: "アルファーヘブン", kind: "cool", t: 2, lo: 3, hi: 6, j: [4, 5], s: 9, pair: "fruit", ab: "【クッション】脇役のとき、主役の焦げラインを+1する。" },
   { id: "ice_grape", name: "アイスグレープ", brand: "アルファーヘブン", kind: "cool", t: 3, lo: 3, hi: 5, j: [4], s: 7, pair: "sweet", ab: "" },
   { id: "cool_mint", name: "クールミント", brand: "アルファーヘブン", kind: "cool", t: 3, lo: 4, hi: 7, j: [6], s: 9, pair: "fruit", ab: "【キレ】脇役のとき、上側のズレを適温として扱う。" },
-  { id: "death_by_ice", name: "デスバイアイス", brand: "フォースフェクタ", kind: "cool", t: 4, lo: 6, hi: 8, j: [8], s: 9, pair: "none", ab: "【強烈】1枚でもボウルにあれば、枚数に関係なく主役になる。" },
+  { id: "death_by_ice", name: "デスバイフロスト", brand: "フォースフェクタ", kind: "cool", t: 4, lo: 6, hi: 8, j: [8], s: 9, pair: "none", ab: "【強烈】1枚でもボウルにあれば、枚数に関係なく主役になる。" },
   { id: "double_apple", name: "ダブルアップル", brand: "アルファーヘブン", kind: "spice", t: 3, lo: 6, hi: 8, j: [7], s: 10, pair: "none", ab: "【原点】ボウルがこの葉だけなら、適温の一口+1。" },
   { id: "cinnamon", name: "シナモン", brand: "アルファーヘブン", kind: "spice", t: 3, lo: 6, hi: 8, j: [7], s: 99, pair: "sweet", ab: "【耐熱】焦げない。" },
   { id: "cardamom", name: "カルダモン", brand: "アフサール", kind: "spice", t: 4, lo: 5, hi: 6, j: [6], s: 7, pair: "floral", ab: "" },
@@ -27,7 +27,7 @@ export const FLAVORS = Object.freeze([
   { id: "jasmine", name: "ジャスミン", brand: "アフサール", kind: "floral", t: 3, lo: 4, hi: 6, j: [5], s: 7, pair: "fruit", ab: "【余韻】ボウルに2枚以上あれば、各セッション最後の一口+1。" },
   { id: "spring_water", name: "スプリングウォーター", brand: "アフサール", kind: "floral", t: 1, lo: 2, hi: 8, j: [], s: 10, pair: "none", ab: "【つなぎ】ほかの葉があるかぎり主役にならない。脇役のとき、主役の相性を必ず満たす。" },
   { id: "vanilla", name: "バニラ", brand: "アルファーヘブン", kind: "sweet", t: 3, lo: 5, hi: 7, j: [6], s: 8, pair: "spice", ab: "【NG：ミント】ミントと2枚ずつ以上重なると、ミックスと相性の加点なし。" },
-  { id: "white_gummy_bear", name: "ホワイトグミベア", brand: "フワリ", kind: "sweet", t: 3, lo: 4, hi: 6, j: [5], s: 8, pair: "fruit", ab: "" },
+  { id: "white_gummy_bear", name: "しろくまグミ", brand: "フワリ", kind: "sweet", t: 3, lo: 4, hi: 6, j: [5], s: 8, pair: "fruit", ab: "" },
   { id: "chocolate", name: "チョコレート", brand: "ドバジ", kind: "sweet", t: 4, lo: 5, hi: 6, j: [6], s: 7, pair: "cool", ab: "" },
   { id: "coffee", name: "コーヒー", brand: "ドバジ", kind: "sweet", t: 4, lo: 7, hi: 8, j: [8], s: 9, pair: "sweet", ab: "" },
 ]);

@@ -43,9 +43,9 @@ const mandatoryMet = (() => {
 })();
 for (const id of ["naru", "adam", "minto", "ageha", "kumicho", "kuraudo", "steve", "volk"]) assert(mandatoryMet.has(id), `${id} には本編で必ず会う`);
 
-// C.STATION の地図の解放（daily/spots.js の isUnlocked）は、第1章の初日にスミさんに頼まれて KEMURIKUSA へ偵察に行った印。
+// C.STATION の地図の解放（daily/spots.js の isUnlocked）は、第1章の初日にスミさんに頼まれて KEMURIYA へ偵察に行った印。
 // 偵察は初日の案内つきの用事（daily/calendar.js）で、そのあと C.STATION で大会の参加登録をする。
-assert.match(readText("remake/js/daily/calendar.js"), /guide: \{ pin: "naru", text: "KEMURIKUSAへ偵察に。/, "第1章の初日に KEMURIKUSA へ案内される");
+assert.match(readText("remake/js/daily/calendar.js"), /guide: \{ pin: "naru", text: "KEMURIYAへ偵察に。/, "第1章の初日に KEMURIYA へ案内される");
 
 /** 第5章の自由行動の保存（本編で必ず会う人だけに会っている。サメちゃん・ヌールなど任意の出会いは無し）。 */
 function freeSave({ met = [...mandatoryMet], region = "home", fields = {}, scouted = true } = {}) {
