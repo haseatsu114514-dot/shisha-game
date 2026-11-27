@@ -188,6 +188,46 @@
           "text": "カウンターは、その頃のままだ"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん、ここで働いてたんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "客だ。背伸びして、奥の席に通ってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（奥の席。……今は、つむぎちゃんがよく座ってる席だ）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "マスターの古い友達が、一度、異国の台を持ってきてな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……葉巻より、そっちがやりたくなった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "マスターは、今は"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "……病気で、店を閉めた。鍵だけ、俺に預けてな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんはそれ以上言わずに、葉の袋を開けた。"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "鉄仮面さんには休憩の長さを、仕込み中のスミさんには吸える時間を聞いた。"
@@ -598,6 +638,31 @@
           "speaker": "",
           "face": "",
           "text": "答えを待つ間、男はゆっくりと笑った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸い終えると、男はホースを置いて、しばらく台を眺めていた。"
+        },
+        {
+          "speaker": "traveler",
+          "face": "normal",
+          "text": "……なぜだろうな。懐かしい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "懐かしい、ですか"
+        },
+        {
+          "speaker": "traveler",
+          "face": "normal",
+          "text": "君の国に、古い友がいた。葉より先に、客の顔を見る男だった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（葉より先に、顔。……スミさんが、マスターの言葉だって言ってた）"
         },
         {
           "type": "remember",
@@ -1489,7 +1554,10 @@
           "face": "normal",
           "text": "注文より先に、水が置かれた"
         },
-        {"type": "show_cg", "cg_id": "cg_ch4_young_sumi_water"},
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ch4_young_sumi_water"
+        },
         {
           "speaker": "sheikh",
           "face": "normal",
@@ -1500,12 +1568,54 @@
           "face": "normal",
           "text": "カルダモンだけの、軽い一台だった"
         },
-        {"type": "hide_cg"},
+        {
+          "type": "hide_cg"
+        },
         {
           "type": "condition",
           "condition_type": "finale_seen",
           "char_id": "sumi",
           "next_true": "sumi_bowl"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "……あの日の一台も、君の一台も、なぜか懐かしかった"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "君の国に、古い友がいた。葉巻の店の主人だ。客に、まず水を置く男だった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……tonariは、元は葉巻のバーなんです。マスターの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクの手が、杯の上で止まった。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "surprise",
+          "text": "……では、あの店の奥の席で、私の台をずっと見ていた若いのが"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "名も聞かずに、それきりだった。あいつが病で店を閉めてから、日本へは行っていない"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "……そうか。あの水は、あいつの水だったか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（マスターの水が、スミさんを通って、ここまで来てたんだ）"
         },
         {
           "speaker": "sheikh",
@@ -1675,6 +1785,31 @@
           "speaker": "sumi",
           "face": "thinking",
           "text": "……あの店、まだあったか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "シェイク、昔、ここに通ってたそうです。マスターの古い友達だって"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの手が、止まった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "surprise",
+          "text": "……葡萄の旦那か"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "路地裏で座った時、どっかで見た顔だとは思った"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "あの人が、ここへ異国の台を持ってきた。……俺の、最初のシーシャだ"
         },
         {
           "speaker": "hajime",
@@ -2390,12 +2525,17 @@
         {
           "speaker": "sensu",
           "face": "normal",
-          "text": "前に話した、終電の晩の店だ。……カウンターに、あいつが立っていた"
+          "text": "前に話した、終電の晩の店だ。……客のはずのあいつが、カウンターで炭を見ていた"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（……スミさんが働いてた、葉巻のバーだ）"
+          "text": "（……スミさんが通ってた、葉巻のバーだ）"
+        },
+        {
+          "speaker": "sensu",
+          "face": "smile",
+          "text": "あいつの最初の一台だ。袖を焦がされた"
         },
         {
           "speaker": "sensu",
