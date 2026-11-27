@@ -2,6 +2,7 @@
   "dialogues": [
     {
       "dialogue_id": "interval_day1_morning_win",
+      "comment": "VOL21（2026-11-27）: 優勝の翌朝、店の口コミの「優勝したお兄さん」に、肩書きへの執着の種（brand/story_and_structure.md 第1章）を短く見せる。優勝自体は喜んでよい。",
       "lines": [
         {
           "speaker": "",
@@ -48,6 +49,21 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（次があるなら、もっと上を目指さないと。あの三人は、もっと強くなって戻ってくる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホには、店の口コミの通知が増えていた。「優勝したお兄さんがいる店」とある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（優勝したお兄さん、か。悪くない響きだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（県大会でも勝ったら、今度は何て呼ばれるんだろう）"
         }
       ],
       "branches": {
