@@ -1,0 +1,253 @@
+/* 縦画面C案「煙の舞台」: Dr.fookah の 1F ショップ（shop.mjs）とシーシャくじ（kuji.mjs）の縦の画面。長さは rem（スマホの幅 39rem）。
+   十字キーと丸ボタンは置かない。ショップは本編の売り場と同じ生成りの紙に紫の差し色、くじは店のカウンター（くるみ材・真鍮）の色。 */
+
+/* ───────── ショップ ───────── */
+.phone[data-kind="shop"] {
+  --sp-ink: #38283f; --sp-purple: #69497e; --sp-purple-2: #8a68a3; --sp-line: #ddd2e2; --sp-muted: #76667e; --sp-paper: #f7f3ed; --sp-card: #fffdf9;
+  background: var(--sp-paper);
+}
+.sp-app { position: absolute; inset: 0; display: flex; flex-direction: column; color: var(--sp-ink); background: var(--sp-paper); }
+
+/* 上: 店内の写真・凛想・店の名前と所持金・ひとこと */
+.sp-top { position: relative; flex: none; height: clamp(16.5rem, 29cqh, 25rem); overflow: hidden; background: #1a1210; }
+.sp-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 38% 55%; }
+.sp-top::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, #0b0812a6 0, transparent 34%, transparent 58%, #0b0812b3 100%); pointer-events: none; }
+.sp-clerk { position: absolute; z-index: 1; right: -7rem; top: 2.6rem; height: 40rem; width: auto; max-width: none; filter: drop-shadow(0 0.6rem 1.4rem #000a); pointer-events: none; }
+.sp-head { position: absolute; z-index: 3; left: 1.2rem; right: 1.2rem; top: max(1.1rem, env(safe-area-inset-top, 0px)); display: flex; align-items: center; gap: 0.8rem; }
+.sp-logo { position: relative; flex: none; display: grid; place-items: center; height: 4.4rem; padding: 0 1rem; border-radius: 1.2rem; background: #f7f3edf2; box-shadow: 0 0.3rem 1rem #0006; }
+.sp-logo-win { position: relative; display: block; width: 8.9rem; height: 3.5rem; overflow: hidden; }
+.sp-logo-win img { position: absolute; max-width: none; }
+.sp-logo b { display: none; font-size: 1.6rem; letter-spacing: -0.02em; }
+.sp-logo.missing .sp-logo-win { display: none; }
+.sp-logo.missing b { display: block; }
+.sp-floor { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.12em; color: #fff; text-shadow: 0 0.1rem 0.6rem #000; white-space: nowrap; }
+.sp-money { margin-left: auto; display: grid; justify-items: end; padding: 0.5rem 1.2rem; border-radius: 1.4rem; color: #fff; background: #120c1db3; border: 0.1rem solid #ffffff38; -webkit-backdrop-filter: blur(0.8rem); backdrop-filter: blur(0.8rem); line-height: 1.2; }
+.sp-money small { font-size: 1rem; font-weight: 700; letter-spacing: 0.12em; color: #d8c4f0; }
+.sp-money b { font-size: 1.75rem; font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
+.sp-money.paid b { animation: sp-paid 0.7s ease-out; }
+@keyframes sp-paid { 0% { color: #ffd98a; transform: scale(1.12); } 100% { color: #fff; transform: none; } }
+.sp-greet { position: absolute; z-index: 3; left: 1.2rem; bottom: 1.2rem; max-width: 22.5rem; margin: 0; padding: 0.8rem 1.2rem 0.9rem; border-radius: 1.4rem 1.4rem 1.4rem 0.4rem; font-size: 1.32rem; line-height: 1.55; color: var(--sp-ink); background: #fffdf9f0; box-shadow: 0 0.4rem 1.2rem #0007; animation: sp-greet 0.4s var(--ease-out) both; }
+.sp-greet[hidden] { display: none; }
+.sp-greet b { display: block; font-size: 1.05rem; letter-spacing: 0.14em; color: var(--sp-purple); }
+@keyframes sp-greet { from { opacity: 0; transform: translateY(0.8rem); } }
+
+/* 売り場の札・種類の札 */
+.sp-tabs { flex: none; display: grid; grid-template-columns: repeat(4, 1fr); height: 4.8rem; background: #fff; border-bottom: 0.1rem solid var(--sp-line); }
+.sp-tabs button { position: relative; font-size: 1.42rem; font-weight: 700; color: var(--sp-muted); white-space: nowrap; }
+.sp-tabs button[aria-pressed="true"] { color: var(--sp-purple); }
+.sp-tabs button[aria-pressed="true"]::after { content: ""; position: absolute; left: 22%; right: 22%; bottom: 0; height: 0.32rem; border-radius: 0.3rem 0.3rem 0 0; background: var(--sp-purple); }
+.sp-cats { flex: none; display: flex; gap: 0.6rem; overflow-x: auto; padding: 0.9rem 1.2rem 0.3rem; scrollbar-width: none; }
+.sp-cats::-webkit-scrollbar { display: none; }
+.sp-cats[hidden] { display: none; }
+.sp-cats button { flex: none; height: 3.3rem; padding: 0 1.4rem; border-radius: 1.7rem; font-size: 1.3rem; font-weight: 700; color: var(--sp-ink); background: #fff; border: 0.1rem solid var(--sp-line); }
+.sp-cats button[aria-pressed="true"] { color: #fff; background: var(--sp-purple); border-color: var(--sp-purple); }
+
+/* 商品の札（2列） */
+.sp-list { flex: 1 1 0; min-height: 0; overflow-y: auto; padding: 1rem 1.2rem 1.6rem; scrollbar-width: none; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.sp-list::-webkit-scrollbar { display: none; }
+.sp-empty { margin: 4rem 1rem; text-align: center; font-size: 1.45rem; line-height: 1.7; color: var(--sp-muted); }
+.sp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.sp-card { position: relative; display: flex; flex-direction: column; min-width: 0; border-radius: 1.5rem; background: var(--sp-card); border: 0.15rem solid transparent; box-shadow: 0 0.1rem 0 var(--sp-line), 0 0.3rem 0.9rem #38283f14; }
+.sp-card.picked { border-color: var(--sp-purple); box-shadow: 0 0.4rem 1.2rem #69497e33; }
+.sp-card.bump { animation: sp-bump 0.22s ease-out; }
+@keyframes sp-bump { 50% { transform: scale(1.025); } }
+.sp-card-main { display: grid; justify-items: center; gap: 0.25rem; width: 100%; padding: 0.8rem 0.8rem 0.2rem; text-align: center; }
+.sp-card-art { display: grid; place-items: center; width: 100%; height: 9.4rem; margin-bottom: 0.4rem; border-radius: 1.1rem; background: radial-gradient(ellipse at 50% 62%, #ffffff 0 40%, #f1e9df 100%); }
+.sp-card-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; min-height: 2.6em; font-size: 1.36rem; line-height: 1.3; font-weight: 700; word-break: auto-phrase; }
+.sp-card-tags { font-size: 1.1rem; color: var(--sp-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.sp-stock { position: absolute; left: 1.2rem; top: 1.2rem; padding: 0.15rem 0.7rem; border-radius: 1rem; font-size: 1.02rem; font-weight: 700; color: #fff; background: #69497ed9; pointer-events: none; }
+.sp-card-row { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; min-height: 4.6rem; padding: 0 0.6rem 0.6rem 1.1rem; }
+.sp-price { font-size: 1.6rem; font-weight: 800; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+.sp-add { flex: none; width: 4rem; height: 4rem; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--sp-purple); box-shadow: 0 0.3rem 0.8rem #69497e55; }
+.sp-add:active, .sp-qty button:active { transform: scale(0.92); }
+.sp-add .ic, .sp-qty .ic { width: 2.2rem; height: 2.2rem; stroke-width: 2.6; }
+.sp-qty { flex: none; display: flex; align-items: center; height: 4rem; padding: 0 0.2rem; border-radius: 2rem; color: #fff; background: var(--sp-purple); }
+.sp-qty button { width: 3.6rem; height: 3.6rem; display: grid; place-items: center; border-radius: 50%; }
+.sp-qty button:disabled { opacity: 0.35; }
+.sp-qty output { min-width: 1.6rem; text-align: center; font-size: 1.6rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.sp-owned { flex: none; padding: 0.4rem 1rem; border-radius: 1.2rem; font-size: 1.15rem; font-weight: 700; color: var(--sp-muted); background: #ece5ef; }
+
+/* 商品の絵（窓の範囲だけを正方形に収める。shop-data.mjs の productArtHtml） */
+.sp-art { position: relative; flex: none; display: grid; place-items: center; width: var(--s); height: var(--s); }
+.sp-art-win { position: relative; display: block; overflow: hidden; filter: drop-shadow(0 0.5rem 0.5rem #38283f38); }
+.sp-art-win img { position: absolute; max-width: none; }
+.sp-art-whole { width: 92%; height: 92%; object-fit: contain; filter: drop-shadow(0 0.5rem 0.5rem #38283f38); }
+.sp-art-text span { display: grid; place-items: center; width: 70%; aspect-ratio: 3 / 4; border: 0.15rem dashed var(--sp-line, #b9a98f); border-radius: 0.8rem; font-size: calc(var(--s) * 0.13); font-weight: 700; color: var(--sp-muted, #8a7666); }
+.sp-art-text.secret span { width: 76%; aspect-ratio: 1; border: 0; border-radius: 50%; font-size: calc(var(--s) * 0.46); color: #f1f2f8; background: radial-gradient(circle at 35% 30%, #5a5590, #2a2648 70%); }
+.sp-art.missing .sp-art-win { display: none; }
+.sp-art.missing::after { content: "フレーバー"; display: grid; place-items: center; width: 70%; aspect-ratio: 3 / 4; border: 0.15rem dashed var(--sp-line); border-radius: 0.8rem; font-size: calc(var(--s) * 0.13); font-weight: 700; color: var(--sp-muted); }
+
+/* シーシャくじの売り場 */
+.sp-kuji { display: grid; gap: 1rem; }
+.sp-kuji-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.2rem 0.4rem; }
+.sp-kuji-head b { font-size: 1.6rem; }
+.sp-kuji-head span { font-size: 1.25rem; color: var(--sp-muted); white-space: nowrap; }
+.sp-kuji-head em { font-style: normal; font-size: 1.6rem; font-weight: 800; color: var(--sp-ink); }
+.sp-kuji-list { display: grid; gap: 0.6rem; margin: 0; padding: 0; list-style: none; }
+.sp-kuji-row { display: grid; grid-template-columns: 1.6rem 4.6rem minmax(0, 1fr) auto; align-items: center; gap: 0.9rem; padding: 0.6rem 1rem; border-radius: 1.2rem; background: var(--sp-card); box-shadow: 0 0.1rem 0 var(--sp-line); }
+.sp-kuji-row[data-out] { opacity: 0.45; }
+.sp-kuji-main { display: grid; min-width: 0; }
+.sp-kuji-main b { font-size: 1.2rem; letter-spacing: 0.06em; color: var(--rk-ink, var(--sp-purple)); }
+.sp-kuji-main span { font-size: 1.32rem; line-height: 1.35; font-weight: 700; }
+.sp-kuji-row small { font-size: 1.15rem; color: var(--sp-muted); white-space: nowrap; }
+.sp-kuji-note { margin: 0.2rem 0.4rem 0; font-size: 1.2rem; line-height: 1.6; color: var(--sp-muted); }
+.sp-buy.kuji { color: #fff3d6; background: linear-gradient(180deg, #8a5d37, #5b3a22); box-shadow: inset 0 0 0 0.2rem #c9a24a, 0 0.5rem 1.2rem #5b3a2255; }
+
+/* 売却 */
+.sp-sell { display: grid; gap: 0.7rem; margin: 0; padding: 0; list-style: none; }
+.sp-sell-row { display: grid; grid-template-columns: 5.6rem minmax(0, 1fr) auto; align-items: center; gap: 1rem; padding: 0.7rem 1rem; border-radius: 1.3rem; background: var(--sp-card); box-shadow: 0 0.1rem 0 var(--sp-line); }
+.sp-sell-main { display: grid; min-width: 0; }
+.sp-sell-main b { font-size: 1.4rem; }
+.sp-sell-main small { font-size: 1.15rem; color: var(--sp-muted); }
+.sp-sell-row button { height: 3.8rem; padding: 0 1.3rem; border-radius: 1.9rem; font-size: 1.25rem; font-weight: 800; color: var(--sp-purple); background: #fff; border: 0.15rem solid var(--sp-purple); white-space: nowrap; }
+
+/* いちばん下: 店を出る・かごの合計・購入する */
+.sp-foot { flex: none; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.9rem; padding: 0.9rem 1.2rem max(1.1rem, env(safe-area-inset-bottom, 0px)); background: #fff; border-top: 0.1rem solid var(--sp-line); box-shadow: 0 -0.4rem 1.2rem #38283f10; }
+.sp-leave { display: grid; justify-items: center; gap: 0.2rem; width: 5.6rem; font-size: 1.05rem; font-weight: 700; color: var(--sp-muted); }
+.sp-leave .ic { width: 2.6rem; height: 2.6rem; }
+.sp-sum { display: grid; text-align: left; line-height: 1.25; min-width: 0; }
+.sp-sum small { font-size: 1.08rem; font-weight: 700; color: var(--sp-muted); }
+.sp-sum b { font-size: 2rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.sp-sum span { font-size: 1.12rem; color: var(--sp-muted); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-sum span.short { color: #c0392b; font-weight: 700; }
+.sp-buy { display: flex; align-items: center; gap: 0.6rem; height: 5.6rem; padding: 0 2rem; border-radius: 2.8rem; font-size: 1.55rem; font-weight: 800; color: #fff; background: var(--sp-purple); box-shadow: 0 0.5rem 1.2rem #69497e55; white-space: nowrap; }
+.sp-buy .ic { width: 2.2rem; height: 2.2rem; }
+.sp-buy:disabled { color: #fff; background: #cdc1d4; box-shadow: none; }
+.sp-buy:not(:disabled):active { transform: scale(0.97); }
+
+/* 下からせり上がる札（説明・かごの中身・確認） */
+.sp-scrim { position: absolute; inset: 0; z-index: 20; background: #0b081266; animation: sp-fade 0.2s ease-out; }
+.sp-scrim[hidden], .sp-sheet[hidden], .sp-toast[hidden] { display: none; }
+@keyframes sp-fade { from { opacity: 0; } }
+.sp-sheet { position: absolute; z-index: 21; left: 0; right: 0; bottom: 0; max-height: 80%; overflow-y: auto; padding: 2.2rem 1.8rem max(1.6rem, env(safe-area-inset-bottom, 0px)); border-radius: 2.4rem 2.4rem 0 0; color: var(--sp-ink); background: var(--sp-paper); box-shadow: 0 -1rem 3rem #0006; }
+.sp-sheet.in { animation: sp-rise 0.32s var(--ease-out); }
+@keyframes sp-rise { from { transform: translateY(100%); } }
+.sp-sheet-x { position: absolute; top: 1rem; right: 1rem; width: 4.2rem; height: 4.2rem; display: grid; place-items: center; border-radius: 50%; color: var(--sp-muted); }
+.sp-sheet-x .ic { width: 2.2rem; height: 2.2rem; }
+.sp-detail { display: grid; grid-template-columns: 13rem minmax(0, 1fr); align-items: center; gap: 1.4rem; padding-right: 2.6rem; }
+.sp-detail-art { display: grid; place-items: center; height: 13rem; border-radius: 1.5rem; background: radial-gradient(ellipse at 50% 62%, #ffffff 0 40%, #efe6da 100%); }
+.sp-detail-main { display: grid; gap: 0.5rem; min-width: 0; }
+.sp-detail-cat { width: fit-content; padding: 0.2rem 0.9rem; border-radius: 1rem; font-size: 1.1rem; font-weight: 700; color: var(--sp-purple); background: #ece3f1; }
+.sp-detail h3 { margin: 0; font-size: 1.9rem; line-height: 1.3; word-break: auto-phrase; }
+.sp-detail-meta { margin: 0; font-size: 1.25rem; line-height: 1.5; color: var(--sp-muted); }
+.sp-detail-now { margin: 0; font-size: 1.2rem; font-weight: 700; color: var(--sp-purple); }
+.sp-detail-text { margin: 1.4rem 0 0; font-size: 1.45rem; line-height: 1.75; word-break: auto-phrase; }
+.sp-detail-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0 0; }
+.sp-detail-tags span { padding: 0.3rem 1rem; border-radius: 1.2rem; font-size: 1.18rem; font-weight: 700; background: #fff; border: 0.1rem solid var(--sp-line); }
+.sp-detail-tags .heat { color: #a1532c; border-color: #e7c4ad; background: #fff6ef; }
+.sp-sheet-title { margin: 0 3rem 1rem 0; font-size: 1.9rem; }
+.sp-sheet-text { margin: 0; font-size: 1.45rem; line-height: 1.75; }
+.sp-order { margin: 0; padding: 0; list-style: none; }
+.sp-order li { display: flex; justify-content: space-between; gap: 1rem; padding: 1rem 0.2rem; font-size: 1.45rem; border-bottom: 0.1rem solid var(--sp-line); }
+.sp-order b { font-variant-numeric: tabular-nums; }
+.sp-sheet-foot { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin-top: 1.8rem; }
+.sp-qty.big { height: 5rem; padding: 0 0.3rem; border-radius: 2.5rem; margin-right: auto; }
+.sp-qty.big button { width: 4.4rem; height: 4.4rem; }
+.sp-qty.big output { min-width: 2.6rem; font-size: 1.9rem; }
+.sp-sheet-ok, .sp-sheet-sub { height: 5rem; padding: 0 2.4rem; border-radius: 2.5rem; font-size: 1.5rem; font-weight: 800; white-space: nowrap; }
+.sp-sheet-ok { color: #fff; background: var(--sp-purple); }
+.sp-sheet-sub { color: var(--sp-purple); background: #fff; border: 0.15rem solid var(--sp-purple); }
+.sp-toast { position: absolute; z-index: 30; left: 50%; bottom: 10.4rem; max-width: 32rem; margin: 0; padding: 1rem 1.9rem; border-radius: 2.2rem; font-size: 1.38rem; font-weight: 700; color: #fff; background: #38283feb; box-shadow: 0 0.6rem 1.6rem #0005; transform: translateX(-50%); white-space: nowrap; }
+.sp-toast.show { animation: sp-toast 2.2s ease-out both; }
+@keyframes sp-toast { 0% { opacity: 0; transform: translate(-50%, 0.8rem); } 10%, 82% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 0); } }
+
+/* ───────── 賞の色（本編 garagara-stage.js の BALL・RANK_LIGHT） ───────── */
+:is(.sp-app, .kjp-app) [data-rank="S"] { --rk: #f7c648; --rk-hi: #fff3c0; --rk-ink: #9a6206; --rk-glow: #ffcf4aa6; }
+:is(.sp-app, .kjp-app) [data-rank="A"] { --rk: #e2443c; --rk-hi: #ffb3a4; --rk-ink: #b3261c; --rk-glow: #ff604e8c; }
+:is(.sp-app, .kjp-app) [data-rank="B"] { --rk: #3f82ea; --rk-hi: #b9d6ff; --rk-ink: #1f55b0; --rk-glow: #4f9bff73; }
+:is(.sp-app, .kjp-app) [data-rank="C"] { --rk: #f6f3ec; --rk-hi: #ffffff; --rk-ink: #7b7166; --rk-glow: #f0e8d64d; }
+:is(.sp-app, .kjp-app) [data-rank="LAST"] { --rk: #2a2648; --rk-hi: #8b8cc0; --rk-ink: #6f6aa8; --rk-glow: #b8aff08c; }
+.sp-kuji-ball, .kjp-ball { width: 1.5rem; height: 1.5rem; border-radius: 50%; background: radial-gradient(circle at 34% 30%, var(--rk-hi) 0 18%, var(--rk) 52%); box-shadow: inset 0 -0.15rem 0.3rem #0004, 0 0 0 0.1rem #00000022; }
+[data-rank="LAST"] :is(.sp-kuji-ball, .kjp-ball) { box-shadow: inset 0 0 0 0.25rem #d8dce6, 0 0 0 0.1rem #00000033; }
+
+/* ───────── シーシャくじ（福引きのガラガラ） ───────── */
+.phone[data-kind="kuji"] { background: #0e0a09; }
+.kjp-app { position: absolute; inset: 0; display: flex; flex-direction: column; color: #f3eadb; background: radial-gradient(ellipse 90% 50% at 50% 30%, #3a2618 0%, #160f0b 70%); }
+.kjp-stage { position: relative; flex: none; height: min(40.1rem, 50cqh); overflow: hidden; background: #0e0a09; }
+/* 本編の舞台（1280×720）。kuji.mjs の relayout が、抽選器のまわりが幅いっぱいに入るよう縮める */
+.kjp-host { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; --font: var(--gothic); }
+.kjp-host .kj-skip { opacity: 0; pointer-events: none; } /* 飛ばすのは下の「とばす」（舞台の右下は写す範囲の外） */
+.kjp-fade { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 6rem; background: linear-gradient(180deg, transparent, #160f0bf2); pointer-events: none; }
+.kjp-head { position: absolute; z-index: 4; left: 1.1rem; right: 1.1rem; top: max(1.1rem, env(safe-area-inset-top, 0px)); display: flex; align-items: center; gap: 0.9rem; }
+.kjp-back { flex: none; width: 4.4rem; height: 4.4rem; display: grid; place-items: center; border-radius: 50%; color: #fff; background: #120c0ab3; border: 0.1rem solid #ffffff38; }
+.kjp-back .ic { width: 2.4rem; height: 2.4rem; }
+.kjp-title { display: grid; line-height: 1.25; text-shadow: 0 0.1rem 0.6rem #000; }
+.kjp-title b { font-family: var(--mincho); font-size: 2rem; letter-spacing: 0.08em; }
+.kjp-title small { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.08em; color: #f2d79a; font-variant-numeric: tabular-nums; }
+.kjp-money { margin-left: auto; display: grid; justify-items: end; padding: 0.5rem 1.2rem; border-radius: 1.4rem; color: #fff; background: #120c0ab3; border: 0.1rem solid #ffffff38; line-height: 1.2; }
+.kjp-money small { font-size: 1rem; font-weight: 700; letter-spacing: 0.12em; color: #f2d79a; }
+.kjp-money b { font-size: 1.7rem; font-variant-numeric: tabular-nums; }
+.kjp-clerk { position: relative; z-index: 5; flex: none; display: flex; align-items: center; gap: 0.9rem; margin: -2.6rem 1.2rem 0; padding: 0.8rem 1.3rem 0.8rem 0.8rem; border-radius: 1.6rem; font-size: 1.3rem; line-height: 1.55; color: #f6ecdc; background: #241913f0; border: 0.1rem solid #c9a24a59; box-shadow: 0 0.6rem 1.6rem #0008; }
+.kjp-clerk[hidden] { display: none; }
+.kjp-clerk.in { animation: sp-greet 0.4s var(--ease-out) both; }
+.kjp-clerk img { flex: none; width: 3.8rem; height: 3.8rem; border-radius: 50%; object-fit: cover; background: #3a2a22; }
+.kjp-panel { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; gap: 1rem; padding: 1.2rem 1.2rem max(1.3rem, env(safe-area-inset-bottom, 0px)); }
+.kjp-empty { margin: auto; font-size: 1.45rem; color: #cbb9a2; }
+.kjp-lineup { flex: 1 1 0; min-height: 0; overflow-y: auto; display: grid; align-content: start; gap: 0.5rem; margin: 0; padding: 0; list-style: none; scrollbar-width: none; }
+.kjp-lineup::-webkit-scrollbar { display: none; }
+.kjp-lineup li { display: grid; grid-template-columns: 1.5rem 4.4rem minmax(0, 1fr) auto; align-items: center; gap: 0.9rem; padding: 0.4rem 1rem; border-radius: 1.2rem; background: #ffffff0e; box-shadow: inset 0 0 0 0.1rem #ffffff12; }
+.kjp-lineup li[data-out] { opacity: 0.38; }
+.kjp-lineup-main { display: grid; min-width: 0; line-height: 1.3; }
+.kjp-lineup-main b { font-size: 1.15rem; letter-spacing: 0.08em; color: var(--rk-hi); }
+[data-rank="C"] .kjp-lineup-main b, [data-rank="LAST"] .kjp-lineup-main b { color: #d8d0c4; }
+.kjp-lineup-main span { font-size: 1.3rem; font-weight: 700; }
+.kjp-lineup small { font-size: 1.12rem; color: #d2c1a8; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.kjp-secret { flex: none; margin: 0; text-align: center; font-size: 1.3rem; font-weight: 700; color: #f2d79a; }
+.kjp-draws { flex: none; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 0.8rem; }
+.kjp-draws button { display: grid; place-content: center; gap: 0.1rem; height: 6.6rem; border-radius: 1.8rem; color: #fff3d6; background: linear-gradient(180deg, #8a5d37, #5b3a22 70%, #4a2e1a); box-shadow: inset 0 0 0 0.2rem #c9a24a, inset 0 0.3rem 0 #ffffff26, 0 0.6rem 1.4rem #0008; }
+.kjp-draws button b { font-size: 2.3rem; font-weight: 900; letter-spacing: 0.04em; line-height: 1.05; }
+.kjp-draws button small { font-size: 1.22rem; font-weight: 700; color: #f2d79a; font-variant-numeric: tabular-nums; }
+.kjp-draws button:disabled { opacity: 0.42; }
+.kjp-draws button:not(:disabled):active { transform: scale(0.97); }
+.kjp-spinning { flex: 1; display: grid; place-content: center; justify-items: center; gap: 1.8rem; }
+.kjp-spinning > span { font-family: var(--mincho); font-size: 2.2rem; letter-spacing: 0.3em; color: #f2d79a; animation: kjp-rattle 0.5s ease-in-out infinite alternate; }
+@keyframes kjp-rattle { from { transform: translateX(-0.2rem) rotate(-1deg); } to { transform: translateX(0.2rem) rotate(1deg); } }
+.kjp-spinning button { display: flex; align-items: center; gap: 0.6rem; height: 4.4rem; padding: 0 1.8rem; border-radius: 2.2rem; font-size: 1.35rem; font-weight: 800; color: #f3eadb; background: #ffffff14; border: 0.1rem solid #ffffff38; }
+.kjp-spinning .ic { width: 1.8rem; height: 1.8rem; }
+
+/* 賞の札（本編の札の絵 card-*.webp。左の窓に景品、右に賞と名前） */
+.kjp-card { --kj-card: url("../../img/ui/kuji/card-c.webp"); position: relative; flex: none; display: block; min-height: calc((100cqw - 2.4rem) * 372 / 884); border-radius: 1.6rem; color: #2b1d1a;
+  background: var(--kj-card) center / 100% 100% no-repeat, linear-gradient(168deg, #fcf7ec 0%, #f3ead8 60%, #eadfc8 100%) center / calc(100% - 1.2rem) calc(100% - 1.2rem) no-repeat;
+  box-shadow: 0 1.2rem 3rem #000b, 0 0 3rem var(--rk-glow); }
+.kjp-card[data-rank="S"] { --kj-card: url("../../img/ui/kuji/card-s.webp"); }
+.kjp-card[data-rank="A"] { --kj-card: url("../../img/ui/kuji/card-a.webp"); }
+.kjp-card[data-rank="B"] { --kj-card: url("../../img/ui/kuji/card-b.webp"); }
+.kjp-card[data-rank="LAST"] { --kj-card: url("../../img/ui/kuji/card-last.webp"); color: #f1f2f8; background: var(--kj-card) center / 100% 100% no-repeat, linear-gradient(168deg, #2a2730, #131216) center / calc(100% - 1.2rem) calc(100% - 1.2rem) no-repeat; }
+.kjp-card { margin: auto 0; }
+.kjp-card.reveal { animation: kjp-reveal 0.55s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+@keyframes kjp-reveal { 0% { opacity: 0; transform: translateY(2rem) scale(0.7) rotate(-3deg); } 60% { opacity: 1; } 100% { transform: none; } }
+/* 景品の窓: 札の絵の窓（x36〜376・y35〜334 / 884×372）に合わせる */
+.kjp-card-art { position: absolute; left: 4.1%; top: 9.4%; width: 38.4%; height: 80.4%; display: grid; place-items: center; overflow: hidden; border-radius: 1rem; }
+.kjp-card-body { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 0.35rem; min-height: inherit; padding: 1.4rem 3.4rem 1.4rem 45%; }
+.kjp-banner { position: absolute; left: 45%; top: 0.8rem; padding: 0.1rem 0.8rem; border-radius: 0.6rem; font-style: normal; font-size: 1.1rem; font-weight: 900; letter-spacing: 0.2em; color: #fff; background: #de3b22; }
+.kjp-rank { width: fit-content; font-size: 3.6rem; font-weight: 900; line-height: 1.02; letter-spacing: 0.02em; background: linear-gradient(180deg, var(--rk) 0%, var(--rk-ink) 58%, #2b1d1a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0.1rem 0 #fffc) drop-shadow(0 0 0.8rem var(--rk-glow)); }
+.kjp-card[data-rank="C"] .kjp-rank { background: linear-gradient(180deg, #b9ad9c, #7b7166); -webkit-background-clip: text; background-clip: text; }
+.kjp-card[data-rank="LAST"] .kjp-rank { font-size: 2.5rem; background: linear-gradient(180deg, #ffffff 0%, #d5d6e6 50%, #9a98c0 100%); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 0.1rem 0 #0009) drop-shadow(0 0 0.8rem var(--rk-glow)); }
+.kjp-name { padding-top: 0.4rem; font-size: 1.42rem; font-weight: 800; line-height: 1.32; border-top: 0.15rem solid; border-image: linear-gradient(90deg, var(--rk-ink), transparent 92%) 1; word-break: auto-phrase; }
+.kjp-desc { margin: 0; font-size: 1.08rem; line-height: 1.5; color: #6a5648; word-break: auto-phrase; }
+.kjp-card[data-rank="LAST"] .kjp-desc { color: #c9c7da; }
+.kjp-dupe { width: fit-content; margin: 0.2rem 0 0; padding: 0.3rem 0.8rem; border-radius: 0.6rem; font-size: 1.05rem; font-weight: 700; line-height: 1.4; color: #5a3a12; background: #c9a24a33; border: 0.1rem solid #8a5a1080; }
+.kjp-close { position: absolute; top: 0.6rem; right: 0.6rem; width: 3.8rem; height: 3.8rem; display: grid; place-items: center; border-radius: 50%; color: #8a7666; }
+.kjp-close .ic { width: 2rem; height: 2rem; }
+.kjp-next { flex: none; height: 5.4rem; margin-top: auto; border-radius: 2.7rem; font-size: 1.5rem; font-weight: 800; color: #2b1d1a; background: linear-gradient(180deg, #f6d27a, #e0a93a); box-shadow: 0 0.6rem 1.4rem #0008; }
+.kjp-next:active { transform: scale(0.98); }
+/* 連続の結果: 小さな札を2列に */
+.kjp-many-head { flex: none; display: flex; align-items: baseline; justify-content: space-between; padding: 0 0.4rem; }
+.kjp-many-head b { font-size: 1.7rem; }
+.kjp-many-head span { font-size: 1.25rem; color: #d2c1a8; }
+.kjp-many-head em { font-style: normal; font-size: 1.6rem; font-weight: 900; color: var(--rk-hi); }
+.kjp-many { flex: 1 1 0; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; align-content: start; gap: 0.6rem; margin: 0; padding: 0; list-style: none; scrollbar-width: none; }
+.kjp-many li { position: relative; display: grid; grid-template-columns: 3.8rem minmax(0, 1fr); align-items: center; gap: 0.5rem; min-height: 5rem; padding: 0.3rem 0.6rem 0.3rem 0.4rem; border-radius: 1.1rem; color: #2b1d1a; background: linear-gradient(168deg, #fcf7ec, #eadfc8); border-left: 0.5rem solid var(--rk); box-shadow: 0 0.3rem 0.8rem #0006, 0 0 1.2rem var(--rk-glow); animation: kjp-flip 0.4s var(--ease-out) both; animation-delay: calc(var(--i) * 70ms); }
+.kjp-many li[data-rank="LAST"] { color: #f1f2f8; background: linear-gradient(168deg, #2a2730, #131216); }
+@keyframes kjp-flip { from { opacity: 0; transform: rotateY(80deg) scale(0.9); } }
+.kjp-many .kjp-ball { position: absolute; left: 0.5rem; top: 0.5rem; z-index: 1; width: 1.3rem; height: 1.3rem; }
+.kjp-many li > span:not(.sp-art):not(.kjp-fan) { display: grid; min-width: 0; line-height: 1.25; }
+.kjp-many b { font-size: 1.2rem; font-weight: 900; color: var(--rk-ink); }
+.kjp-many li[data-rank="LAST"] b { color: #d5d6e6; }
+.kjp-many small { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 1.02rem; font-weight: 700; line-height: 1.25; }
+.kjp-dupe-s { position: absolute; right: 0.5rem; top: 0.4rem; font-style: normal; font-size: 0.95rem; font-weight: 800; color: #8a5a10; }
+.kjp-gift { background: url("../../img/ui/kuji/gift.webp") center bottom / 86% no-repeat; }
+.kjp-fan { position: relative; display: flex; align-items: flex-end; justify-content: center; width: var(--s); height: var(--s); }
+.kjp-fan > .sp-art { margin: 0 -18%; }
+.kjp-fan > .sp-art:first-child { transform: rotate(-11deg); }
+.kjp-fan > .sp-art:last-child:not(:first-child) { transform: rotate(11deg) translateY(-6%); }
