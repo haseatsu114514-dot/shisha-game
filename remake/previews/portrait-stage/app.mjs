@@ -40,7 +40,7 @@ const IMG = {
   bowl_airy: `${OWN_IMG}ui-bowl-airy.webp`,
   bowl_normal: `${OWN_IMG}ui-bowl-normal.webp`,
   bowl_firm: `${OWN_IMG}ui-bowl-firm.webp`,
-  pullHajime: `${OWN_IMG}craft-pull-hajime.webp`,
+  pullHajime: `${OWN_IMG}craft-pull-hajime.webp`, // 人物だけ（背景なし）。場所の背景に重ねる（VPL41）
   // 専用の見た目の部品（VPL37）: 水位計・はかり・真上から見た器・葉の模様・葉の缶・雑念の場の背景3枚
   gauge: `${OWN_IMG}ui-gauge.webp`,
   scale: `${OWN_IMG}ui-scale.webp`,
@@ -236,7 +236,8 @@ const GALLERY = [
   { scene: "pack", caption: "作る・詰め方" },
   { scene: "holes", caption: "作る・穴あけ" },
   { scene: "steam", caption: "作る・蒸らし（雑念よけ）" },
-  { scene: "pull", caption: "作る・吸い出し" },
+  { scene: "pull", caption: "作る・吸い出し（tonari）" },
+  { scene: "pull", caption: "作る・吸い出し（PEPPERMINT の背景に替えた例）", pullBg: "shop" },
 ];
 
 /** 登場カットインの名前（ふりがなは ruby。縦書きでも同じ書き方で右に付く） */
@@ -346,9 +347,10 @@ const TOOL_SVG = {
   drain: `<svg class="tool-svg tool-drain" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(-38 50 52)">
     <rect x="43" y="14" width="14" height="22" rx="3"/><path d="M42 36H58L70 54A21 21 0 1 1 30 54Z"/></g>
     <path class="gl-drop" d="M24 50C24 50 17 60 17 64A7 7 0 0 0 31 64C31 60 24 50 24 50Z"/></svg>`,
-  // 雑念を払う: 真ん中から広がる光（使ったあと8秒で戻る。戻るまでの残りは影で示す）
-  bomb: `<svg class="tool-svg tool-bomb" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="12"/>
-    <path class="gl-rays" d="M50 16v13M50 71v13M16 50h13M71 50h13M26 26l9 9M65 65l9 9M74 26l-9 9M35 65l-9 9"/></svg>`,
+  // 雑念を払う: 本編のリフレッシュ（青い渦）と同じく、渦で雑念を吹き払う形（VPL45）。使ったあと8秒で戻る。戻るまでの残りは影で示す
+  bomb: `<svg class="tool-svg tool-bomb" viewBox="0 0 100 100" aria-hidden="true">
+    <path class="gl-swirl" d="M52 50a3.5 3.5 0 1 1-6 2.5 9 9 0 1 1 17-4.5 15.5 15.5 0 1 1-29 8 22 22 0 1 1 41-12"/>
+    <circle cx="26" cy="24" r="5"/><circle cx="17" cy="35" r="3.2"/></svg>`,
 };
 const btnFace = (kind) => {
   const b = BTN[kind];
@@ -386,7 +388,7 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null, look = "a" } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null, look = "a", pullBg = "tonari" } = {}) {
     this.el = el;
     el.lang = "ja";
     this.fixed = fixed; // 一覧では場面を固定し、その場面の中の操作だけ動かす
@@ -397,6 +399,7 @@ class Phone {
     this.keys = new Set();
     this.rankAt = RANK_PLACES[rank] ? rank : "d"; // ランクの置き場所の案
     this.lookAt = ["a", "b", "c"].includes(look) ? look : "a"; // 水入れ・配合・雑念よけの見た目の案
+    this.pullBg = IMG[pullBg] ? pullBg : "tonari"; // 吸い出しの背景（その場所の絵）
     el.dataset.look = this.lookAt;
     el.dataset.rank = this.rankAt;
     this.st = { scene, sel: DEFAULT_SPOT, step, page: 0, grade: Math.max(0, Math.min(6, Number(grade) || 0)), gradeP: Number(gradeP) || 0, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4,
@@ -782,7 +785,7 @@ class Phone {
     const pic = st.scene === "pack" ? `<img class="bg" src="${IMG.tonari}" alt=""><img class="bowl" src="${IMG[`bowl_${PACKS[st.pack].id}`]}" alt="">`
       : st.scene === "holes" ? `<img class="bg" src="${IMG.tonari}" alt=""><div class="foil"><img src="${IMG.foil}" alt=""><svg viewBox="-100 -100 200 200" class="foil-marks"></svg></div>`
       : st.scene === "water" ? this.waterPic() : st.scene === "mix" ? this.mixPic() : st.scene === "steam" ? this.steamPic()
-      : `<img class="bg pull-cg" src="${IMG.pullHajime}" alt=""><img class="puff" src="${IMG.smoke}" alt="">`;
+      : `<img class="bg" src="${IMG[this.pullBg || "tonari"]}" alt=""><img class="pull-cg" src="${IMG.pullHajime}" alt=""><img class="puff" src="${IMG.smoke}" alt="">`;
     // 日付・体力・お金は出さない。上は工程の並びだけ。名前の文字は出さず、今の工程は光る丸で示す（VPL31）
     return `
       <img class="amb" src="${IMG.tonari}" alt="">

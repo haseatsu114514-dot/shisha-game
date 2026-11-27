@@ -262,3 +262,52 @@ bowl_airy: Fill this same bowl loosely with fluffy moist shredded shisha tobacco
 bowl_firm: Fill this same bowl densely with moist shredded shisha tobacco pressed flat and tight up to just below the rim, a compact dark reddish-brown surface glossy with molasses. Keep the bowl's shape, color, angle, size and position exactly the same. Transparent background. No foil, no charcoal, no smoke, no text.
 ```
 
+## 4回目: 葉を写真のような質感に、はじめを背景なしに（VPL40〜42・5枚）
+
+オーナー「シーシャの葉っぱの見た目は写真チックにリアルに　実際に調べて　なんか今ミミズみたいに見えるから」「吸ってる姿は背景はその場に応じて変えれるように　あとマウスピースの見た目が変　逆に見える　後表情も変」。
+葉の見た目は、シーシャの作り方・詰め方の解説（thehookahlab.com・hookahvault.com・iconhookah.com）で確かめた: 茎を除いて小さく刻む、ブロンドリーフは黄みの橙〜明るい茶、糖蜜とグリセリンでシロップ状にしっとり、袋から出すと塊になり、ほぐしてふんわりさせてから詰める、表面は縁の1〜2mm下で軽く平らにならす。2回目の葉は長い糸状の刻みで「ミミズ」に見えたので、「小さく不規則な葉のかけら・長い糸状にしない・しっとりした照り・小さな塊」と指定し、器は絵のまま、葉だけを写真のような質感にした。
+4枚とも、2回目の空の器（`v2/bowl-empty-original.webp`）を入力にした編集で、器の形・角度をそろえた。`bowl-partial` は葉が少なく底の穴が見える（配合で葉が入っていく途中）、`bowl-airy` は底まで覆ったふんわり（詰め方の札）。
+はじめは、正規の立ち絵と1回目のマウスピースの絵（`mouthpiece-original.webp`。ホース側が太く吸い口側が細い）を入力にした編集で、背景なしの人物だけにした。吸い口のチップを口に、ハンドルは下へ太くなり、下の金具からホースが1本出て画面の外へ。表情は立ち絵と同じ落ち着いた顔。
+
+| 原画（v3/） | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `bowl-partial/airy/normal/firm-original.webp` | `ui-bowl-partial/airy/normal/firm.webp`（空の器と同じ範囲で切り出し） | 配合の器（空→途中→ノーマル）、詰め方の3枚の札 |
+| `hajime-pull-original.webp` | `craft-pull-hajime.webp`（背景なし） | 吸い出し（場所の背景に重ねる） |
+
+生成後の確認: 器4枚は形・角度・大きさがそろい、炭・アルミ・HMD・文字が無い。葉は長い糸状でなく小さなかけら。はじめはホースが1本で、チップ→ハンドル（下へ太くなる）→金具→ホースの順につながり、分岐・台本体・背景・文字が無い。帽子の印・服装・顔は立ち絵と同じ。いずれも合格。
+
+### bowl_normal（入力: bowl-empty-original.webp）
+
+```text
+Fill this same bowl with real shisha (hookah) tobacco, rendered photorealistically like a macro product photograph while the bowl keeps its drawn look: finely chopped tobacco leaf pieces, small irregular torn flakes about 2 to 6 mm with faint leaf veins, NOT long strands, NOT noodles, NOT worms, NOT spaghetti; Virginia blonde leaf in amber to medium-brown tones with a few darker pieces; moist and sticky with molasses and glycerin, a soft syrupy sheen, a few small loose clumps. Packing: even density, the surface lightly pressed flat about 2 mm below the rim. Keep the bowl's shape, color, angle, size and position exactly the same. Transparent background. No foil, no charcoal, no smoke, no text.
+```
+
+### bowl_airy（入力: bowl-empty-original.webp）
+
+```text
+Fill this same bowl with real shisha (hookah) tobacco, rendered photorealistically like a macro product photograph while the bowl keeps its drawn look: finely chopped tobacco leaf pieces, small irregular torn flakes about 2 to 6 mm with faint leaf veins, NOT long strands, NOT noodles, NOT worms, NOT spaghetti; Virginia blonde leaf in amber to medium-brown tones with a few darker pieces; moist and sticky with molasses and glycerin, a soft syrupy sheen, a few small loose clumps. Packing: loose and fluffy, the flakes sprinkled in with visible air gaps between them, the surface a little uneven about 3 mm below the rim. Keep the bowl's shape, color, angle, size and position exactly the same. Transparent background. No foil, no charcoal, no smoke, no text.
+```
+
+### hajime_pull（入力: chr_hajime_normal.webp, mouthpiece-original.webp）
+
+```text
+The first reference image is the exact character design: the same face, short messy black hair, black baseball cap with the white smoke-line emblem, black zip hoodie with white drawstrings, black t-shirt. The second reference image is the exact hookah hose handle to use.
+Create a new vertical game illustration of this young man only (upper body, from the head down to the waist), on a fully transparent background, taking a slow, relaxed draw from a hookah.
+The hose handle: he holds the rigid black handle from the second reference loosely in his right hand. Its orientation must be correct: the short translucent teal disposable tip (the narrow end) is at his lips, the handle becomes slightly THICKER toward the lower end, and at that lower, thicker end the brass hose adapter connects to a single soft black hose that hangs down and leaves the frame at the lower right. The handle is not reversed.
+Expression: calm and natural, the same face as the first reference, eyes gently open and looking slightly down toward the handle, eyebrows relaxed, lips softly closed around the tip, no exaggerated half-lidded or sleepy look. A thin wisp of pale smoke drifts from the corner of his mouth.
+Polished anime game illustration style with clean dark outlines and two or three tone cel shading, no airbrushed gloss, same rendering as the first reference.
+Do not draw: any background, a second hose, a forked hose, the hookah body, a bowl, charcoal, text, letters, logos other than the cap emblem, watermark, frame.
+```
+
+### bowl_firm（入力: bowl-empty-original.webp）
+
+```text
+Fill this same bowl with real shisha (hookah) tobacco, rendered photorealistically like a macro product photograph while the bowl keeps its drawn look: finely chopped tobacco leaf pieces, small irregular torn flakes about 2 to 6 mm with faint leaf veins, NOT long strands, NOT noodles, NOT worms, NOT spaghetti; Virginia blonde leaf in amber to medium-brown tones with a few darker pieces; moist and sticky with molasses and glycerin, a soft syrupy sheen, a few small loose clumps. Packing: dense pack, pressed down firmly into a compact, slightly spongy surface about 1 mm below the rim, the flakes tighter and a little darker. Keep the bowl's shape, color, angle, size and position exactly the same. Transparent background. No foil, no charcoal, no smoke, no text.
+```
+
+### bowl_airy_full（入力: bowl-empty-original.webp）
+
+```text
+Fill this same bowl with real shisha (hookah) tobacco, rendered photorealistically like a macro product photograph while the bowl keeps its drawn look: finely chopped tobacco leaf pieces, small irregular torn flakes about 2 to 6 mm with faint leaf veins, NOT long strands, NOT noodles, NOT worms, NOT spaghetti; Virginia blonde leaf in amber to medium-brown tones with a few darker pieces; moist and sticky with molasses and glycerin, a soft syrupy sheen, a few small loose clumps. Packing: light and fluffy, the flakes completely cover the whole floor of the bowl (no holes or floor visible) but stay loose with small air pockets, the surface softly uneven about 2 to 3 mm below the rim. Keep the bowl's shape, color, angle, size and position exactly the same. Transparent background. No foil, no charcoal, no smoke, no text.
+```
+

@@ -237,7 +237,6 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .pic.craft-pull > .bg { filter: brightness(0.85); transform: none; }
 .pic.craft-holes { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%); }
 .pic.craft-holes .foil { top: auto; bottom: 6.4rem; }
-.pull-actor { position: absolute; max-width: none; height: 82%; left: -36%; bottom: 4%; filter: drop-shadow(0 0.6rem 1.4rem #0008); }
 .puff { position: absolute; max-width: none; width: 60%; left: 34%; top: 14%; opacity: 0; pointer-events: none; mix-blend-mode: screen; }
 .phone.puffing .puff { animation: puff 1.5s var(--ease-out); }
 @keyframes puff { 0% { opacity: 0; transform: translate(0, 12%) scale(0.5); } 22% { opacity: 0.85; } 100% { opacity: 0; transform: translate(-6%, -22%) scale(1.25); } }
@@ -595,7 +594,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .btn-a.pour.pressing .gl-drops circle:nth-child(2) { animation-delay: -0.14s; } .btn-a.pour.pressing .gl-drops circle:nth-child(3) { animation-delay: -0.28s; }
 .btn-a.sub.pressing .gl-drop { animation: drop-fall 0.6s linear infinite; }
 @keyframes drop-fall { 0% { transform: translateY(-6px); opacity: 0.3; } 50% { opacity: 1; } 100% { transform: translateY(6px); opacity: 0.3; } }
-.tool-bomb .gl-rays { fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; }
+.tool-bomb .gl-swirl { fill: none; stroke: currentColor; stroke-width: 6.5; stroke-linecap: round; }
 .btn-a.bomb .cool { position: absolute; z-index: 2; inset: 0.5rem; border-radius: 50%; pointer-events: none; background: conic-gradient(#0b0812c4 calc(var(--cool, 0) * 360deg), transparent 0); }
 
 /* 水入れ（VPL36・VPL37）: 作り直したボトル（640×631）の中だけに水が満ちる。水面の色: 赤＝ステムに届いていない、緑＝ちょうど、金＝そのほか */
@@ -704,7 +703,8 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .phone[data-look="c"] .d-stamp { color: #d9412b; background: #fff8eee6; }
 .phone[data-look="c"] .pic.craft-steam::after { display: none; }
 /* 吸い出しは作り直したはじめの絵（縦の一枚絵） */
-.pic > .bg.pull-cg { object-position: 50% 12%; }
+/* はじめは背景なしの人物（VPL41）。場所の背景の上に、頭が上の段の下に来るように立たせる */
+.pic > .pull-cg { position: absolute; left: 50%; top: 4.8rem; width: 34rem; transform: translateX(-50%); filter: drop-shadow(0 1rem 2rem #000a); }
 .phone[data-scene="steam"] .dp-core { translate: calc(var(--sx, 0) * 3.4rem) calc(var(--sy, 0) * 3.4rem); }
 
 /* ───────── 背の低い画面 ───────── */
