@@ -1,9 +1,9 @@
 /* DJ の縦画面（?layout=portrait の時だけ portrait.mjs が読む。横の画面には掛からない）。
-   板は幅 640（スマホの幅 390px で 0.61 倍）。字は 22px 以上（実寸 13px）、押す所は 72px 以上（実寸 44px）。
-   並べ方（上から）: フロア（お客さんと熱）／案内（手順のランプ・いまやること・2曲の流れ）／皿の置き場（寄る）／ミキサー（横フェーダーは親指の届くいちばん下・幅いっぱい）。
-   皿の置き場は、次に触る側へ寄る（data-focus。portrait.mjs）: a＝左の皿を大きく、b＝右の皿を大きく、wide＝両方を引いて並べる（つなぐ・選ぶ・結果）。
-   左の皿の ▶ は左下（左の親指）、右の皿の ▶ は右下（右の親指）。案内の「左の ▶」「右の ▶」と、寄る向き・押す側がそろう。
-   文字を減らす: 手順のランプは今の段だけ名前を出す。案内の小さい2行目・STANDBY の札・QUANTIZE／AUTO EQ のランプ・機材の札・曲のクレジットの印は出さない。 */
+   板は幅 640（スマホの幅 390px で 0.61 倍）。上＝フロア（お客さんと熱）、その下に いまやること の1行、残りがブース。
+   ブースは横の画面と同じ機材の配置のまま置き、次に触る側へ寄って拡大する（data-focus。portrait.mjs）:
+     a＝左の皿、b＝右の皿、wide＝真ん中（案内・2曲の流れ・ミキサーと横フェーダー。つなぐ・選ぶ・結果の時）。
+   フロアの上の部品（熱・SET・？・↺・←・遊び方の板）と、選曲・結果の札は、縦の幅に合わせて置き直す（機材ではないので）。
+   字と押す所は、本編のスマホ向けの大きさ（style.css の phone density）を土台にする。 */
 html[data-layout=portrait] #dj-stage { width: 640px !important; height: var(--ph, 1385px); transform: translate(-50%, -50%) scale(var(--ps, 1)); }
 
 /* ── フロア ── */
@@ -29,47 +29,22 @@ html[data-layout=portrait] .howto li { grid-template-columns: 60px 1fr; }
 html[data-layout=portrait] .how-pic { width: 60px; height: 60px; }
 html[data-layout=portrait] .howto li b { font-size: 24px; } html[data-layout=portrait] .howto li p { font-size: 20px; white-space: nowrap; }
 
-/* ── ブース: 案内／皿の置き場／ミキサー ── */
-html[data-layout=portrait] .console { margin: 0; padding: 6px 10px 12px; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px; overflow: hidden; }
-html[data-layout=portrait] .navi { grid-column: 1; grid-row: 1; grid-template-columns: minmax(0, 1fr); grid-template-rows: 44px minmax(68px, auto) 76px; gap: 2px; }
-html[data-layout=portrait] .lane { grid-column: 1; }
-html[data-layout=portrait] .steps { justify-content: center; gap: 10px; }
-html[data-layout=portrait] .steps li { font-size: 0; padding: 0; gap: 8px; }
-html[data-layout=portrait] .steps li i { width: 40px; height: 40px; font-size: 20px; }
-html[data-layout=portrait] .steps li.now { font-size: 24px; }
-html[data-layout=portrait] .coach { font-size: 26px; line-height: 1.3; white-space: normal; text-align: center; min-height: 2.6em; display: grid; align-items: center; }
-html[data-layout=portrait] .coach-sub, html[data-layout=portrait] .navi > .credits { display: none; }
-html[data-layout=portrait] .lane { padding-right: 0; }
-
-html[data-layout=portrait] .deck, html[data-layout=portrait] .deck.b { --jog: var(--pjog, 420px); grid-column: 1; grid-row: 2; transition: transform .5s cubic-bezier(.2, .8, .2, 1), opacity .3s; will-change: transform; }
-html[data-layout=portrait] .deck-indicator { display: none; }
-/* ▶ は外側の下の角に大きく（左の皿は左下＝左の親指、右の皿は右下＝右の親指。案内の「左の ▶」「右の ▶」と同じ側）。皿はその反対側の上、曲名は ▶ の上 */
-html[data-layout=portrait] .deck.a .platter { left: auto; right: 0; } html[data-layout=portrait] .deck.b .platter { right: auto; left: 0; }
-html[data-layout=portrait] .deck-controls { width: 150px; height: 150px; }
-html[data-layout=portrait] .deck.a .deck-controls { right: auto; left: 0; } html[data-layout=portrait] .deck.b .deck-controls { left: auto; right: 0; }
-html[data-layout=portrait] .deck-controls::before { background-size: 480px 150px; }
-html[data-layout=portrait] .deck.a .deck-controls::before { transform: scaleX(-1); } html[data-layout=portrait] .deck.b .deck-controls::before { transform: none; }
-html[data-layout=portrait] .deck-play { width: 136px; height: 136px; }
-html[data-layout=portrait] .point.play { bottom: 150px; left: calc(50% - 36px); width: 72px; height: 72px; }
-html[data-layout=portrait] .lcd { width: 150px; height: auto; max-height: none; min-height: 0; top: 0; bottom: auto; flex-direction: column; justify-content: flex-start; gap: 2px; padding: 4px 0; }
-html[data-layout=portrait] .deck.a .lcd { right: auto; left: 0; align-items: flex-start; flex-direction: column; } html[data-layout=portrait] .deck.b .lcd { left: auto; right: 0; align-items: flex-end; flex-direction: column; }
-html[data-layout=portrait] .lcd .track-name { max-width: 150px; font-size: 22px; line-height: 1.2; white-space: normal; text-align: left; } html[data-layout=portrait] .deck.b .lcd .track-name { text-align: right; }
-html[data-layout=portrait] .deck.a .jog-arrows { top: 14px; left: auto; right: calc(var(--jog) / 2 - 62px); } html[data-layout=portrait] .deck.b .jog-arrows { top: 14px; right: auto; left: calc(var(--jog) / 2 - 62px); }
-/* 寄る先 */
-html[data-layout=portrait] #dj-stage[data-focus="a"] .deck.b { transform: translateX(108%); opacity: 0; pointer-events: none; }
-html[data-layout=portrait] #dj-stage[data-focus="b"] .deck.a { transform: translateX(-108%); opacity: 0; pointer-events: none; }
-html[data-layout=portrait] #dj-stage[data-focus="wide"] .deck.a { transform: translateX(-25%) scale(.5); }
-html[data-layout=portrait] #dj-stage[data-focus="wide"] .deck.b { transform: translateX(25%) scale(.5); }
-
-html[data-layout=portrait] .mixrow { grid-column: 1; grid-row: 3; grid-template-columns: minmax(0, 1fr); }
-html[data-layout=portrait] .channels { grid-template-columns: 12px minmax(0, 1fr) 12px; }
-html[data-layout=portrait] #led-quantize, html[data-layout=portrait] #led-autoeq { display: none; }
-html[data-layout=portrait] .beat { grid-column: 2; } html[data-layout=portrait] .meter.b { grid-column: 3; }
-/* 横フェーダーは指で追い続けるので、つかむ帯を太く（縦が短い端末でも実寸 44px 以上）、つまみも大きく */
-html[data-layout=portrait] .xtrack { height: 136px; }
-html[data-layout=portrait] #crossfader { top: 14px; height: 96px; }
-html[data-layout=portrait] #crossfader::-webkit-slider-thumb { width: 84px; height: 84px; }
-html[data-layout=portrait] #crossfader::-moz-range-thumb { width: 84px; height: 84px; }
+/* ── ブース: 元の配置のまま、次に触る側へ寄って拡大する ──
+   2026-11-27 オーナー「DJは素のやつが結構機材っぽい配置にしてたから素のやつをズームするみたいな　今なんか専用レイアウトになってるけど」（VPG13）。
+   ブース（.console）は横の画面と同じ大きさ・同じ並び（幅 1256×高さ 432。左の皿｜案内とミキサー｜右の皿。機材の絵もそのまま）で置き、
+   縦の枠はその上を覗く窓にする。窓の寄り先と倍率は --cx（ブースの中の、窓の左端の位置）と --cz（倍率）で決め、切り替わる時はなめらかに動かす。
+   --zd＝皿へ寄る倍率（皿の列がちょうど幅に収まる）、--zc＝真ん中へ寄る倍率（案内とミキサーの列が収まる）、--area-h＝ブースを映す場所の高さ（portrait.mjs が入れる）。 */
+html[data-layout=portrait] .console { position: absolute; left: 0; top: var(--ctop, 384px); width: 1256px; height: 432px; margin: 0; flex: none;
+  transform-origin: 0 0; transform: translate(calc(var(--cx, 0px) * var(--cz, 1) * -1), calc((var(--area-h, 1000px) - 432px * var(--cz, 1)) / 2)) scale(var(--cz, 1));
+  transition: transform .6s cubic-bezier(.3, .7, .2, 1); will-change: transform; }
+html[data-layout=portrait] #dj-stage[data-focus="a"] .console { --cz: var(--zd, 1.66); --cx: max(0px, calc(195px - 320px / var(--zd, 1.66))); }
+html[data-layout=portrait] #dj-stage[data-focus="b"] .console { --cz: var(--zd, 1.66); --cx: min(calc(1256px - 640px / var(--zd, 1.66)), calc(1061px - 320px / var(--zd, 1.66))); }
+html[data-layout=portrait] #dj-stage[data-focus="wide"] .console { --cz: var(--zc, 1.28); --cx: calc(628px - 320px / var(--zc, 1.28)); }
+/* いまやること（案内の1行）は、皿へ寄っている間は窓の外になるので、フロアのすぐ下に同じ文を写して出す（portrait.mjs が本編の案内を写すだけ） */
+html[data-layout=portrait] .p-coach { position: absolute; z-index: 6; left: 0; right: 0; top: 300px; height: 84px; margin: 0; padding: 0 14px; display: grid; place-items: center; text-align: center;
+  font-size: 27px; font-weight: 900; line-height: 1.25; letter-spacing: .02em; color: #fff; background: linear-gradient(180deg, #0b0812, #171022); border-bottom: 2px solid #e3bd6e55; text-wrap: balance; }
+html[data-layout=portrait] .p-coach.warn { color: var(--warn); }
+html[data-layout=portrait] .p-coach:empty { display: none; }
 
 /* ── 選曲: 札を縦に2枚。前置きの一文と下の注記は出さない ── */
 html[data-layout=portrait] .pick { top: 306px; width: calc(100% - 16px); box-sizing: border-box; }

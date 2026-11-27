@@ -128,31 +128,41 @@ await suite("portrait-games", async check => {
       assert.equal(await page.evaluate(() => Object.keys(localStorage).filter(key => /^suien/.test(key) && !/board_tutorial|roamers|floor|step_intro/.test(key)).length), 0, "the portrait frame writes no game save");
     }, { ...options, pageEntry: frame("tetsuko.html"), pageReadySelector: '[data-test="tetsuko-time-screen"]' });
 
-    // DJ は本体のページ（previews/dj）が ?layout=portrait の時だけ縦になる。次に触る側の皿へ寄る
-    await check(`dj-portrait-focus-follows-the-next-touch-${suffix}`, async page => {
+    // DJ は本体のページ（previews/dj）が ?layout=portrait の時だけ縦になる。ブースは横と同じ機材の配置のまま、次に触る側へ寄って拡大する（VPG13）
+    await check(`dj-portrait-zooms-to-the-next-touch-${suffix}`, async page => {
       const focus = () => page.evaluate(() => document.getElementById("dj-stage").dataset.focus);
+      /** 窓（画面）の中に、その部品がどれだけ見えているか（0〜1）。 */
+      const seen = id => page.evaluate(id => {
+        const r = document.getElementById(id).getBoundingClientRect(), w = Math.max(0, Math.min(r.right, innerWidth) - Math.max(r.left, 0)), h = Math.max(0, Math.min(r.bottom, innerHeight) - Math.max(r.top, 0));
+        return r.width && r.height ? w * h / (r.width * r.height) : 0;
+      }, id);
+      const settled = () => page.waitForTimeout(800); // 寄る動き
       assert.equal(await page.evaluate(() => document.documentElement.dataset.layout), "portrait");
+      // ブースの並びは横のまま（左の皿｜真ん中｜右の皿が横一列で、機材の絵も同じ大きさ）
+      const booth = await page.evaluate(() => { const c = document.querySelector(".console"), a = document.getElementById("deck-a"), b = document.getElementById("deck-b"), m = document.querySelector(".mixrow");
+        return { w: c.offsetWidth, h: c.offsetHeight, a: a.offsetLeft, m: m.offsetLeft, b: b.offsetLeft, top: [a.offsetTop, b.offsetTop] }; });
+      assert.deepEqual([booth.w, booth.h], [1256, 432], "the booth keeps its landscape size");
+      assert(booth.a < booth.m && booth.m < booth.b && booth.top[0] === booth.top[1], "decks and mixer stay side by side");
       assert.equal(await focus(), "a", "before the first play: the left deck");
-      const view = page.viewportSize();
-      await boxesInside(page, ["#play-a", "#platter-a", "#crossfader", "#help", "#restart"], { tap: 44 });
-      const playA = await page.locator("#play-a").boundingBox();
-      assert(playA.x + playA.width / 2 < view.width / 2, "the left deck's play button is on the left thumb side");
-      // 右の皿は枠の外へ出ている（並べ方の CSS が届いてから滑って出るので、出きるのを待つ）
-      await page.waitForFunction(() => document.getElementById("play-b").getBoundingClientRect().left >= innerWidth, null, { timeout: 5000 });
+      await page.waitForFunction(() => document.getElementById("platter-b").getBoundingClientRect().left >= innerWidth, null, { timeout: 5000 });
+      await settled();
+      await boxesInside(page, ["#play-a", "#help", "#restart"], { tap: 44 });
+      assert(await seen("platter-a") > 0.97, "the left platter fills the window");
+      assert.equal(await page.locator(".p-coach").innerText(), await page.locator("#coaching").innerText(), "the coaching line is mirrored under the floor");
       await page.locator("#play-a").tap();
       await page.waitForFunction(() => document.getElementById("deck-a").dataset.playing === "true", null, { timeout: 30000 });
       await page.waitForFunction(() => document.getElementById("dj-stage").dataset.focus === "b", null, { timeout: 10000 });
-      await page.waitForTimeout(700); // 寄る動き
-      await boxesInside(page, ["#play-b", "#platter-b", "#crossfader"], { tap: 44 });
-      const playB = await page.locator("#play-b").boundingBox();
-      assert(playB.x + playB.width / 2 > view.width / 2, "the right deck's play button is on the right thumb side");
-      // 早押しは予約（0 で入る）。入ったら、つなぎの間は両方の皿を引いて見せる
+      await settled();
+      await boxesInside(page, ["#play-b"], { tap: 44 });
+      assert(await seen("platter-b") > 0.97 && await seen("platter-a") < 0.05, "the window moved to the right deck");
+      // 早押しは予約（0 で入る）。入ったら、つなぎの間は真ん中（案内とミキサー）へ寄る
       await page.waitForFunction(() => !document.getElementById("point-play-b").hidden, null, { timeout: 60000 });
       await page.locator("#play-b").tap();
       await page.waitForFunction(() => !document.getElementById("guide").hidden, null, { timeout: 30000 });
-      assert.equal(await focus(), "wide", "while mixing: both decks, pulled back");
-      await page.waitForTimeout(700);
-      await boxesInside(page, ["#platter-a", "#platter-b", "#crossfader"]);
+      assert.equal(await focus(), "wide", "while mixing: the mixer in the middle");
+      await settled();
+      await boxesInside(page, ["#crossfader"], { tap: 44 });
+      assert(await seen("wave-a") > 0.97 && await seen("crossfader") > 0.99, "the waveforms and the crossfader are in the window");
     }, { ...options, pageEntry: `${baseURL}previews/dj/index.html?set=1&layout=portrait&mute=1`, pageReadySelector: "#play-a" });
   }
 
